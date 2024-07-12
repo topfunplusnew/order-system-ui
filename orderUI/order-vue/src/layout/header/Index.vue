@@ -5,8 +5,9 @@
                 <lay-col md="20" sm="20" xs="20">
                     <div class="grid-demo">
                         <lay-row space="10">
-                            <lay-col style="background-color: red;width:200px;float: left"><h1>订单管理</h1>
+                            <lay-col style="width:200px;float: left"><h1>订单管理</h1>
                             </lay-col>
+                            <!--  切换状态-->
                             <lay-col class="buttons">
                                 <slot></slot>
                             </lay-col>
@@ -19,7 +20,26 @@
                     </div>
                 </lay-col>
                 <lay-col md="4" sm="4" xs="4" class="self">
-                    <div class="grid-demo">2</div>
+                    <div class="grid-demo">
+
+                        <lay-dropdown updateAtScroll style="float: right;margin-top:10px;margin-right: 3px">
+                            <lay-button type="primary">
+                                <lay-icon type="layui-icon-friends"></lay-icon>
+                                admin，欢迎您~
+                                <lay-icon type="layui-icon-down"></lay-icon>
+                            </lay-button>
+                            <template #content>
+                                <lay-dropdown-menu>
+                                    <lay-dropdown-menu-item>
+                                        <template #prefix>
+                                            <lay-icon type="layui-icon-logout"></lay-icon>
+                                        </template>
+                                        <template #default>退出登录</template>
+                                    </lay-dropdown-menu-item>
+                                </lay-dropdown-menu>
+                            </template>
+                        </lay-dropdown>
+                    </div>
                 </lay-col>
             </lay-row>
         </lay-header>
@@ -34,16 +54,16 @@
 .layui-header {
     line-height: 60px;
     text-align: center;
-    background: #87ca9a;
-    color: white;
+    background: #ffffff;
+    color: black;
 }
 
 .grid-demo {
     line-height: 50px;
     border-radius: 2px;
     text-align: center;
-    background-color: var(--global-checked-color);
-    color: #fff;
+    background-color: #ffffff;
+    color: black;
 }
 
 .buttons {

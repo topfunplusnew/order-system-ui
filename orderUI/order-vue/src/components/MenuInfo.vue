@@ -9,6 +9,7 @@
 <script setup lang="ts">
 import {ref} from "vue";
 import Menu from "./Menu.vue";
+import {useManuTabsStore} from "../store";
 //先拿到显示与隐藏
 defineProps(['collapse'])
 const collapseTransition = ref(true);
@@ -79,8 +80,19 @@ const menuData = [
 const openKeys = ref([])
 const selectKey = ref("")
 //展开和关闭
+const menu_tabs_store = useManuTabsStore()
 const handleChooseKey = (props) => {
     selectKey.value = props;
+    //todo 添加到状态管理工具中
+    menu_tabs_store.addToOpenList({
+        id: props,
+        title: '测试',
+        children: [],
+        closable: true,
+        open: false,
+        path: '/test',
+        component: {}
+    })
     console.log(props)
 }
 const handleOpenKeys = (keys) => {

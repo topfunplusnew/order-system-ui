@@ -11,11 +11,12 @@
                     <MenuInfo :collapse="collapse"/>
                 </div>
                 <!--                右侧body-->
-                <div class="left" style="width: 85%">
-                    <Body :mockData="menuData"/>
-                </div>
+                <lay-transition>
+                    <div :class="isShow==true?'body-85':'body-100'">
+                        <Body/>
+                    </div>
+                </lay-transition>
             </lay-row>
-
         </div>
     </div>
 </template>
@@ -25,88 +26,20 @@
 import MenuInfo from "../components/MenuInfo.vue";
 import Header from "./header/Index.vue"
 import Body from './body/Index.vue'
-import {ref} from "vue";
-
+import {computed, ref,} from "vue";
+import {LayIcon} from "@layui/layui-vue";
+import {useSwitchStore} from "../store";
 //点击隐藏功能
+const switch_store = useSwitchStore()
+const isShow = computed(() => {
+    return switch_store.isShow
+})
 const collapse = ref(false)
 const handleCollapse = () => {
     collapse.value = !collapse.value
+    switch_store.changeIsShow()
 }
 
-//模拟数据
-const menuData = [
-    {
-        id: 1,
-        title: '首页',
-        children: [],
-        closable: false
-    },
-    {
-        id: 2,
-        title: '菜单',
-        open: false, // 控制子菜单是否展开
-        closable: true,
-        children: [
-            {
-                id: 3,
-                title: '菜单1',
-                children: [],
-                open: false,
-                closable: true,
-            },
-            {
-                id: 4,
-                title: '菜单2',
-                children: [],
-                open: false,
-                closable: true,
-            },
-            {
-                id: 5,
-                title: '菜单3',
-                open: false,
-                closable: true,
-                children: [
-                    {
-                        id: 6,
-                        title: "菜单3-1",
-                        open: false,
-                        closable: true,
-                        children: []
-                    },
-                    {
-                        id: 7,
-                        title: "菜单3-2",
-                        open: false,
-                        closable: true,
-                        children: []
-                    }
-                ]
-            },
-            {
-                id: 8,
-                title: '菜单4',
-                closable: true,
-                children: [
-                    {
-                        id: 9,
-                        title: "菜单4-1",
-                        open: false,
-                        children: [],
-                        closable: true,
-                    },
-                    {
-                        id: 10,
-                        title: "菜单4-2",
-                        open: false,
-                        children: [],
-                        closable: true,
-                    }
-                ]
-            }
-        ]
-    }
-];
 </script>
 
 <style scoped>
@@ -118,4 +51,11 @@ const menuData = [
     align-items: center;
 }
 
+.body-85 {
+    width: 99%;
+}
+
+.body-100 {
+    width: 100%;
+}
 </style>

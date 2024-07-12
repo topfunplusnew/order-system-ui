@@ -4,5 +4,8 @@ import {createApp} from 'vue'
 import App from './App.vue'
 import Layui from '@layui/layui-vue'
 import '@layui/layui-vue/lib/index.css'
+import {createPinia, Pinia} from "pinia";
 
-createApp(App).use(Layui).mount('#app')
+//pinia
+const pinia: Pinia = createPinia()
+createApp(App).use(Layui).use(pinia).mount('#app')
