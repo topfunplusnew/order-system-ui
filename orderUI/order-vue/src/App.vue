@@ -1,28 +1,22 @@
 <script setup lang="ts">
+//导入布局组件
+import LayOut from "./layout/Index.vue";
 </script>
 
 <template>
-  <div>
-    <a href="https://vitejs.dev" target="_blank">
-      <img src="/vite.svg" class="logo" alt="Vite logo" />
-    </a>
-    <a href="https://vuejs.org/" target="_blank">
-      <img src="./assets/vue.svg" class="logo vue" alt="Vue logo" />
-    </a>
-  </div>
+    <div>
+        <LayOut></LayOut>
+    </div>
 </template>
 
-<style scoped>
-.logo {
-  height: 6em;
-  padding: 1.5em;
-  will-change: filter;
-  transition: filter 300ms;
+<style>
+.left {
+    float: left;
 }
-.logo:hover {
-  filter: drop-shadow(0 0 2em #646cffaa);
-}
-.logo.vue:hover {
-  filter: drop-shadow(0 0 2em #42b883aa);
+
+p, dd, dl, dt, h1, h2, h3, h4, h5, h6, ul, li, ol, td, th, pre, div, form, body, input, button, textarea {
+    padding: 0;
+    margin: 0;
+    box-sizing: border-box;
 }
 </style>

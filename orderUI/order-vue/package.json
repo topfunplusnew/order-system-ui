@@ -9,7 +9,12 @@
     "preview": "vite preview"
   },
   "dependencies": {
-    "vue": "^3.4.21"
+    "@layui/layui-vue": "^2.17.7",
+    "layui-vue": "^0.0.1",
+    "pinia": "^2.1.7",
+    "print-js": "^1.6.0",
+    "vue": "^3.4.21",
+    "vue-router": "^4.4.0"
   },
   "devDependencies": {
     "@vitejs/plugin-vue": "^5.0.4",
