@@ -277,6 +277,16 @@
             <artifactId>UserAgentUtils</artifactId>
         </dependency>
 
+
+        <!-- https://mvnrepository.com/artifact/com.alibaba/easyexcel -->
+        <!-- Excel读写 -->
+        <dependency>
+            <groupId>com.alibaba</groupId>
+            <artifactId>easyexcel</artifactId>
+            <version>4.0.1</version>
+        </dependency>
+
+
     </dependencies>
 
     <build>
