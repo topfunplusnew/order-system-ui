@@ -6,11 +6,10 @@
             </lay-button>
         </Header>
         <div>
-            <lay-row space="10">
+            <lay-row >
                 <div class="grid-demo left">
                     <MenuInfo :collapse="collapse"/>
                 </div>
-                <!--                右侧body-->
                 <lay-transition>
                     <div :class="isShow==true?'body-85':'body-100'">
                         <Body/>
@@ -22,7 +21,6 @@
 </template>
 
 <script setup lang="ts">
-
 import MenuInfo from "../components/MenuInfo.vue";
 import Header from "./header/Index.vue"
 import Body from './body/Index.vue'

@@ -1,10 +1,10 @@
 <template>
     <div>
         <lay-header>
-            <lay-row space="10">
+            <lay-row>
                 <lay-col md="20" sm="20" xs="20">
                     <div class="grid-demo">
-                        <lay-row space="10">
+                        <lay-row space="5">
                             <lay-col style="width:200px;float: left"><h1>订单管理</h1>
                             </lay-col>
                             <!--  切换状态-->
@@ -21,7 +21,6 @@
                 </lay-col>
                 <lay-col md="4" sm="4" xs="4" class="self">
                     <div class="grid-demo">
-
                         <lay-dropdown updateAtScroll style="float: right;margin-top:10px;margin-right: 3px">
                             <lay-button type="primary">
                                 <lay-icon type="layui-icon-friends"></lay-icon>
@@ -54,15 +53,14 @@
 .layui-header {
     line-height: 60px;
     text-align: center;
-    background: #ffffff;
+    background: white;
     color: black;
 }
 
 .grid-demo {
-    line-height: 50px;
-    border-radius: 2px;
+    line-height: 60px;
     text-align: center;
-    background-color: #ffffff;
+    background-color: white;
     color: black;
 }
 

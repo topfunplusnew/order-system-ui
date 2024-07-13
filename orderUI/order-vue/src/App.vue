@@ -1,11 +1,12 @@
 <script setup lang="ts">
-//导入布局组件
-import LayOut from "./layout/Index.vue";
+import {RouterView,} from 'vue-router'
+
+
 </script>
 
 <template>
     <div>
-        <LayOut></LayOut>
+        <RouterView></RouterView>
     </div>
 </template>
 
