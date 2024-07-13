@@ -1,5 +1,8 @@
 package org.dzu0434.orderbackend.config.redis;
 
+import org.dzu0434.orderbackend.utils.ReflectUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.core.BoundSetOperations;
 import org.springframework.data.redis.core.HashOperations;
@@ -7,6 +10,7 @@ import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.data.redis.core.ValueOperations;
 import org.springframework.stereotype.Component;
 
+import javax.annotation.PostConstruct;
 import java.util.*;
 import java.util.concurrent.TimeUnit;
 
@@ -21,6 +25,27 @@ public class RedisCache
 {
     @Autowired
     public RedisTemplate redisTemplate;
+
+    private static Logger logger = LoggerFactory.getLogger(ReflectUtils.class);
+
+    @PostConstruct
+    public void init() {
+        // 执行清理系统级别缓存的方法
+        logger.info("系统清理业务数据缓存中...");
+//        System.out.println("系统清理业务数据缓存中...");
+        clearCacheByPrefix("ORDER_SYS_CACHE");
+    }
+
+    /**
+     * 清理缓存
+     * @param prefix
+     */
+    public void clearCacheByPrefix(String prefix) {
+        Set<String> keys = redisTemplate.keys(prefix + "*");
+        if (keys != null && !keys.isEmpty()) {
+            redisTemplate.delete(keys);
+        }
+    }
 
     /**
      * 缓存基本的对象，Integer、String、实体类等
