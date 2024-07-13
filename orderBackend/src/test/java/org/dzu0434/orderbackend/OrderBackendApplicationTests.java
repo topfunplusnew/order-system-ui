@@ -17,7 +17,7 @@ public class OrderBackendApplicationTests {
 
     @Test
     public void TestBadCredentials(){
-        String[] passwords = {"password1", "password2", "password3"};
+        String[] passwords = {"123456"};
 
         for (String password : passwords) {
             String encodedPassword = bCryptPasswordEncoder.encode(password);

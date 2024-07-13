@@ -33,9 +33,9 @@ public class UserDetailsServiceImpl implements UserDetailsService
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException
     {
         SysUser user = new SysUser(1L);
-        user.setPassword("$2a$10$JQQFC6Hdq4npG6UrzvafOeWZI4MpCnofJT0P9ebJ5qCjW01TUoyke");
-        user.setNickName("AdminML");
-        user.setUserName("String");
+        user.setPassword("$2a$10$.ftMd/JBjDveXuZUKhVty./SvSO8DIQdAwKGb1vg006OLwKQZplXC");
+        user.setNickName("Adminw");
+        user.setUserName("testAdmin");
         user.setDelFlag("F");
         user.setPhonenumber("1223314513445");
         // TODO 返回一个非空的用户。毛磊
