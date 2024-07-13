@@ -14,7 +14,9 @@ public class OrderBackendApplication
 {
     public static void main(String[] args)
     {
+
         SpringApplication.run(OrderBackendApplication.class, args);
+
         System.out.println("订单管理系统启动成功!");
     }
 }

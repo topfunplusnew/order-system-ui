@@ -63,7 +63,7 @@ spring:
     # 端口，默认为6379
     port: 6379
     # 数据库索引
-    database: 0
+    database: 7
     # 密码
     password: mwcKzJjGAcpnKPZp
     # 连接超时时间
@@ -86,7 +86,7 @@ token:
   # 令牌密钥
   secret: order-7426e65c-84c2-4b98-952c-6cf9013b184f-system
   # 令牌有效期（默认30分钟）
-  expireTime: 60*24*3
+  expireTime: 4320
 
 # MyBatis配置
 mybatis:
