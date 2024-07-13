@@ -20,6 +20,10 @@ public class OrderBackendApplication
 
         SpringApplication.run(OrderBackendApplication.class, args);
 
-        System.out.println("订单管理系统启动成功!");
+        System.out.println("====================");
+        System.out.println("=                  =");
+        System.out.println("= 订单管理系统启动成功 =");
+        System.out.println("=                  =");
+        System.out.println("====================");
     }
 }
