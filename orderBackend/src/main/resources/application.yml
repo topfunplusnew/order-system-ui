@@ -56,6 +56,20 @@ spring:
     restart:
       # 热部署开关
       enabled: true
+  # 开启缓存并指定为redis
+  cache:
+    type: redis
+    redis:
+      # 缓存过期时间为60分钟，单位为毫秒
+      time-to-live: 3600000
+      # 是否允许缓存空数据，当查询到的结果为空时缓存空数据到redis中
+      cache-null-values: true
+      # 为Redis的KEY拼接前缀
+      key-prefix: "ORDER_SYS_CACHE:"
+      # 是否拼接KEY前缀
+      use-key-prefix: true
+      # 是否开启缓存统计
+      enable-statistics: false
   # redis 配置
   redis:
     # 地址

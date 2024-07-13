@@ -54,7 +54,7 @@ public class SysLoginService
         Authentication authentication = null;
         try
         {
-            // TODO : 这里传入密码，在UserDetailsServiceImpl中的match中进行匹配
+//
             UsernamePasswordAuthenticationToken authenticationToken = new UsernamePasswordAuthenticationToken(username, password);
             AuthenticationContextHolder.setContext(authenticationToken);
             // 该方法会去调用UserDetailsServiceImpl.loadUserByUsername
