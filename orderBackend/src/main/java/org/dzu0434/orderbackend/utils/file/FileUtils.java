@@ -3,7 +3,7 @@ package org.dzu0434.orderbackend.utils.file;
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.ArrayUtils;
-import org.dzu0434.orderbackend.config.DzuConfig;
+import org.dzu0434.orderbackend.config.OrderConfig;
 import org.dzu0434.orderbackend.utils.DateUtils;
 import org.dzu0434.orderbackend.utils.StringUtils;
 import org.dzu0434.orderbackend.utils.uuid.IdUtils;
@@ -69,7 +69,7 @@ public class FileUtils
      */
     public static String writeImportBytes(byte[] data) throws IOException
     {
-        return writeBytes(data, DzuConfig.getImportPath());
+        return writeBytes(data, OrderConfig.getImportPath());
     }
 
     /**

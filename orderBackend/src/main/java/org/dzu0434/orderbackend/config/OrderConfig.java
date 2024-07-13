@@ -9,8 +9,8 @@ import org.springframework.stereotype.Component;
  * @author ml
  */
 @Component
-@ConfigurationProperties(prefix = "dzu")
-public class DzuConfig
+@ConfigurationProperties(prefix = "order")
+public class OrderConfig
 {
     /** 项目名称 */
     private String name;
@@ -67,7 +67,7 @@ public class DzuConfig
 
     public void setProfile(String profile)
     {
-        DzuConfig.profile = profile;
+        OrderConfig.profile = profile;
     }
 
     public static boolean isAddressEnabled()
@@ -77,7 +77,7 @@ public class DzuConfig
 
     public void setAddressEnabled(boolean addressEnabled)
     {
-        DzuConfig.addressEnabled = addressEnabled;
+        OrderConfig.addressEnabled = addressEnabled;
     }
 
     public static String getCaptchaType() {
@@ -85,7 +85,7 @@ public class DzuConfig
     }
 
     public void setCaptchaType(String captchaType) {
-        DzuConfig.captchaType = captchaType;
+        OrderConfig.captchaType = captchaType;
     }
 
     /**
@@ -94,14 +94,6 @@ public class DzuConfig
     public static String getImportPath()
     {
         return getProfile() + "/import";
-    }
-
-    /**
-     * 获取头像上传路径
-     */
-    public static String getAvatarPath()
-    {
-        return getProfile() + "/avatar";
     }
 
     /**

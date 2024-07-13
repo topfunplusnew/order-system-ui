@@ -2,7 +2,7 @@ package org.dzu0434.orderbackend.utils.ip;
 
 import com.alibaba.fastjson2.JSON;
 import com.alibaba.fastjson2.JSONObject;
-import org.dzu0434.orderbackend.config.DzuConfig;
+import org.dzu0434.orderbackend.config.OrderConfig;
 import org.dzu0434.orderbackend.constant.Constants;
 import org.dzu0434.orderbackend.utils.StringUtils;
 import org.dzu0434.orderbackend.utils.http.HttpUtils;
@@ -31,7 +31,7 @@ public class AddressUtils
         {
             return "内网IP";
         }
-        if (DzuConfig.isAddressEnabled())
+        if (OrderConfig.isAddressEnabled())
         {
             try
             {

@@ -1,5 +1,3 @@
-
-
 # 开发环境配置
 server:
   # 服务器的HTTP端口，默认为8080
@@ -116,3 +114,14 @@ pagehelper:
   helperDialect: mysql
   supportMethodsArguments: true
   params: count=countSql
+
+# 项目相关配置
+order:
+  # 名称
+  name: order-system
+  # 版本
+  version: 1.0.0
+  # 文件路径
+  profile: D:/order/uploadPath
+  # 获取ip地址开关
+  addressEnabled: true

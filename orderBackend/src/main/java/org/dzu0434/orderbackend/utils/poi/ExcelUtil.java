@@ -14,7 +14,7 @@ import org.apache.poi.xssf.usermodel.*;
 
 import org.dzu0434.orderbackend.annotation.Excel;
 import org.dzu0434.orderbackend.annotation.Excels;
-import org.dzu0434.orderbackend.config.DzuConfig;
+import org.dzu0434.orderbackend.config.OrderConfig;
 import org.dzu0434.orderbackend.domain.AjaxResult;
 import org.dzu0434.orderbackend.exception.UtilException;
 import org.dzu0434.orderbackend.utils.DateUtils;
@@ -1322,7 +1322,7 @@ public class ExcelUtil<T>
      */
     public String getAbsoluteFile(String filename)
     {
-        String downloadPath = DzuConfig.getDownloadPath() + filename;
+        String downloadPath = OrderConfig.getDownloadPath() + filename;
         File desc = new File(downloadPath);
         if (!desc.getParentFile().exists())
         {

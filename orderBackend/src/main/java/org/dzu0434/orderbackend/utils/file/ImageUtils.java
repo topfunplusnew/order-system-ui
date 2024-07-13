@@ -1,7 +1,7 @@
 package org.dzu0434.orderbackend.utils.file;
 
 import org.apache.poi.util.IOUtils;
-import org.dzu0434.orderbackend.config.DzuConfig;
+import org.dzu0434.orderbackend.config.OrderConfig;
 import org.dzu0434.orderbackend.constant.Constants;
 import org.dzu0434.orderbackend.utils.StringUtils;
 import org.slf4j.Logger;
@@ -80,7 +80,7 @@ public class ImageUtils
             else
             {
                 // 本机地址
-                String localPath = DzuConfig.getProfile();
+                String localPath = OrderConfig.getProfile();
                 String downloadPath = localPath + StringUtils.substringAfter(url, Constants.RESOURCE_PREFIX);
                 in = new FileInputStream(downloadPath);
             }

@@ -1,11 +1,9 @@
 package org.dzu0434.orderbackend.utils.file;
 
-import org.apache.commons.io.FileUtils;
-
 
 import org.apache.commons.io.FilenameUtils;
 //import org.apache.tomcat.util.http.fileupload.impl.FileSizeLimitExceededException;
-import org.dzu0434.orderbackend.config.DzuConfig;
+import org.dzu0434.orderbackend.config.OrderConfig;
 import org.dzu0434.orderbackend.constant.Constants;
 import org.dzu0434.orderbackend.exception.file.FileNameLengthLimitExceededException;
 import org.dzu0434.orderbackend.exception.file.FileSizeLimitExceededException;
@@ -41,7 +39,7 @@ public class FileUploadUtils
     /**
      * 默认上传的地址
      */
-    private static String defaultBaseDir = DzuConfig.getProfile();
+    private static String defaultBaseDir = OrderConfig.getProfile();
 
     public static void setDefaultBaseDir(String defaultBaseDir)
     {
@@ -148,7 +146,7 @@ public class FileUploadUtils
 
     public static final String getPathFileName(String uploadDir, String fileName) throws IOException
     {
-        int dirLastIndex = DzuConfig.getProfile().length() + 1;
+        int dirLastIndex = OrderConfig.getProfile().length() + 1;
         String currentDir = StringUtils.substring(uploadDir, dirLastIndex);
         return Constants.RESOURCE_PREFIX + "/" + currentDir + "/" + fileName;
     }
