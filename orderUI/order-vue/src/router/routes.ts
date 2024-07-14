@@ -2,6 +2,7 @@
 import LayOut from "../layout/Index.vue";
 // @ts-ignore
 import Login from "../view/Login.vue";
+// @ts-ignore
 import {RouteRecordRaw} from "vue-router";
 
 //在这里请求后端的路由信息

@@ -29,12 +29,14 @@ const handleLogin = () => {
         console.log(res)
         if (res.data.code == 200) {
             layer.msg("登录成功~", {time: 2000, icon: 1})
-            localStorage.setItem("user", userInfo.toString())
-            router.push('/')
+            //模拟保存用户信息或者jwt
+            sessionStorage.setItem("token", res.data.token)
+            router.push('/admin')
         } else {
             layer.msg("登录失败" + res.message, {time: 2000, icon: 2})
         }
     }).catch(err => {
+        console.log('err->', err)
         layer.msg("登录失败!" + err.message, {time: 2000, icon: 2})
     })
 }
