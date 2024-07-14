@@ -17,8 +17,8 @@ export const router: Router = createRouter({
 router.beforeEach((to: any) => {
     const token: string | null | undefined = sessionStorage.getItem("token")
     if (to.name == '首页') {
-        console.log("路由守卫")
         if (token == undefined) {
+            layer.msg("您好,请先登录~", {time: 2000, icon: 2})
             return {
                 name: '登录'
             }

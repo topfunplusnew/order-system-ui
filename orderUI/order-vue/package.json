@@ -9,6 +9,7 @@
     "preview": "vite preview"
   },
   "dependencies": {
+    "@layui/json-schema-form": "^1.0.12",
     "@layui/layui-vue": "^2.17.7",
     "axios": "^1.7.2",
     "layui-vue": "^0.0.1",

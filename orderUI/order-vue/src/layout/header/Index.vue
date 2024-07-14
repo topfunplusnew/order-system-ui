@@ -24,7 +24,7 @@
                         <lay-dropdown updateAtScroll style="float: right;margin-top:10px;margin-right: 3px">
                             <lay-button type="primary">
                                 <lay-icon type="layui-icon-friends"></lay-icon>
-                                admin，欢迎您~
+                                {{ username }}，欢迎您~
                                 <lay-icon type="layui-icon-down"></lay-icon>
                             </lay-button>
                             <template #content>
@@ -46,7 +46,7 @@
 </template>
 
 <script setup lang="ts">
-
+const username = sessionStorage.getItem("username")
 </script>
 
 <style scoped>
