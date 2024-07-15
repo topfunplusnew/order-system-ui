@@ -37,9 +37,10 @@ public class LogoutSuccessHandlerImpl implements LogoutSuccessHandler
             throws IOException, ServletException
     {
         LoginUser loginUser = tokenService.getLoginUser(request);
-        System.out.println("模拟用户退出");
-        System.out.println(authentication);
-        //TODO :记得删除并完善退出。毛磊
+        // 删除用户缓存记录
+        tokenService.delLoginUser(loginUser.getToken());
+        //TODO : 日志记录？ 可能需要 。毛磊
+
         ServletUtils.renderString(response, JSON.toJSONString(AjaxResult.success(MessageUtils.message("user.logout.success"))));
     }
 }
