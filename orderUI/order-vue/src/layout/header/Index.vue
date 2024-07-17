@@ -24,12 +24,12 @@
                         <lay-dropdown updateAtScroll style="float: right;margin-top:10px;margin-right: 3px">
                             <lay-button type="primary">
                                 <lay-icon type="layui-icon-friends"></lay-icon>
-                                {{ username }}，欢迎您~
+                                {{ username }}<span v-if="username != '未登录'">，欢迎您~</span>
                                 <lay-icon type="layui-icon-down"></lay-icon>
                             </lay-button>
                             <template #content>
                                 <lay-dropdown-menu>
-                                    <lay-dropdown-menu-item>
+                                    <lay-dropdown-menu-item @click="handleLogout">
                                         <template #prefix>
                                             <lay-icon type="layui-icon-logout"></lay-icon>
                                         </template>
@@ -46,7 +46,60 @@
 </template>
 
 <script setup lang="ts">
-const username = sessionStorage.getItem("username")
+
+import {logout} from "../../api/user/user.ts";
+import {layer} from "@layui/layui-vue";
+import {useRouter} from "vue-router";
+import {ref,} from "vue";
+
+const router = useRouter()
+const token = ref(sessionStorage.getItem("token"))
+
+const username = ref('')
+const temp = sessionStorage.getItem("username")
+if (temp) {
+    username.value = temp;
+} else {
+    if (!token.value) {
+        sessionStorage.removeItem("username")
+        username.value = '未登录'
+        router.push('/login')
+    }
+}
+
+
+//登出
+const handleLogout = () => {
+    //如果没有token 或者token村了个空
+    if (token.value == undefined || token.value == '') {
+        sessionStorage.removeItem("token")
+        sessionStorage.removeItem("username")
+        layer.msg("您尚未登录~", {time: 2000, icon: 2})
+        router.push('/login')
+        //有token
+    } else {
+        logout(token.value).then(r => {
+            console.log(r)
+            //如果接口响应200
+            if (r.data.code == 200) {
+                sessionStorage.removeItem("token")
+                sessionStorage.removeItem("username")
+                layer.msg("登出成功~", {time: 2000, icon: 1})
+                router.push('/login')
+                //其他状态码 直接报错且跳出
+            } else {
+                layer.msg("系统出错!" + r.data.msg, {time: 2000, icon: 2})
+                sessionStorage.removeItem("username")
+                router.push('/login')
+            }
+        }).catch(e => {
+            layer.msg("系统出错!" + e.msg, {time: 2000, icon: 2})
+            sessionStorage.removeItem("username")
+            router.push('/login')
+            console.log(e)
+        })
+    }
+}
 </script>
 
 <style scoped>

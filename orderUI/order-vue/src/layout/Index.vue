@@ -11,7 +11,7 @@
                     <MenuInfo :collapse="collapse"/>
                 </div>
                 <lay-transition>
-                    <div :class="isShow==true?'body-85':'body-100'">
+                    <div :class="isShow==true?'body-85':'body-100'" >
                         <Body/>
                     </div>
                 </lay-transition>
@@ -52,7 +52,7 @@ const handleCollapse = () => {
 }
 
 .body-85 {
-    width: 99%;
+    width: 96%;
 }
 
 .body-100 {
