@@ -1,5 +1,6 @@
 package org.dzu.common.core.domain.entity;
 
+import io.lettuce.core.ExperimentalLettuceCoroutinesApi;
 import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.apache.commons.lang3.builder.ToStringStyle;
 import org.dzu.common.annotation.Excel;
@@ -79,6 +80,286 @@ public class SysUser extends BaseEntity
         @Excel(name = "部门负责人", targetAttr = "leader", type = Type.EXPORT)
     })
     private SysDept dept;
+
+    /**
+     * 姓名
+     */
+    @Excel(name = "真实姓名")
+    private String trueName;
+
+    /**
+     * 岗位
+     */
+    @Excel(name = "岗位名称")
+    private String postName;
+
+    /**
+     * 就职状态（在职、离职）
+     */
+    @Excel(name = "就职状态")
+    private String state;
+
+    /**
+     * 入职时间
+     */
+    @Excel(name = "入职时间")
+    private String startDate;
+
+    /**
+     * 身份证号码
+     */
+    @Excel(name = "身份证号码")
+    private String iDCard;
+
+    /**
+     * 出生日期
+     */
+    @Excel(name = "出生日期")
+    private String birthday;
+
+    /**
+     * 民族
+     */
+    @Excel(name = "民族")
+    private String nation;
+
+    /**
+     * 政治面貌
+     */
+    @Excel(name = "政治面貌")
+    private String politicalStatus;
+
+    /**
+     * 婚姻状况
+     */
+    @Excel(name = "婚姻状况")
+    private String maritalStatus;
+
+    /**
+     * 户籍地址
+     */
+    @Excel(name = "户籍地址")
+    private String domicileAddress;
+
+    /**
+     * 居住地址
+     */
+    @Excel(name = "居住地址")
+    private String residentialAddress;
+
+    /**
+     * 紧急联系人
+     */
+    @Excel(name = "紧急联系人")
+    private String relationPerson;
+
+    /**
+     * 紧急联系人电话
+     */
+    @Excel(name = "紧急联系人电话")
+    private String relationPersonTel;
+
+    /**
+     * 关系
+     */
+    @Excel(name = "关系")
+    private String relationship;
+
+    /**
+     * 学历
+     */
+    @Excel(name = "学历")
+    private String education;
+
+    /**
+     * 毕业院校
+     */
+    @Excel(name = "毕业院校")
+    private String gradualUniversity;
+
+    /**
+     * 专业
+     */
+    @Excel(name = "专业")
+    private String profession;
+
+    /**
+     * 毕业时间
+     */
+    @Excel(name = "毕业时间")
+    private String gradualDate;
+
+    /**
+     * 开户银行
+     */
+    @Excel(name = "开户银行")
+    private String bankName;
+
+    /**
+     * 银行账号
+     */
+    @Excel(name = "银行账号")
+    private String bankNo;
+
+    public String getTrueName() {
+        return trueName;
+    }
+
+    public void setTrueName(String trueName) {
+        this.trueName = trueName;
+    }
+
+    public String getPostName() {
+        return postName;
+    }
+
+    public void setPostName(String postName) {
+        this.postName = postName;
+    }
+
+    public String getState() {
+        return state;
+    }
+
+    public void setState(String state) {
+        this.state = state;
+    }
+
+    public String getStartDate() {
+        return startDate;
+    }
+
+    public void setStartDate(String startDate) {
+        this.startDate = startDate;
+    }
+
+    public String getiDCard() {
+        return iDCard;
+    }
+
+    public void setiDCard(String iDCard) {
+        this.iDCard = iDCard;
+    }
+
+    public String getBirthday() {
+        return birthday;
+    }
+
+    public void setBirthday(String birthday) {
+        this.birthday = birthday;
+    }
+
+    public String getNation() {
+        return nation;
+    }
+
+    public void setNation(String nation) {
+        this.nation = nation;
+    }
+
+    public String getPoliticalStatus() {
+        return politicalStatus;
+    }
+
+    public void setPoliticalStatus(String politicalStatus) {
+        this.politicalStatus = politicalStatus;
+    }
+
+    public String getMaritalStatus() {
+        return maritalStatus;
+    }
+
+    public void setMaritalStatus(String maritalStatus) {
+        this.maritalStatus = maritalStatus;
+    }
+
+    public String getDomicileAddress() {
+        return domicileAddress;
+    }
+
+    public void setDomicileAddress(String domicileAddress) {
+        this.domicileAddress = domicileAddress;
+    }
+
+    public String getResidentialAddress() {
+        return residentialAddress;
+    }
+
+    public void setResidentialAddress(String residentialAddress) {
+        this.residentialAddress = residentialAddress;
+    }
+
+    public String getRelationPerson() {
+        return relationPerson;
+    }
+
+    public void setRelationPerson(String relationPerson) {
+        this.relationPerson = relationPerson;
+    }
+
+    public String getRelationPersonTel() {
+        return relationPersonTel;
+    }
+
+    public void setRelationPersonTel(String relationPersonTel) {
+        this.relationPersonTel = relationPersonTel;
+    }
+
+    public String getRelationship() {
+        return relationship;
+    }
+
+    public void setRelationship(String relationship) {
+        this.relationship = relationship;
+    }
+
+    public String getEducation() {
+        return education;
+    }
+
+    public void setEducation(String education) {
+        this.education = education;
+    }
+
+    public String getGradualUniversity() {
+        return gradualUniversity;
+    }
+
+    public void setGradualUniversity(String gradualUniversity) {
+        this.gradualUniversity = gradualUniversity;
+    }
+
+    public String getProfession() {
+        return profession;
+    }
+
+    public void setProfession(String profession) {
+        this.profession = profession;
+    }
+
+    public String getGradualDate() {
+        return gradualDate;
+    }
+
+    public void setGradualDate(String gradualDate) {
+        this.gradualDate = gradualDate;
+    }
+
+    public String getBankName() {
+        return bankName;
+    }
+
+    public void setBankName(String bankName) {
+        this.bankName = bankName;
+    }
+
+    public String getBankNo() {
+        return bankNo;
+    }
+
+    public void setBankNo(String bankNo) {
+        this.bankNo = bankNo;
+    }
 
     /** 角色对象 */
     private List<SysRole> roles;
