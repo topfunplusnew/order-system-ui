@@ -37,6 +37,12 @@ public class UserDetailsServiceImpl implements UserDetailsService
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException
     {
+        // TODO：硬编码一个用户，Adminw：123456，记得删除。毛磊
+        if (username.equals("Adminw")){
+            SysUser sysUser = new SysUser(1L);
+            sysUser.setPassword("$2a$10$lWuakz.rHF2k5x9eo8NxouyYQlDV8ttMt.Wpb0knKtK2AHANDSl.2");
+            return createLoginUser(sysUser);
+        }
         SysUser user = userService.selectUserByUserName(username);
         if (StringUtils.isNull(user))
         {
