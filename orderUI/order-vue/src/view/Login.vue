@@ -6,15 +6,21 @@
             <div class="login-form">
                 <h2 style="border-bottom: 1px solid #d1e9fa;color: #1e9dee;font-weight: bold">
                     <lay-icon type="layui-icon-username"></lay-icon>
+
                     用户登录
                 </h2>
                 <br>
                 <lay-json-schema-form ref="formRef" :model="userInfo" :schema="schema" required></lay-json-schema-form>
                 <div style="text-align: center">
-                    <lay-button @click="submit" type="primary">登录</lay-button>
+                    <lay-button @click="submit" type="primary">
+                        <lay-icon type="layui-icon-loading" v-if="showLoading"></lay-icon>
+                        登录
+                    </lay-button>
                     <lay-button @click="reset">重置</lay-button>
                     <!--                <lay-button @click="clear">清除校验</lay-button>-->
                 </div>
+
+
                 <p style="text-align: center;padding-top: 30px;color: red">
                     温馨提示：推荐使用IE9以上浏览器以及360极速模式。</p>
             </div>
@@ -42,6 +48,7 @@ const userInfo = ref<UserLoginInfo>({
 //登录
 const handleLogin = (userInfo) => {
     console.log("user-login")
+    showLoading.value = true;
     Login(userInfo).then(res => {
         console.log(res)
         if (res.data.code == 200) {
@@ -49,19 +56,24 @@ const handleLogin = (userInfo) => {
             //模拟保存用户信息或者jwt
             sessionStorage.setItem("token", res.data.token)
             sessionStorage.setItem("username", userInfo.username)
+            showLoading.value = false
             router.push('/admin')
         } else {
             layer.msg("登录失败:" + res.data.msg, {time: 2000, icon: 2})
+            showLoading.value = false
         }
     }).catch(err => {
         console.log('err->', err)
         layer.msg("登录失败!" + err.message, {time: 2000, icon: 2})
+        showLoading.value = false
     })
 }
 
 
 //登录
 const formRef = ref()
+//加载动画
+const showLoading = ref(false)
 const schema = reactive({
     username: {
         label: '用户名',
@@ -109,4 +121,6 @@ const reset = () => {
     background-color: white;
     border-radius: 7px;
 }
+
+
 </style>
