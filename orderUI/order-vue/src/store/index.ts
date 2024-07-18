@@ -1,5 +1,6 @@
 import {defineStore} from 'pinia'
 import {ref} from "vue";
+import _ from 'lodash'
 // @ts-ignore
 import LayOut from '../layout/Index.vue'
 import {treeselect} from "../api/api/system/menu.ts";
@@ -33,7 +34,11 @@ export const useManuTabsStore = defineStore('menu-tabs', () => {
     //action
     const addToOpenList = (menuItems: MenuInfo) => {
         menuOpenList.value.push(menuItems)
-        console.log(menuOpenList.value)
+        //去重
+        menuOpenList.value = menuOpenList.value.filter((obj, index, self) =>
+            index === self.findIndex((t) => (
+                t.menuId === obj.menuId && t.menuName === obj.menuName
+            )))
     }
     const deleteToOpenList = (id?: number, menuItems?: any) => {
         // @ts-ignore
