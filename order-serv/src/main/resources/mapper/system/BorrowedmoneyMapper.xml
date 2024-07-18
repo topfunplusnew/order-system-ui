@@ -1,0 +1,120 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="org.dzu.system.mapper.BorrowedmoneyMapper">
+    
+    <resultMap type="Borrowedmoney" id="BorrowedmoneyResult">
+        <result property="id"    column="id"    />
+        <result property="loanNO"    column="loanNO"    />
+        <result property="origin"    column="origin"    />
+        <result property="moneyAmount"    column="moneyAmount"    />
+        <result property="ratio"    column="ratio"    />
+        <result property="loanDate"    column="loanDate"    />
+        <result property="loanDuring"    column="loanDuring"    />
+        <result property="mortgageGuarantee"    column="mortgageGuarantee"    />
+        <result property="acountsName"    column="acountsName"    />
+        <result property="bankNo"    column="bankNo"    />
+        <result property="comments"    column="comments"    />
+        <result property="addtime"    column="addtime"    />
+        <result property="userId"    column="userId"    />
+        <result property="UserName"    column="UserName"    />
+        <result property="updateTime"    column="update_time"    />
+    </resultMap>
+
+    <sql id="selectBorrowedmoneyVo">
+        select id, loanNO, origin, moneyAmount, ratio, loanDate, loanDuring, mortgageGuarantee, acountsName, bankNo, comments, addtime, userId, UserName, update_time from borrowedmoney
+    </sql>
+
+    <select id="selectBorrowedmoneyList" parameterType="Borrowedmoney" resultMap="BorrowedmoneyResult">
+        <include refid="selectBorrowedmoneyVo"/>
+        <where>  
+            <if test="loanNO != null  and loanNO != ''"> and loanNO = #{loanNO}</if>
+            <if test="origin != null  and origin != ''"> and origin = #{origin}</if>
+            <if test="moneyAmount != null "> and moneyAmount = #{moneyAmount}</if>
+            <if test="ratio != null "> and ratio = #{ratio}</if>
+            <if test="loanDate != null  and loanDate != ''"> and loanDate = #{loanDate}</if>
+            <if test="loanDuring != null  and loanDuring != ''"> and loanDuring = #{loanDuring}</if>
+            <if test="mortgageGuarantee != null  and mortgageGuarantee != ''"> and mortgageGuarantee = #{mortgageGuarantee}</if>
+            <if test="acountsName != null  and acountsName != ''"> and acountsName like concat('%', #{acountsName}, '%')</if>
+            <if test="bankNo != null  and bankNo != ''"> and bankNo = #{bankNo}</if>
+            <if test="comments != null  and comments != ''"> and comments = #{comments}</if>
+            <if test="addtime != null  and addtime != ''"> and addtime = #{addtime}</if>
+            <if test="userId != null "> and userId = #{userId}</if>
+            <if test="UserName != null  and UserName != ''"> and UserName like concat('%', #{UserName}, '%')</if>
+        </where>
+    </select>
+    
+    <select id="selectBorrowedmoneyById" parameterType="Long" resultMap="BorrowedmoneyResult">
+        <include refid="selectBorrowedmoneyVo"/>
+        where id = #{id}
+    </select>
+
+    <insert id="insertBorrowedmoney" parameterType="Borrowedmoney" useGeneratedKeys="true" keyProperty="id">
+        insert into borrowedmoney
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="loanNO != null">loanNO,</if>
+            <if test="origin != null">origin,</if>
+            <if test="moneyAmount != null">moneyAmount,</if>
+            <if test="ratio != null">ratio,</if>
+            <if test="loanDate != null">loanDate,</if>
+            <if test="loanDuring != null">loanDuring,</if>
+            <if test="mortgageGuarantee != null">mortgageGuarantee,</if>
+            <if test="acountsName != null">acountsName,</if>
+            <if test="bankNo != null">bankNo,</if>
+            <if test="comments != null">comments,</if>
+            <if test="addtime != null">addtime,</if>
+            <if test="userId != null">userId,</if>
+            <if test="UserName != null">UserName,</if>
+            <if test="updateTime != null">update_time,</if>
+         </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="loanNO != null">#{loanNO},</if>
+            <if test="origin != null">#{origin},</if>
+            <if test="moneyAmount != null">#{moneyAmount},</if>
+            <if test="ratio != null">#{ratio},</if>
+            <if test="loanDate != null">#{loanDate},</if>
+            <if test="loanDuring != null">#{loanDuring},</if>
+            <if test="mortgageGuarantee != null">#{mortgageGuarantee},</if>
+            <if test="acountsName != null">#{acountsName},</if>
+            <if test="bankNo != null">#{bankNo},</if>
+            <if test="comments != null">#{comments},</if>
+            <if test="addtime != null">#{addtime},</if>
+            <if test="userId != null">#{userId},</if>
+            <if test="UserName != null">#{UserName},</if>
+            <if test="updateTime != null">#{updateTime},</if>
+         </trim>
+    </insert>
+
+    <update id="updateBorrowedmoney" parameterType="Borrowedmoney">
+        update borrowedmoney
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="loanNO != null">loanNO = #{loanNO},</if>
+            <if test="origin != null">origin = #{origin},</if>
+            <if test="moneyAmount != null">moneyAmount = #{moneyAmount},</if>
+            <if test="ratio != null">ratio = #{ratio},</if>
+            <if test="loanDate != null">loanDate = #{loanDate},</if>
+            <if test="loanDuring != null">loanDuring = #{loanDuring},</if>
+            <if test="mortgageGuarantee != null">mortgageGuarantee = #{mortgageGuarantee},</if>
+            <if test="acountsName != null">acountsName = #{acountsName},</if>
+            <if test="bankNo != null">bankNo = #{bankNo},</if>
+            <if test="comments != null">comments = #{comments},</if>
+            <if test="addtime != null">addtime = #{addtime},</if>
+            <if test="userId != null">userId = #{userId},</if>
+            <if test="UserName != null">UserName = #{UserName},</if>
+            <if test="updateTime != null">update_time = #{updateTime},</if>
+        </trim>
+        where id = #{id}
+    </update>
+
+    <delete id="deleteBorrowedmoneyById" parameterType="Long">
+        delete from borrowedmoney where id = #{id}
+    </delete>
+
+    <delete id="deleteBorrowedmoneyByIds" parameterType="String">
+        delete from borrowedmoney where id in 
+        <foreach item="id" collection="array" open="(" separator="," close=")">
+            #{id}
+        </foreach>
+    </delete>
+</mapper>

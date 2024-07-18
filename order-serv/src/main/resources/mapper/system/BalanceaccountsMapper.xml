@@ -1,0 +1,100 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="org.dzu.system.mapper.BalanceaccountsMapper">
+    
+    <resultMap type="Balanceaccounts" id="BalanceaccountsResult">
+        <result property="id"    column="id"    />
+        <result property="operateDate"    column="operateDate"    />
+        <result property="moneyAmount"    column="moneyAmount"    />
+        <result property="company"    column="company"    />
+        <result property="companyID"    column="companyID"    />
+        <result property="companyType"    column="companyType"    />
+        <result property="comments"    column="comments"    />
+        <result property="addtime"    column="addtime"    />
+        <result property="userId"    column="userId"    />
+        <result property="UserName"    column="UserName"    />
+        <result property="updateTime"    column="update_time"    />
+    </resultMap>
+
+    <sql id="selectBalanceaccountsVo">
+        select id, operateDate, moneyAmount, company, companyID, companyType, comments, addtime, userId, UserName, update_time from balanceaccounts
+    </sql>
+
+    <select id="selectBalanceaccountsList" parameterType="Balanceaccounts" resultMap="BalanceaccountsResult">
+        <include refid="selectBalanceaccountsVo"/>
+        <where>  
+            <if test="operateDate != null  and operateDate != ''"> and operateDate = #{operateDate}</if>
+            <if test="moneyAmount != null "> and moneyAmount = #{moneyAmount}</if>
+            <if test="company != null  and company != ''"> and company = #{company}</if>
+            <if test="companyID != null "> and companyID = #{companyID}</if>
+            <if test="companyType != null "> and companyType = #{companyType}</if>
+            <if test="comments != null  and comments != ''"> and comments = #{comments}</if>
+            <if test="addtime != null  and addtime != ''"> and addtime = #{addtime}</if>
+            <if test="userId != null "> and userId = #{userId}</if>
+            <if test="UserName != null  and UserName != ''"> and UserName like concat('%', #{UserName}, '%')</if>
+        </where>
+    </select>
+    
+    <select id="selectBalanceaccountsById" parameterType="Long" resultMap="BalanceaccountsResult">
+        <include refid="selectBalanceaccountsVo"/>
+        where id = #{id}
+    </select>
+
+    <insert id="insertBalanceaccounts" parameterType="Balanceaccounts" useGeneratedKeys="true" keyProperty="id">
+        insert into balanceaccounts
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="operateDate != null">operateDate,</if>
+            <if test="moneyAmount != null">moneyAmount,</if>
+            <if test="company != null">company,</if>
+            <if test="companyID != null">companyID,</if>
+            <if test="companyType != null">companyType,</if>
+            <if test="comments != null">comments,</if>
+            <if test="addtime != null">addtime,</if>
+            <if test="userId != null">userId,</if>
+            <if test="UserName != null">UserName,</if>
+            <if test="updateTime != null">update_time,</if>
+         </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="operateDate != null">#{operateDate},</if>
+            <if test="moneyAmount != null">#{moneyAmount},</if>
+            <if test="company != null">#{company},</if>
+            <if test="companyID != null">#{companyID},</if>
+            <if test="companyType != null">#{companyType},</if>
+            <if test="comments != null">#{comments},</if>
+            <if test="addtime != null">#{addtime},</if>
+            <if test="userId != null">#{userId},</if>
+            <if test="UserName != null">#{UserName},</if>
+            <if test="updateTime != null">#{updateTime},</if>
+         </trim>
+    </insert>
+
+    <update id="updateBalanceaccounts" parameterType="Balanceaccounts">
+        update balanceaccounts
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="operateDate != null">operateDate = #{operateDate},</if>
+            <if test="moneyAmount != null">moneyAmount = #{moneyAmount},</if>
+            <if test="company != null">company = #{company},</if>
+            <if test="companyID != null">companyID = #{companyID},</if>
+            <if test="companyType != null">companyType = #{companyType},</if>
+            <if test="comments != null">comments = #{comments},</if>
+            <if test="addtime != null">addtime = #{addtime},</if>
+            <if test="userId != null">userId = #{userId},</if>
+            <if test="UserName != null">UserName = #{UserName},</if>
+            <if test="updateTime != null">update_time = #{updateTime},</if>
+        </trim>
+        where id = #{id}
+    </update>
+
+    <delete id="deleteBalanceaccountsById" parameterType="Long">
+        delete from balanceaccounts where id = #{id}
+    </delete>
+
+    <delete id="deleteBalanceaccountsByIds" parameterType="String">
+        delete from balanceaccounts where id in 
+        <foreach item="id" collection="array" open="(" separator="," close=")">
+            #{id}
+        </foreach>
+    </delete>
+</mapper>

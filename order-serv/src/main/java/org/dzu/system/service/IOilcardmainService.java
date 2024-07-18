@@ -1,0 +1,62 @@
+package org.dzu.system.service;
+
+import org.dzu.system.domain.Oilcardmain;
+
+import java.util.List;
+
+/**
+ * 加油卡主卡登记信息Service接口
+ * 
+ * @author ml
+ * @date 2024-07-18
+ */
+public interface IOilcardmainService 
+{
+    /**
+     * 查询加油卡主卡登记信息
+     * 
+     * @param id 加油卡主卡登记信息主键
+     * @return 加油卡主卡登记信息
+     */
+    public Oilcardmain selectOilcardmainById(Long id);
+
+    /**
+     * 查询加油卡主卡登记信息列表
+     * 
+     * @param oilcardmain 加油卡主卡登记信息
+     * @return 加油卡主卡登记信息集合
+     */
+    public List<Oilcardmain> selectOilcardmainList(Oilcardmain oilcardmain);
+
+    /**
+     * 新增加油卡主卡登记信息
+     * 
+     * @param oilcardmain 加油卡主卡登记信息
+     * @return 结果
+     */
+    public int insertOilcardmain(Oilcardmain oilcardmain);
+
+    /**
+     * 修改加油卡主卡登记信息
+     * 
+     * @param oilcardmain 加油卡主卡登记信息
+     * @return 结果
+     */
+    public int updateOilcardmain(Oilcardmain oilcardmain);
+
+    /**
+     * 批量删除加油卡主卡登记信息
+     * 
+     * @param ids 需要删除的加油卡主卡登记信息主键集合
+     * @return 结果
+     */
+    public int deleteOilcardmainByIds(Long[] ids);
+
+    /**
+     * 删除加油卡主卡登记信息信息
+     * 
+     * @param id 加油卡主卡登记信息主键
+     * @return 结果
+     */
+    public int deleteOilcardmainById(Long id);
+}

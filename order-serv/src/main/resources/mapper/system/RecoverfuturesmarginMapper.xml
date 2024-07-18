@@ -1,0 +1,105 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="org.dzu.system.mapper.RecoverfuturesmarginMapper">
+    
+    <resultMap type="Recoverfuturesmargin" id="RecoverfuturesmarginResult">
+        <result property="id"    column="id"    />
+        <result property="futuresNO"    column="futuresNO"    />
+        <result property="recoverNO"    column="recoverNO"    />
+        <result property="moneyAmount"    column="moneyAmount"    />
+        <result property="recoverDate"    column="recoverDate"    />
+        <result property="acountsName"    column="acountsName"    />
+        <result property="bankNo"    column="bankNo"    />
+        <result property="comments"    column="comments"    />
+        <result property="addtime"    column="addtime"    />
+        <result property="userId"    column="userId"    />
+        <result property="UserName"    column="UserName"    />
+        <result property="updateTime"    column="update_time"    />
+    </resultMap>
+
+    <sql id="selectRecoverfuturesmarginVo">
+        select id, futuresNO, recoverNO, moneyAmount, recoverDate, acountsName, bankNo, comments, addtime, userId, UserName, update_time from recoverfuturesmargin
+    </sql>
+
+    <select id="selectRecoverfuturesmarginList" parameterType="Recoverfuturesmargin" resultMap="RecoverfuturesmarginResult">
+        <include refid="selectRecoverfuturesmarginVo"/>
+        <where>  
+            <if test="futuresNO != null  and futuresNO != ''"> and futuresNO = #{futuresNO}</if>
+            <if test="recoverNO != null  and recoverNO != ''"> and recoverNO = #{recoverNO}</if>
+            <if test="moneyAmount != null "> and moneyAmount = #{moneyAmount}</if>
+            <if test="recoverDate != null  and recoverDate != ''"> and recoverDate = #{recoverDate}</if>
+            <if test="acountsName != null  and acountsName != ''"> and acountsName like concat('%', #{acountsName}, '%')</if>
+            <if test="bankNo != null  and bankNo != ''"> and bankNo = #{bankNo}</if>
+            <if test="comments != null  and comments != ''"> and comments = #{comments}</if>
+            <if test="addtime != null  and addtime != ''"> and addtime = #{addtime}</if>
+            <if test="userId != null "> and userId = #{userId}</if>
+            <if test="UserName != null  and UserName != ''"> and UserName like concat('%', #{UserName}, '%')</if>
+        </where>
+    </select>
+    
+    <select id="selectRecoverfuturesmarginById" parameterType="Long" resultMap="RecoverfuturesmarginResult">
+        <include refid="selectRecoverfuturesmarginVo"/>
+        where id = #{id}
+    </select>
+
+    <insert id="insertRecoverfuturesmargin" parameterType="Recoverfuturesmargin" useGeneratedKeys="true" keyProperty="id">
+        insert into recoverfuturesmargin
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="futuresNO != null">futuresNO,</if>
+            <if test="recoverNO != null">recoverNO,</if>
+            <if test="moneyAmount != null">moneyAmount,</if>
+            <if test="recoverDate != null">recoverDate,</if>
+            <if test="acountsName != null">acountsName,</if>
+            <if test="bankNo != null">bankNo,</if>
+            <if test="comments != null">comments,</if>
+            <if test="addtime != null">addtime,</if>
+            <if test="userId != null">userId,</if>
+            <if test="UserName != null">UserName,</if>
+            <if test="updateTime != null">update_time,</if>
+         </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="futuresNO != null">#{futuresNO},</if>
+            <if test="recoverNO != null">#{recoverNO},</if>
+            <if test="moneyAmount != null">#{moneyAmount},</if>
+            <if test="recoverDate != null">#{recoverDate},</if>
+            <if test="acountsName != null">#{acountsName},</if>
+            <if test="bankNo != null">#{bankNo},</if>
+            <if test="comments != null">#{comments},</if>
+            <if test="addtime != null">#{addtime},</if>
+            <if test="userId != null">#{userId},</if>
+            <if test="UserName != null">#{UserName},</if>
+            <if test="updateTime != null">#{updateTime},</if>
+         </trim>
+    </insert>
+
+    <update id="updateRecoverfuturesmargin" parameterType="Recoverfuturesmargin">
+        update recoverfuturesmargin
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="futuresNO != null">futuresNO = #{futuresNO},</if>
+            <if test="recoverNO != null">recoverNO = #{recoverNO},</if>
+            <if test="moneyAmount != null">moneyAmount = #{moneyAmount},</if>
+            <if test="recoverDate != null">recoverDate = #{recoverDate},</if>
+            <if test="acountsName != null">acountsName = #{acountsName},</if>
+            <if test="bankNo != null">bankNo = #{bankNo},</if>
+            <if test="comments != null">comments = #{comments},</if>
+            <if test="addtime != null">addtime = #{addtime},</if>
+            <if test="userId != null">userId = #{userId},</if>
+            <if test="UserName != null">UserName = #{UserName},</if>
+            <if test="updateTime != null">update_time = #{updateTime},</if>
+        </trim>
+        where id = #{id}
+    </update>
+
+    <delete id="deleteRecoverfuturesmarginById" parameterType="Long">
+        delete from recoverfuturesmargin where id = #{id}
+    </delete>
+
+    <delete id="deleteRecoverfuturesmarginByIds" parameterType="String">
+        delete from recoverfuturesmargin where id in 
+        <foreach item="id" collection="array" open="(" separator="," close=")">
+            #{id}
+        </foreach>
+    </delete>
+</mapper>

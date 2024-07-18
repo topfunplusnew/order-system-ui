@@ -1,0 +1,90 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="org.dzu.system.mapper.ExwarehouseMapper">
+    
+    <resultMap type="Exwarehouse" id="ExwarehouseResult">
+        <result property="id"    column="id"    />
+        <result property="storeHouseid"    column="storeHouseid"    />
+        <result property="storeHouseName"    column="storeHouseName"    />
+        <result property="storeID"    column="storeID"    />
+        <result property="outDate"    column="outDate"    />
+        <result property="outAmount"    column="outAmount"    />
+        <result property="ordersNo"    column="ordersNo"    />
+        <result property="delFlag"    column="delFlag"    />
+        <result property="updateTime"    column="update_time"    />
+    </resultMap>
+
+    <sql id="selectExwarehouseVo">
+        select id, storeHouseid, storeHouseName, storeID, outDate, outAmount, ordersNo, delFlag, update_time from exwarehouse
+    </sql>
+
+    <select id="selectExwarehouseList" parameterType="Exwarehouse" resultMap="ExwarehouseResult">
+        <include refid="selectExwarehouseVo"/>
+        <where>  
+            <if test="storeHouseid != null "> and storeHouseid = #{storeHouseid}</if>
+            <if test="storeHouseName != null  and storeHouseName != ''"> and storeHouseName like concat('%', #{storeHouseName}, '%')</if>
+            <if test="storeID != null "> and storeID = #{storeID}</if>
+            <if test="outDate != null  and outDate != ''"> and outDate = #{outDate}</if>
+            <if test="outAmount != null "> and outAmount = #{outAmount}</if>
+            <if test="ordersNo != null  and ordersNo != ''"> and ordersNo = #{ordersNo}</if>
+            <if test="delFlag != null "> and delFlag = #{delFlag}</if>
+        </where>
+    </select>
+    
+    <select id="selectExwarehouseById" parameterType="Long" resultMap="ExwarehouseResult">
+        <include refid="selectExwarehouseVo"/>
+        where id = #{id}
+    </select>
+
+    <insert id="insertExwarehouse" parameterType="Exwarehouse" useGeneratedKeys="true" keyProperty="id">
+        insert into exwarehouse
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="storeHouseid != null">storeHouseid,</if>
+            <if test="storeHouseName != null">storeHouseName,</if>
+            <if test="storeID != null">storeID,</if>
+            <if test="outDate != null">outDate,</if>
+            <if test="outAmount != null">outAmount,</if>
+            <if test="ordersNo != null">ordersNo,</if>
+            <if test="delFlag != null">delFlag,</if>
+            <if test="updateTime != null">update_time,</if>
+         </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="storeHouseid != null">#{storeHouseid},</if>
+            <if test="storeHouseName != null">#{storeHouseName},</if>
+            <if test="storeID != null">#{storeID},</if>
+            <if test="outDate != null">#{outDate},</if>
+            <if test="outAmount != null">#{outAmount},</if>
+            <if test="ordersNo != null">#{ordersNo},</if>
+            <if test="delFlag != null">#{delFlag},</if>
+            <if test="updateTime != null">#{updateTime},</if>
+         </trim>
+    </insert>
+
+    <update id="updateExwarehouse" parameterType="Exwarehouse">
+        update exwarehouse
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="storeHouseid != null">storeHouseid = #{storeHouseid},</if>
+            <if test="storeHouseName != null">storeHouseName = #{storeHouseName},</if>
+            <if test="storeID != null">storeID = #{storeID},</if>
+            <if test="outDate != null">outDate = #{outDate},</if>
+            <if test="outAmount != null">outAmount = #{outAmount},</if>
+            <if test="ordersNo != null">ordersNo = #{ordersNo},</if>
+            <if test="delFlag != null">delFlag = #{delFlag},</if>
+            <if test="updateTime != null">update_time = #{updateTime},</if>
+        </trim>
+        where id = #{id}
+    </update>
+
+    <delete id="deleteExwarehouseById" parameterType="Long">
+        delete from exwarehouse where id = #{id}
+    </delete>
+
+    <delete id="deleteExwarehouseByIds" parameterType="String">
+        delete from exwarehouse where id in 
+        <foreach item="id" collection="array" open="(" separator="," close=")">
+            #{id}
+        </foreach>
+    </delete>
+</mapper>

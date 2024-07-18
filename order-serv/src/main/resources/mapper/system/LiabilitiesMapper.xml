@@ -1,0 +1,140 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="org.dzu.system.mapper.LiabilitiesMapper">
+    
+    <resultMap type="Liabilities" id="LiabilitiesResult">
+        <result property="id"    column="id"    />
+        <result property="payNO"    column="payNO"    />
+        <result property="moneyAmount"    column="moneyAmount"    />
+        <result property="payType"    column="payType"    />
+        <result property="otherAcountsName"    column="otherAcountsName"    />
+        <result property="otherBankNo"    column="otherBankNo"    />
+        <result property="otherBankName"    column="otherBankName"    />
+        <result property="otherBankID"    column="otherBankID"    />
+        <result property="selfAcountsName"    column="selfAcountsName"    />
+        <result property="selfBankNo"    column="selfBankNo"    />
+        <result property="selfBankName"    column="selfBankName"    />
+        <result property="selfBankID"    column="selfBankID"    />
+        <result property="payTime"    column="payTime"    />
+        <result property="payState"    column="payState"    />
+        <result property="comments"    column="comments"    />
+        <result property="addtime"    column="addtime"    />
+        <result property="userId"    column="userId"    />
+        <result property="UserName"    column="UserName"    />
+        <result property="updateTime"    column="update_time"    />
+    </resultMap>
+
+    <sql id="selectLiabilitiesVo">
+        select id, payNO, moneyAmount, payType, otherAcountsName, otherBankNo, otherBankName, otherBankID, selfAcountsName, selfBankNo, selfBankName, selfBankID, payTime, payState, comments, addtime, userId, UserName, update_time from liabilities
+    </sql>
+
+    <select id="selectLiabilitiesList" parameterType="Liabilities" resultMap="LiabilitiesResult">
+        <include refid="selectLiabilitiesVo"/>
+        <where>  
+            <if test="payNO != null  and payNO != ''"> and payNO = #{payNO}</if>
+            <if test="moneyAmount != null "> and moneyAmount = #{moneyAmount}</if>
+            <if test="payType != null "> and payType = #{payType}</if>
+            <if test="otherAcountsName != null  and otherAcountsName != ''"> and otherAcountsName like concat('%', #{otherAcountsName}, '%')</if>
+            <if test="otherBankNo != null  and otherBankNo != ''"> and otherBankNo = #{otherBankNo}</if>
+            <if test="otherBankName != null  and otherBankName != ''"> and otherBankName like concat('%', #{otherBankName}, '%')</if>
+            <if test="otherBankID != null  and otherBankID != ''"> and otherBankID = #{otherBankID}</if>
+            <if test="selfAcountsName != null  and selfAcountsName != ''"> and selfAcountsName like concat('%', #{selfAcountsName}, '%')</if>
+            <if test="selfBankNo != null  and selfBankNo != ''"> and selfBankNo = #{selfBankNo}</if>
+            <if test="selfBankName != null  and selfBankName != ''"> and selfBankName like concat('%', #{selfBankName}, '%')</if>
+            <if test="selfBankID != null  and selfBankID != ''"> and selfBankID = #{selfBankID}</if>
+            <if test="payTime != null  and payTime != ''"> and payTime = #{payTime}</if>
+            <if test="payState != null  and payState != ''"> and payState = #{payState}</if>
+            <if test="comments != null  and comments != ''"> and comments = #{comments}</if>
+            <if test="addtime != null  and addtime != ''"> and addtime = #{addtime}</if>
+            <if test="userId != null "> and userId = #{userId}</if>
+            <if test="UserName != null  and UserName != ''"> and UserName like concat('%', #{UserName}, '%')</if>
+        </where>
+    </select>
+    
+    <select id="selectLiabilitiesById" parameterType="Long" resultMap="LiabilitiesResult">
+        <include refid="selectLiabilitiesVo"/>
+        where id = #{id}
+    </select>
+
+    <insert id="insertLiabilities" parameterType="Liabilities" useGeneratedKeys="true" keyProperty="id">
+        insert into liabilities
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="payNO != null">payNO,</if>
+            <if test="moneyAmount != null">moneyAmount,</if>
+            <if test="payType != null">payType,</if>
+            <if test="otherAcountsName != null">otherAcountsName,</if>
+            <if test="otherBankNo != null">otherBankNo,</if>
+            <if test="otherBankName != null">otherBankName,</if>
+            <if test="otherBankID != null">otherBankID,</if>
+            <if test="selfAcountsName != null">selfAcountsName,</if>
+            <if test="selfBankNo != null">selfBankNo,</if>
+            <if test="selfBankName != null">selfBankName,</if>
+            <if test="selfBankID != null">selfBankID,</if>
+            <if test="payTime != null">payTime,</if>
+            <if test="payState != null">payState,</if>
+            <if test="comments != null">comments,</if>
+            <if test="addtime != null">addtime,</if>
+            <if test="userId != null">userId,</if>
+            <if test="UserName != null">UserName,</if>
+            <if test="updateTime != null">update_time,</if>
+         </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="payNO != null">#{payNO},</if>
+            <if test="moneyAmount != null">#{moneyAmount},</if>
+            <if test="payType != null">#{payType},</if>
+            <if test="otherAcountsName != null">#{otherAcountsName},</if>
+            <if test="otherBankNo != null">#{otherBankNo},</if>
+            <if test="otherBankName != null">#{otherBankName},</if>
+            <if test="otherBankID != null">#{otherBankID},</if>
+            <if test="selfAcountsName != null">#{selfAcountsName},</if>
+            <if test="selfBankNo != null">#{selfBankNo},</if>
+            <if test="selfBankName != null">#{selfBankName},</if>
+            <if test="selfBankID != null">#{selfBankID},</if>
+            <if test="payTime != null">#{payTime},</if>
+            <if test="payState != null">#{payState},</if>
+            <if test="comments != null">#{comments},</if>
+            <if test="addtime != null">#{addtime},</if>
+            <if test="userId != null">#{userId},</if>
+            <if test="UserName != null">#{UserName},</if>
+            <if test="updateTime != null">#{updateTime},</if>
+         </trim>
+    </insert>
+
+    <update id="updateLiabilities" parameterType="Liabilities">
+        update liabilities
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="payNO != null">payNO = #{payNO},</if>
+            <if test="moneyAmount != null">moneyAmount = #{moneyAmount},</if>
+            <if test="payType != null">payType = #{payType},</if>
+            <if test="otherAcountsName != null">otherAcountsName = #{otherAcountsName},</if>
+            <if test="otherBankNo != null">otherBankNo = #{otherBankNo},</if>
+            <if test="otherBankName != null">otherBankName = #{otherBankName},</if>
+            <if test="otherBankID != null">otherBankID = #{otherBankID},</if>
+            <if test="selfAcountsName != null">selfAcountsName = #{selfAcountsName},</if>
+            <if test="selfBankNo != null">selfBankNo = #{selfBankNo},</if>
+            <if test="selfBankName != null">selfBankName = #{selfBankName},</if>
+            <if test="selfBankID != null">selfBankID = #{selfBankID},</if>
+            <if test="payTime != null">payTime = #{payTime},</if>
+            <if test="payState != null">payState = #{payState},</if>
+            <if test="comments != null">comments = #{comments},</if>
+            <if test="addtime != null">addtime = #{addtime},</if>
+            <if test="userId != null">userId = #{userId},</if>
+            <if test="UserName != null">UserName = #{UserName},</if>
+            <if test="updateTime != null">update_time = #{updateTime},</if>
+        </trim>
+        where id = #{id}
+    </update>
+
+    <delete id="deleteLiabilitiesById" parameterType="Long">
+        delete from liabilities where id = #{id}
+    </delete>
+
+    <delete id="deleteLiabilitiesByIds" parameterType="String">
+        delete from liabilities where id in 
+        <foreach item="id" collection="array" open="(" separator="," close=")">
+            #{id}
+        </foreach>
+    </delete>
+</mapper>
