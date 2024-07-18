@@ -5,20 +5,20 @@
         <lay-menu-item v-if="!item.children || item.children.length === 0" :id="item.id"
                        style="border-top: 1px solid #dddddd">
             <template #icon>
-                <lay-icon type="layui-icon-home"></lay-icon>
+                <lay-icon type="layui-icon-component"></lay-icon>
             </template>
-            {{ item.title }}
+            {{ item.label }}
         </lay-menu-item>
         <!--      如果有子菜单-->
         <lay-sub-menu v-else :id="item.id" style="border-top: 1px solid #dddddd">
             <template #icon>
                 <!--                使用 lay-icon来定义一个图表-->
-                <lay-icon type="layui-icon-home"></lay-icon>
+                <lay-icon type="layui-icon-template-one"></lay-icon>
             </template>
             <!--            递归子菜单-->
             <Menu v-if="item.length !== 0" :menuData="item.children"></Menu>
             <template #title>
-                {{ item.title }}
+                {{ item.label }}
             </template>
         </lay-sub-menu>
     </div>

@@ -11,7 +11,7 @@
                     <MenuInfo :collapse="collapse"/>
                 </div>
                 <lay-transition>
-                    <div :class="isShow==true?'body-85':'body-100'" >
+                    <div :class="isShow==true?'body-85':'body-100'">
                         <Body/>
                     </div>
                 </lay-transition>
@@ -27,7 +27,6 @@ import Body from './body/Index.vue'
 import {computed, ref, watchEffect} from "vue";
 import {LayIcon} from "@layui/layui-vue";
 import {useSwitchStore} from "../store";
-
 //点击隐藏功能
 const switch_store = useSwitchStore()
 const isShow = computed(() => {
@@ -38,7 +37,6 @@ const handleCollapse = () => {
     collapse.value = !collapse.value
     switch_store.changeIsShow()
 }
-
 
 </script>
 
