@@ -1,5 +1,6 @@
 import {defineStore} from 'pinia'
 import {ref} from "vue";
+// @ts-ignore
 import _ from 'lodash'
 // @ts-ignore
 import LayOut from '../layout/Index.vue'
