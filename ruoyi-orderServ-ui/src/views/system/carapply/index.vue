@@ -1,0 +1,680 @@
+<template>
+  <div class="app-container">
+    <el-form :model="queryParams" ref="queryForm" size="small" :inline="true" v-show="showSearch" label-width="68px">
+      <el-form-item label="申请时间" prop="applyDate">
+        <el-input
+          v-model="queryParams.applyDate"
+          placeholder="请输入申请时间"
+          clearable
+          @keyup.enter.native="handleQuery"
+        />
+      </el-form-item>
+      <el-form-item label="申请人" prop="applyUser">
+        <el-input
+          v-model="queryParams.applyUser"
+          placeholder="请输入申请人"
+          clearable
+          @keyup.enter.native="handleQuery"
+        />
+      </el-form-item>
+      <el-form-item label="部门" prop="department">
+        <el-input
+          v-model="queryParams.department"
+          placeholder="请输入部门"
+          clearable
+          @keyup.enter.native="handleQuery"
+        />
+      </el-form-item>
+      <el-form-item label="车牌" prop="carNo">
+        <el-input
+          v-model="queryParams.carNo"
+          placeholder="请输入车牌"
+          clearable
+          @keyup.enter.native="handleQuery"
+        />
+      </el-form-item>
+      <el-form-item label="是否携带油卡" prop="isUseOilCard">
+        <el-input
+          v-model="queryParams.isUseOilCard"
+          placeholder="请输入是否携带油卡"
+          clearable
+          @keyup.enter.native="handleQuery"
+        />
+      </el-form-item>
+      <el-form-item label="油卡号" prop="iolCardNo">
+        <el-input
+          v-model="queryParams.iolCardNo"
+          placeholder="请输入油卡号"
+          clearable
+          @keyup.enter.native="handleQuery"
+        />
+      </el-form-item>
+      <el-form-item label="随同乘车人员" prop="peers">
+        <el-input
+          v-model="queryParams.peers"
+          placeholder="请输入随同乘车人员"
+          clearable
+          @keyup.enter.native="handleQuery"
+        />
+      </el-form-item>
+      <el-form-item label="用车时间" prop="startTime">
+        <el-input
+          v-model="queryParams.startTime"
+          placeholder="请输入用车时间"
+          clearable
+          @keyup.enter.native="handleQuery"
+        />
+      </el-form-item>
+      <el-form-item label="还车时间" prop="endTime">
+        <el-input
+          v-model="queryParams.endTime"
+          placeholder="请输入还车时间"
+          clearable
+          @keyup.enter.native="handleQuery"
+        />
+      </el-form-item>
+      <el-form-item label="用车事由" prop="ApplyPurpose">
+        <el-input
+          v-model="queryParams.ApplyPurpose"
+          placeholder="请输入用车事由"
+          clearable
+          @keyup.enter.native="handleQuery"
+        />
+      </el-form-item>
+      <el-form-item label="出车前里程" prop="startMile">
+        <el-input
+          v-model="queryParams.startMile"
+          placeholder="请输入出车前里程"
+          clearable
+          @keyup.enter.native="handleQuery"
+        />
+      </el-form-item>
+      <el-form-item label="出车前车况" prop="startCarState">
+        <el-input
+          v-model="queryParams.startCarState"
+          placeholder="请输入出车前车况"
+          clearable
+          @keyup.enter.native="handleQuery"
+        />
+      </el-form-item>
+      <el-form-item label="回来后里程" prop="endMile">
+        <el-input
+          v-model="queryParams.endMile"
+          placeholder="请输入回来后里程"
+          clearable
+          @keyup.enter.native="handleQuery"
+        />
+      </el-form-item>
+      <el-form-item label="回来后车况" prop="endCarState">
+        <el-input
+          v-model="queryParams.endCarState"
+          placeholder="请输入回来后车况"
+          clearable
+          @keyup.enter.native="handleQuery"
+        />
+      </el-form-item>
+      <el-form-item label="用车里程数" prop="miles">
+        <el-input
+          v-model="queryParams.miles"
+          placeholder="请输入用车里程数"
+          clearable
+          @keyup.enter.native="handleQuery"
+        />
+      </el-form-item>
+      <el-form-item label="回程停靠位置" prop="backStopPlace">
+        <el-input
+          v-model="queryParams.backStopPlace"
+          placeholder="请输入回程停靠位置"
+          clearable
+          @keyup.enter.native="handleQuery"
+        />
+      </el-form-item>
+      <el-form-item label="行程中违法次数" prop="violationsCount">
+        <el-input
+          v-model="queryParams.violationsCount"
+          placeholder="请输入行程中违法次数"
+          clearable
+          @keyup.enter.native="handleQuery"
+        />
+      </el-form-item>
+      <el-form-item label="违章罚款金额金额" prop="fine">
+        <el-input
+          v-model="queryParams.fine"
+          placeholder="请输入违章罚款金额金额"
+          clearable
+          @keyup.enter.native="handleQuery"
+        />
+      </el-form-item>
+      <el-form-item label="行程中是否维修/保养" prop="isMaintenance">
+        <el-input
+          v-model="queryParams.isMaintenance"
+          placeholder="请输入行程中是否维修/保养"
+          clearable
+          @keyup.enter.native="handleQuery"
+        />
+      </el-form-item>
+      <el-form-item label="保养金额" prop="maintenanceMoney">
+        <el-input
+          v-model="queryParams.maintenanceMoney"
+          placeholder="请输入保养金额"
+          clearable
+          @keyup.enter.native="handleQuery"
+        />
+      </el-form-item>
+      <el-form-item label="行程中使用加油卡加油次数" prop="refuelingFrequency">
+        <el-input
+          v-model="queryParams.refuelingFrequency"
+          placeholder="请输入行程中使用加油卡加油次数"
+          clearable
+          @keyup.enter.native="handleQuery"
+        />
+      </el-form-item>
+      <el-form-item label="加油金额" prop="refuelingMoney">
+        <el-input
+          v-model="queryParams.refuelingMoney"
+          placeholder="请输入加油金额"
+          clearable
+          @keyup.enter.native="handleQuery"
+        />
+      </el-form-item>
+      <el-form-item label="加油卡余额" prop="oilCardSurplus">
+        <el-input
+          v-model="queryParams.oilCardSurplus"
+          placeholder="请输入加油卡余额"
+          clearable
+          @keyup.enter.native="handleQuery"
+        />
+      </el-form-item>
+      <el-form-item label="加油小票记录是否交给公司管理车辆人员" prop="isOilTicket">
+        <el-input
+          v-model="queryParams.isOilTicket"
+          placeholder="请输入加油小票记录是否交给公司管理车辆人员"
+          clearable
+          @keyup.enter.native="handleQuery"
+        />
+      </el-form-item>
+      <el-form-item label="现金加油金额" prop="refuelingCash">
+        <el-input
+          v-model="queryParams.refuelingCash"
+          placeholder="请输入现金加油金额"
+          clearable
+          @keyup.enter.native="handleQuery"
+        />
+      </el-form-item>
+      <el-form-item label="派车人" prop="dispatchPerson">
+        <el-input
+          v-model="queryParams.dispatchPerson"
+          placeholder="请输入派车人"
+          clearable
+          @keyup.enter.native="handleQuery"
+        />
+      </el-form-item>
+      <el-form-item label="备注" prop="comments">
+        <el-input
+          v-model="queryParams.comments"
+          placeholder="请输入备注"
+          clearable
+          @keyup.enter.native="handleQuery"
+        />
+      </el-form-item>
+      <el-form-item label="添加时间" prop="addtime">
+        <el-input
+          v-model="queryParams.addtime"
+          placeholder="请输入添加时间"
+          clearable
+          @keyup.enter.native="handleQuery"
+        />
+      </el-form-item>
+      <el-form-item label="操作人员ID" prop="userId">
+        <el-input
+          v-model="queryParams.userId"
+          placeholder="请输入操作人员ID"
+          clearable
+          @keyup.enter.native="handleQuery"
+        />
+      </el-form-item>
+      <el-form-item label="操作人员姓名" prop="UserName">
+        <el-input
+          v-model="queryParams.UserName"
+          placeholder="请输入操作人员姓名"
+          clearable
+          @keyup.enter.native="handleQuery"
+        />
+      </el-form-item>
+      <el-form-item label="删除标记" prop="delFlag">
+        <el-input
+          v-model="queryParams.delFlag"
+          placeholder="请输入删除标记"
+          clearable
+          @keyup.enter.native="handleQuery"
+        />
+      </el-form-item>
+      <el-form-item label="附件路径" prop="path">
+        <el-input
+          v-model="queryParams.path"
+          placeholder="请输入附件路径"
+          clearable
+          @keyup.enter.native="handleQuery"
+        />
+      </el-form-item>
+      <el-form-item>
+        <el-button type="primary" icon="el-icon-search" size="mini" @click="handleQuery">搜索</el-button>
+        <el-button icon="el-icon-refresh" size="mini" @click="resetQuery">重置</el-button>
+      </el-form-item>
+    </el-form>
+
+    <el-row :gutter="10" class="mb8">
+      <el-col :span="1.5">
+        <el-button
+          type="primary"
+          plain
+          icon="el-icon-plus"
+          size="mini"
+          @click="handleAdd"
+          v-hasPermi="['system:carapply:add']"
+        >新增</el-button>
+      </el-col>
+      <el-col :span="1.5">
+        <el-button
+          type="success"
+          plain
+          icon="el-icon-edit"
+          size="mini"
+          :disabled="single"
+          @click="handleUpdate"
+          v-hasPermi="['system:carapply:edit']"
+        >修改</el-button>
+      </el-col>
+      <el-col :span="1.5">
+        <el-button
+          type="danger"
+          plain
+          icon="el-icon-delete"
+          size="mini"
+          :disabled="multiple"
+          @click="handleDelete"
+          v-hasPermi="['system:carapply:remove']"
+        >删除</el-button>
+      </el-col>
+      <el-col :span="1.5">
+        <el-button
+          type="warning"
+          plain
+          icon="el-icon-download"
+          size="mini"
+          @click="handleExport"
+          v-hasPermi="['system:carapply:export']"
+        >导出</el-button>
+      </el-col>
+      <right-toolbar :showSearch.sync="showSearch" @queryTable="getList"></right-toolbar>
+    </el-row>
+
+    <el-table v-loading="loading" :data="carapplyList" @selection-change="handleSelectionChange">
+      <el-table-column type="selection" width="55" align="center" />
+      <el-table-column label="${comment}" align="center" prop="id" />
+      <el-table-column label="申请时间" align="center" prop="applyDate" />
+      <el-table-column label="申请人" align="center" prop="applyUser" />
+      <el-table-column label="部门" align="center" prop="department" />
+      <el-table-column label="车牌" align="center" prop="carNo" />
+      <el-table-column label="是否携带油卡" align="center" prop="isUseOilCard" />
+      <el-table-column label="油卡号" align="center" prop="iolCardNo" />
+      <el-table-column label="随同乘车人员" align="center" prop="peers" />
+      <el-table-column label="用车时间" align="center" prop="startTime" />
+      <el-table-column label="还车时间" align="center" prop="endTime" />
+      <el-table-column label="用车事由" align="center" prop="ApplyPurpose" />
+      <el-table-column label="出车前里程" align="center" prop="startMile" />
+      <el-table-column label="出车前车况" align="center" prop="startCarState" />
+      <el-table-column label="回来后里程" align="center" prop="endMile" />
+      <el-table-column label="回来后车况" align="center" prop="endCarState" />
+      <el-table-column label="用车里程数" align="center" prop="miles" />
+      <el-table-column label="回程停靠位置" align="center" prop="backStopPlace" />
+      <el-table-column label="行程中违法次数" align="center" prop="violationsCount" />
+      <el-table-column label="违章罚款金额金额" align="center" prop="fine" />
+      <el-table-column label="行程中是否维修/保养" align="center" prop="isMaintenance" />
+      <el-table-column label="保养金额" align="center" prop="maintenanceMoney" />
+      <el-table-column label="行程中使用加油卡加油次数" align="center" prop="refuelingFrequency" />
+      <el-table-column label="加油金额" align="center" prop="refuelingMoney" />
+      <el-table-column label="加油卡余额" align="center" prop="oilCardSurplus" />
+      <el-table-column label="加油小票记录是否交给公司管理车辆人员" align="center" prop="isOilTicket" />
+      <el-table-column label="现金加油金额" align="center" prop="refuelingCash" />
+      <el-table-column label="派车人" align="center" prop="dispatchPerson" />
+      <el-table-column label="备注" align="center" prop="comments" />
+      <el-table-column label="添加时间" align="center" prop="addtime" />
+      <el-table-column label="操作人员ID" align="center" prop="userId" />
+      <el-table-column label="操作人员姓名" align="center" prop="UserName" />
+      <el-table-column label="删除标记" align="center" prop="delFlag" />
+      <el-table-column label="附件路径" align="center" prop="path" />
+      <el-table-column label="操作" align="center" class-name="small-padding fixed-width">
+        <template slot-scope="scope">
+          <el-button
+            size="mini"
+            type="text"
+            icon="el-icon-edit"
+            @click="handleUpdate(scope.row)"
+            v-hasPermi="['system:carapply:edit']"
+          >修改</el-button>
+          <el-button
+            size="mini"
+            type="text"
+            icon="el-icon-delete"
+            @click="handleDelete(scope.row)"
+            v-hasPermi="['system:carapply:remove']"
+          >删除</el-button>
+        </template>
+      </el-table-column>
+    </el-table>
+    
+    <pagination
+      v-show="total>0"
+      :total="total"
+      :page.sync="queryParams.pageNum"
+      :limit.sync="queryParams.pageSize"
+      @pagination="getList"
+    />
+
+    <!-- 添加或修改汽车申请对话框 -->
+    <el-dialog :title="title" :visible.sync="open" width="500px" append-to-body>
+      <el-form ref="form" :model="form" :rules="rules" label-width="80px">
+        <el-form-item label="申请时间" prop="applyDate">
+          <el-input v-model="form.applyDate" placeholder="请输入申请时间" />
+        </el-form-item>
+        <el-form-item label="申请人" prop="applyUser">
+          <el-input v-model="form.applyUser" placeholder="请输入申请人" />
+        </el-form-item>
+        <el-form-item label="部门" prop="department">
+          <el-input v-model="form.department" placeholder="请输入部门" />
+        </el-form-item>
+        <el-form-item label="车牌" prop="carNo">
+          <el-input v-model="form.carNo" placeholder="请输入车牌" />
+        </el-form-item>
+        <el-form-item label="是否携带油卡" prop="isUseOilCard">
+          <el-input v-model="form.isUseOilCard" placeholder="请输入是否携带油卡" />
+        </el-form-item>
+        <el-form-item label="油卡号" prop="iolCardNo">
+          <el-input v-model="form.iolCardNo" placeholder="请输入油卡号" />
+        </el-form-item>
+        <el-form-item label="随同乘车人员" prop="peers">
+          <el-input v-model="form.peers" placeholder="请输入随同乘车人员" />
+        </el-form-item>
+        <el-form-item label="用车时间" prop="startTime">
+          <el-input v-model="form.startTime" placeholder="请输入用车时间" />
+        </el-form-item>
+        <el-form-item label="还车时间" prop="endTime">
+          <el-input v-model="form.endTime" placeholder="请输入还车时间" />
+        </el-form-item>
+        <el-form-item label="用车事由" prop="ApplyPurpose">
+          <el-input v-model="form.ApplyPurpose" placeholder="请输入用车事由" />
+        </el-form-item>
+        <el-form-item label="出车前里程" prop="startMile">
+          <el-input v-model="form.startMile" placeholder="请输入出车前里程" />
+        </el-form-item>
+        <el-form-item label="出车前车况" prop="startCarState">
+          <el-input v-model="form.startCarState" placeholder="请输入出车前车况" />
+        </el-form-item>
+        <el-form-item label="回来后里程" prop="endMile">
+          <el-input v-model="form.endMile" placeholder="请输入回来后里程" />
+        </el-form-item>
+        <el-form-item label="回来后车况" prop="endCarState">
+          <el-input v-model="form.endCarState" placeholder="请输入回来后车况" />
+        </el-form-item>
+        <el-form-item label="用车里程数" prop="miles">
+          <el-input v-model="form.miles" placeholder="请输入用车里程数" />
+        </el-form-item>
+        <el-form-item label="回程停靠位置" prop="backStopPlace">
+          <el-input v-model="form.backStopPlace" placeholder="请输入回程停靠位置" />
+        </el-form-item>
+        <el-form-item label="行程中违法次数" prop="violationsCount">
+          <el-input v-model="form.violationsCount" placeholder="请输入行程中违法次数" />
+        </el-form-item>
+        <el-form-item label="违章罚款金额金额" prop="fine">
+          <el-input v-model="form.fine" placeholder="请输入违章罚款金额金额" />
+        </el-form-item>
+        <el-form-item label="行程中是否维修/保养" prop="isMaintenance">
+          <el-input v-model="form.isMaintenance" placeholder="请输入行程中是否维修/保养" />
+        </el-form-item>
+        <el-form-item label="保养金额" prop="maintenanceMoney">
+          <el-input v-model="form.maintenanceMoney" placeholder="请输入保养金额" />
+        </el-form-item>
+        <el-form-item label="行程中使用加油卡加油次数" prop="refuelingFrequency">
+          <el-input v-model="form.refuelingFrequency" placeholder="请输入行程中使用加油卡加油次数" />
+        </el-form-item>
+        <el-form-item label="加油金额" prop="refuelingMoney">
+          <el-input v-model="form.refuelingMoney" placeholder="请输入加油金额" />
+        </el-form-item>
+        <el-form-item label="加油卡余额" prop="oilCardSurplus">
+          <el-input v-model="form.oilCardSurplus" placeholder="请输入加油卡余额" />
+        </el-form-item>
+        <el-form-item label="加油小票记录是否交给公司管理车辆人员" prop="isOilTicket">
+          <el-input v-model="form.isOilTicket" placeholder="请输入加油小票记录是否交给公司管理车辆人员" />
+        </el-form-item>
+        <el-form-item label="现金加油金额" prop="refuelingCash">
+          <el-input v-model="form.refuelingCash" placeholder="请输入现金加油金额" />
+        </el-form-item>
+        <el-form-item label="派车人" prop="dispatchPerson">
+          <el-input v-model="form.dispatchPerson" placeholder="请输入派车人" />
+        </el-form-item>
+        <el-form-item label="备注" prop="comments">
+          <el-input v-model="form.comments" placeholder="请输入备注" />
+        </el-form-item>
+        <el-form-item label="添加时间" prop="addtime">
+          <el-input v-model="form.addtime" placeholder="请输入添加时间" />
+        </el-form-item>
+        <el-form-item label="操作人员ID" prop="userId">
+          <el-input v-model="form.userId" placeholder="请输入操作人员ID" />
+        </el-form-item>
+        <el-form-item label="操作人员姓名" prop="UserName">
+          <el-input v-model="form.UserName" placeholder="请输入操作人员姓名" />
+        </el-form-item>
+        <el-form-item label="删除标记" prop="delFlag">
+          <el-input v-model="form.delFlag" placeholder="请输入删除标记" />
+        </el-form-item>
+        <el-form-item label="附件路径" prop="path">
+          <el-input v-model="form.path" placeholder="请输入附件路径" />
+        </el-form-item>
+      </el-form>
+      <div slot="footer" class="dialog-footer">
+        <el-button type="primary" @click="submitForm">确 定</el-button>
+        <el-button @click="cancel">取 消</el-button>
+      </div>
+    </el-dialog>
+  </div>
+</template>
+
+<script>
+import { listCarapply, getCarapply, delCarapply, addCarapply, updateCarapply } from "@/api/system/carapply";
+
+export default {
+  name: "Carapply",
+  data() {
+    return {
+      // 遮罩层
+      loading: true,
+      // 选中数组
+      ids: [],
+      // 非单个禁用
+      single: true,
+      // 非多个禁用
+      multiple: true,
+      // 显示搜索条件
+      showSearch: true,
+      // 总条数
+      total: 0,
+      // 汽车申请表格数据
+      carapplyList: [],
+      // 弹出层标题
+      title: "",
+      // 是否显示弹出层
+      open: false,
+      // 查询参数
+      queryParams: {
+        pageNum: 1,
+        pageSize: 10,
+        applyDate: null,
+        applyUser: null,
+        department: null,
+        carNo: null,
+        isUseOilCard: null,
+        iolCardNo: null,
+        peers: null,
+        startTime: null,
+        endTime: null,
+        ApplyPurpose: null,
+        startMile: null,
+        startCarState: null,
+        endMile: null,
+        endCarState: null,
+        miles: null,
+        backStopPlace: null,
+        violationsCount: null,
+        fine: null,
+        isMaintenance: null,
+        maintenanceMoney: null,
+        refuelingFrequency: null,
+        refuelingMoney: null,
+        oilCardSurplus: null,
+        isOilTicket: null,
+        refuelingCash: null,
+        dispatchPerson: null,
+        comments: null,
+        addtime: null,
+        userId: null,
+        UserName: null,
+        delFlag: null,
+        path: null
+      },
+      // 表单参数
+      form: {},
+      // 表单校验
+      rules: {
+      }
+    };
+  },
+  created() {
+    this.getList();
+  },
+  methods: {
+    /** 查询汽车申请列表 */
+    getList() {
+      this.loading = true;
+      listCarapply(this.queryParams).then(response => {
+        this.carapplyList = response.rows;
+        this.total = response.total;
+        this.loading = false;
+      });
+    },
+    // 取消按钮
+    cancel() {
+      this.open = false;
+      this.reset();
+    },
+    // 表单重置
+    reset() {
+      this.form = {
+        id: null,
+        applyDate: null,
+        applyUser: null,
+        department: null,
+        carNo: null,
+        isUseOilCard: null,
+        iolCardNo: null,
+        peers: null,
+        startTime: null,
+        endTime: null,
+        ApplyPurpose: null,
+        startMile: null,
+        startCarState: null,
+        endMile: null,
+        endCarState: null,
+        miles: null,
+        backStopPlace: null,
+        violationsCount: null,
+        fine: null,
+        isMaintenance: null,
+        maintenanceMoney: null,
+        refuelingFrequency: null,
+        refuelingMoney: null,
+        oilCardSurplus: null,
+        isOilTicket: null,
+        refuelingCash: null,
+        dispatchPerson: null,
+        comments: null,
+        addtime: null,
+        userId: null,
+        UserName: null,
+        updateTime: null,
+        delFlag: null,
+        path: null
+      };
+      this.resetForm("form");
+    },
+    /** 搜索按钮操作 */
+    handleQuery() {
+      this.queryParams.pageNum = 1;
+      this.getList();
+    },
+    /** 重置按钮操作 */
+    resetQuery() {
+      this.resetForm("queryForm");
+      this.handleQuery();
+    },
+    // 多选框选中数据
+    handleSelectionChange(selection) {
+      this.ids = selection.map(item => item.id)
+      this.single = selection.length!==1
+      this.multiple = !selection.length
+    },
+    /** 新增按钮操作 */
+    handleAdd() {
+      this.reset();
+      this.open = true;
+      this.title = "添加汽车申请";
+    },
+    /** 修改按钮操作 */
+    handleUpdate(row) {
+      this.reset();
+      const id = row.id || this.ids
+      getCarapply(id).then(response => {
+        this.form = response.data;
+        this.open = true;
+        this.title = "修改汽车申请";
+      });
+    },
+    /** 提交按钮 */
+    submitForm() {
+      this.$refs["form"].validate(valid => {
+        if (valid) {
+          if (this.form.id != null) {
+            updateCarapply(this.form).then(response => {
+              this.$modal.msgSuccess("修改成功");
+              this.open = false;
+              this.getList();
+            });
+          } else {
+            addCarapply(this.form).then(response => {
+              this.$modal.msgSuccess("新增成功");
+              this.open = false;
+              this.getList();
+            });
+          }
+        }
+      });
+    },
+    /** 删除按钮操作 */
+    handleDelete(row) {
+      const ids = row.id || this.ids;
+      this.$modal.confirm('是否确认删除汽车申请编号为"' + ids + '"的数据项？').then(function() {
+        return delCarapply(ids);
+      }).then(() => {
+        this.getList();
+        this.$modal.msgSuccess("删除成功");
+      }).catch(() => {});
+    },
+    /** 导出按钮操作 */
+    handleExport() {
+      this.download('system/carapply/export', {
+        ...this.queryParams
+      }, `carapply_${new Date().getTime()}.xlsx`)
+    }
+  }
+};
+</script>

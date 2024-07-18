@@ -12,6 +12,7 @@
     <description>订单系统</description>
     <modules>
         <module>orderBackend</module>
+        <module>orderServ</module>
     </modules>
     
 
