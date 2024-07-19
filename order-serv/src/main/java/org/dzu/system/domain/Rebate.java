@@ -15,7 +15,7 @@ public class Rebate extends BaseEntity
 {
     private static final long serialVersionUID = 1L;
 
-    /** $column.columnComment */
+    /** 主键 */
     private Long id;
 
     /** 订单编号（UUID） */

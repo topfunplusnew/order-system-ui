@@ -15,7 +15,7 @@ public class Fixedassets extends BaseEntity
 {
     private static final long serialVersionUID = 1L;
 
-    /** $column.columnComment */
+    /** 主键 */
     private Long id;
 
     /** 购入日期 */

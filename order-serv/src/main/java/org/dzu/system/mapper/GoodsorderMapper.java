@@ -13,6 +13,13 @@ import org.dzu.system.domain.Orderdetail;
 public interface GoodsorderMapper 
 {
     /**
+     * 批量复制信息到备份表
+     *
+     * @param ids 需要copy的主键集合
+     * @return
+     */
+    public void copyToBack(Long[] ids);
+    /**
      * 查询订单
      * 
      * @param id 订单主键
@@ -66,8 +73,8 @@ public interface GoodsorderMapper
      * @param ids 需要删除的数据主键集合
      * @return 结果
      */
-    public int deleteOrderdetailByOrdersNos(Long[] ids);
-    
+    public int deleteOrderdetailByOrdersNos(String[] ids);
+
     /**
      * 批量新增订单详情
      * 
@@ -80,8 +87,8 @@ public interface GoodsorderMapper
     /**
      * 通过订单主键删除订单详情信息
      * 
-     * @param id 订单ID
+     * @param orderNo 订单orderNo
      * @return 结果
      */
-    public int deleteOrderdetailByOrdersNo(Long id);
+    public int deleteOrderdetailByOrdersNo(String orderNo);
 }

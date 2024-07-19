@@ -16,7 +16,7 @@ public class Goodsorder extends BaseEntity
 {
     private static final long serialVersionUID = 1L;
 
-    /** $column.columnComment */
+    /** 主键 */
     private Long id;
 
     /** 订单编号（UUID） */
@@ -72,11 +72,11 @@ public class Goodsorder extends BaseEntity
     private Long checkUserId;
 
     /** 审核状态（已审核、未审核） */
-    @Excel(name = "审核状态", readConverterExp = "已=审核、未审核")
+    @Excel(name = "审核状态", readConverterExp = "已审核、未审核")
     private String checkState;
 
     /** 开票状态（未开票，部分开票，已开票） */
-    @Excel(name = "开票状态", readConverterExp = "未=开票，部分开票，已开票")
+    @Excel(name = "开票状态", readConverterExp = "未开票，部分开票，已开票")
     private String invoiceState;
 
     /** 附件路径 */
@@ -152,15 +152,13 @@ public class Goodsorder extends BaseEntity
     private String comments;
 
     /** 添加时间 */
-    @Excel(name = "添加时间")
     private String addtime;
 
     /** 操作人员ID */
-    @Excel(name = "操作人员ID")
+
     private Long userId;
 
     /** 操作人员姓名 */
-    @Excel(name = "操作人员姓名")
     private String UserName;
 
     /** 订单详情信息 */
