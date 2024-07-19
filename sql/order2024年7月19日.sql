@@ -1,17 +1,17 @@
 /*
  Navicat Premium Data Transfer
 
- Source Server         : 本地连接-MySql
+ Source Server         : 订单系统
  Source Server Type    : MySQL
- Source Server Version : 80012 (8.0.12)
- Source Host           : localhost:3306
- Source Schema         : orderdb
+ Source Server Version : 50744 (5.7.44-log)
+ Source Host           : 47.121.126.94:3306
+ Source Schema         : order
 
  Target Server Type    : MySQL
- Target Server Version : 80012 (8.0.12)
+ Target Server Version : 50744 (5.7.44-log)
  File Encoding         : 65001
 
- Date: 19/07/2024 16:25:29
+ Date: 19/07/2024 16:28:44
 */
 
 SET NAMES utf8mb4;
@@ -35,7 +35,7 @@ CREATE TABLE `balanceaccounts`  (
   `update_time` datetime NULL DEFAULT NULL COMMENT '更新时间',
   `delFlag` int(11) NULL DEFAULT 0 COMMENT '删除标记',
   PRIMARY KEY (`id`) USING BTREE
-) ENGINE = MyISAM AUTO_INCREMENT = 1 CHARACTER SET = utf8 COLLATE = utf8_general_ci COMMENT = '平账' ROW_FORMAT = Dynamic;
+) ENGINE = MyISAM AUTO_INCREMENT = 1 CHARACTER SET = utf8 COLLATE = utf8_general_ci COMMENT = '平账' ROW_FORMAT = DYNAMIC;
 
 -- ----------------------------
 -- Records of balanceaccounts
@@ -70,7 +70,7 @@ CREATE TABLE `bankacceptance`  (
   `update_time` datetime NULL DEFAULT NULL COMMENT '更新时间',
   `delFlag` int(11) NULL DEFAULT 0 COMMENT '删除标记',
   PRIMARY KEY (`id`) USING BTREE
-) ENGINE = InnoDB CHARACTER SET = utf8 COLLATE = utf8_general_ci COMMENT = '商业票据、银行承兑' ROW_FORMAT = Dynamic;
+) ENGINE = InnoDB AUTO_INCREMENT = 1 CHARACTER SET = utf8 COLLATE = utf8_general_ci COMMENT = '商业票据、银行承兑' ROW_FORMAT = DYNAMIC;
 
 -- ----------------------------
 -- Records of bankacceptance
@@ -92,7 +92,7 @@ CREATE TABLE `bankaccount`  (
   `amount` float NULL DEFAULT 0 COMMENT '当前资金额',
   `delFlag` int(11) NULL DEFAULT 0 COMMENT '删除标记',
   PRIMARY KEY (`id`) USING BTREE
-) ENGINE = InnoDB AUTO_INCREMENT = 1647 CHARACTER SET = utf8 COLLATE = utf8_general_ci COMMENT = '银行卡管理' ROW_FORMAT = Dynamic;
+) ENGINE = InnoDB AUTO_INCREMENT = 1647 CHARACTER SET = utf8 COLLATE = utf8_general_ci COMMENT = '银行卡管理' ROW_FORMAT = DYNAMIC;
 
 -- ----------------------------
 -- Records of bankaccount
@@ -116,7 +116,7 @@ CREATE TABLE `bankaccountchange`  (
   `UserName` varchar(50) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL COMMENT '操作人员姓名',
   `update_time` datetime NULL DEFAULT NULL COMMENT '更新时间',
   PRIMARY KEY (`id`) USING BTREE
-) ENGINE = InnoDB AUTO_INCREMENT = 62859 CHARACTER SET = utf8 COLLATE = utf8_general_ci COMMENT = '银行卡资金变动' ROW_FORMAT = Dynamic;
+) ENGINE = InnoDB AUTO_INCREMENT = 62859 CHARACTER SET = utf8 COLLATE = utf8_general_ci COMMENT = '银行卡资金变动' ROW_FORMAT = DYNAMIC;
 
 -- ----------------------------
 -- Records of bankaccountchange
@@ -144,7 +144,7 @@ CREATE TABLE `borrowedmoney`  (
   `update_time` datetime NULL DEFAULT NULL COMMENT '更新时间',
   `delFlag` int(11) NULL DEFAULT 0 COMMENT '删除标记',
   PRIMARY KEY (`id`) USING BTREE
-) ENGINE = MyISAM AUTO_INCREMENT = 1 CHARACTER SET = utf8 COLLATE = utf8_general_ci COMMENT = '从外部借入款、贷款' ROW_FORMAT = Dynamic;
+) ENGINE = MyISAM AUTO_INCREMENT = 1 CHARACTER SET = utf8 COLLATE = utf8_general_ci COMMENT = '从外部借入款、贷款' ROW_FORMAT = DYNAMIC;
 
 -- ----------------------------
 -- Records of borrowedmoney
@@ -171,7 +171,7 @@ CREATE TABLE `businesstrip`  (
   `update_time` datetime NULL DEFAULT NULL COMMENT '更新时间',
   `delFlag` int(11) NULL DEFAULT 0 COMMENT '删除标记',
   PRIMARY KEY (`id`) USING BTREE
-) ENGINE = InnoDB CHARACTER SET = utf8 COLLATE = utf8_general_ci COMMENT = '出差登记' ROW_FORMAT = Dynamic;
+) ENGINE = InnoDB AUTO_INCREMENT = 1 CHARACTER SET = utf8 COLLATE = utf8_general_ci COMMENT = '出差登记' ROW_FORMAT = DYNAMIC;
 
 -- ----------------------------
 -- Records of businesstrip
@@ -217,7 +217,7 @@ CREATE TABLE `carapply`  (
   `delFlag` int(11) NULL DEFAULT 0 COMMENT '删除标记',
   `path` varchar(255) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL COMMENT '附件路径',
   PRIMARY KEY (`id`) USING BTREE
-) ENGINE = MyISAM AUTO_INCREMENT = 85 CHARACTER SET = utf8 COLLATE = utf8_general_ci COMMENT = '车辆派出管理' ROW_FORMAT = Dynamic;
+) ENGINE = MyISAM AUTO_INCREMENT = 85 CHARACTER SET = utf8 COLLATE = utf8_general_ci COMMENT = '车辆派出管理' ROW_FORMAT = DYNAMIC;
 
 -- ----------------------------
 -- Records of carapply
@@ -243,7 +243,7 @@ CREATE TABLE `cars`  (
   `update_time` datetime NULL DEFAULT NULL COMMENT '更新时间',
   `delFlag` int(11) NULL DEFAULT 0 COMMENT '删除标记',
   PRIMARY KEY (`id`) USING BTREE
-) ENGINE = InnoDB CHARACTER SET = utf8 COLLATE = utf8_general_ci COMMENT = '车辆管理' ROW_FORMAT = Dynamic;
+) ENGINE = InnoDB AUTO_INCREMENT = 1 CHARACTER SET = utf8 COLLATE = utf8_general_ci COMMENT = '车辆管理' ROW_FORMAT = DYNAMIC;
 
 -- ----------------------------
 -- Records of cars
@@ -279,7 +279,7 @@ CREATE TABLE `company`  (
   `update_time` datetime NULL DEFAULT NULL COMMENT '更新时间',
   `delFlag` int(11) NULL DEFAULT 0 COMMENT '删除标记',
   PRIMARY KEY (`id`) USING BTREE
-) ENGINE = InnoDB CHARACTER SET = utf8 COLLATE = utf8_general_ci COMMENT = '客户管理' ROW_FORMAT = Dynamic;
+) ENGINE = InnoDB AUTO_INCREMENT = 1 CHARACTER SET = utf8 COLLATE = utf8_general_ci COMMENT = '客户管理' ROW_FORMAT = DYNAMIC;
 
 -- ----------------------------
 -- Records of company
@@ -316,7 +316,7 @@ CREATE TABLE `customervisit`  (
   `checkUserName` varchar(50) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL COMMENT '审核人',
   `delFlag` int(11) NULL DEFAULT 0 COMMENT '删除标记',
   PRIMARY KEY (`id`) USING BTREE
-) ENGINE = InnoDB CHARACTER SET = utf8 COLLATE = utf8_general_ci COMMENT = '走访记录' ROW_FORMAT = Dynamic;
+) ENGINE = InnoDB AUTO_INCREMENT = 1 CHARACTER SET = utf8 COLLATE = utf8_general_ci COMMENT = '走访记录' ROW_FORMAT = DYNAMIC;
 
 -- ----------------------------
 -- Records of customervisit
@@ -340,7 +340,7 @@ CREATE TABLE `exwarehouse`  (
   `userId` int(11) NULL DEFAULT NULL COMMENT '操作人员ID',
   `UserName` varchar(50) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL COMMENT '操作人员姓名',
   PRIMARY KEY (`id`) USING BTREE
-) ENGINE = InnoDB CHARACTER SET = utf8 COLLATE = utf8_general_ci COMMENT = '出库' ROW_FORMAT = Dynamic;
+) ENGINE = InnoDB AUTO_INCREMENT = 1 CHARACTER SET = utf8 COLLATE = utf8_general_ci COMMENT = '出库' ROW_FORMAT = DYNAMIC;
 
 -- ----------------------------
 -- Records of exwarehouse
@@ -371,7 +371,7 @@ CREATE TABLE `fixedassets`  (
   `update_time` datetime NULL DEFAULT NULL COMMENT '更新时间',
   `delFlag` int(11) NULL DEFAULT 0 COMMENT '删除标记',
   PRIMARY KEY (`id`) USING BTREE
-) ENGINE = InnoDB CHARACTER SET = utf8 COLLATE = utf8_general_ci COMMENT = '固定资产' ROW_FORMAT = Dynamic;
+) ENGINE = InnoDB AUTO_INCREMENT = 1 CHARACTER SET = utf8 COLLATE = utf8_general_ci COMMENT = '固定资产' ROW_FORMAT = DYNAMIC;
 
 -- ----------------------------
 -- Records of fixedassets
@@ -391,7 +391,7 @@ CREATE TABLE `fleet`  (
   `editTime` varchar(55) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL COMMENT '编辑时间',
   `delFlag` int(11) NULL DEFAULT 0 COMMENT '删除标记',
   PRIMARY KEY (`id`) USING BTREE
-) ENGINE = InnoDB CHARACTER SET = utf8 COLLATE = utf8_general_ci COMMENT = '车队管理' ROW_FORMAT = Dynamic;
+) ENGINE = InnoDB AUTO_INCREMENT = 1 CHARACTER SET = utf8 COLLATE = utf8_general_ci COMMENT = '车队管理' ROW_FORMAT = DYNAMIC;
 
 -- ----------------------------
 -- Records of fleet
@@ -1285,7 +1285,7 @@ CREATE TABLE `goodsorder`  (
   `UserName` varchar(50) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL COMMENT '操作人员姓名',
   `update_time` datetime NULL DEFAULT NULL COMMENT '更新时间',
   PRIMARY KEY (`id`) USING BTREE
-) ENGINE = MyISAM AUTO_INCREMENT = 23849 CHARACTER SET = utf8 COLLATE = utf8_general_ci COMMENT = '订单' ROW_FORMAT = Dynamic;
+) ENGINE = MyISAM AUTO_INCREMENT = 23849 CHARACTER SET = utf8 COLLATE = utf8_general_ci COMMENT = '订单' ROW_FORMAT = DYNAMIC;
 
 -- ----------------------------
 -- Records of goodsorder
@@ -1336,7 +1336,7 @@ CREATE TABLE `goodsorder_back`  (
   `UserName` varchar(50) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL COMMENT '操作人员姓名',
   `update_time` datetime NULL DEFAULT NULL COMMENT '更新时间',
   PRIMARY KEY (`id`) USING BTREE
-) ENGINE = MyISAM AUTO_INCREMENT = 23849 CHARACTER SET = utf8 COLLATE = utf8_general_ci COMMENT = '订单备份信息' ROW_FORMAT = Dynamic;
+) ENGINE = MyISAM AUTO_INCREMENT = 23849 CHARACTER SET = utf8 COLLATE = utf8_general_ci COMMENT = '订单备份信息' ROW_FORMAT = DYNAMIC;
 
 -- ----------------------------
 -- Records of goodsorder_back
@@ -1400,7 +1400,7 @@ CREATE TABLE `inventory`  (
   `delFlag` int(11) NULL DEFAULT 0 COMMENT '删除标记',
   `showFlag` int(11) NULL DEFAULT 0 COMMENT '订单仓库选择时是否显示（ 显示， 不显示）',
   PRIMARY KEY (`id`) USING BTREE
-) ENGINE = InnoDB AUTO_INCREMENT = 62859 CHARACTER SET = utf8 COLLATE = utf8_general_ci COMMENT = '货物入库' ROW_FORMAT = Dynamic;
+) ENGINE = InnoDB AUTO_INCREMENT = 62859 CHARACTER SET = utf8 COLLATE = utf8_general_ci COMMENT = '货物入库' ROW_FORMAT = DYNAMIC;
 
 -- ----------------------------
 -- Records of inventory
@@ -1465,7 +1465,7 @@ CREATE TABLE `inventory_back`  (
   `delFlag` int(11) NULL DEFAULT 0 COMMENT '删除标记',
   `showFlag` int(11) NULL DEFAULT 0 COMMENT '订单仓库选择时是否显示（ 显示， 不显示）',
   PRIMARY KEY (`id`) USING BTREE
-) ENGINE = InnoDB AUTO_INCREMENT = 62859 CHARACTER SET = utf8 COLLATE = utf8_general_ci COMMENT = '货物入库信息' ROW_FORMAT = Dynamic;
+) ENGINE = InnoDB AUTO_INCREMENT = 62859 CHARACTER SET = utf8 COLLATE = utf8_general_ci COMMENT = '货物入库信息' ROW_FORMAT = DYNAMIC;
 
 -- ----------------------------
 -- Records of inventory_back
@@ -1496,7 +1496,7 @@ CREATE TABLE `lendmoney`  (
   `update_time` datetime NULL DEFAULT NULL COMMENT '更新时间',
   `delFlag` int(11) NULL DEFAULT 0 COMMENT '删除标记',
   PRIMARY KEY (`id`) USING BTREE
-) ENGINE = MyISAM AUTO_INCREMENT = 1 CHARACTER SET = utf8 COLLATE = utf8_general_ci COMMENT = '资金借出（期货）' ROW_FORMAT = Dynamic;
+) ENGINE = MyISAM AUTO_INCREMENT = 1 CHARACTER SET = utf8 COLLATE = utf8_general_ci COMMENT = '资金借出（期货）' ROW_FORMAT = DYNAMIC;
 
 -- ----------------------------
 -- Records of lendmoney
@@ -1522,7 +1522,7 @@ CREATE TABLE `offsetting`  (
   `update_time` datetime NULL DEFAULT NULL COMMENT '更新时间',
   `delFlag` int(11) NULL DEFAULT 0 COMMENT '删除标记',
   PRIMARY KEY (`id`) USING BTREE
-) ENGINE = MyISAM AUTO_INCREMENT = 1 CHARACTER SET = utf8 COLLATE = utf8_general_ci COMMENT = '资金调整单信息' ROW_FORMAT = Dynamic;
+) ENGINE = MyISAM AUTO_INCREMENT = 1 CHARACTER SET = utf8 COLLATE = utf8_general_ci COMMENT = '资金调整单信息' ROW_FORMAT = DYNAMIC;
 
 -- ----------------------------
 -- Records of offsetting
@@ -1543,7 +1543,7 @@ CREATE TABLE `oilcard`  (
   `update_time` datetime NULL DEFAULT NULL COMMENT '更新时间',
   `delFlag` int(11) NULL DEFAULT 0 COMMENT '删除标记',
   PRIMARY KEY (`id`) USING BTREE
-) ENGINE = MyISAM AUTO_INCREMENT = 1 CHARACTER SET = utf8 COLLATE = utf8_general_ci COMMENT = '加油卡' ROW_FORMAT = Dynamic;
+) ENGINE = MyISAM AUTO_INCREMENT = 1 CHARACTER SET = utf8 COLLATE = utf8_general_ci COMMENT = '加油卡' ROW_FORMAT = DYNAMIC;
 
 -- ----------------------------
 -- Records of oilcard
@@ -1574,7 +1574,7 @@ CREATE TABLE `oilcardmain`  (
   `update_time` datetime NULL DEFAULT NULL COMMENT '更新时间',
   `delFlag` int(11) NULL DEFAULT 0 COMMENT '删除标记',
   PRIMARY KEY (`id`) USING BTREE
-) ENGINE = MyISAM AUTO_INCREMENT = 1 CHARACTER SET = utf8 COLLATE = utf8_general_ci COMMENT = '基础信息-加油卡主卡登记' ROW_FORMAT = Dynamic;
+) ENGINE = MyISAM AUTO_INCREMENT = 1 CHARACTER SET = utf8 COLLATE = utf8_general_ci COMMENT = '基础信息-加油卡主卡登记' ROW_FORMAT = DYNAMIC;
 
 -- ----------------------------
 -- Records of oilcardmain
@@ -1634,7 +1634,7 @@ CREATE TABLE `orderdetail`  (
   `UserName` varchar(50) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL COMMENT '操作人员姓名',
   `update_time` datetime NULL DEFAULT NULL COMMENT '更新时间',
   PRIMARY KEY (`id`) USING BTREE
-) ENGINE = InnoDB AUTO_INCREMENT = 62859 CHARACTER SET = utf8 COLLATE = utf8_general_ci COMMENT = '订单详情' ROW_FORMAT = Dynamic;
+) ENGINE = InnoDB AUTO_INCREMENT = 62859 CHARACTER SET = utf8 COLLATE = utf8_general_ci COMMENT = '订单详情' ROW_FORMAT = DYNAMIC;
 
 -- ----------------------------
 -- Records of orderdetail
@@ -1695,7 +1695,7 @@ CREATE TABLE `orderdetail_back`  (
   `UserName` varchar(50) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL COMMENT '操作人员姓名',
   `update_time` datetime NULL DEFAULT NULL COMMENT '更新时间',
   PRIMARY KEY (`id`) USING BTREE
-) ENGINE = InnoDB AUTO_INCREMENT = 62859 CHARACTER SET = utf8 COLLATE = utf8_general_ci COMMENT = '订单详情备份' ROW_FORMAT = Dynamic;
+) ENGINE = InnoDB AUTO_INCREMENT = 62859 CHARACTER SET = utf8 COLLATE = utf8_general_ci COMMENT = '订单详情备份' ROW_FORMAT = DYNAMIC;
 
 -- ----------------------------
 -- Records of orderdetail_back
@@ -1736,7 +1736,7 @@ CREATE TABLE `orderfreight`  (
   `UserName` varchar(50) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL COMMENT '操作人员姓名',
   `delFlag` int(11) NULL DEFAULT 0 COMMENT '删除标记',
   PRIMARY KEY (`id`) USING BTREE
-) ENGINE = InnoDB AUTO_INCREMENT = 62859 CHARACTER SET = utf8 COLLATE = utf8_general_ci COMMENT = '订单运费' ROW_FORMAT = Dynamic;
+) ENGINE = InnoDB AUTO_INCREMENT = 62859 CHARACTER SET = utf8 COLLATE = utf8_general_ci COMMENT = '订单运费' ROW_FORMAT = DYNAMIC;
 
 -- ----------------------------
 -- Records of orderfreight
@@ -1766,7 +1766,7 @@ CREATE TABLE `orderinvoice`  (
   `update_time` datetime NULL DEFAULT NULL COMMENT '更新时间',
   `delFlag` int(11) NULL DEFAULT 0 COMMENT '删除标记',
   PRIMARY KEY (`id`) USING BTREE
-) ENGINE = InnoDB AUTO_INCREMENT = 1459 CHARACTER SET = utf8 COLLATE = utf8_general_ci COMMENT = '订单发票' ROW_FORMAT = Dynamic;
+) ENGINE = InnoDB AUTO_INCREMENT = 1459 CHARACTER SET = utf8 COLLATE = utf8_general_ci COMMENT = '订单发票' ROW_FORMAT = DYNAMIC;
 
 -- ----------------------------
 -- Records of orderinvoice
@@ -1801,7 +1801,7 @@ CREATE TABLE `payment`  (
   `update_time` datetime NULL DEFAULT NULL COMMENT '更新时间',
   `delFlag` int(11) NULL DEFAULT 0 COMMENT '删除标记',
   PRIMARY KEY (`id`) USING BTREE
-) ENGINE = InnoDB AUTO_INCREMENT = 62859 CHARACTER SET = utf8 COLLATE = utf8_general_ci COMMENT = '资产管理-收付款:收付款信息' ROW_FORMAT = Dynamic;
+) ENGINE = InnoDB AUTO_INCREMENT = 62859 CHARACTER SET = utf8 COLLATE = utf8_general_ci COMMENT = '资产管理-收付款:收付款信息' ROW_FORMAT = DYNAMIC;
 
 -- ----------------------------
 -- Records of payment
@@ -1827,7 +1827,7 @@ CREATE TABLE `productlevel`  (
   `update_time` datetime NULL DEFAULT NULL COMMENT '更新时间',
   `delFlag` int(11) NULL DEFAULT 0 COMMENT '删除标记',
   PRIMARY KEY (`id`) USING BTREE
-) ENGINE = MyISAM AUTO_INCREMENT = 1 CHARACTER SET = utf8 COLLATE = utf8_general_ci COMMENT = '产品级别管理' ROW_FORMAT = Dynamic;
+) ENGINE = MyISAM AUTO_INCREMENT = 1 CHARACTER SET = utf8 COLLATE = utf8_general_ci COMMENT = '产品级别管理' ROW_FORMAT = DYNAMIC;
 
 -- ----------------------------
 -- Records of productlevel
@@ -1857,7 +1857,7 @@ CREATE TABLE `rebate`  (
   `update_time` datetime NULL DEFAULT NULL COMMENT '更新时间',
   `delFlag` int(11) NULL DEFAULT 0 COMMENT '删除标记',
   PRIMARY KEY (`id`) USING BTREE
-) ENGINE = InnoDB AUTO_INCREMENT = 62859 CHARACTER SET = utf8 COLLATE = utf8_general_ci COMMENT = '供应商返利' ROW_FORMAT = Dynamic;
+) ENGINE = InnoDB AUTO_INCREMENT = 62859 CHARACTER SET = utf8 COLLATE = utf8_general_ci COMMENT = '供应商返利' ROW_FORMAT = DYNAMIC;
 
 -- ----------------------------
 -- Records of rebate
@@ -1882,7 +1882,7 @@ CREATE TABLE `recovermoney`  (
   `update_time` datetime NULL DEFAULT NULL COMMENT '更新时间',
   `delFlag` int(11) NULL DEFAULT 0 COMMENT '删除标记',
   PRIMARY KEY (`id`) USING BTREE
-) ENGINE = MyISAM AUTO_INCREMENT = 1 CHARACTER SET = utf8 COLLATE = utf8_general_ci COMMENT = '资金回收' ROW_FORMAT = Dynamic;
+) ENGINE = MyISAM AUTO_INCREMENT = 1 CHARACTER SET = utf8 COLLATE = utf8_general_ci COMMENT = '资金回收' ROW_FORMAT = DYNAMIC;
 
 -- ----------------------------
 -- Records of recovermoney
@@ -1908,7 +1908,7 @@ CREATE TABLE `repayment`  (
   `update_time` datetime NULL DEFAULT NULL COMMENT '更新时间',
   `delFlag` int(11) NULL DEFAULT 0 COMMENT '删除标记',
   PRIMARY KEY (`id`) USING BTREE
-) ENGINE = MyISAM AUTO_INCREMENT = 1 CHARACTER SET = utf8 COLLATE = utf8_general_ci COMMENT = '还款记录' ROW_FORMAT = Dynamic;
+) ENGINE = MyISAM AUTO_INCREMENT = 1 CHARACTER SET = utf8 COLLATE = utf8_general_ci COMMENT = '还款记录' ROW_FORMAT = DYNAMIC;
 
 -- ----------------------------
 -- Records of repayment
@@ -1946,7 +1946,7 @@ CREATE TABLE `socialinsurance`  (
   `update_time` datetime NULL DEFAULT NULL COMMENT '更新时间',
   `delFlag` int(11) NULL DEFAULT 0 COMMENT '删除标记',
   PRIMARY KEY (`id`) USING BTREE
-) ENGINE = InnoDB CHARACTER SET = utf8 COLLATE = utf8_general_ci COMMENT = '社保基金' ROW_FORMAT = Dynamic;
+) ENGINE = InnoDB AUTO_INCREMENT = 1 CHARACTER SET = utf8 COLLATE = utf8_general_ci COMMENT = '社保基金' ROW_FORMAT = DYNAMIC;
 
 -- ----------------------------
 -- Records of socialinsurance
@@ -1962,7 +1962,7 @@ CREATE TABLE `storehouse`  (
   `address` varchar(100) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL COMMENT '地址',
   `delFlag` int(11) NULL DEFAULT 0 COMMENT '删除标记',
   PRIMARY KEY (`id`) USING BTREE
-) ENGINE = MyISAM AUTO_INCREMENT = 1 CHARACTER SET = utf8 COLLATE = utf8_general_ci COMMENT = '仓库管理' ROW_FORMAT = Dynamic;
+) ENGINE = MyISAM AUTO_INCREMENT = 1 CHARACTER SET = utf8 COLLATE = utf8_general_ci COMMENT = '仓库管理' ROW_FORMAT = DYNAMIC;
 
 -- ----------------------------
 -- Records of storehouse
@@ -1984,7 +1984,7 @@ CREATE TABLE `sys_config`  (
   `update_time` datetime NULL DEFAULT NULL COMMENT '更新时间',
   `remark` varchar(500) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL COMMENT '备注',
   PRIMARY KEY (`config_id`) USING BTREE
-) ENGINE = InnoDB AUTO_INCREMENT = 100 CHARACTER SET = utf8 COLLATE = utf8_general_ci COMMENT = '参数配置表' ROW_FORMAT = Dynamic;
+) ENGINE = InnoDB AUTO_INCREMENT = 100 CHARACTER SET = utf8 COLLATE = utf8_general_ci COMMENT = '参数配置表' ROW_FORMAT = DYNAMIC;
 
 -- ----------------------------
 -- Records of sys_config
@@ -2016,7 +2016,7 @@ CREATE TABLE `sys_dept`  (
   `update_by` varchar(64) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT '' COMMENT '更新者',
   `update_time` datetime NULL DEFAULT NULL COMMENT '更新时间',
   PRIMARY KEY (`dept_id`) USING BTREE
-) ENGINE = InnoDB AUTO_INCREMENT = 200 CHARACTER SET = utf8 COLLATE = utf8_general_ci COMMENT = '部门表' ROW_FORMAT = Dynamic;
+) ENGINE = InnoDB AUTO_INCREMENT = 200 CHARACTER SET = utf8 COLLATE = utf8_general_ci COMMENT = '部门表' ROW_FORMAT = DYNAMIC;
 
 -- ----------------------------
 -- Records of sys_dept
@@ -2052,7 +2052,7 @@ CREATE TABLE `sys_dict_data`  (
   `update_time` datetime NULL DEFAULT NULL COMMENT '更新时间',
   `remark` varchar(500) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL COMMENT '备注',
   PRIMARY KEY (`dict_code`) USING BTREE
-) ENGINE = InnoDB AUTO_INCREMENT = 100 CHARACTER SET = utf8 COLLATE = utf8_general_ci COMMENT = '字典数据表' ROW_FORMAT = Dynamic;
+) ENGINE = InnoDB AUTO_INCREMENT = 100 CHARACTER SET = utf8 COLLATE = utf8_general_ci COMMENT = '字典数据表' ROW_FORMAT = DYNAMIC;
 
 -- ----------------------------
 -- Records of sys_dict_data
@@ -2102,8 +2102,8 @@ CREATE TABLE `sys_dict_type`  (
   `update_time` datetime NULL DEFAULT NULL COMMENT '更新时间',
   `remark` varchar(500) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL COMMENT '备注',
   PRIMARY KEY (`dict_id`) USING BTREE,
-  UNIQUE INDEX `dict_type`(`dict_type` ASC) USING BTREE
-) ENGINE = InnoDB AUTO_INCREMENT = 100 CHARACTER SET = utf8 COLLATE = utf8_general_ci COMMENT = '字典类型表' ROW_FORMAT = Dynamic;
+  UNIQUE INDEX `dict_type`(`dict_type`) USING BTREE
+) ENGINE = InnoDB AUTO_INCREMENT = 100 CHARACTER SET = utf8 COLLATE = utf8_general_ci COMMENT = '字典类型表' ROW_FORMAT = DYNAMIC;
 
 -- ----------------------------
 -- Records of sys_dict_type
@@ -2138,7 +2138,7 @@ CREATE TABLE `sys_job`  (
   `update_time` datetime NULL DEFAULT NULL COMMENT '更新时间',
   `remark` varchar(500) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT '' COMMENT '备注信息',
   PRIMARY KEY (`job_id`, `job_name`, `job_group`) USING BTREE
-) ENGINE = InnoDB AUTO_INCREMENT = 100 CHARACTER SET = utf8 COLLATE = utf8_general_ci COMMENT = '定时任务调度表' ROW_FORMAT = Dynamic;
+) ENGINE = InnoDB AUTO_INCREMENT = 100 CHARACTER SET = utf8 COLLATE = utf8_general_ci COMMENT = '定时任务调度表' ROW_FORMAT = DYNAMIC;
 
 -- ----------------------------
 -- Records of sys_job
@@ -2161,7 +2161,7 @@ CREATE TABLE `sys_job_log`  (
   `exception_info` varchar(2000) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT '' COMMENT '异常信息',
   `create_time` datetime NULL DEFAULT NULL COMMENT '创建时间',
   PRIMARY KEY (`job_log_id`) USING BTREE
-) ENGINE = InnoDB CHARACTER SET = utf8 COLLATE = utf8_general_ci COMMENT = '定时任务调度日志表' ROW_FORMAT = Dynamic;
+) ENGINE = InnoDB AUTO_INCREMENT = 1 CHARACTER SET = utf8 COLLATE = utf8_general_ci COMMENT = '定时任务调度日志表' ROW_FORMAT = DYNAMIC;
 
 -- ----------------------------
 -- Records of sys_job_log
@@ -2182,9 +2182,9 @@ CREATE TABLE `sys_logininfor`  (
   `msg` varchar(255) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT '' COMMENT '提示消息',
   `login_time` datetime NULL DEFAULT NULL COMMENT '访问时间',
   PRIMARY KEY (`info_id`) USING BTREE,
-  INDEX `idx_sys_logininfor_s`(`STATUS` ASC) USING BTREE,
-  INDEX `idx_sys_logininfor_lt`(`login_time` ASC) USING BTREE
-) ENGINE = InnoDB AUTO_INCREMENT = 105 CHARACTER SET = utf8 COLLATE = utf8_general_ci COMMENT = '系统访问记录' ROW_FORMAT = Dynamic;
+  INDEX `idx_sys_logininfor_s`(`STATUS`) USING BTREE,
+  INDEX `idx_sys_logininfor_lt`(`login_time`) USING BTREE
+) ENGINE = InnoDB AUTO_INCREMENT = 105 CHARACTER SET = utf8 COLLATE = utf8_general_ci COMMENT = '系统访问记录' ROW_FORMAT = DYNAMIC;
 
 -- ----------------------------
 -- Records of sys_logininfor
@@ -2220,7 +2220,7 @@ CREATE TABLE `sys_menu`  (
   `update_time` datetime NULL DEFAULT NULL COMMENT '更新时间',
   `remark` varchar(500) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT '' COMMENT '备注',
   PRIMARY KEY (`menu_id`) USING BTREE
-) ENGINE = InnoDB AUTO_INCREMENT = 2192 CHARACTER SET = utf8 COLLATE = utf8_general_ci COMMENT = '菜单权限表' ROW_FORMAT = Dynamic;
+) ENGINE = InnoDB AUTO_INCREMENT = 2192 CHARACTER SET = utf8 COLLATE = utf8_general_ci COMMENT = '菜单权限表' ROW_FORMAT = DYNAMIC;
 
 -- ----------------------------
 -- Records of sys_menu
@@ -2526,10 +2526,10 @@ CREATE TABLE `sys_oper_log`  (
   `oper_time` datetime NULL DEFAULT NULL COMMENT '操作时间',
   `cost_time` bigint(20) NULL DEFAULT 0 COMMENT '消耗时间',
   PRIMARY KEY (`oper_id`) USING BTREE,
-  INDEX `idx_sys_oper_log_bt`(`business_type` ASC) USING BTREE,
-  INDEX `idx_sys_oper_log_s`(`STATUS` ASC) USING BTREE,
-  INDEX `idx_sys_oper_log_ot`(`oper_time` ASC) USING BTREE
-) ENGINE = InnoDB AUTO_INCREMENT = 109 CHARACTER SET = utf8 COLLATE = utf8_general_ci COMMENT = '操作日志记录' ROW_FORMAT = Dynamic;
+  INDEX `idx_sys_oper_log_bt`(`business_type`) USING BTREE,
+  INDEX `idx_sys_oper_log_s`(`STATUS`) USING BTREE,
+  INDEX `idx_sys_oper_log_ot`(`oper_time`) USING BTREE
+) ENGINE = InnoDB AUTO_INCREMENT = 109 CHARACTER SET = utf8 COLLATE = utf8_general_ci COMMENT = '操作日志记录' ROW_FORMAT = DYNAMIC;
 
 -- ----------------------------
 -- Records of sys_oper_log
@@ -2564,7 +2564,7 @@ CREATE TABLE `sys_role`  (
   `update_time` datetime NULL DEFAULT NULL COMMENT '更新时间',
   `remark` varchar(500) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL COMMENT '备注',
   PRIMARY KEY (`role_id`) USING BTREE
-) ENGINE = InnoDB AUTO_INCREMENT = 100 CHARACTER SET = utf8 COLLATE = utf8_general_ci COMMENT = '角色信息表' ROW_FORMAT = Dynamic;
+) ENGINE = InnoDB AUTO_INCREMENT = 100 CHARACTER SET = utf8 COLLATE = utf8_general_ci COMMENT = '角色信息表' ROW_FORMAT = DYNAMIC;
 
 -- ----------------------------
 -- Records of sys_role
@@ -2580,7 +2580,7 @@ CREATE TABLE `sys_role_dept`  (
   `role_id` bigint(20) NOT NULL COMMENT '角色ID',
   `dept_id` bigint(20) NOT NULL COMMENT '部门ID',
   PRIMARY KEY (`role_id`, `dept_id`) USING BTREE
-) ENGINE = InnoDB CHARACTER SET = utf8 COLLATE = utf8_general_ci COMMENT = '角色和部门关联表' ROW_FORMAT = Dynamic;
+) ENGINE = InnoDB CHARACTER SET = utf8 COLLATE = utf8_general_ci COMMENT = '角色和部门关联表' ROW_FORMAT = DYNAMIC;
 
 -- ----------------------------
 -- Records of sys_role_dept
@@ -2597,7 +2597,7 @@ CREATE TABLE `sys_role_menu`  (
   `role_id` bigint(20) NOT NULL COMMENT '角色ID',
   `menu_id` bigint(20) NOT NULL COMMENT '菜单ID',
   PRIMARY KEY (`role_id`, `menu_id`) USING BTREE
-) ENGINE = InnoDB CHARACTER SET = utf8 COLLATE = utf8_general_ci COMMENT = '角色和菜单关联表' ROW_FORMAT = Dynamic;
+) ENGINE = InnoDB CHARACTER SET = utf8 COLLATE = utf8_general_ci COMMENT = '角色和菜单关联表' ROW_FORMAT = DYNAMIC;
 
 -- ----------------------------
 -- Records of sys_role_menu
@@ -2733,7 +2733,7 @@ CREATE TABLE `sys_user`  (
   `bankName` varchar(150) CHARACTER SET utf8 COLLATE utf8_general_ci NOT NULL COMMENT '开户银行',
   `bankNo` varchar(150) CHARACTER SET utf8 COLLATE utf8_general_ci NOT NULL COMMENT '银行账号',
   PRIMARY KEY (`user_id`) USING BTREE
-) ENGINE = InnoDB AUTO_INCREMENT = 100 CHARACTER SET = utf8 COLLATE = utf8_general_ci COMMENT = '用户信息表' ROW_FORMAT = Dynamic;
+) ENGINE = InnoDB AUTO_INCREMENT = 100 CHARACTER SET = utf8 COLLATE = utf8_general_ci COMMENT = '用户信息表' ROW_FORMAT = DYNAMIC;
 
 -- ----------------------------
 -- Records of sys_user
@@ -2748,7 +2748,7 @@ CREATE TABLE `sys_user_role`  (
   `user_id` bigint(20) NOT NULL COMMENT '用户ID',
   `role_id` bigint(20) NOT NULL COMMENT '角色ID',
   PRIMARY KEY (`user_id`, `role_id`) USING BTREE
-) ENGINE = InnoDB CHARACTER SET = utf8 COLLATE = utf8_general_ci COMMENT = '用户和角色关联表' ROW_FORMAT = Dynamic;
+) ENGINE = InnoDB CHARACTER SET = utf8 COLLATE = utf8_general_ci COMMENT = '用户和角色关联表' ROW_FORMAT = DYNAMIC;
 
 -- ----------------------------
 -- Records of sys_user_role
@@ -2770,7 +2770,7 @@ CREATE TABLE `tableeditmessage`  (
   `userId` int(11) NULL DEFAULT NULL COMMENT '操作人员ID',
   `UserName` varchar(50) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL COMMENT '操作人员姓名',
   PRIMARY KEY (`id`) USING BTREE
-) ENGINE = MyISAM AUTO_INCREMENT = 1 CHARACTER SET = utf8 COLLATE = utf8_general_ci COMMENT = '表变动日志信息' ROW_FORMAT = Dynamic;
+) ENGINE = MyISAM AUTO_INCREMENT = 1 CHARACTER SET = utf8 COLLATE = utf8_general_ci COMMENT = '表变动日志信息' ROW_FORMAT = DYNAMIC;
 
 -- ----------------------------
 -- Records of tableeditmessage
@@ -2794,7 +2794,7 @@ CREATE TABLE `virtualbankaccountchange`  (
   `UserName` varchar(50) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL COMMENT '操作人员姓名',
   `update_time` datetime NULL DEFAULT NULL COMMENT '更新时间',
   PRIMARY KEY (`id`) USING BTREE
-) ENGINE = InnoDB AUTO_INCREMENT = 62859 CHARACTER SET = utf8 COLLATE = utf8_general_ci COMMENT = '虚拟银行账户变动信息' ROW_FORMAT = Dynamic;
+) ENGINE = InnoDB AUTO_INCREMENT = 62859 CHARACTER SET = utf8 COLLATE = utf8_general_ci COMMENT = '虚拟银行账户变动信息' ROW_FORMAT = DYNAMIC;
 
 -- ----------------------------
 -- Records of virtualbankaccountchange
