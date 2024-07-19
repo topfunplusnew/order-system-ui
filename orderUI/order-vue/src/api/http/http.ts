@@ -15,6 +15,7 @@ instance.interceptors.request.use(function (config: any) {
         return config
     }
 }, function (error: any) {
+
     return Promise.reject(error);
 });
 
@@ -22,6 +23,10 @@ instance.interceptors.request.use(function (config: any) {
 // 添加响应拦截器
 instance.interceptors.response.use(function (response: any) {
     console.log(response)
+    if (response.data.code != 200) {
+        sessionStorage.removeItem("token")
+        sessionStorage.removeItem("username")
+    }
     return response;
 }, function (error: any) {
     return Promise.reject(error);
