@@ -1,10 +1,23 @@
-//菜单
 export interface MenuInfo {
-    id: number,
-    title: string,
     children: [],
-    closable: boolean,
-    open: boolean,
+    component: '',
+    createBy?: '',
+    createTime?: '',
+    icon?: '',
+    isCache?: ''
+    isFrame?: '',
+    menuId: number,
+    menuName: string,
+    menuType?: string,
+    orderNum: number,
+    parentId?: number,
+    parentName: string,
     path: string,
-    component: object
+    perms: string,
+    query?: string,
+    remark?: string,
+    status: string,
+    updateBy?: string,
+    updateTime?: string,
+    visible: string,
 }

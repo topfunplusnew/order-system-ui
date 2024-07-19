@@ -1,7 +1,7 @@
 <template>
     <div>
         <Header>
-            <lay-button type="normal" class="buttons" @click="handleCollapse">
+            <lay-button type="primary" class="buttons" @click="handleCollapse">
                 <lay-icon type="layui-icon-slider"></lay-icon>
             </lay-button>
         </Header>
@@ -11,7 +11,7 @@
                     <MenuInfo :collapse="collapse"/>
                 </div>
                 <lay-transition>
-                    <div :class="isShow==true?'body-85':'body-100'" >
+                    <div :class="isShow==true?'body-85':'body-100'">
                         <Body/>
                     </div>
                 </lay-transition>
@@ -27,7 +27,6 @@ import Body from './body/Index.vue'
 import {computed, ref, watchEffect} from "vue";
 import {LayIcon} from "@layui/layui-vue";
 import {useSwitchStore} from "../store";
-
 //点击隐藏功能
 const switch_store = useSwitchStore()
 const isShow = computed(() => {
@@ -38,7 +37,6 @@ const handleCollapse = () => {
     collapse.value = !collapse.value
     switch_store.changeIsShow()
 }
-
 
 </script>
 
@@ -52,7 +50,7 @@ const handleCollapse = () => {
 }
 
 .body-85 {
-    width: 96%;
+    width: 99%;
 }
 
 .body-100 {

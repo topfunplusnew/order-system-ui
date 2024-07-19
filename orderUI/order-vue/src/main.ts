@@ -1,5 +1,5 @@
 //@ts-ignore
-import {createApp} from 'vue'
+import {createApp, ref, watch} from 'vue'
 // @ts-ignore
 import App from './App.vue'
 import Layui from '@layui/layui-vue'
@@ -16,7 +16,4 @@ import Login from "./view/Login.vue";
 import {router} from "./router";
 //pinia
 const pinia: Pinia = createPinia()
-
-//router
-
 createApp(App).use(Layui).use(pinia).use(router).use(LayJsonSchemaForm).mount('#app')
