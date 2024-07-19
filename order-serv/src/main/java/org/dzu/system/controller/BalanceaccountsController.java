@@ -22,10 +22,10 @@ import org.dzu.common.utils.poi.ExcelUtil;
 import org.dzu.common.core.page.TableDataInfo;
 
 /**
- * 余额账户Controller
+ * 平账Controller
  * 
  * @author ml
- * @date 2024-07-18
+ * @date 2024-07-19
  */
 @RestController
 @RequestMapping("/system/balanceaccounts")
@@ -35,7 +35,7 @@ public class BalanceaccountsController extends BaseController
     private IBalanceaccountsService balanceaccountsService;
 
     /**
-     * 查询余额账户列表
+     * 查询平账列表
      */
     @PreAuthorize("@ss.hasPermi('system:balanceaccounts:list')")
     @GetMapping("/list")
@@ -47,20 +47,20 @@ public class BalanceaccountsController extends BaseController
     }
 
     /**
-     * 导出余额账户列表
+     * 导出平账列表
      */
     @PreAuthorize("@ss.hasPermi('system:balanceaccounts:export')")
-    @Log(title = "余额账户", businessType = BusinessType.EXPORT)
+    @Log(title = "平账", businessType = BusinessType.EXPORT)
     @PostMapping("/export")
     public void export(HttpServletResponse response, Balanceaccounts balanceaccounts)
     {
         List<Balanceaccounts> list = balanceaccountsService.selectBalanceaccountsList(balanceaccounts);
         ExcelUtil<Balanceaccounts> util = new ExcelUtil<Balanceaccounts>(Balanceaccounts.class);
-        util.exportExcel(response, list, "余额账户数据");
+        util.exportExcel(response, list, "平账数据");
     }
 
     /**
-     * 获取余额账户详细信息
+     * 获取平账详细信息
      */
     @PreAuthorize("@ss.hasPermi('system:balanceaccounts:query')")
     @GetMapping(value = "/{id}")
@@ -70,10 +70,10 @@ public class BalanceaccountsController extends BaseController
     }
 
     /**
-     * 新增余额账户
+     * 新增平账
      */
     @PreAuthorize("@ss.hasPermi('system:balanceaccounts:add')")
-    @Log(title = "余额账户", businessType = BusinessType.INSERT)
+    @Log(title = "平账", businessType = BusinessType.INSERT)
     @PostMapping
     public AjaxResult add(@RequestBody Balanceaccounts balanceaccounts)
     {
@@ -81,10 +81,10 @@ public class BalanceaccountsController extends BaseController
     }
 
     /**
-     * 修改余额账户
+     * 修改平账
      */
     @PreAuthorize("@ss.hasPermi('system:balanceaccounts:edit')")
-    @Log(title = "余额账户", businessType = BusinessType.UPDATE)
+    @Log(title = "平账", businessType = BusinessType.UPDATE)
     @PutMapping
     public AjaxResult edit(@RequestBody Balanceaccounts balanceaccounts)
     {
@@ -92,10 +92,10 @@ public class BalanceaccountsController extends BaseController
     }
 
     /**
-     * 删除余额账户
+     * 删除平账
      */
     @PreAuthorize("@ss.hasPermi('system:balanceaccounts:remove')")
-    @Log(title = "余额账户", businessType = BusinessType.DELETE)
+    @Log(title = "平账", businessType = BusinessType.DELETE)
 	@DeleteMapping("/{ids}")
     public AjaxResult remove(@PathVariable Long[] ids)
     {

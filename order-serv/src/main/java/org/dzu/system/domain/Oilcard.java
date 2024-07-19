@@ -6,21 +6,25 @@ import org.dzu.common.annotation.Excel;
 import org.dzu.common.core.domain.BaseEntity;
 
 /**
- * 加油卡信息对象 oilcard
+ * 加油卡对象 oilcard
  * 
  * @author ml
- * @date 2024-07-18
+ * @date 2024-07-19
  */
 public class Oilcard extends BaseEntity
 {
     private static final long serialVersionUID = 1L;
 
-    /** 主键 */
+    /** $column.columnComment */
     private Long id;
 
     /** 加油卡卡号 */
     @Excel(name = "加油卡卡号")
     private String oilCardNo;
+
+    /** 加油卡类别（主卡、副卡） */
+    @Excel(name = "加油卡类别", readConverterExp = "主=卡、副卡")
+    private String oilType;
 
     /** 备注 */
     @Excel(name = "备注")
@@ -59,6 +63,15 @@ public class Oilcard extends BaseEntity
     public String getOilCardNo() 
     {
         return oilCardNo;
+    }
+    public void setOilType(String oilType) 
+    {
+        this.oilType = oilType;
+    }
+
+    public String getOilType() 
+    {
+        return oilType;
     }
     public void setComments(String comments) 
     {
@@ -111,6 +124,7 @@ public class Oilcard extends BaseEntity
         return new ToStringBuilder(this,ToStringStyle.MULTI_LINE_STYLE)
             .append("id", getId())
             .append("oilCardNo", getOilCardNo())
+            .append("oilType", getOilType())
             .append("comments", getComments())
             .append("addtime", getAddtime())
             .append("userId", getUserId())

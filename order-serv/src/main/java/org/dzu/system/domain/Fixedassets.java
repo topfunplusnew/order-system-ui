@@ -6,16 +6,16 @@ import org.dzu.common.annotation.Excel;
 import org.dzu.common.core.domain.BaseEntity;
 
 /**
- * 固定资产信息对象 fixedassets
+ * 固定资产对象 fixedassets
  * 
  * @author ml
- * @date 2024-07-18
+ * @date 2024-07-19
  */
 public class Fixedassets extends BaseEntity
 {
     private static final long serialVersionUID = 1L;
 
-    /** 主键 */
+    /** $column.columnComment */
     private Long id;
 
     /** 购入日期 */
@@ -32,7 +32,7 @@ public class Fixedassets extends BaseEntity
 
     /** 规格型号（车牌号） */
     @Excel(name = "规格型号", readConverterExp = "车=牌号")
-    private String specification;
+    private String  specification;
 
     /** 数量 */
     @Excel(name = "数量")
@@ -82,6 +82,10 @@ public class Fixedassets extends BaseEntity
     @Excel(name = "操作人员姓名")
     private String UserName;
 
+    /** 删除标记 */
+    @Excel(name = "删除标记")
+    private Long delFlag;
+
     public void setId(Long id) 
     {
         this.id = id;
@@ -118,14 +122,14 @@ public class Fixedassets extends BaseEntity
     {
         return assetName;
     }
-    public void setSpecification(String specification)
+    public void setSpecification(String  specification)
     {
-        this.specification = specification;
+        this. specification =  specification;
     }
 
     public String getSpecification()
     {
-        return specification;
+        return  specification;
     }
     public void setNumber(String number) 
     {
@@ -235,6 +239,15 @@ public class Fixedassets extends BaseEntity
     {
         return UserName;
     }
+    public void setDelFlag(Long delFlag) 
+    {
+        this.delFlag = delFlag;
+    }
+
+    public Long getDelFlag() 
+    {
+        return delFlag;
+    }
 
     @Override
     public String toString() {
@@ -243,7 +256,7 @@ public class Fixedassets extends BaseEntity
             .append("buyDate", getBuyDate())
             .append("assetNo", getAssetNo())
             .append("assetName", getAssetName())
-            .append("specification", getSpecification())
+            .append(" specification", getSpecification())
             .append("number", getNumber())
             .append("measurementUnit", getMeasurementUnit())
             .append("amountIncludeTax", getAmountIncludeTax())
@@ -257,6 +270,7 @@ public class Fixedassets extends BaseEntity
             .append("userId", getUserId())
             .append("UserName", getUserName())
             .append("updateTime", getUpdateTime())
+            .append("delFlag", getDelFlag())
             .toString();
     }
 }

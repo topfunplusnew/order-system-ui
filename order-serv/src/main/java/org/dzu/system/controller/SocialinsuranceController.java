@@ -22,10 +22,10 @@ import org.dzu.common.utils.poi.ExcelUtil;
 import org.dzu.common.core.page.TableDataInfo;
 
 /**
- * 社会保险信息Controller
+ * 社保基金Controller
  * 
  * @author ml
- * @date 2024-07-18
+ * @date 2024-07-19
  */
 @RestController
 @RequestMapping("/system/socialinsurance")
@@ -35,7 +35,7 @@ public class SocialinsuranceController extends BaseController
     private ISocialinsuranceService socialinsuranceService;
 
     /**
-     * 查询社会保险信息列表
+     * 查询社保基金列表
      */
     @PreAuthorize("@ss.hasPermi('system:socialinsurance:list')")
     @GetMapping("/list")
@@ -47,20 +47,20 @@ public class SocialinsuranceController extends BaseController
     }
 
     /**
-     * 导出社会保险信息列表
+     * 导出社保基金列表
      */
     @PreAuthorize("@ss.hasPermi('system:socialinsurance:export')")
-    @Log(title = "社会保险信息", businessType = BusinessType.EXPORT)
+    @Log(title = "社保基金", businessType = BusinessType.EXPORT)
     @PostMapping("/export")
     public void export(HttpServletResponse response, Socialinsurance socialinsurance)
     {
         List<Socialinsurance> list = socialinsuranceService.selectSocialinsuranceList(socialinsurance);
         ExcelUtil<Socialinsurance> util = new ExcelUtil<Socialinsurance>(Socialinsurance.class);
-        util.exportExcel(response, list, "社会保险信息数据");
+        util.exportExcel(response, list, "社保基金数据");
     }
 
     /**
-     * 获取社会保险信息详细信息
+     * 获取社保基金详细信息
      */
     @PreAuthorize("@ss.hasPermi('system:socialinsurance:query')")
     @GetMapping(value = "/{id}")
@@ -70,10 +70,10 @@ public class SocialinsuranceController extends BaseController
     }
 
     /**
-     * 新增社会保险信息
+     * 新增社保基金
      */
     @PreAuthorize("@ss.hasPermi('system:socialinsurance:add')")
-    @Log(title = "社会保险信息", businessType = BusinessType.INSERT)
+    @Log(title = "社保基金", businessType = BusinessType.INSERT)
     @PostMapping
     public AjaxResult add(@RequestBody Socialinsurance socialinsurance)
     {
@@ -81,10 +81,10 @@ public class SocialinsuranceController extends BaseController
     }
 
     /**
-     * 修改社会保险信息
+     * 修改社保基金
      */
     @PreAuthorize("@ss.hasPermi('system:socialinsurance:edit')")
-    @Log(title = "社会保险信息", businessType = BusinessType.UPDATE)
+    @Log(title = "社保基金", businessType = BusinessType.UPDATE)
     @PutMapping
     public AjaxResult edit(@RequestBody Socialinsurance socialinsurance)
     {
@@ -92,10 +92,10 @@ public class SocialinsuranceController extends BaseController
     }
 
     /**
-     * 删除社会保险信息
+     * 删除社保基金
      */
     @PreAuthorize("@ss.hasPermi('system:socialinsurance:remove')")
-    @Log(title = "社会保险信息", businessType = BusinessType.DELETE)
+    @Log(title = "社保基金", businessType = BusinessType.DELETE)
 	@DeleteMapping("/{ids}")
     public AjaxResult remove(@PathVariable Long[] ids)
     {

@@ -22,10 +22,10 @@ import org.dzu.common.utils.poi.ExcelUtil;
 import org.dzu.common.core.page.TableDataInfo;
 
 /**
- * 加油卡主卡登记信息Controller
+ * 基础信息-加油卡主卡登记Controller
  * 
  * @author ml
- * @date 2024-07-18
+ * @date 2024-07-19
  */
 @RestController
 @RequestMapping("/system/oilcardmain")
@@ -35,7 +35,7 @@ public class OilcardmainController extends BaseController
     private IOilcardmainService oilcardmainService;
 
     /**
-     * 查询加油卡主卡登记信息列表
+     * 查询基础信息-加油卡主卡登记列表
      */
     @PreAuthorize("@ss.hasPermi('system:oilcardmain:list')")
     @GetMapping("/list")
@@ -47,20 +47,20 @@ public class OilcardmainController extends BaseController
     }
 
     /**
-     * 导出加油卡主卡登记信息列表
+     * 导出基础信息-加油卡主卡登记列表
      */
     @PreAuthorize("@ss.hasPermi('system:oilcardmain:export')")
-    @Log(title = "加油卡主卡登记信息", businessType = BusinessType.EXPORT)
+    @Log(title = "基础信息-加油卡主卡登记", businessType = BusinessType.EXPORT)
     @PostMapping("/export")
     public void export(HttpServletResponse response, Oilcardmain oilcardmain)
     {
         List<Oilcardmain> list = oilcardmainService.selectOilcardmainList(oilcardmain);
         ExcelUtil<Oilcardmain> util = new ExcelUtil<Oilcardmain>(Oilcardmain.class);
-        util.exportExcel(response, list, "加油卡主卡登记信息数据");
+        util.exportExcel(response, list, "基础信息-加油卡主卡登记数据");
     }
 
     /**
-     * 获取加油卡主卡登记信息详细信息
+     * 获取基础信息-加油卡主卡登记详细信息
      */
     @PreAuthorize("@ss.hasPermi('system:oilcardmain:query')")
     @GetMapping(value = "/{id}")
@@ -70,10 +70,10 @@ public class OilcardmainController extends BaseController
     }
 
     /**
-     * 新增加油卡主卡登记信息
+     * 新增基础信息-加油卡主卡登记
      */
     @PreAuthorize("@ss.hasPermi('system:oilcardmain:add')")
-    @Log(title = "加油卡主卡登记信息", businessType = BusinessType.INSERT)
+    @Log(title = "基础信息-加油卡主卡登记", businessType = BusinessType.INSERT)
     @PostMapping
     public AjaxResult add(@RequestBody Oilcardmain oilcardmain)
     {
@@ -81,10 +81,10 @@ public class OilcardmainController extends BaseController
     }
 
     /**
-     * 修改加油卡主卡登记信息
+     * 修改基础信息-加油卡主卡登记
      */
     @PreAuthorize("@ss.hasPermi('system:oilcardmain:edit')")
-    @Log(title = "加油卡主卡登记信息", businessType = BusinessType.UPDATE)
+    @Log(title = "基础信息-加油卡主卡登记", businessType = BusinessType.UPDATE)
     @PutMapping
     public AjaxResult edit(@RequestBody Oilcardmain oilcardmain)
     {
@@ -92,10 +92,10 @@ public class OilcardmainController extends BaseController
     }
 
     /**
-     * 删除加油卡主卡登记信息
+     * 删除基础信息-加油卡主卡登记
      */
     @PreAuthorize("@ss.hasPermi('system:oilcardmain:remove')")
-    @Log(title = "加油卡主卡登记信息", businessType = BusinessType.DELETE)
+    @Log(title = "基础信息-加油卡主卡登记", businessType = BusinessType.DELETE)
 	@DeleteMapping("/{ids}")
     public AjaxResult remove(@PathVariable Long[] ids)
     {

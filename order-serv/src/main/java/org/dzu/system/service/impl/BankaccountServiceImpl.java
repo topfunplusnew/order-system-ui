@@ -8,10 +8,10 @@ import org.dzu.system.domain.Bankaccount;
 import org.dzu.system.service.IBankaccountService;
 
 /**
- * 银行账户Service业务层处理
+ * 银行卡管理Service业务层处理
  * 
  * @author ml
- * @date 2024-07-18
+ * @date 2024-07-19
  */
 @Service
 public class BankaccountServiceImpl implements IBankaccountService 
@@ -20,10 +20,10 @@ public class BankaccountServiceImpl implements IBankaccountService
     private BankaccountMapper bankaccountMapper;
 
     /**
-     * 查询银行账户
+     * 查询银行卡管理
      * 
-     * @param id 银行账户主键
-     * @return 银行账户
+     * @param id 银行卡管理主键
+     * @return 银行卡管理
      */
     @Override
     public Bankaccount selectBankaccountById(Long id)
@@ -32,10 +32,10 @@ public class BankaccountServiceImpl implements IBankaccountService
     }
 
     /**
-     * 查询银行账户列表
+     * 查询银行卡管理列表
      * 
-     * @param bankaccount 银行账户
-     * @return 银行账户
+     * @param bankaccount 银行卡管理
+     * @return 银行卡管理
      */
     @Override
     public List<Bankaccount> selectBankaccountList(Bankaccount bankaccount)
@@ -44,9 +44,9 @@ public class BankaccountServiceImpl implements IBankaccountService
     }
 
     /**
-     * 新增银行账户
+     * 新增银行卡管理
      * 
-     * @param bankaccount 银行账户
+     * @param bankaccount 银行卡管理
      * @return 结果
      */
     @Override
@@ -56,9 +56,9 @@ public class BankaccountServiceImpl implements IBankaccountService
     }
 
     /**
-     * 修改银行账户
+     * 修改银行卡管理
      * 
-     * @param bankaccount 银行账户
+     * @param bankaccount 银行卡管理
      * @return 结果
      */
     @Override
@@ -68,9 +68,9 @@ public class BankaccountServiceImpl implements IBankaccountService
     }
 
     /**
-     * 批量删除银行账户
+     * 批量删除银行卡管理
      * 
-     * @param ids 需要删除的银行账户主键
+     * @param ids 需要删除的银行卡管理主键
      * @return 结果
      */
     @Override
@@ -80,9 +80,9 @@ public class BankaccountServiceImpl implements IBankaccountService
     }
 
     /**
-     * 删除银行账户信息
+     * 删除银行卡管理信息
      * 
-     * @param id 银行账户主键
+     * @param id 银行卡管理主键
      * @return 结果
      */
     @Override

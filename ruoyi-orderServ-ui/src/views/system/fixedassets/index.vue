@@ -41,9 +41,9 @@
           @keyup.enter.native="handleQuery"
         />
       </el-form-item>
-      <el-form-item label="计量单位" prop="measurementUnit ">
+      <el-form-item label="计量单位" prop="measurementUnit">
         <el-input
-          v-model="queryParams.measurementUnit "
+          v-model="queryParams.measurementUnit"
           placeholder="请输入计量单位"
           clearable
           @keyup.enter.native="handleQuery"
@@ -189,7 +189,7 @@
       <el-table-column label="资产名称" align="center" prop="assetName" />
       <el-table-column label="规格型号" align="center" prop=" specification" />
       <el-table-column label="数量" align="center" prop="number" />
-      <el-table-column label="计量单位" align="center" prop="measurementUnit " />
+      <el-table-column label="计量单位" align="center" prop="measurementUnit" />
       <el-table-column label="含税金额" align="center" prop="amountIncludeTax" />
       <el-table-column label="不含税金额" align="center" prop="amountNoTax" />
       <el-table-column label="户名名称" align="center" prop="account" />
@@ -219,7 +219,7 @@
         </template>
       </el-table-column>
     </el-table>
-    
+
     <pagination
       v-show="total>0"
       :total="total"
@@ -246,8 +246,8 @@
         <el-form-item label="数量" prop="number">
           <el-input v-model="form.number" placeholder="请输入数量" />
         </el-form-item>
-        <el-form-item label="计量单位" prop="measurementUnit ">
-          <el-input v-model="form.measurementUnit " placeholder="请输入计量单位" />
+        <el-form-item label="计量单位" prop="measurementUnit">
+          <el-input v-model="form.measurementUnit" placeholder="请输入计量单位" />
         </el-form-item>
         <el-form-item label="含税金额" prop="amountIncludeTax">
           <el-input v-model="form.amountIncludeTax" placeholder="请输入含税金额" />
@@ -322,7 +322,7 @@ export default {
         assetName: null,
          specification: null,
         number: null,
-        measurementUnit : null,
+        measurementUnit: null,
         amountIncludeTax: null,
         amountNoTax: null,
         account: null,
@@ -368,7 +368,7 @@ export default {
         assetName: null,
          specification: null,
         number: null,
-        measurementUnit : null,
+        measurementUnit: null,
         amountIncludeTax: null,
         amountNoTax: null,
         account: null,

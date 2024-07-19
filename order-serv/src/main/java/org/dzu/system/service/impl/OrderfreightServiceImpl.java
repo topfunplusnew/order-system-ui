@@ -1,18 +1,17 @@
 package org.dzu.system.service.impl;
 
-import org.dzu.system.domain.Orderfreight;
-import org.dzu.system.mapper.OrderfreightMapper;
-import org.dzu.system.service.IOrderfreightService;
+import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-
-import java.util.List;
+import org.dzu.system.mapper.OrderfreightMapper;
+import org.dzu.system.domain.Orderfreight;
+import org.dzu.system.service.IOrderfreightService;
 
 /**
- * 订单运费信息Service业务层处理
+ * 订单运费Service业务层处理
  * 
  * @author ml
- * @date 2024-07-18
+ * @date 2024-07-19
  */
 @Service
 public class OrderfreightServiceImpl implements IOrderfreightService 
@@ -21,10 +20,10 @@ public class OrderfreightServiceImpl implements IOrderfreightService
     private OrderfreightMapper orderfreightMapper;
 
     /**
-     * 查询订单运费信息
+     * 查询订单运费
      * 
-     * @param id 订单运费信息主键
-     * @return 订单运费信息
+     * @param id 订单运费主键
+     * @return 订单运费
      */
     @Override
     public Orderfreight selectOrderfreightById(Long id)
@@ -33,10 +32,10 @@ public class OrderfreightServiceImpl implements IOrderfreightService
     }
 
     /**
-     * 查询订单运费信息列表
+     * 查询订单运费列表
      * 
-     * @param orderfreight 订单运费信息
-     * @return 订单运费信息
+     * @param orderfreight 订单运费
+     * @return 订单运费
      */
     @Override
     public List<Orderfreight> selectOrderfreightList(Orderfreight orderfreight)
@@ -45,9 +44,9 @@ public class OrderfreightServiceImpl implements IOrderfreightService
     }
 
     /**
-     * 新增订单运费信息
+     * 新增订单运费
      * 
-     * @param orderfreight 订单运费信息
+     * @param orderfreight 订单运费
      * @return 结果
      */
     @Override
@@ -57,9 +56,9 @@ public class OrderfreightServiceImpl implements IOrderfreightService
     }
 
     /**
-     * 修改订单运费信息
+     * 修改订单运费
      * 
-     * @param orderfreight 订单运费信息
+     * @param orderfreight 订单运费
      * @return 结果
      */
     @Override
@@ -69,9 +68,9 @@ public class OrderfreightServiceImpl implements IOrderfreightService
     }
 
     /**
-     * 批量删除订单运费信息
+     * 批量删除订单运费
      * 
-     * @param ids 需要删除的订单运费信息主键
+     * @param ids 需要删除的订单运费主键
      * @return 结果
      */
     @Override
@@ -81,9 +80,9 @@ public class OrderfreightServiceImpl implements IOrderfreightService
     }
 
     /**
-     * 删除订单运费信息信息
+     * 删除订单运费信息
      * 
-     * @param id 订单运费信息主键
+     * @param id 订单运费主键
      * @return 结果
      */
     @Override

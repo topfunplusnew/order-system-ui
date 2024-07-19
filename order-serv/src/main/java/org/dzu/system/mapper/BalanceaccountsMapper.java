@@ -1,59 +1,58 @@
 package org.dzu.system.mapper;
 
+import java.util.List;
 import org.dzu.system.domain.Balanceaccounts;
 
-import java.util.List;
-
 /**
- * 余额账户Mapper接口
+ * 平账Mapper接口
  * 
  * @author ml
- * @date 2024-07-18
+ * @date 2024-07-19
  */
 public interface BalanceaccountsMapper 
 {
     /**
-     * 查询余额账户
+     * 查询平账
      * 
-     * @param id 余额账户主键
-     * @return 余额账户
+     * @param id 平账主键
+     * @return 平账
      */
     public Balanceaccounts selectBalanceaccountsById(Long id);
 
     /**
-     * 查询余额账户列表
+     * 查询平账列表
      * 
-     * @param balanceaccounts 余额账户
-     * @return 余额账户集合
+     * @param balanceaccounts 平账
+     * @return 平账集合
      */
     public List<Balanceaccounts> selectBalanceaccountsList(Balanceaccounts balanceaccounts);
 
     /**
-     * 新增余额账户
+     * 新增平账
      * 
-     * @param balanceaccounts 余额账户
+     * @param balanceaccounts 平账
      * @return 结果
      */
     public int insertBalanceaccounts(Balanceaccounts balanceaccounts);
 
     /**
-     * 修改余额账户
+     * 修改平账
      * 
-     * @param balanceaccounts 余额账户
+     * @param balanceaccounts 平账
      * @return 结果
      */
     public int updateBalanceaccounts(Balanceaccounts balanceaccounts);
 
     /**
-     * 删除余额账户
+     * 删除平账
      * 
-     * @param id 余额账户主键
+     * @param id 平账主键
      * @return 结果
      */
     public int deleteBalanceaccountsById(Long id);
 
     /**
-     * 批量删除余额账户
+     * 批量删除平账
      * 
      * @param ids 需要删除的数据主键集合
      * @return 结果

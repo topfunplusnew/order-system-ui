@@ -1,21 +1,22 @@
 package org.dzu.system.domain;
 
+import java.util.List;
 import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.apache.commons.lang3.builder.ToStringStyle;
 import org.dzu.common.annotation.Excel;
 import org.dzu.common.core.domain.BaseEntity;
 
 /**
- * 货物订单对象 goodsorder
+ * 订单对象 goodsorder
  * 
  * @author ml
- * @date 2024-07-18
+ * @date 2024-07-19
  */
 public class Goodsorder extends BaseEntity
 {
     private static final long serialVersionUID = 1L;
 
-    /** 主键 */
+    /** $column.columnComment */
     private Long id;
 
     /** 订单编号（UUID） */
@@ -82,8 +83,8 @@ public class Goodsorder extends BaseEntity
     @Excel(name = "附件路径")
     private String path;
 
-    /** 打款状态(已打款，未打款) */
-    @Excel(name = "打款状态(已打款，未打款)")
+    /** 打款状态(申请中，已打款，未打款) */
+    @Excel(name = "打款状态(申请中，已打款，未打款)")
     private String PaymentState;
 
     /** 陆运银行户名 */
@@ -161,6 +162,9 @@ public class Goodsorder extends BaseEntity
     /** 操作人员姓名 */
     @Excel(name = "操作人员姓名")
     private String UserName;
+
+    /** 订单详情信息 */
+    private List<Orderdetail> orderdetailList;
 
     public void setId(Long id) 
     {
@@ -496,6 +500,16 @@ public class Goodsorder extends BaseEntity
         return UserName;
     }
 
+    public List<Orderdetail> getOrderdetailList()
+    {
+        return orderdetailList;
+    }
+
+    public void setOrderdetailList(List<Orderdetail> orderdetailList)
+    {
+        this.orderdetailList = orderdetailList;
+    }
+
     @Override
     public String toString() {
         return new ToStringBuilder(this,ToStringStyle.MULTI_LINE_STYLE)
@@ -537,6 +551,7 @@ public class Goodsorder extends BaseEntity
             .append("userId", getUserId())
             .append("UserName", getUserName())
             .append("updateTime", getUpdateTime())
+            .append("orderdetailList", getOrderdetailList())
             .toString();
     }
 }

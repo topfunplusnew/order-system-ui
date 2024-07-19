@@ -22,10 +22,10 @@ import org.dzu.common.utils.poi.ExcelUtil;
 import org.dzu.common.core.page.TableDataInfo;
 
 /**
- * 借入金钱Controller
+ * 从外部借入款、贷款Controller
  * 
  * @author ml
- * @date 2024-07-18
+ * @date 2024-07-19
  */
 @RestController
 @RequestMapping("/system/borrowedmoney")
@@ -35,7 +35,7 @@ public class BorrowedmoneyController extends BaseController
     private IBorrowedmoneyService borrowedmoneyService;
 
     /**
-     * 查询借入金钱列表
+     * 查询从外部借入款、贷款列表
      */
     @PreAuthorize("@ss.hasPermi('system:borrowedmoney:list')")
     @GetMapping("/list")
@@ -47,20 +47,20 @@ public class BorrowedmoneyController extends BaseController
     }
 
     /**
-     * 导出借入金钱列表
+     * 导出从外部借入款、贷款列表
      */
     @PreAuthorize("@ss.hasPermi('system:borrowedmoney:export')")
-    @Log(title = "借入金钱", businessType = BusinessType.EXPORT)
+    @Log(title = "从外部借入款、贷款", businessType = BusinessType.EXPORT)
     @PostMapping("/export")
     public void export(HttpServletResponse response, Borrowedmoney borrowedmoney)
     {
         List<Borrowedmoney> list = borrowedmoneyService.selectBorrowedmoneyList(borrowedmoney);
         ExcelUtil<Borrowedmoney> util = new ExcelUtil<Borrowedmoney>(Borrowedmoney.class);
-        util.exportExcel(response, list, "借入金钱数据");
+        util.exportExcel(response, list, "从外部借入款、贷款数据");
     }
 
     /**
-     * 获取借入金钱详细信息
+     * 获取从外部借入款、贷款详细信息
      */
     @PreAuthorize("@ss.hasPermi('system:borrowedmoney:query')")
     @GetMapping(value = "/{id}")
@@ -70,10 +70,10 @@ public class BorrowedmoneyController extends BaseController
     }
 
     /**
-     * 新增借入金钱
+     * 新增从外部借入款、贷款
      */
     @PreAuthorize("@ss.hasPermi('system:borrowedmoney:add')")
-    @Log(title = "借入金钱", businessType = BusinessType.INSERT)
+    @Log(title = "从外部借入款、贷款", businessType = BusinessType.INSERT)
     @PostMapping
     public AjaxResult add(@RequestBody Borrowedmoney borrowedmoney)
     {
@@ -81,10 +81,10 @@ public class BorrowedmoneyController extends BaseController
     }
 
     /**
-     * 修改借入金钱
+     * 修改从外部借入款、贷款
      */
     @PreAuthorize("@ss.hasPermi('system:borrowedmoney:edit')")
-    @Log(title = "借入金钱", businessType = BusinessType.UPDATE)
+    @Log(title = "从外部借入款、贷款", businessType = BusinessType.UPDATE)
     @PutMapping
     public AjaxResult edit(@RequestBody Borrowedmoney borrowedmoney)
     {
@@ -92,10 +92,10 @@ public class BorrowedmoneyController extends BaseController
     }
 
     /**
-     * 删除借入金钱
+     * 删除从外部借入款、贷款
      */
     @PreAuthorize("@ss.hasPermi('system:borrowedmoney:remove')")
-    @Log(title = "借入金钱", businessType = BusinessType.DELETE)
+    @Log(title = "从外部借入款、贷款", businessType = BusinessType.DELETE)
 	@DeleteMapping("/{ids}")
     public AjaxResult remove(@PathVariable Long[] ids)
     {

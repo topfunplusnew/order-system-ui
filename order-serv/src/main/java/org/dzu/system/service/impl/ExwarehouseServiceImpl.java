@@ -9,10 +9,10 @@ import org.dzu.system.domain.Exwarehouse;
 import org.dzu.system.service.IExwarehouseService;
 
 /**
- * 出库信息Service业务层处理
+ * 出库Service业务层处理
  * 
  * @author ml
- * @date 2024-07-18
+ * @date 2024-07-19
  */
 @Service
 public class ExwarehouseServiceImpl implements IExwarehouseService 
@@ -21,10 +21,10 @@ public class ExwarehouseServiceImpl implements IExwarehouseService
     private ExwarehouseMapper exwarehouseMapper;
 
     /**
-     * 查询出库信息
+     * 查询出库
      * 
-     * @param id 出库信息主键
-     * @return 出库信息
+     * @param id 出库主键
+     * @return 出库
      */
     @Override
     public Exwarehouse selectExwarehouseById(Long id)
@@ -33,10 +33,10 @@ public class ExwarehouseServiceImpl implements IExwarehouseService
     }
 
     /**
-     * 查询出库信息列表
+     * 查询出库列表
      * 
-     * @param exwarehouse 出库信息
-     * @return 出库信息
+     * @param exwarehouse 出库
+     * @return 出库
      */
     @Override
     public List<Exwarehouse> selectExwarehouseList(Exwarehouse exwarehouse)
@@ -45,9 +45,9 @@ public class ExwarehouseServiceImpl implements IExwarehouseService
     }
 
     /**
-     * 新增出库信息
+     * 新增出库
      * 
-     * @param exwarehouse 出库信息
+     * @param exwarehouse 出库
      * @return 结果
      */
     @Override
@@ -57,9 +57,9 @@ public class ExwarehouseServiceImpl implements IExwarehouseService
     }
 
     /**
-     * 修改出库信息
+     * 修改出库
      * 
-     * @param exwarehouse 出库信息
+     * @param exwarehouse 出库
      * @return 结果
      */
     @Override
@@ -70,9 +70,9 @@ public class ExwarehouseServiceImpl implements IExwarehouseService
     }
 
     /**
-     * 批量删除出库信息
+     * 批量删除出库
      * 
-     * @param ids 需要删除的出库信息主键
+     * @param ids 需要删除的出库主键
      * @return 结果
      */
     @Override
@@ -82,9 +82,9 @@ public class ExwarehouseServiceImpl implements IExwarehouseService
     }
 
     /**
-     * 删除出库信息信息
+     * 删除出库信息
      * 
-     * @param id 出库信息主键
+     * @param id 出库主键
      * @return 结果
      */
     @Override

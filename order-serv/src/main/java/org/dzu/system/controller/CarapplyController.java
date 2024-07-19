@@ -22,10 +22,10 @@ import org.dzu.common.utils.poi.ExcelUtil;
 import org.dzu.common.core.page.TableDataInfo;
 
 /**
- * 汽车申请Controller
+ * 车辆派出管理Controller
  * 
  * @author ml
- * @date 2024-07-18
+ * @date 2024-07-19
  */
 @RestController
 @RequestMapping("/system/carapply")
@@ -35,7 +35,7 @@ public class CarapplyController extends BaseController
     private ICarapplyService carapplyService;
 
     /**
-     * 查询汽车申请列表
+     * 查询车辆派出管理列表
      */
     @PreAuthorize("@ss.hasPermi('system:carapply:list')")
     @GetMapping("/list")
@@ -47,20 +47,20 @@ public class CarapplyController extends BaseController
     }
 
     /**
-     * 导出汽车申请列表
+     * 导出车辆派出管理列表
      */
     @PreAuthorize("@ss.hasPermi('system:carapply:export')")
-    @Log(title = "汽车申请", businessType = BusinessType.EXPORT)
+    @Log(title = "车辆派出管理", businessType = BusinessType.EXPORT)
     @PostMapping("/export")
     public void export(HttpServletResponse response, Carapply carapply)
     {
         List<Carapply> list = carapplyService.selectCarapplyList(carapply);
         ExcelUtil<Carapply> util = new ExcelUtil<Carapply>(Carapply.class);
-        util.exportExcel(response, list, "汽车申请数据");
+        util.exportExcel(response, list, "车辆派出管理数据");
     }
 
     /**
-     * 获取汽车申请详细信息
+     * 获取车辆派出管理详细信息
      */
     @PreAuthorize("@ss.hasPermi('system:carapply:query')")
     @GetMapping(value = "/{id}")
@@ -70,10 +70,10 @@ public class CarapplyController extends BaseController
     }
 
     /**
-     * 新增汽车申请
+     * 新增车辆派出管理
      */
     @PreAuthorize("@ss.hasPermi('system:carapply:add')")
-    @Log(title = "汽车申请", businessType = BusinessType.INSERT)
+    @Log(title = "车辆派出管理", businessType = BusinessType.INSERT)
     @PostMapping
     public AjaxResult add(@RequestBody Carapply carapply)
     {
@@ -81,10 +81,10 @@ public class CarapplyController extends BaseController
     }
 
     /**
-     * 修改汽车申请
+     * 修改车辆派出管理
      */
     @PreAuthorize("@ss.hasPermi('system:carapply:edit')")
-    @Log(title = "汽车申请", businessType = BusinessType.UPDATE)
+    @Log(title = "车辆派出管理", businessType = BusinessType.UPDATE)
     @PutMapping
     public AjaxResult edit(@RequestBody Carapply carapply)
     {
@@ -92,10 +92,10 @@ public class CarapplyController extends BaseController
     }
 
     /**
-     * 删除汽车申请
+     * 删除车辆派出管理
      */
     @PreAuthorize("@ss.hasPermi('system:carapply:remove')")
-    @Log(title = "汽车申请", businessType = BusinessType.DELETE)
+    @Log(title = "车辆派出管理", businessType = BusinessType.DELETE)
 	@DeleteMapping("/{ids}")
     public AjaxResult remove(@PathVariable Long[] ids)
     {

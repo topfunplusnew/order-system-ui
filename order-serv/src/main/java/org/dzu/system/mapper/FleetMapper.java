@@ -1,59 +1,58 @@
 package org.dzu.system.mapper;
 
+import java.util.List;
 import org.dzu.system.domain.Fleet;
 
-import java.util.List;
-
 /**
- * 车队信息Mapper接口
+ * 车队管理Mapper接口
  * 
  * @author ml
- * @date 2024-07-18
+ * @date 2024-07-19
  */
 public interface FleetMapper 
 {
     /**
-     * 查询车队信息
+     * 查询车队管理
      * 
-     * @param id 车队信息主键
-     * @return 车队信息
+     * @param id 车队管理主键
+     * @return 车队管理
      */
     public Fleet selectFleetById(Long id);
 
     /**
-     * 查询车队信息列表
+     * 查询车队管理列表
      * 
-     * @param fleet 车队信息
-     * @return 车队信息集合
+     * @param fleet 车队管理
+     * @return 车队管理集合
      */
     public List<Fleet> selectFleetList(Fleet fleet);
 
     /**
-     * 新增车队信息
+     * 新增车队管理
      * 
-     * @param fleet 车队信息
+     * @param fleet 车队管理
      * @return 结果
      */
     public int insertFleet(Fleet fleet);
 
     /**
-     * 修改车队信息
+     * 修改车队管理
      * 
-     * @param fleet 车队信息
+     * @param fleet 车队管理
      * @return 结果
      */
     public int updateFleet(Fleet fleet);
 
     /**
-     * 删除车队信息
+     * 删除车队管理
      * 
-     * @param id 车队信息主键
+     * @param id 车队管理主键
      * @return 结果
      */
     public int deleteFleetById(Long id);
 
     /**
-     * 批量删除车队信息
+     * 批量删除车队管理
      * 
      * @param ids 需要删除的数据主键集合
      * @return 结果

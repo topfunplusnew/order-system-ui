@@ -2,7 +2,7 @@
 <!DOCTYPE mapper
 PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
 "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
-<mapper namespace="org.dzu.system.mapper.ExwarehouseMapper">
+<mapper namespace="com.ruoyi.system.mapper.ExwarehouseMapper">
     
     <resultMap type="Exwarehouse" id="ExwarehouseResult">
         <result property="id"    column="id"    />
@@ -14,10 +14,13 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         <result property="ordersNo"    column="ordersNo"    />
         <result property="delFlag"    column="delFlag"    />
         <result property="updateTime"    column="update_time"    />
+        <result property="addtime"    column="addtime"    />
+        <result property="userId"    column="userId"    />
+        <result property="UserName"    column="UserName"    />
     </resultMap>
 
     <sql id="selectExwarehouseVo">
-        select id, storeHouseid, storeHouseName, storeID, outDate, outAmount, ordersNo, delFlag, update_time from exwarehouse
+        select id, storeHouseid, storeHouseName, storeID, outDate, outAmount, ordersNo, delFlag, update_time, addtime, userId, UserName from exwarehouse
     </sql>
 
     <select id="selectExwarehouseList" parameterType="Exwarehouse" resultMap="ExwarehouseResult">
@@ -30,6 +33,9 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
             <if test="outAmount != null "> and outAmount = #{outAmount}</if>
             <if test="ordersNo != null  and ordersNo != ''"> and ordersNo = #{ordersNo}</if>
             <if test="delFlag != null "> and delFlag = #{delFlag}</if>
+            <if test="addtime != null  and addtime != ''"> and addtime = #{addtime}</if>
+            <if test="userId != null "> and userId = #{userId}</if>
+            <if test="UserName != null  and UserName != ''"> and UserName like concat('%', #{UserName}, '%')</if>
         </where>
     </select>
     
@@ -49,6 +55,9 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
             <if test="ordersNo != null">ordersNo,</if>
             <if test="delFlag != null">delFlag,</if>
             <if test="updateTime != null">update_time,</if>
+            <if test="addtime != null">addtime,</if>
+            <if test="userId != null">userId,</if>
+            <if test="UserName != null">UserName,</if>
          </trim>
         <trim prefix="values (" suffix=")" suffixOverrides=",">
             <if test="storeHouseid != null">#{storeHouseid},</if>
@@ -59,6 +68,9 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
             <if test="ordersNo != null">#{ordersNo},</if>
             <if test="delFlag != null">#{delFlag},</if>
             <if test="updateTime != null">#{updateTime},</if>
+            <if test="addtime != null">#{addtime},</if>
+            <if test="userId != null">#{userId},</if>
+            <if test="UserName != null">#{UserName},</if>
          </trim>
     </insert>
 
@@ -73,6 +85,9 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
             <if test="ordersNo != null">ordersNo = #{ordersNo},</if>
             <if test="delFlag != null">delFlag = #{delFlag},</if>
             <if test="updateTime != null">update_time = #{updateTime},</if>
+            <if test="addtime != null">addtime = #{addtime},</if>
+            <if test="userId != null">userId = #{userId},</if>
+            <if test="UserName != null">UserName = #{UserName},</if>
         </trim>
         where id = #{id}
     </update>

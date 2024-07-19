@@ -9,10 +9,10 @@ import org.dzu.system.domain.Cars;
 import org.dzu.system.service.ICarsService;
 
 /**
- * 汽车信息Service业务层处理
+ * 车辆管理Service业务层处理
  * 
  * @author ml
- * @date 2024-07-18
+ * @date 2024-07-19
  */
 @Service
 public class CarsServiceImpl implements ICarsService 
@@ -21,10 +21,10 @@ public class CarsServiceImpl implements ICarsService
     private CarsMapper carsMapper;
 
     /**
-     * 查询汽车信息
+     * 查询车辆管理
      * 
-     * @param id 汽车信息主键
-     * @return 汽车信息
+     * @param id 车辆管理主键
+     * @return 车辆管理
      */
     @Override
     public Cars selectCarsById(Long id)
@@ -33,10 +33,10 @@ public class CarsServiceImpl implements ICarsService
     }
 
     /**
-     * 查询汽车信息列表
+     * 查询车辆管理列表
      * 
-     * @param cars 汽车信息
-     * @return 汽车信息
+     * @param cars 车辆管理
+     * @return 车辆管理
      */
     @Override
     public List<Cars> selectCarsList(Cars cars)
@@ -45,9 +45,9 @@ public class CarsServiceImpl implements ICarsService
     }
 
     /**
-     * 新增汽车信息
+     * 新增车辆管理
      * 
-     * @param cars 汽车信息
+     * @param cars 车辆管理
      * @return 结果
      */
     @Override
@@ -57,9 +57,9 @@ public class CarsServiceImpl implements ICarsService
     }
 
     /**
-     * 修改汽车信息
+     * 修改车辆管理
      * 
-     * @param cars 汽车信息
+     * @param cars 车辆管理
      * @return 结果
      */
     @Override
@@ -70,9 +70,9 @@ public class CarsServiceImpl implements ICarsService
     }
 
     /**
-     * 批量删除汽车信息
+     * 批量删除车辆管理
      * 
-     * @param ids 需要删除的汽车信息主键
+     * @param ids 需要删除的车辆管理主键
      * @return 结果
      */
     @Override
@@ -82,9 +82,9 @@ public class CarsServiceImpl implements ICarsService
     }
 
     /**
-     * 删除汽车信息信息
+     * 删除车辆管理信息
      * 
-     * @param id 汽车信息主键
+     * @param id 车辆管理主键
      * @return 结果
      */
     @Override

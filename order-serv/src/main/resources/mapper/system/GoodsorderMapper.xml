@@ -45,6 +45,61 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         <result property="updateTime"    column="update_time"    />
     </resultMap>
 
+    <resultMap id="GoodsorderOrderdetailResult" type="Goodsorder" extends="GoodsorderResult">
+        <collection property="orderdetailList" ofType="Orderdetail" column="id" select="selectOrderdetailList" />
+    </resultMap>
+
+    <resultMap type="Orderdetail" id="OrderdetailResult">
+        <result property="id"    column="id"    />
+        <result property="ordersNo"    column="ordersNo"    />
+        <result property="orderDate"    column="orderDate"    />
+        <result property="supplier"    column="supplier"    />
+        <result property="supplierId"    column="supplier_id"    />
+        <result property="customer"    column="customer"    />
+        <result property="customerId"    column="customer_id"    />
+        <result property="levelID"    column="levelID"    />
+        <result property="levelName"    column="levelName"    />
+        <result property="countingUnit"    column="countingUnit"    />
+        <result property="height"    column="height"    />
+        <result property="length"    column="length"    />
+        <result property="width"    column="width"    />
+        <result property="pieces"    column="pieces"    />
+        <result property="piecesPerPack"    column="piecesPerPack"    />
+        <result property="packs"    column="packs"    />
+        <result property="price"    column="price"    />
+        <result property="isIncludeTaxFactory"    column="isIncludeTaxFactory"    />
+        <result property="sundryCost"    column="sundryCost"    />
+        <result property="paymentFactory"    column="paymentFactory"    />
+        <result property="paymentUnload"    column="paymentUnload"    />
+        <result property="isIncludeTaxSale"    column="isIncludeTaxSale"    />
+        <result property="payments"    column="payments"    />
+        <result property="erro"    column="erro"    />
+        <result property="tonnage"    column="tonnage"    />
+        <result property="landFreightPrice"    column="landFreightPrice"    />
+        <result property="landFreight"    column="landFreight"    />
+        <result property="seaFreight"    column="seaFreight"    />
+        <result property="freight"    column="freight"    />
+        <result property="otherCost"    column="otherCost"    />
+        <result property="profit"    column="profit"    />
+        <result property="profitNoTax"    column="profitNoTax"    />
+        <result property="actualPieces"    column="actualPieces"    />
+        <result property="paymentsWithSundry"    column="paymentsWithSundry"    />
+        <result property="additionalFees"    column="additionalFees"    />
+        <result property="storeHouseID"    column="storeHouseID"    />
+        <result property="storeHouseName"    column="storeHouseName"    />
+        <result property="storeID"    column="storeID"    />
+        <result property="logisticsProfit"    column="logisticsProfit"    />
+        <result property="customerCommission"    column="customerCommission"    />
+        <result property="isAdjusted"    column="isAdjusted"    />
+        <result property="adjustDate"    column="adjustDate"    />
+        <result property="cancelFlag"    column="cancelFlag"    />
+        <result property="comments"    column="comments"    />
+        <result property="addtime"    column="addtime"    />
+        <result property="userId"    column="userId"    />
+        <result property="UserName"    column="UserName"    />
+        <result property="updateTime"    column="update_time"    />
+    </resultMap>
+
     <sql id="selectGoodsorderVo">
         select id, ordersNo, orderDate, customer, customer_id, landCar_id, landCarNo, landDriverTel, landDriverName, seaCar_id, seaCarNo, seaDriverTel, seaDriverName, checkUserId, checkState, invoiceState, path, PaymentState, landBankName, landBankNo, seaBankName, seaBankNo, receiveProof, saleManager, fleet, isAdjusted, adjustDate, isAdjust, adjustOrderid, isedit, customerIsInvoice, isSupplierInvoice, cancelFlag, comments, addtime, userId, UserName, update_time from goodsorder
     </sql>
@@ -91,9 +146,16 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         </where>
     </select>
     
-    <select id="selectGoodsorderById" parameterType="Long" resultMap="GoodsorderResult">
-        <include refid="selectGoodsorderVo"/>
+    <select id="selectGoodsorderById" parameterType="Long" resultMap="GoodsorderOrderdetailResult">
+        select id, ordersNo, orderDate, customer, customer_id, landCar_id, landCarNo, landDriverTel, landDriverName, seaCar_id, seaCarNo, seaDriverTel, seaDriverName, checkUserId, checkState, invoiceState, path, PaymentState, landBankName, landBankNo, seaBankName, seaBankNo, receiveProof, saleManager, fleet, isAdjusted, adjustDate, isAdjust, adjustOrderid, isedit, customerIsInvoice, isSupplierInvoice, cancelFlag, comments, addtime, userId, UserName, update_time
+        from goodsorder
         where id = #{id}
+    </select>
+
+    <select id="selectOrderdetailList" resultType="Orderdetail" resultMap="OrderdetailResult">
+        select id, ordersNo, orderDate, supplier, supplier_id, customer, customer_id, levelID, levelName, countingUnit, height, length, width, pieces, piecesPerPack, packs, price, isIncludeTaxFactory, sundryCost, paymentFactory, paymentUnload, isIncludeTaxSale, payments, erro, tonnage, landFreightPrice, landFreight, seaFreight, freight, otherCost, profit, profitNoTax, actualPieces, paymentsWithSundry, additionalFees, storeHouseID, storeHouseName, storeID, logisticsProfit, customerCommission, isAdjusted, adjustDate, cancelFlag, comments, addtime, userId, UserName, update_time
+        from orderdetail
+        where ordersNo = #{ordersNo}
     </select>
 
     <insert id="insertGoodsorder" parameterType="Goodsorder" useGeneratedKeys="true" keyProperty="id">
@@ -232,4 +294,22 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
             #{id}
         </foreach>
     </delete>
+    
+    <delete id="deleteOrderdetailByOrdersNos" parameterType="String">
+        delete from orderdetail where ordersNo in 
+        <foreach item="ordersNo" collection="array" open="(" separator="," close=")">
+            #{ordersNo}
+        </foreach>
+    </delete>
+
+    <delete id="deleteOrderdetailByOrdersNo" parameterType="Long">
+        delete from orderdetail where ordersNo = #{ordersNo}
+    </delete>
+
+    <insert id="batchOrderdetail">
+        insert into orderdetail( id, ordersNo, orderDate, supplier, supplier_id, customer, customer_id, levelID, levelName, countingUnit, height, length, width, pieces, piecesPerPack, packs, price, isIncludeTaxFactory, sundryCost, paymentFactory, paymentUnload, isIncludeTaxSale, payments, erro, tonnage, landFreightPrice, landFreight, seaFreight, freight, otherCost, profit, profitNoTax, actualPieces, paymentsWithSundry, additionalFees, storeHouseID, storeHouseName, storeID, logisticsProfit, customerCommission, isAdjusted, adjustDate, cancelFlag, comments, addtime, userId, UserName, update_time) values
+        <foreach item="item" index="index" collection="list" separator=",">
+            ( #{item.id}, #{item.ordersNo}, #{item.orderDate}, #{item.supplier}, #{item.supplierId}, #{item.customer}, #{item.customerId}, #{item.levelID}, #{item.levelName}, #{item.countingUnit}, #{item.height}, #{item.length}, #{item.width}, #{item.pieces}, #{item.piecesPerPack}, #{item.packs}, #{item.price}, #{item.isIncludeTaxFactory}, #{item.sundryCost}, #{item.paymentFactory}, #{item.paymentUnload}, #{item.isIncludeTaxSale}, #{item.payments}, #{item.erro}, #{item.tonnage}, #{item.landFreightPrice}, #{item.landFreight}, #{item.seaFreight}, #{item.freight}, #{item.otherCost}, #{item.profit}, #{item.profitNoTax}, #{item.actualPieces}, #{item.paymentsWithSundry}, #{item.additionalFees}, #{item.storeHouseID}, #{item.storeHouseName}, #{item.storeID}, #{item.logisticsProfit}, #{item.customerCommission}, #{item.isAdjusted}, #{item.adjustDate}, #{item.cancelFlag}, #{item.comments}, #{item.addtime}, #{item.userId}, #{item.UserName}, #{item.updateTime})
+        </foreach>
+    </insert>
 </mapper>

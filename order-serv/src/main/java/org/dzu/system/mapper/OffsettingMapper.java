@@ -1,14 +1,13 @@
 package org.dzu.system.mapper;
 
-import org.dzu.system.domain.Offsetting;
-
 import java.util.List;
+import org.dzu.system.domain.Offsetting;
 
 /**
  * 资金调整单信息Mapper接口
  * 
  * @author ml
- * @date 2024-07-18
+ * @date 2024-07-19
  */
 public interface OffsettingMapper 
 {

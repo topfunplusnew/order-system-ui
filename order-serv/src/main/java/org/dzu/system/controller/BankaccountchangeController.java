@@ -1,25 +1,31 @@
 package org.dzu.system.controller;
 
+import java.util.List;
+import javax.servlet.http.HttpServletResponse;
+import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
 import org.dzu.common.annotation.Log;
 import org.dzu.common.core.controller.BaseController;
 import org.dzu.common.core.domain.AjaxResult;
-import org.dzu.common.core.page.TableDataInfo;
 import org.dzu.common.enums.BusinessType;
-import org.dzu.common.utils.poi.ExcelUtil;
 import org.dzu.system.domain.Bankaccountchange;
 import org.dzu.system.service.IBankaccountchangeService;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.web.bind.annotation.*;
-
-import javax.servlet.http.HttpServletResponse;
-import java.util.List;
+import org.dzu.common.utils.poi.ExcelUtil;
+import org.dzu.common.core.page.TableDataInfo;
 
 /**
- * 银行账号变更Controller
+ * 银行卡资金变动Controller
  * 
  * @author ml
- * @date 2024-07-18
+ * @date 2024-07-19
  */
 @RestController
 @RequestMapping("/system/bankaccountchange")
@@ -29,7 +35,7 @@ public class BankaccountchangeController extends BaseController
     private IBankaccountchangeService bankaccountchangeService;
 
     /**
-     * 查询银行账号变更列表
+     * 查询银行卡资金变动列表
      */
     @PreAuthorize("@ss.hasPermi('system:bankaccountchange:list')")
     @GetMapping("/list")
@@ -41,20 +47,20 @@ public class BankaccountchangeController extends BaseController
     }
 
     /**
-     * 导出银行账号变更列表
+     * 导出银行卡资金变动列表
      */
     @PreAuthorize("@ss.hasPermi('system:bankaccountchange:export')")
-    @Log(title = "银行账号变更", businessType = BusinessType.EXPORT)
+    @Log(title = "银行卡资金变动", businessType = BusinessType.EXPORT)
     @PostMapping("/export")
     public void export(HttpServletResponse response, Bankaccountchange bankaccountchange)
     {
         List<Bankaccountchange> list = bankaccountchangeService.selectBankaccountchangeList(bankaccountchange);
         ExcelUtil<Bankaccountchange> util = new ExcelUtil<Bankaccountchange>(Bankaccountchange.class);
-        util.exportExcel(response, list, "银行账号变更数据");
+        util.exportExcel(response, list, "银行卡资金变动数据");
     }
 
     /**
-     * 获取银行账号变更详细信息
+     * 获取银行卡资金变动详细信息
      */
     @PreAuthorize("@ss.hasPermi('system:bankaccountchange:query')")
     @GetMapping(value = "/{id}")
@@ -64,10 +70,10 @@ public class BankaccountchangeController extends BaseController
     }
 
     /**
-     * 新增银行账号变更
+     * 新增银行卡资金变动
      */
     @PreAuthorize("@ss.hasPermi('system:bankaccountchange:add')")
-    @Log(title = "银行账号变更", businessType = BusinessType.INSERT)
+    @Log(title = "银行卡资金变动", businessType = BusinessType.INSERT)
     @PostMapping
     public AjaxResult add(@RequestBody Bankaccountchange bankaccountchange)
     {
@@ -75,10 +81,10 @@ public class BankaccountchangeController extends BaseController
     }
 
     /**
-     * 修改银行账号变更
+     * 修改银行卡资金变动
      */
     @PreAuthorize("@ss.hasPermi('system:bankaccountchange:edit')")
-    @Log(title = "银行账号变更", businessType = BusinessType.UPDATE)
+    @Log(title = "银行卡资金变动", businessType = BusinessType.UPDATE)
     @PutMapping
     public AjaxResult edit(@RequestBody Bankaccountchange bankaccountchange)
     {
@@ -86,10 +92,10 @@ public class BankaccountchangeController extends BaseController
     }
 
     /**
-     * 删除银行账号变更
+     * 删除银行卡资金变动
      */
     @PreAuthorize("@ss.hasPermi('system:bankaccountchange:remove')")
-    @Log(title = "银行账号变更", businessType = BusinessType.DELETE)
+    @Log(title = "银行卡资金变动", businessType = BusinessType.DELETE)
 	@DeleteMapping("/{ids}")
     public AjaxResult remove(@PathVariable Long[] ids)
     {

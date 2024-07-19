@@ -1,25 +1,31 @@
 package org.dzu.system.controller;
 
+import java.util.List;
+import javax.servlet.http.HttpServletResponse;
+import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
 import org.dzu.common.annotation.Log;
 import org.dzu.common.core.controller.BaseController;
 import org.dzu.common.core.domain.AjaxResult;
-import org.dzu.common.core.page.TableDataInfo;
 import org.dzu.common.enums.BusinessType;
-import org.dzu.common.utils.poi.ExcelUtil;
 import org.dzu.system.domain.Repayment;
 import org.dzu.system.service.IRepaymentService;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.web.bind.annotation.*;
-
-import javax.servlet.http.HttpServletResponse;
-import java.util.List;
+import org.dzu.common.utils.poi.ExcelUtil;
+import org.dzu.common.core.page.TableDataInfo;
 
 /**
- * 还款信息Controller
+ * 还款记录Controller
  * 
  * @author ml
- * @date 2024-07-18
+ * @date 2024-07-19
  */
 @RestController
 @RequestMapping("/system/repayment")
@@ -29,7 +35,7 @@ public class RepaymentController extends BaseController
     private IRepaymentService repaymentService;
 
     /**
-     * 查询还款信息列表
+     * 查询还款记录列表
      */
     @PreAuthorize("@ss.hasPermi('system:repayment:list')")
     @GetMapping("/list")
@@ -41,20 +47,20 @@ public class RepaymentController extends BaseController
     }
 
     /**
-     * 导出还款信息列表
+     * 导出还款记录列表
      */
     @PreAuthorize("@ss.hasPermi('system:repayment:export')")
-    @Log(title = "还款信息", businessType = BusinessType.EXPORT)
+    @Log(title = "还款记录", businessType = BusinessType.EXPORT)
     @PostMapping("/export")
     public void export(HttpServletResponse response, Repayment repayment)
     {
         List<Repayment> list = repaymentService.selectRepaymentList(repayment);
         ExcelUtil<Repayment> util = new ExcelUtil<Repayment>(Repayment.class);
-        util.exportExcel(response, list, "还款信息数据");
+        util.exportExcel(response, list, "还款记录数据");
     }
 
     /**
-     * 获取还款信息详细信息
+     * 获取还款记录详细信息
      */
     @PreAuthorize("@ss.hasPermi('system:repayment:query')")
     @GetMapping(value = "/{id}")
@@ -64,10 +70,10 @@ public class RepaymentController extends BaseController
     }
 
     /**
-     * 新增还款信息
+     * 新增还款记录
      */
     @PreAuthorize("@ss.hasPermi('system:repayment:add')")
-    @Log(title = "还款信息", businessType = BusinessType.INSERT)
+    @Log(title = "还款记录", businessType = BusinessType.INSERT)
     @PostMapping
     public AjaxResult add(@RequestBody Repayment repayment)
     {
@@ -75,10 +81,10 @@ public class RepaymentController extends BaseController
     }
 
     /**
-     * 修改还款信息
+     * 修改还款记录
      */
     @PreAuthorize("@ss.hasPermi('system:repayment:edit')")
-    @Log(title = "还款信息", businessType = BusinessType.UPDATE)
+    @Log(title = "还款记录", businessType = BusinessType.UPDATE)
     @PutMapping
     public AjaxResult edit(@RequestBody Repayment repayment)
     {
@@ -86,10 +92,10 @@ public class RepaymentController extends BaseController
     }
 
     /**
-     * 删除还款信息
+     * 删除还款记录
      */
     @PreAuthorize("@ss.hasPermi('system:repayment:remove')")
-    @Log(title = "还款信息", businessType = BusinessType.DELETE)
+    @Log(title = "还款记录", businessType = BusinessType.DELETE)
 	@DeleteMapping("/{ids}")
     public AjaxResult remove(@PathVariable Long[] ids)
     {

@@ -1,19 +1,18 @@
 package org.dzu.system.service.impl;
 
+import java.util.List;
 import org.dzu.common.utils.DateUtils;
-import org.dzu.system.domain.Oilcardmain;
-import org.dzu.system.mapper.OilcardmainMapper;
-import org.dzu.system.service.IOilcardmainService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-
-import java.util.List;
+import org.dzu.system.mapper.OilcardmainMapper;
+import org.dzu.system.domain.Oilcardmain;
+import org.dzu.system.service.IOilcardmainService;
 
 /**
- * 加油卡主卡登记信息Service业务层处理
+ * 基础信息-加油卡主卡登记Service业务层处理
  * 
  * @author ml
- * @date 2024-07-18
+ * @date 2024-07-19
  */
 @Service
 public class OilcardmainServiceImpl implements IOilcardmainService 
@@ -22,10 +21,10 @@ public class OilcardmainServiceImpl implements IOilcardmainService
     private OilcardmainMapper oilcardmainMapper;
 
     /**
-     * 查询加油卡主卡登记信息
+     * 查询基础信息-加油卡主卡登记
      * 
-     * @param id 加油卡主卡登记信息主键
-     * @return 加油卡主卡登记信息
+     * @param id 基础信息-加油卡主卡登记主键
+     * @return 基础信息-加油卡主卡登记
      */
     @Override
     public Oilcardmain selectOilcardmainById(Long id)
@@ -34,10 +33,10 @@ public class OilcardmainServiceImpl implements IOilcardmainService
     }
 
     /**
-     * 查询加油卡主卡登记信息列表
+     * 查询基础信息-加油卡主卡登记列表
      * 
-     * @param oilcardmain 加油卡主卡登记信息
-     * @return 加油卡主卡登记信息
+     * @param oilcardmain 基础信息-加油卡主卡登记
+     * @return 基础信息-加油卡主卡登记
      */
     @Override
     public List<Oilcardmain> selectOilcardmainList(Oilcardmain oilcardmain)
@@ -46,9 +45,9 @@ public class OilcardmainServiceImpl implements IOilcardmainService
     }
 
     /**
-     * 新增加油卡主卡登记信息
+     * 新增基础信息-加油卡主卡登记
      * 
-     * @param oilcardmain 加油卡主卡登记信息
+     * @param oilcardmain 基础信息-加油卡主卡登记
      * @return 结果
      */
     @Override
@@ -58,9 +57,9 @@ public class OilcardmainServiceImpl implements IOilcardmainService
     }
 
     /**
-     * 修改加油卡主卡登记信息
+     * 修改基础信息-加油卡主卡登记
      * 
-     * @param oilcardmain 加油卡主卡登记信息
+     * @param oilcardmain 基础信息-加油卡主卡登记
      * @return 结果
      */
     @Override
@@ -71,9 +70,9 @@ public class OilcardmainServiceImpl implements IOilcardmainService
     }
 
     /**
-     * 批量删除加油卡主卡登记信息
+     * 批量删除基础信息-加油卡主卡登记
      * 
-     * @param ids 需要删除的加油卡主卡登记信息主键
+     * @param ids 需要删除的基础信息-加油卡主卡登记主键
      * @return 结果
      */
     @Override
@@ -83,9 +82,9 @@ public class OilcardmainServiceImpl implements IOilcardmainService
     }
 
     /**
-     * 删除加油卡主卡登记信息信息
+     * 删除基础信息-加油卡主卡登记信息
      * 
-     * @param id 加油卡主卡登记信息主键
+     * @param id 基础信息-加油卡主卡登记主键
      * @return 结果
      */
     @Override

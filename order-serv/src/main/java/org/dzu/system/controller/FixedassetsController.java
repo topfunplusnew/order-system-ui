@@ -22,10 +22,10 @@ import org.dzu.common.utils.poi.ExcelUtil;
 import org.dzu.common.core.page.TableDataInfo;
 
 /**
- * 固定资产信息Controller
+ * 固定资产Controller
  * 
  * @author ml
- * @date 2024-07-18
+ * @date 2024-07-19
  */
 @RestController
 @RequestMapping("/system/fixedassets")
@@ -35,7 +35,7 @@ public class FixedassetsController extends BaseController
     private IFixedassetsService fixedassetsService;
 
     /**
-     * 查询固定资产信息列表
+     * 查询固定资产列表
      */
     @PreAuthorize("@ss.hasPermi('system:fixedassets:list')")
     @GetMapping("/list")
@@ -47,20 +47,20 @@ public class FixedassetsController extends BaseController
     }
 
     /**
-     * 导出固定资产信息列表
+     * 导出固定资产列表
      */
     @PreAuthorize("@ss.hasPermi('system:fixedassets:export')")
-    @Log(title = "固定资产信息", businessType = BusinessType.EXPORT)
+    @Log(title = "固定资产", businessType = BusinessType.EXPORT)
     @PostMapping("/export")
     public void export(HttpServletResponse response, Fixedassets fixedassets)
     {
         List<Fixedassets> list = fixedassetsService.selectFixedassetsList(fixedassets);
         ExcelUtil<Fixedassets> util = new ExcelUtil<Fixedassets>(Fixedassets.class);
-        util.exportExcel(response, list, "固定资产信息数据");
+        util.exportExcel(response, list, "固定资产数据");
     }
 
     /**
-     * 获取固定资产信息详细信息
+     * 获取固定资产详细信息
      */
     @PreAuthorize("@ss.hasPermi('system:fixedassets:query')")
     @GetMapping(value = "/{id}")
@@ -70,10 +70,10 @@ public class FixedassetsController extends BaseController
     }
 
     /**
-     * 新增固定资产信息
+     * 新增固定资产
      */
     @PreAuthorize("@ss.hasPermi('system:fixedassets:add')")
-    @Log(title = "固定资产信息", businessType = BusinessType.INSERT)
+    @Log(title = "固定资产", businessType = BusinessType.INSERT)
     @PostMapping
     public AjaxResult add(@RequestBody Fixedassets fixedassets)
     {
@@ -81,10 +81,10 @@ public class FixedassetsController extends BaseController
     }
 
     /**
-     * 修改固定资产信息
+     * 修改固定资产
      */
     @PreAuthorize("@ss.hasPermi('system:fixedassets:edit')")
-    @Log(title = "固定资产信息", businessType = BusinessType.UPDATE)
+    @Log(title = "固定资产", businessType = BusinessType.UPDATE)
     @PutMapping
     public AjaxResult edit(@RequestBody Fixedassets fixedassets)
     {
@@ -92,10 +92,10 @@ public class FixedassetsController extends BaseController
     }
 
     /**
-     * 删除固定资产信息
+     * 删除固定资产
      */
     @PreAuthorize("@ss.hasPermi('system:fixedassets:remove')")
-    @Log(title = "固定资产信息", businessType = BusinessType.DELETE)
+    @Log(title = "固定资产", businessType = BusinessType.DELETE)
 	@DeleteMapping("/{ids}")
     public AjaxResult remove(@PathVariable Long[] ids)
     {

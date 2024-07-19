@@ -9,18 +9,14 @@ import org.dzu.common.core.domain.BaseEntity;
  * 订单详情对象 orderdetail
  * 
  * @author ml
- * @date 2024-07-18
+ * @date 2024-07-19
  */
 public class Orderdetail extends BaseEntity
 {
     private static final long serialVersionUID = 1L;
 
-    /** 主键 */
+    /** $column.columnComment */
     private Long id;
-
-    /** 订单详情ID */
-    @Excel(name = "订单详情ID")
-    private Long orderId;
 
     /** 订单编号（UUID） */
     @Excel(name = "订单编号", readConverterExp = "U=UID")
@@ -214,15 +210,6 @@ public class Orderdetail extends BaseEntity
     public Long getId() 
     {
         return id;
-    }
-    public void setOrderId(Long orderId) 
-    {
-        this.orderId = orderId;
-    }
-
-    public Long getOrderId() 
-    {
-        return orderId;
     }
     public void setOrdersNo(String ordersNo) 
     {
@@ -643,7 +630,6 @@ public class Orderdetail extends BaseEntity
     public String toString() {
         return new ToStringBuilder(this,ToStringStyle.MULTI_LINE_STYLE)
             .append("id", getId())
-            .append("orderId", getOrderId())
             .append("ordersNo", getOrdersNo())
             .append("orderDate", getOrderDate())
             .append("supplier", getSupplier())

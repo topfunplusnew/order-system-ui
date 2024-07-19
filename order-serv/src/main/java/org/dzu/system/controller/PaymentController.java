@@ -1,25 +1,31 @@
 package org.dzu.system.controller;
 
+import java.util.List;
+import javax.servlet.http.HttpServletResponse;
+import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
 import org.dzu.common.annotation.Log;
 import org.dzu.common.core.controller.BaseController;
 import org.dzu.common.core.domain.AjaxResult;
-import org.dzu.common.core.page.TableDataInfo;
 import org.dzu.common.enums.BusinessType;
-import org.dzu.common.utils.poi.ExcelUtil;
 import org.dzu.system.domain.Payment;
 import org.dzu.system.service.IPaymentService;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.web.bind.annotation.*;
-
-import javax.servlet.http.HttpServletResponse;
-import java.util.List;
+import org.dzu.common.utils.poi.ExcelUtil;
+import org.dzu.common.core.page.TableDataInfo;
 
 /**
- * 收付款信息Controller
+ * 资产管理-收付款:收付款信息Controller
  * 
  * @author ml
- * @date 2024-07-18
+ * @date 2024-07-19
  */
 @RestController
 @RequestMapping("/system/payment")
@@ -29,7 +35,7 @@ public class PaymentController extends BaseController
     private IPaymentService paymentService;
 
     /**
-     * 查询收付款信息列表
+     * 查询资产管理-收付款:收付款信息列表
      */
     @PreAuthorize("@ss.hasPermi('system:payment:list')")
     @GetMapping("/list")
@@ -41,20 +47,20 @@ public class PaymentController extends BaseController
     }
 
     /**
-     * 导出收付款信息列表
+     * 导出资产管理-收付款:收付款信息列表
      */
     @PreAuthorize("@ss.hasPermi('system:payment:export')")
-    @Log(title = "收付款信息", businessType = BusinessType.EXPORT)
+    @Log(title = "资产管理-收付款:收付款信息", businessType = BusinessType.EXPORT)
     @PostMapping("/export")
     public void export(HttpServletResponse response, Payment payment)
     {
         List<Payment> list = paymentService.selectPaymentList(payment);
         ExcelUtil<Payment> util = new ExcelUtil<Payment>(Payment.class);
-        util.exportExcel(response, list, "收付款信息数据");
+        util.exportExcel(response, list, "资产管理-收付款:收付款信息数据");
     }
 
     /**
-     * 获取收付款信息详细信息
+     * 获取资产管理-收付款:收付款信息详细信息
      */
     @PreAuthorize("@ss.hasPermi('system:payment:query')")
     @GetMapping(value = "/{id}")
@@ -64,10 +70,10 @@ public class PaymentController extends BaseController
     }
 
     /**
-     * 新增收付款信息
+     * 新增资产管理-收付款:收付款信息
      */
     @PreAuthorize("@ss.hasPermi('system:payment:add')")
-    @Log(title = "收付款信息", businessType = BusinessType.INSERT)
+    @Log(title = "资产管理-收付款:收付款信息", businessType = BusinessType.INSERT)
     @PostMapping
     public AjaxResult add(@RequestBody Payment payment)
     {
@@ -75,10 +81,10 @@ public class PaymentController extends BaseController
     }
 
     /**
-     * 修改收付款信息
+     * 修改资产管理-收付款:收付款信息
      */
     @PreAuthorize("@ss.hasPermi('system:payment:edit')")
-    @Log(title = "收付款信息", businessType = BusinessType.UPDATE)
+    @Log(title = "资产管理-收付款:收付款信息", businessType = BusinessType.UPDATE)
     @PutMapping
     public AjaxResult edit(@RequestBody Payment payment)
     {
@@ -86,10 +92,10 @@ public class PaymentController extends BaseController
     }
 
     /**
-     * 删除收付款信息
+     * 删除资产管理-收付款:收付款信息
      */
     @PreAuthorize("@ss.hasPermi('system:payment:remove')")
-    @Log(title = "收付款信息", businessType = BusinessType.DELETE)
+    @Log(title = "资产管理-收付款:收付款信息", businessType = BusinessType.DELETE)
 	@DeleteMapping("/{ids}")
     public AjaxResult remove(@PathVariable Long[] ids)
     {

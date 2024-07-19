@@ -1,18 +1,17 @@
 package org.dzu.system.service.impl;
 
-import org.dzu.system.domain.Storehouse;
-import org.dzu.system.mapper.StorehouseMapper;
-import org.dzu.system.service.IStorehouseService;
+import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-
-import java.util.List;
+import org.dzu.system.mapper.StorehouseMapper;
+import org.dzu.system.domain.Storehouse;
+import org.dzu.system.service.IStorehouseService;
 
 /**
- * 仓库信息Service业务层处理
+ * 仓库管理Service业务层处理
  * 
  * @author ml
- * @date 2024-07-18
+ * @date 2024-07-19
  */
 @Service
 public class StorehouseServiceImpl implements IStorehouseService 
@@ -21,10 +20,10 @@ public class StorehouseServiceImpl implements IStorehouseService
     private StorehouseMapper storehouseMapper;
 
     /**
-     * 查询仓库信息
+     * 查询仓库管理
      * 
-     * @param id 仓库信息主键
-     * @return 仓库信息
+     * @param id 仓库管理主键
+     * @return 仓库管理
      */
     @Override
     public Storehouse selectStorehouseById(Long id)
@@ -33,10 +32,10 @@ public class StorehouseServiceImpl implements IStorehouseService
     }
 
     /**
-     * 查询仓库信息列表
+     * 查询仓库管理列表
      * 
-     * @param storehouse 仓库信息
-     * @return 仓库信息
+     * @param storehouse 仓库管理
+     * @return 仓库管理
      */
     @Override
     public List<Storehouse> selectStorehouseList(Storehouse storehouse)
@@ -45,9 +44,9 @@ public class StorehouseServiceImpl implements IStorehouseService
     }
 
     /**
-     * 新增仓库信息
+     * 新增仓库管理
      * 
-     * @param storehouse 仓库信息
+     * @param storehouse 仓库管理
      * @return 结果
      */
     @Override
@@ -57,9 +56,9 @@ public class StorehouseServiceImpl implements IStorehouseService
     }
 
     /**
-     * 修改仓库信息
+     * 修改仓库管理
      * 
-     * @param storehouse 仓库信息
+     * @param storehouse 仓库管理
      * @return 结果
      */
     @Override
@@ -69,9 +68,9 @@ public class StorehouseServiceImpl implements IStorehouseService
     }
 
     /**
-     * 批量删除仓库信息
+     * 批量删除仓库管理
      * 
-     * @param ids 需要删除的仓库信息主键
+     * @param ids 需要删除的仓库管理主键
      * @return 结果
      */
     @Override
@@ -81,9 +80,9 @@ public class StorehouseServiceImpl implements IStorehouseService
     }
 
     /**
-     * 删除仓库信息信息
+     * 删除仓库管理信息
      * 
-     * @param id 仓库信息主键
+     * @param id 仓库管理主键
      * @return 结果
      */
     @Override

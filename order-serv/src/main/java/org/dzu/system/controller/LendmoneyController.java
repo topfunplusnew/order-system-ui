@@ -1,25 +1,31 @@
 package org.dzu.system.controller;
 
+import java.util.List;
+import javax.servlet.http.HttpServletResponse;
+import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
 import org.dzu.common.annotation.Log;
 import org.dzu.common.core.controller.BaseController;
 import org.dzu.common.core.domain.AjaxResult;
-import org.dzu.common.core.page.TableDataInfo;
 import org.dzu.common.enums.BusinessType;
-import org.dzu.common.utils.poi.ExcelUtil;
 import org.dzu.system.domain.Lendmoney;
 import org.dzu.system.service.ILendmoneyService;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.web.bind.annotation.*;
-
-import javax.servlet.http.HttpServletResponse;
-import java.util.List;
+import org.dzu.common.utils.poi.ExcelUtil;
+import org.dzu.common.core.page.TableDataInfo;
 
 /**
- * 借贷Controller
+ * 资金借出（期货）Controller
  * 
  * @author ml
- * @date 2024-07-18
+ * @date 2024-07-19
  */
 @RestController
 @RequestMapping("/system/lendmoney")
@@ -29,7 +35,7 @@ public class LendmoneyController extends BaseController
     private ILendmoneyService lendmoneyService;
 
     /**
-     * 查询借贷列表
+     * 查询资金借出（期货）列表
      */
     @PreAuthorize("@ss.hasPermi('system:lendmoney:list')")
     @GetMapping("/list")
@@ -41,20 +47,20 @@ public class LendmoneyController extends BaseController
     }
 
     /**
-     * 导出借贷列表
+     * 导出资金借出（期货）列表
      */
     @PreAuthorize("@ss.hasPermi('system:lendmoney:export')")
-    @Log(title = "借贷", businessType = BusinessType.EXPORT)
+    @Log(title = "资金借出（期货）", businessType = BusinessType.EXPORT)
     @PostMapping("/export")
     public void export(HttpServletResponse response, Lendmoney lendmoney)
     {
         List<Lendmoney> list = lendmoneyService.selectLendmoneyList(lendmoney);
         ExcelUtil<Lendmoney> util = new ExcelUtil<Lendmoney>(Lendmoney.class);
-        util.exportExcel(response, list, "借贷数据");
+        util.exportExcel(response, list, "资金借出（期货）数据");
     }
 
     /**
-     * 获取借贷详细信息
+     * 获取资金借出（期货）详细信息
      */
     @PreAuthorize("@ss.hasPermi('system:lendmoney:query')")
     @GetMapping(value = "/{id}")
@@ -64,10 +70,10 @@ public class LendmoneyController extends BaseController
     }
 
     /**
-     * 新增借贷
+     * 新增资金借出（期货）
      */
     @PreAuthorize("@ss.hasPermi('system:lendmoney:add')")
-    @Log(title = "借贷", businessType = BusinessType.INSERT)
+    @Log(title = "资金借出（期货）", businessType = BusinessType.INSERT)
     @PostMapping
     public AjaxResult add(@RequestBody Lendmoney lendmoney)
     {
@@ -75,10 +81,10 @@ public class LendmoneyController extends BaseController
     }
 
     /**
-     * 修改借贷
+     * 修改资金借出（期货）
      */
     @PreAuthorize("@ss.hasPermi('system:lendmoney:edit')")
-    @Log(title = "借贷", businessType = BusinessType.UPDATE)
+    @Log(title = "资金借出（期货）", businessType = BusinessType.UPDATE)
     @PutMapping
     public AjaxResult edit(@RequestBody Lendmoney lendmoney)
     {
@@ -86,10 +92,10 @@ public class LendmoneyController extends BaseController
     }
 
     /**
-     * 删除借贷
+     * 删除资金借出（期货）
      */
     @PreAuthorize("@ss.hasPermi('system:lendmoney:remove')")
-    @Log(title = "借贷", businessType = BusinessType.DELETE)
+    @Log(title = "资金借出（期货）", businessType = BusinessType.DELETE)
 	@DeleteMapping("/{ids}")
     public AjaxResult remove(@PathVariable Long[] ids)
     {

@@ -9,10 +9,10 @@ import org.dzu.system.domain.Borrowedmoney;
 import org.dzu.system.service.IBorrowedmoneyService;
 
 /**
- * 借入金钱Service业务层处理
+ * 从外部借入款、贷款Service业务层处理
  * 
  * @author ml
- * @date 2024-07-18
+ * @date 2024-07-19
  */
 @Service
 public class BorrowedmoneyServiceImpl implements IBorrowedmoneyService 
@@ -21,10 +21,10 @@ public class BorrowedmoneyServiceImpl implements IBorrowedmoneyService
     private BorrowedmoneyMapper borrowedmoneyMapper;
 
     /**
-     * 查询借入金钱
+     * 查询从外部借入款、贷款
      * 
-     * @param id 借入金钱主键
-     * @return 借入金钱
+     * @param id 从外部借入款、贷款主键
+     * @return 从外部借入款、贷款
      */
     @Override
     public Borrowedmoney selectBorrowedmoneyById(Long id)
@@ -33,10 +33,10 @@ public class BorrowedmoneyServiceImpl implements IBorrowedmoneyService
     }
 
     /**
-     * 查询借入金钱列表
+     * 查询从外部借入款、贷款列表
      * 
-     * @param borrowedmoney 借入金钱
-     * @return 借入金钱
+     * @param borrowedmoney 从外部借入款、贷款
+     * @return 从外部借入款、贷款
      */
     @Override
     public List<Borrowedmoney> selectBorrowedmoneyList(Borrowedmoney borrowedmoney)
@@ -45,9 +45,9 @@ public class BorrowedmoneyServiceImpl implements IBorrowedmoneyService
     }
 
     /**
-     * 新增借入金钱
+     * 新增从外部借入款、贷款
      * 
-     * @param borrowedmoney 借入金钱
+     * @param borrowedmoney 从外部借入款、贷款
      * @return 结果
      */
     @Override
@@ -57,9 +57,9 @@ public class BorrowedmoneyServiceImpl implements IBorrowedmoneyService
     }
 
     /**
-     * 修改借入金钱
+     * 修改从外部借入款、贷款
      * 
-     * @param borrowedmoney 借入金钱
+     * @param borrowedmoney 从外部借入款、贷款
      * @return 结果
      */
     @Override
@@ -70,9 +70,9 @@ public class BorrowedmoneyServiceImpl implements IBorrowedmoneyService
     }
 
     /**
-     * 批量删除借入金钱
+     * 批量删除从外部借入款、贷款
      * 
-     * @param ids 需要删除的借入金钱主键
+     * @param ids 需要删除的从外部借入款、贷款主键
      * @return 结果
      */
     @Override
@@ -82,9 +82,9 @@ public class BorrowedmoneyServiceImpl implements IBorrowedmoneyService
     }
 
     /**
-     * 删除借入金钱信息
+     * 删除从外部借入款、贷款信息
      * 
-     * @param id 借入金钱主键
+     * @param id 从外部借入款、贷款主键
      * @return 结果
      */
     @Override

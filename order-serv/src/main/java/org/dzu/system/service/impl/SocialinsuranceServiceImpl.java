@@ -9,10 +9,10 @@ import org.dzu.system.domain.Socialinsurance;
 import org.dzu.system.service.ISocialinsuranceService;
 
 /**
- * 社会保险信息Service业务层处理
+ * 社保基金Service业务层处理
  * 
  * @author ml
- * @date 2024-07-18
+ * @date 2024-07-19
  */
 @Service
 public class SocialinsuranceServiceImpl implements ISocialinsuranceService 
@@ -21,10 +21,10 @@ public class SocialinsuranceServiceImpl implements ISocialinsuranceService
     private SocialinsuranceMapper socialinsuranceMapper;
 
     /**
-     * 查询社会保险信息
+     * 查询社保基金
      * 
-     * @param id 社会保险信息主键
-     * @return 社会保险信息
+     * @param id 社保基金主键
+     * @return 社保基金
      */
     @Override
     public Socialinsurance selectSocialinsuranceById(Long id)
@@ -33,10 +33,10 @@ public class SocialinsuranceServiceImpl implements ISocialinsuranceService
     }
 
     /**
-     * 查询社会保险信息列表
+     * 查询社保基金列表
      * 
-     * @param socialinsurance 社会保险信息
-     * @return 社会保险信息
+     * @param socialinsurance 社保基金
+     * @return 社保基金
      */
     @Override
     public List<Socialinsurance> selectSocialinsuranceList(Socialinsurance socialinsurance)
@@ -45,9 +45,9 @@ public class SocialinsuranceServiceImpl implements ISocialinsuranceService
     }
 
     /**
-     * 新增社会保险信息
+     * 新增社保基金
      * 
-     * @param socialinsurance 社会保险信息
+     * @param socialinsurance 社保基金
      * @return 结果
      */
     @Override
@@ -57,9 +57,9 @@ public class SocialinsuranceServiceImpl implements ISocialinsuranceService
     }
 
     /**
-     * 修改社会保险信息
+     * 修改社保基金
      * 
-     * @param socialinsurance 社会保险信息
+     * @param socialinsurance 社保基金
      * @return 结果
      */
     @Override
@@ -70,9 +70,9 @@ public class SocialinsuranceServiceImpl implements ISocialinsuranceService
     }
 
     /**
-     * 批量删除社会保险信息
+     * 批量删除社保基金
      * 
-     * @param ids 需要删除的社会保险信息主键
+     * @param ids 需要删除的社保基金主键
      * @return 结果
      */
     @Override
@@ -82,9 +82,9 @@ public class SocialinsuranceServiceImpl implements ISocialinsuranceService
     }
 
     /**
-     * 删除社会保险信息信息
+     * 删除社保基金信息
      * 
-     * @param id 社会保险信息主键
+     * @param id 社保基金主键
      * @return 结果
      */
     @Override

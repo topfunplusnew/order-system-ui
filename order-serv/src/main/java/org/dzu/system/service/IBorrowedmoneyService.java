@@ -4,57 +4,57 @@ import java.util.List;
 import org.dzu.system.domain.Borrowedmoney;
 
 /**
- * 借入金钱Service接口
+ * 从外部借入款、贷款Service接口
  * 
  * @author ml
- * @date 2024-07-18
+ * @date 2024-07-19
  */
 public interface IBorrowedmoneyService 
 {
     /**
-     * 查询借入金钱
+     * 查询从外部借入款、贷款
      * 
-     * @param id 借入金钱主键
-     * @return 借入金钱
+     * @param id 从外部借入款、贷款主键
+     * @return 从外部借入款、贷款
      */
     public Borrowedmoney selectBorrowedmoneyById(Long id);
 
     /**
-     * 查询借入金钱列表
+     * 查询从外部借入款、贷款列表
      * 
-     * @param borrowedmoney 借入金钱
-     * @return 借入金钱集合
+     * @param borrowedmoney 从外部借入款、贷款
+     * @return 从外部借入款、贷款集合
      */
     public List<Borrowedmoney> selectBorrowedmoneyList(Borrowedmoney borrowedmoney);
 
     /**
-     * 新增借入金钱
+     * 新增从外部借入款、贷款
      * 
-     * @param borrowedmoney 借入金钱
+     * @param borrowedmoney 从外部借入款、贷款
      * @return 结果
      */
     public int insertBorrowedmoney(Borrowedmoney borrowedmoney);
 
     /**
-     * 修改借入金钱
+     * 修改从外部借入款、贷款
      * 
-     * @param borrowedmoney 借入金钱
+     * @param borrowedmoney 从外部借入款、贷款
      * @return 结果
      */
     public int updateBorrowedmoney(Borrowedmoney borrowedmoney);
 
     /**
-     * 批量删除借入金钱
+     * 批量删除从外部借入款、贷款
      * 
-     * @param ids 需要删除的借入金钱主键集合
+     * @param ids 需要删除的从外部借入款、贷款主键集合
      * @return 结果
      */
     public int deleteBorrowedmoneyByIds(Long[] ids);
 
     /**
-     * 删除借入金钱信息
+     * 删除从外部借入款、贷款信息
      * 
-     * @param id 借入金钱主键
+     * @param id 从外部借入款、贷款主键
      * @return 结果
      */
     public int deleteBorrowedmoneyById(Long id);

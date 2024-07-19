@@ -6,16 +6,16 @@ import org.dzu.common.annotation.Excel;
 import org.dzu.common.core.domain.BaseEntity;
 
 /**
- * 公司信息对象 company
+ * 客户管理对象 company
  * 
  * @author ml
- * @date 2024-07-18
+ * @date 2024-07-19
  */
 public class Company extends BaseEntity
 {
     private static final long serialVersionUID = 1L;
 
-    /** 主键 */
+    /** $column.columnComment */
     private Long id;
 
     /** 公司 */
@@ -53,10 +53,6 @@ public class Company extends BaseEntity
     /** 客户类别（ 客户，供应商） */
     @Excel(name = "客户类别", readConverterExp = "客=户，供应商")
     private String companyType;
-
-    /** 删除标记 */
-    @Excel(name = "删除标记")
-    private Long delflag;
 
     /** 业务员 */
     @Excel(name = "业务员")
@@ -105,6 +101,10 @@ public class Company extends BaseEntity
     /** 操作人员姓名 */
     @Excel(name = "操作人员姓名")
     private String UserName;
+
+    /** 删除标记 */
+    @Excel(name = "删除标记")
+    private Long delFlag;
 
     public void setId(Long id) 
     {
@@ -195,15 +195,6 @@ public class Company extends BaseEntity
     public String getCompanyType() 
     {
         return companyType;
-    }
-    public void setDelflag(Long delflag) 
-    {
-        this.delflag = delflag;
-    }
-
-    public Long getDelflag() 
-    {
-        return delflag;
     }
     public void setSalesman(String salesman) 
     {
@@ -313,6 +304,15 @@ public class Company extends BaseEntity
     {
         return UserName;
     }
+    public void setDelFlag(Long delFlag) 
+    {
+        this.delFlag = delFlag;
+    }
+
+    public Long getDelFlag() 
+    {
+        return delFlag;
+    }
 
     @Override
     public String toString() {
@@ -327,7 +327,6 @@ public class Company extends BaseEntity
             .append("bankNo", getBankNo())
             .append("surplusMoney", getSurplusMoney())
             .append("companyType", getCompanyType())
-            .append("delflag", getDelflag())
             .append("salesman", getSalesman())
             .append("leader", getLeader())
             .append("leaderTel", getLeaderTel())
@@ -341,6 +340,7 @@ public class Company extends BaseEntity
             .append("userId", getUserId())
             .append("UserName", getUserName())
             .append("updateTime", getUpdateTime())
+            .append("delFlag", getDelFlag())
             .toString();
     }
 }

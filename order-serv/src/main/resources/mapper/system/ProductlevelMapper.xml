@@ -2,7 +2,7 @@
 <!DOCTYPE mapper
 PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
 "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
-<mapper namespace="org.dzu.system.mapper.ProductlevelMapper">
+<mapper namespace="com.ruoyi.system.mapper.ProductlevelMapper">
     
     <resultMap type="Productlevel" id="ProductlevelResult">
         <result property="id"    column="id"    />

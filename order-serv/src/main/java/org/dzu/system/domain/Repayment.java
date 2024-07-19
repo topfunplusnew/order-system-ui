@@ -6,16 +6,16 @@ import org.dzu.common.annotation.Excel;
 import org.dzu.common.core.domain.BaseEntity;
 
 /**
- * 还款信息对象 repayment
+ * 还款记录对象 repayment
  * 
  * @author ml
- * @date 2024-07-18
+ * @date 2024-07-19
  */
 public class Repayment extends BaseEntity
 {
     private static final long serialVersionUID = 1L;
 
-    /** 主键 */
+    /** $column.columnComment */
     private Long id;
 
     /** 贷款编号（UUID） */
@@ -61,6 +61,10 @@ public class Repayment extends BaseEntity
     /** 操作人员姓名 */
     @Excel(name = "操作人员姓名")
     private String UserName;
+
+    /** 删除标记 */
+    @Excel(name = "删除标记")
+    private Long delFlag;
 
     public void setId(Long id) 
     {
@@ -170,6 +174,15 @@ public class Repayment extends BaseEntity
     {
         return UserName;
     }
+    public void setDelFlag(Long delFlag) 
+    {
+        this.delFlag = delFlag;
+    }
+
+    public Long getDelFlag() 
+    {
+        return delFlag;
+    }
 
     @Override
     public String toString() {
@@ -187,6 +200,7 @@ public class Repayment extends BaseEntity
             .append("userId", getUserId())
             .append("UserName", getUserName())
             .append("updateTime", getUpdateTime())
+            .append("delFlag", getDelFlag())
             .toString();
     }
 }

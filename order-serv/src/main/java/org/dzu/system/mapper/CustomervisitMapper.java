@@ -1,14 +1,13 @@
 package org.dzu.system.mapper;
 
-import org.dzu.system.domain.Customervisit;
-
 import java.util.List;
+import org.dzu.system.domain.Customervisit;
 
 /**
  * 走访记录Mapper接口
  * 
  * @author ml
- * @date 2024-07-18
+ * @date 2024-07-19
  */
 public interface CustomervisitMapper 
 {

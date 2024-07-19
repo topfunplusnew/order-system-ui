@@ -6,81 +6,65 @@ import org.dzu.common.annotation.Excel;
 import org.dzu.common.core.domain.BaseEntity;
 
 /**
- * 借贷对象 lendmoney
+ * 资金借出（期货）对象 lendmoney
  * 
  * @author ml
- * @date 2024-07-18
+ * @date 2024-07-19
  */
 public class Lendmoney extends BaseEntity
 {
     private static final long serialVersionUID = 1L;
 
-    /** 主键 */
+    /** $column.columnComment */
     private Long id;
 
-    /** 付款编号（UUID） */
-    @Excel(name = "付款编号", readConverterExp = "U=UID")
-    private String payNO;
+    /** 借出款编号（UUID） */
+    @Excel(name = "借出款编号", readConverterExp = "U=UID")
+    private String futuresNO;
 
-    /** 金额 */
-    @Excel(name = "金额")
+    /** 期货保证金公司 */
+    @Excel(name = "期货保证金公司")
+    private String futuresMarginCompany;
+
+    /** 对象(员工、外面公司在我公司借款) */
+    @Excel(name = "对象(员工、外面公司在我公司借款)")
+    private String target;
+
+    /** 保证金金额 */
+    @Excel(name = "保证金金额")
     private Long moneyAmount;
 
-    /** 借出类型（公司/个人） */
-    @Excel(name = "借出类型", readConverterExp = "公=司/个人")
-    private String lendType;
-
-    /** 公司/个人名称 */
-    @Excel(name = "公司/个人名称")
-    private String company;
-
-    /** 对方户名 */
-    @Excel(name = "对方户名")
-    private String otherAcountsName;
+    /** 对方账户 */
+    @Excel(name = "对方账户")
+    private String targetAcountsName;
 
     /** 对方账号 */
     @Excel(name = "对方账号")
-    private String otherBankNo;
+    private String targetBankNo;
 
     /** 对方开户行 */
     @Excel(name = "对方开户行")
-    private String otherBankName;
+    private String targetBankName;
 
-    /** 对方账号ID */
-    @Excel(name = "对方账号ID")
-    private String otherBankID;
-
-    /** 己方户名 */
-    @Excel(name = "己方户名")
+    /** 我方支付账户 */
+    @Excel(name = "我方支付账户")
     private String selfAcountsName;
 
-    /** 己方账号 */
-    @Excel(name = "己方账号")
+    /** 我方账号 */
+    @Excel(name = "我方账号")
     private String selfBankNo;
 
-    /** 己方开户行 */
-    @Excel(name = "己方开户行")
+    /** 我方开户行 */
+    @Excel(name = "我方开户行")
     private String selfBankName;
 
-    /** 己方账号ID */
-    @Excel(name = "己方账号ID")
-    private String selfBankID;
+    /** 支付期货保证金时间 */
+    @Excel(name = "支付期货保证金时间")
+    private String futuresDate;
 
-    /** 打入账户 */
-    @Excel(name = "打入账户")
-    private String acountsName;
-
-    /** 打入账号 */
-    @Excel(name = "打入账号")
-    private String bankNo;
-
-    /** 打入时间 */
-    @Excel(name = "打入时间")
-    private String payTime;
-
-    /** 缘由 */
-    @Excel(name = "缘由")
-    private Long originReason;
+    /** 事由 */
+    @Excel(name = "事由")
+    private String reason;
 
     /** 备注 */
     @Excel(name = "备注")
@@ -98,6 +82,10 @@ public class Lendmoney extends BaseEntity
     @Excel(name = "操作人员姓名")
     private String UserName;
 
+    /** 删除标记 */
+    @Excel(name = "删除标记")
+    private Long delFlag;
+
     public void setId(Long id) 
     {
         this.id = id;
@@ -107,14 +95,32 @@ public class Lendmoney extends BaseEntity
     {
         return id;
     }
-    public void setPayNO(String payNO) 
+    public void setFuturesNO(String futuresNO) 
     {
-        this.payNO = payNO;
+        this.futuresNO = futuresNO;
     }
 
-    public String getPayNO() 
+    public String getFuturesNO() 
     {
-        return payNO;
+        return futuresNO;
+    }
+    public void setFuturesMarginCompany(String futuresMarginCompany) 
+    {
+        this.futuresMarginCompany = futuresMarginCompany;
+    }
+
+    public String getFuturesMarginCompany() 
+    {
+        return futuresMarginCompany;
+    }
+    public void setTarget(String target) 
+    {
+        this.target = target;
+    }
+
+    public String getTarget() 
+    {
+        return target;
     }
     public void setMoneyAmount(Long moneyAmount) 
     {
@@ -125,59 +131,32 @@ public class Lendmoney extends BaseEntity
     {
         return moneyAmount;
     }
-    public void setLendType(String lendType) 
+    public void setTargetAcountsName(String targetAcountsName) 
     {
-        this.lendType = lendType;
+        this.targetAcountsName = targetAcountsName;
     }
 
-    public String getLendType() 
+    public String getTargetAcountsName() 
     {
-        return lendType;
+        return targetAcountsName;
     }
-    public void setCompany(String company) 
+    public void setTargetBankNo(String targetBankNo) 
     {
-        this.company = company;
-    }
-
-    public String getCompany() 
-    {
-        return company;
-    }
-    public void setOtherAcountsName(String otherAcountsName) 
-    {
-        this.otherAcountsName = otherAcountsName;
+        this.targetBankNo = targetBankNo;
     }
 
-    public String getOtherAcountsName() 
+    public String getTargetBankNo() 
     {
-        return otherAcountsName;
+        return targetBankNo;
     }
-    public void setOtherBankNo(String otherBankNo) 
+    public void setTargetBankName(String targetBankName) 
     {
-        this.otherBankNo = otherBankNo;
-    }
-
-    public String getOtherBankNo() 
-    {
-        return otherBankNo;
-    }
-    public void setOtherBankName(String otherBankName) 
-    {
-        this.otherBankName = otherBankName;
+        this.targetBankName = targetBankName;
     }
 
-    public String getOtherBankName() 
+    public String getTargetBankName() 
     {
-        return otherBankName;
-    }
-    public void setOtherBankID(String otherBankID) 
-    {
-        this.otherBankID = otherBankID;
-    }
-
-    public String getOtherBankID() 
-    {
-        return otherBankID;
+        return targetBankName;
     }
     public void setSelfAcountsName(String selfAcountsName) 
     {
@@ -206,50 +185,23 @@ public class Lendmoney extends BaseEntity
     {
         return selfBankName;
     }
-    public void setSelfBankID(String selfBankID) 
+    public void setFuturesDate(String futuresDate) 
     {
-        this.selfBankID = selfBankID;
+        this.futuresDate = futuresDate;
     }
 
-    public String getSelfBankID() 
+    public String getFuturesDate() 
     {
-        return selfBankID;
+        return futuresDate;
     }
-    public void setAcountsName(String acountsName) 
+    public void setReason(String reason) 
     {
-        this.acountsName = acountsName;
-    }
-
-    public String getAcountsName() 
-    {
-        return acountsName;
-    }
-    public void setBankNo(String bankNo) 
-    {
-        this.bankNo = bankNo;
+        this.reason = reason;
     }
 
-    public String getBankNo() 
+    public String getReason() 
     {
-        return bankNo;
-    }
-    public void setPayTime(String payTime) 
-    {
-        this.payTime = payTime;
-    }
-
-    public String getPayTime() 
-    {
-        return payTime;
-    }
-    public void setOriginReason(Long originReason) 
-    {
-        this.originReason = originReason;
-    }
-
-    public Long getOriginReason() 
-    {
-        return originReason;
+        return reason;
     }
     public void setComments(String comments) 
     {
@@ -287,32 +239,38 @@ public class Lendmoney extends BaseEntity
     {
         return UserName;
     }
+    public void setDelFlag(Long delFlag) 
+    {
+        this.delFlag = delFlag;
+    }
+
+    public Long getDelFlag() 
+    {
+        return delFlag;
+    }
 
     @Override
     public String toString() {
         return new ToStringBuilder(this,ToStringStyle.MULTI_LINE_STYLE)
             .append("id", getId())
-            .append("payNO", getPayNO())
+            .append("futuresNO", getFuturesNO())
+            .append("futuresMarginCompany", getFuturesMarginCompany())
+            .append("target", getTarget())
             .append("moneyAmount", getMoneyAmount())
-            .append("lendType", getLendType())
-            .append("company", getCompany())
-            .append("otherAcountsName", getOtherAcountsName())
-            .append("otherBankNo", getOtherBankNo())
-            .append("otherBankName", getOtherBankName())
-            .append("otherBankID", getOtherBankID())
+            .append("targetAcountsName", getTargetAcountsName())
+            .append("targetBankNo", getTargetBankNo())
+            .append("targetBankName", getTargetBankName())
             .append("selfAcountsName", getSelfAcountsName())
             .append("selfBankNo", getSelfBankNo())
             .append("selfBankName", getSelfBankName())
-            .append("selfBankID", getSelfBankID())
-            .append("acountsName", getAcountsName())
-            .append("bankNo", getBankNo())
-            .append("payTime", getPayTime())
-            .append("originReason", getOriginReason())
+            .append("futuresDate", getFuturesDate())
+            .append("reason", getReason())
             .append("comments", getComments())
             .append("addtime", getAddtime())
             .append("userId", getUserId())
             .append("UserName", getUserName())
             .append("updateTime", getUpdateTime())
+            .append("delFlag", getDelFlag())
             .toString();
     }
 }
