@@ -23,6 +23,9 @@ public class TreeSelect implements Serializable
     /** 节点名称 */
     private String label;
 
+
+    /** 节点类型 */
+    private String type;
     /** 子节点 */
     @JsonInclude(JsonInclude.Include.NON_EMPTY)
     private List<TreeSelect> children;
@@ -39,9 +42,18 @@ public class TreeSelect implements Serializable
         this.children = dept.getChildren().stream().map(TreeSelect::new).collect(Collectors.toList());
     }
 
+    public String getType() {
+        return type;
+    }
+
+    public void setType(String type) {
+        this.type = type;
+    }
+
     public TreeSelect(SysMenu menu)
     {
         this.id = menu.getMenuId();
+        this.type = menu.getMenuType();
         this.label = menu.getMenuName();
         this.children = menu.getChildren().stream().map(TreeSelect::new).collect(Collectors.toList());
     }
