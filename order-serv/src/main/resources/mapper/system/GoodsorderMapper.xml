@@ -46,7 +46,10 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
     </resultMap>
 
     <resultMap id="GoodsorderOrderdetailResult" type="Goodsorder" extends="GoodsorderResult">
-        <collection property="orderdetailList" ofType="Orderdetail" column="id" select="selectOrderdetailList" />
+        <collection property="orderdetailList" ofType="Orderdetail" column="ordersNo" select="selectOrderdetailList" />
+    </resultMap>
+    <resultMap id="GoodsorderListlResult" type="Goodsorder" extends="GoodsorderResult">
+        <collection property="orderdetailList" ofType="Orderdetail" resultMap="OrderdetailForListResult" />
     </resultMap>
 
     <resultMap type="Orderdetail" id="OrderdetailResult">
@@ -99,50 +102,262 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         <result property="UserName"    column="UserName"    />
         <result property="updateTime"    column="update_time"    />
     </resultMap>
+    <resultMap type="Orderdetail" id="OrderdetailForListResult">
+        <result property="id"    column="od_id"    />
+        <result property="ordersNo"    column="od_ordersNo"    />
+        <result property="orderDate"    column="od_orderDate"    />
+        <result property="supplier"    column="od_supplier"    />
+        <result property="supplierId"    column="od_supplier_id"    />
+        <result property="customer"    column="od_customer"    />
+        <result property="customerId"    column="od_customer_id"    />
+        <result property="levelID"    column="od_levelID"    />
+        <result property="levelName"    column="od_levelName"    />
+        <result property="countingUnit"    column="od_countingUnit"    />
+        <result property="height"    column="od_height"    />
+        <result property="length"    column="od_length"    />
+        <result property="width"    column="od_width"    />
+        <result property="pieces"    column="od_pieces"    />
+        <result property="piecesPerPack"    column="od_piecesPerPack"    />
+        <result property="packs"    column="od_packs"    />
+        <result property="price"    column="od_price"    />
+        <result property="isIncludeTaxFactory"    column="od_isIncludeTaxFactory"    />
+        <result property="sundryCost"    column="od_sundryCost"    />
+        <result property="paymentFactory"    column="od_paymentFactory"    />
+        <result property="paymentUnload"    column="od_paymentUnload"    />
+        <result property="isIncludeTaxSale"    column="od_isIncludeTaxSale"    />
+        <result property="payments"    column="od_payments"    />
+        <result property="erro"    column="od_erro"    />
+        <result property="tonnage"    column="od_tonnage"    />
+        <result property="landFreightPrice"    column="od_landFreightPrice"    />
+        <result property="landFreight"    column="od_landFreight"    />
+        <result property="seaFreight"    column="od_seaFreight"    />
+        <result property="freight"    column="od_freight"    />
+        <result property="otherCost"    column="od_otherCost"    />
+        <result property="profit"    column="od_profit"    />
+        <result property="profitNoTax"    column="od_profitNoTax"    />
+        <result property="actualPieces"    column="od_actualPieces"    />
+        <result property="paymentsWithSundry"    column="od_paymentsWithSundry"    />
+        <result property="additionalFees"    column="od_additionalFees"    />
+        <result property="storeHouseID"    column="od_storeHouseID"    />
+        <result property="storeHouseName"    column="od_storeHouseName"    />
+        <result property="storeID"    column="od_storeID"    />
+        <result property="logisticsProfit"    column="od_logisticsProfit"    />
+        <result property="customerCommission"    column="od_customerCommission"    />
+        <result property="isAdjusted"    column="od_isAdjusted"    />
+        <result property="adjustDate"    column="od_adjustDate"    />
+        <result property="cancelFlag"    column="od_cancelFlag"    />
+        <result property="comments"    column="od_comments"    />
+        <result property="addtime"    column="od_addtime"    />
+        <result property="userId"    column="od_userId"    />
+        <result property="UserName"    column="od_UserName"    />
+        <result property="updateTime"    column="od_update_time"    />
+    </resultMap>
 
     <sql id="selectGoodsorderVo">
         select id, ordersNo, orderDate, customer, customer_id, landCar_id, landCarNo, landDriverTel, landDriverName, seaCar_id, seaCarNo, seaDriverTel, seaDriverName, checkUserId, checkState, invoiceState, path, PaymentState, landBankName, landBankNo, seaBankName, seaBankNo, receiveProof, saleManager, fleet, isAdjusted, adjustDate, isAdjust, adjustOrderid, isedit, customerIsInvoice, isSupplierInvoice, cancelFlag, comments, addtime, userId, UserName, update_time from goodsorder
     </sql>
 
-    <select id="selectGoodsorderList" parameterType="Goodsorder" resultMap="GoodsorderResult">
-        <include refid="selectGoodsorderVo"/>
-        <where>  
-            <if test="ordersNo != null  and ordersNo != ''"> and ordersNo = #{ordersNo}</if>
-            <if test="orderDate != null  and orderDate != ''"> and orderDate = #{orderDate}</if>
-            <if test="customer != null  and customer != ''"> and customer = #{customer}</if>
-            <if test="customerId != null "> and customer_id = #{customerId}</if>
-            <if test="landcarId != null "> and landCar_id = #{landcarId}</if>
-            <if test="landCarNo != null  and landCarNo != ''"> and landCarNo = #{landCarNo}</if>
-            <if test="landDriverTel != null  and landDriverTel != ''"> and landDriverTel = #{landDriverTel}</if>
-            <if test="landDriverName != null  and landDriverName != ''"> and landDriverName like concat('%', #{landDriverName}, '%')</if>
-            <if test="seacarId != null "> and seaCar_id = #{seacarId}</if>
-            <if test="seaCarNo != null  and seaCarNo != ''"> and seaCarNo = #{seaCarNo}</if>
-            <if test="seaDriverTel != null  and seaDriverTel != ''"> and seaDriverTel = #{seaDriverTel}</if>
-            <if test="seaDriverName != null  and seaDriverName != ''"> and seaDriverName like concat('%', #{seaDriverName}, '%')</if>
-            <if test="checkUserId != null "> and checkUserId = #{checkUserId}</if>
-            <if test="checkState != null  and checkState != ''"> and checkState = #{checkState}</if>
-            <if test="invoiceState != null  and invoiceState != ''"> and invoiceState = #{invoiceState}</if>
-            <if test="path != null  and path != ''"> and path = #{path}</if>
-            <if test="PaymentState != null  and PaymentState != ''"> and PaymentState = #{PaymentState}</if>
-            <if test="landBankName != null  and landBankName != ''"> and landBankName like concat('%', #{landBankName}, '%')</if>
-            <if test="landBankNo != null  and landBankNo != ''"> and landBankNo = #{landBankNo}</if>
-            <if test="seaBankName != null  and seaBankName != ''"> and seaBankName like concat('%', #{seaBankName}, '%')</if>
-            <if test="seaBankNo != null  and seaBankNo != ''"> and seaBankNo = #{seaBankNo}</if>
-            <if test="receiveProof != null  and receiveProof != ''"> and receiveProof = #{receiveProof}</if>
-            <if test="saleManager != null  and saleManager != ''"> and saleManager = #{saleManager}</if>
-            <if test="fleet != null  and fleet != ''"> and fleet = #{fleet}</if>
-            <if test="isAdjusted != null  and isAdjusted != ''"> and isAdjusted = #{isAdjusted}</if>
-            <if test="adjustDate != null  and adjustDate != ''"> and adjustDate = #{adjustDate}</if>
-            <if test="isAdjust != null  and isAdjust != ''"> and isAdjust = #{isAdjust}</if>
-            <if test="adjustOrderid != null "> and adjustOrderid = #{adjustOrderid}</if>
-            <if test="isedit != null "> and isedit = #{isedit}</if>
-            <if test="customerIsInvoice != null "> and customerIsInvoice = #{customerIsInvoice}</if>
-            <if test="isSupplierInvoice != null "> and isSupplierInvoice = #{isSupplierInvoice}</if>
-            <if test="cancelFlag != null "> and cancelFlag = #{cancelFlag}</if>
-            <if test="comments != null  and comments != ''"> and comments = #{comments}</if>
-            <if test="addtime != null  and addtime != ''"> and addtime = #{addtime}</if>
-            <if test="userId != null "> and userId = #{userId}</if>
-            <if test="UserName != null  and UserName != ''"> and UserName like concat('%', #{UserName}, '%')</if>
+    <select id="selectGoodsorderList" parameterType="Goodsorder" resultMap="GoodsorderListlResult">
+        SELECT go.id,
+               go.ordersNo,
+               go.orderDate,
+               go.customer,
+               go.customer_id,
+               go.landCar_id,
+               go.landCarNo,
+               go.landDriverTel,
+               go.landDriverName,
+               go.seaCar_id,
+               go.seaCarNo,
+               go.seaDriverTel,
+               go.seaDriverName,
+               go.checkUserId,
+               go.checkState,
+               go.invoiceState,
+               go.path,
+               go.PaymentState,
+               go.landBankName,
+               go.landBankNo,
+               go.seaBankName,
+               go.seaBankNo,
+               go.receiveProof,
+               go.saleManager,
+               go.fleet,
+               go.isAdjusted,
+               go.adjustDate,
+               go.isAdjust,
+               go.adjustOrderid,
+               go.isedit,
+               go.customerIsInvoice,
+               go.isSupplierInvoice,
+               go.cancelFlag,
+               go.comments,
+               go.addtime,
+               go.userId,
+               go.UserName,
+               go.update_time,
+               od.id                  AS od_id,
+               od.ordersNo            AS od_ordersNo,
+               od.orderDate           AS od_orderDate,
+               od.supplier            AS od_supplier,
+               od.supplier_id         AS od_supplier_id,
+               od.customer            AS od_customer,
+               od.customer_id         AS od_customer_id,
+               od.levelID             AS od_levelID,
+               od.levelName           AS od_levelName,
+               od.countingUnit        AS od_countingUnit,
+               od.height              AS od_height,
+               od.length              AS od_length,
+               od.width               AS od_width,
+               od.pieces              AS od_pieces,
+               od.piecesPerPack       AS od_piecesPerPack,
+               od.packs               AS od_packs,
+               od.price               AS od_price,
+               od.isIncludeTaxFactory AS od_isIncludeTaxFactory,
+               od.sundryCost          AS od_sundryCost,
+               od.paymentFactory      AS od_paymentFactory,
+               od.paymentUnload       AS od_paymentUnload,
+               od.isIncludeTaxSale    AS od_isIncludeTaxSale,
+               od.payments            AS od_payments,
+               od.erro                AS od_erro,
+               od.tonnage             AS od_tonnage,
+               od.landFreightPrice    AS od_landFreightPrice,
+               od.landFreight         AS od_landFreight,
+               od.seaFreight          AS od_seaFreight,
+               od.freight             AS od_freight,
+               od.otherCost           AS od_otherCost,
+               od.profit              AS od_profit,
+               od.profitNoTax         AS od_profitNoTax,
+               od.actualPieces        AS od_actualPieces,
+               od.paymentsWithSundry  AS od_paymentsWithSundry,
+               od.additionalFees      AS od_additionalFees,
+               od.storeHouseID        AS od_storeHouseID,
+               od.storeHouseName      AS od_storeHouseName,
+               od.storeID             AS od_storeID,
+               od.logisticsProfit     AS od_logisticsProfit,
+               od.customerCommission  AS od_customerCommission,
+               od.isAdjusted          AS od_isAdjusted,
+               od.adjustDate          AS od_adjustDate,
+               od.cancelFlag          AS od_cancelFlag,
+               od.comments            AS od_comments,
+               od.addtime             AS od_addtime,
+               od.userId              AS od_userId,
+               od.UserName            AS od_UserName,
+               od.update_time         AS od_update_time
+        FROM goodsorder go
+                 LEFT JOIN
+             orderdetail od
+             ON
+                 go.ordersNo = od.ordersNo
+        <where>
+            <if test="ordersNo != null  and ordersNo != ''">
+                and ordersNo = #{ordersNo}
+            </if>
+            <if test="orderDate != null  and orderDate != ''">
+                and orderDate = #{orderDate}
+            </if>
+            <if test="customer != null  and customer != ''">
+                and customer = #{customer}
+            </if>
+            <if test="customerId != null">
+                and customer_id = #{customerId}
+            </if>
+            <if test="landcarId != null">
+                and landCar_id = #{landcarId}
+            </if>
+            <if test="landCarNo != null  and landCarNo != ''">
+                and landCarNo = #{landCarNo}
+            </if>
+            <if test="landDriverTel != null  and landDriverTel != ''">
+                and landDriverTel = #{landDriverTel}
+            </if>
+            <if test="landDriverName != null  and landDriverName != ''">
+                and landDriverName like concat('%', #{landDriverName}, '%')
+            </if>
+            <if test="seacarId != null">
+                and seaCar_id = #{seacarId}
+            </if>
+            <if test="seaCarNo != null  and seaCarNo != ''">
+                and seaCarNo = #{seaCarNo}
+            </if>
+            <if test="seaDriverTel != null  and seaDriverTel != ''">
+                and seaDriverTel = #{seaDriverTel}
+            </if>
+            <if test="seaDriverName != null  and seaDriverName != ''">
+                and seaDriverName like concat('%', #{seaDriverName}, '%')
+            </if>
+            <if test="checkUserId != null">
+                and checkUserId = #{checkUserId}
+            </if>
+            <if test="checkState != null  and checkState != ''">
+                and checkState = #{checkState}
+            </if>
+            <if test="invoiceState != null  and invoiceState != ''">
+                and invoiceState = #{invoiceState}
+            </if>
+            <if test="path != null  and path != ''">
+                and path = #{path}
+            </if>
+            <if test="PaymentState != null  and PaymentState != ''">
+                and PaymentState = #{PaymentState}
+            </if>
+            <if test="landBankName != null  and landBankName != ''">
+                and landBankName like concat('%', #{landBankName}, '%')
+            </if>
+            <if test="landBankNo != null  and landBankNo != ''">
+                and landBankNo = #{landBankNo}
+            </if>
+            <if test="seaBankName != null  and seaBankName != ''">
+                and seaBankName like concat('%', #{seaBankName}, '%')
+            </if>
+            <if test="seaBankNo != null  and seaBankNo != ''">
+                and seaBankNo = #{seaBankNo}
+            </if>
+            <if test="receiveProof != null  and receiveProof != ''">
+                and receiveProof = #{receiveProof}
+            </if>
+            <if test="saleManager != null  and saleManager != ''">
+                and saleManager = #{saleManager}
+            </if>
+            <if test="fleet != null  and fleet != ''">
+                and fleet = #{fleet}
+            </if>
+            <if test="isAdjusted != null  and isAdjusted != ''">
+                and isAdjusted = #{isAdjusted}
+            </if>
+            <if test="adjustDate != null  and adjustDate != ''">
+                and adjustDate = #{adjustDate}
+            </if>
+            <if test="isAdjust != null  and isAdjust != ''">
+                and isAdjust = #{isAdjust}
+            </if>
+            <if test="adjustOrderid != null">
+                and adjustOrderid = #{adjustOrderid}
+            </if>
+            <if test="isedit != null">
+                and isedit = #{isedit}
+            </if>
+            <if test="customerIsInvoice != null">
+                and customerIsInvoice = #{customerIsInvoice}
+            </if>
+            <if test="isSupplierInvoice != null">
+                and isSupplierInvoice = #{isSupplierInvoice}
+            </if>
+            <if test="cancelFlag != null">
+                and cancelFlag = #{cancelFlag}
+            </if>
+            <if test="comments != null  and comments != ''">
+                and comments = #{comments}
+            </if>
+            <if test="addtime != null  and addtime != ''">
+                and addtime = #{addtime}
+            </if>
+            <if test="userId != null">
+                and userId = #{userId}
+            </if>
+            <if test="UserName != null  and UserName != ''">
+                and UserName like concat('%', #{UserName}, '%')
+            </if>
         </where>
     </select>
     

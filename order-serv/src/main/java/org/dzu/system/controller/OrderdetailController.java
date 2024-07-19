@@ -27,8 +27,6 @@ import org.dzu.common.core.page.TableDataInfo;
  * @author ml
  * @date 2024-07-19
  */
-@RestController
-@RequestMapping("/system/orderdetail")
 public class OrderdetailController extends BaseController
 {
     @Autowired

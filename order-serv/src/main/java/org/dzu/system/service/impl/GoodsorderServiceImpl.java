@@ -2,6 +2,7 @@ package org.dzu.system.service.impl;
 
 import java.util.List;
 import org.dzu.common.utils.DateUtils;
+import org.dzu.common.utils.uuid.UUID;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import java.util.ArrayList;
@@ -58,6 +59,8 @@ public class GoodsorderServiceImpl implements IGoodsorderService
     @Override
     public int insertGoodsorder(Goodsorder goodsorder)
     {
+        goodsorder.setOrdersNo(UUID.fastUUID().toString());
+        //TODO 毛磊： 此处考虑UUID可能重复问题，解决：数据库唯一索引，此处添加捕获重试机制
         int rows = goodsorderMapper.insertGoodsorder(goodsorder);
         insertOrderdetail(goodsorder);
         return rows;
