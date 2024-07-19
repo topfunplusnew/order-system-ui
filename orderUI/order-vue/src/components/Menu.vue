@@ -12,8 +12,6 @@
                 {{ item.label }}
             </template>
         </lay-sub-menu>
-
-
         <lay-menu-item v-else :id="item.id"
                        style="border-top: 1px solid #dddddd">
             <template #icon>

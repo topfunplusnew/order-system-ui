@@ -1,5 +1,5 @@
 <template>
-    <div style="height: 800px;">
+    <div>
         <lay-table
                 :page="page"
                 :resize="true"
@@ -15,7 +15,7 @@
                 <lay-switch :model-value="row.status" @change="changeStatus($event , row)"></lay-switch>
             </template>
             <template v-slot:toolbar>
-                <lay-button size="sm" type="primary">新增</lay-button>
+                <lay-button size="sm" type="primary" @click="handleAdd">新增</lay-button>
                 <lay-button size="sm" @click="remove">删除</lay-button>
             </template>
             <template v-slot:operator="{ row }">
@@ -27,6 +27,20 @@
         <lay-layer v-model="visible11" :shade="false" :area="['500px', '450px']" :btn="action11">
             <div style="padding: 20px;">
                 <lay-form :model="model11" ref="layFormRef11" required>
+                    <lay-form-item label="用户名" prop="name">
+                        <lay-input v-model="model11.name"></lay-input>
+                    </lay-form-item>
+                    <lay-form-item label="性别" prop="sex">
+                        <lay-input v-model="model11.sex">></lay-input>
+                    </lay-form-item>
+                </lay-form>
+            </div>
+        </lay-layer>
+
+        <!--        新增弹窗-->
+        <lay-layer v-model="visibleAdd" :shade="false" :area="['500px', '450px']" :btn="actionAdd" title="新增">
+            <div style="padding: 20px;">
+                <lay-form :model="modelAdd" ref="layFormRefAdd" required>
                     <lay-form-item label="用户名" prop="name">
                         <lay-input v-model="model11.name"></lay-input>
                     </lay-form-item>
@@ -154,7 +168,6 @@ const changeStatus = (isChecked, row) => {
 const remove = () => {
     layer.msg(selectedKeys.value + '', {area: '50%'})
 }
-
 const loadDataSource = (page, pageSize) => {
     var response = [];
     var startIndex = ((page - 1) * pageSize) + 1;
@@ -231,4 +244,57 @@ const action11 = ref([
         }
     }
 ])
+
+//新增
+const layFormRefAdd = ref(null)
+const visibleAdd = ref(false)
+const actionAdd = ref([
+    {
+        text: "确认",
+        //这里发送请求 更改数据库信息
+        callback: () => {
+            layer.confirm("确定要这样操作吗", {
+                btn: [
+                    {
+                        text: '确认', callback: (id) => {
+                            layer.msg("确定");
+                            layer.close(id);
+                        }
+                    },
+                    {
+                        text: '取消', callback: (id) => {
+                            layer.msg("取消");
+                            layer.close(id);
+                        }
+                    }
+                ]
+            });
+        }
+    },
+    {
+        text: "取消",
+        callback: () => {
+            layer.confirm("操作取消", {
+                btn: [
+                    {
+                        text: '确认', callback: (id) => {
+                            layer.msg("确定");
+                            layer.close(id);
+                        }
+                    },
+                    {
+                        text: '取消', callback: (id) => {
+                            layer.msg("取消");
+                            layer.close(id);
+                        }
+                    }
+                ]
+            });
+        }
+    }
+])
+const modelAdd = ref({})
+const handleAdd = () => {
+    visibleAdd.value = !visibleAdd.value
+}
 </script>

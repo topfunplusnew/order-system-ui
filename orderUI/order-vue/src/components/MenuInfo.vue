@@ -1,7 +1,8 @@
 <template>
     <lay-menu :tree="true" theme="light" v-model:selected-key="selectKey" v-model:openKeys="openKeys"
               @changeSelectedKey="handleChooseKey" @changeOpenKeys="handleOpenKeys" :indent="true" :level="true"
-              :collapse="collapse" :collapse-transition="collapseTransition" style="border-top: #1ab394 3px solid">
+              :collapse="collapse" :collapse-transition="collapseTransition"
+              style="border-top: #1ab394 3px solid;height: 700px;overflow: scroll;">
         <Menu :menuData="menuData"></Menu>
     </lay-menu>
 </template>
