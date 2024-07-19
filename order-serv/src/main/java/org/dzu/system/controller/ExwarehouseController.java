@@ -22,10 +22,10 @@ import org.dzu.common.utils.poi.ExcelUtil;
 import org.dzu.common.core.page.TableDataInfo;
 
 /**
- * 出库信息Controller
+ * 出库Controller
  * 
  * @author ml
- * @date 2024-07-18
+ * @date 2024-07-19
  */
 @RestController
 @RequestMapping("/system/exwarehouse")
@@ -35,7 +35,7 @@ public class ExwarehouseController extends BaseController
     private IExwarehouseService exwarehouseService;
 
     /**
-     * 查询出库信息列表
+     * 查询出库列表
      */
     @PreAuthorize("@ss.hasPermi('system:exwarehouse:list')")
     @GetMapping("/list")
@@ -47,20 +47,20 @@ public class ExwarehouseController extends BaseController
     }
 
     /**
-     * 导出出库信息列表
+     * 导出出库列表
      */
     @PreAuthorize("@ss.hasPermi('system:exwarehouse:export')")
-    @Log(title = "出库信息", businessType = BusinessType.EXPORT)
+    @Log(title = "出库", businessType = BusinessType.EXPORT)
     @PostMapping("/export")
     public void export(HttpServletResponse response, Exwarehouse exwarehouse)
     {
         List<Exwarehouse> list = exwarehouseService.selectExwarehouseList(exwarehouse);
         ExcelUtil<Exwarehouse> util = new ExcelUtil<Exwarehouse>(Exwarehouse.class);
-        util.exportExcel(response, list, "出库信息数据");
+        util.exportExcel(response, list, "出库数据");
     }
 
     /**
-     * 获取出库信息详细信息
+     * 获取出库详细信息
      */
     @PreAuthorize("@ss.hasPermi('system:exwarehouse:query')")
     @GetMapping(value = "/{id}")
@@ -70,10 +70,10 @@ public class ExwarehouseController extends BaseController
     }
 
     /**
-     * 新增出库信息
+     * 新增出库
      */
     @PreAuthorize("@ss.hasPermi('system:exwarehouse:add')")
-    @Log(title = "出库信息", businessType = BusinessType.INSERT)
+    @Log(title = "出库", businessType = BusinessType.INSERT)
     @PostMapping
     public AjaxResult add(@RequestBody Exwarehouse exwarehouse)
     {
@@ -81,10 +81,10 @@ public class ExwarehouseController extends BaseController
     }
 
     /**
-     * 修改出库信息
+     * 修改出库
      */
     @PreAuthorize("@ss.hasPermi('system:exwarehouse:edit')")
-    @Log(title = "出库信息", businessType = BusinessType.UPDATE)
+    @Log(title = "出库", businessType = BusinessType.UPDATE)
     @PutMapping
     public AjaxResult edit(@RequestBody Exwarehouse exwarehouse)
     {
@@ -92,10 +92,10 @@ public class ExwarehouseController extends BaseController
     }
 
     /**
-     * 删除出库信息
+     * 删除出库
      */
     @PreAuthorize("@ss.hasPermi('system:exwarehouse:remove')")
-    @Log(title = "出库信息", businessType = BusinessType.DELETE)
+    @Log(title = "出库", businessType = BusinessType.DELETE)
 	@DeleteMapping("/{ids}")
     public AjaxResult remove(@PathVariable Long[] ids)
     {

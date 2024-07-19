@@ -22,10 +22,10 @@ import org.dzu.common.utils.poi.ExcelUtil;
 import org.dzu.common.core.page.TableDataInfo;
 
 /**
- * 出差记录Controller
+ * 出差登记Controller
  * 
  * @author ml
- * @date 2024-07-18
+ * @date 2024-07-19
  */
 @RestController
 @RequestMapping("/system/businesstrip")
@@ -35,7 +35,7 @@ public class BusinesstripController extends BaseController
     private IBusinesstripService businesstripService;
 
     /**
-     * 查询出差记录列表
+     * 查询出差登记列表
      */
     @PreAuthorize("@ss.hasPermi('system:businesstrip:list')")
     @GetMapping("/list")
@@ -47,20 +47,20 @@ public class BusinesstripController extends BaseController
     }
 
     /**
-     * 导出出差记录列表
+     * 导出出差登记列表
      */
     @PreAuthorize("@ss.hasPermi('system:businesstrip:export')")
-    @Log(title = "出差记录", businessType = BusinessType.EXPORT)
+    @Log(title = "出差登记", businessType = BusinessType.EXPORT)
     @PostMapping("/export")
     public void export(HttpServletResponse response, Businesstrip businesstrip)
     {
         List<Businesstrip> list = businesstripService.selectBusinesstripList(businesstrip);
         ExcelUtil<Businesstrip> util = new ExcelUtil<Businesstrip>(Businesstrip.class);
-        util.exportExcel(response, list, "出差记录数据");
+        util.exportExcel(response, list, "出差登记数据");
     }
 
     /**
-     * 获取出差记录详细信息
+     * 获取出差登记详细信息
      */
     @PreAuthorize("@ss.hasPermi('system:businesstrip:query')")
     @GetMapping(value = "/{id}")
@@ -70,10 +70,10 @@ public class BusinesstripController extends BaseController
     }
 
     /**
-     * 新增出差记录
+     * 新增出差登记
      */
     @PreAuthorize("@ss.hasPermi('system:businesstrip:add')")
-    @Log(title = "出差记录", businessType = BusinessType.INSERT)
+    @Log(title = "出差登记", businessType = BusinessType.INSERT)
     @PostMapping
     public AjaxResult add(@RequestBody Businesstrip businesstrip)
     {
@@ -81,10 +81,10 @@ public class BusinesstripController extends BaseController
     }
 
     /**
-     * 修改出差记录
+     * 修改出差登记
      */
     @PreAuthorize("@ss.hasPermi('system:businesstrip:edit')")
-    @Log(title = "出差记录", businessType = BusinessType.UPDATE)
+    @Log(title = "出差登记", businessType = BusinessType.UPDATE)
     @PutMapping
     public AjaxResult edit(@RequestBody Businesstrip businesstrip)
     {
@@ -92,10 +92,10 @@ public class BusinesstripController extends BaseController
     }
 
     /**
-     * 删除出差记录
+     * 删除出差登记
      */
     @PreAuthorize("@ss.hasPermi('system:businesstrip:remove')")
-    @Log(title = "出差记录", businessType = BusinessType.DELETE)
+    @Log(title = "出差登记", businessType = BusinessType.DELETE)
 	@DeleteMapping("/{ids}")
     public AjaxResult remove(@PathVariable Long[] ids)
     {

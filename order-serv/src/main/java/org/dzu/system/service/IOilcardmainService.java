@@ -1,61 +1,60 @@
 package org.dzu.system.service;
 
+import java.util.List;
 import org.dzu.system.domain.Oilcardmain;
 
-import java.util.List;
-
 /**
- * 加油卡主卡登记信息Service接口
+ * 基础信息-加油卡主卡登记Service接口
  * 
  * @author ml
- * @date 2024-07-18
+ * @date 2024-07-19
  */
 public interface IOilcardmainService 
 {
     /**
-     * 查询加油卡主卡登记信息
+     * 查询基础信息-加油卡主卡登记
      * 
-     * @param id 加油卡主卡登记信息主键
-     * @return 加油卡主卡登记信息
+     * @param id 基础信息-加油卡主卡登记主键
+     * @return 基础信息-加油卡主卡登记
      */
     public Oilcardmain selectOilcardmainById(Long id);
 
     /**
-     * 查询加油卡主卡登记信息列表
+     * 查询基础信息-加油卡主卡登记列表
      * 
-     * @param oilcardmain 加油卡主卡登记信息
-     * @return 加油卡主卡登记信息集合
+     * @param oilcardmain 基础信息-加油卡主卡登记
+     * @return 基础信息-加油卡主卡登记集合
      */
     public List<Oilcardmain> selectOilcardmainList(Oilcardmain oilcardmain);
 
     /**
-     * 新增加油卡主卡登记信息
+     * 新增基础信息-加油卡主卡登记
      * 
-     * @param oilcardmain 加油卡主卡登记信息
+     * @param oilcardmain 基础信息-加油卡主卡登记
      * @return 结果
      */
     public int insertOilcardmain(Oilcardmain oilcardmain);
 
     /**
-     * 修改加油卡主卡登记信息
+     * 修改基础信息-加油卡主卡登记
      * 
-     * @param oilcardmain 加油卡主卡登记信息
+     * @param oilcardmain 基础信息-加油卡主卡登记
      * @return 结果
      */
     public int updateOilcardmain(Oilcardmain oilcardmain);
 
     /**
-     * 批量删除加油卡主卡登记信息
+     * 批量删除基础信息-加油卡主卡登记
      * 
-     * @param ids 需要删除的加油卡主卡登记信息主键集合
+     * @param ids 需要删除的基础信息-加油卡主卡登记主键集合
      * @return 结果
      */
     public int deleteOilcardmainByIds(Long[] ids);
 
     /**
-     * 删除加油卡主卡登记信息信息
+     * 删除基础信息-加油卡主卡登记信息
      * 
-     * @param id 加油卡主卡登记信息主键
+     * @param id 基础信息-加油卡主卡登记主键
      * @return 结果
      */
     public int deleteOilcardmainById(Long id);

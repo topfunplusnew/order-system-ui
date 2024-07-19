@@ -6,16 +6,16 @@ import org.dzu.common.annotation.Excel;
 import org.dzu.common.core.domain.BaseEntity;
 
 /**
- * 库存对象 inventory
+ * 货物入库对象 inventory
  * 
  * @author ml
- * @date 2024-07-18
+ * @date 2024-07-19
  */
 public class Inventory extends BaseEntity
 {
     private static final long serialVersionUID = 1L;
 
-    /** 主键 */
+    /** $column.columnComment */
     private Long id;
 
     /** 仓库ID */

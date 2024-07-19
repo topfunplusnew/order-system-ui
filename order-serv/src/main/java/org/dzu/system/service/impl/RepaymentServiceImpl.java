@@ -1,19 +1,18 @@
 package org.dzu.system.service.impl;
 
+import java.util.List;
 import org.dzu.common.utils.DateUtils;
-import org.dzu.system.domain.Repayment;
-import org.dzu.system.mapper.RepaymentMapper;
-import org.dzu.system.service.IRepaymentService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-
-import java.util.List;
+import org.dzu.system.mapper.RepaymentMapper;
+import org.dzu.system.domain.Repayment;
+import org.dzu.system.service.IRepaymentService;
 
 /**
- * 还款信息Service业务层处理
+ * 还款记录Service业务层处理
  * 
  * @author ml
- * @date 2024-07-18
+ * @date 2024-07-19
  */
 @Service
 public class RepaymentServiceImpl implements IRepaymentService 
@@ -22,10 +21,10 @@ public class RepaymentServiceImpl implements IRepaymentService
     private RepaymentMapper repaymentMapper;
 
     /**
-     * 查询还款信息
+     * 查询还款记录
      * 
-     * @param id 还款信息主键
-     * @return 还款信息
+     * @param id 还款记录主键
+     * @return 还款记录
      */
     @Override
     public Repayment selectRepaymentById(Long id)
@@ -34,10 +33,10 @@ public class RepaymentServiceImpl implements IRepaymentService
     }
 
     /**
-     * 查询还款信息列表
+     * 查询还款记录列表
      * 
-     * @param repayment 还款信息
-     * @return 还款信息
+     * @param repayment 还款记录
+     * @return 还款记录
      */
     @Override
     public List<Repayment> selectRepaymentList(Repayment repayment)
@@ -46,9 +45,9 @@ public class RepaymentServiceImpl implements IRepaymentService
     }
 
     /**
-     * 新增还款信息
+     * 新增还款记录
      * 
-     * @param repayment 还款信息
+     * @param repayment 还款记录
      * @return 结果
      */
     @Override
@@ -58,9 +57,9 @@ public class RepaymentServiceImpl implements IRepaymentService
     }
 
     /**
-     * 修改还款信息
+     * 修改还款记录
      * 
-     * @param repayment 还款信息
+     * @param repayment 还款记录
      * @return 结果
      */
     @Override
@@ -71,9 +70,9 @@ public class RepaymentServiceImpl implements IRepaymentService
     }
 
     /**
-     * 批量删除还款信息
+     * 批量删除还款记录
      * 
-     * @param ids 需要删除的还款信息主键
+     * @param ids 需要删除的还款记录主键
      * @return 结果
      */
     @Override
@@ -83,9 +82,9 @@ public class RepaymentServiceImpl implements IRepaymentService
     }
 
     /**
-     * 删除还款信息信息
+     * 删除还款记录信息
      * 
-     * @param id 还款信息主键
+     * @param id 还款记录主键
      * @return 结果
      */
     @Override

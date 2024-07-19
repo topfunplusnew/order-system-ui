@@ -22,10 +22,10 @@ import org.dzu.common.utils.poi.ExcelUtil;
 import org.dzu.common.core.page.TableDataInfo;
 
 /**
- * 银行承兑Controller
+ * 商业票据、银行承兑Controller
  * 
  * @author ml
- * @date 2024-07-18
+ * @date 2024-07-19
  */
 @RestController
 @RequestMapping("/system/bankacceptance")
@@ -35,7 +35,7 @@ public class BankacceptanceController extends BaseController
     private IBankacceptanceService bankacceptanceService;
 
     /**
-     * 查询银行承兑列表
+     * 查询商业票据、银行承兑列表
      */
     @PreAuthorize("@ss.hasPermi('system:bankacceptance:list')")
     @GetMapping("/list")
@@ -47,20 +47,20 @@ public class BankacceptanceController extends BaseController
     }
 
     /**
-     * 导出银行承兑列表
+     * 导出商业票据、银行承兑列表
      */
     @PreAuthorize("@ss.hasPermi('system:bankacceptance:export')")
-    @Log(title = "银行承兑", businessType = BusinessType.EXPORT)
+    @Log(title = "商业票据、银行承兑", businessType = BusinessType.EXPORT)
     @PostMapping("/export")
     public void export(HttpServletResponse response, Bankacceptance bankacceptance)
     {
         List<Bankacceptance> list = bankacceptanceService.selectBankacceptanceList(bankacceptance);
         ExcelUtil<Bankacceptance> util = new ExcelUtil<Bankacceptance>(Bankacceptance.class);
-        util.exportExcel(response, list, "银行承兑数据");
+        util.exportExcel(response, list, "商业票据、银行承兑数据");
     }
 
     /**
-     * 获取银行承兑详细信息
+     * 获取商业票据、银行承兑详细信息
      */
     @PreAuthorize("@ss.hasPermi('system:bankacceptance:query')")
     @GetMapping(value = "/{id}")
@@ -70,10 +70,10 @@ public class BankacceptanceController extends BaseController
     }
 
     /**
-     * 新增银行承兑
+     * 新增商业票据、银行承兑
      */
     @PreAuthorize("@ss.hasPermi('system:bankacceptance:add')")
-    @Log(title = "银行承兑", businessType = BusinessType.INSERT)
+    @Log(title = "商业票据、银行承兑", businessType = BusinessType.INSERT)
     @PostMapping
     public AjaxResult add(@RequestBody Bankacceptance bankacceptance)
     {
@@ -81,10 +81,10 @@ public class BankacceptanceController extends BaseController
     }
 
     /**
-     * 修改银行承兑
+     * 修改商业票据、银行承兑
      */
     @PreAuthorize("@ss.hasPermi('system:bankacceptance:edit')")
-    @Log(title = "银行承兑", businessType = BusinessType.UPDATE)
+    @Log(title = "商业票据、银行承兑", businessType = BusinessType.UPDATE)
     @PutMapping
     public AjaxResult edit(@RequestBody Bankacceptance bankacceptance)
     {
@@ -92,10 +92,10 @@ public class BankacceptanceController extends BaseController
     }
 
     /**
-     * 删除银行承兑
+     * 删除商业票据、银行承兑
      */
     @PreAuthorize("@ss.hasPermi('system:bankacceptance:remove')")
-    @Log(title = "银行承兑", businessType = BusinessType.DELETE)
+    @Log(title = "商业票据、银行承兑", businessType = BusinessType.DELETE)
 	@DeleteMapping("/{ids}")
     public AjaxResult remove(@PathVariable Long[] ids)
     {

@@ -22,10 +22,10 @@ import org.dzu.common.utils.poi.ExcelUtil;
 import org.dzu.common.core.page.TableDataInfo;
 
 /**
- * 银行账户Controller
+ * 银行卡管理Controller
  * 
  * @author ml
- * @date 2024-07-18
+ * @date 2024-07-19
  */
 @RestController
 @RequestMapping("/system/bankaccount")
@@ -35,7 +35,7 @@ public class BankaccountController extends BaseController
     private IBankaccountService bankaccountService;
 
     /**
-     * 查询银行账户列表
+     * 查询银行卡管理列表
      */
     @PreAuthorize("@ss.hasPermi('system:bankaccount:list')")
     @GetMapping("/list")
@@ -47,20 +47,20 @@ public class BankaccountController extends BaseController
     }
 
     /**
-     * 导出银行账户列表
+     * 导出银行卡管理列表
      */
     @PreAuthorize("@ss.hasPermi('system:bankaccount:export')")
-    @Log(title = "银行账户", businessType = BusinessType.EXPORT)
+    @Log(title = "银行卡管理", businessType = BusinessType.EXPORT)
     @PostMapping("/export")
     public void export(HttpServletResponse response, Bankaccount bankaccount)
     {
         List<Bankaccount> list = bankaccountService.selectBankaccountList(bankaccount);
         ExcelUtil<Bankaccount> util = new ExcelUtil<Bankaccount>(Bankaccount.class);
-        util.exportExcel(response, list, "银行账户数据");
+        util.exportExcel(response, list, "银行卡管理数据");
     }
 
     /**
-     * 获取银行账户详细信息
+     * 获取银行卡管理详细信息
      */
     @PreAuthorize("@ss.hasPermi('system:bankaccount:query')")
     @GetMapping(value = "/{id}")
@@ -70,10 +70,10 @@ public class BankaccountController extends BaseController
     }
 
     /**
-     * 新增银行账户
+     * 新增银行卡管理
      */
     @PreAuthorize("@ss.hasPermi('system:bankaccount:add')")
-    @Log(title = "银行账户", businessType = BusinessType.INSERT)
+    @Log(title = "银行卡管理", businessType = BusinessType.INSERT)
     @PostMapping
     public AjaxResult add(@RequestBody Bankaccount bankaccount)
     {
@@ -81,10 +81,10 @@ public class BankaccountController extends BaseController
     }
 
     /**
-     * 修改银行账户
+     * 修改银行卡管理
      */
     @PreAuthorize("@ss.hasPermi('system:bankaccount:edit')")
-    @Log(title = "银行账户", businessType = BusinessType.UPDATE)
+    @Log(title = "银行卡管理", businessType = BusinessType.UPDATE)
     @PutMapping
     public AjaxResult edit(@RequestBody Bankaccount bankaccount)
     {
@@ -92,10 +92,10 @@ public class BankaccountController extends BaseController
     }
 
     /**
-     * 删除银行账户
+     * 删除银行卡管理
      */
     @PreAuthorize("@ss.hasPermi('system:bankaccount:remove')")
-    @Log(title = "银行账户", businessType = BusinessType.DELETE)
+    @Log(title = "银行卡管理", businessType = BusinessType.DELETE)
 	@DeleteMapping("/{ids}")
     public AjaxResult remove(@PathVariable Long[] ids)
     {

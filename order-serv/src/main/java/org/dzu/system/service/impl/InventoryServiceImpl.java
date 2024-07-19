@@ -9,10 +9,10 @@ import org.dzu.system.domain.Inventory;
 import org.dzu.system.service.IInventoryService;
 
 /**
- * 库存Service业务层处理
+ * 货物入库Service业务层处理
  * 
  * @author ml
- * @date 2024-07-18
+ * @date 2024-07-19
  */
 @Service
 public class InventoryServiceImpl implements IInventoryService 
@@ -21,10 +21,10 @@ public class InventoryServiceImpl implements IInventoryService
     private InventoryMapper inventoryMapper;
 
     /**
-     * 查询库存
+     * 查询货物入库
      * 
-     * @param id 库存主键
-     * @return 库存
+     * @param id 货物入库主键
+     * @return 货物入库
      */
     @Override
     public Inventory selectInventoryById(Long id)
@@ -33,10 +33,10 @@ public class InventoryServiceImpl implements IInventoryService
     }
 
     /**
-     * 查询库存列表
+     * 查询货物入库列表
      * 
-     * @param inventory 库存
-     * @return 库存
+     * @param inventory 货物入库
+     * @return 货物入库
      */
     @Override
     public List<Inventory> selectInventoryList(Inventory inventory)
@@ -45,9 +45,9 @@ public class InventoryServiceImpl implements IInventoryService
     }
 
     /**
-     * 新增库存
+     * 新增货物入库
      * 
-     * @param inventory 库存
+     * @param inventory 货物入库
      * @return 结果
      */
     @Override
@@ -57,9 +57,9 @@ public class InventoryServiceImpl implements IInventoryService
     }
 
     /**
-     * 修改库存
+     * 修改货物入库
      * 
-     * @param inventory 库存
+     * @param inventory 货物入库
      * @return 结果
      */
     @Override
@@ -70,9 +70,9 @@ public class InventoryServiceImpl implements IInventoryService
     }
 
     /**
-     * 批量删除库存
+     * 批量删除货物入库
      * 
-     * @param ids 需要删除的库存主键
+     * @param ids 需要删除的货物入库主键
      * @return 结果
      */
     @Override
@@ -82,9 +82,9 @@ public class InventoryServiceImpl implements IInventoryService
     }
 
     /**
-     * 删除库存信息
+     * 删除货物入库信息
      * 
-     * @param id 库存主键
+     * @param id 货物入库主键
      * @return 结果
      */
     @Override

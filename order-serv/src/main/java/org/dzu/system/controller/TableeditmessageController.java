@@ -22,10 +22,10 @@ import org.dzu.common.utils.poi.ExcelUtil;
 import org.dzu.common.core.page.TableDataInfo;
 
 /**
- * 信息Controller
+ * 变动日志信息Controller
  * 
  * @author ml
- * @date 2024-07-18
+ * @date 2024-07-19
  */
 @RestController
 @RequestMapping("/system/tableeditmessage")
@@ -35,7 +35,7 @@ public class TableeditmessageController extends BaseController
     private ITableeditmessageService tableeditmessageService;
 
     /**
-     * 查询信息列表
+     * 查询变动日志信息列表
      */
     @PreAuthorize("@ss.hasPermi('system:tableeditmessage:list')")
     @GetMapping("/list")
@@ -47,20 +47,20 @@ public class TableeditmessageController extends BaseController
     }
 
     /**
-     * 导出信息列表
+     * 导出变动日志信息列表
      */
     @PreAuthorize("@ss.hasPermi('system:tableeditmessage:export')")
-    @Log(title = "信息", businessType = BusinessType.EXPORT)
+    @Log(title = "变动日志信息", businessType = BusinessType.EXPORT)
     @PostMapping("/export")
     public void export(HttpServletResponse response, Tableeditmessage tableeditmessage)
     {
         List<Tableeditmessage> list = tableeditmessageService.selectTableeditmessageList(tableeditmessage);
         ExcelUtil<Tableeditmessage> util = new ExcelUtil<Tableeditmessage>(Tableeditmessage.class);
-        util.exportExcel(response, list, "信息数据");
+        util.exportExcel(response, list, "变动日志信息数据");
     }
 
     /**
-     * 获取信息详细信息
+     * 获取变动日志信息详细信息
      */
     @PreAuthorize("@ss.hasPermi('system:tableeditmessage:query')")
     @GetMapping(value = "/{id}")
@@ -70,10 +70,10 @@ public class TableeditmessageController extends BaseController
     }
 
     /**
-     * 新增信息
+     * 新增变动日志信息
      */
     @PreAuthorize("@ss.hasPermi('system:tableeditmessage:add')")
-    @Log(title = "信息", businessType = BusinessType.INSERT)
+    @Log(title = "变动日志信息", businessType = BusinessType.INSERT)
     @PostMapping
     public AjaxResult add(@RequestBody Tableeditmessage tableeditmessage)
     {
@@ -81,10 +81,10 @@ public class TableeditmessageController extends BaseController
     }
 
     /**
-     * 修改信息
+     * 修改变动日志信息
      */
     @PreAuthorize("@ss.hasPermi('system:tableeditmessage:edit')")
-    @Log(title = "信息", businessType = BusinessType.UPDATE)
+    @Log(title = "变动日志信息", businessType = BusinessType.UPDATE)
     @PutMapping
     public AjaxResult edit(@RequestBody Tableeditmessage tableeditmessage)
     {
@@ -92,10 +92,10 @@ public class TableeditmessageController extends BaseController
     }
 
     /**
-     * 删除信息
+     * 删除变动日志信息
      */
     @PreAuthorize("@ss.hasPermi('system:tableeditmessage:remove')")
-    @Log(title = "信息", businessType = BusinessType.DELETE)
+    @Log(title = "变动日志信息", businessType = BusinessType.DELETE)
 	@DeleteMapping("/{ids}")
     public AjaxResult remove(@PathVariable Long[] ids)
     {

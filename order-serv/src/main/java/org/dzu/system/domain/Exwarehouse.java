@@ -6,16 +6,16 @@ import org.dzu.common.annotation.Excel;
 import org.dzu.common.core.domain.BaseEntity;
 
 /**
- * 出库信息对象 exwarehouse
+ * 出库对象 exwarehouse
  * 
  * @author ml
- * @date 2024-07-18
+ * @date 2024-07-19
  */
 public class Exwarehouse extends BaseEntity
 {
     private static final long serialVersionUID = 1L;
 
-    /** 主键 */
+    /** $column.columnComment */
     private Long id;
 
     /** 仓库ID */
@@ -45,6 +45,18 @@ public class Exwarehouse extends BaseEntity
     /** 删除标记 */
     @Excel(name = "删除标记")
     private Long delFlag;
+
+    /** 添加时间 */
+    @Excel(name = "添加时间")
+    private String addtime;
+
+    /** 操作人员ID */
+    @Excel(name = "操作人员ID")
+    private Long userId;
+
+    /** 操作人员姓名 */
+    @Excel(name = "操作人员姓名")
+    private String UserName;
 
     public void setId(Long id) 
     {
@@ -118,6 +130,33 @@ public class Exwarehouse extends BaseEntity
     {
         return delFlag;
     }
+    public void setAddtime(String addtime) 
+    {
+        this.addtime = addtime;
+    }
+
+    public String getAddtime() 
+    {
+        return addtime;
+    }
+    public void setUserId(Long userId) 
+    {
+        this.userId = userId;
+    }
+
+    public Long getUserId() 
+    {
+        return userId;
+    }
+    public void setUserName(String UserName) 
+    {
+        this.UserName = UserName;
+    }
+
+    public String getUserName() 
+    {
+        return UserName;
+    }
 
     @Override
     public String toString() {
@@ -131,6 +170,9 @@ public class Exwarehouse extends BaseEntity
             .append("ordersNo", getOrdersNo())
             .append("delFlag", getDelFlag())
             .append("updateTime", getUpdateTime())
+            .append("addtime", getAddtime())
+            .append("userId", getUserId())
+            .append("UserName", getUserName())
             .toString();
     }
 }

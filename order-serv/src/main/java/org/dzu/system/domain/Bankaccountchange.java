@@ -6,16 +6,16 @@ import org.dzu.common.annotation.Excel;
 import org.dzu.common.core.domain.BaseEntity;
 
 /**
- * 银行账号变更对象 bankaccountchange
+ * 银行卡资金变动对象 bankaccountchange
  * 
  * @author ml
- * @date 2024-07-18
+ * @date 2024-07-19
  */
 public class Bankaccountchange extends BaseEntity
 {
     private static final long serialVersionUID = 1L;
 
-    /** 主键 */
+    /** $column.columnComment */
     private Long id;
 
     /** 己方账号 */

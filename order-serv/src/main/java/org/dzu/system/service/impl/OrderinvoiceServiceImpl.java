@@ -1,19 +1,18 @@
 package org.dzu.system.service.impl;
 
+import java.util.List;
 import org.dzu.common.utils.DateUtils;
-import org.dzu.system.domain.Orderinvoice;
-import org.dzu.system.mapper.OrderinvoiceMapper;
-import org.dzu.system.service.IOrderinvoiceService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-
-import java.util.List;
+import org.dzu.system.mapper.OrderinvoiceMapper;
+import org.dzu.system.domain.Orderinvoice;
+import org.dzu.system.service.IOrderinvoiceService;
 
 /**
- * 订单发票信息Service业务层处理
+ * 订单发票Service业务层处理
  * 
  * @author ml
- * @date 2024-07-18
+ * @date 2024-07-19
  */
 @Service
 public class OrderinvoiceServiceImpl implements IOrderinvoiceService 
@@ -22,10 +21,10 @@ public class OrderinvoiceServiceImpl implements IOrderinvoiceService
     private OrderinvoiceMapper orderinvoiceMapper;
 
     /**
-     * 查询订单发票信息
+     * 查询订单发票
      * 
-     * @param id 订单发票信息主键
-     * @return 订单发票信息
+     * @param id 订单发票主键
+     * @return 订单发票
      */
     @Override
     public Orderinvoice selectOrderinvoiceById(Long id)
@@ -34,10 +33,10 @@ public class OrderinvoiceServiceImpl implements IOrderinvoiceService
     }
 
     /**
-     * 查询订单发票信息列表
+     * 查询订单发票列表
      * 
-     * @param orderinvoice 订单发票信息
-     * @return 订单发票信息
+     * @param orderinvoice 订单发票
+     * @return 订单发票
      */
     @Override
     public List<Orderinvoice> selectOrderinvoiceList(Orderinvoice orderinvoice)
@@ -46,9 +45,9 @@ public class OrderinvoiceServiceImpl implements IOrderinvoiceService
     }
 
     /**
-     * 新增订单发票信息
+     * 新增订单发票
      * 
-     * @param orderinvoice 订单发票信息
+     * @param orderinvoice 订单发票
      * @return 结果
      */
     @Override
@@ -58,9 +57,9 @@ public class OrderinvoiceServiceImpl implements IOrderinvoiceService
     }
 
     /**
-     * 修改订单发票信息
+     * 修改订单发票
      * 
-     * @param orderinvoice 订单发票信息
+     * @param orderinvoice 订单发票
      * @return 结果
      */
     @Override
@@ -71,9 +70,9 @@ public class OrderinvoiceServiceImpl implements IOrderinvoiceService
     }
 
     /**
-     * 批量删除订单发票信息
+     * 批量删除订单发票
      * 
-     * @param ids 需要删除的订单发票信息主键
+     * @param ids 需要删除的订单发票主键
      * @return 结果
      */
     @Override
@@ -83,9 +82,9 @@ public class OrderinvoiceServiceImpl implements IOrderinvoiceService
     }
 
     /**
-     * 删除订单发票信息信息
+     * 删除订单发票信息
      * 
-     * @param id 订单发票信息主键
+     * @param id 订单发票主键
      * @return 结果
      */
     @Override

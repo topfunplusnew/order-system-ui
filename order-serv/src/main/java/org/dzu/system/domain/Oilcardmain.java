@@ -6,16 +6,16 @@ import org.dzu.common.annotation.Excel;
 import org.dzu.common.core.domain.BaseEntity;
 
 /**
- * 加油卡主卡登记信息对象 oilcardmain
+ * 基础信息-加油卡主卡登记对象 oilcardmain
  * 
  * @author ml
- * @date 2024-07-18
+ * @date 2024-07-19
  */
 public class Oilcardmain extends BaseEntity
 {
     private static final long serialVersionUID = 1L;
 
-    /** 主键 */
+    /** $column.columnComment */
     private Long id;
 
     /** 加油卡卡号 */

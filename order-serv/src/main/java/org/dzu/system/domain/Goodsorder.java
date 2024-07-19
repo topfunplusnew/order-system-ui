@@ -6,16 +6,16 @@ import org.dzu.common.annotation.Excel;
 import org.dzu.common.core.domain.BaseEntity;
 
 /**
- * 货物订单对象 goodsorder
+ * 订单对象 goodsorder
  * 
  * @author ml
- * @date 2024-07-18
+ * @date 2024-07-19
  */
 public class Goodsorder extends BaseEntity
 {
     private static final long serialVersionUID = 1L;
 
-    /** 主键 */
+    /** $column.columnComment */
     private Long id;
 
     /** 订单编号（UUID） */
@@ -82,8 +82,8 @@ public class Goodsorder extends BaseEntity
     @Excel(name = "附件路径")
     private String path;
 
-    /** 打款状态(已打款，未打款) */
-    @Excel(name = "打款状态(已打款，未打款)")
+    /** 打款状态(申请中，已打款，未打款) */
+    @Excel(name = "打款状态(申请中，已打款，未打款)")
     private String PaymentState;
 
     /** 陆运银行户名 */

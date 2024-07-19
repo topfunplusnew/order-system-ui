@@ -9,13 +9,13 @@ import org.dzu.common.core.domain.BaseEntity;
  * 资金调整单信息对象 offsetting
  * 
  * @author ml
- * @date 2024-07-18
+ * @date 2024-07-19
  */
 public class Offsetting extends BaseEntity
 {
     private static final long serialVersionUID = 1L;
 
-    /** 主键 */
+    /** $column.columnComment */
     private Long id;
 
     /** 冲抵编号（UUID） */
@@ -34,16 +34,16 @@ public class Offsetting extends BaseEntity
     @Excel(name = "金额")
     private Long moneyAmount;
 
-    /** 对方公司 */
-    @Excel(name = "对方公司")
+    /** 公司 */
+    @Excel(name = "公司")
     private String company;
 
-    /** 对方公司ID */
-    @Excel(name = "对方公司ID")
+    /** 公司ID */
+    @Excel(name = "公司ID")
     private Long companyId;
 
-    /** 对方公司类型（1、客户 2、供应商） */
-    @Excel(name = "对方公司类型", readConverterExp = "1=、客户,2=、供应商")
+    /** 公司类型（1、客户 2、供应商） */
+    @Excel(name = "公司类型", readConverterExp = "1=、客户,2=、供应商")
     private Long companyType;
 
     /** 备注 */

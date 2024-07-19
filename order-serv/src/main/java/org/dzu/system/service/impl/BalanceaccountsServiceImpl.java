@@ -9,10 +9,10 @@ import org.dzu.system.domain.Balanceaccounts;
 import org.dzu.system.service.IBalanceaccountsService;
 
 /**
- * 余额账户Service业务层处理
+ * 平账Service业务层处理
  * 
  * @author ml
- * @date 2024-07-18
+ * @date 2024-07-19
  */
 @Service
 public class BalanceaccountsServiceImpl implements IBalanceaccountsService 
@@ -21,10 +21,10 @@ public class BalanceaccountsServiceImpl implements IBalanceaccountsService
     private BalanceaccountsMapper balanceaccountsMapper;
 
     /**
-     * 查询余额账户
+     * 查询平账
      * 
-     * @param id 余额账户主键
-     * @return 余额账户
+     * @param id 平账主键
+     * @return 平账
      */
     @Override
     public Balanceaccounts selectBalanceaccountsById(Long id)
@@ -33,10 +33,10 @@ public class BalanceaccountsServiceImpl implements IBalanceaccountsService
     }
 
     /**
-     * 查询余额账户列表
+     * 查询平账列表
      * 
-     * @param balanceaccounts 余额账户
-     * @return 余额账户
+     * @param balanceaccounts 平账
+     * @return 平账
      */
     @Override
     public List<Balanceaccounts> selectBalanceaccountsList(Balanceaccounts balanceaccounts)
@@ -45,9 +45,9 @@ public class BalanceaccountsServiceImpl implements IBalanceaccountsService
     }
 
     /**
-     * 新增余额账户
+     * 新增平账
      * 
-     * @param balanceaccounts 余额账户
+     * @param balanceaccounts 平账
      * @return 结果
      */
     @Override
@@ -57,9 +57,9 @@ public class BalanceaccountsServiceImpl implements IBalanceaccountsService
     }
 
     /**
-     * 修改余额账户
+     * 修改平账
      * 
-     * @param balanceaccounts 余额账户
+     * @param balanceaccounts 平账
      * @return 结果
      */
     @Override
@@ -70,9 +70,9 @@ public class BalanceaccountsServiceImpl implements IBalanceaccountsService
     }
 
     /**
-     * 批量删除余额账户
+     * 批量删除平账
      * 
-     * @param ids 需要删除的余额账户主键
+     * @param ids 需要删除的平账主键
      * @return 结果
      */
     @Override
@@ -82,9 +82,9 @@ public class BalanceaccountsServiceImpl implements IBalanceaccountsService
     }
 
     /**
-     * 删除余额账户信息
+     * 删除平账信息
      * 
-     * @param id 余额账户主键
+     * @param id 平账主键
      * @return 结果
      */
     @Override

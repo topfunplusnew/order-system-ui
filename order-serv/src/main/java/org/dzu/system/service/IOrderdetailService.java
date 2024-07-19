@@ -1,14 +1,13 @@
 package org.dzu.system.service;
 
-import org.dzu.system.domain.Orderdetail;
-
 import java.util.List;
+import org.dzu.system.domain.Orderdetail;
 
 /**
  * 订单详情Service接口
  * 
  * @author ml
- * @date 2024-07-18
+ * @date 2024-07-19
  */
 public interface IOrderdetailService 
 {

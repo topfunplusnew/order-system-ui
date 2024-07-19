@@ -2,7 +2,7 @@
 <!DOCTYPE mapper
 PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
 "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
-<mapper namespace="org.dzu.system.mapper.PaymentMapper">
+<mapper namespace="com.ruoyi.system.mapper.PaymentMapper">
     
     <resultMap type="Payment" id="PaymentResult">
         <result property="id"    column="id"    />
@@ -27,10 +27,11 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         <result property="userId"    column="userId"    />
         <result property="UserName"    column="UserName"    />
         <result property="updateTime"    column="update_time"    />
+        <result property="delFlag"    column="delFlag"    />
     </resultMap>
 
     <sql id="selectPaymentVo">
-        select id, payCategory, payNO, fundsDate, payType, moneyAmount, selfAcountsName, selfBankNo, selfBankName, selfBankID, otherAcountsName, otherBankNo, otherBankName, paymentState, company, company_id, companyType, comments, addtime, userId, UserName, update_time from payment
+        select id, payCategory, payNO, fundsDate, payType, moneyAmount, selfAcountsName, selfBankNo, selfBankName, selfBankID, otherAcountsName, otherBankNo, otherBankName, paymentState, company, company_id, companyType, comments, addtime, userId, UserName, update_time, delFlag from payment
     </sql>
 
     <select id="selectPaymentList" parameterType="Payment" resultMap="PaymentResult">
@@ -56,6 +57,7 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
             <if test="addtime != null  and addtime != ''"> and addtime = #{addtime}</if>
             <if test="userId != null "> and userId = #{userId}</if>
             <if test="UserName != null  and UserName != ''"> and UserName like concat('%', #{UserName}, '%')</if>
+            <if test="delFlag != null "> and delFlag = #{delFlag}</if>
         </where>
     </select>
     
@@ -88,6 +90,7 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
             <if test="userId != null">userId,</if>
             <if test="UserName != null">UserName,</if>
             <if test="updateTime != null">update_time,</if>
+            <if test="delFlag != null">delFlag,</if>
          </trim>
         <trim prefix="values (" suffix=")" suffixOverrides=",">
             <if test="payCategory != null">#{payCategory},</if>
@@ -111,6 +114,7 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
             <if test="userId != null">#{userId},</if>
             <if test="UserName != null">#{UserName},</if>
             <if test="updateTime != null">#{updateTime},</if>
+            <if test="delFlag != null">#{delFlag},</if>
          </trim>
     </insert>
 
@@ -138,6 +142,7 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
             <if test="userId != null">userId = #{userId},</if>
             <if test="UserName != null">UserName = #{UserName},</if>
             <if test="updateTime != null">update_time = #{updateTime},</if>
+            <if test="delFlag != null">delFlag = #{delFlag},</if>
         </trim>
         where id = #{id}
     </update>

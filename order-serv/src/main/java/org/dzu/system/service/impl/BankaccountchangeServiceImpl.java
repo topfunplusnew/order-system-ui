@@ -1,19 +1,18 @@
 package org.dzu.system.service.impl;
 
+import java.util.List;
 import org.dzu.common.utils.DateUtils;
-import org.dzu.system.domain.Bankaccountchange;
-import org.dzu.system.mapper.BankaccountchangeMapper;
-import org.dzu.system.service.IBankaccountchangeService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-
-import java.util.List;
+import org.dzu.system.mapper.BankaccountchangeMapper;
+import org.dzu.system.domain.Bankaccountchange;
+import org.dzu.system.service.IBankaccountchangeService;
 
 /**
- * 银行账号变更Service业务层处理
+ * 银行卡资金变动Service业务层处理
  * 
  * @author ml
- * @date 2024-07-18
+ * @date 2024-07-19
  */
 @Service
 public class BankaccountchangeServiceImpl implements IBankaccountchangeService 
@@ -22,10 +21,10 @@ public class BankaccountchangeServiceImpl implements IBankaccountchangeService
     private BankaccountchangeMapper bankaccountchangeMapper;
 
     /**
-     * 查询银行账号变更
+     * 查询银行卡资金变动
      * 
-     * @param id 银行账号变更主键
-     * @return 银行账号变更
+     * @param id 银行卡资金变动主键
+     * @return 银行卡资金变动
      */
     @Override
     public Bankaccountchange selectBankaccountchangeById(Long id)
@@ -34,10 +33,10 @@ public class BankaccountchangeServiceImpl implements IBankaccountchangeService
     }
 
     /**
-     * 查询银行账号变更列表
+     * 查询银行卡资金变动列表
      * 
-     * @param bankaccountchange 银行账号变更
-     * @return 银行账号变更
+     * @param bankaccountchange 银行卡资金变动
+     * @return 银行卡资金变动
      */
     @Override
     public List<Bankaccountchange> selectBankaccountchangeList(Bankaccountchange bankaccountchange)
@@ -46,9 +45,9 @@ public class BankaccountchangeServiceImpl implements IBankaccountchangeService
     }
 
     /**
-     * 新增银行账号变更
+     * 新增银行卡资金变动
      * 
-     * @param bankaccountchange 银行账号变更
+     * @param bankaccountchange 银行卡资金变动
      * @return 结果
      */
     @Override
@@ -58,9 +57,9 @@ public class BankaccountchangeServiceImpl implements IBankaccountchangeService
     }
 
     /**
-     * 修改银行账号变更
+     * 修改银行卡资金变动
      * 
-     * @param bankaccountchange 银行账号变更
+     * @param bankaccountchange 银行卡资金变动
      * @return 结果
      */
     @Override
@@ -71,9 +70,9 @@ public class BankaccountchangeServiceImpl implements IBankaccountchangeService
     }
 
     /**
-     * 批量删除银行账号变更
+     * 批量删除银行卡资金变动
      * 
-     * @param ids 需要删除的银行账号变更主键
+     * @param ids 需要删除的银行卡资金变动主键
      * @return 结果
      */
     @Override
@@ -83,9 +82,9 @@ public class BankaccountchangeServiceImpl implements IBankaccountchangeService
     }
 
     /**
-     * 删除银行账号变更信息
+     * 删除银行卡资金变动信息
      * 
-     * @param id 银行账号变更主键
+     * @param id 银行卡资金变动主键
      * @return 结果
      */
     @Override

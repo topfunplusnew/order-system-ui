@@ -6,16 +6,16 @@ import org.dzu.common.annotation.Excel;
 import org.dzu.common.core.domain.BaseEntity;
 
 /**
- * 产品级别信息对象 productlevel
+ * 产品级别管理对象 productlevel
  * 
  * @author ml
- * @date 2024-07-18
+ * @date 2024-07-19
  */
 public class Productlevel extends BaseEntity
 {
     private static final long serialVersionUID = 1L;
 
-    /** 主键 */
+    /** $column.columnComment */
     private Long id;
 
     /** 级别编码 */

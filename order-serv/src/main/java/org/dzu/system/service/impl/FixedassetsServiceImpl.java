@@ -1,19 +1,18 @@
 package org.dzu.system.service.impl;
 
+import java.util.List;
 import org.dzu.common.utils.DateUtils;
-import org.dzu.system.domain.Fixedassets;
-import org.dzu.system.mapper.FixedassetsMapper;
-import org.dzu.system.service.IFixedassetsService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-
-import java.util.List;
+import org.dzu.system.mapper.FixedassetsMapper;
+import org.dzu.system.domain.Fixedassets;
+import org.dzu.system.service.IFixedassetsService;
 
 /**
- * 固定资产信息Service业务层处理
+ * 固定资产Service业务层处理
  * 
  * @author ml
- * @date 2024-07-18
+ * @date 2024-07-19
  */
 @Service
 public class FixedassetsServiceImpl implements IFixedassetsService 
@@ -22,10 +21,10 @@ public class FixedassetsServiceImpl implements IFixedassetsService
     private FixedassetsMapper fixedassetsMapper;
 
     /**
-     * 查询固定资产信息
+     * 查询固定资产
      * 
-     * @param id 固定资产信息主键
-     * @return 固定资产信息
+     * @param id 固定资产主键
+     * @return 固定资产
      */
     @Override
     public Fixedassets selectFixedassetsById(Long id)
@@ -34,10 +33,10 @@ public class FixedassetsServiceImpl implements IFixedassetsService
     }
 
     /**
-     * 查询固定资产信息列表
+     * 查询固定资产列表
      * 
-     * @param fixedassets 固定资产信息
-     * @return 固定资产信息
+     * @param fixedassets 固定资产
+     * @return 固定资产
      */
     @Override
     public List<Fixedassets> selectFixedassetsList(Fixedassets fixedassets)
@@ -46,9 +45,9 @@ public class FixedassetsServiceImpl implements IFixedassetsService
     }
 
     /**
-     * 新增固定资产信息
+     * 新增固定资产
      * 
-     * @param fixedassets 固定资产信息
+     * @param fixedassets 固定资产
      * @return 结果
      */
     @Override
@@ -58,9 +57,9 @@ public class FixedassetsServiceImpl implements IFixedassetsService
     }
 
     /**
-     * 修改固定资产信息
+     * 修改固定资产
      * 
-     * @param fixedassets 固定资产信息
+     * @param fixedassets 固定资产
      * @return 结果
      */
     @Override
@@ -71,9 +70,9 @@ public class FixedassetsServiceImpl implements IFixedassetsService
     }
 
     /**
-     * 批量删除固定资产信息
+     * 批量删除固定资产
      * 
-     * @param ids 需要删除的固定资产信息主键
+     * @param ids 需要删除的固定资产主键
      * @return 结果
      */
     @Override
@@ -83,9 +82,9 @@ public class FixedassetsServiceImpl implements IFixedassetsService
     }
 
     /**
-     * 删除固定资产信息信息
+     * 删除固定资产信息
      * 
-     * @param id 固定资产信息主键
+     * @param id 固定资产主键
      * @return 结果
      */
     @Override

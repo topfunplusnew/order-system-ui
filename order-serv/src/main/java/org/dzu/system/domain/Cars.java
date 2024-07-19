@@ -6,16 +6,16 @@ import org.dzu.common.annotation.Excel;
 import org.dzu.common.core.domain.BaseEntity;
 
 /**
- * 汽车信息对象 cars
+ * 车辆管理对象 cars
  * 
  * @author ml
- * @date 2024-07-18
+ * @date 2024-07-19
  */
 public class Cars extends BaseEntity
 {
     private static final long serialVersionUID = 1L;
 
-    /** 主键 */
+    /** $column.columnComment */
     private Long id;
 
     /** 车牌 */

@@ -2,7 +2,7 @@
 <!DOCTYPE mapper
 PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
 "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
-<mapper namespace="org.dzu.system.mapper.OrderfreightMapper">
+<mapper namespace="com.ruoyi.system.mapper.OrderfreightMapper">
     
     <resultMap type="Orderfreight" id="OrderfreightResult">
         <result property="id"    column="id"    />
@@ -33,10 +33,11 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         <result property="cancelFlag"    column="cancelFlag"    />
         <result property="userId"    column="userId"    />
         <result property="UserName"    column="UserName"    />
+        <result property="delFlag"    column="delFlag"    />
     </resultMap>
 
     <sql id="selectOrderfreightVo">
-        select id, ordersNo, freightState, moneyAmount, selfAcountsName, selfBankNo, selfBankName, otherAcountsName, otherBankNo, otherBankName, content, paymentState, driverName, driverId, CarNo, fleet, comments, addtime, applyUserId, applyUserName, applyDate, isedit, payUserId, payUserName, payDate, cancelFlag, userId, UserName from orderfreight
+        select id, ordersNo, freightState, moneyAmount, selfAcountsName, selfBankNo, selfBankName, otherAcountsName, otherBankNo, otherBankName, content, paymentState, driverName, driverId, CarNo, fleet, comments, addtime, applyUserId, applyUserName, applyDate, isedit, payUserId, payUserName, payDate, cancelFlag, userId, UserName, delFlag from orderfreight
     </sql>
 
     <select id="selectOrderfreightList" parameterType="Orderfreight" resultMap="OrderfreightResult">
@@ -69,6 +70,7 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
             <if test="cancelFlag != null "> and cancelFlag = #{cancelFlag}</if>
             <if test="userId != null "> and userId = #{userId}</if>
             <if test="UserName != null  and UserName != ''"> and UserName like concat('%', #{UserName}, '%')</if>
+            <if test="delFlag != null "> and delFlag = #{delFlag}</if>
         </where>
     </select>
     
@@ -107,6 +109,7 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
             <if test="cancelFlag != null">cancelFlag,</if>
             <if test="userId != null">userId,</if>
             <if test="UserName != null">UserName,</if>
+            <if test="delFlag != null">delFlag,</if>
          </trim>
         <trim prefix="values (" suffix=")" suffixOverrides=",">
             <if test="ordersNo != null">#{ordersNo},</if>
@@ -136,6 +139,7 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
             <if test="cancelFlag != null">#{cancelFlag},</if>
             <if test="userId != null">#{userId},</if>
             <if test="UserName != null">#{UserName},</if>
+            <if test="delFlag != null">#{delFlag},</if>
          </trim>
     </insert>
 
@@ -169,6 +173,7 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
             <if test="cancelFlag != null">cancelFlag = #{cancelFlag},</if>
             <if test="userId != null">userId = #{userId},</if>
             <if test="UserName != null">UserName = #{UserName},</if>
+            <if test="delFlag != null">delFlag = #{delFlag},</if>
         </trim>
         where id = #{id}
     </update>

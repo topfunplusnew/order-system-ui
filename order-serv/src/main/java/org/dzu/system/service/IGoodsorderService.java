@@ -1,61 +1,60 @@
 package org.dzu.system.service;
 
+import java.util.List;
 import org.dzu.system.domain.Goodsorder;
 
-import java.util.List;
-
 /**
- * 货物订单Service接口
+ * 订单Service接口
  * 
  * @author ml
- * @date 2024-07-18
+ * @date 2024-07-19
  */
 public interface IGoodsorderService 
 {
     /**
-     * 查询货物订单
+     * 查询订单
      * 
-     * @param id 货物订单主键
-     * @return 货物订单
+     * @param id 订单主键
+     * @return 订单
      */
     public Goodsorder selectGoodsorderById(Long id);
 
     /**
-     * 查询货物订单列表
+     * 查询订单列表
      * 
-     * @param goodsorder 货物订单
-     * @return 货物订单集合
+     * @param goodsorder 订单
+     * @return 订单集合
      */
     public List<Goodsorder> selectGoodsorderList(Goodsorder goodsorder);
 
     /**
-     * 新增货物订单
+     * 新增订单
      * 
-     * @param goodsorder 货物订单
+     * @param goodsorder 订单
      * @return 结果
      */
     public int insertGoodsorder(Goodsorder goodsorder);
 
     /**
-     * 修改货物订单
+     * 修改订单
      * 
-     * @param goodsorder 货物订单
+     * @param goodsorder 订单
      * @return 结果
      */
     public int updateGoodsorder(Goodsorder goodsorder);
 
     /**
-     * 批量删除货物订单
+     * 批量删除订单
      * 
-     * @param ids 需要删除的货物订单主键集合
+     * @param ids 需要删除的订单主键集合
      * @return 结果
      */
     public int deleteGoodsorderByIds(Long[] ids);
 
     /**
-     * 删除货物订单信息
+     * 删除订单信息
      * 
-     * @param id 货物订单主键
+     * @param id 订单主键
      * @return 结果
      */
     public int deleteGoodsorderById(Long id);

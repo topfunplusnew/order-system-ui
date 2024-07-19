@@ -9,10 +9,10 @@ import org.dzu.system.domain.Lendmoney;
 import org.dzu.system.service.ILendmoneyService;
 
 /**
- * 借贷Service业务层处理
+ * 资金借出（期货）Service业务层处理
  * 
  * @author ml
- * @date 2024-07-18
+ * @date 2024-07-19
  */
 @Service
 public class LendmoneyServiceImpl implements ILendmoneyService 
@@ -21,10 +21,10 @@ public class LendmoneyServiceImpl implements ILendmoneyService
     private LendmoneyMapper lendmoneyMapper;
 
     /**
-     * 查询借贷
+     * 查询资金借出（期货）
      * 
-     * @param id 借贷主键
-     * @return 借贷
+     * @param id 资金借出（期货）主键
+     * @return 资金借出（期货）
      */
     @Override
     public Lendmoney selectLendmoneyById(Long id)
@@ -33,10 +33,10 @@ public class LendmoneyServiceImpl implements ILendmoneyService
     }
 
     /**
-     * 查询借贷列表
+     * 查询资金借出（期货）列表
      * 
-     * @param lendmoney 借贷
-     * @return 借贷
+     * @param lendmoney 资金借出（期货）
+     * @return 资金借出（期货）
      */
     @Override
     public List<Lendmoney> selectLendmoneyList(Lendmoney lendmoney)
@@ -45,9 +45,9 @@ public class LendmoneyServiceImpl implements ILendmoneyService
     }
 
     /**
-     * 新增借贷
+     * 新增资金借出（期货）
      * 
-     * @param lendmoney 借贷
+     * @param lendmoney 资金借出（期货）
      * @return 结果
      */
     @Override
@@ -57,9 +57,9 @@ public class LendmoneyServiceImpl implements ILendmoneyService
     }
 
     /**
-     * 修改借贷
+     * 修改资金借出（期货）
      * 
-     * @param lendmoney 借贷
+     * @param lendmoney 资金借出（期货）
      * @return 结果
      */
     @Override
@@ -70,9 +70,9 @@ public class LendmoneyServiceImpl implements ILendmoneyService
     }
 
     /**
-     * 批量删除借贷
+     * 批量删除资金借出（期货）
      * 
-     * @param ids 需要删除的借贷主键
+     * @param ids 需要删除的资金借出（期货）主键
      * @return 结果
      */
     @Override
@@ -82,9 +82,9 @@ public class LendmoneyServiceImpl implements ILendmoneyService
     }
 
     /**
-     * 删除借贷信息
+     * 删除资金借出（期货）信息
      * 
-     * @param id 借贷主键
+     * @param id 资金借出（期货）主键
      * @return 结果
      */
     @Override

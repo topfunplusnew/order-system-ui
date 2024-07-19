@@ -6,16 +6,16 @@ import org.dzu.common.annotation.Excel;
 import org.dzu.common.core.domain.BaseEntity;
 
 /**
- * 返利信息对象 rebate
+ * 供应商返利对象 rebate
  * 
  * @author ml
- * @date 2024-07-18
+ * @date 2024-07-19
  */
 public class Rebate extends BaseEntity
 {
     private static final long serialVersionUID = 1L;
 
-    /** 主键 */
+    /** $column.columnComment */
     private Long id;
 
     /** 订单编号（UUID） */
@@ -30,8 +30,8 @@ public class Rebate extends BaseEntity
     @Excel(name = "金额")
     private Long rebate;
 
-    /** 类型（返利、降价、售后质量赔偿） */
-    @Excel(name = "类型", readConverterExp = "返=利、降价、售后质量赔偿")
+    /** 返利类型（返利、降价、售后质量赔偿） */
+    @Excel(name = "返利类型", readConverterExp = "返=利、降价、售后质量赔偿")
     private String rebateType;
 
     /** 收款户名 */
@@ -77,6 +77,10 @@ public class Rebate extends BaseEntity
     /** 操作人员姓名 */
     @Excel(name = "操作人员姓名")
     private String UserName;
+
+    /** 删除标记 */
+    @Excel(name = "删除标记")
+    private Long delFlag;
 
     public void setId(Long id) 
     {
@@ -222,6 +226,15 @@ public class Rebate extends BaseEntity
     {
         return UserName;
     }
+    public void setDelFlag(Long delFlag) 
+    {
+        this.delFlag = delFlag;
+    }
+
+    public Long getDelFlag() 
+    {
+        return delFlag;
+    }
 
     @Override
     public String toString() {
@@ -243,6 +256,7 @@ public class Rebate extends BaseEntity
             .append("userId", getUserId())
             .append("UserName", getUserName())
             .append("updateTime", getUpdateTime())
+            .append("delFlag", getDelFlag())
             .toString();
     }
 }

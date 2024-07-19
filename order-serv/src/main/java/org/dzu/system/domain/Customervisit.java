@@ -9,13 +9,13 @@ import org.dzu.common.core.domain.BaseEntity;
  * 走访记录对象 customervisit
  * 
  * @author ml
- * @date 2024-07-18
+ * @date 2024-07-19
  */
 public class Customervisit extends BaseEntity
 {
     private static final long serialVersionUID = 1L;
 
-    /** 主键 */
+    /** $column.columnComment */
     private Long id;
 
     /** 省 */

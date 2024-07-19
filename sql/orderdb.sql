@@ -352,7 +352,7 @@ CREATE TABLE `fixedassets`  (
   `assetName` varchar(155) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL COMMENT '资产名称',
   ` specification` varchar(100) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL COMMENT '规格型号（车牌号）',
   `number` varchar(20) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL COMMENT '数量',
-  `measurementUnit ` varchar(55) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL COMMENT '计量单位',
+  `measurementUnit` varchar(55) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL COMMENT '计量单位',
   `amountIncludeTax` float NULL DEFAULT 0 COMMENT '含税金额',
   `amountNoTax` float NULL DEFAULT 0 COMMENT '不含税金额',
   `account` varchar(55) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL COMMENT '户名名称（公户/个人）',
@@ -715,7 +715,7 @@ INSERT INTO `gen_table_column` VALUES (808, 44, 'assetNo', '资产编号', 'varc
 INSERT INTO `gen_table_column` VALUES (809, 44, 'assetName', '资产名称', 'varchar(155)', 'String', 'assetName', '0', '0', '0', '1', '1', '1', '1', 'LIKE', 'input', '', 4, 'admin', '2024-07-18 09:35:51', '', NULL);
 INSERT INTO `gen_table_column` VALUES (810, 44, ' specification', '规格型号（车牌号）', 'varchar(100)', 'String', ' specification', '0', '0', '0', '1', '1', '1', '1', 'EQ', 'input', '', 5, 'admin', '2024-07-18 09:35:51', '', NULL);
 INSERT INTO `gen_table_column` VALUES (811, 44, 'number', '数量', 'varchar(20)', 'String', 'number', '0', '0', '0', '1', '1', '1', '1', 'EQ', 'input', '', 6, 'admin', '2024-07-18 09:35:51', '', NULL);
-INSERT INTO `gen_table_column` VALUES (812, 44, 'measurementUnit ', '计量单位', 'varchar(55)', 'String', 'measurementUnit ', '0', '0', '0', '1', '1', '1', '1', 'EQ', 'input', '', 7, 'admin', '2024-07-18 09:35:51', '', NULL);
+INSERT INTO `gen_table_column` VALUES (812, 44, 'measurementUnit', '计量单位', 'varchar(55)', 'String', 'measurementUnit', '0', '0', '0', '1', '1', '1', '1', 'EQ', 'input', '', 7, 'admin', '2024-07-18 09:35:51', '', NULL);
 INSERT INTO `gen_table_column` VALUES (813, 44, 'amountIncludeTax', '含税金额', 'float', 'Long', 'amountIncludeTax', '0', '0', '0', '1', '1', '1', '1', 'EQ', 'input', '', 8, 'admin', '2024-07-18 09:35:51', '', NULL);
 INSERT INTO `gen_table_column` VALUES (814, 44, 'amountNoTax', '不含税金额', 'float', 'Long', 'amountNoTax', '0', '0', '0', '1', '1', '1', '1', 'EQ', 'input', '', 9, 'admin', '2024-07-18 09:35:51', '', NULL);
 INSERT INTO `gen_table_column` VALUES (815, 44, 'account', '户名名称（公户/个人）', 'varchar(55)', 'String', 'account', '0', '0', '0', '1', '1', '1', '1', 'EQ', 'input', '', 10, 'admin', '2024-07-18 09:35:51', '', NULL);

@@ -6,16 +6,16 @@ import org.dzu.common.annotation.Excel;
 import org.dzu.common.core.domain.BaseEntity;
 
 /**
- * 订单发票信息对象 orderinvoice
+ * 订单发票对象 orderinvoice
  * 
  * @author ml
- * @date 2024-07-18
+ * @date 2024-07-19
  */
 public class Orderinvoice extends BaseEntity
 {
     private static final long serialVersionUID = 1L;
 
-    /** 主键 */
+    /** $column.columnComment */
     private Long id;
 
     /** 订单编号（UUID） */
@@ -77,6 +77,10 @@ public class Orderinvoice extends BaseEntity
     /** 操作人员姓名 */
     @Excel(name = "操作人员姓名")
     private String UserName;
+
+    /** 删除标记 */
+    @Excel(name = "删除标记")
+    private Long delFlag;
 
     public void setId(Long id) 
     {
@@ -222,6 +226,15 @@ public class Orderinvoice extends BaseEntity
     {
         return UserName;
     }
+    public void setDelFlag(Long delFlag) 
+    {
+        this.delFlag = delFlag;
+    }
+
+    public Long getDelFlag() 
+    {
+        return delFlag;
+    }
 
     @Override
     public String toString() {
@@ -243,6 +256,7 @@ public class Orderinvoice extends BaseEntity
             .append("userId", getUserId())
             .append("UserName", getUserName())
             .append("updateTime", getUpdateTime())
+            .append("delFlag", getDelFlag())
             .toString();
     }
 }

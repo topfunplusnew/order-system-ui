@@ -9,10 +9,10 @@ import org.dzu.system.domain.Businesstrip;
 import org.dzu.system.service.IBusinesstripService;
 
 /**
- * 出差记录Service业务层处理
+ * 出差登记Service业务层处理
  * 
  * @author ml
- * @date 2024-07-18
+ * @date 2024-07-19
  */
 @Service
 public class BusinesstripServiceImpl implements IBusinesstripService 
@@ -21,10 +21,10 @@ public class BusinesstripServiceImpl implements IBusinesstripService
     private BusinesstripMapper businesstripMapper;
 
     /**
-     * 查询出差记录
+     * 查询出差登记
      * 
-     * @param id 出差记录主键
-     * @return 出差记录
+     * @param id 出差登记主键
+     * @return 出差登记
      */
     @Override
     public Businesstrip selectBusinesstripById(Long id)
@@ -33,10 +33,10 @@ public class BusinesstripServiceImpl implements IBusinesstripService
     }
 
     /**
-     * 查询出差记录列表
+     * 查询出差登记列表
      * 
-     * @param businesstrip 出差记录
-     * @return 出差记录
+     * @param businesstrip 出差登记
+     * @return 出差登记
      */
     @Override
     public List<Businesstrip> selectBusinesstripList(Businesstrip businesstrip)
@@ -45,9 +45,9 @@ public class BusinesstripServiceImpl implements IBusinesstripService
     }
 
     /**
-     * 新增出差记录
+     * 新增出差登记
      * 
-     * @param businesstrip 出差记录
+     * @param businesstrip 出差登记
      * @return 结果
      */
     @Override
@@ -57,9 +57,9 @@ public class BusinesstripServiceImpl implements IBusinesstripService
     }
 
     /**
-     * 修改出差记录
+     * 修改出差登记
      * 
-     * @param businesstrip 出差记录
+     * @param businesstrip 出差登记
      * @return 结果
      */
     @Override
@@ -70,9 +70,9 @@ public class BusinesstripServiceImpl implements IBusinesstripService
     }
 
     /**
-     * 批量删除出差记录
+     * 批量删除出差登记
      * 
-     * @param ids 需要删除的出差记录主键
+     * @param ids 需要删除的出差登记主键
      * @return 结果
      */
     @Override
@@ -82,9 +82,9 @@ public class BusinesstripServiceImpl implements IBusinesstripService
     }
 
     /**
-     * 删除出差记录信息
+     * 删除出差登记信息
      * 
-     * @param id 出差记录主键
+     * @param id 出差登记主键
      * @return 结果
      */
     @Override

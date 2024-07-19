@@ -1,19 +1,18 @@
 package org.dzu.system.service.impl;
 
+import java.util.List;
 import org.dzu.common.utils.DateUtils;
-import org.dzu.system.domain.Productlevel;
-import org.dzu.system.mapper.ProductlevelMapper;
-import org.dzu.system.service.IProductlevelService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-
-import java.util.List;
+import org.dzu.system.mapper.ProductlevelMapper;
+import org.dzu.system.domain.Productlevel;
+import org.dzu.system.service.IProductlevelService;
 
 /**
- * 产品级别信息Service业务层处理
+ * 产品级别管理Service业务层处理
  * 
  * @author ml
- * @date 2024-07-18
+ * @date 2024-07-19
  */
 @Service
 public class ProductlevelServiceImpl implements IProductlevelService 
@@ -22,10 +21,10 @@ public class ProductlevelServiceImpl implements IProductlevelService
     private ProductlevelMapper productlevelMapper;
 
     /**
-     * 查询产品级别信息
+     * 查询产品级别管理
      * 
-     * @param id 产品级别信息主键
-     * @return 产品级别信息
+     * @param id 产品级别管理主键
+     * @return 产品级别管理
      */
     @Override
     public Productlevel selectProductlevelById(Long id)
@@ -34,10 +33,10 @@ public class ProductlevelServiceImpl implements IProductlevelService
     }
 
     /**
-     * 查询产品级别信息列表
+     * 查询产品级别管理列表
      * 
-     * @param productlevel 产品级别信息
-     * @return 产品级别信息
+     * @param productlevel 产品级别管理
+     * @return 产品级别管理
      */
     @Override
     public List<Productlevel> selectProductlevelList(Productlevel productlevel)
@@ -46,9 +45,9 @@ public class ProductlevelServiceImpl implements IProductlevelService
     }
 
     /**
-     * 新增产品级别信息
+     * 新增产品级别管理
      * 
-     * @param productlevel 产品级别信息
+     * @param productlevel 产品级别管理
      * @return 结果
      */
     @Override
@@ -58,9 +57,9 @@ public class ProductlevelServiceImpl implements IProductlevelService
     }
 
     /**
-     * 修改产品级别信息
+     * 修改产品级别管理
      * 
-     * @param productlevel 产品级别信息
+     * @param productlevel 产品级别管理
      * @return 结果
      */
     @Override
@@ -71,9 +70,9 @@ public class ProductlevelServiceImpl implements IProductlevelService
     }
 
     /**
-     * 批量删除产品级别信息
+     * 批量删除产品级别管理
      * 
-     * @param ids 需要删除的产品级别信息主键
+     * @param ids 需要删除的产品级别管理主键
      * @return 结果
      */
     @Override
@@ -83,9 +82,9 @@ public class ProductlevelServiceImpl implements IProductlevelService
     }
 
     /**
-     * 删除产品级别信息信息
+     * 删除产品级别管理信息
      * 
-     * @param id 产品级别信息主键
+     * @param id 产品级别管理主键
      * @return 结果
      */
     @Override

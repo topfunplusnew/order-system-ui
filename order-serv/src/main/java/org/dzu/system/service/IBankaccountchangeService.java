@@ -1,61 +1,60 @@
 package org.dzu.system.service;
 
+import java.util.List;
 import org.dzu.system.domain.Bankaccountchange;
 
-import java.util.List;
-
 /**
- * 银行账号变更Service接口
+ * 银行卡资金变动Service接口
  * 
  * @author ml
- * @date 2024-07-18
+ * @date 2024-07-19
  */
 public interface IBankaccountchangeService 
 {
     /**
-     * 查询银行账号变更
+     * 查询银行卡资金变动
      * 
-     * @param id 银行账号变更主键
-     * @return 银行账号变更
+     * @param id 银行卡资金变动主键
+     * @return 银行卡资金变动
      */
     public Bankaccountchange selectBankaccountchangeById(Long id);
 
     /**
-     * 查询银行账号变更列表
+     * 查询银行卡资金变动列表
      * 
-     * @param bankaccountchange 银行账号变更
-     * @return 银行账号变更集合
+     * @param bankaccountchange 银行卡资金变动
+     * @return 银行卡资金变动集合
      */
     public List<Bankaccountchange> selectBankaccountchangeList(Bankaccountchange bankaccountchange);
 
     /**
-     * 新增银行账号变更
+     * 新增银行卡资金变动
      * 
-     * @param bankaccountchange 银行账号变更
+     * @param bankaccountchange 银行卡资金变动
      * @return 结果
      */
     public int insertBankaccountchange(Bankaccountchange bankaccountchange);
 
     /**
-     * 修改银行账号变更
+     * 修改银行卡资金变动
      * 
-     * @param bankaccountchange 银行账号变更
+     * @param bankaccountchange 银行卡资金变动
      * @return 结果
      */
     public int updateBankaccountchange(Bankaccountchange bankaccountchange);
 
     /**
-     * 批量删除银行账号变更
+     * 批量删除银行卡资金变动
      * 
-     * @param ids 需要删除的银行账号变更主键集合
+     * @param ids 需要删除的银行卡资金变动主键集合
      * @return 结果
      */
     public int deleteBankaccountchangeByIds(Long[] ids);
 
     /**
-     * 删除银行账号变更信息
+     * 删除银行卡资金变动信息
      * 
-     * @param id 银行账号变更主键
+     * @param id 银行卡资金变动主键
      * @return 结果
      */
     public int deleteBankaccountchangeById(Long id);

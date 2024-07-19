@@ -2,11 +2,10 @@
 <!DOCTYPE mapper
 PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
 "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
-<mapper namespace="org.dzu.system.mapper.OrderdetailMapper">
+<mapper namespace="com.ruoyi.system.mapper.OrderdetailMapper">
     
     <resultMap type="Orderdetail" id="OrderdetailResult">
         <result property="id"    column="id"    />
-        <result property="orderId"    column="orderId"    />
         <result property="ordersNo"    column="ordersNo"    />
         <result property="orderDate"    column="orderDate"    />
         <result property="supplier"    column="supplier"    />
@@ -57,13 +56,12 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
     </resultMap>
 
     <sql id="selectOrderdetailVo">
-        select id, orderId, ordersNo, orderDate, supplier, supplier_id, customer, customer_id, levelID, levelName, countingUnit, height, length, width, pieces, piecesPerPack, packs, price, isIncludeTaxFactory, sundryCost, paymentFactory, paymentUnload, isIncludeTaxSale, payments, erro, tonnage, landFreightPrice, landFreight, seaFreight, freight, otherCost, profit, profitNoTax, actualPieces, paymentsWithSundry, additionalFees, storeHouseID, storeHouseName, storeID, logisticsProfit, customerCommission, isAdjusted, adjustDate, cancelFlag, comments, addtime, userId, UserName, update_time from orderdetail
+        select id, ordersNo, orderDate, supplier, supplier_id, customer, customer_id, levelID, levelName, countingUnit, height, length, width, pieces, piecesPerPack, packs, price, isIncludeTaxFactory, sundryCost, paymentFactory, paymentUnload, isIncludeTaxSale, payments, erro, tonnage, landFreightPrice, landFreight, seaFreight, freight, otherCost, profit, profitNoTax, actualPieces, paymentsWithSundry, additionalFees, storeHouseID, storeHouseName, storeID, logisticsProfit, customerCommission, isAdjusted, adjustDate, cancelFlag, comments, addtime, userId, UserName, update_time from orderdetail
     </sql>
 
     <select id="selectOrderdetailList" parameterType="Orderdetail" resultMap="OrderdetailResult">
         <include refid="selectOrderdetailVo"/>
         <where>  
-            <if test="orderId != null "> and orderId = #{orderId}</if>
             <if test="ordersNo != null  and ordersNo != ''"> and ordersNo = #{ordersNo}</if>
             <if test="orderDate != null  and orderDate != ''"> and orderDate = #{orderDate}</if>
             <if test="supplier != null  and supplier != ''"> and supplier = #{supplier}</if>
@@ -121,7 +119,6 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
     <insert id="insertOrderdetail" parameterType="Orderdetail" useGeneratedKeys="true" keyProperty="id">
         insert into orderdetail
         <trim prefix="(" suffix=")" suffixOverrides=",">
-            <if test="orderId != null">orderId,</if>
             <if test="ordersNo != null">ordersNo,</if>
             <if test="orderDate != null">orderDate,</if>
             <if test="supplier != null">supplier,</if>
@@ -171,7 +168,6 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
             <if test="updateTime != null">update_time,</if>
          </trim>
         <trim prefix="values (" suffix=")" suffixOverrides=",">
-            <if test="orderId != null">#{orderId},</if>
             <if test="ordersNo != null">#{ordersNo},</if>
             <if test="orderDate != null">#{orderDate},</if>
             <if test="supplier != null">#{supplier},</if>
@@ -225,7 +221,6 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
     <update id="updateOrderdetail" parameterType="Orderdetail">
         update orderdetail
         <trim prefix="SET" suffixOverrides=",">
-            <if test="orderId != null">orderId = #{orderId},</if>
             <if test="ordersNo != null">ordersNo = #{ordersNo},</if>
             <if test="orderDate != null">orderDate = #{orderDate},</if>
             <if test="supplier != null">supplier = #{supplier},</if>

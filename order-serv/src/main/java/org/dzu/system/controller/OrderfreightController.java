@@ -1,25 +1,31 @@
 package org.dzu.system.controller;
 
+import java.util.List;
+import javax.servlet.http.HttpServletResponse;
+import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
 import org.dzu.common.annotation.Log;
 import org.dzu.common.core.controller.BaseController;
 import org.dzu.common.core.domain.AjaxResult;
-import org.dzu.common.core.page.TableDataInfo;
 import org.dzu.common.enums.BusinessType;
-import org.dzu.common.utils.poi.ExcelUtil;
 import org.dzu.system.domain.Orderfreight;
 import org.dzu.system.service.IOrderfreightService;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.web.bind.annotation.*;
-
-import javax.servlet.http.HttpServletResponse;
-import java.util.List;
+import org.dzu.common.utils.poi.ExcelUtil;
+import org.dzu.common.core.page.TableDataInfo;
 
 /**
- * 订单运费信息Controller
+ * 订单运费Controller
  * 
  * @author ml
- * @date 2024-07-18
+ * @date 2024-07-19
  */
 @RestController
 @RequestMapping("/system/orderfreight")
@@ -29,7 +35,7 @@ public class OrderfreightController extends BaseController
     private IOrderfreightService orderfreightService;
 
     /**
-     * 查询订单运费信息列表
+     * 查询订单运费列表
      */
     @PreAuthorize("@ss.hasPermi('system:orderfreight:list')")
     @GetMapping("/list")
@@ -41,20 +47,20 @@ public class OrderfreightController extends BaseController
     }
 
     /**
-     * 导出订单运费信息列表
+     * 导出订单运费列表
      */
     @PreAuthorize("@ss.hasPermi('system:orderfreight:export')")
-    @Log(title = "订单运费信息", businessType = BusinessType.EXPORT)
+    @Log(title = "订单运费", businessType = BusinessType.EXPORT)
     @PostMapping("/export")
     public void export(HttpServletResponse response, Orderfreight orderfreight)
     {
         List<Orderfreight> list = orderfreightService.selectOrderfreightList(orderfreight);
         ExcelUtil<Orderfreight> util = new ExcelUtil<Orderfreight>(Orderfreight.class);
-        util.exportExcel(response, list, "订单运费信息数据");
+        util.exportExcel(response, list, "订单运费数据");
     }
 
     /**
-     * 获取订单运费信息详细信息
+     * 获取订单运费详细信息
      */
     @PreAuthorize("@ss.hasPermi('system:orderfreight:query')")
     @GetMapping(value = "/{id}")
@@ -64,10 +70,10 @@ public class OrderfreightController extends BaseController
     }
 
     /**
-     * 新增订单运费信息
+     * 新增订单运费
      */
     @PreAuthorize("@ss.hasPermi('system:orderfreight:add')")
-    @Log(title = "订单运费信息", businessType = BusinessType.INSERT)
+    @Log(title = "订单运费", businessType = BusinessType.INSERT)
     @PostMapping
     public AjaxResult add(@RequestBody Orderfreight orderfreight)
     {
@@ -75,10 +81,10 @@ public class OrderfreightController extends BaseController
     }
 
     /**
-     * 修改订单运费信息
+     * 修改订单运费
      */
     @PreAuthorize("@ss.hasPermi('system:orderfreight:edit')")
-    @Log(title = "订单运费信息", businessType = BusinessType.UPDATE)
+    @Log(title = "订单运费", businessType = BusinessType.UPDATE)
     @PutMapping
     public AjaxResult edit(@RequestBody Orderfreight orderfreight)
     {
@@ -86,10 +92,10 @@ public class OrderfreightController extends BaseController
     }
 
     /**
-     * 删除订单运费信息
+     * 删除订单运费
      */
     @PreAuthorize("@ss.hasPermi('system:orderfreight:remove')")
-    @Log(title = "订单运费信息", businessType = BusinessType.DELETE)
+    @Log(title = "订单运费", businessType = BusinessType.DELETE)
 	@DeleteMapping("/{ids}")
     public AjaxResult remove(@PathVariable Long[] ids)
     {

@@ -2,7 +2,7 @@
 <!DOCTYPE mapper
 PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
 "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
-<mapper namespace="org.dzu.system.mapper.CompanyMapper">
+<mapper namespace="com.ruoyi.system.mapper.CompanyMapper">
     
     <resultMap type="Company" id="CompanyResult">
         <result property="id"    column="id"    />
@@ -15,7 +15,6 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         <result property="bankNo"    column="bankNo"    />
         <result property="surplusMoney"    column="surplusMoney"    />
         <result property="companyType"    column="companyType"    />
-        <result property="delflag"    column="delflag"    />
         <result property="salesman"    column="salesman"    />
         <result property="leader"    column="leader"    />
         <result property="leaderTel"    column="leaderTel"    />
@@ -29,10 +28,11 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         <result property="userId"    column="userId"    />
         <result property="UserName"    column="UserName"    />
         <result property="updateTime"    column="update_time"    />
+        <result property="delFlag"    column="delFlag"    />
     </resultMap>
 
     <sql id="selectCompanyVo">
-        select id, company, relationName, relationTel, address, bankName, acountsName, bankNo, surplusMoney, companyType, delflag, salesman, leader, leaderTel, region, salesManager, province, city, county, comments, addtime, userId, UserName, update_time from company
+        select id, company, relationName, relationTel, address, bankName, acountsName, bankNo, surplusMoney, companyType, salesman, leader, leaderTel, region, salesManager, province, city, county, comments, addtime, userId, UserName, update_time, delFlag from company
     </sql>
 
     <select id="selectCompanyList" parameterType="Company" resultMap="CompanyResult">
@@ -47,7 +47,6 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
             <if test="bankNo != null  and bankNo != ''"> and bankNo = #{bankNo}</if>
             <if test="surplusMoney != null "> and surplusMoney = #{surplusMoney}</if>
             <if test="companyType != null  and companyType != ''"> and companyType = #{companyType}</if>
-            <if test="delflag != null "> and delflag = #{delflag}</if>
             <if test="salesman != null  and salesman != ''"> and salesman = #{salesman}</if>
             <if test="leader != null  and leader != ''"> and leader = #{leader}</if>
             <if test="leaderTel != null  and leaderTel != ''"> and leaderTel = #{leaderTel}</if>
@@ -60,6 +59,7 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
             <if test="addtime != null  and addtime != ''"> and addtime = #{addtime}</if>
             <if test="userId != null "> and userId = #{userId}</if>
             <if test="UserName != null  and UserName != ''"> and UserName like concat('%', #{UserName}, '%')</if>
+            <if test="delFlag != null "> and delFlag = #{delFlag}</if>
         </where>
     </select>
     
@@ -80,7 +80,6 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
             <if test="bankNo != null">bankNo,</if>
             <if test="surplusMoney != null">surplusMoney,</if>
             <if test="companyType != null">companyType,</if>
-            <if test="delflag != null">delflag,</if>
             <if test="salesman != null">salesman,</if>
             <if test="leader != null">leader,</if>
             <if test="leaderTel != null">leaderTel,</if>
@@ -94,6 +93,7 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
             <if test="userId != null">userId,</if>
             <if test="UserName != null">UserName,</if>
             <if test="updateTime != null">update_time,</if>
+            <if test="delFlag != null">delFlag,</if>
          </trim>
         <trim prefix="values (" suffix=")" suffixOverrides=",">
             <if test="company != null">#{company},</if>
@@ -105,7 +105,6 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
             <if test="bankNo != null">#{bankNo},</if>
             <if test="surplusMoney != null">#{surplusMoney},</if>
             <if test="companyType != null">#{companyType},</if>
-            <if test="delflag != null">#{delflag},</if>
             <if test="salesman != null">#{salesman},</if>
             <if test="leader != null">#{leader},</if>
             <if test="leaderTel != null">#{leaderTel},</if>
@@ -119,6 +118,7 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
             <if test="userId != null">#{userId},</if>
             <if test="UserName != null">#{UserName},</if>
             <if test="updateTime != null">#{updateTime},</if>
+            <if test="delFlag != null">#{delFlag},</if>
          </trim>
     </insert>
 
@@ -134,7 +134,6 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
             <if test="bankNo != null">bankNo = #{bankNo},</if>
             <if test="surplusMoney != null">surplusMoney = #{surplusMoney},</if>
             <if test="companyType != null">companyType = #{companyType},</if>
-            <if test="delflag != null">delflag = #{delflag},</if>
             <if test="salesman != null">salesman = #{salesman},</if>
             <if test="leader != null">leader = #{leader},</if>
             <if test="leaderTel != null">leaderTel = #{leaderTel},</if>
@@ -148,6 +147,7 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
             <if test="userId != null">userId = #{userId},</if>
             <if test="UserName != null">UserName = #{UserName},</if>
             <if test="updateTime != null">update_time = #{updateTime},</if>
+            <if test="delFlag != null">delFlag = #{delFlag},</if>
         </trim>
         where id = #{id}
     </update>

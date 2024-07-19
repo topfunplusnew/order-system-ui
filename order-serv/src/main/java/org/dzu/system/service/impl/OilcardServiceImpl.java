@@ -1,19 +1,18 @@
 package org.dzu.system.service.impl;
 
+import java.util.List;
 import org.dzu.common.utils.DateUtils;
-import org.dzu.system.domain.Oilcard;
-import org.dzu.system.mapper.OilcardMapper;
-import org.dzu.system.service.IOilcardService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-
-import java.util.List;
+import org.dzu.system.mapper.OilcardMapper;
+import org.dzu.system.domain.Oilcard;
+import org.dzu.system.service.IOilcardService;
 
 /**
- * 加油卡信息Service业务层处理
+ * 加油卡Service业务层处理
  * 
  * @author ml
- * @date 2024-07-18
+ * @date 2024-07-19
  */
 @Service
 public class OilcardServiceImpl implements IOilcardService 
@@ -22,10 +21,10 @@ public class OilcardServiceImpl implements IOilcardService
     private OilcardMapper oilcardMapper;
 
     /**
-     * 查询加油卡信息
+     * 查询加油卡
      * 
-     * @param id 加油卡信息主键
-     * @return 加油卡信息
+     * @param id 加油卡主键
+     * @return 加油卡
      */
     @Override
     public Oilcard selectOilcardById(Long id)
@@ -34,10 +33,10 @@ public class OilcardServiceImpl implements IOilcardService
     }
 
     /**
-     * 查询加油卡信息列表
+     * 查询加油卡列表
      * 
-     * @param oilcard 加油卡信息
-     * @return 加油卡信息
+     * @param oilcard 加油卡
+     * @return 加油卡
      */
     @Override
     public List<Oilcard> selectOilcardList(Oilcard oilcard)
@@ -46,9 +45,9 @@ public class OilcardServiceImpl implements IOilcardService
     }
 
     /**
-     * 新增加油卡信息
+     * 新增加油卡
      * 
-     * @param oilcard 加油卡信息
+     * @param oilcard 加油卡
      * @return 结果
      */
     @Override
@@ -58,9 +57,9 @@ public class OilcardServiceImpl implements IOilcardService
     }
 
     /**
-     * 修改加油卡信息
+     * 修改加油卡
      * 
-     * @param oilcard 加油卡信息
+     * @param oilcard 加油卡
      * @return 结果
      */
     @Override
@@ -71,9 +70,9 @@ public class OilcardServiceImpl implements IOilcardService
     }
 
     /**
-     * 批量删除加油卡信息
+     * 批量删除加油卡
      * 
-     * @param ids 需要删除的加油卡信息主键
+     * @param ids 需要删除的加油卡主键
      * @return 结果
      */
     @Override
@@ -83,9 +82,9 @@ public class OilcardServiceImpl implements IOilcardService
     }
 
     /**
-     * 删除加油卡信息信息
+     * 删除加油卡信息
      * 
-     * @param id 加油卡信息主键
+     * @param id 加油卡主键
      * @return 结果
      */
     @Override

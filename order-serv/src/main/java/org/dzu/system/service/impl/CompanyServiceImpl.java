@@ -9,10 +9,10 @@ import org.dzu.system.domain.Company;
 import org.dzu.system.service.ICompanyService;
 
 /**
- * 公司信息Service业务层处理
+ * 客户管理Service业务层处理
  * 
  * @author ml
- * @date 2024-07-18
+ * @date 2024-07-19
  */
 @Service
 public class CompanyServiceImpl implements ICompanyService 
@@ -21,10 +21,10 @@ public class CompanyServiceImpl implements ICompanyService
     private CompanyMapper companyMapper;
 
     /**
-     * 查询公司信息
+     * 查询客户管理
      * 
-     * @param id 公司信息主键
-     * @return 公司信息
+     * @param id 客户管理主键
+     * @return 客户管理
      */
     @Override
     public Company selectCompanyById(Long id)
@@ -33,10 +33,10 @@ public class CompanyServiceImpl implements ICompanyService
     }
 
     /**
-     * 查询公司信息列表
+     * 查询客户管理列表
      * 
-     * @param company 公司信息
-     * @return 公司信息
+     * @param company 客户管理
+     * @return 客户管理
      */
     @Override
     public List<Company> selectCompanyList(Company company)
@@ -45,9 +45,9 @@ public class CompanyServiceImpl implements ICompanyService
     }
 
     /**
-     * 新增公司信息
+     * 新增客户管理
      * 
-     * @param company 公司信息
+     * @param company 客户管理
      * @return 结果
      */
     @Override
@@ -57,9 +57,9 @@ public class CompanyServiceImpl implements ICompanyService
     }
 
     /**
-     * 修改公司信息
+     * 修改客户管理
      * 
-     * @param company 公司信息
+     * @param company 客户管理
      * @return 结果
      */
     @Override
@@ -70,9 +70,9 @@ public class CompanyServiceImpl implements ICompanyService
     }
 
     /**
-     * 批量删除公司信息
+     * 批量删除客户管理
      * 
-     * @param ids 需要删除的公司信息主键
+     * @param ids 需要删除的客户管理主键
      * @return 结果
      */
     @Override
@@ -82,9 +82,9 @@ public class CompanyServiceImpl implements ICompanyService
     }
 
     /**
-     * 删除公司信息信息
+     * 删除客户管理信息
      * 
-     * @param id 公司信息主键
+     * @param id 客户管理主键
      * @return 结果
      */
     @Override

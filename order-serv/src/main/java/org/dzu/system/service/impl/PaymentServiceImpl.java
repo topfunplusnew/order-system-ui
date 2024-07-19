@@ -1,19 +1,18 @@
 package org.dzu.system.service.impl;
 
+import java.util.List;
 import org.dzu.common.utils.DateUtils;
-import org.dzu.system.domain.Payment;
-import org.dzu.system.mapper.PaymentMapper;
-import org.dzu.system.service.IPaymentService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-
-import java.util.List;
+import org.dzu.system.mapper.PaymentMapper;
+import org.dzu.system.domain.Payment;
+import org.dzu.system.service.IPaymentService;
 
 /**
- * 收付款信息Service业务层处理
+ * 资产管理-收付款:收付款信息Service业务层处理
  * 
  * @author ml
- * @date 2024-07-18
+ * @date 2024-07-19
  */
 @Service
 public class PaymentServiceImpl implements IPaymentService 
@@ -22,10 +21,10 @@ public class PaymentServiceImpl implements IPaymentService
     private PaymentMapper paymentMapper;
 
     /**
-     * 查询收付款信息
+     * 查询资产管理-收付款:收付款信息
      * 
-     * @param id 收付款信息主键
-     * @return 收付款信息
+     * @param id 资产管理-收付款:收付款信息主键
+     * @return 资产管理-收付款:收付款信息
      */
     @Override
     public Payment selectPaymentById(Long id)
@@ -34,10 +33,10 @@ public class PaymentServiceImpl implements IPaymentService
     }
 
     /**
-     * 查询收付款信息列表
+     * 查询资产管理-收付款:收付款信息列表
      * 
-     * @param payment 收付款信息
-     * @return 收付款信息
+     * @param payment 资产管理-收付款:收付款信息
+     * @return 资产管理-收付款:收付款信息
      */
     @Override
     public List<Payment> selectPaymentList(Payment payment)
@@ -46,9 +45,9 @@ public class PaymentServiceImpl implements IPaymentService
     }
 
     /**
-     * 新增收付款信息
+     * 新增资产管理-收付款:收付款信息
      * 
-     * @param payment 收付款信息
+     * @param payment 资产管理-收付款:收付款信息
      * @return 结果
      */
     @Override
@@ -58,9 +57,9 @@ public class PaymentServiceImpl implements IPaymentService
     }
 
     /**
-     * 修改收付款信息
+     * 修改资产管理-收付款:收付款信息
      * 
-     * @param payment 收付款信息
+     * @param payment 资产管理-收付款:收付款信息
      * @return 结果
      */
     @Override
@@ -71,9 +70,9 @@ public class PaymentServiceImpl implements IPaymentService
     }
 
     /**
-     * 批量删除收付款信息
+     * 批量删除资产管理-收付款:收付款信息
      * 
-     * @param ids 需要删除的收付款信息主键
+     * @param ids 需要删除的资产管理-收付款:收付款信息主键
      * @return 结果
      */
     @Override
@@ -83,9 +82,9 @@ public class PaymentServiceImpl implements IPaymentService
     }
 
     /**
-     * 删除收付款信息信息
+     * 删除资产管理-收付款:收付款信息信息
      * 
-     * @param id 收付款信息主键
+     * @param id 资产管理-收付款:收付款信息主键
      * @return 结果
      */
     @Override

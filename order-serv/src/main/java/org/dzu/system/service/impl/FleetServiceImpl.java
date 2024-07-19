@@ -1,18 +1,17 @@
 package org.dzu.system.service.impl;
 
-import org.dzu.system.domain.Fleet;
-import org.dzu.system.mapper.FleetMapper;
-import org.dzu.system.service.IFleetService;
+import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-
-import java.util.List;
+import org.dzu.system.mapper.FleetMapper;
+import org.dzu.system.domain.Fleet;
+import org.dzu.system.service.IFleetService;
 
 /**
- * 车队信息Service业务层处理
+ * 车队管理Service业务层处理
  * 
  * @author ml
- * @date 2024-07-18
+ * @date 2024-07-19
  */
 @Service
 public class FleetServiceImpl implements IFleetService 
@@ -21,10 +20,10 @@ public class FleetServiceImpl implements IFleetService
     private FleetMapper fleetMapper;
 
     /**
-     * 查询车队信息
+     * 查询车队管理
      * 
-     * @param id 车队信息主键
-     * @return 车队信息
+     * @param id 车队管理主键
+     * @return 车队管理
      */
     @Override
     public Fleet selectFleetById(Long id)
@@ -33,10 +32,10 @@ public class FleetServiceImpl implements IFleetService
     }
 
     /**
-     * 查询车队信息列表
+     * 查询车队管理列表
      * 
-     * @param fleet 车队信息
-     * @return 车队信息
+     * @param fleet 车队管理
+     * @return 车队管理
      */
     @Override
     public List<Fleet> selectFleetList(Fleet fleet)
@@ -45,9 +44,9 @@ public class FleetServiceImpl implements IFleetService
     }
 
     /**
-     * 新增车队信息
+     * 新增车队管理
      * 
-     * @param fleet 车队信息
+     * @param fleet 车队管理
      * @return 结果
      */
     @Override
@@ -57,9 +56,9 @@ public class FleetServiceImpl implements IFleetService
     }
 
     /**
-     * 修改车队信息
+     * 修改车队管理
      * 
-     * @param fleet 车队信息
+     * @param fleet 车队管理
      * @return 结果
      */
     @Override
@@ -69,9 +68,9 @@ public class FleetServiceImpl implements IFleetService
     }
 
     /**
-     * 批量删除车队信息
+     * 批量删除车队管理
      * 
-     * @param ids 需要删除的车队信息主键
+     * @param ids 需要删除的车队管理主键
      * @return 结果
      */
     @Override
@@ -81,9 +80,9 @@ public class FleetServiceImpl implements IFleetService
     }
 
     /**
-     * 删除车队信息信息
+     * 删除车队管理信息
      * 
-     * @param id 车队信息主键
+     * @param id 车队管理主键
      * @return 结果
      */
     @Override

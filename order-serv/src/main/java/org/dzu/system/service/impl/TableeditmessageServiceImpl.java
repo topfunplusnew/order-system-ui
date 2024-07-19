@@ -8,10 +8,10 @@ import org.dzu.system.domain.Tableeditmessage;
 import org.dzu.system.service.ITableeditmessageService;
 
 /**
- * 信息Service业务层处理
+ * 变动日志信息Service业务层处理
  * 
  * @author ml
- * @date 2024-07-18
+ * @date 2024-07-19
  */
 @Service
 public class TableeditmessageServiceImpl implements ITableeditmessageService 
@@ -20,10 +20,10 @@ public class TableeditmessageServiceImpl implements ITableeditmessageService
     private TableeditmessageMapper tableeditmessageMapper;
 
     /**
-     * 查询信息
+     * 查询变动日志信息
      * 
-     * @param id 信息主键
-     * @return 信息
+     * @param id 变动日志信息主键
+     * @return 变动日志信息
      */
     @Override
     public Tableeditmessage selectTableeditmessageById(Long id)
@@ -32,10 +32,10 @@ public class TableeditmessageServiceImpl implements ITableeditmessageService
     }
 
     /**
-     * 查询信息列表
+     * 查询变动日志信息列表
      * 
-     * @param tableeditmessage 信息
-     * @return 信息
+     * @param tableeditmessage 变动日志信息
+     * @return 变动日志信息
      */
     @Override
     public List<Tableeditmessage> selectTableeditmessageList(Tableeditmessage tableeditmessage)
@@ -44,9 +44,9 @@ public class TableeditmessageServiceImpl implements ITableeditmessageService
     }
 
     /**
-     * 新增信息
+     * 新增变动日志信息
      * 
-     * @param tableeditmessage 信息
+     * @param tableeditmessage 变动日志信息
      * @return 结果
      */
     @Override
@@ -56,9 +56,9 @@ public class TableeditmessageServiceImpl implements ITableeditmessageService
     }
 
     /**
-     * 修改信息
+     * 修改变动日志信息
      * 
-     * @param tableeditmessage 信息
+     * @param tableeditmessage 变动日志信息
      * @return 结果
      */
     @Override
@@ -68,9 +68,9 @@ public class TableeditmessageServiceImpl implements ITableeditmessageService
     }
 
     /**
-     * 批量删除信息
+     * 批量删除变动日志信息
      * 
-     * @param ids 需要删除的信息主键
+     * @param ids 需要删除的变动日志信息主键
      * @return 结果
      */
     @Override
@@ -80,9 +80,9 @@ public class TableeditmessageServiceImpl implements ITableeditmessageService
     }
 
     /**
-     * 删除信息信息
+     * 删除变动日志信息信息
      * 
-     * @param id 信息主键
+     * @param id 变动日志信息主键
      * @return 结果
      */
     @Override

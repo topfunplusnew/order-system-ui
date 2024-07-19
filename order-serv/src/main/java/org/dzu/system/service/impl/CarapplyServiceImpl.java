@@ -9,10 +9,10 @@ import org.dzu.system.domain.Carapply;
 import org.dzu.system.service.ICarapplyService;
 
 /**
- * 汽车申请Service业务层处理
+ * 车辆派出管理Service业务层处理
  * 
  * @author ml
- * @date 2024-07-18
+ * @date 2024-07-19
  */
 @Service
 public class CarapplyServiceImpl implements ICarapplyService 
@@ -21,10 +21,10 @@ public class CarapplyServiceImpl implements ICarapplyService
     private CarapplyMapper carapplyMapper;
 
     /**
-     * 查询汽车申请
+     * 查询车辆派出管理
      * 
-     * @param id 汽车申请主键
-     * @return 汽车申请
+     * @param id 车辆派出管理主键
+     * @return 车辆派出管理
      */
     @Override
     public Carapply selectCarapplyById(Long id)
@@ -33,10 +33,10 @@ public class CarapplyServiceImpl implements ICarapplyService
     }
 
     /**
-     * 查询汽车申请列表
+     * 查询车辆派出管理列表
      * 
-     * @param carapply 汽车申请
-     * @return 汽车申请
+     * @param carapply 车辆派出管理
+     * @return 车辆派出管理
      */
     @Override
     public List<Carapply> selectCarapplyList(Carapply carapply)
@@ -45,9 +45,9 @@ public class CarapplyServiceImpl implements ICarapplyService
     }
 
     /**
-     * 新增汽车申请
+     * 新增车辆派出管理
      * 
-     * @param carapply 汽车申请
+     * @param carapply 车辆派出管理
      * @return 结果
      */
     @Override
@@ -57,9 +57,9 @@ public class CarapplyServiceImpl implements ICarapplyService
     }
 
     /**
-     * 修改汽车申请
+     * 修改车辆派出管理
      * 
-     * @param carapply 汽车申请
+     * @param carapply 车辆派出管理
      * @return 结果
      */
     @Override
@@ -70,9 +70,9 @@ public class CarapplyServiceImpl implements ICarapplyService
     }
 
     /**
-     * 批量删除汽车申请
+     * 批量删除车辆派出管理
      * 
-     * @param ids 需要删除的汽车申请主键
+     * @param ids 需要删除的车辆派出管理主键
      * @return 结果
      */
     @Override
@@ -82,9 +82,9 @@ public class CarapplyServiceImpl implements ICarapplyService
     }
 
     /**
-     * 删除汽车申请信息
+     * 删除车辆派出管理信息
      * 
-     * @param id 汽车申请主键
+     * @param id 车辆派出管理主键
      * @return 结果
      */
     @Override

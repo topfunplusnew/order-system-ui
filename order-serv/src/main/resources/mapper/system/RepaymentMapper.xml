@@ -2,7 +2,7 @@
 <!DOCTYPE mapper
 PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
 "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
-<mapper namespace="org.dzu.system.mapper.RepaymentMapper">
+<mapper namespace="com.ruoyi.system.mapper.RepaymentMapper">
     
     <resultMap type="Repayment" id="RepaymentResult">
         <result property="id"    column="id"    />
@@ -18,10 +18,11 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         <result property="userId"    column="userId"    />
         <result property="UserName"    column="UserName"    />
         <result property="updateTime"    column="update_time"    />
+        <result property="delFlag"    column="delFlag"    />
     </resultMap>
 
     <sql id="selectRepaymentVo">
-        select id, loanNO, payNO, moneyAmount, ratio, payDate, acountsName, bankNo, comments, addtime, userId, UserName, update_time from repayment
+        select id, loanNO, payNO, moneyAmount, ratio, payDate, acountsName, bankNo, comments, addtime, userId, UserName, update_time, delFlag from repayment
     </sql>
 
     <select id="selectRepaymentList" parameterType="Repayment" resultMap="RepaymentResult">
@@ -38,6 +39,7 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
             <if test="addtime != null  and addtime != ''"> and addtime = #{addtime}</if>
             <if test="userId != null "> and userId = #{userId}</if>
             <if test="UserName != null  and UserName != ''"> and UserName like concat('%', #{UserName}, '%')</if>
+            <if test="delFlag != null "> and delFlag = #{delFlag}</if>
         </where>
     </select>
     
@@ -61,6 +63,7 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
             <if test="userId != null">userId,</if>
             <if test="UserName != null">UserName,</if>
             <if test="updateTime != null">update_time,</if>
+            <if test="delFlag != null">delFlag,</if>
          </trim>
         <trim prefix="values (" suffix=")" suffixOverrides=",">
             <if test="loanNO != null">#{loanNO},</if>
@@ -75,6 +78,7 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
             <if test="userId != null">#{userId},</if>
             <if test="UserName != null">#{UserName},</if>
             <if test="updateTime != null">#{updateTime},</if>
+            <if test="delFlag != null">#{delFlag},</if>
          </trim>
     </insert>
 
@@ -93,6 +97,7 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
             <if test="userId != null">userId = #{userId},</if>
             <if test="UserName != null">UserName = #{UserName},</if>
             <if test="updateTime != null">update_time = #{updateTime},</if>
+            <if test="delFlag != null">delFlag = #{delFlag},</if>
         </trim>
         where id = #{id}
     </update>
