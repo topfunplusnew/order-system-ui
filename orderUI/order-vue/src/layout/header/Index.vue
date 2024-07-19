@@ -12,7 +12,7 @@
                                 <slot></slot>
                             </lay-col>
                             <lay-col class="buttons">
-                                <lay-button type="normal">
+                                <lay-button type="primary">
                                     <lay-icon type="layui-icon-screen-full"></lay-icon>
                                 </lay-button>
                             </lay-col>

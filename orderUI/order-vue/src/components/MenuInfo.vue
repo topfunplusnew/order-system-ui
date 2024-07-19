@@ -1,7 +1,7 @@
 <template>
     <lay-menu :tree="true" theme="light" v-model:selected-key="selectKey" v-model:openKeys="openKeys"
               @changeSelectedKey="handleChooseKey" @changeOpenKeys="handleOpenKeys" :indent="true" :level="true"
-              :collapse="collapse" :collapse-transition="collapseTransition">
+              :collapse="collapse" :collapse-transition="collapseTransition" style="border-top: #1ab394 3px solid">
         <Menu :menuData="menuData"></Menu>
     </lay-menu>
 </template>
@@ -35,6 +35,7 @@ const handleChooseKey = (props) => {
     })
     //自动聚焦
     switch_store.changeFocus(props)
+    switch_store.changeSelectedKey(props.toString())
 }
 const handleOpenKeys = (keys) => {
     openKeys.value = keys;

@@ -1,7 +1,7 @@
 <template>
     <div>
         <Header>
-            <lay-button type="normal" class="buttons" @click="handleCollapse">
+            <lay-button type="primary" class="buttons" @click="handleCollapse">
                 <lay-icon type="layui-icon-slider"></lay-icon>
             </lay-button>
         </Header>
@@ -50,7 +50,7 @@ const handleCollapse = () => {
 }
 
 .body-85 {
-    width: 96%;
+    width: 99%;
 }
 
 .body-100 {

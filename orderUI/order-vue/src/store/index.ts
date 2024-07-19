@@ -63,17 +63,24 @@ export const useSwitchStore = defineStore('switch', () => {
     const isShow = ref(true)
     //点击某个菜单自动聚焦
     const focus = ref(1)
+    //菜单选中
+    const selectKey = ref("")
     const changeIsShow = () => {
         isShow.value = !isShow.value
     }
     const changeFocus = (id: number) => {
         focus.value = id;
     }
+    const changeSelectedKey = (id: string) => {
+        selectKey.value = id;
+    }
     return {
         isShow,
         focus,
+        selectKey,
         changeIsShow,
-        changeFocus
+        changeFocus,
+        changeSelectedKey
     }
 })
 
