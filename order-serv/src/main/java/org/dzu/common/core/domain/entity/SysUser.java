@@ -1,6 +1,5 @@
 package org.dzu.common.core.domain.entity;
 
-import io.lettuce.core.ExperimentalLettuceCoroutinesApi;
 import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.apache.commons.lang3.builder.ToStringStyle;
 import org.dzu.common.annotation.Excel;
@@ -8,7 +7,7 @@ import org.dzu.common.annotation.Excel.ColumnType;
 import org.dzu.common.annotation.Excel.Type;
 import org.dzu.common.annotation.Excels;
 import org.dzu.common.core.domain.BaseEntity;
-import org.dzu.common.xss.Xss;
+import org.dzu.common.annotation.Xss;
 
 import javax.validation.constraints.Email;
 import javax.validation.constraints.NotBlank;

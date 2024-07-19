@@ -1,7 +1,11 @@
 package org.dzu.system.service.impl;
 
 import java.util.List;
+
+import org.dzu.common.constant.CompanyConstant;
+import org.dzu.common.core.domain.entity.SysUser;
 import org.dzu.common.utils.DateUtils;
+import org.dzu.common.utils.SecurityUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.dzu.system.mapper.CompanyMapper;
@@ -44,6 +48,7 @@ public class CompanyServiceImpl implements ICompanyService
         return companyMapper.selectCompanyList(company);
     }
 
+
     /**
      * 新增客户管理
      * 
@@ -51,10 +56,13 @@ public class CompanyServiceImpl implements ICompanyService
      * @return 结果
      */
     @Override
-    public int insertCompany(Company company)
-    {
+    public int insertCompany(Company company){
+        // 设置基础属性
+        company.setDelFlag(Long.valueOf(CompanyConstant.NODEL));
+        updateModifypersonneldata(company);
         return companyMapper.insertCompany(company);
     }
+
 
     /**
      * 修改客户管理
@@ -65,6 +73,7 @@ public class CompanyServiceImpl implements ICompanyService
     @Override
     public int updateCompany(Company company)
     {
+        updateModifypersonneldata(company);
         company.setUpdateTime(DateUtils.getNowDate());
         return companyMapper.updateCompany(company);
     }
@@ -91,5 +100,13 @@ public class CompanyServiceImpl implements ICompanyService
     public int deleteCompanyById(Long id)
     {
         return companyMapper.deleteCompanyById(id);
+    }
+
+    private void updateModifypersonneldata(Company company){
+        // 设置操作人员+添加时间
+        company.setAddtime(DateUtils.getTime());
+        SysUser user = SecurityUtils.getLoginUser().getUser();
+        company.setUserId(user.getUserId());
+        company.setUserName(user.getTrueName());
     }
 }

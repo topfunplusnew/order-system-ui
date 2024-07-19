@@ -2,8 +2,15 @@ package org.dzu.system.domain;
 
 import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.apache.commons.lang3.builder.ToStringStyle;
+import org.dzu.common.annotation.DecimalMaxDigits;
 import org.dzu.common.annotation.Excel;
+import org.dzu.common.annotation.OnlyZeroOrOne;
+import org.dzu.common.annotation.PhoneLength;
 import org.dzu.common.core.domain.BaseEntity;
+import org.hibernate.validator.constraints.Length;
+
+import javax.validation.constraints.Pattern;
+import javax.validation.constraints.Size;
 
 /**
  * 客户管理对象 company
@@ -28,10 +35,12 @@ public class Company extends BaseEntity
 
     /** 联系人电话 */
     @Excel(name = "联系人电话")
+    @Size(min = 0, max = 11, message = "联系电话长度不能超过11个字符")
     private String relationTel;
 
     /** 地址 */
     @Excel(name = "地址")
+    @Length(max=249,message = "地址长度过大")
     private String address;
 
     /** 开户行 */
@@ -48,11 +57,14 @@ public class Company extends BaseEntity
 
     /** 余额 */
     @Excel(name = "余额")
-    private Long surplusMoney;
+    @DecimalMaxDigits
+    private Float surplusMoney;
 
     /** 客户类别（ 客户，供应商） */
-    @Excel(name = "客户类别", readConverterExp = "客=户，供应商")
+    @Excel(name = "客户类别")
+    @Pattern(regexp = "客户|供应商", message = "类型必须是 '客户' 或者 '供应商'")
     private String companyType;
+
 
     /** 业务员 */
     @Excel(name = "业务员")
@@ -64,10 +76,13 @@ public class Company extends BaseEntity
 
     /** 联系人电话 */
     @Excel(name = "联系人电话")
+    @PhoneLength
     private String leaderTel;
 
+
+
     /** 区域（省+市县+乡镇） */
-    @Excel(name = "区域", readConverterExp = "省=+市县+乡镇")
+    @Excel(name = "区域" )
     private String region;
 
     /** 销售经理 */
@@ -104,6 +119,7 @@ public class Company extends BaseEntity
 
     /** 删除标记 */
     @Excel(name = "删除标记")
+    @OnlyZeroOrOne
     private Long delFlag;
 
     public void setId(Long id) 
@@ -178,12 +194,12 @@ public class Company extends BaseEntity
     {
         return bankNo;
     }
-    public void setSurplusMoney(Long surplusMoney) 
+    public void setSurplusMoney(Float surplusMoney)
     {
         this.surplusMoney = surplusMoney;
     }
 
-    public Long getSurplusMoney() 
+    public Float getSurplusMoney()
     {
         return surplusMoney;
     }
@@ -230,7 +246,7 @@ public class Company extends BaseEntity
 
     public String getRegion() 
     {
-        return region;
+        return this.province+"-"+this.city+"="+this.county;
     }
     public void setSalesManager(String salesManager) 
     {

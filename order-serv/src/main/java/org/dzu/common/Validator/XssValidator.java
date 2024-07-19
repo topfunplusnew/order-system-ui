@@ -1,5 +1,6 @@
-package org.dzu.common.xss;
+package org.dzu.common.Validator;
 
+import org.dzu.common.annotation.Xss;
 import org.dzu.common.utils.StringUtils;
 
 import javax.validation.ConstraintValidator;

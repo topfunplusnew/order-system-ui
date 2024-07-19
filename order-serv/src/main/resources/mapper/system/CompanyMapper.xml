@@ -37,7 +37,8 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
 
     <select id="selectCompanyList" parameterType="Company" resultMap="CompanyResult">
         <include refid="selectCompanyVo"/>
-        <where>  
+        <where>
+            delFlag = 0
             <if test="company != null  and company != ''"> and company = #{company}</if>
             <if test="relationName != null  and relationName != ''"> and relationName like concat('%', #{relationName}, '%')</if>
             <if test="relationTel != null  and relationTel != ''"> and relationTel = #{relationTel}</if>
@@ -50,7 +51,6 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
             <if test="salesman != null  and salesman != ''"> and salesman = #{salesman}</if>
             <if test="leader != null  and leader != ''"> and leader = #{leader}</if>
             <if test="leaderTel != null  and leaderTel != ''"> and leaderTel = #{leaderTel}</if>
-            <if test="region != null  and region != ''"> and region = #{region}</if>
             <if test="salesManager != null  and salesManager != ''"> and salesManager = #{salesManager}</if>
             <if test="province != null  and province != ''"> and province = #{province}</if>
             <if test="city != null  and city != ''"> and city = #{city}</if>
@@ -65,7 +65,7 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
     
     <select id="selectCompanyById" parameterType="Long" resultMap="CompanyResult">
         <include refid="selectCompanyVo"/>
-        where id = #{id}
+        where id = #{id} and delFlag = 0
     </select>
 
     <insert id="insertCompany" parameterType="Company" useGeneratedKeys="true" keyProperty="id">
@@ -153,11 +153,11 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
     </update>
 
     <delete id="deleteCompanyById" parameterType="Long">
-        delete from company where id = #{id}
+        update company set delflag = 1  where id = #{id}
     </delete>
 
     <delete id="deleteCompanyByIds" parameterType="String">
-        delete from company where id in 
+        update company set delflag = 1 where id in
         <foreach item="id" collection="array" open="(" separator="," close=")">
             #{id}
         </foreach>
