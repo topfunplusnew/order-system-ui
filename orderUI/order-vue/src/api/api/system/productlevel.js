@@ -1,6 +1,6 @@
-import request from "../../../utils/request.js";
+import request from '@/utils/request'
 
-// 查询产品级别信息列表
+// 查询产品级别管理列表
 export function listProductlevel(query) {
   return request({
     url: '/system/productlevel/list',
@@ -9,7 +9,7 @@ export function listProductlevel(query) {
   })
 }
 
-// 查询产品级别信息详细
+// 查询产品级别管理详细
 export function getProductlevel(id) {
   return request({
     url: '/system/productlevel/' + id,
@@ -17,7 +17,7 @@ export function getProductlevel(id) {
   })
 }
 
-// 新增产品级别信息
+// 新增产品级别管理
 export function addProductlevel(data) {
   return request({
     url: '/system/productlevel',
@@ -26,7 +26,7 @@ export function addProductlevel(data) {
   })
 }
 
-// 修改产品级别信息
+// 修改产品级别管理
 export function updateProductlevel(data) {
   return request({
     url: '/system/productlevel',
@@ -35,7 +35,7 @@ export function updateProductlevel(data) {
   })
 }
 
-// 删除产品级别信息
+// 删除产品级别管理
 export function delProductlevel(id) {
   return request({
     url: '/system/productlevel/' + id,

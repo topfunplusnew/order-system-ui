@@ -1,6 +1,6 @@
-import request from "../../../utils/request.js";
+import request from '@/utils/request'
 
-// 查询社会保险信息列表
+// 查询社保基金列表
 export function listSocialinsurance(query) {
   return request({
     url: '/system/socialinsurance/list',
@@ -9,7 +9,7 @@ export function listSocialinsurance(query) {
   })
 }
 
-// 查询社会保险信息详细
+// 查询社保基金详细
 export function getSocialinsurance(id) {
   return request({
     url: '/system/socialinsurance/' + id,
@@ -17,7 +17,7 @@ export function getSocialinsurance(id) {
   })
 }
 
-// 新增社会保险信息
+// 新增社保基金
 export function addSocialinsurance(data) {
   return request({
     url: '/system/socialinsurance',
@@ -26,7 +26,7 @@ export function addSocialinsurance(data) {
   })
 }
 
-// 修改社会保险信息
+// 修改社保基金
 export function updateSocialinsurance(data) {
   return request({
     url: '/system/socialinsurance',
@@ -35,7 +35,7 @@ export function updateSocialinsurance(data) {
   })
 }
 
-// 删除社会保险信息
+// 删除社保基金
 export function delSocialinsurance(id) {
   return request({
     url: '/system/socialinsurance/' + id,

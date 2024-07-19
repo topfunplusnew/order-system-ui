@@ -1,6 +1,6 @@
-import request from "../../../utils/request.js";
+import request from '@/utils/request'
 
-// 查询银行承兑列表
+// 查询商业票据、银行承兑列表
 export function listBankacceptance(query) {
   return request({
     url: '/system/bankacceptance/list',
@@ -9,7 +9,7 @@ export function listBankacceptance(query) {
   })
 }
 
-// 查询银行承兑详细
+// 查询商业票据、银行承兑详细
 export function getBankacceptance(id) {
   return request({
     url: '/system/bankacceptance/' + id,
@@ -17,7 +17,7 @@ export function getBankacceptance(id) {
   })
 }
 
-// 新增银行承兑
+// 新增商业票据、银行承兑
 export function addBankacceptance(data) {
   return request({
     url: '/system/bankacceptance',
@@ -26,7 +26,7 @@ export function addBankacceptance(data) {
   })
 }
 
-// 修改银行承兑
+// 修改商业票据、银行承兑
 export function updateBankacceptance(data) {
   return request({
     url: '/system/bankacceptance',
@@ -35,7 +35,7 @@ export function updateBankacceptance(data) {
   })
 }
 
-// 删除银行承兑
+// 删除商业票据、银行承兑
 export function delBankacceptance(id) {
   return request({
     url: '/system/bankacceptance/' + id,

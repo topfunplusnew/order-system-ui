@@ -1,4 +1,4 @@
-import request from "../../../utils/request.js";
+import request from '@/utils/request'
 
 // 查询订单详情列表
 export function listOrderdetail(query) {

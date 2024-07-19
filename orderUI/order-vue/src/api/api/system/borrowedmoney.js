@@ -1,6 +1,6 @@
-import request from "../../../utils/request.js";
+import request from '@/utils/request'
 
-// 查询借入金钱列表
+// 查询从外部借入款、贷款列表
 export function listBorrowedmoney(query) {
   return request({
     url: '/system/borrowedmoney/list',
@@ -9,7 +9,7 @@ export function listBorrowedmoney(query) {
   })
 }
 
-// 查询借入金钱详细
+// 查询从外部借入款、贷款详细
 export function getBorrowedmoney(id) {
   return request({
     url: '/system/borrowedmoney/' + id,
@@ -17,7 +17,7 @@ export function getBorrowedmoney(id) {
   })
 }
 
-// 新增借入金钱
+// 新增从外部借入款、贷款
 export function addBorrowedmoney(data) {
   return request({
     url: '/system/borrowedmoney',
@@ -26,7 +26,7 @@ export function addBorrowedmoney(data) {
   })
 }
 
-// 修改借入金钱
+// 修改从外部借入款、贷款
 export function updateBorrowedmoney(data) {
   return request({
     url: '/system/borrowedmoney',
@@ -35,7 +35,7 @@ export function updateBorrowedmoney(data) {
   })
 }
 
-// 删除借入金钱
+// 删除从外部借入款、贷款
 export function delBorrowedmoney(id) {
   return request({
     url: '/system/borrowedmoney/' + id,

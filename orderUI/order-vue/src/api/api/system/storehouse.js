@@ -1,6 +1,6 @@
-import request from "../../../utils/request.js";
+import request from '@/utils/request'
 
-// 查询仓库信息列表
+// 查询仓库管理列表
 export function listStorehouse(query) {
   return request({
     url: '/system/storehouse/list',
@@ -9,7 +9,7 @@ export function listStorehouse(query) {
   })
 }
 
-// 查询仓库信息详细
+// 查询仓库管理详细
 export function getStorehouse(id) {
   return request({
     url: '/system/storehouse/' + id,
@@ -17,7 +17,7 @@ export function getStorehouse(id) {
   })
 }
 
-// 新增仓库信息
+// 新增仓库管理
 export function addStorehouse(data) {
   return request({
     url: '/system/storehouse',
@@ -26,7 +26,7 @@ export function addStorehouse(data) {
   })
 }
 
-// 修改仓库信息
+// 修改仓库管理
 export function updateStorehouse(data) {
   return request({
     url: '/system/storehouse',
@@ -35,7 +35,7 @@ export function updateStorehouse(data) {
   })
 }
 
-// 删除仓库信息
+// 删除仓库管理
 export function delStorehouse(id) {
   return request({
     url: '/system/storehouse/' + id,

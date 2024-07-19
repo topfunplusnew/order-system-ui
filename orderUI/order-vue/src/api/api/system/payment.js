@@ -1,6 +1,6 @@
-import request from "../../../utils/request.js";
+import request from '@/utils/request'
 
-// 查询收付款信息列表
+// 查询资产管理-收付款:收付款信息列表
 export function listPayment(query) {
   return request({
     url: '/system/payment/list',
@@ -9,7 +9,7 @@ export function listPayment(query) {
   })
 }
 
-// 查询收付款信息详细
+// 查询资产管理-收付款:收付款信息详细
 export function getPayment(id) {
   return request({
     url: '/system/payment/' + id,
@@ -17,7 +17,7 @@ export function getPayment(id) {
   })
 }
 
-// 新增收付款信息
+// 新增资产管理-收付款:收付款信息
 export function addPayment(data) {
   return request({
     url: '/system/payment',
@@ -26,7 +26,7 @@ export function addPayment(data) {
   })
 }
 
-// 修改收付款信息
+// 修改资产管理-收付款:收付款信息
 export function updatePayment(data) {
   return request({
     url: '/system/payment',
@@ -35,7 +35,7 @@ export function updatePayment(data) {
   })
 }
 
-// 删除收付款信息
+// 删除资产管理-收付款:收付款信息
 export function delPayment(id) {
   return request({
     url: '/system/payment/' + id,

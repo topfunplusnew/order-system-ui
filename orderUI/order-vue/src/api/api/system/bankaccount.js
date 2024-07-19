@@ -1,6 +1,6 @@
-import request from "../../../utils/request.js";
+import request from '@/utils/request'
 
-// 查询银行账户列表
+// 查询银行卡管理列表
 export function listBankaccount(query) {
   return request({
     url: '/system/bankaccount/list',
@@ -9,7 +9,7 @@ export function listBankaccount(query) {
   })
 }
 
-// 查询银行账户详细
+// 查询银行卡管理详细
 export function getBankaccount(id) {
   return request({
     url: '/system/bankaccount/' + id,
@@ -17,7 +17,7 @@ export function getBankaccount(id) {
   })
 }
 
-// 新增银行账户
+// 新增银行卡管理
 export function addBankaccount(data) {
   return request({
     url: '/system/bankaccount',
@@ -26,7 +26,7 @@ export function addBankaccount(data) {
   })
 }
 
-// 修改银行账户
+// 修改银行卡管理
 export function updateBankaccount(data) {
   return request({
     url: '/system/bankaccount',
@@ -35,7 +35,7 @@ export function updateBankaccount(data) {
   })
 }
 
-// 删除银行账户
+// 删除银行卡管理
 export function delBankaccount(id) {
   return request({
     url: '/system/bankaccount/' + id,

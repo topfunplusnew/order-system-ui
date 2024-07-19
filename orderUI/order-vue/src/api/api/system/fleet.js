@@ -1,6 +1,6 @@
-import request from "../../../utils/request.js";
+import request from '@/utils/request'
 
-// 查询车队信息列表
+// 查询车队管理列表
 export function listFleet(query) {
   return request({
     url: '/system/fleet/list',
@@ -9,7 +9,7 @@ export function listFleet(query) {
   })
 }
 
-// 查询车队信息详细
+// 查询车队管理详细
 export function getFleet(id) {
   return request({
     url: '/system/fleet/' + id,
@@ -17,7 +17,7 @@ export function getFleet(id) {
   })
 }
 
-// 新增车队信息
+// 新增车队管理
 export function addFleet(data) {
   return request({
     url: '/system/fleet',
@@ -26,7 +26,7 @@ export function addFleet(data) {
   })
 }
 
-// 修改车队信息
+// 修改车队管理
 export function updateFleet(data) {
   return request({
     url: '/system/fleet',
@@ -35,7 +35,7 @@ export function updateFleet(data) {
   })
 }
 
-// 删除车队信息
+// 删除车队管理
 export function delFleet(id) {
   return request({
     url: '/system/fleet/' + id,

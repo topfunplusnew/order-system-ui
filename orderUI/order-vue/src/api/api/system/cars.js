@@ -1,6 +1,6 @@
-import request from "../../../utils/request.js";
+import request from '@/utils/request'
 
-// 查询汽车信息列表
+// 查询车辆管理列表
 export function listCars(query) {
   return request({
     url: '/system/cars/list',
@@ -9,7 +9,7 @@ export function listCars(query) {
   })
 }
 
-// 查询汽车信息详细
+// 查询车辆管理详细
 export function getCars(id) {
   return request({
     url: '/system/cars/' + id,
@@ -17,7 +17,7 @@ export function getCars(id) {
   })
 }
 
-// 新增汽车信息
+// 新增车辆管理
 export function addCars(data) {
   return request({
     url: '/system/cars',
@@ -26,7 +26,7 @@ export function addCars(data) {
   })
 }
 
-// 修改汽车信息
+// 修改车辆管理
 export function updateCars(data) {
   return request({
     url: '/system/cars',
@@ -35,7 +35,7 @@ export function updateCars(data) {
   })
 }
 
-// 删除汽车信息
+// 删除车辆管理
 export function delCars(id) {
   return request({
     url: '/system/cars/' + id,

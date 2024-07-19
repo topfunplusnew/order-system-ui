@@ -1,6 +1,6 @@
-import request from "../../../utils/request.js";
+import request from '@/utils/request'
 
-// 查询库存列表
+// 查询货物入库列表
 export function listInventory(query) {
   return request({
     url: '/system/inventory/list',
@@ -9,7 +9,7 @@ export function listInventory(query) {
   })
 }
 
-// 查询库存详细
+// 查询货物入库详细
 export function getInventory(id) {
   return request({
     url: '/system/inventory/' + id,
@@ -17,7 +17,7 @@ export function getInventory(id) {
   })
 }
 
-// 新增库存
+// 新增货物入库
 export function addInventory(data) {
   return request({
     url: '/system/inventory',
@@ -26,7 +26,7 @@ export function addInventory(data) {
   })
 }
 
-// 修改库存
+// 修改货物入库
 export function updateInventory(data) {
   return request({
     url: '/system/inventory',
@@ -35,7 +35,7 @@ export function updateInventory(data) {
   })
 }
 
-// 删除库存
+// 删除货物入库
 export function delInventory(id) {
   return request({
     url: '/system/inventory/' + id,

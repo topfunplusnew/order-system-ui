@@ -1,6 +1,6 @@
-import request from "../../../utils/request.js";
+import request from '@/utils/request'
 
-// 查询出差记录列表
+// 查询出差登记列表
 export function listBusinesstrip(query) {
   return request({
     url: '/system/businesstrip/list',
@@ -9,7 +9,7 @@ export function listBusinesstrip(query) {
   })
 }
 
-// 查询出差记录详细
+// 查询出差登记详细
 export function getBusinesstrip(id) {
   return request({
     url: '/system/businesstrip/' + id,
@@ -17,7 +17,7 @@ export function getBusinesstrip(id) {
   })
 }
 
-// 新增出差记录
+// 新增出差登记
 export function addBusinesstrip(data) {
   return request({
     url: '/system/businesstrip',
@@ -26,7 +26,7 @@ export function addBusinesstrip(data) {
   })
 }
 
-// 修改出差记录
+// 修改出差登记
 export function updateBusinesstrip(data) {
   return request({
     url: '/system/businesstrip',
@@ -35,7 +35,7 @@ export function updateBusinesstrip(data) {
   })
 }
 
-// 删除出差记录
+// 删除出差登记
 export function delBusinesstrip(id) {
   return request({
     url: '/system/businesstrip/' + id,
