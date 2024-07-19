@@ -7,7 +7,7 @@
                     <!-- 首页-->
                     <HomeInfo v-if="a.menuId == 1"/>
                     <!-- 测试-->
-                    <span v-if="a.menuId==1000">1</span>
+                    <FormInfo v-if="a.menuId == 100"/>
                     <!-- 动态组件 is绑定菜单名称-->
                     <!--  <component :is="a.menuName"/>-->
                 </lay-tab-item>
@@ -20,6 +20,7 @@
 import {computed,} from "vue";
 import {useManuTabsStore, useSwitchStore} from "../../store";
 import HomeInfo from "../../components/HomeInfo.vue";
+import FormInfo from "../../components/FormInfo.vue";
 
 const switch_store = useSwitchStore()
 const menu_tabs_store = useManuTabsStore();

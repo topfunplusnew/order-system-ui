@@ -1,6 +1,6 @@
-import request from "../../../utils/request.js";
+import request from '@/utils/request'
 
-// 查询出库信息列表
+// 查询出库列表
 export function listExwarehouse(query) {
   return request({
     url: '/system/exwarehouse/list',
@@ -9,7 +9,7 @@ export function listExwarehouse(query) {
   })
 }
 
-// 查询出库信息详细
+// 查询出库详细
 export function getExwarehouse(id) {
   return request({
     url: '/system/exwarehouse/' + id,
@@ -17,7 +17,7 @@ export function getExwarehouse(id) {
   })
 }
 
-// 新增出库信息
+// 新增出库
 export function addExwarehouse(data) {
   return request({
     url: '/system/exwarehouse',
@@ -26,7 +26,7 @@ export function addExwarehouse(data) {
   })
 }
 
-// 修改出库信息
+// 修改出库
 export function updateExwarehouse(data) {
   return request({
     url: '/system/exwarehouse',
@@ -35,7 +35,7 @@ export function updateExwarehouse(data) {
   })
 }
 
-// 删除出库信息
+// 删除出库
 export function delExwarehouse(id) {
   return request({
     url: '/system/exwarehouse/' + id,

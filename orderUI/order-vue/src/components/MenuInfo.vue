@@ -10,7 +10,7 @@
 import {ref} from "vue";
 import Menu from "./Menu.vue";
 import {useManuTabsStore, useSwitchStore, useSysMenuInfoStore} from "../store";
-import {getMenu} from "../api/api/system/menu.ts";
+import {getMenu, listMenu} from "../api/api/system/menu.ts";
 import {layer} from "@layui/layui-vue";
 //先拿到显示与隐藏
 defineProps(['collapse'])
@@ -18,7 +18,8 @@ const collapseTransition = ref(true);
 
 //菜单
 const menu_store = useSysMenuInfoStore()
-const menuData = menu_store.getMenuList()
+const menuData = menu_store.getMenuList()//获取菜单信息
+console.log('menuData=>', menuData)
 const openKeys = ref([])
 const selectKey = ref("")
 

@@ -1,6 +1,6 @@
-import request from "../../../utils/request.js";
+import request from '@/utils/request'
 
-// 查询订单发票信息列表
+// 查询订单发票列表
 export function listOrderinvoice(query) {
   return request({
     url: '/system/orderinvoice/list',
@@ -9,7 +9,7 @@ export function listOrderinvoice(query) {
   })
 }
 
-// 查询订单发票信息详细
+// 查询订单发票详细
 export function getOrderinvoice(id) {
   return request({
     url: '/system/orderinvoice/' + id,
@@ -17,7 +17,7 @@ export function getOrderinvoice(id) {
   })
 }
 
-// 新增订单发票信息
+// 新增订单发票
 export function addOrderinvoice(data) {
   return request({
     url: '/system/orderinvoice',
@@ -26,7 +26,7 @@ export function addOrderinvoice(data) {
   })
 }
 
-// 修改订单发票信息
+// 修改订单发票
 export function updateOrderinvoice(data) {
   return request({
     url: '/system/orderinvoice',
@@ -35,7 +35,7 @@ export function updateOrderinvoice(data) {
   })
 }
 
-// 删除订单发票信息
+// 删除订单发票
 export function delOrderinvoice(id) {
   return request({
     url: '/system/orderinvoice/' + id,

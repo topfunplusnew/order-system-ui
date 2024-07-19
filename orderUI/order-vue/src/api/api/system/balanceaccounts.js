@@ -1,6 +1,6 @@
-import request from "../../../utils/request.js";
+import request from '@/utils/request'
 
-// 查询余额账户列表
+// 查询平账列表
 export function listBalanceaccounts(query) {
   return request({
     url: '/system/balanceaccounts/list',
@@ -9,7 +9,7 @@ export function listBalanceaccounts(query) {
   })
 }
 
-// 查询余额账户详细
+// 查询平账详细
 export function getBalanceaccounts(id) {
   return request({
     url: '/system/balanceaccounts/' + id,
@@ -17,7 +17,7 @@ export function getBalanceaccounts(id) {
   })
 }
 
-// 新增余额账户
+// 新增平账
 export function addBalanceaccounts(data) {
   return request({
     url: '/system/balanceaccounts',
@@ -26,7 +26,7 @@ export function addBalanceaccounts(data) {
   })
 }
 
-// 修改余额账户
+// 修改平账
 export function updateBalanceaccounts(data) {
   return request({
     url: '/system/balanceaccounts',
@@ -35,7 +35,7 @@ export function updateBalanceaccounts(data) {
   })
 }
 
-// 删除余额账户
+// 删除平账
 export function delBalanceaccounts(id) {
   return request({
     url: '/system/balanceaccounts/' + id,

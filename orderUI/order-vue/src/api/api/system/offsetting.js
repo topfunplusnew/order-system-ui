@@ -1,4 +1,4 @@
-import request from "../../../utils/request.js";
+import request from '@/utils/request'
 
 // 查询资金调整单信息列表
 export function listOffsetting(query) {

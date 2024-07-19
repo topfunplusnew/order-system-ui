@@ -1,6 +1,6 @@
-import request from "../../../utils/request.js";
+import request from '@/utils/request'
 
-// 查询借贷列表
+// 查询资金借出（期货）列表
 export function listLendmoney(query) {
   return request({
     url: '/system/lendmoney/list',
@@ -9,7 +9,7 @@ export function listLendmoney(query) {
   })
 }
 
-// 查询借贷详细
+// 查询资金借出（期货）详细
 export function getLendmoney(id) {
   return request({
     url: '/system/lendmoney/' + id,
@@ -17,7 +17,7 @@ export function getLendmoney(id) {
   })
 }
 
-// 新增借贷
+// 新增资金借出（期货）
 export function addLendmoney(data) {
   return request({
     url: '/system/lendmoney',
@@ -26,7 +26,7 @@ export function addLendmoney(data) {
   })
 }
 
-// 修改借贷
+// 修改资金借出（期货）
 export function updateLendmoney(data) {
   return request({
     url: '/system/lendmoney',
@@ -35,7 +35,7 @@ export function updateLendmoney(data) {
   })
 }
 
-// 删除借贷
+// 删除资金借出（期货）
 export function delLendmoney(id) {
   return request({
     url: '/system/lendmoney/' + id,

@@ -1,6 +1,6 @@
-import request from "../../../utils/request.js";
+import request from '@/utils/request'
 
-// 查询还款信息列表
+// 查询还款记录列表
 export function listRepayment(query) {
   return request({
     url: '/system/repayment/list',
@@ -9,7 +9,7 @@ export function listRepayment(query) {
   })
 }
 
-// 查询还款信息详细
+// 查询还款记录详细
 export function getRepayment(id) {
   return request({
     url: '/system/repayment/' + id,
@@ -17,7 +17,7 @@ export function getRepayment(id) {
   })
 }
 
-// 新增还款信息
+// 新增还款记录
 export function addRepayment(data) {
   return request({
     url: '/system/repayment',
@@ -26,7 +26,7 @@ export function addRepayment(data) {
   })
 }
 
-// 修改还款信息
+// 修改还款记录
 export function updateRepayment(data) {
   return request({
     url: '/system/repayment',
@@ -35,7 +35,7 @@ export function updateRepayment(data) {
   })
 }
 
-// 删除还款信息
+// 删除还款记录
 export function delRepayment(id) {
   return request({
     url: '/system/repayment/' + id,

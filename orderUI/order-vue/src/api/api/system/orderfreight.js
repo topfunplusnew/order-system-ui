@@ -1,6 +1,6 @@
-import request from "../../../utils/request.js";
+import request from '@/utils/request'
 
-// 查询订单运费信息列表
+// 查询订单运费列表
 export function listOrderfreight(query) {
   return request({
     url: '/system/orderfreight/list',
@@ -9,7 +9,7 @@ export function listOrderfreight(query) {
   })
 }
 
-// 查询订单运费信息详细
+// 查询订单运费详细
 export function getOrderfreight(id) {
   return request({
     url: '/system/orderfreight/' + id,
@@ -17,7 +17,7 @@ export function getOrderfreight(id) {
   })
 }
 
-// 新增订单运费信息
+// 新增订单运费
 export function addOrderfreight(data) {
   return request({
     url: '/system/orderfreight',
@@ -26,7 +26,7 @@ export function addOrderfreight(data) {
   })
 }
 
-// 修改订单运费信息
+// 修改订单运费
 export function updateOrderfreight(data) {
   return request({
     url: '/system/orderfreight',
@@ -35,7 +35,7 @@ export function updateOrderfreight(data) {
   })
 }
 
-// 删除订单运费信息
+// 删除订单运费
 export function delOrderfreight(id) {
   return request({
     url: '/system/orderfreight/' + id,

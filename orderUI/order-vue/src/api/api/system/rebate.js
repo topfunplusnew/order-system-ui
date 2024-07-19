@@ -1,6 +1,6 @@
-import request from "../../../utils/request.js";
+import request from '@/utils/request'
 
-// 查询返利信息列表
+// 查询供应商返利列表
 export function listRebate(query) {
   return request({
     url: '/system/rebate/list',
@@ -9,7 +9,7 @@ export function listRebate(query) {
   })
 }
 
-// 查询返利信息详细
+// 查询供应商返利详细
 export function getRebate(id) {
   return request({
     url: '/system/rebate/' + id,
@@ -17,7 +17,7 @@ export function getRebate(id) {
   })
 }
 
-// 新增返利信息
+// 新增供应商返利
 export function addRebate(data) {
   return request({
     url: '/system/rebate',
@@ -26,7 +26,7 @@ export function addRebate(data) {
   })
 }
 
-// 修改返利信息
+// 修改供应商返利
 export function updateRebate(data) {
   return request({
     url: '/system/rebate',
@@ -35,7 +35,7 @@ export function updateRebate(data) {
   })
 }
 
-// 删除返利信息
+// 删除供应商返利
 export function delRebate(id) {
   return request({
     url: '/system/rebate/' + id,

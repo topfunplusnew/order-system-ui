@@ -1,6 +1,6 @@
-import request from "../../../utils/request.js";
+import request from '@/utils/request'
 
-// 查询汽车申请列表
+// 查询车辆派出管理列表
 export function listCarapply(query) {
   return request({
     url: '/system/carapply/list',
@@ -9,7 +9,7 @@ export function listCarapply(query) {
   })
 }
 
-// 查询汽车申请详细
+// 查询车辆派出管理详细
 export function getCarapply(id) {
   return request({
     url: '/system/carapply/' + id,
@@ -17,7 +17,7 @@ export function getCarapply(id) {
   })
 }
 
-// 新增汽车申请
+// 新增车辆派出管理
 export function addCarapply(data) {
   return request({
     url: '/system/carapply',
@@ -26,7 +26,7 @@ export function addCarapply(data) {
   })
 }
 
-// 修改汽车申请
+// 修改车辆派出管理
 export function updateCarapply(data) {
   return request({
     url: '/system/carapply',
@@ -35,7 +35,7 @@ export function updateCarapply(data) {
   })
 }
 
-// 删除汽车申请
+// 删除车辆派出管理
 export function delCarapply(id) {
   return request({
     url: '/system/carapply/' + id,

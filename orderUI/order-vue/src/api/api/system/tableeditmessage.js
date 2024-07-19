@@ -1,6 +1,6 @@
-import request from "../../../utils/request.js";
+import request from '@/utils/request'
 
-// 查询信息列表
+// 查询变动日志信息列表
 export function listTableeditmessage(query) {
   return request({
     url: '/system/tableeditmessage/list',
@@ -9,7 +9,7 @@ export function listTableeditmessage(query) {
   })
 }
 
-// 查询信息详细
+// 查询变动日志信息详细
 export function getTableeditmessage(id) {
   return request({
     url: '/system/tableeditmessage/' + id,
@@ -17,7 +17,7 @@ export function getTableeditmessage(id) {
   })
 }
 
-// 新增信息
+// 新增变动日志信息
 export function addTableeditmessage(data) {
   return request({
     url: '/system/tableeditmessage',
@@ -26,7 +26,7 @@ export function addTableeditmessage(data) {
   })
 }
 
-// 修改信息
+// 修改变动日志信息
 export function updateTableeditmessage(data) {
   return request({
     url: '/system/tableeditmessage',
@@ -35,7 +35,7 @@ export function updateTableeditmessage(data) {
   })
 }
 
-// 删除信息
+// 删除变动日志信息
 export function delTableeditmessage(id) {
   return request({
     url: '/system/tableeditmessage/' + id,

@@ -91,7 +91,7 @@ export const useSysMenuInfoStore = defineStore('menu-info', () => {
     const menu_list = ref([])
     const getMenuList = () => {
         treeselect().then(r => {
-            menu_list.value = r.data.data;
+            menu_list.value = r.data.data
         })
         return menu_list
     }

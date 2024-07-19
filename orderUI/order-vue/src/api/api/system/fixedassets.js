@@ -1,6 +1,6 @@
-import request from "../../../utils/request.js";
+import request from '@/utils/request'
 
-// 查询固定资产信息列表
+// 查询固定资产列表
 export function listFixedassets(query) {
   return request({
     url: '/system/fixedassets/list',
@@ -9,7 +9,7 @@ export function listFixedassets(query) {
   })
 }
 
-// 查询固定资产信息详细
+// 查询固定资产详细
 export function getFixedassets(id) {
   return request({
     url: '/system/fixedassets/' + id,
@@ -17,7 +17,7 @@ export function getFixedassets(id) {
   })
 }
 
-// 新增固定资产信息
+// 新增固定资产
 export function addFixedassets(data) {
   return request({
     url: '/system/fixedassets',
@@ -26,7 +26,7 @@ export function addFixedassets(data) {
   })
 }
 
-// 修改固定资产信息
+// 修改固定资产
 export function updateFixedassets(data) {
   return request({
     url: '/system/fixedassets',
@@ -35,7 +35,7 @@ export function updateFixedassets(data) {
   })
 }
 
-// 删除固定资产信息
+// 删除固定资产
 export function delFixedassets(id) {
   return request({
     url: '/system/fixedassets/' + id,

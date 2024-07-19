@@ -1,6 +1,6 @@
-import request from "../../../utils/request.js";
+import request from '@/utils/request'
 
-// 查询加油卡信息列表
+// 查询加油卡列表
 export function listOilcard(query) {
   return request({
     url: '/system/oilcard/list',
@@ -9,7 +9,7 @@ export function listOilcard(query) {
   })
 }
 
-// 查询加油卡信息详细
+// 查询加油卡详细
 export function getOilcard(id) {
   return request({
     url: '/system/oilcard/' + id,
@@ -17,7 +17,7 @@ export function getOilcard(id) {
   })
 }
 
-// 新增加油卡信息
+// 新增加油卡
 export function addOilcard(data) {
   return request({
     url: '/system/oilcard',
@@ -26,7 +26,7 @@ export function addOilcard(data) {
   })
 }
 
-// 修改加油卡信息
+// 修改加油卡
 export function updateOilcard(data) {
   return request({
     url: '/system/oilcard',
@@ -35,7 +35,7 @@ export function updateOilcard(data) {
   })
 }
 
-// 删除加油卡信息
+// 删除加油卡
 export function delOilcard(id) {
   return request({
     url: '/system/oilcard/' + id,

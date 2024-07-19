@@ -1,4 +1,4 @@
-import request from "../../../utils/request.js";
+import request from '@/utils/request'
 
 // 查询走访记录列表
 export function listCustomervisit(query) {

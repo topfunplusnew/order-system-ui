@@ -1,6 +1,6 @@
-import request from "../../../utils/request.js";
+import request from '@/utils/request'
 
-// 查询公司信息列表
+// 查询客户管理列表
 export function listCompany(query) {
   return request({
     url: '/system/company/list',
@@ -9,7 +9,7 @@ export function listCompany(query) {
   })
 }
 
-// 查询公司信息详细
+// 查询客户管理详细
 export function getCompany(id) {
   return request({
     url: '/system/company/' + id,
@@ -17,7 +17,7 @@ export function getCompany(id) {
   })
 }
 
-// 新增公司信息
+// 新增客户管理
 export function addCompany(data) {
   return request({
     url: '/system/company',
@@ -26,7 +26,7 @@ export function addCompany(data) {
   })
 }
 
-// 修改公司信息
+// 修改客户管理
 export function updateCompany(data) {
   return request({
     url: '/system/company',
@@ -35,7 +35,7 @@ export function updateCompany(data) {
   })
 }
 
-// 删除公司信息
+// 删除客户管理
 export function delCompany(id) {
   return request({
     url: '/system/company/' + id,
