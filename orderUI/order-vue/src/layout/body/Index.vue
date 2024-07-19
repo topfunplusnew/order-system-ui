@@ -7,7 +7,7 @@
                     <!-- 首页-->
                     <HomeInfo v-if="a.menuId == 1"/>
                     <!-- 测试-->
-                    <FormInfo v-if="a.menuId == 1000"/>
+                    <FormInfo v-if="a.menuId == 100"/>
                     <!-- 动态组件 is绑定菜单名称-->
                     <!--  <component :is="a.menuName"/>-->
                 </lay-tab-item>

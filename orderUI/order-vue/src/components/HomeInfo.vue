@@ -19,14 +19,10 @@
             <lay-table :default-toolbar="true" :columns="columns" :data-source="dataSource"></lay-table>
         </lay-col>
         <lay-col md="12" sm="12" xs="24">
-            <h2>利润</h2>
-            <lay-panel>
-                <lay-icon type="layui-icon-rmb"></lay-icon>
-                <span style="font-size: 60px;margin-left: 15px">500</span>元
-            </lay-panel>
-            <br>
+
             <lay-row>
                 <lay-col>
+
                     <lay-date-picker v-model="startTime1" placeholder="开始时间" allowClear
                                      style="float: left"></lay-date-picker>
                     <lay-date-picker v-model="endTime1" placeholder="结束时间" allowClear
@@ -37,6 +33,12 @@
                 </lay-col>
             </lay-row>
             <lay-row style="margin-top: 30px">
+                <h2>利润</h2>
+                <lay-panel>
+                    <lay-icon type="layui-icon-rmb"></lay-icon>
+                    <span style="font-size: 60px;margin-left: 15px">500</span>元
+                </lay-panel>
+
                 <lay-table :columns="columns_money" :data-source="dataSource_money"></lay-table>
             </lay-row>
         </lay-col>
