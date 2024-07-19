@@ -15,7 +15,7 @@ public class Repayment extends BaseEntity
 {
     private static final long serialVersionUID = 1L;
 
-    /** $column.columnComment */
+    /** 主键 */
     private Long id;
 
     /** 贷款编号（UUID） */

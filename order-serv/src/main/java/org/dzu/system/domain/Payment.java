@@ -15,7 +15,7 @@ public class Payment extends BaseEntity
 {
     private static final long serialVersionUID = 1L;
 
-    /** $column.columnComment */
+    /** 主键 */
     private Long id;
 
     /** 收付款类型（收款，付款） */

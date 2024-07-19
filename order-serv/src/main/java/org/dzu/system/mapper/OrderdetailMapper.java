@@ -11,6 +11,7 @@ import org.dzu.system.domain.Orderdetail;
  */
 public interface OrderdetailMapper 
 {
+    public void copyOrderDetailsToBack(List<Long> ids);
     /**
      * 查询订单详情
      * 

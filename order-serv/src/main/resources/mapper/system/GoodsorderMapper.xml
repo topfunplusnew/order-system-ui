@@ -250,6 +250,7 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
              ON
                  go.ordersNo = od.ordersNo
         <where>
+            go.cancelFlag = 0
             <if test="ordersNo != null  and ordersNo != ''">
                 and ordersNo = #{ordersNo}
             </if>
@@ -364,13 +365,13 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
     <select id="selectGoodsorderById" parameterType="Long" resultMap="GoodsorderOrderdetailResult">
         select id, ordersNo, orderDate, customer, customer_id, landCar_id, landCarNo, landDriverTel, landDriverName, seaCar_id, seaCarNo, seaDriverTel, seaDriverName, checkUserId, checkState, invoiceState, path, PaymentState, landBankName, landBankNo, seaBankName, seaBankNo, receiveProof, saleManager, fleet, isAdjusted, adjustDate, isAdjust, adjustOrderid, isedit, customerIsInvoice, isSupplierInvoice, cancelFlag, comments, addtime, userId, UserName, update_time
         from goodsorder
-        where id = #{id}
+        where id = #{id} and cancelFlag = 0
     </select>
 
     <select id="selectOrderdetailList" resultType="Orderdetail" resultMap="OrderdetailResult">
         select id, ordersNo, orderDate, supplier, supplier_id, customer, customer_id, levelID, levelName, countingUnit, height, length, width, pieces, piecesPerPack, packs, price, isIncludeTaxFactory, sundryCost, paymentFactory, paymentUnload, isIncludeTaxSale, payments, erro, tonnage, landFreightPrice, landFreight, seaFreight, freight, otherCost, profit, profitNoTax, actualPieces, paymentsWithSundry, additionalFees, storeHouseID, storeHouseName, storeID, logisticsProfit, customerCommission, isAdjusted, adjustDate, cancelFlag, comments, addtime, userId, UserName, update_time
         from orderdetail
-        where ordersNo = #{ordersNo}
+        where ordersNo = #{ordersNo} and cancelFlag = 0
     </select>
 
     <insert id="insertGoodsorder" parameterType="Goodsorder" useGeneratedKeys="true" keyProperty="id">
@@ -499,27 +500,27 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         where id = #{id}
     </update>
 
-    <delete id="deleteGoodsorderById" parameterType="Long">
-        delete from goodsorder where id = #{id}
-    </delete>
+    <update id="deleteGoodsorderById" parameterType="Long">
+        update  goodsorder set cancelFlag = 1  where id = #{id}
+    </update>
 
-    <delete id="deleteGoodsorderByIds" parameterType="String">
-        delete from goodsorder where id in 
+    <update id="deleteGoodsorderByIds" parameterType="String">
+        update goodsorder set cancelFlag=1 where id in
         <foreach item="id" collection="array" open="(" separator="," close=")">
             #{id}
         </foreach>
-    </delete>
+    </update>
     
-    <delete id="deleteOrderdetailByOrdersNos" parameterType="String">
-        delete from orderdetail where ordersNo in 
+    <update id="deleteOrderdetailByOrdersNos" parameterType="String">
+        update  orderdetail set cancelFlag = 1 where ordersNo in
         <foreach item="ordersNo" collection="array" open="(" separator="," close=")">
             #{ordersNo}
         </foreach>
-    </delete>
+    </update>
 
-    <delete id="deleteOrderdetailByOrdersNo" parameterType="Long">
-        delete from orderdetail where ordersNo = #{ordersNo}
-    </delete>
+    <update id="deleteOrderdetailByOrdersNo" parameterType="String">
+        update  orderdetail set cancelFlag = 1 where ordersNo = #{ordersNo}
+    </update>
 
     <insert id="batchOrderdetail">
         insert into orderdetail( id, ordersNo, orderDate, supplier, supplier_id, customer, customer_id, levelID, levelName, countingUnit, height, length, width, pieces, piecesPerPack, packs, price, isIncludeTaxFactory, sundryCost, paymentFactory, paymentUnload, isIncludeTaxSale, payments, erro, tonnage, landFreightPrice, landFreight, seaFreight, freight, otherCost, profit, profitNoTax, actualPieces, paymentsWithSundry, additionalFees, storeHouseID, storeHouseName, storeID, logisticsProfit, customerCommission, isAdjusted, adjustDate, cancelFlag, comments, addtime, userId, UserName, update_time) values
@@ -527,4 +528,92 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
             ( #{item.id}, #{item.ordersNo}, #{item.orderDate}, #{item.supplier}, #{item.supplierId}, #{item.customer}, #{item.customerId}, #{item.levelID}, #{item.levelName}, #{item.countingUnit}, #{item.height}, #{item.length}, #{item.width}, #{item.pieces}, #{item.piecesPerPack}, #{item.packs}, #{item.price}, #{item.isIncludeTaxFactory}, #{item.sundryCost}, #{item.paymentFactory}, #{item.paymentUnload}, #{item.isIncludeTaxSale}, #{item.payments}, #{item.erro}, #{item.tonnage}, #{item.landFreightPrice}, #{item.landFreight}, #{item.seaFreight}, #{item.freight}, #{item.otherCost}, #{item.profit}, #{item.profitNoTax}, #{item.actualPieces}, #{item.paymentsWithSundry}, #{item.additionalFees}, #{item.storeHouseID}, #{item.storeHouseName}, #{item.storeID}, #{item.logisticsProfit}, #{item.customerCommission}, #{item.isAdjusted}, #{item.adjustDate}, #{item.cancelFlag}, #{item.comments}, #{item.addtime}, #{item.userId}, #{item.UserName}, #{item.updateTime})
         </foreach>
     </insert>
+
+    <insert id="copyToBack" parameterType="String">
+        INSERT INTO goodsorder_back (
+        goodsOrderID,
+        ordersNo,
+        orderDate,
+        customer,
+        customer_id,
+        landCar_id,
+        landCarNo,
+        landDriverTel,
+        landDriverName,
+        seaCar_id,
+        seaCarNo,
+        seaDriverTel,
+        seaDriverName,
+        checkUserId,
+        checkState,
+        invoiceState,
+        path,
+        PaymentState,
+        landBankName,
+        landBankNo,
+        seaBankName,
+        seaBankNo,
+        receiveProof,
+        saleManager,
+        fleet,
+        isAdjusted,
+        adjustDate,
+        isAdjust,
+        adjustOrderid,
+        isedit,
+        customerIsInvoice,
+        isSupplierInvoice,
+        cancelFlag,
+        comments,
+        addtime,
+        userId,
+        UserName,
+        update_time
+        )
+        SELECT
+        id,
+        ordersNo,
+        orderDate,
+        customer,
+        customer_id,
+        landCar_id,
+        landCarNo,
+        landDriverTel,
+        landDriverName,
+        seaCar_id,
+        seaCarNo,
+        seaDriverTel,
+        seaDriverName,
+        checkUserId,
+        checkState,
+        invoiceState,
+        path,
+        PaymentState,
+        landBankName,
+        landBankNo,
+        seaBankName,
+        seaBankNo,
+        receiveProof,
+        saleManager,
+        fleet,
+        isAdjusted,
+        adjustDate,
+        isAdjust,
+        adjustOrderid,
+        isedit,
+        customerIsInvoice,
+        isSupplierInvoice,
+        cancelFlag,
+        comments,
+        addtime,
+        userId,
+        UserName,
+        update_time
+        FROM goodsorder
+        WHERE id in
+        <foreach item="id" collection="array" open="(" separator="," close=")">
+            #{id}
+        </foreach> and cancelFlag = 0
+    </insert>
+
 </mapper>

@@ -15,7 +15,7 @@ public class Carapply extends BaseEntity
 {
     private static final long serialVersionUID = 1L;
 
-    /** $column.columnComment */
+    /** 主键 */
     private Long id;
 
     /** 申请时间 */

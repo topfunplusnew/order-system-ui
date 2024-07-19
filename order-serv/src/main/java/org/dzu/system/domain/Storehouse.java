@@ -15,7 +15,7 @@ public class Storehouse extends BaseEntity
 {
     private static final long serialVersionUID = 1L;
 
-    /** $column.columnComment */
+    /** 主键 */
     private Long id;
 
     /** 仓库名称 */

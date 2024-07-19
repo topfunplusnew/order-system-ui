@@ -15,7 +15,7 @@ public class Bankacceptance extends BaseEntity
 {
     private static final long serialVersionUID = 1L;
 
-    /** $column.columnComment */
+    /** 主键 */
     private Long id;
 
     /** 操作日期 */

@@ -15,7 +15,7 @@ public class Businesstrip extends BaseEntity
 {
     private static final long serialVersionUID = 1L;
 
-    /** $column.columnComment */
+    /** 主键 */
     private Long id;
 
     /** 出差人员 */
