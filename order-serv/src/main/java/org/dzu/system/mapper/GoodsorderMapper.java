@@ -2,6 +2,7 @@ package org.dzu.system.mapper;
 
 import java.util.List;
 import org.dzu.system.domain.Goodsorder;
+import org.dzu.system.domain.Orderdetail;
 
 /**
  * 订单Mapper接口
@@ -58,4 +59,29 @@ public interface GoodsorderMapper
      * @return 结果
      */
     public int deleteGoodsorderByIds(Long[] ids);
+
+    /**
+     * 批量删除订单详情
+     * 
+     * @param ids 需要删除的数据主键集合
+     * @return 结果
+     */
+    public int deleteOrderdetailByOrdersNos(Long[] ids);
+    
+    /**
+     * 批量新增订单详情
+     * 
+     * @param orderdetailList 订单详情列表
+     * @return 结果
+     */
+    public int batchOrderdetail(List<Orderdetail> orderdetailList);
+    
+
+    /**
+     * 通过订单主键删除订单详情信息
+     * 
+     * @param id 订单ID
+     * @return 结果
+     */
+    public int deleteOrderdetailByOrdersNo(Long id);
 }

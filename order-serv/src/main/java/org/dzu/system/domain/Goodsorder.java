@@ -1,5 +1,6 @@
 package org.dzu.system.domain;
 
+import java.util.List;
 import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.apache.commons.lang3.builder.ToStringStyle;
 import org.dzu.common.annotation.Excel;
@@ -161,6 +162,9 @@ public class Goodsorder extends BaseEntity
     /** 操作人员姓名 */
     @Excel(name = "操作人员姓名")
     private String UserName;
+
+    /** 订单详情信息 */
+    private List<Orderdetail> orderdetailList;
 
     public void setId(Long id) 
     {
@@ -496,6 +500,16 @@ public class Goodsorder extends BaseEntity
         return UserName;
     }
 
+    public List<Orderdetail> getOrderdetailList()
+    {
+        return orderdetailList;
+    }
+
+    public void setOrderdetailList(List<Orderdetail> orderdetailList)
+    {
+        this.orderdetailList = orderdetailList;
+    }
+
     @Override
     public String toString() {
         return new ToStringBuilder(this,ToStringStyle.MULTI_LINE_STYLE)
@@ -537,6 +551,7 @@ public class Goodsorder extends BaseEntity
             .append("userId", getUserId())
             .append("UserName", getUserName())
             .append("updateTime", getUpdateTime())
+            .append("orderdetailList", getOrderdetailList())
             .toString();
     }
 }

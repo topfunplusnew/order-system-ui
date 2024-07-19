@@ -4,6 +4,10 @@ import java.util.List;
 import org.dzu.common.utils.DateUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import java.util.ArrayList;
+import org.dzu.common.utils.StringUtils;
+import org.springframework.transaction.annotation.Transactional;
+import org.dzu.system.domain.Orderdetail;
 import org.dzu.system.mapper.GoodsorderMapper;
 import org.dzu.system.domain.Goodsorder;
 import org.dzu.system.service.IGoodsorderService;
@@ -50,10 +54,13 @@ public class GoodsorderServiceImpl implements IGoodsorderService
      * @param goodsorder 订单
      * @return 结果
      */
+    @Transactional
     @Override
     public int insertGoodsorder(Goodsorder goodsorder)
     {
-        return goodsorderMapper.insertGoodsorder(goodsorder);
+        int rows = goodsorderMapper.insertGoodsorder(goodsorder);
+        insertOrderdetail(goodsorder);
+        return rows;
     }
 
     /**
@@ -62,10 +69,13 @@ public class GoodsorderServiceImpl implements IGoodsorderService
      * @param goodsorder 订单
      * @return 结果
      */
+    @Transactional
     @Override
     public int updateGoodsorder(Goodsorder goodsorder)
     {
         goodsorder.setUpdateTime(DateUtils.getNowDate());
+        goodsorderMapper.deleteOrderdetailByOrdersNo(goodsorder.getId());
+        insertOrderdetail(goodsorder);
         return goodsorderMapper.updateGoodsorder(goodsorder);
     }
 
@@ -75,9 +85,11 @@ public class GoodsorderServiceImpl implements IGoodsorderService
      * @param ids 需要删除的订单主键
      * @return 结果
      */
+    @Transactional
     @Override
     public int deleteGoodsorderByIds(Long[] ids)
     {
+        goodsorderMapper.deleteOrderdetailByOrdersNos(ids);
         return goodsorderMapper.deleteGoodsorderByIds(ids);
     }
 
@@ -87,9 +99,35 @@ public class GoodsorderServiceImpl implements IGoodsorderService
      * @param id 订单主键
      * @return 结果
      */
+    @Transactional
     @Override
     public int deleteGoodsorderById(Long id)
     {
+        goodsorderMapper.deleteOrderdetailByOrdersNo(id);
         return goodsorderMapper.deleteGoodsorderById(id);
+    }
+
+    /**
+     * 新增订单详情信息
+     * 
+     * @param goodsorder 订单对象
+     */
+    public void insertOrderdetail(Goodsorder goodsorder)
+    {
+        List<Orderdetail> orderdetailList = goodsorder.getOrderdetailList();
+        String ordersNo = goodsorder.getOrdersNo();
+        if (StringUtils.isNotNull(orderdetailList))
+        {
+            List<Orderdetail> list = new ArrayList<Orderdetail>();
+            for (Orderdetail orderdetail : orderdetailList)
+            {
+                orderdetail.setOrdersNo(ordersNo);
+                list.add(orderdetail);
+            }
+            if (list.size() > 0)
+            {
+                goodsorderMapper.batchOrderdetail(list);
+            }
+        }
     }
 }
