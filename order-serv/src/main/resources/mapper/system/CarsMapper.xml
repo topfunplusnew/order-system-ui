@@ -27,7 +27,8 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
 
     <select id="selectCarsList" parameterType="Cars" resultMap="CarsResult">
         <include refid="selectCarsVo"/>
-        <where>  
+        <where>
+            delFlag = 0
             <if test="carNo != null  and carNo != ''"> and carNo = #{carNo}</if>
             <if test="driver != null  and driver != ''"> and driver = #{driver}</if>
             <if test="tel != null  and tel != ''"> and tel = #{tel}</if>
@@ -45,7 +46,7 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
     
     <select id="selectCarsById" parameterType="Long" resultMap="CarsResult">
         <include refid="selectCarsVo"/>
-        where id = #{id}
+        where id = #{id} and delFlag = 0
     </select>
 
     <insert id="insertCars" parameterType="Cars" useGeneratedKeys="true" keyProperty="id">
@@ -103,11 +104,11 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
     </update>
 
     <delete id="deleteCarsById" parameterType="Long">
-        delete from cars where id = #{id}
+        update cars set delFlag = 1 where id = #{id}
     </delete>
 
     <delete id="deleteCarsByIds" parameterType="String">
-        delete from cars where id in 
+        update cars set delFlag = 1 where id in
         <foreach item="id" collection="array" open="(" separator="," close=")">
             #{id}
         </foreach>

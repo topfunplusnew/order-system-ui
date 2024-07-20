@@ -4,6 +4,7 @@ import java.util.List;
 import javax.servlet.http.HttpServletResponse;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
@@ -75,7 +76,7 @@ public class CarsController extends BaseController
     @PreAuthorize("@ss.hasPermi('system:cars:add')")
     @Log(title = "车辆管理", businessType = BusinessType.INSERT)
     @PostMapping
-    public AjaxResult add(@RequestBody Cars cars)
+    public AjaxResult add(@Validated @RequestBody Cars cars)
     {
         return toAjax(carsService.insertCars(cars));
     }
@@ -86,7 +87,7 @@ public class CarsController extends BaseController
     @PreAuthorize("@ss.hasPermi('system:cars:edit')")
     @Log(title = "车辆管理", businessType = BusinessType.UPDATE)
     @PutMapping
-    public AjaxResult edit(@RequestBody Cars cars)
+    public AjaxResult edit(@Validated @RequestBody Cars cars)
     {
         return toAjax(carsService.updateCars(cars));
     }

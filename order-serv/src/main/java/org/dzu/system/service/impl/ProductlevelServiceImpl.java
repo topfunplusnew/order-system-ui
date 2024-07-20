@@ -1,6 +1,6 @@
 package org.dzu.system.service.impl;
 
-import org.dzu.common.constant.DelCOnstants;
+import org.dzu.common.constant.DelConstants;
 import org.dzu.common.core.domain.entity.SysUser;
 import org.dzu.common.utils.DateUtils;
 import org.dzu.common.utils.SecurityUtils;
@@ -58,7 +58,7 @@ public class ProductlevelServiceImpl implements IProductlevelService {
         // 设置操作人员属性
         updateProductlevel(productlevel);
         //设置删除标记
-        productlevel.setDelFlag(Long.valueOf(DelCOnstants.NODEL));
+        productlevel.setDelFlag(Long.valueOf(DelConstants.NODEL));
 
         return productlevelMapper.insertProductlevel(productlevel);
     }
@@ -74,7 +74,7 @@ public class ProductlevelServiceImpl implements IProductlevelService {
         // 设置操作人员属性
         updateModifypersonneldata(productlevel);
         //设置删除标记
-        productlevel.setDelFlag(Long.valueOf(DelCOnstants.NODEL));
+        productlevel.setDelFlag(Long.valueOf(DelConstants.NODEL));
 
         productlevel.setUpdateTime(DateUtils.getNowDate());
         return productlevelMapper.updateProductlevel(productlevel);
