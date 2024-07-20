@@ -10,7 +10,8 @@
  Target Server Type    : MySQL
  Target Server Version : 50744 (5.7.44-log)
  File Encoding         : 65001
- Date: 19/07/2024 16:28:44
+
+ Date: 20/07/2024 08:29:49
 */
 
 SET NAMES utf8mb4;
@@ -23,7 +24,7 @@ DROP TABLE IF EXISTS `balanceaccounts`;
 CREATE TABLE `balanceaccounts`  (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `operateDate` varchar(50) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL COMMENT '操作时间',
-  `moneyAmount` float NULL DEFAULT 0 COMMENT '金额',
+  `moneyAmount` double NULL DEFAULT 0 COMMENT '金额',
   `company` varchar(150) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL COMMENT '对方公司',
   `companyID` int(11) NULL DEFAULT NULL COMMENT '对方公司ID',
   `companyType` int(11) NULL DEFAULT 0 COMMENT '对方公司类型（1、客户 2、供应商）',
@@ -54,9 +55,9 @@ CREATE TABLE `bankacceptance`  (
   `billDate` varchar(50) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL COMMENT '票据日期',
   `billType` varchar(55) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL COMMENT '分类（收入、支出）',
   `reason` varchar(155) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL COMMENT '事由',
-  `billAmount` float NULL DEFAULT 0 COMMENT '票据金额',
-  `inDiscountPoints` float NULL DEFAULT 0 COMMENT '贴息点数',
-  `inDiscountAmount` float NULL DEFAULT 0 COMMENT '贴息金额',
+  `billAmount` double NULL DEFAULT 0 COMMENT '票据金额',
+  `inDiscountPoints` double NULL DEFAULT 0 COMMENT '贴息点数',
+  `inDiscountAmount` double NULL DEFAULT 0 COMMENT '贴息金额',
   `billCategory` varchar(55) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL COMMENT '票据种类（电子/纸质）',
   `origin` varchar(50) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL COMMENT '来源',
   `endorser` varchar(155) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL COMMENT '背书人',
@@ -88,7 +89,7 @@ CREATE TABLE `bankaccount`  (
   `bankNo` varchar(50) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL COMMENT '账号',
   `acountsType` varchar(50) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL COMMENT '账户类型（己方公司，客户，供应商，司机，其它）',
   `comments` varchar(200) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL COMMENT '备注',
-  `amount` float NULL DEFAULT 0 COMMENT '当前资金额',
+  `amount` double NULL DEFAULT 0 COMMENT '当前资金额',
   `delFlag` int(11) NULL DEFAULT 0 COMMENT '删除标记',
   PRIMARY KEY (`id`) USING BTREE
 ) ENGINE = InnoDB AUTO_INCREMENT = 1647 CHARACTER SET = utf8 COLLATE = utf8_general_ci COMMENT = '银行卡管理' ROW_FORMAT = DYNAMIC;
@@ -108,7 +109,7 @@ CREATE TABLE `bankaccountchange`  (
   `payNO` varchar(50) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL COMMENT '发生操作行为的付款编号（UUID）',
   `operateDate` varchar(50) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL COMMENT '日期',
   `changeType` varchar(15) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL COMMENT '变动类型（收入、支出）',
-  `moneyAmount` float NULL DEFAULT 0 COMMENT '金额',
+  `moneyAmount` double NULL DEFAULT 0 COMMENT '金额',
   `comments` varchar(200) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL COMMENT '备注',
   `addtime` varchar(50) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL COMMENT '添加时间',
   `userId` int(11) NULL DEFAULT NULL COMMENT '操作人员ID',
@@ -129,8 +130,8 @@ CREATE TABLE `borrowedmoney`  (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `loanNO` varchar(50) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL COMMENT '贷款编号（UUID）',
   `origin` varchar(50) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL COMMENT '贷款来源',
-  `moneyAmount` float NULL DEFAULT 0 COMMENT '借入金额',
-  `ratio` float NULL DEFAULT 0 COMMENT '贷款利率',
+  `moneyAmount` double NULL DEFAULT 0 COMMENT '借入金额',
+  `ratio` double NULL DEFAULT 0 COMMENT '贷款利率',
   `loanDate` varchar(50) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL COMMENT '贷款发放日期',
   `loanDuring` varchar(50) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL COMMENT '贷款年限（年）',
   `mortgageGuarantee` varchar(200) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL COMMENT '抵押担保',
@@ -261,7 +262,7 @@ CREATE TABLE `company`  (
   `bankName` varchar(50) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL COMMENT '开户行',
   `acountsName` varchar(50) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL COMMENT '开户名',
   `bankNo` varchar(50) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL COMMENT '账号',
-  `surplusMoney` float NOT NULL DEFAULT 0 COMMENT '余额',
+  `surplusMoney` double NOT NULL DEFAULT 0 COMMENT '余额',
   `companyType` varchar(20) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL COMMENT '客户类别（ 客户，供应商）',
   `salesman` varchar(55) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL COMMENT '业务员',
   `leader` varchar(50) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL COMMENT '老板',
@@ -278,11 +279,13 @@ CREATE TABLE `company`  (
   `update_time` datetime NULL DEFAULT NULL COMMENT '更新时间',
   `delFlag` int(11) NULL DEFAULT 0 COMMENT '删除标记',
   PRIMARY KEY (`id`) USING BTREE
-) ENGINE = InnoDB AUTO_INCREMENT = 1 CHARACTER SET = utf8 COLLATE = utf8_general_ci COMMENT = '客户管理' ROW_FORMAT = DYNAMIC;
+) ENGINE = InnoDB AUTO_INCREMENT = 3 CHARACTER SET = utf8 COLLATE = utf8_general_ci COMMENT = '客户管理' ROW_FORMAT = DYNAMIC;
 
 -- ----------------------------
 -- Records of company
 -- ----------------------------
+INSERT INTO `company` VALUES (1, '毛磊2测试', '新志体最办许关', '18157849887', '黑龙江省白城市深坑区', '干内装委史', '先气增海报过', 'consectetur', 123457000, '客户', 'laboris', NULL, '18148469617', '湖南省-苏州市=enim ea ullamco pariatur officia', NULL, '湖南省', '苏州市', 'enim ea ullamco pariatur officia', 'fugiat', '2024-07-19 21:41:49', 1, NULL, '2024-07-19 21:41:49', 0);
+INSERT INTO `company` VALUES (2, '毛磊测试', '新志体最办许关', '18157849887', '黑龙江省白城市深坑区', '干内装委史', '先气增海报过', 'consectetur', 123457000, '客户', 'laboris', NULL, '18148469617', '湖南省-苏州市=ml村', NULL, '湖南省', '苏州市', 'ml村', 'fugiat', '2024-07-20 07:52:29', 1, NULL, NULL, 0);
 
 -- ----------------------------
 -- Table structure for customervisit
@@ -357,12 +360,12 @@ CREATE TABLE `fixedassets`  (
   ` specification` varchar(100) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL COMMENT '规格型号（车牌号）',
   `number` varchar(20) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL COMMENT '数量',
   `measurementUnit ` varchar(55) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL COMMENT '计量单位',
-  `amountIncludeTax` float NULL DEFAULT 0 COMMENT '含税金额',
-  `amountNoTax` float NULL DEFAULT 0 COMMENT '不含税金额',
+  `amountIncludeTax` double NULL DEFAULT 0 COMMENT '含税金额',
+  `amountNoTax` double NULL DEFAULT 0 COMMENT '不含税金额',
   `account` varchar(55) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL COMMENT '户名名称（公户/个人）',
   `department` varchar(55) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL COMMENT '使用部门',
   `scrapDate` varchar(50) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL COMMENT '固定资产清理时间',
-  `saleAmount` float NULL DEFAULT 0 COMMENT '清理/变卖价值',
+  `saleAmount` double NULL DEFAULT 0 COMMENT '清理/变卖价值',
   `comments` varchar(200) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL COMMENT '备注',
   `addtime` varchar(50) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL COMMENT '添加时间',
   `userId` int(11) NULL DEFAULT NULL COMMENT '操作人员ID',
@@ -498,7 +501,7 @@ CREATE TABLE `gen_table_column`  (
 -- ----------------------------
 INSERT INTO `gen_table_column` VALUES (1231, 65, 'id', NULL, 'int(11)', 'Long', 'id', '1', '1', '0', '1', NULL, NULL, NULL, 'EQ', 'input', '', 1, 'admin', '2024-07-19 10:47:08', '', NULL);
 INSERT INTO `gen_table_column` VALUES (1232, 65, 'operateDate', '操作时间', 'varchar(50)', 'String', 'operateDate', '0', '0', '0', '1', '1', '1', '1', 'EQ', 'input', '', 2, 'admin', '2024-07-19 10:47:08', '', NULL);
-INSERT INTO `gen_table_column` VALUES (1233, 65, 'moneyAmount', '金额', 'float', 'Long', 'moneyAmount', '0', '0', '0', '1', '1', '1', '1', 'EQ', 'input', '', 3, 'admin', '2024-07-19 10:47:08', '', NULL);
+INSERT INTO `gen_table_column` VALUES (1233, 65, 'moneyAmount', '金额', 'double', 'Long', 'moneyAmount', '0', '0', '0', '1', '1', '1', '1', 'EQ', 'input', '', 3, 'admin', '2024-07-19 10:47:08', '', NULL);
 INSERT INTO `gen_table_column` VALUES (1234, 65, 'company', '对方公司', 'varchar(150)', 'String', 'company', '0', '0', '0', '1', '1', '1', '1', 'EQ', 'input', '', 4, 'admin', '2024-07-19 10:47:08', '', NULL);
 INSERT INTO `gen_table_column` VALUES (1235, 65, 'companyID', '对方公司ID', 'int(11)', 'Long', 'companyID', '0', '0', '0', '1', '1', '1', '1', 'EQ', 'input', '', 5, 'admin', '2024-07-19 10:47:08', '', NULL);
 INSERT INTO `gen_table_column` VALUES (1236, 65, 'companyType', '对方公司类型（1、客户 2、供应商）', 'int(11)', 'Long', 'companyType', '0', '0', '0', '1', '1', '1', '1', 'EQ', 'select', '', 6, 'admin', '2024-07-19 10:47:08', '', NULL);
@@ -517,9 +520,9 @@ INSERT INTO `gen_table_column` VALUES (1248, 66, 'billAccount', '我方承兑账
 INSERT INTO `gen_table_column` VALUES (1249, 66, 'billDate', '票据日期', 'varchar(50)', 'String', 'billDate', '0', '0', '0', '1', '1', '1', '1', 'EQ', 'input', '', 7, 'admin', '2024-07-19 10:47:08', '', NULL);
 INSERT INTO `gen_table_column` VALUES (1250, 66, 'billType', '分类（收入、支出）', 'varchar(55)', 'String', 'billType', '0', '0', '0', '1', '1', '1', '1', 'EQ', 'select', '', 8, 'admin', '2024-07-19 10:47:08', '', NULL);
 INSERT INTO `gen_table_column` VALUES (1251, 66, 'reason', '事由', 'varchar(155)', 'String', 'reason', '0', '0', '0', '1', '1', '1', '1', 'EQ', 'input', '', 9, 'admin', '2024-07-19 10:47:08', '', NULL);
-INSERT INTO `gen_table_column` VALUES (1252, 66, 'billAmount', '票据金额', 'float', 'Long', 'billAmount', '0', '0', '0', '1', '1', '1', '1', 'EQ', 'input', '', 10, 'admin', '2024-07-19 10:47:08', '', NULL);
-INSERT INTO `gen_table_column` VALUES (1253, 66, 'inDiscountPoints', '贴息点数', 'float', 'Long', 'inDiscountPoints', '0', '0', '0', '1', '1', '1', '1', 'EQ', 'input', '', 11, 'admin', '2024-07-19 10:47:08', '', NULL);
-INSERT INTO `gen_table_column` VALUES (1254, 66, 'inDiscountAmount', '贴息金额', 'float', 'Long', 'inDiscountAmount', '0', '0', '0', '1', '1', '1', '1', 'EQ', 'input', '', 12, 'admin', '2024-07-19 10:47:08', '', NULL);
+INSERT INTO `gen_table_column` VALUES (1252, 66, 'billAmount', '票据金额', 'double', 'Long', 'billAmount', '0', '0', '0', '1', '1', '1', '1', 'EQ', 'input', '', 10, 'admin', '2024-07-19 10:47:08', '', NULL);
+INSERT INTO `gen_table_column` VALUES (1253, 66, 'inDiscountPoints', '贴息点数', 'double', 'Long', 'inDiscountPoints', '0', '0', '0', '1', '1', '1', '1', 'EQ', 'input', '', 11, 'admin', '2024-07-19 10:47:08', '', NULL);
+INSERT INTO `gen_table_column` VALUES (1254, 66, 'inDiscountAmount', '贴息金额', 'double', 'Long', 'inDiscountAmount', '0', '0', '0', '1', '1', '1', '1', 'EQ', 'input', '', 12, 'admin', '2024-07-19 10:47:08', '', NULL);
 INSERT INTO `gen_table_column` VALUES (1255, 66, 'billCategory', '票据种类（电子/纸质）', 'varchar(55)', 'String', 'billCategory', '0', '0', '0', '1', '1', '1', '1', 'EQ', 'input', '', 13, 'admin', '2024-07-19 10:47:08', '', NULL);
 INSERT INTO `gen_table_column` VALUES (1256, 66, 'origin', '来源', 'varchar(50)', 'String', 'origin', '0', '0', '0', '1', '1', '1', '1', 'EQ', 'input', '', 14, 'admin', '2024-07-19 10:47:08', '', NULL);
 INSERT INTO `gen_table_column` VALUES (1257, 66, 'endorser', '背书人', 'varchar(155)', 'String', 'endorser', '0', '0', '0', '1', '1', '1', '1', 'EQ', 'input', '', 15, 'admin', '2024-07-19 10:47:08', '', NULL);
@@ -539,7 +542,7 @@ INSERT INTO `gen_table_column` VALUES (1270, 67, 'acountsName', '开户名称', 
 INSERT INTO `gen_table_column` VALUES (1271, 67, 'bankNo', '账号', 'varchar(50)', 'String', 'bankNo', '0', '0', '0', '1', '1', '1', '1', 'EQ', 'input', '', 6, 'admin', '2024-07-19 10:47:09', '', NULL);
 INSERT INTO `gen_table_column` VALUES (1272, 67, 'acountsType', '账户类型（己方公司，客户，供应商，司机，其它）', 'varchar(50)', 'String', 'acountsType', '0', '0', '0', '1', '1', '1', '1', 'EQ', 'select', '', 7, 'admin', '2024-07-19 10:47:09', '', NULL);
 INSERT INTO `gen_table_column` VALUES (1273, 67, 'comments', '备注', 'varchar(200)', 'String', 'comments', '0', '0', '0', '1', '1', '1', '1', 'EQ', 'input', '', 8, 'admin', '2024-07-19 10:47:09', '', NULL);
-INSERT INTO `gen_table_column` VALUES (1274, 67, 'amount', '当前资金额', 'float', 'Long', 'amount', '0', '0', '0', '1', '1', '1', '1', 'EQ', 'input', '', 9, 'admin', '2024-07-19 10:47:09', '', NULL);
+INSERT INTO `gen_table_column` VALUES (1274, 67, 'amount', '当前资金额', 'double', 'Long', 'amount', '0', '0', '0', '1', '1', '1', '1', 'EQ', 'input', '', 9, 'admin', '2024-07-19 10:47:09', '', NULL);
 INSERT INTO `gen_table_column` VALUES (1275, 67, 'delFlag', '删除标记', 'int(11)', 'Long', 'delFlag', '0', '0', '0', '1', '1', '1', '1', 'EQ', 'input', '', 10, 'admin', '2024-07-19 10:47:09', '', NULL);
 INSERT INTO `gen_table_column` VALUES (1276, 68, 'id', NULL, 'int(11)', 'Long', 'id', '1', '1', '0', '1', NULL, NULL, NULL, 'EQ', 'input', '', 1, 'admin', '2024-07-19 10:47:09', '', NULL);
 INSERT INTO `gen_table_column` VALUES (1277, 68, 'selfBankNo', '己方账号', 'varchar(80)', 'String', 'selfBankNo', '0', '0', '0', '1', '1', '1', '1', 'EQ', 'input', '', 2, 'admin', '2024-07-19 10:47:09', '', NULL);
@@ -547,7 +550,7 @@ INSERT INTO `gen_table_column` VALUES (1278, 68, 'tableName', '发生操作行�
 INSERT INTO `gen_table_column` VALUES (1279, 68, 'payNO', '发生操作行为的付款编号（UUID）', 'varchar(50)', 'String', 'payNO', '0', '0', '0', '1', '1', '1', '1', 'EQ', 'input', '', 4, 'admin', '2024-07-19 10:47:09', '', NULL);
 INSERT INTO `gen_table_column` VALUES (1280, 68, 'operateDate', '日期', 'varchar(50)', 'String', 'operateDate', '0', '0', '0', '1', '1', '1', '1', 'EQ', 'input', '', 5, 'admin', '2024-07-19 10:47:09', '', NULL);
 INSERT INTO `gen_table_column` VALUES (1281, 68, 'changeType', '变动类型（收入、支出）', 'varchar(15)', 'String', 'changeType', '0', '0', '0', '1', '1', '1', '1', 'EQ', 'select', '', 6, 'admin', '2024-07-19 10:47:09', '', NULL);
-INSERT INTO `gen_table_column` VALUES (1282, 68, 'moneyAmount', '金额', 'float', 'Long', 'moneyAmount', '0', '0', '0', '1', '1', '1', '1', 'EQ', 'input', '', 7, 'admin', '2024-07-19 10:47:09', '', NULL);
+INSERT INTO `gen_table_column` VALUES (1282, 68, 'moneyAmount', '金额', 'double', 'Long', 'moneyAmount', '0', '0', '0', '1', '1', '1', '1', 'EQ', 'input', '', 7, 'admin', '2024-07-19 10:47:09', '', NULL);
 INSERT INTO `gen_table_column` VALUES (1283, 68, 'comments', '备注', 'varchar(200)', 'String', 'comments', '0', '0', '0', '1', '1', '1', '1', 'EQ', 'input', '', 8, 'admin', '2024-07-19 10:47:09', '', NULL);
 INSERT INTO `gen_table_column` VALUES (1284, 68, 'addtime', '添加时间', 'varchar(50)', 'String', 'addtime', '0', '0', '0', '1', '1', '1', '1', 'EQ', 'input', '', 9, 'admin', '2024-07-19 10:47:09', '', NULL);
 INSERT INTO `gen_table_column` VALUES (1285, 68, 'userId', '操作人员ID', 'int(11)', 'Long', 'userId', '0', '0', '0', '1', '1', '1', '1', 'EQ', 'input', '', 10, 'admin', '2024-07-19 10:47:09', '', NULL);
@@ -556,8 +559,8 @@ INSERT INTO `gen_table_column` VALUES (1287, 68, 'update_time', '更新时间', 
 INSERT INTO `gen_table_column` VALUES (1288, 69, 'id', NULL, 'int(11)', 'Long', 'id', '1', '1', '0', '1', NULL, NULL, NULL, 'EQ', 'input', '', 1, 'admin', '2024-07-19 10:47:09', '', NULL);
 INSERT INTO `gen_table_column` VALUES (1289, 69, 'loanNO', '贷款编号（UUID）', 'varchar(50)', 'String', 'loanNO', '0', '0', '0', '1', '1', '1', '1', 'EQ', 'input', '', 2, 'admin', '2024-07-19 10:47:09', '', NULL);
 INSERT INTO `gen_table_column` VALUES (1290, 69, 'origin', '贷款来源', 'varchar(50)', 'String', 'origin', '0', '0', '0', '1', '1', '1', '1', 'EQ', 'input', '', 3, 'admin', '2024-07-19 10:47:09', '', NULL);
-INSERT INTO `gen_table_column` VALUES (1291, 69, 'moneyAmount', '借入金额', 'float', 'Long', 'moneyAmount', '0', '0', '0', '1', '1', '1', '1', 'EQ', 'input', '', 4, 'admin', '2024-07-19 10:47:09', '', NULL);
-INSERT INTO `gen_table_column` VALUES (1292, 69, 'ratio', '贷款利率', 'float', 'Long', 'ratio', '0', '0', '0', '1', '1', '1', '1', 'EQ', 'input', '', 5, 'admin', '2024-07-19 10:47:09', '', NULL);
+INSERT INTO `gen_table_column` VALUES (1291, 69, 'moneyAmount', '借入金额', 'double', 'Long', 'moneyAmount', '0', '0', '0', '1', '1', '1', '1', 'EQ', 'input', '', 4, 'admin', '2024-07-19 10:47:09', '', NULL);
+INSERT INTO `gen_table_column` VALUES (1292, 69, 'ratio', '贷款利率', 'double', 'Long', 'ratio', '0', '0', '0', '1', '1', '1', '1', 'EQ', 'input', '', 5, 'admin', '2024-07-19 10:47:09', '', NULL);
 INSERT INTO `gen_table_column` VALUES (1293, 69, 'loanDate', '贷款发放日期', 'varchar(50)', 'String', 'loanDate', '0', '0', '0', '1', '1', '1', '1', 'EQ', 'input', '', 6, 'admin', '2024-07-19 10:47:09', '', NULL);
 INSERT INTO `gen_table_column` VALUES (1294, 69, 'loanDuring', '贷款年限（年）', 'varchar(50)', 'String', 'loanDuring', '0', '0', '0', '1', '1', '1', '1', 'EQ', 'input', '', 7, 'admin', '2024-07-19 10:47:09', '', NULL);
 INSERT INTO `gen_table_column` VALUES (1295, 69, 'mortgageGuarantee', '抵押担保', 'varchar(200)', 'String', 'mortgageGuarantee', '0', '0', '0', '1', '1', '1', '1', 'EQ', 'input', '', 8, 'admin', '2024-07-19 10:47:09', '', NULL);
@@ -640,7 +643,7 @@ INSERT INTO `gen_table_column` VALUES (1371, 73, 'address', '地址', 'varchar(2
 INSERT INTO `gen_table_column` VALUES (1372, 73, 'bankName', '开户行', 'varchar(50)', 'String', 'bankName', '0', '0', '0', '1', '1', '1', '1', 'LIKE', 'input', '', 6, 'admin', '2024-07-19 10:47:09', '', NULL);
 INSERT INTO `gen_table_column` VALUES (1373, 73, 'acountsName', '开户名', 'varchar(50)', 'String', 'acountsName', '0', '0', '0', '1', '1', '1', '1', 'LIKE', 'input', '', 7, 'admin', '2024-07-19 10:47:09', '', NULL);
 INSERT INTO `gen_table_column` VALUES (1374, 73, 'bankNo', '账号', 'varchar(50)', 'String', 'bankNo', '0', '0', '0', '1', '1', '1', '1', 'EQ', 'input', '', 8, 'admin', '2024-07-19 10:47:09', '', NULL);
-INSERT INTO `gen_table_column` VALUES (1375, 73, 'surplusMoney', '余额', 'float', 'Long', 'surplusMoney', '0', '0', '1', '1', '1', '1', '1', 'EQ', 'input', '', 9, 'admin', '2024-07-19 10:47:09', '', NULL);
+INSERT INTO `gen_table_column` VALUES (1375, 73, 'surplusMoney', '余额', 'double', 'Long', 'surplusMoney', '0', '0', '1', '1', '1', '1', '1', 'EQ', 'input', '', 9, 'admin', '2024-07-19 10:47:09', '', NULL);
 INSERT INTO `gen_table_column` VALUES (1376, 73, 'companyType', '客户类别（ 客户，供应商）', 'varchar(20)', 'String', 'companyType', '0', '0', '0', '1', '1', '1', '1', 'EQ', 'select', '', 10, 'admin', '2024-07-19 10:47:09', '', NULL);
 INSERT INTO `gen_table_column` VALUES (1377, 73, 'salesman', '业务员', 'varchar(55)', 'String', 'salesman', '0', '0', '0', '1', '1', '1', '1', 'EQ', 'input', '', 11, 'admin', '2024-07-19 10:47:09', '', NULL);
 INSERT INTO `gen_table_column` VALUES (1378, 73, 'leader', '老板', 'varchar(50)', 'String', 'leader', '0', '0', '0', '1', '1', '1', '1', 'EQ', 'input', '', 12, 'admin', '2024-07-19 10:47:09', '', NULL);
@@ -700,12 +703,12 @@ INSERT INTO `gen_table_column` VALUES (1431, 76, 'assetName', '资产名称', 'v
 INSERT INTO `gen_table_column` VALUES (1432, 76, ' specification', '规格型号（车牌号）', 'varchar(100)', 'String', ' specification', '0', '0', '0', '1', '1', '1', '1', 'EQ', 'input', '', 5, 'admin', '2024-07-19 10:47:09', '', NULL);
 INSERT INTO `gen_table_column` VALUES (1433, 76, 'number', '数量', 'varchar(20)', 'String', 'number', '0', '0', '0', '1', '1', '1', '1', 'EQ', 'input', '', 6, 'admin', '2024-07-19 10:47:09', '', NULL);
 INSERT INTO `gen_table_column` VALUES (1434, 76, 'measurementUnit ', '计量单位', 'varchar(55)', 'String', 'measurementUnit ', '0', '0', '0', '1', '1', '1', '1', 'EQ', 'input', '', 7, 'admin', '2024-07-19 10:47:09', '', NULL);
-INSERT INTO `gen_table_column` VALUES (1435, 76, 'amountIncludeTax', '含税金额', 'float', 'Long', 'amountIncludeTax', '0', '0', '0', '1', '1', '1', '1', 'EQ', 'input', '', 8, 'admin', '2024-07-19 10:47:09', '', NULL);
-INSERT INTO `gen_table_column` VALUES (1436, 76, 'amountNoTax', '不含税金额', 'float', 'Long', 'amountNoTax', '0', '0', '0', '1', '1', '1', '1', 'EQ', 'input', '', 9, 'admin', '2024-07-19 10:47:09', '', NULL);
+INSERT INTO `gen_table_column` VALUES (1435, 76, 'amountIncludeTax', '含税金额', 'double', 'Long', 'amountIncludeTax', '0', '0', '0', '1', '1', '1', '1', 'EQ', 'input', '', 8, 'admin', '2024-07-19 10:47:09', '', NULL);
+INSERT INTO `gen_table_column` VALUES (1436, 76, 'amountNoTax', '不含税金额', 'double', 'Long', 'amountNoTax', '0', '0', '0', '1', '1', '1', '1', 'EQ', 'input', '', 9, 'admin', '2024-07-19 10:47:09', '', NULL);
 INSERT INTO `gen_table_column` VALUES (1437, 76, 'account', '户名名称（公户/个人）', 'varchar(55)', 'String', 'account', '0', '0', '0', '1', '1', '1', '1', 'EQ', 'input', '', 10, 'admin', '2024-07-19 10:47:09', '', NULL);
 INSERT INTO `gen_table_column` VALUES (1438, 76, 'department', '使用部门', 'varchar(55)', 'String', 'department', '0', '0', '0', '1', '1', '1', '1', 'EQ', 'input', '', 11, 'admin', '2024-07-19 10:47:09', '', NULL);
 INSERT INTO `gen_table_column` VALUES (1439, 76, 'scrapDate', '固定资产清理时间', 'varchar(50)', 'String', 'scrapDate', '0', '0', '0', '1', '1', '1', '1', 'EQ', 'input', '', 12, 'admin', '2024-07-19 10:47:09', '', NULL);
-INSERT INTO `gen_table_column` VALUES (1440, 76, 'saleAmount', '清理/变卖价值', 'float', 'Long', 'saleAmount', '0', '0', '0', '1', '1', '1', '1', 'EQ', 'input', '', 13, 'admin', '2024-07-19 10:47:09', '', NULL);
+INSERT INTO `gen_table_column` VALUES (1440, 76, 'saleAmount', '清理/变卖价值', 'double', 'Long', 'saleAmount', '0', '0', '0', '1', '1', '1', '1', 'EQ', 'input', '', 13, 'admin', '2024-07-19 10:47:09', '', NULL);
 INSERT INTO `gen_table_column` VALUES (1441, 76, 'comments', '备注', 'varchar(200)', 'String', 'comments', '0', '0', '0', '1', '1', '1', '1', 'EQ', 'input', '', 14, 'admin', '2024-07-19 10:47:09', '', NULL);
 INSERT INTO `gen_table_column` VALUES (1442, 76, 'addtime', '添加时间', 'varchar(50)', 'String', 'addtime', '0', '0', '0', '1', '1', '1', '1', 'EQ', 'input', '', 15, 'admin', '2024-07-19 10:47:09', '', NULL);
 INSERT INTO `gen_table_column` VALUES (1443, 76, 'userId', '操作人员ID', 'int(11)', 'Long', 'userId', '0', '0', '0', '1', '1', '1', '1', 'EQ', 'input', '', 16, 'admin', '2024-07-19 10:47:09', '', NULL);
@@ -769,17 +772,17 @@ INSERT INTO `gen_table_column` VALUES (1538, 80, 'supplierId', '供应商ID', 'i
 INSERT INTO `gen_table_column` VALUES (1539, 80, 'levelID', '级别编码', 'int(11)', 'Long', 'levelID', '0', '0', '0', '1', '1', '1', '1', 'EQ', 'input', '', 8, 'admin', '2024-07-19 10:47:09', '', NULL);
 INSERT INTO `gen_table_column` VALUES (1540, 80, 'levelName', '级别名称', 'varchar(80)', 'String', 'levelName', '0', '0', '0', '1', '1', '1', '1', 'LIKE', 'input', '', 9, 'admin', '2024-07-19 10:47:09', '', NULL);
 INSERT INTO `gen_table_column` VALUES (1541, 80, 'countingUnit', '计量单位', 'varchar(25)', 'String', 'countingUnit', '0', '0', '0', '1', '1', '1', '1', 'EQ', 'input', '', 10, 'admin', '2024-07-19 10:47:09', '', NULL);
-INSERT INTO `gen_table_column` VALUES (1542, 80, 'height', '厚度', 'float', 'Long', 'height', '0', '0', '0', '1', '1', '1', '1', 'EQ', 'input', '', 11, 'admin', '2024-07-19 10:47:09', '', NULL);
-INSERT INTO `gen_table_column` VALUES (1543, 80, 'length', '长度', 'float', 'Long', 'length', '0', '0', '0', '1', '1', '1', '1', 'EQ', 'input', '', 12, 'admin', '2024-07-19 10:47:09', '', NULL);
-INSERT INTO `gen_table_column` VALUES (1544, 80, 'width', '宽度', 'float', 'Long', 'width', '0', '0', '0', '1', '1', '1', '1', 'EQ', 'input', '', 13, 'admin', '2024-07-19 10:47:09', '', NULL);
+INSERT INTO `gen_table_column` VALUES (1542, 80, 'height', '厚度', 'double', 'Long', 'height', '0', '0', '0', '1', '1', '1', '1', 'EQ', 'input', '', 11, 'admin', '2024-07-19 10:47:09', '', NULL);
+INSERT INTO `gen_table_column` VALUES (1543, 80, 'length', '长度', 'double', 'Long', 'length', '0', '0', '0', '1', '1', '1', '1', 'EQ', 'input', '', 12, 'admin', '2024-07-19 10:47:09', '', NULL);
+INSERT INTO `gen_table_column` VALUES (1544, 80, 'width', '宽度', 'double', 'Long', 'width', '0', '0', '0', '1', '1', '1', '1', 'EQ', 'input', '', 13, 'admin', '2024-07-19 10:47:09', '', NULL);
 INSERT INTO `gen_table_column` VALUES (1545, 80, 'pieces', '出厂片数', 'int(11)', 'Long', 'pieces', '0', '0', '0', '1', '1', '1', '1', 'EQ', 'input', '', 14, 'admin', '2024-07-19 10:47:09', '', NULL);
 INSERT INTO `gen_table_column` VALUES (1546, 80, 'piecesPerPack', '每包片数', 'int(11)', 'Long', 'piecesPerPack', '0', '0', '0', '1', '1', '1', '1', 'EQ', 'input', '', 15, 'admin', '2024-07-19 10:47:09', '', NULL);
 INSERT INTO `gen_table_column` VALUES (1547, 80, 'packs', '包数', 'int(11)', 'Long', 'packs', '0', '0', '0', '1', '1', '1', '1', 'EQ', 'input', '', 16, 'admin', '2024-07-19 10:47:09', '', NULL);
-INSERT INTO `gen_table_column` VALUES (1548, 80, 'price', '出厂单价', 'float', 'Long', 'price', '0', '0', '0', '1', '1', '1', '1', 'EQ', 'input', '', 17, 'admin', '2024-07-19 10:47:09', '', NULL);
+INSERT INTO `gen_table_column` VALUES (1548, 80, 'price', '出厂单价', 'double', 'Long', 'price', '0', '0', '0', '1', '1', '1', '1', 'EQ', 'input', '', 17, 'admin', '2024-07-19 10:47:09', '', NULL);
 INSERT INTO `gen_table_column` VALUES (1549, 80, 'isIncludeTaxFactory', '出厂是否含税', 'int(11)', 'Long', 'isIncludeTaxFactory', '0', '0', '0', '1', '1', '1', '1', 'EQ', 'input', '', 18, 'admin', '2024-07-19 10:47:09', '', NULL);
-INSERT INTO `gen_table_column` VALUES (1550, 80, 'sundryCost', '杂费', 'float', 'Long', 'sundryCost', '0', '0', '0', '1', '1', '1', '1', 'EQ', 'input', '', 19, 'admin', '2024-07-19 10:47:09', '', NULL);
-INSERT INTO `gen_table_column` VALUES (1551, 80, 'paymentFactory', '出厂货款', 'float', 'Long', 'paymentFactory', '0', '0', '0', '1', '1', '1', '1', 'EQ', 'input', '', 20, 'admin', '2024-07-19 10:47:09', '', NULL);
-INSERT INTO `gen_table_column` VALUES (1552, 80, 'paymentUnload', '卸货价', 'float', 'Long', 'paymentUnload', '0', '0', '0', '1', '1', '1', '1', 'EQ', 'input', '', 21, 'admin', '2024-07-19 10:47:09', '', NULL);
+INSERT INTO `gen_table_column` VALUES (1550, 80, 'sundryCost', '杂费', 'double', 'Long', 'sundryCost', '0', '0', '0', '1', '1', '1', '1', 'EQ', 'input', '', 19, 'admin', '2024-07-19 10:47:09', '', NULL);
+INSERT INTO `gen_table_column` VALUES (1551, 80, 'paymentFactory', '出厂货款', 'double', 'Long', 'paymentFactory', '0', '0', '0', '1', '1', '1', '1', 'EQ', 'input', '', 20, 'admin', '2024-07-19 10:47:09', '', NULL);
+INSERT INTO `gen_table_column` VALUES (1552, 80, 'paymentUnload', '卸货价', 'double', 'Long', 'paymentUnload', '0', '0', '0', '1', '1', '1', '1', 'EQ', 'input', '', 21, 'admin', '2024-07-19 10:47:09', '', NULL);
 INSERT INTO `gen_table_column` VALUES (1553, 80, 'isIncludeTaxSale', '销售是否含税（0不含税，1含税）', 'int(11)', 'Long', 'isIncludeTaxSale', '0', '0', '0', '1', '1', '1', '1', 'EQ', 'input', '', 22, 'admin', '2024-07-19 10:47:09', '', NULL);
 INSERT INTO `gen_table_column` VALUES (1554, 80, 'payments', '总货款', 'varchar(20)', 'String', 'payments', '0', '0', '0', '1', '1', '1', '1', 'EQ', 'input', '', 23, 'admin', '2024-07-19 10:47:09', '', NULL);
 INSERT INTO `gen_table_column` VALUES (1555, 80, 'landCar_id', '陆运车辆ID', 'int(11)', 'Long', 'landcarId', '0', '0', '0', '1', '1', '1', '1', 'EQ', 'input', '', 24, 'admin', '2024-07-19 10:47:09', '', NULL);
@@ -790,20 +793,20 @@ INSERT INTO `gen_table_column` VALUES (1559, 80, 'seaCar_id', '海运车辆ID', 
 INSERT INTO `gen_table_column` VALUES (1560, 80, 'seaCarNo', '海运车牌', 'varchar(550)', 'String', 'seaCarNo', '0', '0', '0', '1', '1', '1', '1', 'EQ', 'textarea', '', 29, 'admin', '2024-07-19 10:47:09', '', NULL);
 INSERT INTO `gen_table_column` VALUES (1561, 80, 'seaDriverTel', '海运司机电话', 'varchar(550)', 'String', 'seaDriverTel', '0', '0', '0', '1', '1', '1', '1', 'EQ', 'textarea', '', 30, 'admin', '2024-07-19 10:47:09', '', NULL);
 INSERT INTO `gen_table_column` VALUES (1562, 80, 'seaDriverName', '海运司机姓名', 'varchar(255)', 'String', 'seaDriverName', '0', '0', '0', '1', '1', '1', '1', 'LIKE', 'input', '', 31, 'admin', '2024-07-19 10:47:09', '', NULL);
-INSERT INTO `gen_table_column` VALUES (1563, 80, 'erro', '误差', 'float', 'Long', 'erro', '0', '0', '0', '1', '1', '1', '1', 'EQ', 'input', '', 32, 'admin', '2024-07-19 10:47:09', '', NULL);
-INSERT INTO `gen_table_column` VALUES (1564, 80, 'tonnage', '吨位', 'float', 'Long', 'tonnage', '0', '0', '0', '1', '1', '1', '1', 'EQ', 'input', '', 33, 'admin', '2024-07-19 10:47:09', '', NULL);
-INSERT INTO `gen_table_column` VALUES (1565, 80, 'landFreightPrice', '陆运费单价', 'float', 'Long', 'landFreightPrice', '0', '0', '0', '1', '1', '1', '1', 'EQ', 'input', '', 34, 'admin', '2024-07-19 10:47:09', '', NULL);
-INSERT INTO `gen_table_column` VALUES (1566, 80, 'landFreight', '陆运费', 'float', 'Long', 'landFreight', '0', '0', '0', '1', '1', '1', '1', 'EQ', 'input', '', 35, 'admin', '2024-07-19 10:47:09', '', NULL);
-INSERT INTO `gen_table_column` VALUES (1567, 80, 'seaFreight', '海运费', 'float', 'Long', 'seaFreight', '0', '0', '0', '1', '1', '1', '1', 'EQ', 'input', '', 36, 'admin', '2024-07-19 10:47:09', '', NULL);
-INSERT INTO `gen_table_column` VALUES (1568, 80, 'freight', '运费（海运费+陆运费）', 'float', 'Long', 'freight', '0', '0', '0', '1', '1', '1', '1', 'EQ', 'input', '', 37, 'admin', '2024-07-19 10:47:09', '', NULL);
-INSERT INTO `gen_table_column` VALUES (1569, 80, 'otherCost', '其他费用', 'float', 'Long', 'otherCost', '0', '0', '0', '1', '1', '1', '1', 'EQ', 'input', '', 38, 'admin', '2024-07-19 10:47:09', '', NULL);
-INSERT INTO `gen_table_column` VALUES (1570, 80, 'profit', '利润', 'float', 'Long', 'profit', '0', '0', '0', '1', '1', '1', '1', 'EQ', 'input', '', 39, 'admin', '2024-07-19 10:47:09', '', NULL);
-INSERT INTO `gen_table_column` VALUES (1571, 80, 'profitNoTax', '不含税利润', 'float', 'Long', 'profitNoTax', '0', '0', '0', '1', '1', '1', '1', 'EQ', 'input', '', 40, 'admin', '2024-07-19 10:47:09', '', NULL);
+INSERT INTO `gen_table_column` VALUES (1563, 80, 'erro', '误差', 'double', 'Long', 'erro', '0', '0', '0', '1', '1', '1', '1', 'EQ', 'input', '', 32, 'admin', '2024-07-19 10:47:09', '', NULL);
+INSERT INTO `gen_table_column` VALUES (1564, 80, 'tonnage', '吨位', 'double', 'Long', 'tonnage', '0', '0', '0', '1', '1', '1', '1', 'EQ', 'input', '', 33, 'admin', '2024-07-19 10:47:09', '', NULL);
+INSERT INTO `gen_table_column` VALUES (1565, 80, 'landFreightPrice', '陆运费单价', 'double', 'Long', 'landFreightPrice', '0', '0', '0', '1', '1', '1', '1', 'EQ', 'input', '', 34, 'admin', '2024-07-19 10:47:09', '', NULL);
+INSERT INTO `gen_table_column` VALUES (1566, 80, 'landFreight', '陆运费', 'double', 'Long', 'landFreight', '0', '0', '0', '1', '1', '1', '1', 'EQ', 'input', '', 35, 'admin', '2024-07-19 10:47:09', '', NULL);
+INSERT INTO `gen_table_column` VALUES (1567, 80, 'seaFreight', '海运费', 'double', 'Long', 'seaFreight', '0', '0', '0', '1', '1', '1', '1', 'EQ', 'input', '', 36, 'admin', '2024-07-19 10:47:09', '', NULL);
+INSERT INTO `gen_table_column` VALUES (1568, 80, 'freight', '运费（海运费+陆运费）', 'double', 'Long', 'freight', '0', '0', '0', '1', '1', '1', '1', 'EQ', 'input', '', 37, 'admin', '2024-07-19 10:47:09', '', NULL);
+INSERT INTO `gen_table_column` VALUES (1569, 80, 'otherCost', '其他费用', 'double', 'Long', 'otherCost', '0', '0', '0', '1', '1', '1', '1', 'EQ', 'input', '', 38, 'admin', '2024-07-19 10:47:09', '', NULL);
+INSERT INTO `gen_table_column` VALUES (1570, 80, 'profit', '利润', 'double', 'Long', 'profit', '0', '0', '0', '1', '1', '1', '1', 'EQ', 'input', '', 39, 'admin', '2024-07-19 10:47:09', '', NULL);
+INSERT INTO `gen_table_column` VALUES (1571, 80, 'profitNoTax', '不含税利润', 'double', 'Long', 'profitNoTax', '0', '0', '0', '1', '1', '1', '1', 'EQ', 'input', '', 40, 'admin', '2024-07-19 10:47:09', '', NULL);
 INSERT INTO `gen_table_column` VALUES (1572, 80, 'actualPieces', '实际片数', 'int(11)', 'Long', 'actualPieces', '0', '0', '0', '1', '1', '1', '1', 'EQ', 'input', '', 41, 'admin', '2024-07-19 10:47:09', '', NULL);
-INSERT INTO `gen_table_column` VALUES (1573, 80, 'paymentsWithSundry', '总货款杂费', 'float', 'Long', 'paymentsWithSundry', '0', '0', '0', '1', '1', '1', '1', 'EQ', 'input', '', 42, 'admin', '2024-07-19 10:47:09', '', NULL);
-INSERT INTO `gen_table_column` VALUES (1574, 80, 'additionalFees', '加费', 'float', 'Long', 'additionalFees', '0', '0', '0', '1', '1', '1', '1', 'EQ', 'input', '', 43, 'admin', '2024-07-19 10:47:09', '', NULL);
-INSERT INTO `gen_table_column` VALUES (1575, 80, 'rebate', '返利金额', 'float', 'Long', 'rebate', '0', '0', '0', '1', '1', '1', '1', 'EQ', 'input', '', 44, 'admin', '2024-07-19 10:47:09', '', NULL);
-INSERT INTO `gen_table_column` VALUES (1576, 80, 'customerCommission', '客户佣金', 'float', 'Long', 'customerCommission', '0', '0', '0', '1', '1', '1', '1', 'EQ', 'input', '', 45, 'admin', '2024-07-19 10:47:09', '', NULL);
+INSERT INTO `gen_table_column` VALUES (1573, 80, 'paymentsWithSundry', '总货款杂费', 'double', 'Long', 'paymentsWithSundry', '0', '0', '0', '1', '1', '1', '1', 'EQ', 'input', '', 42, 'admin', '2024-07-19 10:47:09', '', NULL);
+INSERT INTO `gen_table_column` VALUES (1574, 80, 'additionalFees', '加费', 'double', 'Long', 'additionalFees', '0', '0', '0', '1', '1', '1', '1', 'EQ', 'input', '', 43, 'admin', '2024-07-19 10:47:09', '', NULL);
+INSERT INTO `gen_table_column` VALUES (1575, 80, 'rebate', '返利金额', 'double', 'Long', 'rebate', '0', '0', '0', '1', '1', '1', '1', 'EQ', 'input', '', 44, 'admin', '2024-07-19 10:47:09', '', NULL);
+INSERT INTO `gen_table_column` VALUES (1576, 80, 'customerCommission', '客户佣金', 'double', 'Long', 'customerCommission', '0', '0', '0', '1', '1', '1', '1', 'EQ', 'input', '', 45, 'admin', '2024-07-19 10:47:09', '', NULL);
 INSERT INTO `gen_table_column` VALUES (1577, 80, 'comments', '备注', 'varchar(200)', 'String', 'comments', '0', '0', '0', '1', '1', '1', '1', 'EQ', 'input', '', 46, 'admin', '2024-07-19 10:47:09', '', NULL);
 INSERT INTO `gen_table_column` VALUES (1578, 80, 'addtime', '添加时间', 'varchar(50)', 'String', 'addtime', '0', '0', '0', '1', '1', '1', '1', 'EQ', 'input', '', 47, 'admin', '2024-07-19 10:47:09', '', NULL);
 INSERT INTO `gen_table_column` VALUES (1579, 80, 'userId', '操作人员ID', 'int(11)', 'Long', 'userId', '0', '0', '0', '1', '1', '1', '1', 'EQ', 'input', '', 48, 'admin', '2024-07-19 10:47:09', '', NULL);
@@ -822,17 +825,17 @@ INSERT INTO `gen_table_column` VALUES (1591, 81, 'supplierId', '供应商ID', 'i
 INSERT INTO `gen_table_column` VALUES (1592, 81, 'levelID', '级别编码', 'int(11)', 'Long', 'levelID', '0', '0', '0', '1', '1', '1', '1', 'EQ', 'input', '', 9, 'admin', '2024-07-19 10:47:09', '', NULL);
 INSERT INTO `gen_table_column` VALUES (1593, 81, 'levelName', '级别名称', 'varchar(80)', 'String', 'levelName', '0', '0', '0', '1', '1', '1', '1', 'LIKE', 'input', '', 10, 'admin', '2024-07-19 10:47:09', '', NULL);
 INSERT INTO `gen_table_column` VALUES (1594, 81, 'countingUnit', '计量单位', 'varchar(25)', 'String', 'countingUnit', '0', '0', '0', '1', '1', '1', '1', 'EQ', 'input', '', 11, 'admin', '2024-07-19 10:47:09', '', NULL);
-INSERT INTO `gen_table_column` VALUES (1595, 81, 'height', '厚度', 'float', 'Long', 'height', '0', '0', '0', '1', '1', '1', '1', 'EQ', 'input', '', 12, 'admin', '2024-07-19 10:47:09', '', NULL);
-INSERT INTO `gen_table_column` VALUES (1596, 81, 'length', '长度', 'float', 'Long', 'length', '0', '0', '0', '1', '1', '1', '1', 'EQ', 'input', '', 13, 'admin', '2024-07-19 10:47:09', '', NULL);
-INSERT INTO `gen_table_column` VALUES (1597, 81, 'width', '宽度', 'float', 'Long', 'width', '0', '0', '0', '1', '1', '1', '1', 'EQ', 'input', '', 14, 'admin', '2024-07-19 10:47:09', '', NULL);
+INSERT INTO `gen_table_column` VALUES (1595, 81, 'height', '厚度', 'double', 'Long', 'height', '0', '0', '0', '1', '1', '1', '1', 'EQ', 'input', '', 12, 'admin', '2024-07-19 10:47:09', '', NULL);
+INSERT INTO `gen_table_column` VALUES (1596, 81, 'length', '长度', 'double', 'Long', 'length', '0', '0', '0', '1', '1', '1', '1', 'EQ', 'input', '', 13, 'admin', '2024-07-19 10:47:09', '', NULL);
+INSERT INTO `gen_table_column` VALUES (1597, 81, 'width', '宽度', 'double', 'Long', 'width', '0', '0', '0', '1', '1', '1', '1', 'EQ', 'input', '', 14, 'admin', '2024-07-19 10:47:09', '', NULL);
 INSERT INTO `gen_table_column` VALUES (1598, 81, 'pieces', '出厂片数', 'int(11)', 'Long', 'pieces', '0', '0', '0', '1', '1', '1', '1', 'EQ', 'input', '', 15, 'admin', '2024-07-19 10:47:09', '', NULL);
 INSERT INTO `gen_table_column` VALUES (1599, 81, 'piecesPerPack', '每包片数', 'int(11)', 'Long', 'piecesPerPack', '0', '0', '0', '1', '1', '1', '1', 'EQ', 'input', '', 16, 'admin', '2024-07-19 10:47:09', '', NULL);
 INSERT INTO `gen_table_column` VALUES (1600, 81, 'packs', '包数', 'int(11)', 'Long', 'packs', '0', '0', '0', '1', '1', '1', '1', 'EQ', 'input', '', 17, 'admin', '2024-07-19 10:47:09', '', NULL);
-INSERT INTO `gen_table_column` VALUES (1601, 81, 'price', '出厂单价', 'float', 'Long', 'price', '0', '0', '0', '1', '1', '1', '1', 'EQ', 'input', '', 18, 'admin', '2024-07-19 10:47:09', '', NULL);
+INSERT INTO `gen_table_column` VALUES (1601, 81, 'price', '出厂单价', 'double', 'Long', 'price', '0', '0', '0', '1', '1', '1', '1', 'EQ', 'input', '', 18, 'admin', '2024-07-19 10:47:09', '', NULL);
 INSERT INTO `gen_table_column` VALUES (1602, 81, 'isIncludeTaxFactory', '出厂是否含税', 'int(11)', 'Long', 'isIncludeTaxFactory', '0', '0', '0', '1', '1', '1', '1', 'EQ', 'input', '', 19, 'admin', '2024-07-19 10:47:09', '', NULL);
-INSERT INTO `gen_table_column` VALUES (1603, 81, 'sundryCost', '杂费', 'float', 'Long', 'sundryCost', '0', '0', '0', '1', '1', '1', '1', 'EQ', 'input', '', 20, 'admin', '2024-07-19 10:47:09', '', NULL);
-INSERT INTO `gen_table_column` VALUES (1604, 81, 'paymentFactory', '出厂货款', 'float', 'Long', 'paymentFactory', '0', '0', '0', '1', '1', '1', '1', 'EQ', 'input', '', 21, 'admin', '2024-07-19 10:47:09', '', NULL);
-INSERT INTO `gen_table_column` VALUES (1605, 81, 'paymentUnload', '卸货价', 'float', 'Long', 'paymentUnload', '0', '0', '0', '1', '1', '1', '1', 'EQ', 'input', '', 22, 'admin', '2024-07-19 10:47:09', '', NULL);
+INSERT INTO `gen_table_column` VALUES (1603, 81, 'sundryCost', '杂费', 'double', 'Long', 'sundryCost', '0', '0', '0', '1', '1', '1', '1', 'EQ', 'input', '', 20, 'admin', '2024-07-19 10:47:09', '', NULL);
+INSERT INTO `gen_table_column` VALUES (1604, 81, 'paymentFactory', '出厂货款', 'double', 'Long', 'paymentFactory', '0', '0', '0', '1', '1', '1', '1', 'EQ', 'input', '', 21, 'admin', '2024-07-19 10:47:09', '', NULL);
+INSERT INTO `gen_table_column` VALUES (1605, 81, 'paymentUnload', '卸货价', 'double', 'Long', 'paymentUnload', '0', '0', '0', '1', '1', '1', '1', 'EQ', 'input', '', 22, 'admin', '2024-07-19 10:47:09', '', NULL);
 INSERT INTO `gen_table_column` VALUES (1606, 81, 'isIncludeTaxSale', '销售是否含税（0不含税，1含税）', 'int(11)', 'Long', 'isIncludeTaxSale', '0', '0', '0', '1', '1', '1', '1', 'EQ', 'input', '', 23, 'admin', '2024-07-19 10:47:09', '', NULL);
 INSERT INTO `gen_table_column` VALUES (1607, 81, 'payments', '总货款', 'varchar(20)', 'String', 'payments', '0', '0', '0', '1', '1', '1', '1', 'EQ', 'input', '', 24, 'admin', '2024-07-19 10:47:09', '', NULL);
 INSERT INTO `gen_table_column` VALUES (1608, 81, 'landCar_id', '陆运车辆ID', 'int(11)', 'Long', 'landcarId', '0', '0', '0', '1', '1', '1', '1', 'EQ', 'input', '', 25, 'admin', '2024-07-19 10:47:09', '', NULL);
@@ -843,20 +846,20 @@ INSERT INTO `gen_table_column` VALUES (1612, 81, 'seaCar_id', '海运车辆ID', 
 INSERT INTO `gen_table_column` VALUES (1613, 81, 'seaCarNo', '海运车牌', 'varchar(550)', 'String', 'seaCarNo', '0', '0', '0', '1', '1', '1', '1', 'EQ', 'textarea', '', 30, 'admin', '2024-07-19 10:47:09', '', NULL);
 INSERT INTO `gen_table_column` VALUES (1614, 81, 'seaDriverTel', '海运司机电话', 'varchar(550)', 'String', 'seaDriverTel', '0', '0', '0', '1', '1', '1', '1', 'EQ', 'textarea', '', 31, 'admin', '2024-07-19 10:47:09', '', NULL);
 INSERT INTO `gen_table_column` VALUES (1615, 81, 'seaDriverName', '海运司机姓名', 'varchar(255)', 'String', 'seaDriverName', '0', '0', '0', '1', '1', '1', '1', 'LIKE', 'input', '', 32, 'admin', '2024-07-19 10:47:09', '', NULL);
-INSERT INTO `gen_table_column` VALUES (1616, 81, 'erro', '误差', 'float', 'Long', 'erro', '0', '0', '0', '1', '1', '1', '1', 'EQ', 'input', '', 33, 'admin', '2024-07-19 10:47:09', '', NULL);
-INSERT INTO `gen_table_column` VALUES (1617, 81, 'tonnage', '吨位', 'float', 'Long', 'tonnage', '0', '0', '0', '1', '1', '1', '1', 'EQ', 'input', '', 34, 'admin', '2024-07-19 10:47:09', '', NULL);
-INSERT INTO `gen_table_column` VALUES (1618, 81, 'landFreightPrice', '陆运费单价', 'float', 'Long', 'landFreightPrice', '0', '0', '0', '1', '1', '1', '1', 'EQ', 'input', '', 35, 'admin', '2024-07-19 10:47:09', '', NULL);
-INSERT INTO `gen_table_column` VALUES (1619, 81, 'landFreight', '陆运费', 'float', 'Long', 'landFreight', '0', '0', '0', '1', '1', '1', '1', 'EQ', 'input', '', 36, 'admin', '2024-07-19 10:47:09', '', NULL);
-INSERT INTO `gen_table_column` VALUES (1620, 81, 'seaFreight', '海运费', 'float', 'Long', 'seaFreight', '0', '0', '0', '1', '1', '1', '1', 'EQ', 'input', '', 37, 'admin', '2024-07-19 10:47:09', '', NULL);
-INSERT INTO `gen_table_column` VALUES (1621, 81, 'freight', '运费（海运费+陆运费）', 'float', 'Long', 'freight', '0', '0', '0', '1', '1', '1', '1', 'EQ', 'input', '', 38, 'admin', '2024-07-19 10:47:09', '', NULL);
-INSERT INTO `gen_table_column` VALUES (1622, 81, 'otherCost', '其他费用', 'float', 'Long', 'otherCost', '0', '0', '0', '1', '1', '1', '1', 'EQ', 'input', '', 39, 'admin', '2024-07-19 10:47:09', '', NULL);
-INSERT INTO `gen_table_column` VALUES (1623, 81, 'profit', '利润', 'float', 'Long', 'profit', '0', '0', '0', '1', '1', '1', '1', 'EQ', 'input', '', 40, 'admin', '2024-07-19 10:47:09', '', NULL);
-INSERT INTO `gen_table_column` VALUES (1624, 81, 'profitNoTax', '不含税利润', 'float', 'Long', 'profitNoTax', '0', '0', '0', '1', '1', '1', '1', 'EQ', 'input', '', 41, 'admin', '2024-07-19 10:47:09', '', NULL);
+INSERT INTO `gen_table_column` VALUES (1616, 81, 'erro', '误差', 'double', 'Long', 'erro', '0', '0', '0', '1', '1', '1', '1', 'EQ', 'input', '', 33, 'admin', '2024-07-19 10:47:09', '', NULL);
+INSERT INTO `gen_table_column` VALUES (1617, 81, 'tonnage', '吨位', 'double', 'Long', 'tonnage', '0', '0', '0', '1', '1', '1', '1', 'EQ', 'input', '', 34, 'admin', '2024-07-19 10:47:09', '', NULL);
+INSERT INTO `gen_table_column` VALUES (1618, 81, 'landFreightPrice', '陆运费单价', 'double', 'Long', 'landFreightPrice', '0', '0', '0', '1', '1', '1', '1', 'EQ', 'input', '', 35, 'admin', '2024-07-19 10:47:09', '', NULL);
+INSERT INTO `gen_table_column` VALUES (1619, 81, 'landFreight', '陆运费', 'double', 'Long', 'landFreight', '0', '0', '0', '1', '1', '1', '1', 'EQ', 'input', '', 36, 'admin', '2024-07-19 10:47:09', '', NULL);
+INSERT INTO `gen_table_column` VALUES (1620, 81, 'seaFreight', '海运费', 'double', 'Long', 'seaFreight', '0', '0', '0', '1', '1', '1', '1', 'EQ', 'input', '', 37, 'admin', '2024-07-19 10:47:09', '', NULL);
+INSERT INTO `gen_table_column` VALUES (1621, 81, 'freight', '运费（海运费+陆运费）', 'double', 'Long', 'freight', '0', '0', '0', '1', '1', '1', '1', 'EQ', 'input', '', 38, 'admin', '2024-07-19 10:47:09', '', NULL);
+INSERT INTO `gen_table_column` VALUES (1622, 81, 'otherCost', '其他费用', 'double', 'Long', 'otherCost', '0', '0', '0', '1', '1', '1', '1', 'EQ', 'input', '', 39, 'admin', '2024-07-19 10:47:09', '', NULL);
+INSERT INTO `gen_table_column` VALUES (1623, 81, 'profit', '利润', 'double', 'Long', 'profit', '0', '0', '0', '1', '1', '1', '1', 'EQ', 'input', '', 40, 'admin', '2024-07-19 10:47:09', '', NULL);
+INSERT INTO `gen_table_column` VALUES (1624, 81, 'profitNoTax', '不含税利润', 'double', 'Long', 'profitNoTax', '0', '0', '0', '1', '1', '1', '1', 'EQ', 'input', '', 41, 'admin', '2024-07-19 10:47:09', '', NULL);
 INSERT INTO `gen_table_column` VALUES (1625, 81, 'actualPieces', '实际片数', 'int(11)', 'Long', 'actualPieces', '0', '0', '0', '1', '1', '1', '1', 'EQ', 'input', '', 42, 'admin', '2024-07-19 10:47:09', '', NULL);
-INSERT INTO `gen_table_column` VALUES (1626, 81, 'paymentsWithSundry', '总货款杂费', 'float', 'Long', 'paymentsWithSundry', '0', '0', '0', '1', '1', '1', '1', 'EQ', 'input', '', 43, 'admin', '2024-07-19 10:47:09', '', NULL);
-INSERT INTO `gen_table_column` VALUES (1627, 81, 'additionalFees', '加费', 'float', 'Long', 'additionalFees', '0', '0', '0', '1', '1', '1', '1', 'EQ', 'input', '', 44, 'admin', '2024-07-19 10:47:09', '', NULL);
-INSERT INTO `gen_table_column` VALUES (1628, 81, 'rebate', '返利金额', 'float', 'Long', 'rebate', '0', '0', '0', '1', '1', '1', '1', 'EQ', 'input', '', 45, 'admin', '2024-07-19 10:47:09', '', NULL);
-INSERT INTO `gen_table_column` VALUES (1629, 81, 'customerCommission', '客户佣金', 'float', 'Long', 'customerCommission', '0', '0', '0', '1', '1', '1', '1', 'EQ', 'input', '', 46, 'admin', '2024-07-19 10:47:09', '', NULL);
+INSERT INTO `gen_table_column` VALUES (1626, 81, 'paymentsWithSundry', '总货款杂费', 'double', 'Long', 'paymentsWithSundry', '0', '0', '0', '1', '1', '1', '1', 'EQ', 'input', '', 43, 'admin', '2024-07-19 10:47:09', '', NULL);
+INSERT INTO `gen_table_column` VALUES (1627, 81, 'additionalFees', '加费', 'double', 'Long', 'additionalFees', '0', '0', '0', '1', '1', '1', '1', 'EQ', 'input', '', 44, 'admin', '2024-07-19 10:47:09', '', NULL);
+INSERT INTO `gen_table_column` VALUES (1628, 81, 'rebate', '返利金额', 'double', 'Long', 'rebate', '0', '0', '0', '1', '1', '1', '1', 'EQ', 'input', '', 45, 'admin', '2024-07-19 10:47:09', '', NULL);
+INSERT INTO `gen_table_column` VALUES (1629, 81, 'customerCommission', '客户佣金', 'double', 'Long', 'customerCommission', '0', '0', '0', '1', '1', '1', '1', 'EQ', 'input', '', 46, 'admin', '2024-07-19 10:47:09', '', NULL);
 INSERT INTO `gen_table_column` VALUES (1630, 81, 'comments', '备注', 'varchar(200)', 'String', 'comments', '0', '0', '0', '1', '1', '1', '1', 'EQ', 'input', '', 47, 'admin', '2024-07-19 10:47:09', '', NULL);
 INSERT INTO `gen_table_column` VALUES (1631, 81, 'addtime', '添加时间', 'varchar(50)', 'String', 'addtime', '0', '0', '0', '1', '1', '1', '1', 'EQ', 'input', '', 48, 'admin', '2024-07-19 10:47:09', '', NULL);
 INSERT INTO `gen_table_column` VALUES (1632, 81, 'userId', '操作人员ID', 'int(11)', 'Long', 'userId', '0', '0', '0', '1', '1', '1', '1', 'EQ', 'input', '', 49, 'admin', '2024-07-19 10:47:09', '', NULL);
@@ -868,7 +871,7 @@ INSERT INTO `gen_table_column` VALUES (1637, 82, 'id', NULL, 'int(11)', 'Long', 
 INSERT INTO `gen_table_column` VALUES (1638, 82, 'futuresNO', '借出款编号（UUID）', 'varchar(50)', 'String', 'futuresNO', '0', '0', '0', '1', '1', '1', '1', 'EQ', 'input', '', 2, 'admin', '2024-07-19 10:47:09', '', NULL);
 INSERT INTO `gen_table_column` VALUES (1639, 82, 'futuresMarginCompany', '期货保证金公司', 'varchar(80)', 'String', 'futuresMarginCompany', '0', '0', '0', '1', '1', '1', '1', 'EQ', 'input', '', 3, 'admin', '2024-07-19 10:47:09', '', NULL);
 INSERT INTO `gen_table_column` VALUES (1640, 82, 'target', '对象(员工、外面公司在我公司借款)', 'varchar(50)', 'String', 'target', '0', '0', '0', '1', '1', '1', '1', 'EQ', 'input', '', 4, 'admin', '2024-07-19 10:47:09', '', NULL);
-INSERT INTO `gen_table_column` VALUES (1641, 82, 'moneyAmount', '保证金金额', 'float', 'Long', 'moneyAmount', '0', '0', '0', '1', '1', '1', '1', 'EQ', 'input', '', 5, 'admin', '2024-07-19 10:47:09', '', NULL);
+INSERT INTO `gen_table_column` VALUES (1641, 82, 'moneyAmount', '保证金金额', 'double', 'Long', 'moneyAmount', '0', '0', '0', '1', '1', '1', '1', 'EQ', 'input', '', 5, 'admin', '2024-07-19 10:47:09', '', NULL);
 INSERT INTO `gen_table_column` VALUES (1642, 82, 'targetAcountsName', '对方账户', 'varchar(80)', 'String', 'targetAcountsName', '0', '0', '0', '1', '1', '1', '1', 'LIKE', 'input', '', 6, 'admin', '2024-07-19 10:47:09', '', NULL);
 INSERT INTO `gen_table_column` VALUES (1643, 82, 'targetBankNo', '对方账号', 'varchar(80)', 'String', 'targetBankNo', '0', '0', '0', '1', '1', '1', '1', 'EQ', 'input', '', 7, 'admin', '2024-07-19 10:47:09', '', NULL);
 INSERT INTO `gen_table_column` VALUES (1644, 82, 'targetBankName', '对方开户行', 'varchar(80)', 'String', 'targetBankName', '0', '0', '0', '1', '1', '1', '1', 'LIKE', 'input', '', 8, 'admin', '2024-07-19 10:47:09', '', NULL);
@@ -887,7 +890,7 @@ INSERT INTO `gen_table_column` VALUES (1656, 83, 'id', NULL, 'int(11)', 'Long', 
 INSERT INTO `gen_table_column` VALUES (1657, 83, 'OffsetNO', '冲抵编号（UUID）', 'varchar(50)', 'String', 'OffsetNO', '0', '0', '0', '1', '1', '1', '1', 'EQ', 'input', '', 2, 'admin', '2024-07-19 10:47:09', '', NULL);
 INSERT INTO `gen_table_column` VALUES (1658, 83, 'operateDate', '操作时间', 'varchar(50)', 'String', 'operateDate', '0', '0', '0', '1', '1', '1', '1', 'EQ', 'input', '', 3, 'admin', '2024-07-19 10:47:09', '', NULL);
 INSERT INTO `gen_table_column` VALUES (1659, 83, 'operateType', '冲抵类型（收入、支出）', 'varchar(50)', 'String', 'operateType', '0', '0', '0', '1', '1', '1', '1', 'EQ', 'select', '', 4, 'admin', '2024-07-19 10:47:09', '', NULL);
-INSERT INTO `gen_table_column` VALUES (1660, 83, 'moneyAmount', '金额', 'float', 'Long', 'moneyAmount', '0', '0', '0', '1', '1', '1', '1', 'EQ', 'input', '', 5, 'admin', '2024-07-19 10:47:09', '', NULL);
+INSERT INTO `gen_table_column` VALUES (1660, 83, 'moneyAmount', '金额', 'double', 'Long', 'moneyAmount', '0', '0', '0', '1', '1', '1', '1', 'EQ', 'input', '', 5, 'admin', '2024-07-19 10:47:09', '', NULL);
 INSERT INTO `gen_table_column` VALUES (1661, 83, 'company', '公司', 'varchar(150)', 'String', 'company', '0', '0', '0', '1', '1', '1', '1', 'EQ', 'input', '', 6, 'admin', '2024-07-19 10:47:09', '', NULL);
 INSERT INTO `gen_table_column` VALUES (1662, 83, 'company_id', '公司ID', 'int(11)', 'Long', 'companyId', '0', '0', '0', '1', '1', '1', '1', 'EQ', 'input', '', 7, 'admin', '2024-07-19 10:47:09', '', NULL);
 INSERT INTO `gen_table_column` VALUES (1663, 83, 'companyType', '公司类型（1、客户 2、供应商）', 'int(11)', 'Long', 'companyType', '0', '0', '0', '1', '1', '1', '1', 'EQ', 'select', '', 8, 'admin', '2024-07-19 10:47:09', '', NULL);
@@ -936,36 +939,36 @@ INSERT INTO `gen_table_column` VALUES (1753, 87, 'customer_id', '客户ID', 'int
 INSERT INTO `gen_table_column` VALUES (1754, 87, 'levelID', '级别编码', 'int(11)', 'Long', 'levelID', '0', '0', '0', '1', '1', '1', '1', 'EQ', 'input', '', 9, 'admin', '2024-07-19 10:47:10', '', NULL);
 INSERT INTO `gen_table_column` VALUES (1755, 87, 'levelName', '级别名称', 'varchar(80)', 'String', 'levelName', '0', '0', '0', '1', '1', '1', '1', 'LIKE', 'input', '', 10, 'admin', '2024-07-19 10:47:10', '', NULL);
 INSERT INTO `gen_table_column` VALUES (1756, 87, 'countingUnit', '计量单位', 'varchar(25)', 'String', 'countingUnit', '0', '0', '0', '1', '1', '1', '1', 'EQ', 'input', '', 11, 'admin', '2024-07-19 10:47:10', '', NULL);
-INSERT INTO `gen_table_column` VALUES (1757, 87, 'height', '厚度', 'float', 'Long', 'height', '0', '0', '0', '1', '1', '1', '1', 'EQ', 'input', '', 12, 'admin', '2024-07-19 10:47:10', '', NULL);
-INSERT INTO `gen_table_column` VALUES (1758, 87, 'length', '长度', 'float', 'Long', 'length', '0', '0', '0', '1', '1', '1', '1', 'EQ', 'input', '', 13, 'admin', '2024-07-19 10:47:10', '', NULL);
-INSERT INTO `gen_table_column` VALUES (1759, 87, 'width', '宽度', 'float', 'Long', 'width', '0', '0', '0', '1', '1', '1', '1', 'EQ', 'input', '', 14, 'admin', '2024-07-19 10:47:10', '', NULL);
+INSERT INTO `gen_table_column` VALUES (1757, 87, 'height', '厚度', 'double', 'Long', 'height', '0', '0', '0', '1', '1', '1', '1', 'EQ', 'input', '', 12, 'admin', '2024-07-19 10:47:10', '', NULL);
+INSERT INTO `gen_table_column` VALUES (1758, 87, 'length', '长度', 'double', 'Long', 'length', '0', '0', '0', '1', '1', '1', '1', 'EQ', 'input', '', 13, 'admin', '2024-07-19 10:47:10', '', NULL);
+INSERT INTO `gen_table_column` VALUES (1759, 87, 'width', '宽度', 'double', 'Long', 'width', '0', '0', '0', '1', '1', '1', '1', 'EQ', 'input', '', 14, 'admin', '2024-07-19 10:47:10', '', NULL);
 INSERT INTO `gen_table_column` VALUES (1760, 87, 'pieces', '出厂片数', 'int(11)', 'Long', 'pieces', '0', '0', '0', '1', '1', '1', '1', 'EQ', 'input', '', 15, 'admin', '2024-07-19 10:47:10', '', NULL);
 INSERT INTO `gen_table_column` VALUES (1761, 87, 'piecesPerPack', '每包片数', 'int(11)', 'Long', 'piecesPerPack', '0', '0', '0', '1', '1', '1', '1', 'EQ', 'input', '', 16, 'admin', '2024-07-19 10:47:10', '', NULL);
 INSERT INTO `gen_table_column` VALUES (1762, 87, 'packs', '包数', 'int(11)', 'Long', 'packs', '0', '0', '0', '1', '1', '1', '1', 'EQ', 'input', '', 17, 'admin', '2024-07-19 10:47:10', '', NULL);
-INSERT INTO `gen_table_column` VALUES (1763, 87, 'price', '出厂单价', 'float', 'Long', 'price', '0', '0', '0', '1', '1', '1', '1', 'EQ', 'input', '', 18, 'admin', '2024-07-19 10:47:10', '', NULL);
+INSERT INTO `gen_table_column` VALUES (1763, 87, 'price', '出厂单价', 'double', 'Long', 'price', '0', '0', '0', '1', '1', '1', '1', 'EQ', 'input', '', 18, 'admin', '2024-07-19 10:47:10', '', NULL);
 INSERT INTO `gen_table_column` VALUES (1764, 87, 'isIncludeTaxFactory', '出厂是否含税', 'int(11)', 'Long', 'isIncludeTaxFactory', '0', '0', '0', '1', '1', '1', '1', 'EQ', 'input', '', 19, 'admin', '2024-07-19 10:47:10', '', NULL);
-INSERT INTO `gen_table_column` VALUES (1765, 87, 'sundryCost', '杂费', 'float', 'Long', 'sundryCost', '0', '0', '0', '1', '1', '1', '1', 'EQ', 'input', '', 20, 'admin', '2024-07-19 10:47:10', '', NULL);
-INSERT INTO `gen_table_column` VALUES (1766, 87, 'paymentFactory', '出厂货款', 'float', 'Long', 'paymentFactory', '0', '0', '0', '1', '1', '1', '1', 'EQ', 'input', '', 21, 'admin', '2024-07-19 10:47:10', '', NULL);
-INSERT INTO `gen_table_column` VALUES (1767, 87, 'paymentUnload', '卸货价', 'float', 'Long', 'paymentUnload', '0', '0', '0', '1', '1', '1', '1', 'EQ', 'input', '', 22, 'admin', '2024-07-19 10:47:10', '', NULL);
+INSERT INTO `gen_table_column` VALUES (1765, 87, 'sundryCost', '杂费', 'double', 'Long', 'sundryCost', '0', '0', '0', '1', '1', '1', '1', 'EQ', 'input', '', 20, 'admin', '2024-07-19 10:47:10', '', NULL);
+INSERT INTO `gen_table_column` VALUES (1766, 87, 'paymentFactory', '出厂货款', 'double', 'Long', 'paymentFactory', '0', '0', '0', '1', '1', '1', '1', 'EQ', 'input', '', 21, 'admin', '2024-07-19 10:47:10', '', NULL);
+INSERT INTO `gen_table_column` VALUES (1767, 87, 'paymentUnload', '卸货价', 'double', 'Long', 'paymentUnload', '0', '0', '0', '1', '1', '1', '1', 'EQ', 'input', '', 22, 'admin', '2024-07-19 10:47:10', '', NULL);
 INSERT INTO `gen_table_column` VALUES (1768, 87, 'isIncludeTaxSale', '销售是否含税', 'int(11)', 'Long', 'isIncludeTaxSale', '0', '0', '0', '1', '1', '1', '1', 'EQ', 'input', '', 23, 'admin', '2024-07-19 10:47:10', '', NULL);
-INSERT INTO `gen_table_column` VALUES (1769, 87, 'payments', '总货款', 'float', 'Long', 'payments', '0', '0', '0', '1', '1', '1', '1', 'EQ', 'input', '', 24, 'admin', '2024-07-19 10:47:10', '', NULL);
-INSERT INTO `gen_table_column` VALUES (1770, 87, 'erro', '误差', 'float', 'Long', 'erro', '0', '0', '0', '1', '1', '1', '1', 'EQ', 'input', '', 25, 'admin', '2024-07-19 10:47:10', '', NULL);
-INSERT INTO `gen_table_column` VALUES (1771, 87, 'tonnage', '吨位', 'float', 'Long', 'tonnage', '0', '0', '0', '1', '1', '1', '1', 'EQ', 'input', '', 26, 'admin', '2024-07-19 10:47:10', '', NULL);
-INSERT INTO `gen_table_column` VALUES (1772, 87, 'landFreightPrice', '陆运费单价', 'float', 'Long', 'landFreightPrice', '0', '0', '0', '1', '1', '1', '1', 'EQ', 'input', '', 27, 'admin', '2024-07-19 10:47:10', '', NULL);
-INSERT INTO `gen_table_column` VALUES (1773, 87, 'landFreight', '陆运费', 'float', 'Long', 'landFreight', '0', '0', '0', '1', '1', '1', '1', 'EQ', 'input', '', 28, 'admin', '2024-07-19 10:47:10', '', NULL);
-INSERT INTO `gen_table_column` VALUES (1774, 87, 'seaFreight', '海运费', 'float', 'Long', 'seaFreight', '0', '0', '0', '1', '1', '1', '1', 'EQ', 'input', '', 29, 'admin', '2024-07-19 10:47:10', '', NULL);
-INSERT INTO `gen_table_column` VALUES (1775, 87, 'freight', '总运费', 'float', 'Long', 'freight', '0', '0', '0', '1', '1', '1', '1', 'EQ', 'input', '', 30, 'admin', '2024-07-19 10:47:10', '', NULL);
-INSERT INTO `gen_table_column` VALUES (1776, 87, 'otherCost', '其他费用', 'float', 'Long', 'otherCost', '0', '0', '0', '1', '1', '1', '1', 'EQ', 'input', '', 31, 'admin', '2024-07-19 10:47:10', '', NULL);
-INSERT INTO `gen_table_column` VALUES (1777, 87, 'profit', '利润', 'float', 'Long', 'profit', '0', '0', '0', '1', '1', '1', '1', 'EQ', 'input', '', 32, 'admin', '2024-07-19 10:47:10', '', NULL);
-INSERT INTO `gen_table_column` VALUES (1778, 87, 'profitNoTax', '不含税利润', 'float', 'Long', 'profitNoTax', '0', '0', '0', '1', '1', '1', '1', 'EQ', 'input', '', 33, 'admin', '2024-07-19 10:47:10', '', NULL);
+INSERT INTO `gen_table_column` VALUES (1769, 87, 'payments', '总货款', 'double', 'Long', 'payments', '0', '0', '0', '1', '1', '1', '1', 'EQ', 'input', '', 24, 'admin', '2024-07-19 10:47:10', '', NULL);
+INSERT INTO `gen_table_column` VALUES (1770, 87, 'erro', '误差', 'double', 'Long', 'erro', '0', '0', '0', '1', '1', '1', '1', 'EQ', 'input', '', 25, 'admin', '2024-07-19 10:47:10', '', NULL);
+INSERT INTO `gen_table_column` VALUES (1771, 87, 'tonnage', '吨位', 'double', 'Long', 'tonnage', '0', '0', '0', '1', '1', '1', '1', 'EQ', 'input', '', 26, 'admin', '2024-07-19 10:47:10', '', NULL);
+INSERT INTO `gen_table_column` VALUES (1772, 87, 'landFreightPrice', '陆运费单价', 'double', 'Long', 'landFreightPrice', '0', '0', '0', '1', '1', '1', '1', 'EQ', 'input', '', 27, 'admin', '2024-07-19 10:47:10', '', NULL);
+INSERT INTO `gen_table_column` VALUES (1773, 87, 'landFreight', '陆运费', 'double', 'Long', 'landFreight', '0', '0', '0', '1', '1', '1', '1', 'EQ', 'input', '', 28, 'admin', '2024-07-19 10:47:10', '', NULL);
+INSERT INTO `gen_table_column` VALUES (1774, 87, 'seaFreight', '海运费', 'double', 'Long', 'seaFreight', '0', '0', '0', '1', '1', '1', '1', 'EQ', 'input', '', 29, 'admin', '2024-07-19 10:47:10', '', NULL);
+INSERT INTO `gen_table_column` VALUES (1775, 87, 'freight', '总运费', 'double', 'Long', 'freight', '0', '0', '0', '1', '1', '1', '1', 'EQ', 'input', '', 30, 'admin', '2024-07-19 10:47:10', '', NULL);
+INSERT INTO `gen_table_column` VALUES (1776, 87, 'otherCost', '其他费用', 'double', 'Long', 'otherCost', '0', '0', '0', '1', '1', '1', '1', 'EQ', 'input', '', 31, 'admin', '2024-07-19 10:47:10', '', NULL);
+INSERT INTO `gen_table_column` VALUES (1777, 87, 'profit', '利润', 'double', 'Long', 'profit', '0', '0', '0', '1', '1', '1', '1', 'EQ', 'input', '', 32, 'admin', '2024-07-19 10:47:10', '', NULL);
+INSERT INTO `gen_table_column` VALUES (1778, 87, 'profitNoTax', '不含税利润', 'double', 'Long', 'profitNoTax', '0', '0', '0', '1', '1', '1', '1', 'EQ', 'input', '', 33, 'admin', '2024-07-19 10:47:10', '', NULL);
 INSERT INTO `gen_table_column` VALUES (1779, 87, 'actualPieces', '实际片数', 'int(11)', 'Long', 'actualPieces', '0', '0', '0', '1', '1', '1', '1', 'EQ', 'input', '', 34, 'admin', '2024-07-19 10:47:10', '', NULL);
-INSERT INTO `gen_table_column` VALUES (1780, 87, 'paymentsWithSundry', '总货款杂费', 'float', 'Long', 'paymentsWithSundry', '0', '0', '0', '1', '1', '1', '1', 'EQ', 'input', '', 35, 'admin', '2024-07-19 10:47:10', '', NULL);
-INSERT INTO `gen_table_column` VALUES (1781, 87, 'additionalFees', '加费', 'float', 'Long', 'additionalFees', '0', '0', '0', '1', '1', '1', '1', 'EQ', 'input', '', 36, 'admin', '2024-07-19 10:47:10', '', NULL);
+INSERT INTO `gen_table_column` VALUES (1780, 87, 'paymentsWithSundry', '总货款杂费', 'double', 'Long', 'paymentsWithSundry', '0', '0', '0', '1', '1', '1', '1', 'EQ', 'input', '', 35, 'admin', '2024-07-19 10:47:10', '', NULL);
+INSERT INTO `gen_table_column` VALUES (1781, 87, 'additionalFees', '加费', 'double', 'Long', 'additionalFees', '0', '0', '0', '1', '1', '1', '1', 'EQ', 'input', '', 36, 'admin', '2024-07-19 10:47:10', '', NULL);
 INSERT INTO `gen_table_column` VALUES (1782, 87, 'storeHouseID', '仓库ID', 'int(11)', 'Long', 'storeHouseID', '0', '0', '0', '1', '1', '1', '1', 'EQ', 'input', '', 37, 'admin', '2024-07-19 10:47:10', '', NULL);
 INSERT INTO `gen_table_column` VALUES (1783, 87, 'storeHouseName', '仓库名称', 'varchar(100)', 'String', 'storeHouseName', '0', '0', '0', '1', '1', '1', '1', 'LIKE', 'input', '', 38, 'admin', '2024-07-19 10:47:10', '', NULL);
 INSERT INTO `gen_table_column` VALUES (1784, 87, 'storeID', '仓库存储的货物ID', 'int(11)', 'Long', 'storeID', '0', '0', '0', '1', '1', '1', '1', 'EQ', 'input', '', 39, 'admin', '2024-07-19 10:47:10', '', NULL);
-INSERT INTO `gen_table_column` VALUES (1785, 87, 'logisticsProfit', '物流利润', 'float', 'Long', 'logisticsProfit', '0', '0', '0', '1', '1', '1', '1', 'EQ', 'input', '', 40, 'admin', '2024-07-19 10:47:10', '', NULL);
-INSERT INTO `gen_table_column` VALUES (1786, 87, 'customerCommission', '客户佣金', 'float', 'Long', 'customerCommission', '0', '0', '0', '1', '1', '1', '1', 'EQ', 'input', '', 41, 'admin', '2024-07-19 10:47:10', '', NULL);
+INSERT INTO `gen_table_column` VALUES (1785, 87, 'logisticsProfit', '物流利润', 'double', 'Long', 'logisticsProfit', '0', '0', '0', '1', '1', '1', '1', 'EQ', 'input', '', 40, 'admin', '2024-07-19 10:47:10', '', NULL);
+INSERT INTO `gen_table_column` VALUES (1786, 87, 'customerCommission', '客户佣金', 'double', 'Long', 'customerCommission', '0', '0', '0', '1', '1', '1', '1', 'EQ', 'input', '', 41, 'admin', '2024-07-19 10:47:10', '', NULL);
 INSERT INTO `gen_table_column` VALUES (1787, 87, 'isAdjusted', '是否被调整单（ 是  否）', 'varchar(10)', 'String', 'isAdjusted', '0', '0', '0', '1', '1', '1', '1', 'EQ', 'input', '', 42, 'admin', '2024-07-19 10:47:10', '', NULL);
 INSERT INTO `gen_table_column` VALUES (1788, 87, 'adjustDate', '调整日期', 'varchar(50)', 'String', 'adjustDate', '0', '0', '0', '1', '1', '1', '1', 'EQ', 'input', '', 43, 'admin', '2024-07-19 10:47:10', '', NULL);
 INSERT INTO `gen_table_column` VALUES (1789, 87, 'cancelFlag', '作废标记', 'int(11)', 'Long', 'cancelFlag', '0', '0', '0', '1', '1', '1', '1', 'EQ', 'input', '', 44, 'admin', '2024-07-19 10:47:10', '', NULL);
@@ -1006,15 +1009,15 @@ INSERT INTO `gen_table_column` VALUES (1823, 88, 'delFlag', '删除标记', 'int
 INSERT INTO `gen_table_column` VALUES (1824, 89, 'id', NULL, 'int(11)', 'Long', 'id', '1', '1', '0', '1', NULL, NULL, NULL, 'EQ', 'input', '', 1, 'admin', '2024-07-19 10:47:10', '', NULL);
 INSERT INTO `gen_table_column` VALUES (1825, 89, 'ordersNo', '订单编号（UUID）', 'varchar(50)', 'String', 'ordersNo', '0', '0', '0', '1', '1', '1', '1', 'EQ', 'input', '', 2, 'admin', '2024-07-19 10:47:10', '', NULL);
 INSERT INTO `gen_table_column` VALUES (1826, 89, 'invoiceDate', '开票日期', 'varchar(55)', 'String', 'invoiceDate', '0', '0', '0', '1', '1', '1', '1', 'EQ', 'input', '', 3, 'admin', '2024-07-19 10:47:10', '', NULL);
-INSERT INTO `gen_table_column` VALUES (1827, 89, 'invoiceType', '开票类型（购入、卖出）', 'float', 'Long', 'invoiceType', '0', '0', '0', '1', '1', '1', '1', 'EQ', 'select', '', 4, 'admin', '2024-07-19 10:47:10', '', NULL);
-INSERT INTO `gen_table_column` VALUES (1828, 89, 'invoiceAmount', '应开票金额', 'float', 'Long', 'invoiceAmount', '0', '0', '0', '1', '1', '1', '1', 'EQ', 'input', '', 5, 'admin', '2024-07-19 10:47:10', '', NULL);
+INSERT INTO `gen_table_column` VALUES (1827, 89, 'invoiceType', '开票类型（购入、卖出）', 'double', 'Long', 'invoiceType', '0', '0', '0', '1', '1', '1', '1', 'EQ', 'select', '', 4, 'admin', '2024-07-19 10:47:10', '', NULL);
+INSERT INTO `gen_table_column` VALUES (1828, 89, 'invoiceAmount', '应开票金额', 'double', 'Long', 'invoiceAmount', '0', '0', '0', '1', '1', '1', '1', 'EQ', 'input', '', 5, 'admin', '2024-07-19 10:47:10', '', NULL);
 INSERT INTO `gen_table_column` VALUES (1829, 89, 'companyType', '公司类别（客户、供应商）', 'varchar(20)', 'String', 'companyType', '0', '0', '0', '1', '1', '1', '1', 'EQ', 'select', '', 6, 'admin', '2024-07-19 10:47:10', '', NULL);
 INSERT INTO `gen_table_column` VALUES (1830, 89, 'companyName', '公司名称', 'varchar(120)', 'String', 'companyName', '0', '0', '0', '1', '1', '1', '1', 'LIKE', 'input', '', 7, 'admin', '2024-07-19 10:47:10', '', NULL);
 INSERT INTO `gen_table_column` VALUES (1831, 89, 'companyID', '公司名称', 'int(11)', 'Long', 'companyID', '0', '0', '0', '1', '1', '1', '1', 'EQ', 'input', '', 8, 'admin', '2024-07-19 10:47:10', '', NULL);
 INSERT INTO `gen_table_column` VALUES (1832, 89, 'invoiceCompanyName', '票据单位名称', 'varchar(120)', 'String', 'invoiceCompanyName', '0', '0', '0', '1', '1', '1', '1', 'LIKE', 'input', '', 9, 'admin', '2024-07-19 10:47:10', '', NULL);
-INSERT INTO `gen_table_column` VALUES (1833, 89, 'actualInvoiceAmount', '实际开票金额', 'float', 'Long', 'actualInvoiceAmount', '0', '0', '0', '1', '1', '1', '1', 'EQ', 'input', '', 10, 'admin', '2024-07-19 10:47:10', '', NULL);
-INSERT INTO `gen_table_column` VALUES (1834, 89, 'ticketPoint', '票点', 'float', 'Long', 'ticketPoint', '0', '0', '0', '1', '1', '1', '1', 'EQ', 'input', '', 11, 'admin', '2024-07-19 10:47:10', '', NULL);
-INSERT INTO `gen_table_column` VALUES (1835, 89, 'ticketPointAmount', '票点金额（实际开票金额*票点）', 'float', 'Long', 'ticketPointAmount', '0', '0', '0', '1', '1', '1', '1', 'EQ', 'input', '', 12, 'admin', '2024-07-19 10:47:10', '', NULL);
+INSERT INTO `gen_table_column` VALUES (1833, 89, 'actualInvoiceAmount', '实际开票金额', 'double', 'Long', 'actualInvoiceAmount', '0', '0', '0', '1', '1', '1', '1', 'EQ', 'input', '', 10, 'admin', '2024-07-19 10:47:10', '', NULL);
+INSERT INTO `gen_table_column` VALUES (1834, 89, 'ticketPoint', '票点', 'double', 'Long', 'ticketPoint', '0', '0', '0', '1', '1', '1', '1', 'EQ', 'input', '', 11, 'admin', '2024-07-19 10:47:10', '', NULL);
+INSERT INTO `gen_table_column` VALUES (1835, 89, 'ticketPointAmount', '票点金额（实际开票金额*票点）', 'double', 'Long', 'ticketPointAmount', '0', '0', '0', '1', '1', '1', '1', 'EQ', 'input', '', 12, 'admin', '2024-07-19 10:47:10', '', NULL);
 INSERT INTO `gen_table_column` VALUES (1836, 89, 'comments', '备注', 'varchar(200)', 'String', 'comments', '0', '0', '0', '1', '1', '1', '1', 'EQ', 'input', '', 13, 'admin', '2024-07-19 10:47:10', '', NULL);
 INSERT INTO `gen_table_column` VALUES (1837, 89, 'addtime', '添加时间', 'varchar(50)', 'String', 'addtime', '0', '0', '0', '1', '1', '1', '1', 'EQ', 'input', '', 14, 'admin', '2024-07-19 10:47:10', '', NULL);
 INSERT INTO `gen_table_column` VALUES (1838, 89, 'userId', '操作人员ID', 'int(11)', 'Long', 'userId', '0', '0', '0', '1', '1', '1', '1', 'EQ', 'input', '', 15, 'admin', '2024-07-19 10:47:10', '', NULL);
@@ -1026,7 +1029,7 @@ INSERT INTO `gen_table_column` VALUES (1843, 90, 'payCategory', '收付款类型
 INSERT INTO `gen_table_column` VALUES (1844, 90, 'payNO', '付款编号（UUID）', 'varchar(50)', 'String', 'payNO', '0', '0', '0', '1', '1', '1', '1', 'EQ', 'input', '', 3, 'admin', '2024-07-19 10:47:10', '', NULL);
 INSERT INTO `gen_table_column` VALUES (1845, 90, 'fundsDate', '日期', 'varchar(50)', 'String', 'fundsDate', '0', '0', '0', '1', '1', '1', '1', 'EQ', 'input', '', 4, 'admin', '2024-07-19 10:47:10', '', NULL);
 INSERT INTO `gen_table_column` VALUES (1846, 90, 'payType', '支付类型', 'varchar(55)', 'String', 'payType', '0', '0', '0', '1', '1', '1', '1', 'EQ', 'select', '', 5, 'admin', '2024-07-19 10:47:10', '', NULL);
-INSERT INTO `gen_table_column` VALUES (1847, 90, 'moneyAmount', '金额', 'float', 'Long', 'moneyAmount', '0', '0', '0', '1', '1', '1', '1', 'EQ', 'input', '', 6, 'admin', '2024-07-19 10:47:10', '', NULL);
+INSERT INTO `gen_table_column` VALUES (1847, 90, 'moneyAmount', '金额', 'double', 'Long', 'moneyAmount', '0', '0', '0', '1', '1', '1', '1', 'EQ', 'input', '', 6, 'admin', '2024-07-19 10:47:10', '', NULL);
 INSERT INTO `gen_table_column` VALUES (1848, 90, 'selfAcountsName', '己方户名', 'varchar(80)', 'String', 'selfAcountsName', '0', '0', '0', '1', '1', '1', '1', 'LIKE', 'input', '', 7, 'admin', '2024-07-19 10:47:10', '', NULL);
 INSERT INTO `gen_table_column` VALUES (1849, 90, 'selfBankNo', '己方账号', 'varchar(80)', 'String', 'selfBankNo', '0', '0', '0', '1', '1', '1', '1', 'EQ', 'input', '', 8, 'admin', '2024-07-19 10:47:10', '', NULL);
 INSERT INTO `gen_table_column` VALUES (1850, 90, 'selfBankName', '己方开户行', 'varchar(150)', 'String', 'selfBankName', '0', '0', '0', '1', '1', '1', '1', 'LIKE', 'input', '', 9, 'admin', '2024-07-19 10:47:10', '', NULL);
@@ -1049,10 +1052,10 @@ INSERT INTO `gen_table_column` VALUES (1866, 91, 'levelNo', '级别编码', 'var
 INSERT INTO `gen_table_column` VALUES (1867, 91, 'levelName', '级别名称', 'varchar(80)', 'String', 'levelName', '0', '0', '0', '1', '1', '1', '1', 'LIKE', 'input', '', 3, 'admin', '2024-07-19 10:47:10', '', NULL);
 INSERT INTO `gen_table_column` VALUES (1868, 91, 'categoryNo', '分类编号', 'int(11)', 'Long', 'categoryNo', '0', '0', '0', '1', '1', '1', '1', 'EQ', 'input', '', 4, 'admin', '2024-07-19 10:47:10', '', NULL);
 INSERT INTO `gen_table_column` VALUES (1869, 91, 'categoryName', '分类名称', 'varchar(80)', 'String', 'categoryName', '0', '0', '0', '1', '1', '1', '1', 'LIKE', 'input', '', 5, 'admin', '2024-07-19 10:47:10', '', NULL);
-INSERT INTO `gen_table_column` VALUES (1870, 91, 'height', '厚度', 'float', 'Long', 'height', '0', '0', '0', '1', '1', '1', '1', 'EQ', 'input', '', 6, 'admin', '2024-07-19 10:47:10', '', NULL);
-INSERT INTO `gen_table_column` VALUES (1871, 91, 'length', '长度', 'float', 'Long', 'length', '0', '0', '0', '1', '1', '1', '1', 'EQ', 'input', '', 7, 'admin', '2024-07-19 10:47:10', '', NULL);
-INSERT INTO `gen_table_column` VALUES (1872, 91, 'width', '宽度', 'float', 'Long', 'width', '0', '0', '0', '1', '1', '1', '1', 'EQ', 'input', '', 8, 'admin', '2024-07-19 10:47:10', '', NULL);
-INSERT INTO `gen_table_column` VALUES (1873, 91, 'tonnage', '吨位', 'float', 'Long', 'tonnage', '0', '0', '0', '1', '1', '1', '1', 'EQ', 'input', '', 9, 'admin', '2024-07-19 10:47:10', '', NULL);
+INSERT INTO `gen_table_column` VALUES (1870, 91, 'height', '厚度', 'double', 'Long', 'height', '0', '0', '0', '1', '1', '1', '1', 'EQ', 'input', '', 6, 'admin', '2024-07-19 10:47:10', '', NULL);
+INSERT INTO `gen_table_column` VALUES (1871, 91, 'length', '长度', 'double', 'Long', 'length', '0', '0', '0', '1', '1', '1', '1', 'EQ', 'input', '', 7, 'admin', '2024-07-19 10:47:10', '', NULL);
+INSERT INTO `gen_table_column` VALUES (1872, 91, 'width', '宽度', 'double', 'Long', 'width', '0', '0', '0', '1', '1', '1', '1', 'EQ', 'input', '', 8, 'admin', '2024-07-19 10:47:10', '', NULL);
+INSERT INTO `gen_table_column` VALUES (1873, 91, 'tonnage', '吨位', 'double', 'Long', 'tonnage', '0', '0', '0', '1', '1', '1', '1', 'EQ', 'input', '', 9, 'admin', '2024-07-19 10:47:10', '', NULL);
 INSERT INTO `gen_table_column` VALUES (1874, 91, 'addtime', '添加时间', 'varchar(50)', 'String', 'addtime', '0', '0', '0', '1', '1', '1', '1', 'EQ', 'input', '', 10, 'admin', '2024-07-19 10:47:10', '', NULL);
 INSERT INTO `gen_table_column` VALUES (1875, 91, 'userId', '操作人员ID', 'int(11)', 'Long', 'userId', '0', '0', '0', '1', '1', '1', '1', 'EQ', 'input', '', 11, 'admin', '2024-07-19 10:47:10', '', NULL);
 INSERT INTO `gen_table_column` VALUES (1876, 91, 'UserName', '操作人员姓名', 'varchar(50)', 'String', 'UserName', '0', '0', '0', '1', '1', '1', '1', 'LIKE', 'input', '', 12, 'admin', '2024-07-19 10:47:10', '', NULL);
@@ -1061,7 +1064,7 @@ INSERT INTO `gen_table_column` VALUES (1878, 91, 'delFlag', '删除标记', 'int
 INSERT INTO `gen_table_column` VALUES (1879, 92, 'id', NULL, 'int(11)', 'Long', 'id', '1', '1', '0', '1', NULL, NULL, NULL, 'EQ', 'input', '', 1, 'admin', '2024-07-19 10:47:10', '', NULL);
 INSERT INTO `gen_table_column` VALUES (1880, 92, 'ordersNo', '订单编号（UUID）', 'varchar(50)', 'String', 'ordersNo', '0', '0', '0', '1', '1', '1', '1', 'EQ', 'input', '', 2, 'admin', '2024-07-19 10:47:10', '', NULL);
 INSERT INTO `gen_table_column` VALUES (1881, 92, 'rebateDate', '日期', 'varchar(50)', 'String', 'rebateDate', '0', '0', '0', '1', '1', '1', '1', 'EQ', 'input', '', 3, 'admin', '2024-07-19 10:47:10', '', NULL);
-INSERT INTO `gen_table_column` VALUES (1882, 92, 'rebate', '金额', 'float', 'Long', 'rebate', '0', '0', '0', '1', '1', '1', '1', 'EQ', 'input', '', 4, 'admin', '2024-07-19 10:47:10', '', NULL);
+INSERT INTO `gen_table_column` VALUES (1882, 92, 'rebate', '金额', 'double', 'Long', 'rebate', '0', '0', '0', '1', '1', '1', '1', 'EQ', 'input', '', 4, 'admin', '2024-07-19 10:47:10', '', NULL);
 INSERT INTO `gen_table_column` VALUES (1883, 92, 'rebateType', '返利类型（返利、降价、售后质量赔偿）', 'varchar(80)', 'String', 'rebateType', '0', '0', '0', '1', '1', '1', '1', 'EQ', 'select', '', 5, 'admin', '2024-07-19 10:47:10', '', NULL);
 INSERT INTO `gen_table_column` VALUES (1884, 92, 'inAcountsName', '收款户名', 'varchar(80)', 'String', 'inAcountsName', '0', '0', '0', '1', '1', '1', '1', 'LIKE', 'input', '', 6, 'admin', '2024-07-19 10:47:10', '', NULL);
 INSERT INTO `gen_table_column` VALUES (1885, 92, 'inBankNo', '收款账号', 'varchar(80)', 'String', 'inBankNo', '0', '0', '0', '1', '1', '1', '1', 'EQ', 'input', '', 7, 'admin', '2024-07-19 10:47:10', '', NULL);
@@ -1079,7 +1082,7 @@ INSERT INTO `gen_table_column` VALUES (1896, 92, 'delFlag', '删除标记', 'int
 INSERT INTO `gen_table_column` VALUES (1897, 93, 'id', NULL, 'int(11)', 'Long', 'id', '1', '1', '0', '1', NULL, NULL, NULL, 'EQ', 'input', '', 1, 'admin', '2024-07-19 10:47:10', '', NULL);
 INSERT INTO `gen_table_column` VALUES (1898, 93, 'futuresNO', '借出款编号（UUID）', 'varchar(50)', 'String', 'futuresNO', '0', '0', '0', '1', '1', '1', '1', 'EQ', 'input', '', 2, 'admin', '2024-07-19 10:47:10', '', NULL);
 INSERT INTO `gen_table_column` VALUES (1899, 93, 'recoverNO', '还款编号（UUID）', 'varchar(50)', 'String', 'recoverNO', '0', '0', '0', '1', '1', '1', '1', 'EQ', 'input', '', 3, 'admin', '2024-07-19 10:47:10', '', NULL);
-INSERT INTO `gen_table_column` VALUES (1900, 93, 'moneyAmount', '收回金额', 'float', 'Long', 'moneyAmount', '0', '0', '0', '1', '1', '1', '1', 'EQ', 'input', '', 4, 'admin', '2024-07-19 10:47:10', '', NULL);
+INSERT INTO `gen_table_column` VALUES (1900, 93, 'moneyAmount', '收回金额', 'double', 'Long', 'moneyAmount', '0', '0', '0', '1', '1', '1', '1', 'EQ', 'input', '', 4, 'admin', '2024-07-19 10:47:10', '', NULL);
 INSERT INTO `gen_table_column` VALUES (1901, 93, 'recoverDate', '收回日期', 'varchar(50)', 'String', 'recoverDate', '0', '0', '0', '1', '1', '1', '1', 'EQ', 'input', '', 5, 'admin', '2024-07-19 10:47:10', '', NULL);
 INSERT INTO `gen_table_column` VALUES (1902, 93, 'acountsName', '收回账户', 'varchar(80)', 'String', 'acountsName', '0', '0', '0', '1', '1', '1', '1', 'LIKE', 'input', '', 6, 'admin', '2024-07-19 10:47:10', '', NULL);
 INSERT INTO `gen_table_column` VALUES (1903, 93, 'bankNo', '收回账号', 'varchar(80)', 'String', 'bankNo', '0', '0', '0', '1', '1', '1', '1', 'EQ', 'input', '', 7, 'admin', '2024-07-19 10:47:10', '', NULL);
@@ -1092,8 +1095,8 @@ INSERT INTO `gen_table_column` VALUES (1909, 93, 'delFlag', '删除标记', 'int
 INSERT INTO `gen_table_column` VALUES (1910, 94, 'id', NULL, 'int(11)', 'Long', 'id', '1', '1', '0', '1', NULL, NULL, NULL, 'EQ', 'input', '', 1, 'admin', '2024-07-19 10:47:10', '', NULL);
 INSERT INTO `gen_table_column` VALUES (1911, 94, 'loanNO', '贷款编号（UUID）', 'varchar(50)', 'String', 'loanNO', '0', '0', '0', '1', '1', '1', '1', 'EQ', 'input', '', 2, 'admin', '2024-07-19 10:47:10', '', NULL);
 INSERT INTO `gen_table_column` VALUES (1912, 94, 'payNO', '还款编号（UUID）', 'varchar(50)', 'String', 'payNO', '0', '0', '0', '1', '1', '1', '1', 'EQ', 'input', '', 3, 'admin', '2024-07-19 10:47:10', '', NULL);
-INSERT INTO `gen_table_column` VALUES (1913, 94, 'moneyAmount', '还（本）金额', 'float', 'Long', 'moneyAmount', '0', '0', '0', '1', '1', '1', '1', 'EQ', 'input', '', 4, 'admin', '2024-07-19 10:47:10', '', NULL);
-INSERT INTO `gen_table_column` VALUES (1914, 94, 'ratio', '付息（金额）', 'float', 'Long', 'ratio', '0', '0', '0', '1', '1', '1', '1', 'EQ', 'input', '', 5, 'admin', '2024-07-19 10:47:10', '', NULL);
+INSERT INTO `gen_table_column` VALUES (1913, 94, 'moneyAmount', '还（本）金额', 'double', 'Long', 'moneyAmount', '0', '0', '0', '1', '1', '1', '1', 'EQ', 'input', '', 4, 'admin', '2024-07-19 10:47:10', '', NULL);
+INSERT INTO `gen_table_column` VALUES (1914, 94, 'ratio', '付息（金额）', 'double', 'Long', 'ratio', '0', '0', '0', '1', '1', '1', '1', 'EQ', 'input', '', 5, 'admin', '2024-07-19 10:47:10', '', NULL);
 INSERT INTO `gen_table_column` VALUES (1915, 94, 'payDate', '还款日期', 'varchar(50)', 'String', 'payDate', '0', '0', '0', '1', '1', '1', '1', 'EQ', 'input', '', 6, 'admin', '2024-07-19 10:47:10', '', NULL);
 INSERT INTO `gen_table_column` VALUES (1916, 94, 'acountsName', '还款账户', 'varchar(80)', 'String', 'acountsName', '0', '0', '0', '1', '1', '1', '1', 'LIKE', 'input', '', 7, 'admin', '2024-07-19 10:47:10', '', NULL);
 INSERT INTO `gen_table_column` VALUES (1917, 94, 'bankNo', '还款账号', 'varchar(80)', 'String', 'bankNo', '0', '0', '0', '1', '1', '1', '1', 'EQ', 'input', '', 8, 'admin', '2024-07-19 10:47:10', '', NULL);
@@ -1104,25 +1107,25 @@ INSERT INTO `gen_table_column` VALUES (1921, 94, 'UserName', '操作人员姓名
 INSERT INTO `gen_table_column` VALUES (1922, 94, 'update_time', '更新时间', 'datetime', 'Date', 'updateTime', '0', '0', '0', '1', '1', NULL, NULL, 'EQ', 'datetime', '', 13, 'admin', '2024-07-19 10:47:10', '', NULL);
 INSERT INTO `gen_table_column` VALUES (1923, 94, 'delFlag', '删除标记', 'int(11)', 'Long', 'delFlag', '0', '0', '0', '1', '1', '1', '1', 'EQ', 'input', '', 14, 'admin', '2024-07-19 10:47:10', '', NULL);
 INSERT INTO `gen_table_column` VALUES (1924, 95, 'id', NULL, 'int(11)', 'Long', 'id', '1', '1', '0', '1', NULL, NULL, NULL, 'EQ', 'input', '', 1, 'admin', '2024-07-19 10:47:10', '', NULL);
-INSERT INTO `gen_table_column` VALUES (1925, 95, 'basicSocialInsurance', '社保缴纳基数', 'float', 'Long', 'basicSocialInsurance', '0', '0', '0', '1', '1', '1', '1', 'EQ', 'input', '', 2, 'admin', '2024-07-19 10:47:10', '', NULL);
-INSERT INTO `gen_table_column` VALUES (1926, 95, 'basicHousingFund', '公积金基数', 'float', 'Long', 'basicHousingFund', '0', '0', '0', '1', '1', '1', '1', 'EQ', 'input', '', 3, 'admin', '2024-07-19 10:47:10', '', NULL);
+INSERT INTO `gen_table_column` VALUES (1925, 95, 'basicSocialInsurance', '社保缴纳基数', 'double', 'Long', 'basicSocialInsurance', '0', '0', '0', '1', '1', '1', '1', 'EQ', 'input', '', 2, 'admin', '2024-07-19 10:47:10', '', NULL);
+INSERT INTO `gen_table_column` VALUES (1926, 95, 'basicHousingFund', '公积金基数', 'double', 'Long', 'basicHousingFund', '0', '0', '0', '1', '1', '1', '1', 'EQ', 'input', '', 3, 'admin', '2024-07-19 10:47:10', '', NULL);
 INSERT INTO `gen_table_column` VALUES (1927, 95, 'depName', '部门', 'varchar(50)', 'String', 'depName', '0', '0', '0', '1', '1', '1', '1', 'LIKE', 'input', '', 4, 'admin', '2024-07-19 10:47:10', '', NULL);
 INSERT INTO `gen_table_column` VALUES (1928, 95, 'employeeName', '姓名', 'varchar(15)', 'String', 'employeeName', '0', '0', '0', '1', '1', '1', '1', 'LIKE', 'input', '', 5, 'admin', '2024-07-19 10:47:10', '', NULL);
 INSERT INTO `gen_table_column` VALUES (1929, 95, 'employeeID', '人员编号', 'varchar(15)', 'String', 'employeeID', '0', '0', '0', '1', '1', '1', '1', 'EQ', 'input', '', 6, 'admin', '2024-07-19 10:47:10', '', NULL);
 INSERT INTO `gen_table_column` VALUES (1930, 95, 'insuranceDate', '缴费时间', 'varchar(50)', 'String', 'insuranceDate', '0', '0', '0', '1', '1', '1', '1', 'EQ', 'input', '', 7, 'admin', '2024-07-19 10:47:10', '', NULL);
 INSERT INTO `gen_table_column` VALUES (1931, 95, 'isRecruiting', '是否增员（是，否）', 'varchar(10)', 'String', 'isRecruiting', '0', '0', '0', '1', '1', '1', '1', 'EQ', 'input', '', 8, 'admin', '2024-07-19 10:47:10', '', NULL);
 INSERT INTO `gen_table_column` VALUES (1932, 95, 'isDepletion', '是否减员', 'varchar(10)', 'String', 'isDepletion', '0', '0', '0', '1', '1', '1', '1', 'EQ', 'input', '', 9, 'admin', '2024-07-19 10:47:10', '', NULL);
-INSERT INTO `gen_table_column` VALUES (1933, 95, 'healthySecuritySelf', '基本医疗保险-个人', 'float', 'Long', 'healthySecuritySelf', '0', '0', '0', '1', '1', '1', '1', 'EQ', 'input', '', 10, 'admin', '2024-07-19 10:47:10', '', NULL);
-INSERT INTO `gen_table_column` VALUES (1934, 95, 'healthySecurityCompany', '基本医疗保险-公司', 'float', 'Long', 'healthySecurityCompany', '0', '0', '0', '1', '1', '1', '1', 'EQ', 'input', '', 11, 'admin', '2024-07-19 10:47:10', '', NULL);
-INSERT INTO `gen_table_column` VALUES (1935, 95, 'injuryInsurance', '工伤保险', 'float', 'Long', 'injuryInsurance', '0', '0', '0', '1', '1', '1', '1', 'EQ', 'input', '', 12, 'admin', '2024-07-19 10:47:10', '', NULL);
-INSERT INTO `gen_table_column` VALUES (1936, 95, 'unemploymentSecuritySelf', '失业保险-个人', 'float', 'Long', 'unemploymentSecuritySelf', '0', '0', '0', '1', '1', '1', '1', 'EQ', 'input', '', 13, 'admin', '2024-07-19 10:47:10', '', NULL);
-INSERT INTO `gen_table_column` VALUES (1937, 95, 'unemploymentSecurityCompany', '失业保险-公司', 'float', 'Long', 'unemploymentSecurityCompany', '0', '0', '0', '1', '1', '1', '1', 'EQ', 'input', '', 14, 'admin', '2024-07-19 10:47:10', '', NULL);
-INSERT INTO `gen_table_column` VALUES (1938, 95, 'retirementSecuritySelf', '养老保险-个人', 'float', 'Long', 'retirementSecuritySelf', '0', '0', '0', '1', '1', '1', '1', 'EQ', 'input', '', 15, 'admin', '2024-07-19 10:47:10', '', NULL);
-INSERT INTO `gen_table_column` VALUES (1939, 95, 'retirementSecurityCompany', '养老保险-公司', 'float', 'Long', 'retirementSecurityCompany', '0', '0', '0', '1', '1', '1', '1', 'EQ', 'input', '', 16, 'admin', '2024-07-19 10:47:10', '', NULL);
-INSERT INTO `gen_table_column` VALUES (1940, 95, 'largeMedicalSecuritySelf', '大额医保-个人', 'float', 'Long', 'largeMedicalSecuritySelf', '0', '0', '0', '1', '1', '1', '1', 'EQ', 'input', '', 17, 'admin', '2024-07-19 10:47:10', '', NULL);
-INSERT INTO `gen_table_column` VALUES (1941, 95, 'largeMedicalSecurityCompany', '大额医保-公司', 'float', 'Long', 'largeMedicalSecurityCompany', '0', '0', '0', '1', '1', '1', '1', 'EQ', 'input', '', 18, 'admin', '2024-07-19 10:47:10', '', NULL);
-INSERT INTO `gen_table_column` VALUES (1942, 95, 'housingFundSelf', '公积金-个人', 'float', 'Long', 'housingFundSelf', '0', '0', '0', '1', '1', '1', '1', 'EQ', 'input', '', 19, 'admin', '2024-07-19 10:47:10', '', NULL);
-INSERT INTO `gen_table_column` VALUES (1943, 95, 'housingFundCompany', '公积金-公司', 'float', 'Long', 'housingFundCompany', '0', '0', '0', '1', '1', '1', '1', 'EQ', 'input', '', 20, 'admin', '2024-07-19 10:47:10', '', NULL);
+INSERT INTO `gen_table_column` VALUES (1933, 95, 'healthySecuritySelf', '基本医疗保险-个人', 'double', 'Long', 'healthySecuritySelf', '0', '0', '0', '1', '1', '1', '1', 'EQ', 'input', '', 10, 'admin', '2024-07-19 10:47:10', '', NULL);
+INSERT INTO `gen_table_column` VALUES (1934, 95, 'healthySecurityCompany', '基本医疗保险-公司', 'double', 'Long', 'healthySecurityCompany', '0', '0', '0', '1', '1', '1', '1', 'EQ', 'input', '', 11, 'admin', '2024-07-19 10:47:10', '', NULL);
+INSERT INTO `gen_table_column` VALUES (1935, 95, 'injuryInsurance', '工伤保险', 'double', 'Long', 'injuryInsurance', '0', '0', '0', '1', '1', '1', '1', 'EQ', 'input', '', 12, 'admin', '2024-07-19 10:47:10', '', NULL);
+INSERT INTO `gen_table_column` VALUES (1936, 95, 'unemploymentSecuritySelf', '失业保险-个人', 'double', 'Long', 'unemploymentSecuritySelf', '0', '0', '0', '1', '1', '1', '1', 'EQ', 'input', '', 13, 'admin', '2024-07-19 10:47:10', '', NULL);
+INSERT INTO `gen_table_column` VALUES (1937, 95, 'unemploymentSecurityCompany', '失业保险-公司', 'double', 'Long', 'unemploymentSecurityCompany', '0', '0', '0', '1', '1', '1', '1', 'EQ', 'input', '', 14, 'admin', '2024-07-19 10:47:10', '', NULL);
+INSERT INTO `gen_table_column` VALUES (1938, 95, 'retirementSecuritySelf', '养老保险-个人', 'double', 'Long', 'retirementSecuritySelf', '0', '0', '0', '1', '1', '1', '1', 'EQ', 'input', '', 15, 'admin', '2024-07-19 10:47:10', '', NULL);
+INSERT INTO `gen_table_column` VALUES (1939, 95, 'retirementSecurityCompany', '养老保险-公司', 'double', 'Long', 'retirementSecurityCompany', '0', '0', '0', '1', '1', '1', '1', 'EQ', 'input', '', 16, 'admin', '2024-07-19 10:47:10', '', NULL);
+INSERT INTO `gen_table_column` VALUES (1940, 95, 'largeMedicalSecuritySelf', '大额医保-个人', 'double', 'Long', 'largeMedicalSecuritySelf', '0', '0', '0', '1', '1', '1', '1', 'EQ', 'input', '', 17, 'admin', '2024-07-19 10:47:10', '', NULL);
+INSERT INTO `gen_table_column` VALUES (1941, 95, 'largeMedicalSecurityCompany', '大额医保-公司', 'double', 'Long', 'largeMedicalSecurityCompany', '0', '0', '0', '1', '1', '1', '1', 'EQ', 'input', '', 18, 'admin', '2024-07-19 10:47:10', '', NULL);
+INSERT INTO `gen_table_column` VALUES (1942, 95, 'housingFundSelf', '公积金-个人', 'double', 'Long', 'housingFundSelf', '0', '0', '0', '1', '1', '1', '1', 'EQ', 'input', '', 19, 'admin', '2024-07-19 10:47:10', '', NULL);
+INSERT INTO `gen_table_column` VALUES (1943, 95, 'housingFundCompany', '公积金-公司', 'double', 'Long', 'housingFundCompany', '0', '0', '0', '1', '1', '1', '1', 'EQ', 'input', '', 20, 'admin', '2024-07-19 10:47:10', '', NULL);
 INSERT INTO `gen_table_column` VALUES (1944, 95, 'comments', '备注', 'varchar(200)', 'String', 'comments', '0', '0', '0', '1', '1', '1', '1', 'EQ', 'input', '', 21, 'admin', '2024-07-19 10:47:10', '', NULL);
 INSERT INTO `gen_table_column` VALUES (1945, 95, 'addtime', '添加时间', 'varchar(50)', 'String', 'addtime', '0', '0', '0', '1', '1', '1', '1', 'EQ', 'input', '', 22, 'admin', '2024-07-19 10:47:10', '', NULL);
 INSERT INTO `gen_table_column` VALUES (1946, 95, 'userId', '操作人员ID', 'int(11)', 'Long', 'userId', '0', '0', '0', '1', '1', '1', '1', 'EQ', 'input', '', 23, 'admin', '2024-07-19 10:47:10', '', NULL);
@@ -1147,7 +1150,7 @@ INSERT INTO `gen_table_column` VALUES (1964, 98, 'tableName', '发生操作行�
 INSERT INTO `gen_table_column` VALUES (1965, 98, 'payNO', '发生操作行为的冲抵款编号（UUID）', 'varchar(50)', 'String', 'payNO', '0', '0', '0', '1', '1', '1', '1', 'EQ', 'input', '', 4, 'admin', '2024-07-19 10:47:10', '', NULL);
 INSERT INTO `gen_table_column` VALUES (1966, 98, 'operateDate', '日期', 'varchar(50)', 'String', 'operateDate', '0', '0', '0', '1', '1', '1', '1', 'EQ', 'input', '', 5, 'admin', '2024-07-19 10:47:10', '', NULL);
 INSERT INTO `gen_table_column` VALUES (1967, 98, 'changeType', '变动类型（收入、支出）', 'varchar(15)', 'String', 'changeType', '0', '0', '0', '1', '1', '1', '1', 'EQ', 'select', '', 6, 'admin', '2024-07-19 10:47:10', '', NULL);
-INSERT INTO `gen_table_column` VALUES (1968, 98, 'moneyAmount', '金额', 'float', 'Long', 'moneyAmount', '0', '0', '0', '1', '1', '1', '1', 'EQ', 'input', '', 7, 'admin', '2024-07-19 10:47:10', '', NULL);
+INSERT INTO `gen_table_column` VALUES (1968, 98, 'moneyAmount', '金额', 'double', 'Long', 'moneyAmount', '0', '0', '0', '1', '1', '1', '1', 'EQ', 'input', '', 7, 'admin', '2024-07-19 10:47:10', '', NULL);
 INSERT INTO `gen_table_column` VALUES (1969, 98, 'comments', '备注', 'varchar(200)', 'String', 'comments', '0', '0', '0', '1', '1', '1', '1', 'EQ', 'input', '', 8, 'admin', '2024-07-19 10:47:10', '', NULL);
 INSERT INTO `gen_table_column` VALUES (1970, 98, 'addtime', '添加时间', 'varchar(50)', 'String', 'addtime', '0', '0', '0', '1', '1', '1', '1', 'EQ', 'input', '', 9, 'admin', '2024-07-19 10:47:10', '', NULL);
 INSERT INTO `gen_table_column` VALUES (1971, 98, 'userId', '操作人员ID', 'int(11)', 'Long', 'userId', '0', '0', '0', '1', '1', '1', '1', 'EQ', 'input', '', 10, 'admin', '2024-07-19 10:47:10', '', NULL);
@@ -1201,36 +1204,36 @@ INSERT INTO `gen_table_column` VALUES (2018, 100, 'customer_id', '客户ID', 'in
 INSERT INTO `gen_table_column` VALUES (2019, 100, 'levelID', '级别编码', 'int(11)', 'Long', 'levelID', '0', '0', '0', '1', '1', '1', '1', 'EQ', 'input', '', 8, 'admin', '2024-07-19 11:35:04', '', NULL);
 INSERT INTO `gen_table_column` VALUES (2020, 100, 'levelName', '级别名称', 'varchar(80)', 'String', 'levelName', '0', '0', '0', '1', '1', '1', '1', 'LIKE', 'input', '', 9, 'admin', '2024-07-19 11:35:04', '', NULL);
 INSERT INTO `gen_table_column` VALUES (2021, 100, 'countingUnit', '计量单位', 'varchar(25)', 'String', 'countingUnit', '0', '0', '0', '1', '1', '1', '1', 'EQ', 'input', '', 10, 'admin', '2024-07-19 11:35:04', '', NULL);
-INSERT INTO `gen_table_column` VALUES (2022, 100, 'height', '厚度', 'float', 'Long', 'height', '0', '0', '0', '1', '1', '1', '1', 'EQ', 'input', '', 11, 'admin', '2024-07-19 11:35:04', '', NULL);
-INSERT INTO `gen_table_column` VALUES (2023, 100, 'length', '长度', 'float', 'Long', 'length', '0', '0', '0', '1', '1', '1', '1', 'EQ', 'input', '', 12, 'admin', '2024-07-19 11:35:04', '', NULL);
-INSERT INTO `gen_table_column` VALUES (2024, 100, 'width', '宽度', 'float', 'Long', 'width', '0', '0', '0', '1', '1', '1', '1', 'EQ', 'input', '', 13, 'admin', '2024-07-19 11:35:04', '', NULL);
+INSERT INTO `gen_table_column` VALUES (2022, 100, 'height', '厚度', 'double', 'Long', 'height', '0', '0', '0', '1', '1', '1', '1', 'EQ', 'input', '', 11, 'admin', '2024-07-19 11:35:04', '', NULL);
+INSERT INTO `gen_table_column` VALUES (2023, 100, 'length', '长度', 'double', 'Long', 'length', '0', '0', '0', '1', '1', '1', '1', 'EQ', 'input', '', 12, 'admin', '2024-07-19 11:35:04', '', NULL);
+INSERT INTO `gen_table_column` VALUES (2024, 100, 'width', '宽度', 'double', 'Long', 'width', '0', '0', '0', '1', '1', '1', '1', 'EQ', 'input', '', 13, 'admin', '2024-07-19 11:35:04', '', NULL);
 INSERT INTO `gen_table_column` VALUES (2025, 100, 'pieces', '出厂片数', 'int(11)', 'Long', 'pieces', '0', '0', '0', '1', '1', '1', '1', 'EQ', 'input', '', 14, 'admin', '2024-07-19 11:35:04', '', NULL);
 INSERT INTO `gen_table_column` VALUES (2026, 100, 'piecesPerPack', '每包片数', 'int(11)', 'Long', 'piecesPerPack', '0', '0', '0', '1', '1', '1', '1', 'EQ', 'input', '', 15, 'admin', '2024-07-19 11:35:04', '', NULL);
 INSERT INTO `gen_table_column` VALUES (2027, 100, 'packs', '包数', 'int(11)', 'Long', 'packs', '0', '0', '0', '1', '1', '1', '1', 'EQ', 'input', '', 16, 'admin', '2024-07-19 11:35:04', '', NULL);
-INSERT INTO `gen_table_column` VALUES (2028, 100, 'price', '出厂单价', 'float', 'Long', 'price', '0', '0', '0', '1', '1', '1', '1', 'EQ', 'input', '', 17, 'admin', '2024-07-19 11:35:04', '', NULL);
+INSERT INTO `gen_table_column` VALUES (2028, 100, 'price', '出厂单价', 'double', 'Long', 'price', '0', '0', '0', '1', '1', '1', '1', 'EQ', 'input', '', 17, 'admin', '2024-07-19 11:35:04', '', NULL);
 INSERT INTO `gen_table_column` VALUES (2029, 100, 'isIncludeTaxFactory', '出厂是否含税', 'int(11)', 'Long', 'isIncludeTaxFactory', '0', '0', '0', '1', '1', '1', '1', 'EQ', 'input', '', 18, 'admin', '2024-07-19 11:35:04', '', NULL);
-INSERT INTO `gen_table_column` VALUES (2030, 100, 'sundryCost', '杂费', 'float', 'Long', 'sundryCost', '0', '0', '0', '1', '1', '1', '1', 'EQ', 'input', '', 19, 'admin', '2024-07-19 11:35:04', '', NULL);
-INSERT INTO `gen_table_column` VALUES (2031, 100, 'paymentFactory', '出厂货款', 'float', 'Long', 'paymentFactory', '0', '0', '0', '1', '1', '1', '1', 'EQ', 'input', '', 20, 'admin', '2024-07-19 11:35:04', '', NULL);
-INSERT INTO `gen_table_column` VALUES (2032, 100, 'paymentUnload', '卸货价', 'float', 'Long', 'paymentUnload', '0', '0', '0', '1', '1', '1', '1', 'EQ', 'input', '', 21, 'admin', '2024-07-19 11:35:04', '', NULL);
+INSERT INTO `gen_table_column` VALUES (2030, 100, 'sundryCost', '杂费', 'double', 'Long', 'sundryCost', '0', '0', '0', '1', '1', '1', '1', 'EQ', 'input', '', 19, 'admin', '2024-07-19 11:35:04', '', NULL);
+INSERT INTO `gen_table_column` VALUES (2031, 100, 'paymentFactory', '出厂货款', 'double', 'Long', 'paymentFactory', '0', '0', '0', '1', '1', '1', '1', 'EQ', 'input', '', 20, 'admin', '2024-07-19 11:35:04', '', NULL);
+INSERT INTO `gen_table_column` VALUES (2032, 100, 'paymentUnload', '卸货价', 'double', 'Long', 'paymentUnload', '0', '0', '0', '1', '1', '1', '1', 'EQ', 'input', '', 21, 'admin', '2024-07-19 11:35:04', '', NULL);
 INSERT INTO `gen_table_column` VALUES (2033, 100, 'isIncludeTaxSale', '销售是否含税', 'int(11)', 'Long', 'isIncludeTaxSale', '0', '0', '0', '1', '1', '1', '1', 'EQ', 'input', '', 22, 'admin', '2024-07-19 11:35:04', '', NULL);
-INSERT INTO `gen_table_column` VALUES (2034, 100, 'payments', '总货款', 'float', 'Long', 'payments', '0', '0', '0', '1', '1', '1', '1', 'EQ', 'input', '', 23, 'admin', '2024-07-19 11:35:04', '', NULL);
-INSERT INTO `gen_table_column` VALUES (2035, 100, 'erro', '误差', 'float', 'Long', 'erro', '0', '0', '0', '1', '1', '1', '1', 'EQ', 'input', '', 24, 'admin', '2024-07-19 11:35:04', '', NULL);
-INSERT INTO `gen_table_column` VALUES (2036, 100, 'tonnage', '吨位', 'float', 'Long', 'tonnage', '0', '0', '0', '1', '1', '1', '1', 'EQ', 'input', '', 25, 'admin', '2024-07-19 11:35:04', '', NULL);
-INSERT INTO `gen_table_column` VALUES (2037, 100, 'landFreightPrice', '陆运费单价', 'float', 'Long', 'landFreightPrice', '0', '0', '0', '1', '1', '1', '1', 'EQ', 'input', '', 26, 'admin', '2024-07-19 11:35:04', '', NULL);
-INSERT INTO `gen_table_column` VALUES (2038, 100, 'landFreight', '陆运费', 'float', 'Long', 'landFreight', '0', '0', '0', '1', '1', '1', '1', 'EQ', 'input', '', 27, 'admin', '2024-07-19 11:35:04', '', NULL);
-INSERT INTO `gen_table_column` VALUES (2039, 100, 'seaFreight', '海运费', 'float', 'Long', 'seaFreight', '0', '0', '0', '1', '1', '1', '1', 'EQ', 'input', '', 28, 'admin', '2024-07-19 11:35:04', '', NULL);
-INSERT INTO `gen_table_column` VALUES (2040, 100, 'freight', '总运费', 'float', 'Long', 'freight', '0', '0', '0', '1', '1', '1', '1', 'EQ', 'input', '', 29, 'admin', '2024-07-19 11:35:04', '', NULL);
-INSERT INTO `gen_table_column` VALUES (2041, 100, 'otherCost', '其他费用', 'float', 'Long', 'otherCost', '0', '0', '0', '1', '1', '1', '1', 'EQ', 'input', '', 30, 'admin', '2024-07-19 11:35:04', '', NULL);
-INSERT INTO `gen_table_column` VALUES (2042, 100, 'profit', '利润', 'float', 'Long', 'profit', '0', '0', '0', '1', '1', '1', '1', 'EQ', 'input', '', 31, 'admin', '2024-07-19 11:35:04', '', NULL);
-INSERT INTO `gen_table_column` VALUES (2043, 100, 'profitNoTax', '不含税利润', 'float', 'Long', 'profitNoTax', '0', '0', '0', '1', '1', '1', '1', 'EQ', 'input', '', 32, 'admin', '2024-07-19 11:35:04', '', NULL);
+INSERT INTO `gen_table_column` VALUES (2034, 100, 'payments', '总货款', 'double', 'Long', 'payments', '0', '0', '0', '1', '1', '1', '1', 'EQ', 'input', '', 23, 'admin', '2024-07-19 11:35:04', '', NULL);
+INSERT INTO `gen_table_column` VALUES (2035, 100, 'erro', '误差', 'double', 'Long', 'erro', '0', '0', '0', '1', '1', '1', '1', 'EQ', 'input', '', 24, 'admin', '2024-07-19 11:35:04', '', NULL);
+INSERT INTO `gen_table_column` VALUES (2036, 100, 'tonnage', '吨位', 'double', 'Long', 'tonnage', '0', '0', '0', '1', '1', '1', '1', 'EQ', 'input', '', 25, 'admin', '2024-07-19 11:35:04', '', NULL);
+INSERT INTO `gen_table_column` VALUES (2037, 100, 'landFreightPrice', '陆运费单价', 'double', 'Long', 'landFreightPrice', '0', '0', '0', '1', '1', '1', '1', 'EQ', 'input', '', 26, 'admin', '2024-07-19 11:35:04', '', NULL);
+INSERT INTO `gen_table_column` VALUES (2038, 100, 'landFreight', '陆运费', 'double', 'Long', 'landFreight', '0', '0', '0', '1', '1', '1', '1', 'EQ', 'input', '', 27, 'admin', '2024-07-19 11:35:04', '', NULL);
+INSERT INTO `gen_table_column` VALUES (2039, 100, 'seaFreight', '海运费', 'double', 'Long', 'seaFreight', '0', '0', '0', '1', '1', '1', '1', 'EQ', 'input', '', 28, 'admin', '2024-07-19 11:35:04', '', NULL);
+INSERT INTO `gen_table_column` VALUES (2040, 100, 'freight', '总运费', 'double', 'Long', 'freight', '0', '0', '0', '1', '1', '1', '1', 'EQ', 'input', '', 29, 'admin', '2024-07-19 11:35:04', '', NULL);
+INSERT INTO `gen_table_column` VALUES (2041, 100, 'otherCost', '其他费用', 'double', 'Long', 'otherCost', '0', '0', '0', '1', '1', '1', '1', 'EQ', 'input', '', 30, 'admin', '2024-07-19 11:35:04', '', NULL);
+INSERT INTO `gen_table_column` VALUES (2042, 100, 'profit', '利润', 'double', 'Long', 'profit', '0', '0', '0', '1', '1', '1', '1', 'EQ', 'input', '', 31, 'admin', '2024-07-19 11:35:04', '', NULL);
+INSERT INTO `gen_table_column` VALUES (2043, 100, 'profitNoTax', '不含税利润', 'double', 'Long', 'profitNoTax', '0', '0', '0', '1', '1', '1', '1', 'EQ', 'input', '', 32, 'admin', '2024-07-19 11:35:04', '', NULL);
 INSERT INTO `gen_table_column` VALUES (2044, 100, 'actualPieces', '实际片数', 'int(11)', 'Long', 'actualPieces', '0', '0', '0', '1', '1', '1', '1', 'EQ', 'input', '', 33, 'admin', '2024-07-19 11:35:04', '', NULL);
-INSERT INTO `gen_table_column` VALUES (2045, 100, 'paymentsWithSundry', '总货款杂费', 'float', 'Long', 'paymentsWithSundry', '0', '0', '0', '1', '1', '1', '1', 'EQ', 'input', '', 34, 'admin', '2024-07-19 11:35:04', '', NULL);
-INSERT INTO `gen_table_column` VALUES (2046, 100, 'additionalFees', '加费', 'float', 'Long', 'additionalFees', '0', '0', '0', '1', '1', '1', '1', 'EQ', 'input', '', 35, 'admin', '2024-07-19 11:35:04', '', NULL);
+INSERT INTO `gen_table_column` VALUES (2045, 100, 'paymentsWithSundry', '总货款杂费', 'double', 'Long', 'paymentsWithSundry', '0', '0', '0', '1', '1', '1', '1', 'EQ', 'input', '', 34, 'admin', '2024-07-19 11:35:04', '', NULL);
+INSERT INTO `gen_table_column` VALUES (2046, 100, 'additionalFees', '加费', 'double', 'Long', 'additionalFees', '0', '0', '0', '1', '1', '1', '1', 'EQ', 'input', '', 35, 'admin', '2024-07-19 11:35:04', '', NULL);
 INSERT INTO `gen_table_column` VALUES (2047, 100, 'storeHouseID', '仓库ID', 'int(11)', 'Long', 'storeHouseID', '0', '0', '0', '1', '1', '1', '1', 'EQ', 'input', '', 36, 'admin', '2024-07-19 11:35:04', '', NULL);
 INSERT INTO `gen_table_column` VALUES (2048, 100, 'storeHouseName', '仓库名称', 'varchar(100)', 'String', 'storeHouseName', '0', '0', '0', '1', '1', '1', '1', 'LIKE', 'input', '', 37, 'admin', '2024-07-19 11:35:04', '', NULL);
 INSERT INTO `gen_table_column` VALUES (2049, 100, 'storeID', '仓库存储的货物ID', 'int(11)', 'Long', 'storeID', '0', '0', '0', '1', '1', '1', '1', 'EQ', 'input', '', 38, 'admin', '2024-07-19 11:35:04', '', NULL);
-INSERT INTO `gen_table_column` VALUES (2050, 100, 'logisticsProfit', '物流利润', 'float', 'Long', 'logisticsProfit', '0', '0', '0', '1', '1', '1', '1', 'EQ', 'input', '', 39, 'admin', '2024-07-19 11:35:04', '', NULL);
-INSERT INTO `gen_table_column` VALUES (2051, 100, 'customerCommission', '客户佣金', 'float', 'Long', 'customerCommission', '0', '0', '0', '1', '1', '1', '1', 'EQ', 'input', '', 40, 'admin', '2024-07-19 11:35:04', '', NULL);
+INSERT INTO `gen_table_column` VALUES (2050, 100, 'logisticsProfit', '物流利润', 'double', 'Long', 'logisticsProfit', '0', '0', '0', '1', '1', '1', '1', 'EQ', 'input', '', 39, 'admin', '2024-07-19 11:35:04', '', NULL);
+INSERT INTO `gen_table_column` VALUES (2051, 100, 'customerCommission', '客户佣金', 'double', 'Long', 'customerCommission', '0', '0', '0', '1', '1', '1', '1', 'EQ', 'input', '', 40, 'admin', '2024-07-19 11:35:04', '', NULL);
 INSERT INTO `gen_table_column` VALUES (2052, 100, 'isAdjusted', '是否被调整单（ 是  否）', 'varchar(10)', 'String', 'isAdjusted', '0', '0', '0', '1', '1', '1', '1', 'EQ', 'input', '', 41, 'admin', '2024-07-19 11:35:04', '', NULL);
 INSERT INTO `gen_table_column` VALUES (2053, 100, 'adjustDate', '调整日期', 'varchar(50)', 'String', 'adjustDate', '0', '0', '0', '1', '1', '1', '1', 'EQ', 'input', '', 42, 'admin', '2024-07-19 11:35:04', '', NULL);
 INSERT INTO `gen_table_column` VALUES (2054, 100, 'cancelFlag', '作废标记', 'int(11)', 'Long', 'cancelFlag', '0', '0', '0', '1', '1', '1', '1', 'EQ', 'input', '', 43, 'admin', '2024-07-19 11:35:04', '', NULL);
@@ -1284,11 +1287,16 @@ CREATE TABLE `goodsorder`  (
   `UserName` varchar(50) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL COMMENT '操作人员姓名',
   `update_time` datetime NULL DEFAULT NULL COMMENT '更新时间',
   PRIMARY KEY (`id`) USING BTREE
-) ENGINE = MyISAM AUTO_INCREMENT = 23849 CHARACTER SET = utf8 COLLATE = utf8_general_ci COMMENT = '订单' ROW_FORMAT = DYNAMIC;
+) ENGINE = MyISAM AUTO_INCREMENT = 23854 CHARACTER SET = utf8 COLLATE = utf8_general_ci COMMENT = '订单' ROW_FORMAT = DYNAMIC;
 
 -- ----------------------------
 -- Records of goodsorder
 -- ----------------------------
+INSERT INTO `goodsorder` VALUES (23849, '00450796-a26e-4f1c-8fa3-c878c6b655a9', '1982-10-20', 'Ut anim magna', 21, 8, NULL, '18195573273', '料消存1此边', 60, 'mollit', '13596554422', '率年白', 23, '1', '1', NULL, NULL, '电手门点极为', NULL, '着志西年部', 'nisi eiusmod ipsum qui amet', NULL, 'dolore cillum', NULL, '1', '2009-04-03', '1', 3, 18, 95, 26, 53, 'voluptate', '1981-03-17 19:20:50', 39, NULL, '2024-07-19 17:37:21');
+INSERT INTO `goodsorder` VALUES (23850, '8cb269c1-2631-4115-9c62-2051c3ffc808', '1982-10-20', 'Ut anim magna', 21, 8, NULL, '18195573273', '料消存此边', 60, 'mollit', '13596554422', '率年白', 23, '1', '1', NULL, NULL, '电手门点极为', NULL, '着志西年部', 'nisi eiusmod ipsum qui amet', NULL, 'dolore cillum', NULL, '1', '2009-04-03', '1', 3, 18, 95, 26, 53, 'voluptate', '1981-03-17 19:20:50', 39, NULL, '2004-01-23 23:54:04');
+INSERT INTO `goodsorder` VALUES (23851, '15c67809-444f-4af9-84ab-ca042171c59f', '1982-10-20', 'Ut anim magna', 21, 8, NULL, '18195573273', '料消存此边', 60, 'mollit', '13596554422', '率年白', 23, '1', '1', NULL, NULL, '电手门点极为', NULL, '着志西年部', 'nisi eiusmod ipsum qui amet', NULL, 'dolore cillum', NULL, '1', '2009-04-03', '1', 3, 18, 95, 26, 53, 'voluptate', '1981-03-17 19:20:50', 39, NULL, '2004-01-23 23:54:04');
+INSERT INTO `goodsorder` VALUES (23852, '8f944461-317a-450e-93b6-2bcacc691c17', '1982-10-20', 'Ut anim magna', 21, 8, NULL, '18195573273', '料消存此边', 60, 'mollit', '13596554422', '率年白', 23, '1', '1', NULL, NULL, '电手门点极为', NULL, '着志西年部', 'nisi eiusmod ipsum qui amet', NULL, 'dolore cillum', NULL, '1', '2009-04-03', '1', 3, 18, 95, 26, 53, 'voluptate', '1981-03-17 19:20:50', 39, NULL, '2004-01-23 23:54:04');
+INSERT INTO `goodsorder` VALUES (23853, '1db10918-652c-4838-aab5-6bcb800c7555', '1982-10-20', 'Ut anim magna', 21, 8, NULL, '18195573273', '料消存此边', 60, 'mollit', '13596554422', '率年白', 23, '1', '1', NULL, NULL, '电手门点极为', NULL, '着志西年部', 'nisi eiusmod ipsum qui amet', NULL, 'dolore cillum', NULL, '1', '2009-04-03', '1', 3, 18, 95, 26, 1, 'voluptate', '2024-07-19 18:21:47', 1, NULL, '2004-01-23 23:54:04');
 
 -- ----------------------------
 -- Table structure for goodsorder_back
@@ -1335,11 +1343,18 @@ CREATE TABLE `goodsorder_back`  (
   `UserName` varchar(50) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL COMMENT '操作人员姓名',
   `update_time` datetime NULL DEFAULT NULL COMMENT '更新时间',
   PRIMARY KEY (`id`) USING BTREE
-) ENGINE = MyISAM AUTO_INCREMENT = 23849 CHARACTER SET = utf8 COLLATE = utf8_general_ci COMMENT = '订单备份信息' ROW_FORMAT = DYNAMIC;
+) ENGINE = MyISAM AUTO_INCREMENT = 23856 CHARACTER SET = utf8 COLLATE = utf8_general_ci COMMENT = '订单备份信息' ROW_FORMAT = DYNAMIC;
 
 -- ----------------------------
 -- Records of goodsorder_back
 -- ----------------------------
+INSERT INTO `goodsorder_back` VALUES (23849, 23849, '00450796-a26e-4f1c-8fa3-c878c6b655a9', '1982-10-20', 'Ut anim magna', 21, 8, NULL, '18195573273', '料消存此边', 60, 'mollit', '13596554422', '率年白', 23, '1', '1', NULL, NULL, '电手门点极为', NULL, '着志西年部', 'nisi eiusmod ipsum qui amet', NULL, 'dolore cillum', NULL, '1', '2009-04-03', '1', 3, 18, 95, 26, 53, 'voluptate', '1981-03-17 19:20:50', 39, NULL, '2004-01-23 23:54:04');
+INSERT INTO `goodsorder_back` VALUES (23850, 23849, '00450796-a26e-4f1c-8fa3-c878c6b655a9', '1982-10-20', 'Ut anim magna', 21, 8, NULL, '18195573273', '料消存此边', 60, 'mollit', '13596554422', '率年白', 23, '1', '1', NULL, NULL, '电手门点极为', NULL, '着志西年部', 'nisi eiusmod ipsum qui amet', NULL, 'dolore cillum', NULL, '1', '2009-04-03', '1', 3, 18, 95, 26, 53, 'voluptate', '1981-03-17 19:20:50', 39, NULL, '2004-01-23 23:54:04');
+INSERT INTO `goodsorder_back` VALUES (23851, 23849, '00450796-a26e-4f1c-8fa3-c878c6b655a9', '1982-10-20', 'Ut anim magna', 21, 8, NULL, '18195573273', '料消存此边', 60, 'mollit', '13596554422', '率年白', 23, '1', '1', NULL, NULL, '电手门点极为', NULL, '着志西年部', 'nisi eiusmod ipsum qui amet', NULL, 'dolore cillum', NULL, '1', '2009-04-03', '1', 3, 18, 95, 26, 53, 'voluptate', '1981-03-17 19:20:50', 39, NULL, '2004-01-23 23:54:04');
+INSERT INTO `goodsorder_back` VALUES (23852, 23849, '00450796-a26e-4f1c-8fa3-c878c6b655a9', '1982-10-20', 'Ut anim magna', 21, 8, NULL, '18195573273', '料消存此边', 60, 'mollit', '13596554422', '率年白', 23, '1', '1', NULL, NULL, '电手门点极为', NULL, '着志西年部', 'nisi eiusmod ipsum qui amet', NULL, 'dolore cillum', NULL, '1', '2009-04-03', '1', 3, 18, 95, 26, 53, 'voluptate', '1981-03-17 19:20:50', 39, NULL, '2004-01-23 23:54:04');
+INSERT INTO `goodsorder_back` VALUES (23853, 23849, '00450796-a26e-4f1c-8fa3-c878c6b655a9', '1982-10-20', 'Ut anim magna', 21, 8, NULL, '18195573273', '料消存此边', 60, 'mollit', '13596554422', '率年白', 23, '1', '1', NULL, NULL, '电手门点极为', NULL, '着志西年部', 'nisi eiusmod ipsum qui amet', NULL, 'dolore cillum', NULL, '1', '2009-04-03', '1', 3, 18, 95, 26, 53, 'voluptate', '1981-03-17 19:20:50', 39, NULL, '2004-01-23 23:54:04');
+INSERT INTO `goodsorder_back` VALUES (23854, 23849, '00450796-a26e-4f1c-8fa3-c878c6b655a9', '1982-10-20', 'Ut anim magna', 21, 8, NULL, '18195573273', '料消存1此边', 60, 'mollit', '13596554422', '率年白', 23, '1', '1', NULL, NULL, '电手门点极为', NULL, '着志西年部', 'nisi eiusmod ipsum qui amet', NULL, 'dolore cillum', NULL, '1', '2009-04-03', '1', 3, 18, 95, 26, 53, 'voluptate', '1981-03-17 19:20:50', 39, NULL, '2024-07-19 17:28:11');
+INSERT INTO `goodsorder_back` VALUES (23855, 23849, '00450796-a26e-4f1c-8fa3-c878c6b655a9', '1982-10-20', 'Ut anim magna', 21, 8, NULL, '18195573273', '料消存1此边', 60, 'mollit', '13596554422', '率年白', 23, '1', '1', NULL, NULL, '电手门点极为', NULL, '着志西年部', 'nisi eiusmod ipsum qui amet', NULL, 'dolore cillum', NULL, '1', '2009-04-03', '1', 3, 18, 95, 26, 53, 'voluptate', '1981-03-17 19:20:50', 39, NULL, '2024-07-19 17:37:12');
 
 -- ----------------------------
 -- Table structure for inventory
@@ -1356,17 +1371,17 @@ CREATE TABLE `inventory`  (
   `levelID` int(11) NULL DEFAULT NULL COMMENT '级别编码',
   `levelName` varchar(80) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL COMMENT '级别名称',
   `countingUnit` varchar(25) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL COMMENT '计量单位',
-  `height` float NULL DEFAULT 0 COMMENT '厚度',
-  `length` float NULL DEFAULT 0 COMMENT '长度',
-  `width` float NULL DEFAULT 0 COMMENT '宽度',
+  `height` double NULL DEFAULT 0 COMMENT '厚度',
+  `length` double NULL DEFAULT 0 COMMENT '长度',
+  `width` double NULL DEFAULT 0 COMMENT '宽度',
   `pieces` int(11) NULL DEFAULT NULL COMMENT '出厂片数',
   `piecesPerPack` int(11) NULL DEFAULT NULL COMMENT '每包片数',
   `packs` int(11) NULL DEFAULT NULL COMMENT '包数',
-  `price` float NULL DEFAULT 0 COMMENT '出厂单价',
+  `price` double NULL DEFAULT 0 COMMENT '出厂单价',
   `isIncludeTaxFactory` int(11) NULL DEFAULT NULL COMMENT '出厂是否含税',
-  `sundryCost` float NULL DEFAULT 0 COMMENT '杂费',
-  `paymentFactory` float NULL DEFAULT 0 COMMENT '出厂货款',
-  `paymentUnload` float NULL DEFAULT 0 COMMENT '卸货价',
+  `sundryCost` double NULL DEFAULT 0 COMMENT '杂费',
+  `paymentFactory` double NULL DEFAULT 0 COMMENT '出厂货款',
+  `paymentUnload` double NULL DEFAULT 0 COMMENT '卸货价',
   `isIncludeTaxSale` int(11) NULL DEFAULT NULL COMMENT '销售是否含税（0不含税，1含税）',
   `payments` varchar(20) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL COMMENT '总货款',
   `landCar_id` int(11) NULL DEFAULT NULL COMMENT '陆运车辆ID',
@@ -1377,20 +1392,20 @@ CREATE TABLE `inventory`  (
   `seaCarNo` varchar(550) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL COMMENT '海运车牌',
   `seaDriverTel` varchar(550) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL COMMENT '海运司机电话',
   `seaDriverName` varchar(255) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL COMMENT '海运司机姓名',
-  `erro` float NULL DEFAULT 0 COMMENT '误差',
-  `tonnage` float NULL DEFAULT 0 COMMENT '吨位',
-  `landFreightPrice` float NULL DEFAULT 0 COMMENT '陆运费单价',
-  `landFreight` float NULL DEFAULT 0 COMMENT '陆运费',
-  `seaFreight` float NULL DEFAULT 0 COMMENT '海运费',
-  `freight` float NULL DEFAULT 0 COMMENT '运费（海运费+陆运费）',
-  `otherCost` float NULL DEFAULT 0 COMMENT '其他费用',
-  `profit` float NULL DEFAULT 0 COMMENT '利润',
-  `profitNoTax` float NULL DEFAULT 0 COMMENT '不含税利润',
+  `erro` double NULL DEFAULT 0 COMMENT '误差',
+  `tonnage` double NULL DEFAULT 0 COMMENT '吨位',
+  `landFreightPrice` double NULL DEFAULT 0 COMMENT '陆运费单价',
+  `landFreight` double NULL DEFAULT 0 COMMENT '陆运费',
+  `seaFreight` double NULL DEFAULT 0 COMMENT '海运费',
+  `freight` double NULL DEFAULT 0 COMMENT '运费（海运费+陆运费）',
+  `otherCost` double NULL DEFAULT 0 COMMENT '其他费用',
+  `profit` double NULL DEFAULT 0 COMMENT '利润',
+  `profitNoTax` double NULL DEFAULT 0 COMMENT '不含税利润',
   `actualPieces` int(11) NULL DEFAULT NULL COMMENT '实际片数',
-  `paymentsWithSundry` float NULL DEFAULT 0 COMMENT '总货款杂费',
-  `additionalFees` float NULL DEFAULT 0 COMMENT '加费',
-  `rebate` float NULL DEFAULT 0 COMMENT '返利金额',
-  `customerCommission` float NULL DEFAULT 0 COMMENT '客户佣金',
+  `paymentsWithSundry` double NULL DEFAULT 0 COMMENT '总货款杂费',
+  `additionalFees` double NULL DEFAULT 0 COMMENT '加费',
+  `rebate` double NULL DEFAULT 0 COMMENT '返利金额',
+  `customerCommission` double NULL DEFAULT 0 COMMENT '客户佣金',
   `comments` varchar(200) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL COMMENT '备注',
   `addtime` varchar(50) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL COMMENT '添加时间',
   `userId` int(11) NULL DEFAULT NULL COMMENT '操作人员ID',
@@ -1421,17 +1436,17 @@ CREATE TABLE `inventory_back`  (
   `levelID` int(11) NULL DEFAULT NULL COMMENT '级别编码',
   `levelName` varchar(80) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL COMMENT '级别名称',
   `countingUnit` varchar(25) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL COMMENT '计量单位',
-  `height` float NULL DEFAULT 0 COMMENT '厚度',
-  `length` float NULL DEFAULT 0 COMMENT '长度',
-  `width` float NULL DEFAULT 0 COMMENT '宽度',
+  `height` double NULL DEFAULT 0 COMMENT '厚度',
+  `length` double NULL DEFAULT 0 COMMENT '长度',
+  `width` double NULL DEFAULT 0 COMMENT '宽度',
   `pieces` int(11) NULL DEFAULT NULL COMMENT '出厂片数',
   `piecesPerPack` int(11) NULL DEFAULT NULL COMMENT '每包片数',
   `packs` int(11) NULL DEFAULT NULL COMMENT '包数',
-  `price` float NULL DEFAULT 0 COMMENT '出厂单价',
+  `price` double NULL DEFAULT 0 COMMENT '出厂单价',
   `isIncludeTaxFactory` int(11) NULL DEFAULT NULL COMMENT '出厂是否含税',
-  `sundryCost` float NULL DEFAULT 0 COMMENT '杂费',
-  `paymentFactory` float NULL DEFAULT 0 COMMENT '出厂货款',
-  `paymentUnload` float NULL DEFAULT 0 COMMENT '卸货价',
+  `sundryCost` double NULL DEFAULT 0 COMMENT '杂费',
+  `paymentFactory` double NULL DEFAULT 0 COMMENT '出厂货款',
+  `paymentUnload` double NULL DEFAULT 0 COMMENT '卸货价',
   `isIncludeTaxSale` int(11) NULL DEFAULT NULL COMMENT '销售是否含税（0不含税，1含税）',
   `payments` varchar(20) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL COMMENT '总货款',
   `landCar_id` int(11) NULL DEFAULT NULL COMMENT '陆运车辆ID',
@@ -1442,20 +1457,20 @@ CREATE TABLE `inventory_back`  (
   `seaCarNo` varchar(550) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL COMMENT '海运车牌',
   `seaDriverTel` varchar(550) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL COMMENT '海运司机电话',
   `seaDriverName` varchar(255) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL COMMENT '海运司机姓名',
-  `erro` float NULL DEFAULT 0 COMMENT '误差',
-  `tonnage` float NULL DEFAULT 0 COMMENT '吨位',
-  `landFreightPrice` float NULL DEFAULT 0 COMMENT '陆运费单价',
-  `landFreight` float NULL DEFAULT 0 COMMENT '陆运费',
-  `seaFreight` float NULL DEFAULT 0 COMMENT '海运费',
-  `freight` float NULL DEFAULT 0 COMMENT '运费（海运费+陆运费）',
-  `otherCost` float NULL DEFAULT 0 COMMENT '其他费用',
-  `profit` float NULL DEFAULT 0 COMMENT '利润',
-  `profitNoTax` float NULL DEFAULT 0 COMMENT '不含税利润',
+  `erro` double NULL DEFAULT 0 COMMENT '误差',
+  `tonnage` double NULL DEFAULT 0 COMMENT '吨位',
+  `landFreightPrice` double NULL DEFAULT 0 COMMENT '陆运费单价',
+  `landFreight` double NULL DEFAULT 0 COMMENT '陆运费',
+  `seaFreight` double NULL DEFAULT 0 COMMENT '海运费',
+  `freight` double NULL DEFAULT 0 COMMENT '运费（海运费+陆运费）',
+  `otherCost` double NULL DEFAULT 0 COMMENT '其他费用',
+  `profit` double NULL DEFAULT 0 COMMENT '利润',
+  `profitNoTax` double NULL DEFAULT 0 COMMENT '不含税利润',
   `actualPieces` int(11) NULL DEFAULT NULL COMMENT '实际片数',
-  `paymentsWithSundry` float NULL DEFAULT 0 COMMENT '总货款杂费',
-  `additionalFees` float NULL DEFAULT 0 COMMENT '加费',
-  `rebate` float NULL DEFAULT 0 COMMENT '返利金额',
-  `customerCommission` float NULL DEFAULT 0 COMMENT '客户佣金',
+  `paymentsWithSundry` double NULL DEFAULT 0 COMMENT '总货款杂费',
+  `additionalFees` double NULL DEFAULT 0 COMMENT '加费',
+  `rebate` double NULL DEFAULT 0 COMMENT '返利金额',
+  `customerCommission` double NULL DEFAULT 0 COMMENT '客户佣金',
   `comments` varchar(200) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL COMMENT '备注',
   `addtime` varchar(50) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL COMMENT '添加时间',
   `userId` int(11) NULL DEFAULT NULL COMMENT '操作人员ID',
@@ -1479,7 +1494,7 @@ CREATE TABLE `lendmoney`  (
   `futuresNO` varchar(50) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL COMMENT '借出款编号（UUID）',
   `futuresMarginCompany` varchar(80) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL COMMENT '期货保证金公司',
   `target` varchar(50) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL COMMENT '对象(员工、外面公司在我公司借款)',
-  `moneyAmount` float NULL DEFAULT 0 COMMENT '保证金金额',
+  `moneyAmount` double NULL DEFAULT 0 COMMENT '保证金金额',
   `targetAcountsName` varchar(80) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL COMMENT '对方账户',
   `targetBankNo` varchar(80) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL COMMENT '对方账号',
   `targetBankName` varchar(80) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL COMMENT '对方开户行',
@@ -1510,7 +1525,7 @@ CREATE TABLE `offsetting`  (
   `OffsetNO` varchar(50) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL COMMENT '冲抵编号（UUID）',
   `operateDate` varchar(50) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL COMMENT '操作时间',
   `operateType` varchar(50) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL COMMENT '冲抵类型（收入、支出）',
-  `moneyAmount` float NULL DEFAULT 0 COMMENT '金额',
+  `moneyAmount` double NULL DEFAULT 0 COMMENT '金额',
   `company` varchar(150) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL COMMENT '公司',
   `company_id` int(11) NULL DEFAULT NULL COMMENT '公司ID',
   `companyType` int(11) NULL DEFAULT 0 COMMENT '公司类型（1、客户 2、供应商）',
@@ -1594,36 +1609,36 @@ CREATE TABLE `orderdetail`  (
   `levelID` int(11) NULL DEFAULT NULL COMMENT '级别编码',
   `levelName` varchar(80) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL COMMENT '级别名称',
   `countingUnit` varchar(25) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL COMMENT '计量单位',
-  `height` float NULL DEFAULT 0 COMMENT '厚度',
-  `length` float NULL DEFAULT 0 COMMENT '长度',
-  `width` float NULL DEFAULT 0 COMMENT '宽度',
+  `height` double NULL DEFAULT 0 COMMENT '厚度',
+  `length` double NULL DEFAULT 0 COMMENT '长度',
+  `width` double NULL DEFAULT 0 COMMENT '宽度',
   `pieces` int(11) NULL DEFAULT NULL COMMENT '出厂片数',
   `piecesPerPack` int(11) NULL DEFAULT NULL COMMENT '每包片数',
   `packs` int(11) NULL DEFAULT NULL COMMENT '包数',
-  `price` float NULL DEFAULT NULL COMMENT '出厂单价',
+  `price` double NULL DEFAULT NULL COMMENT '出厂单价',
   `isIncludeTaxFactory` int(11) NULL DEFAULT NULL COMMENT '出厂是否含税',
-  `sundryCost` float NULL DEFAULT NULL COMMENT '杂费',
-  `paymentFactory` float NULL DEFAULT NULL COMMENT '出厂货款',
-  `paymentUnload` float NULL DEFAULT NULL COMMENT '卸货价',
+  `sundryCost` double NULL DEFAULT NULL COMMENT '杂费',
+  `paymentFactory` double NULL DEFAULT NULL COMMENT '出厂货款',
+  `paymentUnload` double NULL DEFAULT NULL COMMENT '卸货价',
   `isIncludeTaxSale` int(11) NULL DEFAULT NULL COMMENT '销售是否含税',
-  `payments` float NULL DEFAULT NULL COMMENT '总货款',
-  `erro` float NULL DEFAULT 0 COMMENT '误差',
-  `tonnage` float NULL DEFAULT 0 COMMENT '吨位',
-  `landFreightPrice` float NULL DEFAULT 0 COMMENT '陆运费单价',
-  `landFreight` float NULL DEFAULT 0 COMMENT '陆运费',
-  `seaFreight` float NULL DEFAULT 0 COMMENT '海运费',
-  `freight` float NULL DEFAULT 0 COMMENT '总运费',
-  `otherCost` float NULL DEFAULT NULL COMMENT '其他费用',
-  `profit` float NULL DEFAULT NULL COMMENT '利润',
-  `profitNoTax` float NULL DEFAULT NULL COMMENT '不含税利润',
+  `payments` double NULL DEFAULT NULL COMMENT '总货款',
+  `erro` double NULL DEFAULT 0 COMMENT '误差',
+  `tonnage` double NULL DEFAULT 0 COMMENT '吨位',
+  `landFreightPrice` double NULL DEFAULT 0 COMMENT '陆运费单价',
+  `landFreight` double NULL DEFAULT 0 COMMENT '陆运费',
+  `seaFreight` double NULL DEFAULT 0 COMMENT '海运费',
+  `freight` double NULL DEFAULT 0 COMMENT '总运费',
+  `otherCost` double NULL DEFAULT NULL COMMENT '其他费用',
+  `profit` double NULL DEFAULT NULL COMMENT '利润',
+  `profitNoTax` double NULL DEFAULT NULL COMMENT '不含税利润',
   `actualPieces` int(11) NULL DEFAULT NULL COMMENT '实际片数',
-  `paymentsWithSundry` float NULL DEFAULT 0 COMMENT '总货款杂费',
-  `additionalFees` float NULL DEFAULT 0 COMMENT '加费',
+  `paymentsWithSundry` double NULL DEFAULT 0 COMMENT '总货款杂费',
+  `additionalFees` double NULL DEFAULT 0 COMMENT '加费',
   `storeHouseID` int(11) NULL DEFAULT 0 COMMENT '仓库ID',
   `storeHouseName` varchar(100) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL COMMENT '仓库名称',
   `storeID` int(11) NULL DEFAULT 0 COMMENT '仓库存储的货物ID',
-  `logisticsProfit` float NULL DEFAULT 0 COMMENT '物流利润',
-  `customerCommission` float NULL DEFAULT 0 COMMENT '客户佣金',
+  `logisticsProfit` double NULL DEFAULT 0 COMMENT '物流利润',
+  `customerCommission` double NULL DEFAULT 0 COMMENT '客户佣金',
   `isAdjusted` varchar(10) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL COMMENT '是否被调整单（ 是  否）',
   `adjustDate` varchar(50) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL COMMENT '调整日期',
   `cancelFlag` int(11) NULL DEFAULT 0 COMMENT '作废标记',
@@ -1633,11 +1648,16 @@ CREATE TABLE `orderdetail`  (
   `UserName` varchar(50) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL COMMENT '操作人员姓名',
   `update_time` datetime NULL DEFAULT NULL COMMENT '更新时间',
   PRIMARY KEY (`id`) USING BTREE
-) ENGINE = InnoDB AUTO_INCREMENT = 62859 CHARACTER SET = utf8 COLLATE = utf8_general_ci COMMENT = '订单详情' ROW_FORMAT = DYNAMIC;
+) ENGINE = InnoDB AUTO_INCREMENT = 62864 CHARACTER SET = utf8 COLLATE = utf8_general_ci COMMENT = '订单详情' ROW_FORMAT = DYNAMIC;
 
 -- ----------------------------
 -- Records of orderdetail
 -- ----------------------------
+INSERT INTO `orderdetail` VALUES (62859, '00450796-a26e-4f1c-8fa3-c878c6b655a9', '1987-12-20', 'incididunt minim id', 6, NULL, 88, 16, '格厂战南', NULL, 25, 12, 100, 91, 26, 52, 43, 71, 19, 99, 92, 19, 63, 61, 3, 85, 9, 68, 72, 37, 89, 76, 98, 92, 52, 61, '路影林', 90, 43, 56, '1', '2022-05-07', 56, NULL, '2002-07-14 15:11:50', 52, NULL, '2017-10-18 14:00:44');
+INSERT INTO `orderdetail` VALUES (62860, '8cb269c1-2631-4115-9c62-2051c3ffc808', '1987-12-20', 'incididunt minim id', 6, NULL, 88, 16, '格厂战南', NULL, 25, 12, 100, 91, 26, 52, 43, 71, 19, 99, 92, 19, 63, 61, 3, 85, 9, 68, 72, 37, 89, 76, 98, 92, 52, 61, '路影林', 90, 43, 56, '1', '2022-05-07', 56, NULL, '2002-07-14 15:11:50', 52, NULL, '2017-10-18 14:00:44');
+INSERT INTO `orderdetail` VALUES (62861, '15c67809-444f-4af9-84ab-ca042171c59f', '1987-12-20', 'incididunt minim id', 6, NULL, 88, 16, '格厂战南', NULL, 25, 12, 100, 91, 26, 52, 43, 71, 19, 99, 92, 19, 63, 61, 3, 85, 9, 68, 72, 37, 89, 76, 98, 92, 52, 61, '路影林', 90, 43, 56, '1', '2022-05-07', 56, NULL, '2002-07-14 15:11:50', 52, NULL, '2017-10-18 14:00:44');
+INSERT INTO `orderdetail` VALUES (62862, '8f944461-317a-450e-93b6-2bcacc691c17', '1987-12-20', 'incididunt minim id', 6, NULL, 88, 16, '格厂战南', NULL, 25, 12, 100, 91, 26, 52, 43, 71, 19, 99, 92, 19, 63, 61, 3, 85, 9, 68, 72, 37, 89, 76, 98, 92, 52, 61, '路影林', 90, 43, 56, '1', '2022-05-07', 56, NULL, '2002-07-14 15:11:50', 52, NULL, '2017-10-18 14:00:44');
+INSERT INTO `orderdetail` VALUES (62863, '1db10918-652c-4838-aab5-6bcb800c7555', '1987-12-20', 'incididunt minim id', 6, NULL, 88, 16, '格厂战南', NULL, 25, 12, 100, 91, 26, 52, 43, 71, 19, 99, 92, 19, 63, 61, 3, 85, 9, 68, 72, 37, 89, 76, 98, 92, 52, 61, '路影林', 90, 43, 56, '1', '2022-05-07', 1, NULL, '2002-07-14 15:11:50', 52, NULL, '2017-10-18 14:00:44');
 
 -- ----------------------------
 -- Table structure for orderdetail_back
@@ -1655,36 +1675,36 @@ CREATE TABLE `orderdetail_back`  (
   `levelID` int(11) NULL DEFAULT NULL COMMENT '级别编码',
   `levelName` varchar(80) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL COMMENT '级别名称',
   `countingUnit` varchar(25) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL COMMENT '计量单位',
-  `height` float NULL DEFAULT 0 COMMENT '厚度',
-  `length` float NULL DEFAULT 0 COMMENT '长度',
-  `width` float NULL DEFAULT 0 COMMENT '宽度',
+  `height` double NULL DEFAULT 0 COMMENT '厚度',
+  `length` double NULL DEFAULT 0 COMMENT '长度',
+  `width` double NULL DEFAULT 0 COMMENT '宽度',
   `pieces` int(11) NULL DEFAULT NULL COMMENT '出厂片数',
   `piecesPerPack` int(11) NULL DEFAULT NULL COMMENT '每包片数',
   `packs` int(11) NULL DEFAULT NULL COMMENT '包数',
-  `price` float NULL DEFAULT NULL COMMENT '出厂单价',
+  `price` double NULL DEFAULT NULL COMMENT '出厂单价',
   `isIncludeTaxFactory` int(11) NULL DEFAULT NULL COMMENT '出厂是否含税',
-  `sundryCost` float NULL DEFAULT NULL COMMENT '杂费',
-  `paymentFactory` float NULL DEFAULT NULL COMMENT '出厂货款',
-  `paymentUnload` float NULL DEFAULT NULL COMMENT '卸货价',
+  `sundryCost` double NULL DEFAULT NULL COMMENT '杂费',
+  `paymentFactory` double NULL DEFAULT NULL COMMENT '出厂货款',
+  `paymentUnload` double NULL DEFAULT NULL COMMENT '卸货价',
   `isIncludeTaxSale` int(11) NULL DEFAULT NULL COMMENT '销售是否含税',
-  `payments` float NULL DEFAULT NULL COMMENT '总货款',
-  `erro` float NULL DEFAULT 0 COMMENT '误差',
-  `tonnage` float NULL DEFAULT 0 COMMENT '吨位',
-  `landFreightPrice` float NULL DEFAULT 0 COMMENT '陆运费单价',
-  `landFreight` float NULL DEFAULT 0 COMMENT '陆运费',
-  `seaFreight` float NULL DEFAULT 0 COMMENT '海运费',
-  `freight` float NULL DEFAULT 0 COMMENT '总运费',
-  `otherCost` float NULL DEFAULT NULL COMMENT '其他费用',
-  `profit` float NULL DEFAULT NULL COMMENT '利润',
-  `profitNoTax` float NULL DEFAULT NULL COMMENT '不含税利润',
+  `payments` double NULL DEFAULT NULL COMMENT '总货款',
+  `erro` double NULL DEFAULT 0 COMMENT '误差',
+  `tonnage` double NULL DEFAULT 0 COMMENT '吨位',
+  `landFreightPrice` double NULL DEFAULT 0 COMMENT '陆运费单价',
+  `landFreight` double NULL DEFAULT 0 COMMENT '陆运费',
+  `seaFreight` double NULL DEFAULT 0 COMMENT '海运费',
+  `freight` double NULL DEFAULT 0 COMMENT '总运费',
+  `otherCost` double NULL DEFAULT NULL COMMENT '其他费用',
+  `profit` double NULL DEFAULT NULL COMMENT '利润',
+  `profitNoTax` double NULL DEFAULT NULL COMMENT '不含税利润',
   `actualPieces` int(11) NULL DEFAULT NULL COMMENT '实际片数',
-  `paymentsWithSundry` float NULL DEFAULT 0 COMMENT '总货款杂费',
-  `additionalFees` float NULL DEFAULT 0 COMMENT '加费',
+  `paymentsWithSundry` double NULL DEFAULT 0 COMMENT '总货款杂费',
+  `additionalFees` double NULL DEFAULT 0 COMMENT '加费',
   `storeHouseID` int(11) NULL DEFAULT 0 COMMENT '仓库ID',
   `storeHouseName` varchar(100) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL COMMENT '仓库名称',
   `storeID` int(11) NULL DEFAULT 0 COMMENT '仓库存储的货物ID',
-  `logisticsProfit` float NULL DEFAULT 0 COMMENT '物流利润',
-  `customerCommission` float NULL DEFAULT 0 COMMENT '客户佣金',
+  `logisticsProfit` double NULL DEFAULT 0 COMMENT '物流利润',
+  `customerCommission` double NULL DEFAULT 0 COMMENT '客户佣金',
   `isAdjusted` varchar(10) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL COMMENT '是否被调整单（ 是  否）',
   `adjustDate` varchar(50) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL COMMENT '调整日期',
   `cancelFlag` int(11) NULL DEFAULT 0 COMMENT '作废标记',
@@ -1694,11 +1714,14 @@ CREATE TABLE `orderdetail_back`  (
   `UserName` varchar(50) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL COMMENT '操作人员姓名',
   `update_time` datetime NULL DEFAULT NULL COMMENT '更新时间',
   PRIMARY KEY (`id`) USING BTREE
-) ENGINE = InnoDB AUTO_INCREMENT = 62859 CHARACTER SET = utf8 COLLATE = utf8_general_ci COMMENT = '订单详情备份' ROW_FORMAT = DYNAMIC;
+) ENGINE = InnoDB AUTO_INCREMENT = 62866 CHARACTER SET = utf8 COLLATE = utf8_general_ci COMMENT = '订单详情备份' ROW_FORMAT = DYNAMIC;
 
 -- ----------------------------
 -- Records of orderdetail_back
 -- ----------------------------
+INSERT INTO `orderdetail_back` VALUES (62863, 62859, '00450796-a26e-4f1c-8fa3-c878c6b655a9', '1987-12-20', 'incididunt minim id', 6, NULL, 88, 16, '格厂战南', NULL, 25, 12, 100, 91, 26, 52, 43, 71, 19, 99, 92, 19, 63, 61, 3, 85, 9, 68, 72, 37, 89, 76, 98, 92, 52, 61, '路影林', 90, 43, 56, '1', '2022-05-07', 56, NULL, '2002-07-14 15:11:50', 52, NULL, '2017-10-18 14:00:44');
+INSERT INTO `orderdetail_back` VALUES (62864, 62859, '00450796-a26e-4f1c-8fa3-c878c6b655a9', '1987-12-20', 'incididunt minim id', 6, NULL, 88, 16, '格厂战南', NULL, 25, 12, 100, 91, 26, 52, 43, 71, 19, 99, 92, 19, 63, 61, 3, 85, 9, 68, 72, 37, 89, 76, 98, 92, 52, 61, '路影林', 90, 43, 56, '1', '2022-05-07', 56, NULL, '2002-07-14 15:11:50', 52, NULL, '2017-10-18 14:00:44');
+INSERT INTO `orderdetail_back` VALUES (62865, 62859, '00450796-a26e-4f1c-8fa3-c878c6b655a9', '1987-12-20', 'incididunt minim id', 6, NULL, 88, 16, '格厂战南', NULL, 25, 12, 100, 91, 26, 52, 43, 71, 19, 99, 92, 19, 63, 61, 3, 85, 9, 68, 72, 37, 89, 76, 98, 92, 52, 61, '路影林', 90, 43, 56, '1', '2022-05-07', 56, NULL, '2002-07-14 15:11:50', 52, NULL, '2017-10-18 14:00:44');
 
 -- ----------------------------
 -- Table structure for orderfreight
@@ -1749,15 +1772,15 @@ CREATE TABLE `orderinvoice`  (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `ordersNo` varchar(50) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL COMMENT '订单编号（UUID）',
   `invoiceDate` varchar(55) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL COMMENT '开票日期',
-  `invoiceType` float NULL DEFAULT 0 COMMENT '开票类型（购入、卖出）',
-  `invoiceAmount` float NULL DEFAULT 0 COMMENT '应开票金额',
+  `invoiceType` double NULL DEFAULT 0 COMMENT '开票类型（购入、卖出）',
+  `invoiceAmount` double NULL DEFAULT 0 COMMENT '应开票金额',
   `companyType` varchar(20) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL COMMENT '公司类别（客户、供应商）',
   `companyName` varchar(120) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL COMMENT '公司名称',
   `companyID` int(11) NULL DEFAULT NULL COMMENT '公司名称',
   `invoiceCompanyName` varchar(120) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL COMMENT '票据单位名称',
-  `actualInvoiceAmount` float NULL DEFAULT 0 COMMENT '实际开票金额',
-  `ticketPoint` float NULL DEFAULT 0 COMMENT '票点',
-  `ticketPointAmount` float NULL DEFAULT 0 COMMENT '票点金额（实际开票金额*票点）',
+  `actualInvoiceAmount` double NULL DEFAULT 0 COMMENT '实际开票金额',
+  `ticketPoint` double NULL DEFAULT 0 COMMENT '票点',
+  `ticketPointAmount` double NULL DEFAULT 0 COMMENT '票点金额（实际开票金额*票点）',
   `comments` varchar(200) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL COMMENT '备注',
   `addtime` varchar(50) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL COMMENT '添加时间',
   `userId` int(11) NULL DEFAULT NULL COMMENT '操作人员ID',
@@ -1781,7 +1804,7 @@ CREATE TABLE `payment`  (
   `payNO` varchar(50) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL COMMENT '付款编号（UUID）',
   `fundsDate` varchar(50) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL COMMENT '日期',
   `payType` varchar(55) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL COMMENT '支付类型',
-  `moneyAmount` float NULL DEFAULT 0 COMMENT '金额',
+  `moneyAmount` double NULL DEFAULT 0 COMMENT '金额',
   `selfAcountsName` varchar(80) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL COMMENT '己方户名',
   `selfBankNo` varchar(80) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL COMMENT '己方账号',
   `selfBankName` varchar(150) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL COMMENT '己方开户行',
@@ -1816,10 +1839,10 @@ CREATE TABLE `productlevel`  (
   `levelName` varchar(80) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL COMMENT '级别名称',
   `categoryNo` int(11) NULL DEFAULT 0 COMMENT '分类编号',
   `categoryName` varchar(80) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL COMMENT '分类名称',
-  `height` float NULL DEFAULT 0 COMMENT '厚度',
-  `length` float NULL DEFAULT 0 COMMENT '长度',
-  `width` float NULL DEFAULT 0 COMMENT '宽度',
-  `tonnage` float NULL DEFAULT 0 COMMENT '吨位',
+  `height` double NULL DEFAULT 0 COMMENT '厚度',
+  `length` double NULL DEFAULT 0 COMMENT '长度',
+  `width` double NULL DEFAULT 0 COMMENT '宽度',
+  `tonnage` double NULL DEFAULT 0 COMMENT '吨位',
   `addtime` varchar(50) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL COMMENT '添加时间',
   `userId` int(11) NULL DEFAULT NULL COMMENT '操作人员ID',
   `UserName` varchar(50) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL COMMENT '操作人员姓名',
@@ -1840,7 +1863,7 @@ CREATE TABLE `rebate`  (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `ordersNo` varchar(50) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL COMMENT '订单编号（UUID）',
   `rebateDate` varchar(50) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL COMMENT '日期',
-  `rebate` float NULL DEFAULT 0 COMMENT '金额',
+  `rebate` double NULL DEFAULT 0 COMMENT '金额',
   `rebateType` varchar(80) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL COMMENT '返利类型（返利、降价、售后质量赔偿）',
   `inAcountsName` varchar(80) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL COMMENT '收款户名',
   `inBankNo` varchar(80) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL COMMENT '收款账号',
@@ -1870,7 +1893,7 @@ CREATE TABLE `recovermoney`  (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `futuresNO` varchar(50) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL COMMENT '借出款编号（UUID）',
   `recoverNO` varchar(50) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL COMMENT '还款编号（UUID）',
-  `moneyAmount` float NULL DEFAULT 0 COMMENT '收回金额',
+  `moneyAmount` double NULL DEFAULT 0 COMMENT '收回金额',
   `recoverDate` varchar(50) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL COMMENT '收回日期',
   `acountsName` varchar(80) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL COMMENT '收回账户',
   `bankNo` varchar(80) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL COMMENT '收回账号',
@@ -1895,8 +1918,8 @@ CREATE TABLE `repayment`  (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `loanNO` varchar(50) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL COMMENT '贷款编号（UUID）',
   `payNO` varchar(50) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL COMMENT '还款编号（UUID）',
-  `moneyAmount` float NULL DEFAULT 0 COMMENT '还（本）金额',
-  `ratio` float NULL DEFAULT 0 COMMENT '付息（金额）',
+  `moneyAmount` double NULL DEFAULT 0 COMMENT '还（本）金额',
+  `ratio` double NULL DEFAULT 0 COMMENT '付息（金额）',
   `payDate` varchar(50) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL COMMENT '还款日期',
   `acountsName` varchar(80) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL COMMENT '还款账户',
   `bankNo` varchar(80) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL COMMENT '还款账号',
@@ -1919,25 +1942,25 @@ CREATE TABLE `repayment`  (
 DROP TABLE IF EXISTS `socialinsurance`;
 CREATE TABLE `socialinsurance`  (
   `id` int(11) NOT NULL AUTO_INCREMENT,
-  `basicSocialInsurance` float NULL DEFAULT 0 COMMENT '社保缴纳基数',
-  `basicHousingFund` float NULL DEFAULT 0 COMMENT '公积金基数',
+  `basicSocialInsurance` double NULL DEFAULT 0 COMMENT '社保缴纳基数',
+  `basicHousingFund` double NULL DEFAULT 0 COMMENT '公积金基数',
   `depName` varchar(50) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL COMMENT '部门',
   `employeeName` varchar(15) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL COMMENT '姓名',
   `employeeID` varchar(15) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL COMMENT '人员编号',
   `insuranceDate` varchar(50) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL COMMENT '缴费时间',
   `isRecruiting` varchar(10) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL COMMENT '是否增员（是，否）',
   `isDepletion` varchar(10) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL COMMENT '是否减员',
-  `healthySecuritySelf` float NULL DEFAULT 0 COMMENT '基本医疗保险-个人',
-  `healthySecurityCompany` float NULL DEFAULT 0 COMMENT '基本医疗保险-公司',
-  `injuryInsurance` float NULL DEFAULT 0 COMMENT '工伤保险',
-  `unemploymentSecuritySelf` float NULL DEFAULT 0 COMMENT '失业保险-个人',
-  `unemploymentSecurityCompany` float NULL DEFAULT 0 COMMENT '失业保险-公司',
-  `retirementSecuritySelf` float NULL DEFAULT 0 COMMENT '养老保险-个人',
-  `retirementSecurityCompany` float NULL DEFAULT 0 COMMENT '养老保险-公司',
-  `largeMedicalSecuritySelf` float NULL DEFAULT 0 COMMENT '大额医保-个人',
-  `largeMedicalSecurityCompany` float NULL DEFAULT 0 COMMENT '大额医保-公司',
-  `housingFundSelf` float NULL DEFAULT 0 COMMENT '公积金-个人',
-  `housingFundCompany` float NULL DEFAULT 0 COMMENT '公积金-公司',
+  `healthySecuritySelf` double NULL DEFAULT 0 COMMENT '基本医疗保险-个人',
+  `healthySecurityCompany` double NULL DEFAULT 0 COMMENT '基本医疗保险-公司',
+  `injuryInsurance` double NULL DEFAULT 0 COMMENT '工伤保险',
+  `unemploymentSecuritySelf` double NULL DEFAULT 0 COMMENT '失业保险-个人',
+  `unemploymentSecurityCompany` double NULL DEFAULT 0 COMMENT '失业保险-公司',
+  `retirementSecuritySelf` double NULL DEFAULT 0 COMMENT '养老保险-个人',
+  `retirementSecurityCompany` double NULL DEFAULT 0 COMMENT '养老保险-公司',
+  `largeMedicalSecuritySelf` double NULL DEFAULT 0 COMMENT '大额医保-个人',
+  `largeMedicalSecurityCompany` double NULL DEFAULT 0 COMMENT '大额医保-公司',
+  `housingFundSelf` double NULL DEFAULT 0 COMMENT '公积金-个人',
+  `housingFundCompany` double NULL DEFAULT 0 COMMENT '公积金-公司',
   `comments` varchar(200) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL COMMENT '备注',
   `addtime` varchar(50) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL COMMENT '添加时间',
   `userId` int(11) NULL DEFAULT NULL COMMENT '操作人员ID',
@@ -2183,7 +2206,7 @@ CREATE TABLE `sys_logininfor`  (
   PRIMARY KEY (`info_id`) USING BTREE,
   INDEX `idx_sys_logininfor_s`(`STATUS`) USING BTREE,
   INDEX `idx_sys_logininfor_lt`(`login_time`) USING BTREE
-) ENGINE = InnoDB AUTO_INCREMENT = 105 CHARACTER SET = utf8 COLLATE = utf8_general_ci COMMENT = '系统访问记录' ROW_FORMAT = DYNAMIC;
+) ENGINE = InnoDB AUTO_INCREMENT = 118 CHARACTER SET = utf8 COLLATE = utf8_general_ci COMMENT = '系统访问记录' ROW_FORMAT = DYNAMIC;
 
 -- ----------------------------
 -- Records of sys_logininfor
@@ -2193,6 +2216,19 @@ INSERT INTO `sys_logininfor` VALUES (101, 'admin', '127.0.0.1', '内网IP', 'Chr
 INSERT INTO `sys_logininfor` VALUES (102, 'admin', '127.0.0.1', '内网IP', 'Chrome 12', 'Windows 10', '1', '用户不存在/密码错误', '2024-07-19 10:22:17');
 INSERT INTO `sys_logininfor` VALUES (103, 'admin', '127.0.0.1', '内网IP', 'Chrome 12', 'Windows 10', '0', '登录成功', '2024-07-19 10:29:35');
 INSERT INTO `sys_logininfor` VALUES (104, 'admin', '127.0.0.1', '内网IP', 'Chrome 12', 'Windows 10', '0', '登录成功', '2024-07-19 11:33:38');
+INSERT INTO `sys_logininfor` VALUES (105, 'Adminw', '127.0.0.1', '内网IP', 'Chrome 12', 'Windows 10', '0', '登录成功', '2024-07-19 16:33:43');
+INSERT INTO `sys_logininfor` VALUES (106, 'Adminw', '127.0.0.1', '内网IP', 'Unknown', 'Unknown', '0', '登录成功', '2024-07-19 17:00:51');
+INSERT INTO `sys_logininfor` VALUES (107, 'admin', '127.0.0.1', '内网IP', 'Chrome 12', 'Windows 10', '0', '登录成功', '2024-07-19 17:29:44');
+INSERT INTO `sys_logininfor` VALUES (108, NULL, '127.0.0.1', '内网IP', 'Chrome 12', 'Windows 10', '0', '退出成功', '2024-07-19 17:39:19');
+INSERT INTO `sys_logininfor` VALUES (109, 'Adminw', '127.0.0.1', '内网IP', 'Chrome 12', 'Windows 10', '0', '登录成功', '2024-07-19 17:39:24');
+INSERT INTO `sys_logininfor` VALUES (110, 'Adminw', '127.0.0.1', '内网IP', 'Unknown', 'Unknown', '0', '登录成功', '2024-07-19 18:12:01');
+INSERT INTO `sys_logininfor` VALUES (111, 'adminw', '127.0.0.1', '内网IP', 'Chrome 12', 'Windows 10', '1', '用户不存在/密码错误', '2024-07-19 20:22:48');
+INSERT INTO `sys_logininfor` VALUES (112, 'adminw', '127.0.0.1', '内网IP', 'Chrome 12', 'Windows 10', '1', '用户不存在/密码错误', '2024-07-19 20:22:53');
+INSERT INTO `sys_logininfor` VALUES (113, 'adminw', '127.0.0.1', '内网IP', 'Chrome 12', 'Windows 10', '1', '用户不存在/密码错误', '2024-07-19 20:22:58');
+INSERT INTO `sys_logininfor` VALUES (114, 'Adminw', '127.0.0.1', '内网IP', 'Chrome 12', 'Windows 10', '0', '登录成功', '2024-07-19 20:23:36');
+INSERT INTO `sys_logininfor` VALUES (115, 'Adminw', '127.0.0.1', '内网IP', 'Chrome 12', 'Windows 10', '0', '登录成功', '2024-07-19 20:31:22');
+INSERT INTO `sys_logininfor` VALUES (116, 'Adminw', '127.0.0.1', '内网IP', 'Unknown', 'Unknown', '0', '登录成功', '2024-07-19 21:37:44');
+INSERT INTO `sys_logininfor` VALUES (117, 'Adminw', '127.0.0.1', '内网IP', 'Unknown', 'Unknown', '0', '登录成功', '2024-07-20 07:47:04');
 
 -- ----------------------------
 -- Table structure for sys_menu
@@ -2528,7 +2564,7 @@ CREATE TABLE `sys_oper_log`  (
   INDEX `idx_sys_oper_log_bt`(`business_type`) USING BTREE,
   INDEX `idx_sys_oper_log_s`(`STATUS`) USING BTREE,
   INDEX `idx_sys_oper_log_ot`(`oper_time`) USING BTREE
-) ENGINE = InnoDB AUTO_INCREMENT = 109 CHARACTER SET = utf8 COLLATE = utf8_general_ci COMMENT = '操作日志记录' ROW_FORMAT = DYNAMIC;
+) ENGINE = InnoDB AUTO_INCREMENT = 127 CHARACTER SET = utf8 COLLATE = utf8_general_ci COMMENT = '操作日志记录' ROW_FORMAT = DYNAMIC;
 
 -- ----------------------------
 -- Records of sys_oper_log
@@ -2542,6 +2578,24 @@ INSERT INTO `sys_oper_log` VALUES (105, '代码生成', 6, 'com.ruoyi.generator.
 INSERT INTO `sys_oper_log` VALUES (106, '代码生成', 6, 'com.ruoyi.generator.controller.GenController.importTableSave()', 'POST', 1, 'admin', NULL, '/tool/gen/importTable', '127.0.0.1', '内网IP', '{\"tables\":\"orderdetail\"}', '{\"msg\":\"操作成功\",\"code\":200}', 0, NULL, '2024-07-19 11:35:04', 181);
 INSERT INTO `sys_oper_log` VALUES (107, '代码生成', 2, 'com.ruoyi.generator.controller.GenController.editSave()', 'PUT', 1, 'admin', NULL, '/tool/gen', '127.0.0.1', '内网IP', '{\"businessName\":\"goodsorder\",\"className\":\"Goodsorder\",\"columns\":[{\"capJavaField\":\"Id\",\"columnId\":1974,\"columnName\":\"id\",\"columnType\":\"int(11)\",\"createBy\":\"admin\",\"createTime\":\"2024-07-19 11:34:37\",\"dictType\":\"\",\"edit\":false,\"htmlType\":\"input\",\"increment\":true,\"insert\":true,\"isIncrement\":\"1\",\"isInsert\":\"1\",\"isPk\":\"1\",\"isRequired\":\"0\",\"javaField\":\"id\",\"javaType\":\"Long\",\"list\":false,\"params\":{},\"pk\":true,\"query\":false,\"queryType\":\"EQ\",\"required\":false,\"sort\":1,\"superColumn\":false,\"tableId\":99,\"updateBy\":\"\",\"usableColumn\":false},{\"capJavaField\":\"OrdersNo\",\"columnComment\":\"订单编号（UUID）\",\"columnId\":1975,\"columnName\":\"ordersNo\",\"columnType\":\"varchar(50)\",\"createBy\":\"admin\",\"createTime\":\"2024-07-19 11:34:37\",\"dictType\":\"\",\"edit\":true,\"htmlType\":\"input\",\"increment\":false,\"insert\":true,\"isEdit\":\"1\",\"isIncrement\":\"0\",\"isInsert\":\"1\",\"isList\":\"1\",\"isPk\":\"0\",\"isQuery\":\"1\",\"isRequired\":\"0\",\"javaField\":\"ordersNo\",\"javaType\":\"String\",\"list\":true,\"params\":{},\"pk\":false,\"query\":true,\"queryType\":\"EQ\",\"required\":false,\"sort\":2,\"superColumn\":false,\"tableId\":99,\"updateBy\":\"\",\"usableColumn\":false},{\"capJavaField\":\"OrderDate\",\"columnComment\":\"日期\",\"columnId\":1976,\"columnName\":\"orderDate\",\"columnType\":\"varchar(50)\",\"createBy\":\"admin\",\"createTime\":\"2024-07-19 11:34:37\",\"dictType\":\"\",\"edit\":true,\"htmlType\":\"input\",\"increment\":false,\"insert\":true,\"isEdit\":\"1\",\"isIncrement\":\"0\",\"isInsert\":\"1\",\"isList\":\"1\",\"isPk\":\"0\",\"isQuery\":\"1\",\"isRequired\":\"0\",\"javaField\":\"orderDate\",\"javaType\":\"String\",\"list\":true,\"params\":{},\"pk\":false,\"query\":true,\"queryType\":\"EQ\",\"required\":false,\"sort\":3,\"superColumn\":false,\"tableId\":99,\"updateBy\":\"\",\"usableColumn\":false},{\"capJavaField\":\"Customer\",\"columnComment\":\"客户\",\"columnId\":1977,\"columnName\":\"customer\",\"columnType\":\"varchar(150)\",\"createBy\":\"admin\",\"createTime\":\"2024-07-19 11:34:37\",\"dictType\":\"\",\"edit\":true,\"htmlType\":\"input\",\"increment\":false,\"insert\":true,\"isEdit\":\"1\",\"isIncrement\":\"0\",\"isInsert\":\"1\",\"isList\":\"1\",\"isPk\":\"0\",\"isQuery\":\"1\",\"isRequired\":\"0\",\"javaField', '{\"msg\":\"操作成功\",\"code\":200}', 0, NULL, '2024-07-19 11:36:21', 120);
 INSERT INTO `sys_oper_log` VALUES (108, '代码生成', 8, 'com.ruoyi.generator.controller.GenController.batchGenCode()', 'GET', 1, 'admin', NULL, '/tool/gen/batchGenCode', '127.0.0.1', '内网IP', '{\"tables\":\"goodsorder\"}', NULL, 0, NULL, '2024-07-19 11:37:41', 94);
+INSERT INTO `sys_oper_log` VALUES (109, '订单', 1, 'org.dzu.system.controller.GoodsorderController.add()', 'POST', 1, NULL, NULL, '/system/goodsorder', '127.0.0.1', '内网IP', '{\"addtime\":\"1981-03-17 19:20:50\",\"adjustDate\":\"2009-04-03\",\"adjustOrderid\":3,\"cancelFlag\":53,\"checkState\":\"1\",\"checkUserId\":23,\"comments\":\"voluptate\",\"createBy\":\"officia occaecat\",\"createTime\":\"1982-01-24 04:59:40\",\"customer\":\"Ut anim magna\",\"customerId\":21,\"customerIsInvoice\":95,\"id\":23849,\"invoiceState\":\"1\",\"isAdjust\":\"1\",\"isAdjusted\":\"1\",\"isSupplierInvoice\":26,\"isedit\":18,\"landBankName\":\"电手门点极为\",\"landDriverName\":\"料消存此边\",\"landDriverTel\":\"18195573273\",\"landcarId\":8,\"orderDate\":\"1982-10-20\",\"orderdetailList\":[{\"actualPieces\":98,\"additionalFees\":52,\"addtime\":\"2002-07-14 15:11:50\",\"adjustDate\":\"2022-05-07\",\"cancelFlag\":56,\"createBy\":\"qui dolor irure\",\"createTime\":\"1985-12-30 18:18:52\",\"customerCommission\":56,\"customerId\":88,\"erro\":61,\"freight\":72,\"height\":25,\"isAdjusted\":\"1\",\"isIncludeTaxFactory\":71,\"isIncludeTaxSale\":19,\"landFreight\":9,\"landFreightPrice\":85,\"length\":12,\"levelID\":16,\"levelName\":\"格厂战南\",\"logisticsProfit\":43,\"orderDate\":\"1987-12-20\",\"ordersNo\":\"00450796-a26e-4f1c-8fa3-c878c6b655a9\",\"otherCost\":37,\"packs\":52,\"params\":{},\"paymentFactory\":99,\"paymentUnload\":92,\"payments\":63,\"paymentsWithSundry\":92,\"pieces\":91,\"piecesPerPack\":26,\"price\":43,\"profit\":89,\"profitNoTax\":76,\"remark\":\"commodo cupidatat\",\"seaFreight\":68,\"storeHouseID\":61,\"storeHouseName\":\"路影林\",\"storeID\":90,\"sundryCost\":19,\"supplier\":\"incididunt minim id\",\"supplierId\":6,\"tonnage\":3,\"updateBy\":\"do quis\",\"updateTime\":\"2017-10-18 14:00:44\",\"userId\":52,\"width\":100}],\"ordersNo\":\"00450796-a26e-4f1c-8fa3-c878c6b655a9\",\"params\":{},\"saleManager\":\"dolore cillum\",\"seaBankName\":\"着志西年部\",\"seaBankNo\":\"nisi eiusmod ipsum qui amet\",\"seaCarNo\":\"mollit\",\"seaDriverName\":\"率年白\",\"seaDriverTel\":\"13596554422\",\"seacarId\":60,\"updateTime\":\"2004-01-23 23:54:04\",\"userId\":39}', '{\"msg\":\"操作成功\",\"code\":200}', 0, NULL, '2024-07-19 17:01:34', 511);
+INSERT INTO `sys_oper_log` VALUES (110, '订单', 1, 'org.dzu.system.controller.GoodsorderController.add()', 'POST', 1, NULL, NULL, '/system/goodsorder', '127.0.0.1', '内网IP', '{\"addtime\":\"1981-03-17 19:20:50\",\"adjustDate\":\"2009-04-03\",\"adjustOrderid\":3,\"cancelFlag\":53,\"checkState\":\"1\",\"checkUserId\":23,\"comments\":\"voluptate\",\"createBy\":\"officia occaecat\",\"createTime\":\"1982-01-24 04:59:40\",\"customer\":\"Ut anim magna\",\"customerId\":21,\"customerIsInvoice\":95,\"id\":23850,\"invoiceState\":\"1\",\"isAdjust\":\"1\",\"isAdjusted\":\"1\",\"isSupplierInvoice\":26,\"isedit\":18,\"landBankName\":\"电手门点极为\",\"landDriverName\":\"料消存此边\",\"landDriverTel\":\"18195573273\",\"landcarId\":8,\"orderDate\":\"1982-10-20\",\"orderdetailList\":[{\"actualPieces\":98,\"additionalFees\":52,\"addtime\":\"2002-07-14 15:11:50\",\"adjustDate\":\"2022-05-07\",\"cancelFlag\":56,\"createBy\":\"qui dolor irure\",\"createTime\":\"1985-12-30 18:18:52\",\"customerCommission\":56,\"customerId\":88,\"erro\":61,\"freight\":72,\"height\":25,\"isAdjusted\":\"1\",\"isIncludeTaxFactory\":71,\"isIncludeTaxSale\":19,\"landFreight\":9,\"landFreightPrice\":85,\"length\":12,\"levelID\":16,\"levelName\":\"格厂战南\",\"logisticsProfit\":43,\"orderDate\":\"1987-12-20\",\"ordersNo\":\"8cb269c1-2631-4115-9c62-2051c3ffc808\",\"otherCost\":37,\"packs\":52,\"params\":{},\"paymentFactory\":99,\"paymentUnload\":92,\"payments\":63,\"paymentsWithSundry\":92,\"pieces\":91,\"piecesPerPack\":26,\"price\":43,\"profit\":89,\"profitNoTax\":76,\"remark\":\"commodo cupidatat\",\"seaFreight\":68,\"storeHouseID\":61,\"storeHouseName\":\"路影林\",\"storeID\":90,\"sundryCost\":19,\"supplier\":\"incididunt minim id\",\"supplierId\":6,\"tonnage\":3,\"updateBy\":\"do quis\",\"updateTime\":\"2017-10-18 14:00:44\",\"userId\":52,\"width\":100}],\"ordersNo\":\"8cb269c1-2631-4115-9c62-2051c3ffc808\",\"params\":{},\"saleManager\":\"dolore cillum\",\"seaBankName\":\"着志西年部\",\"seaBankNo\":\"nisi eiusmod ipsum qui amet\",\"seaCarNo\":\"mollit\",\"seaDriverName\":\"率年白\",\"seaDriverTel\":\"13596554422\",\"seacarId\":60,\"updateTime\":\"2004-01-23 23:54:04\",\"userId\":39}', '{\"msg\":\"操作成功\",\"code\":200}', 0, NULL, '2024-07-19 17:01:41', 498);
+INSERT INTO `sys_oper_log` VALUES (111, '订单', 1, 'org.dzu.system.controller.GoodsorderController.add()', 'POST', 1, NULL, NULL, '/system/goodsorder', '127.0.0.1', '内网IP', '{\"addtime\":\"1981-03-17 19:20:50\",\"adjustDate\":\"2009-04-03\",\"adjustOrderid\":3,\"cancelFlag\":53,\"checkState\":\"1\",\"checkUserId\":23,\"comments\":\"voluptate\",\"createBy\":\"officia occaecat\",\"createTime\":\"1982-01-24 04:59:40\",\"customer\":\"Ut anim magna\",\"customerId\":21,\"customerIsInvoice\":95,\"id\":23851,\"invoiceState\":\"1\",\"isAdjust\":\"1\",\"isAdjusted\":\"1\",\"isSupplierInvoice\":26,\"isedit\":18,\"landBankName\":\"电手门点极为\",\"landDriverName\":\"料消存此边\",\"landDriverTel\":\"18195573273\",\"landcarId\":8,\"orderDate\":\"1982-10-20\",\"orderdetailList\":[{\"actualPieces\":98,\"additionalFees\":52,\"addtime\":\"2002-07-14 15:11:50\",\"adjustDate\":\"2022-05-07\",\"cancelFlag\":56,\"createBy\":\"qui dolor irure\",\"createTime\":\"1985-12-30 18:18:52\",\"customerCommission\":56,\"customerId\":88,\"erro\":61,\"freight\":72,\"height\":25,\"isAdjusted\":\"1\",\"isIncludeTaxFactory\":71,\"isIncludeTaxSale\":19,\"landFreight\":9,\"landFreightPrice\":85,\"length\":12,\"levelID\":16,\"levelName\":\"格厂战南\",\"logisticsProfit\":43,\"orderDate\":\"1987-12-20\",\"ordersNo\":\"15c67809-444f-4af9-84ab-ca042171c59f\",\"otherCost\":37,\"packs\":52,\"params\":{},\"paymentFactory\":99,\"paymentUnload\":92,\"payments\":63,\"paymentsWithSundry\":92,\"pieces\":91,\"piecesPerPack\":26,\"price\":43,\"profit\":89,\"profitNoTax\":76,\"remark\":\"commodo cupidatat\",\"seaFreight\":68,\"storeHouseID\":61,\"storeHouseName\":\"路影林\",\"storeID\":90,\"sundryCost\":19,\"supplier\":\"incididunt minim id\",\"supplierId\":6,\"tonnage\":3,\"updateBy\":\"do quis\",\"updateTime\":\"2017-10-18 14:00:44\",\"userId\":52,\"width\":100}],\"ordersNo\":\"15c67809-444f-4af9-84ab-ca042171c59f\",\"params\":{},\"saleManager\":\"dolore cillum\",\"seaBankName\":\"着志西年部\",\"seaBankNo\":\"nisi eiusmod ipsum qui amet\",\"seaCarNo\":\"mollit\",\"seaDriverName\":\"率年白\",\"seaDriverTel\":\"13596554422\",\"seacarId\":60,\"updateTime\":\"2004-01-23 23:54:04\",\"userId\":39}', '{\"msg\":\"操作成功\",\"code\":200}', 0, NULL, '2024-07-19 17:01:43', 475);
+INSERT INTO `sys_oper_log` VALUES (112, '订单', 1, 'org.dzu.system.controller.GoodsorderController.add()', 'POST', 1, NULL, NULL, '/system/goodsorder', '127.0.0.1', '内网IP', '{\"addtime\":\"1981-03-17 19:20:50\",\"adjustDate\":\"2009-04-03\",\"adjustOrderid\":3,\"cancelFlag\":53,\"checkState\":\"1\",\"checkUserId\":23,\"comments\":\"voluptate\",\"createBy\":\"officia occaecat\",\"createTime\":\"1982-01-24 04:59:40\",\"customer\":\"Ut anim magna\",\"customerId\":21,\"customerIsInvoice\":95,\"id\":23852,\"invoiceState\":\"1\",\"isAdjust\":\"1\",\"isAdjusted\":\"1\",\"isSupplierInvoice\":26,\"isedit\":18,\"landBankName\":\"电手门点极为\",\"landDriverName\":\"料消存此边\",\"landDriverTel\":\"18195573273\",\"landcarId\":8,\"orderDate\":\"1982-10-20\",\"orderdetailList\":[{\"actualPieces\":98,\"additionalFees\":52,\"addtime\":\"2002-07-14 15:11:50\",\"adjustDate\":\"2022-05-07\",\"cancelFlag\":56,\"createBy\":\"qui dolor irure\",\"createTime\":\"1985-12-30 18:18:52\",\"customerCommission\":56,\"customerId\":88,\"erro\":61,\"freight\":72,\"height\":25,\"isAdjusted\":\"1\",\"isIncludeTaxFactory\":71,\"isIncludeTaxSale\":19,\"landFreight\":9,\"landFreightPrice\":85,\"length\":12,\"levelID\":16,\"levelName\":\"格厂战南\",\"logisticsProfit\":43,\"orderDate\":\"1987-12-20\",\"ordersNo\":\"8f944461-317a-450e-93b6-2bcacc691c17\",\"otherCost\":37,\"packs\":52,\"params\":{},\"paymentFactory\":99,\"paymentUnload\":92,\"payments\":63,\"paymentsWithSundry\":92,\"pieces\":91,\"piecesPerPack\":26,\"price\":43,\"profit\":89,\"profitNoTax\":76,\"remark\":\"commodo cupidatat\",\"seaFreight\":68,\"storeHouseID\":61,\"storeHouseName\":\"路影林\",\"storeID\":90,\"sundryCost\":19,\"supplier\":\"incididunt minim id\",\"supplierId\":6,\"tonnage\":3,\"updateBy\":\"do quis\",\"updateTime\":\"2017-10-18 14:00:44\",\"userId\":52,\"width\":100}],\"ordersNo\":\"8f944461-317a-450e-93b6-2bcacc691c17\",\"params\":{},\"saleManager\":\"dolore cillum\",\"seaBankName\":\"着志西年部\",\"seaBankNo\":\"nisi eiusmod ipsum qui amet\",\"seaCarNo\":\"mollit\",\"seaDriverName\":\"率年白\",\"seaDriverTel\":\"13596554422\",\"seacarId\":60,\"updateTime\":\"2004-01-23 23:54:04\",\"userId\":39}', '{\"msg\":\"操作成功\",\"code\":200}', 0, NULL, '2024-07-19 17:01:48', 475);
+INSERT INTO `sys_oper_log` VALUES (113, '订单', 2, 'org.dzu.system.controller.GoodsorderController.edit()', 'PUT', 1, NULL, NULL, '/system/goodsorder', '127.0.0.1', '内网IP', '{\"addtime\":\"1981-03-17 19:20:50\",\"adjustDate\":\"2009-04-03\",\"adjustOrderid\":3,\"cancelFlag\":53,\"checkState\":\"1\",\"checkUserId\":23,\"comments\":\"voluptate\",\"customer\":\"Ut anim magna\",\"customerId\":21,\"customerIsInvoice\":95,\"id\":23849,\"invoiceState\":\"1\",\"isAdjust\":\"1\",\"isAdjusted\":\"1\",\"isSupplierInvoice\":26,\"isedit\":18,\"landBankName\":\"电手门点极为\",\"landDriverName\":\"料消存1此边\",\"landDriverTel\":\"18195573273\",\"landcarId\":8,\"orderDate\":\"1982-10-20\",\"orderdetailList\":[{\"actualPieces\":98,\"additionalFees\":52,\"addtime\":\"2002-07-14 15:11:50\",\"adjustDate\":\"2022-05-07\",\"cancelFlag\":56,\"customerCommission\":56,\"customerId\":88,\"erro\":61,\"freight\":72,\"height\":25,\"id\":62859,\"isAdjusted\":\"1\",\"isIncludeTaxFactory\":71,\"isIncludeTaxSale\":19,\"landFreight\":9,\"landFreightPrice\":85,\"length\":12,\"levelID\":16,\"levelName\":\"格厂战南\",\"logisticsProfit\":43,\"orderDate\":\"1987-12-20\",\"ordersNo\":\"00450796-a26e-4f1c-8fa3-c878c6b655a9\",\"otherCost\":37,\"packs\":52,\"params\":{},\"paymentFactory\":99,\"paymentUnload\":92,\"payments\":63,\"paymentsWithSundry\":92,\"pieces\":91,\"piecesPerPack\":26,\"price\":43,\"profit\":89,\"profitNoTax\":76,\"seaFreight\":68,\"storeHouseID\":61,\"storeHouseName\":\"路影林\",\"storeID\":90,\"sundryCost\":19,\"supplier\":\"incididunt minim id\",\"supplierId\":6,\"tonnage\":3,\"updateTime\":\"2017-10-18 14:00:44\",\"userId\":52,\"width\":100}],\"ordersNo\":\"00450796-a26e-4f1c-8fa3-c878c6b655a9\",\"params\":{},\"saleManager\":\"dolore cillum\",\"seaBankName\":\"着志西年部\",\"seaBankNo\":\"nisi eiusmod ipsum qui amet\",\"seaCarNo\":\"mollit\",\"seaDriverName\":\"率年白\",\"seaDriverTel\":\"13596554422\",\"seacarId\":60,\"updateTime\":\"2024-07-19 17:02:44\",\"userId\":39}', NULL, 1, '\r\n### Error updating database.  Cause: com.mysql.cj.jdbc.exceptions.MysqlDataTruncation: Data truncation: Truncated incorrect DOUBLE value: \'00450796-a26e-4f1c-8fa3-c878c6b655a9\'\r\n### The error may exist in file [D:\\Code\\project\\order-system\\order-serv\\target\\classes\\mapper\\system\\GoodsorderMapper.xml]\r\n### The error may involve org.dzu.system.mapper.GoodsorderMapper.deleteOrderdetailByOrdersNo-Inline\r\n### The error occurred while setting parameters\r\n### SQL: delete from orderdetail where ordersNo = ?\r\n### Cause: com.mysql.cj.jdbc.exceptions.MysqlDataTruncation: Data truncation: Truncated incorrect DOUBLE value: \'00450796-a26e-4f1c-8fa3-c878c6b655a9\'\n; Data truncation: Truncated incorrect DOUBLE value: \'00450796-a26e-4f1c-8fa3-c878c6b655a9\'; nested exception is com.mysql.cj.jdbc.exceptions.MysqlDataTruncation: Data truncation: Truncated incorrect DOUBLE value: \'00450796-a26e-4f1c-8fa3-c878c6b655a9\'', '2024-07-19 17:02:42', 668);
+INSERT INTO `sys_oper_log` VALUES (114, '订单', 2, 'org.dzu.system.controller.GoodsorderController.edit()', 'PUT', 1, NULL, NULL, '/system/goodsorder', '127.0.0.1', '内网IP', '{\"addtime\":\"1981-03-17 19:20:50\",\"adjustDate\":\"2009-04-03\",\"adjustOrderid\":3,\"cancelFlag\":53,\"checkState\":\"1\",\"checkUserId\":23,\"comments\":\"voluptate\",\"customer\":\"Ut anim magna\",\"customerId\":21,\"customerIsInvoice\":95,\"id\":23849,\"invoiceState\":\"1\",\"isAdjust\":\"1\",\"isAdjusted\":\"1\",\"isSupplierInvoice\":26,\"isedit\":18,\"landBankName\":\"电手门点极为\",\"landDriverName\":\"料消存1此边\",\"landDriverTel\":\"18195573273\",\"landcarId\":8,\"orderDate\":\"1982-10-20\",\"orderdetailList\":[{\"actualPieces\":98,\"additionalFees\":52,\"addtime\":\"2002-07-14 15:11:50\",\"adjustDate\":\"2022-05-07\",\"cancelFlag\":56,\"customerCommission\":56,\"customerId\":88,\"erro\":61,\"freight\":72,\"height\":25,\"id\":62859,\"isAdjusted\":\"1\",\"isIncludeTaxFactory\":71,\"isIncludeTaxSale\":19,\"landFreight\":9,\"landFreightPrice\":85,\"length\":12,\"levelID\":16,\"levelName\":\"格厂战南\",\"logisticsProfit\":43,\"orderDate\":\"1987-12-20\",\"ordersNo\":\"00450796-a26e-4f1c-8fa3-c878c6b655a9\",\"otherCost\":37,\"packs\":52,\"params\":{},\"paymentFactory\":99,\"paymentUnload\":92,\"payments\":63,\"paymentsWithSundry\":92,\"pieces\":91,\"piecesPerPack\":26,\"price\":43,\"profit\":89,\"profitNoTax\":76,\"seaFreight\":68,\"storeHouseID\":61,\"storeHouseName\":\"路影林\",\"storeID\":90,\"sundryCost\":19,\"supplier\":\"incididunt minim id\",\"supplierId\":6,\"tonnage\":3,\"updateTime\":\"2017-10-18 14:00:44\",\"userId\":52,\"width\":100}],\"ordersNo\":\"00450796-a26e-4f1c-8fa3-c878c6b655a9\",\"params\":{},\"saleManager\":\"dolore cillum\",\"seaBankName\":\"着志西年部\",\"seaBankNo\":\"nisi eiusmod ipsum qui amet\",\"seaCarNo\":\"mollit\",\"seaDriverName\":\"率年白\",\"seaDriverTel\":\"13596554422\",\"seacarId\":60,\"updateTime\":\"2024-07-19 17:10:06\",\"userId\":39}', NULL, 1, '\r\n### Error updating database.  Cause: com.mysql.cj.jdbc.exceptions.MysqlDataTruncation: Data truncation: Truncated incorrect DOUBLE value: \'00450796-a26e-4f1c-8fa3-c878c6b655a9\'\r\n### The error may exist in file [D:\\Code\\project\\order-system\\order-serv\\target\\classes\\mapper\\system\\GoodsorderMapper.xml]\r\n### The error may involve org.dzu.system.mapper.GoodsorderMapper.deleteOrderdetailByOrdersNo-Inline\r\n### The error occurred while setting parameters\r\n### SQL: delete from orderdetail where ordersNo = ?\r\n### Cause: com.mysql.cj.jdbc.exceptions.MysqlDataTruncation: Data truncation: Truncated incorrect DOUBLE value: \'00450796-a26e-4f1c-8fa3-c878c6b655a9\'\n; Data truncation: Truncated incorrect DOUBLE value: \'00450796-a26e-4f1c-8fa3-c878c6b655a9\'; nested exception is com.mysql.cj.jdbc.exceptions.MysqlDataTruncation: Data truncation: Truncated incorrect DOUBLE value: \'00450796-a26e-4f1c-8fa3-c878c6b655a9\'', '2024-07-19 17:10:28', 23428);
+INSERT INTO `sys_oper_log` VALUES (115, '订单', 2, 'org.dzu.system.controller.GoodsorderController.edit()', 'PUT', 1, NULL, NULL, '/system/goodsorder', '127.0.0.1', '内网IP', '{\"addtime\":\"1981-03-17 19:20:50\",\"adjustDate\":\"2009-04-03\",\"adjustOrderid\":3,\"cancelFlag\":53,\"checkState\":\"1\",\"checkUserId\":23,\"comments\":\"voluptate\",\"customer\":\"Ut anim magna\",\"customerId\":21,\"customerIsInvoice\":95,\"id\":23849,\"invoiceState\":\"1\",\"isAdjust\":\"1\",\"isAdjusted\":\"1\",\"isSupplierInvoice\":26,\"isedit\":18,\"landBankName\":\"电手门点极为\",\"landDriverName\":\"料消存1此边\",\"landDriverTel\":\"18195573273\",\"landcarId\":8,\"orderDate\":\"1982-10-20\",\"orderdetailList\":[{\"actualPieces\":98,\"additionalFees\":52,\"addtime\":\"2002-07-14 15:11:50\",\"adjustDate\":\"2022-05-07\",\"cancelFlag\":56,\"customerCommission\":56,\"customerId\":88,\"erro\":61,\"freight\":72,\"height\":25,\"id\":62859,\"isAdjusted\":\"1\",\"isIncludeTaxFactory\":71,\"isIncludeTaxSale\":19,\"landFreight\":9,\"landFreightPrice\":85,\"length\":12,\"levelID\":16,\"levelName\":\"格厂战南\",\"logisticsProfit\":43,\"orderDate\":\"1987-12-20\",\"ordersNo\":\"00450796-a26e-4f1c-8fa3-c878c6b655a9\",\"otherCost\":37,\"packs\":52,\"params\":{},\"paymentFactory\":99,\"paymentUnload\":92,\"payments\":63,\"paymentsWithSundry\":92,\"pieces\":91,\"piecesPerPack\":26,\"price\":43,\"profit\":89,\"profitNoTax\":76,\"seaFreight\":68,\"storeHouseID\":61,\"storeHouseName\":\"路影林\",\"storeID\":90,\"sundryCost\":19,\"supplier\":\"incididunt minim id\",\"supplierId\":6,\"tonnage\":3,\"updateTime\":\"2017-10-18 14:00:44\",\"userId\":52,\"width\":100}],\"ordersNo\":\"00450796-a26e-4f1c-8fa3-c878c6b655a9\",\"params\":{},\"saleManager\":\"dolore cillum\",\"seaBankName\":\"着志西年部\",\"seaBankNo\":\"nisi eiusmod ipsum qui amet\",\"seaCarNo\":\"mollit\",\"seaDriverName\":\"率年白\",\"seaDriverTel\":\"13596554422\",\"seacarId\":60,\"updateTime\":\"2024-07-19 17:10:57\",\"userId\":39}', NULL, 1, '\r\n### Error updating database.  Cause: com.mysql.cj.jdbc.exceptions.MysqlDataTruncation: Data truncation: Truncated incorrect DOUBLE value: \'00450796-a26e-4f1c-8fa3-c878c6b655a9\'\r\n### The error may exist in file [D:\\Code\\project\\order-system\\order-serv\\target\\classes\\mapper\\system\\GoodsorderMapper.xml]\r\n### The error may involve org.dzu.system.mapper.GoodsorderMapper.deleteOrderdetailByOrdersNo-Inline\r\n### The error occurred while setting parameters\r\n### SQL: delete from orderdetail where ordersNo = ?\r\n### Cause: com.mysql.cj.jdbc.exceptions.MysqlDataTruncation: Data truncation: Truncated incorrect DOUBLE value: \'00450796-a26e-4f1c-8fa3-c878c6b655a9\'\n; Data truncation: Truncated incorrect DOUBLE value: \'00450796-a26e-4f1c-8fa3-c878c6b655a9\'; nested exception is com.mysql.cj.jdbc.exceptions.MysqlDataTruncation: Data truncation: Truncated incorrect DOUBLE value: \'00450796-a26e-4f1c-8fa3-c878c6b655a9\'', '2024-07-19 17:10:56', 626);
+INSERT INTO `sys_oper_log` VALUES (116, '订单', 2, 'org.dzu.system.controller.GoodsorderController.edit()', 'PUT', 1, NULL, NULL, '/system/goodsorder', '127.0.0.1', '内网IP', '{\"addtime\":\"1981-03-17 19:20:50\",\"adjustDate\":\"2009-04-03\",\"adjustOrderid\":3,\"cancelFlag\":53,\"checkState\":\"1\",\"checkUserId\":23,\"comments\":\"voluptate\",\"customer\":\"Ut anim magna\",\"customerId\":21,\"customerIsInvoice\":95,\"id\":23849,\"invoiceState\":\"1\",\"isAdjust\":\"1\",\"isAdjusted\":\"1\",\"isSupplierInvoice\":26,\"isedit\":18,\"landBankName\":\"电手门点极为\",\"landDriverName\":\"料消存1此边\",\"landDriverTel\":\"18195573273\",\"landcarId\":8,\"orderDate\":\"1982-10-20\",\"orderdetailList\":[{\"actualPieces\":98,\"additionalFees\":52,\"addtime\":\"2002-07-14 15:11:50\",\"adjustDate\":\"2022-05-07\",\"cancelFlag\":56,\"customerCommission\":56,\"customerId\":88,\"erro\":61,\"freight\":72,\"height\":25,\"id\":62859,\"isAdjusted\":\"1\",\"isIncludeTaxFactory\":71,\"isIncludeTaxSale\":19,\"landFreight\":9,\"landFreightPrice\":85,\"length\":12,\"levelID\":16,\"levelName\":\"格厂战南\",\"logisticsProfit\":43,\"orderDate\":\"1987-12-20\",\"ordersNo\":\"00450796-a26e-4f1c-8fa3-c878c6b655a9\",\"otherCost\":37,\"packs\":52,\"params\":{},\"paymentFactory\":99,\"paymentUnload\":92,\"payments\":63,\"paymentsWithSundry\":92,\"pieces\":91,\"piecesPerPack\":26,\"price\":43,\"profit\":89,\"profitNoTax\":76,\"seaFreight\":68,\"storeHouseID\":61,\"storeHouseName\":\"路影林\",\"storeID\":90,\"sundryCost\":19,\"supplier\":\"incididunt minim id\",\"supplierId\":6,\"tonnage\":3,\"updateTime\":\"2017-10-18 14:00:44\",\"userId\":52,\"width\":100}],\"ordersNo\":\"00450796-a26e-4f1c-8fa3-c878c6b655a9\",\"params\":{},\"saleManager\":\"dolore cillum\",\"seaBankName\":\"着志西年部\",\"seaBankNo\":\"nisi eiusmod ipsum qui amet\",\"seaCarNo\":\"mollit\",\"seaDriverName\":\"率年白\",\"seaDriverTel\":\"13596554422\",\"seacarId\":60,\"updateTime\":\"2024-07-19 17:12:51\",\"userId\":39}', NULL, 1, '\r\n### Error updating database.  Cause: com.mysql.cj.jdbc.exceptions.MysqlDataTruncation: Data truncation: Truncated incorrect DOUBLE value: \'00450796-a26e-4f1c-8fa3-c878c6b655a9\'\r\n### The error may exist in file [D:\\Code\\project\\order-system\\order-serv\\target\\classes\\mapper\\system\\GoodsorderMapper.xml]\r\n### The error may involve org.dzu.system.mapper.GoodsorderMapper.deleteOrderdetailByOrdersNo-Inline\r\n### The error occurred while setting parameters\r\n### SQL: delete from orderdetail where ordersNo = ?\r\n### Cause: com.mysql.cj.jdbc.exceptions.MysqlDataTruncation: Data truncation: Truncated incorrect DOUBLE value: \'00450796-a26e-4f1c-8fa3-c878c6b655a9\'\n; Data truncation: Truncated incorrect DOUBLE value: \'00450796-a26e-4f1c-8fa3-c878c6b655a9\'; nested exception is com.mysql.cj.jdbc.exceptions.MysqlDataTruncation: Data truncation: Truncated incorrect DOUBLE value: \'00450796-a26e-4f1c-8fa3-c878c6b655a9\'', '2024-07-19 17:13:10', 20984);
+INSERT INTO `sys_oper_log` VALUES (117, '订单', 2, 'org.dzu.system.controller.GoodsorderController.edit()', 'PUT', 1, NULL, NULL, '/system/goodsorder', '127.0.0.1', '内网IP', '{\"addtime\":\"1981-03-17 19:20:50\",\"adjustDate\":\"2009-04-03\",\"adjustOrderid\":3,\"cancelFlag\":53,\"checkState\":\"1\",\"checkUserId\":23,\"comments\":\"voluptate\",\"customer\":\"Ut anim magna\",\"customerId\":21,\"customerIsInvoice\":95,\"id\":23849,\"invoiceState\":\"1\",\"isAdjust\":\"1\",\"isAdjusted\":\"1\",\"isSupplierInvoice\":26,\"isedit\":18,\"landBankName\":\"电手门点极为\",\"landDriverName\":\"料消存1此边\",\"landDriverTel\":\"18195573273\",\"landcarId\":8,\"orderDate\":\"1982-10-20\",\"orderdetailList\":[{\"actualPieces\":98,\"additionalFees\":52,\"addtime\":\"2002-07-14 15:11:50\",\"adjustDate\":\"2022-05-07\",\"cancelFlag\":56,\"customerCommission\":56,\"customerId\":88,\"erro\":61,\"freight\":72,\"height\":25,\"id\":62859,\"isAdjusted\":\"1\",\"isIncludeTaxFactory\":71,\"isIncludeTaxSale\":19,\"landFreight\":9,\"landFreightPrice\":85,\"length\":12,\"levelID\":16,\"levelName\":\"格厂战南\",\"logisticsProfit\":43,\"orderDate\":\"1987-12-20\",\"ordersNo\":\"00450796-a26e-4f1c-8fa3-c878c6b655a9\",\"otherCost\":37,\"packs\":52,\"params\":{},\"paymentFactory\":99,\"paymentUnload\":92,\"payments\":63,\"paymentsWithSundry\":92,\"pieces\":91,\"piecesPerPack\":26,\"price\":43,\"profit\":89,\"profitNoTax\":76,\"seaFreight\":68,\"storeHouseID\":61,\"storeHouseName\":\"路影林\",\"storeID\":90,\"sundryCost\":19,\"supplier\":\"incididunt minim id\",\"supplierId\":6,\"tonnage\":3,\"updateTime\":\"2017-10-18 14:00:44\",\"userId\":52,\"width\":100}],\"ordersNo\":\"00450796-a26e-4f1c-8fa3-c878c6b655a9\",\"params\":{},\"saleManager\":\"dolore cillum\",\"seaBankName\":\"着志西年部\",\"seaBankNo\":\"nisi eiusmod ipsum qui amet\",\"seaCarNo\":\"mollit\",\"seaDriverName\":\"率年白\",\"seaDriverTel\":\"13596554422\",\"seacarId\":60,\"updateTime\":\"2024-07-19 17:28:10\",\"userId\":39}', '{\"msg\":\"操作成功\",\"code\":200}', 0, NULL, '2024-07-19 17:28:11', 2891);
+INSERT INTO `sys_oper_log` VALUES (118, '订单', 2, 'org.dzu.system.controller.GoodsorderController.edit()', 'PUT', 1, NULL, NULL, '/system/goodsorder', '127.0.0.1', '内网IP', '{\"addtime\":\"1981-03-17 19:20:50\",\"adjustDate\":\"2009-04-03\",\"adjustOrderid\":3,\"cancelFlag\":53,\"checkState\":\"1\",\"checkUserId\":23,\"comments\":\"voluptate\",\"customer\":\"Ut anim magna\",\"customerId\":21,\"customerIsInvoice\":95,\"id\":23849,\"invoiceState\":\"1\",\"isAdjust\":\"1\",\"isAdjusted\":\"1\",\"isSupplierInvoice\":26,\"isedit\":18,\"landBankName\":\"电手门点极为\",\"landDriverName\":\"料消存1此边\",\"landDriverTel\":\"18195573273\",\"landcarId\":8,\"orderDate\":\"1982-10-20\",\"orderdetailList\":[{\"actualPieces\":98,\"additionalFees\":52,\"addtime\":\"2002-07-14 15:11:50\",\"adjustDate\":\"2022-05-07\",\"cancelFlag\":56,\"customerCommission\":56,\"customerId\":88,\"erro\":61,\"freight\":72,\"height\":25,\"id\":62859,\"isAdjusted\":\"1\",\"isIncludeTaxFactory\":71,\"isIncludeTaxSale\":19,\"landFreight\":9,\"landFreightPrice\":85,\"length\":12,\"levelID\":16,\"levelName\":\"格厂战南\",\"logisticsProfit\":43,\"orderDate\":\"1987-12-20\",\"ordersNo\":\"00450796-a26e-4f1c-8fa3-c878c6b655a9\",\"otherCost\":37,\"packs\":52,\"params\":{},\"paymentFactory\":99,\"paymentUnload\":92,\"payments\":63,\"paymentsWithSundry\":92,\"pieces\":91,\"piecesPerPack\":26,\"price\":43,\"profit\":89,\"profitNoTax\":76,\"seaFreight\":68,\"storeHouseID\":61,\"storeHouseName\":\"路影林\",\"storeID\":90,\"sundryCost\":19,\"supplier\":\"incididunt minim id\",\"supplierId\":6,\"tonnage\":3,\"updateTime\":\"2017-10-18 14:00:44\",\"userId\":52,\"width\":100}],\"ordersNo\":\"00450796-a26e-4f1c-8fa3-c878c6b655a9\",\"params\":{},\"saleManager\":\"dolore cillum\",\"seaBankName\":\"着志西年部\",\"seaBankNo\":\"nisi eiusmod ipsum qui amet\",\"seaCarNo\":\"mollit\",\"seaDriverName\":\"率年白\",\"seaDriverTel\":\"13596554422\",\"seacarId\":60,\"updateTime\":\"2024-07-19 17:37:12\",\"userId\":39}', '{\"msg\":\"操作成功\",\"code\":200}', 0, NULL, '2024-07-19 17:37:14', 4041);
+INSERT INTO `sys_oper_log` VALUES (119, '订单', 2, 'org.dzu.system.controller.GoodsorderController.edit()', 'PUT', 1, NULL, NULL, '/system/goodsorder', '127.0.0.1', '内网IP', '{\"addtime\":\"1981-03-17 19:20:50\",\"adjustDate\":\"2009-04-03\",\"adjustOrderid\":3,\"cancelFlag\":53,\"checkState\":\"1\",\"checkUserId\":23,\"comments\":\"voluptate\",\"customer\":\"Ut anim magna\",\"customerId\":21,\"customerIsInvoice\":95,\"id\":23849,\"invoiceState\":\"1\",\"isAdjust\":\"1\",\"isAdjusted\":\"1\",\"isSupplierInvoice\":26,\"isedit\":18,\"landBankName\":\"电手门点极为\",\"landDriverName\":\"料消存1此边\",\"landDriverTel\":\"18195573273\",\"landcarId\":8,\"orderDate\":\"1982-10-20\",\"orderdetailList\":[{\"actualPieces\":98,\"additionalFees\":52,\"addtime\":\"2002-07-14 15:11:50\",\"adjustDate\":\"2022-05-07\",\"cancelFlag\":56,\"customerCommission\":56,\"customerId\":88,\"erro\":61,\"freight\":72,\"height\":25,\"id\":62859,\"isAdjusted\":\"1\",\"isIncludeTaxFactory\":71,\"isIncludeTaxSale\":19,\"landFreight\":9,\"landFreightPrice\":85,\"length\":12,\"levelID\":16,\"levelName\":\"格厂战南\",\"logisticsProfit\":43,\"orderDate\":\"1987-12-20\",\"ordersNo\":\"00450796-a26e-4f1c-8fa3-c878c6b655a9\",\"otherCost\":37,\"packs\":52,\"params\":{},\"paymentFactory\":99,\"paymentUnload\":92,\"payments\":63,\"paymentsWithSundry\":92,\"pieces\":91,\"piecesPerPack\":26,\"price\":43,\"profit\":89,\"profitNoTax\":76,\"seaFreight\":68,\"storeHouseID\":61,\"storeHouseName\":\"路影林\",\"storeID\":90,\"sundryCost\":19,\"supplier\":\"incididunt minim id\",\"supplierId\":6,\"tonnage\":3,\"updateTime\":\"2017-10-18 14:00:44\",\"userId\":52,\"width\":100}],\"ordersNo\":\"00450796-a26e-4f1c-8fa3-c878c6b655a9\",\"params\":{},\"saleManager\":\"dolore cillum\",\"seaBankName\":\"着志西年部\",\"seaBankNo\":\"nisi eiusmod ipsum qui amet\",\"seaCarNo\":\"mollit\",\"seaDriverName\":\"率年白\",\"seaDriverTel\":\"13596554422\",\"seacarId\":60,\"updateTime\":\"2024-07-19 17:37:20\",\"userId\":39}', '{\"msg\":\"操作成功\",\"code\":200}', 0, NULL, '2024-07-19 17:37:19', 846);
+INSERT INTO `sys_oper_log` VALUES (120, '订单', 1, 'org.dzu.system.controller.GoodsorderController.add()', 'POST', 1, NULL, NULL, '/system/goodsorder', '127.0.0.1', '内网IP', '{\"addtime\":\"2024-07-19 18:21:47\",\"adjustDate\":\"2009-04-03\",\"adjustOrderid\":3,\"cancelFlag\":0,\"checkState\":\"1\",\"checkUserId\":23,\"comments\":\"voluptate\",\"createBy\":\"officia occaecat\",\"createTime\":\"1982-01-24 04:59:40\",\"customer\":\"Ut anim magna\",\"customerId\":21,\"customerIsInvoice\":95,\"id\":23853,\"invoiceState\":\"1\",\"isAdjust\":\"1\",\"isAdjusted\":\"1\",\"isSupplierInvoice\":26,\"isedit\":18,\"landBankName\":\"电手门点极为\",\"landDriverName\":\"料消存此边\",\"landDriverTel\":\"18195573273\",\"landcarId\":8,\"orderDate\":\"1982-10-20\",\"orderdetailList\":[{\"actualPieces\":98,\"additionalFees\":52,\"addtime\":\"2002-07-14 15:11:50\",\"adjustDate\":\"2022-05-07\",\"cancelFlag\":56,\"createBy\":\"qui dolor irure\",\"createTime\":\"1985-12-30 18:18:52\",\"customerCommission\":56,\"customerId\":88,\"erro\":61,\"freight\":72,\"height\":25,\"isAdjusted\":\"1\",\"isIncludeTaxFactory\":71,\"isIncludeTaxSale\":19,\"landFreight\":9,\"landFreightPrice\":85,\"length\":12,\"levelID\":16,\"levelName\":\"格厂战南\",\"logisticsProfit\":43,\"orderDate\":\"1987-12-20\",\"ordersNo\":\"1db10918-652c-4838-aab5-6bcb800c7555\",\"otherCost\":37,\"packs\":52,\"params\":{},\"paymentFactory\":99,\"paymentUnload\":92,\"payments\":63,\"paymentsWithSundry\":92,\"pieces\":91,\"piecesPerPack\":26,\"price\":43,\"profit\":89,\"profitNoTax\":76,\"remark\":\"commodo cupidatat\",\"seaFreight\":68,\"storeHouseID\":61,\"storeHouseName\":\"路影林\",\"storeID\":90,\"sundryCost\":19,\"supplier\":\"incididunt minim id\",\"supplierId\":6,\"tonnage\":3,\"updateBy\":\"do quis\",\"updateTime\":\"2017-10-18 14:00:44\",\"userId\":52,\"width\":100}],\"ordersNo\":\"1db10918-652c-4838-aab5-6bcb800c7555\",\"params\":{},\"saleManager\":\"dolore cillum\",\"seaBankName\":\"着志西年部\",\"seaBankNo\":\"nisi eiusmod ipsum qui amet\",\"seaCarNo\":\"mollit\",\"seaDriverName\":\"率年白\",\"seaDriverTel\":\"13596554422\",\"seacarId\":60,\"updateTime\":\"2004-01-23 23:54:04\",\"userId\":1}', '{\"msg\":\"操作成功\",\"code\":200}', 0, NULL, '2024-07-19 18:21:46', 500);
+INSERT INTO `sys_oper_log` VALUES (121, '订单', 3, 'org.dzu.system.controller.GoodsorderController.remove()', 'DELETE', 1, NULL, NULL, '/system/goodsorder/23853', '127.0.0.1', '内网IP', '{}', NULL, 1, '\r\n### Error updating database.  Cause: com.mysql.cj.jdbc.exceptions.MysqlDataTruncation: Data truncation: Truncated incorrect DOUBLE value: \'00450796-a26e-4f1c-8fa3-c878c6b655a9\'\r\n### The error may exist in file [D:\\Code\\project\\order-system\\order-serv\\target\\classes\\mapper\\system\\GoodsorderMapper.xml]\r\n### The error may involve org.dzu.system.mapper.GoodsorderMapper.deleteOrderdetailByOrdersNos-Inline\r\n### The error occurred while setting parameters\r\n### SQL: update  orderdetail set cancelFlag = 1 where ordersNo in          (               ?          )\r\n### Cause: com.mysql.cj.jdbc.exceptions.MysqlDataTruncation: Data truncation: Truncated incorrect DOUBLE value: \'00450796-a26e-4f1c-8fa3-c878c6b655a9\'\n; Data truncation: Truncated incorrect DOUBLE value: \'00450796-a26e-4f1c-8fa3-c878c6b655a9\'; nested exception is com.mysql.cj.jdbc.exceptions.MysqlDataTruncation: Data truncation: Truncated incorrect DOUBLE value: \'00450796-a26e-4f1c-8fa3-c878c6b655a9\'', '2024-07-19 18:22:03', 355);
+INSERT INTO `sys_oper_log` VALUES (122, '订单', 3, 'org.dzu.system.controller.GoodsorderController.remove()', 'DELETE', 1, NULL, NULL, '/system/goodsorder/23853', '127.0.0.1', '内网IP', '{}', '{\"msg\":\"操作成功\",\"code\":200}', 0, NULL, '2024-07-19 18:28:16', 544);
+INSERT INTO `sys_oper_log` VALUES (123, '客户管理', 1, 'org.dzu.system.controller.CompanyController.add()', 'POST', 1, NULL, NULL, '/system/company', '127.0.0.1', '内网IP', '{\"acountsName\":\"先气增海报过\",\"address\":\"黑龙江省白城市深坑区\",\"addtime\":\"2024-07-19 21:39:20\",\"bankName\":\"干内装委史\",\"bankNo\":\"consectetur\",\"city\":\"苏州市\",\"comments\":\"fugiat\",\"company\":\"毛磊测试\",\"companyType\":\"客户\",\"county\":\"enim ea ullamco pariatur officia\",\"delFlag\":0,\"id\":1,\"leaderTel\":\"18148469617\",\"params\":{},\"province\":\"湖南省\",\"region\":\"湖南省-苏州市=enim ea ullamco pariatur officia\",\"relationName\":\"新志体最办许关\",\"relationTel\":\"18157849887\",\"salesman\":\"laboris\",\"surplusMoney\":64.0,\"userId\":1}', '{\"msg\":\"操作成功\",\"code\":200}', 0, NULL, '2024-07-19 21:39:18', 147);
+INSERT INTO `sys_oper_log` VALUES (124, '客户管理', 2, 'org.dzu.system.controller.CompanyController.edit()', 'PUT', 1, NULL, NULL, '/system/company', '127.0.0.1', '内网IP', '{\"acountsName\":\"先气增海报过\",\"address\":\"黑龙江省白城市深坑区\",\"addtime\":\"2024-07-19 21:41:49\",\"bankName\":\"干内装委史\",\"bankNo\":\"consectetur\",\"city\":\"苏州市\",\"comments\":\"fugiat\",\"company\":\"毛磊2测试\",\"companyType\":\"客户\",\"county\":\"enim ea ullamco pariatur officia\",\"delFlag\":0,\"id\":1,\"leaderTel\":\"18148469617\",\"params\":{},\"province\":\"湖南省\",\"region\":\"湖南省-苏州市=enim ea ullamco pariatur officia\",\"relationName\":\"新志体最办许关\",\"relationTel\":\"18157849887\",\"salesman\":\"laboris\",\"surplusMoney\":64.0,\"updateTime\":\"2024-07-19 21:41:49\",\"userId\":1}', '{\"msg\":\"操作成功\",\"code\":200}', 0, NULL, '2024-07-19 21:41:47', 145);
+INSERT INTO `sys_oper_log` VALUES (125, '客户管理', 3, 'org.dzu.system.controller.CompanyController.remove()', 'DELETE', 1, NULL, NULL, '/system/company/1', '127.0.0.1', '内网IP', '{}', '{\"msg\":\"操作成功\",\"code\":200}', 0, NULL, '2024-07-19 21:42:19', 122);
+INSERT INTO `sys_oper_log` VALUES (126, '客户管理', 1, 'org.dzu.system.controller.CompanyController.add()', 'POST', 1, NULL, NULL, '/system/company', '127.0.0.1', '内网IP', '{\"acountsName\":\"先气增海报过\",\"address\":\"黑龙江省白城市深坑区\",\"addtime\":\"2024-07-20 07:52:29\",\"bankName\":\"干内装委史\",\"bankNo\":\"consectetur\",\"city\":\"苏州市\",\"comments\":\"fugiat\",\"company\":\"毛磊测试\",\"companyType\":\"客户\",\"county\":\"ml村\",\"delFlag\":0,\"id\":2,\"leaderTel\":\"18148469617\",\"params\":{},\"province\":\"湖南省\",\"region\":\"湖南省-苏州市=ml村\",\"relationName\":\"新志体最办许关\",\"relationTel\":\"18157849887\",\"salesman\":\"laboris\",\"surplusMoney\":1.2345679E8,\"userId\":1}', '{\"msg\":\"操作成功\",\"code\":200}', 0, NULL, '2024-07-20 07:53:07', 38660);
 
 -- ----------------------------
 -- Table structure for sys_role
@@ -2737,7 +2791,7 @@ CREATE TABLE `sys_user`  (
 -- ----------------------------
 -- Records of sys_user
 -- ----------------------------
-INSERT INTO `sys_user` VALUES (1, NULL, 'admin', 'admin', '00', '', '0', '', '$2a$10$7JB720yubVSZvUI0rEqK/.VqGOZTH.ulu33dHOiBE8ByOhJIrdAu2', '0', '0', '127.0.0.1', '2024-07-19 11:33:38', '', NULL, '', '2024-07-19 11:33:37', NULL, 'admin', 'admin', '1', '', '', '', '', '', '', '', '', '', 'asd', 'asd', 'asd', 'awsd', 'awd', 'awsda', 'awsd', 'awsd', 'awsd');
+INSERT INTO `sys_user` VALUES (1, NULL, 'admin', 'admin', '00', '', '0', '', '$2a$10$7JB720yubVSZvUI0rEqK/.VqGOZTH.ulu33dHOiBE8ByOhJIrdAu2', '0', '0', '127.0.0.1', '2024-07-20 07:47:05', '', NULL, '', '2024-07-20 07:47:04', NULL, 'admin', 'admin', '1', '', '', '', '', '', '', '', '', '', 'asd', 'asd', 'asd', 'awsd', 'awd', 'awsda', 'awsd', 'awsd', 'awsd');
 
 -- ----------------------------
 -- Table structure for sys_user_role
@@ -2786,7 +2840,7 @@ CREATE TABLE `virtualbankaccountchange`  (
   `payNO` varchar(50) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL COMMENT '发生操作行为的冲抵款编号（UUID）',
   `operateDate` varchar(50) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL COMMENT '日期',
   `changeType` varchar(15) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL COMMENT '变动类型（收入、支出）',
-  `moneyAmount` float NULL DEFAULT 0 COMMENT '金额',
+  `moneyAmount` double NULL DEFAULT 0 COMMENT '金额',
   `comments` varchar(200) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL COMMENT '备注',
   `addtime` varchar(50) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL COMMENT '添加时间',
   `userId` int(11) NULL DEFAULT NULL COMMENT '操作人员ID',
