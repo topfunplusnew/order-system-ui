@@ -17,6 +17,9 @@
             <template v-slot:toolbar>
                 <lay-button size="sm" type="primary" @click="handleAdd">新增</lay-button>
                 <lay-button size="sm" @click="remove">删除</lay-button>
+                <span style="margin-left: 10px">姓名:</span>
+                <lay-input placeholder="提示信息" style="width:100px; margin-left: 20px"></lay-input>
+                <lay-button size="sm" @click="remove" style="margin-left: 5px">查询</lay-button>
             </template>
             <template v-slot:operator="{ row }">
                 <lay-button size="xs" type="primary" @click="changeVisible11(row)">编辑</lay-button>
@@ -41,26 +44,39 @@
         <lay-layer v-model="visibleAdd" :shade="false" :area="['500px', '450px']" :btn="actionAdd" title="新增">
             <div style="padding: 20px;">
                 <lay-form :model="modelAdd" ref="layFormRefAdd" required>
-                    <lay-form-item label="用户名" prop="name">
-                        <lay-input v-model="model11.name"></lay-input>
+                    <lay-form-item label="栏目权限" prop="name">
+                        <lay-select v-model="model11.sex" placeholder="请选择">
+                            <lay-select-option v-for="(item,index) in roleList" :value="index" :label="item.roleName"
+                                               :key="index"></lay-select-option>
+                        </lay-select>
                     </lay-form-item>
-                    <lay-form-item label="邮箱" prop="sex">
+                    <lay-form-item label="用户名" prop="sex">
+                        <lay-input v-model="model11.sex">></lay-input>
+                    </lay-form-item>
+                    <lay-form-item label="密码" prop="sex">
+                        <lay-input v-model="model11.sex">></lay-input>
+                    </lay-form-item>
+                    <lay-form-item label="电话号码" prop="sex">
                         <lay-input v-model="model11.sex">></lay-input>
                     </lay-form-item>
                 </lay-form>
             </div>
         </lay-layer>
+        <!--        加载-->
+
     </div>
 </template>
 
 <script setup lang="ts">
-import {ref, reactive, } from 'vue';
+import {ref, reactive,} from 'vue';
 import {layer} from '@layui/layui-vue';
 import {listUser} from "../../api/api/system/user.ts";
+import {listRole} from "../../api/api/system/role.ts";
+import {isNumber} from "@layui/layui-vue/types/utils";
 
 
 //data
-const loading = ref(false);
+const loading = ref(true);
 const selectedKeys = ref([]);
 const page = reactive({current: 1, limit: 10, total: 100});
 const columns = ref([
@@ -136,7 +152,11 @@ const action11 = ref([
 //新增
 const layFormRefAdd = ref(null)
 const visibleAdd = ref(false)
-const modelAdd = ref({})
+const modelAdd = ref({
+    userName: String,
+    password: String,
+    phonenumber: Number
+})
 const actionAdd = ref([
     {
         text: "确认",
@@ -233,8 +253,14 @@ const handleAdd = () => {
 
 //用户信息
 const query = null
+//获取权限信息
+const roleList = ref([])
+listRole(query).then(res => {
+    roleList.value = res.data.rows
+})
 //获取用户信息
 listUser(query).then(res => {
+    loading.value = false
     dataSource.value = res.data.rows
 })
 
