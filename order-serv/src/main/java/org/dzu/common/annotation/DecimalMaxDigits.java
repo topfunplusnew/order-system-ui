@@ -13,7 +13,7 @@ import java.lang.annotation.Target;
 @Target({ ElementType.FIELD, ElementType.METHOD, ElementType.PARAMETER, ElementType.ANNOTATION_TYPE })
 @Retention(RetentionPolicy.RUNTIME)
 public @interface DecimalMaxDigits {
-    String message() default "小数位数不能超过6位";
+    String message() default "数值溢出:小数位不超过2位同时整数位不超过13位";
     Class<?>[] groups() default {};
     Class<? extends Payload>[] payload() default {};
 }

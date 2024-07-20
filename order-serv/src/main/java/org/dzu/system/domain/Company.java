@@ -58,7 +58,7 @@ public class Company extends BaseEntity
     /** 余额 */
     @Excel(name = "余额")
     @DecimalMaxDigits
-    private Float surplusMoney;
+    private Double surplusMoney;
 
     /** 客户类别（ 客户，供应商） */
     @Excel(name = "客户类别")
@@ -194,12 +194,12 @@ public class Company extends BaseEntity
     {
         return bankNo;
     }
-    public void setSurplusMoney(Float surplusMoney)
+    public void setSurplusMoney(Double surplusMoney)
     {
         this.surplusMoney = surplusMoney;
     }
 
-    public Float getSurplusMoney()
+    public Double getSurplusMoney()
     {
         return surplusMoney;
     }
