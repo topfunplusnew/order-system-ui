@@ -21,7 +21,8 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
 
     <select id="selectFleetList" parameterType="Fleet" resultMap="FleetResult">
         <include refid="selectFleetVo"/>
-        <where>  
+        <where>
+            delFlag = 0
             <if test="fName != null  and fName != ''"> and fName like concat('%', #{fName}, '%')</if>
             <if test="fLeader != null  and fLeader != ''"> and fLeader = #{fLeader}</if>
             <if test="tel != null  and tel != ''"> and tel = #{tel}</if>
@@ -34,7 +35,7 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
     
     <select id="selectFleetById" parameterType="Long" resultMap="FleetResult">
         <include refid="selectFleetVo"/>
-        where id = #{id}
+        where id = #{id} and delFlag = 0
     </select>
 
     <insert id="insertFleet" parameterType="Fleet" useGeneratedKeys="true" keyProperty="id">
@@ -74,11 +75,11 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
     </update>
 
     <delete id="deleteFleetById" parameterType="Long">
-        delete from fleet where id = #{id}
+       update fleet set delFlag = 1 where id = #{id}
     </delete>
 
     <delete id="deleteFleetByIds" parameterType="String">
-        delete from fleet where id in 
+        update fleet set delFlag = 1 where id in
         <foreach item="id" collection="array" open="(" separator="," close=")">
             #{id}
         </foreach>

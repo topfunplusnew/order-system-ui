@@ -3,7 +3,10 @@ package org.dzu.system.domain;
 import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.apache.commons.lang3.builder.ToStringStyle;
 import org.dzu.common.annotation.Excel;
+import org.dzu.common.annotation.OnlyZeroOrOne;
+import org.dzu.common.annotation.PhoneLength;
 import org.dzu.common.core.domain.BaseEntity;
+import org.hibernate.validator.constraints.Length;
 
 /**
  * 车队管理对象 fleet
@@ -18,20 +21,25 @@ public class Fleet extends BaseEntity
     /** 主键 */
     private Long id;
 
+
     /** 车队名称 */
     @Excel(name = "车队名称")
+    @Length(max = 50, message = "车队名称不能超过50个字符")
     private String fName;
 
     /** 车队经理 */
     @Excel(name = "车队经理")
+    @Length(max = 50, message = "车队经理不能超过50个字符")
     private String fLeader;
 
     /** 车队经理电话 */
     @Excel(name = "车队经理电话")
+    @PhoneLength
     private String tel;
 
     /** 地址 */
     @Excel(name = "地址")
+    @Length(max = 250, message = "地址不能超过250个字符")
     private String address;
 
     /** 添加时间 */
@@ -44,6 +52,7 @@ public class Fleet extends BaseEntity
 
     /** 删除标记 */
     @Excel(name = "删除标记")
+    @OnlyZeroOrOne
     private Long delFlag;
 
     public void setId(Long id) 

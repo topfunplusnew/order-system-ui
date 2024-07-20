@@ -1,6 +1,9 @@
 package org.dzu.system.service.impl;
 
 import java.util.List;
+
+import org.dzu.common.constant.DelConstants;
+import org.dzu.common.utils.DateUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.dzu.system.mapper.FleetMapper;
@@ -52,6 +55,8 @@ public class FleetServiceImpl implements IFleetService
     @Override
     public int insertFleet(Fleet fleet)
     {
+        fleet.setAddtime(DateUtils.getTime());
+        fleet.setDelFlag(Long.valueOf(DelConstants.NODEL));
         return fleetMapper.insertFleet(fleet);
     }
 
@@ -64,6 +69,8 @@ public class FleetServiceImpl implements IFleetService
     @Override
     public int updateFleet(Fleet fleet)
     {
+        fleet.setDelFlag(Long.valueOf(DelConstants.NODEL));
+        fleet.setEditTime(DateUtils.getTime());
         return fleetMapper.updateFleet(fleet);
     }
 
