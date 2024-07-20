@@ -4,6 +4,7 @@ import java.util.List;
 import javax.servlet.http.HttpServletResponse;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
@@ -75,7 +76,7 @@ public class BankaccountController extends BaseController
     @PreAuthorize("@ss.hasPermi('system:bankaccount:add')")
     @Log(title = "银行卡管理", businessType = BusinessType.INSERT)
     @PostMapping
-    public AjaxResult add(@RequestBody Bankaccount bankaccount)
+    public AjaxResult add(@Validated @RequestBody Bankaccount bankaccount)
     {
         return toAjax(bankaccountService.insertBankaccount(bankaccount));
     }
@@ -86,7 +87,7 @@ public class BankaccountController extends BaseController
     @PreAuthorize("@ss.hasPermi('system:bankaccount:edit')")
     @Log(title = "银行卡管理", businessType = BusinessType.UPDATE)
     @PutMapping
-    public AjaxResult edit(@RequestBody Bankaccount bankaccount)
+    public AjaxResult edit( @Validated @RequestBody Bankaccount bankaccount)
     {
         return toAjax(bankaccountService.updateBankaccount(bankaccount));
     }

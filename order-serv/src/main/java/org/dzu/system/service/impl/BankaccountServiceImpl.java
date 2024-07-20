@@ -1,6 +1,11 @@
 package org.dzu.system.service.impl;
 
 import java.util.List;
+
+import org.dzu.common.constant.DelCOnstants;
+import org.dzu.common.core.domain.entity.SysUser;
+import org.dzu.common.utils.SecurityUtils;
+import org.dzu.system.domain.Productlevel;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.dzu.system.mapper.BankaccountMapper;
@@ -52,6 +57,7 @@ public class BankaccountServiceImpl implements IBankaccountService
     @Override
     public int insertBankaccount(Bankaccount bankaccount)
     {
+        bankaccount.setDelFlag(Long.valueOf(DelCOnstants.NODEL));
         return bankaccountMapper.insertBankaccount(bankaccount);
     }
 
@@ -64,6 +70,8 @@ public class BankaccountServiceImpl implements IBankaccountService
     @Override
     public int updateBankaccount(Bankaccount bankaccount)
     {
+
+        bankaccount.setDelFlag(Long.valueOf(DelCOnstants.NODEL));
         return bankaccountMapper.updateBankaccount(bankaccount);
     }
 
@@ -76,6 +84,7 @@ public class BankaccountServiceImpl implements IBankaccountService
     @Override
     public int deleteBankaccountByIds(Long[] ids)
     {
+
         return bankaccountMapper.deleteBankaccountByIds(ids);
     }
 
@@ -90,4 +99,5 @@ public class BankaccountServiceImpl implements IBankaccountService
     {
         return bankaccountMapper.deleteBankaccountById(id);
     }
+
 }

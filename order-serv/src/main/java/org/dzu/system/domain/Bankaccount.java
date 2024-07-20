@@ -2,8 +2,13 @@ package org.dzu.system.domain;
 
 import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.apache.commons.lang3.builder.ToStringStyle;
+import org.dzu.common.annotation.DecimalMaxDigits;
 import org.dzu.common.annotation.Excel;
+import org.dzu.common.annotation.OnlyZeroOrOne;
 import org.dzu.common.core.domain.BaseEntity;
+import org.hibernate.validator.constraints.Length;
+
+import javax.validation.constraints.Pattern;
 
 /**
  * 银行卡管理对象 bankaccount
@@ -20,6 +25,7 @@ public class Bankaccount extends BaseEntity
 
     /** 公司名称 */
     @Excel(name = "公司名称")
+    @Length(max = 50,message = "公司名称最大为50")
     private String companyName;
 
     /** 对应公司ID */
@@ -28,30 +34,37 @@ public class Bankaccount extends BaseEntity
 
     /** 开户行 */
     @Excel(name = "开户行")
+    @Length(max = 50,message = "开户行长度最大为50")
     private String bankName;
 
     /** 开户名称 */
     @Excel(name = "开户名称")
+    @Length(max = 50,message = "开户名称最大为50")
     private String acountsName;
 
     /** 账号 */
     @Excel(name = "账号")
+    @Length(max = 50,message = "账号长度最大为50")
     private String bankNo;
 
     /** 账户类型（己方公司，客户，供应商，司机，其它） */
-    @Excel(name = "账户类型", readConverterExp = "己=方公司，客户，供应商，司机，其它")
+    @Excel(name = "账户类型")
+    @Pattern(regexp = "己方公司|客户|供应商|司机|其他" ,message = "账户类型必须是(己方公司|客户|供应商|司机|其他)的一种")
     private String acountsType;
 
     /** 备注 */
     @Excel(name = "备注")
+    @Length(max = 200,message = "备注最多200字符")
     private String comments;
 
     /** 当前资金额 */
     @Excel(name = "当前资金额")
-    private Long amount;
+    @DecimalMaxDigits
+    private Double amount;
 
     /** 删除标记 */
     @Excel(name = "删除标记")
+    @OnlyZeroOrOne
     private Long delFlag;
 
     public void setId(Long id) 
@@ -126,12 +139,12 @@ public class Bankaccount extends BaseEntity
     {
         return comments;
     }
-    public void setAmount(Long amount) 
+    public void setAmount(Double amount)
     {
         this.amount = amount;
     }
 
-    public Long getAmount() 
+    public Double getAmount()
     {
         return amount;
     }

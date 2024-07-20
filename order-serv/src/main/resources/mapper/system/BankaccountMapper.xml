@@ -23,7 +23,8 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
 
     <select id="selectBankaccountList" parameterType="Bankaccount" resultMap="BankaccountResult">
         <include refid="selectBankaccountVo"/>
-        <where>  
+        <where>
+            delFlag = 0
             <if test="companyName != null  and companyName != ''"> and companyName like concat('%', #{companyName}, '%')</if>
             <if test="companyId != null "> and companyId = #{companyId}</if>
             <if test="bankName != null  and bankName != ''"> and bankName like concat('%', #{bankName}, '%')</if>
@@ -38,7 +39,7 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
     
     <select id="selectBankaccountById" parameterType="Long" resultMap="BankaccountResult">
         <include refid="selectBankaccountVo"/>
-        where id = #{id}
+        where id = #{id} and delFlag = 0
     </select>
 
     <insert id="insertBankaccount" parameterType="Bankaccount" useGeneratedKeys="true" keyProperty="id">
@@ -84,11 +85,11 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
     </update>
 
     <delete id="deleteBankaccountById" parameterType="Long">
-        delete from bankaccount where id = #{id}
+        update bankaccount set delFlag = 1  where id = #{id}
     </delete>
 
     <delete id="deleteBankaccountByIds" parameterType="String">
-        delete from bankaccount where id in 
+        update bankaccount set delFlag = 1  where id in
         <foreach item="id" collection="array" open="(" separator="," close=")">
             #{id}
         </foreach>
