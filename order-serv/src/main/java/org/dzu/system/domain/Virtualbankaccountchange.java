@@ -2,8 +2,13 @@ package org.dzu.system.domain;
 
 import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.apache.commons.lang3.builder.ToStringStyle;
+import org.dzu.common.annotation.DecimalMaxDigits;
 import org.dzu.common.annotation.Excel;
 import org.dzu.common.core.domain.BaseEntity;
+import org.hibernate.validator.constraints.Length;
+
+import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Pattern;
 
 /**
  * 虚拟银行账户变动信息对象 virtualbankaccountchange
@@ -15,11 +20,12 @@ public class Virtualbankaccountchange extends BaseEntity
 {
     private static final long serialVersionUID = 1L;
 
-    /** 主键 */
     private Long id;
+
 
     /** 公司ID */
     @Excel(name = "公司ID")
+    @Length(max = 80, message = "公司ID不能超过80个字符")
     private String companyId;
 
     /** 发生操作行为的表 */
@@ -27,23 +33,29 @@ public class Virtualbankaccountchange extends BaseEntity
     private String tableName;
 
     /** 发生操作行为的冲抵款编号（UUID） */
-    @Excel(name = "发生操作行为的冲抵款编号", readConverterExp = "U=UID")
+    @Excel(name = "发生操作行为的冲抵款编号")
     private String payNO;
 
     /** 日期 */
     @Excel(name = "日期")
+    @Length(max = 50, message = "日期不能超过50个字符")
     private String operateDate;
 
     /** 变动类型（收入、支出） */
-    @Excel(name = "变动类型", readConverterExp = "收=入、支出")
+    @Excel(name = "变动类型")
+    @Pattern(regexp = "收入|支出",message = "变动类型只能为收入或者支出")
+    @Length(max = 15, message = "变动类型不能超过15个字符")
     private String changeType;
 
     /** 金额 */
     @Excel(name = "金额")
-    private Long moneyAmount;
+    @DecimalMaxDigits
+    @NotNull(message = "金额不能为空")
+    private Double moneyAmount;
 
     /** 备注 */
     @Excel(name = "备注")
+    @Length(max = 200, message = "备注不能超过200个字符")
     private String comments;
 
     /** 添加时间 */
@@ -57,8 +69,7 @@ public class Virtualbankaccountchange extends BaseEntity
     /** 操作人员姓名 */
     @Excel(name = "操作人员姓名")
     private String UserName;
-
-    public void setId(Long id) 
+    public void setId(Long id)
     {
         this.id = id;
     }
@@ -112,12 +123,12 @@ public class Virtualbankaccountchange extends BaseEntity
     {
         return changeType;
     }
-    public void setMoneyAmount(Long moneyAmount) 
+    public void setMoneyAmount(Double moneyAmount)
     {
         this.moneyAmount = moneyAmount;
     }
 
-    public Long getMoneyAmount() 
+    public Double getMoneyAmount()
     {
         return moneyAmount;
     }
@@ -139,7 +150,7 @@ public class Virtualbankaccountchange extends BaseEntity
     {
         return addtime;
     }
-    public void setUserId(Long userId) 
+    public void setUserId(Long userId)
     {
         this.userId = userId;
     }

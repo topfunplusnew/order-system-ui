@@ -3,6 +3,7 @@ package org.dzu.common.utils.reflect;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.Validate;
 import org.apache.poi.ss.usermodel.DateUtil;
+import org.dzu.common.core.domain.entity.SysUser;
 import org.dzu.common.core.text.Convert;
 import org.dzu.common.utils.DateUtils;
 import org.slf4j.Logger;
@@ -402,5 +403,9 @@ public class ReflectUtils
             return new RuntimeException(msg, ((InvocationTargetException) e).getTargetException());
         }
         return new RuntimeException(msg, e);
+    }
+    public static void modfiyPersonInfo(Object object, SysUser user){
+        invokeSetter(object,"UserName",user.getTrueName());
+        invokeSetter(object,"userId",user.getUserId());
     }
 }
