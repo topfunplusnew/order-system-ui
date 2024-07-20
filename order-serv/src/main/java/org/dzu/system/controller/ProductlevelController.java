@@ -4,6 +4,7 @@ import java.util.List;
 import javax.servlet.http.HttpServletResponse;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
@@ -75,7 +76,7 @@ public class ProductlevelController extends BaseController
     @PreAuthorize("@ss.hasPermi('system:productlevel:add')")
     @Log(title = "产品级别管理", businessType = BusinessType.INSERT)
     @PostMapping
-    public AjaxResult add(@RequestBody Productlevel productlevel)
+    public AjaxResult add(@Validated @RequestBody Productlevel productlevel)
     {
         return toAjax(productlevelService.insertProductlevel(productlevel));
     }
@@ -86,7 +87,7 @@ public class ProductlevelController extends BaseController
     @PreAuthorize("@ss.hasPermi('system:productlevel:edit')")
     @Log(title = "产品级别管理", businessType = BusinessType.UPDATE)
     @PutMapping
-    public AjaxResult edit(@RequestBody Productlevel productlevel)
+    public AjaxResult edit(@Validated @RequestBody Productlevel productlevel)
     {
         return toAjax(productlevelService.updateProductlevel(productlevel));
     }

@@ -3,7 +3,11 @@ package org.dzu.system.domain;
 import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.apache.commons.lang3.builder.ToStringStyle;
 import org.dzu.common.annotation.Excel;
+import org.dzu.common.annotation.OnlyZeroOrOne;
 import org.dzu.common.core.domain.BaseEntity;
+
+import javax.validation.constraints.NotEmpty;
+import javax.validation.constraints.NotNull;
 
 /**
  * 产品级别管理对象 productlevel
@@ -20,34 +24,42 @@ public class Productlevel extends BaseEntity
 
     /** 级别编码 */
     @Excel(name = "级别编码")
+    @NotNull(message = "级别编码是必须的")
     private String levelNo;
 
     /** 级别名称 */
     @Excel(name = "级别名称")
+    @NotNull(message = "级别名称是必须的")
     private String levelName;
 
     /** 分类编号 */
     @Excel(name = "分类编号")
+    @NotNull(message = "分类编号是必须的")
     private Long categoryNo;
 
     /** 分类名称 */
     @Excel(name = "分类名称")
+    @NotNull(message = "分类名称是必须的")
     private String categoryName;
 
     /** 厚度 */
     @Excel(name = "厚度")
+    @NotNull(message = "厚度信息是必须的")
     private Long height;
 
     /** 长度 */
     @Excel(name = "长度")
+    @NotNull(message = "长度信息是必须的")
     private Long length;
 
     /** 宽度 */
     @Excel(name = "宽度")
+    @NotNull(message = "宽度位信息是必须的")
     private Long width;
 
     /** 吨位 */
     @Excel(name = "吨位")
+    @NotNull(message = "吨位信息是必须的")
     private Long tonnage;
 
     /** 添加时间 */
@@ -64,6 +76,7 @@ public class Productlevel extends BaseEntity
 
     /** 删除标记 */
     @Excel(name = "删除标记")
+    @OnlyZeroOrOne
     private Long delFlag;
 
     public void setId(Long id) 

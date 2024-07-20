@@ -59,6 +59,7 @@ public class CompanyServiceImpl implements ICompanyService
     public int insertCompany(Company company){
         // 设置基础属性
         company.setDelFlag(Long.valueOf(CompanyConstant.NODEL));
+        company.setAddtime(DateUtils.getTime());
         updateModifypersonneldata(company);
         return companyMapper.insertCompany(company);
     }
@@ -104,7 +105,6 @@ public class CompanyServiceImpl implements ICompanyService
 
     private void updateModifypersonneldata(Company company){
         // 设置操作人员+添加时间
-        company.setAddtime(DateUtils.getTime());
         SysUser user = SecurityUtils.getLoginUser().getUser();
         company.setUserId(user.getUserId());
         company.setUserName(user.getTrueName());

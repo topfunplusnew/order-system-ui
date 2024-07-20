@@ -27,7 +27,8 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
 
     <select id="selectProductlevelList" parameterType="Productlevel" resultMap="ProductlevelResult">
         <include refid="selectProductlevelVo"/>
-        <where>  
+        <where>
+            delFlag = 0
             <if test="levelNo != null  and levelNo != ''"> and levelNo = #{levelNo}</if>
             <if test="levelName != null  and levelName != ''"> and levelName like concat('%', #{levelName}, '%')</if>
             <if test="categoryNo != null "> and categoryNo = #{categoryNo}</if>
@@ -45,7 +46,7 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
     
     <select id="selectProductlevelById" parameterType="Long" resultMap="ProductlevelResult">
         <include refid="selectProductlevelVo"/>
-        where id = #{id}
+        where id = #{id} and delFlag = 0
     </select>
 
     <insert id="insertProductlevel" parameterType="Productlevel" useGeneratedKeys="true" keyProperty="id">
@@ -103,11 +104,13 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
     </update>
 
     <delete id="deleteProductlevelById" parameterType="Long">
-        delete from productlevel where id = #{id}
+        update productlevel
+        set delFlag= where id = #{id}
     </delete>
 
     <delete id="deleteProductlevelByIds" parameterType="String">
-        delete from productlevel where id in 
+        update productlevel
+        set delFlag=1 where id in
         <foreach item="id" collection="array" open="(" separator="," close=")">
             #{id}
         </foreach>
