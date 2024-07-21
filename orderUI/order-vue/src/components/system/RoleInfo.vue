@@ -61,7 +61,7 @@ import {listRole} from "../../api/api/system/role.ts";
 import {useAddForm, usePopForm} from "../../hooks/form.ts";
 import {AxiosPromise} from "axios";
 
-const loading = ref(false);
+const loading = ref(true);
 const selectedKeys = ref([]);
 const page = reactive({current: 1, limit: 10, total: 100});
 const columns = ref([
@@ -143,6 +143,7 @@ const handleEdit = (row) => {
     visiblePop.value = !visiblePop.value
 }
 listRole(null).then(res => {
+    loading.value = false
     dataSource.value = res.data.rows
 })
 </script>
