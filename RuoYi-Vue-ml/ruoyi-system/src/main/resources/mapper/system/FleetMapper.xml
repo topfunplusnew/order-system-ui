@@ -1,0 +1,86 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ruoyi.system.mapper.FleetMapper">
+    
+    <resultMap type="Fleet" id="FleetResult">
+        <result property="id"    column="id"    />
+        <result property="fName"    column="fName"    />
+        <result property="fLeader"    column="fLeader"    />
+        <result property="tel"    column="tel"    />
+        <result property="address"    column="address"    />
+        <result property="addtime"    column="addtime"    />
+        <result property="editTime"    column="editTime"    />
+        <result property="delFlag"    column="delFlag"    />
+    </resultMap>
+
+    <sql id="selectFleetVo">
+        select id, fName, fLeader, tel, address, addtime, editTime, delFlag from fleet
+    </sql>
+
+    <select id="selectFleetList" parameterType="Fleet" resultMap="FleetResult">
+        <include refid="selectFleetVo"/>
+        <where>  
+            <if test="fName != null  and fName != ''"> and fName like concat('%', #{fName}, '%')</if>
+            <if test="fLeader != null  and fLeader != ''"> and fLeader = #{fLeader}</if>
+            <if test="tel != null  and tel != ''"> and tel = #{tel}</if>
+            <if test="address != null  and address != ''"> and address = #{address}</if>
+            <if test="addtime != null  and addtime != ''"> and addtime = #{addtime}</if>
+            <if test="editTime != null  and editTime != ''"> and editTime = #{editTime}</if>
+            <if test="delFlag != null "> and delFlag = #{delFlag}</if>
+        </where>
+    </select>
+    
+    <select id="selectFleetById" parameterType="Long" resultMap="FleetResult">
+        <include refid="selectFleetVo"/>
+        where id = #{id}
+    </select>
+
+    <insert id="insertFleet" parameterType="Fleet" useGeneratedKeys="true" keyProperty="id">
+        insert into fleet
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="fName != null">fName,</if>
+            <if test="fLeader != null">fLeader,</if>
+            <if test="tel != null">tel,</if>
+            <if test="address != null">address,</if>
+            <if test="addtime != null">addtime,</if>
+            <if test="editTime != null">editTime,</if>
+            <if test="delFlag != null">delFlag,</if>
+         </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="fName != null">#{fName},</if>
+            <if test="fLeader != null">#{fLeader},</if>
+            <if test="tel != null">#{tel},</if>
+            <if test="address != null">#{address},</if>
+            <if test="addtime != null">#{addtime},</if>
+            <if test="editTime != null">#{editTime},</if>
+            <if test="delFlag != null">#{delFlag},</if>
+         </trim>
+    </insert>
+
+    <update id="updateFleet" parameterType="Fleet">
+        update fleet
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="fName != null">fName = #{fName},</if>
+            <if test="fLeader != null">fLeader = #{fLeader},</if>
+            <if test="tel != null">tel = #{tel},</if>
+            <if test="address != null">address = #{address},</if>
+            <if test="addtime != null">addtime = #{addtime},</if>
+            <if test="editTime != null">editTime = #{editTime},</if>
+            <if test="delFlag != null">delFlag = #{delFlag},</if>
+        </trim>
+        where id = #{id}
+    </update>
+
+    <delete id="deleteFleetById" parameterType="Long">
+        delete from fleet where id = #{id}
+    </delete>
+
+    <delete id="deleteFleetByIds" parameterType="String">
+        delete from fleet where id in 
+        <foreach item="id" collection="array" open="(" separator="," close=")">
+            #{id}
+        </foreach>
+    </delete>
+</mapper>

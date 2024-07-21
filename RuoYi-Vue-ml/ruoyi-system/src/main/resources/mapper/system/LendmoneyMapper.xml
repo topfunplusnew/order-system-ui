@@ -1,0 +1,155 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ruoyi.system.mapper.LendmoneyMapper">
+    
+    <resultMap type="Lendmoney" id="LendmoneyResult">
+        <result property="id"    column="id"    />
+        <result property="payNO"    column="payNO"    />
+        <result property="moneyAmount"    column="moneyAmount"    />
+        <result property="lendType"    column="lendType"    />
+        <result property="company"    column="company"    />
+        <result property="otherAcountsName"    column="otherAcountsName"    />
+        <result property="otherBankNo"    column="otherBankNo"    />
+        <result property="otherBankName"    column="otherBankName"    />
+        <result property="otherBankID"    column="otherBankID"    />
+        <result property="selfAcountsName"    column="selfAcountsName"    />
+        <result property="selfBankNo"    column="selfBankNo"    />
+        <result property="selfBankName"    column="selfBankName"    />
+        <result property="selfBankID"    column="selfBankID"    />
+        <result property="acountsName"    column="acountsName"    />
+        <result property="bankNo"    column="bankNo"    />
+        <result property="payTime"    column="payTime"    />
+        <result property="originReason"    column="originReason"    />
+        <result property="comments"    column="comments"    />
+        <result property="addtime"    column="addtime"    />
+        <result property="userId"    column="userId"    />
+        <result property="UserName"    column="UserName"    />
+        <result property="updateTime"    column="update_time"    />
+    </resultMap>
+
+    <sql id="selectLendmoneyVo">
+        select id, payNO, moneyAmount, lendType, company, otherAcountsName, otherBankNo, otherBankName, otherBankID, selfAcountsName, selfBankNo, selfBankName, selfBankID, acountsName, bankNo, payTime, originReason, comments, addtime, userId, UserName, update_time from lendmoney
+    </sql>
+
+    <select id="selectLendmoneyList" parameterType="Lendmoney" resultMap="LendmoneyResult">
+        <include refid="selectLendmoneyVo"/>
+        <where>  
+            <if test="payNO != null  and payNO != ''"> and payNO = #{payNO}</if>
+            <if test="moneyAmount != null "> and moneyAmount = #{moneyAmount}</if>
+            <if test="lendType != null  and lendType != ''"> and lendType = #{lendType}</if>
+            <if test="company != null  and company != ''"> and company = #{company}</if>
+            <if test="otherAcountsName != null  and otherAcountsName != ''"> and otherAcountsName like concat('%', #{otherAcountsName}, '%')</if>
+            <if test="otherBankNo != null  and otherBankNo != ''"> and otherBankNo = #{otherBankNo}</if>
+            <if test="otherBankName != null  and otherBankName != ''"> and otherBankName like concat('%', #{otherBankName}, '%')</if>
+            <if test="otherBankID != null  and otherBankID != ''"> and otherBankID = #{otherBankID}</if>
+            <if test="selfAcountsName != null  and selfAcountsName != ''"> and selfAcountsName like concat('%', #{selfAcountsName}, '%')</if>
+            <if test="selfBankNo != null  and selfBankNo != ''"> and selfBankNo = #{selfBankNo}</if>
+            <if test="selfBankName != null  and selfBankName != ''"> and selfBankName like concat('%', #{selfBankName}, '%')</if>
+            <if test="selfBankID != null  and selfBankID != ''"> and selfBankID = #{selfBankID}</if>
+            <if test="acountsName != null  and acountsName != ''"> and acountsName like concat('%', #{acountsName}, '%')</if>
+            <if test="bankNo != null  and bankNo != ''"> and bankNo = #{bankNo}</if>
+            <if test="payTime != null  and payTime != ''"> and payTime = #{payTime}</if>
+            <if test="originReason != null "> and originReason = #{originReason}</if>
+            <if test="comments != null  and comments != ''"> and comments = #{comments}</if>
+            <if test="addtime != null  and addtime != ''"> and addtime = #{addtime}</if>
+            <if test="userId != null "> and userId = #{userId}</if>
+            <if test="UserName != null  and UserName != ''"> and UserName like concat('%', #{UserName}, '%')</if>
+        </where>
+    </select>
+    
+    <select id="selectLendmoneyById" parameterType="Long" resultMap="LendmoneyResult">
+        <include refid="selectLendmoneyVo"/>
+        where id = #{id}
+    </select>
+
+    <insert id="insertLendmoney" parameterType="Lendmoney" useGeneratedKeys="true" keyProperty="id">
+        insert into lendmoney
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="payNO != null">payNO,</if>
+            <if test="moneyAmount != null">moneyAmount,</if>
+            <if test="lendType != null">lendType,</if>
+            <if test="company != null">company,</if>
+            <if test="otherAcountsName != null">otherAcountsName,</if>
+            <if test="otherBankNo != null">otherBankNo,</if>
+            <if test="otherBankName != null">otherBankName,</if>
+            <if test="otherBankID != null">otherBankID,</if>
+            <if test="selfAcountsName != null">selfAcountsName,</if>
+            <if test="selfBankNo != null">selfBankNo,</if>
+            <if test="selfBankName != null">selfBankName,</if>
+            <if test="selfBankID != null">selfBankID,</if>
+            <if test="acountsName != null">acountsName,</if>
+            <if test="bankNo != null">bankNo,</if>
+            <if test="payTime != null">payTime,</if>
+            <if test="originReason != null">originReason,</if>
+            <if test="comments != null">comments,</if>
+            <if test="addtime != null">addtime,</if>
+            <if test="userId != null">userId,</if>
+            <if test="UserName != null">UserName,</if>
+            <if test="updateTime != null">update_time,</if>
+         </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="payNO != null">#{payNO},</if>
+            <if test="moneyAmount != null">#{moneyAmount},</if>
+            <if test="lendType != null">#{lendType},</if>
+            <if test="company != null">#{company},</if>
+            <if test="otherAcountsName != null">#{otherAcountsName},</if>
+            <if test="otherBankNo != null">#{otherBankNo},</if>
+            <if test="otherBankName != null">#{otherBankName},</if>
+            <if test="otherBankID != null">#{otherBankID},</if>
+            <if test="selfAcountsName != null">#{selfAcountsName},</if>
+            <if test="selfBankNo != null">#{selfBankNo},</if>
+            <if test="selfBankName != null">#{selfBankName},</if>
+            <if test="selfBankID != null">#{selfBankID},</if>
+            <if test="acountsName != null">#{acountsName},</if>
+            <if test="bankNo != null">#{bankNo},</if>
+            <if test="payTime != null">#{payTime},</if>
+            <if test="originReason != null">#{originReason},</if>
+            <if test="comments != null">#{comments},</if>
+            <if test="addtime != null">#{addtime},</if>
+            <if test="userId != null">#{userId},</if>
+            <if test="UserName != null">#{UserName},</if>
+            <if test="updateTime != null">#{updateTime},</if>
+         </trim>
+    </insert>
+
+    <update id="updateLendmoney" parameterType="Lendmoney">
+        update lendmoney
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="payNO != null">payNO = #{payNO},</if>
+            <if test="moneyAmount != null">moneyAmount = #{moneyAmount},</if>
+            <if test="lendType != null">lendType = #{lendType},</if>
+            <if test="company != null">company = #{company},</if>
+            <if test="otherAcountsName != null">otherAcountsName = #{otherAcountsName},</if>
+            <if test="otherBankNo != null">otherBankNo = #{otherBankNo},</if>
+            <if test="otherBankName != null">otherBankName = #{otherBankName},</if>
+            <if test="otherBankID != null">otherBankID = #{otherBankID},</if>
+            <if test="selfAcountsName != null">selfAcountsName = #{selfAcountsName},</if>
+            <if test="selfBankNo != null">selfBankNo = #{selfBankNo},</if>
+            <if test="selfBankName != null">selfBankName = #{selfBankName},</if>
+            <if test="selfBankID != null">selfBankID = #{selfBankID},</if>
+            <if test="acountsName != null">acountsName = #{acountsName},</if>
+            <if test="bankNo != null">bankNo = #{bankNo},</if>
+            <if test="payTime != null">payTime = #{payTime},</if>
+            <if test="originReason != null">originReason = #{originReason},</if>
+            <if test="comments != null">comments = #{comments},</if>
+            <if test="addtime != null">addtime = #{addtime},</if>
+            <if test="userId != null">userId = #{userId},</if>
+            <if test="UserName != null">UserName = #{UserName},</if>
+            <if test="updateTime != null">update_time = #{updateTime},</if>
+        </trim>
+        where id = #{id}
+    </update>
+
+    <delete id="deleteLendmoneyById" parameterType="Long">
+        delete from lendmoney where id = #{id}
+    </delete>
+
+    <delete id="deleteLendmoneyByIds" parameterType="String">
+        delete from lendmoney where id in 
+        <foreach item="id" collection="array" open="(" separator="," close=")">
+            #{id}
+        </foreach>
+    </delete>
+</mapper>

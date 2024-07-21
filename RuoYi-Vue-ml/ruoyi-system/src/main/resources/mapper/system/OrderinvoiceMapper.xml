@@ -1,0 +1,130 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ruoyi.system.mapper.OrderinvoiceMapper">
+    
+    <resultMap type="Orderinvoice" id="OrderinvoiceResult">
+        <result property="id"    column="id"    />
+        <result property="ordersNo"    column="ordersNo"    />
+        <result property="invoiceDate"    column="invoiceDate"    />
+        <result property="invoiceType"    column="invoiceType"    />
+        <result property="invoiceAmount"    column="invoiceAmount"    />
+        <result property="companyType"    column="companyType"    />
+        <result property="companyName"    column="companyName"    />
+        <result property="companyID"    column="companyID"    />
+        <result property="invoiceCompanyName"    column="invoiceCompanyName"    />
+        <result property="actualInvoiceAmount"    column="actualInvoiceAmount"    />
+        <result property="ticketPoint"    column="ticketPoint"    />
+        <result property="ticketPointAmount"    column="ticketPointAmount"    />
+        <result property="comments"    column="comments"    />
+        <result property="addtime"    column="addtime"    />
+        <result property="userId"    column="userId"    />
+        <result property="UserName"    column="UserName"    />
+        <result property="updateTime"    column="update_time"    />
+    </resultMap>
+
+    <sql id="selectOrderinvoiceVo">
+        select id, ordersNo, invoiceDate, invoiceType, invoiceAmount, companyType, companyName, companyID, invoiceCompanyName, actualInvoiceAmount, ticketPoint, ticketPointAmount, comments, addtime, userId, UserName, update_time from orderinvoice
+    </sql>
+
+    <select id="selectOrderinvoiceList" parameterType="Orderinvoice" resultMap="OrderinvoiceResult">
+        <include refid="selectOrderinvoiceVo"/>
+        <where>  
+            <if test="ordersNo != null  and ordersNo != ''"> and ordersNo = #{ordersNo}</if>
+            <if test="invoiceDate != null  and invoiceDate != ''"> and invoiceDate = #{invoiceDate}</if>
+            <if test="invoiceType != null "> and invoiceType = #{invoiceType}</if>
+            <if test="invoiceAmount != null "> and invoiceAmount = #{invoiceAmount}</if>
+            <if test="companyType != null  and companyType != ''"> and companyType = #{companyType}</if>
+            <if test="companyName != null  and companyName != ''"> and companyName like concat('%', #{companyName}, '%')</if>
+            <if test="companyID != null "> and companyID = #{companyID}</if>
+            <if test="invoiceCompanyName != null  and invoiceCompanyName != ''"> and invoiceCompanyName like concat('%', #{invoiceCompanyName}, '%')</if>
+            <if test="actualInvoiceAmount != null "> and actualInvoiceAmount = #{actualInvoiceAmount}</if>
+            <if test="ticketPoint != null "> and ticketPoint = #{ticketPoint}</if>
+            <if test="ticketPointAmount != null "> and ticketPointAmount = #{ticketPointAmount}</if>
+            <if test="comments != null  and comments != ''"> and comments = #{comments}</if>
+            <if test="addtime != null  and addtime != ''"> and addtime = #{addtime}</if>
+            <if test="userId != null "> and userId = #{userId}</if>
+            <if test="UserName != null  and UserName != ''"> and UserName like concat('%', #{UserName}, '%')</if>
+        </where>
+    </select>
+    
+    <select id="selectOrderinvoiceById" parameterType="Long" resultMap="OrderinvoiceResult">
+        <include refid="selectOrderinvoiceVo"/>
+        where id = #{id}
+    </select>
+
+    <insert id="insertOrderinvoice" parameterType="Orderinvoice" useGeneratedKeys="true" keyProperty="id">
+        insert into orderinvoice
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="ordersNo != null">ordersNo,</if>
+            <if test="invoiceDate != null">invoiceDate,</if>
+            <if test="invoiceType != null">invoiceType,</if>
+            <if test="invoiceAmount != null">invoiceAmount,</if>
+            <if test="companyType != null">companyType,</if>
+            <if test="companyName != null">companyName,</if>
+            <if test="companyID != null">companyID,</if>
+            <if test="invoiceCompanyName != null">invoiceCompanyName,</if>
+            <if test="actualInvoiceAmount != null">actualInvoiceAmount,</if>
+            <if test="ticketPoint != null">ticketPoint,</if>
+            <if test="ticketPointAmount != null">ticketPointAmount,</if>
+            <if test="comments != null">comments,</if>
+            <if test="addtime != null">addtime,</if>
+            <if test="userId != null">userId,</if>
+            <if test="UserName != null">UserName,</if>
+            <if test="updateTime != null">update_time,</if>
+         </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="ordersNo != null">#{ordersNo},</if>
+            <if test="invoiceDate != null">#{invoiceDate},</if>
+            <if test="invoiceType != null">#{invoiceType},</if>
+            <if test="invoiceAmount != null">#{invoiceAmount},</if>
+            <if test="companyType != null">#{companyType},</if>
+            <if test="companyName != null">#{companyName},</if>
+            <if test="companyID != null">#{companyID},</if>
+            <if test="invoiceCompanyName != null">#{invoiceCompanyName},</if>
+            <if test="actualInvoiceAmount != null">#{actualInvoiceAmount},</if>
+            <if test="ticketPoint != null">#{ticketPoint},</if>
+            <if test="ticketPointAmount != null">#{ticketPointAmount},</if>
+            <if test="comments != null">#{comments},</if>
+            <if test="addtime != null">#{addtime},</if>
+            <if test="userId != null">#{userId},</if>
+            <if test="UserName != null">#{UserName},</if>
+            <if test="updateTime != null">#{updateTime},</if>
+         </trim>
+    </insert>
+
+    <update id="updateOrderinvoice" parameterType="Orderinvoice">
+        update orderinvoice
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="ordersNo != null">ordersNo = #{ordersNo},</if>
+            <if test="invoiceDate != null">invoiceDate = #{invoiceDate},</if>
+            <if test="invoiceType != null">invoiceType = #{invoiceType},</if>
+            <if test="invoiceAmount != null">invoiceAmount = #{invoiceAmount},</if>
+            <if test="companyType != null">companyType = #{companyType},</if>
+            <if test="companyName != null">companyName = #{companyName},</if>
+            <if test="companyID != null">companyID = #{companyID},</if>
+            <if test="invoiceCompanyName != null">invoiceCompanyName = #{invoiceCompanyName},</if>
+            <if test="actualInvoiceAmount != null">actualInvoiceAmount = #{actualInvoiceAmount},</if>
+            <if test="ticketPoint != null">ticketPoint = #{ticketPoint},</if>
+            <if test="ticketPointAmount != null">ticketPointAmount = #{ticketPointAmount},</if>
+            <if test="comments != null">comments = #{comments},</if>
+            <if test="addtime != null">addtime = #{addtime},</if>
+            <if test="userId != null">userId = #{userId},</if>
+            <if test="UserName != null">UserName = #{UserName},</if>
+            <if test="updateTime != null">update_time = #{updateTime},</if>
+        </trim>
+        where id = #{id}
+    </update>
+
+    <delete id="deleteOrderinvoiceById" parameterType="Long">
+        delete from orderinvoice where id = #{id}
+    </delete>
+
+    <delete id="deleteOrderinvoiceByIds" parameterType="String">
+        delete from orderinvoice where id in 
+        <foreach item="id" collection="array" open="(" separator="," close=")">
+            #{id}
+        </foreach>
+    </delete>
+</mapper>

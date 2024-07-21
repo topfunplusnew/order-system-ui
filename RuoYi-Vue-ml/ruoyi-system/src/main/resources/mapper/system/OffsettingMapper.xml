@@ -1,0 +1,115 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ruoyi.system.mapper.OffsettingMapper">
+    
+    <resultMap type="Offsetting" id="OffsettingResult">
+        <result property="id"    column="id"    />
+        <result property="OffsetNO"    column="OffsetNO"    />
+        <result property="operateDate"    column="operateDate"    />
+        <result property="operateType"    column="operateType"    />
+        <result property="moneyAmount"    column="moneyAmount"    />
+        <result property="company"    column="company"    />
+        <result property="companyId"    column="company_id"    />
+        <result property="companyType"    column="companyType"    />
+        <result property="comments"    column="comments"    />
+        <result property="addtime"    column="addtime"    />
+        <result property="userId"    column="userId"    />
+        <result property="UserName"    column="UserName"    />
+        <result property="updateTime"    column="update_time"    />
+        <result property="delFlag"    column="delFlag"    />
+    </resultMap>
+
+    <sql id="selectOffsettingVo">
+        select id, OffsetNO, operateDate, operateType, moneyAmount, company, company_id, companyType, comments, addtime, userId, UserName, update_time, delFlag from offsetting
+    </sql>
+
+    <select id="selectOffsettingList" parameterType="Offsetting" resultMap="OffsettingResult">
+        <include refid="selectOffsettingVo"/>
+        <where>  
+            <if test="OffsetNO != null  and OffsetNO != ''"> and OffsetNO = #{OffsetNO}</if>
+            <if test="operateDate != null  and operateDate != ''"> and operateDate = #{operateDate}</if>
+            <if test="operateType != null  and operateType != ''"> and operateType = #{operateType}</if>
+            <if test="moneyAmount != null "> and moneyAmount = #{moneyAmount}</if>
+            <if test="company != null  and company != ''"> and company = #{company}</if>
+            <if test="companyId != null "> and company_id = #{companyId}</if>
+            <if test="companyType != null "> and companyType = #{companyType}</if>
+            <if test="comments != null  and comments != ''"> and comments = #{comments}</if>
+            <if test="addtime != null  and addtime != ''"> and addtime = #{addtime}</if>
+            <if test="userId != null "> and userId = #{userId}</if>
+            <if test="UserName != null  and UserName != ''"> and UserName like concat('%', #{UserName}, '%')</if>
+            <if test="delFlag != null "> and delFlag = #{delFlag}</if>
+        </where>
+    </select>
+    
+    <select id="selectOffsettingById" parameterType="Long" resultMap="OffsettingResult">
+        <include refid="selectOffsettingVo"/>
+        where id = #{id}
+    </select>
+
+    <insert id="insertOffsetting" parameterType="Offsetting" useGeneratedKeys="true" keyProperty="id">
+        insert into offsetting
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="OffsetNO != null">OffsetNO,</if>
+            <if test="operateDate != null">operateDate,</if>
+            <if test="operateType != null">operateType,</if>
+            <if test="moneyAmount != null">moneyAmount,</if>
+            <if test="company != null">company,</if>
+            <if test="companyId != null">company_id,</if>
+            <if test="companyType != null">companyType,</if>
+            <if test="comments != null">comments,</if>
+            <if test="addtime != null">addtime,</if>
+            <if test="userId != null">userId,</if>
+            <if test="UserName != null">UserName,</if>
+            <if test="updateTime != null">update_time,</if>
+            <if test="delFlag != null">delFlag,</if>
+         </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="OffsetNO != null">#{OffsetNO},</if>
+            <if test="operateDate != null">#{operateDate},</if>
+            <if test="operateType != null">#{operateType},</if>
+            <if test="moneyAmount != null">#{moneyAmount},</if>
+            <if test="company != null">#{company},</if>
+            <if test="companyId != null">#{companyId},</if>
+            <if test="companyType != null">#{companyType},</if>
+            <if test="comments != null">#{comments},</if>
+            <if test="addtime != null">#{addtime},</if>
+            <if test="userId != null">#{userId},</if>
+            <if test="UserName != null">#{UserName},</if>
+            <if test="updateTime != null">#{updateTime},</if>
+            <if test="delFlag != null">#{delFlag},</if>
+         </trim>
+    </insert>
+
+    <update id="updateOffsetting" parameterType="Offsetting">
+        update offsetting
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="OffsetNO != null">OffsetNO = #{OffsetNO},</if>
+            <if test="operateDate != null">operateDate = #{operateDate},</if>
+            <if test="operateType != null">operateType = #{operateType},</if>
+            <if test="moneyAmount != null">moneyAmount = #{moneyAmount},</if>
+            <if test="company != null">company = #{company},</if>
+            <if test="companyId != null">company_id = #{companyId},</if>
+            <if test="companyType != null">companyType = #{companyType},</if>
+            <if test="comments != null">comments = #{comments},</if>
+            <if test="addtime != null">addtime = #{addtime},</if>
+            <if test="userId != null">userId = #{userId},</if>
+            <if test="UserName != null">UserName = #{UserName},</if>
+            <if test="updateTime != null">update_time = #{updateTime},</if>
+            <if test="delFlag != null">delFlag = #{delFlag},</if>
+        </trim>
+        where id = #{id}
+    </update>
+
+    <delete id="deleteOffsettingById" parameterType="Long">
+        delete from offsetting where id = #{id}
+    </delete>
+
+    <delete id="deleteOffsettingByIds" parameterType="String">
+        delete from offsetting where id in 
+        <foreach item="id" collection="array" open="(" separator="," close=")">
+            #{id}
+        </foreach>
+    </delete>
+</mapper>

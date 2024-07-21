@@ -1,0 +1,85 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ruoyi.system.mapper.OilcardMapper">
+    
+    <resultMap type="Oilcard" id="OilcardResult">
+        <result property="id"    column="id"    />
+        <result property="oilCardNo"    column="oilCardNo"    />
+        <result property="comments"    column="comments"    />
+        <result property="addtime"    column="addtime"    />
+        <result property="userId"    column="userId"    />
+        <result property="UserName"    column="UserName"    />
+        <result property="updateTime"    column="update_time"    />
+        <result property="delFlag"    column="delFlag"    />
+    </resultMap>
+
+    <sql id="selectOilcardVo">
+        select id, oilCardNo, comments, addtime, userId, UserName, update_time, delFlag from oilcard
+    </sql>
+
+    <select id="selectOilcardList" parameterType="Oilcard" resultMap="OilcardResult">
+        <include refid="selectOilcardVo"/>
+        <where>  
+            <if test="oilCardNo != null  and oilCardNo != ''"> and oilCardNo = #{oilCardNo}</if>
+            <if test="comments != null  and comments != ''"> and comments = #{comments}</if>
+            <if test="addtime != null  and addtime != ''"> and addtime = #{addtime}</if>
+            <if test="userId != null "> and userId = #{userId}</if>
+            <if test="UserName != null  and UserName != ''"> and UserName like concat('%', #{UserName}, '%')</if>
+            <if test="delFlag != null "> and delFlag = #{delFlag}</if>
+        </where>
+    </select>
+    
+    <select id="selectOilcardById" parameterType="Long" resultMap="OilcardResult">
+        <include refid="selectOilcardVo"/>
+        where id = #{id}
+    </select>
+
+    <insert id="insertOilcard" parameterType="Oilcard" useGeneratedKeys="true" keyProperty="id">
+        insert into oilcard
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="oilCardNo != null">oilCardNo,</if>
+            <if test="comments != null">comments,</if>
+            <if test="addtime != null">addtime,</if>
+            <if test="userId != null">userId,</if>
+            <if test="UserName != null">UserName,</if>
+            <if test="updateTime != null">update_time,</if>
+            <if test="delFlag != null">delFlag,</if>
+         </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="oilCardNo != null">#{oilCardNo},</if>
+            <if test="comments != null">#{comments},</if>
+            <if test="addtime != null">#{addtime},</if>
+            <if test="userId != null">#{userId},</if>
+            <if test="UserName != null">#{UserName},</if>
+            <if test="updateTime != null">#{updateTime},</if>
+            <if test="delFlag != null">#{delFlag},</if>
+         </trim>
+    </insert>
+
+    <update id="updateOilcard" parameterType="Oilcard">
+        update oilcard
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="oilCardNo != null">oilCardNo = #{oilCardNo},</if>
+            <if test="comments != null">comments = #{comments},</if>
+            <if test="addtime != null">addtime = #{addtime},</if>
+            <if test="userId != null">userId = #{userId},</if>
+            <if test="UserName != null">UserName = #{UserName},</if>
+            <if test="updateTime != null">update_time = #{updateTime},</if>
+            <if test="delFlag != null">delFlag = #{delFlag},</if>
+        </trim>
+        where id = #{id}
+    </update>
+
+    <delete id="deleteOilcardById" parameterType="Long">
+        delete from oilcard where id = #{id}
+    </delete>
+
+    <delete id="deleteOilcardByIds" parameterType="String">
+        delete from oilcard where id in 
+        <foreach item="id" collection="array" open="(" separator="," close=")">
+            #{id}
+        </foreach>
+    </delete>
+</mapper>
