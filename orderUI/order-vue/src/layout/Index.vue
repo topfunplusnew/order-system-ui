@@ -1,5 +1,6 @@
 <template>
     <div>
+        <!--        头部-->
         <Header>
             <lay-button type="primary" class="buttons" @click="handleCollapse">
                 <lay-icon type="layui-icon-slider"></lay-icon>
@@ -7,7 +8,7 @@
         </Header>
         <div>
             <lay-row>
-                <div class="grid-demo left">
+                <div class="left">
                     <MenuInfo :collapse="collapse"/>
                 </div>
                 <lay-transition>

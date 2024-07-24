@@ -26,7 +26,7 @@ router.beforeEach((to: any) => {
     }
 
     if (to.name == '登录') {
-        if (token != undefined && token != '') {
+        if (token != undefined) {
             layer.msg("您已经登录过了~", {time: 2000, icon: 1})
             return {
                 name: '首页'

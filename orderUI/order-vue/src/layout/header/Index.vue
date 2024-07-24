@@ -13,7 +13,10 @@
                             </lay-col>
                             <lay-col class="buttons">
                                 <lay-button type="primary">
-                                    <lay-icon type="layui-icon-screen-full"></lay-icon>
+                                    <lay-fullscreen v-slot="{ enter, exit, toggle, isFullscreen }"
+                                                    @fullscreenchange=fullscreen>
+                                        <lay-icon type="layui-icon-screen-full" @click="enter()"></lay-icon>
+                                    </lay-fullscreen>
                                 </lay-button>
                             </lay-col>
                         </lay-row>
@@ -66,7 +69,10 @@ if (temp) {
         router.push('/login')
     }
 }
-
+//全屏
+const fullscreen = function (isFullscreen) {
+    console.log(isFullscreen)
+}
 
 //登出
 const handleLogout = () => {
