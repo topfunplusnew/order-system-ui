@@ -5,6 +5,8 @@ import org.apache.commons.lang3.builder.ToStringStyle;
 import org.dzu.common.annotation.Excel;
 import org.dzu.common.core.domain.BaseEntity;
 
+import java.util.List;
+
 /**
  * 商业票据、银行承兑对象 bankacceptance
  * 
@@ -13,7 +15,9 @@ import org.dzu.common.core.domain.BaseEntity;
  */
 public class Bankacceptance extends BaseEntity
 {
+    public static final int MAX = 20;
     private static final long serialVersionUID = 1L;
+
 
     /** 主键 */
     private Long id;
@@ -101,8 +105,18 @@ public class Bankacceptance extends BaseEntity
     /** 删除标记 */
     @Excel(name = "删除标记")
     private Long delFlag;
+    /*票据表*/
+    private List<Bankacceptance> bankList;
 
-    public void setId(Long id) 
+    public List<Bankacceptance> getbankList() {
+        return bankList;
+    }
+
+    public void setbankList(List<Bankacceptance> bankList) {
+        this.bankList = bankList;
+    }
+
+    public void setId(Long id)
     {
         this.id = id;
     }

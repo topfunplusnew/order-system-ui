@@ -12,6 +12,13 @@ import org.dzu.system.domain.Bankacceptance;
 public interface BankacceptanceMapper 
 {
     /**
+     * 批量复制信息到备份表
+     *
+     * @param ids 需要copy的主键的集合
+     * @return
+     * */
+    public void copyToBack(Long[] ids);
+    /**
      * 查询商业票据、银行承兑
      * 
      * @param id 商业票据、银行承兑主键

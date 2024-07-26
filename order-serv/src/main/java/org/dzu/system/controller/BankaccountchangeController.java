@@ -2,6 +2,10 @@ package org.dzu.system.controller;
 
 import java.util.List;
 import javax.servlet.http.HttpServletResponse;
+import javax.validation.Valid;
+
+import org.dzu.common.utils.StringUtils;
+import org.dzu.system.domain.Bankacceptance;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -100,5 +104,36 @@ public class BankaccountchangeController extends BaseController
     public AjaxResult remove(@PathVariable Long[] ids)
     {
         return toAjax(bankaccountchangeService.deleteBankaccountchangeByIds(ids));
+    }
+    /*
+    * 判断*/
+    @PostMapping("/add")
+    public AjaxResult add( Bankacceptance bankacceptance) {
+        Bankaccountchange bankaccountchange = null;
+        if (StringUtils.length(bankacceptance.getEndorser()) > Bankacceptance.MAX) {
+            return AjaxResult.error("背书人不能超过" + Bankacceptance.MAX + "字符");
+        }
+        if (StringUtils.length(bankacceptance.getEndorsee()) > Bankacceptance.MAX) {
+            return AjaxResult.error("被背书人不能超过" + Bankacceptance.MAX + "字符");
+        }
+        if (StringUtils.length(bankacceptance.getUserName()) > Bankacceptance.MAX){
+            return AjaxResult.error("操作人员姓名不能超过" + Bankacceptance.MAX + "字符");
+        }
+        return toAjax(bankaccountchangeService.insertBankaccountchange(bankaccountchange));
+    }
+
+    @PutMapping("/edit")
+    public AjaxResult edit(Bankacceptance bankacceptance) {
+        Bankaccountchange bankaccountchange=null;
+        if (StringUtils.length(bankacceptance.getEndorser()) > Bankacceptance.MAX) {
+            return AjaxResult.error("背书人不能超过" + Bankacceptance.MAX + "字符");
+        }
+        if (StringUtils.length(bankacceptance.getEndorsee()) > Bankacceptance.MAX) {
+            return AjaxResult.error("被背书人不能超过" + Bankacceptance.MAX + "字符");
+        }
+        if (StringUtils.length(bankacceptance.getUserName()) > Bankacceptance.MAX) {
+            return AjaxResult.error("操作人员姓名不能超过" + Bankacceptance.MAX + "字符");
+        }
+        return toAjax(bankaccountchangeService.updateBankaccountchange(bankaccountchange));
     }
 }

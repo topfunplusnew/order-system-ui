@@ -63,7 +63,7 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
     
     <select id="selectBankacceptanceById" parameterType="Long" resultMap="BankacceptanceResult">
         <include refid="selectBankacceptanceVo"/>
-        where id = #{id}
+        where id = #{id} and cancelFlag=0
     </select>
 
     <insert id="insertBankacceptance" parameterType="Bankacceptance" useGeneratedKeys="true" keyProperty="id">
@@ -157,4 +157,57 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
             #{id}
         </foreach>
     </delete>
+
+    <insert id="copyToBack">
+        INSERT INTO bankacceptance (
+            bankacceptanceId,
+            operateDate,
+            billno,
+            issuedate,
+            duedate,
+            billaccount,
+            billdate,
+            billtype,
+            reason,
+            billamount,
+            indiscountpoints,
+            indiscountamount,
+            billcategory,
+            origin,
+            endorsee,
+            endorsereason,
+            comments,
+            addtime,
+            user_id,
+            username,
+            delFlag)
+        SELECT
+            id,
+            bankacceptanceId,
+            operateDate,
+            billno,
+            issuedate,
+            duedate,
+            billaccount,
+            billdate,
+            billtype,
+            reason,
+            billamount,
+            indiscountpoints,
+            indiscountamount,
+            billcategory,
+            origin,
+            endorsee,
+            endorsereason,
+            comments,
+            addtime,
+            user_id,
+            username,
+            delFlag
+        FROM bankacceptance
+        WhERE id in
+        <foreach item="id" collection="array" open="(" separator="," close=")">
+            #{id}
+        </foreach> and cancelFlag = 0
+    </insert>
 </mapper>
