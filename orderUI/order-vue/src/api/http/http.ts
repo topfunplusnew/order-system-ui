@@ -3,7 +3,7 @@ import axios, {AxiosInstance} from "axios";
 
 export const instance: AxiosInstance = axios.create({
     baseURL: 'http://localhost:5173/api',
-    timeout: 2000
+    timeout: 4000
 })
 
 //请求拦截器
@@ -23,10 +23,10 @@ instance.interceptors.request.use(function (config: any) {
 // 添加响应拦截器
 instance.interceptors.response.use(function (response: any) {
     console.log(response)
-    if (response.data.code != 200) {
-        sessionStorage.removeItem("token")
-        sessionStorage.removeItem("username")
-    }
+    // if (response.data.code != 200) {
+    //     sessionStorage.removeItem("token")
+    //     sessionStorage.removeItem("username")
+    // }
     return response;
 }, function (error: any) {
     return Promise.reject(error);
