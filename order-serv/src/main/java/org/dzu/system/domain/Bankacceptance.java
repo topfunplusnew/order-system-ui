@@ -2,9 +2,12 @@ package org.dzu.system.domain;
 
 import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.apache.commons.lang3.builder.ToStringStyle;
+import org.dzu.common.annotation.DecimalMaxDigits;
 import org.dzu.common.annotation.Excel;
 import org.dzu.common.core.domain.BaseEntity;
+import org.hibernate.validator.constraints.Length;
 
+import javax.validation.constraints.Pattern;
 import java.util.List;
 
 /**
@@ -45,7 +48,7 @@ public class Bankacceptance extends BaseEntity
     /** 票据日期 */
     @Excel(name = "票据日期")
     private String billDate;
-
+   // TODO：readConverterExp 自动生成错误
     /** 分类（收入、支出） */
     @Excel(name = "分类", readConverterExp = "收=入、支出")
     private String billType;
@@ -56,6 +59,7 @@ public class Bankacceptance extends BaseEntity
 
     /** 票据金额 */
     @Excel(name = "票据金额")
+    @DecimalMaxDigits
     private Long billAmount;
 
     /** 贴息点数 */
@@ -68,6 +72,7 @@ public class Bankacceptance extends BaseEntity
 
     /** 票据种类（电子/纸质） */
     @Excel(name = "票据种类", readConverterExp = "电=子/纸质")
+    @Pattern(regexp = "电子|纸质",message = "票据种类必须是xxxx")
     private String billCategory;
 
     /** 来源 */
@@ -76,6 +81,7 @@ public class Bankacceptance extends BaseEntity
 
     /** 背书人 */
     @Excel(name = "背书人")
+    @Length(max = 20)
     private String endorser;
 
     /** 被背书人 */
@@ -106,6 +112,7 @@ public class Bankacceptance extends BaseEntity
     @Excel(name = "删除标记")
     private Long delFlag;
     /*票据表*/
+    // TODO： 这个属性多余
     private List<Bankacceptance> bankList;
 
     public List<Bankacceptance> getbankList() {

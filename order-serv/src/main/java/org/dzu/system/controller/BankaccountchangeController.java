@@ -8,6 +8,7 @@ import org.dzu.common.utils.StringUtils;
 import org.dzu.system.domain.Bankacceptance;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
@@ -109,7 +110,8 @@ public class BankaccountchangeController extends BaseController
     * 判断*/
     @PostMapping("/add")
     public AjaxResult add( Bankacceptance bankacceptance) {
-        Bankaccountchange bankaccountchange = null;
+        Bankaccountchange bankaccountchange = null; // TODO：测试+改回去
+        //TODO：提取成一个方法，移入到Service
         if (StringUtils.length(bankacceptance.getEndorser()) > Bankacceptance.MAX) {
             return AjaxResult.error("背书人不能超过" + Bankacceptance.MAX + "字符");
         }
@@ -123,17 +125,17 @@ public class BankaccountchangeController extends BaseController
     }
 
     @PutMapping("/edit")
-    public AjaxResult edit(Bankacceptance bankacceptance) {
+    public AjaxResult edit(@Validated Bankacceptance bankacceptance) {
         Bankaccountchange bankaccountchange=null;
-        if (StringUtils.length(bankacceptance.getEndorser()) > Bankacceptance.MAX) {
-            return AjaxResult.error("背书人不能超过" + Bankacceptance.MAX + "字符");
-        }
-        if (StringUtils.length(bankacceptance.getEndorsee()) > Bankacceptance.MAX) {
-            return AjaxResult.error("被背书人不能超过" + Bankacceptance.MAX + "字符");
-        }
-        if (StringUtils.length(bankacceptance.getUserName()) > Bankacceptance.MAX) {
-            return AjaxResult.error("操作人员姓名不能超过" + Bankacceptance.MAX + "字符");
-        }
+//        if (StringUtils.length(bankacceptance.getEndorser()) > Bankacceptance.MAX) {
+//            return AjaxResult.error("背书人不能超过" + Bankacceptance.MAX + "字符");
+//        }
+//        if (StringUtils.length(bankacceptance.getEndorsee()) > Bankacceptance.MAX) {
+//            return AjaxResult.error("被背书人不能超过" + Bankacceptance.MAX + "字符");
+//        }
+//        if (StringUtils.length(bankacceptance.getUserName()) > Bankacceptance.MAX) {
+//            return AjaxResult.error("操作人员姓名不能超过" + Bankacceptance.MAX + "字符");
+//        }
         return toAjax(bankaccountchangeService.updateBankaccountchange(bankaccountchange));
     }
 }

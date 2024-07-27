@@ -36,7 +36,8 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
 
     <select id="selectBankacceptanceList" parameterType="Bankacceptance" resultMap="BankacceptanceResult">
         <include refid="selectBankacceptanceVo"/>
-        <where>  
+        <where>
+<!--            逻辑删除标记缺失-->
             <if test="operateDate != null  and operateDate != ''"> and operateDate = #{operateDate}</if>
             <if test="billNo != null  and billNo != ''"> and billNo = #{billNo}</if>
             <if test="issueDate != null  and issueDate != ''"> and issueDate = #{issueDate}</if>
@@ -64,6 +65,7 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
     <select id="selectBankacceptanceById" parameterType="Long" resultMap="BankacceptanceResult">
         <include refid="selectBankacceptanceVo"/>
         where id = #{id} and cancelFlag=0
+<!--        这个字段错了 -->
     </select>
 
     <insert id="insertBankacceptance" parameterType="Bankacceptance" useGeneratedKeys="true" keyProperty="id">
@@ -152,7 +154,7 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
     </delete>
 
     <delete id="deleteBankacceptanceByIds" parameterType="String">
-        delete from bankacceptance where id in 
+        delete from bankacceptance where id in
         <foreach item="id" collection="array" open="(" separator="," close=")">
             #{id}
         </foreach>
