@@ -1,5 +1,7 @@
 package org.dzu.common.core.domain.entity;
 
+import com.baomidou.mybatisplus.annotation.IdType;
+import com.baomidou.mybatisplus.annotation.TableId;
 import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.apache.commons.lang3.builder.ToStringStyle;
 import org.dzu.common.annotation.Excel;
@@ -26,6 +28,7 @@ public class SysUser extends BaseEntity
 
     /** 用户ID */
     @Excel(name = "用户序号", type = Type.EXPORT, cellType = ColumnType.NUMERIC, prompt = "用户编号")
+    @TableId(value = "user_id",type = IdType.AUTO)// 告知plus主键
     private Long userId;
 
     /** 部门ID */

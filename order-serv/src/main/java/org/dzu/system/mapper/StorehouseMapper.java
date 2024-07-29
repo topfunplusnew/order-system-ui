@@ -1,5 +1,6 @@
 package org.dzu.system.mapper;
 
+import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import java.util.List;
 import org.dzu.system.domain.Storehouse;
 
@@ -9,7 +10,7 @@ import org.dzu.system.domain.Storehouse;
  * @author ml
  * @date 2024-07-29
  */
-public interface StorehouseMapper 
+public interface StorehouseMapper extends BaseMapper<Storehouse>
 {
     /**
      * 查询仓库管理

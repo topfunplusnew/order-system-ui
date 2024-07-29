@@ -1,5 +1,6 @@
 package org.dzu.system.mapper;
 
+import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import java.util.List;
 import org.dzu.system.domain.Orderfreight;
 
@@ -9,7 +10,7 @@ import org.dzu.system.domain.Orderfreight;
  * @author ml
  * @date 2024-07-29
  */
-public interface OrderfreightMapper 
+public interface OrderfreightMapper extends BaseMapper<Orderfreight>
 {
     /**
      * 查询订单运费

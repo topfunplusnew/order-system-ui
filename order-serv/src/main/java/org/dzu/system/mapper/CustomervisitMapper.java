@@ -1,5 +1,6 @@
 package org.dzu.system.mapper;
 
+import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import java.util.List;
 import org.dzu.system.domain.Customervisit;
 
@@ -9,7 +10,7 @@ import org.dzu.system.domain.Customervisit;
  * @author ml
  * @date 2024-07-29
  */
-public interface CustomervisitMapper 
+public interface CustomervisitMapper extends BaseMapper<Customervisit>
 {
     /**
      * 查询走访记录

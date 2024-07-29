@@ -1,5 +1,6 @@
 package org.dzu.system.mapper;
 
+import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import java.util.List;
 import org.dzu.system.domain.OrderdetailBack;
 
@@ -9,7 +10,7 @@ import org.dzu.system.domain.OrderdetailBack;
  * @author ml
  * @date 2024-07-29
  */
-public interface OrderdetailBackMapper 
+public interface OrderdetailBackMapper extends BaseMapper<OrderdetailBack>
 {
     /**
      * 查询订单详情备份

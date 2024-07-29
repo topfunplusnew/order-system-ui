@@ -1,5 +1,6 @@
 package org.dzu.system.mapper;
 
+import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import java.util.List;
 import org.dzu.system.domain.Recovermoney;
 
@@ -9,7 +10,7 @@ import org.dzu.system.domain.Recovermoney;
  * @author ml
  * @date 2024-07-29
  */
-public interface RecovermoneyMapper 
+public interface RecovermoneyMapper extends BaseMapper<Recovermoney>
 {
     /**
      * 查询资金回收

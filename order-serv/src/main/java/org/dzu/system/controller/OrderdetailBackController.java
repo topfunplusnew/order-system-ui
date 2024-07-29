@@ -29,7 +29,7 @@ import org.dzu.common.core.page.TableDataInfo;
  * @date 2024-07-29
  */
 @RestController
-@RequestMapping("/system/back")
+@RequestMapping("/system/OrderdetailBack")
 public class OrderdetailBackController extends BaseController
 {
     @Autowired
@@ -38,7 +38,7 @@ public class OrderdetailBackController extends BaseController
     /**
      * 查询订单详情备份列表
      */
-    @PreAuthorize("@ss.hasPermi('system:back:list')")
+    @PreAuthorize("@ss.hasPermi('system:OrderdetailBack:list')")
     @GetMapping("/list")
     public TableDataInfo list(OrderdetailBack orderdetailBack)
     {
@@ -50,7 +50,7 @@ public class OrderdetailBackController extends BaseController
     /**
      * 导出订单详情备份列表
      */
-    @PreAuthorize("@ss.hasPermi('system:back:export')")
+    @PreAuthorize("@ss.hasPermi('system:OrderdetailBack:export')")
     @Log(title = "订单详情备份", businessType = BusinessType.EXPORT)
     @PostMapping("/export")
     public void export(HttpServletResponse response, OrderdetailBack orderdetailBack)
@@ -63,7 +63,7 @@ public class OrderdetailBackController extends BaseController
     /**
      * 获取订单详情备份详细信息
      */
-    @PreAuthorize("@ss.hasPermi('system:back:query')")
+    @PreAuthorize("@ss.hasPermi('system:OrderdetailBack:query')")
     @GetMapping(value = "/{id}")
     public AjaxResult getInfo(@PathVariable("id") Long id)
     {
@@ -73,7 +73,7 @@ public class OrderdetailBackController extends BaseController
     /**
      * 新增订单详情备份
      */
-    @PreAuthorize("@ss.hasPermi('system:back:add')")
+    @PreAuthorize("@ss.hasPermi('system:OrderdetailBack:add')")
     @Log(title = "订单详情备份", businessType = BusinessType.INSERT)
     @PostMapping
     public AjaxResult add(@Validated @RequestBody OrderdetailBack orderdetailBack)
@@ -84,7 +84,7 @@ public class OrderdetailBackController extends BaseController
     /**
      * 修改订单详情备份
      */
-    @PreAuthorize("@ss.hasPermi('system:back:edit')")
+    @PreAuthorize("@ss.hasPermi('system:OrderdetailBack:edit')")
     @Log(title = "订单详情备份", businessType = BusinessType.UPDATE)
     @PutMapping
     public AjaxResult edit(@Validated @RequestBody OrderdetailBack orderdetailBack)
@@ -95,7 +95,7 @@ public class OrderdetailBackController extends BaseController
     /**
      * 删除订单详情备份
      */
-    @PreAuthorize("@ss.hasPermi('system:back:remove')")
+    @PreAuthorize("@ss.hasPermi('system:OrderdetailBack:remove')")
     @Log(title = "订单详情备份", businessType = BusinessType.DELETE)
 	@DeleteMapping("/{ids}")
     public AjaxResult remove(@PathVariable Long[] ids)

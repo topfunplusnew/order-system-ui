@@ -1,5 +1,6 @@
 package org.dzu.system.mapper;
 
+import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import java.util.List;
 import org.dzu.system.domain.Businesstrip;
 
@@ -9,7 +10,7 @@ import org.dzu.system.domain.Businesstrip;
  * @author ml
  * @date 2024-07-29
  */
-public interface BusinesstripMapper 
+public interface BusinesstripMapper extends BaseMapper<Businesstrip>
 {
     /**
      * 查询出差登记

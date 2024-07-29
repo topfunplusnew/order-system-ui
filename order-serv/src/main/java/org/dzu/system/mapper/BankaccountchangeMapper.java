@@ -1,5 +1,6 @@
 package org.dzu.system.mapper;
 
+import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import java.util.List;
 import org.dzu.system.domain.Bankaccountchange;
 
@@ -9,7 +10,7 @@ import org.dzu.system.domain.Bankaccountchange;
  * @author ml
  * @date 2024-07-29
  */
-public interface BankaccountchangeMapper 
+public interface BankaccountchangeMapper extends BaseMapper<Bankaccountchange>
 {
     /**
      * 查询银行卡资金变动

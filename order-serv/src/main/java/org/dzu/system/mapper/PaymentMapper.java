@@ -1,5 +1,6 @@
 package org.dzu.system.mapper;
 
+import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import java.util.List;
 import org.dzu.system.domain.Payment;
 
@@ -9,7 +10,7 @@ import org.dzu.system.domain.Payment;
  * @author ml
  * @date 2024-07-29
  */
-public interface PaymentMapper 
+public interface PaymentMapper extends BaseMapper<Payment>
 {
     /**
      * 查询资产管理-收付款:收付款信息

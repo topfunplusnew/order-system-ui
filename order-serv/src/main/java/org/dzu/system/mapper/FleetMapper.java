@@ -1,5 +1,6 @@
 package org.dzu.system.mapper;
 
+import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import java.util.List;
 import org.dzu.system.domain.Fleet;
 
@@ -9,7 +10,7 @@ import org.dzu.system.domain.Fleet;
  * @author ml
  * @date 2024-07-29
  */
-public interface FleetMapper 
+public interface FleetMapper extends BaseMapper<Fleet>
 {
     /**
      * 查询车队管理

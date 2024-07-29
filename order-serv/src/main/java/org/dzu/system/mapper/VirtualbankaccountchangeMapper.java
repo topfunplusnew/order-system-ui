@@ -1,5 +1,6 @@
 package org.dzu.system.mapper;
 
+import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import java.util.List;
 import org.dzu.system.domain.Virtualbankaccountchange;
 
@@ -9,7 +10,7 @@ import org.dzu.system.domain.Virtualbankaccountchange;
  * @author ml
  * @date 2024-07-29
  */
-public interface VirtualbankaccountchangeMapper 
+public interface VirtualbankaccountchangeMapper extends BaseMapper<Virtualbankaccountchange>
 {
     /**
      * 查询虚拟银行账户变动信息

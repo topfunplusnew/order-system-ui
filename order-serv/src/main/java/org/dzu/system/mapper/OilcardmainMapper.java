@@ -1,5 +1,6 @@
 package org.dzu.system.mapper;
 
+import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import java.util.List;
 import org.dzu.system.domain.Oilcardmain;
 
@@ -9,7 +10,7 @@ import org.dzu.system.domain.Oilcardmain;
  * @author ml
  * @date 2024-07-29
  */
-public interface OilcardmainMapper 
+public interface OilcardmainMapper extends BaseMapper<Oilcardmain>
 {
     /**
      * 查询基础信息-加油卡主卡登记

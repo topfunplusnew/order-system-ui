@@ -1,5 +1,6 @@
 package org.dzu.system.mapper;
 
+import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import java.util.List;
 import org.dzu.system.domain.Offsetting;
 
@@ -9,7 +10,7 @@ import org.dzu.system.domain.Offsetting;
  * @author ml
  * @date 2024-07-29
  */
-public interface OffsettingMapper 
+public interface OffsettingMapper extends BaseMapper<Offsetting>
 {
     /**
      * 查询资金调整单信息

@@ -29,7 +29,7 @@ import org.dzu.common.core.page.TableDataInfo;
  * @date 2024-07-29
  */
 @RestController
-@RequestMapping("/system/inventoryBack")
+@RequestMapping("/system/InventoryBack")
 public class InventoryBackController extends BaseController
 {
     @Autowired
@@ -38,7 +38,7 @@ public class InventoryBackController extends BaseController
     /**
      * 查询货物入库信息列表
      */
-    @PreAuthorize("@ss.hasPermi('system:back:list')")
+    @PreAuthorize("@ss.hasPermi('system:InventoryBack:list')")
     @GetMapping("/list")
     public TableDataInfo list(InventoryBack inventoryBack)
     {
@@ -50,7 +50,7 @@ public class InventoryBackController extends BaseController
     /**
      * 导出货物入库信息列表
      */
-    @PreAuthorize("@ss.hasPermi('system:back:export')")
+    @PreAuthorize("@ss.hasPermi('system:InventoryBack:export')")
     @Log(title = "货物入库信息", businessType = BusinessType.EXPORT)
     @PostMapping("/export")
     public void export(HttpServletResponse response, InventoryBack inventoryBack)
@@ -63,7 +63,7 @@ public class InventoryBackController extends BaseController
     /**
      * 获取货物入库信息详细信息
      */
-    @PreAuthorize("@ss.hasPermi('system:back:query')")
+    @PreAuthorize("@ss.hasPermi('system:InventoryBack:query')")
     @GetMapping(value = "/{id}")
     public AjaxResult getInfo(@PathVariable("id") Long id)
     {
@@ -73,7 +73,7 @@ public class InventoryBackController extends BaseController
     /**
      * 新增货物入库信息
      */
-    @PreAuthorize("@ss.hasPermi('system:back:add')")
+    @PreAuthorize("@ss.hasPermi('system:InventoryBack:add')")
     @Log(title = "货物入库信息", businessType = BusinessType.INSERT)
     @PostMapping
     public AjaxResult add(@Validated @RequestBody InventoryBack inventoryBack)
@@ -84,7 +84,7 @@ public class InventoryBackController extends BaseController
     /**
      * 修改货物入库信息
      */
-    @PreAuthorize("@ss.hasPermi('system:back:edit')")
+    @PreAuthorize("@ss.hasPermi('system:InventoryBack:edit')")
     @Log(title = "货物入库信息", businessType = BusinessType.UPDATE)
     @PutMapping
     public AjaxResult edit(@Validated @RequestBody InventoryBack inventoryBack)
@@ -95,7 +95,7 @@ public class InventoryBackController extends BaseController
     /**
      * 删除货物入库信息
      */
-    @PreAuthorize("@ss.hasPermi('system:back:remove')")
+    @PreAuthorize("@ss.hasPermi('system:InventoryBack:remove')")
     @Log(title = "货物入库信息", businessType = BusinessType.DELETE)
 	@DeleteMapping("/{ids}")
     public AjaxResult remove(@PathVariable Long[] ids)
