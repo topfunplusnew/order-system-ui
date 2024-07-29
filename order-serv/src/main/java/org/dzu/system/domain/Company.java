@@ -10,6 +10,7 @@ import org.dzu.common.annotation.DecimalMaxDigits;
 import org.dzu.common.annotation.OnlyZeroOrOne;
 import org.hibernate.validator.constraints.Length;
 
+import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Pattern;
 
 /**
@@ -68,6 +69,7 @@ public class Company extends BaseEntity
     @Excel(name = "客户类别")
     @Pattern(regexp = "客户|供应商",message = "类别只能为字符串\"客户\"或者\"供应商\"")
     @Length(max = 20, message = "客户类别的字符长度不允许超过20")
+    @NotNull(message = "客户类别不能为空")
     private String companyType;
 
     /** 业务员 */

@@ -3,9 +3,17 @@ package org.dzu.system.domain;
 import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.apache.commons.lang3.builder.ToStringStyle;
 import org.dzu.common.annotation.Excel;
+import org.dzu.common.annotation.PhoneLength;
 import org.dzu.common.core.domain.BaseEntity;
 
 import org.dzu.common.annotation.OnlyZeroOrOne;
+import org.hibernate.validator.constraints.Length;
+
+import javax.validation.constraints.Max;
+import javax.validation.constraints.Min;
+import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Pattern;
+
 /**
  * 外部车辆信息对象 cars
  * 
@@ -19,36 +27,48 @@ public class Cars extends BaseEntity
     /** id */
     private Long id;
 
+
     /** 车牌 */
     @Excel(name = "车牌")
+    @Length(max = 20, message = "车牌的字符长度不允许超过20")
     private String carNo;
 
     /** 司机 */
     @Excel(name = "司机")
+    @Length(max = 20, message = "司机的字符长度不允许超过20")
     private String driver;
 
     /** 司机电话 */
     @Excel(name = "司机电话")
+    @PhoneLength
     private String tel;
 
     /** 开户行 */
     @Excel(name = "开户行")
+    @Length(max = 50, message = "开户行的字符长度不允许超过50")
     private String bankName;
 
     /** 开户名 */
     @Excel(name = "开户名")
+    @Length(max = 50, message = "开户名的字符长度不允许超过50")
     private String acountsName;
 
     /** 账号 */
     @Excel(name = "账号")
+    @Length(max = 50, message = "账号的字符长度不允许超过50")
     private String bankNo;
 
     /** 账号类型（1收款，2付款） */
-    @Excel(name = "账号类型", readConverterExp = "1=收款，2付款")
+    @Excel(name = "账号类型")
+    @NotNull(message = "账号类型不能为空")
+    @Min(value = 1, message = "账号类型的值不允许小于1")
+    @Max(value = 2, message = "账号类型的值不允许大于2")
     private Long acountsType;
 
     /** 运输类型(陆运，海运) */
     @Excel(name = "运输类型(陆运，海运)")
+    @Pattern(regexp = "陆运|海运", message = "运输类型必须是：陆运或海运")
+    @NotNull(message = "运输类型不能为空")
     private String carType;
 
     /** 添加时间 */
