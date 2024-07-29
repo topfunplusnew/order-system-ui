@@ -284,7 +284,10 @@ export default {
     getList() {
       this.loading = true;
       listBankAccount(this.queryParams).then(response => {
-        this.bankAccountList = response.rows;
+        this.bankAccountList = response.rows.filter(item => {
+          return item.acountsType === '己方公司' || item.acountsType === '其他'
+        })
+        // this.bankAccountList = this.bankAccountList
         console.log(this.bankAccountList)
         this.total = response.total;
         this.loading = false;
