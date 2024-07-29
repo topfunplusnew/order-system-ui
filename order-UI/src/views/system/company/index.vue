@@ -1,169 +1,18 @@
 <template>
   <div class="app-container">
     <el-form :model="queryParams" ref="queryForm" size="small" :inline="true" v-show="showSearch" label-width="68px">
-      <el-form-item label="联系人" prop="relationName">
+      <el-form-item label="客户名称" prop="relationName">
         <el-input
           v-model="queryParams.relationName"
-          placeholder="请输入联系人"
+          placeholder="请输入客户名称"
           clearable
           @keyup.enter.native="handleQuery"
         />
       </el-form-item>
-      <el-form-item label="联系人电话" prop="relationTel">
-        <el-input
-          v-model="queryParams.relationTel"
-          placeholder="请输入联系人电话"
-          clearable
-          @keyup.enter.native="handleQuery"
-        />
-      </el-form-item>
-      <el-form-item label="地址" prop="address">
-        <el-input
-          v-model="queryParams.address"
-          placeholder="请输入地址"
-          clearable
-          @keyup.enter.native="handleQuery"
-        />
-      </el-form-item>
-      <el-form-item label="开户行" prop="bankName">
-        <el-input
-          v-model="queryParams.bankName"
-          placeholder="请输入开户行"
-          clearable
-          @keyup.enter.native="handleQuery"
-        />
-      </el-form-item>
-      <el-form-item label="开户名" prop="acountsName">
-        <el-input
-          v-model="queryParams.acountsName"
-          placeholder="请输入开户名"
-          clearable
-          @keyup.enter.native="handleQuery"
-        />
-      </el-form-item>
-      <el-form-item label="账号" prop="bankNo">
-        <el-input
-          v-model="queryParams.bankNo"
-          placeholder="请输入账号"
-          clearable
-          @keyup.enter.native="handleQuery"
-        />
-      </el-form-item>
-      <el-form-item label="余额" prop="surplusMoney">
-        <el-input
-          v-model="queryParams.surplusMoney"
-          placeholder="请输入余额"
-          clearable
-          @keyup.enter.native="handleQuery"
-        />
-      </el-form-item>
-      <el-form-item label="业务员" prop="salesman">
-        <el-input
-          v-model="queryParams.salesman"
-          placeholder="请输入业务员"
-          clearable
-          @keyup.enter.native="handleQuery"
-        />
-      </el-form-item>
-      <el-form-item label="老板" prop="leader">
-        <el-input
-          v-model="queryParams.leader"
-          placeholder="请输入老板"
-          clearable
-          @keyup.enter.native="handleQuery"
-        />
-      </el-form-item>
-      <el-form-item label="联系人电话" prop="leaderTel">
-        <el-input
-          v-model="queryParams.leaderTel"
-          placeholder="请输入联系人电话"
-          clearable
-          @keyup.enter.native="handleQuery"
-        />
-      </el-form-item>
-      <el-form-item label="区域" prop="region">
-        <el-input
-          v-model="queryParams.region"
-          placeholder="请输入区域"
-          clearable
-          @keyup.enter.native="handleQuery"
-        />
-      </el-form-item>
-      <el-form-item label="销售经理" prop="salesManager">
-        <el-input
-          v-model="queryParams.salesManager"
-          placeholder="请输入销售经理"
-          clearable
-          @keyup.enter.native="handleQuery"
-        />
-      </el-form-item>
-      <el-form-item label="省" prop="province">
-        <el-input
-          v-model="queryParams.province"
-          placeholder="请输入省"
-          clearable
-          @keyup.enter.native="handleQuery"
-        />
-      </el-form-item>
-      <el-form-item label="市县" prop="city">
-        <el-input
-          v-model="queryParams.city"
-          placeholder="请输入市县"
-          clearable
-          @keyup.enter.native="handleQuery"
-        />
-      </el-form-item>
-      <el-form-item label="乡镇" prop="county">
-        <el-input
-          v-model="queryParams.county"
-          placeholder="请输入乡镇"
-          clearable
-          @keyup.enter.native="handleQuery"
-        />
-      </el-form-item>
-      <el-form-item label="备注" prop="comments">
-        <el-input
-          v-model="queryParams.comments"
-          placeholder="请输入备注"
-          clearable
-          @keyup.enter.native="handleQuery"
-        />
-      </el-form-item>
-      <el-form-item label="添加时间" prop="addtime">
-        <el-input
-          v-model="queryParams.addtime"
-          placeholder="请输入添加时间"
-          clearable
-          @keyup.enter.native="handleQuery"
-        />
-      </el-form-item>
-      <el-form-item label="操作人员ID" prop="userId">
-        <el-input
-          v-model="queryParams.userId"
-          placeholder="请输入操作人员ID"
-          clearable
-          @keyup.enter.native="handleQuery"
-        />
-      </el-form-item>
-      <el-form-item label="操作人员姓名" prop="UserName">
-        <el-input
-          v-model="queryParams.UserName"
-          placeholder="请输入操作人员姓名"
-          clearable
-          @keyup.enter.native="handleQuery"
-        />
-      </el-form-item>
-      <el-form-item label="删除标记" prop="delFlag">
-        <el-input
-          v-model="queryParams.delFlag"
-          placeholder="请输入删除标记"
-          clearable
-          @keyup.enter.native="handleQuery"
-        />
-      </el-form-item>
+
       <el-form-item>
         <el-button type="primary" icon="el-icon-search" size="mini" @click="handleQuery">搜索</el-button>
-        <el-button icon="el-icon-refresh" size="mini" @click="resetQuery">重置</el-button>
+        <el-button icon="el-icon-refresh" size="mini" @click="resetQuery">刷新</el-button>
       </el-form-item>
     </el-form>
 
@@ -176,7 +25,8 @@
           size="mini"
           @click="handleAdd"
           v-hasPermi="['system:company:add']"
-        >新增</el-button>
+        >新增
+        </el-button>
       </el-col>
       <el-col :span="1.5">
         <el-button
@@ -187,7 +37,8 @@
           :disabled="single"
           @click="handleUpdate"
           v-hasPermi="['system:company:edit']"
-        >修改</el-button>
+        >修改
+        </el-button>
       </el-col>
       <el-col :span="1.5">
         <el-button
@@ -198,7 +49,8 @@
           :disabled="multiple"
           @click="handleDelete"
           v-hasPermi="['system:company:remove']"
-        >删除</el-button>
+        >删除
+        </el-button>
       </el-col>
       <el-col :span="1.5">
         <el-button
@@ -208,36 +60,37 @@
           size="mini"
           @click="handleExport"
           v-hasPermi="['system:company:export']"
-        >导出</el-button>
+        >导出
+        </el-button>
       </el-col>
       <right-toolbar :showSearch.sync="showSearch" @queryTable="getList"></right-toolbar>
     </el-row>
 
     <el-table v-loading="loading" :data="companyList" @selection-change="handleSelectionChange">
-      <el-table-column type="selection" width="55" align="center" />
-      <el-table-column label="id" align="center" prop="id" />
-      <el-table-column label="公司名称" align="center" prop="companyName" />
-      <el-table-column label="联系人" align="center" prop="relationName" />
-      <el-table-column label="联系人电话" align="center" prop="relationTel" />
-      <el-table-column label="地址" align="center" prop="address" />
-      <el-table-column label="开户行" align="center" prop="bankName" />
-      <el-table-column label="开户名" align="center" prop="acountsName" />
-      <el-table-column label="账号" align="center" prop="bankNo" />
-      <el-table-column label="余额" align="center" prop="surplusMoney" />
-      <el-table-column label="客户类别" align="center" prop="companyType" />
-      <el-table-column label="业务员" align="center" prop="salesman" />
-      <el-table-column label="老板" align="center" prop="leader" />
-      <el-table-column label="联系人电话" align="center" prop="leaderTel" />
-      <el-table-column label="区域" align="center" prop="region" />
-      <el-table-column label="销售经理" align="center" prop="salesManager" />
-      <el-table-column label="省" align="center" prop="province" />
-      <el-table-column label="市县" align="center" prop="city" />
-      <el-table-column label="乡镇" align="center" prop="county" />
-      <el-table-column label="备注" align="center" prop="comments" />
-      <el-table-column label="添加时间" align="center" prop="addtime" />
-      <el-table-column label="操作人员ID" align="center" prop="userId" />
-      <el-table-column label="操作人员姓名" align="center" prop="UserName" />
-      <el-table-column label="删除标记" align="center" prop="delFlag" />
+      <el-table-column type="selection" width="55" align="center"/>
+      <el-table-column label="id" align="center" prop="id"/>
+      <el-table-column label="公司名称" align="center" prop="companyName"/>
+      <el-table-column label="联系人" align="center" prop="relationName"/>
+      <el-table-column label="联系人电话" align="center" prop="relationTel"/>
+      <el-table-column label="地址" align="center" prop="address"/>
+      <el-table-column label="开户行" align="center" prop="bankName"/>
+      <el-table-column label="开户名" align="center" prop="acountsName"/>
+      <el-table-column label="账号" align="center" prop="bankNo"/>
+      <el-table-column label="余额" align="center" prop="surplusMoney"/>
+      <el-table-column label="客户类别" align="center" prop="companyType"/>
+      <el-table-column label="业务员" align="center" prop="salesman"/>
+      <el-table-column label="老板" align="center" prop="leader"/>
+      <el-table-column label="联系人电话" align="center" prop="leaderTel"/>
+      <el-table-column label="区域" align="center" prop="region"/>
+      <el-table-column label="销售经理" align="center" prop="salesManager"/>
+      <el-table-column label="省" align="center" prop="province"/>
+      <el-table-column label="市县" align="center" prop="city"/>
+      <el-table-column label="乡镇" align="center" prop="county"/>
+      <el-table-column label="备注" align="center" prop="comments"/>
+      <el-table-column label="添加时间" align="center" prop="addtime"/>
+      <el-table-column label="操作人员ID" align="center" prop="userId"/>
+      <el-table-column label="操作人员姓名" align="center" prop="UserName"/>
+      <el-table-column label="删除标记" align="center" prop="delFlag"/>
       <el-table-column label="操作" align="center" class-name="small-padding fixed-width">
         <template slot-scope="scope">
           <el-button
@@ -246,18 +99,20 @@
             icon="el-icon-edit"
             @click="handleUpdate(scope.row)"
             v-hasPermi="['system:company:edit']"
-          >修改</el-button>
+          >修改
+          </el-button>
           <el-button
             size="mini"
             type="text"
             icon="el-icon-delete"
             @click="handleDelete(scope.row)"
             v-hasPermi="['system:company:remove']"
-          >删除</el-button>
+          >删除
+          </el-button>
         </template>
       </el-table-column>
     </el-table>
-    
+
     <pagination
       v-show="total>0"
       :total="total"
@@ -270,67 +125,67 @@
     <el-dialog :title="title" :visible.sync="open" width="500px" append-to-body>
       <el-form ref="form" :model="form" :rules="rules" label-width="80px">
         <el-form-item label="公司名称" prop="companyName">
-          <el-input v-model="form.companyName" type="textarea" placeholder="请输入内容" />
+          <el-input v-model="form.companyName" type="textarea" placeholder="请输入内容"/>
         </el-form-item>
         <el-form-item label="联系人" prop="relationName">
-          <el-input v-model="form.relationName" placeholder="请输入联系人" />
+          <el-input v-model="form.relationName" placeholder="请输入联系人"/>
         </el-form-item>
         <el-form-item label="联系人电话" prop="relationTel">
-          <el-input v-model="form.relationTel" placeholder="请输入联系人电话" />
+          <el-input v-model="form.relationTel" placeholder="请输入联系人电话"/>
         </el-form-item>
         <el-form-item label="地址" prop="address">
-          <el-input v-model="form.address" placeholder="请输入地址" />
+          <el-input v-model="form.address" placeholder="请输入地址"/>
         </el-form-item>
         <el-form-item label="开户行" prop="bankName">
-          <el-input v-model="form.bankName" placeholder="请输入开户行" />
+          <el-input v-model="form.bankName" placeholder="请输入开户行"/>
         </el-form-item>
         <el-form-item label="开户名" prop="acountsName">
-          <el-input v-model="form.acountsName" placeholder="请输入开户名" />
+          <el-input v-model="form.acountsName" placeholder="请输入开户名"/>
         </el-form-item>
         <el-form-item label="账号" prop="bankNo">
-          <el-input v-model="form.bankNo" placeholder="请输入账号" />
+          <el-input v-model="form.bankNo" placeholder="请输入账号"/>
         </el-form-item>
         <el-form-item label="余额" prop="surplusMoney">
-          <el-input v-model="form.surplusMoney" placeholder="请输入余额" />
+          <el-input v-model="form.surplusMoney" placeholder="请输入余额"/>
         </el-form-item>
         <el-form-item label="业务员" prop="salesman">
-          <el-input v-model="form.salesman" placeholder="请输入业务员" />
+          <el-input v-model="form.salesman" placeholder="请输入业务员"/>
         </el-form-item>
         <el-form-item label="老板" prop="leader">
-          <el-input v-model="form.leader" placeholder="请输入老板" />
+          <el-input v-model="form.leader" placeholder="请输入老板"/>
         </el-form-item>
         <el-form-item label="联系人电话" prop="leaderTel">
-          <el-input v-model="form.leaderTel" placeholder="请输入联系人电话" />
+          <el-input v-model="form.leaderTel" placeholder="请输入联系人电话"/>
         </el-form-item>
         <el-form-item label="区域" prop="region">
-          <el-input v-model="form.region" placeholder="请输入区域" />
+          <el-input v-model="form.region" placeholder="请输入区域"/>
         </el-form-item>
         <el-form-item label="销售经理" prop="salesManager">
-          <el-input v-model="form.salesManager" placeholder="请输入销售经理" />
+          <el-input v-model="form.salesManager" placeholder="请输入销售经理"/>
         </el-form-item>
         <el-form-item label="省" prop="province">
-          <el-input v-model="form.province" placeholder="请输入省" />
+          <el-input v-model="form.province" placeholder="请输入省"/>
         </el-form-item>
         <el-form-item label="市县" prop="city">
-          <el-input v-model="form.city" placeholder="请输入市县" />
+          <el-input v-model="form.city" placeholder="请输入市县"/>
         </el-form-item>
         <el-form-item label="乡镇" prop="county">
-          <el-input v-model="form.county" placeholder="请输入乡镇" />
+          <el-input v-model="form.county" placeholder="请输入乡镇"/>
         </el-form-item>
         <el-form-item label="备注" prop="comments">
-          <el-input v-model="form.comments" placeholder="请输入备注" />
+          <el-input v-model="form.comments" placeholder="请输入备注"/>
         </el-form-item>
         <el-form-item label="添加时间" prop="addtime">
-          <el-input v-model="form.addtime" placeholder="请输入添加时间" />
+          <el-input v-model="form.addtime" placeholder="请输入添加时间"/>
         </el-form-item>
         <el-form-item label="操作人员ID" prop="userId">
-          <el-input v-model="form.userId" placeholder="请输入操作人员ID" />
+          <el-input v-model="form.userId" placeholder="请输入操作人员ID"/>
         </el-form-item>
         <el-form-item label="操作人员姓名" prop="UserName">
-          <el-input v-model="form.UserName" placeholder="请输入操作人员姓名" />
+          <el-input v-model="form.UserName" placeholder="请输入操作人员姓名"/>
         </el-form-item>
         <el-form-item label="删除标记" prop="delFlag">
-          <el-input v-model="form.delFlag" placeholder="请输入删除标记" />
+          <el-input v-model="form.delFlag" placeholder="请输入删除标记"/>
         </el-form-item>
       </el-form>
       <div slot="footer" class="dialog-footer">
@@ -342,7 +197,7 @@
 </template>
 
 <script>
-import { listCompany, getCompany, delCompany, addCompany, updateCompany } from "@/api/system/company";
+import {listCompany, getCompany, delCompany, addCompany, updateCompany} from "@/api/system/company";
 
 export default {
   name: "Company",
@@ -398,7 +253,7 @@ export default {
       // 表单校验
       rules: {
         surplusMoney: [
-          { required: true, message: "余额不能为空", trigger: "blur" }
+          {required: true, message: "余额不能为空", trigger: "blur"}
         ],
       }
     };
@@ -464,7 +319,7 @@ export default {
     // 多选框选中数据
     handleSelectionChange(selection) {
       this.ids = selection.map(item => item.id)
-      this.single = selection.length!==1
+      this.single = selection.length !== 1
       this.multiple = !selection.length
     },
     /** 新增按钮操作 */
@@ -506,12 +361,13 @@ export default {
     /** 删除按钮操作 */
     handleDelete(row) {
       const ids = row.id || this.ids;
-      this.$modal.confirm('是否确认删除客户、供应商信息编号为"' + ids + '"的数据项？').then(function() {
+      this.$modal.confirm('是否确认删除客户、供应商信息编号为"' + ids + '"的数据项？').then(function () {
         return delCompany(ids);
       }).then(() => {
         this.getList();
         this.$modal.msgSuccess("删除成功");
-      }).catch(() => {});
+      }).catch(() => {
+      });
     },
     /** 导出按钮操作 */
     handleExport() {

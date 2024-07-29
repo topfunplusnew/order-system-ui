@@ -1,66 +1,28 @@
 <template>
   <div class="app-container">
     <el-form :model="queryParams" ref="queryForm" size="small" :inline="true" v-show="showSearch" label-width="68px">
-      <el-form-item label="公司名称" prop="companyName">
-        <el-input
-          v-model="queryParams.companyName"
-          placeholder="请输入公司名称"
-          clearable
-          @keyup.enter.native="handleQuery"
-        />
+      <el-form-item label="类型" prop="acountsType">
+        <el-select v-model="queryParams.acountsType" placeholder="请选择">
+          <el-option
+            v-for="item in options"
+            :key="item.value"
+            :label="item.label"
+            :value="item.value">
+          </el-option>
+        </el-select>
       </el-form-item>
-      <el-form-item label="对应公司ID" prop="companyId">
-        <el-input
-          v-model="queryParams.companyId"
-          placeholder="请输入对应公司ID"
-          clearable
-          @keyup.enter.native="handleQuery"
-        />
-      </el-form-item>
-      <el-form-item label="开户行" prop="bankName">
-        <el-input
-          v-model="queryParams.bankName"
-          placeholder="请输入开户行"
-          clearable
-          @keyup.enter.native="handleQuery"
-        />
-      </el-form-item>
-      <el-form-item label="开户名称" prop="acountsName">
+      <el-form-item label="户名" prop="acountsName">
         <el-input
           v-model="queryParams.acountsName"
-          placeholder="请输入开户名称"
+          placeholder="请输入户名"
           clearable
           @keyup.enter.native="handleQuery"
         />
       </el-form-item>
-      <el-form-item label="账号" prop="bankNo">
+      <el-form-item label="银行账号" prop="bankNo">
         <el-input
           v-model="queryParams.bankNo"
-          placeholder="请输入账号"
-          clearable
-          @keyup.enter.native="handleQuery"
-        />
-      </el-form-item>
-      <el-form-item label="当前资金额" prop="amount">
-        <el-input
-          v-model="queryParams.amount"
-          placeholder="请输入当前资金额"
-          clearable
-          @keyup.enter.native="handleQuery"
-        />
-      </el-form-item>
-      <el-form-item label="备注" prop="comments">
-        <el-input
-          v-model="queryParams.comments"
-          placeholder="请输入备注"
-          clearable
-          @keyup.enter.native="handleQuery"
-        />
-      </el-form-item>
-      <el-form-item label="删除标记" prop="delFlag">
-        <el-input
-          v-model="queryParams.delFlag"
-          placeholder="请输入删除标记"
+          placeholder="请输入银行账号"
           clearable
           @keyup.enter.native="handleQuery"
         />
@@ -74,24 +36,14 @@
     <el-row :gutter="10" class="mb8">
       <el-col :span="1.5">
         <el-button
-          type="primary"
+          type="danger"
           plain
           icon="el-icon-plus"
           size="mini"
           @click="handleAdd"
           v-hasPermi="['system:bankAccount:add']"
-        >新增</el-button>
-      </el-col>
-      <el-col :span="1.5">
-        <el-button
-          type="success"
-          plain
-          icon="el-icon-edit"
-          size="mini"
-          :disabled="single"
-          @click="handleUpdate"
-          v-hasPermi="['system:bankAccount:edit']"
-        >修改</el-button>
+        >新增银行卡信息
+        </el-button>
       </el-col>
       <el-col :span="1.5">
         <el-button
@@ -102,7 +54,8 @@
           :disabled="multiple"
           @click="handleDelete"
           v-hasPermi="['system:bankAccount:remove']"
-        >删除</el-button>
+        >批量删除
+        </el-button>
       </el-col>
       <el-col :span="1.5">
         <el-button
@@ -112,43 +65,52 @@
           size="mini"
           @click="handleExport"
           v-hasPermi="['system:bankAccount:export']"
-        >导出</el-button>
+        >导出
+        </el-button>
+
       </el-col>
-      <right-toolbar :showSearch.sync="showSearch" @queryTable="getList"></right-toolbar>
+      <el-col :span="1.5">
+        <el-button
+          type="primary"
+          plain
+          icon="el-icon-printer"
+          size="mini"
+          @click="printHTML"
+        >打印
+        </el-button>
+
+      </el-col>
+
+      <right-toolbar :showSearch.sync="showSearch" @queryTable="getList" :columns="columns"></right-toolbar>
     </el-row>
 
-    <el-table v-loading="loading" :data="bankAccountList" @selection-change="handleSelectionChange">
-      <el-table-column type="selection" width="55" align="center" />
-      <el-table-column label="id" align="center" prop="id" />
-      <el-table-column label="公司名称" align="center" prop="companyName" />
-      <el-table-column label="对应公司ID" align="center" prop="companyId" />
-      <el-table-column label="开户行" align="center" prop="bankName" />
-      <el-table-column label="开户名称" align="center" prop="acountsName" />
-      <el-table-column label="账号" align="center" prop="bankNo" />
-      <el-table-column label="账户类型" align="center" prop="acountsType" />
-      <el-table-column label="当前资金额" align="center" prop="amount" />
-      <el-table-column label="备注" align="center" prop="comments" />
-      <el-table-column label="删除标记" align="center" prop="delFlag" />
+    <el-table v-loading="loading" :data="bankAccountList" @selection-change="handleSelectionChange" id="printBox">
+      <el-table-column type="selection" width="55" align="center"/>
+      <el-table-column label="id" align="center" prop="id"/>
+      <el-table-column label="账户类型" align="center" prop="acountsType" v-if="columns[0].visible"/>
+      <el-table-column label="开户名称(户名)" align="center" prop="acountsName" v-if="columns[1].visible"/>
+      <el-table-column label="账号(银行账号)" align="center" prop="bankNo" v-if="columns[2].visible"/>
+      <el-table-column label="开户行" align="center" prop="bankName" v-if="columns[3].visible"/>
       <el-table-column label="操作" align="center" class-name="small-padding fixed-width">
         <template slot-scope="scope">
           <el-button
             size="mini"
-            type="text"
-            icon="el-icon-edit"
+            type="primary"
             @click="handleUpdate(scope.row)"
             v-hasPermi="['system:bankAccount:edit']"
-          >修改</el-button>
+          >编辑
+          </el-button>
           <el-button
             size="mini"
-            type="text"
-            icon="el-icon-delete"
+            type="danger"
             @click="handleDelete(scope.row)"
             v-hasPermi="['system:bankAccount:remove']"
-          >删除</el-button>
+          >删除
+          </el-button>
         </template>
       </el-table-column>
     </el-table>
-    
+
     <pagination
       v-show="total>0"
       :total="total"
@@ -160,29 +122,24 @@
     <!-- 添加或修改银行账号对话框 -->
     <el-dialog :title="title" :visible.sync="open" width="500px" append-to-body>
       <el-form ref="form" :model="form" :rules="rules" label-width="80px">
-        <el-form-item label="公司名称" prop="companyName">
-          <el-input v-model="form.companyName" placeholder="请输入公司名称" />
+        <el-form-item label="账号类型" prop="acountsType">
+          <el-select v-model="form.acountsType" placeholder="请选择账号类型">
+            <el-option
+              v-for="item in options"
+              :key="item.value"
+              :label="item.label"
+              :value="item.value">
+            </el-option>
+          </el-select>
         </el-form-item>
-        <el-form-item label="对应公司ID" prop="companyId">
-          <el-input v-model="form.companyId" placeholder="请输入对应公司ID" />
+        <el-form-item label="户名" prop="acountsName">
+          <el-input v-model="form.acountsName" placeholder="请输入户名"/>
+        </el-form-item>
+        <el-form-item label="银行账号" prop="bankNo">
+          <el-input v-model="form.bankNo" placeholder="请输入银行账号"/>
         </el-form-item>
         <el-form-item label="开户行" prop="bankName">
-          <el-input v-model="form.bankName" placeholder="请输入开户行" />
-        </el-form-item>
-        <el-form-item label="开户名称" prop="acountsName">
-          <el-input v-model="form.acountsName" placeholder="请输入开户名称" />
-        </el-form-item>
-        <el-form-item label="账号" prop="bankNo">
-          <el-input v-model="form.bankNo" placeholder="请输入账号" />
-        </el-form-item>
-        <el-form-item label="当前资金额" prop="amount">
-          <el-input v-model="form.amount" placeholder="请输入当前资金额" />
-        </el-form-item>
-        <el-form-item label="备注" prop="comments">
-          <el-input v-model="form.comments" placeholder="请输入备注" />
-        </el-form-item>
-        <el-form-item label="删除标记" prop="delFlag">
-          <el-input v-model="form.delFlag" placeholder="请输入删除标记" />
+          <el-input v-model="form.bankName" placeholder="请输入开户行"/>
         </el-form-item>
       </el-form>
       <div slot="footer" class="dialog-footer">
@@ -194,7 +151,13 @@
 </template>
 
 <script>
-import { listBankAccount, getBankAccount, delBankAccount, addBankAccount, updateBankAccount } from "@/api/system/bankAccount";
+import {
+  listBankAccount,
+  getBankAccount,
+  delBankAccount,
+  addBankAccount,
+  updateBankAccount
+} from "@/api/system/bankAccount";
 
 export default {
   name: "BankAccount",
@@ -235,19 +198,54 @@ export default {
       // 表单参数
       form: {},
       // 表单校验
-      rules: {
-      }
+      rules: {},
+      options: [
+        {
+          value: '己方公司',
+          label: '己方公司'
+        }, {
+          value: '客户',
+          label: '客户'
+        }, {
+          value: '供应商',
+          label: '供应商'
+        }, {
+          value: '司机',
+          label: '司机'
+        }, {
+          value: '其它',
+          label: '其它'
+        }
+      ],
+      //隐藏列信息
+      columns: [
+        {key: 0, label: `账户类型`, visible: true},
+        {key: 1, label: `开户名称`, visible: true},
+        {key: 2, label: `账号(银行卡号)`, visible: true},
+        {key: 3, label: `开户行`, visible: true}
+      ]
     };
   },
   created() {
     this.getList();
   },
   methods: {
+    //打印
+    printHTML() {
+      this.$print({
+        printable: 'printBox',
+        type: 'html',
+        targetStyles: ['*'], // 打印内容使用所有HTML样式，没有设置这个属性/值，设置分页打印没有效果
+      })
+    },
+
     /** 查询银行账号列表 */
     getList() {
       this.loading = true;
       listBankAccount(this.queryParams).then(response => {
+        console.log('查询参数=>', this.queryParams)
         this.bankAccountList = response.rows;
+        console.log(this.bankAccountList)
         this.total = response.total;
         this.loading = false;
       });
@@ -286,14 +284,14 @@ export default {
     // 多选框选中数据
     handleSelectionChange(selection) {
       this.ids = selection.map(item => item.id)
-      this.single = selection.length!==1
+      this.single = selection.length !== 1
       this.multiple = !selection.length
     },
     /** 新增按钮操作 */
     handleAdd() {
       this.reset();
       this.open = true;
-      this.title = "添加银行账号";
+      this.title = "新增银行卡信息";
     },
     /** 修改按钮操作 */
     handleUpdate(row) {
@@ -302,7 +300,7 @@ export default {
       getBankAccount(id).then(response => {
         this.form = response.data;
         this.open = true;
-        this.title = "修改银行账号";
+        this.title = "修改银行卡信息";
       });
     },
     /** 提交按钮 */
@@ -328,12 +326,13 @@ export default {
     /** 删除按钮操作 */
     handleDelete(row) {
       const ids = row.id || this.ids;
-      this.$modal.confirm('是否确认删除银行账号编号为"' + ids + '"的数据项？').then(function() {
+      this.$modal.confirm('是否确认删除银行账号编号为"' + ids + '"的数据项？').then(function () {
         return delBankAccount(ids);
       }).then(() => {
         this.getList();
         this.$modal.msgSuccess("删除成功");
-      }).catch(() => {});
+      }).catch(() => {
+      });
     },
     /** 导出按钮操作 */
     handleExport() {
