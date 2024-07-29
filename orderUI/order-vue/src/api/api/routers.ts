@@ -1,9 +1,9 @@
-import {instance} from "../http/http.ts";
+import { instance } from '../http/http.ts'
 
 // 获取路由
 export const getRouters = () => {
-    return instance({
-        url: '/getRouters',
-        method: 'get'
-    })
+  return instance({
+    url: '/getRouters',
+    method: 'get',
+  })
 }

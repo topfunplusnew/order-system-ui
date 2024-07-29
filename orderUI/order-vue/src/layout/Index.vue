@@ -28,6 +28,7 @@ import Body from './body/Index.vue'
 import { computed, ref } from 'vue'
 import { LayIcon } from '@layui/layui-vue'
 import { useSwitchStore } from '../store'
+import { getRouters } from '../api/api/routers'
 //点击隐藏功能
 const switch_store = useSwitchStore()
 const isShow = computed(() => {
@@ -38,6 +39,10 @@ const handleCollapse = () => {
   collapse.value = !collapse.value
   switch_store.changeIsShow()
 }
+
+getRouters().then((res) => {
+  console.log('res=>', res)
+})
 </script>
 
 <style scoped>
