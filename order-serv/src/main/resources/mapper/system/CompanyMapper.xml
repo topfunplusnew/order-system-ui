@@ -1,0 +1,167 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="org.dzu.system.mapper.CompanyMapper">
+    
+    <resultMap type="Company" id="CompanyResult">
+        <result property="id"    column="id"    />
+        <result property="company"    column="company"    />
+        <result property="relationName"    column="relationName"    />
+        <result property="relationTel"    column="relationTel"    />
+        <result property="address"    column="address"    />
+        <result property="bankName"    column="bankName"    />
+        <result property="acountsName"    column="acountsName"    />
+        <result property="bankNo"    column="bankNo"    />
+        <result property="surplusMoney"    column="surplusMoney"    />
+        <result property="companyType"    column="companyType"    />
+        <result property="salesman"    column="salesman"    />
+        <result property="leader"    column="leader"    />
+        <result property="leaderTel"    column="leaderTel"    />
+        <result property="region"    column="region"    />
+        <result property="salesManager"    column="salesManager"    />
+        <result property="province"    column="province"    />
+        <result property="city"    column="city"    />
+        <result property="county"    column="county"    />
+        <result property="comments"    column="comments"    />
+        <result property="addtime"    column="addtime"    />
+        <result property="userId"    column="userId"    />
+        <result property="UserName"    column="UserName"    />
+        <result property="updateTime"    column="update_time"    />
+        <result property="delFlag"    column="delFlag"    />
+    </resultMap>
+
+
+ 
+
+    <sql id="selectCompanyVo">
+        select id, company, relationName, relationTel, address, bankName, acountsName, bankNo, surplusMoney, companyType, salesman, leader, leaderTel, region, salesManager, province, city, county, comments, addtime, userId, UserName, update_time, delFlag from company
+    </sql>
+
+    <select id="selectCompanyList" parameterType="Company" resultMap="CompanyResult">
+        <include refid="selectCompanyVo"/>
+        <where>  
+            <if test="company != null  and company != ''"> and company = #{company}</if>
+            <if test="relationName != null  and relationName != ''"> and relationName like concat('%', #{relationName}, '%')</if>
+            <if test="relationTel != null  and relationTel != ''"> and relationTel = #{relationTel}</if>
+            <if test="address != null  and address != ''"> and address = #{address}</if>
+            <if test="bankName != null  and bankName != ''"> and bankName like concat('%', #{bankName}, '%')</if>
+            <if test="acountsName != null  and acountsName != ''"> and acountsName like concat('%', #{acountsName}, '%')</if>
+            <if test="bankNo != null  and bankNo != ''"> and bankNo = #{bankNo}</if>
+            <if test="surplusMoney != null "> and surplusMoney = #{surplusMoney}</if>
+            <if test="companyType != null  and companyType != ''"> and companyType = #{companyType}</if>
+            <if test="salesman != null  and salesman != ''"> and salesman = #{salesman}</if>
+            <if test="leader != null  and leader != ''"> and leader = #{leader}</if>
+            <if test="leaderTel != null  and leaderTel != ''"> and leaderTel = #{leaderTel}</if>
+            <if test="region != null  and region != ''"> and region = #{region}</if>
+            <if test="salesManager != null  and salesManager != ''"> and salesManager = #{salesManager}</if>
+            <if test="province != null  and province != ''"> and province = #{province}</if>
+            <if test="city != null  and city != ''"> and city = #{city}</if>
+            <if test="county != null  and county != ''"> and county = #{county}</if>
+            <if test="comments != null  and comments != ''"> and comments = #{comments}</if>
+            <if test="addtime != null  and addtime != ''"> and addtime = #{addtime}</if>
+            <if test="userId != null "> and userId = #{userId}</if>
+            <if test="UserName != null  and UserName != ''"> and UserName like concat('%', #{UserName}, '%')</if>
+            and delFlag = 0
+        </where>
+    </select>
+    
+    <select id="selectCompanyById" parameterType="Long" resultMap="CompanyResult">
+        <include refid="selectCompanyVo"/>
+        where id = #{id}
+        and delFlag = 0
+    </select>
+
+    <insert id="insertCompany" parameterType="Company" useGeneratedKeys="true" keyProperty="id">
+        insert into company
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="company != null">company,</if>
+            <if test="relationName != null">relationName,</if>
+            <if test="relationTel != null">relationTel,</if>
+            <if test="address != null">address,</if>
+            <if test="bankName != null">bankName,</if>
+            <if test="acountsName != null">acountsName,</if>
+            <if test="bankNo != null">bankNo,</if>
+            <if test="surplusMoney != null">surplusMoney,</if>
+            <if test="companyType != null">companyType,</if>
+            <if test="salesman != null">salesman,</if>
+            <if test="leader != null">leader,</if>
+            <if test="leaderTel != null">leaderTel,</if>
+            <if test="region != null">region,</if>
+            <if test="salesManager != null">salesManager,</if>
+            <if test="province != null">province,</if>
+            <if test="city != null">city,</if>
+            <if test="county != null">county,</if>
+            <if test="comments != null">comments,</if>
+            <if test="addtime != null">addtime,</if>
+            <if test="userId != null">userId,</if>
+            <if test="UserName != null">UserName,</if>
+            <if test="updateTime != null">update_time,</if>
+            <if test="delFlag != null">delFlag,</if>
+         </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="company != null">#{company},</if>
+            <if test="relationName != null">#{relationName},</if>
+            <if test="relationTel != null">#{relationTel},</if>
+            <if test="address != null">#{address},</if>
+            <if test="bankName != null">#{bankName},</if>
+            <if test="acountsName != null">#{acountsName},</if>
+            <if test="bankNo != null">#{bankNo},</if>
+            <if test="surplusMoney != null">#{surplusMoney},</if>
+            <if test="companyType != null">#{companyType},</if>
+            <if test="salesman != null">#{salesman},</if>
+            <if test="leader != null">#{leader},</if>
+            <if test="leaderTel != null">#{leaderTel},</if>
+            <if test="region != null">#{region},</if>
+            <if test="salesManager != null">#{salesManager},</if>
+            <if test="province != null">#{province},</if>
+            <if test="city != null">#{city},</if>
+            <if test="county != null">#{county},</if>
+            <if test="comments != null">#{comments},</if>
+            <if test="addtime != null">#{addtime},</if>
+            <if test="userId != null">#{userId},</if>
+            <if test="UserName != null">#{UserName},</if>
+            <if test="updateTime != null">#{updateTime},</if>
+            <if test="delFlag != null">#{delFlag},</if>
+         </trim>
+    </insert>
+
+    <update id="updateCompany" parameterType="Company">
+        update company
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="company != null">company = #{company},</if>
+            <if test="relationName != null">relationName = #{relationName},</if>
+            <if test="relationTel != null">relationTel = #{relationTel},</if>
+            <if test="address != null">address = #{address},</if>
+            <if test="bankName != null">bankName = #{bankName},</if>
+            <if test="acountsName != null">acountsName = #{acountsName},</if>
+            <if test="bankNo != null">bankNo = #{bankNo},</if>
+            <if test="surplusMoney != null">surplusMoney = #{surplusMoney},</if>
+            <if test="companyType != null">companyType = #{companyType},</if>
+            <if test="salesman != null">salesman = #{salesman},</if>
+            <if test="leader != null">leader = #{leader},</if>
+            <if test="leaderTel != null">leaderTel = #{leaderTel},</if>
+            <if test="region != null">region = #{region},</if>
+            <if test="salesManager != null">salesManager = #{salesManager},</if>
+            <if test="province != null">province = #{province},</if>
+            <if test="city != null">city = #{city},</if>
+            <if test="county != null">county = #{county},</if>
+            <if test="comments != null">comments = #{comments},</if>
+            <if test="addtime != null">addtime = #{addtime},</if>
+            <if test="userId != null">userId = #{userId},</if>
+            <if test="UserName != null">UserName = #{UserName},</if>
+            <if test="updateTime != null">update_time = #{updateTime},</if>
+            <if test="delFlag != null">delFlag = #{delFlag},</if>
+        </trim>
+        where id = #{id}
+    </update>
+    <update id="deleteCompanyById" parameterType="Long">
+        update company set delFlag = 1 where id = #{id}
+    </update>
+    <update id="deleteCompanyByIds" parameterType="String">
+        update company set delFlag = 1 where id in
+        <foreach item="id" collection="array" open="(" separator="," close=")">
+            #{id}
+        </foreach>
+    </update>
+</mapper>

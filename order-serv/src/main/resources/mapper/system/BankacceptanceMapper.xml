@@ -1,0 +1,162 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="org.dzu.system.mapper.BankacceptanceMapper">
+    
+    <resultMap type="Bankacceptance" id="BankacceptanceResult">
+        <result property="id"    column="id"    />
+        <result property="operateDate"    column="operateDate"    />
+        <result property="billNo"    column="billNo"    />
+        <result property="issueDate"    column="issueDate"    />
+        <result property="dueDate"    column="dueDate"    />
+        <result property="billAccount"    column="billAccount"    />
+        <result property="billDate"    column="billDate"    />
+        <result property="billType"    column="billType"    />
+        <result property="reason"    column="reason"    />
+        <result property="billAmount"    column="billAmount"    />
+        <result property="inDiscountPoints"    column="inDiscountPoints"    />
+        <result property="inDiscountAmount"    column="inDiscountAmount"    />
+        <result property="billCategory"    column="billCategory"    />
+        <result property="origin"    column="origin"    />
+        <result property="endorser"    column="endorser"    />
+        <result property="endorsee"    column="endorsee"    />
+        <result property="endorseReason"    column="endorseReason"    />
+        <result property="comments"    column="comments"    />
+        <result property="addtime"    column="addtime"    />
+        <result property="userId"    column="userId"    />
+        <result property="UserName"    column="UserName"    />
+        <result property="updateTime"    column="update_time"    />
+        <result property="delFlag"    column="delFlag"    />
+    </resultMap>
+
+
+ 
+
+    <sql id="selectBankacceptanceVo">
+        select id, operateDate, billNo, issueDate, dueDate, billAccount, billDate, billType, reason, billAmount, inDiscountPoints, inDiscountAmount, billCategory, origin, endorser, endorsee, endorseReason, comments, addtime, userId, UserName, update_time, delFlag from bankacceptance
+    </sql>
+
+    <select id="selectBankacceptanceList" parameterType="Bankacceptance" resultMap="BankacceptanceResult">
+        <include refid="selectBankacceptanceVo"/>
+        <where>  
+            <if test="operateDate != null  and operateDate != ''"> and operateDate = #{operateDate}</if>
+            <if test="billNo != null  and billNo != ''"> and billNo = #{billNo}</if>
+            <if test="issueDate != null  and issueDate != ''"> and issueDate = #{issueDate}</if>
+            <if test="dueDate != null  and dueDate != ''"> and dueDate = #{dueDate}</if>
+            <if test="billAccount != null  and billAccount != ''"> and billAccount = #{billAccount}</if>
+            <if test="billDate != null  and billDate != ''"> and billDate = #{billDate}</if>
+            <if test="billType != null  and billType != ''"> and billType = #{billType}</if>
+            <if test="reason != null  and reason != ''"> and reason = #{reason}</if>
+            <if test="billAmount != null "> and billAmount = #{billAmount}</if>
+            <if test="inDiscountPoints != null "> and inDiscountPoints = #{inDiscountPoints}</if>
+            <if test="inDiscountAmount != null "> and inDiscountAmount = #{inDiscountAmount}</if>
+            <if test="billCategory != null  and billCategory != ''"> and billCategory = #{billCategory}</if>
+            <if test="origin != null  and origin != ''"> and origin = #{origin}</if>
+            <if test="endorser != null  and endorser != ''"> and endorser = #{endorser}</if>
+            <if test="endorsee != null  and endorsee != ''"> and endorsee = #{endorsee}</if>
+            <if test="endorseReason != null  and endorseReason != ''"> and endorseReason = #{endorseReason}</if>
+            <if test="comments != null  and comments != ''"> and comments = #{comments}</if>
+            <if test="addtime != null  and addtime != ''"> and addtime = #{addtime}</if>
+            <if test="userId != null "> and userId = #{userId}</if>
+            <if test="UserName != null  and UserName != ''"> and UserName like concat('%', #{UserName}, '%')</if>
+            and delFlag = 0
+        </where>
+    </select>
+    
+    <select id="selectBankacceptanceById" parameterType="Long" resultMap="BankacceptanceResult">
+        <include refid="selectBankacceptanceVo"/>
+        where id = #{id}
+        and delFlag = 0
+    </select>
+
+    <insert id="insertBankacceptance" parameterType="Bankacceptance" useGeneratedKeys="true" keyProperty="id">
+        insert into bankacceptance
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="operateDate != null">operateDate,</if>
+            <if test="billNo != null">billNo,</if>
+            <if test="issueDate != null">issueDate,</if>
+            <if test="dueDate != null">dueDate,</if>
+            <if test="billAccount != null">billAccount,</if>
+            <if test="billDate != null">billDate,</if>
+            <if test="billType != null">billType,</if>
+            <if test="reason != null">reason,</if>
+            <if test="billAmount != null">billAmount,</if>
+            <if test="inDiscountPoints != null">inDiscountPoints,</if>
+            <if test="inDiscountAmount != null">inDiscountAmount,</if>
+            <if test="billCategory != null">billCategory,</if>
+            <if test="origin != null">origin,</if>
+            <if test="endorser != null">endorser,</if>
+            <if test="endorsee != null">endorsee,</if>
+            <if test="endorseReason != null">endorseReason,</if>
+            <if test="comments != null">comments,</if>
+            <if test="addtime != null">addtime,</if>
+            <if test="userId != null">userId,</if>
+            <if test="UserName != null">UserName,</if>
+            <if test="updateTime != null">update_time,</if>
+            <if test="delFlag != null">delFlag,</if>
+         </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="operateDate != null">#{operateDate},</if>
+            <if test="billNo != null">#{billNo},</if>
+            <if test="issueDate != null">#{issueDate},</if>
+            <if test="dueDate != null">#{dueDate},</if>
+            <if test="billAccount != null">#{billAccount},</if>
+            <if test="billDate != null">#{billDate},</if>
+            <if test="billType != null">#{billType},</if>
+            <if test="reason != null">#{reason},</if>
+            <if test="billAmount != null">#{billAmount},</if>
+            <if test="inDiscountPoints != null">#{inDiscountPoints},</if>
+            <if test="inDiscountAmount != null">#{inDiscountAmount},</if>
+            <if test="billCategory != null">#{billCategory},</if>
+            <if test="origin != null">#{origin},</if>
+            <if test="endorser != null">#{endorser},</if>
+            <if test="endorsee != null">#{endorsee},</if>
+            <if test="endorseReason != null">#{endorseReason},</if>
+            <if test="comments != null">#{comments},</if>
+            <if test="addtime != null">#{addtime},</if>
+            <if test="userId != null">#{userId},</if>
+            <if test="UserName != null">#{UserName},</if>
+            <if test="updateTime != null">#{updateTime},</if>
+            <if test="delFlag != null">#{delFlag},</if>
+         </trim>
+    </insert>
+
+    <update id="updateBankacceptance" parameterType="Bankacceptance">
+        update bankacceptance
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="operateDate != null">operateDate = #{operateDate},</if>
+            <if test="billNo != null">billNo = #{billNo},</if>
+            <if test="issueDate != null">issueDate = #{issueDate},</if>
+            <if test="dueDate != null">dueDate = #{dueDate},</if>
+            <if test="billAccount != null">billAccount = #{billAccount},</if>
+            <if test="billDate != null">billDate = #{billDate},</if>
+            <if test="billType != null">billType = #{billType},</if>
+            <if test="reason != null">reason = #{reason},</if>
+            <if test="billAmount != null">billAmount = #{billAmount},</if>
+            <if test="inDiscountPoints != null">inDiscountPoints = #{inDiscountPoints},</if>
+            <if test="inDiscountAmount != null">inDiscountAmount = #{inDiscountAmount},</if>
+            <if test="billCategory != null">billCategory = #{billCategory},</if>
+            <if test="origin != null">origin = #{origin},</if>
+            <if test="endorser != null">endorser = #{endorser},</if>
+            <if test="endorsee != null">endorsee = #{endorsee},</if>
+            <if test="endorseReason != null">endorseReason = #{endorseReason},</if>
+            <if test="comments != null">comments = #{comments},</if>
+            <if test="addtime != null">addtime = #{addtime},</if>
+            <if test="userId != null">userId = #{userId},</if>
+            <if test="UserName != null">UserName = #{UserName},</if>
+            <if test="updateTime != null">update_time = #{updateTime},</if>
+            <if test="delFlag != null">delFlag = #{delFlag},</if>
+        </trim>
+        where id = #{id}
+    </update>
+    <update id="deleteBankacceptanceById" parameterType="Long">
+        update bankacceptance set delFlag = 1 where id = #{id}
+    </update>
+    <update id="deleteBankacceptanceByIds" parameterType="String">
+        update bankacceptance set delFlag = 1 where id in
+        <foreach item="id" collection="array" open="(" separator="," close=")">
+            #{id}
+        </foreach>
+    </update>
+</mapper>

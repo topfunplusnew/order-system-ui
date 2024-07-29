@@ -1,0 +1,122 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="org.dzu.system.mapper.BusinesstripMapper">
+    
+    <resultMap type="Businesstrip" id="BusinesstripResult">
+        <result property="id"    column="id"    />
+        <result property="personnel"    column="personnel"    />
+        <result property="starttime"    column="starttime"    />
+        <result property="startMilesPhoto"    column="startMilesPhoto"    />
+        <result property="refuelPhoto"    column="refuelPhoto"    />
+        <result property="endtime"    column="endtime"    />
+        <result property="endMilesPhoto"    column="endMilesPhoto"    />
+        <result property="feesPhoto"    column="feesPhoto"    />
+        <result property="isReimburse"    column="isReimburse"    />
+        <result property="comments"    column="comments"    />
+        <result property="addtime"    column="addtime"    />
+        <result property="userId"    column="userId"    />
+        <result property="UserName"    column="UserName"    />
+        <result property="updateTime"    column="update_time"    />
+        <result property="delFlag"    column="delFlag"    />
+    </resultMap>
+
+
+ 
+
+    <sql id="selectBusinesstripVo">
+        select id, personnel, starttime, startMilesPhoto, refuelPhoto, endtime, endMilesPhoto, feesPhoto, isReimburse, comments, addtime, userId, UserName, update_time, delFlag from businesstrip
+    </sql>
+
+    <select id="selectBusinesstripList" parameterType="Businesstrip" resultMap="BusinesstripResult">
+        <include refid="selectBusinesstripVo"/>
+        <where>  
+            <if test="personnel != null  and personnel != ''"> and personnel = #{personnel}</if>
+            <if test="starttime != null  and starttime != ''"> and starttime = #{starttime}</if>
+            <if test="startMilesPhoto != null  and startMilesPhoto != ''"> and startMilesPhoto = #{startMilesPhoto}</if>
+            <if test="refuelPhoto != null  and refuelPhoto != ''"> and refuelPhoto = #{refuelPhoto}</if>
+            <if test="endtime != null  and endtime != ''"> and endtime = #{endtime}</if>
+            <if test="endMilesPhoto != null  and endMilesPhoto != ''"> and endMilesPhoto = #{endMilesPhoto}</if>
+            <if test="feesPhoto != null  and feesPhoto != ''"> and feesPhoto = #{feesPhoto}</if>
+            <if test="isReimburse != null "> and isReimburse = #{isReimburse}</if>
+            <if test="comments != null  and comments != ''"> and comments = #{comments}</if>
+            <if test="addtime != null  and addtime != ''"> and addtime = #{addtime}</if>
+            <if test="userId != null "> and userId = #{userId}</if>
+            <if test="UserName != null  and UserName != ''"> and UserName like concat('%', #{UserName}, '%')</if>
+            and delFlag = 0
+        </where>
+    </select>
+    
+    <select id="selectBusinesstripById" parameterType="Long" resultMap="BusinesstripResult">
+        <include refid="selectBusinesstripVo"/>
+        where id = #{id}
+        and delFlag = 0
+    </select>
+
+    <insert id="insertBusinesstrip" parameterType="Businesstrip" useGeneratedKeys="true" keyProperty="id">
+        insert into businesstrip
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="personnel != null">personnel,</if>
+            <if test="starttime != null">starttime,</if>
+            <if test="startMilesPhoto != null">startMilesPhoto,</if>
+            <if test="refuelPhoto != null">refuelPhoto,</if>
+            <if test="endtime != null">endtime,</if>
+            <if test="endMilesPhoto != null">endMilesPhoto,</if>
+            <if test="feesPhoto != null">feesPhoto,</if>
+            <if test="isReimburse != null">isReimburse,</if>
+            <if test="comments != null">comments,</if>
+            <if test="addtime != null">addtime,</if>
+            <if test="userId != null">userId,</if>
+            <if test="UserName != null">UserName,</if>
+            <if test="updateTime != null">update_time,</if>
+            <if test="delFlag != null">delFlag,</if>
+         </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="personnel != null">#{personnel},</if>
+            <if test="starttime != null">#{starttime},</if>
+            <if test="startMilesPhoto != null">#{startMilesPhoto},</if>
+            <if test="refuelPhoto != null">#{refuelPhoto},</if>
+            <if test="endtime != null">#{endtime},</if>
+            <if test="endMilesPhoto != null">#{endMilesPhoto},</if>
+            <if test="feesPhoto != null">#{feesPhoto},</if>
+            <if test="isReimburse != null">#{isReimburse},</if>
+            <if test="comments != null">#{comments},</if>
+            <if test="addtime != null">#{addtime},</if>
+            <if test="userId != null">#{userId},</if>
+            <if test="UserName != null">#{UserName},</if>
+            <if test="updateTime != null">#{updateTime},</if>
+            <if test="delFlag != null">#{delFlag},</if>
+         </trim>
+    </insert>
+
+    <update id="updateBusinesstrip" parameterType="Businesstrip">
+        update businesstrip
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="personnel != null">personnel = #{personnel},</if>
+            <if test="starttime != null">starttime = #{starttime},</if>
+            <if test="startMilesPhoto != null">startMilesPhoto = #{startMilesPhoto},</if>
+            <if test="refuelPhoto != null">refuelPhoto = #{refuelPhoto},</if>
+            <if test="endtime != null">endtime = #{endtime},</if>
+            <if test="endMilesPhoto != null">endMilesPhoto = #{endMilesPhoto},</if>
+            <if test="feesPhoto != null">feesPhoto = #{feesPhoto},</if>
+            <if test="isReimburse != null">isReimburse = #{isReimburse},</if>
+            <if test="comments != null">comments = #{comments},</if>
+            <if test="addtime != null">addtime = #{addtime},</if>
+            <if test="userId != null">userId = #{userId},</if>
+            <if test="UserName != null">UserName = #{UserName},</if>
+            <if test="updateTime != null">update_time = #{updateTime},</if>
+            <if test="delFlag != null">delFlag = #{delFlag},</if>
+        </trim>
+        where id = #{id}
+    </update>
+    <update id="deleteBusinesstripById" parameterType="Long">
+        update businesstrip set delFlag = 1 where id = #{id}
+    </update>
+    <update id="deleteBusinesstripByIds" parameterType="String">
+        update businesstrip set delFlag = 1 where id in
+        <foreach item="id" collection="array" open="(" separator="," close=")">
+            #{id}
+        </foreach>
+    </update>
+</mapper>

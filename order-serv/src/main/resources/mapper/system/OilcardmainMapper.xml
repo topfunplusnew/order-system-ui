@@ -1,0 +1,142 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="org.dzu.system.mapper.OilcardmainMapper">
+    
+    <resultMap type="Oilcardmain" id="OilcardmainResult">
+        <result property="id"    column="id"    />
+        <result property="oilCardNo"    column="oilCardNo"    />
+        <result property="useDate"    column="useDate"    />
+        <result property="carNo"    column="carNo"    />
+        <result property="destination"    column="destination"    />
+        <result property="startCardSurplus"    column="startCardSurplus"    />
+        <result property="toPlusCardMoney"    column="toPlusCardMoney"    />
+        <result property="refuelingNumber"    column="refuelingNumber"    />
+        <result property="unitPrice"    column="unitPrice"    />
+        <result property="refuelingMoney"    column="refuelingMoney"    />
+        <result property="rechargeMoney"    column="rechargeMoney"    />
+        <result property="isTicket"    column="isTicket"    />
+        <result property="endCardSurplus"    column="endCardSurplus"    />
+        <result property="comments"    column="comments"    />
+        <result property="addtime"    column="addtime"    />
+        <result property="userId"    column="userId"    />
+        <result property="UserName"    column="UserName"    />
+        <result property="updateTime"    column="update_time"    />
+        <result property="delFlag"    column="delFlag"    />
+    </resultMap>
+
+
+ 
+
+    <sql id="selectOilcardmainVo">
+        select id, oilCardNo, useDate, carNo, destination, startCardSurplus, toPlusCardMoney, refuelingNumber, unitPrice, refuelingMoney, rechargeMoney, isTicket, endCardSurplus, comments, addtime, userId, UserName, update_time, delFlag from oilcardmain
+    </sql>
+
+    <select id="selectOilcardmainList" parameterType="Oilcardmain" resultMap="OilcardmainResult">
+        <include refid="selectOilcardmainVo"/>
+        <where>  
+            <if test="oilCardNo != null  and oilCardNo != ''"> and oilCardNo = #{oilCardNo}</if>
+            <if test="useDate != null  and useDate != ''"> and useDate = #{useDate}</if>
+            <if test="carNo != null  and carNo != ''"> and carNo = #{carNo}</if>
+            <if test="destination != null  and destination != ''"> and destination = #{destination}</if>
+            <if test="startCardSurplus != null  and startCardSurplus != ''"> and startCardSurplus = #{startCardSurplus}</if>
+            <if test="toPlusCardMoney != null  and toPlusCardMoney != ''"> and toPlusCardMoney = #{toPlusCardMoney}</if>
+            <if test="refuelingNumber != null  and refuelingNumber != ''"> and refuelingNumber = #{refuelingNumber}</if>
+            <if test="unitPrice != null  and unitPrice != ''"> and unitPrice = #{unitPrice}</if>
+            <if test="refuelingMoney != null  and refuelingMoney != ''"> and refuelingMoney = #{refuelingMoney}</if>
+            <if test="rechargeMoney != null  and rechargeMoney != ''"> and rechargeMoney = #{rechargeMoney}</if>
+            <if test="isTicket != null  and isTicket != ''"> and isTicket = #{isTicket}</if>
+            <if test="endCardSurplus != null  and endCardSurplus != ''"> and endCardSurplus = #{endCardSurplus}</if>
+            <if test="comments != null  and comments != ''"> and comments = #{comments}</if>
+            <if test="addtime != null  and addtime != ''"> and addtime = #{addtime}</if>
+            <if test="userId != null "> and userId = #{userId}</if>
+            <if test="UserName != null  and UserName != ''"> and UserName like concat('%', #{UserName}, '%')</if>
+            and delFlag = 0
+        </where>
+    </select>
+    
+    <select id="selectOilcardmainById" parameterType="Long" resultMap="OilcardmainResult">
+        <include refid="selectOilcardmainVo"/>
+        where id = #{id}
+        and delFlag = 0
+    </select>
+
+    <insert id="insertOilcardmain" parameterType="Oilcardmain" useGeneratedKeys="true" keyProperty="id">
+        insert into oilcardmain
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="oilCardNo != null">oilCardNo,</if>
+            <if test="useDate != null">useDate,</if>
+            <if test="carNo != null">carNo,</if>
+            <if test="destination != null">destination,</if>
+            <if test="startCardSurplus != null">startCardSurplus,</if>
+            <if test="toPlusCardMoney != null">toPlusCardMoney,</if>
+            <if test="refuelingNumber != null">refuelingNumber,</if>
+            <if test="unitPrice != null">unitPrice,</if>
+            <if test="refuelingMoney != null">refuelingMoney,</if>
+            <if test="rechargeMoney != null">rechargeMoney,</if>
+            <if test="isTicket != null">isTicket,</if>
+            <if test="endCardSurplus != null">endCardSurplus,</if>
+            <if test="comments != null">comments,</if>
+            <if test="addtime != null">addtime,</if>
+            <if test="userId != null">userId,</if>
+            <if test="UserName != null">UserName,</if>
+            <if test="updateTime != null">update_time,</if>
+            <if test="delFlag != null">delFlag,</if>
+         </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="oilCardNo != null">#{oilCardNo},</if>
+            <if test="useDate != null">#{useDate},</if>
+            <if test="carNo != null">#{carNo},</if>
+            <if test="destination != null">#{destination},</if>
+            <if test="startCardSurplus != null">#{startCardSurplus},</if>
+            <if test="toPlusCardMoney != null">#{toPlusCardMoney},</if>
+            <if test="refuelingNumber != null">#{refuelingNumber},</if>
+            <if test="unitPrice != null">#{unitPrice},</if>
+            <if test="refuelingMoney != null">#{refuelingMoney},</if>
+            <if test="rechargeMoney != null">#{rechargeMoney},</if>
+            <if test="isTicket != null">#{isTicket},</if>
+            <if test="endCardSurplus != null">#{endCardSurplus},</if>
+            <if test="comments != null">#{comments},</if>
+            <if test="addtime != null">#{addtime},</if>
+            <if test="userId != null">#{userId},</if>
+            <if test="UserName != null">#{UserName},</if>
+            <if test="updateTime != null">#{updateTime},</if>
+            <if test="delFlag != null">#{delFlag},</if>
+         </trim>
+    </insert>
+
+    <update id="updateOilcardmain" parameterType="Oilcardmain">
+        update oilcardmain
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="oilCardNo != null">oilCardNo = #{oilCardNo},</if>
+            <if test="useDate != null">useDate = #{useDate},</if>
+            <if test="carNo != null">carNo = #{carNo},</if>
+            <if test="destination != null">destination = #{destination},</if>
+            <if test="startCardSurplus != null">startCardSurplus = #{startCardSurplus},</if>
+            <if test="toPlusCardMoney != null">toPlusCardMoney = #{toPlusCardMoney},</if>
+            <if test="refuelingNumber != null">refuelingNumber = #{refuelingNumber},</if>
+            <if test="unitPrice != null">unitPrice = #{unitPrice},</if>
+            <if test="refuelingMoney != null">refuelingMoney = #{refuelingMoney},</if>
+            <if test="rechargeMoney != null">rechargeMoney = #{rechargeMoney},</if>
+            <if test="isTicket != null">isTicket = #{isTicket},</if>
+            <if test="endCardSurplus != null">endCardSurplus = #{endCardSurplus},</if>
+            <if test="comments != null">comments = #{comments},</if>
+            <if test="addtime != null">addtime = #{addtime},</if>
+            <if test="userId != null">userId = #{userId},</if>
+            <if test="UserName != null">UserName = #{UserName},</if>
+            <if test="updateTime != null">update_time = #{updateTime},</if>
+            <if test="delFlag != null">delFlag = #{delFlag},</if>
+        </trim>
+        where id = #{id}
+    </update>
+    <update id="deleteOilcardmainById" parameterType="Long">
+        update oilcardmain set delFlag = 1 where id = #{id}
+    </update>
+    <update id="deleteOilcardmainByIds" parameterType="String">
+        update oilcardmain set delFlag = 1 where id in
+        <foreach item="id" collection="array" open="(" separator="," close=")">
+            #{id}
+        </foreach>
+    </update>
+</mapper>

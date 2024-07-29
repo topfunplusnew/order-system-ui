@@ -1,0 +1,137 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="org.dzu.system.mapper.RebateMapper">
+    
+    <resultMap type="Rebate" id="RebateResult">
+        <result property="id"    column="id"    />
+        <result property="ordersNo"    column="ordersNo"    />
+        <result property="rebateDate"    column="rebateDate"    />
+        <result property="rebate"    column="rebate"    />
+        <result property="rebateType"    column="rebateType"    />
+        <result property="inAcountsName"    column="inAcountsName"    />
+        <result property="inBankNo"    column="inBankNo"    />
+        <result property="supplier"    column="supplier"    />
+        <result property="supplierId"    column="supplier_id"    />
+        <result property="outAcountsName"    column="outAcountsName"    />
+        <result property="outBankNo"    column="outBankNo"    />
+        <result property="rebateReason"    column="rebateReason"    />
+        <result property="comments"    column="comments"    />
+        <result property="addtime"    column="addtime"    />
+        <result property="userId"    column="userId"    />
+        <result property="UserName"    column="UserName"    />
+        <result property="updateTime"    column="update_time"    />
+        <result property="delFlag"    column="delFlag"    />
+    </resultMap>
+
+
+ 
+
+    <sql id="selectRebateVo">
+        select id, ordersNo, rebateDate, rebate, rebateType, inAcountsName, inBankNo, supplier, supplier_id, outAcountsName, outBankNo, rebateReason, comments, addtime, userId, UserName, update_time, delFlag from rebate
+    </sql>
+
+    <select id="selectRebateList" parameterType="Rebate" resultMap="RebateResult">
+        <include refid="selectRebateVo"/>
+        <where>  
+            <if test="ordersNo != null  and ordersNo != ''"> and ordersNo = #{ordersNo}</if>
+            <if test="rebateDate != null  and rebateDate != ''"> and rebateDate = #{rebateDate}</if>
+            <if test="rebate != null "> and rebate = #{rebate}</if>
+            <if test="rebateType != null  and rebateType != ''"> and rebateType = #{rebateType}</if>
+            <if test="inAcountsName != null  and inAcountsName != ''"> and inAcountsName like concat('%', #{inAcountsName}, '%')</if>
+            <if test="inBankNo != null  and inBankNo != ''"> and inBankNo = #{inBankNo}</if>
+            <if test="supplier != null  and supplier != ''"> and supplier = #{supplier}</if>
+            <if test="supplierId != null "> and supplier_id = #{supplierId}</if>
+            <if test="outAcountsName != null  and outAcountsName != ''"> and outAcountsName like concat('%', #{outAcountsName}, '%')</if>
+            <if test="outBankNo != null  and outBankNo != ''"> and outBankNo = #{outBankNo}</if>
+            <if test="rebateReason != null  and rebateReason != ''"> and rebateReason = #{rebateReason}</if>
+            <if test="comments != null  and comments != ''"> and comments = #{comments}</if>
+            <if test="addtime != null  and addtime != ''"> and addtime = #{addtime}</if>
+            <if test="userId != null "> and userId = #{userId}</if>
+            <if test="UserName != null  and UserName != ''"> and UserName like concat('%', #{UserName}, '%')</if>
+            and delFlag = 0
+        </where>
+    </select>
+    
+    <select id="selectRebateById" parameterType="Long" resultMap="RebateResult">
+        <include refid="selectRebateVo"/>
+        where id = #{id}
+        and delFlag = 0
+    </select>
+
+    <insert id="insertRebate" parameterType="Rebate" useGeneratedKeys="true" keyProperty="id">
+        insert into rebate
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="ordersNo != null">ordersNo,</if>
+            <if test="rebateDate != null">rebateDate,</if>
+            <if test="rebate != null">rebate,</if>
+            <if test="rebateType != null">rebateType,</if>
+            <if test="inAcountsName != null">inAcountsName,</if>
+            <if test="inBankNo != null">inBankNo,</if>
+            <if test="supplier != null">supplier,</if>
+            <if test="supplierId != null">supplier_id,</if>
+            <if test="outAcountsName != null">outAcountsName,</if>
+            <if test="outBankNo != null">outBankNo,</if>
+            <if test="rebateReason != null">rebateReason,</if>
+            <if test="comments != null">comments,</if>
+            <if test="addtime != null">addtime,</if>
+            <if test="userId != null">userId,</if>
+            <if test="UserName != null">UserName,</if>
+            <if test="updateTime != null">update_time,</if>
+            <if test="delFlag != null">delFlag,</if>
+         </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="ordersNo != null">#{ordersNo},</if>
+            <if test="rebateDate != null">#{rebateDate},</if>
+            <if test="rebate != null">#{rebate},</if>
+            <if test="rebateType != null">#{rebateType},</if>
+            <if test="inAcountsName != null">#{inAcountsName},</if>
+            <if test="inBankNo != null">#{inBankNo},</if>
+            <if test="supplier != null">#{supplier},</if>
+            <if test="supplierId != null">#{supplierId},</if>
+            <if test="outAcountsName != null">#{outAcountsName},</if>
+            <if test="outBankNo != null">#{outBankNo},</if>
+            <if test="rebateReason != null">#{rebateReason},</if>
+            <if test="comments != null">#{comments},</if>
+            <if test="addtime != null">#{addtime},</if>
+            <if test="userId != null">#{userId},</if>
+            <if test="UserName != null">#{UserName},</if>
+            <if test="updateTime != null">#{updateTime},</if>
+            <if test="delFlag != null">#{delFlag},</if>
+         </trim>
+    </insert>
+
+    <update id="updateRebate" parameterType="Rebate">
+        update rebate
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="ordersNo != null">ordersNo = #{ordersNo},</if>
+            <if test="rebateDate != null">rebateDate = #{rebateDate},</if>
+            <if test="rebate != null">rebate = #{rebate},</if>
+            <if test="rebateType != null">rebateType = #{rebateType},</if>
+            <if test="inAcountsName != null">inAcountsName = #{inAcountsName},</if>
+            <if test="inBankNo != null">inBankNo = #{inBankNo},</if>
+            <if test="supplier != null">supplier = #{supplier},</if>
+            <if test="supplierId != null">supplier_id = #{supplierId},</if>
+            <if test="outAcountsName != null">outAcountsName = #{outAcountsName},</if>
+            <if test="outBankNo != null">outBankNo = #{outBankNo},</if>
+            <if test="rebateReason != null">rebateReason = #{rebateReason},</if>
+            <if test="comments != null">comments = #{comments},</if>
+            <if test="addtime != null">addtime = #{addtime},</if>
+            <if test="userId != null">userId = #{userId},</if>
+            <if test="UserName != null">UserName = #{UserName},</if>
+            <if test="updateTime != null">update_time = #{updateTime},</if>
+            <if test="delFlag != null">delFlag = #{delFlag},</if>
+        </trim>
+        where id = #{id}
+    </update>
+    <update id="deleteRebateById" parameterType="Long">
+        update rebate set delFlag = 1 where id = #{id}
+    </update>
+    <update id="deleteRebateByIds" parameterType="String">
+        update rebate set delFlag = 1 where id in
+        <foreach item="id" collection="array" open="(" separator="," close=")">
+            #{id}
+        </foreach>
+    </update>
+</mapper>
