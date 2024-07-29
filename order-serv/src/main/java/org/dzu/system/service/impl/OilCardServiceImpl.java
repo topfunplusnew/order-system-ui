@@ -1,6 +1,8 @@
 package org.dzu.system.service.impl;
 
 import java.util.List;
+
+import org.dzu.common.exception.ServiceException;
 import org.dzu.common.utils.DateUtils;
 import org.dzu.common.utils.SecurityUtils;
 import org.dzu.common.utils.SecurityUtils;
@@ -56,6 +58,13 @@ public class OilCardServiceImpl implements IOilCardService
     @Override
     public int insertOilCard(OilCard oilCard)
     {
+        // 根据卡号搜索，如果搜索到，提示已经有了
+        OilCard query = new OilCard();
+        query.setOilCardNo(oilCard.getOilCardNo());
+        if(selectOilCardList(query).size()>0){
+            throw new ServiceException("对应卡号已经录入");
+        }
+
         oilCard.setAddtime(String.valueOf(DateUtils.getNowDate()));
         oilCard.setUserId(SecurityUtils.getUserId());
         oilCard.setUserName(SecurityUtils.getUserTruename());
@@ -72,6 +81,12 @@ public class OilCardServiceImpl implements IOilCardService
     @Override
     public int updateOilCard(OilCard oilCard)
     {
+        // 根据卡号搜索，如果搜索到，提示已经有了
+        OilCard query = new OilCard();
+        query.setOilCardNo(oilCard.getOilCardNo());
+        if(selectOilCardList(query).size()>0){
+            throw new ServiceException("对应卡号已经录入");
+        }
         oilCard.setUserId(SecurityUtils.getUserId());
         oilCard.setUserName(SecurityUtils.getUserTruename());
         oilCard.setUpdateTime(DateUtils.getNowDate());
