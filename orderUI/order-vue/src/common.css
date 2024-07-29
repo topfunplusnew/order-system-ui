@@ -1,0 +1,8 @@
+/*通用CSS封装 */
+.ml {
+  margin-left: 1rem;
+}
+
+.border-1 {
+  border-radius: 0.5rem;
+}
