@@ -36,7 +36,7 @@
     <el-row :gutter="10" class="mb8">
       <el-col :span="1.5">
         <el-button
-          type="danger"
+          type="primary"
           plain
           icon="el-icon-plus"
           size="mini"
@@ -78,7 +78,6 @@
           @click="printHTML"
         >打印
         </el-button>
-
       </el-col>
 
       <right-toolbar :showSearch.sync="showSearch" @queryTable="getList" :columns="columns"></right-toolbar>
@@ -287,8 +286,6 @@ export default {
         this.bankAccountList = response.rows.filter(item => {
           return item.acountsType === '己方公司' || item.acountsType === '其他'
         })
-        // this.bankAccountList = this.bankAccountList
-        console.log(this.bankAccountList)
         this.total = response.total;
         this.loading = false;
       });
