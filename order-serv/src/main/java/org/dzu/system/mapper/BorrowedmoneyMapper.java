@@ -1,5 +1,6 @@
 package org.dzu.system.mapper;
 
+import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import java.util.List;
 import org.dzu.system.domain.Borrowedmoney;
 
@@ -9,7 +10,7 @@ import org.dzu.system.domain.Borrowedmoney;
  * @author ml
  * @date 2024-07-29
  */
-public interface BorrowedmoneyMapper 
+public interface BorrowedmoneyMapper extends BaseMapper<Borrowedmoney>
 {
     /**
      * 查询从外部借入款、贷款

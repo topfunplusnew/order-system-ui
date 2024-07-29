@@ -29,7 +29,7 @@ import org.dzu.common.core.page.TableDataInfo;
  * @date 2024-07-29
  */
 @RestController
-@RequestMapping("/system/goodsOrderBack")
+@RequestMapping("/system/GoodsorderBack")
 public class GoodsorderBackController extends BaseController
 {
     @Autowired
@@ -38,7 +38,7 @@ public class GoodsorderBackController extends BaseController
     /**
      * 查询订单备份信息列表
      */
-    @PreAuthorize("@ss.hasPermi('system:back:list')")
+    @PreAuthorize("@ss.hasPermi('system:GoodsorderBack:list')")
     @GetMapping("/list")
     public TableDataInfo list(GoodsorderBack goodsorderBack)
     {
@@ -50,7 +50,7 @@ public class GoodsorderBackController extends BaseController
     /**
      * 导出订单备份信息列表
      */
-    @PreAuthorize("@ss.hasPermi('system:back:export')")
+    @PreAuthorize("@ss.hasPermi('system:GoodsorderBack:export')")
     @Log(title = "订单备份信息", businessType = BusinessType.EXPORT)
     @PostMapping("/export")
     public void export(HttpServletResponse response, GoodsorderBack goodsorderBack)
@@ -63,7 +63,7 @@ public class GoodsorderBackController extends BaseController
     /**
      * 获取订单备份信息详细信息
      */
-    @PreAuthorize("@ss.hasPermi('system:back:query')")
+    @PreAuthorize("@ss.hasPermi('system:GoodsorderBack:query')")
     @GetMapping(value = "/{id}")
     public AjaxResult getInfo(@PathVariable("id") Long id)
     {
@@ -73,7 +73,7 @@ public class GoodsorderBackController extends BaseController
     /**
      * 新增订单备份信息
      */
-    @PreAuthorize("@ss.hasPermi('system:back:add')")
+    @PreAuthorize("@ss.hasPermi('system:GoodsorderBack:add')")
     @Log(title = "订单备份信息", businessType = BusinessType.INSERT)
     @PostMapping
     public AjaxResult add(@Validated @RequestBody GoodsorderBack goodsorderBack)
@@ -84,7 +84,7 @@ public class GoodsorderBackController extends BaseController
     /**
      * 修改订单备份信息
      */
-    @PreAuthorize("@ss.hasPermi('system:back:edit')")
+    @PreAuthorize("@ss.hasPermi('system:GoodsorderBack:edit')")
     @Log(title = "订单备份信息", businessType = BusinessType.UPDATE)
     @PutMapping
     public AjaxResult edit(@Validated @RequestBody GoodsorderBack goodsorderBack)
@@ -95,7 +95,7 @@ public class GoodsorderBackController extends BaseController
     /**
      * 删除订单备份信息
      */
-    @PreAuthorize("@ss.hasPermi('system:back:remove')")
+    @PreAuthorize("@ss.hasPermi('system:GoodsorderBack:remove')")
     @Log(title = "订单备份信息", businessType = BusinessType.DELETE)
 	@DeleteMapping("/{ids}")
     public AjaxResult remove(@PathVariable Long[] ids)

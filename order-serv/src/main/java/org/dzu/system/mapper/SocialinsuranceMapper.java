@@ -1,5 +1,6 @@
 package org.dzu.system.mapper;
 
+import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import java.util.List;
 import org.dzu.system.domain.Socialinsurance;
 
@@ -9,7 +10,7 @@ import org.dzu.system.domain.Socialinsurance;
  * @author ml
  * @date 2024-07-29
  */
-public interface SocialinsuranceMapper 
+public interface SocialinsuranceMapper extends BaseMapper<Socialinsurance>
 {
     /**
      * 查询社保基金

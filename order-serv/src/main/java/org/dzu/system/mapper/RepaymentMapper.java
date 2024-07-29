@@ -1,5 +1,6 @@
 package org.dzu.system.mapper;
 
+import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import java.util.List;
 import org.dzu.system.domain.Repayment;
 
@@ -9,7 +10,7 @@ import org.dzu.system.domain.Repayment;
  * @author ml
  * @date 2024-07-29
  */
-public interface RepaymentMapper 
+public interface RepaymentMapper extends BaseMapper<Repayment>
 {
     /**
      * 查询还款记录

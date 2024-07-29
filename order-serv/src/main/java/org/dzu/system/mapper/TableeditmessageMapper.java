@@ -1,5 +1,6 @@
 package org.dzu.system.mapper;
 
+import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import java.util.List;
 import org.dzu.system.domain.Tableeditmessage;
 
@@ -9,7 +10,7 @@ import org.dzu.system.domain.Tableeditmessage;
  * @author ml
  * @date 2024-07-29
  */
-public interface TableeditmessageMapper 
+public interface TableeditmessageMapper extends BaseMapper<Tableeditmessage>
 {
     /**
      * 查询变动日志信息

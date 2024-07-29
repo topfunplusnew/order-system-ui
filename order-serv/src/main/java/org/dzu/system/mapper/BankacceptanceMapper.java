@@ -1,5 +1,6 @@
 package org.dzu.system.mapper;
 
+import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import java.util.List;
 import org.dzu.system.domain.Bankacceptance;
 
@@ -9,7 +10,7 @@ import org.dzu.system.domain.Bankacceptance;
  * @author ml
  * @date 2024-07-29
  */
-public interface BankacceptanceMapper 
+public interface BankacceptanceMapper extends BaseMapper<Bankacceptance>
 {
     /**
      * 查询商业票据、银行承兑

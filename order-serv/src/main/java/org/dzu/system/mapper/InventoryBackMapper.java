@@ -1,5 +1,6 @@
 package org.dzu.system.mapper;
 
+import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import java.util.List;
 import org.dzu.system.domain.InventoryBack;
 
@@ -9,7 +10,7 @@ import org.dzu.system.domain.InventoryBack;
  * @author ml
  * @date 2024-07-29
  */
-public interface InventoryBackMapper 
+public interface InventoryBackMapper extends BaseMapper<InventoryBack>
 {
     /**
      * 查询货物入库信息

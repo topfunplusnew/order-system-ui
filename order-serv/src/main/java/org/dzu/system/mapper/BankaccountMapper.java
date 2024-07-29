@@ -1,5 +1,6 @@
 package org.dzu.system.mapper;
 
+import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import java.util.List;
 import org.dzu.system.domain.Bankaccount;
 
@@ -9,7 +10,7 @@ import org.dzu.system.domain.Bankaccount;
  * @author ml
  * @date 2024-07-29
  */
-public interface BankaccountMapper 
+public interface BankaccountMapper extends BaseMapper<Bankaccount>
 {
     /**
      * 查询银行卡管理

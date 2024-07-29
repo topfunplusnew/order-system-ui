@@ -1,5 +1,6 @@
 package org.dzu.system.mapper;
 
+import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import java.util.List;
 import org.dzu.system.domain.Orderinvoice;
 
@@ -9,7 +10,7 @@ import org.dzu.system.domain.Orderinvoice;
  * @author ml
  * @date 2024-07-29
  */
-public interface OrderinvoiceMapper 
+public interface OrderinvoiceMapper extends BaseMapper<Orderinvoice>
 {
     /**
      * 查询订单发票

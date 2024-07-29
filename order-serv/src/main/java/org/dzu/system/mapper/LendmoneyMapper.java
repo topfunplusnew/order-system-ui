@@ -1,5 +1,6 @@
 package org.dzu.system.mapper;
 
+import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import java.util.List;
 import org.dzu.system.domain.Lendmoney;
 
@@ -9,7 +10,7 @@ import org.dzu.system.domain.Lendmoney;
  * @author ml
  * @date 2024-07-29
  */
-public interface LendmoneyMapper 
+public interface LendmoneyMapper extends BaseMapper<Lendmoney>
 {
     /**
      * 查询资金借出（期货）

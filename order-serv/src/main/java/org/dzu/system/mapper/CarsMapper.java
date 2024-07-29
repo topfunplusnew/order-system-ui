@@ -1,5 +1,6 @@
 package org.dzu.system.mapper;
 
+import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import java.util.List;
 import org.dzu.system.domain.Cars;
 
@@ -9,7 +10,7 @@ import org.dzu.system.domain.Cars;
  * @author ml
  * @date 2024-07-29
  */
-public interface CarsMapper 
+public interface CarsMapper extends BaseMapper<Cars>
 {
     /**
      * 查询车辆管理

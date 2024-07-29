@@ -1,5 +1,6 @@
 package org.dzu.system.mapper;
 
+import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import java.util.List;
 import org.dzu.system.domain.Balanceaccounts;
 
@@ -9,7 +10,7 @@ import org.dzu.system.domain.Balanceaccounts;
  * @author ml
  * @date 2024-07-29
  */
-public interface BalanceaccountsMapper 
+public interface BalanceaccountsMapper extends BaseMapper<Balanceaccounts>
 {
     /**
      * 查询平账

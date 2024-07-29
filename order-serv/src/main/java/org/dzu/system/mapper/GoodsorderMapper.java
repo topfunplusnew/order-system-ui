@@ -1,5 +1,6 @@
 package org.dzu.system.mapper;
 
+import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import java.util.List;
 import org.dzu.system.domain.Goodsorder;
 
@@ -9,7 +10,7 @@ import org.dzu.system.domain.Goodsorder;
  * @author ml
  * @date 2024-07-29
  */
-public interface GoodsorderMapper 
+public interface GoodsorderMapper extends BaseMapper<Goodsorder>
 {
     /**
      * 查询订单

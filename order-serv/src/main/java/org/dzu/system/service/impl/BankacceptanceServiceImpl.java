@@ -88,6 +88,7 @@ public class BankacceptanceServiceImpl implements IBankacceptanceService
     public int deleteBankacceptanceByIds(Long[] ids)
     {
         return bankacceptanceMapper.deleteBankacceptanceByIds(ids);
+
     }
 
     /**

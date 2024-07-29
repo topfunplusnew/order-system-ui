@@ -1,5 +1,6 @@
 package org.dzu.system.mapper;
 
+import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import java.util.List;
 import org.dzu.system.domain.Carapply;
 
@@ -9,7 +10,7 @@ import org.dzu.system.domain.Carapply;
  * @author ml
  * @date 2024-07-29
  */
-public interface CarapplyMapper 
+public interface CarapplyMapper extends BaseMapper<Carapply>
 {
     /**
      * 查询车辆派出管理

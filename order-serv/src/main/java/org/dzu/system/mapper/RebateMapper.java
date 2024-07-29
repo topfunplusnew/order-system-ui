@@ -1,5 +1,6 @@
 package org.dzu.system.mapper;
 
+import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import java.util.List;
 import org.dzu.system.domain.Rebate;
 
@@ -9,7 +10,7 @@ import org.dzu.system.domain.Rebate;
  * @author ml
  * @date 2024-07-29
  */
-public interface RebateMapper 
+public interface RebateMapper extends BaseMapper<Rebate>
 {
     /**
      * 查询供应商返利

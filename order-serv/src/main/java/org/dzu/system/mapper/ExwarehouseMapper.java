@@ -1,5 +1,6 @@
 package org.dzu.system.mapper;
 
+import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import java.util.List;
 import org.dzu.system.domain.Exwarehouse;
 
@@ -9,7 +10,7 @@ import org.dzu.system.domain.Exwarehouse;
  * @author ml
  * @date 2024-07-29
  */
-public interface ExwarehouseMapper 
+public interface ExwarehouseMapper extends BaseMapper<Exwarehouse>
 {
     /**
      * 查询出库
