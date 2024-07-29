@@ -2,27 +2,30 @@ package org.dzu.system.service.impl;
 
 import java.util.List;
 import org.dzu.common.utils.DateUtils;
+import org.dzu.common.utils.SecurityUtils;
+import org.dzu.common.utils.SecurityUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.dzu.system.mapper.OrderinvoiceMapper;
 import org.dzu.system.domain.Orderinvoice;
 import org.dzu.system.service.IOrderinvoiceService;
-
+ 
+import org.dzu.common.constant.DelConstants;
 /**
  * 订单发票Service业务层处理
- * 
+ *
  * @author ml
- * @date 2024-07-19
+ * @date 2024-07-29
  */
 @Service
-public class OrderinvoiceServiceImpl implements IOrderinvoiceService 
+public class OrderinvoiceServiceImpl implements IOrderinvoiceService
 {
     @Autowired
     private OrderinvoiceMapper orderinvoiceMapper;
 
     /**
      * 查询订单发票
-     * 
+     *
      * @param id 订单发票主键
      * @return 订单发票
      */
@@ -34,7 +37,7 @@ public class OrderinvoiceServiceImpl implements IOrderinvoiceService
 
     /**
      * 查询订单发票列表
-     * 
+     *
      * @param orderinvoice 订单发票
      * @return 订单发票
      */
@@ -46,13 +49,17 @@ public class OrderinvoiceServiceImpl implements IOrderinvoiceService
 
     /**
      * 新增订单发票
-     * 
+     *
      * @param orderinvoice 订单发票
      * @return 结果
      */
     @Override
     public int insertOrderinvoice(Orderinvoice orderinvoice)
     {
+        orderinvoice.setAddtime(String.valueOf(DateUtils.getNowDate()));
+        orderinvoice.setUserId(SecurityUtils.getUserId());
+        orderinvoice.setUserName(SecurityUtils.getUserTruename());
+        orderinvoice.setDelFlag(Long.valueOf(DelConstants.NODEL));
         return orderinvoiceMapper.insertOrderinvoice(orderinvoice);
     }
 
@@ -65,6 +72,8 @@ public class OrderinvoiceServiceImpl implements IOrderinvoiceService
     @Override
     public int updateOrderinvoice(Orderinvoice orderinvoice)
     {
+        orderinvoice.setUserId(SecurityUtils.getUserId());
+        orderinvoice.setUserName(SecurityUtils.getUserTruename());
         orderinvoice.setUpdateTime(DateUtils.getNowDate());
         return orderinvoiceMapper.updateOrderinvoice(orderinvoice);
     }

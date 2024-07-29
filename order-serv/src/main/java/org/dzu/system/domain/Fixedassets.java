@@ -5,17 +5,19 @@ import org.apache.commons.lang3.builder.ToStringStyle;
 import org.dzu.common.annotation.Excel;
 import org.dzu.common.core.domain.BaseEntity;
 
+import org.dzu.common.annotation.DecimalMaxDigits;
+import org.dzu.common.annotation.OnlyZeroOrOne;
 /**
  * 固定资产对象 fixedassets
  * 
  * @author ml
- * @date 2024-07-19
+ * @date 2024-07-29
  */
 public class Fixedassets extends BaseEntity
 {
     private static final long serialVersionUID = 1L;
 
-    /** 主键 */
+    /** id */
     private Long id;
 
     /** 购入日期 */
@@ -43,12 +45,12 @@ public class Fixedassets extends BaseEntity
     private String measurementUnit;
 
     /** 含税金额 */
-    @Excel(name = "含税金额")
-    private Long amountIncludeTax;
+    @DecimalMaxDigits
+    private Double amountIncludeTax;
 
     /** 不含税金额 */
-    @Excel(name = "不含税金额")
-    private Long amountNoTax;
+    @DecimalMaxDigits
+    private Double amountNoTax;
 
     /** 户名名称（公户/个人） */
     @Excel(name = "户名名称", readConverterExp = "公=户/个人")
@@ -63,8 +65,8 @@ public class Fixedassets extends BaseEntity
     private String scrapDate;
 
     /** 清理/变卖价值 */
-    @Excel(name = "清理/变卖价值")
-    private Long saleAmount;
+    @DecimalMaxDigits
+    private Double saleAmount;
 
     /** 备注 */
     @Excel(name = "备注")
@@ -83,7 +85,7 @@ public class Fixedassets extends BaseEntity
     private String UserName;
 
     /** 删除标记 */
-    @Excel(name = "删除标记")
+    @OnlyZeroOrOne
     private Long delFlag;
 
     public void setId(Long id) 
@@ -122,12 +124,12 @@ public class Fixedassets extends BaseEntity
     {
         return assetName;
     }
-    public void setSpecification(String  specification)
+    public void setspecification(String  specification)
     {
         this. specification =  specification;
     }
 
-    public String getSpecification()
+    public String getspecification()
     {
         return  specification;
     }
@@ -140,30 +142,30 @@ public class Fixedassets extends BaseEntity
     {
         return number;
     }
-    public void setMeasurementUnit(String measurementUnit) 
+    public void setMeasurementUnit(String measurementUnit)
     {
         this.measurementUnit = measurementUnit;
     }
 
-    public String getMeasurementUnit() 
+    public String getMeasurementUnit()
     {
         return measurementUnit;
     }
-    public void setAmountIncludeTax(Long amountIncludeTax) 
+    public void setAmountIncludeTax(Double amountIncludeTax) 
     {
         this.amountIncludeTax = amountIncludeTax;
     }
 
-    public Long getAmountIncludeTax() 
+    public Double getAmountIncludeTax() 
     {
         return amountIncludeTax;
     }
-    public void setAmountNoTax(Long amountNoTax) 
+    public void setAmountNoTax(Double amountNoTax) 
     {
         this.amountNoTax = amountNoTax;
     }
 
-    public Long getAmountNoTax() 
+    public Double getAmountNoTax() 
     {
         return amountNoTax;
     }
@@ -194,12 +196,12 @@ public class Fixedassets extends BaseEntity
     {
         return scrapDate;
     }
-    public void setSaleAmount(Long saleAmount) 
+    public void setSaleAmount(Double saleAmount) 
     {
         this.saleAmount = saleAmount;
     }
 
-    public Long getSaleAmount() 
+    public Double getSaleAmount() 
     {
         return saleAmount;
     }
@@ -256,7 +258,7 @@ public class Fixedassets extends BaseEntity
             .append("buyDate", getBuyDate())
             .append("assetNo", getAssetNo())
             .append("assetName", getAssetName())
-            .append(" specification", getSpecification())
+            .append(" specification", getspecification())
             .append("number", getNumber())
             .append("measurementUnit", getMeasurementUnit())
             .append("amountIncludeTax", getAmountIncludeTax())

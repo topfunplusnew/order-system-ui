@@ -5,17 +5,19 @@ import org.apache.commons.lang3.builder.ToStringStyle;
 import org.dzu.common.annotation.Excel;
 import org.dzu.common.core.domain.BaseEntity;
 
+import org.dzu.common.annotation.DecimalMaxDigits;
+import org.dzu.common.annotation.OnlyZeroOrOne;
 /**
  * 资金借出（期货）对象 lendmoney
  * 
  * @author ml
- * @date 2024-07-19
+ * @date 2024-07-29
  */
 public class Lendmoney extends BaseEntity
 {
     private static final long serialVersionUID = 1L;
 
-    /** 主键 */
+    /** id */
     private Long id;
 
     /** 借出款编号（UUID） */
@@ -31,8 +33,8 @@ public class Lendmoney extends BaseEntity
     private String target;
 
     /** 保证金金额 */
-    @Excel(name = "保证金金额")
-    private Long moneyAmount;
+    @DecimalMaxDigits
+    private Double moneyAmount;
 
     /** 对方账户 */
     @Excel(name = "对方账户")
@@ -83,7 +85,7 @@ public class Lendmoney extends BaseEntity
     private String UserName;
 
     /** 删除标记 */
-    @Excel(name = "删除标记")
+    @OnlyZeroOrOne
     private Long delFlag;
 
     public void setId(Long id) 
@@ -122,12 +124,12 @@ public class Lendmoney extends BaseEntity
     {
         return target;
     }
-    public void setMoneyAmount(Long moneyAmount) 
+    public void setMoneyAmount(Double moneyAmount) 
     {
         this.moneyAmount = moneyAmount;
     }
 
-    public Long getMoneyAmount() 
+    public Double getMoneyAmount() 
     {
         return moneyAmount;
     }

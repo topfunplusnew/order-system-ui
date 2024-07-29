@@ -3,6 +3,7 @@ package org.dzu.system.controller;
 import java.util.List;
 import javax.servlet.http.HttpServletResponse;
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -25,7 +26,7 @@ import org.dzu.common.core.page.TableDataInfo;
  * 车辆派出管理Controller
  * 
  * @author ml
- * @date 2024-07-19
+ * @date 2024-07-29
  */
 @RestController
 @RequestMapping("/system/carapply")
@@ -75,7 +76,7 @@ public class CarapplyController extends BaseController
     @PreAuthorize("@ss.hasPermi('system:carapply:add')")
     @Log(title = "车辆派出管理", businessType = BusinessType.INSERT)
     @PostMapping
-    public AjaxResult add(@RequestBody Carapply carapply)
+    public AjaxResult add(@Validated @RequestBody Carapply carapply)
     {
         return toAjax(carapplyService.insertCarapply(carapply));
     }
@@ -86,7 +87,7 @@ public class CarapplyController extends BaseController
     @PreAuthorize("@ss.hasPermi('system:carapply:edit')")
     @Log(title = "车辆派出管理", businessType = BusinessType.UPDATE)
     @PutMapping
-    public AjaxResult edit(@RequestBody Carapply carapply)
+    public AjaxResult edit(@Validated @RequestBody Carapply carapply)
     {
         return toAjax(carapplyService.updateCarapply(carapply));
     }

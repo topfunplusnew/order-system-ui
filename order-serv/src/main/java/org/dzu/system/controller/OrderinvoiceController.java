@@ -3,6 +3,7 @@ package org.dzu.system.controller;
 import java.util.List;
 import javax.servlet.http.HttpServletResponse;
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -25,7 +26,7 @@ import org.dzu.common.core.page.TableDataInfo;
  * 订单发票Controller
  * 
  * @author ml
- * @date 2024-07-19
+ * @date 2024-07-29
  */
 @RestController
 @RequestMapping("/system/orderinvoice")
@@ -75,7 +76,7 @@ public class OrderinvoiceController extends BaseController
     @PreAuthorize("@ss.hasPermi('system:orderinvoice:add')")
     @Log(title = "订单发票", businessType = BusinessType.INSERT)
     @PostMapping
-    public AjaxResult add(@RequestBody Orderinvoice orderinvoice)
+    public AjaxResult add(@Validated @RequestBody Orderinvoice orderinvoice)
     {
         return toAjax(orderinvoiceService.insertOrderinvoice(orderinvoice));
     }
@@ -86,7 +87,7 @@ public class OrderinvoiceController extends BaseController
     @PreAuthorize("@ss.hasPermi('system:orderinvoice:edit')")
     @Log(title = "订单发票", businessType = BusinessType.UPDATE)
     @PutMapping
-    public AjaxResult edit(@RequestBody Orderinvoice orderinvoice)
+    public AjaxResult edit(@Validated @RequestBody Orderinvoice orderinvoice)
     {
         return toAjax(orderinvoiceService.updateOrderinvoice(orderinvoice));
     }

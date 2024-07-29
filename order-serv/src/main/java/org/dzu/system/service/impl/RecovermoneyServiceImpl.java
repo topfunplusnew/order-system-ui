@@ -2,27 +2,30 @@ package org.dzu.system.service.impl;
 
 import java.util.List;
 import org.dzu.common.utils.DateUtils;
+import org.dzu.common.utils.SecurityUtils;
+import org.dzu.common.utils.SecurityUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.dzu.system.mapper.RecovermoneyMapper;
 import org.dzu.system.domain.Recovermoney;
 import org.dzu.system.service.IRecovermoneyService;
-
+ 
+import org.dzu.common.constant.DelConstants;
 /**
  * 资金回收Service业务层处理
- * 
+ *
  * @author ml
- * @date 2024-07-19
+ * @date 2024-07-29
  */
 @Service
-public class RecovermoneyServiceImpl implements IRecovermoneyService 
+public class RecovermoneyServiceImpl implements IRecovermoneyService
 {
     @Autowired
     private RecovermoneyMapper recovermoneyMapper;
 
     /**
      * 查询资金回收
-     * 
+     *
      * @param id 资金回收主键
      * @return 资金回收
      */
@@ -34,7 +37,7 @@ public class RecovermoneyServiceImpl implements IRecovermoneyService
 
     /**
      * 查询资金回收列表
-     * 
+     *
      * @param recovermoney 资金回收
      * @return 资金回收
      */
@@ -46,13 +49,17 @@ public class RecovermoneyServiceImpl implements IRecovermoneyService
 
     /**
      * 新增资金回收
-     * 
+     *
      * @param recovermoney 资金回收
      * @return 结果
      */
     @Override
     public int insertRecovermoney(Recovermoney recovermoney)
     {
+        recovermoney.setAddtime(String.valueOf(DateUtils.getNowDate()));
+        recovermoney.setUserId(SecurityUtils.getUserId());
+        recovermoney.setUserName(SecurityUtils.getUserTruename());
+        recovermoney.setDelFlag(Long.valueOf(DelConstants.NODEL));
         return recovermoneyMapper.insertRecovermoney(recovermoney);
     }
 
@@ -65,6 +72,8 @@ public class RecovermoneyServiceImpl implements IRecovermoneyService
     @Override
     public int updateRecovermoney(Recovermoney recovermoney)
     {
+        recovermoney.setUserId(SecurityUtils.getUserId());
+        recovermoney.setUserName(SecurityUtils.getUserTruename());
         recovermoney.setUpdateTime(DateUtils.getNowDate());
         return recovermoneyMapper.updateRecovermoney(recovermoney);
     }

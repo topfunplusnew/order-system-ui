@@ -3,6 +3,7 @@ package org.dzu.system.controller;
 import java.util.List;
 import javax.servlet.http.HttpServletResponse;
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -25,7 +26,7 @@ import org.dzu.common.core.page.TableDataInfo;
  * 走访记录Controller
  * 
  * @author ml
- * @date 2024-07-19
+ * @date 2024-07-29
  */
 @RestController
 @RequestMapping("/system/customervisit")
@@ -75,7 +76,7 @@ public class CustomervisitController extends BaseController
     @PreAuthorize("@ss.hasPermi('system:customervisit:add')")
     @Log(title = "走访记录", businessType = BusinessType.INSERT)
     @PostMapping
-    public AjaxResult add(@RequestBody Customervisit customervisit)
+    public AjaxResult add(@Validated @RequestBody Customervisit customervisit)
     {
         return toAjax(customervisitService.insertCustomervisit(customervisit));
     }
@@ -86,7 +87,7 @@ public class CustomervisitController extends BaseController
     @PreAuthorize("@ss.hasPermi('system:customervisit:edit')")
     @Log(title = "走访记录", businessType = BusinessType.UPDATE)
     @PutMapping
-    public AjaxResult edit(@RequestBody Customervisit customervisit)
+    public AjaxResult edit(@Validated @RequestBody Customervisit customervisit)
     {
         return toAjax(customervisitService.updateCustomervisit(customervisit));
     }

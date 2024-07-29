@@ -5,17 +5,19 @@ import org.apache.commons.lang3.builder.ToStringStyle;
 import org.dzu.common.annotation.Excel;
 import org.dzu.common.core.domain.BaseEntity;
 
+import org.dzu.common.annotation.DecimalMaxDigits;
+import org.dzu.common.annotation.OnlyZeroOrOne;
 /**
  * 商业票据、银行承兑对象 bankacceptance
  * 
  * @author ml
- * @date 2024-07-19
+ * @date 2024-07-29
  */
 public class Bankacceptance extends BaseEntity
 {
     private static final long serialVersionUID = 1L;
 
-    /** 主键 */
+    /** id */
     private Long id;
 
     /** 操作日期 */
@@ -51,16 +53,16 @@ public class Bankacceptance extends BaseEntity
     private String reason;
 
     /** 票据金额 */
-    @Excel(name = "票据金额")
-    private Long billAmount;
+    @DecimalMaxDigits
+    private Double billAmount;
 
     /** 贴息点数 */
-    @Excel(name = "贴息点数")
-    private Long inDiscountPoints;
+    @DecimalMaxDigits
+    private Double inDiscountPoints;
 
     /** 贴息金额 */
-    @Excel(name = "贴息金额")
-    private Long inDiscountAmount;
+    @DecimalMaxDigits
+    private Double inDiscountAmount;
 
     /** 票据种类（电子/纸质） */
     @Excel(name = "票据种类", readConverterExp = "电=子/纸质")
@@ -99,7 +101,7 @@ public class Bankacceptance extends BaseEntity
     private String UserName;
 
     /** 删除标记 */
-    @Excel(name = "删除标记")
+    @OnlyZeroOrOne
     private Long delFlag;
 
     public void setId(Long id) 
@@ -183,30 +185,30 @@ public class Bankacceptance extends BaseEntity
     {
         return reason;
     }
-    public void setBillAmount(Long billAmount) 
+    public void setBillAmount(Double billAmount) 
     {
         this.billAmount = billAmount;
     }
 
-    public Long getBillAmount() 
+    public Double getBillAmount() 
     {
         return billAmount;
     }
-    public void setInDiscountPoints(Long inDiscountPoints) 
+    public void setInDiscountPoints(Double inDiscountPoints) 
     {
         this.inDiscountPoints = inDiscountPoints;
     }
 
-    public Long getInDiscountPoints() 
+    public Double getInDiscountPoints() 
     {
         return inDiscountPoints;
     }
-    public void setInDiscountAmount(Long inDiscountAmount) 
+    public void setInDiscountAmount(Double inDiscountAmount) 
     {
         this.inDiscountAmount = inDiscountAmount;
     }
 
-    public Long getInDiscountAmount() 
+    public Double getInDiscountAmount() 
     {
         return inDiscountAmount;
     }

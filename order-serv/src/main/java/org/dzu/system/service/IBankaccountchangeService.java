@@ -7,7 +7,7 @@ import org.dzu.system.domain.Bankaccountchange;
  * 银行卡资金变动Service接口
  * 
  * @author ml
- * @date 2024-07-19
+ * @date 2024-07-29
  */
 public interface IBankaccountchangeService 
 {

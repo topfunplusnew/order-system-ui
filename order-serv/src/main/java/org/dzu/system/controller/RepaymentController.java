@@ -3,6 +3,7 @@ package org.dzu.system.controller;
 import java.util.List;
 import javax.servlet.http.HttpServletResponse;
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -25,7 +26,7 @@ import org.dzu.common.core.page.TableDataInfo;
  * 还款记录Controller
  * 
  * @author ml
- * @date 2024-07-19
+ * @date 2024-07-29
  */
 @RestController
 @RequestMapping("/system/repayment")
@@ -75,7 +76,7 @@ public class RepaymentController extends BaseController
     @PreAuthorize("@ss.hasPermi('system:repayment:add')")
     @Log(title = "还款记录", businessType = BusinessType.INSERT)
     @PostMapping
-    public AjaxResult add(@RequestBody Repayment repayment)
+    public AjaxResult add(@Validated @RequestBody Repayment repayment)
     {
         return toAjax(repaymentService.insertRepayment(repayment));
     }
@@ -86,7 +87,7 @@ public class RepaymentController extends BaseController
     @PreAuthorize("@ss.hasPermi('system:repayment:edit')")
     @Log(title = "还款记录", businessType = BusinessType.UPDATE)
     @PutMapping
-    public AjaxResult edit(@RequestBody Repayment repayment)
+    public AjaxResult edit(@Validated @RequestBody Repayment repayment)
     {
         return toAjax(repaymentService.updateRepayment(repayment));
     }

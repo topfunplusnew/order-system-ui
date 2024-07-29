@@ -3,6 +3,7 @@ package org.dzu.system.controller;
 import java.util.List;
 import javax.servlet.http.HttpServletResponse;
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -25,7 +26,7 @@ import org.dzu.common.core.page.TableDataInfo;
  * 社保基金Controller
  * 
  * @author ml
- * @date 2024-07-19
+ * @date 2024-07-29
  */
 @RestController
 @RequestMapping("/system/socialinsurance")
@@ -75,7 +76,7 @@ public class SocialinsuranceController extends BaseController
     @PreAuthorize("@ss.hasPermi('system:socialinsurance:add')")
     @Log(title = "社保基金", businessType = BusinessType.INSERT)
     @PostMapping
-    public AjaxResult add(@RequestBody Socialinsurance socialinsurance)
+    public AjaxResult add(@Validated @RequestBody Socialinsurance socialinsurance)
     {
         return toAjax(socialinsuranceService.insertSocialinsurance(socialinsurance));
     }
@@ -86,7 +87,7 @@ public class SocialinsuranceController extends BaseController
     @PreAuthorize("@ss.hasPermi('system:socialinsurance:edit')")
     @Log(title = "社保基金", businessType = BusinessType.UPDATE)
     @PutMapping
-    public AjaxResult edit(@RequestBody Socialinsurance socialinsurance)
+    public AjaxResult edit(@Validated @RequestBody Socialinsurance socialinsurance)
     {
         return toAjax(socialinsuranceService.updateSocialinsurance(socialinsurance));
     }

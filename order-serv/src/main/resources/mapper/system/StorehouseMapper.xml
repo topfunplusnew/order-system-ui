@@ -11,6 +11,9 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         <result property="delFlag"    column="delFlag"    />
     </resultMap>
 
+
+ 
+
     <sql id="selectStorehouseVo">
         select id, storeHouseName, address, delFlag from storehouse
     </sql>
@@ -20,13 +23,14 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         <where>  
             <if test="storeHouseName != null  and storeHouseName != ''"> and storeHouseName like concat('%', #{storeHouseName}, '%')</if>
             <if test="address != null  and address != ''"> and address = #{address}</if>
-            <if test="delFlag != null "> and delFlag = #{delFlag}</if>
+            and delFlag = 0
         </where>
     </select>
     
     <select id="selectStorehouseById" parameterType="Long" resultMap="StorehouseResult">
         <include refid="selectStorehouseVo"/>
         where id = #{id}
+        and delFlag = 0
     </select>
 
     <insert id="insertStorehouse" parameterType="Storehouse" useGeneratedKeys="true" keyProperty="id">
@@ -52,15 +56,13 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         </trim>
         where id = #{id}
     </update>
-
-    <delete id="deleteStorehouseById" parameterType="Long">
-        delete from storehouse where id = #{id}
-    </delete>
-
-    <delete id="deleteStorehouseByIds" parameterType="String">
-        delete from storehouse where id in 
+    <update id="deleteStorehouseById" parameterType="Long">
+        update storehouse set delFlag = 1 where id = #{id}
+    </update>
+    <update id="deleteStorehouseByIds" parameterType="String">
+        update storehouse set delFlag = 1 where id in
         <foreach item="id" collection="array" open="(" separator="," close=")">
             #{id}
         </foreach>
-    </delete>
+    </update>
 </mapper>

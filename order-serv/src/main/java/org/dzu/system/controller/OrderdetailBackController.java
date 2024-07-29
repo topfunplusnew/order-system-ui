@@ -3,6 +3,7 @@ package org.dzu.system.controller;
 import java.util.List;
 import javax.servlet.http.HttpServletResponse;
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -25,10 +26,10 @@ import org.dzu.common.core.page.TableDataInfo;
  * 订单详情备份Controller
  * 
  * @author ml
- * @date 2024-07-19
+ * @date 2024-07-29
  */
 @RestController
-@RequestMapping("/system/orderdetailback")
+@RequestMapping("/system/back")
 public class OrderdetailBackController extends BaseController
 {
     @Autowired
@@ -75,7 +76,7 @@ public class OrderdetailBackController extends BaseController
     @PreAuthorize("@ss.hasPermi('system:back:add')")
     @Log(title = "订单详情备份", businessType = BusinessType.INSERT)
     @PostMapping
-    public AjaxResult add(@RequestBody OrderdetailBack orderdetailBack)
+    public AjaxResult add(@Validated @RequestBody OrderdetailBack orderdetailBack)
     {
         return toAjax(orderdetailBackService.insertOrderdetailBack(orderdetailBack));
     }
@@ -86,7 +87,7 @@ public class OrderdetailBackController extends BaseController
     @PreAuthorize("@ss.hasPermi('system:back:edit')")
     @Log(title = "订单详情备份", businessType = BusinessType.UPDATE)
     @PutMapping
-    public AjaxResult edit(@RequestBody OrderdetailBack orderdetailBack)
+    public AjaxResult edit(@Validated @RequestBody OrderdetailBack orderdetailBack)
     {
         return toAjax(orderdetailBackService.updateOrderdetailBack(orderdetailBack));
     }

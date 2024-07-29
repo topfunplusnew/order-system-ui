@@ -19,6 +19,8 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         <result property="updateTime"    column="update_time"    />
     </resultMap>
 
+
+
     <sql id="selectVirtualbankaccountchangeVo">
         select id, companyId, tableName, payNO, operateDate, changeType, moneyAmount, comments, addtime, userId, UserName, update_time from virtualbankaccountchange
     </sql>
@@ -91,13 +93,11 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         </trim>
         where id = #{id}
     </update>
-
     <delete id="deleteVirtualbankaccountchangeById" parameterType="Long">
         delete from virtualbankaccountchange where id = #{id}
     </delete>
-
     <delete id="deleteVirtualbankaccountchangeByIds" parameterType="String">
-        delete from virtualbankaccountchange where id in 
+        delete from virtualbankaccountchange where id in
         <foreach item="id" collection="array" open="(" separator="," close=")">
             #{id}
         </foreach>

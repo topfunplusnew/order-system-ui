@@ -5,17 +5,19 @@ import org.apache.commons.lang3.builder.ToStringStyle;
 import org.dzu.common.annotation.Excel;
 import org.dzu.common.core.domain.BaseEntity;
 
+import org.dzu.common.annotation.DecimalMaxDigits;
+import org.dzu.common.annotation.OnlyZeroOrOne;
 /**
  * 订单发票对象 orderinvoice
  * 
  * @author ml
- * @date 2024-07-19
+ * @date 2024-07-29
  */
 public class Orderinvoice extends BaseEntity
 {
     private static final long serialVersionUID = 1L;
 
-    /** 主键 */
+    /** id */
     private Long id;
 
     /** 订单编号（UUID） */
@@ -28,11 +30,11 @@ public class Orderinvoice extends BaseEntity
 
     /** 开票类型（购入、卖出） */
     @Excel(name = "开票类型", readConverterExp = "购=入、卖出")
-    private Long invoiceType;
+    private Double invoiceType;
 
     /** 应开票金额 */
-    @Excel(name = "应开票金额")
-    private Long invoiceAmount;
+    @DecimalMaxDigits
+    private Double invoiceAmount;
 
     /** 公司类别（客户、供应商） */
     @Excel(name = "公司类别", readConverterExp = "客=户、供应商")
@@ -51,16 +53,16 @@ public class Orderinvoice extends BaseEntity
     private String invoiceCompanyName;
 
     /** 实际开票金额 */
-    @Excel(name = "实际开票金额")
-    private Long actualInvoiceAmount;
+    @DecimalMaxDigits
+    private Double actualInvoiceAmount;
 
     /** 票点 */
-    @Excel(name = "票点")
-    private Long ticketPoint;
+    @DecimalMaxDigits
+    private Double ticketPoint;
 
     /** 票点金额（实际开票金额*票点） */
     @Excel(name = "票点金额", readConverterExp = "实=际开票金额*票点")
-    private Long ticketPointAmount;
+    private Double ticketPointAmount;
 
     /** 备注 */
     @Excel(name = "备注")
@@ -79,7 +81,7 @@ public class Orderinvoice extends BaseEntity
     private String UserName;
 
     /** 删除标记 */
-    @Excel(name = "删除标记")
+    @OnlyZeroOrOne
     private Long delFlag;
 
     public void setId(Long id) 
@@ -109,21 +111,21 @@ public class Orderinvoice extends BaseEntity
     {
         return invoiceDate;
     }
-    public void setInvoiceType(Long invoiceType) 
+    public void setInvoiceType(Double invoiceType) 
     {
         this.invoiceType = invoiceType;
     }
 
-    public Long getInvoiceType() 
+    public Double getInvoiceType() 
     {
         return invoiceType;
     }
-    public void setInvoiceAmount(Long invoiceAmount) 
+    public void setInvoiceAmount(Double invoiceAmount) 
     {
         this.invoiceAmount = invoiceAmount;
     }
 
-    public Long getInvoiceAmount() 
+    public Double getInvoiceAmount() 
     {
         return invoiceAmount;
     }
@@ -163,30 +165,30 @@ public class Orderinvoice extends BaseEntity
     {
         return invoiceCompanyName;
     }
-    public void setActualInvoiceAmount(Long actualInvoiceAmount) 
+    public void setActualInvoiceAmount(Double actualInvoiceAmount) 
     {
         this.actualInvoiceAmount = actualInvoiceAmount;
     }
 
-    public Long getActualInvoiceAmount() 
+    public Double getActualInvoiceAmount() 
     {
         return actualInvoiceAmount;
     }
-    public void setTicketPoint(Long ticketPoint) 
+    public void setTicketPoint(Double ticketPoint) 
     {
         this.ticketPoint = ticketPoint;
     }
 
-    public Long getTicketPoint() 
+    public Double getTicketPoint() 
     {
         return ticketPoint;
     }
-    public void setTicketPointAmount(Long ticketPointAmount) 
+    public void setTicketPointAmount(Double ticketPointAmount) 
     {
         this.ticketPointAmount = ticketPointAmount;
     }
 
-    public Long getTicketPointAmount() 
+    public Double getTicketPointAmount() 
     {
         return ticketPointAmount;
     }

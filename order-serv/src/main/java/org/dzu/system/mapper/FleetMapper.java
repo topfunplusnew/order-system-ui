@@ -7,7 +7,7 @@ import org.dzu.system.domain.Fleet;
  * 车队管理Mapper接口
  * 
  * @author ml
- * @date 2024-07-19
+ * @date 2024-07-29
  */
 public interface FleetMapper 
 {

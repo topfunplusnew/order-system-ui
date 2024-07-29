@@ -41,6 +41,9 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         <result property="path"    column="path"    />
     </resultMap>
 
+
+ 
+
     <sql id="selectCarapplyVo">
         select id, applyDate, applyUser, department, carNo, isUseOilCard, iolCardNo, peers, startTime, endTime, ApplyPurpose, startMile, startCarState, endMile, endCarState, miles, backStopPlace, violationsCount, fine, isMaintenance, maintenanceMoney, refuelingFrequency, refuelingMoney, oilCardSurplus, isOilTicket, refuelingCash, dispatchPerson, comments, addtime, userId, UserName, update_time, delFlag, path from carapply
     </sql>
@@ -78,7 +81,7 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
             <if test="addtime != null  and addtime != ''"> and addtime = #{addtime}</if>
             <if test="userId != null "> and userId = #{userId}</if>
             <if test="UserName != null  and UserName != ''"> and UserName like concat('%', #{UserName}, '%')</if>
-            <if test="delFlag != null "> and delFlag = #{delFlag}</if>
+            and delFlag = 0
             <if test="path != null  and path != ''"> and path = #{path}</if>
         </where>
     </select>
@@ -86,6 +89,7 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
     <select id="selectCarapplyById" parameterType="Long" resultMap="CarapplyResult">
         <include refid="selectCarapplyVo"/>
         where id = #{id}
+        and delFlag = 0
     </select>
 
     <insert id="insertCarapply" parameterType="Carapply" useGeneratedKeys="true" keyProperty="id">
@@ -201,15 +205,13 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         </trim>
         where id = #{id}
     </update>
-
-    <delete id="deleteCarapplyById" parameterType="Long">
-        delete from carapply where id = #{id}
-    </delete>
-
-    <delete id="deleteCarapplyByIds" parameterType="String">
-        delete from carapply where id in 
+    <update id="deleteCarapplyById" parameterType="Long">
+        update carapply set delFlag = 1 where id = #{id}
+    </update>
+    <update id="deleteCarapplyByIds" parameterType="String">
+        update carapply set delFlag = 1 where id in
         <foreach item="id" collection="array" open="(" separator="," close=")">
             #{id}
         </foreach>
-    </delete>
+    </update>
 </mapper>

@@ -7,7 +7,7 @@ import org.dzu.system.domain.InventoryBack;
  * 货物入库信息Mapper接口
  * 
  * @author ml
- * @date 2024-07-19
+ * @date 2024-07-29
  */
 public interface InventoryBackMapper 
 {

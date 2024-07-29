@@ -20,6 +20,9 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         <result property="delFlag"    column="delFlag"    />
     </resultMap>
 
+
+ 
+
     <sql id="selectRecovermoneyVo">
         select id, futuresNO, recoverNO, moneyAmount, recoverDate, acountsName, bankNo, comments, addtime, userId, UserName, update_time, delFlag from recovermoney
     </sql>
@@ -37,13 +40,14 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
             <if test="addtime != null  and addtime != ''"> and addtime = #{addtime}</if>
             <if test="userId != null "> and userId = #{userId}</if>
             <if test="UserName != null  and UserName != ''"> and UserName like concat('%', #{UserName}, '%')</if>
-            <if test="delFlag != null "> and delFlag = #{delFlag}</if>
+            and delFlag = 0
         </where>
     </select>
     
     <select id="selectRecovermoneyById" parameterType="Long" resultMap="RecovermoneyResult">
         <include refid="selectRecovermoneyVo"/>
         where id = #{id}
+        and delFlag = 0
     </select>
 
     <insert id="insertRecovermoney" parameterType="Recovermoney" useGeneratedKeys="true" keyProperty="id">
@@ -96,15 +100,13 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         </trim>
         where id = #{id}
     </update>
-
-    <delete id="deleteRecovermoneyById" parameterType="Long">
-        delete from recovermoney where id = #{id}
-    </delete>
-
-    <delete id="deleteRecovermoneyByIds" parameterType="String">
-        delete from recovermoney where id in 
+    <update id="deleteRecovermoneyById" parameterType="Long">
+        update recovermoney set delFlag = 1 where id = #{id}
+    </update>
+    <update id="deleteRecovermoneyByIds" parameterType="String">
+        update recovermoney set delFlag = 1 where id in
         <foreach item="id" collection="array" open="(" separator="," close=")">
             #{id}
         </foreach>
-    </delete>
+    </update>
 </mapper>

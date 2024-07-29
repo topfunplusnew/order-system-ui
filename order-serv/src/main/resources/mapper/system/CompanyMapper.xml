@@ -31,14 +31,16 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         <result property="delFlag"    column="delFlag"    />
     </resultMap>
 
+
+ 
+
     <sql id="selectCompanyVo">
         select id, company, relationName, relationTel, address, bankName, acountsName, bankNo, surplusMoney, companyType, salesman, leader, leaderTel, region, salesManager, province, city, county, comments, addtime, userId, UserName, update_time, delFlag from company
     </sql>
 
     <select id="selectCompanyList" parameterType="Company" resultMap="CompanyResult">
         <include refid="selectCompanyVo"/>
-        <where>
-            delFlag = 0
+        <where>  
             <if test="company != null  and company != ''"> and company = #{company}</if>
             <if test="relationName != null  and relationName != ''"> and relationName like concat('%', #{relationName}, '%')</if>
             <if test="relationTel != null  and relationTel != ''"> and relationTel = #{relationTel}</if>
@@ -51,6 +53,7 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
             <if test="salesman != null  and salesman != ''"> and salesman = #{salesman}</if>
             <if test="leader != null  and leader != ''"> and leader = #{leader}</if>
             <if test="leaderTel != null  and leaderTel != ''"> and leaderTel = #{leaderTel}</if>
+            <if test="region != null  and region != ''"> and region = #{region}</if>
             <if test="salesManager != null  and salesManager != ''"> and salesManager = #{salesManager}</if>
             <if test="province != null  and province != ''"> and province = #{province}</if>
             <if test="city != null  and city != ''"> and city = #{city}</if>
@@ -59,13 +62,14 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
             <if test="addtime != null  and addtime != ''"> and addtime = #{addtime}</if>
             <if test="userId != null "> and userId = #{userId}</if>
             <if test="UserName != null  and UserName != ''"> and UserName like concat('%', #{UserName}, '%')</if>
-            <if test="delFlag != null "> and delFlag = #{delFlag}</if>
+            and delFlag = 0
         </where>
     </select>
     
     <select id="selectCompanyById" parameterType="Long" resultMap="CompanyResult">
         <include refid="selectCompanyVo"/>
-        where id = #{id} and delFlag = 0
+        where id = #{id}
+        and delFlag = 0
     </select>
 
     <insert id="insertCompany" parameterType="Company" useGeneratedKeys="true" keyProperty="id">
@@ -151,15 +155,13 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         </trim>
         where id = #{id}
     </update>
-
-    <delete id="deleteCompanyById" parameterType="Long">
-        update company set delflag = 1  where id = #{id}
-    </delete>
-
-    <delete id="deleteCompanyByIds" parameterType="String">
-        update company set delflag = 1 where id in
+    <update id="deleteCompanyById" parameterType="Long">
+        update company set delFlag = 1 where id = #{id}
+    </update>
+    <update id="deleteCompanyByIds" parameterType="String">
+        update company set delFlag = 1 where id in
         <foreach item="id" collection="array" open="(" separator="," close=")">
             #{id}
         </foreach>
-    </delete>
+    </update>
 </mapper>

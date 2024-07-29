@@ -3,6 +3,7 @@ package org.dzu.system.controller;
 import java.util.List;
 import javax.servlet.http.HttpServletResponse;
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -25,7 +26,7 @@ import org.dzu.common.core.page.TableDataInfo;
  * 资金回收Controller
  * 
  * @author ml
- * @date 2024-07-19
+ * @date 2024-07-29
  */
 @RestController
 @RequestMapping("/system/recovermoney")
@@ -75,7 +76,7 @@ public class RecovermoneyController extends BaseController
     @PreAuthorize("@ss.hasPermi('system:recovermoney:add')")
     @Log(title = "资金回收", businessType = BusinessType.INSERT)
     @PostMapping
-    public AjaxResult add(@RequestBody Recovermoney recovermoney)
+    public AjaxResult add(@Validated @RequestBody Recovermoney recovermoney)
     {
         return toAjax(recovermoneyService.insertRecovermoney(recovermoney));
     }
@@ -86,7 +87,7 @@ public class RecovermoneyController extends BaseController
     @PreAuthorize("@ss.hasPermi('system:recovermoney:edit')")
     @Log(title = "资金回收", businessType = BusinessType.UPDATE)
     @PutMapping
-    public AjaxResult edit(@RequestBody Recovermoney recovermoney)
+    public AjaxResult edit(@Validated @RequestBody Recovermoney recovermoney)
     {
         return toAjax(recovermoneyService.updateRecovermoney(recovermoney));
     }

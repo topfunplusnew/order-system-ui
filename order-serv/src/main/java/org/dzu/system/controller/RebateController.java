@@ -3,6 +3,7 @@ package org.dzu.system.controller;
 import java.util.List;
 import javax.servlet.http.HttpServletResponse;
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -25,7 +26,7 @@ import org.dzu.common.core.page.TableDataInfo;
  * 供应商返利Controller
  * 
  * @author ml
- * @date 2024-07-19
+ * @date 2024-07-29
  */
 @RestController
 @RequestMapping("/system/rebate")
@@ -75,7 +76,7 @@ public class RebateController extends BaseController
     @PreAuthorize("@ss.hasPermi('system:rebate:add')")
     @Log(title = "供应商返利", businessType = BusinessType.INSERT)
     @PostMapping
-    public AjaxResult add(@RequestBody Rebate rebate)
+    public AjaxResult add(@Validated @RequestBody Rebate rebate)
     {
         return toAjax(rebateService.insertRebate(rebate));
     }
@@ -86,7 +87,7 @@ public class RebateController extends BaseController
     @PreAuthorize("@ss.hasPermi('system:rebate:edit')")
     @Log(title = "供应商返利", businessType = BusinessType.UPDATE)
     @PutMapping
-    public AjaxResult edit(@RequestBody Rebate rebate)
+    public AjaxResult edit(@Validated @RequestBody Rebate rebate)
     {
         return toAjax(rebateService.updateRebate(rebate));
     }

@@ -5,17 +5,18 @@ import org.apache.commons.lang3.builder.ToStringStyle;
 import org.dzu.common.annotation.Excel;
 import org.dzu.common.core.domain.BaseEntity;
 
+import org.dzu.common.annotation.OnlyZeroOrOne;
 /**
  * 加油卡对象 oilcard
  * 
  * @author ml
- * @date 2024-07-19
+ * @date 2024-07-29
  */
 public class Oilcard extends BaseEntity
 {
     private static final long serialVersionUID = 1L;
 
-    /** 主键 */
+    /** id */
     private Long id;
 
     /** 加油卡卡号 */
@@ -43,7 +44,7 @@ public class Oilcard extends BaseEntity
     private String UserName;
 
     /** 删除标记 */
-    @Excel(name = "删除标记")
+    @OnlyZeroOrOne
     private Long delFlag;
 
     public void setId(Long id) 

@@ -7,7 +7,7 @@ import org.dzu.system.domain.Borrowedmoney;
  * 从外部借入款、贷款Service接口
  * 
  * @author ml
- * @date 2024-07-19
+ * @date 2024-07-29
  */
 public interface IBorrowedmoneyService 
 {

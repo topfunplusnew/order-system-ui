@@ -3,6 +3,7 @@ package org.dzu.system.controller;
 import java.util.List;
 import javax.servlet.http.HttpServletResponse;
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -25,7 +26,7 @@ import org.dzu.common.core.page.TableDataInfo;
  * 从外部借入款、贷款Controller
  * 
  * @author ml
- * @date 2024-07-19
+ * @date 2024-07-29
  */
 @RestController
 @RequestMapping("/system/borrowedmoney")
@@ -75,7 +76,7 @@ public class BorrowedmoneyController extends BaseController
     @PreAuthorize("@ss.hasPermi('system:borrowedmoney:add')")
     @Log(title = "从外部借入款、贷款", businessType = BusinessType.INSERT)
     @PostMapping
-    public AjaxResult add(@RequestBody Borrowedmoney borrowedmoney)
+    public AjaxResult add(@Validated @RequestBody Borrowedmoney borrowedmoney)
     {
         return toAjax(borrowedmoneyService.insertBorrowedmoney(borrowedmoney));
     }
@@ -86,7 +87,7 @@ public class BorrowedmoneyController extends BaseController
     @PreAuthorize("@ss.hasPermi('system:borrowedmoney:edit')")
     @Log(title = "从外部借入款、贷款", businessType = BusinessType.UPDATE)
     @PutMapping
-    public AjaxResult edit(@RequestBody Borrowedmoney borrowedmoney)
+    public AjaxResult edit(@Validated @RequestBody Borrowedmoney borrowedmoney)
     {
         return toAjax(borrowedmoneyService.updateBorrowedmoney(borrowedmoney));
     }

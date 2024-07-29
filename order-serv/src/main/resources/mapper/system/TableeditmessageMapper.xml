@@ -15,6 +15,8 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         <result property="UserName"    column="UserName"    />
     </resultMap>
 
+
+
     <sql id="selectTableeditmessageVo">
         select id, tableName, modifyTime, reason, tid, addtime, userId, UserName from tableeditmessage
     </sql>
@@ -72,13 +74,11 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         </trim>
         where id = #{id}
     </update>
-
     <delete id="deleteTableeditmessageById" parameterType="Long">
         delete from tableeditmessage where id = #{id}
     </delete>
-
     <delete id="deleteTableeditmessageByIds" parameterType="String">
-        delete from tableeditmessage where id in 
+        delete from tableeditmessage where id in
         <foreach item="id" collection="array" open="(" separator="," close=")">
             #{id}
         </foreach>

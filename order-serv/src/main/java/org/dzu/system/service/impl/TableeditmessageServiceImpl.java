@@ -1,27 +1,29 @@
 package org.dzu.system.service.impl;
 
 import java.util.List;
+import org.dzu.common.utils.DateUtils;
+import org.dzu.common.utils.SecurityUtils;
+import org.dzu.common.utils.SecurityUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.dzu.system.mapper.TableeditmessageMapper;
 import org.dzu.system.domain.Tableeditmessage;
 import org.dzu.system.service.ITableeditmessageService;
-
 /**
  * 变动日志信息Service业务层处理
- * 
+ *
  * @author ml
- * @date 2024-07-19
+ * @date 2024-07-29
  */
 @Service
-public class TableeditmessageServiceImpl implements ITableeditmessageService 
+public class TableeditmessageServiceImpl implements ITableeditmessageService
 {
     @Autowired
     private TableeditmessageMapper tableeditmessageMapper;
 
     /**
      * 查询变动日志信息
-     * 
+     *
      * @param id 变动日志信息主键
      * @return 变动日志信息
      */
@@ -33,7 +35,7 @@ public class TableeditmessageServiceImpl implements ITableeditmessageService
 
     /**
      * 查询变动日志信息列表
-     * 
+     *
      * @param tableeditmessage 变动日志信息
      * @return 变动日志信息
      */
@@ -45,13 +47,16 @@ public class TableeditmessageServiceImpl implements ITableeditmessageService
 
     /**
      * 新增变动日志信息
-     * 
+     *
      * @param tableeditmessage 变动日志信息
      * @return 结果
      */
     @Override
     public int insertTableeditmessage(Tableeditmessage tableeditmessage)
     {
+        tableeditmessage.setAddtime(String.valueOf(DateUtils.getNowDate()));
+        tableeditmessage.setUserId(SecurityUtils.getUserId());
+        tableeditmessage.setUserName(SecurityUtils.getUserTruename());
         return tableeditmessageMapper.insertTableeditmessage(tableeditmessage);
     }
 
@@ -64,6 +69,8 @@ public class TableeditmessageServiceImpl implements ITableeditmessageService
     @Override
     public int updateTableeditmessage(Tableeditmessage tableeditmessage)
     {
+        tableeditmessage.setUserId(SecurityUtils.getUserId());
+        tableeditmessage.setUserName(SecurityUtils.getUserTruename());
         return tableeditmessageMapper.updateTableeditmessage(tableeditmessage);
     }
 

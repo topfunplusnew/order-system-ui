@@ -5,26 +5,28 @@ import org.apache.commons.lang3.builder.ToStringStyle;
 import org.dzu.common.annotation.Excel;
 import org.dzu.common.core.domain.BaseEntity;
 
+import org.dzu.common.annotation.DecimalMaxDigits;
+import org.dzu.common.annotation.OnlyZeroOrOne;
 /**
  * 社保基金对象 socialinsurance
  * 
  * @author ml
- * @date 2024-07-19
+ * @date 2024-07-29
  */
 public class Socialinsurance extends BaseEntity
 {
     private static final long serialVersionUID = 1L;
 
-    /** 主键 */
+    /** id */
     private Long id;
 
     /** 社保缴纳基数 */
-    @Excel(name = "社保缴纳基数")
-    private Long basicSocialInsurance;
+    @DecimalMaxDigits
+    private Double basicSocialInsurance;
 
     /** 公积金基数 */
-    @Excel(name = "公积金基数")
-    private Long basicHousingFund;
+    @DecimalMaxDigits
+    private Double basicHousingFund;
 
     /** 部门 */
     @Excel(name = "部门")
@@ -51,48 +53,48 @@ public class Socialinsurance extends BaseEntity
     private String isDepletion;
 
     /** 基本医疗保险-个人 */
-    @Excel(name = "基本医疗保险-个人")
-    private Long healthySecuritySelf;
+    @DecimalMaxDigits
+    private Double healthySecuritySelf;
 
     /** 基本医疗保险-公司 */
-    @Excel(name = "基本医疗保险-公司")
-    private Long healthySecurityCompany;
+    @DecimalMaxDigits
+    private Double healthySecurityCompany;
 
     /** 工伤保险 */
-    @Excel(name = "工伤保险")
-    private Long injuryInsurance;
+    @DecimalMaxDigits
+    private Double injuryInsurance;
 
     /** 失业保险-个人 */
-    @Excel(name = "失业保险-个人")
-    private Long unemploymentSecuritySelf;
+    @DecimalMaxDigits
+    private Double unemploymentSecuritySelf;
 
     /** 失业保险-公司 */
-    @Excel(name = "失业保险-公司")
-    private Long unemploymentSecurityCompany;
+    @DecimalMaxDigits
+    private Double unemploymentSecurityCompany;
 
     /** 养老保险-个人 */
-    @Excel(name = "养老保险-个人")
-    private Long retirementSecuritySelf;
+    @DecimalMaxDigits
+    private Double retirementSecuritySelf;
 
     /** 养老保险-公司 */
-    @Excel(name = "养老保险-公司")
-    private Long retirementSecurityCompany;
+    @DecimalMaxDigits
+    private Double retirementSecurityCompany;
 
     /** 大额医保-个人 */
-    @Excel(name = "大额医保-个人")
-    private Long largeMedicalSecuritySelf;
+    @DecimalMaxDigits
+    private Double largeMedicalSecuritySelf;
 
     /** 大额医保-公司 */
-    @Excel(name = "大额医保-公司")
-    private Long largeMedicalSecurityCompany;
+    @DecimalMaxDigits
+    private Double largeMedicalSecurityCompany;
 
     /** 公积金-个人 */
-    @Excel(name = "公积金-个人")
-    private Long housingFundSelf;
+    @DecimalMaxDigits
+    private Double housingFundSelf;
 
     /** 公积金-公司 */
-    @Excel(name = "公积金-公司")
-    private Long housingFundCompany;
+    @DecimalMaxDigits
+    private Double housingFundCompany;
 
     /** 备注 */
     @Excel(name = "备注")
@@ -111,7 +113,7 @@ public class Socialinsurance extends BaseEntity
     private String UserName;
 
     /** 删除标记 */
-    @Excel(name = "删除标记")
+    @OnlyZeroOrOne
     private Long delFlag;
 
     public void setId(Long id) 
@@ -123,21 +125,21 @@ public class Socialinsurance extends BaseEntity
     {
         return id;
     }
-    public void setBasicSocialInsurance(Long basicSocialInsurance) 
+    public void setBasicSocialInsurance(Double basicSocialInsurance) 
     {
         this.basicSocialInsurance = basicSocialInsurance;
     }
 
-    public Long getBasicSocialInsurance() 
+    public Double getBasicSocialInsurance() 
     {
         return basicSocialInsurance;
     }
-    public void setBasicHousingFund(Long basicHousingFund) 
+    public void setBasicHousingFund(Double basicHousingFund) 
     {
         this.basicHousingFund = basicHousingFund;
     }
 
-    public Long getBasicHousingFund() 
+    public Double getBasicHousingFund() 
     {
         return basicHousingFund;
     }
@@ -195,102 +197,102 @@ public class Socialinsurance extends BaseEntity
     {
         return isDepletion;
     }
-    public void setHealthySecuritySelf(Long healthySecuritySelf) 
+    public void setHealthySecuritySelf(Double healthySecuritySelf) 
     {
         this.healthySecuritySelf = healthySecuritySelf;
     }
 
-    public Long getHealthySecuritySelf() 
+    public Double getHealthySecuritySelf() 
     {
         return healthySecuritySelf;
     }
-    public void setHealthySecurityCompany(Long healthySecurityCompany) 
+    public void setHealthySecurityCompany(Double healthySecurityCompany) 
     {
         this.healthySecurityCompany = healthySecurityCompany;
     }
 
-    public Long getHealthySecurityCompany() 
+    public Double getHealthySecurityCompany() 
     {
         return healthySecurityCompany;
     }
-    public void setInjuryInsurance(Long injuryInsurance) 
+    public void setInjuryInsurance(Double injuryInsurance) 
     {
         this.injuryInsurance = injuryInsurance;
     }
 
-    public Long getInjuryInsurance() 
+    public Double getInjuryInsurance() 
     {
         return injuryInsurance;
     }
-    public void setUnemploymentSecuritySelf(Long unemploymentSecuritySelf) 
+    public void setUnemploymentSecuritySelf(Double unemploymentSecuritySelf) 
     {
         this.unemploymentSecuritySelf = unemploymentSecuritySelf;
     }
 
-    public Long getUnemploymentSecuritySelf() 
+    public Double getUnemploymentSecuritySelf() 
     {
         return unemploymentSecuritySelf;
     }
-    public void setUnemploymentSecurityCompany(Long unemploymentSecurityCompany) 
+    public void setUnemploymentSecurityCompany(Double unemploymentSecurityCompany) 
     {
         this.unemploymentSecurityCompany = unemploymentSecurityCompany;
     }
 
-    public Long getUnemploymentSecurityCompany() 
+    public Double getUnemploymentSecurityCompany() 
     {
         return unemploymentSecurityCompany;
     }
-    public void setRetirementSecuritySelf(Long retirementSecuritySelf) 
+    public void setRetirementSecuritySelf(Double retirementSecuritySelf) 
     {
         this.retirementSecuritySelf = retirementSecuritySelf;
     }
 
-    public Long getRetirementSecuritySelf() 
+    public Double getRetirementSecuritySelf() 
     {
         return retirementSecuritySelf;
     }
-    public void setRetirementSecurityCompany(Long retirementSecurityCompany) 
+    public void setRetirementSecurityCompany(Double retirementSecurityCompany) 
     {
         this.retirementSecurityCompany = retirementSecurityCompany;
     }
 
-    public Long getRetirementSecurityCompany() 
+    public Double getRetirementSecurityCompany() 
     {
         return retirementSecurityCompany;
     }
-    public void setLargeMedicalSecuritySelf(Long largeMedicalSecuritySelf) 
+    public void setLargeMedicalSecuritySelf(Double largeMedicalSecuritySelf) 
     {
         this.largeMedicalSecuritySelf = largeMedicalSecuritySelf;
     }
 
-    public Long getLargeMedicalSecuritySelf() 
+    public Double getLargeMedicalSecuritySelf() 
     {
         return largeMedicalSecuritySelf;
     }
-    public void setLargeMedicalSecurityCompany(Long largeMedicalSecurityCompany) 
+    public void setLargeMedicalSecurityCompany(Double largeMedicalSecurityCompany) 
     {
         this.largeMedicalSecurityCompany = largeMedicalSecurityCompany;
     }
 
-    public Long getLargeMedicalSecurityCompany() 
+    public Double getLargeMedicalSecurityCompany() 
     {
         return largeMedicalSecurityCompany;
     }
-    public void setHousingFundSelf(Long housingFundSelf) 
+    public void setHousingFundSelf(Double housingFundSelf) 
     {
         this.housingFundSelf = housingFundSelf;
     }
 
-    public Long getHousingFundSelf() 
+    public Double getHousingFundSelf() 
     {
         return housingFundSelf;
     }
-    public void setHousingFundCompany(Long housingFundCompany) 
+    public void setHousingFundCompany(Double housingFundCompany) 
     {
         this.housingFundCompany = housingFundCompany;
     }
 
-    public Long getHousingFundCompany() 
+    public Double getHousingFundCompany() 
     {
         return housingFundCompany;
     }

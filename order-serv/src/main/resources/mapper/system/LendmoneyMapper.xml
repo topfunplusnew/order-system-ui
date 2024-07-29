@@ -26,6 +26,9 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         <result property="delFlag"    column="delFlag"    />
     </resultMap>
 
+
+ 
+
     <sql id="selectLendmoneyVo">
         select id, futuresNO, futuresMarginCompany, target, moneyAmount, targetAcountsName, targetBankNo, targetBankName, selfAcountsName, selfBankNo, selfBankName, futuresDate, reason, comments, addtime, userId, UserName, update_time, delFlag from lendmoney
     </sql>
@@ -49,13 +52,14 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
             <if test="addtime != null  and addtime != ''"> and addtime = #{addtime}</if>
             <if test="userId != null "> and userId = #{userId}</if>
             <if test="UserName != null  and UserName != ''"> and UserName like concat('%', #{UserName}, '%')</if>
-            <if test="delFlag != null "> and delFlag = #{delFlag}</if>
+            and delFlag = 0
         </where>
     </select>
     
     <select id="selectLendmoneyById" parameterType="Long" resultMap="LendmoneyResult">
         <include refid="selectLendmoneyVo"/>
         where id = #{id}
+        and delFlag = 0
     </select>
 
     <insert id="insertLendmoney" parameterType="Lendmoney" useGeneratedKeys="true" keyProperty="id">
@@ -126,15 +130,13 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         </trim>
         where id = #{id}
     </update>
-
-    <delete id="deleteLendmoneyById" parameterType="Long">
-        delete from lendmoney where id = #{id}
-    </delete>
-
-    <delete id="deleteLendmoneyByIds" parameterType="String">
-        delete from lendmoney where id in 
+    <update id="deleteLendmoneyById" parameterType="Long">
+        update lendmoney set delFlag = 1 where id = #{id}
+    </update>
+    <update id="deleteLendmoneyByIds" parameterType="String">
+        update lendmoney set delFlag = 1 where id in
         <foreach item="id" collection="array" open="(" separator="," close=")">
             #{id}
         </foreach>
-    </delete>
+    </update>
 </mapper>

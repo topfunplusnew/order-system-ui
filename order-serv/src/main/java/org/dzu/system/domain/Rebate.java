@@ -5,17 +5,19 @@ import org.apache.commons.lang3.builder.ToStringStyle;
 import org.dzu.common.annotation.Excel;
 import org.dzu.common.core.domain.BaseEntity;
 
+import org.dzu.common.annotation.DecimalMaxDigits;
+import org.dzu.common.annotation.OnlyZeroOrOne;
 /**
  * 供应商返利对象 rebate
  * 
  * @author ml
- * @date 2024-07-19
+ * @date 2024-07-29
  */
 public class Rebate extends BaseEntity
 {
     private static final long serialVersionUID = 1L;
 
-    /** 主键 */
+    /** id */
     private Long id;
 
     /** 订单编号（UUID） */
@@ -27,8 +29,8 @@ public class Rebate extends BaseEntity
     private String rebateDate;
 
     /** 金额 */
-    @Excel(name = "金额")
-    private Long rebate;
+    @DecimalMaxDigits
+    private Double rebate;
 
     /** 返利类型（返利、降价、售后质量赔偿） */
     @Excel(name = "返利类型", readConverterExp = "返=利、降价、售后质量赔偿")
@@ -79,7 +81,7 @@ public class Rebate extends BaseEntity
     private String UserName;
 
     /** 删除标记 */
-    @Excel(name = "删除标记")
+    @OnlyZeroOrOne
     private Long delFlag;
 
     public void setId(Long id) 
@@ -109,12 +111,12 @@ public class Rebate extends BaseEntity
     {
         return rebateDate;
     }
-    public void setRebate(Long rebate) 
+    public void setRebate(Double rebate) 
     {
         this.rebate = rebate;
     }
 
-    public Long getRebate() 
+    public Double getRebate() 
     {
         return rebate;
     }

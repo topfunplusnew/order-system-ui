@@ -26,6 +26,9 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         <result property="delFlag"    column="delFlag"    />
     </resultMap>
 
+
+ 
+
     <sql id="selectOilcardmainVo">
         select id, oilCardNo, useDate, carNo, destination, startCardSurplus, toPlusCardMoney, refuelingNumber, unitPrice, refuelingMoney, rechargeMoney, isTicket, endCardSurplus, comments, addtime, userId, UserName, update_time, delFlag from oilcardmain
     </sql>
@@ -49,13 +52,14 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
             <if test="addtime != null  and addtime != ''"> and addtime = #{addtime}</if>
             <if test="userId != null "> and userId = #{userId}</if>
             <if test="UserName != null  and UserName != ''"> and UserName like concat('%', #{UserName}, '%')</if>
-            <if test="delFlag != null "> and delFlag = #{delFlag}</if>
+            and delFlag = 0
         </where>
     </select>
     
     <select id="selectOilcardmainById" parameterType="Long" resultMap="OilcardmainResult">
         <include refid="selectOilcardmainVo"/>
         where id = #{id}
+        and delFlag = 0
     </select>
 
     <insert id="insertOilcardmain" parameterType="Oilcardmain" useGeneratedKeys="true" keyProperty="id">
@@ -126,15 +130,13 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         </trim>
         where id = #{id}
     </update>
-
-    <delete id="deleteOilcardmainById" parameterType="Long">
-        delete from oilcardmain where id = #{id}
-    </delete>
-
-    <delete id="deleteOilcardmainByIds" parameterType="String">
-        delete from oilcardmain where id in 
+    <update id="deleteOilcardmainById" parameterType="Long">
+        update oilcardmain set delFlag = 1 where id = #{id}
+    </update>
+    <update id="deleteOilcardmainByIds" parameterType="String">
+        update oilcardmain set delFlag = 1 where id in
         <foreach item="id" collection="array" open="(" separator="," close=")">
             #{id}
         </foreach>
-    </delete>
+    </update>
 </mapper>

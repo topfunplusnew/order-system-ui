@@ -5,17 +5,18 @@ import org.apache.commons.lang3.builder.ToStringStyle;
 import org.dzu.common.annotation.Excel;
 import org.dzu.common.core.domain.BaseEntity;
 
+import org.dzu.common.annotation.OnlyZeroOrOne;
 /**
  * 订单运费对象 orderfreight
  * 
  * @author ml
- * @date 2024-07-19
+ * @date 2024-07-29
  */
 public class Orderfreight extends BaseEntity
 {
     private static final long serialVersionUID = 1L;
 
-    /** 主键 */
+    /** id */
     private Long id;
 
     /** 订单编号（UUID） */
@@ -115,7 +116,7 @@ public class Orderfreight extends BaseEntity
     private String payDate;
 
     /** 作废标记 */
-    @Excel(name = "作废标记")
+    @OnlyZeroOrOne
     private Long cancelFlag;
 
     /** 操作人员ID */
@@ -127,7 +128,7 @@ public class Orderfreight extends BaseEntity
     private String UserName;
 
     /** 删除标记 */
-    @Excel(name = "删除标记")
+    @OnlyZeroOrOne
     private Long delFlag;
 
     public void setId(Long id) 

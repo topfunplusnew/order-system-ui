@@ -3,6 +3,7 @@ package org.dzu.system.controller;
 import java.util.List;
 import javax.servlet.http.HttpServletResponse;
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -25,7 +26,7 @@ import org.dzu.common.core.page.TableDataInfo;
  * 加油卡Controller
  * 
  * @author ml
- * @date 2024-07-19
+ * @date 2024-07-29
  */
 @RestController
 @RequestMapping("/system/oilcard")
@@ -75,7 +76,7 @@ public class OilcardController extends BaseController
     @PreAuthorize("@ss.hasPermi('system:oilcard:add')")
     @Log(title = "加油卡", businessType = BusinessType.INSERT)
     @PostMapping
-    public AjaxResult add(@RequestBody Oilcard oilcard)
+    public AjaxResult add(@Validated @RequestBody Oilcard oilcard)
     {
         return toAjax(oilcardService.insertOilcard(oilcard));
     }
@@ -86,7 +87,7 @@ public class OilcardController extends BaseController
     @PreAuthorize("@ss.hasPermi('system:oilcard:edit')")
     @Log(title = "加油卡", businessType = BusinessType.UPDATE)
     @PutMapping
-    public AjaxResult edit(@RequestBody Oilcard oilcard)
+    public AjaxResult edit(@Validated @RequestBody Oilcard oilcard)
     {
         return toAjax(oilcardService.updateOilcard(oilcard));
     }

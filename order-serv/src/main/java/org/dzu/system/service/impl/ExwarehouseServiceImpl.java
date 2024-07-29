@@ -2,27 +2,30 @@ package org.dzu.system.service.impl;
 
 import java.util.List;
 import org.dzu.common.utils.DateUtils;
+import org.dzu.common.utils.SecurityUtils;
+import org.dzu.common.utils.SecurityUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.dzu.system.mapper.ExwarehouseMapper;
 import org.dzu.system.domain.Exwarehouse;
 import org.dzu.system.service.IExwarehouseService;
-
+ 
+import org.dzu.common.constant.DelConstants;
 /**
  * 出库Service业务层处理
- * 
+ *
  * @author ml
- * @date 2024-07-19
+ * @date 2024-07-29
  */
 @Service
-public class ExwarehouseServiceImpl implements IExwarehouseService 
+public class ExwarehouseServiceImpl implements IExwarehouseService
 {
     @Autowired
     private ExwarehouseMapper exwarehouseMapper;
 
     /**
      * 查询出库
-     * 
+     *
      * @param id 出库主键
      * @return 出库
      */
@@ -34,7 +37,7 @@ public class ExwarehouseServiceImpl implements IExwarehouseService
 
     /**
      * 查询出库列表
-     * 
+     *
      * @param exwarehouse 出库
      * @return 出库
      */
@@ -46,13 +49,17 @@ public class ExwarehouseServiceImpl implements IExwarehouseService
 
     /**
      * 新增出库
-     * 
+     *
      * @param exwarehouse 出库
      * @return 结果
      */
     @Override
     public int insertExwarehouse(Exwarehouse exwarehouse)
     {
+        exwarehouse.setAddtime(String.valueOf(DateUtils.getNowDate()));
+        exwarehouse.setUserId(SecurityUtils.getUserId());
+        exwarehouse.setUserName(SecurityUtils.getUserTruename());
+        exwarehouse.setDelFlag(Long.valueOf(DelConstants.NODEL));
         return exwarehouseMapper.insertExwarehouse(exwarehouse);
     }
 
@@ -66,6 +73,8 @@ public class ExwarehouseServiceImpl implements IExwarehouseService
     public int updateExwarehouse(Exwarehouse exwarehouse)
     {
         exwarehouse.setUpdateTime(DateUtils.getNowDate());
+        exwarehouse.setUserId(SecurityUtils.getUserId());
+        exwarehouse.setUserName(SecurityUtils.getUserTruename());
         return exwarehouseMapper.updateExwarehouse(exwarehouse);
     }
 

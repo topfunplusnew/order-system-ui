@@ -3,6 +3,7 @@ package org.dzu.system.controller;
 import java.util.List;
 import javax.servlet.http.HttpServletResponse;
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -25,7 +26,7 @@ import org.dzu.common.core.page.TableDataInfo;
  * 固定资产Controller
  * 
  * @author ml
- * @date 2024-07-19
+ * @date 2024-07-29
  */
 @RestController
 @RequestMapping("/system/fixedassets")
@@ -75,7 +76,7 @@ public class FixedassetsController extends BaseController
     @PreAuthorize("@ss.hasPermi('system:fixedassets:add')")
     @Log(title = "固定资产", businessType = BusinessType.INSERT)
     @PostMapping
-    public AjaxResult add(@RequestBody Fixedassets fixedassets)
+    public AjaxResult add(@Validated @RequestBody Fixedassets fixedassets)
     {
         return toAjax(fixedassetsService.insertFixedassets(fixedassets));
     }
@@ -86,7 +87,7 @@ public class FixedassetsController extends BaseController
     @PreAuthorize("@ss.hasPermi('system:fixedassets:edit')")
     @Log(title = "固定资产", businessType = BusinessType.UPDATE)
     @PutMapping
-    public AjaxResult edit(@RequestBody Fixedassets fixedassets)
+    public AjaxResult edit(@Validated @RequestBody Fixedassets fixedassets)
     {
         return toAjax(fixedassetsService.updateFixedassets(fixedassets));
     }

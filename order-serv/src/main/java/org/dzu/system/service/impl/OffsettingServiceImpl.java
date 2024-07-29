@@ -2,27 +2,30 @@ package org.dzu.system.service.impl;
 
 import java.util.List;
 import org.dzu.common.utils.DateUtils;
+import org.dzu.common.utils.SecurityUtils;
+import org.dzu.common.utils.SecurityUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.dzu.system.mapper.OffsettingMapper;
 import org.dzu.system.domain.Offsetting;
 import org.dzu.system.service.IOffsettingService;
-
+ 
+import org.dzu.common.constant.DelConstants;
 /**
  * 资金调整单信息Service业务层处理
- * 
+ *
  * @author ml
- * @date 2024-07-19
+ * @date 2024-07-29
  */
 @Service
-public class OffsettingServiceImpl implements IOffsettingService 
+public class OffsettingServiceImpl implements IOffsettingService
 {
     @Autowired
     private OffsettingMapper offsettingMapper;
 
     /**
      * 查询资金调整单信息
-     * 
+     *
      * @param id 资金调整单信息主键
      * @return 资金调整单信息
      */
@@ -34,7 +37,7 @@ public class OffsettingServiceImpl implements IOffsettingService
 
     /**
      * 查询资金调整单信息列表
-     * 
+     *
      * @param offsetting 资金调整单信息
      * @return 资金调整单信息
      */
@@ -46,13 +49,17 @@ public class OffsettingServiceImpl implements IOffsettingService
 
     /**
      * 新增资金调整单信息
-     * 
+     *
      * @param offsetting 资金调整单信息
      * @return 结果
      */
     @Override
     public int insertOffsetting(Offsetting offsetting)
     {
+        offsetting.setAddtime(String.valueOf(DateUtils.getNowDate()));
+        offsetting.setUserId(SecurityUtils.getUserId());
+        offsetting.setUserName(SecurityUtils.getUserTruename());
+        offsetting.setDelFlag(Long.valueOf(DelConstants.NODEL));
         return offsettingMapper.insertOffsetting(offsetting);
     }
 
@@ -65,6 +72,8 @@ public class OffsettingServiceImpl implements IOffsettingService
     @Override
     public int updateOffsetting(Offsetting offsetting)
     {
+        offsetting.setUserId(SecurityUtils.getUserId());
+        offsetting.setUserName(SecurityUtils.getUserTruename());
         offsetting.setUpdateTime(DateUtils.getNowDate());
         return offsettingMapper.updateOffsetting(offsetting);
     }

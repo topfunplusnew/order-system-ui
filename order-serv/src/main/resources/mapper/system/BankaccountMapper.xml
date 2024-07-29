@@ -17,14 +17,16 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         <result property="delFlag"    column="delFlag"    />
     </resultMap>
 
+
+ 
+
     <sql id="selectBankaccountVo">
         select id, companyName, companyId, bankName, acountsName, bankNo, acountsType, comments, amount, delFlag from bankaccount
     </sql>
 
     <select id="selectBankaccountList" parameterType="Bankaccount" resultMap="BankaccountResult">
         <include refid="selectBankaccountVo"/>
-        <where>
-            delFlag = 0
+        <where>  
             <if test="companyName != null  and companyName != ''"> and companyName like concat('%', #{companyName}, '%')</if>
             <if test="companyId != null "> and companyId = #{companyId}</if>
             <if test="bankName != null  and bankName != ''"> and bankName like concat('%', #{bankName}, '%')</if>
@@ -33,13 +35,14 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
             <if test="acountsType != null  and acountsType != ''"> and acountsType = #{acountsType}</if>
             <if test="comments != null  and comments != ''"> and comments = #{comments}</if>
             <if test="amount != null "> and amount = #{amount}</if>
-            <if test="delFlag != null "> and delFlag = #{delFlag}</if>
+            and delFlag = 0
         </where>
     </select>
     
     <select id="selectBankaccountById" parameterType="Long" resultMap="BankaccountResult">
         <include refid="selectBankaccountVo"/>
-        where id = #{id} and delFlag = 0
+        where id = #{id}
+        and delFlag = 0
     </select>
 
     <insert id="insertBankaccount" parameterType="Bankaccount" useGeneratedKeys="true" keyProperty="id">
@@ -83,15 +86,13 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         </trim>
         where id = #{id}
     </update>
-
-    <delete id="deleteBankaccountById" parameterType="Long">
-        update bankaccount set delFlag = 1  where id = #{id}
-    </delete>
-
-    <delete id="deleteBankaccountByIds" parameterType="String">
-        update bankaccount set delFlag = 1  where id in
+    <update id="deleteBankaccountById" parameterType="Long">
+        update bankaccount set delFlag = 1 where id = #{id}
+    </update>
+    <update id="deleteBankaccountByIds" parameterType="String">
+        update bankaccount set delFlag = 1 where id in
         <foreach item="id" collection="array" open="(" separator="," close=")">
             #{id}
         </foreach>
-    </delete>
+    </update>
 </mapper>

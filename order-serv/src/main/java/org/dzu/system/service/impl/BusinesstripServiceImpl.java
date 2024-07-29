@@ -2,27 +2,30 @@ package org.dzu.system.service.impl;
 
 import java.util.List;
 import org.dzu.common.utils.DateUtils;
+import org.dzu.common.utils.SecurityUtils;
+import org.dzu.common.utils.SecurityUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.dzu.system.mapper.BusinesstripMapper;
 import org.dzu.system.domain.Businesstrip;
 import org.dzu.system.service.IBusinesstripService;
-
+ 
+import org.dzu.common.constant.DelConstants;
 /**
  * 出差登记Service业务层处理
- * 
+ *
  * @author ml
- * @date 2024-07-19
+ * @date 2024-07-29
  */
 @Service
-public class BusinesstripServiceImpl implements IBusinesstripService 
+public class BusinesstripServiceImpl implements IBusinesstripService
 {
     @Autowired
     private BusinesstripMapper businesstripMapper;
 
     /**
      * 查询出差登记
-     * 
+     *
      * @param id 出差登记主键
      * @return 出差登记
      */
@@ -34,7 +37,7 @@ public class BusinesstripServiceImpl implements IBusinesstripService
 
     /**
      * 查询出差登记列表
-     * 
+     *
      * @param businesstrip 出差登记
      * @return 出差登记
      */
@@ -46,13 +49,17 @@ public class BusinesstripServiceImpl implements IBusinesstripService
 
     /**
      * 新增出差登记
-     * 
+     *
      * @param businesstrip 出差登记
      * @return 结果
      */
     @Override
     public int insertBusinesstrip(Businesstrip businesstrip)
     {
+        businesstrip.setAddtime(String.valueOf(DateUtils.getNowDate()));
+        businesstrip.setUserId(SecurityUtils.getUserId());
+        businesstrip.setUserName(SecurityUtils.getUserTruename());
+        businesstrip.setDelFlag(Long.valueOf(DelConstants.NODEL));
         return businesstripMapper.insertBusinesstrip(businesstrip);
     }
 
@@ -65,6 +72,8 @@ public class BusinesstripServiceImpl implements IBusinesstripService
     @Override
     public int updateBusinesstrip(Businesstrip businesstrip)
     {
+        businesstrip.setUserId(SecurityUtils.getUserId());
+        businesstrip.setUserName(SecurityUtils.getUserTruename());
         businesstrip.setUpdateTime(DateUtils.getNowDate());
         return businesstripMapper.updateBusinesstrip(businesstrip);
     }

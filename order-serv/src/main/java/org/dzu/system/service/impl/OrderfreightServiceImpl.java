@@ -1,27 +1,31 @@
 package org.dzu.system.service.impl;
 
 import java.util.List;
+import org.dzu.common.utils.DateUtils;
+import org.dzu.common.utils.SecurityUtils;
+import org.dzu.common.utils.SecurityUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.dzu.system.mapper.OrderfreightMapper;
 import org.dzu.system.domain.Orderfreight;
 import org.dzu.system.service.IOrderfreightService;
-
+ 
+import org.dzu.common.constant.DelConstants;
 /**
  * 订单运费Service业务层处理
- * 
+ *
  * @author ml
- * @date 2024-07-19
+ * @date 2024-07-29
  */
 @Service
-public class OrderfreightServiceImpl implements IOrderfreightService 
+public class OrderfreightServiceImpl implements IOrderfreightService
 {
     @Autowired
     private OrderfreightMapper orderfreightMapper;
 
     /**
      * 查询订单运费
-     * 
+     *
      * @param id 订单运费主键
      * @return 订单运费
      */
@@ -33,7 +37,7 @@ public class OrderfreightServiceImpl implements IOrderfreightService
 
     /**
      * 查询订单运费列表
-     * 
+     *
      * @param orderfreight 订单运费
      * @return 订单运费
      */
@@ -45,13 +49,17 @@ public class OrderfreightServiceImpl implements IOrderfreightService
 
     /**
      * 新增订单运费
-     * 
+     *
      * @param orderfreight 订单运费
      * @return 结果
      */
     @Override
     public int insertOrderfreight(Orderfreight orderfreight)
     {
+        orderfreight.setAddtime(String.valueOf(DateUtils.getNowDate()));
+        orderfreight.setUserId(SecurityUtils.getUserId());
+        orderfreight.setUserName(SecurityUtils.getUserTruename());
+        orderfreight.setCancelFlag(Long.valueOf(DelConstants.NODEL));
         return orderfreightMapper.insertOrderfreight(orderfreight);
     }
 
@@ -64,6 +72,8 @@ public class OrderfreightServiceImpl implements IOrderfreightService
     @Override
     public int updateOrderfreight(Orderfreight orderfreight)
     {
+        orderfreight.setUserId(SecurityUtils.getUserId());
+        orderfreight.setUserName(SecurityUtils.getUserTruename());
         return orderfreightMapper.updateOrderfreight(orderfreight);
     }
 

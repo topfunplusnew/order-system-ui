@@ -3,6 +3,7 @@ package org.dzu.system.controller;
 import java.util.List;
 import javax.servlet.http.HttpServletResponse;
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -25,10 +26,10 @@ import org.dzu.common.core.page.TableDataInfo;
  * 货物入库信息Controller
  * 
  * @author ml
- * @date 2024-07-19
+ * @date 2024-07-29
  */
 @RestController
-@RequestMapping("/system/inventoryback")
+@RequestMapping("/system/inventoryBack")
 public class InventoryBackController extends BaseController
 {
     @Autowired
@@ -75,7 +76,7 @@ public class InventoryBackController extends BaseController
     @PreAuthorize("@ss.hasPermi('system:back:add')")
     @Log(title = "货物入库信息", businessType = BusinessType.INSERT)
     @PostMapping
-    public AjaxResult add(@RequestBody InventoryBack inventoryBack)
+    public AjaxResult add(@Validated @RequestBody InventoryBack inventoryBack)
     {
         return toAjax(inventoryBackService.insertInventoryBack(inventoryBack));
     }
@@ -86,7 +87,7 @@ public class InventoryBackController extends BaseController
     @PreAuthorize("@ss.hasPermi('system:back:edit')")
     @Log(title = "货物入库信息", businessType = BusinessType.UPDATE)
     @PutMapping
-    public AjaxResult edit(@RequestBody InventoryBack inventoryBack)
+    public AjaxResult edit(@Validated @RequestBody InventoryBack inventoryBack)
     {
         return toAjax(inventoryBackService.updateInventoryBack(inventoryBack));
     }

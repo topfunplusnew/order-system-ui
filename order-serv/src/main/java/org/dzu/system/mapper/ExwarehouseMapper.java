@@ -7,7 +7,7 @@ import org.dzu.system.domain.Exwarehouse;
  * 出库Mapper接口
  * 
  * @author ml
- * @date 2024-07-19
+ * @date 2024-07-29
  */
 public interface ExwarehouseMapper 
 {

@@ -2,27 +2,30 @@ package org.dzu.system.service.impl;
 
 import java.util.List;
 import org.dzu.common.utils.DateUtils;
+import org.dzu.common.utils.SecurityUtils;
+import org.dzu.common.utils.SecurityUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.dzu.system.mapper.OilcardMapper;
 import org.dzu.system.domain.Oilcard;
 import org.dzu.system.service.IOilcardService;
-
+ 
+import org.dzu.common.constant.DelConstants;
 /**
  * 加油卡Service业务层处理
- * 
+ *
  * @author ml
- * @date 2024-07-19
+ * @date 2024-07-29
  */
 @Service
-public class OilcardServiceImpl implements IOilcardService 
+public class OilcardServiceImpl implements IOilcardService
 {
     @Autowired
     private OilcardMapper oilcardMapper;
 
     /**
      * 查询加油卡
-     * 
+     *
      * @param id 加油卡主键
      * @return 加油卡
      */
@@ -34,7 +37,7 @@ public class OilcardServiceImpl implements IOilcardService
 
     /**
      * 查询加油卡列表
-     * 
+     *
      * @param oilcard 加油卡
      * @return 加油卡
      */
@@ -46,13 +49,17 @@ public class OilcardServiceImpl implements IOilcardService
 
     /**
      * 新增加油卡
-     * 
+     *
      * @param oilcard 加油卡
      * @return 结果
      */
     @Override
     public int insertOilcard(Oilcard oilcard)
     {
+        oilcard.setAddtime(String.valueOf(DateUtils.getNowDate()));
+        oilcard.setUserId(SecurityUtils.getUserId());
+        oilcard.setUserName(SecurityUtils.getUserTruename());
+        oilcard.setDelFlag(Long.valueOf(DelConstants.NODEL));
         return oilcardMapper.insertOilcard(oilcard);
     }
 
@@ -65,6 +72,8 @@ public class OilcardServiceImpl implements IOilcardService
     @Override
     public int updateOilcard(Oilcard oilcard)
     {
+        oilcard.setUserId(SecurityUtils.getUserId());
+        oilcard.setUserName(SecurityUtils.getUserTruename());
         oilcard.setUpdateTime(DateUtils.getNowDate());
         return oilcardMapper.updateOilcard(oilcard);
     }

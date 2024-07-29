@@ -55,6 +55,9 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         <result property="updateTime"    column="update_time"    />
     </resultMap>
 
+
+ 
+
     <sql id="selectOrderdetailVo">
         select id, ordersNo, orderDate, supplier, supplier_id, customer, customer_id, levelID, levelName, countingUnit, height, length, width, pieces, piecesPerPack, packs, price, isIncludeTaxFactory, sundryCost, paymentFactory, paymentUnload, isIncludeTaxSale, payments, erro, tonnage, landFreightPrice, landFreight, seaFreight, freight, otherCost, profit, profitNoTax, actualPieces, paymentsWithSundry, additionalFees, storeHouseID, storeHouseName, storeID, logisticsProfit, customerCommission, isAdjusted, adjustDate, cancelFlag, comments, addtime, userId, UserName, update_time from orderdetail
     </sql>
@@ -103,7 +106,7 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
             <if test="customerCommission != null "> and customerCommission = #{customerCommission}</if>
             <if test="isAdjusted != null  and isAdjusted != ''"> and isAdjusted = #{isAdjusted}</if>
             <if test="adjustDate != null  and adjustDate != ''"> and adjustDate = #{adjustDate}</if>
-            <if test="cancelFlag != null "> and cancelFlag = #{cancelFlag}</if>
+            and cancelFlag = 0
             <if test="comments != null  and comments != ''"> and comments = #{comments}</if>
             <if test="addtime != null  and addtime != ''"> and addtime = #{addtime}</if>
             <if test="userId != null "> and userId = #{userId}</if>
@@ -114,6 +117,7 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
     <select id="selectOrderdetailById" parameterType="Long" resultMap="OrderdetailResult">
         <include refid="selectOrderdetailVo"/>
         where id = #{id}
+        and cancelFlag = 0
     </select>
 
     <insert id="insertOrderdetail" parameterType="Orderdetail" useGeneratedKeys="true" keyProperty="id">
@@ -271,123 +275,13 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         </trim>
         where id = #{id}
     </update>
-
-    <delete id="deleteOrderdetailById" parameterType="Long">
-        delete from orderdetail where id = #{id}
-    </delete>
-
-    <delete id="deleteOrderdetailByIds" parameterType="String">
-        delete from orderdetail where id in 
+    <update id="deleteOrderdetailById" parameterType="Long">
+        update orderdetail set cancelFlag = 1 where id = #{id}
+    </update>
+    <update id="deleteOrderdetailByIds" parameterType="String">
+        update orderdetail set cancelFlag = 1 where id in
         <foreach item="id" collection="array" open="(" separator="," close=")">
             #{id}
         </foreach>
-    </delete>
-
-    <insert id="copyOrderDetailsToBack" parameterType="java.util.List">
-        INSERT INTO orderdetail_back (
-        orderId,
-        ordersNo,
-        orderDate,
-        supplier,
-        supplier_id,
-        customer,
-        customer_id,
-        levelID,
-        levelName,
-        countingUnit,
-        height,
-        length,
-        width,
-        pieces,
-        piecesPerPack,
-        packs,
-        price,
-        isIncludeTaxFactory,
-        sundryCost,
-        paymentFactory,
-        paymentUnload,
-        isIncludeTaxSale,
-        payments,
-        erro,
-        tonnage,
-        landFreightPrice,
-        landFreight,
-        seaFreight,
-        freight,
-        otherCost,
-        profit,
-        profitNoTax,
-        actualPieces,
-        paymentsWithSundry,
-        additionalFees,
-        storeHouseID,
-        storeHouseName,
-        storeID,
-        logisticsProfit,
-        customerCommission,
-        isAdjusted,
-        adjustDate,
-        cancelFlag,
-        comments,
-        addtime,
-        userId,
-        UserName,
-        update_time
-        )
-        SELECT
-        id,
-        ordersNo,
-        orderDate,
-        supplier,
-        supplier_id,
-        customer,
-        customer_id,
-        levelID,
-        levelName,
-        countingUnit,
-        height,
-        length,
-        width,
-        pieces,
-        piecesPerPack,
-        packs,
-        price,
-        isIncludeTaxFactory,
-        sundryCost,
-        paymentFactory,
-        paymentUnload,
-        isIncludeTaxSale,
-        payments,
-        erro,
-        tonnage,
-        landFreightPrice,
-        landFreight,
-        seaFreight,
-        freight,
-        otherCost,
-        profit,
-        profitNoTax,
-        actualPieces,
-        paymentsWithSundry,
-        additionalFees,
-        storeHouseID,
-        storeHouseName,
-        storeID,
-        logisticsProfit,
-        customerCommission,
-        isAdjusted,
-        adjustDate,
-        cancelFlag,
-        comments,
-        addtime,
-        userId,
-        UserName,
-        update_time
-        FROM orderdetail
-        WHERE id in
-        <foreach item="item" index="index" collection="list" open="(" separator="," close=")">
-            #{item}
-        </foreach>
-    </insert>
-
+    </update>
 </mapper>

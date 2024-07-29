@@ -25,6 +25,9 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         <result property="delFlag"    column="delFlag"    />
     </resultMap>
 
+
+ 
+
     <sql id="selectRebateVo">
         select id, ordersNo, rebateDate, rebate, rebateType, inAcountsName, inBankNo, supplier, supplier_id, outAcountsName, outBankNo, rebateReason, comments, addtime, userId, UserName, update_time, delFlag from rebate
     </sql>
@@ -47,13 +50,14 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
             <if test="addtime != null  and addtime != ''"> and addtime = #{addtime}</if>
             <if test="userId != null "> and userId = #{userId}</if>
             <if test="UserName != null  and UserName != ''"> and UserName like concat('%', #{UserName}, '%')</if>
-            <if test="delFlag != null "> and delFlag = #{delFlag}</if>
+            and delFlag = 0
         </where>
     </select>
     
     <select id="selectRebateById" parameterType="Long" resultMap="RebateResult">
         <include refid="selectRebateVo"/>
         where id = #{id}
+        and delFlag = 0
     </select>
 
     <insert id="insertRebate" parameterType="Rebate" useGeneratedKeys="true" keyProperty="id">
@@ -121,15 +125,13 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         </trim>
         where id = #{id}
     </update>
-
-    <delete id="deleteRebateById" parameterType="Long">
-        delete from rebate where id = #{id}
-    </delete>
-
-    <delete id="deleteRebateByIds" parameterType="String">
-        delete from rebate where id in 
+    <update id="deleteRebateById" parameterType="Long">
+        update rebate set delFlag = 1 where id = #{id}
+    </update>
+    <update id="deleteRebateByIds" parameterType="String">
+        update rebate set delFlag = 1 where id in
         <foreach item="id" collection="array" open="(" separator="," close=")">
             #{id}
         </foreach>
-    </delete>
+    </update>
 </mapper>

@@ -3,6 +3,7 @@ package org.dzu.system.controller;
 import java.util.List;
 import javax.servlet.http.HttpServletResponse;
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -25,7 +26,7 @@ import org.dzu.common.core.page.TableDataInfo;
  * 资金调整单信息Controller
  * 
  * @author ml
- * @date 2024-07-19
+ * @date 2024-07-29
  */
 @RestController
 @RequestMapping("/system/offsetting")
@@ -75,7 +76,7 @@ public class OffsettingController extends BaseController
     @PreAuthorize("@ss.hasPermi('system:offsetting:add')")
     @Log(title = "资金调整单信息", businessType = BusinessType.INSERT)
     @PostMapping
-    public AjaxResult add(@RequestBody Offsetting offsetting)
+    public AjaxResult add(@Validated @RequestBody Offsetting offsetting)
     {
         return toAjax(offsettingService.insertOffsetting(offsetting));
     }
@@ -86,7 +87,7 @@ public class OffsettingController extends BaseController
     @PreAuthorize("@ss.hasPermi('system:offsetting:edit')")
     @Log(title = "资金调整单信息", businessType = BusinessType.UPDATE)
     @PutMapping
-    public AjaxResult edit(@RequestBody Offsetting offsetting)
+    public AjaxResult edit(@Validated @RequestBody Offsetting offsetting)
     {
         return toAjax(offsettingService.updateOffsetting(offsetting));
     }

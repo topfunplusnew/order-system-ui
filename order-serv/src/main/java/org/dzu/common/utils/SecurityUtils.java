@@ -68,6 +68,20 @@ public class SecurityUtils
     }
 
     /**
+     * 获取用户账户
+     **/
+    public static String getUserTruename()
+    {
+        try
+        {
+            return getLoginUser().getUser().getTrueName();
+        }
+        catch (Exception e)
+        {
+            throw new ServiceException("获取用户账户异常", HttpStatus.UNAUTHORIZED);
+        }
+    }
+    /**
      * 获取用户
      **/
     public static LoginUser getLoginUser()

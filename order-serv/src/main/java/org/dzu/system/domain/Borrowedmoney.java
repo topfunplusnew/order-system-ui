@@ -5,17 +5,19 @@ import org.apache.commons.lang3.builder.ToStringStyle;
 import org.dzu.common.annotation.Excel;
 import org.dzu.common.core.domain.BaseEntity;
 
+import org.dzu.common.annotation.DecimalMaxDigits;
+import org.dzu.common.annotation.OnlyZeroOrOne;
 /**
  * 从外部借入款、贷款对象 borrowedmoney
  * 
  * @author ml
- * @date 2024-07-19
+ * @date 2024-07-29
  */
 public class Borrowedmoney extends BaseEntity
 {
     private static final long serialVersionUID = 1L;
 
-    /** 主键 */
+    /** id */
     private Long id;
 
     /** 贷款编号（UUID） */
@@ -27,12 +29,12 @@ public class Borrowedmoney extends BaseEntity
     private String origin;
 
     /** 借入金额 */
-    @Excel(name = "借入金额")
-    private Long moneyAmount;
+    @DecimalMaxDigits
+    private Double moneyAmount;
 
     /** 贷款利率 */
-    @Excel(name = "贷款利率")
-    private Long ratio;
+    @DecimalMaxDigits
+    private Double ratio;
 
     /** 贷款发放日期 */
     @Excel(name = "贷款发放日期")
@@ -71,7 +73,7 @@ public class Borrowedmoney extends BaseEntity
     private String UserName;
 
     /** 删除标记 */
-    @Excel(name = "删除标记")
+    @OnlyZeroOrOne
     private Long delFlag;
 
     public void setId(Long id) 
@@ -101,21 +103,21 @@ public class Borrowedmoney extends BaseEntity
     {
         return origin;
     }
-    public void setMoneyAmount(Long moneyAmount) 
+    public void setMoneyAmount(Double moneyAmount) 
     {
         this.moneyAmount = moneyAmount;
     }
 
-    public Long getMoneyAmount() 
+    public Double getMoneyAmount() 
     {
         return moneyAmount;
     }
-    public void setRatio(Long ratio) 
+    public void setRatio(Double ratio) 
     {
         this.ratio = ratio;
     }
 
-    public Long getRatio() 
+    public Double getRatio() 
     {
         return ratio;
     }

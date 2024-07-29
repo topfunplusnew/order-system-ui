@@ -1,29 +1,28 @@
 package org.dzu.system.service.impl;
 
 import java.util.List;
-
-import org.dzu.common.constant.DelConstants;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.dzu.system.mapper.BankaccountMapper;
 import org.dzu.system.domain.Bankaccount;
 import org.dzu.system.service.IBankaccountService;
-
+ 
+import org.dzu.common.constant.DelConstants;
 /**
  * 银行卡管理Service业务层处理
- * 
+ *
  * @author ml
- * @date 2024-07-19
+ * @date 2024-07-29
  */
 @Service
-public class BankaccountServiceImpl implements IBankaccountService 
+public class BankaccountServiceImpl implements IBankaccountService
 {
     @Autowired
     private BankaccountMapper bankaccountMapper;
 
     /**
      * 查询银行卡管理
-     * 
+     *
      * @param id 银行卡管理主键
      * @return 银行卡管理
      */
@@ -35,7 +34,7 @@ public class BankaccountServiceImpl implements IBankaccountService
 
     /**
      * 查询银行卡管理列表
-     * 
+     *
      * @param bankaccount 银行卡管理
      * @return 银行卡管理
      */
@@ -47,7 +46,7 @@ public class BankaccountServiceImpl implements IBankaccountService
 
     /**
      * 新增银行卡管理
-     * 
+     *
      * @param bankaccount 银行卡管理
      * @return 结果
      */
@@ -67,8 +66,6 @@ public class BankaccountServiceImpl implements IBankaccountService
     @Override
     public int updateBankaccount(Bankaccount bankaccount)
     {
-
-        bankaccount.setDelFlag(Long.valueOf(DelConstants.NODEL));
         return bankaccountMapper.updateBankaccount(bankaccount);
     }
 
@@ -81,7 +78,6 @@ public class BankaccountServiceImpl implements IBankaccountService
     @Override
     public int deleteBankaccountByIds(Long[] ids)
     {
-
         return bankaccountMapper.deleteBankaccountByIds(ids);
     }
 
@@ -96,5 +92,4 @@ public class BankaccountServiceImpl implements IBankaccountService
     {
         return bankaccountMapper.deleteBankaccountById(id);
     }
-
 }

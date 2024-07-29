@@ -11,7 +11,7 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         <result property="assetName"    column="assetName"    />
         <result property=" specification"    column=" specification"    />
         <result property="number"    column="number"    />
-        <result property="measurementUnit"    column="measurementUnit"    />
+        <result property="measurementUnit "    column="measurementUnit "    />
         <result property="amountIncludeTax"    column="amountIncludeTax"    />
         <result property="amountNoTax"    column="amountNoTax"    />
         <result property="account"    column="account"    />
@@ -26,8 +26,11 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         <result property="delFlag"    column="delFlag"    />
     </resultMap>
 
+
+ 
+
     <sql id="selectFixedassetsVo">
-        select id, buyDate, assetNo, assetName,  specification, number, measurementUnit, amountIncludeTax, amountNoTax, account, department, scrapDate, saleAmount, comments, addtime, userId, UserName, update_time, delFlag from fixedassets
+        select id, buyDate, assetNo, assetName,  specification, number, measurementUnit , amountIncludeTax, amountNoTax, account, department, scrapDate, saleAmount, comments, addtime, userId, UserName, update_time, delFlag from fixedassets
     </sql>
 
     <select id="selectFixedassetsList" parameterType="Fixedassets" resultMap="FixedassetsResult">
@@ -38,7 +41,7 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
             <if test="assetName != null  and assetName != ''"> and assetName like concat('%', #{assetName}, '%')</if>
             <if test=" specification != null  and specification != ''"> and  specification = #{ specification}</if>
             <if test="number != null  and number != ''"> and number = #{number}</if>
-            <if test="measurementUnit != null  and measurementUnit != ''"> and measurementUnit = #{measurementUnit}</if>
+            <if test="measurementUnit  != null  and measurementUnit  != ''"> and measurementUnit  = #{measurementUnit }</if>
             <if test="amountIncludeTax != null "> and amountIncludeTax = #{amountIncludeTax}</if>
             <if test="amountNoTax != null "> and amountNoTax = #{amountNoTax}</if>
             <if test="account != null  and account != ''"> and account = #{account}</if>
@@ -49,13 +52,14 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
             <if test="addtime != null  and addtime != ''"> and addtime = #{addtime}</if>
             <if test="userId != null "> and userId = #{userId}</if>
             <if test="UserName != null  and UserName != ''"> and UserName like concat('%', #{UserName}, '%')</if>
-            <if test="delFlag != null "> and delFlag = #{delFlag}</if>
+            and delFlag = 0
         </where>
     </select>
     
     <select id="selectFixedassetsById" parameterType="Long" resultMap="FixedassetsResult">
         <include refid="selectFixedassetsVo"/>
         where id = #{id}
+        and delFlag = 0
     </select>
 
     <insert id="insertFixedassets" parameterType="Fixedassets" useGeneratedKeys="true" keyProperty="id">
@@ -66,7 +70,7 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
             <if test="assetName != null">assetName,</if>
             <if test=" specification != null"> specification,</if>
             <if test="number != null">number,</if>
-            <if test="measurementUnit != null">measurementUnit,</if>
+            <if test="measurementUnit  != null">measurementUnit ,</if>
             <if test="amountIncludeTax != null">amountIncludeTax,</if>
             <if test="amountNoTax != null">amountNoTax,</if>
             <if test="account != null">account,</if>
@@ -86,7 +90,7 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
             <if test="assetName != null">#{assetName},</if>
             <if test=" specification != null">#{ specification},</if>
             <if test="number != null">#{number},</if>
-            <if test="measurementUnit != null">#{measurementUnit},</if>
+            <if test="measurementUnit  != null">#{measurementUnit },</if>
             <if test="amountIncludeTax != null">#{amountIncludeTax},</if>
             <if test="amountNoTax != null">#{amountNoTax},</if>
             <if test="account != null">#{account},</if>
@@ -110,7 +114,7 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
             <if test="assetName != null">assetName = #{assetName},</if>
             <if test=" specification != null"> specification = #{ specification},</if>
             <if test="number != null">number = #{number},</if>
-            <if test="measurementUnit != null">measurementUnit = #{measurementUnit},</if>
+            <if test="measurementUnit  != null">measurementUnit  = #{measurementUnit },</if>
             <if test="amountIncludeTax != null">amountIncludeTax = #{amountIncludeTax},</if>
             <if test="amountNoTax != null">amountNoTax = #{amountNoTax},</if>
             <if test="account != null">account = #{account},</if>
@@ -126,15 +130,13 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         </trim>
         where id = #{id}
     </update>
-
-    <delete id="deleteFixedassetsById" parameterType="Long">
-        delete from fixedassets where id = #{id}
-    </delete>
-
-    <delete id="deleteFixedassetsByIds" parameterType="String">
-        delete from fixedassets where id in 
+    <update id="deleteFixedassetsById" parameterType="Long">
+        update fixedassets set delFlag = 1 where id = #{id}
+    </update>
+    <update id="deleteFixedassetsByIds" parameterType="String">
+        update fixedassets set delFlag = 1 where id in
         <foreach item="id" collection="array" open="(" separator="," close=")">
             #{id}
         </foreach>
-    </delete>
+    </update>
 </mapper>

@@ -21,6 +21,9 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         <result property="delFlag"    column="delFlag"    />
     </resultMap>
 
+
+ 
+
     <sql id="selectRepaymentVo">
         select id, loanNO, payNO, moneyAmount, ratio, payDate, acountsName, bankNo, comments, addtime, userId, UserName, update_time, delFlag from repayment
     </sql>
@@ -39,13 +42,14 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
             <if test="addtime != null  and addtime != ''"> and addtime = #{addtime}</if>
             <if test="userId != null "> and userId = #{userId}</if>
             <if test="UserName != null  and UserName != ''"> and UserName like concat('%', #{UserName}, '%')</if>
-            <if test="delFlag != null "> and delFlag = #{delFlag}</if>
+            and delFlag = 0
         </where>
     </select>
     
     <select id="selectRepaymentById" parameterType="Long" resultMap="RepaymentResult">
         <include refid="selectRepaymentVo"/>
         where id = #{id}
+        and delFlag = 0
     </select>
 
     <insert id="insertRepayment" parameterType="Repayment" useGeneratedKeys="true" keyProperty="id">
@@ -101,15 +105,13 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         </trim>
         where id = #{id}
     </update>
-
-    <delete id="deleteRepaymentById" parameterType="Long">
-        delete from repayment where id = #{id}
-    </delete>
-
-    <delete id="deleteRepaymentByIds" parameterType="String">
-        delete from repayment where id in 
+    <update id="deleteRepaymentById" parameterType="Long">
+        update repayment set delFlag = 1 where id = #{id}
+    </update>
+    <update id="deleteRepaymentByIds" parameterType="String">
+        update repayment set delFlag = 1 where id in
         <foreach item="id" collection="array" open="(" separator="," close=")">
             #{id}
         </foreach>
-    </delete>
+    </update>
 </mapper>

@@ -5,17 +5,18 @@ import org.apache.commons.lang3.builder.ToStringStyle;
 import org.dzu.common.annotation.Excel;
 import org.dzu.common.core.domain.BaseEntity;
 
+import org.dzu.common.annotation.OnlyZeroOrOne;
 /**
  * 订单备份信息对象 goodsorder_back
  * 
  * @author ml
- * @date 2024-07-19
+ * @date 2024-07-29
  */
 public class GoodsorderBack extends BaseEntity
 {
     private static final long serialVersionUID = 1L;
 
-    /** 主键 */
+    /** id */
     private Long id;
 
     /** 原订单ID */
@@ -147,7 +148,7 @@ public class GoodsorderBack extends BaseEntity
     private Long isSupplierInvoice;
 
     /** 作废标记 */
-    @Excel(name = "作废标记")
+    @OnlyZeroOrOne
     private Long cancelFlag;
 
     /** 备注 */

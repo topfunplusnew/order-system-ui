@@ -30,6 +30,9 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         <result property="delFlag"    column="delFlag"    />
     </resultMap>
 
+
+ 
+
     <sql id="selectPaymentVo">
         select id, payCategory, payNO, fundsDate, payType, moneyAmount, selfAcountsName, selfBankNo, selfBankName, selfBankID, otherAcountsName, otherBankNo, otherBankName, paymentState, company, company_id, companyType, comments, addtime, userId, UserName, update_time, delFlag from payment
     </sql>
@@ -57,13 +60,14 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
             <if test="addtime != null  and addtime != ''"> and addtime = #{addtime}</if>
             <if test="userId != null "> and userId = #{userId}</if>
             <if test="UserName != null  and UserName != ''"> and UserName like concat('%', #{UserName}, '%')</if>
-            <if test="delFlag != null "> and delFlag = #{delFlag}</if>
+            and delFlag = 0
         </where>
     </select>
     
     <select id="selectPaymentById" parameterType="Long" resultMap="PaymentResult">
         <include refid="selectPaymentVo"/>
         where id = #{id}
+        and delFlag = 0
     </select>
 
     <insert id="insertPayment" parameterType="Payment" useGeneratedKeys="true" keyProperty="id">
@@ -146,15 +150,13 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         </trim>
         where id = #{id}
     </update>
-
-    <delete id="deletePaymentById" parameterType="Long">
-        delete from payment where id = #{id}
-    </delete>
-
-    <delete id="deletePaymentByIds" parameterType="String">
-        delete from payment where id in 
+    <update id="deletePaymentById" parameterType="Long">
+        update payment set delFlag = 1 where id = #{id}
+    </update>
+    <update id="deletePaymentByIds" parameterType="String">
+        update payment set delFlag = 1 where id in
         <foreach item="id" collection="array" open="(" separator="," close=")">
             #{id}
         </foreach>
-    </delete>
+    </update>
 </mapper>

@@ -59,6 +59,9 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         <result property="showFlag"    column="showFlag"    />
     </resultMap>
 
+
+ 
+
     <sql id="selectInventoryVo">
         select id, storeHouseid, storeHouseName, storeDate, stockNumber, supplier, supplierId, levelID, levelName, countingUnit, height, length, width, pieces, piecesPerPack, packs, price, isIncludeTaxFactory, sundryCost, paymentFactory, paymentUnload, isIncludeTaxSale, payments, landCar_id, landCarNo, landDriverTel, landDriverName, seaCar_id, seaCarNo, seaDriverTel, seaDriverName, erro, tonnage, landFreightPrice, landFreight, seaFreight, freight, otherCost, profit, profitNoTax, actualPieces, paymentsWithSundry, additionalFees, rebate, customerCommission, comments, addtime, userId, UserName, update_time, delFlag, showFlag from inventory
     </sql>
@@ -114,7 +117,7 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
             <if test="addtime != null  and addtime != ''"> and addtime = #{addtime}</if>
             <if test="userId != null "> and userId = #{userId}</if>
             <if test="UserName != null  and UserName != ''"> and UserName like concat('%', #{UserName}, '%')</if>
-            <if test="delFlag != null "> and delFlag = #{delFlag}</if>
+            and delFlag = 0
             <if test="showFlag != null "> and showFlag = #{showFlag}</if>
         </where>
     </select>
@@ -122,6 +125,7 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
     <select id="selectInventoryById" parameterType="Long" resultMap="InventoryResult">
         <include refid="selectInventoryVo"/>
         where id = #{id}
+        and delFlag = 0
     </select>
 
     <insert id="insertInventory" parameterType="Inventory" useGeneratedKeys="true" keyProperty="id">
@@ -291,15 +295,13 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         </trim>
         where id = #{id}
     </update>
-
-    <delete id="deleteInventoryById" parameterType="Long">
-        delete from inventory where id = #{id}
-    </delete>
-
-    <delete id="deleteInventoryByIds" parameterType="String">
-        delete from inventory where id in 
+    <update id="deleteInventoryById" parameterType="Long">
+        update inventory set delFlag = 1 where id = #{id}
+    </update>
+    <update id="deleteInventoryByIds" parameterType="String">
+        update inventory set delFlag = 1 where id in
         <foreach item="id" collection="array" open="(" separator="," close=")">
             #{id}
         </foreach>
-    </delete>
+    </update>
 </mapper>

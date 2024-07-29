@@ -2,27 +2,30 @@ package org.dzu.system.service.impl;
 
 import java.util.List;
 import org.dzu.common.utils.DateUtils;
+import org.dzu.common.utils.SecurityUtils;
+import org.dzu.common.utils.SecurityUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.dzu.system.mapper.CustomervisitMapper;
 import org.dzu.system.domain.Customervisit;
 import org.dzu.system.service.ICustomervisitService;
-
+ 
+import org.dzu.common.constant.DelConstants;
 /**
  * 走访记录Service业务层处理
- * 
+ *
  * @author ml
- * @date 2024-07-19
+ * @date 2024-07-29
  */
 @Service
-public class CustomervisitServiceImpl implements ICustomervisitService 
+public class CustomervisitServiceImpl implements ICustomervisitService
 {
     @Autowired
     private CustomervisitMapper customervisitMapper;
 
     /**
      * 查询走访记录
-     * 
+     *
      * @param id 走访记录主键
      * @return 走访记录
      */
@@ -34,7 +37,7 @@ public class CustomervisitServiceImpl implements ICustomervisitService
 
     /**
      * 查询走访记录列表
-     * 
+     *
      * @param customervisit 走访记录
      * @return 走访记录
      */
@@ -46,13 +49,17 @@ public class CustomervisitServiceImpl implements ICustomervisitService
 
     /**
      * 新增走访记录
-     * 
+     *
      * @param customervisit 走访记录
      * @return 结果
      */
     @Override
     public int insertCustomervisit(Customervisit customervisit)
     {
+        customervisit.setAddtime(String.valueOf(DateUtils.getNowDate()));
+        customervisit.setUserId(SecurityUtils.getUserId());
+        customervisit.setUserName(SecurityUtils.getUserTruename());
+        customervisit.setDelFlag(Long.valueOf(DelConstants.NODEL));
         return customervisitMapper.insertCustomervisit(customervisit);
     }
 
@@ -65,6 +72,8 @@ public class CustomervisitServiceImpl implements ICustomervisitService
     @Override
     public int updateCustomervisit(Customervisit customervisit)
     {
+        customervisit.setUserId(SecurityUtils.getUserId());
+        customervisit.setUserName(SecurityUtils.getUserTruename());
         customervisit.setUpdateTime(DateUtils.getNowDate());
         return customervisitMapper.updateCustomervisit(customervisit);
     }

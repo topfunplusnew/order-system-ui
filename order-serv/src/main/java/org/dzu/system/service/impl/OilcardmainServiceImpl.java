@@ -2,27 +2,30 @@ package org.dzu.system.service.impl;
 
 import java.util.List;
 import org.dzu.common.utils.DateUtils;
+import org.dzu.common.utils.SecurityUtils;
+import org.dzu.common.utils.SecurityUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.dzu.system.mapper.OilcardmainMapper;
 import org.dzu.system.domain.Oilcardmain;
 import org.dzu.system.service.IOilcardmainService;
-
+ 
+import org.dzu.common.constant.DelConstants;
 /**
  * 基础信息-加油卡主卡登记Service业务层处理
- * 
+ *
  * @author ml
- * @date 2024-07-19
+ * @date 2024-07-29
  */
 @Service
-public class OilcardmainServiceImpl implements IOilcardmainService 
+public class OilcardmainServiceImpl implements IOilcardmainService
 {
     @Autowired
     private OilcardmainMapper oilcardmainMapper;
 
     /**
      * 查询基础信息-加油卡主卡登记
-     * 
+     *
      * @param id 基础信息-加油卡主卡登记主键
      * @return 基础信息-加油卡主卡登记
      */
@@ -34,7 +37,7 @@ public class OilcardmainServiceImpl implements IOilcardmainService
 
     /**
      * 查询基础信息-加油卡主卡登记列表
-     * 
+     *
      * @param oilcardmain 基础信息-加油卡主卡登记
      * @return 基础信息-加油卡主卡登记
      */
@@ -46,13 +49,17 @@ public class OilcardmainServiceImpl implements IOilcardmainService
 
     /**
      * 新增基础信息-加油卡主卡登记
-     * 
+     *
      * @param oilcardmain 基础信息-加油卡主卡登记
      * @return 结果
      */
     @Override
     public int insertOilcardmain(Oilcardmain oilcardmain)
     {
+        oilcardmain.setAddtime(String.valueOf(DateUtils.getNowDate()));
+        oilcardmain.setUserId(SecurityUtils.getUserId());
+        oilcardmain.setUserName(SecurityUtils.getUserTruename());
+        oilcardmain.setDelFlag(Long.valueOf(DelConstants.NODEL));
         return oilcardmainMapper.insertOilcardmain(oilcardmain);
     }
 
@@ -65,6 +72,8 @@ public class OilcardmainServiceImpl implements IOilcardmainService
     @Override
     public int updateOilcardmain(Oilcardmain oilcardmain)
     {
+        oilcardmain.setUserId(SecurityUtils.getUserId());
+        oilcardmain.setUserName(SecurityUtils.getUserTruename());
         oilcardmain.setUpdateTime(DateUtils.getNowDate());
         return oilcardmainMapper.updateOilcardmain(oilcardmain);
     }

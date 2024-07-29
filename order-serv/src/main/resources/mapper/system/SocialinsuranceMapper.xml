@@ -33,6 +33,9 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         <result property="delFlag"    column="delFlag"    />
     </resultMap>
 
+
+ 
+
     <sql id="selectSocialinsuranceVo">
         select id, basicSocialInsurance, basicHousingFund, depName, employeeName, employeeID, insuranceDate, isRecruiting, isDepletion, healthySecuritySelf, healthySecurityCompany, injuryInsurance, unemploymentSecuritySelf, unemploymentSecurityCompany, retirementSecuritySelf, retirementSecurityCompany, largeMedicalSecuritySelf, largeMedicalSecurityCompany, housingFundSelf, housingFundCompany, comments, addtime, userId, UserName, update_time, delFlag from socialinsurance
     </sql>
@@ -63,13 +66,14 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
             <if test="addtime != null  and addtime != ''"> and addtime = #{addtime}</if>
             <if test="userId != null "> and userId = #{userId}</if>
             <if test="UserName != null  and UserName != ''"> and UserName like concat('%', #{UserName}, '%')</if>
-            <if test="delFlag != null "> and delFlag = #{delFlag}</if>
+            and delFlag = 0
         </where>
     </select>
     
     <select id="selectSocialinsuranceById" parameterType="Long" resultMap="SocialinsuranceResult">
         <include refid="selectSocialinsuranceVo"/>
         where id = #{id}
+        and delFlag = 0
     </select>
 
     <insert id="insertSocialinsurance" parameterType="Socialinsurance" useGeneratedKeys="true" keyProperty="id">
@@ -161,15 +165,13 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         </trim>
         where id = #{id}
     </update>
-
-    <delete id="deleteSocialinsuranceById" parameterType="Long">
-        delete from socialinsurance where id = #{id}
-    </delete>
-
-    <delete id="deleteSocialinsuranceByIds" parameterType="String">
-        delete from socialinsurance where id in 
+    <update id="deleteSocialinsuranceById" parameterType="Long">
+        update socialinsurance set delFlag = 1 where id = #{id}
+    </update>
+    <update id="deleteSocialinsuranceByIds" parameterType="String">
+        update socialinsurance set delFlag = 1 where id in
         <foreach item="id" collection="array" open="(" separator="," close=")">
             #{id}
         </foreach>
-    </delete>
+    </update>
 </mapper>

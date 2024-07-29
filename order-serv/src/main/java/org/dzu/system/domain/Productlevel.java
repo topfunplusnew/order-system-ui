@@ -3,64 +3,54 @@ package org.dzu.system.domain;
 import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.apache.commons.lang3.builder.ToStringStyle;
 import org.dzu.common.annotation.Excel;
-import org.dzu.common.annotation.OnlyZeroOrOne;
 import org.dzu.common.core.domain.BaseEntity;
 
-import javax.validation.constraints.NotEmpty;
-import javax.validation.constraints.NotNull;
-
+import org.dzu.common.annotation.DecimalMaxDigits;
+import org.dzu.common.annotation.OnlyZeroOrOne;
 /**
  * 产品级别管理对象 productlevel
  * 
  * @author ml
- * @date 2024-07-19
+ * @date 2024-07-29
  */
 public class Productlevel extends BaseEntity
 {
     private static final long serialVersionUID = 1L;
 
-    /** 主键 */
+    /** id */
     private Long id;
 
     /** 级别编码 */
     @Excel(name = "级别编码")
-    @NotNull(message = "级别编码是必须的")
     private String levelNo;
 
     /** 级别名称 */
     @Excel(name = "级别名称")
-    @NotNull(message = "级别名称是必须的")
     private String levelName;
 
     /** 分类编号 */
     @Excel(name = "分类编号")
-    @NotNull(message = "分类编号是必须的")
     private Long categoryNo;
 
     /** 分类名称 */
     @Excel(name = "分类名称")
-    @NotNull(message = "分类名称是必须的")
     private String categoryName;
 
     /** 厚度 */
-    @Excel(name = "厚度")
-    @NotNull(message = "厚度信息是必须的")
-    private Long height;
+    @DecimalMaxDigits
+    private Double height;
 
     /** 长度 */
-    @Excel(name = "长度")
-    @NotNull(message = "长度信息是必须的")
-    private Long length;
+    @DecimalMaxDigits
+    private Double length;
 
     /** 宽度 */
-    @Excel(name = "宽度")
-    @NotNull(message = "宽度位信息是必须的")
-    private Long width;
+    @DecimalMaxDigits
+    private Double width;
 
     /** 吨位 */
-    @Excel(name = "吨位")
-    @NotNull(message = "吨位信息是必须的")
-    private Long tonnage;
+    @DecimalMaxDigits
+    private Double tonnage;
 
     /** 添加时间 */
     @Excel(name = "添加时间")
@@ -75,7 +65,6 @@ public class Productlevel extends BaseEntity
     private String UserName;
 
     /** 删除标记 */
-    @Excel(name = "删除标记")
     @OnlyZeroOrOne
     private Long delFlag;
 
@@ -124,39 +113,39 @@ public class Productlevel extends BaseEntity
     {
         return categoryName;
     }
-    public void setHeight(Long height) 
+    public void setHeight(Double height) 
     {
         this.height = height;
     }
 
-    public Long getHeight() 
+    public Double getHeight() 
     {
         return height;
     }
-    public void setLength(Long length) 
+    public void setLength(Double length) 
     {
         this.length = length;
     }
 
-    public Long getLength() 
+    public Double getLength() 
     {
         return length;
     }
-    public void setWidth(Long width) 
+    public void setWidth(Double width) 
     {
         this.width = width;
     }
 
-    public Long getWidth() 
+    public Double getWidth() 
     {
         return width;
     }
-    public void setTonnage(Long tonnage) 
+    public void setTonnage(Double tonnage) 
     {
         this.tonnage = tonnage;
     }
 
-    public Long getTonnage() 
+    public Double getTonnage() 
     {
         return tonnage;
     }

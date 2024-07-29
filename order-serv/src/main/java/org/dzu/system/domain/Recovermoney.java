@@ -5,17 +5,19 @@ import org.apache.commons.lang3.builder.ToStringStyle;
 import org.dzu.common.annotation.Excel;
 import org.dzu.common.core.domain.BaseEntity;
 
+import org.dzu.common.annotation.DecimalMaxDigits;
+import org.dzu.common.annotation.OnlyZeroOrOne;
 /**
  * 资金回收对象 recovermoney
  * 
  * @author ml
- * @date 2024-07-19
+ * @date 2024-07-29
  */
 public class Recovermoney extends BaseEntity
 {
     private static final long serialVersionUID = 1L;
 
-    /** 主键 */
+    /** id */
     private Long id;
 
     /** 借出款编号（UUID） */
@@ -27,8 +29,8 @@ public class Recovermoney extends BaseEntity
     private String recoverNO;
 
     /** 收回金额 */
-    @Excel(name = "收回金额")
-    private Long moneyAmount;
+    @DecimalMaxDigits
+    private Double moneyAmount;
 
     /** 收回日期 */
     @Excel(name = "收回日期")
@@ -59,7 +61,7 @@ public class Recovermoney extends BaseEntity
     private String UserName;
 
     /** 删除标记 */
-    @Excel(name = "删除标记")
+    @OnlyZeroOrOne
     private Long delFlag;
 
     public void setId(Long id) 
@@ -89,12 +91,12 @@ public class Recovermoney extends BaseEntity
     {
         return recoverNO;
     }
-    public void setMoneyAmount(Long moneyAmount) 
+    public void setMoneyAmount(Double moneyAmount) 
     {
         this.moneyAmount = moneyAmount;
     }
 
-    public Long getMoneyAmount() 
+    public Double getMoneyAmount() 
     {
         return moneyAmount;
     }

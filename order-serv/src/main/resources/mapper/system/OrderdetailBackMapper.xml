@@ -56,6 +56,9 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         <result property="updateTime"    column="update_time"    />
     </resultMap>
 
+
+ 
+
     <sql id="selectOrderdetailBackVo">
         select id, orderId, ordersNo, orderDate, supplier, supplier_id, customer, customer_id, levelID, levelName, countingUnit, height, length, width, pieces, piecesPerPack, packs, price, isIncludeTaxFactory, sundryCost, paymentFactory, paymentUnload, isIncludeTaxSale, payments, erro, tonnage, landFreightPrice, landFreight, seaFreight, freight, otherCost, profit, profitNoTax, actualPieces, paymentsWithSundry, additionalFees, storeHouseID, storeHouseName, storeID, logisticsProfit, customerCommission, isAdjusted, adjustDate, cancelFlag, comments, addtime, userId, UserName, update_time from orderdetail_back
     </sql>
@@ -105,7 +108,7 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
             <if test="customerCommission != null "> and customerCommission = #{customerCommission}</if>
             <if test="isAdjusted != null  and isAdjusted != ''"> and isAdjusted = #{isAdjusted}</if>
             <if test="adjustDate != null  and adjustDate != ''"> and adjustDate = #{adjustDate}</if>
-            <if test="cancelFlag != null "> and cancelFlag = #{cancelFlag}</if>
+            and cancelFlag = 0
             <if test="comments != null  and comments != ''"> and comments = #{comments}</if>
             <if test="addtime != null  and addtime != ''"> and addtime = #{addtime}</if>
             <if test="userId != null "> and userId = #{userId}</if>
@@ -116,6 +119,7 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
     <select id="selectOrderdetailBackById" parameterType="Long" resultMap="OrderdetailBackResult">
         <include refid="selectOrderdetailBackVo"/>
         where id = #{id}
+        and cancelFlag = 0
     </select>
 
     <insert id="insertOrderdetailBack" parameterType="OrderdetailBack" useGeneratedKeys="true" keyProperty="id">
@@ -276,15 +280,13 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         </trim>
         where id = #{id}
     </update>
-
-    <delete id="deleteOrderdetailBackById" parameterType="Long">
-        delete from orderdetail_back where id = #{id}
-    </delete>
-
-    <delete id="deleteOrderdetailBackByIds" parameterType="String">
-        delete from orderdetail_back where id in 
+    <update id="deleteOrderdetailBackById" parameterType="Long">
+        update orderdetail_back set cancelFlag = 1 where id = #{id}
+    </update>
+    <update id="deleteOrderdetailBackByIds" parameterType="String">
+        update orderdetail_back set cancelFlag = 1 where id in
         <foreach item="id" collection="array" open="(" separator="," close=")">
             #{id}
         </foreach>
-    </delete>
+    </update>
 </mapper>

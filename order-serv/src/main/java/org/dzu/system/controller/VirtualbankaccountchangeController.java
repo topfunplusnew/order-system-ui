@@ -2,11 +2,9 @@ package org.dzu.system.controller;
 
 import java.util.List;
 import javax.servlet.http.HttpServletResponse;
-
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.validation.annotation.Validated;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
@@ -28,7 +26,7 @@ import org.dzu.common.core.page.TableDataInfo;
  * 虚拟银行账户变动信息Controller
  * 
  * @author ml
- * @date 2024-07-19
+ * @date 2024-07-29
  */
 @RestController
 @RequestMapping("/system/virtualbankaccountchange")
@@ -78,7 +76,7 @@ public class VirtualbankaccountchangeController extends BaseController
     @PreAuthorize("@ss.hasPermi('system:virtualbankaccountchange:add')")
     @Log(title = "虚拟银行账户变动信息", businessType = BusinessType.INSERT)
     @PostMapping
-    public AjaxResult add(@Validated  @RequestBody Virtualbankaccountchange virtualbankaccountchange)
+    public AjaxResult add(@Validated @RequestBody Virtualbankaccountchange virtualbankaccountchange)
     {
         return toAjax(virtualbankaccountchangeService.insertVirtualbankaccountchange(virtualbankaccountchange));
     }

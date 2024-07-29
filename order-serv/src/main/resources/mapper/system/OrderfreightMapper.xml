@@ -36,6 +36,9 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         <result property="delFlag"    column="delFlag"    />
     </resultMap>
 
+
+ 
+
     <sql id="selectOrderfreightVo">
         select id, ordersNo, freightState, moneyAmount, selfAcountsName, selfBankNo, selfBankName, otherAcountsName, otherBankNo, otherBankName, content, paymentState, driverName, driverId, CarNo, fleet, comments, addtime, applyUserId, applyUserName, applyDate, isedit, payUserId, payUserName, payDate, cancelFlag, userId, UserName, delFlag from orderfreight
     </sql>
@@ -67,7 +70,7 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
             <if test="payUserId != null "> and payUserId = #{payUserId}</if>
             <if test="payUserName != null  and payUserName != ''"> and payUserName like concat('%', #{payUserName}, '%')</if>
             <if test="payDate != null  and payDate != ''"> and payDate = #{payDate}</if>
-            <if test="cancelFlag != null "> and cancelFlag = #{cancelFlag}</if>
+            and cancelFlag = 0
             <if test="userId != null "> and userId = #{userId}</if>
             <if test="UserName != null  and UserName != ''"> and UserName like concat('%', #{UserName}, '%')</if>
             <if test="delFlag != null "> and delFlag = #{delFlag}</if>
@@ -77,6 +80,7 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
     <select id="selectOrderfreightById" parameterType="Long" resultMap="OrderfreightResult">
         <include refid="selectOrderfreightVo"/>
         where id = #{id}
+        and cancelFlag = 0
     </select>
 
     <insert id="insertOrderfreight" parameterType="Orderfreight" useGeneratedKeys="true" keyProperty="id">
@@ -177,15 +181,13 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         </trim>
         where id = #{id}
     </update>
-
-    <delete id="deleteOrderfreightById" parameterType="Long">
-        delete from orderfreight where id = #{id}
-    </delete>
-
-    <delete id="deleteOrderfreightByIds" parameterType="String">
-        delete from orderfreight where id in 
+    <update id="deleteOrderfreightById" parameterType="Long">
+        update orderfreight set cancelFlag = 1 where id = #{id}
+    </update>
+    <update id="deleteOrderfreightByIds" parameterType="String">
+        update orderfreight set cancelFlag = 1 where id in
         <foreach item="id" collection="array" open="(" separator="," close=")">
             #{id}
         </foreach>
-    </delete>
+    </update>
 </mapper>

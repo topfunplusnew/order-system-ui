@@ -3,6 +3,7 @@ package org.dzu.system.controller;
 import java.util.List;
 import javax.servlet.http.HttpServletResponse;
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -25,7 +26,7 @@ import org.dzu.common.core.page.TableDataInfo;
  * 平账Controller
  * 
  * @author ml
- * @date 2024-07-19
+ * @date 2024-07-29
  */
 @RestController
 @RequestMapping("/system/balanceaccounts")
@@ -75,7 +76,7 @@ public class BalanceaccountsController extends BaseController
     @PreAuthorize("@ss.hasPermi('system:balanceaccounts:add')")
     @Log(title = "平账", businessType = BusinessType.INSERT)
     @PostMapping
-    public AjaxResult add(@RequestBody Balanceaccounts balanceaccounts)
+    public AjaxResult add(@Validated @RequestBody Balanceaccounts balanceaccounts)
     {
         return toAjax(balanceaccountsService.insertBalanceaccounts(balanceaccounts));
     }
@@ -86,7 +87,7 @@ public class BalanceaccountsController extends BaseController
     @PreAuthorize("@ss.hasPermi('system:balanceaccounts:edit')")
     @Log(title = "平账", businessType = BusinessType.UPDATE)
     @PutMapping
-    public AjaxResult edit(@RequestBody Balanceaccounts balanceaccounts)
+    public AjaxResult edit(@Validated @RequestBody Balanceaccounts balanceaccounts)
     {
         return toAjax(balanceaccountsService.updateBalanceaccounts(balanceaccounts));
     }

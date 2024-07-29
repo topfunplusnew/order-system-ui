@@ -7,7 +7,7 @@ import org.dzu.system.domain.Oilcardmain;
  * 基础信息-加油卡主卡登记Service接口
  * 
  * @author ml
- * @date 2024-07-19
+ * @date 2024-07-29
  */
 public interface IOilcardmainService 
 {

@@ -5,17 +5,19 @@ import org.apache.commons.lang3.builder.ToStringStyle;
 import org.dzu.common.annotation.Excel;
 import org.dzu.common.core.domain.BaseEntity;
 
+import org.dzu.common.annotation.DecimalMaxDigits;
+import org.dzu.common.annotation.OnlyZeroOrOne;
 /**
  * 订单详情备份对象 orderdetail_back
  * 
  * @author ml
- * @date 2024-07-19
+ * @date 2024-07-29
  */
 public class OrderdetailBack extends BaseEntity
 {
     private static final long serialVersionUID = 1L;
 
-    /** 主键 */
+    /** id */
     private Long id;
 
     /** 原订单详情ID */
@@ -59,16 +61,16 @@ public class OrderdetailBack extends BaseEntity
     private String countingUnit;
 
     /** 厚度 */
-    @Excel(name = "厚度")
-    private Long height;
+    @DecimalMaxDigits
+    private Double height;
 
     /** 长度 */
-    @Excel(name = "长度")
-    private Long length;
+    @DecimalMaxDigits
+    private Double length;
 
     /** 宽度 */
-    @Excel(name = "宽度")
-    private Long width;
+    @DecimalMaxDigits
+    private Double width;
 
     /** 出厂片数 */
     @Excel(name = "出厂片数")
@@ -83,80 +85,80 @@ public class OrderdetailBack extends BaseEntity
     private Long packs;
 
     /** 出厂单价 */
-    @Excel(name = "出厂单价")
-    private Long price;
+    @DecimalMaxDigits
+    private Double price;
 
     /** 出厂是否含税 */
     @Excel(name = "出厂是否含税")
     private Long isIncludeTaxFactory;
 
     /** 杂费 */
-    @Excel(name = "杂费")
-    private Long sundryCost;
+    @DecimalMaxDigits
+    private Double sundryCost;
 
     /** 出厂货款 */
-    @Excel(name = "出厂货款")
-    private Long paymentFactory;
+    @DecimalMaxDigits
+    private Double paymentFactory;
 
     /** 卸货价 */
-    @Excel(name = "卸货价")
-    private Long paymentUnload;
+    @DecimalMaxDigits
+    private Double paymentUnload;
 
     /** 销售是否含税 */
     @Excel(name = "销售是否含税")
     private Long isIncludeTaxSale;
 
     /** 总货款 */
-    @Excel(name = "总货款")
-    private Long payments;
+    @DecimalMaxDigits
+    private Double payments;
 
     /** 误差 */
-    @Excel(name = "误差")
-    private Long erro;
+    @DecimalMaxDigits
+    private Double erro;
 
     /** 吨位 */
-    @Excel(name = "吨位")
-    private Long tonnage;
+    @DecimalMaxDigits
+    private Double tonnage;
 
     /** 陆运费单价 */
-    @Excel(name = "陆运费单价")
-    private Long landFreightPrice;
+    @DecimalMaxDigits
+    private Double landFreightPrice;
 
     /** 陆运费 */
-    @Excel(name = "陆运费")
-    private Long landFreight;
+    @DecimalMaxDigits
+    private Double landFreight;
 
     /** 海运费 */
-    @Excel(name = "海运费")
-    private Long seaFreight;
+    @DecimalMaxDigits
+    private Double seaFreight;
 
     /** 总运费 */
-    @Excel(name = "总运费")
-    private Long freight;
+    @DecimalMaxDigits
+    private Double freight;
 
     /** 其他费用 */
-    @Excel(name = "其他费用")
-    private Long otherCost;
+    @DecimalMaxDigits
+    private Double otherCost;
 
     /** 利润 */
-    @Excel(name = "利润")
-    private Long profit;
+    @DecimalMaxDigits
+    private Double profit;
 
     /** 不含税利润 */
-    @Excel(name = "不含税利润")
-    private Long profitNoTax;
+    @DecimalMaxDigits
+    private Double profitNoTax;
 
     /** 实际片数 */
     @Excel(name = "实际片数")
     private Long actualPieces;
 
     /** 总货款杂费 */
-    @Excel(name = "总货款杂费")
-    private Long paymentsWithSundry;
+    @DecimalMaxDigits
+    private Double paymentsWithSundry;
 
     /** 加费 */
-    @Excel(name = "加费")
-    private Long additionalFees;
+    @DecimalMaxDigits
+    private Double additionalFees;
 
     /** 仓库ID */
     @Excel(name = "仓库ID")
@@ -171,12 +173,12 @@ public class OrderdetailBack extends BaseEntity
     private Long storeID;
 
     /** 物流利润 */
-    @Excel(name = "物流利润")
-    private Long logisticsProfit;
+    @DecimalMaxDigits
+    private Double logisticsProfit;
 
     /** 客户佣金 */
-    @Excel(name = "客户佣金")
-    private Long customerCommission;
+    @DecimalMaxDigits
+    private Double customerCommission;
 
     /** 是否被调整单（ 是  否） */
     @Excel(name = "是否被调整单", readConverterExp = "是=,否=")
@@ -187,7 +189,7 @@ public class OrderdetailBack extends BaseEntity
     private String adjustDate;
 
     /** 作废标记 */
-    @Excel(name = "作废标记")
+    @OnlyZeroOrOne
     private Long cancelFlag;
 
     /** 备注 */
@@ -305,30 +307,30 @@ public class OrderdetailBack extends BaseEntity
     {
         return countingUnit;
     }
-    public void setHeight(Long height) 
+    public void setHeight(Double height) 
     {
         this.height = height;
     }
 
-    public Long getHeight() 
+    public Double getHeight() 
     {
         return height;
     }
-    public void setLength(Long length) 
+    public void setLength(Double length) 
     {
         this.length = length;
     }
 
-    public Long getLength() 
+    public Double getLength() 
     {
         return length;
     }
-    public void setWidth(Long width) 
+    public void setWidth(Double width) 
     {
         this.width = width;
     }
 
-    public Long getWidth() 
+    public Double getWidth() 
     {
         return width;
     }
@@ -359,12 +361,12 @@ public class OrderdetailBack extends BaseEntity
     {
         return packs;
     }
-    public void setPrice(Long price) 
+    public void setPrice(Double price) 
     {
         this.price = price;
     }
 
-    public Long getPrice() 
+    public Double getPrice() 
     {
         return price;
     }
@@ -377,30 +379,30 @@ public class OrderdetailBack extends BaseEntity
     {
         return isIncludeTaxFactory;
     }
-    public void setSundryCost(Long sundryCost) 
+    public void setSundryCost(Double sundryCost) 
     {
         this.sundryCost = sundryCost;
     }
 
-    public Long getSundryCost() 
+    public Double getSundryCost() 
     {
         return sundryCost;
     }
-    public void setPaymentFactory(Long paymentFactory) 
+    public void setPaymentFactory(Double paymentFactory) 
     {
         this.paymentFactory = paymentFactory;
     }
 
-    public Long getPaymentFactory() 
+    public Double getPaymentFactory() 
     {
         return paymentFactory;
     }
-    public void setPaymentUnload(Long paymentUnload) 
+    public void setPaymentUnload(Double paymentUnload) 
     {
         this.paymentUnload = paymentUnload;
     }
 
-    public Long getPaymentUnload() 
+    public Double getPaymentUnload() 
     {
         return paymentUnload;
     }
@@ -413,93 +415,93 @@ public class OrderdetailBack extends BaseEntity
     {
         return isIncludeTaxSale;
     }
-    public void setPayments(Long payments) 
+    public void setPayments(Double payments) 
     {
         this.payments = payments;
     }
 
-    public Long getPayments() 
+    public Double getPayments() 
     {
         return payments;
     }
-    public void setErro(Long erro) 
+    public void setErro(Double erro) 
     {
         this.erro = erro;
     }
 
-    public Long getErro() 
+    public Double getErro() 
     {
         return erro;
     }
-    public void setTonnage(Long tonnage) 
+    public void setTonnage(Double tonnage) 
     {
         this.tonnage = tonnage;
     }
 
-    public Long getTonnage() 
+    public Double getTonnage() 
     {
         return tonnage;
     }
-    public void setLandFreightPrice(Long landFreightPrice) 
+    public void setLandFreightPrice(Double landFreightPrice) 
     {
         this.landFreightPrice = landFreightPrice;
     }
 
-    public Long getLandFreightPrice() 
+    public Double getLandFreightPrice() 
     {
         return landFreightPrice;
     }
-    public void setLandFreight(Long landFreight) 
+    public void setLandFreight(Double landFreight) 
     {
         this.landFreight = landFreight;
     }
 
-    public Long getLandFreight() 
+    public Double getLandFreight() 
     {
         return landFreight;
     }
-    public void setSeaFreight(Long seaFreight) 
+    public void setSeaFreight(Double seaFreight) 
     {
         this.seaFreight = seaFreight;
     }
 
-    public Long getSeaFreight() 
+    public Double getSeaFreight() 
     {
         return seaFreight;
     }
-    public void setFreight(Long freight) 
+    public void setFreight(Double freight) 
     {
         this.freight = freight;
     }
 
-    public Long getFreight() 
+    public Double getFreight() 
     {
         return freight;
     }
-    public void setOtherCost(Long otherCost) 
+    public void setOtherCost(Double otherCost) 
     {
         this.otherCost = otherCost;
     }
 
-    public Long getOtherCost() 
+    public Double getOtherCost() 
     {
         return otherCost;
     }
-    public void setProfit(Long profit) 
+    public void setProfit(Double profit) 
     {
         this.profit = profit;
     }
 
-    public Long getProfit() 
+    public Double getProfit() 
     {
         return profit;
     }
-    public void setProfitNoTax(Long profitNoTax) 
+    public void setProfitNoTax(Double profitNoTax) 
     {
         this.profitNoTax = profitNoTax;
     }
 
-    public Long getProfitNoTax() 
+    public Double getProfitNoTax() 
     {
         return profitNoTax;
     }
@@ -512,21 +514,21 @@ public class OrderdetailBack extends BaseEntity
     {
         return actualPieces;
     }
-    public void setPaymentsWithSundry(Long paymentsWithSundry) 
+    public void setPaymentsWithSundry(Double paymentsWithSundry) 
     {
         this.paymentsWithSundry = paymentsWithSundry;
     }
 
-    public Long getPaymentsWithSundry() 
+    public Double getPaymentsWithSundry() 
     {
         return paymentsWithSundry;
     }
-    public void setAdditionalFees(Long additionalFees) 
+    public void setAdditionalFees(Double additionalFees) 
     {
         this.additionalFees = additionalFees;
     }
 
-    public Long getAdditionalFees() 
+    public Double getAdditionalFees() 
     {
         return additionalFees;
     }
@@ -557,21 +559,21 @@ public class OrderdetailBack extends BaseEntity
     {
         return storeID;
     }
-    public void setLogisticsProfit(Long logisticsProfit) 
+    public void setLogisticsProfit(Double logisticsProfit) 
     {
         this.logisticsProfit = logisticsProfit;
     }
 
-    public Long getLogisticsProfit() 
+    public Double getLogisticsProfit() 
     {
         return logisticsProfit;
     }
-    public void setCustomerCommission(Long customerCommission) 
+    public void setCustomerCommission(Double customerCommission) 
     {
         this.customerCommission = customerCommission;
     }
 
-    public Long getCustomerCommission() 
+    public Double getCustomerCommission() 
     {
         return customerCommission;
     }

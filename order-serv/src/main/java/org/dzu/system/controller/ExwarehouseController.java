@@ -3,6 +3,7 @@ package org.dzu.system.controller;
 import java.util.List;
 import javax.servlet.http.HttpServletResponse;
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -25,7 +26,7 @@ import org.dzu.common.core.page.TableDataInfo;
  * 出库Controller
  * 
  * @author ml
- * @date 2024-07-19
+ * @date 2024-07-29
  */
 @RestController
 @RequestMapping("/system/exwarehouse")
@@ -75,7 +76,7 @@ public class ExwarehouseController extends BaseController
     @PreAuthorize("@ss.hasPermi('system:exwarehouse:add')")
     @Log(title = "出库", businessType = BusinessType.INSERT)
     @PostMapping
-    public AjaxResult add(@RequestBody Exwarehouse exwarehouse)
+    public AjaxResult add(@Validated @RequestBody Exwarehouse exwarehouse)
     {
         return toAjax(exwarehouseService.insertExwarehouse(exwarehouse));
     }
@@ -86,7 +87,7 @@ public class ExwarehouseController extends BaseController
     @PreAuthorize("@ss.hasPermi('system:exwarehouse:edit')")
     @Log(title = "出库", businessType = BusinessType.UPDATE)
     @PutMapping
-    public AjaxResult edit(@RequestBody Exwarehouse exwarehouse)
+    public AjaxResult edit(@Validated @RequestBody Exwarehouse exwarehouse)
     {
         return toAjax(exwarehouseService.updateExwarehouse(exwarehouse));
     }

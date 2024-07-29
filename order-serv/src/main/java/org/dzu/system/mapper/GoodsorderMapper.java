@@ -2,23 +2,15 @@ package org.dzu.system.mapper;
 
 import java.util.List;
 import org.dzu.system.domain.Goodsorder;
-import org.dzu.system.domain.Orderdetail;
 
 /**
  * 订单Mapper接口
  * 
  * @author ml
- * @date 2024-07-19
+ * @date 2024-07-29
  */
 public interface GoodsorderMapper 
 {
-    /**
-     * 批量复制信息到备份表
-     *
-     * @param ids 需要copy的主键集合
-     * @return
-     */
-    public void copyToBack(Long[] ids);
     /**
      * 查询订单
      * 
@@ -66,29 +58,4 @@ public interface GoodsorderMapper
      * @return 结果
      */
     public int deleteGoodsorderByIds(Long[] ids);
-
-    /**
-     * 批量删除订单详情
-     * 
-     * @param ids 需要删除的数据主键集合
-     * @return 结果
-     */
-    public int deleteOrderdetailByOrdersNos(String[] ids);
-
-    /**
-     * 批量新增订单详情
-     * 
-     * @param orderdetailList 订单详情列表
-     * @return 结果
-     */
-    public int batchOrderdetail(List<Orderdetail> orderdetailList);
-    
-
-    /**
-     * 通过订单主键删除订单详情信息
-     * 
-     * @param orderNo 订单orderNo
-     * @return 结果
-     */
-    public int deleteOrderdetailByOrdersNo(String orderNo);
 }

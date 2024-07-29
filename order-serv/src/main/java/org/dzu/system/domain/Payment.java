@@ -5,17 +5,19 @@ import org.apache.commons.lang3.builder.ToStringStyle;
 import org.dzu.common.annotation.Excel;
 import org.dzu.common.core.domain.BaseEntity;
 
+import org.dzu.common.annotation.DecimalMaxDigits;
+import org.dzu.common.annotation.OnlyZeroOrOne;
 /**
  * 资产管理-收付款:收付款信息对象 payment
  * 
  * @author ml
- * @date 2024-07-19
+ * @date 2024-07-29
  */
 public class Payment extends BaseEntity
 {
     private static final long serialVersionUID = 1L;
 
-    /** 主键 */
+    /** id */
     private Long id;
 
     /** 收付款类型（收款，付款） */
@@ -35,8 +37,8 @@ public class Payment extends BaseEntity
     private String payType;
 
     /** 金额 */
-    @Excel(name = "金额")
-    private Long moneyAmount;
+    @DecimalMaxDigits
+    private Double moneyAmount;
 
     /** 己方户名 */
     @Excel(name = "己方户名")
@@ -99,7 +101,7 @@ public class Payment extends BaseEntity
     private String UserName;
 
     /** 删除标记 */
-    @Excel(name = "删除标记")
+    @OnlyZeroOrOne
     private Long delFlag;
 
     public void setId(Long id) 
@@ -147,12 +149,12 @@ public class Payment extends BaseEntity
     {
         return payType;
     }
-    public void setMoneyAmount(Long moneyAmount) 
+    public void setMoneyAmount(Double moneyAmount) 
     {
         this.moneyAmount = moneyAmount;
     }
 
-    public Long getMoneyAmount() 
+    public Double getMoneyAmount() 
     {
         return moneyAmount;
     }

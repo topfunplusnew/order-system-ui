@@ -9,13 +9,13 @@ import org.dzu.common.core.domain.BaseEntity;
  * 变动日志信息对象 tableeditmessage
  * 
  * @author ml
- * @date 2024-07-19
+ * @date 2024-07-29
  */
 public class Tableeditmessage extends BaseEntity
 {
     private static final long serialVersionUID = 1L;
 
-    /** 主键 */
+    /** id */
     private Long id;
 
     /** 表名 */

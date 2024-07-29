@@ -19,6 +19,9 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         <result property="UserName"    column="UserName"    />
     </resultMap>
 
+
+ 
+
     <sql id="selectExwarehouseVo">
         select id, storeHouseid, storeHouseName, storeID, outDate, outAmount, ordersNo, delFlag, update_time, addtime, userId, UserName from exwarehouse
     </sql>
@@ -32,7 +35,7 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
             <if test="outDate != null  and outDate != ''"> and outDate = #{outDate}</if>
             <if test="outAmount != null "> and outAmount = #{outAmount}</if>
             <if test="ordersNo != null  and ordersNo != ''"> and ordersNo = #{ordersNo}</if>
-            <if test="delFlag != null "> and delFlag = #{delFlag}</if>
+            and delFlag = 0
             <if test="addtime != null  and addtime != ''"> and addtime = #{addtime}</if>
             <if test="userId != null "> and userId = #{userId}</if>
             <if test="UserName != null  and UserName != ''"> and UserName like concat('%', #{UserName}, '%')</if>
@@ -42,6 +45,7 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
     <select id="selectExwarehouseById" parameterType="Long" resultMap="ExwarehouseResult">
         <include refid="selectExwarehouseVo"/>
         where id = #{id}
+        and delFlag = 0
     </select>
 
     <insert id="insertExwarehouse" parameterType="Exwarehouse" useGeneratedKeys="true" keyProperty="id">
@@ -91,15 +95,13 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         </trim>
         where id = #{id}
     </update>
-
-    <delete id="deleteExwarehouseById" parameterType="Long">
-        delete from exwarehouse where id = #{id}
-    </delete>
-
-    <delete id="deleteExwarehouseByIds" parameterType="String">
-        delete from exwarehouse where id in 
+    <update id="deleteExwarehouseById" parameterType="Long">
+        update exwarehouse set delFlag = 1 where id = #{id}
+    </update>
+    <update id="deleteExwarehouseByIds" parameterType="String">
+        update exwarehouse set delFlag = 1 where id in
         <foreach item="id" collection="array" open="(" separator="," close=")">
             #{id}
         </foreach>
-    </delete>
+    </update>
 </mapper>

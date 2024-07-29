@@ -5,17 +5,18 @@ import org.apache.commons.lang3.builder.ToStringStyle;
 import org.dzu.common.annotation.Excel;
 import org.dzu.common.core.domain.BaseEntity;
 
+import org.dzu.common.annotation.DecimalMaxDigits;
 /**
  * 银行卡资金变动对象 bankaccountchange
  * 
  * @author ml
- * @date 2024-07-19
+ * @date 2024-07-29
  */
 public class Bankaccountchange extends BaseEntity
 {
     private static final long serialVersionUID = 1L;
 
-    /** 主键 */
+    /** id */
     private Long id;
 
     /** 己方账号 */
@@ -39,8 +40,8 @@ public class Bankaccountchange extends BaseEntity
     private String changeType;
 
     /** 金额 */
-    @Excel(name = "金额")
-    private Long moneyAmount;
+    @DecimalMaxDigits
+    private Double moneyAmount;
 
     /** 备注 */
     @Excel(name = "备注")
@@ -112,12 +113,12 @@ public class Bankaccountchange extends BaseEntity
     {
         return changeType;
     }
-    public void setMoneyAmount(Long moneyAmount) 
+    public void setMoneyAmount(Double moneyAmount) 
     {
         this.moneyAmount = moneyAmount;
     }
 
-    public Long getMoneyAmount() 
+    public Double getMoneyAmount() 
     {
         return moneyAmount;
     }

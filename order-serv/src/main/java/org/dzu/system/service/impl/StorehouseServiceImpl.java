@@ -6,22 +6,23 @@ import org.springframework.stereotype.Service;
 import org.dzu.system.mapper.StorehouseMapper;
 import org.dzu.system.domain.Storehouse;
 import org.dzu.system.service.IStorehouseService;
-
+ 
+import org.dzu.common.constant.DelConstants;
 /**
  * 仓库管理Service业务层处理
- * 
+ *
  * @author ml
- * @date 2024-07-19
+ * @date 2024-07-29
  */
 @Service
-public class StorehouseServiceImpl implements IStorehouseService 
+public class StorehouseServiceImpl implements IStorehouseService
 {
     @Autowired
     private StorehouseMapper storehouseMapper;
 
     /**
      * 查询仓库管理
-     * 
+     *
      * @param id 仓库管理主键
      * @return 仓库管理
      */
@@ -33,7 +34,7 @@ public class StorehouseServiceImpl implements IStorehouseService
 
     /**
      * 查询仓库管理列表
-     * 
+     *
      * @param storehouse 仓库管理
      * @return 仓库管理
      */
@@ -45,13 +46,14 @@ public class StorehouseServiceImpl implements IStorehouseService
 
     /**
      * 新增仓库管理
-     * 
+     *
      * @param storehouse 仓库管理
      * @return 结果
      */
     @Override
     public int insertStorehouse(Storehouse storehouse)
     {
+        storehouse.setDelFlag(Long.valueOf(DelConstants.NODEL));
         return storehouseMapper.insertStorehouse(storehouse);
     }
 

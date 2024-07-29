@@ -21,14 +21,16 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         <result property="delFlag"    column="delFlag"    />
     </resultMap>
 
+
+ 
+
     <sql id="selectCarsVo">
         select id, carNo, driver, tel, bankName, acountsName, bankNo, acountsType, carType, addtime, userId, UserName, update_time, delFlag from cars
     </sql>
 
     <select id="selectCarsList" parameterType="Cars" resultMap="CarsResult">
         <include refid="selectCarsVo"/>
-        <where>
-            delFlag = 0
+        <where>  
             <if test="carNo != null  and carNo != ''"> and carNo = #{carNo}</if>
             <if test="driver != null  and driver != ''"> and driver = #{driver}</if>
             <if test="tel != null  and tel != ''"> and tel = #{tel}</if>
@@ -40,13 +42,14 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
             <if test="addtime != null  and addtime != ''"> and addtime = #{addtime}</if>
             <if test="userId != null "> and userId = #{userId}</if>
             <if test="UserName != null  and UserName != ''"> and UserName like concat('%', #{UserName}, '%')</if>
-            <if test="delFlag != null "> and delFlag = #{delFlag}</if>
+            and delFlag = 0
         </where>
     </select>
     
     <select id="selectCarsById" parameterType="Long" resultMap="CarsResult">
         <include refid="selectCarsVo"/>
-        where id = #{id} and delFlag = 0
+        where id = #{id}
+        and delFlag = 0
     </select>
 
     <insert id="insertCars" parameterType="Cars" useGeneratedKeys="true" keyProperty="id">
@@ -102,15 +105,13 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         </trim>
         where id = #{id}
     </update>
-
-    <delete id="deleteCarsById" parameterType="Long">
+    <update id="deleteCarsById" parameterType="Long">
         update cars set delFlag = 1 where id = #{id}
-    </delete>
-
-    <delete id="deleteCarsByIds" parameterType="String">
+    </update>
+    <update id="deleteCarsByIds" parameterType="String">
         update cars set delFlag = 1 where id in
         <foreach item="id" collection="array" open="(" separator="," close=")">
             #{id}
         </foreach>
-    </delete>
+    </update>
 </mapper>

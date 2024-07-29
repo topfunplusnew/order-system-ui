@@ -32,6 +32,9 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         <result property="delFlag"    column="delFlag"    />
     </resultMap>
 
+
+ 
+
     <sql id="selectCustomervisitVo">
         select id, province, city, county, customer, leaderName, LeaderTel, equipment, competitor, localDealer, monthlyConsumption, whiteGlassFactory, loweGlassConsumption, colorGlassConsumption, specialGlassConsumption, comments, addtime, userId, UserName, update_time, visitDate, checkState, checkUserID, checkUserName, delFlag from customervisit
     </sql>
@@ -61,13 +64,14 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
             <if test="checkState != null "> and checkState = #{checkState}</if>
             <if test="checkUserID != null "> and checkUserID = #{checkUserID}</if>
             <if test="checkUserName != null  and checkUserName != ''"> and checkUserName like concat('%', #{checkUserName}, '%')</if>
-            <if test="delFlag != null "> and delFlag = #{delFlag}</if>
+            and delFlag = 0
         </where>
     </select>
     
     <select id="selectCustomervisitById" parameterType="Long" resultMap="CustomervisitResult">
         <include refid="selectCustomervisitVo"/>
         where id = #{id}
+        and delFlag = 0
     </select>
 
     <insert id="insertCustomervisit" parameterType="Customervisit" useGeneratedKeys="true" keyProperty="id">
@@ -156,15 +160,13 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         </trim>
         where id = #{id}
     </update>
-
-    <delete id="deleteCustomervisitById" parameterType="Long">
-        delete from customervisit where id = #{id}
-    </delete>
-
-    <delete id="deleteCustomervisitByIds" parameterType="String">
-        delete from customervisit where id in 
+    <update id="deleteCustomervisitById" parameterType="Long">
+        update customervisit set delFlag = 1 where id = #{id}
+    </update>
+    <update id="deleteCustomervisitByIds" parameterType="String">
+        update customervisit set delFlag = 1 where id in
         <foreach item="id" collection="array" open="(" separator="," close=")">
             #{id}
         </foreach>
-    </delete>
+    </update>
 </mapper>

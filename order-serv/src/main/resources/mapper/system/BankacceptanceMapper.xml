@@ -30,6 +30,9 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         <result property="delFlag"    column="delFlag"    />
     </resultMap>
 
+
+ 
+
     <sql id="selectBankacceptanceVo">
         select id, operateDate, billNo, issueDate, dueDate, billAccount, billDate, billType, reason, billAmount, inDiscountPoints, inDiscountAmount, billCategory, origin, endorser, endorsee, endorseReason, comments, addtime, userId, UserName, update_time, delFlag from bankacceptance
     </sql>
@@ -57,13 +60,14 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
             <if test="addtime != null  and addtime != ''"> and addtime = #{addtime}</if>
             <if test="userId != null "> and userId = #{userId}</if>
             <if test="UserName != null  and UserName != ''"> and UserName like concat('%', #{UserName}, '%')</if>
-            <if test="delFlag != null "> and delFlag = #{delFlag}</if>
+            and delFlag = 0
         </where>
     </select>
     
     <select id="selectBankacceptanceById" parameterType="Long" resultMap="BankacceptanceResult">
         <include refid="selectBankacceptanceVo"/>
         where id = #{id}
+        and delFlag = 0
     </select>
 
     <insert id="insertBankacceptance" parameterType="Bankacceptance" useGeneratedKeys="true" keyProperty="id">
@@ -146,15 +150,13 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         </trim>
         where id = #{id}
     </update>
-
-    <delete id="deleteBankacceptanceById" parameterType="Long">
-        delete from bankacceptance where id = #{id}
-    </delete>
-
-    <delete id="deleteBankacceptanceByIds" parameterType="String">
-        delete from bankacceptance where id in 
+    <update id="deleteBankacceptanceById" parameterType="Long">
+        update bankacceptance set delFlag = 1 where id = #{id}
+    </update>
+    <update id="deleteBankacceptanceByIds" parameterType="String">
+        update bankacceptance set delFlag = 1 where id in
         <foreach item="id" collection="array" open="(" separator="," close=")">
             #{id}
         </foreach>
-    </delete>
+    </update>
 </mapper>

@@ -21,14 +21,16 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         <result property="delFlag"    column="delFlag"    />
     </resultMap>
 
+
+ 
+
     <sql id="selectProductlevelVo">
         select id, levelNo, levelName, categoryNo, categoryName, height, length, width, tonnage, addtime, userId, UserName, update_time, delFlag from productlevel
     </sql>
 
     <select id="selectProductlevelList" parameterType="Productlevel" resultMap="ProductlevelResult">
         <include refid="selectProductlevelVo"/>
-        <where>
-            delFlag = 0
+        <where>  
             <if test="levelNo != null  and levelNo != ''"> and levelNo = #{levelNo}</if>
             <if test="levelName != null  and levelName != ''"> and levelName like concat('%', #{levelName}, '%')</if>
             <if test="categoryNo != null "> and categoryNo = #{categoryNo}</if>
@@ -40,13 +42,14 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
             <if test="addtime != null  and addtime != ''"> and addtime = #{addtime}</if>
             <if test="userId != null "> and userId = #{userId}</if>
             <if test="UserName != null  and UserName != ''"> and UserName like concat('%', #{UserName}, '%')</if>
-            <if test="delFlag != null "> and delFlag = #{delFlag}</if>
+            and delFlag = 0
         </where>
     </select>
     
     <select id="selectProductlevelById" parameterType="Long" resultMap="ProductlevelResult">
         <include refid="selectProductlevelVo"/>
-        where id = #{id} and delFlag = 0
+        where id = #{id}
+        and delFlag = 0
     </select>
 
     <insert id="insertProductlevel" parameterType="Productlevel" useGeneratedKeys="true" keyProperty="id">
@@ -102,17 +105,13 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         </trim>
         where id = #{id}
     </update>
-
-    <delete id="deleteProductlevelById" parameterType="Long">
-        update productlevel
-        set delFlag= where id = #{id}
-    </delete>
-
-    <delete id="deleteProductlevelByIds" parameterType="String">
-        update productlevel
-        set delFlag=1 where id in
+    <update id="deleteProductlevelById" parameterType="Long">
+        update productlevel set delFlag = 1 where id = #{id}
+    </update>
+    <update id="deleteProductlevelByIds" parameterType="String">
+        update productlevel set delFlag = 1 where id in
         <foreach item="id" collection="array" open="(" separator="," close=")">
             #{id}
         </foreach>
-    </delete>
+    </update>
 </mapper>

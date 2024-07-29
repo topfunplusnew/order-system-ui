@@ -2,27 +2,30 @@ package org.dzu.system.service.impl;
 
 import java.util.List;
 import org.dzu.common.utils.DateUtils;
+import org.dzu.common.utils.SecurityUtils;
+import org.dzu.common.utils.SecurityUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.dzu.system.mapper.LendmoneyMapper;
 import org.dzu.system.domain.Lendmoney;
 import org.dzu.system.service.ILendmoneyService;
-
+ 
+import org.dzu.common.constant.DelConstants;
 /**
  * 资金借出（期货）Service业务层处理
- * 
+ *
  * @author ml
- * @date 2024-07-19
+ * @date 2024-07-29
  */
 @Service
-public class LendmoneyServiceImpl implements ILendmoneyService 
+public class LendmoneyServiceImpl implements ILendmoneyService
 {
     @Autowired
     private LendmoneyMapper lendmoneyMapper;
 
     /**
      * 查询资金借出（期货）
-     * 
+     *
      * @param id 资金借出（期货）主键
      * @return 资金借出（期货）
      */
@@ -34,7 +37,7 @@ public class LendmoneyServiceImpl implements ILendmoneyService
 
     /**
      * 查询资金借出（期货）列表
-     * 
+     *
      * @param lendmoney 资金借出（期货）
      * @return 资金借出（期货）
      */
@@ -46,13 +49,17 @@ public class LendmoneyServiceImpl implements ILendmoneyService
 
     /**
      * 新增资金借出（期货）
-     * 
+     *
      * @param lendmoney 资金借出（期货）
      * @return 结果
      */
     @Override
     public int insertLendmoney(Lendmoney lendmoney)
     {
+        lendmoney.setAddtime(String.valueOf(DateUtils.getNowDate()));
+        lendmoney.setUserId(SecurityUtils.getUserId());
+        lendmoney.setUserName(SecurityUtils.getUserTruename());
+        lendmoney.setDelFlag(Long.valueOf(DelConstants.NODEL));
         return lendmoneyMapper.insertLendmoney(lendmoney);
     }
 
@@ -65,6 +72,8 @@ public class LendmoneyServiceImpl implements ILendmoneyService
     @Override
     public int updateLendmoney(Lendmoney lendmoney)
     {
+        lendmoney.setUserId(SecurityUtils.getUserId());
+        lendmoney.setUserName(SecurityUtils.getUserTruename());
         lendmoney.setUpdateTime(DateUtils.getNowDate());
         return lendmoneyMapper.updateLendmoney(lendmoney);
     }

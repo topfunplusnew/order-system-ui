@@ -25,6 +25,9 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         <result property="delFlag"    column="delFlag"    />
     </resultMap>
 
+
+ 
+
     <sql id="selectOrderinvoiceVo">
         select id, ordersNo, invoiceDate, invoiceType, invoiceAmount, companyType, companyName, companyID, invoiceCompanyName, actualInvoiceAmount, ticketPoint, ticketPointAmount, comments, addtime, userId, UserName, update_time, delFlag from orderinvoice
     </sql>
@@ -47,13 +50,14 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
             <if test="addtime != null  and addtime != ''"> and addtime = #{addtime}</if>
             <if test="userId != null "> and userId = #{userId}</if>
             <if test="UserName != null  and UserName != ''"> and UserName like concat('%', #{UserName}, '%')</if>
-            <if test="delFlag != null "> and delFlag = #{delFlag}</if>
+            and delFlag = 0
         </where>
     </select>
     
     <select id="selectOrderinvoiceById" parameterType="Long" resultMap="OrderinvoiceResult">
         <include refid="selectOrderinvoiceVo"/>
         where id = #{id}
+        and delFlag = 0
     </select>
 
     <insert id="insertOrderinvoice" parameterType="Orderinvoice" useGeneratedKeys="true" keyProperty="id">
@@ -121,15 +125,13 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         </trim>
         where id = #{id}
     </update>
-
-    <delete id="deleteOrderinvoiceById" parameterType="Long">
-        delete from orderinvoice where id = #{id}
-    </delete>
-
-    <delete id="deleteOrderinvoiceByIds" parameterType="String">
-        delete from orderinvoice where id in 
+    <update id="deleteOrderinvoiceById" parameterType="Long">
+        update orderinvoice set delFlag = 1 where id = #{id}
+    </update>
+    <update id="deleteOrderinvoiceByIds" parameterType="String">
+        update orderinvoice set delFlag = 1 where id in
         <foreach item="id" collection="array" open="(" separator="," close=")">
             #{id}
         </foreach>
-    </delete>
+    </update>
 </mapper>

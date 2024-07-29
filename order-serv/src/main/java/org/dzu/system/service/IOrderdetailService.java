@@ -7,7 +7,7 @@ import org.dzu.system.domain.Orderdetail;
  * 订单详情Service接口
  * 
  * @author ml
- * @date 2024-07-19
+ * @date 2024-07-29
  */
 public interface IOrderdetailService 
 {

@@ -46,6 +46,9 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         <result property="updateTime"    column="update_time"    />
     </resultMap>
 
+
+ 
+
     <sql id="selectGoodsorderBackVo">
         select id, goodsOrderID, ordersNo, orderDate, customer, customer_id, landCar_id, landCarNo, landDriverTel, landDriverName, seaCar_id, seaCarNo, seaDriverTel, seaDriverName, checkUserId, checkState, invoiceState, path, PaymentState, landBankName, landBankNo, seaBankName, seaBankNo, receiveProof, saleManager, fleet, isAdjusted, adjustDate, isAdjust, adjustOrderid, isedit, customerIsInvoice, isSupplierInvoice, cancelFlag, comments, addtime, userId, UserName, update_time from goodsorder_back
     </sql>
@@ -85,7 +88,7 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
             <if test="isedit != null "> and isedit = #{isedit}</if>
             <if test="customerIsInvoice != null "> and customerIsInvoice = #{customerIsInvoice}</if>
             <if test="isSupplierInvoice != null "> and isSupplierInvoice = #{isSupplierInvoice}</if>
-            <if test="cancelFlag != null "> and cancelFlag = #{cancelFlag}</if>
+            and cancelFlag = 0
             <if test="comments != null  and comments != ''"> and comments = #{comments}</if>
             <if test="addtime != null  and addtime != ''"> and addtime = #{addtime}</if>
             <if test="userId != null "> and userId = #{userId}</if>
@@ -96,6 +99,7 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
     <select id="selectGoodsorderBackById" parameterType="Long" resultMap="GoodsorderBackResult">
         <include refid="selectGoodsorderBackVo"/>
         where id = #{id}
+        and cancelFlag = 0
     </select>
 
     <insert id="insertGoodsorderBack" parameterType="GoodsorderBack" useGeneratedKeys="true" keyProperty="id">
@@ -226,18 +230,13 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         </trim>
         where id = #{id}
     </update>
-
-    <delete id="deleteGoodsorderBackById" parameterType="Long">
-        delete from goodsorder_back where id = #{id}
-    </delete>
-
-    <delete id="deleteGoodsorderBackByIds" parameterType="String">
-        delete from goodsorder_back where id in 
+    <update id="deleteGoodsorderBackById" parameterType="Long">
+        update goodsorder_back set cancelFlag = 1 where id = #{id}
+    </update>
+    <update id="deleteGoodsorderBackByIds" parameterType="String">
+        update goodsorder_back set cancelFlag = 1 where id in
         <foreach item="id" collection="array" open="(" separator="," close=")">
             #{id}
         </foreach>
-    </delete>
-
-    <insert id="backGoodsorder">
-    </insert>
+    </update>
 </mapper>

@@ -22,6 +22,9 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         <result property="delFlag"    column="delFlag"    />
     </resultMap>
 
+
+ 
+
     <sql id="selectBusinesstripVo">
         select id, personnel, starttime, startMilesPhoto, refuelPhoto, endtime, endMilesPhoto, feesPhoto, isReimburse, comments, addtime, userId, UserName, update_time, delFlag from businesstrip
     </sql>
@@ -41,13 +44,14 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
             <if test="addtime != null  and addtime != ''"> and addtime = #{addtime}</if>
             <if test="userId != null "> and userId = #{userId}</if>
             <if test="UserName != null  and UserName != ''"> and UserName like concat('%', #{UserName}, '%')</if>
-            <if test="delFlag != null "> and delFlag = #{delFlag}</if>
+            and delFlag = 0
         </where>
     </select>
     
     <select id="selectBusinesstripById" parameterType="Long" resultMap="BusinesstripResult">
         <include refid="selectBusinesstripVo"/>
         where id = #{id}
+        and delFlag = 0
     </select>
 
     <insert id="insertBusinesstrip" parameterType="Businesstrip" useGeneratedKeys="true" keyProperty="id">
@@ -106,15 +110,13 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         </trim>
         where id = #{id}
     </update>
-
-    <delete id="deleteBusinesstripById" parameterType="Long">
-        delete from businesstrip where id = #{id}
-    </delete>
-
-    <delete id="deleteBusinesstripByIds" parameterType="String">
-        delete from businesstrip where id in 
+    <update id="deleteBusinesstripById" parameterType="Long">
+        update businesstrip set delFlag = 1 where id = #{id}
+    </update>
+    <update id="deleteBusinesstripByIds" parameterType="String">
+        update businesstrip set delFlag = 1 where id in
         <foreach item="id" collection="array" open="(" separator="," close=")">
             #{id}
         </foreach>
-    </delete>
+    </update>
 </mapper>

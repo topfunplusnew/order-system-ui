@@ -3,6 +3,7 @@ package org.dzu.system.controller;
 import java.util.List;
 import javax.servlet.http.HttpServletResponse;
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -25,7 +26,7 @@ import org.dzu.common.core.page.TableDataInfo;
  * 资产管理-收付款:收付款信息Controller
  * 
  * @author ml
- * @date 2024-07-19
+ * @date 2024-07-29
  */
 @RestController
 @RequestMapping("/system/payment")
@@ -75,7 +76,7 @@ public class PaymentController extends BaseController
     @PreAuthorize("@ss.hasPermi('system:payment:add')")
     @Log(title = "资产管理-收付款:收付款信息", businessType = BusinessType.INSERT)
     @PostMapping
-    public AjaxResult add(@RequestBody Payment payment)
+    public AjaxResult add(@Validated @RequestBody Payment payment)
     {
         return toAjax(paymentService.insertPayment(payment));
     }
@@ -86,7 +87,7 @@ public class PaymentController extends BaseController
     @PreAuthorize("@ss.hasPermi('system:payment:edit')")
     @Log(title = "资产管理-收付款:收付款信息", businessType = BusinessType.UPDATE)
     @PutMapping
-    public AjaxResult edit(@RequestBody Payment payment)
+    public AjaxResult edit(@Validated @RequestBody Payment payment)
     {
         return toAjax(paymentService.updatePayment(payment));
     }

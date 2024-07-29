@@ -1,22 +1,22 @@
 package org.dzu.system.domain;
 
-import java.util.List;
 import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.apache.commons.lang3.builder.ToStringStyle;
 import org.dzu.common.annotation.Excel;
 import org.dzu.common.core.domain.BaseEntity;
 
+import org.dzu.common.annotation.OnlyZeroOrOne;
 /**
  * 订单对象 goodsorder
  * 
  * @author ml
- * @date 2024-07-19
+ * @date 2024-07-29
  */
 public class Goodsorder extends BaseEntity
 {
     private static final long serialVersionUID = 1L;
 
-    /** 主键 */
+    /** id */
     private Long id;
 
     /** 订单编号（UUID） */
@@ -72,11 +72,11 @@ public class Goodsorder extends BaseEntity
     private Long checkUserId;
 
     /** 审核状态（已审核、未审核） */
-    @Excel(name = "审核状态", readConverterExp = "已审核、未审核")
+    @Excel(name = "审核状态", readConverterExp = "已=审核、未审核")
     private String checkState;
 
     /** 开票状态（未开票，部分开票，已开票） */
-    @Excel(name = "开票状态", readConverterExp = "未开票，部分开票，已开票")
+    @Excel(name = "开票状态", readConverterExp = "未=开票，部分开票，已开票")
     private String invoiceState;
 
     /** 附件路径 */
@@ -144,7 +144,7 @@ public class Goodsorder extends BaseEntity
     private Long isSupplierInvoice;
 
     /** 作废标记 */
-    @Excel(name = "作废标记")
+    @OnlyZeroOrOne
     private Long cancelFlag;
 
     /** 备注 */
@@ -152,17 +152,16 @@ public class Goodsorder extends BaseEntity
     private String comments;
 
     /** 添加时间 */
+    @Excel(name = "添加时间")
     private String addtime;
 
     /** 操作人员ID */
-
+    @Excel(name = "操作人员ID")
     private Long userId;
 
     /** 操作人员姓名 */
+    @Excel(name = "操作人员姓名")
     private String UserName;
-
-    /** 订单详情信息 */
-    private List<Orderdetail> orderdetailList;
 
     public void setId(Long id) 
     {
@@ -498,16 +497,6 @@ public class Goodsorder extends BaseEntity
         return UserName;
     }
 
-    public List<Orderdetail> getOrderdetailList()
-    {
-        return orderdetailList;
-    }
-
-    public void setOrderdetailList(List<Orderdetail> orderdetailList)
-    {
-        this.orderdetailList = orderdetailList;
-    }
-
     @Override
     public String toString() {
         return new ToStringBuilder(this,ToStringStyle.MULTI_LINE_STYLE)
@@ -549,7 +538,6 @@ public class Goodsorder extends BaseEntity
             .append("userId", getUserId())
             .append("UserName", getUserName())
             .append("updateTime", getUpdateTime())
-            .append("orderdetailList", getOrderdetailList())
             .toString();
     }
 }

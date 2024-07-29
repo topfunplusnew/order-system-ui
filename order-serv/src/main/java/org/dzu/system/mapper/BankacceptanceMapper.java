@@ -7,7 +7,7 @@ import org.dzu.system.domain.Bankacceptance;
  * 商业票据、银行承兑Mapper接口
  * 
  * @author ml
- * @date 2024-07-19
+ * @date 2024-07-29
  */
 public interface BankacceptanceMapper 
 {
