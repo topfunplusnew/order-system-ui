@@ -25,10 +25,10 @@
                   </lay-fullscreen>
                 </lay-button>
                 <!-- TODO 测试 -->
-                <lay-button type="primary" @click="handleClick">
+                <!-- <lay-button type="primary" @click="handleClick">
                   测试代码
                 </lay-button>
-                <lay-button>{{ name }}</lay-button>
+                <lay-button>{{ name }}</lay-button> -->
               </lay-col>
             </lay-row>
           </div>
@@ -66,7 +66,7 @@
 import { logout } from '../../api/user/user.ts'
 import { layer } from '@layui/layui-vue'
 import { useRouter } from 'vue-router'
-import { ref, watch } from 'vue'
+import { ref } from 'vue'
 
 const router = useRouter()
 const token = ref(sessionStorage.getItem('token'))
@@ -123,14 +123,14 @@ const handleLogout = () => {
 }
 
 //测试代码
-const name = ref('')
-const handleClick = () => {
-  name.value = 'hello world' //副作用 effect
-}
-//name是依赖 dependency
-watch(name, () => {
-  alert(1)
-})
+// const name = ref('')
+// const handleClick = () => {
+//   name.value = 'hello world' //副作用 effect
+// }
+// //name是依赖 dependency
+// watch(name, () => {
+//   alert(1)
+// })
 </script>
 
 <style scoped>
