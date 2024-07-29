@@ -3,7 +3,8 @@
 * Copyright (c) 2021 ruoyi
 */
 
-import Clipboard from 'order-UI/src/directive/module/clipboard'
+// import Clipboard from 'order-UI/src/directive/module/clipboard'
+import Clipboard from "quill/modules/clipboard";
 export default {
   bind(el, binding, vnode) {
     switch (binding.arg) {
