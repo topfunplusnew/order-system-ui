@@ -91,6 +91,7 @@
       <el-table-column label="开户名称(户名)" align="center" prop="acountsName" v-if="columns[1].visible"/>
       <el-table-column label="账号(银行账号)" align="center" prop="bankNo" v-if="columns[2].visible"/>
       <el-table-column label="开户行" align="center" prop="bankName" v-if="columns[3].visible"/>
+      <el-table-column label="公司名称" align="center" prop="companyName" v-if="columns[4].visible"/>
       <el-table-column label="操作" align="center" class-name="small-padding fixed-width">
         <template slot-scope="scope">
           <el-button
@@ -135,6 +136,16 @@
         <el-form-item label="户名" prop="acountsName">
           <el-input v-model="form.acountsName" placeholder="请输入户名"/>
         </el-form-item>
+        <el-form-item label="公司名称" prop="companyName">
+          <el-select v-model="form.companyName" placeholder="请选择公司名称">
+            <el-option
+              v-for="item in companyList"
+              :key="item.value"
+              :label="item.label"
+              :value="item.value">
+            </el-option>
+          </el-select>
+        </el-form-item>
         <el-form-item label="银行账号" prop="bankNo">
           <el-input v-model="form.bankNo" placeholder="请输入银行账号"/>
         </el-form-item>
@@ -158,6 +169,7 @@ import {
   addBankAccount,
   updateBankAccount
 } from "@/api/system/bankAccount";
+import {listCompany} from "@/api/system/company";
 
 export default {
   name: "BankAccount",
@@ -195,6 +207,28 @@ export default {
         comments: null,
         delFlag: null
       },
+      //查询供应商
+      queryParamsCompany: {
+        pageNum: 1,
+        pageSize: 10,
+        companyName: null,
+        relationName: null,
+        relationTel: null,
+        address: null,
+        bankName: null,
+        acountsName: null,
+        bankNo: null,
+        surplusMoney: null,
+        companyType: null,
+        salesman: null,
+        leader: null,
+        leaderTel: null,
+        salesManager: null,
+        province: null,
+        city: null,
+        county: null,
+        comments: null,
+      },
       // 表单参数
       form: {},
       // 表单校验
@@ -222,12 +256,14 @@ export default {
         {key: 0, label: `账户类型`, visible: true},
         {key: 1, label: `开户名称`, visible: true},
         {key: 2, label: `账号(银行卡号)`, visible: true},
-        {key: 3, label: `开户行`, visible: true}
+        {key: 3, label: `开户行`, visible: true},
+        {key: 4, label: `公司名称`, visible: true}
       ]
     };
   },
   created() {
     this.getList();
+    this.getCompanyInfo()
   },
   methods: {
     //打印
@@ -238,7 +274,12 @@ export default {
         targetStyles: ['*'], // 打印内容使用所有HTML样式，没有设置这个属性/值，设置分页打印没有效果
       })
     },
-
+    //查询客户 供应商信息
+    getCompanyInfo() {
+      listCompany(this.queryParamsCompany).then(res => {
+        console.log('company=>', res)
+      })
+    },
     /** 查询银行账号列表 */
     getList() {
       this.loading = true;
