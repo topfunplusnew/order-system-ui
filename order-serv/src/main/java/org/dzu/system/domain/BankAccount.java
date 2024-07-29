@@ -32,7 +32,6 @@ public class BankAccount extends BaseEntity
 
     /** 对应公司ID */
     @Excel(name = "对应公司ID")
-    @NotNull(message = "对应公司ID不能为空")
     private Long companyId;
 
     /** 开户行 */
