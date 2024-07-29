@@ -136,15 +136,8 @@
         <el-form-item label="户名" prop="acountsName">
           <el-input v-model="form.acountsName" placeholder="请输入户名"/>
         </el-form-item>
-        <el-form-item label="公司名称" prop="companyName">
-          <el-select v-model="form.companyName" placeholder="请选择公司名称">
-            <el-option
-              v-for="item in companyList"
-              :key="item.value"
-              :label="item.label"
-              :value="item.value">
-            </el-option>
-          </el-select>
+        <el-form-item label="公司名称" prop="companyName" v-if="isNeed">
+          <el-input v-model="form.bankNo" placeholder="请输入公司名称"/>
         </el-form-item>
         <el-form-item label="银行账号" prop="bankNo">
           <el-input v-model="form.bankNo" placeholder="请输入银行账号"/>
@@ -258,12 +251,19 @@ export default {
         {key: 2, label: `账号(银行卡号)`, visible: true},
         {key: 3, label: `开户行`, visible: true},
         {key: 4, label: `公司名称`, visible: true}
-      ]
+      ],
+      companyList: []
     };
   },
   created() {
     this.getList();
     this.getCompanyInfo()
+  },
+  computed: {
+    //是否是己方公司
+    isNeed() {
+      return this.form.acountsType !== '己方公司' && this.form.acountsType !== '司机'
+    }
   },
   methods: {
     //打印
@@ -277,14 +277,13 @@ export default {
     //查询客户 供应商信息
     getCompanyInfo() {
       listCompany(this.queryParamsCompany).then(res => {
-        console.log('company=>', res)
+        this.companyList = res.data.rows;
       })
     },
     /** 查询银行账号列表 */
     getList() {
       this.loading = true;
       listBankAccount(this.queryParams).then(response => {
-        console.log('查询参数=>', this.queryParams)
         this.bankAccountList = response.rows;
         console.log(this.bankAccountList)
         this.total = response.total;
