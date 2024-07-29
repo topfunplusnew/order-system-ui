@@ -1,13 +1,9 @@
-<template>
-123
-</template>
+<template>123</template>
 
 <script>
 export default {
-    name: "VirtualbankaccountchangeInfo"
+  name: 'VirtualbankaccountchangeInfo',
 }
 </script>
 
-<style scoped>
-
-</style>
+<style scoped></style>

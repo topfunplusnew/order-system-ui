@@ -1,13 +1,9 @@
-<template>
-12312123
-</template>
+<template>12312123</template>
 
 <script>
 export default {
-    name: "BackInfo"
+  name: 'BackInfo',
 }
 </script>
 
-<style scoped>
-
-</style>
+<style scoped></style>

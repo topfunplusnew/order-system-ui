@@ -1,13 +1,9 @@
-<template>
-2131132
-</template>
+<template>2131132</template>
 
 <script>
 export default {
-    name: "SocialinsuranceInfo"
+  name: 'SocialinsuranceInfo',
 }
 </script>
 
-<style scoped>
-
-</style>
+<style scoped></style>

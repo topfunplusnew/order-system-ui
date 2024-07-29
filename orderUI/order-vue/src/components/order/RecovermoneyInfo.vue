@@ -1,13 +1,9 @@
-<template>
-121
-</template>
+<template>121</template>
 
 <script>
 export default {
-    name: "RecovermoneyInfo"
+  name: 'RecovermoneyInfo',
 }
 </script>
 
-<style scoped>
-
-</style>
+<style scoped></style>

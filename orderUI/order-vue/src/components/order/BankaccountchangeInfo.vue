@@ -1,13 +1,9 @@
-<template>
-31232132
-</template>
+<template>31232132</template>
 
 <script>
 export default {
-    name: "BankaccountchangeInfo"
+  name: 'BankaccountchangeInfo',
 }
 </script>
 
-<style scoped>
-
-</style>
+<style scoped></style>
