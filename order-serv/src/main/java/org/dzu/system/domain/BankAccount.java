@@ -7,6 +7,11 @@ import org.dzu.common.core.domain.BaseEntity;
 
 import org.dzu.common.annotation.DecimalMaxDigits;
 import org.dzu.common.annotation.OnlyZeroOrOne;
+import org.hibernate.validator.constraints.Length;
+
+import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Pattern;
+
 /**
  * 银行账号对象 bankAccount
  * 
@@ -22,34 +27,40 @@ public class BankAccount extends BaseEntity
 
     /** 公司名称 */
     @Excel(name = "公司名称")
+    @Length(max = 50, message = "公司名称的字符长度不允许超过50")
     private String companyName;
 
     /** 对应公司ID */
     @Excel(name = "对应公司ID")
+    @NotNull(message = "对应公司ID不能为空")
     private Long companyId;
 
     /** 开户行 */
     @Excel(name = "开户行")
+    @Length(max = 50, message = "开户行的字符长度不允许超过50")
     private String bankName;
 
     /** 开户名称 */
     @Excel(name = "开户名称")
+    @Length(max = 50, message = "开户名称的字符长度不允许超过50")
     private String acountsName;
 
     /** 账号 */
     @Excel(name = "账号")
+    @Length(max = 50, message = "账号的字符长度不允许超过50")
     private String bankNo;
 
     /** 账户类型（己方公司，客户，供应商，司机，其它） */
-    @Excel(name = "账户类型", readConverterExp = "己=方公司，客户，供应商，司机，其它")
+    @Excel(name = "账户类型")
+    @Pattern(regexp = "己方公司|客户|供应商|司机|其它", message = "账户类型必须是：己方公司、客户、供应商、司机、其它")
     private String acountsType;
-
     /** 当前资金额 */
     @DecimalMaxDigits
     private Double amount;
 
     /** 备注 */
     @Excel(name = "备注")
+    @Length(max = 200)
     private String comments;
 
     /** 删除标记 */
