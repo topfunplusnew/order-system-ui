@@ -44,12 +44,12 @@ public class SysRegisterService
         SysUser sysUser = new SysUser();
         sysUser.setUserName(username);
 
-        // 验证码开关
-        boolean captchaEnabled = configService.selectCaptchaEnabled();
-        if (captchaEnabled)
-        {
-            validateCaptcha(username, registerBody.getCode(), registerBody.getUuid());
-        }
+//        // 验证码开关
+//        boolean captchaEnabled = configService.selectCaptchaEnabled();
+//        if (captchaEnabled)
+//        {
+//            validateCaptcha(username, registerBody.getCode(), registerBody.getUuid());
+//        }
 
         if (StringUtils.isEmpty(username))
         {
