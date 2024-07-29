@@ -1,0 +1,68 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="org.dzu.system.mapper.StoreHouseMapper">
+    
+    <resultMap type="StoreHouse" id="StoreHouseResult">
+        <result property="id"    column="id"    />
+        <result property="storeHouseName"    column="storeHouseName"    />
+        <result property="address"    column="address"    />
+        <result property="delFlag"    column="delFlag"    />
+    </resultMap>
+
+
+ 
+
+    <sql id="selectStoreHouseVo">
+        select id, storeHouseName, address, delFlag from StoreHouse
+    </sql>
+
+    <select id="selectStoreHouseList" parameterType="StoreHouse" resultMap="StoreHouseResult">
+        <include refid="selectStoreHouseVo"/>
+        <where>  
+            <if test="storeHouseName != null  and storeHouseName != ''"> and storeHouseName like concat('%', #{storeHouseName}, '%')</if>
+            <if test="address != null  and address != ''"> and address = #{address}</if>
+            and delFlag = 0
+        </where>
+    </select>
+    
+    <select id="selectStoreHouseById" parameterType="Long" resultMap="StoreHouseResult">
+        <include refid="selectStoreHouseVo"/>
+        where id = #{id}
+        and delFlag = 0
+    </select>
+
+    <insert id="insertStoreHouse" parameterType="StoreHouse" useGeneratedKeys="true" keyProperty="id">
+        insert into StoreHouse
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="storeHouseName != null">storeHouseName,</if>
+            <if test="address != null">address,</if>
+            <if test="delFlag != null">delFlag,</if>
+         </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="storeHouseName != null">#{storeHouseName},</if>
+            <if test="address != null">#{address},</if>
+            <if test="delFlag != null">#{delFlag},</if>
+         </trim>
+    </insert>
+
+    <update id="updateStoreHouse" parameterType="StoreHouse">
+        update StoreHouse
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="storeHouseName != null">storeHouseName = #{storeHouseName},</if>
+            <if test="address != null">address = #{address},</if>
+            <if test="delFlag != null">delFlag = #{delFlag},</if>
+        </trim>
+        where id = #{id}
+    </update>
+    <update id="deleteStoreHouseById" parameterType="Long">
+        update StoreHouse set delFlag = 1 where id = #{id}
+    </update>
+    <update id="deleteStoreHouseByIds" parameterType="String">
+        update StoreHouse set delFlag = 1 where id in
+        <foreach item="id" collection="array" open="(" separator="," close=")">
+            #{id}
+        </foreach>
+    </update>
+</mapper>

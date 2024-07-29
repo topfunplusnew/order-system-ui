@@ -1,0 +1,105 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="org.dzu.system.mapper.BankAccountChangeMapper">
+    
+    <resultMap type="BankAccountChange" id="BankAccountChangeResult">
+        <result property="id"    column="id"    />
+        <result property="selfBankNo"    column="selfBankNo"    />
+        <result property="tableName"    column="tableName"    />
+        <result property="payNO"    column="payNO"    />
+        <result property="operateDate"    column="operateDate"    />
+        <result property="changeType"    column="changeType"    />
+        <result property="moneyAmount"    column="moneyAmount"    />
+        <result property="comments"    column="comments"    />
+        <result property="addtime"    column="addtime"    />
+        <result property="userId"    column="userId"    />
+        <result property="UserName"    column="UserName"    />
+        <result property="updateTime"    column="update_time"    />
+    </resultMap>
+
+
+
+    <sql id="selectBankAccountChangeVo">
+        select id, selfBankNo, tableName, payNO, operateDate, changeType, moneyAmount, comments, addtime, userId, UserName, update_time from bankAccountChange
+    </sql>
+
+    <select id="selectBankAccountChangeList" parameterType="BankAccountChange" resultMap="BankAccountChangeResult">
+        <include refid="selectBankAccountChangeVo"/>
+        <where>  
+            <if test="selfBankNo != null  and selfBankNo != ''"> and selfBankNo = #{selfBankNo}</if>
+            <if test="tableName != null  and tableName != ''"> and tableName like concat('%', #{tableName}, '%')</if>
+            <if test="payNO != null  and payNO != ''"> and payNO = #{payNO}</if>
+            <if test="operateDate != null  and operateDate != ''"> and operateDate = #{operateDate}</if>
+            <if test="changeType != null  and changeType != ''"> and changeType = #{changeType}</if>
+            <if test="moneyAmount != null "> and moneyAmount = #{moneyAmount}</if>
+            <if test="comments != null  and comments != ''"> and comments = #{comments}</if>
+            <if test="addtime != null  and addtime != ''"> and addtime = #{addtime}</if>
+            <if test="userId != null "> and userId = #{userId}</if>
+            <if test="UserName != null  and UserName != ''"> and UserName like concat('%', #{UserName}, '%')</if>
+        </where>
+    </select>
+    
+    <select id="selectBankAccountChangeById" parameterType="Long" resultMap="BankAccountChangeResult">
+        <include refid="selectBankAccountChangeVo"/>
+        where id = #{id}
+    </select>
+
+    <insert id="insertBankAccountChange" parameterType="BankAccountChange" useGeneratedKeys="true" keyProperty="id">
+        insert into bankAccountChange
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="selfBankNo != null">selfBankNo,</if>
+            <if test="tableName != null">tableName,</if>
+            <if test="payNO != null">payNO,</if>
+            <if test="operateDate != null">operateDate,</if>
+            <if test="changeType != null">changeType,</if>
+            <if test="moneyAmount != null">moneyAmount,</if>
+            <if test="comments != null">comments,</if>
+            <if test="addtime != null">addtime,</if>
+            <if test="userId != null">userId,</if>
+            <if test="UserName != null">UserName,</if>
+            <if test="updateTime != null">update_time,</if>
+         </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="selfBankNo != null">#{selfBankNo},</if>
+            <if test="tableName != null">#{tableName},</if>
+            <if test="payNO != null">#{payNO},</if>
+            <if test="operateDate != null">#{operateDate},</if>
+            <if test="changeType != null">#{changeType},</if>
+            <if test="moneyAmount != null">#{moneyAmount},</if>
+            <if test="comments != null">#{comments},</if>
+            <if test="addtime != null">#{addtime},</if>
+            <if test="userId != null">#{userId},</if>
+            <if test="UserName != null">#{UserName},</if>
+            <if test="updateTime != null">#{updateTime},</if>
+         </trim>
+    </insert>
+
+    <update id="updateBankAccountChange" parameterType="BankAccountChange">
+        update bankAccountChange
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="selfBankNo != null">selfBankNo = #{selfBankNo},</if>
+            <if test="tableName != null">tableName = #{tableName},</if>
+            <if test="payNO != null">payNO = #{payNO},</if>
+            <if test="operateDate != null">operateDate = #{operateDate},</if>
+            <if test="changeType != null">changeType = #{changeType},</if>
+            <if test="moneyAmount != null">moneyAmount = #{moneyAmount},</if>
+            <if test="comments != null">comments = #{comments},</if>
+            <if test="addtime != null">addtime = #{addtime},</if>
+            <if test="userId != null">userId = #{userId},</if>
+            <if test="UserName != null">UserName = #{UserName},</if>
+            <if test="updateTime != null">update_time = #{updateTime},</if>
+        </trim>
+        where id = #{id}
+    </update>
+    <delete id="deleteBankAccountChangeById" parameterType="Long">
+        delete from bankAccountChange where id = #{id}
+    </delete>
+    <delete id="deleteBankAccountChangeByIds" parameterType="String">
+        delete from bankAccountChange where id in
+        <foreach item="id" collection="array" open="(" separator="," close=")">
+            #{id}
+        </foreach>
+    </delete>
+</mapper>

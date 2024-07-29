@@ -1,0 +1,104 @@
+package org.dzu.system.service.impl;
+
+import java.util.List;
+import org.dzu.common.utils.DateUtils;
+import org.dzu.common.utils.SecurityUtils;
+import org.dzu.common.utils.SecurityUtils;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+import org.dzu.system.mapper.OilCardMapper;
+import org.dzu.system.domain.OilCard;
+import org.dzu.system.service.IOilCardService;
+ 
+import org.dzu.common.constant.DelConstants;
+/**
+ * 加油卡信息Service业务层处理
+ *
+ * @author ml
+ * @date 2024-07-29
+ */
+@Service
+public class OilCardServiceImpl implements IOilCardService
+{
+    @Autowired
+    private OilCardMapper oilCardMapper;
+
+    /**
+     * 查询加油卡信息
+     *
+     * @param id 加油卡信息主键
+     * @return 加油卡信息
+     */
+    @Override
+    public OilCard selectOilCardById(Long id)
+    {
+        return oilCardMapper.selectOilCardById(id);
+    }
+
+    /**
+     * 查询加油卡信息列表
+     *
+     * @param oilCard 加油卡信息
+     * @return 加油卡信息
+     */
+    @Override
+    public List<OilCard> selectOilCardList(OilCard oilCard)
+    {
+        return oilCardMapper.selectOilCardList(oilCard);
+    }
+
+    /**
+     * 新增加油卡信息
+     *
+     * @param oilCard 加油卡信息
+     * @return 结果
+     */
+    @Override
+    public int insertOilCard(OilCard oilCard)
+    {
+        oilCard.setAddtime(String.valueOf(DateUtils.getNowDate()));
+        oilCard.setUserId(SecurityUtils.getUserId());
+        oilCard.setUserName(SecurityUtils.getUserTruename());
+        oilCard.setDelFlag(Long.valueOf(DelConstants.NODEL));
+        return oilCardMapper.insertOilCard(oilCard);
+    }
+
+    /**
+     * 修改加油卡信息
+     * 
+     * @param oilCard 加油卡信息
+     * @return 结果
+     */
+    @Override
+    public int updateOilCard(OilCard oilCard)
+    {
+        oilCard.setUserId(SecurityUtils.getUserId());
+        oilCard.setUserName(SecurityUtils.getUserTruename());
+        oilCard.setUpdateTime(DateUtils.getNowDate());
+        return oilCardMapper.updateOilCard(oilCard);
+    }
+
+    /**
+     * 批量删除加油卡信息
+     * 
+     * @param ids 需要删除的加油卡信息主键
+     * @return 结果
+     */
+    @Override
+    public int deleteOilCardByIds(Long[] ids)
+    {
+        return oilCardMapper.deleteOilCardByIds(ids);
+    }
+
+    /**
+     * 删除加油卡信息信息
+     * 
+     * @param id 加油卡信息主键
+     * @return 结果
+     */
+    @Override
+    public int deleteOilCardById(Long id)
+    {
+        return oilCardMapper.deleteOilCardById(id);
+    }
+}

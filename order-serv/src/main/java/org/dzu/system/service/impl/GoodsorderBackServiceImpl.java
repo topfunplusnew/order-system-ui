@@ -12,7 +12,7 @@ import org.dzu.system.service.IGoodsorderBackService;
  
 import org.dzu.common.constant.DelConstants;
 /**
- * 订单备份信息Service业务层处理
+ * 订单备份Service业务层处理
  *
  * @author ml
  * @date 2024-07-29
@@ -24,10 +24,10 @@ public class GoodsorderBackServiceImpl implements IGoodsorderBackService
     private GoodsorderBackMapper goodsorderBackMapper;
 
     /**
-     * 查询订单备份信息
+     * 查询订单备份
      *
-     * @param id 订单备份信息主键
-     * @return 订单备份信息
+     * @param id 订单备份主键
+     * @return 订单备份
      */
     @Override
     public GoodsorderBack selectGoodsorderBackById(Long id)
@@ -36,10 +36,10 @@ public class GoodsorderBackServiceImpl implements IGoodsorderBackService
     }
 
     /**
-     * 查询订单备份信息列表
+     * 查询订单备份列表
      *
-     * @param goodsorderBack 订单备份信息
-     * @return 订单备份信息
+     * @param goodsorderBack 订单备份
+     * @return 订单备份
      */
     @Override
     public List<GoodsorderBack> selectGoodsorderBackList(GoodsorderBack goodsorderBack)
@@ -48,9 +48,9 @@ public class GoodsorderBackServiceImpl implements IGoodsorderBackService
     }
 
     /**
-     * 新增订单备份信息
+     * 新增订单备份
      *
-     * @param goodsorderBack 订单备份信息
+     * @param goodsorderBack 订单备份
      * @return 结果
      */
     @Override
@@ -64,9 +64,9 @@ public class GoodsorderBackServiceImpl implements IGoodsorderBackService
     }
 
     /**
-     * 修改订单备份信息
+     * 修改订单备份
      * 
-     * @param goodsorderBack 订单备份信息
+     * @param goodsorderBack 订单备份
      * @return 结果
      */
     @Override
@@ -79,9 +79,9 @@ public class GoodsorderBackServiceImpl implements IGoodsorderBackService
     }
 
     /**
-     * 批量删除订单备份信息
+     * 批量删除订单备份
      * 
-     * @param ids 需要删除的订单备份信息主键
+     * @param ids 需要删除的订单备份主键
      * @return 结果
      */
     @Override
@@ -91,9 +91,9 @@ public class GoodsorderBackServiceImpl implements IGoodsorderBackService
     }
 
     /**
-     * 删除订单备份信息信息
+     * 删除订单备份信息
      * 
-     * @param id 订单备份信息主键
+     * @param id 订单备份主键
      * @return 结果
      */
     @Override

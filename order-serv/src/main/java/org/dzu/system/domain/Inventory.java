@@ -8,7 +8,7 @@ import org.dzu.common.core.domain.BaseEntity;
 import org.dzu.common.annotation.DecimalMaxDigits;
 import org.dzu.common.annotation.OnlyZeroOrOne;
 /**
- * 货物入库对象 inventory
+ * 库存对象 inventory
  * 
  * @author ml
  * @date 2024-07-29
@@ -110,7 +110,7 @@ public class Inventory extends BaseEntity
 
     /** 陆运车辆ID */
     @Excel(name = "陆运车辆ID")
-    private Long landcarId;
+    private Long landCarID;
 
     /** 陆运车牌 */
     @Excel(name = "陆运车牌")
@@ -126,7 +126,7 @@ public class Inventory extends BaseEntity
 
     /** 海运车辆ID */
     @Excel(name = "海运车辆ID")
-    private Long seacarId;
+    private Long seaCarID;
 
     /** 海运车牌 */
     @Excel(name = "海运车牌")
@@ -427,14 +427,14 @@ public class Inventory extends BaseEntity
     {
         return payments;
     }
-    public void setLandcarId(Long landcarId) 
+    public void setLandCarID(Long landCarID) 
     {
-        this.landcarId = landcarId;
+        this.landCarID = landCarID;
     }
 
-    public Long getLandcarId() 
+    public Long getLandCarID() 
     {
-        return landcarId;
+        return landCarID;
     }
     public void setLandCarNo(String landCarNo) 
     {
@@ -463,14 +463,14 @@ public class Inventory extends BaseEntity
     {
         return landDriverName;
     }
-    public void setSeacarId(Long seacarId) 
+    public void setSeaCarID(Long seaCarID) 
     {
-        this.seacarId = seacarId;
+        this.seaCarID = seaCarID;
     }
 
-    public Long getSeacarId() 
+    public Long getSeaCarID() 
     {
-        return seacarId;
+        return seaCarID;
     }
     public void setSeaCarNo(String seaCarNo) 
     {
@@ -706,11 +706,11 @@ public class Inventory extends BaseEntity
             .append("paymentUnload", getPaymentUnload())
             .append("isIncludeTaxSale", getIsIncludeTaxSale())
             .append("payments", getPayments())
-            .append("landcarId", getLandcarId())
+            .append("landCarID", getLandCarID())
             .append("landCarNo", getLandCarNo())
             .append("landDriverTel", getLandDriverTel())
             .append("landDriverName", getLandDriverName())
-            .append("seacarId", getSeacarId())
+            .append("seaCarID", getSeaCarID())
             .append("seaCarNo", getSeaCarNo())
             .append("seaDriverTel", getSeaDriverTel())
             .append("seaDriverName", getSeaDriverName())

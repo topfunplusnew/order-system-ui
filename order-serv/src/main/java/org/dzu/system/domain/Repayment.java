@@ -8,7 +8,7 @@ import org.dzu.common.core.domain.BaseEntity;
 import org.dzu.common.annotation.DecimalMaxDigits;
 import org.dzu.common.annotation.OnlyZeroOrOne;
 /**
- * 还款记录对象 repayment
+ * 贷款还款信息对象 repayment
  * 
  * @author ml
  * @date 2024-07-29

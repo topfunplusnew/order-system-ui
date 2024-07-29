@@ -12,7 +12,7 @@ import org.dzu.system.service.ICompanyService;
  
 import org.dzu.common.constant.DelConstants;
 /**
- * 客户管理Service业务层处理
+ * 客户、供应商信息Service业务层处理
  *
  * @author ml
  * @date 2024-07-29
@@ -24,10 +24,10 @@ public class CompanyServiceImpl implements ICompanyService
     private CompanyMapper companyMapper;
 
     /**
-     * 查询客户管理
+     * 查询客户、供应商信息
      *
-     * @param id 客户管理主键
-     * @return 客户管理
+     * @param id 客户、供应商信息主键
+     * @return 客户、供应商信息
      */
     @Override
     public Company selectCompanyById(Long id)
@@ -36,10 +36,10 @@ public class CompanyServiceImpl implements ICompanyService
     }
 
     /**
-     * 查询客户管理列表
+     * 查询客户、供应商信息列表
      *
-     * @param company 客户管理
-     * @return 客户管理
+     * @param company 客户、供应商信息
+     * @return 客户、供应商信息
      */
     @Override
     public List<Company> selectCompanyList(Company company)
@@ -48,9 +48,9 @@ public class CompanyServiceImpl implements ICompanyService
     }
 
     /**
-     * 新增客户管理
+     * 新增客户、供应商信息
      *
-     * @param company 客户管理
+     * @param company 客户、供应商信息
      * @return 结果
      */
     @Override
@@ -64,9 +64,9 @@ public class CompanyServiceImpl implements ICompanyService
     }
 
     /**
-     * 修改客户管理
+     * 修改客户、供应商信息
      * 
-     * @param company 客户管理
+     * @param company 客户、供应商信息
      * @return 结果
      */
     @Override
@@ -79,9 +79,9 @@ public class CompanyServiceImpl implements ICompanyService
     }
 
     /**
-     * 批量删除客户管理
+     * 批量删除客户、供应商信息
      * 
-     * @param ids 需要删除的客户管理主键
+     * @param ids 需要删除的客户、供应商信息主键
      * @return 结果
      */
     @Override
@@ -91,9 +91,9 @@ public class CompanyServiceImpl implements ICompanyService
     }
 
     /**
-     * 删除客户管理信息
+     * 删除客户、供应商信息信息
      * 
-     * @param id 客户管理主键
+     * @param id 客户、供应商信息主键
      * @return 结果
      */
     @Override

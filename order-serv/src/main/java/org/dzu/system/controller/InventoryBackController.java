@@ -23,22 +23,22 @@ import org.dzu.common.utils.poi.ExcelUtil;
 import org.dzu.common.core.page.TableDataInfo;
 
 /**
- * 货物入库信息Controller
+ * 库存备份Controller
  * 
  * @author ml
  * @date 2024-07-29
  */
 @RestController
-@RequestMapping("/system/InventoryBack")
+@RequestMapping("/system/inentoryBack")
 public class InventoryBackController extends BaseController
 {
     @Autowired
     private IInventoryBackService inventoryBackService;
 
     /**
-     * 查询货物入库信息列表
+     * 查询库存备份列表
      */
-    @PreAuthorize("@ss.hasPermi('system:InventoryBack:list')")
+    @PreAuthorize("@ss.hasPermi('system:back:list')")
     @GetMapping("/list")
     public TableDataInfo list(InventoryBack inventoryBack)
     {
@@ -48,22 +48,22 @@ public class InventoryBackController extends BaseController
     }
 
     /**
-     * 导出货物入库信息列表
+     * 导出库存备份列表
      */
-    @PreAuthorize("@ss.hasPermi('system:InventoryBack:export')")
-    @Log(title = "货物入库信息", businessType = BusinessType.EXPORT)
+    @PreAuthorize("@ss.hasPermi('system:back:export')")
+    @Log(title = "库存备份", businessType = BusinessType.EXPORT)
     @PostMapping("/export")
     public void export(HttpServletResponse response, InventoryBack inventoryBack)
     {
         List<InventoryBack> list = inventoryBackService.selectInventoryBackList(inventoryBack);
         ExcelUtil<InventoryBack> util = new ExcelUtil<InventoryBack>(InventoryBack.class);
-        util.exportExcel(response, list, "货物入库信息数据");
+        util.exportExcel(response, list, "库存备份数据");
     }
 
     /**
-     * 获取货物入库信息详细信息
+     * 获取库存备份详细信息
      */
-    @PreAuthorize("@ss.hasPermi('system:InventoryBack:query')")
+    @PreAuthorize("@ss.hasPermi('system:back:query')")
     @GetMapping(value = "/{id}")
     public AjaxResult getInfo(@PathVariable("id") Long id)
     {
@@ -71,10 +71,10 @@ public class InventoryBackController extends BaseController
     }
 
     /**
-     * 新增货物入库信息
+     * 新增库存备份
      */
-    @PreAuthorize("@ss.hasPermi('system:InventoryBack:add')")
-    @Log(title = "货物入库信息", businessType = BusinessType.INSERT)
+    @PreAuthorize("@ss.hasPermi('system:back:add')")
+    @Log(title = "库存备份", businessType = BusinessType.INSERT)
     @PostMapping
     public AjaxResult add(@Validated @RequestBody InventoryBack inventoryBack)
     {
@@ -82,10 +82,10 @@ public class InventoryBackController extends BaseController
     }
 
     /**
-     * 修改货物入库信息
+     * 修改库存备份
      */
-    @PreAuthorize("@ss.hasPermi('system:InventoryBack:edit')")
-    @Log(title = "货物入库信息", businessType = BusinessType.UPDATE)
+    @PreAuthorize("@ss.hasPermi('system:back:edit')")
+    @Log(title = "库存备份", businessType = BusinessType.UPDATE)
     @PutMapping
     public AjaxResult edit(@Validated @RequestBody InventoryBack inventoryBack)
     {
@@ -93,10 +93,10 @@ public class InventoryBackController extends BaseController
     }
 
     /**
-     * 删除货物入库信息
+     * 删除库存备份
      */
-    @PreAuthorize("@ss.hasPermi('system:InventoryBack:remove')")
-    @Log(title = "货物入库信息", businessType = BusinessType.DELETE)
+    @PreAuthorize("@ss.hasPermi('system:back:remove')")
+    @Log(title = "库存备份", businessType = BusinessType.DELETE)
 	@DeleteMapping("/{ids}")
     public AjaxResult remove(@PathVariable Long[] ids)
     {

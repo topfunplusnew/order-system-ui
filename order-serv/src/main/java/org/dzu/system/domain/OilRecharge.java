@@ -1,0 +1,236 @@
+package org.dzu.system.domain;
+
+import org.apache.commons.lang3.builder.ToStringBuilder;
+import org.apache.commons.lang3.builder.ToStringStyle;
+import org.dzu.common.annotation.Excel;
+import org.dzu.common.core.domain.BaseEntity;
+
+import org.dzu.common.annotation.DecimalMaxDigits;
+import org.dzu.common.annotation.OnlyZeroOrOne;
+/**
+ * 加油卡充值信息对象 oilRecharge
+ * 
+ * @author ml
+ * @date 2024-07-29
+ */
+public class OilRecharge extends BaseEntity
+{
+    private static final long serialVersionUID = 1L;
+
+    /** id */
+    private Long id;
+
+    /** 出差编号UUID */
+    @Excel(name = "出差编号UUID")
+    private String bTripId;
+
+    /** 加油卡卡号 */
+    @Excel(name = "加油卡卡号")
+    private String oilCardNo;
+
+    /** 充值类型（银行卡、现金） */
+    @Excel(name = "充值类型", readConverterExp = "银=行卡、现金")
+    private String rechargeType;
+
+    /** 充值金额 */
+    @DecimalMaxDigits
+    private Double rechargeMoney;
+
+    /** 充值时间 */
+    @Excel(name = "充值时间")
+    private String rechargeDate;
+
+    /** 银行开户名 */
+    @Excel(name = "银行开户名")
+    private String acountsName;
+
+    /** 银行账号 */
+    @Excel(name = "银行账号")
+    private String bankNo;
+
+    /** 充值人员姓名 */
+    @Excel(name = "充值人员姓名")
+    private String rechargeName;
+
+    /** 充值附件 */
+    @Excel(name = "充值附件")
+    private String attachment;
+
+    /** 备注 */
+    @Excel(name = "备注")
+    private String comments;
+
+    /** 添加时间 */
+    @Excel(name = "添加时间")
+    private String addtime;
+
+    /** 操作人员ID */
+    @Excel(name = "操作人员ID")
+    private Long userId;
+
+    /** 操作人员姓名 */
+    @Excel(name = "操作人员姓名")
+    private String UserName;
+
+    /** 删除标记 */
+    @OnlyZeroOrOne
+    private Long delFlag;
+
+    public void setId(Long id) 
+    {
+        this.id = id;
+    }
+
+    public Long getId() 
+    {
+        return id;
+    }
+    public void setbTripId(String bTripId) 
+    {
+        this.bTripId = bTripId;
+    }
+
+    public String getbTripId() 
+    {
+        return bTripId;
+    }
+    public void setOilCardNo(String oilCardNo) 
+    {
+        this.oilCardNo = oilCardNo;
+    }
+
+    public String getOilCardNo() 
+    {
+        return oilCardNo;
+    }
+    public void setRechargeType(String rechargeType) 
+    {
+        this.rechargeType = rechargeType;
+    }
+
+    public String getRechargeType() 
+    {
+        return rechargeType;
+    }
+    public void setRechargeMoney(Double rechargeMoney) 
+    {
+        this.rechargeMoney = rechargeMoney;
+    }
+
+    public Double getRechargeMoney() 
+    {
+        return rechargeMoney;
+    }
+    public void setRechargeDate(String rechargeDate) 
+    {
+        this.rechargeDate = rechargeDate;
+    }
+
+    public String getRechargeDate() 
+    {
+        return rechargeDate;
+    }
+    public void setAcountsName(String acountsName) 
+    {
+        this.acountsName = acountsName;
+    }
+
+    public String getAcountsName() 
+    {
+        return acountsName;
+    }
+    public void setBankNo(String bankNo) 
+    {
+        this.bankNo = bankNo;
+    }
+
+    public String getBankNo() 
+    {
+        return bankNo;
+    }
+    public void setRechargeName(String rechargeName) 
+    {
+        this.rechargeName = rechargeName;
+    }
+
+    public String getRechargeName() 
+    {
+        return rechargeName;
+    }
+    public void setAttachment(String attachment) 
+    {
+        this.attachment = attachment;
+    }
+
+    public String getAttachment() 
+    {
+        return attachment;
+    }
+    public void setComments(String comments) 
+    {
+        this.comments = comments;
+    }
+
+    public String getComments() 
+    {
+        return comments;
+    }
+    public void setAddtime(String addtime) 
+    {
+        this.addtime = addtime;
+    }
+
+    public String getAddtime() 
+    {
+        return addtime;
+    }
+    public void setUserId(Long userId) 
+    {
+        this.userId = userId;
+    }
+
+    public Long getUserId() 
+    {
+        return userId;
+    }
+    public void setUserName(String UserName) 
+    {
+        this.UserName = UserName;
+    }
+
+    public String getUserName() 
+    {
+        return UserName;
+    }
+    public void setDelFlag(Long delFlag) 
+    {
+        this.delFlag = delFlag;
+    }
+
+    public Long getDelFlag() 
+    {
+        return delFlag;
+    }
+
+    @Override
+    public String toString() {
+        return new ToStringBuilder(this,ToStringStyle.MULTI_LINE_STYLE)
+            .append("id", getId())
+            .append("bTripId", getbTripId())
+            .append("oilCardNo", getOilCardNo())
+            .append("rechargeType", getRechargeType())
+            .append("rechargeMoney", getRechargeMoney())
+            .append("rechargeDate", getRechargeDate())
+            .append("acountsName", getAcountsName())
+            .append("bankNo", getBankNo())
+            .append("rechargeName", getRechargeName())
+            .append("attachment", getAttachment())
+            .append("comments", getComments())
+            .append("addtime", getAddtime())
+            .append("userId", getUserId())
+            .append("UserName", getUserName())
+            .append("updateTime", getUpdateTime())
+            .append("delFlag", getDelFlag())
+            .toString();
+    }
+}

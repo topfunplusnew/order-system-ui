@@ -12,7 +12,7 @@ import org.dzu.system.service.IRepaymentService;
  
 import org.dzu.common.constant.DelConstants;
 /**
- * 还款记录Service业务层处理
+ * 贷款还款信息Service业务层处理
  *
  * @author ml
  * @date 2024-07-29
@@ -24,10 +24,10 @@ public class RepaymentServiceImpl implements IRepaymentService
     private RepaymentMapper repaymentMapper;
 
     /**
-     * 查询还款记录
+     * 查询贷款还款信息
      *
-     * @param id 还款记录主键
-     * @return 还款记录
+     * @param id 贷款还款信息主键
+     * @return 贷款还款信息
      */
     @Override
     public Repayment selectRepaymentById(Long id)
@@ -36,10 +36,10 @@ public class RepaymentServiceImpl implements IRepaymentService
     }
 
     /**
-     * 查询还款记录列表
+     * 查询贷款还款信息列表
      *
-     * @param repayment 还款记录
-     * @return 还款记录
+     * @param repayment 贷款还款信息
+     * @return 贷款还款信息
      */
     @Override
     public List<Repayment> selectRepaymentList(Repayment repayment)
@@ -48,9 +48,9 @@ public class RepaymentServiceImpl implements IRepaymentService
     }
 
     /**
-     * 新增还款记录
+     * 新增贷款还款信息
      *
-     * @param repayment 还款记录
+     * @param repayment 贷款还款信息
      * @return 结果
      */
     @Override
@@ -64,9 +64,9 @@ public class RepaymentServiceImpl implements IRepaymentService
     }
 
     /**
-     * 修改还款记录
+     * 修改贷款还款信息
      * 
-     * @param repayment 还款记录
+     * @param repayment 贷款还款信息
      * @return 结果
      */
     @Override
@@ -79,9 +79,9 @@ public class RepaymentServiceImpl implements IRepaymentService
     }
 
     /**
-     * 批量删除还款记录
+     * 批量删除贷款还款信息
      * 
-     * @param ids 需要删除的还款记录主键
+     * @param ids 需要删除的贷款还款信息主键
      * @return 结果
      */
     @Override
@@ -91,9 +91,9 @@ public class RepaymentServiceImpl implements IRepaymentService
     }
 
     /**
-     * 删除还款记录信息
+     * 删除贷款还款信息信息
      * 
-     * @param id 还款记录主键
+     * @param id 贷款还款信息主键
      * @return 结果
      */
     @Override

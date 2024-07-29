@@ -6,7 +6,7 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
     
     <resultMap type="Company" id="CompanyResult">
         <result property="id"    column="id"    />
-        <result property="company"    column="company"    />
+        <result property="companyName"    column="companyName"    />
         <result property="relationName"    column="relationName"    />
         <result property="relationTel"    column="relationTel"    />
         <result property="address"    column="address"    />
@@ -35,13 +35,13 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
  
 
     <sql id="selectCompanyVo">
-        select id, company, relationName, relationTel, address, bankName, acountsName, bankNo, surplusMoney, companyType, salesman, leader, leaderTel, region, salesManager, province, city, county, comments, addtime, userId, UserName, update_time, delFlag from company
+        select id, companyName, relationName, relationTel, address, bankName, acountsName, bankNo, surplusMoney, companyType, salesman, leader, leaderTel, region, salesManager, province, city, county, comments, addtime, userId, UserName, update_time, delFlag from company
     </sql>
 
     <select id="selectCompanyList" parameterType="Company" resultMap="CompanyResult">
         <include refid="selectCompanyVo"/>
         <where>  
-            <if test="company != null  and company != ''"> and company = #{company}</if>
+            <if test="companyName != null  and companyName != ''"> and companyName like concat('%', #{companyName}, '%')</if>
             <if test="relationName != null  and relationName != ''"> and relationName like concat('%', #{relationName}, '%')</if>
             <if test="relationTel != null  and relationTel != ''"> and relationTel = #{relationTel}</if>
             <if test="address != null  and address != ''"> and address = #{address}</if>
@@ -75,7 +75,7 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
     <insert id="insertCompany" parameterType="Company" useGeneratedKeys="true" keyProperty="id">
         insert into company
         <trim prefix="(" suffix=")" suffixOverrides=",">
-            <if test="company != null">company,</if>
+            <if test="companyName != null">companyName,</if>
             <if test="relationName != null">relationName,</if>
             <if test="relationTel != null">relationTel,</if>
             <if test="address != null">address,</if>
@@ -100,7 +100,7 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
             <if test="delFlag != null">delFlag,</if>
          </trim>
         <trim prefix="values (" suffix=")" suffixOverrides=",">
-            <if test="company != null">#{company},</if>
+            <if test="companyName != null">#{companyName},</if>
             <if test="relationName != null">#{relationName},</if>
             <if test="relationTel != null">#{relationTel},</if>
             <if test="address != null">#{address},</if>
@@ -129,7 +129,7 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
     <update id="updateCompany" parameterType="Company">
         update company
         <trim prefix="SET" suffixOverrides=",">
-            <if test="company != null">company = #{company},</if>
+            <if test="companyName != null">companyName = #{companyName},</if>
             <if test="relationName != null">relationName = #{relationName},</if>
             <if test="relationTel != null">relationTel = #{relationTel},</if>
             <if test="address != null">address = #{address},</if>

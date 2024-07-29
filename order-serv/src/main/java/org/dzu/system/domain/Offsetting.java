@@ -8,7 +8,7 @@ import org.dzu.common.core.domain.BaseEntity;
 import org.dzu.common.annotation.DecimalMaxDigits;
 import org.dzu.common.annotation.OnlyZeroOrOne;
 /**
- * 资金调整单信息对象 offsetting
+ * 对冲账信息对象 Offsetting
  * 
  * @author ml
  * @date 2024-07-29
@@ -38,7 +38,7 @@ public class Offsetting extends BaseEntity
 
     /** 公司 */
     @Excel(name = "公司")
-    private String company;
+    private String companyName;
 
     /** 公司ID */
     @Excel(name = "公司ID")
@@ -113,14 +113,14 @@ public class Offsetting extends BaseEntity
     {
         return moneyAmount;
     }
-    public void setCompany(String company) 
+    public void setCompanyName(String companyName) 
     {
-        this.company = company;
+        this.companyName = companyName;
     }
 
-    public String getCompany() 
+    public String getCompanyName() 
     {
-        return company;
+        return companyName;
     }
     public void setCompanyId(Long companyId) 
     {
@@ -194,7 +194,7 @@ public class Offsetting extends BaseEntity
             .append("operateDate", getOperateDate())
             .append("operateType", getOperateType())
             .append("moneyAmount", getMoneyAmount())
-            .append("company", getCompany())
+            .append("companyName", getCompanyName())
             .append("companyId", getCompanyId())
             .append("companyType", getCompanyType())
             .append("comments", getComments())

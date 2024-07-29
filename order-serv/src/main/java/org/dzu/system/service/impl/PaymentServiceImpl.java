@@ -12,7 +12,7 @@ import org.dzu.system.service.IPaymentService;
  
 import org.dzu.common.constant.DelConstants;
 /**
- * 资产管理-收付款:收付款信息Service业务层处理
+ * 付款信息Service业务层处理
  *
  * @author ml
  * @date 2024-07-29
@@ -24,10 +24,10 @@ public class PaymentServiceImpl implements IPaymentService
     private PaymentMapper paymentMapper;
 
     /**
-     * 查询资产管理-收付款:收付款信息
+     * 查询付款信息
      *
-     * @param id 资产管理-收付款:收付款信息主键
-     * @return 资产管理-收付款:收付款信息
+     * @param id 付款信息主键
+     * @return 付款信息
      */
     @Override
     public Payment selectPaymentById(Long id)
@@ -36,10 +36,10 @@ public class PaymentServiceImpl implements IPaymentService
     }
 
     /**
-     * 查询资产管理-收付款:收付款信息列表
+     * 查询付款信息列表
      *
-     * @param payment 资产管理-收付款:收付款信息
-     * @return 资产管理-收付款:收付款信息
+     * @param payment 付款信息
+     * @return 付款信息
      */
     @Override
     public List<Payment> selectPaymentList(Payment payment)
@@ -48,9 +48,9 @@ public class PaymentServiceImpl implements IPaymentService
     }
 
     /**
-     * 新增资产管理-收付款:收付款信息
+     * 新增付款信息
      *
-     * @param payment 资产管理-收付款:收付款信息
+     * @param payment 付款信息
      * @return 结果
      */
     @Override
@@ -64,9 +64,9 @@ public class PaymentServiceImpl implements IPaymentService
     }
 
     /**
-     * 修改资产管理-收付款:收付款信息
+     * 修改付款信息
      * 
-     * @param payment 资产管理-收付款:收付款信息
+     * @param payment 付款信息
      * @return 结果
      */
     @Override
@@ -79,9 +79,9 @@ public class PaymentServiceImpl implements IPaymentService
     }
 
     /**
-     * 批量删除资产管理-收付款:收付款信息
+     * 批量删除付款信息
      * 
-     * @param ids 需要删除的资产管理-收付款:收付款信息主键
+     * @param ids 需要删除的付款信息主键
      * @return 结果
      */
     @Override
@@ -91,9 +91,9 @@ public class PaymentServiceImpl implements IPaymentService
     }
 
     /**
-     * 删除资产管理-收付款:收付款信息信息
+     * 删除付款信息信息
      * 
-     * @param id 资产管理-收付款:收付款信息主键
+     * @param id 付款信息主键
      * @return 结果
      */
     @Override

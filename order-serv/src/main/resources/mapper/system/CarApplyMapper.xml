@@ -1,0 +1,197 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="org.dzu.system.mapper.CarApplyMapper">
+    
+    <resultMap type="CarApply" id="CarApplyResult">
+        <result property="id"    column="id"    />
+        <result property="bTripId"    column="bTripId"    />
+        <result property="applyDate"    column="applyDate"    />
+        <result property="applyUser"    column="applyUser"    />
+        <result property="department"    column="department"    />
+        <result property="carNo"    column="carNo"    />
+        <result property="isUseOilCard"    column="isUseOilCard"    />
+        <result property="peers"    column="peers"    />
+        <result property="startTime"    column="startTime"    />
+        <result property="endTime"    column="endTime"    />
+        <result property="ApplyPurpose"    column="ApplyPurpose"    />
+        <result property="startMile"    column="startMile"    />
+        <result property="startCarState"    column="startCarState"    />
+        <result property="endMile"    column="endMile"    />
+        <result property="endCarState"    column="endCarState"    />
+        <result property="miles"    column="miles"    />
+        <result property="backStopPlace"    column="backStopPlace"    />
+        <result property="violationsCount"    column="violationsCount"    />
+        <result property="fine"    column="fine"    />
+        <result property="isMaintenance"    column="isMaintenance"    />
+        <result property="maintenanceMoney"    column="maintenanceMoney"    />
+        <result property="refuelingFrequency"    column="refuelingFrequency"    />
+        <result property="dispatchPerson"    column="dispatchPerson"    />
+        <result property="comments"    column="comments"    />
+        <result property="addtime"    column="addtime"    />
+        <result property="userId"    column="userId"    />
+        <result property="UserName"    column="UserName"    />
+        <result property="updateTime"    column="update_time"    />
+        <result property="delFlag"    column="delFlag"    />
+        <result property="path"    column="path"    />
+    </resultMap>
+
+
+ 
+
+    <sql id="selectCarApplyVo">
+        select id, bTripId, applyDate, applyUser, department, carNo, isUseOilCard, peers, startTime, endTime, ApplyPurpose, startMile, startCarState, endMile, endCarState, miles, backStopPlace, violationsCount, fine, isMaintenance, maintenanceMoney, refuelingFrequency, dispatchPerson, comments, addtime, userId, UserName, update_time, delFlag, path from carApply
+    </sql>
+
+    <select id="selectCarApplyList" parameterType="CarApply" resultMap="CarApplyResult">
+        <include refid="selectCarApplyVo"/>
+        <where>  
+            <if test="bTripId != null  and bTripId != ''"> and bTripId = #{bTripId}</if>
+            <if test="applyDate != null  and applyDate != ''"> and applyDate = #{applyDate}</if>
+            <if test="applyUser != null  and applyUser != ''"> and applyUser = #{applyUser}</if>
+            <if test="department != null  and department != ''"> and department = #{department}</if>
+            <if test="carNo != null  and carNo != ''"> and carNo = #{carNo}</if>
+            <if test="isUseOilCard != null "> and isUseOilCard = #{isUseOilCard}</if>
+            <if test="peers != null  and peers != ''"> and peers = #{peers}</if>
+            <if test="startTime != null  and startTime != ''"> and startTime = #{startTime}</if>
+            <if test="endTime != null  and endTime != ''"> and endTime = #{endTime}</if>
+            <if test="ApplyPurpose != null  and ApplyPurpose != ''"> and ApplyPurpose = #{ApplyPurpose}</if>
+            <if test="startMile != null  and startMile != ''"> and startMile = #{startMile}</if>
+            <if test="startCarState != null  and startCarState != ''"> and startCarState = #{startCarState}</if>
+            <if test="endMile != null  and endMile != ''"> and endMile = #{endMile}</if>
+            <if test="endCarState != null  and endCarState != ''"> and endCarState = #{endCarState}</if>
+            <if test="miles != null  and miles != ''"> and miles = #{miles}</if>
+            <if test="backStopPlace != null  and backStopPlace != ''"> and backStopPlace = #{backStopPlace}</if>
+            <if test="violationsCount != null  and violationsCount != ''"> and violationsCount = #{violationsCount}</if>
+            <if test="fine != null  and fine != ''"> and fine = #{fine}</if>
+            <if test="isMaintenance != null  and isMaintenance != ''"> and isMaintenance = #{isMaintenance}</if>
+            <if test="maintenanceMoney != null  and maintenanceMoney != ''"> and maintenanceMoney = #{maintenanceMoney}</if>
+            <if test="refuelingFrequency != null  and refuelingFrequency != ''"> and refuelingFrequency = #{refuelingFrequency}</if>
+            <if test="dispatchPerson != null  and dispatchPerson != ''"> and dispatchPerson = #{dispatchPerson}</if>
+            <if test="comments != null  and comments != ''"> and comments = #{comments}</if>
+            <if test="addtime != null  and addtime != ''"> and addtime = #{addtime}</if>
+            <if test="userId != null "> and userId = #{userId}</if>
+            <if test="UserName != null  and UserName != ''"> and UserName like concat('%', #{UserName}, '%')</if>
+            and delFlag = 0
+            <if test="path != null  and path != ''"> and path = #{path}</if>
+        </where>
+    </select>
+    
+    <select id="selectCarApplyById" parameterType="Long" resultMap="CarApplyResult">
+        <include refid="selectCarApplyVo"/>
+        where id = #{id}
+        and delFlag = 0
+    </select>
+
+    <insert id="insertCarApply" parameterType="CarApply" useGeneratedKeys="true" keyProperty="id">
+        insert into carApply
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="bTripId != null">bTripId,</if>
+            <if test="applyDate != null">applyDate,</if>
+            <if test="applyUser != null">applyUser,</if>
+            <if test="department != null">department,</if>
+            <if test="carNo != null">carNo,</if>
+            <if test="isUseOilCard != null">isUseOilCard,</if>
+            <if test="peers != null">peers,</if>
+            <if test="startTime != null">startTime,</if>
+            <if test="endTime != null">endTime,</if>
+            <if test="ApplyPurpose != null">ApplyPurpose,</if>
+            <if test="startMile != null">startMile,</if>
+            <if test="startCarState != null">startCarState,</if>
+            <if test="endMile != null">endMile,</if>
+            <if test="endCarState != null">endCarState,</if>
+            <if test="miles != null">miles,</if>
+            <if test="backStopPlace != null">backStopPlace,</if>
+            <if test="violationsCount != null">violationsCount,</if>
+            <if test="fine != null">fine,</if>
+            <if test="isMaintenance != null">isMaintenance,</if>
+            <if test="maintenanceMoney != null">maintenanceMoney,</if>
+            <if test="refuelingFrequency != null">refuelingFrequency,</if>
+            <if test="dispatchPerson != null">dispatchPerson,</if>
+            <if test="comments != null">comments,</if>
+            <if test="addtime != null">addtime,</if>
+            <if test="userId != null">userId,</if>
+            <if test="UserName != null">UserName,</if>
+            <if test="updateTime != null">update_time,</if>
+            <if test="delFlag != null">delFlag,</if>
+            <if test="path != null">path,</if>
+         </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="bTripId != null">#{bTripId},</if>
+            <if test="applyDate != null">#{applyDate},</if>
+            <if test="applyUser != null">#{applyUser},</if>
+            <if test="department != null">#{department},</if>
+            <if test="carNo != null">#{carNo},</if>
+            <if test="isUseOilCard != null">#{isUseOilCard},</if>
+            <if test="peers != null">#{peers},</if>
+            <if test="startTime != null">#{startTime},</if>
+            <if test="endTime != null">#{endTime},</if>
+            <if test="ApplyPurpose != null">#{ApplyPurpose},</if>
+            <if test="startMile != null">#{startMile},</if>
+            <if test="startCarState != null">#{startCarState},</if>
+            <if test="endMile != null">#{endMile},</if>
+            <if test="endCarState != null">#{endCarState},</if>
+            <if test="miles != null">#{miles},</if>
+            <if test="backStopPlace != null">#{backStopPlace},</if>
+            <if test="violationsCount != null">#{violationsCount},</if>
+            <if test="fine != null">#{fine},</if>
+            <if test="isMaintenance != null">#{isMaintenance},</if>
+            <if test="maintenanceMoney != null">#{maintenanceMoney},</if>
+            <if test="refuelingFrequency != null">#{refuelingFrequency},</if>
+            <if test="dispatchPerson != null">#{dispatchPerson},</if>
+            <if test="comments != null">#{comments},</if>
+            <if test="addtime != null">#{addtime},</if>
+            <if test="userId != null">#{userId},</if>
+            <if test="UserName != null">#{UserName},</if>
+            <if test="updateTime != null">#{updateTime},</if>
+            <if test="delFlag != null">#{delFlag},</if>
+            <if test="path != null">#{path},</if>
+         </trim>
+    </insert>
+
+    <update id="updateCarApply" parameterType="CarApply">
+        update carApply
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="bTripId != null">bTripId = #{bTripId},</if>
+            <if test="applyDate != null">applyDate = #{applyDate},</if>
+            <if test="applyUser != null">applyUser = #{applyUser},</if>
+            <if test="department != null">department = #{department},</if>
+            <if test="carNo != null">carNo = #{carNo},</if>
+            <if test="isUseOilCard != null">isUseOilCard = #{isUseOilCard},</if>
+            <if test="peers != null">peers = #{peers},</if>
+            <if test="startTime != null">startTime = #{startTime},</if>
+            <if test="endTime != null">endTime = #{endTime},</if>
+            <if test="ApplyPurpose != null">ApplyPurpose = #{ApplyPurpose},</if>
+            <if test="startMile != null">startMile = #{startMile},</if>
+            <if test="startCarState != null">startCarState = #{startCarState},</if>
+            <if test="endMile != null">endMile = #{endMile},</if>
+            <if test="endCarState != null">endCarState = #{endCarState},</if>
+            <if test="miles != null">miles = #{miles},</if>
+            <if test="backStopPlace != null">backStopPlace = #{backStopPlace},</if>
+            <if test="violationsCount != null">violationsCount = #{violationsCount},</if>
+            <if test="fine != null">fine = #{fine},</if>
+            <if test="isMaintenance != null">isMaintenance = #{isMaintenance},</if>
+            <if test="maintenanceMoney != null">maintenanceMoney = #{maintenanceMoney},</if>
+            <if test="refuelingFrequency != null">refuelingFrequency = #{refuelingFrequency},</if>
+            <if test="dispatchPerson != null">dispatchPerson = #{dispatchPerson},</if>
+            <if test="comments != null">comments = #{comments},</if>
+            <if test="addtime != null">addtime = #{addtime},</if>
+            <if test="userId != null">userId = #{userId},</if>
+            <if test="UserName != null">UserName = #{UserName},</if>
+            <if test="updateTime != null">update_time = #{updateTime},</if>
+            <if test="delFlag != null">delFlag = #{delFlag},</if>
+            <if test="path != null">path = #{path},</if>
+        </trim>
+        where id = #{id}
+    </update>
+    <update id="deleteCarApplyById" parameterType="Long">
+        update carApply set delFlag = 1 where id = #{id}
+    </update>
+    <update id="deleteCarApplyByIds" parameterType="String">
+        update carApply set delFlag = 1 where id in
+        <foreach item="id" collection="array" open="(" separator="," close=")">
+            #{id}
+        </foreach>
+    </update>
+</mapper>

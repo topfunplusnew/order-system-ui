@@ -23,22 +23,22 @@ import org.dzu.common.utils.poi.ExcelUtil;
 import org.dzu.common.core.page.TableDataInfo;
 
 /**
- * 订单备份信息Controller
+ * 订单备份Controller
  * 
  * @author ml
  * @date 2024-07-29
  */
 @RestController
-@RequestMapping("/system/GoodsorderBack")
+@RequestMapping("/system/goodsOrderBack")
 public class GoodsorderBackController extends BaseController
 {
     @Autowired
     private IGoodsorderBackService goodsorderBackService;
 
     /**
-     * 查询订单备份信息列表
+     * 查询订单备份列表
      */
-    @PreAuthorize("@ss.hasPermi('system:GoodsorderBack:list')")
+    @PreAuthorize("@ss.hasPermi('system:back:list')")
     @GetMapping("/list")
     public TableDataInfo list(GoodsorderBack goodsorderBack)
     {
@@ -48,22 +48,22 @@ public class GoodsorderBackController extends BaseController
     }
 
     /**
-     * 导出订单备份信息列表
+     * 导出订单备份列表
      */
-    @PreAuthorize("@ss.hasPermi('system:GoodsorderBack:export')")
-    @Log(title = "订单备份信息", businessType = BusinessType.EXPORT)
+    @PreAuthorize("@ss.hasPermi('system:back:export')")
+    @Log(title = "订单备份", businessType = BusinessType.EXPORT)
     @PostMapping("/export")
     public void export(HttpServletResponse response, GoodsorderBack goodsorderBack)
     {
         List<GoodsorderBack> list = goodsorderBackService.selectGoodsorderBackList(goodsorderBack);
         ExcelUtil<GoodsorderBack> util = new ExcelUtil<GoodsorderBack>(GoodsorderBack.class);
-        util.exportExcel(response, list, "订单备份信息数据");
+        util.exportExcel(response, list, "订单备份数据");
     }
 
     /**
-     * 获取订单备份信息详细信息
+     * 获取订单备份详细信息
      */
-    @PreAuthorize("@ss.hasPermi('system:GoodsorderBack:query')")
+    @PreAuthorize("@ss.hasPermi('system:back:query')")
     @GetMapping(value = "/{id}")
     public AjaxResult getInfo(@PathVariable("id") Long id)
     {
@@ -71,10 +71,10 @@ public class GoodsorderBackController extends BaseController
     }
 
     /**
-     * 新增订单备份信息
+     * 新增订单备份
      */
-    @PreAuthorize("@ss.hasPermi('system:GoodsorderBack:add')")
-    @Log(title = "订单备份信息", businessType = BusinessType.INSERT)
+    @PreAuthorize("@ss.hasPermi('system:back:add')")
+    @Log(title = "订单备份", businessType = BusinessType.INSERT)
     @PostMapping
     public AjaxResult add(@Validated @RequestBody GoodsorderBack goodsorderBack)
     {
@@ -82,10 +82,10 @@ public class GoodsorderBackController extends BaseController
     }
 
     /**
-     * 修改订单备份信息
+     * 修改订单备份
      */
-    @PreAuthorize("@ss.hasPermi('system:GoodsorderBack:edit')")
-    @Log(title = "订单备份信息", businessType = BusinessType.UPDATE)
+    @PreAuthorize("@ss.hasPermi('system:back:edit')")
+    @Log(title = "订单备份", businessType = BusinessType.UPDATE)
     @PutMapping
     public AjaxResult edit(@Validated @RequestBody GoodsorderBack goodsorderBack)
     {
@@ -93,10 +93,10 @@ public class GoodsorderBackController extends BaseController
     }
 
     /**
-     * 删除订单备份信息
+     * 删除订单备份
      */
-    @PreAuthorize("@ss.hasPermi('system:GoodsorderBack:remove')")
-    @Log(title = "订单备份信息", businessType = BusinessType.DELETE)
+    @PreAuthorize("@ss.hasPermi('system:back:remove')")
+    @Log(title = "订单备份", businessType = BusinessType.DELETE)
 	@DeleteMapping("/{ids}")
     public AjaxResult remove(@PathVariable Long[] ids)
     {

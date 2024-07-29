@@ -12,7 +12,7 @@ import org.dzu.system.service.IRebateService;
  
 import org.dzu.common.constant.DelConstants;
 /**
- * 供应商返利Service业务层处理
+ * 返利回扣Service业务层处理
  *
  * @author ml
  * @date 2024-07-29
@@ -24,10 +24,10 @@ public class RebateServiceImpl implements IRebateService
     private RebateMapper rebateMapper;
 
     /**
-     * 查询供应商返利
+     * 查询返利回扣
      *
-     * @param id 供应商返利主键
-     * @return 供应商返利
+     * @param id 返利回扣主键
+     * @return 返利回扣
      */
     @Override
     public Rebate selectRebateById(Long id)
@@ -36,10 +36,10 @@ public class RebateServiceImpl implements IRebateService
     }
 
     /**
-     * 查询供应商返利列表
+     * 查询返利回扣列表
      *
-     * @param rebate 供应商返利
-     * @return 供应商返利
+     * @param rebate 返利回扣
+     * @return 返利回扣
      */
     @Override
     public List<Rebate> selectRebateList(Rebate rebate)
@@ -48,9 +48,9 @@ public class RebateServiceImpl implements IRebateService
     }
 
     /**
-     * 新增供应商返利
+     * 新增返利回扣
      *
-     * @param rebate 供应商返利
+     * @param rebate 返利回扣
      * @return 结果
      */
     @Override
@@ -64,9 +64,9 @@ public class RebateServiceImpl implements IRebateService
     }
 
     /**
-     * 修改供应商返利
+     * 修改返利回扣
      * 
-     * @param rebate 供应商返利
+     * @param rebate 返利回扣
      * @return 结果
      */
     @Override
@@ -79,9 +79,9 @@ public class RebateServiceImpl implements IRebateService
     }
 
     /**
-     * 批量删除供应商返利
+     * 批量删除返利回扣
      * 
-     * @param ids 需要删除的供应商返利主键
+     * @param ids 需要删除的返利回扣主键
      * @return 结果
      */
     @Override
@@ -91,9 +91,9 @@ public class RebateServiceImpl implements IRebateService
     }
 
     /**
-     * 删除供应商返利信息
+     * 删除返利回扣信息
      * 
-     * @param id 供应商返利主键
+     * @param id 返利回扣主键
      * @return 结果
      */
     @Override

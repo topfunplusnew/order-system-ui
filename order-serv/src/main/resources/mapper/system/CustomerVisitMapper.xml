@@ -1,0 +1,172 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="org.dzu.system.mapper.CustomerVisitMapper">
+    
+    <resultMap type="CustomerVisit" id="CustomerVisitResult">
+        <result property="id"    column="id"    />
+        <result property="province"    column="province"    />
+        <result property="city"    column="city"    />
+        <result property="county"    column="county"    />
+        <result property="customer"    column="customer"    />
+        <result property="leaderName"    column="leaderName"    />
+        <result property="LeaderTel"    column="LeaderTel"    />
+        <result property="equipment"    column="equipment"    />
+        <result property="competitor"    column="competitor"    />
+        <result property="localDealer"    column="localDealer"    />
+        <result property="monthlyConsumption"    column="monthlyConsumption"    />
+        <result property="whiteGlassFactory"    column="whiteGlassFactory"    />
+        <result property="loweGlassConsumption"    column="loweGlassConsumption"    />
+        <result property="colorGlassConsumption"    column="colorGlassConsumption"    />
+        <result property="specialGlassConsumption"    column="specialGlassConsumption"    />
+        <result property="comments"    column="comments"    />
+        <result property="addtime"    column="addtime"    />
+        <result property="userId"    column="userId"    />
+        <result property="UserName"    column="UserName"    />
+        <result property="updateTime"    column="update_time"    />
+        <result property="visitDate"    column="visitDate"    />
+        <result property="checkState"    column="checkState"    />
+        <result property="checkUserID"    column="checkUserID"    />
+        <result property="checkUserName"    column="checkUserName"    />
+        <result property="delFlag"    column="delFlag"    />
+    </resultMap>
+
+
+ 
+
+    <sql id="selectCustomerVisitVo">
+        select id, province, city, county, customer, leaderName, LeaderTel, equipment, competitor, localDealer, monthlyConsumption, whiteGlassFactory, loweGlassConsumption, colorGlassConsumption, specialGlassConsumption, comments, addtime, userId, UserName, update_time, visitDate, checkState, checkUserID, checkUserName, delFlag from CustomerVisit
+    </sql>
+
+    <select id="selectCustomerVisitList" parameterType="CustomerVisit" resultMap="CustomerVisitResult">
+        <include refid="selectCustomerVisitVo"/>
+        <where>  
+            <if test="province != null  and province != ''"> and province = #{province}</if>
+            <if test="city != null  and city != ''"> and city = #{city}</if>
+            <if test="county != null  and county != ''"> and county = #{county}</if>
+            <if test="customer != null  and customer != ''"> and customer = #{customer}</if>
+            <if test="leaderName != null  and leaderName != ''"> and leaderName like concat('%', #{leaderName}, '%')</if>
+            <if test="LeaderTel != null  and LeaderTel != ''"> and LeaderTel = #{LeaderTel}</if>
+            <if test="equipment != null  and equipment != ''"> and equipment = #{equipment}</if>
+            <if test="competitor != null  and competitor != ''"> and competitor = #{competitor}</if>
+            <if test="localDealer != null  and localDealer != ''"> and localDealer = #{localDealer}</if>
+            <if test="monthlyConsumption != null  and monthlyConsumption != ''"> and monthlyConsumption = #{monthlyConsumption}</if>
+            <if test="whiteGlassFactory != null  and whiteGlassFactory != ''"> and whiteGlassFactory = #{whiteGlassFactory}</if>
+            <if test="loweGlassConsumption != null  and loweGlassConsumption != ''"> and loweGlassConsumption = #{loweGlassConsumption}</if>
+            <if test="colorGlassConsumption != null  and colorGlassConsumption != ''"> and colorGlassConsumption = #{colorGlassConsumption}</if>
+            <if test="specialGlassConsumption != null  and specialGlassConsumption != ''"> and specialGlassConsumption = #{specialGlassConsumption}</if>
+            <if test="comments != null  and comments != ''"> and comments = #{comments}</if>
+            <if test="addtime != null  and addtime != ''"> and addtime = #{addtime}</if>
+            <if test="userId != null "> and userId = #{userId}</if>
+            <if test="UserName != null  and UserName != ''"> and UserName like concat('%', #{UserName}, '%')</if>
+            <if test="visitDate != null  and visitDate != ''"> and visitDate = #{visitDate}</if>
+            <if test="checkState != null "> and checkState = #{checkState}</if>
+            <if test="checkUserID != null "> and checkUserID = #{checkUserID}</if>
+            <if test="checkUserName != null  and checkUserName != ''"> and checkUserName like concat('%', #{checkUserName}, '%')</if>
+            and delFlag = 0
+        </where>
+    </select>
+    
+    <select id="selectCustomerVisitById" parameterType="Long" resultMap="CustomerVisitResult">
+        <include refid="selectCustomerVisitVo"/>
+        where id = #{id}
+        and delFlag = 0
+    </select>
+
+    <insert id="insertCustomerVisit" parameterType="CustomerVisit" useGeneratedKeys="true" keyProperty="id">
+        insert into CustomerVisit
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="province != null">province,</if>
+            <if test="city != null">city,</if>
+            <if test="county != null">county,</if>
+            <if test="customer != null">customer,</if>
+            <if test="leaderName != null">leaderName,</if>
+            <if test="LeaderTel != null">LeaderTel,</if>
+            <if test="equipment != null">equipment,</if>
+            <if test="competitor != null">competitor,</if>
+            <if test="localDealer != null">localDealer,</if>
+            <if test="monthlyConsumption != null">monthlyConsumption,</if>
+            <if test="whiteGlassFactory != null">whiteGlassFactory,</if>
+            <if test="loweGlassConsumption != null">loweGlassConsumption,</if>
+            <if test="colorGlassConsumption != null">colorGlassConsumption,</if>
+            <if test="specialGlassConsumption != null">specialGlassConsumption,</if>
+            <if test="comments != null">comments,</if>
+            <if test="addtime != null">addtime,</if>
+            <if test="userId != null">userId,</if>
+            <if test="UserName != null">UserName,</if>
+            <if test="updateTime != null">update_time,</if>
+            <if test="visitDate != null">visitDate,</if>
+            <if test="checkState != null">checkState,</if>
+            <if test="checkUserID != null">checkUserID,</if>
+            <if test="checkUserName != null">checkUserName,</if>
+            <if test="delFlag != null">delFlag,</if>
+         </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="province != null">#{province},</if>
+            <if test="city != null">#{city},</if>
+            <if test="county != null">#{county},</if>
+            <if test="customer != null">#{customer},</if>
+            <if test="leaderName != null">#{leaderName},</if>
+            <if test="LeaderTel != null">#{LeaderTel},</if>
+            <if test="equipment != null">#{equipment},</if>
+            <if test="competitor != null">#{competitor},</if>
+            <if test="localDealer != null">#{localDealer},</if>
+            <if test="monthlyConsumption != null">#{monthlyConsumption},</if>
+            <if test="whiteGlassFactory != null">#{whiteGlassFactory},</if>
+            <if test="loweGlassConsumption != null">#{loweGlassConsumption},</if>
+            <if test="colorGlassConsumption != null">#{colorGlassConsumption},</if>
+            <if test="specialGlassConsumption != null">#{specialGlassConsumption},</if>
+            <if test="comments != null">#{comments},</if>
+            <if test="addtime != null">#{addtime},</if>
+            <if test="userId != null">#{userId},</if>
+            <if test="UserName != null">#{UserName},</if>
+            <if test="updateTime != null">#{updateTime},</if>
+            <if test="visitDate != null">#{visitDate},</if>
+            <if test="checkState != null">#{checkState},</if>
+            <if test="checkUserID != null">#{checkUserID},</if>
+            <if test="checkUserName != null">#{checkUserName},</if>
+            <if test="delFlag != null">#{delFlag},</if>
+         </trim>
+    </insert>
+
+    <update id="updateCustomerVisit" parameterType="CustomerVisit">
+        update CustomerVisit
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="province != null">province = #{province},</if>
+            <if test="city != null">city = #{city},</if>
+            <if test="county != null">county = #{county},</if>
+            <if test="customer != null">customer = #{customer},</if>
+            <if test="leaderName != null">leaderName = #{leaderName},</if>
+            <if test="LeaderTel != null">LeaderTel = #{LeaderTel},</if>
+            <if test="equipment != null">equipment = #{equipment},</if>
+            <if test="competitor != null">competitor = #{competitor},</if>
+            <if test="localDealer != null">localDealer = #{localDealer},</if>
+            <if test="monthlyConsumption != null">monthlyConsumption = #{monthlyConsumption},</if>
+            <if test="whiteGlassFactory != null">whiteGlassFactory = #{whiteGlassFactory},</if>
+            <if test="loweGlassConsumption != null">loweGlassConsumption = #{loweGlassConsumption},</if>
+            <if test="colorGlassConsumption != null">colorGlassConsumption = #{colorGlassConsumption},</if>
+            <if test="specialGlassConsumption != null">specialGlassConsumption = #{specialGlassConsumption},</if>
+            <if test="comments != null">comments = #{comments},</if>
+            <if test="addtime != null">addtime = #{addtime},</if>
+            <if test="userId != null">userId = #{userId},</if>
+            <if test="UserName != null">UserName = #{UserName},</if>
+            <if test="updateTime != null">update_time = #{updateTime},</if>
+            <if test="visitDate != null">visitDate = #{visitDate},</if>
+            <if test="checkState != null">checkState = #{checkState},</if>
+            <if test="checkUserID != null">checkUserID = #{checkUserID},</if>
+            <if test="checkUserName != null">checkUserName = #{checkUserName},</if>
+            <if test="delFlag != null">delFlag = #{delFlag},</if>
+        </trim>
+        where id = #{id}
+    </update>
+    <update id="deleteCustomerVisitById" parameterType="Long">
+        update CustomerVisit set delFlag = 1 where id = #{id}
+    </update>
+    <update id="deleteCustomerVisitByIds" parameterType="String">
+        update CustomerVisit set delFlag = 1 where id in
+        <foreach item="id" collection="array" open="(" separator="," close=")">
+            #{id}
+        </foreach>
+    </update>
+</mapper>

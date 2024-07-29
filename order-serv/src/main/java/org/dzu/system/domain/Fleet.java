@@ -7,7 +7,7 @@ import org.dzu.common.core.domain.BaseEntity;
 
 import org.dzu.common.annotation.OnlyZeroOrOne;
 /**
- * 车队管理对象 fleet
+ * 车队对象 fleet
  * 
  * @author ml
  * @date 2024-07-29

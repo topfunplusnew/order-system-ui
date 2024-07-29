@@ -23,7 +23,7 @@ import org.dzu.common.utils.poi.ExcelUtil;
 import org.dzu.common.core.page.TableDataInfo;
 
 /**
- * 货物入库Controller
+ * 库存Controller
  * 
  * @author ml
  * @date 2024-07-29
@@ -36,7 +36,7 @@ public class InventoryController extends BaseController
     private IInventoryService inventoryService;
 
     /**
-     * 查询货物入库列表
+     * 查询库存列表
      */
     @PreAuthorize("@ss.hasPermi('system:inventory:list')")
     @GetMapping("/list")
@@ -48,20 +48,20 @@ public class InventoryController extends BaseController
     }
 
     /**
-     * 导出货物入库列表
+     * 导出库存列表
      */
     @PreAuthorize("@ss.hasPermi('system:inventory:export')")
-    @Log(title = "货物入库", businessType = BusinessType.EXPORT)
+    @Log(title = "库存", businessType = BusinessType.EXPORT)
     @PostMapping("/export")
     public void export(HttpServletResponse response, Inventory inventory)
     {
         List<Inventory> list = inventoryService.selectInventoryList(inventory);
         ExcelUtil<Inventory> util = new ExcelUtil<Inventory>(Inventory.class);
-        util.exportExcel(response, list, "货物入库数据");
+        util.exportExcel(response, list, "库存数据");
     }
 
     /**
-     * 获取货物入库详细信息
+     * 获取库存详细信息
      */
     @PreAuthorize("@ss.hasPermi('system:inventory:query')")
     @GetMapping(value = "/{id}")
@@ -71,10 +71,10 @@ public class InventoryController extends BaseController
     }
 
     /**
-     * 新增货物入库
+     * 新增库存
      */
     @PreAuthorize("@ss.hasPermi('system:inventory:add')")
-    @Log(title = "货物入库", businessType = BusinessType.INSERT)
+    @Log(title = "库存", businessType = BusinessType.INSERT)
     @PostMapping
     public AjaxResult add(@Validated @RequestBody Inventory inventory)
     {
@@ -82,10 +82,10 @@ public class InventoryController extends BaseController
     }
 
     /**
-     * 修改货物入库
+     * 修改库存
      */
     @PreAuthorize("@ss.hasPermi('system:inventory:edit')")
-    @Log(title = "货物入库", businessType = BusinessType.UPDATE)
+    @Log(title = "库存", businessType = BusinessType.UPDATE)
     @PutMapping
     public AjaxResult edit(@Validated @RequestBody Inventory inventory)
     {
@@ -93,10 +93,10 @@ public class InventoryController extends BaseController
     }
 
     /**
-     * 删除货物入库
+     * 删除库存
      */
     @PreAuthorize("@ss.hasPermi('system:inventory:remove')")
-    @Log(title = "货物入库", businessType = BusinessType.DELETE)
+    @Log(title = "库存", businessType = BusinessType.DELETE)
 	@DeleteMapping("/{ids}")
     public AjaxResult remove(@PathVariable Long[] ids)
     {

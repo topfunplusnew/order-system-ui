@@ -1,0 +1,250 @@
+package org.dzu.system.domain;
+
+import org.apache.commons.lang3.builder.ToStringBuilder;
+import org.apache.commons.lang3.builder.ToStringStyle;
+import org.dzu.common.annotation.Excel;
+import org.dzu.common.core.domain.BaseEntity;
+
+import org.dzu.common.annotation.DecimalMaxDigits;
+import org.dzu.common.annotation.OnlyZeroOrOne;
+/**
+ * 发票购入信息对象 invoiceIn
+ * 
+ * @author ml
+ * @date 2024-07-29
+ */
+public class InvoiceIn extends BaseEntity
+{
+    private static final long serialVersionUID = 1L;
+
+    /** id */
+    private Long id;
+
+    /** 开票日期 */
+    @Excel(name = "开票日期")
+    private String invoiceDate;
+
+    /** 我方开票实体 */
+    @Excel(name = "我方开票实体")
+    private String invoiceObject;
+
+    /** 开票金额 */
+    @DecimalMaxDigits
+    private Double invoiceAmount;
+
+    /** 对方公司类别（客户、供应商,其他） */
+    @Excel(name = "对方公司类别", readConverterExp = "客=户、供应商,其他")
+    private String companyType;
+
+    /** 对方公司名称 */
+    @Excel(name = "对方公司名称")
+    private String companyName;
+
+    /** 对方公司ID */
+    @Excel(name = "对方公司ID")
+    private Long companyID;
+
+    /** 票据单位名称 */
+    @Excel(name = "票据单位名称")
+    private String invoiceCompanyName;
+
+    /** 票点 */
+    @DecimalMaxDigits
+    private Double ticketPoint;
+
+    /** 票点金额（开票金额*票点） */
+    @Excel(name = "票点金额", readConverterExp = "开=票金额*票点")
+    private Double ticketPointAmount;
+
+    /** 是否订单对应票点 */
+    @Excel(name = "是否订单对应票点")
+    private Long isOrderTax;
+
+    /** 备注 */
+    @Excel(name = "备注")
+    private String comments;
+
+    /** 添加时间 */
+    @Excel(name = "添加时间")
+    private String addtime;
+
+    /** 操作人员ID */
+    @Excel(name = "操作人员ID")
+    private Long userId;
+
+    /** 操作人员姓名 */
+    @Excel(name = "操作人员姓名")
+    private String UserName;
+
+    /** 删除标记 */
+    @OnlyZeroOrOne
+    private Long delFlag;
+
+    public void setId(Long id) 
+    {
+        this.id = id;
+    }
+
+    public Long getId() 
+    {
+        return id;
+    }
+    public void setInvoiceDate(String invoiceDate) 
+    {
+        this.invoiceDate = invoiceDate;
+    }
+
+    public String getInvoiceDate() 
+    {
+        return invoiceDate;
+    }
+    public void setInvoiceObject(String invoiceObject) 
+    {
+        this.invoiceObject = invoiceObject;
+    }
+
+    public String getInvoiceObject() 
+    {
+        return invoiceObject;
+    }
+    public void setInvoiceAmount(Double invoiceAmount) 
+    {
+        this.invoiceAmount = invoiceAmount;
+    }
+
+    public Double getInvoiceAmount() 
+    {
+        return invoiceAmount;
+    }
+    public void setCompanyType(String companyType) 
+    {
+        this.companyType = companyType;
+    }
+
+    public String getCompanyType() 
+    {
+        return companyType;
+    }
+    public void setCompanyName(String companyName) 
+    {
+        this.companyName = companyName;
+    }
+
+    public String getCompanyName() 
+    {
+        return companyName;
+    }
+    public void setCompanyID(Long companyID) 
+    {
+        this.companyID = companyID;
+    }
+
+    public Long getCompanyID() 
+    {
+        return companyID;
+    }
+    public void setInvoiceCompanyName(String invoiceCompanyName) 
+    {
+        this.invoiceCompanyName = invoiceCompanyName;
+    }
+
+    public String getInvoiceCompanyName() 
+    {
+        return invoiceCompanyName;
+    }
+    public void setTicketPoint(Double ticketPoint) 
+    {
+        this.ticketPoint = ticketPoint;
+    }
+
+    public Double getTicketPoint() 
+    {
+        return ticketPoint;
+    }
+    public void setTicketPointAmount(Double ticketPointAmount) 
+    {
+        this.ticketPointAmount = ticketPointAmount;
+    }
+
+    public Double getTicketPointAmount() 
+    {
+        return ticketPointAmount;
+    }
+    public void setIsOrderTax(Long isOrderTax) 
+    {
+        this.isOrderTax = isOrderTax;
+    }
+
+    public Long getIsOrderTax() 
+    {
+        return isOrderTax;
+    }
+    public void setComments(String comments) 
+    {
+        this.comments = comments;
+    }
+
+    public String getComments() 
+    {
+        return comments;
+    }
+    public void setAddtime(String addtime) 
+    {
+        this.addtime = addtime;
+    }
+
+    public String getAddtime() 
+    {
+        return addtime;
+    }
+    public void setUserId(Long userId) 
+    {
+        this.userId = userId;
+    }
+
+    public Long getUserId() 
+    {
+        return userId;
+    }
+    public void setUserName(String UserName) 
+    {
+        this.UserName = UserName;
+    }
+
+    public String getUserName() 
+    {
+        return UserName;
+    }
+    public void setDelFlag(Long delFlag) 
+    {
+        this.delFlag = delFlag;
+    }
+
+    public Long getDelFlag() 
+    {
+        return delFlag;
+    }
+
+    @Override
+    public String toString() {
+        return new ToStringBuilder(this,ToStringStyle.MULTI_LINE_STYLE)
+            .append("id", getId())
+            .append("invoiceDate", getInvoiceDate())
+            .append("invoiceObject", getInvoiceObject())
+            .append("invoiceAmount", getInvoiceAmount())
+            .append("companyType", getCompanyType())
+            .append("companyName", getCompanyName())
+            .append("companyID", getCompanyID())
+            .append("invoiceCompanyName", getInvoiceCompanyName())
+            .append("ticketPoint", getTicketPoint())
+            .append("ticketPointAmount", getTicketPointAmount())
+            .append("isOrderTax", getIsOrderTax())
+            .append("comments", getComments())
+            .append("addtime", getAddtime())
+            .append("userId", getUserId())
+            .append("UserName", getUserName())
+            .append("updateTime", getUpdateTime())
+            .append("delFlag", getDelFlag())
+            .toString();
+    }
+}

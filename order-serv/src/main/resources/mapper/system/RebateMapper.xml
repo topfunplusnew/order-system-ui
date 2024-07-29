@@ -13,7 +13,7 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         <result property="inAcountsName"    column="inAcountsName"    />
         <result property="inBankNo"    column="inBankNo"    />
         <result property="supplier"    column="supplier"    />
-        <result property="supplierId"    column="supplier_id"    />
+        <result property="supplierID"    column="supplierID"    />
         <result property="outAcountsName"    column="outAcountsName"    />
         <result property="outBankNo"    column="outBankNo"    />
         <result property="rebateReason"    column="rebateReason"    />
@@ -29,7 +29,7 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
  
 
     <sql id="selectRebateVo">
-        select id, ordersNo, rebateDate, rebate, rebateType, inAcountsName, inBankNo, supplier, supplier_id, outAcountsName, outBankNo, rebateReason, comments, addtime, userId, UserName, update_time, delFlag from rebate
+        select id, ordersNo, rebateDate, rebate, rebateType, inAcountsName, inBankNo, supplier, supplierID, outAcountsName, outBankNo, rebateReason, comments, addtime, userId, UserName, update_time, delFlag from Rebate
     </sql>
 
     <select id="selectRebateList" parameterType="Rebate" resultMap="RebateResult">
@@ -42,7 +42,7 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
             <if test="inAcountsName != null  and inAcountsName != ''"> and inAcountsName like concat('%', #{inAcountsName}, '%')</if>
             <if test="inBankNo != null  and inBankNo != ''"> and inBankNo = #{inBankNo}</if>
             <if test="supplier != null  and supplier != ''"> and supplier = #{supplier}</if>
-            <if test="supplierId != null "> and supplier_id = #{supplierId}</if>
+            <if test="supplierID != null "> and supplierID = #{supplierID}</if>
             <if test="outAcountsName != null  and outAcountsName != ''"> and outAcountsName like concat('%', #{outAcountsName}, '%')</if>
             <if test="outBankNo != null  and outBankNo != ''"> and outBankNo = #{outBankNo}</if>
             <if test="rebateReason != null  and rebateReason != ''"> and rebateReason = #{rebateReason}</if>
@@ -61,7 +61,7 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
     </select>
 
     <insert id="insertRebate" parameterType="Rebate" useGeneratedKeys="true" keyProperty="id">
-        insert into rebate
+        insert into Rebate
         <trim prefix="(" suffix=")" suffixOverrides=",">
             <if test="ordersNo != null">ordersNo,</if>
             <if test="rebateDate != null">rebateDate,</if>
@@ -70,7 +70,7 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
             <if test="inAcountsName != null">inAcountsName,</if>
             <if test="inBankNo != null">inBankNo,</if>
             <if test="supplier != null">supplier,</if>
-            <if test="supplierId != null">supplier_id,</if>
+            <if test="supplierID != null">supplierID,</if>
             <if test="outAcountsName != null">outAcountsName,</if>
             <if test="outBankNo != null">outBankNo,</if>
             <if test="rebateReason != null">rebateReason,</if>
@@ -89,7 +89,7 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
             <if test="inAcountsName != null">#{inAcountsName},</if>
             <if test="inBankNo != null">#{inBankNo},</if>
             <if test="supplier != null">#{supplier},</if>
-            <if test="supplierId != null">#{supplierId},</if>
+            <if test="supplierID != null">#{supplierID},</if>
             <if test="outAcountsName != null">#{outAcountsName},</if>
             <if test="outBankNo != null">#{outBankNo},</if>
             <if test="rebateReason != null">#{rebateReason},</if>
@@ -103,7 +103,7 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
     </insert>
 
     <update id="updateRebate" parameterType="Rebate">
-        update rebate
+        update Rebate
         <trim prefix="SET" suffixOverrides=",">
             <if test="ordersNo != null">ordersNo = #{ordersNo},</if>
             <if test="rebateDate != null">rebateDate = #{rebateDate},</if>
@@ -112,7 +112,7 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
             <if test="inAcountsName != null">inAcountsName = #{inAcountsName},</if>
             <if test="inBankNo != null">inBankNo = #{inBankNo},</if>
             <if test="supplier != null">supplier = #{supplier},</if>
-            <if test="supplierId != null">supplier_id = #{supplierId},</if>
+            <if test="supplierID != null">supplierID = #{supplierID},</if>
             <if test="outAcountsName != null">outAcountsName = #{outAcountsName},</if>
             <if test="outBankNo != null">outBankNo = #{outBankNo},</if>
             <if test="rebateReason != null">rebateReason = #{rebateReason},</if>
@@ -126,10 +126,10 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         where id = #{id}
     </update>
     <update id="deleteRebateById" parameterType="Long">
-        update rebate set delFlag = 1 where id = #{id}
+        update Rebate set delFlag = 1 where id = #{id}
     </update>
     <update id="deleteRebateByIds" parameterType="String">
-        update rebate set delFlag = 1 where id in
+        update Rebate set delFlag = 1 where id in
         <foreach item="id" collection="array" open="(" separator="," close=")">
             #{id}
         </foreach>

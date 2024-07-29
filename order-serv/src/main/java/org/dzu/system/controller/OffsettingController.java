@@ -23,22 +23,22 @@ import org.dzu.common.utils.poi.ExcelUtil;
 import org.dzu.common.core.page.TableDataInfo;
 
 /**
- * 资金调整单信息Controller
+ * 对冲账信息Controller
  * 
  * @author ml
  * @date 2024-07-29
  */
 @RestController
-@RequestMapping("/system/offsetting")
+@RequestMapping("/system/Offsetting")
 public class OffsettingController extends BaseController
 {
     @Autowired
     private IOffsettingService offsettingService;
 
     /**
-     * 查询资金调整单信息列表
+     * 查询对冲账信息列表
      */
-    @PreAuthorize("@ss.hasPermi('system:offsetting:list')")
+    @PreAuthorize("@ss.hasPermi('system:Offsetting:list')")
     @GetMapping("/list")
     public TableDataInfo list(Offsetting offsetting)
     {
@@ -48,22 +48,22 @@ public class OffsettingController extends BaseController
     }
 
     /**
-     * 导出资金调整单信息列表
+     * 导出对冲账信息列表
      */
-    @PreAuthorize("@ss.hasPermi('system:offsetting:export')")
-    @Log(title = "资金调整单信息", businessType = BusinessType.EXPORT)
+    @PreAuthorize("@ss.hasPermi('system:Offsetting:export')")
+    @Log(title = "对冲账信息", businessType = BusinessType.EXPORT)
     @PostMapping("/export")
     public void export(HttpServletResponse response, Offsetting offsetting)
     {
         List<Offsetting> list = offsettingService.selectOffsettingList(offsetting);
         ExcelUtil<Offsetting> util = new ExcelUtil<Offsetting>(Offsetting.class);
-        util.exportExcel(response, list, "资金调整单信息数据");
+        util.exportExcel(response, list, "对冲账信息数据");
     }
 
     /**
-     * 获取资金调整单信息详细信息
+     * 获取对冲账信息详细信息
      */
-    @PreAuthorize("@ss.hasPermi('system:offsetting:query')")
+    @PreAuthorize("@ss.hasPermi('system:Offsetting:query')")
     @GetMapping(value = "/{id}")
     public AjaxResult getInfo(@PathVariable("id") Long id)
     {
@@ -71,10 +71,10 @@ public class OffsettingController extends BaseController
     }
 
     /**
-     * 新增资金调整单信息
+     * 新增对冲账信息
      */
-    @PreAuthorize("@ss.hasPermi('system:offsetting:add')")
-    @Log(title = "资金调整单信息", businessType = BusinessType.INSERT)
+    @PreAuthorize("@ss.hasPermi('system:Offsetting:add')")
+    @Log(title = "对冲账信息", businessType = BusinessType.INSERT)
     @PostMapping
     public AjaxResult add(@Validated @RequestBody Offsetting offsetting)
     {
@@ -82,10 +82,10 @@ public class OffsettingController extends BaseController
     }
 
     /**
-     * 修改资金调整单信息
+     * 修改对冲账信息
      */
-    @PreAuthorize("@ss.hasPermi('system:offsetting:edit')")
-    @Log(title = "资金调整单信息", businessType = BusinessType.UPDATE)
+    @PreAuthorize("@ss.hasPermi('system:Offsetting:edit')")
+    @Log(title = "对冲账信息", businessType = BusinessType.UPDATE)
     @PutMapping
     public AjaxResult edit(@Validated @RequestBody Offsetting offsetting)
     {
@@ -93,10 +93,10 @@ public class OffsettingController extends BaseController
     }
 
     /**
-     * 删除资金调整单信息
+     * 删除对冲账信息
      */
-    @PreAuthorize("@ss.hasPermi('system:offsetting:remove')")
-    @Log(title = "资金调整单信息", businessType = BusinessType.DELETE)
+    @PreAuthorize("@ss.hasPermi('system:Offsetting:remove')")
+    @Log(title = "对冲账信息", businessType = BusinessType.DELETE)
 	@DeleteMapping("/{ids}")
     public AjaxResult remove(@PathVariable Long[] ids)
     {

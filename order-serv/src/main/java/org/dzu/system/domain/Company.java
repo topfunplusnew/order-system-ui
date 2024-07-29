@@ -8,7 +8,7 @@ import org.dzu.common.core.domain.BaseEntity;
 import org.dzu.common.annotation.DecimalMaxDigits;
 import org.dzu.common.annotation.OnlyZeroOrOne;
 /**
- * 客户管理对象 company
+ * 客户、供应商信息对象 company
  * 
  * @author ml
  * @date 2024-07-29
@@ -20,9 +20,9 @@ public class Company extends BaseEntity
     /** id */
     private Long id;
 
-    /** 公司 */
-    @Excel(name = "公司")
-    private String company;
+    /** 公司名称 */
+    @Excel(name = "公司名称")
+    private String companyName;
 
     /** 联系人 */
     @Excel(name = "联系人")
@@ -117,14 +117,14 @@ public class Company extends BaseEntity
     {
         return id;
     }
-    public void setCompany(String company) 
+    public void setCompanyName(String companyName) 
     {
-        this.company = company;
+        this.companyName = companyName;
     }
 
-    public String getCompany() 
+    public String getCompanyName() 
     {
-        return company;
+        return companyName;
     }
     public void setRelationName(String relationName) 
     {
@@ -320,7 +320,7 @@ public class Company extends BaseEntity
     public String toString() {
         return new ToStringBuilder(this,ToStringStyle.MULTI_LINE_STYLE)
             .append("id", getId())
-            .append("company", getCompany())
+            .append("companyName", getCompanyName())
             .append("relationName", getRelationName())
             .append("relationTel", getRelationTel())
             .append("address", getAddress())

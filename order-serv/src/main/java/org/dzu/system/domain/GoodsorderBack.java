@@ -7,7 +7,7 @@ import org.dzu.common.core.domain.BaseEntity;
 
 import org.dzu.common.annotation.OnlyZeroOrOne;
 /**
- * 订单备份信息对象 goodsorder_back
+ * 订单备份对象 goodsOrder_back
  * 
  * @author ml
  * @date 2024-07-29
@@ -37,11 +37,11 @@ public class GoodsorderBack extends BaseEntity
 
     /** 客户ID */
     @Excel(name = "客户ID")
-    private Long customerId;
+    private Long customerID;
 
     /** 陆运车辆ID */
     @Excel(name = "陆运车辆ID")
-    private Long landcarId;
+    private Long landCarID;
 
     /** 陆运车牌 */
     @Excel(name = "陆运车牌")
@@ -57,7 +57,7 @@ public class GoodsorderBack extends BaseEntity
 
     /** 海运车辆ID */
     @Excel(name = "海运车辆ID")
-    private Long seacarId;
+    private Long seaCarID;
 
     /** 海运车牌 */
     @Excel(name = "海运车牌")
@@ -212,23 +212,23 @@ public class GoodsorderBack extends BaseEntity
     {
         return customer;
     }
-    public void setCustomerId(Long customerId) 
+    public void setCustomerID(Long customerID) 
     {
-        this.customerId = customerId;
+        this.customerID = customerID;
     }
 
-    public Long getCustomerId() 
+    public Long getCustomerID() 
     {
-        return customerId;
+        return customerID;
     }
-    public void setLandcarId(Long landcarId) 
+    public void setLandCarID(Long landCarID) 
     {
-        this.landcarId = landcarId;
+        this.landCarID = landCarID;
     }
 
-    public Long getLandcarId() 
+    public Long getLandCarID() 
     {
-        return landcarId;
+        return landCarID;
     }
     public void setLandCarNo(String landCarNo) 
     {
@@ -257,14 +257,14 @@ public class GoodsorderBack extends BaseEntity
     {
         return landDriverName;
     }
-    public void setSeacarId(Long seacarId) 
+    public void setSeaCarID(Long seaCarID) 
     {
-        this.seacarId = seacarId;
+        this.seaCarID = seaCarID;
     }
 
-    public Long getSeacarId() 
+    public Long getSeaCarID() 
     {
-        return seacarId;
+        return seaCarID;
     }
     public void setSeaCarNo(String seaCarNo) 
     {
@@ -518,12 +518,12 @@ public class GoodsorderBack extends BaseEntity
             .append("ordersNo", getOrdersNo())
             .append("orderDate", getOrderDate())
             .append("customer", getCustomer())
-            .append("customerId", getCustomerId())
-            .append("landcarId", getLandcarId())
+            .append("customerID", getCustomerID())
+            .append("landCarID", getLandCarID())
             .append("landCarNo", getLandCarNo())
             .append("landDriverTel", getLandDriverTel())
             .append("landDriverName", getLandDriverName())
-            .append("seacarId", getSeacarId())
+            .append("seaCarID", getSeaCarID())
             .append("seaCarNo", getSeaCarNo())
             .append("seaDriverTel", getSeaDriverTel())
             .append("seaDriverName", getSeaDriverName())

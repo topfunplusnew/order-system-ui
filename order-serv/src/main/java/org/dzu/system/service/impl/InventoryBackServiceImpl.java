@@ -12,7 +12,7 @@ import org.dzu.system.service.IInventoryBackService;
  
 import org.dzu.common.constant.DelConstants;
 /**
- * 货物入库信息Service业务层处理
+ * 库存备份Service业务层处理
  *
  * @author ml
  * @date 2024-07-29
@@ -24,10 +24,10 @@ public class InventoryBackServiceImpl implements IInventoryBackService
     private InventoryBackMapper inventoryBackMapper;
 
     /**
-     * 查询货物入库信息
+     * 查询库存备份
      *
-     * @param id 货物入库信息主键
-     * @return 货物入库信息
+     * @param id 库存备份主键
+     * @return 库存备份
      */
     @Override
     public InventoryBack selectInventoryBackById(Long id)
@@ -36,10 +36,10 @@ public class InventoryBackServiceImpl implements IInventoryBackService
     }
 
     /**
-     * 查询货物入库信息列表
+     * 查询库存备份列表
      *
-     * @param inventoryBack 货物入库信息
-     * @return 货物入库信息
+     * @param inventoryBack 库存备份
+     * @return 库存备份
      */
     @Override
     public List<InventoryBack> selectInventoryBackList(InventoryBack inventoryBack)
@@ -48,9 +48,9 @@ public class InventoryBackServiceImpl implements IInventoryBackService
     }
 
     /**
-     * 新增货物入库信息
+     * 新增库存备份
      *
-     * @param inventoryBack 货物入库信息
+     * @param inventoryBack 库存备份
      * @return 结果
      */
     @Override
@@ -64,9 +64,9 @@ public class InventoryBackServiceImpl implements IInventoryBackService
     }
 
     /**
-     * 修改货物入库信息
+     * 修改库存备份
      * 
-     * @param inventoryBack 货物入库信息
+     * @param inventoryBack 库存备份
      * @return 结果
      */
     @Override
@@ -79,9 +79,9 @@ public class InventoryBackServiceImpl implements IInventoryBackService
     }
 
     /**
-     * 批量删除货物入库信息
+     * 批量删除库存备份
      * 
-     * @param ids 需要删除的货物入库信息主键
+     * @param ids 需要删除的库存备份主键
      * @return 结果
      */
     @Override
@@ -91,9 +91,9 @@ public class InventoryBackServiceImpl implements IInventoryBackService
     }
 
     /**
-     * 删除货物入库信息信息
+     * 删除库存备份信息
      * 
-     * @param id 货物入库信息主键
+     * @param id 库存备份主键
      * @return 结果
      */
     @Override

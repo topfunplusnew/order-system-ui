@@ -6,7 +6,7 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
     
     <resultMap type="InventoryBack" id="InventoryBackResult">
         <result property="id"    column="id"    />
-        <result property="inventoryId"    column="inventory_id"    />
+        <result property="inventoryID"    column="inventoryID"    />
         <result property="storeHouseid"    column="storeHouseid"    />
         <result property="storeHouseName"    column="storeHouseName"    />
         <result property="storeDate"    column="storeDate"    />
@@ -29,11 +29,11 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         <result property="paymentUnload"    column="paymentUnload"    />
         <result property="isIncludeTaxSale"    column="isIncludeTaxSale"    />
         <result property="payments"    column="payments"    />
-        <result property="landcarId"    column="landCar_id"    />
+        <result property="landCarID"    column="landCarID"    />
         <result property="landCarNo"    column="landCarNo"    />
         <result property="landDriverTel"    column="landDriverTel"    />
         <result property="landDriverName"    column="landDriverName"    />
-        <result property="seacarId"    column="seaCar_id"    />
+        <result property="seaCarID"    column="seaCarID"    />
         <result property="seaCarNo"    column="seaCarNo"    />
         <result property="seaDriverTel"    column="seaDriverTel"    />
         <result property="seaDriverName"    column="seaDriverName"    />
@@ -64,13 +64,13 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
  
 
     <sql id="selectInventoryBackVo">
-        select id, inventory_id, storeHouseid, storeHouseName, storeDate, stockNumber, supplier, supplierId, levelID, levelName, countingUnit, height, length, width, pieces, piecesPerPack, packs, price, isIncludeTaxFactory, sundryCost, paymentFactory, paymentUnload, isIncludeTaxSale, payments, landCar_id, landCarNo, landDriverTel, landDriverName, seaCar_id, seaCarNo, seaDriverTel, seaDriverName, erro, tonnage, landFreightPrice, landFreight, seaFreight, freight, otherCost, profit, profitNoTax, actualPieces, paymentsWithSundry, additionalFees, rebate, customerCommission, comments, addtime, userId, UserName, update_time, delFlag, showFlag from inventory_back
+        select id, inventoryID, storeHouseid, storeHouseName, storeDate, stockNumber, supplier, supplierId, levelID, levelName, countingUnit, height, length, width, pieces, piecesPerPack, packs, price, isIncludeTaxFactory, sundryCost, paymentFactory, paymentUnload, isIncludeTaxSale, payments, landCarID, landCarNo, landDriverTel, landDriverName, seaCarID, seaCarNo, seaDriverTel, seaDriverName, erro, tonnage, landFreightPrice, landFreight, seaFreight, freight, otherCost, profit, profitNoTax, actualPieces, paymentsWithSundry, additionalFees, rebate, customerCommission, comments, addtime, userId, UserName, update_time, delFlag, showFlag from inventory_back
     </sql>
 
     <select id="selectInventoryBackList" parameterType="InventoryBack" resultMap="InventoryBackResult">
         <include refid="selectInventoryBackVo"/>
         <where>  
-            <if test="inventoryId != null "> and inventory_id = #{inventoryId}</if>
+            <if test="inventoryID != null "> and inventoryID = #{inventoryID}</if>
             <if test="storeHouseid != null "> and storeHouseid = #{storeHouseid}</if>
             <if test="storeHouseName != null  and storeHouseName != ''"> and storeHouseName like concat('%', #{storeHouseName}, '%')</if>
             <if test="storeDate != null  and storeDate != ''"> and storeDate = #{storeDate}</if>
@@ -93,11 +93,11 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
             <if test="paymentUnload != null "> and paymentUnload = #{paymentUnload}</if>
             <if test="isIncludeTaxSale != null "> and isIncludeTaxSale = #{isIncludeTaxSale}</if>
             <if test="payments != null  and payments != ''"> and payments = #{payments}</if>
-            <if test="landcarId != null "> and landCar_id = #{landcarId}</if>
+            <if test="landCarID != null "> and landCarID = #{landCarID}</if>
             <if test="landCarNo != null  and landCarNo != ''"> and landCarNo = #{landCarNo}</if>
             <if test="landDriverTel != null  and landDriverTel != ''"> and landDriverTel = #{landDriverTel}</if>
             <if test="landDriverName != null  and landDriverName != ''"> and landDriverName like concat('%', #{landDriverName}, '%')</if>
-            <if test="seacarId != null "> and seaCar_id = #{seacarId}</if>
+            <if test="seaCarID != null "> and seaCarID = #{seaCarID}</if>
             <if test="seaCarNo != null  and seaCarNo != ''"> and seaCarNo = #{seaCarNo}</if>
             <if test="seaDriverTel != null  and seaDriverTel != ''"> and seaDriverTel = #{seaDriverTel}</if>
             <if test="seaDriverName != null  and seaDriverName != ''"> and seaDriverName like concat('%', #{seaDriverName}, '%')</if>
@@ -133,7 +133,7 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
     <insert id="insertInventoryBack" parameterType="InventoryBack" useGeneratedKeys="true" keyProperty="id">
         insert into inventory_back
         <trim prefix="(" suffix=")" suffixOverrides=",">
-            <if test="inventoryId != null">inventory_id,</if>
+            <if test="inventoryID != null">inventoryID,</if>
             <if test="storeHouseid != null">storeHouseid,</if>
             <if test="storeHouseName != null">storeHouseName,</if>
             <if test="storeDate != null">storeDate,</if>
@@ -156,11 +156,11 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
             <if test="paymentUnload != null">paymentUnload,</if>
             <if test="isIncludeTaxSale != null">isIncludeTaxSale,</if>
             <if test="payments != null">payments,</if>
-            <if test="landcarId != null">landCar_id,</if>
+            <if test="landCarID != null">landCarID,</if>
             <if test="landCarNo != null">landCarNo,</if>
             <if test="landDriverTel != null">landDriverTel,</if>
             <if test="landDriverName != null">landDriverName,</if>
-            <if test="seacarId != null">seaCar_id,</if>
+            <if test="seaCarID != null">seaCarID,</if>
             <if test="seaCarNo != null">seaCarNo,</if>
             <if test="seaDriverTel != null">seaDriverTel,</if>
             <if test="seaDriverName != null">seaDriverName,</if>
@@ -187,7 +187,7 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
             <if test="showFlag != null">showFlag,</if>
          </trim>
         <trim prefix="values (" suffix=")" suffixOverrides=",">
-            <if test="inventoryId != null">#{inventoryId},</if>
+            <if test="inventoryID != null">#{inventoryID},</if>
             <if test="storeHouseid != null">#{storeHouseid},</if>
             <if test="storeHouseName != null">#{storeHouseName},</if>
             <if test="storeDate != null">#{storeDate},</if>
@@ -210,11 +210,11 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
             <if test="paymentUnload != null">#{paymentUnload},</if>
             <if test="isIncludeTaxSale != null">#{isIncludeTaxSale},</if>
             <if test="payments != null">#{payments},</if>
-            <if test="landcarId != null">#{landcarId},</if>
+            <if test="landCarID != null">#{landCarID},</if>
             <if test="landCarNo != null">#{landCarNo},</if>
             <if test="landDriverTel != null">#{landDriverTel},</if>
             <if test="landDriverName != null">#{landDriverName},</if>
-            <if test="seacarId != null">#{seacarId},</if>
+            <if test="seaCarID != null">#{seaCarID},</if>
             <if test="seaCarNo != null">#{seaCarNo},</if>
             <if test="seaDriverTel != null">#{seaDriverTel},</if>
             <if test="seaDriverName != null">#{seaDriverName},</if>
@@ -245,7 +245,7 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
     <update id="updateInventoryBack" parameterType="InventoryBack">
         update inventory_back
         <trim prefix="SET" suffixOverrides=",">
-            <if test="inventoryId != null">inventory_id = #{inventoryId},</if>
+            <if test="inventoryID != null">inventoryID = #{inventoryID},</if>
             <if test="storeHouseid != null">storeHouseid = #{storeHouseid},</if>
             <if test="storeHouseName != null">storeHouseName = #{storeHouseName},</if>
             <if test="storeDate != null">storeDate = #{storeDate},</if>
@@ -268,11 +268,11 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
             <if test="paymentUnload != null">paymentUnload = #{paymentUnload},</if>
             <if test="isIncludeTaxSale != null">isIncludeTaxSale = #{isIncludeTaxSale},</if>
             <if test="payments != null">payments = #{payments},</if>
-            <if test="landcarId != null">landCar_id = #{landcarId},</if>
+            <if test="landCarID != null">landCarID = #{landCarID},</if>
             <if test="landCarNo != null">landCarNo = #{landCarNo},</if>
             <if test="landDriverTel != null">landDriverTel = #{landDriverTel},</if>
             <if test="landDriverName != null">landDriverName = #{landDriverName},</if>
-            <if test="seacarId != null">seaCar_id = #{seacarId},</if>
+            <if test="seaCarID != null">seaCarID = #{seaCarID},</if>
             <if test="seaCarNo != null">seaCarNo = #{seaCarNo},</if>
             <if test="seaDriverTel != null">seaDriverTel = #{seaDriverTel},</if>
             <if test="seaDriverName != null">seaDriverName = #{seaDriverName},</if>

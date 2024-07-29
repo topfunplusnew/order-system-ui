@@ -10,8 +10,8 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         <result property="operateDate"    column="operateDate"    />
         <result property="operateType"    column="operateType"    />
         <result property="moneyAmount"    column="moneyAmount"    />
-        <result property="company"    column="company"    />
-        <result property="companyId"    column="company_id"    />
+        <result property="companyName"    column="companyName"    />
+        <result property="companyId"    column="companyId"    />
         <result property="companyType"    column="companyType"    />
         <result property="comments"    column="comments"    />
         <result property="addtime"    column="addtime"    />
@@ -25,7 +25,7 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
  
 
     <sql id="selectOffsettingVo">
-        select id, OffsetNO, operateDate, operateType, moneyAmount, company, company_id, companyType, comments, addtime, userId, UserName, update_time, delFlag from offsetting
+        select id, OffsetNO, operateDate, operateType, moneyAmount, companyName, companyId, companyType, comments, addtime, userId, UserName, update_time, delFlag from Offsetting
     </sql>
 
     <select id="selectOffsettingList" parameterType="Offsetting" resultMap="OffsettingResult">
@@ -35,8 +35,8 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
             <if test="operateDate != null  and operateDate != ''"> and operateDate = #{operateDate}</if>
             <if test="operateType != null  and operateType != ''"> and operateType = #{operateType}</if>
             <if test="moneyAmount != null "> and moneyAmount = #{moneyAmount}</if>
-            <if test="company != null  and company != ''"> and company = #{company}</if>
-            <if test="companyId != null "> and company_id = #{companyId}</if>
+            <if test="companyName != null  and companyName != ''"> and companyName like concat('%', #{companyName}, '%')</if>
+            <if test="companyId != null "> and companyId = #{companyId}</if>
             <if test="companyType != null "> and companyType = #{companyType}</if>
             <if test="comments != null  and comments != ''"> and comments = #{comments}</if>
             <if test="addtime != null  and addtime != ''"> and addtime = #{addtime}</if>
@@ -53,14 +53,14 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
     </select>
 
     <insert id="insertOffsetting" parameterType="Offsetting" useGeneratedKeys="true" keyProperty="id">
-        insert into offsetting
+        insert into Offsetting
         <trim prefix="(" suffix=")" suffixOverrides=",">
             <if test="OffsetNO != null">OffsetNO,</if>
             <if test="operateDate != null">operateDate,</if>
             <if test="operateType != null">operateType,</if>
             <if test="moneyAmount != null">moneyAmount,</if>
-            <if test="company != null">company,</if>
-            <if test="companyId != null">company_id,</if>
+            <if test="companyName != null">companyName,</if>
+            <if test="companyId != null">companyId,</if>
             <if test="companyType != null">companyType,</if>
             <if test="comments != null">comments,</if>
             <if test="addtime != null">addtime,</if>
@@ -74,7 +74,7 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
             <if test="operateDate != null">#{operateDate},</if>
             <if test="operateType != null">#{operateType},</if>
             <if test="moneyAmount != null">#{moneyAmount},</if>
-            <if test="company != null">#{company},</if>
+            <if test="companyName != null">#{companyName},</if>
             <if test="companyId != null">#{companyId},</if>
             <if test="companyType != null">#{companyType},</if>
             <if test="comments != null">#{comments},</if>
@@ -87,14 +87,14 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
     </insert>
 
     <update id="updateOffsetting" parameterType="Offsetting">
-        update offsetting
+        update Offsetting
         <trim prefix="SET" suffixOverrides=",">
             <if test="OffsetNO != null">OffsetNO = #{OffsetNO},</if>
             <if test="operateDate != null">operateDate = #{operateDate},</if>
             <if test="operateType != null">operateType = #{operateType},</if>
             <if test="moneyAmount != null">moneyAmount = #{moneyAmount},</if>
-            <if test="company != null">company = #{company},</if>
-            <if test="companyId != null">company_id = #{companyId},</if>
+            <if test="companyName != null">companyName = #{companyName},</if>
+            <if test="companyId != null">companyId = #{companyId},</if>
             <if test="companyType != null">companyType = #{companyType},</if>
             <if test="comments != null">comments = #{comments},</if>
             <if test="addtime != null">addtime = #{addtime},</if>
@@ -106,10 +106,10 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         where id = #{id}
     </update>
     <update id="deleteOffsettingById" parameterType="Long">
-        update offsetting set delFlag = 1 where id = #{id}
+        update Offsetting set delFlag = 1 where id = #{id}
     </update>
     <update id="deleteOffsettingByIds" parameterType="String">
-        update offsetting set delFlag = 1 where id in
+        update Offsetting set delFlag = 1 where id in
         <foreach item="id" collection="array" open="(" separator="," close=")">
             #{id}
         </foreach>

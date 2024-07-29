@@ -8,7 +8,7 @@ import org.dzu.common.core.domain.BaseEntity;
 import org.dzu.common.annotation.DecimalMaxDigits;
 import org.dzu.common.annotation.OnlyZeroOrOne;
 /**
- * 供应商返利对象 rebate
+ * 返利回扣对象 Rebate
  * 
  * @author ml
  * @date 2024-07-29
@@ -32,8 +32,8 @@ public class Rebate extends BaseEntity
     @DecimalMaxDigits
     private Double rebate;
 
-    /** 返利类型（返利、降价、售后质量赔偿） */
-    @Excel(name = "返利类型", readConverterExp = "返=利、降价、售后质量赔偿")
+    /** 类型（返利、降价、售后质量赔偿） */
+    @Excel(name = "类型", readConverterExp = "返=利、降价、售后质量赔偿")
     private String rebateType;
 
     /** 收款户名 */
@@ -50,7 +50,7 @@ public class Rebate extends BaseEntity
 
     /** 供应商ID */
     @Excel(name = "供应商ID")
-    private Long supplierId;
+    private Long supplierID;
 
     /** 付款户名 */
     @Excel(name = "付款户名")
@@ -156,14 +156,14 @@ public class Rebate extends BaseEntity
     {
         return supplier;
     }
-    public void setSupplierId(Long supplierId) 
+    public void setSupplierID(Long supplierID) 
     {
-        this.supplierId = supplierId;
+        this.supplierID = supplierID;
     }
 
-    public Long getSupplierId() 
+    public Long getSupplierID() 
     {
-        return supplierId;
+        return supplierID;
     }
     public void setOutAcountsName(String outAcountsName) 
     {
@@ -249,7 +249,7 @@ public class Rebate extends BaseEntity
             .append("inAcountsName", getInAcountsName())
             .append("inBankNo", getInBankNo())
             .append("supplier", getSupplier())
-            .append("supplierId", getSupplierId())
+            .append("supplierID", getSupplierID())
             .append("outAcountsName", getOutAcountsName())
             .append("outBankNo", getOutBankNo())
             .append("rebateReason", getRebateReason())

@@ -1,0 +1,107 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="org.dzu.system.mapper.OilCardFundTransferMapper">
+    
+    <resultMap type="OilCardFundTransfer" id="OilCardFundTransferResult">
+        <result property="id"    column="id"    />
+        <result property="oilMainCardNo"    column="oilMainCardNo"    />
+        <result property="oilSecondCardNo"    column="oilSecondCardNo"    />
+        <result property="rechargeMoney"    column="rechargeMoney"    />
+        <result property="rechargeDate"    column="rechargeDate"    />
+        <result property="rechargeName"    column="rechargeName"    />
+        <result property="comments"    column="comments"    />
+        <result property="addtime"    column="addtime"    />
+        <result property="userId"    column="userId"    />
+        <result property="UserName"    column="UserName"    />
+        <result property="updateTime"    column="update_time"    />
+        <result property="delFlag"    column="delFlag"    />
+    </resultMap>
+
+
+ 
+
+    <sql id="selectOilCardFundTransferVo">
+        select id, oilMainCardNo, oilSecondCardNo, rechargeMoney, rechargeDate, rechargeName, comments, addtime, userId, UserName, update_time, delFlag from oilCardFundTransfer
+    </sql>
+
+    <select id="selectOilCardFundTransferList" parameterType="OilCardFundTransfer" resultMap="OilCardFundTransferResult">
+        <include refid="selectOilCardFundTransferVo"/>
+        <where>  
+            <if test="oilMainCardNo != null  and oilMainCardNo != ''"> and oilMainCardNo = #{oilMainCardNo}</if>
+            <if test="oilSecondCardNo != null  and oilSecondCardNo != ''"> and oilSecondCardNo = #{oilSecondCardNo}</if>
+            <if test="rechargeMoney != null "> and rechargeMoney = #{rechargeMoney}</if>
+            <if test="rechargeDate != null  and rechargeDate != ''"> and rechargeDate = #{rechargeDate}</if>
+            <if test="rechargeName != null  and rechargeName != ''"> and rechargeName like concat('%', #{rechargeName}, '%')</if>
+            <if test="comments != null  and comments != ''"> and comments = #{comments}</if>
+            <if test="addtime != null  and addtime != ''"> and addtime = #{addtime}</if>
+            <if test="userId != null "> and userId = #{userId}</if>
+            <if test="UserName != null  and UserName != ''"> and UserName like concat('%', #{UserName}, '%')</if>
+            and delFlag = 0
+        </where>
+    </select>
+    
+    <select id="selectOilCardFundTransferById" parameterType="Long" resultMap="OilCardFundTransferResult">
+        <include refid="selectOilCardFundTransferVo"/>
+        where id = #{id}
+        and delFlag = 0
+    </select>
+
+    <insert id="insertOilCardFundTransfer" parameterType="OilCardFundTransfer" useGeneratedKeys="true" keyProperty="id">
+        insert into oilCardFundTransfer
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="oilMainCardNo != null">oilMainCardNo,</if>
+            <if test="oilSecondCardNo != null">oilSecondCardNo,</if>
+            <if test="rechargeMoney != null">rechargeMoney,</if>
+            <if test="rechargeDate != null">rechargeDate,</if>
+            <if test="rechargeName != null">rechargeName,</if>
+            <if test="comments != null">comments,</if>
+            <if test="addtime != null">addtime,</if>
+            <if test="userId != null">userId,</if>
+            <if test="UserName != null">UserName,</if>
+            <if test="updateTime != null">update_time,</if>
+            <if test="delFlag != null">delFlag,</if>
+         </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="oilMainCardNo != null">#{oilMainCardNo},</if>
+            <if test="oilSecondCardNo != null">#{oilSecondCardNo},</if>
+            <if test="rechargeMoney != null">#{rechargeMoney},</if>
+            <if test="rechargeDate != null">#{rechargeDate},</if>
+            <if test="rechargeName != null">#{rechargeName},</if>
+            <if test="comments != null">#{comments},</if>
+            <if test="addtime != null">#{addtime},</if>
+            <if test="userId != null">#{userId},</if>
+            <if test="UserName != null">#{UserName},</if>
+            <if test="updateTime != null">#{updateTime},</if>
+            <if test="delFlag != null">#{delFlag},</if>
+         </trim>
+    </insert>
+
+    <update id="updateOilCardFundTransfer" parameterType="OilCardFundTransfer">
+        update oilCardFundTransfer
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="oilMainCardNo != null">oilMainCardNo = #{oilMainCardNo},</if>
+            <if test="oilSecondCardNo != null">oilSecondCardNo = #{oilSecondCardNo},</if>
+            <if test="rechargeMoney != null">rechargeMoney = #{rechargeMoney},</if>
+            <if test="rechargeDate != null">rechargeDate = #{rechargeDate},</if>
+            <if test="rechargeName != null">rechargeName = #{rechargeName},</if>
+            <if test="comments != null">comments = #{comments},</if>
+            <if test="addtime != null">addtime = #{addtime},</if>
+            <if test="userId != null">userId = #{userId},</if>
+            <if test="UserName != null">UserName = #{UserName},</if>
+            <if test="updateTime != null">update_time = #{updateTime},</if>
+            <if test="delFlag != null">delFlag = #{delFlag},</if>
+        </trim>
+        where id = #{id}
+    </update>
+    <update id="deleteOilCardFundTransferById" parameterType="Long">
+        update oilCardFundTransfer set delFlag = 1 where id = #{id}
+    </update>
+    <update id="deleteOilCardFundTransferByIds" parameterType="String">
+        update oilCardFundTransfer set delFlag = 1 where id in
+        <foreach item="id" collection="array" open="(" separator="," close=")">
+            #{id}
+        </foreach>
+    </update>
+</mapper>

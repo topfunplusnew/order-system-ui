@@ -8,7 +8,7 @@ import org.dzu.common.core.domain.BaseEntity;
 import org.dzu.common.annotation.DecimalMaxDigits;
 import org.dzu.common.annotation.OnlyZeroOrOne;
 /**
- * 资产管理-收付款:收付款信息对象 payment
+ * 付款信息对象 payment
  * 
  * @author ml
  * @date 2024-07-29
@@ -19,10 +19,6 @@ public class Payment extends BaseEntity
 
     /** id */
     private Long id;
-
-    /** 收付款类型（收款，付款） */
-    @Excel(name = "收付款类型", readConverterExp = "收=款，付款")
-    private String payCategory;
 
     /** 付款编号（UUID） */
     @Excel(name = "付款编号", readConverterExp = "U=UID")
@@ -35,6 +31,14 @@ public class Payment extends BaseEntity
     /** 支付类型 */
     @Excel(name = "支付类型")
     private String payType;
+
+    /** 对应的表名 */
+    @Excel(name = "对应的表名")
+    private String tableName;
+
+    /** 对应的表主键 */
+    @Excel(name = "对应的表主键")
+    private String tID;
 
     /** 金额 */
     @DecimalMaxDigits
@@ -74,7 +78,7 @@ public class Payment extends BaseEntity
 
     /** 对方公司 */
     @Excel(name = "对方公司")
-    private String company;
+    private String companyName;
 
     /** 对方公司ID */
     @Excel(name = "对方公司ID")
@@ -113,15 +117,6 @@ public class Payment extends BaseEntity
     {
         return id;
     }
-    public void setPayCategory(String payCategory) 
-    {
-        this.payCategory = payCategory;
-    }
-
-    public String getPayCategory() 
-    {
-        return payCategory;
-    }
     public void setPayNO(String payNO) 
     {
         this.payNO = payNO;
@@ -148,6 +143,24 @@ public class Payment extends BaseEntity
     public String getPayType() 
     {
         return payType;
+    }
+    public void setTableName(String tableName) 
+    {
+        this.tableName = tableName;
+    }
+
+    public String getTableName() 
+    {
+        return tableName;
+    }
+    public void settID(String tID) 
+    {
+        this.tID = tID;
+    }
+
+    public String gettID() 
+    {
+        return tID;
     }
     public void setMoneyAmount(Double moneyAmount) 
     {
@@ -230,14 +243,14 @@ public class Payment extends BaseEntity
     {
         return paymentState;
     }
-    public void setCompany(String company) 
+    public void setCompanyName(String companyName) 
     {
-        this.company = company;
+        this.companyName = companyName;
     }
 
-    public String getCompany() 
+    public String getCompanyName() 
     {
-        return company;
+        return companyName;
     }
     public void setCompanyId(Long companyId) 
     {
@@ -307,10 +320,11 @@ public class Payment extends BaseEntity
     public String toString() {
         return new ToStringBuilder(this,ToStringStyle.MULTI_LINE_STYLE)
             .append("id", getId())
-            .append("payCategory", getPayCategory())
             .append("payNO", getPayNO())
             .append("fundsDate", getFundsDate())
             .append("payType", getPayType())
+            .append("tableName", getTableName())
+            .append("tID", gettID())
             .append("moneyAmount", getMoneyAmount())
             .append("selfAcountsName", getSelfAcountsName())
             .append("selfBankNo", getSelfBankNo())
@@ -320,7 +334,7 @@ public class Payment extends BaseEntity
             .append("otherBankNo", getOtherBankNo())
             .append("otherBankName", getOtherBankName())
             .append("paymentState", getPaymentState())
-            .append("company", getCompany())
+            .append("companyName", getCompanyName())
             .append("companyId", getCompanyId())
             .append("companyType", getCompanyType())
             .append("comments", getComments())

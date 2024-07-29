@@ -5,7 +5,7 @@ import java.util.List;
 import org.dzu.system.domain.Inventory;
 
 /**
- * 货物入库Mapper接口
+ * 库存Mapper接口
  * 
  * @author ml
  * @date 2024-07-29
@@ -13,47 +13,47 @@ import org.dzu.system.domain.Inventory;
 public interface InventoryMapper extends BaseMapper<Inventory>
 {
     /**
-     * 查询货物入库
+     * 查询库存
      * 
-     * @param id 货物入库主键
-     * @return 货物入库
+     * @param id 库存主键
+     * @return 库存
      */
     public Inventory selectInventoryById(Long id);
 
     /**
-     * 查询货物入库列表
+     * 查询库存列表
      * 
-     * @param inventory 货物入库
-     * @return 货物入库集合
+     * @param inventory 库存
+     * @return 库存集合
      */
     public List<Inventory> selectInventoryList(Inventory inventory);
 
     /**
-     * 新增货物入库
+     * 新增库存
      * 
-     * @param inventory 货物入库
+     * @param inventory 库存
      * @return 结果
      */
     public int insertInventory(Inventory inventory);
 
     /**
-     * 修改货物入库
+     * 修改库存
      * 
-     * @param inventory 货物入库
+     * @param inventory 库存
      * @return 结果
      */
     public int updateInventory(Inventory inventory);
 
     /**
-     * 删除货物入库
+     * 删除库存
      * 
-     * @param id 货物入库主键
+     * @param id 库存主键
      * @return 结果
      */
     public int deleteInventoryById(Long id);
 
     /**
-     * 批量删除货物入库
+     * 批量删除库存
      * 
      * @param ids 需要删除的数据主键集合
      * @return 结果

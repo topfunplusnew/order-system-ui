@@ -23,7 +23,7 @@ import org.dzu.common.utils.poi.ExcelUtil;
 import org.dzu.common.core.page.TableDataInfo;
 
 /**
- * 车辆管理Controller
+ * 外部车辆信息Controller
  * 
  * @author ml
  * @date 2024-07-29
@@ -36,7 +36,7 @@ public class CarsController extends BaseController
     private ICarsService carsService;
 
     /**
-     * 查询车辆管理列表
+     * 查询外部车辆信息列表
      */
     @PreAuthorize("@ss.hasPermi('system:cars:list')")
     @GetMapping("/list")
@@ -48,20 +48,20 @@ public class CarsController extends BaseController
     }
 
     /**
-     * 导出车辆管理列表
+     * 导出外部车辆信息列表
      */
     @PreAuthorize("@ss.hasPermi('system:cars:export')")
-    @Log(title = "车辆管理", businessType = BusinessType.EXPORT)
+    @Log(title = "外部车辆信息", businessType = BusinessType.EXPORT)
     @PostMapping("/export")
     public void export(HttpServletResponse response, Cars cars)
     {
         List<Cars> list = carsService.selectCarsList(cars);
         ExcelUtil<Cars> util = new ExcelUtil<Cars>(Cars.class);
-        util.exportExcel(response, list, "车辆管理数据");
+        util.exportExcel(response, list, "外部车辆信息数据");
     }
 
     /**
-     * 获取车辆管理详细信息
+     * 获取外部车辆信息详细信息
      */
     @PreAuthorize("@ss.hasPermi('system:cars:query')")
     @GetMapping(value = "/{id}")
@@ -71,10 +71,10 @@ public class CarsController extends BaseController
     }
 
     /**
-     * 新增车辆管理
+     * 新增外部车辆信息
      */
     @PreAuthorize("@ss.hasPermi('system:cars:add')")
-    @Log(title = "车辆管理", businessType = BusinessType.INSERT)
+    @Log(title = "外部车辆信息", businessType = BusinessType.INSERT)
     @PostMapping
     public AjaxResult add(@Validated @RequestBody Cars cars)
     {
@@ -82,10 +82,10 @@ public class CarsController extends BaseController
     }
 
     /**
-     * 修改车辆管理
+     * 修改外部车辆信息
      */
     @PreAuthorize("@ss.hasPermi('system:cars:edit')")
-    @Log(title = "车辆管理", businessType = BusinessType.UPDATE)
+    @Log(title = "外部车辆信息", businessType = BusinessType.UPDATE)
     @PutMapping
     public AjaxResult edit(@Validated @RequestBody Cars cars)
     {
@@ -93,10 +93,10 @@ public class CarsController extends BaseController
     }
 
     /**
-     * 删除车辆管理
+     * 删除外部车辆信息
      */
     @PreAuthorize("@ss.hasPermi('system:cars:remove')")
-    @Log(title = "车辆管理", businessType = BusinessType.DELETE)
+    @Log(title = "外部车辆信息", businessType = BusinessType.DELETE)
 	@DeleteMapping("/{ids}")
     public AjaxResult remove(@PathVariable Long[] ids)
     {

@@ -23,7 +23,7 @@ import org.dzu.common.utils.poi.ExcelUtil;
 import org.dzu.common.core.page.TableDataInfo;
 
 /**
- * 车队管理Controller
+ * 车队Controller
  * 
  * @author ml
  * @date 2024-07-29
@@ -36,7 +36,7 @@ public class FleetController extends BaseController
     private IFleetService fleetService;
 
     /**
-     * 查询车队管理列表
+     * 查询车队列表
      */
     @PreAuthorize("@ss.hasPermi('system:fleet:list')")
     @GetMapping("/list")
@@ -48,20 +48,20 @@ public class FleetController extends BaseController
     }
 
     /**
-     * 导出车队管理列表
+     * 导出车队列表
      */
     @PreAuthorize("@ss.hasPermi('system:fleet:export')")
-    @Log(title = "车队管理", businessType = BusinessType.EXPORT)
+    @Log(title = "车队", businessType = BusinessType.EXPORT)
     @PostMapping("/export")
     public void export(HttpServletResponse response, Fleet fleet)
     {
         List<Fleet> list = fleetService.selectFleetList(fleet);
         ExcelUtil<Fleet> util = new ExcelUtil<Fleet>(Fleet.class);
-        util.exportExcel(response, list, "车队管理数据");
+        util.exportExcel(response, list, "车队数据");
     }
 
     /**
-     * 获取车队管理详细信息
+     * 获取车队详细信息
      */
     @PreAuthorize("@ss.hasPermi('system:fleet:query')")
     @GetMapping(value = "/{id}")
@@ -71,10 +71,10 @@ public class FleetController extends BaseController
     }
 
     /**
-     * 新增车队管理
+     * 新增车队
      */
     @PreAuthorize("@ss.hasPermi('system:fleet:add')")
-    @Log(title = "车队管理", businessType = BusinessType.INSERT)
+    @Log(title = "车队", businessType = BusinessType.INSERT)
     @PostMapping
     public AjaxResult add(@Validated @RequestBody Fleet fleet)
     {
@@ -82,10 +82,10 @@ public class FleetController extends BaseController
     }
 
     /**
-     * 修改车队管理
+     * 修改车队
      */
     @PreAuthorize("@ss.hasPermi('system:fleet:edit')")
-    @Log(title = "车队管理", businessType = BusinessType.UPDATE)
+    @Log(title = "车队", businessType = BusinessType.UPDATE)
     @PutMapping
     public AjaxResult edit(@Validated @RequestBody Fleet fleet)
     {
@@ -93,10 +93,10 @@ public class FleetController extends BaseController
     }
 
     /**
-     * 删除车队管理
+     * 删除车队
      */
     @PreAuthorize("@ss.hasPermi('system:fleet:remove')")
-    @Log(title = "车队管理", businessType = BusinessType.DELETE)
+    @Log(title = "车队", businessType = BusinessType.DELETE)
 	@DeleteMapping("/{ids}")
     public AjaxResult remove(@PathVariable Long[] ids)
     {

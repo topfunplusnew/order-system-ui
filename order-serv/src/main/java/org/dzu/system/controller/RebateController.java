@@ -23,22 +23,22 @@ import org.dzu.common.utils.poi.ExcelUtil;
 import org.dzu.common.core.page.TableDataInfo;
 
 /**
- * 供应商返利Controller
+ * 返利回扣Controller
  * 
  * @author ml
  * @date 2024-07-29
  */
 @RestController
-@RequestMapping("/system/rebate")
+@RequestMapping("/system/Rebate")
 public class RebateController extends BaseController
 {
     @Autowired
     private IRebateService rebateService;
 
     /**
-     * 查询供应商返利列表
+     * 查询返利回扣列表
      */
-    @PreAuthorize("@ss.hasPermi('system:rebate:list')")
+    @PreAuthorize("@ss.hasPermi('system:Rebate:list')")
     @GetMapping("/list")
     public TableDataInfo list(Rebate rebate)
     {
@@ -48,22 +48,22 @@ public class RebateController extends BaseController
     }
 
     /**
-     * 导出供应商返利列表
+     * 导出返利回扣列表
      */
-    @PreAuthorize("@ss.hasPermi('system:rebate:export')")
-    @Log(title = "供应商返利", businessType = BusinessType.EXPORT)
+    @PreAuthorize("@ss.hasPermi('system:Rebate:export')")
+    @Log(title = "返利回扣", businessType = BusinessType.EXPORT)
     @PostMapping("/export")
     public void export(HttpServletResponse response, Rebate rebate)
     {
         List<Rebate> list = rebateService.selectRebateList(rebate);
         ExcelUtil<Rebate> util = new ExcelUtil<Rebate>(Rebate.class);
-        util.exportExcel(response, list, "供应商返利数据");
+        util.exportExcel(response, list, "返利回扣数据");
     }
 
     /**
-     * 获取供应商返利详细信息
+     * 获取返利回扣详细信息
      */
-    @PreAuthorize("@ss.hasPermi('system:rebate:query')")
+    @PreAuthorize("@ss.hasPermi('system:Rebate:query')")
     @GetMapping(value = "/{id}")
     public AjaxResult getInfo(@PathVariable("id") Long id)
     {
@@ -71,10 +71,10 @@ public class RebateController extends BaseController
     }
 
     /**
-     * 新增供应商返利
+     * 新增返利回扣
      */
-    @PreAuthorize("@ss.hasPermi('system:rebate:add')")
-    @Log(title = "供应商返利", businessType = BusinessType.INSERT)
+    @PreAuthorize("@ss.hasPermi('system:Rebate:add')")
+    @Log(title = "返利回扣", businessType = BusinessType.INSERT)
     @PostMapping
     public AjaxResult add(@Validated @RequestBody Rebate rebate)
     {
@@ -82,10 +82,10 @@ public class RebateController extends BaseController
     }
 
     /**
-     * 修改供应商返利
+     * 修改返利回扣
      */
-    @PreAuthorize("@ss.hasPermi('system:rebate:edit')")
-    @Log(title = "供应商返利", businessType = BusinessType.UPDATE)
+    @PreAuthorize("@ss.hasPermi('system:Rebate:edit')")
+    @Log(title = "返利回扣", businessType = BusinessType.UPDATE)
     @PutMapping
     public AjaxResult edit(@Validated @RequestBody Rebate rebate)
     {
@@ -93,10 +93,10 @@ public class RebateController extends BaseController
     }
 
     /**
-     * 删除供应商返利
+     * 删除返利回扣
      */
-    @PreAuthorize("@ss.hasPermi('system:rebate:remove')")
-    @Log(title = "供应商返利", businessType = BusinessType.DELETE)
+    @PreAuthorize("@ss.hasPermi('system:Rebate:remove')")
+    @Log(title = "返利回扣", businessType = BusinessType.DELETE)
 	@DeleteMapping("/{ids}")
     public AjaxResult remove(@PathVariable Long[] ids)
     {

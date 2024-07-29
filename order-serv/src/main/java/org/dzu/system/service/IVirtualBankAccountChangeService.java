@@ -1,0 +1,61 @@
+package org.dzu.system.service;
+
+import java.util.List;
+import org.dzu.system.domain.VirtualBankAccountChange;
+
+/**
+ * 虚拟银行账号Service接口
+ * 
+ * @author ml
+ * @date 2024-07-29
+ */
+public interface IVirtualBankAccountChangeService 
+{
+    /**
+     * 查询虚拟银行账号
+     * 
+     * @param id 虚拟银行账号主键
+     * @return 虚拟银行账号
+     */
+    public VirtualBankAccountChange selectVirtualBankAccountChangeById(Long id);
+
+    /**
+     * 查询虚拟银行账号列表
+     * 
+     * @param virtualBankAccountChange 虚拟银行账号
+     * @return 虚拟银行账号集合
+     */
+    public List<VirtualBankAccountChange> selectVirtualBankAccountChangeList(VirtualBankAccountChange virtualBankAccountChange);
+
+    /**
+     * 新增虚拟银行账号
+     * 
+     * @param virtualBankAccountChange 虚拟银行账号
+     * @return 结果
+     */
+    public int insertVirtualBankAccountChange(VirtualBankAccountChange virtualBankAccountChange);
+
+    /**
+     * 修改虚拟银行账号
+     * 
+     * @param virtualBankAccountChange 虚拟银行账号
+     * @return 结果
+     */
+    public int updateVirtualBankAccountChange(VirtualBankAccountChange virtualBankAccountChange);
+
+    /**
+     * 批量删除虚拟银行账号
+     * 
+     * @param ids 需要删除的虚拟银行账号主键集合
+     * @return 结果
+     */
+    public int deleteVirtualBankAccountChangeByIds(Long[] ids);
+
+    /**
+     * 删除虚拟银行账号信息
+     * 
+     * @param id 虚拟银行账号主键
+     * @return 结果
+     */
+    public int deleteVirtualBankAccountChangeById(Long id);
+}

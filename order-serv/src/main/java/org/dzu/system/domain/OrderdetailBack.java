@@ -8,7 +8,7 @@ import org.dzu.common.core.domain.BaseEntity;
 import org.dzu.common.annotation.DecimalMaxDigits;
 import org.dzu.common.annotation.OnlyZeroOrOne;
 /**
- * 订单详情备份对象 orderdetail_back
+ * 订单详情备份对象 orderDetail_back
  * 
  * @author ml
  * @date 2024-07-29
@@ -38,7 +38,7 @@ public class OrderdetailBack extends BaseEntity
 
     /** 供应商ID */
     @Excel(name = "供应商ID")
-    private Long supplierId;
+    private Long supplierID;
 
     /** 客户 */
     @Excel(name = "客户")
@@ -46,7 +46,7 @@ public class OrderdetailBack extends BaseEntity
 
     /** 客户ID */
     @Excel(name = "客户ID")
-    private Long customerId;
+    private Long customerID;
 
     /** 级别编码 */
     @Excel(name = "级别编码")
@@ -253,14 +253,14 @@ public class OrderdetailBack extends BaseEntity
     {
         return supplier;
     }
-    public void setSupplierId(Long supplierId) 
+    public void setSupplierID(Long supplierID) 
     {
-        this.supplierId = supplierId;
+        this.supplierID = supplierID;
     }
 
-    public Long getSupplierId() 
+    public Long getSupplierID() 
     {
-        return supplierId;
+        return supplierID;
     }
     public void setCustomer(String customer) 
     {
@@ -271,14 +271,14 @@ public class OrderdetailBack extends BaseEntity
     {
         return customer;
     }
-    public void setCustomerId(Long customerId) 
+    public void setCustomerID(Long customerID) 
     {
-        this.customerId = customerId;
+        this.customerID = customerID;
     }
 
-    public Long getCustomerId() 
+    public Long getCustomerID() 
     {
-        return customerId;
+        return customerID;
     }
     public void setLevelID(Long levelID) 
     {
@@ -649,9 +649,9 @@ public class OrderdetailBack extends BaseEntity
             .append("ordersNo", getOrdersNo())
             .append("orderDate", getOrderDate())
             .append("supplier", getSupplier())
-            .append("supplierId", getSupplierId())
+            .append("supplierID", getSupplierID())
             .append("customer", getCustomer())
-            .append("customerId", getCustomerId())
+            .append("customerID", getCustomerID())
             .append("levelID", getLevelID())
             .append("levelName", getLevelName())
             .append("countingUnit", getCountingUnit())

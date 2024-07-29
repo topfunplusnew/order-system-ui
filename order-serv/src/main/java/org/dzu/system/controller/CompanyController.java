@@ -23,7 +23,7 @@ import org.dzu.common.utils.poi.ExcelUtil;
 import org.dzu.common.core.page.TableDataInfo;
 
 /**
- * 客户管理Controller
+ * 客户、供应商信息Controller
  * 
  * @author ml
  * @date 2024-07-29
@@ -36,7 +36,7 @@ public class CompanyController extends BaseController
     private ICompanyService companyService;
 
     /**
-     * 查询客户管理列表
+     * 查询客户、供应商信息列表
      */
     @PreAuthorize("@ss.hasPermi('system:company:list')")
     @GetMapping("/list")
@@ -48,20 +48,20 @@ public class CompanyController extends BaseController
     }
 
     /**
-     * 导出客户管理列表
+     * 导出客户、供应商信息列表
      */
     @PreAuthorize("@ss.hasPermi('system:company:export')")
-    @Log(title = "客户管理", businessType = BusinessType.EXPORT)
+    @Log(title = "客户、供应商信息", businessType = BusinessType.EXPORT)
     @PostMapping("/export")
     public void export(HttpServletResponse response, Company company)
     {
         List<Company> list = companyService.selectCompanyList(company);
         ExcelUtil<Company> util = new ExcelUtil<Company>(Company.class);
-        util.exportExcel(response, list, "客户管理数据");
+        util.exportExcel(response, list, "客户、供应商信息数据");
     }
 
     /**
-     * 获取客户管理详细信息
+     * 获取客户、供应商信息详细信息
      */
     @PreAuthorize("@ss.hasPermi('system:company:query')")
     @GetMapping(value = "/{id}")
@@ -71,10 +71,10 @@ public class CompanyController extends BaseController
     }
 
     /**
-     * 新增客户管理
+     * 新增客户、供应商信息
      */
     @PreAuthorize("@ss.hasPermi('system:company:add')")
-    @Log(title = "客户管理", businessType = BusinessType.INSERT)
+    @Log(title = "客户、供应商信息", businessType = BusinessType.INSERT)
     @PostMapping
     public AjaxResult add(@Validated @RequestBody Company company)
     {
@@ -82,10 +82,10 @@ public class CompanyController extends BaseController
     }
 
     /**
-     * 修改客户管理
+     * 修改客户、供应商信息
      */
     @PreAuthorize("@ss.hasPermi('system:company:edit')")
-    @Log(title = "客户管理", businessType = BusinessType.UPDATE)
+    @Log(title = "客户、供应商信息", businessType = BusinessType.UPDATE)
     @PutMapping
     public AjaxResult edit(@Validated @RequestBody Company company)
     {
@@ -93,10 +93,10 @@ public class CompanyController extends BaseController
     }
 
     /**
-     * 删除客户管理
+     * 删除客户、供应商信息
      */
     @PreAuthorize("@ss.hasPermi('system:company:remove')")
-    @Log(title = "客户管理", businessType = BusinessType.DELETE)
+    @Log(title = "客户、供应商信息", businessType = BusinessType.DELETE)
 	@DeleteMapping("/{ids}")
     public AjaxResult remove(@PathVariable Long[] ids)
     {

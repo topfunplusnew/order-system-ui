@@ -5,7 +5,7 @@ import java.util.List;
 import org.dzu.system.domain.Cars;
 
 /**
- * 车辆管理Mapper接口
+ * 外部车辆信息Mapper接口
  * 
  * @author ml
  * @date 2024-07-29
@@ -13,47 +13,47 @@ import org.dzu.system.domain.Cars;
 public interface CarsMapper extends BaseMapper<Cars>
 {
     /**
-     * 查询车辆管理
+     * 查询外部车辆信息
      * 
-     * @param id 车辆管理主键
-     * @return 车辆管理
+     * @param id 外部车辆信息主键
+     * @return 外部车辆信息
      */
     public Cars selectCarsById(Long id);
 
     /**
-     * 查询车辆管理列表
+     * 查询外部车辆信息列表
      * 
-     * @param cars 车辆管理
-     * @return 车辆管理集合
+     * @param cars 外部车辆信息
+     * @return 外部车辆信息集合
      */
     public List<Cars> selectCarsList(Cars cars);
 
     /**
-     * 新增车辆管理
+     * 新增外部车辆信息
      * 
-     * @param cars 车辆管理
+     * @param cars 外部车辆信息
      * @return 结果
      */
     public int insertCars(Cars cars);
 
     /**
-     * 修改车辆管理
+     * 修改外部车辆信息
      * 
-     * @param cars 车辆管理
+     * @param cars 外部车辆信息
      * @return 结果
      */
     public int updateCars(Cars cars);
 
     /**
-     * 删除车辆管理
+     * 删除外部车辆信息
      * 
-     * @param id 车辆管理主键
+     * @param id 外部车辆信息主键
      * @return 结果
      */
     public int deleteCarsById(Long id);
 
     /**
-     * 批量删除车辆管理
+     * 批量删除外部车辆信息
      * 
      * @param ids 需要删除的数据主键集合
      * @return 结果
