@@ -135,30 +135,30 @@
     <!-- 添加或修改客户、供应商信息对话框 -->
     <el-dialog :title="title" :visible.sync="open" width="500px" append-to-body>
       <el-form ref="form" :model="form" :rules="rules" label-width="80px">
-        <el-form-item label="公司名称" prop="companyName">
-          <el-input v-model="form.companyName" type="textarea" placeholder="请输入内容"/>
-        </el-form-item>
         <el-form-item label="客户" prop="relationName">
           <el-input v-model="form.relationName" placeholder="请输入客户名称"/>
         </el-form-item>
-        <el-form-item label="联系人电话" prop="relationTel">
+        <el-form-item label="公司名称" prop="companyName">
+          <el-input v-model="form.companyName" placeholder="请输入公司名称"/>
+        </el-form-item>
+        <el-form-item label="客户电话" prop="relationTel">
           <el-input v-model="form.relationTel" placeholder="请输入联系人电话"/>
         </el-form-item>
         <el-form-item label="地址" prop="address">
           <el-input v-model="form.address" placeholder="请输入地址"/>
         </el-form-item>
-        <el-form-item label="开户行" prop="bankName">
-          <el-input v-model="form.bankName" placeholder="请输入开户行"/>
-        </el-form-item>
-        <el-form-item label="开户名" prop="acountsName">
-          <el-input v-model="form.acountsName" placeholder="请输入开户名"/>
-        </el-form-item>
-        <el-form-item label="账号" prop="bankNo">
-          <el-input v-model="form.bankNo" placeholder="请输入账号"/>
-        </el-form-item>
-        <el-form-item label="余额" prop="surplusMoney">
-          <el-input v-model="form.surplusMoney" placeholder="请输入余额"/>
-        </el-form-item>
+        <!--        <el-form-item label="开户行" prop="bankName">-->
+        <!--          <el-input v-model="form.bankName" placeholder="请输入开户行"/>-->
+        <!--        </el-form-item>-->
+        <!--        <el-form-item label="开户名" prop="acountsName">-->
+        <!--          <el-input v-model="form.acountsName" placeholder="请输入开户名"/>-->
+        <!--        </el-form-item>-->
+        <!--        <el-form-item label="账号" prop="bankNo">-->
+        <!--          <el-input v-model="form.bankNo" placeholder="请输入账号"/>-->
+        <!--        </el-form-item>-->
+        <!--        <el-form-item label="余额" prop="surplusMoney">-->
+        <!--          <el-input v-model="form.surplusMoney" placeholder="请输入余额"/>-->
+        <!--        </el-form-item>-->
         <el-form-item label="业务员" prop="salesman">
           <el-input v-model="form.salesman" placeholder="请输入业务员"/>
         </el-form-item>
@@ -168,9 +168,9 @@
         <el-form-item label="老板电话" prop="leaderTel">
           <el-input v-model="form.leaderTel" placeholder="请输入联系人电话"/>
         </el-form-item>
-        <el-form-item label="区域" prop="region">
-          <el-input v-model="form.region" placeholder="请输入区域"/>
-        </el-form-item>
+        <!--        <el-form-item label="区域" prop="region">-->
+        <!--          <el-input v-model="form.region" placeholder="请输入区域"/>-->
+        <!--        </el-form-item>-->
         <el-form-item label="销售经理" prop="salesManager">
           <el-input v-model="form.salesManager" placeholder="请输入销售经理"/>
         </el-form-item>
@@ -186,18 +186,18 @@
         <el-form-item label="备注" prop="comments">
           <el-input v-model="form.comments" placeholder="请输入备注"/>
         </el-form-item>
-        <el-form-item label="添加时间" prop="addtime">
-          <el-input v-model="form.addtime" placeholder="请输入添加时间"/>
-        </el-form-item>
-        <el-form-item label="操作人员ID" prop="userId">
-          <el-input v-model="form.userId" placeholder="请输入操作人员ID"/>
-        </el-form-item>
-        <el-form-item label="操作人员姓名" prop="UserName">
-          <el-input v-model="form.UserName" placeholder="请输入操作人员姓名"/>
-        </el-form-item>
-        <el-form-item label="删除标记" prop="delFlag">
-          <el-input v-model="form.delFlag" placeholder="请输入删除标记"/>
-        </el-form-item>
+        <!--        <el-form-item label="添加时间" prop="addtime">-->
+        <!--          <el-input v-model="form.addtime" placeholder="请输入添加时间"/>-->
+        <!--        </el-form-item>-->
+        <!--        <el-form-item label="操作人员ID" prop="userId">-->
+        <!--          <el-input v-model="form.userId" placeholder="请输入操作人员ID"/>-->
+        <!--        </el-form-item>-->
+        <!--        <el-form-item label="操作人员姓名" prop="UserName">-->
+        <!--          <el-input v-model="form.UserName" placeholder="请输入操作人员姓名"/>-->
+        <!--        </el-form-item>-->
+        <!--        <el-form-item label="删除标记" prop="delFlag">-->
+        <!--          <el-input v-model="form.delFlag" placeholder="请输入删除标记"/>-->
+        <!--        </el-form-item>-->
       </el-form>
       <div slot="footer" class="dialog-footer">
         <el-button type="primary" @click="submitForm">确 定</el-button>
@@ -504,7 +504,7 @@ export default {
         acountsName: null,
         bankNo: null,
         surplusMoney: null,
-        companyType: null,
+        companyType: '客户',
         salesman: null,
         leader: null,
         leaderTel: null,
