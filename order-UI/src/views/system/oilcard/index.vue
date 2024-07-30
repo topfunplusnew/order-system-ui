@@ -83,7 +83,7 @@
           @click="handleUpdate"
           v-hasPermi="['system:oilCard:edit']"
         >修改</el-button>
-    
+    <!--记录为空时可以点按钮-->
       </el-col>
       <el-col :span="1.5">
         <el-button
@@ -94,6 +94,7 @@
           @click="handleDelete"
           v-hasPermi="['system:oilCard:remove']"
         >删除</el-button>
+        <!--记录为空时可以点按钮-->
       </el-col>
       <el-col :span="1.5">
         <el-button
@@ -138,7 +139,7 @@
         </template>
       </el-table-column>
     </el-table>
-    
+
     <pagination
       v-show="total>0"
       :total="total"
@@ -149,7 +150,7 @@
 
     <!-- 添加或修改加油卡信息对话框 -->
     <el-dialog :title="title" :visible.sync="open" width="500px" append-to-body>
-      
+
       <el-form ref="form" :model="form" :rules="rules" label-width="80px">
         <el-form-item label="加油卡卡号" prop="oilCardNo">
           <el-input v-model="form.oilCardNo" placeholder="请输入加油卡卡号" />
@@ -176,7 +177,7 @@
       <div slot="footer" class="dialog-footer">
         <el-button type="primary" @click="submitForm">确 定</el-button>
         <el-button @click="cancel">取 消</el-button>
-      
+
       </div>
     </el-dialog>
   </div>
