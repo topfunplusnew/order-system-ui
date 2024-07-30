@@ -7,6 +7,10 @@ import org.dzu.common.core.domain.BaseEntity;
 
 import org.dzu.common.annotation.DecimalMaxDigits;
 import org.dzu.common.annotation.OnlyZeroOrOne;
+import org.hibernate.validator.constraints.Length;
+
+import javax.validation.constraints.Pattern;
+
 /**
  * 商业票据、银行承兑对象 bankAcceptance
  * 
@@ -21,35 +25,39 @@ public class BankAcceptance extends BaseEntity
     private Long id;
 
     /** 操作日期 */
-    @Excel(name = "操作日期")
+    @Excel(name = "操作日期",dateFormat = "yyyy-MM-dd")
     private String operateDate;
 
     /** 票据号码 */
     @Excel(name = "票据号码")
+    @Length(max = 30, message = "票据号码的字符长度不允许超过30")
     private String billNo;
 
     /** 出票日期 */
-    @Excel(name = "出票日期")
+    @Excel(name = "出票日期",dateFormat = "yyyy-MM-dd")
     private String issueDate;
 
     /** 到期日期 */
-    @Excel(name = "到期日期")
+    @Excel(name = "到期日期",dateFormat = "yyyy-MM-dd")
     private String dueDate;
 
     /** 我方承兑账户 */
     @Excel(name = "我方承兑账户")
+    @Length(max = 20, message = "我方承兑账户的字符长度不允许超过20")
     private String billAccount;
 
     /** 票据日期 */
-    @Excel(name = "票据日期")
+    @Excel(name = "票据日期",dateFormat = "yyyy-MM-dd")
     private String billDate;
 
     /** 分类（收入、支出） */
-    @Excel(name = "分类", readConverterExp = "收=入、支出")
+    @Excel(name = "分类(收入/支出)")
+    @Pattern(regexp = "收入|支出", message = "分类必须是：收入或支出")
     private String billType;
 
     /** 事由 */
     @Excel(name = "事由")
+    @Length(max = 50, message = "事由的字符长度不允许超过50")
     private String reason;
 
     /** 票据金额 */
@@ -65,31 +73,37 @@ public class BankAcceptance extends BaseEntity
     private Double inDiscountAmount;
 
     /** 票据种类（电子/纸质） */
-    @Excel(name = "票据种类", readConverterExp = "电=子/纸质")
+    @Excel(name = "票据种类（电子或纸质）")
+    @Pattern(regexp = "电子|纸质", message = "票据类型必须是：电子或纸质")
     private String billCategory;
 
     /** 来源 */
     @Excel(name = "来源")
+    @Length(max = 50, message = "来源的字符长度不允许超过50")
     private String origin;
 
     /** 背书人 */
     @Excel(name = "背书人")
+    @Length(max = 20, message = "背书人的字符长度不允许超过20")
     private String endorser;
 
     /** 被背书人 */
     @Excel(name = "被背书人")
+    @Length(max = 20, message = "被背书人的字符长度不允许超过50")
     private String endorsee;
 
     /** 背书事由（出卖/付货款） */
-    @Excel(name = "背书事由", readConverterExp = "出=卖/付货款")
+    @Excel(name = "背书事由")
+    @Pattern(regexp = "出卖|付货款", message = "背书事由必须是：出卖或付货款")
     private String endorseReason;
 
     /** 备注 */
     @Excel(name = "备注")
+    @Length(max = 50, message = "备注的字符长度不允许超过50")
     private String comments;
 
     /** 添加时间 */
-    @Excel(name = "添加时间")
+    @Excel(name = "添加时间",dateFormat = "yyyy-MM-dd")
     private String addtime;
 
     /** 操作人员ID */
