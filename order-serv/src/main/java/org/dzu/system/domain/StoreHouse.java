@@ -6,6 +6,8 @@ import org.dzu.common.annotation.Excel;
 import org.dzu.common.core.domain.BaseEntity;
 
 import org.dzu.common.annotation.OnlyZeroOrOne;
+import org.hibernate.validator.constraints.Length;
+
 /**
  * 库房对象 StoreHouse
  * 
@@ -21,10 +23,12 @@ public class StoreHouse extends BaseEntity
 
     /** 仓库名称 */
     @Excel(name = "仓库名称")
+    @Length(max = 20, message = "仓库名称的字符长度不允许超过20")
     private String storeHouseName;
 
     /** 地址 */
     @Excel(name = "地址")
+    @Length(max = 30, message = "地址的字符长度不允许超过30")
     private String address;
 
     /** 删除标记 */

@@ -3,9 +3,14 @@ package org.dzu.system.domain;
 import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.apache.commons.lang3.builder.ToStringStyle;
 import org.dzu.common.annotation.Excel;
+import org.dzu.common.annotation.PhoneLength;
 import org.dzu.common.core.domain.BaseEntity;
 
 import org.dzu.common.annotation.OnlyZeroOrOne;
+import org.hibernate.validator.constraints.Length;
+
+import javax.validation.constraints.NotNull;
+
 /**
  * 车队对象 fleet
  * 
@@ -21,18 +26,25 @@ public class Fleet extends BaseEntity
 
     /** 车队名称 */
     @Excel(name = "车队名称")
+    @Length(max = 20, message = "车队名称的字符长度不允许超过20")
+    @NotNull(message = "车队名称不能为空")
     private String fName;
 
     /** 车队经理 */
     @Excel(name = "车队经理")
+    @Length(max = 20, message = "车队经理的字符长度不允许超过20")
+    @NotNull(message = "车队经理不能为空")
     private String fLeader;
 
     /** 车队经理电话 */
     @Excel(name = "车队经理电话")
+    @PhoneLength(message = "车队经理电话的字符长度不允许超过15")
     private String tel;
 
     /** 地址 */
     @Excel(name = "地址")
+    @Length(max = 30, message = "地址的字符长度不允许超过30")
+    @NotNull(message = "地址不能为空")
     private String address;
 
     /** 添加时间 */
