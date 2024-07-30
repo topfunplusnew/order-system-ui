@@ -246,7 +246,7 @@
           </el-col>
           <el-col :span="8">
             <el-form-item label="户名" :label-width="formLabelWidth">
-              <el-input v-model="currentInfo.bankName" autocomplete="off"></el-input>
+              <el-input v-model="currentInfo.acountsName" autocomplete="off"></el-input>
             </el-form-item>
           </el-col>
           <el-col :span="3">
@@ -411,25 +411,16 @@ export default {
       ],
       dialogFormSearchVisible: false,
       dialogFormVisible: false,
-      form_search: {
-        name: '',
-        region: '',
-        date1: '',
-        date2: '',
-        delivery: false,
-        type: [],
-        resource: '',
-        desc: ''
-      },
       formLabelWidth: '120px',
       //点击弹窗出来的搜索信息
       currentInfo: {
         companyType: '供应商',
         relationName: '',
         bankNo: '',
-        bankName: ''
+        bankName: '',
+        acountsName: ''
       },
-      //指定用户的信息
+      //指定用户的信息银行卡相关信息
       singleInfo: []
     };
   },
@@ -464,7 +455,6 @@ export default {
       this.dialogFormVisible = true
       //查询某供应商信息
       listCompany({relationName: row.relationName, relationTel: row.relationTel}).then(res => {
-        console.log('res=>', res)
         this.singleInfo = res.rows
       })
     },
@@ -477,11 +467,17 @@ export default {
       }).catch(err => {
         this.$modal.msgError("修改失败!" + err.msg);
       })
+      listCompany({
+        relationName: this.currentInfo.relationName,
+        relationTel: this.currentInfo.relationTel
+      }).then(res => {
+        this.singleInfo = res.rows
+      })
     },
     //打开的银行卡弹窗点击编辑
     handleUpdateBankPop(row) {
       this.currentInfo.bankNo = row.bankNo;
-      this.currentInfo.bankName = row.bankName;
+      this.currentInfo.acountsName = row.acountsName;
     },
     printHTML() {
       this.$print({

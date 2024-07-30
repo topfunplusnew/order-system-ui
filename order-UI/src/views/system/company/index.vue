@@ -241,7 +241,7 @@
           </el-col>
           <el-col :span="8">
             <el-form-item label="户名" :label-width="formLabelWidth">
-              <el-input v-model="currentInfo.bankName" autocomplete="off"></el-input>
+              <el-input v-model="currentInfo.acountsName" autocomplete="off"></el-input>
             </el-form-item>
           </el-col>
           <el-col :span="3">
@@ -403,41 +403,14 @@ export default {
       ],
       dialogFormVisible: false,
       dialogFormSearchVisible: false,
-      form_search: {
-        name: '',
-        region: '',
-        date1: '',
-        date2: '',
-        delivery: false,
-        type: [],
-        resource: '',
-        desc: ''
-      },
       formLabelWidth: '120px',
-      //表格内容
-      gridData: [{
-        date: '2016-05-02',
-        name: '王小虎',
-        address: '上海市普陀区金沙江路 1518 弄'
-      }, {
-        date: '2016-05-04',
-        name: '王小虎',
-        address: '上海市普陀区金沙江路 1518 弄'
-      }, {
-        date: '2016-05-01',
-        name: '王小虎',
-        address: '上海市普陀区金沙江路 1518 弄'
-      }, {
-        date: '2016-05-03',
-        name: '王小虎',
-        address: '上海市普陀区金沙江路 1518 弄'
-      }],
       //点击弹窗出来的搜索信息
       currentInfo: {
         companyType: '客户',
         relationName: '',
         bankNo: '',
-        bankName: ''
+        bankName: '',
+        acountsName: ''
       },
       //指定用户的信息
       singleInfo: []
@@ -487,11 +460,19 @@ export default {
       }).catch(err => {
         this.$modal.msgError("修改失败!" + err.msg);
       })
+      //重新查询
+      listCompany({
+        relationName: this.currentInfo.relationName,
+        relationTel: this.currentInfo.relationTel
+      }).then(res => {
+        this.singleInfo = res.rows
+      })
+
     },
     //打开的银行卡弹窗点击编辑
     handleUpdateBankPop(row) {
       this.currentInfo.bankNo = row.bankNo;
-      this.currentInfo.bankName = row.bankName;
+      this.currentInfo.acountsName = row.acountsName;
     },
     printHTML() {
       this.$print({
