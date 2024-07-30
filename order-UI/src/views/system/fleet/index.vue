@@ -138,7 +138,7 @@
         </template>
       </el-table-column>
     </el-table>
-    
+
     <pagination
       v-show="total>0"
       :total="total"
@@ -192,9 +192,11 @@ export default {
       // 选中数组
       ids: [],
       // 非单个禁用
-      single: true,
+     /* single: true,*/
+      single: false,
       // 非多个禁用
-      multiple: true,
+      /*multiple: true,*/
+      multiple: false,
       // 显示搜索条件
       showSearch: true,
       // 总条数
