@@ -10,8 +10,8 @@ order:
   profile: D:/order/uploadPath
   # 获取ip地址开关
   addressEnabled: true
-  # 验证码类型 math 数字计算 char 字符验证
-  captchaType: math
+  # 需要排除的参数，使用逗号分割
+  IllegalParameters: delFlag,cancelFlag,addtime,UserName,userId
 
 # 开发环境配置
 server:
