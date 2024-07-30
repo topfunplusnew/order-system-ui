@@ -573,7 +573,7 @@ export default {
       getCompany(id).then(response => {
         this.form = response.data;
         this.open = true;
-        this.title = "修改客户、供应商信息";
+        this.title = "修改客户信息";
       });
     },
     /** 提交按钮 */
@@ -599,7 +599,7 @@ export default {
     /** 删除按钮操作 */
     handleDelete(row) {
       const ids = row.id || this.ids;
-      this.$modal.confirm('是否确认删除客户、供应商信息编号为"' + ids + '"的数据项？').then(function () {
+      this.$modal.confirm('是否确认删除客户信息编号为"' + ids + '"的数据项？').then(function () {
         return delCompany(ids);
       }).then(() => {
         this.getList();
