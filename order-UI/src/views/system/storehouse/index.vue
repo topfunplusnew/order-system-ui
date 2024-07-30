@@ -102,7 +102,7 @@
         </template>
       </el-table-column>
     </el-table>
-    
+
     <pagination
       v-show="total>0"
       :total="total"
@@ -144,9 +144,11 @@ export default {
       // 选中数组
       ids: [],
       // 非单个禁用
-      single: true,
+      /*single: true,*/
+      single: false,
       // 非多个禁用
-      multiple: true,
+      /*multiple: true,*/
+      multiple: false,
       // 显示搜索条件
       showSearch: true,
       // 总条数
@@ -223,7 +225,7 @@ export default {
       this.title = "添加库房";
     },
     /** 修改按钮操作 */
-    handleUpdate(row) {
+     handleUpdate(row) {
       this.reset();
       const id = row.id || this.ids
       getStoreHouse(id).then(response => {
