@@ -38,6 +38,8 @@ import VueMeta from 'vue-meta'
 // 字典数据组件
 import DictData from '@/components/DictData'
 
+// 引入表格横向滚动插件
+import horizontalScroll from 'el-table-horizontal-scroll'
 //打印
 import 'print-js/dist/print.css';
 import print from 'print-js'
@@ -64,6 +66,8 @@ Vue.component('ImagePreview', ImagePreview)
 Vue.use(directive)
 Vue.use(plugins)
 Vue.use(VueMeta)
+// 引入表格横向滚动插件
+Vue.use(horizontalScroll)
 DictData.install()
 
 /**

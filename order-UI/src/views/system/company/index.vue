@@ -96,7 +96,7 @@
     </el-row>
 
     <el-table border v-loading="loading" :data="companyList" @selection-change="handleSelectionChange" id="printBox"
-              height="300px">
+              height="300px" v-horizontal-scroll="'always'">
       <!--      <el-table-column type="selection" width="55" align="center"/>-->
       <el-table-column label="id" align="center" prop="id"/>
       <el-table-column label="客户" align="center" prop="relationName" v-if="columns[0].visible"/>

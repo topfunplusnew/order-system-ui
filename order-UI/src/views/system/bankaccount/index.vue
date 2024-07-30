@@ -112,7 +112,7 @@
 
     <!-- 打印内容 -->
     <el-table border v-loading="loading" :data="bankAccountList" @selection-change="handleSelectionChange" id="printBox"
-              height="300px">
+              height="300px" v-horizontal-scroll="'always'">
       <!--      <el-table-column type="selection" width="55" align="center"/>-->
       <el-table-column label="id" align="center" prop="id"/>
       <el-table-column label="账户类型" align="center" prop="acountsType" v-if="columns[0].visible"/>
