@@ -77,23 +77,23 @@
     <el-table v-loading="loading" :data="companyList" @selection-change="handleSelectionChange" id="printBox">
       <el-table-column type="selection" width="55" align="center"/>
       <el-table-column label="id" align="center" prop="id"/>
-      <el-table-column label="供应商" align="center" prop="companyName" v-if="columns[2].visible"/>
-      <el-table-column label="地址" align="center" prop="address" v-if="columns[5].visible"/>
-      <el-table-column label="联系人" align="center" prop="relationName" v-if="columns[0].visible"/>
-      <el-table-column label="银行卡账号" align="center" prop="bankNo"/>
+      <el-table-column label="供应商" align="center" prop="companyName" v-if="columns[0].visible"/>
+      <el-table-column label="地址" align="center" prop="address" v-if="columns[1].visible"/>
+      <el-table-column label="联系人" align="center" prop="relationName" v-if="columns[2].visible"/>
+      <el-table-column label="银行卡账号" align="center" prop="bankNo" v-if="columns[3].visible"/>
       <!--      <el-table-column label="老板电话" align="center" prop="leaderTel" v-if="columns[3].visible"/>-->
       <!--      银行信息-->
-      <el-table-column label="开户名" align="center" prop="acountsName"/>
-      <el-table-column label="开户行" align="center" prop="bankName"/>
+      <el-table-column label="开户名" align="center" prop="acountsName" v-if="columns[4].visible"/>
+      <el-table-column label="开户行" align="center" prop="bankName" v-if="columns[5].visible"/>
       <!--      <el-table-column label="余额" align="center" prop="surplusMoney"/>-->
       <!--      <el-table-column label="业务员" align="center" prop="salesman"/>-->
       <!--      <el-table-column label="区域" align="center" prop="region" v-if="columns[6].visible"/>-->
       <!--      <el-table-column label="销售经理" align="center" prop="salesManager" v-if="columns[7].visible"/>-->
       <!--      <el-table-column label="省" align="center" prop="province"/>-->
       <!--      <el-table-column label="市县" align="center" prop="city"/>-->
-      <el-table-column label="电话" align="center" prop="relationTel" v-if="columns[4].visible"/>
+      <el-table-column label="电话" align="center" prop="relationTel" v-if="columns[6].visible"/>
       <!--      <el-table-column label="乡镇" align="center" prop="county"/>-->
-      <el-table-column label="备注" align="center" prop="comments" v-if="columns[8].visible"/>
+      <el-table-column label="备注" align="center" prop="comments" v-if="columns[7].visible"/>
       <!--      <el-table-column label="添加时间" align="center" prop="addtime"/>-->
       <!--      <el-table-column label="操作人员ID" align="center" prop="userId"/>-->
       <!--      <el-table-column label="操作人员姓名" align="center" prop="UserName"/>-->
@@ -373,14 +373,13 @@ export default {
       },
       columns: [
         {key: 0, label: `供应商`, visible: true},
-        {key: 1, label: `老板姓名`, visible: true},
-        {key: 2, label: `公司名称`, visible: true},
-        {key: 3, label: `老板电话`, visible: true},
-        {key: 4, label: `电话`, visible: true},
-        {key: 5, label: `地址`, visible: true},
-        {key: 6, label: `区域`, visible: true},
-        {key: 7, label: `销售经理`, visible: true},
-        {key: 8, label: `备注`, visible: true},
+        {key: 1, label: `地址`, visible: true},
+        {key: 2, label: `联系人`, visible: true},
+        {key: 3, label: `银行卡账号`, visible: true},
+        {key: 4, label: `开户名`, visible: true},
+        {key: 5, label: `开户行`, visible: true},
+        {key: 6, label: `电话`, visible: true},
+        {key: 7, label: `备注`, visible: true},
       ],
       dialogFormSearchVisible: false,
       dialogFormVisible: false,
