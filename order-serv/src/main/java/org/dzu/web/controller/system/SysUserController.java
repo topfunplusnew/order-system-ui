@@ -13,7 +13,6 @@ import org.dzu.common.utils.SecurityUtils;
 import org.dzu.common.utils.StringUtils;
 import org.dzu.common.utils.poi.ExcelUtil;
 import org.dzu.system.service.ISysDeptService;
-import org.dzu.system.service.ISysPostService;
 import org.dzu.system.service.ISysRoleService;
 import org.dzu.system.service.ISysUserService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -44,8 +43,6 @@ public class SysUserController extends BaseController
     @Autowired
     private ISysDeptService deptService;
 
-    @Autowired
-    private ISysPostService postService;
 
     /**
      * 获取用户列表
@@ -99,12 +96,10 @@ public class SysUserController extends BaseController
         AjaxResult ajax = AjaxResult.success();
         List<SysRole> roles = roleService.selectRoleAll();
         ajax.put("roles", SysUser.isAdmin(userId) ? roles : roles.stream().filter(r -> !r.isAdmin()).collect(Collectors.toList()));
-        ajax.put("posts", postService.selectPostAll());
         if (StringUtils.isNotNull(userId))
         {
             SysUser sysUser = userService.selectUserById(userId);
             ajax.put(AjaxResult.DATA_TAG, sysUser);
-            ajax.put("postIds", postService.selectPostListByUserId(userId));
             ajax.put("roleIds", sysUser.getRoles().stream().map(SysRole::getRoleId).collect(Collectors.toList()));
         }
         return ajax;

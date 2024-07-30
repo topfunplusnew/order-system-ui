@@ -10,8 +10,8 @@ order:
   profile: D:/order/uploadPath
   # 获取ip地址开关
   addressEnabled: true
-  # 验证码类型 math 数字计算 char 字符验证
-  captchaType: math
+  # 需要排除的参数，使用逗号分割
+  IllegalParameters: delFlag,cancelFlag,addtime,UserName,userId
 
 # 开发环境配置
 server:
@@ -68,13 +68,13 @@ spring:
   # redis 配置
   redis:
     # 地址
-    host: 24.233.1.45
+    host: 123.57.244.82
     # 端口，默认为6379
-    port: 63792
+    port: 6379
     # 数据库索引
     database: 0
     # 密码
-    password: BYp2akmQByzNTEN2
+    password: mwcKzJjGAcpnKPZp
 
     # 连接超时时间
     timeout: 0

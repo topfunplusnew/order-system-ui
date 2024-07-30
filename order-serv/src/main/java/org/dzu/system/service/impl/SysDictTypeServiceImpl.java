@@ -193,6 +193,10 @@ public class SysDictTypeServiceImpl implements ISysDictTypeService
     public int updateDictType(SysDictType dict)
     {
         SysDictType oldDict = dictTypeMapper.selectDictTypeById(dict.getDictId());
+        // 如果原来是dict是order前缀，则本次拒绝修改
+        if(( !oldDict.getDictType().equals(dict.getDictType()) || !oldDict.getStatus().equals(dict.getStatus()))&&oldDict.getDictType().startsWith("order")){
+            throw new ServiceException("系统业务表，拒绝修改");
+        }
         dictDataMapper.updateDictDataType(oldDict.getDictType(), dict.getDictType());
         int row = dictTypeMapper.updateDictType(dict);
         if (row > 0)
