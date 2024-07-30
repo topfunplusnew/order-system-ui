@@ -12,14 +12,18 @@
 
       <el-form-item>
         <el-button type="primary" icon="el-icon-search" size="mini" @click="handleQuery">搜索</el-button>
-        <el-button icon="el-icon-refresh" size="mini" @click="resetQuery">刷新</el-button>
+        <!--        <el-button icon="el-icon-refresh" size="mini" @click="resetQuery">刷新</el-button>-->
       </el-form-item>
     </el-form>
 
     <el-row :gutter="10" class="mb8">
+      <!-- 刷新按钮-->
+      <el-col :span="1.5">
+        <el-button icon="el-icon-refresh" size="mini" @click="resetQuery">刷新</el-button>
+      </el-col>
       <el-col :span="1.5">
         <el-button
-          type="primary"
+          type="danger"
           plain
           icon="el-icon-plus"
           size="mini"
@@ -28,39 +32,30 @@
         >新增客户信息
         </el-button>
       </el-col>
-      <el-col :span="1.5">
-        <el-button
-          type="danger"
-          plain
-          icon="el-icon-delete"
-          size="mini"
-          :disabled="multiple"
-          @click="handleDelete"
-          v-hasPermi="['system:company:remove']"
-        >批量删除
-        </el-button>
-      </el-col>
-      <el-col :span="1.5">
-        <el-button
-          type="warning"
-          plain
-          icon="el-icon-download"
-          size="mini"
-          @click="handleExport"
-          v-hasPermi="['system:company:export']"
-        >导出
-        </el-button>
-      </el-col>
-      <el-col :span="1.5">
-        <el-button
-          type="primary"
-          plain
-          icon="el-icon-printer"
-          size="mini"
-          @click="printHTML"
-        >打印
-        </el-button>
-      </el-col>
+      <!--      <el-col :span="1.5">-->
+      <!--        <el-button-->
+      <!--          type="danger"-->
+      <!--          plain-->
+      <!--          icon="el-icon-delete"-->
+      <!--          size="mini"-->
+      <!--          :disabled="multiple"-->
+      <!--          @click="handleDelete"-->
+      <!--          v-hasPermi="['system:company:remove']"-->
+      <!--        >批量删除-->
+      <!--        </el-button>-->
+      <!--      </el-col>-->
+      <!--      导出-->
+      <!--      <el-col :span="1.5">-->
+      <!--        <el-button-->
+      <!--          type="warning"-->
+      <!--          plain-->
+      <!--          icon="el-icon-download"-->
+      <!--          size="mini"-->
+      <!--          @click="handleExport"-->
+      <!--          v-hasPermi="['system:company:export']"-->
+      <!--        >导出-->
+      <!--        </el-button>-->
+      <!--      </el-col>-->
       <el-col :span="1.5">
         <el-button
           type="warning"
@@ -71,17 +66,45 @@
         >账号搜索
         </el-button>
       </el-col>
-      <right-toolbar :showSearch.sync="showSearch" @queryTable="getList" :columns="columns"></right-toolbar>
+
+      <right-toolbar :showSearch.sync="showSearch" @queryTable="getList" :columns="columns">
+        <template v-slot:print>
+          <el-col :span="1.5">
+            <el-button
+              plain
+              icon="el-icon-printer"
+              size="mini"
+              @click="printHTML"
+            >
+            </el-button>
+          </el-col>
+        </template>
+        <!--        导出-->
+        <template v-slot:export>
+          <el-col :span="1.5">
+            <el-button
+              plain
+              icon="el-icon-folder-opened"
+              size="mini"
+              @click="handleExport"
+              v-hasPermi="['system:company:export']"
+            >
+            </el-button>
+          </el-col>
+        </template>
+      </right-toolbar>
     </el-row>
 
-    <el-table v-loading="loading" :data="companyList" @selection-change="handleSelectionChange" id="printBox">
-      <el-table-column type="selection" width="55" align="center"/>
+    <el-table border v-loading="loading" :data="companyList" @selection-change="handleSelectionChange" id="printBox"
+              height="300px">
+      <!--      <el-table-column type="selection" width="55" align="center"/>-->
       <el-table-column label="id" align="center" prop="id"/>
       <el-table-column label="客户" align="center" prop="relationName" v-if="columns[0].visible"/>
       <el-table-column label="老板姓名" align="center" prop="leader" v-if="columns[1].visible"/>
-      <el-table-column label="公司名称" align="center" prop="companyName" v-if="columns[2].visible"/>
       <el-table-column label="老板电话" align="center" prop="leaderTel" v-if="columns[3].visible"/>
-      <el-table-column label="电话" align="center" prop="relationTel" v-if="columns[4].visible"/>
+      <el-table-column label="区域" align="center" prop="region" v-if="columns[6].visible"/>
+      <el-table-column label="公司名称" align="center" prop="companyName" v-if="columns[2].visible"/>
+      <el-table-column label="销售经理" align="center" prop="salesManager" v-if="columns[7].visible"/>
       <el-table-column label="地址" align="center" prop="address" v-if="columns[5].visible"/>
       <!--      银行信息-->
       <!--      <el-table-column label="开户行" align="center" prop="bankName"/>-->
@@ -89,8 +112,7 @@
       <!--      <el-table-column label="账号" align="center" prop="bankNo"/>-->
       <!--      <el-table-column label="余额" align="center" prop="surplusMoney"/>-->
       <!--      <el-table-column label="业务员" align="center" prop="salesman"/>-->
-      <el-table-column label="区域" align="center" prop="region" v-if="columns[6].visible"/>
-      <el-table-column label="销售经理" align="center" prop="salesManager" v-if="columns[7].visible"/>
+      <el-table-column label="电话" align="center" prop="relationTel" v-if="columns[4].visible"/>
       <!--      <el-table-column label="省" align="center" prop="province"/>-->
       <!--      <el-table-column label="市县" align="center" prop="city"/>-->
       <!--      <el-table-column label="乡镇" align="center" prop="county"/>-->
@@ -210,7 +232,7 @@
       <el-form :model="currentInfo">
         <el-row :gutter="4">
           <el-col :span="4">
-            {{ currentInfo.relationName }}
+            <span style="font-weight: bolder">{{ currentInfo.relationName }}</span>
           </el-col>
           <el-col :span="8">
             <el-form-item label="账号" :label-width="formLabelWidth">

@@ -29,14 +29,17 @@
       </el-form-item>
       <el-form-item>
         <el-button type="primary" icon="el-icon-search" size="mini" @click="handleQuery">搜索</el-button>
-        <el-button icon="el-icon-refresh" size="mini" @click="resetQuery">重置</el-button>
+        <!--        <el-button icon="el-icon-refresh" size="mini" @click="resetQuery">重置</el-button>-->
       </el-form-item>
     </el-form>
 
     <el-row :gutter="10" class="mb8">
       <el-col :span="1.5">
+        <el-button icon="el-icon-refresh" size="mini" @click="resetQuery">刷新</el-button>
+      </el-col>
+      <el-col :span="1.5">
         <el-button
-          type="primary"
+          type="danger"
           plain
           icon="el-icon-plus"
           size="mini"
@@ -45,46 +48,71 @@
         >新增银行卡信息
         </el-button>
       </el-col>
-      <el-col :span="1.5">
-        <el-button
-          type="danger"
-          plain
-          icon="el-icon-delete"
-          size="mini"
-          :disabled="multiple"
-          @click="handleDelete"
-          v-hasPermi="['system:bankAccount:remove']"
-        >批量删除
-        </el-button>
-      </el-col>
-      <el-col :span="1.5">
-        <el-button
-          type="warning"
-          plain
-          icon="el-icon-download"
-          size="mini"
-          @click="handleExport"
-          v-hasPermi="['system:bankAccount:export']"
-        >导出
-        </el-button>
+      <!--      <el-col :span="1.5">-->
+      <!--        <el-button-->
+      <!--          type="danger"-->
+      <!--          plain-->
+      <!--          icon="el-icon-delete"-->
+      <!--          size="mini"-->
+      <!--          :disabled="multiple"-->
+      <!--          @click="handleDelete"-->
+      <!--          v-hasPermi="['system:bankAccount:remove']"-->
+      <!--        >批量删除-->
+      <!--        </el-button>-->
+      <!--      </el-col>-->
+      <!--            <el-col :span="1.5">-->
+      <!--              <el-button-->
+      <!--                type="warning"-->
+      <!--                plain-->
+      <!--                icon="el-icon-download"-->
+      <!--                size="mini"-->
+      <!--                @click="handleExport"-->
+      <!--                v-hasPermi="['system:bankAccount:export']"-->
+      <!--              >导出-->
+      <!--              </el-button>-->
+      <!--            </el-col>-->
+      <!--      <el-col :span="1.5">-->
+      <!--        <el-button-->
+      <!--          type="primary"-->
+      <!--          plain-->
+      <!--          icon="el-icon-printer"-->
+      <!--          size="mini"-->
+      <!--          @click="printHTML"-->
+      <!--        >打印-->
+      <!--        </el-button>-->
+      <!--      </el-col>-->
 
-      </el-col>
-      <el-col :span="1.5">
-        <el-button
-          type="primary"
-          plain
-          icon="el-icon-printer"
-          size="mini"
-          @click="printHTML"
-        >打印
-        </el-button>
-      </el-col>
-
-      <right-toolbar :showSearch.sync="showSearch" @queryTable="getList" :columns="columns"></right-toolbar>
+      <right-toolbar :showSearch.sync="showSearch" @queryTable="getList" :columns="columns">
+        <template v-slot:print>
+          <el-col :span="1.5">
+            <el-button
+              plain
+              icon="el-icon-printer"
+              size="mini"
+              @click="printHTML"
+            >
+            </el-button>
+          </el-col>
+        </template>
+        <!--        导出-->
+        <template v-slot:export>
+          <el-col :span="1.5">
+            <el-button
+              plain
+              icon="el-icon-folder-opened"
+              size="mini"
+              @click="handleExport"
+              v-hasPermi="['system:bankAccount:export']"
+            >
+            </el-button>
+          </el-col>
+        </template>
+      </right-toolbar>
     </el-row>
 
-    <el-table v-loading="loading" :data="bankAccountList" @selection-change="handleSelectionChange" id="printBox">
-      <el-table-column type="selection" width="55" align="center"/>
+    <el-table border v-loading="loading" :data="bankAccountList" @selection-change="handleSelectionChange" id="printBox"
+              height="300px">
+      <!--      <el-table-column type="selection" width="55" align="center"/>-->
       <el-table-column label="id" align="center" prop="id"/>
       <el-table-column label="账户类型" align="center" prop="acountsType" v-if="columns[0].visible"/>
       <el-table-column label="开户名称(户名)" align="center" prop="acountsName" v-if="columns[1].visible"/>
