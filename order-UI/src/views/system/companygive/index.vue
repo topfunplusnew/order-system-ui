@@ -1,15 +1,14 @@
 <template>
   <div class="app-container">
-    <el-form :model="queryParams" ref="queryForm" size="small" :inline="true" v-show="showSearch" label-width="68px">
-      <el-form-item label="客户名称" prop="relationName">
+    <el-form :model="queryParams" ref="queryForm" size="small" :inline="true" v-show="showSearch" label-width="100px">
+      <el-form-item label="供应商名称" prop="companyName">
         <el-input
-          v-model="queryParams.relationName"
-          placeholder="请输入客户名称"
+          v-model="queryParams.companyName"
+          placeholder="请输入供应商名称"
           clearable
           @keyup.enter.native="handleQuery"
         />
       </el-form-item>
-
       <el-form-item>
         <el-button type="primary" icon="el-icon-search" size="mini" @click="handleQuery">搜索</el-button>
         <!--        <el-button icon="el-icon-refresh" size="mini" @click="resetQuery">刷新</el-button>-->
@@ -17,7 +16,6 @@
     </el-form>
 
     <el-row :gutter="10" class="mb8">
-      <!-- 刷新按钮-->
       <el-col :span="1.5">
         <el-button icon="el-icon-refresh" size="mini" @click="resetQuery">刷新</el-button>
       </el-col>
@@ -29,7 +27,7 @@
           size="mini"
           @click="handleAdd"
           v-hasPermi="['system:company:add']"
-        >新增客户信息
+        >新增供应商信息
         </el-button>
       </el-col>
       <!--      <el-col :span="1.5">-->
@@ -44,7 +42,6 @@
       <!--        >批量删除-->
       <!--        </el-button>-->
       <!--      </el-col>-->
-      <!--      导出-->
       <!--      <el-col :span="1.5">-->
       <!--        <el-button-->
       <!--          type="warning"-->
@@ -54,6 +51,16 @@
       <!--          @click="handleExport"-->
       <!--          v-hasPermi="['system:company:export']"-->
       <!--        >导出-->
+      <!--        </el-button>-->
+      <!--      </el-col>-->
+      <!--      <el-col :span="1.5">-->
+      <!--        <el-button-->
+      <!--          type="primary"-->
+      <!--          plain-->
+      <!--          icon="el-icon-printer"-->
+      <!--          size="mini"-->
+      <!--          @click="printHTML"-->
+      <!--        >打印-->
       <!--        </el-button>-->
       <!--      </el-col>-->
       <el-col :span="1.5">
@@ -66,7 +73,6 @@
         >账号搜索
         </el-button>
       </el-col>
-
       <right-toolbar :showSearch.sync="showSearch" @queryTable="getList" :columns="columns">
         <template v-slot:print>
           <el-col :span="1.5">
@@ -99,24 +105,23 @@
               height="300px" v-horizontal-scroll="'always'">
       <!--      <el-table-column type="selection" width="55" align="center"/>-->
       <el-table-column label="id" align="center" prop="id"/>
-      <el-table-column label="客户" align="center" prop="relationName" v-if="columns[0].visible"/>
-      <el-table-column label="老板姓名" align="center" prop="leader" v-if="columns[1].visible"/>
-      <el-table-column label="老板电话" align="center" prop="leaderTel" v-if="columns[3].visible"/>
-      <el-table-column label="区域" align="center" prop="region" v-if="columns[6].visible"/>
-      <el-table-column label="公司名称" align="center" prop="companyName" v-if="columns[2].visible"/>
-      <el-table-column label="销售经理" align="center" prop="salesManager" v-if="columns[7].visible"/>
-      <el-table-column label="地址" align="center" prop="address" v-if="columns[5].visible"/>
+      <el-table-column label="供应商" align="center" prop="companyName" v-if="columns[0].visible"/>
+      <el-table-column label="地址" align="center" prop="address" v-if="columns[1].visible"/>
+      <el-table-column label="联系人" align="center" prop="relationName" v-if="columns[2].visible"/>
+      <el-table-column label="银行卡账号" align="center" prop="bankNo" v-if="columns[3].visible"/>
+      <!--      <el-table-column label="老板电话" align="center" prop="leaderTel" v-if="columns[3].visible"/>-->
       <!--      银行信息-->
-      <!--      <el-table-column label="开户行" align="center" prop="bankName"/>-->
-      <!--      <el-table-column label="开户名" align="center" prop="acountsName"/>-->
-      <!--      <el-table-column label="账号" align="center" prop="bankNo"/>-->
+      <el-table-column label="开户名" align="center" prop="acountsName" v-if="columns[4].visible"/>
+      <el-table-column label="开户行" align="center" prop="bankName" v-if="columns[5].visible"/>
       <!--      <el-table-column label="余额" align="center" prop="surplusMoney"/>-->
       <!--      <el-table-column label="业务员" align="center" prop="salesman"/>-->
-      <el-table-column label="电话" align="center" prop="relationTel" v-if="columns[4].visible"/>
+      <!--      <el-table-column label="区域" align="center" prop="region" v-if="columns[6].visible"/>-->
+      <!--      <el-table-column label="销售经理" align="center" prop="salesManager" v-if="columns[7].visible"/>-->
       <!--      <el-table-column label="省" align="center" prop="province"/>-->
       <!--      <el-table-column label="市县" align="center" prop="city"/>-->
+      <el-table-column label="电话" align="center" prop="relationTel" v-if="columns[6].visible"/>
       <!--      <el-table-column label="乡镇" align="center" prop="county"/>-->
-      <el-table-column label="备注" align="center" prop="comments" v-if="columns[8].visible"/>
+      <el-table-column label="备注" align="center" prop="comments" v-if="columns[7].visible"/>
       <!--      <el-table-column label="添加时间" align="center" prop="addtime"/>-->
       <!--      <el-table-column label="操作人员ID" align="center" prop="userId"/>-->
       <!--      <el-table-column label="操作人员姓名" align="center" prop="UserName"/>-->
@@ -154,16 +159,16 @@
       @pagination="getList"
     />
 
-    <!-- 添加或修改客户、供应商信息对话框 -->
+    <!-- 添加或修改供应商、供应商信息对话框 -->
     <el-dialog :title="title" :visible.sync="open" width="500px" append-to-body>
       <el-form ref="form" :model="form" :rules="rules" label-width="80px">
-        <el-form-item label="客户" prop="relationName">
-          <el-input v-model="form.relationName" placeholder="请输入客户名称"/>
+        <el-form-item label="供应商名称" prop="relationName">
+          <el-input v-model="form.companyName" placeholder="请输入供应商名称"/>
         </el-form-item>
-        <el-form-item label="公司名称" prop="companyName">
-          <el-input v-model="form.companyName" placeholder="请输入公司名称"/>
-        </el-form-item>
-        <el-form-item label="客户电话" prop="relationTel">
+        <!--        <el-form-item label="公司名称" prop="companyName">-->
+        <!--          <el-input v-model="form.companyName" type="textarea" placeholder="请输入内容"/>-->
+        <!--        </el-form-item>-->
+        <el-form-item label="供应商电话" prop="relationTel">
           <el-input v-model="form.relationTel" placeholder="请输入联系人电话"/>
         </el-form-item>
         <el-form-item label="地址" prop="address">
@@ -181,21 +186,21 @@
         <!--        <el-form-item label="余额" prop="surplusMoney">-->
         <!--          <el-input v-model="form.surplusMoney" placeholder="请输入余额"/>-->
         <!--        </el-form-item>-->
-        <el-form-item label="业务员" prop="salesman">
-          <el-input v-model="form.salesman" placeholder="请输入业务员"/>
-        </el-form-item>
-        <el-form-item label="老板姓名" prop="leader">
-          <el-input v-model="form.leader" placeholder="请输入老板姓名"/>
-        </el-form-item>
-        <el-form-item label="老板电话" prop="leaderTel">
-          <el-input v-model="form.leaderTel" placeholder="请输入联系人电话"/>
-        </el-form-item>
+        <!--        <el-form-item label="业务员" prop="salesman">-->
+        <!--          <el-input v-model="form.salesman" placeholder="请输入业务员"/>-->
+        <!--        </el-form-item>-->
+        <!--        <el-form-item label="老板姓名" prop="leader">-->
+        <!--          <el-input v-model="form.leader" placeholder="请输入老板姓名"/>-->
+        <!--        </el-form-item>-->
+        <!--        <el-form-item label="老板电话" prop="leaderTel">-->
+        <!--          <el-input v-model="form.leaderTel" placeholder="请输入联系人电话"/>-->
+        <!--        </el-form-item>-->
         <!--        <el-form-item label="区域" prop="region">-->
         <!--          <el-input v-model="form.region" placeholder="请输入区域"/>-->
         <!--        </el-form-item>-->
-        <el-form-item label="销售经理" prop="salesManager">
-          <el-input v-model="form.salesManager" placeholder="请输入销售经理"/>
-        </el-form-item>
+        <!--        <el-form-item label="销售经理" prop="salesManager">-->
+        <!--          <el-input v-model="form.salesManager" placeholder="请输入销售经理"/>-->
+        <!--        </el-form-item>-->
         <el-form-item label="省" prop="province">
           <el-input v-model="form.province" placeholder="请输入省"/>
         </el-form-item>
@@ -227,12 +232,12 @@
       </div>
     </el-dialog>
 
-    <!--    点击银行卡-->
+    <!--    银行卡-->
     <el-dialog title="银行卡号" :visible.sync="dialogFormVisible">
       <el-form :model="currentInfo">
         <el-row :gutter="4">
           <el-col :span="4">
-            <span style="font-weight: bolder">{{ currentInfo.relationName }}</span>
+            {{ currentInfo.relationName }}
           </el-col>
           <el-col :span="8">
             <el-form-item label="账号" :label-width="formLabelWidth">
@@ -251,7 +256,7 @@
       </el-form>
       <el-table v-loading="loading" :data="singleInfo" @selection-change="handleSelectionChange">
         <el-table-column label="序号" align="center" prop="id"/>
-        <el-table-column label="客户名称" align="center" prop="relationName"/>
+        <el-table-column label="供应商名称" align="center" prop="relationName"/>
         <el-table-column label="银行卡号" align="center" prop="bankNo"/>
         <el-table-column label="户名" align="center" prop="acountsName"/>
         <el-table-column label="操作" align="center" class-name="small-padding fixed-width" fixed="right" width="180">
@@ -284,13 +289,12 @@
       />
     </el-dialog>
 
-
     <!--    账号搜索-->
     <el-dialog title="账号搜索" :visible.sync="dialogFormSearchVisible">
       <el-form :model="queryParams">
         <el-row :gutter="4">
           <el-col :span="8">
-            <el-form-item label="客户名称" :label-width="formLabelWidth">
+            <el-form-item label="供应商名称" :label-width="formLabelWidth">
               <el-input v-model="queryParams.relationName" autocomplete="off"></el-input>
             </el-form-item>
           </el-col>
@@ -299,8 +303,13 @@
               <el-input v-model="queryParams.bankNo" autocomplete="off"></el-input>
             </el-form-item>
           </el-col>
-          <el-col :span="3">
-            <el-button type="primary" @click="handleSearchCompanyGive">搜索</el-button>
+          <el-col :span="8">
+            <el-form-item label="户名" :label-width="formLabelWidth">
+              <el-input v-model="queryParams.acountsName" autocomplete="off"></el-input>
+            </el-form-item>
+          </el-col>
+          <el-col>
+            <el-button type="primary" @click="handleSearchCompanyGive" style="margin-left: 50px">提交</el-button>
           </el-col>
         </el-row>
       </el-form>
@@ -315,7 +324,7 @@
             </el-button>
           </template>
         </el-table-column>
-        <el-table-column label="客户名称" align="center" prop="relationName"/>
+        <el-table-column label="供应商名称" align="center" prop="relationName"/>
         <el-table-column label="银行卡号" align="center" prop="bankNo"/>
         <el-table-column label="户名" align="center" prop="acountsName"/>
       </el-table>
@@ -349,7 +358,7 @@ export default {
       showSearch: true,
       // 总条数
       total: 0,
-      // 客户、供应商信息表格数据
+      // 供应商、供应商信息表格数据
       companyList: [],
       // 弹出层标题
       title: "",
@@ -367,7 +376,7 @@ export default {
         acountsName: null,
         bankNo: null,
         surplusMoney: null,
-        companyType: '客户',
+        companyType: '供应商',
         salesman: null,
         leader: null,
         leaderTel: null,
@@ -391,28 +400,27 @@ export default {
         ],
       },
       columns: [
-        {key: 0, label: `客户`, visible: true},
-        {key: 1, label: `老板姓名`, visible: true},
-        {key: 2, label: `公司名称`, visible: true},
-        {key: 3, label: `老板电话`, visible: true},
-        {key: 4, label: `电话`, visible: true},
-        {key: 5, label: `地址`, visible: true},
-        {key: 6, label: `区域`, visible: true},
-        {key: 7, label: `销售经理`, visible: true},
-        {key: 8, label: `备注`, visible: true},
+        {key: 0, label: `供应商`, visible: true},
+        {key: 1, label: `地址`, visible: true},
+        {key: 2, label: `联系人`, visible: true},
+        {key: 3, label: `银行卡账号`, visible: true},
+        {key: 4, label: `开户名`, visible: true},
+        {key: 5, label: `开户行`, visible: true},
+        {key: 6, label: `电话`, visible: true},
+        {key: 7, label: `备注`, visible: true},
       ],
-      dialogFormVisible: false,
       dialogFormSearchVisible: false,
+      dialogFormVisible: false,
       formLabelWidth: '120px',
       //点击弹窗出来的搜索信息
       currentInfo: {
-        companyType: '客户',
+        companyType: '供应商',
         relationName: '',
         bankNo: '',
         bankName: '',
         acountsName: ''
       },
-      //指定用户的信息
+      //指定用户的信息银行卡相关信息
       singleInfo: []
     };
   },
@@ -420,6 +428,10 @@ export default {
     this.getList();
   },
   methods: {
+    //银行卡搜索按钮
+    handleSearchCompanyGive() {
+      this.getList();
+    },
     //账号搜索
     handleSearch() {
       this.dialogFormSearchVisible = true;
@@ -441,15 +453,10 @@ export default {
       this.currentInfo.county = row.county
       this.currentInfo.comments = row.comments
       this.dialogFormVisible = true
-      //查询某客户信息
+      //查询某供应商信息
       listCompany({relationName: row.relationName, relationTel: row.relationTel}).then(res => {
-        console.log('res=>', res)
         this.singleInfo = res.rows
       })
-    },
-    //银行卡搜索按钮
-    handleSearchCompanyGive() {
-      this.getList();
     },
     //弹出的银行卡信息点击提交
     handleCommitCompanyGive() {
@@ -460,14 +467,12 @@ export default {
       }).catch(err => {
         this.$modal.msgError("修改失败!" + err.msg);
       })
-      //重新查询
       listCompany({
         relationName: this.currentInfo.relationName,
         relationTel: this.currentInfo.relationTel
       }).then(res => {
         this.singleInfo = res.rows
       })
-
     },
     //打开的银行卡弹窗点击编辑
     handleUpdateBankPop(row) {
@@ -481,7 +486,7 @@ export default {
         targetStyles: ['*'], // 打印内容使用所有HTML样式，没有设置这个属性/值，设置分页打印没有效果
       })
     },
-    /** 查询客户、供应商信息列表 */
+    /** 查询供应商、供应商信息列表 */
     getList() {
       this.loading = true;
       listCompany(this.queryParams).then(response => {
@@ -507,7 +512,7 @@ export default {
         acountsName: null,
         bankNo: null,
         surplusMoney: null,
-        companyType: '客户',
+        companyType: '供应商',
         salesman: null,
         leader: null,
         leaderTel: null,
@@ -545,7 +550,7 @@ export default {
     handleAdd() {
       this.reset();
       this.open = true;
-      this.title = "添加客户信息";
+      this.title = "添加供应商信息";
     },
     /** 修改按钮操作 */
     handleUpdate(row) {
@@ -554,7 +559,7 @@ export default {
       getCompany(id).then(response => {
         this.form = response.data;
         this.open = true;
-        this.title = "修改客户信息";
+        this.title = "修改供应商信息";
       });
     },
     /** 提交按钮 */
@@ -580,7 +585,7 @@ export default {
     /** 删除按钮操作 */
     handleDelete(row) {
       const ids = row.id || this.ids;
-      this.$modal.confirm('是否确认删除客户信息编号为"' + ids + '"的数据项？').then(function () {
+      this.$modal.confirm('是否确认删除供应商编号为"' + ids + '"的数据项？').then(function () {
         return delCompany(ids);
       }).then(() => {
         this.getList();

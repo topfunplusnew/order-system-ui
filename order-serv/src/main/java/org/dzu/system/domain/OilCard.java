@@ -7,6 +7,11 @@ import org.dzu.common.core.domain.BaseEntity;
 
 import org.dzu.common.annotation.DecimalMaxDigits;
 import org.dzu.common.annotation.OnlyZeroOrOne;
+import org.hibernate.validator.constraints.Length;
+
+import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Pattern;
+
 /**
  * 加油卡信息对象 oilCard
  * 
@@ -22,20 +27,24 @@ public class OilCard extends BaseEntity
 
     /** 加油卡卡号 */
     @Excel(name = "加油卡卡号")
+    @Length(max = 55, message = "加油卡卡号的字符长度不允许超过55")
     private String oilCardNo;
 
     /** 加油卡类别（主卡、副卡） */
-    @Excel(name = "加油卡类别", readConverterExp = "主=卡、副卡")
+    @Excel(name = "加油卡类别")
+    @NotNull(message = "加油卡类别不能为空")
+    @Pattern(regexp = "主卡|副卡", message = "加油卡类别必须是：主卡或副卡")
     private String oilType;
 
     /** 当前金额 */
+    @NotNull(message = "当前金额不能为空")
     @DecimalMaxDigits
     private Double moneyAmount;
 
     /** 备注 */
     @Excel(name = "备注")
+    @Length(max = 200, message = "备注的字符长度不允许超过200")
     private String comments;
-
     /** 添加时间 */
     @Excel(name = "添加时间")
     private String addtime;

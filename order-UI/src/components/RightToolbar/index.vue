@@ -1,25 +1,39 @@
 <template>
   <div class="top-right-btn" :style="style">
     <el-row>
-      <el-tooltip class="item" effect="dark" :content="showSearch ? '隐藏搜索' : '显示搜索'" placement="top" v-if="search">
-        <el-button size="mini" circle icon="el-icon-search" @click="toggleSearch()" />
+      <!--      打印-->
+      <el-tooltip class="item" effect="dark" content="打印" placement="top" style="margin-right: 10px">
+        <slot name="print"></slot>
       </el-tooltip>
-      <el-tooltip class="item" effect="dark" content="刷新" placement="top">
-        <el-button size="mini" circle icon="el-icon-refresh" @click="refresh()" />
+
+      <!--      导出-->
+      <el-tooltip class="item" effect="dark" content="导出" placement="top">
+        <slot name="export"></slot>
       </el-tooltip>
-      <el-tooltip class="item" effect="dark" content="显隐列" placement="top" v-if="columns">
-        <el-button size="mini" circle icon="el-icon-menu" @click="showColumn()" v-if="showColumnsType == 'transfer'"/>
-        <el-dropdown trigger="click" :hide-on-click="false" style="padding-left: 12px" v-if="showColumnsType == 'checkbox'">
-          <el-button size="mini" circle icon="el-icon-menu" />
+      <!-- 隐藏列的控制   -->
+      <el-tooltip class="item" style="margin-right: 10px" effect="dark" content="显隐列" placement="top" v-if="columns">
+        <el-button size="mini" circle icon="el-icon-s-open" @click="showColumn()" v-if="showColumnsType == 'transfer'"/>
+        <el-dropdown trigger="click" :hide-on-click="false" style="padding-left: 12px"
+                     v-if="showColumnsType == 'checkbox'">
+          <el-button size="mini" icon="el-icon-s-open"/>
           <el-dropdown-menu slot="dropdown">
             <template v-for="item in columns">
               <el-dropdown-item :key="item.key">
-                <el-checkbox :checked="item.visible" @change="checkboxChange($event, item.label)" :label="item.label" />
+                <el-checkbox :checked="item.visible" @change="checkboxChange($event, item.label)" :label="item.label"/>
               </el-dropdown-item>
             </template>
           </el-dropdown-menu>
         </el-dropdown>
       </el-tooltip>
+      <!--      显示与隐藏-->
+      <!--      <el-tooltip class="item" effect="dark" :content="showSearch ? '隐藏搜索' : '显示搜索'" placement="top"-->
+      <!--                  v-if="search">-->
+      <!--        <el-button size="mini" icon="el-icon-search" @click="toggleSearch()"/>-->
+      <!--      </el-tooltip>-->
+      <!--      刷新-->
+      <!--      <el-tooltip class="item" effect="dark" content="刷新" placement="top">-->
+      <!--        <el-button size="mini" circle icon="el-icon-refresh" @click="refresh()"/>-->
+      <!--      </el-tooltip>-->
     </el-row>
     <el-dialog :title="title" :visible.sync="open" append-to-body>
       <el-transfer
@@ -90,6 +104,10 @@ export default {
     }
   },
   methods: {
+    //打印
+    handlePrint() {
+
+    },
     // 搜索
     toggleSearch() {
       this.$emit("update:showSearch", !this.showSearch);
@@ -123,6 +141,7 @@ export default {
   display: block;
   margin-left: 0px;
 }
+
 ::v-deep .el-transfer__button:first-child {
   margin-bottom: 10px;
 }

@@ -3,10 +3,15 @@ package org.dzu.system.domain;
 import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.apache.commons.lang3.builder.ToStringStyle;
 import org.dzu.common.annotation.Excel;
+import org.dzu.common.annotation.PhoneLength;
 import org.dzu.common.core.domain.BaseEntity;
 
 import org.dzu.common.annotation.DecimalMaxDigits;
 import org.dzu.common.annotation.OnlyZeroOrOne;
+import org.hibernate.validator.constraints.Length;
+
+import javax.validation.constraints.Pattern;
+
 /**
  * 库存对象 inventory
  * 
@@ -26,18 +31,20 @@ public class Inventory extends BaseEntity
 
     /** 仓库名称 */
     @Excel(name = "仓库名称")
+    @Length(max = 20, message = "仓库名称的字符长度不允许超过20")
     private String storeHouseName;
 
     /** 入库日期 */
-    @Excel(name = "入库日期")
+    @Excel(name = "入库日期",dateFormat = "yyyy-MM-dd")
     private String storeDate;
 
     /** 库存量（片数） */
-    @Excel(name = "库存量", readConverterExp = "片=数")
+    @Excel(name = "库存量(片数）")
     private Long stockNumber;
 
     /** 供应商 */
     @Excel(name = "供应商")
+    @Length(max = 20, message = "供应商的字符长度不允许超过20")
     private String supplier;
 
     /** 供应商ID */
@@ -50,10 +57,12 @@ public class Inventory extends BaseEntity
 
     /** 级别名称 */
     @Excel(name = "级别名称")
+    @Length(max = 20, message = "账号的字符长度不允许超过20")
     private String levelName;
 
     /** 计量单位 */
     @Excel(name = "计量单位")
+    @Length(max = 20, message = "计量单位的字符长度不允许超过20")
     private String countingUnit;
 
     /** 厚度 */
@@ -86,6 +95,7 @@ public class Inventory extends BaseEntity
 
     /** 出厂是否含税 */
     @Excel(name = "出厂是否含税")
+    @Pattern(regexp = "是|否", message = "出厂是否含税必须是：是或否")
     private Long isIncludeTaxFactory;
 
     /** 杂费 */
@@ -101,11 +111,12 @@ public class Inventory extends BaseEntity
     private Double paymentUnload;
 
     /** 销售是否含税（0不含税，1含税） */
-    @Excel(name = "销售是否含税", readConverterExp = "0=不含税，1含税")
+    @Excel(name = "销售是否含税")
+    @Pattern(regexp = "是|否", message = "销售是否含税必须是：是或否")
     private Long isIncludeTaxSale;
 
     /** 总货款 */
-    @Excel(name = "总货款")
+    @DecimalMaxDigits
     private String payments;
 
     /** 陆运车辆ID */
@@ -117,7 +128,7 @@ public class Inventory extends BaseEntity
     private String landCarNo;
 
     /** 陆运司机电话 */
-    @Excel(name = "陆运司机电话")
+    @PhoneLength
     private String landDriverTel;
 
     /** 陆地司机姓名 */
@@ -126,18 +137,22 @@ public class Inventory extends BaseEntity
 
     /** 海运车辆ID */
     @Excel(name = "海运车辆ID")
+    @Length(max = 55, message = "海运车辆ID的字符长度不允许超过55")
     private Long seaCarID;
 
     /** 海运车牌 */
     @Excel(name = "海运车牌")
+    @Length(max = 55, message = "海运车车牌的字符长度不允许超过55")
     private String seaCarNo;
 
     /** 海运司机电话 */
     @Excel(name = "海运司机电话")
+    @PhoneLength
     private String seaDriverTel;
 
     /** 海运司机姓名 */
     @Excel(name = "海运司机姓名")
+    @Length(max = 20, message = "海运司机姓名的字符长度不允许超过20")
     private String seaDriverName;
 
     /** 误差 */
@@ -161,7 +176,7 @@ public class Inventory extends BaseEntity
     private Double seaFreight;
 
     /** 运费（海运费+陆运费） */
-    @Excel(name = "运费", readConverterExp = "海=运费+陆运费")
+    @Excel(name = "运费", readConverterExp = "运费=海运费+陆运费")
     private Double freight;
 
     /** 其他费用 */
@@ -198,10 +213,11 @@ public class Inventory extends BaseEntity
 
     /** 备注 */
     @Excel(name = "备注")
+    @Length(max = 50, message = "备注的字符长度不允许超过50")
     private String comments;
 
     /** 添加时间 */
-    @Excel(name = "添加时间")
+    @Excel(name = "添加时间",dateFormat = "yyyy-MM-dd")
     private String addtime;
 
     /** 操作人员ID */
@@ -210,6 +226,7 @@ public class Inventory extends BaseEntity
 
     /** 操作人员姓名 */
     @Excel(name = "操作人员姓名")
+    @Length(max = 20, message = "操作人员姓名的字符长度不允许超过20")
     private String UserName;
 
     /** 删除标记 */
@@ -217,7 +234,7 @@ public class Inventory extends BaseEntity
     private Long delFlag;
 
     /** 订单仓库选择时是否显示（ 显示， 不显示） */
-    @Excel(name = "订单仓库选择时是否显示", readConverterExp = "显=示，,不=显示")
+    @Excel(name = "订单仓库选择时是否显示", readConverterExp = "0=显示，,1=不显示")
     private Long showFlag;
 
     public void setId(Long id) 

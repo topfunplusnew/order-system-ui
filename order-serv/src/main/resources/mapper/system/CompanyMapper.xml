@@ -53,7 +53,6 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
             <if test="salesman != null  and salesman != ''"> and salesman = #{salesman}</if>
             <if test="leader != null  and leader != ''"> and leader = #{leader}</if>
             <if test="leaderTel != null  and leaderTel != ''"> and leaderTel = #{leaderTel}</if>
-            <if test="region != null  and region != ''"> and region = #{region}</if>
             <if test="salesManager != null  and salesManager != ''"> and salesManager = #{salesManager}</if>
             <if test="province != null  and province != ''"> and province = #{province}</if>
             <if test="city != null  and city != ''"> and city = #{city}</if>
