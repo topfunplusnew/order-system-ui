@@ -22,7 +22,6 @@ import org.dzu.common.utils.spring.SpringUtils;
 import org.dzu.system.domain.SysPost;
 import org.dzu.system.domain.SysUserPost;
 import org.dzu.system.domain.SysUserRole;
-import org.dzu.system.mapper.SysPostMapper;
 import org.dzu.system.mapper.SysRoleMapper;
 import org.dzu.system.mapper.SysUserMapper;
 import org.dzu.system.mapper.SysUserPostMapper;
@@ -47,8 +46,6 @@ public class SysUserServiceImpl implements ISysUserService
     @Autowired
     private SysRoleMapper roleMapper;
 
-    @Autowired
-    private SysPostMapper postMapper;
 
     @Autowired
     private SysUserRoleMapper userRoleMapper;
@@ -145,22 +142,6 @@ public class SysUserServiceImpl implements ISysUserService
         return list.stream().map(SysRole::getRoleName).collect(Collectors.joining(","));
     }
 
-    /**
-     * 查询用户所属岗位组
-     * 
-     * @param userName 用户名
-     * @return 结果
-     */
-    @Override
-    public String selectUserPostGroup(String userName)
-    {
-        List<SysPost> list = postMapper.selectPostsByUserName(userName);
-        if (CollectionUtils.isEmpty(list))
-        {
-            return StringUtils.EMPTY;
-        }
-        return list.stream().map(SysPost::getPostName).collect(Collectors.joining(","));
-    }
 
     /**
      * 校验用户名称是否唯一
