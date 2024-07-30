@@ -110,6 +110,7 @@
       </right-toolbar>
     </el-row>
 
+    <!-- 打印内容 -->
     <el-table border v-loading="loading" :data="bankAccountList" @selection-change="handleSelectionChange" id="printBox"
               height="300px">
       <!--      <el-table-column type="selection" width="55" align="center"/>-->
