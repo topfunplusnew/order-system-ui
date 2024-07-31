@@ -572,6 +572,10 @@ export default {
               this.getList();
             });
           } else {
+            this.form.delFlag = null;
+            this.form.addtime = null;
+            this.form.updateTime = null;
+            this.form.userId = null;
             addCompany(this.form).then(response => {
               this.$modal.msgSuccess("新增成功");
               this.open = false;

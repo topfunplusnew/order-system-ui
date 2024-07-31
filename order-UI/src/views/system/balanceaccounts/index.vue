@@ -88,7 +88,8 @@
           size="mini"
           @click="handleAdd"
           v-hasPermi="['system:BalanceAccounts:add']"
-        >新增</el-button>
+        >新增
+        </el-button>
       </el-col>
       <el-col :span="1.5">
         <el-button
@@ -99,7 +100,8 @@
           :disabled="single"
           @click="handleUpdate"
           v-hasPermi="['system:BalanceAccounts:edit']"
-        >修改</el-button>
+        >修改
+        </el-button>
       </el-col>
       <el-col :span="1.5">
         <el-button
@@ -110,7 +112,8 @@
           :disabled="multiple"
           @click="handleDelete"
           v-hasPermi="['system:BalanceAccounts:remove']"
-        >删除</el-button>
+        >删除
+        </el-button>
       </el-col>
       <el-col :span="1.5">
         <el-button
@@ -120,24 +123,26 @@
           size="mini"
           @click="handleExport"
           v-hasPermi="['system:BalanceAccounts:export']"
-        >导出</el-button>
+        >导出
+        </el-button>
       </el-col>
       <right-toolbar :showSearch.sync="showSearch" @queryTable="getList"></right-toolbar>
     </el-row>
 
-    <el-table v-loading="loading" :data="BalanceAccountsList" @selection-change="handleSelectionChange">
-      <el-table-column type="selection" width="55" align="center" />
-      <el-table-column label="id" align="center" prop="id" />
-      <el-table-column label="操作时间" align="center" prop="operateDate" />
-      <el-table-column label="金额" align="center" prop="moneyAmount" />
-      <el-table-column label="对方公司" align="center" prop="companyName" />
-      <el-table-column label="对方公司ID" align="center" prop="companyID" />
-      <el-table-column label="对方公司类型" align="center" prop="companyType" />
-      <el-table-column label="备注" align="center" prop="comments" />
-      <el-table-column label="添加时间" align="center" prop="addtime" />
-      <el-table-column label="操作人员ID" align="center" prop="userId" />
-      <el-table-column label="操作人员姓名" align="center" prop="UserName" />
-      <el-table-column label="删除标记" align="center" prop="delFlag" />
+    <el-table v-loading="loading" :data="BalanceAccountsList" @selection-change="handleSelectionChange"
+              v-horizontal-scroll="'always'">
+      <el-table-column type="selection" width="55" align="center"/>
+      <el-table-column label="id" align="center" prop="id"/>
+      <el-table-column label="操作时间" align="center" prop="operateDate"/>
+      <el-table-column label="金额" align="center" prop="moneyAmount"/>
+      <el-table-column label="对方公司" align="center" prop="companyName"/>
+      <el-table-column label="对方公司ID" align="center" prop="companyID"/>
+      <el-table-column label="对方公司类型" align="center" prop="companyType"/>
+      <el-table-column label="备注" align="center" prop="comments"/>
+      <el-table-column label="添加时间" align="center" prop="addtime"/>
+      <el-table-column label="操作人员ID" align="center" prop="userId"/>
+      <el-table-column label="操作人员姓名" align="center" prop="UserName"/>
+      <el-table-column label="删除标记" align="center" prop="delFlag"/>
       <el-table-column label="操作" align="center" class-name="small-padding fixed-width">
         <template slot-scope="scope">
           <el-button
@@ -146,18 +151,20 @@
             icon="el-icon-edit"
             @click="handleUpdate(scope.row)"
             v-hasPermi="['system:BalanceAccounts:edit']"
-          >修改</el-button>
+          >修改
+          </el-button>
           <el-button
             size="mini"
             type="text"
             icon="el-icon-delete"
             @click="handleDelete(scope.row)"
             v-hasPermi="['system:BalanceAccounts:remove']"
-          >删除</el-button>
+          >删除
+          </el-button>
         </template>
       </el-table-column>
     </el-table>
-    
+
     <pagination
       v-show="total>0"
       :total="total"
@@ -170,31 +177,31 @@
     <el-dialog :title="title" :visible.sync="open" width="500px" append-to-body>
       <el-form ref="form" :model="form" :rules="rules" label-width="80px">
         <el-form-item label="操作时间" prop="operateDate">
-          <el-input v-model="form.operateDate" placeholder="请输入操作时间" />
+          <el-input v-model="form.operateDate" placeholder="请输入操作时间"/>
         </el-form-item>
         <el-form-item label="金额" prop="moneyAmount">
-          <el-input v-model="form.moneyAmount" placeholder="请输入金额" />
+          <el-input v-model="form.moneyAmount" placeholder="请输入金额"/>
         </el-form-item>
         <el-form-item label="对方公司" prop="companyName">
-          <el-input v-model="form.companyName" placeholder="请输入对方公司" />
+          <el-input v-model="form.companyName" placeholder="请输入对方公司"/>
         </el-form-item>
         <el-form-item label="对方公司ID" prop="companyID">
-          <el-input v-model="form.companyID" placeholder="请输入对方公司ID" />
+          <el-input v-model="form.companyID" placeholder="请输入对方公司ID"/>
         </el-form-item>
         <el-form-item label="备注" prop="comments">
-          <el-input v-model="form.comments" placeholder="请输入备注" />
+          <el-input v-model="form.comments" placeholder="请输入备注"/>
         </el-form-item>
         <el-form-item label="添加时间" prop="addtime">
-          <el-input v-model="form.addtime" placeholder="请输入添加时间" />
+          <el-input v-model="form.addtime" placeholder="请输入添加时间"/>
         </el-form-item>
         <el-form-item label="操作人员ID" prop="userId">
-          <el-input v-model="form.userId" placeholder="请输入操作人员ID" />
+          <el-input v-model="form.userId" placeholder="请输入操作人员ID"/>
         </el-form-item>
         <el-form-item label="操作人员姓名" prop="UserName">
-          <el-input v-model="form.UserName" placeholder="请输入操作人员姓名" />
+          <el-input v-model="form.UserName" placeholder="请输入操作人员姓名"/>
         </el-form-item>
         <el-form-item label="删除标记" prop="delFlag">
-          <el-input v-model="form.delFlag" placeholder="请输入删除标记" />
+          <el-input v-model="form.delFlag" placeholder="请输入删除标记"/>
         </el-form-item>
       </el-form>
       <div slot="footer" class="dialog-footer">
@@ -206,7 +213,13 @@
 </template>
 
 <script>
-import { listBalanceAccounts, getBalanceAccounts, delBalanceAccounts, addBalanceAccounts, updateBalanceAccounts } from "@/api/system/BalanceAccounts";
+import {
+  listBalanceAccounts,
+  getBalanceAccounts,
+  delBalanceAccounts,
+  addBalanceAccounts,
+  updateBalanceAccounts
+} from "@/api/system/BalanceAccounts";
 
 export default {
   name: "BalanceAccounts",
@@ -248,8 +261,7 @@ export default {
       // 表单参数
       form: {},
       // 表单校验
-      rules: {
-      }
+      rules: {}
     };
   },
   created() {
@@ -301,7 +313,7 @@ export default {
     // 多选框选中数据
     handleSelectionChange(selection) {
       this.ids = selection.map(item => item.id)
-      this.single = selection.length!==1
+      this.single = selection.length !== 1
       this.multiple = !selection.length
     },
     /** 新增按钮操作 */
@@ -325,12 +337,20 @@ export default {
       this.$refs["form"].validate(valid => {
         if (valid) {
           if (this.form.id != null) {
+            this.form.delFlag = null;
+            this.form.addtime = null;
+            this.form.updateTime = null;
+            this.form.userId = null;
             updateBalanceAccounts(this.form).then(response => {
               this.$modal.msgSuccess("修改成功");
               this.open = false;
               this.getList();
             });
           } else {
+            this.form.delFlag = null;
+            this.form.addtime = null;
+            this.form.updateTime = null;
+            this.form.userId = null;
             addBalanceAccounts(this.form).then(response => {
               this.$modal.msgSuccess("新增成功");
               this.open = false;
@@ -343,12 +363,13 @@ export default {
     /** 删除按钮操作 */
     handleDelete(row) {
       const ids = row.id || this.ids;
-      this.$modal.confirm('是否确认删除平账信息编号为"' + ids + '"的数据项？').then(function() {
+      this.$modal.confirm('是否确认删除平账信息编号为"' + ids + '"的数据项？').then(function () {
         return delBalanceAccounts(ids);
       }).then(() => {
         this.getList();
         this.$modal.msgSuccess("删除成功");
-      }).catch(() => {});
+      }).catch(() => {
+      });
     },
     /** 导出按钮操作 */
     handleExport() {
@@ -359,3 +380,30 @@ export default {
   }
 };
 </script>
+<style>
+//隐藏原有滚动条
+.el-table__body-wrapper::-webkit-scrollbar {
+  /*width: 0;宽度为0隐藏*/
+  width: 0px;
+}
+
+.el-table__body-wrapper::-webkit-scrollbar-thumb {
+  border-radius: 2px;
+  height: 50px;
+  background: #eee;
+}
+
+.el-table__body-wrapper::-webkit-scrollbar-track {
+  box-shadow: inset 0 0 5px rgba(0, 0, 0, 0.2);
+  border-radius: 2px;
+  background: rgba(0, 0, 0, 0.4);
+}
+
+.el-table--scrollable-y .el-table__body-wrapper {
+  overflow: hidden !important;
+}
+
+.el-table--scrollable-x .el-table__body-wrapper {
+  overflow: hidden !important;
+}
+</style>

@@ -32,6 +32,10 @@
     </el-form>
 
     <el-row :gutter="10" class="mb8">
+      <!-- 刷新按钮-->
+      <el-col :span="1.5">
+        <el-button icon="el-icon-refresh" size="mini" @click="resetQuery">刷新</el-button>
+      </el-col>
       <el-col :span="1.5">
         <el-button
           type="primary"
@@ -40,9 +44,9 @@
           size="mini"
           @click="handleAdd"
           v-hasPermi="['system:StoreHouse:add']"
-        >新增</el-button>
+        >添加仓库商信息</el-button>
       </el-col>
-      <el-col :span="1.5">
+<!--      <el-col :span="1.5">
         <el-button
           type="success"
           plain
@@ -73,11 +77,36 @@
           @click="handleExport"
           v-hasPermi="['system:StoreHouse:export']"
         >导出</el-button>
-      </el-col>
-      <right-toolbar :showSearch.sync="showSearch" @queryTable="getList"></right-toolbar>
+      </el-col>-->
+      <right-toolbar :showSearch.sync="showSearch" @queryTable="getList" :columns="columns">
+        <template v-slot:print>
+          <el-col :span="1.5">
+            <el-button
+              plain
+              icon="el-icon-printer"
+              size="mini"
+              @click="printHTML"
+            >
+            </el-button>
+          </el-col>
+        </template>
+        <!--        导出-->
+        <template v-slot:export>
+          <el-col :span="1.5">
+            <el-button
+              plain
+              icon="el-icon-folder-opened"
+              size="mini"
+              @click="handleExport"
+              v-hasPermi="['system:fleet:export']"
+            >
+            </el-button>
+          </el-col>
+        </template>
+      </right-toolbar>
     </el-row>
 
-    <el-table v-loading="loading" :data="StoreHouseList" @selection-change="handleSelectionChange">
+    <el-table v-loading="loading" :data="StoreHouseList" @selection-change="handleSelectionChange" id="printBox"  v-horizontal-scroll="'always'">
       <el-table-column type="selection" width="55" align="center" />
       <el-table-column label="id" align="center" prop="id" />
       <el-table-column label="仓库名称" align="center" prop="storeHouseName" />
@@ -85,7 +114,7 @@
 <!--      <el-table-column label="删除标记" align="center" prop="delFlag" />-->
       <el-table-column label="操作" align="center" class-name="small-padding fixed-width">
         <template slot-scope="scope">
-          <el-button
+<!--          <el-button
             size="mini"
             type="text"
             icon="el-icon-edit"
@@ -98,7 +127,21 @@
             icon="el-icon-delete"
             @click="handleDelete(scope.row)"
             v-hasPermi="['system:StoreHouse:remove']"
-          >删除</el-button>
+          >删除</el-button>-->
+          <el-button
+            size="mini"
+            type="primary"
+            @click="handleUpdate(scope.row)"
+            v-hasPermi="['system:fleet:edit']"
+          >编辑
+          </el-button>
+          <el-button
+            size="mini"
+            type="danger"
+            @click="handleDelete(scope.row)"
+            v-hasPermi="['system:fleet:remove']"
+          >删除
+          </el-button>
         </template>
       </el-table-column>
     </el-table>
@@ -169,13 +212,28 @@ export default {
       form: {},
       // 表单校验
       rules: {
-      }
+      },
+      columns: [
+        {key: 0, label: `仓库名称`, visible: true},
+        {key: 1, label: `地址`, visible: true},
+      ],
+      dialogFormVisible: false,
+      dialogFormSearchVisible: false,
+      formLabelWidth: '120px',
     };
   },
   created() {
     this.getList();
   },
   methods: {
+    /*打印信息*/
+    printHTML() {
+      this.$print({
+        printable: 'printBox',
+        type: 'html',
+        targetStyles: ['*'], // 打印内容使用所有HTML样式，没有设置这个属性/值，设置分页打印没有效果
+      })
+    },
     /** 查询库房列表 */
     getList() {
       this.loading = true;

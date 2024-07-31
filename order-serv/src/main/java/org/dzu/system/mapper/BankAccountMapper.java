@@ -2,6 +2,8 @@ package org.dzu.system.mapper;
 
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import java.util.List;
+
+import org.apache.ibatis.annotations.Param;
 import org.dzu.system.domain.BankAccount;
 
 /**
@@ -59,4 +61,11 @@ public interface BankAccountMapper extends BaseMapper<BankAccount>
      * @return 结果
      */
     public int deleteBankAccountByIds(Long[] ids);
+
+    /**
+     * 根据银行卡号返回
+     * @param bankNo
+     * @return
+     */
+    public  BankAccount selectBankAccountByBankNo( @Param("bankNo") String bankNo);
 }

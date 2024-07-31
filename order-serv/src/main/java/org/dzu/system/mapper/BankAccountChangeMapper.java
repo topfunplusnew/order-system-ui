@@ -59,4 +59,18 @@ public interface BankAccountChangeMapper extends BaseMapper<BankAccountChange>
      * @return 结果
      */
     public int deleteBankAccountChangeByIds(Long[] ids);
+
+    /**
+     * 根据UUID更新流水
+     * @param bankAccountChange
+     * @return
+     */
+    public int updateBankAccountChangeByUUID(BankAccountChange bankAccountChange);
+
+    /**
+     * 根据UUID删除流水
+     * @param uuids
+     * @return
+     */
+    public int deleteBankAccountChangeByUUIDS(String[] uuids);
 }

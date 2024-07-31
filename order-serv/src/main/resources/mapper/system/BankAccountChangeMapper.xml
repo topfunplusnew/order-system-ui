@@ -102,4 +102,29 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
             #{id}
         </foreach>
     </delete>
+
+    <update id="updateBankAccountChangeByUUID" parameterType="BankAccountChange">
+        update bankAccountChange
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="selfBankNo != null">selfBankNo = #{selfBankNo},</if>
+            <if test="tableName != null">tableName = #{tableName},</if>
+            <if test="payNO != null">payNO = #{payNO},</if>
+            <if test="operateDate != null">operateDate = #{operateDate},</if>
+            <if test="changeType != null">changeType = #{changeType},</if>
+            <if test="moneyAmount != null">moneyAmount = #{moneyAmount},</if>
+            <if test="comments != null">comments = #{comments},</if>
+            <if test="addtime != null">addtime = #{addtime},</if>
+            <if test="userId != null">userId = #{userId},</if>
+            <if test="UserName != null">UserName = #{UserName},</if>
+            <if test="updateTime != null">update_time = #{updateTime},</if>
+        </trim>
+        where payNO = #{payNO}
+    </update>
+
+    <delete id="deleteBankAccountChangeByUUIDS" parameterType="String">
+        delete from bankAccountChange where payNO in
+        <foreach item="uuid" collection="array" open="(" separator="," close=")">
+            #{uuid}
+        </foreach>
+    </delete>
 </mapper>

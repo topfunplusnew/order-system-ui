@@ -3,7 +3,6 @@ package org.dzu.system.service.impl;
 import java.util.List;
 import org.dzu.common.utils.DateUtils;
 import org.dzu.common.utils.SecurityUtils;
-import org.dzu.common.utils.SecurityUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.dzu.system.mapper.BankAccountChangeMapper;
@@ -89,15 +88,20 @@ public class BankAccountChangeServiceImpl implements IBankAccountChangeService
         return bankAccountChangeMapper.deleteBankAccountChangeByIds(ids);
     }
 
+
     /**
-     * 删除银行账号变动流水信息
-     * 
-     * @param id 银行账号变动流水主键
-     * @return 结果
+     * 通过UUID更新变动信息
+     * @param bankAccountChange
+     * @return
      */
     @Override
-    public int deleteBankAccountChangeById(Long id)
-    {
-        return bankAccountChangeMapper.deleteBankAccountChangeById(id);
+    public int updateBankAccountChangeByUUID(BankAccountChange bankAccountChange) {
+        return bankAccountChangeMapper.updateBankAccountChangeByUUID(bankAccountChange);
     }
+
+    @Override
+    public int deleteBankAccountChangeByUUID(String[] uuids){
+        return bankAccountChangeMapper.deleteBankAccountChangeByUUIDS(uuids);
+    }
+
 }
