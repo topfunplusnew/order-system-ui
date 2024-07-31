@@ -341,7 +341,9 @@ export default {
           //对指定列进行计算
           // if(index)
           //排除打入账户
-          if (index !== 9 && index !== 1 && index !== 16) {
+          const out_list = [1, 2, 16]
+          //index !== 9 && index !== 1 && index !== 16 && index !== 2
+          if (!out_list.includes(index)) {
             sums[index] = values.reduce((prev, curr) => {
               const value = Number(curr);
               if (!isNaN(value)) {
