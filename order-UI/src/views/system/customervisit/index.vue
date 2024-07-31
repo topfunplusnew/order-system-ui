@@ -184,8 +184,8 @@
           plain
           icon="el-icon-edit"
           size="mini"
-          :disabled="single"
           @click="handleUpdate"
+          :disabled="single"
           v-hasPermi="['system:CustomerVisit:edit']"
         >修改</el-button>
         <!--初始状态不能点击-->
@@ -196,8 +196,8 @@
           plain
           icon="el-icon-delete"
           size="mini"
-          :disabled="multiple"
           @click="handleDelete"
+          :disabled="multiple"
           v-hasPermi="['system:CustomerVisit:remove']"
         >删除</el-button>
          <!--初始状态不能点击-->

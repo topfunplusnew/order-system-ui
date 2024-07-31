@@ -80,8 +80,8 @@
           plain
           icon="el-icon-edit"
           size="mini"
-          :disabled="single"
           @click="handleUpdate"
+          :disabled="single"
           v-hasPermi="['system:oilCard:edit']"
         >修改</el-button>
     <!--记录为空时可以点按钮-->
