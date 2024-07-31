@@ -303,10 +303,13 @@ export default {
     getList() {
       this.loading = true;
       listBankAccount(this.queryParams).then(response => {
+        const accountsTypeToSelect = ['己方公司', '其它'];
         this.bankAccountList = response.rows.filter(item => {
-          return item.acountsType === '己方公司' || item.acountsType === '其他'
+          // return item.acountsType === '己方公司' || item.acountsType === '其它'
+          return accountsTypeToSelect.includes(item.acountsType)
         })
-        this.total = response.total;
+        // this.total = response.total;
+        this.total = this.bankAccountList.length;
         this.loading = false;
       });
     },
@@ -368,6 +371,10 @@ export default {
       this.$refs["form"].validate(valid => {
         if (valid) {
           if (this.form.id != null) {
+            this.form.delFlag = null;
+            this.form.addtime = null;
+            this.form.updateTime = null;
+            this.form.userId = null;
             updateBankAccount(this.form).then(response => {
               this.$modal.msgSuccess("修改成功");
               this.open = false;
