@@ -57,7 +57,7 @@
     </el-row>
 
     <!--   数据表格-->
-    <el-table v-loading="loading" :data="borrowedMoneyList" @selection-change="handleSelectionChange"
+    <el-table border v-loading="loading" :data="borrowedMoneyList" @selection-change="handleSelectionChange"
               v-horizontal-scroll="'always'" id="printBox">
       <el-table-column type="selection" width="55" align="center"/>
       <el-table-column label="id" align="center" prop="id"/>
