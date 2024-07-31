@@ -1,5 +1,6 @@
 package org.dzu.system.service.impl;
 
+import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import org.dzu.common.constant.BankChangeConstant;
 import org.dzu.common.constant.BorrowedMoneyConstants;
 import org.dzu.common.constant.DelConstants;
@@ -177,5 +178,10 @@ public class BorrowedMoneyServiceImpl implements IBorrowedMoneyService {
         String loanNO = borrowedMoneyMapper.selectBorrowedMoneyById(id).getLoanNO();
         bankAccountChangeService.deleteBankAccountChangeByUUID(new String[]{loanNO});
         return borrowedMoneyMapper.deleteBorrowedMoneyById(id);
+    }
+
+    @Override
+    public BorrowedMoney seleteBorrowedMoneyByUUID(String uuid) {
+        return borrowedMoneyMapper.selectBorrowedMoneyByUUID(uuid);
     }
 }
