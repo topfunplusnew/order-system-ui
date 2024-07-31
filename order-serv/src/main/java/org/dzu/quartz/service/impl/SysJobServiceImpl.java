@@ -15,7 +15,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import javax.annotation.PostConstruct;
+//import javax.annotation.PostConstruct;
 import java.util.List;
 
 /**
@@ -35,7 +35,8 @@ public class SysJobServiceImpl implements ISysJobService
     /**
      * 项目启动时，初始化定时器 主要是防止手动修改数据库导致未同步到定时任务处理（注：不能手动修改数据库ID和任务组名，否则会导致脏数据）
      */
-    @PostConstruct
+//    @PostConstruct
+    // TODO： 目前不需要这个，暂时关闭来提高启动速度
     public void init() throws SchedulerException, TaskException
     {
         scheduler.clear();

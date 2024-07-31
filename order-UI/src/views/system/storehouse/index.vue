@@ -27,7 +27,7 @@
       </el-form-item>-->
       <el-form-item>
         <el-button type="primary" icon="el-icon-search" size="mini" @click="handleQuery">搜索</el-button>
-        <el-button icon="el-icon-refresh" size="mini" @click="resetQuery">重置</el-button>
+<!--        <el-button icon="el-icon-refresh" size="mini" @click="resetQuery">重置</el-button>-->
       </el-form-item>
     </el-form>
 
@@ -106,13 +106,13 @@
       </right-toolbar>
     </el-row>
 
-    <el-table v-loading="loading" :data="StoreHouseList" @selection-change="handleSelectionChange" id="printBox"  v-horizontal-scroll="'always'">
+    <el-table v-loading="loading" :data="StoreHouseList" @selection-change="handleSelectionChange" id="printBox"  >
       <el-table-column type="selection" width="55" align="center" />
       <el-table-column label="id" align="center" prop="id" />
-      <el-table-column label="仓库名称" align="center" prop="storeHouseName" />
-      <el-table-column label="地址" align="center" prop="address" />
+      <el-table-column label="仓库名称" align="center" prop="storeHouseName" v-if="columns[0].visible"/>
+      <el-table-column label="地址" align="center" prop="address" v-if="columns[1].visible"/>
 <!--      <el-table-column label="删除标记" align="center" prop="delFlag" />-->
-      <el-table-column label="操作" align="center" class-name="small-padding fixed-width">
+      <el-table-column label="操作" align="center" class-name="small-padding fixed-width" fixed="right" width="180">
         <template slot-scope="scope">
 <!--          <el-button
             size="mini"
@@ -128,18 +128,19 @@
             @click="handleDelete(scope.row)"
             v-hasPermi="['system:StoreHouse:remove']"
           >删除</el-button>-->
+
           <el-button
             size="mini"
             type="primary"
             @click="handleUpdate(scope.row)"
-            v-hasPermi="['system:fleet:edit']"
+            v-hasPermi="['system:StoreHouse:edit']"
           >编辑
           </el-button>
           <el-button
             size="mini"
             type="danger"
             @click="handleDelete(scope.row)"
-            v-hasPermi="['system:fleet:remove']"
+            v-hasPermi="['system:StoreHouse:remove']"
           >删除
           </el-button>
         </template>
@@ -217,9 +218,6 @@ export default {
         {key: 0, label: `仓库名称`, visible: true},
         {key: 1, label: `地址`, visible: true},
       ],
-      dialogFormVisible: false,
-      dialogFormSearchVisible: false,
-      formLabelWidth: '120px',
     };
   },
   created() {
@@ -305,6 +303,10 @@ export default {
               this.getList();
             });
           } else {
+            this.form.delFlag = null;
+            this.form.addtime = null;
+            this.form.updateTime = null;
+            this.form.userId = null;
             addStoreHouse(this.form).then(response => {
               this.$modal.msgSuccess("新增成功");
               this.open = false;

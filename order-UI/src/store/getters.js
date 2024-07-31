@@ -16,6 +16,8 @@ const getters = {
   defaultRoutes: state => state.permission.defaultRoutes,
   sidebarRouters: state => state.permission.sidebarRouters,
   //获取借款信息的getter
-  tempBorrowedMoneyList: state => state.borrowMoney.tempBorrowedMoneyList
+  tempBorrowedMoneyList: state => state.money.tempBorrowedMoneyList,
+  //还款信息
+  tempRepaymentList: state => state.money.tempRepaymentList
 }
 export default getters
