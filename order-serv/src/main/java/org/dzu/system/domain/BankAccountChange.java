@@ -6,6 +6,12 @@ import org.dzu.common.annotation.Excel;
 import org.dzu.common.core.domain.BaseEntity;
 
 import org.dzu.common.annotation.DecimalMaxDigits;
+import org.hibernate.validator.constraints.Length;
+
+import javax.validation.constraints.DecimalMin;
+import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Pattern;
+
 /**
  * 银行账号变动流水对象 bankAccountChange
  * 
@@ -21,30 +27,38 @@ public class BankAccountChange extends BaseEntity
 
     /** 己方账号 */
     @Excel(name = "己方账号")
+    @Length(max = 80, message = "己方账号的字符长度不允许超过80")
     private String selfBankNo;
 
     /** 发生操作行为的表 */
     @Excel(name = "发生操作行为的表")
+    @Length(max = 80, message = "发生操作行为的表的字符长度不允许超过80")
     private String tableName;
 
     /** 发生操作行为的付款编号（UUID） */
-    @Excel(name = "发生操作行为的付款编号", readConverterExp = "U=UID")
+    @Excel(name = "发生操作行为的付款编号")
+    @Length(max = 50, message = "付款编号的字符长度不允许超过50")
     private String payNO;
 
     /** 日期 */
     @Excel(name = "日期")
+    @Length(max = 50, message = "日期的字符长度不允许超过50")
     private String operateDate;
 
     /** 变动类型（收入、支出） */
-    @Excel(name = "变动类型", readConverterExp = "收=入、支出")
+    @Excel(name = "变动类型")
+    @NotNull(message = "变动类型不能为空")
+    @Pattern(regexp = "收入|支出", message = "变动类型必须是：收入或支出")
     private String changeType;
 
     /** 金额 */
-    @DecimalMaxDigits
+    @NotNull(message = "金额不能为空")
+    @DecimalMin(value = "0.0", message = "金额不能小于0")
     private Double moneyAmount;
 
     /** 备注 */
     @Excel(name = "备注")
+    @Length(max = 200, message = "备注的字符长度不允许超过200")
     private String comments;
 
     /** 添加时间 */

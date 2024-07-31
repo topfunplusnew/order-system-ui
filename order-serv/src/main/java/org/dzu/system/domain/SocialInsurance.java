@@ -7,6 +7,12 @@ import org.dzu.common.core.domain.BaseEntity;
 
 import org.dzu.common.annotation.DecimalMaxDigits;
 import org.dzu.common.annotation.OnlyZeroOrOne;
+import org.hibernate.validator.constraints.Length;
+
+import javax.validation.constraints.DecimalMin;
+import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Pattern;
+
 /**
  * 社保基金对象 socialInsurance
  * 
@@ -21,91 +27,115 @@ public class SocialInsurance extends BaseEntity
     private Long id;
 
     /** 社保缴纳基数 */
-    @DecimalMaxDigits
+    @NotNull(message = "社保缴纳基数不能为空")
+    @DecimalMin(value = "0.0", message = "社保缴纳基数不能小于0")
     private Double basicSocialInsurance;
 
     /** 公积金基数 */
-    @DecimalMaxDigits
+    @NotNull(message = "公积金基数不能为空")
+    @DecimalMin(value = "0.0", message = "公积金基数不能小于0")
     private Double basicHousingFund;
 
     /** 部门 */
     @Excel(name = "部门")
+    @Length(max = 50, message = "部门的字符长度不允许超过50")
     private String depName;
 
     /** 姓名 */
     @Excel(name = "姓名")
+    @Length(max = 15, message = "姓名的字符长度不允许超过15")
     private String employeeName;
 
     /** 人员编号 */
     @Excel(name = "人员编号")
+    @Length(max = 15, message = "人员编号的字符长度不允许超过15")
     private String employeeID;
 
     /** 缴费时间 */
     @Excel(name = "缴费时间")
+    @Length(max = 50, message = "缴费时间的字符长度不允许超过50")
     private String insuranceDate;
 
     /** 是否增员（是，否） */
     @Excel(name = "是否增员", readConverterExp = "是=，否")
+    @NotNull(message = "是否增员不能为空")
+    @Pattern(regexp = "是|否", message = "是否增员必须是：是或否")
     private String isRecruiting;
 
     /** 是否减员 */
     @Excel(name = "是否减员")
+    @NotNull(message = "是否减员不能为空")
+    @Pattern(regexp = "是|否", message = "是否减员必须是：是或否")
     private String isDepletion;
 
     /** 基本医疗保险-个人 */
-    @DecimalMaxDigits
+    @NotNull(message = "基本医疗保险-个人不能为空")
+    @DecimalMin(value = "0.0", message = "基本医疗保险-个人不能小于0")
     private Double healthySecuritySelf;
 
     /** 基本医疗保险-公司 */
-    @DecimalMaxDigits
+    @NotNull(message = "基本医疗保险-公司不能为空")
+    @DecimalMin(value = "0.0", message = "基本医疗保险-公司不能小于0")
     private Double healthySecurityCompany;
 
     /** 工伤保险 */
-    @DecimalMaxDigits
+    @NotNull(message = "工伤保险不能为空")
+    @DecimalMin(value = "0.0", message = "工伤保险不能小于0")
     private Double injuryInsurance;
 
     /** 失业保险-个人 */
-    @DecimalMaxDigits
+    @NotNull(message = "失业保险-个人不能为空")
+    @DecimalMin(value = "0.0", message = "失业保险-个人不能小于0")
     private Double unemploymentSecuritySelf;
 
     /** 失业保险-公司 */
-    @DecimalMaxDigits
+    @NotNull(message = "失业保险-公司不能为空")
+    @DecimalMin(value = "0.0", message = "失业保险-公司不能小于0")
     private Double unemploymentSecurityCompany;
 
     /** 养老保险-个人 */
-    @DecimalMaxDigits
+    @NotNull(message = "养老保险-个人不能为空")
+    @DecimalMin(value = "0.0", message = "养老保险-个人不能小于0")
     private Double retirementSecuritySelf;
 
     /** 养老保险-公司 */
-    @DecimalMaxDigits
+    @NotNull(message = "养老保险-公司不能为空")
+    @DecimalMin(value = "0.0", message = "养老保险-公司不能小于0")
     private Double retirementSecurityCompany;
 
     /** 大额医保-个人 */
-    @DecimalMaxDigits
+    @NotNull(message = "大额医保-个人不能为空")
+    @DecimalMin(value = "0.0", message = "大额医保-个人不能小于0")
     private Double largeMedicalSecuritySelf;
 
     /** 大额医保-公司 */
-    @DecimalMaxDigits
+    @NotNull(message = "大额医保-公司不能为空")
+    @DecimalMin(value = "0.0", message = "大额医保-公司不能小于0")
     private Double largeMedicalSecurityCompany;
 
     /** 公积金-个人 */
-    @DecimalMaxDigits
+    @NotNull(message = "公积金-个人不能为空")
+    @DecimalMin(value = "0.0", message = "公积金-个人不能小于0")
     private Double housingFundSelf;
 
     /** 公积金-公司 */
-    @DecimalMaxDigits
+    @NotNull(message = "公积金-公司不能为空")
+    @DecimalMin(value = "0.0", message = "公积金-公司不能小于0")
     private Double housingFundCompany;
 
     /** 个人缴费总额 */
-    @DecimalMaxDigits
+    @NotNull(message = "个人缴费总额不能为空")
+    @DecimalMin(value = "0.0", message = "个人缴费总额不能小于0")
     private Double sumSelf;
 
     /** 公司缴费总额 */
-    @DecimalMaxDigits
+    @NotNull(message = "公司缴费总额不能为空")
+    @DecimalMin(value = "0.0", message = "公司缴费总额不能小于0")
     private Double sumCompany;
 
     /** 备注 */
     @Excel(name = "备注")
+    @Length(max = 200, message = "备注的字符长度不允许超过200")
     private String comments;
 
     /** 添加时间 */
