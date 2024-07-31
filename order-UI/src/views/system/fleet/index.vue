@@ -113,6 +113,7 @@
       </el-col>-->
 
       <right-toolbar :showSearch.sync="showSearch" @queryTable="getList" :columns="columns">
+        <!--    打印    -->
         <template v-slot:print>
           <el-col :span="1.5">
             <el-button
@@ -140,13 +141,13 @@
       </right-toolbar>
     </el-row>
 
-    <el-table v-loading="loading" :data="fleetList" @selection-change="handleSelectionChange"  id="printBox"  v-horizontal-scroll="'always'">
+    <el-table v-loading="loading" :data="fleetList" @selection-change="handleSelectionChange"  id="printBox"  >
       <el-table-column type="selection" width="55" align="center" />
       <el-table-column label="id" align="center" prop="id" />
-      <el-table-column label="车队名称" align="center" prop="fName" />
-      <el-table-column label="车队经理" align="center" prop="fLeader" />
-      <el-table-column label="车队经理电话" align="center" prop="tel" />
-      <el-table-column label="地址" align="center" prop="address" />
+      <el-table-column label="车队名称" align="center" prop="fName" v-if="columns[0].visible"/>
+      <el-table-column label="车队经理" align="center" prop="fLeader" v-if="columns[1].visible"/>
+      <el-table-column label="车队经理电话" align="center" prop="tel" v-if="columns[2].visible"/>
+      <el-table-column label="地址" align="center" prop="address" v-if="columns[3].visible"/>
 <!--      <el-table-column label="添加时间" align="center" prop="addtime" />
       <el-table-column label="编辑时间" align="center" prop="editTime" />-->
 <!--      <el-table-column label="删除标记" align="center" prop="delFlag" />-->
@@ -166,6 +167,8 @@
             @click="handleDelete(scope.row)"
             v-hasPermi="['system:fleet:remove']"
           >删除</el-button>-->
+
+
           <el-button
             size="mini"
             type="primary"
@@ -273,10 +276,7 @@ export default {
         {key: 2, label: `车队经理电话`, visible: true},
         {key: 3, label: `地址`, visible: true},
 
-      ],
-      dialogFormVisible: false,
-      dialogFormSearchVisible: false,
-      formLabelWidth: '120px',
+      ]
     };
   },
 
@@ -368,6 +368,10 @@ export default {
             });
           } else {
             addFleet(this.form).then(response => {
+              this.form.delFlag = null;
+              this.form.addtime = null;
+              this.form.updateTime = null;
+              this.form.userId = null;
               this.$modal.msgSuccess("新增成功");
               this.open = false;
               this.getList();
