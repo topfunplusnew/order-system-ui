@@ -59,7 +59,6 @@
     <!--   数据表格-->
     <el-table border v-loading="loading" :data="borrowedMoneyList" @selection-change="handleSelectionChange"
               v-horizontal-scroll="'always'" id="printBox">
-      <el-table-column type="selection" width="55" align="center"/>
       <el-table-column label="id" align="center" prop="id"/>
       <!--      应该可以优化columns -->
       <el-table-column label="贷款编号" align="center" prop="loanNO" v-if="columns[0].visible"/>
