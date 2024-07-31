@@ -99,8 +99,8 @@
       </right-toolbar>
     </el-row>
 
-    <el-table v-horizontal-scroll="'always'" v-loading="loading" :data="bankAcceptanceList"
-              @selection-change="handleSelectionChange">
+    <el-table border v-horizontal-scroll="'always'" v-loading="loading" :data="bankAcceptanceList"
+              @selection-change="handleSelectionChange" show-summary :summary-method="getSummaries" height="480px">
       <!--  <el-table-column type="selection" width="55" align="center"/>-->
       <el-table-column label="id" align="center" prop="id"/>
       <el-table-column label="操作日期" align="center" prop="operateDate" v-if="columns[0].visible"/>
@@ -120,10 +120,6 @@
       <el-table-column label="被背书人" align="center" prop="endorsee" v-if="columns[14].visible"/>
       <el-table-column label="背书事由" align="center" prop="endorseReason" v-if="columns[15].visible"/>
       <el-table-column label="备注" align="center" prop="comments"/>
-      <!--      <el-table-column label="添加时间" align="center" prop="addtime"/>-->
-      <!--      <el-table-column label="操作人员ID" align="center" prop="userId"/>-->
-      <!--      <el-table-column label="操作人员姓名" align="center" prop="UserName"/>-->
-      <!--      <el-table-column label="删除标记" align="center" prop="delFlag"/>-->
       <el-table-column label="操作" align="center" class-name="small-padding fixed-width" width="150px" fixed="right">
         <template slot-scope="scope">
           <el-button
@@ -327,6 +323,41 @@ export default {
     this.getList();
   },
   methods: {
+    //自定义列统计总函数
+    getSummaries(param) {
+      const {columns, data} = param;
+      console.log(param)
+      const sums = [];
+      columns.forEach((column, index) => {
+        if (index === 0) {
+          sums[index] = '总价';
+          return;
+        }
+        const values = data.map(item => {
+          return Number(item[column.property])
+        });
+
+        if (!values.every(value => isNaN(value))) {
+          //对指定列进行计算
+          // if(index)
+          //排除打入账户
+          if (index !== 9 && index !== 1 && index !== 16) {
+            sums[index] = values.reduce((prev, curr) => {
+              const value = Number(curr);
+              if (!isNaN(value)) {
+                return prev + curr;
+              } else {
+                return prev;
+              }
+            }, 0);
+            sums[index] += ' ';
+          }
+        } else {
+          sums[index] = '';
+        }
+      });
+      return sums;
+    },
     printHTML() {
       this.$print({
         printable: 'printBox',
@@ -459,30 +490,30 @@ export default {
   }
 };
 </script>
-<style>
-//隐藏原有滚动条
-.el-table__body-wrapper::-webkit-scrollbar {
-  /*width: 0;宽度为0隐藏*/
-  width: 0px;
-}
-
-.el-table__body-wrapper::-webkit-scrollbar-thumb {
-  border-radius: 2px;
-  height: 50px;
-  background: #eee;
-}
-
-.el-table__body-wrapper::-webkit-scrollbar-track {
-  box-shadow: inset 0 0 5px rgba(0, 0, 0, 0.2);
-  border-radius: 2px;
-  background: rgba(0, 0, 0, 0.4);
-}
-
-.el-table--scrollable-y .el-table__body-wrapper {
-  overflow: hidden !important;
-}
-
-.el-table--scrollable-x .el-table__body-wrapper {
-  overflow: hidden !important;
-}
-</style>
+<!--<style>-->
+////隐藏原有滚动条
+//.el-table__body-wrapper::-webkit-scrollbar {
+//  /*width: 0;宽度为0隐藏*/
+//  width: 0px;
+//}
+//
+//.el-table__body-wrapper::-webkit-scrollbar-thumb {
+//  border-radius: 2px;
+//  height: 50px;
+//  background: #eee;
+//}
+//
+//.el-table__body-wrapper::-webkit-scrollbar-track {
+//  box-shadow: inset 0 0 5px rgba(0, 0, 0, 0.2);
+//  border-radius: 2px;
+//  background: rgba(0, 0, 0, 0.4);
+//}
+//
+//.el-table--scrollable-y .el-table__body-wrapper {
+//  overflow: hidden !important;
+//}
+//
+//.el-table--scrollable-x .el-table__body-wrapper {
+//  overflow: hidden !important;
+//}
+<!--</style>-->

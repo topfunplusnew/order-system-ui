@@ -58,7 +58,7 @@
 
     <!--   数据表格-->
     <el-table border v-loading="loading" :data="borrowedMoneyList" @selection-change="handleSelectionChange"
-              v-horizontal-scroll="'always'" id="printBox">
+              v-horizontal-scroll="'always'" id="printBox" show-summary :summary-method="getSummaries">
       <el-table-column label="id" align="center" prop="id"/>
       <!--      应该可以优化columns -->
       <el-table-column label="贷款编号" align="center" prop="loanNO" v-if="columns[0].visible"/>
@@ -72,12 +72,14 @@
       <el-table-column label="打入账号" align="center" prop="bankNo" v-if="columns[8].visible"/>
       <el-table-column label="已还款标记" align="center" prop="isEnd" v-if="columns[9].visible"/>
       <el-table-column label="备注" align="center" prop="comments"/>
-      <!--      <el-table-column label="添加时间" align="center" prop="addtime"/>-->
-      <!--      <el-table-column label="操作人员ID" align="center" prop="userId"/>-->
-      <!--      <el-table-column label="操作人员姓名" align="center" prop="UserName"/>-->
-      <!--      <el-table-column label="删除标记" align="center" prop="delFlag"/>-->
-      <el-table-column label="操作" align="center" class-name="small-padding fixed-width">
+      <el-table-column label="操作" align="center" class-name="small-padding fixed-width" width="160px" fixed="right">
         <template slot-scope="scope">
+          <el-button
+            size="mini"
+            type="warning"
+            @click="handleGiveBackMoney(scope.row)"
+          >还款
+          </el-button>
           <el-button
             size="mini"
             type="primary"
@@ -141,18 +143,6 @@
         <el-form-item label="备注" prop="comments">
           <el-input v-model="form.comments" placeholder="请输入备注"/>
         </el-form-item>
-        <!--        <el-form-item label="添加时间" prop="addtime">-->
-        <!--          <el-input v-model="form.addtime" placeholder="请输入添加时间"/>-->
-        <!--        </el-form-item>-->
-        <!--        <el-form-item label="操作人员ID" prop="userId">-->
-        <!--          <el-input v-model="form.userId" placeholder="请输入操作人员ID"/>-->
-        <!--        </el-form-item>-->
-        <!--        <el-form-item label="操作人员姓名" prop="UserName">-->
-        <!--          <el-input v-model="form.UserName" placeholder="请输入操作人员姓名"/>-->
-        <!--        </el-form-item>-->
-        <!--        <el-form-item label="删除标记" prop="delFlag">-->
-        <!--          <el-input v-model="form.delFlag" placeholder="请输入删除标记"/>-->
-        <!--        </el-form-item>-->
       </el-form>
       <div slot="footer" class="dialog-footer">
         <el-button type="primary" @click="submitForm">确 定</el-button>
@@ -278,6 +268,45 @@ export default {
         const time_end = date.getTime()
         return time_search >= time_start && time_search <= time_end
       })
+    },
+    //处理还款的事件函数
+    handleGiveBackMoney() {
+      alert('还款功能还未实现')
+    },
+    //自定义列统计总函数
+    getSummaries(param) {
+      const {columns, data} = param;
+      console.log(param)
+      const sums = [];
+      columns.forEach((column, index) => {
+        if (index === 0) {
+          sums[index] = '总价';
+          return;
+        }
+        const values = data.map(item => {
+          return Number(item[column.property])
+        });
+
+        if (!values.every(value => isNaN(value))) {
+          //对指定列进行计算
+          // if(index)
+          //排除打入账户
+          if (index !== 9) {
+            sums[index] = values.reduce((prev, curr) => {
+              const value = Number(curr);
+              if (!isNaN(value)) {
+                return prev + curr;
+              } else {
+                return prev;
+              }
+            }, 0);
+            sums[index] += ' ';
+          }
+        } else {
+          sums[index] = '';
+        }
+      });
+      return sums;
     },
     printHTML() {
       this.$print({
@@ -408,30 +437,30 @@ export default {
   }
 };
 </script>
-<style>
-//隐藏原有滚动条
-.el-table__body-wrapper::-webkit-scrollbar {
-  /*width: 0;宽度为0隐藏*/
-  width: 0px;
-}
+<!--<style>-->
+<!--//隐藏原有滚动条-->
+<!--.el-table__body-wrapper::-webkit-scrollbar {-->
+<!--  /*width: 0;宽度为0隐藏*/-->
+<!--  width: 0px;-->
+<!--}-->
 
-.el-table__body-wrapper::-webkit-scrollbar-thumb {
-  border-radius: 2px;
-  height: 50px;
-  background: #eee;
-}
+<!--.el-table__body-wrapper::-webkit-scrollbar-thumb {-->
+<!--  border-radius: 2px;-->
+<!--  height: 50px;-->
+<!--  background: #eee;-->
+<!--}-->
 
-.el-table__body-wrapper::-webkit-scrollbar-track {
-  box-shadow: inset 0 0 5px rgba(0, 0, 0, 0.2);
-  border-radius: 2px;
-  background: rgba(0, 0, 0, 0.4);
-}
+<!--.el-table__body-wrapper::-webkit-scrollbar-track {-->
+<!--  box-shadow: inset 0 0 5px rgba(0, 0, 0, 0.2);-->
+<!--  border-radius: 2px;-->
+<!--  background: rgba(0, 0, 0, 0.4);-->
+<!--}-->
 
-.el-table--scrollable-y .el-table__body-wrapper {
-  overflow: hidden !important;
-}
+<!--.el-table&#45;&#45;scrollable-y .el-table__body-wrapper {-->
+<!--  overflow: hidden !important;-->
+<!--}-->
 
-.el-table--scrollable-x .el-table__body-wrapper {
-  overflow: hidden !important;
-}
-</style>
+<!--.el-table&#45;&#45;scrollable-x .el-table__body-wrapper {-->
+<!--  overflow: hidden !important;-->
+<!--}-->
+<!--</style>-->
