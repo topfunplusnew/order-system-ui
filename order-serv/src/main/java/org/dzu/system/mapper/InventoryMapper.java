@@ -59,4 +59,6 @@ public interface InventoryMapper extends BaseMapper<Inventory>
      * @return 结果
      */
     public int deleteInventoryByIds(Long[] ids);
+
+    public List<Inventory> orderByInventory(Inventory inventory);
 }
