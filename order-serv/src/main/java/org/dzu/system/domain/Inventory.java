@@ -5,11 +5,12 @@ import org.apache.commons.lang3.builder.ToStringStyle;
 import org.dzu.common.annotation.Excel;
 import org.dzu.common.annotation.PhoneLength;
 import org.dzu.common.core.domain.BaseEntity;
-
 import org.dzu.common.annotation.DecimalMaxDigits;
 import org.dzu.common.annotation.OnlyZeroOrOne;
 import org.hibernate.validator.constraints.Length;
-
+import javax.validation.constraints.Max;
+import javax.validation.constraints.Min;
+import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Pattern;
 
 /**
@@ -26,172 +27,212 @@ public class Inventory extends BaseEntity
     private Long id;
 
     /** 仓库ID */
+    @NotNull(message = "仓库ID不能为空")
     @Excel(name = "仓库ID")
     private Long storeHouseid;
 
     /** 仓库名称 */
+    @NotNull(message = "仓库名称不能为空")
     @Excel(name = "仓库名称")
     @Length(max = 20, message = "仓库名称的字符长度不允许超过20")
     private String storeHouseName;
 
     /** 入库日期 */
-    @Excel(name = "入库日期",dateFormat = "yyyy-MM-dd")
+    @NotNull(message = "入库日期不能为空")
+    @Excel(name = "入库日期", dateFormat = "yyyy-MM-dd")
     private String storeDate;
 
     /** 库存量（片数） */
+    @NotNull(message = "库存量不能为空")
     @Excel(name = "库存量(片数）")
     private Long stockNumber;
 
     /** 供应商 */
+    @NotNull(message = "供应商不能为空")
     @Excel(name = "供应商")
     @Length(max = 20, message = "供应商的字符长度不允许超过20")
     private String supplier;
 
     /** 供应商ID */
+    @NotNull(message = "供应商ID不能为空")
     @Excel(name = "供应商ID")
     private Long supplierId;
 
     /** 级别编码 */
+    @NotNull(message = "级别编码不能为空")
     @Excel(name = "级别编码")
     private Long levelID;
 
     /** 级别名称 */
+    @NotNull(message = "级别名称不能为空")
     @Excel(name = "级别名称")
     @Length(max = 20, message = "账号的字符长度不允许超过20")
     private String levelName;
 
     /** 计量单位 */
+    @NotNull(message = "计量单位不能为空")
     @Excel(name = "计量单位")
     @Length(max = 20, message = "计量单位的字符长度不允许超过20")
     private String countingUnit;
 
     /** 厚度 */
+    @NotNull(message = "厚度不能为空")
     @DecimalMaxDigits
     private Double height;
 
     /** 长度 */
+    @NotNull(message = "长度不能为空")
     @DecimalMaxDigits
     private Double length;
 
     /** 宽度 */
+    @NotNull(message = "宽度不能为空")
     @DecimalMaxDigits
     private Double width;
 
     /** 出厂片数 */
+    @NotNull(message = "出厂片数不能为空")
     @Excel(name = "出厂片数")
     private Long pieces;
 
     /** 每包片数 */
+    @NotNull(message = "每包片数不能为空")
     @Excel(name = "每包片数")
     private Long piecesPerPack;
 
     /** 包数 */
+    @NotNull(message = "包数不能为空")
     @Excel(name = "包数")
     private Long packs;
 
     /** 出厂单价 */
+    @NotNull(message = "出厂单价不能为空")
     @DecimalMaxDigits
     private Double price;
 
     /** 出厂是否含税 */
-    @Excel(name = "出厂是否含税")
-    @Pattern(regexp = "是|否", message = "出厂是否含税必须是：是或否")
+    @NotNull(message = "出厂是否含税不能为空")
+      @Excel(name = "出厂是否含税", readConverterExp = "0=不含税,1=含税")
+    @Max(value = 1, message = "只能为0或1，分别代表不含税或含税")
+    @Min(value = 0, message = "只能为0或1，分别代表不含税或含税")
     private Long isIncludeTaxFactory;
 
     /** 杂费 */
+    @NotNull(message = "杂费不能为空")
     @DecimalMaxDigits
     private Double sundryCost;
 
     /** 出厂货款 */
+    @NotNull(message = "出厂货款不能为空")
     @DecimalMaxDigits
     private Double paymentFactory;
 
     /** 卸货价 */
+    @NotNull(message = "卸货价不能为空")
     @DecimalMaxDigits
     private Double paymentUnload;
 
     /** 销售是否含税（0不含税，1含税） */
-    @Excel(name = "销售是否含税")
-    @Pattern(regexp = "是|否", message = "销售是否含税必须是：是或否")
+    @NotNull(message = "销售是否含税不能为空")
+    @Excel(name = "销售是否含税", readConverterExp = "0=不含税,1=含税")
+    @Max(value = 1, message = "只能为0或1，分别代表不含税或含税")
+    @Min(value = 0, message = "只能为0或1，分别代表不含税或含税")
     private Long isIncludeTaxSale;
 
     /** 总货款 */
-    @DecimalMaxDigits
+    @NotNull(message = "总货款不能为空")
     private String payments;
 
     /** 陆运车辆ID */
+    @NotNull(message = "陆运车辆ID不能为空")
     @Excel(name = "陆运车辆ID")
     private Long landCarID;
 
     /** 陆运车牌 */
+    @NotNull(message = "陆运车牌不能为空")
     @Excel(name = "陆运车牌")
     private String landCarNo;
 
     /** 陆运司机电话 */
+    @NotNull(message = "陆运司机电话不能为空")
     @PhoneLength
     private String landDriverTel;
 
     /** 陆地司机姓名 */
+    @NotNull(message = "陆地司机姓名不能为空")
     @Excel(name = "陆地司机姓名")
     private String landDriverName;
 
     /** 海运车辆ID */
+    @NotNull(message = "海运车辆ID不能为空")
     @Excel(name = "海运车辆ID")
-    @Length(max = 55, message = "海运车辆ID的字符长度不允许超过55")
     private Long seaCarID;
 
     /** 海运车牌 */
+    @NotNull(message = "海运车牌不能为空")
     @Excel(name = "海运车牌")
     @Length(max = 55, message = "海运车车牌的字符长度不允许超过55")
     private String seaCarNo;
 
     /** 海运司机电话 */
+    @NotNull(message = "海运司机电话不能为空")
     @Excel(name = "海运司机电话")
     @PhoneLength
     private String seaDriverTel;
 
     /** 海运司机姓名 */
+    @NotNull(message = "海运司机姓名不能为空")
     @Excel(name = "海运司机姓名")
     @Length(max = 20, message = "海运司机姓名的字符长度不允许超过20")
     private String seaDriverName;
 
     /** 误差 */
+    @NotNull(message = "误差不能为空")
     @DecimalMaxDigits
     private Double erro;
 
     /** 吨位 */
+    @NotNull(message = "吨位不能为空")
     @DecimalMaxDigits
     private Double tonnage;
 
     /** 陆运费单价 */
+    @NotNull(message = "陆运费单价不能为空")
     @DecimalMaxDigits
     private Double landFreightPrice;
 
     /** 陆运费 */
+    @NotNull(message = "陆运费不能为空")
     @DecimalMaxDigits
     private Double landFreight;
 
     /** 海运费 */
+    @NotNull(message = "海运费不能为空")
     @DecimalMaxDigits
     private Double seaFreight;
 
     /** 运费（海运费+陆运费） */
-    @Excel(name = "运费", readConverterExp = "运费=海运费+陆运费")
+    @NotNull(message = "运费不能为空")
+    @Excel(name = "运费")
     private Double freight;
 
     /** 其他费用 */
+    @NotNull(message = "其他费用不能为空")
     @DecimalMaxDigits
     private Double otherCost;
 
     /** 利润 */
+    @NotNull(message = "利润不能为空")
     @DecimalMaxDigits
     private Double profit;
 
     /** 不含税利润 */
+    @NotNull(message = "不含税利润不能为空")
     @DecimalMaxDigits
     private Double profitNoTax;
 
     /** 实际片数 */
+    @NotNull(message = "实际片数不能为空")
     @Excel(name = "实际片数")
     private Long actualPieces;
 
@@ -234,7 +275,7 @@ public class Inventory extends BaseEntity
     private Long delFlag;
 
     /** 订单仓库选择时是否显示（ 显示， 不显示） */
-    @Excel(name = "订单仓库选择时是否显示", readConverterExp = "0=显示，,1=不显示")
+    @Excel(name = "订单仓库选择时是否显示")
     private Long showFlag;
 
     public void setId(Long id) 

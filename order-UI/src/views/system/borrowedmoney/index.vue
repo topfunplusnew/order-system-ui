@@ -1,129 +1,35 @@
 <template>
   <div class="app-container">
-    <el-form :model="queryParams" ref="queryForm" size="small" :inline="true" v-show="showSearch" label-width="68px">
-      <el-form-item label="贷款编号" prop="loanNO">
+    <el-form :model="timesQuery" ref="queryForm" size="small" :inline="true" v-show="showSearch" label-width="68px">
+      <el-form-item label="开始时间" prop="beginTime">
         <el-input
-          v-model="queryParams.loanNO"
-          placeholder="请输入贷款编号"
+          v-model="timesQuery.beginTime"
+          placeholder="请输入开始时间"
           clearable
           @keyup.enter.native="handleQuery"
         />
       </el-form-item>
-      <el-form-item label="贷款来源" prop="origin">
+      <el-form-item label="结束时间" prop="endTime">
         <el-input
-          v-model="queryParams.origin"
-          placeholder="请输入贷款来源"
+          v-model="timesQuery.endTime"
+          placeholder="请输入结束时间"
           clearable
           @keyup.enter.native="handleQuery"
         />
       </el-form-item>
-      <el-form-item label="借入金额" prop="moneyAmount">
-        <el-input
-          v-model="queryParams.moneyAmount"
-          placeholder="请输入借入金额"
-          clearable
-          @keyup.enter.native="handleQuery"
-        />
-      </el-form-item>
-      <el-form-item label="贷款利率" prop="ratio">
-        <el-input
-          v-model="queryParams.ratio"
-          placeholder="请输入贷款利率"
-          clearable
-          @keyup.enter.native="handleQuery"
-        />
-      </el-form-item>
-      <el-form-item label="贷款发放日期" prop="loanDate">
-        <el-input
-          v-model="queryParams.loanDate"
-          placeholder="请输入贷款发放日期"
-          clearable
-          @keyup.enter.native="handleQuery"
-        />
-      </el-form-item>
-      <el-form-item label="贷款年限" prop="loanDuring">
-        <el-input
-          v-model="queryParams.loanDuring"
-          placeholder="请输入贷款年限"
-          clearable
-          @keyup.enter.native="handleQuery"
-        />
-      </el-form-item>
-      <el-form-item label="抵押担保" prop="mortgageGuarantee">
-        <el-input
-          v-model="queryParams.mortgageGuarantee"
-          placeholder="请输入抵押担保"
-          clearable
-          @keyup.enter.native="handleQuery"
-        />
-      </el-form-item>
-      <el-form-item label="打入账户" prop="acountsName">
-        <el-input
-          v-model="queryParams.acountsName"
-          placeholder="请输入打入账户"
-          clearable
-          @keyup.enter.native="handleQuery"
-        />
-      </el-form-item>
-      <el-form-item label="打入账号" prop="bankNo">
-        <el-input
-          v-model="queryParams.bankNo"
-          placeholder="请输入打入账号"
-          clearable
-          @keyup.enter.native="handleQuery"
-        />
-      </el-form-item>
-      <el-form-item label="已还款标记" prop="isEnd">
-        <el-input
-          v-model="queryParams.isEnd"
-          placeholder="请输入已还款标记"
-          clearable
-          @keyup.enter.native="handleQuery"
-        />
-      </el-form-item>
-      <el-form-item label="备注" prop="comments">
-        <el-input
-          v-model="queryParams.comments"
-          placeholder="请输入备注"
-          clearable
-          @keyup.enter.native="handleQuery"
-        />
-      </el-form-item>
-      <el-form-item label="添加时间" prop="addtime">
-        <el-input
-          v-model="queryParams.addtime"
-          placeholder="请输入添加时间"
-          clearable
-          @keyup.enter.native="handleQuery"
-        />
-      </el-form-item>
-      <el-form-item label="操作人员ID" prop="userId">
-        <el-input
-          v-model="queryParams.userId"
-          placeholder="请输入操作人员ID"
-          clearable
-          @keyup.enter.native="handleQuery"
-        />
-      </el-form-item>
-      <el-form-item label="操作人员姓名" prop="UserName">
-        <el-input
-          v-model="queryParams.UserName"
-          placeholder="请输入操作人员姓名"
-          clearable
-          @keyup.enter.native="handleQuery"
-        />
-      </el-form-item>
-      <el-form-item label="删除标记" prop="delFlag">
-        <el-input
-          v-model="queryParams.delFlag"
-          placeholder="请输入删除标记"
-          clearable
-          @keyup.enter.native="handleQuery"
-        />
+      <el-form-item label="对象类型" prop="objectType">
+        <el-select v-model="timesQuery.objectType" placeholder="请选择对象类型">
+          <el-option
+            v-for="item in options"
+            :key="item.value"
+            :label="item.label"
+            :value="item.value">
+          </el-option>
+        </el-select>
       </el-form-item>
       <el-form-item>
         <el-button type="primary" icon="el-icon-search" size="mini" @click="handleQuery">搜索</el-button>
-        <el-button icon="el-icon-refresh" size="mini" @click="resetQuery">重置</el-button>
+        <!--        <el-button icon="el-icon-refresh" size="mini" @click="resetQuery">重置</el-button>-->
       </el-form-item>
     </el-form>
 
@@ -136,7 +42,8 @@
           size="mini"
           @click="handleAdd"
           v-hasPermi="['system:borrowedMoney:add']"
-        >新增</el-button>
+        >新增
+        </el-button>
       </el-col>
       <el-col :span="1.5">
         <el-button
@@ -147,7 +54,8 @@
           :disabled="single"
           @click="handleUpdate"
           v-hasPermi="['system:borrowedMoney:edit']"
-        >修改</el-button>
+        >修改
+        </el-button>
       </el-col>
       <el-col :span="1.5">
         <el-button
@@ -158,7 +66,8 @@
           :disabled="multiple"
           @click="handleDelete"
           v-hasPermi="['system:borrowedMoney:remove']"
-        >删除</el-button>
+        >删除
+        </el-button>
       </el-col>
       <el-col :span="1.5">
         <el-button
@@ -168,29 +77,30 @@
           size="mini"
           @click="handleExport"
           v-hasPermi="['system:borrowedMoney:export']"
-        >导出</el-button>
+        >导出
+        </el-button>
       </el-col>
       <right-toolbar :showSearch.sync="showSearch" @queryTable="getList"></right-toolbar>
     </el-row>
 
     <el-table v-loading="loading" :data="borrowedMoneyList" @selection-change="handleSelectionChange">
-      <el-table-column type="selection" width="55" align="center" />
-      <el-table-column label="id" align="center" prop="id" />
-      <el-table-column label="贷款编号" align="center" prop="loanNO" />
-      <el-table-column label="贷款来源" align="center" prop="origin" />
-      <el-table-column label="借入金额" align="center" prop="moneyAmount" />
-      <el-table-column label="贷款利率" align="center" prop="ratio" />
-      <el-table-column label="贷款发放日期" align="center" prop="loanDate" />
-      <el-table-column label="贷款年限" align="center" prop="loanDuring" />
-      <el-table-column label="抵押担保" align="center" prop="mortgageGuarantee" />
-      <el-table-column label="打入账户" align="center" prop="acountsName" />
-      <el-table-column label="打入账号" align="center" prop="bankNo" />
-      <el-table-column label="已还款标记" align="center" prop="isEnd" />
-      <el-table-column label="备注" align="center" prop="comments" />
-      <el-table-column label="添加时间" align="center" prop="addtime" />
-      <el-table-column label="操作人员ID" align="center" prop="userId" />
-      <el-table-column label="操作人员姓名" align="center" prop="UserName" />
-      <el-table-column label="删除标记" align="center" prop="delFlag" />
+      <el-table-column type="selection" width="55" align="center"/>
+      <el-table-column label="id" align="center" prop="id"/>
+      <el-table-column label="贷款编号" align="center" prop="loanNO"/>
+      <el-table-column label="贷款来源" align="center" prop="origin"/>
+      <el-table-column label="借入金额" align="center" prop="moneyAmount"/>
+      <el-table-column label="贷款利率" align="center" prop="ratio"/>
+      <el-table-column label="贷款发放日期" align="center" prop="loanDate"/>
+      <el-table-column label="贷款年限" align="center" prop="loanDuring"/>
+      <el-table-column label="抵押担保" align="center" prop="mortgageGuarantee"/>
+      <el-table-column label="打入账户" align="center" prop="acountsName"/>
+      <el-table-column label="打入账号" align="center" prop="bankNo"/>
+      <el-table-column label="已还款标记" align="center" prop="isEnd"/>
+      <el-table-column label="备注" align="center" prop="comments"/>
+      <el-table-column label="添加时间" align="center" prop="addtime"/>
+      <el-table-column label="操作人员ID" align="center" prop="userId"/>
+      <el-table-column label="操作人员姓名" align="center" prop="UserName"/>
+      <el-table-column label="删除标记" align="center" prop="delFlag"/>
       <el-table-column label="操作" align="center" class-name="small-padding fixed-width">
         <template slot-scope="scope">
           <el-button
@@ -199,18 +109,20 @@
             icon="el-icon-edit"
             @click="handleUpdate(scope.row)"
             v-hasPermi="['system:borrowedMoney:edit']"
-          >修改</el-button>
+          >修改
+          </el-button>
           <el-button
             size="mini"
             type="text"
             icon="el-icon-delete"
             @click="handleDelete(scope.row)"
             v-hasPermi="['system:borrowedMoney:remove']"
-          >删除</el-button>
+          >删除
+          </el-button>
         </template>
       </el-table-column>
     </el-table>
-    
+
     <pagination
       v-show="total>0"
       :total="total"
@@ -223,49 +135,49 @@
     <el-dialog :title="title" :visible.sync="open" width="500px" append-to-body>
       <el-form ref="form" :model="form" :rules="rules" label-width="80px">
         <el-form-item label="贷款编号" prop="loanNO">
-          <el-input v-model="form.loanNO" placeholder="请输入贷款编号" />
+          <el-input v-model="form.loanNO" placeholder="请输入贷款编号"/>
         </el-form-item>
         <el-form-item label="贷款来源" prop="origin">
-          <el-input v-model="form.origin" placeholder="请输入贷款来源" />
+          <el-input v-model="form.origin" placeholder="请输入贷款来源"/>
         </el-form-item>
         <el-form-item label="借入金额" prop="moneyAmount">
-          <el-input v-model="form.moneyAmount" placeholder="请输入借入金额" />
+          <el-input v-model="form.moneyAmount" placeholder="请输入借入金额"/>
         </el-form-item>
         <el-form-item label="贷款利率" prop="ratio">
-          <el-input v-model="form.ratio" placeholder="请输入贷款利率" />
+          <el-input v-model="form.ratio" placeholder="请输入贷款利率"/>
         </el-form-item>
         <el-form-item label="贷款发放日期" prop="loanDate">
-          <el-input v-model="form.loanDate" placeholder="请输入贷款发放日期" />
+          <el-input v-model="form.loanDate" placeholder="请输入贷款发放日期"/>
         </el-form-item>
         <el-form-item label="贷款年限" prop="loanDuring">
-          <el-input v-model="form.loanDuring" placeholder="请输入贷款年限" />
+          <el-input v-model="form.loanDuring" placeholder="请输入贷款年限"/>
         </el-form-item>
         <el-form-item label="抵押担保" prop="mortgageGuarantee">
-          <el-input v-model="form.mortgageGuarantee" placeholder="请输入抵押担保" />
+          <el-input v-model="form.mortgageGuarantee" placeholder="请输入抵押担保"/>
         </el-form-item>
         <el-form-item label="打入账户" prop="acountsName">
-          <el-input v-model="form.acountsName" placeholder="请输入打入账户" />
+          <el-input v-model="form.acountsName" placeholder="请输入打入账户"/>
         </el-form-item>
         <el-form-item label="打入账号" prop="bankNo">
-          <el-input v-model="form.bankNo" placeholder="请输入打入账号" />
+          <el-input v-model="form.bankNo" placeholder="请输入打入账号"/>
         </el-form-item>
         <el-form-item label="已还款标记" prop="isEnd">
-          <el-input v-model="form.isEnd" placeholder="请输入已还款标记" />
+          <el-input v-model="form.isEnd" placeholder="请输入已还款标记"/>
         </el-form-item>
         <el-form-item label="备注" prop="comments">
-          <el-input v-model="form.comments" placeholder="请输入备注" />
+          <el-input v-model="form.comments" placeholder="请输入备注"/>
         </el-form-item>
         <el-form-item label="添加时间" prop="addtime">
-          <el-input v-model="form.addtime" placeholder="请输入添加时间" />
+          <el-input v-model="form.addtime" placeholder="请输入添加时间"/>
         </el-form-item>
         <el-form-item label="操作人员ID" prop="userId">
-          <el-input v-model="form.userId" placeholder="请输入操作人员ID" />
+          <el-input v-model="form.userId" placeholder="请输入操作人员ID"/>
         </el-form-item>
         <el-form-item label="操作人员姓名" prop="UserName">
-          <el-input v-model="form.UserName" placeholder="请输入操作人员姓名" />
+          <el-input v-model="form.UserName" placeholder="请输入操作人员姓名"/>
         </el-form-item>
         <el-form-item label="删除标记" prop="delFlag">
-          <el-input v-model="form.delFlag" placeholder="请输入删除标记" />
+          <el-input v-model="form.delFlag" placeholder="请输入删除标记"/>
         </el-form-item>
       </el-form>
       <div slot="footer" class="dialog-footer">
@@ -277,7 +189,13 @@
 </template>
 
 <script>
-import { listBorrowedMoney, getBorrowedMoney, delBorrowedMoney, addBorrowedMoney, updateBorrowedMoney } from "@/api/system/borrowedMoney";
+import {
+  listBorrowedMoney,
+  getBorrowedMoney,
+  delBorrowedMoney,
+  addBorrowedMoney,
+  updateBorrowedMoney
+} from "@/api/system/borrowedMoney";
 
 export default {
   name: "BorrowedMoney",
@@ -324,8 +242,19 @@ export default {
       // 表单参数
       form: {},
       // 表单校验
-      rules: {
-      }
+      rules: {},
+      //搜索参数
+      timesQuery: {
+        beginTime: '',
+        endTime: '',
+        objectType: ''
+      },
+      options: [
+        {
+          label: 'test',
+          value: 'test'
+        }
+      ]
     };
   },
   created() {
@@ -382,7 +311,7 @@ export default {
     // 多选框选中数据
     handleSelectionChange(selection) {
       this.ids = selection.map(item => item.id)
-      this.single = selection.length!==1
+      this.single = selection.length !== 1
       this.multiple = !selection.length
     },
     /** 新增按钮操作 */
@@ -424,12 +353,13 @@ export default {
     /** 删除按钮操作 */
     handleDelete(row) {
       const ids = row.id || this.ids;
-      this.$modal.confirm('是否确认删除从外部借款信息编号为"' + ids + '"的数据项？').then(function() {
+      this.$modal.confirm('是否确认删除从外部借款信息编号为"' + ids + '"的数据项？').then(function () {
         return delBorrowedMoney(ids);
       }).then(() => {
         this.getList();
         this.$modal.msgSuccess("删除成功");
-      }).catch(() => {});
+      }).catch(() => {
+      });
     },
     /** 导出按钮操作 */
     handleExport() {

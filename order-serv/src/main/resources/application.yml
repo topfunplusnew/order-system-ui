@@ -87,8 +87,7 @@ token:
   # 令牌密钥
   secret: orderorderorderordermlorderorder
   # 令牌有效期（默认单位分钟，4320min=三天）
-  expireTime: 4320
-
+  expireTime: 43200
 
 # MyBatis Plus配置
 mybatis-plus:
