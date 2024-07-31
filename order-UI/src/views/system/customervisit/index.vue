@@ -142,8 +142,8 @@
     <!-- 添加或修改走访记录对话框 -->
     <el-dialog :title="title" :visible.sync="open" width="500px" append-to-body>
       <el-form ref="form" :model="form" :rules="rules" label-width="80px">
-        <el-form-item label="省" prop="province">
-          <el-input v-model="form.province" placeholder="请输入省" />
+        <el-form-item label="ID" prop="ID">
+          <el-input v-model="form.province" placeholder="请输入ID" />
         </el-form-item>
         <el-form-item label="市县" prop="city">
           <el-input v-model="form.city" placeholder="请输入市县" />
