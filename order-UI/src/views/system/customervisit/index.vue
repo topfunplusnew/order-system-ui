@@ -1,168 +1,44 @@
 <template>
   <div class="app-container">
     <el-form :model="queryParams" ref="queryForm" size="small" :inline="true" v-show="showSearch" label-width="68px">
-      <el-form-item label="省" prop="province">
+      <el-form-item label="客户" prop="province">
         <el-input
           v-model="queryParams.province"
-          placeholder="请输入省"
+          placeholder="请输入客户姓名"
           clearable
           @keyup.enter.native="handleQuery"
         />
       </el-form-item>
-      <el-form-item label="市县" prop="city">
+      <el-form-item label="区域" prop="city">
         <el-input
           v-model="queryParams.city"
-          placeholder="请输入市县"
+          placeholder="请输入区域"
           clearable
           @keyup.enter.native="handleQuery"
         />
       </el-form-item>
-      <el-form-item label="乡镇" prop="county">
+      <el-form-item label="日期" prop="county">
         <el-input
           v-model="queryParams.county"
-          placeholder="请输入乡镇"
+          placeholder="请输入日期"
           clearable
           @keyup.enter.native="handleQuery"
         />
       </el-form-item>
-      <el-form-item label="厂房设备" prop="equipment">
+      <el-form-item label="姓名" prop="equipment">
         <el-input
           v-model="queryParams.equipment"
-          placeholder="请输入厂房设备"
+          placeholder="请输入姓名"
           clearable
           @keyup.enter.native="handleQuery"
         />
       </el-form-item>
-      <el-form-item label="竞争对手" prop="competitor">
-        <el-input
-          v-model="queryParams.competitor"
-          placeholder="请输入竞争对手"
-          clearable
-          @keyup.enter.native="handleQuery"
-        />
-      </el-form-item>
-      <el-form-item label="当地经销商" prop="localDealer">
-        <el-input
-          v-model="queryParams.localDealer"
-          placeholder="请输入当地经销商"
-          clearable
-          @keyup.enter.native="handleQuery"
-        />
-      </el-form-item>
-      <el-form-item label="月用货量" prop="monthlyConsumption">
-        <el-input
-          v-model="queryParams.monthlyConsumption"
-          placeholder="请输入月用货量"
-          clearable
-          @keyup.enter.native="handleQuery"
-        />
-      </el-form-item>
-      <el-form-item label="白玻用货习惯及厂家" prop="whiteGlassFactory">
-        <el-input
-          v-model="queryParams.whiteGlassFactory"
-          placeholder="请输入白玻用货习惯及厂家"
-          clearable
-          @keyup.enter.native="handleQuery"
-        />
-      </el-form-item>
-      <el-form-item label="lowe玻璃用货厂家及用量" prop="loweGlassConsumption">
-        <el-input
-          v-model="queryParams.loweGlassConsumption"
-          placeholder="请输入lowe玻璃用货厂家及用量"
-          clearable
-          @keyup.enter.native="handleQuery"
-        />
-      </el-form-item>
-      <el-form-item label="色玻、过度色玻璃用货厂家及用量" prop="colorGlassConsumption">
-        <el-input
-          v-model="queryParams.colorGlassConsumption"
-          placeholder="请输入色玻、过度色玻璃用货厂家及用量"
-          clearable
-          @keyup.enter.native="handleQuery"
-        />
-      </el-form-item>
-      <el-form-item label="特色厚度、特殊尺寸、协议品用货厂家及用量" prop="specialGlassConsumption">
-        <el-input
-          v-model="queryParams.specialGlassConsumption"
-          placeholder="请输入特色厚度、特殊尺寸、协议品用货厂家及用量"
-          clearable
-          @keyup.enter.native="handleQuery"
-        />
-      </el-form-item>
-      <el-form-item label="备注" prop="comments">
-        <el-input
-          v-model="queryParams.comments"
-          placeholder="请输入备注"
-          clearable
-          @keyup.enter.native="handleQuery"
-        />
-      </el-form-item>
-      <el-form-item label="添加时间" prop="addtime">
-        <el-input
-          v-model="queryParams.addtime"
-          placeholder="请输入添加时间"
-          clearable
-          @keyup.enter.native="handleQuery"
-        />
-      </el-form-item>
-      <el-form-item label="操作人员ID" prop="userId">
-        <el-input
-          v-model="queryParams.userId"
-          placeholder="请输入操作人员ID"
-          clearable
-          @keyup.enter.native="handleQuery"
-        />
-      </el-form-item>
-      <el-form-item label="操作人员姓名" prop="UserName">
-        <el-input
-          v-model="queryParams.UserName"
-          placeholder="请输入操作人员姓名"
-          clearable
-          @keyup.enter.native="handleQuery"
-        />
-      </el-form-item>
-      <el-form-item label="走访日期" prop="visitDate">
-        <el-input
-          v-model="queryParams.visitDate"
-          placeholder="请输入走访日期"
-          clearable
-          @keyup.enter.native="handleQuery"
-        />
-      </el-form-item>
-      <el-form-item label="审核标志" prop="checkState">
-        <el-input
-          v-model="queryParams.checkState"
-          placeholder="请输入审核标志"
-          clearable
-          @keyup.enter.native="handleQuery"
-        />
-      </el-form-item>
-      <el-form-item label="审核人ID" prop="checkUserID">
-        <el-input
-          v-model="queryParams.checkUserID"
-          placeholder="请输入审核人ID"
-          clearable
-          @keyup.enter.native="handleQuery"
-        />
-      </el-form-item>
-      <el-form-item label="审核人" prop="checkUserName">
-        <el-input
-          v-model="queryParams.checkUserName"
-          placeholder="请输入审核人"
-          clearable
-          @keyup.enter.native="handleQuery"
-        />
-      </el-form-item>
-      <el-form-item label="删除标记" prop="delFlag">
-        <el-input
-          v-model="queryParams.delFlag"
-          placeholder="请输入删除标记"
-          clearable
-          @keyup.enter.native="handleQuery"
-        />
-      </el-form-item>
+
       <el-form-item>
-        <el-button type="primary" icon="el-icon-search" size="mini" @click="handleQuery">搜索</el-button>
+      <el-button type="primary" icon="el-icon-search" size="mini" @click="handleQuery">搜索</el-button>
+      </el-form-item>
+
+      <el-form-item>
         <el-button icon="el-icon-refresh" size="mini" @click="resetQuery">重置</el-button>
       </el-form-item>
     </el-form>
@@ -218,12 +94,12 @@
 
     <el-table v-loading="loading" :data="CustomerVisitList" @selection-change="handleSelectionChange">
       <el-table-column type="selection" width="55" align="center" />
-      <el-table-column label="id" align="center" prop="id" />
-      <el-table-column label="省" align="center" prop="province" />
-      <el-table-column label="市县" align="center" prop="city" />
-      <el-table-column label="乡镇" align="center" prop="county" />
-      <el-table-column label="客户" align="center" prop="customer" />
-      <el-table-column label="负责人" align="center" prop="leaderName" />
+      <el-table-column label="ID" align="center" prop="ID" />
+      <el-table-column label="是否审核" align="center" prop="isCheckState" />
+      <el-table-column label="人员" align="center" prop="personnel" />
+      <el-table-column label="区域" align="center" prop="region" />
+      <el-table-column label="客户名称" align="center" prop="customer" />
+      <el-table-column label="负责人姓名" align="center" prop="leaderName" />
       <el-table-column label="负责人电话" align="center" prop="LeaderTel" />
       <el-table-column label="厂房设备" align="center" prop="equipment" />
       <el-table-column label="竞争对手" align="center" prop="competitor" />
@@ -234,14 +110,7 @@
       <el-table-column label="色玻、过度色玻璃用货厂家及用量" align="center" prop="colorGlassConsumption" />
       <el-table-column label="特色厚度、特殊尺寸、协议品用货厂家及用量" align="center" prop="specialGlassConsumption" />
       <el-table-column label="备注" align="center" prop="comments" />
-      <el-table-column label="添加时间" align="center" prop="addtime" />
-      <el-table-column label="操作人员ID" align="center" prop="userId" />
-      <el-table-column label="操作人员姓名" align="center" prop="UserName" />
-      <el-table-column label="走访日期" align="center" prop="visitDate" />
-      <el-table-column label="审核标志" align="center" prop="checkState" />
-      <el-table-column label="审核人ID" align="center" prop="checkUserID" />
-      <el-table-column label="审核人" align="center" prop="checkUserName" />
-      <el-table-column label="删除标记" align="center" prop="delFlag" />
+      <el-table-column label="提交时间" align="center" prop="submittime" />
       <el-table-column label="操作" align="center" class-name="small-padding fixed-width">
         <template slot-scope="scope">
           <el-button
