@@ -254,7 +254,7 @@ export default {
   },
   created() {
     this.getList();
-    this.$store.dispatch('borrowMoney/getTempBorrowedMoneyList')
+    this.$store.dispatch('money/getTempBorrowedMoneyList')
   },
   computed: {
     ...mapGetters(['tempBorrowedMoneyList'])

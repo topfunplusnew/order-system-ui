@@ -315,9 +315,6 @@ export default {
     /** 搜索按钮操作 */
     handleQuery() {
       this.queryParams.pageNum = 1;
-      //格式化时间
-      // const time = new Date(this.queryParams.issueDate)
-      // this.queryParams.issueDate = formatTime(time)
       this.getList();
     },
     /** 重置按钮操作 */

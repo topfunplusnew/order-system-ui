@@ -2,33 +2,21 @@
   <div class="app-container">
     <el-form :model="timesQuery" ref="queryForm" size="small" :inline="true" v-show="showSearch" label-width="68px">
       <el-form-item label="开始时间" prop="beginTime">
-        <el-input
+        <el-date-picker
           v-model="timesQuery.beginTime"
-          placeholder="请输入开始时间"
-          clearable
-          @keyup.enter.native="handleQuery"
-        />
+          type="date"
+          placeholder="请选择开始时间">
+        </el-date-picker>
       </el-form-item>
       <el-form-item label="结束时间" prop="endTime">
-        <el-input
+        <el-date-picker
           v-model="timesQuery.endTime"
-          placeholder="请输入结束时间"
-          clearable
-          @keyup.enter.native="handleQuery"
-        />
-      </el-form-item>
-      <el-form-item label="对象类型" prop="objectType">
-        <el-select v-model="timesQuery.objectType" placeholder="请选择对象类型">
-          <el-option
-            v-for="item in options"
-            :key="item.value"
-            :label="item.label"
-            :value="item.value">
-          </el-option>
-        </el-select>
+          type="date"
+          placeholder="请选择结束时间">
+        </el-date-picker>
       </el-form-item>
       <el-form-item>
-        <el-button type="primary" icon="el-icon-search" size="mini" @click="handleQuery">搜索</el-button>
+        <el-button type="primary" icon="el-icon-search" size="mini" @click="handleQueryTime">搜索</el-button>
       </el-form-item>
     </el-form>
 
@@ -64,36 +52,34 @@
       </right-toolbar>
     </el-row>
 
-    <el-table v-loading="loading" :data="repaymentList" @selection-change="handleSelectionChange" id="printBox"
+    <el-table border v-loading="loading" :data="repaymentList" @selection-change="handleSelectionChange" id="printBox"
               v-horizontal-scroll="'always'">
-      <el-table-column type="selection" width="55" align="center"/>
+      <!--      <el-table-column type="selection" width="55" align="center"/>-->
       <el-table-column label="id" align="center" prop="id"/>
-      <el-table-column label="贷款编号" align="center" prop="loanNO"/>
-      <el-table-column label="还款编号" align="center" prop="payNO"/>
-      <el-table-column label="还" align="center" prop="moneyAmount"/>
-      <el-table-column label="付息" align="center" prop="ratio"/>
-      <el-table-column label="还款日期" align="center" prop="payDate"/>
-      <el-table-column label="还款账户" align="center" prop="acountsName"/>
-      <el-table-column label="还款账号" align="center" prop="bankNo"/>
+      <el-table-column label="贷款编号" align="center" prop="loanNO" v-if="columns[0].visible"/>
+      <el-table-column label="还款编号" align="center" prop="payNO" v-if="columns[1].visible"/>
+      <el-table-column label="还款金额" align="center" prop="moneyAmount" v-if="columns[2].visible"/>
+      <el-table-column label="付息" align="center" prop="ratio" v-if="columns[3].visible"/>
+      <el-table-column label="还款日期" align="center" prop="payDate" v-if="columns[4].visible"/>
+      <el-table-column label="还款账户" align="center" prop="acountsName" v-if="columns[5].visible"/>
+      <el-table-column label="还款账号" align="center" prop="bankNo" v-if="columns[6].visible"/>
       <el-table-column label="备注" align="center" prop="comments"/>
-      <el-table-column label="添加时间" align="center" prop="addtime"/>
-      <el-table-column label="操作人员ID" align="center" prop="userId"/>
-      <el-table-column label="操作人员姓名" align="center" prop="UserName"/>
-      <el-table-column label="删除标记" align="center" prop="delFlag"/>
+      <!--      <el-table-column label="添加时间" align="center" prop="addtime"/>-->
+      <!--      <el-table-column label="操作人员ID" align="center" prop="userId"/>-->
+      <!--      <el-table-column label="操作人员姓名" align="center" prop="UserName"/>-->
+      <!--      <el-table-column label="删除标记" align="center" prop="delFlag"/>-->
       <el-table-column label="操作" align="center" class-name="small-padding fixed-width">
         <template slot-scope="scope">
           <el-button
             size="mini"
-            type="text"
-            icon="el-icon-edit"
+            type="primary"
             @click="handleUpdate(scope.row)"
             v-hasPermi="['system:repayment:edit']"
           >修改
           </el-button>
           <el-button
             size="mini"
-            type="text"
-            icon="el-icon-delete"
+            type="danger"
             @click="handleDelete(scope.row)"
             v-hasPermi="['system:repayment:remove']"
           >删除
@@ -137,18 +123,18 @@
         <el-form-item label="备注" prop="comments">
           <el-input v-model="form.comments" placeholder="请输入备注"/>
         </el-form-item>
-        <el-form-item label="添加时间" prop="addtime">
-          <el-input v-model="form.addtime" placeholder="请输入添加时间"/>
-        </el-form-item>
-        <el-form-item label="操作人员ID" prop="userId">
-          <el-input v-model="form.userId" placeholder="请输入操作人员ID"/>
-        </el-form-item>
-        <el-form-item label="操作人员姓名" prop="UserName">
-          <el-input v-model="form.UserName" placeholder="请输入操作人员姓名"/>
-        </el-form-item>
-        <el-form-item label="删除标记" prop="delFlag">
-          <el-input v-model="form.delFlag" placeholder="请输入删除标记"/>
-        </el-form-item>
+        <!--        <el-form-item label="添加时间" prop="addtime">-->
+        <!--          <el-input v-model="form.addtime" placeholder="请输入添加时间"/>-->
+        <!--        </el-form-item>-->
+        <!--        <el-form-item label="操作人员ID" prop="userId">-->
+        <!--          <el-input v-model="form.userId" placeholder="请输入操作人员ID"/>-->
+        <!--        </el-form-item>-->
+        <!--        <el-form-item label="操作人员姓名" prop="UserName">-->
+        <!--          <el-input v-model="form.UserName" placeholder="请输入操作人员姓名"/>-->
+        <!--        </el-form-item>-->
+        <!--        <el-form-item label="删除标记" prop="delFlag">-->
+        <!--          <el-input v-model="form.delFlag" placeholder="请输入删除标记"/>-->
+        <!--        </el-form-item>-->
       </el-form>
       <div slot="footer" class="dialog-footer">
         <el-button type="primary" @click="submitForm">确 定</el-button>
@@ -160,6 +146,7 @@
 
 <script>
 import {listRepayment, getRepayment, delRepayment, addRepayment, updateRepayment} from "@/api/system/repayment";
+import {mapGetters} from "vuex";
 
 export default {
   name: "Repayment",
@@ -205,15 +192,13 @@ export default {
       // 表单校验
       rules: {},
       columns: [
-        {key: 0, label: `客户`, visible: true},
-        {key: 1, label: `老板姓名`, visible: true},
-        {key: 2, label: `公司名称`, visible: true},
-        {key: 3, label: `老板电话`, visible: true},
-        {key: 4, label: `电话`, visible: true},
-        {key: 5, label: `地址`, visible: true},
-        {key: 6, label: `区域`, visible: true},
-        {key: 7, label: `销售经理`, visible: true},
-        {key: 8, label: `备注`, visible: true},
+        {key: 0, label: `贷款编号`, visible: true},
+        {key: 1, label: `还款编号`, visible: true},
+        {key: 2, label: `还款金额`, visible: true},
+        {key: 3, label: `付息`, visible: true},
+        {key: 4, label: `还款日期`, visible: true},
+        {key: 5, label: `还款账户`, visible: true},
+        {key: 6, label: `还款账号`, visible: true},
       ],
       timesQuery: {
         beginTime: '',
@@ -230,8 +215,32 @@ export default {
   },
   created() {
     this.getList();
+    this.$store.dispatch('money/getRepaymentList')
+  },
+  computed: {
+    ...mapGetters(['tempRepaymentList'])
   },
   methods: {
+    //时间查询
+    handleQueryTime() {
+      //重置
+      this.repaymentList = this.tempRepaymentList
+      console.log(this.tempRepaymentList)
+      //筛选
+      this.repaymentList = this.filterTime()
+    },
+    //筛选方法
+    filterTime() {
+      return this.repaymentList.filter(item => {
+        //时间转换
+        const time_search = new Date(item.payDate).getTime()
+        const time_start = new Date(this.timesQuery.beginTime).getTime()
+        const date = new Date(this.timesQuery.endTime)
+        date.setDate(date.getDate() + 1)
+        const time_end = date.getTime()
+        return time_search >= time_start && time_search <= time_end
+      })
+    },
     printHTML() {
       this.$print({
         printable: 'printBox',
@@ -310,12 +319,20 @@ export default {
       this.$refs["form"].validate(valid => {
         if (valid) {
           if (this.form.id != null) {
+            this.form.delFlag = null;
+            this.form.addtime = null;
+            this.form.updateTime = null;
+            this.form.userId = null;
             updateRepayment(this.form).then(response => {
               this.$modal.msgSuccess("修改成功");
               this.open = false;
               this.getList();
             });
           } else {
+            this.form.delFlag = null;
+            this.form.addtime = null;
+            this.form.updateTime = null;
+            this.form.userId = null;
             addRepayment(this.form).then(response => {
               this.$modal.msgSuccess("新增成功");
               this.open = false;
@@ -345,3 +362,30 @@ export default {
   }
 };
 </script>
+<style>
+//隐藏原有滚动条
+.el-table__body-wrapper::-webkit-scrollbar {
+  /*width: 0;宽度为0隐藏*/
+  width: 0px;
+}
+
+.el-table__body-wrapper::-webkit-scrollbar-thumb {
+  border-radius: 2px;
+  height: 50px;
+  background: #eee;
+}
+
+.el-table__body-wrapper::-webkit-scrollbar-track {
+  box-shadow: inset 0 0 5px rgba(0, 0, 0, 0.2);
+  border-radius: 2px;
+  background: rgba(0, 0, 0, 0.4);
+}
+
+.el-table--scrollable-y .el-table__body-wrapper {
+  overflow: hidden !important;
+}
+
+.el-table--scrollable-x .el-table__body-wrapper {
+  overflow: hidden !important;
+}
+</style>
