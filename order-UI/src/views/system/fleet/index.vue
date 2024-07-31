@@ -49,14 +49,14 @@
           @keyup.enter.native="handleQuery"
         />
       </el-form-item>
-      <el-form-item label="删除标记" prop="delFlag">
+<!--      <el-form-item label="删除标记" prop="delFlag">
         <el-input
           v-model="queryParams.delFlag"
           placeholder="请输入删除标记"
           clearable
           @keyup.enter.native="handleQuery"
         />
-      </el-form-item>
+      </el-form-item>-->
       <el-form-item>
         <el-button type="primary" icon="el-icon-search" size="mini" @click="handleQuery">搜索</el-button>
         <el-button icon="el-icon-refresh" size="mini" @click="resetQuery">重置</el-button>
@@ -118,7 +118,7 @@
       <el-table-column label="地址" align="center" prop="address" />
       <el-table-column label="添加时间" align="center" prop="addtime" />
       <el-table-column label="编辑时间" align="center" prop="editTime" />
-      <el-table-column label="删除标记" align="center" prop="delFlag" />
+<!--      <el-table-column label="删除标记" align="center" prop="delFlag" />-->
       <el-table-column label="操作" align="center" class-name="small-padding fixed-width">
         <template slot-scope="scope">
           <el-button
@@ -168,9 +168,9 @@
         <el-form-item label="编辑时间" prop="editTime">
           <el-input v-model="form.editTime" placeholder="请输入编辑时间" />
         </el-form-item>
-        <el-form-item label="删除标记" prop="delFlag">
+<!--        <el-form-item label="删除标记" prop="delFlag">
           <el-input v-model="form.delFlag" placeholder="请输入删除标记" />
-        </el-form-item>
+        </el-form-item>-->
       </el-form>
       <div slot="footer" class="dialog-footer">
         <el-button type="primary" @click="submitForm">确 定</el-button>
@@ -192,11 +192,9 @@ export default {
       // 选中数组
       ids: [],
       // 非单个禁用
-     /* single: true,*/
-      single: false,
+      single: true,
       // 非多个禁用
-      /*multiple: true,*/
-      multiple: false,
+      multiple: true,
       // 显示搜索条件
       showSearch: true,
       // 总条数
