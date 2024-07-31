@@ -57,6 +57,7 @@ public class BankAccountChangeServiceImpl implements IBankAccountChangeService
         bankAccountChange.setAddtime(String.valueOf(DateUtils.getNowDate()));
         bankAccountChange.setUserId(SecurityUtils.getUserId());
         bankAccountChange.setUserName(SecurityUtils.getUserTruename());
+        bankAccountChange.setOperateDate(String.valueOf(DateUtils.getNowDate()));
         return bankAccountChangeMapper.insertBankAccountChange(bankAccountChange);
     }
 
@@ -72,6 +73,7 @@ public class BankAccountChangeServiceImpl implements IBankAccountChangeService
         bankAccountChange.setUserId(SecurityUtils.getUserId());
         bankAccountChange.setUserName(SecurityUtils.getUserTruename());
         bankAccountChange.setUpdateTime(DateUtils.getNowDate());
+        bankAccountChange.setOperateDate(String.valueOf(DateUtils.getNowDate()));
         return bankAccountChangeMapper.updateBankAccountChange(bankAccountChange);
     }
 
