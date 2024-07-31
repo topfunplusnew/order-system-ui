@@ -7,6 +7,7 @@ import tagsView from './modules/tagsView'
 import permission from './modules/permission'
 import settings from './modules/settings'
 import getters from './getters'
+import borrowMoney from "@/store/modules/borrowMoney";
 
 Vue.use(Vuex)
 
@@ -17,7 +18,9 @@ const store = new Vuex.Store({
     user,
     tagsView,
     permission,
-    settings
+    settings,
+    //借款信息
+    borrowMoney
   },
   getters
 })
