@@ -1,6 +1,8 @@
 package org.dzu.system.service.impl;
 
 import java.util.List;
+
+import org.dzu.common.exception.ServiceException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.dzu.system.mapper.BankAccountMapper;
@@ -8,6 +10,9 @@ import org.dzu.system.domain.BankAccount;
 import org.dzu.system.service.IBankAccountService;
  
 import org.dzu.common.constant.DelConstants;
+import org.springframework.transaction.annotation.Isolation;
+import org.springframework.transaction.annotation.Transactional;
+
 /**
  * 银行账号Service业务层处理
  *
@@ -19,6 +24,11 @@ public class BankAccountServiceImpl implements IBankAccountService
 {
     @Autowired
     private BankAccountMapper bankAccountMapper;
+
+    @Override
+    public BankAccount selectBankAccountByBankNo(String bankNo) {
+        return bankAccountMapper.selectBankAccountByBankNo(bankNo);
+    }
 
     /**
      * 查询银行账号
@@ -51,9 +61,19 @@ public class BankAccountServiceImpl implements IBankAccountService
      * @return 结果
      */
     @Override
+    @Transactional(isolation = Isolation.SERIALIZABLE,rollbackFor = Exception.class)
     public int insertBankAccount(BankAccount bankAccount)
     {
         bankAccount.setDelFlag(Long.valueOf(DelConstants.NODEL));
+
+        BankAccount query = new BankAccount();
+        query.setBankNo(bankAccount.getBankNo());
+        query.setAcountsType(bankAccount.getAcountsType());
+        List<BankAccount> bankAccounts = selectBankAccountList(query);
+        // 如果同类型下存在相同的卡号，直接拒绝
+        if(bankAccounts.size()>0){
+            throw new ServiceException("存在相同的银行卡号！,请删除原有的或更改本次的");
+        }
         return bankAccountMapper.insertBankAccount(bankAccount);
     }
 
@@ -66,6 +86,15 @@ public class BankAccountServiceImpl implements IBankAccountService
     @Override
     public int updateBankAccount(BankAccount bankAccount)
     {
+
+        BankAccount query = new BankAccount();
+        query.setBankNo(bankAccount.getBankNo());
+        query.setAcountsType(bankAccount.getAcountsType());
+        List<BankAccount> bankAccounts = selectBankAccountList(query);
+        // 如果同类型下存在相同的卡号，直接拒绝
+        if(bankAccounts.size()>0){
+            throw new ServiceException("存在相同的银行卡号！,请删除原有的或更改本次的");
+        }
         return bankAccountMapper.updateBankAccount(bankAccount);
     }
 

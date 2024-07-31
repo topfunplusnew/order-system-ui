@@ -52,10 +52,12 @@ public interface IBankAccountChangeService
     public int deleteBankAccountChangeByIds(Long[] ids);
 
     /**
-     * 删除银行账号变动流水信息
-     * 
-     * @param id 银行账号变动流水主键
-     * @return 结果
+     * 根据UUID更新银行账号变动流水
+     *
+     * @param bankAccountChange
+     * @return
      */
-    public int deleteBankAccountChangeById(Long id);
+    public int updateBankAccountChangeByUUID(BankAccountChange bankAccountChange);
+
+    int deleteBankAccountChangeByUUID(String[] uuids);
 }

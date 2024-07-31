@@ -14,11 +14,18 @@ public interface IBankAccountService
     /**
      * 查询银行账号
      * 
+     * @param bankNo 银行账号主键
+     * @return 银行账号
+     */
+    public BankAccount selectBankAccountByBankNo(String bankNo);
+
+    /**
+     * 查询银行账号
+     *
      * @param id 银行账号主键
      * @return 银行账号
      */
     public BankAccount selectBankAccountById(Long id);
-
     /**
      * 查询银行账号列表
      * 

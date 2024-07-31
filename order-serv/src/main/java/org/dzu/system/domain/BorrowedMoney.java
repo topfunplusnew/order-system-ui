@@ -7,6 +7,12 @@ import org.dzu.common.core.domain.BaseEntity;
 
 import org.dzu.common.annotation.DecimalMaxDigits;
 import org.dzu.common.annotation.OnlyZeroOrOne;
+import org.hibernate.validator.constraints.Length;
+
+import javax.validation.constraints.Max;
+import javax.validation.constraints.Min;
+import javax.validation.constraints.NotNull;
+
 /**
  * 从外部借款信息对象 borrowedMoney
  * 
@@ -21,49 +27,61 @@ public class BorrowedMoney extends BaseEntity
     private Long id;
 
     /** 贷款编号（UUID） */
-    @Excel(name = "贷款编号", readConverterExp = "U=UID")
+    @Excel(name = "贷款编号")
+    @Length(max = 50, message = "贷款编号的字符长度不允许超过50")
     private String loanNO;
 
     /** 贷款来源 */
     @Excel(name = "贷款来源")
+    @Length(max = 50, message = "贷款来源的字符长度不允许超过50")
     private String origin;
 
     /** 借入金额 */
+    @NotNull(message = "借入金额不能为空")
     @DecimalMaxDigits
     private Double moneyAmount;
 
     /** 贷款利率 */
+    @NotNull(message = "贷款利率不能为空")
     @DecimalMaxDigits
     private Double ratio;
 
     /** 贷款发放日期 */
     @Excel(name = "贷款发放日期")
+    @Length(max = 50, message = "贷款发放日期的字符长度不允许超过50")
     private String loanDate;
 
     /** 贷款年限（年） */
-    @Excel(name = "贷款年限", readConverterExp = "年=")
+    @Excel(name = "贷款年限")
+    @Length(max = 50, message = "贷款年限的字符长度不允许超过50")
     private String loanDuring;
 
     /** 抵押担保 */
     @Excel(name = "抵押担保")
+    @Length(max = 200, message = "抵押担保的字符长度不允许超过200")
     private String mortgageGuarantee;
 
     /** 打入账户 */
     @Excel(name = "打入账户")
+    @Length(max = 80, message = "打入账户的字符长度不允许超过80")
     private String acountsName;
 
     /** 打入账号 */
     @Excel(name = "打入账号")
+    @Length(max = 80, message = "打入账号的字符长度不允许超过80")
     private String bankNo;
 
     /** 已还款标记 */
-    @Excel(name = "已还款标记")
+    @Excel(name = "已还款标记",readConverterExp = "0=已还款,1=未还款")
+    @NotNull(message = "已还款标记不能为空")
+    @Max(value = 1,message = "还款标记必须为0或1")
+    @Min(value = 0,message = "还款标记必须为0或1")
     private Long isEnd;
 
     /** 备注 */
     @Excel(name = "备注")
+    @Length(max = 200, message = "备注的字符长度不允许超过200")
     private String comments;
-
     /** 添加时间 */
     @Excel(name = "添加时间")
     private String addtime;

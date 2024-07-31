@@ -95,4 +95,16 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
             #{id}
         </foreach>
     </update>
+
+    <select id="selectBankAccountByBankNo"  parameterType="String" resultMap="BankAccountResult">
+        <include refid="selectBankAccountVo"/>
+        <where>
+            <if test=" bankNo != null  and bankNo != ''"> and bankNo =
+                #{bankNo}
+            </if>
+
+            and delFlag = 0
+        </where>
+        limit  1
+    </select>
 </mapper>

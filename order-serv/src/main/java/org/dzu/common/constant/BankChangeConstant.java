@@ -12,18 +12,22 @@ public class BankChangeConstant {
             this.description = description;
         }
 
-        public String getDescription() {
+        public String get() {
             return description;
         }
 
-        // 根据描述获取对应的枚举类型
-        public static PaymentType fromDescription(String description) {
-            for (PaymentType type : PaymentType.values()) {
-                if (type.description.equals(description)) {
-                    return type;
-                }
-            }
-            throw new IllegalArgumentException("Unknown description: " + description);
+    }
+    public enum TableName {
+        BORROWED_MONEY("borrowedmoney");
+        private final String tableName;
+
+        TableName(String tableName) {
+            this.tableName = tableName;
+        }
+
+        public String get() {
+            return tableName;
         }
     }
+
 }
