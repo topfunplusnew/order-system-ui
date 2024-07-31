@@ -80,6 +80,7 @@
           plain
           icon="el-icon-edit"
           size="mini"
+          :disabled="single"
           @click="handleUpdate"
           v-hasPermi="['system:oilCard:edit']"
         >修改</el-button>
@@ -91,6 +92,7 @@
           plain
           icon="el-icon-delete"
           size="mini"
+          :disabled="multiple"
           @click="handleDelete"
           v-hasPermi="['system:oilCard:remove']"
         >删除</el-button>
