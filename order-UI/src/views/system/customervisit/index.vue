@@ -83,8 +83,8 @@
         <el-button
           type="warning"
           plain
-          icon="el-icon-download"
           size="mini"
+          icon="el-icon-download"
           @click="handleExport"
           v-hasPermi="['system:CustomerVisit:export']"
         >导出</el-button>
