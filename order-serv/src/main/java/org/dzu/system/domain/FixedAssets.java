@@ -7,6 +7,11 @@ import org.dzu.common.core.domain.BaseEntity;
 
 import org.dzu.common.annotation.DecimalMaxDigits;
 import org.dzu.common.annotation.OnlyZeroOrOne;
+import org.hibernate.validator.constraints.Length;
+
+import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Pattern;
+
 /**
  * 固定资产对象 fixedAssets
  * 
@@ -21,19 +26,22 @@ public class FixedAssets extends BaseEntity
     private Long id;
 
     /** 购入日期 */
-    @Excel(name = "购入日期")
+    @Excel(name = "购入日期",dateFormat = "yyyy-MM-dd")
     private String buyDate;
 
     /** 资产编号 */
     @Excel(name = "资产编号")
+    @Length(max = 30, message = "资产编号的字符长度不允许超过30")
     private String assetNo;
 
     /** 资产名称 */
     @Excel(name = "资产名称")
+    @Length(max = 20, message = "资产名称的字符长度不允许超过20")
+    @NotNull(message = "资产名称不能为空")
     private String assetName;
 
     /** 规格型号（车牌号） */
-    @Excel(name = "规格型号", readConverterExp = "车=牌号")
+    @Excel(name = "规格型号", readConverterExp = "车牌号")
     private String  specification;
 
     /** 数量 */
@@ -42,6 +50,7 @@ public class FixedAssets extends BaseEntity
 
     /** 计量单位 */
     @Excel(name = "计量单位")
+    @Length(max = 20, message = "计量单位的字符长度不允许超过20")
     private String measurementUnit;
 
     /** 含税金额 */
@@ -53,15 +62,19 @@ public class FixedAssets extends BaseEntity
     private Double amountNoTax;
 
     /** 户名名称（公户/个人） */
-    @Excel(name = "户名名称", readConverterExp = "公=户/个人")
+    @Excel(name = "户名名称")
+    @Pattern(regexp = "公户|个人", message = "户名名称必须是：公户或个人")
+    @NotNull(message = "户名名称不能为空")
     private String account;
 
     /** 使用部门 */
     @Excel(name = "使用部门")
+    @NotNull(message = "使用部门的字符长度不允许超过20")
+    @Length(max = 20, message = "使用部门的字符长度不允许超过20")
     private String department;
 
     /** 固定资产清理时间 */
-    @Excel(name = "固定资产清理时间")
+    @Excel(name = "固定资产清理时间",dateFormat = "yyyy-MM-dd")
     private String scrapDate;
 
     /** 清理/变卖价值 */
@@ -70,18 +83,21 @@ public class FixedAssets extends BaseEntity
 
     /** 备注 */
     @Excel(name = "备注")
+    @Length(max = 200, message = "备注的字符长度不允许超过200")
     private String comments;
 
     /** 添加时间 */
-    @Excel(name = "添加时间")
+    @Excel(name = "添加时间",dateFormat = "yyyy-MM-dd")
     private String addtime;
 
     /** 操作人员ID */
     @Excel(name = "操作人员ID")
+    @Length(max = 20, message = "操作人员ID的字符长度不允许超过20")
     private Long userId;
 
     /** 操作人员姓名 */
     @Excel(name = "操作人员姓名")
+    @Length(max = 20, message = "操作人员姓名的字符长度不允许超过20")
     private String UserName;
 
     /** 删除标记 */
