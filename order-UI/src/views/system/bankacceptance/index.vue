@@ -176,7 +176,8 @@
           size="mini"
           @click="handleAdd"
           v-hasPermi="['system:bankAcceptance:add']"
-        >新增</el-button>
+        >新增
+        </el-button>
       </el-col>
       <el-col :span="1.5">
         <el-button
@@ -187,7 +188,8 @@
           :disabled="single"
           @click="handleUpdate"
           v-hasPermi="['system:bankAcceptance:edit']"
-        >修改</el-button>
+        >修改
+        </el-button>
       </el-col>
       <el-col :span="1.5">
         <el-button
@@ -198,7 +200,8 @@
           :disabled="multiple"
           @click="handleDelete"
           v-hasPermi="['system:bankAcceptance:remove']"
-        >删除</el-button>
+        >删除
+        </el-button>
       </el-col>
       <el-col :span="1.5">
         <el-button
@@ -208,35 +211,37 @@
           size="mini"
           @click="handleExport"
           v-hasPermi="['system:bankAcceptance:export']"
-        >导出</el-button>
+        >导出
+        </el-button>
       </el-col>
       <right-toolbar :showSearch.sync="showSearch" @queryTable="getList"></right-toolbar>
     </el-row>
 
-    <el-table v-loading="loading" :data="bankAcceptanceList" @selection-change="handleSelectionChange">
-      <el-table-column type="selection" width="55" align="center" />
-      <el-table-column label="id" align="center" prop="id" />
-      <el-table-column label="操作日期" align="center" prop="operateDate" />
-      <el-table-column label="票据号码" align="center" prop="billNo" />
-      <el-table-column label="出票日期" align="center" prop="issueDate" />
-      <el-table-column label="到期日期" align="center" prop="dueDate" />
-      <el-table-column label="我方承兑账户" align="center" prop="billAccount" />
-      <el-table-column label="票据日期" align="center" prop="billDate" />
-      <el-table-column label="分类" align="center" prop="billType" />
-      <el-table-column label="事由" align="center" prop="reason" />
-      <el-table-column label="票据金额" align="center" prop="billAmount" />
-      <el-table-column label="贴息点数" align="center" prop="inDiscountPoints" />
-      <el-table-column label="贴息金额" align="center" prop="inDiscountAmount" />
-      <el-table-column label="票据种类" align="center" prop="billCategory" />
-      <el-table-column label="来源" align="center" prop="origin" />
-      <el-table-column label="背书人" align="center" prop="endorser" />
-      <el-table-column label="被背书人" align="center" prop="endorsee" />
-      <el-table-column label="背书事由" align="center" prop="endorseReason" />
-      <el-table-column label="备注" align="center" prop="comments" />
-      <el-table-column label="添加时间" align="center" prop="addtime" />
-      <el-table-column label="操作人员ID" align="center" prop="userId" />
-      <el-table-column label="操作人员姓名" align="center" prop="UserName" />
-      <el-table-column label="删除标记" align="center" prop="delFlag" />
+    <el-table v-horizontal-scroll="'always'" v-loading="loading" :data="bankAcceptanceList"
+              @selection-change="handleSelectionChange">
+      <el-table-column type="selection" width="55" align="center"/>
+      <el-table-column label="id" align="center" prop="id"/>
+      <el-table-column label="操作日期" align="center" prop="operateDate"/>
+      <el-table-column label="票据号码" align="center" prop="billNo"/>
+      <el-table-column label="出票日期" align="center" prop="issueDate"/>
+      <el-table-column label="到期日期" align="center" prop="dueDate"/>
+      <el-table-column label="我方承兑账户" align="center" prop="billAccount"/>
+      <el-table-column label="票据日期" align="center" prop="billDate"/>
+      <el-table-column label="分类" align="center" prop="billType"/>
+      <el-table-column label="事由" align="center" prop="reason"/>
+      <el-table-column label="票据金额" align="center" prop="billAmount"/>
+      <el-table-column label="贴息点数" align="center" prop="inDiscountPoints"/>
+      <el-table-column label="贴息金额" align="center" prop="inDiscountAmount"/>
+      <el-table-column label="票据种类" align="center" prop="billCategory"/>
+      <el-table-column label="来源" align="center" prop="origin"/>
+      <el-table-column label="背书人" align="center" prop="endorser"/>
+      <el-table-column label="被背书人" align="center" prop="endorsee"/>
+      <el-table-column label="背书事由" align="center" prop="endorseReason"/>
+      <el-table-column label="备注" align="center" prop="comments"/>
+      <el-table-column label="添加时间" align="center" prop="addtime"/>
+      <el-table-column label="操作人员ID" align="center" prop="userId"/>
+      <el-table-column label="操作人员姓名" align="center" prop="UserName"/>
+      <el-table-column label="删除标记" align="center" prop="delFlag"/>
       <el-table-column label="操作" align="center" class-name="small-padding fixed-width">
         <template slot-scope="scope">
           <el-button
@@ -245,18 +250,20 @@
             icon="el-icon-edit"
             @click="handleUpdate(scope.row)"
             v-hasPermi="['system:bankAcceptance:edit']"
-          >修改</el-button>
+          >修改
+          </el-button>
           <el-button
             size="mini"
             type="text"
             icon="el-icon-delete"
             @click="handleDelete(scope.row)"
             v-hasPermi="['system:bankAcceptance:remove']"
-          >删除</el-button>
+          >删除
+          </el-button>
         </template>
       </el-table-column>
     </el-table>
-    
+
     <pagination
       v-show="total>0"
       :total="total"
@@ -269,64 +276,64 @@
     <el-dialog :title="title" :visible.sync="open" width="500px" append-to-body>
       <el-form ref="form" :model="form" :rules="rules" label-width="80px">
         <el-form-item label="操作日期" prop="operateDate">
-          <el-input v-model="form.operateDate" placeholder="请输入操作日期" />
+          <el-input v-model="form.operateDate" placeholder="请输入操作日期"/>
         </el-form-item>
         <el-form-item label="票据号码" prop="billNo">
-          <el-input v-model="form.billNo" placeholder="请输入票据号码" />
+          <el-input v-model="form.billNo" placeholder="请输入票据号码"/>
         </el-form-item>
         <el-form-item label="出票日期" prop="issueDate">
-          <el-input v-model="form.issueDate" placeholder="请输入出票日期" />
+          <el-input v-model="form.issueDate" placeholder="请输入出票日期"/>
         </el-form-item>
         <el-form-item label="到期日期" prop="dueDate">
-          <el-input v-model="form.dueDate" placeholder="请输入到期日期" />
+          <el-input v-model="form.dueDate" placeholder="请输入到期日期"/>
         </el-form-item>
         <el-form-item label="我方承兑账户" prop="billAccount">
-          <el-input v-model="form.billAccount" placeholder="请输入我方承兑账户" />
+          <el-input v-model="form.billAccount" placeholder="请输入我方承兑账户"/>
         </el-form-item>
         <el-form-item label="票据日期" prop="billDate">
-          <el-input v-model="form.billDate" placeholder="请输入票据日期" />
+          <el-input v-model="form.billDate" placeholder="请输入票据日期"/>
         </el-form-item>
         <el-form-item label="事由" prop="reason">
-          <el-input v-model="form.reason" placeholder="请输入事由" />
+          <el-input v-model="form.reason" placeholder="请输入事由"/>
         </el-form-item>
         <el-form-item label="票据金额" prop="billAmount">
-          <el-input v-model="form.billAmount" placeholder="请输入票据金额" />
+          <el-input v-model="form.billAmount" placeholder="请输入票据金额"/>
         </el-form-item>
         <el-form-item label="贴息点数" prop="inDiscountPoints">
-          <el-input v-model="form.inDiscountPoints" placeholder="请输入贴息点数" />
+          <el-input v-model="form.inDiscountPoints" placeholder="请输入贴息点数"/>
         </el-form-item>
         <el-form-item label="贴息金额" prop="inDiscountAmount">
-          <el-input v-model="form.inDiscountAmount" placeholder="请输入贴息金额" />
+          <el-input v-model="form.inDiscountAmount" placeholder="请输入贴息金额"/>
         </el-form-item>
         <el-form-item label="票据种类" prop="billCategory">
-          <el-input v-model="form.billCategory" placeholder="请输入票据种类" />
+          <el-input v-model="form.billCategory" placeholder="请输入票据种类"/>
         </el-form-item>
         <el-form-item label="来源" prop="origin">
-          <el-input v-model="form.origin" placeholder="请输入来源" />
+          <el-input v-model="form.origin" placeholder="请输入来源"/>
         </el-form-item>
         <el-form-item label="背书人" prop="endorser">
-          <el-input v-model="form.endorser" placeholder="请输入背书人" />
+          <el-input v-model="form.endorser" placeholder="请输入背书人"/>
         </el-form-item>
         <el-form-item label="被背书人" prop="endorsee">
-          <el-input v-model="form.endorsee" placeholder="请输入被背书人" />
+          <el-input v-model="form.endorsee" placeholder="请输入被背书人"/>
         </el-form-item>
         <el-form-item label="背书事由" prop="endorseReason">
-          <el-input v-model="form.endorseReason" placeholder="请输入背书事由" />
+          <el-input v-model="form.endorseReason" placeholder="请输入背书事由"/>
         </el-form-item>
         <el-form-item label="备注" prop="comments">
-          <el-input v-model="form.comments" placeholder="请输入备注" />
+          <el-input v-model="form.comments" placeholder="请输入备注"/>
         </el-form-item>
         <el-form-item label="添加时间" prop="addtime">
-          <el-input v-model="form.addtime" placeholder="请输入添加时间" />
+          <el-input v-model="form.addtime" placeholder="请输入添加时间"/>
         </el-form-item>
         <el-form-item label="操作人员ID" prop="userId">
-          <el-input v-model="form.userId" placeholder="请输入操作人员ID" />
+          <el-input v-model="form.userId" placeholder="请输入操作人员ID"/>
         </el-form-item>
         <el-form-item label="操作人员姓名" prop="UserName">
-          <el-input v-model="form.UserName" placeholder="请输入操作人员姓名" />
+          <el-input v-model="form.UserName" placeholder="请输入操作人员姓名"/>
         </el-form-item>
         <el-form-item label="删除标记" prop="delFlag">
-          <el-input v-model="form.delFlag" placeholder="请输入删除标记" />
+          <el-input v-model="form.delFlag" placeholder="请输入删除标记"/>
         </el-form-item>
       </el-form>
       <div slot="footer" class="dialog-footer">
@@ -338,7 +345,13 @@
 </template>
 
 <script>
-import { listBankAcceptance, getBankAcceptance, delBankAcceptance, addBankAcceptance, updateBankAcceptance } from "@/api/system/bankAcceptance";
+import {
+  listBankAcceptance,
+  getBankAcceptance,
+  delBankAcceptance,
+  addBankAcceptance,
+  updateBankAcceptance
+} from "@/api/system/bankAcceptance";
 
 export default {
   name: "BankAcceptance",
@@ -391,8 +404,7 @@ export default {
       // 表单参数
       form: {},
       // 表单校验
-      rules: {
-      }
+      rules: {}
     };
   },
   created() {
@@ -455,7 +467,7 @@ export default {
     // 多选框选中数据
     handleSelectionChange(selection) {
       this.ids = selection.map(item => item.id)
-      this.single = selection.length!==1
+      this.single = selection.length !== 1
       this.multiple = !selection.length
     },
     /** 新增按钮操作 */
@@ -497,12 +509,13 @@ export default {
     /** 删除按钮操作 */
     handleDelete(row) {
       const ids = row.id || this.ids;
-      this.$modal.confirm('是否确认删除商业票据、银行承兑编号为"' + ids + '"的数据项？').then(function() {
+      this.$modal.confirm('是否确认删除商业票据、银行承兑编号为"' + ids + '"的数据项？').then(function () {
         return delBankAcceptance(ids);
       }).then(() => {
         this.getList();
         this.$modal.msgSuccess("删除成功");
-      }).catch(() => {});
+      }).catch(() => {
+      });
     },
     /** 导出按钮操作 */
     handleExport() {
