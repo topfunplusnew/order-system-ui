@@ -35,7 +35,8 @@ public class SysDictTypeServiceImpl implements ISysDictTypeService
     /**
      * 项目启动时，初始化字典到缓存
      */
-    @PostConstruct
+//    @PostConstruct
+    // TODO：目前这个可以先关闭，以提高启动速度
     public void init()
     {
         loadingDictCache();

@@ -68,7 +68,7 @@
       <!--      <el-table-column label="操作人员ID" align="center" prop="userId"/>-->
       <!--      <el-table-column label="操作人员姓名" align="center" prop="UserName"/>-->
       <!--      <el-table-column label="删除标记" align="center" prop="delFlag"/>-->
-      <el-table-column label="操作" align="center" class-name="small-padding fixed-width">
+      <el-table-column label="操作" align="center" class-name="small-padding fixed-width" fixed="right">
         <template slot-scope="scope">
           <el-button
             size="mini"
@@ -362,30 +362,30 @@ export default {
   }
 };
 </script>
-<style>
-//隐藏原有滚动条
-.el-table__body-wrapper::-webkit-scrollbar {
-  /*width: 0;宽度为0隐藏*/
-  width: 0px;
-}
+<!--<style>-->
+<!--//隐藏原有滚动条-->
+<!--.el-table__body-wrapper::-webkit-scrollbar {-->
+<!--  /*width: 0;宽度为0隐藏*/-->
+<!--  width: 0px;-->
+<!--}-->
 
-.el-table__body-wrapper::-webkit-scrollbar-thumb {
-  border-radius: 2px;
-  height: 50px;
-  background: #eee;
-}
+<!--.el-table__body-wrapper::-webkit-scrollbar-thumb {-->
+<!--  border-radius: 2px;-->
+<!--  height: 50px;-->
+<!--  background: #eee;-->
+<!--}-->
 
-.el-table__body-wrapper::-webkit-scrollbar-track {
-  box-shadow: inset 0 0 5px rgba(0, 0, 0, 0.2);
-  border-radius: 2px;
-  background: rgba(0, 0, 0, 0.4);
-}
+<!--.el-table__body-wrapper::-webkit-scrollbar-track {-->
+<!--  box-shadow: inset 0 0 5px rgba(0, 0, 0, 0.2);-->
+<!--  border-radius: 2px;-->
+<!--  background: rgba(0, 0, 0, 0.4);-->
+<!--}-->
 
-.el-table--scrollable-y .el-table__body-wrapper {
-  overflow: hidden !important;
-}
+<!--.el-table&#45;&#45;scrollable-y .el-table__body-wrapper {-->
+<!--  overflow: hidden !important;-->
+<!--}-->
 
-.el-table--scrollable-x .el-table__body-wrapper {
-  overflow: hidden !important;
-}
-</style>
+<!--.el-table&#45;&#45;scrollable-x .el-table__body-wrapper {-->
+<!--  overflow: hidden !important;-->
+<!--}-->
+<!--</style>-->

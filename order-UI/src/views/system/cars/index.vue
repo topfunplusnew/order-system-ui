@@ -9,165 +9,271 @@
           @keyup.enter.native="handleQuery"
         />
       </el-form-item>
-      <el-form-item label="司机" prop="driver">
-        <el-input
-          v-model="queryParams.driver"
-          placeholder="请输入司机"
-          clearable
-          @keyup.enter.native="handleQuery"
-        />
-      </el-form-item>
-      <el-form-item label="司机电话" prop="tel">
-        <el-input
-          v-model="queryParams.tel"
-          placeholder="请输入司机电话"
-          clearable
-          @keyup.enter.native="handleQuery"
-        />
-      </el-form-item>
-      <el-form-item label="开户行" prop="bankName">
-        <el-input
-          v-model="queryParams.bankName"
-          placeholder="请输入开户行"
-          clearable
-          @keyup.enter.native="handleQuery"
-        />
-      </el-form-item>
-      <el-form-item label="开户名" prop="acountsName">
+<!--      <el-form-item label="司机" prop="driver">-->
+<!--        <el-input-->
+<!--          v-model="queryParams.driver"-->
+<!--          placeholder="请输入司机"-->
+<!--          clearable-->
+<!--          @keyup.enter.native="handleQuery"-->
+<!--        />-->
+<!--      </el-form-item>-->
+<!--      <el-form-item label="司机电话" prop="tel">-->
+<!--        <el-input-->
+<!--          v-model="queryParams.tel"-->
+<!--          placeholder="请输入司机电话"-->
+<!--          clearable-->
+<!--          @keyup.enter.native="handleQuery"-->
+<!--        />-->
+<!--      </el-form-item>-->
+<!--      <el-form-item label="开户行" prop="bankName">-->
+<!--        <el-input-->
+<!--          v-model="queryParams.bankName"-->
+<!--          placeholder="请输入开户行"-->
+<!--          clearable-->
+<!--          @keyup.enter.native="handleQuery"-->
+<!--        />-->
+<!--      </el-form-item>-->
+      <el-form-item label="户名" prop="acountsName">
         <el-input
           v-model="queryParams.acountsName"
-          placeholder="请输入开户名"
+          placeholder="请输入户名"
           clearable
           @keyup.enter.native="handleQuery"
         />
       </el-form-item>
-      <el-form-item label="账号" prop="bankNo">
-        <el-input
-          v-model="queryParams.bankNo"
-          placeholder="请输入账号"
-          clearable
-          @keyup.enter.native="handleQuery"
-        />
-      </el-form-item>
-      <el-form-item label="添加时间" prop="addtime">
-        <el-input
-          v-model="queryParams.addtime"
-          placeholder="请输入添加时间"
-          clearable
-          @keyup.enter.native="handleQuery"
-        />
-      </el-form-item>
-      <el-form-item label="操作人员ID" prop="userId">
-        <el-input
-          v-model="queryParams.userId"
-          placeholder="请输入操作人员ID"
-          clearable
-          @keyup.enter.native="handleQuery"
-        />
-      </el-form-item>
-      <el-form-item label="操作人员姓名" prop="UserName">
-        <el-input
-          v-model="queryParams.UserName"
-          placeholder="请输入操作人员姓名"
-          clearable
-          @keyup.enter.native="handleQuery"
-        />
-      </el-form-item>
-      <el-form-item label="删除标记" prop="delFlag">
-        <el-input
-          v-model="queryParams.delFlag"
-          placeholder="请输入删除标记"
-          clearable
-          @keyup.enter.native="handleQuery"
-        />
-      </el-form-item>
+<!--      <el-form-item label="账号" prop="bankNo">-->
+<!--        <el-input-->
+<!--          v-model="queryParams.bankNo"-->
+<!--          placeholder="请输入账号"-->
+<!--          clearable-->
+<!--          @keyup.enter.native="handleQuery"-->
+<!--        />-->
+<!--      </el-form-item>-->
+<!--      <el-form-item label="添加时间" prop="addtime">-->
+<!--        <el-input-->
+<!--          v-model="queryParams.addtime"-->
+<!--          placeholder="请输入添加时间"-->
+<!--          clearable-->
+<!--          @keyup.enter.native="handleQuery"-->
+<!--        />-->
+<!--      </el-form-item>-->
+<!--      <el-form-item label="操作人员ID" prop="userId">-->
+<!--        <el-input-->
+<!--          v-model="queryParams.userId"-->
+<!--          placeholder="请输入操作人员ID"-->
+<!--          clearable-->
+<!--          @keyup.enter.native="handleQuery"-->
+<!--        />-->
+<!--      </el-form-item>-->
+<!--      <el-form-item label="操作人员姓名" prop="UserName">-->
+<!--        <el-input-->
+<!--          v-model="queryParams.UserName"-->
+<!--          placeholder="请输入操作人员姓名"-->
+<!--          clearable-->
+<!--          @keyup.enter.native="handleQuery"-->
+<!--        />-->
+<!--      </el-form-item>-->
+<!--      <el-form-item label="删除标记" prop="delFlag">-->
+<!--        <el-input-->
+<!--          v-model="queryParams.delFlag"-->
+<!--          placeholder="请输入删除标记"-->
+<!--          clearable-->
+<!--          @keyup.enter.native="handleQuery"-->
+<!--        />-->
+<!--      </el-form-item>-->
       <el-form-item>
-        <el-button type="primary" icon="el-icon-search" size="mini" @click="handleQuery">搜索</el-button>
-        <el-button icon="el-icon-refresh" size="mini" @click="resetQuery">重置</el-button>
+        <el-button type="primary"  size="mini" @click="handleQuery">搜索</el-button>
+<!--        <el-button icon="el-icon-refresh" size="mini" @click="resetQuery">重置</el-button>-->
       </el-form-item>
     </el-form>
-
     <el-row :gutter="10" class="mb8">
       <el-col :span="1.5">
-        <el-button
-          type="primary"
-          plain
-          icon="el-icon-plus"
-          size="mini"
-          @click="handleAdd"
-          v-hasPermi="['system:cars:add']"
-        >新增</el-button>
-      </el-col>
-      <el-col :span="1.5">
-        <el-button
-          type="success"
-          plain
-          icon="el-icon-edit"
-          size="mini"
-          :disabled="single"
-          @click="handleUpdate"
-          v-hasPermi="['system:cars:edit']"
-        >修改</el-button>
+        <el-button icon="el-icon-refresh" size="mini" @click="resetQuery">刷新</el-button>
       </el-col>
       <el-col :span="1.5">
         <el-button
           type="danger"
           plain
-          icon="el-icon-delete"
+          icon="el-icon-plus"
           size="mini"
-          :disabled="multiple"
-          @click="handleDelete"
-          v-hasPermi="['system:cars:remove']"
-        >删除</el-button>
+          @click="handleAdd"
+          v-hasPermi="['system:cars:add']"
+        >添加车辆信息
+        </el-button>
       </el-col>
-      <el-col :span="1.5">
-        <el-button
-          type="warning"
-          plain
-          icon="el-icon-download"
-          size="mini"
-          @click="handleExport"
-          v-hasPermi="['system:cars:export']"
-        >导出</el-button>
-      </el-col>
-      <right-toolbar :showSearch.sync="showSearch" @queryTable="getList"></right-toolbar>
+      <!--      <el-col :span="1.5">-->
+      <!--        <el-button-->
+      <!--          type="danger"-->
+      <!--          plain-->
+      <!--          icon="el-icon-delete"-->
+      <!--          size="mini"-->
+      <!--          :disabled="multiple"-->
+      <!--          @click="handleDelete"-->
+      <!--          v-hasPermi="['system:bankAccount:remove']"-->
+      <!--        >批量删除-->
+      <!--        </el-button>-->
+      <!--      </el-col>-->
+      <!--            <el-col :span="1.5">-->
+      <!--              <el-button-->
+      <!--                type="warning"-->
+      <!--                plain-->
+      <!--                icon="el-icon-download"-->
+      <!--                size="mini"-->
+      <!--                @click="handleExport"-->
+      <!--                v-hasPermi="['system:bankAccount:export']"-->
+      <!--              >导出-->
+      <!--              </el-button>-->
+      <!--            </el-col>-->
+      <!--      <el-col :span="1.5">-->
+      <!--        <el-button-->
+      <!--          type="primary"-->
+      <!--          plain-->
+      <!--          icon="el-icon-printer"-->
+      <!--          size="mini"-->
+      <!--          @click="printHTML"-->
+      <!--        >打印-->
+      <!--        </el-button>-->
+      <!--      </el-col>-->
+
+      <right-toolbar :showSearch.sync="showSearch" @queryTable="getList" :columns="columns">
+        <template v-slot:print>
+          <el-col :span="1.5">
+            <el-button
+              plain
+              icon="el-icon-printer"
+              size="mini"
+              @click="printHTML"
+            >
+            </el-button>
+          </el-col>
+        </template>
+        <!--        导出-->
+        <template v-slot:export>
+          <el-col :span="1.5">
+            <el-button
+              plain
+              icon="el-icon-folder-opened"
+              size="mini"
+              @click="handleExport"
+              v-hasPermi="['system:bankAccount:export']"
+            >
+            </el-button>
+          </el-col>
+        </template>
+      </right-toolbar>
     </el-row>
+
+    <!-- 打印内容 -->
+<!--    <el-table border v-loading="loading" :data="cars" @selection-change="handleSelectionChange" id="printBox"-->
+<!--              height="300px" v-horizontal-scroll="'always'">-->
+            <el-table-column type="selection" width="55" align="center"/>
+<!--      <el-table-column label="id" align="center" prop="id"/>-->
+<!--      <el-table-column label="账户类型" align="center" prop="acountsType" v-if="columns[0].visible"/>-->
+<!--      <el-table-column label="开户名称(户名)" align="center" prop="acountsName" v-if="columns[1].visible"/>-->
+<!--      <el-table-column label="账号(银行账号)" align="center" prop="bankNo" v-if="columns[2].visible"/>-->
+<!--      <el-table-column label="开户行" align="center" prop="bankName" v-if="columns[3].visible"/>-->
+<!--      <el-table-column label="公司名称" align="center" prop="companyName" v-if="columns[4].visible"/>-->
+    <el-table-column label="操作" align="center" class-name="small-padding fixed-width">
+      <template slot-scope="scope">
+        <el-button
+          size="mini"
+          type="primary"
+          @click="handleUpdate(scope.row)"
+          v-hasPermi="['system:cars:edit']"
+        >编辑
+        </el-button>
+        <el-button
+          size="mini"
+          type="danger"
+          @click="handleDelete(scope.row)"
+          v-hasPermi="['system:bankAccount:remove']"
+        >删除
+        </el-button>
+      </template>
+    </el-table-column>
+<!--    </el-table>-->
+<!--    <el-row :gutter="10" class="mb8">-->
+<!--      <el-col :span="1.5">-->
+<!--        <el-button-->
+<!--          type="primary"-->
+<!--          plain-->
+<!--          icon="el-icon-plus"-->
+<!--          size="mini"-->
+<!--          @click="handleAdd"-->
+<!--          v-hasPermi="['system:cars:add']"-->
+<!--        >新增</el-button>-->
+<!--      </el-col>-->
+<!--      <el-col :span="1.5">-->
+<!--        <el-button-->
+<!--          type="success"-->
+<!--          plain-->
+<!--          icon="el-icon-edit"-->
+<!--          size="mini"-->
+<!--          :disabled="single"-->
+<!--          @click="handleUpdate"-->
+<!--          v-hasPermi="['system:cars:edit']"-->
+<!--        >修改</el-button>-->
+<!--      </el-col>-->
+<!--      <el-col :span="1.5">-->
+<!--        <el-button-->
+<!--          type="danger"-->
+<!--          plain-->
+<!--          icon="el-icon-delete"-->
+<!--          size="mini"-->
+<!--          :disabled="multiple"-->
+<!--          @click="handleDelete"-->
+<!--          v-hasPermi="['system:cars:remove']"-->
+<!--        >删除</el-button>-->
+<!--      </el-col>-->
+<!--      <el-col :span="1.5">-->
+<!--        <el-button-->
+<!--          type="warning"-->
+<!--          plain-->
+<!--          icon="el-icon-download"-->
+<!--          size="mini"-->
+<!--          @click="handleExport"-->
+<!--          v-hasPermi="['system:cars:export']"-->
+<!--        >导出</el-button>-->
+<!--      </el-col>-->
+<!--      <right-toolbar :showSearch.sync="showSearch" @queryTable="getList"></right-toolbar>-->
+<!--    </el-row>-->
 
     <el-table v-loading="loading" :data="carsList" @selection-change="handleSelectionChange">
       <el-table-column type="selection" width="55" align="center" />
       <el-table-column label="id" align="center" prop="id" />
       <el-table-column label="车牌" align="center" prop="carNo" />
-      <el-table-column label="司机" align="center" prop="driver" />
+      <el-table-column label="司机姓名" align="center" prop="driver" />
       <el-table-column label="司机电话" align="center" prop="tel" />
+      <el-table-column label="户名" align="center" prop="acountsName" />
+      <el-table-column label="银行账号" align="center" prop="bankNo" />
       <el-table-column label="开户行" align="center" prop="bankName" />
-      <el-table-column label="开户名" align="center" prop="acountsName" />
-      <el-table-column label="账号" align="center" prop="bankNo" />
-      <el-table-column label="账号类型" align="center" prop="acountsType" />
-      <el-table-column label="运输类型(陆运，海运)" align="center" prop="carType" />
-      <el-table-column label="添加时间" align="center" prop="addtime" />
-      <el-table-column label="操作人员ID" align="center" prop="userId" />
-      <el-table-column label="操作人员姓名" align="center" prop="UserName" />
-      <el-table-column label="删除标记" align="center" prop="delFlag" />
+
+      <!--      <el-table-column label="账号类型" align="center" prop="acountsType" />-->
+<!--      <el-table-column label="运输类型(陆运，海运)" align="center" prop="carType" />-->
+<!--      <el-table-column label="添加时间" align="center" prop="addtime" />-->
+<!--      <el-table-column label="操作人员ID" align="center" prop="userId" />-->
+<!--      <el-table-column label="操作人员姓名" align="center" prop="UserName" />-->
+<!--      <el-table-column label="删除标记" align="center" prop="delFlag" />-->
       <el-table-column label="操作" align="center" class-name="small-padding fixed-width">
         <template slot-scope="scope">
           <el-button
             size="mini"
-            type="text"
-            icon="el-icon-edit"
+            type="primary"
             @click="handleUpdate(scope.row)"
             v-hasPermi="['system:cars:edit']"
-          >修改</el-button>
+          >编辑
+          </el-button>
           <el-button
             size="mini"
-            type="text"
-            icon="el-icon-delete"
+            type="danger"
             @click="handleDelete(scope.row)"
             v-hasPermi="['system:cars:remove']"
-          >删除</el-button>
+          >删除
+          </el-button>
         </template>
       </el-table-column>
     </el-table>
-    
+
     <pagination
       v-show="total>0"
       :total="total"
@@ -182,15 +288,15 @@
         <el-form-item label="车牌" prop="carNo">
           <el-input v-model="form.carNo" placeholder="请输入车牌" />
         </el-form-item>
-        <el-form-item label="司机" prop="driver">
-          <el-input v-model="form.driver" placeholder="请输入司机" />
-        </el-form-item>
-        <el-form-item label="司机电话" prop="tel">
-          <el-input v-model="form.tel" placeholder="请输入司机电话" />
-        </el-form-item>
-        <el-form-item label="开户行" prop="bankName">
-          <el-input v-model="form.bankName" placeholder="请输入开户行" />
-        </el-form-item>
+<!--        <el-form-item label="司机" prop="driver">-->
+<!--          <el-input v-model="form.driver" placeholder="请输入司机" />-->
+<!--        </el-form-item>-->
+<!--        <el-form-item label="司机电话" prop="tel">-->
+<!--          <el-input v-model="form.tel" placeholder="请输入司机电话" />-->
+<!--        </el-form-item>-->
+<!--        <el-form-item label="开户行" prop="bankName">-->
+<!--          <el-input v-model="form.bankName" placeholder="请输入开户行" />-->
+<!--        </el-form-item>-->
         <el-form-item label="开户名" prop="acountsName">
           <el-input v-model="form.acountsName" placeholder="请输入开户名" />
         </el-form-item>
@@ -251,9 +357,9 @@ export default {
         driver: null,
         tel: null,
         bankName: null,
-        acountsName: null,
+        carsName: null,
         bankNo: null,
-        acountsType: null,
+       carsType: null,
         carType: null,
         addtime: null,
         userId: null,
@@ -263,8 +369,28 @@ export default {
       // 表单参数
       form: {},
       // 表单校验
-      rules: {
-      }
+      rules: {}
+      ,
+      options: [
+        {
+          value: '己方公司',
+          label: '己方公司'
+        }, {
+          value: '其它',
+          label: '其它'
+        }
+      ],
+      //隐藏列信息
+      columns: [
+        {key: 0, label: `车牌`, visible: true},
+        {key: 1, label: `司机姓名`, visible: true},
+        {key: 2, label: `司机电话`, visible: true},
+        {key: 3, label: `户名`, visible: true},
+        {key: 4, label: `银行账号`, visible: true},
+        {key: 5, label: `开户行`, visible: true}
+
+      ],
+      companyList: []
     };
   },
   created() {
@@ -311,16 +437,17 @@ export default {
       this.getList();
     },
     /** 重置按钮操作 */
-    resetQuery() {
-      this.resetForm("queryForm");
-      this.handleQuery();
-    },
+    // resetQuery() {
+    //   this.resetForm("queryForm");
+    //   this.handleQuery();
+    // },
     // 多选框选中数据
     handleSelectionChange(selection) {
       this.ids = selection.map(item => item.id)
       this.single = selection.length!==1
       this.multiple = !selection.length
     },
+
     /** 新增按钮操作 */
     handleAdd() {
       this.reset();
