@@ -304,4 +304,61 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
             #{id}
         </foreach>
     </update>
+
+    <select id="orderByInventory" parameterType="Inventory" resultMap="InventoryResult">
+        <include refid="selectInventoryVo"/>
+         <where>
+             pieces >= stockNumber
+            <if test="storeHouseid != null "> and storeHouseid = #{storeHouseid}</if>
+            <if test="storeHouseName != null  and storeHouseName != ''"> and storeHouseName like concat('%', #{storeHouseName}, '%')</if>
+            <if test="storeDate != null  and storeDate != ''"> and storeDate = #{storeDate}</if>
+            <if test="stockNumber != null "> and stockNumber = #{stockNumber}</if>
+            <if test="supplier != null  and supplier != ''"> and supplier = #{supplier}</if>
+            <if test="supplierId != null "> and supplierId = #{supplierId}</if>
+            <if test="levelID != null "> and levelID = #{levelID}</if>
+            <if test="levelName != null  and levelName != ''"> and levelName like concat('%', #{levelName}, '%')</if>
+            <if test="countingUnit != null  and countingUnit != ''"> and countingUnit = #{countingUnit}</if>
+            <if test="height != null "> and height = #{height}</if>
+            <if test="length != null "> and length = #{length}</if>
+            <if test="width != null "> and width = #{width}</if>
+            <if test="pieces != null "> and pieces = #{pieces}</if>
+            <if test="piecesPerPack != null "> and piecesPerPack = #{piecesPerPack}</if>
+            <if test="packs != null "> and packs = #{packs}</if>
+            <if test="price != null "> and price = #{price}</if>
+            <if test="isIncludeTaxFactory != null "> and isIncludeTaxFactory = #{isIncludeTaxFactory}</if>
+            <if test="sundryCost != null "> and sundryCost = #{sundryCost}</if>
+            <if test="paymentFactory != null "> and paymentFactory = #{paymentFactory}</if>
+            <if test="paymentUnload != null "> and paymentUnload = #{paymentUnload}</if>
+            <if test="isIncludeTaxSale != null "> and isIncludeTaxSale = #{isIncludeTaxSale}</if>
+            <if test="payments != null  and payments != ''"> and payments = #{payments}</if>
+            <if test="landCarID != null "> and landCarID = #{landCarID}</if>
+            <if test="landCarNo != null  and landCarNo != ''"> and landCarNo = #{landCarNo}</if>
+            <if test="landDriverTel != null  and landDriverTel != ''"> and landDriverTel = #{landDriverTel}</if>
+            <if test="landDriverName != null  and landDriverName != ''"> and landDriverName like concat('%', #{landDriverName}, '%')</if>
+            <if test="seaCarID != null "> and seaCarID = #{seaCarID}</if>
+            <if test="seaCarNo != null  and seaCarNo != ''"> and seaCarNo = #{seaCarNo}</if>
+            <if test="seaDriverTel != null  and seaDriverTel != ''"> and seaDriverTel = #{seaDriverTel}</if>
+            <if test="seaDriverName != null  and seaDriverName != ''"> and seaDriverName like concat('%', #{seaDriverName}, '%')</if>
+            <if test="erro != null "> and erro = #{erro}</if>
+            <if test="tonnage != null "> and tonnage = #{tonnage}</if>
+            <if test="landFreightPrice != null "> and landFreightPrice = #{landFreightPrice}</if>
+            <if test="landFreight != null "> and landFreight = #{landFreight}</if>
+            <if test="seaFreight != null "> and seaFreight = #{seaFreight}</if>
+            <if test="freight != null "> and freight = #{freight}</if>
+            <if test="otherCost != null "> and otherCost = #{otherCost}</if>
+            <if test="profit != null "> and profit = #{profit}</if>
+            <if test="profitNoTax != null "> and profitNoTax = #{profitNoTax}</if>
+            <if test="actualPieces != null "> and actualPieces = #{actualPieces}</if>
+            <if test="paymentsWithSundry != null "> and paymentsWithSundry = #{paymentsWithSundry}</if>
+            <if test="additionalFees != null "> and additionalFees = #{additionalFees}</if>
+            <if test="rebate != null "> and rebate = #{rebate}</if>
+            <if test="customerCommission != null "> and customerCommission = #{customerCommission}</if>
+            <if test="comments != null  and comments != ''"> and comments = #{comments}</if>
+            <if test="addtime != null  and addtime != ''"> and addtime = #{addtime}</if>
+            <if test="userId != null "> and userId = #{userId}</if>
+            <if test="UserName != null  and UserName != ''"> and UserName like concat('%', #{UserName}, '%')</if>
+            and delFlag = 0
+            <if test="showFlag != null "> and showFlag = #{showFlag}</if>
+        </where>
+    </select>
 </mapper>

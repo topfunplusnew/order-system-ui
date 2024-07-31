@@ -1,9 +1,14 @@
 package org.dzu.system.service.impl;
 
 import java.util.List;
+
+import com.fasterxml.jackson.databind.util.BeanUtil;
 import org.dzu.common.utils.DateUtils;
 import org.dzu.common.utils.SecurityUtils;
-import org.dzu.common.utils.SecurityUtils;
+import org.dzu.common.utils.bean.BeanUtils;
+import org.dzu.common.utils.spring.SpringUtils;
+import org.dzu.system.domain.InventoryBack;
+import org.dzu.system.mapper.InventoryBackMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.dzu.system.mapper.InventoryMapper;
@@ -11,6 +16,8 @@ import org.dzu.system.domain.Inventory;
 import org.dzu.system.service.IInventoryService;
  
 import org.dzu.common.constant.DelConstants;
+import org.springframework.transaction.annotation.Transactional;
+
 /**
  * 库存Service业务层处理
  *
@@ -23,6 +30,8 @@ public class InventoryServiceImpl implements IInventoryService
     @Autowired
     private InventoryMapper inventoryMapper;
 
+    @Autowired
+    private InventoryBackServiceImpl inventoryBackService;
     /**
      * 查询库存
      *
@@ -35,6 +44,15 @@ public class InventoryServiceImpl implements IInventoryService
         return inventoryMapper.selectInventoryById(id);
     }
 
+    /**
+     * 寻找可以出库的inventory信息
+     * @param inventory
+     * @return
+     */
+    @Override
+    public List<Inventory> orderByInventory(Inventory inventory){
+        return inventoryMapper.orderByInventory(inventory);
+    }
     /**
      * 查询库存列表
      *
@@ -56,6 +74,8 @@ public class InventoryServiceImpl implements IInventoryService
     @Override
     public int insertInventory(Inventory inventory)
     {
+        // 设置基础属性
+        inventory.setPieces(inventory.getStockNumber());
         inventory.setAddtime(String.valueOf(DateUtils.getNowDate()));
         inventory.setUserId(SecurityUtils.getUserId());
         inventory.setUserName(SecurityUtils.getUserTruename());
@@ -70,11 +90,15 @@ public class InventoryServiceImpl implements IInventoryService
      * @return 结果
      */
     @Override
+    @Transactional(rollbackFor = Exception.class)// 多次sql，故开启事务
     public int updateInventory(Inventory inventory)
     {
+        // 设置基础信息
         inventory.setUserId(SecurityUtils.getUserId());
         inventory.setUserName(SecurityUtils.getUserTruename());
         inventory.setUpdateTime(DateUtils.getNowDate());
+        // 进行备份
+        copyTobacb(inventory);
         return inventoryMapper.updateInventory(inventory);
     }
 
@@ -101,4 +125,17 @@ public class InventoryServiceImpl implements IInventoryService
     {
         return inventoryMapper.deleteInventoryById(id);
     }
+
+
+    private void copyTobacb(Inventory inventory){
+        // 创建一个备份类
+        InventoryBack inventoryBack = new InventoryBack();
+        BeanUtils.copyProperties(inventory,inventoryBack);
+        // 调整一下错误拷贝的id
+        inventoryBack.setInventoryID(inventory.getId());
+        inventoryBack.setId(null);
+        // 插入信息，由对应业务层补充杂项信息
+        inventoryBackService.insertInventoryBack(inventoryBack);
+    }
+
 }
