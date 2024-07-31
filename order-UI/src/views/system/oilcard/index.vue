@@ -81,6 +81,7 @@
           icon="el-icon-edit"
           size="mini"
           @click="handleUpdate"
+          :disabled="single"
           v-hasPermi="['system:oilCard:edit']"
         >修改</el-button>
     <!--记录为空时可以点按钮-->
@@ -91,6 +92,7 @@
           plain
           icon="el-icon-delete"
           size="mini"
+          :disabled="multiple"
           @click="handleDelete"
           v-hasPermi="['system:oilCard:remove']"
         >删除</el-button>
