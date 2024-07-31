@@ -381,6 +381,10 @@ export default {
               this.getList();
             });
           } else {
+            this.form.delFlag = null;
+            this.form.addtime = null;
+            this.form.updateTime = null;
+            this.form.userId = null;
             addBankAccount(this.form).then(response => {
               this.$modal.msgSuccess("新增成功");
               this.open = false;
