@@ -25,4 +25,5 @@ export default {
 #app .theme-picker {
   display: none;
 }
+
 </style>

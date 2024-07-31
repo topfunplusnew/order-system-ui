@@ -33,7 +33,7 @@
           @keyup.enter.native="handleQuery"
         />
       </el-form-item>
-      <el-form-item label="添加时间" prop="addtime">
+<!--      <el-form-item label="添加时间" prop="addtime">
         <el-input
           v-model="queryParams.addtime"
           placeholder="请输入添加时间"
@@ -48,22 +48,27 @@
           clearable
           @keyup.enter.native="handleQuery"
         />
-      </el-form-item>
-      <el-form-item label="删除标记" prop="delFlag">
+      </el-form-item>-->
+<!--      <el-form-item label="删除标记" prop="delFlag">
         <el-input
           v-model="queryParams.delFlag"
           placeholder="请输入删除标记"
           clearable
           @keyup.enter.native="handleQuery"
         />
-      </el-form-item>
+      </el-form-item>-->
       <el-form-item>
         <el-button type="primary" icon="el-icon-search" size="mini" @click="handleQuery">搜索</el-button>
-        <el-button icon="el-icon-refresh" size="mini" @click="resetQuery">重置</el-button>
+<!--        <el-button icon="el-icon-refresh" size="mini" @click="resetQuery">重置</el-button>-->
       </el-form-item>
     </el-form>
 
     <el-row :gutter="10" class="mb8">
+      <!-- 刷新按钮-->
+      <el-col :span="1.5">
+        <el-button icon="el-icon-refresh" size="mini" @click="resetQuery">刷新</el-button>
+      </el-col>
+      <!-- 新增按钮 -->
       <el-col :span="1.5">
         <el-button
           type="primary"
@@ -72,9 +77,9 @@
           size="mini"
           @click="handleAdd"
           v-hasPermi="['system:fleet:add']"
-        >新增</el-button>
+        >添加车队信息</el-button>
       </el-col>
-      <el-col :span="1.5">
+<!--      <el-col :span="1.5">
         <el-button
           type="success"
           plain
@@ -105,23 +110,49 @@
           @click="handleExport"
           v-hasPermi="['system:fleet:export']"
         >导出</el-button>
-      </el-col>
-      <right-toolbar :showSearch.sync="showSearch" @queryTable="getList"></right-toolbar>
+      </el-col>-->
+
+      <right-toolbar :showSearch.sync="showSearch" @queryTable="getList" :columns="columns">
+        <template v-slot:print>
+          <el-col :span="1.5">
+            <el-button
+              plain
+              icon="el-icon-printer"
+              size="mini"
+              @click="printHTML"
+            >
+            </el-button>
+          </el-col>
+        </template>
+        <!--        导出-->
+        <template v-slot:export>
+          <el-col :span="1.5">
+            <el-button
+              plain
+              icon="el-icon-folder-opened"
+              size="mini"
+              @click="handleExport"
+              v-hasPermi="['system:fleet:export']"
+            >
+            </el-button>
+          </el-col>
+        </template>
+      </right-toolbar>
     </el-row>
 
-    <el-table v-loading="loading" :data="fleetList" @selection-change="handleSelectionChange">
+    <el-table v-loading="loading" :data="fleetList" @selection-change="handleSelectionChange"  id="printBox"  v-horizontal-scroll="'always'">
       <el-table-column type="selection" width="55" align="center" />
       <el-table-column label="id" align="center" prop="id" />
       <el-table-column label="车队名称" align="center" prop="fName" />
       <el-table-column label="车队经理" align="center" prop="fLeader" />
       <el-table-column label="车队经理电话" align="center" prop="tel" />
       <el-table-column label="地址" align="center" prop="address" />
-      <el-table-column label="添加时间" align="center" prop="addtime" />
-      <el-table-column label="编辑时间" align="center" prop="editTime" />
-      <el-table-column label="删除标记" align="center" prop="delFlag" />
+<!--      <el-table-column label="添加时间" align="center" prop="addtime" />
+      <el-table-column label="编辑时间" align="center" prop="editTime" />-->
+<!--      <el-table-column label="删除标记" align="center" prop="delFlag" />-->
       <el-table-column label="操作" align="center" class-name="small-padding fixed-width">
         <template slot-scope="scope">
-          <el-button
+<!--          <el-button
             size="mini"
             type="text"
             icon="el-icon-edit"
@@ -134,7 +165,21 @@
             icon="el-icon-delete"
             @click="handleDelete(scope.row)"
             v-hasPermi="['system:fleet:remove']"
-          >删除</el-button>
+          >删除</el-button>-->
+          <el-button
+            size="mini"
+            type="primary"
+            @click="handleUpdate(scope.row)"
+            v-hasPermi="['system:fleet:edit']"
+          >编辑
+          </el-button>
+          <el-button
+            size="mini"
+            type="danger"
+            @click="handleDelete(scope.row)"
+            v-hasPermi="['system:fleet:remove']"
+          >删除
+          </el-button>
         </template>
       </el-table-column>
     </el-table>
@@ -162,15 +207,15 @@
         <el-form-item label="地址" prop="address">
           <el-input v-model="form.address" placeholder="请输入地址" />
         </el-form-item>
-        <el-form-item label="添加时间" prop="addtime">
+<!--        <el-form-item label="添加时间" prop="addtime">
           <el-input v-model="form.addtime" placeholder="请输入添加时间" />
         </el-form-item>
         <el-form-item label="编辑时间" prop="editTime">
           <el-input v-model="form.editTime" placeholder="请输入编辑时间" />
-        </el-form-item>
-        <el-form-item label="删除标记" prop="delFlag">
+        </el-form-item>-->
+<!--        <el-form-item label="删除标记" prop="delFlag">
           <el-input v-model="form.delFlag" placeholder="请输入删除标记" />
-        </el-form-item>
+        </el-form-item>-->
       </el-form>
       <div slot="footer" class="dialog-footer">
         <el-button type="primary" @click="submitForm">确 定</el-button>
@@ -192,11 +237,9 @@ export default {
       // 选中数组
       ids: [],
       // 非单个禁用
-     /* single: true,*/
-      single: false,
+      single: true,
       // 非多个禁用
-      /*multiple: true,*/
-      multiple: false,
+      multiple: true,
       // 显示搜索条件
       showSearch: true,
       // 总条数
@@ -223,13 +266,32 @@ export default {
       form: {},
       // 表单校验
       rules: {
-      }
+      },
+      columns: [
+        {key: 0, label: `车队名称`, visible: true},
+        {key: 1, label: `车队经理`, visible: true},
+        {key: 2, label: `车队经理电话`, visible: true},
+        {key: 3, label: `地址`, visible: true},
+
+      ],
+      dialogFormVisible: false,
+      dialogFormSearchVisible: false,
+      formLabelWidth: '120px',
     };
   },
+
   created() {
     this.getList();
   },
   methods: {
+    /*打印信息*/
+    printHTML() {
+      this.$print({
+        printable: 'printBox',
+        type: 'html',
+        targetStyles: ['*'], // 打印内容使用所有HTML样式，没有设置这个属性/值，设置分页打印没有效果
+      })
+    },
     /** 查询车队列表 */
     getList() {
       this.loading = true;
@@ -295,6 +357,10 @@ export default {
       this.$refs["form"].validate(valid => {
         if (valid) {
           if (this.form.id != null) {
+            this.from.delFlag=null;
+            this.form.addtime=null;
+            this.form.updateTime=null;
+            this.form.userId=null;
             updateFleet(this.form).then(response => {
               this.$modal.msgSuccess("修改成功");
               this.open = false;
@@ -329,3 +395,31 @@ export default {
   }
 };
 </script>
+
+<style>
+//隐藏原有滚动条
+.el-table__body-wrapper::-webkit-scrollbar {
+  /*width: 0;宽度为0隐藏*/
+  width: 0px;
+}
+
+.el-table__body-wrapper::-webkit-scrollbar-thumb {
+  border-radius: 2px;
+  height: 50px;
+  background: #eee;
+}
+
+.el-table__body-wrapper::-webkit-scrollbar-track {
+  box-shadow: inset 0 0 5px rgba(0, 0, 0, 0.2);
+  border-radius: 2px;
+  background: rgba(0, 0, 0, 0.4);
+}
+
+.el-table--scrollable-y .el-table__body-wrapper {
+  overflow: hidden !important;
+}
+
+.el-table--scrollable-x .el-table__body-wrapper {
+  overflow: hidden !important;
+}
+</style>

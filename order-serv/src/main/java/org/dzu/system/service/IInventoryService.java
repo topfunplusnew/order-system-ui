@@ -20,6 +20,13 @@ public interface IInventoryService
     public Inventory selectInventoryById(Long id);
 
     /**
+     * 寻找可以出库的inventory信息
+     * @param inventory
+     * @return
+     */
+    List<Inventory> orderByInventory(Inventory inventory);
+
+    /**
      * 查询库存列表
      * 
      * @param inventory 库存

@@ -112,7 +112,7 @@
 
     <!-- 打印内容 -->
     <el-table border v-loading="loading" :data="bankAccountList" @selection-change="handleSelectionChange" id="printBox"
-              height="300px">
+              height="300px" v-horizontal-scroll="'always'">
       <!--      <el-table-column type="selection" width="55" align="center"/>-->
       <el-table-column label="id" align="center" prop="id"/>
       <el-table-column label="账户类型" align="center" prop="acountsType" v-if="columns[0].visible"/>
@@ -303,10 +303,13 @@ export default {
     getList() {
       this.loading = true;
       listBankAccount(this.queryParams).then(response => {
+        const accountsTypeToSelect = ['己方公司', '其它'];
         this.bankAccountList = response.rows.filter(item => {
-          return item.acountsType === '己方公司' || item.acountsType === '其他'
+          // return item.acountsType === '己方公司' || item.acountsType === '其它'
+          return accountsTypeToSelect.includes(item.acountsType)
         })
-        this.total = response.total;
+        // this.total = response.total;
+        this.total = this.bankAccountList.length;
         this.loading = false;
       });
     },
@@ -368,12 +371,20 @@ export default {
       this.$refs["form"].validate(valid => {
         if (valid) {
           if (this.form.id != null) {
+            this.form.delFlag = null;
+            this.form.addtime = null;
+            this.form.updateTime = null;
+            this.form.userId = null;
             updateBankAccount(this.form).then(response => {
               this.$modal.msgSuccess("修改成功");
               this.open = false;
               this.getList();
             });
           } else {
+            this.form.delFlag = null;
+            this.form.addtime = null;
+            this.form.updateTime = null;
+            this.form.userId = null;
             addBankAccount(this.form).then(response => {
               this.$modal.msgSuccess("新增成功");
               this.open = false;

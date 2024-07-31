@@ -96,7 +96,7 @@
     </el-row>
 
     <el-table border v-loading="loading" :data="companyList" @selection-change="handleSelectionChange" id="printBox"
-              height="300px">
+              v-horizontal-scroll="'always'">
       <!--      <el-table-column type="selection" width="55" align="center"/>-->
       <el-table-column label="id" align="center" prop="id"/>
       <el-table-column label="客户" align="center" prop="relationName" v-if="columns[0].visible"/>
@@ -241,7 +241,7 @@
           </el-col>
           <el-col :span="8">
             <el-form-item label="户名" :label-width="formLabelWidth">
-              <el-input v-model="currentInfo.bankName" autocomplete="off"></el-input>
+              <el-input v-model="currentInfo.acountsName" autocomplete="off"></el-input>
             </el-form-item>
           </el-col>
           <el-col :span="3">
@@ -403,41 +403,14 @@ export default {
       ],
       dialogFormVisible: false,
       dialogFormSearchVisible: false,
-      form_search: {
-        name: '',
-        region: '',
-        date1: '',
-        date2: '',
-        delivery: false,
-        type: [],
-        resource: '',
-        desc: ''
-      },
       formLabelWidth: '120px',
-      //表格内容
-      gridData: [{
-        date: '2016-05-02',
-        name: '王小虎',
-        address: '上海市普陀区金沙江路 1518 弄'
-      }, {
-        date: '2016-05-04',
-        name: '王小虎',
-        address: '上海市普陀区金沙江路 1518 弄'
-      }, {
-        date: '2016-05-01',
-        name: '王小虎',
-        address: '上海市普陀区金沙江路 1518 弄'
-      }, {
-        date: '2016-05-03',
-        name: '王小虎',
-        address: '上海市普陀区金沙江路 1518 弄'
-      }],
       //点击弹窗出来的搜索信息
       currentInfo: {
         companyType: '客户',
         relationName: '',
         bankNo: '',
-        bankName: ''
+        bankName: '',
+        acountsName: ''
       },
       //指定用户的信息
       singleInfo: []
@@ -487,11 +460,19 @@ export default {
       }).catch(err => {
         this.$modal.msgError("修改失败!" + err.msg);
       })
+      //重新查询
+      listCompany({
+        relationName: this.currentInfo.relationName,
+        relationTel: this.currentInfo.relationTel
+      }).then(res => {
+        this.singleInfo = res.rows
+      })
+
     },
     //打开的银行卡弹窗点击编辑
     handleUpdateBankPop(row) {
       this.currentInfo.bankNo = row.bankNo;
-      this.currentInfo.bankName = row.bankName;
+      this.currentInfo.acountsName = row.acountsName;
     },
     printHTML() {
       this.$print({
@@ -573,7 +554,7 @@ export default {
       getCompany(id).then(response => {
         this.form = response.data;
         this.open = true;
-        this.title = "修改客户、供应商信息";
+        this.title = "修改客户信息";
       });
     },
     /** 提交按钮 */
@@ -581,12 +562,20 @@ export default {
       this.$refs["form"].validate(valid => {
         if (valid) {
           if (this.form.id != null) {
+            this.form.delFlag = null;
+            this.form.addtime = null;
+            this.form.updateTime = null;
+            this.form.userId = null;
             updateCompany(this.form).then(response => {
               this.$modal.msgSuccess("修改成功");
               this.open = false;
               this.getList();
             });
           } else {
+            this.form.delFlag = null;
+            this.form.addtime = null;
+            this.form.updateTime = null;
+            this.form.userId = null;
             addCompany(this.form).then(response => {
               this.$modal.msgSuccess("新增成功");
               this.open = false;
@@ -599,7 +588,7 @@ export default {
     /** 删除按钮操作 */
     handleDelete(row) {
       const ids = row.id || this.ids;
-      this.$modal.confirm('是否确认删除客户、供应商信息编号为"' + ids + '"的数据项？').then(function () {
+      this.$modal.confirm('是否确认删除客户信息编号为"' + ids + '"的数据项？').then(function () {
         return delCompany(ids);
       }).then(() => {
         this.getList();
@@ -616,3 +605,30 @@ export default {
   }
 };
 </script>
+<style>
+//隐藏原有滚动条
+.el-table__body-wrapper::-webkit-scrollbar {
+  /*width: 0;宽度为0隐藏*/
+  width: 0px;
+}
+
+.el-table__body-wrapper::-webkit-scrollbar-thumb {
+  border-radius: 2px;
+  height: 50px;
+  background: #eee;
+}
+
+.el-table__body-wrapper::-webkit-scrollbar-track {
+  box-shadow: inset 0 0 5px rgba(0, 0, 0, 0.2);
+  border-radius: 2px;
+  background: rgba(0, 0, 0, 0.4);
+}
+
+.el-table--scrollable-y .el-table__body-wrapper {
+  overflow: hidden !important;
+}
+
+.el-table--scrollable-x .el-table__body-wrapper {
+  overflow: hidden !important;
+}
+</style>
