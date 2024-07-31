@@ -58,4 +58,7 @@ public interface IBorrowedMoneyService
      * @return 结果
      */
     public int deleteBorrowedMoneyById(Long id);
+
+
+    public BorrowedMoney seleteBorrowedMoneyByUUID(String  uuid);
 }

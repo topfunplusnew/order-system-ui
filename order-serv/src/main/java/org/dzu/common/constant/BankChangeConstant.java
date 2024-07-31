@@ -18,7 +18,8 @@ public class BankChangeConstant {
 
     }
     public enum TableName {
-        BORROWED_MONEY("borrowedmoney");
+        BORROWED_MONEY("borrowedmoney"),
+        REPAYMENT("repayment");
         private final String tableName;
 
         TableName(String tableName) {
