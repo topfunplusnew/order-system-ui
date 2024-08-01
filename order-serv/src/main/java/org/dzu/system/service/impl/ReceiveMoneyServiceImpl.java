@@ -4,7 +4,6 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import org.dzu.common.constant.BankChangeConstant;
 import org.dzu.common.exception.ServiceException;
@@ -131,6 +130,13 @@ public class ReceiveMoneyServiceImpl implements IReceiveMoneyService
         if(bankAccountService.selectBankAccountByBankNo(receiveMoney.getOtherBankNo())==null){
             throw new ServiceException("对应银行卡号不存在");
         }
+
+        // 判断是否修改UUID
+        ReceiveMoney old = receiveMoneyMapper.selectReceiveMoneyById(receiveMoney.getId());
+        if(!old.getReceiveNO().equals(receiveMoney.getReceiveNO())){
+            throw new ServiceException("不允许修改UUID");
+        }
+
 
         // 因为变动表对与本次来说是由两个相同的UUID，所以这里使用先删除，后插入，而不是修改
         // 批量删除
