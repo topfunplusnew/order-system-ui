@@ -434,7 +434,7 @@ export default {
     //自定义列统计总函数
     getSummaries(param) {
       const {columns, data} = param;
-      console.log(param)
+      // console.log(param)
       const sums = [];
       columns.forEach((column, index) => {
         if (index === 0) {
