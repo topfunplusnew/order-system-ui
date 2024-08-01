@@ -42,7 +42,7 @@
               plain
               icon="el-icon-printer"
               size="mini"
-              @click="printHTML"
+              @click="printJSON"
             >
             </el-button>
           </el-col>
@@ -64,7 +64,7 @@
     </el-row>
 
     <el-table border v-loading="loading" :data="socialInsuranceList" @selection-change="handleSelectionChange"
-              v-horizontal-scroll="'always'" id="printBox">
+              id="printBox">
       <el-table-column label="id" align="center" prop="id"/>
       <el-table-column label="社保缴纳基数" align="center" prop="basicSocialInsurance" v-if="columns[0].visible"/>
       <el-table-column label="公积金基数" align="center" prop="basicHousingFund" v-if="columns[1].visible"/>
@@ -78,13 +78,15 @@
       <el-table-column label="基本医疗保险-公司" align="center" prop="healthySecurityCompany"
                        v-if="columns[9].visible"/>
       <el-table-column label="工伤保险" align="center" prop="injuryInsurance" v-if="columns[10].visible"/>
-      <el-table-column label="失业保险-个人" align="center" prop="unemploymentSecuritySelf" v-if="columns[11].visible"/>
+      <el-table-column label="失业保险-个人" align="center" prop="unemploymentSecuritySelf"
+                       v-if="columns[11].visible"/>
       <el-table-column label="失业保险-公司" align="center" prop="unemploymentSecurityCompany"
                        v-if="columns[12].visible"/>
       <el-table-column label="养老保险-个人" align="center" prop="retirementSecuritySelf" v-if="columns[13].visible"/>
       <el-table-column label="养老保险-公司" align="center" prop="retirementSecurityCompany"
                        v-if="columns[14].visible"/>
-      <el-table-column label="大额医保-个人" align="center" prop="largeMedicalSecuritySelf" v-if="columns[15].visible"/>
+      <el-table-column label="大额医保-个人" align="center" prop="largeMedicalSecuritySelf"
+                       v-if="columns[15].visible"/>
       <el-table-column label="大额医保-公司" align="center" prop="largeMedicalSecurityCompany"
                        v-if="columns[16].visible"/>
       <el-table-column label="公积金-个人" align="center" prop="housingFundSelf" v-if="columns[17].visible"/>
@@ -92,7 +94,6 @@
       <el-table-column label="个人缴费总额" align="center" prop="sumSelf" v-if="columns[19].visible"/>
       <el-table-column label="公司缴费总额" align="center" prop="sumCompany" v-if="columns[20].visible"/>
       <el-table-column label="备注" align="center" prop="comments"/>
-
       <el-table-column label="操作" align="center" class-name="small-padding fixed-width" fixed="right">
         <template slot-scope="scope">
           <el-button
@@ -299,6 +300,15 @@ export default {
         printable: 'printBox',
         type: 'html',
         targetStyles: ['*'], // 打印内容使用所有HTML样式，没有设置这个属性/值，设置分页打印没有效果
+      })
+    },
+    printJSON() {
+      const exclude = ['userId', 'createBy', 'createTime', 'updateBy', 'updateTime', 'addtime', 'delFlag', 'userName', 'remark',]
+      this.$print({
+        maxWidth: 3000,
+        printable: this.socialInsuranceList,
+        properties: Object.keys(this.socialInsuranceList[0]).filter(item => !exclude.includes(item)),
+        type: 'json'
       })
     },
     /** 查询社保基金列表 */
