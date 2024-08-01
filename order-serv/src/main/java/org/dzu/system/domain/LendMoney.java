@@ -35,12 +35,14 @@ public class LendMoney extends BaseEntity {
     @Excel(name = "借出款编号", readConverterExp = "U=UID")
     @Length(max = 50, message = "借出款编号的字符长度不允许超过50")
     @TableField("futuresNO")
+    @NotNull(message = "借出款编号不能为空")
     private String futuresNO;
 
     /**
      * 期货保证金公司
      */
     @Excel(name = "期货保证金公司")
+    @NotNull(message = "期货保证金公司的值不能为空")
     @Length(max = 80, message = "期货保证金公司的字符长度不允许超过80")
     @TableField("futuresMarginCompany")
     private String futuresMarginCompany;

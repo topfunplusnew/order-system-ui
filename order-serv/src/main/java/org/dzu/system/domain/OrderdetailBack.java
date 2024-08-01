@@ -9,6 +9,11 @@ import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableName;
 import org.dzu.common.annotation.DecimalMaxDigits;
 import org.dzu.common.annotation.OnlyZeroOrOne;
+import org.hibernate.validator.constraints.Length;
+
+import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Pattern;
+
 /**
  * 订单详情备份对象 orderDetail_back
  * 
@@ -26,46 +31,63 @@ public class OrderdetailBack extends BaseEntity
 
     /** 原订单详情ID */
     @Excel(name = "原订单详情ID")
+    @NotNull(message = "原订单详情ID不能为空")
     @TableField(value = "orderId")
+    @Length(max = 19, message = "原订单详情ID长度不能超过19")
     private Long orderId;
 
     /** 订单编号（UUID） */
-    @Excel(name = "订单编号", readConverterExp = "U=UID")
+    @NotNull(message = "订单编号不能为空")
+    @Excel(name = "订单编号", readConverterExp = "UUID")
+    @Length(max = 32, message = "订单编号长度不能超过32")
     @TableField(value = "ordersNo")
     private String ordersNo;
 
     /** 订单日期 */
     @Excel(name = "订单日期")
+    @NotNull(message = "订单日期不能为空")
     @TableField(value = "orderDate")
     private String orderDate;
 
     /** 供应商 */
     @Excel(name = "供应商")
+    @Length(max = 32, message = "供应商长度不能超过32")
+    @NotNull(message = "供应商不能为空")
     @TableField(value = "supplier")
     private String supplier;
 
     /** 供应商ID */
     @Excel(name = "供应商ID")
     @TableField(value = "supplierID")
+    @Length(max = 19, message = "供应商ID长度不能超过19")
+    @NotNull(message = "供应商ID不能为空")
     private Long supplierID;
 
     /** 客户 */
     @Excel(name = "客户")
+    @Length(max = 32, message = "客户长度不能超过32")
+    @NotNull(message = "客户不能为空")
     @TableField(value = "customer")
     private String customer;
 
     /** 客户ID */
     @Excel(name = "客户ID")
+    @Length(max = 19, message = "客户ID长度不能超过19")
+    @NotNull(message = "客户ID不能为空")
     @TableField(value = "customerID")
     private Long customerID;
 
     /** 级别编码 */
     @Excel(name = "级别编码")
+    @Length(max = 32, message = "级别编码长度不能超过32")
+    @NotNull(message = "级别编码不能为空")
     @TableField(value = "levelID")
     private Long levelID;
 
     /** 级别名称 */
     @Excel(name = "级别名称")
+    @Length(max = 32, message = "级别名称长度不能超过32")
+    @NotNull(message = "级别名称不能为空")
     @TableField(value = "levelName")
     private String levelName;
 
@@ -111,6 +133,8 @@ public class OrderdetailBack extends BaseEntity
 
     /** 出厂是否含税 */
     @Excel(name = "出厂是否含税")
+    @NotNull(message = "出厂是否含税不能为空")
+    @Length(max = 1, message = "出厂是否含税长度不能超过1")
     @TableField(value = "isIncludeTaxFactory")
     private Long isIncludeTaxFactory;
 
@@ -201,16 +225,22 @@ public class OrderdetailBack extends BaseEntity
 
     /** 仓库ID */
     @Excel(name = "仓库ID")
+    @NotNull(message = "仓库ID不能为空")
+    @Length(max = 19, message = "仓库ID长度不能超过19")
     @TableField(value = "storeHouseID")
     private Long storeHouseID;
 
     /** 仓库名称 */
     @Excel(name = "仓库名称")
+    @NotNull(message = "仓库名称不能为空")
+    @Length(max = 20, message = "仓库名称长度不能超过20")
     @TableField(value = "storeHouseName")
     private String storeHouseName;
 
     /** 仓库存储的货物ID */
     @Excel(name = "仓库存储的货物ID")
+    @Length(max = 19, message = "仓库存储的货物ID长度不能超过19")
+    @NotNull(message = "仓库存储的货物ID不能为空")
     @TableField(value = "storeID")
     private Long storeID;
 
@@ -225,7 +255,8 @@ public class OrderdetailBack extends BaseEntity
     private Double customerCommission;
 
     /** 是否被调整单（ 是  否） */
-    @Excel(name = "是否被调整单", readConverterExp = "是=,否=")
+    @Excel(name = "是否被调整单")
+    @Pattern(regexp = "是|否", message = "是否被调整单必须是 是或否")
     @TableField(value = "isAdjusted")
     private String isAdjusted;
 
@@ -241,6 +272,7 @@ public class OrderdetailBack extends BaseEntity
 
     /** 备注 */
     @Excel(name = "备注")
+    @Length(max = 200, message = "备注长度不能超过200")
     @TableField(value = "comments")
     private String comments;
 

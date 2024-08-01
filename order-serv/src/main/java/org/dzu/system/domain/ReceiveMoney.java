@@ -33,6 +33,7 @@ public class ReceiveMoney extends BaseEntity
 
     /** 收款编号（UUID） */
     @Excel(name = "收款编号")
+    @NotNull(message = "收款编号不能为空")
     @TableField(value = "receiveNO")
     @Length(max = 50, message = "收款编号的字符长度不允许超过50")
     private String receiveNO;
@@ -46,6 +47,7 @@ public class ReceiveMoney extends BaseEntity
 
     /** 支付类型 */
     @Excel(name = "支付类型")
+    @NotNull(message = "支付类型不能为空")
     @TableField(value = "receiveType")
     @Length(max = 55, message = "支付类型的字符长度不允许超过55")
     private String receiveType;

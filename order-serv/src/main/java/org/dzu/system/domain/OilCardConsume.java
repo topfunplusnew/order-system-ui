@@ -2,12 +2,17 @@ package org.dzu.system.domain;
 
 import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.apache.commons.lang3.builder.ToStringStyle;
+import org.dzu.common.annotation.DecimalMaxDigits;
 import org.dzu.common.annotation.Excel;
 import org.dzu.common.core.domain.BaseEntity;
 import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableName;
 import org.dzu.common.annotation.OnlyZeroOrOne;
+import org.hibernate.validator.constraints.Length;
+
+import javax.validation.constraints.NotNull;
+
 /**
  * 加油卡消费信息对象 OilCardConsume
  * 
@@ -25,51 +30,65 @@ public class OilCardConsume extends BaseEntity
 
     /** 出差编号UUID */
     @Excel(name = "出差编号UUID")
+    @Length(min = 0, max = 64, message = "出差编号UUID长度不能超过 64 个字符")
+    @NotNull(message = "出差编号UUID不能为空")
     @TableField(value = "bTripId")
     private String bTripId;
 
     /** 加油卡卡号 */
     @Excel(name = "加油卡卡号")
+    @Length(min = 0, max = 64, message = "加油卡卡号长度不能超过 64 个字符")
+    @NotNull(message = "加油卡卡号不能为空")
     @TableField(value = "oilCardNo")
     private String oilCardNo;
 
     /** 使用加油卡时间 */
     @Excel(name = "使用加油卡时间")
+    @NotNull(message = "使用加油卡时间不能为空")
+    @Length(min = 0, max = 4, message = "使用加油卡时间长度不能超过 4 个字符")
     @TableField(value = "useDate")
     private String useDate;
 
     /** 使用加油卡车辆车牌号 */
     @Excel(name = "使用加油卡车辆车牌号")
+    @NotNull(message = "使用加油卡车辆车牌号不能为空")
+    @Length(min = 0, max = 64, message = "使用加油卡车辆车牌号长度不能超过 64 个字符")
     @TableField(value = "carNo")
     private String carNo;
 
     /** 期初余额 */
     @Excel(name = "期初余额")
+    @DecimalMaxDigits
     @TableField(value = "startCardSurplus")
     private String startCardSurplus;
 
     /** 加油量（升） */
     @Excel(name = "加油量", readConverterExp = "升=")
     @TableField(value = "refuelingNumber")
+    @DecimalMaxDigits
     private String refuelingNumber;
 
     /** 单价 */
     @Excel(name = "单价")
+    @Length(min = 0, max = 64, message = "单价长度不能超过 64 个字符")
     @TableField(value = "unitPrice")
     private String unitPrice;
 
     /** 加油金额(元） */
     @Excel(name = "加油金额(元）")
+    @DecimalMaxDigits
     @TableField(value = "refuelingMoney")
     private String refuelingMoney;
 
     /** 充值金额(元） */
     @Excel(name = "充值金额(元）")
+    @DecimalMaxDigits
     @TableField(value = "rechargeMoney")
     private String rechargeMoney;
 
     /** 加油卡余额 */
     @Excel(name = "加油卡余额")
+    @DecimalMaxDigits
     @TableField(value = "endCardSurplus")
     private String endCardSurplus;
 
@@ -80,6 +99,7 @@ public class OilCardConsume extends BaseEntity
 
     /** 备注 */
     @Excel(name = "备注")
+    @Length(min = 0, max = 255, message = "备注长度不能超过 255 个字符")
     @TableField(value = "comments")
     private String comments;
 

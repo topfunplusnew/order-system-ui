@@ -9,6 +9,10 @@ import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableName;
 import org.dzu.common.annotation.DecimalMaxDigits;
 import org.dzu.common.annotation.OnlyZeroOrOne;
+import org.hibernate.validator.constraints.Length;
+
+import javax.validation.constraints.NotNull;
+
 /**
  * 加油卡圈存对象 oilCardFundTransfer
  * 
@@ -26,11 +30,15 @@ public class OilCardFundTransfer extends BaseEntity
 
     /** 主加油卡卡号 */
     @Excel(name = "主加油卡卡号")
+    @Length( max = 25, message = "主加油卡卡号长度不能超过25")
+    @NotNull(message = "主加油卡卡号不能为空")
     @TableField(value = "oilMainCardNo")
     private String oilMainCardNo;
 
     /** 副加油卡卡号 */
     @Excel(name = "副加油卡卡号")
+    @Length( max = 25, message = "副加油卡卡号长度不能超过25")
+    @NotNull(message = "副加油卡卡号不能为空")
     @TableField(value = "oilSecondCardNo")
     private String oilSecondCardNo;
 
@@ -46,11 +54,14 @@ public class OilCardFundTransfer extends BaseEntity
 
     /** 充值人员姓名 */
     @Excel(name = "充值人员姓名")
+    @NotNull(message = "充值人员姓名不能为空")
+    @Length( max = 25, message = "充值人员姓名长度不能超过25")
     @TableField(value = "rechargeName")
     private String rechargeName;
 
     /** 备注 */
     @Excel(name = "备注")
+    @Length( max = 255, message = "备注长度不能超过255")
     @TableField(value = "comments")
     private String comments;
 

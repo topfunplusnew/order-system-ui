@@ -3,11 +3,17 @@ package org.dzu.system.domain;
 import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.apache.commons.lang3.builder.ToStringStyle;
 import org.dzu.common.annotation.Excel;
+import org.dzu.common.annotation.PhoneLength;
 import org.dzu.common.core.domain.BaseEntity;
 import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableName;
 import org.dzu.common.annotation.OnlyZeroOrOne;
+import org.hibernate.validator.constraints.Length;
+
+import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Pattern;
+
 /**
  * 订单备份对象 goodsOrder_back
  * 
@@ -25,81 +31,100 @@ public class GoodsorderBack extends BaseEntity
 
     /** 原订单ID */
     @Excel(name = "原订单ID")
+    @Length(max = 20, message = "原订单ID长度不能超过20")
+    @NotNull(message = "原订单ID不能为空")
     @TableField(value = "goodsOrderID")
     private Long goodsOrderID;
 
     /** 订单编号（UUID） */
     @Excel(name = "订单编号", readConverterExp = "U=UID")
+    @Length(max = 20, message = "订单编号长度不能超过20")
+    @NotNull(message = "订单编号不能为空")
     @TableField(value = "ordersNo")
     private String ordersNo;
 
     /** 日期 */
-    @Excel(name = "日期")
+    @Excel(name = "日期",dateFormat = "yyyy-MM-dd")
     @TableField(value = "orderDate")
     private String orderDate;
 
     /** 客户 */
     @Excel(name = "客户")
+    @Length(max = 20, message = "客户长度不能超过20")
+    @NotNull(message = "客户不能为空")
     @TableField(value = "customer")
     private String customer;
 
     /** 客户ID */
     @Excel(name = "客户ID")
+    @Length(max = 20, message = "客户ID长度不能超过20")
+    @NotNull(message = "客户ID不能为空")
     @TableField(value = "customerID")
     private Long customerID;
 
     /** 陆运车辆ID */
     @Excel(name = "陆运车辆ID")
+    @Length(max = 20, message = "陆运车辆ID长度不能超过20")
     @TableField(value = "landCarID")
     private Long landCarID;
 
     /** 陆运车牌 */
     @Excel(name = "陆运车牌")
+    @Length(max = 20, message = "陆运车牌长度不能超过20")
     @TableField(value = "landCarNo")
     private String landCarNo;
 
     /** 陆运司机电话 */
     @Excel(name = "陆运司机电话")
+    @PhoneLength(message = "陆运司机电话长度不能超过15")
     @TableField(value = "landDriverTel")
     private String landDriverTel;
 
     /** 陆地司机姓名 */
     @Excel(name = "陆地司机姓名")
+    @Length(max = 20, message = "陆地司机姓名长度不能超过20")
     @TableField(value = "landDriverName")
     private String landDriverName;
 
     /** 海运车辆ID */
     @Excel(name = "海运车辆ID")
+    @Length(max = 20, message = "海运车辆ID长度不能超过20")
     @TableField(value = "seaCarID")
     private Long seaCarID;
 
     /** 海运车牌 */
     @Excel(name = "海运车牌")
+    @Length(max = 20, message = "海运车牌长度不能超过20")
     @TableField(value = "seaCarNo")
     private String seaCarNo;
 
     /** 海运司机电话 */
     @Excel(name = "海运司机电话")
+    @PhoneLength(message = "海运司机电话长度不能超过15")
     @TableField(value = "seaDriverTel")
     private String seaDriverTel;
 
     /** 海运司机姓名 */
     @Excel(name = "海运司机姓名")
+    @Length(max = 20, message = "海运司机姓名长度不能超过20")
     @TableField(value = "seaDriverName")
     private String seaDriverName;
 
     /** 审核人编号 */
     @Excel(name = "审核人编号")
+    @Length(max = 20, message = "审核人编号长度不能超过20")
     @TableField(value = "checkUserId")
     private Long checkUserId;
 
     /** 审核状态（已审核、未审核） */
-    @Excel(name = "审核状态", readConverterExp = "已=审核、未审核")
+    @Excel(name = "审核状态")
+    @Pattern(regexp = "已审核|未审核", message = "审核状态格式必须是 已审核或未审核")
     @TableField(value = "checkState")
     private String checkState;
 
     /** 开票状态（未开票，部分开票，已开票） */
-    @Excel(name = "开票状态", readConverterExp = "未=开票，部分开票，已开票")
+    @Excel(name = "开票状态")
+    @Pattern(regexp = "未开票|部分开票|已开票", message = "开票状态格式必须是 未开票、部分开票或已开票")
     @TableField(value = "invoiceState")
     private String invoiceState;
 
@@ -110,26 +135,31 @@ public class GoodsorderBack extends BaseEntity
 
     /** 打款状态(已打款，未打款) */
     @Excel(name = "打款状态(已打款，未打款)")
+    @Pattern(regexp = "已打款|未打款", message = "打款状态(已打款，未打款)格式必须是 已打款或未打款")
     @TableField(value = "PaymentState")
     private String PaymentState;
 
     /** 陆运银行户名 */
     @Excel(name = "陆运银行户名")
+    @Length(max = 20, message = "陆运银行户名长度不能超过20")
     @TableField(value = "landBankName")
     private String landBankName;
 
     /** 陆运银行账号 */
     @Excel(name = "陆运银行账号")
+    @Length(max = 20, message = "陆运银行账号长度不能超过20")
     @TableField(value = "landBankNo")
     private String landBankNo;
 
     /** 海运银行户名 */
     @Excel(name = "海运银行户名")
+    @Length(max = 20, message = "海运银行户名长度不能超过20")
     @TableField(value = "seaBankName")
     private String seaBankName;
 
     /** 海运银行账号 */
     @Excel(name = "海运银行账号")
+    @Length(max = 20, message = "海运银行账号长度不能超过20")
     @TableField(value = "seaBankNo")
     private String seaBankNo;
 
@@ -140,46 +170,54 @@ public class GoodsorderBack extends BaseEntity
 
     /** 销售经理 */
     @Excel(name = "销售经理")
+    @Length(max = 20, message = "销售经理长度不能超过20")
     @TableField(value = "saleManager")
     private String saleManager;
 
     /** 车队 */
     @Excel(name = "车队")
+    @Length(max = 20, message = "车队长度不能超过20")
     @TableField(value = "fleet")
     private String fleet;
 
     /** 是否被调整单（ 是  否） */
-    @Excel(name = "是否被调整单", readConverterExp = "是=,否=")
+    @Excel(name = "是否被调整单")
+    @Pattern(regexp = "是|否", message = "是否被调整单格式必须是 是或否")
     @TableField(value = "isAdjusted")
     private String isAdjusted;
 
     /** 调整日期 */
-    @Excel(name = "调整日期")
+    @Excel(name = "调整日期",dateFormat = "yyyy-MM-dd")
     @TableField(value = "adjustDate")
     private String adjustDate;
 
     /** 是否调整单（是  否） */
-    @Excel(name = "是否调整单", readConverterExp = "是=,否=")
+    @Excel(name = "是否调整单")
+    @Pattern(regexp = "是|否", message = "是否调整单格式必须是 是或否")
     @TableField(value = "isAdjust")
     private String isAdjust;
 
     /** 原订单编号 */
     @Excel(name = "原订单编号")
+    @Length(max = 20, message = "原订单编号长度不能超过20")
     @TableField(value = "adjustOrderid")
     private Long adjustOrderid;
 
     /** 是否可编辑 */
     @Excel(name = "是否可编辑")
+    @Pattern(regexp = "是|否", message = "是否可编辑格式必须是 是或否")
     @TableField(value = "isedit")
     private Long isedit;
 
     /** 客户是否开票 */
     @Excel(name = "客户是否开票")
+    @Pattern(regexp = "是|否", message = "客户是否开票格式必须是 是或否")
     @TableField(value = "customerIsInvoice")
     private Long customerIsInvoice;
 
     /** 供应商是否开票 */
     @Excel(name = "供应商是否开票")
+    @Pattern(regexp = "是|否", message = "供应商是否开票格式必须是 是或否")
     @TableField(value = "isSupplierInvoice")
     private Long isSupplierInvoice;
 
@@ -190,11 +228,12 @@ public class GoodsorderBack extends BaseEntity
 
     /** 备注 */
     @Excel(name = "备注")
+    @Length(max = 200, message = "备注长度不能超过200")
     @TableField(value = "comments")
     private String comments;
 
     /** 添加时间 */
-    @Excel(name = "添加时间")
+    @Excel(name = "添加时间",dateFormat = "yyyy-MM-dd")
     @TableField(value = "addtime")
     private String addtime;
 
