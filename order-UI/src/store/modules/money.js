@@ -1,5 +1,6 @@
 import {listBorrowedMoney} from "@/api/system/borrowedMoney";
 import {listRepayment} from "@/api/system/repayment";
+import {listLendMoney} from "@/api/system/lendMoney";
 
 /**
  * 获取借款列表的状态信息
@@ -9,7 +10,9 @@ const state = {
   //借钱
   tempBorrowedMoneyList: [],
   //贷款还款记录
-  tempRepaymentList: []
+  tempRepaymentList: [],
+  //向外借钱
+  tempLendMoneyList: []
 }
 
 const mutations = {
@@ -20,6 +23,10 @@ const mutations = {
   //还款
   setRepaymentList(state, tempRepaymentList) {
     state.tempRepaymentList = tempRepaymentList
+  },
+  //向外借钱
+  setTempLendMoneyList(state, tempLendMoneyList) {
+    state.tempLendMoneyList = tempLendMoneyList
   }
 }
 
@@ -45,6 +52,18 @@ const actions = {
       listRepayment().then(response => {
         let repaymentList = response.rows;
         commit('setRepaymentList', repaymentList)
+        resolve(response)
+      }).catch(err => {
+        reject(err)
+      })
+    })
+  },
+  //向外借钱
+  getTempLendMoneyList({commit}, payload) {
+    return new Promise((resolve, reject) => {
+      listLendMoney().then(response => {
+        let tempLendMoneyList = response.rows
+        commit('setTempLendMoneyList', tempLendMoneyList)
         resolve(response)
       }).catch(err => {
         reject(err)
