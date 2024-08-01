@@ -51,11 +51,4 @@ public interface ILendMoneyService
      */
     public int deleteLendMoneyByIds(Long[] ids);
 
-    /**
-     * 删除向外部借出款信息信息
-     * 
-     * @param id 向外部借出款信息主键
-     * @return 结果
-     */
-    public int deleteLendMoneyById(Long id);
 }
