@@ -103,11 +103,11 @@ public class RepaymentServiceImpl implements IRepaymentService {
         if (bankAccount == null) {
             throw new ServiceException("BankNo_miss");
         }
-        BorrowedMoney borrowedMoney = result.get(0);
-        borrowedMoney
-                .setIsEnd(BorrowedMoneyConstants.isEnd);
-        // 修改借款表的标志为还款
-        borrowedMoneyService.updateBorrowedMoney(borrowedMoney);
+//        BorrowedMoney borrowedMoney = result.get(0);
+//        borrowedMoney
+//                .setIsEnd(BorrowedMoneyConstants.isEnd);
+//        // 修改借款表的标志为还款
+//        borrowedMoneyService.updateBorrowedMoney(borrowedMoney);
         // 准备同步到变动表
         BankAccountChange bankAccountChange = new BankAccountChange();
         bankAccountChange.setSelfBankNo(repayment.getBankNo());
@@ -183,7 +183,7 @@ public class RepaymentServiceImpl implements IRepaymentService {
         List<String> Pays = new ArrayList<String>();
         repayments.parallelStream().forEach(
                 r -> {
-                    Loans.add(r.getLoanNO());
+//                    Loans.add(r.getLoanNO());
                     Pays.add(r.getPayNO());
                 }
         );
@@ -193,12 +193,12 @@ public class RepaymentServiceImpl implements IRepaymentService {
         String[] array = Arrays.copyOf(Pays.toArray(), Pays.size(), String[].class);
         bankAccountChangeService.deleteBankAccountChangeByUUID(array);
 
-        //修改借款标志
-        QueryWrapper<BorrowedMoney> borrowedMoneyQueryWrapper = new QueryWrapper<>();
-        borrowedMoneyQueryWrapper.in("LoanNO", Pays.toArray());
-        BorrowedMoney borrowedMoney = new BorrowedMoney();
-        borrowedMoney.setIsEnd(BorrowedMoneyConstants.noEnd);
-        borrowedMoneyMapper.update(borrowedMoney, borrowedMoneyQueryWrapper);
+//        //修改借款标志
+//        QueryWrapper<BorrowedMoney> borrowedMoneyQueryWrapper = new QueryWrapper<>();
+//        borrowedMoneyQueryWrapper.in("LoanNO", Pays.toArray());
+//        BorrowedMoney borrowedMoney = new BorrowedMoney();
+//        borrowedMoney.setIsEnd(BorrowedMoneyConstants.noEnd);
+//        borrowedMoneyMapper.update(borrowedMoney, borrowedMoneyQueryWrapper);
 
         return repaymentMapper.deleteRepaymentByIds(ids);
     }
