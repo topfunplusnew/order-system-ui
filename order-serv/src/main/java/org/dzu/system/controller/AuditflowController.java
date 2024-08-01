@@ -47,18 +47,6 @@ public class AuditflowController extends BaseController
         return getDataTable(list);
     }
 
-    /**
-     * 导出审核流程列表
-     */
-    @PreAuthorize("@ss.hasPermi('system:auditflow:export')")
-    @Log(title = "审核流程", businessType = BusinessType.EXPORT)
-    @PostMapping("/export")
-    public void export(HttpServletResponse response, Auditflow auditflow)
-    {
-        List<Auditflow> list = auditflowService.selectAuditflowList(auditflow);
-        ExcelUtil<Auditflow> util = new ExcelUtil<Auditflow>(Auditflow.class);
-        util.exportExcel(response, list, "审核流程数据");
-    }
 
     /**
      * 获取审核流程详细信息
@@ -71,35 +59,13 @@ public class AuditflowController extends BaseController
     }
 
     /**
-     * 新增审核流程
-     */
-    @PreAuthorize("@ss.hasPermi('system:auditflow:add')")
-    @Log(title = "审核流程", businessType = BusinessType.INSERT)
-    @PostMapping
-    public AjaxResult add(@Validated @RequestBody Auditflow auditflow)
-    {
-        return toAjax(auditflowService.insertAuditflow(auditflow));
-    }
-
-    /**
      * 修改审核流程
      */
     @PreAuthorize("@ss.hasPermi('system:auditflow:edit')")
     @Log(title = "审核流程", businessType = BusinessType.UPDATE)
     @PutMapping
-    public AjaxResult edit(@Validated @RequestBody Auditflow auditflow)
+    public AjaxResult put(@Validated @RequestBody List<Auditflow> auditflow)
     {
-        return toAjax(auditflowService.updateAuditflow(auditflow));
-    }
-
-    /**
-     * 删除审核流程
-     */
-    @PreAuthorize("@ss.hasPermi('system:auditflow:remove')")
-    @Log(title = "审核流程", businessType = BusinessType.DELETE)
-	@DeleteMapping("/{ids}")
-    public AjaxResult remove(@PathVariable Long[] ids)
-    {
-        return toAjax(auditflowService.deleteAuditflowByIds(ids));
+        return toAjax(auditflowService.put(auditflow));
     }
 }

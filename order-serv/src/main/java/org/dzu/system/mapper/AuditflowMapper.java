@@ -59,4 +59,6 @@ public interface AuditflowMapper extends BaseMapper<Auditflow>
      * @return 结果
      */
     public int deleteAuditflowByIds(Long[] ids);
+
+    int insertBatch(List<Auditflow> auditflow);
 }
