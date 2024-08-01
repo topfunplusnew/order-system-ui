@@ -1,0 +1,106 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="org.dzu.system.mapper.AuditInfoMapper">
+    
+    <resultMap type="AuditInfo" id="AuditInfoResult">
+        <result property="id"    column="id"    />
+        <result property="flowname"    column="flowname"    />
+        <result property="applyID"    column="applyID"    />
+        <result property="stepnum"    column="stepnum"    />
+        <result property="step"    column="step"    />
+        <result property="auditauthority"    column="auditauthority"    />
+        <result property="auditdate"    column="auditdate"    />
+        <result property="userId"    column="userId"    />
+        <result property="UserName"    column="UserName"    />
+        <result property="checkState"    column="checkState"    />
+        <result property="auditcomment"    column="auditcomment"    />
+        <result property="submitflag"    column="submitflag"    />
+    </resultMap>
+
+
+
+    <sql id="selectAuditInfoVo">
+        select id, flowname, applyID, stepnum, step, auditauthority, auditdate, userId, UserName, checkState, auditcomment, submitflag from auditInfo
+    </sql>
+
+    <select id="selectAuditInfoList" parameterType="AuditInfo" resultMap="AuditInfoResult">
+        <include refid="selectAuditInfoVo"/>
+        <where>  
+            <if test="flowname != null  and flowname != ''"> and flowname like concat('%', #{flowname}, '%')</if>
+            <if test="applyID != null "> and applyID = #{applyID}</if>
+            <if test="stepnum != null "> and stepnum = #{stepnum}</if>
+            <if test="step != null "> and step = #{step}</if>
+            <if test="auditauthority != null  and auditauthority != ''"> and auditauthority = #{auditauthority}</if>
+            <if test="auditdate != null "> and auditdate = #{auditdate}</if>
+            <if test="userId != null "> and userId = #{userId}</if>
+            <if test="UserName != null  and UserName != ''"> and UserName like concat('%', #{UserName}, '%')</if>
+            <if test="checkState != null  and checkState != ''"> and checkState = #{checkState}</if>
+            <if test="auditcomment != null  and auditcomment != ''"> and auditcomment = #{auditcomment}</if>
+            <if test="submitflag != null "> and submitflag = #{submitflag}</if>
+        </where>
+    </select>
+    
+    <select id="selectAuditInfoById" parameterType="Long" resultMap="AuditInfoResult">
+        <include refid="selectAuditInfoVo"/>
+        where id = #{id}
+    </select>
+
+    <insert id="insertAuditInfo" parameterType="AuditInfo" useGeneratedKeys="true" keyProperty="id">
+        insert into auditInfo
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="flowname != null">flowname,</if>
+            <if test="applyID != null">applyID,</if>
+            <if test="stepnum != null">stepnum,</if>
+            <if test="step != null">step,</if>
+            <if test="auditauthority != null">auditauthority,</if>
+            <if test="auditdate != null">auditdate,</if>
+            <if test="userId != null">userId,</if>
+            <if test="UserName != null">UserName,</if>
+            <if test="checkState != null">checkState,</if>
+            <if test="auditcomment != null">auditcomment,</if>
+            <if test="submitflag != null">submitflag,</if>
+         </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="flowname != null">#{flowname},</if>
+            <if test="applyID != null">#{applyID},</if>
+            <if test="stepnum != null">#{stepnum},</if>
+            <if test="step != null">#{step},</if>
+            <if test="auditauthority != null">#{auditauthority},</if>
+            <if test="auditdate != null">#{auditdate},</if>
+            <if test="userId != null">#{userId},</if>
+            <if test="UserName != null">#{UserName},</if>
+            <if test="checkState != null">#{checkState},</if>
+            <if test="auditcomment != null">#{auditcomment},</if>
+            <if test="submitflag != null">#{submitflag},</if>
+         </trim>
+    </insert>
+
+    <update id="updateAuditInfo" parameterType="AuditInfo">
+        update auditInfo
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="flowname != null">flowname = #{flowname},</if>
+            <if test="applyID != null">applyID = #{applyID},</if>
+            <if test="stepnum != null">stepnum = #{stepnum},</if>
+            <if test="step != null">step = #{step},</if>
+            <if test="auditauthority != null">auditauthority = #{auditauthority},</if>
+            <if test="auditdate != null">auditdate = #{auditdate},</if>
+            <if test="userId != null">userId = #{userId},</if>
+            <if test="UserName != null">UserName = #{UserName},</if>
+            <if test="checkState != null">checkState = #{checkState},</if>
+            <if test="auditcomment != null">auditcomment = #{auditcomment},</if>
+            <if test="submitflag != null">submitflag = #{submitflag},</if>
+        </trim>
+        where id = #{id}
+    </update>
+    <delete id="deleteAuditInfoById" parameterType="Long">
+        delete from auditInfo where id = #{id}
+    </delete>
+    <delete id="deleteAuditInfoByIds" parameterType="String">
+        delete from auditInfo where id in
+        <foreach item="id" collection="array" open="(" separator="," close=")">
+            #{id}
+        </foreach>
+    </delete>
+</mapper>

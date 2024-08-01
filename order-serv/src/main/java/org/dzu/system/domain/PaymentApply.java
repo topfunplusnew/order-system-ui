@@ -7,120 +7,64 @@ import org.dzu.common.core.domain.BaseEntity;
 import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableName;
-import org.dzu.common.annotation.DecimalMaxDigits;
 import org.dzu.common.annotation.OnlyZeroOrOne;
-import org.hibernate.validator.constraints.Length;
-
-import javax.validation.constraints.Max;
-import javax.validation.constraints.Min;
-import javax.validation.constraints.NotNull;
-import javax.validation.constraints.Pattern;
-
 /**
- * 付款信息对象 payment
+ * 付款信息对象 paymentApply
  * 
  * @author ml
  * @date 2024-08-01
  */
-@TableName("payment")
-public class Payment extends BaseEntity
+@TableName("paymentApply")
+public class PaymentApply extends BaseEntity
 {
     private static final long serialVersionUID = 1L;
 
-    /** id */
+    /** $column.columnComment */
     @TableId(value = "id")
     private Long id;
 
-    /** 付款编号（UUID） */
-    @Excel(name = "付款编号")
-    @TableField(value = "payNO")
-    private String payNO;
-
-    /** 日期 */
-    @Excel(name = "日期")
-    @NotNull(message = "日期不能为空")
-    @Length(max = 50, message = "日期长度不能超过50个字符")
-    @TableField(value = "fundsDate")
-    private String fundsDate;
-
-    /** 支付类型 */
-    @Excel(name = "支付类型")
-    @NotNull(message = "支付类型不能为空")
-    @Length(max = 55, message = "支付类型长度不能超过55个字符")
-    @TableField(value = "payType")
-    private String payType;
-
     /** 对应的表名 */
     @Excel(name = "对应的表名")
-    @Length(max = 55, message = "表名长度不能超过55个字符")
     @TableField(value = "tableName")
     private String tableName;
 
     /** 对应的表主键 */
     @Excel(name = "对应的表主键")
-    @Length(max = 55, message = "表主键长度不能超过55个字符")
     @TableField(value = "tID")
     private String tID;
 
+    /** 日期 */
+    @Excel(name = "日期")
+    @TableField(value = "fundsDate")
+    private String fundsDate;
+
+    /** 支付类型 */
+    @Excel(name = "支付类型")
+    @TableField(value = "payType")
+    private String payType;
+
     /** 金额 */
-    @DecimalMaxDigits
-    @Min(value = 0, message = "金额必须大于或等于0")
+    @Excel(name = "金额")
     @TableField(value = "moneyAmount")
-    private Double moneyAmount;
-
-    /** 己方户名 */
-    @Excel(name = "己方户名")
-    @Length(max = 80, message = "己方户名长度不能超过80个字符")
-    @TableField(value = "selfAcountsName")
-    private String selfAcountsName;
-
-    /** 己方账号 */
-    @Excel(name = "己方账号")
-    @Length(max = 80, message = "己方账号长度不能超过80个字符")
-    @TableField(value = "selfBankNo")
-    private String selfBankNo;
-
-    /** 己方开户行 */
-    @Excel(name = "己方开户行")
-    @Length(max = 150, message = "己方开户行长度不能超过150个字符")
-    @TableField(value = "selfBankName")
-    private String selfBankName;
-
-    /** 己方账号ID */
-    @Excel(name = "己方账号ID")
-    @Length(max = 150, message = "己方账号ID长度不能超过150个字符")
-    @TableField(value = "selfBankID")
-    private String selfBankID;
+    private Long moneyAmount;
 
     /** 对方户名 */
     @Excel(name = "对方户名")
-    @Length(max = 80, message = "对方户名长度不能超过80个字符")
     @TableField(value = "otherAcountsName")
     private String otherAcountsName;
 
     /** 对方账号 */
     @Excel(name = "对方账号")
-    @Length(max = 80, message = "对方账号长度不能超过80个字符")
     @TableField(value = "otherBankNo")
     private String otherBankNo;
 
     /** 对方开户行 */
     @Excel(name = "对方开户行")
-    @Length(max = 150, message = "对方开户行长度不能超过150个字符")
     @TableField(value = "otherBankName")
     private String otherBankName;
 
-    /** 支付状态（已支付、未支付、申请中） */
-    @Excel(name = "支付状态")
-    @NotNull(message = "支付状态不能为空")
-    @Length(max = 55, message = "支付状态长度不能超过55个字符")
-    @Pattern(regexp = "^(已支付|未支付|申请中)$", message = "支付状态必须是已支付、未支付、申请中")
-    @TableField(value = "paymentState")
-    private String paymentState;
-
     /** 对方公司 */
     @Excel(name = "对方公司")
-    @Length(max = 150, message = "对方公司长度不能超过150个字符")
     @TableField(value = "companyName")
     private String companyName;
 
@@ -129,19 +73,41 @@ public class Payment extends BaseEntity
     @TableField(value = "companyId")
     private Long companyId;
 
-    /** 对方公司类型客户、供应商、司机、个人、其他 */
-    @Excel(name = "对方公司类型")
-    @NotNull(message = "对方公司类型不能为空")
+    /** 对方公司类型（客户、供应商、司机、个人、其他） */
+    @Excel(name = "对方公司类型", readConverterExp = "客=户、供应商、司机、个人、其他")
     @TableField(value = "companyType")
-    @Min(value = 1, message = "类型只能为1-5,代表客户、供应商、司机、个人、其他")
-    @Max(value = 5, message = "类型只能为1-5,代表客户、供应商、司机、个人、其他")
-    private Long companyType;
+    private String companyType;
+
+    /** 付款原因 */
+    @Excel(name = "付款原因")
+    @TableField(value = "reason")
+    private String reason;
+
+    /** 附件 */
+    @Excel(name = "附件")
+    @TableField(value = "attachment")
+    private String attachment;
+
+    /** 申请人 */
+    @Excel(name = "申请人")
+    @TableField(value = "applyPerson")
+    private String applyPerson;
+
+    /** 申请人ID */
+    @Excel(name = "申请人ID")
+    @TableField(value = "applyPersonID")
+    private Long applyPersonID;
+
+    /** 审核状态（审核中、通过、未通过） */
+    @Excel(name = "审核状态", readConverterExp = "审=核中、通过、未通过")
+    @TableField(value = "checkState")
+    private String checkState;
 
     /** 备注 */
     @Excel(name = "备注")
-    @Length(max = 200, message = "备注长度不能超过200个字符")
     @TableField(value = "comments")
     private String comments;
+
     /** 添加时间 */
     @Excel(name = "添加时间")
     @TableField(value = "addtime")
@@ -162,6 +128,11 @@ public class Payment extends BaseEntity
     @TableField(value = "delFlag")
     private Long delFlag;
 
+    /** 提交标记 */
+    @Excel(name = "提交标记")
+    @TableField(value = "submitflag")
+    private Long submitflag;
+
     public void setId(Long id) 
     {
         this.id = id;
@@ -170,33 +141,6 @@ public class Payment extends BaseEntity
     public Long getId() 
     {
         return id;
-    }
-    public void setPayNO(String payNO) 
-    {
-        this.payNO = payNO;
-    }
-
-    public String getPayNO() 
-    {
-        return payNO;
-    }
-    public void setFundsDate(String fundsDate) 
-    {
-        this.fundsDate = fundsDate;
-    }
-
-    public String getFundsDate() 
-    {
-        return fundsDate;
-    }
-    public void setPayType(String payType) 
-    {
-        this.payType = payType;
-    }
-
-    public String getPayType() 
-    {
-        return payType;
     }
     public void setTableName(String tableName) 
     {
@@ -216,50 +160,32 @@ public class Payment extends BaseEntity
     {
         return tID;
     }
-    public void setMoneyAmount(Double moneyAmount) 
+    public void setFundsDate(String fundsDate) 
+    {
+        this.fundsDate = fundsDate;
+    }
+
+    public String getFundsDate() 
+    {
+        return fundsDate;
+    }
+    public void setPayType(String payType) 
+    {
+        this.payType = payType;
+    }
+
+    public String getPayType() 
+    {
+        return payType;
+    }
+    public void setMoneyAmount(Long moneyAmount) 
     {
         this.moneyAmount = moneyAmount;
     }
 
-    public Double getMoneyAmount() 
+    public Long getMoneyAmount() 
     {
         return moneyAmount;
-    }
-    public void setSelfAcountsName(String selfAcountsName) 
-    {
-        this.selfAcountsName = selfAcountsName;
-    }
-
-    public String getSelfAcountsName() 
-    {
-        return selfAcountsName;
-    }
-    public void setSelfBankNo(String selfBankNo) 
-    {
-        this.selfBankNo = selfBankNo;
-    }
-
-    public String getSelfBankNo() 
-    {
-        return selfBankNo;
-    }
-    public void setSelfBankName(String selfBankName) 
-    {
-        this.selfBankName = selfBankName;
-    }
-
-    public String getSelfBankName() 
-    {
-        return selfBankName;
-    }
-    public void setSelfBankID(String selfBankID) 
-    {
-        this.selfBankID = selfBankID;
-    }
-
-    public String getSelfBankID() 
-    {
-        return selfBankID;
     }
     public void setOtherAcountsName(String otherAcountsName) 
     {
@@ -288,15 +214,6 @@ public class Payment extends BaseEntity
     {
         return otherBankName;
     }
-    public void setPaymentState(String paymentState) 
-    {
-        this.paymentState = paymentState;
-    }
-
-    public String getPaymentState() 
-    {
-        return paymentState;
-    }
     public void setCompanyName(String companyName) 
     {
         this.companyName = companyName;
@@ -315,14 +232,59 @@ public class Payment extends BaseEntity
     {
         return companyId;
     }
-    public void setCompanyType(Long companyType) 
+    public void setCompanyType(String companyType) 
     {
         this.companyType = companyType;
     }
 
-    public Long getCompanyType() 
+    public String getCompanyType() 
     {
         return companyType;
+    }
+    public void setReason(String reason) 
+    {
+        this.reason = reason;
+    }
+
+    public String getReason() 
+    {
+        return reason;
+    }
+    public void setAttachment(String attachment) 
+    {
+        this.attachment = attachment;
+    }
+
+    public String getAttachment() 
+    {
+        return attachment;
+    }
+    public void setApplyPerson(String applyPerson) 
+    {
+        this.applyPerson = applyPerson;
+    }
+
+    public String getApplyPerson() 
+    {
+        return applyPerson;
+    }
+    public void setApplyPersonID(Long applyPersonID) 
+    {
+        this.applyPersonID = applyPersonID;
+    }
+
+    public Long getApplyPersonID() 
+    {
+        return applyPersonID;
+    }
+    public void setCheckState(String checkState) 
+    {
+        this.checkState = checkState;
+    }
+
+    public String getCheckState() 
+    {
+        return checkState;
     }
     public void setComments(String comments) 
     {
@@ -369,34 +331,43 @@ public class Payment extends BaseEntity
     {
         return delFlag;
     }
+    public void setSubmitflag(Long submitflag) 
+    {
+        this.submitflag = submitflag;
+    }
+
+    public Long getSubmitflag() 
+    {
+        return submitflag;
+    }
 
     @Override
     public String toString() {
         return new ToStringBuilder(this,ToStringStyle.MULTI_LINE_STYLE)
             .append("id", getId())
-            .append("payNO", getPayNO())
-            .append("fundsDate", getFundsDate())
-            .append("payType", getPayType())
             .append("tableName", getTableName())
             .append("tID", gettID())
+            .append("fundsDate", getFundsDate())
+            .append("payType", getPayType())
             .append("moneyAmount", getMoneyAmount())
-            .append("selfAcountsName", getSelfAcountsName())
-            .append("selfBankNo", getSelfBankNo())
-            .append("selfBankName", getSelfBankName())
-            .append("selfBankID", getSelfBankID())
             .append("otherAcountsName", getOtherAcountsName())
             .append("otherBankNo", getOtherBankNo())
             .append("otherBankName", getOtherBankName())
-            .append("paymentState", getPaymentState())
             .append("companyName", getCompanyName())
             .append("companyId", getCompanyId())
             .append("companyType", getCompanyType())
+            .append("reason", getReason())
+            .append("attachment", getAttachment())
+            .append("applyPerson", getApplyPerson())
+            .append("applyPersonID", getApplyPersonID())
+            .append("checkState", getCheckState())
             .append("comments", getComments())
             .append("addtime", getAddtime())
             .append("userId", getUserId())
             .append("UserName", getUserName())
             .append("updateTime", getUpdateTime())
             .append("delFlag", getDelFlag())
+            .append("submitflag", getSubmitflag())
             .toString();
     }
 }

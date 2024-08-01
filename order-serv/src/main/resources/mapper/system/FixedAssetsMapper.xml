@@ -30,7 +30,7 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
  
 
     <sql id="selectFixedAssetsVo">
-        select id, buyDate, assetNo, assetName, specification, number, measurementUnit, amountIncludeTax, amountNoTax, account, department, scrapDate, saleAmount, comments, addtime, userId, UserName, update_time, delFlag from fixedAssets
+        select id, buyDate, assetNo, assetName, ` specification`, number, measurementUnit , amountIncludeTax, amountNoTax, account, department, scrapDate, saleAmount, comments, addtime, userId, UserName, update_time, delFlag from fixedAssets
     </sql>
 
     <select id="selectFixedAssetsList" parameterType="FixedAssets" resultMap="FixedAssetsResult">
