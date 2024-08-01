@@ -193,6 +193,7 @@
         <el-form-item label="票据金额" prop="billAmount">
           <el-input v-model="form.billAmount" placeholder="请输入票据金额"/>
         </el-form-item>
+<!--        11-->
         <!--        时间选择器-->
         <el-form-item label="出票日期" prop="issueDate">
           <!--          <el-input v-model="form.issueDate" placeholder="请输入出票日期"/>-->
