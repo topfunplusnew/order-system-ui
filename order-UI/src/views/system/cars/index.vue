@@ -402,7 +402,7 @@ export default {
         {key: 3, label: `户名`, visible: true},
         {key: 4, label: `银行账号`, visible: true},
         {key: 5, label: `开户行`, visible: true}
-
+// 1
       ],
       companyList: []
     };
