@@ -4,163 +4,203 @@ import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.apache.commons.lang3.builder.ToStringStyle;
 import org.dzu.common.annotation.Excel;
 import org.dzu.common.core.domain.BaseEntity;
-
+import com.baomidou.mybatisplus.annotation.TableField;
+import com.baomidou.mybatisplus.annotation.TableId;
+import com.baomidou.mybatisplus.annotation.TableName;
 import org.dzu.common.annotation.OnlyZeroOrOne;
 /**
  * 订单对象 goodsOrder
  * 
  * @author ml
- * @date 2024-07-29
+ * @date 2024-08-01
  */
+@TableName("goodsOrder")
 public class GoodsOrder extends BaseEntity
 {
     private static final long serialVersionUID = 1L;
 
     /** id */
+    @TableId(value = "id")
     private Long id;
 
     /** 订单编号（UUID） */
     @Excel(name = "订单编号", readConverterExp = "U=UID")
+    @TableField(value = "ordersNo")
     private String ordersNo;
 
     /** 日期 */
     @Excel(name = "日期")
+    @TableField(value = "orderDate")
     private String orderDate;
 
     /** 客户 */
     @Excel(name = "客户")
+    @TableField(value = "customer")
     private String customer;
 
     /** 客户ID */
     @Excel(name = "客户ID")
+    @TableField(value = "customerID")
     private Long customerID;
 
     /** 陆运车辆ID */
     @Excel(name = "陆运车辆ID")
+    @TableField(value = "landCarID")
     private Long landCarID;
 
     /** 陆运车牌 */
     @Excel(name = "陆运车牌")
+    @TableField(value = "landCarNo")
     private String landCarNo;
 
     /** 陆运司机电话 */
     @Excel(name = "陆运司机电话")
+    @TableField(value = "landDriverTel")
     private String landDriverTel;
 
     /** 陆地司机姓名 */
     @Excel(name = "陆地司机姓名")
+    @TableField(value = "landDriverName")
     private String landDriverName;
 
     /** 海运车辆ID */
     @Excel(name = "海运车辆ID")
+    @TableField(value = "seaCarID")
     private Long seaCarID;
 
     /** 海运车牌 */
     @Excel(name = "海运车牌")
+    @TableField(value = "seaCarNo")
     private String seaCarNo;
 
     /** 海运司机电话 */
     @Excel(name = "海运司机电话")
+    @TableField(value = "seaDriverTel")
     private String seaDriverTel;
 
     /** 海运司机姓名 */
     @Excel(name = "海运司机姓名")
+    @TableField(value = "seaDriverName")
     private String seaDriverName;
 
     /** 审核人编号 */
     @Excel(name = "审核人编号")
+    @TableField(value = "checkUserId")
     private Long checkUserId;
 
     /** 审核状态（已审核、未审核） */
     @Excel(name = "审核状态", readConverterExp = "已=审核、未审核")
+    @TableField(value = "checkState")
     private String checkState;
 
     /** 开票状态（未开票，部分开票，已开票） */
     @Excel(name = "开票状态", readConverterExp = "未=开票，部分开票，已开票")
+    @TableField(value = "invoiceState")
     private String invoiceState;
 
     /** 附件路径 */
     @Excel(name = "附件路径")
+    @TableField(value = "path")
     private String path;
 
     /** 打款状态(申请中，已打款，未打款) */
     @Excel(name = "打款状态(申请中，已打款，未打款)")
+    @TableField(value = "PaymentState")
     private String PaymentState;
 
     /** 陆运银行户名 */
     @Excel(name = "陆运银行户名")
+    @TableField(value = "landBankName")
     private String landBankName;
 
     /** 陆运银行账号 */
     @Excel(name = "陆运银行账号")
+    @TableField(value = "landBankNo")
     private String landBankNo;
 
     /** 海运银行户名 */
     @Excel(name = "海运银行户名")
+    @TableField(value = "seaBankName")
     private String seaBankName;
 
     /** 海运银行账号 */
     @Excel(name = "海运银行账号")
+    @TableField(value = "seaBankNo")
     private String seaBankNo;
 
     /** 收到条附件路径 */
     @Excel(name = "收到条附件路径")
+    @TableField(value = "receiveProof")
     private String receiveProof;
 
     /** 销售经理 */
     @Excel(name = "销售经理")
+    @TableField(value = "saleManager")
     private String saleManager;
 
     /** 车队 */
     @Excel(name = "车队")
+    @TableField(value = "fleet")
     private String fleet;
 
     /** 是否被调整单（ 是  否） */
     @Excel(name = "是否被调整单", readConverterExp = "是=,否=")
+    @TableField(value = "isAdjusted")
     private String isAdjusted;
 
     /** 调整日期 */
     @Excel(name = "调整日期")
+    @TableField(value = "adjustDate")
     private String adjustDate;
 
     /** 是否调整单（是  否） */
     @Excel(name = "是否调整单", readConverterExp = "是=,否=")
+    @TableField(value = "isAdjust")
     private String isAdjust;
 
     /** 原订单编号 */
     @Excel(name = "原订单编号")
+    @TableField(value = "adjustOrderid")
     private Long adjustOrderid;
 
     /** 是否可编辑 */
     @Excel(name = "是否可编辑")
+    @TableField(value = "isedit")
     private Long isedit;
 
     /** 客户是否开票 */
     @Excel(name = "客户是否开票")
+    @TableField(value = "customerIsInvoice")
     private Long customerIsInvoice;
 
     /** 供应商是否开票 */
     @Excel(name = "供应商是否开票")
+    @TableField(value = "isSupplierInvoice")
     private Long isSupplierInvoice;
 
     /** 作废标记 */
     @OnlyZeroOrOne
+    @TableField(value = "cancelFlag")
     private Long cancelFlag;
 
     /** 备注 */
     @Excel(name = "备注")
+    @TableField(value = "comments")
     private String comments;
 
     /** 添加时间 */
     @Excel(name = "添加时间")
+    @TableField(value = "addtime")
     private String addtime;
 
     /** 操作人员ID */
     @Excel(name = "操作人员ID")
+    @TableField(value = "userId")
     private Long userId;
 
     /** 操作人员姓名 */
     @Excel(name = "操作人员姓名")
+    @TableField(value = "UserName")
     private String UserName;
 
     public void setId(Long id) 

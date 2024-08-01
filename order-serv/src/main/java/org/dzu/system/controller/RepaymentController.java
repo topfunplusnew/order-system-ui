@@ -71,6 +71,16 @@ public class RepaymentController extends BaseController
     }
 
     /**
+     * 获取贷款还款信息详细信息
+     */
+    @PreAuthorize("@ss.hasPermi('system:repayment:query')")
+    @GetMapping(value = "/loanNo/{uuid}")
+    public AjaxResult getInfoByLoanNo(@PathVariable("uuid") String  id)
+    {
+        return success(repaymentService.selectRepaymentByLoanNo(id));
+    }
+
+    /**
      * 新增贷款还款信息
      */
     @PreAuthorize("@ss.hasPermi('system:repayment:add')")

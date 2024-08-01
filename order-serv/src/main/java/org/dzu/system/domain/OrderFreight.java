@@ -4,131 +4,163 @@ import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.apache.commons.lang3.builder.ToStringStyle;
 import org.dzu.common.annotation.Excel;
 import org.dzu.common.core.domain.BaseEntity;
-
+import com.baomidou.mybatisplus.annotation.TableField;
+import com.baomidou.mybatisplus.annotation.TableId;
+import com.baomidou.mybatisplus.annotation.TableName;
 import org.dzu.common.annotation.OnlyZeroOrOne;
 /**
  * 订单运费对象 orderFreight
  * 
  * @author ml
- * @date 2024-07-29
+ * @date 2024-08-01
  */
+@TableName("orderFreight")
 public class OrderFreight extends BaseEntity
 {
     private static final long serialVersionUID = 1L;
 
     /** id */
+    @TableId(value = "id")
     private Long id;
 
     /** 订单编号（UUID） */
     @Excel(name = "订单编号", readConverterExp = "U=UID")
+    @TableField(value = "ordersNo")
     private String ordersNo;
 
     /** 运费类型（ 陆运、海运） */
     @Excel(name = "运费类型", readConverterExp = "陆=运、海运")
+    @TableField(value = "freightType")
     private String freightType;
 
     /** 金额 */
     @Excel(name = "金额")
+    @TableField(value = "moneyAmount")
     private String moneyAmount;
 
     /** 己方户名 */
     @Excel(name = "己方户名")
+    @TableField(value = "selfAcountsName")
     private String selfAcountsName;
 
     /** 己方账号 */
     @Excel(name = "己方账号")
+    @TableField(value = "selfBankNo")
     private String selfBankNo;
 
     /** 己方开户行 */
     @Excel(name = "己方开户行")
+    @TableField(value = "selfBankName")
     private String selfBankName;
 
     /** 对方户名 */
     @Excel(name = "对方户名")
+    @TableField(value = "otherAcountsName")
     private String otherAcountsName;
 
     /** 对方账号 */
     @Excel(name = "对方账号")
+    @TableField(value = "otherBankNo")
     private String otherBankNo;
 
     /** 对方开户行 */
     @Excel(name = "对方开户行")
+    @TableField(value = "otherBankName")
     private String otherBankName;
 
     /** 备注 */
     @Excel(name = "备注")
+    @TableField(value = "content")
     private String content;
 
     /** 支付状态（ 已支付、 未支付、  申请中） */
     @Excel(name = "支付状态", readConverterExp = "已=支付、,未=支付、,申=请中")
+    @TableField(value = "paymentState")
     private String paymentState;
 
     /** 司机姓名 */
     @Excel(name = "司机姓名")
+    @TableField(value = "driverName")
     private String driverName;
 
     /** 司机ID */
     @Excel(name = "司机ID")
+    @TableField(value = "driverId")
     private Long driverId;
 
     /** 车牌号 */
     @Excel(name = "车牌号")
+    @TableField(value = "CarNo")
     private String CarNo;
 
     /** 车队 */
     @Excel(name = "车队")
+    @TableField(value = "fleet")
     private String fleet;
 
     /** 申请人员ID */
     @Excel(name = "申请人员ID")
+    @TableField(value = "applyUserId")
     private Long applyUserId;
 
     /** 申请人员姓名 */
     @Excel(name = "申请人员姓名")
+    @TableField(value = "applyUserName")
     private String applyUserName;
 
     /** 申请日期 */
     @Excel(name = "申请日期")
+    @TableField(value = "applyDate")
     private String applyDate;
 
     /** 是否可编辑 */
     @Excel(name = "是否可编辑")
+    @TableField(value = "isedit")
     private Long isedit;
 
     /** 付款人员ID */
     @Excel(name = "付款人员ID")
+    @TableField(value = "payUserId")
     private Long payUserId;
 
     /** 付款人员姓名 */
     @Excel(name = "付款人员姓名")
+    @TableField(value = "payUserName")
     private String payUserName;
 
     /** 付款日期 */
     @Excel(name = "付款日期")
+    @TableField(value = "payDate")
     private String payDate;
 
     /** 作废标记 */
     @OnlyZeroOrOne
+    @TableField(value = "cancelFlag")
     private Long cancelFlag;
 
     /** 备注 */
     @Excel(name = "备注")
+    @TableField(value = "comments")
     private String comments;
 
     /** 添加时间 */
     @Excel(name = "添加时间")
+    @TableField(value = "addtime")
     private String addtime;
 
     /** 操作人员ID */
     @Excel(name = "操作人员ID")
+    @TableField(value = "userId")
     private Long userId;
 
     /** 操作人员姓名 */
     @Excel(name = "操作人员姓名")
+    @TableField(value = "UserName")
     private String UserName;
 
     /** 删除标记 */
     @OnlyZeroOrOne
+    @TableField(value = "delFlag")
     private Long delFlag;
 
     public void setId(Long id) 

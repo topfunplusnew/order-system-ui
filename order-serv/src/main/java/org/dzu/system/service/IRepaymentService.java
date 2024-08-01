@@ -51,11 +51,5 @@ public interface IRepaymentService
      */
     public int deleteRepaymentByIds(Long[] ids);
 
-    /**
-     * 删除贷款还款信息信息
-     * 
-     * @param id 贷款还款信息主键
-     * @return 结果
-     */
-    public int deleteRepaymentById(Long id);
+    Repayment selectRepaymentByLoanNo(String id);
 }

@@ -4,111 +4,138 @@ import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.apache.commons.lang3.builder.ToStringStyle;
 import org.dzu.common.annotation.Excel;
 import org.dzu.common.core.domain.BaseEntity;
-
+import com.baomidou.mybatisplus.annotation.TableField;
+import com.baomidou.mybatisplus.annotation.TableId;
+import com.baomidou.mybatisplus.annotation.TableName;
 import org.dzu.common.annotation.OnlyZeroOrOne;
 /**
  * 走访记录对象 CustomerVisit
  * 
  * @author ml
- * @date 2024-07-29
+ * @date 2024-08-01
  */
+@TableName("CustomerVisit")
 public class CustomerVisit extends BaseEntity
 {
     private static final long serialVersionUID = 1L;
 
     /** id */
+    @TableId(value = "id")
     private Long id;
 
     /** 省 */
     @Excel(name = "省")
+    @TableField(value = "province")
     private String province;
 
     /** 市县 */
     @Excel(name = "市县")
+    @TableField(value = "city")
     private String city;
 
     /** 乡镇（街道） */
     @Excel(name = "乡镇", readConverterExp = "街=道")
+    @TableField(value = "county")
     private String county;
 
     /** 客户 */
     @Excel(name = "客户")
+    @TableField(value = "customer")
     private String customer;
 
     /** 负责人 */
     @Excel(name = "负责人")
+    @TableField(value = "leaderName")
     private String leaderName;
 
     /** 负责人电话 */
     @Excel(name = "负责人电话")
+    @TableField(value = "LeaderTel")
     private String LeaderTel;
 
     /** 厂房设备 */
     @Excel(name = "厂房设备")
+    @TableField(value = "equipment")
     private String equipment;
 
     /** 竞争对手 */
     @Excel(name = "竞争对手")
+    @TableField(value = "competitor")
     private String competitor;
 
     /** 当地经销商 */
     @Excel(name = "当地经销商")
+    @TableField(value = "localDealer")
     private String localDealer;
 
     /** 月用货量（车数） */
     @Excel(name = "月用货量", readConverterExp = "车=数")
+    @TableField(value = "monthlyConsumption")
     private String monthlyConsumption;
 
     /** 白玻用货习惯及厂家 */
     @Excel(name = "白玻用货习惯及厂家")
+    @TableField(value = "whiteGlassFactory")
     private String whiteGlassFactory;
 
     /** lowe玻璃用货厂家及用量 */
     @Excel(name = "lowe玻璃用货厂家及用量")
+    @TableField(value = "loweGlassConsumption")
     private String loweGlassConsumption;
 
     /** 色玻、过度色玻璃用货厂家及用量 */
     @Excel(name = "色玻、过度色玻璃用货厂家及用量")
+    @TableField(value = "colorGlassConsumption")
     private String colorGlassConsumption;
 
     /** 特色厚度、特殊尺寸、协议品用货厂家及用量 */
     @Excel(name = "特色厚度、特殊尺寸、协议品用货厂家及用量")
+    @TableField(value = "specialGlassConsumption")
     private String specialGlassConsumption;
 
     /** 备注 */
     @Excel(name = "备注")
+    @TableField(value = "comments")
     private String comments;
 
     /** 添加时间 */
     @Excel(name = "添加时间")
+    @TableField(value = "addtime")
     private String addtime;
 
     /** 操作人员ID */
     @Excel(name = "操作人员ID")
+    @TableField(value = "userId")
     private Long userId;
 
     /** 操作人员姓名 */
     @Excel(name = "操作人员姓名")
+    @TableField(value = "UserName")
     private String UserName;
 
     /** 走访日期 */
     @Excel(name = "走访日期")
+    @TableField(value = "visitDate")
     private String visitDate;
 
     /** 审核标志 */
     @Excel(name = "审核标志")
+    @TableField(value = "checkState")
     private Long checkState;
 
     /** 审核人ID */
     @Excel(name = "审核人ID")
+    @TableField(value = "checkUserID")
     private Long checkUserID;
 
     /** 审核人 */
     @Excel(name = "审核人")
+    @TableField(value = "checkUserName")
     private String checkUserName;
 
     /** 删除标记 */
     @OnlyZeroOrOne
+    @TableField(value = "delFlag")
     private Long delFlag;
 
     public void setId(Long id) 

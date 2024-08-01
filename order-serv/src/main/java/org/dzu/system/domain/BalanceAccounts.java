@@ -4,60 +4,74 @@ import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.apache.commons.lang3.builder.ToStringStyle;
 import org.dzu.common.annotation.Excel;
 import org.dzu.common.core.domain.BaseEntity;
-
+import com.baomidou.mybatisplus.annotation.TableField;
+import com.baomidou.mybatisplus.annotation.TableId;
+import com.baomidou.mybatisplus.annotation.TableName;
 import org.dzu.common.annotation.DecimalMaxDigits;
 import org.dzu.common.annotation.OnlyZeroOrOne;
 /**
  * 平账信息对象 BalanceAccounts
  * 
  * @author ml
- * @date 2024-07-29
+ * @date 2024-08-01
  */
+@TableName("BalanceAccounts")
 public class BalanceAccounts extends BaseEntity
 {
     private static final long serialVersionUID = 1L;
 
     /** id */
+    @TableId(value = "id")
     private Long id;
 
     /** 操作时间 */
     @Excel(name = "操作时间")
+    @TableField(value = "operateDate")
     private String operateDate;
 
     /** 金额 */
     @DecimalMaxDigits
+    @TableField(value = "moneyAmount")
     private Double moneyAmount;
 
     /** 对方公司 */
     @Excel(name = "对方公司")
+    @TableField(value = "companyName")
     private String companyName;
 
     /** 对方公司ID */
     @Excel(name = "对方公司ID")
+    @TableField(value = "companyID")
     private Long companyID;
 
     /** 对方公司类型（1、客户 2、供应商） */
     @Excel(name = "对方公司类型", readConverterExp = "1=、客户,2=、供应商")
+    @TableField(value = "companyType")
     private Long companyType;
 
     /** 备注 */
     @Excel(name = "备注")
+    @TableField(value = "comments")
     private String comments;
 
     /** 添加时间 */
     @Excel(name = "添加时间")
+    @TableField(value = "addtime")
     private String addtime;
 
     /** 操作人员ID */
     @Excel(name = "操作人员ID")
+    @TableField(value = "userId")
     private Long userId;
 
     /** 操作人员姓名 */
     @Excel(name = "操作人员姓名")
+    @TableField(value = "UserName")
     private String UserName;
 
     /** 删除标记 */
     @OnlyZeroOrOne
+    @TableField(value = "delFlag")
     private Long delFlag;
 
     public void setId(Long id) 

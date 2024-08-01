@@ -129,4 +129,11 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
             #{id}
         </foreach>
     </update>
+
+    <select id="selectBorrowedMoneyByUUID" parameterType="String" resultMap="BorrowedMoneyResult">
+        <include refid="selectBorrowedMoneyVo"/>
+        where loanNo = #{uuid}
+        and delFlag = 0
+        limit  1
+    </select>
 </mapper>

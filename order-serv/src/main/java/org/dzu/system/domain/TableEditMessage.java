@@ -4,46 +4,57 @@ import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.apache.commons.lang3.builder.ToStringStyle;
 import org.dzu.common.annotation.Excel;
 import org.dzu.common.core.domain.BaseEntity;
-
+import com.baomidou.mybatisplus.annotation.TableField;
+import com.baomidou.mybatisplus.annotation.TableId;
+import com.baomidou.mybatisplus.annotation.TableName;
 /**
  * 编辑原因对象 tableEditMessage
  * 
  * @author ml
- * @date 2024-07-29
+ * @date 2024-08-01
  */
+@TableName("tableEditMessage")
 public class TableEditMessage extends BaseEntity
 {
     private static final long serialVersionUID = 1L;
 
     /** id */
+    @TableId(value = "id")
     private Long id;
 
     /** 表名 */
     @Excel(name = "表名")
+    @TableField(value = "tableName")
     private String tableName;
 
     /** 修改时间 */
     @Excel(name = "修改时间")
+    @TableField(value = "modifyTime")
     private String modifyTime;
 
     /** 修改原因 */
     @Excel(name = "修改原因")
+    @TableField(value = "reason")
     private String reason;
 
     /** 修改表对应信息的id */
     @Excel(name = "修改表对应信息的id")
+    @TableField(value = "tid")
     private Long tid;
 
     /** 添加时间 */
     @Excel(name = "添加时间")
+    @TableField(value = "addtime")
     private String addtime;
 
     /** 操作人员ID */
     @Excel(name = "操作人员ID")
+    @TableField(value = "userId")
     private Long userId;
 
     /** 操作人员姓名 */
     @Excel(name = "操作人员姓名")
+    @TableField(value = "UserName")
     private String UserName;
 
     public void setId(Long id) 

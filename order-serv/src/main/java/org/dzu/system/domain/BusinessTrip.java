@@ -4,67 +4,83 @@ import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.apache.commons.lang3.builder.ToStringStyle;
 import org.dzu.common.annotation.Excel;
 import org.dzu.common.core.domain.BaseEntity;
-
+import com.baomidou.mybatisplus.annotation.TableField;
+import com.baomidou.mybatisplus.annotation.TableId;
+import com.baomidou.mybatisplus.annotation.TableName;
 import org.dzu.common.annotation.OnlyZeroOrOne;
 /**
  * 出差对象 BusinessTrip
  * 
  * @author ml
- * @date 2024-07-29
+ * @date 2024-08-01
  */
+@TableName("BusinessTrip")
 public class BusinessTrip extends BaseEntity
 {
     private static final long serialVersionUID = 1L;
 
     /** id */
+    @TableId(value = "id")
     private Long id;
 
     /** 报销人ID */
     @Excel(name = "报销人ID")
+    @TableField(value = "employeeID")
     private Long employeeID;
 
     /** 报销人 */
     @Excel(name = "报销人")
+    @TableField(value = "employee")
     private String employee;
 
     /** 共同出差人员 */
     @Excel(name = "共同出差人员")
+    @TableField(value = "personnel")
     private String personnel;
 
     /** 出差时间 */
     @Excel(name = "出差时间")
+    @TableField(value = "starttime")
     private String starttime;
 
     /** 出差结束时间 */
     @Excel(name = "出差结束时间")
+    @TableField(value = "endtime")
     private String endtime;
 
     /** 附件地址 */
     @Excel(name = "附件地址")
+    @TableField(value = "attachmentPath")
     private String attachmentPath;
 
     /** 是否已报销（0未报销，1已报销） */
     @Excel(name = "是否已报销", readConverterExp = "0=未报销，1已报销")
+    @TableField(value = "isReimburse")
     private Long isReimburse;
 
     /** 备注 */
     @Excel(name = "备注")
+    @TableField(value = "comments")
     private String comments;
 
     /** 添加时间 */
     @Excel(name = "添加时间")
+    @TableField(value = "addtime")
     private String addtime;
 
     /** 操作人员ID */
     @Excel(name = "操作人员ID")
+    @TableField(value = "userId")
     private Long userId;
 
     /** 操作人员姓名 */
     @Excel(name = "操作人员姓名")
+    @TableField(value = "UserName")
     private String UserName;
 
     /** 删除标记 */
     @OnlyZeroOrOne
+    @TableField(value = "delFlag")
     private Long delFlag;
 
     public void setId(Long id) 
