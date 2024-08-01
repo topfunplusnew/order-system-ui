@@ -2,6 +2,7 @@ package org.dzu.system.domain;
 
 import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.apache.commons.lang3.builder.ToStringStyle;
+import org.dzu.common.annotation.AutoTimestamps;
 import org.dzu.common.annotation.Excel;
 import org.dzu.common.core.domain.BaseEntity;
 
@@ -9,7 +10,12 @@ import org.dzu.common.annotation.DecimalMaxDigits;
 import org.dzu.common.annotation.OnlyZeroOrOne;
 import org.hibernate.validator.constraints.Length;
 
+import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Pattern;
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 
 /**
  * 商业票据、银行承兑对象 bankAcceptance
@@ -31,50 +37,61 @@ public class BankAcceptance extends BaseEntity
     /** 票据号码 */
     @Excel(name = "票据号码")
     @Length(max = 30, message = "票据号码的字符长度不允许超过30")
+    @NotNull(message = "票据号码不能为空")
     private String billNo;
 
     /** 出票日期 */
     @Excel(name = "出票日期",dateFormat = "yyyy-MM-dd")
+    @NotNull(message = "出票日期不能为空")
     private String issueDate;
 
     /** 到期日期 */
     @Excel(name = "到期日期",dateFormat = "yyyy-MM-dd")
+    @NotNull(message = "到期日期不能为空")
     private String dueDate;
 
     /** 我方承兑账户 */
     @Excel(name = "我方承兑账户")
     @Length(max = 20, message = "我方承兑账户的字符长度不允许超过20")
+    @NotNull(message = "我方承兑账户不能为空")
     private String billAccount;
 
     /** 票据日期 */
     @Excel(name = "票据日期",dateFormat = "yyyy-MM-dd")
+    @NotNull(message = "票据日期不能为空")
     private String billDate;
 
     /** 分类（收入、支出） */
     @Excel(name = "分类(收入/支出)")
     @Pattern(regexp = "收入|支出", message = "分类必须是：收入或支出")
+    @NotNull(message = "分类不能为空")
     private String billType;
 
     /** 事由 */
     @Excel(name = "事由")
-    @Length(max = 50, message = "事由的字符长度不允许超过50")
+    @Length(max = 200, message = "事由的字符长度不允许超过200")
+    @NotNull(message = "事由不能为空")
     private String reason;
 
     /** 票据金额 */
     @DecimalMaxDigits
+    @NotNull(message = "票据金额不能为空")
     private Double billAmount;
 
     /** 贴息点数 */
     @DecimalMaxDigits
+    @NotNull(message = "贴息点数不能为空")
     private Double inDiscountPoints;
 
     /** 贴息金额 */
     @DecimalMaxDigits
+    @NotNull(message = "贴息金额不能为空")
     private Double inDiscountAmount;
 
     /** 票据种类（电子/纸质） */
     @Excel(name = "票据种类（电子或纸质）")
     @Pattern(regexp = "电子|纸质", message = "票据类型必须是：电子或纸质")
+    @NotNull(message = "票据类型不能为空")
     private String billCategory;
 
     /** 来源 */
@@ -85,11 +102,13 @@ public class BankAcceptance extends BaseEntity
     /** 背书人 */
     @Excel(name = "背书人")
     @Length(max = 20, message = "背书人的字符长度不允许超过20")
+    @NotNull(message = "背书人不能为空")
     private String endorser;
 
     /** 被背书人 */
     @Excel(name = "被背书人")
     @Length(max = 20, message = "被背书人的字符长度不允许超过50")
+    @NotNull(message = "被背书人不能为空")
     private String endorsee;
 
     /** 背书事由（出卖/付货款） */
@@ -97,8 +116,7 @@ public class BankAcceptance extends BaseEntity
     @Pattern(regexp = "出卖|付货款", message = "背书事由必须是：出卖或付货款")
     private String endorseReason;
 
-    /** 备注 */
-    @Excel(name = "备注")
+    /** 备注 */    @Excel(name = "备注")
     @Length(max = 50, message = "备注的字符长度不允许超过50")
     private String comments;
 
@@ -132,8 +150,12 @@ public class BankAcceptance extends BaseEntity
         this.operateDate = operateDate;
     }
 
+    @AutoTimestamps
     public String getOperateDate() 
     {
+        if (this.operateDate == null || this.operateDate.isEmpty()) {
+            this.operateDate = new SimpleDateFormat("yyyy-MM-dd").format(new Date());
+        }
         return operateDate;
     }
     public void setBillNo(String billNo) 
