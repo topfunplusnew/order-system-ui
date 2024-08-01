@@ -4,80 +4,99 @@ import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.apache.commons.lang3.builder.ToStringStyle;
 import org.dzu.common.annotation.Excel;
 import org.dzu.common.core.domain.BaseEntity;
-
+import com.baomidou.mybatisplus.annotation.TableField;
+import com.baomidou.mybatisplus.annotation.TableId;
+import com.baomidou.mybatisplus.annotation.TableName;
 import org.dzu.common.annotation.DecimalMaxDigits;
 import org.dzu.common.annotation.OnlyZeroOrOne;
 /**
  * 发票卖出信息对象 invoiceOut
  * 
  * @author ml
- * @date 2024-07-29
+ * @date 2024-08-01
  */
+@TableName("invoiceOut")
 public class InvoiceOut extends BaseEntity
 {
     private static final long serialVersionUID = 1L;
 
     /** id */
+    @TableId(value = "id")
     private Long id;
 
     /** 开票日期 */
     @Excel(name = "开票日期")
+    @TableField(value = "invoiceDate")
     private String invoiceDate;
 
     /** 我方开票实体 */
     @Excel(name = "我方开票实体")
+    @TableField(value = "invoiceObject")
     private String invoiceObject;
 
     /** 开票金额 */
     @DecimalMaxDigits
+    @TableField(value = "invoiceAmount")
     private Double invoiceAmount;
 
     /** 公司类别（客户、供应商,其他） */
     @Excel(name = "公司类别", readConverterExp = "客=户、供应商,其他")
+    @TableField(value = "companyType")
     private String companyType;
 
     /** 公司名称 */
     @Excel(name = "公司名称")
+    @TableField(value = "companyName")
     private String companyName;
 
     /** 公司ID */
     @Excel(name = "公司ID")
+    @TableField(value = "companyID")
     private Long companyID;
 
     /** 票据单位名称 */
     @Excel(name = "票据单位名称")
+    @TableField(value = "invoiceCompanyName")
     private String invoiceCompanyName;
 
     /** 票点 */
     @DecimalMaxDigits
+    @TableField(value = "ticketPoint")
     private Double ticketPoint;
 
     /** 票点金额（开票金额*票点） */
     @Excel(name = "票点金额", readConverterExp = "开=票金额*票点")
+    @TableField(value = "ticketPointAmount")
     private Double ticketPointAmount;
 
     /** 是否订单对应票点 */
     @Excel(name = "是否订单对应票点")
+    @TableField(value = "isOrderTax")
     private Long isOrderTax;
 
     /** 备注 */
     @Excel(name = "备注")
+    @TableField(value = "comments")
     private String comments;
 
     /** 添加时间 */
     @Excel(name = "添加时间")
+    @TableField(value = "addtime")
     private String addtime;
 
     /** 操作人员ID */
     @Excel(name = "操作人员ID")
+    @TableField(value = "userId")
     private Long userId;
 
     /** 操作人员姓名 */
     @Excel(name = "操作人员姓名")
+    @TableField(value = "UserName")
     private String UserName;
 
     /** 删除标记 */
     @OnlyZeroOrOne
+    @TableField(value = "delFlag")
     private Long delFlag;
 
     public void setId(Long id) 

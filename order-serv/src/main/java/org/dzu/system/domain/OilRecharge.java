@@ -4,76 +4,94 @@ import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.apache.commons.lang3.builder.ToStringStyle;
 import org.dzu.common.annotation.Excel;
 import org.dzu.common.core.domain.BaseEntity;
-
+import com.baomidou.mybatisplus.annotation.TableField;
+import com.baomidou.mybatisplus.annotation.TableId;
+import com.baomidou.mybatisplus.annotation.TableName;
 import org.dzu.common.annotation.DecimalMaxDigits;
 import org.dzu.common.annotation.OnlyZeroOrOne;
 /**
  * 加油卡充值信息对象 oilRecharge
  * 
  * @author ml
- * @date 2024-07-29
+ * @date 2024-08-01
  */
+@TableName("oilRecharge")
 public class OilRecharge extends BaseEntity
 {
     private static final long serialVersionUID = 1L;
 
     /** id */
+    @TableId(value = "id")
     private Long id;
 
     /** 出差编号UUID */
     @Excel(name = "出差编号UUID")
+    @TableField(value = "bTripId")
     private String bTripId;
 
     /** 加油卡卡号 */
     @Excel(name = "加油卡卡号")
+    @TableField(value = "oilCardNo")
     private String oilCardNo;
 
     /** 充值类型（银行卡、现金） */
     @Excel(name = "充值类型", readConverterExp = "银=行卡、现金")
+    @TableField(value = "rechargeType")
     private String rechargeType;
 
     /** 充值金额 */
     @DecimalMaxDigits
+    @TableField(value = "rechargeMoney")
     private Double rechargeMoney;
 
     /** 充值时间 */
     @Excel(name = "充值时间")
+    @TableField(value = "rechargeDate")
     private String rechargeDate;
 
     /** 银行开户名 */
     @Excel(name = "银行开户名")
+    @TableField(value = "acountsName")
     private String acountsName;
 
     /** 银行账号 */
     @Excel(name = "银行账号")
+    @TableField(value = "bankNo")
     private String bankNo;
 
     /** 充值人员姓名 */
     @Excel(name = "充值人员姓名")
+    @TableField(value = "rechargeName")
     private String rechargeName;
 
     /** 充值附件 */
     @Excel(name = "充值附件")
+    @TableField(value = "attachment")
     private String attachment;
 
     /** 备注 */
     @Excel(name = "备注")
+    @TableField(value = "comments")
     private String comments;
 
     /** 添加时间 */
     @Excel(name = "添加时间")
+    @TableField(value = "addtime")
     private String addtime;
 
     /** 操作人员ID */
     @Excel(name = "操作人员ID")
+    @TableField(value = "userId")
     private Long userId;
 
     /** 操作人员姓名 */
     @Excel(name = "操作人员姓名")
+    @TableField(value = "UserName")
     private String UserName;
 
     /** 删除标记 */
     @OnlyZeroOrOne
+    @TableField(value = "delFlag")
     private Long delFlag;
 
     public void setId(Long id) 

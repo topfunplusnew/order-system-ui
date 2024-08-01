@@ -4,59 +4,73 @@ import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.apache.commons.lang3.builder.ToStringStyle;
 import org.dzu.common.annotation.Excel;
 import org.dzu.common.core.domain.BaseEntity;
-
+import com.baomidou.mybatisplus.annotation.TableField;
+import com.baomidou.mybatisplus.annotation.TableId;
+import com.baomidou.mybatisplus.annotation.TableName;
 import org.dzu.common.annotation.OnlyZeroOrOne;
 /**
  * 出库对象 exWarehouse
  * 
  * @author ml
- * @date 2024-07-29
+ * @date 2024-08-01
  */
+@TableName("exWarehouse")
 public class ExWarehouse extends BaseEntity
 {
     private static final long serialVersionUID = 1L;
 
     /** id */
+    @TableId(value = "id")
     private Long id;
 
     /** 订单编号（UUID） */
     @Excel(name = "订单编号", readConverterExp = "U=UID")
+    @TableField(value = "ordersNo")
     private String ordersNo;
 
     /** 仓库ID */
     @Excel(name = "仓库ID")
+    @TableField(value = "storeHouseid")
     private Long storeHouseid;
 
     /** 仓库名称 */
     @Excel(name = "仓库名称")
+    @TableField(value = "storeHouseName")
     private String storeHouseName;
 
     /** 仓库存储的货物ID */
     @Excel(name = "仓库存储的货物ID")
+    @TableField(value = "storeID")
     private Long storeID;
 
     /** 出库日期 */
     @Excel(name = "出库日期")
+    @TableField(value = "outDate")
     private String outDate;
 
     /** 出库量（片数） */
     @Excel(name = "出库量", readConverterExp = "片=数")
+    @TableField(value = "outAmount")
     private Long outAmount;
 
     /** 删除标记 */
     @OnlyZeroOrOne
+    @TableField(value = "delFlag")
     private Long delFlag;
 
     /** 添加时间 */
     @Excel(name = "添加时间")
+    @TableField(value = "addtime")
     private String addtime;
 
     /** 操作人员ID */
     @Excel(name = "操作人员ID")
+    @TableField(value = "userId")
     private Long userId;
 
     /** 操作人员姓名 */
     @Excel(name = "操作人员姓名")
+    @TableField(value = "UserName")
     private String UserName;
 
     public void setId(Long id) 

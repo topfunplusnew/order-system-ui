@@ -4,131 +4,163 @@ import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.apache.commons.lang3.builder.ToStringStyle;
 import org.dzu.common.annotation.Excel;
 import org.dzu.common.core.domain.BaseEntity;
-
+import com.baomidou.mybatisplus.annotation.TableField;
+import com.baomidou.mybatisplus.annotation.TableId;
+import com.baomidou.mybatisplus.annotation.TableName;
 import org.dzu.common.annotation.OnlyZeroOrOne;
 /**
  * 车辆使用申请对象 carApply
  * 
  * @author ml
- * @date 2024-07-29
+ * @date 2024-08-01
  */
+@TableName("carApply")
 public class CarApply extends BaseEntity
 {
     private static final long serialVersionUID = 1L;
 
     /** id */
+    @TableId(value = "id")
     private Long id;
 
     /** 出差编号UUID */
     @Excel(name = "出差编号UUID")
+    @TableField(value = "bTripId")
     private String bTripId;
 
     /** 申请时间 */
     @Excel(name = "申请时间")
+    @TableField(value = "applyDate")
     private String applyDate;
 
     /** 申请人 */
     @Excel(name = "申请人")
+    @TableField(value = "applyUser")
     private String applyUser;
 
     /** 部门 */
     @Excel(name = "部门")
+    @TableField(value = "department")
     private String department;
 
     /** 车牌 */
     @Excel(name = "车牌")
+    @TableField(value = "carNo")
     private String carNo;
 
     /** 是否携带油卡 */
     @Excel(name = "是否携带油卡")
+    @TableField(value = "isUseOilCard")
     private Long isUseOilCard;
 
     /** 随同乘车人员 */
     @Excel(name = "随同乘车人员")
+    @TableField(value = "peers")
     private String peers;
 
     /** 用车时间 */
     @Excel(name = "用车时间")
+    @TableField(value = "startTime")
     private String startTime;
 
     /** 还车时间 */
     @Excel(name = "还车时间")
+    @TableField(value = "endTime")
     private String endTime;
 
     /** 用车事由 */
     @Excel(name = "用车事由")
+    @TableField(value = "ApplyPurpose")
     private String ApplyPurpose;
 
     /** 出车前里程 */
     @Excel(name = "出车前里程")
+    @TableField(value = "startMile")
     private String startMile;
 
     /** 出车前车况（外观是否损坏，车胎等） */
     @Excel(name = "出车前车况", readConverterExp = "外=观是否损坏，车胎等")
+    @TableField(value = "startCarState")
     private String startCarState;
 
     /** 回来后里程 */
     @Excel(name = "回来后里程")
+    @TableField(value = "endMile")
     private String endMile;
 
     /** 回来后车况（外观是否损坏，车胎等） */
     @Excel(name = "回来后车况", readConverterExp = "外=观是否损坏，车胎等")
+    @TableField(value = "endCarState")
     private String endCarState;
 
     /** 用车里程数 */
     @Excel(name = "用车里程数")
+    @TableField(value = "miles")
     private String miles;
 
     /** 回程停靠位置 */
     @Excel(name = "回程停靠位置")
+    @TableField(value = "backStopPlace")
     private String backStopPlace;
 
     /** 行程中违法次数 */
     @Excel(name = "行程中违法次数")
+    @TableField(value = "violationsCount")
     private String violationsCount;
 
     /** 违章罚款金额金额 */
     @Excel(name = "违章罚款金额金额")
+    @TableField(value = "fine")
     private String fine;
 
     /** 行程中是否维修/保养 */
     @Excel(name = "行程中是否维修/保养")
+    @TableField(value = "isMaintenance")
     private String isMaintenance;
 
     /** 保养金额 */
     @Excel(name = "保养金额")
+    @TableField(value = "maintenanceMoney")
     private String maintenanceMoney;
 
     /** 行程中使用加油卡加油次数 */
     @Excel(name = "行程中使用加油卡加油次数")
+    @TableField(value = "refuelingFrequency")
     private String refuelingFrequency;
 
     /** 派车人 */
     @Excel(name = "派车人")
+    @TableField(value = "dispatchPerson")
     private String dispatchPerson;
 
     /** 备注 */
     @Excel(name = "备注")
+    @TableField(value = "comments")
     private String comments;
 
     /** 添加时间 */
     @Excel(name = "添加时间")
+    @TableField(value = "addtime")
     private String addtime;
 
     /** 操作人员ID */
     @Excel(name = "操作人员ID")
+    @TableField(value = "userId")
     private Long userId;
 
     /** 操作人员姓名 */
     @Excel(name = "操作人员姓名")
+    @TableField(value = "UserName")
     private String UserName;
 
     /** 删除标记 */
     @OnlyZeroOrOne
+    @TableField(value = "delFlag")
     private Long delFlag;
 
     /** 附件路径 */
     @Excel(name = "附件路径")
+    @TableField(value = "path")
     private String path;
 
     public void setId(Long id) 
