@@ -94,7 +94,7 @@
 
     <el-table v-loading="loading" :data="CustomerVisitList" @selection-change="handleSelectionChange">
       <el-table-column type="selection" width="55" align="center" />
-      <el-table-column label="ID" align="center" prop="ID" />
+      <el-table-column label="id" align="center" prop="id" />
       <el-table-column label="是否审核" align="center" prop="isCheckState" />
       <el-table-column label="人员" align="center" prop="personnel" />
       <el-table-column label="区域" align="center" prop="region" />
@@ -142,7 +142,7 @@
     <!-- 添加或修改走访记录对话框 -->
     <el-dialog :title="title" :visible.sync="open" width="500px" append-to-body>
       <el-form ref="form" :model="form" :rules="rules" label-width="80px">
-        <el-form-item label="ID" prop="ID">
+        <el-form-item label="id" prop="id">
           <el-input v-model="form.province" placeholder="请输入ID" />
         </el-form-item>
         <el-form-item label="是否审核" prop="isCheckState">
