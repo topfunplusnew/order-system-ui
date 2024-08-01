@@ -45,10 +45,8 @@ export function delBorrowedMoney(id) {
 
 //根据uuid查询借款详细信息
 export function getBorrowedMoneyByUuid(uuid) {
-  return new Promise(() => {
-    return request({
-      url: '/system/repayment/loanNo/' + uuid,
-      method: 'GET'
-    })
+  return request({
+    url: '/system/repayment/loanNo/' + uuid,
+    method: 'GET'
   })
 }
