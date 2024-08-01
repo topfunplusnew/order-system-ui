@@ -27,6 +27,8 @@ public interface IReceiveMoneyService
      */
     public List<ReceiveMoney> selectReceiveMoneyList(ReceiveMoney receiveMoney);
 
+    ReceiveMoney selectReceiveMoneyByReceiveNO(String receiveNO);
+
     /**
      * 新增收款信息
      * 
@@ -51,11 +53,4 @@ public interface IReceiveMoneyService
      */
     public int deleteReceiveMoneyByIds(Long[] ids);
 
-    /**
-     * 删除收款信息信息
-     * 
-     * @param id 收款信息主键
-     * @return 结果
-     */
-    public int deleteReceiveMoneyById(Long id);
 }
