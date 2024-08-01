@@ -134,8 +134,8 @@
       <!--        >打印-->
       <!--        </el-button>-->
       <!--      </el-col>-->
-
       <right-toolbar :showSearch.sync="showSearch" @queryTable="getList" :columns="columns">
+
         <template v-slot:print>
           <el-col :span="1.5">
             <el-button
@@ -238,15 +238,15 @@
 <!--      <right-toolbar :showSearch.sync="showSearch" @queryTable="getList"></right-toolbar>-->
 <!--    </el-row>-->
 
-    <el-table v-loading="loading" :data="carsList" @selection-change="handleSelectionChange">
+    <el-table v-loading="loading" :data="carsList" @selection-change="handleSelectionChange" id="printBox" >
       <el-table-column type="selection" width="55" align="center" />
       <el-table-column label="id" align="center" prop="id" />
-      <el-table-column label="车牌" align="center" prop="carNo" />
-      <el-table-column label="司机姓名" align="center" prop="driver" />
-      <el-table-column label="司机电话" align="center" prop="tel" />
-      <el-table-column label="户名" align="center" prop="acountsName" />
-      <el-table-column label="银行账号" align="center" prop="bankNo" />
-      <el-table-column label="开户行" align="center" prop="bankName" />
+      <el-table-column label="车牌" align="center" prop="carNo"  v-if="columns[0].visible"/>
+      <el-table-column label="司机姓名" align="center" prop="driver"  v-if="columns[1].visible"/>
+      <el-table-column label="司机电话" align="center" prop="tel"  v-if="columns[2].visible"/>
+      <el-table-column label="户名" align="center" prop="acountsName" v-if="columns[3].visible"/>
+      <el-table-column label="银行账号" align="center" prop="bankNo"  v-if="columns[4].visible"/>
+      <el-table-column label="开户行" align="center" prop="bankName"  v-if="columns[5].visible"/>
 
       <!--      <el-table-column label="账号类型" align="center" prop="acountsType" />-->
 <!--      <el-table-column label="运输类型(陆运，海运)" align="center" prop="carType" />-->
@@ -288,33 +288,47 @@
         <el-form-item label="车牌" prop="carNo">
           <el-input v-model="form.carNo" placeholder="请输入车牌" />
         </el-form-item>
-<!--        <el-form-item label="司机" prop="driver">-->
-<!--          <el-input v-model="form.driver" placeholder="请输入司机" />-->
-<!--        </el-form-item>-->
-<!--        <el-form-item label="司机电话" prop="tel">-->
-<!--          <el-input v-model="form.tel" placeholder="请输入司机电话" />-->
-<!--        </el-form-item>-->
-<!--        <el-form-item label="开户行" prop="bankName">-->
-<!--          <el-input v-model="form.bankName" placeholder="请输入开户行" />-->
-<!--        </el-form-item>-->
+        <el-form-item label="司机" prop="driver">
+          <el-input v-model="form.driver" placeholder="请输入司机" />
+        </el-form-item>
+        <el-form-item label="司机电话" prop="tel">
+          <el-input v-model="form.tel" placeholder="请输入司机电话" />
+        </el-form-item>
+        <el-form-item label="开户行" prop="bankName">
+          <el-input v-model="form.bankName" placeholder="请输入开户行" />
+        </el-form-item>
         <el-form-item label="开户名" prop="acountsName">
           <el-input v-model="form.acountsName" placeholder="请输入开户名" />
         </el-form-item>
         <el-form-item label="账号" prop="bankNo">
           <el-input v-model="form.bankNo" placeholder="请输入账号" />
         </el-form-item>
-        <el-form-item label="添加时间" prop="addtime">
-          <el-input v-model="form.addtime" placeholder="请输入添加时间" />
+        <!--        单选-->
+        <el-form-item label="账号类型" prop="acountsType">
+          <!--          <el-input v-model="form.billCategory" placeholder="请输入票据种类"/>-->
+          <el-radio v-model="form.acountsType" label="1">收款</el-radio>
+          <el-radio v-model="form.acountsType" label="2">付款</el-radio>
         </el-form-item>
-        <el-form-item label="操作人员ID" prop="userId">
-          <el-input v-model="form.userId" placeholder="请输入操作人员ID" />
+<!--        <el-form-item label="账号类型" prop="acountsType">-->
+<!--          <el-input v-model="form.bankNo" placeholder="请输入账号" />-->
+<!--        </el-form-item>-->
+        <el-form-item label="运输类型" prop="carType">
+<!--          <el-input v-model="form.bankNo" placeholder="请输入账号" />-->
+          <el-radio v-model="form.carType" label="1">陆运</el-radio>
+          <el-radio v-model="form.carType" label="2">海运</el-radio>
         </el-form-item>
-        <el-form-item label="操作人员姓名" prop="UserName">
-          <el-input v-model="form.UserName" placeholder="请输入操作人员姓名" />
-        </el-form-item>
-        <el-form-item label="删除标记" prop="delFlag">
-          <el-input v-model="form.delFlag" placeholder="请输入删除标记" />
-        </el-form-item>
+<!--        <el-form-item label="添加时间" prop="addtime">-->
+<!--          <el-input v-model="form.addtime" placeholder="请输入添加时间" />-->
+<!--        </el-form-item>-->
+<!--        <el-form-item label="操作人员ID" prop="userId">-->
+<!--          <el-input v-model="form.userId" placeholder="请输入操作人员ID" />-->
+<!--        </el-form-item>-->
+<!--        <el-form-item label="操作人员姓名" prop="UserName">-->
+<!--          <el-input v-model="form.UserName" placeholder="请输入操作人员姓名" />-->
+<!--        </el-form-item>-->
+<!--        <el-form-item label="删除标记" prop="delFlag">-->
+<!--          <el-input v-model="form.delFlag" placeholder="请输入删除标记" />-->
+<!--        </el-form-item>-->
       </el-form>
       <div slot="footer" class="dialog-footer">
         <el-button type="primary" @click="submitForm">确 定</el-button>
@@ -371,15 +385,15 @@ export default {
       // 表单校验
       rules: {}
       ,
-      options: [
-        {
-          value: '己方公司',
-          label: '己方公司'
-        }, {
-          value: '其它',
-          label: '其它'
-        }
-      ],
+      // options: [
+      //   {
+      //     value: '收款',
+      //     label: '收款'
+      //   }, {
+      //     value: '付款',
+      //     label: '付款'
+      //   }
+      // ],
       //隐藏列信息
       columns: [
         {key: 0, label: `车牌`, visible: true},
