@@ -145,14 +145,17 @@
         <el-form-item label="ID" prop="ID">
           <el-input v-model="form.province" placeholder="请输入ID" />
         </el-form-item>
-        <el-form-item label="市县" prop="city">
-          <el-input v-model="form.city" placeholder="请输入市县" />
+        <el-form-item label="是否审核" prop="isCheckState">
+          <el-input v-model="form.checkState" placeholder="请输入审核标志" />
         </el-form-item>
-        <el-form-item label="乡镇" prop="county">
-          <el-input v-model="form.county" placeholder="请输入乡镇" />
+        <el-form-item label="人员" prop="personnel">
+          <el-input v-model="form.county" placeholder="请输入人员" />
         </el-form-item>
-        <el-form-item label="客户" prop="customer">
-          <el-input v-model="form.customer" type="textarea" placeholder="请输入内容" />
+        <el-form-item label="区域" prop="region">
+          <el-input v-model="form.customer" type="textarea" placeholder="请输入区域" />
+        </el-form-item>
+        <el-form-item label="客户名称" prop="customer">
+          <el-input v-model="form.city" placeholder="请输入客户名称" />
         </el-form-item>
         <el-form-item label="负责人" prop="leaderName">
           <el-input v-model="form.leaderName" type="textarea" placeholder="请输入内容" />
@@ -187,30 +190,10 @@
         <el-form-item label="备注" prop="comments">
           <el-input v-model="form.comments" placeholder="请输入备注" />
         </el-form-item>
-        <el-form-item label="添加时间" prop="addtime">
+        <el-form-item label="提交时间" prop="submittime">
           <el-input v-model="form.addtime" placeholder="请输入添加时间" />
         </el-form-item>
-        <el-form-item label="操作人员ID" prop="userId">
-          <el-input v-model="form.userId" placeholder="请输入操作人员ID" />
-        </el-form-item>
-        <el-form-item label="操作人员姓名" prop="UserName">
-          <el-input v-model="form.UserName" placeholder="请输入操作人员姓名" />
-        </el-form-item>
-        <el-form-item label="走访日期" prop="visitDate">
-          <el-input v-model="form.visitDate" placeholder="请输入走访日期" />
-        </el-form-item>
-        <el-form-item label="审核标志" prop="checkState">
-          <el-input v-model="form.checkState" placeholder="请输入审核标志" />
-        </el-form-item>
-        <el-form-item label="审核人ID" prop="checkUserID">
-          <el-input v-model="form.checkUserID" placeholder="请输入审核人ID" />
-        </el-form-item>
-        <el-form-item label="审核人" prop="checkUserName">
-          <el-input v-model="form.checkUserName" placeholder="请输入审核人" />
-        </el-form-item>
-        <el-form-item label="删除标记" prop="delFlag">
-          <el-input v-model="form.delFlag" placeholder="请输入删除标记" />
-        </el-form-item>
+
       </el-form>
       <div slot="footer" class="dialog-footer">
         <el-button type="primary" @click="submitForm">确 定</el-button>
