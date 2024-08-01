@@ -4,6 +4,7 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import org.dzu.common.constant.BankChangeConstant;
 import org.dzu.common.exception.ServiceException;
 import org.dzu.common.utils.DateUtils;
@@ -11,6 +12,7 @@ import org.dzu.common.utils.SecurityUtils;
 import org.dzu.common.utils.SecurityUtils;
 import org.dzu.common.utils.uuid.UUID;
 import org.dzu.system.domain.BankAccountChange;
+import org.dzu.system.domain.RecoverMoney;
 import org.dzu.system.service.IBankAccountChangeService;
 import org.dzu.system.service.IBankAccountService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -164,6 +166,14 @@ public class LendMoneyServiceImpl implements ILendMoneyService
 
         // 真正的删除数据
         return lendMoneyMapper.deleteLendMoneyByIds(ids);
+    }
+
+    @Override
+    public LendMoney selectLendMoneyByFuturesNO(String futuresNO) {
+        QueryWrapper<LendMoney> query = new QueryWrapper<>();
+        query.select().eq("futuresNO",futuresNO).eq("delFlag",DelConstants.NODEL);
+        return lendMoneyMapper.selectOne(query);
+
     }
 
 
