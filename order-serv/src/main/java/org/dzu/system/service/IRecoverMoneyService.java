@@ -27,6 +27,8 @@ public interface IRecoverMoneyService
      */
     public List<RecoverMoney> selectRecoverMoneyList(RecoverMoney recoverMoney);
 
+    RecoverMoney selectRecoverMoneyByFuturesNO(String futuresNO);
+
     /**
      * 新增借出款收回信息
      * 
@@ -51,11 +53,4 @@ public interface IRecoverMoneyService
      */
     public int deleteRecoverMoneyByIds(Long[] ids);
 
-    /**
-     * 删除借出款收回信息信息
-     * 
-     * @param id 借出款收回信息主键
-     * @return 结果
-     */
-    public int deleteRecoverMoneyById(Long id);
 }
