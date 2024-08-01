@@ -1,5 +1,8 @@
 package org.dzu.system.domain;
 
+import com.baomidou.mybatisplus.annotation.TableField;
+import com.baomidou.mybatisplus.annotation.TableId;
+import com.baomidou.mybatisplus.annotation.TableName;
 import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.apache.commons.lang3.builder.ToStringStyle;
 import org.dzu.common.annotation.Excel;
@@ -19,99 +22,123 @@ import javax.validation.constraints.Pattern;
  * @author ml
  * @date 2024-07-29
  */
+@TableName("inventory")
+
 public class Inventory extends BaseEntity
 {
     private static final long serialVersionUID = 1L;
 
     /** id */
+    @TableId(value = "id")
     private Long id;
 
     /** 仓库ID */
+    @TableField(value = "storeHouseid")
+    @Length(max = 20, message = "仓库ID的字符长度不允许超过20")
     @NotNull(message = "仓库ID不能为空")
     @Excel(name = "仓库ID")
     private Long storeHouseid;
 
     /** 仓库名称 */
     @NotNull(message = "仓库名称不能为空")
+    @TableField(value = "storeHouseName")
     @Excel(name = "仓库名称")
     @Length(max = 20, message = "仓库名称的字符长度不允许超过20")
     private String storeHouseName;
 
     /** 入库日期 */
     @NotNull(message = "入库日期不能为空")
+    @TableField(value = "storeDate")
     @Excel(name = "入库日期", dateFormat = "yyyy-MM-dd")
     private String storeDate;
 
     /** 库存量（片数） */
     @NotNull(message = "库存量不能为空")
+    @TableField(value = "stockNumber")
+    @Length(max = 20, message = "库存量的字符长度不允许超过20")
     @Excel(name = "库存量(片数）")
     private Long stockNumber;
 
     /** 供应商 */
     @NotNull(message = "供应商不能为空")
+    @TableField(value = "supplier")
     @Excel(name = "供应商")
     @Length(max = 20, message = "供应商的字符长度不允许超过20")
     private String supplier;
 
     /** 供应商ID */
     @NotNull(message = "供应商ID不能为空")
+    @TableField(value = "supplierId")
     @Excel(name = "供应商ID")
+    @Length(max = 20, message = "供应商ID的字符长度不允许超过20")
     private Long supplierId;
 
     /** 级别编码 */
     @NotNull(message = "级别编码不能为空")
+    @TableField(value = "levelID")
+    @Length(max = 20, message = "级别编码的字符长度不允许超过20")
     @Excel(name = "级别编码")
     private Long levelID;
 
     /** 级别名称 */
     @NotNull(message = "级别名称不能为空")
+    @TableField(value = "levelName")
     @Excel(name = "级别名称")
     @Length(max = 20, message = "账号的字符长度不允许超过20")
     private String levelName;
 
     /** 计量单位 */
     @NotNull(message = "计量单位不能为空")
+    @TableField(value = "countingUnit")
     @Excel(name = "计量单位")
     @Length(max = 20, message = "计量单位的字符长度不允许超过20")
     private String countingUnit;
 
     /** 厚度 */
     @NotNull(message = "厚度不能为空")
+    @TableField(value = "thickness")
     @DecimalMaxDigits
     private Double height;
 
     /** 长度 */
     @NotNull(message = "长度不能为空")
+    @TableField(value = "length")
     @DecimalMaxDigits
     private Double length;
 
     /** 宽度 */
     @NotNull(message = "宽度不能为空")
+    @TableField(value = "width")
     @DecimalMaxDigits
     private Double width;
 
     /** 出厂片数 */
     @NotNull(message = "出厂片数不能为空")
+    @TableField(value = "pieces")
     @Excel(name = "出厂片数")
     private Long pieces;
 
     /** 每包片数 */
     @NotNull(message = "每包片数不能为空")
+    @TableField(value = "piecesPerPack")
     @Excel(name = "每包片数")
     private Long piecesPerPack;
 
     /** 包数 */
     @NotNull(message = "包数不能为空")
+    @TableField(value = "packs")
     @Excel(name = "包数")
     private Long packs;
 
     /** 出厂单价 */
     @NotNull(message = "出厂单价不能为空")
+    @TableField(value = "price")
     @DecimalMaxDigits
     private Double price;
 
     /** 出厂是否含税 */
     @NotNull(message = "出厂是否含税不能为空")
+    @TableField(value = "isIncludeTaxFactory")
       @Excel(name = "出厂是否含税", readConverterExp = "0=不含税,1=含税")
     @Max(value = 1, message = "只能为0或1，分别代表不含税或含税")
     @Min(value = 0, message = "只能为0或1，分别代表不含税或含税")
@@ -119,21 +146,25 @@ public class Inventory extends BaseEntity
 
     /** 杂费 */
     @NotNull(message = "杂费不能为空")
+    @TableField(value = "sundryCost")
     @DecimalMaxDigits
     private Double sundryCost;
 
     /** 出厂货款 */
     @NotNull(message = "出厂货款不能为空")
+    @TableField(value = "payments")
     @DecimalMaxDigits
     private Double paymentFactory;
 
     /** 卸货价 */
     @NotNull(message = "卸货价不能为空")
+    @TableField(value = "unloadPrice")
     @DecimalMaxDigits
     private Double paymentUnload;
 
     /** 销售是否含税（0不含税，1含税） */
     @NotNull(message = "销售是否含税不能为空")
+    @TableField(value = "isIncludeTaxSale")
     @Excel(name = "销售是否含税", readConverterExp = "0=不含税,1=含税")
     @Max(value = 1, message = "只能为0或1，分别代表不含税或含税")
     @Min(value = 0, message = "只能为0或1，分别代表不含税或含税")
@@ -141,140 +172,168 @@ public class Inventory extends BaseEntity
 
     /** 总货款 */
     @NotNull(message = "总货款不能为空")
+    @TableField(value = "totalPayments")
+    @DecimalMaxDigits
     private String payments;
 
     /** 陆运车辆ID */
-    @NotNull(message = "陆运车辆ID不能为空")
+
+    @TableField(value = "landCarID")
+    @Length(max = 50, message = "陆运车辆ID的字符长度不允许超过50")
     @Excel(name = "陆运车辆ID")
     private Long landCarID;
 
     /** 陆运车牌 */
-    @NotNull(message = "陆运车牌不能为空")
+    @TableField(value = "landCarNo")
+    @Length(max = 50, message = "陆运车牌的字符长度不允许超过50")
     @Excel(name = "陆运车牌")
     private String landCarNo;
 
     /** 陆运司机电话 */
-    @NotNull(message = "陆运司机电话不能为空")
+
+    @TableField(value = "landDriverTel")
     @PhoneLength
     private String landDriverTel;
 
     /** 陆地司机姓名 */
-    @NotNull(message = "陆地司机姓名不能为空")
+    @Length(max = 20, message = "陆运司机姓名的字符长度不允许超过20")
+    @TableField(value = "landDriverName")
     @Excel(name = "陆地司机姓名")
     private String landDriverName;
 
     /** 海运车辆ID */
-    @NotNull(message = "海运车辆ID不能为空")
+    @TableField(value = "seaCarID")
     @Excel(name = "海运车辆ID")
     private Long seaCarID;
 
     /** 海运车牌 */
-    @NotNull(message = "海运车牌不能为空")
+    @TableField(value = "seaCarNo")
     @Excel(name = "海运车牌")
     @Length(max = 55, message = "海运车车牌的字符长度不允许超过55")
     private String seaCarNo;
 
     /** 海运司机电话 */
-    @NotNull(message = "海运司机电话不能为空")
+    @TableField(value = "seaDriverTel")
     @Excel(name = "海运司机电话")
     @PhoneLength
     private String seaDriverTel;
 
     /** 海运司机姓名 */
-    @NotNull(message = "海运司机姓名不能为空")
+    @TableField(value = "seaDriverName")
     @Excel(name = "海运司机姓名")
     @Length(max = 20, message = "海运司机姓名的字符长度不允许超过20")
     private String seaDriverName;
 
     /** 误差 */
-    @NotNull(message = "误差不能为空")
+    @TableField(value = "erro")
     @DecimalMaxDigits
     private Double erro;
 
     /** 吨位 */
     @NotNull(message = "吨位不能为空")
     @DecimalMaxDigits
+    @TableField(value = "tonnage")
     private Double tonnage;
 
     /** 陆运费单价 */
     @NotNull(message = "陆运费单价不能为空")
     @DecimalMaxDigits
+    @TableField(value = "landFreightPrice")
     private Double landFreightPrice;
 
     /** 陆运费 */
     @NotNull(message = "陆运费不能为空")
     @DecimalMaxDigits
+    @TableField(value = "landFreight")
     private Double landFreight;
 
     /** 海运费 */
     @NotNull(message = "海运费不能为空")
     @DecimalMaxDigits
+    @TableField(value = "seaFreight")
     private Double seaFreight;
 
     /** 运费（海运费+陆运费） */
     @NotNull(message = "运费不能为空")
     @Excel(name = "运费")
+    @DecimalMaxDigits
+    @TableField(value = "freight")
     private Double freight;
 
     /** 其他费用 */
     @NotNull(message = "其他费用不能为空")
     @DecimalMaxDigits
+    @TableField(value = "otherCost")
     private Double otherCost;
 
     /** 利润 */
     @NotNull(message = "利润不能为空")
     @DecimalMaxDigits
+    @TableField(value = "profit")
     private Double profit;
 
     /** 不含税利润 */
     @NotNull(message = "不含税利润不能为空")
     @DecimalMaxDigits
+    @TableField(value = "profitNoTax")
     private Double profitNoTax;
 
     /** 实际片数 */
     @NotNull(message = "实际片数不能为空")
     @Excel(name = "实际片数")
+    @Length(max = 50, message = "实际片数的字符长度不允许超过50")
+    @TableField(value = "actualPieces")
     private Long actualPieces;
 
     /** 总货款杂费 */
     @DecimalMaxDigits
+    @TableField(value = "totalGoodsCost")
     private Double paymentsWithSundry;
 
     /** 加费 */
     @DecimalMaxDigits
+    @TableField(value = "additionalFees")
     private Double additionalFees;
 
     /** 返利金额 */
     @DecimalMaxDigits
+    @TableField(value = "rebate")
     private Double rebate;
 
     /** 客户佣金 */
     @DecimalMaxDigits
+    @TableField(value = "customerCommission")
     private Double customerCommission;
 
     /** 备注 */
     @Excel(name = "备注")
-    @Length(max = 50, message = "备注的字符长度不允许超过50")
+    @TableField(value = "comments")
+    @Length(max = 500, message = "备注的字符长度不允许超过500")
     private String comments;
 
     /** 添加时间 */
+    @TableField(value = "addTime")
     @Excel(name = "添加时间",dateFormat = "yyyy-MM-dd")
     private String addtime;
 
     /** 操作人员ID */
+    @TableField(value = "userId")
     @Excel(name = "操作人员ID")
     private Long userId;
 
     /** 操作人员姓名 */
+    @TableField(value = "userName")
     @Excel(name = "操作人员姓名")
     @Length(max = 20, message = "操作人员姓名的字符长度不允许超过20")
     private String UserName;
 
     /** 删除标记 */
+    @TableField(value = "delFlag")
     @OnlyZeroOrOne
     private Long delFlag;
 
     /** 订单仓库选择时是否显示（ 显示， 不显示） */
+    @TableField(value = "showFlag")
     @Excel(name = "订单仓库选择时是否显示")
     private Long showFlag;
 

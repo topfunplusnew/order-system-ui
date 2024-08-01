@@ -1,0 +1,167 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="org.dzu.system.mapper.PaymentApplyMapper">
+    
+    <resultMap type="PaymentApply" id="PaymentApplyResult">
+        <result property="id"    column="id"    />
+        <result property="tableName"    column="tableName"    />
+        <result property="tID"    column="tID"    />
+        <result property="fundsDate"    column="fundsDate"    />
+        <result property="payType"    column="payType"    />
+        <result property="moneyAmount"    column="moneyAmount"    />
+        <result property="otherAcountsName"    column="otherAcountsName"    />
+        <result property="otherBankNo"    column="otherBankNo"    />
+        <result property="otherBankName"    column="otherBankName"    />
+        <result property="companyName"    column="companyName"    />
+        <result property="companyId"    column="companyId"    />
+        <result property="companyType"    column="companyType"    />
+        <result property="reason"    column="reason"    />
+        <result property="attachment"    column="attachment"    />
+        <result property="applyPerson"    column="applyPerson"    />
+        <result property="applyPersonID"    column="applyPersonID"    />
+        <result property="checkState"    column="checkState"    />
+        <result property="comments"    column="comments"    />
+        <result property="addtime"    column="addtime"    />
+        <result property="userId"    column="userId"    />
+        <result property="UserName"    column="UserName"    />
+        <result property="updateTime"    column="update_time"    />
+        <result property="delFlag"    column="delFlag"    />
+        <result property="submitflag"    column="submitflag"    />
+    </resultMap>
+
+
+ 
+
+    <sql id="selectPaymentApplyVo">
+        select id, tableName, tID, fundsDate, payType, moneyAmount, otherAcountsName, otherBankNo, otherBankName, companyName, companyId, companyType, reason, attachment, applyPerson, applyPersonID, checkState, comments, addtime, userId, UserName, update_time, delFlag, submitflag from paymentApply
+    </sql>
+
+    <select id="selectPaymentApplyList" parameterType="PaymentApply" resultMap="PaymentApplyResult">
+        <include refid="selectPaymentApplyVo"/>
+        <where>  
+            <if test="tableName != null  and tableName != ''"> and tableName like concat('%', #{tableName}, '%')</if>
+            <if test="tID != null  and tID != ''"> and tID = #{tID}</if>
+            <if test="fundsDate != null  and fundsDate != ''"> and fundsDate = #{fundsDate}</if>
+            <if test="payType != null  and payType != ''"> and payType = #{payType}</if>
+            <if test="moneyAmount != null "> and moneyAmount = #{moneyAmount}</if>
+            <if test="otherAcountsName != null  and otherAcountsName != ''"> and otherAcountsName like concat('%', #{otherAcountsName}, '%')</if>
+            <if test="otherBankNo != null  and otherBankNo != ''"> and otherBankNo = #{otherBankNo}</if>
+            <if test="otherBankName != null  and otherBankName != ''"> and otherBankName like concat('%', #{otherBankName}, '%')</if>
+            <if test="companyName != null  and companyName != ''"> and companyName like concat('%', #{companyName}, '%')</if>
+            <if test="companyId != null "> and companyId = #{companyId}</if>
+            <if test="companyType != null  and companyType != ''"> and companyType = #{companyType}</if>
+            <if test="reason != null  and reason != ''"> and reason = #{reason}</if>
+            <if test="attachment != null  and attachment != ''"> and attachment = #{attachment}</if>
+            <if test="applyPerson != null  and applyPerson != ''"> and applyPerson = #{applyPerson}</if>
+            <if test="applyPersonID != null "> and applyPersonID = #{applyPersonID}</if>
+            <if test="checkState != null  and checkState != ''"> and checkState = #{checkState}</if>
+            <if test="comments != null  and comments != ''"> and comments = #{comments}</if>
+            <if test="addtime != null  and addtime != ''"> and addtime = #{addtime}</if>
+            <if test="userId != null "> and userId = #{userId}</if>
+            <if test="UserName != null  and UserName != ''"> and UserName like concat('%', #{UserName}, '%')</if>
+            and delFlag = 0
+            <if test="submitflag != null "> and submitflag = #{submitflag}</if>
+        </where>
+    </select>
+    
+    <select id="selectPaymentApplyById" parameterType="Long" resultMap="PaymentApplyResult">
+        <include refid="selectPaymentApplyVo"/>
+        where id = #{id}
+        and delFlag = 0
+    </select>
+
+    <insert id="insertPaymentApply" parameterType="PaymentApply" useGeneratedKeys="true" keyProperty="id">
+        insert into paymentApply
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="tableName != null">tableName,</if>
+            <if test="tID != null">tID,</if>
+            <if test="fundsDate != null">fundsDate,</if>
+            <if test="payType != null">payType,</if>
+            <if test="moneyAmount != null">moneyAmount,</if>
+            <if test="otherAcountsName != null">otherAcountsName,</if>
+            <if test="otherBankNo != null">otherBankNo,</if>
+            <if test="otherBankName != null">otherBankName,</if>
+            <if test="companyName != null">companyName,</if>
+            <if test="companyId != null">companyId,</if>
+            <if test="companyType != null">companyType,</if>
+            <if test="reason != null">reason,</if>
+            <if test="attachment != null">attachment,</if>
+            <if test="applyPerson != null">applyPerson,</if>
+            <if test="applyPersonID != null">applyPersonID,</if>
+            <if test="checkState != null">checkState,</if>
+            <if test="comments != null">comments,</if>
+            <if test="addtime != null">addtime,</if>
+            <if test="userId != null">userId,</if>
+            <if test="UserName != null">UserName,</if>
+            <if test="updateTime != null">update_time,</if>
+            <if test="delFlag != null">delFlag,</if>
+            <if test="submitflag != null">submitflag,</if>
+         </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="tableName != null">#{tableName},</if>
+            <if test="tID != null">#{tID},</if>
+            <if test="fundsDate != null">#{fundsDate},</if>
+            <if test="payType != null">#{payType},</if>
+            <if test="moneyAmount != null">#{moneyAmount},</if>
+            <if test="otherAcountsName != null">#{otherAcountsName},</if>
+            <if test="otherBankNo != null">#{otherBankNo},</if>
+            <if test="otherBankName != null">#{otherBankName},</if>
+            <if test="companyName != null">#{companyName},</if>
+            <if test="companyId != null">#{companyId},</if>
+            <if test="companyType != null">#{companyType},</if>
+            <if test="reason != null">#{reason},</if>
+            <if test="attachment != null">#{attachment},</if>
+            <if test="applyPerson != null">#{applyPerson},</if>
+            <if test="applyPersonID != null">#{applyPersonID},</if>
+            <if test="checkState != null">#{checkState},</if>
+            <if test="comments != null">#{comments},</if>
+            <if test="addtime != null">#{addtime},</if>
+            <if test="userId != null">#{userId},</if>
+            <if test="UserName != null">#{UserName},</if>
+            <if test="updateTime != null">#{updateTime},</if>
+            <if test="delFlag != null">#{delFlag},</if>
+            <if test="submitflag != null">#{submitflag},</if>
+         </trim>
+    </insert>
+
+    <update id="updatePaymentApply" parameterType="PaymentApply">
+        update paymentApply
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="tableName != null">tableName = #{tableName},</if>
+            <if test="tID != null">tID = #{tID},</if>
+            <if test="fundsDate != null">fundsDate = #{fundsDate},</if>
+            <if test="payType != null">payType = #{payType},</if>
+            <if test="moneyAmount != null">moneyAmount = #{moneyAmount},</if>
+            <if test="otherAcountsName != null">otherAcountsName = #{otherAcountsName},</if>
+            <if test="otherBankNo != null">otherBankNo = #{otherBankNo},</if>
+            <if test="otherBankName != null">otherBankName = #{otherBankName},</if>
+            <if test="companyName != null">companyName = #{companyName},</if>
+            <if test="companyId != null">companyId = #{companyId},</if>
+            <if test="companyType != null">companyType = #{companyType},</if>
+            <if test="reason != null">reason = #{reason},</if>
+            <if test="attachment != null">attachment = #{attachment},</if>
+            <if test="applyPerson != null">applyPerson = #{applyPerson},</if>
+            <if test="applyPersonID != null">applyPersonID = #{applyPersonID},</if>
+            <if test="checkState != null">checkState = #{checkState},</if>
+            <if test="comments != null">comments = #{comments},</if>
+            <if test="addtime != null">addtime = #{addtime},</if>
+            <if test="userId != null">userId = #{userId},</if>
+            <if test="UserName != null">UserName = #{UserName},</if>
+            <if test="updateTime != null">update_time = #{updateTime},</if>
+            <if test="delFlag != null">delFlag = #{delFlag},</if>
+            <if test="submitflag != null">submitflag = #{submitflag},</if>
+        </trim>
+        where id = #{id}
+    </update>
+    <update id="deletePaymentApplyById" parameterType="Long">
+        update paymentApply set delFlag = 1 where id = #{id}
+    </update>
+    <update id="deletePaymentApplyByIds" parameterType="String">
+        update paymentApply set delFlag = 1 where id in
+        <foreach item="id" collection="array" open="(" separator="," close=")">
+            #{id}
+        </foreach>
+    </update>
+</mapper>

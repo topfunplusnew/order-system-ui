@@ -9,6 +9,8 @@ import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableName;
 import org.dzu.common.annotation.DecimalMaxDigits;
 import org.dzu.common.annotation.OnlyZeroOrOne;
+import org.hibernate.validator.constraints.Length;
+
 /**
  * 库存备份对象 inventory_back
  * 
@@ -26,51 +28,60 @@ public class InventoryBack extends BaseEntity
 
     /** 原货物存储ID */
     @Excel(name = "原货物存储ID")
+    @Length(max = 20, message = "原货物存储ID长度不能超过20")
     @TableField(value = "inventoryID")
     private Long inventoryID;
 
     /** 仓库ID */
     @Excel(name = "仓库ID")
+    @Length(max = 20, message = "仓库ID长度不能超过20")
     @TableField(value = "storeHouseid")
     private Long storeHouseid;
 
     /** 仓库名称 */
     @Excel(name = "仓库名称")
+    @Length(max = 20, message = "仓库名称长度不能超过20")
     @TableField(value = "storeHouseName")
     private String storeHouseName;
 
     /** 入库日期 */
-    @Excel(name = "入库日期")
+    @Excel(name = "入库日期",dateFormat = "yyyy-MM-dd")
     @TableField(value = "storeDate")
     private String storeDate;
 
     /** 库存量（片数） */
-    @Excel(name = "库存量", readConverterExp = "片=数")
+    @Excel(name = "库存量", readConverterExp = "片数")
+    @Length(max = 20, message = "库存量长度不能超过20")
     @TableField(value = "stockNumber")
     private Long stockNumber;
 
     /** 供应商 */
     @Excel(name = "供应商")
+    @Length(max = 20, message = "供应商长度不能超过20")
     @TableField(value = "supplier")
     private String supplier;
 
     /** 供应商ID */
     @Excel(name = "供应商ID")
+    @Length(max = 20, message = "供应商ID长度不能超过20")
     @TableField(value = "supplierId")
     private Long supplierId;
 
     /** 级别编码 */
     @Excel(name = "级别编码")
+    @Length(max = 20, message = "级别编码长度不能超过20")
     @TableField(value = "levelID")
     private Long levelID;
 
     /** 级别名称 */
     @Excel(name = "级别名称")
+    @Length(max = 20, message = "级别名称长度不能超过20")
     @TableField(value = "levelName")
     private String levelName;
 
     /** 计量单位 */
     @Excel(name = "计量单位")
+    @Length(max = 20, message = "计量单位长度不能超过20")
     @TableField(value = "countingUnit")
     private String countingUnit;
 

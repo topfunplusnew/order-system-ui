@@ -9,6 +9,10 @@ import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableName;
 import org.dzu.common.annotation.DecimalMaxDigits;
 import org.dzu.common.annotation.OnlyZeroOrOne;
+import org.hibernate.validator.constraints.Length;
+
+import javax.validation.constraints.NotNull;
+
 /**
  * 商家直接给客户开发票对象 invoiceOther
  * 
@@ -26,56 +30,71 @@ public class InvoiceOther extends BaseEntity
 
     /** 订单编号（UUID） */
     @Excel(name = "订单编号", readConverterExp = "U=UID")
+    @Length(max = 32, message = "订单编号长度不能超过32个字符")
     @TableField(value = "ordersNo")
     private String ordersNo;
 
     /** 开票日期 */
-    @Excel(name = "开票日期")
+    @Excel(name = "开票日期",dateFormat = "yyyy-MM-dd")
     @TableField(value = "invoiceDate")
     private String invoiceDate;
 
     /** 开票金额 */
     @DecimalMaxDigits
+    @NotNull(message = "开票金额不能为空")
     @TableField(value = "invoiceAmount")
     private Double invoiceAmount;
 
     /** 供应商票点 */
     @DecimalMaxDigits
+    @NotNull(message = "供应商票点不能为空")
     @TableField(value = "supplierTicketPoint")
     private Double supplierTicketPoint;
 
     /** 供应商票点金额（开票金额*供应商票点） */
-    @Excel(name = "供应商票点金额", readConverterExp = "开=票金额*供应商票点")
+    @Excel(name = "供应商票点金额", readConverterExp = "供应商票点金额=开票金额*供应商票点")
+    @NotNull(message = "供应商票点金额不能为空")
     @TableField(value = "supplierPointAmount")
     private Double supplierPointAmount;
 
     /** 供应商公司名称 */
     @Excel(name = "供应商公司名称")
+    @Length(max = 32, message = "供应商公司名称长度不能超过32个字符")
+    @NotNull(message = "供应商公司名称不能为空")
     @TableField(value = "Supplier")
     private String Supplier;
 
     /** 供应商ID */
     @Excel(name = "供应商ID")
+    @NotNull(message = "供应商ID不能为空")
+    @Length(max = 32, message = "供应商ID长度不能超过32个字符")
     @TableField(value = "SupplierID")
     private Long SupplierID;
 
     /** 客户公司名称 */
     @Excel(name = "客户公司名称")
+    @Length(max = 32, message = "客户公司名称长度不能超过32个字符")
+    @NotNull(message = "客户公司名称不能为空")
     @TableField(value = "customer")
     private String customer;
 
     /** 客户ID */
     @Excel(name = "客户ID")
+    @Length(max = 32, message = "客户ID长度不能超过32个字符")
+    @NotNull(message = "客户ID不能为空")
     @TableField(value = "CustomerID")
     private Long CustomerID;
 
     /** 票据单位名称 */
     @Excel(name = "票据单位名称")
+    @Length(max = 32, message = "票据单位名称长度不能超过32个字符")
+    @NotNull(message = "票据单位名称不能为空")
     @TableField(value = "invoiceCompanyName")
     private String invoiceCompanyName;
 
     /** 客户票点 */
     @DecimalMaxDigits
+    @NotNull(message = "客户票点不能为空")
     @TableField(value = "customerTicketPoint")
     private Double customerTicketPoint;
 
@@ -86,6 +105,7 @@ public class InvoiceOther extends BaseEntity
 
     /** 备注 */
     @Excel(name = "备注")
+    @Length(max = 255, message = "备注长度不能超过255个字符")
     @TableField(value = "comments")
     private String comments;
 

@@ -11,6 +11,7 @@ import org.dzu.common.annotation.DecimalMaxDigits;
 import org.dzu.common.annotation.OnlyZeroOrOne;
 import org.hibernate.validator.constraints.Length;
 
+import javax.validation.constraints.Max;
 import javax.validation.constraints.Min;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Pattern;
@@ -128,10 +129,12 @@ public class Payment extends BaseEntity
     @TableField(value = "companyId")
     private Long companyId;
 
-    /** 对方公司类型（1、客户 2、供应商） */
+    /** 对方公司类型客户、供应商、司机、个人、其他 */
     @Excel(name = "对方公司类型")
     @NotNull(message = "对方公司类型不能为空")
     @TableField(value = "companyType")
+    @Min(value = 1, message = "类型只能为1-5,代表客户、供应商、司机、个人、其他")
+    @Max(value = 5, message = "类型只能为1-5,代表客户、供应商、司机、个人、其他")
     private Long companyType;
 
     /** 备注 */
