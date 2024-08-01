@@ -27,7 +27,7 @@
       </el-form-item>
       <el-form-item>
         <el-button type="primary" icon="el-icon-search" size="mini" @click="handleQuery">搜索</el-button>
-        <el-button icon="el-icon-refresh" size="mini" @click="resetQuery">重置</el-button>
+        <!--        <el-button icon="el-icon-refresh" size="mini" @click="resetQuery">重置</el-button>-->
       </el-form-item>
     </el-form>
 
@@ -396,12 +396,20 @@ export default {
       this.$refs["form"].validate(valid => {
         if (valid) {
           if (this.form.id != null) {
+            this.form.delFlag = null;
+            this.form.addtime = null;
+            this.form.updateTime = null;
+            this.form.userId = null;
             updateSocialInsurance(this.form).then(response => {
               this.$modal.msgSuccess("修改成功");
               this.open = false;
               this.getList();
             });
           } else {
+            this.form.delFlag = null;
+            this.form.addtime = null;
+            this.form.updateTime = null;
+            this.form.userId = null;
             addSocialInsurance(this.form).then(response => {
               this.$modal.msgSuccess("新增成功");
               this.open = false;

@@ -56,13 +56,13 @@
               id="printBox"
               v-horizontal-scroll="'always'">
       <el-table-column label="id" align="center" prop="id"/>
-      <el-table-column label="借出款编号" align="center" prop="futuresNO"/>
-      <el-table-column label="还款编号" align="center" prop="recoverNO"/>
-      <el-table-column label="收回金额" align="center" prop="moneyAmount"/>
-      <el-table-column label="收回日期" align="center" prop="recoverDate"/>
-      <el-table-column label="收回账户" align="center" prop="acountsName"/>
-      <el-table-column label="收回账号" align="center" prop="bankNo"/>
-      <el-table-column label="备注" align="center" prop="comments"/>
+      <el-table-column label="借出款编号" align="center" prop="futuresNO" v-if="columns[0].visible"/>
+      <el-table-column label="还款编号" align="center" prop="recoverNO" v-if="columns[1].visible"/>
+      <el-table-column label="收回金额" align="center" prop="moneyAmount" v-if="columns[2].visible"/>
+      <el-table-column label="收回日期" align="center" prop="recoverDate" v-if="columns[3].visible"/>
+      <el-table-column label="收回账户" align="center" prop="acountsName" v-if="columns[4].visible"/>
+      <el-table-column label="收回账号" align="center" prop="bankNo" v-if="columns[5].visible"/>
+      <el-table-column label="备注" align="center" prop="comments" v-if="columns[6].visible"/>
       <el-table-column label="操作" align="center" class-name="small-padding fixed-width" fixed="right">
         <template slot-scope="scope">
           <el-button
@@ -187,15 +187,13 @@ export default {
       // 表单参数
       form: {},
       columns: [
-        {key: 0, label: `客户`, visible: true},
-        {key: 1, label: `老板姓名`, visible: true},
-        {key: 2, label: `公司名称`, visible: true},
-        {key: 3, label: `老板电话`, visible: true},
-        {key: 4, label: `电话`, visible: true},
-        {key: 5, label: `地址`, visible: true},
-        {key: 6, label: `区域`, visible: true},
-        {key: 7, label: `销售经理`, visible: true},
-        {key: 8, label: `备注`, visible: true},
+        {key: 0, label: `借出款编号`, visible: true},
+        {key: 1, label: `还款编号`, visible: true},
+        {key: 2, label: `收回金额`, visible: true},
+        {key: 3, label: `收回日期`, visible: true},
+        {key: 4, label: `收回账户`, visible: true},
+        {key: 5, label: `收回账号`, visible: true},
+        {key: 6, label: `备注`, visible: true},
       ],
       // 表单校验
       rules: {},
