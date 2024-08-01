@@ -1,21 +1,20 @@
+<!--向外借钱-->
 <template>
   <div class="app-container">
     <el-form :model="timesQuery" ref="queryForm" size="small" :inline="true" v-show="showSearch" label-width="68px">
       <el-form-item label="开始时间" prop="beginTime">
-        <el-input
+        <el-date-picker
           v-model="timesQuery.beginTime"
-          placeholder="请输入开始时间"
-          clearable
-          @keyup.enter.native="handleQuery"
-        />
+          type="date"
+          placeholder="请选择开始时间">
+        </el-date-picker>
       </el-form-item>
       <el-form-item label="结束时间" prop="endTime">
-        <el-input
+        <el-date-picker
           v-model="timesQuery.endTime"
-          placeholder="请输入结束时间"
-          clearable
-          @keyup.enter.native="handleQuery"
-        />
+          type="date"
+          placeholder="请选择结束时间">
+        </el-date-picker>
       </el-form-item>
       <el-form-item label="对象类型" prop="objectType">
         <el-select v-model="timesQuery.objectType" placeholder="请选择对象类型">
@@ -28,7 +27,7 @@
         </el-select>
       </el-form-item>
       <el-form-item>
-        <el-button type="primary" icon="el-icon-search" size="mini" @click="handleQuery">搜索</el-button>
+        <el-button type="primary" icon="el-icon-search" size="mini" @click="handleQueryTime">搜索</el-button>
         <!--        <el-button icon="el-icon-refresh" size="mini" @click="resetQuery">重置</el-button>-->
       </el-form-item>
     </el-form>
@@ -65,42 +64,36 @@
       </right-toolbar>
     </el-row>
 
-    <el-table v-loading="loading" :data="lendMoneyList" @selection-change="handleSelectionChange"
+    <el-table border v-loading="loading" :data="lendMoneyList" @selection-change="handleSelectionChange"
               v-horizontal-scroll="'always'" id="printBox">
-      <el-table-column type="selection" width="55" align="center"/>
       <el-table-column label="id" align="center" prop="id"/>
-      <el-table-column label="借出款编号" align="center" prop="futuresNO"/>
-      <el-table-column label="期货保证金公司" align="center" prop="futuresMarginCompany"/>
-      <el-table-column label="对象类型(员工、客户、供应商、其他)" align="center" prop="targetType"/>
-      <el-table-column label="对象(员工姓名、公司名称)" align="center" prop="target"/>
-      <el-table-column label="保证金金额" align="center" prop="moneyAmount"/>
-      <el-table-column label="对方账户" align="center" prop="targetAcountsName"/>
-      <el-table-column label="对方账号" align="center" prop="targetBankNo"/>
-      <el-table-column label="对方开户行" align="center" prop="targetBankName"/>
-      <el-table-column label="我方支付账户" align="center" prop="selfAcountsName"/>
-      <el-table-column label="我方账号" align="center" prop="selfBankNo"/>
-      <el-table-column label="我方开户行" align="center" prop="selfBankName"/>
-      <el-table-column label="支付期货保证金时间" align="center" prop="futuresDate"/>
-      <el-table-column label="事由" align="center" prop="reason"/>
+      <el-table-column label="借出款编号" align="center" prop="futuresNO" v-if="columns[0].visible"/>
+      <el-table-column label="期货保证金公司" align="center" prop="futuresMarginCompany" v-if="columns[1].visible"/>
+      <el-table-column label="对象类型(员工、客户、供应商、其他)" align="center" prop="targetType"
+                       v-if="columns[2].visible"/>
+      <el-table-column label="对象(员工姓名、公司名称)" align="center" prop="target" v-if="columns[3].visible"/>
+      <el-table-column label="保证金金额" align="center" prop="moneyAmount" v-if="columns[4].visible"/>
+      <el-table-column label="对方账户" align="center" prop="targetAcountsName" v-if="columns[5].visible"/>
+      <el-table-column label="对方账号" align="center" prop="targetBankNo" v-if="columns[6].visible"/>
+      <el-table-column label="对方开户行" align="center" prop="targetBankName" v-if="columns[7].visible"/>
+      <el-table-column label="我方支付账户" align="center" prop="selfAcountsName" v-if="columns[8].visible"/>
+      <el-table-column label="我方账号" align="center" prop="selfBankNo" v-if="columns[9].visible"/>
+      <el-table-column label="我方开户行" align="center" prop="selfBankName" v-if="columns[10].visible"/>
+      <el-table-column label="支付期货保证金时间" align="center" prop="futuresDate" v-if="columns[11].visible"/>
+      <el-table-column label="事由" align="center" prop="reason" v-if="columns[12].visible"/>
       <el-table-column label="备注" align="center" prop="comments"/>
-      <!--      <el-table-column label="添加时间" align="center" prop="addtime"/>-->
-      <!--      <el-table-column label="操作人员ID" align="center" prop="userId"/>-->
-      <!--      <el-table-column label="操作人员姓名" align="center" prop="UserName"/>-->
-      <!--      <el-table-column label="删除标记" align="center" prop="delFlag"/>-->
-      <el-table-column label="操作" align="center" class-name="small-padding fixed-width">
+      <el-table-column label="操作" align="center" class-name="small-padding fixed-width" width="150px" fixed="right">
         <template slot-scope="scope">
           <el-button
             size="mini"
-            type="text"
-            icon="el-icon-edit"
+            type="primary"
             @click="handleUpdate(scope.row)"
             v-hasPermi="['system:lendMoney:edit']"
           >修改
           </el-button>
           <el-button
             size="mini"
-            type="text"
-            icon="el-icon-delete"
+            type="danger"
             @click="handleDelete(scope.row)"
             v-hasPermi="['system:lendMoney:remove']"
           >删除
@@ -150,8 +143,15 @@
         <el-form-item label="我方开户行" prop="selfBankName">
           <el-input v-model="form.selfBankName" placeholder="请输入我方开户行"/>
         </el-form-item>
+        <!--        时间选择-->
         <el-form-item label="支付期货保证金时间" prop="futuresDate">
-          <el-input v-model="form.futuresDate" placeholder="请输入支付期货保证金时间"/>
+          <!--          <el-input v-model="form.futuresDate" placeholder="请输入支付期货保证金时间"/>-->
+          <el-date-picker
+            v-model="form.futuresDate"
+            type="date"
+            placeholder="请选择支付期货保证金时间"
+            value-format="yyyy-MM-dd">
+          </el-date-picker>
         </el-form-item>
         <el-form-item label="事由" prop="reason">
           <el-input v-model="form.reason" placeholder="请输入事由"/>
@@ -159,18 +159,6 @@
         <el-form-item label="备注" prop="comments">
           <el-input v-model="form.comments" placeholder="请输入备注"/>
         </el-form-item>
-        <!--        <el-form-item label="添加时间" prop="addtime">-->
-        <!--          <el-input v-model="form.addtime" placeholder="请输入添加时间"/>-->
-        <!--        </el-form-item>-->
-        <!--        <el-form-item label="操作人员ID" prop="userId">-->
-        <!--          <el-input v-model="form.userId" placeholder="请输入操作人员ID"/>-->
-        <!--        </el-form-item>-->
-        <!--        <el-form-item label="操作人员姓名" prop="UserName">-->
-        <!--          <el-input v-model="form.UserName" placeholder="请输入操作人员姓名"/>-->
-        <!--        </el-form-item>-->
-        <!--        <el-form-item label="删除标记" prop="delFlag">-->
-        <!--          <el-input v-model="form.delFlag" placeholder="请输入删除标记"/>-->
-        <!--        </el-form-item>-->
       </el-form>
       <div slot="footer" class="dialog-footer">
         <el-button type="primary" @click="submitForm">确 定</el-button>
@@ -182,6 +170,7 @@
 
 <script>
 import {listLendMoney, getLendMoney, delLendMoney, addLendMoney, updateLendMoney} from "@/api/system/lendMoney";
+import {mapGetters} from "vuex";
 
 export default {
   name: "LendMoney",
@@ -233,15 +222,19 @@ export default {
       // 表单校验
       rules: {},
       columns: [
-        {key: 0, label: `客户`, visible: true},
-        {key: 1, label: `老板姓名`, visible: true},
-        {key: 2, label: `公司名称`, visible: true},
-        {key: 3, label: `老板电话`, visible: true},
-        {key: 4, label: `电话`, visible: true},
-        {key: 5, label: `地址`, visible: true},
-        {key: 6, label: `区域`, visible: true},
-        {key: 7, label: `销售经理`, visible: true},
-        {key: 8, label: `备注`, visible: true},
+        {key: 0, label: `借出款编号`, visible: true},
+        {key: 1, label: `期货保证金公司`, visible: true},
+        {key: 2, label: `对象类型`, visible: true},
+        {key: 3, label: `对象`, visible: true},
+        {key: 4, label: `保证金金额`, visible: true},
+        {key: 5, label: `对方账户`, visible: true},
+        {key: 6, label: `对方账号`, visible: true},
+        {key: 7, label: `对方开户行`, visible: true},
+        {key: 8, label: `我方开户行`, visible: true},
+        {key: 9, label: `我方支付账户`, visible: true},
+        {key: 10, label: `我方账号`, visible: true},
+        {key: 11, label: `我方开户行`, visible: true},
+        {key: 12, label: `支付期货保证金时间`, visible: true},
       ],
       //搜索参数
       timesQuery: {
@@ -249,18 +242,61 @@ export default {
         endTime: '',
         objectType: ''
       },
+      //员工、客户、供应商、其他
       options: [
         {
-          label: 'test',
-          value: 'test'
+          label: '员工',
+          value: '员工'
+        }, {
+          label: '客户',
+          value: '客户'
+        }, {
+          label: '供应商',
+          value: '供应商'
+        }, {
+          label: '其他',
+          value: '其他'
         }
       ]
     };
   },
   created() {
     this.getList();
+    //查向外借钱
+    this.$store.dispatch('money/getTempLendMoneyList')
+  },
+  computed: {
+    ...mapGetters(['tempLendMoneyList'])
   },
   methods: {
+    handleQueryTime() {
+      //重置
+      this.lendMoneyList = this.tempLendMoneyList
+      //筛选事件
+      this.lendMoneyList = this.filterTime()
+    },
+    //筛选方法
+    filterTime() {
+      return this.lendMoneyList.filter(item => {
+        //时间转换
+        const time_search = new Date(item.futuresDate).getTime()
+        const time_start = new Date(this.timesQuery.beginTime).getTime()
+        const date = new Date(this.timesQuery.endTime)
+        date.setDate(date.getDate() + 1)
+        const time_end = date.getTime()
+        //如果当前的客户类型给空
+        if (this.timesQuery.beginTime !== '' && this.timesQuery.endTime !== '') {
+          if (this.timesQuery.objectType !== '') {
+            return time_search >= time_start && time_search <=
+              time_end && item.targetType === this.timesQuery.objectType
+          } else {
+            return time_search >= time_start && time_search <= time_end
+          }
+        } else {
+          return item.targetType === this.timesQuery.objectType
+        }
+      })
+    },
     printHTML() {
       this.$print({
         printable: 'printBox',

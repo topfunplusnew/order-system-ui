@@ -4,204 +4,254 @@ import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.apache.commons.lang3.builder.ToStringStyle;
 import org.dzu.common.annotation.Excel;
 import org.dzu.common.core.domain.BaseEntity;
-
+import com.baomidou.mybatisplus.annotation.TableField;
+import com.baomidou.mybatisplus.annotation.TableId;
+import com.baomidou.mybatisplus.annotation.TableName;
 import org.dzu.common.annotation.DecimalMaxDigits;
 import org.dzu.common.annotation.OnlyZeroOrOne;
 /**
  * 订单详情对象 orderDetail
  * 
  * @author ml
- * @date 2024-07-29
+ * @date 2024-08-01
  */
+@TableName("orderDetail")
 public class OrderDetail extends BaseEntity
 {
     private static final long serialVersionUID = 1L;
 
     /** id */
+    @TableId(value = "id")
     private Long id;
 
     /** 订单编号（UUID） */
     @Excel(name = "订单编号", readConverterExp = "U=UID")
+    @TableField(value = "ordersNo")
     private String ordersNo;
 
     /** 订单日期 */
     @Excel(name = "订单日期")
+    @TableField(value = "orderDate")
     private String orderDate;
 
     /** 供应商 */
     @Excel(name = "供应商")
+    @TableField(value = "supplier")
     private String supplier;
 
     /** 供应商ID */
     @Excel(name = "供应商ID")
+    @TableField(value = "supplierID")
     private Long supplierID;
 
     /** 客户 */
     @Excel(name = "客户")
+    @TableField(value = "customer")
     private String customer;
 
     /** 客户ID */
     @Excel(name = "客户ID")
+    @TableField(value = "customerID")
     private Long customerID;
 
     /** 级别编码 */
     @Excel(name = "级别编码")
+    @TableField(value = "levelID")
     private Long levelID;
 
     /** 级别名称 */
     @Excel(name = "级别名称")
+    @TableField(value = "levelName")
     private String levelName;
 
     /** 计量单位 */
     @Excel(name = "计量单位")
+    @TableField(value = "countingUnit")
     private String countingUnit;
 
     /** 厚度 */
     @DecimalMaxDigits
+    @TableField(value = "height")
     private Double height;
 
     /** 长度 */
     @DecimalMaxDigits
+    @TableField(value = "length")
     private Double length;
 
     /** 宽度 */
     @DecimalMaxDigits
+    @TableField(value = "width")
     private Double width;
 
     /** 出厂片数 */
     @Excel(name = "出厂片数")
+    @TableField(value = "pieces")
     private Long pieces;
 
     /** 每包片数 */
     @Excel(name = "每包片数")
+    @TableField(value = "piecesPerPack")
     private Long piecesPerPack;
 
     /** 包数 */
     @Excel(name = "包数")
+    @TableField(value = "packs")
     private Long packs;
 
     /** 出厂单价 */
     @DecimalMaxDigits
+    @TableField(value = "price")
     private Double price;
 
     /** 出厂是否含税 */
     @Excel(name = "出厂是否含税")
+    @TableField(value = "isIncludeTaxFactory")
     private Long isIncludeTaxFactory;
 
     /** 杂费 */
     @DecimalMaxDigits
+    @TableField(value = "sundryCost")
     private Double sundryCost;
 
     /** 出厂货款 */
     @DecimalMaxDigits
+    @TableField(value = "paymentFactory")
     private Double paymentFactory;
 
     /** 卸货价 */
     @DecimalMaxDigits
+    @TableField(value = "paymentUnload")
     private Double paymentUnload;
 
     /** 销售是否含税 */
     @Excel(name = "销售是否含税")
+    @TableField(value = "isIncludeTaxSale")
     private Long isIncludeTaxSale;
 
     /** 总货款 */
     @DecimalMaxDigits
+    @TableField(value = "payments")
     private Double payments;
 
     /** 误差 */
     @DecimalMaxDigits
+    @TableField(value = "erro")
     private Double erro;
 
     /** 吨位 */
     @DecimalMaxDigits
+    @TableField(value = "tonnage")
     private Double tonnage;
 
     /** 陆运费单价 */
     @DecimalMaxDigits
+    @TableField(value = "landFreightPrice")
     private Double landFreightPrice;
 
     /** 陆运费 */
     @DecimalMaxDigits
+    @TableField(value = "landFreight")
     private Double landFreight;
 
     /** 海运费 */
     @DecimalMaxDigits
+    @TableField(value = "seaFreight")
     private Double seaFreight;
 
     /** 总运费 */
     @DecimalMaxDigits
+    @TableField(value = "freight")
     private Double freight;
 
     /** 其他费用 */
     @DecimalMaxDigits
+    @TableField(value = "otherCost")
     private Double otherCost;
 
     /** 利润 */
     @DecimalMaxDigits
+    @TableField(value = "profit")
     private Double profit;
 
     /** 不含税利润 */
     @DecimalMaxDigits
+    @TableField(value = "profitNoTax")
     private Double profitNoTax;
 
     /** 实际片数 */
     @Excel(name = "实际片数")
+    @TableField(value = "actualPieces")
     private Long actualPieces;
 
     /** 总货款杂费 */
     @DecimalMaxDigits
+    @TableField(value = "paymentsWithSundry")
     private Double paymentsWithSundry;
 
     /** 加费 */
     @DecimalMaxDigits
+    @TableField(value = "additionalFees")
     private Double additionalFees;
 
     /** 仓库ID */
     @Excel(name = "仓库ID")
+    @TableField(value = "storeHouseID")
     private Long storeHouseID;
 
     /** 仓库名称 */
     @Excel(name = "仓库名称")
+    @TableField(value = "storeHouseName")
     private String storeHouseName;
 
     /** 仓库存储的货物ID */
     @Excel(name = "仓库存储的货物ID")
+    @TableField(value = "storeID")
     private Long storeID;
 
     /** 物流利润 */
     @DecimalMaxDigits
+    @TableField(value = "logisticsProfit")
     private Double logisticsProfit;
 
     /** 客户佣金 */
     @DecimalMaxDigits
+    @TableField(value = "customerCommission")
     private Double customerCommission;
 
     /** 是否被调整单（ 是  否） */
     @Excel(name = "是否被调整单", readConverterExp = "是=,否=")
+    @TableField(value = "isAdjusted")
     private String isAdjusted;
 
     /** 调整日期 */
     @Excel(name = "调整日期")
+    @TableField(value = "adjustDate")
     private String adjustDate;
 
     /** 作废标记 */
     @OnlyZeroOrOne
+    @TableField(value = "cancelFlag")
     private Long cancelFlag;
 
     /** 备注 */
     @Excel(name = "备注")
+    @TableField(value = "comments")
     private String comments;
 
     /** 添加时间 */
     @Excel(name = "添加时间")
+    @TableField(value = "addtime")
     private String addtime;
 
     /** 操作人员ID */
     @Excel(name = "操作人员ID")
+    @TableField(value = "userId")
     private Long userId;
 
     /** 操作人员姓名 */
     @Excel(name = "操作人员姓名")
+    @TableField(value = "UserName")
     private String UserName;
 
     public void setId(Long id) 

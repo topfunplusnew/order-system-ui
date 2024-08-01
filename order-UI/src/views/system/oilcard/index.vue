@@ -9,10 +9,90 @@
           @keyup.enter.native="handleQuery"
         />
       </el-form-item>
-      <el-form-item label="当前金额" prop="moneyAmount">
+      <el-form-item label="使用加油卡时间" prop="useDate">
         <el-input
-          v-model="queryParams.moneyAmount"
-          placeholder="请输入当前金额"
+          v-model="queryParams.useDate"
+          placeholder="请输入使用加油卡时间"
+          clearable
+          @keyup.enter.native="handleQuery"
+        />
+      </el-form-item>
+      <el-form-item label="使用加油卡车辆车牌号" prop="carNo">
+        <el-input
+          v-model="queryParams.carNo"
+          placeholder="请输入使用加油卡车辆车牌号"
+          clearable
+          @keyup.enter.native="handleQuery"
+        />
+      </el-form-item>
+      <el-form-item label="地点、事由" prop="destination">
+        <el-input
+          v-model="queryParams.destination"
+          placeholder="请输入地点、事由"
+          clearable
+          @keyup.enter.native="handleQuery"
+        />
+      </el-form-item>
+      <el-form-item label="充值金额(元）" prop="rechargeMoney">
+        <el-input
+          v-model="queryParams.rechargeMoney"
+          placeholder="请输入充值金额(元）"
+          clearable
+          @keyup.enter.native="handleQuery"
+        />
+      </el-form-item>
+      <el-form-item label="期初余额" prop="startCardSurplus">
+        <el-input
+          v-model="queryParams.startCardSurplus"
+          placeholder="请输入期初余额"
+          clearable
+          @keyup.enter.native="handleQuery"
+        />
+      </el-form-item>
+      <el-form-item label="主卡转副卡充值金额" prop="toPlusCardMoney">
+        <el-input
+          v-model="queryParams.toPlusCardMoney"
+          placeholder="请输入主卡转副卡充值金额"
+          clearable
+          @keyup.enter.native="handleQuery"
+        />
+      </el-form-item>
+      <el-form-item label="加油量" prop="refuelingNumber">
+        <el-input
+          v-model="queryParams.refuelingNumber"
+          placeholder="请输入加油量"
+          clearable
+          @keyup.enter.native="handleQuery"
+        />
+      </el-form-item>
+      <el-form-item label="单价" prop="unitPrice">
+        <el-input
+          v-model="queryParams.unitPrice"
+          placeholder="请输入单价"
+          clearable
+          @keyup.enter.native="handleQuery"
+        />
+      </el-form-item>
+      <el-form-item label="加油金额(元）" prop="refuelingMoney">
+        <el-input
+          v-model="queryParams.refuelingMoney"
+          placeholder="请输入加油金额(元）"
+          clearable
+          @keyup.enter.native="handleQuery"
+        />
+      </el-form-item>
+      <el-form-item label="是否有小票" prop="isTicket">
+        <el-input
+          v-model="queryParams.isTicket"
+          placeholder="请输入是否有小票"
+          clearable
+          @keyup.enter.native="handleQuery"
+        />
+      </el-form-item>
+      <el-form-item label="加油卡余额" prop="endCardSurplus">
+        <el-input
+          v-model="queryParams.endCardSurplus"
+          placeholder="请输入加油卡余额"
           clearable
           @keyup.enter.native="handleQuery"
         />
@@ -21,38 +101,6 @@
         <el-input
           v-model="queryParams.comments"
           placeholder="请输入备注"
-          clearable
-          @keyup.enter.native="handleQuery"
-        />
-      </el-form-item>
-      <el-form-item label="添加时间" prop="addtime">
-        <el-input
-          v-model="queryParams.addtime"
-          placeholder="请输入添加时间"
-          clearable
-          @keyup.enter.native="handleQuery"
-        />
-      </el-form-item>
-      <el-form-item label="操作人员ID" prop="userId">
-        <el-input
-          v-model="queryParams.userId"
-          placeholder="请输入操作人员ID"
-          clearable
-          @keyup.enter.native="handleQuery"
-        />
-      </el-form-item>
-      <el-form-item label="操作人员姓名" prop="UserName">
-        <el-input
-          v-model="queryParams.UserName"
-          placeholder="请输入操作人员姓名"
-          clearable
-          @keyup.enter.native="handleQuery"
-        />
-      </el-form-item>
-      <el-form-item label="删除标记" prop="delFlag">
-        <el-input
-          v-model="queryParams.delFlag"
-          placeholder="请输入删除标记"
           clearable
           @keyup.enter.native="handleQuery"
         />
@@ -115,13 +163,19 @@
       <el-table-column type="selection" width="55" align="center" />
       <el-table-column label="id" align="center" prop="id" />
       <el-table-column label="加油卡卡号" align="center" prop="oilCardNo" />
+      <el-table-column label="使用加油卡时间" align="center" prop="useDate" />
+      <el-table-column label="使用加油卡车辆车牌号" align="center" prop="carNo" />
+      <el-table-column label="地点、事由" align="center" prop="destination" />
+      <el-table-column label="充值金额(元）" align="center" prop="rechargeMoney" />
+      <el-table-column label="期初余额" align="center" prop="startCardSurplus" />
+      <el-table-column label="主卡转副卡充值金额" align="center" prop="toPlusCardMoney" />
+      <el-table-column label="加油量" align="center" prop="refuelingNumber" />
+      <el-table-column label="单价" align="center" prop="unitPrice" />
+      <el-table-column label="加油金额(元）" align="center" prop="refuelingMoney" />
+      <el-table-column label="是否有小票" align="center" prop="isTicket" />
+      <el-table-column label="加油卡余额" align="center" prop="endCardSurplus" />
       <el-table-column label="加油卡类别" align="center" prop="oilType" />
-      <el-table-column label="当前金额" align="center" prop="moneyAmount" />
       <el-table-column label="备注" align="center" prop="comments" />
-      <el-table-column label="添加时间" align="center" prop="addtime" />
-      <el-table-column label="操作人员ID" align="center" prop="userId" />
-      <el-table-column label="操作人员姓名" align="center" prop="UserName" />
-      <el-table-column label="删除标记" align="center" prop="delFlag" />
       <el-table-column label="操作" align="center" class-name="small-padding fixed-width">
         <template slot-scope="scope">
           <el-button
@@ -157,23 +211,41 @@
         <el-form-item label="加油卡卡号" prop="oilCardNo">
           <el-input v-model="form.oilCardNo" placeholder="请输入加油卡卡号" />
         </el-form-item>
-        <el-form-item label="当前金额" prop="moneyAmount">
-          <el-input v-model="form.moneyAmount" placeholder="请输入当前金额" />
+        <el-form-item label="使用加油卡时间" prop="useDate">
+          <el-input v-model="form.useDate" placeholder="请输入使用加油卡时间" />
+        </el-form-item>
+        <el-form-item label="使用加油卡车辆车牌号" prop="carNo">
+          <el-input v-model="form.carNo" placeholder="请输入使用加油卡车辆车牌号" />
+        </el-form-item>
+        <el-form-item label="地点、事由" prop="destination">
+          <el-input v-model="form.destination" placeholder="请输入地点、事由" />
+        </el-form-item>
+        <el-form-item label="充值金额(元）" prop="rechargeMoney">
+          <el-input v-model="form.rechargeMoney" placeholder="请输入充值金额(元）" />
+        </el-form-item>
+        <el-form-item label="期初余额" prop="startCardSurplus">
+          <el-input v-model="form.startCardSurplus" placeholder="请输入期初余额" />
+        </el-form-item>
+        <el-form-item label="主卡转副卡充值金额" prop="toPlusCardMoney">
+          <el-input v-model="form.toPlusCardMoney" placeholder="请输入主卡转副卡充值金额" />
+        </el-form-item>
+        <el-form-item label="加油量" prop="refuelingNumber">
+          <el-input v-model="form.refuelingNumber" placeholder="请输入加油量" />
+        </el-form-item>
+        <el-form-item label="单价" prop="unitPrice">
+          <el-input v-model="form.unitPrice" placeholder="请输入单价" />
+        </el-form-item>
+        <el-form-item label="加油金额(元）" prop="refuelingMoney">
+          <el-input v-model="form.refuelingMoney" placeholder="请输入加油金额(元）" />
+        </el-form-item>
+        <el-form-item label="是否有小票" prop="isTicket">
+          <el-input v-model="form.isTicket" placeholder="请输入是否有小票" />
+        </el-form-item>
+        <el-form-item label="加油卡余额" prop="endCardSurplus">
+          <el-input v-model="form.endCardSurplus" placeholder="请输入加油卡余额" />
         </el-form-item>
         <el-form-item label="备注" prop="comments">
           <el-input v-model="form.comments" placeholder="请输入备注" />
-        </el-form-item>
-        <el-form-item label="添加时间" prop="addtime">
-          <el-input v-model="form.addtime" placeholder="请输入添加时间" />
-        </el-form-item>
-        <el-form-item label="操作人员ID" prop="userId">
-          <el-input v-model="form.userId" placeholder="请输入操作人员ID" />
-        </el-form-item>
-        <el-form-item label="操作人员姓名" prop="UserName">
-          <el-input v-model="form.UserName" placeholder="请输入操作人员姓名" />
-        </el-form-item>
-        <el-form-item label="删除标记" prop="delFlag">
-          <el-input v-model="form.delFlag" placeholder="请输入删除标记" />
         </el-form-item>
       </el-form>
       <div slot="footer" class="dialog-footer">
@@ -218,7 +290,7 @@ export default {
         oilType: null,
         moneyAmount: null,
         comments: null,
-        addtime: null,
+        submittime: null,
         userId: null,
         UserName: null,
         delFlag: null
@@ -256,7 +328,7 @@ export default {
         oilType: null,
         moneyAmount: null,
         comments: null,
-        addtime: null,
+        submittime: null,
         userId: null,
         UserName: null,
         updateTime: null,

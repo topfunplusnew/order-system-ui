@@ -2,6 +2,7 @@ package org.dzu.system.service;
 
 import java.util.List;
 import org.dzu.system.domain.LendMoney;
+import org.dzu.system.domain.RecoverMoney;
 
 /**
  * 向外部借出款信息Service接口
@@ -52,10 +53,9 @@ public interface ILendMoneyService
     public int deleteLendMoneyByIds(Long[] ids);
 
     /**
-     * 删除向外部借出款信息信息
-     * 
-     * @param id 向外部借出款信息主键
-     * @return 结果
+     * 根据参数查询对应信息
+     * @param futuresNO
+     * @return
      */
-    public int deleteLendMoneyById(Long id);
+    LendMoney selectLendMoneyByFuturesNO(String futuresNO);
 }
