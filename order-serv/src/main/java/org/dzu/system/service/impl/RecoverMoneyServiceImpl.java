@@ -81,11 +81,11 @@ public class RecoverMoneyServiceImpl implements IRecoverMoneyService
      * @return
      */
     @Override
-    public RecoverMoney selectRecoverMoneyByFuturesNO(String futuresNO)
+    public List<RecoverMoney> selectRecoverMoneyByFuturesNO(String futuresNO)
     {
         QueryWrapper<RecoverMoney> queryWrapper = new QueryWrapper<>();
         queryWrapper.select().eq("futuresNO", futuresNO).eq("delFlag", DelConstants.NODEL);
-        return recoverMoneyMapper.selectOne(queryWrapper);
+        return recoverMoneyMapper.selectList(queryWrapper);
     }
 
     /**

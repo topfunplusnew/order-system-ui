@@ -78,6 +78,7 @@
             size="mini"
             type="warning"
             @click="handleGiveBackMoney(scope.row)"
+            v-if="scope.row.isEnd ==='否'"
           >还款
           </el-button>
           <el-button
@@ -149,6 +150,107 @@
         <el-button @click="cancel">取 消</el-button>
       </div>
     </el-dialog>
+
+
+    <!--    点击还款的弹框-->
+    <el-dialog title="还款操作" :visible.sync="giveBackMoneyShow">
+      <!--      历史还款信息列表-->
+      <div id="back-money-info">
+        <el-card class="box-card">
+          <div slot="header" class="clearfix">
+            <span>历史还款记录</span>
+            <!--   刷新-->
+            <el-button style="float: right; padding: 3px 0" @click="handleRefreshNeedGiveBackMoneyList">
+              刷新
+            </el-button>
+          </div>
+          <el-table
+            :data="needGiveBackMoneyList"
+            style="width: 100%" border v-loading="needMoneyLoading">
+            <el-table-column
+              prop="id"
+              label="ID"
+              width="60">
+            </el-table-column>
+            <el-table-column
+              prop="loanNO"
+              label="贷款编号"
+              width="130">
+            </el-table-column>
+            <el-table-column
+              prop="moneyAmount"
+              label="还(本)金额">
+            </el-table-column>
+            <el-table-column
+              prop="ratio"
+              label="付息金额">
+            </el-table-column>
+            <el-table-column
+              prop="payDate"
+              label="还款日期">
+            </el-table-column>
+            <el-table-column
+              prop="bankNo"
+              label="还款账号">
+            </el-table-column>
+            <el-table-column
+              prop="acountsName"
+              label="还款账户">
+            </el-table-column>
+          </el-table>
+        </el-card>
+        <br/>
+        <el-card class="box-card">
+          <div slot="header" class="clearfix">
+            <h4 style="font-weight: bolder">贷款编号:{{ currentUUID }}
+              <el-button type="primary" @click="innerVisible = true">继续还款</el-button>
+            </h4>
+          </div>
+          <!--内层-->
+          <el-dialog
+            width="30%"
+            title="继续还款"
+            :visible.sync="innerVisible"
+            append-to-body>
+            <!-- 还款表单-->
+            <el-form :model="currentGiveBackMoneyInfo" class="demo-form-inline">
+              <!--还款银行卡-->
+              <el-form-item label="还款账号" prop="bankNo">
+                <!--                <el-input v-model="currentGiveBackMoneyInfo.bankNo" placeholder="请输入还款账号"/>-->
+                <span>{{ currentGiveBackMoneyInfo.bankNo }}</span>
+              </el-form-item>
+              <el-form-item label="还款金额" prop="moneyAmount">
+                <el-input v-model="currentGiveBackMoneyInfo.moneyAmount" placeholder="请输入还款金额"/>
+              </el-form-item>
+              <!--还款账户-->
+              <el-form-item label="还款账户" prop="acountsName">
+                <el-input v-model="currentGiveBackMoneyInfo.acountsName" placeholder="请输入还款账户"/>
+              </el-form-item>
+              <!-- 付息金额(自动计算)-->
+              <el-form-item label="是否偿还利息" prop="ratio">
+                <el-radio v-model="isNeedRatio" label="0">否</el-radio>
+                <el-radio v-model="isNeedRatio" label="1">是</el-radio>
+                <el-input v-model="currentGiveBackMoneyInfo.ratio" placeholder="请输入付息金额"
+                          v-if="isNeedRatio === '1'"/>
+              </el-form-item>
+              <el-form-item label="还款日期" prop="payDate">
+                <el-date-picker
+                  v-model="currentGiveBackMoneyInfo.payDate"
+                  type="date"
+                  placeholder="请选择还款日期" value-format="yyyy-MM-dd">
+                </el-date-picker>
+              </el-form-item>
+              <el-form-item label="备注信息" prop="comments">
+                <el-input v-model="currentGiveBackMoneyInfo.comments" placeholder="请输入备注信息"/>
+              </el-form-item>
+              <el-form-item>
+                <el-button type="primary" @click="GiveBackMoney">还款</el-button>
+              </el-form-item>
+            </el-form>
+          </el-dialog>
+        </el-card>
+      </div>
+    </el-dialog>
   </div>
 </template>
 
@@ -158,9 +260,10 @@ import {
   getBorrowedMoney,
   delBorrowedMoney,
   addBorrowedMoney,
-  updateBorrowedMoney
+  updateBorrowedMoney, getBorrowedMoneyByUuid
 } from "@/api/system/borrowedMoney";
 import {mapGetters, mapState} from "vuex";
+import {addRepayment} from "@/api/system/repayment";
 
 export default {
   name: "BorrowedMoney",
@@ -177,6 +280,13 @@ export default {
       }
     };
     return {
+      //测试数据
+      formInline: {
+        user: '',
+        region: ''
+      },
+
+
       // 遮罩层
       loading: true,
       // 选中数组
@@ -240,6 +350,29 @@ export default {
         beginTime: '',
         endTime: '',
       },
+      //还款弹窗
+      giveBackMoneyShow: false,
+      //还款记录列表
+      needGiveBackMoneyList: [],
+      needMoneyLoading: false,
+      //还款内层
+      innerVisible: false,
+      //当前选中的UUID和银行卡号
+      currentUUID: '',
+      currentBankNo: '',
+      //继续还款中的还款信息
+      /*
+        loanNo: '',
+        moneyAmount: null,
+        ratio: '',
+        payDate: '',
+        acountsName: '',
+        bankNo: '',
+        comments: ''
+       */
+      currentGiveBackMoneyInfo: {},
+      //是否偿还利息
+      isNeedRatio: false
     };
   },
   created() {
@@ -270,8 +403,32 @@ export default {
       })
     },
     //处理还款的事件函数
-    handleGiveBackMoney() {
-      alert('还款功能还未实现')
+    handleGiveBackMoney(row) {
+      this.currentUUID = row.loanNO
+      this.currentBankNo = row.bankNo
+      this.currentGiveBackMoneyInfo.bankNo = row.bankNo
+      this.needMoneyLoading = true
+      //防抖
+      setTimeout(() => {
+        //查询借款uuid对应的信息
+        getBorrowedMoneyByUuid(this.currentUUID).then(res => {
+          this.needGiveBackMoneyList = res.data
+          this.giveBackMoneyShow = true
+          this.needMoneyLoading = false
+        })
+      }, 200)
+    },
+    handleRefreshNeedGiveBackMoneyList() {
+      this.handleGiveBackMoney({loanNO: this.currentUUID}); //刷新
+    },
+    //还款
+    GiveBackMoney() {
+      addRepayment({...this.currentGiveBackMoneyInfo, loanNO: this.currentUUID, bankNo: this.currentBankNo})
+        .then(res => {
+          this.$modal.msgSuccess("修改成功");
+        }).catch(err => {
+        this.$modal.msgError("修改失败:" + err.msg);
+      })
     },
     //自定义列统计总函数
     getSummaries(param) {
@@ -312,6 +469,7 @@ export default {
       this.$print({
         printable: 'printBox',
         type: 'html',
+        maxWidth: 3000,
         targetStyles: ['*'], // 打印内容使用所有HTML样式，没有设置这个属性/值，设置分页打印没有效果
       })
     },

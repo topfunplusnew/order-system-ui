@@ -61,4 +61,6 @@ public interface IBorrowedMoneyService
 
 
     public BorrowedMoney seleteBorrowedMoneyByUUID(String  uuid);
+
+    void updateBorrowedMoneyIsEndByLoanNO(String loanNO);
 }

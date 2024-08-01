@@ -27,7 +27,7 @@ public interface IRecoverMoneyService
      */
     public List<RecoverMoney> selectRecoverMoneyList(RecoverMoney recoverMoney);
 
-    RecoverMoney selectRecoverMoneyByFuturesNO(String futuresNO);
+    List<RecoverMoney> selectRecoverMoneyByFuturesNO(String futuresNO);
 
     /**
      * 新增借出款收回信息

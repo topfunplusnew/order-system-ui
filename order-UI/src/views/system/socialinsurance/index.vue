@@ -64,7 +64,7 @@
     </el-row>
 
     <el-table border v-loading="loading" :data="socialInsuranceList" @selection-change="handleSelectionChange"
-              id="printBox">
+              id="printBox" v-horizontal-scroll="'always'">
       <el-table-column label="id" align="center" prop="id"/>
       <el-table-column label="社保缴纳基数" align="center" prop="basicSocialInsurance" v-if="columns[0].visible"/>
       <el-table-column label="公积金基数" align="center" prop="basicHousingFund" v-if="columns[1].visible"/>
