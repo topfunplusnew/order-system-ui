@@ -2,34 +2,21 @@
   <div class="app-container">
     <el-form :model="timesQuery" ref="queryForm" size="small" :inline="true" v-show="showSearch" label-width="68px">
       <el-form-item label="开始时间" prop="beginTime">
-        <el-input
+        <el-date-picker
           v-model="timesQuery.beginTime"
-          placeholder="请输入开始时间"
-          clearable
-          @keyup.enter.native="handleQuery"
-        />
+          type="date"
+          placeholder="请选择开始时间" value-format="yyyy-MM-dd">
+        </el-date-picker>
       </el-form-item>
       <el-form-item label="结束时间" prop="endTime">
-        <el-input
+        <el-date-picker
           v-model="timesQuery.endTime"
-          placeholder="请输入结束时间"
-          clearable
-          @keyup.enter.native="handleQuery"
-        />
-      </el-form-item>
-      <el-form-item label="对象类型" prop="objectType">
-        <el-select v-model="timesQuery.objectType" placeholder="请选择对象类型">
-          <el-option
-            v-for="item in options"
-            :key="item.value"
-            :label="item.label"
-            :value="item.value">
-          </el-option>
-        </el-select>
+          type="date"
+          placeholder="请选择结束时间" value-format="yyyy-MM-dd">
+        </el-date-picker>
       </el-form-item>
       <el-form-item>
-        <el-button type="primary" icon="el-icon-search" size="mini" @click="handleQuery">搜索</el-button>
-        <!--        <el-button icon="el-icon-refresh" size="mini" @click="resetQuery">重置</el-button>-->
+        <el-button type="primary" icon="el-icon-search" size="mini" @click="handleQueryTime">搜索</el-button>
       </el-form-item>
     </el-form>
 
@@ -37,52 +24,6 @@
       <el-col :span="1.5">
         <el-button icon="el-icon-refresh" size="mini" @click="resetQuery">刷新</el-button>
       </el-col>
-      <!--      <el-col :span="1.5">-->
-      <!--        <el-button-->
-      <!--          type="primary"-->
-      <!--          plain-->
-      <!--          icon="el-icon-plus"-->
-      <!--          size="mini"-->
-      <!--          @click="handleAdd"-->
-      <!--          v-hasPermi="['system:recoverMoney:add']"-->
-      <!--        >新增-->
-      <!--        </el-button>-->
-      <!--      </el-col>-->
-      <!--      <el-col :span="1.5">-->
-      <!--        <el-button-->
-      <!--          type="success"-->
-      <!--          plain-->
-      <!--          icon="el-icon-edit"-->
-      <!--          size="mini"-->
-      <!--          :disabled="single"-->
-      <!--          @click="handleUpdate"-->
-      <!--          v-hasPermi="['system:recoverMoney:edit']"-->
-      <!--        >修改-->
-      <!--        </el-button>-->
-      <!--      </el-col>-->
-      <!--      <el-col :span="1.5">-->
-      <!--        <el-button-->
-      <!--          type="danger"-->
-      <!--          plain-->
-      <!--          icon="el-icon-delete"-->
-      <!--          size="mini"-->
-      <!--          :disabled="multiple"-->
-      <!--          @click="handleDelete"-->
-      <!--          v-hasPermi="['system:recoverMoney:remove']"-->
-      <!--        >删除-->
-      <!--        </el-button>-->
-      <!--      </el-col>-->
-      <!--      <el-col :span="1.5">-->
-      <!--        <el-button-->
-      <!--          type="warning"-->
-      <!--          plain-->
-      <!--          icon="el-icon-download"-->
-      <!--          size="mini"-->
-      <!--          @click="handleExport"-->
-      <!--          v-hasPermi="['system:recoverMoney:export']"-->
-      <!--        >导出-->
-      <!--        </el-button>-->
-      <!--      </el-col>-->
       <right-toolbar :showSearch.sync="showSearch" @queryTable="getList" :columns="columns">
         <template v-slot:print>
           <el-col :span="1.5">
@@ -111,9 +52,9 @@
       </right-toolbar>
     </el-row>
 
-    <el-table v-loading="loading" :data="recoverMoneyList" @selection-change="handleSelectionChange" id="printBox"
+    <el-table border v-loading="loading" :data="recoverMoneyList" @selection-change="handleSelectionChange"
+              id="printBox"
               v-horizontal-scroll="'always'">
-      <el-table-column type="selection" width="55" align="center"/>
       <el-table-column label="id" align="center" prop="id"/>
       <el-table-column label="借出款编号" align="center" prop="futuresNO"/>
       <el-table-column label="还款编号" align="center" prop="recoverNO"/>
@@ -122,24 +63,18 @@
       <el-table-column label="收回账户" align="center" prop="acountsName"/>
       <el-table-column label="收回账号" align="center" prop="bankNo"/>
       <el-table-column label="备注" align="center" prop="comments"/>
-      <!--      <el-table-column label="添加时间" align="center" prop="addtime"/>-->
-      <!--      <el-table-column label="操作人员ID" align="center" prop="userId"/>-->
-      <!--      <el-table-column label="操作人员姓名" align="center" prop="UserName"/>-->
-      <!--      <el-table-column label="删除标记" align="center" prop="delFlag"/>-->
-      <el-table-column label="操作" align="center" class-name="small-padding fixed-width">
+      <el-table-column label="操作" align="center" class-name="small-padding fixed-width" fixed="right">
         <template slot-scope="scope">
           <el-button
             size="mini"
-            type="text"
-            icon="el-icon-edit"
+            type="primary"
             @click="handleUpdate(scope.row)"
             v-hasPermi="['system:recoverMoney:edit']"
           >修改
           </el-button>
           <el-button
             size="mini"
-            type="text"
-            icon="el-icon-delete"
+            type="danger"
             @click="handleDelete(scope.row)"
             v-hasPermi="['system:recoverMoney:remove']"
           >删除
@@ -209,6 +144,7 @@ import {
   addRecoverMoney,
   updateRecoverMoney
 } from "@/api/system/recoverMoney";
+import {mapGetters} from "vuex";
 
 export default {
   name: "RecoverMoney",
@@ -279,8 +215,31 @@ export default {
   },
   created() {
     this.getList();
+    this.$store.dispatch('money/getTempRecoverMoneyList')
+  },
+  computed: {
+    ...mapGetters(['tempRecoverMoneyList'])
   },
   methods: {
+    //时间查询
+    handleQueryTime() {
+      //重置
+      this.recoverMoneyList = this.tempRecoverMoneyList
+      //筛选
+      this.recoverMoneyList = this.filterTime()
+    },
+    //筛选方法
+    filterTime() {
+      return this.recoverMoneyList.filter(item => {
+        //时间转换
+        const time_search = new Date(item.recoverDate).getTime()
+        const time_start = new Date(this.timesQuery.beginTime).getTime()
+        const date = new Date(this.timesQuery.endTime)
+        date.setDate(date.getDate() + 1)
+        const time_end = date.getTime()
+        return time_search >= time_start && time_search <= time_end
+      })
+    },
     printHTML() {
       this.$print({
         printable: 'printBox',
