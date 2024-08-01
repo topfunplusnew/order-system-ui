@@ -107,7 +107,8 @@
       </right-toolbar>
     </el-row>
 
-    <el-table v-loading="loading" :data="StoreHouseList" @selection-change="handleSelectionChange" id="printBox">
+    <el-table v-horizontal-scroll="'always'" v-loading="loading" :data="StoreHouseList"
+              @selection-change="handleSelectionChange" id="printBox">
       <el-table-column type="selection" width="55" align="center"/>
       <el-table-column label="id" align="center" prop="id"/>
       <el-table-column label="仓库名称" align="center" prop="storeHouseName" v-if="columns[0].visible"/>

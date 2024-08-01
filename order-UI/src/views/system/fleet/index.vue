@@ -141,7 +141,7 @@
       </right-toolbar>
     </el-row>
 
-    <el-table v-loading="loading" :data="fleetList" @selection-change="handleSelectionChange"  id="printBox"  >
+    <el-table v-horizontal-scroll="'always'" v-loading="loading" :data="fleetList" @selection-change="handleSelectionChange"  id="printBox"  >
       <el-table-column type="selection" width="55" align="center" />
       <el-table-column label="id" align="center" prop="id" />
       <el-table-column label="车队名称" align="center" prop="fName" v-if="columns[0].visible"/>
