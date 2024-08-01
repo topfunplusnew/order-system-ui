@@ -21,7 +21,7 @@ import javax.validation.constraints.NotNull;
  * @author ml
  * @date 2024-07-29
  */
-@TableName("recovermoney")
+@TableName("recoverMoney")
 public class RecoverMoney extends BaseEntity {
     private static final long serialVersionUID = 1L;
 
@@ -30,14 +30,14 @@ public class RecoverMoney extends BaseEntity {
     private Long id;
 
     /** 借出款编号（UUID） */
-    @Excel(name = "借出款编号", readConverterExp = "U=UID")
+    @Excel(name = "借出款编号")
     @NotNull(message = "缺少借出款编号")
     @Length(max = 50, message = "借出款编号的字符长度不允许超过50")
     @TableField("futuresNO")
     private String futuresNO;
 
     /** 还款编号（UUID） */
-    @Excel(name = "还款编号", readConverterExp = "U=UID")
+    @Excel(name = "还款编号")
     @Length(max = 50, message = "还款编号的字符长度不允许超过50")
     @TableField("recoverNO")
     private String recoverNO;
