@@ -426,6 +426,7 @@ export default {
       addRepayment({...this.currentGiveBackMoneyInfo, loanNO: this.currentUUID, bankNo: this.currentBankNo})
         .then(res => {
           this.$modal.msgSuccess("修改成功");
+          this.giveBackMoneyShow = false
         }).catch(err => {
         this.$modal.msgError("修改失败:" + err.msg);
       })

@@ -42,3 +42,11 @@ export function delRecoverMoney(id) {
     method: 'delete'
   })
 }
+
+//根据uuid查询借出款详细信息
+export function getRecoverMoneyByUuid(uuid) {
+  return request({
+    url: '/system/recoverMoney/futuresNO/' + uuid,
+    method: 'get'
+  })
+}
