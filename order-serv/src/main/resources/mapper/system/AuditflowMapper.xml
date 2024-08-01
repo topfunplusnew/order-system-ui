@@ -20,12 +20,13 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
 
     <select id="selectAuditflowList" parameterType="Auditflow" resultMap="AuditflowResult">
         <include refid="selectAuditflowVo"/>
-        <where>  
+        <where>
             <if test="flowname != null  and flowname != ''"> and flowname like concat('%', #{flowname}, '%')</if>
             <if test="stepnum != null "> and stepnum = #{stepnum}</if>
             <if test="step != null "> and step = #{step}</if>
             <if test="auditauthority != null  and auditauthority != ''"> and auditauthority = #{auditauthority}</if>
         </where>
+        order by step asc
     </select>
     
     <select id="selectAuditflowById" parameterType="Long" resultMap="AuditflowResult">
@@ -68,4 +69,12 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
             #{id}
         </foreach>
     </delete>
+
+   <insert id="insertBatch" parameterType="java.util.List">
+    insert into auditflow (flowname, stepnum, step, auditauthority)
+    values
+    <foreach collection="list" item="item" index="index" separator=",">
+        (#{item.flowname}, #{item.stepnum}, #{item.step}, #{item.auditauthority})
+    </foreach>
+</insert>
 </mapper>

@@ -58,4 +58,7 @@ public interface IAuditflowService
      * @return 结果
      */
     public int deleteAuditflowById(Long id);
+
+
+    int put(List<Auditflow> auditflow);
 }
