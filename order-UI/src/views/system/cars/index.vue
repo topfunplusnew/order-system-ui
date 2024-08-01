@@ -307,7 +307,7 @@
         <el-form-item label="账号类型" prop="acountsType">
           <!--          <el-input v-model="form.billCategory" placeholder="请输入票据种类"/>-->
           <el-radio v-model="form.acountsType" label="1">收款</el-radio>
-          <el-radio v-model="form.acountsType" label="3">付款</el-radio>
+          <el-radio v-model="form.acountsType" label="2">付款</el-radio>
         </el-form-item>
 <!--        <el-form-item label="账号类型" prop="acountsType">-->
 <!--          <el-input v-model="form.bankNo" placeholder="请输入账号" />-->
