@@ -1,7 +1,12 @@
 package org.dzu.system.domain;
 
+import com.baomidou.mybatisplus.annotation.IdType;
+import com.baomidou.mybatisplus.annotation.TableField;
+import com.baomidou.mybatisplus.annotation.TableId;
+import com.baomidou.mybatisplus.annotation.TableName;
 import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.apache.commons.lang3.builder.ToStringStyle;
+import org.dzu.common.annotation.AutoTimestamps;
 import org.dzu.common.annotation.Excel;
 import org.dzu.common.core.domain.BaseEntity;
 
@@ -11,6 +16,8 @@ import org.hibernate.validator.constraints.Length;
 import javax.validation.constraints.DecimalMin;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Pattern;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 
 /**
  * 银行账号变动流水对象 bankAccountChange
@@ -18,59 +25,73 @@ import javax.validation.constraints.Pattern;
  * @author ml
  * @date 2024-07-29
  */
+@TableName("bankAccountChange")
 public class BankAccountChange extends BaseEntity
 {
     private static final long serialVersionUID = 1L;
 
     /** id */
+    @TableId(value = "id", type = IdType.AUTO)
     private Long id;
 
     /** 己方账号 */
     @Excel(name = "己方账号")
     @Length(max = 80, message = "己方账号的字符长度不允许超过80")
+    @NotNull(message = "己方账号不能为空")
+    @TableField("selfBankNo")
     private String selfBankNo;
 
     /** 发生操作行为的表 */
     @Excel(name = "发生操作行为的表")
     @Length(max = 80, message = "发生操作行为的表的字符长度不允许超过80")
+    @TableField("tableName")
     private String tableName;
 
     /** 发生操作行为的付款编号（UUID） */
     @Excel(name = "发生操作行为的付款编号")
     @Length(max = 50, message = "付款编号的字符长度不允许超过50")
+    @TableField("payNO")
+    @NotNull(message = "付款编号不能为空")
     private String payNO;
 
     /** 日期 */
-    @Excel(name = "日期")
-    @Length(max = 50, message = "日期的字符长度不允许超过50")
+    @Excel(name = "日期",dateFormat = "yyyy-MM-dd")
+    @NotNull(message = "日期不能为空")
+    @TableField("operateDate")
     private String operateDate;
 
     /** 变动类型（收入、支出） */
     @Excel(name = "变动类型")
     @NotNull(message = "变动类型不能为空")
     @Pattern(regexp = "收入|支出", message = "变动类型必须是：收入或支出")
+    @TableField("changeType")
     private String changeType;
 
     /** 金额 */
     @NotNull(message = "金额不能为空")
     @DecimalMin(value = "0.0", message = "金额不能小于0")
+    @TableField("moneyAmount")
     private Double moneyAmount;
 
     /** 备注 */
     @Excel(name = "备注")
     @Length(max = 200, message = "备注的字符长度不允许超过200")
+    @TableField("comments")
     private String comments;
 
     /** 添加时间 */
-    @Excel(name = "添加时间")
+    @Excel(name = "添加时间",dateFormat = "yyyy-MM-dd")
+    @TableField("addtime")
     private String addtime;
 
     /** 操作人员ID */
     @Excel(name = "操作人员ID")
+    @TableField("userId")
     private Long userId;
 
     /** 操作人员姓名 */
     @Excel(name = "操作人员姓名")
+    @TableField("UserName")
     private String UserName;
 
     public void setId(Long id) 
@@ -149,6 +170,7 @@ public class BankAccountChange extends BaseEntity
     {
         this.addtime = addtime;
     }
+
 
     public String getAddtime() 
     {

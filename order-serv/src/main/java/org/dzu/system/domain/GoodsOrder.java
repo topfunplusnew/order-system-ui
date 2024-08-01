@@ -3,11 +3,17 @@ package org.dzu.system.domain;
 import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.apache.commons.lang3.builder.ToStringStyle;
 import org.dzu.common.annotation.Excel;
+import org.dzu.common.annotation.PhoneLength;
 import org.dzu.common.core.domain.BaseEntity;
 import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableName;
 import org.dzu.common.annotation.OnlyZeroOrOne;
+import org.hibernate.validator.constraints.Length;
+
+import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Pattern;
+
 /**
  * 订单对象 goodsOrder
  * 
@@ -26,75 +32,93 @@ public class GoodsOrder extends BaseEntity
     /** 订单编号（UUID） */
     @Excel(name = "订单编号", readConverterExp = "U=UID")
     @TableField(value = "ordersNo")
+    @NotNull(message = "订单编号不能为空")
     private String ordersNo;
 
     /** 日期 */
-    @Excel(name = "日期")
+    @Excel(name = "日期",dateFormat = "yyyy-MM-dd")
     @TableField(value = "orderDate")
+    @NotNull(message = "日期不能为空")
     private String orderDate;
 
     /** 客户 */
     @Excel(name = "客户")
+    @NotNull(message = "客户不能为空")
+    @Length(max = 20, message= "客户名称不能超过20个字符")
     @TableField(value = "customer")
     private String customer;
 
     /** 客户ID */
     @Excel(name = "客户ID")
     @TableField(value = "customerID")
+    @Length(max = 20, message= "客户ID不能超过20个字符")
+    @NotNull(message = "客户ID不能为空")
     private Long customerID;
 
     /** 陆运车辆ID */
     @Excel(name = "陆运车辆ID")
+    @Length(max = 20, message= "陆运车辆ID不能超过20个字符")
     @TableField(value = "landCarID")
     private Long landCarID;
 
     /** 陆运车牌 */
     @Excel(name = "陆运车牌")
+    @Length(max = 20, message= "陆运车牌不能超过20个字符")
     @TableField(value = "landCarNo")
     private String landCarNo;
 
     /** 陆运司机电话 */
     @Excel(name = "陆运司机电话")
+    @PhoneLength
     @TableField(value = "landDriverTel")
     private String landDriverTel;
 
     /** 陆地司机姓名 */
     @Excel(name = "陆地司机姓名")
+    @Length(max = 20, message= "陆地司机姓名不能超过20个字符")
     @TableField(value = "landDriverName")
     private String landDriverName;
 
     /** 海运车辆ID */
     @Excel(name = "海运车辆ID")
     @TableField(value = "seaCarID")
+    @Length(max = 20, message= "海运车辆ID不能超过20个字符")
     private Long seaCarID;
 
     /** 海运车牌 */
     @Excel(name = "海运车牌")
+    @Length(max = 20, message= "海运车牌不能超过20个字符")
     @TableField(value = "seaCarNo")
     private String seaCarNo;
 
     /** 海运司机电话 */
     @Excel(name = "海运司机电话")
+    @PhoneLength
     @TableField(value = "seaDriverTel")
     private String seaDriverTel;
 
     /** 海运司机姓名 */
     @Excel(name = "海运司机姓名")
+    @Length(max = 20, message= "海运司机姓名不能超过20个字符")
     @TableField(value = "seaDriverName")
     private String seaDriverName;
 
     /** 审核人编号 */
     @Excel(name = "审核人编号")
+    @Length(max = 20, message= "审核人编号不能超过20个字符")
     @TableField(value = "checkUserId")
     private Long checkUserId;
 
     /** 审核状态（已审核、未审核） */
-    @Excel(name = "审核状态", readConverterExp = "已=审核、未审核")
+    @Excel(name = "审核状态", readConverterExp = "0=已审核,1=未审核")
+    @NotNull(message = "审核状态不能为空")
     @TableField(value = "checkState")
     private String checkState;
 
     /** 开票状态（未开票，部分开票，已开票） */
-    @Excel(name = "开票状态", readConverterExp = "未=开票，部分开票，已开票")
+    @Excel(name = "开票状态")
+    @NotNull(message = "开票状态不能为空")
+    @Pattern(regexp = "未开票|部分开票|已开票", message= "开票状态格式错误")
     @TableField(value = "invoiceState")
     private String invoiceState;
 
@@ -105,26 +129,31 @@ public class GoodsOrder extends BaseEntity
 
     /** 打款状态(申请中，已打款，未打款) */
     @Excel(name = "打款状态(申请中，已打款，未打款)")
+    @Pattern(regexp = "申请中|已打款|未打款", message= "打款状态必须是：申请中，已打款，未打款")
     @TableField(value = "PaymentState")
     private String PaymentState;
 
     /** 陆运银行户名 */
     @Excel(name = "陆运银行户名")
+    @Length(max = 20, message= "陆运银行户名不能超过20个字符")
     @TableField(value = "landBankName")
     private String landBankName;
 
     /** 陆运银行账号 */
     @Excel(name = "陆运银行账号")
+    @Length(max = 20, message= "陆运银行账号不能超过20个字符")
     @TableField(value = "landBankNo")
     private String landBankNo;
 
     /** 海运银行户名 */
     @Excel(name = "海运银行户名")
+    @Length(max = 20, message= "海运银行户名不能超过20个字符")
     @TableField(value = "seaBankName")
     private String seaBankName;
 
     /** 海运银行账号 */
     @Excel(name = "海运银行账号")
+    @Length(max = 20, message= "海运银行账号不能超过20个字符")
     @TableField(value = "seaBankNo")
     private String seaBankNo;
 
@@ -135,46 +164,54 @@ public class GoodsOrder extends BaseEntity
 
     /** 销售经理 */
     @Excel(name = "销售经理")
+    @Length(max = 20, message= "销售经理不能超过20个字符")
     @TableField(value = "saleManager")
     private String saleManager;
 
     /** 车队 */
     @Excel(name = "车队")
+    @Length(max = 20, message= "车队不能超过20个字符")
     @TableField(value = "fleet")
     private String fleet;
 
     /** 是否被调整单（ 是  否） */
-    @Excel(name = "是否被调整单", readConverterExp = "是=,否=")
+    @Excel(name = "是否被调整单")
+    @Pattern(regexp = "是|否", message= "是否被调整单必须是 是或否")
     @TableField(value = "isAdjusted")
     private String isAdjusted;
 
     /** 调整日期 */
-    @Excel(name = "调整日期")
+    @Excel(name = "调整日期",dateFormat = "yyyy-MM-dd")
     @TableField(value = "adjustDate")
     private String adjustDate;
 
     /** 是否调整单（是  否） */
-    @Excel(name = "是否调整单", readConverterExp = "是=,否=")
+    @Excel(name = "是否调整单",dateFormat = "yyyy-MM-dd")
+    @Pattern(regexp = "是|否", message= "是否调整单必须是 是或否")
     @TableField(value = "isAdjust")
     private String isAdjust;
 
     /** 原订单编号 */
     @Excel(name = "原订单编号")
+    @Length(max = 20, message= "原订单编号不能超过20个字符")
     @TableField(value = "adjustOrderid")
     private Long adjustOrderid;
 
     /** 是否可编辑 */
     @Excel(name = "是否可编辑")
+    @Pattern(regexp = "是|否", message= "是否可编辑必须是 是或否")
     @TableField(value = "isedit")
     private Long isedit;
 
     /** 客户是否开票 */
     @Excel(name = "客户是否开票")
+    @Pattern(regexp = "是|否", message= "客户是否开票必须是 是或否")
     @TableField(value = "customerIsInvoice")
     private Long customerIsInvoice;
 
     /** 供应商是否开票 */
     @Excel(name = "供应商是否开票")
+    @Pattern(regexp = "是|否", message= "供应商是否开票必须是 是或否")
     @TableField(value = "isSupplierInvoice")
     private Long isSupplierInvoice;
 
@@ -185,6 +222,7 @@ public class GoodsOrder extends BaseEntity
 
     /** 备注 */
     @Excel(name = "备注")
+    @Length(max = 200, message= "备注不能超过200个字符")
     @TableField(value = "comments")
     private String comments;
 

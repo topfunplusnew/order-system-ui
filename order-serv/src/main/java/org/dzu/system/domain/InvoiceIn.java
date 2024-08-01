@@ -9,6 +9,11 @@ import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableName;
 import org.dzu.common.annotation.DecimalMaxDigits;
 import org.dzu.common.annotation.OnlyZeroOrOne;
+import org.hibernate.validator.constraints.Length;
+
+import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Pattern;
+
 /**
  * 发票购入信息对象 invoiceIn
  * 
@@ -25,12 +30,13 @@ public class InvoiceIn extends BaseEntity
     private Long id;
 
     /** 开票日期 */
-    @Excel(name = "开票日期")
+    @Excel(name = "开票日期",dateFormat = "yyyy-MM-dd")
     @TableField(value = "invoiceDate")
     private String invoiceDate;
 
     /** 我方开票实体 */
     @Excel(name = "我方开票实体")
+    @Length(max = 20, message = "我方开票实体不能超过 20 个字符")
     @TableField(value = "invoiceObject")
     private String invoiceObject;
 
@@ -40,22 +46,30 @@ public class InvoiceIn extends BaseEntity
     private Double invoiceAmount;
 
     /** 对方公司类别（客户、供应商,其他） */
-    @Excel(name = "对方公司类别", readConverterExp = "客=户、供应商,其他")
+    @Excel(name = "对方公司类别")
+    @NotNull(message = "对方公司类别不能为空")
+    @Pattern(regexp = "客户|供应商|其他", message = "对方公司类别必须是 客户，供应商，其他")
     @TableField(value = "companyType")
     private String companyType;
 
     /** 对方公司名称 */
     @Excel(name = "对方公司名称")
+    @NotNull(message = "对方公司名称不能为空")
+    @Length(max = 55, message = "对方公司名称不能超过 55 个字符")
     @TableField(value = "companyName")
     private String companyName;
 
     /** 对方公司ID */
     @Excel(name = "对方公司ID")
+    @NotNull(message = "对方公司ID不能为空")
+    @Length(max = 50, message = "对方公司ID不能超过 50 个字符")
     @TableField(value = "companyID")
     private Long companyID;
 
     /** 票据单位名称 */
     @Excel(name = "票据单位名称")
+    @NotNull(message = "票据单位名称不能为空")
+    @Length(max = 50, message = "票据单位名称不能超过 50 个字符")
     @TableField(value = "invoiceCompanyName")
     private String invoiceCompanyName;
 
@@ -65,22 +79,25 @@ public class InvoiceIn extends BaseEntity
     private Double ticketPoint;
 
     /** 票点金额（开票金额*票点） */
-    @Excel(name = "票点金额", readConverterExp = "开=票金额*票点")
+    @Excel(name = "票点金额", readConverterExp = "票点金额=开票金额*票点")
+    @NotNull(message = "票点金额不能为空")
     @TableField(value = "ticketPointAmount")
     private Double ticketPointAmount;
 
     /** 是否订单对应票点 */
     @Excel(name = "是否订单对应票点")
+    @Pattern(regexp = "是|否", message = "是否订单对应票点必须是 是，否")
     @TableField(value = "isOrderTax")
     private Long isOrderTax;
 
     /** 备注 */
     @Excel(name = "备注")
+    @Length(max = 200, message = "备注的字符长度不允许超过200")
     @TableField(value = "comments")
     private String comments;
 
     /** 添加时间 */
-    @Excel(name = "添加时间")
+    @Excel(name = "添加时间",dateFormat = "yyyy-MM-dd")
     @TableField(value = "addtime")
     private String addtime;
 

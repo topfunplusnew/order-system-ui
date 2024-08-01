@@ -2,6 +2,7 @@ package org.dzu.system.domain;
 
 import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.apache.commons.lang3.builder.ToStringStyle;
+import org.dzu.common.annotation.AutoTimestamps;
 import org.dzu.common.annotation.Excel;
 import org.dzu.common.core.domain.BaseEntity;
 import com.baomidou.mybatisplus.annotation.TableField;
@@ -9,6 +10,13 @@ import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableName;
 import org.dzu.common.annotation.DecimalMaxDigits;
 import org.dzu.common.annotation.OnlyZeroOrOne;
+import org.hibernate.validator.constraints.Length;
+
+import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Pattern;
+import java.text.SimpleDateFormat;
+import java.util.Date;
+
 /**
  * 对冲账信息对象 Offsetting
  * 
@@ -25,7 +33,8 @@ public class Offsetting extends BaseEntity
     private Long id;
 
     /** 冲抵编号（UUID） */
-    @Excel(name = "冲抵编号", readConverterExp = "U=UID")
+    @Length(max = 32, message = "冲抵编号长度不能超过32个字符")
+    @Excel(name = "冲抵编号", readConverterExp = "UUID")
     @TableField(value = "OffsetNO")
     private String OffsetNO;
 
@@ -35,7 +44,8 @@ public class Offsetting extends BaseEntity
     private String operateDate;
 
     /** 冲抵类型（收入、支出） */
-    @Excel(name = "冲抵类型", readConverterExp = "收=入、支出")
+    @Excel(name = "冲抵类型")
+    @Pattern(regexp = "收入|支出", message = "冲抵类型必须是收入或者支出")
     @TableField(value = "operateType")
     private String operateType;
 
@@ -46,21 +56,27 @@ public class Offsetting extends BaseEntity
 
     /** 公司 */
     @Excel(name = "公司")
+    @NotNull(message = "公司不能为空")
+    @Length(max = 32, message = "公司长度不能超过32个字符")
     @TableField(value = "companyName")
     private String companyName;
 
     /** 公司ID */
     @Excel(name = "公司ID")
+    @NotNull(message = "公司ID不能为空")
+    @Length(max = 32, message = "公司ID长度不能超过32个字符")
     @TableField(value = "companyId")
     private Long companyId;
 
     /** 公司类型（1、客户 2、供应商） */
-    @Excel(name = "公司类型", readConverterExp = "1=、客户,2=、供应商")
+    @Excel(name = "公司类型", readConverterExp = "1=客户,2=供应商")
+    @NotNull(message = "公司类型不能为空")
     @TableField(value = "companyType")
     private Long companyType;
 
     /** 备注 */
     @Excel(name = "备注")
+    @Length(max = 256, message = "备注长度不能超过256个字符")
     @TableField(value = "comments")
     private String comments;
 
@@ -106,9 +122,12 @@ public class Offsetting extends BaseEntity
     {
         this.operateDate = operateDate;
     }
-
+    @AutoTimestamps
     public String getOperateDate() 
     {
+        if (this.operateDate == null || this.operateDate.isEmpty()) {
+            this.operateDate = new SimpleDateFormat("yyyy-MM-dd").format(new Date());
+        }
         return operateDate;
     }
     public void setOperateType(String operateType) 

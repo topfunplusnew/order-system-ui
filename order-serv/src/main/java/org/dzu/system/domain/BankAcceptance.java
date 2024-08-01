@@ -1,5 +1,9 @@
 package org.dzu.system.domain;
 
+import com.baomidou.mybatisplus.annotation.IdType;
+import com.baomidou.mybatisplus.annotation.TableField;
+import com.baomidou.mybatisplus.annotation.TableId;
+import com.baomidou.mybatisplus.annotation.TableName;
 import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.apache.commons.lang3.builder.ToStringStyle;
 import org.dzu.common.annotation.AutoTimestamps;
@@ -23,14 +27,17 @@ import java.util.Date;
  * @author ml
  * @date 2024-07-29
  */
+@TableName("bankacceptance")
 public class BankAcceptance extends BaseEntity
 {
     private static final long serialVersionUID = 1L;
 
     /** id */
+    @TableId(value = "id",type = IdType.AUTO)
     private Long id;
 
     /** 操作日期 */
+    @TableField("operatedate")
     @Excel(name = "操作日期",dateFormat = "yyyy-MM-dd")
     private String operateDate;
 
@@ -38,102 +45,124 @@ public class BankAcceptance extends BaseEntity
     @Excel(name = "票据号码")
     @Length(max = 30, message = "票据号码的字符长度不允许超过30")
     @NotNull(message = "票据号码不能为空")
+    @TableField("billNo")
     private String billNo;
 
     /** 出票日期 */
     @Excel(name = "出票日期",dateFormat = "yyyy-MM-dd")
     @NotNull(message = "出票日期不能为空")
+    @TableField("issueDate")
     private String issueDate;
 
     /** 到期日期 */
     @Excel(name = "到期日期",dateFormat = "yyyy-MM-dd")
     @NotNull(message = "到期日期不能为空")
+    @TableField("dueDate")
     private String dueDate;
 
     /** 我方承兑账户 */
     @Excel(name = "我方承兑账户")
     @Length(max = 20, message = "我方承兑账户的字符长度不允许超过20")
     @NotNull(message = "我方承兑账户不能为空")
+    @TableField("billAccount")
     private String billAccount;
 
     /** 票据日期 */
     @Excel(name = "票据日期",dateFormat = "yyyy-MM-dd")
     @NotNull(message = "票据日期不能为空")
+    @TableField("billDate")
     private String billDate;
 
     /** 分类（收入、支出） */
     @Excel(name = "分类(收入/支出)")
     @Pattern(regexp = "收入|支出", message = "分类必须是：收入或支出")
     @NotNull(message = "分类不能为空")
+    @TableField("billType")
     private String billType;
 
     /** 事由 */
     @Excel(name = "事由")
     @Length(max = 200, message = "事由的字符长度不允许超过200")
     @NotNull(message = "事由不能为空")
+    @TableField("reason")
     private String reason;
 
     /** 票据金额 */
     @DecimalMaxDigits
     @NotNull(message = "票据金额不能为空")
+    @TableField("billAmount")
     private Double billAmount;
 
     /** 贴息点数 */
     @DecimalMaxDigits
     @NotNull(message = "贴息点数不能为空")
+    @TableField("inDiscountPoints")
     private Double inDiscountPoints;
 
     /** 贴息金额 */
     @DecimalMaxDigits
     @NotNull(message = "贴息金额不能为空")
+    @TableField("inDiscountAmount")
     private Double inDiscountAmount;
 
     /** 票据种类（电子/纸质） */
     @Excel(name = "票据种类（电子或纸质）")
     @Pattern(regexp = "电子|纸质", message = "票据类型必须是：电子或纸质")
     @NotNull(message = "票据类型不能为空")
+    @TableField("billCategory")
     private String billCategory;
 
     /** 来源 */
     @Excel(name = "来源")
     @Length(max = 50, message = "来源的字符长度不允许超过50")
+    @NotNull(message = "来源不能为空")
+    @TableField("origin")
     private String origin;
 
     /** 背书人 */
     @Excel(name = "背书人")
     @Length(max = 20, message = "背书人的字符长度不允许超过20")
     @NotNull(message = "背书人不能为空")
+    @TableField("endorser")
     private String endorser;
 
     /** 被背书人 */
     @Excel(name = "被背书人")
     @Length(max = 20, message = "被背书人的字符长度不允许超过50")
     @NotNull(message = "被背书人不能为空")
+    @TableField("endorsee")
     private String endorsee;
 
     /** 背书事由（出卖/付货款） */
     @Excel(name = "背书事由")
     @Pattern(regexp = "出卖|付货款", message = "背书事由必须是：出卖或付货款")
+    @TableField("endorseReason")
     private String endorseReason;
 
-    /** 备注 */    @Excel(name = "备注")
+    /** 备注 */
+    @Excel(name = "备注")
     @Length(max = 50, message = "备注的字符长度不允许超过50")
+    @TableField("comments")
     private String comments;
 
     /** 添加时间 */
     @Excel(name = "添加时间",dateFormat = "yyyy-MM-dd")
+    @TableField("addtime")
     private String addtime;
 
     /** 操作人员ID */
     @Excel(name = "操作人员ID")
+    @TableField("userId")
     private Long userId;
 
     /** 操作人员姓名 */
     @Excel(name = "操作人员姓名")
+    @TableField("UserName")
     private String UserName;
 
     /** 删除标记 */
     @OnlyZeroOrOne
+    @TableField("delFlag")
     private Long delFlag;
 
     public void setId(Long id) 

@@ -8,6 +8,8 @@ import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableName;
 import org.dzu.common.annotation.OnlyZeroOrOne;
+import org.hibernate.validator.constraints.Length;
+
 /**
  * 出差报销对象 tripReimbursement
  * 
@@ -26,20 +28,24 @@ public class TripReimbursement extends BaseEntity
     /** 出差ID */
     @Excel(name = "出差ID")
     @TableField(value = "bTripId")
+    @Length(max = 20, message = "出差ID长度不能超过20个字符")
     private Long bTripId;
 
     /** 报销项 */
     @Excel(name = "报销项")
+    @Length(max = 20, message = "报销项长度不能超过20个字符")
     @TableField(value = "item")
     private String item;
 
     /** 费用 */
     @Excel(name = "费用")
+    @Length(max = 20, message = "费用长度不能超过20个字符")
     @TableField(value = "itemCost")
     private String itemCost;
 
     /** 备注 */
     @Excel(name = "备注")
+    @Length(max = 200, message = "备注长度不能超过200个字符")
     @TableField(value = "comments")
     private String comments;
 

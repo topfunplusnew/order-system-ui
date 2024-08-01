@@ -8,6 +8,10 @@ import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableName;
 import org.dzu.common.annotation.OnlyZeroOrOne;
+import org.hibernate.validator.constraints.Length;
+
+import javax.validation.constraints.NotNull;
+
 /**
  * 走访记录对象 CustomerVisit
  * 
@@ -26,25 +30,31 @@ public class CustomerVisit extends BaseEntity
     /** 省 */
     @Excel(name = "省")
     @TableField(value = "province")
+    @Length(max = 10, message = "省长度不能超过10个字符")
     private String province;
 
     /** 市县 */
     @Excel(name = "市县")
     @TableField(value = "city")
+    @Length(max = 10, message = "市县长度不能超过10个字符")
     private String city;
 
     /** 乡镇（街道） */
-    @Excel(name = "乡镇", readConverterExp = "街=道")
+    @Excel(name = "乡镇", readConverterExp = "街道")
     @TableField(value = "county")
+    @Length(max = 10, message = "乡镇（街道）长度不能超过10个字符")
     private String county;
 
     /** 客户 */
     @Excel(name = "客户")
+    @Length(max = 20, message = "客户长度不能超过20个字符")
+    @NotNull(message = "客户不能为空")
     @TableField(value = "customer")
     private String customer;
 
     /** 负责人 */
     @Excel(name = "负责人")
+    @Length(max = 20, message = "负责人长度不能超过20个字符")
     @TableField(value = "leaderName")
     private String leaderName;
 
@@ -69,32 +79,37 @@ public class CustomerVisit extends BaseEntity
     private String localDealer;
 
     /** 月用货量（车数） */
-    @Excel(name = "月用货量", readConverterExp = "车=数")
+    @Excel(name = "月用货量", readConverterExp = "车数")
     @TableField(value = "monthlyConsumption")
     private String monthlyConsumption;
 
     /** 白玻用货习惯及厂家 */
     @Excel(name = "白玻用货习惯及厂家")
+    @Length(max = 50, message = "白玻用货习惯及厂家长度不能超过50个字符")
     @TableField(value = "whiteGlassFactory")
     private String whiteGlassFactory;
 
     /** lowe玻璃用货厂家及用量 */
     @Excel(name = "lowe玻璃用货厂家及用量")
+    @Length(max = 500, message = "lowe玻璃用货厂家及用量长度不能超过500个字符")
     @TableField(value = "loweGlassConsumption")
     private String loweGlassConsumption;
 
     /** 色玻、过度色玻璃用货厂家及用量 */
     @Excel(name = "色玻、过度色玻璃用货厂家及用量")
+    @Length(max = 500, message = "色��、过度色����用货厂家及用量长度不能超过500个字符")
     @TableField(value = "colorGlassConsumption")
     private String colorGlassConsumption;
 
     /** 特色厚度、特殊尺寸、协议品用货厂家及用量 */
     @Excel(name = "特色厚度、特殊尺寸、协议品用货厂家及用量")
+    @Length(max = 500, message = "特色厚度、特殊尺寸、协议品用货厂家及用量长度不能超过500个字符")
     @TableField(value = "specialGlassConsumption")
     private String specialGlassConsumption;
 
     /** 备注 */
     @Excel(name = "备注")
+    @Length(max = 500, message = "备注长度不能超过500个字符")
     @TableField(value = "comments")
     private String comments;
 

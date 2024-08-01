@@ -1,5 +1,8 @@
 package org.dzu.system.domain;
 
+import com.baomidou.mybatisplus.annotation.TableField;
+import com.baomidou.mybatisplus.annotation.TableId;
+import com.baomidou.mybatisplus.annotation.TableName;
 import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.apache.commons.lang3.builder.ToStringStyle;
 import org.dzu.common.annotation.Excel;
@@ -17,34 +20,43 @@ import javax.validation.constraints.Pattern;
  * @author ml
  * @date 2024-07-29
  */
+@TableName("virtualBankAccountChange")
 public class VirtualBankAccountChange extends BaseEntity
 {
     private static final long serialVersionUID = 1L;
 
     /** id */
+    @TableId(value = "id")
     private Long id;
 
     /** 公司ID */
+    @TableField(value = "companyId")
     @Excel(name = "公司ID")
+    @NotNull(message = "公司ID不能为空")
     @Length(max = 80, message = "公司ID的字符长度不允许超过80")
     private String companyId;
 
     /** 发生操作行为的表 */
     @Excel(name = "发生操作行为的表")
+    @TableField(value = "tableName")
     @Length(max = 80, message = "发生操作行为的表的字符长度不允许超过80")
     private String tableName;
 
     /** 发生操作行为的冲抵款编号（UUID） */
+    @TableField(value = "payNO")
+    @NotNull(message = "发生操作行为的冲抵款编号不能为空")
     @Excel(name = "发生操作行为的冲抵款编号", readConverterExp = "U=UID")
     @Length(max = 50, message = "冲抵款编号的字符长度不允许超过50")
     private String payNO;
 
     /** 日期 */
     @Excel(name = "日期")
+    @TableField(value = "operateDate")
     @Length(max = 50, message = "日期的字符长度不允许超过50")
     private String operateDate;
 
     /** 变动类型（收入、支出） */
+    @TableField(value = "changeType")
     @Excel(name = "变动类型", readConverterExp = "收=入、支出")
     @NotNull(message = "变动类型不能为空")
     @Pattern(regexp = "收入|支出", message = "变动类型必须是：收入或支出")
@@ -52,24 +64,29 @@ public class VirtualBankAccountChange extends BaseEntity
 
     /** 金额 */
     @NotNull(message = "金额不能为空")
+    @TableField(value = "moneyAmount")
     @DecimalMaxDigits
     private Double moneyAmount;
 
     /** 备注 */
     @Excel(name = "备注")
+    @TableField(value = "comments")
     @Length(max = 200, message = "备注的字符长度不允许超过200")
     private String comments;
 
     /** 添加时间 */
     @Excel(name = "添加时间")
+    @TableField(value = "addtime")
     private String addtime;
 
     /** 操作人员ID */
     @Excel(name = "操作人员ID")
+    @TableField(value = "userId")
     private Long userId;
 
     /** 操作人员姓名 */
     @Excel(name = "操作人员姓名")
+    @TableField(value = "UserName")
     private String UserName;
 
     public void setId(Long id) 

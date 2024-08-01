@@ -16,6 +16,8 @@ import org.hibernate.validator.constraints.Length;
 import javax.validation.constraints.Max;
 import javax.validation.constraints.Min;
 import javax.validation.constraints.NotNull;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 
 /**
  * 从外部借款信息对象 borrowedMoney
@@ -235,6 +237,7 @@ public class BorrowedMoney extends BaseEntity {
 
     public String getAddtime() 
     {
+
         return addtime;
     }
     public void setUserId(Long userId) 
