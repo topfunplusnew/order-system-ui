@@ -86,6 +86,12 @@
         <template slot-scope="scope">
           <el-button
             size="mini"
+            @click="handleGetBackMoney(scope.row)"
+            v-hasPermi="['system:lendMoney:remove']"
+          >收回资金
+          </el-button>
+          <el-button
+            size="mini"
             type="primary"
             @click="handleUpdate(scope.row)"
             v-hasPermi="['system:lendMoney:edit']"
@@ -165,12 +171,107 @@
         <el-button @click="cancel">取 消</el-button>
       </div>
     </el-dialog>
+
+
+    <!--    回收弹窗-->
+    <el-dialog title="收回资金操作" :visible.sync="giveRecoverMoneyShow">
+      <div id="back-money-info">
+        <el-card class="box-card">
+          <div slot="header" class="clearfix">
+            <span>历史收回记录</span>
+            <el-button style="float: right; padding: 3px 0" @click="handleRefreshNeedGetBackMoneyList">
+              刷新
+            </el-button>
+          </div>
+          <el-table
+            :data="needGetBackMoneyList"
+            style="width: 100%" border v-loading="needMoneyLoading">
+            <el-table-column
+              prop="id"
+              label="ID"
+              width="60">
+            </el-table-column>
+            <el-table-column
+              prop="futuresNO"
+              label="借出款编号"
+              width="130">
+            </el-table-column>
+            <el-table-column
+              prop="moneyAmount"
+              label="收回金额">
+            </el-table-column>
+            <el-table-column
+              prop="bankNo"
+              label="收回账号">
+            </el-table-column>
+            <el-table-column
+              prop="acountsName"
+              label="收回账户">
+            </el-table-column>
+            <el-table-column
+              prop="recoverDate"
+              label="还款日期">
+            </el-table-column>
+            <el-table-column
+              prop="bankNo"
+              label="还款账号">
+            </el-table-column>
+            <el-table-column
+              prop="comments"
+              label="备注">
+            </el-table-column>
+          </el-table>
+        </el-card>
+        <br/>
+        <el-card class="box-card">
+          <div slot="header" class="clearfix">
+            <h4 style="font-weight: bolder">借出款编号:{{ currentUUID }}
+              <el-button type="primary" @click="innerVisible = true">收款</el-button>
+            </h4>
+          </div>
+          <!--内层-->
+          <el-dialog
+            width="30%"
+            title="继续收款"
+            :visible.sync="innerVisible"
+            append-to-body>
+            <!-- 还款表单-->
+            <el-form :model="currentRecoverMoneyInfo" class="demo-form-inline">
+              <el-form-item label="收回账号" prop="bankNo">
+                <span>{{ currentRecoverMoneyInfo.selfBankNo }}</span>
+              </el-form-item>
+              <el-form-item label="收回账户" prop="acountsName">
+                <el-input v-model="currentAccountsName" placeholder="请输入收回账户"/>
+                <!--{{ currentAccountsName }}-->
+              </el-form-item>
+              <el-form-item label="收回金额" prop="moneyAmount">
+                <el-input v-model="currentRecoverMoneyInfo.moneyAmount" placeholder="请输入收回金额"/>
+              </el-form-item>
+              <el-form-item label="收回日期" prop="payDate">
+                <el-date-picker
+                  v-model="currentRecoverMoneyInfo.recoverDate"
+                  type="date"
+                  placeholder="请选择收回日期" value-format="yyyy-MM-dd">
+                </el-date-picker>
+              </el-form-item>
+              <el-form-item label="备注信息" prop="comments">
+                <el-input v-model="currentRecoverMoneyInfo.comments" placeholder="请输入备注信息"/>
+              </el-form-item>
+              <el-form-item>
+                <el-button type="primary" @click="RecoverMoney">还款</el-button>
+              </el-form-item>
+            </el-form>
+          </el-dialog>
+        </el-card>
+      </div>
+    </el-dialog>
   </div>
 </template>
 
 <script>
 import {listLendMoney, getLendMoney, delLendMoney, addLendMoney, updateLendMoney} from "@/api/system/lendMoney";
 import {mapGetters} from "vuex";
+import {addRecoverMoney, getRecoverMoneyByUuid} from "@/api/system/recoverMoney";
 
 export default {
   name: "LendMoney",
@@ -257,7 +358,21 @@ export default {
           label: '其他',
           value: '其他'
         }
-      ]
+      ],
+      //uuid
+      currentUUID: '',
+      //收回资金弹窗
+      giveRecoverMoneyShow: false,
+      //历史收回资金列表
+      needGetBackMoneyList: [],
+      //加载
+      needMoneyLoading: false,
+      //收款表单
+      currentRecoverMoneyInfo: {},
+      innerVisible: false,
+      //默认填充的账户和账号
+      currentBankNo: '',
+      currentAccountsName: ''
     };
   },
   created() {
@@ -269,6 +384,41 @@ export default {
     ...mapGetters(['tempLendMoneyList'])
   },
   methods: {
+    //点击收回资金按钮
+    handleGetBackMoney(row) {
+      console.log(row)
+      this.giveRecoverMoneyShow = true;
+      this.needMoneyLoading = true
+      this.currentUUID = row.futuresNO
+      //不需要填的字段自动填充
+      this.currentBankNo = row.selfBankNo
+      this.currentAccountsName = row.selfAcountsName
+      this.currentRecoverMoneyInfo.selfBankNo = row.selfBankNo
+      setTimeout(() => {
+        getRecoverMoneyByUuid(this.currentUUID).then(res => {
+          this.needGetBackMoneyList = res.data
+          this.needMoneyLoading = false
+        })
+      }, 200)
+    },
+    //刷新
+    handleRefreshNeedGetBackMoneyList() {
+      this.handleGetBackMoney({futuresNO: this.currentUUID})
+    },
+    //收回资金
+    RecoverMoney() {
+      addRecoverMoney({
+        ...this.currentRecoverMoneyInfo, futuresNO: this.currentUUID
+        , bankNo: this.currentBankNo, acountsName: this.currentAccountsName
+      })
+        .then(res => {
+          this.$modal.msgSuccess("修改成功");
+          this.giveRecoverMoneyShow = false
+          this.innerVisible = false
+        }).catch(err => {
+        this.$modal.msgError("修改失败:" + err.msg);
+      })
+    },
     handleQueryTime() {
       //重置
       this.lendMoneyList = this.tempLendMoneyList
