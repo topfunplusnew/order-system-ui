@@ -61,4 +61,6 @@ public interface BorrowedMoneyMapper extends BaseMapper<BorrowedMoney>
     public int deleteBorrowedMoneyByIds(Long[] ids);
 
     BorrowedMoney selectBorrowedMoneyByUUID(String uuid);
+
+    void updateBorrowedMoneyIsEndByLoanNO(String loanNO);
 }

@@ -184,4 +184,10 @@ public class BorrowedMoneyServiceImpl implements IBorrowedMoneyService {
     public BorrowedMoney seleteBorrowedMoneyByUUID(String uuid) {
         return borrowedMoneyMapper.selectBorrowedMoneyByUUID(uuid);
     }
+
+    @Override
+    public void updateBorrowedMoneyIsEndByLoanNO(String loanNO) {
+        borrowedMoneyMapper.updateBorrowedMoneyIsEndByLoanNO(loanNO);
+        return;
+    }
 }

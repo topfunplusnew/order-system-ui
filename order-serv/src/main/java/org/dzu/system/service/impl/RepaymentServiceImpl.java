@@ -111,14 +111,17 @@ public class RepaymentServiceImpl implements IRepaymentService {
         // 准备同步到变动表
         BankAccountChange bankAccountChange = new BankAccountChange();
         bankAccountChange.setSelfBankNo(repayment.getBankNo());
-        bankAccountChange.setMoneyAmount(repayment.getMoneyAmount() + repayment.getRatio());
+        bankAccountChange.setMoneyAmount(repayment.getMoneyAmount());
         bankAccountChange.setPayNO(repayment.getPayNO());
         bankAccountChange.setChangeType(BankChangeConstant.PaymentType.PAYMENT.get());
         bankAccountChange.setTableName(BankChangeConstant.TableName.REPAYMENT.get());
         bankAccountChangeService.insertBankAccountChange(bankAccountChange);
+        int i = repaymentMapper.insertRepayment(repayment);
+        // 判断是否需要更新对应借款的isEnd属性,如果需要，自动更新
+        updateIsEnd(repayment.getLoanNO());
 
         // 准备插入
-        return repaymentMapper.insertRepayment(repayment);
+        return i;
     }
 
     /**
@@ -157,11 +160,14 @@ public class RepaymentServiceImpl implements IRepaymentService {
         // 准备同步到变动表
         BankAccountChange bankAccountChange = new BankAccountChange();
         bankAccountChange.setSelfBankNo(repayment.getBankNo());
-        bankAccountChange.setMoneyAmount(repayment.getMoneyAmount() + repayment.getRatio());
+        bankAccountChange.setMoneyAmount(repayment.getMoneyAmount());
         bankAccountChange.setPayNO(repayment.getPayNO());
         bankAccountChange.setChangeType(BankChangeConstant.PaymentType.PAYMENT.get());
         bankAccountChange.setTableName(BankChangeConstant.TableName.REPAYMENT.get());
         bankAccountChangeService.updateBankAccountChangeByUUID(bankAccountChange);
+
+        // 判断是否需要更新对应借款的isEnd属性,如果需要，自动更新
+        updateIsEnd(repayment.getLoanNO());
 
         return repaymentMapper.updateRepayment(repayment);
     }
@@ -211,5 +217,9 @@ public class RepaymentServiceImpl implements IRepaymentService {
         queryWrapper.eq("loanNO", loanNo).eq("delFlag", DelConstants.NODEL);
 
         return repaymentMapper.selectList(queryWrapper);
+    }
+
+    private void updateIsEnd(String loanNO) {
+        borrowedMoneyService.updateBorrowedMoneyIsEndByLoanNO(loanNO);
     }
 }
