@@ -70,6 +70,16 @@ public class PaymentController extends BaseController
         return success(paymentService.selectPaymentById(id));
     }
 
+
+    /**
+     * 获取付款信息详细信息根据uuid
+     */
+    @PreAuthorize("@ss.hasPermi('system:payment:query')")
+    @GetMapping(value = "/payNO/{uuid}")
+    public AjaxResult getInfoByPayNO(@PathVariable("uuid") String payNO)
+    {
+        return success(paymentService.selectPaymentByPayNO(payNO));
+    }
     /**
      * 新增付款信息
      */

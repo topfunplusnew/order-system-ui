@@ -19,6 +19,8 @@ public interface IPaymentService
      */
     public Payment selectPaymentById(Long id);
 
+    Payment selectPaymentByPayNO(String payNO);
+
     /**
      * 查询付款信息列表
      * 
@@ -51,11 +53,4 @@ public interface IPaymentService
      */
     public int deletePaymentByIds(Long[] ids);
 
-    /**
-     * 删除付款信息信息
-     * 
-     * @param id 付款信息主键
-     * @return 结果
-     */
-    public int deletePaymentById(Long id);
 }
