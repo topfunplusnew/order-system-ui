@@ -103,11 +103,12 @@ public class RepaymentServiceImpl implements IRepaymentService {
         if (bankAccount == null) {
             throw new ServiceException("BankNo_miss");
         }
-//        BorrowedMoney borrowedMoney = result.get(0);
-//        borrowedMoney
-//                .setIsEnd(BorrowedMoneyConstants.isEnd);
-//        // 修改借款表的标志为还款
-//        borrowedMoneyService.updateBorrowedMoney(borrowedMoney);
+
+        // 判断转账的bankName存是否存在,如果为null则自动补充上去
+        if(bankAccount.getAcountsName()==null){
+            repayment.setAcountsName(bankAccount.getAcountsName());
+        }
+
         // 准备同步到变动表
         BankAccountChange bankAccountChange = new BankAccountChange();
         bankAccountChange.setSelfBankNo(repayment.getBankNo());
@@ -155,6 +156,10 @@ public class RepaymentServiceImpl implements IRepaymentService {
         BankAccount bankAccount = bankAccountService.selectBankAccountByBankNo(repayment.getBankNo());
         if (bankAccount == null) {
             throw new ServiceException("BankNo_miss");
+        }
+        // 判断转账的bankName存是否存在,如果为null则自动补充上去
+        if(bankAccount.getAcountsName()==null){
+            repayment.setAcountsName(bankAccount.getAcountsName());
         }
 
         // 准备同步到变动表

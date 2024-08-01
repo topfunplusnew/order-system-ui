@@ -11,6 +11,7 @@ import org.dzu.common.utils.DateUtils;
 import org.dzu.common.utils.SecurityUtils;
 import org.dzu.common.utils.SecurityUtils;
 import org.dzu.common.utils.uuid.UUID;
+import org.dzu.system.domain.BankAccount;
 import org.dzu.system.domain.BankAccountChange;
 import org.dzu.system.domain.RecoverMoney;
 import org.dzu.system.service.IBankAccountChangeService;
@@ -86,11 +87,20 @@ public class LendMoneyServiceImpl implements ILendMoneyService
 
         // 创建uuid
         lendMoney.setFuturesNO(UUID.fastUUID().toString());
-
+        BankAccount bankAccount = bankAccountService.selectBankAccountByBankNo(lendMoney.getSelfBankNo());
+        BankAccount targetAccount = bankAccountService.selectBankAccountByBankNo(lendMoney.getTargetBankNo());
         // 先查询对应银行卡是否存在
-        if (bankAccountService.selectBankAccountByBankNo(lendMoney.getSelfBankNo()) == null) {
+        if (bankAccount == null) {
             // 丢出错误信息异常
             throw new ServiceException("银行卡号不存在");
+        }
+        // 判断账户名是否为null，是的话填充数据库中的信息
+        if(lendMoney.getSelfAcountsName()==null){
+            lendMoney.setSelfAcountsName(bankAccount.getBankName());
+        }
+        // 判断银行名是否为null,是的话填充数据库中的信息
+        if(lendMoney.getSelfBankName()==null){
+            lendMoney.setSelfBankName(bankAccount.getBankName());
         }
 
         // 同步信息到银行卡变动表

@@ -7,6 +7,8 @@ import org.dzu.common.core.domain.BaseEntity;
 import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableName;
+import org.hibernate.validator.constraints.Length;
+
 /**
  * 审核流程对象 auditflow
  * 
@@ -18,13 +20,14 @@ public class Auditflow extends BaseEntity
 {
     private static final long serialVersionUID = 1L;
 
-    /** $column.columnComment */
+
     @TableId(value = "id")
     private Long id;
 
     /** 流程名称 */
     @Excel(name = "流程名称")
     @TableField(value = "flowname")
+    @Length(max = 50,message = "流程名称长度不能超过50个字符")
     private String flowname;
 
     /** 审核步骤 */
@@ -40,6 +43,7 @@ public class Auditflow extends BaseEntity
     /** 允许的审核人员ID */
     @Excel(name = "允许的审核人员ID")
     @TableField(value = "auditauthority")
+    @Length(max = 500,message = "请减少审核人员")
     private String auditauthority;
 
     public void setId(Long id) 

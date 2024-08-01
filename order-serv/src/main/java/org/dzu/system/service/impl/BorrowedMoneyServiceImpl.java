@@ -104,6 +104,11 @@ public class BorrowedMoneyServiceImpl implements IBorrowedMoneyService {
         // 1.3调用业务层去把剩余的字段自动补齐
         bankAccountChangeService.insertBankAccountChange(bankAccountChange);
 
+        // 判断转账的bankName存是否存在,如果为null则自动补充上去
+        if(bankAccount.getAcountsName()==null){
+            borrowedMoney.setAcountsName(bankAccount.getAcountsName());
+        }
+
         // 返回插入结果
         return borrowedMoneyMapper.insertBorrowedMoney(borrowedMoney);
     }
@@ -134,6 +139,12 @@ public class BorrowedMoneyServiceImpl implements IBorrowedMoneyService {
         if (StringUtils.isNull(bankAccount)) {
             throw new ServiceException("错误，搜索不到对应的银行卡信息,请检查");
         }
+
+        // 判断转账的bankName存是否存在,如果为null则自动补充上去
+        if(bankAccount.getAcountsName()==null){
+            borrowedMoney.setAcountsName(bankAccount.getAcountsName());
+        }
+
 
         // 查询到银行卡后开始拼装变动信息
         BankAccountChange bankAccountChange = new BankAccountChange();
