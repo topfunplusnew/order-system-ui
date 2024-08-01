@@ -51,5 +51,5 @@ public interface IRepaymentService
      */
     public int deleteRepaymentByIds(Long[] ids);
 
-    Repayment selectRepaymentByLoanNo(String id);
+    List<Repayment> selectRepaymentByLoanNo(String id);
 }

@@ -1,7 +1,6 @@
 package org.dzu.system.service.impl;
 
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
-import com.baomidou.mybatisplus.core.exceptions.MybatisPlusException;
 import org.dzu.common.constant.BankChangeConstant;
 import org.dzu.common.constant.BorrowedMoneyConstants;
 import org.dzu.common.constant.DelConstants;
@@ -205,13 +204,12 @@ public class RepaymentServiceImpl implements IRepaymentService {
     }
 
     @Override
-    public Repayment selectRepaymentByLoanNo(String loanNo) {
+    public List<Repayment> selectRepaymentByLoanNo(String loanNo) {
         QueryWrapper<Repayment> queryWrapper = new QueryWrapper<>();
 //        queryWrapper.eq("loanNO", loanNo);
         // 应该查询loanNO相等并且逻辑删除标记delFlag不为1
         queryWrapper.eq("loanNO", loanNo).eq("delFlag", DelConstants.NODEL);
 
-        List<Repayment> repayments = repaymentMapper.selectList(queryWrapper);
-        return repayments.get(0);
+        return repaymentMapper.selectList(queryWrapper);
     }
 }
