@@ -71,6 +71,14 @@ public class ReceiveMoneyController extends BaseController
     }
 
     /**
+     * 根据UUID获取收款信息详细信息
+     */
+    @PreAuthorize("@ss.hasPermi('system:receiveMoney:query')")
+    @GetMapping(value = "/receiveNO/{uuid}")
+    public AjaxResult getInfo(@PathVariable("uuid") String  uuid){
+        return success(receiveMoneyService.selectReceiveMoneyByReceiveNO(uuid));
+    }
+    /**
      * 新增收款信息
      */
     @PreAuthorize("@ss.hasPermi('system:receiveMoney:add')")

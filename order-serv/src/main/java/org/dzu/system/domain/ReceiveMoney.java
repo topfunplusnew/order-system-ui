@@ -9,6 +9,13 @@ import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableName;
 import org.dzu.common.annotation.DecimalMaxDigits;
 import org.dzu.common.annotation.OnlyZeroOrOne;
+import org.hibernate.validator.constraints.Length;
+
+import javax.validation.constraints.Max;
+import javax.validation.constraints.Min;
+import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Null;
+
 /**
  * 收款信息对象 receiveMoney
  * 
@@ -25,28 +32,34 @@ public class ReceiveMoney extends BaseEntity
     private Long id;
 
     /** 收款编号（UUID） */
-    @Excel(name = "收款编号", readConverterExp = "U=UID")
+    @Excel(name = "收款编号")
     @TableField(value = "receiveNO")
+    @Length(max = 50, message = "收款编号的字符长度不允许超过50")
     private String receiveNO;
 
     /** 日期 */
     @Excel(name = "日期")
     @TableField(value = "fundsDate")
+    @NotNull(message = "日期不能为空")
+    @Length(max = 50, message = "日期的字符长度不允许超过50")
     private String fundsDate;
 
     /** 支付类型 */
     @Excel(name = "支付类型")
     @TableField(value = "receiveType")
+    @Length(max = 55, message = "支付类型的字符长度不允许超过55")
     private String receiveType;
 
     /** 对应的表名 */
     @Excel(name = "对应的表名")
     @TableField(value = "tableName")
+    @Length(max = 55, message = "对应的表名的字符长度不允许超过55")
     private String tableName;
 
     /** 对应的表主键 */
     @Excel(name = "对应的表主键")
     @TableField(value = "tID")
+    @Length(max = 55, message = "对应的表主键的字符长度不允许超过55")
     private String tID;
 
     /** 金额 */
@@ -57,41 +70,49 @@ public class ReceiveMoney extends BaseEntity
     /** 己方户名 */
     @Excel(name = "己方户名")
     @TableField(value = "selfAcountsName")
+    @Length(max = 80, message = "己方户名的字符长度不允许超过80")
     private String selfAcountsName;
 
     /** 己方账号 */
     @Excel(name = "己方账号")
     @TableField(value = "selfBankNo")
+    @Length(max = 80, message = "己方账号的字符长度不允许超过80")
     private String selfBankNo;
 
     /** 己方开户行 */
     @Excel(name = "己方开户行")
     @TableField(value = "selfBankName")
+    @Length(max = 150, message = "己方开户行的字符长度不允许超过150")
     private String selfBankName;
 
     /** 己方账号ID */
     @Excel(name = "己方账号ID")
     @TableField(value = "selfBankID")
+    @Length(max = 150, message = "己方账号ID的字符长度不允许超过150")
     private String selfBankID;
 
     /** 对方户名 */
     @Excel(name = "对方户名")
     @TableField(value = "otherAcountsName")
+    @Length(max = 80, message = "对方户名的字符长度不允许超过80")
     private String otherAcountsName;
 
     /** 对方账号 */
     @Excel(name = "对方账号")
     @TableField(value = "otherBankNo")
+    @Length(max = 80, message = "对方账号的字符长度不允许超过80")
     private String otherBankNo;
 
     /** 对方开户行 */
     @Excel(name = "对方开户行")
     @TableField(value = "otherBankName")
+    @Length(max = 150, message = "对方开户行的字符长度不允许超过150")
     private String otherBankName;
 
     /** 对方公司 */
     @Excel(name = "对方公司")
     @TableField(value = "companyName")
+    @Length(max = 150, message = "对方公司的字符长度不允许超过150")
     private String companyName;
 
     /** 对方公司ID */
@@ -100,15 +121,17 @@ public class ReceiveMoney extends BaseEntity
     private Long companyId;
 
     /** 对方公司类型（1、客户 2、供应商） */
-    @Excel(name = "对方公司类型", readConverterExp = "1=、客户,2=、供应商")
+    @Excel(name = "对方公司类型", readConverterExp = "1=客户,2=供应商")
     @TableField(value = "companyType")
+    @Min(value = 1, message = "公司类型必须为1（客户）或2（供应商）")
+    @Max(value = 2, message = "公司类型必须为1（客户）或2（供应商）")
     private Long companyType;
 
     /** 备注 */
     @Excel(name = "备注")
     @TableField(value = "comments")
+    @Length(max = 200, message = "备注的字符长度不允许超过200")
     private String comments;
-
     /** 添加时间 */
     @Excel(name = "添加时间")
     @TableField(value = "addtime")
@@ -224,7 +247,7 @@ public class ReceiveMoney extends BaseEntity
         this.selfBankID = selfBankID;
     }
 
-    public String getSelfBankID() 
+    public String getSelfBankID()
     {
         return selfBankID;
     }
