@@ -78,6 +78,7 @@
             size="mini"
             type="warning"
             @click="handleGiveBackMoney(scope.row)"
+            v-if="scope.row.isEnd ==='否'"
           >还款
           </el-button>
           <el-button
@@ -149,6 +150,26 @@
         <el-button @click="cancel">取 消</el-button>
       </div>
     </el-dialog>
+
+
+    <!--    点击还款的弹框-->
+    <el-dialog title="收货地址" :visible.sync="giveBackMoneyShow">
+      <!--      <el-form :model="form">-->
+      <!--        <el-form-item label="活动名称" :label-width="formLabelWidth">-->
+      <!--          <el-input v-model="form.name" autocomplete="off"></el-input>-->
+      <!--        </el-form-item>-->
+      <!--        <el-form-item label="活动区域" :label-width="formLabelWidth">-->
+      <!--          <el-select v-model="form.region" placeholder="请选择活动区域">-->
+      <!--            <el-option label="区域一" value="shanghai"></el-option>-->
+      <!--            <el-option label="区域二" value="beijing"></el-option>-->
+      <!--          </el-select>-->
+      <!--        </el-form-item>-->
+      <!--      </el-form>-->
+      <div slot="footer" class="dialog-footer">
+        <el-button @click="giveBackMoneyShow = false">取 消</el-button>
+        <el-button type="primary" @click="giveBackMoneyShow = false">确 定</el-button>
+      </div>
+    </el-dialog>
   </div>
 </template>
 
@@ -158,7 +179,7 @@ import {
   getBorrowedMoney,
   delBorrowedMoney,
   addBorrowedMoney,
-  updateBorrowedMoney
+  updateBorrowedMoney, getBorrowedMoneyByUuid
 } from "@/api/system/borrowedMoney";
 import {mapGetters, mapState} from "vuex";
 
@@ -240,6 +261,8 @@ export default {
         beginTime: '',
         endTime: '',
       },
+      //还款弹窗
+      giveBackMoneyShow: false
     };
   },
   created() {
@@ -270,8 +293,13 @@ export default {
       })
     },
     //处理还款的事件函数
-    handleGiveBackMoney() {
-      alert('还款功能还未实现')
+    handleGiveBackMoney(row) {
+      console.log(row)
+      console.log('uuid=>', row.loanNO)
+      //查询借款uuid对应的信息
+      getBorrowedMoneyByUuid(row.loanNO).then(res => {
+        console.log(res)
+      })
     },
     //自定义列统计总函数
     getSummaries(param) {
@@ -312,6 +340,7 @@ export default {
       this.$print({
         printable: 'printBox',
         type: 'html',
+        maxWidth: 3000,
         targetStyles: ['*'], // 打印内容使用所有HTML样式，没有设置这个属性/值，设置分页打印没有效果
       })
     },
