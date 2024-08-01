@@ -99,7 +99,7 @@
       </right-toolbar>
     </el-row>
 
-    <el-table border v-loading="loading" :data="bankAcceptanceList"
+    <el-table border v-loading="loading" :data="bankAcceptanceList" v-horizontal-scroll="'always'"
               @selection-change="handleSelectionChange" show-summary :summary-method="getSummaries" height="480px"
               id="printBox">
       <!--  <el-table-column type="selection" width="55" align="center"/>-->
