@@ -218,7 +218,7 @@ export default {
         oilType: null,
         moneyAmount: null,
         comments: null,
-        addtime: null,
+        submittime: null,
         userId: null,
         UserName: null,
         delFlag: null
@@ -256,7 +256,7 @@ export default {
         oilType: null,
         moneyAmount: null,
         comments: null,
-        addtime: null,
+        submittime: null,
         userId: null,
         UserName: null,
         updateTime: null,
