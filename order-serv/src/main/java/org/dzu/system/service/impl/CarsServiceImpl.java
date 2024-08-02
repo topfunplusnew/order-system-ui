@@ -67,10 +67,13 @@ public class CarsServiceImpl implements ICarsService {
         cars.setDelFlag(Long.valueOf(DelConstants.NODEL));
         // 逻辑校验
         Validated(cars);
+        // 先执行插入，获取主键
+        int i = carsMapper.insertCars(cars);
+
         // 同步到银行卡管理
         syncToBankAccount(cars);
 
-        return carsMapper.insertCars(cars);
+        return i;
     }
 
     /**
