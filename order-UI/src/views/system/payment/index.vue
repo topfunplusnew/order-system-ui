@@ -1,53 +1,47 @@
 <template>
   <div class="app-container">
-    <el-form :model="queryParams" ref="queryForm" size="small" :inline="true" v-show="showSearch" label-width="120px">
-      <el-form-item label="开始时间" prop="payNO">
-        <el-input
-          v-model="queryParams.payNO"
-          placeholder="请输入付款编号"
-          clearable
-          @keyup.enter.native="handleQuery"
-        />
+    <el-form :model="queryPayment" ref="queryForm" size="small" :inline="true" v-show="showSearch" label-width="120px">
+      <el-form-item label="开始时间" prop="beginTime">
+        <el-date-picker
+          v-model="queryParams.beginTime"
+          type="date"
+          value-format="yyyy-MM-dd" class="w-85px">
+        </el-date-picker>
       </el-form-item>
-      <el-form-item label="结束时间" prop="fundsDate">
-        <el-input
-          v-model="queryParams.fundsDate"
-          placeholder="请输入日期"
-          clearable
-          @keyup.enter.native="handleQuery"
-        />
-      </el-form-item>
-      <el-form-item label="支付类型" prop="tableName">
-        <el-input
-          v-model="queryParams.tableName"
-          placeholder="请输入对应的表名"
-          clearable
-          @keyup.enter.native="handleQuery"
-        />
+      <el-form-item label="结束时间" prop="endTime">
+        <el-date-picker
+          v-model="queryParams.endTime"
+          type="date"
+          value-format="yyyy-MM-dd" class="w-85px">
+        </el-date-picker>
       </el-form-item>
       <!--      客户还是供应商-->
-      <el-form-item label="对象类型" prop="tID">
-        <el-input
-          v-model="queryParams.tID"
-          placeholder="请输入对应的表主键"
-          clearable
-          @keyup.enter.native="handleQuery"
-        />
+      <el-form-item label="对象类型" prop="companyType">
+        <el-select v-model="queryParams.companyType" placeholder="请选择对象类型" class="w-85px">
+          <el-option
+            v-for="item in options_companyType"
+            :key="item.value"
+            :label="item.label"
+            :value="item.value">
+          </el-option>
+        </el-select>
       </el-form-item>
-      <el-form-item label="支付类型" prop="moneyAmount">
-        <el-input
-          v-model="queryParams.moneyAmount"
-          placeholder="请输入金额"
-          clearable
-          @keyup.enter.native="handleQuery"
-        />
+      <el-form-item label="支付类型" prop="payType">
+        <el-select v-model="queryParams.payType" placeholder="请选择支付类型" class="w-85px">
+          <el-option
+            v-for="item in options_payType"
+            :key="item.value"
+            :label="item.label"
+            :value="item.value">
+          </el-option>
+        </el-select>
       </el-form-item>
       <el-form-item label="日常费用类目" prop="selfAcountsName">
         <el-input
           v-model="queryParams.selfAcountsName"
           placeholder="请输入己方户名"
           clearable
-          @keyup.enter.native="handleQuery"
+          @keyup.enter.native="handleQuery" class="w-85px"
         />
       </el-form-item>
       <el-form-item label="供应商/客户/车牌" prop="selfBankNo">
@@ -55,7 +49,7 @@
           v-model="queryParams.selfBankNo"
           placeholder="请输入己方账号"
           clearable
-          @keyup.enter.native="handleQuery"
+          @keyup.enter.native="handleQuery" class="w-85px"
         />
       </el-form-item>
       <el-form-item label="户名" prop="selfBankName">
@@ -63,7 +57,7 @@
           v-model="queryParams.selfBankName"
           placeholder="请输入己方开户行"
           clearable
-          @keyup.enter.native="handleQuery"
+          @keyup.enter.native="handleQuery" class="w-85px"
         />
       </el-form-item>
       <el-form-item label="对方银行卡号" prop="selfBankID">
@@ -71,7 +65,7 @@
           v-model="queryParams.selfBankID"
           placeholder="请输入己方账号ID"
           clearable
-          @keyup.enter.native="handleQuery"
+          @keyup.enter.native="handleQuery" class="w-85px"
         />
       </el-form-item>
       <el-form-item label="对方户名" prop="otherAcountsName">
@@ -79,7 +73,7 @@
           v-model="queryParams.otherAcountsName"
           placeholder="请输入对方户名"
           clearable
-          @keyup.enter.native="handleQuery"
+          @keyup.enter.native="handleQuery" class="w-85px"
         />
       </el-form-item>
       <el-form-item label="备注" prop="otherBankNo">
@@ -87,12 +81,12 @@
           v-model="queryParams.otherBankNo"
           placeholder="请输入对方账号"
           clearable
-          @keyup.enter.native="handleQuery"
+          @keyup.enter.native="handleQuery" class="w-85px"
         />
       </el-form-item>
       <el-form-item>
         <el-button type="primary" icon="el-icon-search" size="mini" @click="handleQuery">搜索</el-button>
-        <el-button icon="el-icon-refresh" size="mini" @click="resetQuery">重置</el-button>
+        <!--  <el-button icon="el-icon-refresh" size="mini" @click="resetQuery">重置</el-button>-->
       </el-form-item>
     </el-form>
 
@@ -328,7 +322,69 @@ export default {
       // 表单参数
       form: {},
       // 表单校验
-      rules: {}
+      rules: {},
+      //顶部筛选框
+      queryPayment: {},
+      options_companyType: [
+        {
+          value: '客户',
+          label: '客户'
+        }, {
+          value: '供应商',
+          label: '供应商'
+        }, {
+          value: '司机',
+          label: '司机'
+        }, {
+          value: '个人',
+          label: '个人'
+        }, {
+          value: '其他',
+          label: '其他'
+        },
+      ],
+      options_payType: [
+        {
+          value: '票点',
+          label: '票点'
+        }, {
+          value: '工资和社保和公积金',
+          label: '工资和社保和公积金'
+        }, {
+          value: '委托在加工出库',
+          label: '委托在加工出库'
+        }, {
+          value: '(供应商暂存)平账',
+          label: '(供应商暂存)平账'
+        }, {
+          value: '日常费用报销',
+          label: '日常费用报销'
+        }, {
+          value: '销售玻璃贷款',
+          label: '销售玻璃贷款'
+        }, {
+          value: '票点',
+          label: '票点'
+        }, {
+          value: '承兑贴现',
+          label: '承兑贴现'
+        }, {
+          value: '公司贷款',
+          label: '公司贷款'
+        }, {
+          value: '内部往来转账收入',
+          label: '内部往来转账收入'
+        }, {
+          value: '委托再加工入库',
+          label: '委托再加工入库'
+        }, {
+          value: '(客户暂存)平账',
+          label: '(客户暂存)平账'
+        }, {
+          value: '其他收入',
+          label: '其他收入'
+        }
+      ]
     };
   },
   created() {
@@ -451,3 +507,8 @@ export default {
   }
 };
 </script>
+<style scoped>
+.w-85px {
+  width: 85px;
+}
+</style>
