@@ -1,5 +1,8 @@
 package org.dzu.system.domain;
 
+import com.baomidou.mybatisplus.annotation.TableField;
+import com.baomidou.mybatisplus.annotation.TableId;
+import com.baomidou.mybatisplus.annotation.TableName;
 import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.apache.commons.lang3.builder.ToStringStyle;
 import org.dzu.common.annotation.Excel;
@@ -17,46 +20,55 @@ import javax.validation.constraints.NotNull;
  * @author ml
  * @date 2024-07-29
  */
+@TableName("fleet")
 public class Fleet extends BaseEntity
 {
     private static final long serialVersionUID = 1L;
 
     /** id */
+    @TableId(value = "id")
     private Long id;
 
     /** 车队名称 */
     @Excel(name = "车队名称")
+    @TableField(value = "fName")
     @Length(max = 20, message = "车队名称的字符长度不允许超过20")
     @NotNull(message = "车队名称不能为空")
     private String fName;
 
     /** 车队经理 */
     @Excel(name = "车队经理")
+    @TableField(value = "fLeader")
     @Length(max = 20, message = "车队经理的字符长度不允许超过20")
     @NotNull(message = "车队经理不能为空")
     private String fLeader;
 
     /** 车队经理电话 */
     @Excel(name = "车队经理电话")
+    @TableField(value = "tel")
     @PhoneLength(message = "车队经理电话的字符长度不允许超过15")
     private String tel;
 
     /** 地址 */
     @Excel(name = "地址")
+    @TableField(value = "address")
     @Length(max = 30, message = "地址的字符长度不允许超过30")
     @NotNull(message = "地址不能为空")
     private String address;
 
     /** 添加时间 */
     @Excel(name = "添加时间")
+    @TableField(value = "addtime")
     private String addtime;
 
     /** 编辑时间 */
     @Excel(name = "编辑时间")
+    @TableField(value = "editTime")
     private String editTime;
 
     /** 删除标记 */
     @OnlyZeroOrOne
+    @TableField(value = "delFlag")
     private Long delFlag;
 
     public void setId(Long id) 

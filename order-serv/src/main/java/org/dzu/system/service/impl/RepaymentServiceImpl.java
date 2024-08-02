@@ -1,7 +1,6 @@
 package org.dzu.system.service.impl;
 
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
-import com.baomidou.mybatisplus.core.exceptions.MybatisPlusException;
 import org.dzu.common.constant.BankChangeConstant;
 import org.dzu.common.constant.BorrowedMoneyConstants;
 import org.dzu.common.constant.DelConstants;
@@ -104,22 +103,26 @@ public class RepaymentServiceImpl implements IRepaymentService {
         if (bankAccount == null) {
             throw new ServiceException("BankNo_miss");
         }
-        BorrowedMoney borrowedMoney = result.get(0);
-        borrowedMoney
-                .setIsEnd(BorrowedMoneyConstants.isEnd);
-        // 修改借款表的标志为还款
-        borrowedMoneyService.updateBorrowedMoney(borrowedMoney);
+
+        // 判断转账的bankName存是否存在,如果为null则自动补充上去
+        if(bankAccount.getAcountsName()==null){
+            repayment.setAcountsName(bankAccount.getAcountsName());
+        }
+
         // 准备同步到变动表
         BankAccountChange bankAccountChange = new BankAccountChange();
         bankAccountChange.setSelfBankNo(repayment.getBankNo());
-        bankAccountChange.setMoneyAmount(repayment.getMoneyAmount() + repayment.getRatio());
+        bankAccountChange.setMoneyAmount(repayment.getMoneyAmount());
         bankAccountChange.setPayNO(repayment.getPayNO());
         bankAccountChange.setChangeType(BankChangeConstant.PaymentType.PAYMENT.get());
         bankAccountChange.setTableName(BankChangeConstant.TableName.REPAYMENT.get());
         bankAccountChangeService.insertBankAccountChange(bankAccountChange);
+        int i = repaymentMapper.insertRepayment(repayment);
+        // 判断是否需要更新对应借款的isEnd属性,如果需要，自动更新
+        updateIsEnd(repayment.getLoanNO());
 
         // 准备插入
-        return repaymentMapper.insertRepayment(repayment);
+        return i;
     }
 
     /**
@@ -154,15 +157,22 @@ public class RepaymentServiceImpl implements IRepaymentService {
         if (bankAccount == null) {
             throw new ServiceException("BankNo_miss");
         }
+        // 判断转账的bankName存是否存在,如果为null则自动补充上去
+        if(bankAccount.getAcountsName()==null){
+            repayment.setAcountsName(bankAccount.getAcountsName());
+        }
 
         // 准备同步到变动表
         BankAccountChange bankAccountChange = new BankAccountChange();
         bankAccountChange.setSelfBankNo(repayment.getBankNo());
-        bankAccountChange.setMoneyAmount(repayment.getMoneyAmount() + repayment.getRatio());
+        bankAccountChange.setMoneyAmount(repayment.getMoneyAmount());
         bankAccountChange.setPayNO(repayment.getPayNO());
         bankAccountChange.setChangeType(BankChangeConstant.PaymentType.PAYMENT.get());
         bankAccountChange.setTableName(BankChangeConstant.TableName.REPAYMENT.get());
         bankAccountChangeService.updateBankAccountChangeByUUID(bankAccountChange);
+
+        // 判断是否需要更新对应借款的isEnd属性,如果需要，自动更新
+        updateIsEnd(repayment.getLoanNO());
 
         return repaymentMapper.updateRepayment(repayment);
     }
@@ -184,7 +194,7 @@ public class RepaymentServiceImpl implements IRepaymentService {
         List<String> Pays = new ArrayList<String>();
         repayments.parallelStream().forEach(
                 r -> {
-                    Loans.add(r.getLoanNO());
+//                    Loans.add(r.getLoanNO());
                     Pays.add(r.getPayNO());
                 }
         );
@@ -194,24 +204,27 @@ public class RepaymentServiceImpl implements IRepaymentService {
         String[] array = Arrays.copyOf(Pays.toArray(), Pays.size(), String[].class);
         bankAccountChangeService.deleteBankAccountChangeByUUID(array);
 
-        //修改借款标志
-        QueryWrapper<BorrowedMoney> borrowedMoneyQueryWrapper = new QueryWrapper<>();
-        borrowedMoneyQueryWrapper.in("LoanNO", Pays.toArray());
-        BorrowedMoney borrowedMoney = new BorrowedMoney();
-        borrowedMoney.setIsEnd(BorrowedMoneyConstants.noEnd);
-        borrowedMoneyMapper.update(borrowedMoney, borrowedMoneyQueryWrapper);
+//        //修改借款标志
+//        QueryWrapper<BorrowedMoney> borrowedMoneyQueryWrapper = new QueryWrapper<>();
+//        borrowedMoneyQueryWrapper.in("LoanNO", Pays.toArray());
+//        BorrowedMoney borrowedMoney = new BorrowedMoney();
+//        borrowedMoney.setIsEnd(BorrowedMoneyConstants.noEnd);
+//        borrowedMoneyMapper.update(borrowedMoney, borrowedMoneyQueryWrapper);
 
         return repaymentMapper.deleteRepaymentByIds(ids);
     }
 
     @Override
-    public Repayment selectRepaymentByLoanNo(String loanNo) {
+    public List<Repayment> selectRepaymentByLoanNo(String loanNo) {
         QueryWrapper<Repayment> queryWrapper = new QueryWrapper<>();
 //        queryWrapper.eq("loanNO", loanNo);
         // 应该查询loanNO相等并且逻辑删除标记delFlag不为1
         queryWrapper.eq("loanNO", loanNo).eq("delFlag", DelConstants.NODEL);
 
-        List<Repayment> repayments = repaymentMapper.selectList(queryWrapper);
-        return repayments.get(0);
+        return repaymentMapper.selectList(queryWrapper);
+    }
+
+    private void updateIsEnd(String loanNO) {
+        borrowedMoneyService.updateBorrowedMoneyIsEndByLoanNO(loanNO);
     }
 }

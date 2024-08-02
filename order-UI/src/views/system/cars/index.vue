@@ -166,31 +166,31 @@
     <!-- 打印内容 -->
 <!--    <el-table border v-loading="loading" :data="cars" @selection-change="handleSelectionChange" id="printBox"-->
 <!--              height="300px" v-horizontal-scroll="'always'">-->
-            <el-table-column type="selection" width="55" align="center"/>
+<!--            <el-table-column type="selection" width="55" align="center"/>-->
 <!--      <el-table-column label="id" align="center" prop="id"/>-->
 <!--      <el-table-column label="账户类型" align="center" prop="acountsType" v-if="columns[0].visible"/>-->
 <!--      <el-table-column label="开户名称(户名)" align="center" prop="acountsName" v-if="columns[1].visible"/>-->
 <!--      <el-table-column label="账号(银行账号)" align="center" prop="bankNo" v-if="columns[2].visible"/>-->
 <!--      <el-table-column label="开户行" align="center" prop="bankName" v-if="columns[3].visible"/>-->
 <!--      <el-table-column label="公司名称" align="center" prop="companyName" v-if="columns[4].visible"/>-->
-    <el-table-column label="操作" align="center" class-name="small-padding fixed-width">
-      <template slot-scope="scope">
-        <el-button
-          size="mini"
-          type="primary"
-          @click="handleUpdate(scope.row)"
-          v-hasPermi="['system:cars:edit']"
-        >编辑
-        </el-button>
-        <el-button
-          size="mini"
-          type="danger"
-          @click="handleDelete(scope.row)"
-          v-hasPermi="['system:bankAccount:remove']"
-        >删除
-        </el-button>
-      </template>
-    </el-table-column>
+<!--    <el-table-column label="操作" align="center" class-name="small-padding fixed-width">-->
+<!--      <template slot-scope="scope">-->
+<!--        <el-button-->
+<!--          size="mini"-->
+<!--          type="primary"-->
+<!--          @click="handleUpdate(scope.row)"-->
+<!--          v-hasPermi="['system:cars:edit']"-->
+<!--        >编辑-->
+<!--        </el-button>-->
+<!--        <el-button-->
+<!--          size="mini"-->
+<!--          type="danger"-->
+<!--          @click="handleDelete(scope.row)"-->
+<!--          v-hasPermi="['system:bankAccount:remove']"-->
+<!--        >删除-->
+<!--        </el-button>-->
+<!--      </template>-->
+<!--    </el-table-column>-->
 <!--    </el-table>-->
 <!--    <el-row :gutter="10" class="mb8">-->
 <!--      <el-col :span="1.5">-->
@@ -238,7 +238,9 @@
 <!--      <right-toolbar :showSearch.sync="showSearch" @queryTable="getList"></right-toolbar>-->
 <!--    </el-row>-->
 
-    <el-table v-loading="loading" :data="carsList" @selection-change="handleSelectionChange" id="printBox" >
+<!--    <el-table v-loading="loading" :data="carsList" @selection-change="handleSelectionChange" id="printBox" >-->
+          <el-table border v-loading="loading" :data="carsList" @selection-change="handleSelectionChange" id="printBox"
+                    height="500px" v-horizontal-scroll="'always'">
       <el-table-column type="selection" width="55" align="center" />
       <el-table-column label="id" align="center" prop="id" />
       <el-table-column label="车牌" align="center" prop="carNo"  v-if="columns[0].visible"/>
@@ -297,25 +299,25 @@
         <el-form-item label="开户行" prop="bankName">
           <el-input v-model="form.bankName" placeholder="请输入开户行" />
         </el-form-item>
-        <el-form-item label="开户名" prop="acountsName">
+        <el-form-item label="开户名" prop="accountsName">
           <el-input v-model="form.acountsName" placeholder="请输入开户名" />
         </el-form-item>
         <el-form-item label="账号" prop="bankNo">
           <el-input v-model="form.bankNo" placeholder="请输入账号" />
         </el-form-item>
         <!--        单选-->
-        <el-form-item label="账号类型" prop="acountsType">
+        <el-form-item label="账号类型" prop="accountsType">
           <!--          <el-input v-model="form.billCategory" placeholder="请输入票据种类"/>-->
           <el-radio v-model="form.acountsType" label="1">收款</el-radio>
           <el-radio v-model="form.acountsType" label="2">付款</el-radio>
         </el-form-item>
-<!--        <el-form-item label="账号类型" prop="acountsType">-->
+<!--        <el-form-item label="账号类型" prop="accountsType">-->
 <!--          <el-input v-model="form.bankNo" placeholder="请输入账号" />-->
 <!--        </el-form-item>-->
         <el-form-item label="运输类型" prop="carType">
 <!--          <el-input v-model="form.bankNo" placeholder="请输入账号" />-->
-          <el-radio v-model="form.carType" label="1">陆运</el-radio>
-          <el-radio v-model="form.carType" label="2">海运</el-radio>
+          <el-radio v-model="form.carType" label="陆运">陆运</el-radio>
+          <el-radio v-model="form.carType" label="海运">海运</el-radio>
         </el-form-item>
 <!--        <el-form-item label="添加时间" prop="addtime">-->
 <!--          <el-input v-model="form.addtime" placeholder="请输入添加时间" />-->
@@ -340,6 +342,7 @@
 
 <script>
 import { listCars, getCars, delCars, addCars, updateCars } from "@/api/system/cars";
+import {addFleet, updateFleet} from "@/api/system/fleet";
 
 export default {
   name: "Cars",
@@ -433,9 +436,9 @@ export default {
         driver: null,
         tel: null,
         bankName: null,
-        acountsName: null,
+        accountsName: null,
         bankNo: null,
-        acountsType: null,
+        accountsType: null,
         carType: null,
         addtime: null,
         userId: null,
@@ -479,10 +482,15 @@ export default {
       });
     },
     /** 提交按钮 */
+    // /** 提交按钮 */
     submitForm() {
       this.$refs["form"].validate(valid => {
         if (valid) {
           if (this.form.id != null) {
+            this.form.delFlag = null;
+            this.form.addtime=null;
+            this.form.updateTime=null;
+            this.form.userId=null;
             updateCars(this.form).then(response => {
               this.$modal.msgSuccess("修改成功");
               this.open = false;
@@ -490,6 +498,10 @@ export default {
             });
           } else {
             addCars(this.form).then(response => {
+              this.form.delFlag = null;
+              this.form.addtime = null;
+              this.form.updateTime = null;
+              this.form.userId = null;
               this.$modal.msgSuccess("新增成功");
               this.open = false;
               this.getList();
@@ -498,6 +510,7 @@ export default {
         }
       });
     },
+
     /** 删除按钮操作 */
     handleDelete(row) {
       const ids = row.id || this.ids;

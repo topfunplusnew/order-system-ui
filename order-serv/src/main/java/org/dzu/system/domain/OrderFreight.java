@@ -2,12 +2,18 @@ package org.dzu.system.domain;
 
 import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.apache.commons.lang3.builder.ToStringStyle;
+import org.dzu.common.annotation.DecimalMaxDigits;
 import org.dzu.common.annotation.Excel;
 import org.dzu.common.core.domain.BaseEntity;
 import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableName;
 import org.dzu.common.annotation.OnlyZeroOrOne;
+import org.hibernate.validator.constraints.Length;
+
+import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Pattern;
+
 /**
  * 订单运费对象 orderFreight
  * 
@@ -24,87 +30,113 @@ public class OrderFreight extends BaseEntity
     private Long id;
 
     /** 订单编号（UUID） */
-    @Excel(name = "订单编号", readConverterExp = "U=UID")
+    @Excel(name = "订单编号", readConverterExp = "UUID")
+    @Length(max = 20, message = "订单编号长度不能超过20个字符")
     @TableField(value = "ordersNo")
     private String ordersNo;
 
     /** 运费类型（ 陆运、海运） */
-    @Excel(name = "运费类型", readConverterExp = "陆=运、海运")
+    @Excel(name = "运费类型")
+    @NotNull(message = "运费类型不能为空")
+    @Pattern(regexp = "陆运|海运", message = "运费类型必须是：陆运或海运")
     @TableField(value = "freightType")
     private String freightType;
 
     /** 金额 */
     @Excel(name = "金额")
+    @DecimalMaxDigits
     @TableField(value = "moneyAmount")
     private String moneyAmount;
 
     /** 己方户名 */
     @Excel(name = "己方户名")
+    @Length(max = 20, message = "己方户名长度不能超过20个字符")
+    @NotNull(message = "己方户名不能为空")
     @TableField(value = "selfAcountsName")
     private String selfAcountsName;
 
     /** 己方账号 */
     @Excel(name = "己方账号")
+    @Length(max = 20, message = "己方账号长度不能超过20个字符")
+    @NotNull(message = "己方账号不能为空")
     @TableField(value = "selfBankNo")
     private String selfBankNo;
 
     /** 己方开户行 */
     @Excel(name = "己方开户行")
+    @Length(max = 20, message = "己方开户行长度不能超过20个字符")
     @TableField(value = "selfBankName")
     private String selfBankName;
 
     /** 对方户名 */
     @Excel(name = "对方户名")
+    @NotNull(message = "对方户名不能为空")
+    @Length(max = 20, message = "对方户名长度不能超过20个字符")
     @TableField(value = "otherAcountsName")
     private String otherAcountsName;
 
     /** 对方账号 */
     @Excel(name = "对方账号")
+    @NotNull(message = "对方账号不能为空")
+    @Length(max = 20, message = "对方账号长度不能超过20个字符")
     @TableField(value = "otherBankNo")
     private String otherBankNo;
 
     /** 对方开户行 */
     @Excel(name = "对方开户行")
+    @Length(max = 20, message = "对方开户行长度不能超过20个字符")
     @TableField(value = "otherBankName")
     private String otherBankName;
 
     /** 备注 */
     @Excel(name = "备注")
+    @Length(max = 200, message = "备注的字符长度不允许超过200")
     @TableField(value = "content")
     private String content;
 
     /** 支付状态（ 已支付、 未支付、  申请中） */
-    @Excel(name = "支付状态", readConverterExp = "已=支付、,未=支付、,申=请中")
+    @Excel(name = "支付状态")
+    @Pattern(regexp = "已支付|未支付|申请中", message = "支付状态必须是：已支付或未支付或申请中")
     @TableField(value = "paymentState")
     private String paymentState;
 
     /** 司机姓名 */
     @Excel(name = "司机姓名")
+    @Length(max = 20, message = "司机姓名的字符长度不允许超过20")
+    @NotNull(message = "司机姓名不能为空")
     @TableField(value = "driverName")
     private String driverName;
 
     /** 司机ID */
     @Excel(name = "司机ID")
+    @Length(max = 20, message = "司机ID的字符长度不允许超过20")
+    @NotNull(message = "司机ID不能为空")
     @TableField(value = "driverId")
     private Long driverId;
 
     /** 车牌号 */
     @Excel(name = "车牌号")
+    @NotNull(message = "车牌号不能为空")
+    @Length(max = 20, message = "车牌号的字符长度不允许超过20")
     @TableField(value = "CarNo")
     private String CarNo;
 
     /** 车队 */
     @Excel(name = "车队")
+    @Length(max = 20, message = "车队的字符长度不允许超过20")
+    @NotNull(message = "车队不能为空")
     @TableField(value = "fleet")
     private String fleet;
 
     /** 申请人员ID */
     @Excel(name = "申请人员ID")
+    @Length(max = 20, message = "申请人员ID的字符长度不允许超过20")
     @TableField(value = "applyUserId")
     private Long applyUserId;
 
     /** 申请人员姓名 */
     @Excel(name = "申请人员姓名")
+    @Length(max = 20, message = "申请人员姓名的字符长度不允许超过20")
     @TableField(value = "applyUserName")
     private String applyUserName;
 
@@ -115,16 +147,19 @@ public class OrderFreight extends BaseEntity
 
     /** 是否可编辑 */
     @Excel(name = "是否可编辑")
+    @Length(max = 1, message = "是否可编辑的字符长度不允许超过1")
     @TableField(value = "isedit")
     private Long isedit;
 
     /** 付款人员ID */
     @Excel(name = "付款人员ID")
+    @Length(max = 20, message = "付款人员ID的字符长度不允许超过20")
     @TableField(value = "payUserId")
     private Long payUserId;
 
     /** 付款人员姓名 */
     @Excel(name = "付款人员姓名")
+    @Length(max = 20, message = "付款人员姓名的字符长度不允许超过20")
     @TableField(value = "payUserName")
     private String payUserName;
 
@@ -141,6 +176,7 @@ public class OrderFreight extends BaseEntity
     /** 备注 */
     @Excel(name = "备注")
     @TableField(value = "comments")
+    @Length(max = 200, message = "备注的字符长度不允许超过200")
     private String comments;
 
     /** 添加时间 */

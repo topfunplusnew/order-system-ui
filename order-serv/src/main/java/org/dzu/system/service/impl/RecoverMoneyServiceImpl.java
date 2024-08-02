@@ -10,6 +10,7 @@ import org.dzu.common.exception.ServiceException;
 import org.dzu.common.utils.DateUtils;
 import org.dzu.common.utils.SecurityUtils;
 import org.dzu.common.utils.uuid.UUID;
+import org.dzu.system.domain.BankAccount;
 import org.dzu.system.domain.BankAccountChange;
 import org.dzu.system.domain.LendMoney;
 import org.dzu.system.mapper.LendMoneyMapper;
@@ -81,11 +82,11 @@ public class RecoverMoneyServiceImpl implements IRecoverMoneyService
      * @return
      */
     @Override
-    public RecoverMoney selectRecoverMoneyByFuturesNO(String futuresNO)
+    public List<RecoverMoney> selectRecoverMoneyByFuturesNO(String futuresNO)
     {
         QueryWrapper<RecoverMoney> queryWrapper = new QueryWrapper<>();
         queryWrapper.select().eq("futuresNO", futuresNO).eq("delFlag", DelConstants.NODEL);
-        return recoverMoneyMapper.selectOne(queryWrapper);
+        return recoverMoneyMapper.selectList(queryWrapper);
     }
 
     /**
@@ -110,12 +111,19 @@ public class RecoverMoneyServiceImpl implements IRecoverMoneyService
             // 找不到这个对应的记录，即错误参数
             throw new ServiceException("找不到对应的借出款信息，请刷新页面后重试");
         }
-
+        BankAccount bankAccount = bankAccountServic.selectBankAccountByBankNo(recoverMoney.getBankNo());
         // 查询银行卡号是否存在
-        if (bankAccountServic.selectBankAccountByBankNo(recoverMoney.getBankNo()) == null) {
+        if (bankAccount== null) {
             // 丢出错误信息异常
             throw new ServiceException("银行卡号不存在");
         }
+
+        // 如果 账户名为null则填充数据库中银行卡的户名
+        if(recoverMoney.getAcountsName()==null){
+            recoverMoney.setAcountsName(bankAccount.getAcountsName());
+        }
+
+
         // 如果都存在，那么准备插入本次信息
         // 首先创建uuid
         recoverMoney.setRecoverNO(UUID.fastUUID().toString());

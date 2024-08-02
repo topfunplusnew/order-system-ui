@@ -452,6 +452,7 @@ export default {
       this.currentInfo.city = row.city
       this.currentInfo.county = row.county
       this.currentInfo.comments = row.comments
+      this.currentInfo.companyName = row.companyName
       this.dialogFormVisible = true
       //查询某供应商信息
       listCompany({relationName: row.relationName, relationTel: row.relationTel}).then(res => {

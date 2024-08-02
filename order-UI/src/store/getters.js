@@ -18,6 +18,10 @@ const getters = {
   //获取借款信息的getter
   tempBorrowedMoneyList: state => state.money.tempBorrowedMoneyList,
   //还款信息
-  tempRepaymentList: state => state.money.tempRepaymentList
+  tempRepaymentList: state => state.money.tempRepaymentList,
+  //向外借款
+  tempLendMoneyList: state => state.money.tempLendMoneyList,
+  //资金收回
+  tempRecoverMoneyList: state => state.money.tempRecoverMoneyList
 }
 export default getters

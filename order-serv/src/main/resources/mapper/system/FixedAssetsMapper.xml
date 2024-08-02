@@ -9,7 +9,7 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         <result property="buyDate"    column="buyDate"    />
         <result property="assetNo"    column="assetNo"    />
         <result property="assetName"    column="assetName"    />
-        <result property="specification"    column="specification"    />
+        <result property="specification"    column=" specification"    />
         <result property="number"    column="number"    />
         <result property="measurementUnit"    column="measurementUnit"    />
         <result property="amountIncludeTax"    column="amountIncludeTax"    />
@@ -30,7 +30,7 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
  
 
     <sql id="selectFixedAssetsVo">
-        select id, buyDate, assetNo, assetName, specification, number, measurementUnit, amountIncludeTax, amountNoTax, account, department, scrapDate, saleAmount, comments, addtime, userId, UserName, update_time, delFlag from fixedAssets
+        select id, buyDate, assetNo, assetName, ` specification`, number, measurementUnit , amountIncludeTax, amountNoTax, account, department, scrapDate, saleAmount, comments, addtime, userId, UserName, update_time, delFlag from fixedAssets
     </sql>
 
     <select id="selectFixedAssetsList" parameterType="FixedAssets" resultMap="FixedAssetsResult">
@@ -39,7 +39,7 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
             <if test="buyDate != null  and buyDate != ''"> and buyDate = #{buyDate}</if>
             <if test="assetNo != null  and assetNo != ''"> and assetNo = #{assetNo}</if>
             <if test="assetName != null  and assetName != ''"> and assetName like concat('%', #{assetName}, '%')</if>
-            <if test="specification != null  andspecification != ''"> and specification = #{specification}</if>
+            <if test="specification != null  and specification != ''"> and specification = #{specification}</if>
             <if test="number != null  and number != ''"> and number = #{number}</if>
             <if test="measurementUnit != null  and measurementUnit != ''"> and measurementUnit = #{measurementUnit}</if>
             <if test="amountIncludeTax != null "> and amountIncludeTax = #{amountIncludeTax}</if>

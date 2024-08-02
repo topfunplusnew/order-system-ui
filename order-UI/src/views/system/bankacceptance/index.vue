@@ -99,8 +99,9 @@
       </right-toolbar>
     </el-row>
 
-    <el-table border v-loading="loading" :data="bankAcceptanceList"
-              @selection-change="handleSelectionChange" show-summary :summary-method="getSummaries" height="480px">
+    <el-table border v-loading="loading" :data="bankAcceptanceList" v-horizontal-scroll="'always'"
+              @selection-change="handleSelectionChange" show-summary :summary-method="getSummaries" height="480px"
+              id="printBox">
       <!--  <el-table-column type="selection" width="55" align="center"/>-->
       <el-table-column label="id" align="center" prop="id"/>
       <el-table-column label="操作日期" align="center" prop="operateDate" v-if="columns[0].visible"/>
@@ -109,7 +110,7 @@
       <el-table-column label="到期日期" align="center" prop="dueDate" v-if="columns[3].visible"/>
       <el-table-column label="我方承兑账户" align="center" prop="billAccount" v-if="columns[4].visible"/>
       <el-table-column label="票据日期" align="center" prop="billDate" v-if="columns[5].visible"/>
-      <!--      <el-table-column label="分类" align="center" prop="billType" v-if="columns[6].visible"/>-->
+      <el-table-column label="分类" align="center" prop="billType" v-if="columns[6].visible"/>
       <el-table-column label="事由" align="center" prop="reason" v-if="columns[7].visible"/>
       <el-table-column label="票据金额" align="center" prop="billAmount" v-if="columns[8].visible"/>
       <el-table-column label="贴息点数" align="center" prop="inDiscountPoints" v-if="columns[9].visible"/>
@@ -184,6 +185,10 @@
             placeholder="选择日期" format="yyyy 年 MM 月 dd 日" value-format="yyyy-MM-dd">
           </el-date-picker>
         </el-form-item>
+        <el-form-item label="分类" prop="billType">
+          <el-radio v-model="form.billType" label="收入">收入</el-radio>
+          <el-radio v-model="form.billType" label="支出">支出</el-radio>
+        </el-form-item>
         <!--        单选-->
         <el-form-item label="票据种类" prop="billCategory">
           <!--          <el-input v-model="form.billCategory" placeholder="请输入票据种类"/>-->
@@ -193,7 +198,7 @@
         <el-form-item label="票据金额" prop="billAmount">
           <el-input v-model="form.billAmount" placeholder="请输入票据金额"/>
         </el-form-item>
-<!--        11-->
+        <!--        11-->
         <!--        时间选择器-->
         <el-form-item label="出票日期" prop="issueDate">
           <!--          <el-input v-model="form.issueDate" placeholder="请输入出票日期"/>-->
@@ -331,7 +336,7 @@ export default {
       const sums = [];
       columns.forEach((column, index) => {
         if (index === 0) {
-          sums[index] = '总价';
+          sums[index] = '统计';
           return;
         }
         const values = data.map(item => {
@@ -341,10 +346,10 @@ export default {
         if (!values.every(value => isNaN(value))) {
           //对指定列进行计算
           // if(index)
-          //排除打入账户
-          const out_list = [1, 2, 16]
+          //需要进行统计的索引列
+          const out_list = [9, 10, 11]
           //index !== 9 && index !== 1 && index !== 16 && index !== 2
-          if (!out_list.includes(index)) {
+          if (out_list.includes(index)) {
             sums[index] = values.reduce((prev, curr) => {
               const value = Number(curr);
               if (!isNaN(value)) {
@@ -365,6 +370,7 @@ export default {
       this.$print({
         printable: 'printBox',
         type: 'html',
+        maxWidth: 2500,
         targetStyles: ['*'], // 打印内容使用所有HTML样式，没有设置这个属性/值，设置分页打印没有效果
       })
     },

@@ -8,6 +8,10 @@ import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableName;
 import org.dzu.common.annotation.OnlyZeroOrOne;
+import org.hibernate.validator.constraints.Length;
+
+import javax.validation.constraints.NotNull;
+
 /**
  * 出库对象 exWarehouse
  * 
@@ -26,31 +30,41 @@ public class ExWarehouse extends BaseEntity
     /** 订单编号（UUID） */
     @Excel(name = "订单编号", readConverterExp = "U=UID")
     @TableField(value = "ordersNo")
+    @NotNull(message = "订单编号不能为空")
+    @Length(max = 64, message = "订单编号长度不能超过64个字符")
     private String ordersNo;
 
     /** 仓库ID */
     @Excel(name = "仓库ID")
     @TableField(value = "storeHouseid")
+    @Length(max = 64, message = "仓库ID长度不能超过64个字符")
+    @NotNull(message = "仓库ID不能为空")
     private Long storeHouseid;
 
     /** 仓库名称 */
     @Excel(name = "仓库名称")
     @TableField(value = "storeHouseName")
+    @Length(max = 64, message = "仓库名称长度不能超过64个字符")
+    @NotNull(message = "仓库名称不能为空")
     private String storeHouseName;
 
     /** 仓库存储的货物ID */
     @Excel(name = "仓库存储的货物ID")
     @TableField(value = "storeID")
+    @Length(max = 64, message = "仓库存储的货物ID长度不能超过64个字符")
+    @NotNull(message = "仓库存储的货物ID不能为空")
     private Long storeID;
 
     /** 出库日期 */
-    @Excel(name = "出库日期")
+    @Excel(name = "出库日期",dateFormat = "yyyy-MM-dd")
     @TableField(value = "outDate")
     private String outDate;
 
     /** 出库量（片数） */
-    @Excel(name = "出库量", readConverterExp = "片=数")
+    @Excel(name = "出库量", readConverterExp = "片数")
     @TableField(value = "outAmount")
+    @NotNull(message = "出库量不能为空")
+    @Length(max=20, message="出库量长度不能超过20个字符")
     private Long outAmount;
 
     /** 删除标记 */

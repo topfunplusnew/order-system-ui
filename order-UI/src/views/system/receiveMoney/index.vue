@@ -1,52 +1,27 @@
 <template>
   <div class="app-container">
-    <el-form :model="queryParams" ref="queryForm" size="small" :inline="true" v-show="showSearch" label-width="68px">
+    <el-form :model="queryParams" ref="queryForm" size="small" :inline="true" v-show="showSearch" label-width="100px">
       <el-form-item label="收款编号" prop="receiveNO">
         <el-input
           v-model="queryParams.receiveNO"
           placeholder="请输入收款编号"
           clearable
-          @keyup.enter.native="handleQuery"
+          @keyup.enter.native="handleQuery" class="w-85px"
         />
       </el-form-item>
       <el-form-item label="日期" prop="fundsDate">
-        <el-input
+        <el-date-picker
           v-model="queryParams.fundsDate"
-          placeholder="请输入日期"
-          clearable
-          @keyup.enter.native="handleQuery"
-        />
-      </el-form-item>
-      <el-form-item label="对应的表名" prop="tableName">
-        <el-input
-          v-model="queryParams.tableName"
-          placeholder="请输入对应的表名"
-          clearable
-          @keyup.enter.native="handleQuery"
-        />
-      </el-form-item>
-      <el-form-item label="对应的表主键" prop="tID">
-        <el-input
-          v-model="queryParams.tID"
-          placeholder="请输入对应的表主键"
-          clearable
-          @keyup.enter.native="handleQuery"
-        />
-      </el-form-item>
-      <el-form-item label="金额" prop="moneyAmount">
-        <el-input
-          v-model="queryParams.moneyAmount"
-          placeholder="请输入金额"
-          clearable
-          @keyup.enter.native="handleQuery"
-        />
+          type="date"
+          placeholder="请选择日期" value-format="yyyy-MM-dd" class="w-85px">
+        </el-date-picker>
       </el-form-item>
       <el-form-item label="己方户名" prop="selfAcountsName">
         <el-input
           v-model="queryParams.selfAcountsName"
           placeholder="请输入己方户名"
           clearable
-          @keyup.enter.native="handleQuery"
+          @keyup.enter.native="handleQuery" class="w-85px"
         />
       </el-form-item>
       <el-form-item label="己方账号" prop="selfBankNo">
@@ -54,7 +29,7 @@
           v-model="queryParams.selfBankNo"
           placeholder="请输入己方账号"
           clearable
-          @keyup.enter.native="handleQuery"
+          @keyup.enter.native="handleQuery" class="w-85px"
         />
       </el-form-item>
       <el-form-item label="己方开户行" prop="selfBankName">
@@ -62,15 +37,7 @@
           v-model="queryParams.selfBankName"
           placeholder="请输入己方开户行"
           clearable
-          @keyup.enter.native="handleQuery"
-        />
-      </el-form-item>
-      <el-form-item label="己方账号ID" prop="selfBankID">
-        <el-input
-          v-model="queryParams.selfBankID"
-          placeholder="请输入己方账号ID"
-          clearable
-          @keyup.enter.native="handleQuery"
+          @keyup.enter.native="handleQuery" class="w-85px"
         />
       </el-form-item>
       <el-form-item label="对方户名" prop="otherAcountsName">
@@ -78,7 +45,7 @@
           v-model="queryParams.otherAcountsName"
           placeholder="请输入对方户名"
           clearable
-          @keyup.enter.native="handleQuery"
+          @keyup.enter.native="handleQuery" class="w-85px"
         />
       </el-form-item>
       <el-form-item label="对方账号" prop="otherBankNo">
@@ -86,7 +53,7 @@
           v-model="queryParams.otherBankNo"
           placeholder="请输入对方账号"
           clearable
-          @keyup.enter.native="handleQuery"
+          @keyup.enter.native="handleQuery" class="w-85px"
         />
       </el-form-item>
       <el-form-item label="对方开户行" prop="otherBankName">
@@ -94,7 +61,7 @@
           v-model="queryParams.otherBankName"
           placeholder="请输入对方开户行"
           clearable
-          @keyup.enter.native="handleQuery"
+          @keyup.enter.native="handleQuery" class="w-85px"
         />
       </el-form-item>
       <el-form-item label="对方公司" prop="companyName">
@@ -102,7 +69,7 @@
           v-model="queryParams.companyName"
           placeholder="请输入对方公司"
           clearable
-          @keyup.enter.native="handleQuery"
+          @keyup.enter.native="handleQuery" class="w-85px"
         />
       </el-form-item>
       <el-form-item label="对方公司ID" prop="companyId">
@@ -110,7 +77,7 @@
           v-model="queryParams.companyId"
           placeholder="请输入对方公司ID"
           clearable
-          @keyup.enter.native="handleQuery"
+          @keyup.enter.native="handleQuery" class="w-85px"
         />
       </el-form-item>
       <el-form-item label="备注" prop="comments">
@@ -118,44 +85,11 @@
           v-model="queryParams.comments"
           placeholder="请输入备注"
           clearable
-          @keyup.enter.native="handleQuery"
-        />
-      </el-form-item>
-      <el-form-item label="添加时间" prop="addtime">
-        <el-input
-          v-model="queryParams.addtime"
-          placeholder="请输入添加时间"
-          clearable
-          @keyup.enter.native="handleQuery"
-        />
-      </el-form-item>
-      <el-form-item label="操作人员ID" prop="userId">
-        <el-input
-          v-model="queryParams.userId"
-          placeholder="请输入操作人员ID"
-          clearable
-          @keyup.enter.native="handleQuery"
-        />
-      </el-form-item>
-      <el-form-item label="操作人员姓名" prop="UserName">
-        <el-input
-          v-model="queryParams.UserName"
-          placeholder="请输入操作人员姓名"
-          clearable
-          @keyup.enter.native="handleQuery"
-        />
-      </el-form-item>
-      <el-form-item label="删除标记" prop="delFlag">
-        <el-input
-          v-model="queryParams.delFlag"
-          placeholder="请输入删除标记"
-          clearable
-          @keyup.enter.native="handleQuery"
+          @keyup.enter.native="handleQuery" class="w-85px"
         />
       </el-form-item>
       <el-form-item>
         <el-button type="primary" icon="el-icon-search" size="mini" @click="handleQuery">搜索</el-button>
-        <el-button icon="el-icon-refresh" size="mini" @click="resetQuery">重置</el-button>
       </el-form-item>
     </el-form>
 
@@ -168,87 +102,80 @@
           size="mini"
           @click="handleAdd"
           v-hasPermi="['system:receiveMoney:add']"
-        >新增</el-button>
+        >新增收款信息
+        </el-button>
       </el-col>
       <el-col :span="1.5">
-        <el-button
-          type="success"
-          plain
-          icon="el-icon-edit"
-          size="mini"
-          :disabled="single"
-          @click="handleUpdate"
-          v-hasPermi="['system:receiveMoney:edit']"
-        >修改</el-button>
+        <el-button icon="el-icon-refresh" size="mini" @click="resetQuery">刷新</el-button>
       </el-col>
-      <el-col :span="1.5">
-        <el-button
-          type="danger"
-          plain
-          icon="el-icon-delete"
-          size="mini"
-          :disabled="multiple"
-          @click="handleDelete"
-          v-hasPermi="['system:receiveMoney:remove']"
-        >删除</el-button>
-      </el-col>
-      <el-col :span="1.5">
-        <el-button
-          type="warning"
-          plain
-          icon="el-icon-download"
-          size="mini"
-          @click="handleExport"
-          v-hasPermi="['system:receiveMoney:export']"
-        >导出</el-button>
-      </el-col>
-      <right-toolbar :showSearch.sync="showSearch" @queryTable="getList"></right-toolbar>
+      <right-toolbar :showSearch.sync="showSearch" @queryTable="getList" :columns="columns">
+        <template v-slot:print>
+          <el-col :span="1.5">
+            <el-button
+              plain
+              icon="el-icon-printer"
+              size="mini"
+              @click="printHTML"
+            >
+            </el-button>
+          </el-col>
+        </template>
+        <!--        导出-->
+        <template v-slot:export>
+          <el-col :span="1.5">
+            <el-button
+              plain
+              icon="el-icon-folder-opened"
+              size="mini"
+              @click="handleExport"
+              v-hasPermi="['system:company:export']"
+            >
+            </el-button>
+          </el-col>
+        </template>
+      </right-toolbar>
     </el-row>
 
-    <el-table v-loading="loading" :data="receiveMoneyList" @selection-change="handleSelectionChange">
-      <el-table-column type="selection" width="55" align="center" />
-      <el-table-column label="id" align="center" prop="id" />
-      <el-table-column label="收款编号" align="center" prop="receiveNO" />
-      <el-table-column label="日期" align="center" prop="fundsDate" />
-      <el-table-column label="支付类型" align="center" prop="receiveType" />
-      <el-table-column label="对应的表名" align="center" prop="tableName" />
-      <el-table-column label="对应的表主键" align="center" prop="tID" />
-      <el-table-column label="金额" align="center" prop="moneyAmount" />
-      <el-table-column label="己方户名" align="center" prop="selfAcountsName" />
-      <el-table-column label="己方账号" align="center" prop="selfBankNo" />
-      <el-table-column label="己方开户行" align="center" prop="selfBankName" />
-      <el-table-column label="己方账号ID" align="center" prop="selfBankID" />
-      <el-table-column label="对方户名" align="center" prop="otherAcountsName" />
-      <el-table-column label="对方账号" align="center" prop="otherBankNo" />
-      <el-table-column label="对方开户行" align="center" prop="otherBankName" />
-      <el-table-column label="对方公司" align="center" prop="companyName" />
-      <el-table-column label="对方公司ID" align="center" prop="companyId" />
-      <el-table-column label="对方公司类型" align="center" prop="companyType" />
-      <el-table-column label="备注" align="center" prop="comments" />
-      <el-table-column label="添加时间" align="center" prop="addtime" />
-      <el-table-column label="操作人员ID" align="center" prop="userId" />
-      <el-table-column label="操作人员姓名" align="center" prop="UserName" />
-      <el-table-column label="删除标记" align="center" prop="delFlag" />
-      <el-table-column label="操作" align="center" class-name="small-padding fixed-width">
+    <el-table border v-horizontal-scroll="'always'" v-loading="loading" :data="receiveMoneyList"
+              @selection-change="handleSelectionChange">
+      <el-table-column label="id" align="center" prop="id"/>
+      <el-table-column label="收款编号" align="center" prop="receiveNO"/>
+      <el-table-column label="日期" align="center" prop="fundsDate"/>
+      <el-table-column label="支付类型" align="center" prop="receiveType"/>
+      <el-table-column label="对应的表名" align="center" prop="tableName"/>
+      <el-table-column label="对应的表主键" align="center" prop="tID"/>
+      <el-table-column label="金额" align="center" prop="moneyAmount"/>
+      <el-table-column label="己方户名" align="center" prop="selfAcountsName"/>
+      <el-table-column label="己方账号" align="center" prop="selfBankNo"/>
+      <el-table-column label="己方开户行" align="center" prop="selfBankName"/>
+      <el-table-column label="己方账号ID" align="center" prop="selfBankID"/>
+      <el-table-column label="对方户名" align="center" prop="otherAcountsName"/>
+      <el-table-column label="对方账号" align="center" prop="otherBankNo"/>
+      <el-table-column label="对方开户行" align="center" prop="otherBankName"/>
+      <el-table-column label="对方公司" align="center" prop="companyName"/>
+      <el-table-column label="对方公司ID" align="center" prop="companyId"/>
+      <el-table-column label="对方公司类型" align="center" prop="companyType"/>
+      <el-table-column label="备注" align="center" prop="comments"/>
+      <el-table-column label="操作" align="center" fixed="right">
         <template slot-scope="scope">
           <el-button
             size="mini"
-            type="text"
-            icon="el-icon-edit"
+            type="primary"
             @click="handleUpdate(scope.row)"
             v-hasPermi="['system:receiveMoney:edit']"
-          >修改</el-button>
+          >修改
+          </el-button>
           <el-button
             size="mini"
-            type="text"
-            icon="el-icon-delete"
+            type="danger"
             @click="handleDelete(scope.row)"
             v-hasPermi="['system:receiveMoney:remove']"
-          >删除</el-button>
+          >删除
+          </el-button>
         </template>
       </el-table-column>
     </el-table>
-    
+
     <pagination
       v-show="total>0"
       :total="total"
@@ -261,61 +188,56 @@
     <el-dialog :title="title" :visible.sync="open" width="500px" append-to-body>
       <el-form ref="form" :model="form" :rules="rules" label-width="80px">
         <el-form-item label="收款编号" prop="receiveNO">
-          <el-input v-model="form.receiveNO" placeholder="请输入收款编号" />
+          <el-input v-model="form.receiveNO" placeholder="请输入收款编号"/>
         </el-form-item>
         <el-form-item label="日期" prop="fundsDate">
-          <el-input v-model="form.fundsDate" placeholder="请输入日期" />
+          <el-date-picker
+            v-model="form.fundsDate"
+            type="date"
+            value-format="yyyy-MM-dd">
+          </el-date-picker>
         </el-form-item>
         <el-form-item label="对应的表名" prop="tableName">
-          <el-input v-model="form.tableName" placeholder="请输入对应的表名" />
+          <el-input v-model="form.tableName" placeholder="请输入对应的表名"/>
+        </el-form-item>
+        <el-form-item label="支付类型" prop="payType">
+          <el-input v-model="form.payType" placeholder="请输入支付类型"/>
         </el-form-item>
         <el-form-item label="对应的表主键" prop="tID">
-          <el-input v-model="form.tID" placeholder="请输入对应的表主键" />
+          <el-input v-model="form.tID" placeholder="请输入对应的表主键"/>
         </el-form-item>
         <el-form-item label="金额" prop="moneyAmount">
-          <el-input v-model="form.moneyAmount" placeholder="请输入金额" />
+          <el-input v-model="form.moneyAmount" placeholder="请输入金额"/>
         </el-form-item>
         <el-form-item label="己方户名" prop="selfAcountsName">
-          <el-input v-model="form.selfAcountsName" placeholder="请输入己方户名" />
+          <el-input v-model="form.selfAcountsName" placeholder="请输入己方户名"/>
         </el-form-item>
         <el-form-item label="己方账号" prop="selfBankNo">
-          <el-input v-model="form.selfBankNo" placeholder="请输入己方账号" />
+          <el-input v-model="form.selfBankNo" placeholder="请输入己方账号"/>
         </el-form-item>
         <el-form-item label="己方开户行" prop="selfBankName">
-          <el-input v-model="form.selfBankName" placeholder="请输入己方开户行" />
+          <el-input v-model="form.selfBankName" placeholder="请输入己方开户行"/>
         </el-form-item>
         <el-form-item label="己方账号ID" prop="selfBankID">
-          <el-input v-model="form.selfBankID" placeholder="请输入己方账号ID" />
+          <el-input v-model="form.selfBankID" placeholder="请输入己方账号ID"/>
         </el-form-item>
         <el-form-item label="对方户名" prop="otherAcountsName">
-          <el-input v-model="form.otherAcountsName" placeholder="请输入对方户名" />
+          <el-input v-model="form.otherAcountsName" placeholder="请输入对方户名"/>
         </el-form-item>
         <el-form-item label="对方账号" prop="otherBankNo">
-          <el-input v-model="form.otherBankNo" placeholder="请输入对方账号" />
+          <el-input v-model="form.otherBankNo" placeholder="请输入对方账号"/>
         </el-form-item>
         <el-form-item label="对方开户行" prop="otherBankName">
-          <el-input v-model="form.otherBankName" placeholder="请输入对方开户行" />
+          <el-input v-model="form.otherBankName" placeholder="请输入对方开户行"/>
         </el-form-item>
         <el-form-item label="对方公司" prop="companyName">
-          <el-input v-model="form.companyName" placeholder="请输入对方公司" />
+          <el-input v-model="form.companyName" placeholder="请输入对方公司"/>
         </el-form-item>
         <el-form-item label="对方公司ID" prop="companyId">
-          <el-input v-model="form.companyId" placeholder="请输入对方公司ID" />
+          <el-input v-model="form.companyId" placeholder="请输入对方公司ID"/>
         </el-form-item>
         <el-form-item label="备注" prop="comments">
-          <el-input v-model="form.comments" placeholder="请输入备注" />
-        </el-form-item>
-        <el-form-item label="添加时间" prop="addtime">
-          <el-input v-model="form.addtime" placeholder="请输入添加时间" />
-        </el-form-item>
-        <el-form-item label="操作人员ID" prop="userId">
-          <el-input v-model="form.userId" placeholder="请输入操作人员ID" />
-        </el-form-item>
-        <el-form-item label="操作人员姓名" prop="UserName">
-          <el-input v-model="form.UserName" placeholder="请输入操作人员姓名" />
-        </el-form-item>
-        <el-form-item label="删除标记" prop="delFlag">
-          <el-input v-model="form.delFlag" placeholder="请输入删除标记" />
+          <el-input v-model="form.comments" placeholder="请输入备注"/>
         </el-form-item>
       </el-form>
       <div slot="footer" class="dialog-footer">
@@ -327,7 +249,13 @@
 </template>
 
 <script>
-import { listReceiveMoney, getReceiveMoney, delReceiveMoney, addReceiveMoney, updateReceiveMoney } from "@/api/system/receiveMoney";
+import {
+  listReceiveMoney,
+  getReceiveMoney,
+  delReceiveMoney,
+  addReceiveMoney,
+  updateReceiveMoney
+} from "@/api/system/receiveMoney";
 
 export default {
   name: "ReceiveMoney",
@@ -380,8 +308,18 @@ export default {
       // 表单参数
       form: {},
       // 表单校验
-      rules: {
-      }
+      rules: {},
+      columns: [
+        {key: 0, label: `客户`, visible: true},
+        {key: 1, label: `老板姓名`, visible: true},
+        {key: 2, label: `公司名称`, visible: true},
+        {key: 3, label: `老板电话`, visible: true},
+        {key: 4, label: `电话`, visible: true},
+        {key: 5, label: `地址`, visible: true},
+        {key: 6, label: `区域`, visible: true},
+        {key: 7, label: `销售经理`, visible: true},
+        {key: 8, label: `备注`, visible: true},
+      ],
     };
   },
   created() {
@@ -444,7 +382,7 @@ export default {
     // 多选框选中数据
     handleSelectionChange(selection) {
       this.ids = selection.map(item => item.id)
-      this.single = selection.length!==1
+      this.single = selection.length !== 1
       this.multiple = !selection.length
     },
     /** 新增按钮操作 */
@@ -468,12 +406,20 @@ export default {
       this.$refs["form"].validate(valid => {
         if (valid) {
           if (this.form.id != null) {
+            this.form.delFlag = null;
+            this.form.addtime = null;
+            this.form.updateTime = null;
+            this.form.userId = null;
             updateReceiveMoney(this.form).then(response => {
               this.$modal.msgSuccess("修改成功");
               this.open = false;
               this.getList();
             });
           } else {
+            this.form.delFlag = null;
+            this.form.addtime = null;
+            this.form.updateTime = null;
+            this.form.userId = null;
             addReceiveMoney(this.form).then(response => {
               this.$modal.msgSuccess("新增成功");
               this.open = false;
@@ -486,12 +432,13 @@ export default {
     /** 删除按钮操作 */
     handleDelete(row) {
       const ids = row.id || this.ids;
-      this.$modal.confirm('是否确认删除收款信息编号为"' + ids + '"的数据项？').then(function() {
+      this.$modal.confirm('是否确认删除收款信息编号为"' + ids + '"的数据项？').then(function () {
         return delReceiveMoney(ids);
       }).then(() => {
         this.getList();
         this.$modal.msgSuccess("删除成功");
-      }).catch(() => {});
+      }).catch(() => {
+      });
     },
     /** 导出按钮操作 */
     handleExport() {
@@ -502,3 +449,8 @@ export default {
   }
 };
 </script>
+<style scoped>
+.w-85px {
+  width: 85px;
+}
+</style>

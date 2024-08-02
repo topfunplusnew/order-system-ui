@@ -9,6 +9,11 @@ import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableName;
 import org.dzu.common.annotation.DecimalMaxDigits;
 import org.dzu.common.annotation.OnlyZeroOrOne;
+import org.hibernate.validator.constraints.Length;
+
+import javax.validation.constraints.Max;
+import javax.validation.constraints.NotNull;
+
 /**
  * 订单详情对象 orderDetail
  * 
@@ -25,47 +30,63 @@ public class OrderDetail extends BaseEntity
     private Long id;
 
     /** 订单编号（UUID） */
-    @Excel(name = "订单编号", readConverterExp = "U=UID")
+    @Excel(name = "订单编号", readConverterExp = "UUID")
+    @Length(max = 20, message = "订单编号长度不能超过20个字符")
+    @NotNull(message = "订单编号不能为空")
     @TableField(value = "ordersNo")
     private String ordersNo;
 
     /** 订单日期 */
-    @Excel(name = "订单日期")
+    @Excel(name = "订单日期",dateFormat = "yyyy-MM-dd")
     @TableField(value = "orderDate")
     private String orderDate;
 
     /** 供应商 */
     @Excel(name = "供应商")
+    @Length(max = 20, message = "供应商长度不能超过20个字符")
+    @NotNull(message = "供应商不能为空")
     @TableField(value = "supplier")
     private String supplier;
 
     /** 供应商ID */
     @Excel(name = "供应商ID")
+    @Length(max = 20, message = "供应商ID长度不能超过20个字符")
+    @NotNull(message = "供应商ID不能为空")
     @TableField(value = "supplierID")
     private Long supplierID;
 
     /** 客户 */
     @Excel(name = "客户")
+    @Length(max = 20, message = "客户长度不能超过20个字符")
+    @NotNull(message = "客户不能为空")
     @TableField(value = "customer")
     private String customer;
 
     /** 客户ID */
     @Excel(name = "客户ID")
+    @Length(max = 20, message = "客户ID长度不能超过20个字符")
+    @NotNull(message = "客户ID不能为空")
     @TableField(value = "customerID")
     private Long customerID;
 
     /** 级别编码 */
     @Excel(name = "级别编码")
+    @Length(max = 20, message = "级别编码长度不能超过20个字符")
+    @NotNull(message = "级别编码不能为空")
     @TableField(value = "levelID")
     private Long levelID;
 
     /** 级别名称 */
     @Excel(name = "级别名称")
+    @Length(max = 20, message = "级别名称长度不能超过20个字符")
+    @NotNull(message = "级别名称不能为空")
     @TableField(value = "levelName")
     private String levelName;
 
     /** 计量单位 */
     @Excel(name = "计量单位")
+    @NotNull(message = "计量单位不能为空")
+    @Length(max = 20, message = "计量单位长度不能超过20个字符")
     @TableField(value = "countingUnit")
     private String countingUnit;
 
@@ -106,6 +127,7 @@ public class OrderDetail extends BaseEntity
 
     /** 出厂是否含税 */
     @Excel(name = "出厂是否含税")
+    @Length(max = 1, message = "出厂是否含税长度不能超过1个字符")
     @TableField(value = "isIncludeTaxFactory")
     private Long isIncludeTaxFactory;
 
@@ -181,6 +203,7 @@ public class OrderDetail extends BaseEntity
 
     /** 实际片数 */
     @Excel(name = "实际片数")
+    @Max(value = 9223372036854775807L, message = "实际片数长度不能超过19个字符")
     @TableField(value = "actualPieces")
     private Long actualPieces;
 
@@ -196,16 +219,21 @@ public class OrderDetail extends BaseEntity
 
     /** 仓库ID */
     @Excel(name = "仓库ID")
+    @Length(max = 19, message = "仓库ID长度不能超过19个字符")
+    @NotNull(message = "仓库ID不能为空")
     @TableField(value = "storeHouseID")
     private Long storeHouseID;
 
     /** 仓库名称 */
     @Excel(name = "仓库名称")
+    @Length(max = 20, message = "仓库名称长度不能超过20个字符")
     @TableField(value = "storeHouseName")
     private String storeHouseName;
 
     /** 仓库存储的货物ID */
     @Excel(name = "仓库存储的货物ID")
+    @Length(max = 19, message = "仓库存储的货物ID长度不能超过19个字符")
+
     @TableField(value = "storeID")
     private Long storeID;
 
@@ -236,6 +264,7 @@ public class OrderDetail extends BaseEntity
 
     /** 备注 */
     @Excel(name = "备注")
+    @Length(max = 200, message = "备注长度不能超过200个字符")
     @TableField(value = "comments")
     private String comments;
 

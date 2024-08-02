@@ -208,18 +208,6 @@
         <el-form-item label="备注" prop="comments">
           <el-input v-model="form.comments" placeholder="请输入备注"/>
         </el-form-item>
-        <!--        <el-form-item label="添加时间" prop="addtime">-->
-        <!--          <el-input v-model="form.addtime" placeholder="请输入添加时间"/>-->
-        <!--        </el-form-item>-->
-        <!--        <el-form-item label="操作人员ID" prop="userId">-->
-        <!--          <el-input v-model="form.userId" placeholder="请输入操作人员ID"/>-->
-        <!--        </el-form-item>-->
-        <!--        <el-form-item label="操作人员姓名" prop="UserName">-->
-        <!--          <el-input v-model="form.UserName" placeholder="请输入操作人员姓名"/>-->
-        <!--        </el-form-item>-->
-        <!--        <el-form-item label="删除标记" prop="delFlag">-->
-        <!--          <el-input v-model="form.delFlag" placeholder="请输入删除标记"/>-->
-        <!--        </el-form-item>-->
       </el-form>
       <div slot="footer" class="dialog-footer">
         <el-button type="primary" @click="submitForm">确 定</el-button>
@@ -440,6 +428,7 @@ export default {
       this.currentInfo.city = row.city
       this.currentInfo.county = row.county
       this.currentInfo.comments = row.comments
+      this.currentInfo.companyName = row.companyName
       this.dialogFormVisible = true
       //查询某客户信息
       listCompany({relationName: row.relationName, relationTel: row.relationTel}).then(res => {
@@ -466,8 +455,9 @@ export default {
         relationTel: this.currentInfo.relationTel
       }).then(res => {
         this.singleInfo = res.rows
+      }).catch(err => {
+        this.$message.error(err.msg)
       })
-
     },
     //打开的银行卡弹窗点击编辑
     handleUpdateBankPop(row) {

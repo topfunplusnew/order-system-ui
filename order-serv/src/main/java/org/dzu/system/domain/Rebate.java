@@ -9,6 +9,11 @@ import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableName;
 import org.dzu.common.annotation.DecimalMaxDigits;
 import org.dzu.common.annotation.OnlyZeroOrOne;
+import org.hibernate.validator.constraints.Length;
+
+import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Pattern;
+
 /**
  * 返利回扣对象 Rebate
  * 
@@ -26,6 +31,8 @@ public class Rebate extends BaseEntity
 
     /** 订单编号（UUID） */
     @Excel(name = "订单编号", readConverterExp = "U=UID")
+    @Length(max = 32, message = "订单编号长度不能超过32个字符")
+    @NotNull(message = "订单编号不能为空")
     @TableField(value = "ordersNo")
     private String ordersNo;
 
@@ -40,47 +47,63 @@ public class Rebate extends BaseEntity
     private Double rebate;
 
     /** 类型（返利、降价、售后质量赔偿） */
-    @Excel(name = "类型", readConverterExp = "返=利、降价、售后质量赔偿")
+    @Excel(name = "类型")
+    @Pattern(regexp = "返利|降价|售后质量赔偿", message = "类型格式错误")
     @TableField(value = "rebateType")
     private String rebateType;
 
     /** 收款户名 */
     @Excel(name = "收款户名")
     @TableField(value = "inAcountsName")
+    @NotNull(message = "收款户名不能为空")
+    @Length(max = 32, message = "收款户名长度不能超过32个字符")
     private String inAcountsName;
 
     /** 收款账号 */
     @Excel(name = "收款账号")
+    @NotNull(message = "收款账号不能为空")
+    @Length(max = 32, message = "收款账号长度不能超过32个字符")
     @TableField(value = "inBankNo")
     private String inBankNo;
 
     /** 供应商 */
     @Excel(name = "供应商")
+    @NotNull(message = "供应商不能为空")
+    @Length(max = 20, message = "供应商长度不能超过20个字符")
     @TableField(value = "supplier")
     private String supplier;
 
     /** 供应商ID */
     @Excel(name = "供应商ID")
+    @NotNull(message = "供应商ID不能为空")
+    @Length(max = 20, message = "供应商ID长度不能超过20个字符")
     @TableField(value = "supplierID")
     private Long supplierID;
 
     /** 付款户名 */
     @Excel(name = "付款户名")
+    @Length(max = 20, message = "付款户名长度不能超过20个字符")
+    @NotNull(message = "付款户名不能为空")
     @TableField(value = "outAcountsName")
     private String outAcountsName;
 
     /** 付款款账号 */
     @Excel(name = "付款款账号")
+    @NotNull(message = "付款款账号不能为空")
+    @Length(max = 20, message = "付款款账号长度不能超过20个字符")
     @TableField(value = "outBankNo")
     private String outBankNo;
 
     /** 返利原因 */
     @Excel(name = "返利原因")
+    @Length(max = 255, message = "返利原因长度不能超过255个字符")
+    @NotNull(message = "返利原因不能为空")
     @TableField(value = "rebateReason")
     private String rebateReason;
 
     /** 备注 */
     @Excel(name = "备注")
+    @Length(max = 255, message = "备注长度不能超过255个字符")
     @TableField(value = "comments")
     private String comments;
 
