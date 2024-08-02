@@ -272,6 +272,7 @@
 import {listLendMoney, getLendMoney, delLendMoney, addLendMoney, updateLendMoney} from "@/api/system/lendMoney";
 import {mapGetters} from "vuex";
 import {addRecoverMoney, getRecoverMoneyByUuid} from "@/api/system/recoverMoney";
+import {addReceiveMoney} from "@/api/system/receiveMoney";
 
 export default {
   name: "LendMoney",
@@ -372,7 +373,11 @@ export default {
       innerVisible: false,
       //默认填充的账户和账号
       currentBankNo: '',
-      currentAccountsName: ''
+      currentBankName: '',
+      currentAccountsName: '',
+      currentCompanyName: '',
+      //对方公司或者客户名称
+      currentTargetAcountsName: ''
     };
   },
   created() {
@@ -392,7 +397,9 @@ export default {
       this.currentUUID = row.futuresNO
       //不需要填的字段自动填充
       this.currentBankNo = row.selfBankNo
+      this.currentBankName = row.selfBankName;
       this.currentAccountsName = row.selfAcountsName
+      this.currentTargetAcountsName = row.targetAcountsName
       this.currentRecoverMoneyInfo.selfBankNo = row.selfBankNo
       setTimeout(() => {
         getRecoverMoneyByUuid(this.currentUUID).then(res => {
@@ -407,6 +414,7 @@ export default {
     },
     //收回资金
     RecoverMoney() {
+      //添加信息
       addRecoverMoney({
         ...this.currentRecoverMoneyInfo, futuresNO: this.currentUUID
         , bankNo: this.currentBankNo, acountsName: this.currentAccountsName
@@ -417,6 +425,44 @@ export default {
           this.innerVisible = false
         }).catch(err => {
         this.$modal.msgError("修改失败:" + err.msg);
+      })
+
+      //同步修改到收款信息里
+      //fundsDate
+      const fundsDate = this.currentRecoverMoneyInfo.recoverDate;
+      const receiveType = '收回借出款';
+      const tableName = 'recoverMoney'; //操作表
+      const tID = 'id'; //对应表的主键
+      const moneyAmount = this.currentRecoverMoneyInfo.moneyAmount;//操作金额
+      const selfAcountsName = this.currentRecoverMoneyInfo.selfAcountsName;//收回账户
+      const selfBankNo = this.currentRecoverMoneyInfo.selfBankNo;//收回账号
+      const selfBankName = this.currentBankName;
+      const companyName = this.currentTargetAcountsName
+      //companyId 魔法值
+      const companyId = '999';
+      const companyType = '1';
+      const comments = '备注:资金收回';
+      //构造
+      const item = {
+        fundsDate,
+        receiveType,
+        tableName,
+        tID,
+        moneyAmount,
+        selfAcountsName,
+        selfBankNo,
+        selfBankName,
+        companyName,
+        companyId,
+        companyType,
+        comments
+      }
+      this.addToReceiveMoney(item)
+    },
+    //同步修改到收款信息方法
+    addToReceiveMoney(item) {
+      addReceiveMoney(item).then(res => {
+        console.log(res)
       })
     },
     handleQueryTime() {
