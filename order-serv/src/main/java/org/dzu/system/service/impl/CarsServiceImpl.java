@@ -155,7 +155,7 @@ public class CarsServiceImpl implements ICarsService {
         if (bankAccounts.size() > 0) {
             // 存在，所以当前是修改
             newBankAccountInfo.setId(bankAccounts.get(0).getId());// 拼接上原信息的id，允许修改
-            bankAccountService.updateBankAccount(bankAccount);
+            bankAccountService.updateBankAccount(newBankAccountInfo);
         } else {
             // 不存在，但是找到旧车辆信息。故进行插入
             // 之前车的信息有了，但是本次修改提交了修改银行卡的情况
