@@ -52,7 +52,7 @@ public class ProductLevel extends BaseEntity {
      */
     @Excel(name = "分类编号")
     @TableField("categoryNo")
-    @Length(max = 20, message = "分类编号的字符长度不允许超过20")
+    // @Length(max = 20, message = "分类编号的字符长度不允许超过20")
     @NotNull(message = "分类编号不能为空")
     private Long categoryNo;
 
