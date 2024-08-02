@@ -376,7 +376,7 @@ export default {
     },
     //点击添加级别信息
     submitAddLevel() {
-      const obj = JSON.parse(JSON.stringify(this.dictObj))
+      const obj = JSON.parse(JSON.stringify(this.dictObj)) //Observer改JSON
       let categoryNo = null;
       for (let a in obj) {
         if (obj[a] === this.addCategoryModel.categoryName) {
@@ -396,6 +396,7 @@ export default {
     onDictReady(dict) {
       this.dictObj = dict.label.order_product_categories
     },
+    //打印方法
     printHTML() {
       this.$print({
         printable: 'printBox',
@@ -430,6 +431,7 @@ export default {
         })
       });
     },
+    //去重方法
     uniqueObjects(arr) {
       const seen = new Set();
       return arr.filter(obj => {

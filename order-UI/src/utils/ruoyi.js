@@ -1,5 +1,3 @@
-
-
 /**
  * 通用js方法封装处理
  * Copyright (c) 2019 ruoyi
@@ -37,7 +35,9 @@ export function parseTime(time, pattern) {
   const time_str = format.replace(/{(y|m|d|h|i|s|a)+}/g, (result, key) => {
     let value = formatObj[key]
     // Note: getDay() returns 0 on Sunday
-    if (key === 'a') { return ['日', '一', '二', '三', '四', '五', '六'][value] }
+    if (key === 'a') {
+      return ['日', '一', '二', '三', '四', '五', '六'][value]
+    }
     if (result.length > 0 && value < 10) {
       value = '0' + value
     }
@@ -88,7 +88,7 @@ export function selectDictLabel(datas, value) {
 
 // 回显数据字典（字符串、数组）
 export function selectDictLabels(datas, value, separator) {
-  if (value === undefined || value.length ===0) {
+  if (value === undefined || value.length === 0) {
     return "";
   }
   if (Array.isArray(value)) {
@@ -158,6 +158,7 @@ export function mergeRecursive(source, target) {
  * @param {*} children 孩子节点字段 默认 'children'
  */
 export function handleTree(data, id, parentId, children) {
+  //预处理
   let config = {
     id: id || 'id',
     parentId: parentId || 'parentId',
@@ -168,17 +169,22 @@ export function handleTree(data, id, parentId, children) {
   var nodeIds = {};
   var tree = [];
 
+  //遍历传来的数组的每一个对象 d是每一个item
   for (let d of data) {
-    let parentId = d[config.parentId];
+    let parentId = d[config.parentId]; //拿到每一个item的父节点id
+
+    //父节点=null
     if (childrenListMap[parentId] == null) {
       childrenListMap[parentId] = [];
     }
+
+    //d[config.id] => d.id
     nodeIds[d[config.id]] = d;
     childrenListMap[parentId].push(d);
   }
 
   for (let d of data) {
-    let parentId = d[config.parentId];
+    let parentId = d[config.parentId]; //拿到父id
     if (nodeIds[parentId] == null) {
       tree.push(d);
     }
@@ -188,6 +194,7 @@ export function handleTree(data, id, parentId, children) {
     adaptToChildrenList(t);
   }
 
+  //递归
   function adaptToChildrenList(o) {
     if (childrenListMap[o[config.id]] !== null) {
       o[config.childrenList] = childrenListMap[o[config.id]];
@@ -198,13 +205,14 @@ export function handleTree(data, id, parentId, children) {
       }
     }
   }
+
   return tree;
 }
 
 /**
-* 参数处理
-* @param {*} params  参数
-*/
+ * 参数处理
+ * @param {*} params  参数
+ */
 export function tansParams(params) {
   let result = ''
   for (const propName of Object.keys(params)) {
