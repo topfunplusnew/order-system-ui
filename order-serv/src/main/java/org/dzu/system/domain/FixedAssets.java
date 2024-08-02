@@ -120,7 +120,6 @@ public class FixedAssets extends BaseEntity
     /** 操作人员ID */
     @Excel(name = "操作人员ID")
     @TableField("userId")
-    @Length(max = 20, message = "操作人员ID的字符长度不允许超过20")
     private Long userId;
 
     /** 操作人员姓名 */
