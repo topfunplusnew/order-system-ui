@@ -14,7 +14,7 @@
       </el-form-item>
     </el-form>
     <el-row>
-<!--      <el-col :span="4">
+      <el-col :span="4">
         <el-tree :data="dict.type.order_product_categories" :props="defaultProps"
                  @node-click="handleNodeClick">
            <span class="custom-tree-node" slot-scope="{ node, data }">
@@ -23,7 +23,7 @@
              </span>
            </span>
         </el-tree>
-      </el-col>-->
+      </el-col>
       <el-col :span="20">
         <el-row :gutter="10" class="mb8">
           <el-col :span="1.5">
@@ -47,7 +47,7 @@
             >新增产品级别信息
             </el-button>
           </el-col>
-<!--          <right-toolbar :showSearch.sync="showSearch" @queryTable="getList" :columns="columns">
+          <right-toolbar :showSearch.sync="showSearch" @queryTable="getList" :columns="columns">
             <template v-slot:print>
               <el-col :span="1.5">
                 <el-button
@@ -59,7 +59,7 @@
                 </el-button>
               </el-col>
             </template>
-            &lt;!&ndash;        导出&ndash;&gt;
+            <!--        导出-->
             <template v-slot:export>
               <el-col :span="1.5">
                 <el-button
@@ -72,19 +72,19 @@
                 </el-button>
               </el-col>
             </template>
-          </right-toolbar>-->
+          </right-toolbar>
         </el-row>
-<!--        <el-table border v-horizontal-scroll="'always'" v-loading="loading" :data="productLevelList"
+        <el-table border v-horizontal-scroll="'always'" v-loading="loading" :data="productLevelList"
                   @selection-change="handleSelectionChange" id="printBox">
           <el-table-column label="id" align="center" prop="id"/>
-          <el-table-column label="级别编码" align="center" prop="levelNo" v-if="columns[0].visible"/>
-          <el-table-column label="级别名称" align="center" prop="levelName" v-if="columns[1].visible"/>
-          <el-table-column label="分类编号" align="center" prop="categoryNo" v-if="columns[2].visible"/>
-          <el-table-column label="分类名称" align="center" prop="categoryName" v-if="columns[3].visible"/>
-          <el-table-column label="厚度" align="center" prop="height" v-if="columns[4].visible"/>
-          <el-table-column label="长度" align="center" prop="length" v-if="columns[5].visible"/>
-          <el-table-column label="宽度" align="center" prop="width" v-if="columns[6].visible"/>
-          <el-table-column label="吨位" align="center" prop="tonnage" v-if="columns[7].visible"/>
+          <el-table-column label="级别编码" align="center" prop="levelNo"/>
+          <el-table-column label="级别名称" align="center" prop="levelName"/>
+          <el-table-column label="分类编号" align="center" prop="categoryNo"/>
+          <el-table-column label="分类名称" align="center" prop="categoryName"/>
+          <el-table-column label="厚度" align="center" prop="height"/>
+          <el-table-column label="长度" align="center" prop="length"/>
+          <el-table-column label="宽度" align="center" prop="width"/>
+          <el-table-column label="吨位" align="center" prop="tonnage"/>
           <el-table-column label="操作" align="center" class-name="small-padding fixed-width" fixed="right">
             <template slot-scope="scope">
               <el-button
@@ -103,67 +103,10 @@
               </el-button>
             </template>
           </el-table-column>
-        </el-table>-->
+        </el-table>
       </el-col>
     </el-row>
 
-    <right-toolbar :showSearch.sync="showSearch" @queryTable="getList" :columns="columns">
-      <template v-slot:print>
-        <el-col :span="1.5">
-          <el-button
-            plain
-            icon="el-icon-printer"
-            size="mini"
-            @click="printHTML"
-          >
-          </el-button>
-        </el-col>
-      </template>
-      <!--        导出-->
-      <template v-slot:export>
-        <el-col :span="1.5">
-          <el-button
-            plain
-            icon="el-icon-folder-opened"
-            size="mini"
-            @click="handleExport"
-            v-hasPermi="['system:productLevel:export']"
-          >
-          </el-button>
-        </el-col>
-      </template>
-    </right-toolbar>
-
-    <el-table border v-horizontal-scroll="'always'" v-loading="loading" :data="productLevelList"
-              @selection-change="handleSelectionChange" id="printBox">
-      <el-table-column label="id" align="center" prop="id"/>
-      <el-table-column label="级别编码" align="center" prop="levelNo" v-if="columns[0].visible"/>
-      <el-table-column label="级别名称" align="center" prop="levelName" v-if="columns[1].visible"/>
-      <el-table-column label="分类编号" align="center" prop="categoryNo" v-if="columns[2].visible"/>
-      <el-table-column label="分类名称" align="center" prop="categoryName" v-if="columns[3].visible"/>
-      <el-table-column label="厚度" align="center" prop="height" v-if="columns[4].visible"/>
-      <el-table-column label="长度" align="center" prop="length" v-if="columns[5].visible"/>
-      <el-table-column label="宽度" align="center" prop="width" v-if="columns[6].visible"/>
-      <el-table-column label="吨位" align="center" prop="tonnage" v-if="columns[7].visible"/>
-      <el-table-column label="操作" align="center" class-name="small-padding fixed-width" fixed="right" width="180">
-        <template slot-scope="scope">
-          <el-button
-            size="mini"
-            type="primary"
-            @click="handleUpdate(scope.row)"
-            v-hasPermi="['system:productLevel:edit']"
-          >修改
-          </el-button>
-          <el-button
-            size="mini"
-            type="danger"
-            @click="handleDelete(scope.row)"
-            v-hasPermi="['system:productLevel:remove']"
-          >删除
-          </el-button>
-        </template>
-      </el-table-column>
-    </el-table>
     <pagination
       v-show="total>0"
       :total="total"
@@ -342,14 +285,15 @@ export default {
       rules: {},
       test: [],
       columns: [
-        {key: 0, label: `级别编码`, visible: true},
-        {key: 1, label: `级别名称`, visible: true},
-        {key: 2, label: `分类编号`, visible: true},
-        {key: 3, label: `分类名称`, visible: true},
-        {key: 4, label: `厚度`, visible: true},
-        {key: 5, label: `长度`, visible: true},
-        {key: 6, label: `宽度`, visible: true},
-        {key: 7, label: `吨位`, visible: true},
+        {key: 0, label: `客户`, visible: true},
+        {key: 1, label: `老板姓名`, visible: true},
+        {key: 2, label: `公司名称`, visible: true},
+        {key: 3, label: `老板电话`, visible: true},
+        {key: 4, label: `电话`, visible: true},
+        {key: 5, label: `地址`, visible: true},
+        {key: 6, label: `区域`, visible: true},
+        {key: 7, label: `销售经理`, visible: true},
+        {key: 8, label: `备注`, visible: true},
       ],
       //产品分类信息
       categoryList: [],

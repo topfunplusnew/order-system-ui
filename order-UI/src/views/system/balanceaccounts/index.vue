@@ -183,10 +183,10 @@
       <el-table-column label="金额" align="center" prop="moneyAmount" v-if="columns[1].visible"/>
       <el-table-column label="对方公司" align="center" prop="companyName" v-if="columns[2].visible"/>
       <el-table-column label="对方公司ID" align="center" prop="companyID" v-if="columns[3].visible"/>
-      <el-table-column label="对方公司类型" align="center" prop="companyType"v-if="columns[4].visible"/>
-      <el-table-column label="备注" align="center" prop="comments" v-if="columns[5].visible"/>
-      <el-table-column label="添加时间" align="center" prop="addtime" v-if="columns[6].visible"/>
-      <el-table-column label="操作人员ID" align="center" prop="userId" v-if="columns[7].visible"/>
+      <el-table-column label="对方公司类型" align="center" prop="companyType"/>
+      <el-table-column label="备注" align="center" prop="comments" v-if="columns[4].visible"/>
+      <el-table-column label="添加时间" align="center" prop="addtime" v-if="columns[5].visible"/>
+      <el-table-column label="操作人员ID" align="center" prop="userId" v-if="columns[6].visible"/>
 <!--      <el-table-column label="操作人员姓名" align="center" prop="UserName"v-if="columns[7].visible"/>-->
 <!--      <el-table-column label="删除标记" align="center" prop="delFlag"/>-->
       <el-table-column label="操作" align="center" class-name="small-padding fixed-width">
@@ -343,11 +343,9 @@ export default {
         {key: 1, label: `金额`, visible: true},
         {key: 2, label: `对方公司`, visible: true},
         {key: 3, label: `对方公司ID`, visible: true},
-        {key: 4, label: `对方公司类型`, visible: true},
-        {key: 5, label: `备注`, visible: true},
-        {key: 6, label: `添加时间`, visible: true},
-        {key: 7, label: `操作人员ID`, visible: true},
-
+        {key: 4, label: `备注`, visible: true},
+        {key: 5, label: `添加时间`, visible: true},
+        {key: 6, label: `操作人员ID`, visible: true},
       /*  {key: 7, label: `操作人员姓名`, visible: true},*/
       ],
       // 表单校验
