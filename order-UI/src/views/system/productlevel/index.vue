@@ -14,7 +14,7 @@
       </el-form-item>
     </el-form>
     <el-row>
-      <el-col :span="4">
+      <el-col :span="5">
         <el-tree :data="dict.type.order_product_categories" :props="defaultProps"
                  @node-click="handleNodeClick">
            <span class="custom-tree-node" slot-scope="{ node, data }">
@@ -24,7 +24,7 @@
            </span>
         </el-tree>
       </el-col>
-      <el-col :span="20">
+      <el-col :span="19">
         <el-row :gutter="10" class="mb8">
           <el-col :span="1.5">
             <el-button icon="el-icon-refresh" size="mini" @click="resetQuery">刷新</el-button>
@@ -225,6 +225,48 @@
        <el-button type="primary" @click="submitAddLevel">保存</el-button>
        <el-button @click="addProductLevelOpen = false">取 消</el-button>
       </span>
+    </el-dialog>
+
+
+    <!-- 添加或修改收款信息对话框 -->
+    <el-dialog :title="title" :visible.sync="open" width="500px" append-to-body>
+      <el-form ref="form" :model="form" :rules="rules" label-width="80px">
+        <el-form-item label="级别编码" prop="levelNo">
+          <el-input v-model="form.levelNo" placeholder="请输入支付类型"/>
+        </el-form-item>
+        <el-form-item label="级别名称" prop="levelName">
+          <el-input v-model="form.levelName" placeholder="请输入收款编号"/>
+        </el-form-item>
+        <el-form-item label="分类编号" prop="tableName">
+          <el-input v-model="form.categoryNo" placeholder="请输入对应的表名"/>
+        </el-form-item>
+        <el-form-item label="分类名称" prop="categoryName">
+          <el-select v-model="form.categoryName" placeholder="请选择分类名称">
+            <el-option
+              v-for="item in dict.type.order_product_categories"
+              :key="item.value"
+              :label="item.label"
+              :value="item.label">
+            </el-option>
+          </el-select>
+        </el-form-item>
+        <el-form-item label="厚度" prop="height">
+          <el-input v-model="form.height" placeholder="请输入厚度"/>
+        </el-form-item>
+        <el-form-item label="宽度" prop="width">
+          <el-input v-model="form.width" placeholder="请输入宽度"/>
+        </el-form-item>
+        <el-form-item label="长度" prop="length">
+          <el-input v-model="form.length" placeholder="请输入长度"/>
+        </el-form-item>
+        <el-form-item label="吨位" prop="tonnage">
+          <el-input v-model="form.tonnage" placeholder="请输入吨位"/>
+        </el-form-item>
+      </el-form>
+      <div slot="footer" class="dialog-footer">
+        <el-button type="primary" @click="submitForm">确 定</el-button>
+        <el-button @click="cancel">取 消</el-button>
+      </div>
     </el-dialog>
   </div>
 </template>
