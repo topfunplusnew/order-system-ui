@@ -59,4 +59,6 @@ public interface IAuditInfoService
      * @return 结果
      */
     public int deleteAuditInfoById(Long id);
+
+    void updateAuditInfoToError();
 }
