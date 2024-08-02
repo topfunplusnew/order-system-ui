@@ -53,4 +53,5 @@ public interface IPaymentService
      */
     public int deletePaymentByIds(Long[] ids);
 
+    void insertPaymentByApply(Long applyID);
 }

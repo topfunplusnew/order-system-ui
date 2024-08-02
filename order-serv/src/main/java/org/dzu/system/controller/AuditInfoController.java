@@ -71,17 +71,6 @@ public class AuditInfoController extends BaseController
     }
 
     /**
-     * 新增审核流程
-     */
-    @PreAuthorize("@ss.hasPermi('system:auditInfo:add')")
-    @Log(title = "审核流程", businessType = BusinessType.INSERT)
-    @PostMapping
-    public AjaxResult add(@Validated @RequestBody AuditInfo auditInfo)
-    {
-        return toAjax(auditInfoService.insertAuditInfo(auditInfo));
-    }
-
-    /**
      * 修改审核流程
      */
     @PreAuthorize("@ss.hasPermi('system:auditInfo:edit')")
@@ -97,7 +86,10 @@ public class AuditInfoController extends BaseController
      */
     @PreAuthorize("@ss.hasPermi('system:auditInfo:remove')")
     @Log(title = "审核流程", businessType = BusinessType.DELETE)
-	@DeleteMapping("/{ids}")
+//	@DeleteMapping("/{ids}")
+    // 因为涉及到自动增加下一步以及一些关键信息，同时删除需要关联变动到其他表
+    // 同时，删除审核流程会导致审核流程不完整，不符合业务逻辑
+    // 所以删除操作不允许，此处拒绝给前端提供删除接口
     public AjaxResult remove(@PathVariable Long[] ids)
     {
         return toAjax(auditInfoService.deleteAuditInfoByIds(ids));

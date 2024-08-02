@@ -164,4 +164,44 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
             #{id}
         </foreach>
     </update>
+
+
+    <insert id="insertPaymentByApply" parameterType="Long">
+        INSERT INTO payment (
+        applyId, payNO, fundsDate, payType, tableName, tID, moneyAmount,
+        selfAcountsName, selfBankNo, selfBankName, selfBankID, otherAcountsName,
+        otherBankNo, otherBankName, paymentState, companyName, companyId, companyType,
+        comments, addtime, userId, UserName, update_time, delFlag
+        )
+        SELECT
+        pa.id AS applyId,
+        UUID() AS payNO,  -- 生成唯一的付款编号
+        pa.fundsDate,
+        pa.payType,
+        pa.tableName,
+        pa.tID,
+        pa.moneyAmount,
+        NULL AS selfAcountsName, -- 根据需要填充
+        NULL AS selfBankNo,      -- 根据需要填充
+        NULL AS selfBankName,    -- 根据需要填充
+        NULL AS selfBankID,      -- 根据需要填充
+        pa.otherAcountsName,
+        pa.otherBankNo,
+        pa.otherBankName,
+        '申请中' AS paymentState, -- 默认设置为申请中
+        pa.companyName,
+        pa.companyId,
+        pa.companyType,
+        pa.comments,
+        pa.addtime,
+        pa.userId,
+        pa.UserName,
+        NOW() AS update_time,
+        0 AS delFlag
+        FROM
+        paymentApply pa
+        WHERE
+        pa.id = #{applyId}
+    </insert>
+
 </mapper>

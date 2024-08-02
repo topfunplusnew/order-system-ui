@@ -163,5 +163,6 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         <foreach item="id" collection="array" open="(" separator="," close=")">
             #{id}
         </foreach>
+        AND submitflag = 0
     </update>
 </mapper>
