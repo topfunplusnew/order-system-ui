@@ -67,7 +67,6 @@
 
     <el-table border v-horizontal-scroll="'always'" v-loading="loading" :data="fixedAssetsList"
               @selection-change="handleSelectionChange" id="printBox">
-      <el-table-column type="selection" width="55" align="center"/>
       <el-table-column label="id" align="center" prop="id"/>
       <el-table-column label="购入日期" align="center" prop="buyDate"/>
       <el-table-column label="资产编号" align="center" prop="assetNo"/>

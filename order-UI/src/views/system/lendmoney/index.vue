@@ -258,7 +258,7 @@
                 <el-input v-model="currentRecoverMoneyInfo.comments" placeholder="请输入备注信息"/>
               </el-form-item>
               <el-form-item>
-                <el-button type="primary" @click="RecoverMoney">还款</el-button>
+                <el-button type="primary" @click="RecoverMoney">收款</el-button>
               </el-form-item>
             </el-form>
           </el-dialog>
@@ -574,30 +574,3 @@ export default {
   }
 };
 </script>
-<!--<style>-->
-<!--//隐藏原有滚动条-->
-<!--.el-table__body-wrapper::-webkit-scrollbar {-->
-<!--  /*width: 0;宽度为0隐藏*/-->
-<!--  width: 0px;-->
-<!--}-->
-
-<!--.el-table__body-wrapper::-webkit-scrollbar-thumb {-->
-<!--  border-radius: 2px;-->
-<!--  height: 50px;-->
-<!--  background: #eee;-->
-<!--}-->
-
-<!--.el-table__body-wrapper::-webkit-scrollbar-track {-->
-<!--  box-shadow: inset 0 0 5px rgba(0, 0, 0, 0.2);-->
-<!--  border-radius: 2px;-->
-<!--  background: rgba(0, 0, 0, 0.4);-->
-<!--}-->
-
-<!--.el-table&#45;&#45;scrollable-y .el-table__body-wrapper {-->
-<!--  overflow: hidden !important;-->
-<!--}-->
-
-<!--.el-table&#45;&#45;scrollable-x .el-table__body-wrapper {-->
-<!--  overflow: hidden !important;-->
-<!--}-->
-<!--</style>-->
