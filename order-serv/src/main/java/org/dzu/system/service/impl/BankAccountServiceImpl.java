@@ -84,6 +84,7 @@ public class BankAccountServiceImpl implements IBankAccountService
      * @return 结果
      */
     @Override
+    @Transactional(isolation = Isolation.SERIALIZABLE,rollbackFor = Exception.class)//多次sql操作，需要保证事务
     public int updateBankAccount(BankAccount bankAccount)
     {
 
@@ -92,7 +93,7 @@ public class BankAccountServiceImpl implements IBankAccountService
         query.setAcountsType(bankAccount.getAcountsType());
         List<BankAccount> bankAccounts = selectBankAccountList(query);
         // 如果同类型下存在相同的卡号，直接拒绝
-        if(bankAccounts.size()>0){
+        if(bankAccounts.size()>0&&bankAccounts.get(0).getBankNo()==bankAccount.getBankNo()){
             throw new ServiceException("存在相同的银行卡号！,请删除原有的或更改本次的");
         }
         return bankAccountMapper.updateBankAccount(bankAccount);
