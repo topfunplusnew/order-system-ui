@@ -1,11 +1,17 @@
 package org.dzu.system.service.impl;
 
 import java.util.List;
+
+import org.dzu.common.exception.ServiceException;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.DuplicateKeyException;
 import org.springframework.stereotype.Service;
 import org.dzu.system.mapper.AuditflowMapper;
 import org.dzu.system.domain.Auditflow;
 import org.dzu.system.service.IAuditflowService;
+import org.springframework.transaction.annotation.Isolation;
+import org.springframework.transaction.annotation.Transactional;
+
 /**
  * 审核流程Service业务层处理
  *
@@ -88,5 +94,24 @@ public class AuditflowServiceImpl implements IAuditflowService
     public int deleteAuditflowById(Long id)
     {
         return auditflowMapper.deleteAuditflowById(id);
+    }
+
+    @Override
+    @Transactional(isolation = Isolation.SERIALIZABLE, rollbackFor = Exception.class)// 开启最高级别的事务隔离和最小容忍异常
+    public int put(List<Auditflow> auditflow) {
+        // 全部删除
+        auditflowMapper.delete(null);
+        // 重新插入
+        int i = 0;
+        try {
+            i = auditflowMapper.insertBatch(auditflow);
+        } catch (DuplicateKeyException e) {
+            throw new ServiceException("步骤编号重复");
+        }
+        // 重新设置总页数
+        Auditflow update = new Auditflow();
+        update.setStepnum(Long.valueOf(auditflow.size()));
+        auditflowMapper.update(update,null);
+        return i;
     }
 }

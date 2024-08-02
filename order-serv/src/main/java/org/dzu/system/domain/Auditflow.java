@@ -16,7 +16,7 @@ import org.hibernate.validator.constraints.Length;
  * @date 2024-08-01
  */
 @TableName("auditflow")
-public class Auditflow extends BaseEntity
+public class Auditflow
 {
     private static final long serialVersionUID = 1L;
 

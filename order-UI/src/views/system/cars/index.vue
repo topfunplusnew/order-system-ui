@@ -244,7 +244,7 @@
       <el-table-column label="车牌" align="center" prop="carNo"  v-if="columns[0].visible"/>
       <el-table-column label="司机姓名" align="center" prop="driver"  v-if="columns[1].visible"/>
       <el-table-column label="司机电话" align="center" prop="tel"  v-if="columns[2].visible"/>
-      <el-table-column label="户名" align="center" prop="acountsName" v-if="columns[3].visible"/>
+      <el-table-column label="户名" align="center" prop="accountsName" v-if="columns[3].visible"/>
       <el-table-column label="银行账号" align="center" prop="bankNo"  v-if="columns[4].visible"/>
       <el-table-column label="开户行" align="center" prop="bankName"  v-if="columns[5].visible"/>
 
@@ -297,25 +297,25 @@
         <el-form-item label="开户行" prop="bankName">
           <el-input v-model="form.bankName" placeholder="请输入开户行" />
         </el-form-item>
-        <el-form-item label="开户名" prop="acountsName">
+        <el-form-item label="开户名" prop="accountsName">
           <el-input v-model="form.acountsName" placeholder="请输入开户名" />
         </el-form-item>
         <el-form-item label="账号" prop="bankNo">
           <el-input v-model="form.bankNo" placeholder="请输入账号" />
         </el-form-item>
         <!--        单选-->
-        <el-form-item label="账号类型" prop="acountsType">
+        <el-form-item label="账号类型" prop="accountsType">
           <!--          <el-input v-model="form.billCategory" placeholder="请输入票据种类"/>-->
           <el-radio v-model="form.acountsType" label="1">收款</el-radio>
           <el-radio v-model="form.acountsType" label="2">付款</el-radio>
         </el-form-item>
-<!--        <el-form-item label="账号类型" prop="acountsType">-->
+<!--        <el-form-item label="账号类型" prop="accountsType">-->
 <!--          <el-input v-model="form.bankNo" placeholder="请输入账号" />-->
 <!--        </el-form-item>-->
         <el-form-item label="运输类型" prop="carType">
 <!--          <el-input v-model="form.bankNo" placeholder="请输入账号" />-->
-          <el-radio v-model="form.carType" label="1">陆运</el-radio>
-          <el-radio v-model="form.carType" label="2">海运</el-radio>
+          <el-radio v-model="form.carType" label="陆运">陆运</el-radio>
+          <el-radio v-model="form.carType" label="海运">海运</el-radio>
         </el-form-item>
 <!--        <el-form-item label="添加时间" prop="addtime">-->
 <!--          <el-input v-model="form.addtime" placeholder="请输入添加时间" />-->
@@ -340,6 +340,7 @@
 
 <script>
 import { listCars, getCars, delCars, addCars, updateCars } from "@/api/system/cars";
+import {addFleet, updateFleet} from "@/api/system/fleet";
 
 export default {
   name: "Cars",
@@ -433,9 +434,9 @@ export default {
         driver: null,
         tel: null,
         bankName: null,
-        acountsName: null,
+        accountsName: null,
         bankNo: null,
-        acountsType: null,
+        accountsType: null,
         carType: null,
         addtime: null,
         userId: null,
@@ -479,10 +480,15 @@ export default {
       });
     },
     /** 提交按钮 */
+    // /** 提交按钮 */
     submitForm() {
       this.$refs["form"].validate(valid => {
         if (valid) {
           if (this.form.id != null) {
+            this.form.delFlag = null;
+            this.form.addtime=null;
+            this.form.updateTime=null;
+            this.form.userId=null;
             updateCars(this.form).then(response => {
               this.$modal.msgSuccess("修改成功");
               this.open = false;
@@ -490,6 +496,10 @@ export default {
             });
           } else {
             addCars(this.form).then(response => {
+              this.form.delFlag = null;
+              this.form.addtime = null;
+              this.form.updateTime = null;
+              this.form.userId = null;
               this.$modal.msgSuccess("新增成功");
               this.open = false;
               this.getList();
@@ -498,6 +508,7 @@ export default {
         }
       });
     },
+
     /** 删除按钮操作 */
     handleDelete(row) {
       const ids = row.id || this.ids;
