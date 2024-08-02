@@ -9,12 +9,11 @@ import org.dzu.common.annotation.Excel;
 import org.dzu.common.annotation.PhoneLength;
 import org.dzu.common.core.domain.BaseEntity;
 import org.dzu.common.annotation.DecimalMaxDigits;
-import org.dzu.common.annotation.OnlyZeroOrOne;
+import org.dzu.common.annotation.FlagOnlyZeroOrOne;
 import org.hibernate.validator.constraints.Length;
 import javax.validation.constraints.Max;
 import javax.validation.constraints.Min;
 import javax.validation.constraints.NotNull;
-import javax.validation.constraints.Pattern;
 
 /**
  * 库存对象 inventory
@@ -329,7 +328,7 @@ public class Inventory extends BaseEntity
 
     /** 删除标记 */
     @TableField(value = "delFlag")
-    @OnlyZeroOrOne
+    @FlagOnlyZeroOrOne
     private Long delFlag;
 
     /** 订单仓库选择时是否显示（ 显示， 不显示） */
