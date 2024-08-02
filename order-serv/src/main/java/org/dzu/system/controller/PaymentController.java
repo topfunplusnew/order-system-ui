@@ -85,9 +85,10 @@ public class PaymentController extends BaseController
      */
     @PreAuthorize("@ss.hasPermi('system:payment:add')")
     @Log(title = "付款信息", businessType = BusinessType.INSERT)
-    @PostMapping
+//    @PostMapping
     public AjaxResult add(@Validated @RequestBody Payment payment)
     {
+        // 目前来说，不允许直接增加付款信息
         return toAjax(paymentService.insertPayment(payment));
     }
 
