@@ -165,6 +165,11 @@ public class PaymentServiceImpl implements IPaymentService
         return paymentMapper.deletePaymentByIds(ids);
     }
 
+    @Override
+    public void insertPaymentByApply(Long applyID) {
+        paymentMapper.insertPaymentByApply(applyID);
+    }
+
 
     /**
      * 同步到银行账户变动表

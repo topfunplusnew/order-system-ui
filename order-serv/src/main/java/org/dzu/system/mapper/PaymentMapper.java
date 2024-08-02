@@ -59,4 +59,6 @@ public interface PaymentMapper extends BaseMapper<Payment>
      * @return 结果
      */
     public int deletePaymentByIds(Long[] ids);
+
+    void insertPaymentByApply(Long applyID);
 }

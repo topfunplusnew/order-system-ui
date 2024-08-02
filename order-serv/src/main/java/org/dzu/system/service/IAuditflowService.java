@@ -61,4 +61,6 @@ public interface IAuditflowService
 
 
     int put(List<Auditflow> auditflow);
+
+    Auditflow selectAuditflowByStep(long l);
 }

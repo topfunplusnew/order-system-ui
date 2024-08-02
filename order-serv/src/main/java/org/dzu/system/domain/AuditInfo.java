@@ -9,6 +9,13 @@ import org.dzu.common.core.domain.BaseEntity;
 import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableName;
+import org.hibernate.validator.constraints.Length;
+
+import javax.validation.constraints.Max;
+import javax.validation.constraints.Min;
+import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Pattern;
+
 /**
  * 审核流程对象 auditInfo
  * 
@@ -20,32 +27,39 @@ public class AuditInfo extends BaseEntity
 {
     private static final long serialVersionUID = 1L;
 
-    /** $column.columnComment */
+
     @TableId(value = "id")
     private Long id;
 
     /** 流程名称 */
     @Excel(name = "流程名称")
+    @NotNull(message = "流程名称不能为空")
+    @Length(max = 50, message = "流程名称长度不能超过50个字符")
     @TableField(value = "flowname")
     private String flowname;
 
     /** 对应的表主键 */
     @Excel(name = "对应的表主键")
+    @NotNull(message = "对应的表主键不能为空")
     @TableField(value = "applyID")
     private Long applyID;
 
     /** 审核总共步骤 */
     @Excel(name = "审核总共步骤")
+    @NotNull(message = "审核总共步骤不能为空")
+    @Min(value = 1, message = "审核总共步骤必须大于或等于1")
     @TableField(value = "stepnum")
     private Long stepnum;
 
     /** 步骤序号 */
     @Excel(name = "步骤序号")
+    @NotNull(message = "步骤序号不能为空")
     @TableField(value = "step")
     private Long step;
 
     /** 允许的审核人员ID（多个人员用逗号分隔） */
-    @Excel(name = "允许的审核人员ID", readConverterExp = "多=个人员用逗号分隔")
+    @Excel(name = "允许的审核人员ID")
+    @Length(max = 500, message = "允许的审核人员ID长度不能超过500个字符")
     @TableField(value = "auditauthority")
     private String auditauthority;
 
@@ -62,23 +76,30 @@ public class AuditInfo extends BaseEntity
 
     /** 审核人员姓名 */
     @Excel(name = "审核人员姓名")
+    @Length(max = 50, message = "审核人员姓名长度不能超过50个字符")
     @TableField(value = "UserName")
     private String UserName;
 
     /** 审核状态（审核中、通过、未通过） */
-    @Excel(name = "审核状态", readConverterExp = "审=核中、通过、未通过")
+    @Excel(name = "审核状态")
+    @NotNull(message = "审核状态不能为空")
+    @Pattern(regexp = "审核中|通过|未通过", message = "审核状态只能是'审核中'、'通过'或'未通过'")
     @TableField(value = "checkState")
     private String checkState;
 
     /** 审核意见 */
     @Excel(name = "审核意见")
+    @Length(max = 200, message = "审核意见长度不能超过200个字符")
     @TableField(value = "auditcomment")
     private String auditcomment;
 
     /** 提交标记 */
     @Excel(name = "提交标记")
+    @Min(value = 0, message = "提交标记必须是0或1")
+    @Max(value = 1, message = "提交标记必须是0或1")
     @TableField(value = "submitflag")
     private Long submitflag;
+
 
     public void setId(Long id) 
     {
