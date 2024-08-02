@@ -87,10 +87,13 @@
       </el-form-item>
     </el-form>
     <el-row :gutter="10" class="mb8">
+
+      <!-- 刷新按钮-->
       <el-col :span="1.5">
         <el-button icon="el-icon-refresh" size="mini" @click="resetQuery">刷新</el-button>
       </el-col>
       <el-col :span="1.5">
+
         <el-button
           type="danger"
           plain
@@ -124,16 +127,16 @@
       <!--              >导出-->
       <!--              </el-button>-->
       <!--            </el-col>-->
-      <!--      <el-col :span="1.5">-->
-      <!--        <el-button-->
-      <!--          type="primary"-->
-      <!--          plain-->
-      <!--          icon="el-icon-printer"-->
-      <!--          size="mini"-->
-      <!--          @click="printHTML"-->
-      <!--        >打印-->
-      <!--        </el-button>-->
-      <!--      </el-col>-->
+<!--            <el-col :span="1.5">-->
+<!--              <el-button-->
+<!--                type="primary"-->
+<!--                plain-->
+<!--                icon="el-icon-printer"-->
+<!--                size="mini"-->
+<!--                @click="printHTML"-->
+<!--              >打印-->
+<!--              </el-button>-->
+<!--            </el-col>-->
       <right-toolbar :showSearch.sync="showSearch" @queryTable="getList" :columns="columns">
 
         <template v-slot:print>
@@ -163,85 +166,11 @@
       </right-toolbar>
     </el-row>
 
-    <!-- 打印内容 -->
-<!--    <el-table border v-loading="loading" :data="cars" @selection-change="handleSelectionChange" id="printBox"-->
-<!--              height="300px" v-horizontal-scroll="'always'">-->
-<!--            <el-table-column type="selection" width="55" align="center"/>-->
-<!--      <el-table-column label="id" align="center" prop="id"/>-->
-<!--      <el-table-column label="账户类型" align="center" prop="acountsType" v-if="columns[0].visible"/>-->
-<!--      <el-table-column label="开户名称(户名)" align="center" prop="acountsName" v-if="columns[1].visible"/>-->
-<!--      <el-table-column label="账号(银行账号)" align="center" prop="bankNo" v-if="columns[2].visible"/>-->
-<!--      <el-table-column label="开户行" align="center" prop="bankName" v-if="columns[3].visible"/>-->
-<!--      <el-table-column label="公司名称" align="center" prop="companyName" v-if="columns[4].visible"/>-->
-<!--    <el-table-column label="操作" align="center" class-name="small-padding fixed-width">-->
-<!--      <template slot-scope="scope">-->
-<!--        <el-button-->
-<!--          size="mini"-->
-<!--          type="primary"-->
-<!--          @click="handleUpdate(scope.row)"-->
-<!--          v-hasPermi="['system:cars:edit']"-->
-<!--        >编辑-->
-<!--        </el-button>-->
-<!--        <el-button-->
-<!--          size="mini"-->
-<!--          type="danger"-->
-<!--          @click="handleDelete(scope.row)"-->
-<!--          v-hasPermi="['system:bankAccount:remove']"-->
-<!--        >删除-->
-<!--        </el-button>-->
-<!--      </template>-->
-<!--    </el-table-column>-->
-<!--    </el-table>-->
-<!--    <el-row :gutter="10" class="mb8">-->
-<!--      <el-col :span="1.5">-->
-<!--        <el-button-->
-<!--          type="primary"-->
-<!--          plain-->
-<!--          icon="el-icon-plus"-->
-<!--          size="mini"-->
-<!--          @click="handleAdd"-->
-<!--          v-hasPermi="['system:cars:add']"-->
-<!--        >新增</el-button>-->
-<!--      </el-col>-->
-<!--      <el-col :span="1.5">-->
-<!--        <el-button-->
-<!--          type="success"-->
-<!--          plain-->
-<!--          icon="el-icon-edit"-->
-<!--          size="mini"-->
-<!--          :disabled="single"-->
-<!--          @click="handleUpdate"-->
-<!--          v-hasPermi="['system:cars:edit']"-->
-<!--        >修改</el-button>-->
-<!--      </el-col>-->
-<!--      <el-col :span="1.5">-->
-<!--        <el-button-->
-<!--          type="danger"-->
-<!--          plain-->
-<!--          icon="el-icon-delete"-->
-<!--          size="mini"-->
-<!--          :disabled="multiple"-->
-<!--          @click="handleDelete"-->
-<!--          v-hasPermi="['system:cars:remove']"-->
-<!--        >删除</el-button>-->
-<!--      </el-col>-->
-<!--      <el-col :span="1.5">-->
-<!--        <el-button-->
-<!--          type="warning"-->
-<!--          plain-->
-<!--          icon="el-icon-download"-->
-<!--          size="mini"-->
-<!--          @click="handleExport"-->
-<!--          v-hasPermi="['system:cars:export']"-->
-<!--        >导出</el-button>-->
-<!--      </el-col>-->
-<!--      <right-toolbar :showSearch.sync="showSearch" @queryTable="getList"></right-toolbar>-->
-<!--    </el-row>-->
-
-<!--    <el-table v-loading="loading" :data="carsList" @selection-change="handleSelectionChange" id="printBox" >-->
           <el-table border v-loading="loading" :data="carsList" @selection-change="handleSelectionChange" id="printBox"
-                    height="500px" v-horizontal-scroll="'always'">
-      <el-table-column type="selection" width="55" align="center" />
+                    height="550px" v-horizontal-scroll="'always'">
+<!--            复选框-->
+<!--            首行-->
+<!--      <el-table-column type="selection" width="55" align="center" />-->
       <el-table-column label="id" align="center" prop="id" />
       <el-table-column label="车牌" align="center" prop="carNo"  v-if="columns[0].visible"/>
       <el-table-column label="司机姓名" align="center" prop="driver"  v-if="columns[1].visible"/>
@@ -299,21 +228,18 @@
         <el-form-item label="开户行" prop="bankName">
           <el-input v-model="form.bankName" placeholder="请输入开户行" />
         </el-form-item>
-        <el-form-item label="开户名" prop="accountsName">
+        <el-form-item label="开户名" prop="acountsName">
           <el-input v-model="form.acountsName" placeholder="请输入开户名" />
         </el-form-item>
         <el-form-item label="账号" prop="bankNo">
           <el-input v-model="form.bankNo" placeholder="请输入账号" />
         </el-form-item>
         <!--        单选-->
-        <el-form-item label="账号类型" prop="accountsType">
-          <!--          <el-input v-model="form.billCategory" placeholder="请输入票据种类"/>-->
+        <el-form-item label="账号类型" prop="acountsType">
           <el-radio v-model="form.acountsType" label="1">收款</el-radio>
           <el-radio v-model="form.acountsType" label="2">付款</el-radio>
         </el-form-item>
-<!--        <el-form-item label="账号类型" prop="accountsType">-->
-<!--          <el-input v-model="form.bankNo" placeholder="请输入账号" />-->
-<!--        </el-form-item>-->
+
         <el-form-item label="运输类型" prop="carType">
 <!--          <el-input v-model="form.bankNo" placeholder="请输入账号" />-->
           <el-radio v-model="form.carType" label="陆运">陆运</el-radio>
@@ -388,15 +314,15 @@ export default {
       // 表单校验
       rules: {}
       ,
-      // options: [
-      //   {
-      //     value: '收款',
-      //     label: '收款'
-      //   }, {
-      //     value: '付款',
-      //     label: '付款'
-      //   }
-      // ],
+      options: [
+        {
+          value: '收款',
+          label: '收款'
+        }, {
+          value: '付款',
+          label: '付款'
+        }
+      ],
       //隐藏列信息
       columns: [
         {key: 0, label: `车牌`, visible: true},
@@ -405,7 +331,7 @@ export default {
         {key: 3, label: `户名`, visible: true},
         {key: 4, label: `银行账号`, visible: true},
         {key: 5, label: `开户行`, visible: true}
-// 1
+
       ],
       companyList: []
     };
@@ -423,6 +349,14 @@ export default {
         this.loading = false;
       });
     },
+    //打印
+    printHTML() {
+      this.$print({
+        printable: 'printBox',
+        type: 'html',
+        targetStyles: ['*'], // 打印内容使用所有HTML样式，没有设置这个属性/值，设置分页打印没有效果
+      })
+    },
     // 取消按钮
     cancel() {
       this.open = false;
@@ -436,9 +370,9 @@ export default {
         driver: null,
         tel: null,
         bankName: null,
-        accountsName: null,
+        acountsName: null,
         bankNo: null,
-        accountsType: null,
+        acountsType: null,
         carType: null,
         addtime: null,
         userId: null,
@@ -454,10 +388,10 @@ export default {
       this.getList();
     },
     /** 重置按钮操作 */
-    // resetQuery() {
-    //   this.resetForm("queryForm");
-    //   this.handleQuery();
-    // },
+    resetQuery() {
+      this.resetForm("queryForm");
+      this.handleQuery();
+    },
     // 多选框选中数据
     handleSelectionChange(selection) {
       this.ids = selection.map(item => item.id)
