@@ -2,6 +2,8 @@ package org.dzu.system.controller;
 
 import java.util.List;
 import javax.servlet.http.HttpServletResponse;
+
+import org.dzu.common.utils.SecurityUtils;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -79,17 +81,6 @@ public class PaymentApplyController extends BaseController
     public AjaxResult add(@Validated @RequestBody PaymentApply paymentApply)
     {
         return toAjax(paymentApplyService.insertPaymentApply(paymentApply));
-    }
-
-    /**
-     * 修改付款信息
-     */
-    @PreAuthorize("@ss.hasPermi('system:paymentApply:edit')")
-    @Log(title = "付款信息", businessType = BusinessType.UPDATE)
-    @PutMapping
-    public AjaxResult edit(@Validated @RequestBody PaymentApply paymentApply)
-    {
-        return toAjax(paymentApplyService.updatePaymentApply(paymentApply));
     }
 
     /**

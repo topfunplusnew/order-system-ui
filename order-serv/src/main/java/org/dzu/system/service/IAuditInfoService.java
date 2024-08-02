@@ -2,6 +2,7 @@ package org.dzu.system.service;
 
 import java.util.List;
 import org.dzu.system.domain.AuditInfo;
+import org.dzu.system.domain.PaymentApply;
 
 /**
  * 审核流程Service接口
@@ -33,7 +34,7 @@ public interface IAuditInfoService
      * @param auditInfo 审核流程
      * @return 结果
      */
-    public int insertAuditInfo(AuditInfo auditInfo);
+    public int insertAuditInfo(PaymentApply auditInfo);
 
     /**
      * 修改审核流程
@@ -58,4 +59,6 @@ public interface IAuditInfoService
      * @return 结果
      */
     public int deleteAuditInfoById(Long id);
+
+    void updateAuditInfoToError();
 }

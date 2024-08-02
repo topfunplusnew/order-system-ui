@@ -2,7 +2,12 @@ package org.dzu.system.service.impl;
 
 import java.util.List;
 
+import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+import org.dzu.common.constant.AuditStateConstants;
 import org.dzu.common.exception.ServiceException;
+import org.dzu.system.domain.AuditInfo;
+import org.dzu.system.mapper.AuditInfoMapper;
+import org.dzu.system.service.IAuditInfoService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DuplicateKeyException;
 import org.springframework.stereotype.Service;
@@ -24,6 +29,11 @@ public class AuditflowServiceImpl implements IAuditflowService
     @Autowired
     private AuditflowMapper auditflowMapper;
 
+    @Autowired
+    private AuditInfoMapper auditInfoMapper;
+
+    @Autowired
+    private IAuditInfoService auditInfoService;
     /**
      * 查询审核流程
      *
@@ -99,8 +109,16 @@ public class AuditflowServiceImpl implements IAuditflowService
     @Override
     @Transactional(isolation = Isolation.SERIALIZABLE, rollbackFor = Exception.class)// 开启最高级别的事务隔离和最小容忍异常
     public int put(List<Auditflow> auditflow) {
+        // 判断步骤编号必须是从1开始，且连续
+        for (int j = 0; j < auditflow.size(); j++) {
+            if (auditflow.get(j).getStep() != j + 1) {
+                throw new ServiceException("步骤编号必须是从1开始，且连续");
+            }
+        }
+
         // 全部删除
         auditflowMapper.delete(null);
+
         // 重新插入
         int i = 0;
         try {
@@ -108,10 +126,25 @@ public class AuditflowServiceImpl implements IAuditflowService
         } catch (DuplicateKeyException e) {
             throw new ServiceException("步骤编号重复");
         }
+
         // 重新设置总页数
         Auditflow update = new Auditflow();
         update.setStepnum(Long.valueOf(auditflow.size()));
         auditflowMapper.update(update,null);
+
+
+        // 将当前的所有审核流程设置为未通过
+        auditInfoService.updateAuditInfoToError();
+
+
+
         return i;
+    }
+
+    @Override
+    public Auditflow selectAuditflowByStep(long l) {
+        QueryWrapper<Auditflow> query = new QueryWrapper<>();
+        query.eq("step", l);
+        return auditflowMapper.selectOne(query);
     }
 }

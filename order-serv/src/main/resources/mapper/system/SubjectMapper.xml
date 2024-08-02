@@ -1,0 +1,101 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="org.dzu.system.mapper.SubjectMapper">
+    
+    <resultMap type="Subject" id="SubjectResult">
+        <result property="id"    column="id"    />
+        <result property="title"    column="title"    />
+        <result property="type"    column="type"    />
+        <result property="subjectNo"    column="subjectNo"    />
+        <result property="parentId"    column="parent_id"    />
+        <result property="orderNum"    column="order_num"    />
+        <result property="STATUS"    column="STATUS"    />
+        <result property="createBy"    column="create_by"    />
+        <result property="createTime"    column="create_time"    />
+        <result property="updateBy"    column="update_by"    />
+        <result property="updateTime"    column="update_time"    />
+        <result property="remark"    column="remark"    />
+    </resultMap>
+
+
+
+    <sql id="selectSubjectVo">
+        select id, title, type, subjectNo, parent_id, order_num, STATUS, create_by, create_time, update_by, update_time, remark from subject
+    </sql>
+
+    <select id="selectSubjectList" parameterType="Subject" resultMap="SubjectResult">
+        <include refid="selectSubjectVo"/>
+        <where>  
+            <if test="title != null  and title != ''"> and title = #{title}</if>
+            <if test="type != null  and type != ''"> and type = #{type}</if>
+            <if test="subjectNo != null  and subjectNo != ''"> and subjectNo = #{subjectNo}</if>
+            <if test="parentId != null "> and parent_id = #{parentId}</if>
+            <if test="orderNum != null "> and order_num = #{orderNum}</if>
+            <if test="STATUS != null  and STATUS != ''"> and STATUS = #{STATUS}</if>
+        </where>
+    </select>
+    
+    <select id="selectSubjectById" parameterType="Long" resultMap="SubjectResult">
+        <include refid="selectSubjectVo"/>
+        where id = #{id}
+    </select>
+
+    <insert id="insertSubject" parameterType="Subject" useGeneratedKeys="true" keyProperty="id">
+        insert into subject
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="title != null and title != ''">title,</if>
+            <if test="type != null and type != ''">type,</if>
+            <if test="subjectNo != null">subjectNo,</if>
+            <if test="parentId != null">parent_id,</if>
+            <if test="orderNum != null">order_num,</if>
+            <if test="STATUS != null">STATUS,</if>
+            <if test="createBy != null">create_by,</if>
+            <if test="createTime != null">create_time,</if>
+            <if test="updateBy != null">update_by,</if>
+            <if test="updateTime != null">update_time,</if>
+            <if test="remark != null">remark,</if>
+         </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="title != null and title != ''">#{title},</if>
+            <if test="type != null and type != ''">#{type},</if>
+            <if test="subjectNo != null">#{subjectNo},</if>
+            <if test="parentId != null">#{parentId},</if>
+            <if test="orderNum != null">#{orderNum},</if>
+            <if test="STATUS != null">#{STATUS},</if>
+            <if test="createBy != null">#{createBy},</if>
+            <if test="createTime != null">#{createTime},</if>
+            <if test="updateBy != null">#{updateBy},</if>
+            <if test="updateTime != null">#{updateTime},</if>
+            <if test="remark != null">#{remark},</if>
+         </trim>
+    </insert>
+
+    <update id="updateSubject" parameterType="Subject">
+        update subject
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="title != null and title != ''">title = #{title},</if>
+            <if test="type != null and type != ''">type = #{type},</if>
+            <if test="subjectNo != null">subjectNo = #{subjectNo},</if>
+            <if test="parentId != null">parent_id = #{parentId},</if>
+            <if test="orderNum != null">order_num = #{orderNum},</if>
+            <if test="STATUS != null">STATUS = #{STATUS},</if>
+            <if test="createBy != null">create_by = #{createBy},</if>
+            <if test="createTime != null">create_time = #{createTime},</if>
+            <if test="updateBy != null">update_by = #{updateBy},</if>
+            <if test="updateTime != null">update_time = #{updateTime},</if>
+            <if test="remark != null">remark = #{remark},</if>
+        </trim>
+        where id = #{id}
+    </update>
+    <delete id="deleteSubjectById" parameterType="Long">
+        delete from subject where id = #{id}
+    </delete>
+    <delete id="deleteSubjectByIds" parameterType="String">
+        delete from subject where id in
+        <foreach item="id" collection="array" open="(" separator="," close=")">
+            #{id}
+        </foreach>
+    </delete>
+</mapper>

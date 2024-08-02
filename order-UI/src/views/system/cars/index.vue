@@ -166,31 +166,31 @@
     <!-- 打印内容 -->
 <!--    <el-table border v-loading="loading" :data="cars" @selection-change="handleSelectionChange" id="printBox"-->
 <!--              height="300px" v-horizontal-scroll="'always'">-->
-            <el-table-column type="selection" width="55" align="center"/>
+<!--            <el-table-column type="selection" width="55" align="center"/>-->
 <!--      <el-table-column label="id" align="center" prop="id"/>-->
 <!--      <el-table-column label="账户类型" align="center" prop="acountsType" v-if="columns[0].visible"/>-->
 <!--      <el-table-column label="开户名称(户名)" align="center" prop="acountsName" v-if="columns[1].visible"/>-->
 <!--      <el-table-column label="账号(银行账号)" align="center" prop="bankNo" v-if="columns[2].visible"/>-->
 <!--      <el-table-column label="开户行" align="center" prop="bankName" v-if="columns[3].visible"/>-->
 <!--      <el-table-column label="公司名称" align="center" prop="companyName" v-if="columns[4].visible"/>-->
-    <el-table-column label="操作" align="center" class-name="small-padding fixed-width">
-      <template slot-scope="scope">
-        <el-button
-          size="mini"
-          type="primary"
-          @click="handleUpdate(scope.row)"
-          v-hasPermi="['system:cars:edit']"
-        >编辑
-        </el-button>
-        <el-button
-          size="mini"
-          type="danger"
-          @click="handleDelete(scope.row)"
-          v-hasPermi="['system:bankAccount:remove']"
-        >删除
-        </el-button>
-      </template>
-    </el-table-column>
+<!--    <el-table-column label="操作" align="center" class-name="small-padding fixed-width">-->
+<!--      <template slot-scope="scope">-->
+<!--        <el-button-->
+<!--          size="mini"-->
+<!--          type="primary"-->
+<!--          @click="handleUpdate(scope.row)"-->
+<!--          v-hasPermi="['system:cars:edit']"-->
+<!--        >编辑-->
+<!--        </el-button>-->
+<!--        <el-button-->
+<!--          size="mini"-->
+<!--          type="danger"-->
+<!--          @click="handleDelete(scope.row)"-->
+<!--          v-hasPermi="['system:bankAccount:remove']"-->
+<!--        >删除-->
+<!--        </el-button>-->
+<!--      </template>-->
+<!--    </el-table-column>-->
 <!--    </el-table>-->
 <!--    <el-row :gutter="10" class="mb8">-->
 <!--      <el-col :span="1.5">-->
@@ -238,13 +238,15 @@
 <!--      <right-toolbar :showSearch.sync="showSearch" @queryTable="getList"></right-toolbar>-->
 <!--    </el-row>-->
 
-    <el-table v-loading="loading" :data="carsList" @selection-change="handleSelectionChange" id="printBox" >
+<!--    <el-table v-loading="loading" :data="carsList" @selection-change="handleSelectionChange" id="printBox" >-->
+          <el-table border v-loading="loading" :data="carsList" @selection-change="handleSelectionChange" id="printBox"
+                    height="500px" v-horizontal-scroll="'always'">
       <el-table-column type="selection" width="55" align="center" />
       <el-table-column label="id" align="center" prop="id" />
       <el-table-column label="车牌" align="center" prop="carNo"  v-if="columns[0].visible"/>
       <el-table-column label="司机姓名" align="center" prop="driver"  v-if="columns[1].visible"/>
       <el-table-column label="司机电话" align="center" prop="tel"  v-if="columns[2].visible"/>
-      <el-table-column label="户名" align="center" prop="accountsName" v-if="columns[3].visible"/>
+      <el-table-column label="户名" align="center" prop="acountsName" v-if="columns[3].visible"/>
       <el-table-column label="银行账号" align="center" prop="bankNo"  v-if="columns[4].visible"/>
       <el-table-column label="开户行" align="center" prop="bankName"  v-if="columns[5].visible"/>
 

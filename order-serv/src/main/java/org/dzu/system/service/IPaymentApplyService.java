@@ -9,7 +9,7 @@ import org.dzu.system.domain.PaymentApply;
  * @author ml
  * @date 2024-08-01
  */
-public interface IPaymentApplyService 
+public interface IPaymentApplyService
 {
     /**
      * 查询付款信息
@@ -51,11 +51,5 @@ public interface IPaymentApplyService
      */
     public int deletePaymentApplyByIds(Long[] ids);
 
-    /**
-     * 删除付款信息信息
-     * 
-     * @param id 付款信息主键
-     * @return 结果
-     */
-    public int deletePaymentApplyById(Long id);
+    void auditPass(Long applyID);
 }

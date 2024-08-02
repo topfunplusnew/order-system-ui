@@ -177,7 +177,7 @@
 
     <el-table border v-loading="loading" :data="BalanceAccountsList" @selection-change="handleSelectionChange" id="printBox"
               v-horizontal-scroll="'always'">
-      <el-table-column type="selection" width="55" align="center"/>
+<!--      <el-table-column type="selection" width="55" align="center"/>-->
       <el-table-column label="id" align="center" prop="id"/>
       <el-table-column label="操作时间" align="center" prop="operateDate" v-if="columns[0].visible"/>
       <el-table-column label="金额" align="center" prop="moneyAmount" v-if="columns[1].visible"/>
@@ -249,20 +249,8 @@
         <el-form-item label="对方公司ID" prop="companyID">
           <el-input v-model="form.companyID" placeholder="请输入对方公司ID"/>
         </el-form-item>
-<!--     选择框
-        <el-form-item label="对方公司类型" prop="companyType">
-          <el-select v-model="queryParams.companyType" placeholder="请选择对方公司类型">
-            <el-option
-              v-for="item in options"
-              :key="item.value"
-              :label="item.label"
-              :value="item.value">
-            </el-option>
-          </el-select>
-        </el-form-item>-->
         <!--        单选-->
-        <el-form-item label="对方公司类型" prop="companyType">
-          <!--          <el-input v-model="form.billCategory" placeholder="请输入票据种类"/>-->
+        <el-form-item label="对方公司类型" prop="companyType" >
           <el-radio v-model="form.companyType" label="1">客户</el-radio>
           <el-radio v-model="form.companyType" label="2">供应商</el-radio>
         </el-form-item>
@@ -298,9 +286,16 @@ import {
   addBalanceAccounts,
   updateBalanceAccounts
 } from "@/api/system/BalanceAccounts";
+import company from "@/views/system/company/index.vue";
 
 export default {
   name: "BalanceAccounts",
+  computed: {
+    company() {
+      return company
+     /* return label === 1 ? "客户" : "供应商"*/
+    }
+  },
   data() {
     return {
       // 遮罩层
@@ -343,16 +338,6 @@ export default {
       },
       // 表单参数
       form: {},
-      // //选择框
-      // options: [
-      //   {
-      //     value: '1',
-      //     label: '1(客户)'
-      //   }, {
-      //     value: '2',
-      //     label: '2(供应商)'
-      //   }
-      // ],
       columns: [
         {key: 0, label: `操作时间`, visible: true},
         {key: 1, label: `金额`, visible: true},

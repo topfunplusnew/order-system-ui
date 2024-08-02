@@ -2,12 +2,17 @@ package org.dzu.system.domain;
 
 import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.apache.commons.lang3.builder.ToStringStyle;
+import org.dzu.common.annotation.DecimalMaxDigits;
 import org.dzu.common.annotation.Excel;
 import org.dzu.common.core.domain.BaseEntity;
 import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableName;
 import org.dzu.common.annotation.OnlyZeroOrOne;
+import org.hibernate.validator.constraints.Length;
+
+import javax.validation.constraints.Pattern;
+
 /**
  * 付款信息对象 paymentApply
  * 
@@ -19,52 +24,62 @@ public class PaymentApply extends BaseEntity
 {
     private static final long serialVersionUID = 1L;
 
-    /** $column.columnComment */
+
+    /** 主键ID */
     @TableId(value = "id")
     private Long id;
 
     /** 对应的表名 */
     @Excel(name = "对应的表名")
+    @Length(max = 55, message = "对应的表名长度不能超过55个字符")
     @TableField(value = "tableName")
     private String tableName;
 
     /** 对应的表主键 */
     @Excel(name = "对应的表主键")
+    @Length(max = 55, message = "对应的表主键长度不能超过55个字符")
     @TableField(value = "tID")
     private String tID;
 
     /** 日期 */
     @Excel(name = "日期")
+    @Length(max = 50, message = "日期长度不能超过50个字符")
     @TableField(value = "fundsDate")
     private String fundsDate;
 
     /** 支付类型 */
     @Excel(name = "支付类型")
+    @Length(max = 55, message = "支付类型长度不能超过55个字符")
     @TableField(value = "payType")
     private String payType;
 
     /** 金额 */
+    @DecimalMaxDigits
     @Excel(name = "金额")
     @TableField(value = "moneyAmount")
-    private Long moneyAmount;
+    private Double moneyAmount;
 
     /** 对方户名 */
     @Excel(name = "对方户名")
+    @Length(max = 80, message = "对方户名长度不能超过80个字符")
     @TableField(value = "otherAcountsName")
     private String otherAcountsName;
 
     /** 对方账号 */
     @Excel(name = "对方账号")
+    @Length(max = 80, message = "对方账号长度不能超过80个字符")
     @TableField(value = "otherBankNo")
     private String otherBankNo;
 
     /** 对方开户行 */
     @Excel(name = "对方开户行")
+    @Length(max = 150, message = "对方开户行长度不能超过150个字符")
     @TableField(value = "otherBankName")
     private String otherBankName;
 
     /** 对方公司 */
     @Excel(name = "对方公司")
+    @Length(max = 150, message = "对方公司长度不能超过150个字符")
     @TableField(value = "companyName")
     private String companyName;
 
@@ -74,22 +89,26 @@ public class PaymentApply extends BaseEntity
     private Long companyId;
 
     /** 对方公司类型（客户、供应商、司机、个人、其他） */
-    @Excel(name = "对方公司类型", readConverterExp = "客=户、供应商、司机、个人、其他")
+    @Excel(name = "对方公司类型", readConverterExp = "客户、供应商、司机、个人、其他")
+    @Pattern(regexp = "客户|供应商|司机|个人|其他", message = "对方公司类型只能是'客户'、'供应商'、'司机'、'个人'或'其他'")
     @TableField(value = "companyType")
     private String companyType;
 
     /** 付款原因 */
     @Excel(name = "付款原因")
+    @Length(max = 500, message = "付款原因长度不能超过500个字符")
     @TableField(value = "reason")
     private String reason;
 
     /** 附件 */
     @Excel(name = "附件")
+    @Length(max = 500, message = "请缩短提交附件的名称长度")
     @TableField(value = "attachment")
     private String attachment;
 
     /** 申请人 */
     @Excel(name = "申请人")
+    @Length(max = 20, message = "申请人长度不能超过20个字符")
     @TableField(value = "applyPerson")
     private String applyPerson;
 
@@ -100,11 +119,13 @@ public class PaymentApply extends BaseEntity
 
     /** 审核状态（审核中、通过、未通过） */
     @Excel(name = "审核状态", readConverterExp = "审=核中、通过、未通过")
+    @Pattern(regexp = "审核中|通过|未通过", message = "审核状态只能是'审核中'、'通过'或'未通过'")
     @TableField(value = "checkState")
     private String checkState;
 
     /** 备注 */
     @Excel(name = "备注")
+    @Length(max = 200, message = "备注长度不能超过200个字符")
     @TableField(value = "comments")
     private String comments;
 
@@ -178,12 +199,12 @@ public class PaymentApply extends BaseEntity
     {
         return payType;
     }
-    public void setMoneyAmount(Long moneyAmount) 
+    public void setMoneyAmount(Double moneyAmount)
     {
         this.moneyAmount = moneyAmount;
     }
 
-    public Long getMoneyAmount() 
+    public Double getMoneyAmount()
     {
         return moneyAmount;
     }

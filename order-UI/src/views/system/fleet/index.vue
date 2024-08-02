@@ -141,8 +141,8 @@
       </right-toolbar>
     </el-row>
 
-    <el-table v-horizontal-scroll="'always'" v-loading="loading" :data="fleetList" @selection-change="handleSelectionChange"  id="printBox"  >
-      <el-table-column type="selection" width="55" align="center" />
+    <el-table border v-horizontal-scroll="'always'" v-loading="loading" :data="fleetList" @selection-change="handleSelectionChange"  id="printBox"  >
+<!--      <el-table-column type="selection" width="55" align="center" />-->
       <el-table-column label="id" align="center" prop="id" />
       <el-table-column label="车队名称" align="center" prop="fName" v-if="columns[0].visible"/>
       <el-table-column label="车队经理" align="center" prop="fLeader" v-if="columns[1].visible"/>
