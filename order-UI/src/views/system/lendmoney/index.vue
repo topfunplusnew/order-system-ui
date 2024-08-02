@@ -430,6 +430,7 @@ export default {
       //同步修改到收款信息里
       //fundsDate
       const fundsDate = this.currentRecoverMoneyInfo.recoverDate;
+      //todo 支付类型 未知功能
       const receiveType = '收回借出款';
       const tableName = 'recoverMoney'; //操作表
       const tID = 'id'; //对应表的主键
@@ -438,7 +439,7 @@ export default {
       const selfBankNo = this.currentRecoverMoneyInfo.selfBankNo;//收回账号
       const selfBankName = this.currentBankName;
       const companyName = this.currentTargetAcountsName
-      //companyId 魔法值
+      //todo companyId 魔法值 需要查询公司的id 以及类型 如客户或者供应商
       const companyId = '999';
       const companyType = '1';
       const comments = '备注:资金收回';

@@ -165,20 +165,18 @@
       <el-table-column label="操作人员ID" align="center" prop="userId"/>
       <el-table-column label="操作人员姓名" align="center" prop="UserName"/>
       <el-table-column label="删除标记" align="center" prop="delFlag"/>
-      <el-table-column label="操作" align="center" class-name="small-padding fixed-width">
+      <el-table-column label="操作" align="center" class-name="small-padding fixed-width" width="100px">
         <template slot-scope="scope">
           <el-button
             size="mini"
-            type="text"
-            icon="el-icon-edit"
+            type="primary"
             @click="handleUpdate(scope.row)"
             v-hasPermi="['system:payment:edit']"
           >修改
           </el-button>
           <el-button
             size="mini"
-            type="text"
-            icon="el-icon-delete"
+            type="danger"
             @click="handleDelete(scope.row)"
             v-hasPermi="['system:payment:remove']"
           >删除

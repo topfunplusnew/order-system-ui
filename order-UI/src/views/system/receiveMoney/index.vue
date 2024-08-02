@@ -137,26 +137,26 @@
     </el-row>
 
     <el-table border v-horizontal-scroll="'always'" v-loading="loading" :data="receiveMoneyList"
-              @selection-change="handleSelectionChange">
+              @selection-change="handleSelectionChange" id="printBox">
       <el-table-column label="id" align="center" prop="id"/>
-      <el-table-column label="收款编号" align="center" prop="receiveNO"/>
-      <el-table-column label="日期" align="center" prop="fundsDate"/>
-      <el-table-column label="支付类型" align="center" prop="receiveType"/>
-      <el-table-column label="对应的表名" align="center" prop="tableName"/>
-      <el-table-column label="对应的表主键" align="center" prop="tID"/>
-      <el-table-column label="金额" align="center" prop="moneyAmount"/>
-      <el-table-column label="己方户名" align="center" prop="selfAcountsName"/>
-      <el-table-column label="己方账号" align="center" prop="selfBankNo"/>
-      <el-table-column label="己方开户行" align="center" prop="selfBankName"/>
-      <el-table-column label="己方账号ID" align="center" prop="selfBankID"/>
-      <el-table-column label="对方户名" align="center" prop="otherAcountsName"/>
-      <el-table-column label="对方账号" align="center" prop="otherBankNo"/>
-      <el-table-column label="对方开户行" align="center" prop="otherBankName"/>
-      <el-table-column label="对方公司" align="center" prop="companyName"/>
-      <el-table-column label="对方公司ID" align="center" prop="companyId"/>
-      <el-table-column label="对方公司类型" align="center" prop="companyType"/>
+      <el-table-column label="收款编号" align="center" prop="receiveNO" v-if="columns[0].visible"/>
+      <el-table-column label="日期" align="center" prop="fundsDate" v-if="columns[1].visible"/>
+      <el-table-column label="支付类型" align="center" prop="receiveType" v-if="columns[2].visible"/>
+      <!--      <el-table-column label="对应的表名" align="center" prop="tableName"/>-->
+      <!--      <el-table-column label="对应的表主键" align="center" prop="tID"/>-->
+      <el-table-column label="金额" align="center" prop="moneyAmount" v-if="columns[3].visible"/>
+      <el-table-column label="己方户名" align="center" prop="selfAcountsName" v-if="columns[4].visible"/>
+      <el-table-column label="己方账号" align="center" prop="selfBankNo" v-if="columns[5].visible"/>
+      <el-table-column label="己方开户行" align="center" prop="selfBankName" v-if="columns[6].visible"/>
+      <el-table-column label="己方账号ID" align="center" prop="selfBankID" v-if="columns[7].visible"/>
+      <el-table-column label="对方户名" align="center" prop="otherAcountsName" v-if="columns[8].visible"/>
+      <el-table-column label="对方账号" align="center" prop="otherBankNo" v-if="columns[9].visible"/>
+      <el-table-column label="对方开户行" align="center" prop="otherBankName" v-if="columns[10].visible"/>
+      <el-table-column label="对方公司" align="center" prop="companyName" v-if="columns[11].visible"/>
+      <el-table-column label="对方公司ID" align="center" prop="companyId" v-if="columns[12].visible"/>
+      <el-table-column label="对方公司类型" align="center" prop="companyType" v-if="columns[13].visible"/>
       <el-table-column label="备注" align="center" prop="comments"/>
-      <el-table-column label="操作" align="center" fixed="right">
+      <el-table-column label="操作" align="center" fixed="right" width="150">
         <template slot-scope="scope">
           <el-button
             size="mini"
@@ -201,7 +201,7 @@
           <el-input v-model="form.tableName" placeholder="请输入对应的表名"/>
         </el-form-item>
         <el-form-item label="支付类型" prop="payType">
-          <el-input v-model="form.payType" placeholder="请输入支付类型"/>
+          <el-input v-model="form.receiveType" placeholder="请输入支付类型"/>
         </el-form-item>
         <el-form-item label="对应的表主键" prop="tID">
           <el-input v-model="form.tID" placeholder="请输入对应的表主键"/>
@@ -310,15 +310,20 @@ export default {
       // 表单校验
       rules: {},
       columns: [
-        {key: 0, label: `客户`, visible: true},
-        {key: 1, label: `老板姓名`, visible: true},
-        {key: 2, label: `公司名称`, visible: true},
-        {key: 3, label: `老板电话`, visible: true},
-        {key: 4, label: `电话`, visible: true},
-        {key: 5, label: `地址`, visible: true},
-        {key: 6, label: `区域`, visible: true},
-        {key: 7, label: `销售经理`, visible: true},
-        {key: 8, label: `备注`, visible: true},
+        {key: 0, label: `收款编号`, visible: true},
+        {key: 1, label: `日期`, visible: true},
+        {key: 2, label: `支付类型`, visible: true},
+        {key: 3, label: `金额`, visible: true},
+        {key: 4, label: `己方户名`, visible: true},
+        {key: 5, label: `己方账号`, visible: true},
+        {key: 6, label: `己方开户行`, visible: true},
+        {key: 7, label: `己方账号ID`, visible: true},
+        {key: 8, label: `对方户名`, visible: true},
+        {key: 9, label: `对方账号`, visible: true},
+        {key: 10, label: `对方开户行`, visible: true},
+        {key: 11, label: `对方公司`, visible: true},
+        {key: 12, label: `对方公司ID`, visible: true},
+        {key: 13, label: `对方公司类型`, visible: true},
       ],
     };
   },
@@ -326,6 +331,13 @@ export default {
     this.getList();
   },
   methods: {
+    printHTML() {
+      this.$print({
+        printable: 'printBox',
+        type: 'html',
+        targetStyles: ['*'], // 打印内容使用所有HTML样式，没有设置这个属性/值，设置分页打印没有效果
+      })
+    },
     /** 查询收款信息列表 */
     getList() {
       this.loading = true;
