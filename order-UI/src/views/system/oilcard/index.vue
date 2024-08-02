@@ -107,24 +107,27 @@
       </el-form-item>
       <el-form-item>
         <el-button type="primary" icon="el-icon-search" size="mini" @click="handleQuery">搜索</el-button>
-        <el-button icon="el-icon-refresh" size="mini" @click="resetQuery">重置</el-button>
+<!--        <el-button icon="el-icon-refresh" size="mini" @click="resetQuery">重置</el-button>-->
       </el-form-item>
     </el-form>
 
     <el-row :gutter="10" class="mb8">
       <el-col :span="1.5">
-        <el-button
-          type="primary"
-          plain
-          icon="el-icon-plus"
-          size="mini"
-          @click="handleAdd"
-          v-hasPermi="['system:oilCard:add']"
-        >新增
-        </el-button>
+        <el-col :span="1.5">
+          <el-button icon="el-icon-refresh" size="mini" @click="resetQuery">刷新</el-button>
+        </el-col>
+<!--        <el-button-->
+<!--          type="primary"-->
+<!--          plain-->
+<!--          icon="el-icon-plus"-->
+<!--          size="mini"-->
+<!--          @click="handleAdd"-->
+<!--          v-hasPermi="['system:oilCard:add']"-->
+<!--        >新增-->
+<!--        </el-button>-->
       </el-col>
-      <el-col :span="1.5">
-        <el-button
+<!--      <el-col :span="1.5">-->
+<!--        <el-button
           type="success"
           plain
           icon="el-icon-edit"
@@ -133,11 +136,11 @@
           :disabled="single"
           v-hasPermi="['system:oilCard:edit']"
         >修改
-        </el-button>
+        </el-button>-->
         <!--记录为空时可以点按钮-->
-      </el-col>
-      <el-col :span="1.5">
-        <el-button
+<!--      </el-col>-->
+<!--      <el-col :span="1.5">-->
+<!--        <el-button
           type="danger"
           plain
           icon="el-icon-delete"
@@ -146,11 +149,11 @@
           @click="handleDelete"
           v-hasPermi="['system:oilCard:remove']"
         >删除
-        </el-button>
+        </el-button>-->
         <!--记录为空时可以点按钮-->
-      </el-col>
-      <el-col :span="1.5">
-        <el-button
+<!--      </el-col>-->
+<!--      <el-col :span="1.5">-->
+<!--        <el-button
           type="warning"
           plain
           icon="el-icon-download"
@@ -158,9 +161,34 @@
           @click="handleExport"
           v-hasPermi="['system:oilCard:export']"
         >导出
-        </el-button>
-      </el-col>
-      <right-toolbar :showSearch.sync="showSearch" @queryTable="getList"></right-toolbar>
+        </el-button>-->
+<!--      </el-col>-->
+      <right-toolbar :showSearch.sync="showSearch" @queryTable="getList">
+        <template v-slot:print>
+          <el-col :span="1.5">
+            <el-button
+              plain
+              icon="el-icon-printer"
+              size="mini"
+              @click="printHTML"
+            >
+            </el-button>
+          </el-col>
+        </template>
+        <!--        导出-->
+        <template v-slot:export>
+          <el-col :span="1.5">
+            <el-button
+              plain
+              icon="el-icon-folder-opened"
+              size="mini"
+              @click="handleExport"
+              v-hasPermi="['system:company:export']"
+            >
+            </el-button>
+          </el-col>
+        </template>
+      </right-toolbar>
     </el-row>
 
     <el-table border v-loading="loading" :data="oilCardList" @selection-change="handleSelectionChange" id="printBox"
@@ -252,7 +280,7 @@
           <el-input v-model="form.endCardSurplus" placeholder="请输入加油卡余额"/>
         </el-form-item>
         <el-form-item label="备注" prop="comments">
-          <el-input v-model="form.comments" placeholder="请输入备注"/>
+          <el-input v-model="form.comments" placeholder="请输入备注 "/>
         </el-form-item>
       </el-form>
       <div slot="footer" class="dialog-footer">
