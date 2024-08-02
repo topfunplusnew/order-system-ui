@@ -391,6 +391,9 @@ export default {
         }).catch(err => {
         this.$message.error("添加失败，请重试:" + err.msg)
       })
+
+      //刷新表格
+      this.getList()
     },
     //初始化字典对象中的信息
     onDictReady(dict) {

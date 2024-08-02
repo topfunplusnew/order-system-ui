@@ -9,30 +9,30 @@
           @keyup.enter.native="handleQuery"
         />
       </el-form-item>
-<!--      <el-form-item label="司机" prop="driver">-->
-<!--        <el-input-->
-<!--          v-model="queryParams.driver"-->
-<!--          placeholder="请输入司机"-->
-<!--          clearable-->
-<!--          @keyup.enter.native="handleQuery"-->
-<!--        />-->
-<!--      </el-form-item>-->
-<!--      <el-form-item label="司机电话" prop="tel">-->
-<!--        <el-input-->
-<!--          v-model="queryParams.tel"-->
-<!--          placeholder="请输入司机电话"-->
-<!--          clearable-->
-<!--          @keyup.enter.native="handleQuery"-->
-<!--        />-->
-<!--      </el-form-item>-->
-<!--      <el-form-item label="开户行" prop="bankName">-->
-<!--        <el-input-->
-<!--          v-model="queryParams.bankName"-->
-<!--          placeholder="请输入开户行"-->
-<!--          clearable-->
-<!--          @keyup.enter.native="handleQuery"-->
-<!--        />-->
-<!--      </el-form-item>-->
+      <!--      <el-form-item label="司机" prop="driver">-->
+      <!--        <el-input-->
+      <!--          v-model="queryParams.driver"-->
+      <!--          placeholder="请输入司机"-->
+      <!--          clearable-->
+      <!--          @keyup.enter.native="handleQuery"-->
+      <!--        />-->
+      <!--      </el-form-item>-->
+      <!--      <el-form-item label="司机电话" prop="tel">-->
+      <!--        <el-input-->
+      <!--          v-model="queryParams.tel"-->
+      <!--          placeholder="请输入司机电话"-->
+      <!--          clearable-->
+      <!--          @keyup.enter.native="handleQuery"-->
+      <!--        />-->
+      <!--      </el-form-item>-->
+      <!--      <el-form-item label="开户行" prop="bankName">-->
+      <!--        <el-input-->
+      <!--          v-model="queryParams.bankName"-->
+      <!--          placeholder="请输入开户行"-->
+      <!--          clearable-->
+      <!--          @keyup.enter.native="handleQuery"-->
+      <!--        />-->
+      <!--      </el-form-item>-->
       <el-form-item label="户名" prop="acountsName">
         <el-input
           v-model="queryParams.acountsName"
@@ -41,49 +41,49 @@
           @keyup.enter.native="handleQuery"
         />
       </el-form-item>
-<!--      <el-form-item label="账号" prop="bankNo">-->
-<!--        <el-input-->
-<!--          v-model="queryParams.bankNo"-->
-<!--          placeholder="请输入账号"-->
-<!--          clearable-->
-<!--          @keyup.enter.native="handleQuery"-->
-<!--        />-->
-<!--      </el-form-item>-->
-<!--      <el-form-item label="添加时间" prop="addtime">-->
-<!--        <el-input-->
-<!--          v-model="queryParams.addtime"-->
-<!--          placeholder="请输入添加时间"-->
-<!--          clearable-->
-<!--          @keyup.enter.native="handleQuery"-->
-<!--        />-->
-<!--      </el-form-item>-->
-<!--      <el-form-item label="操作人员ID" prop="userId">-->
-<!--        <el-input-->
-<!--          v-model="queryParams.userId"-->
-<!--          placeholder="请输入操作人员ID"-->
-<!--          clearable-->
-<!--          @keyup.enter.native="handleQuery"-->
-<!--        />-->
-<!--      </el-form-item>-->
-<!--      <el-form-item label="操作人员姓名" prop="UserName">-->
-<!--        <el-input-->
-<!--          v-model="queryParams.UserName"-->
-<!--          placeholder="请输入操作人员姓名"-->
-<!--          clearable-->
-<!--          @keyup.enter.native="handleQuery"-->
-<!--        />-->
-<!--      </el-form-item>-->
-<!--      <el-form-item label="删除标记" prop="delFlag">-->
-<!--        <el-input-->
-<!--          v-model="queryParams.delFlag"-->
-<!--          placeholder="请输入删除标记"-->
-<!--          clearable-->
-<!--          @keyup.enter.native="handleQuery"-->
-<!--        />-->
-<!--      </el-form-item>-->
+      <!--      <el-form-item label="账号" prop="bankNo">-->
+      <!--        <el-input-->
+      <!--          v-model="queryParams.bankNo"-->
+      <!--          placeholder="请输入账号"-->
+      <!--          clearable-->
+      <!--          @keyup.enter.native="handleQuery"-->
+      <!--        />-->
+      <!--      </el-form-item>-->
+      <!--      <el-form-item label="添加时间" prop="addtime">-->
+      <!--        <el-input-->
+      <!--          v-model="queryParams.addtime"-->
+      <!--          placeholder="请输入添加时间"-->
+      <!--          clearable-->
+      <!--          @keyup.enter.native="handleQuery"-->
+      <!--        />-->
+      <!--      </el-form-item>-->
+      <!--      <el-form-item label="操作人员ID" prop="userId">-->
+      <!--        <el-input-->
+      <!--          v-model="queryParams.userId"-->
+      <!--          placeholder="请输入操作人员ID"-->
+      <!--          clearable-->
+      <!--          @keyup.enter.native="handleQuery"-->
+      <!--        />-->
+      <!--      </el-form-item>-->
+      <!--      <el-form-item label="操作人员姓名" prop="UserName">-->
+      <!--        <el-input-->
+      <!--          v-model="queryParams.UserName"-->
+      <!--          placeholder="请输入操作人员姓名"-->
+      <!--          clearable-->
+      <!--          @keyup.enter.native="handleQuery"-->
+      <!--        />-->
+      <!--      </el-form-item>-->
+      <!--      <el-form-item label="删除标记" prop="delFlag">-->
+      <!--        <el-input-->
+      <!--          v-model="queryParams.delFlag"-->
+      <!--          placeholder="请输入删除标记"-->
+      <!--          clearable-->
+      <!--          @keyup.enter.native="handleQuery"-->
+      <!--        />-->
+      <!--      </el-form-item>-->
       <el-form-item>
-        <el-button type="primary"  size="mini" @click="handleQuery">搜索</el-button>
-<!--        <el-button icon="el-icon-refresh" size="mini" @click="resetQuery">重置</el-button>-->
+        <el-button type="primary" size="mini" @click="handleQuery">搜索</el-button>
+        <!--        <el-button icon="el-icon-refresh" size="mini" @click="resetQuery">重置</el-button>-->
       </el-form-item>
     </el-form>
     <el-row :gutter="10" class="mb8">
@@ -127,16 +127,16 @@
       <!--              >导出-->
       <!--              </el-button>-->
       <!--            </el-col>-->
-<!--            <el-col :span="1.5">-->
-<!--              <el-button-->
-<!--                type="primary"-->
-<!--                plain-->
-<!--                icon="el-icon-printer"-->
-<!--                size="mini"-->
-<!--                @click="printHTML"-->
-<!--              >打印-->
-<!--              </el-button>-->
-<!--            </el-col>-->
+      <!--            <el-col :span="1.5">-->
+      <!--              <el-button-->
+      <!--                type="primary"-->
+      <!--                plain-->
+      <!--                icon="el-icon-printer"-->
+      <!--                size="mini"-->
+      <!--                @click="printHTML"-->
+      <!--              >打印-->
+      <!--              </el-button>-->
+      <!--            </el-col>-->
       <right-toolbar :showSearch.sync="showSearch" @queryTable="getList" :columns="columns">
 
         <template v-slot:print>
@@ -166,25 +166,25 @@
       </right-toolbar>
     </el-row>
 
-          <el-table border v-loading="loading" :data="carsList" @selection-change="handleSelectionChange" id="printBox"
-                    height="550px" v-horizontal-scroll="'always'">
-<!--            复选框-->
-<!--            首行-->
-<!--      <el-table-column type="selection" width="55" align="center" />-->
-      <el-table-column label="id" align="center" prop="id" />
-      <el-table-column label="车牌" align="center" prop="carNo"  v-if="columns[0].visible"/>
-      <el-table-column label="司机姓名" align="center" prop="driver"  v-if="columns[1].visible"/>
-      <el-table-column label="司机电话" align="center" prop="tel"  v-if="columns[2].visible"/>
+    <el-table border v-loading="loading" :data="carsList" @selection-change="handleSelectionChange" id="printBox"
+              height="550px" v-horizontal-scroll="'always'">
+      <!--            复选框-->
+      <!--            首行-->
+      <!--      <el-table-column type="selection" width="55" align="center" />-->
+      <el-table-column label="id" align="center" prop="id"/>
+      <el-table-column label="车牌" align="center" prop="carNo" v-if="columns[0].visible"/>
+      <el-table-column label="司机姓名" align="center" prop="driver" v-if="columns[1].visible"/>
+      <el-table-column label="司机电话" align="center" prop="tel" v-if="columns[2].visible"/>
       <el-table-column label="户名" align="center" prop="acountsName" v-if="columns[3].visible"/>
-      <el-table-column label="银行账号" align="center" prop="bankNo"  v-if="columns[4].visible"/>
-      <el-table-column label="开户行" align="center" prop="bankName"  v-if="columns[5].visible"/>
+      <el-table-column label="银行账号" align="center" prop="bankNo" v-if="columns[4].visible"/>
+      <el-table-column label="开户行" align="center" prop="bankName" v-if="columns[5].visible"/>
 
       <!--      <el-table-column label="账号类型" align="center" prop="acountsType" />-->
-<!--      <el-table-column label="运输类型(陆运，海运)" align="center" prop="carType" />-->
-<!--      <el-table-column label="添加时间" align="center" prop="addtime" />-->
-<!--      <el-table-column label="操作人员ID" align="center" prop="userId" />-->
-<!--      <el-table-column label="操作人员姓名" align="center" prop="UserName" />-->
-<!--      <el-table-column label="删除标记" align="center" prop="delFlag" />-->
+      <!--      <el-table-column label="运输类型(陆运，海运)" align="center" prop="carType" />-->
+      <!--      <el-table-column label="添加时间" align="center" prop="addtime" />-->
+      <!--      <el-table-column label="操作人员ID" align="center" prop="userId" />-->
+      <!--      <el-table-column label="操作人员姓名" align="center" prop="UserName" />-->
+      <!--      <el-table-column label="删除标记" align="center" prop="delFlag" />-->
       <el-table-column label="操作" align="center" class-name="small-padding fixed-width">
         <template slot-scope="scope">
           <el-button
@@ -217,22 +217,22 @@
     <el-dialog :title="title" :visible.sync="open" width="500px" append-to-body>
       <el-form ref="form" :model="form" :rules="rules" label-width="80px">
         <el-form-item label="车牌" prop="carNo">
-          <el-input v-model="form.carNo" placeholder="请输入车牌" />
+          <el-input v-model="form.carNo" placeholder="请输入车牌"/>
         </el-form-item>
         <el-form-item label="司机" prop="driver">
-          <el-input v-model="form.driver" placeholder="请输入司机" />
+          <el-input v-model="form.driver" placeholder="请输入司机"/>
         </el-form-item>
         <el-form-item label="司机电话" prop="tel">
-          <el-input v-model="form.tel" placeholder="请输入司机电话" />
+          <el-input v-model="form.tel" placeholder="请输入司机电话"/>
         </el-form-item>
         <el-form-item label="开户行" prop="bankName">
-          <el-input v-model="form.bankName" placeholder="请输入开户行" />
+          <el-input v-model="form.bankName" placeholder="请输入开户行"/>
         </el-form-item>
         <el-form-item label="开户名" prop="acountsName">
-          <el-input v-model="form.acountsName" placeholder="请输入开户名" />
+          <el-input v-model="form.acountsName" placeholder="请输入开户名"/>
         </el-form-item>
         <el-form-item label="账号" prop="bankNo">
-          <el-input v-model="form.bankNo" placeholder="请输入账号" />
+          <el-input v-model="form.bankNo" placeholder="请输入账号"/>
         </el-form-item>
         <!--        单选-->
         <el-form-item label="账号类型" prop="acountsType">
@@ -241,22 +241,22 @@
         </el-form-item>
 
         <el-form-item label="运输类型" prop="carType">
-<!--          <el-input v-model="form.bankNo" placeholder="请输入账号" />-->
+          <!--          <el-input v-model="form.bankNo" placeholder="请输入账号" />-->
           <el-radio v-model="form.carType" label="陆运">陆运</el-radio>
           <el-radio v-model="form.carType" label="海运">海运</el-radio>
         </el-form-item>
-<!--        <el-form-item label="添加时间" prop="addtime">-->
-<!--          <el-input v-model="form.addtime" placeholder="请输入添加时间" />-->
-<!--        </el-form-item>-->
-<!--        <el-form-item label="操作人员ID" prop="userId">-->
-<!--          <el-input v-model="form.userId" placeholder="请输入操作人员ID" />-->
-<!--        </el-form-item>-->
-<!--        <el-form-item label="操作人员姓名" prop="UserName">-->
-<!--          <el-input v-model="form.UserName" placeholder="请输入操作人员姓名" />-->
-<!--        </el-form-item>-->
-<!--        <el-form-item label="删除标记" prop="delFlag">-->
-<!--          <el-input v-model="form.delFlag" placeholder="请输入删除标记" />-->
-<!--        </el-form-item>-->
+        <!--        <el-form-item label="添加时间" prop="addtime">-->
+        <!--          <el-input v-model="form.addtime" placeholder="请输入添加时间" />-->
+        <!--        </el-form-item>-->
+        <!--        <el-form-item label="操作人员ID" prop="userId">-->
+        <!--          <el-input v-model="form.userId" placeholder="请输入操作人员ID" />-->
+        <!--        </el-form-item>-->
+        <!--        <el-form-item label="操作人员姓名" prop="UserName">-->
+        <!--          <el-input v-model="form.UserName" placeholder="请输入操作人员姓名" />-->
+        <!--        </el-form-item>-->
+        <!--        <el-form-item label="删除标记" prop="delFlag">-->
+        <!--          <el-input v-model="form.delFlag" placeholder="请输入删除标记" />-->
+        <!--        </el-form-item>-->
       </el-form>
       <div slot="footer" class="dialog-footer">
         <el-button type="primary" @click="submitForm">确 定</el-button>
@@ -267,7 +267,7 @@
 </template>
 
 <script>
-import { listCars, getCars, delCars, addCars, updateCars } from "@/api/system/cars";
+import {listCars, getCars, delCars, addCars, updateCars} from "@/api/system/cars";
 import {addFleet, updateFleet} from "@/api/system/fleet";
 
 export default {
@@ -302,7 +302,7 @@ export default {
         bankName: null,
         carsName: null,
         bankNo: null,
-       carsType: null,
+        carsType: null,
         carType: null,
         addtime: null,
         userId: null,
@@ -395,7 +395,7 @@ export default {
     // 多选框选中数据
     handleSelectionChange(selection) {
       this.ids = selection.map(item => item.id)
-      this.single = selection.length!==1
+      this.single = selection.length !== 1
       this.multiple = !selection.length
     },
 
@@ -411,6 +411,7 @@ export default {
       const id = row.id || this.ids
       getCars(id).then(response => {
         this.form = response.data;
+        this.form.acountsType += ''
         this.open = true;
         this.title = "修改外部车辆信息";
       });
@@ -422,9 +423,9 @@ export default {
         if (valid) {
           if (this.form.id != null) {
             this.form.delFlag = null;
-            this.form.addtime=null;
-            this.form.updateTime=null;
-            this.form.userId=null;
+            this.form.addtime = null;
+            this.form.updateTime = null;
+            this.form.userId = null;
             updateCars(this.form).then(response => {
               this.$modal.msgSuccess("修改成功");
               this.open = false;
@@ -448,12 +449,13 @@ export default {
     /** 删除按钮操作 */
     handleDelete(row) {
       const ids = row.id || this.ids;
-      this.$modal.confirm('是否确认删除外部车辆信息编号为"' + ids + '"的数据项？').then(function() {
+      this.$modal.confirm('是否确认删除外部车辆信息编号为"' + ids + '"的数据项？').then(function () {
         return delCars(ids);
       }).then(() => {
         this.getList();
         this.$modal.msgSuccess("删除成功");
-      }).catch(() => {});
+      }).catch(() => {
+      });
     },
     /** 导出按钮操作 */
     handleExport() {
