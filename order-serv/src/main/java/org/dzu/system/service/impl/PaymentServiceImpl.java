@@ -7,6 +7,7 @@ import java.util.stream.Collectors;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import org.dzu.common.constant.BankChangeConstant;
 import org.dzu.common.constant.PaymentState;
+import org.dzu.common.exception.ServiceException;
 import org.dzu.common.utils.DateUtils;
 import org.dzu.common.utils.SecurityUtils;
 import org.dzu.common.utils.uuid.UUID;
@@ -139,6 +140,11 @@ public class PaymentServiceImpl implements IPaymentService
         {
             throw new RuntimeException("不允许修改UUID");
         }
+        // 判断本信息是否提交，如果提交了，不允许修改
+        if (oldPayment.getPaymentState().equals(PaymentState.OVER))
+        {
+            throw new ServiceException("已经提交的信息不允许修改");
+        }
 
         // 因为本次会同一个UUID产生两个数据，不适宜使用更新操作
         // 所以这里直接删除旧数据，插入新数据
@@ -158,11 +164,17 @@ public class PaymentServiceImpl implements IPaymentService
     @Transactional(isolation = Isolation.SERIALIZABLE,rollbackFor = Exception.class) // 开启最高级别的事务隔离和最小容忍异常
     public int deletePaymentByIds(Long[] ids)
     {
+        List<Payment> payments = paymentMapper.selectBatchIds(Arrays.asList(ids));
         // 搜索所有的信息
-        String[] array = paymentMapper.selectBatchIds(Arrays.asList(ids)).stream().map(Payment::getPayNO).collect(Collectors.toList()).toArray(new String[0]);
+        String[] array = payments.stream().map(Payment::getPayNO).collect(Collectors.toList()).toArray(new String[0]);
         // 批量删除
         bankAccountChangeService.deleteBankAccountChangeByUUID(array);
-        return paymentMapper.deletePaymentByIds(ids);
+        int i = paymentMapper.deletePaymentByIds(ids);
+        if(i!=ids.length){
+            throw new ServiceException("含有已经支付的信息！");
+        }
+        return  i;
+
     }
 
     @Override
