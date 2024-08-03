@@ -277,13 +277,13 @@ export default {
   created() {
     this.getList();
     this.getCompanyInfo()
-    //如果本地不为空 更新值
-    if (localStorage.getItem('bankaccount-columns') !== null
-      || localStorage.getItem('bankaccount-columns') !== undefined) {
-      this.columns = JSON.parse(localStorage.getItem('bankaccount-columns'));
-      //先存储一次本地
-    } else {
+    //如果是空
+    if (localStorage.getItem('bankaccount-columns') === 'null'
+      || !localStorage.getItem('bankaccount-columns')) {
+      //设置localStorage
       localStorage.setItem("bankaccount-columns", JSON.stringify(this.columns))
+    } else {
+      this.columns = JSON.parse(localStorage.getItem('bankaccount-columns'));
     }
   },
   //展示与隐藏

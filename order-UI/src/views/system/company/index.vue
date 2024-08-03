@@ -406,8 +406,11 @@ export default {
   },
   created() {
     this.getList();
-    if (localStorage.getItem('company-columns') !== null
-      || localStorage.getItem('company-columns') !== undefined) {
+    if (localStorage.getItem('company-columns') === 'null'
+      || !localStorage.getItem('company-columns')) {
+      //设置localStorage
+      localStorage.setItem("company-columns", JSON.stringify(this.columns))
+    } else {
       this.columns = JSON.parse(localStorage.getItem('company-columns'));
     }
   },

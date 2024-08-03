@@ -426,11 +426,11 @@ export default {
   },
   created() {
     this.getList();
-    //先存储一次本地
-    localStorage.setItem("companygive-columns", JSON.stringify(this.columns))
-    //如果本地不为空 更新值
-    if (localStorage.getItem('companygive-columns') !== null
-      || localStorage.getItem('companygive-columns') !== undefined) {
+    if (localStorage.getItem('companygive-columns') === 'null'
+      || !localStorage.getItem('companygive-columns')) {
+      //设置localStorage
+      localStorage.setItem("companygive-columns", JSON.stringify(this.columns))
+    } else {
       this.columns = JSON.parse(localStorage.getItem('companygive-columns'));
     }
   },
