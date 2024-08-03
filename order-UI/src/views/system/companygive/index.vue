@@ -426,6 +426,22 @@ export default {
   },
   created() {
     this.getList();
+    //先存储一次本地
+    localStorage.setItem("companygive-columns", JSON.stringify(this.columns))
+    //如果本地不为空 更新值
+    if (localStorage.getItem('companygive-columns') !== null
+      || localStorage.getItem('companygive-columns') !== undefined) {
+      this.columns = JSON.parse(localStorage.getItem('companygive-columns'));
+    }
+  },
+  //展示与隐藏
+  watch: {
+    columns: {
+      handler: (newVal) => {
+        localStorage.setItem("companygive-columns", JSON.stringify(newVal))
+      },
+      deep: true,
+    }
   },
   methods: {
     //银行卡搜索按钮
