@@ -35,6 +35,8 @@ public interface IOrderDetailService
      */
     public int insertOrderDetail(OrderDetail orderDetail);
 
+    void preInsert(OrderDetail orderDetail);
+
     /**
      * 修改订单详情
      * 

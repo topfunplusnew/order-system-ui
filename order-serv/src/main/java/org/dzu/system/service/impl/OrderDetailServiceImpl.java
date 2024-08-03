@@ -1,16 +1,23 @@
 package org.dzu.system.service.impl;
 
-import java.util.List;
+import org.dzu.common.constant.DelConstants;
+import org.dzu.common.constant.YesOrNoConstants;
+import org.dzu.common.exception.ServiceException;
 import org.dzu.common.utils.DateUtils;
 import org.dzu.common.utils.SecurityUtils;
-import org.dzu.common.utils.SecurityUtils;
+import org.dzu.common.utils.StringUtils;
+import org.dzu.system.domain.Company;
+import org.dzu.system.domain.Inventory;
+import org.dzu.system.domain.OrderDetail;
+import org.dzu.system.mapper.OrderDetailMapper;
+import org.dzu.system.service.ICompanyService;
+import org.dzu.system.service.IInventoryService;
+import org.dzu.system.service.IOrderDetailService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import org.dzu.system.mapper.OrderDetailMapper;
-import org.dzu.system.domain.OrderDetail;
-import org.dzu.system.service.IOrderDetailService;
- 
-import org.dzu.common.constant.DelConstants;
+
+import java.util.List;
+
 /**
  * 订单详情Service业务层处理
  *
@@ -18,10 +25,15 @@ import org.dzu.common.constant.DelConstants;
  * @date 2024-07-29
  */
 @Service
-public class OrderDetailServiceImpl implements IOrderDetailService
-{
+public class OrderDetailServiceImpl implements IOrderDetailService {
     @Autowired
     private OrderDetailMapper orderDetailMapper;
+
+    @Autowired
+    private ICompanyService companyService;
+
+    @Autowired
+    private IInventoryService inventoryService;
 
     /**
      * 查询订单详情
@@ -30,8 +42,7 @@ public class OrderDetailServiceImpl implements IOrderDetailService
      * @return 订单详情
      */
     @Override
-    public OrderDetail selectOrderDetailById(Long id)
-    {
+    public OrderDetail selectOrderDetailById(Long id) {
         return orderDetailMapper.selectOrderDetailById(id);
     }
 
@@ -42,8 +53,7 @@ public class OrderDetailServiceImpl implements IOrderDetailService
      * @return 订单详情
      */
     @Override
-    public List<OrderDetail> selectOrderDetailList(OrderDetail orderDetail)
-    {
+    public List<OrderDetail> selectOrderDetailList(OrderDetail orderDetail) {
         return orderDetailMapper.selectOrderDetailList(orderDetail);
     }
 
@@ -54,24 +64,67 @@ public class OrderDetailServiceImpl implements IOrderDetailService
      * @return 结果
      */
     @Override
-    public int insertOrderDetail(OrderDetail orderDetail)
-    {
+    public int insertOrderDetail(OrderDetail orderDetail) {
+        preInsert(orderDetail);
+        return orderDetailMapper.insertOrderDetail(orderDetail);
+    }
+
+    @Override
+    public void preInsert(OrderDetail orderDetail) {
+        // 对于需要插插入的信息进行一些校验或者填补
+
+        // 补充一些基本的数据
         orderDetail.setAddtime(String.valueOf(DateUtils.getNowDate()));
         orderDetail.setUserId(SecurityUtils.getUserId());
         orderDetail.setUserName(SecurityUtils.getUserTruename());
         orderDetail.setCancelFlag(Long.valueOf(DelConstants.NODEL));
-        return orderDetailMapper.insertOrderDetail(orderDetail);
+        // 插入肯定不是修改，所以不是调整
+        orderDetail.setIsAdjusted(YesOrNoConstants.NO_zh);
+        orderDetail.setAdjustDate(null);
+
+        // 准备校验
+
+        // 两者不能同时为null
+        if(StringUtils.isNull(orderDetail.getSupplierID()) && StringUtils.isNull(orderDetail.getStoreID())){
+            throw new ServiceException("供应商和仓库不能同时为空，请检查后重试");
+        }
+        // 两者也不能同时不为null
+        if(StringUtils.isNotNull(orderDetail.getSupplierID()) && StringUtils.isNotNull(orderDetail.getStoreID())){
+            throw new ServiceException("供应商和仓库不能同时不为空，请检查后重试");
+        }
+
+        // 先校验仓库和供应商是否存在，不存在就没法确定后期拨款
+        if (StringUtils.isNotNull(orderDetail.getSupplierID())) {
+            Company supplier = companyService.selectCompanyById(orderDetail.getSupplierID());
+            if (supplier == null) {
+                throw new ServiceException("获取供应商信息异常，请刷新页面后重试");
+            }
+        }
+        if (StringUtils.isNotNull(orderDetail.getStoreID())) {
+            Inventory inventory = inventoryService.selectInventoryById(orderDetail.getStoreID());
+            if (inventory == null) {
+                throw new ServiceException("获取对应仓库的存货信息异常，请刷新页面后重试");
+            } else {
+                // 存货二次判断+联动修改
+                if (inventory.getStockNumber() > 0 && orderDetail.getPieces() <= inventory.getStockNumber()) {
+                    // 仓库存货足够
+                    // TODO： 联动出库
+                } else {
+                    throw new ServiceException("仓库存货不足，请检查后重试");
+                }
+            }
+        }
     }
+
 
     /**
      * 修改订单详情
-     * 
+     *
      * @param orderDetail 订单详情
      * @return 结果
      */
     @Override
-    public int updateOrderDetail(OrderDetail orderDetail)
-    {
+    public int updateOrderDetail(OrderDetail orderDetail) {
         orderDetail.setUserId(SecurityUtils.getUserId());
         orderDetail.setUserName(SecurityUtils.getUserTruename());
         orderDetail.setUpdateTime(DateUtils.getNowDate());
@@ -80,25 +133,23 @@ public class OrderDetailServiceImpl implements IOrderDetailService
 
     /**
      * 批量删除订单详情
-     * 
+     *
      * @param ids 需要删除的订单详情主键
      * @return 结果
      */
     @Override
-    public int deleteOrderDetailByIds(Long[] ids)
-    {
+    public int deleteOrderDetailByIds(Long[] ids) {
         return orderDetailMapper.deleteOrderDetailByIds(ids);
     }
 
     /**
      * 删除订单详情信息
-     * 
+     *
      * @param id 订单详情主键
      * @return 结果
      */
     @Override
-    public int deleteOrderDetailById(Long id)
-    {
+    public int deleteOrderDetailById(Long id) {
         return orderDetailMapper.deleteOrderDetailById(id);
     }
 }

@@ -85,4 +85,8 @@ public interface GoodsOrderMapper extends BaseMapper<GoodsOrder>
      * @return 结果
      */
     public int deleteOrderDetailByOrdersNo(Long id);
+
+    int deleteOrderDetailByOrderId(Long id);
+
+    int deleteOrderDetailByIds(Long[] ids);
 }

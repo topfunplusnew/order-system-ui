@@ -11,6 +11,7 @@ import com.baomidou.mybatisplus.annotation.TableName;
 import org.dzu.common.annotation.FlagOnlyZeroOrOne;
 import org.hibernate.validator.constraints.Length;
 
+import javax.validation.Valid;
 import javax.validation.constraints.Max;
 import javax.validation.constraints.Min;
 import javax.validation.constraints.Pattern;
@@ -244,7 +245,8 @@ public class GoodsOrder extends BaseEntity
     private String UserName;
 
     /** 订单详情信息 */
-    private List<OrderDetail> orderDetailList;
+    @Valid
+    private List<@Valid OrderDetail> orderDetailList;
 
     public void setId(Long id) 
     {

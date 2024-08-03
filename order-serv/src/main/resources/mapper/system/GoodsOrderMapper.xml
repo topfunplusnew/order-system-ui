@@ -45,7 +45,7 @@
     </resultMap>
 
     <resultMap id="GoodsOrderOrderDetailResult" type="GoodsOrder" extends="GoodsOrderResult">
-        <collection property="orderDetailList" ofType="OrderDetail" column="id" select="selectOrderDetailList"/>
+        <collection property="orderDetailList" ofType="OrderDetail" column="ordersNo" select="selectOrderDetailList"/>
     </resultMap>
 
     <resultMap type="OrderDetail" id="OrderDetailResult">
@@ -712,16 +712,15 @@
         </foreach>
     </update>
     <delete id="deleteOrderDetailByOrdersNos" parameterType="String">
-        delete
-        from orderDetail where ordersNo in
+        update
+         orderDetail set cancelFlag = 1 where ordersNo in
         <foreach item="ordersNo" collection="array" open="(" separator="," close=")">
             #{ordersNo}
         </foreach>
     </delete>
 
     <delete id="deleteOrderDetailByOrdersNo" parameterType="Long">
-        delete
-        from orderDetail
+        update orderDetail set cancelFlag = 1
         where ordersNo = #{ordersNo}
     </delete>
 
@@ -746,4 +745,21 @@
              #{item.addtime}, #{item.userId}, #{item.UserName}, #{item.updateTime})
         </foreach>
     </insert>
+
+    <update id="deleteOrderDetailByOrderId">
+        update orderDetail set cancelFlag = 1
+        where ordersNo in (select ordersNo from goodsOrder where id = #{id})
+    </update>
+
+    <delete id="deleteOrderDetailByIds">
+        update
+            orderDetail
+        set cancelFlag = 1 where ordersNo in (
+        select ordersNo
+        from goodsOrder where id in
+        <foreach item="id" collection="array" open="(" separator="," close=")">
+            #{id}
+        </foreach>
+        )
+    </delete>
 </mapper>
