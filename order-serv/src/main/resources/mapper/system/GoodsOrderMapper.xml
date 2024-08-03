@@ -45,7 +45,7 @@
     </resultMap>
 
     <resultMap id="GoodsOrderOrderDetailResult" type="GoodsOrder" extends="GoodsOrderResult">
-        <collection property="orderDetailList" ofType="OrderDetail" column="id" select="selectOrderDetailList"/>
+        <collection property="orderDetailList" ofType="OrderDetail" column="ordersNo" select="selectOrderDetailList"/>
     </resultMap>
 
     <resultMap type="OrderDetail" id="OrderDetailResult">
@@ -712,16 +712,15 @@
         </foreach>
     </update>
     <delete id="deleteOrderDetailByOrdersNos" parameterType="String">
-        delete
-        from orderDetail where ordersNo in
+        update
+         orderDetail set cancelFlag = 1 where ordersNo in
         <foreach item="ordersNo" collection="array" open="(" separator="," close=")">
             #{ordersNo}
         </foreach>
     </delete>
 
-    <delete id="deleteOrderDetailByOrdersNo" parameterType="Long">
-        delete
-        from orderDetail
+    <delete id="deleteOrderDetailByOrdersNo" parameterType="String">
+        update orderDetail set cancelFlag = 1
         where ordersNo = #{ordersNo}
     </delete>
 
@@ -745,5 +744,107 @@
              #{item.customerCommission}, #{item.isAdjusted}, #{item.adjustDate}, #{item.cancelFlag}, #{item.comments},
              #{item.addtime}, #{item.userId}, #{item.UserName}, #{item.updateTime})
         </foreach>
+    </insert>
+
+    <update id="deleteOrderDetailByOrderId">
+        update orderDetail set cancelFlag = 1
+        where ordersNo in (select ordersNo from goodsOrder where id = #{id})
+    </update>
+
+    <delete id="deleteOrderDetailByIds">
+        update
+            orderDetail
+        set cancelFlag = 1 where ordersNo in (
+        select ordersNo
+        from goodsOrder where id in
+        <foreach item="id" collection="array" open="(" separator="," close=")">
+            #{id}
+        </foreach>
+        )
+    </delete>
+
+
+    <insert id="backupGoodsOrder" parameterType="GoodsorderBack" useGeneratedKeys="true" keyProperty="id">
+        insert into goodsOrder_back
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="goodsOrderID != null">goodsOrderID,</if>
+            <if test="ordersNo != null">ordersNo,</if>
+            <if test="orderDate != null">orderDate,</if>
+            <if test="customer != null">customer,</if>
+            <if test="customerID != null">customerID,</if>
+            <if test="landCarID != null">landCarID,</if>
+            <if test="landCarNo != null">landCarNo,</if>
+            <if test="landDriverTel != null">landDriverTel,</if>
+            <if test="landDriverName != null">landDriverName,</if>
+            <if test="seaCarID != null">seaCarID,</if>
+            <if test="seaCarNo != null">seaCarNo,</if>
+            <if test="seaDriverTel != null">seaDriverTel,</if>
+            <if test="seaDriverName != null">seaDriverName,</if>
+            <if test="checkUserId != null">checkUserId,</if>
+            <if test="checkState != null">checkState,</if>
+            <if test="invoiceState != null">invoiceState,</if>
+            <if test="path != null">path,</if>
+            <if test="PaymentState != null">PaymentState,</if>
+            <if test="landBankName != null">landBankName,</if>
+            <if test="landBankNo != null">landBankNo,</if>
+            <if test="seaBankName != null">seaBankName,</if>
+            <if test="seaBankNo != null">seaBankNo,</if>
+            <if test="receiveProof != null">receiveProof,</if>
+            <if test="saleManager != null">saleManager,</if>
+            <if test="fleet != null">fleet,</if>
+            <if test="isAdjusted != null">isAdjusted,</if>
+            <if test="adjustDate != null">adjustDate,</if>
+            <if test="isAdjust != null">isAdjust,</if>
+            <if test="adjustOrderid != null">adjustOrderid,</if>
+            <if test="isedit != null">isedit,</if>
+            <if test="customerIsInvoice != null">customerIsInvoice,</if>
+            <if test="isSupplierInvoice != null">isSupplierInvoice,</if>
+            <if test="cancelFlag != null">cancelFlag,</if>
+            <if test="comments != null">comments,</if>
+            <if test="addtime != null">addtime,</if>
+            <if test="userId != null">userId,</if>
+            <if test="UserName != null">UserName,</if>
+            <if test="updateTime != null">update_time,</if>
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="goodsOrderID != null">#{goodsOrderID},</if>
+            <if test="ordersNo != null">#{ordersNo},</if>
+            <if test="orderDate != null">#{orderDate},</if>
+            <if test="customer != null">#{customer},</if>
+            <if test="customerID != null">#{customerID},</if>
+            <if test="landCarID != null">#{landCarID},</if>
+            <if test="landCarNo != null">#{landCarNo},</if>
+            <if test="landDriverTel != null">#{landDriverTel},</if>
+            <if test="landDriverName != null">#{landDriverName},</if>
+            <if test="seaCarID != null">#{seaCarID},</if>
+            <if test="seaCarNo != null">#{seaCarNo},</if>
+            <if test="seaDriverTel != null">#{seaDriverTel},</if>
+            <if test="seaDriverName != null">#{seaDriverName},</if>
+            <if test="checkUserId != null">#{checkUserId},</if>
+            <if test="checkState != null">#{checkState},</if>
+            <if test="invoiceState != null">#{invoiceState},</if>
+            <if test="path != null">#{path},</if>
+            <if test="PaymentState != null">#{PaymentState},</if>
+            <if test="landBankName != null">#{landBankName},</if>
+            <if test="landBankNo != null">#{landBankNo},</if>
+            <if test="seaBankName != null">#{seaBankName},</if>
+            <if test="seaBankNo != null">#{seaBankNo},</if>
+            <if test="receiveProof != null">#{receiveProof},</if>
+            <if test="saleManager != null">#{saleManager},</if>
+            <if test="fleet != null">#{fleet},</if>
+            <if test="isAdjusted != null">#{isAdjusted},</if>
+            <if test="adjustDate != null">#{adjustDate},</if>
+            <if test="isAdjust != null">#{isAdjust},</if>
+            <if test="adjustOrderid != null">#{adjustOrderid},</if>
+            <if test="isedit != null">#{isedit},</if>
+            <if test="customerIsInvoice != null">#{customerIsInvoice},</if>
+            <if test="isSupplierInvoice != null">#{isSupplierInvoice},</if>
+            <if test="cancelFlag != null">#{cancelFlag},</if>
+            <if test="comments != null">#{comments},</if>
+            <if test="addtime != null">#{addtime},</if>
+            <if test="userId != null">#{userId},</if>
+            <if test="UserName != null">#{UserName},</if>
+            <if test="updateTime != null">#{updateTime},</if>
+        </trim>
     </insert>
 </mapper>

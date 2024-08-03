@@ -3,6 +3,7 @@ package org.dzu.system.mapper;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import java.util.List;
 import org.dzu.system.domain.GoodsOrder;
+import org.dzu.system.domain.GoodsorderBack;
 import org.dzu.system.domain.OrderDetail;
 
 /**
@@ -81,8 +82,14 @@ public interface GoodsOrderMapper extends BaseMapper<GoodsOrder>
     /**
      * 通过订单主键删除订单详情信息
      * 
-     * @param id 订单ID
+     * @param orderNo 订单ID
      * @return 结果
      */
-    public int deleteOrderDetailByOrdersNo(Long id);
+    public int deleteOrderDetailByOrdersNo(String orderNo);
+
+    int deleteOrderDetailByOrderId(Long id);
+
+    int deleteOrderDetailByIds(Long[] ids);
+
+    void backupGoodsOrder(GoodsorderBack goodsOrder);
 }

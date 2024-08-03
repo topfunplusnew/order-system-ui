@@ -92,6 +92,19 @@ public class GoodsOrderController extends BaseController
         return toAjax(goodsOrderService.updateGoodsOrder(goodsOrder));
     }
 
+
+    /**
+     * 调整订单
+     */
+    @PreAuthorize("@ss.hasPermi('system:goodsOrder:edit')")
+    @Log(title = "订单", businessType = BusinessType.UPDATE)
+    @PutMapping("/adjust")
+    public AjaxResult adjust(@Validated @RequestBody GoodsOrder goodsOrder)
+    {
+        return toAjax(goodsOrderService.adjustGoodsOrder(goodsOrder));
+    }
+
+
     /**
      * 删除订单
      */

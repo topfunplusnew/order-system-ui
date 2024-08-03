@@ -269,6 +269,7 @@
 <script>
 import {listCars, getCars, delCars, addCars, updateCars} from "@/api/system/cars";
 import {addFleet, updateFleet} from "@/api/system/fleet";
+import {listCompany} from "@/api/system/company";
 
 export default {
   name: "Cars",
@@ -338,7 +339,26 @@ export default {
   },
   created() {
     this.getList();
+    // this.getcarsInfo()
+    //如果本地不为空 更新值
+    if (localStorage.getItem('car-columns') !== null
+      || localStorage.getItem('car-columns') !== undefined) {
+      this.columns = JSON.parse(localStorage.getItem('car-columns'));
+      //先存储一次本地
+    } else {
+      localStorage.setItem("car-columns", JSON.stringify(this.columns))
+    }
   },
+  //展示与隐藏
+  watch: {
+    columns: {
+      handler: (newVal) => {
+        localStorage.setItem("car-columns", JSON.stringify(newVal))
+      },
+      deep: true,
+    }
+  },
+
   methods: {
     /** 查询外部车辆信息列表 */
     getList() {
@@ -348,6 +368,11 @@ export default {
         this.total = response.total;
         this.loading = false;
       });
+    },
+    getcarsInfo() {
+      listcars(this.queryParamsCompany).then(res => {
+        this.carsList = res.data.rows;
+      })
     },
     //打印
     printHTML() {
