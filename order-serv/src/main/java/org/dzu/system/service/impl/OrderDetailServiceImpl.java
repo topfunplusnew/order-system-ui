@@ -1,5 +1,6 @@
 package org.dzu.system.service.impl;
 
+import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import org.dzu.common.constant.DelConstants;
 import org.dzu.common.constant.YesOrNoConstants;
 import org.dzu.common.exception.ServiceException;
@@ -9,7 +10,9 @@ import org.dzu.common.utils.StringUtils;
 import org.dzu.system.domain.Company;
 import org.dzu.system.domain.Inventory;
 import org.dzu.system.domain.OrderDetail;
+import org.dzu.system.domain.OrderdetailBack;
 import org.dzu.system.mapper.OrderDetailMapper;
+import org.dzu.system.mapper.OrderdetailBackMapper;
 import org.dzu.system.service.ICompanyService;
 import org.dzu.system.service.IExWarehouseService;
 import org.dzu.system.service.IInventoryService;
@@ -39,6 +42,8 @@ public class OrderDetailServiceImpl implements IOrderDetailService {
     @Autowired
     private IExWarehouseService exWarehouseService;
 
+    @Autowired
+    private OrderdetailBackMapper orderdetailBackMapper;
     /**
      * 查询订单详情
      *
@@ -161,5 +166,15 @@ public class OrderDetailServiceImpl implements IOrderDetailService {
     @Override
     public void backupOrderDetail(String ordersNo) {
         orderDetailMapper.backupOrderDetail(ordersNo);
+        QueryWrapper<OrderdetailBack> query = new QueryWrapper<>();
+        query.eq("ordersNo", ordersNo);
+
+        // 获取本次修改的人
+        OrderdetailBack updateInfo = new OrderdetailBack();
+        updateInfo.setUserId(SecurityUtils.getUserId());
+        updateInfo.setUserName(SecurityUtils.getUserTruename());
+        updateInfo.setUpdateTime(DateUtils.getNowDate());
+        orderdetailBackMapper.update(updateInfo, query);
+
     }
 }
