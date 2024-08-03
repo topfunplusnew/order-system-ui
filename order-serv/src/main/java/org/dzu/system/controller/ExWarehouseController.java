@@ -78,7 +78,9 @@ public class ExWarehouseController extends BaseController
     @PostMapping
     public AjaxResult add(@Validated @RequestBody ExWarehouse exWarehouse)
     {
-        return toAjax(exWarehouseService.insertExWarehouse(exWarehouse));
+        // 目前不支持前端添加信息
+        throw  new RuntimeException("目前不支持前端添加信息");
+//        return toAjax(exWarehouseService.insertExWarehouse(exWarehouse));
     }
 
     /**

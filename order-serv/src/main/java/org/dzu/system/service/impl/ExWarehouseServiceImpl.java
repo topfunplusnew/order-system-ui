@@ -1,9 +1,17 @@
 package org.dzu.system.service.impl;
 
 import java.util.List;
+
+import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+import org.dzu.common.exception.ServiceException;
 import org.dzu.common.utils.DateUtils;
 import org.dzu.common.utils.SecurityUtils;
-import org.dzu.common.utils.SecurityUtils;
+import org.dzu.common.utils.StringUtils;
+import org.dzu.system.domain.GoodsOrder;
+import org.dzu.system.domain.Inventory;
+import org.dzu.system.mapper.GoodsOrderMapper;
+import org.dzu.system.mapper.InventoryMapper;
+import org.dzu.system.service.IInventoryService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.dzu.system.mapper.ExWarehouseMapper;
@@ -11,6 +19,8 @@ import org.dzu.system.domain.ExWarehouse;
 import org.dzu.system.service.IExWarehouseService;
  
 import org.dzu.common.constant.DelConstants;
+import org.springframework.transaction.annotation.Transactional;
+
 /**
  * 出库Service业务层处理
  *
@@ -22,6 +32,15 @@ public class ExWarehouseServiceImpl implements IExWarehouseService
 {
     @Autowired
     private ExWarehouseMapper exWarehouseMapper;
+
+    @Autowired
+    private InventoryMapper inventoryMapper;
+
+    @Autowired
+    private IInventoryService inventoryService;
+
+    @Autowired
+    private GoodsOrderMapper goodsOrderMapper;
 
     /**
      * 查询出库
@@ -101,4 +120,35 @@ public class ExWarehouseServiceImpl implements IExWarehouseService
     {
         return exWarehouseMapper.deleteExWarehouseById(id);
     }
+
+    @Override
+    @Transactional
+    public void InventoryToEx(Long InventoryId, Long outAmount, String OrderNo, String outDate) {
+        Inventory inventory = inventoryMapper.selectInventoryById(InventoryId);
+        if (StringUtils.isNull(inventory)) {
+            throw new ServiceException("库存不存在");
+        }
+        if (inventory.getStockNumber() < outAmount) {
+            throw new ServiceException("库存不足");
+        }
+        inventory.setStockNumber(inventory.getStockNumber() - outAmount);
+        // 写回
+        inventoryMapper.updateInventory(inventory);
+
+        // 进行校验
+        QueryWrapper<GoodsOrder> eq = new QueryWrapper<GoodsOrder>().eq("ordersNo", OrderNo).eq("cancelFlag", DelConstants.NODEL);
+        GoodsOrder goodsOrder = goodsOrderMapper.selectOne(eq);
+        if(StringUtils.isNull(goodsOrder)){
+            throw new ServiceException("订单不存在");
+        }
+
+        // 出库
+        ExWarehouse exWarehouse = new ExWarehouse();
+        exWarehouse.setOrdersNo(OrderNo);
+        exWarehouse.setOutAmount(outAmount);
+        exWarehouse.setOutDate(outDate);
+
+        insertExWarehouse(exWarehouse);
+    }
+
 }

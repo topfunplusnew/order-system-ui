@@ -2,12 +2,13 @@ package org.dzu.system.service;
 
 import java.util.List;
 import org.dzu.system.domain.GoodsOrder;
+import org.springframework.transaction.annotation.Transactional;
 
 /**
  * 订单Service接口
  * 
  * @author ml
- * @date 2024-07-29
+ * @date 2024-08-02
  */
 public interface IGoodsOrderService 
 {
@@ -42,6 +43,9 @@ public interface IGoodsOrderService
      * @return 结果
      */
     public int updateGoodsOrder(GoodsOrder goodsOrder);
+
+    @Transactional
+    int adjustGoodsOrder(GoodsOrder goodsOrder);
 
     /**
      * 批量删除订单
