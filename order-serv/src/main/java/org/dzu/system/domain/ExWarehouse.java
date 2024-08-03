@@ -28,7 +28,7 @@ public class ExWarehouse extends BaseEntity
     private Long id;
 
     /** 订单编号（UUID） */
-    @Excel(name = "订单编号", readConverterExp = "U=UID")
+    @Excel(name = "订单编号")
     @TableField(value = "ordersNo")
     @NotNull(message = "订单编号不能为空")
     @Length(max = 64, message = "订单编号长度不能超过64个字符")
@@ -37,7 +37,6 @@ public class ExWarehouse extends BaseEntity
     /** 仓库ID */
     @Excel(name = "仓库ID")
     @TableField(value = "storeHouseid")
-    @Length(max = 64, message = "仓库ID长度不能超过64个字符")
     @NotNull(message = "仓库ID不能为空")
     private Long storeHouseid;
 
@@ -51,7 +50,6 @@ public class ExWarehouse extends BaseEntity
     /** 仓库存储的货物ID */
     @Excel(name = "仓库存储的货物ID")
     @TableField(value = "storeID")
-    @Length(max = 64, message = "仓库存储的货物ID长度不能超过64个字符")
     @NotNull(message = "仓库存储的货物ID不能为空")
     private Long storeID;
 
@@ -64,7 +62,6 @@ public class ExWarehouse extends BaseEntity
     @Excel(name = "出库量", readConverterExp = "片数")
     @TableField(value = "outAmount")
     @NotNull(message = "出库量不能为空")
-    @Length(max=20, message="出库量长度不能超过20个字符")
     private Long outAmount;
 
     /** 删除标记 */

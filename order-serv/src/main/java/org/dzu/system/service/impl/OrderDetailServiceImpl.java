@@ -11,6 +11,7 @@ import org.dzu.system.domain.Inventory;
 import org.dzu.system.domain.OrderDetail;
 import org.dzu.system.mapper.OrderDetailMapper;
 import org.dzu.system.service.ICompanyService;
+import org.dzu.system.service.IExWarehouseService;
 import org.dzu.system.service.IInventoryService;
 import org.dzu.system.service.IOrderDetailService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -34,6 +35,9 @@ public class OrderDetailServiceImpl implements IOrderDetailService {
 
     @Autowired
     private IInventoryService inventoryService;
+
+    @Autowired
+    private IExWarehouseService exWarehouseService;
 
     /**
      * 查询订单详情
@@ -109,6 +113,7 @@ public class OrderDetailServiceImpl implements IOrderDetailService {
                 if (inventory.getStockNumber() > 0 && orderDetail.getPieces() <= inventory.getStockNumber()) {
                     // 仓库存货足够
                     // TODO： 联动出库
+                    exWarehouseService.InventoryToEx(orderDetail.getStoreID(), orderDetail.getPieces(), orderDetail.getOrdersNo(), orderDetail.getAddtime());
                 } else {
                     throw new ServiceException("仓库存货不足，请检查后重试");
                 }
