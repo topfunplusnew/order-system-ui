@@ -55,9 +55,11 @@ public interface IOrderDetailService
 
     /**
      * 删除订单详情信息
-     * 
+     *
      * @param id 订单详情主键
      * @return 结果
      */
     public int deleteOrderDetailById(Long id);
+
+    void backupOrderDetail(String ordersNo);
 }

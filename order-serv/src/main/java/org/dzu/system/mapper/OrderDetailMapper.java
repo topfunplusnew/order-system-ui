@@ -59,4 +59,6 @@ public interface OrderDetailMapper extends BaseMapper<OrderDetail>
      * @return 结果
      */
     public int deleteOrderDetailByIds(Long[] ids);
+
+    int backupOrderDetail(String ordersNo);
 }

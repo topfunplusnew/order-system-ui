@@ -32,7 +32,7 @@ public class GoodsOrder extends BaseEntity
     private Long id;
 
     /** 订单编号（UUID） */
-    @Excel(name = "订单编号", readConverterExp = "U=UID")
+    @Excel(name = "订单编号")
     @TableField(value = "ordersNo")
     @Length(max = 50)
     private String ordersNo;
@@ -246,6 +246,7 @@ public class GoodsOrder extends BaseEntity
 
     /** 订单详情信息 */
     @Valid
+    @TableField(exist = false)
     private List<@Valid OrderDetail> orderDetailList;
 
     public void setId(Long id) 

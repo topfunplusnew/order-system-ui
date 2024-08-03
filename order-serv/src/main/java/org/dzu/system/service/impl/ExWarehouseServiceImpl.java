@@ -136,7 +136,7 @@ public class ExWarehouseServiceImpl implements IExWarehouseService
         inventoryMapper.updateInventory(inventory);
 
         // 进行校验
-        QueryWrapper<GoodsOrder> eq = new QueryWrapper<GoodsOrder>().eq("orderNo", OrderNo).eq("cancelFlag", DelConstants.NODEL);
+        QueryWrapper<GoodsOrder> eq = new QueryWrapper<GoodsOrder>().eq("ordersNo", OrderNo).eq("cancelFlag", DelConstants.NODEL);
         GoodsOrder goodsOrder = goodsOrderMapper.selectOne(eq);
         if(StringUtils.isNull(goodsOrder)){
             throw new ServiceException("订单不存在");

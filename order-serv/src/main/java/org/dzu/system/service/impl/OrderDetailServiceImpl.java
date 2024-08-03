@@ -157,4 +157,9 @@ public class OrderDetailServiceImpl implements IOrderDetailService {
     public int deleteOrderDetailById(Long id) {
         return orderDetailMapper.deleteOrderDetailById(id);
     }
+
+    @Override
+    public void backupOrderDetail(String ordersNo) {
+        orderDetailMapper.backupOrderDetail(ordersNo);
+    }
 }

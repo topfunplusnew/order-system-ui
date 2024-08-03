@@ -2,23 +2,22 @@ package org.dzu.system.service.impl;
 
 import java.util.List;
 
+import org.dzu.common.constant.OrderConstants;
 import org.dzu.common.constant.YesOrNoConstants;
 import org.dzu.common.exception.ServiceException;
 import org.dzu.common.utils.DateUtils;
 import org.dzu.common.utils.SecurityUtils;
 import org.dzu.common.utils.SecurityUtils;
 import org.dzu.common.utils.uuid.UUID;
-import org.dzu.system.domain.BankAccount;
-import org.dzu.system.domain.Company;
+import org.dzu.system.domain.*;
 import org.dzu.system.service.*;
+import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import java.util.ArrayList;
 import org.dzu.common.utils.StringUtils;
 import org.springframework.transaction.annotation.Transactional;
-import org.dzu.system.domain.OrderDetail;
 import org.dzu.system.mapper.GoodsOrderMapper;
-import org.dzu.system.domain.GoodsOrder;
 
 import org.dzu.common.constant.DelConstants;
 /**
@@ -122,7 +121,7 @@ public class GoodsOrderServiceImpl implements IGoodsOrderService
         goodsOrder.setAdjustDate(null);
         // 新增一定不可能被审核
 //        goodsOrder.setA
-        goodsOrder.setCheckState(String.valueOf(YesOrNoConstants.NO_num));
+        goodsOrder.setCheckState(OrderConstants.ORDER_STATUS_AUDIT_NO_PASS);
         goodsOrder.setCheckUserId(null);
         //是否可编辑为是
         goodsOrder.setIsedit(Long.valueOf(YesOrNoConstants.YES_num));
@@ -143,10 +142,17 @@ public class GoodsOrderServiceImpl implements IGoodsOrderService
     @Override
     public int updateGoodsOrder(GoodsOrder goodsOrder)
     {
+        // 备份数据
+        ToBack(goodsOrder);
+
+        // 设置基础数据
         goodsOrder.setUserId(SecurityUtils.getUserId());
         goodsOrder.setUserName(SecurityUtils.getUserTruename());
         goodsOrder.setUpdateTime(DateUtils.getNowDate());
-        goodsOrderMapper.deleteOrderDetailByOrdersNo(goodsOrder.getId());
+
+
+
+        goodsOrderMapper.deleteGoodsOrderById(goodsOrder.getId());
         insertOrderDetail(goodsOrder);
         return goodsOrderMapper.updateGoodsOrder(goodsOrder);
     }
@@ -202,5 +208,24 @@ public class GoodsOrderServiceImpl implements IGoodsOrderService
                 goodsOrderMapper.batchOrderDetail(list);
             }
         }
+    }
+
+    /**
+     * 通过订单来备份订单和订单详情信息到备份表
+     * @param goodsOrder
+     */
+    private void ToBack(GoodsOrder goodsOrder){
+        // 备份订单
+        backupGoodsOrder(goodsOrder);
+
+        // 备份订单详情
+        orderDetailService.backupOrderDetail(goodsOrder.getOrdersNo());
+    }
+
+    private void backupGoodsOrder(GoodsOrder goodsOrder) {
+        GoodsorderBack back = new GoodsorderBack();
+        BeanUtils.copyProperties(goodsOrder, back);
+        back.setId(null);back.setGoodsOrderID(goodsOrder.getId());
+        goodsOrderMapper.backupGoodsOrder(back);
     }
 }

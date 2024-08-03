@@ -284,4 +284,59 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
             #{id}
         </foreach>
     </update>
+
+    <insert id="backupOrderDetail" parameterType="String">
+        INSERT INTO orderDetail_back(orderId, ordersNo, orderDate, supplier, supplierID, customer, customerID, levelID, levelName, countingUnit, height, length, width, pieces, piecesPerPack, packs, price, isIncludeTaxFactory, sundryCost, paymentFactory, paymentUnload, isIncludeTaxSale, payments, erro, tonnage, landFreightPrice, landFreight, seaFreight, freight, otherCost, profit, profitNoTax, actualPieces, paymentsWithSundry, additionalFees, storeHouseID, storeHouseName, storeID, logisticsProfit, customerCommission, isAdjusted, adjustDate,
+                                     cancelFlag, comments, addtime, userId, UserName, update_time)
+        SELECT id AS orderId,
+               ordersNo,
+               orderDate,
+               supplier,
+               supplierID,
+               customer,
+               customerID,
+               levelID,
+               levelName,
+               countingUnit,
+               height,
+               length,
+               width,
+               pieces,
+               piecesPerPack,
+               packs,
+               price,
+               isIncludeTaxFactory,
+               sundryCost,
+               paymentFactory,
+               paymentUnload,
+               isIncludeTaxSale,
+               payments,
+               erro,
+               tonnage,
+               landFreightPrice,
+               landFreight,
+               seaFreight,
+               freight,
+               otherCost,
+               profit,
+               profitNoTax,
+               actualPieces,
+               paymentsWithSundry,
+               additionalFees,
+               storeHouseID,
+               storeHouseName,
+               storeID,
+               logisticsProfit,
+               customerCommission,
+               isAdjusted,
+               adjustDate,
+               cancelFlag,
+               comments,
+               addtime,
+               userId,
+               UserName,
+               update_time
+        FROM orderDetail
+        WHERE ordersNo = #{orderNo}
+    </insert>
 </mapper>
