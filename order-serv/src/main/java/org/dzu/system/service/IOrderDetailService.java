@@ -62,4 +62,6 @@ public interface IOrderDetailService
     public int deleteOrderDetailById(Long id);
 
     void backupOrderDetail(String ordersNo);
+
+    void adjustOrderDetail(String ordersNo);
 }

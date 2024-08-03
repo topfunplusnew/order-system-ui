@@ -177,4 +177,14 @@ public class OrderDetailServiceImpl implements IOrderDetailService {
         orderdetailBackMapper.update(updateInfo, query);
 
     }
+
+    @Override
+    public void adjustOrderDetail(String ordersNo) {
+        // 设置属性为调整
+        OrderDetail update = new OrderDetail();
+        update.setAdjustDate(DateUtils.getNowDate().toString());
+        update.setIsAdjusted(YesOrNoConstants.YES_zh);
+        QueryWrapper<OrderDetail> query = new QueryWrapper<OrderDetail>().eq("ordersNo", ordersNo).eq("cancelFlag", DelConstants.NODEL);
+        orderDetailMapper.update(update, query);
+    }
 }

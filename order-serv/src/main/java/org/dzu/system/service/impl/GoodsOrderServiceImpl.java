@@ -1,5 +1,6 @@
 package org.dzu.system.service.impl;
 
+import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import org.dzu.common.constant.DelConstants;
 import org.dzu.common.constant.OrderConstants;
 import org.dzu.common.constant.YesOrNoConstants;
@@ -10,6 +11,7 @@ import org.dzu.common.utils.StringUtils;
 import org.dzu.common.utils.uuid.UUID;
 import org.dzu.system.domain.*;
 import org.dzu.system.mapper.GoodsOrderMapper;
+import org.dzu.system.mapper.PaymentMapper;
 import org.dzu.system.service.*;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -42,6 +44,8 @@ public class GoodsOrderServiceImpl implements IGoodsOrderService {
     @Autowired
     private IOrderDetailService orderDetailService;
 
+    @Autowired
+    private PaymentMapper paymentMapper;
     /**
      * 查询订单
      *
@@ -116,44 +120,102 @@ public class GoodsOrderServiceImpl implements IGoodsOrderService {
     @Transactional
     @Override
     public int updateGoodsOrder(GoodsOrder goodsOrder) {
+
         // 备份数据
         // 原型复制一份goodsOrder, 因为需要改动数据，防止对现有的进行干扰
         GoodsOrder back = new GoodsOrder();
         BeanUtils.copyProperties(goodsOrder, back);
-        // 本次是修改，不是调整
-        back.setIsedit(Long.valueOf(YesOrNoConstants.YES_num));
         ToBack(back);
 
         // 设置基础数据
-        goodsOrder.setUserId(SecurityUtils.getUserId());
-        goodsOrder.setUserName(SecurityUtils.getUserTruename());
         goodsOrder.setUpdateTime(DateUtils.getNowDate());
 
         // 获取数据库中的旧数据
         GoodsOrder oldOrder = goodsOrderMapper.selectGoodsOrderById(goodsOrder.getId());
-        if (oldOrder == null || oldOrder.getIsedit().equals(YesOrNoConstants.NO_num)) {
+        if (oldOrder == null ) {
             throw new ServiceException("数据库搜索失败,请刷新页面后重试");
         }
+        // 如果可编辑选项为否，不允许修改
+        if(oldOrder.getIsedit().equals(YesOrNoConstants.NO_num)){
+            throw new ServiceException("本订单已不允许修改");
+        }
+
         //  如果距离addtime的时间超过5天，拒绝修改. 先将addtime从字符串转会Date再进行运算
         if (DateUtils.differentDaysByMillisecond(DateUtils.parseDate(oldOrder.getAddtime()), DateUtils.getNowDate()) > 5) {
             throw new ServiceException("订单创建时间超过5天，不允许修改");
         }
 
         // 先校验有没有改动uuid
-        if(StringUtils.equals(oldOrder.getOrdersNo(),goodsOrder.getOrdersNo())){
+        if (StringUtils.equals(oldOrder.getOrdersNo(), goodsOrder.getOrdersNo())) {
             throw new ServiceException("订单号不允许修改");
         }
 
         // 检查依赖的其他表
         Vaildate(goodsOrder);
 
-
-
-        // 本次是修改操作
-        goodsOrder.setIsedit(Long.valueOf(YesOrNoConstants.YES_num));
         goodsOrderMapper.deleteGoodsOrderById(goodsOrder.getId());
         insertOrderDetail(goodsOrder);
         return goodsOrderMapper.updateGoodsOrder(goodsOrder);
+    }
+
+    /**
+     * 调整订单
+     *
+     * @param goodsOrder 订单
+     * @return 结果
+     */
+    @Transactional
+    @Override
+    public int adjustGoodsOrder(GoodsOrder goodsOrder) {
+        // 判断已付费表里面是否有本信息，如果有，则不允许调整
+        if (paymentMapper.selectCount(new QueryWrapper<Payment>().eq("tID", goodsOrder.getId()).eq("tableName", "goodsorder")) > 0) {
+            throw new ServiceException("已付费信息不允许调整");
+        }
+
+
+
+
+
+        // 逻辑需要
+        goodsOrder.setAdjustOrderid(goodsOrder.getId());
+
+
+        // 备份数据
+        // 原型复制一份goodsOrder, 因为需要改动数据，防止对现有的进行干扰
+        GoodsOrder back = new GoodsOrder();
+        BeanUtils.copyProperties(goodsOrder, back);
+        // 本次是调整
+        back.setIsAdjust(YesOrNoConstants.YES_zh);
+        ToBack(back);
+
+        // 设置基础数据
+        goodsOrder.setUpdateTime(DateUtils.getNowDate());
+
+        // 设置调整属性
+        goodsOrder.setIsAdjusted(YesOrNoConstants.YES_zh);
+        goodsOrder.setAdjustDate(DateUtils.getNowDate().toString());
+
+        // 检查依赖的其他表
+        Vaildate(goodsOrder);
+
+        //设置原来的订单和订单详情为调整单
+        goodsOrder.setIsedit(Long.valueOf(YesOrNoConstants.NO_num));
+        goodsOrderMapper.updateGoodsOrder(goodsOrder);
+        orderDetailService.adjustOrderDetail(goodsOrder.getOrdersNo());
+
+        // 拼接调整数据插入新的订单和订单详情
+        GoodsOrder newInfo = new GoodsOrder();
+        BeanUtils.copyProperties(goodsOrder, newInfo);
+        newInfo.setIsAdjust(YesOrNoConstants.YES_zh);
+        newInfo.setAdjustOrderid(goodsOrder.getId());
+        newInfo.setIsAdjust(YesOrNoConstants.YES_zh);
+        newInfo.setAdjustDate(DateUtils.getNowDate().toString());
+        newInfo.setIsedit(Long.valueOf(YesOrNoConstants.YES_num));
+
+        // 先插入主表后插入子表
+        int rows = goodsOrderMapper.insertGoodsOrder(newInfo);
+        insertOrderDetail(newInfo);
+        return rows;
     }
 
     /**
