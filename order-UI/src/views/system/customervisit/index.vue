@@ -1,33 +1,33 @@
 <template>
   <div class="app-container">
     <el-form :model="queryParams" ref="queryForm" size="small" :inline="true" v-show="showSearch" label-width="68px">
-      <el-form-item label="客户" prop="province">
+      <el-form-item label="客户" prop="customer">
         <el-input
-          v-model="queryParams.province"
+          v-model="queryParams.customer"
           placeholder="请输入客户姓名"
           clearable
           @keyup.enter.native="handleQuery"
         />
       </el-form-item>
-      <el-form-item label="区域" prop="city">
+      <el-form-item label="区域" prop="region">
         <el-input
-          v-model="queryParams.city"
+          v-model="queryParams.region"
           placeholder="请输入区域"
           clearable
           @keyup.enter.native="handleQuery"
         />
       </el-form-item>
-      <el-form-item label="日期" prop="county">
+      <el-form-item label="日期" prop="submittime">
         <el-input
-          v-model="queryParams.county"
+          v-model="queryParams.submittime"
           placeholder="请输入日期"
           clearable
           @keyup.enter.native="handleQuery"
         />
       </el-form-item>
-      <el-form-item label="姓名" prop="equipment">
+      <el-form-item label="姓名" prop="personnel">
         <el-input
-          v-model="queryParams.equipment"
+          v-model="queryParams.personnel"
           placeholder="请输入姓名"
           clearable
           @keyup.enter.native="handleQuery"
@@ -90,6 +90,8 @@
         >导出</el-button>
       </el-col>
       <right-toolbar :showSearch.sync="showSearch" @queryTable="getList"></right-toolbar>
+
+
     </el-row>
 
     <el-table v-loading="loading" :data="CustomerVisitList" @selection-change="handleSelectionChange">
@@ -191,7 +193,7 @@
           <el-input v-model="form.comments" placeholder="请输入备注" />
         </el-form-item>
         <el-form-item label="提交时间" prop="submittime">
-          <el-input v-model="form.addtime" placeholder="请输入添加时间" />
+          <el-input v-model="form.submittime" placeholder="请输入添加时间" />
         </el-form-item>
 
       </el-form>
@@ -247,7 +249,7 @@ export default {
         colorGlassConsumption: null,
         specialGlassConsumption: null,
         comments: null,
-        addtime: null,
+        submittime: null,
         userId: null,
         UserName: null,
         visitDate: null,
@@ -300,7 +302,7 @@ export default {
         colorGlassConsumption: null,
         specialGlassConsumption: null,
         comments: null,
-        addtime: null,
+        submittime: null,
         userId: null,
         UserName: null,
         updateTime: null,
