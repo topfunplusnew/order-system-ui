@@ -163,7 +163,7 @@
         >导出
         </el-button>-->
 <!--      </el-col>-->
-      <right-toolbar :showSearch.sync="showSearch" @queryTable="getList">
+      <right-toolbar :showSearch.sync="showSearch" @queryTable="getList" :columns="columns">
         <template v-slot:print>
           <el-col :span="1.5">
             <el-button
@@ -171,6 +171,7 @@
               icon="el-icon-printer"
               size="mini"
               @click="printHTML"
+              v-hasPermi="['system:oilcard:export']"
             >
             </el-button>
           </el-col>
@@ -183,7 +184,7 @@
               icon="el-icon-folder-opened"
               size="mini"
               @click="handleExport"
-              v-hasPermi="['system:company:export']"
+              v-hasPermi="['system:oilcard:export']"
             >
             </el-button>
           </el-col>
@@ -342,6 +343,17 @@ export default {
         pageNum: 1,
         pageSize: 10,
         oilCardNo: null,
+        useDate:null,
+        carNo:null,
+        destination:null,
+        rechargeMoney:null,
+        startCardSurplus:null,
+        toPlusCardMoney:null,
+        refuelingNumber:null,
+        unitPrice:null,
+        refuelingMoney:null,
+        isTicket:null,
+        endCarState:null,
         oilType: null,
         moneyAmount: null,
         comments: null,
@@ -375,6 +387,23 @@ export default {
 
   created() {
     this.getList();
+    this.getOilCardInfo();
+    if (localStorage.getItem('oilcard-columns') === 'null'
+      || !localStorage.getItem('oilcard-columns')) {
+      //设置localStorage
+      localStorage.setItem("oilcard-columns", JSON.stringify(this.columns))
+    } else {
+      this.columns = JSON.parse(localStorage.getItem('oilcard-columns'));
+    }
+  },
+  //展示与隐藏
+  watch: {
+    columns: {
+      handler: (newVal) => {
+        localStorage.setItem("oilcard-columns", JSON.stringify(newVal))
+      },
+      deep: true,
+    }
   },
   methods: {
     /** 查询加油卡信息列表 */
@@ -396,6 +425,17 @@ export default {
       this.form = {
         id: null,
         oilCardNo: null,
+        useDate:null,
+        carNo:null,
+        destination:null,
+        rechargeMoney:null,
+        startCardSurplus:null,
+        toPlusCardMoney:null,
+        refuelingNumber:null,
+        unitPrice:null,
+        refuelingMoney:null,
+        isTicket:null,
+        endCarState:null,
         oilType: null,
         moneyAmount: null,
         comments: null,
@@ -407,6 +447,7 @@ export default {
       };
       this.resetForm("form");
     },
+
 
 
     /** 搜索按钮操作 */
