@@ -6,7 +6,7 @@ import com.baomidou.mybatisplus.annotation.TableName;
 import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.apache.commons.lang3.builder.ToStringStyle;
 import org.dzu.common.annotation.Excel;
-import org.dzu.common.annotation.OnlyZeroOrOne;
+import org.dzu.common.annotation.FlagOnlyZeroOrOne;
 import org.dzu.common.core.domain.BaseEntity;
 import org.hibernate.validator.constraints.Length;
 
@@ -124,7 +124,7 @@ public class ProductLevel extends BaseEntity {
     /**
      * 删除标记
      */
-    @OnlyZeroOrOne
+    @FlagOnlyZeroOrOne
     @TableField("delFlag")
     private Long delFlag;
 

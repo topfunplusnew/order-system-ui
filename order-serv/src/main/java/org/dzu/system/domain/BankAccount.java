@@ -10,7 +10,7 @@ import org.dzu.common.annotation.Excel;
 import org.dzu.common.core.domain.BaseEntity;
 
 import org.dzu.common.annotation.DecimalMaxDigits;
-import org.dzu.common.annotation.OnlyZeroOrOne;
+import org.dzu.common.annotation.FlagOnlyZeroOrOne;
 import org.hibernate.validator.constraints.Length;
 
 import javax.validation.constraints.NotNull;
@@ -41,7 +41,7 @@ public class BankAccount extends BaseEntity
 
     /** 对应公司ID */
     @Excel(name = "对应公司ID")
-    @Length(max = 50, message = "对应公司ID的字符长度不允许超过50")
+    @Length(max = 11, message = "对应公司ID的字符长度不允许超过11")
     @NotNull(message = "对应公司ID不能为空")
     @TableField("companyId")
     private Long companyId;
@@ -85,7 +85,7 @@ public class BankAccount extends BaseEntity
     private String comments;
 
     /** 删除标记 */
-    @OnlyZeroOrOne
+    @FlagOnlyZeroOrOne
     @TableField("delFlag")
     private Long delFlag;
 

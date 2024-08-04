@@ -8,7 +8,7 @@ import org.dzu.common.core.domain.BaseEntity;
 import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableName;
-import org.dzu.common.annotation.OnlyZeroOrOne;
+import org.dzu.common.annotation.FlagOnlyZeroOrOne;
 import org.hibernate.validator.constraints.Length;
 
 import javax.validation.constraints.NotNull;
@@ -30,14 +30,14 @@ public class OilCardConsume extends BaseEntity
 
     /** 出差编号UUID */
     @Excel(name = "出差编号UUID")
-    @Length(min = 0, max = 64, message = "出差编号UUID长度不能超过 64 个字符")
+    @Length(min = 0, max = 30, message = "出差编号UUID长度不能超过 30 个字符")
     @NotNull(message = "出差编号UUID不能为空")
     @TableField(value = "bTripId")
     private String bTripId;
 
     /** 加油卡卡号 */
     @Excel(name = "加油卡卡号")
-    @Length(min = 0, max = 64, message = "加油卡卡号长度不能超过 64 个字符")
+    @Length(min = 0, max = 55, message = "加油卡卡号长度不能超过 55 个字符")
     @NotNull(message = "加油卡卡号不能为空")
     @TableField(value = "oilCardNo")
     private String oilCardNo;
@@ -45,14 +45,14 @@ public class OilCardConsume extends BaseEntity
     /** 使用加油卡时间 */
     @Excel(name = "使用加油卡时间")
     @NotNull(message = "使用加油卡时间不能为空")
-    @Length(min = 0, max = 4, message = "使用加油卡时间长度不能超过 4 个字符")
+    @Length(min = 0, max = 40, message = "使用加油卡时间长度不能超过 40 个字符")
     @TableField(value = "useDate")
     private String useDate;
 
     /** 使用加油卡车辆车牌号 */
     @Excel(name = "使用加油卡车辆车牌号")
     @NotNull(message = "使用加油卡车辆车牌号不能为空")
-    @Length(min = 0, max = 64, message = "使用加油卡车辆车牌号长度不能超过 64 个字符")
+    @Length(min = 0, max = 55, message = "使用加油卡车辆车牌号长度不能超过 55个字符")
     @TableField(value = "carNo")
     private String carNo;
 
@@ -63,7 +63,7 @@ public class OilCardConsume extends BaseEntity
     private String startCardSurplus;
 
     /** 加油量（升） */
-    @Excel(name = "加油量", readConverterExp = "升=")
+    @Excel(name = "加油量", readConverterExp = "升")
     @TableField(value = "refuelingNumber")
     @DecimalMaxDigits
     private String refuelingNumber;
@@ -119,7 +119,7 @@ public class OilCardConsume extends BaseEntity
     private String UserName;
 
     /** 删除标记 */
-    @OnlyZeroOrOne
+    @FlagOnlyZeroOrOne
     @TableField(value = "delFlag")
     private Long delFlag;
 

@@ -14,7 +14,7 @@
       </el-form-item>
     </el-form>
     <el-row>
-      <el-col :span="4">
+      <el-col :span="5">
         <el-tree :data="dict.type.order_product_categories" :props="defaultProps"
                  @node-click="handleNodeClick">
            <span class="custom-tree-node" slot-scope="{ node, data }">
@@ -24,7 +24,7 @@
            </span>
         </el-tree>
       </el-col>
-      <el-col :span="20">
+      <el-col :span="19">
         <el-row :gutter="10" class="mb8">
           <el-col :span="1.5">
             <el-button icon="el-icon-refresh" size="mini" @click="resetQuery">刷新</el-button>
@@ -77,14 +77,14 @@
         <el-table border v-horizontal-scroll="'always'" v-loading="loading" :data="productLevelList"
                   @selection-change="handleSelectionChange" id="printBox">
           <el-table-column label="id" align="center" prop="id"/>
-          <el-table-column label="级别编码" align="center" prop="levelNo"/>
-          <el-table-column label="级别名称" align="center" prop="levelName"/>
-          <el-table-column label="分类编号" align="center" prop="categoryNo"/>
-          <el-table-column label="分类名称" align="center" prop="categoryName"/>
-          <el-table-column label="厚度" align="center" prop="height"/>
-          <el-table-column label="长度" align="center" prop="length"/>
-          <el-table-column label="宽度" align="center" prop="width"/>
-          <el-table-column label="吨位" align="center" prop="tonnage"/>
+          <el-table-column label="级别编码" align="center" prop="levelNo" v-if="columns[0].visible"/>
+          <el-table-column label="级别名称" align="center" prop="levelName" v-if="columns[1].visible"/>
+          <el-table-column label="分类编号" align="center" prop="categoryNo" v-if="columns[2].visible"/>
+          <el-table-column label="分类名称" align="center" prop="categoryName" v-if="columns[3].visible"/>
+          <el-table-column label="厚度" align="center" prop="height" v-if="columns[4].visible"/>
+          <el-table-column label="长度" align="center" prop="length" v-if="columns[5].visible"/>
+          <el-table-column label="宽度" align="center" prop="width" v-if="columns[6].visible"/>
+          <el-table-column label="吨位" align="center" prop="tonnage" v-if="columns[7].visible"/>
           <el-table-column label="操作" align="center" class-name="small-padding fixed-width" fixed="right">
             <template slot-scope="scope">
               <el-button
@@ -226,6 +226,48 @@
        <el-button @click="addProductLevelOpen = false">取 消</el-button>
       </span>
     </el-dialog>
+
+
+    <!-- 添加或修改收款信息对话框 -->
+    <el-dialog :title="title" :visible.sync="open" width="500px" append-to-body>
+      <el-form ref="form" :model="form" :rules="rules" label-width="80px">
+        <el-form-item label="级别编码" prop="levelNo">
+          <el-input v-model="form.levelNo" placeholder="请输入支付类型"/>
+        </el-form-item>
+        <el-form-item label="级别名称" prop="levelName">
+          <el-input v-model="form.levelName" placeholder="请输入收款编号"/>
+        </el-form-item>
+        <el-form-item label="分类编号" prop="tableName">
+          <el-input v-model="form.categoryNo" placeholder="请输入对应的表名"/>
+        </el-form-item>
+        <el-form-item label="分类名称" prop="categoryName">
+          <el-select v-model="form.categoryName" placeholder="请选择分类名称">
+            <el-option
+              v-for="item in dict.type.order_product_categories"
+              :key="item.value"
+              :label="item.label"
+              :value="item.label">
+            </el-option>
+          </el-select>
+        </el-form-item>
+        <el-form-item label="厚度" prop="height">
+          <el-input v-model="form.height" placeholder="请输入厚度"/>
+        </el-form-item>
+        <el-form-item label="宽度" prop="width">
+          <el-input v-model="form.width" placeholder="请输入宽度"/>
+        </el-form-item>
+        <el-form-item label="长度" prop="length">
+          <el-input v-model="form.length" placeholder="请输入长度"/>
+        </el-form-item>
+        <el-form-item label="吨位" prop="tonnage">
+          <el-input v-model="form.tonnage" placeholder="请输入吨位"/>
+        </el-form-item>
+      </el-form>
+      <div slot="footer" class="dialog-footer">
+        <el-button type="primary" @click="submitForm">确 定</el-button>
+        <el-button @click="cancel">取 消</el-button>
+      </div>
+    </el-dialog>
   </div>
 </template>
 
@@ -285,15 +327,14 @@ export default {
       rules: {},
       test: [],
       columns: [
-        {key: 0, label: `客户`, visible: true},
-        {key: 1, label: `老板姓名`, visible: true},
-        {key: 2, label: `公司名称`, visible: true},
-        {key: 3, label: `老板电话`, visible: true},
-        {key: 4, label: `电话`, visible: true},
-        {key: 5, label: `地址`, visible: true},
-        {key: 6, label: `区域`, visible: true},
-        {key: 7, label: `销售经理`, visible: true},
-        {key: 8, label: `备注`, visible: true},
+        {key: 0, label: `级别编码`, visible: true},
+        {key: 1, label: `级别名称`, visible: true},
+        {key: 2, label: `分类编号`, visible: true},
+        {key: 3, label: `分类名称`, visible: true},
+        {key: 4, label: `厚度`, visible: true},
+        {key: 5, label: `长度`, visible: true},
+        {key: 6, label: `宽度`, visible: true},
+        {key: 7, label: `吨位`, visible: true},
       ],
       //产品分类信息
       categoryList: [],
@@ -331,6 +372,22 @@ export default {
   },
   created() {
     this.getList();
+    if (localStorage.getItem('productlevel-columns') === 'null'
+      || !localStorage.getItem('productlevel-columns')) {
+      //设置localStorage
+      localStorage.setItem("productlevel-columns", JSON.stringify(this.columns))
+    } else {
+      this.columns = JSON.parse(localStorage.getItem('productlevel-columns'));
+    }
+  },
+  //展示与隐藏
+  watch: {
+    columns: {
+      handler: (newVal) => {
+        localStorage.setItem("productlevel-columns", JSON.stringify(newVal))
+      },
+      deep: true,
+    }
   },
   methods: {
     //添加产品分类信息
@@ -391,6 +448,9 @@ export default {
         }).catch(err => {
         this.$message.error("添加失败，请重试:" + err.msg)
       })
+
+      //刷新表格
+      this.getList()
     },
     //初始化字典对象中的信息
     onDictReady(dict) {

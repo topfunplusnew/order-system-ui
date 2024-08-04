@@ -26,7 +26,7 @@ import org.dzu.common.core.page.TableDataInfo;
  * 订单Controller
  * 
  * @author ml
- * @date 2024-07-29
+ * @date 2024-08-02
  */
 @RestController
 @RequestMapping("/system/goodsOrder")
@@ -40,7 +40,7 @@ public class GoodsOrderController extends BaseController
      */
     @PreAuthorize("@ss.hasPermi('system:goodsOrder:list')")
     @GetMapping("/list")
-    public TableDataInfo list(GoodsOrder goodsOrder)
+    public TableDataInfo list( GoodsOrder goodsOrder)
     {
         startPage();
         List<GoodsOrder> list = goodsOrderService.selectGoodsOrderList(goodsOrder);
@@ -91,6 +91,19 @@ public class GoodsOrderController extends BaseController
     {
         return toAjax(goodsOrderService.updateGoodsOrder(goodsOrder));
     }
+
+
+    /**
+     * 调整订单
+     */
+    @PreAuthorize("@ss.hasPermi('system:goodsOrder:edit')")
+    @Log(title = "订单", businessType = BusinessType.UPDATE)
+    @PutMapping("/adjust")
+    public AjaxResult adjust(@Validated @RequestBody GoodsOrder goodsOrder)
+    {
+        return toAjax(goodsOrderService.adjustGoodsOrder(goodsOrder));
+    }
+
 
     /**
      * 删除订单

@@ -2,6 +2,7 @@ package org.dzu.system.service;
 
 import java.util.List;
 import org.dzu.system.domain.ExWarehouse;
+import org.springframework.transaction.annotation.Transactional;
 
 /**
  * 出库Service接口
@@ -58,4 +59,9 @@ public interface IExWarehouseService
      * @return 结果
      */
     public int deleteExWarehouseById(Long id);
+
+    @Transactional
+    void InventoryToEx(Long InventoryId, Long outAmount, String OrderNo, String outDate);
+
+    int deleteExWarehouseByOrderNo(String detail);
 }

@@ -8,13 +8,12 @@ import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableName;
 import org.dzu.common.annotation.DecimalMaxDigits;
-import org.dzu.common.annotation.OnlyZeroOrOne;
+import org.dzu.common.annotation.FlagOnlyZeroOrOne;
 import org.hibernate.validator.constraints.Length;
 
 import javax.validation.constraints.Max;
 import javax.validation.constraints.Min;
 import javax.validation.constraints.NotNull;
-import javax.validation.constraints.Null;
 
 /**
  * 收款信息对象 receiveMoney
@@ -33,7 +32,6 @@ public class ReceiveMoney extends BaseEntity
 
     /** 收款编号（UUID） */
     @Excel(name = "收款编号")
-    @NotNull(message = "收款编号不能为空")
     @TableField(value = "receiveNO")
     @Length(max = 50, message = "收款编号的字符长度不允许超过50")
     private String receiveNO;
@@ -150,7 +148,7 @@ public class ReceiveMoney extends BaseEntity
     private String UserName;
 
     /** 删除标记 */
-    @OnlyZeroOrOne
+    @FlagOnlyZeroOrOne
     @TableField(value = "delFlag")
     private Long delFlag;
 

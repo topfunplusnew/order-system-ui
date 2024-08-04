@@ -59,4 +59,6 @@ public interface OilRechargeMapper extends BaseMapper<OilRecharge>
      * @return 结果
      */
     public int deleteOilRechargeByIds(Long[] ids);
+
+
 }

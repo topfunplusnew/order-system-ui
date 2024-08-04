@@ -1,108 +1,777 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <!DOCTYPE mapper
-PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
-"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="org.dzu.system.mapper.GoodsOrderMapper">
-    
     <resultMap type="GoodsOrder" id="GoodsOrderResult">
-        <result property="id"    column="id"    />
-        <result property="ordersNo"    column="ordersNo"    />
-        <result property="orderDate"    column="orderDate"    />
-        <result property="customer"    column="customer"    />
-        <result property="customerID"    column="customerID"    />
-        <result property="landCarID"    column="landCarID"    />
-        <result property="landCarNo"    column="landCarNo"    />
-        <result property="landDriverTel"    column="landDriverTel"    />
-        <result property="landDriverName"    column="landDriverName"    />
-        <result property="seaCarID"    column="seaCarID"    />
-        <result property="seaCarNo"    column="seaCarNo"    />
-        <result property="seaDriverTel"    column="seaDriverTel"    />
-        <result property="seaDriverName"    column="seaDriverName"    />
-        <result property="checkUserId"    column="checkUserId"    />
-        <result property="checkState"    column="checkState"    />
-        <result property="invoiceState"    column="invoiceState"    />
-        <result property="path"    column="path"    />
-        <result property="PaymentState"    column="PaymentState"    />
-        <result property="landBankName"    column="landBankName"    />
-        <result property="landBankNo"    column="landBankNo"    />
-        <result property="seaBankName"    column="seaBankName"    />
-        <result property="seaBankNo"    column="seaBankNo"    />
-        <result property="receiveProof"    column="receiveProof"    />
-        <result property="saleManager"    column="saleManager"    />
-        <result property="fleet"    column="fleet"    />
-        <result property="isAdjusted"    column="isAdjusted"    />
-        <result property="adjustDate"    column="adjustDate"    />
-        <result property="isAdjust"    column="isAdjust"    />
-        <result property="adjustOrderid"    column="adjustOrderid"    />
-        <result property="isedit"    column="isedit"    />
-        <result property="customerIsInvoice"    column="customerIsInvoice"    />
-        <result property="isSupplierInvoice"    column="isSupplierInvoice"    />
-        <result property="cancelFlag"    column="cancelFlag"    />
-        <result property="comments"    column="comments"    />
-        <result property="addtime"    column="addtime"    />
-        <result property="userId"    column="userId"    />
-        <result property="UserName"    column="UserName"    />
-        <result property="updateTime"    column="update_time"    />
+        <result property="id" column="id"/>
+        <result property="ordersNo" column="ordersNo"/>
+        <result property="orderDate" column="orderDate"/>
+        <result property="customer" column="customer"/>
+        <result property="customerID" column="customerID"/>
+        <result property="landCarID" column="landCarID"/>
+        <result property="landCarNo" column="landCarNo"/>
+        <result property="landDriverTel" column="landDriverTel"/>
+        <result property="landDriverName" column="landDriverName"/>
+        <result property="seaCarID" column="seaCarID"/>
+        <result property="seaCarNo" column="seaCarNo"/>
+        <result property="seaDriverTel" column="seaDriverTel"/>
+        <result property="seaDriverName" column="seaDriverName"/>
+        <result property="checkUserId" column="checkUserId"/>
+        <result property="checkState" column="checkState"/>
+        <result property="invoiceState" column="invoiceState"/>
+        <result property="path" column="path"/>
+        <result property="PaymentState" column="PaymentState"/>
+        <result property="landBankName" column="landBankName"/>
+        <result property="landBankNo" column="landBankNo"/>
+        <result property="seaBankName" column="seaBankName"/>
+        <result property="seaBankNo" column="seaBankNo"/>
+        <result property="receiveProof" column="receiveProof"/>
+        <result property="saleManager" column="saleManager"/>
+        <result property="fleet" column="fleet"/>
+        <result property="isAdjusted" column="isAdjusted"/>
+        <result property="adjustDate" column="adjustDate"/>
+        <result property="isAdjust" column="isAdjust"/>
+        <result property="adjustOrderid" column="adjustOrderid"/>
+        <result property="isedit" column="isedit"/>
+        <result property="customerIsInvoice" column="customerIsInvoice"/>
+        <result property="isSupplierInvoice" column="isSupplierInvoice"/>
+        <result property="cancelFlag" column="cancelFlag"/>
+        <result property="comments" column="comments"/>
+        <result property="addtime" column="addtime"/>
+        <result property="userId" column="userId"/>
+        <result property="UserName" column="UserName"/>
+        <result property="updateTime" column="update_time"/>
+    </resultMap>
+
+    <resultMap id="GoodsOrderOrderDetailResult" type="GoodsOrder" extends="GoodsOrderResult">
+        <collection property="orderDetailList" ofType="OrderDetail" column="ordersNo" select="selectOrderDetailList"/>
+    </resultMap>
+
+    <resultMap type="OrderDetail" id="OrderDetailResult">
+        <result property="id" column="id"/>
+        <result property="ordersNo" column="ordersNo"/>
+        <result property="orderDate" column="orderDate"/>
+        <result property="supplier" column="supplier"/>
+        <result property="supplierID" column="supplierID"/>
+        <result property="customer" column="customer"/>
+        <result property="customerID" column="customerID"/>
+        <result property="levelID" column="levelID"/>
+        <result property="levelName" column="levelName"/>
+        <result property="countingUnit" column="countingUnit"/>
+        <result property="height" column="height"/>
+        <result property="length" column="length"/>
+        <result property="width" column="width"/>
+        <result property="pieces" column="pieces"/>
+        <result property="piecesPerPack" column="piecesPerPack"/>
+        <result property="packs" column="packs"/>
+        <result property="price" column="price"/>
+        <result property="isIncludeTaxFactory" column="isIncludeTaxFactory"/>
+        <result property="sundryCost" column="sundryCost"/>
+        <result property="paymentFactory" column="paymentFactory"/>
+        <result property="paymentUnload" column="paymentUnload"/>
+        <result property="isIncludeTaxSale" column="isIncludeTaxSale"/>
+        <result property="payments" column="payments"/>
+        <result property="erro" column="erro"/>
+        <result property="tonnage" column="tonnage"/>
+        <result property="landFreightPrice" column="landFreightPrice"/>
+        <result property="landFreight" column="landFreight"/>
+        <result property="seaFreight" column="seaFreight"/>
+        <result property="freight" column="freight"/>
+        <result property="otherCost" column="otherCost"/>
+        <result property="profit" column="profit"/>
+        <result property="profitNoTax" column="profitNoTax"/>
+        <result property="actualPieces" column="actualPieces"/>
+        <result property="paymentsWithSundry" column="paymentsWithSundry"/>
+        <result property="additionalFees" column="additionalFees"/>
+        <result property="storeHouseID" column="storeHouseID"/>
+        <result property="storeHouseName" column="storeHouseName"/>
+        <result property="storeID" column="storeID"/>
+        <result property="logisticsProfit" column="logisticsProfit"/>
+        <result property="customerCommission" column="customerCommission"/>
+        <result property="isAdjusted" column="isAdjusted"/>
+        <result property="adjustDate" column="adjustDate"/>
+        <result property="cancelFlag" column="cancelFlag"/>
+        <result property="comments" column="comments"/>
+        <result property="addtime" column="addtime"/>
+        <result property="userId" column="userId"/>
+        <result property="UserName" column="UserName"/>
+        <result property="updateTime" column="update_time"/>
     </resultMap>
 
 
- 
-
     <sql id="selectGoodsOrderVo">
-        select id, ordersNo, orderDate, customer, customerID, landCarID, landCarNo, landDriverTel, landDriverName, seaCarID, seaCarNo, seaDriverTel, seaDriverName, checkUserId, checkState, invoiceState, path, PaymentState, landBankName, landBankNo, seaBankName, seaBankNo, receiveProof, saleManager, fleet, isAdjusted, adjustDate, isAdjust, adjustOrderid, isedit, customerIsInvoice, isSupplierInvoice, cancelFlag, comments, addtime, userId, UserName, update_time from goodsOrder
+        select id,
+               ordersNo,
+               orderDate,
+               customer,
+               customerID,
+               landCarID,
+               landCarNo,
+               landDriverTel,
+               landDriverName,
+               seaCarID,
+               seaCarNo,
+               seaDriverTel,
+               seaDriverName,
+               checkUserId,
+               checkState,
+               invoiceState,
+               path,
+               PaymentState,
+               landBankName,
+               landBankNo,
+               seaBankName,
+               seaBankNo,
+               receiveProof,
+               saleManager,
+               fleet,
+               isAdjusted,
+               adjustDate,
+               isAdjust,
+               adjustOrderid,
+               isedit,
+               customerIsInvoice,
+               isSupplierInvoice,
+               cancelFlag,
+               comments,
+               addtime,
+               userId,
+               UserName,
+               update_time
+        from goodsOrder
     </sql>
 
     <select id="selectGoodsOrderList" parameterType="GoodsOrder" resultMap="GoodsOrderResult">
         <include refid="selectGoodsOrderVo"/>
-        <where>  
-            <if test="ordersNo != null  and ordersNo != ''"> and ordersNo = #{ordersNo}</if>
-            <if test="orderDate != null  and orderDate != ''"> and orderDate = #{orderDate}</if>
-            <if test="customer != null  and customer != ''"> and customer = #{customer}</if>
-            <if test="customerID != null "> and customerID = #{customerID}</if>
-            <if test="landCarID != null "> and landCarID = #{landCarID}</if>
-            <if test="landCarNo != null  and landCarNo != ''"> and landCarNo = #{landCarNo}</if>
-            <if test="landDriverTel != null  and landDriverTel != ''"> and landDriverTel = #{landDriverTel}</if>
-            <if test="landDriverName != null  and landDriverName != ''"> and landDriverName like concat('%', #{landDriverName}, '%')</if>
-            <if test="seaCarID != null "> and seaCarID = #{seaCarID}</if>
-            <if test="seaCarNo != null  and seaCarNo != ''"> and seaCarNo = #{seaCarNo}</if>
-            <if test="seaDriverTel != null  and seaDriverTel != ''"> and seaDriverTel = #{seaDriverTel}</if>
-            <if test="seaDriverName != null  and seaDriverName != ''"> and seaDriverName like concat('%', #{seaDriverName}, '%')</if>
-            <if test="checkUserId != null "> and checkUserId = #{checkUserId}</if>
-            <if test="checkState != null  and checkState != ''"> and checkState = #{checkState}</if>
-            <if test="invoiceState != null  and invoiceState != ''"> and invoiceState = #{invoiceState}</if>
-            <if test="path != null  and path != ''"> and path = #{path}</if>
-            <if test="PaymentState != null  and PaymentState != ''"> and PaymentState = #{PaymentState}</if>
-            <if test="landBankName != null  and landBankName != ''"> and landBankName like concat('%', #{landBankName}, '%')</if>
-            <if test="landBankNo != null  and landBankNo != ''"> and landBankNo = #{landBankNo}</if>
-            <if test="seaBankName != null  and seaBankName != ''"> and seaBankName like concat('%', #{seaBankName}, '%')</if>
-            <if test="seaBankNo != null  and seaBankNo != ''"> and seaBankNo = #{seaBankNo}</if>
-            <if test="receiveProof != null  and receiveProof != ''"> and receiveProof = #{receiveProof}</if>
-            <if test="saleManager != null  and saleManager != ''"> and saleManager = #{saleManager}</if>
-            <if test="fleet != null  and fleet != ''"> and fleet = #{fleet}</if>
-            <if test="isAdjusted != null  and isAdjusted != ''"> and isAdjusted = #{isAdjusted}</if>
-            <if test="adjustDate != null  and adjustDate != ''"> and adjustDate = #{adjustDate}</if>
-            <if test="isAdjust != null  and isAdjust != ''"> and isAdjust = #{isAdjust}</if>
-            <if test="adjustOrderid != null "> and adjustOrderid = #{adjustOrderid}</if>
-            <if test="isedit != null "> and isedit = #{isedit}</if>
-            <if test="customerIsInvoice != null "> and customerIsInvoice = #{customerIsInvoice}</if>
-            <if test="isSupplierInvoice != null "> and isSupplierInvoice = #{isSupplierInvoice}</if>
+        <where>
+
+<!--            前端传入两个时间戳，在这里做范围匹配-->
+            <if test="orderDateStart != null and orderDateStart != '' and orderDateEnd != null and orderDateEnd != ''">
+<!--                    需要注意的是时间都是时间戳形式的字符串-->
+                and orderDate between #{orderDateStart} and #{orderDateEnd}
+            </if>
+
+            <if test="ordersNo != null  and ordersNo != ''">
+                and ordersNo = #{ordersNo}
+            </if>
+            <if test="customer != null  and customer != ''">
+                and customer = #{customer}
+            </if>
+            <if test="customerID != null">
+                and customerID = #{customerID}
+            </if>
+            <if test="landCarID != null">
+                and landCarID = #{landCarID}
+            </if>
+            <if test="landCarNo != null  and landCarNo != ''">
+                and landCarNo = #{landCarNo}
+            </if>
+            <if test="landDriverTel != null  and landDriverTel != ''">
+                and landDriverTel = #{landDriverTel}
+            </if>
+            <if test="landDriverName != null  and landDriverName != ''">
+                and landDriverName like concat('%', #{landDriverName}, '%')
+            </if>
+            <if test="seaCarID != null">
+                and seaCarID = #{seaCarID}
+            </if>
+            <if test="seaCarNo != null  and seaCarNo != ''">
+                and seaCarNo = #{seaCarNo}
+            </if>
+            <if test="seaDriverTel != null  and seaDriverTel != ''">
+                and seaDriverTel = #{seaDriverTel}
+            </if>
+            <if test="seaDriverName != null  and seaDriverName != ''">
+                and seaDriverName like concat('%', #{seaDriverName}, '%')
+            </if>
+            <if test="checkUserId != null">
+                and checkUserId = #{checkUserId}
+            </if>
+            <if test="checkState != null  and checkState != ''">
+                and checkState = #{checkState}
+            </if>
+            <if test="invoiceState != null  and invoiceState != ''">
+                and invoiceState = #{invoiceState}
+            </if>
+            <if test="path != null  and path != ''">
+                and path = #{path}
+            </if>
+            <if test="PaymentState != null  and PaymentState != ''">
+                and PaymentState = #{PaymentState}
+            </if>
+            <if test="landBankName != null  and landBankName != ''">
+                and landBankName like concat('%', #{landBankName}, '%')
+            </if>
+            <if test="landBankNo != null  and landBankNo != ''">
+                and landBankNo = #{landBankNo}
+            </if>
+            <if test="seaBankName != null  and seaBankName != ''">
+                and seaBankName like concat('%', #{seaBankName}, '%')
+            </if>
+            <if test="seaBankNo != null  and seaBankNo != ''">
+                and seaBankNo = #{seaBankNo}
+            </if>
+            <if test="receiveProof != null  and receiveProof != ''">
+                and receiveProof = #{receiveProof}
+            </if>
+            <if test="saleManager != null  and saleManager != ''">
+                and saleManager = #{saleManager}
+            </if>
+            <if test="fleet != null  and fleet != ''">
+                and fleet = #{fleet}
+            </if>
+            <if test="isAdjusted != null  and isAdjusted != ''">
+                and isAdjusted = #{isAdjusted}
+            </if>
+            <if test="adjustDate != null  and adjustDate != ''">
+                and adjustDate = #{adjustDate}
+            </if>
+            <if test="isAdjust != null  and isAdjust != ''">
+                and isAdjust = #{isAdjust}
+            </if>
+            <if test="adjustOrderid != null">
+                and adjustOrderid = #{adjustOrderid}
+            </if>
+            <if test="isedit != null">
+                and isedit = #{isedit}
+            </if>
+            <if test="customerIsInvoice != null">
+                and customerIsInvoice = #{customerIsInvoice}
+            </if>
+            <if test="isSupplierInvoice != null">
+                and isSupplierInvoice = #{isSupplierInvoice}
+            </if>
             and cancelFlag = 0
-            <if test="comments != null  and comments != ''"> and comments = #{comments}</if>
-            <if test="addtime != null  and addtime != ''"> and addtime = #{addtime}</if>
-            <if test="userId != null "> and userId = #{userId}</if>
-            <if test="UserName != null  and UserName != ''"> and UserName like concat('%', #{UserName}, '%')</if>
+            <if test="comments != null  and comments != ''">
+                and comments = #{comments}
+            </if>
+            <if test="addtime != null  and addtime != ''">
+                and addtime = #{addtime}
+            </if>
+            <if test="userId != null">
+                and userId = #{userId}
+            </if>
+            <if test="UserName != null  and UserName != ''">
+                and UserName like concat('%', #{UserName}, '%')
+            </if>
         </where>
     </select>
-    
-    <select id="selectGoodsOrderById" parameterType="Long" resultMap="GoodsOrderResult">
-        <include refid="selectGoodsOrderVo"/>
+
+    <select id="selectGoodsOrderById" parameterType="Long" resultMap="GoodsOrderOrderDetailResult">
+        select id,
+               ordersNo,
+               orderDate,
+               customer,
+               customerID,
+               landCarID,
+               landCarNo,
+               landDriverTel,
+               landDriverName,
+               seaCarID,
+               seaCarNo,
+               seaDriverTel,
+               seaDriverName,
+               checkUserId,
+               checkState,
+               invoiceState,
+               path,
+               PaymentState,
+               landBankName,
+               landBankNo,
+               seaBankName,
+               seaBankNo,
+               receiveProof,
+               saleManager,
+               fleet,
+               isAdjusted,
+               adjustDate,
+               isAdjust,
+               adjustOrderid,
+               isedit,
+               customerIsInvoice,
+               isSupplierInvoice,
+               cancelFlag,
+               comments,
+               addtime,
+               userId,
+               UserName,
+               update_time
+        from goodsOrder
         where id = #{id}
-        and cancelFlag = 0
+          and cancelFlag = 0
+    </select>
+
+    <select id="selectOrderDetailList" resultType="OrderDetail" resultMap="OrderDetailResult">
+        select id,
+               ordersNo,
+               orderDate,
+               supplier,
+               supplierID,
+               customer,
+               customerID,
+               levelID,
+               levelName,
+               countingUnit,
+               height,
+               length,
+               width,
+               pieces,
+               piecesPerPack,
+               packs,
+               price,
+               isIncludeTaxFactory,
+               sundryCost,
+               paymentFactory,
+               paymentUnload,
+               isIncludeTaxSale,
+               payments,
+               erro,
+               tonnage,
+               landFreightPrice,
+               landFreight,
+               seaFreight,
+               freight,
+               otherCost,
+               profit,
+               profitNoTax,
+               actualPieces,
+               paymentsWithSundry,
+               additionalFees,
+               storeHouseID,
+               storeHouseName,
+               storeID,
+               logisticsProfit,
+               customerCommission,
+               isAdjusted,
+               adjustDate,
+               cancelFlag,
+               comments,
+               addtime,
+               userId,
+               UserName,
+               update_time
+        from orderDetail
+        where ordersNo = #{ordersNo}
+          and cancelFlag = 0
     </select>
 
     <insert id="insertGoodsOrder" parameterType="GoodsOrder" useGeneratedKeys="true" keyProperty="id">
         insert into goodsOrder
         <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="ordersNo != null">
+                ordersNo,
+            </if>
+            <if test="orderDate != null">
+                orderDate,
+            </if>
+            <if test="customer != null">
+                customer,
+            </if>
+            <if test="customerID != null">
+                customerID,
+            </if>
+            <if test="landCarID != null">
+                landCarID,
+            </if>
+            <if test="landCarNo != null">
+                landCarNo,
+            </if>
+            <if test="landDriverTel != null">
+                landDriverTel,
+            </if>
+            <if test="landDriverName != null">
+                landDriverName,
+            </if>
+            <if test="seaCarID != null">
+                seaCarID,
+            </if>
+            <if test="seaCarNo != null">
+                seaCarNo,
+            </if>
+            <if test="seaDriverTel != null">
+                seaDriverTel,
+            </if>
+            <if test="seaDriverName != null">
+                seaDriverName,
+            </if>
+            <if test="checkUserId != null">
+                checkUserId,
+            </if>
+            <if test="checkState != null">
+                checkState,
+            </if>
+            <if test="invoiceState != null">
+                invoiceState,
+            </if>
+            <if test="path != null">
+                path,
+            </if>
+            <if test="PaymentState != null">
+                PaymentState,
+            </if>
+            <if test="landBankName != null">
+                landBankName,
+            </if>
+            <if test="landBankNo != null">
+                landBankNo,
+            </if>
+            <if test="seaBankName != null">
+                seaBankName,
+            </if>
+            <if test="seaBankNo != null">
+                seaBankNo,
+            </if>
+            <if test="receiveProof != null">
+                receiveProof,
+            </if>
+            <if test="saleManager != null">
+                saleManager,
+            </if>
+            <if test="fleet != null">
+                fleet,
+            </if>
+            <if test="isAdjusted != null">
+                isAdjusted,
+            </if>
+            <if test="adjustDate != null">
+                adjustDate,
+            </if>
+            <if test="isAdjust != null">
+                isAdjust,
+            </if>
+            <if test="adjustOrderid != null">
+                adjustOrderid,
+            </if>
+            <if test="isedit != null">
+                isedit,
+            </if>
+            <if test="customerIsInvoice != null">
+                customerIsInvoice,
+            </if>
+            <if test="isSupplierInvoice != null">
+                isSupplierInvoice,
+            </if>
+            <if test="cancelFlag != null">
+                cancelFlag,
+            </if>
+            <if test="comments != null">
+                comments,
+            </if>
+            <if test="addtime != null">
+                addtime,
+            </if>
+            <if test="userId != null">
+                userId,
+            </if>
+            <if test="UserName != null">
+                UserName,
+            </if>
+            <if test="updateTime != null">
+                update_time,
+            </if>
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="ordersNo != null">
+                #{ordersNo},
+            </if>
+            <if test="orderDate != null">
+                #{orderDate},
+            </if>
+            <if test="customer != null">
+                #{customer},
+            </if>
+            <if test="customerID != null">
+                #{customerID},
+            </if>
+            <if test="landCarID != null">
+                #{landCarID},
+            </if>
+            <if test="landCarNo != null">
+                #{landCarNo},
+            </if>
+            <if test="landDriverTel != null">
+                #{landDriverTel},
+            </if>
+            <if test="landDriverName != null">
+                #{landDriverName},
+            </if>
+            <if test="seaCarID != null">
+                #{seaCarID},
+            </if>
+            <if test="seaCarNo != null">
+                #{seaCarNo},
+            </if>
+            <if test="seaDriverTel != null">
+                #{seaDriverTel},
+            </if>
+            <if test="seaDriverName != null">
+                #{seaDriverName},
+            </if>
+            <if test="checkUserId != null">
+                #{checkUserId},
+            </if>
+            <if test="checkState != null">
+                #{checkState},
+            </if>
+            <if test="invoiceState != null">
+                #{invoiceState},
+            </if>
+            <if test="path != null">
+                #{path},
+            </if>
+            <if test="PaymentState != null">
+                #{PaymentState},
+            </if>
+            <if test="landBankName != null">
+                #{landBankName},
+            </if>
+            <if test="landBankNo != null">
+                #{landBankNo},
+            </if>
+            <if test="seaBankName != null">
+                #{seaBankName},
+            </if>
+            <if test="seaBankNo != null">
+                #{seaBankNo},
+            </if>
+            <if test="receiveProof != null">
+                #{receiveProof},
+            </if>
+            <if test="saleManager != null">
+                #{saleManager},
+            </if>
+            <if test="fleet != null">
+                #{fleet},
+            </if>
+            <if test="isAdjusted != null">
+                #{isAdjusted},
+            </if>
+            <if test="adjustDate != null">
+                #{adjustDate},
+            </if>
+            <if test="isAdjust != null">
+                #{isAdjust},
+            </if>
+            <if test="adjustOrderid != null">
+                #{adjustOrderid},
+            </if>
+            <if test="isedit != null">
+                #{isedit},
+            </if>
+            <if test="customerIsInvoice != null">
+                #{customerIsInvoice},
+            </if>
+            <if test="isSupplierInvoice != null">
+                #{isSupplierInvoice},
+            </if>
+            <if test="cancelFlag != null">
+                #{cancelFlag},
+            </if>
+            <if test="comments != null">
+                #{comments},
+            </if>
+            <if test="addtime != null">
+                #{addtime},
+            </if>
+            <if test="userId != null">
+                #{userId},
+            </if>
+            <if test="UserName != null">
+                #{UserName},
+            </if>
+            <if test="updateTime != null">
+                #{updateTime},
+            </if>
+        </trim>
+    </insert>
+
+    <update id="updateGoodsOrder" parameterType="GoodsOrder">
+        update goodsOrder
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="ordersNo != null">
+                ordersNo = #{ordersNo},
+            </if>
+            <if test="orderDate != null">
+                orderDate = #{orderDate},
+            </if>
+            <if test="customer != null">
+                customer = #{customer},
+            </if>
+            <if test="customerID != null">
+                customerID = #{customerID},
+            </if>
+            <if test="landCarID != null">
+                landCarID = #{landCarID},
+            </if>
+            <if test="landCarNo != null">
+                landCarNo = #{landCarNo},
+            </if>
+            <if test="landDriverTel != null">
+                landDriverTel = #{landDriverTel},
+            </if>
+            <if test="landDriverName != null">
+                landDriverName = #{landDriverName},
+            </if>
+            <if test="seaCarID != null">
+                seaCarID = #{seaCarID},
+            </if>
+            <if test="seaCarNo != null">
+                seaCarNo = #{seaCarNo},
+            </if>
+            <if test="seaDriverTel != null">
+                seaDriverTel = #{seaDriverTel},
+            </if>
+            <if test="seaDriverName != null">
+                seaDriverName = #{seaDriverName},
+            </if>
+            <if test="checkUserId != null">
+                checkUserId = #{checkUserId},
+            </if>
+            <if test="checkState != null">
+                checkState = #{checkState},
+            </if>
+            <if test="invoiceState != null">
+                invoiceState = #{invoiceState},
+            </if>
+            <if test="path != null">
+                path = #{path},
+            </if>
+            <if test="PaymentState != null">
+                PaymentState = #{PaymentState},
+            </if>
+            <if test="landBankName != null">
+                landBankName = #{landBankName},
+            </if>
+            <if test="landBankNo != null">
+                landBankNo = #{landBankNo},
+            </if>
+            <if test="seaBankName != null">
+                seaBankName = #{seaBankName},
+            </if>
+            <if test="seaBankNo != null">
+                seaBankNo = #{seaBankNo},
+            </if>
+            <if test="receiveProof != null">
+                receiveProof = #{receiveProof},
+            </if>
+            <if test="saleManager != null">
+                saleManager = #{saleManager},
+            </if>
+            <if test="fleet != null">
+                fleet = #{fleet},
+            </if>
+            <if test="isAdjusted != null">
+                isAdjusted = #{isAdjusted},
+            </if>
+            <if test="adjustDate != null">
+                adjustDate = #{adjustDate},
+            </if>
+            <if test="isAdjust != null">
+                isAdjust = #{isAdjust},
+            </if>
+            <if test="adjustOrderid != null">
+                adjustOrderid = #{adjustOrderid},
+            </if>
+            <if test="isedit != null">
+                isedit = #{isedit},
+            </if>
+            <if test="customerIsInvoice != null">
+                customerIsInvoice = #{customerIsInvoice},
+            </if>
+            <if test="isSupplierInvoice != null">
+                isSupplierInvoice = #{isSupplierInvoice},
+            </if>
+            <if test="cancelFlag != null">
+                cancelFlag = #{cancelFlag},
+            </if>
+            <if test="comments != null">
+                comments = #{comments},
+            </if>
+            <if test="addtime != null">
+                addtime = #{addtime},
+            </if>
+            <if test="userId != null">
+                userId = #{userId},
+            </if>
+            <if test="UserName != null">
+                UserName = #{UserName},
+            </if>
+            <if test="updateTime != null">
+                update_time = #{updateTime},
+            </if>
+        </trim>
+        where id = #{id}
+    </update>
+    <update id="deleteGoodsOrderById" parameterType="Long">
+        update goodsOrder
+        set cancelFlag = 1
+        where id = #{id}
+    </update>
+    <update id="deleteGoodsOrderByIds" parameterType="String">
+        update goodsOrder
+        set cancelFlag = 1 where id in
+        <foreach item="id" collection="array" open="(" separator="," close=")">
+            #{id}
+        </foreach>
+    </update>
+    <delete id="deleteOrderDetailByOrdersNos" parameterType="String">
+        update
+         orderDetail set cancelFlag = 1 where ordersNo in
+        <foreach item="ordersNo" collection="array" open="(" separator="," close=")">
+            #{ordersNo}
+        </foreach>
+    </delete>
+
+    <delete id="deleteOrderDetailByOrdersNo" parameterType="String">
+        update orderDetail set cancelFlag = 1
+        where ordersNo = #{ordersNo}
+    </delete>
+
+    <insert id="batchOrderDetail">
+        insert into orderDetail(id, ordersNo, orderDate, supplier, supplierID, customer, customerID, levelID, levelName,
+                                countingUnit, height, length, width, pieces, piecesPerPack, packs, price,
+                                isIncludeTaxFactory, sundryCost, paymentFactory, paymentUnload, isIncludeTaxSale,
+                                payments, erro, tonnage, landFreightPrice, landFreight, seaFreight, freight, otherCost,
+                                profit, profitNoTax, actualPieces, paymentsWithSundry, additionalFees, storeHouseID,
+                                storeHouseName, storeID, logisticsProfit, customerCommission, isAdjusted, adjustDate,
+                                cancelFlag, comments, addtime, userId, UserName, update_time) values
+        <foreach item="item" index="index" collection="list" separator=",">
+            (#{item.id}, #{item.ordersNo}, #{item.orderDate}, #{item.supplier}, #{item.supplierID}, #{item.customer},
+             #{item.customerID}, #{item.levelID}, #{item.levelName}, #{item.countingUnit}, #{item.height},
+             #{item.length}, #{item.width}, #{item.pieces}, #{item.piecesPerPack}, #{item.packs}, #{item.price},
+             #{item.isIncludeTaxFactory}, #{item.sundryCost}, #{item.paymentFactory}, #{item.paymentUnload},
+             #{item.isIncludeTaxSale}, #{item.payments}, #{item.erro}, #{item.tonnage}, #{item.landFreightPrice},
+             #{item.landFreight}, #{item.seaFreight}, #{item.freight}, #{item.otherCost}, #{item.profit},
+             #{item.profitNoTax}, #{item.actualPieces}, #{item.paymentsWithSundry}, #{item.additionalFees},
+             #{item.storeHouseID}, #{item.storeHouseName}, #{item.storeID}, #{item.logisticsProfit},
+             #{item.customerCommission}, #{item.isAdjusted}, #{item.adjustDate}, #{item.cancelFlag}, #{item.comments},
+             #{item.addtime}, #{item.userId}, #{item.UserName}, #{item.updateTime})
+        </foreach>
+    </insert>
+
+    <update id="deleteOrderDetailByOrderId">
+        update orderDetail set cancelFlag = 1
+        where ordersNo in (select ordersNo from goodsOrder where id = #{id})
+    </update>
+
+    <delete id="deleteOrderDetailByIds">
+        update
+            orderDetail
+        set cancelFlag = 1 where ordersNo in (
+        select ordersNo
+        from goodsOrder where id in
+        <foreach item="id" collection="array" open="(" separator="," close=")">
+            #{id}
+        </foreach>
+        )
+    </delete>
+
+
+    <insert id="backupGoodsOrder" parameterType="GoodsorderBack" useGeneratedKeys="true" keyProperty="id">
+        insert into goodsOrder_back
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="goodsOrderID != null">goodsOrderID,</if>
             <if test="ordersNo != null">ordersNo,</if>
             <if test="orderDate != null">orderDate,</if>
             <if test="customer != null">customer,</if>
@@ -140,8 +809,9 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
             <if test="userId != null">userId,</if>
             <if test="UserName != null">UserName,</if>
             <if test="updateTime != null">update_time,</if>
-         </trim>
+        </trim>
         <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="goodsOrderID != null">#{goodsOrderID},</if>
             <if test="ordersNo != null">#{ordersNo},</if>
             <if test="orderDate != null">#{orderDate},</if>
             <if test="customer != null">#{customer},</if>
@@ -179,59 +849,6 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
             <if test="userId != null">#{userId},</if>
             <if test="UserName != null">#{UserName},</if>
             <if test="updateTime != null">#{updateTime},</if>
-         </trim>
-    </insert>
-
-    <update id="updateGoodsOrder" parameterType="GoodsOrder">
-        update goodsOrder
-        <trim prefix="SET" suffixOverrides=",">
-            <if test="ordersNo != null">ordersNo = #{ordersNo},</if>
-            <if test="orderDate != null">orderDate = #{orderDate},</if>
-            <if test="customer != null">customer = #{customer},</if>
-            <if test="customerID != null">customerID = #{customerID},</if>
-            <if test="landCarID != null">landCarID = #{landCarID},</if>
-            <if test="landCarNo != null">landCarNo = #{landCarNo},</if>
-            <if test="landDriverTel != null">landDriverTel = #{landDriverTel},</if>
-            <if test="landDriverName != null">landDriverName = #{landDriverName},</if>
-            <if test="seaCarID != null">seaCarID = #{seaCarID},</if>
-            <if test="seaCarNo != null">seaCarNo = #{seaCarNo},</if>
-            <if test="seaDriverTel != null">seaDriverTel = #{seaDriverTel},</if>
-            <if test="seaDriverName != null">seaDriverName = #{seaDriverName},</if>
-            <if test="checkUserId != null">checkUserId = #{checkUserId},</if>
-            <if test="checkState != null">checkState = #{checkState},</if>
-            <if test="invoiceState != null">invoiceState = #{invoiceState},</if>
-            <if test="path != null">path = #{path},</if>
-            <if test="PaymentState != null">PaymentState = #{PaymentState},</if>
-            <if test="landBankName != null">landBankName = #{landBankName},</if>
-            <if test="landBankNo != null">landBankNo = #{landBankNo},</if>
-            <if test="seaBankName != null">seaBankName = #{seaBankName},</if>
-            <if test="seaBankNo != null">seaBankNo = #{seaBankNo},</if>
-            <if test="receiveProof != null">receiveProof = #{receiveProof},</if>
-            <if test="saleManager != null">saleManager = #{saleManager},</if>
-            <if test="fleet != null">fleet = #{fleet},</if>
-            <if test="isAdjusted != null">isAdjusted = #{isAdjusted},</if>
-            <if test="adjustDate != null">adjustDate = #{adjustDate},</if>
-            <if test="isAdjust != null">isAdjust = #{isAdjust},</if>
-            <if test="adjustOrderid != null">adjustOrderid = #{adjustOrderid},</if>
-            <if test="isedit != null">isedit = #{isedit},</if>
-            <if test="customerIsInvoice != null">customerIsInvoice = #{customerIsInvoice},</if>
-            <if test="isSupplierInvoice != null">isSupplierInvoice = #{isSupplierInvoice},</if>
-            <if test="cancelFlag != null">cancelFlag = #{cancelFlag},</if>
-            <if test="comments != null">comments = #{comments},</if>
-            <if test="addtime != null">addtime = #{addtime},</if>
-            <if test="userId != null">userId = #{userId},</if>
-            <if test="UserName != null">UserName = #{UserName},</if>
-            <if test="updateTime != null">update_time = #{updateTime},</if>
         </trim>
-        where id = #{id}
-    </update>
-    <update id="deleteGoodsOrderById" parameterType="Long">
-        update goodsOrder set cancelFlag = 1 where id = #{id}
-    </update>
-    <update id="deleteGoodsOrderByIds" parameterType="String">
-        update goodsOrder set cancelFlag = 1 where id in
-        <foreach item="id" collection="array" open="(" separator="," close=")">
-            #{id}
-        </foreach>
-    </update>
+    </insert>
 </mapper>

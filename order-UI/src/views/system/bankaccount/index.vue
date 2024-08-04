@@ -277,6 +277,23 @@ export default {
   created() {
     this.getList();
     this.getCompanyInfo()
+    //如果是空
+    if (localStorage.getItem('bankaccount-columns') === 'null'
+      || !localStorage.getItem('bankaccount-columns')) {
+      //设置localStorage
+      localStorage.setItem("bankaccount-columns", JSON.stringify(this.columns))
+    } else {
+      this.columns = JSON.parse(localStorage.getItem('bankaccount-columns'));
+    }
+  },
+  //展示与隐藏
+  watch: {
+    columns: {
+      handler: (newVal) => {
+        localStorage.setItem("bankaccount-columns", JSON.stringify(newVal))
+      },
+      deep: true,
+    }
   },
   computed: {
     //是否是己方公司

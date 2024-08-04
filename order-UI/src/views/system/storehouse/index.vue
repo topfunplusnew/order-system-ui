@@ -99,7 +99,7 @@
               icon="el-icon-folder-opened"
               size="mini"
               @click="handleExport"
-              v-hasPermi="['system:fleet:export']"
+              v-hasPermi="['system:StoreHouse:export']"
             >
             </el-button>
           </el-col>
@@ -223,6 +223,22 @@ export default {
   },
   created() {
     this.getList();
+    if (localStorage.getItem('storehouse-columns') === 'null'
+      || !localStorage.getItem('storehouse-columns')) {
+      //设置localStorage
+      localStorage.setItem("storehouse-columns", JSON.stringify(this.columns))
+    } else {
+      this.columns = JSON.parse(localStorage.getItem('storehouse-columns'));
+    }
+  },
+  //展示与隐藏
+  watch: {
+    columns: {
+      handler: (newVal) => {
+        localStorage.setItem("storehouse-columns", JSON.stringify(newVal))
+      },
+      deep: true,
+    }
   },
   methods: {
     /*打印信息*/

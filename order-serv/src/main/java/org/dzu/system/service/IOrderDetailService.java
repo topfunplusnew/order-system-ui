@@ -1,6 +1,8 @@
 package org.dzu.system.service;
 
 import java.util.List;
+
+import org.dzu.system.domain.GoodsOrder;
 import org.dzu.system.domain.OrderDetail;
 
 /**
@@ -35,6 +37,8 @@ public interface IOrderDetailService
      */
     public int insertOrderDetail(OrderDetail orderDetail);
 
+    void preInsert(OrderDetail orderDetail);
+
     /**
      * 修改订单详情
      * 
@@ -53,9 +57,15 @@ public interface IOrderDetailService
 
     /**
      * 删除订单详情信息
-     * 
+     *
      * @param id 订单详情主键
      * @return 结果
      */
     public int deleteOrderDetailById(Long id);
+
+    void backupOrderDetail(String ordersNo);
+
+    void adjustOrderDetail(String ordersNo);
+
+    void deleteOrderDetailByOrderId(GoodsOrder id);
 }

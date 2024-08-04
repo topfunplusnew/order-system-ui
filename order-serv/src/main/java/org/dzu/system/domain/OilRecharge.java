@@ -8,7 +8,7 @@ import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableName;
 import org.dzu.common.annotation.DecimalMaxDigits;
-import org.dzu.common.annotation.OnlyZeroOrOne;
+import org.dzu.common.annotation.FlagOnlyZeroOrOne;
 import org.hibernate.validator.constraints.Length;
 
 import javax.validation.constraints.NotNull;
@@ -44,7 +44,7 @@ public class OilRecharge extends BaseEntity
     private String oilCardNo;
 
     /** 充值类型（银行卡、现金） */
-    @Excel(name = "充值类型", readConverterExp = "银=行卡、现金")
+    @Excel(name = "充值类型")
     @Pattern(regexp = "银行卡|现金", message = "充值类型必须是：银行卡或者现金")
     @TableField(value = "rechargeType")
     private String rechargeType;
@@ -61,7 +61,6 @@ public class OilRecharge extends BaseEntity
 
     /** 银行开户名 */
     @Excel(name = "银行开户名")
-    @NotNull(message = "银行开户名不能为空")
     @Length( max = 24, message = "银行开户名长度不能超过24个字符")
     @TableField(value = "acountsName")
     private String acountsName;
@@ -69,7 +68,6 @@ public class OilRecharge extends BaseEntity
     /** 银行账号 */
     @Excel(name = "银行账号")
     @TableField(value = "bankNo")
-    @NotNull(message = "银行账号不能为空")
     @Length( max = 24, message = "银行账号长度不能超过24个字符")
     private String bankNo;
 
@@ -107,7 +105,7 @@ public class OilRecharge extends BaseEntity
     private String UserName;
 
     /** 删除标记 */
-    @OnlyZeroOrOne
+    @FlagOnlyZeroOrOne
     @TableField(value = "delFlag")
     private Long delFlag;
 

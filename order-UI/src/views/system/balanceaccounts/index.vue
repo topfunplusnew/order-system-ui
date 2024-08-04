@@ -167,7 +167,7 @@
               icon="el-icon-folder-opened"
               size="mini"
               @click="handleExport"
-              v-hasPermi="['system:fleet:export']"
+              v-hasPermi="['system:BalanceAccounts:export']"
             >
             </el-button>
           </el-col>
@@ -212,14 +212,14 @@
             size="mini"
             type="primary"
             @click="handleUpdate(scope.row)"
-            v-hasPermi="['system:StoreHouse:edit']"
+            v-hasPermi="['system:BalanceAccounts:edit']"
           >编辑
           </el-button>
           <el-button
             size="mini"
             type="danger"
             @click="handleDelete(scope.row)"
-            v-hasPermi="['system:StoreHouse:remove']"
+            v-hasPermi="['system:BalanceAccounts:remove']"
           >删除
           </el-button>
         </template>
@@ -354,6 +354,22 @@ export default {
   },
   created() {
     this.getList();
+    if (localStorage.getItem('balanceaccounts-columns') === 'null'
+      || !localStorage.getItem('balanceaccounts-columns')) {
+      //设置localStorage
+      localStorage.setItem("balanceaccounts-columns", JSON.stringify(this.columns))
+    } else {
+      this.columns = JSON.parse(localStorage.getItem('balanceaccounts-columns'));
+    }
+  },
+  //展示与隐藏
+  watch: {
+    columns: {
+      handler: (newVal) => {
+        localStorage.setItem("balanceaccounts-columns", JSON.stringify(newVal))
+      },
+      deep: true,
+    }
   },
   methods: {
     /*打印信息*/
@@ -476,30 +492,4 @@ export default {
   }
 };
 </script>
-<!--<style>-->
-<!--//隐藏原有滚动条-->
-<!--.el-table__body-wrapper::-webkit-scrollbar {-->
-<!--  /*width: 0;宽度为0隐藏*/-->
-<!--  width: 0px;-->
-<!--}-->
 
-<!--.el-table__body-wrapper::-webkit-scrollbar-thumb {-->
-<!--  border-radius: 2px;-->
-<!--  height: 50px;-->
-<!--  background: #eee;-->
-<!--}-->
-
-<!--.el-table__body-wrapper::-webkit-scrollbar-track {-->
-<!--  box-shadow: inset 0 0 5px rgba(0, 0, 0, 0.2);-->
-<!--  border-radius: 2px;-->
-<!--  background: rgba(0, 0, 0, 0.4);-->
-<!--}-->
-
-<!--.el-table&#45;&#45;scrollable-y .el-table__body-wrapper {-->
-<!--  overflow: hidden !important;-->
-<!--}-->
-
-<!--.el-table&#45;&#45;scrollable-x .el-table__body-wrapper {-->
-<!--  overflow: hidden !important;-->
-<!--}-->
-<!--</style>-->

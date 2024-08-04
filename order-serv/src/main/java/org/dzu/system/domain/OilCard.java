@@ -9,9 +9,10 @@ import org.dzu.common.annotation.Excel;
 import org.dzu.common.core.domain.BaseEntity;
 
 import org.dzu.common.annotation.DecimalMaxDigits;
-import org.dzu.common.annotation.OnlyZeroOrOne;
+import org.dzu.common.annotation.FlagOnlyZeroOrOne;
 import org.hibernate.validator.constraints.Length;
 
+import javax.validation.constraints.Max;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Pattern;
 
@@ -48,6 +49,7 @@ public class OilCard extends BaseEntity
     @NotNull(message = "当前金额不能为空")
     @TableField("moneyAmount")
     @DecimalMaxDigits
+    @Max(value = 10000000, message = "当前金额不能超过100万")
     private Double moneyAmount;
 
     /** 备注 */
@@ -71,7 +73,7 @@ public class OilCard extends BaseEntity
     private String UserName;
 
     /** 删除标记 */
-    @OnlyZeroOrOne
+    @FlagOnlyZeroOrOne
     @TableField("delFlag")
     private Long delFlag;
 

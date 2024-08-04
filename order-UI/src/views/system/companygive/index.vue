@@ -426,6 +426,22 @@ export default {
   },
   created() {
     this.getList();
+    if (localStorage.getItem('companygive-columns') === 'null'
+      || !localStorage.getItem('companygive-columns')) {
+      //设置localStorage
+      localStorage.setItem("companygive-columns", JSON.stringify(this.columns))
+    } else {
+      this.columns = JSON.parse(localStorage.getItem('companygive-columns'));
+    }
+  },
+  //展示与隐藏
+  watch: {
+    columns: {
+      handler: (newVal) => {
+        localStorage.setItem("companygive-columns", JSON.stringify(newVal))
+      },
+      deep: true,
+    }
   },
   methods: {
     //银行卡搜索按钮

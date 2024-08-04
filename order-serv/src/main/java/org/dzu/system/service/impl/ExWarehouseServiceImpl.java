@@ -1,9 +1,17 @@
 package org.dzu.system.service.impl;
 
 import java.util.List;
+
+import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+import org.dzu.common.exception.ServiceException;
 import org.dzu.common.utils.DateUtils;
 import org.dzu.common.utils.SecurityUtils;
-import org.dzu.common.utils.SecurityUtils;
+import org.dzu.common.utils.StringUtils;
+import org.dzu.system.domain.GoodsOrder;
+import org.dzu.system.domain.Inventory;
+import org.dzu.system.mapper.GoodsOrderMapper;
+import org.dzu.system.mapper.InventoryMapper;
+import org.dzu.system.service.IInventoryService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.dzu.system.mapper.ExWarehouseMapper;
@@ -11,6 +19,9 @@ import org.dzu.system.domain.ExWarehouse;
 import org.dzu.system.service.IExWarehouseService;
  
 import org.dzu.common.constant.DelConstants;
+import org.springframework.transaction.annotation.Isolation;
+import org.springframework.transaction.annotation.Transactional;
+
 /**
  * 出库Service业务层处理
  *
@@ -22,6 +33,15 @@ public class ExWarehouseServiceImpl implements IExWarehouseService
 {
     @Autowired
     private ExWarehouseMapper exWarehouseMapper;
+
+    @Autowired
+    private InventoryMapper inventoryMapper;
+
+    @Autowired
+    private IInventoryService inventoryService;
+
+    @Autowired
+    private GoodsOrderMapper goodsOrderMapper;
 
     /**
      * 查询出库
@@ -60,6 +80,9 @@ public class ExWarehouseServiceImpl implements IExWarehouseService
         exWarehouse.setUserId(SecurityUtils.getUserId());
         exWarehouse.setUserName(SecurityUtils.getUserTruename());
         exWarehouse.setDelFlag(Long.valueOf(DelConstants.NODEL));
+
+        // TODO： 出库信息的新增以后考虑下，似乎不能让用户自己填写出库信息
+
         return exWarehouseMapper.insertExWarehouse(exWarehouse);
     }
 
@@ -85,8 +108,15 @@ public class ExWarehouseServiceImpl implements IExWarehouseService
      * @return 结果
      */
     @Override
+    @Transactional(isolation = Isolation.SERIALIZABLE,rollbackFor = Exception.class)
     public int deleteExWarehouseByIds(Long[] ids)
     {
+        for (Long id : ids) {
+            // 打上删除标记的同时还原库存
+            ExWarehouse exWarehouse = exWarehouseMapper.selectExWarehouseById(id);
+            if(StringUtils.isNull(exWarehouse)) continue;
+            InventoryToBack(exWarehouse.getStoreID(), exWarehouse.getOutAmount());
+        }
         return exWarehouseMapper.deleteExWarehouseByIds(ids);
     }
 
@@ -97,8 +127,73 @@ public class ExWarehouseServiceImpl implements IExWarehouseService
      * @return 结果
      */
     @Override
+    @Transactional(isolation = Isolation.SERIALIZABLE,rollbackFor = Exception.class)
     public int deleteExWarehouseById(Long id)
     {
+        // 打上删除标记的同时还原库存
+        ExWarehouse exWarehouse = exWarehouseMapper.selectExWarehouseById(id);
+        InventoryToBack(exWarehouse.getStoreID(), exWarehouse.getOutAmount());
+
         return exWarehouseMapper.deleteExWarehouseById(id);
+    }
+
+    /**
+     * 删除出库信息
+     *
+     * @param OrderNo
+     * @return
+     */
+    @Override
+    public int deleteExWarehouseByOrderNo(String OrderNo) {
+
+        // 打上删除标记的同时还原库存
+        QueryWrapper<ExWarehouse> query = new QueryWrapper<ExWarehouse>().eq("ordersNo", OrderNo).eq("delFlag", DelConstants.NODEL);
+        exWarehouseMapper.selectList(query).forEach(exWarehouse -> {
+            InventoryToBack(exWarehouse.getStoreID(), exWarehouse.getOutAmount());
+        });
+        return exWarehouseMapper.deleteExWarehouseByOrderNo(OrderNo);
+    }
+
+    @Override
+    @Transactional(isolation = Isolation.SERIALIZABLE,rollbackFor = Exception.class)
+    public void InventoryToEx(Long InventoryId, Long outAmount, String OrderNo, String outDate) {
+        Inventory inventory = inventoryMapper.selectInventoryById(InventoryId);
+        if (StringUtils.isNull(inventory)) {
+            throw new ServiceException("库存不存在");
+        }
+        if (inventory.getStockNumber() < outAmount) {
+            throw new ServiceException("库存不足");
+        }
+        inventory.setStockNumber(inventory.getStockNumber() - outAmount);
+        // 写回
+        inventoryMapper.updateInventory(inventory);
+
+        // 进行校验
+        QueryWrapper<GoodsOrder> eq = new QueryWrapper<GoodsOrder>().eq("ordersNo", OrderNo).eq("cancelFlag", DelConstants.NODEL);
+        GoodsOrder goodsOrder = goodsOrderMapper.selectOne(eq);
+        if(StringUtils.isNull(goodsOrder)){
+            throw new ServiceException("订单不存在");
+        }
+
+        // 出库
+        ExWarehouse exWarehouse = new ExWarehouse();
+        exWarehouse.setOrdersNo(OrderNo);
+        exWarehouse.setOutAmount(outAmount);
+        exWarehouse.setOutDate(outDate);
+        exWarehouse.setStoreID(InventoryId);
+
+        insertExWarehouse(exWarehouse);
+    }
+
+
+
+    private void InventoryToBack(Long InventoryId, Long outAmount) {
+        Inventory inventory = inventoryMapper.selectInventoryById(InventoryId);
+        if (StringUtils.isNull(inventory)) {
+            throw new ServiceException("库存不存在");
+        }
+        inventory.setStockNumber(inventory.getStockNumber() + outAmount);
+        // 写回
+        inventoryService.updateInventory(inventory);
     }
 }

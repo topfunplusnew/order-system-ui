@@ -258,7 +258,7 @@
                 <el-input v-model="currentRecoverMoneyInfo.comments" placeholder="请输入备注信息"/>
               </el-form-item>
               <el-form-item>
-                <el-button type="primary" @click="RecoverMoney">还款</el-button>
+                <el-button type="primary" @click="RecoverMoney">收款</el-button>
               </el-form-item>
             </el-form>
           </el-dialog>
@@ -272,6 +272,7 @@
 import {listLendMoney, getLendMoney, delLendMoney, addLendMoney, updateLendMoney} from "@/api/system/lendMoney";
 import {mapGetters} from "vuex";
 import {addRecoverMoney, getRecoverMoneyByUuid} from "@/api/system/recoverMoney";
+import {addReceiveMoney} from "@/api/system/receiveMoney";
 
 export default {
   name: "LendMoney",
@@ -372,7 +373,11 @@ export default {
       innerVisible: false,
       //默认填充的账户和账号
       currentBankNo: '',
-      currentAccountsName: ''
+      currentBankName: '',
+      currentAccountsName: '',
+      currentCompanyName: '',
+      //对方公司或者客户名称
+      currentTargetAcountsName: ''
     };
   },
   created() {
@@ -392,7 +397,9 @@ export default {
       this.currentUUID = row.futuresNO
       //不需要填的字段自动填充
       this.currentBankNo = row.selfBankNo
+      this.currentBankName = row.selfBankName;
       this.currentAccountsName = row.selfAcountsName
+      this.currentTargetAcountsName = row.targetAcountsName
       this.currentRecoverMoneyInfo.selfBankNo = row.selfBankNo
       setTimeout(() => {
         getRecoverMoneyByUuid(this.currentUUID).then(res => {
@@ -407,6 +414,7 @@ export default {
     },
     //收回资金
     RecoverMoney() {
+      //添加信息
       addRecoverMoney({
         ...this.currentRecoverMoneyInfo, futuresNO: this.currentUUID
         , bankNo: this.currentBankNo, acountsName: this.currentAccountsName
@@ -417,6 +425,45 @@ export default {
           this.innerVisible = false
         }).catch(err => {
         this.$modal.msgError("修改失败:" + err.msg);
+      })
+
+      //同步修改到收款信息里
+      //fundsDate
+      const fundsDate = this.currentRecoverMoneyInfo.recoverDate;
+      //todo 支付类型 未知功能
+      const receiveType = '收回借出款';
+      const tableName = 'recoverMoney'; //操作表
+      const tID = 'id'; //对应表的主键
+      const moneyAmount = this.currentRecoverMoneyInfo.moneyAmount;//操作金额
+      const selfAcountsName = this.currentRecoverMoneyInfo.selfAcountsName;//收回账户
+      const selfBankNo = this.currentRecoverMoneyInfo.selfBankNo;//收回账号
+      const selfBankName = this.currentBankName;
+      const companyName = this.currentTargetAcountsName
+      //todo companyId 魔法值 需要查询公司的id 以及类型 如客户或者供应商
+      const companyId = '999';
+      const companyType = '1';
+      const comments = '备注:资金收回';
+      //构造
+      const item = {
+        fundsDate,
+        receiveType,
+        tableName,
+        tID,
+        moneyAmount,
+        selfAcountsName,
+        selfBankNo,
+        selfBankName,
+        companyName,
+        companyId,
+        companyType,
+        comments
+      }
+      this.addToReceiveMoney(item)
+    },
+    //同步修改到收款信息方法
+    addToReceiveMoney(item) {
+      addReceiveMoney(item).then(res => {
+        console.log(res)
       })
     },
     handleQueryTime() {
@@ -574,30 +621,3 @@ export default {
   }
 };
 </script>
-<!--<style>-->
-<!--//隐藏原有滚动条-->
-<!--.el-table__body-wrapper::-webkit-scrollbar {-->
-<!--  /*width: 0;宽度为0隐藏*/-->
-<!--  width: 0px;-->
-<!--}-->
-
-<!--.el-table__body-wrapper::-webkit-scrollbar-thumb {-->
-<!--  border-radius: 2px;-->
-<!--  height: 50px;-->
-<!--  background: #eee;-->
-<!--}-->
-
-<!--.el-table__body-wrapper::-webkit-scrollbar-track {-->
-<!--  box-shadow: inset 0 0 5px rgba(0, 0, 0, 0.2);-->
-<!--  border-radius: 2px;-->
-<!--  background: rgba(0, 0, 0, 0.4);-->
-<!--}-->
-
-<!--.el-table&#45;&#45;scrollable-y .el-table__body-wrapper {-->
-<!--  overflow: hidden !important;-->
-<!--}-->
-
-<!--.el-table&#45;&#45;scrollable-x .el-table__body-wrapper {-->
-<!--  overflow: hidden !important;-->
-<!--}-->
-<!--</style>-->
