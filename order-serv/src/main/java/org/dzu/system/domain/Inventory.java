@@ -33,7 +33,6 @@ public class Inventory extends BaseEntity
 
     /** 仓库ID */
     @TableField(value = "storeHouseid")
-    @Length(max = 20, message = "仓库ID的字符长度不允许超过20")
     @NotNull(message = "仓库ID不能为空")
     @Excel(name = "仓库ID")
     private Long storeHouseid;
@@ -54,7 +53,6 @@ public class Inventory extends BaseEntity
     /** 库存量（片数） */
     @NotNull(message = "库存量不能为空")
     @TableField(value = "stockNumber")
-    @Length(max = 20, message = "库存量的字符长度不允许超过20")
     @Excel(name = "库存量(片数）")
     private Long stockNumber;
 
@@ -69,13 +67,11 @@ public class Inventory extends BaseEntity
     @NotNull(message = "供应商ID不能为空")
     @TableField(value = "supplierId")
     @Excel(name = "供应商ID")
-    @Length(max = 20, message = "供应商ID的字符长度不允许超过20")
     private Long supplierId;
 
     /** 级别编码 */
     @NotNull(message = "级别编码不能为空")
     @TableField(value = "levelID")
-    @Length(max = 20, message = "级别编码的字符长度不允许超过20")
     @Excel(name = "级别编码")
     private Long levelID;
 
@@ -172,13 +168,11 @@ public class Inventory extends BaseEntity
     /** 总货款 */
     @NotNull(message = "总货款不能为空")
     @TableField(value = "totalPayments")
-    @DecimalMaxDigits
     private String payments;
 
     /** 陆运车辆ID */
 
     @TableField(value = "landCarID")
-    @Length(max = 50, message = "陆运车辆ID的字符长度不允许超过50")
     @Excel(name = "陆运车辆ID")
     private Long landCarID;
 
@@ -280,7 +274,6 @@ public class Inventory extends BaseEntity
     /** 实际片数 */
     @NotNull(message = "实际片数不能为空")
     @Excel(name = "实际片数")
-    @Length(max = 50, message = "实际片数的字符长度不允许超过50")
     @TableField(value = "actualPieces")
     private Long actualPieces;
 
