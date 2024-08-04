@@ -62,4 +62,7 @@ public interface IGoodsOrderService
      * @return 结果
      */
     public int deleteGoodsOrderById(Long id);
+
+    GoodsOrder selectGoodsOrderByOrderNO(String ordersNo);
+
 }

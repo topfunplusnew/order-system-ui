@@ -302,6 +302,49 @@
           and cancelFlag = 0
     </select>
 
+    <select id="selectGoodsOrderByOrderNO" resultType="org.dzu.system.domain.GoodsOrder">  select id,
+        ordersNo,
+        orderDate,
+        customer,
+        customerID,
+        landCarID,
+        landCarNo,
+        landDriverTel,
+        landDriverName,
+        seaCarID,
+        seaCarNo,
+        seaDriverTel,
+        seaDriverName,
+        checkUserId,
+        checkState,
+        invoiceState,
+        path,
+        PaymentState,
+        landBankName,
+        landBankNo,
+        seaBankName,
+        seaBankNo,
+        receiveProof,
+        saleManager,
+        fleet,
+        isAdjusted,
+        adjustDate,
+        isAdjust,
+        adjustOrderid,
+        isedit,
+        customerIsInvoice,
+        isSupplierInvoice,
+        cancelFlag,
+        comments,
+        addtime,
+        userId,
+        UserName,
+        update_time
+        from goodsOrder
+        where ordersNo = #{ordersNo}
+        and cancelFlag = 0
+    </select>
+
     <select id="selectOrderDetailList" resultType="OrderDetail" resultMap="OrderDetailResult">
         select id,
                ordersNo,
@@ -851,4 +894,6 @@
             <if test="updateTime != null">#{updateTime},</if>
         </trim>
     </insert>
+
+
 </mapper>
