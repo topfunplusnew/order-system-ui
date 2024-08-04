@@ -387,7 +387,6 @@ export default {
 
   created() {
     this.getList();
-    this.getOilCardInfo();
     if (localStorage.getItem('oilcard-columns') === 'null'
       || !localStorage.getItem('oilcard-columns')) {
       //设置localStorage
