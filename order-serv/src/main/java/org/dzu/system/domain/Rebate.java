@@ -30,8 +30,8 @@ public class Rebate extends BaseEntity
     private Long id;
 
     /** 订单编号（UUID） */
-    @Excel(name = "订单编号", readConverterExp = "U=UID")
-    @Length(max = 32, message = "订单编号长度不能超过32个字符")
+    @Excel(name = "订单编号")
+    @Length(max = 50, message = "订单编号长度不能超过32个字符")
     @NotNull(message = "订单编号不能为空")
     @TableField(value = "ordersNo")
     private String ordersNo;
@@ -54,9 +54,9 @@ public class Rebate extends BaseEntity
 
     /** 收款户名 */
     @Excel(name = "收款户名")
-    @TableField(value = "inAcountsName")
     @NotNull(message = "收款户名不能为空")
     @Length(max = 32, message = "收款户名长度不能超过32个字符")
+    @TableField(value = "inAcountsName")
     private String inAcountsName;
 
     /** 收款账号 */
@@ -76,21 +76,20 @@ public class Rebate extends BaseEntity
     /** 供应商ID */
     @Excel(name = "供应商ID")
     @NotNull(message = "供应商ID不能为空")
-    @Length(max = 20, message = "供应商ID长度不能超过20个字符")
     @TableField(value = "supplierID")
     private Long supplierID;
 
     /** 付款户名 */
     @Excel(name = "付款户名")
-    @Length(max = 20, message = "付款户名长度不能超过20个字符")
+    @Length(max = 32, message = "付款户名长度不能超过32个字符")
     @NotNull(message = "付款户名不能为空")
     @TableField(value = "outAcountsName")
     private String outAcountsName;
 
-    /** 付款款账号 */
-    @Excel(name = "付款款账号")
-    @NotNull(message = "付款款账号不能为空")
-    @Length(max = 20, message = "付款款账号长度不能超过20个字符")
+    /** 付款账号 */
+    @Excel(name = "付款账号")
+    @NotNull(message = "付款账号不能为空")
+    @Length(max = 32, message = "付款账号长度不能超过32个字符")
     @TableField(value = "outBankNo")
     private String outBankNo;
 

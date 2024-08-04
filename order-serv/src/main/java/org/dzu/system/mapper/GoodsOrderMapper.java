@@ -92,4 +92,6 @@ public interface GoodsOrderMapper extends BaseMapper<GoodsOrder>
     int deleteOrderDetailByIds(Long[] ids);
 
     void backupGoodsOrder(GoodsorderBack goodsOrder);
+
+    GoodsOrder selectGoodsOrderByOrderNO(String ordersNo);
 }
