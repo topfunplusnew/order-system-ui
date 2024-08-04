@@ -292,6 +292,11 @@ public class GoodsOrderServiceImpl implements IGoodsOrderService {
         return goodsOrderMapper.deleteGoodsOrderById(id);
     }
 
+    @Override
+    public GoodsOrder selectGoodsOrderByOrderNO(String ordersNo) {
+        return goodsOrderMapper.selectGoodsOrderByOrderNO(ordersNo);
+    }
+
     /**
      * 新增订单详情信息
      *

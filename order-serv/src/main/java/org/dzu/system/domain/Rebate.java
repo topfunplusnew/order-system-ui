@@ -31,7 +31,7 @@ public class Rebate extends BaseEntity
 
     /** 订单编号（UUID） */
     @Excel(name = "订单编号")
-    @Length(max = 32, message = "订单编号长度不能超过32个字符")
+    @Length(max = 50, message = "订单编号长度不能超过32个字符")
     @NotNull(message = "订单编号不能为空")
     @TableField(value = "ordersNo")
     private String ordersNo;
