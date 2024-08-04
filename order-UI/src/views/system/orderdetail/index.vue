@@ -437,22 +437,19 @@
         <template slot-scope="scope">
           <el-button
             size="mini"
-            @click="handleUpdate(scope.row)"
-            v-hasPermi="['system:orderDetail:edit']"
+            @click="checkOrderItemInfo(scope.row)"
           >查看
           </el-button>
           <el-button
             size="mini"
             type="primary"
-            @click="handleUpdate(scope.row)"
-            v-hasPermi="['system:orderDetail:edit']"
+            @click="handleOrderItemInfo(scope.row)"
           >调整单
           </el-button>
           <el-button
             size="mini"
             type="danger"
             @click="handleUpdate(scope.row)"
-            v-hasPermi="['system:orderDetail:edit']"
           >复制
           </el-button>
           <el-button
@@ -518,32 +515,32 @@
         <template slot-scope="scope">
           <el-button
             size="mini"
-            @click="handleUpdate(scope.row)"
+            @click="handleOrder1(scope.row)"
             v-hasPermi="['system:orderDetail:edit']"
           >发货单1
           </el-button>
           <el-button
             size="mini"
-            @click="handleUpdate(scope.row)"
+            @click="handleOrder2(scope.row)"
             v-hasPermi="['system:orderDetail:edit']"
           >发货单2
           </el-button>
           <el-button
             size="mini"
-            @click="handleUpdate(scope.row)"
+            @click="handleOrder3(scope.row)"
             v-hasPermi="['system:orderDetail:edit']"
           >发货单3
           </el-button>
           <el-button
             size="mini"
             type="primary"
-            @click="handleDelete(scope.row)"
+            @click="handleUpload(scope.row)"
             v-hasPermi="['system:orderDetail:remove']"
           >上传附件
           </el-button>
           <el-button
             size="mini"
-            @click="handleDelete(scope.row)"
+            @click="handleCommit(scope.row)"
             v-hasPermi="['system:orderDetail:remove']"
           >上传收到条
           </el-button>
@@ -706,6 +703,93 @@
         <el-button @click="cancel">取 消</el-button>
       </div>
     </el-dialog>
+
+
+    <!--    点击查看某个订单的弹窗   -->
+    <el-dialog
+      title="提示"
+      :visible.sync="checkOrderVisible"
+      width="30%">
+      <span>点击查看订单的弹窗</span>
+      <span slot="footer" class="dialog-footer">
+    <el-button @click="checkOrderVisible = false">取 消</el-button>
+    <el-button type="primary" @click="checkOrderVisible = false">确 定</el-button>
+  </span>
+    </el-dialog>
+
+    <!--    点击调整单的弹窗-->
+    <el-dialog
+      title="提示"
+      :visible.sync="handleOrderVisible"
+      width="30%">
+      <span>点击调整单的弹窗</span>
+      <span slot="footer" class="dialog-footer">
+    <el-button @click="handleOrderVisible = false">取 消</el-button>
+    <el-button type="primary" @click="handleOrderVisible = false">确 定</el-button>
+  </span>
+    </el-dialog>
+
+    <!--    点击发货单1的弹窗-->
+    <el-dialog
+      title="提示"
+      :visible.sync="Order1Visible"
+      width="30%">
+      <span>点击发货单1的弹窗</span>
+      <span slot="footer" class="dialog-footer">
+    <el-button @click="Order1Visible = false">取 消</el-button>
+    <el-button type="primary" @click="Order1Visible = false">确 定</el-button>
+  </span>
+    </el-dialog>
+
+    <!--    点击发货单2的弹窗-->
+    <el-dialog
+      title="提示"
+      :visible.sync="Order2Visible"
+      width="30%">
+      <span>点击发货单2的弹窗</span>
+      <span slot="footer" class="dialog-footer">
+    <el-button @click="Order2Visible = false">取 消</el-button>
+    <el-button type="primary" @click="Order2Visible = false">确 定</el-button>
+  </span>
+    </el-dialog>
+
+
+    <!--    点击发货单3的弹窗-->
+    <el-dialog
+      title="提示"
+      :visible.sync="Order3Visible"
+      width="30%">
+      <span>点击发货单3的弹窗</span>
+      <span slot="footer" class="dialog-footer">
+    <el-button @click="Order3Visible = false">取 消</el-button>
+    <el-button type="primary" @click="Order3Visible = false">确 定</el-button>
+  </span>
+    </el-dialog>
+
+    <!--    上传附件的弹窗-->
+    <el-dialog
+      title="提示"
+      :visible.sync="handleUploadVisible"
+      width="30%">
+      <span>上传附件的弹窗</span>
+      <span slot="footer" class="dialog-footer">
+    <el-button @click="handleUploadVisible = false">取 消</el-button>
+    <el-button type="primary" @click="handleUploadVisible = false">确 定</el-button>
+  </span>
+    </el-dialog>
+
+    <!--    上传收到条的弹窗-->
+    <el-dialog
+      title="提示"
+      :visible.sync="handleCommitVisible"
+      width="30%">
+      <span>上传收到条的弹窗</span>
+      <span slot="footer" class="dialog-footer">
+    <el-button @click="handleCommitVisible = false">取 消</el-button>
+    <el-button type="primary" @click="handleCommitVisible = false">确 定</el-button>
+  </span>
+    </el-dialog>
+
   </div>
 </template>
 
@@ -806,13 +890,50 @@ export default {
       // 表单参数
       form: {},
       // 表单校验
-      rules: {}
+      rules: {},
+
+      //点击查看的弹窗
+      checkOrderVisible: false,
+      //调整单的弹窗
+      handleOrderVisible: false,
+      //订单弹窗
+      Order1Visible: false,
+      Order2Visible: false,
+      Order3Visible: false,
+      //上传和收到条
+      handleUploadVisible: false,
+      handleCommitVisible: false
     };
   },
   created() {
     this.getList();
   },
   methods: {
+    //点击查看
+    checkOrderItemInfo(row) {
+      this.checkOrderVisible = true;
+    },
+    //点击调整单的弹窗
+    handleOrderItemInfo(row) {
+      this.handleOrderVisible = true
+    },
+    //订单
+    handleOrder1(row) {
+      this.Order1Visible = true
+    },
+    handleOrder2(row) {
+      this.Order2Visible = true
+    },
+    handleOrder3(row) {
+      this.Order3Visible = true
+    },
+    //上传和收到条
+    handleUpload(row) {
+      this.handleUploadVisible = true
+    },
+    handleCommit(row) {
+      this.handleCommitVisible = true
+    },
     //表格统计
     //自定义列统计总函数
     getSummaries(param) {
