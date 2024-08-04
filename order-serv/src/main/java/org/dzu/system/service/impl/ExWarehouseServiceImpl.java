@@ -19,6 +19,7 @@ import org.dzu.system.domain.ExWarehouse;
 import org.dzu.system.service.IExWarehouseService;
  
 import org.dzu.common.constant.DelConstants;
+import org.springframework.transaction.annotation.Isolation;
 import org.springframework.transaction.annotation.Transactional;
 
 /**
@@ -79,6 +80,11 @@ public class ExWarehouseServiceImpl implements IExWarehouseService
         exWarehouse.setUserId(SecurityUtils.getUserId());
         exWarehouse.setUserName(SecurityUtils.getUserTruename());
         exWarehouse.setDelFlag(Long.valueOf(DelConstants.NODEL));
+        // 联动Inventory表进行出库
+        InventoryToEx(exWarehouse.getStoreID(), exWarehouse.getOutAmount(), exWarehouse.getOrdersNo(), exWarehouse.getOutDate());
+
+        // TODO： 出库信息的新增以后考虑下，似乎不能让用户自己填写出库信息
+
         return exWarehouseMapper.insertExWarehouse(exWarehouse);
     }
 
@@ -104,8 +110,15 @@ public class ExWarehouseServiceImpl implements IExWarehouseService
      * @return 结果
      */
     @Override
+    @Transactional(isolation = Isolation.SERIALIZABLE,rollbackFor = Exception.class)
     public int deleteExWarehouseByIds(Long[] ids)
     {
+        for (Long id : ids) {
+            // 打上删除标记的同时还原库存
+            ExWarehouse exWarehouse = exWarehouseMapper.selectExWarehouseById(id);
+            if(StringUtils.isNull(exWarehouse)) continue;
+            InventoryToBack(exWarehouse.getStoreID(), exWarehouse.getOutAmount());
+        }
         return exWarehouseMapper.deleteExWarehouseByIds(ids);
     }
 
@@ -116,13 +129,18 @@ public class ExWarehouseServiceImpl implements IExWarehouseService
      * @return 结果
      */
     @Override
+    @Transactional(isolation = Isolation.SERIALIZABLE,rollbackFor = Exception.class)
     public int deleteExWarehouseById(Long id)
     {
+        // 打上删除标记的同时还原库存
+        ExWarehouse exWarehouse = exWarehouseMapper.selectExWarehouseById(id);
+        InventoryToBack(exWarehouse.getStoreID(), exWarehouse.getOutAmount());
+
         return exWarehouseMapper.deleteExWarehouseById(id);
     }
 
     @Override
-    @Transactional
+    @Transactional(isolation = Isolation.SERIALIZABLE,rollbackFor = Exception.class)
     public void InventoryToEx(Long InventoryId, Long outAmount, String OrderNo, String outDate) {
         Inventory inventory = inventoryMapper.selectInventoryById(InventoryId);
         if (StringUtils.isNull(inventory)) {
@@ -147,8 +165,18 @@ public class ExWarehouseServiceImpl implements IExWarehouseService
         exWarehouse.setOrdersNo(OrderNo);
         exWarehouse.setOutAmount(outAmount);
         exWarehouse.setOutDate(outDate);
+        exWarehouse.setStoreID(InventoryId);
 
         insertExWarehouse(exWarehouse);
     }
 
+    private void InventoryToBack(Long InventoryId, Long outAmount) {
+        Inventory inventory = inventoryMapper.selectInventoryById(InventoryId);
+        if (StringUtils.isNull(inventory)) {
+            throw new ServiceException("库存不存在");
+        }
+        inventory.setStockNumber(inventory.getStockNumber() + outAmount);
+        // 写回
+        inventoryService.updateInventory(inventory);
+    }
 }

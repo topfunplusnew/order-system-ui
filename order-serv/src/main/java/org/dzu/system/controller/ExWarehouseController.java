@@ -69,39 +69,4 @@ public class ExWarehouseController extends BaseController
     {
         return success(exWarehouseService.selectExWarehouseById(id));
     }
-
-    /**
-     * 新增出库
-     */
-    @PreAuthorize("@ss.hasPermi('system:exWarehouse:add')")
-    @Log(title = "出库", businessType = BusinessType.INSERT)
-    @PostMapping
-    public AjaxResult add(@Validated @RequestBody ExWarehouse exWarehouse)
-    {
-        // 目前不支持前端添加信息
-        throw  new RuntimeException("目前不支持前端添加信息");
-//        return toAjax(exWarehouseService.insertExWarehouse(exWarehouse));
-    }
-
-    /**
-     * 修改出库
-     */
-    @PreAuthorize("@ss.hasPermi('system:exWarehouse:edit')")
-    @Log(title = "出库", businessType = BusinessType.UPDATE)
-    @PutMapping
-    public AjaxResult edit(@Validated @RequestBody ExWarehouse exWarehouse)
-    {
-        return toAjax(exWarehouseService.updateExWarehouse(exWarehouse));
-    }
-
-    /**
-     * 删除出库
-     */
-    @PreAuthorize("@ss.hasPermi('system:exWarehouse:remove')")
-    @Log(title = "出库", businessType = BusinessType.DELETE)
-	@DeleteMapping("/{ids}")
-    public AjaxResult remove(@PathVariable Long[] ids)
-    {
-        return toAjax(exWarehouseService.deleteExWarehouseByIds(ids));
-    }
 }
