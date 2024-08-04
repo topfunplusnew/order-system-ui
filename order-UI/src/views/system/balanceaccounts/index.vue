@@ -167,7 +167,7 @@
               icon="el-icon-folder-opened"
               size="mini"
               @click="handleExport"
-              v-hasPermi="['system:fleet:export']"
+              v-hasPermi="['system:BalanceAccounts:export']"
             >
             </el-button>
           </el-col>
@@ -212,14 +212,14 @@
             size="mini"
             type="primary"
             @click="handleUpdate(scope.row)"
-            v-hasPermi="['system:StoreHouse:edit']"
+            v-hasPermi="['system:BalanceAccounts:edit']"
           >编辑
           </el-button>
           <el-button
             size="mini"
             type="danger"
             @click="handleDelete(scope.row)"
-            v-hasPermi="['system:StoreHouse:remove']"
+            v-hasPermi="['system:BalanceAccounts:remove']"
           >删除
           </el-button>
         </template>
@@ -354,15 +354,19 @@ export default {
   },
   created() {
     this.getList();
-    if (localStorage.getItem('columns') !== null || localStorage.getItem('columns') !== undefined) {
-      this.columns = JSON.parse(localStorage.getItem('columns'));
+    if (localStorage.getItem('balanceaccounts-columns') === 'null'
+      || !localStorage.getItem('balanceaccounts-columns')) {
+      //设置localStorage
+      localStorage.setItem("balanceaccounts-columns", JSON.stringify(this.columns))
+    } else {
+      this.columns = JSON.parse(localStorage.getItem('balanceaccounts-columns'));
     }
   },
   //展示与隐藏
   watch: {
     columns: {
       handler: (newVal) => {
-        localStorage.setItem("columns", JSON.stringify(newVal))
+        localStorage.setItem("balanceaccounts-columns", JSON.stringify(newVal))
       },
       deep: true,
     }
