@@ -406,15 +406,19 @@ export default {
   },
   created() {
     this.getList();
-    if (localStorage.getItem('columns') !== null || localStorage.getItem('columns') !== undefined) {
-      this.columns = JSON.parse(localStorage.getItem('columns'));
+    if (localStorage.getItem('company-columns') === 'null'
+      || !localStorage.getItem('company-columns')) {
+      //设置localStorage
+      localStorage.setItem("company-columns", JSON.stringify(this.columns))
+    } else {
+      this.columns = JSON.parse(localStorage.getItem('company-columns'));
     }
   },
   //展示与隐藏
   watch: {
     columns: {
       handler: (newVal) => {
-        localStorage.setItem("columns", JSON.stringify(newVal))
+        localStorage.setItem("company-columns", JSON.stringify(newVal))
       },
       deep: true,
     }

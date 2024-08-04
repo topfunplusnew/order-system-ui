@@ -11,6 +11,8 @@ import org.dzu.common.annotation.DecimalMaxDigits;
 import org.dzu.common.annotation.FlagOnlyZeroOrOne;
 import org.hibernate.validator.constraints.Length;
 
+import javax.validation.constraints.Max;
+import javax.validation.constraints.Min;
 import javax.validation.constraints.NotNull;
 
 /**
@@ -30,17 +32,19 @@ public class OilCardFundTransfer extends BaseEntity
 
     /** 主加油卡卡号 */
     @Excel(name = "主加油卡卡号")
-    @Length( max = 25, message = "主加油卡卡号长度不能超过25")
+    @Max(value =25, message = "主加油卡卡号长度不能超过25")
+    @Min(value = 0, message = "主加油卡卡号长度不能小于0")
     @NotNull(message = "主加油卡卡号不能为空")
     @TableField(value = "oilMainCardNo")
-    private String oilMainCardNo;
+    private long oilMainCardNo;
 
     /** 副加油卡卡号 */
     @Excel(name = "副加油卡卡号")
-    @Length( max = 25, message = "副加油卡卡号长度不能超过25")
+    @Max( value= 25, message = "副加油卡卡号长度不能超过25")
+    @Min( value= 0, message = "副加油卡卡号长度不能小于0")
     @NotNull(message = "副加油卡卡号不能为空")
     @TableField(value = "oilSecondCardNo")
-    private String oilSecondCardNo;
+    private long oilSecondCardNo;
 
     /** 充值金额 */
     @DecimalMaxDigits
@@ -94,21 +98,21 @@ public class OilCardFundTransfer extends BaseEntity
     {
         return id;
     }
-    public void setOilMainCardNo(String oilMainCardNo) 
+    public void setOilMainCardNo(Long oilMainCardNo)
     {
         this.oilMainCardNo = oilMainCardNo;
     }
 
-    public String getOilMainCardNo() 
+    public Long getOilMainCardNo()
     {
         return oilMainCardNo;
     }
-    public void setOilSecondCardNo(String oilSecondCardNo) 
+    public void setOilSecondCardNo(Long oilSecondCardNo)
     {
         this.oilSecondCardNo = oilSecondCardNo;
     }
 
-    public String getOilSecondCardNo() 
+    public Long getOilSecondCardNo()
     {
         return oilSecondCardNo;
     }

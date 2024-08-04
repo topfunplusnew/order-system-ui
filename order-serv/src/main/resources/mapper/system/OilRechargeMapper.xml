@@ -55,6 +55,7 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         where id = #{id}
         and delFlag = 0
     </select>
+    <select id="selectOilRechargesByBankNo" resultType="org.dzu.system.domain.OilRecharge"></select>
 
     <insert id="insertOilRecharge" parameterType="OilRecharge" useGeneratedKeys="true" keyProperty="id">
         insert into oilRecharge

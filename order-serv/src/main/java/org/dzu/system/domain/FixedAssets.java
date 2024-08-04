@@ -53,7 +53,7 @@ public class FixedAssets extends BaseEntity
 
     /** 规格型号（车牌号） */
     @TableField("specification")
-    @Length(max = 20, message = "规格型号的字符长度不允许超过20")
+    @Length(max = 50, message = "规格型号的字符长度不允许超过50")
     @NotNull(message = "规格型号不能为空")
     @Excel(name = "规格型号", readConverterExp = "车牌号")
     private String  specification;
@@ -62,7 +62,7 @@ public class FixedAssets extends BaseEntity
     @Excel(name = "数量")
     @TableField("number")
     @NotNull(message = "数量不能为空")
-    @Max(value = 99999, message = "数量不能超过99999")
+    @Length(max = 20, message = "数量的字符长度不允许超过20")
     private String number;
 
     /** 计量单位 */

@@ -41,7 +41,7 @@ public class BankAccount extends BaseEntity
 
     /** 对应公司ID */
     @Excel(name = "对应公司ID")
-    @Length(max = 50, message = "对应公司ID的字符长度不允许超过50")
+    @Length(max = 11, message = "对应公司ID的字符长度不允许超过11")
     @NotNull(message = "对应公司ID不能为空")
     @TableField("companyId")
     private Long companyId;
