@@ -223,15 +223,19 @@ export default {
   },
   created() {
     this.getList();
-    if (localStorage.getItem('columns') !== null || localStorage.getItem('columns') !== undefined) {
-      this.columns = JSON.parse(localStorage.getItem('columns'));
+    if (localStorage.getItem('storehouse-columns') === 'null'
+      || !localStorage.getItem('storehouse-columns')) {
+      //设置localStorage
+      localStorage.setItem("storehouse-columns", JSON.stringify(this.columns))
+    } else {
+      this.columns = JSON.parse(localStorage.getItem('storehouse-columns'));
     }
   },
   //展示与隐藏
   watch: {
     columns: {
       handler: (newVal) => {
-        localStorage.setItem("columns", JSON.stringify(newVal))
+        localStorage.setItem("storehouse-columns", JSON.stringify(newVal))
       },
       deep: true,
     }
