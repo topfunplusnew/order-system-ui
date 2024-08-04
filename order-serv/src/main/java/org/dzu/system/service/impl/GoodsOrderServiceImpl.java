@@ -19,6 +19,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
 
@@ -132,7 +133,6 @@ public class GoodsOrderServiceImpl implements IGoodsOrderService {
     public int updateGoodsOrder(GoodsOrder goodsOrder) {
 
 
-
         // 设置基础数据
         goodsOrder.setUpdateTime(DateUtils.getNowDate());
 
@@ -143,7 +143,7 @@ public class GoodsOrderServiceImpl implements IGoodsOrderService {
         }
 
         // 如果可编辑选项为否，不允许修改
-        if (oldOrder.getIsedit()==YesOrNoConstants.NO_num) {
+        if (oldOrder.getIsedit() == YesOrNoConstants.NO_num) {
             throw new ServiceException("本订单已不允许修改");
         }
 
@@ -172,9 +172,10 @@ public class GoodsOrderServiceImpl implements IGoodsOrderService {
         Vaildate(goodsOrder);
 
         // 删除后插入，模拟成更新
-        goodsOrderMapper.deleteOrderDetailByOrderId(goodsOrder.getId());
+        orderDetailService.deleteOrderDetailByOrderId(goodsOrder);
         int rows = goodsOrderMapper.updateGoodsOrder(goodsOrder);
         insertOrderDetail(goodsOrder);
+
         return rows;
     }
 
@@ -193,7 +194,7 @@ public class GoodsOrderServiceImpl implements IGoodsOrderService {
         }
         // 获取老信息
         GoodsOrder oldOrder = goodsOrderMapper.selectGoodsOrderById(goodsOrder.getId());
-        if(oldOrder == null){
+        if (oldOrder == null) {
             throw new ServiceException("数据库搜索失败,请刷新页面后重试");
         }
         // 如果可编辑选项为否，不允许修改
@@ -201,7 +202,7 @@ public class GoodsOrderServiceImpl implements IGoodsOrderService {
             throw new ServiceException("本订单已不允许修改");
         }
         // 如果本身已经是调整单或者被调整单，不允许再次调整
-        if (oldOrder.getIsAdjust().equals(YesOrNoConstants.YES_zh)||oldOrder.getIsAdjusted().equals(YesOrNoConstants.YES_zh)) {
+        if (oldOrder.getIsAdjust().equals(YesOrNoConstants.YES_zh) || oldOrder.getIsAdjusted().equals(YesOrNoConstants.YES_zh)) {
             throw new ServiceException("本订单不允许再次调整");
         }
 
@@ -216,7 +217,7 @@ public class GoodsOrderServiceImpl implements IGoodsOrderService {
         // 本次是调整
         back.setIsAdjust(YesOrNoConstants.YES_zh);
         back.getOrderDetailList().parallelStream().forEach(
-                item->{
+                item -> {
                     item.setIsAdjusted(YesOrNoConstants.YES_zh);
                     item.setAdjustDate(DateUtils.getNowDate().toString());
                 }
@@ -249,7 +250,7 @@ public class GoodsOrderServiceImpl implements IGoodsOrderService {
         newInfo.setOrdersNo(UUID.fastUUID().toString());
         // 新的订单的订单详情也需要修改
         newInfo.getOrderDetailList().parallelStream().forEach(
-                item->{
+                item -> {
                     item.setIsAdjusted(YesOrNoConstants.YES_zh);
                     item.setAdjustDate(DateUtils.getNowDate().toString());
                 }
@@ -270,7 +271,11 @@ public class GoodsOrderServiceImpl implements IGoodsOrderService {
     @Transactional
     @Override
     public int deleteGoodsOrderByIds(Long[] ids) {
-        goodsOrderMapper.deleteOrderDetailByIds(ids);
+        List<GoodsOrder> goodsOrders = goodsOrderMapper.selectBatchIds(Arrays.asList(ids));
+
+        for (GoodsOrder order: goodsOrders) {
+            orderDetailService.deleteOrderDetailByOrderId(order);
+        }
         return goodsOrderMapper.deleteGoodsOrderByIds(ids);
     }
 
@@ -283,7 +288,7 @@ public class GoodsOrderServiceImpl implements IGoodsOrderService {
     @Transactional
     @Override
     public int deleteGoodsOrderById(Long id) {
-        goodsOrderMapper.deleteOrderDetailByOrderId(id);
+        orderDetailService.deleteOrderDetailByOrderId(goodsOrderMapper.selectGoodsOrderById(id));
         return goodsOrderMapper.deleteGoodsOrderById(id);
     }
 

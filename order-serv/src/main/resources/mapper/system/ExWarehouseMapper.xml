@@ -104,4 +104,8 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
             #{id}
         </foreach>
     </update>
+
+    <update id="deleteExWarehouseByOrderNo">
+        update exWarehouse set delFlag = 1 where ordersNo = #{ordersNo}
+    </update>
 </mapper>

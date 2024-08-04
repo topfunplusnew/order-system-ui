@@ -7,10 +7,8 @@ import org.dzu.common.exception.ServiceException;
 import org.dzu.common.utils.DateUtils;
 import org.dzu.common.utils.SecurityUtils;
 import org.dzu.common.utils.StringUtils;
-import org.dzu.system.domain.Company;
-import org.dzu.system.domain.Inventory;
-import org.dzu.system.domain.OrderDetail;
-import org.dzu.system.domain.OrderdetailBack;
+import org.dzu.system.domain.*;
+import org.dzu.system.mapper.GoodsOrderMapper;
 import org.dzu.system.mapper.OrderDetailMapper;
 import org.dzu.system.mapper.OrderdetailBackMapper;
 import org.dzu.system.service.ICompanyService;
@@ -44,6 +42,10 @@ public class OrderDetailServiceImpl implements IOrderDetailService {
 
     @Autowired
     private OrderdetailBackMapper orderdetailBackMapper;
+
+    @Autowired
+    private GoodsOrderMapper goodsOrderMapper;
+
     /**
      * 查询订单详情
      *
@@ -94,11 +96,11 @@ public class OrderDetailServiceImpl implements IOrderDetailService {
         // 准备校验
 
         // 两者不能同时为null
-        if(StringUtils.isNull(orderDetail.getSupplierID()) && StringUtils.isNull(orderDetail.getStoreID())){
+        if (StringUtils.isNull(orderDetail.getSupplierID()) && StringUtils.isNull(orderDetail.getStoreID())) {
             throw new ServiceException("供应商和仓库不能同时为空，请检查后重试");
         }
         // 两者也不能同时不为null
-        if(StringUtils.isNotNull(orderDetail.getSupplierID()) && StringUtils.isNotNull(orderDetail.getStoreID())){
+        if (StringUtils.isNotNull(orderDetail.getSupplierID()) && StringUtils.isNotNull(orderDetail.getStoreID())) {
             throw new ServiceException("供应商和仓库不能同时不为空，请检查后重试");
         }
 
@@ -117,7 +119,6 @@ public class OrderDetailServiceImpl implements IOrderDetailService {
                 // 存货二次判断+联动修改
                 if (inventory.getStockNumber() > 0 && orderDetail.getPieces() <= inventory.getStockNumber()) {
                     // 仓库存货足够
-                    // TODO： 联动出库
                     exWarehouseService.InventoryToEx(orderDetail.getStoreID(), orderDetail.getPieces(), orderDetail.getOrdersNo(), orderDetail.getAddtime());
                 } else {
                     throw new ServiceException("仓库存货不足，请检查后重试");
@@ -186,5 +187,14 @@ public class OrderDetailServiceImpl implements IOrderDetailService {
         update.setIsAdjusted(YesOrNoConstants.YES_zh);
         QueryWrapper<OrderDetail> query = new QueryWrapper<OrderDetail>().eq("ordersNo", ordersNo).eq("cancelFlag", DelConstants.NODEL);
         orderDetailMapper.update(update, query);
+    }
+
+    @Override
+    public void deleteOrderDetailByOrderId(GoodsOrder goodsOrder) {
+
+        // 如果是仓库出货，需要联动删除出库信息
+        exWarehouseService.deleteExWarehouseByOrderNo(goodsOrder.getOrdersNo());
+
+        goodsOrderMapper.deleteOrderDetailByOrderId(goodsOrder.getId());
     }
 }

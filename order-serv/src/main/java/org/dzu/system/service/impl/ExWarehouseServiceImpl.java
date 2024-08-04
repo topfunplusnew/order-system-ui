@@ -80,8 +80,6 @@ public class ExWarehouseServiceImpl implements IExWarehouseService
         exWarehouse.setUserId(SecurityUtils.getUserId());
         exWarehouse.setUserName(SecurityUtils.getUserTruename());
         exWarehouse.setDelFlag(Long.valueOf(DelConstants.NODEL));
-        // 联动Inventory表进行出库
-        InventoryToEx(exWarehouse.getStoreID(), exWarehouse.getOutAmount(), exWarehouse.getOrdersNo(), exWarehouse.getOutDate());
 
         // TODO： 出库信息的新增以后考虑下，似乎不能让用户自己填写出库信息
 
@@ -139,6 +137,23 @@ public class ExWarehouseServiceImpl implements IExWarehouseService
         return exWarehouseMapper.deleteExWarehouseById(id);
     }
 
+    /**
+     * 删除出库信息
+     *
+     * @param OrderNo
+     * @return
+     */
+    @Override
+    public int deleteExWarehouseByOrderNo(String OrderNo) {
+
+        // 打上删除标记的同时还原库存
+        QueryWrapper<ExWarehouse> query = new QueryWrapper<ExWarehouse>().eq("ordersNo", OrderNo).eq("delFlag", DelConstants.NODEL);
+        exWarehouseMapper.selectList(query).forEach(exWarehouse -> {
+            InventoryToBack(exWarehouse.getStoreID(), exWarehouse.getOutAmount());
+        });
+        return exWarehouseMapper.deleteExWarehouseByOrderNo(OrderNo);
+    }
+
     @Override
     @Transactional(isolation = Isolation.SERIALIZABLE,rollbackFor = Exception.class)
     public void InventoryToEx(Long InventoryId, Long outAmount, String OrderNo, String outDate) {
@@ -169,6 +184,8 @@ public class ExWarehouseServiceImpl implements IExWarehouseService
 
         insertExWarehouse(exWarehouse);
     }
+
+
 
     private void InventoryToBack(Long InventoryId, Long outAmount) {
         Inventory inventory = inventoryMapper.selectInventoryById(InventoryId);

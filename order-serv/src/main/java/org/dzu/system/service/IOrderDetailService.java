@@ -1,6 +1,8 @@
 package org.dzu.system.service;
 
 import java.util.List;
+
+import org.dzu.system.domain.GoodsOrder;
 import org.dzu.system.domain.OrderDetail;
 
 /**
@@ -64,4 +66,6 @@ public interface IOrderDetailService
     void backupOrderDetail(String ordersNo);
 
     void adjustOrderDetail(String ordersNo);
+
+    void deleteOrderDetailByOrderId(GoodsOrder id);
 }

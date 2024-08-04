@@ -62,4 +62,6 @@ public interface IExWarehouseService
 
     @Transactional
     void InventoryToEx(Long InventoryId, Long outAmount, String OrderNo, String outDate);
+
+    int deleteExWarehouseByOrderNo(String detail);
 }

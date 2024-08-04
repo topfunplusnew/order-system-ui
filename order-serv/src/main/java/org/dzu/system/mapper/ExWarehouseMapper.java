@@ -59,4 +59,6 @@ public interface ExWarehouseMapper extends BaseMapper<ExWarehouse>
      * @return 结果
      */
     public int deleteExWarehouseByIds(Long[] ids);
+
+    int deleteExWarehouseByOrderNo(String orderNo);
 }
