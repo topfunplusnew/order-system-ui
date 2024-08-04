@@ -67,6 +67,14 @@ public class GoodsOrderServiceImpl implements IGoodsOrderService {
      */
     @Override
     public List<GoodsOrder> selectGoodsOrderList(GoodsOrder goodsOrder) {
+        // 校验一下开始和结束时间戳是否是纯数字
+        if (StringUtils.isNotEmpty(goodsOrder.getOrderDateStart()) && !StringUtils.isNumeric(goodsOrder.getOrderDateStart())) {
+            throw new ServiceException("开始时间戳不合法");
+        }
+        if (StringUtils.isNotEmpty(goodsOrder.getOrderDateEnd()) && !StringUtils.isNumeric(goodsOrder.getOrderDateEnd())) {
+            throw new ServiceException("结束时间戳不合法");
+        }
+
         return goodsOrderMapper.selectGoodsOrderList(goodsOrder);
     }
 

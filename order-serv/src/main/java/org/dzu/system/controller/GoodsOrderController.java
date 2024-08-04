@@ -40,7 +40,7 @@ public class GoodsOrderController extends BaseController
      */
     @PreAuthorize("@ss.hasPermi('system:goodsOrder:list')")
     @GetMapping("/list")
-    public TableDataInfo list(GoodsOrder goodsOrder)
+    public TableDataInfo list( GoodsOrder goodsOrder)
     {
         startPage();
         List<GoodsOrder> list = goodsOrderService.selectGoodsOrderList(goodsOrder);
