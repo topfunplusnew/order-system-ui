@@ -116,15 +116,15 @@
         <el-col :span="1.5">
           <el-button icon="el-icon-refresh" size="mini" @click="resetQuery">刷新</el-button>
         </el-col>
-<!--        <el-button-->
-<!--          type="primary"-->
-<!--          plain-->
-<!--          icon="el-icon-plus"-->
-<!--          size="mini"-->
-<!--          @click="handleAdd"-->
-<!--          v-hasPermi="['system:oilCard:add']"-->
-<!--        >新增-->
-<!--        </el-button>-->
+        <el-button
+          type="primary"
+          plain
+          icon="el-icon-plus"
+          size="mini"
+          @click="handleAdd"
+          v-hasPermi="['system:oilCard:add']"
+        >新增加油卡信息
+        </el-button>
       </el-col>
 <!--      <el-col :span="1.5">-->
 <!--        <el-button
@@ -193,7 +193,7 @@
 
     <el-table border v-loading="loading" :data="oilCardList" @selection-change="handleSelectionChange" id="printBox"
               v-horizontal-scroll="'always'">
-      <el-table-column type="selection" width="55" align="center">
+<!--      <el-table-column type="selection" width="55" align="center">-->
         <el-table-column label="id" align="center" prop="id"/>
         <el-table-column label="加油卡卡号" align="center" prop="oilCardNo" v-if="columns[0].visible"/>
         <el-table-column label="使用加油卡时间" align="center" prop="useDate" v-if="columns[1].visible"/>
@@ -209,9 +209,9 @@
         <el-table-column label="加油卡余额" align="center" prop="endCardSurplus" v-if="columns[11].visible"/>
         <el-table-column label="加油卡类别" align="center" prop="oilType" v-if="columns[12].visible"/>
         <el-table-column label="备注" align="center" prop="comments" v-if="columns[13].visible"/>
-        <el-table-column label="操作" align="center" class-name="small-padding fixed-width"/>
+        <el-table-column label="操作" align="center" class-name="small-padding fixed-width" fixed="right" >
         <template slot-scope="scope">
-          <el-button
+<!--          <el-button
             size="mini"
             type="text"
             icon="el-icon-edit"
@@ -226,11 +226,25 @@
             @click="handleDelete(scope.row)"
             v-hasPermi="['system:oilCard:remove']"
           >删除
+          </el-button>-->
+          <el-button
+            size="mini"
+            type="primary"
+            @click="handleUpdate(scope.row)"
+            v-hasPermi="['system:oilcard:edit']"
+          >编辑
+          </el-button>
+          <el-button
+            size="mini"
+            type="danger"
+            @click="handleDelete(scope.row)"
+            v-hasPermi="['system:oilcard:remove']"
+          >删除
           </el-button>
         </template>
       </el-table-column>
     </el-table>
-
+<!--分页-->
     <pagination
       v-show="total>0"
       :total="total"
@@ -286,8 +300,14 @@
       <div slot="footer" class="dialog-footer">
         <el-button type="primary" @click="submitForm">确 定</el-button>
         <el-button @click="cancel">取 消</el-button>
-
       </div>
+      <pagination
+        v-show="total>0"
+        :total="total"
+        :page.sync="queryParams.pageNum"
+        :limit.sync="queryParams.pageSize"
+        @pagination="getList"
+      />
     </el-dialog>
   </div>
 </template>
