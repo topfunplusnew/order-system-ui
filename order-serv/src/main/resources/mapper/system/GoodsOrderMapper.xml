@@ -145,11 +145,15 @@
     <select id="selectGoodsOrderList" parameterType="GoodsOrder" resultMap="GoodsOrderResult">
         <include refid="selectGoodsOrderVo"/>
         <where>
+
+<!--            前端传入两个时间戳，在这里做范围匹配-->
+            <if test="orderDateStart != null and orderDateStart != '' and orderDateEnd != null and orderDateEnd != ''">
+<!--                    需要注意的是时间都是时间戳形式的字符串-->
+                and orderDate between #{orderDateStart} and #{orderDateEnd}
+            </if>
+
             <if test="ordersNo != null  and ordersNo != ''">
                 and ordersNo = #{ordersNo}
-            </if>
-            <if test="orderDate != null  and orderDate != ''">
-                and orderDate = #{orderDate}
             </if>
             <if test="customer != null  and customer != ''">
                 and customer = #{customer}

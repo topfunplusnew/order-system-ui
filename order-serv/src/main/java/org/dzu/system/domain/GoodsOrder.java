@@ -41,7 +41,35 @@ public class GoodsOrder extends BaseEntity
     @Excel(name = "日期")
     @TableField(value = "orderDate")
     @Length(max = 50)
+    // 已知前端在此处传入时间戳，必定是数字组成
+    @Pattern(regexp = "^[0-9]*$",message = "orderDate必须是时间戳形式的")
     private String orderDate;
+
+
+    // 需要添加两个字段，用来前端传入两个界限时间，用来查询订单
+    // 一个是开始时间，一个是结束时间，同时这个两个字段应该被excel工具和mybatisPlus忽略
+    @Pattern(regexp = "^[0-9]*$",message = "orderDateStart必须是时间戳形式的")
+    @TableField(exist = false)
+    private String orderDateStart;
+    @Pattern(regexp = "^[0-9]*$",message = "orderDateEnd必须是时间戳形式的")
+    @TableField(exist = false)
+    private String orderDateEnd;
+
+    public String getOrderDateStart() {
+        return orderDateStart;
+    }
+
+    public void setOrderDateStart(@Pattern(regexp = "^[0-9]*$", message = "orderDateStart必须是时间戳形式的") String orderDateStart) {
+        this.orderDateStart = orderDateStart;
+    }
+
+    public  String getOrderDateEnd() {
+        return orderDateEnd;
+    }
+
+    public void setOrderDateEnd(@Pattern(regexp = "^[0-9]*$", message = "orderDateEnd必须是时间戳形式的") String orderDateEnd) {
+        this.orderDateEnd = orderDateEnd;
+    }
 
     /** 客户 */
     @Excel(name = "客户")
