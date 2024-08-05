@@ -46,4 +46,4 @@ nbdist/
 !*/build/*.html
 !*/build/*.xml
 orderUI/package-lock.json
-
+order-serv/src/main/resources/application.yml
