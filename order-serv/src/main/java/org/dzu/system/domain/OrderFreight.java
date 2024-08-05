@@ -30,8 +30,8 @@ public class OrderFreight extends BaseEntity
     private Long id;
 
     /** 订单编号（UUID） */
-    @Excel(name = "订单编号", readConverterExp = "UUID")
-    @Length(max = 20, message = "订单编号长度不能超过20个字符")
+    @Excel(name = "订单编号")
+    @Length(max = 40, message = "订单编号长度不能超过40个字符")
     @TableField(value = "ordersNo")
     private String ordersNo;
 
@@ -44,7 +44,6 @@ public class OrderFreight extends BaseEntity
 
     /** 金额 */
     @Excel(name = "金额")
-    @DecimalMaxDigits
     @TableField(value = "moneyAmount")
     private String moneyAmount;
 
@@ -109,7 +108,6 @@ public class OrderFreight extends BaseEntity
 
     /** 司机ID */
     @Excel(name = "司机ID")
-    @Length(max = 20, message = "司机ID的字符长度不允许超过20")
     @NotNull(message = "司机ID不能为空")
     @TableField(value = "driverId")
     private Long driverId;
@@ -117,9 +115,9 @@ public class OrderFreight extends BaseEntity
     /** 车牌号 */
     @Excel(name = "车牌号")
     @NotNull(message = "车牌号不能为空")
-    @Length(max = 20, message = "车牌号的字符长度不允许超过20")
+    @Length(max = 32, message = "车牌号的字符长度不允许超过20")
     @TableField(value = "CarNo")
-    private String CarNo;
+    private String carNo;
 
     /** 车队 */
     @Excel(name = "车队")
@@ -130,7 +128,6 @@ public class OrderFreight extends BaseEntity
 
     /** 申请人员ID */
     @Excel(name = "申请人员ID")
-    @Length(max = 20, message = "申请人员ID的字符长度不允许超过20")
     @TableField(value = "applyUserId")
     private Long applyUserId;
 
@@ -147,13 +144,11 @@ public class OrderFreight extends BaseEntity
 
     /** 是否可编辑 */
     @Excel(name = "是否可编辑")
-    @Length(max = 1, message = "是否可编辑的字符长度不允许超过1")
     @TableField(value = "isedit")
     private Long isedit;
 
     /** 付款人员ID */
     @Excel(name = "付款人员ID")
-    @Length(max = 20, message = "付款人员ID的字符长度不允许超过20")
     @TableField(value = "payUserId")
     private Long payUserId;
 
@@ -325,16 +320,16 @@ public class OrderFreight extends BaseEntity
     {
         return driverId;
     }
-    public void setCarNo(String CarNo) 
-    {
-        this.CarNo = CarNo;
+
+    public String getCarNo() {
+        return carNo;
     }
 
-    public String getCarNo() 
-    {
-        return CarNo;
+    public void setCarNo(@NotNull(message = "车牌号不能为空") @Length(max = 32, message = "车牌号的字符长度不允许超过20") String carNo) {
+        this.carNo = carNo;
     }
-    public void setFleet(String fleet) 
+
+    public void setFleet(String fleet)
     {
         this.fleet = fleet;
     }
