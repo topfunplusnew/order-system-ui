@@ -434,6 +434,9 @@ public class GoodsOrderServiceImpl implements IGoodsOrderService {
                 .orElse(0);                            // 如果没有最大值，返回 0
         switch (maxValue) {
             case 0:
+                // 无限制，但是填写一个恒成立的条件
+                goodsOrder.getParams().put("orderDataScope", " and 1 = 1");
+
                 break;
             case 1:
                 // 仅能查看自己录入的
@@ -449,6 +452,8 @@ public class GoodsOrderServiceImpl implements IGoodsOrderService {
                 goodsOrder.getParams().put("orderDataScope", " and userId = " + SecurityUtils.getUserId() + " or customerID in (select id from company where delFlag = 0 and userId = " + SecurityUtils.getUserId() + ")");
                 break;
             default:
+                // 不做任何限制，但是拼接一个恒成立的条件
+                goodsOrder.getParams().put("orderDataScope", " and 1 = 1");
                 break;
         }
     }

@@ -257,10 +257,8 @@
             <if test="UserName != null  and UserName != ''">
                 and UserName like concat('%', #{UserName}, '%')
             </if>
+            ${params.orderDataScope}
 
-            <if test="params.orderDataScope != null and params.orderDataScope != ''">
-            #{params.orderDataScope}
-            </if>
         </where>
     </select>
 
