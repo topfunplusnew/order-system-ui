@@ -398,16 +398,51 @@
       <el-table-column label="收到条附件路径" align="center" prop="receiveProof"/>
 
       <!--      是与否-->
-      <el-table-column label="是否被调整单" align="center" prop="isAdjusted"/>
-      <el-table-column label="是否调整单" align="center" prop="isAdjust"/>
+      <el-table-column label="是否被调整单" align="center" prop="isAdjusted">
+        <template slot-scope="scope">
+          <el-tag
+            :type="scope.row.isAdjusted === '否' ? 'danger' :'success'"
+            disable-transitions>{{ scope.row.isAdjusted }}
+          </el-tag>
+        </template>
+      </el-table-column>
+      <el-table-column label="是否调整单" align="center" prop="isAdjust">
+        <template slot-scope="scope">
+          <el-tag
+            :type="scope.row.isAdjust === '否' ? 'danger' :'success'"
+            disable-transitions>{{ scope.row.isAdjust }}
+          </el-tag>
+        </template>
+      </el-table-column>
 
       <el-table-column label="调整日期" align="center" prop="adjustDate"/>
       <el-table-column label="原订单编号" align="center" prop="adjustOrderid"/>
 
       <!--      是与否-->
-      <el-table-column label="是否可编辑" align="center" prop="isedit"/>
-      <el-table-column label="客户是否开票" align="center" prop="customerIsInvoice"/>
-      <el-table-column label="供应商是否开票" align="center" prop="isSupplierInvoice"/>
+      <el-table-column label="是否可编辑" align="center" prop="isedit">
+        <template slot-scope="scope">
+          <el-tag
+            :type="scope.row.isedit === 0 ? 'danger' :'success'"
+            disable-transitions>{{ isOrNot(scope.row.isedit) }}
+          </el-tag>
+        </template>
+      </el-table-column>
+      <el-table-column label="客户是否开票" align="center" prop="customerIsInvoice">
+        <template slot-scope="scope">
+          <el-tag
+            :type="scope.row.customerIsInvoice === 0 ? 'danger' :'success'"
+            disable-transitions>{{ isOrNot(scope.row.customerIsInvoice) }}
+          </el-tag>
+        </template>
+      </el-table-column>
+      <el-table-column label="供应商是否开票" align="center" prop="isSupplierInvoice">
+        <template slot-scope="scope">
+          <el-tag
+            :type="scope.row.isSupplierInvoice === 0 ? 'danger' :'success'"
+            disable-transitions>{{ isOrNot(scope.row.isSupplierInvoice) }}
+          </el-tag>
+        </template>
+      </el-table-column>
       <!--      <el-table-column label="客户ID" align="center" prop="customerID"/>-->
       <!--      <el-table-column label="审核人编号" align="center" prop="checkUserId"/>-->
       <!--      <el-table-column label="陆运车辆ID" align="center" prop="landCarID"/>-->
