@@ -322,7 +322,7 @@
 
     <!--    表格列-->
     <el-table v-loading="loading" :data="goodsOrderList" @selection-change="handleSelectionChange"
-              show-summary :summary-method="getSummaries" id="printBox">
+              show-summary :summary-method="getSummaries" id="printBox" :row-class-name="tableRowClassName">
       <!--      左侧操作栏-->
       <el-table-column label="操作" align="center" class-name="small-padding fixed-width" width="170px" fixed="left">
         <template slot-scope="scope">
@@ -336,12 +336,6 @@
             type="primary"
             @click="handleOrderItemInfo(scope.row)"
           >调整单
-          </el-button>
-          <el-button
-            size="mini"
-            type="danger"
-            @click="handleUpdate(scope.row)"
-          >复制
           </el-button>
           <el-button
             size="mini"
@@ -368,14 +362,35 @@
       <el-table-column label="销售经理" align="center" prop="saleManager"/>
       <el-table-column label="车队" align="center" prop="fleet"/>
       <!--      是与否-->
-      <el-table-column label="审核状态" align="center" prop="checkState"/>
-      <el-table-column label="开票状态" align="center" prop="invoiceState"/>
+      <el-table-column label="审核状态" align="center" prop="checkState">
+        <template slot-scope="scope">
+          <el-tag
+            :type="scope.row.checkState === '未审核' ? 'danger' : 'success'"
+            disable-transitions>{{ scope.row.checkState }}
+          </el-tag>
+        </template>
+      </el-table-column>
+      <el-table-column label="开票状态" align="center" prop="invoiceState">
+        <template slot-scope="scope">
+          <el-tag
+            :type="scope.row.invoiceState === '未开票' ? 'danger' : 'success'"
+            disable-transitions>{{ scope.row.invoiceState }}
+          </el-tag>
+        </template>
+      </el-table-column>
 
       <!--  todo    压缩上传-->
       <el-table-column label="附件路径" align="center" prop="path"/>
 
       <!--      无字典 转换-->
-      <el-table-column label="打款状态(申请中，已打款，未打款)" align="center" prop="PaymentState"/>
+      <el-table-column label="打款状态(申请中，已打款，未打款)" align="center" prop="PaymentState">
+        <template slot-scope="scope">
+          <el-tag
+            :type="scope.row.PaymentState === '未打款' ? 'danger' : scope.row.PaymentState === '申请中'?'primary':'success'"
+            disable-transitions>{{ scope.row.PaymentState }}
+          </el-tag>
+        </template>
+      </el-table-column>
       <el-table-column label="陆运银行户名" align="center" prop="landBankName"/>
       <el-table-column label="陆运银行账号" align="center" prop="landBankNo"/>
       <el-table-column label="海运银行户名" align="center" prop="seaBankName"/>
@@ -894,7 +909,7 @@ export default {
       //查询该id的订单详细信息
       getGoodsOrder(id).then(res => {
         //调整单 调用调整订单接口 传入数据
-        //todo
+        //todo 将ordersNo赋值为空
         let orderInfo = res.data
         for (let i = 0; i < orderInfo.orderDetailList.length; i++) {
           orderInfo.orderDetailList[i].ordersNo = ''
@@ -913,6 +928,10 @@ export default {
           this.$message.error('调整单提交失败' + err.msg)
         })
       })
+    },
+    //表格中的列自定义样式信息 渲染的时候每一个列都会执行这个函数
+    tableRowClassName({row, rowIndex}) {
+      console.log(row)
     },
     //表格统计
     //自定义列统计总函数
