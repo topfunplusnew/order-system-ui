@@ -4,21 +4,21 @@
     <el-form :model="queryOrderInfo" ref="queryForm" size="small" :inline="true" v-show="showSearch"
              label-width="100px">
       <!--      开始时间-->
-      <!--      <el-form-item label="开始日期" prop="startTime">-->
-      <!--        <el-date-picker-->
-      <!--          v-model="queryOrderInfo.startTime"-->
-      <!--          type="date"-->
-      <!--          placeholder="请选择开始日期" value-format="yyyy-MM-dd">-->
-      <!--        </el-date-picker>-->
-      <!--      </el-form-item>-->
-      <!--      &lt;!&ndash;      结束时间&ndash;&gt;-->
-      <!--      <el-form-item label="结束日期" prop="endTime">-->
-      <!--        <el-date-picker-->
-      <!--          v-model="queryOrderInfo.endTime"-->
-      <!--          type="date"-->
-      <!--          placeholder="请选择结束日期" value-format="yyyy-MM-dd">-->
-      <!--        </el-date-picker>-->
-      <!--      </el-form-item>-->
+      <!--            <el-form-item label="开始日期" prop="startTime">-->
+      <!--              <el-date-picker-->
+      <!--                v-model="queryOrderInfo.startTime"-->
+      <!--                type="date"-->
+      <!--                placeholder="请选择开始日期" value-format="yyyy-MM-dd">-->
+      <!--              </el-date-picker>-->
+      <!--            </el-form-item>-->
+      <!--            &lt;!&ndash;      结束时间&ndash;&gt;-->
+      <!--            <el-form-item label="结束日期" prop="endTime">-->
+      <!--              <el-date-picker-->
+      <!--                v-model="queryOrderInfo.endTime"-->
+      <!--                type="date"-->
+      <!--                placeholder="请选择结束日期" value-format="yyyy-MM-dd">-->
+      <!--              </el-date-picker>-->
+      <!--            </el-form-item>-->
       <!--      业务员查询-->
       <!--      <el-form-item label="业务员名称" prop="salesman">-->
       <!--        <el-input-->

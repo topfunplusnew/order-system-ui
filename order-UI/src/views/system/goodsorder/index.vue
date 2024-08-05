@@ -11,38 +11,23 @@
         />
       </el-form-item>
       <!--      时间范围查询-->
-      <el-form-item label="日期" prop="orderDate">
-        <el-input
-          v-model="queryParams.orderDate"
-          placeholder="请输入日期"
-          clearable
-          @keyup.enter.native="handleQuery"
-        />
+      <el-form-item label="开始日期" prop="startTime">
+        <el-date-picker
+          v-model="queryParams.startTime"
+          type="date"
+          placeholder="请选择开始日期" value-format="yyyy-MM-dd">
+        </el-date-picker>
       </el-form-item>
-      <el-form-item label="客户" prop="customer">
-        <el-input
-          v-model="queryParams.customer"
-          placeholder="请输入客户"
-          clearable
-          @keyup.enter.native="handleQuery"
-        />
+      <!--      结束时间-->
+      <el-form-item label="结束日期" prop="endTime">
+        <el-date-picker
+          v-model="queryParams.endTime"
+          type="date"
+          placeholder="请选择结束日期" value-format="yyyy-MM-dd">
+        </el-date-picker>
       </el-form-item>
-      <!--      <el-form-item label="客户ID" prop="customerID">-->
-      <!--        <el-input-->
-      <!--          v-model="queryParams.customerID"-->
-      <!--          placeholder="请输入客户ID"-->
-      <!--          clearable-->
-      <!--          @keyup.enter.native="handleQuery"-->
-      <!--        />-->
-      <!--      </el-form-item>-->
-      <!--      <el-form-item label="陆运车辆ID" prop="landCarID">-->
-      <!--        <el-input-->
-      <!--          v-model="queryParams.landCarID"-->
-      <!--          placeholder="请输入陆运车辆ID"-->
-      <!--          clearable-->
-      <!--          @keyup.enter.native="handleQuery"-->
-      <!--        />-->
-      <!--      </el-form-item>-->
+
+      <!--      基础信息-->
       <el-form-item label="陆运车牌" prop="landCarNo">
         <el-input
           v-model="queryParams.landCarNo"
@@ -67,14 +52,7 @@
           @keyup.enter.native="handleQuery"
         />
       </el-form-item>
-      <!--      <el-form-item label="海运车辆ID" prop="seaCarID">-->
-      <!--        <el-input-->
-      <!--          v-model="queryParams.seaCarID"-->
-      <!--          placeholder="请输入海运车辆ID"-->
-      <!--          clearable-->
-      <!--          @keyup.enter.native="handleQuery"-->
-      <!--        />-->
-      <!--      </el-form-item>-->
+
       <el-form-item label="海运车牌" prop="seaCarNo">
         <el-input
           v-model="queryParams.seaCarNo"
@@ -99,6 +77,30 @@
           @keyup.enter.native="handleQuery"
         />
       </el-form-item>
+      <!--      <el-form-item label="海运车辆ID" prop="seaCarID">-->
+      <!--        <el-input-->
+      <!--          v-model="queryParams.seaCarID"-->
+      <!--          placeholder="请输入海运车辆ID"-->
+      <!--          clearable-->
+      <!--          @keyup.enter.native="handleQuery"-->
+      <!--        />-->
+      <!--      </el-form-item>-->
+      <!--      <el-form-item label="客户ID" prop="customerID">-->
+      <!--        <el-input-->
+      <!--          v-model="queryParams.customerID"-->
+      <!--          placeholder="请输入客户ID"-->
+      <!--          clearable-->
+      <!--          @keyup.enter.native="handleQuery"-->
+      <!--        />-->
+      <!--      </el-form-item>-->
+      <!--      <el-form-item label="陆运车辆ID" prop="landCarID">-->
+      <!--        <el-input-->
+      <!--          v-model="queryParams.landCarID"-->
+      <!--          placeholder="请输入陆运车辆ID"-->
+      <!--          clearable-->
+      <!--          @keyup.enter.native="handleQuery"-->
+      <!--        />-->
+      <!--      </el-form-item>-->
       <!--      <el-form-item label="审核人编号" prop="checkUserId">-->
       <!--        <el-input-->
       <!--          v-model="queryParams.checkUserId"-->
@@ -357,16 +359,12 @@
 
       <!--      以下字段可动-->
       <el-table-column label="订单编号" align="center" prop="ordersNo"/>
-      <el-table-column label="客户ID" align="center" prop="customerID"/>
-      <el-table-column label="陆运车辆ID" align="center" prop="landCarID"/>
       <el-table-column label="陆运车牌" align="center" prop="landCarNo"/>
       <el-table-column label="陆运司机电话" align="center" prop="landDriverTel"/>
       <el-table-column label="陆地司机姓名" align="center" prop="landDriverName"/>
-      <el-table-column label="海运车辆ID" align="center" prop="seaCarID"/>
       <el-table-column label="海运车牌" align="center" prop="seaCarNo"/>
       <el-table-column label="海运司机电话" align="center" prop="seaDriverTel"/>
       <el-table-column label="海运司机姓名" align="center" prop="seaDriverName"/>
-      <el-table-column label="审核人编号" align="center" prop="checkUserId"/>
       <el-table-column label="销售经理" align="center" prop="saleManager"/>
       <el-table-column label="车队" align="center" prop="fleet"/>
       <!--      是与否-->
@@ -384,7 +382,6 @@
       <el-table-column label="海运银行账号" align="center" prop="seaBankNo"/>
       <el-table-column label="收到条附件路径" align="center" prop="receiveProof"/>
 
-
       <!--      是与否-->
       <el-table-column label="是否被调整单" align="center" prop="isAdjusted"/>
       <el-table-column label="是否调整单" align="center" prop="isAdjust"/>
@@ -396,6 +393,10 @@
       <el-table-column label="是否可编辑" align="center" prop="isedit"/>
       <el-table-column label="客户是否开票" align="center" prop="customerIsInvoice"/>
       <el-table-column label="供应商是否开票" align="center" prop="isSupplierInvoice"/>
+      <!--      <el-table-column label="客户ID" align="center" prop="customerID"/>-->
+      <!--      <el-table-column label="审核人编号" align="center" prop="checkUserId"/>-->
+      <!--      <el-table-column label="陆运车辆ID" align="center" prop="landCarID"/>-->
+      <!--      <el-table-column label="海运车辆ID" align="center" prop="seaCarID"/>-->
       <!--      右侧操作栏-->
       <el-table-column label="操作" align="center" class-name="small-padding fixed-width" width="300px" fixed="right">
         <template slot-scope="scope">
@@ -560,17 +561,65 @@
       </div>
     </el-dialog>
 
-    <!--    点击查看某个订单的弹窗   -->
+    <!--        点击查看某个订单的弹窗   -->
     <el-dialog
-      title="提示"
+      title="查看订单信息"
       :visible.sync="checkOrderVisible"
       width="30%">
-      <span>点击查看订单的弹窗</span>
+      <el-descriptions title="订单信息" :column="1" border>
+        <el-descriptions-item label="id">{{ orderDetailInfo.id }}</el-descriptions-item>
+        <el-descriptions-item label="日期">{{ orderDetailInfo.orderDate }}</el-descriptions-item>
+        <el-descriptions-item label="客户">{{ orderDetailInfo.customer }}</el-descriptions-item>
+        <!--        <el-descriptions-item label="供应商">{{ orderDetailInfo.supplier }}</el-descriptions-item>-->
+        <el-descriptions-item label="商家姓名">{{ orderDetailInfo.supplierNames }}</el-descriptions-item>
+        <el-descriptions-item label="车队">{{ orderDetailInfo.fleet }}</el-descriptions-item>
+        <!--  todo      审核状态 是否字典-->
+        <el-descriptions-item label="审核状态">
+          <TagsItem :check-info="orderDetailInfo.checkState" checkValue="未审核"/>
+        </el-descriptions-item>
+        <el-descriptions-item label="开票状态">
+          <TagsItem :check-info="orderDetailInfo.invoiceState" checkValue="未开票"/>
+        </el-descriptions-item>
+        <!-- todo       附件-->
+        <el-descriptions-item label="附件">{{ orderDetailInfo.path }}</el-descriptions-item>
+        <el-descriptions-item label="陆运车牌">{{ orderDetailInfo.landCarNo }}</el-descriptions-item>
+        <el-descriptions-item label="陆运司机电话">{{ orderDetailInfo.landDriverTel }}</el-descriptions-item>
+        <el-descriptions-item label="陆运司机姓名">{{ orderDetailInfo.landDriverName }}</el-descriptions-item>
+        <el-descriptions-item label="海运车牌">{{ orderDetailInfo.seaCarNo }}</el-descriptions-item>
+        <el-descriptions-item label="海运司机电话">{{ orderDetailInfo.seaDriverTel }}</el-descriptions-item>
+        <el-descriptions-item label="海运司机姓名">{{ orderDetailInfo.seaDriverName }}</el-descriptions-item>
+        <el-descriptions-item label="打款状态">{{ orderDetailInfo.PaymentState }}</el-descriptions-item>
+        <el-descriptions-item label="陆运银行户名">{{ orderDetailInfo.landBankName }}</el-descriptions-item>
+        <el-descriptions-item label="陆运银行账号">{{ orderDetailInfo.landBankNo }}</el-descriptions-item>
+        <el-descriptions-item label="海运银行户名">{{ orderDetailInfo.seaBankName }}</el-descriptions-item>
+        <el-descriptions-item label="海运银行账号">{{ orderDetailInfo.seaBankNo }}</el-descriptions-item>
+        <el-descriptions-item label="收到条附件">{{ orderDetailInfo.receiveProof }}</el-descriptions-item>
+        <el-descriptions-item label="是否被调整单">
+          <TagsItem :check-info="orderDetailInfo.isAdjusted " check-value="否"/>
+        </el-descriptions-item>
+        <el-descriptions-item label="调整日期" v-if="orderDetailInfo.isAdjusted">{{
+            orderDetailInfo.adjustDate
+          }}
+        </el-descriptions-item>
+        <el-descriptions-item label="原订单编号">{{ orderDetailInfo.adjustOrderid }}</el-descriptions-item>
+        <el-descriptions-item label="是否可编辑">
+          <TagsItem :check-info="isOrNot(orderDetailInfo.isedit) " check-value="否"/>
+        </el-descriptions-item>
+        <el-descriptions-item label="客户是否开票">
+          <TagsItem :check-info="isOrNot(orderDetailInfo.customerIsInvoice)" check-value="否"/>
+        </el-descriptions-item>
+        <el-descriptions-item label="供应商是否开票">
+          <TagsItem :check-info="isOrNot(orderDetailInfo.customerIsInvoice)" check-value="否"/>
+        </el-descriptions-item>
+        <el-descriptions-item label="陆运费">{{ orderDetailInfo.landFreight }}</el-descriptions-item>
+        <el-descriptions-item label="海运费">{{ orderDetailInfo.seaFreight }}</el-descriptions-item>
+      </el-descriptions>
       <span slot="footer" class="dialog-footer">
-    <el-button @click="checkOrderVisible = false">取 消</el-button>
-    <el-button type="primary" @click="checkOrderVisible = false">确 定</el-button>
-  </span>
+        <el-button @click="checkOrderVisible = false">取 消</el-button>
+        <el-button type="primary" @click="checkOrderVisible = false">确 定</el-button>
+      </span>
     </el-dialog>
+
 
     <!--    点击调整单的弹窗-->
     <el-dialog
@@ -644,14 +693,30 @@
     <el-button type="primary" @click="handleCommitVisible = false">确 定</el-button>
   </span>
     </el-dialog>
+
+
+    <!--    添加订单的新弹窗 原有的新增不使用-->
+    <el-dialog
+      title="订单信息"
+      :visible.sync="addOrderItemVisible"
+      width="80%">
+      <OrderForm/>
+      <span slot="footer" class="dialog-footer">
+    <el-button @click="addOrderItemVisible = false">取 消</el-button>
+    <el-button type="primary" @click="addOrderItemVisible = false">确 定</el-button>
+  </span>
+    </el-dialog>
   </div>
 </template>
 
 <script>
 import {listGoodsOrder, getGoodsOrder, delGoodsOrder, addGoodsOrder, updateGoodsOrder} from "@/api/system/goodsOrder";
+import TagsItem from "@/components/TagsItem/index.vue";
+import OrderForm from "@/components/OrderForm.vue";
 
 export default {
   name: "GoodsOrder",
+  components: {OrderForm, TagsItem},
   data() {
     return {
       // 遮罩层
@@ -741,16 +806,56 @@ export default {
       Order3Visible: false,
       //上传和收到条
       handleUploadVisible: false,
-      handleCommitVisible: false
+      handleCommitVisible: false,
+      //添加新订单的弹窗
+      addOrderItemVisible: false,
+      //查看订单中的列表
+      orderDetailInfo: {},
+      //添加订单详情
+      addOrderItem: {}
     };
   },
   created() {
     this.getList();
   },
+  computed: {
+    //审核状态
+    tempCheckState: {
+      get() {
+
+      },
+      set() {
+
+      }
+    },
+    //开票状态
+    tempOpenTicketState: {
+      get() {
+
+      },
+      set() {
+
+      }
+    },
+
+  },
   methods: {
+    //提交订单信息
+    onOrderSubmit() {
+
+    },
+    //是或者否
+    isOrNot(val) {
+      return val === 1 ? "是" : "否";
+    },
     //点击查看
     checkOrderItemInfo(row) {
       this.checkOrderVisible = true;
+      const id = row.id;
+      getGoodsOrder(id).then(res => {
+        this.orderDetailInfo = res.data;
+        console.log(res)
+      })
     },
     //点击调整单的弹窗
     handleOrderItemInfo(row) {
@@ -893,9 +998,12 @@ export default {
     },
     /** 新增按钮操作 */
     handleAdd() {
-      this.reset();
-      this.open = true;
-      this.title = "添加订单";
+      // this.reset();
+      // this.open = true;
+      // this.title = "添加订单";
+
+      //打开新的新增框
+      this.addOrderItemVisible = true
     },
     /** 修改按钮操作 */
     handleUpdate(row) {
