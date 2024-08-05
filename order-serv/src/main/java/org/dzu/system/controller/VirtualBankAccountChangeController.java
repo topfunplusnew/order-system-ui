@@ -38,7 +38,7 @@ public class VirtualBankAccountChangeController extends BaseController
     /**
      * 查询虚拟银行账号列表
      */
-    @PreAuthorize("@ss.hasPermi('system:virtualBankAccountChange:list')")
+    @PreAuthorize("@ss.hasPermi('system:virtualbankaccountchange:list')")
     @GetMapping("/list")
     public TableDataInfo list(VirtualBankAccountChange virtualBankAccountChange)
     {
@@ -50,7 +50,7 @@ public class VirtualBankAccountChangeController extends BaseController
     /**
      * 导出虚拟银行账号列表
      */
-    @PreAuthorize("@ss.hasPermi('system:virtualBankAccountChange:export')")
+    @PreAuthorize("@ss.hasPermi('system:virtualbankaccountchange:export')")
     @Log(title = "虚拟银行账号", businessType = BusinessType.EXPORT)
     @PostMapping("/export")
     public void export(HttpServletResponse response, VirtualBankAccountChange virtualBankAccountChange)
@@ -63,7 +63,7 @@ public class VirtualBankAccountChangeController extends BaseController
     /**
      * 获取虚拟银行账号详细信息
      */
-    @PreAuthorize("@ss.hasPermi('system:virtualBankAccountChange:query')")
+    @PreAuthorize("@ss.hasPermi('system:virtualbankaccountchange:query')")
     @GetMapping(value = "/{id}")
     public AjaxResult getInfo(@PathVariable("id") Long id)
     {
@@ -73,7 +73,7 @@ public class VirtualBankAccountChangeController extends BaseController
     /**
      * 新增虚拟银行账号
      */
-    @PreAuthorize("@ss.hasPermi('system:virtualBankAccountChange:add')")
+    @PreAuthorize("@ss.hasPermi('system:virtualbankaccountchange:add')")
     @Log(title = "虚拟银行账号", businessType = BusinessType.INSERT)
     @PostMapping
     public AjaxResult add(@Validated @RequestBody VirtualBankAccountChange virtualBankAccountChange)
@@ -84,7 +84,7 @@ public class VirtualBankAccountChangeController extends BaseController
     /**
      * 修改虚拟银行账号
      */
-    @PreAuthorize("@ss.hasPermi('system:virtualBankAccountChange:edit')")
+    @PreAuthorize("@ss.hasPermi('system:virtualbankaccountchange:edit')")
     @Log(title = "虚拟银行账号", businessType = BusinessType.UPDATE)
     @PutMapping
     public AjaxResult edit(@Validated @RequestBody VirtualBankAccountChange virtualBankAccountChange)
@@ -95,7 +95,7 @@ public class VirtualBankAccountChangeController extends BaseController
     /**
      * 删除虚拟银行账号
      */
-    @PreAuthorize("@ss.hasPermi('system:virtualBankAccountChange:remove')")
+    @PreAuthorize("@ss.hasPermi('system:virtualbankaccountchange:remove')")
     @Log(title = "虚拟银行账号", businessType = BusinessType.DELETE)
 	@DeleteMapping("/{ids}")
     public AjaxResult remove(@PathVariable Long[] ids)

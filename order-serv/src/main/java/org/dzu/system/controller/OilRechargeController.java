@@ -41,7 +41,7 @@ public class OilRechargeController extends BaseController
     /**
      * 查询加油卡充值信息列表
      */
-    @PreAuthorize("@ss.hasPermi('system:oilRecharge:list')")
+    @PreAuthorize("@ss.hasPermi('system:oilrecharge:list')")
     @GetMapping("/list")
     public TableDataInfo list(OilRecharge oilRecharge)
     {
@@ -53,7 +53,7 @@ public class OilRechargeController extends BaseController
     /**
      * 导出加油卡充值信息列表
      */
-    @PreAuthorize("@ss.hasPermi('system:oilRecharge:export')")
+    @PreAuthorize("@ss.hasPermi('system:oilrecharge:export')")
     @Log(title = "加油卡充值信息", businessType = BusinessType.EXPORT)
     @PostMapping("/export")
     public void export(HttpServletResponse response, OilRecharge oilRecharge)
@@ -66,7 +66,7 @@ public class OilRechargeController extends BaseController
     /**
      * 获取加油卡充值信息详细信息
      */
-    @PreAuthorize("@ss.hasPermi('system:oilRecharge:query')")
+    @PreAuthorize("@ss.hasPermi('system:oilrecharge:query')")
     @GetMapping(value = "/{id}")
     public AjaxResult getInfo(@PathVariable("id") Long id)
     {
@@ -76,7 +76,7 @@ public class OilRechargeController extends BaseController
     /**
      * 新增加油卡充值信息
      */
-    @PreAuthorize("@ss.hasPermi('system:oilRecharge:add')")
+    @PreAuthorize("@ss.hasPermi('system:oilrecharge:add')")
     @Log(title = "加油卡充值信息", businessType = BusinessType.INSERT)
     @PostMapping
     public AjaxResult add(@Validated @RequestBody OilRecharge oilRecharge)
@@ -87,7 +87,7 @@ public class OilRechargeController extends BaseController
     /**
      * 修改加油卡充值信息
      */
-    @PreAuthorize("@ss.hasPermi('system:oilRecharge:edit')")
+    @PreAuthorize("@ss.hasPermi('system:oilrecharge:edit')")
     @Log(title = "加油卡充值信息", businessType = BusinessType.UPDATE)
     @PutMapping
     public AjaxResult edit(@Validated @RequestBody OilRecharge oilRecharge)
@@ -98,7 +98,7 @@ public class OilRechargeController extends BaseController
     /**
      * 删除加油卡充值信息
      */
-    @PreAuthorize("@ss.hasPermi('system:oilRecharge:remove')")
+    @PreAuthorize("@ss.hasPermi('system:oilrecharge:remove')")
     @Log(title = "加油卡充值信息", businessType = BusinessType.DELETE)
 	@DeleteMapping("/{ids}")
     public AjaxResult remove(@PathVariable Long[] ids)

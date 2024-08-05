@@ -32,7 +32,7 @@
           icon="el-icon-plus"
           size="mini"
           @click="handleAdd"
-          v-hasPermi="['system:bankAcceptance:add']"
+          v-hasPermi="['system:bankacceptance:add']"
         >添加商业票据
         </el-button>
       </el-col>
@@ -44,7 +44,7 @@
       <!--          size="mini"-->
       <!--          :disabled="single"-->
       <!--          @click="handleUpdate"-->
-      <!--          v-hasPermi="['system:bankAcceptance:edit']"-->
+      <!--          v-hasPermi="['system:bankacceptance:edit']"-->
       <!--        >修改-->
       <!--        </el-button>-->
       <!--      </el-col>-->
@@ -56,7 +56,7 @@
       <!--          size="mini"-->
       <!--          :disabled="multiple"-->
       <!--          @click="handleDelete"-->
-      <!--          v-hasPermi="['system:bankAcceptance:remove']"-->
+      <!--          v-hasPermi="['system:bankacceptance:remove']"-->
       <!--        >删除-->
       <!--        </el-button>-->
       <!--      </el-col>-->
@@ -67,7 +67,7 @@
       <!--          icon="el-icon-download"-->
       <!--          size="mini"-->
       <!--          @click="handleExport"-->
-      <!--          v-hasPermi="['system:bankAcceptance:export']"-->
+      <!--          v-hasPermi="['system:bankacceptance:export']"-->
       <!--        >导出-->
       <!--        </el-button>-->
       <!--      </el-col>-->
@@ -128,7 +128,7 @@
             type="primary"
             icon="el-icon-edit"
             @click="handleUpdate(scope.row)"
-            v-hasPermi="['system:bankAcceptance:edit']"
+            v-hasPermi="['system:bankacceptance:edit']"
           >修改
           </el-button>
           <el-button
@@ -136,7 +136,7 @@
             type="danger"
             icon="el-icon-delete"
             @click="handleDelete(scope.row)"
-            v-hasPermi="['system:bankAcceptance:remove']"
+            v-hasPermi="['system:bankacceptance:remove']"
           >删除
           </el-button>
         </template>

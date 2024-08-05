@@ -38,7 +38,7 @@ public class OilCardController extends BaseController
     /**
      * 查询加油卡信息列表
      */
-    @PreAuthorize("@ss.hasPermi('system:oilCard:list')")
+    @PreAuthorize("@ss.hasPermi('system:oilcard:list')")
     @GetMapping("/list")
     public TableDataInfo list(OilCard oilCard)
     {
@@ -50,7 +50,7 @@ public class OilCardController extends BaseController
     /**
      * 导出加油卡信息列表
      */
-    @PreAuthorize("@ss.hasPermi('system:oilCard:export')")
+    @PreAuthorize("@ss.hasPermi('system:oilcard:export')")
     @Log(title = "加油卡信息", businessType = BusinessType.EXPORT)
     @PostMapping("/export")
     public void export(HttpServletResponse response, OilCard oilCard)
@@ -63,7 +63,7 @@ public class OilCardController extends BaseController
     /**
      * 获取加油卡信息详细信息
      */
-    @PreAuthorize("@ss.hasPermi('system:oilCard:query')")
+    @PreAuthorize("@ss.hasPermi('system:oilcard:query')")
     @GetMapping(value = "/{id}")
     public AjaxResult getInfo(@PathVariable("id") Long id)
     {
@@ -73,7 +73,7 @@ public class OilCardController extends BaseController
     /**
      * 新增加油卡信息
      */
-    @PreAuthorize("@ss.hasPermi('system:oilCard:add')")
+    @PreAuthorize("@ss.hasPermi('system:oilcard:add')")
     @Log(title = "加油卡信息", businessType = BusinessType.INSERT)
     @PostMapping
     public AjaxResult add(@Validated @RequestBody OilCard oilCard)
@@ -84,7 +84,7 @@ public class OilCardController extends BaseController
     /**
      * 修改加油卡信息
      */
-    @PreAuthorize("@ss.hasPermi('system:oilCard:edit')")
+    @PreAuthorize("@ss.hasPermi('system:oilcard:edit')")
     @Log(title = "加油卡信息", businessType = BusinessType.UPDATE)
     @PutMapping
     public AjaxResult edit(@Validated @RequestBody OilCard oilCard)
@@ -95,7 +95,7 @@ public class OilCardController extends BaseController
     /**
      * 删除加油卡信息
      */
-    @PreAuthorize("@ss.hasPermi('system:oilCard:remove')")
+    @PreAuthorize("@ss.hasPermi('system:oilcard:remove')")
     @Log(title = "加油卡信息", businessType = BusinessType.DELETE)
 	@DeleteMapping("/{ids}")
     public AjaxResult remove(@PathVariable Long[] ids)

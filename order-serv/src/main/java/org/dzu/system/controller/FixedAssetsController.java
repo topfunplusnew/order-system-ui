@@ -38,7 +38,7 @@ public class FixedAssetsController extends BaseController
     /**
      * 查询固定资产列表
      */
-    @PreAuthorize("@ss.hasPermi('system:fixedAssets:list')")
+    @PreAuthorize("@ss.hasPermi('system:fixedassets:list')")
     @GetMapping("/list")
     public TableDataInfo list(FixedAssets fixedAssets)
     {
@@ -50,7 +50,7 @@ public class FixedAssetsController extends BaseController
     /**
      * 导出固定资产列表
      */
-    @PreAuthorize("@ss.hasPermi('system:fixedAssets:export')")
+    @PreAuthorize("@ss.hasPermi('system:fixedassets:export')")
     @Log(title = "固定资产", businessType = BusinessType.EXPORT)
     @PostMapping("/export")
     public void export(HttpServletResponse response, FixedAssets fixedAssets)
@@ -63,7 +63,7 @@ public class FixedAssetsController extends BaseController
     /**
      * 获取固定资产详细信息
      */
-    @PreAuthorize("@ss.hasPermi('system:fixedAssets:query')")
+    @PreAuthorize("@ss.hasPermi('system:fixedassets:query')")
     @GetMapping(value = "/{id}")
     public AjaxResult getInfo(@PathVariable("id") Long id)
     {
@@ -73,7 +73,7 @@ public class FixedAssetsController extends BaseController
     /**
      * 新增固定资产
      */
-    @PreAuthorize("@ss.hasPermi('system:fixedAssets:add')")
+    @PreAuthorize("@ss.hasPermi('system:fixedassets:add')")
     @Log(title = "固定资产", businessType = BusinessType.INSERT)
     @PostMapping
     public AjaxResult add(@Validated @RequestBody FixedAssets fixedAssets)
@@ -84,7 +84,7 @@ public class FixedAssetsController extends BaseController
     /**
      * 修改固定资产
      */
-    @PreAuthorize("@ss.hasPermi('system:fixedAssets:edit')")
+    @PreAuthorize("@ss.hasPermi('system:fixedassets:edit')")
     @Log(title = "固定资产", businessType = BusinessType.UPDATE)
     @PutMapping
     public AjaxResult edit(@Validated @RequestBody FixedAssets fixedAssets)
@@ -95,7 +95,7 @@ public class FixedAssetsController extends BaseController
     /**
      * 删除固定资产
      */
-    @PreAuthorize("@ss.hasPermi('system:fixedAssets:remove')")
+    @PreAuthorize("@ss.hasPermi('system:fixedassets:remove')")
     @Log(title = "固定资产", businessType = BusinessType.DELETE)
 	@DeleteMapping("/{ids}")
     public AjaxResult remove(@PathVariable Long[] ids)

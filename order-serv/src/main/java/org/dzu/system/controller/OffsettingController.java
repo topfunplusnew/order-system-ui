@@ -38,7 +38,7 @@ public class OffsettingController extends BaseController
     /**
      * 查询对冲账信息列表
      */
-    @PreAuthorize("@ss.hasPermi('system:Offsetting:list')")
+    @PreAuthorize("@ss.hasPermi('system:offsetting:list')")
     @GetMapping("/list")
     public TableDataInfo list(Offsetting offsetting)
     {
@@ -50,7 +50,7 @@ public class OffsettingController extends BaseController
     /**
      * 导出对冲账信息列表
      */
-    @PreAuthorize("@ss.hasPermi('system:Offsetting:export')")
+    @PreAuthorize("@ss.hasPermi('system:offsetting:export')")
     @Log(title = "对冲账信息", businessType = BusinessType.EXPORT)
     @PostMapping("/export")
     public void export(HttpServletResponse response, Offsetting offsetting)
@@ -63,7 +63,7 @@ public class OffsettingController extends BaseController
     /**
      * 获取对冲账信息详细信息
      */
-    @PreAuthorize("@ss.hasPermi('system:Offsetting:query')")
+    @PreAuthorize("@ss.hasPermi('system:offsetting:query')")
     @GetMapping(value = "/{id}")
     public AjaxResult getInfo(@PathVariable("id") Long id)
     {
@@ -73,7 +73,7 @@ public class OffsettingController extends BaseController
     /**
      * 新增对冲账信息
      */
-    @PreAuthorize("@ss.hasPermi('system:Offsetting:add')")
+    @PreAuthorize("@ss.hasPermi('system:offsetting:add')")
     @Log(title = "对冲账信息", businessType = BusinessType.INSERT)
     @PostMapping
     public AjaxResult add(@Validated @RequestBody Offsetting offsetting)
@@ -84,7 +84,7 @@ public class OffsettingController extends BaseController
     /**
      * 修改对冲账信息
      */
-    @PreAuthorize("@ss.hasPermi('system:Offsetting:edit')")
+    @PreAuthorize("@ss.hasPermi('system:offsetting:edit')")
     @Log(title = "对冲账信息", businessType = BusinessType.UPDATE)
     @PutMapping
     public AjaxResult edit(@Validated @RequestBody Offsetting offsetting)
@@ -95,7 +95,7 @@ public class OffsettingController extends BaseController
     /**
      * 删除对冲账信息
      */
-    @PreAuthorize("@ss.hasPermi('system:Offsetting:remove')")
+    @PreAuthorize("@ss.hasPermi('system:offsetting:remove')")
     @Log(title = "对冲账信息", businessType = BusinessType.DELETE)
 	@DeleteMapping("/{ids}")
     public AjaxResult remove(@PathVariable Long[] ids)

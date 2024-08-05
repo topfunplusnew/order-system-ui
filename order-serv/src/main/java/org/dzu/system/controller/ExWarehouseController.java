@@ -38,7 +38,7 @@ public class ExWarehouseController extends BaseController
     /**
      * 查询出库列表
      */
-    @PreAuthorize("@ss.hasPermi('system:exWarehouse:list')")
+    @PreAuthorize("@ss.hasPermi('system:exwarehouse:list')")
     @GetMapping("/list")
     public TableDataInfo list(ExWarehouse exWarehouse)
     {
@@ -50,7 +50,7 @@ public class ExWarehouseController extends BaseController
     /**
      * 导出出库列表
      */
-    @PreAuthorize("@ss.hasPermi('system:exWarehouse:export')")
+    @PreAuthorize("@ss.hasPermi('system:exwarehouse:export')")
     @Log(title = "出库", businessType = BusinessType.EXPORT)
     @PostMapping("/export")
     public void export(HttpServletResponse response, ExWarehouse exWarehouse)
@@ -63,7 +63,7 @@ public class ExWarehouseController extends BaseController
     /**
      * 获取出库详细信息
      */
-    @PreAuthorize("@ss.hasPermi('system:exWarehouse:query')")
+    @PreAuthorize("@ss.hasPermi('system:exwarehouse:query')")
     @GetMapping(value = "/{id}")
     public AjaxResult getInfo(@PathVariable("id") Long id)
     {

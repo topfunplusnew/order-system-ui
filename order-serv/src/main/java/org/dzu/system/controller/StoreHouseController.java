@@ -38,7 +38,7 @@ public class StoreHouseController extends BaseController
     /**
      * 查询库房列表
      */
-    @PreAuthorize("@ss.hasPermi('system:StoreHouse:list')")
+    @PreAuthorize("@ss.hasPermi('system:storehouse:list')")
     @GetMapping("/list")
     public TableDataInfo list(StoreHouse storeHouse)
     {
@@ -50,7 +50,7 @@ public class StoreHouseController extends BaseController
     /**
      * 导出库房列表
      */
-    @PreAuthorize("@ss.hasPermi('system:StoreHouse:export')")
+    @PreAuthorize("@ss.hasPermi('system:storehouse:export')")
     @Log(title = "库房", businessType = BusinessType.EXPORT)
     @PostMapping("/export")
     public void export(HttpServletResponse response, StoreHouse storeHouse)
@@ -63,7 +63,7 @@ public class StoreHouseController extends BaseController
     /**
      * 获取库房详细信息
      */
-    @PreAuthorize("@ss.hasPermi('system:StoreHouse:query')")
+    @PreAuthorize("@ss.hasPermi('system:storehouse:query')")
     @GetMapping(value = "/{id}")
     public AjaxResult getInfo(@PathVariable("id") Long id)
     {
@@ -73,7 +73,7 @@ public class StoreHouseController extends BaseController
     /**
      * 新增库房
      */
-    @PreAuthorize("@ss.hasPermi('system:StoreHouse:add')")
+    @PreAuthorize("@ss.hasPermi('system:storehouse:add')")
     @Log(title = "库房", businessType = BusinessType.INSERT)
     @PostMapping
     public AjaxResult add(@Validated @RequestBody StoreHouse storeHouse)
@@ -84,7 +84,7 @@ public class StoreHouseController extends BaseController
     /**
      * 修改库房
      */
-    @PreAuthorize("@ss.hasPermi('system:StoreHouse:edit')")
+    @PreAuthorize("@ss.hasPermi('system:storehouse:edit')")
     @Log(title = "库房", businessType = BusinessType.UPDATE)
     @PutMapping
     public AjaxResult edit(@Validated @RequestBody StoreHouse storeHouse)
@@ -95,7 +95,7 @@ public class StoreHouseController extends BaseController
     /**
      * 删除库房
      */
-    @PreAuthorize("@ss.hasPermi('system:StoreHouse:remove')")
+    @PreAuthorize("@ss.hasPermi('system:storehouse:remove')")
     @Log(title = "库房", businessType = BusinessType.DELETE)
 	@DeleteMapping("/{ids}")
     public AjaxResult remove(@PathVariable Long[] ids)

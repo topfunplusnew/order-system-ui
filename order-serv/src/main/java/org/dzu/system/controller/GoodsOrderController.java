@@ -38,7 +38,7 @@ public class GoodsOrderController extends BaseController
     /**
      * 查询订单列表
      */
-    @PreAuthorize("@ss.hasPermi('system:goodsOrder:list')")
+    @PreAuthorize("@ss.hasPermi('system:goodsorder:list')")
     @GetMapping("/list")
     public TableDataInfo list( GoodsOrder goodsOrder)
     {
@@ -50,7 +50,7 @@ public class GoodsOrderController extends BaseController
     /**
      * 导出订单列表
      */
-    @PreAuthorize("@ss.hasPermi('system:goodsOrder:export')")
+    @PreAuthorize("@ss.hasPermi('system:goodsorder:export')")
     @Log(title = "订单", businessType = BusinessType.EXPORT)
     @PostMapping("/export")
     public void export(HttpServletResponse response, GoodsOrder goodsOrder)
@@ -63,7 +63,7 @@ public class GoodsOrderController extends BaseController
     /**
      * 获取订单详细信息
      */
-    @PreAuthorize("@ss.hasPermi('system:goodsOrder:query')")
+    @PreAuthorize("@ss.hasPermi('system:goodsorder:query')")
     @GetMapping(value = "/{id}")
     public AjaxResult getInfo(@PathVariable("id") Long id)
     {
@@ -73,7 +73,7 @@ public class GoodsOrderController extends BaseController
     /**
      * 新增订单
      */
-    @PreAuthorize("@ss.hasPermi('system:goodsOrder:add')")
+    @PreAuthorize("@ss.hasPermi('system:goodsorder:add')")
     @Log(title = "订单", businessType = BusinessType.INSERT)
     @PostMapping
     public AjaxResult add(@Validated @RequestBody GoodsOrder goodsOrder)
@@ -84,7 +84,7 @@ public class GoodsOrderController extends BaseController
     /**
      * 修改订单
      */
-    @PreAuthorize("@ss.hasPermi('system:goodsOrder:edit')")
+    @PreAuthorize("@ss.hasPermi('system:goodsorder:edit')")
     @Log(title = "订单", businessType = BusinessType.UPDATE)
     @PutMapping
     public AjaxResult edit(@Validated @RequestBody GoodsOrder goodsOrder)
@@ -96,7 +96,7 @@ public class GoodsOrderController extends BaseController
     /**
      * 调整订单
      */
-    @PreAuthorize("@ss.hasPermi('system:goodsOrder:edit')")
+    @PreAuthorize("@ss.hasPermi('system:goodsorder:edit')")
     @Log(title = "订单", businessType = BusinessType.UPDATE)
     @PutMapping("/adjust")
     public AjaxResult adjust(@Validated @RequestBody GoodsOrder goodsOrder)
@@ -108,7 +108,7 @@ public class GoodsOrderController extends BaseController
     /**
      * 删除订单
      */
-    @PreAuthorize("@ss.hasPermi('system:goodsOrder:remove')")
+    @PreAuthorize("@ss.hasPermi('system:goodsorder:remove')")
     @Log(title = "订单", businessType = BusinessType.DELETE)
 	@DeleteMapping("/{ids}")
     public AjaxResult remove(@PathVariable Long[] ids)

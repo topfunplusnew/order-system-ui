@@ -103,7 +103,7 @@
           icon="el-icon-plus"
           size="mini"
           @click="handleAdd"
-          v-hasPermi="['system:auditInfo:add']"
+          v-hasPermi="['system:auditinfo:add']"
         >新增</el-button>
       </el-col>
       <el-col :span="1.5">
@@ -114,7 +114,7 @@
           size="mini"
           :disabled="single"
           @click="handleUpdate"
-          v-hasPermi="['system:auditInfo:edit']"
+          v-hasPermi="['system:auditinfo:edit']"
         >修改</el-button>
       </el-col>
       <el-col :span="1.5">
@@ -125,7 +125,7 @@
           size="mini"
           :disabled="multiple"
           @click="handleDelete"
-          v-hasPermi="['system:auditInfo:remove']"
+          v-hasPermi="['system:auditinfo:remove']"
         >删除</el-button>
       </el-col>
       <el-col :span="1.5">
@@ -135,7 +135,7 @@
           icon="el-icon-download"
           size="mini"
           @click="handleExport"
-          v-hasPermi="['system:auditInfo:export']"
+          v-hasPermi="['system:auditinfo:export']"
         >导出</el-button>
       </el-col>
       <right-toolbar :showSearch.sync="showSearch" @queryTable="getList"></right-toolbar>
@@ -166,14 +166,14 @@
             type="text"
             icon="el-icon-edit"
             @click="handleUpdate(scope.row)"
-            v-hasPermi="['system:auditInfo:edit']"
+            v-hasPermi="['system:auditinfo:edit']"
           >修改</el-button>
           <el-button
             size="mini"
             type="text"
             icon="el-icon-delete"
             @click="handleDelete(scope.row)"
-            v-hasPermi="['system:auditInfo:remove']"
+            v-hasPermi="['system:auditinfo:remove']"
           >删除</el-button>
         </template>
       </el-table-column>

@@ -38,7 +38,7 @@ public class CarApplyController extends BaseController
     /**
      * 查询车辆使用申请列表
      */
-    @PreAuthorize("@ss.hasPermi('system:carApply:list')")
+    @PreAuthorize("@ss.hasPermi('system:carapply:list')")
     @GetMapping("/list")
     public TableDataInfo list(CarApply carApply)
     {
@@ -50,7 +50,7 @@ public class CarApplyController extends BaseController
     /**
      * 导出车辆使用申请列表
      */
-    @PreAuthorize("@ss.hasPermi('system:carApply:export')")
+    @PreAuthorize("@ss.hasPermi('system:carapply:export')")
     @Log(title = "车辆使用申请", businessType = BusinessType.EXPORT)
     @PostMapping("/export")
     public void export(HttpServletResponse response, CarApply carApply)
@@ -63,7 +63,7 @@ public class CarApplyController extends BaseController
     /**
      * 获取车辆使用申请详细信息
      */
-    @PreAuthorize("@ss.hasPermi('system:carApply:query')")
+    @PreAuthorize("@ss.hasPermi('system:carapply:query')")
     @GetMapping(value = "/{id}")
     public AjaxResult getInfo(@PathVariable("id") Long id)
     {
@@ -73,7 +73,7 @@ public class CarApplyController extends BaseController
     /**
      * 新增车辆使用申请
      */
-    @PreAuthorize("@ss.hasPermi('system:carApply:add')")
+    @PreAuthorize("@ss.hasPermi('system:carapply:add')")
     @Log(title = "车辆使用申请", businessType = BusinessType.INSERT)
     @PostMapping
     public AjaxResult add(@Validated @RequestBody CarApply carApply)
@@ -84,7 +84,7 @@ public class CarApplyController extends BaseController
     /**
      * 修改车辆使用申请
      */
-    @PreAuthorize("@ss.hasPermi('system:carApply:edit')")
+    @PreAuthorize("@ss.hasPermi('system:carapply:edit')")
     @Log(title = "车辆使用申请", businessType = BusinessType.UPDATE)
     @PutMapping
     public AjaxResult edit(@Validated @RequestBody CarApply carApply)
@@ -95,7 +95,7 @@ public class CarApplyController extends BaseController
     /**
      * 删除车辆使用申请
      */
-    @PreAuthorize("@ss.hasPermi('system:carApply:remove')")
+    @PreAuthorize("@ss.hasPermi('system:carapply:remove')")
     @Log(title = "车辆使用申请", businessType = BusinessType.DELETE)
 	@DeleteMapping("/{ids}")
     public AjaxResult remove(@PathVariable Long[] ids)

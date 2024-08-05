@@ -38,7 +38,7 @@ public class LendMoneyController extends BaseController
     /**
      * 查询向外部借出款信息列表
      */
-    @PreAuthorize("@ss.hasPermi('system:lendMoney:list')")
+    @PreAuthorize("@ss.hasPermi('system:lendmoney:list')")
     @GetMapping("/list")
     public TableDataInfo list(LendMoney lendMoney)
     {
@@ -50,7 +50,7 @@ public class LendMoneyController extends BaseController
     /**
      * 导出向外部借出款信息列表
      */
-    @PreAuthorize("@ss.hasPermi('system:lendMoney:export')")
+    @PreAuthorize("@ss.hasPermi('system:lendmoney:export')")
     @Log(title = "向外部借出款信息", businessType = BusinessType.EXPORT)
     @PostMapping("/export")
     public void export(HttpServletResponse response, LendMoney lendMoney)
@@ -63,7 +63,7 @@ public class LendMoneyController extends BaseController
     /**
      * 获取向外部借出款信息详细信息
      */
-    @PreAuthorize("@ss.hasPermi('system:lendMoney:query')")
+    @PreAuthorize("@ss.hasPermi('system:lendmoney:query')")
     @GetMapping(value = "/{id}")
     public AjaxResult getInfo(@PathVariable("id") Long id)
     {
@@ -73,7 +73,7 @@ public class LendMoneyController extends BaseController
     /**
      * 新增向外部借出款信息
      */
-    @PreAuthorize("@ss.hasPermi('system:lendMoney:add')")
+    @PreAuthorize("@ss.hasPermi('system:lendmoney:add')")
     @Log(title = "向外部借出款信息", businessType = BusinessType.INSERT)
     @PostMapping
     public AjaxResult add(@Validated @RequestBody LendMoney lendMoney)
@@ -84,7 +84,7 @@ public class LendMoneyController extends BaseController
     /**
      * 修改向外部借出款信息
      */
-    @PreAuthorize("@ss.hasPermi('system:lendMoney:edit')")
+    @PreAuthorize("@ss.hasPermi('system:lendmoney:edit')")
     @Log(title = "向外部借出款信息", businessType = BusinessType.UPDATE)
     @PutMapping
     public AjaxResult edit(@Validated @RequestBody LendMoney lendMoney)
@@ -95,7 +95,7 @@ public class LendMoneyController extends BaseController
     /**
      * 删除向外部借出款信息
      */
-    @PreAuthorize("@ss.hasPermi('system:lendMoney:remove')")
+    @PreAuthorize("@ss.hasPermi('system:lendmoney:remove')")
     @Log(title = "向外部借出款信息", businessType = BusinessType.DELETE)
 	@DeleteMapping("/{ids}")
     public AjaxResult remove(@PathVariable Long[] ids)

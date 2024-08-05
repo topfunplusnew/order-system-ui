@@ -38,7 +38,7 @@ public class InvoiceInController extends BaseController
     /**
      * 查询发票购入信息列表
      */
-    @PreAuthorize("@ss.hasPermi('system:invoiceIn:list')")
+    @PreAuthorize("@ss.hasPermi('system:invoicein:list')")
     @GetMapping("/list")
     public TableDataInfo list(InvoiceIn invoiceIn)
     {
@@ -50,7 +50,7 @@ public class InvoiceInController extends BaseController
     /**
      * 导出发票购入信息列表
      */
-    @PreAuthorize("@ss.hasPermi('system:invoiceIn:export')")
+    @PreAuthorize("@ss.hasPermi('system:invoicein:export')")
     @Log(title = "发票购入信息", businessType = BusinessType.EXPORT)
     @PostMapping("/export")
     public void export(HttpServletResponse response, InvoiceIn invoiceIn)
@@ -63,7 +63,7 @@ public class InvoiceInController extends BaseController
     /**
      * 获取发票购入信息详细信息
      */
-    @PreAuthorize("@ss.hasPermi('system:invoiceIn:query')")
+    @PreAuthorize("@ss.hasPermi('system:invoicein:query')")
     @GetMapping(value = "/{id}")
     public AjaxResult getInfo(@PathVariable("id") Long id)
     {
@@ -73,7 +73,7 @@ public class InvoiceInController extends BaseController
     /**
      * 新增发票购入信息
      */
-    @PreAuthorize("@ss.hasPermi('system:invoiceIn:add')")
+    @PreAuthorize("@ss.hasPermi('system:invoicein:add')")
     @Log(title = "发票购入信息", businessType = BusinessType.INSERT)
     @PostMapping
     public AjaxResult add(@Validated @RequestBody InvoiceIn invoiceIn)
@@ -84,7 +84,7 @@ public class InvoiceInController extends BaseController
     /**
      * 修改发票购入信息
      */
-    @PreAuthorize("@ss.hasPermi('system:invoiceIn:edit')")
+    @PreAuthorize("@ss.hasPermi('system:invoicein:edit')")
     @Log(title = "发票购入信息", businessType = BusinessType.UPDATE)
     @PutMapping
     public AjaxResult edit(@Validated @RequestBody InvoiceIn invoiceIn)
@@ -95,7 +95,7 @@ public class InvoiceInController extends BaseController
     /**
      * 删除发票购入信息
      */
-    @PreAuthorize("@ss.hasPermi('system:invoiceIn:remove')")
+    @PreAuthorize("@ss.hasPermi('system:invoicein:remove')")
     @Log(title = "发票购入信息", businessType = BusinessType.DELETE)
 	@DeleteMapping("/{ids}")
     public AjaxResult remove(@PathVariable Long[] ids)

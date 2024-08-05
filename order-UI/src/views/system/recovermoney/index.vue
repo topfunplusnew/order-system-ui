@@ -69,14 +69,14 @@
             size="mini"
             type="primary"
             @click="handleUpdate(scope.row)"
-            v-hasPermi="['system:recoverMoney:edit']"
+            v-hasPermi="['system:recovermoney:edit']"
           >修改
           </el-button>
           <el-button
             size="mini"
             type="danger"
             @click="handleDelete(scope.row)"
-            v-hasPermi="['system:recoverMoney:remove']"
+            v-hasPermi="['system:recovermoney:remove']"
           >删除
           </el-button>
         </template>

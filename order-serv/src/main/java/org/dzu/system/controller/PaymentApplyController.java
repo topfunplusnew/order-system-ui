@@ -40,7 +40,7 @@ public class PaymentApplyController extends BaseController
     /**
      * 查询付款信息列表
      */
-    @PreAuthorize("@ss.hasPermi('system:paymentApply:list')")
+    @PreAuthorize("@ss.hasPermi('system:paymentapply:list')")
     @GetMapping("/list")
     public TableDataInfo list(PaymentApply paymentApply)
     {
@@ -52,7 +52,7 @@ public class PaymentApplyController extends BaseController
     /**
      * 导出付款信息列表
      */
-    @PreAuthorize("@ss.hasPermi('system:paymentApply:export')")
+    @PreAuthorize("@ss.hasPermi('system:paymentapply:export')")
     @Log(title = "付款信息", businessType = BusinessType.EXPORT)
     @PostMapping("/export")
     public void export(HttpServletResponse response, PaymentApply paymentApply)
@@ -65,7 +65,7 @@ public class PaymentApplyController extends BaseController
     /**
      * 获取付款信息详细信息
      */
-    @PreAuthorize("@ss.hasPermi('system:paymentApply:query')")
+    @PreAuthorize("@ss.hasPermi('system:paymentapply:query')")
     @GetMapping(value = "/{id}")
     public AjaxResult getInfo(@PathVariable("id") Long id)
     {
@@ -75,7 +75,7 @@ public class PaymentApplyController extends BaseController
     /**
      * 新增付款信息
      */
-    @PreAuthorize("@ss.hasPermi('system:paymentApply:add')")
+    @PreAuthorize("@ss.hasPermi('system:paymentapply:add')")
     @Log(title = "付款信息", businessType = BusinessType.INSERT)
     @PostMapping
     public AjaxResult add(@Validated @RequestBody PaymentApply paymentApply)
@@ -86,7 +86,7 @@ public class PaymentApplyController extends BaseController
     /**
      * 删除付款信息
      */
-    @PreAuthorize("@ss.hasPermi('system:paymentApply:remove')")
+    @PreAuthorize("@ss.hasPermi('system:paymentapply:remove')")
     @Log(title = "付款信息", businessType = BusinessType.DELETE)
 	@DeleteMapping("/{ids}")
     public AjaxResult remove(@PathVariable Long[] ids)

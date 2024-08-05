@@ -71,7 +71,7 @@
           size="mini"
           @click="handleUpdate"
           :disabled="single"
-          v-hasPermi="['system:CustomerVisit:edit']"
+          v-hasPermi="['system:customervisit:edit']"
         >修改</el-button>
         &lt;!&ndash;初始状态不能点击&ndash;&gt;
       </el-col>-->
@@ -83,7 +83,7 @@
           size="mini"
           @click="handleDelete"
           :disabled="multiple"
-          v-hasPermi="['system:CustomerVisit:remove']"
+          v-hasPermi="['system:customervisit:remove']"
         >删除</el-button>
          &lt;!&ndash;初始状态不能点击&ndash;&gt;
       </el-col>-->
@@ -94,7 +94,7 @@
           size="mini"
           icon="el-icon-download"
           @click="handleExport"
-          v-hasPermi="['system:CustomerVisit:export']"
+          v-hasPermi="['system:customervisit:export']"
         >导出</el-button>
       </el-col>-->
       <right-toolbar :showSearch.sync="showSearch" @queryTable="getList" :columns="columns">
@@ -166,14 +166,14 @@
             type="text"
             icon="el-icon-edit"
             @click="handleUpdate(scope.row)"
-            v-hasPermi="['system:CustomerVisit:edit']"
+            v-hasPermi="['system:customervisit:edit']"
           >修改</el-button>-->
 <!--          <el-button
             size="mini"
             type="text"
             icon="el-icon-delete"
             @click="handleDelete(scope.row)"
-            v-hasPermi="['system:CustomerVisit:remove']"
+            v-hasPermi="['system:customervisit:remove']"
           >删除</el-button>-->
         </template>
       </el-table-column>

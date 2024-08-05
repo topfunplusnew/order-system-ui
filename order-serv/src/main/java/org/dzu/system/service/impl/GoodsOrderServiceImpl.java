@@ -4,6 +4,7 @@ import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import org.dzu.common.constant.DelConstants;
 import org.dzu.common.constant.OrderConstants;
 import org.dzu.common.constant.YesOrNoConstants;
+import org.dzu.common.core.domain.entity.SysRole;
 import org.dzu.common.exception.ServiceException;
 import org.dzu.common.utils.DateUtils;
 import org.dzu.common.utils.SecurityUtils;
@@ -65,6 +66,8 @@ public class GoodsOrderServiceImpl implements IGoodsOrderService {
      */
     @Override
     public List<GoodsOrder> selectGoodsOrderList(GoodsOrder goodsOrder) {
+        // 校验权限，决定能看到的数据
+        preDataScope(goodsOrder);
         // 校验一下开始和结束时间戳是否是纯数字
         if (StringUtils.isNotEmpty(goodsOrder.getOrderDateStart()) && !StringUtils.isNumeric(goodsOrder.getOrderDateStart())) {
             throw new ServiceException("开始时间戳不合法");
@@ -85,6 +88,9 @@ public class GoodsOrderServiceImpl implements IGoodsOrderService {
     @Transactional
     @Override
     public int insertGoodsOrder(GoodsOrder goodsOrder) {
+
+
+
         // 设置基础信息
         goodsOrder.setAddtime(String.valueOf(DateUtils.getNowDate()));
         goodsOrder.setUserId(SecurityUtils.getUserId());
@@ -405,6 +411,45 @@ public class GoodsOrderServiceImpl implements IGoodsOrderService {
                     }
             );
             goodsOrder.setSupplierNames(sj.toString());
+        }
+    }
+
+    private void preDataScope(GoodsOrder goodsOrder) {
+        // 获取当前用户
+        List<SysRole> roles = SecurityUtils.getLoginUser().getUser().getRoles();
+
+        // 如果获取不到，代表没有绑定任何角色，后续逻辑不执行
+        if (roles == null || roles.size() == 0) {
+            return;
+        }
+
+
+        // 获取全部的数据权限，寻找最高级别 已知第一位只能是0123
+        int maxValue = roles.stream()
+                .map(SysRole::getDataScope)           // 获取每个角色的 DataScope
+                .distinct()                            // 去重
+                .map(scope -> scope.substring(0, scope.length() - 1))  // 去掉最后一位字符
+                .mapToInt(Integer::parseInt)           // 转换为 int 类型
+                .max()                                 // 求最大值
+                .orElse(0);                            // 如果没有最大值，返回 0
+        switch (maxValue) {
+            case 0:
+                break;
+            case 1:
+                // 仅能查看自己录入的
+                goodsOrder.getParams().put("orderDataScope", " and userId = " + SecurityUtils.getUserId());
+                break;
+            case 2:
+                // 对应仅自己负责的客户
+                goodsOrder.getParams().put("orderDataScope", " and customerID in (select id from company where delFlag = 0 and userId = " + SecurityUtils.getUserId() + ")");
+
+                break;
+            case 3:
+                // 同时满足1和2
+                goodsOrder.getParams().put("orderDataScope", " and userId = " + SecurityUtils.getUserId() + " or customerID in (select id from company where delFlag = 0 and userId = " + SecurityUtils.getUserId() + ")");
+                break;
+            default:
+                break;
         }
     }
 }

@@ -38,7 +38,7 @@ public class RebateController extends BaseController
     /**
      * 查询返利回扣列表
      */
-    @PreAuthorize("@ss.hasPermi('system:Rebate:list')")
+    @PreAuthorize("@ss.hasPermi('system:rebate:list')")
     @GetMapping("/list")
     public TableDataInfo list(Rebate rebate)
     {
@@ -50,7 +50,7 @@ public class RebateController extends BaseController
     /**
      * 导出返利回扣列表
      */
-    @PreAuthorize("@ss.hasPermi('system:Rebate:export')")
+    @PreAuthorize("@ss.hasPermi('system:rebate:export')")
     @Log(title = "返利回扣", businessType = BusinessType.EXPORT)
     @PostMapping("/export")
     public void export(HttpServletResponse response, Rebate rebate)
@@ -63,7 +63,7 @@ public class RebateController extends BaseController
     /**
      * 获取返利回扣详细信息
      */
-    @PreAuthorize("@ss.hasPermi('system:Rebate:query')")
+    @PreAuthorize("@ss.hasPermi('system:rebate:query')")
     @GetMapping(value = "/{id}")
     public AjaxResult getInfo(@PathVariable("id") Long id)
     {
@@ -73,7 +73,7 @@ public class RebateController extends BaseController
     /**
      * 新增返利回扣
      */
-    @PreAuthorize("@ss.hasPermi('system:Rebate:add')")
+    @PreAuthorize("@ss.hasPermi('system:rebate:add')")
     @Log(title = "返利回扣", businessType = BusinessType.INSERT)
     @PostMapping
     public AjaxResult add(@Validated @RequestBody Rebate rebate)
@@ -84,7 +84,7 @@ public class RebateController extends BaseController
     /**
      * 修改返利回扣
      */
-    @PreAuthorize("@ss.hasPermi('system:Rebate:edit')")
+    @PreAuthorize("@ss.hasPermi('system:rebate:edit')")
     @Log(title = "返利回扣", businessType = BusinessType.UPDATE)
     @PutMapping
     public AjaxResult edit(@Validated @RequestBody Rebate rebate)
@@ -95,7 +95,7 @@ public class RebateController extends BaseController
     /**
      * 删除返利回扣
      */
-    @PreAuthorize("@ss.hasPermi('system:Rebate:remove')")
+    @PreAuthorize("@ss.hasPermi('system:rebate:remove')")
     @Log(title = "返利回扣", businessType = BusinessType.DELETE)
 	@DeleteMapping("/{ids}")
     public AjaxResult remove(@PathVariable Long[] ids)

@@ -38,7 +38,7 @@ public class BalanceAccountsController extends BaseController
     /**
      * 查询平账信息列表
      */
-    @PreAuthorize("@ss.hasPermi('system:BalanceAccounts:list')")
+    @PreAuthorize("@ss.hasPermi('system:balanceaccounts:list')")
     @GetMapping("/list")
     public TableDataInfo list(BalanceAccounts balanceAccounts)
     {
@@ -50,7 +50,7 @@ public class BalanceAccountsController extends BaseController
     /**
      * 导出平账信息列表
      */
-    @PreAuthorize("@ss.hasPermi('system:BalanceAccounts:export')")
+    @PreAuthorize("@ss.hasPermi('system:balanceaccounts:export')")
     @Log(title = "平账信息", businessType = BusinessType.EXPORT)
     @PostMapping("/export")
     public void export(HttpServletResponse response, BalanceAccounts balanceAccounts)
@@ -63,7 +63,7 @@ public class BalanceAccountsController extends BaseController
     /**
      * 获取平账信息详细信息
      */
-    @PreAuthorize("@ss.hasPermi('system:BalanceAccounts:query')")
+    @PreAuthorize("@ss.hasPermi('system:balanceaccounts:query')")
     @GetMapping(value = "/{id}")
     public AjaxResult getInfo(@PathVariable("id") Long id)
     {
@@ -73,7 +73,7 @@ public class BalanceAccountsController extends BaseController
     /**
      * 新增平账信息
      */
-    @PreAuthorize("@ss.hasPermi('system:BalanceAccounts:add')")
+    @PreAuthorize("@ss.hasPermi('system:balanceaccounts:add')")
     @Log(title = "平账信息", businessType = BusinessType.INSERT)
     @PostMapping
     public AjaxResult add(@Validated @RequestBody BalanceAccounts balanceAccounts)
@@ -84,7 +84,7 @@ public class BalanceAccountsController extends BaseController
     /**
      * 修改平账信息
      */
-    @PreAuthorize("@ss.hasPermi('system:BalanceAccounts:edit')")
+    @PreAuthorize("@ss.hasPermi('system:balanceaccounts:edit')")
     @Log(title = "平账信息", businessType = BusinessType.UPDATE)
     @PutMapping
     public AjaxResult edit(@Validated @RequestBody BalanceAccounts balanceAccounts)
@@ -95,7 +95,7 @@ public class BalanceAccountsController extends BaseController
     /**
      * 删除平账信息
      */
-    @PreAuthorize("@ss.hasPermi('system:BalanceAccounts:remove')")
+    @PreAuthorize("@ss.hasPermi('system:balanceaccounts:remove')")
     @Log(title = "平账信息", businessType = BusinessType.DELETE)
 	@DeleteMapping("/{ids}")
     public AjaxResult remove(@PathVariable Long[] ids)

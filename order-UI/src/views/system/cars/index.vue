@@ -112,7 +112,7 @@
       <!--          size="mini"-->
       <!--          :disabled="multiple"-->
       <!--          @click="handleDelete"-->
-      <!--          v-hasPermi="['system:bankAccount:remove']"-->
+      <!--          v-hasPermi="['system:bankaccount:remove']"-->
       <!--        >批量删除-->
       <!--        </el-button>-->
       <!--      </el-col>-->
@@ -123,7 +123,7 @@
       <!--                icon="el-icon-download"-->
       <!--                size="mini"-->
       <!--                @click="handleExport"-->
-      <!--                v-hasPermi="['system:bankAccount:export']"-->
+      <!--                v-hasPermi="['system:bankaccount:export']"-->
       <!--              >导出-->
       <!--              </el-button>-->
       <!--            </el-col>-->
@@ -158,7 +158,7 @@
               icon="el-icon-folder-opened"
               size="mini"
               @click="handleExport"
-              v-hasPermi="['system:bankAccount:export']"
+              v-hasPermi="['system:bankaccount:export']"
             >
             </el-button>
           </el-col>

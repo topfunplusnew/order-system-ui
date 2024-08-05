@@ -44,7 +44,7 @@
           icon="el-icon-plus"
           size="mini"
           @click="handleAdd"
-          v-hasPermi="['system:bankAccount:add']"
+          v-hasPermi="['system:bankaccount:add']"
         >新增银行卡信息
         </el-button>
       </el-col>
@@ -56,7 +56,7 @@
       <!--          size="mini"-->
       <!--          :disabled="multiple"-->
       <!--          @click="handleDelete"-->
-      <!--          v-hasPermi="['system:bankAccount:remove']"-->
+      <!--          v-hasPermi="['system:bankaccount:remove']"-->
       <!--        >批量删除-->
       <!--        </el-button>-->
       <!--      </el-col>-->
@@ -67,7 +67,7 @@
       <!--                icon="el-icon-download"-->
       <!--                size="mini"-->
       <!--                @click="handleExport"-->
-      <!--                v-hasPermi="['system:bankAccount:export']"-->
+      <!--                v-hasPermi="['system:bankaccount:export']"-->
       <!--              >导出-->
       <!--              </el-button>-->
       <!--            </el-col>-->
@@ -102,7 +102,7 @@
               icon="el-icon-folder-opened"
               size="mini"
               @click="handleExport"
-              v-hasPermi="['system:bankAccount:export']"
+              v-hasPermi="['system:bankaccount:export']"
             >
             </el-button>
           </el-col>
@@ -126,14 +126,14 @@
             size="mini"
             type="primary"
             @click="handleUpdate(scope.row)"
-            v-hasPermi="['system:bankAccount:edit']"
+            v-hasPermi="['system:bankaccount:edit']"
           >编辑
           </el-button>
           <el-button
             size="mini"
             type="danger"
             @click="handleDelete(scope.row)"
-            v-hasPermi="['system:bankAccount:remove']"
+            v-hasPermi="['system:bankaccount:remove']"
           >删除
           </el-button>
         </template>

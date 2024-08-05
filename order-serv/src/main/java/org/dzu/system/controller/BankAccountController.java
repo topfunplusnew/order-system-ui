@@ -38,7 +38,7 @@ public class BankAccountController extends BaseController
     /**
      * 查询银行账号列表
      */
-    @PreAuthorize("@ss.hasPermi('system:bankAccount:list')")
+    @PreAuthorize("@ss.hasPermi('system:bankaccount:list')")
     @GetMapping("/list")
     public TableDataInfo list(BankAccount bankAccount)
     {
@@ -50,7 +50,7 @@ public class BankAccountController extends BaseController
     /**
      * 导出银行账号列表
      */
-    @PreAuthorize("@ss.hasPermi('system:bankAccount:export')")
+    @PreAuthorize("@ss.hasPermi('system:bankaccount:export')")
     @Log(title = "银行账号", businessType = BusinessType.EXPORT)
     @PostMapping("/export")
     public void export(HttpServletResponse response, BankAccount bankAccount)
@@ -63,7 +63,7 @@ public class BankAccountController extends BaseController
     /**
      * 获取银行账号详细信息
      */
-    @PreAuthorize("@ss.hasPermi('system:bankAccount:query')")
+    @PreAuthorize("@ss.hasPermi('system:bankaccount:query')")
     @GetMapping(value = "/{id}")
     public AjaxResult getInfo(@PathVariable("id") Long id)
     {
@@ -73,7 +73,7 @@ public class BankAccountController extends BaseController
     /**
      * 新增银行账号
      */
-    @PreAuthorize("@ss.hasPermi('system:bankAccount:add')")
+    @PreAuthorize("@ss.hasPermi('system:bankaccount:add')")
     @Log(title = "银行账号", businessType = BusinessType.INSERT)
     @PostMapping
     public AjaxResult add(@Validated @RequestBody BankAccount bankAccount)
@@ -84,7 +84,7 @@ public class BankAccountController extends BaseController
     /**
      * 修改银行账号
      */
-    @PreAuthorize("@ss.hasPermi('system:bankAccount:edit')")
+    @PreAuthorize("@ss.hasPermi('system:bankaccount:edit')")
     @Log(title = "银行账号", businessType = BusinessType.UPDATE)
     @PutMapping
     public AjaxResult edit(@Validated @RequestBody BankAccount bankAccount)
@@ -95,7 +95,7 @@ public class BankAccountController extends BaseController
     /**
      * 删除银行账号
      */
-    @PreAuthorize("@ss.hasPermi('system:bankAccount:remove')")
+    @PreAuthorize("@ss.hasPermi('system:bankaccount:remove')")
     @Log(title = "银行账号", businessType = BusinessType.DELETE)
 	@DeleteMapping("/{ids}")
     public AjaxResult remove(@PathVariable Long[] ids)

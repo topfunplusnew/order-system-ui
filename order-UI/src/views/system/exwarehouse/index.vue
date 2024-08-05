@@ -95,7 +95,7 @@
           icon="el-icon-plus"
           size="mini"
           @click="handleAdd"
-          v-hasPermi="['system:exWarehouse:add']"
+          v-hasPermi="['system:exwarehouse:add']"
         >新增</el-button>
       </el-col>
       <el-col :span="1.5">
@@ -106,7 +106,7 @@
           size="mini"
           :disabled="single"
           @click="handleUpdate"
-          v-hasPermi="['system:exWarehouse:edit']"
+          v-hasPermi="['system:exwarehouse:edit']"
         >修改</el-button>
       </el-col>
       <el-col :span="1.5">
@@ -117,7 +117,7 @@
           size="mini"
           :disabled="multiple"
           @click="handleDelete"
-          v-hasPermi="['system:exWarehouse:remove']"
+          v-hasPermi="['system:exwarehouse:remove']"
         >删除</el-button>
       </el-col>
       <el-col :span="1.5">
@@ -127,7 +127,7 @@
           icon="el-icon-download"
           size="mini"
           @click="handleExport"
-          v-hasPermi="['system:exWarehouse:export']"
+          v-hasPermi="['system:exwarehouse:export']"
         >导出</el-button>
       </el-col>
       <right-toolbar :showSearch.sync="showSearch" @queryTable="getList"></right-toolbar>
@@ -153,14 +153,14 @@
             type="text"
             icon="el-icon-edit"
             @click="handleUpdate(scope.row)"
-            v-hasPermi="['system:exWarehouse:edit']"
+            v-hasPermi="['system:exwarehouse:edit']"
           >修改</el-button>
           <el-button
             size="mini"
             type="text"
             icon="el-icon-delete"
             @click="handleDelete(scope.row)"
-            v-hasPermi="['system:exWarehouse:remove']"
+            v-hasPermi="['system:exwarehouse:remove']"
           >删除</el-button>
         </template>
       </el-table-column>

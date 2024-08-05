@@ -38,7 +38,7 @@ public class TripReimbursementController extends BaseController
     /**
      * 查询出差报销列表
      */
-    @PreAuthorize("@ss.hasPermi('system:tripReimbursement:list')")
+    @PreAuthorize("@ss.hasPermi('system:tripreimbursement:list')")
     @GetMapping("/list")
     public TableDataInfo list(TripReimbursement tripReimbursement)
     {
@@ -50,7 +50,7 @@ public class TripReimbursementController extends BaseController
     /**
      * 导出出差报销列表
      */
-    @PreAuthorize("@ss.hasPermi('system:tripReimbursement:export')")
+    @PreAuthorize("@ss.hasPermi('system:tripreimbursement:export')")
     @Log(title = "出差报销", businessType = BusinessType.EXPORT)
     @PostMapping("/export")
     public void export(HttpServletResponse response, TripReimbursement tripReimbursement)
@@ -63,7 +63,7 @@ public class TripReimbursementController extends BaseController
     /**
      * 获取出差报销详细信息
      */
-    @PreAuthorize("@ss.hasPermi('system:tripReimbursement:query')")
+    @PreAuthorize("@ss.hasPermi('system:tripreimbursement:query')")
     @GetMapping(value = "/{id}")
     public AjaxResult getInfo(@PathVariable("id") Long id)
     {
@@ -73,7 +73,7 @@ public class TripReimbursementController extends BaseController
     /**
      * 新增出差报销
      */
-    @PreAuthorize("@ss.hasPermi('system:tripReimbursement:add')")
+    @PreAuthorize("@ss.hasPermi('system:tripreimbursement:add')")
     @Log(title = "出差报销", businessType = BusinessType.INSERT)
     @PostMapping
     public AjaxResult add(@Validated @RequestBody TripReimbursement tripReimbursement)
@@ -84,7 +84,7 @@ public class TripReimbursementController extends BaseController
     /**
      * 修改出差报销
      */
-    @PreAuthorize("@ss.hasPermi('system:tripReimbursement:edit')")
+    @PreAuthorize("@ss.hasPermi('system:tripreimbursement:edit')")
     @Log(title = "出差报销", businessType = BusinessType.UPDATE)
     @PutMapping
     public AjaxResult edit(@Validated @RequestBody TripReimbursement tripReimbursement)
@@ -95,7 +95,7 @@ public class TripReimbursementController extends BaseController
     /**
      * 删除出差报销
      */
-    @PreAuthorize("@ss.hasPermi('system:tripReimbursement:remove')")
+    @PreAuthorize("@ss.hasPermi('system:tripreimbursement:remove')")
     @Log(title = "出差报销", businessType = BusinessType.DELETE)
 	@DeleteMapping("/{ids}")
     public AjaxResult remove(@PathVariable Long[] ids)

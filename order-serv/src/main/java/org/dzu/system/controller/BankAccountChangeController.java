@@ -38,7 +38,7 @@ public class BankAccountChangeController extends BaseController
     /**
      * 查询银行账号变动流水列表
      */
-    @PreAuthorize("@ss.hasPermi('system:bankAccountChange:list')")
+    @PreAuthorize("@ss.hasPermi('system:bankaccountchange:list')")
     @GetMapping("/list")
     public TableDataInfo list(BankAccountChange bankAccountChange)
     {
@@ -50,7 +50,7 @@ public class BankAccountChangeController extends BaseController
     /**
      * 导出银行账号变动流水列表
      */
-    @PreAuthorize("@ss.hasPermi('system:bankAccountChange:export')")
+    @PreAuthorize("@ss.hasPermi('system:bankaccountchange:export')")
     @Log(title = "银行账号变动流水", businessType = BusinessType.EXPORT)
     @PostMapping("/export")
     public void export(HttpServletResponse response, BankAccountChange bankAccountChange)
@@ -63,7 +63,7 @@ public class BankAccountChangeController extends BaseController
     /**
      * 获取银行账号变动流水详细信息
      */
-    @PreAuthorize("@ss.hasPermi('system:bankAccountChange:query')")
+    @PreAuthorize("@ss.hasPermi('system:bankaccountchange:query')")
     @GetMapping(value = "/{id}")
     public AjaxResult getInfo(@PathVariable("id") Long id)
     {
@@ -73,7 +73,7 @@ public class BankAccountChangeController extends BaseController
     /**
      * 新增银行账号变动流水
      */
-    @PreAuthorize("@ss.hasPermi('system:bankAccountChange:add')")
+    @PreAuthorize("@ss.hasPermi('system:bankaccountchange:add')")
     @Log(title = "银行账号变动流水", businessType = BusinessType.INSERT)
     @PostMapping
     public AjaxResult add(@Validated @RequestBody BankAccountChange bankAccountChange)
@@ -84,7 +84,7 @@ public class BankAccountChangeController extends BaseController
     /**
      * 修改银行账号变动流水
      */
-    @PreAuthorize("@ss.hasPermi('system:bankAccountChange:edit')")
+    @PreAuthorize("@ss.hasPermi('system:bankaccountchange:edit')")
     @Log(title = "银行账号变动流水", businessType = BusinessType.UPDATE)
     @PutMapping
     public AjaxResult edit(@Validated @RequestBody BankAccountChange bankAccountChange)
@@ -95,7 +95,7 @@ public class BankAccountChangeController extends BaseController
     /**
      * 删除银行账号变动流水
      */
-    @PreAuthorize("@ss.hasPermi('system:bankAccountChange:remove')")
+    @PreAuthorize("@ss.hasPermi('system:bankaccountchange:remove')")
     @Log(title = "银行账号变动流水", businessType = BusinessType.DELETE)
 	@DeleteMapping("/{ids}")
     public AjaxResult remove(@PathVariable Long[] ids)
