@@ -94,4 +94,16 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
             #{id}
         </foreach>
     </update>
+    <!-- 查询油卡余额 -->
+    <select id="getmoneyAmount" parameterType="String" resultType="java.lang.Double">
+        SELECT moneyAmonnt
+        FROM oilCard
+        WHERE oilCardNo = #{oilCcardNo}
+    </select>
+    <!-- 更新油卡余额 -->
+    <update id="updatemoneyAmount" parameterType="map">
+        UPDATE oil_card
+        SET moneyAmount = #{moneyAmount}
+        WHERE oilCardNo = #{oilCardNo}
+    </update>
 </mapper>

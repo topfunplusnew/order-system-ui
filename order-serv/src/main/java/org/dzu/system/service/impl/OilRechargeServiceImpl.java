@@ -9,6 +9,9 @@ import org.dzu.common.utils.DateUtils;
 import org.dzu.common.utils.SecurityUtils;
 import org.dzu.common.utils.StringUtils;
 import org.dzu.system.domain.BankAccount;
+import org.dzu.system.domain.OilCardFundTransfer;
+import org.dzu.system.mapper.OilCardConsumeMapper;
+import org.dzu.system.mapper.OilCardMapper;
 import org.dzu.system.mapper.OilRechargeMapper;
 import org.dzu.system.domain.OilRecharge;
 import org.dzu.system.service.IBankAccountService;
@@ -23,23 +26,43 @@ public class OilRechargeServiceImpl implements IOilRechargeService {
 
     @Autowired
     private OilRechargeMapper oilRechargeMapper;
-
     @Autowired
     private IBankAccountService bankAccountService;
+    @Autowired
+    private OilCardMapper oilCardMapper;
+    @Autowired
+    private OilCardConsumeMapper oilCardConsumeMapper;
 
     @Override
     public OilRecharge selectOilRechargeById(Long id) {
         return oilRechargeMapper.selectOilRechargeById(id);
     }
 
+    /**
+     * 查询加油卡充值信息列表
+     *
+     * @param oilRecharge 加油卡充值信息
+     * @return 加油卡充值信息
+     */
     @Override
     public List<OilRecharge> selectOilRechargeList(OilRecharge oilRecharge) {
         return oilRechargeMapper.selectOilRechargeList(oilRecharge);
+    }  private void validate(OilRecharge oilRecharge) {
+        if (OilRechargeConstant.BankCord.equals(oilRecharge.getRechargeType()) && StringUtils.isEmpty(oilRecharge.getBankNo())) {
+            throw new ServiceException("银行卡必须有银行卡号");
+        }
     }
 
+    /**
+     * 新增加油卡充值信息
+     *
+     * @param oilRecharge 加油卡充值信息
+     * @return 结果
+     */
     @Override
     @Transactional(isolation = Isolation.SERIALIZABLE, rollbackFor = Exception.class)
     public int insertOilRecharge(OilRecharge oilRecharge) {
+
         // 校验逻辑
         validate(oilRecharge);
 
@@ -58,13 +81,41 @@ public class OilRechargeServiceImpl implements IOilRechargeService {
 
         return oilRechargeMapper.insertOilRecharge(oilRecharge);
     }
+    @Override
+    public void calculateCardBalances(OilRecharge oilRecharge) {
+        // 获取主卡卡号
+        OilCardFundTransfer oilCardFundTransfer = new OilCardFundTransfer();
+        String mainoilCardNo = String.valueOf(oilCardFundTransfer.getOilMainCardNo());
 
-    private void validate(OilRecharge oilRecharge) {
-        if (OilRechargeConstant.BankCord.equals(oilRecharge.getRechargeType()) && StringUtils.isEmpty(oilRecharge.getBankNo())) {
-            throw new ServiceException("银行卡必须有银行卡号");
-        }
+        // 获取副卡卡号
+        String secondoilCardNo = String.valueOf(oilCardFundTransfer.getOilSecondCardNo());
+
+        // 获取主卡消费金额总和
+        Double mainCardTotalSpent = oilCardConsumeMapper.getrefuelingMoney(mainoilCardNo);
+
+        // 获取副卡消费金额总和
+        Double secondCardTotalSpent =oilCardConsumeMapper.getrefuelingMoney(secondoilCardNo);
+
+        // 获取圈存副卡金额
+        Double secondCardRechargeAmount = oilRecharge.getRechargeMoney(); // 圈存金额是充值到副卡的金额
+        // 获取主卡当前金额
+        Double mainCardmoneyAmount = oilCardMapper.getmoneyAmount(mainoilCardNo);
+        Double newMainOilCardmoneyAmount = mainCardmoneyAmount - mainCardTotalSpent - secondCardRechargeAmount;
+
+        // 获取副卡当前金额
+        Double secondmoneyAmount = oilCardMapper.getmoneyAmount(secondoilCardNo);
+        Double newSecondOilCardmoneyAmount = secondCardRechargeAmount - secondCardTotalSpent;
+
+        // 更新主卡和副卡余额
+        oilCardMapper.updatemoneyAmount(mainoilCardNo, newMainOilCardmoneyAmount);
+        oilCardMapper.updatemoneyAmount(secondoilCardNo, newSecondOilCardmoneyAmount);
     }
-
+    /**
+     * 修改加油卡充值信息
+     *
+     * @param oilRecharge 加油卡充值信息
+     * @return 结果
+     */
     @Override
     @Transactional(isolation = Isolation.SERIALIZABLE, rollbackFor = Exception.class)
     public int updateOilRecharge(OilRecharge oilRecharge) {
@@ -92,11 +143,23 @@ public class OilRechargeServiceImpl implements IOilRechargeService {
         return oilRechargeMapper.updateOilRecharge(oilRecharge);
     }
 
+    /**
+     * 批量删除加油卡充值信息
+     *
+     * @param ids 需要删除的加油卡充值信息主键
+     * @return 结果
+     */
     @Override
     public int deleteOilRechargeByIds(Long[] ids) {
         return oilRechargeMapper.deleteOilRechargeByIds(ids);
     }
 
+    /**
+     * 删除加油卡充值信息信息
+     *
+     * @param id 加油卡充值信息主键
+     * @return 结果
+     */
     @Override
     public int deleteOilRechargeById(Long id) {
         return oilRechargeMapper.deleteOilRechargeById(id);
