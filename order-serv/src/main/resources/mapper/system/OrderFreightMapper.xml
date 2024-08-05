@@ -19,7 +19,7 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         <result property="paymentState"    column="paymentState"    />
         <result property="driverName"    column="driverName"    />
         <result property="driverId"    column="driverId"    />
-        <result property="CarNo"    column="CarNo"    />
+        <result property="carNo"    column="CarNo"    />
         <result property="fleet"    column="fleet"    />
         <result property="applyUserId"    column="applyUserId"    />
         <result property="applyUserName"    column="applyUserName"    />
@@ -59,7 +59,7 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
             <if test="paymentState != null  and paymentState != ''"> and paymentState = #{paymentState}</if>
             <if test="driverName != null  and driverName != ''"> and driverName like concat('%', #{driverName}, '%')</if>
             <if test="driverId != null "> and driverId = #{driverId}</if>
-            <if test="CarNo != null  and CarNo != ''"> and CarNo = #{CarNo}</if>
+            <if test="carNo != null  and carNo != ''"> and CarNo = #{carNo}</if>
             <if test="fleet != null  and fleet != ''"> and fleet = #{fleet}</if>
             <if test="applyUserId != null "> and applyUserId = #{applyUserId}</if>
             <if test="applyUserName != null  and applyUserName != ''"> and applyUserName like concat('%', #{applyUserName}, '%')</if>
@@ -99,7 +99,7 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
             <if test="paymentState != null">paymentState,</if>
             <if test="driverName != null">driverName,</if>
             <if test="driverId != null">driverId,</if>
-            <if test="CarNo != null">CarNo,</if>
+            <if test="carNo != null">CarNo,</if>
             <if test="fleet != null">fleet,</if>
             <if test="applyUserId != null">applyUserId,</if>
             <if test="applyUserName != null">applyUserName,</if>
@@ -129,7 +129,7 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
             <if test="paymentState != null">#{paymentState},</if>
             <if test="driverName != null">#{driverName},</if>
             <if test="driverId != null">#{driverId},</if>
-            <if test="CarNo != null">#{CarNo},</if>
+            <if test="carNo != null">#{carNo},</if>
             <if test="fleet != null">#{fleet},</if>
             <if test="applyUserId != null">#{applyUserId},</if>
             <if test="applyUserName != null">#{applyUserName},</if>
@@ -163,7 +163,7 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
             <if test="paymentState != null">paymentState = #{paymentState},</if>
             <if test="driverName != null">driverName = #{driverName},</if>
             <if test="driverId != null">driverId = #{driverId},</if>
-            <if test="CarNo != null">CarNo = #{CarNo},</if>
+            <if test="carNo != null">CarNo = #{carNo},</if>
             <if test="fleet != null">fleet = #{fleet},</if>
             <if test="applyUserId != null">applyUserId = #{applyUserId},</if>
             <if test="applyUserName != null">applyUserName = #{applyUserName},</if>

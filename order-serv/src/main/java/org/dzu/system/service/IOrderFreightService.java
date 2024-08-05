@@ -51,11 +51,4 @@ public interface IOrderFreightService
      */
     public int deleteOrderFreightByIds(Long[] ids);
 
-    /**
-     * 删除订单运费信息
-     * 
-     * @param id 订单运费主键
-     * @return 结果
-     */
-    public int deleteOrderFreightById(Long id);
 }

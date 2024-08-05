@@ -18,10 +18,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Date;
-import java.util.List;
+import java.util.*;
 
 /**
  * 订单Service业务层处理
@@ -115,6 +112,10 @@ public class GoodsOrderServiceImpl implements IGoodsOrderService {
         //是否可编辑为是
         goodsOrder.setIsedit(Long.valueOf(YesOrNoConstants.YES_num));
 
+        // 计算陆运费和海运费和商家姓名，方便以后查询减少查询次数
+        preFreightAndSupplier(goodsOrder);
+
+
         // 先插入主表后插入子表
         int rows = goodsOrderMapper.insertGoodsOrder(goodsOrder);
         insertOrderDetail(goodsOrder);
@@ -170,6 +171,11 @@ public class GoodsOrderServiceImpl implements IGoodsOrderService {
         goodsOrder.setOrdersNo(oldOrder.getOrdersNo());
         // 检查依赖的其他表
         Vaildate(goodsOrder);
+
+
+        // 计算陆运费和海运费和商家姓名，方便以后查询减少查询次数
+        preFreightAndSupplier(goodsOrder);
+
 
         // 删除后插入，模拟成更新
         orderDetailService.deleteOrderDetailByOrderId(goodsOrder);
@@ -273,7 +279,7 @@ public class GoodsOrderServiceImpl implements IGoodsOrderService {
     public int deleteGoodsOrderByIds(Long[] ids) {
         List<GoodsOrder> goodsOrders = goodsOrderMapper.selectBatchIds(Arrays.asList(ids));
 
-        for (GoodsOrder order: goodsOrders) {
+        for (GoodsOrder order : goodsOrders) {
             orderDetailService.deleteOrderDetailByOrderId(order);
         }
         return goodsOrderMapper.deleteGoodsOrderByIds(ids);
@@ -377,6 +383,28 @@ public class GoodsOrderServiceImpl implements IGoodsOrderService {
         Company company = companyService.selectCompanyById(goodsOrder.getCustomerID());
         if (company == null) {
             throw new ServiceException("获取客户信息异常，请刷新页面后重试");
+        }
+    }
+
+    private static void preFreightAndSupplier(GoodsOrder goodsOrder) {
+        StringJoiner sj = new StringJoiner("、");
+        goodsOrder.setLandFreight(Double.valueOf(0));
+        goodsOrder.setSeaFreight(Double.valueOf(0));
+
+        if (goodsOrder.getOrderDetailList().size() > 0) {
+            goodsOrder.getOrderDetailList().forEach(
+                    item -> {
+                        // 计算陆运费和海运费
+                        goodsOrder.setLandFreight(goodsOrder.getLandFreight() + item.getLandFreight());
+
+                        // 有的订单可能没有供应商，而是仓库发货
+                        if (StringUtils.isNotEmpty(item.getSupplier())) {
+                            goodsOrder.setSeaFreight(goodsOrder.getSeaFreight() + item.getSeaFreight());
+                            sj.add(item.getSupplier());
+                        }
+                    }
+            );
+            goodsOrder.setSupplierNames(sj.toString());
         }
     }
 }

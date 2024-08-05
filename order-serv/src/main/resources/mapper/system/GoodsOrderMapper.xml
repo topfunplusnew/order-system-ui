@@ -42,6 +42,9 @@
         <result property="userId" column="userId"/>
         <result property="UserName" column="UserName"/>
         <result property="updateTime" column="update_time"/>
+        <result property="landFreight" column="landFreight"/>
+        <result property="seaFreight" column="seaFreight"/>
+        <result property="supplierNames" column="supplierNames"/>
     </resultMap>
 
     <resultMap id="GoodsOrderOrderDetailResult" type="GoodsOrder" extends="GoodsOrderResult">
@@ -296,7 +299,10 @@
                addtime,
                userId,
                UserName,
-               update_time
+               update_time,
+               landFreight,
+               seaFreight,
+               supplierNames
         from goodsOrder
         where id = #{id}
           and cancelFlag = 0
@@ -513,6 +519,15 @@
             <if test="updateTime != null">
                 update_time,
             </if>
+            <if test = "landFreight != null">
+                landFreight,
+            </if>
+            <if test = "seaFreight != null">
+                seaFreight,
+            </if>
+            <if test = "supplierNames != null and supplierNames != ''">
+                supplierNames,
+            </if>
         </trim>
         <trim prefix="values (" suffix=")" suffixOverrides=",">
             <if test="ordersNo != null">
@@ -625,6 +640,15 @@
             </if>
             <if test="updateTime != null">
                 #{updateTime},
+            </if>
+            <if test = "landFreight != null">
+                #{landFreight},
+            </if>
+            <if test = "seaFreight != null">
+                #{seaFreight},
+            </if>
+            <if test = "supplierNames != null and supplierNames != ''">
+                #{supplierNames},
             </if>
         </trim>
     </insert>
@@ -742,6 +766,15 @@
             </if>
             <if test="updateTime != null">
                 update_time = #{updateTime},
+            </if>
+            <if test = "landFreight != null">
+                landFreight = #{landFreight},
+            </if>
+            <if test = "seaFreight != null">
+                seaFreight = #{seaFreight},
+            </if>
+            <if test = "supplierNames != null and supplierNames != ''">
+                supplierNames = #{supplierNames},
             </if>
         </trim>
         where id = #{id}
