@@ -38,7 +38,7 @@ public class InvoiceOtherController extends BaseController
     /**
      * 查询商家直接给客户开发票列表
      */
-    @PreAuthorize("@ss.hasPermi('system:invoiceOther:list')")
+    @PreAuthorize("@ss.hasPermi('system:invoiceother:list')")
     @GetMapping("/list")
     public TableDataInfo list(InvoiceOther invoiceOther)
     {
@@ -50,7 +50,7 @@ public class InvoiceOtherController extends BaseController
     /**
      * 导出商家直接给客户开发票列表
      */
-    @PreAuthorize("@ss.hasPermi('system:invoiceOther:export')")
+    @PreAuthorize("@ss.hasPermi('system:invoiceother:export')")
     @Log(title = "商家直接给客户开发票", businessType = BusinessType.EXPORT)
     @PostMapping("/export")
     public void export(HttpServletResponse response, InvoiceOther invoiceOther)
@@ -63,7 +63,7 @@ public class InvoiceOtherController extends BaseController
     /**
      * 获取商家直接给客户开发票详细信息
      */
-    @PreAuthorize("@ss.hasPermi('system:invoiceOther:query')")
+    @PreAuthorize("@ss.hasPermi('system:invoiceother:query')")
     @GetMapping(value = "/{id}")
     public AjaxResult getInfo(@PathVariable("id") Long id)
     {
@@ -73,7 +73,7 @@ public class InvoiceOtherController extends BaseController
     /**
      * 新增商家直接给客户开发票
      */
-    @PreAuthorize("@ss.hasPermi('system:invoiceOther:add')")
+    @PreAuthorize("@ss.hasPermi('system:invoiceother:add')")
     @Log(title = "商家直接给客户开发票", businessType = BusinessType.INSERT)
     @PostMapping
     public AjaxResult add(@Validated @RequestBody InvoiceOther invoiceOther)
@@ -84,7 +84,7 @@ public class InvoiceOtherController extends BaseController
     /**
      * 修改商家直接给客户开发票
      */
-    @PreAuthorize("@ss.hasPermi('system:invoiceOther:edit')")
+    @PreAuthorize("@ss.hasPermi('system:invoiceother:edit')")
     @Log(title = "商家直接给客户开发票", businessType = BusinessType.UPDATE)
     @PutMapping
     public AjaxResult edit(@Validated @RequestBody InvoiceOther invoiceOther)
@@ -95,7 +95,7 @@ public class InvoiceOtherController extends BaseController
     /**
      * 删除商家直接给客户开发票
      */
-    @PreAuthorize("@ss.hasPermi('system:invoiceOther:remove')")
+    @PreAuthorize("@ss.hasPermi('system:invoiceother:remove')")
     @Log(title = "商家直接给客户开发票", businessType = BusinessType.DELETE)
 	@DeleteMapping("/{ids}")
     public AjaxResult remove(@PathVariable Long[] ids)

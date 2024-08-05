@@ -38,7 +38,7 @@ public class OilCardConsumeController extends BaseController
     /**
      * 查询加油卡消费信息列表
      */
-    @PreAuthorize("@ss.hasPermi('system:OilCardConsume:list')")
+    @PreAuthorize("@ss.hasPermi('system:oilcardconsume:list')")
     @GetMapping("/list")
     public TableDataInfo list(OilCardConsume oilCardConsume)
     {
@@ -50,7 +50,7 @@ public class OilCardConsumeController extends BaseController
     /**
      * 导出加油卡消费信息列表
      */
-    @PreAuthorize("@ss.hasPermi('system:OilCardConsume:export')")
+    @PreAuthorize("@ss.hasPermi('system:oilcardconsume:export')")
     @Log(title = "加油卡消费信息", businessType = BusinessType.EXPORT)
     @PostMapping("/export")
     public void export(HttpServletResponse response, OilCardConsume oilCardConsume)
@@ -63,7 +63,7 @@ public class OilCardConsumeController extends BaseController
     /**
      * 获取加油卡消费信息详细信息
      */
-    @PreAuthorize("@ss.hasPermi('system:OilCardConsume:query')")
+    @PreAuthorize("@ss.hasPermi('system:oilcardconsume:query')")
     @GetMapping(value = "/{id}")
     public AjaxResult getInfo(@PathVariable("id") Long id)
     {
@@ -73,7 +73,7 @@ public class OilCardConsumeController extends BaseController
     /**
      * 新增加油卡消费信息
      */
-    @PreAuthorize("@ss.hasPermi('system:OilCardConsume:add')")
+    @PreAuthorize("@ss.hasPermi('system:oilcardconsume:add')")
     @Log(title = "加油卡消费信息", businessType = BusinessType.INSERT)
     @PostMapping
     public AjaxResult add(@Validated @RequestBody OilCardConsume oilCardConsume)
@@ -84,7 +84,7 @@ public class OilCardConsumeController extends BaseController
     /**
      * 修改加油卡消费信息
      */
-    @PreAuthorize("@ss.hasPermi('system:OilCardConsume:edit')")
+    @PreAuthorize("@ss.hasPermi('system:oilcardconsume:edit')")
     @Log(title = "加油卡消费信息", businessType = BusinessType.UPDATE)
     @PutMapping
     public AjaxResult edit(@Validated @RequestBody OilCardConsume oilCardConsume)
@@ -95,7 +95,7 @@ public class OilCardConsumeController extends BaseController
     /**
      * 删除加油卡消费信息
      */
-    @PreAuthorize("@ss.hasPermi('system:OilCardConsume:remove')")
+    @PreAuthorize("@ss.hasPermi('system:oilcardconsume:remove')")
     @Log(title = "加油卡消费信息", businessType = BusinessType.DELETE)
 	@DeleteMapping("/{ids}")
     public AjaxResult remove(@PathVariable Long[] ids)

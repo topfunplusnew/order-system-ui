@@ -38,7 +38,7 @@ public class CustomerVisitController extends BaseController
     /**
      * 查询走访记录列表
      */
-    @PreAuthorize("@ss.hasPermi('system:CustomerVisit:list')")
+    @PreAuthorize("@ss.hasPermi('system:customervisit:list')")
     @GetMapping("/list")
     public TableDataInfo list(CustomerVisit customerVisit)
     {
@@ -50,7 +50,7 @@ public class CustomerVisitController extends BaseController
     /**
      * 导出走访记录列表
      */
-    @PreAuthorize("@ss.hasPermi('system:CustomerVisit:export')")
+    @PreAuthorize("@ss.hasPermi('system:customervisit:export')")
     @Log(title = "走访记录", businessType = BusinessType.EXPORT)
     @PostMapping("/export")
     public void export(HttpServletResponse response, CustomerVisit customerVisit)
@@ -63,7 +63,7 @@ public class CustomerVisitController extends BaseController
     /**
      * 获取走访记录详细信息
      */
-    @PreAuthorize("@ss.hasPermi('system:CustomerVisit:query')")
+    @PreAuthorize("@ss.hasPermi('system:customervisit:query')")
     @GetMapping(value = "/{id}")
     public AjaxResult getInfo(@PathVariable("id") Long id)
     {
@@ -73,7 +73,7 @@ public class CustomerVisitController extends BaseController
     /**
      * 新增走访记录
      */
-    @PreAuthorize("@ss.hasPermi('system:CustomerVisit:add')")
+    @PreAuthorize("@ss.hasPermi('system:customervisit:add')")
     @Log(title = "走访记录", businessType = BusinessType.INSERT)
     @PostMapping
     public AjaxResult add(@Validated @RequestBody CustomerVisit customerVisit)
@@ -84,7 +84,7 @@ public class CustomerVisitController extends BaseController
     /**
      * 修改走访记录
      */
-    @PreAuthorize("@ss.hasPermi('system:CustomerVisit:edit')")
+    @PreAuthorize("@ss.hasPermi('system:customervisit:edit')")
     @Log(title = "走访记录", businessType = BusinessType.UPDATE)
     @PutMapping
     public AjaxResult edit(@Validated @RequestBody CustomerVisit customerVisit)
@@ -95,7 +95,7 @@ public class CustomerVisitController extends BaseController
     /**
      * 删除走访记录
      */
-    @PreAuthorize("@ss.hasPermi('system:CustomerVisit:remove')")
+    @PreAuthorize("@ss.hasPermi('system:customervisit:remove')")
     @Log(title = "走访记录", businessType = BusinessType.DELETE)
 	@DeleteMapping("/{ids}")
     public AjaxResult remove(@PathVariable Long[] ids)

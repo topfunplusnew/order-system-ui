@@ -91,14 +91,14 @@
             size="mini"
             type="primary"
             @click="handleUpdate(scope.row)"
-            v-hasPermi="['system:fixedAssets:edit']"
+            v-hasPermi="['system:fixedassets:edit']"
           >修改
           </el-button>
           <el-button
             size="mini"
             type="danger"
             @click="handleDelete(scope.row)"
-            v-hasPermi="['system:fixedAssets:remove']"
+            v-hasPermi="['system:fixedassets:remove']"
           >删除
           </el-button>
         </template>

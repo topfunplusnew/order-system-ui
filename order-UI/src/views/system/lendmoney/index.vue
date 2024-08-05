@@ -87,21 +87,21 @@
           <el-button
             size="mini"
             @click="handleGetBackMoney(scope.row)"
-            v-hasPermi="['system:lendMoney:remove']"
+            v-hasPermi="['system:lendmoney:remove']"
           >收回资金
           </el-button>
           <el-button
             size="mini"
             type="primary"
             @click="handleUpdate(scope.row)"
-            v-hasPermi="['system:lendMoney:edit']"
+            v-hasPermi="['system:lendmoney:edit']"
           >修改
           </el-button>
           <el-button
             size="mini"
             type="danger"
             @click="handleDelete(scope.row)"
-            v-hasPermi="['system:lendMoney:remove']"
+            v-hasPermi="['system:lendmoney:remove']"
           >删除
           </el-button>
         </template>

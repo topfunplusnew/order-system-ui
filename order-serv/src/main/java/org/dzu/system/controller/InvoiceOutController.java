@@ -38,7 +38,7 @@ public class InvoiceOutController extends BaseController
     /**
      * 查询发票卖出信息列表
      */
-    @PreAuthorize("@ss.hasPermi('system:invoiceOut:list')")
+    @PreAuthorize("@ss.hasPermi('system:invoiceout:list')")
     @GetMapping("/list")
     public TableDataInfo list(InvoiceOut invoiceOut)
     {
@@ -50,7 +50,7 @@ public class InvoiceOutController extends BaseController
     /**
      * 导出发票卖出信息列表
      */
-    @PreAuthorize("@ss.hasPermi('system:invoiceOut:export')")
+    @PreAuthorize("@ss.hasPermi('system:invoiceout:export')")
     @Log(title = "发票卖出信息", businessType = BusinessType.EXPORT)
     @PostMapping("/export")
     public void export(HttpServletResponse response, InvoiceOut invoiceOut)
@@ -63,7 +63,7 @@ public class InvoiceOutController extends BaseController
     /**
      * 获取发票卖出信息详细信息
      */
-    @PreAuthorize("@ss.hasPermi('system:invoiceOut:query')")
+    @PreAuthorize("@ss.hasPermi('system:invoiceout:query')")
     @GetMapping(value = "/{id}")
     public AjaxResult getInfo(@PathVariable("id") Long id)
     {
@@ -73,7 +73,7 @@ public class InvoiceOutController extends BaseController
     /**
      * 新增发票卖出信息
      */
-    @PreAuthorize("@ss.hasPermi('system:invoiceOut:add')")
+    @PreAuthorize("@ss.hasPermi('system:invoiceout:add')")
     @Log(title = "发票卖出信息", businessType = BusinessType.INSERT)
     @PostMapping
     public AjaxResult add(@Validated @RequestBody InvoiceOut invoiceOut)
@@ -84,7 +84,7 @@ public class InvoiceOutController extends BaseController
     /**
      * 修改发票卖出信息
      */
-    @PreAuthorize("@ss.hasPermi('system:invoiceOut:edit')")
+    @PreAuthorize("@ss.hasPermi('system:invoiceout:edit')")
     @Log(title = "发票卖出信息", businessType = BusinessType.UPDATE)
     @PutMapping
     public AjaxResult edit(@Validated @RequestBody InvoiceOut invoiceOut)
@@ -95,7 +95,7 @@ public class InvoiceOutController extends BaseController
     /**
      * 删除发票卖出信息
      */
-    @PreAuthorize("@ss.hasPermi('system:invoiceOut:remove')")
+    @PreAuthorize("@ss.hasPermi('system:invoiceout:remove')")
     @Log(title = "发票卖出信息", businessType = BusinessType.DELETE)
 	@DeleteMapping("/{ids}")
     public AjaxResult remove(@PathVariable Long[] ids)

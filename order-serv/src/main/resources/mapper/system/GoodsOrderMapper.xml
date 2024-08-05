@@ -148,7 +148,6 @@
     <select id="selectGoodsOrderList" parameterType="GoodsOrder" resultMap="GoodsOrderResult">
         <include refid="selectGoodsOrderVo"/>
         <where>
-
 <!--            前端传入两个时间戳，在这里做范围匹配-->
             <if test="orderDateStart != null and orderDateStart != '' and orderDateEnd != null and orderDateEnd != ''">
 <!--                    需要注意的是时间都是时间戳形式的字符串-->
@@ -258,6 +257,8 @@
             <if test="UserName != null  and UserName != ''">
                 and UserName like concat('%', #{UserName}, '%')
             </if>
+            ${params.orderDataScope}
+
         </where>
     </select>
 

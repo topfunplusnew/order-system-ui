@@ -38,7 +38,7 @@ public class ReceiveMoneyController extends BaseController
     /**
      * 查询收款信息列表
      */
-    @PreAuthorize("@ss.hasPermi('system:receiveMoney:list')")
+    @PreAuthorize("@ss.hasPermi('system:receivemoney:list')")
     @GetMapping("/list")
     public TableDataInfo list(ReceiveMoney receiveMoney)
     {
@@ -50,7 +50,7 @@ public class ReceiveMoneyController extends BaseController
     /**
      * 导出收款信息列表
      */
-    @PreAuthorize("@ss.hasPermi('system:receiveMoney:export')")
+    @PreAuthorize("@ss.hasPermi('system:receivemoney:export')")
     @Log(title = "收款信息", businessType = BusinessType.EXPORT)
     @PostMapping("/export")
     public void export(HttpServletResponse response, ReceiveMoney receiveMoney)
@@ -63,7 +63,7 @@ public class ReceiveMoneyController extends BaseController
     /**
      * 获取收款信息详细信息
      */
-    @PreAuthorize("@ss.hasPermi('system:receiveMoney:query')")
+    @PreAuthorize("@ss.hasPermi('system:receivemoney:query')")
     @GetMapping(value = "/{id}")
     public AjaxResult getInfo(@PathVariable("id") Long id)
     {
@@ -73,7 +73,7 @@ public class ReceiveMoneyController extends BaseController
     /**
      * 根据UUID获取收款信息详细信息
      */
-    @PreAuthorize("@ss.hasPermi('system:receiveMoney:query')")
+    @PreAuthorize("@ss.hasPermi('system:receivemoney:query')")
     @GetMapping(value = "/receiveNO/{uuid}")
     public AjaxResult getInfo(@PathVariable("uuid") String  uuid){
         return success(receiveMoneyService.selectReceiveMoneyByReceiveNO(uuid));
@@ -81,7 +81,7 @@ public class ReceiveMoneyController extends BaseController
     /**
      * 新增收款信息
      */
-    @PreAuthorize("@ss.hasPermi('system:receiveMoney:add')")
+    @PreAuthorize("@ss.hasPermi('system:receivemoney:add')")
     @Log(title = "收款信息", businessType = BusinessType.INSERT)
     @PostMapping
     public AjaxResult add(@Validated @RequestBody ReceiveMoney receiveMoney)
@@ -92,7 +92,7 @@ public class ReceiveMoneyController extends BaseController
     /**
      * 修改收款信息
      */
-    @PreAuthorize("@ss.hasPermi('system:receiveMoney:edit')")
+    @PreAuthorize("@ss.hasPermi('system:receivemoney:edit')")
     @Log(title = "收款信息", businessType = BusinessType.UPDATE)
     @PutMapping
     public AjaxResult edit(@Validated @RequestBody ReceiveMoney receiveMoney)
@@ -103,7 +103,7 @@ public class ReceiveMoneyController extends BaseController
     /**
      * 删除收款信息
      */
-    @PreAuthorize("@ss.hasPermi('system:receiveMoney:remove')")
+    @PreAuthorize("@ss.hasPermi('system:receivemoney:remove')")
     @Log(title = "收款信息", businessType = BusinessType.DELETE)
 	@DeleteMapping("/{ids}")
     public AjaxResult remove(@PathVariable Long[] ids)

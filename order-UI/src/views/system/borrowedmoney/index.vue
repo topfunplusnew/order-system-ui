@@ -85,14 +85,14 @@
             size="mini"
             type="primary"
             @click="handleUpdate(scope.row)"
-            v-hasPermi="['system:borrowedMoney:edit']"
+            v-hasPermi="['system:borrowedmoney:edit']"
           >编辑
           </el-button>
           <el-button
             size="mini"
             type="danger"
             @click="handleDelete(scope.row)"
-            v-hasPermi="['system:borrowedMoney:remove']"
+            v-hasPermi="['system:borrowedmoney:remove']"
           >删除
           </el-button>
         </template>

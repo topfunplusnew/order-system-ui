@@ -38,7 +38,7 @@ public class AuditInfoController extends BaseController
     /**
      * 查询审核流程列表
      */
-    @PreAuthorize("@ss.hasPermi('system:auditInfo:list')")
+    @PreAuthorize("@ss.hasPermi('system:auditinfo:list')")
     @GetMapping("/list")
     public TableDataInfo list(AuditInfo auditInfo)
     {
@@ -50,7 +50,7 @@ public class AuditInfoController extends BaseController
     /**
      * 导出审核流程列表
      */
-    @PreAuthorize("@ss.hasPermi('system:auditInfo:export')")
+    @PreAuthorize("@ss.hasPermi('system:auditinfo:export')")
     @Log(title = "审核流程", businessType = BusinessType.EXPORT)
     @PostMapping("/export")
     public void export(HttpServletResponse response, AuditInfo auditInfo)
@@ -63,7 +63,7 @@ public class AuditInfoController extends BaseController
     /**
      * 获取审核流程详细信息
      */
-    @PreAuthorize("@ss.hasPermi('system:auditInfo:query')")
+    @PreAuthorize("@ss.hasPermi('system:auditinfo:query')")
     @GetMapping(value = "/{id}")
     public AjaxResult getInfo(@PathVariable("id") Long id)
     {
@@ -73,7 +73,7 @@ public class AuditInfoController extends BaseController
     /**
      * 修改审核流程
      */
-    @PreAuthorize("@ss.hasPermi('system:auditInfo:edit')")
+    @PreAuthorize("@ss.hasPermi('system:auditinfo:edit')")
     @Log(title = "审核流程", businessType = BusinessType.UPDATE)
     @PutMapping
     public AjaxResult edit(@Validated @RequestBody AuditInfo auditInfo)
@@ -84,7 +84,7 @@ public class AuditInfoController extends BaseController
     /**
      * 删除审核流程
      */
-    @PreAuthorize("@ss.hasPermi('system:auditInfo:remove')")
+    @PreAuthorize("@ss.hasPermi('system:auditinfo:remove')")
     @Log(title = "审核流程", businessType = BusinessType.DELETE)
 //	@DeleteMapping("/{ids}")
     // 因为涉及到自动增加下一步以及一些关键信息，同时删除需要关联变动到其他表

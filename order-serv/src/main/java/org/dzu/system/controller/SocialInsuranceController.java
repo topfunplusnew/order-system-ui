@@ -38,7 +38,7 @@ public class SocialInsuranceController extends BaseController
     /**
      * 查询社保基金列表
      */
-    @PreAuthorize("@ss.hasPermi('system:socialInsurance:list')")
+    @PreAuthorize("@ss.hasPermi('system:socialinsurance:list')")
     @GetMapping("/list")
     public TableDataInfo list(SocialInsurance socialInsurance)
     {
@@ -50,7 +50,7 @@ public class SocialInsuranceController extends BaseController
     /**
      * 导出社保基金列表
      */
-    @PreAuthorize("@ss.hasPermi('system:socialInsurance:export')")
+    @PreAuthorize("@ss.hasPermi('system:socialinsurance:export')")
     @Log(title = "社保基金", businessType = BusinessType.EXPORT)
     @PostMapping("/export")
     public void export(HttpServletResponse response, SocialInsurance socialInsurance)
@@ -63,7 +63,7 @@ public class SocialInsuranceController extends BaseController
     /**
      * 获取社保基金详细信息
      */
-    @PreAuthorize("@ss.hasPermi('system:socialInsurance:query')")
+    @PreAuthorize("@ss.hasPermi('system:socialinsurance:query')")
     @GetMapping(value = "/{id}")
     public AjaxResult getInfo(@PathVariable("id") Long id)
     {
@@ -73,7 +73,7 @@ public class SocialInsuranceController extends BaseController
     /**
      * 新增社保基金
      */
-    @PreAuthorize("@ss.hasPermi('system:socialInsurance:add')")
+    @PreAuthorize("@ss.hasPermi('system:socialinsurance:add')")
     @Log(title = "社保基金", businessType = BusinessType.INSERT)
     @PostMapping
     public AjaxResult add(@Validated @RequestBody SocialInsurance socialInsurance)
@@ -84,7 +84,7 @@ public class SocialInsuranceController extends BaseController
     /**
      * 修改社保基金
      */
-    @PreAuthorize("@ss.hasPermi('system:socialInsurance:edit')")
+    @PreAuthorize("@ss.hasPermi('system:socialinsurance:edit')")
     @Log(title = "社保基金", businessType = BusinessType.UPDATE)
     @PutMapping
     public AjaxResult edit(@Validated @RequestBody SocialInsurance socialInsurance)
@@ -95,7 +95,7 @@ public class SocialInsuranceController extends BaseController
     /**
      * 删除社保基金
      */
-    @PreAuthorize("@ss.hasPermi('system:socialInsurance:remove')")
+    @PreAuthorize("@ss.hasPermi('system:socialinsurance:remove')")
     @Log(title = "社保基金", businessType = BusinessType.DELETE)
 	@DeleteMapping("/{ids}")
     public AjaxResult remove(@PathVariable Long[] ids)

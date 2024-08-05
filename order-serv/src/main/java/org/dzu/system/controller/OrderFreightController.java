@@ -38,7 +38,7 @@ public class OrderFreightController extends BaseController
     /**
      * 查询订单运费列表
      */
-    @PreAuthorize("@ss.hasPermi('system:orderFreight:list')")
+    @PreAuthorize("@ss.hasPermi('system:orderfreight:list')")
     @GetMapping("/list")
     public TableDataInfo list(OrderFreight orderFreight)
     {
@@ -50,7 +50,7 @@ public class OrderFreightController extends BaseController
     /**
      * 导出订单运费列表
      */
-    @PreAuthorize("@ss.hasPermi('system:orderFreight:export')")
+    @PreAuthorize("@ss.hasPermi('system:orderfreight:export')")
     @Log(title = "订单运费", businessType = BusinessType.EXPORT)
     @PostMapping("/export")
     public void export(HttpServletResponse response, OrderFreight orderFreight)
@@ -63,7 +63,7 @@ public class OrderFreightController extends BaseController
     /**
      * 获取订单运费详细信息
      */
-    @PreAuthorize("@ss.hasPermi('system:orderFreight:query')")
+    @PreAuthorize("@ss.hasPermi('system:orderfreight:query')")
     @GetMapping(value = "/{id}")
     public AjaxResult getInfo(@PathVariable("id") Long id)
     {
@@ -73,7 +73,7 @@ public class OrderFreightController extends BaseController
     /**
      * 新增订单运费
      */
-    @PreAuthorize("@ss.hasPermi('system:orderFreight:add')")
+    @PreAuthorize("@ss.hasPermi('system:orderfreight:add')")
     @Log(title = "订单运费", businessType = BusinessType.INSERT)
     @PostMapping
     public AjaxResult add(@Validated @RequestBody OrderFreight orderFreight)
@@ -84,7 +84,7 @@ public class OrderFreightController extends BaseController
     /**
      * 修改订单运费
      */
-    @PreAuthorize("@ss.hasPermi('system:orderFreight:edit')")
+    @PreAuthorize("@ss.hasPermi('system:orderfreight:edit')")
     @Log(title = "订单运费", businessType = BusinessType.UPDATE)
     @PutMapping
     public AjaxResult edit(@Validated @RequestBody OrderFreight orderFreight)
@@ -95,7 +95,7 @@ public class OrderFreightController extends BaseController
     /**
      * 删除订单运费
      */
-    @PreAuthorize("@ss.hasPermi('system:orderFreight:remove')")
+    @PreAuthorize("@ss.hasPermi('system:orderfreight:remove')")
     @Log(title = "订单运费", businessType = BusinessType.DELETE)
 	@DeleteMapping("/{ids}")
     public AjaxResult remove(@PathVariable Long[] ids)

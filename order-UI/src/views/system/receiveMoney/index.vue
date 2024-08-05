@@ -101,7 +101,7 @@
           icon="el-icon-plus"
           size="mini"
           @click="handleAdd"
-          v-hasPermi="['system:receiveMoney:add']"
+          v-hasPermi="['system:receivemoney:add']"
         >新增收款信息
         </el-button>
       </el-col>
@@ -162,14 +162,14 @@
             size="mini"
             type="primary"
             @click="handleUpdate(scope.row)"
-            v-hasPermi="['system:receiveMoney:edit']"
+            v-hasPermi="['system:receivemoney:edit']"
           >修改
           </el-button>
           <el-button
             size="mini"
             type="danger"
             @click="handleDelete(scope.row)"
-            v-hasPermi="['system:receiveMoney:remove']"
+            v-hasPermi="['system:receivemoney:remove']"
           >删除
           </el-button>
         </template>

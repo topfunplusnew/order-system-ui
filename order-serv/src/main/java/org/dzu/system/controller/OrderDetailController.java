@@ -38,7 +38,7 @@ public class OrderDetailController extends BaseController
     /**
      * 查询订单详情列表
      */
-    @PreAuthorize("@ss.hasPermi('system:orderDetail:list')")
+    @PreAuthorize("@ss.hasPermi('system:orderdetail:list')")
     @GetMapping("/list")
     public TableDataInfo list(OrderDetail orderDetail)
     {
@@ -50,7 +50,7 @@ public class OrderDetailController extends BaseController
     /**
      * 导出订单详情列表
      */
-    @PreAuthorize("@ss.hasPermi('system:orderDetail:export')")
+    @PreAuthorize("@ss.hasPermi('system:orderdetail:export')")
     @Log(title = "订单详情", businessType = BusinessType.EXPORT)
     @PostMapping("/export")
     public void export(HttpServletResponse response, OrderDetail orderDetail)
@@ -63,7 +63,7 @@ public class OrderDetailController extends BaseController
     /**
      * 获取订单详情详细信息
      */
-    @PreAuthorize("@ss.hasPermi('system:orderDetail:query')")
+    @PreAuthorize("@ss.hasPermi('system:orderdetail:query')")
     @GetMapping(value = "/{id}")
     public AjaxResult getInfo(@PathVariable("id") Long id)
     {
@@ -73,7 +73,7 @@ public class OrderDetailController extends BaseController
     /**
      * 新增订单详情
      */
-    @PreAuthorize("@ss.hasPermi('system:orderDetail:add')")
+    @PreAuthorize("@ss.hasPermi('system:orderdetail:add')")
     @Log(title = "订单详情", businessType = BusinessType.INSERT)
     @PostMapping
     public AjaxResult add(@Validated @RequestBody OrderDetail orderDetail)
@@ -84,7 +84,7 @@ public class OrderDetailController extends BaseController
     /**
      * 修改订单详情
      */
-    @PreAuthorize("@ss.hasPermi('system:orderDetail:edit')")
+    @PreAuthorize("@ss.hasPermi('system:orderdetail:edit')")
     @Log(title = "订单详情", businessType = BusinessType.UPDATE)
     @PutMapping
     public AjaxResult edit(@Validated @RequestBody OrderDetail orderDetail)
@@ -95,7 +95,7 @@ public class OrderDetailController extends BaseController
     /**
      * 删除订单详情
      */
-    @PreAuthorize("@ss.hasPermi('system:orderDetail:remove')")
+    @PreAuthorize("@ss.hasPermi('system:orderdetail:remove')")
     @Log(title = "订单详情", businessType = BusinessType.DELETE)
 	@DeleteMapping("/{ids}")
     public AjaxResult remove(@PathVariable Long[] ids)

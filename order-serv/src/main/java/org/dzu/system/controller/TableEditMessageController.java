@@ -38,7 +38,7 @@ public class TableEditMessageController extends BaseController
     /**
      * 查询编辑原因列表
      */
-    @PreAuthorize("@ss.hasPermi('system:tableEditMessage:list')")
+    @PreAuthorize("@ss.hasPermi('system:tableeditmessage:list')")
     @GetMapping("/list")
     public TableDataInfo list(TableEditMessage tableEditMessage)
     {
@@ -50,7 +50,7 @@ public class TableEditMessageController extends BaseController
     /**
      * 导出编辑原因列表
      */
-    @PreAuthorize("@ss.hasPermi('system:tableEditMessage:export')")
+    @PreAuthorize("@ss.hasPermi('system:tableeditmessage:export')")
     @Log(title = "编辑原因", businessType = BusinessType.EXPORT)
     @PostMapping("/export")
     public void export(HttpServletResponse response, TableEditMessage tableEditMessage)
@@ -63,7 +63,7 @@ public class TableEditMessageController extends BaseController
     /**
      * 获取编辑原因详细信息
      */
-    @PreAuthorize("@ss.hasPermi('system:tableEditMessage:query')")
+    @PreAuthorize("@ss.hasPermi('system:tableeditmessage:query')")
     @GetMapping(value = "/{id}")
     public AjaxResult getInfo(@PathVariable("id") Long id)
     {
@@ -73,7 +73,7 @@ public class TableEditMessageController extends BaseController
     /**
      * 新增编辑原因
      */
-    @PreAuthorize("@ss.hasPermi('system:tableEditMessage:add')")
+    @PreAuthorize("@ss.hasPermi('system:tableeditmessage:add')")
     @Log(title = "编辑原因", businessType = BusinessType.INSERT)
     @PostMapping
     public AjaxResult add(@Validated @RequestBody TableEditMessage tableEditMessage)
@@ -84,7 +84,7 @@ public class TableEditMessageController extends BaseController
     /**
      * 修改编辑原因
      */
-    @PreAuthorize("@ss.hasPermi('system:tableEditMessage:edit')")
+    @PreAuthorize("@ss.hasPermi('system:tableeditmessage:edit')")
     @Log(title = "编辑原因", businessType = BusinessType.UPDATE)
     @PutMapping
     public AjaxResult edit(@Validated @RequestBody TableEditMessage tableEditMessage)
@@ -95,7 +95,7 @@ public class TableEditMessageController extends BaseController
     /**
      * 删除编辑原因
      */
-    @PreAuthorize("@ss.hasPermi('system:tableEditMessage:remove')")
+    @PreAuthorize("@ss.hasPermi('system:tableeditmessage:remove')")
     @Log(title = "编辑原因", businessType = BusinessType.DELETE)
 	@DeleteMapping("/{ids}")
     public AjaxResult remove(@PathVariable Long[] ids)

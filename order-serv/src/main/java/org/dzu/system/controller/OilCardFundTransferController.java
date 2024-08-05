@@ -38,7 +38,7 @@ public class OilCardFundTransferController extends BaseController
     /**
      * 查询加油卡圈存列表
      */
-    @PreAuthorize("@ss.hasPermi('system:oilCardFundTransfer:list')")
+    @PreAuthorize("@ss.hasPermi('system:oilcardfundtransfer:list')")
     @GetMapping("/list")
     public TableDataInfo list(OilCardFundTransfer oilCardFundTransfer)
     {
@@ -50,7 +50,7 @@ public class OilCardFundTransferController extends BaseController
     /**
      * 导出加油卡圈存列表
      */
-    @PreAuthorize("@ss.hasPermi('system:oilCardFundTransfer:export')")
+    @PreAuthorize("@ss.hasPermi('system:oilcardfundtransfer:export')")
     @Log(title = "加油卡圈存", businessType = BusinessType.EXPORT)
     @PostMapping("/export")
     public void export(HttpServletResponse response, OilCardFundTransfer oilCardFundTransfer)
@@ -63,7 +63,7 @@ public class OilCardFundTransferController extends BaseController
     /**
      * 获取加油卡圈存详细信息
      */
-    @PreAuthorize("@ss.hasPermi('system:oilCardFundTransfer:query')")
+    @PreAuthorize("@ss.hasPermi('system:oilcardfundtransfer:query')")
     @GetMapping(value = "/{id}")
     public AjaxResult getInfo(@PathVariable("id") Long id)
     {
@@ -73,7 +73,7 @@ public class OilCardFundTransferController extends BaseController
     /**
      * 新增加油卡圈存
      */
-    @PreAuthorize("@ss.hasPermi('system:oilCardFundTransfer:add')")
+    @PreAuthorize("@ss.hasPermi('system:oilcardfundtransfer:add')")
     @Log(title = "加油卡圈存", businessType = BusinessType.INSERT)
     @PostMapping
     public AjaxResult add(@Validated @RequestBody OilCardFundTransfer oilCardFundTransfer)
@@ -84,7 +84,7 @@ public class OilCardFundTransferController extends BaseController
     /**
      * 修改加油卡圈存
      */
-    @PreAuthorize("@ss.hasPermi('system:oilCardFundTransfer:edit')")
+    @PreAuthorize("@ss.hasPermi('system:oilcardfundtransfer:edit')")
     @Log(title = "加油卡圈存", businessType = BusinessType.UPDATE)
     @PutMapping
     public AjaxResult edit(@Validated @RequestBody OilCardFundTransfer oilCardFundTransfer)
@@ -95,7 +95,7 @@ public class OilCardFundTransferController extends BaseController
     /**
      * 删除加油卡圈存
      */
-    @PreAuthorize("@ss.hasPermi('system:oilCardFundTransfer:remove')")
+    @PreAuthorize("@ss.hasPermi('system:oilcardfundtransfer:remove')")
     @Log(title = "加油卡圈存", businessType = BusinessType.DELETE)
 	@DeleteMapping("/{ids}")
     public AjaxResult remove(@PathVariable Long[] ids)

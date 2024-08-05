@@ -38,7 +38,7 @@ public class BorrowedMoneyController extends BaseController
     /**
      * 查询从外部借款信息列表
      */
-    @PreAuthorize("@ss.hasPermi('system:borrowedMoney:list')")
+    @PreAuthorize("@ss.hasPermi('system:borrowedmoney:list')")
     @GetMapping("/list")
     public TableDataInfo list(BorrowedMoney borrowedMoney)
     {
@@ -50,7 +50,7 @@ public class BorrowedMoneyController extends BaseController
     /**
      * 导出从外部借款信息列表
      */
-    @PreAuthorize("@ss.hasPermi('system:borrowedMoney:export')")
+    @PreAuthorize("@ss.hasPermi('system:borrowedmoney:export')")
     @Log(title = "从外部借款信息", businessType = BusinessType.EXPORT)
     @PostMapping("/export")
     public void export(HttpServletResponse response, BorrowedMoney borrowedMoney)
@@ -63,7 +63,7 @@ public class BorrowedMoneyController extends BaseController
     /**
      * 获取从外部借款信息详细信息
      */
-    @PreAuthorize("@ss.hasPermi('system:borrowedMoney:query')")
+    @PreAuthorize("@ss.hasPermi('system:borrowedmoney:query')")
     @GetMapping(value = "/{id}")
     public AjaxResult getInfo(@PathVariable("id") Long id)
     {
@@ -73,7 +73,7 @@ public class BorrowedMoneyController extends BaseController
     /**
      * 新增从外部借款信息
      */
-    @PreAuthorize("@ss.hasPermi('system:borrowedMoney:add')")
+    @PreAuthorize("@ss.hasPermi('system:borrowedmoney:add')")
     @Log(title = "从外部借款信息", businessType = BusinessType.INSERT)
     @PostMapping
     public AjaxResult add(@Validated @RequestBody BorrowedMoney borrowedMoney)
@@ -84,7 +84,7 @@ public class BorrowedMoneyController extends BaseController
     /**
      * 修改从外部借款信息
      */
-    @PreAuthorize("@ss.hasPermi('system:borrowedMoney:edit')")
+    @PreAuthorize("@ss.hasPermi('system:borrowedmoney:edit')")
     @Log(title = "从外部借款信息", businessType = BusinessType.UPDATE)
     @PutMapping
     public AjaxResult edit(@Validated @RequestBody BorrowedMoney borrowedMoney)
@@ -95,7 +95,7 @@ public class BorrowedMoneyController extends BaseController
     /**
      * 删除从外部借款信息
      */
-    @PreAuthorize("@ss.hasPermi('system:borrowedMoney:remove')")
+    @PreAuthorize("@ss.hasPermi('system:borrowedmoney:remove')")
     @Log(title = "从外部借款信息", businessType = BusinessType.DELETE)
 	@DeleteMapping("/{ids}")
     public AjaxResult remove(@PathVariable Long[] ids)

@@ -108,7 +108,7 @@
           icon="el-icon-plus"
           size="mini"
           @click="handleAdd"
-          v-hasPermi="['system:BalanceAccounts:add']"
+          v-hasPermi="['system:balanceaccounts:add']"
         >新增
         </el-button>
       </el-col>
@@ -120,7 +120,7 @@
           size="mini"
           :disabled="single"
           @click="handleUpdate"
-          v-hasPermi="['system:BalanceAccounts:edit']"
+          v-hasPermi="['system:balanceaccounts:edit']"
         >修改
         </el-button>
       </el-col>
@@ -132,7 +132,7 @@
           size="mini"
           :disabled="multiple"
           @click="handleDelete"
-          v-hasPermi="['system:BalanceAccounts:remove']"
+          v-hasPermi="['system:balanceaccounts:remove']"
         >删除
         </el-button>
       </el-col>
@@ -143,7 +143,7 @@
           icon="el-icon-download"
           size="mini"
           @click="handleExport"
-          v-hasPermi="['system:BalanceAccounts:export']"
+          v-hasPermi="['system:balanceaccounts:export']"
         >导出
         </el-button>
       </el-col>-->
@@ -167,7 +167,7 @@
               icon="el-icon-folder-opened"
               size="mini"
               @click="handleExport"
-              v-hasPermi="['system:BalanceAccounts:export']"
+              v-hasPermi="['system:balanceaccounts:export']"
             >
             </el-button>
           </el-col>
@@ -196,7 +196,7 @@
             type="text"
             icon="el-icon-edit"
             @click="handleUpdate(scope.row)"
-            v-hasPermi="['system:BalanceAccounts:edit']"
+            v-hasPermi="['system:balanceaccounts:edit']"
           >修改
           </el-button>
           <el-button
@@ -204,7 +204,7 @@
             type="text"
             icon="el-icon-delete"
             @click="handleDelete(scope.row)"
-            v-hasPermi="['system:BalanceAccounts:remove']"
+            v-hasPermi="['system:balanceaccounts:remove']"
           >删除
           </el-button>-->
 
@@ -212,14 +212,14 @@
             size="mini"
             type="primary"
             @click="handleUpdate(scope.row)"
-            v-hasPermi="['system:BalanceAccounts:edit']"
+            v-hasPermi="['system:balanceaccounts:edit']"
           >编辑
           </el-button>
           <el-button
             size="mini"
             type="danger"
             @click="handleDelete(scope.row)"
-            v-hasPermi="['system:BalanceAccounts:remove']"
+            v-hasPermi="['system:balanceaccounts:remove']"
           >删除
           </el-button>
         </template>

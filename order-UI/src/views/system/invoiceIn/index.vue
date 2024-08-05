@@ -127,7 +127,7 @@
           icon="el-icon-plus"
           size="mini"
           @click="handleAdd"
-          v-hasPermi="['system:invoiceIn:add']"
+          v-hasPermi="['system:invoicein:add']"
         >新增</el-button>
       </el-col>
       <el-col :span="1.5">
@@ -138,7 +138,7 @@
           size="mini"
           :disabled="single"
           @click="handleUpdate"
-          v-hasPermi="['system:invoiceIn:edit']"
+          v-hasPermi="['system:invoicein:edit']"
         >修改</el-button>
       </el-col>
       <el-col :span="1.5">
@@ -149,7 +149,7 @@
           size="mini"
           :disabled="multiple"
           @click="handleDelete"
-          v-hasPermi="['system:invoiceIn:remove']"
+          v-hasPermi="['system:invoicein:remove']"
         >删除</el-button>
       </el-col>
       <el-col :span="1.5">
@@ -159,7 +159,7 @@
           icon="el-icon-download"
           size="mini"
           @click="handleExport"
-          v-hasPermi="['system:invoiceIn:export']"
+          v-hasPermi="['system:invoicein:export']"
         >导出</el-button>
       </el-col>
       <right-toolbar :showSearch.sync="showSearch" @queryTable="getList"></right-toolbar>
@@ -190,14 +190,14 @@
             type="text"
             icon="el-icon-edit"
             @click="handleUpdate(scope.row)"
-            v-hasPermi="['system:invoiceIn:edit']"
+            v-hasPermi="['system:invoicein:edit']"
           >修改</el-button>
           <el-button
             size="mini"
             type="text"
             icon="el-icon-delete"
             @click="handleDelete(scope.row)"
-            v-hasPermi="['system:invoiceIn:remove']"
+            v-hasPermi="['system:invoicein:remove']"
           >删除</el-button>
         </template>
       </el-table-column>

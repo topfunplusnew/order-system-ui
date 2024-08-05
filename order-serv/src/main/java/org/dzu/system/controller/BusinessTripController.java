@@ -38,7 +38,7 @@ public class BusinessTripController extends BaseController
     /**
      * 查询出差列表
      */
-    @PreAuthorize("@ss.hasPermi('system:BusinessTrip:list')")
+    @PreAuthorize("@ss.hasPermi('system:businesstrip:list')")
     @GetMapping("/list")
     public TableDataInfo list(BusinessTrip businessTrip)
     {
@@ -50,7 +50,7 @@ public class BusinessTripController extends BaseController
     /**
      * 导出出差列表
      */
-    @PreAuthorize("@ss.hasPermi('system:BusinessTrip:export')")
+    @PreAuthorize("@ss.hasPermi('system:businesstrip:export')")
     @Log(title = "出差", businessType = BusinessType.EXPORT)
     @PostMapping("/export")
     public void export(HttpServletResponse response, BusinessTrip businessTrip)
@@ -63,7 +63,7 @@ public class BusinessTripController extends BaseController
     /**
      * 获取出差详细信息
      */
-    @PreAuthorize("@ss.hasPermi('system:BusinessTrip:query')")
+    @PreAuthorize("@ss.hasPermi('system:businesstrip:query')")
     @GetMapping(value = "/{id}")
     public AjaxResult getInfo(@PathVariable("id") Long id)
     {
@@ -73,7 +73,7 @@ public class BusinessTripController extends BaseController
     /**
      * 新增出差
      */
-    @PreAuthorize("@ss.hasPermi('system:BusinessTrip:add')")
+    @PreAuthorize("@ss.hasPermi('system:businesstrip:add')")
     @Log(title = "出差", businessType = BusinessType.INSERT)
     @PostMapping
     public AjaxResult add(@Validated @RequestBody BusinessTrip businessTrip)
@@ -84,7 +84,7 @@ public class BusinessTripController extends BaseController
     /**
      * 修改出差
      */
-    @PreAuthorize("@ss.hasPermi('system:BusinessTrip:edit')")
+    @PreAuthorize("@ss.hasPermi('system:businesstrip:edit')")
     @Log(title = "出差", businessType = BusinessType.UPDATE)
     @PutMapping
     public AjaxResult edit(@Validated @RequestBody BusinessTrip businessTrip)
@@ -95,7 +95,7 @@ public class BusinessTripController extends BaseController
     /**
      * 删除出差
      */
-    @PreAuthorize("@ss.hasPermi('system:BusinessTrip:remove')")
+    @PreAuthorize("@ss.hasPermi('system:businesstrip:remove')")
     @Log(title = "出差", businessType = BusinessType.DELETE)
 	@DeleteMapping("/{ids}")
     public AjaxResult remove(@PathVariable Long[] ids)

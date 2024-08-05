@@ -274,7 +274,7 @@
           icon="el-icon-plus"
           size="mini"
           @click="handleAdd"
-          v-hasPermi="['system:orderDetail:add']"
+          v-hasPermi="['system:orderdetail:add']"
         >添加订单信息
         </el-button>
       </el-col>
@@ -285,7 +285,7 @@
           icon="el-icon-download"
           size="mini"
           @click="handleExport"
-          v-hasPermi="['system:orderDetail:export']"
+          v-hasPermi="['system:orderdetail:export']"
         >导出订单数据
         </el-button>
       </el-col>
@@ -341,7 +341,7 @@
             size="mini"
             type="danger"
             @click="handleDelete(scope.row)"
-            v-hasPermi="['system:orderDetail:remove']"
+            v-hasPermi="['system:orderdetail:remove']"
           >删除
           </el-button>
         </template>
@@ -453,32 +453,32 @@
           <el-button
             size="mini"
             @click="handleOrder1(scope.row)"
-            v-hasPermi="['system:orderDetail:edit']"
+            v-hasPermi="['system:orderdetail:edit']"
           >发货单1
           </el-button>
           <el-button
             size="mini"
             @click="handleOrder2(scope.row)"
-            v-hasPermi="['system:orderDetail:edit']"
+            v-hasPermi="['system:orderdetail:edit']"
           >发货单2
           </el-button>
           <el-button
             size="mini"
             @click="handleOrder3(scope.row)"
-            v-hasPermi="['system:orderDetail:edit']"
+            v-hasPermi="['system:orderdetail:edit']"
           >发货单3
           </el-button>
           <el-button
             size="mini"
             type="primary"
             @click="handleUpload(scope.row)"
-            v-hasPermi="['system:orderDetail:remove']"
+            v-hasPermi="['system:orderdetail:remove']"
           >上传附件
           </el-button>
           <el-button
             size="mini"
             @click="handleCommit(scope.row)"
-            v-hasPermi="['system:orderDetail:remove']"
+            v-hasPermi="['system:orderdetail:remove']"
           >上传收到条
           </el-button>
         </template>

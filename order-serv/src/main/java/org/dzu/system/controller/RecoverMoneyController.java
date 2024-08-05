@@ -31,7 +31,7 @@ public class RecoverMoneyController extends BaseController {
     /**
      * 查询借出款收回信息列表
      */
-    @PreAuthorize("@ss.hasPermi('system:recoverMoney:list')")
+    @PreAuthorize("@ss.hasPermi('system:recovermoney:list')")
     @GetMapping("/list")
     public TableDataInfo list(RecoverMoney recoverMoney) {
         startPage();
@@ -42,7 +42,7 @@ public class RecoverMoneyController extends BaseController {
     /**
      * 导出借出款收回信息列表
      */
-    @PreAuthorize("@ss.hasPermi('system:recoverMoney:export')")
+    @PreAuthorize("@ss.hasPermi('system:recovermoney:export')")
     @Log(title = "借出款收回信息", businessType = BusinessType.EXPORT)
     @PostMapping("/export")
     public void export(HttpServletResponse response, RecoverMoney recoverMoney) {
@@ -54,7 +54,7 @@ public class RecoverMoneyController extends BaseController {
     /**
      * 获取借出款收回信息详细信息
      */
-    @PreAuthorize("@ss.hasPermi('system:recoverMoney:query')")
+    @PreAuthorize("@ss.hasPermi('system:recovermoney:query')")
     @GetMapping(value = "/{id}")
     public AjaxResult getInfo(@PathVariable("id") Long id) {
         return success(recoverMoneyService.selectRecoverMoneyById(id));
@@ -63,7 +63,7 @@ public class RecoverMoneyController extends BaseController {
     /**
      * 根据UUID获取借出款收回信息详细信息
      */
-    @PreAuthorize("@ss.hasPermi('system:recoverMoney:query')")
+    @PreAuthorize("@ss.hasPermi('system:recovermoney:query')")
     @GetMapping(value = "/futuresNO/{uuid}")
     public AjaxResult getInfoByUUID(@PathVariable("uuid") String uuid) {
         return success(recoverMoneyService.selectRecoverMoneyByFuturesNO(uuid));
@@ -72,7 +72,7 @@ public class RecoverMoneyController extends BaseController {
     /**
      * 新增借出款收回信息
      */
-    @PreAuthorize("@ss.hasPermi('system:recoverMoney:add')")
+    @PreAuthorize("@ss.hasPermi('system:recovermoney:add')")
     @Log(title = "借出款收回信息", businessType = BusinessType.INSERT)
     @PostMapping
     public AjaxResult add(@Validated @RequestBody RecoverMoney recoverMoney) {
@@ -82,7 +82,7 @@ public class RecoverMoneyController extends BaseController {
     /**
      * 修改借出款收回信息
      */
-    @PreAuthorize("@ss.hasPermi('system:recoverMoney:edit')")
+    @PreAuthorize("@ss.hasPermi('system:recovermoney:edit')")
     @Log(title = "借出款收回信息", businessType = BusinessType.UPDATE)
     @PutMapping
     public AjaxResult edit(@Validated @RequestBody RecoverMoney recoverMoney) {
@@ -92,7 +92,7 @@ public class RecoverMoneyController extends BaseController {
     /**
      * 删除借出款收回信息
      */
-    @PreAuthorize("@ss.hasPermi('system:recoverMoney:remove')")
+    @PreAuthorize("@ss.hasPermi('system:recovermoney:remove')")
     @Log(title = "借出款收回信息", businessType = BusinessType.DELETE)
     @DeleteMapping("/{ids}")
     public AjaxResult remove(@PathVariable Long[] ids) {

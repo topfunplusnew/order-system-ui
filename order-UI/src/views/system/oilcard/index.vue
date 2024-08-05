@@ -122,7 +122,7 @@
           icon="el-icon-plus"
           size="mini"
           @click="handleAdd"
-          v-hasPermi="['system:oilCard:add']"
+          v-hasPermi="['system:oilcard:add']"
         >新增加油卡信息
         </el-button>
       </el-col>
@@ -134,7 +134,7 @@
           size="mini"
           @click="handleUpdate"
           :disabled="single"
-          v-hasPermi="['system:oilCard:edit']"
+          v-hasPermi="['system:oilcard:edit']"
         >修改
         </el-button>-->
         <!--记录为空时可以点按钮-->
@@ -147,7 +147,7 @@
           size="mini"
           :disabled="multiple"
           @click="handleDelete"
-          v-hasPermi="['system:oilCard:remove']"
+          v-hasPermi="['system:oilcard:remove']"
         >删除
         </el-button>-->
         <!--记录为空时可以点按钮-->
@@ -159,7 +159,7 @@
           icon="el-icon-download"
           size="mini"
           @click="handleExport"
-          v-hasPermi="['system:oilCard:export']"
+          v-hasPermi="['system:oilcard:export']"
         >导出
         </el-button>-->
 <!--      </el-col>-->
@@ -217,7 +217,7 @@
             type="text"
             icon="el-icon-edit"
             @click="handleUpdate(scope.row)"
-            v-hasPermi="['system:oilCard:edit']"
+            v-hasPermi="['system:oilcard:edit']"
           >修改
           </el-button>
           <el-button
@@ -225,7 +225,7 @@
             type="text"
             icon="el-icon-delete"
             @click="handleDelete(scope.row)"
-            v-hasPermi="['system:oilCard:remove']"
+            v-hasPermi="['system:oilcard:remove']"
           >删除
           </el-button>-->
           <el-button
