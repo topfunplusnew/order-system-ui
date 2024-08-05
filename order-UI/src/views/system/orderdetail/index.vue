@@ -1,26 +1,88 @@
 <template>
   <div class="app-container">
-    <el-form :model="queryParams" ref="queryForm" size="small" :inline="true" v-show="showSearch" label-width="68px">
-      <!--      <el-form-item label="订单编号" prop="ordersNo">-->
+    <!--    查询组-->
+    <el-form :model="queryOrderInfo" ref="queryForm" size="small" :inline="true" v-show="showSearch"
+             label-width="100px">
+      <!--      开始时间-->
+      <!--      <el-form-item label="开始日期" prop="startTime">-->
+      <!--        <el-date-picker-->
+      <!--          v-model="queryOrderInfo.startTime"-->
+      <!--          type="date"-->
+      <!--          placeholder="请选择开始日期" value-format="yyyy-MM-dd">-->
+      <!--        </el-date-picker>-->
+      <!--      </el-form-item>-->
+      <!--      &lt;!&ndash;      结束时间&ndash;&gt;-->
+      <!--      <el-form-item label="结束日期" prop="endTime">-->
+      <!--        <el-date-picker-->
+      <!--          v-model="queryOrderInfo.endTime"-->
+      <!--          type="date"-->
+      <!--          placeholder="请选择结束日期" value-format="yyyy-MM-dd">-->
+      <!--        </el-date-picker>-->
+      <!--      </el-form-item>-->
+      <!--      业务员查询-->
+      <!--      <el-form-item label="业务员名称" prop="salesman">-->
       <!--        <el-input-->
-      <!--          v-model="queryParams.ordersNo"-->
-      <!--          placeholder="请输入订单编号"-->
+      <!--          v-model="queryOrderInfo.salesman"-->
+      <!--          placeholder="请输入业务员名称"-->
+      <!--          clearable-->
+      <!--        />-->
+      <!--      </el-form-item>-->
+      <!--      &lt;!&ndash;      供应商&ndash;&gt;-->
+      <!--      <el-form-item label="供应商名称" prop="supplier">-->
+      <!--        <el-input-->
+      <!--          v-model="queryOrderInfo.supplier"-->
+      <!--          placeholder="请输入供应商名称"-->
       <!--          clearable-->
       <!--          @keyup.enter.native="handleQuery"-->
       <!--        />-->
       <!--      </el-form-item>-->
-      <el-form-item label="订单日期" prop="orderDate">
+      <!--      &lt;!&ndash;      客户&ndash;&gt;-->
+      <!--      <el-form-item label="客户名称" prop="customer">-->
+      <!--        <el-input-->
+      <!--          v-model="queryOrderInfo.customer"-->
+      <!--          placeholder="请输入客户名称"-->
+      <!--          clearable-->
+      <!--          @keyup.enter.native="handleQuery"-->
+      <!--        />-->
+      <!--      </el-form-item>-->
+
+
+      <!--      &lt;!&ndash;      车牌&ndash;&gt;-->
+      <!--      <el-form-item label="车牌" prop="customer">-->
+      <!--        <el-input-->
+      <!--          v-model="queryParams.customer"-->
+      <!--          placeholder="请输入车牌"-->
+      <!--          clearable-->
+      <!--          @keyup.enter.native="handleQuery"-->
+      <!--        />-->
+      <!--      </el-form-item>-->
+
+      <!--      &lt;!&ndash;      审核状态&ndash;&gt;-->
+      <!--      <el-form-item label="车牌" prop="customer">-->
+      <!--        <el-input-->
+      <!--          v-model="queryParams.customer"-->
+      <!--          placeholder="请输入车牌"-->
+      <!--          clearable-->
+      <!--          @keyup.enter.native="handleQuery"-->
+      <!--        />-->
+      <!--      </el-form-item>-->
+
+      <!--      &lt;!&ndash;      是否开票&ndash;&gt;-->
+      <!--      <el-form-item label="是否开票" prop="customer">-->
+      <!--        <el-input-->
+      <!--          v-model="queryParams.customer"-->
+      <!--          placeholder="请输入车牌"-->
+      <!--          clearable-->
+      <!--          @keyup.enter.native="handleQuery"-->
+      <!--        />-->
+      <!--      </el-form-item>-->
+
+
+      <!--      以下代码待用-->
+      <el-form-item label="订单编号" prop="ordersNo">
         <el-input
-          v-model="queryParams.orderDate"
-          placeholder="请输入订单日期"
-          clearable
-          @keyup.enter.native="handleQuery"
-        />
-      </el-form-item>
-      <el-form-item label="供应商名称" prop="supplier">
-        <el-input
-          v-model="queryParams.supplier"
-          placeholder="请输入供应商名称"
+          v-model="queryParams.ordersNo"
+          placeholder="请输入订单编号"
           clearable
           @keyup.enter.native="handleQuery"
         />
@@ -33,14 +95,6 @@
       <!--          @keyup.enter.native="handleQuery"-->
       <!--        />-->
       <!--      </el-form-item>-->
-      <el-form-item label="客户名称" prop="customer">
-        <el-input
-          v-model="queryParams.customer"
-          placeholder="请输入客户名称"
-          clearable
-          @keyup.enter.native="handleQuery"
-        />
-      </el-form-item>
       <!--      <el-form-item label="客户ID" prop="customerID">-->
       <!--        <el-input-->
       <!--          v-model="queryParams.customerID"-->
@@ -371,7 +425,7 @@
       <!--      </el-form-item>-->
       <el-form-item>
         <el-button type="primary" icon="el-icon-search" size="mini" @click="handleQuery">搜索</el-button>
-        <el-button icon="el-icon-refresh" size="mini" @click="resetQuery">重置</el-button>
+        <!--        <el-button icon="el-icon-refresh" size="mini" @click="resetQuery">重置</el-button>-->
       </el-form-item>
     </el-form>
 
@@ -437,22 +491,19 @@
         <template slot-scope="scope">
           <el-button
             size="mini"
-            @click="handleUpdate(scope.row)"
-            v-hasPermi="['system:orderDetail:edit']"
+            @click="checkOrderItemInfo(scope.row)"
           >查看
           </el-button>
           <el-button
             size="mini"
             type="primary"
-            @click="handleUpdate(scope.row)"
-            v-hasPermi="['system:orderDetail:edit']"
+            @click="handleOrderItemInfo(scope.row)"
           >调整单
           </el-button>
           <el-button
             size="mini"
             type="danger"
             @click="handleUpdate(scope.row)"
-            v-hasPermi="['system:orderDetail:edit']"
           >复制
           </el-button>
           <el-button
@@ -518,32 +569,32 @@
         <template slot-scope="scope">
           <el-button
             size="mini"
-            @click="handleUpdate(scope.row)"
+            @click="handleOrder1(scope.row)"
             v-hasPermi="['system:orderDetail:edit']"
           >发货单1
           </el-button>
           <el-button
             size="mini"
-            @click="handleUpdate(scope.row)"
+            @click="handleOrder2(scope.row)"
             v-hasPermi="['system:orderDetail:edit']"
           >发货单2
           </el-button>
           <el-button
             size="mini"
-            @click="handleUpdate(scope.row)"
+            @click="handleOrder3(scope.row)"
             v-hasPermi="['system:orderDetail:edit']"
           >发货单3
           </el-button>
           <el-button
             size="mini"
             type="primary"
-            @click="handleDelete(scope.row)"
+            @click="handleUpload(scope.row)"
             v-hasPermi="['system:orderDetail:remove']"
           >上传附件
           </el-button>
           <el-button
             size="mini"
-            @click="handleDelete(scope.row)"
+            @click="handleCommit(scope.row)"
             v-hasPermi="['system:orderDetail:remove']"
           >上传收到条
           </el-button>
@@ -706,6 +757,93 @@
         <el-button @click="cancel">取 消</el-button>
       </div>
     </el-dialog>
+
+
+    <!--    点击查看某个订单的弹窗   -->
+    <el-dialog
+      title="提示"
+      :visible.sync="checkOrderVisible"
+      width="30%">
+      <span>点击查看订单的弹窗</span>
+      <span slot="footer" class="dialog-footer">
+    <el-button @click="checkOrderVisible = false">取 消</el-button>
+    <el-button type="primary" @click="checkOrderVisible = false">确 定</el-button>
+  </span>
+    </el-dialog>
+
+    <!--    点击调整单的弹窗-->
+    <el-dialog
+      title="提示"
+      :visible.sync="handleOrderVisible"
+      width="30%">
+      <span>点击调整单的弹窗</span>
+      <span slot="footer" class="dialog-footer">
+    <el-button @click="handleOrderVisible = false">取 消</el-button>
+    <el-button type="primary" @click="handleOrderVisible = false">确 定</el-button>
+  </span>
+    </el-dialog>
+
+    <!--    点击发货单1的弹窗-->
+    <el-dialog
+      title="提示"
+      :visible.sync="Order1Visible"
+      width="30%">
+      <span>点击发货单1的弹窗</span>
+      <span slot="footer" class="dialog-footer">
+    <el-button @click="Order1Visible = false">取 消</el-button>
+    <el-button type="primary" @click="Order1Visible = false">确 定</el-button>
+  </span>
+    </el-dialog>
+
+    <!--    点击发货单2的弹窗-->
+    <el-dialog
+      title="提示"
+      :visible.sync="Order2Visible"
+      width="30%">
+      <span>点击发货单2的弹窗</span>
+      <span slot="footer" class="dialog-footer">
+    <el-button @click="Order2Visible = false">取 消</el-button>
+    <el-button type="primary" @click="Order2Visible = false">确 定</el-button>
+  </span>
+    </el-dialog>
+
+
+    <!--    点击发货单3的弹窗-->
+    <el-dialog
+      title="提示"
+      :visible.sync="Order3Visible"
+      width="30%">
+      <span>点击发货单3的弹窗</span>
+      <span slot="footer" class="dialog-footer">
+    <el-button @click="Order3Visible = false">取 消</el-button>
+    <el-button type="primary" @click="Order3Visible = false">确 定</el-button>
+  </span>
+    </el-dialog>
+
+    <!--    上传附件的弹窗-->
+    <el-dialog
+      title="提示"
+      :visible.sync="handleUploadVisible"
+      width="30%">
+      <span>上传附件的弹窗</span>
+      <span slot="footer" class="dialog-footer">
+    <el-button @click="handleUploadVisible = false">取 消</el-button>
+    <el-button type="primary" @click="handleUploadVisible = false">确 定</el-button>
+  </span>
+    </el-dialog>
+
+    <!--    上传收到条的弹窗-->
+    <el-dialog
+      title="提示"
+      :visible.sync="handleCommitVisible"
+      width="30%">
+      <span>上传收到条的弹窗</span>
+      <span slot="footer" class="dialog-footer">
+    <el-button @click="handleCommitVisible = false">取 消</el-button>
+    <el-button type="primary" @click="handleCommitVisible = false">确 定</el-button>
+  </span>
+    </el-dialog>
+
   </div>
 </template>
 
@@ -791,6 +929,11 @@ export default {
         userId: null,
         UserName: null,
       },
+
+      // 表单参数
+      form: {},
+      // 表单校验
+      rules: {},
       //隐藏列
       columns: [
         {key: 0, label: `客户`, visible: true},
@@ -803,16 +946,50 @@ export default {
         {key: 7, label: `销售经理`, visible: true},
         {key: 8, label: `备注`, visible: true},
       ],
-      // 表单参数
-      form: {},
-      // 表单校验
-      rules: {}
+      //顶部条件搜索
+      queryOrderInfo: {},
+      //点击查看的弹窗
+      checkOrderVisible: false,
+      //调整单的弹窗
+      handleOrderVisible: false,
+      //订单弹窗
+      Order1Visible: false,
+      Order2Visible: false,
+      Order3Visible: false,
+      //上传和收到条
+      handleUploadVisible: false,
+      handleCommitVisible: false
     };
   },
   created() {
     this.getList();
   },
   methods: {
+    //点击查看
+    checkOrderItemInfo(row) {
+      this.checkOrderVisible = true;
+    },
+    //点击调整单的弹窗
+    handleOrderItemInfo(row) {
+      this.handleOrderVisible = true
+    },
+    //订单
+    handleOrder1(row) {
+      this.Order1Visible = true
+    },
+    handleOrder2(row) {
+      this.Order2Visible = true
+    },
+    handleOrder3(row) {
+      this.Order3Visible = true
+    },
+    //上传和收到条
+    handleUpload(row) {
+      this.handleUploadVisible = true
+    },
+    handleCommit(row) {
+      this.handleCommitVisible = true
+    },
     //表格统计
     //自定义列统计总函数
     getSummaries(param) {
