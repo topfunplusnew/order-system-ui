@@ -272,6 +272,46 @@ public class GoodsOrder extends BaseEntity
     @TableField(value = "UserName")
     private String UserName;
 
+    public Double getLandFreight() {
+        return landFreight;
+    }
+
+    public void setLandFreight(Double landFreight) {
+        this.landFreight = landFreight;
+    }
+
+    public Double getSeaFreight() {
+        return seaFreight;
+    }
+
+    public void setSeaFreight(Double seaFreight) {
+        this.seaFreight = seaFreight;
+    }
+
+    public String getSupplierNames() {
+        return supplierNames;
+    }
+
+    public void setSupplierNames(String supplierNames) {
+        this.supplierNames = supplierNames;
+    }
+
+    /** 陆运费 */
+    @Excel(name = "陆运费")
+    @TableField(value = "landFreight")
+    private Double landFreight;
+
+    /** 海运费 */
+    @Excel(name = "海运费")
+    @TableField(value = "seaFreight")
+    private Double seaFreight;
+
+    /** 商家姓名集合 */
+    @Excel(name = "商家姓名集合")
+    @TableField(value = "supplierNames")
+    private String supplierNames;
+
+
     /** 订单详情信息 */
     @Valid
     @TableField(exist = false)
