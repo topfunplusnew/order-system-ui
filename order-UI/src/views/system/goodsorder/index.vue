@@ -626,10 +626,10 @@
       title="提示"
       :visible.sync="handleOrderVisible"
       width="30%">
-      <span>点击调整单的弹窗</span>
+      <span>是否将订单设置为调整单?</span>
       <span slot="footer" class="dialog-footer">
     <el-button @click="handleOrderVisible = false">取 消</el-button>
-    <el-button type="primary" @click="handleOrderVisible = false">确 定</el-button>
+    <el-button type="primary" @click="submitChangeOrder">确 定</el-button>
   </span>
     </el-dialog>
 
@@ -700,6 +700,7 @@
       title="订单信息"
       :visible.sync="addOrderItemVisible"
       width="80%">
+      <!--      添加订单-->
       <OrderForm/>
       <span slot="footer" class="dialog-footer">
     <el-button @click="addOrderItemVisible = false">取 消</el-button>
@@ -710,7 +711,14 @@
 </template>
 
 <script>
-import {listGoodsOrder, getGoodsOrder, delGoodsOrder, addGoodsOrder, updateGoodsOrder} from "@/api/system/goodsOrder";
+import {
+  listGoodsOrder,
+  getGoodsOrder,
+  delGoodsOrder,
+  addGoodsOrder,
+  updateGoodsOrder,
+  adjustGoodsOrder
+} from "@/api/system/goodsOrder";
 import TagsItem from "@/components/TagsItem/index.vue";
 import OrderForm from "@/components/OrderForm.vue";
 
@@ -812,7 +820,9 @@ export default {
       //查看订单中的列表
       orderDetailInfo: {},
       //添加订单详情
-      addOrderItem: {}
+      addOrderItem: {},
+      //调整单的id
+      tempId: ''
     };
   },
   created() {
@@ -854,12 +864,12 @@ export default {
       const id = row.id;
       getGoodsOrder(id).then(res => {
         this.orderDetailInfo = res.data;
-        console.log(res)
       })
     },
     //点击调整单的弹窗
     handleOrderItemInfo(row) {
       this.handleOrderVisible = true
+      this.tempId = row.id;
     },
     //订单
     handleOrder1(row) {
@@ -877,6 +887,32 @@ export default {
     },
     handleCommit(row) {
       this.handleCommitVisible = true
+    },
+    //调整单
+    submitChangeOrder() {
+      const id = this.tempId
+      //查询该id的订单详细信息
+      getGoodsOrder(id).then(res => {
+        //调整单 调用调整订单接口 传入数据
+        //todo
+        let orderInfo = res.data
+        for (let i = 0; i < orderInfo.orderDetailList.length; i++) {
+          orderInfo.orderDetailList[i].ordersNo = ''
+        }
+        //去除字段
+        orderInfo.delFlag = null;
+        orderInfo.addtime = null;
+        orderInfo.updateTime = null;
+        orderInfo.userId = null;
+        orderInfo.cancelFlag = null;
+        //调整单
+        adjustGoodsOrder({...orderInfo, ordersNo: ''}).then(res => {
+          this.$message.success('调整单提交成功')
+          this.handleOrderVisible = false
+        }).catch(err => {
+          this.$message.error('调整单提交失败' + err.msg)
+        })
+      })
     },
     //表格统计
     //自定义列统计总函数

@@ -50,3 +50,12 @@ export function getGoodsByUUID(uuid) {
     method: 'delete'
   })
 }
+
+//调整单
+export function adjustGoodsOrder(data) {
+  return request({
+    url: '/system/goodsOrder/adjust',
+    method: 'put',
+    data: data
+  })
+}
