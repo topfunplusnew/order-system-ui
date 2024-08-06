@@ -1,6 +1,7 @@
 <script>
 import {listCompany} from "@/api/system/company";
 import {listCars} from "@/api/system/cars";
+import {listFleet} from "@/api/system/fleet";
 
 export default {
   name: "OrderForm",
@@ -31,7 +32,8 @@ export default {
 
 
       //客户信息弹窗的搜索客户名
-      customerName: ''
+      customerName: '',
+      fleetName: '',
     }
   },
   methods: {
@@ -52,18 +54,30 @@ export default {
     //陆运车牌信息
     searchLandInfo() {
       this.landInfoDialogVisible = true
+      //搜索车队信息
       listCars().then(res => {
-        console.log(res)
         this.landInfo = res.rows;
       })
     },
     //车队信息
     searchFleetInfo() {
       this.fleetInfoDialogVisible = true
+      if (this.fleetName !== '') {
+        listFleet({fName: this.fleetName}).then(res => {
+          this.fleetInfo = res.rows;
+        })
+      } else {
+        //发送请求 获取客户供应商信息
+        listFleet().then(res => {
+          this.fleetInfo = res.rows;
+        })
+      }
     },
-    //海运车牌信息
+    //todo 海运车牌信息
     searchSeaInfo() {
       this.seaInfoDialogVisible = true
+      //查询海运车牌信息
+
     },
     handleClick(row) {
       console.log(row);
@@ -79,12 +93,20 @@ export default {
     },
     //查询车牌信息的确认
     commitCarsInfo(row) {
-      console.log(row)
       this.orderInfo.landCarNo = row.carNo;
       this.orderInfo.landDriverName = row.driver;
       this.orderInfo.landDriverTel = row.tel;
       this.landInfoDialogVisible = false;
     },
+    //车队信息的确认
+    commitFleetInfo(row) {
+      this.orderInfo.fleet = row.fName;
+      this.fleetInfoDialogVisible = false;
+    },
+    //海运信息的确认
+    commitSeaInfo(row) {
+
+    }
   },
   created() {
 
@@ -160,16 +182,18 @@ export default {
         <div style="display: flex;">
           <div>
             <span class="text-bold">海运车牌</span>
-            <el-input type="text" style="width: 50%" placeholder="请输入车牌"></el-input>
-            <el-button type="primary" size="mini" icon="el-icon-search" @click="searchSeaInfo"></el-button>
+            <el-input type="text" v-model="orderInfo.seaCarNo" style="width: 50%" placeholder="请输入车牌"></el-input>
+            <!--            <el-button type="primary" size="mini" icon="el-icon-search" @click="searchSeaInfo"></el-button>-->
           </div>
           <div>
             <span class="text-bold">海运司机姓名</span>
-            <el-input type="text" style="width: 60%" placeholder="请输入司机姓名"></el-input>
+            <el-input type="text" v-model="orderInfo.seaDriverName" style="width: 60%"
+                      placeholder="请输入司机姓名"></el-input>
           </div>
           <div>
             <span class="text-bold">海运司机电话</span>
-            <el-input type="text" style="width: 60%" placeholder="请输入司机电话"></el-input>
+            <el-input type="text" v-model="orderInfo.seaDriverTel" style="width: 60%"
+                      placeholder="请输入司机电话"></el-input>
           </div>
         </div>
       </div>
@@ -438,30 +462,35 @@ export default {
       title="客户信息"
       :visible.sync="fleetInfoDialogVisible"
       width="35%" append-to-body>
+      <!--      车队搜索框-->
+      <el-row :gutter="5">
+        <el-col :span="4">
+          <span style="font-weight: bolder;line-height: 40px">车队</span>
+        </el-col>
+        <el-col :span="8">
+          <el-input v-model="fleetName" placeholder="请输入车队名称"></el-input>
+        </el-col>
+        <el-col :span="8">
+          <el-button type="primary" @click="searchFleetInfo">搜索</el-button>
+        </el-col>
+      </el-row>
+
+      <!--      车队信息列表-->
       <el-table
-        :data="companyInfo"
+        :data="fleetInfo"
         border>
         <!--        操作-->
         <el-table-column
           fixed="left"
           label="操作">
           <template slot-scope="scope">
-            <el-button @click="handleClick(scope.row)" type="text" size="small">查看</el-button>
-            <el-button type="text" size="small">编辑</el-button>
+            <el-button @click="commitFleetInfo(scope.row)" type="danger" size="small">确认</el-button>
           </template>
         </el-table-column>
         <el-table-column
           fixed
-          prop="relationName"
-          label="客户">
-        </el-table-column>
-        <el-table-column
-          prop="leader"
-          label="老板姓名">
-        </el-table-column>
-        <el-table-column
-          prop="leaderTel"
-          label="老板联系方式">
+          prop="fName"
+          label="车队名称">
         </el-table-column>
       </el-table>
       <span slot="footer" class="dialog-footer">
@@ -477,15 +506,14 @@ export default {
       :visible.sync="seaInfoDialogVisible"
       width="35%" append-to-body>
       <el-table
-        :data="companyInfo"
+        :data="seaInfo"
         border>
         <!--        操作-->
         <el-table-column
           fixed="left"
           label="操作">
           <template slot-scope="scope">
-            <el-button @click="handleClick(scope.row)" type="text" size="small">查看</el-button>
-            <el-button type="text" size="small">编辑</el-button>
+            <el-button @click="commitSeaInfo(scope.row)" type="danger" size="small">确认</el-button>
           </template>
         </el-table-column>
         <el-table-column
