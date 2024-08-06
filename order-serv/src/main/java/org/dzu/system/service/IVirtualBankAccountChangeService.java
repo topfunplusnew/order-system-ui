@@ -35,6 +35,11 @@ public interface IVirtualBankAccountChangeService
      */
     public int insertVirtualBankAccountChange(VirtualBankAccountChange virtualBankAccountChange);
 
+    // 两个插入方法，但是相对于上面的插入，额外设置了类型
+    int inserPayment(VirtualBankAccountChange virtualBankAccountChange);
+
+    int insertReceipt(VirtualBankAccountChange virtualBankAccountChange);
+
     /**
      * 修改虚拟银行账号
      * 
@@ -58,4 +63,6 @@ public interface IVirtualBankAccountChangeService
      * @return 结果
      */
     public int deleteVirtualBankAccountChangeById(Long id);
+
+    int delete(String tableName, String id);
 }

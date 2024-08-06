@@ -53,6 +53,7 @@ public class BankChangeConstant {
         RECOVER_MONEY("recovermoney"),
         REPAYMENT("repayment"),
         SOCIAL_INSURANCE("socialinsurance"),
+        BALANCEACCOUNT("balanceaccounts"),
         STOREHOUSE("storehouse");
         private final String tableName;
 
