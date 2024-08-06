@@ -31,7 +31,7 @@ public class Offsetting extends BaseEntity
     private Long id;
 
     /** 冲抵编号（UUID） */
-    @Excel(name = "冲抵编号", readConverterExp = "U=UID")
+    @Excel(name = "冲抵编号")
     @Length(max = 50, message = "冲抵编号长度不能超过50个字符")
     @TableField(value = "OffsetNO")
     private String OffsetNO;
@@ -44,7 +44,7 @@ public class Offsetting extends BaseEntity
     private String operateDate;
 
     /** 冲抵类型（收入、支出） */
-    @Excel(name = "冲抵类型", readConverterExp = "收=入、支出")
+    @Excel(name = "冲抵类型")
     @NotNull(message = "冲抵类型不能为空")
     @Pattern(regexp = "收入|支出", message = "冲抵类型只能是'收入'或'支出'")
     @TableField(value = "operateType")
@@ -71,7 +71,7 @@ public class Offsetting extends BaseEntity
     private Long companyId;
 
     /** 公司类型（1、客户 2、供应商） */
-    @Excel(name = "公司类型", readConverterExp = "1=、客户,2=、供应商")
+    @Excel(name = "公司类型", readConverterExp = "1=客户,2=供应商")
     @NotNull(message = "公司类型不能为空")
     @Pattern(regexp = "1|2", message = "公司类型只能是'1'（客户）或'2'（供应商）")
     @TableField(value = "companyType")

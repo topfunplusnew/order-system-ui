@@ -45,7 +45,7 @@ public class VirtualBankAccountChange extends BaseEntity
     /** 发生操作行为的冲抵款编号（UUID） */
     @TableField(value = "payNO")
     @NotNull(message = "发生操作行为的冲抵款编号不能为空")
-    @Excel(name = "发生操作行为的冲抵款编号", readConverterExp = "U=UID")
+    @Excel(name = "发生操作行为的冲抵款编号")
     @Length(max = 50, message = "冲抵款编号的字符长度不允许超过50")
     private String payNO;
 
