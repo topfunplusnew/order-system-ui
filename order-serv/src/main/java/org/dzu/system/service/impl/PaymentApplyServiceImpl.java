@@ -72,7 +72,7 @@ public class PaymentApplyServiceImpl implements IPaymentApplyService
     @Override
     public int insertPaymentApply(PaymentApply paymentApply)
     {
-        // 设置基础信息
+        // 设置基础信息，申请人信息
         paymentApply.setAddtime(String.valueOf(DateUtils.getNowDate()));
         paymentApply.setUserId(SecurityUtils.getUserId());
         paymentApply.setUserName(SecurityUtils.getUserTruename());
@@ -107,7 +107,7 @@ public class PaymentApplyServiceImpl implements IPaymentApplyService
         paymentApply.setUserId(SecurityUtils.getUserId());
         paymentApply.setUserName(SecurityUtils.getUserTruename());
         paymentApply.setUpdateTime(DateUtils.getNowDate());
-        // 一些信息不需要修改，置为null
+
         return paymentApplyMapper.updatePaymentApply(paymentApply);
     }
 
