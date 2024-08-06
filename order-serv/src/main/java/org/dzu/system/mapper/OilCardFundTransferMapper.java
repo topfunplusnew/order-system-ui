@@ -35,7 +35,13 @@ public interface OilCardFundTransferMapper extends BaseMapper<OilCardFundTransfe
      * @return 结果
      */
     public int insertOilCardFundTransfer(OilCardFundTransfer oilCardFundTransfer);
-
+    /**
+     * 获取主卡余额
+     *
+     * @param oilCardNo 加油卡卡号
+     * @return 主卡余额
+     */
+    Double getMainCardBalance(Long oilCardNo);
     /**
      * 修改加油卡圈存
      * 

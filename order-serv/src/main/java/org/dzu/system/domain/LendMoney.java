@@ -32,7 +32,7 @@ public class LendMoney extends BaseEntity {
     /**
      * 借出款编号（UUID）
      */
-    @Excel(name = "借出款编号", readConverterExp = "U=UID")
+    @Excel(name = "借出款编号")
     @Length(max = 50, message = "借出款编号的字符长度不允许超过50")
     @TableField("futuresNO")
     @NotNull(message = "借出款编号不能为空")

@@ -426,7 +426,8 @@ public class GoodsOrderServiceImpl implements IGoodsOrderService {
 
         // 获取全部的数据权限，寻找最高级别 已知第一位只能是0123
         int maxValue = roles.stream()
-                .map(SysRole::getDataScope)           // 获取每个角色的 DataScope
+                .map(SysRole::getDataScope)
+                .filter(s -> StringUtils.isNotEmpty(s)&&s.length()>1)           // 获取每个角色的 DataScope
                 .distinct()                            // 去重
                 .map(scope -> scope.substring(0, scope.length() - 1))  // 去掉最后一位字符
                 .mapToInt(Integer::parseInt)           // 转换为 int 类型

@@ -37,7 +37,7 @@ public class GoodsorderBack extends BaseEntity
     private Long goodsOrderID;
 
     /** 订单编号（UUID） */
-    @Excel(name = "订单编号", readConverterExp = "U=UID")
+    @Excel(name = "订单编号")
     @Length(max = 20, message = "订单编号长度不能超过20")
     @NotNull(message = "订单编号不能为空")
     @TableField(value = "ordersNo")

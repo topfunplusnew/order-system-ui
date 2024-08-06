@@ -76,8 +76,12 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
             <if test="updateTime != null">#{updateTime},</if>
             <if test="delFlag != null">#{delFlag},</if>
          </trim>
+
     </insert>
 
+    <select id="getMainCardBalance" resultType="double" parameterType="long">
+        SELECT endCardSurplus FROM oilCardConsume WHERE oilCardNo = #{oilCardNo}
+    </select>
     <update id="updateOilCardFundTransfer" parameterType="OilCardFundTransfer">
         update oilCardFundTransfer
         <trim prefix="SET" suffixOverrides=",">

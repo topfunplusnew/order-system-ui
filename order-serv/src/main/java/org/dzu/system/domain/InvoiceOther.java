@@ -29,7 +29,7 @@ public class InvoiceOther extends BaseEntity
     private Long id;
 
     /** 订单编号（UUID） */
-    @Excel(name = "订单编号", readConverterExp = "U=UID")
+    @Excel(name = "订单编号")
     @Length(max = 32, message = "订单编号长度不能超过32个字符")
     @TableField(value = "ordersNo")
     private String ordersNo;

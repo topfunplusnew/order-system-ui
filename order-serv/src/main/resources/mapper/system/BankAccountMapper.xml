@@ -1,110 +1,216 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <!DOCTYPE mapper
-PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
-"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="org.dzu.system.mapper.BankAccountMapper">
-    
     <resultMap type="BankAccount" id="BankAccountResult">
-        <result property="id"    column="id"    />
-        <result property="companyName"    column="companyName"    />
-        <result property="companyId"    column="companyId"    />
-        <result property="bankName"    column="bankName"    />
-        <result property="acountsName"    column="acountsName"    />
-        <result property="bankNo"    column="bankNo"    />
-        <result property="acountsType"    column="acountsType"    />
-        <result property="amount"    column="amount"    />
-        <result property="comments"    column="comments"    />
-        <result property="delFlag"    column="delFlag"    />
+        <result property="id" column="id"/>
+        <result property="companyName" column="companyName"/>
+        <result property="companyId" column="companyId"/>
+        <result property="bankName" column="bankName"/>
+        <result property="acountsName" column="acountsName"/>
+        <result property="bankNo" column="bankNo"/>
+        <result property="acountsType" column="acountsType"/>
+        <result property="amount" column="amount"/>
+        <result property="comments" column="comments"/>
+        <result property="delFlag" column="delFlag"/>
     </resultMap>
 
 
- 
-
     <sql id="selectBankAccountVo">
-        select id, companyName, companyId, bankName, acountsName, bankNo, acountsType, amount, comments, delFlag from bankAccount
+        SELECT ba.id,
+               ba.companyName,
+               ba.companyId,
+               ba.bankName,
+               ba.acountsName,
+               ba.bankNo,
+               ba.acountsType,
+               COALESCE(SUM(CASE
+                                WHEN bac.changeType = '收入' THEN bac.moneyAmount
+                                WHEN bac.changeType = '支出' THEN -bac.moneyAmount
+                                ELSE 0 END), 0) AS amount,
+               ba.comments,
+               ba.delFlag
+        FROM bankAccount ba
+                 LEFT JOIN
+             bankAccountChange bac
+             ON
+                 ba.bankNo = bac.selfBankNo
     </sql>
 
     <select id="selectBankAccountList" parameterType="BankAccount" resultMap="BankAccountResult">
         <include refid="selectBankAccountVo"/>
-        <where>  
-            <if test="companyName != null  and companyName != ''"> and companyName like concat('%', #{companyName}, '%')</if>
-            <if test="companyId != null "> and companyId = #{companyId}</if>
-            <if test="bankName != null  and bankName != ''"> and bankName like concat('%', #{bankName}, '%')</if>
-            <if test="acountsName != null  and acountsName != ''"> and acountsName like concat('%', #{acountsName}, '%')</if>
-            <if test="bankNo != null  and bankNo != ''"> and bankNo = #{bankNo}</if>
-            <if test="acountsType != null  and acountsType != ''"> and acountsType = #{acountsType}</if>
-            <if test="amount != null "> and amount = #{amount}</if>
-            <if test="comments != null  and comments != ''"> and comments = #{comments}</if>
-            and delFlag = 0
+        <where>
+            <if test="companyName != null  and companyName != ''">
+                and ba.companyName like concat('%', #{companyName}, '%')
+            </if>
+            <if test="companyId != null">
+                and ba.companyId = #{companyId}
+            </if>
+            <if test="bankName != null  and bankName != ''">
+                and ba.bankName like concat('%', #{bankName}, '%')
+            </if>
+            <if test="acountsName != null  and acountsName != ''">
+                and ba.acountsName like concat('%', #{acountsName}, '%')
+            </if>
+            <if test="bankNo != null  and bankNo != ''">
+                and ba.bankNo = concat('%', #{bankNo}, '%')
+            </if>
+            <if test="acountsType != null  and acountsType != ''">
+                and ba.acountsType = #{acountsType}
+            </if>
+            <if test="amount != null">
+                and amount = #{amount}
+            </if>
+            <if test="comments != null  and comments != ''">
+                and ba.comments = #{comments}
+            </if>
+            and ba.delFlag = 0
         </where>
+        GROUP BY ba.id,
+                 ba.companyName,
+                 ba.companyId,
+                 ba.bankName,
+                 ba.acountsName,
+                 ba.bankNo,
+                 ba.acountsType,
+                 ba.comments,
+                 ba.delFlag
     </select>
-    
+
     <select id="selectBankAccountById" parameterType="Long" resultMap="BankAccountResult">
         <include refid="selectBankAccountVo"/>
-        where id = #{id}
-        and delFlag = 0
+        where ba.id = #{id}
+          and delFlag = 0
+        GROUP BY ba.id,
+                 ba.companyName,
+                 ba.companyId,
+                 ba.bankName,
+                 ba.acountsName,
+                 ba.bankNo,
+                 ba.acountsType,
+                 ba.comments,
+                 ba.delFlag
     </select>
 
     <insert id="insertBankAccount" parameterType="BankAccount" useGeneratedKeys="true" keyProperty="id">
         insert into bankAccount
         <trim prefix="(" suffix=")" suffixOverrides=",">
-            <if test="companyName != null">companyName,</if>
-            <if test="companyId != null">companyId,</if>
-            <if test="bankName != null">bankName,</if>
-            <if test="acountsName != null">acountsName,</if>
-            <if test="bankNo != null">bankNo,</if>
-            <if test="acountsType != null">acountsType,</if>
-            <if test="amount != null">amount,</if>
-            <if test="comments != null">comments,</if>
-            <if test="delFlag != null">delFlag,</if>
-         </trim>
+            <if test="companyName != null">
+                companyName,
+            </if>
+            <if test="companyId != null">
+                companyId,
+            </if>
+            <if test="bankName != null">
+                bankName,
+            </if>
+            <if test="acountsName != null">
+                acountsName,
+            </if>
+            <if test="bankNo != null">
+                bankNo,
+            </if>
+            <if test="acountsType != null">
+                acountsType,
+            </if>
+            <if test="amount != null">
+                amount,
+            </if>
+            <if test="comments != null">
+                comments,
+            </if>
+            <if test="delFlag != null">
+                delFlag,
+            </if>
+        </trim>
         <trim prefix="values (" suffix=")" suffixOverrides=",">
-            <if test="companyName != null">#{companyName},</if>
-            <if test="companyId != null">#{companyId},</if>
-            <if test="bankName != null">#{bankName},</if>
-            <if test="acountsName != null">#{acountsName},</if>
-            <if test="bankNo != null">#{bankNo},</if>
-            <if test="acountsType != null">#{acountsType},</if>
-            <if test="amount != null">#{amount},</if>
-            <if test="comments != null">#{comments},</if>
-            <if test="delFlag != null">#{delFlag},</if>
-         </trim>
+            <if test="companyName != null">
+                #{companyName},
+            </if>
+            <if test="companyId != null">
+                #{companyId},
+            </if>
+            <if test="bankName != null">
+                #{bankName},
+            </if>
+            <if test="acountsName != null">
+                #{acountsName},
+            </if>
+            <if test="bankNo != null">
+                #{bankNo},
+            </if>
+            <if test="acountsType != null">
+                #{acountsType},
+            </if>
+            <if test="amount != null">
+                #{amount},
+            </if>
+            <if test="comments != null">
+                #{comments},
+            </if>
+            <if test="delFlag != null">
+                #{delFlag},
+            </if>
+        </trim>
     </insert>
 
     <update id="updateBankAccount" parameterType="BankAccount">
         update bankAccount
         <trim prefix="SET" suffixOverrides=",">
-            <if test="companyName != null">companyName = #{companyName},</if>
-            <if test="companyId != null">companyId = #{companyId},</if>
-            <if test="bankName != null">bankName = #{bankName},</if>
-            <if test="acountsName != null">acountsName = #{acountsName},</if>
-            <if test="bankNo != null">bankNo = #{bankNo},</if>
-            <if test="acountsType != null">acountsType = #{acountsType},</if>
-            <if test="amount != null">amount = #{amount},</if>
-            <if test="comments != null">comments = #{comments},</if>
-            <if test="delFlag != null">delFlag = #{delFlag},</if>
+            <if test="companyName != null">
+                companyName = #{companyName},
+            </if>
+            <if test="companyId != null">
+                companyId = #{companyId},
+            </if>
+            <if test="bankName != null">
+                bankName = #{bankName},
+            </if>
+            <if test="acountsName != null">
+                acountsName = #{acountsName},
+            </if>
+            <if test="bankNo != null">
+                bankNo = #{bankNo},
+            </if>
+            <if test="acountsType != null">
+                acountsType = #{acountsType},
+            </if>
+            <if test="amount != null">
+                amount = #{amount},
+            </if>
+            <if test="comments != null">
+                comments = #{comments},
+            </if>
+            <if test="delFlag != null">
+                delFlag = #{delFlag},
+            </if>
         </trim>
         where id = #{id}
     </update>
     <update id="deleteBankAccountById" parameterType="Long">
-        update bankAccount set delFlag = 1 where id = #{id}
+        update bankAccount
+        set delFlag = 1
+        where id = #{id}
     </update>
     <update id="deleteBankAccountByIds" parameterType="String">
-        update bankAccount set delFlag = 1 where id in
+        update bankAccount
+        set delFlag = 1 where id in
         <foreach item="id" collection="array" open="(" separator="," close=")">
             #{id}
         </foreach>
     </update>
 
-    <select id="selectBankAccountByBankNo"  parameterType="String" resultMap="BankAccountResult">
+    <select id="selectBankAccountByBankNo" parameterType="String" resultMap="BankAccountResult">
         <include refid="selectBankAccountVo"/>
         <where>
-            <if test=" bankNo != null  and bankNo != ''"> and bankNo =
-                #{bankNo}
+            <if test="bankNo != null  and bankNo != ''">
+                and bankNo =
+                    #{bankNo}
             </if>
 
             and delFlag = 0
         </where>
-        limit  1
+        limit 1
     </select>
 </mapper>

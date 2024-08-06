@@ -59,4 +59,18 @@ public interface OilCardMapper extends BaseMapper<OilCard>
      * @return 结果
      */
     public int deleteOilCardByIds(Long[] ids);
+    /**
+     * 获取消费金额
+     *
+     * @param oilCardNo 加油卡卡号
+     * @return 加油卡当前余额
+     */
+    public  Double getmoneyAmount(String oilCardNo);
+    /**
+     * 更新加油卡当前余额
+     *
+     * @param oilCardNo&&moneyAmount  加油卡卡号
+     * @return 加油卡当前余额
+     */
+    public  void updatemoneyAmount(String oilCardNo, Double moneyAmount);
 }

@@ -35,6 +35,8 @@ public interface IOilRechargeService
      */
     public int insertOilRecharge(OilRecharge oilRecharge);
 
+    void calculateCardBalances(OilRecharge oilRecharge);
+
     /**
      * 修改加油卡充值信息
      * 

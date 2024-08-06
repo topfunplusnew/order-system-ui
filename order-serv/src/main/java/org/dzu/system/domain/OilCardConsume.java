@@ -82,7 +82,7 @@ public class OilCardConsume extends BaseEntity
 
     /** 充值金额(元） */
     @Excel(name = "充值金额(元）")
-    @DecimalMaxDigits
+    @Length(max = 64, message = "充值金额(元）长度不能超过 64 个字符")
     @TableField(value = "rechargeMoney")
     private String rechargeMoney;
 
@@ -213,12 +213,12 @@ public class OilCardConsume extends BaseEntity
     {
         return rechargeMoney;
     }
-    public void setEndCardSurplus(String endCardSurplus) 
+    public void setEndCardSurplus(String endCardSurplus)
     {
         this.endCardSurplus = endCardSurplus;
     }
 
-    public String getEndCardSurplus() 
+    public String getEndCardSurplus()
     {
         return endCardSurplus;
     }

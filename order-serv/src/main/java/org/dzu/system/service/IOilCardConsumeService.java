@@ -58,4 +58,5 @@ public interface IOilCardConsumeService
      * @return 结果
      */
     public int deleteOilCardConsumeById(Long id);
+
 }

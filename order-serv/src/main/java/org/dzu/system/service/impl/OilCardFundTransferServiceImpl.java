@@ -50,7 +50,25 @@ public class OilCardFundTransferServiceImpl implements IOilCardFundTransferServi
     {
         return oilCardFundTransferMapper.selectOilCardFundTransferList(oilCardFundTransfer);
     }
+    public void validateMainCardBalance(OilCardFundTransfer oilCardFundTransfer) {
+        Long cardNo;
+        OilCard oilCard=new OilCard();
+        if ("主卡".equals(oilCard.getOilType())) {
+            cardNo = Long.valueOf(oilCard.getOilCardNo());
+        } else if ("副卡".equals(oilCard.getOilType())) {
+            cardNo = Long.valueOf(oilCard.getOilCardNo());
+        } else {
+            throw new IllegalArgumentException("油卡类型不正确");
+        }
 
+        // 获取主卡余额
+        Double mainmoney= oilCardFundTransferMapper.getMainCardBalance(cardNo);
+
+        // 检查主卡余额是否大于圈存充值余额
+        if (mainmoney == null || mainmoney < oilCardFundTransfer.getRechargeMoney()) {
+            throw new IllegalArgumentException("主卡余额不足，无法进行圈存操作");
+        }
+    }
     /**
      * 新增加油卡圈存
      *
