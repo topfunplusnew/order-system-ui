@@ -4,6 +4,7 @@ import {listCars} from "@/api/system/cars";
 import {listFleet} from "@/api/system/fleet";
 import {listStoreHouse} from "@/api/system/StoreHouse";
 import {listProductLevel} from "@/api/system/productLevel";
+import {listInventory} from "@/api/system/inventory";
 
 export default {
   name: "OrderForm",
@@ -44,6 +45,8 @@ export default {
       companyGiveInfo: [],
       //仓库信息
       storeInfo: [],
+      //库存信息
+      inventoryInfo: [],
       //产品级别信息
       productLevelInfo: [],
       //客户信息弹窗的搜索客户名
@@ -70,6 +73,8 @@ export default {
       storeID: '',
       landCarID: '',
       seaCarID: '',
+
+
     }
   },
   methods: {
@@ -116,6 +121,13 @@ export default {
     //查询仓库信息
     searchStoreInfo() {
       this.storeInfoDialogVisible = true;
+      //搜索库存信息
+      listInventory().then(res => {
+        console.log('库存信息', res.rows)
+        this.inventoryInfo = res.rows.filter(item => {
+          return item.stockNumber > 0;
+        })
+      })
       //搜索仓库信息
       listStoreHouse().then(res => {
         this.storeInfo = res.rows;
@@ -704,40 +716,219 @@ export default {
     <el-dialog
       title="仓库信息"
       :visible.sync="storeInfoDialogVisible"
-      width="35%" append-to-body>
-      <!--      供应商信息搜索-->
-      <!--      <el-row :gutter="5">-->
-      <!--        <el-col :span="4">-->
-      <!--          <span style="font-weight: bolder;line-height: 40px">仓库名称</span>-->
-      <!--        </el-col>-->
-      <!--        <el-col :span="8">-->
-      <!--          <el-input v-model="storeName" placeholder="请输入公司名称"></el-input>-->
-      <!--        </el-col>-->
-      <!--        <el-col :span="8">-->
-      <!--          <el-button type="primary" @click="searchStoreInfo">搜索</el-button>-->
-      <!--        </el-col>-->
+      width="60%" append-to-body>
+      <!--        <el-table-->
+      <!--          :data="storeInfo"-->
+      <!--          border>-->
+      <!--          &lt;!&ndash;        操作&ndash;&gt;-->
+      <!--          <el-table-column-->
+      <!--            fixed="left"-->
+      <!--            label="操作">-->
+      <!--            <template slot-scope="scope">-->
+      <!--              <el-button @click="commitStoreInfo(scope.row)" type="danger" size="small">确认</el-button>-->
+      <!--            </template>-->
+      <!--          </el-table-column>-->
+      <!--          <el-table-column-->
+      <!--            fixed-->
+      <!--            prop="storeHouseName"-->
+      <!--            label="仓库名称">-->
+      <!--          </el-table-column>-->
+      <!--          <el-table-column-->
+      <!--            prop="address"-->
+      <!--            label="仓库地址">-->
+      <!--          </el-table-column>-->
+      <!--        </el-table>-->
       <!--      </el-row>-->
-      <el-table
-        :data="storeInfo"
-        border>
-        <!--        操作-->
-        <el-table-column
-          fixed="left"
-          label="操作">
-          <template slot-scope="scope">
-            <el-button @click="commitStoreInfo(scope.row)" type="danger" size="small">确认</el-button>
-          </template>
-        </el-table-column>
-        <el-table-column
-          fixed
-          prop="storeHouseName"
-          label="仓库名称">
-        </el-table-column>
-        <el-table-column
-          prop="address"
-          label="仓库地址">
-        </el-table-column>
-      </el-table>
+      <!--      <br/>-->
+      <!--      <hr/>-->
+      <el-row>
+        <span style="font-weight: bolder">库存信息</span>
+      </el-row>
+      <!--      搜索库存信息-->
+      <el-row>
+        <el-col :span="12">
+          <el-input type="text"></el-input>
+        </el-col>
+        <el-col :span="5">
+          <el-button type="primary">搜索</el-button>
+        </el-col>
+      </el-row>
+      <br/>
+      <!--      库存信息列表-->
+      <el-row>
+        <el-table
+          :data="inventoryInfo"
+          border>
+          <!--         库存列表-->
+          <el-table-column
+            fixed="left"
+            label="操作">
+            <template slot-scope="scope">
+              <el-button @click="commitStoreInfo(scope.row)" type="danger" size="small">确认</el-button>
+            </template>
+          </el-table-column>
+          <el-table-column
+            prop="storeHouseName"
+            label="仓库名称">
+          </el-table-column>
+          <el-table-column
+            prop="storeDate"
+            label="入库日期">
+          </el-table-column>
+          <el-table-column
+            prop="stockNumber"
+            label="库存量">
+          </el-table-column>
+          <el-table-column
+            prop="supplier"
+            label="供应商">
+          </el-table-column>
+          <el-table-column
+            prop="levelName"
+            label="级别名称">
+          </el-table-column>
+          <el-table-column
+            prop="countingUnit"
+            label="计量单位">
+          </el-table-column>
+          <el-table-column
+            prop="height"
+            label="厚度">
+          </el-table-column>
+          <el-table-column
+            prop="length"
+            label="长度">
+          </el-table-column>
+          <el-table-column
+            prop="width"
+            label="宽度">
+          </el-table-column>
+          <el-table-column
+            prop="pieces"
+            label="出厂片数">
+          </el-table-column>
+          <el-table-column
+            prop="piecesPerPack"
+            label="每包片数">
+          </el-table-column>
+          <el-table-column
+            prop="packs"
+            label="包数">
+          </el-table-column>
+          <el-table-column
+            prop="price"
+            label="出厂单价">
+          </el-table-column>
+          <el-table-column
+            prop="isIncludeTaxFactory"
+            label="出厂是否含税">
+          </el-table-column>
+          <el-table-column
+            prop="sundryCost"
+            label="杂费">
+          </el-table-column>
+          <el-table-column
+            prop="paymentFactory"
+            label="出厂贷款">
+          </el-table-column>
+          <el-table-column
+            prop="paymentUnload"
+            label="卸货价">
+          </el-table-column>
+          <el-table-column
+            prop="isIncludeTaxSale"
+            label="销售是否含税">
+          </el-table-column>
+          <el-table-column
+            prop="payments"
+            label="总贷款">
+          </el-table-column>
+          <el-table-column
+            prop="landCarNo"
+            label="陆运车牌">
+          </el-table-column>
+          <el-table-column
+            prop="landDriverTel"
+            label="陆运司机电话">
+          </el-table-column>
+          <el-table-column
+            prop="landDriverName"
+            label="陆地司机姓名">
+          </el-table-column>
+          <el-table-column
+            prop="seaCarNo"
+            label="海运车牌">
+          </el-table-column>
+          <el-table-column
+            prop="seaDriverTel"
+            label="海运司机电话">
+          </el-table-column>
+          <el-table-column
+            prop="seaDriverName"
+            label="海运司机姓名">
+          </el-table-column>
+          <el-table-column
+            prop="erro"
+            label="误差">
+          </el-table-column>
+          <el-table-column
+            prop="tonnage"
+            label="吨位">
+          </el-table-column>
+          <el-table-column
+            prop="landFreightPrice"
+            label="陆运费单价">
+          </el-table-column>
+          <el-table-column
+            prop="landFreight"
+            label="陆运费">
+          </el-table-column>
+          <el-table-column
+            prop="seaFreight"
+            label="海运费">
+          </el-table-column>
+          <el-table-column
+            prop="freight"
+            label="运费（海运费+陆运费）">
+          </el-table-column>
+          <el-table-column
+            prop="otherCost"
+            label="其他费用">
+          </el-table-column>
+          <el-table-column
+            prop="profit"
+            label="利润">
+          </el-table-column>
+          <el-table-column
+            prop="profitNoTax"
+            label="不含税利润">
+          </el-table-column>
+          <el-table-column
+            prop="actualPieces"
+            label="实际片数">
+          </el-table-column>
+          <el-table-column
+            prop="paymentsWithSundry"
+            label="总货款杂费">
+          </el-table-column>
+          <el-table-column
+            prop="additionalFees"
+            label="加费">
+          </el-table-column>
+          <el-table-column
+            prop="rebate"
+            label="返利金额">
+          </el-table-column>
+          <el-table-column
+            prop="customerCommission"
+            label="客户佣金">
+          </el-table-column>
+          <el-table-column
+            prop="comments"
+            label="备注">
+          </el-table-column>
+        </el-table>
+      </el-row>
       <span slot="footer" class="dialog-footer">
     <el-button @click="storeInfoDialogVisible = false">取 消</el-button>
     <el-button type="primary" @click="storeInfoDialogVisible = false">确 定</el-button>
