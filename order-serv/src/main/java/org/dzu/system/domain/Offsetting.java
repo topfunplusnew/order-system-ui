@@ -26,6 +26,10 @@ public class Offsetting extends BaseEntity
 {
     private static final long serialVersionUID = 1L;
 
+    // 两个常量，收入和支出
+    public static final String INCOME = "收入";
+    public static final String EXPENDITURE = "支出";
+
     /** id */
     @TableId(value = "id")
     private Long id;
