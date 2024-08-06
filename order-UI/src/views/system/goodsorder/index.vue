@@ -77,182 +77,6 @@
           @keyup.enter.native="handleQuery"
         />
       </el-form-item>
-      <!--      <el-form-item label="海运车辆ID" prop="seaCarID">-->
-      <!--        <el-input-->
-      <!--          v-model="queryParams.seaCarID"-->
-      <!--          placeholder="请输入海运车辆ID"-->
-      <!--          clearable-->
-      <!--          @keyup.enter.native="handleQuery"-->
-      <!--        />-->
-      <!--      </el-form-item>-->
-      <!--      <el-form-item label="客户ID" prop="customerID">-->
-      <!--        <el-input-->
-      <!--          v-model="queryParams.customerID"-->
-      <!--          placeholder="请输入客户ID"-->
-      <!--          clearable-->
-      <!--          @keyup.enter.native="handleQuery"-->
-      <!--        />-->
-      <!--      </el-form-item>-->
-      <!--      <el-form-item label="陆运车辆ID" prop="landCarID">-->
-      <!--        <el-input-->
-      <!--          v-model="queryParams.landCarID"-->
-      <!--          placeholder="请输入陆运车辆ID"-->
-      <!--          clearable-->
-      <!--          @keyup.enter.native="handleQuery"-->
-      <!--        />-->
-      <!--      </el-form-item>-->
-      <!--      <el-form-item label="审核人编号" prop="checkUserId">-->
-      <!--        <el-input-->
-      <!--          v-model="queryParams.checkUserId"-->
-      <!--          placeholder="请输入审核人编号"-->
-      <!--          clearable-->
-      <!--          @keyup.enter.native="handleQuery"-->
-      <!--        />-->
-      <!--      </el-form-item>-->
-      <!--      <el-form-item label="审核状态" prop="checkState">-->
-      <!--        <el-input-->
-      <!--          v-model="queryParams.checkState"-->
-      <!--          placeholder="请输入审核状态"-->
-      <!--          clearable-->
-      <!--          @keyup.enter.native="handleQuery"-->
-      <!--        />-->
-      <!--      </el-form-item>-->
-      <!--      <el-form-item label="开票状态" prop="invoiceState">-->
-      <!--        <el-input-->
-      <!--          v-model="queryParams.invoiceState"-->
-      <!--          placeholder="请输入开票状态"-->
-      <!--          clearable-->
-      <!--          @keyup.enter.native="handleQuery"-->
-      <!--        />-->
-      <!--      </el-form-item>-->
-      <!--      <el-form-item label="附件路径" prop="path">-->
-      <!--        <el-input-->
-      <!--          v-model="queryParams.path"-->
-      <!--          placeholder="请输入附件路径"-->
-      <!--          clearable-->
-      <!--          @keyup.enter.native="handleQuery"-->
-      <!--        />-->
-      <!--      </el-form-item>-->
-      <!--      <el-form-item label="打款状态(申请中，已打款，未打款)" prop="PaymentState">-->
-      <!--        <el-input-->
-      <!--          v-model="queryParams.PaymentState"-->
-      <!--          placeholder="请输入打款状态(申请中，已打款，未打款)"-->
-      <!--          clearable-->
-      <!--          @keyup.enter.native="handleQuery"-->
-      <!--        />-->
-      <!--      </el-form-item>-->
-      <!--      <el-form-item label="陆运银行户名" prop="landBankName">-->
-      <!--        <el-input-->
-      <!--          v-model="queryParams.landBankName"-->
-      <!--          placeholder="请输入陆运银行户名"-->
-      <!--          clearable-->
-      <!--          @keyup.enter.native="handleQuery"-->
-      <!--        />-->
-      <!--      </el-form-item>-->
-      <!--      <el-form-item label="陆运银行账号" prop="landBankNo">-->
-      <!--        <el-input-->
-      <!--          v-model="queryParams.landBankNo"-->
-      <!--          placeholder="请输入陆运银行账号"-->
-      <!--          clearable-->
-      <!--          @keyup.enter.native="handleQuery"-->
-      <!--        />-->
-      <!--      </el-form-item>-->
-      <!--      <el-form-item label="海运银行户名" prop="seaBankName">-->
-      <!--        <el-input-->
-      <!--          v-model="queryParams.seaBankName"-->
-      <!--          placeholder="请输入海运银行户名"-->
-      <!--          clearable-->
-      <!--          @keyup.enter.native="handleQuery"-->
-      <!--        />-->
-      <!--      </el-form-item>-->
-      <!--      <el-form-item label="海运银行账号" prop="seaBankNo">-->
-      <!--        <el-input-->
-      <!--          v-model="queryParams.seaBankNo"-->
-      <!--          placeholder="请输入海运银行账号"-->
-      <!--          clearable-->
-      <!--          @keyup.enter.native="handleQuery"-->
-      <!--        />-->
-      <!--      </el-form-item>-->
-      <!--      <el-form-item label="销售经理" prop="saleManager">-->
-      <!--        <el-input-->
-      <!--          v-model="queryParams.saleManager"-->
-      <!--          placeholder="请输入销售经理"-->
-      <!--          clearable-->
-      <!--          @keyup.enter.native="handleQuery"-->
-      <!--        />-->
-      <!--      </el-form-item>-->
-      <!--      <el-form-item label="车队" prop="fleet">-->
-      <!--        <el-input-->
-      <!--          v-model="queryParams.fleet"-->
-      <!--          placeholder="请输入车队"-->
-      <!--          clearable-->
-      <!--          @keyup.enter.native="handleQuery"-->
-      <!--        />-->
-      <!--      </el-form-item>-->
-      <!--      <el-form-item label="是否被调整单" prop="isAdjusted">-->
-      <!--        <el-input-->
-      <!--          v-model="queryParams.isAdjusted"-->
-      <!--          placeholder="请输入是否被调整单"-->
-      <!--          clearable-->
-      <!--          @keyup.enter.native="handleQuery"-->
-      <!--        />-->
-      <!--      </el-form-item>-->
-      <!--      <el-form-item label="调整日期" prop="adjustDate">-->
-      <!--        <el-input-->
-      <!--          v-model="queryParams.adjustDate"-->
-      <!--          placeholder="请输入调整日期"-->
-      <!--          clearable-->
-      <!--          @keyup.enter.native="handleQuery"-->
-      <!--        />-->
-      <!--      </el-form-item>-->
-      <!--      <el-form-item label="是否调整单" prop="isAdjust">-->
-      <!--        <el-input-->
-      <!--          v-model="queryParams.isAdjust"-->
-      <!--          placeholder="请输入是否调整单"-->
-      <!--          clearable-->
-      <!--          @keyup.enter.native="handleQuery"-->
-      <!--        />-->
-      <!--      </el-form-item>-->
-      <!--      <el-form-item label="原订单编号" prop="adjustOrderid">-->
-      <!--        <el-input-->
-      <!--          v-model="queryParams.adjustOrderid"-->
-      <!--          placeholder="请输入原订单编号"-->
-      <!--          clearable-->
-      <!--          @keyup.enter.native="handleQuery"-->
-      <!--        />-->
-      <!--      </el-form-item>-->
-      <!--      <el-form-item label="是否可编辑" prop="isedit">-->
-      <!--        <el-input-->
-      <!--          v-model="queryParams.isedit"-->
-      <!--          placeholder="请输入是否可编辑"-->
-      <!--          clearable-->
-      <!--          @keyup.enter.native="handleQuery"-->
-      <!--        />-->
-      <!--      </el-form-item>-->
-      <!--      <el-form-item label="客户是否开票" prop="customerIsInvoice">-->
-      <!--        <el-input-->
-      <!--          v-model="queryParams.customerIsInvoice"-->
-      <!--          placeholder="请输入客户是否开票"-->
-      <!--          clearable-->
-      <!--          @keyup.enter.native="handleQuery"-->
-      <!--        />-->
-      <!--      </el-form-item>-->
-      <!--      <el-form-item label="供应商是否开票" prop="isSupplierInvoice">-->
-      <!--        <el-input-->
-      <!--          v-model="queryParams.isSupplierInvoice"-->
-      <!--          placeholder="请输入供应商是否开票"-->
-      <!--          clearable-->
-      <!--          @keyup.enter.native="handleQuery"-->
-      <!--        />-->
-      <!--      </el-form-item>-->
-      <!--      <el-form-item label="备注" prop="comments">-->
-      <!--        <el-input-->
-      <!--          v-model="queryParams.comments"-->
-      <!--          placeholder="请输入备注"-->
-      <!--          clearable-->
-      <!--          @keyup.enter.native="handleQuery"-->
-      <!--        />-->
-      <!--      </el-form-item>-->
       <el-form-item>
         <el-button type="primary" icon="el-icon-search" size="mini" @click="handleQuery">搜索</el-button>
         <el-button icon="el-icon-refresh" size="mini" @click="resetQuery">重置</el-button>
@@ -751,7 +575,7 @@
       :visible.sync="addOrderItemVisible"
       width="80%">
       <!--      添加订单-->
-      <OrderForm :orderInfo="orderInfo"/>
+      <OrderForm :orderInfo="orderInfo" @changeOrderInfo="handleChangeOrderInfo"/>
       <span slot="footer" class="dialog-footer">
     <el-button @click="addOrderItemVisible = false">取 消</el-button>
     <el-button type="primary" @click="submitOrder">确 定</el-button>
@@ -874,7 +698,9 @@ export default {
       //调整单的id
       tempId: '',
       //订单输入详情信息
-      orderInfo: {}
+      orderInfo: {},
+      //订单里的item
+      goodsOrdersList: [{}, {}]
     };
   },
   created() {
@@ -975,6 +801,15 @@ export default {
     submitOrder() {
       this.addOrderItemVisible = false
       console.log(this.orderInfo)
+    },
+    handleChangeOrderInfo(val) {
+      this.orderInfo.goodsOrderList = val;
+      this.orderInfo.goodsOrderList[1] = val[0]
+      const date = this.orderInfo.orderDate.getTime();
+      //todo 在这里发送添加订单的请求 ID在OrderForm组件中已经定义
+      addGoodsOrder({...this.orderInfo, orderDate: date}).then(res => {
+        console.log(res)
+      })
     },
     //表格统计
     //自定义列统计总函数
