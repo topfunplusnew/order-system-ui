@@ -751,10 +751,10 @@
       :visible.sync="addOrderItemVisible"
       width="80%">
       <!--      添加订单-->
-      <OrderForm/>
+      <OrderForm :orderInfo="orderInfo"/>
       <span slot="footer" class="dialog-footer">
     <el-button @click="addOrderItemVisible = false">取 消</el-button>
-    <el-button type="primary" @click="addOrderItemVisible = false">确 定</el-button>
+    <el-button type="primary" @click="submitOrder">确 定</el-button>
   </span>
     </el-dialog>
   </div>
@@ -872,7 +872,9 @@ export default {
       //添加订单详情
       addOrderItem: {},
       //调整单的id
-      tempId: ''
+      tempId: '',
+      //订单输入详情信息
+      orderInfo: {}
     };
   },
   created() {
@@ -959,6 +961,7 @@ export default {
         adjustGoodsOrder({...orderInfo, ordersNo: ''}).then(res => {
           this.$message.success('调整单提交成功')
           this.handleOrderVisible = false
+          this.getList();
         }).catch(err => {
           this.$message.error('调整单提交失败' + err.msg)
         })
@@ -966,7 +969,12 @@ export default {
     },
     //表格中的列自定义样式信息 渲染的时候每一个列都会执行这个函数
     tableRowClassName({row, rowIndex}) {
-      console.log(row)
+    },
+    //提交订单
+    //订单列表的对象封装一个，订单详情有两个一样的对象 对应供应商发货和仓库发货
+    submitOrder() {
+      this.addOrderItemVisible = false
+      console.log(this.orderInfo)
     },
     //表格统计
     //自定义列统计总函数
