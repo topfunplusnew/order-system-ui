@@ -20,6 +20,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Isolation;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.Arrays;
 import java.util.List;
 
 /**
@@ -114,14 +115,16 @@ public class AuditInfoServiceImpl implements IAuditInfoService {
             throw new RuntimeException("审核已结束，不允许修改");
         }
 
+        // 判断是否是允许的用户，只有允许的审核人才能进行审核
         // 获取审核人字符串(用户id，中间用英文逗号分割)
         String[] checkUserIds = oldAuditInfo.getAuditauthority().split(",");
+        boolean contains = Arrays.asList(checkUserIds).contains(String.valueOf(SecurityUtils.getUserId()));
+
         // 如果本人不在里面并且不是管理员，抛出异常
-        if (!SecurityUtils.getUserId().equals(checkUserIds[auditInfo.getStep().intValue()]) && SecurityUtils.isAdmin(SecurityUtils.getUserId()) == false) {
+        if (!contains && SecurityUtils.isAdmin(SecurityUtils.getUserId()) == false) {
             throw new RuntimeException("您不是本阶段的审核人，无法进行审核");
         }
 
-        // 判断是否是允许的用户，只有允许的审核人才能进行审核
         if (!auditInfo.getCheckState().equals(AuditStateConstants.CHECK_STATE_ING)) {
             // 不是审核中则必定是审核结束的两种状态
             auditInfo.setSubmitflag(AuditStateConstants.SUBMIT_STATE_END);
@@ -153,7 +156,6 @@ public class AuditInfoServiceImpl implements IAuditInfoService {
                 updateInfo.setCheckState(AuditStateConstants.CHECK_STATE_NOT_PASS);
                 updateInfo.setSubmitflag(AuditStateConstants.SUBMIT_STATE_END);
                 paymentApplyService.updatePaymentApply(updateInfo);
-
             }
         } else {
             // 如果是审核中，则不允许本次操作

@@ -19,38 +19,72 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         <result property="UserName"    column="UserName"    />
         <result property="updateTime"    column="update_time"    />
         <result property="delFlag"    column="delFlag"    />
+        <result property="checkState"    column="checkState"    />
     </resultMap>
 
 
- 
 
     <sql id="selectRepaymentVo">
-        select id, loanNO, payNO, moneyAmount, ratio, payDate, acountsName, bankNo, comments, addtime, userId, UserName, update_time, delFlag from repayment
+        select
+        r.id,
+        r.loanNO,
+        r.payNO,
+        r.moneyAmount,
+        r.ratio,
+        r.payDate,
+        r.acountsName,
+        r.bankNo,
+        r.comments,
+        r.addtime,
+        r.userId,
+        r.UserName,
+        r.update_time,
+        r.delFlag,
+        -- 优先获取 payment 表的 paymentState，如果不存在则获取 paymentapply 表的 checkState
+        CASE
+        WHEN pa.checkState = '通过' THEN p.paymentState
+        ELSE COALESCE(pa.checkState, '未申请')
+        END as checkState  <!-- 修改后的审核/支付状态 -->
+        from
+        repayment r
+        left join
+        paymentapply pa
+        on
+        pa.tableName = 'repayment'
+        and pa.tID = r.id
+        and (pa.checkState = '审核中' or pa.checkState = '通过')
+        left join
+        payment p
+        on
+        p.applyId = pa.id
+        and p.delFlag = 0
     </sql>
-
     <select id="selectRepaymentList" parameterType="Repayment" resultMap="RepaymentResult">
         <include refid="selectRepaymentVo"/>
-        <where>  
-            <if test="loanNO != null  and loanNO != ''"> and loanNO = #{loanNO}</if>
-            <if test="payNO != null  and payNO != ''"> and payNO = #{payNO}</if>
-            <if test="moneyAmount != null "> and moneyAmount = #{moneyAmount}</if>
-            <if test="ratio != null "> and ratio = #{ratio}</if>
-            <if test="payDate != null  and payDate != ''"> and payDate = #{payDate}</if>
-            <if test="acountsName != null  and acountsName != ''"> and acountsName like concat('%', #{acountsName}, '%')</if>
-            <if test="bankNo != null  and bankNo != ''"> and bankNo = #{bankNo}</if>
-            <if test="comments != null  and comments != ''"> and comments = #{comments}</if>
-            <if test="addtime != null  and addtime != ''"> and addtime = #{addtime}</if>
-            <if test="userId != null "> and userId = #{userId}</if>
-            <if test="UserName != null  and UserName != ''"> and UserName like concat('%', #{UserName}, '%')</if>
-            and delFlag = 0
+        <where>
+            <if test="loanNO != null  and loanNO != ''"> and r.loanNO = #{loanNO}</if>
+            <if test="payNO != null  and payNO != ''"> and r.payNO = #{payNO}</if>
+            <if test="moneyAmount != null "> and r.moneyAmount = #{moneyAmount}</if>
+            <if test="ratio != null "> and r.ratio = #{ratio}</if>
+            <if test="payDate != null  and payDate != ''"> and r.payDate = #{payDate}</if>
+            <if test="acountsName != null  and acountsName != ''"> and r.acountsName like concat('%', #{acountsName}, '%')</if>
+            <if test="bankNo != null  and bankNo != ''"> and r.bankNo = #{bankNo}</if>
+            <if test="comments != null  and comments != ''"> and r.comments = #{comments}</if>
+            <if test="addtime != null  and addtime != ''"> and r.addtime = #{addtime}</if>
+            <if test="userId != null "> and r.userId = #{userId}</if>
+            <if test="UserName != null  and UserName != ''"> and r.UserName like concat('%', #{UserName}, '%')</if>
+            and r.delFlag = 0
         </where>
     </select>
-    
+
     <select id="selectRepaymentById" parameterType="Long" resultMap="RepaymentResult">
         <include refid="selectRepaymentVo"/>
-        where id = #{id}
-        and delFlag = 0
+        where
+        r.id = #{id}  <!-- 根据 id 进行查询 -->
+        and r.delFlag = 0
     </select>
+
+
 
     <insert id="insertRepayment" parameterType="Repayment" useGeneratedKeys="true" keyProperty="id">
         insert into repayment

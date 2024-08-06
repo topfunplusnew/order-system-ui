@@ -92,6 +92,26 @@
                  ba.comments,
                  ba.delFlag
     </select>
+    <select id="selectBankAccountByBankNo" parameterType="String" resultMap="BankAccountResult">
+        <include refid="selectBankAccountVo"/>
+        <where>
+            <if test="bankNo != null  and bankNo != ''">
+                and ba.bankNo =
+                    #{bankNo}
+            </if>
+            and ba.delFlag = 0
+        </where>
+        GROUP BY ba.id,
+        ba.companyName,
+        ba.companyId,
+        ba.bankName,
+        ba.acountsName,
+        ba.bankNo,
+        ba.acountsType,
+        ba.comments,
+        ba.delFlag
+        limit 1
+    </select>
 
     <insert id="insertBankAccount" parameterType="BankAccount" useGeneratedKeys="true" keyProperty="id">
         insert into bankAccount
@@ -200,17 +220,4 @@
             #{id}
         </foreach>
     </update>
-
-    <select id="selectBankAccountByBankNo" parameterType="String" resultMap="BankAccountResult">
-        <include refid="selectBankAccountVo"/>
-        <where>
-            <if test="bankNo != null  and bankNo != ''">
-                and bankNo =
-                    #{bankNo}
-            </if>
-
-            and delFlag = 0
-        </where>
-        limit 1
-    </select>
 </mapper>

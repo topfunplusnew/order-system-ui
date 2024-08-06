@@ -6,6 +6,7 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
     
     <resultMap type="Payment" id="PaymentResult">
         <result property="id"    column="id"    />
+        <result property="applyid" column="applyId" />
         <result property="payNO"    column="payNO"    />
         <result property="fundsDate"    column="fundsDate"    />
         <result property="payType"    column="payType"    />
@@ -35,13 +36,14 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
  
 
     <sql id="selectPaymentVo">
-        select id, payNO, fundsDate, payType, tableName, tID, moneyAmount, selfAcountsName, selfBankNo, selfBankName, selfBankID, otherAcountsName, otherBankNo, otherBankName, paymentState, companyName, companyId, companyType, comments, addtime, userId, UserName, update_time, delFlag from payment
+        select id,applyId, payNO, fundsDate, payType, tableName, tID, moneyAmount, selfAcountsName, selfBankNo, selfBankName, selfBankID, otherAcountsName, otherBankNo, otherBankName, paymentState, companyName, companyId, companyType, comments, addtime, userId, UserName, update_time, delFlag from payment
     </sql>
 
     <select id="selectPaymentList" parameterType="Payment" resultMap="PaymentResult">
         <include refid="selectPaymentVo"/>
         <where>  
             <if test="payNO != null  and payNO != ''"> and payNO = #{payNO}</if>
+            <if test="applyid != null "> and applyId = #{applyid}</if>
             <if test="fundsDate != null  and fundsDate != ''"> and fundsDate = #{fundsDate}</if>
             <if test="payType != null  and payType != ''"> and payType = #{payType}</if>
             <if test="tableName != null  and tableName != ''"> and tableName like concat('%', #{tableName}, '%')</if>
@@ -76,6 +78,7 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         insert into payment
         <trim prefix="(" suffix=")" suffixOverrides=",">
             <if test="payNO != null">payNO,</if>
+            <if test="applyid != null">applyId,</if>
             <if test="fundsDate != null">fundsDate,</if>
             <if test="payType != null">payType,</if>
             <if test="tableName != null">tableName,</if>
@@ -101,6 +104,7 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
          </trim>
         <trim prefix="values (" suffix=")" suffixOverrides=",">
             <if test="payNO != null">#{payNO},</if>
+            <if test="applyid != null">#{applyid},</if>
             <if test="fundsDate != null">#{fundsDate},</if>
             <if test="payType != null">#{payType},</if>
             <if test="tableName != null">#{tableName},</if>
@@ -129,11 +133,8 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
     <update id="updatePayment" parameterType="Payment">
         update payment
         <trim prefix="SET" suffixOverrides=",">
-            <if test="payNO != null">payNO = #{payNO},</if>
             <if test="fundsDate != null">fundsDate = #{fundsDate},</if>
             <if test="payType != null">payType = #{payType},</if>
-            <if test="tableName != null">tableName = #{tableName},</if>
-            <if test="tID != null">tID = #{tID},</if>
             <if test="moneyAmount != null">moneyAmount = #{moneyAmount},</if>
             <if test="selfAcountsName != null">selfAcountsName = #{selfAcountsName},</if>
             <if test="selfBankNo != null">selfBankNo = #{selfBankNo},</if>
@@ -151,7 +152,6 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
             <if test="userId != null">userId = #{userId},</if>
             <if test="UserName != null">UserName = #{UserName},</if>
             <if test="updateTime != null">update_time = #{updateTime},</if>
-            <if test="delFlag != null">delFlag = #{delFlag},</if>
         </trim>
         where id = #{id}
     </update>

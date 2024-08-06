@@ -178,6 +178,17 @@ public class LendMoney extends BaseEntity {
     @TableField("delFlag")
     private Long delFlag;
 
+    public String getCheckState() {
+        return checkState;
+    }
+
+    public void setCheckState(String checkState) {
+        this.checkState = checkState;
+    }
+
+    /** 额外字段 */
+    @TableField(exist = false)
+    private String checkState;
     // Getters and Setters
 
     public void setId(Long id) {
