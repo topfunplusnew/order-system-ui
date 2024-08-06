@@ -575,10 +575,10 @@
       :visible.sync="addOrderItemVisible"
       width="80%">
       <!--      添加订单-->
-      <OrderForm :orderInfo="orderInfo" @changeOrderInfo="handleChangeOrderInfo"/>
+      <OrderForm :orderInfo="orderInfo"/>
       <span slot="footer" class="dialog-footer">
     <el-button @click="addOrderItemVisible = false">取 消</el-button>
-    <el-button type="primary" @click="submitOrder">确 定</el-button>
+    <el-button type="primary" @click="submitOrder">添加订单</el-button>
   </span>
     </el-dialog>
   </div>
@@ -595,6 +595,7 @@ import {
 } from "@/api/system/goodsOrder";
 import TagsItem from "@/components/TagsItem/index.vue";
 import OrderForm from "@/components/OrderForm.vue";
+import {mapGetters} from "vuex";
 
 export default {
   name: "GoodsOrder",
@@ -699,8 +700,6 @@ export default {
       tempId: '',
       //订单输入详情信息
       orderInfo: {},
-      //订单里的item
-      goodsOrdersList: [{}, {}]
     };
   },
   created() {
@@ -726,6 +725,8 @@ export default {
       }
     },
 
+    //获取订单列表
+    ...mapGetters(['orderItemList'])
   },
   methods: {
     //提交订单信息
@@ -800,17 +801,17 @@ export default {
     //订单列表的对象封装一个，订单详情有两个一样的对象 对应供应商发货和仓库发货
     submitOrder() {
       this.addOrderItemVisible = false
-      console.log(this.orderInfo)
-    },
-    handleChangeOrderInfo(val) {
-      this.orderInfo.goodsOrderList = val;
-      this.orderInfo.goodsOrderList[1] = val[0]
+      console.log('订单信息=>', this.orderItemList)
+      console.log('orderinfo=>', this.orderInfo)
+      //从vuex拿到订单详细列表 加入到订单信息中
+      this.orderInfo.orderDetailList = this.orderItemList;
+      //添加订单 转化时间戳
       const date = this.orderInfo.orderDate.getTime();
-      //todo 在这里发送添加订单的请求 ID在OrderForm组件中已经定义
       addGoodsOrder({...this.orderInfo, orderDate: date}).then(res => {
         console.log(res)
       })
     },
+
     //表格统计
     //自定义列统计总函数
     getSummaries(param) {

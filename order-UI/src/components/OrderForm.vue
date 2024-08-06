@@ -6,6 +6,7 @@ import {listStoreHouse} from "@/api/system/StoreHouse";
 import {listProductLevel} from "@/api/system/productLevel";
 import {listInventory} from "@/api/system/inventory";
 import OrderItem from "@/components/OrderItem.vue";
+import {mapGetters} from "vuex";
 
 export default {
   name: "OrderForm",
@@ -45,16 +46,6 @@ export default {
       //车队搜索
       fleetName: '',
 
-      //id:  供应商ID:supplierID  客户ID:customerID 仓库ID:storeHouseID
-      // 仓库存储的货物ID:storeID 客户ID:customerID 货运车辆ID:landCarID 海运车辆ID:seaCarID
-      supplierID: '',
-      customerID: '',
-      storeHouseID: '',
-      storeID: '',
-      landCarID: '',
-      seaCarID: '',
-
-
     }
   },
   methods: {
@@ -93,7 +84,7 @@ export default {
     //todo 确认中初始化所有的id
     //客户信息中的搜索确认
     commitCustomerInfo(row) {
-      this.customerID = row.id;  //orderInfo
+      this.orderInfo.customerID = row.id;  //orderInfo->客户ID
       //填充客户和销售经理信息
       this.orderInfo.customer = row.relationName;
       this.orderInfo.saleManager = row.salesManager;
@@ -101,7 +92,7 @@ export default {
     },
     //查询车牌信息的确认
     commitCarsInfo(row) {
-      this.landCarID = row.id;   //orderInfo
+      this.orderInfo.landCarID = row.id;   //orderInfo->陆运车ID
       this.orderInfo.landCarNo = row.carNo;
       this.orderInfo.landDriverName = row.driver;
       this.orderInfo.landDriverTel = row.tel;
@@ -117,16 +108,9 @@ export default {
     commitSeaInfo(row) {
 
     },
-
-
-    //订单详情 添加订单
-    handleAddOrderItem(val) {
-      console.log('订单详情=>', val)
-    },
-
-    //提交订单 添加订单信息
-    submitOrderItems() {
-      this.$emit('changeOrderInfo', this.goodsOrderList)
+    //添加订单vuex
+    addOrderItem() {
+      this.$store.dispatch('order/addOrderItemList', {})
     },
   },
   created() {
@@ -134,6 +118,10 @@ export default {
   },
   mounted() {
 
+  },
+  computed: {
+    //获取订单列表
+    ...mapGetters(['orderItemList'])
   }
 }
 </script>
@@ -221,23 +209,22 @@ export default {
     </div>
 
     <!--    订单主体-->
-    <div v-if="goodsOrderList.length!==0">
-      <!--  todo   遍历订单详情列表 item是每一个订单的信息 还是得上vuex -->
-      <!--   todo   该组件中从vuex中获取订单列表-->
-      <div v-for="(item,index) in goodsOrderList" :key="index">
-        <!--    todo    遍历订单详情组件 传入订单个体信息 订单个体信息传入子组件后，子组件主动更新该数据后 发送到vuex中 -->
-        <OrderItem :orderItemInfo="item"/>
-        <!--        继续添加订单-->
-        <div class="option">
-          <el-button type="primary" @click="goodsOrderList.push({})" icon="el-icon-plus">继续添加订单详情</el-button>
-        </div>
+    <div v-if="orderItemList.length!==0">
+      <!--      从vuex中拿到订单详细列表-->
+      <div v-for="(item,index) in orderItemList" :key="index">
+        <!--        订单个体-->
+        <OrderItem :order-item-info="item" :isLand="isLand" :isSea="isSea" :index="index"/>
+      </div>
+      <!--        继续添加订单-->
+      <div class="option">
+        <el-button type="primary" @click="addOrderItem" icon="el-icon-plus">继续添加订单详情</el-button>
       </div>
     </div>
     <!--    如果没有订单-->
     <div v-else>
       <el-row>
         <el-col>
-          <el-button type="primary" icon="el-icon-plus" @click="goodsOrderList.push({})">添加订单详情信息</el-button>
+          <el-button type="primary" @click="addOrderItem" icon="el-icon-plus">添加订单详情信息</el-button>
         </el-col>
       </el-row>
     </div>

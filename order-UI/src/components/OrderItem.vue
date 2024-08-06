@@ -1,4 +1,5 @@
 <!--订单详情个体-->
+
 <script>
 import {listCompany} from "@/api/system/company";
 import {listInventory} from "@/api/system/inventory";
@@ -8,7 +9,11 @@ import {listProductLevel} from "@/api/system/productLevel";
 export default {
   name: "OrderItem",
   props: {
-    orderItemInfo: {}
+    //父组件传递的订单详情个体
+    orderItemInfo: {},
+    isSea: Boolean,
+    isLand: Boolean,
+    index: Number
   },
   data() {
     return {
@@ -40,6 +45,13 @@ export default {
       inventoryInfo: [],
       //产品级别信息
       productLevelInfo: [],
+
+      //id:  供应商ID:supplierID  客户ID:customerID 仓库ID:storeHouseID
+      // 仓库存储的货物ID:storeID 客户ID:customerID 货运车辆ID:landCarID 海运车辆ID:seaCarID
+      supplierID: '',
+      storeHouseID: '',
+      storeID: '',
+
     }
   },
   methods: {
@@ -82,41 +94,35 @@ export default {
     //供应商信息确认
     commitCompanyGiveInfo(row) {
       console.log('供应商信息row', row)
-      this.supplierID = row.id;   //goodsOrderList
-      this.goodsOrderList[0].supplier = row.companyName
+      this.orderItemInfo.supplierID = row.id;   //goodsOrderList->供应商ID
+      this.orderItemInfo.supplier = row.companyName
       this.companyGiveDialogVisible = false;
     },
     //仓库确认
     commitStoreInfo(row) {
       console.log('仓库信息row', row)
-      this.storeID = row.id;
-      this.goodsOrderList[0].storeHouseName = row.storeHouseName
+      this.orderItemInfo.storeID = row.id;  //goodsOrderList ->仓库ID
+      this.orderItemInfo.storeHouseID = row.id //goodsOrderList ->库存ID
+      Object.assign(this.orderItemInfo, row)
       this.storeInfoDialogVisible = false;
     },
     //产品级别确认
     commitProductLevelInfo(row) {
       console.log('产品级别信息row', row)
       //填充表格数据
-      this.goodsOrderList[0].levelName = row.levelName;
-      this.goodsOrderList[0].height = row.height;
-      this.goodsOrderList[0].length = row.length;
-      this.goodsOrderList[0].width = row.width;
+      this.orderItemInfo.levelName = row.levelName;
+      this.orderItemInfo.height = row.height;
+      this.orderItemInfo.length = row.length;
+      this.orderItemInfo.width = row.width;
       this.productLevelDialogVisible = false;
     },
-
-    //保存订单详情信息 传递给父组件
-    handleCommitOrderItem() {
-      //todo 不再传递给父组件
-      // this.$emit('addOrderItem', this.orderItemInfo)
-      //todo 直接添加到 vuex中
-      this.$message.success("订单详情个体保存成功~")
-    }
   }
 }
 </script>
 
 <template>
   <div>
+    <h4 style="font-weight: bolder">订单详细信息-{{ index + 1 }}</h4>
     <div class="order font-size-12">
       <div class="order-item">
         <span class="text-bold">供应商/仓库</span>
@@ -197,11 +203,11 @@ export default {
                   v-model="orderItemInfo.paymentFactory"></el-input>
       </div>
       <!--          todo-->
-      <div class="order-item">
-        <span class="text-bold">卸货片数</span>
-        <hr/>
-        <el-input type="text" placeholder="请输入卸货片数"></el-input>
-      </div>
+      <!--      <div class="order-item">-->
+      <!--        <span class="text-bold">卸货片数</span>-->
+      <!--        <hr/>-->
+      <!--        <el-input type="text" placeholder="请输入卸货片数"></el-input>-->
+      <!--      </div>-->
       <div class="order-item">
         <span class="text-bold">卸货价</span>
         <hr/>
@@ -280,11 +286,11 @@ export default {
         <el-input type="text" placeholder="总货款杂费"
                   v-model="orderItemInfo.paymentsWithSundry"></el-input>
       </div>
-      <div class="order-item">
-        <span class="text-bold">物流利润</span>
-        <hr/>
-        <el-input type="text" placeholder="物流利润" v-model="orderItemInfo.logisticsProfit"></el-input>
-      </div>
+      <!--      <div class="order-item">-->
+      <!--        <span class="text-bold">物流利润</span>-->
+      <!--        <hr/>-->
+      <!--        <el-input type="text" placeholder="物流利润" v-model="orderItemInfo.logisticsProfit"></el-input>-->
+      <!--      </div>-->
       <div class="order-item">
         <span class="text-bold">客户佣金</span>
         <hr/>
@@ -295,9 +301,6 @@ export default {
         <span class="text-bold">备注</span>
         <hr/>
         <el-input type="text" placeholder="备注" v-model="orderItemInfo.comments"></el-input>
-      </div>
-      <div class="option">
-        <el-button type="primary" @click="handleCommitOrderItem">保存该订单</el-button>
       </div>
     </div>
 
