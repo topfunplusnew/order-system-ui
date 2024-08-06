@@ -72,9 +72,7 @@ public class BankAcceptanceServiceImpl implements IBankAcceptanceService
     @Override
     public int updateBankAcceptance(BankAcceptance bankAcceptance)
     {
-        bankAcceptance.setUserId(SecurityUtils.getUserId());
-        bankAcceptance.setUserName(SecurityUtils.getUserTruename());
-        bankAcceptance.setUpdateTime(DateUtils.getNowDate());
+
         return bankAcceptanceMapper.updateBankAcceptance(bankAcceptance);
     }
 

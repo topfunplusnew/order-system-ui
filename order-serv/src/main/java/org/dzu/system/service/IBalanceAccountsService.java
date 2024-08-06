@@ -50,12 +50,4 @@ public interface IBalanceAccountsService
      * @return 结果
      */
     public int deleteBalanceAccountsByIds(Long[] ids);
-
-    /**
-     * 删除平账信息信息
-     * 
-     * @param id 平账信息主键
-     * @return 结果
-     */
-    public int deleteBalanceAccountsById(Long id);
 }
