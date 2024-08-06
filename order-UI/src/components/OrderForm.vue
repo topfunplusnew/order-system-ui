@@ -1,5 +1,6 @@
 <script>
 import {listCompany} from "@/api/system/company";
+import {listCars} from "@/api/system/cars";
 
 export default {
   name: "OrderForm",
@@ -50,7 +51,11 @@ export default {
     },
     //陆运车牌信息
     searchLandInfo() {
-      this.seaInfoDialogVisible = true
+      this.landInfoDialogVisible = true
+      listCars().then(res => {
+        console.log(res)
+        this.landInfo = res.rows;
+      })
     },
     //车队信息
     searchFleetInfo() {
@@ -71,6 +76,14 @@ export default {
       this.orderInfo.customer = row.relationName;
       this.orderInfo.saleManager = row.salesManager;
       this.customerInfoDialogVisible = false
+    },
+    //查询车牌信息的确认
+    commitCarsInfo(row) {
+      console.log(row)
+      this.orderInfo.landCarNo = row.carNo;
+      this.orderInfo.landDriverName = row.driver;
+      this.orderInfo.landDriverTel = row.tel;
+      this.landInfoDialogVisible = false;
     },
   },
   created() {
@@ -385,33 +398,32 @@ export default {
 
     <!--    陆运车牌信息弹窗-->
     <el-dialog
-      title="客户信息"
+      title="车牌信息"
       :visible.sync="landInfoDialogVisible"
       width="35%" append-to-body>
       <el-table
-        :data="companyInfo"
+        :data="landInfo"
         border>
         <!--        操作-->
         <el-table-column
           fixed="left"
           label="操作">
           <template slot-scope="scope">
-            <el-button @click="handleClick(scope.row)" type="text" size="small">查看</el-button>
-            <el-button type="text" size="small">编辑</el-button>
+            <el-button @click="commitCarsInfo(scope.row)" type="danger" size="small">确认</el-button>
           </template>
         </el-table-column>
         <el-table-column
           fixed
-          prop="relationName"
-          label="客户">
+          prop="carNo"
+          label="车牌">
         </el-table-column>
         <el-table-column
-          prop="leader"
-          label="老板姓名">
+          prop="driver"
+          label="司机姓名">
         </el-table-column>
         <el-table-column
-          prop="leaderTel"
-          label="老板联系方式">
+          prop="tel"
+          label="司机电话">
         </el-table-column>
       </el-table>
       <span slot="footer" class="dialog-footer">
