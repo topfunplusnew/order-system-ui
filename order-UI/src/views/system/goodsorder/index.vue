@@ -1,3 +1,5 @@
+<!--订单页面-->
+
 <template>
   <div class="app-container">
     <el-form :model="queryParams" ref="queryForm" size="small" :inline="true" v-show="showSearch" label-width="100px">
@@ -92,6 +94,7 @@
         <el-button icon="el-icon-refresh" size="mini" @click="resetQuery">刷新</el-button>
       </el-col>
       <el-col :span="1.5">
+        <!--        todo 审核的时候添加审核权限 -->
         <el-button
           type="danger"
           plain
@@ -803,8 +806,13 @@ export default {
       this.addOrderItemVisible = false
       console.log('订单信息=>', this.orderItemList)
       console.log('orderinfo=>', this.orderInfo)
-      //从vuex拿到订单详细列表 加入到订单信息中
-      this.orderInfo.orderDetailList = this.orderItemList;
+      this.orderInfo.orderDetailList = this.orderItemList; //从vuex拿到订单详细列表 加入到订单信息中
+      //订单详情添加客户信息
+      for (let i = 0; i < this.orderItemList.length; i++) {
+        let item = this.orderItemList[i];
+        item.customerID = this.orderInfo.customerID;
+        item.customer = this.orderInfo.customer;
+      }
       //添加订单 转化时间戳
       const date = this.orderInfo.orderDate.getTime();
       addGoodsOrder({...this.orderInfo, orderDate: date}).then(res => {
