@@ -3,6 +3,7 @@
     <!--    查询组-->
     <el-form :model="queryOrderInfo" ref="queryForm" size="small" :inline="true" v-show="showSearch"
              label-width="100px">
+
       <!--      开始时间-->
       <!--            <el-form-item label="开始日期" prop="startTime">-->
       <!--              <el-date-picker-->
@@ -433,17 +434,17 @@
       <el-col :span="1.5">
         <el-button icon="el-icon-refresh" size="mini" @click="resetQuery">刷新</el-button>
       </el-col>
-      <el-col :span="1.5">
-        <el-button
-          type="danger"
-          plain
-          icon="el-icon-plus"
-          size="mini"
-          @click="handleAdd"
-          v-hasPermi="['system:orderdetail:add']"
-        >添加订单信息
-        </el-button>
-      </el-col>
+<!--      <el-col :span="1.5">-->
+<!--        <el-button-->
+<!--          type="danger"-->
+<!--          plain-->
+<!--          icon="el-icon-plus"-->
+<!--          size="mini"-->
+<!--          @click="handleAdd"-->
+<!--          v-hasPermi="['system:orderdetail:add']"-->
+<!--        >添加订单信息-->
+<!--        </el-button>-->
+<!--      </el-col>-->
       <el-col :span="1.5">
         <el-button
           type="warning"
@@ -482,11 +483,26 @@
         </template>
       </right-toolbar>
     </el-row>
-
-    <el-table v-horizontal-scroll="'always'" v-loading="loading" :data="orderDetailList"
+<!--    <el-table-->
+<!--      v-horizontal-scroll="'always'"-->
+<!--      v-loading="loading" :data="orderDetailList"-->
+<!--      @selection-change="handleSelectionChange" id="printBox"-->
+<!--      show-summary :summary-method="getSummaries"-->
+<!--      max-height="400">-->
+<!--    <el-table v-loading="loading" -->
+<!--              :data="goodsOrderList"-->
+<!--              @selection-change="handleSelectionChange"-->
+<!--              show-summary :summary-method="getSummaries"-->
+<!--              id="printBox" :row-class-name="tableRowClassName"-->
+<!--              max-height="400">-->
+    <el-table
+      v-horizontal-scroll="'always'"
+              v-loading="loading" :data="orderDetailList"
               @selection-change="handleSelectionChange" id="printBox"
-              show-summary :summary-method="getSummaries">
+              show-summary :summary-method="getSummaries"
+              max-height="400">
       <!--      操作列-->
+
       <el-table-column label="操作" align="center" class-name="small-padding fixed-width" width="170px" fixed="left">
         <template slot-scope="scope">
           <el-button
@@ -494,18 +510,18 @@
             @click="checkOrderItemInfo(scope.row)"
           >查看
           </el-button>
-          <el-button
-            size="mini"
-            type="primary"
-            @click="handleOrderItemInfo(scope.row)"
-          >调整单
-          </el-button>
-          <el-button
-            size="mini"
-            type="danger"
-            @click="handleUpdate(scope.row)"
-          >复制
-          </el-button>
+<!--          <el-button-->
+<!--            size="mini"-->
+<!--            type="primary"-->
+<!--            @click="handleOrderItemInfo(scope.row)"-->
+<!--          >调整单-->
+<!--          </el-button>-->
+<!--          <el-button-->
+<!--            size="mini"-->
+<!--            type="danger"-->
+<!--            @click="handleUpdate(scope.row)"-->
+<!--          >复制-->
+<!--          </el-button>-->
           <el-button
             size="mini"
             type="danger"
@@ -567,37 +583,37 @@
       <!--      右侧操作列-->
       <el-table-column label="操作" align="center" class-name="small-padding fixed-width" width="300px" fixed="right">
         <template slot-scope="scope">
-          <el-button
-            size="mini"
-            @click="handleOrder1(scope.row)"
-            v-hasPermi="['system:orderdetail:edit']"
-          >发货单1
-          </el-button>
-          <el-button
-            size="mini"
-            @click="handleOrder2(scope.row)"
-            v-hasPermi="['system:orderdetail:edit']"
-          >发货单2
-          </el-button>
-          <el-button
-            size="mini"
-            @click="handleOrder3(scope.row)"
-            v-hasPermi="['system:orderdetail:edit']"
-          >发货单3
-          </el-button>
-          <el-button
-            size="mini"
-            type="primary"
-            @click="handleUpload(scope.row)"
-            v-hasPermi="['system:orderdetail:remove']"
-          >上传附件
-          </el-button>
-          <el-button
-            size="mini"
-            @click="handleCommit(scope.row)"
-            v-hasPermi="['system:orderdetail:remove']"
-          >上传收到条
-          </el-button>
+<!--          <el-button-->
+<!--            size="mini"-->
+<!--            @click="handleOrder1(scope.row)"-->
+<!--            v-hasPermi="['system:orderdetail:edit']"-->
+<!--          >发货单1-->
+<!--          </el-button>-->
+<!--          <el-button-->
+<!--            size="mini"-->
+<!--            @click="handleOrder2(scope.row)"-->
+<!--            v-hasPermi="['system:orderdetail:edit']"-->
+<!--          >发货单2-->
+<!--          </el-button>-->
+<!--          <el-button-->
+<!--            size="mini"-->
+<!--            @click="handleOrder3(scope.row)"-->
+<!--            v-hasPermi="['system:orderdetail:edit']"-->
+<!--          >发货单3-->
+<!--          </el-button>-->
+<!--          <el-button-->
+<!--            size="mini"-->
+<!--            type="primary"-->
+<!--            @click="handleUpload(scope.row)"-->
+<!--            v-hasPermi="['system:orderdetail:remove']"-->
+<!--          >上传附件-->
+<!--          </el-button>-->
+<!--          <el-button-->
+<!--            size="mini"-->
+<!--            @click="handleCommit(scope.row)"-->
+<!--            v-hasPermi="['system:orderdetail:remove']"-->
+<!--          >上传收到条-->
+<!--          </el-button>-->
         </template>
       </el-table-column>
     </el-table>
