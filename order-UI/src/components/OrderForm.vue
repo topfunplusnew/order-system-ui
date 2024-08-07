@@ -83,7 +83,7 @@ export default {
 
     },
 
-    //todo 确认中初始化所有的id
+    //todo 确认中初始化所有的id 给出银行信息
     //客户信息中的搜索确认
     commitCustomerInfo(row) {
       this.orderInfo.customerID = row.id;  //orderInfo->客户ID
@@ -98,6 +98,10 @@ export default {
       this.orderInfo.landCarNo = row.carNo;
       this.orderInfo.landDriverName = row.driver;
       this.orderInfo.landDriverTel = row.tel;
+
+      //填充银行信息
+      this.orderInfo.landBankName = row.acountsName;
+      this.orderInfo.landBankNo = row.bankNo;
       this.landInfoDialogVisible = false;
     },
     //车队信息的确认

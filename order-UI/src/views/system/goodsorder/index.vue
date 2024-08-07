@@ -149,7 +149,8 @@
 
     <!--    表格列-->
     <el-table v-loading="loading" :data="goodsOrderList" @selection-change="handleSelectionChange"
-              show-summary :summary-method="getSummaries" id="printBox" :row-class-name="tableRowClassName">
+              show-summary :summary-method="getSummaries" id="printBox" :row-class-name="tableRowClassName"
+              max-height="400">
       <!--      左侧操作栏-->
       <el-table-column label="操作" align="center" class-name="small-padding fixed-width" width="170px" fixed="left">
         <template slot-scope="scope">
@@ -816,7 +817,9 @@ export default {
       //添加订单 转化时间戳
       const date = this.orderInfo.orderDate.getTime();
       addGoodsOrder({...this.orderInfo, orderDate: date}).then(res => {
-        console.log(res)
+        this.$message.success('订单提交成功')
+      }).catch(err => {
+        this.$message.error('订单提交失败' + err.msg)
       })
     },
 
