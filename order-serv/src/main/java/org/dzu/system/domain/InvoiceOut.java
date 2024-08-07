@@ -11,6 +11,7 @@ import org.dzu.common.annotation.FlagOnlyZeroOrOne;
 import org.dzu.common.core.domain.BaseEntity;
 import org.hibernate.validator.constraints.Length;
 
+import javax.validation.constraints.DecimalMin;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Pattern;
 
@@ -30,63 +31,69 @@ public class InvoiceOut extends BaseEntity
     private Long id;
 
     /** 开票日期 */
-    @Excel(name = "开票日期",dateFormat = "yyyy-MM-dd")
+    @Excel(name = "开票日期", dateFormat = "yyyy-MM-dd")
     @TableField(value = "invoiceDate")
+    @NotNull(message = "开票日期不能为空")
+    @Length(max = 55, message = "开票日期长度不能超过55个字符")
     private String invoiceDate;
 
     /** 我方开票实体 */
     @Excel(name = "我方开票实体")
     @NotNull(message = "我方开票实体不能为空")
-    @Length(max = 20, message = "我方开票实体长度不能超过20个字符")
+    @Length(max = 55, message = "我方开票实体长度不能超过55个字符")
     @TableField(value = "invoiceObject")
     private String invoiceObject;
 
     /** 开票金额 */
     @DecimalMaxDigits
+    @NotNull(message = "开票金额不能为空")
     @TableField(value = "invoiceAmount")
     private Double invoiceAmount;
 
     /** 公司类别（客户、供应商,其他） */
     @Excel(name = "公司类别")
     @NotNull(message = "公司类别不能为空")
-    @Pattern(regexp = "客户|供应商|其他", message = "公司类别必须是 客户，供应商，其他")
+    @Pattern(regexp = "客户|供应商|其他", message = "公司类别必须是 客户、供应商或其他")
     @TableField(value = "companyType")
     private String companyType;
 
     /** 公司名称 */
     @Excel(name = "公司名称")
-    @Length(max = 50, message = "公司名称长度不能超过50个字符")
+    @NotNull(message = "公司名称不能为空")
+    @Length(max = 120, message = "公司名称长度不能超过120个字符")
     @TableField(value = "companyName")
     private String companyName;
 
     /** 公司ID */
     @Excel(name = "公司ID")
     @NotNull(message = "公司ID不能为空")
-    @Length(max = 20, message = "公司ID长度不能超过20个字符")
     @TableField(value = "companyID")
     private Long companyID;
 
     /** 票据单位名称 */
     @Excel(name = "票据单位名称")
-    @Length(max = 50, message = "票据单位名称长度不能超过50个字符")
     @NotNull(message = "票据单位名称不能为空")
+    @Length(max = 120, message = "票据单位名称长度不能超过120个字符")
     @TableField(value = "invoiceCompanyName")
     private String invoiceCompanyName;
 
     /** 票点 */
-    @DecimalMaxDigits
+    @NotNull(message = "票点不能为空")
+    @DecimalMin(value = "0.0", message = "票点不能小于0")
     @TableField(value = "ticketPoint")
     private Double ticketPoint;
 
     /** 票点金额（开票金额*票点） */
     @Excel(name = "票点金额", readConverterExp = "票点金额=开票金额*票点")
     @NotNull(message = "票点金额不能为空")
+    @DecimalMin(value = "0.0", message = "票点金额不能小于0")
     @TableField(value = "ticketPointAmount")
     private Double ticketPointAmount;
 
     /** 是否订单对应票点 */
     @Excel(name = "是否订单对应票点")
-    @Pattern(regexp = "是|否", message = "是否订单对应票点必须是 是，否")
+    @NotNull(message = "是否订单对应票点不能为空")
+    @Pattern(regexp = "是|否", message = "是否订单对应票点必须是 是或否")
     @TableField(value = "isOrderTax")
     private Long isOrderTax;
 

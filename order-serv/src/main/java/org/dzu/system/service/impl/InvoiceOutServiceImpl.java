@@ -71,8 +71,6 @@ public class InvoiceOutServiceImpl implements IInvoiceOutService
     @Override
     public int updateInvoiceOut(InvoiceOut invoiceOut)
     {
-        invoiceOut.setUserId(SecurityUtils.getUserId());
-        invoiceOut.setUserName(SecurityUtils.getUserTruename());
         invoiceOut.setUpdateTime(DateUtils.getNowDate());
         return invoiceOutMapper.updateInvoiceOut(invoiceOut);
     }
