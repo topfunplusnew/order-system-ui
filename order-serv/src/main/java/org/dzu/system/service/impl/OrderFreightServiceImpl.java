@@ -5,6 +5,7 @@ import org.dzu.common.constant.BankChangeConstant;
 import org.dzu.common.constant.DelConstants;
 import org.dzu.common.constant.OrderFreightPaymentConstants;
 import org.dzu.common.constant.YesOrNoConstants;
+import org.dzu.common.enums.TableName;
 import org.dzu.common.exception.ServiceException;
 import org.dzu.common.utils.DateUtils;
 import org.dzu.common.utils.SecurityUtils;
@@ -178,14 +179,14 @@ public class OrderFreightServiceImpl implements IOrderFreightService {
 
         // 拼接变动信息
         BankAccountChange self = new BankAccountChange();
-        self.setTableName(BankChangeConstant.TableName.ORDER_FREIGHT.get());
+        self.setTableName(TableName.ORDER_FREIGHT.get());
         self.setMoneyAmount(Double.valueOf(orderFreight.getMoneyAmount()));
         self.setPayNO(String.valueOf(orderFreight.getId()));
         self.setChangeType(BankChangeConstant.PaymentType.PAYMENT.get());
         self.setSelfBankNo(orderFreight.getSelfBankNo());
 
         BankAccountChange driver = new BankAccountChange();
-        driver.setTableName(BankChangeConstant.TableName.ORDER_FREIGHT.get());
+        driver.setTableName(TableName.ORDER_FREIGHT.get());
         driver.setMoneyAmount(Double.valueOf(orderFreight.getMoneyAmount()));
         driver.setPayNO(String.valueOf(orderFreight.getId()));
         driver.setChangeType(BankChangeConstant.PaymentType.RECEIPT.get());
@@ -193,7 +194,7 @@ public class OrderFreightServiceImpl implements IOrderFreightService {
 
 
         // 去变动表里面搜索，如果搜索到就先删除后插入，搜索不到就是插入
-        QueryWrapper<BankAccountChange> query = new QueryWrapper<BankAccountChange>().eq("payNO", orderFreight.getId()).eq("tableName", BankChangeConstant.TableName.ORDER_FREIGHT.get());
+        QueryWrapper<BankAccountChange> query = new QueryWrapper<BankAccountChange>().eq("payNO", orderFreight.getId()).eq("tableName", TableName.ORDER_FREIGHT.get());
 
         if (bankAccountChangeMapper.selectCount(query) > 0) {
             bankAccountChangeMapper.delete(query);

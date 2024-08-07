@@ -1,7 +1,8 @@
 package org.dzu.system.service;
 
-import java.util.List;
 import org.dzu.system.domain.FixedAssets;
+
+import java.util.List;
 
 /**
  * 固定资产Service接口

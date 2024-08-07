@@ -1,8 +1,9 @@
 package org.dzu.system.mapper;
 
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
-import java.util.List;
 import org.dzu.system.domain.InvoiceOther;
+
+import java.util.List;
 
 /**
  * 商家直接给客户开发票Mapper接口

@@ -1,7 +1,8 @@
 package org.dzu.system.service;
 
-import java.util.List;
 import org.dzu.system.domain.BankAccount;
+
+import java.util.List;
 
 /**
  * 银行账号Service接口

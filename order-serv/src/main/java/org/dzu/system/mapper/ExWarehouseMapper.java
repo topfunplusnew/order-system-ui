@@ -1,8 +1,9 @@
 package org.dzu.system.mapper;
 
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
-import java.util.List;
 import org.dzu.system.domain.ExWarehouse;
+
+import java.util.List;
 
 /**
  * 出库Mapper接口

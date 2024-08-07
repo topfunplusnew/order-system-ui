@@ -25,37 +25,72 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
     </resultMap>
 
 
- 
+
 
     <sql id="selectInvoiceInVo">
-        select id, invoiceDate, invoiceObject, invoiceAmount, companyType, companyName, companyID, invoiceCompanyName, ticketPoint, ticketPointAmount, isOrderTax, comments, addtime, userId, UserName, update_time, delFlag from invoiceIn
+        select
+        i.id,
+        i.invoiceDate,
+        i.invoiceObject,
+        i.invoiceAmount,
+        i.companyType,
+        i.companyName,
+        i.companyID,
+        i.invoiceCompanyName,
+        i.ticketPoint,
+        i.ticketPointAmount,
+        i.isOrderTax,
+        i.comments,
+        i.addtime,
+        i.userId,
+        i.UserName,
+        i.update_time,
+        i.delFlag,
+        CASE
+        WHEN pa.checkState = '通过' THEN p.paymentState
+        ELSE COALESCE(pa.checkState, '未申请')
+        END as checkState
+        from
+        invoiceIn i
+        left join
+        paymentApply pa
+        on
+        pa.tableName = 'invoicein'
+        and pa.tID = i.id
+        and (pa.checkState = '审核中' or pa.checkState = '通过')
+        left join
+        payment p
+        on
+        p.applyId = pa.id
+        and p.delFlag = 0
     </sql>
 
     <select id="selectInvoiceInList" parameterType="InvoiceIn" resultMap="InvoiceInResult">
         <include refid="selectInvoiceInVo"/>
-        <where>  
-            <if test="invoiceDate != null  and invoiceDate != ''"> and invoiceDate = #{invoiceDate}</if>
-            <if test="invoiceObject != null  and invoiceObject != ''"> and invoiceObject = #{invoiceObject}</if>
-            <if test="invoiceAmount != null "> and invoiceAmount = #{invoiceAmount}</if>
-            <if test="companyType != null  and companyType != ''"> and companyType = #{companyType}</if>
-            <if test="companyName != null  and companyName != ''"> and companyName like concat('%', #{companyName}, '%')</if>
-            <if test="companyID != null "> and companyID = #{companyID}</if>
-            <if test="invoiceCompanyName != null  and invoiceCompanyName != ''"> and invoiceCompanyName like concat('%', #{invoiceCompanyName}, '%')</if>
-            <if test="ticketPoint != null "> and ticketPoint = #{ticketPoint}</if>
-            <if test="ticketPointAmount != null "> and ticketPointAmount = #{ticketPointAmount}</if>
-            <if test="isOrderTax != null "> and isOrderTax = #{isOrderTax}</if>
-            <if test="comments != null  and comments != ''"> and comments = #{comments}</if>
-            <if test="addtime != null  and addtime != ''"> and addtime = #{addtime}</if>
-            <if test="userId != null "> and userId = #{userId}</if>
-            <if test="UserName != null  and UserName != ''"> and UserName like concat('%', #{UserName}, '%')</if>
-            and delFlag = 0
+        <where>
+            <if test="beginTime != null and beginTime != '' and endTime != null and endTime != ''"> and i.invoiceDate between #{beginTime} and #{endTime}</if>
+            <if test="invoiceObject != null  and invoiceObject != ''"> and i.invoiceObject = #{invoiceObject}</if>
+            <if test="invoiceAmount != null "> and i.invoiceAmount = #{invoiceAmount}</if>
+            <if test="companyType != null  and companyType != ''"> and i.companyType = #{companyType}</if>
+            <if test="companyName != null  and companyName != ''"> and i.companyName like concat('%', #{companyName}, '%')</if>
+            <if test="companyID != null "> and i.companyID = #{companyID}</if>
+            <if test="invoiceCompanyName != null  and invoiceCompanyName != ''"> and i.invoiceCompanyName like concat('%', #{invoiceCompanyName}, '%')</if>
+            <if test="ticketPoint != null "> and i.ticketPoint = #{ticketPoint}</if>
+            <if test="ticketPointAmount != null "> and i.ticketPointAmount = #{ticketPointAmount}</if>
+            <if test="isOrderTax != null "> and i.isOrderTax = #{isOrderTax}</if>
+            <if test="comments != null  and comments != ''"> and i.comments = #{comments}</if>
+            <if test="addtime != null  and addtime != ''"> and i.addtime = #{addtime}</if>
+            <if test="userId != null "> and i.userId = #{userId}</if>
+            <if test="UserName != null  and UserName != ''"> and i.UserName like concat('%', #{UserName}, '%')</if>
+            and i.delFlag = 0
         </where>
     </select>
-    
+
     <select id="selectInvoiceInById" parameterType="Long" resultMap="InvoiceInResult">
         <include refid="selectInvoiceInVo"/>
-        where id = #{id}
-        and delFlag = 0
+        where
+        i.id = #{id}
+        and i.delFlag = 0
     </select>
 
     <insert id="insertInvoiceIn" parameterType="InvoiceIn" useGeneratedKeys="true" keyProperty="id">

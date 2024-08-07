@@ -1,12 +1,5 @@
 package org.dzu.framework.web.service;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.core.userdetails.UserDetails;
-import org.springframework.security.core.userdetails.UserDetailsService;
-import org.springframework.security.core.userdetails.UsernameNotFoundException;
-import org.springframework.stereotype.Service;
 import org.dzu.common.core.domain.entity.SysUser;
 import org.dzu.common.core.domain.model.LoginUser;
 import org.dzu.common.enums.UserStatus;
@@ -14,6 +7,13 @@ import org.dzu.common.exception.ServiceException;
 import org.dzu.common.utils.MessageUtils;
 import org.dzu.common.utils.StringUtils;
 import org.dzu.system.service.ISysUserService;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.core.userdetails.UserDetailsService;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
+import org.springframework.stereotype.Service;
 
 /**
  * 用户验证处理

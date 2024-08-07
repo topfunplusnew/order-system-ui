@@ -1,21 +1,19 @@
 package org.dzu.system.service.impl;
 
-import java.util.List;
-
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
-import org.dzu.common.constant.AuditStateConstants;
 import org.dzu.common.exception.ServiceException;
-import org.dzu.system.domain.AuditInfo;
+import org.dzu.system.domain.Auditflow;
 import org.dzu.system.mapper.AuditInfoMapper;
+import org.dzu.system.mapper.AuditflowMapper;
 import org.dzu.system.service.IAuditInfoService;
+import org.dzu.system.service.IAuditflowService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DuplicateKeyException;
 import org.springframework.stereotype.Service;
-import org.dzu.system.mapper.AuditflowMapper;
-import org.dzu.system.domain.Auditflow;
-import org.dzu.system.service.IAuditflowService;
 import org.springframework.transaction.annotation.Isolation;
 import org.springframework.transaction.annotation.Transactional;
+
+import java.util.List;
 
 /**
  * 审核流程Service业务层处理

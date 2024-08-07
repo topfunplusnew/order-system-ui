@@ -1,15 +1,5 @@
 package org.dzu.system.service.impl;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.stream.Collectors;
-import javax.validation.Validator;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
-import org.springframework.util.CollectionUtils;
 import org.dzu.common.annotation.DataScope;
 import org.dzu.common.constant.UserConstants;
 import org.dzu.common.core.domain.entity.SysRole;
@@ -19,7 +9,6 @@ import org.dzu.common.utils.SecurityUtils;
 import org.dzu.common.utils.StringUtils;
 import org.dzu.common.utils.bean.BeanValidators;
 import org.dzu.common.utils.spring.SpringUtils;
-import org.dzu.system.domain.SysPost;
 import org.dzu.system.domain.SysUserPost;
 import org.dzu.system.domain.SysUserRole;
 import org.dzu.system.mapper.SysRoleMapper;
@@ -29,6 +18,17 @@ import org.dzu.system.mapper.SysUserRoleMapper;
 import org.dzu.system.service.ISysConfigService;
 import org.dzu.system.service.ISysDeptService;
 import org.dzu.system.service.ISysUserService;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+import org.springframework.util.CollectionUtils;
+
+import javax.validation.Validator;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.stream.Collectors;
 
 /**
  * 用户 业务层处理

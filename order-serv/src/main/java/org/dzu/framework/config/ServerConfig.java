@@ -1,8 +1,9 @@
 package org.dzu.framework.config;
 
-import javax.servlet.http.HttpServletRequest;
-import org.springframework.stereotype.Component;
 import org.dzu.common.utils.ServletUtils;
+import org.springframework.stereotype.Component;
+
+import javax.servlet.http.HttpServletRequest;
 
 /**
  * 服务相关配置

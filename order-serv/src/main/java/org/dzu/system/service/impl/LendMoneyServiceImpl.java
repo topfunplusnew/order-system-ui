@@ -1,30 +1,28 @@
 package org.dzu.system.service.impl;
 
-import java.util.Arrays;
-import java.util.List;
-import java.util.stream.Collectors;
-
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import org.dzu.common.constant.BankChangeConstant;
+import org.dzu.common.constant.DelConstants;
+import org.dzu.common.enums.TableName;
 import org.dzu.common.exception.ServiceException;
 import org.dzu.common.utils.DateUtils;
-import org.dzu.common.utils.SecurityUtils;
 import org.dzu.common.utils.SecurityUtils;
 import org.dzu.common.utils.uuid.UUID;
 import org.dzu.system.domain.BankAccount;
 import org.dzu.system.domain.BankAccountChange;
-import org.dzu.system.domain.RecoverMoney;
+import org.dzu.system.domain.LendMoney;
+import org.dzu.system.mapper.LendMoneyMapper;
 import org.dzu.system.service.IBankAccountChangeService;
 import org.dzu.system.service.IBankAccountService;
+import org.dzu.system.service.ILendMoneyService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import org.dzu.system.mapper.LendMoneyMapper;
-import org.dzu.system.domain.LendMoney;
-import org.dzu.system.service.ILendMoneyService;
- 
-import org.dzu.common.constant.DelConstants;
 import org.springframework.transaction.annotation.Isolation;
 import org.springframework.transaction.annotation.Transactional;
+
+import java.util.Arrays;
+import java.util.List;
+import java.util.stream.Collectors;
 
 /**
  * 向外部借出款信息Service业务层处理
@@ -108,7 +106,7 @@ public class LendMoneyServiceImpl implements ILendMoneyService
         bankAccountChange.setPayNO(lendMoney.getFuturesNO());
         bankAccountChange.setMoneyAmount(lendMoney.getMoneyAmount());
         bankAccountChange.setSelfBankNo(lendMoney.getSelfBankNo());
-        bankAccountChange.setTableName(BankChangeConstant.TableName.LEND_MONEY.get());
+        bankAccountChange.setTableName(TableName.LEND_MONEY.get());
         bankAccountChange.setChangeType(BankChangeConstant.PaymentType.PAYMENT.get());
         bankAccountChangeService.insertBankAccountChange(bankAccountChange);
 
@@ -146,7 +144,7 @@ public class LendMoneyServiceImpl implements ILendMoneyService
         bankAccountChange.setPayNO(lendMoney.getFuturesNO());
         bankAccountChange.setMoneyAmount(lendMoney.getMoneyAmount());
         bankAccountChange.setSelfBankNo(lendMoney.getSelfBankNo());
-        bankAccountChange.setTableName(BankChangeConstant.TableName.LEND_MONEY.get());
+        bankAccountChange.setTableName(TableName.LEND_MONEY.get());
         bankAccountChange.setChangeType(BankChangeConstant.PaymentType.PAYMENT.get());
 
         bankAccountChangeService.updateBankAccountChangeByUUID(bankAccountChange);

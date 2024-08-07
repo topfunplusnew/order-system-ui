@@ -1,8 +1,9 @@
 package org.dzu.system.mapper;
 
-import java.util.List;
 import org.apache.ibatis.annotations.Param;
 import org.dzu.common.core.domain.entity.SysMenu;
+
+import java.util.List;
 
 /**
  * 菜单表 数据层

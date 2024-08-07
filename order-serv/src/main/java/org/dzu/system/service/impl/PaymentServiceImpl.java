@@ -5,6 +5,7 @@ import org.dzu.common.constant.BankChangeConstant;
 import org.dzu.common.constant.DelConstants;
 import org.dzu.common.constant.PaymentState;
 import org.dzu.common.constant.YesOrNoConstants;
+import org.dzu.common.enums.TableName;
 import org.dzu.common.exception.ServiceException;
 import org.dzu.common.utils.DateUtils;
 import org.dzu.common.utils.SecurityUtils;
@@ -190,7 +191,7 @@ public class PaymentServiceImpl implements IPaymentService {
         selfChange.setSelfBankNo(payment.getSelfBankNo());
         selfChange.setMoneyAmount(payment.getMoneyAmount());
         selfChange.setChangeType(BankChangeConstant.PaymentType.PAYMENT.get());
-        selfChange.setTableName(BankChangeConstant.TableName.PAYMENT.get());
+        selfChange.setTableName(TableName.PAYMENT.get());
         selfChange.setPayNO(payment.getPayNO());
         bankAccountChangeService.insertBankAccountChange(selfChange);
 
@@ -199,7 +200,7 @@ public class PaymentServiceImpl implements IPaymentService {
         otherChange.setSelfBankNo(payment.getOtherBankNo());
         otherChange.setMoneyAmount(payment.getMoneyAmount());
         otherChange.setChangeType(BankChangeConstant.PaymentType.RECEIPT.get());
-        otherChange.setTableName(BankChangeConstant.TableName.PAYMENT.get());
+        otherChange.setTableName(TableName.PAYMENT.get());
         otherChange.setPayNO(payment.getPayNO());
 
         // 插入
@@ -222,7 +223,7 @@ public class PaymentServiceImpl implements IPaymentService {
         if(StringUtils.isEmpty(payment.getTableName())){
             return;
         }
-        switch (BankChangeConstant.TableName.valueOf(payment.getTableName().toLowerCase().trim())) {
+        switch (TableName.valueOf(payment.getTableName().toLowerCase().trim())) {
             case ORDER_FREIGHT:
                 // 处理运费表的逻辑
                 QueryWrapper<OrderFreight> query = new QueryWrapper<OrderFreight>().eq("id", payment.gettID()).eq("delFlag", DelConstants.NODEL);

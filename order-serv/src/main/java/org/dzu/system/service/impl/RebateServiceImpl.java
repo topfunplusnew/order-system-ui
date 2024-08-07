@@ -3,6 +3,7 @@ package org.dzu.system.service.impl;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import org.dzu.common.constant.BankChangeConstant;
 import org.dzu.common.constant.DelConstants;
+import org.dzu.common.enums.TableName;
 import org.dzu.common.utils.DateUtils;
 import org.dzu.common.utils.SecurityUtils;
 import org.dzu.system.domain.BankAccount;
@@ -169,14 +170,14 @@ public class RebateServiceImpl implements IRebateService {
         outBank.setChangeType(BankChangeConstant.PaymentType.PAYMENT.get());
         outBank.setSelfBankNo(rebate.getOutBankNo());
         outBank.setMoneyAmount(rebate.getRebate());
-        outBank.setTableName(BankChangeConstant.TableName.REBATE.get());
+        outBank.setTableName(TableName.REBATE.get());
 
         BankAccountChange inBank = new BankAccountChange();
         inBank.setPayNO(String.valueOf(rebate.getId()));
         inBank.setChangeType(BankChangeConstant.PaymentType.RECEIPT.get());
         inBank.setSelfBankNo(rebate.getInBankNo());
         inBank.setMoneyAmount(rebate.getRebate());
-        inBank.setTableName(BankChangeConstant.TableName.REBATE.get());
+        inBank.setTableName(TableName.REBATE.get());
 
         // 去尝试搜索是否有对应的银行卡变动记录，如果无，则是更新，如果有，则是插入
         QueryWrapper<BankAccountChange> queryIn = new QueryWrapper<>();

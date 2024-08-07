@@ -1,7 +1,8 @@
 package org.dzu.system.service;
 
-import java.util.List;
 import org.dzu.system.domain.CustomerVisit;
+
+import java.util.List;
 
 /**
  * 走访记录Service接口

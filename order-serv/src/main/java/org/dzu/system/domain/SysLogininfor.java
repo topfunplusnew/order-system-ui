@@ -1,7 +1,5 @@
 package org.dzu.system.domain;
 
-import java.util.Date;
-
 import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableName;
@@ -10,6 +8,8 @@ import org.dzu.common.annotation.Excel;
 import org.dzu.common.annotation.Excel.ColumnType;
 import org.dzu.common.core.domain.BaseEntity;
 import org.hibernate.validator.constraints.Length;
+
+import java.util.Date;
 
 /**
  * 系统访问记录表 sys_logininfor

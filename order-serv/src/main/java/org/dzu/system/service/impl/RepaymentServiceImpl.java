@@ -2,8 +2,8 @@ package org.dzu.system.service.impl;
 
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import org.dzu.common.constant.BankChangeConstant;
-import org.dzu.common.constant.BorrowedMoneyConstants;
 import org.dzu.common.constant.DelConstants;
+import org.dzu.common.enums.TableName;
 import org.dzu.common.exception.ServiceException;
 import org.dzu.common.utils.DateUtils;
 import org.dzu.common.utils.SecurityUtils;
@@ -115,7 +115,7 @@ public class RepaymentServiceImpl implements IRepaymentService {
         bankAccountChange.setMoneyAmount(repayment.getMoneyAmount());
         bankAccountChange.setPayNO(repayment.getPayNO());
         bankAccountChange.setChangeType(BankChangeConstant.PaymentType.PAYMENT.get());
-        bankAccountChange.setTableName(BankChangeConstant.TableName.REPAYMENT.get());
+        bankAccountChange.setTableName(TableName.REPAYMENT.get());
         bankAccountChangeService.insertBankAccountChange(bankAccountChange);
         int i = repaymentMapper.insertRepayment(repayment);
         // 判断是否需要更新对应借款的isEnd属性,如果需要，自动更新
@@ -168,7 +168,7 @@ public class RepaymentServiceImpl implements IRepaymentService {
         bankAccountChange.setMoneyAmount(repayment.getMoneyAmount());
         bankAccountChange.setPayNO(repayment.getPayNO());
         bankAccountChange.setChangeType(BankChangeConstant.PaymentType.PAYMENT.get());
-        bankAccountChange.setTableName(BankChangeConstant.TableName.REPAYMENT.get());
+        bankAccountChange.setTableName(TableName.REPAYMENT.get());
         bankAccountChangeService.updateBankAccountChangeByUUID(bankAccountChange);
 
         // 判断是否需要更新对应借款的isEnd属性,如果需要，自动更新

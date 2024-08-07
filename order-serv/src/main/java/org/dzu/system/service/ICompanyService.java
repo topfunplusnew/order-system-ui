@@ -1,7 +1,8 @@
 package org.dzu.system.service;
 
-import java.util.List;
 import org.dzu.system.domain.Company;
+
+import java.util.List;
 
 /**
  * 客户、供应商信息Service接口

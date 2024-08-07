@@ -1,7 +1,5 @@
 package org.dzu.common.constant;
 
-import org.dzu.common.annotation.Excel;
-
 public class lendMoneyConstants {
 //    "对象类型(员工、客户、供应商、其他)"
     public static enum targetType {

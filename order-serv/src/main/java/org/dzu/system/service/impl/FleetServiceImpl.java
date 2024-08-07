@@ -1,14 +1,14 @@
 package org.dzu.system.service.impl;
 
-import java.util.List;
+import org.dzu.common.constant.DelConstants;
 import org.dzu.common.utils.DateUtils;
+import org.dzu.system.domain.Fleet;
+import org.dzu.system.mapper.FleetMapper;
+import org.dzu.system.service.IFleetService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import org.dzu.system.mapper.FleetMapper;
-import org.dzu.system.domain.Fleet;
-import org.dzu.system.service.IFleetService;
- 
-import org.dzu.common.constant.DelConstants;
+
+import java.util.List;
 /**
  * 车队Service业务层处理
  *

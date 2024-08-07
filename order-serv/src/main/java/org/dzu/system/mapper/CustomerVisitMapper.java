@@ -1,8 +1,9 @@
 package org.dzu.system.mapper;
 
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
-import java.util.List;
 import org.dzu.system.domain.CustomerVisit;
+
+import java.util.List;
 
 /**
  * 走访记录Mapper接口

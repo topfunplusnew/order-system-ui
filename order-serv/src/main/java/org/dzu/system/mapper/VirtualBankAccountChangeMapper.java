@@ -1,8 +1,9 @@
 package org.dzu.system.mapper;
 
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
-import java.util.List;
 import org.dzu.system.domain.VirtualBankAccountChange;
+
+import java.util.List;
 
 /**
  * 虚拟银行账号Mapper接口

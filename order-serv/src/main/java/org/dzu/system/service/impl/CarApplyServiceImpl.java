@@ -1,16 +1,15 @@
 package org.dzu.system.service.impl;
 
-import java.util.List;
+import org.dzu.common.constant.DelConstants;
 import org.dzu.common.utils.DateUtils;
 import org.dzu.common.utils.SecurityUtils;
-import org.dzu.common.utils.SecurityUtils;
+import org.dzu.system.domain.CarApply;
+import org.dzu.system.mapper.CarApplyMapper;
+import org.dzu.system.service.ICarApplyService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import org.dzu.system.mapper.CarApplyMapper;
-import org.dzu.system.domain.CarApply;
-import org.dzu.system.service.ICarApplyService;
- 
-import org.dzu.common.constant.DelConstants;
+
+import java.util.List;
 /**
  * 车辆使用申请Service业务层处理
  *

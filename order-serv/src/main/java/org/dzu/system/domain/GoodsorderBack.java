@@ -1,14 +1,14 @@
 package org.dzu.system.domain;
 
-import org.apache.commons.lang3.builder.ToStringBuilder;
-import org.apache.commons.lang3.builder.ToStringStyle;
-import org.dzu.common.annotation.Excel;
-import org.dzu.common.annotation.PhoneLength;
-import org.dzu.common.core.domain.BaseEntity;
 import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableName;
+import org.apache.commons.lang3.builder.ToStringBuilder;
+import org.apache.commons.lang3.builder.ToStringStyle;
+import org.dzu.common.annotation.Excel;
 import org.dzu.common.annotation.FlagOnlyZeroOrOne;
+import org.dzu.common.annotation.PhoneLength;
+import org.dzu.common.core.domain.BaseEntity;
 import org.hibernate.validator.constraints.Length;
 
 import javax.validation.constraints.NotNull;

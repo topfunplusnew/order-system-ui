@@ -1,7 +1,8 @@
 package org.dzu.system.service;
 
-import java.util.List;
 import org.dzu.system.domain.SocialInsurance;
+
+import java.util.List;
 
 /**
  * 社保基金Service接口

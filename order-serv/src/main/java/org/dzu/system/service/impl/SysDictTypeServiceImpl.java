@@ -1,13 +1,5 @@
 package org.dzu.system.service.impl;
 
-import java.util.Comparator;
-import java.util.List;
-import java.util.Map;
-import java.util.stream.Collectors;
-import javax.annotation.PostConstruct;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 import org.dzu.common.constant.UserConstants;
 import org.dzu.common.core.domain.entity.SysDictData;
 import org.dzu.common.core.domain.entity.SysDictType;
@@ -17,6 +9,14 @@ import org.dzu.common.utils.StringUtils;
 import org.dzu.system.mapper.SysDictDataMapper;
 import org.dzu.system.mapper.SysDictTypeMapper;
 import org.dzu.system.service.ISysDictTypeService;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
+import java.util.Comparator;
+import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
 
 /**
  * 字典 业务层处理

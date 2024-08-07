@@ -1,15 +1,5 @@
 package org.dzu.system.service.impl;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.HashSet;
-import java.util.Iterator;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Set;
-import java.util.stream.Collectors;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
 import org.dzu.common.constant.Constants;
 import org.dzu.common.constant.UserConstants;
 import org.dzu.common.core.domain.TreeSelect;
@@ -24,6 +14,11 @@ import org.dzu.system.mapper.SysMenuMapper;
 import org.dzu.system.mapper.SysRoleMapper;
 import org.dzu.system.mapper.SysRoleMenuMapper;
 import org.dzu.system.service.ISysMenuService;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
+import java.util.*;
+import java.util.stream.Collectors;
 
 /**
  * 菜单 业务层处理

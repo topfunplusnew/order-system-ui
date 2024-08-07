@@ -1,7 +1,8 @@
 package org.dzu.system.service;
 
-import java.util.List;
 import org.dzu.system.domain.InvoiceIn;
+
+import java.util.List;
 
 /**
  * 发票购入信息Service接口
@@ -51,11 +52,4 @@ public interface IInvoiceInService
      */
     public int deleteInvoiceInByIds(Long[] ids);
 
-    /**
-     * 删除发票购入信息信息
-     * 
-     * @param id 发票购入信息主键
-     * @return 结果
-     */
-    public int deleteInvoiceInById(Long id);
 }

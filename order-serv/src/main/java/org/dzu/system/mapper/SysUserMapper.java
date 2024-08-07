@@ -1,10 +1,10 @@
 package org.dzu.system.mapper;
 
-import java.util.List;
-
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import org.apache.ibatis.annotations.Param;
 import org.dzu.common.core.domain.entity.SysUser;
+
+import java.util.List;
 
 /**
  * 用户表 数据层

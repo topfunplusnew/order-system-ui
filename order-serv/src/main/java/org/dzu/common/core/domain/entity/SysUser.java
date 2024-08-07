@@ -8,8 +8,8 @@ import org.dzu.common.annotation.Excel;
 import org.dzu.common.annotation.Excel.ColumnType;
 import org.dzu.common.annotation.Excel.Type;
 import org.dzu.common.annotation.Excels;
-import org.dzu.common.core.domain.BaseEntity;
 import org.dzu.common.annotation.Xss;
+import org.dzu.common.core.domain.BaseEntity;
 
 import javax.validation.constraints.Email;
 import javax.validation.constraints.NotBlank;

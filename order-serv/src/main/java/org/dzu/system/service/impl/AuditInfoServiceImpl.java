@@ -10,7 +10,6 @@ import org.dzu.system.domain.Auditflow;
 import org.dzu.system.domain.PaymentApply;
 import org.dzu.system.mapper.AuditInfoMapper;
 import org.dzu.system.mapper.PaymentApplyMapper;
-import org.dzu.system.mapper.PaymentMapper;
 import org.dzu.system.service.IAuditInfoService;
 import org.dzu.system.service.IAuditflowService;
 import org.dzu.system.service.IPaymentApplyService;

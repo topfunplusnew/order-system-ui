@@ -1,23 +1,22 @@
 package org.dzu.system.service.impl;
 
-import java.util.List;
-
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import org.dzu.common.constant.AuditStateConstants;
+import org.dzu.common.constant.DelConstants;
 import org.dzu.common.exception.ServiceException;
 import org.dzu.common.utils.DateUtils;
 import org.dzu.common.utils.SecurityUtils;
 import org.dzu.system.domain.AuditInfo;
+import org.dzu.system.domain.PaymentApply;
 import org.dzu.system.mapper.AuditInfoMapper;
+import org.dzu.system.mapper.PaymentApplyMapper;
 import org.dzu.system.service.IAuditInfoService;
+import org.dzu.system.service.IPaymentApplyService;
 import org.dzu.system.service.IPaymentService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import org.dzu.system.mapper.PaymentApplyMapper;
-import org.dzu.system.domain.PaymentApply;
-import org.dzu.system.service.IPaymentApplyService;
- 
-import org.dzu.common.constant.DelConstants;
+
+import java.util.List;
 /**
  * 付款信息Service业务层处理
  *
@@ -147,4 +146,39 @@ public class PaymentApplyServiceImpl implements IPaymentApplyService
         // 创建付款信息
         paymentService.insertPaymentByApply(applyID);
     }
+
+    // 根据表名和主键查询是否有通过或正在申请的信息，如果有则返回true，否则返回false
+
+    @Override
+    public boolean checkExist(String tableName, Long id) {
+        QueryWrapper<PaymentApply> query = new QueryWrapper<>();
+        query.eq("tableName",tableName).eq("tID",id);
+        // 正在申请或者通过的
+        query.and(i->i.eq("checkState",AuditStateConstants.CHECK_STATE_ING).or().eq("checkState",AuditStateConstants.CHECK_STATE_PASS));
+        return paymentApplyMapper.selectCount(query)>0;
+    }
+
+    @Override
+    public boolean checkNotExist(String tableName, Long id) {
+        return !checkExist(tableName, id);
+    }
+
+
+
+    // 根据表名和id获取申请信息
+
+    /**
+     * 根据表名和id获取申请信息
+     * @param tableName
+     * @param id
+     * @return
+     */
+    @Override
+    public List<AuditInfo> getApplyInfo(String tableName, Long id){
+        QueryWrapper<AuditInfo> query = new QueryWrapper<>();
+        query.eq("tableName",tableName).eq("tID",id);
+        List<AuditInfo> auditInfos = auditInfoMapper.selectList(query);
+        return auditInfos;
+    }
+
 }

@@ -1,16 +1,15 @@
 package org.dzu.system.service.impl;
 
-import java.util.List;
+import org.dzu.common.constant.DelConstants;
 import org.dzu.common.utils.DateUtils;
 import org.dzu.common.utils.SecurityUtils;
-import org.dzu.common.utils.SecurityUtils;
+import org.dzu.system.domain.InvoiceOther;
+import org.dzu.system.mapper.InvoiceOtherMapper;
+import org.dzu.system.service.IInvoiceOtherService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import org.dzu.system.mapper.InvoiceOtherMapper;
-import org.dzu.system.domain.InvoiceOther;
-import org.dzu.system.service.IInvoiceOtherService;
- 
-import org.dzu.common.constant.DelConstants;
+
+import java.util.List;
 /**
  * 商家直接给客户开发票Service业务层处理
  *

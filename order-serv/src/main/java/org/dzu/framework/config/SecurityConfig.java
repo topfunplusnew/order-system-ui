@@ -1,5 +1,9 @@
 package org.dzu.framework.config;
 
+import org.dzu.framework.config.properties.PermitAllUrlProperties;
+import org.dzu.framework.security.filter.JwtAuthenticationTokenFilter;
+import org.dzu.framework.security.handle.AuthenticationEntryPointImpl;
+import org.dzu.framework.security.handle.LogoutSuccessHandlerImpl;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -16,10 +20,6 @@ import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.security.web.authentication.logout.LogoutFilter;
 import org.springframework.web.filter.CorsFilter;
-import org.dzu.framework.config.properties.PermitAllUrlProperties;
-import org.dzu.framework.security.filter.JwtAuthenticationTokenFilter;
-import org.dzu.framework.security.handle.AuthenticationEntryPointImpl;
-import org.dzu.framework.security.handle.LogoutSuccessHandlerImpl;
 
 /**
  * spring security配置

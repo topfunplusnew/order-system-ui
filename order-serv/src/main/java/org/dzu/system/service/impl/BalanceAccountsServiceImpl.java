@@ -1,7 +1,7 @@
 package org.dzu.system.service.impl;
 
-import org.dzu.common.constant.BankChangeConstant;
 import org.dzu.common.constant.DelConstants;
+import org.dzu.common.enums.TableName;
 import org.dzu.common.exception.ServiceException;
 import org.dzu.common.utils.DateUtils;
 import org.dzu.common.utils.SecurityUtils;
@@ -89,7 +89,7 @@ public class BalanceAccountsServiceImpl implements IBalanceAccountsService {
         VirtualBankAccountChange self = new VirtualBankAccountChange();
         self.setCompanyId(String.valueOf(balanceAccounts.getCompanyID()));
         self.setPayNO(String.valueOf(balanceAccounts.getId()));
-        self.setTableName(BankChangeConstant.TableName.BALANCEACCOUNT.get());
+        self.setTableName(TableName.BALANCEACCOUNT.get());
         self.setMoneyAmount(balanceAccounts.getMoneyAmount());
         bankAccountChangeService.insertReceipt(self);
         bankAccountChangeService.inserPayment(self);
@@ -106,7 +106,7 @@ public class BalanceAccountsServiceImpl implements IBalanceAccountsService {
     public int updateBalanceAccounts(BalanceAccounts balanceAccounts) {
         balanceAccounts.setUpdateTime(DateUtils.getNowDate());
         // 直接删除对应的资金变动然后重新插入
-        bankAccountChangeService.delete(BankChangeConstant.TableName.BALANCEACCOUNT.get(), String.valueOf(balanceAccounts.getId()));
+        bankAccountChangeService.delete(TableName.BALANCEACCOUNT.get(), String.valueOf(balanceAccounts.getId()));
         // 重新插入
         syncToChange(balanceAccounts);
 
@@ -124,7 +124,7 @@ public class BalanceAccountsServiceImpl implements IBalanceAccountsService {
     public int deleteBalanceAccountsByIds(Long[] ids) {
 
         for (Long id : ids) {
-            bankAccountChangeService.delete(BankChangeConstant.TableName.BALANCEACCOUNT.get(), String.valueOf(id));
+            bankAccountChangeService.delete(TableName.BALANCEACCOUNT.get(), String.valueOf(id));
         }
 
         return balanceAccountsMapper.deleteBalanceAccountsByIds(ids);

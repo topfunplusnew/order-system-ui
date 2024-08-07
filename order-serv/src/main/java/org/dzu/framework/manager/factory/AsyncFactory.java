@@ -1,8 +1,6 @@
 package org.dzu.framework.manager.factory;
 
-import java.util.TimerTask;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import eu.bitwalker.useragentutils.UserAgent;
 import org.dzu.common.constant.Constants;
 import org.dzu.common.utils.LogUtils;
 import org.dzu.common.utils.ServletUtils;
@@ -14,7 +12,10 @@ import org.dzu.system.domain.SysLogininfor;
 import org.dzu.system.domain.SysOperLog;
 import org.dzu.system.service.ISysLogininforService;
 import org.dzu.system.service.ISysOperLogService;
-import eu.bitwalker.useragentutils.UserAgent;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import java.util.TimerTask;
 
 /**
  * 异步工厂（产生任务用）

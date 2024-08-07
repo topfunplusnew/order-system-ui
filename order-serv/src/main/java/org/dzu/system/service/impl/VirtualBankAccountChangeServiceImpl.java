@@ -1,16 +1,16 @@
 package org.dzu.system.service.impl;
 
-import java.util.List;
-
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import org.dzu.common.constant.BankChangeConstant;
 import org.dzu.common.utils.DateUtils;
 import org.dzu.common.utils.SecurityUtils;
+import org.dzu.system.domain.VirtualBankAccountChange;
+import org.dzu.system.mapper.VirtualBankAccountChangeMapper;
+import org.dzu.system.service.IVirtualBankAccountChangeService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import org.dzu.system.mapper.VirtualBankAccountChangeMapper;
-import org.dzu.system.domain.VirtualBankAccountChange;
-import org.dzu.system.service.IVirtualBankAccountChangeService;
+
+import java.util.List;
 
 /**
  * 虚拟银行账号Service业务层处理

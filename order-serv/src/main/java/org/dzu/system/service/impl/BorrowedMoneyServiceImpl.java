@@ -1,9 +1,9 @@
 package org.dzu.system.service.impl;
 
-import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import org.dzu.common.constant.BankChangeConstant;
 import org.dzu.common.constant.BorrowedMoneyConstants;
 import org.dzu.common.constant.DelConstants;
+import org.dzu.common.enums.TableName;
 import org.dzu.common.exception.ServiceException;
 import org.dzu.common.utils.DateUtils;
 import org.dzu.common.utils.SecurityUtils;
@@ -99,7 +99,7 @@ public class BorrowedMoneyServiceImpl implements IBorrowedMoneyService {
         bankAccountChange.setMoneyAmount(borrowedMoney.getMoneyAmount());
         bankAccountChange.setSelfBankNo(borrowedMoney.getBankNo());
         bankAccountChange.setPayNO(borrowedMoney.getLoanNO());
-        bankAccountChange.setTableName(BankChangeConstant.TableName.BORROWED_MONEY.get());
+        bankAccountChange.setTableName(TableName.BORROWED_MONEY.get());
 
         // 1.3调用业务层去把剩余的字段自动补齐
         bankAccountChangeService.insertBankAccountChange(bankAccountChange);
@@ -153,7 +153,7 @@ public class BorrowedMoneyServiceImpl implements IBorrowedMoneyService {
         bankAccountChange.setMoneyAmount(borrowedMoney.getMoneyAmount());
         bankAccountChange.setSelfBankNo(borrowedMoney.getBankNo());
         bankAccountChange.setPayNO(borrowedMoney.getLoanNO());
-        bankAccountChange.setTableName(BankChangeConstant.TableName.BORROWED_MONEY.get());
+        bankAccountChange.setTableName(TableName.BORROWED_MONEY.get());
 
         // 1.3调用业务层去把剩余的字段自动补齐
         bankAccountChangeService.updateBankAccountChangeByUUID(bankAccountChange);

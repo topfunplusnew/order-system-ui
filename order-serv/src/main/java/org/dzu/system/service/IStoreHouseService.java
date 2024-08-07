@@ -1,7 +1,8 @@
 package org.dzu.system.service;
 
-import java.util.List;
 import org.dzu.system.domain.StoreHouse;
+
+import java.util.List;
 
 /**
  * 库房Service接口

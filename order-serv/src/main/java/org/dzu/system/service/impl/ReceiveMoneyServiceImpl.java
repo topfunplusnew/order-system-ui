@@ -1,27 +1,27 @@
 package org.dzu.system.service.impl;
 
-import java.util.Arrays;
-import java.util.List;
-import java.util.stream.Collectors;
-
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import org.dzu.common.constant.BankChangeConstant;
+import org.dzu.common.constant.DelConstants;
+import org.dzu.common.enums.TableName;
 import org.dzu.common.exception.ServiceException;
 import org.dzu.common.utils.DateUtils;
 import org.dzu.common.utils.SecurityUtils;
 import org.dzu.common.utils.uuid.UUID;
 import org.dzu.system.domain.BankAccountChange;
+import org.dzu.system.domain.ReceiveMoney;
+import org.dzu.system.mapper.ReceiveMoneyMapper;
 import org.dzu.system.service.IBankAccountChangeService;
 import org.dzu.system.service.IBankAccountService;
+import org.dzu.system.service.IReceiveMoneyService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import org.dzu.system.mapper.ReceiveMoneyMapper;
-import org.dzu.system.domain.ReceiveMoney;
-import org.dzu.system.service.IReceiveMoneyService;
- 
-import org.dzu.common.constant.DelConstants;
 import org.springframework.transaction.annotation.Isolation;
 import org.springframework.transaction.annotation.Transactional;
+
+import java.util.Arrays;
+import java.util.List;
+import java.util.stream.Collectors;
 
 /**
  * 收款信息Service业务层处理
@@ -178,7 +178,7 @@ public class ReceiveMoneyServiceImpl implements IReceiveMoneyService
         selfChange.setSelfBankNo(receiveMoney.getSelfBankNo());
         selfChange.setMoneyAmount(receiveMoney.getMoneyAmount());
         selfChange.setChangeType(BankChangeConstant.PaymentType.RECEIPT.get());
-        selfChange.setTableName(BankChangeConstant.TableName.RECEIVE_MONEY.get());
+        selfChange.setTableName(TableName.RECEIVE_MONEY.get());
         selfChange.setPayNO(receiveMoney.getReceiveNO());
         bankAccountChangeService.insertBankAccountChange(selfChange);
 
@@ -187,7 +187,7 @@ public class ReceiveMoneyServiceImpl implements IReceiveMoneyService
         otherChange.setSelfBankNo(receiveMoney.getOtherBankNo());
         otherChange.setMoneyAmount(receiveMoney.getMoneyAmount());
         otherChange.setChangeType(BankChangeConstant.PaymentType.PAYMENT.get());
-        otherChange.setTableName(BankChangeConstant.TableName.RECEIVE_MONEY.get());
+        otherChange.setTableName(TableName.RECEIVE_MONEY.get());
         otherChange.setPayNO(receiveMoney.getReceiveNO());
         bankAccountChangeService.insertBankAccountChange(otherChange);
     }

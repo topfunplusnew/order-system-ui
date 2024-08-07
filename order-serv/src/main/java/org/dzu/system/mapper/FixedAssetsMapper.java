@@ -1,8 +1,9 @@
 package org.dzu.system.mapper;
 
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
-import java.util.List;
 import org.dzu.system.domain.FixedAssets;
+
+import java.util.List;
 
 /**
  * 固定资产Mapper接口

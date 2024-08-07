@@ -1,7 +1,8 @@
 package org.dzu.system.service;
 
-import java.util.List;
 import org.dzu.system.domain.Inventory;
+
+import java.util.List;
 
 /**
  * 库存Service接口

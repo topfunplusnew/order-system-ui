@@ -1,11 +1,9 @@
 package org.dzu.system.service.impl;
 
-import java.util.Arrays;
-import java.util.List;
-import java.util.stream.Collectors;
-
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import org.dzu.common.constant.BankChangeConstant;
+import org.dzu.common.constant.DelConstants;
+import org.dzu.common.enums.TableName;
 import org.dzu.common.exception.ServiceException;
 import org.dzu.common.utils.DateUtils;
 import org.dzu.common.utils.SecurityUtils;
@@ -13,19 +11,21 @@ import org.dzu.common.utils.uuid.UUID;
 import org.dzu.system.domain.BankAccount;
 import org.dzu.system.domain.BankAccountChange;
 import org.dzu.system.domain.LendMoney;
+import org.dzu.system.domain.RecoverMoney;
 import org.dzu.system.mapper.LendMoneyMapper;
+import org.dzu.system.mapper.RecoverMoneyMapper;
 import org.dzu.system.service.IBankAccountChangeService;
 import org.dzu.system.service.IBankAccountService;
 import org.dzu.system.service.ILendMoneyService;
+import org.dzu.system.service.IRecoverMoneyService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import org.dzu.system.mapper.RecoverMoneyMapper;
-import org.dzu.system.domain.RecoverMoney;
-import org.dzu.system.service.IRecoverMoneyService;
- 
-import org.dzu.common.constant.DelConstants;
 import org.springframework.transaction.annotation.Isolation;
 import org.springframework.transaction.annotation.Transactional;
+
+import java.util.Arrays;
+import java.util.List;
+import java.util.stream.Collectors;
 
 /**
  * 借出款收回信息Service业务层处理
@@ -134,7 +134,7 @@ public class RecoverMoneyServiceImpl implements IRecoverMoneyService
         bankAccountChange.setMoneyAmount(recoverMoney.getMoneyAmount());
         bankAccountChange.setPayNO(recoverMoney.getRecoverNO());
         bankAccountChange.setSelfBankNo(recoverMoney.getBankNo());
-        bankAccountChange.setTableName(BankChangeConstant.TableName.RECOVER_MONEY.get());
+        bankAccountChange.setTableName(TableName.RECOVER_MONEY.get());
         bankAccountChangeService.insertBankAccountChange(bankAccountChange);
 
         // 执行插入
@@ -177,7 +177,7 @@ public class RecoverMoneyServiceImpl implements IRecoverMoneyService
         bankAccountChange.setMoneyAmount(recoverMoney.getMoneyAmount());
         bankAccountChange.setPayNO(recoverMoney.getRecoverNO());
         bankAccountChange.setSelfBankNo(recoverMoney.getBankNo());
-        bankAccountChange.setTableName(BankChangeConstant.TableName.RECOVER_MONEY.get());
+        bankAccountChange.setTableName(TableName.RECOVER_MONEY.get());
         // 根据UUID来更新
         bankAccountChangeService.updateBankAccountChangeByUUID(bankAccountChange);
 

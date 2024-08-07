@@ -1,16 +1,15 @@
 package org.dzu.system.service.impl;
 
-import java.util.List;
+import org.dzu.common.constant.DelConstants;
 import org.dzu.common.utils.DateUtils;
 import org.dzu.common.utils.SecurityUtils;
-import org.dzu.common.utils.SecurityUtils;
+import org.dzu.system.domain.CustomerVisit;
+import org.dzu.system.mapper.CustomerVisitMapper;
+import org.dzu.system.service.ICustomerVisitService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import org.dzu.system.mapper.CustomerVisitMapper;
-import org.dzu.system.domain.CustomerVisit;
-import org.dzu.system.service.ICustomerVisitService;
- 
-import org.dzu.common.constant.DelConstants;
+
+import java.util.List;
 /**
  * 走访记录Service业务层处理
  *

@@ -1,8 +1,9 @@
 package org.dzu.system.mapper;
 
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
-import java.util.List;
 import org.dzu.system.domain.CarApply;
+
+import java.util.List;
 
 /**
  * 车辆使用申请Mapper接口
