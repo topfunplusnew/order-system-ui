@@ -45,6 +45,9 @@ public interface IGoodsOrderService
     public int updateGoodsOrder(GoodsOrder goodsOrder);
 
     @Transactional
+    int auditGoodsOrder(Long id, boolean isAudit);
+
+    @Transactional
     int adjustGoodsOrder(GoodsOrder goodsOrder);
 
     /**

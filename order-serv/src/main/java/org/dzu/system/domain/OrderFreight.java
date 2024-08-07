@@ -194,6 +194,11 @@ public class OrderFreight extends BaseEntity
     @TableField(value = "delFlag")
     private Long delFlag;
 
+    /** 额外字段 */
+    @Excel(name = "审核状态")
+    @TableField(exist = false)
+    private String checkState;
+
     public void setId(Long id) 
     {
         this.id = id;
@@ -454,6 +459,14 @@ public class OrderFreight extends BaseEntity
     public Long getDelFlag() 
     {
         return delFlag;
+    }
+
+    public String getCheckState() {
+        return checkState;
+    }
+
+    public void setCheckState(String checkState) {
+        this.checkState = checkState;
     }
 
     @Override
