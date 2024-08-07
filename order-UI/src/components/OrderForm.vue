@@ -170,7 +170,6 @@ export default {
   methods: {
     //这个方法用来修改父组件的某一个属性
     handleUpdateOrderInfo(newOrderValue) {
-      console.log('newOrderValue=>', newOrderValue)
       this.$emit('updateOrderInfo', newOrderValue)
     },
     //客户供应商信息
@@ -250,6 +249,13 @@ export default {
     addOrderItem() {
       //给vuex扔一个空对象，父组件遍历vuex中的列表 然后再把对象仍回来 子组件再重新赋值对象
       this.$store.dispatch('order/addOrderItemList', {})
+    },
+
+    //todo 修改订单详情信息  index是订单索引 val是修改的值
+    handleChangeOrderItemInfo(index, val) {
+      console.log('订单详情的修改=>', index, val)
+      //改变vuex中的数据 传递一个对象 这个对象是修改过的item
+      this.$store.dispatch('order/changeOrderItem', {...val, index: index})
     },
   },
   created() {
@@ -349,15 +355,14 @@ export default {
     <div v-if="orderItemList.length!==0">
       <!--      从vuex中拿到订单详细列表-->
       <div v-for="(item,index) in orderItemList" :key="index">
-        <!--        订单个体-->
-        <OrderItem :order-item-info="item" :isLand="isLand" :isSea="isSea" :index="index"/>
+        <!--        订单个体 传递给子组件订单详情个体   -->
+        <OrderItem :order-item-info="item" :isLand="isLand" :isSea="isSea" :index="index"
+                   @changeOrderItemInfo="handleChangeOrderItemInfo(index,$event)"/>
       </div>
-      <!--        继续添加订单-->
       <div class="option">
         <el-button type="primary" @click="addOrderItem" icon="el-icon-plus">继续添加订单详情</el-button>
       </div>
     </div>
-    <!--    如果没有订单-->
     <div v-else>
       <el-row>
         <el-col>
