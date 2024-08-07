@@ -58,37 +58,37 @@ public class OilCardConsume extends BaseEntity
 
     /** 期初余额 */
     @Excel(name = "期初余额")
-    @DecimalMaxDigits
+    @Length(min = 0, max = 30, message = "期初余额长度不能超过 30 个字符")
     @TableField(value = "startCardSurplus")
     private String startCardSurplus;
 
     /** 加油量（升） */
     @Excel(name = "加油量", readConverterExp = "升")
     @TableField(value = "refuelingNumber")
-    @DecimalMaxDigits
+    @Length(min = 0, max = 55, message = "加油量长度不能超过 55 个字符")
     private String refuelingNumber;
 
     /** 单价 */
     @Excel(name = "单价")
-    @Length(min = 0, max = 64, message = "单价长度不能超过 64 个字符")
+    @Length(min = 0, max = 55, message = "单价长度不能超过 55 个字符")
     @TableField(value = "unitPrice")
     private String unitPrice;
 
     /** 加油金额(元） */
     @Excel(name = "加油金额(元）")
-    @DecimalMaxDigits
+    @Length(min = 0, max = 55, message = "加油金额(元）长度不能超过 55 个字符")
     @TableField(value = "refuelingMoney")
     private String refuelingMoney;
 
     /** 充值金额(元） */
     @Excel(name = "充值金额(元）")
-    @Length(max = 64, message = "充值金额(元）长度不能超过 64 个字符")
+    @Length(min = 0, max = 55, message = "充值金额(元）长度不能超过 55 个字符")
     @TableField(value = "rechargeMoney")
     private String rechargeMoney;
 
     /** 加油卡余额 */
     @Excel(name = "加油卡余额")
-    @DecimalMaxDigits
+    @Length(min = 0, max = 55, message = "加油卡余额长度不能超过 55 个字符")
     @TableField(value = "endCardSurplus")
     private String endCardSurplus;
 

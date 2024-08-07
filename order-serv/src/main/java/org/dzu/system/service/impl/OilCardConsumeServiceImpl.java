@@ -127,9 +127,6 @@ public class OilCardConsumeServiceImpl implements IOilCardConsumeService
         String oilCardNo = oilCardConsume.getOilCardNo();
         // 获取油卡的当前余额
         OilCard oilCard = oilCardMapper.selectOilCardById(oilCardConsume.getId());
-        if (oilCard == null) {
-            throw new ServiceException("油卡信息不存在");
-        }
         oilCardConsume.setUserId(SecurityUtils.getUserId());
         oilCardConsume.setUserName(SecurityUtils.getUserTruename());
         oilCardConsume.setUpdateTime(DateUtils.getNowDate());
