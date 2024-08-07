@@ -36,37 +36,41 @@ public class BankAcceptance extends BaseEntity
 
     /** 操作日期 */
     @TableField("operatedate")
-    @Excel(name = "操作日期",dateFormat = "yyyy-MM-dd")
+    @Excel(name = "操作日期", dateFormat = "yyyy-MM-dd")
+    @Length(max = 50, message = "操作日期的字符长度不允许超过50")
     private String operateDate;
 
     /** 票据号码 */
     @Excel(name = "票据号码")
-    @Length(max = 30, message = "票据号码的字符长度不允许超过30")
+    @Length(max = 55, message = "票据号码的字符长度不允许超过55")
     @NotNull(message = "票据号码不能为空")
     @TableField("billNo")
     private String billNo;
 
     /** 出票日期 */
-    @Excel(name = "出票日期",dateFormat = "yyyy-MM-dd")
+    @Excel(name = "出票日期", dateFormat = "yyyy-MM-dd")
+    @Length(max = 50, message = "出票日期的字符长度不允许超过50")
     @NotNull(message = "出票日期不能为空")
     @TableField("issueDate")
     private String issueDate;
 
     /** 到期日期 */
-    @Excel(name = "到期日期",dateFormat = "yyyy-MM-dd")
+    @Excel(name = "到期日期", dateFormat = "yyyy-MM-dd")
+    @Length(max = 50, message = "到期日期的字符长度不允许超过50")
     @NotNull(message = "到期日期不能为空")
     @TableField("dueDate")
     private String dueDate;
 
     /** 我方承兑账户 */
     @Excel(name = "我方承兑账户")
-    @Length(max = 20, message = "我方承兑账户的字符长度不允许超过20")
+    @Length(max = 50, message = "我方承兑账户的字符长度不允许超过50")
     @NotNull(message = "我方承兑账户不能为空")
     @TableField("billAccount")
     private String billAccount;
 
     /** 票据日期 */
-    @Excel(name = "票据日期",dateFormat = "yyyy-MM-dd")
+    @Excel(name = "票据日期", dateFormat = "yyyy-MM-dd")
+    @Length(max = 50, message = "票据日期的字符长度不允许超过50")
     @NotNull(message = "票据日期不能为空")
     @TableField("billDate")
     private String billDate;
@@ -74,17 +78,17 @@ public class BankAcceptance extends BaseEntity
     /** 分类（收入、支出） */
     @Excel(name = "分类(收入/支出)")
     @Pattern(regexp = "收入|支出", message = "分类必须是：收入或支出")
+    @Length(max = 55, message = "分类的字符长度不允许超过55")
     @NotNull(message = "分类不能为空")
     @TableField("billType")
     private String billType;
 
     /** 事由 */
     @Excel(name = "事由")
-    @Length(max = 200, message = "事由的字符长度不允许超过200")
+    @Length(max = 155, message = "事由的字符长度不允许超过155")
     @NotNull(message = "事由不能为空")
     @TableField("reason")
     private String reason;
-
     /** 票据金额 */
     @DecimalMaxDigits
     @NotNull(message = "票据金额不能为空")
@@ -106,6 +110,7 @@ public class BankAcceptance extends BaseEntity
     /** 票据种类（电子/纸质） */
     @Excel(name = "票据种类（电子或纸质）")
     @Pattern(regexp = "电子|纸质", message = "票据类型必须是：电子或纸质")
+    @Length(max = 55, message = "票据种类的字符长度不允许超过55")
     @NotNull(message = "票据类型不能为空")
     @TableField("billCategory")
     private String billCategory;
@@ -119,14 +124,14 @@ public class BankAcceptance extends BaseEntity
 
     /** 背书人 */
     @Excel(name = "背书人")
-    @Length(max = 20, message = "背书人的字符长度不允许超过20")
+    @Length(max = 155, message = "背书人的字符长度不允许超过155")
     @NotNull(message = "背书人不能为空")
     @TableField("endorser")
     private String endorser;
 
     /** 被背书人 */
     @Excel(name = "被背书人")
-    @Length(max = 20, message = "被背书人的字符长度不允许超过50")
+    @Length(max = 155, message = "被背书人的字符长度不允许超过155")
     @NotNull(message = "被背书人不能为空")
     @TableField("endorsee")
     private String endorsee;
@@ -134,12 +139,13 @@ public class BankAcceptance extends BaseEntity
     /** 背书事由（出卖/付货款） */
     @Excel(name = "背书事由")
     @Pattern(regexp = "出卖|付货款", message = "背书事由必须是：出卖或付货款")
+    @Length(max = 255, message = "背书事由的字符长度不允许超过255")
     @TableField("endorseReason")
     private String endorseReason;
 
     /** 备注 */
     @Excel(name = "备注")
-    @Length(max = 50, message = "备注的字符长度不允许超过50")
+    @Length(max = 200, message = "备注的字符长度不允许超过200")
     @TableField("comments")
     private String comments;
 

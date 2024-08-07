@@ -102,7 +102,21 @@ public class Repayment extends BaseEntity  {
     @TableField("delFlag")
     private Long delFlag;
 
-    public void setId(Long id) 
+
+    /** 额外字段，通过联查获取 */
+    @Excel(name = "支付状态")
+    @TableField(exist = false)
+    private String checkState;
+
+    public String getCheckState() {
+        return checkState;
+    }
+
+    public void setCheckState(String checkState) {
+        this.checkState = checkState;
+    }
+
+    public void setId(Long id)
     {
         this.id = id;
     }

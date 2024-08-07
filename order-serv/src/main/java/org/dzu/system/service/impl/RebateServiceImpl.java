@@ -85,10 +85,12 @@ public class RebateServiceImpl implements IRebateService {
         // 校验所依赖的表中有无数据
         Validate(rebate);
 
+        // 先插入，插入之后才有主键
+        int rows = rebateMapper.insertRebate(rebate);
         // 同步银行卡变动
         SyncToBankChange(rebate);
 
-        return rebateMapper.insertRebate(rebate);
+        return  rows;
     }
 
     /**

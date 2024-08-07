@@ -25,44 +25,81 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         <result property="UserName"    column="UserName"    />
         <result property="updateTime"    column="update_time"    />
         <result property="delFlag"    column="delFlag"    />
+        <result property="checkState"    column="checkState"    />
     </resultMap>
 
-
- 
-
     <sql id="selectLendMoneyVo">
-        select id, futuresNO, futuresMarginCompany, targetType, target, moneyAmount, targetAcountsName, targetBankNo, targetBankName, selfAcountsName, selfBankNo, selfBankName, futuresDate, reason, comments, addtime, userId, UserName, update_time, delFlag from lendMoney
+        select
+        l.id,
+        l.futuresNO,
+        l.futuresMarginCompany,
+        l.targetType,
+        l.target,
+        l.moneyAmount,
+        l.targetAcountsName,
+        l.targetBankNo,
+        l.targetBankName,
+        l.selfAcountsName,
+        l.selfBankNo,
+        l.selfBankName,
+        l.futuresDate,
+        l.reason,
+        l.comments,
+        l.addtime,
+        l.userId,
+        l.UserName,
+        l.update_time,
+        l.delFlag,
+        CASE
+        WHEN pa.checkState = '通过' THEN p.paymentState
+        ELSE COALESCE(pa.checkState, '未申请')
+        END as checkState
+        from
+        lendMoney l
+        left join
+        paymentapply pa
+        on
+        pa.tableName = 'lendMoney'
+        and pa.tID = l.id
+        and (pa.checkState = '审核中' or pa.checkState = '通过')
+        left join
+        payment p
+        on
+        p.applyId = pa.id
+        and p.delFlag = 0
     </sql>
 
     <select id="selectLendMoneyList" parameterType="LendMoney" resultMap="LendMoneyResult">
         <include refid="selectLendMoneyVo"/>
-        <where>  
-            <if test="futuresNO != null  and futuresNO != ''"> and futuresNO = #{futuresNO}</if>
-            <if test="futuresMarginCompany != null  and futuresMarginCompany != ''"> and futuresMarginCompany = #{futuresMarginCompany}</if>
-            <if test="targetType != null  and targetType != ''"> and targetType = #{targetType}</if>
-            <if test="target != null  and target != ''"> and target = #{target}</if>
-            <if test="moneyAmount != null "> and moneyAmount = #{moneyAmount}</if>
-            <if test="targetAcountsName != null  and targetAcountsName != ''"> and targetAcountsName like concat('%', #{targetAcountsName}, '%')</if>
-            <if test="targetBankNo != null  and targetBankNo != ''"> and targetBankNo = #{targetBankNo}</if>
-            <if test="targetBankName != null  and targetBankName != ''"> and targetBankName like concat('%', #{targetBankName}, '%')</if>
-            <if test="selfAcountsName != null  and selfAcountsName != ''"> and selfAcountsName like concat('%', #{selfAcountsName}, '%')</if>
-            <if test="selfBankNo != null  and selfBankNo != ''"> and selfBankNo = #{selfBankNo}</if>
-            <if test="selfBankName != null  and selfBankName != ''"> and selfBankName like concat('%', #{selfBankName}, '%')</if>
-            <if test="futuresDate != null  and futuresDate != ''"> and futuresDate = #{futuresDate}</if>
-            <if test="reason != null  and reason != ''"> and reason = #{reason}</if>
-            <if test="comments != null  and comments != ''"> and comments = #{comments}</if>
-            <if test="addtime != null  and addtime != ''"> and addtime = #{addtime}</if>
-            <if test="userId != null "> and userId = #{userId}</if>
-            <if test="UserName != null  and UserName != ''"> and UserName like concat('%', #{UserName}, '%')</if>
-            and delFlag = 0
+        <where>
+            <if test="futuresNO != null  and futuresNO != ''"> and l.futuresNO = #{futuresNO}</if>
+            <if test="futuresMarginCompany != null  and futuresMarginCompany != ''"> and l.futuresMarginCompany = #{futuresMarginCompany}</if>
+            <if test="targetType != null  and targetType != ''"> and l.targetType = #{targetType}</if>
+            <if test="target != null  and target != ''"> and l.target = #{target}</if>
+            <if test="moneyAmount != null "> and l.moneyAmount = #{moneyAmount}</if>
+            <if test="targetAcountsName != null  and targetAcountsName != ''"> and l.targetAcountsName like concat('%', #{targetAcountsName}, '%')</if>
+            <if test="targetBankNo != null  and targetBankNo != ''"> and l.targetBankNo = #{targetBankNo}</if>
+            <if test="targetBankName != null  and targetBankName != ''"> and l.targetBankName like concat('%', #{targetBankName}, '%')</if>
+            <if test="selfAcountsName != null  and selfAcountsName != ''"> and l.selfAcountsName like concat('%', #{selfAcountsName}, '%')</if>
+            <if test="selfBankNo != null  and selfBankNo != ''"> and l.selfBankNo = #{selfBankNo}</if>
+            <if test="selfBankName != null  and selfBankName != ''"> and l.selfBankName like concat('%', #{selfBankName}, '%')</if>
+            <if test="futuresDate != null  and futuresDate != ''"> and l.futuresDate = #{futuresDate}</if>
+            <if test="reason != null  and reason != ''"> and l.reason = #{reason}</if>
+            <if test="comments != null  and comments != ''"> and l.comments = #{comments}</if>
+            <if test="addtime != null  and addtime != ''"> and l.addtime = #{addtime}</if>
+            <if test="userId != null "> and l.userId = #{userId}</if>
+            <if test="UserName != null  and UserName != ''"> and l.UserName like concat('%', #{UserName}, '%')</if>
+            and l.delFlag = 0
         </where>
     </select>
-    
+
     <select id="selectLendMoneyById" parameterType="Long" resultMap="LendMoneyResult">
         <include refid="selectLendMoneyVo"/>
-        where id = #{id}
-        and delFlag = 0
+        where
+        l.id = #{id}
+        and l.delFlag = 0
     </select>
+
 
     <insert id="insertLendMoney" parameterType="LendMoney" useGeneratedKeys="true" keyProperty="id">
         insert into lendMoney

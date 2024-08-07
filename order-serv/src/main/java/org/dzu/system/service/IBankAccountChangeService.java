@@ -35,6 +35,10 @@ public interface IBankAccountChangeService
      */
     public int insertBankAccountChange(BankAccountChange bankAccountChange);
 
+    int insertPaymenyChange(BankAccountChange bankAccountChange);
+
+    int insertReceiptChange(BankAccountChange bankAccountChange);
+
     /**
      * 修改银行账号变动流水
      * 
@@ -60,4 +64,10 @@ public interface IBankAccountChangeService
     public int updateBankAccountChangeByUUID(BankAccountChange bankAccountChange);
 
     int deleteBankAccountChangeByUUID(String[] uuids);
+
+    // 通过指定表名和对应主键和支付类型来删除
+    int deleteChange(String tableName, String id, String type);
+
+    // 通过指定表名和主键来删除
+    int deleteChange(String tableName, String id);
 }

@@ -8,6 +8,7 @@ import permission from './modules/permission'
 import settings from './modules/settings'
 import getters from './getters'
 import money from "@/store/modules/money";
+import order from "@/store/modules/order";
 
 Vue.use(Vuex)
 
@@ -20,7 +21,8 @@ const store = new Vuex.Store({
     permission,
     settings,
     //借款信息
-    money
+    money,
+    order
   },
   getters
 })

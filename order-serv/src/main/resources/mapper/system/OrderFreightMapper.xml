@@ -34,6 +34,7 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         <result property="userId"    column="userId"    />
         <result property="UserName"    column="UserName"    />
         <result property="delFlag"    column="delFlag"    />
+        <result property="checkState"    column="checkState"    />
     </resultMap>
 
 

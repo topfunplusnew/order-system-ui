@@ -73,6 +73,7 @@ public class BankAccount extends BaseEntity
     @NotNull(message = "账户类型不能为空")
     @TableField("acountsType")
     private String acountsType;
+
     /** 当前资金额 */
     @DecimalMaxDigits
     @TableField("amount")
@@ -88,6 +89,9 @@ public class BankAccount extends BaseEntity
     @FlagOnlyZeroOrOne
     @TableField("delFlag")
     private Long delFlag;
+
+
+
 
     public void setId(Long id) 
     {
