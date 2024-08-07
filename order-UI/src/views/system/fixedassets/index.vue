@@ -68,19 +68,19 @@
     <el-table border v-horizontal-scroll="'always'" v-loading="loading" :data="fixedAssetsList"
               @selection-change="handleSelectionChange" id="printBox">
       <el-table-column label="id" align="center" prop="id"/>
-      <el-table-column label="购入日期" align="center" prop="buyDate"/>
-      <el-table-column label="资产编号" align="center" prop="assetNo"/>
-      <el-table-column label="资产名称" align="center" prop="assetName"/>
-      <el-table-column label="规格型号" align="center" prop=" specification"/>
-      <el-table-column label="数量" align="center" prop="number"/>
-      <el-table-column label="计量单位" align="center" prop="measurementUnit "/>
-      <el-table-column label="含税金额" align="center" prop="amountIncludeTax"/>
-      <el-table-column label="不含税金额" align="center" prop="amountNoTax"/>
-      <el-table-column label="户名名称" align="center" prop="account"/>
-      <el-table-column label="使用部门" align="center" prop="department"/>
-      <el-table-column label="固定资产清理时间" align="center" prop="scrapDate"/>
-      <el-table-column label="清理/变卖价值" align="center" prop="saleAmount"/>
-      <el-table-column label="备注" align="center" prop="comments"/>
+      <el-table-column label="购入日期" align="center" prop="buyDate" v-if="columns[0].visible"/>
+      <el-table-column label="资产编号" align="center" prop="assetNo" v-if="columns[1].visible"/>
+      <el-table-column label="资产名称" align="center" prop="assetName" v-if="columns[2].visible"/>
+      <el-table-column label="规格型号" align="center" prop=" specification" v-if="columns[3].visible"/>
+      <el-table-column label="数量" align="center" prop="number" v-if="columns[4].visible"/>
+      <el-table-column label="计量单位" align="center" prop="measurementUnit " v-if="columns[5].visible"/>
+      <el-table-column label="含税金额" align="center" prop="amountIncludeTax" v-if="columns[6].visible"/>
+      <el-table-column label="不含税金额" align="center" prop="amountNoTax" v-if="columns[7].visible"/>
+      <el-table-column label="户名名称" align="center" prop="account" v-if="columns[8].visible"/>
+      <el-table-column label="使用部门" align="center" prop="department" v-if="columns[9].visible"/>
+      <el-table-column label="固定资产清理时间" align="center" prop="scrapDate" v-if="columns[10].visible"/>
+      <el-table-column label="清理/变卖价值" align="center" prop="saleAmount" v-if="columns[11].visible"/>
+      <el-table-column label="备注" align="center" prop="comments" v-if="columns[12].visible"/>
       <!--      <el-table-column label="添加时间" align="center" prop="addtime"/>-->
       <!--      <el-table-column label="操作人员ID" align="center" prop="userId"/>-->
       <!--      <el-table-column label="操作人员姓名" align="center" prop="UserName"/>-->
@@ -234,15 +234,20 @@ export default {
       // 表单校验
       rules: {},
       columns: [
-        {key: 0, label: `客户`, visible: true},
-        {key: 1, label: `老板姓名`, visible: true},
-        {key: 2, label: `公司名称`, visible: true},
-        {key: 3, label: `老板电话`, visible: true},
-        {key: 4, label: `电话`, visible: true},
-        {key: 5, label: `地址`, visible: true},
-        {key: 6, label: `区域`, visible: true},
-        {key: 7, label: `销售经理`, visible: true},
-        {key: 8, label: `备注`, visible: true},
+        {key: 0, label: `购入日期`, visible: true},
+        {key: 1, label: `资产编号`, visible: true},
+        {key: 2, label: `资产名称`, visible: true},
+        {key: 3, label: `规格型号`, visible: true},
+        {key: 4, label: `数量`, visible: true},
+        {key: 5, label: `计量单位`, visible: true},
+        {key: 6, label: `含税金额`, visible: true},
+        {key: 7, label: `不含税金额`, visible: true},
+        {key: 8, label: `户名名称`, visible: true},
+        {key: 9, label: `使用部门`, visible: true},
+        {key: 10, label: `固定资产清理时间`, visible: true},
+        {key: 11, label: `清理/变卖价值`, visible: true},
+        {key: 12, label: `备注`, visible: true},
+
       ],
       //开始时间
       timesQuery: {
@@ -261,7 +266,23 @@ export default {
   created() {
     //获取信息
     // this.getList();
-    this.loading = false
+    this.loading = false;
+    if (localStorage.getItem('fixedassets-columns') === 'null'
+      || !localStorage.getItem('fixedassets-columns')) {
+      //设置localStorage
+      localStorage.setItem("fixedassets-columns", JSON.stringify(this.columns))
+    } else {
+      this.columns = JSON.parse(localStorage.getItem('fixedassets-columns'));
+    }
+  },
+  //展示与隐藏
+  watch: {
+    columns: {
+      handler: (newVal) => {
+        localStorage.setItem("fixedassets-columns", JSON.stringify(newVal))
+      },
+      deep: true,
+    }
   },
   methods: {
     printHTML() {
