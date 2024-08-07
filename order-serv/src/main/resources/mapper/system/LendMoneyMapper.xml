@@ -28,14 +28,6 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         <result property="checkState"    column="checkState"    />
     </resultMap>
 
-
- 
-
-    <sql id="selectLendMoneyVo">
-        select id, futuresNO, futuresMarginCompany, targetType, target, moneyAmount, targetAcountsName, targetBankNo, targetBankName, selfAcountsName, selfBankNo, selfBankName, futuresDate, reason, comments, addtime, userId, UserName, update_time, delFlag from lendMoney
-    </sql>
-
-
     <sql id="selectLendMoneyVo">
         select
         l.id,
