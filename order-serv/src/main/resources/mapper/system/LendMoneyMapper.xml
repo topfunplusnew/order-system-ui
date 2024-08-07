@@ -57,7 +57,7 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         from
         lendMoney l
         left join
-        paymentapply pa
+        paymentApply pa
         on
         pa.tableName = 'lendMoney'
         and pa.tID = l.id

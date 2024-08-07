@@ -1,9 +1,14 @@
 package org.dzu.system.service.impl;
 
 import java.util.List;
+
+import org.dzu.common.exception.ServiceException;
 import org.dzu.common.utils.DateUtils;
 import org.dzu.common.utils.SecurityUtils;
 import org.dzu.common.utils.SecurityUtils;
+import org.dzu.common.utils.StringUtils;
+import org.dzu.system.domain.Company;
+import org.dzu.system.service.ICompanyService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.dzu.system.mapper.InvoiceInMapper;
@@ -23,6 +28,8 @@ public class InvoiceInServiceImpl implements IInvoiceInService
     @Autowired
     private InvoiceInMapper invoiceInMapper;
 
+    @Autowired
+    private ICompanyService companyService;
     /**
      * 查询发票购入信息
      *
@@ -56,10 +63,21 @@ public class InvoiceInServiceImpl implements IInvoiceInService
     @Override
     public int insertInvoiceIn(InvoiceIn invoiceIn)
     {
+        // 设置基础信息
         invoiceIn.setAddtime(String.valueOf(DateUtils.getNowDate()));
         invoiceIn.setUserId(SecurityUtils.getUserId());
         invoiceIn.setUserName(SecurityUtils.getUserTruename());
         invoiceIn.setDelFlag(Long.valueOf(DelConstants.NODEL));
+
+        // 检查客户信息是否存在
+        Company company = companyService.selectCompanyById(invoiceIn.getCompanyID());
+        if(StringUtils.isNull(company)){
+            // 搜索不到客户信息
+            throw new ServiceException("搜索不到客户信息,请刷新后重试");
+        }
+
+
+
         return invoiceInMapper.insertInvoiceIn(invoiceIn);
     }
 
@@ -72,8 +90,6 @@ public class InvoiceInServiceImpl implements IInvoiceInService
     @Override
     public int updateInvoiceIn(InvoiceIn invoiceIn)
     {
-        invoiceIn.setUserId(SecurityUtils.getUserId());
-        invoiceIn.setUserName(SecurityUtils.getUserTruename());
         invoiceIn.setUpdateTime(DateUtils.getNowDate());
         return invoiceInMapper.updateInvoiceIn(invoiceIn);
     }

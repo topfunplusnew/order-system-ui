@@ -11,6 +11,7 @@ import org.dzu.common.annotation.DecimalMaxDigits;
 import org.dzu.common.annotation.FlagOnlyZeroOrOne;
 import org.hibernate.validator.constraints.Length;
 
+import javax.validation.constraints.DecimalMin;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Pattern;
 
@@ -30,63 +31,68 @@ public class InvoiceIn extends BaseEntity
     private Long id;
 
     /** 开票日期 */
-    @Excel(name = "开票日期",dateFormat = "yyyy-MM-dd")
+    @Excel(name = "开票日期", dateFormat = "yyyy-MM-dd")
     @TableField(value = "invoiceDate")
+    @Length(max = 55, message = "开票日期的字符长度不允许超过55")
     private String invoiceDate;
 
     /** 我方开票实体 */
     @Excel(name = "我方开票实体")
-    @Length(max = 20, message = "我方开票实体不能超过 20 个字符")
+    @Length(max = 55, message = "我方开票实体不能超过55个字符")
     @TableField(value = "invoiceObject")
     private String invoiceObject;
 
     /** 开票金额 */
     @DecimalMaxDigits
     @TableField(value = "invoiceAmount")
+    @NotNull(message = "开票金额不能为空")
     private Double invoiceAmount;
 
     /** 对方公司类别（客户、供应商,其他） */
     @Excel(name = "对方公司类别")
     @NotNull(message = "对方公司类别不能为空")
-    @Pattern(regexp = "客户|供应商|其他", message = "对方公司类别必须是 客户，供应商，其他")
+    @Pattern(regexp = "客户|供应商|其他", message = "对方公司类别必须是：客户、供应商或其他")
     @TableField(value = "companyType")
     private String companyType;
 
     /** 对方公司名称 */
     @Excel(name = "对方公司名称")
     @NotNull(message = "对方公司名称不能为空")
-    @Length(max = 55, message = "对方公司名称不能超过 55 个字符")
+    @Length(max = 120, message = "对方公司名称不能超过120个字符")
     @TableField(value = "companyName")
     private String companyName;
 
     /** 对方公司ID */
     @Excel(name = "对方公司ID")
     @NotNull(message = "对方公司ID不能为空")
-    @Length(max = 50, message = "对方公司ID不能超过 50 个字符")
     @TableField(value = "companyID")
     private Long companyID;
 
     /** 票据单位名称 */
     @Excel(name = "票据单位名称")
     @NotNull(message = "票据单位名称不能为空")
-    @Length(max = 50, message = "票据单位名称不能超过 50 个字符")
+    @Length(max = 120, message = "票据单位名称不能超过120个字符")
     @TableField(value = "invoiceCompanyName")
     private String invoiceCompanyName;
 
     /** 票点 */
     @DecimalMaxDigits
     @TableField(value = "ticketPoint")
+    @NotNull(message = "票点不能为空")
     private Double ticketPoint;
 
     /** 票点金额（开票金额*票点） */
     @Excel(name = "票点金额", readConverterExp = "票点金额=开票金额*票点")
     @NotNull(message = "票点金额不能为空")
+    @DecimalMin(value = "0.0", message = "票点金额不能小于0")
+    @DecimalMaxDigits
     @TableField(value = "ticketPointAmount")
     private Double ticketPointAmount;
 
     /** 是否订单对应票点 */
     @Excel(name = "是否订单对应票点")
-    @Pattern(regexp = "是|否", message = "是否订单对应票点必须是 是，否")
+    @NotNull(message = "是否订单对应票点不能为空")
+    @FlagOnlyZeroOrOne(message = "是否订单对应票点必须是0或1")
     @TableField(value = "isOrderTax")
     private Long isOrderTax;
 
