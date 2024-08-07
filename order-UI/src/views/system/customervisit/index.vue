@@ -59,7 +59,7 @@
           size="mini"
           @click="handleAdd"
           v-hasPermi="['system:customervisit:add']"
-        >新增走访记录信息
+        >新增走访记录
         </el-button>
       </el-col>
 
@@ -151,14 +151,14 @@
             size="mini"
             type="primary"
             @click="handleUpdate(scope.row)"
-            v-hasPermi="['system:company:edit']"
+            v-hasPermi="['system:customervisit:edit']"
           >编辑
           </el-button>
           <el-button
             size="mini"
             type="danger"
             @click="handleDelete(scope.row)"
-            v-hasPermi="['system:company:remove']"
+            v-hasPermi="['system:customervisit:remove']"
           >删除
           </el-button>
 <!--          <el-button
@@ -354,6 +354,14 @@ export default {
     cancel() {
       this.open = false;
       this.reset();
+    },
+    // 打印按钮操作
+    printHTML() {
+      this.$print({
+        printable: 'printBox',
+        type: 'html',
+        targetStyles: ['*'], // 打印内容使用所有HTML样式，没有设置这个属性/值，设置分页打印没有效果
+      })
     },
     // 表单重置
     reset() {
