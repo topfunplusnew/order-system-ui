@@ -61,7 +61,7 @@ public class OilCardFundTransferServiceImpl implements IOilCardFundTransferServi
     @Override
     public int insertOilCardFundTransfer(OilCardFundTransfer oilCardFundTransfer)
     {
-        OilCard oilCard;
+        OilCard oilCard=new OilCard();
         Long cardNo= Long.valueOf(oilCard.getOilCardNo());
         if ("主卡".equals(oilCard.getOilType())) {
             cardNo = Long.valueOf(oilCard.getOilCardNo());
@@ -111,6 +111,7 @@ public class OilCardFundTransferServiceImpl implements IOilCardFundTransferServi
     @Override
     public int updateOilCardFundTransfer(OilCardFundTransfer oilCardFundTransfer)
     {
+        OilCard oilCard=new OilCard();
         Long cardNo= Long.valueOf(oilCard.getOilCardNo());
         if ("主卡".equals(oilCard.getOilType())) {
             cardNo = Long.valueOf(oilCard.getOilCardNo());
