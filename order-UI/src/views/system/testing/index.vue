@@ -1,7 +1,10 @@
 <script>
 
+import SearchOption from "@/components/SearchOption.vue";
+import {listCars} from "@/api/system/cars";
+
 export default {
-  components: {},
+  components: {SearchOption},
   data() {
     return {
       //tableData每一个对象代表的是图表的每一个行
@@ -41,6 +44,8 @@ export default {
     };
   },
   methods: {
+
+    listCars,
     //统计方法
     getSummaries(param) {
       console.log(param)
@@ -75,7 +80,13 @@ export default {
       });
 
       return sums;
-    }
+    },
+
+
+    //确认的函数 可以用于给表单自动填充
+    handleCommitBack(val) {
+      console.log(val)
+    },
   },
   created() {
 
@@ -153,6 +164,21 @@ export default {
     <el-row>
       <h2>测试封装组件</h2>
 
+      <!--      封装组件用例-->
+      <SearchOption icon="el-icon-platform-eleme" title="车辆信息" :get-data="listCars" @commitBack="handleCommitBack">
+        <template v-slot:table-columns>
+          <el-table-column
+            prop="acountsName"
+            label="户名"
+            width="150">
+          </el-table-column>
+          <el-table-column
+            prop="acountsType"
+            label="账户类型"
+            width="150">
+          </el-table-column>
+        </template>
+      </SearchOption>
     </el-row>
   </div>
 </template>
