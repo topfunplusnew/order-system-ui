@@ -140,6 +140,9 @@ public class GoodsOrderServiceImpl implements IGoodsOrderService {
     public int updateGoodsOrder(GoodsOrder goodsOrder) {
 
 
+
+        // 计算陆运费和海运费和商家姓名，方便以后查询减少查询次数
+        preFreightAndSupplier(goodsOrder);
         // 设置基础数据
         goodsOrder.setUpdateTime(DateUtils.getNowDate());
 
@@ -153,6 +156,10 @@ public class GoodsOrderServiceImpl implements IGoodsOrderService {
         if (oldOrder.getIsedit() == YesOrNoConstants.NO_num) {
             throw new ServiceException("本订单已不允许修改");
         }
+
+        // 防止修改审核状态
+        goodsOrder.setCheckState(null);
+        goodsOrder.setCheckUserId(null);
 
         // 备份数据
         // 原型复制一份goodsOrder, 因为需要改动数据，防止对现有的进行干扰
@@ -178,7 +185,6 @@ public class GoodsOrderServiceImpl implements IGoodsOrderService {
         // 检查依赖的其他表
         Vaildate(goodsOrder);
 
-
         // 计算陆运费和海运费和商家姓名，方便以后查询减少查询次数
         preFreightAndSupplier(goodsOrder);
 
@@ -191,12 +197,50 @@ public class GoodsOrderServiceImpl implements IGoodsOrderService {
         return rows;
     }
 
+
     /**
-     * 调整订单
+     * 审核订单
      *
-     * @param goodsOrder 订单
+     * @param id 订单
      * @return 结果
      */
+    @Transactional
+    @Override
+    public int auditGoodsOrder(Long id,boolean isAudit) {
+        // 先搜索旧数据
+        GoodsOrder oldOrder = goodsOrderMapper.selectGoodsOrderById(id);
+        if (oldOrder == null) {
+            throw new ServiceException("数据库搜索失败,请刷新页面后重试");
+        }
+        // 更改状态
+        if(isAudit){
+             // 本次需要修改为已经审核
+            oldOrder.setCheckState(OrderConstants.ORDER_STATUS_AUDIT_PASS);
+            oldOrder.setCheckUserId(SecurityUtils.getUserId());
+            oldOrder.setIsedit(Long.valueOf(YesOrNoConstants.NO_num));
+        }else {
+            // 检擦是否满足修改为未审核的条件
+            // 检查本订单是不是调整单
+            if(oldOrder.getIsAdjusted().equals(YesOrNoConstants.YES_zh)){
+                throw new ServiceException("被调整单不允许修改审核状态");
+            }
+            // 检查是否有运费产生
+            if(paymentMapper.selectCount(new QueryWrapper<Payment>().eq("tID", oldOrder.getId()).eq("tableName", "goodsorder") )>0){
+                throw new ServiceException("已付费信息不允许修改审核状态");
+            }
+            // 本次需要修改为未审核并且放开修改权限
+            oldOrder.setCheckState(OrderConstants.ORDER_STATUS_AUDIT_NO_PASS);
+            oldOrder.setIsedit(Long.valueOf(YesOrNoConstants.YES_num));
+        }
+        return goodsOrderMapper.updateGoodsOrder(oldOrder);
+    }
+
+        /**
+         * 调整订单
+         *
+         * @param goodsOrder 订单
+         * @return 结果
+         */
     @Transactional
     @Override
     public int adjustGoodsOrder(GoodsOrder goodsOrder) {
@@ -210,7 +254,7 @@ public class GoodsOrderServiceImpl implements IGoodsOrderService {
             throw new ServiceException("数据库搜索失败,请刷新页面后重试");
         }
         // 如果可编辑选项为否，不允许修改
-        if (oldOrder.getIsedit().equals(YesOrNoConstants.NO_num)) {
+        if (oldOrder.getIsedit()==YesOrNoConstants.NO_num) {
             throw new ServiceException("本订单已不允许修改");
         }
         // 如果本身已经是调整单或者被调整单，不允许再次调整
@@ -240,6 +284,8 @@ public class GoodsOrderServiceImpl implements IGoodsOrderService {
         Vaildate(goodsOrder);
 
 
+        // 计算陆运费和海运费和商家姓名，方便以后查询减少查询次数
+        preFreightAndSupplier(goodsOrder);
         // 设置基础数据
         goodsOrder.setUpdateTime(DateUtils.getNowDate());
         // 设置调整属性

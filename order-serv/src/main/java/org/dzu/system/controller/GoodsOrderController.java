@@ -1,37 +1,30 @@
 package org.dzu.system.controller;
 
-import java.util.List;
-import javax.servlet.http.HttpServletResponse;
-import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.validation.annotation.Validated;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.PutMapping;
-import org.springframework.web.bind.annotation.DeleteMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
 import org.dzu.common.annotation.Log;
 import org.dzu.common.core.controller.BaseController;
 import org.dzu.common.core.domain.AjaxResult;
+import org.dzu.common.core.page.TableDataInfo;
 import org.dzu.common.enums.BusinessType;
+import org.dzu.common.utils.poi.ExcelUtil;
 import org.dzu.system.domain.GoodsOrder;
 import org.dzu.system.service.IGoodsOrderService;
-import org.dzu.common.utils.poi.ExcelUtil;
-import org.dzu.common.core.page.TableDataInfo;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.validation.annotation.Validated;
+import org.springframework.web.bind.annotation.*;
+
+import javax.servlet.http.HttpServletResponse;
+import java.util.List;
 
 /**
  * 订单Controller
- * 
+ *
  * @author ml
  * @date 2024-08-02
  */
 @RestController
 @RequestMapping("/system/goodsOrder")
-public class GoodsOrderController extends BaseController
-{
+public class GoodsOrderController extends BaseController {
     @Autowired
     private IGoodsOrderService goodsOrderService;
 
@@ -40,8 +33,7 @@ public class GoodsOrderController extends BaseController
      */
     @PreAuthorize("@ss.hasPermi('system:goodsorder:list')")
     @GetMapping("/list")
-    public TableDataInfo list( GoodsOrder goodsOrder)
-    {
+    public TableDataInfo list(GoodsOrder goodsOrder) {
         startPage();
         List<GoodsOrder> list = goodsOrderService.selectGoodsOrderList(goodsOrder);
         return getDataTable(list);
@@ -53,8 +45,7 @@ public class GoodsOrderController extends BaseController
     @PreAuthorize("@ss.hasPermi('system:goodsorder:export')")
     @Log(title = "订单", businessType = BusinessType.EXPORT)
     @PostMapping("/export")
-    public void export(HttpServletResponse response, GoodsOrder goodsOrder)
-    {
+    public void export(HttpServletResponse response, GoodsOrder goodsOrder) {
         List<GoodsOrder> list = goodsOrderService.selectGoodsOrderList(goodsOrder);
         ExcelUtil<GoodsOrder> util = new ExcelUtil<GoodsOrder>(GoodsOrder.class);
         util.exportExcel(response, list, "订单数据");
@@ -65,8 +56,7 @@ public class GoodsOrderController extends BaseController
      */
     @PreAuthorize("@ss.hasPermi('system:goodsorder:query')")
     @GetMapping(value = "/{id}")
-    public AjaxResult getInfo(@PathVariable("id") Long id)
-    {
+    public AjaxResult getInfo(@PathVariable("id") Long id) {
         return success(goodsOrderService.selectGoodsOrderById(id));
     }
 
@@ -76,8 +66,7 @@ public class GoodsOrderController extends BaseController
     @PreAuthorize("@ss.hasPermi('system:goodsorder:add')")
     @Log(title = "订单", businessType = BusinessType.INSERT)
     @PostMapping
-    public AjaxResult add(@Validated @RequestBody GoodsOrder goodsOrder)
-    {
+    public AjaxResult add(@Validated @RequestBody GoodsOrder goodsOrder) {
         return toAjax(goodsOrderService.insertGoodsOrder(goodsOrder));
     }
 
@@ -87,9 +76,18 @@ public class GoodsOrderController extends BaseController
     @PreAuthorize("@ss.hasPermi('system:goodsorder:edit')")
     @Log(title = "订单", businessType = BusinessType.UPDATE)
     @PutMapping
-    public AjaxResult edit(@Validated @RequestBody GoodsOrder goodsOrder)
-    {
+    public AjaxResult edit(@Validated @RequestBody GoodsOrder goodsOrder) {
         return toAjax(goodsOrderService.updateGoodsOrder(goodsOrder));
+    }
+
+    /**
+     * 审核订单
+     */
+    @PreAuthorize("@ss.hasPermi('system:goodsorder:audit')")
+    @Log(title = "订单", businessType = BusinessType.UPDATE)
+    @PutMapping("/audit")
+    public AjaxResult audit(@RequestParam Long id, @RequestParam boolean isaudit) {
+        return toAjax(goodsOrderService.auditGoodsOrder(id,isaudit));
     }
 
 
@@ -99,8 +97,7 @@ public class GoodsOrderController extends BaseController
     @PreAuthorize("@ss.hasPermi('system:goodsorder:edit')")
     @Log(title = "订单", businessType = BusinessType.UPDATE)
     @PutMapping("/adjust")
-    public AjaxResult adjust(@Validated @RequestBody GoodsOrder goodsOrder)
-    {
+    public AjaxResult adjust(@Validated @RequestBody GoodsOrder goodsOrder) {
         return toAjax(goodsOrderService.adjustGoodsOrder(goodsOrder));
     }
 
@@ -110,9 +107,8 @@ public class GoodsOrderController extends BaseController
      */
     @PreAuthorize("@ss.hasPermi('system:goodsorder:remove')")
     @Log(title = "订单", businessType = BusinessType.DELETE)
-	@DeleteMapping("/{ids}")
-    public AjaxResult remove(@PathVariable Long[] ids)
-    {
+    @DeleteMapping("/{ids}")
+    public AjaxResult remove(@PathVariable Long[] ids) {
         return toAjax(goodsOrderService.deleteGoodsOrderByIds(ids));
     }
 }
