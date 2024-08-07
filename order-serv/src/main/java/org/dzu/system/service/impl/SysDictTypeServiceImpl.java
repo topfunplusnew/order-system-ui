@@ -118,11 +118,18 @@ public class SysDictTypeServiceImpl implements ISysDictTypeService
      * @param dictIds 需要删除的字典ID
      */
     @Override
+    @Transactional
     public void deleteDictTypeByIds(Long[] dictIds)
     {
         for (Long dictId : dictIds)
         {
             SysDictType dictType = selectDictTypeById(dictId);
+            // 如果原来是dict是order前缀，则本次拒绝修改
+            if(dictType.getDictType().startsWith("order")){
+                throw new ServiceException("拒绝删除前缀为order的字典");
+            }
+
+
             if (dictDataMapper.countDictDataByType(dictType.getDictType()) > 0)
             {
                 throw new ServiceException(String.format("%1$s已分配,不能删除", dictType.getDictName()));
@@ -175,6 +182,12 @@ public class SysDictTypeServiceImpl implements ISysDictTypeService
     @Override
     public int insertDictType(SysDictType dict)
     {
+        // 如果原来是dict是order前缀，则本次拒绝修改
+        if(dict.getDictType().startsWith("order")){
+            throw new ServiceException("拒绝插入前缀为order的字典");
+        }
+
+
         int row = dictTypeMapper.insertDictType(dict);
         if (row > 0)
         {
