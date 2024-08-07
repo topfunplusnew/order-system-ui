@@ -331,6 +331,14 @@ public class GoodsOrderServiceImpl implements IGoodsOrderService {
     public int deleteGoodsOrderByIds(Long[] ids) {
         List<GoodsOrder> goodsOrders = goodsOrderMapper.selectBatchIds(Arrays.asList(ids));
 
+        goodsOrders.forEach(
+                order ->{
+                    if(order.getIsedit()==YesOrNoConstants.NO_num){
+                        throw new ServiceException("含有已审核、已调整、已付运费的订单，不允许删除");
+                    }
+                }
+        );
+
         for (GoodsOrder order : goodsOrders) {
             orderDetailService.deleteOrderDetailByOrderId(order);
         }
@@ -346,7 +354,13 @@ public class GoodsOrderServiceImpl implements IGoodsOrderService {
     @Transactional
     @Override
     public int deleteGoodsOrderById(Long id) {
-        orderDetailService.deleteOrderDetailByOrderId(goodsOrderMapper.selectGoodsOrderById(id));
+        GoodsOrder goodsOrder = goodsOrderMapper.selectGoodsOrderById(id);
+
+        if(goodsOrder.getIsedit()==YesOrNoConstants.NO_num){
+            throw new ServiceException("含有已审核、已调整、已付运费的订单，不允许删除");
+        }
+
+        orderDetailService.deleteOrderDetailByOrderId(goodsOrder);
         return goodsOrderMapper.deleteGoodsOrderById(id);
     }
 
@@ -480,11 +494,6 @@ public class GoodsOrderServiceImpl implements IGoodsOrderService {
                 .max()                                 // 求最大值
                 .orElse(0);                            // 如果没有最大值，返回 0
         switch (maxValue) {
-            case 0:
-                // 无限制，但是填写一个恒成立的条件
-                goodsOrder.getParams().put("orderDataScope", " and 1 = 1");
-
-                break;
             case 1:
                 // 仅能查看自己录入的
                 goodsOrder.getParams().put("orderDataScope", " and userId = " + SecurityUtils.getUserId());
