@@ -46,7 +46,6 @@ export default {
       //海运车牌信息
       seaInfo: [],
 
-
       //客户信息弹窗的搜索客户名
       customerName: '',
       //车队搜索
@@ -70,8 +69,6 @@ export default {
         return this.orderInfo.customer;
       },
       set(val) {
-        console.log('com customer=>', val)
-        //将新输入的值更新到父组件
         this.handleUpdateOrderInfo({...this.orderInfo, customer: val})
       }
     },
@@ -81,7 +78,6 @@ export default {
         return this.orderInfo.saleManager;
       },
       set(val) {
-        console.log('com saleManager=>', val)
         //将新输入的值更新到父组件 添加延时操作 避免解构赋空
         setTimeout(() => {
           this.handleUpdateOrderInfo({...this.orderInfo, saleManager: val})
@@ -176,7 +172,6 @@ export default {
     searchCustomerInfo() {
       this.customerInfoDialogVisible = true
       listCompany({relationName: this.customerName}).then(res => {
-        console.log('客户供应商信息', res)
         this.companyInfo = res.rows;
       })
     },
@@ -186,7 +181,6 @@ export default {
       //搜索车队信息
       listCars().then(res => {
         this.landInfo = res.rows;
-        console.log('车辆信息', res.rows)
       })
     },
     //车队信息
@@ -194,7 +188,6 @@ export default {
       this.fleetInfoDialogVisible = true
       listFleet({fName: this.fleetName}).then(res => {
         this.fleetInfo = res.rows;
-        console.log('车队信息', res.rows)
       })
     },
     //海运信息 查询carType为海运的车辆信息
@@ -202,7 +195,6 @@ export default {
       this.seaInfoDialogVisible = true
       //查询海运车牌信息
       listCars({carType: '海运'}).then(res => {
-        console.log('海运车辆信息', res)
         this.seaInfo = res.rows;
       })
     },
@@ -212,7 +204,6 @@ export default {
     commitCustomerInfo(row) {
       this.orderInfo.customerID = row.id;  //orderInfo->客户ID
       //填充客户和销售经理信息 这里有改动 直接改计算属性 计算属性会更改父组件属性
-      console.log('客户信息', row)
       this.customer = row.relationName;
       this.saleManager = row.salesManager;
       this.customerInfoDialogVisible = false
@@ -232,7 +223,6 @@ export default {
     },
     //车队信息的确认
     commitFleetInfo(row) {
-      console.log('车队信息row', row)
       this.fleet = row.fName;
       this.fleetInfoDialogVisible = false;
     },
@@ -251,9 +241,7 @@ export default {
       this.$store.dispatch('order/addOrderItemList', {})
     },
 
-    //todo 修改订单详情信息  index是订单索引 val是修改的值
     handleChangeOrderItemInfo(index, val) {
-      console.log('订单详情的修改=>', index, val)
       //改变vuex中的数据 传递一个对象 这个对象是修改过的item
       this.$store.dispatch('order/changeOrderItem', {...val, index: index})
     },

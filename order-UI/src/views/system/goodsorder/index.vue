@@ -735,7 +735,6 @@ export default {
   methods: {
     //子组件提醒父组件修改orderInfo信息
     handleChangeOrderInfo(val) {
-      console.log(val)
       this.orderInfo = val;
     },
 
@@ -811,8 +810,6 @@ export default {
     //订单列表的对象封装一个，订单详情有两个一样的对象 对应供应商发货和仓库发货
     submitOrder() {
       this.addOrderItemVisible = false
-      console.log('订单信息=>', this.orderItemList)
-      console.log('orderinfo=>', this.orderInfo)
       this.orderInfo.orderDetailList = this.orderItemList; //从vuex拿到订单详细列表 加入到订单信息中
       //订单详情添加客户信息
       for (let i = 0; i < this.orderItemList.length; i++) {

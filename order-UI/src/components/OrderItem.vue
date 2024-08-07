@@ -392,7 +392,6 @@ export default {
     },
     //产品级别确认
     commitProductLevelInfo(row) {
-      console.log('产品级别信息row', row)
       //填充表格数据
       this.levelName = row.levelName;
       this.height = row.height;
