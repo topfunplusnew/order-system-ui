@@ -260,6 +260,7 @@
             ${params.orderDataScope}
 
         </where>
+        ORDER BY adjustOrderid DESC, addtime DESC
     </select>
 
     <select id="selectGoodsOrderById" parameterType="Long" resultMap="GoodsOrderOrderDetailResult">
