@@ -578,8 +578,8 @@
       title="订单信息"
       :visible.sync="addOrderItemVisible"
       width="80%">
-      <!--      添加订单-->
-      <OrderForm :orderInfo="orderInfo"/>
+      <!--      添加订单 传递本组件的orderInfo信息 -->
+      <OrderForm :orderInfo="orderInfo" @updateOrderInfo="handleChangeOrderInfo"/>
       <span slot="footer" class="dialog-footer">
     <el-button @click="addOrderItemVisible = false">取 消</el-button>
     <el-button type="primary" @click="submitOrder">添加订单</el-button>
@@ -733,6 +733,12 @@ export default {
     ...mapGetters(['orderItemList'])
   },
   methods: {
+    //子组件提醒父组件修改orderInfo信息
+    handleChangeOrderInfo(val) {
+      console.log(val)
+      this.orderInfo = val;
+    },
+
     //提交订单信息
     onOrderSubmit() {
 

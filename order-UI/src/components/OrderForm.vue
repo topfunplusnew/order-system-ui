@@ -15,7 +15,11 @@ export default {
   components: {OrderItem},
   props: {
     //订单信息
-    orderInfo: {},
+    // orderInfo: {},
+    orderInfo: {
+      type: Object,
+      required: true
+    }
   },
   data() {
     return {
@@ -50,7 +54,125 @@ export default {
 
     }
   },
+  //计算属性 目的是为了避免无法输入修改父组件
+  computed: {
+    orderDate: {
+      get() {
+        return this.orderInfo.orderDate;
+      },
+      set(val) {
+        this.handleUpdateOrderInfo({...this.orderInfo, orderDate: val})
+      }
+    },
+    //客户
+    customer: {
+      get() {
+        return this.orderInfo.customer;
+      },
+      set(val) {
+        console.log('com customer=>', val)
+        //将新输入的值更新到父组件
+        this.handleUpdateOrderInfo({...this.orderInfo, customer: val})
+      }
+    },
+    //销售经理
+    saleManager: {
+      get() {
+        return this.orderInfo.saleManager;
+      },
+      set(val) {
+        console.log('com saleManager=>', val)
+        //将新输入的值更新到父组件 添加延时操作 避免解构赋空
+        setTimeout(() => {
+          this.handleUpdateOrderInfo({...this.orderInfo, saleManager: val})
+        }, 20)
+      }
+    },
+    //陆运车牌
+    landCarNo: {
+      get() {
+        return this.orderInfo.landCarNo;
+      },
+      set(val) {
+        this.handleUpdateOrderInfo({...this.orderInfo, landCarNo: val})
+      }
+    },
+    //司机名称
+    landDriverName: {
+      get() {
+        return this.orderInfo.landDriverName;
+      },
+      set(val) {
+        setTimeout(() => {
+          this.handleUpdateOrderInfo({...this.orderInfo, landDriverName: val})
+        }, 20)
+      }
+    },
+    //司机电话
+    landDriverTel: {
+      get() {
+        return this.orderInfo.landDriverTel;
+      },
+      set(val) {
+        setTimeout(() => {
+          this.handleUpdateOrderInfo({...this.orderInfo, landDriverTel: val})
+        }, 30)
+      }
+    },
+    //车队
+    fleet: {
+      get() {
+        return this.orderInfo.fleet;
+      },
+      set(val) {
+        this.handleUpdateOrderInfo({...this.orderInfo, fleet: val})
+      }
+    },
+    //海运车辆信息的计算属性
+    seaCarNo: {
+      get() {
+        return this.orderInfo.seaCarNo;
+      },
+      set(val) {
+        this.handleUpdateOrderInfo({...this.orderInfo, seaCarNo: val})
+      }
+    },
+    seaDriverName: {
+      get() {
+        return this.orderInfo.seaDriverName;
+      },
+      set(val) {
+        setTimeout(() => {
+          this.handleUpdateOrderInfo({...this.orderInfo, seaDriverName: val})
+        }, 20)
+      }
+    },
+    seaDriverTel: {
+      get() {
+        return this.orderInfo.seaDriverTel;
+      },
+      set(val) {
+        setTimeout(() => {
+          this.handleUpdateOrderInfo({...this.orderInfo, seaDriverTel: val})
+        }, 25)
+      }
+    },
+    //获取订单列表
+    ...mapGetters(['orderItemList'])
+  },
+  //监视属性 用来测试
+  watch: {
+    customer: {
+      handler(val) {
+      },
+    }
+  },
   methods: {
+    //这个方法用来修改父组件的某一个属性
+    handleUpdateOrderInfo(newOrderValue) {
+      console.log('newOrderValue=>', newOrderValue)
+      this.$emit('updateOrderInfo', newOrderValue)
+    },
     //客户供应商信息
     searchCustomerInfo() {
       this.customerInfoDialogVisible = true
@@ -76,28 +198,33 @@ export default {
         console.log('车队信息', res.rows)
       })
     },
-    //todo 海运车牌信息
+    //海运信息 查询carType为海运的车辆信息
     searchSeaInfo() {
       this.seaInfoDialogVisible = true
       //查询海运车牌信息
-
+      listCars({carType: '海运'}).then(res => {
+        console.log('海运车辆信息', res)
+        this.seaInfo = res.rows;
+      })
     },
 
     //todo 确认中初始化所有的id 给出银行信息
     //客户信息中的搜索确认
     commitCustomerInfo(row) {
       this.orderInfo.customerID = row.id;  //orderInfo->客户ID
-      //填充客户和销售经理信息
-      this.orderInfo.customer = row.relationName;
-      this.orderInfo.saleManager = row.salesManager;
+      //填充客户和销售经理信息 这里有改动 直接改计算属性 计算属性会更改父组件属性
+      console.log('客户信息', row)
+      this.customer = row.relationName;
+      this.saleManager = row.salesManager;
       this.customerInfoDialogVisible = false
     },
     //查询车牌信息的确认
     commitCarsInfo(row) {
       this.orderInfo.landCarID = row.id;   //orderInfo->陆运车ID
-      this.orderInfo.landCarNo = row.carNo;
-      this.orderInfo.landDriverName = row.driver;
-      this.orderInfo.landDriverTel = row.tel;
+      //与上面填充客户信息同理
+      this.landCarNo = row.carNo;
+      this.landDriverName = row.driver;
+      this.landDriverTel = row.tel;
 
       //填充银行信息
       this.orderInfo.landBankName = row.acountsName;
@@ -107,15 +234,21 @@ export default {
     //车队信息的确认
     commitFleetInfo(row) {
       console.log('车队信息row', row)
-      this.orderInfo.fleet = row.fName;
+      this.fleet = row.fName;
       this.fleetInfoDialogVisible = false;
     },
     //海运信息的确认
     commitSeaInfo(row) {
-
+      this.orderInfo.seaCarID = row.id;   //orderInfo->陆运车ID
+      //与上面填充客户信息同理
+      this.seaCarNo = row.carNo;
+      this.seaDriverName = row.driver;
+      this.seaDriverTel = row.tel;
+      this.seaInfoDialogVisible = false
     },
     //添加订单vuex
     addOrderItem() {
+      //给vuex扔一个空对象，父组件遍历vuex中的列表 然后再把对象仍回来 子组件再重新赋值对象
       this.$store.dispatch('order/addOrderItemList', {})
     },
   },
@@ -125,10 +258,7 @@ export default {
   mounted() {
 
   },
-  computed: {
-    //获取订单列表
-    ...mapGetters(['orderItemList'])
-  }
+
 }
 </script>
 
@@ -139,20 +269,21 @@ export default {
       <div class="header-item">
         <span style="font-weight: bolder">日期:</span>
         <el-date-picker
-          v-model="orderInfo.orderDate"
+          v-model="orderDate"
           type="date"
           placeholder="选择日期" style="width: 70%">
         </el-date-picker>
       </div>
       <div class="header-item">
         <span style="font-weight: bolder">客户:</span>
-        <el-input type="text" v-model="orderInfo.customer" style="width: 50%" placeholder="请输入客户名称"></el-input>
+        <el-input type="text" v-model="customer" style="width: 50%"
+                  placeholder="请输入客户名称"></el-input>
         <!--        查询客户列表-->
         <el-button type="primary" size="mini" icon="el-icon-search" @click="searchCustomerInfo"></el-button>
       </div>
       <div class="header-item">
         <span style="font-weight: bolder">销售经理:</span>
-        <el-input type="text" v-model="orderInfo.saleManager" style="width: 60%"
+        <el-input type="text" v-model="saleManager" style="width: 60%"
                   placeholder="请输入销售经理名称"></el-input>
       </div>
       <!--      多选框-->
@@ -168,23 +299,23 @@ export default {
         <div style="display: flex;">
           <div>
             <span class="text-bold">陆运车牌</span>
-            <el-input type="text" v-model="orderInfo.landCarNo" style="width: 50%"
+            <el-input type="text" v-model="landCarNo" style="width: 50%"
                       placeholder="请输入陆运车牌"></el-input>
             <el-button type="primary" size="mini" icon="el-icon-search" @click="searchLandInfo"></el-button>
           </div>
           <div>
             <span class="text-bold">陆运司机姓名</span>
-            <el-input type="text" v-model="orderInfo.landDriverName" style="width: 60%"
+            <el-input type="text" v-model="landDriverName" style="width: 60%"
                       placeholder="请输入陆运司机姓名"></el-input>
           </div>
           <div>
             <span class="text-bold">陆运司机电话</span>
-            <el-input type="text" v-model="orderInfo.landDriverTel" style="width: 60%"
+            <el-input type="text" v-model="landDriverTel" style="width: 60%"
                       placeholder="请输入陆运司机电话"></el-input>
           </div>
           <div>
             <span class="text-bold">车队</span>
-            <el-input type="text" v-model="orderInfo.fleet" style="width: 50%" placeholder="请输入车队"></el-input>
+            <el-input type="text" v-model="fleet" style="width: 50%" placeholder="请输入车队"></el-input>
             <el-button type="primary" size="mini" icon="el-icon-search" @click="searchFleetInfo"></el-button>
           </div>
         </div>
@@ -196,17 +327,17 @@ export default {
         <div style="display: flex;">
           <div>
             <span class="text-bold">海运车牌</span>
-            <el-input type="text" v-model="orderInfo.seaCarNo" style="width: 50%" placeholder="请输入车牌"></el-input>
-            <!--            <el-button type="primary" size="mini" icon="el-icon-search" @click="searchSeaInfo"></el-button>-->
+            <el-input type="text" v-model="seaCarNo" style="width: 50%" placeholder="请输入车牌"></el-input>
+            <el-button type="primary" size="mini" icon="el-icon-search" @click="searchSeaInfo"></el-button>
           </div>
           <div>
             <span class="text-bold">海运司机姓名</span>
-            <el-input type="text" v-model="orderInfo.seaDriverName" style="width: 60%"
+            <el-input type="text" v-model="seaDriverName" style="width: 60%"
                       placeholder="请输入司机姓名"></el-input>
           </div>
           <div>
             <span class="text-bold">海运司机电话</span>
-            <el-input type="text" v-model="orderInfo.seaDriverTel" style="width: 60%"
+            <el-input type="text" v-model="seaDriverTel" style="width: 60%"
                       placeholder="请输入司机电话"></el-input>
           </div>
         </div>
@@ -367,7 +498,7 @@ export default {
 
     <!--    海运车牌信息弹窗-->
     <el-dialog
-      title="客户信息"
+      title="海运车辆信息"
       :visible.sync="seaInfoDialogVisible"
       width="35%" append-to-body>
       <el-table
@@ -383,16 +514,16 @@ export default {
         </el-table-column>
         <el-table-column
           fixed
-          prop="relationName"
-          label="客户">
+          prop="carNo"
+          label="车牌">
         </el-table-column>
         <el-table-column
-          prop="leader"
-          label="老板姓名">
+          prop="driver"
+          label="司机姓名">
         </el-table-column>
         <el-table-column
-          prop="leaderTel"
-          label="老板联系方式">
+          prop="tel"
+          label="司机电话">
         </el-table-column>
       </el-table>
       <span slot="footer" class="dialog-footer">
