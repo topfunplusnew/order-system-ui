@@ -4,9 +4,13 @@ import {listCars} from "@/api/system/cars";
 import {listFleet} from "@/api/system/fleet";
 import {listStoreHouse} from "@/api/system/StoreHouse";
 import {listProductLevel} from "@/api/system/productLevel";
+import {listInventory} from "@/api/system/inventory";
+import OrderItem from "@/components/OrderItem.vue";
+import {mapGetters} from "vuex";
 
 export default {
   name: "OrderForm",
+  components: {OrderItem},
   props: {
     //订单信息
     orderInfo: {},
@@ -14,7 +18,7 @@ export default {
   data() {
     return {
       //订单信息中的items
-      goodsOrderList: [{}, {}],
+      goodsOrderList: [],
       //海运还是陆运
       isLand: false,
       isSea: false,
@@ -26,12 +30,7 @@ export default {
       fleetInfoDialogVisible: false,
       //海运车牌信息弹窗
       seaInfoDialogVisible: false,
-      //供应商信息弹窗
-      companyGiveDialogVisible: false,
-      //仓库信息弹窗
-      storeInfoDialogVisible: false,
-      //产品级别弹窗
-      productLevelDialogVisible: false,
+
       //客户信息
       companyInfo: [],
       //陆运车牌信息
@@ -40,36 +39,13 @@ export default {
       fleetInfo: [],
       //海运车牌信息
       seaInfo: [],
-      //供应商信息
-      companyGiveInfo: [],
-      //仓库信息
-      storeInfo: [],
-      //产品级别信息
-      productLevelInfo: [],
+
+
       //客户信息弹窗的搜索客户名
       customerName: '',
       //车队搜索
       fleetName: '',
-      //公司(供应商)名称搜索
-      companyName: '',
-      //仓库名称搜索
-      storeName: '',
-      //产品级别搜索
-      productLevel: {
-        //级别
-        level: '',
-        //宽度
-        width: ''
-      },
 
-      //id:  供应商ID:supplierID  客户ID:customerID 仓库ID:storeHouseID
-      // 仓库存储的货物ID:storeID 客户ID:customerID 货运车辆ID:landCarID 海运车辆ID:seaCarID
-      supplierID: '',
-      customerID: '',
-      storeHouseID: '',
-      storeID: '',
-      landCarID: '',
-      seaCarID: '',
     }
   },
   methods: {
@@ -104,39 +80,11 @@ export default {
       //查询海运车牌信息
 
     },
-    //供应商信息
-    searchCompanyGiveInfo() {
-      this.companyGiveDialogVisible = true;
-      //查询供应商信息
-      listCompany({companyType: '供应商', companyName: this.companyName}).then(res => {
-        this.companyGiveInfo = res.rows;
-        console.log('供应商信息', res.rows)
-      })
-    },
-    //查询仓库信息
-    searchStoreInfo() {
-      this.storeInfoDialogVisible = true;
-      //搜索仓库信息
-      listStoreHouse().then(res => {
-        this.storeInfo = res.rows;
-        console.log('仓库信息', res.rows)
-      })
-    },
-    //查询产品级别信息
-    searchProductLevelInfo() {
-      this.productLevelDialogVisible = true;
-      //查询产品级别信息
-      listProductLevel({width: this.productLevel.width, levelName: this.productLevel.level}).then(res => {
-        this.productLevelInfo = res.rows;
-        console.log('产品级别信息', res.rows)
-      })
-    },
-
 
     //todo 确认中初始化所有的id
     //客户信息中的搜索确认
     commitCustomerInfo(row) {
-      this.customerID = row.id;  //orderInfo
+      this.orderInfo.customerID = row.id;  //orderInfo->客户ID
       //填充客户和销售经理信息
       this.orderInfo.customer = row.relationName;
       this.orderInfo.saleManager = row.salesManager;
@@ -144,7 +92,7 @@ export default {
     },
     //查询车牌信息的确认
     commitCarsInfo(row) {
-      this.landCarID = row.id;   //orderInfo
+      this.orderInfo.landCarID = row.id;   //orderInfo->陆运车ID
       this.orderInfo.landCarNo = row.carNo;
       this.orderInfo.landDriverName = row.driver;
       this.orderInfo.landDriverTel = row.tel;
@@ -160,36 +108,9 @@ export default {
     commitSeaInfo(row) {
 
     },
-
-    //以下信息保存在goodsOrderList中
-    //供应商信息确认
-    commitCompanyGiveInfo(row) {
-      console.log('供应商信息row', row)
-      this.supplierID = row.id;   //goodsOrderList
-      this.goodsOrderList[0].supplier = row.companyName
-      this.companyGiveDialogVisible = false;
-    },
-    //仓库确认
-    commitStoreInfo(row) {
-      console.log('仓库信息row', row)
-      this.storeID = row.id;
-      this.goodsOrderList[0].storeHouseName = row.storeHouseName
-      this.storeInfoDialogVisible = false;
-    },
-    //产品级别确认
-    commitProductLevelInfo(row) {
-      console.log('产品级别信息row', row)
-      //填充表格数据
-      this.goodsOrderList[0].levelName = row.levelName;
-      this.goodsOrderList[0].height = row.height;
-      this.goodsOrderList[0].length = row.length;
-      this.goodsOrderList[0].width = row.width;
-      this.productLevelDialogVisible = false;
-    },
-
-    //提交订单 添加订单信息
-    submitOrderItems() {
-      this.$emit('changeOrderInfo', this.goodsOrderList)
+    //添加订单vuex
+    addOrderItem() {
+      this.$store.dispatch('order/addOrderItemList', {})
     },
   },
   created() {
@@ -197,6 +118,10 @@ export default {
   },
   mounted() {
 
+  },
+  computed: {
+    //获取订单列表
+    ...mapGetters(['orderItemList'])
   }
 }
 </script>
@@ -230,7 +155,6 @@ export default {
         <el-checkbox v-model="isLand">陆运</el-checkbox>
         <el-checkbox v-model="isSea">海运</el-checkbox>
       </div>
-
 
       <!--      陆运-->
       <div style="margin:20px 0;" v-if="isLand">
@@ -285,197 +209,24 @@ export default {
     </div>
 
     <!--    订单主体-->
-    <div class="order font-size-12">
-      <div class="order-item">
-        <span class="text-bold">供应商/仓库</span>
-        <hr/>
-        <el-input placeholder="请输入供应商/仓库"
-                  v-model="goodsOrderList[0].supplier || goodsOrderList[0].storeHouseName"
-                  disabled></el-input>
-        <!--        供应商弹窗按钮-->
-        <el-button size="mini" type="primary" icon="el-icon-user" circle @click="searchCompanyGiveInfo">
-        </el-button>
-        <el-button size="mini" icon="el-icon-s-home" circle @click="searchStoreInfo">
-        </el-button>
+    <div v-if="orderItemList.length!==0">
+      <!--      从vuex中拿到订单详细列表-->
+      <div v-for="(item,index) in orderItemList" :key="index">
+        <!--        订单个体-->
+        <OrderItem :order-item-info="item" :isLand="isLand" :isSea="isSea" :index="index"/>
       </div>
-      <div class="order-item">
-        <span class="text-bold">产品级别</span>
-        <hr/>
-        <el-input type="text" placeholder="请输入产品级别" v-model="goodsOrderList[0].levelName"></el-input>
-        <el-button type="primary" size="mini" icon="el-icon-search" circle @click="searchProductLevelInfo"></el-button>
-      </div>
-      <div class="order-item">
-        <span class="text-bold">计量单位</span>
-        <hr/>
-        <el-radio v-model="goodsOrderList[0].countingUnit" label="片数">片数</el-radio>
-        <el-radio v-model="goodsOrderList[0].countingUnit" label="其他">其他</el-radio>
-      </div>
-      <div class="order-item">
-        <span class="text-bold">厚度</span>
-        <hr/>
-        <el-input type="text" placeholder="请输入厚度" v-model="goodsOrderList[0].height"></el-input>
-      </div>
-      <div class="order-item">
-        <span class="text-bold">长度</span>
-        <hr/>
-        <el-input type="text" placeholder="请输入长度" v-model="goodsOrderList[0].length"></el-input>
-      </div>
-      <div class="order-item">
-        <span class="text-bold">宽度</span>
-        <hr/>
-        <el-input type="text" placeholder="请输入宽度" v-model="goodsOrderList[0].width"></el-input>
-      </div>
-      <div class="order-item">
-        <span class="text-bold">每包片数</span>
-        <hr/>
-        <el-input type="text" placeholder="请输入每包片数"
-                  v-model="goodsOrderList[0].piecesPerPack"></el-input>
-      </div>
-      <div class="order-item">
-        <span class="text-bold">包数</span>
-        <hr/>
-        <el-input type="text" placeholder="请输入包数" v-model="goodsOrderList[0].packs"></el-input>
-      </div>
-      <div class="order-item">
-        <span class="text-bold">出厂片数</span>
-        <hr/>
-        <el-input type="text" placeholder="请输入出厂片数" v-model="goodsOrderList[0].pieces"></el-input>
-      </div>
-      <div class="order-item">
-        <span class="text-bold">出厂单价</span>
-        <hr/>
-        <el-input type="text" placeholder="请输入出厂单价" v-model="goodsOrderList[0].price"></el-input>
-      </div>
-      <div class="order-item">
-        <span class="text-bold">出厂是否含税</span>
-        <hr/>
-        <el-radio v-model="goodsOrderList[0].isIncludeTaxFactory" label="是">是</el-radio>
-        <el-radio v-model="goodsOrderList[0].isIncludeTaxFactory" label="否">否</el-radio>
-      </div>
-      <div class="order-item">
-        <span class="text-bold">杂费</span>
-        <hr/>
-        <el-input type="text" placeholder="请输入杂费" v-model="goodsOrderList[0].sundryCost"></el-input>
-      </div>
-      <div class="order-item">
-        <span class="text-bold">出厂货款</span>
-        <hr/>
-        <el-input type="text" placeholder="请输入出厂贷款"
-                  v-model="goodsOrderList[0].paymentFactory"></el-input>
-      </div>
-      <!--      <div class="order-item">-->
-      <!--        <span class="text-bold">卸货片数</span>-->
-      <!--        <hr/>-->
-      <!--        <el-input type="text" placeholder="请输入卸货片数"></el-input>-->
-      <!--      </div>-->
-      <div class="order-item">
-        <span class="text-bold">卸货价</span>
-        <hr/>
-        <el-input type="text" placeholder="请输入卸货价" v-model="goodsOrderList[0].paymentUnload"></el-input>
-      </div>
-      <div class="order-item">
-        <span class="text-bold">销售是否含税</span>
-        <hr/>
-        <el-radio v-model="goodsOrderList[0].isIncludeTaxSale" label="是">是</el-radio>
-        <el-radio v-model="goodsOrderList[0].isIncludeTaxSale" label="否">否</el-radio>
-      </div>
-      <div class="order-item">
-        <span class="text-bold">总货款</span>
-        <hr/>
-        <el-input type="text" placeholder="请输入总货款" v-model="goodsOrderList[0].payments"></el-input>
-      </div>
-      <div class="order-item">
-        <span class="text-bold">误差</span>
-        <hr/>
-        <el-input type="text" placeholder="请输入误差" v-model="goodsOrderList[0].erro"></el-input>
-      </div>
-      <div class="order-item">
-        <span class="text-bold">吨位</span>
-        <hr/>
-        <el-input type="text" placeholder="请输入吨位" v-model="goodsOrderList[0].tonnage"></el-input>
-      </div>
-      <div class="order-item">
-        <span class="text-bold">陆运费单价</span>
-        <hr/>
-        <el-input type="text" placeholder="请输入陆运费单价"
-                  v-model="goodsOrderList[0].landFreightPrice"></el-input>
-      </div>
-      <div class="order-item">
-        <span class="text-bold">陆运费</span>
-        <hr/>
-        <el-input type="text" placeholder="陆运费" v-model="goodsOrderList[0].landFreight"></el-input>
-      </div>
-      <div class="order-item" v-if="isSea">
-        <span class="text-bold">海运费</span>
-        <hr/>
-        <el-input type="text" placeholder="海运费" v-model="goodsOrderList[0].seaFreight"></el-input>
-      </div>
-      <div class="order-item">
-        <span class="text-bold">总运费</span>
-        <hr/>
-        <el-input type="text" placeholder="总运费" v-model="goodsOrderList[0].freight"></el-input>
-      </div>
-      <div class="order-item">
-        <span class="text-bold">加费</span>
-        <hr/>
-        <el-input type="text" placeholder="加费" v-model="goodsOrderList[0].additionalFees"></el-input>
-      </div>
-      <div class="order-item">
-        <span class="text-bold">其他费用</span>
-        <hr/>
-        <el-input type="text" placeholder="其他费用" v-model="goodsOrderList[0].otherCost"></el-input>
-      </div>
-      <div class="order-item">
-        <span class="text-bold">利润</span>
-        <hr/>
-        <el-input type="text" placeholder="利润" v-model="goodsOrderList[0].profit"></el-input>
-      </div>
-      <div class="order-item">
-        <span class="text-bold">不含税利润</span>
-        <hr/>
-        <el-input type="text" placeholder="不含税利润" v-model="goodsOrderList[0].profitNoTax"></el-input>
-      </div>
-      <div class="order-item">
-        <span class="text-bold">实际片数</span>
-        <hr/>
-        <el-input type="text" placeholder="实际片数" v-model="goodsOrderList[0].actualPieces"></el-input>
-      </div>
-      <div class="order-item">
-        <span class="text-bold">总货款杂费</span>
-        <hr/>
-        <el-input type="text" placeholder="总货款杂费"
-                  v-model="goodsOrderList[0].paymentsWithSundry"></el-input>
-      </div>
-      <div class="order-item">
-        <span class="text-bold">物流利润</span>
-        <hr/>
-        <el-input type="text" placeholder="物流利润" v-model="goodsOrderList[0].logisticsProfit"></el-input>
-      </div>
-      <div class="order-item">
-        <span class="text-bold">客户佣金</span>
-        <hr/>
-        <el-input type="text" placeholder="客户佣金"
-                  v-model="goodsOrderList[0].customerCommission"></el-input>
-      </div>
-      <div class="order-item">
-        <span class="text-bold">备注</span>
-        <hr/>
-        <el-input type="text" placeholder="备注" v-model="goodsOrderList[0].comments"></el-input>
-      </div>
-      <!--      <div class="order-item">-->
-      <!--        <span class="text-bold">返利金额</span>-->
-      <!--        <hr/>-->
-      <!--        <el-input type="text" placeholder="返利金额"></el-input>-->
-      <!--      </div>-->
-      <!--      <div class="order-item">-->
-      <!--        <span class="text-bold">降价金额</span>-->
-      <!--        <hr/>-->
-      <!--        <el-input type="text" placeholder="降价金额"></el-input>-->
-      <!--      </div>-->
+      <!--        继续添加订单-->
       <div class="option">
-        <el-button type="primary" @click="submitOrderItems">提交</el-button>
-        <el-button>重置</el-button>
+        <el-button type="primary" @click="addOrderItem" icon="el-icon-plus">继续添加订单详情</el-button>
       </div>
+    </div>
+    <!--    如果没有订单-->
+    <div v-else>
+      <el-row>
+        <el-col>
+          <el-button type="primary" @click="addOrderItem" icon="el-icon-plus">添加订单详情信息</el-button>
+        </el-col>
+      </el-row>
     </div>
 
     <!--    客户信息弹窗-->
@@ -495,6 +246,7 @@ export default {
         </el-col>
       </el-row>
 
+      <!--      客户信息-->
       <el-table
         :data="companyInfo"
         border>
@@ -643,175 +395,6 @@ export default {
   </span>
     </el-dialog>
 
-    <!--    供应商信息弹窗-->
-    <el-dialog
-      title="供应商信息"
-      :visible.sync="companyGiveDialogVisible"
-      width="35%" append-to-body>
-      <!--      供应商信息搜索-->
-      <el-row :gutter="5">
-        <el-col :span="4">
-          <span style="font-weight: bolder;line-height: 40px">公司名称</span>
-        </el-col>
-        <el-col :span="8">
-          <el-input v-model="companyName" placeholder="请输入公司名称"></el-input>
-        </el-col>
-        <el-col :span="8">
-          <el-button type="primary" @click="searchCompanyGiveInfo">搜索</el-button>
-        </el-col>
-      </el-row>
-      <el-table
-        :data="companyGiveInfo"
-        border>
-        <!--        操作-->
-        <el-table-column
-          fixed="left"
-          label="操作">
-          <template slot-scope="scope">
-            <el-button @click="commitCompanyGiveInfo(scope.row)" type="danger" size="small">确认</el-button>
-          </template>
-        </el-table-column>
-        <el-table-column
-          fixed
-          prop="companyName"
-          label="供应商">
-        </el-table-column>
-        <el-table-column
-          prop="address"
-          label="地址">
-        </el-table-column>
-        <el-table-column
-          prop="relationName"
-          label="联系人">
-        </el-table-column>
-        <el-table-column
-          prop="bankNo"
-          label="银行账号">
-        </el-table-column>
-        <el-table-column
-          prop="acountsName"
-          label="户名">
-        </el-table-column>
-      </el-table>
-      <span slot="footer" class="dialog-footer">
-    <el-button @click="companyGiveDialogVisible = false">取 消</el-button>
-    <el-button type="primary" @click="companyGiveDialogVisible = false">确 定</el-button>
-  </span>
-    </el-dialog>
-
-
-    <!--    仓库信息弹窗-->
-    <el-dialog
-      title="仓库信息"
-      :visible.sync="storeInfoDialogVisible"
-      width="35%" append-to-body>
-      <!--      供应商信息搜索-->
-      <!--      <el-row :gutter="5">-->
-      <!--        <el-col :span="4">-->
-      <!--          <span style="font-weight: bolder;line-height: 40px">仓库名称</span>-->
-      <!--        </el-col>-->
-      <!--        <el-col :span="8">-->
-      <!--          <el-input v-model="storeName" placeholder="请输入公司名称"></el-input>-->
-      <!--        </el-col>-->
-      <!--        <el-col :span="8">-->
-      <!--          <el-button type="primary" @click="searchStoreInfo">搜索</el-button>-->
-      <!--        </el-col>-->
-      <!--      </el-row>-->
-      <el-table
-        :data="storeInfo"
-        border>
-        <!--        操作-->
-        <el-table-column
-          fixed="left"
-          label="操作">
-          <template slot-scope="scope">
-            <el-button @click="commitStoreInfo(scope.row)" type="danger" size="small">确认</el-button>
-          </template>
-        </el-table-column>
-        <el-table-column
-          fixed
-          prop="storeHouseName"
-          label="仓库名称">
-        </el-table-column>
-        <el-table-column
-          prop="address"
-          label="仓库地址">
-        </el-table-column>
-      </el-table>
-      <span slot="footer" class="dialog-footer">
-    <el-button @click="storeInfoDialogVisible = false">取 消</el-button>
-    <el-button type="primary" @click="storeInfoDialogVisible = false">确 定</el-button>
-  </span>
-    </el-dialog>
-
-
-    <!--    产品级别信息弹窗-->
-    <el-dialog
-      title="产品级别信息"
-      :visible.sync="productLevelDialogVisible"
-      width="35%" append-to-body>
-      <el-row style="margin-bottom: 20px">
-        <!--      产品级别-->
-        <el-col :span="3">
-          <span style="font-weight: bolder;line-height: 40px">产品级别</span>
-        </el-col>
-        <el-col :span="8">
-          <el-input v-model="productLevel.level" placeholder="请输入产品级别"></el-input>
-        </el-col>
-        <!--        宽度-->
-        <el-col :span="2">
-          <span style="font-weight: bolder;line-height: 40px">宽度</span>
-        </el-col>
-        <el-col :span="8">
-          <el-input v-model="productLevel.width" placeholder="请输入产品级别"></el-input>
-        </el-col>
-        <el-col :span="2">
-          <el-button type="primary" @click="searchProductLevelInfo">搜索</el-button>
-        </el-col>
-      </el-row>
-      <el-table
-        :data="productLevelInfo"
-        border>
-        <!--        操作-->
-        <el-table-column
-          fixed="left"
-          label="操作">
-          <template slot-scope="scope">
-            <el-button @click="commitProductLevelInfo(scope.row)" type="danger" size="small">确认</el-button>
-          </template>
-        </el-table-column>
-        <el-table-column
-          fixed
-          prop="categoryName"
-          label="分类">
-        </el-table-column>
-        <el-table-column
-          prop="levelNo"
-          label="产品级别编码">
-        </el-table-column>
-        <el-table-column
-          prop="levelName"
-          label="标题">
-        </el-table-column>
-        <el-table-column
-          prop="height"
-          label="厚度">
-        </el-table-column>
-        <el-table-column
-          prop="length"
-          label="长度">
-        </el-table-column>
-        <el-table-column
-          prop="width"
-          label="宽度">
-        </el-table-column>
-      </el-table>
-      <span slot="footer" class="dialog-footer">
-    <el-button @click="productLevelDialogVisible = false">取 消</el-button>
-    <el-button type="primary" @click="productLevelDialogVisible = false">确 定</el-button>
-  </span>
-    </el-dialog>
-
   </div>
 </template>
 
@@ -833,41 +416,5 @@ export default {
   margin-top: 10px;
 }
 
-/*订单信息*/
-.order {
-  overflow-x: scroll;
-  display: flex;
-  width: 100%;
-  justify-content: flex-start;
-  align-items: center;
-  margin: 12px auto;
-}
 
-.order-item {
-  height: 120px;
-  flex: 0 0 100px;
-  flex-direction: column;
-  flex-wrap: nowrap;
-  border: 1px solid #dddddd;
-  background-color: #f9f9f9;
-
-  span {
-    font-weight: bolder;
-  }
-}
-
-.option {
-  line-height: 100px;
-  width: 60%;
-  height: 120px;
-  flex: 0 0 200px;
-}
-
-.font-size-12 {
-  font-size: 12px;
-}
-
-.width-50px {
-  width: 50px;
-}
 </style>

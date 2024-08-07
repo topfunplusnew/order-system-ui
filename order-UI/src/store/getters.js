@@ -22,6 +22,8 @@ const getters = {
   //向外借款
   tempLendMoneyList: state => state.money.tempLendMoneyList,
   //资金收回
-  tempRecoverMoneyList: state => state.money.tempRecoverMoneyList
+  tempRecoverMoneyList: state => state.money.tempRecoverMoneyList,
+  //订单列表
+  orderItemList: state => state.order.orderItemList,
 }
 export default getters
