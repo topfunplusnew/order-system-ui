@@ -32,19 +32,17 @@ public class OilCardFundTransfer extends BaseEntity
 
     /** 主加油卡卡号 */
     @Excel(name = "主加油卡卡号")
-    @Max(value =25, message = "主加油卡卡号长度不能超过25")
-    @Min(value = 0, message = "主加油卡卡号长度不能小于0")
+    @Length( max = 25, message = "主加油卡卡号长度不能超过25")
     @NotNull(message = "主加油卡卡号不能为空")
     @TableField(value = "oilMainCardNo")
-    private long oilMainCardNo;
+    private String oilMainCardNo;
 
     /** 副加油卡卡号 */
     @Excel(name = "副加油卡卡号")
-    @Max( value= 25, message = "副加油卡卡号长度不能超过25")
-    @Min( value= 0, message = "副加油卡卡号长度不能小于0")
+    @Length( max = 25, message = "副加油卡卡号长度不能超过25")
     @NotNull(message = "副加油卡卡号不能为空")
     @TableField(value = "oilSecondCardNo")
-    private long oilSecondCardNo;
+    private String oilSecondCardNo;
 
     /** 充值金额 */
     @DecimalMaxDigits
@@ -98,21 +96,21 @@ public class OilCardFundTransfer extends BaseEntity
     {
         return id;
     }
-    public void setOilMainCardNo(Long oilMainCardNo)
+    public void setOilMainCardNo(String oilMainCardNo)
     {
         this.oilMainCardNo = oilMainCardNo;
     }
 
-    public Long getOilMainCardNo()
+    public String getOilMainCardNo()
     {
         return oilMainCardNo;
     }
-    public void setOilSecondCardNo(Long oilSecondCardNo)
+    public void setOilSecondCardNo(String oilSecondCardNo)
     {
         this.oilSecondCardNo = oilSecondCardNo;
     }
 
-    public Long getOilSecondCardNo()
+    public String getOilSecondCardNo()
     {
         return oilSecondCardNo;
     }
