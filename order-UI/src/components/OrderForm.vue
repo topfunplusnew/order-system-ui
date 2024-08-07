@@ -215,7 +215,6 @@ export default {
       this.landCarNo = row.carNo;
       this.landDriverName = row.driver;
       this.landDriverTel = row.tel;
-
       //填充银行信息
       this.orderInfo.landBankName = row.acountsName;
       this.orderInfo.landBankNo = row.bankNo;
@@ -240,7 +239,6 @@ export default {
       //给vuex扔一个空对象，父组件遍历vuex中的列表 然后再把对象仍回来 子组件再重新赋值对象
       this.$store.dispatch('order/addOrderItemList', {})
     },
-
     handleChangeOrderItemInfo(index, val) {
       //改变vuex中的数据 传递一个对象 这个对象是修改过的item
       this.$store.dispatch('order/changeOrderItem', {...val, index: index})

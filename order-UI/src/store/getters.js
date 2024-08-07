@@ -25,5 +25,8 @@ const getters = {
   tempRecoverMoneyList: state => state.money.tempRecoverMoneyList,
   //订单列表
   orderItemList: state => state.order.orderItemList,
+
+  //平账信息
+  tempbalanceaccountsList: state => state.balanceaccounts.balanceaccountsList
 }
 export default getters
