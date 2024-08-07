@@ -46,7 +46,6 @@ export default {
       //海运车牌信息
       seaInfo: [],
 
-
       //客户信息弹窗的搜索客户名
       customerName: '',
       //车队搜索
@@ -70,8 +69,6 @@ export default {
         return this.orderInfo.customer;
       },
       set(val) {
-        console.log('com customer=>', val)
-        //将新输入的值更新到父组件
         this.handleUpdateOrderInfo({...this.orderInfo, customer: val})
       }
     },
@@ -81,7 +78,6 @@ export default {
         return this.orderInfo.saleManager;
       },
       set(val) {
-        console.log('com saleManager=>', val)
         //将新输入的值更新到父组件 添加延时操作 避免解构赋空
         setTimeout(() => {
           this.handleUpdateOrderInfo({...this.orderInfo, saleManager: val})
@@ -170,14 +166,12 @@ export default {
   methods: {
     //这个方法用来修改父组件的某一个属性
     handleUpdateOrderInfo(newOrderValue) {
-      console.log('newOrderValue=>', newOrderValue)
       this.$emit('updateOrderInfo', newOrderValue)
     },
     //客户供应商信息
     searchCustomerInfo() {
       this.customerInfoDialogVisible = true
       listCompany({relationName: this.customerName}).then(res => {
-        console.log('客户供应商信息', res)
         this.companyInfo = res.rows;
       })
     },
@@ -187,7 +181,6 @@ export default {
       //搜索车队信息
       listCars().then(res => {
         this.landInfo = res.rows;
-        console.log('车辆信息', res.rows)
       })
     },
     //车队信息
@@ -195,7 +188,6 @@ export default {
       this.fleetInfoDialogVisible = true
       listFleet({fName: this.fleetName}).then(res => {
         this.fleetInfo = res.rows;
-        console.log('车队信息', res.rows)
       })
     },
     //海运信息 查询carType为海运的车辆信息
@@ -203,7 +195,6 @@ export default {
       this.seaInfoDialogVisible = true
       //查询海运车牌信息
       listCars({carType: '海运'}).then(res => {
-        console.log('海运车辆信息', res)
         this.seaInfo = res.rows;
       })
     },
@@ -213,7 +204,6 @@ export default {
     commitCustomerInfo(row) {
       this.orderInfo.customerID = row.id;  //orderInfo->客户ID
       //填充客户和销售经理信息 这里有改动 直接改计算属性 计算属性会更改父组件属性
-      console.log('客户信息', row)
       this.customer = row.relationName;
       this.saleManager = row.salesManager;
       this.customerInfoDialogVisible = false
@@ -233,7 +223,6 @@ export default {
     },
     //车队信息的确认
     commitFleetInfo(row) {
-      console.log('车队信息row', row)
       this.fleet = row.fName;
       this.fleetInfoDialogVisible = false;
     },
@@ -250,6 +239,11 @@ export default {
     addOrderItem() {
       //给vuex扔一个空对象，父组件遍历vuex中的列表 然后再把对象仍回来 子组件再重新赋值对象
       this.$store.dispatch('order/addOrderItemList', {})
+    },
+
+    handleChangeOrderItemInfo(index, val) {
+      //改变vuex中的数据 传递一个对象 这个对象是修改过的item
+      this.$store.dispatch('order/changeOrderItem', {...val, index: index})
     },
   },
   created() {
@@ -349,15 +343,14 @@ export default {
     <div v-if="orderItemList.length!==0">
       <!--      从vuex中拿到订单详细列表-->
       <div v-for="(item,index) in orderItemList" :key="index">
-        <!--        订单个体-->
-        <OrderItem :order-item-info="item" :isLand="isLand" :isSea="isSea" :index="index"/>
+        <!--        订单个体 传递给子组件订单详情个体   -->
+        <OrderItem :order-item-info="item" :isLand="isLand" :isSea="isSea" :index="index"
+                   @changeOrderItemInfo="handleChangeOrderItemInfo(index,$event)"/>
       </div>
-      <!--        继续添加订单-->
       <div class="option">
         <el-button type="primary" @click="addOrderItem" icon="el-icon-plus">继续添加订单详情</el-button>
       </div>
     </div>
-    <!--    如果没有订单-->
     <div v-else>
       <el-row>
         <el-col>

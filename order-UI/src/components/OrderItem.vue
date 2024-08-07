@@ -8,8 +8,9 @@ import {listProductLevel} from "@/api/system/productLevel";
 
 export default {
   name: "OrderItem",
+
+  //父组件传递的订单详情个体
   props: {
-    //父组件传递的订单详情个体
     orderItemInfo: {},
     isSea: Boolean,
     isLand: Boolean,
@@ -54,6 +55,278 @@ export default {
 
     }
   },
+  // 思路  先通过计算属性，拿到属性，渲染到页面 因为计算属性是响应式的 在给计算属性赋值时 提醒父组件改变传递的item对象
+  computed: {
+    //厚度信息
+    height: {
+      set(val) {
+        this.$emit('changeOrderItemInfo', {...this.orderItemInfo, height: val})
+      },
+      get() {
+        return this.orderItemInfo.height;
+      }
+    },
+    //供应商和仓库信息
+    supplier: {
+      set(val) {
+        this.$emit('changeOrderItemInfo', {...this.orderItemInfo, supplier: val})
+      },
+      get() {
+        return this.orderItemInfo.supplier;
+      }
+    },
+    storeHouseName: {
+      set(val) {
+        this.$emit('changeOrderItemInfo', {...this.orderItemInfo, storeHouseName: val})
+      },
+      get() {
+        return this.orderItemInfo.storeHouseName;
+      }
+    },
+    //levelName级别名称
+    levelName: {
+      set(val) {
+        this.$emit('changeOrderItemInfo', {...this.orderItemInfo, levelName: val})
+      },
+      get() {
+        return this.orderItemInfo.levelName;
+      }
+    },
+    //countingUnit计量单位
+    countingUnit: {
+      set(val) {
+        this.$emit('changeOrderItemInfo', {...this.orderItemInfo, countingUnit: val})
+      },
+      get() {
+        return this.orderItemInfo.countingUnit;
+      }
+    },
+    //length长度和宽度信息
+    length: {
+      set(val) {
+        this.$emit('changeOrderItemInfo', {...this.orderItemInfo, length: val})
+      },
+      get() {
+        return this.orderItemInfo.length;
+      }
+    },
+    width: {
+      set(val) {
+        this.$emit('changeOrderItemInfo', {...this.orderItemInfo, width: val})
+      },
+      get() {
+        return this.orderItemInfo.width;
+      }
+    },
+    //包数 每包片数 出厂片数 出厂单价
+    piecesPerPack: {
+      set(val) {
+        this.$emit('changeOrderItemInfo', {...this.orderItemInfo, piecesPerPack: val})
+      },
+      get() {
+        return this.orderItemInfo.piecesPerPack;
+      }
+    },
+    //包数
+    packs: {
+      set(val) {
+        this.$emit('changeOrderItemInfo', {...this.orderItemInfo, packs: val})
+      },
+      get() {
+        return this.orderItemInfo.packs;
+      }
+    },
+    pieces: {
+      set(val) {
+        this.$emit('changeOrderItemInfo', {...this.orderItemInfo, pieces: val})
+      },
+      get() {
+        return this.orderItemInfo.pieces;
+      }
+    },
+    price: {
+      set(val) {
+        this.$emit('changeOrderItemInfo', {...this.orderItemInfo, price: val})
+      },
+      get() {
+        return this.orderItemInfo.price;
+      }
+    },
+    //出厂是否含税
+    isIncludeTaxFactory: {
+      set(val) {
+        this.$emit('changeOrderItemInfo', {...this.orderItemInfo, isIncludeTaxFactory: val === '是' ? 1 : 0})
+      },
+      get() {
+        return this.orderItemInfo.isIncludeTaxFactory;
+      }
+    },
+    sundryCost: {
+      set(val) {
+        this.$emit('changeOrderItemInfo', {...this.orderItemInfo, sundryCost: val})
+      },
+      get() {
+        return this.orderItemInfo.sundryCost;
+      }
+    },
+    paymentFactory: {
+      set(val) {
+        this.$emit('changeOrderItemInfo', {...this.orderItemInfo, paymentFactory: val})
+      },
+      get() {
+        return this.orderItemInfo.paymentFactory;
+      }
+    },
+    //卸货价
+    paymentUnload: {
+      set(val) {
+        this.$emit('changeOrderItemInfo', {...this.orderItemInfo, paymentUnload: val})
+      },
+      get() {
+        return this.orderItemInfo.paymentUnload;
+      }
+    },
+
+    //GPT
+    isIncludeTaxSale: {
+      set(val) {
+        this.$emit('changeOrderItemInfo', {...this.orderItemInfo, isIncludeTaxSale: val});
+      },
+      get() {
+        return this.orderItemInfo.isIncludeTaxSale;
+      }
+    },
+    payments: {
+      set(val) {
+        this.$emit('changeOrderItemInfo', {...this.orderItemInfo, payments: val});
+      },
+      get() {
+        return this.orderItemInfo.payments;
+      }
+    },
+    erro: {
+      set(val) {
+        this.$emit('changeOrderItemInfo', {...this.orderItemInfo, erro: val});
+      },
+      get() {
+        return this.orderItemInfo.erro;
+      }
+    },
+    tonnage: {
+      set(val) {
+        this.$emit('changeOrderItemInfo', {...this.orderItemInfo, tonnage: val});
+      },
+      get() {
+        return this.orderItemInfo.tonnage;
+      }
+    },
+    landFreightPrice: {
+      set(val) {
+        this.$emit('changeOrderItemInfo', {...this.orderItemInfo, landFreightPrice: val});
+      },
+      get() {
+        return this.orderItemInfo.landFreightPrice;
+      }
+    },
+    landFreight: {
+      set(val) {
+        this.$emit('changeOrderItemInfo', {...this.orderItemInfo, landFreight: val});
+      },
+      get() {
+        return this.orderItemInfo.landFreight;
+      }
+    },
+    seaFreight: {
+      set(val) {
+        this.$emit('changeOrderItemInfo', {...this.orderItemInfo, seaFreight: val});
+      },
+      get() {
+        return this.orderItemInfo.seaFreight;
+      }
+    },
+    freight: {
+      set(val) {
+        this.$emit('changeOrderItemInfo', {...this.orderItemInfo, freight: val});
+      },
+      get() {
+        return this.orderItemInfo.freight;
+      }
+    },
+    additionalFees: {
+      set(val) {
+        this.$emit('changeOrderItemInfo', {...this.orderItemInfo, additionalFees: val});
+      },
+      get() {
+        return this.orderItemInfo.additionalFees;
+      }
+    },
+    otherCost: {
+      set(val) {
+        this.$emit('changeOrderItemInfo', {...this.orderItemInfo, otherCost: val});
+      },
+      get() {
+        return this.orderItemInfo.otherCost;
+      }
+    },
+    profit: {
+      set(val) {
+        this.$emit('changeOrderItemInfo', {...this.orderItemInfo, profit: val});
+      },
+      get() {
+        return this.orderItemInfo.profit;
+      }
+    },
+    profitNoTax: {
+      set(val) {
+        this.$emit('changeOrderItemInfo', {...this.orderItemInfo, profitNoTax: val});
+      },
+      get() {
+        return this.orderItemInfo.profitNoTax;
+      }
+    },
+    actualPieces: {
+      set(val) {
+        this.$emit('changeOrderItemInfo', {...this.orderItemInfo, actualPieces: val});
+      },
+      get() {
+        return this.orderItemInfo.actualPieces;
+      }
+    },
+    paymentsWithSundry: {
+      set(val) {
+        this.$emit('changeOrderItemInfo', {...this.orderItemInfo, paymentsWithSundry: val});
+      },
+      get() {
+        return this.orderItemInfo.paymentsWithSundry;
+      }
+    },
+    customerCommission: {
+      set(val) {
+        this.$emit('changeOrderItemInfo', {...this.orderItemInfo, customerCommission: val});
+      },
+      get() {
+        return this.orderItemInfo.customerCommission;
+      }
+    },
+    comments: {
+      set(val) {
+        this.$emit('changeOrderItemInfo', {...this.orderItemInfo, comments: val});
+      },
+      get() {
+        return this.orderItemInfo.comments;
+      }
+    },
+
+    //级别编码levelNo
+    levelID: {
+      set(val) {
+        this.$emit('changeOrderItemInfo', {...this.orderItemInfo, levelID: val});
+      },
+      get() {
+        return this.orderItemInfo.levelID;
+      }
+    }
+  },
   methods: {
     //供应商信息
     searchCompanyGiveInfo() {
@@ -95,7 +368,7 @@ export default {
     commitCompanyGiveInfo(row) {
       console.log('供应商信息row', row)
       this.orderItemInfo.supplierID = row.id;   //goodsOrderList->供应商ID
-      this.orderItemInfo.supplier = row.companyName
+      this.supplier = row.companyName
       this.companyGiveDialogVisible = false;
     },
     //仓库确认
@@ -103,19 +376,40 @@ export default {
       console.log('仓库信息row', row)
       this.orderItemInfo.storeID = row.id;  //goodsOrderList ->仓库ID
       this.orderItemInfo.storeHouseID = row.id //goodsOrderList ->库存ID
-      Object.assign(this.orderItemInfo, row)
+
+      //自动填充数据
+      const computedProperties = this.$options.computed;
+      Object.keys(computedProperties).forEach(key => {
+        this[key] = row[key];
+      })
+      this.length = row.length;
+      this.width = row.width;
+      this.levelID = row.levelID;
+
+      //出厂片数让用户自己填
+      this.pieces = ''
       this.storeInfoDialogVisible = false;
     },
     //产品级别确认
     commitProductLevelInfo(row) {
-      console.log('产品级别信息row', row)
       //填充表格数据
-      this.orderItemInfo.levelName = row.levelName;
-      this.orderItemInfo.height = row.height;
-      this.orderItemInfo.length = row.length;
-      this.orderItemInfo.width = row.width;
+      this.levelName = row.levelName;
+      this.height = row.height;
+      this.length = row.length;
+      this.width = row.width;
+      //添加产品级别编码
+      this.levelNo = row.levelNo;
       this.productLevelDialogVisible = false;
     },
+
+
+    //todo 测试用 打印所有计算属性的值
+    printAllComputers() {
+      const computedProperties = this.$options.computed;
+      Object.keys(computedProperties).forEach(key => {
+        console.log('计算属性+>', key, computedProperties[key])
+      })
+    }
   }
 }
 </script>
@@ -128,7 +422,7 @@ export default {
         <span class="text-bold">供应商/仓库</span>
         <hr/>
         <el-input placeholder="请输入供应商/仓库"
-                  v-model="orderItemInfo.supplier || orderItemInfo.storeHouseName"
+                  v-model="supplier===''?storeName:supplier"
                   disabled></el-input>
         <!--        供应商弹窗按钮-->
         <el-button size="mini" type="primary" icon="el-icon-user" circle @click="searchCompanyGiveInfo">
@@ -139,68 +433,69 @@ export default {
       <div class="order-item">
         <span class="text-bold">产品级别</span>
         <hr/>
-        <el-input type="text" placeholder="请输入产品级别" v-model="orderItemInfo.levelName"></el-input>
+        <el-input type="text" placeholder="请输入产品级别" v-model="levelName"></el-input>
         <el-button type="primary" size="mini" icon="el-icon-search" circle
                    @click="searchProductLevelInfo"></el-button>
       </div>
       <div class="order-item">
         <span class="text-bold">计量单位</span>
         <hr/>
-        <el-radio v-model="orderItemInfo.countingUnit" label="片数">片数</el-radio>
-        <el-radio v-model="orderItemInfo.countingUnit" label="其他">其他</el-radio>
+        <el-radio v-model="countingUnit" label="片数">片数</el-radio>
+        <el-radio v-model="countingUnit" label="其他">其他</el-radio>
       </div>
       <div class="order-item">
         <span class="text-bold">厚度</span>
         <hr/>
-        <el-input type="text" placeholder="请输入厚度" v-model="orderItemInfo.height"></el-input>
+        <!--        todo  测试-->
+        <el-input type="text" placeholder="请输入厚度" v-model="height"></el-input>
       </div>
       <div class="order-item">
         <span class="text-bold">长度</span>
         <hr/>
-        <el-input type="text" placeholder="请输入长度" v-model="orderItemInfo.length"></el-input>
+        <el-input type="text" placeholder="请输入长度" v-model="length"></el-input>
       </div>
       <div class="order-item">
         <span class="text-bold">宽度</span>
         <hr/>
-        <el-input type="text" placeholder="请输入宽度" v-model="orderItemInfo.width"></el-input>
+        <el-input type="text" placeholder="请输入宽度" v-model="width"></el-input>
       </div>
       <div class="order-item">
         <span class="text-bold">每包片数</span>
         <hr/>
         <el-input type="text" placeholder="请输入每包片数"
-                  v-model="orderItemInfo.piecesPerPack"></el-input>
+                  v-model="piecesPerPack"></el-input>
       </div>
       <div class="order-item">
         <span class="text-bold">包数</span>
         <hr/>
-        <el-input type="text" placeholder="请输入包数" v-model="orderItemInfo.packs"></el-input>
+        <el-input type="text" placeholder="请输入包数" v-model="packs"></el-input>
       </div>
       <div class="order-item">
         <span class="text-bold">出厂片数</span>
         <hr/>
-        <el-input type="text" placeholder="请输入出厂片数" v-model="orderItemInfo.pieces"></el-input>
+        <el-input type="text" placeholder="请输入出厂片数" v-model="pieces"></el-input>
       </div>
       <div class="order-item">
         <span class="text-bold">出厂单价</span>
         <hr/>
-        <el-input type="text" placeholder="请输入出厂单价" v-model="orderItemInfo.price"></el-input>
+        <el-input type="text" placeholder="请输入出厂单价" v-model="price"></el-input>
       </div>
       <div class="order-item">
         <span class="text-bold">出厂是否含税</span>
         <hr/>
-        <el-radio v-model="orderItemInfo.isIncludeTaxFactory" label="是">是</el-radio>
-        <el-radio v-model="orderItemInfo.isIncludeTaxFactory" label="否">否</el-radio>
+        <el-radio v-model="isIncludeTaxFactory" label="是">是</el-radio>
+        <el-radio v-model="isIncludeTaxFactory" label="否">否</el-radio>
       </div>
       <div class="order-item">
         <span class="text-bold">杂费</span>
         <hr/>
-        <el-input type="text" placeholder="请输入杂费" v-model="orderItemInfo.sundryCost"></el-input>
+        <el-input type="text" placeholder="请输入杂费" v-model="sundryCost"></el-input>
       </div>
       <div class="order-item">
         <span class="text-bold">出厂货款</span>
         <hr/>
         <el-input type="text" placeholder="请输入出厂贷款"
-                  v-model="orderItemInfo.paymentFactory"></el-input>
+                  v-model="paymentFactory"></el-input>
       </div>
       <!--          todo-->
       <!--      <div class="order-item">-->
@@ -211,80 +506,80 @@ export default {
       <div class="order-item">
         <span class="text-bold">卸货价</span>
         <hr/>
-        <el-input type="text" placeholder="请输入卸货价" v-model="orderItemInfo.paymentUnload"></el-input>
+        <el-input type="text" placeholder="请输入卸货价" v-model="paymentUnload"></el-input>
       </div>
       <div class="order-item">
         <span class="text-bold">销售是否含税</span>
         <hr/>
-        <el-radio v-model="orderItemInfo.isIncludeTaxSale" label="是">是</el-radio>
-        <el-radio v-model="orderItemInfo.isIncludeTaxSale" label="否">否</el-radio>
+        <el-radio v-model="isIncludeTaxSale" label="是">是</el-radio>
+        <el-radio v-model="isIncludeTaxSale" label="否">否</el-radio>
       </div>
       <div class="order-item">
         <span class="text-bold">总货款</span>
         <hr/>
-        <el-input type="text" placeholder="请输入总货款" v-model="orderItemInfo.payments"></el-input>
+        <el-input type="text" placeholder="请输入总货款" v-model="payments"></el-input>
       </div>
       <div class="order-item">
         <span class="text-bold">误差</span>
         <hr/>
-        <el-input type="text" placeholder="请输入误差" v-model="orderItemInfo.erro"></el-input>
+        <el-input type="text" placeholder="请输入误差" v-model="erro"></el-input>
       </div>
       <div class="order-item">
         <span class="text-bold">吨位</span>
         <hr/>
-        <el-input type="text" placeholder="请输入吨位" v-model="orderItemInfo.tonnage"></el-input>
+        <el-input type="text" placeholder="请输入吨位" v-model="tonnage"></el-input>
       </div>
       <div class="order-item">
         <span class="text-bold">陆运费单价</span>
         <hr/>
         <el-input type="text" placeholder="请输入陆运费单价"
-                  v-model="orderItemInfo.landFreightPrice"></el-input>
+                  v-model="landFreightPrice"></el-input>
       </div>
       <div class="order-item">
         <span class="text-bold">陆运费</span>
         <hr/>
-        <el-input type="text" placeholder="陆运费" v-model="orderItemInfo.landFreight"></el-input>
+        <el-input type="text" placeholder="陆运费" v-model="landFreight"></el-input>
       </div>
       <div class="order-item" v-if="isSea">
         <span class="text-bold">海运费</span>
         <hr/>
-        <el-input type="text" placeholder="海运费" v-model="orderItemInfo.seaFreight"></el-input>
+        <el-input type="text" placeholder="海运费" v-model="seaFreight"></el-input>
       </div>
       <div class="order-item">
         <span class="text-bold">总运费</span>
         <hr/>
-        <el-input type="text" placeholder="总运费" v-model="orderItemInfo.freight"></el-input>
+        <el-input type="text" placeholder="总运费" v-model="freight"></el-input>
       </div>
       <div class="order-item">
         <span class="text-bold">加费</span>
         <hr/>
-        <el-input type="text" placeholder="加费" v-model="orderItemInfo.additionalFees"></el-input>
+        <el-input type="text" placeholder="加费" v-model="additionalFees"></el-input>
       </div>
       <div class="order-item">
         <span class="text-bold">其他费用</span>
         <hr/>
-        <el-input type="text" placeholder="其他费用" v-model="orderItemInfo.otherCost"></el-input>
+        <el-input type="text" placeholder="其他费用" v-model="otherCost"></el-input>
       </div>
       <div class="order-item">
         <span class="text-bold">利润</span>
         <hr/>
-        <el-input type="text" placeholder="利润" v-model="orderItemInfo.profit"></el-input>
+        <el-input type="text" placeholder="利润" v-model="profit"></el-input>
       </div>
       <div class="order-item">
         <span class="text-bold">不含税利润</span>
         <hr/>
-        <el-input type="text" placeholder="不含税利润" v-model="orderItemInfo.profitNoTax"></el-input>
+        <el-input type="text" placeholder="不含税利润" v-model="profitNoTax"></el-input>
       </div>
       <div class="order-item">
         <span class="text-bold">实际片数</span>
         <hr/>
-        <el-input type="text" placeholder="实际片数" v-model="orderItemInfo.actualPieces"></el-input>
+        <el-input type="text" placeholder="实际片数" v-model="actualPieces"></el-input>
       </div>
       <div class="order-item">
         <span class="text-bold">总货款杂费</span>
         <hr/>
         <el-input type="text" placeholder="总货款杂费"
-                  v-model="orderItemInfo.paymentsWithSundry"></el-input>
+                  v-model="paymentsWithSundry"></el-input>
       </div>
       <!--      <div class="order-item">-->
       <!--        <span class="text-bold">物流利润</span>-->
@@ -295,12 +590,12 @@ export default {
         <span class="text-bold">客户佣金</span>
         <hr/>
         <el-input type="text" placeholder="客户佣金"
-                  v-model="orderItemInfo.customerCommission"></el-input>
+                  v-model="customerCommission"></el-input>
       </div>
       <div class="order-item">
         <span class="text-bold">备注</span>
         <hr/>
-        <el-input type="text" placeholder="备注" v-model="orderItemInfo.comments"></el-input>
+        <el-input type="text" placeholder="备注" v-model="comments"></el-input>
       </div>
     </div>
 

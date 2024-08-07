@@ -1,3 +1,4 @@
+import Vue from 'vue'
 //订单状态信息 由订单Item组件主动推入
 const state = {
   //订单详情列表
@@ -9,8 +10,15 @@ const mutations = {
   ADD_ORDER_ITEM_LIST(state, orderItem) {
     state.orderItemList.push(orderItem)
   },
-  CHANGE_ORDER_ITEM(state, index, orderItem) {
-    state.orderItemList[index] = orderItem;
+  //修改的mutation
+  CHANGE_ORDER_ITEM(state, orderItemInfo) {
+    //组装orderItem对象 剔除index属性
+    const {index, ...orderItem} = orderItemInfo;
+    //修改状态
+    //Vue.set(state.orderItemList[index], key, value);
+    // state.orderItemList[index] = orderItem;  这样会失去响应式
+    for (let property in orderItem)
+      Vue.set(state.orderItemList[index], `${property}`, orderItem[property])
   },
 }
 
@@ -20,8 +28,9 @@ const actions = {
     commit('ADD_ORDER_ITEM_LIST', orderItem)
   },
   //修改
-  changeOrderItem({commit}, index, orderItem) {
-    commit('CHANGE_ORDER_ITEM', index, orderItem)
+  //action只能传递一个参数
+  changeOrderItem({commit}, orderItemInfo) {
+    commit('CHANGE_ORDER_ITEM', orderItemInfo)
   }
 }
 
