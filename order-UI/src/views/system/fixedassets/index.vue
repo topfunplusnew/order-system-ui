@@ -2,34 +2,31 @@
   <div class="app-container">
     <el-form :model="timesQuery" ref="queryForm" size="small" :inline="true" v-show="showSearch" label-width="68px">
       <el-form-item label="开始时间" prop="beginTime">
-        <el-input
+        <el-date-picker
           v-model="timesQuery.beginTime"
-          placeholder="请输入开始时间"
-          clearable
-          @keyup.enter.native="handleQuery"
-        />
+          type="date"
+          placeholder="选择开始时间">
+        </el-date-picker>
       </el-form-item>
       <el-form-item label="结束时间" prop="endTime">
-        <el-input
+        <el-date-picker
           v-model="timesQuery.endTime"
-          placeholder="请输入结束时间"
-          clearable
-          @keyup.enter.native="handleQuery"
-        />
+          type="date"
+          placeholder="选择结束时间">
+        </el-date-picker>
       </el-form-item>
-      <el-form-item label="对象类型" prop="objectType">
-        <el-select v-model="timesQuery.objectType" placeholder="请选择对象类型">
-          <el-option
-            v-for="item in options"
-            :key="item.value"
-            :label="item.label"
-            :value="item.value">
-          </el-option>
-        </el-select>
-      </el-form-item>
+      <!--      <el-form-item label="对象类型" prop="objectType">-->
+      <!--        <el-select v-model="timesQuery.objectType" placeholder="请选择对象类型">-->
+      <!--          <el-option-->
+      <!--            v-for="item in options"-->
+      <!--            :key="item.value"-->
+      <!--            :label="item.label"-->
+      <!--            :value="item.value">-->
+      <!--          </el-option>-->
+      <!--        </el-select>-->
+      <!--      </el-form-item>-->
       <el-form-item>
-        <el-button type="primary" icon="el-icon-search" size="mini" @click="handleQuery">搜索</el-button>
-        <!--        <el-button icon="el-icon-refresh" size="mini" @click="resetQuery">重置</el-button>-->
+        <el-button type="primary" icon="el-icon-search" size="mini" @click="handleTimesQuery">搜索</el-button>
       </el-form-item>
     </el-form>
 
@@ -81,10 +78,6 @@
       <el-table-column label="固定资产清理时间" align="center" prop="scrapDate" v-if="columns[10].visible"/>
       <el-table-column label="清理/变卖价值" align="center" prop="saleAmount" v-if="columns[11].visible"/>
       <el-table-column label="备注" align="center" prop="comments" v-if="columns[12].visible"/>
-      <!--      <el-table-column label="添加时间" align="center" prop="addtime"/>-->
-      <!--      <el-table-column label="操作人员ID" align="center" prop="userId"/>-->
-      <!--      <el-table-column label="操作人员姓名" align="center" prop="UserName"/>-->
-      <!--      <el-table-column label="删除标记" align="center" prop="delFlag"/>-->
       <el-table-column label="操作" align="center" class-name="small-padding fixed-width">
         <template slot-scope="scope">
           <el-button
@@ -155,18 +148,6 @@
         <el-form-item label="备注" prop="comments">
           <el-input v-model="form.comments" placeholder="请输入备注"/>
         </el-form-item>
-        <!--        <el-form-item label="添加时间" prop="addtime">-->
-        <!--          <el-input v-model="form.addtime" placeholder="请输入添加时间"/>-->
-        <!--        </el-form-item>-->
-        <!--        <el-form-item label="操作人员ID" prop="userId">-->
-        <!--          <el-input v-model="form.userId" placeholder="请输入操作人员ID"/>-->
-        <!--        </el-form-item>-->
-        <!--        <el-form-item label="操作人员姓名" prop="UserName">-->
-        <!--          <el-input v-model="form.UserName" placeholder="请输入操作人员姓名"/>-->
-        <!--        </el-form-item>-->
-        <!--        <el-form-item label="删除标记" prop="delFlag">-->
-        <!--          <el-input v-model="form.delFlag" placeholder="请输入删除标记"/>-->
-        <!--        </el-form-item>-->
       </el-form>
       <div slot="footer" class="dialog-footer">
         <el-button type="primary" @click="submitForm">确 定</el-button>
@@ -184,6 +165,8 @@ import {
   addFixedAssets,
   updateFixedAssets
 } from "@/api/system/fixedAssets";
+import {mapGetters} from "vuex";
+import {excludeParams} from "@/api/tool/exclude";
 
 export default {
   name: "FixedAssets",
@@ -260,12 +243,13 @@ export default {
           label: 'test',
           value: 'test'
         }
-      ]
+      ],
     };
   },
   created() {
     //获取信息
-    // this.getList();
+    this.getList();
+    this.$store.dispatch('fixedassets/getFixedassetsList')
     this.loading = false;
     if (localStorage.getItem('fixedassets-columns') === 'null'
       || !localStorage.getItem('fixedassets-columns')) {
@@ -284,7 +268,18 @@ export default {
       deep: true,
     }
   },
+  computed: {
+    ...mapGetters(['fixedassetsList'])
+  },
   methods: {
+    //时间查询
+    handleTimesQuery() {
+      //重新赋值
+      this.fixedAssetsList = this.fixedassetsList;
+      //筛选
+      this.fixedAssetsList =
+        this.$dateRange(this, 'fixedAssetsList', 'buyDate', this.timesQuery.beginTime, this.timesQuery.endTime);
+    },
     printHTML() {
       this.$print({
         printable: 'printBox',
@@ -368,20 +363,15 @@ export default {
       this.$refs["form"].validate(valid => {
         if (valid) {
           if (this.form.id != null) {
-            this.form.delFlag = null;
-            this.form.addtime = null;
-            this.form.updateTime = null;
-            this.form.userId = null;
+            //排除无用字段
+            this.form = excludeParams(this.form, this.$exclude)
             updateFixedAssets(this.form).then(response => {
               this.$modal.msgSuccess("修改成功");
               this.open = false;
               this.getList();
             });
           } else {
-            this.form.delFlag = null;
-            this.form.addtime = null;
-            this.form.updateTime = null;
-            this.form.userId = null;
+            this.form = excludeParams(this.form, this.$exclude)
             addFixedAssets(this.form).then(response => {
               this.$modal.msgSuccess("新增成功");
               this.open = false;

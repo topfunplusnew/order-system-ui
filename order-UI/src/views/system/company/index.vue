@@ -320,6 +320,7 @@
 
 <script>
 import {listCompany, getCompany, delCompany, addCompany, updateCompany} from "@/api/system/company";
+import {excludeParams} from "@/api/tool/exclude";
 
 export default {
   name: "Company",
@@ -568,20 +569,14 @@ export default {
       this.$refs["form"].validate(valid => {
         if (valid) {
           if (this.form.id != null) {
-            this.form.delFlag = null;
-            this.form.addtime = null;
-            this.form.updateTime = null;
-            this.form.userId = null;
+            this.form = excludeParams(this.form, this.$exclude)
             updateCompany(this.form).then(response => {
               this.$modal.msgSuccess("修改成功");
               this.open = false;
               this.getList();
             });
           } else {
-            this.form.delFlag = null;
-            this.form.addtime = null;
-            this.form.updateTime = null;
-            this.form.userId = null;
+            this.form = excludeParams(this.form, this.$exclude)
             addCompany(this.form).then(response => {
               this.$modal.msgSuccess("新增成功");
               this.open = false;

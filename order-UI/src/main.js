@@ -2,7 +2,7 @@ import Vue from 'vue'
 
 import Cookies from 'js-cookie'
 
-import Element from 'element-ui'
+import Element, {Loading} from 'element-ui'
 import './assets/styles/element-variables.scss'
 
 import '@/assets/styles/index.scss' // global css
@@ -43,7 +43,10 @@ import horizontalScroll from 'el-table-horizontal-scroll'
 //打印
 import 'print-js/dist/print.css';
 import print from 'print-js'
-// 全局方法挂载
+import {excludeParams} from "@/api/tool/exclude";
+import data from "@/views/system/dict/data.vue";
+
+//todo 全局方法挂载
 Vue.prototype.getDicts = getDicts
 Vue.prototype.getConfigKey = getConfigKey
 Vue.prototype.parseTime = parseTime
@@ -54,6 +57,53 @@ Vue.prototype.selectDictLabels = selectDictLabels
 Vue.prototype.download = download
 Vue.prototype.handleTree = handleTree
 Vue.prototype.$print = print;
+
+//todo 以下是自己封装的一些常用的繁琐操作函数
+//1.需要排除的字段信息
+//使用: this.form = excludeParams(this.form, this.$exclude)  api/tool/exclude.js
+Vue.prototype.$exclude = ['addtime', 'userId', 'UserName', 'delFlag', 'submitflag', 'cancelFlag']
+
+//2.挂载加载中动态效果
+//使用: 数据加载前:this.$wait()  数据加载后:this.$close()
+Vue.prototype.$wait = () => {
+  Loading.service({
+    fullscreen: true,
+    text: '正在加载中，请稍后...',
+  })
+}
+//结束加载
+Vue.prototype.$close = () => {
+  Loading.service({}).close()
+}
+
+//3.时间范围查询方法
+//targetList: 需要筛选的数组
+//targetProperty: 需要筛选的时间字段
+//return 筛选后的数组
+//使用: this.$dateRange(this, this.bankList, 'createTime', this.timesQuery.startTime,this.timesQuery.endTime)
+Vue.prototype.$dateRange = function (_this, targetList, targetProperty, startTime, endTime) {
+  //开始时间 结束时间的时间戳
+  const start = new Date(startTime).getTime()
+  const end_date = new Date(endTime)
+  end_date.setDate(end_date.getDate() + 1)
+  const end = end_date.getTime();
+  //校验
+  if (startTime === '' || endTime === '') {
+    this.$message.error("开始时间或结束时间不能为空!");
+    return _this[targetList]
+  } else if (start > end) {
+    this.$message.error("开始时间不能大于结束时间!");
+    return _this[targetList]
+  } else {
+    //筛选
+    return _this[targetList].filter(item => {
+      const target = new Date(item[targetProperty]).getTime();
+      return target >= start && target <= end;
+    })
+  }
+}
+
+
 // 全局组件挂载
 Vue.component('DictTag', DictTag)
 Vue.component('Pagination', Pagination)
@@ -62,6 +112,7 @@ Vue.component('Editor', Editor)
 Vue.component('FileUpload', FileUpload)
 Vue.component('ImageUpload', ImageUpload)
 Vue.component('ImagePreview', ImagePreview)
+
 
 Vue.use(directive)
 Vue.use(plugins)
