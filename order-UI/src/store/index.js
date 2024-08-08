@@ -9,6 +9,8 @@ import settings from './modules/settings'
 import getters from './getters'
 import money from "@/store/modules/money";
 import order from "@/store/modules/order";
+import balanceaccounts from "@/store/modules/balanceaccounts";
+import fixedassets from "@/store/modules/fixedassets";
 
 Vue.use(Vuex)
 
@@ -22,7 +24,10 @@ const store = new Vuex.Store({
     settings,
     //借款信息
     money,
-    order
+    order,
+    //平账信息
+    balanceaccounts,
+    fixedassets
   },
   getters
 })

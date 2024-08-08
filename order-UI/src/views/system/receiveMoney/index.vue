@@ -94,17 +94,17 @@
     </el-form>
 
     <el-row :gutter="10" class="mb8">
-      <el-col :span="1.5">
-        <el-button
-          type="primary"
-          plain
-          icon="el-icon-plus"
-          size="mini"
-          @click="handleAdd"
-          v-hasPermi="['system:receivemoney:add']"
-        >新增收款信息
-        </el-button>
-      </el-col>
+      <!--      <el-col :span="1.5">-->
+      <!--        <el-button-->
+      <!--          type="primary"-->
+      <!--          plain-->
+      <!--          icon="el-icon-plus"-->
+      <!--          size="mini"-->
+      <!--          @click="handleAdd"-->
+      <!--          v-hasPermi="['system:receivemoney:add']"-->
+      <!--        >新增收款信息-->
+      <!--        </el-button>-->
+      <!--      </el-col>-->
       <el-col :span="1.5">
         <el-button icon="el-icon-refresh" size="mini" @click="resetQuery">刷新</el-button>
       </el-col>
@@ -210,7 +210,24 @@
           <el-input v-model="form.moneyAmount" placeholder="请输入金额"/>
         </el-form-item>
         <el-form-item label="己方户名" prop="selfAcountsName">
-          <el-input v-model="form.selfAcountsName" placeholder="请输入己方户名"/>
+          <el-row>
+            <el-col :span="10">
+              <el-input v-model="form.selfAcountsName" placeholder="请输入己方户名"/>
+            </el-col>
+            <!--   自定义组件查找-->
+            <el-col :span="3">
+              <SearchOption :get-data="listBankAccount" title="银行卡信息" icon="el-icon-search"
+                            @commitBack="handleCallBack" :limit-info="{acountsType:'己方公司'}">
+                <template #table-columns>
+                  <el-table-column label="账户类型" align="center" prop="acountsType"/>
+                  <el-table-column label="开户名称(户名)" align="center" prop="acountsName"/>
+                  <el-table-column label="账号(银行账号)" align="center" prop="bankNo"/>
+                  <el-table-column label="开户行" align="center" prop="bankName"/>
+                  <el-table-column label="公司名称" align="center" prop="companyName"/>
+                </template>
+              </SearchOption>
+            </el-col>
+          </el-row>
         </el-form-item>
         <el-form-item label="己方账号" prop="selfBankNo">
           <el-input v-model="form.selfBankNo" placeholder="请输入己方账号"/>
@@ -256,9 +273,13 @@ import {
   addReceiveMoney,
   updateReceiveMoney
 } from "@/api/system/receiveMoney";
+import SearchOption from "@/components/SearchOption.vue";
+import {listBankAccount} from "@/api/system/bankAccount";
+import {Loading} from "element-ui";
 
 export default {
   name: "ReceiveMoney",
+  components: {SearchOption},
   data() {
     return {
       // 遮罩层
@@ -331,6 +352,14 @@ export default {
     this.getList();
   },
   methods: {
+    listBankAccount,
+    //点击确认的回调函数 点击后自动补充相关字段
+    handleCallBack(val) {
+      this.form.selfAcountsName = val.acountsName
+      this.form.selfBankNo = val.bankNo;
+      this.form.selfBankName = val.bankName
+      this.form.selfBankID = val.id;
+    },
     printHTML() {
       this.$print({
         printable: 'printBox',
@@ -415,6 +444,7 @@ export default {
     },
     /** 提交按钮 */
     submitForm() {
+      this.$wait();//开始加载
       this.$refs["form"].validate(valid => {
         if (valid) {
           if (this.form.id != null) {
@@ -424,6 +454,7 @@ export default {
             this.form.userId = null;
             updateReceiveMoney(this.form).then(response => {
               this.$modal.msgSuccess("修改成功");
+              this.$close();//结束加载
               this.open = false;
               this.getList();
             });

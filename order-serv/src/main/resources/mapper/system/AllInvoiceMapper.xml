@@ -1,0 +1,152 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="org.dzu.system.mapper.AllInvoiceMapper">
+    <resultMap id="invoiceResultMap" type="allInvoice">
+        <id property="id" column="id"/>
+        <result property="invoiceDate" column="invoiceDate"/>
+        <result property="invoiceObject" column="invoiceObject"/>
+        <result property="invoiceAmount" column="invoiceAmount"/>
+        <result property="companyType" column="companyType"/>
+        <result property="companyName" column="companyName"/>
+        <result property="companyID" column="companyID"/>
+        <result property="invoiceCompanyName" column="invoiceCompanyName"/>
+        <result property="ticketPoint" column="ticketPoint"/>
+        <result property="ticketPointAmount" column="ticketPointAmount"/>
+        <result property="isOrderTax" column="isOrderTax"/>
+        <result property="supplier" column="Supplier"/>
+        <result property="supplierID" column="SupplierID"/>
+        <result property="customer" column="customer"/>
+        <result property="customerID" column="CustomerID"/>
+        <result property="comments" column="comments"/>
+        <result property="addtime" column="addtime"/>
+        <result property="userId" column="userId"/>
+        <result property="userName" column="UserName"/>
+        <result property="updateTime" column="update_time"/>
+        <result property="delFlag" column="delFlag"/>
+        <result property="purchaseInvoiceAmount" column="purchaseInvoiceAmount"/>
+        <result property="ticketPointCost" column="ticketPointCost"/>
+        <result property="ticketPointCostAmount" column="ticketPointCostAmount"/>
+        <result property="ticketPointIncome" column="ticketPointIncome"/>
+        <result property="ticketPointIncomeAmount" column="ticketPointIncomeAmount"/>
+        <result property="ticketPointDifference" column="ticketPointDifference"/>
+        <result property="tableName" column="tableName"/>
+    </resultMap>
+
+    <select id="selectInvoices" parameterType="AllInvoice" resultMap="invoiceResultMap">
+        SELECT *
+        FROM (SELECT id,
+                     invoiceDate,
+                     invoiceObject,
+                     invoiceAmount,
+                     companyType,
+                     companyName,
+                     companyID,
+                     invoiceCompanyName,
+                     ticketPoint,
+                     ticketPointAmount,
+                     isOrderTax,
+                     NULL              AS Supplier,
+                     NULL              AS SupplierID,
+                     NULL              AS customer,
+                     NULL              AS CustomerID,
+                     comments,
+                     addtime,
+                     userId,
+                     UserName,
+                     update_time,
+                     delFlag,
+                     invoiceAmount     AS purchaseInvoiceAmount,
+                     ticketPoint       AS ticketPointCost,
+                     ticketPointAmount AS ticketPointCostAmount,
+                     NULL              AS ticketPointIncome,
+                     NULL              AS ticketPointIncomeAmount,
+                     NULL              AS ticketPointDifference,
+                     'invoicein'       AS tableName
+              FROM invoicein
+
+              UNION
+
+              SELECT id,
+                     invoiceDate,
+                     invoiceObject,
+                     invoiceAmount,
+                     companyType,
+                     companyName,
+                     companyID,
+                     invoiceCompanyName,
+                     ticketPoint,
+                     ticketPointAmount,
+                     isOrderTax,
+                     NULL              AS Supplier,
+                     NULL              AS SupplierID,
+                     NULL              AS customer,
+                     NULL              AS CustomerID,
+                     comments,
+                     addtime,
+                     userId,
+                     UserName,
+                     update_time,
+                     delFlag,
+                     NULL              AS purchaseInvoiceAmount,
+                     NULL              AS ticketPointCost,
+                     NULL              AS ticketPointCostAmount,
+                     ticketPoint       AS ticketPointIncome,
+                     ticketPointAmount AS ticketPointIncomeAmount,
+                     NULL              AS ticketPointDifference,
+                     'invoiceout'      AS tableName
+              FROM invoiceout
+
+              UNION
+
+              SELECT id,
+                     invoiceDate,
+                     NULL                                        AS invoiceObject,
+                     invoiceAmount,
+                     NULL                                        AS companyType,
+                     NULL                                        AS companyName,
+                     NULL                                        AS companyID,
+                     invoiceCompanyName,
+                     supplierTicketPoint                         AS ticketPoint,
+                     supplierPointAmount                         AS ticketPointAmount,
+                     NULL                                        AS isOrderTax,
+                     Supplier,
+                     SupplierID,
+                     customer,
+                     CustomerID,
+                     comments,
+                     addtime,
+                     userId,
+                     UserName,
+                     update_time,
+                     delFlag,
+                     invoiceAmount                               AS purchaseInvoiceAmount,
+                     supplierTicketPoint                         AS ticketPointCost,
+                     supplierPointAmount                         AS ticketPointCostAmount,
+                     customerTicketPoint                         AS ticketPointIncome,
+                     customerPointAmount                         AS ticketPointIncomeAmount,
+                     (customerPointAmount - supplierPointAmount) AS ticketPointDifference,
+                     'invoiceother'                              AS tableName
+              FROM invoiceother) AS tmp
+        <where>
+            delFlag = 0
+            <if test="startDate != null and startDate != '' and endDate != null and endDate != ''">
+                AND invoiceDate BETWEEN #{startDate} AND #{endDate}
+            </if>
+            <if test="searchCompamyName != null and searchCompamyName != ''">
+                AND (
+                    (tableName = 'invoiceother' AND Supplier LIKE CONCAT('%', #{searchCompamyName}, '%'))
+                        OR (tableName = 'invoiceother' AND customer LIKE CONCAT('%', #{searchCompamyName}, '%'))
+                        OR (tableName = 'invoicein' AND companyName LIKE CONCAT('%', #{searchCompamyName}, '%'))
+                        OR (tableName = 'invoiceout' AND companyName LIKE CONCAT('%', #{searchCompamyName}, '%'))
+                    )
+            </if>
+            <if test="searchInvoiceCompanyName != null and searchInvoiceCompanyName != ''">
+                AND invoiceCompanyName LIKE CONCAT('%', #{searchInvoiceCompanyName}, '%')
+            </if>
+        </where>
+        ORDER BY invoiceDate DESC
+    </select>
+
+</mapper>

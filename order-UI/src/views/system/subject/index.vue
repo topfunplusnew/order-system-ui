@@ -78,6 +78,15 @@
             >添加科目信息
             </el-button>
           </el-col>
+          <el-col :span="1.5">
+            <el-button
+              type="primary"
+              plain
+              size="mini"
+              @click="handleAddType"
+            >添加科目类型
+            </el-button>
+          </el-col>
           <right-toolbar :showSearch.sync="showSearch" @queryTable="getList"></right-toolbar>
         </el-row>
 
@@ -128,15 +137,18 @@
     <!-- 添加或修改科目对话框 -->
     <el-dialog :title="title" :visible.sync="open" width="500px" append-to-body>
       <el-form ref="form" :model="form" :rules="rules" label-width="80px">
+        <el-form-item label="父级ID" prop="parentId">
+          <treeselect v-model="form.parentId" :options="subjectOptions" :normalizer="normalizer"
+                      placeholder="请选择父级ID"/>
+        </el-form-item>
+        <el-form-item label="分类名称" prop="type">
+          <el-input v-model="form.type" placeholder="请输入分类名称"/>
+        </el-form-item>
         <el-form-item label="科目名称" prop="title">
           <el-input v-model="form.title" placeholder="请输入科目名称"/>
         </el-form-item>
         <el-form-item label="编号" prop="subjectNo">
           <el-input v-model="form.subjectNo" placeholder="请输入编号"/>
-        </el-form-item>
-        <el-form-item label="父级ID" prop="parentId">
-          <treeselect v-model="form.parentId" :options="subjectOptions" :normalizer="normalizer"
-                      placeholder="请选择父级ID"/>
         </el-form-item>
         <el-form-item label="显示顺序" prop="orderNum">
           <el-input v-model="form.orderNum" placeholder="请输入显示顺序"/>
@@ -147,6 +159,32 @@
       </el-form>
       <div slot="footer" class="dialog-footer">
         <el-button type="primary" @click="submitForm">确 定</el-button>
+        <el-button @click="cancel">取 消</el-button>
+      </div>
+    </el-dialog>
+
+    <!--    添加科目分类的弹窗-->
+    <el-dialog title="添加科目分类" :visible.sync="openType" width="500px" append-to-body>
+      <el-form :model="formType" :rules="rules" label-width="80px">
+        <el-form-item label="科目分类" prop="type">
+          <el-select v-model="formType.type" placeholder="请选择">
+            <el-option
+              v-for="item in options"
+              :key="item.value"
+              :label="item.label"
+              :value="item.value">
+            </el-option>
+          </el-select>
+        </el-form-item>
+        <el-form-item label="科目编号" prop="subjectNo">
+          <el-input v-model="formType.subjectNo" type="textarea" placeholder="请输入科目编号"/>
+        </el-form-item>
+        <el-form-item label="备注" prop="remark">
+          <el-input v-model="formType.remark" type="textarea" placeholder="请输入备注"/>
+        </el-form-item>
+      </el-form>
+      <div slot="footer" class="dialog-footer">
+        <el-button type="primary" @click="submitFormType">确 定</el-button>
         <el-button @click="cancel">取 消</el-button>
       </div>
     </el-dialog>
@@ -242,16 +280,79 @@ export default {
         children: 'children',
         label: 'label'
       },
+
+      //添加产品分类
+      openType: false,
+      options: [{
+        value: '收入',
+        label: '收入'
+      }, {
+        value: '支出',
+        label: '支出'
+      }, {
+        value: '其他',
+        label: '其他'
+      }],
+      current_title: '',
+      formType: {
+        type: '',
+        subjectNo: '',
+        remark: ''
+      }
     };
   },
   created() {
     this.getList();
   },
+  computed: {
+    //利用computed做中间层
+    formId() {
+      return this.form.parentId
+    }
+  },
+  watch: {
+    formId: {
+      //handler不该用箭头函数 会拿不到this
+      handler: function (val) {
+        console.log('id', val)
+        if (val !== 0 && val !== null && val !== undefined) {
+          //应该先getId 填充this.form.type数据
+          getSubject(val).then(response => {
+            console.log('个体数据', response)
+            this.form.type = response.data.type;
+            //todo 类型是二级菜单的类型
+            this.form.subjectNo = response.data.subjectNo
+          })
+          //val是id 然后再拿id去查找该元素的子元素个数 用来拼接
+          listSubject({id: val}).then(response => {
+            console.log('元素', response)
+            //查询该id下的子元素数组
+            const filters = response.data.filter(item => {
+              return item.parentId === val;
+            })
+            console.log('子数组', filters)
+            //拼接 todo
+            this.form.subjectNo += `00${filters.length + 1}`
+          });
+        }
+      }
+    }
+  },
   methods: {
+    //添加科目分类
+    handleAddType() {
+      this.openType = true;
+    }
+    ,
+    handleChangeType(e) {
+      console.log(e)
+    }
+    ,
     //点击某个树的节点
     handleNodeClick(data) {
       console.log(data);
-    },
+    }
+    ,
     /** 查询科目列表 */
     getList() {
       this.loading = true;
@@ -262,7 +363,8 @@ export default {
 
         this.loading = false;
       });
-    },
+    }
+    ,
     /** 转换科目数据结构 */
     normalizer(node) {
       if (node.children && !node.children.length) {
@@ -273,7 +375,8 @@ export default {
         label: node.title,
         children: node.children
       };
-    },
+    }
+    ,
     /** 查询科目下拉树结构 */
     getTreeselect() {
       listSubject().then(response => {
@@ -282,12 +385,15 @@ export default {
         data.children = this.handleTree(response.data, "id", "parentId");
         this.subjectOptions.push(data);
       });
-    },
+    }
+    ,
     // 取消按钮
     cancel() {
       this.open = false;
+      this.openType = false;
       this.reset();
-    },
+    }
+    ,
     // 表单重置
     reset() {
       this.form = {
@@ -305,16 +411,19 @@ export default {
         remark: null
       };
       this.resetForm("form");
-    },
+    }
+    ,
     /** 搜索按钮操作 */
     handleQuery() {
       this.getList();
-    },
+    }
+    ,
     /** 重置按钮操作 */
     resetQuery() {
       this.resetForm("queryForm");
       this.handleQuery();
-    },
+    }
+    ,
     /** 新增按钮操作 */
     handleAdd(row) {
       this.reset();
@@ -326,7 +435,8 @@ export default {
       }
       this.open = true;
       this.title = "添加科目";
-    },
+    }
+    ,
     /** 展开/折叠操作 */
     toggleExpandAll() {
       this.refreshTable = false;
@@ -334,7 +444,8 @@ export default {
       this.$nextTick(() => {
         this.refreshTable = true;
       });
-    },
+    }
+    ,
     /** 修改按钮操作 */
     handleUpdate(row) {
       this.reset();
@@ -347,11 +458,13 @@ export default {
         this.open = true;
         this.title = "修改科目";
       });
-    },
+    }
+    ,
     /** 提交按钮 */
     submitForm() {
       this.$refs["form"].validate(valid => {
         if (valid) {
+          //如果添加类别
           if (this.form.id != null) {
             updateSubject(this.form).then(response => {
               this.$modal.msgSuccess("修改成功");
@@ -367,7 +480,21 @@ export default {
           }
         }
       });
-    },
+    }
+    ,
+    //提交添加分类
+    submitFormType() {
+      //如果添加类别
+      this.formType.title = this.formType.type;
+      addSubject(this.formType).then(response => {
+        this.$modal.msgSuccess("修改成功");
+        this.openType = false;
+        this.getList();
+      }).catch(err => {
+        console.log(err)
+      })
+    }
+    ,
     /** 删除按钮操作 */
     handleDelete(row) {
       this.$modal.confirm('是否确认删除科目编号为"' + row.id + '"的数据项？').then(function () {
@@ -379,5 +506,6 @@ export default {
       });
     }
   }
-};
+}
+;
 </script>

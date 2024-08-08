@@ -48,7 +48,7 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         from
         repayment r
         left join
-        paymentapply pa
+        paymentApply pa
         on
         pa.tableName = 'repayment'
         and pa.tID = r.id

@@ -38,6 +38,7 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         <where>  
             <if test="ordersNo != null  and ordersNo != ''"> and ordersNo = #{ordersNo}</if>
             <if test="invoiceDate != null  and invoiceDate != ''"> and invoiceDate = #{invoiceDate}</if>
+            <if test="beginTime != null and beginTime != '' and endTime != null and endTime != ''"> and invoiceDate between #{beginTime} and #{endTime}</if>
             <if test="invoiceAmount != null "> and invoiceAmount = #{invoiceAmount}</if>
             <if test="supplierTicketPoint != null "> and supplierTicketPoint = #{supplierTicketPoint}</if>
             <if test="supplierPointAmount != null "> and supplierPointAmount = #{supplierPointAmount}</if>

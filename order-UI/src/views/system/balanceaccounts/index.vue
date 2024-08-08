@@ -16,85 +16,86 @@
           placeholder="请选择结束时间">
         </el-date-picker>
       </el-form-item>
-    </el-form>
-    <el-form :model="queryParams" ref="queryForm" size="small" :inline="true" v-show="showSearch" label-width="68px">
-<!--      <el-form-item label="操作时间" prop="operateDate">
-        <el-input
-          v-model="queryParams.operateDate"
-          placeholder="请输入操作时间"
-          clearable
-          @keyup.enter.native="handleQuery"
-        />
-      </el-form-item>-->
-<!--      <el-form-item label="金额" prop="moneyAmount">
-        <el-input
-          v-model="queryParams.moneyAmount"
-          placeholder="请输入金额"
-          clearable
-          @keyup.enter.native="handleQuery"
-        />
-      </el-form-item>-->
       <el-form-item label="对方公司" prop="companyName">
         <el-input
-          v-model="queryParams.companyName"
+          v-model="timesQuery.companyName"
           placeholder="请输入对方公司"
           clearable
-          @keyup.enter.native="handleQuery"
         />
       </el-form-item>
-      <el-form-item label="对方公司ID" prop="companyID">
-        <el-input
-          v-model="queryParams.companyID"
-          placeholder="请输入对方公司ID"
-          clearable
-          @keyup.enter.native="handleQuery"
-        />
-      </el-form-item>
-<!--      <el-form-item label="备注" prop="comments">
-        <el-input
-          v-model="queryParams.comments"
-          placeholder="请输入备注"
-          clearable
-          @keyup.enter.native="handleQuery"
-        />
-      </el-form-item>-->
-<!--      <el-form-item label="添加时间" prop="addtime">
-        <el-input
-          v-model="queryParams.addtime"
-          placeholder="请输入添加时间"
-          clearable
-          @keyup.enter.native="handleQuery"
-        />
-      </el-form-item>-->
-<!--      <el-form-item label="操作人员ID" prop="userId">
-        <el-input
-          v-model="queryParams.userId"
-          placeholder="请输入操作人员ID"
-          clearable
-          @keyup.enter.native="handleQuery"
-        />
-      </el-form-item>
-      <el-form-item label="操作人员姓名" prop="UserName">
-        <el-input
-          v-model="queryParams.UserName"
-          placeholder="请输入操作人员姓名"
-          clearable
-          @keyup.enter.native="handleQuery"
-        />
-      </el-form-item>-->
-<!--      <el-form-item label="删除标记" prop="delFlag">
-        <el-input
-          v-model="queryParams.delFlag"
-          placeholder="请输入删除标记"
-          clearable
-          @keyup.enter.native="handleQuery"
-        />
-      </el-form-item>-->
       <el-form-item>
-        <el-button type="primary" icon="el-icon-search" size="mini" @click="handleQuery">搜索</el-button>
-<!--        <el-button icon="el-icon-refresh" size="mini" @click="resetQuery">重置</el-button>-->
+        <el-button type="primary" icon="el-icon-search" size="mini" @click="handleTimesQuery">搜索</el-button>
+        <!--        <el-button icon="el-icon-refresh" size="mini" @click="resetQuery">重置</el-button>-->
       </el-form-item>
     </el-form>
+    <!--    <el-form :model="queryParams" ref="queryForm" size="small" :inline="true" v-show="showSearch" label-width="68px">-->
+    <!--      &lt;!&ndash;      <el-form-item label="操作时间" prop="operateDate">-->
+    <!--              <el-input-->
+    <!--                v-model="queryParams.operateDate"-->
+    <!--                placeholder="请输入操作时间"-->
+    <!--                clearable-->
+    <!--                @keyup.enter.native="handleQuery"-->
+    <!--              />-->
+    <!--            </el-form-item>&ndash;&gt;-->
+    <!--      &lt;!&ndash;      <el-form-item label="金额" prop="moneyAmount">-->
+    <!--              <el-input-->
+    <!--                v-model="queryParams.moneyAmount"-->
+    <!--                placeholder="请输入金额"-->
+    <!--                clearable-->
+    <!--                @keyup.enter.native="handleQuery"-->
+    <!--              />-->
+    <!--            </el-form-item>&ndash;&gt;-->
+    <!--   -->
+    <!--      &lt;!&ndash;      <el-form-item label="对方公司ID" prop="companyID">&ndash;&gt;-->
+    <!--      &lt;!&ndash;        <el-input&ndash;&gt;-->
+    <!--      &lt;!&ndash;          v-model="queryParams.companyID"&ndash;&gt;-->
+    <!--      &lt;!&ndash;          placeholder="请输入对方公司ID"&ndash;&gt;-->
+    <!--      &lt;!&ndash;          clearable&ndash;&gt;-->
+    <!--      &lt;!&ndash;          @keyup.enter.native="handleQuery"&ndash;&gt;-->
+    <!--      &lt;!&ndash;        />&ndash;&gt;-->
+    <!--      &lt;!&ndash;      </el-form-item>&ndash;&gt;-->
+    <!--      &lt;!&ndash;      <el-form-item label="备注" prop="comments">-->
+    <!--              <el-input-->
+    <!--                v-model="queryParams.comments"-->
+    <!--                placeholder="请输入备注"-->
+    <!--                clearable-->
+    <!--                @keyup.enter.native="handleQuery"-->
+    <!--              />-->
+    <!--            </el-form-item>&ndash;&gt;-->
+    <!--      &lt;!&ndash;      <el-form-item label="添加时间" prop="addtime">-->
+    <!--              <el-input-->
+    <!--                v-model="queryParams.addtime"-->
+    <!--                placeholder="请输入添加时间"-->
+    <!--                clearable-->
+    <!--                @keyup.enter.native="handleQuery"-->
+    <!--              />-->
+    <!--            </el-form-item>&ndash;&gt;-->
+    <!--      &lt;!&ndash;      <el-form-item label="操作人员ID" prop="userId">-->
+    <!--              <el-input-->
+    <!--                v-model="queryParams.userId"-->
+    <!--                placeholder="请输入操作人员ID"-->
+    <!--                clearable-->
+    <!--                @keyup.enter.native="handleQuery"-->
+    <!--              />-->
+    <!--            </el-form-item>-->
+    <!--            <el-form-item label="操作人员姓名" prop="UserName">-->
+    <!--              <el-input-->
+    <!--                v-model="queryParams.UserName"-->
+    <!--                placeholder="请输入操作人员姓名"-->
+    <!--                clearable-->
+    <!--                @keyup.enter.native="handleQuery"-->
+    <!--              />-->
+    <!--            </el-form-item>&ndash;&gt;-->
+    <!--      &lt;!&ndash;      <el-form-item label="删除标记" prop="delFlag">-->
+    <!--              <el-input-->
+    <!--                v-model="queryParams.delFlag"-->
+    <!--                placeholder="请输入删除标记"-->
+    <!--                clearable-->
+    <!--                @keyup.enter.native="handleQuery"-->
+    <!--              />-->
+    <!--            </el-form-item>&ndash;&gt;-->
+    <!--      -->
+    <!--    </el-form>-->
 
     <el-row :gutter="10" class="mb8">
       <!-- 刷新按钮-->
@@ -112,41 +113,7 @@
         >新增
         </el-button>
       </el-col>
-<!--      <el-col :span="1.5">
-        <el-button
-          type="success"
-          plain
-          icon="el-icon-edit"
-          size="mini"
-          :disabled="single"
-          @click="handleUpdate"
-          v-hasPermi="['system:balanceaccounts:edit']"
-        >修改
-        </el-button>
-      </el-col>
-      <el-col :span="1.5">
-        <el-button
-          type="danger"
-          plain
-          icon="el-icon-delete"
-          size="mini"
-          :disabled="multiple"
-          @click="handleDelete"
-          v-hasPermi="['system:balanceaccounts:remove']"
-        >删除
-        </el-button>
-      </el-col>
-      <el-col :span="1.5">
-        <el-button
-          type="warning"
-          plain
-          icon="el-icon-download"
-          size="mini"
-          @click="handleExport"
-          v-hasPermi="['system:balanceaccounts:export']"
-        >导出
-        </el-button>
-      </el-col>-->
+
       <right-toolbar :showSearch.sync="showSearch" @queryTable="getList" :columns="columns">
         <template v-slot:print>
           <el-col :span="1.5">
@@ -175,9 +142,9 @@
       </right-toolbar>
     </el-row>
 
-    <el-table border v-loading="loading" :data="BalanceAccountsList" @selection-change="handleSelectionChange" id="printBox"
+    <el-table border v-loading="loading" :data="BalanceAccountsList" @selection-change="handleSelectionChange"
+              id="printBox"
               v-horizontal-scroll="'always'">
-<!--      <el-table-column type="selection" width="55" align="center"/>-->
       <el-table-column label="id" align="center" prop="id"/>
       <el-table-column label="操作时间" align="center" prop="operateDate" v-if="columns[0].visible"/>
       <el-table-column label="金额" align="center" prop="moneyAmount" v-if="columns[1].visible"/>
@@ -187,27 +154,8 @@
       <el-table-column label="备注" align="center" prop="comments" v-if="columns[4].visible"/>
       <el-table-column label="添加时间" align="center" prop="addtime" v-if="columns[5].visible"/>
       <el-table-column label="操作人员ID" align="center" prop="userId" v-if="columns[6].visible"/>
-<!--      <el-table-column label="操作人员姓名" align="center" prop="UserName"v-if="columns[7].visible"/>-->
-<!--      <el-table-column label="删除标记" align="center" prop="delFlag"/>-->
       <el-table-column label="操作" align="center" class-name="small-padding fixed-width">
         <template slot-scope="scope">
-<!--          <el-button
-            size="mini"
-            type="text"
-            icon="el-icon-edit"
-            @click="handleUpdate(scope.row)"
-            v-hasPermi="['system:balanceaccounts:edit']"
-          >修改
-          </el-button>
-          <el-button
-            size="mini"
-            type="text"
-            icon="el-icon-delete"
-            @click="handleDelete(scope.row)"
-            v-hasPermi="['system:balanceaccounts:remove']"
-          >删除
-          </el-button>-->
-
           <el-button
             size="mini"
             type="primary"
@@ -238,42 +186,77 @@
     <el-dialog :title="title" :visible.sync="open" width="500px" append-to-body>
       <el-form ref="form" :model="form" :rules="rules" label-width="80px">
         <el-form-item label="操作时间" prop="operateDate">
-          <el-input v-model="form.operateDate" placeholder="请输入操作时间"/>
+          <!--          <el-input v-model="form.operateDate" placeholder="请输入操作时间"/>-->
+          <el-date-picker
+            v-model="form.operateDate"
+            type="date"
+            placeholder="选择操作时间">
+          </el-date-picker>
         </el-form-item>
         <el-form-item label="金额" prop="moneyAmount">
           <el-input v-model="form.moneyAmount" placeholder="请输入金额"/>
         </el-form-item>
         <el-form-item label="对方公司" prop="companyName">
-          <el-input v-model="form.companyName" placeholder="请输入对方公司"/>
+          <el-row>
+            <el-col :span="12">
+              <el-input v-model="form.companyName" placeholder="请输入对方公司"/>
+            </el-col>
+            <el-col :span="6">
+              <el-button icon="el-icon-search" @click="searchCompanyInfo"></el-button>
+            </el-col>
+          </el-row>
         </el-form-item>
         <el-form-item label="对方公司ID" prop="companyID">
-          <el-input v-model="form.companyID" placeholder="请输入对方公司ID"/>
+          <el-row>
+            <el-col :span="12">
+              <el-input v-model="form.companyID" placeholder="请输入对方公司ID"/>
+            </el-col>
+          </el-row>
         </el-form-item>
         <!--        单选-->
-        <el-form-item label="对方公司类型" prop="companyType" >
+        <el-form-item label="对方公司类型" prop="companyType">
           <el-radio v-model="form.companyType" label="1">客户</el-radio>
           <el-radio v-model="form.companyType" label="2">供应商</el-radio>
         </el-form-item>
         <el-form-item label="备注" prop="comments">
           <el-input v-model="form.comments" placeholder="请输入备注"/>
         </el-form-item>
-<!--        <el-form-item label="添加时间" prop="addtime">
-          <el-input v-model="form.addtime" placeholder="请输入添加时间"/>
-        </el-form-item>-->
-        <el-form-item label="操作人员ID" prop="userId">
-          <el-input v-model="form.userId" placeholder="请输入操作人员ID"/>
-        </el-form-item>
-<!--        <el-form-item label="操作人员姓名" prop="UserName">
-          <el-input v-model="form.UserName" placeholder="请输入操作人员姓名"/>
-        </el-form-item>-->
-<!--        <el-form-item label="删除标记" prop="delFlag">
-          <el-input v-model="form.delFlag" placeholder="请输入删除标记"/>
-        </el-form-item>-->
+        <!--        <el-form-item label="操作人员ID" prop="userId">-->
+        <!--          <el-input v-model="form.userId" placeholder="请输入操作人员ID"/>-->
+        <!--        </el-form-item>-->
       </el-form>
       <div slot="footer" class="dialog-footer">
         <el-button type="primary" @click="submitForm">确 定</el-button>
         <el-button @click="cancel">取 消</el-button>
       </div>
+    </el-dialog>
+
+    <!--    点击公司查询的弹窗-->
+    <el-dialog
+      title="提示"
+      :visible.sync="companyDialogVisible"
+      width="40%">
+      <el-row>
+        <el-table
+          :data="companyInfoList"
+          border
+          style="width: 100%">
+          <el-table-column label="公司名称" align="center" prop="companyName"/>
+          <el-table-column label="公司id" align="center" prop="id"/>
+          <el-table-column
+            fixed="right"
+            label="操作"
+            width="100">
+            <template slot-scope="scope">
+              <el-button @click="commitCompanyInfo(scope.row)" type="danger" size="small">确定</el-button>
+            </template>
+          </el-table-column>
+        </el-table>
+      </el-row>
+      <span slot="footer" class="dialog-footer">
+    <el-button @click="companyDialogVisible = false">取 消</el-button>
+    <el-button type="primary" @click="companyDialogVisible = false">确 定</el-button>
+  </span>
     </el-dialog>
   </div>
 </template>
@@ -287,14 +270,16 @@ import {
   updateBalanceAccounts
 } from "@/api/system/BalanceAccounts";
 import company from "@/views/system/company/index.vue";
+import {mapGetters} from "vuex";
+import {listCompany} from "@/api/system/company";
 
 export default {
   name: "BalanceAccounts",
   computed: {
     company() {
       return company
-     /* return label === 1 ? "客户" : "供应商"*/
-    }
+    },
+    ...mapGetters(['tempbalanceaccountsList'])
   },
   data() {
     return {
@@ -331,7 +316,7 @@ export default {
         UserName: null,
         delFlag: null
       },
-     // 搜索参数
+      // 搜索参数
       timesQuery: {
         beginTime: '',
         endTime: '',
@@ -346,14 +331,22 @@ export default {
         {key: 4, label: `备注`, visible: true},
         {key: 5, label: `添加时间`, visible: true},
         {key: 6, label: `操作人员ID`, visible: true},
-      /*  {key: 7, label: `操作人员姓名`, visible: true},*/
       ],
       // 表单校验
-      rules: {}
+      rules: {},
+
+      //点击公司的弹窗
+      companyDialogVisible: false,
+
+      //公司信息
+      companyInfoList: [],
     };
   },
   created() {
     this.getList();
+    //获取平账信息
+    this.$store.dispatch('balanceaccounts/getbalanceaccountsList')
+    //控制隐藏列
     if (localStorage.getItem('balanceaccounts-columns') === 'null'
       || !localStorage.getItem('balanceaccounts-columns')) {
       //设置localStorage
@@ -371,7 +364,39 @@ export default {
       deep: true,
     }
   },
+
   methods: {
+    //搜索公司信息
+    searchCompanyInfo() {
+      this.companyDialogVisible = true;
+      //获取公司信息 渲染到表格
+      listCompany({companyType: '供应商'}).then(res => {
+        console.log(res)
+        this.companyInfoList = res.rows;
+      })
+    },
+    //点击确认公司
+    commitCompanyInfo(row) {
+      this.form.companyName = row.companyName;
+      this.form.companyID = row.id
+      this.companyDialogVisible = false;
+    },
+    //todo 时间查询
+    handleTimesQuery() {
+      this.BalanceAccountsList = this.tempbalanceaccountsList;
+      console.log(this.timesQuery)
+      const begin = this.timesQuery.beginTime.getTime();
+      const end = this.timesQuery.beginTime.getTime();
+      this.BalanceAccountsList.filter(item => {
+        if (this.timesQuery.companyName === '') {
+          const date = new Date(item.operateDate).getTime();
+          return date >= begin && date <= end;
+        } else {
+          const date = new Date(item.operateDate).getTime();
+          return date >= begin && date <= end && item.companyName === this.timesQuery.companyName;
+        }
+      })
+    },
     /*打印信息*/
     printHTML() {
       this.$print({
