@@ -1,10 +1,16 @@
 package org.dzu.system.service.impl;
 
 import org.dzu.common.constant.DelConstants;
+import org.dzu.common.exception.ServiceException;
 import org.dzu.common.utils.DateUtils;
 import org.dzu.common.utils.SecurityUtils;
+import org.dzu.common.utils.StringUtils;
+import org.dzu.system.domain.Company;
+import org.dzu.system.domain.GoodsOrder;
 import org.dzu.system.domain.InvoiceOther;
 import org.dzu.system.mapper.InvoiceOtherMapper;
+import org.dzu.system.service.ICompanyService;
+import org.dzu.system.service.IGoodsOrderService;
 import org.dzu.system.service.IInvoiceOtherService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -22,6 +28,11 @@ public class InvoiceOtherServiceImpl implements IInvoiceOtherService
     @Autowired
     private InvoiceOtherMapper invoiceOtherMapper;
 
+    @Autowired
+    private ICompanyService companyService;
+
+    @Autowired
+    private IGoodsOrderService goodsOrderService;
     /**
      * 查询商家直接给客户开发票
      *
@@ -55,10 +66,27 @@ public class InvoiceOtherServiceImpl implements IInvoiceOtherService
     @Override
     public int insertInvoiceOther(InvoiceOther invoiceOther)
     {
+        // 设置基础信息
         invoiceOther.setAddtime(String.valueOf(DateUtils.getNowDate()));
         invoiceOther.setUserId(SecurityUtils.getUserId());
         invoiceOther.setUserName(SecurityUtils.getUserTruename());
         invoiceOther.setDelFlag(Long.valueOf(DelConstants.NODEL));
+
+        // 确定对应的客户和供应商信息存在
+        Company customer = companyService.selectCompanyById(invoiceOther.getCustomerID());
+        Company supplier = companyService.selectCompanyById(invoiceOther.getSupplierID());
+
+        if(StringUtils.isNull(customer) || StringUtils.isNull(supplier)){
+            throw new ServiceException("对应的客户或着供应商信息不存在,请刷新页面后重试");
+        }
+
+        // 搜索对应的订单是否存在
+        if(StringUtils.isNotNull(invoiceOther.getOrdersNo())){
+            GoodsOrder goodsOrder = goodsOrderService.selectGoodsOrderByOrderNO(invoiceOther.getOrdersNo());
+            if(StringUtils.isNull(goodsOrder)){
+                throw new ServiceException("对应的订单信息不存在,请刷新页面后重试");
+            }
+        }
         return invoiceOtherMapper.insertInvoiceOther(invoiceOther);
     }
 
@@ -71,9 +99,26 @@ public class InvoiceOtherServiceImpl implements IInvoiceOtherService
     @Override
     public int updateInvoiceOther(InvoiceOther invoiceOther)
     {
-        invoiceOther.setUserId(SecurityUtils.getUserId());
-        invoiceOther.setUserName(SecurityUtils.getUserTruename());
+        // 确定对应的客户和供应商信息存在
+        Company customer = companyService.selectCompanyById(invoiceOther.getCustomerID());
+        Company supplier = companyService.selectCompanyById(invoiceOther.getSupplierID());
+
+        if(StringUtils.isNull(customer) || StringUtils.isNull(supplier)){
+            throw new ServiceException("对应的客户或着供应商信息不存在,请刷新页面后重试");
+        }
+
+        // 搜索对应的订单是否存在
+        if(StringUtils.isNotNull(invoiceOther.getOrdersNo())){
+            GoodsOrder goodsOrder = goodsOrderService.selectGoodsOrderByOrderNO(invoiceOther.getOrdersNo());
+            if(StringUtils.isNull(goodsOrder)){
+                throw new ServiceException("对应的订单信息不存在,请刷新页面后重试");
+            }
+        }
+
+        // 设置更新时间
         invoiceOther.setUpdateTime(DateUtils.getNowDate());
+
+
         return invoiceOtherMapper.updateInvoiceOther(invoiceOther);
     }
 
