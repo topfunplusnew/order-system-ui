@@ -538,21 +538,21 @@
       <el-table-column label="客户" align="center" prop="customer" fixed="left"/>
       <el-table-column label="供应商" align="center" prop="supplier" fixed="left"/>
       <!--      滚动列-->
-      <el-table-column label="供应商ID" align="center" prop="supplierID"/>
-      <el-table-column label="客户ID" align="center" prop="customerID"/>
-      <el-table-column label="级别编码" align="center" prop="levelID"/>
-      <el-table-column label="级别名称" align="center" prop="levelName"/>
-      <el-table-column label="计量单位" align="center" prop="countingUnit"/>
-      <el-table-column label="厚度" align="center" prop="height"/>
-      <el-table-column label="长度" align="center" prop="length"/>
-      <el-table-column label="宽度" align="center" prop="width"/>
-      <el-table-column label="出厂片数" align="center" prop="pieces"/>
-      <el-table-column label="每包片数" align="center" prop="piecesPerPack"/>
-      <el-table-column label="包数" align="center" prop="packs"/>
-      <el-table-column label="出厂单价" align="center" prop="price"/>
+      <el-table-column label="供应商ID" align="center" prop="supplierID" v-if="columns[36].visible" />
+      <el-table-column label="客户ID" align="center" prop="customerID" v-if="columns[0].visible"/>
+      <el-table-column label="级别编码" align="center" prop="levelID" v-if="columns[1].visible"/>
+      <el-table-column label="级别名称" align="center" prop="levelName" v-if="columns[2].visible"/>
+      <el-table-column label="计量单位" align="center" prop="countingUnit" v-if="columns[3].visible"/>
+      <el-table-column label="厚度" align="center" prop="height" v-if="columns[4].visible"/>
+      <el-table-column label="长度" align="center" prop="length" v-if="columns[5].visible"/>
+      <el-table-column label="宽度" align="center" prop="width" v-if="columns[6].visible"/>
+      <el-table-column label="出厂片数" align="center" prop="pieces" v-if="columns[7].visible"/>
+      <el-table-column label="每包片数" align="center" prop="piecesPerPack" v-if="columns[8].visible"/>
+      <el-table-column label="包数" align="center" prop="packs" v-if="columns[9].visible"/>
+      <el-table-column label="出厂单价" align="center" prop="price" v-if="columns[10].visible"/>
 <!--      <el-table-column label="出厂是否含税" align="center" prop="isIncludeTaxFactory"/>-->
       <!--      是与否-->
-      <el-table-column label="出厂是否含税" align="center" prop="isIncludeTaxFactory">
+      <el-table-column label="出厂是否含税" align="center" prop="isIncludeTaxFactory"v-if="columns[11].visible" >
         <template slot-scope="scope">
           <el-tag
             :type="scope.row.isIncludeTaxFactory === '否' ? 'danger' :'success'"
@@ -560,12 +560,12 @@
           </el-tag>
         </template>
       </el-table-column>
-      <el-table-column label="杂费" align="center" prop="sundryCost"/>
-      <el-table-column label="出厂货款" align="center" prop="paymentFactory"/>
-      <el-table-column label="卸货价" align="center" prop="paymentUnload"/>
+      <el-table-column label="杂费" align="center" prop="sundryCost" v-if="columns[12].visible"/>
+      <el-table-column label="出厂货款" align="center" prop="paymentFactory"v-if="columns[13].visible"/>
+      <el-table-column label="卸货价" align="center" prop="paymentUnload"v-if="columns[14].visible"/>
 <!--      <el-table-column label="销售是否含税" align="center" prop="isIncludeTaxSale"/>-->
       <!--      是与否-->
-      <el-table-column label="销售是否含税" align="center" prop="isIncludeTaxSale">
+      <el-table-column label="销售是否含税" align="center" prop="isIncludeTaxSale" v-if="columns[15].visible">
         <template slot-scope="scope">
           <el-tag
             :type="scope.row.isIncludeTaxSale === '否' ? 'danger' :'success'"
@@ -573,28 +573,28 @@
           </el-tag>
         </template>
       </el-table-column>
-      <el-table-column label="总货款" align="center" prop="payments"/>
-      <el-table-column label="误差" align="center" prop="erro"/>
-      <el-table-column label="吨位" align="center" prop="tonnage"/>
-      <el-table-column label="陆运费单价" align="center" prop="landFreightPrice"/>
-      <el-table-column label="陆运费" align="center" prop="landFreight"/>
-      <el-table-column label="海运费" align="center" prop="seaFreight"/>
-      <el-table-column label="总运费" align="center" prop="freight"/>
-      <el-table-column label="其他费用" align="center" prop="otherCost"/>
-      <el-table-column label="利润" align="center" prop="profit"/>
-      <el-table-column label="不含税利润" align="center" prop="profitNoTax"/>
-      <el-table-column label="实际片数" align="center" prop="actualPieces"/>
-      <el-table-column label="总货款杂费" align="center" prop="paymentsWithSundry"/>
-      <el-table-column label="加费" align="center" prop="additionalFees"/>
-      <el-table-column label="仓库ID" align="center" prop="storeHouseID"/>
-      <el-table-column label="仓库名称" align="center" prop="storeHouseName"/>
-      <el-table-column label="仓库存储的货物ID" align="center" prop="storeID"/>
-      <el-table-column label="物流利润" align="center" prop="logisticsProfit"/>
-      <el-table-column label="客户佣金" align="center" prop="customerCommission"/>
+      <el-table-column label="总货款" align="center" prop="payments" v-if="columns[16].visible"/>
+      <el-table-column label="误差" align="center" prop="erro" v-if="columns[17].visible"/>
+      <el-table-column label="吨位" align="center" prop="tonnage" v-if="columns[18].visible"/>
+      <el-table-column label="陆运费单价" align="center" prop="landFreightPrice" v-if="columns[19].visible"/>
+      <el-table-column label="陆运费" align="center" prop="landFreight" v-if="columns[20].visible"/>
+      <el-table-column label="海运费" align="center" prop="seaFreight" v-if="columns[21].visible"/>
+      <el-table-column label="总运费" align="center" prop="freight" v-if="columns[22].visible"/>
+      <el-table-column label="其他费用" align="center" prop="otherCost" v-if="columns[23].visible"/>
+      <el-table-column label="利润" align="center" prop="profit" v-if="columns[24].visible"/>
+      <el-table-column label="不含税利润" align="center" prop="profitNoTax" v-if="columns[25].visible"/>
+      <el-table-column label="实际片数" align="center" prop="actualPieces" v-if="columns[26].visible"/>
+      <el-table-column label="总货款杂费" align="center" prop="paymentsWithSundry" v-if="columns[27].visible"/>
+      <el-table-column label="加费" align="center" prop="additionalFees" v-if="columns[28].visible"/>
+      <el-table-column label="仓库ID" align="center" prop="storeHouseID" v-if="columns[29].visible"/>
+      <el-table-column label="仓库名称" align="center" prop="storeHouseName" v-if="columns[30].visible"/>
+      <el-table-column label="仓库存储的货物ID" align="center" prop="storeID" v-if="columns[31].visible"/>
+      <el-table-column label="物流利润" align="center" prop="logisticsProfit" v-if="columns[32].visible"/>
+      <el-table-column label="客户佣金" align="center" prop="customerCommission" v-if="columns[33].visible"/>
 <!--      <el-table-column label="是否被调整单" align="center" prop="isAdjusted"/>-->
 
       <!--      是与否-->
-      <el-table-column label="是否被调整单" align="center" prop="isAdjusted">
+      <el-table-column label="是否被调整单" align="center" prop="isAdjusted" v-if="columns[34].visible" >
         <template slot-scope="scope">
           <el-tag
             :type="scope.row.isAdjusted === '否' ? 'danger' :'success'"
@@ -602,17 +602,17 @@
           </el-tag>
         </template>
       </el-table-column>
+      <el-table-column label="调整日期" align="center" prop="adjustDate" v-if="columns[35].visible"/>
 
 
-      <el-table-column label="调整日期" align="center" prop="adjustDate"/>
-      <el-table-column label="作废标记" align="center" prop="cancelFlag"/>
-      <el-table-column label="备注" align="center" prop="comments"/>
-      <el-table-column label="添加时间" align="center" prop="addtime"/>
-      <el-table-column label="操作人员ID" align="center" prop="userId"/>
-      <el-table-column label="操作人员姓名" align="center" prop="UserName"/>
+<!--      <el-table-column label="作废标记" align="center" prop="cancelFlag"/>-->
+<!--      <el-table-column label="备注" align="center" prop="comments"/>-->
+<!--      <el-table-column label="添加时间" align="center" prop="addtime"/>-->
+<!--      <el-table-column label="操作人员ID" align="center" prop="userId"/>-->
+<!--      <el-table-column label="操作人员姓名" align="center" prop="UserName"/>-->
       <!--      右侧操作列-->
-      <el-table-column label="操作" align="center" class-name="small-padding fixed-width" width="300px" fixed="right">
-        <template slot-scope="scope">
+<!--      <el-table-column label="操作" align="center" class-name="small-padding fixed-width" width="300px" fixed="right">-->
+<!--        <template slot-scope="scope">-->
 <!--          <el-button-->
 <!--            size="mini"-->
 <!--            @click="handleOrder1(scope.row)"-->
@@ -644,8 +644,8 @@
 <!--            v-hasPermi="['system:orderdetail:remove']"-->
 <!--          >上传收到条-->
 <!--          </el-button>-->
-        </template>
-      </el-table-column>
+<!--        </template>-->
+<!--      </el-table-column>-->
     </el-table>
 
     <pagination
@@ -861,11 +861,11 @@
           <TagsItem :check-info="orderDetailInfo.isAdjusted " check-value="否"/>
         </el-descriptions-item>
         <el-descriptions-item label="调整日期">{{ orderDetailInfo.adjustDate }}</el-descriptions-item>
-        <el-descriptions-item label="作废标记">{{ orderDetailInfo.cancelFlag}}</el-descriptions-item>
-        <el-descriptions-item label="备注">{{ orderDetailInfo.comments }}</el-descriptions-item>
-        <el-descriptions-item label="添加时间">{{ orderDetailInfo.addtime }}</el-descriptions-item>
-        <el-descriptions-item label="操作人员ID">{{ orderDetailInfo.userId }}</el-descriptions-item>
-        <el-descriptions-item label="操作人员姓名">{{ orderDetailInfo.UserName }}</el-descriptions-item>
+<!--        <el-descriptions-item label="作废标记">{{ orderDetailInfo.cancelFlag}}</el-descriptions-item>-->
+<!--        <el-descriptions-item label="备注">{{ orderDetailInfo.comments }}</el-descriptions-item>-->
+<!--        <el-descriptions-item label="添加时间">{{ orderDetailInfo.addtime }}</el-descriptions-item>-->
+<!--        <el-descriptions-item label="操作人员ID">{{ orderDetailInfo.userId }}</el-descriptions-item>-->
+<!--        <el-descriptions-item label="操作人员姓名">{{ orderDetailInfo.UserName }}</el-descriptions-item>-->
         <!-- todo       附件-->
 
       </el-descriptions>
@@ -1044,15 +1044,45 @@ export default {
       rules: {},
       //隐藏列
       columns: [
-        {key: 0, label: `客户`, visible: true},
-        {key: 1, label: `老板姓名`, visible: true},
-        {key: 2, label: `公司名称`, visible: true},
-        {key: 3, label: `老板电话`, visible: true},
-        {key: 4, label: `电话`, visible: true},
-        {key: 5, label: `地址`, visible: true},
-        {key: 6, label: `区域`, visible: true},
-        {key: 7, label: `销售经理`, visible: true},
-        {key: 8, label: `备注`, visible: true},
+        // {key: 50, label: ` 供应商ID`, visible: true},
+        {key: 0, label: ` 客户ID`, visible: true},
+        {key: 1, label: `级别编码`, visible: true},
+        {key: 2, label: `级别名称`, visible: true},
+        {key: 3, label: `计量单位`, visible: true},
+        {key: 4, label: `厚度`, visible: true},
+        {key: 5, label: `长度`, visible: true},
+        {key: 6, label: `宽度`, visible: true},
+        {key: 7, label: `出厂片数`, visible: true},
+        {key: 8, label: `每包片数`, visible: true},
+        {key: 9, label: `包数`, visible: true},
+        {key: 10, label: `出厂单价`, visible: true},
+        {key: 11, label: `出厂是否含税`, visible: true},
+        {key: 12, label: `杂费`, visible: true},
+        {key: 13, label: `出厂货款`, visible: true},
+        {key: 14, label: `卸货价`, visible: true},
+        {key: 15, label: `销售是否含税`, visible: true},
+        {key: 16, label: `总货款`, visible: true},
+        {key: 17, label: `误差`, visible: true},
+        {key: 18, label: `吨位`, visible: true},
+        {key: 19, label: `陆运费单价`, visible: true},
+        {key: 20, label: `陆运费`, visible: true},
+        {key: 21, label: `海运费`, visible: true},
+        {key: 22, label: `总运费`, visible: true},
+        {key: 23, label: `其他费用`, visible: true},
+        {key: 24, label: `利润`, visible: true},
+        {key: 25, label: `不含税利润`, visible: true},
+        {key: 26, label: `实际片数`, visible: true},
+        {key: 27, label: `总货款杂费`, visible: true},
+        {key: 28, label: `加费`, visible: true},
+        {key: 29, label: `仓库ID`,visible: true},
+        {key: 30, label: `仓库名称`, visible: true},
+        {key: 31, label: `仓库存储的货物ID`, visible: true},
+        {key: 32, label: `物流利润`, visible: true},
+        {key: 33, label: `客户佣金`, visible: true},
+        {key: 34, label: `是否被调整单`, visible: true},
+        {key: 35, label: `调整日期`, visible: true},
+        {key: 36, label: `供应商ID`, visible: true},
+
       ],
       //顶部条件搜索
       queryOrderInfo: {},
