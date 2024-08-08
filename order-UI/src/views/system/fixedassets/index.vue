@@ -265,7 +265,7 @@ export default {
   },
   created() {
     //获取信息
-    // this.getList();
+    this.getList();
     this.loading = false;
     if (localStorage.getItem('fixedassets-columns') === 'null'
       || !localStorage.getItem('fixedassets-columns')) {
