@@ -444,7 +444,7 @@ export default {
     },
     /** 提交按钮 */
     submitForm() {
-      this.$waiting();//开始加载
+      this.$wait();//开始加载
       this.$refs["form"].validate(valid => {
         if (valid) {
           if (this.form.id != null) {

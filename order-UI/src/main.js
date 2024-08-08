@@ -43,6 +43,7 @@ import horizontalScroll from 'el-table-horizontal-scroll'
 //打印
 import 'print-js/dist/print.css';
 import print from 'print-js'
+import {excludeParams} from "@/api/tool/exclude";
 // 全局方法挂载
 Vue.prototype.getDicts = getDicts
 Vue.prototype.getConfigKey = getConfigKey
@@ -54,13 +55,14 @@ Vue.prototype.selectDictLabels = selectDictLabels
 Vue.prototype.download = download
 Vue.prototype.handleTree = handleTree
 Vue.prototype.$print = print;
-
+//需要排除的字段信息
+//使用: excludeParams(this, this.$exclude)  api/tool/exclude.js
+Vue.prototype.$exclude = ['addtime', 'userId', 'UserName', 'delFlag', 'submitflag','cancelFlag']
 //挂载加载中动态效果
-Vue.prototype.$waiting = () => {
+Vue.prototype.$wait = () => {
   Loading.service({
     fullscreen: true,
     text: '正在加载中，请稍后...',
-    background: 'rgba(0, 0, 0, 0.7)'
   })
 }
 //结束加载
