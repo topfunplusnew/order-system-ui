@@ -148,9 +148,9 @@
 
 
     <!--    表格列-->
-    <el-table v-loading="loading" :data="goodsOrderList" @selection-change="handleSelectionChange"
+    <el-table border v-loading="loading" :data="goodsOrderList" @selection-change="handleSelectionChange"
               show-summary :summary-method="getSummaries" id="printBox" :row-class-name="tableRowClassName"
-              max-height="400">
+              max-height="500">
       <!--      左侧操作栏-->
       <el-table-column label="操作" align="center" class-name="small-padding fixed-width" width="170px" fixed="left">
         <template slot-scope="scope">
