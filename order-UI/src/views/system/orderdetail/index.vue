@@ -4,6 +4,7 @@
     <el-form :model="queryOrderInfo" ref="queryForm" size="small" :inline="true" v-show="showSearch"
              label-width="100px">
 
+
       <!--      开始时间-->
       <!--            <el-form-item label="开始日期" prop="startTime">-->
       <!--              <el-date-picker-->
@@ -87,6 +88,22 @@
           clearable
           @keyup.enter.native="handleQuery"
         />
+      </el-form-item>
+      <!--      时间范围查询-->
+      <el-form-item label="开始日期" prop="startTime">
+        <el-date-picker
+          v-model="queryParams.startTime"
+          type="date"
+          placeholder="请选择开始日期" value-format="yyyy-MM-dd">
+        </el-date-picker>
+      </el-form-item>
+      <!--      结束时间-->
+      <el-form-item label="结束日期" prop="endTime">
+        <el-date-picker
+          v-model="queryParams.endTime"
+          type="date"
+          placeholder="请选择结束日期" value-format="yyyy-MM-dd">
+        </el-date-picker>
       </el-form-item>
       <!--      <el-form-item label="供应商ID" prop="supplierID">-->
       <!--        <el-input-->
@@ -429,8 +446,10 @@
         <!--        <el-button icon="el-icon-refresh" size="mini" @click="resetQuery">重置</el-button>-->
       </el-form-item>
     </el-form>
+<!--       表格上方操作栏-->
 
     <el-row :gutter="10" class="mb8">
+      <!--      左侧操作栏-->
       <el-col :span="1.5">
         <el-button icon="el-icon-refresh" size="mini" @click="resetQuery">刷新</el-button>
       </el-col>
@@ -489,18 +508,19 @@
 <!--      @selection-change="handleSelectionChange" id="printBox"-->
 <!--      show-summary :summary-method="getSummaries"-->
 <!--      max-height="400">-->
-<!--    <el-table v-loading="loading" -->
-<!--              :data="goodsOrderList"-->
-<!--              @selection-change="handleSelectionChange"-->
-<!--              show-summary :summary-method="getSummaries"-->
-<!--              id="printBox" :row-class-name="tableRowClassName"-->
-<!--              max-height="400">-->
-    <el-table
+<!--<  <el-table border v-loading="loading"
+:data="goodsOrderList"
+@selection-change="handleSelectionChange"-->
+<!--             show-summary :summary-method="getSummaries" id="printBox" :row-class-name="tableRowClassName"-->
+<!--             max-height="500">-->
+    <el-table border
       v-horizontal-scroll="'always'"
               v-loading="loading" :data="orderDetailList"
               @selection-change="handleSelectionChange" id="printBox"
+      :row-class-name="tableRowClassName"
               show-summary :summary-method="getSummaries"
-              max-height="400">
+              max-height="700"
+    >
       <!--      操作列-->
 
       <el-table-column label="操作" align="center" class-name="small-padding fixed-width" width="170px" fixed="left">
