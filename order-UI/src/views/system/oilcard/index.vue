@@ -171,8 +171,8 @@
               icon="el-icon-printer"
               size="mini"
               @click="printHTML"
-              v-hasPermi="['system:oilcard:export']"
             >
+<!--              v-hasPermi="['system:oilcard:export']"-->
             </el-button>
           </el-col>
         </template>
@@ -446,9 +446,14 @@ export default {
       };
       this.resetForm("form");
     },
-
-
-
+    // 打印按钮操作
+    printHTML() {
+      this.$print({
+        printable: 'printBox',
+        type: 'html',
+        targetStyles: ['*'], // 打印内容使用所有HTML样式，没有设置这个属性/值，设置分页打印没有效果
+      })
+    },
     /** 搜索按钮操作 */
     handleQuery() {
       this.queryParams.pageNum = 1;
