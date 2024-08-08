@@ -165,6 +165,8 @@ export default {
       <h2>测试封装组件</h2>
 
       <!--      封装组件用例-->
+      <!--      需要的参数 icon:图标  title:弹窗标题 get-data:列表获取数据源函数  handleCommitBack:用于修改表单的函数 -->
+      <!--      slot: 表格的列数据 -->
       <SearchOption icon="el-icon-platform-eleme" title="车辆信息" :get-data="listCars" @commitBack="handleCommitBack">
         <template v-slot:table-columns>
           <el-table-column
