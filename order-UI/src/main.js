@@ -45,7 +45,8 @@ import 'print-js/dist/print.css';
 import print from 'print-js'
 import {excludeParams} from "@/api/tool/exclude";
 import data from "@/views/system/dict/data.vue";
-// 全局方法挂载
+
+//todo 全局方法挂载
 Vue.prototype.getDicts = getDicts
 Vue.prototype.getConfigKey = getConfigKey
 Vue.prototype.parseTime = parseTime
@@ -56,9 +57,12 @@ Vue.prototype.selectDictLabels = selectDictLabels
 Vue.prototype.download = download
 Vue.prototype.handleTree = handleTree
 Vue.prototype.$print = print;
+
+//todo 以下是自己封装的一些常用的繁琐操作函数
 //1.需要排除的字段信息
-//使用: excludeParams(this, this.$exclude)  api/tool/exclude.js
+//使用: this.form = excludeParams(this.form, this.$exclude)  api/tool/exclude.js
 Vue.prototype.$exclude = ['addtime', 'userId', 'UserName', 'delFlag', 'submitflag', 'cancelFlag']
+
 //2.挂载加载中动态效果
 //使用: 数据加载前:this.$wait()  数据加载后:this.$close()
 Vue.prototype.$wait = () => {
@@ -71,6 +75,7 @@ Vue.prototype.$wait = () => {
 Vue.prototype.$close = () => {
   Loading.service({}).close()
 }
+
 //3.时间范围查询方法
 //targetList: 需要筛选的数组
 //targetProperty: 需要筛选的时间字段
@@ -98,6 +103,7 @@ Vue.prototype.$dateRange = function (_this, targetList, targetProperty, startTim
   }
 }
 
+
 // 全局组件挂载
 Vue.component('DictTag', DictTag)
 Vue.component('Pagination', Pagination)
@@ -106,6 +112,7 @@ Vue.component('Editor', Editor)
 Vue.component('FileUpload', FileUpload)
 Vue.component('ImageUpload', ImageUpload)
 Vue.component('ImagePreview', ImagePreview)
+
 
 Vue.use(directive)
 Vue.use(plugins)
