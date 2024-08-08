@@ -11,13 +11,19 @@ export default {
     getData: {
       type: Function,
       required: true
+    },
+    //约束条件
+    limitInfo: {
+      type: Object
     }
   },
   data() {
     return {
       dialogVisible: false,
       //数据集 通过父组件传入函数来获取
-      tableData: []
+      tableData: [],
+      //加载效果
+      loading: false
     }
   },
   created() {
@@ -26,16 +32,17 @@ export default {
     //点击弹窗
     handleCallBack() {
       this.dialogVisible = true
+      this.loading = true;
       //获取数据 渲染表格
-      this.getData().then(res => {
+      this.getData(this.limitInfo).then(res => {
         this.tableData = res.rows;
-        console.log(res)
+        this.loading = false;
       })
     },
     //点击确认
     commitSomeThing(row) {
-      console.log(row)
       this.$emit('commitBack', row)
+      this.dialogVisible = false
     }
   }
 }
@@ -44,15 +51,15 @@ export default {
 <template>
   <div>
     <!--    按钮-->
-    <el-button :icon="icon" @click="handleCallBack"></el-button>
+    <el-button :icon="icon" @click="handleCallBack" type="primary"></el-button>
     <!--    弹窗-->
     <el-dialog
       :title="title"
       :visible.sync="dialogVisible"
-      width="30%">
+      width="30%" append-to-body>
       <!--      弹出的表格内容-->
       <el-row>
-        <el-table :data="tableData">
+        <el-table :data="tableData" v-loading="loading">
           <!--   这里给表格的数据行-->
           <slot name="table-columns"></slot>
           <!--          点击确认的地方-->

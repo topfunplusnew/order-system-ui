@@ -2,7 +2,7 @@ import Vue from 'vue'
 
 import Cookies from 'js-cookie'
 
-import Element from 'element-ui'
+import Element, {Loading} from 'element-ui'
 import './assets/styles/element-variables.scss'
 
 import '@/assets/styles/index.scss' // global css
@@ -54,6 +54,19 @@ Vue.prototype.selectDictLabels = selectDictLabels
 Vue.prototype.download = download
 Vue.prototype.handleTree = handleTree
 Vue.prototype.$print = print;
+
+//挂载加载中动态效果
+Vue.prototype.$waiting = () => {
+  Loading.service({
+    fullscreen: true,
+    text: '正在加载中，请稍后...',
+    background: 'rgba(0, 0, 0, 0.7)'
+  })
+}
+//结束加载
+Vue.prototype.$close = () => {
+  Loading.service({}).close()
+}
 // 全局组件挂载
 Vue.component('DictTag', DictTag)
 Vue.component('Pagination', Pagination)
