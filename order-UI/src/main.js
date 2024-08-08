@@ -44,6 +44,7 @@ import horizontalScroll from 'el-table-horizontal-scroll'
 import 'print-js/dist/print.css';
 import print from 'print-js'
 import {excludeParams} from "@/api/tool/exclude";
+import data from "@/views/system/dict/data.vue";
 // 全局方法挂载
 Vue.prototype.getDicts = getDicts
 Vue.prototype.getConfigKey = getConfigKey
@@ -55,10 +56,11 @@ Vue.prototype.selectDictLabels = selectDictLabels
 Vue.prototype.download = download
 Vue.prototype.handleTree = handleTree
 Vue.prototype.$print = print;
-//需要排除的字段信息
+//1.需要排除的字段信息
 //使用: excludeParams(this, this.$exclude)  api/tool/exclude.js
-Vue.prototype.$exclude = ['addtime', 'userId', 'UserName', 'delFlag', 'submitflag','cancelFlag']
-//挂载加载中动态效果
+Vue.prototype.$exclude = ['addtime', 'userId', 'UserName', 'delFlag', 'submitflag', 'cancelFlag']
+//2.挂载加载中动态效果
+//使用: 数据加载前:this.$wait()  数据加载后:this.$close()
 Vue.prototype.$wait = () => {
   Loading.service({
     fullscreen: true,
@@ -69,6 +71,33 @@ Vue.prototype.$wait = () => {
 Vue.prototype.$close = () => {
   Loading.service({}).close()
 }
+//3.时间范围查询方法
+//targetList: 需要筛选的数组
+//targetProperty: 需要筛选的时间字段
+//return 筛选后的数组
+//使用: this.$dateRange(this, this.bankList, 'createTime', this.timesQuery.startTime,this.timesQuery.endTime)
+Vue.prototype.$dateRange = function (_this, targetList, targetProperty, startTime, endTime) {
+  //开始时间 结束时间的时间戳
+  const start = new Date(startTime).getTime()
+  const end_date = new Date(endTime)
+  end_date.setDate(end_date.getDate() + 1)
+  const end = end_date.getTime();
+  //校验
+  if (startTime === '' || endTime === '') {
+    this.$message.error("开始时间或结束时间不能为空!");
+    return _this[targetList]
+  } else if (start > end) {
+    this.$message.error("开始时间不能大于结束时间!");
+    return _this[targetList]
+  } else {
+    //筛选
+    return _this[targetList].filter(item => {
+      const target = new Date(item[targetProperty]).getTime();
+      return target >= start && target <= end;
+    })
+  }
+}
+
 // 全局组件挂载
 Vue.component('DictTag', DictTag)
 Vue.component('Pagination', Pagination)

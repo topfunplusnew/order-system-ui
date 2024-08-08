@@ -273,21 +273,11 @@ export default {
   methods: {
     //时间查询
     handleTimesQuery() {
+      //重新赋值
       this.fixedAssetsList = this.fixedassetsList;
-      this.fixedAssetsList = this.fixedAssetsList.filter(item => {
-        //时间转换
-        const time_start = new Date(this.timesQuery.beginTime).getTime()
-        const date = new Date(this.timesQuery.endTime)
-        date.setDate(date.getDate() + 1)
-        const time_end = date.getTime()
-
-        const time_search = new Date(item.buyDate).getTime()
-        console.log(time_search, time_start, time_end)
-        //筛选
-        return time_search
-          >= time_start && time_search <= time_end
-      })
-      console.log(this.fixedassetsList)
+      //筛选
+      this.fixedAssetsList =
+        this.$dateRange(this, 'fixedAssetsList', 'buyDate', this.timesQuery.beginTime, this.timesQuery.endTime);
     },
     printHTML() {
       this.$print({
