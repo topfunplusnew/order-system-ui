@@ -9,101 +9,112 @@
           @keyup.enter.native="handleQuery"
         />
       </el-form-item>
-      <el-form-item label="使用加油卡时间" prop="useDate">
-        <el-input
-          v-model="queryParams.useDate"
-          placeholder="请输入使用加油卡时间"
-          clearable
-          @keyup.enter.native="handleQuery"
-        />
-      </el-form-item>
-      <el-form-item label="使用加油卡车辆车牌号" prop="carNo">
-        <el-input
-          v-model="queryParams.carNo"
-          placeholder="请输入使用加油卡车辆车牌号"
-          clearable
-          @keyup.enter.native="handleQuery"
-        />
-      </el-form-item>
-      <el-form-item label="地点、事由" prop="destination">
-        <el-input
-          v-model="queryParams.destination"
-          placeholder="请输入地点、事由"
-          clearable
-          @keyup.enter.native="handleQuery"
-        />
-      </el-form-item>
-      <el-form-item label="充值金额(元）" prop="rechargeMoney">
-        <el-input
-          v-model="queryParams.rechargeMoney"
-          placeholder="请输入充值金额(元）"
-          clearable
-          @keyup.enter.native="handleQuery"
-        />
-      </el-form-item>
-      <el-form-item label="期初余额" prop="startCardSurplus">
-        <el-input
-          v-model="queryParams.startCardSurplus"
-          placeholder="请输入期初余额"
-          clearable
-          @keyup.enter.native="handleQuery"
-        />
-      </el-form-item>
-      <el-form-item label="主卡转副卡充值金额" prop="toPlusCardMoney">
-        <el-input
-          v-model="queryParams.toPlusCardMoney"
-          placeholder="请输入主卡转副卡充值金额"
-          clearable
-          @keyup.enter.native="handleQuery"
-        />
-      </el-form-item>
-      <el-form-item label="加油量" prop="refuelingNumber">
-        <el-input
-          v-model="queryParams.refuelingNumber"
-          placeholder="请输入加油量"
-          clearable
-          @keyup.enter.native="handleQuery"
-        />
-      </el-form-item>
-      <el-form-item label="单价" prop="unitPrice">
-        <el-input
-          v-model="queryParams.unitPrice"
-          placeholder="请输入单价"
-          clearable
-          @keyup.enter.native="handleQuery"
-        />
-      </el-form-item>
-      <el-form-item label="加油金额(元）" prop="refuelingMoney">
-        <el-input
-          v-model="queryParams.refuelingMoney"
-          placeholder="请输入加油金额(元）"
-          clearable
-          @keyup.enter.native="handleQuery"
-        />
-      </el-form-item>
-      <el-form-item label="是否有小票" prop="isTicket">
-        <el-input
-          v-model="queryParams.isTicket"
-          placeholder="请输入是否有小票"
-          clearable
-          @keyup.enter.native="handleQuery"
-        />
-      </el-form-item>
-      <el-form-item label="加油卡余额" prop="endCardSurplus">
-        <el-input
-          v-model="queryParams.endCardSurplus"
-          placeholder="请输入加油卡余额"
-          clearable
-          @keyup.enter.native="handleQuery"
-        />
-      </el-form-item>
-      <el-form-item label="备注" prop="comments">
-        <el-input
-          v-model="queryParams.comments"
-          placeholder="请输入备注"
-          clearable
-          @keyup.enter.native="handleQuery"
-        />
+<!--      <el-form-item label="使用加油卡时间" prop="useDate">-->
+<!--        <el-input-->
+<!--          v-model="queryParams.useDate"-->
+<!--          placeholder="请输入使用加油卡时间"-->
+<!--          clearable-->
+<!--          @keyup.enter.native="handleQuery"-->
+<!--        />-->
+<!--      </el-form-item>-->
+<!--      <el-form-item label="使用加油卡车辆车牌号" prop="carNo">-->
+<!--        <el-input-->
+<!--          v-model="queryParams.carNo"-->
+<!--          placeholder="请输入使用加油卡车辆车牌号"-->
+<!--          clearable-->
+<!--          @keyup.enter.native="handleQuery"-->
+<!--        />-->
+<!--      </el-form-item>-->
+<!--      <el-form-item label="地点、事由" prop="destination">-->
+<!--        <el-input-->
+<!--          v-model="queryParams.destination"-->
+<!--          placeholder="请输入地点、事由"-->
+<!--          clearable-->
+<!--          @keyup.enter.native="handleQuery"-->
+<!--        />-->
+<!--      </el-form-item>-->
+<!--      <el-form-item label="充值金额(元）" prop="rechargeMoney">-->
+<!--        <el-input-->
+<!--          v-model="queryParams.rechargeMoney"-->
+<!--          placeholder="请输入充值金额(元）"-->
+<!--          clearable-->
+<!--          @keyup.enter.native="handleQuery"-->
+<!--        />-->
+<!--      </el-form-item>-->
+<!--      <el-form-item label="期初余额" prop="startCardSurplus">-->
+<!--        <el-input-->
+<!--          v-model="queryParams.startCardSurplus"-->
+<!--          placeholder="请输入期初余额"-->
+<!--          clearable-->
+<!--          @keyup.enter.native="handleQuery"-->
+<!--        />-->
+<!--      </el-form-item>-->
+<!--      <el-form-item label="主卡转副卡充值金额" prop="toPlusCardMoney">-->
+<!--        <el-input-->
+<!--          v-model="queryParams.toPlusCardMoney"-->
+<!--          placeholder="请输入主卡转副卡充值金额"-->
+<!--          clearable-->
+<!--          @keyup.enter.native="handleQuery"-->
+<!--        />-->
+<!--      </el-form-item>-->
+<!--      <el-form-item label="加油量" prop="refuelingNumber">-->
+<!--        <el-input-->
+<!--          v-model="queryParams.refuelingNumber"-->
+<!--          placeholder="请输入加油量"-->
+<!--          clearable-->
+<!--          @keyup.enter.native="handleQuery"-->
+<!--        />-->
+<!--      </el-form-item>-->
+<!--      <el-form-item label="单价" prop="unitPrice">-->
+<!--        <el-input-->
+<!--          v-model="queryParams.unitPrice"-->
+<!--          placeholder="请输入单价"-->
+<!--          clearable-->
+<!--          @keyup.enter.native="handleQuery"-->
+<!--        />-->
+<!--      </el-form-item>-->
+<!--      <el-form-item label="加油金额(元）" prop="refuelingMoney">-->
+<!--        <el-input-->
+<!--          v-model="queryParams.refuelingMoney"-->
+<!--          placeholder="请输入加油金额(元）"-->
+<!--          clearable-->
+<!--          @keyup.enter.native="handleQuery"-->
+<!--        />-->
+<!--      </el-form-item>-->
+<!--      <el-form-item label="是否有小票" prop="isTicket">-->
+<!--        <el-input-->
+<!--          v-model="queryParams.isTicket"-->
+<!--          placeholder="请输入是否有小票"-->
+<!--          clearable-->
+<!--          @keyup.enter.native="handleQuery"-->
+<!--        />-->
+<!--      </el-form-item>-->
+<!--      <el-form-item label="加油卡余额" prop="endCardSurplus">-->
+<!--        <el-input-->
+<!--          v-model="queryParams.endCardSurplus"-->
+<!--          placeholder="请输入加油卡余额"-->
+<!--          clearable-->
+<!--          @keyup.enter.native="handleQuery"-->
+<!--        />-->
+<!--      </el-form-item>-->
+<!--      <el-form-item label="备注" prop="comments">-->
+<!--        <el-input-->
+<!--          v-model="queryParams.comments"-->
+<!--          placeholder="请输入备注"-->
+<!--          clearable-->
+<!--          @keyup.enter.native="handleQuery"-->
+<!--        />-->
+<!--      </el-form-item>-->
+      <el-form-item label="使用加油卡时间">
+        <el-date-picker
+          v-model="dateRange"
+          style="width: 240px"
+          value-format="yyyy-MM-dd"
+          type="daterange"
+          range-separator="-"
+          start-placeholder="开始日期"
+          end-placeholder="结束日期"
+        ></el-date-picker>
       </el-form-item>
       <el-form-item>
         <el-button type="primary" icon="el-icon-search" size="mini" @click="handleQuery">搜索</el-button>
