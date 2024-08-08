@@ -35,6 +35,8 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         <include refid="selectInvoiceOutVo"/>
         <where>  
             <if test="invoiceDate != null  and invoiceDate != ''"> and invoiceDate = #{invoiceDate}</if>
+
+            <if test="beginTime != null and beginTime != '' and endTime != null and endTime != ''"> and invoiceDate between #{beginTime} and #{endTime}</if>
             <if test="invoiceObject != null  and invoiceObject != ''"> and invoiceObject = #{invoiceObject}</if>
             <if test="invoiceAmount != null "> and invoiceAmount = #{invoiceAmount}</if>
             <if test="companyType != null  and companyType != ''"> and companyType = #{companyType}</if>

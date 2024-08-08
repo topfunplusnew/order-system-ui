@@ -12,6 +12,7 @@ import org.dzu.common.core.domain.BaseEntity;
 import org.hibernate.validator.constraints.Length;
 
 import javax.validation.constraints.DecimalMin;
+import javax.validation.constraints.Min;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Pattern;
 
@@ -125,8 +126,8 @@ public class InvoiceIn extends BaseEntity {
      */
     @Excel(name = "是否订单对应票点")
     @NotNull(message = "是否订单对应票点不能为空")
-    @FlagOnlyZeroOrOne(message = "是否订单对应票点必须是0或1")
     @TableField(value = "isOrderTax")
+    @Min(value = 0, message = "不对订单则为0,否则为对应主键id")
     private Long isOrderTax;
 
     /**

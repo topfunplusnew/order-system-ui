@@ -12,6 +12,7 @@ import org.dzu.common.core.domain.BaseEntity;
 import org.hibernate.validator.constraints.Length;
 
 import javax.validation.constraints.DecimalMin;
+import javax.validation.constraints.Min;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Pattern;
 
@@ -34,6 +35,7 @@ public class InvoiceOut extends BaseEntity
     @Excel(name = "开票日期", dateFormat = "yyyy-MM-dd")
     @TableField(value = "invoiceDate")
     @NotNull(message = "开票日期不能为空")
+    @Pattern(regexp = "^[0-9]*$", message = "开票时间必须是时间戳")
     @Length(max = 55, message = "开票日期长度不能超过55个字符")
     private String invoiceDate;
 
@@ -93,7 +95,7 @@ public class InvoiceOut extends BaseEntity
     /** 是否订单对应票点 */
     @Excel(name = "是否订单对应票点")
     @NotNull(message = "是否订单对应票点不能为空")
-    @Pattern(regexp = "是|否", message = "是否订单对应票点必须是 是或否")
+    @Min(value = 0, message = "IsOrderTax如果不对应订单则为0,否则为订单主键")
     @TableField(value = "isOrderTax")
     private Long isOrderTax;
 
@@ -122,6 +124,33 @@ public class InvoiceOut extends BaseEntity
     @FlagOnlyZeroOrOne
     @TableField(value = "delFlag")
     private Long delFlag;
+
+    public @Pattern(regexp = "^[0-9]*$", message = "开始时间必须是时间戳") String getBeginTime() {
+        return beginTime;
+    }
+
+    public void setBeginTime(@Pattern(regexp = "^[0-9]*$", message = "开始时间必须是时间戳") String beginTime) {
+        this.beginTime = beginTime;
+    }
+
+    public @Pattern(regexp = "^[0-9]*$", message = "结束时间必须是时间戳") String getEndTime() {
+        return endTime;
+    }
+
+    public void setEndTime(@Pattern(regexp = "^[0-9]*$", message = "结束时间必须是时间戳") String endTime) {
+        this.endTime = endTime;
+    }
+
+
+    // 前端传入时间的开始和结束
+
+    @TableField(exist = false)
+    @Pattern(regexp = "^[0-9]*$", message = "开始时间必须是时间戳")
+    private String beginTime;
+
+    @TableField(exist = false)
+    @Pattern(regexp = "^[0-9]*$", message = "结束时间必须是时间戳")
+    private String endTime;
 
     public void setId(Long id) 
     {

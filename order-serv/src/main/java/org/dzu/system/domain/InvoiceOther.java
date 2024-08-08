@@ -3,6 +3,7 @@ package org.dzu.system.domain;
 import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableName;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.apache.commons.lang3.builder.ToStringStyle;
 import org.dzu.common.annotation.DecimalMaxDigits;
@@ -11,7 +12,9 @@ import org.dzu.common.annotation.FlagOnlyZeroOrOne;
 import org.dzu.common.core.domain.BaseEntity;
 import org.hibernate.validator.constraints.Length;
 
+import javax.validation.constraints.DecimalMin;
 import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Pattern;
 
 /**
  * 商家直接给客户开发票对象 invoiceOther
@@ -30,82 +33,93 @@ public class InvoiceOther extends BaseEntity
 
     /** 订单编号（UUID） */
     @Excel(name = "订单编号")
-    @Length(max = 32, message = "订单编号长度不能超过32个字符")
+    @Length(max = 50, message = "订单编号长度不能超过50个字符")
+    @NotNull(message = "订单编号不能为空")
     @TableField(value = "ordersNo")
     private String ordersNo;
 
     /** 开票日期 */
-    @Excel(name = "开票日期",dateFormat = "yyyy-MM-dd")
+    @Excel(name = "开票日期", dateFormat = "yyyy-MM-dd")
+    @NotNull(message = "开票日期不能为空")
+    @Length(max = 55, message = "开票日期长度不能超过55个字符")
     @TableField(value = "invoiceDate")
+    @Pattern(regexp = "^[0-9]*$", message = "开票时间必须是时间戳")
     private String invoiceDate;
 
     /** 开票金额 */
     @DecimalMaxDigits
     @NotNull(message = "开票金额不能为空")
+    @DecimalMin(value = "0.0", message = "开票金额不能小于0")
     @TableField(value = "invoiceAmount")
     private Double invoiceAmount;
 
     /** 供应商票点 */
     @DecimalMaxDigits
     @NotNull(message = "供应商票点不能为空")
+    @DecimalMin(value = "0.0", message = "供应商票点不能小于0")
     @TableField(value = "supplierTicketPoint")
     private Double supplierTicketPoint;
 
     /** 供应商票点金额（开票金额*供应商票点） */
     @Excel(name = "供应商票点金额", readConverterExp = "供应商票点金额=开票金额*供应商票点")
     @NotNull(message = "供应商票点金额不能为空")
+    @DecimalMin(value = "0.0", message = "供应商票点金额不能小于0")
     @TableField(value = "supplierPointAmount")
     private Double supplierPointAmount;
 
     /** 供应商公司名称 */
     @Excel(name = "供应商公司名称")
-    @Length(max = 32, message = "供应商公司名称长度不能超过32个字符")
     @NotNull(message = "供应商公司名称不能为空")
+    @Length(max = 120, message = "供应商公司名称长度不能超过120个字符")
     @TableField(value = "Supplier")
+    @JsonProperty("Supplier")
     private String Supplier;
 
     /** 供应商ID */
     @Excel(name = "供应商ID")
     @NotNull(message = "供应商ID不能为空")
-    @Length(max = 32, message = "供应商ID长度不能超过32个字符")
     @TableField(value = "SupplierID")
+    @JsonProperty("SupplierID")
     private Long SupplierID;
 
     /** 客户公司名称 */
     @Excel(name = "客户公司名称")
-    @Length(max = 32, message = "客户公司名称长度不能超过32个字符")
     @NotNull(message = "客户公司名称不能为空")
+    @Length(max = 120, message = "客户公司名称长度不能超过120个字符")
     @TableField(value = "customer")
     private String customer;
 
     /** 客户ID */
     @Excel(name = "客户ID")
-    @Length(max = 32, message = "客户ID长度不能超过32个字符")
     @NotNull(message = "客户ID不能为空")
     @TableField(value = "CustomerID")
+    @JsonProperty("CustomerID")
     private Long CustomerID;
 
     /** 票据单位名称 */
     @Excel(name = "票据单位名称")
-    @Length(max = 32, message = "票据单位名称长度不能超过32个字符")
     @NotNull(message = "票据单位名称不能为空")
+    @Length(max = 120, message = "票据单位名称长度不能超过120个字符")
     @TableField(value = "invoiceCompanyName")
     private String invoiceCompanyName;
 
     /** 客户票点 */
     @DecimalMaxDigits
     @NotNull(message = "客户票点不能为空")
+    @DecimalMin(value = "0.0", message = "客户票点不能小于0")
     @TableField(value = "customerTicketPoint")
     private Double customerTicketPoint;
 
     /** 票点金额（开票金额*客户票点） */
-    @Excel(name = "票点金额", readConverterExp = "开=票金额*客户票点")
+    @Excel(name = "票点金额", readConverterExp = "票点金额=开票金额*客户票点")
+    @NotNull(message = "票点金额不能为空")
+    @DecimalMin(value = "0.0", message = "票点金额不能小于0")
     @TableField(value = "customerPointAmount")
     private Double customerPointAmount;
 
     /** 备注 */
     @Excel(name = "备注")
-    @Length(max = 255, message = "备注长度不能超过255个字符")
+    @Length(max = 200, message = "备注长度不能超过200个字符")
     @TableField(value = "comments")
     private String comments;
 
@@ -129,7 +143,33 @@ public class InvoiceOther extends BaseEntity
     @TableField(value = "delFlag")
     private Long delFlag;
 
-    public void setId(Long id) 
+
+    // 前端传入时间的开始和结束
+
+    @TableField(exist = false)
+    @Pattern(regexp = "^[0-9]*$", message = "开始时间必须是时间戳")
+    private String beginTime;
+
+    public @Pattern(regexp = "^[0-9]*$", message = "结束时间必须是时间戳") String getEndTime() {
+        return endTime;
+    }
+
+    public void setEndTime(@Pattern(regexp = "^[0-9]*$", message = "结束时间必须是时间戳") String endTime) {
+        this.endTime = endTime;
+    }
+
+    public @Pattern(regexp = "^[0-9]*$", message = "开始时间必须是时间戳") String getBeginTime() {
+        return beginTime;
+    }
+
+    public void setBeginTime(@Pattern(regexp = "^[0-9]*$", message = "开始时间必须是时间戳") String beginTime) {
+        this.beginTime = beginTime;
+    }
+
+    @TableField(exist = false)
+    @Pattern(regexp = "^[0-9]*$", message = "结束时间必须是时间戳")
+    private String endTime;
+    public void setId(Long id)
     {
         this.id = id;
     }
