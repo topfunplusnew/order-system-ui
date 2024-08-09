@@ -167,9 +167,23 @@ public class InvoiceIn extends BaseEntity {
     private Long delFlag;
 
 
-    /** 额外字段，数据库联动查询获得 */
+    /**
+     * 额外字段，数据库联动查询获得
+     */
     @Excel(name = "审核状态")
     private String checkState;
+
+    public Double getOweAmount() {
+        return oweAmount;
+    }
+
+    public void setOweAmount(Double oweAmount) {
+        this.oweAmount = oweAmount;
+    }
+
+    // 欠票金额
+    @TableField(exist = false)
+    private Double oweAmount;
 
     public String getCheckState() {
         return checkState;
