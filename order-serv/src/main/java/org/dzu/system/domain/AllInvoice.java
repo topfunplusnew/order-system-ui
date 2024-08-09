@@ -106,4 +106,12 @@ public class AllInvoice {
 
     /** 开票单位搜索值 */
     private String searchInvoiceCompanyName;
+//    g.allPayments,
+//    g.orderDate,
+
+    /** 总货款 */
+    private Double allPayments;
+
+    /** 实际开票日期 */
+    private String orderDate;
 }

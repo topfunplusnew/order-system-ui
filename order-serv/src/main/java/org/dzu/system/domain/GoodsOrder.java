@@ -311,13 +311,26 @@ public class GoodsOrder extends BaseEntity
     @TableField(value = "supplierNames")
     private String supplierNames;
 
+    /** 订单总货款 */
+    @Excel(name = "订单总货款")
+    @TableField(value = "allPayments")
+    private Double allPayments;
+
 
     /** 订单详情信息 */
     @Valid
     @TableField(exist = false)
     private List<@Valid OrderDetail> orderDetailList;
 
-    public void setId(Long id) 
+    public Double getAllPayments() {
+        return allPayments;
+    }
+
+    public void setAllPayments(Double allPayments) {
+        this.allPayments = allPayments;
+    }
+
+    public void setId(Long id)
     {
         this.id = id;
     }

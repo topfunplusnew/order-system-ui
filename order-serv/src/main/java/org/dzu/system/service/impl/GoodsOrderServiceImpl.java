@@ -145,8 +145,7 @@ public class GoodsOrderServiceImpl implements IGoodsOrderService {
     public int updateGoodsOrder(GoodsOrder goodsOrder) {
 
 
-        // 计算陆运费和海运费和商家姓名，方便以后查询减少查询次数
-        preFreightAndSupplier(goodsOrder);
+
         // 设置基础数据
         goodsOrder.setUpdateTime(DateUtils.getNowDate());
 
@@ -479,12 +478,16 @@ public class GoodsOrderServiceImpl implements IGoodsOrderService {
         StringJoiner sj = new StringJoiner("、");
         goodsOrder.setLandFreight(Double.valueOf(0));
         goodsOrder.setSeaFreight(Double.valueOf(0));
+        goodsOrder.setAllPayments(Double.valueOf(0));
 
         if (goodsOrder.getOrderDetailList().size() > 0) {
             goodsOrder.getOrderDetailList().forEach(
                     item -> {
                         // 计算陆运费和海运费
                         goodsOrder.setLandFreight(goodsOrder.getLandFreight() + item.getLandFreight());
+                        goodsOrder.setSeaFreight(goodsOrder.getSeaFreight() + item.getSeaFreight());
+                        // 设置总货款
+                        goodsOrder.setAllPayments(goodsOrder.getAllPayments() + item.getPayments());
 
                         // 有的订单可能没有供应商，而是仓库发货
                         if (StringUtils.isNotEmpty(item.getSupplier())) {

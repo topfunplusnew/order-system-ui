@@ -32,11 +32,44 @@
         <result property="ticketPointIncomeAmount" column="ticketPointIncomeAmount"/>
         <result property="ticketPointDifference" column="ticketPointDifference"/>
         <result property="tableName" column="tableName"/>
+        <result property="allPayments" column="allPayments"/>
+        <result property="orderDate" column="orderDate"/>
     </resultMap>
 
     <select id="selectInvoices" parameterType="AllInvoice" resultMap="invoiceResultMap">
-        SELECT *
+        SELECT tmp.id,
+               COALESCE(g.ordersNo, tmp.ordersNo) AS ordersNo,
+               tmp.invoiceDate,
+               g.allPayments,
+               g.orderDate,
+               tmp.invoiceObject,
+               tmp.invoiceAmount,
+               tmp.companyType,
+               tmp.companyName,
+               tmp.companyID,
+               tmp.invoiceCompanyName,
+               tmp.ticketPoint,
+               tmp.ticketPointAmount,
+               tmp.isOrderTax,
+               tmp.Supplier,
+               tmp.SupplierID,
+               tmp.customer,
+               tmp.CustomerID,
+               tmp.comments,
+               tmp.addtime,
+               tmp.userId,
+               tmp.UserName,
+               tmp.update_time,
+               tmp.delFlag,
+               tmp.purchaseInvoiceAmount,
+               tmp.ticketPointCost,
+               tmp.ticketPointCostAmount,
+               tmp.ticketPointIncome,
+               tmp.ticketPointIncomeAmount,
+               tmp.ticketPointDifference,
+               tmp.tableName
         FROM (SELECT id,
+                     NULL              as ordersNo,
                      invoiceDate,
                      invoiceObject,
                      invoiceAmount,
@@ -63,12 +96,13 @@
                      NULL              AS ticketPointIncome,
                      NULL              AS ticketPointIncomeAmount,
                      NULL              AS ticketPointDifference,
-                     'invoicein'       AS tableName
+                     "invoicein"       AS tableName
               FROM invoicein
 
               UNION
 
               SELECT id,
+                     NULL              as ordersNo,
                      invoiceDate,
                      invoiceObject,
                      invoiceAmount,
@@ -95,12 +129,13 @@
                      ticketPoint       AS ticketPointIncome,
                      ticketPointAmount AS ticketPointIncomeAmount,
                      NULL              AS ticketPointDifference,
-                     'invoiceout'      AS tableName
+                     "invoiceout"      AS tableName
               FROM invoiceout
 
               UNION
 
               SELECT id,
+                     ordersNo,
                      invoiceDate,
                      NULL                                        AS invoiceObject,
                      invoiceAmount,
@@ -127,26 +162,31 @@
                      customerTicketPoint                         AS ticketPointIncome,
                      customerPointAmount                         AS ticketPointIncomeAmount,
                      (customerPointAmount - supplierPointAmount) AS ticketPointDifference,
-                     'invoiceother'                              AS tableName
+                     "invoiceother"                              AS tableName
               FROM invoiceother) AS tmp
+                 LEFT JOIN goodsorder g
+                           ON (tmp.isOrderTax != 0 AND tmp.isOrderTax = g.id)
+                               OR
+                              (tmp.ordersNo IS NOT NULL AND tmp.ordersNo = g.ordersNo)
+
+
         <where>
-            delFlag = 0
             <if test="startDate != null and startDate != '' and endDate != null and endDate != ''">
-                AND invoiceDate BETWEEN #{startDate} AND #{endDate}
+                AND tmp.invoiceDate BETWEEN #{startDate} AND #{endDate}
             </if>
-            <if test="searchCompamyName != null and searchCompamyName != ''">
-                AND (
-                    (tableName = 'invoiceother' AND Supplier LIKE CONCAT('%', #{searchCompamyName}, '%'))
-                        OR (tableName = 'invoiceother' AND customer LIKE CONCAT('%', #{searchCompamyName}, '%'))
-                        OR (tableName = 'invoicein' AND companyName LIKE CONCAT('%', #{searchCompamyName}, '%'))
-                        OR (tableName = 'invoiceout' AND companyName LIKE CONCAT('%', #{searchCompamyName}, '%'))
-                    )
+            <if test="searchCompamyName != null and supplier != ''">
+                AND (tmp.tableName = 'invoiceother' AND tmp.Supplier LIKE CONCAT('%', #{searchCompamyName}, '%')
+                    OR tmp.tableName = 'invoiceother' AND tmp.customer LIKE CONCAT('%', #{searchCompamyName}, '%')
+                    OR tmp.tableName = 'invoicein' AND tmp.companyName LIKE CONCAT('%', #{searchCompamyName}, '%')
+                    OR tmp.tableName = 'invoiceout' AND tmp.companyName LIKE CONCAT('%', #{searchCompamyName}, '%'))
             </if>
             <if test="searchInvoiceCompanyName != null and searchInvoiceCompanyName != ''">
-                AND invoiceCompanyName LIKE CONCAT('%', #{searchInvoiceCompanyName}, '%')
+                AND tmp.invoiceCompanyName LIKE CONCAT('%', #{searchInvoiceCompanyName}, '%')
             </if>
         </where>
-        ORDER BY invoiceDate DESC
+
+        ORDER BY COALESCE(g.orderDate, tmp.invoiceDate) DESC
     </select>
+
 
 </mapper>
