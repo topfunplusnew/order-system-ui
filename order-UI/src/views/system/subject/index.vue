@@ -381,7 +381,7 @@ export default {
     getTreeselect() {
       listSubject().then(response => {
         this.subjectOptions = [];
-        const data = {id: 0, title: '顶级节点', children: []};
+        const data = {id: 0, title: '请选择一级分类', children: []};
         data.children = this.handleTree(response.data, "id", "parentId");
         this.subjectOptions.push(data);
       });

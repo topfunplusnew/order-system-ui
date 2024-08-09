@@ -72,14 +72,14 @@
           @keyup.enter.native="handleQuery" class="w-85px"
         />
       </el-form-item>
-      <el-form-item label="对方公司ID" prop="companyId">
-        <el-input
-          v-model="queryParams.companyId"
-          placeholder="请输入对方公司ID"
-          clearable
-          @keyup.enter.native="handleQuery" class="w-85px"
-        />
-      </el-form-item>
+      <!--      <el-form-item label="对方公司ID" prop="companyId">-->
+      <!--        <el-input-->
+      <!--          v-model="queryParams.companyId"-->
+      <!--          placeholder="请输入对方公司ID"-->
+      <!--          clearable-->
+      <!--          @keyup.enter.native="handleQuery" class="w-85px"-->
+      <!--        />-->
+      <!--      </el-form-item>-->
       <el-form-item label="备注" prop="comments">
         <el-input
           v-model="queryParams.comments"
@@ -94,17 +94,17 @@
     </el-form>
 
     <el-row :gutter="10" class="mb8">
-      <!--      <el-col :span="1.5">-->
-      <!--        <el-button-->
-      <!--          type="primary"-->
-      <!--          plain-->
-      <!--          icon="el-icon-plus"-->
-      <!--          size="mini"-->
-      <!--          @click="handleAdd"-->
-      <!--          v-hasPermi="['system:receivemoney:add']"-->
-      <!--        >新增收款信息-->
-      <!--        </el-button>-->
-      <!--      </el-col>-->
+      <el-col :span="1.5">
+        <el-button
+          type="primary"
+          plain
+          icon="el-icon-plus"
+          size="mini"
+          @click="handleAdd"
+          v-hasPermi="['system:receivemoney:add']"
+        >新增收款信息
+        </el-button>
+      </el-col>
       <el-col :span="1.5">
         <el-button icon="el-icon-refresh" size="mini" @click="resetQuery">刷新</el-button>
       </el-col>
@@ -148,12 +148,14 @@
       <el-table-column label="己方户名" align="center" prop="selfAcountsName" v-if="columns[4].visible"/>
       <el-table-column label="己方账号" align="center" prop="selfBankNo" v-if="columns[5].visible"/>
       <el-table-column label="己方开户行" align="center" prop="selfBankName" v-if="columns[6].visible"/>
-      <el-table-column label="己方账号ID" align="center" prop="selfBankID" v-if="columns[7].visible"/>
+      <!--      同理-->
+      <!--      <el-table-column label="己方账号ID" align="center" prop="selfBankID" v-if="columns[7].visible"/>-->
       <el-table-column label="对方户名" align="center" prop="otherAcountsName" v-if="columns[8].visible"/>
       <el-table-column label="对方账号" align="center" prop="otherBankNo" v-if="columns[9].visible"/>
       <el-table-column label="对方开户行" align="center" prop="otherBankName" v-if="columns[10].visible"/>
+      <!--      以下字段根据对方的户名和账号自动查询填充-->
       <el-table-column label="对方公司" align="center" prop="companyName" v-if="columns[11].visible"/>
-      <el-table-column label="对方公司ID" align="center" prop="companyId" v-if="columns[12].visible"/>
+      <!--      <el-table-column label="对方公司ID" align="center" prop="companyId" v-if="columns[12].visible"/>-->
       <el-table-column label="对方公司类型" align="center" prop="companyType" v-if="columns[13].visible"/>
       <el-table-column label="备注" align="center" prop="comments"/>
       <el-table-column label="操作" align="center" fixed="right" width="150">
@@ -187,9 +189,9 @@
     <!-- 添加或修改收款信息对话框 -->
     <el-dialog :title="title" :visible.sync="open" width="500px" append-to-body>
       <el-form ref="form" :model="form" :rules="rules" label-width="80px">
-        <el-form-item label="收款编号" prop="receiveNO">
-          <el-input v-model="form.receiveNO" placeholder="请输入收款编号"/>
-        </el-form-item>
+        <!--        <el-form-item label="收款编号" prop="receiveNO">-->
+        <!--          <el-input v-model="form.receiveNO" placeholder="请输入收款编号"/>-->
+        <!--        </el-form-item>-->
         <el-form-item label="日期" prop="fundsDate">
           <el-date-picker
             v-model="form.fundsDate"
@@ -197,15 +199,39 @@
             value-format="yyyy-MM-dd">
           </el-date-picker>
         </el-form-item>
-        <el-form-item label="对应的表名" prop="tableName">
-          <el-input v-model="form.tableName" placeholder="请输入对应的表名"/>
-        </el-form-item>
+        <!--        <el-form-item label="对应的表名" prop="tableName">-->
+        <!--          <el-input v-model="form.tableName" placeholder="请输入对应的表名"/>-->
+        <!--        </el-form-item>-->
         <el-form-item label="支付类型" prop="payType">
-          <el-input v-model="form.receiveType" placeholder="请输入支付类型"/>
+          <!--          <el-input v-model="form.receiveType" placeholder="请输入支付类型"/>-->
+          <el-row :gutter="5">
+            <!--            一级分类-->
+            <el-col :span="8">
+              <el-select v-model="currentSort.levelOne" placeholder="请选择一级分类" @change="handleSelectOneLevel">
+                <el-option
+                  v-for="item in OneLevelOption"
+                  :key="item.id"
+                  :label="item.title"
+                  :value="item.title">
+                </el-option>
+              </el-select>
+            </el-col>
+            <!--            二级分类-->
+            <el-col :span="8">
+              <el-select v-model="currentSort.levelTwo" placeholder="请选择二级分类" @change="handleSelectTwoLevel">
+                <el-option
+                  v-for="item in TwoLevelOption"
+                  :key="item.id"
+                  :label="item.title"
+                  :value="item.title">
+                </el-option>
+              </el-select>
+            </el-col>
+          </el-row>
         </el-form-item>
-        <el-form-item label="对应的表主键" prop="tID">
-          <el-input v-model="form.tID" placeholder="请输入对应的表主键"/>
-        </el-form-item>
+        <!--        <el-form-item label="对应的表主键" prop="tID">-->
+        <!--          <el-input v-model="form.tID" placeholder="请输入对应的表主键"/>-->
+        <!--        </el-form-item>-->
         <el-form-item label="金额" prop="moneyAmount">
           <el-input v-model="form.moneyAmount" placeholder="请输入金额"/>
         </el-form-item>
@@ -235,24 +261,40 @@
         <el-form-item label="己方开户行" prop="selfBankName">
           <el-input v-model="form.selfBankName" placeholder="请输入己方开户行"/>
         </el-form-item>
-        <el-form-item label="己方账号ID" prop="selfBankID">
-          <el-input v-model="form.selfBankID" placeholder="请输入己方账号ID"/>
-        </el-form-item>
+        <!--        根据己方账号查询后自动填充-->
+        <!--        <el-form-item label="己方账号ID" prop="selfBankID">-->
+        <!--          <el-input v-model="form.selfBankID" placeholder="请输入己方账号ID"/>-->
+        <!--        </el-form-item>-->
         <el-form-item label="对方户名" prop="otherAcountsName">
           <el-input v-model="form.otherAcountsName" placeholder="请输入对方户名"/>
         </el-form-item>
         <el-form-item label="对方账号" prop="otherBankNo">
-          <el-input v-model="form.otherBankNo" placeholder="请输入对方账号"/>
+          <el-col :span="10">
+            <el-input v-model="form.otherBankNo" placeholder="请输入对方账号"/>
+          </el-col>
+          <el-col :span="3">
+            <!--            todo 这里查的不是银行卡表 客户表 银行卡表中查不到客户银行卡信息-->
+            <SearchOption :get-data="listCompany" title="客户银行卡信息" icon="el-icon-search"
+                          @commitBack="handleCallBackCompany" :limit-info="{acountsType:'客户'}">
+              <template #table-columns>
+                <el-table-column label="客户" align="center" prop="companyName"/>
+                <el-table-column label="开户名称(户名)" align="center" prop="acountsName"/>
+                <el-table-column label="账号(银行账号)" align="center" prop="bankNo"/>
+                <el-table-column label="开户行" align="center" prop="bankName"/>
+              </template>
+            </SearchOption>
+          </el-col>
         </el-form-item>
-        <el-form-item label="对方开户行" prop="otherBankName">
-          <el-input v-model="form.otherBankName" placeholder="请输入对方开户行"/>
-        </el-form-item>
-        <el-form-item label="对方公司" prop="companyName">
-          <el-input v-model="form.companyName" placeholder="请输入对方公司"/>
-        </el-form-item>
-        <el-form-item label="对方公司ID" prop="companyId">
-          <el-input v-model="form.companyId" placeholder="请输入对方公司ID"/>
-        </el-form-item>
+        <!--        同理 要查询公司类型为客户的-->
+        <!--        <el-form-item label="对方开户行" prop="otherBankName">-->
+        <!--          <el-input v-model="form.otherBankName" placeholder="请输入对方开户行"/>-->
+        <!--        </el-form-item>-->
+        <!--        <el-form-item label="对方公司" prop="companyName">-->
+        <!--          <el-input v-model="form.companyName" placeholder="请输入对方公司"/>-->
+        <!--        </el-form-item>-->
+        <!--        <el-form-item label="对方公司ID" prop="companyId">-->
+        <!--          <el-input v-model="form.companyId" placeholder="请输入对方公司ID"/>-->
+        <!--        </el-form-item>-->
         <el-form-item label="备注" prop="comments">
           <el-input v-model="form.comments" placeholder="请输入备注"/>
         </el-form-item>
@@ -276,6 +318,8 @@ import {
 import SearchOption from "@/components/SearchOption.vue";
 import {listBankAccount} from "@/api/system/bankAccount";
 import {Loading} from "element-ui";
+import {listSubject} from "@/api/system/subject";
+import {listCompany} from "@/api/system/company";
 
 export default {
   name: "ReceiveMoney",
@@ -346,12 +390,32 @@ export default {
         {key: 12, label: `对方公司ID`, visible: true},
         {key: 13, label: `对方公司类型`, visible: true},
       ],
+      subjectTree: [],
+      //分类信息
+      currentSort: {
+        levelOne: '',
+        levelTwo: ''
+      },
+      //一级分类列表
+      OneLevelOption: [],
+      //二级分类
+      TwoLevelOption: []
     };
   },
   created() {
     this.getList();
+    listSubject().then(res => {
+      this.subjectTree = this.handleTree(res.data, "id", "parentId");
+      this.OneLevelOption = this.subjectTree;
+    })
+  },
+  computed: {
+    fullLevel() {
+      return this.currentSort.levelOne + '-' + this.currentSort.levelTwo;
+    }
   },
   methods: {
+    listCompany,
     listBankAccount,
     //点击确认的回调函数 点击后自动补充相关字段
     handleCallBack(val) {
@@ -360,6 +424,35 @@ export default {
       this.form.selfBankName = val.bankName
       this.form.selfBankID = val.id;
     },
+    //查询客户银行卡信息的回调
+    handleCallBackCompany(val) {
+      console.log(val)
+      this.form.otherAcountsName = val.acountsName;
+      this.form.otherBankNo = val.bankNo;
+      this.form.otherBankName = val.bankName;
+      this.form.companyId = val.id;
+      this.form.companyName = val.companyID;
+      this.form.companyType = val.companyType === '供应商' ? 2 : 1;
+    },
+    //点击一级分类后的回调
+    handleSelectOneLevel(value) {
+      this.currentSort.levelOne = value;
+      for (var i = 0; i < this.OneLevelOption.length; i++) {
+        //每个一级分类
+        var oneSubject = this.OneLevelOption[i]
+        //判断：所有一级分类id和点击一级分类id是否一样
+        if (value === oneSubject.title) {  //===即比较值 还要比较类型
+          //从一级分类中获取所有的二级分类
+          this.TwoLevelOption = oneSubject.children
+          //把二级分类Id值清空
+          this.currentSort.levelTwo = ''
+        }
+      }
+    },
+    //点击二级
+    handleSelectTwoLevel(value) {
+      this.currentSort.levelTwo = value;
+    },
     printHTML() {
       this.$print({
         printable: 'printBox',
@@ -367,6 +460,7 @@ export default {
         targetStyles: ['*'], // 打印内容使用所有HTML样式，没有设置这个属性/值，设置分页打印没有效果
       })
     },
+
     /** 查询收款信息列表 */
     getList() {
       this.loading = true;
@@ -452,22 +546,30 @@ export default {
             this.form.addtime = null;
             this.form.updateTime = null;
             this.form.userId = null;
+            //支付类型
+            this.form.receiveType = this.fullLevel;
             updateReceiveMoney(this.form).then(response => {
               this.$modal.msgSuccess("修改成功");
               this.$close();//结束加载
               this.open = false;
               this.getList();
-            });
+            }).catch(err => {
+              this.$close()
+            })
           } else {
             this.form.delFlag = null;
             this.form.addtime = null;
             this.form.updateTime = null;
             this.form.userId = null;
+            this.form.receiveType = this.fullLevel;
+            // form.tableName form.tID
             addReceiveMoney(this.form).then(response => {
               this.$modal.msgSuccess("新增成功");
               this.open = false;
               this.getList();
-            });
+            }).catch(err => {
+              this.$close()
+            })
           }
         }
       });

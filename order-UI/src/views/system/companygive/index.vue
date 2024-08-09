@@ -174,6 +174,9 @@
         <el-form-item label="地址" prop="address">
           <el-input v-model="form.address" placeholder="请输入地址"/>
         </el-form-item>
+        <el-form-item label="联系人" prop="address">
+          <el-input v-model="form.relationName" placeholder="请输入联系人"/>
+        </el-form-item>
         <!--        <el-form-item label="开户行" prop="bankName">-->
         <!--          <el-input v-model="form.bankName" placeholder="请输入开户行"/>-->
         <!--        </el-form-item>-->
