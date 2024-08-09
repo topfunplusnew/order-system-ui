@@ -22,49 +22,67 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         <result property="UserName"    column="UserName"    />
         <result property="updateTime"    column="update_time"    />
         <result property="delFlag"    column="delFlag"    />
+        <result property="oweAmount"    column="oweAmount"    />
     </resultMap>
 
 
 
 
     <sql id="selectInvoiceInVo">
-        select
-        i.id,
-        i.invoiceDate,
-        i.invoiceObject,
-        i.invoiceAmount,
-        i.companyType,
-        i.companyName,
-        i.companyID,
-        i.invoiceCompanyName,
-        i.ticketPoint,
-        i.ticketPointAmount,
-        i.isOrderTax,
-        i.comments,
-        i.addtime,
-        i.userId,
-        i.UserName,
-        i.update_time,
-        i.delFlag,
-        CASE
-        WHEN pa.checkState = '通过' THEN p.paymentState
-        ELSE COALESCE(pa.checkState, '未申请')
-        END as checkState
-        from
-        invoiceIn i
-        left join
-        paymentApply pa
-        on
-        pa.tableName = 'invoicein'
-        and pa.tID = i.id
-        and (pa.checkState = '审核中' or pa.checkState = '通过')
-        left join
-        payment p
-        on
-        p.applyId = pa.id
-        and p.delFlag = 0
+        SELECT i.id,
+               i.invoiceDate,
+               i.invoiceObject,
+               i.invoiceAmount,
+               i.companyType,
+               i.companyName,
+               i.companyID,
+               i.invoiceCompanyName,
+               i.ticketPoint,
+               i.ticketPointAmount,
+               i.isOrderTax,
+               i.comments,
+               i.addtime,
+               i.userId,
+               i.UserName,
+               i.update_time,
+               i.delFlag,
+               go.ordersNo,
+               go.allPayments,
+               go.orderDate,
+               CASE
+                   WHEN pa.checkState = '通过' THEN p.paymentState
+                   ELSE COALESCE(pa.checkState, '未申请')
+                   END AS checkState,
+               GREATEST(
+                       COALESCE(
+                               CASE
+                                   WHEN COUNT(*) OVER (PARTITION BY i.isOrderTax) = 1 THEN
+                                       go.allPayments - i.invoiceAmount
+                                   ELSE
+                                       go.allPayments - (SELECT SUM(i1.invoiceAmount)
+                                                         FROM invoiceIn i1
+                                                         WHERE i1.isOrderTax = i.isOrderTax
+                                                           AND i1.invoiceDate &lt;= i.invoiceDate)
+                                   END, 0
+                       ), 0
+               )       AS oweAmount
+        FROM invoiceIn i
+                 LEFT JOIN
+             paymentApply pa
+             ON
+                 pa.tableName = 'invoicein'
+                     AND pa.tID = i.id
+                     AND (pa.checkState = '审核中' OR pa.checkState = '通过')
+                 LEFT JOIN
+             payment p
+             ON
+                 p.applyId = pa.id
+                     AND p.delFlag = 0
+                 LEFT JOIN
+             goodsOrder go
+             ON
+                 i.isOrderTax = go.id
     </sql>
-
     <select id="selectInvoiceInList" parameterType="InvoiceIn" resultMap="InvoiceInResult">
         <include refid="selectInvoiceInVo"/>
         <where>
