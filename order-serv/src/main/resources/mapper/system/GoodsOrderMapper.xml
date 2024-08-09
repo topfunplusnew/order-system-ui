@@ -530,6 +530,9 @@
             <if test = "supplierNames != null and supplierNames != ''">
                 supplierNames,
             </if>
+            <if test = "allPayments != null">
+                allPayments,
+            </if>
         </trim>
         <trim prefix="values (" suffix=")" suffixOverrides=",">
             <if test="ordersNo != null">
@@ -651,6 +654,9 @@
             </if>
             <if test = "supplierNames != null and supplierNames != ''">
                 #{supplierNames},
+            </if>
+            <if test="allPayments != null">
+                #{allPayments},
             </if>
         </trim>
     </insert>
@@ -777,6 +783,9 @@
             </if>
             <if test = "supplierNames != null and supplierNames != ''">
                 supplierNames = #{supplierNames},
+            </if>
+            <if test="allPayments != null">
+                adjustOrderid = #{allPayments},
             </if>
         </trim>
         where id = #{id}

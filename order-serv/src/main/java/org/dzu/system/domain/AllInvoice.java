@@ -114,4 +114,6 @@ public class AllInvoice {
 
     /** 实际开票日期 */
     private String orderDate;
+
+    private String owedAmount;
 }

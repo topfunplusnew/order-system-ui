@@ -34,6 +34,7 @@
         <result property="tableName" column="tableName"/>
         <result property="allPayments" column="allPayments"/>
         <result property="orderDate" column="orderDate"/>
+        <result property="owedAmount" column="owedAmount"/>
     </resultMap>
 
     <select id="selectInvoices" parameterType="AllInvoice" resultMap="invoiceResultMap">
@@ -67,109 +68,28 @@
                tmp.ticketPointIncome,
                tmp.ticketPointIncomeAmount,
                tmp.ticketPointDifference,
-               tmp.tableName
-        FROM (SELECT id,
-                     NULL              as ordersNo,
-                     invoiceDate,
-                     invoiceObject,
-                     invoiceAmount,
-                     companyType,
-                     companyName,
-                     companyID,
-                     invoiceCompanyName,
-                     ticketPoint,
-                     ticketPointAmount,
-                     isOrderTax,
-                     NULL              AS Supplier,
-                     NULL              AS SupplierID,
-                     NULL              AS customer,
-                     NULL              AS CustomerID,
-                     comments,
-                     addtime,
-                     userId,
-                     UserName,
-                     update_time,
-                     delFlag,
-                     invoiceAmount     AS purchaseInvoiceAmount,
-                     ticketPoint       AS ticketPointCost,
-                     ticketPointAmount AS ticketPointCostAmount,
-                     NULL              AS ticketPointIncome,
-                     NULL              AS ticketPointIncomeAmount,
-                     NULL              AS ticketPointDifference,
-                     "invoicein"       AS tableName
-              FROM invoicein
-
-              UNION
-
-              SELECT id,
-                     NULL              as ordersNo,
-                     invoiceDate,
-                     invoiceObject,
-                     invoiceAmount,
-                     companyType,
-                     companyName,
-                     companyID,
-                     invoiceCompanyName,
-                     ticketPoint,
-                     ticketPointAmount,
-                     isOrderTax,
-                     NULL              AS Supplier,
-                     NULL              AS SupplierID,
-                     NULL              AS customer,
-                     NULL              AS CustomerID,
-                     comments,
-                     addtime,
-                     userId,
-                     UserName,
-                     update_time,
-                     delFlag,
-                     NULL              AS purchaseInvoiceAmount,
-                     NULL              AS ticketPointCost,
-                     NULL              AS ticketPointCostAmount,
-                     ticketPoint       AS ticketPointIncome,
-                     ticketPointAmount AS ticketPointIncomeAmount,
-                     NULL              AS ticketPointDifference,
-                     "invoiceout"      AS tableName
-              FROM invoiceout
-
-              UNION
-
-              SELECT id,
-                     ordersNo,
-                     invoiceDate,
-                     NULL                                        AS invoiceObject,
-                     invoiceAmount,
-                     NULL                                        AS companyType,
-                     NULL                                        AS companyName,
-                     NULL                                        AS companyID,
-                     invoiceCompanyName,
-                     supplierTicketPoint                         AS ticketPoint,
-                     supplierPointAmount                         AS ticketPointAmount,
-                     NULL                                        AS isOrderTax,
-                     Supplier,
-                     SupplierID,
-                     customer,
-                     CustomerID,
-                     comments,
-                     addtime,
-                     userId,
-                     UserName,
-                     update_time,
-                     delFlag,
-                     invoiceAmount                               AS purchaseInvoiceAmount,
-                     supplierTicketPoint                         AS ticketPointCost,
-                     supplierPointAmount                         AS ticketPointCostAmount,
-                     customerTicketPoint                         AS ticketPointIncome,
-                     customerPointAmount                         AS ticketPointIncomeAmount,
-                     (customerPointAmount - supplierPointAmount) AS ticketPointDifference,
-                     "invoiceother"                              AS tableName
-              FROM invoiceother) AS tmp
-                 LEFT JOIN goodsorder g
-                           ON (tmp.isOrderTax != 0 AND tmp.isOrderTax = g.id)
-                               OR
-                              (tmp.ordersNo IS NOT NULL AND tmp.ordersNo = g.ordersNo)
-
-
+               tmp.tableName,
+               GREATEST(
+                       COALESCE(
+                               CASE
+                                   WHEN COUNT(*) OVER (PARTITION BY COALESCE(g.ordersNo, tmp.ordersNo)) = 1 THEN
+                                       g.allPayments - tmp.invoiceAmount
+                                   ELSE
+                                       g.allPayments - (SELECT SUM(tmp1.invoiceAmount)
+                                                        FROM v_allInvoice tmp1
+                                                        WHERE COALESCE(tmp1.ordersNo, tmp1.isOrderTax) =
+                                                              COALESCE(g.ordersNo, tmp.ordersNo)
+                                                          AND tmp1.invoiceDate &lt; tmp.invoiceDate)
+                                   END, 0
+                       ), 0
+               )                                  AS owedAmount
+        FROM v_allInvoice AS tmp
+                 LEFT JOIN
+             goodsorder g
+             ON
+                 (tmp.isOrderTax != 0 AND tmp.isOrderTax = g.id)
+                     OR
+                 (tmp.ordersNo IS NOT NULL AND tmp.ordersNo = g.ordersNo)
         <where>
             <if test="startDate != null and startDate != '' and endDate != null and endDate != ''">
                 AND tmp.invoiceDate BETWEEN #{startDate} AND #{endDate}
@@ -184,9 +104,7 @@
                 AND tmp.invoiceCompanyName LIKE CONCAT('%', #{searchInvoiceCompanyName}, '%')
             </if>
         </where>
-
         ORDER BY COALESCE(g.orderDate, tmp.invoiceDate) DESC
     </select>
-
 
 </mapper>
