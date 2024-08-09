@@ -19,10 +19,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-import java.util.StringJoiner;
+import java.util.*;
 
 /**
  * 订单Service业务层处理
@@ -193,7 +190,7 @@ public class GoodsOrderServiceImpl implements IGoodsOrderService {
 
 
         // 如果距离addtime的时间超过设置的分钟，拒绝修改. 先将addtime从字符串转会Date再进行运算
-        if (DateUtils.differentMinutesByMillisecond(DateUtils.parseDate(oldOrder.getAddtime()), DateUtils.getNowDate()) > limit) {
+        if (DateUtils.differentMinutesByMillisecond(new Date(oldOrder.getAddtime()), DateUtils.getNowDate()) > limit) {
             throw new ServiceException("超过修改时间限制:"+limit+"分钟,不允许修改");
         }
 
