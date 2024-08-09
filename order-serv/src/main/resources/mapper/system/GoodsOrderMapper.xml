@@ -103,255 +103,193 @@
     </resultMap>
 
 
-    <sql id="selectGoodsOrderVo">
-        select id,
-               ordersNo,
-               orderDate,
-               customer,
-               customerID,
-               landCarID,
-               landCarNo,
-               landDriverTel,
-               landDriverName,
-               seaCarID,
-               seaCarNo,
-               seaDriverTel,
-               seaDriverName,
-               checkUserId,
-               checkState,
-               invoiceState,
-               path,
-               PaymentState,
-               landBankName,
-               landBankNo,
-               seaBankName,
-               seaBankNo,
-               receiveProof,
-               saleManager,
-               fleet,
-               isAdjusted,
-               adjustDate,
-               isAdjust,
-               adjustOrderid,
-               isedit,
-               customerIsInvoice,
-               isSupplierInvoice,
-               cancelFlag,
-               comments,
-               addtime,
-               userId,
-               UserName,
-               update_time
-        from goodsOrder
-    </sql>
 
+    <sql id="selectGoodsOrderVo">
+        select
+            g.id,
+            g.ordersNo,
+            g.orderDate,
+            g.customer,
+            g.customerID,
+            g.landCarID,
+            g.landCarNo,
+            g.landDriverTel,
+            g.landDriverName,
+            g.seaCarID,
+            g.seaCarNo,
+            g.seaDriverTel,
+            g.seaDriverName,
+            g.checkUserId,
+            g.checkState,
+            g.invoiceState,
+            g.path,
+            g.landBankName,
+            g.landBankNo,
+            g.seaBankName,
+            g.seaBankNo,
+            g.receiveProof,
+            g.saleManager,
+            g.fleet,
+            g.isAdjusted,
+            g.adjustDate,
+            g.isAdjust,
+            g.adjustOrderid,
+            g.isedit,
+            g.customerIsInvoice,
+            g.isSupplierInvoice,
+            g.cancelFlag,
+            g.comments,
+            g.addtime,
+            g.userId,
+            g.UserName,
+            g.update_time,
+            g.seaFreight,
+            g.landFreight,
+            g.supplierNames,
+            CASE
+                WHEN pa.checkState = '通过' THEN p.paymentState
+                ELSE COALESCE(pa.checkState, '未申请')
+                END as PaymentState
+        from
+            goodsOrder g
+                left join
+            paymentapply pa
+            on pa.tableName = 'goodsOrder'
+                and pa.tID = g.id
+                and (pa.checkState = '审核中' or pa.checkState = '通过')
+                left join
+            payment p
+            on p.applyId = pa.id
+                and p.delFlag = 0
+    </sql>
     <select id="selectGoodsOrderList" parameterType="GoodsOrder" resultMap="GoodsOrderResult">
         <include refid="selectGoodsOrderVo"/>
         <where>
-<!--            前端传入两个时间戳，在这里做范围匹配-->
             <if test="orderDateStart != null and orderDateStart != '' and orderDateEnd != null and orderDateEnd != ''">
-<!--                    需要注意的是时间都是时间戳形式的字符串-->
-                and orderDate between #{orderDateStart} and #{orderDateEnd}
+                and g.orderDate between #{orderDateStart} and #{orderDateEnd}
             </if>
-
             <if test="ordersNo != null  and ordersNo != ''">
-                and ordersNo = #{ordersNo}
+                and g.ordersNo = #{ordersNo}
             </if>
             <if test="customer != null  and customer != ''">
-                and customer = #{customer}
+                and g.customer = #{customer}
             </if>
             <if test="customerID != null">
-                and customerID = #{customerID}
+                and g.customerID = #{customerID}
             </if>
             <if test="landCarID != null">
-                and landCarID = #{landCarID}
+                and g.landCarID = #{landCarID}
             </if>
             <if test="landCarNo != null  and landCarNo != ''">
-                and landCarNo = #{landCarNo}
+                and g.landCarNo = #{landCarNo}
             </if>
             <if test="landDriverTel != null  and landDriverTel != ''">
-                and landDriverTel = #{landDriverTel}
+                and g.landDriverTel = #{landDriverTel}
             </if>
             <if test="landDriverName != null  and landDriverName != ''">
-                and landDriverName like concat('%', #{landDriverName}, '%')
+                and g.landDriverName like concat('%', #{landDriverName}, '%')
             </if>
             <if test="seaCarID != null">
-                and seaCarID = #{seaCarID}
+                and g.seaCarID = #{seaCarID}
             </if>
             <if test="seaCarNo != null  and seaCarNo != ''">
-                and seaCarNo = #{seaCarNo}
+                and g.seaCarNo = #{seaCarNo}
             </if>
             <if test="seaDriverTel != null  and seaDriverTel != ''">
-                and seaDriverTel = #{seaDriverTel}
+                and g.seaDriverTel = #{seaDriverTel}
             </if>
             <if test="seaDriverName != null  and seaDriverName != ''">
-                and seaDriverName like concat('%', #{seaDriverName}, '%')
+                and g.seaDriverName like concat('%', #{seaDriverName}, '%')
             </if>
             <if test="checkUserId != null">
-                and checkUserId = #{checkUserId}
+                and g.checkUserId = #{checkUserId}
             </if>
             <if test="checkState != null  and checkState != ''">
-                and checkState = #{checkState}
+                and g.checkState = #{checkState}
             </if>
             <if test="invoiceState != null  and invoiceState != ''">
-                and invoiceState = #{invoiceState}
+                and g.invoiceState = #{invoiceState}
             </if>
             <if test="path != null  and path != ''">
-                and path = #{path}
+                and g.path = #{path}
             </if>
             <if test="PaymentState != null  and PaymentState != ''">
-                and PaymentState = #{PaymentState}
+                and g.PaymentState = #{PaymentState}
             </if>
             <if test="landBankName != null  and landBankName != ''">
-                and landBankName like concat('%', #{landBankName}, '%')
+                and g.landBankName like concat('%', #{landBankName}, '%')
             </if>
             <if test="landBankNo != null  and landBankNo != ''">
-                and landBankNo = #{landBankNo}
+                and g.landBankNo = #{landBankNo}
             </if>
             <if test="seaBankName != null  and seaBankName != ''">
-                and seaBankName like concat('%', #{seaBankName}, '%')
+                and g.seaBankName like concat('%', #{seaBankName}, '%')
             </if>
             <if test="seaBankNo != null  and seaBankNo != ''">
-                and seaBankNo = #{seaBankNo}
+                and g.seaBankNo = #{seaBankNo}
             </if>
             <if test="receiveProof != null  and receiveProof != ''">
-                and receiveProof = #{receiveProof}
+                and g.receiveProof = #{receiveProof}
             </if>
             <if test="saleManager != null  and saleManager != ''">
-                and saleManager = #{saleManager}
+                and g.saleManager = #{saleManager}
             </if>
             <if test="fleet != null  and fleet != ''">
-                and fleet = #{fleet}
+                and g.fleet = #{fleet}
             </if>
             <if test="isAdjusted != null  and isAdjusted != ''">
-                and isAdjusted = #{isAdjusted}
+                and g.isAdjusted = #{isAdjusted}
             </if>
             <if test="adjustDate != null  and adjustDate != ''">
-                and adjustDate = #{adjustDate}
+                and g.adjustDate = #{adjustDate}
             </if>
             <if test="isAdjust != null  and isAdjust != ''">
-                and isAdjust = #{isAdjust}
+                and g.isAdjust = #{isAdjust}
             </if>
             <if test="adjustOrderid != null">
-                and adjustOrderid = #{adjustOrderid}
+                and g.adjustOrderid = #{adjustOrderid}
             </if>
             <if test="isedit != null">
-                and isedit = #{isedit}
+                and g.isedit = #{isedit}
             </if>
             <if test="customerIsInvoice != null">
-                and customerIsInvoice = #{customerIsInvoice}
+                and g.customerIsInvoice = #{customerIsInvoice}
             </if>
             <if test="isSupplierInvoice != null">
-                and isSupplierInvoice = #{isSupplierInvoice}
+                and g.isSupplierInvoice = #{isSupplierInvoice}
             </if>
-            and cancelFlag = 0
+            and g.cancelFlag = 0
             <if test="comments != null  and comments != ''">
-                and comments = #{comments}
+                and g.comments = #{comments}
             </if>
             <if test="addtime != null  and addtime != ''">
-                and addtime = #{addtime}
+                and g.addtime = #{addtime}
             </if>
             <if test="userId != null">
-                and userId = #{userId}
+                and g.userId = #{userId}
             </if>
             <if test="UserName != null  and UserName != ''">
-                and UserName like concat('%', #{UserName}, '%')
+                and g.UserName like concat('%', #{UserName}, '%')
             </if>
             ${params.orderDataScope}
-
         </where>
-        ORDER BY adjustOrderid DESC, addtime DESC
+        ORDER BY g.adjustOrderid DESC, g.addtime DESC
     </select>
 
     <select id="selectGoodsOrderById" parameterType="Long" resultMap="GoodsOrderOrderDetailResult">
-        select id,
-               ordersNo,
-               orderDate,
-               customer,
-               customerID,
-               landCarID,
-               landCarNo,
-               landDriverTel,
-               landDriverName,
-               seaCarID,
-               seaCarNo,
-               seaDriverTel,
-               seaDriverName,
-               checkUserId,
-               checkState,
-               invoiceState,
-               path,
-               PaymentState,
-               landBankName,
-               landBankNo,
-               seaBankName,
-               seaBankNo,
-               receiveProof,
-               saleManager,
-               fleet,
-               isAdjusted,
-               adjustDate,
-               isAdjust,
-               adjustOrderid,
-               isedit,
-               customerIsInvoice,
-               isSupplierInvoice,
-               cancelFlag,
-               comments,
-               addtime,
-               userId,
-               UserName,
-               update_time,
-               landFreight,
-               seaFreight,
-               supplierNames
-        from goodsOrder
-        where id = #{id}
-          and cancelFlag = 0
+        <include refid="selectGoodsOrderVo"/>
+        where
+        g.id = #{id}
+        and g.cancelFlag = 0
     </select>
 
-    <select id="selectGoodsOrderByOrderNO" resultType="org.dzu.system.domain.GoodsOrder">  select id,
-        ordersNo,
-        orderDate,
-        customer,
-        customerID,
-        landCarID,
-        landCarNo,
-        landDriverTel,
-        landDriverName,
-        seaCarID,
-        seaCarNo,
-        seaDriverTel,
-        seaDriverName,
-        checkUserId,
-        checkState,
-        invoiceState,
-        path,
-        PaymentState,
-        landBankName,
-        landBankNo,
-        seaBankName,
-        seaBankNo,
-        receiveProof,
-        saleManager,
-        fleet,
-        isAdjusted,
-        adjustDate,
-        isAdjust,
-        adjustOrderid,
-        isedit,
-        customerIsInvoice,
-        isSupplierInvoice,
-        cancelFlag,
-        comments,
-        addtime,
-        userId,
-        UserName,
-        update_time
-        from goodsOrder
-        where ordersNo = #{ordersNo}
-        and cancelFlag = 0
+    <select id="selectGoodsOrderByOrderNO" resultType="org.dzu.system.domain.GoodsOrder">
+        <include refid="selectGoodsOrderVo"/>
+        where
+        g.ordersNo = #{ordersNo}
+        and g.cancelFlag = 0
     </select>
+
 
     <select id="selectOrderDetailList" resultType="OrderDetail" resultMap="OrderDetailResult">
         select id,
