@@ -77,12 +77,15 @@ export default {
       headers: {
         Authorization: "Bearer " + getToken(),
       },
+      //文件列表
       fileList: [],
     };
   },
   watch: {
+    //监听value的变化
     value: {
       handler(val) {
+        //如果变化了
         if (val) {
           let temp = 1;
           // 首先将值转为数组
