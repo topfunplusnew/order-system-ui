@@ -152,6 +152,19 @@ public class InvoiceOut extends BaseEntity
     @Pattern(regexp = "^[0-9]*$", message = "结束时间必须是时间戳")
     private String endTime;
 
+
+    public Double getOweAmount() {
+        return oweAmount;
+    }
+
+    public void setOweAmount(Double oweAmount) {
+        this.oweAmount = oweAmount;
+    }
+
+    // 欠票金额
+    @TableField(exist = false)
+    private Double oweAmount;
+
     public void setId(Long id) 
     {
         this.id = id;
