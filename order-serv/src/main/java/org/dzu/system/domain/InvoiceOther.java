@@ -169,6 +169,18 @@ public class InvoiceOther extends BaseEntity
     @TableField(exist = false)
     @Pattern(regexp = "^[0-9]*$", message = "结束时间必须是时间戳")
     private String endTime;
+
+    @Excel(name = "当月欠票")
+    private String oweAmount;
+
+    public String getOweAmount() {
+        return oweAmount;
+    }
+
+    public void setOweAmount(String oweAmount) {
+        this.oweAmount = oweAmount;
+    }
+
     public void setId(Long id)
     {
         this.id = id;
