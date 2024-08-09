@@ -207,7 +207,6 @@
         </template>
       </el-table-column>
 
-      <!--  todo    压缩上传-->
       <el-table-column label="附件路径" align="center" prop="path"/>
 
       <!--      无字典 转换-->
@@ -300,7 +299,6 @@
             size="mini"
             type="primary"
             @click="handleUpload(scope.row)"
-            v-hasPermi="['system:orderdetail:remove']"
           >上传附件
           </el-button>
           <el-button
@@ -550,10 +548,10 @@
 
     <!--    上传附件的弹窗-->
     <el-dialog
-      title="提示"
+      title="上传附件"
       :visible.sync="handleUploadVisible"
       width="30%">
-      <span>上传附件的弹窗</span>
+      <file-upload is-show-tip @input="handleBackUpload"/>
       <span slot="footer" class="dialog-footer">
     <el-button @click="handleUploadVisible = false">取 消</el-button>
     <el-button type="primary" @click="handleUploadVisible = false">确 定</el-button>
@@ -600,6 +598,8 @@ import {
 import TagsItem from "@/components/TagsItem/index.vue";
 import OrderForm from "@/components/OrderForm.vue";
 import {mapGetters} from "vuex";
+import {getToken} from "@/utils/auth";
+import {excludeParams} from "@/api/tool/exclude";
 
 export default {
   name: "GoodsOrder",
@@ -704,6 +704,8 @@ export default {
       tempId: '',
       //订单输入详情信息
       orderInfo: {},
+      //上传附件临时保存当前点击订单信息
+      tempOrderInfo: {}
     };
   },
   created() {
@@ -738,10 +740,6 @@ export default {
       this.orderInfo = val;
     },
 
-    //提交订单信息
-    onOrderSubmit() {
-
-    },
     //是或者否
     isOrNot(val) {
       return val === 1 ? "是" : "否";
@@ -759,7 +757,8 @@ export default {
       this.handleOrderVisible = true
       this.tempId = row.id;
     },
-    //订单
+
+    //订单发货单123
     handleOrder1(row) {
       this.Order1Visible = true
     },
@@ -769,13 +768,32 @@ export default {
     handleOrder3(row) {
       this.Order3Visible = true
     },
-    //上传和收到条
+
+    //todo 压缩上传和收到条
     handleUpload(row) {
       this.handleUploadVisible = true
+      //保存当前订单信息 现根据当前订单列表信息查询详细订单信息
+      getGoodsOrder(row.id).then(res => {
+        this.tempOrderInfo = res.data;
+      })
     },
     handleCommit(row) {
       this.handleCommitVisible = true
     },
+
+    //上传组件的回调
+    handleBackUpload(val) {
+      //去除不必要字段
+      this.tempOrderInfo = excludeParams(this.tempOrderInfo, this.$exclude)
+      //修改订单信息
+      updateGoodsOrder({...this.tempOrderInfo, path: val})
+        .then(res => {
+          this.$message.success('上传成功')
+        }).catch(err => {
+        this.$message.error('上传失败' + err.msg)
+      })
+    },
+
     //调整单
     submitChangeOrder() {
       const id = this.tempId
@@ -803,9 +821,11 @@ export default {
         })
       })
     },
+
     //表格中的列自定义样式信息 渲染的时候每一个列都会执行这个函数
     tableRowClassName({row, rowIndex}) {
     },
+
     //提交订单
     //订单列表的对象封装一个，订单详情有两个一样的对象 对应供应商发货和仓库发货
     submitOrder() {
@@ -862,6 +882,7 @@ export default {
       });
       return sums;
     },
+
     //打印
     printHTML() {
       this.$print({
