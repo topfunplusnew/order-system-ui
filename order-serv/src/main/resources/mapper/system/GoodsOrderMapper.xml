@@ -154,7 +154,7 @@
             goodsOrder g
                 left join
             paymentapply pa
-            on pa.tableName = 'goodsOrder'
+            on pa.tableName = 'goodsorder'
                 and pa.tID = g.id
                 and (pa.checkState = '审核中' or pa.checkState = '通过')
                 left join
