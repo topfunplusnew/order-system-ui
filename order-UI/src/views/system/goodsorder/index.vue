@@ -805,8 +805,6 @@ export default {
     handleTimesQuery() {
       //重新赋值
       this.goodsOrderList = this.orderList;
-      //筛选
-      //其他情况 判断时间是不是空
       if (Object.keys(JSON.parse(JSON.stringify(this.paramQuery))).length !== 0) {
         this.goodsOrderList = this.goodsOrderList.filter(obj => {
           let exclude = Object.entries(JSON.parse(JSON.stringify(this.paramQuery))) //填写的参数列表 判断item的某个属性
