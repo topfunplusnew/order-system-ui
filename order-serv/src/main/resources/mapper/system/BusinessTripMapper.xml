@@ -83,8 +83,8 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
             <if test="employeeID != null "> and bt.employeeID = #{employeeID}</if>
             <if test="employee != null  and employee != ''"> and bt.employee like concat('%', #{employee}, '%')</if>
             <if test="personnel != null  and personnel != ''"> and bt.personnel like concat('%', #{personnel}, '%')</if>
-            <if test="starttime != null  and starttime != ''"> and bt.starttime = #{starttime}</if>
-            <if test="endtime != null  and endtime != ''"> and bt.endtime = #{endtime}</if>
+            <if test="starttime != null  and starttime != ''"> and bt.starttime &gt;= #{starttime}</if>
+            <if test="endtime != null  and endtime != ''"> and bt.endtime &lt;= #{endtime}</if>
             <if test="attachmentPath != null  and attachmentPath != ''"> and bt.attachmentPath = #{attachmentPath}</if>
             <if test="isReimburse != null "> and bt.isReimburse = #{isReimburse}</if>
             <if test="comments != null  and comments != ''"> and bt.comments = #{comments}</if>
