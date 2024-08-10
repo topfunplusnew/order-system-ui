@@ -52,11 +52,4 @@ public interface ICarApplyService
      */
     public int deleteCarApplyByIds(Long[] ids);
 
-    /**
-     * 删除车辆使用申请信息
-     * 
-     * @param id 车辆使用申请主键
-     * @return 结果
-     */
-    public int deleteCarApplyById(Long id);
 }
