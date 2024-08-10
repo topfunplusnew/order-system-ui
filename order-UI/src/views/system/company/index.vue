@@ -215,9 +215,9 @@
       </div>
     </el-dialog>
 
-    <!--    点击银行卡-->
+    <!--    搜索已绑定的银行卡信息-->
     <el-dialog title="银行卡号" :visible.sync="dialogFormVisible">
-      <el-form :model="currentInfo">
+      <el-form :model="currentInfo" v-if="singleInfo.length !== 0">
         <el-row :gutter="4">
           <el-col :span="4">
             <span style="font-weight: bolder">{{ currentInfo.relationName }}</span>
@@ -237,28 +237,46 @@
           </el-col>
         </el-row>
       </el-form>
-      <el-table v-loading="loading" :data="singleInfo" @selection-change="handleSelectionChange">
-        <el-table-column label="序号" align="center" prop="id"/>
-        <el-table-column label="客户名称" align="center" prop="relationName"/>
-        <el-table-column label="银行卡号" align="center" prop="bankNo"/>
-        <el-table-column label="户名" align="center" prop="acountsName"/>
-        <el-table-column label="操作" align="center" class-name="small-padding fixed-width" fixed="right" width="180">
-          <template slot-scope="scope">
-            <el-button
-              size="mini"
-              @click="handleUpdateBankPop(scope.row)"
-              v-hasPermi="['system:company:edit']"
-            ><i class="el-icon-edit"></i>
-            </el-button>
-            <el-button
-              size="mini"
-              @click="handleDelete(scope.row)"
-              v-hasPermi="['system:company:remove']"
-            ><i class="el-icon-delete"></i>
-            </el-button>
+      <hr/>
+
+
+      <!--      客户的银行卡列表  应查询已经绑定的银行卡-->
+      <el-row>
+        <span style="font-weight: bolder">已绑定银行卡列表</span>
+      </el-row>
+
+
+      <el-row>
+        <!--        已经绑定的银行卡列表-->
+        <el-table v-loading="loading" :data="singleInfo" @selection-change="handleSelectionChange">
+          <!--          添加银行卡信息-->
+          <template #append>
+            <div style="text-align: center">
+              <el-button type="primary" @click="handleAddBankInfo">添加银行卡信息</el-button>
+            </div>
           </template>
-        </el-table-column>
-      </el-table>
+          <el-table-column label="序号" align="center" prop="id"/>
+          <el-table-column label="客户名称" align="center" prop="relationName"/>
+          <el-table-column label="银行卡号" align="center" prop="bankNo"/>
+          <el-table-column label="户名" align="center" prop="acountsName"/>
+          <el-table-column label="操作" align="center" class-name="small-padding fixed-width" fixed="right" width="180">
+            <template slot-scope="scope">
+              <el-button
+                size="mini"
+                @click="handleUpdateBankPop(scope.row)"
+                v-hasPermi="['system:company:edit']"
+              ><i class="el-icon-edit"></i>
+              </el-button>
+              <el-button
+                size="mini"
+                @click="handleDelete(scope.row)"
+                v-hasPermi="['system:company:remove']"
+              ><i class="el-icon-delete"></i>
+              </el-button>
+            </template>
+          </el-table-column>
+        </el-table>
+      </el-row>
       <div slot="footer" class="dialog-footer">
         <el-button @click="dialogFormVisible = false">取 消</el-button>
         <el-button type="primary" @click="dialogFormVisible = false">确 定</el-button>
@@ -270,57 +288,118 @@
         :limit.sync="queryParams.pageSize"
         @pagination="getList"
       />
-    </el-dialog>
 
 
-    <!--    账号搜索-->
-    <el-dialog title="账号搜索" :visible.sync="dialogFormSearchVisible">
-      <el-form :model="queryParams">
-        <el-row :gutter="4">
-          <el-col :span="8">
-            <el-form-item label="客户名称" :label-width="formLabelWidth">
-              <el-input v-model="queryParams.relationName" autocomplete="off"></el-input>
-            </el-form-item>
-          </el-col>
-          <el-col :span="8">
-            <el-form-item label="银行账号" :label-width="formLabelWidth">
-              <el-input v-model="queryParams.bankNo" autocomplete="off"></el-input>
-            </el-form-item>
-          </el-col>
-          <el-col :span="3">
-            <el-button type="primary" @click="handleSearchCompanyGive">搜索</el-button>
-          </el-col>
+      <!--    账号搜索-->
+      <el-dialog title="账号搜索" :visible.sync="dialogBankInfoVisible">
+        <el-form :model="queryParams">
+          <el-row :gutter="4">
+            <el-col :span="8">
+              <el-form-item label="客户名称" :label-width="formLabelWidth">
+                <el-input v-model="queryParams.relationName" autocomplete="off"></el-input>
+              </el-form-item>
+            </el-col>
+            <el-col :span="8">
+              <el-form-item label="银行卡号" :label-width="formLabelWidth">
+                <el-input v-model="queryParams.bankNo" autocomplete="off"></el-input>
+              </el-form-item>
+            </el-col>
+            <el-col :span="3">
+              <el-button type="primary" @click="handleSearchCompanyGive">搜索</el-button>
+            </el-col>
+          </el-row>
+        </el-form>
+        <el-table v-loading="loading" :data="companyList" @selection-change="handleSelectionChange">
+          <el-table-column label="操作" align="center" class-name="small-padding fixed-width" fixed="left" width="180">
+            <template slot-scope="scope">
+              <el-button
+                type="danger"
+                size="mini"
+                @click="dialogFormSearchVisible = false"
+              >确认
+              </el-button>
+            </template>
+          </el-table-column>
+          <el-table-column label="客户名称" align="center" prop="relationName"/>
+          <el-table-column label="银行卡号" align="center" prop="bankNo"/>
+          <el-table-column label="户名" align="center" prop="acountsName"/>
+        </el-table>
+        <pagination
+          v-show="total>0"
+          :total="total"
+          :page.sync="queryParams.pageNum"
+          :limit.sync="queryParams.pageSize"
+          @pagination="getList"
+        />
+      </el-dialog>
+
+
+      <!--    银行信息-->
+      <!--      查询银行卡 操作银行卡 查询所有账户类型为客户的银行卡信息-->
+      <el-dialog title="操作银行卡" :visible.sync="dialogBankInfoVisible" append-to-body>
+        <el-form :model="queryBankInfo">
+          <el-row :gutter="4">
+            <el-col :span="8">
+              <el-form-item label="账号类型" :label-width="formLabelWidth">
+                <el-select v-model="queryBankInfo.acountsType" placeholder="请选择">
+                  <el-option
+                    v-for="item in acountsTypeList"
+                    :key="item.value"
+                    :label="item.label"
+                    :value="item.value">
+                  </el-option>
+                </el-select>
+              </el-form-item>
+            </el-col>
+            <el-col :span="8">
+              <el-form-item label="账户名" :label-width="formLabelWidth">
+                <el-input v-model="queryBankInfo.acountsName" autocomplete="off"></el-input>
+              </el-form-item>
+            </el-col>
+            <el-col :span="3">
+              <el-button type="primary" @click="handleSearchBankInfo">搜索</el-button>
+            </el-col>
+          </el-row>
+        </el-form>
+        <el-row>
+          <el-table v-loading="loading" :data="bankInfo">
+            <el-table-column label="银行卡号" align="center" prop="bankNo"/>
+            <el-table-column label="账户类型" align="center" prop="acountsType"/>
+            <el-table-column label="账户名" align="center" prop="acountsName"/>
+            <el-table-column label="操作" align="center" class-name="small-padding fixed-width" fixed="right"
+                             width="180">
+              <template slot-scope="scope">
+                <el-button
+                  type="danger"
+                  @click="addThisBankInfo(scope.row)"
+                >添加该银行卡
+                </el-button>
+              </template>
+            </el-table-column>
+          </el-table>
         </el-row>
-      </el-form>
-      <el-table v-loading="loading" :data="companyList" @selection-change="handleSelectionChange">
-        <el-table-column label="操作" align="center" class-name="small-padding fixed-width" fixed="left" width="180">
-          <template slot-scope="scope">
-            <el-button
-              type="danger"
-              size="mini"
-              @click="dialogFormSearchVisible = false"
-            >确认
-            </el-button>
-          </template>
-        </el-table-column>
-        <el-table-column label="客户名称" align="center" prop="relationName"/>
-        <el-table-column label="银行卡号" align="center" prop="bankNo"/>
-        <el-table-column label="户名" align="center" prop="acountsName"/>
-      </el-table>
-      <pagination
-        v-show="total>0"
-        :total="total"
-        :page.sync="queryParams.pageNum"
-        :limit.sync="queryParams.pageSize"
-        @pagination="getList"
-      />
+        <div slot="footer" class="dialog-footer">
+          <el-button @click="dialogBankInfoVisible = false">取 消</el-button>
+          <el-button type="primary" @click="dialogBankInfoVisible = false">确 定</el-button>
+        </div>
+        <pagination
+          v-show="total>0"
+          :total="total"
+          :page.sync="queryParams.pageNum"
+          :limit.sync="queryParams.pageSize"
+          @pagination="getList"
+        />
+      </el-dialog>
     </el-dialog>
+
+
   </div>
 </template>
 
 <script>
 import {listCompany, getCompany, delCompany, addCompany, updateCompany} from "@/api/system/company";
 import {excludeParams} from "@/api/tool/exclude";
+import {addBankAccount, listBankAccount} from "@/api/system/bankAccount";
 
 export default {
   name: "Company",
@@ -402,7 +481,32 @@ export default {
         acountsName: ''
       },
       //指定用户的信息
-      singleInfo: []
+      singleInfo: [],
+      bankInfo: [],
+      dialogBankInfoVisible: false,
+      queryBankInfo: {
+        acountsType: '',
+        acountsName: ''
+      },
+
+      //账户类型
+      acountsTypeList: [{
+        value: '己方公司',
+        label: '己方公司'
+      }, {
+        value: '客户',
+        label: '客户'
+      }, {
+        value: '供应商',
+        label: '供应商'
+      }, {
+        value: '司机',
+        label: '司机'
+      }, {
+        value: '其他',
+        label: '其他'
+      }]
+
     };
   },
   created() {
@@ -431,6 +535,7 @@ export default {
     },
     //点击银行卡后弹窗
     jumpBankNo(row) {
+      console.log(row)
       this.currentInfo.relationName = row.relationName
       this.currentInfo.id = row.id
       this.currentInfo.relationTel = row.relationTel
@@ -447,15 +552,49 @@ export default {
       this.currentInfo.comments = row.comments
       this.currentInfo.companyName = row.companyName
       this.dialogFormVisible = true
-      //查询某客户信息
-      listCompany({relationName: row.relationName, relationTel: row.relationTel}).then(res => {
-        console.log('res=>', res)
+      //查询某客户的银行卡信息
+      listBankAccount({acountsName: this.currentInfo.relationName, acountsType: '客户'}).then(res => {
         this.singleInfo = res.rows
+      })
+    },
+
+    //添加银行卡信息
+    handleAddBankInfo() {
+      this.dialogBankInfoVisible = true;
+      //查询所有银行卡信息
+      listBankAccount().then(res => {
+        this.bankInfo = res.rows;
       })
     },
     //银行卡搜索按钮
     handleSearchCompanyGive() {
       this.getList();
+    },
+    //查询银行卡
+    handleSearchBankInfo() {
+      listBankAccount({acountsType: this.queryBankInfo.acountsType, acountsName: this.queryBankInfo.acountsName})
+        .then(res => {
+          this.bankInfo = res.rows;
+        })
+    },
+    addThisBankInfo(row) {
+      console.log(row)
+      this.dialogBankInfoVisible = false;
+      this.dialogFormVisible = false;
+      //添加银行卡信息
+
+      //如果账户名不一样不允许添加银行卡
+      if (this.currentInfo.relationName !== row.acountsName) {
+        this.$message.error("不允许添加非己银行卡!");
+      } else {
+        this.currentInfo.bankNo = row.bankNo;
+        this.currentInfo.bankName = row.bankName;
+        this.currentInfo.acountsName = row.acountsName
+        // 应该是调用修改客户信息的修改银行卡信息
+        updateCompany(this.currentInfo).then(res => {
+          this.$message.success("添加成功")
+        })
+      }
     },
     //弹出的银行卡信息点击提交
     handleCommitCompanyGive() {
