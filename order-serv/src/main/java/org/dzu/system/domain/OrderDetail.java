@@ -34,7 +34,6 @@ public class OrderDetail extends BaseEntity {
      * 订单编号（UUID）
      */
     @Excel(name = "订单编号", readConverterExp = "UUID")
-    @Length(max = 20, message = "订单编号长度不能超过20个字符")
     @TableField(value = "ordersNo")
     private String ordersNo;
 

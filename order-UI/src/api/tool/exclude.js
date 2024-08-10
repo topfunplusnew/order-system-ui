@@ -2,7 +2,7 @@
 export function excludeParams(target, params) {
   console.log(params)
   params.forEach(item => {
-    target[item] = null;
+    delete target[item];
   })
   return target;
 }

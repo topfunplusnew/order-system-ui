@@ -1,26 +1,37 @@
 package org.dzu.system.service.impl;
 
-import org.dzu.common.constant.DelConstants;
+import java.util.List;
+
+import org.dzu.common.enums.TableName;
 import org.dzu.common.utils.DateUtils;
 import org.dzu.common.utils.SecurityUtils;
-import org.dzu.system.domain.BusinessTrip;
-import org.dzu.system.mapper.BusinessTripMapper;
-import org.dzu.system.service.IBusinessTripService;
+import org.dzu.common.utils.SecurityUtils;
+import org.dzu.system.service.IPaymentApplyService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-
-import java.util.List;
+import java.util.ArrayList;
+import org.dzu.common.utils.StringUtils;
+import org.springframework.transaction.annotation.Transactional;
+import org.dzu.system.domain.TripReimbursement;
+import org.dzu.system.mapper.BusinessTripMapper;
+import org.dzu.system.domain.BusinessTrip;
+import org.dzu.system.service.IBusinessTripService;
+ 
+import org.dzu.common.constant.DelConstants;
 /**
  * 出差Service业务层处理
  *
  * @author ml
- * @date 2024-07-29
+ * @date 2024-08-10
  */
 @Service
 public class BusinessTripServiceImpl implements IBusinessTripService
 {
     @Autowired
     private BusinessTripMapper businessTripMapper;
+
+    @Autowired
+    private IPaymentApplyService paymentApplyService;
 
     /**
      * 查询出差
@@ -52,14 +63,23 @@ public class BusinessTripServiceImpl implements IBusinessTripService
      * @param businessTrip 出差
      * @return 结果
      */
+    @Transactional
     @Override
     public int insertBusinessTrip(BusinessTrip businessTrip)
     {
+        // 设置基础信息
         businessTrip.setAddtime(String.valueOf(DateUtils.getNowDate()));
         businessTrip.setUserId(SecurityUtils.getUserId());
         businessTrip.setUserName(SecurityUtils.getUserTruename());
         businessTrip.setDelFlag(Long.valueOf(DelConstants.NODEL));
-        return businessTripMapper.insertBusinessTrip(businessTrip);
+        businessTrip.setEmployee(SecurityUtils.getUserTruename());
+        businessTrip.setEmployeeID(SecurityUtils.getUserId());
+
+
+        // 插入出差
+        int rows = businessTripMapper.insertBusinessTrip(businessTrip);
+        insertTripReimbursement(businessTrip);
+        return rows;
     }
 
     /**
@@ -68,12 +88,20 @@ public class BusinessTripServiceImpl implements IBusinessTripService
      * @param businessTrip 出差
      * @return 结果
      */
+    @Transactional
     @Override
     public int updateBusinessTrip(BusinessTrip businessTrip)
     {
-        businessTrip.setUserId(SecurityUtils.getUserId());
-        businessTrip.setUserName(SecurityUtils.getUserTruename());
         businessTrip.setUpdateTime(DateUtils.getNowDate());
+
+        /// 检查付款申请，如有有，则拒绝修改
+        if (paymentApplyService.checkExist(TableName.BUSINESS_TRIP.get(), businessTrip.getId()))
+        {
+            throw new RuntimeException("已有付款申请，不允许修改");
+        }
+
+        businessTripMapper.deleteTripReimbursementByBTripId(businessTrip.getId());
+        insertTripReimbursement(businessTrip);
         return businessTripMapper.updateBusinessTrip(businessTrip);
     }
 
@@ -83,21 +111,48 @@ public class BusinessTripServiceImpl implements IBusinessTripService
      * @param ids 需要删除的出差主键
      * @return 结果
      */
+    @Transactional
     @Override
     public int deleteBusinessTripByIds(Long[] ids)
     {
+        // 去检查付款申请信息
+        for (Long id : ids) {
+            boolean b = paymentApplyService.checkExist(TableName.BUSINESS_TRIP.get(), id);
+            if(b) {
+                throw new RuntimeException("已有付款申请，不允许删除");
+            }
+        }
+        businessTripMapper.deleteTripReimbursementByBTripIds(ids);
         return businessTripMapper.deleteBusinessTripByIds(ids);
     }
 
+
+
     /**
-     * 删除出差信息
+     * 新增出差报销信息
      * 
-     * @param id 出差主键
-     * @return 结果
+     * @param businessTrip 出差对象
      */
-    @Override
-    public int deleteBusinessTripById(Long id)
+    public void insertTripReimbursement(BusinessTrip businessTrip)
     {
-        return businessTripMapper.deleteBusinessTripById(id);
+        List<TripReimbursement> tripReimbursementList = businessTrip.getTripReimbursementList();
+        Long id = businessTrip.getId();
+        if (StringUtils.isNotNull(tripReimbursementList))
+        {
+            List<TripReimbursement> list = new ArrayList<TripReimbursement>();
+            for (TripReimbursement tripReimbursement : tripReimbursementList)
+            {
+                tripReimbursement.setbTripId(id);
+                tripReimbursement.setUserId(SecurityUtils.getUserId());
+                tripReimbursement.setUserName(SecurityUtils.getUserTruename());
+                tripReimbursement.setDelFlag(Long.valueOf(DelConstants.NODEL));
+                tripReimbursement.setAddtime(DateUtils.getNowDate().toString());
+                list.add(tripReimbursement);
+            }
+            if (list.size() > 0)
+            {
+                businessTripMapper.batchTripReimbursement(list);
+            }
+        }
     }
 }

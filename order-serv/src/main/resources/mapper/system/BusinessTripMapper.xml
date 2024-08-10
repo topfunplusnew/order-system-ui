@@ -19,37 +19,95 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         <result property="UserName"    column="UserName"    />
         <result property="updateTime"    column="update_time"    />
         <result property="delFlag"    column="delFlag"    />
+        <result property="checkState" column="checkState"/>
+
+    </resultMap>
+
+    <resultMap id="BusinessTripTripReimbursementResult" type="BusinessTrip" extends="BusinessTripResult">
+        <collection property="tripReimbursementList" ofType="TripReimbursement" column="id" select="selectTripReimbursementList" />
+    </resultMap>
+
+    <resultMap type="TripReimbursement" id="TripReimbursementResult">
+        <result property="id"    column="id"    />
+        <result property="bTripId"    column="bTripId"    />
+        <result property="item"    column="item"    />
+        <result property="itemCost"    column="itemCost"    />
+        <result property="comments"    column="comments"    />
+        <result property="addtime"    column="addtime"    />
+        <result property="userId"    column="userId"    />
+        <result property="UserName"    column="UserName"    />
+        <result property="updateTime"    column="update_time"    />
+        <result property="delFlag"    column="delFlag"    />
     </resultMap>
 
 
- 
 
     <sql id="selectBusinessTripVo">
-        select id, employeeID, employee, personnel, starttime, endtime, attachmentPath, isReimburse, comments, addtime, userId, UserName, update_time, delFlag from BusinessTrip
+        select
+        bt.id,
+        bt.employeeID,
+        bt.employee,
+        bt.personnel,
+        bt.starttime,
+        bt.endtime,
+        bt.attachmentPath,
+        bt.isReimburse,
+        bt.comments,
+        bt.addtime,
+        bt.userId,
+        bt.UserName,
+        bt.update_time,
+        bt.delFlag,
+        CASE
+        WHEN pa.checkState = '通过' THEN p.paymentState
+        ELSE COALESCE(pa.checkState, '未申请')
+        END as checkState  <!-- 审核/支付状态 -->
+        from
+        BusinessTrip bt
+        left join
+        paymentapply pa
+        on
+        pa.tableName = 'businesstrip'
+        and pa.tID = bt.id
+        and (pa.checkState = '审核中' or pa.checkState = '通过')
+        left join
+        payment p
+        on
+        p.applyId = pa.id
+        and p.delFlag = 0
     </sql>
 
     <select id="selectBusinessTripList" parameterType="BusinessTrip" resultMap="BusinessTripResult">
         <include refid="selectBusinessTripVo"/>
-        <where>  
-            <if test="employeeID != null "> and employeeID = #{employeeID}</if>
-            <if test="employee != null  and employee != ''"> and employee = #{employee}</if>
-            <if test="personnel != null  and personnel != ''"> and personnel = #{personnel}</if>
-            <if test="starttime != null  and starttime != ''"> and starttime = #{starttime}</if>
-            <if test="endtime != null  and endtime != ''"> and endtime = #{endtime}</if>
-            <if test="attachmentPath != null  and attachmentPath != ''"> and attachmentPath = #{attachmentPath}</if>
-            <if test="isReimburse != null "> and isReimburse = #{isReimburse}</if>
-            <if test="comments != null  and comments != ''"> and comments = #{comments}</if>
-            <if test="addtime != null  and addtime != ''"> and addtime = #{addtime}</if>
-            <if test="userId != null "> and userId = #{userId}</if>
-            <if test="UserName != null  and UserName != ''"> and UserName like concat('%', #{UserName}, '%')</if>
-            and delFlag = 0
+        <where>
+            <if test="employeeID != null "> and bt.employeeID = #{employeeID}</if>
+            <if test="employee != null  and employee != ''"> and bt.employee like concat('%', #{employee}, '%')</if>
+            <if test="personnel != null  and personnel != ''"> and bt.personnel like concat('%', #{personnel}, '%')</if>
+            <if test="starttime != null  and starttime != ''"> and bt.starttime &gt;= #{starttime}</if>
+            <if test="endtime != null  and endtime != ''"> and bt.endtime &lt;= #{endtime}</if>
+            <if test="attachmentPath != null  and attachmentPath != ''"> and bt.attachmentPath = #{attachmentPath}</if>
+            <if test="isReimburse != null "> and bt.isReimburse = #{isReimburse}</if>
+            <if test="comments != null  and comments != ''"> and bt.comments = #{comments}</if>
+            <if test="addtime != null  and addtime != ''"> and bt.addtime = #{addtime}</if>
+            <if test="userId != null "> and bt.userId = #{userId}</if>
+            <if test="UserName != null  and UserName != ''"> and bt.UserName like concat('%', #{UserName}, '%')</if>
+            and bt.delFlag = 0
         </where>
+        order by bt.starttime desc, bt.endtime asc
     </select>
-    
-    <select id="selectBusinessTripById" parameterType="Long" resultMap="BusinessTripResult">
+
+    <select id="selectBusinessTripById" parameterType="Long" resultMap="BusinessTripTripReimbursementResult">
         <include refid="selectBusinessTripVo"/>
-        where id = #{id}
-        and delFlag = 0
+        where
+        bt.id = #{id}
+        and bt.delFlag = 0
+    </select>
+
+    <select id="selectTripReimbursementList" resultType="TripReimbursement" resultMap="TripReimbursementResult">
+        select id, bTripId, item, itemCost, comments, addtime, userId, UserName, update_time, delFlag
+        from tripReimbursement
+        where bTripId = #{bTripId}
+
     </select>
 
     <insert id="insertBusinessTrip" parameterType="BusinessTrip" useGeneratedKeys="true" keyProperty="id">
@@ -114,4 +172,21 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
             #{id}
         </foreach>
     </update>
+    <delete id="deleteTripReimbursementByBTripIds" parameterType="String">
+        delete from tripReimbursement where bTripId in 
+        <foreach item="bTripId" collection="array" open="(" separator="," close=")">
+            #{bTripId}
+        </foreach>
+    </delete>
+
+    <delete id="deleteTripReimbursementByBTripId" parameterType="Long">
+        delete from tripReimbursement where bTripId = #{bTripId}
+    </delete>
+
+    <insert id="batchTripReimbursement">
+        insert into tripReimbursement( id, bTripId, item, itemCost, comments, addtime, userId, UserName, update_time, delFlag) values
+        <foreach item="item" index="index" collection="list" separator=",">
+            ( #{item.id}, #{item.bTripId}, #{item.item}, #{item.itemCost}, #{item.comments}, #{item.addtime}, #{item.userId}, #{item.UserName}, #{item.updateTime}, #{item.delFlag})
+        </foreach>
+    </insert>
 </mapper>

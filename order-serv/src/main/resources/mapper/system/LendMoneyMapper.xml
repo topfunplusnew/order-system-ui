@@ -59,7 +59,7 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         left join
         paymentApply pa
         on
-        pa.tableName = 'lendMoney'
+        pa.tableName = 'lendmoney'
         and pa.tID = l.id
         and (pa.checkState = '审核中' or pa.checkState = '通过')
         left join

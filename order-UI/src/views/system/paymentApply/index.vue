@@ -163,6 +163,8 @@
       </right-toolbar>
     </el-row>
 
+
+    <!--    列表-->
     <el-table border v-horizontal-scroll="'always'" v-loading="loading" :data="paymentApplyList"
               @selection-change="handleSelectionChange" id="printBox">
       <el-table-column label="id" align="center" prop="id"/>
@@ -218,9 +220,10 @@
       @pagination="getList"
     />
 
-    <!-- 添加或修改付款信息对话框 -->
-    <el-dialog :title="title" :visible.sync="open" width="500px" append-to-body>
+    <!-- 2.添加或修改付款信息对话框 -->
+    <el-dialog title="付款申请" :visible.sync="open" width="500px" append-to-body>
       <el-form ref="form" :model="form" :rules="rules" label-width="80px">
+        <!--        表名要自动填充 手动添加无需-->
         <!--        <el-form-item label="对应的表名" prop="tableName">-->
         <!--          <el-input v-model="form.tableName" placeholder="请输入对应的表名"/>-->
         <!--        </el-form-item>-->
@@ -228,13 +231,61 @@
         <!--          <el-input v-model="form.tID" placeholder="请输入对应的表主键"/>-->
         <!--        </el-form-item>-->
         <el-form-item label="日期" prop="fundsDate">
-          <el-input v-model="form.fundsDate" placeholder="请输入日期"/>
+          <el-date-picker
+            v-model="form.fundsDate"
+            type="date"
+            placeholder="选择日期">
+          </el-date-picker>
+        </el-form-item>
+        <el-form-item label="支付类型" prop="payType">
+          <!--          <el-input v-model="form.receiveType" placeholder="请输入支付类型"/>-->
+          <el-row :gutter="5">
+            <!--            一级分类-->
+            <el-col :span="8">
+              <el-select v-model="currentSort.levelOne" placeholder="请选择一级分类" @change="handleSelectOneLevel">
+                <el-option
+                  v-for="item in OneLevelOption"
+                  :key="item.id"
+                  :label="item.title"
+                  :value="item.title">
+                </el-option>
+              </el-select>
+            </el-col>
+            <!--            二级分类-->
+            <el-col :span="8">
+              <el-select v-model="currentSort.levelTwo" placeholder="请选择二级分类" @change="handleSelectTwoLevel">
+                <el-option
+                  v-for="item in TwoLevelOption"
+                  :key="item.id"
+                  :label="item.title"
+                  :value="item.title">
+                </el-option>
+              </el-select>
+            </el-col>
+          </el-row>
         </el-form-item>
         <el-form-item label="金额" prop="moneyAmount">
           <el-input v-model="form.moneyAmount" placeholder="请输入金额"/>
         </el-form-item>
+
+        <!--        对方信息-->
         <el-form-item label="对方户名" prop="otherAcountsName">
-          <el-input v-model="form.otherAcountsName" placeholder="请输入对方户名"/>
+          <el-row>
+            <el-col :span="10">
+              <el-input v-model="form.otherAcountsName" placeholder="请输入对方户名"/>
+            </el-col>
+            <el-col :span="3">
+              <SearchOption :get-data="listCompany" icon="el-icon-search" @commitBack="handleCommitBack">
+                <template #table-columns>
+                  <el-table-column label="公司名称" align="center" prop="companyName"/>
+                  <el-table-column label="公司类型" align="center" prop="companyType"/>
+                  <el-table-column label="开户行" align="center" prop="bankName"/>
+                  <el-table-column label="开户名" align="center" prop="acountsName"/>
+                  <el-table-column label="账号" align="center" prop="bankNo"/>
+                </template>
+              </SearchOption>
+            </el-col>
+          </el-row>
         </el-form-item>
         <el-form-item label="对方账号" prop="otherBankNo">
           <el-input v-model="form.otherBankNo" placeholder="请输入对方账号"/>
@@ -245,24 +296,30 @@
         <el-form-item label="对方公司" prop="companyName">
           <el-input v-model="form.companyName" placeholder="请输入对方公司"/>
         </el-form-item>
-        <el-form-item label="对方公司ID" prop="companyId">
-          <el-input v-model="form.companyId" placeholder="请输入对方公司ID"/>
-        </el-form-item>
+        <!--        <el-form-item label="对方公司ID" prop="companyId">-->
+        <!--          <el-input v-model="form.companyId" placeholder="请输入对方公司ID"/>-->
+        <!--        </el-form-item>-->
+
         <el-form-item label="付款原因" prop="reason">
           <el-input v-model="form.reason" type="textarea" placeholder="请输入内容"/>
         </el-form-item>
+
+        <!--        文件-->
         <el-form-item label="附件" prop="attachment">
-          <el-input v-model="form.attachment" type="textarea" placeholder="请输入内容"/>
+          <!--          <el-input v-model="form.attachment" type="textarea" placeholder="请输入内容"/>-->
+          <file-upload @input="handleCommitUpload"/>
         </el-form-item>
-        <el-form-item label="申请人" prop="applyPerson">
-          <el-input v-model="form.applyPerson" placeholder="请输入申请人"/>
-        </el-form-item>
-        <el-form-item label="申请人ID" prop="applyPersonID">
-          <el-input v-model="form.applyPersonID" placeholder="请输入申请人ID"/>
-        </el-form-item>
-        <el-form-item label="审核状态" prop="checkState">
-          <el-input v-model="form.checkState" placeholder="请输入审核状态"/>
-        </el-form-item>
+
+        <!--        发起付款人的信息-->
+        <!--        <el-form-item label="申请人" prop="applyPerson">-->
+        <!--          <el-input v-model="form.applyPerson" placeholder="请输入申请人"/>-->
+        <!--        </el-form-item>-->
+        <!--        <el-form-item label="申请人ID" prop="applyPersonID">-->
+        <!--          <el-input v-model="form.applyPersonID" placeholder="请输入申请人ID"/>-->
+        <!--        </el-form-item>-->
+        <!--        <el-form-item label="审核状态" prop="checkState">-->
+        <!--          <el-input v-model="form.checkState" placeholder="请输入审核状态"/>-->
+        <!--        </el-form-item>-->
         <el-form-item label="备注" prop="comments">
           <el-input v-model="form.comments" placeholder="请输入备注"/>
         </el-form-item>
@@ -284,9 +341,14 @@ import {
   updatePaymentApply
 } from "@/api/system/paymentApply";
 import {excludeParams} from "@/api/tool/exclude";
+import {listSubject} from "@/api/system/subject";
+import {formatDate} from "@/utils";
+import SearchOption from "@/components/SearchOption.vue";
+import {listCompany} from "@/api/system/company";
 
 export default {
   name: "PaymentApply",
+  components: {SearchOption},
   data() {
     return {
       // 遮罩层
@@ -354,12 +416,66 @@ export default {
         {key: 12, label: `对方公司ID`, visible: true},
         {key: 13, label: `对方公司类型`, visible: true},
       ],
+      //付款分类信息
+      subjectTree: [],
+      //分类信息
+      currentSort: {
+        levelOne: '',
+        levelTwo: ''
+      },
+      //一级分类列表
+      OneLevelOption: [],
+      //二级分类
+      TwoLevelOption: []
     };
   },
   created() {
     this.getList();
+    listSubject().then(res => {
+      this.subjectTree = this.handleTree(res.data, "id", "parentId");
+      this.OneLevelOption = this.subjectTree;
+    })
+  },
+  computed: {
+    fullLevel() {
+      return this.currentSort.levelOne + '-' + this.currentSort.levelTwo;
+    }
   },
   methods: {
+    listCompany,
+    //点击一级分类后的回调
+    handleSelectOneLevel(value) {
+      this.currentSort.levelOne = value;
+      for (var i = 0; i < this.OneLevelOption.length; i++) {
+        //每个一级分类
+        var oneSubject = this.OneLevelOption[i]
+        //判断：所有一级分类id和点击一级分类id是否一样
+        if (value === oneSubject.title) {  //===即比较值 还要比较类型
+          //从一级分类中获取所有的二级分类
+          this.TwoLevelOption = oneSubject.children
+          //把二级分类Id值清空
+          this.currentSort.levelTwo = ''
+        }
+      }
+    },
+    //点击二级
+    handleSelectTwoLevel(value) {
+      this.currentSort.levelTwo = value;
+    },
+
+    //对方信息 - 点击确认后自动填充
+    handleCommitBack(val) {
+      this.form.otherBankNo = val.bankNo;
+      this.form.otherBankName = val.bankName;
+      this.form.companyName = val.companyName;
+      this.form.companyId = val.id;
+      this.form.otherAcountsName = val.acountsName;
+      this.form.companyType = val.companyType
+    },
+    //上传的回调函数
+    handleCommitUpload(val) {
+      this.form.attachment = val;
+    },
     printHTML() {
       this.$print({
         printable: 'printBox',
@@ -456,6 +572,8 @@ export default {
               this.getList();
             });
           } else {
+            excludeParams(this, this.$exclude)
+            this.form.payType = this.fullLevel;
             addPaymentApply(this.form).then(response => {
               this.$modal.msgSuccess("新增成功");
               this.open = false;

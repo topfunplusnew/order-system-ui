@@ -15,6 +15,7 @@ import org.dzu.system.service.IPaymentApplyService;
 import org.dzu.system.service.IPaymentService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 /**
@@ -117,17 +118,20 @@ public class PaymentApplyServiceImpl implements IPaymentApplyService
      * @return 结果
      */
     @Override
+    @Transactional
     public int deletePaymentApplyByIds(Long[] ids)
     {
+        // 需要确保对应的审核信息的submitFlag只能未提交状态
+        QueryWrapper<AuditInfo> query = new QueryWrapper<>();
+        query.in("applyID",ids).eq("submitflag",AuditStateConstants.SUBMIT_STATE_END);
+        if(auditInfoMapper.selectCount(query)>0){
+            throw new ServiceException("删除信息中含有已经审核结束的信息，请刷新页面后重新选择");
+        }
+
         int i = paymentApplyMapper.deletePaymentApplyByIds(ids);
         if(i!=ids.length){
             throw new ServiceException("删除信息中含有已经审核结束的信息，请刷新页面后重新选择");
         }
-        // 如果上一步没丢出异常，可以确定本次选择的都是还没有审核到最后一步的信息
-        // 所以在这里执行删除对应审核流程
-        QueryWrapper<AuditInfo> query = new QueryWrapper<>();
-        query.in("applyID",ids);
-        auditInfoMapper.delete(query);
 
         return i;
     }

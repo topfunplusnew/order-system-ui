@@ -1,132 +1,305 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <!DOCTYPE mapper
-PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
-"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="org.dzu.system.mapper.InvoiceOutMapper">
-    
     <resultMap type="InvoiceOut" id="InvoiceOutResult">
-        <result property="id"    column="id"    />
-        <result property="invoiceDate"    column="invoiceDate"    />
-        <result property="invoiceObject"    column="invoiceObject"    />
-        <result property="invoiceAmount"    column="invoiceAmount"    />
-        <result property="companyType"    column="companyType"    />
-        <result property="companyName"    column="companyName"    />
-        <result property="companyID"    column="companyID"    />
-        <result property="invoiceCompanyName"    column="invoiceCompanyName"    />
-        <result property="ticketPoint"    column="ticketPoint"    />
-        <result property="ticketPointAmount"    column="ticketPointAmount"    />
-        <result property="isOrderTax"    column="isOrderTax"    />
-        <result property="comments"    column="comments"    />
-        <result property="addtime"    column="addtime"    />
-        <result property="userId"    column="userId"    />
-        <result property="UserName"    column="UserName"    />
-        <result property="updateTime"    column="update_time"    />
-        <result property="delFlag"    column="delFlag"    />
+        <result property="id" column="id"/>
+        <result property="invoiceDate" column="invoiceDate"/>
+        <result property="invoiceObject" column="invoiceObject"/>
+        <result property="invoiceAmount" column="invoiceAmount"/>
+        <result property="companyType" column="companyType"/>
+        <result property="companyName" column="companyName"/>
+        <result property="companyID" column="companyID"/>
+        <result property="invoiceCompanyName" column="invoiceCompanyName"/>
+        <result property="ticketPoint" column="ticketPoint"/>
+        <result property="ticketPointAmount" column="ticketPointAmount"/>
+        <result property="isOrderTax" column="isOrderTax"/>
+        <result property="comments" column="comments"/>
+        <result property="addtime" column="addtime"/>
+        <result property="userId" column="userId"/>
+        <result property="UserName" column="UserName"/>
+        <result property="updateTime" column="update_time"/>
+        <result property="delFlag" column="delFlag"/>
+        <result property="oweAmount" column="oweAmount"/>
     </resultMap>
 
 
- 
 
     <sql id="selectInvoiceOutVo">
-        select id, invoiceDate, invoiceObject, invoiceAmount, companyType, companyName, companyID, invoiceCompanyName, ticketPoint, ticketPointAmount, isOrderTax, comments, addtime, userId, UserName, update_time, delFlag from invoiceOut
+        SELECT o.id,
+               o.invoiceDate,
+               o.invoiceObject,
+               o.invoiceAmount,
+               o.companyType,
+               o.companyName,
+               o.companyID,
+               o.invoiceCompanyName,
+               o.ticketPoint,
+               o.ticketPointAmount,
+               o.isOrderTax,
+               o.comments,
+               o.addtime,
+               o.userId,
+               o.UserName,
+               o.update_time,
+               o.delFlag,
+               g.ordersNo,
+               g.allPayments,
+               g.orderDate,
+               COALESCE(
+                       CASE
+                           WHEN COUNT(*) OVER (PARTITION BY o.isOrderTax) = 1 THEN
+                               g.allPayments - o.invoiceAmount
+                           ELSE
+                               g.allPayments - (
+                                   SELECT SUM(o1.invoiceAmount)
+                                   FROM invoiceOut o1
+                                   WHERE o1.isOrderTax = o.isOrderTax
+                                     AND o1.delFlag = 0
+                                     AND o1.invoiceDate &lt;= o.invoiceDate
+        )
+        END,
+        0
+        ) AS oweAmount
+        FROM invoiceOut o
+        LEFT JOIN goodsOrder g
+        ON o.isOrderTax = g.id
     </sql>
+
 
     <select id="selectInvoiceOutList" parameterType="InvoiceOut" resultMap="InvoiceOutResult">
         <include refid="selectInvoiceOutVo"/>
-        <where>  
-            <if test="invoiceDate != null  and invoiceDate != ''"> and invoiceDate = #{invoiceDate}</if>
+        <where>
+            <if test="invoiceDate != null  and invoiceDate != ''">
+                and invoiceDate = #{invoiceDate}
+            </if>
 
-            <if test="beginTime != null and beginTime != '' and endTime != null and endTime != ''"> and invoiceDate between #{beginTime} and #{endTime}</if>
-            <if test="invoiceObject != null  and invoiceObject != ''"> and invoiceObject = #{invoiceObject}</if>
-            <if test="invoiceAmount != null "> and invoiceAmount = #{invoiceAmount}</if>
-            <if test="companyType != null  and companyType != ''"> and companyType = #{companyType}</if>
-            <if test="companyName != null  and companyName != ''"> and companyName like concat('%', #{companyName}, '%')</if>
-            <if test="companyID != null "> and companyID = #{companyID}</if>
-            <if test="invoiceCompanyName != null  and invoiceCompanyName != ''"> and invoiceCompanyName like concat('%', #{invoiceCompanyName}, '%')</if>
-            <if test="ticketPoint != null "> and ticketPoint = #{ticketPoint}</if>
-            <if test="ticketPointAmount != null "> and ticketPointAmount = #{ticketPointAmount}</if>
-            <if test="isOrderTax != null "> and isOrderTax = #{isOrderTax}</if>
-            <if test="comments != null  and comments != ''"> and comments = #{comments}</if>
-            <if test="addtime != null  and addtime != ''"> and addtime = #{addtime}</if>
-            <if test="userId != null "> and userId = #{userId}</if>
-            <if test="UserName != null  and UserName != ''"> and UserName like concat('%', #{UserName}, '%')</if>
+            <if test="beginTime != null and beginTime != '' and endTime != null and endTime != ''">
+                and invoiceDate between #{beginTime}
+                and #{endTime}
+            </if>
+            <if test="invoiceObject != null  and invoiceObject != ''">
+                and invoiceObject = #{invoiceObject}
+            </if>
+            <if test="invoiceAmount != null">
+                and invoiceAmount = #{invoiceAmount}
+            </if>
+            <if test="companyType != null  and companyType != ''">
+                and companyType = #{companyType}
+            </if>
+            <if test="companyName != null  and companyName != ''">
+                and companyName like concat('%'
+                  , #{companyName}
+                  , '%')
+            </if>
+            <if test="companyID != null">
+                and companyID = #{companyID}
+            </if>
+            <if test="invoiceCompanyName != null  and invoiceCompanyName != ''">
+                and invoiceCompanyName like concat('%'
+                  , #{invoiceCompanyName}
+                  , '%')
+            </if>
+            <if test="ticketPoint != null">
+                and ticketPoint = #{ticketPoint}
+            </if>
+            <if test="ticketPointAmount != null">
+                and ticketPointAmount = #{ticketPointAmount}
+            </if>
+            <if test="isOrderTax != null">
+                and isOrderTax = #{isOrderTax}
+            </if>
+            <if test="comments != null  and comments != ''">
+                and comments = #{comments}
+            </if>
+            <if test="addtime != null  and addtime != ''">
+                and addtime = #{addtime}
+            </if>
+            <if test="userId != null">
+                and userId = #{userId}
+            </if>
+            <if test="UserName != null  and UserName != ''">
+                and UserName like concat('%'
+                  , #{UserName}
+                  , '%')
+            </if>
             and delFlag = 0
         </where>
     </select>
-    
+
     <select id="selectInvoiceOutById" parameterType="Long" resultMap="InvoiceOutResult">
         <include refid="selectInvoiceOutVo"/>
         where id = #{id}
-        and delFlag = 0
+          and delFlag = 0
     </select>
 
     <insert id="insertInvoiceOut" parameterType="InvoiceOut" useGeneratedKeys="true" keyProperty="id">
         insert into invoiceOut
         <trim prefix="(" suffix=")" suffixOverrides=",">
-            <if test="invoiceDate != null">invoiceDate,</if>
-            <if test="invoiceObject != null">invoiceObject,</if>
-            <if test="invoiceAmount != null">invoiceAmount,</if>
-            <if test="companyType != null">companyType,</if>
-            <if test="companyName != null">companyName,</if>
-            <if test="companyID != null">companyID,</if>
-            <if test="invoiceCompanyName != null">invoiceCompanyName,</if>
-            <if test="ticketPoint != null">ticketPoint,</if>
-            <if test="ticketPointAmount != null">ticketPointAmount,</if>
-            <if test="isOrderTax != null">isOrderTax,</if>
-            <if test="comments != null">comments,</if>
-            <if test="addtime != null">addtime,</if>
-            <if test="userId != null">userId,</if>
-            <if test="UserName != null">UserName,</if>
-            <if test="updateTime != null">update_time,</if>
-            <if test="delFlag != null">delFlag,</if>
-         </trim>
+            <if test="invoiceDate != null">
+                invoiceDate,
+            </if>
+            <if test="invoiceObject != null">
+                invoiceObject,
+            </if>
+            <if test="invoiceAmount != null">
+                invoiceAmount,
+            </if>
+            <if test="companyType != null">
+                companyType,
+            </if>
+            <if test="companyName != null">
+                companyName,
+            </if>
+            <if test="companyID != null">
+                companyID,
+            </if>
+            <if test="invoiceCompanyName != null">
+                invoiceCompanyName,
+            </if>
+            <if test="ticketPoint != null">
+                ticketPoint,
+            </if>
+            <if test="ticketPointAmount != null">
+                ticketPointAmount,
+            </if>
+            <if test="isOrderTax != null">
+                isOrderTax,
+            </if>
+            <if test="comments != null">
+                comments,
+            </if>
+            <if test="addtime != null">
+                addtime,
+            </if>
+            <if test="userId != null">
+                userId,
+            </if>
+            <if test="UserName != null">
+                UserName,
+            </if>
+            <if test="updateTime != null">
+                update_time,
+            </if>
+            <if test="delFlag != null">
+                delFlag,
+            </if>
+        </trim>
         <trim prefix="values (" suffix=")" suffixOverrides=",">
-            <if test="invoiceDate != null">#{invoiceDate},</if>
-            <if test="invoiceObject != null">#{invoiceObject},</if>
-            <if test="invoiceAmount != null">#{invoiceAmount},</if>
-            <if test="companyType != null">#{companyType},</if>
-            <if test="companyName != null">#{companyName},</if>
-            <if test="companyID != null">#{companyID},</if>
-            <if test="invoiceCompanyName != null">#{invoiceCompanyName},</if>
-            <if test="ticketPoint != null">#{ticketPoint},</if>
-            <if test="ticketPointAmount != null">#{ticketPointAmount},</if>
-            <if test="isOrderTax != null">#{isOrderTax},</if>
-            <if test="comments != null">#{comments},</if>
-            <if test="addtime != null">#{addtime},</if>
-            <if test="userId != null">#{userId},</if>
-            <if test="UserName != null">#{UserName},</if>
-            <if test="updateTime != null">#{updateTime},</if>
-            <if test="delFlag != null">#{delFlag},</if>
-         </trim>
+            <if test="invoiceDate != null">
+                #{invoiceDate},
+            </if>
+            <if test="invoiceObject != null">
+                #{invoiceObject},
+            </if>
+            <if test="invoiceAmount != null">
+                #{invoiceAmount},
+            </if>
+            <if test="companyType != null">
+                #{companyType},
+            </if>
+            <if test="companyName != null">
+                #{companyName},
+            </if>
+            <if test="companyID != null">
+                #{companyID},
+            </if>
+            <if test="invoiceCompanyName != null">
+                #{invoiceCompanyName},
+            </if>
+            <if test="ticketPoint != null">
+                #{ticketPoint},
+            </if>
+            <if test="ticketPointAmount != null">
+                #{ticketPointAmount},
+            </if>
+            <if test="isOrderTax != null">
+                #{isOrderTax},
+            </if>
+            <if test="comments != null">
+                #{comments},
+            </if>
+            <if test="addtime != null">
+                #{addtime},
+            </if>
+            <if test="userId != null">
+                #{userId},
+            </if>
+            <if test="UserName != null">
+                #{UserName},
+            </if>
+            <if test="updateTime != null">
+                #{updateTime},
+            </if>
+            <if test="delFlag != null">
+                #{delFlag},
+            </if>
+        </trim>
     </insert>
 
     <update id="updateInvoiceOut" parameterType="InvoiceOut">
         update invoiceOut
         <trim prefix="SET" suffixOverrides=",">
-            <if test="invoiceDate != null">invoiceDate = #{invoiceDate},</if>
-            <if test="invoiceObject != null">invoiceObject = #{invoiceObject},</if>
-            <if test="invoiceAmount != null">invoiceAmount = #{invoiceAmount},</if>
-            <if test="companyType != null">companyType = #{companyType},</if>
-            <if test="companyName != null">companyName = #{companyName},</if>
-            <if test="companyID != null">companyID = #{companyID},</if>
-            <if test="invoiceCompanyName != null">invoiceCompanyName = #{invoiceCompanyName},</if>
-            <if test="ticketPoint != null">ticketPoint = #{ticketPoint},</if>
-            <if test="ticketPointAmount != null">ticketPointAmount = #{ticketPointAmount},</if>
-            <if test="isOrderTax != null">isOrderTax = #{isOrderTax},</if>
-            <if test="comments != null">comments = #{comments},</if>
-            <if test="addtime != null">addtime = #{addtime},</if>
-            <if test="userId != null">userId = #{userId},</if>
-            <if test="UserName != null">UserName = #{UserName},</if>
-            <if test="updateTime != null">update_time = #{updateTime},</if>
-            <if test="delFlag != null">delFlag = #{delFlag},</if>
+            <if test="invoiceDate != null">
+                invoiceDate = #{invoiceDate},
+            </if>
+            <if test="invoiceObject != null">
+                invoiceObject = #{invoiceObject},
+            </if>
+            <if test="invoiceAmount != null">
+                invoiceAmount = #{invoiceAmount},
+            </if>
+            <if test="companyType != null">
+                companyType = #{companyType},
+            </if>
+            <if test="companyName != null">
+                companyName = #{companyName},
+            </if>
+            <if test="companyID != null">
+                companyID = #{companyID},
+            </if>
+            <if test="invoiceCompanyName != null">
+                invoiceCompanyName = #{invoiceCompanyName},
+            </if>
+            <if test="ticketPoint != null">
+                ticketPoint = #{ticketPoint},
+            </if>
+            <if test="ticketPointAmount != null">
+                ticketPointAmount = #{ticketPointAmount},
+            </if>
+            <if test="isOrderTax != null">
+                isOrderTax = #{isOrderTax},
+            </if>
+            <if test="comments != null">
+                comments = #{comments},
+            </if>
+            <if test="addtime != null">
+                addtime = #{addtime},
+            </if>
+            <if test="userId != null">
+                userId = #{userId},
+            </if>
+            <if test="UserName != null">
+                UserName = #{UserName},
+            </if>
+            <if test="updateTime != null">
+                update_time = #{updateTime},
+            </if>
+            <if test="delFlag != null">
+                delFlag = #{delFlag},
+            </if>
         </trim>
         where id = #{id}
     </update>
     <update id="deleteInvoiceOutById" parameterType="Long">
-        update invoiceOut set delFlag = 1 where id = #{id}
+        update invoiceOut
+        set delFlag = 1
+        where id = #{id}
     </update>
     <update id="deleteInvoiceOutByIds" parameterType="String">
-        update invoiceOut set delFlag = 1 where id in
+        update invoiceOut
+        set delFlag = 1 where id in
         <foreach item="id" collection="array" open="(" separator="," close=")">
             #{id}
         </foreach>

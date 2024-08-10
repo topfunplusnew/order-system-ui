@@ -271,6 +271,9 @@ export default {
   computed: {
     ...mapGetters(['fixedassetsList'])
   },
+  mounted() {
+    // console.log(this) //this=>VueComponent(fixedassets)
+  },
   methods: {
     //时间查询
     handleTimesQuery() {

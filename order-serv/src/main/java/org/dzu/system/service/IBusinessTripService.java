@@ -1,14 +1,13 @@
 package org.dzu.system.service;
 
-import org.dzu.system.domain.BusinessTrip;
-
 import java.util.List;
+import org.dzu.system.domain.BusinessTrip;
 
 /**
  * 出差Service接口
  * 
  * @author ml
- * @date 2024-07-29
+ * @date 2024-08-10
  */
 public interface IBusinessTripService 
 {
@@ -51,12 +50,4 @@ public interface IBusinessTripService
      * @return 结果
      */
     public int deleteBusinessTripByIds(Long[] ids);
-
-    /**
-     * 删除出差信息
-     * 
-     * @param id 出差主键
-     * @return 结果
-     */
-    public int deleteBusinessTripById(Long id);
 }

@@ -6,7 +6,10 @@ export default {
     //弹出框的标题
     title: '',
     //图标信息
-    icon: '',
+    icon: {
+      type: String,
+      default: 'el-icon-search'
+    },
     //获取数据的函数
     getData: {
       type: Function,

@@ -270,6 +270,7 @@
 import {listCars, getCars, delCars, addCars, updateCars} from "@/api/system/cars";
 import {addFleet, updateFleet} from "@/api/system/fleet";
 import {listCompany} from "@/api/system/company";
+import {excludeParams} from "@/api/tool/exclude";
 
 export default {
   name: "Cars",
@@ -448,10 +449,7 @@ export default {
       this.$refs["form"].validate(valid => {
         if (valid) {
           if (this.form.id != null) {
-            this.form.delFlag = null;
-            this.form.addtime = null;
-            this.form.updateTime = null;
-            this.form.userId = null;
+            this.form = excludeParams(this.form, this.$exclude)
             updateCars(this.form).then(response => {
               this.$modal.msgSuccess("修改成功");
               this.open = false;
@@ -459,10 +457,7 @@ export default {
             });
           } else {
             addCars(this.form).then(response => {
-              this.form.delFlag = null;
-              this.form.addtime = null;
-              this.form.updateTime = null;
-              this.form.userId = null;
+              this.form = excludeParams(this.form, this.$exclude)
               this.$modal.msgSuccess("新增成功");
               this.open = false;
               this.getList();

@@ -174,6 +174,9 @@
         <el-form-item label="地址" prop="address">
           <el-input v-model="form.address" placeholder="请输入地址"/>
         </el-form-item>
+        <el-form-item label="联系人" prop="address">
+          <el-input v-model="form.relationName" placeholder="请输入联系人"/>
+        </el-form-item>
         <!--        <el-form-item label="开户行" prop="bankName">-->
         <!--          <el-input v-model="form.bankName" placeholder="请输入开户行"/>-->
         <!--        </el-form-item>-->
@@ -186,15 +189,15 @@
         <!--        <el-form-item label="余额" prop="surplusMoney">-->
         <!--          <el-input v-model="form.surplusMoney" placeholder="请输入余额"/>-->
         <!--        </el-form-item>-->
-        <!--        <el-form-item label="业务员" prop="salesman">-->
-        <!--          <el-input v-model="form.salesman" placeholder="请输入业务员"/>-->
-        <!--        </el-form-item>-->
-        <!--        <el-form-item label="老板姓名" prop="leader">-->
-        <!--          <el-input v-model="form.leader" placeholder="请输入老板姓名"/>-->
-        <!--        </el-form-item>-->
-        <!--        <el-form-item label="老板电话" prop="leaderTel">-->
-        <!--          <el-input v-model="form.leaderTel" placeholder="请输入联系人电话"/>-->
-        <!--        </el-form-item>-->
+        <el-form-item label="业务员" prop="salesman">
+          <el-input v-model="form.salesman" placeholder="请输入业务员"/>
+        </el-form-item>
+        <el-form-item label="老板姓名" prop="leader">
+          <el-input v-model="form.leader" placeholder="请输入老板姓名"/>
+        </el-form-item>
+        <el-form-item label="老板电话" prop="leaderTel">
+          <el-input v-model="form.leaderTel" placeholder="请输入联系人电话"/>
+        </el-form-item>
         <!--        <el-form-item label="区域" prop="region">-->
         <!--          <el-input v-model="form.region" placeholder="请输入区域"/>-->
         <!--        </el-form-item>-->
@@ -254,28 +257,45 @@
           </el-col>
         </el-row>
       </el-form>
-      <el-table v-loading="loading" :data="singleInfo" @selection-change="handleSelectionChange">
-        <el-table-column label="序号" align="center" prop="id"/>
-        <el-table-column label="供应商名称" align="center" prop="relationName"/>
-        <el-table-column label="银行卡号" align="center" prop="bankNo"/>
-        <el-table-column label="户名" align="center" prop="acountsName"/>
-        <el-table-column label="操作" align="center" class-name="small-padding fixed-width" fixed="right" width="180">
-          <template slot-scope="scope">
-            <el-button
-              size="mini"
-              @click="handleUpdateBankPop(scope.row)"
-              v-hasPermi="['system:company:edit']"
-            ><i class="el-icon-edit"></i>
-            </el-button>
-            <el-button
-              size="mini"
-              @click="handleDelete(scope.row)"
-              v-hasPermi="['system:company:remove']"
-            ><i class="el-icon-delete"></i>
-            </el-button>
+
+      <hr/>
+      <el-row>
+        <span style="font-weight: bolder">已绑定银行卡列表</span>
+      </el-row>
+
+
+      <el-row>
+        <el-table v-loading="loading" :data="singleInfo" @selection-change="handleSelectionChange">
+          <!--          添加银行卡信息-->
+          <template #append>
+            <div style="text-align: center">
+              <el-button type="primary" @click="handleAddBankInfo">添加银行卡信息</el-button>
+            </div>
           </template>
-        </el-table-column>
-      </el-table>
+          <el-table-column label="序号" align="center" prop="id"/>
+          <el-table-column label="供应商名称" align="center" prop="relationName"/>
+          <el-table-column label="银行卡号" align="center" prop="bankNo"/>
+          <el-table-column label="户名" align="center" prop="acountsName"/>
+          <el-table-column label="操作" align="center" class-name="small-padding fixed-width" fixed="right" width="180">
+            <template slot-scope="scope">
+              <el-button
+                size="mini"
+                @click="handleUpdateBankPop(scope.row)"
+                v-hasPermi="['system:company:edit']"
+              ><i class="el-icon-edit"></i>
+              </el-button>
+              <el-button
+                size="mini"
+                @click="handleDelete(scope.row)"
+                v-hasPermi="['system:company:remove']"
+              ><i class="el-icon-delete"></i>
+              </el-button>
+            </template>
+          </el-table-column>
+        </el-table>
+      </el-row>
+
+
       <div slot="footer" class="dialog-footer">
         <el-button @click="dialogFormVisible = false">取 消</el-button>
         <el-button type="primary" @click="dialogFormVisible = false">确 定</el-button>
@@ -287,7 +307,65 @@
         :limit.sync="queryParams.pageSize"
         @pagination="getList"
       />
+
+
+      <el-dialog title="操作银行卡" :visible.sync="dialogBankInfoVisible" append-to-body>
+        <el-form :model="queryBankInfo">
+          <el-row :gutter="4">
+            <el-col :span="8">
+              <el-form-item label="账号类型" :label-width="formLabelWidth">
+                <el-select v-model="queryBankInfo.acountsType" placeholder="请选择">
+                  <el-option
+                    v-for="item in acountsTypeList"
+                    :key="item.value"
+                    :label="item.label"
+                    :value="item.value">
+                  </el-option>
+                </el-select>
+              </el-form-item>
+            </el-col>
+            <el-col :span="8">
+              <el-form-item label="账户名" :label-width="formLabelWidth">
+                <el-input v-model="queryBankInfo.acountsName" autocomplete="off"></el-input>
+              </el-form-item>
+            </el-col>
+            <el-col :span="3">
+              <el-button type="primary" @click="handleSearchBankInfo">搜索</el-button>
+            </el-col>
+          </el-row>
+        </el-form>
+        <el-row>
+          <el-table v-loading="loading" :data="bankInfo">
+            <el-table-column label="银行卡号" align="center" prop="bankNo"/>
+            <el-table-column label="账户类型" align="center" prop="acountsType"/>
+            <el-table-column label="账户名" align="center" prop="acountsName"/>
+            <el-table-column label="操作" align="center" class-name="small-padding fixed-width" fixed="right"
+                             width="180">
+              <template slot-scope="scope">
+                <el-button
+                  type="danger"
+                  @click="addThisBankInfo(scope.row)"
+                >添加该银行卡
+                </el-button>
+              </template>
+            </el-table-column>
+          </el-table>
+        </el-row>
+        <div slot="footer" class="dialog-footer">
+          <el-button @click="dialogBankInfoVisible = false">取 消</el-button>
+          <el-button type="primary" @click="dialogBankInfoVisible = false">确 定</el-button>
+        </div>
+        <pagination
+          v-show="total>0"
+          :total="total"
+          :page.sync="queryParams.pageNum"
+          :limit.sync="queryParams.pageSize"
+          @pagination="getList"
+        />
+      </el-dialog>
+
     </el-dialog>
+
 
     <!--    账号搜索-->
     <el-dialog title="账号搜索" :visible.sync="dialogFormSearchVisible">
@@ -341,6 +419,7 @@
 
 <script>
 import {listCompany, getCompany, delCompany, addCompany, updateCompany} from "@/api/system/company";
+import {listBankAccount} from "@/api/system/bankAccount";
 
 export default {
   name: "Company",
@@ -421,7 +500,32 @@ export default {
         acountsName: ''
       },
       //指定用户的信息银行卡相关信息
-      singleInfo: []
+      singleInfo: [],
+
+      bankInfo: [],
+      dialogBankInfoVisible: false,
+      queryBankInfo: {
+        acountsType: '',
+        acountsName: ''
+      },
+
+      //账户类型
+      acountsTypeList: [{
+        value: '己方公司',
+        label: '己方公司'
+      }, {
+        value: '客户',
+        label: '客户'
+      }, {
+        value: '供应商',
+        label: '供应商'
+      }, {
+        value: '司机',
+        label: '司机'
+      }, {
+        value: '其他',
+        label: '其他'
+      }]
     };
   },
   created() {
@@ -471,9 +575,44 @@ export default {
       this.currentInfo.companyName = row.companyName
       this.dialogFormVisible = true
       //查询某供应商信息
-      listCompany({relationName: row.relationName, relationTel: row.relationTel}).then(res => {
+      listBankAccount({acountsName: this.currentInfo.relationName, acountsType: '供应商'}).then(res => {
         this.singleInfo = res.rows
       })
+    },
+    //添加银行卡信息
+    handleAddBankInfo() {
+      this.dialogBankInfoVisible = true;
+      //查询所有银行卡信息
+      listBankAccount().then(res => {
+        this.bankInfo = res.rows;
+      })
+    },
+
+    //查询银行卡
+    handleSearchBankInfo() {
+      listBankAccount({acountsType: this.queryBankInfo.acountsType, acountsName: this.queryBankInfo.acountsName})
+        .then(res => {
+          this.bankInfo = res.rows;
+        })
+    },
+    addThisBankInfo(row) {
+      console.log(row)
+      this.dialogBankInfoVisible = false;
+      this.dialogFormVisible = false;
+      //添加银行卡信息
+
+      //如果账户名不一样不允许添加银行卡
+      if (this.currentInfo.relationName !== row.acountsName) {
+        this.$message.error("不允许添加非己银行卡!");
+      } else {
+        this.currentInfo.bankNo = row.bankNo;
+        this.currentInfo.bankName = row.bankName;
+        this.currentInfo.acountsName = row.acountsName
+        // 应该是调用修改客户信息的修改银行卡信息
+        updateCompany(this.currentInfo).then(res => {
+          this.$message.success("添加成功")
+        })
+      }
     },
     //弹出的银行卡信息点击提交
     handleCommitCompanyGive() {

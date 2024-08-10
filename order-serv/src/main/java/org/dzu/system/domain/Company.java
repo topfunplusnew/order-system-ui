@@ -62,20 +62,20 @@ public class Company extends BaseEntity
     @Excel(name = "开户行")
     @Length(max = 50, message = "开户行的字符长度不允许超过50")
     @TableField(value = "bankName")
-    @NotNull(message = "开户行不能为空")
+//    @NotNull(message = "开户行不能为空")
     private String bankName;
 
     /** 开户名 */
     @Excel(name = "开户名")
     @Length(max = 50, message = "开户名的字符长度不允许超过50")
-    @NotNull(message = "开户名不能为空")
+//    @NotNull(message = "开户名不能为空")
     @TableField(value = "acountsName")
     private String acountsName;
 
     /** 账号 */
     @Excel(name = "账号")
     @Length(max = 50, message = "账号的字符长度不允许超过50")
-    @NotNull(message = "账号不能为空")
+//    @NotNull(message = "账号不能为空")
     @TableField(value = "bankNo")
     private String bankNo;
 

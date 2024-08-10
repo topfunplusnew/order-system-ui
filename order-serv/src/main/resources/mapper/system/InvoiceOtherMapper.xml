@@ -24,14 +24,55 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         <result property="UserName"    column="UserName"    />
         <result property="updateTime"    column="update_time"    />
         <result property="delFlag"    column="delFlag"    />
+        <result property="oweAmount"    column="oweAmount"    />
     </resultMap>
 
 
- 
+
+
 
     <sql id="selectInvoiceOtherVo">
-        select id, ordersNo, invoiceDate, invoiceAmount, supplierTicketPoint, supplierPointAmount, Supplier, SupplierID, customer, CustomerID, invoiceCompanyName, customerTicketPoint, customerPointAmount, comments, addtime, userId, UserName, update_time, delFlag from invoiceOther
+        SELECT i.id,
+               i.ordersNo,
+               i.invoiceDate,
+               i.invoiceAmount,
+               i.supplierTicketPoint,
+               i.supplierPointAmount,
+               i.Supplier,
+               i.SupplierID,
+               i.customer,
+               i.CustomerID,
+               i.invoiceCompanyName,
+               i.customerTicketPoint,
+               i.customerPointAmount,
+               i.comments,
+               i.addtime,
+               i.userId,
+               i.UserName,
+               i.update_time,
+               i.delFlag,
+               go.allPayments,
+               go.orderDate,
+               GREATEST(
+                       COALESCE(
+                               CASE
+                                   WHEN COUNT(*) OVER (PARTITION BY i.ordersNo) = 1 THEN
+                                       go.allPayments - i.invoiceAmount
+                                   ELSE
+                                       go.allPayments - (SELECT SUM(i1.invoiceAmount)
+                                                         FROM invoiceOther i1
+                                                         WHERE i1.ordersNo = i.ordersNo
+                                                           AND i1.invoiceDate &lt;= i.invoiceDate)
+                                   END, 0
+                       ), 0
+               ) AS oweAmount
+        FROM invoiceOther i
+                 LEFT JOIN
+             goodsOrder go
+             ON
+                 i.ordersNo = go.ordersNo
     </sql>
+
 
     <select id="selectInvoiceOtherList" parameterType="InvoiceOther" resultMap="InvoiceOtherResult">
         <include refid="selectInvoiceOtherVo"/>
