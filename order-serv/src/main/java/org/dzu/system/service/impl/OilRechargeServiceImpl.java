@@ -74,6 +74,13 @@ public class OilRechargeServiceImpl implements IOilRechargeService {
             }
         }
 
+        // 检查银行卡余额是否足够
+        BankAccount bankAccount=new BankAccount();
+        Double currentBalance = bankAccount.getAmount();
+        if (currentBalance < oilRecharge.getRechargeMoney()) {
+            throw new RuntimeException("银行卡余额不足");
+        }
+
         oilRecharge.setAddtime(String.valueOf(DateUtils.getNowDate()));
         oilRecharge.setUserId(SecurityUtils.getUserId());
         oilRecharge.setUserName(SecurityUtils.getUserTruename());
@@ -132,6 +139,12 @@ public class OilRechargeServiceImpl implements IOilRechargeService {
             if (bankAccount == null) {
                 throw new RuntimeException("银行卡号不存在");
             }
+        }
+        // 检查银行卡余额是否足够
+        BankAccount bankAccount=new BankAccount();
+        Double currentBalance = bankAccount.getAmount();
+        if (currentBalance < oilRecharge.getRechargeMoney()) {
+            throw new RuntimeException("银行卡余额不足");
         }
 
         // 检查是否存在相同的卡号

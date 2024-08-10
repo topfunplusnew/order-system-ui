@@ -74,5 +74,12 @@ public interface OilCardMapper extends BaseMapper<OilCard>
      * @return 加油卡当前余额
      */
     public  void updatemoneyAmount(String oilCardNo, Double moneyAmount);
+    /**
+     * 获取主卡余额
+     *
+     * @param oilCardNo 加��卡卡号
+     * @return 主卡余额
+     */
+    public OilCard selectOilCardByoilCardNo(String oilCardNo);
 
 }

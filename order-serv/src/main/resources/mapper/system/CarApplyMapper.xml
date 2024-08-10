@@ -77,7 +77,15 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
             <if test="path != null  and path != ''"> and path = #{path}</if>
         </where>
     </select>
-    
+    <select id="selectCarApplyByIds" parameterType="java.util.List" resultMap="CarApplyResult">
+        <include refid="selectCarApplyVo"/>
+        WHERE id IN
+        <foreach item="id" index="index" collection="list" open="(" separator="," close=")">
+            #{id}
+        </foreach>
+        AND delFlag = 0
+    </select>
+
     <select id="selectCarApplyById" parameterType="Long" resultMap="CarApplyResult">
         <include refid="selectCarApplyVo"/>
         where id = #{id}

@@ -11,6 +11,7 @@ import org.dzu.system.mapper.OilCardMapper;
 import org.dzu.system.service.IOilCardFundTransferService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 /**
@@ -58,46 +59,36 @@ public class OilCardFundTransferServiceImpl implements IOilCardFundTransferServi
      * @return 结果
      */
     @Override
-    public int insertOilCardFundTransfer(OilCardFundTransfer oilCardFundTransfer)
-    {
-        OilCard oilCard=new OilCard();
-        Long cardNo= Long.valueOf(oilCard.getOilCardNo());
-        if ("主卡".equals(oilCard.getOilType())) {
-            cardNo = Long.valueOf(oilCard.getOilCardNo());
-        } else if ("副卡".equals(oilCard.getOilType())) {
-            cardNo = Long.valueOf(oilCard.getOilCardNo());
-        } else {
-            throw new IllegalArgumentException("油卡类型不正确");
+    @Transactional
+    public int insertOilCardFundTransfer(OilCardFundTransfer oilCardFundTransfer) {
+        // 获取主卡和副卡信息
+        OilCard mainCard = oilCardMapper.selectOilCardByoilCardNo(oilCardFundTransfer.getOilMainCardNo());
+        OilCard secondCard = oilCardMapper.selectOilCardByoilCardNo(oilCardFundTransfer.getOilSecondCardNo());
+
+        if (mainCard == null || secondCard == null) {
+            throw new ServiceException("该主卡或者副卡信息不存在");
         }
 
-        // 获取主卡余额
-        Double mainmoney= oilCardFundTransferMapper.getMainCardBalance(cardNo);
-
         // 检查主卡余额是否大于圈存充值余额
-        if (mainmoney == null || mainmoney < oilCardFundTransfer.getRechargeMoney()) {
+        Double mainMoney = mainCard.getMoneyAmount();
+        if (mainMoney == null || mainMoney < oilCardFundTransfer.getRechargeMoney()) {
             throw new IllegalArgumentException("主卡余额不足，无法进行圈存操作");
         }
 
-        // 获取主卡和副卡信息
-        OilCard mainCard = oilCardMapper.selectOilCardById(oilCardFundTransfer.getId());
-        OilCard secondCard = oilCardMapper.selectOilCardById(oilCardFundTransfer.getId());
-
-        if (mainCard == null || secondCard == null) {
-            throw new ServiceException("主卡或副卡信息不存在");
-        }
-
         // 更新主卡和副卡的金额
-        mainCard.setMoneyAmount(mainCard.getMoneyAmount() - oilCardFundTransfer.getRechargeMoney());
+        mainCard.setMoneyAmount(mainMoney - oilCardFundTransfer.getRechargeMoney());
         secondCard.setMoneyAmount(secondCard.getMoneyAmount() + oilCardFundTransfer.getRechargeMoney());
 
         // 更新主卡和副卡信息
         oilCardMapper.updateOilCard(mainCard);
         oilCardMapper.updateOilCard(secondCard);
 
-        oilCardFundTransfer.setAddtime(String.valueOf(DateUtils.getNowDate()));
+        // 设置其他必要信息
+        oilCardFundTransfer.setAddtime(DateUtils.getNowDate().toString());
         oilCardFundTransfer.setUserId(SecurityUtils.getUserId());
         oilCardFundTransfer.setUserName(SecurityUtils.getUserTruename());
         oilCardFundTransfer.setDelFlag(Long.valueOf(DelConstants.NODEL));
+
         return oilCardFundTransferMapper.insertOilCardFundTransfer(oilCardFundTransfer);
     }
 
@@ -108,46 +99,38 @@ public class OilCardFundTransferServiceImpl implements IOilCardFundTransferServi
      * @return 结果
      */
     @Override
-    public int updateOilCardFundTransfer(OilCardFundTransfer oilCardFundTransfer)
-    {
-        OilCard oilCard=new OilCard();
-        Long cardNo= Long.valueOf(oilCard.getOilCardNo());
-        if ("主卡".equals(oilCard.getOilType())) {
-            cardNo = Long.valueOf(oilCard.getOilCardNo());
-        } else if ("副卡".equals(oilCard.getOilType())) {
-            cardNo = Long.valueOf(oilCard.getOilCardNo());
-        } else {
-            throw new IllegalArgumentException("油卡类型不正确");
-        }
-
-        // 获取主卡余额
-        Double mainmoney= oilCardFundTransferMapper.getMainCardBalance(cardNo);
-
-        // 检查主卡余额是否大于圈存充值余额
-        if (mainmoney == null || mainmoney < oilCardFundTransfer.getRechargeMoney()) {
-            throw new IllegalArgumentException("主卡余额不足，无法进行圈存操作");
-        }
-
+    @Transactional
+    public int updateOilCardFundTransfer(OilCardFundTransfer oilCardFundTransfer) {
         // 获取主卡和副卡信息
-        OilCard mainCard = oilCardMapper.selectOilCardById(oilCardFundTransfer.getId());
-        OilCard secondCard = oilCardMapper.selectOilCardById(oilCardFundTransfer.getId());
+        OilCard mainCard = oilCardMapper.selectOilCardByoilCardNo(oilCardFundTransfer.getOilMainCardNo());
+        OilCard secondCard = oilCardMapper.selectOilCardByoilCardNo(oilCardFundTransfer.getOilSecondCardNo());
 
         if (mainCard == null || secondCard == null) {
             throw new ServiceException("主卡或副卡信息不存在");
         }
 
+        // 检查主卡余额是否大于圈存充值余额
+        Double mainMoney = mainCard.getMoneyAmount();
+        if (mainMoney == null || mainMoney < oilCardFundTransfer.getRechargeMoney()) {
+            throw new IllegalArgumentException("主卡余额不足，无法进行圈存操作");
+        }
+
         // 更新主卡和副卡的金额
-        mainCard.setMoneyAmount(mainCard.getMoneyAmount() - oilCardFundTransfer.getRechargeMoney());
+        mainCard.setMoneyAmount(mainMoney - oilCardFundTransfer.getRechargeMoney());
         secondCard.setMoneyAmount(secondCard.getMoneyAmount() + oilCardFundTransfer.getRechargeMoney());
 
         // 更新主卡和副卡信息
         oilCardMapper.updateOilCard(mainCard);
         oilCardMapper.updateOilCard(secondCard);
+
+        // 更新其他信息
         oilCardFundTransfer.setUserId(SecurityUtils.getUserId());
         oilCardFundTransfer.setUserName(SecurityUtils.getUserTruename());
         oilCardFundTransfer.setUpdateTime(DateUtils.getNowDate());
+
         return oilCardFundTransferMapper.updateOilCardFundTransfer(oilCardFundTransfer);
     }
+
 
     /**
      * 批量删除加油卡圈存

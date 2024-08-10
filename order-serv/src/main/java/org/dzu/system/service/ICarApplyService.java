@@ -46,7 +46,7 @@ public interface ICarApplyService
 
     /**
      * 批量删除车辆使用申请
-     * 
+     *
      * @param ids 需要删除的车辆使用申请主键集合
      * @return 结果
      */

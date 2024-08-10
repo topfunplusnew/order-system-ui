@@ -24,11 +24,45 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
     </resultMap>
 
 
- 
+
 
     <sql id="selectOilRechargeVo">
-        select id, bTripId, oilCardNo, rechargeType, rechargeMoney, rechargeDate, acountsName, bankNo, rechargeName, attachment, comments, addtime, userId, UserName, update_time, delFlag from oilRecharge
+        select
+            OR.id,
+            OR.bTripId,
+            OR.oilCardNo,
+            OR.rechargeType,
+            OR.rechargeMoney,
+            OR.rechargeDate,
+            OR.acountsName,
+            OR.bankNo,
+            OR.rechargeName,
+            OR.attachment,
+            OR.comments,
+            OR.addtime,
+            OR.userId,
+            OR.UserName,
+            OR.updateTime,
+            OR.delFlag,
+            CASE
+                WHEN pa.checkState = '通过' THEN p.paymentState
+                ELSE COALESCE(pa.checkState, '未申请')
+                END as checkState
+        from
+            oilRecharge OR
+            left join
+        paymentApply pa
+        on
+            pa.tableName = 'oilRecharge'
+            and pa.tID = OR.id
+            and (pa.checkState = '审核中' or pa.checkState = '通过')
+            left join
+            payment p
+            on
+            p.applyId = pa.id
+            and p.delFlag = 0
     </sql>
+
 
     <select id="selectOilRechargeList" parameterType="OilRecharge" resultMap="OilRechargeResult">
         <include refid="selectOilRechargeVo"/>
@@ -125,4 +159,10 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
             #{id}
         </foreach>
     </update>
+    <select id="existsByTripId" resultType="boolean">
+        SELECT COUNT(*) > 0
+        FROM oil_recharge
+        WHERE bTripId = #{bTripId}
+    </select>
+
 </mapper>
