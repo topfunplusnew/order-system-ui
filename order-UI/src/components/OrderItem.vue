@@ -158,7 +158,7 @@ export default {
         this.$emit('changeOrderItemInfo', {...this.orderItemInfo, isIncludeTaxFactory: val})
       },
       get() {
-        return this.orderItemInfo.isIncludeTaxFactory;
+        return this.orderItemInfo.isIncludeTaxFactory + '';
       }
     },
     sundryCost: {
@@ -193,7 +193,7 @@ export default {
         this.$emit('changeOrderItemInfo', {...this.orderItemInfo, isIncludeTaxSale: val});
       },
       get() {
-        return this.orderItemInfo.isIncludeTaxSale;
+        return this.orderItemInfo.isIncludeTaxSale + '';
       }
     },
     payments: {
@@ -374,7 +374,19 @@ export default {
       if (this.supplier) {
         this.supplier = null;
       }
-      this.storeName = row.storeHouseName
+      // this.storeName = row.storeHouseName
+      //自动填充数据
+      const computedProperties = this.$options.computed;
+      Object.keys(computedProperties).forEach(key => {
+        this[key] = row[key];
+      })
+      this.length = row.length;
+      this.width = row.width;
+      this.levelID = row.levelID;
+
+      //出厂片数让用户自己填
+      this.pieces = ''
+
       this.storeInfoDialogVisible = false;
     },
     //产品级别确认
@@ -382,11 +394,17 @@ export default {
       //确定产品级别编码信息
       this.levelID = row.id;
       //如果供应商此时没值
-      if (this.supplier === '' || this.supplier === undefined || this.supplier === null) {
-        this.searchSupplierInventory(row)
-      } else {
-        this.searchStoreInventory(row)
-      }
+      // if (this.supplier === '' || this.supplier === undefined || this.supplier === null) {
+      //   this.searchSupplierInventory(row)
+      // } else {
+      //   this.searchStoreInventory(row)
+      // }
+      //填充级别信息
+      this.levelName = row.levelName;
+      this.height = row.height;
+      this.length = row.length;
+      this.width = row.width;
+      this.levelNo = row.levelNo;
       this.productLevelDialogVisible = false;
     },
 
@@ -462,7 +480,7 @@ export default {
       <div class="order-item">
         <span class="text-bold">计量单位</span>
         <hr/>
-        <el-radio v-model="countingUnit" label="片数">片数</el-radio>
+        <el-radio v-model="countingUnit" label="片">片数</el-radio>
         <el-radio v-model="countingUnit" label="其他">其他</el-radio>
       </div>
       <div class="order-item">
@@ -505,8 +523,8 @@ export default {
       <div class="order-item">
         <span class="text-bold">出厂是否含税</span>
         <hr/>
-        <el-radio v-model="isIncludeTaxFactory" label="是">是</el-radio>
-        <el-radio v-model="isIncludeTaxFactory" label="否">否</el-radio>
+        <el-radio v-model="isIncludeTaxFactory" label="1">是</el-radio>
+        <el-radio v-model="isIncludeTaxFactory" label="0">否</el-radio>
       </div>
       <div class="order-item">
         <span class="text-bold">杂费</span>
@@ -533,8 +551,8 @@ export default {
       <div class="order-item">
         <span class="text-bold">销售是否含税</span>
         <hr/>
-        <el-radio v-model="isIncludeTaxSale" label="是">是</el-radio>
-        <el-radio v-model="isIncludeTaxSale" label="否">否</el-radio>
+        <el-radio v-model="isIncludeTaxSale" label="1">是</el-radio>
+        <el-radio v-model="isIncludeTaxSale" label="0">否</el-radio>
       </div>
       <div class="order-item">
         <span class="text-bold">总货款</span>

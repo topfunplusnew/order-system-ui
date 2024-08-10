@@ -167,6 +167,12 @@
           </el-button>
           <el-button
             size="mini"
+            type="warning"
+            @click="handleMoneyBack(scope.row)"
+          >返利
+          </el-button>
+          <el-button
+            size="mini"
             type="danger"
             @click="handleDelete(scope.row)"
             v-hasPermi="['system:orderdetail:remove']"
@@ -466,6 +472,99 @@
     <el-button type="primary" @click="submitOrder">添加订单</el-button>
   </span>
     </el-dialog>
+
+
+    <!--    返利回扣-->
+    <el-dialog
+      title="添加返利信息"
+      :visible.sync="addMoneyBackVisible"
+      width="40%">
+      <el-form :model="moneyBackInfo" label-width="80px">
+        <el-form-item label="订单编号" prop="ordersNo">
+          <span style="font-weight: bolder">{{ moneyBackInfo.ordersNo }}</span>
+        </el-form-item>
+        <el-form-item label="日期" prop="rebateDate">
+          <el-date-picker
+            v-model="moneyBackInfo.rebateDate"
+            type="date"
+            placeholder="选择日期">
+          </el-date-picker>
+        </el-form-item>
+        <el-form-item label="金额" prop="rebate">
+          <el-input v-model="moneyBackInfo.rebate" placeholder="请输入金额"/>
+        </el-form-item>
+        <el-form-item label="收款户名" prop="inAcountsName">
+          <el-row>
+            <el-col :span="10">
+              <el-input v-model="moneyBackInfo.inAcountsName" placeholder="请输入收款户名"/>
+            </el-col>
+            <el-col :span="3">
+              <SearchOption :get-data="listBankAccount" @commitBack="handleCommitBankAccount">
+                <template #table-columns>
+                  <el-table-column label="开户行" align="center" prop="bankName"/>
+                  <el-table-column label="开户名" align="center" prop="acountsName"/>
+                  <el-table-column label="账号" align="center" prop="bankNo"/>
+                </template>
+              </SearchOption>
+            </el-col>
+          </el-row>
+        </el-form-item>
+        <el-form-item label="收款账号" prop="inBankNo">
+          <el-input v-model="moneyBackInfo.inBankNo" placeholder="请输入收款账号"/>
+        </el-form-item>
+        <el-form-item label="供应商" prop="supplier">
+          <el-row>
+            <el-col :span="10">
+              <el-input v-model="moneyBackInfo.supplier" placeholder="请输入供应商"/>
+            </el-col>
+            <el-col :span="3">
+              <SearchOption :get-data="listCompany" @commitBack="handleCommitCompany"
+                            :limit-info="{companyType:'供应商'}">
+                <template #table-columns>
+                  <el-table-column label="公司名称" align="center" prop="companyName"/>
+                  <el-table-column label="老板姓名" align="center" prop="leader"/>
+                  <el-table-column label="老板电话" align="center" prop="leaderTel"/>
+                  <el-table-column label="开户行" align="center" prop="bankName"/>
+                  <el-table-column label="开户名" align="center" prop="acountsName"/>
+                </template>
+              </SearchOption>
+            </el-col>
+          </el-row>
+        </el-form-item>
+        <!--        <el-form-item label="供应商ID" prop="supplierID">-->
+        <!--          <el-input v-model="moneyBackInfo.supplierID" placeholder="请输入供应商ID"/>-->
+        <!--        </el-form-item>-->
+        <el-form-item label="付款户名" prop="outAcountsName">
+          <el-row>
+            <el-col :span="10">
+              <el-input v-model="moneyBackInfo.outAcountsName" placeholder="请输入付款户名"/>
+            </el-col>
+            <el-col :span="3">
+              <SearchOption :get-data="listBankAccount" @commitBack="handleCommitBankAccountOut">
+                <template #table-columns>
+                  <el-table-column label="开户行" align="center" prop="bankName"/>
+                  <el-table-column label="开户名" align="center" prop="acountsName"/>
+                  <el-table-column label="账号" align="center" prop="bankNo"/>
+                </template>
+              </SearchOption>
+            </el-col>
+          </el-row>
+        </el-form-item>
+        <el-form-item label="付款款账号" prop="outBankNo">
+          <el-input v-model="moneyBackInfo.outBankNo" placeholder="请输入付款款账号"/>
+        </el-form-item>
+        <el-form-item label="返利原因" prop="rebateReason">
+          <el-input v-model="moneyBackInfo.rebateReason" placeholder="请输入返利原因"/>
+        </el-form-item>
+        <el-form-item label="备注" prop="comments">
+          <el-input v-model="moneyBackInfo.comments" placeholder="请输入备注"/>
+        </el-form-item>
+      </el-form>
+      <span slot="footer" class="dialog-footer">
+    <el-button @click="addMoneyBackVisible = false">取 消</el-button>
+    <el-button type="primary" @click="addMoneyBackInfo">添加</el-button>
+  </span>
+    </el-dialog>
   </div>
 </template>
 
@@ -483,10 +582,14 @@ import OrderForm from "@/components/OrderForm.vue";
 import {mapGetters} from "vuex";
 import {getToken} from "@/utils/auth";
 import {excludeParams} from "@/api/tool/exclude";
+import SearchOption from "@/components/SearchOption.vue";
+import {listBankAccount} from "@/api/system/bankAccount";
+import {listCompany} from "@/api/system/company";
+import {addRebate} from "@/api/system/Rebate";
 
 export default {
   name: "GoodsOrder",
-  components: {OrderForm, TagsItem},
+  components: {SearchOption, OrderForm, TagsItem},
   data() {
     return {
       // 遮罩层
@@ -577,10 +680,23 @@ export default {
       //上传和收到条
       handleUploadVisible: false,
       handleCommitVisible: false,
+      addMoneyBackVisible: false,
       //添加新订单的弹窗
       addOrderItemVisible: false,
       //查看订单中的列表
       orderDetailInfo: {},
+      //返利回扣信息
+      moneyBackInfo: {
+        rebateDate: '',
+        rebate: '',
+        inAcountsName: '',
+        inBankNo: '',
+        supplier: '',
+        outAcountsName: '',
+        outBankNo: '',
+        rebateReason: '',
+        comments: ''
+      },
       //添加订单详情
       addOrderItem: {},
       //调整单的id
@@ -618,6 +734,9 @@ export default {
     ...mapGetters(['orderItemList'])
   },
   methods: {
+    listCompany,
+    listBankAccount,
+    listGoodsOrder,
     //子组件提醒父组件修改orderInfo信息
     handleChangeOrderInfo(val) {
       this.orderInfo = val;
@@ -641,6 +760,19 @@ export default {
       this.tempId = row.id;
     },
 
+    //返利回扣
+    handleMoneyBack(row) {
+      console.log(row)
+      this.moneyBackInfo.ordersNo = row.ordersNo;
+      this.addMoneyBackVisible = true;
+    },
+    //添加返利回扣信息
+    addMoneyBackInfo() {
+      addRebate(this.moneyBackInfo).then(res => {
+        this.$message.success('添加成功~')
+      })
+      this.addMoneyBackVisible = false;
+    },
     //订单发货单123
     handleOrder1(row) {
       this.Order1Visible = true
@@ -663,7 +795,21 @@ export default {
     handleCommit(row) {
       this.handleCommitVisible = true
     },
-
+    //
+    handleCommitBankAccount(val) {
+      this.moneyBackInfo.inAcountsName = val.acountsName;
+      this.moneyBackInfo.inBankNo = val.bankNo;
+    },
+    //
+    handleCommitCompany(val) {
+      this.moneyBackInfo.supplierID = val.id;
+      this.moneyBackInfo.supplier = val.companyName;
+    },
+    //
+    handleCommitBankAccountOut(val) {
+      this.moneyBackInfo.outAcountsName = val.acountsName;
+      this.moneyBackInfo.outBankNo = val.bankNo;
+    },
     //上传组件的回调
     handleBackUpload(val) {
       //去除不必要字段
