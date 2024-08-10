@@ -179,7 +179,7 @@
               <el-input v-model="form.billAccount" placeholder="请输入我方承兑账户"/>
             </el-col>
             <el-col :span="3">
-              <SearchOption :get-data="listBankAccount" :limit-info="{accountType:'己方公司'}" title="我方承兑账户"
+              <SearchOption :get-data="listBankAccount" :limit-info="{accountType:'己方公司'}"
                             @commitBack="handleCommitBack">
                 <template #table-columns>
                   <el-table-column label="开户名称(户名)" align="center" prop="acountsName"/>
@@ -200,11 +200,10 @@
             placeholder="选择日期" format="yyyy 年 MM 月 dd 日" value-format="yyyy-MM-dd">
           </el-date-picker>
         </el-form-item>
-        <!--        自动填充-->
-        <!--        <el-form-item label="分类" prop="billType">-->
-        <!--          <el-radio v-model="form.billType" label="收入">收入</el-radio>-->
-        <!--          <el-radio v-model="form.billType" label="支出">支出</el-radio>-->
-        <!--        </el-form-item>-->
+        <el-form-item label="分类" prop="billType">
+          <el-radio v-model="form.billType" label="收入">收入</el-radio>
+          <el-radio v-model="form.billType" label="支出">支出</el-radio>
+        </el-form-item>
         <!--        单选-->
         <el-form-item label="票据种类" prop="billCategory">
           <!--          <el-input v-model="form.billCategory" placeholder="请输入票据种类"/>-->
@@ -304,7 +303,7 @@ export default {
         dueDate: null,
         billAccount: null,
         billDate: null,
-        billType: '收入',
+        billType: '支出',
         reason: null,
         billAmount: null,
         inDiscountPoints: null,
@@ -350,7 +349,6 @@ export default {
   methods: {
     listBankAccount,
     handleCommitBack(val) {
-      console.log(val)
       this.form.billAccount = val.acountsName;
     },
     //自定义列统计总函数
@@ -484,7 +482,7 @@ export default {
             this.form.addtime = null;
             this.form.updateTime = null;
             this.form.userId = null;
-            this.form.billType = '收入'
+            this.form.billType = '支出'
             updateBankAcceptance(this.form).then(response => {
               this.$modal.msgSuccess("修改成功");
               this.open = false;
@@ -495,7 +493,7 @@ export default {
             this.form.addtime = null;
             this.form.updateTime = null;
             this.form.userId = null;
-            this.form.billType = '收入'
+            this.form.billType = '支出'
             addBankAcceptance(this.form).then(response => {
               this.$modal.msgSuccess("新增成功");
               this.open = false;
