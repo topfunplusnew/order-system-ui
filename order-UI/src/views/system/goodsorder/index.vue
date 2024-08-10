@@ -319,123 +319,6 @@
       @pagination="getList"
     />
 
-    <!-- 添加或修改订单对话框 -->
-    <el-dialog :title="title" :visible.sync="open" width="500px" append-to-body>
-      <el-form ref="form" :model="form" :rules="rules" label-width="80px">
-        <el-form-item label="订单编号" prop="ordersNo">
-          <el-input v-model="form.ordersNo" placeholder="请输入订单编号"/>
-        </el-form-item>
-        <el-form-item label="日期" prop="orderDate">
-          <el-input v-model="form.orderDate" placeholder="请输入日期"/>
-        </el-form-item>
-        <el-form-item label="客户" prop="customer">
-          <el-input v-model="form.customer" placeholder="请输入客户"/>
-        </el-form-item>
-        <el-form-item label="客户ID" prop="customerID">
-          <el-input v-model="form.customerID" placeholder="请输入客户ID"/>
-        </el-form-item>
-        <el-form-item label="陆运车辆ID" prop="landCarID">
-          <el-input v-model="form.landCarID" placeholder="请输入陆运车辆ID"/>
-        </el-form-item>
-        <el-form-item label="陆运车牌" prop="landCarNo">
-          <el-input v-model="form.landCarNo" placeholder="请输入陆运车牌"/>
-        </el-form-item>
-        <el-form-item label="陆运司机电话" prop="landDriverTel">
-          <el-input v-model="form.landDriverTel" placeholder="请输入陆运司机电话"/>
-        </el-form-item>
-        <el-form-item label="陆地司机姓名" prop="landDriverName">
-          <el-input v-model="form.landDriverName" placeholder="请输入陆地司机姓名"/>
-        </el-form-item>
-        <el-form-item label="海运车辆ID" prop="seaCarID">
-          <el-input v-model="form.seaCarID" placeholder="请输入海运车辆ID"/>
-        </el-form-item>
-        <el-form-item label="海运车牌" prop="seaCarNo">
-          <el-input v-model="form.seaCarNo" placeholder="请输入海运车牌"/>
-        </el-form-item>
-        <el-form-item label="海运司机电话" prop="seaDriverTel">
-          <el-input v-model="form.seaDriverTel" placeholder="请输入海运司机电话"/>
-        </el-form-item>
-        <el-form-item label="海运司机姓名" prop="seaDriverName">
-          <el-input v-model="form.seaDriverName" placeholder="请输入海运司机姓名"/>
-        </el-form-item>
-        <el-form-item label="审核人编号" prop="checkUserId">
-          <el-input v-model="form.checkUserId" placeholder="请输入审核人编号"/>
-        </el-form-item>
-        <el-form-item label="审核状态" prop="checkState">
-          <el-input v-model="form.checkState" placeholder="请输入审核状态"/>
-        </el-form-item>
-        <el-form-item label="开票状态" prop="invoiceState">
-          <el-input v-model="form.invoiceState" placeholder="请输入开票状态"/>
-        </el-form-item>
-        <el-form-item label="附件路径" prop="path">
-          <el-input v-model="form.path" placeholder="请输入附件路径"/>
-        </el-form-item>
-        <el-form-item label="打款状态(申请中，已打款，未打款)" prop="PaymentState">
-          <el-input v-model="form.PaymentState" placeholder="请输入打款状态(申请中，已打款，未打款)"/>
-        </el-form-item>
-        <el-form-item label="陆运银行户名" prop="landBankName">
-          <el-input v-model="form.landBankName" placeholder="请输入陆运银行户名"/>
-        </el-form-item>
-        <el-form-item label="陆运银行账号" prop="landBankNo">
-          <el-input v-model="form.landBankNo" placeholder="请输入陆运银行账号"/>
-        </el-form-item>
-        <el-form-item label="海运银行户名" prop="seaBankName">
-          <el-input v-model="form.seaBankName" placeholder="请输入海运银行户名"/>
-        </el-form-item>
-        <el-form-item label="海运银行账号" prop="seaBankNo">
-          <el-input v-model="form.seaBankNo" placeholder="请输入海运银行账号"/>
-        </el-form-item>
-        <el-form-item label="收到条附件路径" prop="receiveProof">
-          <el-input v-model="form.receiveProof" type="textarea" placeholder="请输入内容"/>
-        </el-form-item>
-        <el-form-item label="销售经理" prop="saleManager">
-          <el-input v-model="form.saleManager" placeholder="请输入销售经理"/>
-        </el-form-item>
-        <el-form-item label="车队" prop="fleet">
-          <el-input v-model="form.fleet" placeholder="请输入车队"/>
-        </el-form-item>
-        <el-form-item label="是否被调整单" prop="isAdjusted">
-          <el-input v-model="form.isAdjusted" placeholder="请输入是否被调整单"/>
-        </el-form-item>
-        <el-form-item label="调整日期" prop="adjustDate">
-          <el-input v-model="form.adjustDate" placeholder="请输入调整日期"/>
-        </el-form-item>
-        <el-form-item label="是否调整单" prop="isAdjust">
-          <el-input v-model="form.isAdjust" placeholder="请输入是否调整单"/>
-        </el-form-item>
-        <el-form-item label="原订单编号" prop="adjustOrderid">
-          <el-input v-model="form.adjustOrderid" placeholder="请输入原订单编号"/>
-        </el-form-item>
-        <el-form-item label="是否可编辑" prop="isedit">
-          <el-input v-model="form.isedit" placeholder="请输入是否可编辑"/>
-        </el-form-item>
-        <el-form-item label="客户是否开票" prop="customerIsInvoice">
-          <el-input v-model="form.customerIsInvoice" placeholder="请输入客户是否开票"/>
-        </el-form-item>
-        <el-form-item label="供应商是否开票" prop="isSupplierInvoice">
-          <el-input v-model="form.isSupplierInvoice" placeholder="请输入供应商是否开票"/>
-        </el-form-item>
-        <el-form-item label="作废标记" prop="cancelFlag">
-          <el-input v-model="form.cancelFlag" placeholder="请输入作废标记"/>
-        </el-form-item>
-        <el-form-item label="备注" prop="comments">
-          <el-input v-model="form.comments" placeholder="请输入备注"/>
-        </el-form-item>
-        <el-form-item label="添加时间" prop="addtime">
-          <el-input v-model="form.addtime" placeholder="请输入添加时间"/>
-        </el-form-item>
-        <el-form-item label="操作人员ID" prop="userId">
-          <el-input v-model="form.userId" placeholder="请输入操作人员ID"/>
-        </el-form-item>
-        <el-form-item label="操作人员姓名" prop="UserName">
-          <el-input v-model="form.UserName" placeholder="请输入操作人员姓名"/>
-        </el-form-item>
-      </el-form>
-      <div slot="footer" class="dialog-footer">
-        <el-button type="primary" @click="submitForm">确 定</el-button>
-        <el-button @click="cancel">取 消</el-button>
-      </div>
-    </el-dialog>
 
     <!--        点击查看某个订单的弹窗   -->
     <el-dialog
@@ -1027,3 +910,122 @@ export default {
   }
 };
 </script>
+
+
+<!-- 添加或修改订单对话框 -->
+<!--    <el-dialog :title="title" :visible.sync="open" width="500px" append-to-body>-->
+<!--      <el-form ref="form" :model="form" :rules="rules" label-width="80px">-->
+<!--        <el-form-item label="订单编号" prop="ordersNo">-->
+<!--          <el-input v-model="form.ordersNo" placeholder="请输入订单编号"/>-->
+<!--        </el-form-item>-->
+<!--        <el-form-item label="日期" prop="orderDate">-->
+<!--          <el-input v-model="form.orderDate" placeholder="请输入日期"/>-->
+<!--        </el-form-item>-->
+<!--        <el-form-item label="客户" prop="customer">-->
+<!--          <el-input v-model="form.customer" placeholder="请输入客户"/>-->
+<!--        </el-form-item>-->
+<!--        <el-form-item label="客户ID" prop="customerID">-->
+<!--          <el-input v-model="form.customerID" placeholder="请输入客户ID"/>-->
+<!--        </el-form-item>-->
+<!--        <el-form-item label="陆运车辆ID" prop="landCarID">-->
+<!--          <el-input v-model="form.landCarID" placeholder="请输入陆运车辆ID"/>-->
+<!--        </el-form-item>-->
+<!--        <el-form-item label="陆运车牌" prop="landCarNo">-->
+<!--          <el-input v-model="form.landCarNo" placeholder="请输入陆运车牌"/>-->
+<!--        </el-form-item>-->
+<!--        <el-form-item label="陆运司机电话" prop="landDriverTel">-->
+<!--          <el-input v-model="form.landDriverTel" placeholder="请输入陆运司机电话"/>-->
+<!--        </el-form-item>-->
+<!--        <el-form-item label="陆地司机姓名" prop="landDriverName">-->
+<!--          <el-input v-model="form.landDriverName" placeholder="请输入陆地司机姓名"/>-->
+<!--        </el-form-item>-->
+<!--        <el-form-item label="海运车辆ID" prop="seaCarID">-->
+<!--          <el-input v-model="form.seaCarID" placeholder="请输入海运车辆ID"/>-->
+<!--        </el-form-item>-->
+<!--        <el-form-item label="海运车牌" prop="seaCarNo">-->
+<!--          <el-input v-model="form.seaCarNo" placeholder="请输入海运车牌"/>-->
+<!--        </el-form-item>-->
+<!--        <el-form-item label="海运司机电话" prop="seaDriverTel">-->
+<!--          <el-input v-model="form.seaDriverTel" placeholder="请输入海运司机电话"/>-->
+<!--        </el-form-item>-->
+<!--        <el-form-item label="海运司机姓名" prop="seaDriverName">-->
+<!--          <el-input v-model="form.seaDriverName" placeholder="请输入海运司机姓名"/>-->
+<!--        </el-form-item>-->
+<!--        <el-form-item label="审核人编号" prop="checkUserId">-->
+<!--          <el-input v-model="form.checkUserId" placeholder="请输入审核人编号"/>-->
+<!--        </el-form-item>-->
+<!--        <el-form-item label="审核状态" prop="checkState">-->
+<!--          <el-input v-model="form.checkState" placeholder="请输入审核状态"/>-->
+<!--        </el-form-item>-->
+<!--        <el-form-item label="开票状态" prop="invoiceState">-->
+<!--          <el-input v-model="form.invoiceState" placeholder="请输入开票状态"/>-->
+<!--        </el-form-item>-->
+<!--        <el-form-item label="附件路径" prop="path">-->
+<!--          <el-input v-model="form.path" placeholder="请输入附件路径"/>-->
+<!--        </el-form-item>-->
+<!--        <el-form-item label="打款状态(申请中，已打款，未打款)" prop="PaymentState">-->
+<!--          <el-input v-model="form.PaymentState" placeholder="请输入打款状态(申请中，已打款，未打款)"/>-->
+<!--        </el-form-item>-->
+<!--        <el-form-item label="陆运银行户名" prop="landBankName">-->
+<!--          <el-input v-model="form.landBankName" placeholder="请输入陆运银行户名"/>-->
+<!--        </el-form-item>-->
+<!--        <el-form-item label="陆运银行账号" prop="landBankNo">-->
+<!--          <el-input v-model="form.landBankNo" placeholder="请输入陆运银行账号"/>-->
+<!--        </el-form-item>-->
+<!--        <el-form-item label="海运银行户名" prop="seaBankName">-->
+<!--          <el-input v-model="form.seaBankName" placeholder="请输入海运银行户名"/>-->
+<!--        </el-form-item>-->
+<!--        <el-form-item label="海运银行账号" prop="seaBankNo">-->
+<!--          <el-input v-model="form.seaBankNo" placeholder="请输入海运银行账号"/>-->
+<!--        </el-form-item>-->
+<!--        <el-form-item label="收到条附件路径" prop="receiveProof">-->
+<!--          <el-input v-model="form.receiveProof" type="textarea" placeholder="请输入内容"/>-->
+<!--        </el-form-item>-->
+<!--        <el-form-item label="销售经理" prop="saleManager">-->
+<!--          <el-input v-model="form.saleManager" placeholder="请输入销售经理"/>-->
+<!--        </el-form-item>-->
+<!--        <el-form-item label="车队" prop="fleet">-->
+<!--          <el-input v-model="form.fleet" placeholder="请输入车队"/>-->
+<!--        </el-form-item>-->
+<!--        <el-form-item label="是否被调整单" prop="isAdjusted">-->
+<!--          <el-input v-model="form.isAdjusted" placeholder="请输入是否被调整单"/>-->
+<!--        </el-form-item>-->
+<!--        <el-form-item label="调整日期" prop="adjustDate">-->
+<!--          <el-input v-model="form.adjustDate" placeholder="请输入调整日期"/>-->
+<!--        </el-form-item>-->
+<!--        <el-form-item label="是否调整单" prop="isAdjust">-->
+<!--          <el-input v-model="form.isAdjust" placeholder="请输入是否调整单"/>-->
+<!--        </el-form-item>-->
+<!--        <el-form-item label="原订单编号" prop="adjustOrderid">-->
+<!--          <el-input v-model="form.adjustOrderid" placeholder="请输入原订单编号"/>-->
+<!--        </el-form-item>-->
+<!--        <el-form-item label="是否可编辑" prop="isedit">-->
+<!--          <el-input v-model="form.isedit" placeholder="请输入是否可编辑"/>-->
+<!--        </el-form-item>-->
+<!--        <el-form-item label="客户是否开票" prop="customerIsInvoice">-->
+<!--          <el-input v-model="form.customerIsInvoice" placeholder="请输入客户是否开票"/>-->
+<!--        </el-form-item>-->
+<!--        <el-form-item label="供应商是否开票" prop="isSupplierInvoice">-->
+<!--          <el-input v-model="form.isSupplierInvoice" placeholder="请输入供应商是否开票"/>-->
+<!--        </el-form-item>-->
+<!--        <el-form-item label="作废标记" prop="cancelFlag">-->
+<!--          <el-input v-model="form.cancelFlag" placeholder="请输入作废标记"/>-->
+<!--        </el-form-item>-->
+<!--        <el-form-item label="备注" prop="comments">-->
+<!--          <el-input v-model="form.comments" placeholder="请输入备注"/>-->
+<!--        </el-form-item>-->
+<!--        <el-form-item label="添加时间" prop="addtime">-->
+<!--          <el-input v-model="form.addtime" placeholder="请输入添加时间"/>-->
+<!--        </el-form-item>-->
+<!--        <el-form-item label="操作人员ID" prop="userId">-->
+<!--          <el-input v-model="form.userId" placeholder="请输入操作人员ID"/>-->
+<!--        </el-form-item>-->
+<!--        <el-form-item label="操作人员姓名" prop="UserName">-->
+<!--          <el-input v-model="form.UserName" placeholder="请输入操作人员姓名"/>-->
+<!--        </el-form-item>-->
+<!--      </el-form>-->
+<!--      <div slot="footer" class="dialog-footer">-->
+<!--        <el-button type="primary" @click="submitForm">确 定</el-button>-->
+<!--        <el-button @click="cancel">取 消</el-button>-->
+<!--      </div>-->
+<!--    </el-dialog>-->
