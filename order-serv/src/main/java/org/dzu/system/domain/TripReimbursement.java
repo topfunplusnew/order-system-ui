@@ -1,72 +1,53 @@
 package org.dzu.system.domain;
 
-import com.baomidou.mybatisplus.annotation.TableField;
-import com.baomidou.mybatisplus.annotation.TableId;
-import com.baomidou.mybatisplus.annotation.TableName;
 import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.apache.commons.lang3.builder.ToStringStyle;
 import org.dzu.common.annotation.Excel;
-import org.dzu.common.annotation.FlagOnlyZeroOrOne;
 import org.dzu.common.core.domain.BaseEntity;
-import org.hibernate.validator.constraints.Length;
 
 /**
  * 出差报销对象 tripReimbursement
  * 
  * @author ml
- * @date 2024-08-01
+ * @date 2024-08-10
  */
-@TableName("tripReimbursement")
 public class TripReimbursement extends BaseEntity
 {
     private static final long serialVersionUID = 1L;
 
     /** id */
-    @TableId(value = "id")
     private Long id;
 
     /** 出差ID */
     @Excel(name = "出差ID")
-    @TableField(value = "bTripId")
-    @Length(max = 20, message = "出差ID长度不能超过20个字符")
     private Long bTripId;
 
     /** 报销项 */
     @Excel(name = "报销项")
-    @Length(max = 20, message = "报销项长度不能超过20个字符")
-    @TableField(value = "item")
     private String item;
 
     /** 费用 */
     @Excel(name = "费用")
-    @Length(max = 20, message = "费用长度不能超过20个字符")
-    @TableField(value = "itemCost")
-    private String itemCost;
+    private Double itemCost;
 
     /** 备注 */
     @Excel(name = "备注")
-    @Length(max = 200, message = "备注长度不能超过200个字符")
-    @TableField(value = "comments")
     private String comments;
 
     /** 添加时间 */
     @Excel(name = "添加时间")
-    @TableField(value = "addtime")
     private String addtime;
 
     /** 操作人员ID */
     @Excel(name = "操作人员ID")
-    @TableField(value = "userId")
     private Long userId;
 
     /** 操作人员姓名 */
     @Excel(name = "操作人员姓名")
-    @TableField(value = "UserName")
     private String UserName;
 
     /** 删除标记 */
-    @FlagOnlyZeroOrOne
-    @TableField(value = "delFlag")
+    @Excel(name = "删除标记")
     private Long delFlag;
 
     public void setId(Long id) 
@@ -96,12 +77,12 @@ public class TripReimbursement extends BaseEntity
     {
         return item;
     }
-    public void setItemCost(String itemCost) 
+    public void setItemCost(Double itemCost) 
     {
         this.itemCost = itemCost;
     }
 
-    public String getItemCost() 
+    public Double getItemCost() 
     {
         return itemCost;
     }

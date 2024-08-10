@@ -1,22 +1,19 @@
 package org.dzu.system.domain;
 
-import com.baomidou.mybatisplus.annotation.TableField;
-import com.baomidou.mybatisplus.annotation.TableId;
-import com.baomidou.mybatisplus.annotation.TableName;
+import java.util.List;
 import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.apache.commons.lang3.builder.ToStringStyle;
 import org.dzu.common.annotation.Excel;
 import org.dzu.common.annotation.FlagOnlyZeroOrOne;
 import org.dzu.common.core.domain.BaseEntity;
-import org.hibernate.validator.constraints.Length;
-
-import javax.validation.constraints.NotNull;
-
+import com.baomidou.mybatisplus.annotation.TableField;
+import com.baomidou.mybatisplus.annotation.TableId;
+import com.baomidou.mybatisplus.annotation.TableName;
 /**
  * 出差对象 BusinessTrip
  * 
  * @author ml
- * @date 2024-08-01
+ * @date 2024-08-10
  */
 @TableName("BusinessTrip")
 public class BusinessTrip extends BaseEntity
@@ -29,52 +26,42 @@ public class BusinessTrip extends BaseEntity
 
     /** 报销人ID */
     @Excel(name = "报销人ID")
-    @Length(max = 20, message = "报销人ID长度不能超过20个字符")
     @TableField(value = "employeeID")
-    @NotNull(message = "报销人ID不能为空")
     private Long employeeID;
 
     /** 报销人 */
     @Excel(name = "报销人")
     @TableField(value = "employee")
-    @NotNull(message = "报销人不能为空")
-    @Length(max = 20, message = "报销人长度不能超过20个字符")
     private String employee;
 
     /** 共同出差人员 */
     @Excel(name = "共同出差人员")
     @TableField(value = "personnel")
-    @Length(max = 100, message = "共同出差人员长度不能超过100个字符")
     private String personnel;
 
     /** 出差时间 */
-    @Excel(name = "出差时间",dateFormat = "yyyy-MM-dd")
+    @Excel(name = "出差时间")
     @TableField(value = "starttime")
-    @NotNull(message = "出差时间不能为空")
     private String starttime;
 
     /** 出差结束时间 */
-    @Excel(name = "出差结束时间",dateFormat = "yyyy-MM-dd")
+    @Excel(name = "出差结束时间")
     @TableField(value = "endtime")
-    @NotNull(message = "出差结束时间不能为空")
     private String endtime;
 
     /** 附件地址 */
     @Excel(name = "附件地址")
-    @Length(max = 50, message = "附件地址长度不能超过50个字符")
     @TableField(value = "attachmentPath")
     private String attachmentPath;
 
     /** 是否已报销（0未报销，1已报销） */
-    @Excel(name = "是否已报销", readConverterExp = "0=未报销，1已报销")
+    @Excel(name = "是否已报销", readConverterExp = "0=未报销,1=已报销")
     @TableField(value = "isReimburse")
-    @NotNull(message = "是否已报销不能为空")
     private Long isReimburse;
 
     /** 备注 */
     @Excel(name = "备注")
     @TableField(value = "comments")
-    @Length(max = 200, message = "备注长度不能超过200个字符")
     private String comments;
 
     /** 添加时间 */
@@ -96,6 +83,9 @@ public class BusinessTrip extends BaseEntity
     @FlagOnlyZeroOrOne
     @TableField(value = "delFlag")
     private Long delFlag;
+
+    /** 出差报销信息 */
+    private List<TripReimbursement> tripReimbursementList;
 
     public void setId(Long id) 
     {
@@ -215,6 +205,16 @@ public class BusinessTrip extends BaseEntity
         return delFlag;
     }
 
+    public List<TripReimbursement> getTripReimbursementList()
+    {
+        return tripReimbursementList;
+    }
+
+    public void setTripReimbursementList(List<TripReimbursement> tripReimbursementList)
+    {
+        this.tripReimbursementList = tripReimbursementList;
+    }
+
     @Override
     public String toString() {
         return new ToStringBuilder(this,ToStringStyle.MULTI_LINE_STYLE)
@@ -232,6 +232,7 @@ public class BusinessTrip extends BaseEntity
             .append("UserName", getUserName())
             .append("updateTime", getUpdateTime())
             .append("delFlag", getDelFlag())
+            .append("tripReimbursementList", getTripReimbursementList())
             .toString();
     }
 }

@@ -21,6 +21,23 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         <result property="delFlag"    column="delFlag"    />
     </resultMap>
 
+    <resultMap id="BusinessTripTripReimbursementResult" type="BusinessTrip" extends="BusinessTripResult">
+        <collection property="tripReimbursementList" ofType="TripReimbursement" column="id" select="selectTripReimbursementList" />
+    </resultMap>
+
+    <resultMap type="TripReimbursement" id="TripReimbursementResult">
+        <result property="id"    column="id"    />
+        <result property="bTripId"    column="bTripId"    />
+        <result property="item"    column="item"    />
+        <result property="itemCost"    column="itemCost"    />
+        <result property="comments"    column="comments"    />
+        <result property="addtime"    column="addtime"    />
+        <result property="userId"    column="userId"    />
+        <result property="UserName"    column="UserName"    />
+        <result property="updateTime"    column="update_time"    />
+        <result property="delFlag"    column="delFlag"    />
+    </resultMap>
+
 
  
 
@@ -32,8 +49,8 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         <include refid="selectBusinessTripVo"/>
         <where>  
             <if test="employeeID != null "> and employeeID = #{employeeID}</if>
-            <if test="employee != null  and employee != ''"> and employee = #{employee}</if>
-            <if test="personnel != null  and personnel != ''"> and personnel = #{personnel}</if>
+            <if test="employee != null  and employee != ''"> and employee like concat('%', #{employee}, '%')</if>
+            <if test="personnel != null  and personnel != ''"> and personnel like concat('%', #{personnel}, '%')</if>
             <if test="starttime != null  and starttime != ''"> and starttime = #{starttime}</if>
             <if test="endtime != null  and endtime != ''"> and endtime = #{endtime}</if>
             <if test="attachmentPath != null  and attachmentPath != ''"> and attachmentPath = #{attachmentPath}</if>
@@ -44,12 +61,21 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
             <if test="UserName != null  and UserName != ''"> and UserName like concat('%', #{UserName}, '%')</if>
             and delFlag = 0
         </where>
+        order by starttime desc, endtime asc
     </select>
     
-    <select id="selectBusinessTripById" parameterType="Long" resultMap="BusinessTripResult">
-        <include refid="selectBusinessTripVo"/>
-        where id = #{id}
-        and delFlag = 0
+    <select id="selectBusinessTripById" parameterType="Long" resultMap="BusinessTripTripReimbursementResult">
+        select id, employeeID, employee, personnel, starttime, endtime, attachmentPath, isReimburse, comments, addtime, userId, UserName, update_time, delFlag
+        from BusinessTrip
+        where id = #{id} true
+
+    </select>
+
+    <select id="selectTripReimbursementList" resultType="TripReimbursement" resultMap="TripReimbursementResult">
+        select id, bTripId, item, itemCost, comments, addtime, userId, UserName, update_time, delFlag
+        from tripReimbursement
+        where bTripId = #{bTripId}
+
     </select>
 
     <insert id="insertBusinessTrip" parameterType="BusinessTrip" useGeneratedKeys="true" keyProperty="id">
@@ -114,4 +140,21 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
             #{id}
         </foreach>
     </update>
+    <delete id="deleteTripReimbursementByBTripIds" parameterType="String">
+        delete from tripReimbursement where bTripId in 
+        <foreach item="bTripId" collection="array" open="(" separator="," close=")">
+            #{bTripId}
+        </foreach>
+    </delete>
+
+    <delete id="deleteTripReimbursementByBTripId" parameterType="Long">
+        delete from tripReimbursement where bTripId = #{bTripId}
+    </delete>
+
+    <insert id="batchTripReimbursement">
+        insert into tripReimbursement( id, bTripId, item, itemCost, comments, addtime, userId, UserName, update_time, delFlag) values
+        <foreach item="item" index="index" collection="list" separator=",">
+            ( #{item.id}, #{item.bTripId}, #{item.item}, #{item.itemCost}, #{item.comments}, #{item.addtime}, #{item.userId}, #{item.UserName}, #{item.updateTime}, #{item.delFlag})
+        </foreach>
+    </insert>
 </mapper>

@@ -103,7 +103,7 @@
           icon="el-icon-plus"
           size="mini"
           @click="handleAdd"
-          v-hasPermi="['system:businesstrip:add']"
+          v-hasPermi="['system:BusinessTrip:add']"
         >新增</el-button>
       </el-col>
       <el-col :span="1.5">
@@ -114,7 +114,7 @@
           size="mini"
           :disabled="single"
           @click="handleUpdate"
-          v-hasPermi="['system:businesstrip:edit']"
+          v-hasPermi="['system:BusinessTrip:edit']"
         >修改</el-button>
       </el-col>
       <el-col :span="1.5">
@@ -125,7 +125,7 @@
           size="mini"
           :disabled="multiple"
           @click="handleDelete"
-          v-hasPermi="['system:businesstrip:remove']"
+          v-hasPermi="['system:BusinessTrip:remove']"
         >删除</el-button>
       </el-col>
       <el-col :span="1.5">
@@ -135,7 +135,7 @@
           icon="el-icon-download"
           size="mini"
           @click="handleExport"
-          v-hasPermi="['system:businesstrip:export']"
+          v-hasPermi="['system:BusinessTrip:export']"
         >导出</el-button>
       </el-col>
       <right-toolbar :showSearch.sync="showSearch" @queryTable="getList"></right-toolbar>
@@ -163,14 +163,14 @@
             type="text"
             icon="el-icon-edit"
             @click="handleUpdate(scope.row)"
-            v-hasPermi="['system:businesstrip:edit']"
+            v-hasPermi="['system:BusinessTrip:edit']"
           >修改</el-button>
           <el-button
             size="mini"
             type="text"
             icon="el-icon-delete"
             @click="handleDelete(scope.row)"
-            v-hasPermi="['system:businesstrip:remove']"
+            v-hasPermi="['system:BusinessTrip:remove']"
           >删除</el-button>
         </template>
       </el-table-column>
@@ -223,6 +223,49 @@
         <el-form-item label="删除标记" prop="delFlag">
           <el-input v-model="form.delFlag" placeholder="请输入删除标记" />
         </el-form-item>
+        <el-divider content-position="center">出差报销信息</el-divider>
+        <el-row :gutter="10" class="mb8">
+          <el-col :span="1.5">
+            <el-button type="primary" icon="el-icon-plus" size="mini" @click="handleAddTripReimbursement">添加</el-button>
+          </el-col>
+          <el-col :span="1.5">
+            <el-button type="danger" icon="el-icon-delete" size="mini" @click="handleDeleteTripReimbursement">删除</el-button>
+          </el-col>
+        </el-row>
+        <el-table :data="tripReimbursementList" :row-class-name="rowTripReimbursementIndex" @selection-change="handleTripReimbursementSelectionChange" ref="tripReimbursement">
+          <el-table-column type="selection" width="50" align="center" />
+          <el-table-column label="序号" align="center" prop="index" width="50"/>
+          <el-table-column label="报销项" prop="item" width="150">
+            <template slot-scope="scope">
+              <el-input v-model="scope.row.item" placeholder="请输入报销项" />
+            </template>
+          </el-table-column>
+          <el-table-column label="费用" prop="itemCost" width="150">
+            <template slot-scope="scope">
+              <el-input v-model="scope.row.itemCost" placeholder="请输入费用" />
+            </template>
+          </el-table-column>
+          <el-table-column label="添加时间" prop="addtime" width="150">
+            <template slot-scope="scope">
+              <el-input v-model="scope.row.addtime" placeholder="请输入添加时间" />
+            </template>
+          </el-table-column>
+          <el-table-column label="操作人员ID" prop="userId" width="150">
+            <template slot-scope="scope">
+              <el-input v-model="scope.row.userId" placeholder="请输入操作人员ID" />
+            </template>
+          </el-table-column>
+          <el-table-column label="操作人员姓名" prop="UserName" width="150">
+            <template slot-scope="scope">
+              <el-input v-model="scope.row.UserName" placeholder="请输入操作人员姓名" />
+            </template>
+          </el-table-column>
+          <el-table-column label="删除标记" prop="delFlag" width="150">
+            <template slot-scope="scope">
+              <el-input v-model="scope.row.delFlag" placeholder="请输入删除标记" />
+            </template>
+          </el-table-column>
+        </el-table>
       </el-form>
       <div slot="footer" class="dialog-footer">
         <el-button type="primary" @click="submitForm">确 定</el-button>
@@ -243,6 +286,8 @@ export default {
       loading: true,
       // 选中数组
       ids: [],
+      // 子表选中数据
+      checkedTripReimbursement: [],
       // 非单个禁用
       single: true,
       // 非多个禁用
@@ -253,6 +298,8 @@ export default {
       total: 0,
       // 出差表格数据
       BusinessTripList: [],
+      // 出差报销表格数据
+      tripReimbursementList: [],
       // 弹出层标题
       title: "",
       // 是否显示弹出层
@@ -317,6 +364,7 @@ export default {
         updateTime: null,
         delFlag: null
       };
+      this.tripReimbursementList = [];
       this.resetForm("form");
     },
     /** 搜索按钮操作 */
@@ -347,6 +395,7 @@ export default {
       const id = row.id || this.ids
       getBusinessTrip(id).then(response => {
         this.form = response.data;
+        this.tripReimbursementList = response.data.tripReimbursementList;
         this.open = true;
         this.title = "修改出差";
       });
@@ -355,6 +404,7 @@ export default {
     submitForm() {
       this.$refs["form"].validate(valid => {
         if (valid) {
+          this.form.tripReimbursementList = this.tripReimbursementList;
           if (this.form.id != null) {
             updateBusinessTrip(this.form).then(response => {
               this.$modal.msgSuccess("修改成功");
@@ -380,6 +430,38 @@ export default {
         this.getList();
         this.$modal.msgSuccess("删除成功");
       }).catch(() => {});
+    },
+	/** 出差报销序号 */
+    rowTripReimbursementIndex({ row, rowIndex }) {
+      row.index = rowIndex + 1;
+    },
+    /** 出差报销添加按钮操作 */
+    handleAddTripReimbursement() {
+      let obj = {};
+      obj.item = "";
+      obj.itemCost = "";
+      obj.comments = "";
+      obj.addtime = "";
+      obj.userId = "";
+      obj.UserName = "";
+      obj.delFlag = "";
+      this.tripReimbursementList.push(obj);
+    },
+    /** 出差报销删除按钮操作 */
+    handleDeleteTripReimbursement() {
+      if (this.checkedTripReimbursement.length == 0) {
+        this.$modal.msgError("请先选择要删除的出差报销数据");
+      } else {
+        const tripReimbursementList = this.tripReimbursementList;
+        const checkedTripReimbursement = this.checkedTripReimbursement;
+        this.tripReimbursementList = tripReimbursementList.filter(function(item) {
+          return checkedTripReimbursement.indexOf(item.index) == -1
+        });
+      }
+    },
+    /** 复选框选中数据 */
+    handleTripReimbursementSelectionChange(selection) {
+      this.checkedTripReimbursement = selection.map(item => item.index)
     },
     /** 导出按钮操作 */
     handleExport() {
