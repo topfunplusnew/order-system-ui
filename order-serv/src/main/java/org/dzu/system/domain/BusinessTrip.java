@@ -59,6 +59,11 @@ public class BusinessTrip extends BaseEntity
     @TableField(value = "isReimburse")
     private Long isReimburse;
 
+    /** 付款状态 */
+    @Excel(name = "付款状态")
+    @TableField(exist = false)
+    private String checkState;
+
     /** 备注 */
     @Excel(name = "备注")
     @TableField(value = "comments")
@@ -83,6 +88,14 @@ public class BusinessTrip extends BaseEntity
     @FlagOnlyZeroOrOne
     @TableField(value = "delFlag")
     private Long delFlag;
+
+    public String getCheckState() {
+        return checkState;
+    }
+
+    public void setCheckState(String checkState) {
+        this.checkState = checkState;
+    }
 
     /** 出差报销信息 */
     private List<TripReimbursement> tripReimbursementList;

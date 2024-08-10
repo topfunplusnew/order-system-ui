@@ -55,8 +55,27 @@ public interface IPaymentApplyService
 
     void auditPass(Long applyID);
 
+    /**
+     * 根据表名和ID检查是否存在正在进行的申请
+     * @param tableName
+     * @param id
+     * @return
+     */
     boolean checkExist(String tableName, Long id);
+
+    /**
+     * 根据表名和ID检查是否不存在正在进行的申请
+     * @param tableName
+     * @param id
+     * @return
+     */
     boolean checkNotExist(String tableName, Long id);
 
+    /**
+     * 根据表名和ID查询申请信息
+     * @param tableName
+     * @param id
+     * @return
+     */
     List<AuditInfo> getApplyInfo(String tableName, Long id);
 }

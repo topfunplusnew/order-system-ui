@@ -1,9 +1,12 @@
 package org.dzu.system.service.impl;
 
 import java.util.List;
+
+import org.dzu.common.enums.TableName;
 import org.dzu.common.utils.DateUtils;
 import org.dzu.common.utils.SecurityUtils;
 import org.dzu.common.utils.SecurityUtils;
+import org.dzu.system.service.IPaymentApplyService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import java.util.ArrayList;
@@ -26,6 +29,9 @@ public class BusinessTripServiceImpl implements IBusinessTripService
 {
     @Autowired
     private BusinessTripMapper businessTripMapper;
+
+    @Autowired
+    private IPaymentApplyService paymentApplyService;
 
     /**
      * 查询出差
@@ -88,6 +94,11 @@ public class BusinessTripServiceImpl implements IBusinessTripService
     {
         businessTrip.setUpdateTime(DateUtils.getNowDate());
 
+        /// 检查付款申请，如有有，则拒绝修改
+        if (paymentApplyService.checkExist(TableName.BUSINESS_TRIP.get(), businessTrip.getId()))
+        {
+            throw new RuntimeException("已有付款申请，不允许修改");
+        }
 
         businessTripMapper.deleteTripReimbursementByBTripId(businessTrip.getId());
         insertTripReimbursement(businessTrip);
@@ -104,23 +115,18 @@ public class BusinessTripServiceImpl implements IBusinessTripService
     @Override
     public int deleteBusinessTripByIds(Long[] ids)
     {
+        // 去检查付款申请信息
+        for (Long id : ids) {
+            boolean b = paymentApplyService.checkExist(TableName.BUSINESS_TRIP.get(), id);
+            if(b) {
+                throw new RuntimeException("已有付款申请，不允许删除");
+            }
+        }
         businessTripMapper.deleteTripReimbursementByBTripIds(ids);
         return businessTripMapper.deleteBusinessTripByIds(ids);
     }
 
-    /**
-     * 删除出差信息
-     * 
-     * @param id 出差主键
-     * @return 结果
-     */
-    @Transactional
-    @Override
-    public int deleteBusinessTripById(Long id)
-    {
-        businessTripMapper.deleteTripReimbursementByBTripId(id);
-        return businessTripMapper.deleteBusinessTripById(id);
-    }
+
 
     /**
      * 新增出差报销信息

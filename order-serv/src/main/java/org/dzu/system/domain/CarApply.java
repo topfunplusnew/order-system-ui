@@ -10,7 +10,6 @@ import org.dzu.common.annotation.FlagOnlyZeroOrOne;
 import org.dzu.common.core.domain.BaseEntity;
 import org.hibernate.validator.constraints.Length;
 
-import javax.validation.constraints.Max;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Pattern;
 
@@ -32,149 +31,147 @@ public class CarApply extends BaseEntity
     /** 出差编号UUID */
     @Excel(name = "出差编号UUID")
     @TableField(value = "bTripId")
-    @Length(min = 0, max = 64, message = "出差编号UUID长度不能超过 64 个字符")
+    @Length(max = 50, message = "出差编号UUID长度不能超过 50 个字符")
     @NotNull(message = "出差编号UUID不能为空")
     private String bTripId;
 
     /** 申请时间 */
     @Excel(name = "申请时间")
     @TableField(value = "applyDate")
-    @Length(min = 0, max = 50, message = "申请时间长度不能超过 50 个字符")
+    @Length(max = 50, message = "申请时间长度不能超过 50 个字符")
     @NotNull(message = "申请时间不能为空")
     private String applyDate;
 
     /** 申请人 */
     @Excel(name = "申请人")
     @TableField(value = "applyUser")
-    @Length(min = 0, max = 50, message = "申请人长度不能超过 50 个字符")
+    @Length(max = 25, message = "申请人长度不能超过 25 个字符")
     @NotNull(message = "申请人不能为空")
     private String applyUser;
 
     /** 部门 */
     @Excel(name = "部门")
     @TableField(value = "department")
-    @Length( max = 50, message = "部门长度不能超过 50 个字符")
+    @Length(max = 25, message = "部门长度不能超过 25 个字符")
     @NotNull(message = "部门不能为空")
     private String department;
 
     /** 车牌 */
     @Excel(name = "车牌")
     @TableField(value = "carNo")
-    @Length( max = 50, message = "车牌长度不能超过 50 个字符")
+    @Length(max = 200, message = "车牌长度不能超过 200 个字符")
     @NotNull(message = "车牌不能为空")
     private String carNo;
 
     /** 是否携带油卡 */
     @Excel(name = "是否携带油卡")
     @TableField(value = "isUseOilCard")
-    @Pattern(regexp = "是|否",message = "是否携带油卡必须是 是或否")
     @NotNull(message = "是否携带油卡不能为空")
     private Long isUseOilCard;
 
     /** 随同乘车人员 */
     @Excel(name = "随同乘车人员")
     @TableField(value = "peers")
-    @Length(max = 200, message = "随同乘车人员长度不能超过 200 个字符")
+    @Length(max = 155, message = "随同乘车人员长度不能超过 155 个字符")
     private String peers;
 
     /** 用车时间 */
     @Excel(name = "用车时间")
     @TableField(value = "startTime")
-    @Length( max = 50, message = "用车时间长度不能超过 50 个字符")
+    @Length(max = 55, message = "用车时间长度不能超过 55 个字符")
     @NotNull(message = "用车时间不能为空")
     private String startTime;
 
     /** 还车时间 */
     @Excel(name = "还车时间")
     @TableField(value = "endTime")
-    @Length( max = 50, message = "还车时间长度不能超过 50 个字符")
+    @Length(max = 55, message = "还车时间长度不能超过 55 个字符")
     private String endTime;
 
     /** 用车事由 */
     @Excel(name = "用车事由")
     @TableField(value = "ApplyPurpose")
-    @Length( max = 200, message = "用车事由长度不能超过 200 个字符")
+    @Length(max = 255, message = "用车事由长度不能超过 255 个字符")
     private String ApplyPurpose;
 
     /** 出车前里程 */
     @Excel(name = "出车前里程")
     @TableField(value = "startMile")
-    @Length( max = 50, message = "出车前里程长度不能超过 50 个字符")
+    @Length(max = 55, message = "出车前里程长度不能超过 55 个字符")
     private String startMile;
 
     /** 出车前车况（外观是否损坏，车胎等） */
-    @Excel(name = "出车前车况", readConverterExp = "外=观是否损坏，车胎等")
+    @Excel(name = "出车前车况")
     @TableField(value = "startCarState")
-    @Length( max = 500, message = "出车前车况长度不能超过 500 个字符")
+    @Length(max = 155, message = "出车前车况长度不能超过 155 个字符")
     private String startCarState;
 
     /** 回来后里程 */
     @Excel(name = "回来后里程")
     @TableField(value = "endMile")
-    @Length( max = 50, message = "回来后里程长度不能超过 50 个字符")
+    @Length(max = 55, message = "回来后里程长度不能超过 55 个字符")
     private String endMile;
 
     /** 回来后车况（外观是否损坏，车胎等） */
-    @Excel(name = "回来后车况", readConverterExp = "外观是否损坏，车胎等")
+    @Excel(name = "回来后车况")
     @TableField(value = "endCarState")
-    @Length( max = 500, message = "回来后车况长度不能超过 500 个字符")
+    @Length(max = 255, message = "回来后车况长度不能超过 255 个字符")
     private String endCarState;
 
     /** 用车里程数 */
     @Excel(name = "用车里程数")
     @TableField(value = "miles")
-    @Length( max = 50, message = "用车里程数长度不能超过 50 个字符")
+    @Length(max = 55, message = "用车里程数长度不能超过 55 个字符")
     private String miles;
 
     /** 回程停靠位置 */
     @Excel(name = "回程停靠位置")
     @TableField(value = "backStopPlace")
-    @Length( max = 50, message = "回程停靠位置长度不能超过 50 个字符")
+    @Length(max = 155, message = "回程停靠位置长度不能超过 155 个字符")
     private String backStopPlace;
 
     /** 行程中违法次数 */
     @Excel(name = "行程中违法次数")
     @TableField(value = "violationsCount")
-    @Length( max = 3, message = "行程中违法次数长度不能超过 3 个字符")
+    @Length(max = 15, message = "行程中违法次数长度不能超过 15 个字符")
     private String violationsCount;
 
     /** 违章罚款金额金额 */
     @Excel(name = "违章罚款金额金额")
     @TableField(value = "fine")
-    @Max(value = 1000000, message = "违章罚款金额金额不能超过 1000000")
+    @Length(max = 25, message = "违章罚款金额金额长度不能超过 25 个字符")
     private String fine;
 
     /** 行程中是否维修/保养 */
     @Excel(name = "行程中是否维修/保养")
-    @Pattern(regexp = "是|否",message = "行程中是否维修/保养必须是 是或否")
     @TableField(value = "isMaintenance")
+    @Pattern(regexp = "是|否", message = "行程中是否维修/保养必须是 是或否")
     @NotNull(message = "行程中是否维修/保养不能为空")
     private String isMaintenance;
 
     /** 保养金额 */
     @Excel(name = "保养金额")
-    @Max(value = 1000000, message = "保养金额不能超过 1000000")
     @TableField(value = "maintenanceMoney")
+    @Length(max = 15, message = "保养金额长度不能超过 15 个字符")
     private String maintenanceMoney;
 
     /** 行程中使用加油卡加油次数 */
     @Excel(name = "行程中使用加油卡加油次数")
     @TableField(value = "refuelingFrequency")
-    @Length( max = 3, message = "行程中使用加油卡加油次数长度不能超过 3 个字符")
-    @NotNull(message = "行程中使用加油卡加油次数不能为空")
+    @Length(max = 15, message = "行程中使用加油卡加油次数长度不能超过 15 个字符")
     private String refuelingFrequency;
 
     /** 派车人 */
     @Excel(name = "派车人")
     @TableField(value = "dispatchPerson")
+    @Length(max = 25, message = "派车人长度不能超过 25 个字符")
     @NotNull(message = "派车人不能为空")
-    @Length( max = 20, message = "派车人长度不能超过 20 个字符")
     private String dispatchPerson;
 
     /** 备注 */
     @Excel(name = "备注")
     @TableField(value = "comments")
-    @Length( max = 500, message = "备注长度不能超过 500 个字符")
+    @Length(max = 200, message = "备注长度不能超过 200 个字符")
     private String comments;
 
     /** 添加时间 */

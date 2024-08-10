@@ -50,12 +50,4 @@ public interface IBusinessTripService
      * @return 结果
      */
     public int deleteBusinessTripByIds(Long[] ids);
-
-    /**
-     * 删除出差信息
-     * 
-     * @param id 出差主键
-     * @return 结果
-     */
-    public int deleteBusinessTripById(Long id);
 }
