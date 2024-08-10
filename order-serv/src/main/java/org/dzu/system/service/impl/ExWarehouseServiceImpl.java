@@ -80,8 +80,6 @@ public class ExWarehouseServiceImpl implements IExWarehouseService
         exWarehouse.setUserName(SecurityUtils.getUserTruename());
         exWarehouse.setDelFlag(Long.valueOf(DelConstants.NODEL));
 
-        // TODO： 出库信息的新增以后考虑下，似乎不能让用户自己填写出库信息
-
         return exWarehouseMapper.insertExWarehouse(exWarehouse);
     }
 
