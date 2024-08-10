@@ -55,6 +55,7 @@ public class CompanyServiceImpl implements ICompanyService
     @Override
     public int insertCompany(Company company)
     {
+        // TODO： 插入供应商和客户的时候是否允许为null
         company.setAddtime(String.valueOf(DateUtils.getNowDate()));
         company.setUserId(SecurityUtils.getUserId());
         company.setUserName(SecurityUtils.getUserTruename());
