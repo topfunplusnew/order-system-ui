@@ -320,13 +320,14 @@ export default {
     getList() {
       this.loading = true;
       listBankAccount(this.queryParams).then(response => {
-        const accountsTypeToSelect = ['己方公司', '其它'];
-        this.bankAccountList = response.rows.filter(item => {
-          // return item.acountsType === '己方公司' || item.acountsType === '其它'
-          return accountsTypeToSelect.includes(item.acountsType)
-        })
-        // this.total = response.total;
-        this.total = this.bankAccountList.length;
+        // const accountsTypeToSelect = ['己方公司', '其它'];
+        // this.bankAccountList = response.rows.filter(item => {
+        //   // return item.acountsType === '己方公司' || item.acountsType === '其它'
+        //   return accountsTypeToSelect.includes(item.acountsType)
+        // })
+        this.bankAccountList = response.rows;
+        this.total = response.total;
+        // this.total = this.bankAccountList.length;
         this.loading = false;
       });
     },
