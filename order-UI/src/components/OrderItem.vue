@@ -155,7 +155,7 @@ export default {
     //出厂是否含税
     isIncludeTaxFactory: {
       set(val) {
-        this.$emit('changeOrderItemInfo', {...this.orderItemInfo, isIncludeTaxFactory: val === '是' ? 1 : 0})
+        this.$emit('changeOrderItemInfo', {...this.orderItemInfo, isIncludeTaxFactory: val})
       },
       get() {
         return this.orderItemInfo.isIncludeTaxFactory;

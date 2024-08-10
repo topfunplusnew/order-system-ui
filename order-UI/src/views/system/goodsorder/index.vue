@@ -836,6 +836,9 @@ export default {
         let item = this.orderItemList[i];
         item.customerID = this.orderInfo.customerID;
         item.customer = this.orderInfo.customer;
+        //是否含税
+        item.isIncludeTaxFactory = item.isIncludeTaxFactory === '是' ? '1' : '0';
+        item.isIncludeTaxSale = item.isIncludeTaxSale === '是' ? '1' : '0';
       }
       //添加订单 转化时间戳
       const date = this.orderInfo.orderDate.getTime();
