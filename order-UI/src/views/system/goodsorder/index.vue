@@ -4,30 +4,30 @@
   <div class="app-container">
     <el-form :model="timesQuery" ref="queryForm" size="small" :inline="true" v-show="showSearch" label-width="100px">
       <!--      编号-->
-      <el-form-item label="订单编号" prop="ordersNo">
-        <el-input
-          v-model="queryParams.ordersNo"
-          placeholder="请输入订单编号"
-          clearable
-          @keyup.enter.native="handleQuery"
-        />
-      </el-form-item>
+      <!--      <el-form-item label="订单编号" prop="ordersNo">-->
+      <!--        <el-input-->
+      <!--          v-model="queryParams.ordersNo"-->
+      <!--          placeholder="请输入订单编号"-->
+      <!--          clearable-->
+      <!--          @keyup.enter.native="handleQuery"-->
+      <!--        />-->
+      <!--      </el-form-item>-->
       <!--      时间范围查询-->
-<!--      <el-form-item label="开始日期" prop="startTime">
-        <el-date-picker
-          v-model="queryParams.startTime"
-          type="date"
-          placeholder="请选择开始日期" value-format="yyyy-MM-dd">
-        </el-date-picker>
-      </el-form-item>
-      &lt;!&ndash;      结束时间&ndash;&gt;
-      <el-form-item label="结束日期" prop="endTime">
-        <el-date-picker
-          v-model="queryParams.endTime"
-          type="date"
-          placeholder="请选择结束日期" value-format="yyyy-MM-dd">
-        </el-date-picker>
-      </el-form-item>-->
+      <!--      <el-form-item label="开始日期" prop="startTime">
+              <el-date-picker
+                v-model="queryParams.startTime"
+                type="date"
+                placeholder="请选择开始日期" value-format="yyyy-MM-dd">
+              </el-date-picker>
+            </el-form-item>
+            &lt;!&ndash;      结束时间&ndash;&gt;
+            <el-form-item label="结束日期" prop="endTime">
+              <el-date-picker
+                v-model="queryParams.endTime"
+                type="date"
+                placeholder="请选择结束日期" value-format="yyyy-MM-dd">
+              </el-date-picker>
+            </el-form-item>-->
       <el-form-item label="开始时间" prop="beginTime">
         <el-date-picker
           v-model="timesQuery.beginTime"
@@ -95,7 +95,7 @@
       </el-form-item>
       <el-form-item>
         <el-button type="primary" icon="el-icon-search" size="mini" @click="handleTimesQuery">搜索</el-button>
-<!--        <el-button icon="el-icon-refresh" size="mini" @click="resetQuery">重置</el-button>-->
+        <!--        <el-button icon="el-icon-refresh" size="mini" @click="resetQuery">重置</el-button>-->
       </el-form-item>
     </el-form>
 
@@ -202,7 +202,7 @@
       <!--      以下字段可动-->
       <!--      以下字段可动-->
       <el-table-column label="订单编号" align="center" prop="ordersNo" v-if="columns[0].visible"/>
-      <el-table-column label="陆运车牌" align="center" prop="landCarNo"  v-if="columns[1].visible"/>
+      <el-table-column label="陆运车牌" align="center" prop="landCarNo" v-if="columns[1].visible"/>
       <el-table-column label="陆运司机电话" align="center" prop="landDriverTel" v-if="columns[2].visible"/>
       <el-table-column label="陆地司机姓名" align="center" prop="landDriverName" v-if="columns[3].visible"/>
       <el-table-column label="海运车牌" align="center" prop="seaCarNo" v-if="columns[4].visible"/>
@@ -232,7 +232,8 @@
       <el-table-column label="附件路径" align="center" prop="path" v-if="columns[11].visible"/>
 
       <!--      无字典 转换-->
-      <el-table-column label="打款状态(申请中，已打款，未打款)" align="center" prop="PaymentState" v-if="columns[12].visible">
+      <el-table-column label="打款状态(申请中，已打款，未打款)" align="center" prop="PaymentState"
+                       v-if="columns[12].visible">
         <template slot-scope="scope">
           <el-tag
             :type="scope.row.PaymentState === '未打款' ? 'danger' : scope.row.PaymentState === '申请中'?'primary':'success'"
@@ -602,6 +603,7 @@ import SearchOption from "@/components/SearchOption.vue";
 import {listBankAccount} from "@/api/system/bankAccount";
 import {listCompany} from "@/api/system/company";
 import {addRebate} from "@/api/system/Rebate";
+import {formatDate} from "@/utils";
 
 export default {
   name: "GoodsOrder",
@@ -671,6 +673,7 @@ export default {
       form: {},
       // 表单校验
       rules: {},
+      timesQuery: {},
       //隐藏列
       columns: [
         {key: 0, label: `订单编号`, visible: true},
@@ -741,6 +744,7 @@ export default {
   },
   created() {
     this.getList();
+    this.$store.dispatch('order/getOrderList')
   },
   computed: {
     //审核状态
@@ -763,16 +767,17 @@ export default {
     },
 
     //获取订单列表
-    ...mapGetters(['orderItemList'])
+    ...mapGetters(['orderItemList']),
+    ...mapGetters(['orderList'])
   },
   methods: {
-    //时间查询
+    //时间查询 todo
     handleTimesQuery() {
       //重新赋值
-      this.fixedAssetsList = this.fixedassetsList;
+      this.goodsOrderList = this.orderList;
       //筛选
-      this.fixedAssetsList =
-        this.$dateRange(this, 'fixedAssetsList', 'buyDate', this.timesQuery.beginTime, this.timesQuery.endTime);
+      this.goodsOrderList =
+        this.$dateRange(this, 'goodsOrderList', 'orderDate', this.timesQuery.beginTime, this.timesQuery.endTime);
     },
     listCompany,
     listBankAccount,
@@ -968,6 +973,10 @@ export default {
       this.loading = true;
       listGoodsOrder(this.queryParams).then(response => {
         this.goodsOrderList = response.rows;
+        //处理日期
+        this.goodsOrderList.forEach(item => {
+          item.orderDate = formatDate(new Date(item.orderDate))
+        })
         this.total = response.total;
         this.loading = false;
       });

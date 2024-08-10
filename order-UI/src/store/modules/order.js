@@ -1,8 +1,11 @@
 import Vue from 'vue'
+import {listGoodsOrder} from "@/api/system/goodsOrder";
 //订单状态信息 由订单Item组件主动推入
 const state = {
   //订单详情列表
   orderItemList: [],
+  //订单列表
+  orderList: []
 }
 
 const mutations = {
@@ -20,6 +23,12 @@ const mutations = {
     for (let property in orderItem)
       Vue.set(state.orderItemList[index], `${property}`, orderItem[property])
   },
+
+  //
+  CHANGE_ORDER_LIST(state, orderList) {
+    state.orderList = orderList
+  }
+
 }
 
 const actions = {
@@ -31,6 +40,13 @@ const actions = {
   //action只能传递一个参数
   changeOrderItem({commit}, orderItemInfo) {
     commit('CHANGE_ORDER_ITEM', orderItemInfo)
+  },
+
+  //查询订单列表 赋值
+  getOrderList({commit}) {
+    listGoodsOrder().then(res => {
+      commit('CHANGE_ORDER_LIST', res.rows)
+    })
   }
 }
 
