@@ -184,15 +184,28 @@
             </el-col>
           </el-row>
         </el-form-item>
-        <el-form-item label="供应商ID" prop="supplierId">
-          <el-input v-model="form.supplierId" placeholder="请输入供应商ID"/>
-        </el-form-item>
+        <!--        <el-form-item label="供应商ID" prop="supplierId">-->
+        <!--          <el-input v-model="form.supplierId" placeholder="请输入供应商ID"/>-->
+        <!--        </el-form-item>-->
         <el-form-item label="级别编码" prop="levelID">
-          <el-input v-model="form.levelID" placeholder="请输入级别编码"/>
+          <el-row>
+            <el-col :span="10">
+              <el-input v-model="form.levelID" placeholder="请输入级别编码"/>
+            </el-col>
+            <el-col :span="3">
+              <SearchOption :get-data="listProductLevel" @commitBack="handleCommitBackProductLevel">
+                <template #table-columns>
+                  <el-table-column label="级别编码" align="center" prop="levelNo"/>
+                  <el-table-column label="级别名称" align="center" prop="levelName"/>
+                </template>
+              </SearchOption>
+            </el-col>
+          </el-row>
         </el-form-item>
         <el-form-item label="级别名称" prop="levelName">
           <el-input v-model="form.levelName" placeholder="请输入级别名称"/>
         </el-form-item>
+        <!--        基本信息-->
         <el-form-item label="计量单位" prop="countingUnit">
           <el-input v-model="form.countingUnit" placeholder="请输入计量单位"/>
         </el-form-item>
@@ -217,8 +230,10 @@
         <el-form-item label="出厂单价" prop="price">
           <el-input v-model="form.price" placeholder="请输入出厂单价"/>
         </el-form-item>
+        <!--        单选框-->
         <el-form-item label="出厂是否含税" prop="isIncludeTaxFactory">
-          <el-input v-model="form.isIncludeTaxFactory" placeholder="请输入出厂是否含税"/>
+          <el-radio v-model="form.isIncludeTaxFactory" label="1">是</el-radio>
+          <el-radio v-model="form.isIncludeTaxFactory" label="2">否</el-radio>
         </el-form-item>
         <el-form-item label="杂费" prop="sundryCost">
           <el-input v-model="form.sundryCost" placeholder="请输入杂费"/>
@@ -230,16 +245,33 @@
           <el-input v-model="form.paymentUnload" placeholder="请输入卸货价"/>
         </el-form-item>
         <el-form-item label="销售是否含税" prop="isIncludeTaxSale">
-          <el-input v-model="form.isIncludeTaxSale" placeholder="请输入销售是否含税"/>
+          <el-radio v-model="form.isIncludeTaxSale" label="1">是</el-radio>
+          <el-radio v-model="form.isIncludeTaxSale" label="2">否</el-radio>
         </el-form-item>
         <el-form-item label="总货款" prop="payments">
           <el-input v-model="form.payments" placeholder="请输入总货款"/>
         </el-form-item>
-        <el-form-item label="陆运车辆ID" prop="landCarID">
-          <el-input v-model="form.landCarID" placeholder="请输入陆运车辆ID"/>
-        </el-form-item>
+
+        <!--        车牌-->
+        <!--        <el-form-item label="陆运车辆ID" prop="landCarID">-->
+        <!--          <el-input v-model="form.landCarID" placeholder="请输入陆运车辆ID"/>-->
+        <!--        </el-form-item>-->
         <el-form-item label="陆运车牌" prop="landCarNo">
-          <el-input v-model="form.landCarNo" placeholder="请输入陆运车牌"/>
+          <el-row>
+            <el-col :span="10">
+              <el-input v-model="form.landCarNo" placeholder="请输入陆运车牌"/>
+            </el-col>
+            <el-col :span="3">
+              <SearchOption :get-data="listCars" @commitBack="handleCommitBackCars"
+                            :limit-info="{carType:'陆运'}">
+                <template #table-columns>
+                  <el-table-column label="车牌" align="center" prop="carNo"/>
+                  <el-table-column label="司机" align="center" prop="driver"/>
+                  <el-table-column label="司机电话" align="center" prop="tel"/>
+                </template>
+              </SearchOption>
+            </el-col>
+          </el-row>
         </el-form-item>
         <el-form-item label="陆运司机电话" prop="landDriverTel">
           <el-input v-model="form.landDriverTel" placeholder="请输入陆运司机电话"/>
@@ -247,11 +279,25 @@
         <el-form-item label="陆地司机姓名" prop="landDriverName">
           <el-input v-model="form.landDriverName" placeholder="请输入陆地司机姓名"/>
         </el-form-item>
-        <el-form-item label="海运车辆ID" prop="seaCarID">
-          <el-input v-model="form.seaCarID" placeholder="请输入海运车辆ID"/>
-        </el-form-item>
+        <!--        <el-form-item label="海运车辆ID" prop="seaCarID">-->
+        <!--          <el-input v-model="form.seaCarID" placeholder="请输入海运车辆ID"/>-->
+        <!--        </el-form-item>-->
         <el-form-item label="海运车牌" prop="seaCarNo">
-          <el-input v-model="form.seaCarNo" type="textarea" placeholder="请输入内容"/>
+          <el-row>
+            <el-col :span="10">
+              <el-input v-model="form.seaCarNo" placeholder="请输入陆运车牌"/>
+            </el-col>
+            <el-col :span="3">
+              <SearchOption :get-data="listCars" @commitBack="handleCommitBackSea"
+                            :limit-info="{carType:'海运'}">
+                <template #table-columns>
+                  <el-table-column label="车牌" align="center" prop="carNo"/>
+                  <el-table-column label="司机" align="center" prop="driver"/>
+                  <el-table-column label="司机电话" align="center" prop="tel"/>
+                </template>
+              </SearchOption>
+            </el-col>
+          </el-row>
         </el-form-item>
         <el-form-item label="海运司机电话" prop="seaDriverTel">
           <el-input v-model="form.seaDriverTel" type="textarea" placeholder="请输入内容"/>
@@ -304,21 +350,6 @@
         <el-form-item label="备注" prop="comments">
           <el-input v-model="form.comments" placeholder="请输入备注"/>
         </el-form-item>
-        <el-form-item label="添加时间" prop="addtime">
-          <el-input v-model="form.addtime" placeholder="请输入添加时间"/>
-        </el-form-item>
-        <el-form-item label="操作人员ID" prop="userId">
-          <el-input v-model="form.userId" placeholder="请输入操作人员ID"/>
-        </el-form-item>
-        <el-form-item label="操作人员姓名" prop="UserName">
-          <el-input v-model="form.UserName" placeholder="请输入操作人员姓名"/>
-        </el-form-item>
-        <el-form-item label="删除标记" prop="delFlag">
-          <el-input v-model="form.delFlag" placeholder="请输入删除标记"/>
-        </el-form-item>
-        <el-form-item label="订单仓库选择时是否显示" prop="showFlag">
-          <el-input v-model="form.showFlag" placeholder="请输入订单仓库选择时是否显示"/>
-        </el-form-item>
       </el-form>
       <div slot="footer" class="dialog-footer">
         <el-button type="primary" @click="submitForm">确 定</el-button>
@@ -333,6 +364,9 @@ import {listInventory, getInventory, delInventory, addInventory, updateInventory
 import SearchOption from "@/components/SearchOption.vue";
 import {listStoreHouse} from "@/api/system/StoreHouse";
 import {listCompany} from "@/api/system/company";
+import {listProductLevel} from "@/api/system/productLevel";
+import {listCars} from "@/api/system/cars";
+import {excludeParams} from "@/api/tool/exclude";
 
 export default {
   name: "Inventory",
@@ -437,6 +471,8 @@ export default {
     this.getList();
   },
   methods: {
+    listCars,
+    listProductLevel,
     listCompany,
     listStoreHouse,
     //选中仓库点击确定的回调
@@ -448,6 +484,23 @@ export default {
     handleCommitBackCompany(val) {
       this.form.supplier = val.companyName;
       this.form.supplierId = val.id;
+    },
+    //选中级别编码的回调
+    handleCommitBackProductLevel(val) {
+      this.form.levelID = val.id;//todo levelNo?
+      this.form.levelName = val.levelName
+    },
+    handleCommitBackCars(val) {
+      this.form.landCarNo = val.carNo;
+      this.form.landDriverTel = val.tel;
+      this.form.landDriverName = val.driver;
+      this.form.landCarID = val.id;
+    },
+    handleCommitBackSea(val) {
+      this.form.seaCarNo = val.carNo;
+      this.form.seaDriverTel = val.tel;
+      this.form.seaDriverName = val.driver;
+      this.form.seaCarID = val.id;
     },
     /** 查询库存列表 */
     getList() {
@@ -566,12 +619,18 @@ export default {
       this.$refs["form"].validate(valid => {
         if (valid) {
           if (this.form.id != null) {
+            this.form = excludeParams(this.form, this.$exclude)
+            this.form.isIncludeTaxFactory = this.form.isIncludeTaxFactory === '是' ? '1' : '0'
+            this.form.isIncludeTaxSale = this.form.isIncludeTaxSale === '是' ? '1' : '0'
             updateInventory(this.form).then(response => {
               this.$modal.msgSuccess("修改成功");
               this.open = false;
               this.getList();
             });
           } else {
+            this.form = excludeParams(this.form, this.$exclude)
+            this.form.isIncludeTaxFactory = this.form.isIncludeTaxFactory === '是' ? '1' : '0'
+            this.form.isIncludeTaxSale = this.form.isIncludeTaxSale === '是' ? '1' : '0'
             addInventory(this.form).then(response => {
               this.$modal.msgSuccess("新增成功");
               this.open = false;
