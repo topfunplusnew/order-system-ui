@@ -400,6 +400,7 @@
 import {listCompany, getCompany, delCompany, addCompany, updateCompany} from "@/api/system/company";
 import {excludeParams} from "@/api/tool/exclude";
 import {addBankAccount, listBankAccount} from "@/api/system/bankAccount";
+import {TableName} from "@/api/tool/enums";
 
 export default {
   name: "Company",
