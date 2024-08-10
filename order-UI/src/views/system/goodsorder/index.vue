@@ -3,31 +3,6 @@
 <template>
   <div class="app-container">
     <el-form :model="timesQuery" ref="queryForm" size="small" :inline="true" v-show="showSearch" label-width="100px">
-      <!--      编号-->
-      <!--      <el-form-item label="订单编号" prop="ordersNo">-->
-      <!--        <el-input-->
-      <!--          v-model="queryParams.ordersNo"-->
-      <!--          placeholder="请输入订单编号"-->
-      <!--          clearable-->
-      <!--          @keyup.enter.native="handleQuery"-->
-      <!--        />-->
-      <!--      </el-form-item>-->
-      <!--      时间范围查询-->
-      <!--      <el-form-item label="开始日期" prop="startTime">
-              <el-date-picker
-                v-model="queryParams.startTime"
-                type="date"
-                placeholder="请选择开始日期" value-format="yyyy-MM-dd">
-              </el-date-picker>
-            </el-form-item>
-            &lt;!&ndash;      结束时间&ndash;&gt;
-            <el-form-item label="结束日期" prop="endTime">
-              <el-date-picker
-                v-model="queryParams.endTime"
-                type="date"
-                placeholder="请选择结束日期" value-format="yyyy-MM-dd">
-              </el-date-picker>
-            </el-form-item>-->
       <el-form-item label="开始时间" prop="beginTime">
         <el-date-picker
           v-model="timesQuery.beginTime"
@@ -42,57 +17,92 @@
           placeholder="选择结束时间">
         </el-date-picker>
       </el-form-item>
-
-      <!--      基础信息-->
-      <el-form-item label="陆运车牌" prop="landCarNo">
+      <!--      <el-form-item label="业务员名称" prop="saleManager">-->
+      <!--        <el-input-->
+      <!--          v-model="timesQuery.saleManager"-->
+      <!--          placeholder="请输入陆运车牌"-->
+      <!--          clearable-->
+      <!--          @keyup.enter.native="handleQuery"-->
+      <!--        />-->
+      <!--      </el-form-item>-->
+      <el-form-item label="客户名称" prop="customer">
         <el-input
-          v-model="queryParams.landCarNo"
+          v-model="paramQuery.customer"
           placeholder="请输入陆运车牌"
           clearable
           @keyup.enter.native="handleQuery"
         />
       </el-form-item>
-      <el-form-item label="陆运司机电话" prop="landDriverTel">
-        <el-input
-          v-model="queryParams.landDriverTel"
-          placeholder="请输入陆运司机电话"
-          clearable
-          @keyup.enter.native="handleQuery"
-        />
+      <el-form-item label="审核状态" prop="checkState">
+        <el-select v-model="paramQuery.checkState" placeholder="请选择">
+          <el-option
+            v-for="item in options"
+            :key="item.value"
+            :label="item.label"
+            :value="item.value">
+          </el-option>
+        </el-select>
       </el-form-item>
-      <el-form-item label="陆地司机姓名" prop="landDriverName">
-        <el-input
-          v-model="queryParams.landDriverName"
-          placeholder="请输入陆地司机姓名"
-          clearable
-          @keyup.enter.native="handleQuery"
-        />
+      <el-form-item label="开票状态" prop="invoiceState">
+        <el-select v-model="paramQuery.invoiceState" placeholder="请选择">
+          <el-option
+            v-for="item in optionsInvoice"
+            :key="item.value"
+            :label="item.label"
+            :value="item.value">
+          </el-option>
+        </el-select>
       </el-form-item>
+      <!--      基础信息-->
+      <!--      <el-form-item label="陆运车牌" prop="landCarNo">-->
+      <!--        <el-input-->
+      <!--          v-model="queryParams.landCarNo"-->
+      <!--          placeholder="请输入陆运车牌"-->
+      <!--          clearable-->
+      <!--          @keyup.enter.native="handleQuery"-->
+      <!--        />-->
+      <!--      </el-form-item>-->
+      <!--      <el-form-item label="陆运司机电话" prop="landDriverTel">-->
+      <!--        <el-input-->
+      <!--          v-model="queryParams.landDriverTel"-->
+      <!--          placeholder="请输入陆运司机电话"-->
+      <!--          clearable-->
+      <!--          @keyup.enter.native="handleQuery"-->
+      <!--        />-->
+      <!--      </el-form-item>-->
+      <!--      <el-form-item label="陆地司机姓名" prop="landDriverName">-->
+      <!--        <el-input-->
+      <!--          v-model="queryParams.landDriverName"-->
+      <!--          placeholder="请输入陆地司机姓名"-->
+      <!--          clearable-->
+      <!--          @keyup.enter.native="handleQuery"-->
+      <!--        />-->
+      <!--      </el-form-item>-->
 
-      <el-form-item label="海运车牌" prop="seaCarNo">
-        <el-input
-          v-model="queryParams.seaCarNo"
-          placeholder="请输入海运车牌"
-          clearable
-          @keyup.enter.native="handleQuery"
-        />
-      </el-form-item>
-      <el-form-item label="海运司机电话" prop="seaDriverTel">
-        <el-input
-          v-model="queryParams.seaDriverTel"
-          placeholder="请输入海运司机电话"
-          clearable
-          @keyup.enter.native="handleQuery"
-        />
-      </el-form-item>
-      <el-form-item label="海运司机姓名" prop="seaDriverName">
-        <el-input
-          v-model="queryParams.seaDriverName"
-          placeholder="请输入海运司机姓名"
-          clearable
-          @keyup.enter.native="handleQuery"
-        />
-      </el-form-item>
+      <!--      <el-form-item label="海运车牌" prop="seaCarNo">-->
+      <!--        <el-input-->
+      <!--          v-model="queryParams.seaCarNo"-->
+      <!--          placeholder="请输入海运车牌"-->
+      <!--          clearable-->
+      <!--          @keyup.enter.native="handleQuery"-->
+      <!--        />-->
+      <!--      </el-form-item>-->
+      <!--      <el-form-item label="海运司机电话" prop="seaDriverTel">-->
+      <!--        <el-input-->
+      <!--          v-model="queryParams.seaDriverTel"-->
+      <!--          placeholder="请输入海运司机电话"-->
+      <!--          clearable-->
+      <!--          @keyup.enter.native="handleQuery"-->
+      <!--        />-->
+      <!--      </el-form-item>-->
+      <!--      <el-form-item label="海运司机姓名" prop="seaDriverName">-->
+      <!--        <el-input-->
+      <!--          v-model="queryParams.seaDriverName"-->
+      <!--          placeholder="请输入海运司机姓名"-->
+      <!--          clearable-->
+      <!--          @keyup.enter.native="handleQuery"-->
+      <!--        />-->
+      <!--      </el-form-item>-->
       <el-form-item>
         <el-button type="primary" icon="el-icon-search" size="mini" @click="handleTimesQuery">搜索</el-button>
         <!--        <el-button icon="el-icon-refresh" size="mini" @click="resetQuery">重置</el-button>-->
@@ -163,7 +173,7 @@
 
     <!--    表格列-->
     <el-table border v-loading="loading" :data="goodsOrderList" @selection-change="handleSelectionChange"
-              show-summary :summary-method="getSummaries" id="printBox" :row-class-name="tableRowClassName"
+              id="printBox" :row-class-name="tableRowClassName"
               max-height="500">
       <!--      左侧操作栏-->
       <el-table-column label="操作" align="center" class-name="small-padding fixed-width" width="170px" fixed="left">
@@ -674,6 +684,26 @@ export default {
       // 表单校验
       rules: {},
       timesQuery: {},
+      paramQuery: {},
+      options: [
+        {
+          value: '已审核',
+          label: '已审核'
+        }, {
+          value: '未审核',
+          label: '未审核'
+        },
+      ],
+      optionsInvoice: [{
+        value: '未开票',
+        label: '未开票'
+      }, {
+        value: '部分开票',
+        label: '部分开票'
+      }, {
+        value: '已开票',
+        label: '已开票'
+      },],
       //隐藏列
       columns: [
         {key: 0, label: `订单编号`, visible: true},
@@ -771,13 +801,27 @@ export default {
     ...mapGetters(['orderList'])
   },
   methods: {
-    //时间查询 todo
+    //时间查询
     handleTimesQuery() {
       //重新赋值
       this.goodsOrderList = this.orderList;
       //筛选
-      this.goodsOrderList =
-        this.$dateRange(this, 'goodsOrderList', 'orderDate', this.timesQuery.beginTime, this.timesQuery.endTime);
+      //其他情况 判断时间是不是空
+      if (Object.keys(JSON.parse(JSON.stringify(this.paramQuery))).length !== 0) {
+        this.goodsOrderList = this.goodsOrderList.filter(obj => {
+          let exclude = Object.entries(JSON.parse(JSON.stringify(this.paramQuery))) //填写的参数列表 判断item的某个属性
+          return exclude.every((item) => {
+            return obj.hasOwnProperty(item[0]) && obj[item[0]] === item[1];
+          })
+        })
+        if (this.timesQuery.beginTime && this.timesQuery.endTime) {
+          this.goodsOrderList =
+            this.$dateRange(this, 'goodsOrderList', 'orderDate', this.timesQuery.beginTime, this.timesQuery.endTime);
+        }
+      } else {
+        this.goodsOrderList =
+          this.$dateRange(this, 'goodsOrderList', 'orderDate', this.timesQuery.beginTime, this.timesQuery.endTime);
+      }
     },
     listCompany,
     listBankAccount,
@@ -813,6 +857,8 @@ export default {
     },
     //添加返利回扣信息
     addMoneyBackInfo() {
+      //转成时间戳
+      this.moneyBackInfo.rebateDate = this.moneyBackInfo.rebateDate.getTime();
       addRebate(this.moneyBackInfo).then(res => {
         this.$message.success('添加成功~')
       })
@@ -973,9 +1019,10 @@ export default {
       this.loading = true;
       listGoodsOrder(this.queryParams).then(response => {
         this.goodsOrderList = response.rows;
-        //处理日期
+        //处理日期 将时间戳转化为时间
         this.goodsOrderList.forEach(item => {
-          item.orderDate = formatDate(new Date(item.orderDate))
+          //这里item.orderDate是一个字符串 要转成Number
+          item.orderDate = formatDate(new Date(Number(item.orderDate)));
         })
         this.total = response.total;
         this.loading = false;

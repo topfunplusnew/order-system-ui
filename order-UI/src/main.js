@@ -87,6 +87,7 @@ Vue.prototype.$dateRange = function (_this, targetList, targetProperty, startTim
   const end_date = new Date(endTime)
   end_date.setDate(end_date.getDate() + 1)
   const end = end_date.getTime();
+
   //校验
   if (startTime === '' || endTime === '') {
     this.$message.error("开始时间或结束时间不能为空!");
@@ -97,7 +98,7 @@ Vue.prototype.$dateRange = function (_this, targetList, targetProperty, startTim
   } else {
     //筛选
     return _this[targetList].filter(item => {
-      const target = new Date(item[targetProperty]).getTime();
+      const target = new Date(Number(item[targetProperty])).getTime();
       return target >= start && target <= end;
     })
   }
