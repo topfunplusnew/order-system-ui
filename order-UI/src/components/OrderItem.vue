@@ -155,7 +155,7 @@ export default {
     //出厂是否含税
     isIncludeTaxFactory: {
       set(val) {
-        this.$emit('changeOrderItemInfo', {...this.orderItemInfo, isIncludeTaxFactory: val === '是' ? 1 : 0})
+        this.$emit('changeOrderItemInfo', {...this.orderItemInfo, isIncludeTaxFactory: val})
       },
       get() {
         return this.orderItemInfo.isIncludeTaxFactory;
@@ -328,21 +328,20 @@ export default {
     }
   },
   methods: {
+    //todo 供应商和库存操作 选择供应商或者仓库后，还要选择级别编码 然后查询库存信息的基本信息
     //供应商信息
     searchCompanyGiveInfo() {
       this.companyGiveDialogVisible = true;
       //查询供应商信息
       listCompany({companyType: '供应商', companyName: this.companyName}).then(res => {
         this.companyGiveInfo = res.rows;
-        console.log('供应商信息', res.rows)
       })
     },
     //查询仓库信息
     searchStoreInfo() {
       this.storeInfoDialogVisible = true;
-      //搜索库存信息
+      //搜索库存信息 只查询库存中仓库
       listInventory().then(res => {
-        console.log('库存信息', res.rows)
         this.inventoryInfo = res.rows.filter(item => {
           return item.stockNumber > 0;
         })
@@ -350,7 +349,6 @@ export default {
       //搜索仓库信息
       listStoreHouse().then(res => {
         this.storeInfo = res.rows;
-        console.log('仓库信息', res.rows)
       })
     },
     //查询产品级别信息
@@ -359,50 +357,74 @@ export default {
       //查询产品级别信息
       listProductLevel({width: this.productLevel.width, levelName: this.productLevel.level}).then(res => {
         this.productLevelInfo = res.rows;
-        console.log('产品级别信息', res.rows)
       })
     },
 
     //以下信息保存在goodsOrderList中
-    //供应商信息确认
+    //供应商信息确认 选择供应商后还要选择产品级别
     commitCompanyGiveInfo(row) {
-      console.log('供应商信息row', row)
       this.orderItemInfo.supplierID = row.id;   //goodsOrderList->供应商ID
       this.supplier = row.companyName
       this.companyGiveDialogVisible = false;
     },
     //仓库确认
     commitStoreInfo(row) {
-      console.log('仓库信息row', row)
       this.orderItemInfo.storeID = row.id;  //goodsOrderList ->仓库ID
       this.orderItemInfo.storeHouseID = row.id //goodsOrderList ->库存ID
-
-      //自动填充数据
-      const computedProperties = this.$options.computed;
-      Object.keys(computedProperties).forEach(key => {
-        this[key] = row[key];
-      })
-      this.length = row.length;
-      this.width = row.width;
-      this.levelID = row.levelID;
-
-      //出厂片数让用户自己填
-      this.pieces = ''
+      if (this.supplier) {
+        this.supplier = null;
+      }
+      this.storeName = row.storeHouseName
       this.storeInfoDialogVisible = false;
     },
     //产品级别确认
     commitProductLevelInfo(row) {
-      //填充表格数据
-      this.levelName = row.levelName;
-      this.height = row.height;
-      this.length = row.length;
-      this.width = row.width;
-      //添加产品级别编码
-      this.levelNo = row.levelNo;
+      //确定产品级别编码信息
+      this.levelID = row.id;
+      //如果供应商此时没值
+      if (this.supplier === '' || this.supplier === undefined || this.supplier === null) {
+        this.searchSupplierInventory(row)
+      } else {
+        this.searchStoreInventory(row)
+      }
       this.productLevelDialogVisible = false;
     },
 
-
+    //查询库存信息
+    searchSupplierInventory(row) {
+      //填充表格数据
+      listInventory({supplier: this.supplier, levelID: this.levelID}).then(res => {
+        if (res.rows.length === 0) {
+          this.$message.error("没有该库存信息!")
+          //自动填写某些字段
+        } else {
+          this.levelName = row.levelName;
+          //数据库查询的筛选后的库存信息
+          //todo 如果有多个库存信息 应该如何做
+          const info = res.rows[0];
+          this.height = info.height;
+          this.length = info.length;
+          this.width = info.width;
+          //添加产品级别编码
+          this.levelNo = row.levelNo;
+        }
+      })
+    },
+    searchStoreInventory(row) {
+      //填充表格数据
+      listInventory({storeHouseName: this.supplier, levelID: this.levelID}).then(res => {
+        if (res.rows.length === 0) {
+          this.$message.error("没有该库存信息!")
+        } else {
+          this.levelName = row.levelName;
+          const info = res.rows[0];
+          this.height = info.height;
+          this.length = info.length;
+          this.width = info.width;
+          this.levelNo = row.levelNo;
+        }
+      })
+    },
     //todo 测试用 打印所有计算属性的值
     printAllComputers() {
       const computedProperties = this.$options.computed;
@@ -422,7 +444,7 @@ export default {
         <span class="text-bold">供应商/仓库</span>
         <hr/>
         <el-input placeholder="请输入供应商/仓库"
-                  v-model="supplier===''?storeName:supplier"
+                  v-model="supplier===undefined||supplier===null?storeName:supplier"
                   disabled></el-input>
         <!--        供应商弹窗按钮-->
         <el-button size="mini" type="primary" icon="el-icon-user" circle @click="searchCompanyGiveInfo">
@@ -675,7 +697,7 @@ export default {
         </el-col>
       </el-row>
       <br/>
-      <!--      库存信息列表-->
+      <!--      仓库信息列表-->
       <el-row>
         <el-table
           :data="inventoryInfo"
