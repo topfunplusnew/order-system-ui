@@ -168,6 +168,7 @@ export default {
     },
     // 上传结束处理
     uploadedSuccessfully() {
+      this.$message.success("上传成功")
       if (this.number > 0 && this.uploadList.length === this.number) {
         this.fileList = this.fileList.concat(this.uploadList);
         this.uploadList = [];

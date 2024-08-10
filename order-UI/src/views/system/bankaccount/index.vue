@@ -165,7 +165,19 @@
           <el-input v-model="form.acountsName" placeholder="请输入户名"/>
         </el-form-item>
         <el-form-item label="公司名称" prop="companyName" v-if="isNeed">
-          <el-input v-model="form.bankNo" placeholder="请输入公司名称"/>
+          <el-row>
+            <el-col :span="10">
+              <el-input v-model="form.companyName" placeholder="请输入公司名称"/>
+            </el-col>
+            <el-col :span="3">
+              <SearchOption :get-data="listCompany" :limit-info="{acountsType:'供应商'|'客户'}"
+                            icon="el-icon-search" title="供应商信息" @commitBack="handleCommitBack">
+                <template #table-columns>
+                  <el-table-column label="公司名称" align="center" prop="companyName"/>
+                </template>
+              </SearchOption>
+            </el-col>
+          </el-row>
         </el-form-item>
         <el-form-item label="银行账号" prop="bankNo">
           <el-input v-model="form.bankNo" placeholder="请输入银行账号"/>
@@ -191,9 +203,11 @@ import {
   updateBankAccount
 } from "@/api/system/bankAccount";
 import {listCompany} from "@/api/system/company";
+import SearchOption from "@/components/SearchOption.vue";
 
 export default {
   name: "BankAccount",
+  components: {SearchOption},
   data() {
     return {
       // 遮罩层
@@ -251,13 +265,28 @@ export default {
         comments: null,
       },
       // 表单参数
-      form: {},
+      form: {
+        bankNo: '',
+        bankName: '',
+        acountsName: '',
+        companyName: '',
+        acountsType: ''
+      },
       // 表单校验
       rules: {},
       options: [
         {
           value: '己方公司',
           label: '己方公司'
+        }, {
+          value: '客户',
+          label: '客户'
+        }, {
+          value: '供应商',
+          label: '供应商'
+        }, {
+          value: '司机',
+          label: '司机'
         }, {
           value: '其它',
           label: '其它'
@@ -302,7 +331,13 @@ export default {
     }
   },
   methods: {
+    listCompany,
     //打印
+    handleCommitBack(val) {
+      console.log(val)
+      this.form.companyName = val.companyName
+      this.form.companyId = val.id;
+    },
     printHTML() {
       this.$print({
         printable: 'printBox',
@@ -313,7 +348,7 @@ export default {
     //查询客户 供应商信息
     getCompanyInfo() {
       listCompany(this.queryParamsCompany).then(res => {
-        this.companyList = res.data.rows;
+        this.companyList = res.rows;
       })
     },
     /** 查询银行账号列表 */
