@@ -2,86 +2,110 @@
 
 <template>
   <div class="app-container">
-    <el-form :model="queryParams" ref="queryForm" size="small" :inline="true" v-show="showSearch" label-width="100px">
-      <!--      编号-->
-      <el-form-item label="订单编号" prop="ordersNo">
-        <el-input
-          v-model="queryParams.ordersNo"
-          placeholder="请输入订单编号"
-          clearable
-          @keyup.enter.native="handleQuery"
-        />
-      </el-form-item>
-      <!--      时间范围查询-->
-      <el-form-item label="开始日期" prop="startTime">
+    <el-form :model="timesQuery" ref="queryForm" size="small" :inline="true" v-show="showSearch" label-width="100px">
+      <el-form-item label="开始时间" prop="beginTime">
         <el-date-picker
-          v-model="queryParams.startTime"
+          v-model="timesQuery.beginTime"
           type="date"
-          placeholder="请选择开始日期" value-format="yyyy-MM-dd">
+          placeholder="选择开始时间">
         </el-date-picker>
       </el-form-item>
-      <!--      结束时间-->
-      <el-form-item label="结束日期" prop="endTime">
+      <el-form-item label="结束时间" prop="endTime">
         <el-date-picker
-          v-model="queryParams.endTime"
+          v-model="timesQuery.endTime"
           type="date"
-          placeholder="请选择结束日期" value-format="yyyy-MM-dd">
+          placeholder="选择结束时间">
         </el-date-picker>
       </el-form-item>
-
-      <!--      基础信息-->
-      <el-form-item label="陆运车牌" prop="landCarNo">
+      <!--      <el-form-item label="业务员名称" prop="saleManager">-->
+      <!--        <el-input-->
+      <!--          v-model="timesQuery.saleManager"-->
+      <!--          placeholder="请输入陆运车牌"-->
+      <!--          clearable-->
+      <!--          @keyup.enter.native="handleQuery"-->
+      <!--        />-->
+      <!--      </el-form-item>-->
+      <el-form-item label="客户名称" prop="customer">
         <el-input
-          v-model="queryParams.landCarNo"
+          v-model="paramQuery.customer"
           placeholder="请输入陆运车牌"
           clearable
           @keyup.enter.native="handleQuery"
         />
       </el-form-item>
-      <el-form-item label="陆运司机电话" prop="landDriverTel">
-        <el-input
-          v-model="queryParams.landDriverTel"
-          placeholder="请输入陆运司机电话"
-          clearable
-          @keyup.enter.native="handleQuery"
-        />
+      <el-form-item label="审核状态" prop="checkState">
+        <el-select v-model="paramQuery.checkState" placeholder="请选择">
+          <el-option
+            v-for="item in options"
+            :key="item.value"
+            :label="item.label"
+            :value="item.value">
+          </el-option>
+        </el-select>
       </el-form-item>
-      <el-form-item label="陆地司机姓名" prop="landDriverName">
-        <el-input
-          v-model="queryParams.landDriverName"
-          placeholder="请输入陆地司机姓名"
-          clearable
-          @keyup.enter.native="handleQuery"
-        />
+      <el-form-item label="开票状态" prop="invoiceState">
+        <el-select v-model="paramQuery.invoiceState" placeholder="请选择">
+          <el-option
+            v-for="item in optionsInvoice"
+            :key="item.value"
+            :label="item.label"
+            :value="item.value">
+          </el-option>
+        </el-select>
       </el-form-item>
+      <!--      基础信息-->
+      <!--      <el-form-item label="陆运车牌" prop="landCarNo">-->
+      <!--        <el-input-->
+      <!--          v-model="queryParams.landCarNo"-->
+      <!--          placeholder="请输入陆运车牌"-->
+      <!--          clearable-->
+      <!--          @keyup.enter.native="handleQuery"-->
+      <!--        />-->
+      <!--      </el-form-item>-->
+      <!--      <el-form-item label="陆运司机电话" prop="landDriverTel">-->
+      <!--        <el-input-->
+      <!--          v-model="queryParams.landDriverTel"-->
+      <!--          placeholder="请输入陆运司机电话"-->
+      <!--          clearable-->
+      <!--          @keyup.enter.native="handleQuery"-->
+      <!--        />-->
+      <!--      </el-form-item>-->
+      <!--      <el-form-item label="陆地司机姓名" prop="landDriverName">-->
+      <!--        <el-input-->
+      <!--          v-model="queryParams.landDriverName"-->
+      <!--          placeholder="请输入陆地司机姓名"-->
+      <!--          clearable-->
+      <!--          @keyup.enter.native="handleQuery"-->
+      <!--        />-->
+      <!--      </el-form-item>-->
 
-      <el-form-item label="海运车牌" prop="seaCarNo">
-        <el-input
-          v-model="queryParams.seaCarNo"
-          placeholder="请输入海运车牌"
-          clearable
-          @keyup.enter.native="handleQuery"
-        />
-      </el-form-item>
-      <el-form-item label="海运司机电话" prop="seaDriverTel">
-        <el-input
-          v-model="queryParams.seaDriverTel"
-          placeholder="请输入海运司机电话"
-          clearable
-          @keyup.enter.native="handleQuery"
-        />
-      </el-form-item>
-      <el-form-item label="海运司机姓名" prop="seaDriverName">
-        <el-input
-          v-model="queryParams.seaDriverName"
-          placeholder="请输入海运司机姓名"
-          clearable
-          @keyup.enter.native="handleQuery"
-        />
-      </el-form-item>
+      <!--      <el-form-item label="海运车牌" prop="seaCarNo">-->
+      <!--        <el-input-->
+      <!--          v-model="queryParams.seaCarNo"-->
+      <!--          placeholder="请输入海运车牌"-->
+      <!--          clearable-->
+      <!--          @keyup.enter.native="handleQuery"-->
+      <!--        />-->
+      <!--      </el-form-item>-->
+      <!--      <el-form-item label="海运司机电话" prop="seaDriverTel">-->
+      <!--        <el-input-->
+      <!--          v-model="queryParams.seaDriverTel"-->
+      <!--          placeholder="请输入海运司机电话"-->
+      <!--          clearable-->
+      <!--          @keyup.enter.native="handleQuery"-->
+      <!--        />-->
+      <!--      </el-form-item>-->
+      <!--      <el-form-item label="海运司机姓名" prop="seaDriverName">-->
+      <!--        <el-input-->
+      <!--          v-model="queryParams.seaDriverName"-->
+      <!--          placeholder="请输入海运司机姓名"-->
+      <!--          clearable-->
+      <!--          @keyup.enter.native="handleQuery"-->
+      <!--        />-->
+      <!--      </el-form-item>-->
       <el-form-item>
-        <el-button type="primary" icon="el-icon-search" size="mini" @click="handleQuery">搜索</el-button>
-        <el-button icon="el-icon-refresh" size="mini" @click="resetQuery">重置</el-button>
+        <el-button type="primary" icon="el-icon-search" size="mini" @click="handleTimesQuery">搜索</el-button>
+        <!--        <el-button icon="el-icon-refresh" size="mini" @click="resetQuery">重置</el-button>-->
       </el-form-item>
     </el-form>
 
@@ -138,7 +162,7 @@
               icon="el-icon-folder-opened"
               size="mini"
               @click="handleExport"
-              v-hasPermi="['system:company:export']"
+              v-hasPermi="['system:orderdetail:export']"
             >
             </el-button>
           </el-col>
@@ -149,7 +173,7 @@
 
     <!--    表格列-->
     <el-table border v-loading="loading" :data="goodsOrderList" @selection-change="handleSelectionChange"
-              show-summary :summary-method="getSummaries" id="printBox" :row-class-name="tableRowClassName"
+              id="printBox" :row-class-name="tableRowClassName"
               max-height="500">
       <!--      左侧操作栏-->
       <el-table-column label="操作" align="center" class-name="small-padding fixed-width" width="170px" fixed="left">
@@ -167,6 +191,12 @@
           </el-button>
           <el-button
             size="mini"
+            type="warning"
+            @click="handleMoneyBack(scope.row)"
+          >返利
+          </el-button>
+          <el-button
+            size="mini"
             type="danger"
             @click="handleDelete(scope.row)"
             v-hasPermi="['system:orderdetail:remove']"
@@ -180,17 +210,18 @@
       <el-table-column label="客户" align="center" prop="customer" fixed="left"/>
 
       <!--      以下字段可动-->
-      <el-table-column label="订单编号" align="center" prop="ordersNo"/>
-      <el-table-column label="陆运车牌" align="center" prop="landCarNo"/>
-      <el-table-column label="陆运司机电话" align="center" prop="landDriverTel"/>
-      <el-table-column label="陆地司机姓名" align="center" prop="landDriverName"/>
-      <el-table-column label="海运车牌" align="center" prop="seaCarNo"/>
-      <el-table-column label="海运司机电话" align="center" prop="seaDriverTel"/>
-      <el-table-column label="海运司机姓名" align="center" prop="seaDriverName"/>
-      <el-table-column label="销售经理" align="center" prop="saleManager"/>
-      <el-table-column label="车队" align="center" prop="fleet"/>
+      <!--      以下字段可动-->
+      <el-table-column label="订单编号" align="center" prop="ordersNo" v-if="columns[0].visible"/>
+      <el-table-column label="陆运车牌" align="center" prop="landCarNo" v-if="columns[1].visible"/>
+      <el-table-column label="陆运司机电话" align="center" prop="landDriverTel" v-if="columns[2].visible"/>
+      <el-table-column label="陆地司机姓名" align="center" prop="landDriverName" v-if="columns[3].visible"/>
+      <el-table-column label="海运车牌" align="center" prop="seaCarNo" v-if="columns[4].visible"/>
+      <el-table-column label="海运司机电话" align="center" prop="seaDriverTel" v-if="columns[5].visible"/>
+      <el-table-column label="海运司机姓名" align="center" prop="seaDriverName" v-if="columns[6].visible"/>
+      <el-table-column label="销售经理" align="center" prop="saleManager" v-if="columns[7].visible"/>
+      <el-table-column label="车队" align="center" prop="fleet" v-if="columns[8].visible"/>
       <!--      是与否-->
-      <el-table-column label="审核状态" align="center" prop="checkState">
+      <el-table-column label="审核状态" align="center" prop="checkState" v-if="columns[9].visible">
         <template slot-scope="scope">
           <el-tag
             :type="scope.row.checkState === '未审核' ? 'danger' : 'success'"
@@ -198,7 +229,7 @@
           </el-tag>
         </template>
       </el-table-column>
-      <el-table-column label="开票状态" align="center" prop="invoiceState">
+      <el-table-column label="开票状态" align="center" prop="invoiceState" v-if="columns[10].visible">
         <template slot-scope="scope">
           <el-tag
             :type="scope.row.invoiceState === '未开票' ? 'danger' : 'success'"
@@ -207,10 +238,12 @@
         </template>
       </el-table-column>
 
-      <el-table-column label="附件路径" align="center" prop="path"/>
+      <!--  todo    压缩上传-->
+      <el-table-column label="附件路径" align="center" prop="path" v-if="columns[11].visible"/>
 
       <!--      无字典 转换-->
-      <el-table-column label="打款状态(申请中，已打款，未打款)" align="center" prop="PaymentState">
+      <el-table-column label="打款状态(申请中，已打款，未打款)" align="center" prop="PaymentState"
+                       v-if="columns[12].visible">
         <template slot-scope="scope">
           <el-tag
             :type="scope.row.PaymentState === '未打款' ? 'danger' : scope.row.PaymentState === '申请中'?'primary':'success'"
@@ -218,14 +251,14 @@
           </el-tag>
         </template>
       </el-table-column>
-      <el-table-column label="陆运银行户名" align="center" prop="landBankName"/>
-      <el-table-column label="陆运银行账号" align="center" prop="landBankNo"/>
-      <el-table-column label="海运银行户名" align="center" prop="seaBankName"/>
-      <el-table-column label="海运银行账号" align="center" prop="seaBankNo"/>
-      <el-table-column label="收到条附件路径" align="center" prop="receiveProof"/>
+      <el-table-column label="陆运银行户名" align="center" prop="landBankName" v-if="columns[13].visible"/>
+      <el-table-column label="陆运银行账号" align="center" prop="landBankNo" v-if="columns[14].visible"/>
+      <el-table-column label="海运银行户名" align="center" prop="seaBankName" v-if="columns[15].visible"/>
+      <el-table-column label="海运银行账号" align="center" prop="seaBankNo" v-if="columns[16].visible"/>
+      <el-table-column label="收到条附件路径" align="center" prop="receiveProof" v-if="columns[17].visible"/>
 
       <!--      是与否-->
-      <el-table-column label="是否被调整单" align="center" prop="isAdjusted">
+      <el-table-column label="是否被调整单" align="center" prop="isAdjusted" v-if="columns[18].visible">
         <template slot-scope="scope">
           <el-tag
             :type="scope.row.isAdjusted === '否' ? 'danger' :'success'"
@@ -233,7 +266,7 @@
           </el-tag>
         </template>
       </el-table-column>
-      <el-table-column label="是否调整单" align="center" prop="isAdjust">
+      <el-table-column label="是否调整单" align="center" prop="isAdjust" v-if="columns[19].visible">
         <template slot-scope="scope">
           <el-tag
             :type="scope.row.isAdjust === '否' ? 'danger' :'success'"
@@ -242,11 +275,11 @@
         </template>
       </el-table-column>
 
-      <el-table-column label="调整日期" align="center" prop="adjustDate"/>
-      <el-table-column label="原订单编号" align="center" prop="adjustOrderid"/>
+      <el-table-column label="调整日期" align="center" prop="adjustDate" v-if="columns[20].visible"/>
+      <el-table-column label="原订单编号" align="center" prop="adjustOrderid" v-if="columns[21].visible"/>
 
       <!--      是与否-->
-      <el-table-column label="是否可编辑" align="center" prop="isedit">
+      <el-table-column label="是否可编辑" align="center" prop="isedit" v-if="columns[22].visible">
         <template slot-scope="scope">
           <el-tag
             :type="scope.row.isedit === 0 ? 'danger' :'success'"
@@ -254,7 +287,7 @@
           </el-tag>
         </template>
       </el-table-column>
-      <el-table-column label="客户是否开票" align="center" prop="customerIsInvoice">
+      <el-table-column label="客户是否开票" align="center" prop="customerIsInvoice" v-if="columns[23].visible">
         <template slot-scope="scope">
           <el-tag
             :type="scope.row.customerIsInvoice === 0 ? 'danger' :'success'"
@@ -262,7 +295,7 @@
           </el-tag>
         </template>
       </el-table-column>
-      <el-table-column label="供应商是否开票" align="center" prop="isSupplierInvoice">
+      <el-table-column label="供应商是否开票" align="center" prop="isSupplierInvoice" v-if="columns[24].visible">
         <template slot-scope="scope">
           <el-tag
             :type="scope.row.isSupplierInvoice === 0 ? 'danger' :'success'"
@@ -466,6 +499,99 @@
     <el-button type="primary" @click="submitOrder">添加订单</el-button>
   </span>
     </el-dialog>
+
+
+    <!--    返利回扣-->
+    <el-dialog
+      title="添加返利信息"
+      :visible.sync="addMoneyBackVisible"
+      width="40%">
+      <el-form :model="moneyBackInfo" label-width="80px">
+        <el-form-item label="订单编号" prop="ordersNo">
+          <span style="font-weight: bolder">{{ moneyBackInfo.ordersNo }}</span>
+        </el-form-item>
+        <el-form-item label="日期" prop="rebateDate">
+          <el-date-picker
+            v-model="moneyBackInfo.rebateDate"
+            type="date"
+            placeholder="选择日期">
+          </el-date-picker>
+        </el-form-item>
+        <el-form-item label="金额" prop="rebate">
+          <el-input v-model="moneyBackInfo.rebate" placeholder="请输入金额"/>
+        </el-form-item>
+        <el-form-item label="收款户名" prop="inAcountsName">
+          <el-row>
+            <el-col :span="10">
+              <el-input v-model="moneyBackInfo.inAcountsName" placeholder="请输入收款户名"/>
+            </el-col>
+            <el-col :span="3">
+              <SearchOption :get-data="listBankAccount" @commitBack="handleCommitBankAccount">
+                <template #table-columns>
+                  <el-table-column label="开户行" align="center" prop="bankName"/>
+                  <el-table-column label="开户名" align="center" prop="acountsName"/>
+                  <el-table-column label="账号" align="center" prop="bankNo"/>
+                </template>
+              </SearchOption>
+            </el-col>
+          </el-row>
+        </el-form-item>
+        <el-form-item label="收款账号" prop="inBankNo">
+          <el-input v-model="moneyBackInfo.inBankNo" placeholder="请输入收款账号"/>
+        </el-form-item>
+        <el-form-item label="供应商" prop="supplier">
+          <el-row>
+            <el-col :span="10">
+              <el-input v-model="moneyBackInfo.supplier" placeholder="请输入供应商"/>
+            </el-col>
+            <el-col :span="3">
+              <SearchOption :get-data="listCompany" @commitBack="handleCommitCompany"
+                            :limit-info="{companyType:'供应商'}">
+                <template #table-columns>
+                  <el-table-column label="公司名称" align="center" prop="companyName"/>
+                  <el-table-column label="老板姓名" align="center" prop="leader"/>
+                  <el-table-column label="老板电话" align="center" prop="leaderTel"/>
+                  <el-table-column label="开户行" align="center" prop="bankName"/>
+                  <el-table-column label="开户名" align="center" prop="acountsName"/>
+                </template>
+              </SearchOption>
+            </el-col>
+          </el-row>
+        </el-form-item>
+        <!--        <el-form-item label="供应商ID" prop="supplierID">-->
+        <!--          <el-input v-model="moneyBackInfo.supplierID" placeholder="请输入供应商ID"/>-->
+        <!--        </el-form-item>-->
+        <el-form-item label="付款户名" prop="outAcountsName">
+          <el-row>
+            <el-col :span="10">
+              <el-input v-model="moneyBackInfo.outAcountsName" placeholder="请输入付款户名"/>
+            </el-col>
+            <el-col :span="3">
+              <SearchOption :get-data="listBankAccount" @commitBack="handleCommitBankAccountOut">
+                <template #table-columns>
+                  <el-table-column label="开户行" align="center" prop="bankName"/>
+                  <el-table-column label="开户名" align="center" prop="acountsName"/>
+                  <el-table-column label="账号" align="center" prop="bankNo"/>
+                </template>
+              </SearchOption>
+            </el-col>
+          </el-row>
+        </el-form-item>
+        <el-form-item label="付款款账号" prop="outBankNo">
+          <el-input v-model="moneyBackInfo.outBankNo" placeholder="请输入付款款账号"/>
+        </el-form-item>
+        <el-form-item label="返利原因" prop="rebateReason">
+          <el-input v-model="moneyBackInfo.rebateReason" placeholder="请输入返利原因"/>
+        </el-form-item>
+        <el-form-item label="备注" prop="comments">
+          <el-input v-model="moneyBackInfo.comments" placeholder="请输入备注"/>
+        </el-form-item>
+      </el-form>
+      <span slot="footer" class="dialog-footer">
+    <el-button @click="addMoneyBackVisible = false">取 消</el-button>
+    <el-button type="primary" @click="addMoneyBackInfo">添加</el-button>
+  </span>
+    </el-dialog>
   </div>
 </template>
 
@@ -483,10 +609,15 @@ import OrderForm from "@/components/OrderForm.vue";
 import {mapGetters} from "vuex";
 import {getToken} from "@/utils/auth";
 import {excludeParams} from "@/api/tool/exclude";
+import SearchOption from "@/components/SearchOption.vue";
+import {listBankAccount} from "@/api/system/bankAccount";
+import {listCompany} from "@/api/system/company";
+import {addRebate} from "@/api/system/Rebate";
+import {formatDate} from "@/utils";
 
 export default {
   name: "GoodsOrder",
-  components: {OrderForm, TagsItem},
+  components: {SearchOption, OrderForm, TagsItem},
   data() {
     return {
       // 遮罩层
@@ -552,17 +683,54 @@ export default {
       form: {},
       // 表单校验
       rules: {},
+      timesQuery: {},
+      paramQuery: {},
+      options: [
+        {
+          value: '已审核',
+          label: '已审核'
+        }, {
+          value: '未审核',
+          label: '未审核'
+        },
+      ],
+      optionsInvoice: [{
+        value: '未开票',
+        label: '未开票'
+      }, {
+        value: '部分开票',
+        label: '部分开票'
+      }, {
+        value: '已开票',
+        label: '已开票'
+      },],
       //隐藏列
       columns: [
-        {key: 0, label: `客户`, visible: true},
-        {key: 1, label: `老板姓名`, visible: true},
-        {key: 2, label: `公司名称`, visible: true},
-        {key: 3, label: `老板电话`, visible: true},
-        {key: 4, label: `电话`, visible: true},
-        {key: 5, label: `地址`, visible: true},
-        {key: 6, label: `区域`, visible: true},
+        {key: 0, label: `订单编号`, visible: true},
+        {key: 1, label: `陆运车牌`, visible: true},
+        {key: 2, label: `陆运司机电话`, visible: true},
+        {key: 3, label: `陆运司机姓名`, visible: true},
+        {key: 4, label: `海运车牌`, visible: true},
+        {key: 5, label: `海运司机电话`, visible: true},
+        {key: 6, label: `海运司机姓名`, visible: true},
         {key: 7, label: `销售经理`, visible: true},
-        {key: 8, label: `备注`, visible: true},
+        {key: 8, label: `车队`, visible: true},
+        {key: 9, label: `审核状态`, visible: true},
+        {key: 10, label: `开票状态`, visible: true},
+        {key: 11, label: `附件路径`, visible: true},
+        {key: 12, label: `打款状态`, visible: true},
+        {key: 13, label: `陆运银行户名`, visible: true},
+        {key: 14, label: `陆运银行账号`, visible: true},
+        {key: 15, label: `海运银行户名`, visible: true},
+        {key: 16, label: `海运银行账号`, visible: true},
+        {key: 17, label: `收到条附件路径`, visible: true},
+        {key: 18, label: `是否被调整单`, visible: true},
+        {key: 19, label: `是否调整单`, visible: true},
+        {key: 20, label: `调整日期`, visible: true},
+        {key: 21, label: `原订单编号`, visible: true},
+        {key: 22, label: `是否可编辑`, visible: true},
+        {key: 23, label: `客户是否开票`, visible: true},
+        {key: 24, label: `供应商是否开票`, visible: true},
       ],
       //顶部条件搜索
       queryOrderInfo: {},
@@ -577,10 +745,23 @@ export default {
       //上传和收到条
       handleUploadVisible: false,
       handleCommitVisible: false,
+      addMoneyBackVisible: false,
       //添加新订单的弹窗
       addOrderItemVisible: false,
       //查看订单中的列表
       orderDetailInfo: {},
+      //返利回扣信息
+      moneyBackInfo: {
+        rebateDate: '',
+        rebate: '',
+        inAcountsName: '',
+        inBankNo: '',
+        supplier: '',
+        outAcountsName: '',
+        outBankNo: '',
+        rebateReason: '',
+        comments: ''
+      },
       //添加订单详情
       addOrderItem: {},
       //调整单的id
@@ -593,6 +774,7 @@ export default {
   },
   created() {
     this.getList();
+    this.$store.dispatch('order/getOrderList')
   },
   computed: {
     //审核状态
@@ -615,9 +797,33 @@ export default {
     },
 
     //获取订单列表
-    ...mapGetters(['orderItemList'])
+    ...mapGetters(['orderItemList']),
+    ...mapGetters(['orderList'])
   },
   methods: {
+    //时间查询
+    handleTimesQuery() {
+      //重新赋值
+      this.goodsOrderList = this.orderList;
+      if (Object.keys(JSON.parse(JSON.stringify(this.paramQuery))).length !== 0) {
+        this.goodsOrderList = this.goodsOrderList.filter(obj => {
+          let exclude = Object.entries(JSON.parse(JSON.stringify(this.paramQuery))) //填写的参数列表 判断item的某个属性
+          return exclude.every((item) => {
+            return obj.hasOwnProperty(item[0]) && obj[item[0]] === item[1];
+          })
+        })
+        if (this.timesQuery.beginTime && this.timesQuery.endTime) {
+          this.goodsOrderList =
+            this.$dateRange(this, 'goodsOrderList', 'orderDate', this.timesQuery.beginTime, this.timesQuery.endTime);
+        }
+      } else {
+        this.goodsOrderList =
+          this.$dateRange(this, 'goodsOrderList', 'orderDate', this.timesQuery.beginTime, this.timesQuery.endTime);
+      }
+    },
+    listCompany,
+    listBankAccount,
+    listGoodsOrder,
     //子组件提醒父组件修改orderInfo信息
     handleChangeOrderInfo(val) {
       this.orderInfo = val;
@@ -641,6 +847,21 @@ export default {
       this.tempId = row.id;
     },
 
+    //返利回扣
+    handleMoneyBack(row) {
+      console.log(row)
+      this.moneyBackInfo.ordersNo = row.ordersNo;
+      this.addMoneyBackVisible = true;
+    },
+    //添加返利回扣信息
+    addMoneyBackInfo() {
+      //转成时间戳
+      this.moneyBackInfo.rebateDate = this.moneyBackInfo.rebateDate.getTime();
+      addRebate(this.moneyBackInfo).then(res => {
+        this.$message.success('添加成功~')
+      })
+      this.addMoneyBackVisible = false;
+    },
     //订单发货单123
     handleOrder1(row) {
       this.Order1Visible = true
@@ -663,7 +884,21 @@ export default {
     handleCommit(row) {
       this.handleCommitVisible = true
     },
-
+    //
+    handleCommitBankAccount(val) {
+      this.moneyBackInfo.inAcountsName = val.acountsName;
+      this.moneyBackInfo.inBankNo = val.bankNo;
+    },
+    //
+    handleCommitCompany(val) {
+      this.moneyBackInfo.supplierID = val.id;
+      this.moneyBackInfo.supplier = val.companyName;
+    },
+    //
+    handleCommitBankAccountOut(val) {
+      this.moneyBackInfo.outAcountsName = val.acountsName;
+      this.moneyBackInfo.outBankNo = val.bankNo;
+    },
     //上传组件的回调
     handleBackUpload(val) {
       //去除不必要字段
@@ -782,6 +1017,11 @@ export default {
       this.loading = true;
       listGoodsOrder(this.queryParams).then(response => {
         this.goodsOrderList = response.rows;
+        //处理日期 将时间戳转化为时间
+        this.goodsOrderList.forEach(item => {
+          //这里item.orderDate是一个字符串 要转成Number
+          item.orderDate = formatDate(new Date(Number(item.orderDate)));
+        })
         this.total = response.total;
         this.loading = false;
       });

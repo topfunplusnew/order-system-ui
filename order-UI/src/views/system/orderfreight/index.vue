@@ -9,62 +9,62 @@
           @keyup.enter.native="handleQuery"
         />
       </el-form-item>
-      <el-form-item label="金额" prop="moneyAmount">
-        <el-input
-          v-model="queryParams.moneyAmount"
-          placeholder="请输入金额"
-          clearable
-          @keyup.enter.native="handleQuery"
-        />
-      </el-form-item>
-      <el-form-item label="己方户名" prop="selfAcountsName">
-        <el-input
-          v-model="queryParams.selfAcountsName"
-          placeholder="请输入己方户名"
-          clearable
-          @keyup.enter.native="handleQuery"
-        />
-      </el-form-item>
-      <el-form-item label="己方账号" prop="selfBankNo">
-        <el-input
-          v-model="queryParams.selfBankNo"
-          placeholder="请输入己方账号"
-          clearable
-          @keyup.enter.native="handleQuery"
-        />
-      </el-form-item>
-      <el-form-item label="己方开户行" prop="selfBankName">
-        <el-input
-          v-model="queryParams.selfBankName"
-          placeholder="请输入己方开户行"
-          clearable
-          @keyup.enter.native="handleQuery"
-        />
-      </el-form-item>
-      <el-form-item label="对方户名" prop="otherAcountsName">
-        <el-input
-          v-model="queryParams.otherAcountsName"
-          placeholder="请输入对方户名"
-          clearable
-          @keyup.enter.native="handleQuery"
-        />
-      </el-form-item>
-      <el-form-item label="对方账号" prop="otherBankNo">
-        <el-input
-          v-model="queryParams.otherBankNo"
-          placeholder="请输入对方账号"
-          clearable
-          @keyup.enter.native="handleQuery"
-        />
-      </el-form-item>
-      <el-form-item label="对方开户行" prop="otherBankName">
-        <el-input
-          v-model="queryParams.otherBankName"
-          placeholder="请输入对方开户行"
-          clearable
-          @keyup.enter.native="handleQuery"
-        />
-      </el-form-item>
+      <!--      <el-form-item label="金额" prop="moneyAmount">-->
+      <!--        <el-input-->
+      <!--          v-model="queryParams.moneyAmount"-->
+      <!--          placeholder="请输入金额"-->
+      <!--          clearable-->
+      <!--          @keyup.enter.native="handleQuery"-->
+      <!--        />-->
+      <!--      </el-form-item>-->
+      <!--      <el-form-item label="己方户名" prop="selfAcountsName">-->
+      <!--        <el-input-->
+      <!--          v-model="queryParams.selfAcountsName"-->
+      <!--          placeholder="请输入己方户名"-->
+      <!--          clearable-->
+      <!--          @keyup.enter.native="handleQuery"-->
+      <!--        />-->
+      <!--      </el-form-item>-->
+      <!--      <el-form-item label="己方账号" prop="selfBankNo">-->
+      <!--        <el-input-->
+      <!--          v-model="queryParams.selfBankNo"-->
+      <!--          placeholder="请输入己方账号"-->
+      <!--          clearable-->
+      <!--          @keyup.enter.native="handleQuery"-->
+      <!--        />-->
+      <!--      </el-form-item>-->
+      <!--      <el-form-item label="己方开户行" prop="selfBankName">-->
+      <!--        <el-input-->
+      <!--          v-model="queryParams.selfBankName"-->
+      <!--          placeholder="请输入己方开户行"-->
+      <!--          clearable-->
+      <!--          @keyup.enter.native="handleQuery"-->
+      <!--        />-->
+      <!--      </el-form-item>-->
+      <!--      <el-form-item label="对方户名" prop="otherAcountsName">-->
+      <!--        <el-input-->
+      <!--          v-model="queryParams.otherAcountsName"-->
+      <!--          placeholder="请输入对方户名"-->
+      <!--          clearable-->
+      <!--          @keyup.enter.native="handleQuery"-->
+      <!--        />-->
+      <!--      </el-form-item>-->
+      <!--      <el-form-item label="对方账号" prop="otherBankNo">-->
+      <!--        <el-input-->
+      <!--          v-model="queryParams.otherBankNo"-->
+      <!--          placeholder="请输入对方账号"-->
+      <!--          clearable-->
+      <!--          @keyup.enter.native="handleQuery"-->
+      <!--        />-->
+      <!--      </el-form-item>-->
+      <!--      <el-form-item label="对方开户行" prop="otherBankName">-->
+      <!--        <el-input-->
+      <!--          v-model="queryParams.otherBankName"-->
+      <!--          placeholder="请输入对方开户行"-->
+      <!--          clearable-->
+      <!--          @keyup.enter.native="handleQuery"-->
+      <!--        />-->
+      <!--      </el-form-item>-->
       <el-form-item label="支付状态" prop="paymentState">
         <el-input
           v-model="queryParams.paymentState"
@@ -73,22 +73,22 @@
           @keyup.enter.native="handleQuery"
         />
       </el-form-item>
-      <el-form-item label="司机姓名" prop="driverName">
-        <el-input
-          v-model="queryParams.driverName"
-          placeholder="请输入司机姓名"
-          clearable
-          @keyup.enter.native="handleQuery"
-        />
-      </el-form-item>
-      <el-form-item label="司机ID" prop="driverId">
-        <el-input
-          v-model="queryParams.driverId"
-          placeholder="请输入司机ID"
-          clearable
-          @keyup.enter.native="handleQuery"
-        />
-      </el-form-item>
+      <!--      <el-form-item label="司机姓名" prop="driverName">-->
+      <!--        <el-input-->
+      <!--          v-model="queryParams.driverName"-->
+      <!--          placeholder="请输入司机姓名"-->
+      <!--          clearable-->
+      <!--          @keyup.enter.native="handleQuery"-->
+      <!--        />-->
+      <!--      </el-form-item>-->
+      <!--      <el-form-item label="司机ID" prop="driverId">-->
+      <!--        <el-input-->
+      <!--          v-model="queryParams.driverId"-->
+      <!--          placeholder="请输入司机ID"-->
+      <!--          clearable-->
+      <!--          @keyup.enter.native="handleQuery"-->
+      <!--        />-->
+      <!--      </el-form-item>-->
       <el-form-item label="车牌号" prop="CarNo">
         <el-input
           v-model="queryParams.CarNo"
@@ -97,114 +97,74 @@
           @keyup.enter.native="handleQuery"
         />
       </el-form-item>
-      <el-form-item label="车队" prop="fleet">
-        <el-input
-          v-model="queryParams.fleet"
-          placeholder="请输入车队"
-          clearable
-          @keyup.enter.native="handleQuery"
-        />
-      </el-form-item>
-      <el-form-item label="申请人员ID" prop="applyUserId">
-        <el-input
-          v-model="queryParams.applyUserId"
-          placeholder="请输入申请人员ID"
-          clearable
-          @keyup.enter.native="handleQuery"
-        />
-      </el-form-item>
-      <el-form-item label="申请人员姓名" prop="applyUserName">
-        <el-input
-          v-model="queryParams.applyUserName"
-          placeholder="请输入申请人员姓名"
-          clearable
-          @keyup.enter.native="handleQuery"
-        />
-      </el-form-item>
-      <el-form-item label="申请日期" prop="applyDate">
-        <el-input
-          v-model="queryParams.applyDate"
-          placeholder="请输入申请日期"
-          clearable
-          @keyup.enter.native="handleQuery"
-        />
-      </el-form-item>
-      <el-form-item label="是否可编辑" prop="isedit">
-        <el-input
-          v-model="queryParams.isedit"
-          placeholder="请输入是否可编辑"
-          clearable
-          @keyup.enter.native="handleQuery"
-        />
-      </el-form-item>
-      <el-form-item label="付款人员ID" prop="payUserId">
-        <el-input
-          v-model="queryParams.payUserId"
-          placeholder="请输入付款人员ID"
-          clearable
-          @keyup.enter.native="handleQuery"
-        />
-      </el-form-item>
-      <el-form-item label="付款人员姓名" prop="payUserName">
-        <el-input
-          v-model="queryParams.payUserName"
-          placeholder="请输入付款人员姓名"
-          clearable
-          @keyup.enter.native="handleQuery"
-        />
-      </el-form-item>
-      <el-form-item label="付款日期" prop="payDate">
-        <el-input
-          v-model="queryParams.payDate"
-          placeholder="请输入付款日期"
-          clearable
-          @keyup.enter.native="handleQuery"
-        />
-      </el-form-item>
-      <el-form-item label="作废标记" prop="cancelFlag">
-        <el-input
-          v-model="queryParams.cancelFlag"
-          placeholder="请输入作废标记"
-          clearable
-          @keyup.enter.native="handleQuery"
-        />
-      </el-form-item>
+      <!--      <el-form-item label="车队" prop="fleet">-->
+      <!--        <el-input-->
+      <!--          v-model="queryParams.fleet"-->
+      <!--          placeholder="请输入车队"-->
+      <!--          clearable-->
+      <!--          @keyup.enter.native="handleQuery"-->
+      <!--        />-->
+      <!--      </el-form-item>-->
+      <!--      <el-form-item label="申请人员ID" prop="applyUserId">-->
+      <!--        <el-input-->
+      <!--          v-model="queryParams.applyUserId"-->
+      <!--          placeholder="请输入申请人员ID"-->
+      <!--          clearable-->
+      <!--          @keyup.enter.native="handleQuery"-->
+      <!--        />-->
+      <!--      </el-form-item>-->
+      <!--      <el-form-item label="申请人员姓名" prop="applyUserName">-->
+      <!--        <el-input-->
+      <!--          v-model="queryParams.applyUserName"-->
+      <!--          placeholder="请输入申请人员姓名"-->
+      <!--          clearable-->
+      <!--          @keyup.enter.native="handleQuery"-->
+      <!--        />-->
+      <!--      </el-form-item>-->
+      <!--      <el-form-item label="申请日期" prop="applyDate">-->
+      <!--        <el-input-->
+      <!--          v-model="queryParams.applyDate"-->
+      <!--          placeholder="请输入申请日期"-->
+      <!--          clearable-->
+      <!--          @keyup.enter.native="handleQuery"-->
+      <!--        />-->
+      <!--      </el-form-item>-->
+      <!--      <el-form-item label="是否可编辑" prop="isedit">-->
+      <!--        <el-input-->
+      <!--          v-model="queryParams.isedit"-->
+      <!--          placeholder="请输入是否可编辑"-->
+      <!--          clearable-->
+      <!--          @keyup.enter.native="handleQuery"-->
+      <!--        />-->
+      <!--      </el-form-item>-->
+      <!--      <el-form-item label="付款人员ID" prop="payUserId">-->
+      <!--        <el-input-->
+      <!--          v-model="queryParams.payUserId"-->
+      <!--          placeholder="请输入付款人员ID"-->
+      <!--          clearable-->
+      <!--          @keyup.enter.native="handleQuery"-->
+      <!--        />-->
+      <!--      </el-form-item>-->
+      <!--      <el-form-item label="付款人员姓名" prop="payUserName">-->
+      <!--        <el-input-->
+      <!--          v-model="queryParams.payUserName"-->
+      <!--          placeholder="请输入付款人员姓名"-->
+      <!--          clearable-->
+      <!--          @keyup.enter.native="handleQuery"-->
+      <!--        />-->
+      <!--      </el-form-item>-->
+      <!--      <el-form-item label="付款日期" prop="payDate">-->
+      <!--        <el-input-->
+      <!--          v-model="queryParams.payDate"-->
+      <!--          placeholder="请输入付款日期"-->
+      <!--          clearable-->
+      <!--          @keyup.enter.native="handleQuery"-->
+      <!--        />-->
+      <!--      </el-form-item>-->
       <el-form-item label="备注" prop="comments">
         <el-input
           v-model="queryParams.comments"
           placeholder="请输入备注"
-          clearable
-          @keyup.enter.native="handleQuery"
-        />
-      </el-form-item>
-      <el-form-item label="添加时间" prop="addtime">
-        <el-input
-          v-model="queryParams.addtime"
-          placeholder="请输入添加时间"
-          clearable
-          @keyup.enter.native="handleQuery"
-        />
-      </el-form-item>
-      <el-form-item label="操作人员ID" prop="userId">
-        <el-input
-          v-model="queryParams.userId"
-          placeholder="请输入操作人员ID"
-          clearable
-          @keyup.enter.native="handleQuery"
-        />
-      </el-form-item>
-      <el-form-item label="操作人员姓名" prop="UserName">
-        <el-input
-          v-model="queryParams.UserName"
-          placeholder="请输入操作人员姓名"
-          clearable
-          @keyup.enter.native="handleQuery"
-        />
-      </el-form-item>
-      <el-form-item label="删除标记" prop="delFlag">
-        <el-input
-          v-model="queryParams.delFlag"
-          placeholder="请输入删除标记"
           clearable
           @keyup.enter.native="handleQuery"
         />
@@ -224,75 +184,65 @@
           size="mini"
           @click="handleAdd"
           v-hasPermi="['system:orderfreight:add']"
-        >新增</el-button>
+        >新增订单运费申请
+        </el-button>
       </el-col>
-      <el-col :span="1.5">
-        <el-button
-          type="success"
-          plain
-          icon="el-icon-edit"
-          size="mini"
-          :disabled="single"
-          @click="handleUpdate"
-          v-hasPermi="['system:orderfreight:edit']"
-        >修改</el-button>
-      </el-col>
-      <el-col :span="1.5">
-        <el-button
-          type="danger"
-          plain
-          icon="el-icon-delete"
-          size="mini"
-          :disabled="multiple"
-          @click="handleDelete"
-          v-hasPermi="['system:orderfreight:remove']"
-        >删除</el-button>
-      </el-col>
-      <el-col :span="1.5">
-        <el-button
-          type="warning"
-          plain
-          icon="el-icon-download"
-          size="mini"
-          @click="handleExport"
-          v-hasPermi="['system:orderfreight:export']"
-        >导出</el-button>
-      </el-col>
-      <right-toolbar :showSearch.sync="showSearch" @queryTable="getList"></right-toolbar>
+      <right-toolbar :showSearch.sync="showSearch" @queryTable="getList" :columns="columns">
+        <template v-slot:print>
+          <el-col :span="1.5">
+            <el-button
+              plain
+              icon="el-icon-printer"
+              size="mini"
+              @click="printHTML"
+            >
+            </el-button>
+          </el-col>
+        </template>
+        <!--        导出-->
+        <template v-slot:export>
+          <el-col :span="1.5">
+            <el-button
+              plain
+              icon="el-icon-folder-opened"
+              size="mini"
+              @click="handleExport"
+              v-hasPermi="['system:company:export']"
+            >
+            </el-button>
+          </el-col>
+        </template>
+      </right-toolbar>
     </el-row>
 
-    <el-table v-loading="loading" :data="orderFreightList" @selection-change="handleSelectionChange">
-      <el-table-column type="selection" width="55" align="center" />
-      <el-table-column label="id" align="center" prop="id" />
-      <el-table-column label="订单编号" align="center" prop="ordersNo" />
-      <el-table-column label="运费类型" align="center" prop="freightType" />
-      <el-table-column label="金额" align="center" prop="moneyAmount" />
-      <el-table-column label="己方户名" align="center" prop="selfAcountsName" />
-      <el-table-column label="己方账号" align="center" prop="selfBankNo" />
-      <el-table-column label="己方开户行" align="center" prop="selfBankName" />
-      <el-table-column label="对方户名" align="center" prop="otherAcountsName" />
-      <el-table-column label="对方账号" align="center" prop="otherBankNo" />
-      <el-table-column label="对方开户行" align="center" prop="otherBankName" />
-      <el-table-column label="备注" align="center" prop="content" />
-      <el-table-column label="支付状态" align="center" prop="paymentState" />
-      <el-table-column label="司机姓名" align="center" prop="driverName" />
-      <el-table-column label="司机ID" align="center" prop="driverId" />
-      <el-table-column label="车牌号" align="center" prop="CarNo" />
-      <el-table-column label="车队" align="center" prop="fleet" />
-      <el-table-column label="申请人员ID" align="center" prop="applyUserId" />
-      <el-table-column label="申请人员姓名" align="center" prop="applyUserName" />
-      <el-table-column label="申请日期" align="center" prop="applyDate" />
-      <el-table-column label="是否可编辑" align="center" prop="isedit" />
-      <el-table-column label="付款人员ID" align="center" prop="payUserId" />
-      <el-table-column label="付款人员姓名" align="center" prop="payUserName" />
-      <el-table-column label="付款日期" align="center" prop="payDate" />
-      <el-table-column label="作废标记" align="center" prop="cancelFlag" />
-      <el-table-column label="备注" align="center" prop="comments" />
-      <el-table-column label="添加时间" align="center" prop="addtime" />
-      <el-table-column label="操作人员ID" align="center" prop="userId" />
-      <el-table-column label="操作人员姓名" align="center" prop="UserName" />
-      <el-table-column label="删除标记" align="center" prop="delFlag" />
-      <el-table-column label="操作" align="center" class-name="small-padding fixed-width">
+    <el-table v-horizontal-scroll="'always'" border v-loading="loading" :data="orderFreightList"
+              @selection-change="handleSelectionChange" id="printBox">
+      <el-table-column label="id" align="center" prop="id"/>
+      <el-table-column label="订单编号" align="center" prop="ordersNo"/>
+      <el-table-column label="运费类型" align="center" prop="freightType"/>
+      <el-table-column label="金额" align="center" prop="moneyAmount"/>
+      <el-table-column label="己方户名" align="center" prop="selfAcountsName"/>
+      <el-table-column label="己方账号" align="center" prop="selfBankNo"/>
+      <el-table-column label="己方开户行" align="center" prop="selfBankName"/>
+      <el-table-column label="对方户名" align="center" prop="otherAcountsName"/>
+      <el-table-column label="对方账号" align="center" prop="otherBankNo"/>
+      <el-table-column label="对方开户行" align="center" prop="otherBankName"/>
+      <el-table-column label="备注" align="center" prop="content"/>
+      <el-table-column label="支付状态" align="center" prop="paymentState"/>
+      <el-table-column label="司机姓名" align="center" prop="driverName"/>
+      <el-table-column label="司机ID" align="center" prop="driverId"/>
+      <el-table-column label="车牌号" align="center" prop="CarNo"/>
+      <el-table-column label="车队" align="center" prop="fleet"/>
+      <!--      <el-table-column label="申请人员ID" align="center" prop="applyUserId"/>-->
+      <el-table-column label="申请人员姓名" align="center" prop="applyUserName"/>
+      <el-table-column label="申请日期" align="center" prop="applyDate"/>
+      <el-table-column label="是否可编辑" align="center" prop="isedit"/>
+      <!--      <el-table-column label="付款人员ID" align="center" prop="payUserId"/>-->
+      <el-table-column label="付款人员姓名" align="center" prop="payUserName"/>
+      <el-table-column label="付款日期" align="center" prop="payDate"/>
+      <el-table-column label="作废标记" align="center" prop="cancelFlag"/>
+      <el-table-column label="备注" align="center" prop="comments"/>
+      <el-table-column label="操作" align="center" class-name="small-padding fixed-width" fixed="right">
         <template slot-scope="scope">
           <el-button
             size="mini"
@@ -300,18 +250,20 @@
             icon="el-icon-edit"
             @click="handleUpdate(scope.row)"
             v-hasPermi="['system:orderfreight:edit']"
-          >修改</el-button>
+          >修改
+          </el-button>
           <el-button
             size="mini"
             type="text"
             icon="el-icon-delete"
             @click="handleDelete(scope.row)"
             v-hasPermi="['system:orderfreight:remove']"
-          >删除</el-button>
+          >删除
+          </el-button>
         </template>
       </el-table-column>
     </el-table>
-    
+
     <pagination
       v-show="total>0"
       :total="total"
@@ -324,85 +276,117 @@
     <el-dialog :title="title" :visible.sync="open" width="500px" append-to-body>
       <el-form ref="form" :model="form" :rules="rules" label-width="80px">
         <el-form-item label="订单编号" prop="ordersNo">
-          <el-input v-model="form.ordersNo" placeholder="请输入订单编号" />
+          <el-input v-model="form.ordersNo" placeholder="请输入订单编号"/>
         </el-form-item>
         <el-form-item label="金额" prop="moneyAmount">
-          <el-input v-model="form.moneyAmount" placeholder="请输入金额" />
+          <el-input v-model="form.moneyAmount" placeholder="请输入金额"/>
         </el-form-item>
         <el-form-item label="己方户名" prop="selfAcountsName">
-          <el-input v-model="form.selfAcountsName" placeholder="请输入己方户名" />
+          <el-row :gutter="3">
+            <el-col :span="10">
+              <el-input v-model="form.selfAcountsName" placeholder="请输入己方户名"/>
+            </el-col>
+            <el-col :span="3">
+              <SearchOption :get-data="listBankAccount" :limit-info="{acountsType:'己方公司'}"
+                            @commitBack="handleCommitSelfBackBank">
+                <template #table-columns>
+                  <el-table-column label="账户类型" align="center" prop="acountsType"/>
+                  <el-table-column label="开户名称(户名)" align="center" prop="acountsName"/>
+                  <el-table-column label="账号(银行账号)" align="center" prop="bankNo"/>
+                  <el-table-column label="开户行" align="center" prop="bankName"/>
+                  <el-table-column label="公司名称" align="center" prop="companyName"/>
+                </template>
+              </SearchOption>
+            </el-col>
+          </el-row>
         </el-form-item>
         <el-form-item label="己方账号" prop="selfBankNo">
-          <el-input v-model="form.selfBankNo" placeholder="请输入己方账号" />
+          <el-input v-model="form.selfBankNo" placeholder="请输入己方账号"/>
         </el-form-item>
         <el-form-item label="己方开户行" prop="selfBankName">
-          <el-input v-model="form.selfBankName" placeholder="请输入己方开户行" />
+          <el-input v-model="form.selfBankName" placeholder="请输入己方开户行"/>
         </el-form-item>
         <el-form-item label="对方户名" prop="otherAcountsName">
-          <el-input v-model="form.otherAcountsName" placeholder="请输入对方户名" />
+          <el-row :gutter="3">
+            <el-col :span="10">
+              <el-input v-model="form.otherAcountsName" placeholder="请输入对方户名"/>
+            </el-col>
+            <el-col :span="3">
+              <SearchOption :get-data="listBankAccount"
+                            @commitBack="handleCommitOtherBackBank">
+                <template #table-columns>
+                  <el-table-column label="账户类型" align="center" prop="acountsType"/>
+                  <el-table-column label="开户名称(户名)" align="center" prop="acountsName"/>
+                  <el-table-column label="账号(银行账号)" align="center" prop="bankNo"/>
+                  <el-table-column label="开户行" align="center" prop="bankName"/>
+                  <el-table-column label="公司名称" align="center" prop="companyName"/>
+                </template>
+              </SearchOption>
+            </el-col>
+          </el-row>
         </el-form-item>
         <el-form-item label="对方账号" prop="otherBankNo">
-          <el-input v-model="form.otherBankNo" placeholder="请输入对方账号" />
+          <el-input v-model="form.otherBankNo" placeholder="请输入对方账号"/>
         </el-form-item>
         <el-form-item label="对方开户行" prop="otherBankName">
-          <el-input v-model="form.otherBankName" placeholder="请输入对方开户行" />
+          <el-input v-model="form.otherBankName" placeholder="请输入对方开户行"/>
         </el-form-item>
-        <el-form-item label="备注">
-          <editor v-model="form.content" :min-height="192"/>
-        </el-form-item>
+        <!--        <el-form-item label="备注">-->
+        <!--          &lt;!&ndash;          todo富文本&ndash;&gt;-->
+        <!--          <editor v-model="form.content" :min-height="192"/>-->
+        <!--        </el-form-item>-->
         <el-form-item label="支付状态" prop="paymentState">
-          <el-input v-model="form.paymentState" placeholder="请输入支付状态" />
+          <el-input v-model="form.paymentState" placeholder="请输入支付状态"/>
         </el-form-item>
         <el-form-item label="司机姓名" prop="driverName">
-          <el-input v-model="form.driverName" placeholder="请输入司机姓名" />
+          <el-input v-model="form.driverName" placeholder="请输入司机姓名"/>
         </el-form-item>
-        <el-form-item label="司机ID" prop="driverId">
-          <el-input v-model="form.driverId" placeholder="请输入司机ID" />
-        </el-form-item>
+        <!--        <el-form-item label="司机ID" prop="driverId">-->
+        <!--          <el-input v-model="form.driverId" placeholder="请输入司机ID"/>-->
+        <!--        </el-form-item>-->
         <el-form-item label="车牌号" prop="CarNo">
-          <el-input v-model="form.CarNo" placeholder="请输入车牌号" />
+          <el-input v-model="form.CarNo" placeholder="请输入车牌号"/>
         </el-form-item>
         <el-form-item label="车队" prop="fleet">
-          <el-input v-model="form.fleet" placeholder="请输入车队" />
+          <el-input v-model="form.fleet" placeholder="请输入车队"/>
         </el-form-item>
-        <el-form-item label="申请人员ID" prop="applyUserId">
-          <el-input v-model="form.applyUserId" placeholder="请输入申请人员ID" />
-        </el-form-item>
-        <el-form-item label="申请人员姓名" prop="applyUserName">
-          <el-input v-model="form.applyUserName" placeholder="请输入申请人员姓名" />
-        </el-form-item>
+        <!--        后端自动填充-->
+        <!--        <el-form-item label="申请人员ID" prop="applyUserId">-->
+        <!--          <el-input v-model="form.applyUserId" placeholder="请输入申请人员ID"/>-->
+        <!--        </el-form-item>-->
+        <!--        <el-form-item label="申请人员姓名" prop="applyUserName">-->
+        <!--          <el-input v-model="form.applyUserName" placeholder="请输入申请人员姓名"/>-->
+        <!--        </el-form-item>-->
         <el-form-item label="申请日期" prop="applyDate">
-          <el-input v-model="form.applyDate" placeholder="请输入申请日期" />
+          <!--          <el-input v-model="form.applyDate" placeholder="请输入申请日期"/>-->
+          <el-date-picker
+            v-model="form.applyDate"
+            type="date"
+            placeholder="选择日期">
+          </el-date-picker>
         </el-form-item>
-        <el-form-item label="是否可编辑" prop="isedit">
-          <el-input v-model="form.isedit" placeholder="请输入是否可编辑" />
-        </el-form-item>
-        <el-form-item label="付款人员ID" prop="payUserId">
-          <el-input v-model="form.payUserId" placeholder="请输入付款人员ID" />
-        </el-form-item>
+        <!--        <el-form-item label="是否可编辑" prop="isedit">-->
+        <!--          <el-input v-model="form.isedit" placeholder="请输入是否可编辑"/>-->
+        <!--        </el-form-item>-->
+        <!--        <el-form-item label="付款人员ID" prop="payUserId">-->
+        <!--          <el-input v-model="form.payUserId" placeholder="请输入付款人员ID"/>-->
+        <!--        </el-form-item>-->
         <el-form-item label="付款人员姓名" prop="payUserName">
-          <el-input v-model="form.payUserName" placeholder="请输入付款人员姓名" />
+          <el-input v-model="form.payUserName" placeholder="请输入付款人员姓名"/>
         </el-form-item>
         <el-form-item label="付款日期" prop="payDate">
-          <el-input v-model="form.payDate" placeholder="请输入付款日期" />
+          <!--          <el-input v-model="form.payDate" placeholder="请输入付款日期"/>-->
+          <el-date-picker
+            v-model="form.payDate"
+            type="date"
+            placeholder="选择日期">
+          </el-date-picker>
         </el-form-item>
-        <el-form-item label="作废标记" prop="cancelFlag">
-          <el-input v-model="form.cancelFlag" placeholder="请输入作废标记" />
-        </el-form-item>
+        <!--        <el-form-item label="作废标记" prop="cancelFlag">-->
+        <!--          <el-input v-model="form.cancelFlag" placeholder="请输入作废标记"/>-->
+        <!--        </el-form-item>-->
         <el-form-item label="备注" prop="comments">
-          <el-input v-model="form.comments" placeholder="请输入备注" />
-        </el-form-item>
-        <el-form-item label="添加时间" prop="addtime">
-          <el-input v-model="form.addtime" placeholder="请输入添加时间" />
-        </el-form-item>
-        <el-form-item label="操作人员ID" prop="userId">
-          <el-input v-model="form.userId" placeholder="请输入操作人员ID" />
-        </el-form-item>
-        <el-form-item label="操作人员姓名" prop="UserName">
-          <el-input v-model="form.UserName" placeholder="请输入操作人员姓名" />
-        </el-form-item>
-        <el-form-item label="删除标记" prop="delFlag">
-          <el-input v-model="form.delFlag" placeholder="请输入删除标记" />
+          <el-input v-model="form.comments" placeholder="请输入备注"/>
         </el-form-item>
       </el-form>
       <div slot="footer" class="dialog-footer">
@@ -414,10 +398,19 @@
 </template>
 
 <script>
-import { listOrderFreight, getOrderFreight, delOrderFreight, addOrderFreight, updateOrderFreight } from "@/api/system/orderFreight";
+import {
+  listOrderFreight,
+  getOrderFreight,
+  delOrderFreight,
+  addOrderFreight,
+  updateOrderFreight
+} from "@/api/system/orderFreight";
+import SearchOption from "@/components/SearchOption.vue";
+import {listBankAccount} from "@/api/system/bankAccount";
 
 export default {
   name: "OrderFreight",
+  components: {SearchOption},
   data() {
     return {
       // 遮罩层
@@ -474,14 +467,36 @@ export default {
       // 表单参数
       form: {},
       // 表单校验
-      rules: {
-      }
+      rules: {},
+      columns: [
+        {key: 0, label: `客户`, visible: true},
+        {key: 1, label: `老板姓名`, visible: true},
+        {key: 2, label: `公司名称`, visible: true},
+        {key: 3, label: `老板电话`, visible: true},
+        {key: 4, label: `电话`, visible: true},
+        {key: 5, label: `地址`, visible: true},
+        {key: 6, label: `区域`, visible: true},
+        {key: 7, label: `销售经理`, visible: true},
+        {key: 8, label: `备注`, visible: true},
+      ],
     };
   },
   created() {
     this.getList();
   },
   methods: {
+    listBankAccount,
+    //己方公司点击确定的回调
+    handleCommitSelfBackBank(val) {
+      this.form.selfAcountsName = val.acountsName;
+      this.form.selfBankNo = val.bankNo;
+      this.form.selfBankName = val.bankName
+    },
+    handleCommitOtherBackBank(val) {
+      this.form.otherAcountsName = val.acountsName;
+      this.form.otherBankNo = val.bankNo;
+      this.form.otherBankName = val.bankName
+    },
     /** 查询订单运费列表 */
     getList() {
       this.loading = true;
@@ -490,6 +505,13 @@ export default {
         this.total = response.total;
         this.loading = false;
       });
+    },
+    printHTML() {
+      this.$print({
+        printable: 'printBox',
+        type: 'html',
+        targetStyles: ['*'], // 打印内容使用所有HTML样式，没有设置这个属性/值，设置分页打印没有效果
+      })
     },
     // 取消按钮
     cancel() {
@@ -544,7 +566,7 @@ export default {
     // 多选框选中数据
     handleSelectionChange(selection) {
       this.ids = selection.map(item => item.id)
-      this.single = selection.length!==1
+      this.single = selection.length !== 1
       this.multiple = !selection.length
     },
     /** 新增按钮操作 */
@@ -586,12 +608,13 @@ export default {
     /** 删除按钮操作 */
     handleDelete(row) {
       const ids = row.id || this.ids;
-      this.$modal.confirm('是否确认删除订单运费编号为"' + ids + '"的数据项？').then(function() {
+      this.$modal.confirm('是否确认删除订单运费编号为"' + ids + '"的数据项？').then(function () {
         return delOrderFreight(ids);
       }).then(() => {
         this.getList();
         this.$modal.msgSuccess("删除成功");
-      }).catch(() => {});
+      }).catch(() => {
+      });
     },
     /** 导出按钮操作 */
     handleExport() {

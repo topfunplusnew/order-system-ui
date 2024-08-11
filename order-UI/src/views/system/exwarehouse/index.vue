@@ -9,14 +9,14 @@
           @keyup.enter.native="handleQuery"
         />
       </el-form-item>
-      <el-form-item label="仓库ID" prop="storeHouseid">
-        <el-input
-          v-model="queryParams.storeHouseid"
-          placeholder="请输入仓库ID"
-          clearable
-          @keyup.enter.native="handleQuery"
-        />
-      </el-form-item>
+      <!--      <el-form-item label="仓库ID" prop="storeHouseid">-->
+      <!--        <el-input-->
+      <!--          v-model="queryParams.storeHouseid"-->
+      <!--          placeholder="请输入仓库ID"-->
+      <!--          clearable-->
+      <!--          @keyup.enter.native="handleQuery"-->
+      <!--        />-->
+      <!--      </el-form-item>-->
       <el-form-item label="仓库名称" prop="storeHouseName">
         <el-input
           v-model="queryParams.storeHouseName"
@@ -25,14 +25,14 @@
           @keyup.enter.native="handleQuery"
         />
       </el-form-item>
-      <el-form-item label="仓库存储的货物ID" prop="storeID">
-        <el-input
-          v-model="queryParams.storeID"
-          placeholder="请输入仓库存储的货物ID"
-          clearable
-          @keyup.enter.native="handleQuery"
-        />
-      </el-form-item>
+      <!--      <el-form-item label="仓库存储的货物ID" prop="storeID">-->
+      <!--        <el-input-->
+      <!--          v-model="queryParams.storeID"-->
+      <!--          placeholder="请输入仓库存储的货物ID"-->
+      <!--          clearable-->
+      <!--          @keyup.enter.native="handleQuery"-->
+      <!--        />-->
+      <!--      </el-form-item>-->
       <el-form-item label="出库日期" prop="outDate">
         <el-input
           v-model="queryParams.outDate"
@@ -41,46 +41,14 @@
           @keyup.enter.native="handleQuery"
         />
       </el-form-item>
-      <el-form-item label="出库量" prop="outAmount">
-        <el-input
-          v-model="queryParams.outAmount"
-          placeholder="请输入出库量"
-          clearable
-          @keyup.enter.native="handleQuery"
-        />
-      </el-form-item>
-      <el-form-item label="删除标记" prop="delFlag">
-        <el-input
-          v-model="queryParams.delFlag"
-          placeholder="请输入删除标记"
-          clearable
-          @keyup.enter.native="handleQuery"
-        />
-      </el-form-item>
-      <el-form-item label="添加时间" prop="addtime">
-        <el-input
-          v-model="queryParams.addtime"
-          placeholder="请输入添加时间"
-          clearable
-          @keyup.enter.native="handleQuery"
-        />
-      </el-form-item>
-      <el-form-item label="操作人员ID" prop="userId">
-        <el-input
-          v-model="queryParams.userId"
-          placeholder="请输入操作人员ID"
-          clearable
-          @keyup.enter.native="handleQuery"
-        />
-      </el-form-item>
-      <el-form-item label="操作人员姓名" prop="UserName">
-        <el-input
-          v-model="queryParams.UserName"
-          placeholder="请输入操作人员姓名"
-          clearable
-          @keyup.enter.native="handleQuery"
-        />
-      </el-form-item>
+      <!--      <el-form-item label="出库量" prop="outAmount">-->
+      <!--        <el-input-->
+      <!--          v-model="queryParams.outAmount"-->
+      <!--          placeholder="请输入出库量"-->
+      <!--          clearable-->
+      <!--          @keyup.enter.native="handleQuery"-->
+      <!--        />-->
+      <!--      </el-form-item>-->
       <el-form-item>
         <el-button type="primary" icon="el-icon-search" size="mini" @click="handleQuery">搜索</el-button>
         <el-button icon="el-icon-refresh" size="mini" @click="resetQuery">重置</el-button>
@@ -96,76 +64,66 @@
           size="mini"
           @click="handleAdd"
           v-hasPermi="['system:exwarehouse:add']"
-        >新增</el-button>
+        >新增出库信息
+        </el-button>
       </el-col>
-      <el-col :span="1.5">
-        <el-button
-          type="success"
-          plain
-          icon="el-icon-edit"
-          size="mini"
-          :disabled="single"
-          @click="handleUpdate"
-          v-hasPermi="['system:exwarehouse:edit']"
-        >修改</el-button>
-      </el-col>
-      <el-col :span="1.5">
-        <el-button
-          type="danger"
-          plain
-          icon="el-icon-delete"
-          size="mini"
-          :disabled="multiple"
-          @click="handleDelete"
-          v-hasPermi="['system:exwarehouse:remove']"
-        >删除</el-button>
-      </el-col>
-      <el-col :span="1.5">
-        <el-button
-          type="warning"
-          plain
-          icon="el-icon-download"
-          size="mini"
-          @click="handleExport"
-          v-hasPermi="['system:exwarehouse:export']"
-        >导出</el-button>
-      </el-col>
-      <right-toolbar :showSearch.sync="showSearch" @queryTable="getList"></right-toolbar>
+      <right-toolbar :showSearch.sync="showSearch" @queryTable="getList" :columns="columns">
+        <template v-slot:print>
+          <el-col :span="1.5">
+            <el-button
+              plain
+              icon="el-icon-printer"
+              size="mini"
+              @click="printHTML"
+            >
+            </el-button>
+          </el-col>
+        </template>
+        <!--        导出-->
+        <template v-slot:export>
+          <el-col :span="1.5">
+            <el-button
+              plain
+              icon="el-icon-folder-opened"
+              size="mini"
+              @click="handleExport"
+              v-hasPermi="['system:bankaccount:export']"
+            >
+            </el-button>
+          </el-col>
+        </template>
+      </right-toolbar>
     </el-row>
 
-    <el-table v-loading="loading" :data="exWarehouseList" @selection-change="handleSelectionChange">
-      <el-table-column type="selection" width="55" align="center" />
-      <el-table-column label="id" align="center" prop="id" />
-      <el-table-column label="订单编号" align="center" prop="ordersNo" />
-      <el-table-column label="仓库ID" align="center" prop="storeHouseid" />
-      <el-table-column label="仓库名称" align="center" prop="storeHouseName" />
-      <el-table-column label="仓库存储的货物ID" align="center" prop="storeID" />
-      <el-table-column label="出库日期" align="center" prop="outDate" />
-      <el-table-column label="出库量" align="center" prop="outAmount" />
-      <el-table-column label="删除标记" align="center" prop="delFlag" />
-      <el-table-column label="添加时间" align="center" prop="addtime" />
-      <el-table-column label="操作人员ID" align="center" prop="userId" />
-      <el-table-column label="操作人员姓名" align="center" prop="UserName" />
+    <el-table border v-horizontal-scroll="'always'" v-loading="loading" :data="exWarehouseList"
+              @selection-change="handleSelectionChange" id="printBox">
+      <el-table-column label="id" align="center" prop="id"/>
+      <el-table-column label="订单编号" align="center" prop="ordersNo"/>
+      <!--      <el-table-column label="仓库ID" align="center" prop="storeHouseid"/>-->
+      <el-table-column label="仓库名称" align="center" prop="storeHouseName"/>
+      <!--      <el-table-column label="仓库存储的货物ID" align="center" prop="storeID"/>-->
+      <el-table-column label="出库日期" align="center" prop="outDate"/>
+      <el-table-column label="出库量" align="center" prop="outAmount"/>
       <el-table-column label="操作" align="center" class-name="small-padding fixed-width">
         <template slot-scope="scope">
           <el-button
             size="mini"
-            type="text"
-            icon="el-icon-edit"
+            type="primary"
             @click="handleUpdate(scope.row)"
             v-hasPermi="['system:exwarehouse:edit']"
-          >修改</el-button>
+          >修改
+          </el-button>
           <el-button
             size="mini"
-            type="text"
-            icon="el-icon-delete"
+            type="danger"
             @click="handleDelete(scope.row)"
             v-hasPermi="['system:exwarehouse:remove']"
-          >删除</el-button>
+          >删除
+          </el-button>
         </template>
       </el-table-column>
     </el-table>
-    
+
     <pagination
       v-show="total>0"
       :total="total"
@@ -178,34 +136,34 @@
     <el-dialog :title="title" :visible.sync="open" width="500px" append-to-body>
       <el-form ref="form" :model="form" :rules="rules" label-width="80px">
         <el-form-item label="订单编号" prop="ordersNo">
-          <el-input v-model="form.ordersNo" placeholder="请输入订单编号" />
+          <el-input v-model="form.ordersNo" placeholder="请输入订单编号"/>
         </el-form-item>
-        <el-form-item label="仓库ID" prop="storeHouseid">
-          <el-input v-model="form.storeHouseid" placeholder="请输入仓库ID" />
-        </el-form-item>
+        <!--        <el-form-item label="仓库ID" prop="storeHouseid">-->
+        <!--          <el-input v-model="form.storeHouseid" placeholder="请输入仓库ID"/>-->
+        <!--        </el-form-item>-->
         <el-form-item label="仓库名称" prop="storeHouseName">
-          <el-input v-model="form.storeHouseName" placeholder="请输入仓库名称" />
+          <el-input v-model="form.storeHouseName" placeholder="请输入仓库名称"/>
         </el-form-item>
         <el-form-item label="仓库存储的货物ID" prop="storeID">
-          <el-input v-model="form.storeID" placeholder="请输入仓库存储的货物ID" />
+          <el-input v-model="form.storeID" placeholder="请输入仓库存储的货物ID"/>
         </el-form-item>
         <el-form-item label="出库日期" prop="outDate">
-          <el-input v-model="form.outDate" placeholder="请输入出库日期" />
+          <el-input v-model="form.outDate" placeholder="请输入出库日期"/>
         </el-form-item>
         <el-form-item label="出库量" prop="outAmount">
-          <el-input v-model="form.outAmount" placeholder="请输入出库量" />
+          <el-input v-model="form.outAmount" placeholder="请输入出库量"/>
         </el-form-item>
         <el-form-item label="删除标记" prop="delFlag">
-          <el-input v-model="form.delFlag" placeholder="请输入删除标记" />
+          <el-input v-model="form.delFlag" placeholder="请输入删除标记"/>
         </el-form-item>
         <el-form-item label="添加时间" prop="addtime">
-          <el-input v-model="form.addtime" placeholder="请输入添加时间" />
+          <el-input v-model="form.addtime" placeholder="请输入添加时间"/>
         </el-form-item>
-        <el-form-item label="操作人员ID" prop="userId">
-          <el-input v-model="form.userId" placeholder="请输入操作人员ID" />
-        </el-form-item>
+        <!--        <el-form-item label="操作人员ID" prop="userId">-->
+        <!--          <el-input v-model="form.userId" placeholder="请输入操作人员ID"/>-->
+        <!--        </el-form-item>-->
         <el-form-item label="操作人员姓名" prop="UserName">
-          <el-input v-model="form.UserName" placeholder="请输入操作人员姓名" />
+          <el-input v-model="form.UserName" placeholder="请输入操作人员姓名"/>
         </el-form-item>
       </el-form>
       <div slot="footer" class="dialog-footer">
@@ -217,7 +175,13 @@
 </template>
 
 <script>
-import { listExWarehouse, getExWarehouse, delExWarehouse, addExWarehouse, updateExWarehouse } from "@/api/system/exWarehouse";
+import {
+  listExWarehouse,
+  getExWarehouse,
+  delExWarehouse,
+  addExWarehouse,
+  updateExWarehouse
+} from "@/api/system/exWarehouse";
 
 export default {
   name: "ExWarehouse",
@@ -259,8 +223,14 @@ export default {
       // 表单参数
       form: {},
       // 表单校验
-      rules: {
-      }
+      rules: {},
+      columns: [
+        {key: 0, label: `账户类型`, visible: true},
+        {key: 1, label: `开户名称`, visible: true},
+        {key: 2, label: `账号(银行卡号)`, visible: true},
+        {key: 3, label: `开户行`, visible: true},
+        {key: 4, label: `公司名称`, visible: true}
+      ],
     };
   },
   created() {
@@ -312,8 +282,15 @@ export default {
     // 多选框选中数据
     handleSelectionChange(selection) {
       this.ids = selection.map(item => item.id)
-      this.single = selection.length!==1
+      this.single = selection.length !== 1
       this.multiple = !selection.length
+    },
+    printHTML() {
+      this.$print({
+        printable: 'printBox',
+        type: 'html',
+        targetStyles: ['*'], // 打印内容使用所有HTML样式，没有设置这个属性/值，设置分页打印没有效果
+      })
     },
     /** 新增按钮操作 */
     handleAdd() {
@@ -354,12 +331,13 @@ export default {
     /** 删除按钮操作 */
     handleDelete(row) {
       const ids = row.id || this.ids;
-      this.$modal.confirm('是否确认删除出库编号为"' + ids + '"的数据项？').then(function() {
+      this.$modal.confirm('是否确认删除出库编号为"' + ids + '"的数据项？').then(function () {
         return delExWarehouse(ids);
       }).then(() => {
         this.getList();
         this.$modal.msgSuccess("删除成功");
-      }).catch(() => {});
+      }).catch(() => {
+      });
     },
     /** 导出按钮操作 */
     handleExport() {

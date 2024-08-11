@@ -23,9 +23,10 @@ const getters = {
   tempLendMoneyList: state => state.money.tempLendMoneyList,
   //资金收回
   tempRecoverMoneyList: state => state.money.tempRecoverMoneyList,
-  //订单列表
+  //订单详情列表
   orderItemList: state => state.order.orderItemList,
-
+  //订单列表
+  orderList: state => state.order.orderList,
   //平账信息
   tempbalanceaccountsList: state => state.balanceaccounts.balanceaccountsList,
   //固定资产信息

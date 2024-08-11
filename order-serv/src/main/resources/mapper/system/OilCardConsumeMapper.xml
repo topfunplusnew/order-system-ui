@@ -26,12 +26,44 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
     </resultMap>
 
 
- 
 
     <sql id="selectOilCardConsumeVo">
-        select id, bTripId, oilCardNo, useDate, carNo, startCardSurplus, refuelingNumber, unitPrice, refuelingMoney, rechargeMoney, endCardSurplus, attachmentOiladd, comments, addtime, userId, UserName, update_time, delFlag from OilCardConsume
+        select
+            OCC.id,
+            OCC.bTripId,
+            OCC.oilCardNo,
+            OCC.useDdate,
+            OCC.carNo,
+            OCC.refuelingNumber,
+            OCC.unitPrice,
+            OCC.refuelingMoney,
+            OCC.rechargeMoney,
+            OCC.endCardSurplus,
+            OCC.attachmentOiladd,
+            OCC.comments,
+            OCC.addtime,
+            OCC.userId,
+            OCC.UserName,
+            OCC.update_time,
+            OCC.delFlag,
+            CASE
+                WHEN pa.checkState = '通过' THEN p.paymentState
+                ELSE COALESCE(pa.checkState, '未申请')
+                END as checkState
+        from
+            OilCardConsume OCC
+                left join
+            paymentApply pa
+            on
+                pa.tableName = 'lendmoney'
+                    and pa.tID = l.id
+                    and (pa.checkState = '审核中' or pa.checkState = '通过')
+                left join
+            payment p
+            on
+                p.applyId = pa.id
+                    and p.delFlag = 0
     </sql>
-
     <select id="selectOilCardConsumeList" parameterType="OilCardConsume" resultMap="OilCardConsumeResult">
         <include refid="selectOilCardConsumeVo"/>
         <where>  
@@ -140,4 +172,11 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         FROM oilCardConsume
         WHERE oilCardNo = #{oilCardNo}
     </select>
+    <select id="existsByTripId" resultType="boolean">
+        SELECT COUNT(*) > 0
+        FROM oil_recharge
+        WHERE bTripId = #{bTripId}
+    </select>
+
+
 </mapper>

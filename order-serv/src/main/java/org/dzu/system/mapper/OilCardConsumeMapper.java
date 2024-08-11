@@ -68,4 +68,5 @@ public interface OilCardConsumeMapper extends BaseMapper<OilCardConsume>
      */
     public Double getrefuelingMoney(String oilCardNo);
 
+   public boolean existsByTripId(String bTripId);
 }
