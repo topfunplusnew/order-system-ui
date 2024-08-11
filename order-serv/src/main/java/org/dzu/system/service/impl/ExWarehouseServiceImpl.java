@@ -178,11 +178,10 @@ public class ExWarehouseServiceImpl implements IExWarehouseService
         exWarehouse.setOutAmount(outAmount);
         exWarehouse.setOutDate(outDate);
         exWarehouse.setStoreID(InventoryId);
+        exWarehouse.setStoreHouseName(inventory.getStoreHouseName());
 
         insertExWarehouse(exWarehouse);
     }
-
-
 
     private void InventoryToBack(Long InventoryId, Long outAmount) {
         Inventory inventory = inventoryMapper.selectInventoryById(InventoryId);
