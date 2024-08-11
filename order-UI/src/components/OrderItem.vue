@@ -59,6 +59,9 @@ export default {
       //出库日期
       // exWarehouseDate: ''
 
+      //库存
+      currentStockNumber: ''
+
     }
   },
   // 思路  先通过计算属性，拿到属性，渲染到页面 因为计算属性是响应式的 在给计算属性赋值时 提醒父组件改变传递的item对象
@@ -354,6 +357,15 @@ export default {
     }
   },
   watch: {
+    //出厂片数
+    pieces: {
+      handler(val) {
+        if (val > this.currentStockNumber) {
+          this.$message.error("出厂片数不能大于库存量!");
+          this.pieces = this.currentStockNumber;
+        }
+      }
+    },
     //出厂是否含税
     isIncludeTaxFactory: {
       handler(val) {
@@ -378,7 +390,6 @@ export default {
         //如果不是仓库发货
         if (this.storeHouseName === undefined) {
           //是否含税 厂家否 客户否
-          //todo 保留两位小数
           if (this.Tax === '00') {
             //出厂贷款
             this.paymentFactory = fix(this.length * this.width * this.pieces / 1000000 * this.price + this.sundryCost)
@@ -392,7 +403,20 @@ export default {
             this.profit = fix(this.payments - this.paymentFactory - this.landFreight)
             //不含税利润
             this.profitNoTax = fix(this.payments - this.paymentFactory - this.landFreight - this.otherCost)
+
+            //出厂含税客户不含税
+          } else if (this.Tax === '10') {
+            //出厂不含税客户含税
+          } else if (this.Tax === '01') {
+
+            //都含税
+          } else {
+
           }
+
+          //如果仓库发货 根据出厂片数自动计算
+        } else {
+
         }
       },
       deep: true
@@ -456,8 +480,8 @@ export default {
       this.levelID = row.levelID;
 
       //出厂片数让用户自己填
-      this.pieces = ''
-
+      this.pieces = row.stockNumber;
+      this.currentStockNumber = row.stockNumber;//暂存
       this.storeInfoDialogVisible = false;
     },
     //产品级别确认
