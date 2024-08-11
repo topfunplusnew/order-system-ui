@@ -95,6 +95,29 @@ public class RecoverMoney extends BaseEntity {
     @TableField("delFlag")
     private Long delFlag;
 
+
+    /** 额外字段,开始时间*/
+    @TableField(exist = false)
+    private String startTime;
+
+    /** 额外字段,结束时间*/
+    private String endTime;
+
+    public String getStartTime() {
+        return startTime;
+    }
+
+    public void setStartTime(String startTime) {
+        this.startTime = startTime;
+    }
+
+    public String getEndTime() {
+        return endTime;
+    }
+
+    public void setEndTime(String endTime) {
+        this.endTime = endTime;
+    }
     public void setId(Long id)
     {
         this.id = id;

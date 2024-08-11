@@ -39,11 +39,8 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
 
     <select id="selectBankAcceptanceList" parameterType="BankAcceptance" resultMap="BankAcceptanceResult">
         <include refid="selectBankAcceptanceVo"/>
-        <where>  
-            <if test="operateDate != null  and operateDate != ''"> and operateDate = #{operateDate}</if>
+        <where>
             <if test="billNo != null  and billNo != ''"> and billNo = #{billNo}</if>
-            <if test="issueDate != null  and issueDate != ''"> and issueDate = #{issueDate}</if>
-            <if test="dueDate != null  and dueDate != ''"> and dueDate = #{dueDate}</if>
             <if test="billAccount != null  and billAccount != ''"> and billAccount = #{billAccount}</if>
             <if test="billDate != null  and billDate != ''"> and billDate = #{billDate}</if>
             <if test="billType != null  and billType != ''"> and billType = #{billType}</if>
@@ -60,10 +57,18 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
             <if test="addtime != null  and addtime != ''"> and addtime = #{addtime}</if>
             <if test="userId != null "> and userId = #{userId}</if>
             <if test="UserName != null  and UserName != ''"> and UserName like concat('%', #{UserName}, '%')</if>
+
+            <!-- Time range conditions -->
+            <if test="dueDateStart != null and dueDateStart != ''"> and dueDate &gt;= #{dueDateStart}</if>
+            <if test="dueDateEnd != null and dueDateEnd != ''"> and dueDate &lt;= #{dueDateEnd}</if>
+            <if test="issueDateStart != null and issueDateStart != ''"> and issueDate &gt;= #{issueDateStart}</if>
+            <if test="issueDateEnd != null and issueDateEnd != ''"> and issueDate &lt;= #{issueDateEnd}</if>
+            <if test="operateDateStart != null and operateDateStart != ''"> and operateDate &gt;= #{operateDateStart}</if>
+            <if test="operateDateEnd != null and operateDateEnd != ''"> and operateDate &lt;= #{operateDateEnd}</if>
+
             and delFlag = 0
         </where>
     </select>
-    
     <select id="selectBankAcceptanceById" parameterType="Long" resultMap="BankAcceptanceResult">
         <include refid="selectBankAcceptanceVo"/>
         where id = #{id}

@@ -41,7 +41,12 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         <include refid="selectReceiveMoneyVo"/>
         <where>  
             <if test="receiveNO != null  and receiveNO != ''"> and receiveNO = #{receiveNO}</if>
-            <if test="fundsDate != null  and fundsDate != ''"> and fundsDate = #{fundsDate}</if>
+            <if test="startTime != null and startTime != ''">
+                and fundsDate &gt;= #{startTime}
+            </if>
+            <if test="endTime != null and endTime != ''">
+                and fundsDate &lt;= #{endTime}
+            </if>
             <if test="receiveType != null  and receiveType != ''"> and receiveType = #{receiveType}</if>
             <if test="tableName != null  and tableName != ''"> and tableName like concat('%', #{tableName}, '%')</if>
             <if test="tID != null  and tID != ''"> and tID = #{tID}</if>

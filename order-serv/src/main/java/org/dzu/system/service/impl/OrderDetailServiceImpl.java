@@ -117,9 +117,14 @@ public class OrderDetailServiceImpl implements IOrderDetailService {
                 throw new ServiceException("获取对应仓库的存货信息异常，请刷新页面后重试");
             } else {
                 // 存货二次判断+联动修改
+
+                // 先判断下pieces是不是null
+                if(StringUtils.isNull(orderDetail.getPieces())){
+                    throw new ServiceException("请填写数量后重试");
+                }
                 if (inventory.getStockNumber() > 0 && orderDetail.getPieces() <= inventory.getStockNumber()) {
                     // 仓库存货足够
-                    exWarehouseService.InventoryToEx(orderDetail.getStoreID(), orderDetail.getPieces(), orderDetail.getOrdersNo(), orderDetail.getAddtime());
+                    exWarehouseService.InventoryToEx(orderDetail.getStoreID(), orderDetail.getPieces(), orderDetail.getOrdersNo(), orderDetail.getExWarehouseDate());
                 } else {
                     throw new ServiceException("仓库存货不足，请检查后重试");
                 }

@@ -368,6 +368,22 @@ public class OrderDetail extends BaseEntity {
     @TableField(value = "UserName")
     private String UserName;
 
+    public String getExWarehouseDate() {
+        return exWarehouseDate;
+    }
+
+    public void setExWarehouseDate(String exWarehouseDate) {
+        this.exWarehouseDate = exWarehouseDate;
+    }
+
+    /**
+     * 额外的字段,用来传递给出库信息,出库日期
+     * 只有仓库发货的情况下才有值
+     * @param id
+     */
+    @TableField(exist = false)
+    private String exWarehouseDate;
+
     public void setId(Long id) {
         this.id = id;
     }
