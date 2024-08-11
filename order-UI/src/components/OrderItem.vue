@@ -254,6 +254,9 @@ export default {
         return this.orderItemInfo.seaFreight;
       }
     },
+
+
+    //总运费 逻辑是 没有海运费 就是陆运费 如果有则二者之和
     freight: {
       set(val) {
         this.$emit('changeOrderItemInfo', {...this.orderItemInfo, freight: val});
@@ -362,13 +365,13 @@ export default {
       return fix(this.length * this.width * this.pieces / 1000000 * this.price + Number(this.sundryCost))
     },
     payments00() {
-      return fix(this.length * this.width * this.outPieces / 1000000 * this.paymentUnload + this.paymentsWithSundry);
+      return fix(this.length * this.width * this.outPieces / 1000000 * this.paymentUnload + Number(this.paymentsWithSundry));
     },
     tonnage00() {
       return fix((this.height - this.erro) * this.length * this.pieces / 1000000 / 20 / 20);
     },
     landFreight00() {
-      return fix(this.tonnage * this.landFreightPrice + this.additionalFees);
+      return fix(this.tonnage * this.landFreightPrice + Number(this.additionalFees));
     },
     profit00() {
       return fix(this.payments - this.paymentFactory - this.landFreight);
@@ -387,7 +390,7 @@ export default {
       return fix((this.height - this.erro) * this.length * this.width * this.pieces / 1000000 / 20 / 20)
     },
     landFreight10() {
-      return fix(this.tonnage * this.landFreightPrice + this.additionalFees)
+      return fix(this.tonnage * this.landFreightPrice + Number(this.additionalFees))
     },
     profit10() {
       return fix(this.payments - this.paymentFactory - this.landFreight)
@@ -426,7 +429,7 @@ export default {
       return fix((this.height - this.erro) * this.length * this.width * this.pieces / 1000000 / 20 / 20)
     },
     landFreight11() {
-      return fix(this.tonnage * this.landFreightPrice + this.additionalFees)
+      return fix(this.tonnage * this.landFreightPrice + Number(this.additionalFees))
     },
     profit11() {
       return fix(this.payments - this.paymentFactory - this.landFreight)
@@ -436,7 +439,14 @@ export default {
     },
   },
   watch: {
-
+    //如果不选海运
+    isSea: {
+      handler(val) {
+        if (val === false) {
+          this.seaFreight = 0;
+        }
+      }
+    },
     //出厂是否含税
     isIncludeTaxFactory: {
       handler(val) {
@@ -499,6 +509,12 @@ export default {
             this.profitNoTax = this.profitNoTax11
           }
         }
+        //运费自动填充
+        if (this.seaFreight === undefined) {
+          this.freight = Number(this.landFreight);
+        } else {
+          this.freight = Number(this.landFreight) + Number(this.seaFreight);
+        }
       },
       deep: true
     },
@@ -545,6 +561,15 @@ export default {
         }
       }
     },
+    // seaFreight: {
+    //   handler(val) {
+    //     if (this.seaFreight !== '') {
+    //       return Number(this.orderItemInfo.freight) + Number(this.seaFreight);
+    //     } else {
+    //       return this.landFreight;
+    //     }
+    //   }
+    // }
   }
   ,
   methods: {
@@ -832,6 +857,7 @@ export default {
         <hr/>
         <el-input type="text" placeholder="海运费" v-model="seaFreight"></el-input>
       </div>
+
       <div class="order-item">
         <span class="text-bold">总运费</span>
         <hr/>

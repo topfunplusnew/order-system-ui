@@ -495,7 +495,7 @@
       <!--      添加订单 传递本组件的orderInfo信息 -->
       <OrderForm :orderInfo="orderInfo" @updateOrderInfo="handleChangeOrderInfo"/>
       <span slot="footer" class="dialog-footer">
-    <el-button @click="addOrderItemVisible = false">取 消</el-button>
+    <el-button @click="cancelSubmit">取 消</el-button>
     <el-button type="primary" @click="submitOrder">添加订单</el-button>
   </span>
     </el-dialog>
@@ -801,6 +801,10 @@ export default {
     ...mapGetters(['orderList'])
   },
   methods: {
+    cancelSubmit() {
+      this.orderInfo = {};
+      this.addOrderItemVisible = false
+    },
     //时间查询
     handleTimesQuery() {
       //重新赋值
@@ -960,7 +964,7 @@ export default {
       }
       //添加订单 转化时间戳
       const date = this.orderInfo.orderDate.getTime();
-      addGoodsOrder({...this.orderInfo, orderDate: date}).then(res => {
+      addGoodsOrder({...this.orderInfo, orderDate: date, PaymentState: ''}).then(res => {
         this.$message.success('订单提交成功')
       }).catch(err => {
         this.$message.error('订单提交失败' + err.msg)
