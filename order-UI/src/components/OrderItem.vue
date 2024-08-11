@@ -55,7 +55,9 @@ export default {
       storeID: '',
 
       //卸货片数
-      outPieces: 0
+      outPieces: 0,
+      //出库日期
+      // exWarehouseDate: ''
 
     }
   },
@@ -338,6 +340,17 @@ export default {
       get() {
         return this.isIncludeTaxFactory + this.isIncludeTaxSale;
       }
+    },
+    //出库日期
+    exWarehouseDate: {
+      set(val) {
+        if (val) {
+          this.$emit('changeOrderItemInfo', {...this.orderItemInfo, exWarehouseDate: val.getTime() + ''});
+        }
+      },
+      get() {
+        return this.orderItemInfo.exWarehouseDate;
+      }
     }
   },
   watch: {
@@ -534,6 +547,15 @@ export default {
         <el-input type="text" placeholder="请输入产品级别" v-model="levelName"></el-input>
         <el-button type="primary" size="mini" icon="el-icon-search" circle
                    @click="searchProductLevelInfo"></el-button>
+      </div>
+      <div class="order-item" v-if="storeName">
+        <span class="text-bold">出库日期</span>
+        <hr/>
+        <el-date-picker
+          v-model="exWarehouseDate"
+          type="date"
+          placeholder="选择日期">
+        </el-date-picker>
       </div>
       <div class="order-item">
         <span class="text-bold">计量单位</span>
