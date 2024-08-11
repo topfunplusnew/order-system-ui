@@ -481,9 +481,19 @@ public class GoodsOrderServiceImpl implements IGoodsOrderService {
             goodsOrder.getOrderDetailList().forEach(
                     item -> {
                         // 计算陆运费和海运费
+                        // 获取item的对应运费时,需要先判断是不是null
+                        if(item.getLandFreight() == null){
+                            item.setLandFreight(Double.valueOf(0));
+                        }
                         goodsOrder.setLandFreight(goodsOrder.getLandFreight() + item.getLandFreight());
+                        if(item.getSeaFreight() == null){
+                            item.setSeaFreight(Double.valueOf(0));
+                        }
                         goodsOrder.setSeaFreight(goodsOrder.getSeaFreight() + item.getSeaFreight());
                         // 设置总货款
+                        if(item.getPayments() == null){
+                            item.setPayments(Double.valueOf(0));
+                        }
                         goodsOrder.setAllPayments(goodsOrder.getAllPayments() + item.getPayments());
 
                         // 有的订单可能没有供应商，而是仓库发货
