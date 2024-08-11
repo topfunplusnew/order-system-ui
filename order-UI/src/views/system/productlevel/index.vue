@@ -405,11 +405,15 @@ export default {
       this.addDictInfo.dictValue = this.tempCategoryInfo.levelNo;
       addData(this.addDictInfo).then(res => {
         this.$message.success("添加成功~")
+        location.reload()
         this.addCategoryOpen = false
       }).catch(err => {
         this.$message.error("添加失败，请重试:" + err.msg)
       })
+      //重新抓取信息
+      this.addCategoryOpen = false;
     },
+
     //获取产品分类
     getCategoryList() {
 

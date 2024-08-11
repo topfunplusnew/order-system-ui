@@ -1,42 +1,24 @@
 <template>
   <div class="app-container">
     <el-form :model="queryParams" ref="queryForm" size="small" :inline="true" v-show="showSearch" label-width="68px">
-      <el-form-item label="开票日期" prop="invoiceDate">
-        <el-input
-          v-model="queryParams.invoiceDate"
-          placeholder="请输入开票日期"
-          clearable
-          @keyup.enter.native="handleQuery"
-        />
+      <el-form-item label="开始时间" prop="beginTime">
+        <el-date-picker
+          v-model="beginTime"
+          type="date"
+          placeholder="选择日期">
+        </el-date-picker>
       </el-form-item>
-      <el-form-item label="我方开票实体" prop="invoiceObject">
-        <el-input
-          v-model="queryParams.invoiceObject"
-          placeholder="请输入我方开票实体"
-          clearable
-          @keyup.enter.native="handleQuery"
-        />
-      </el-form-item>
-      <el-form-item label="开票金额" prop="invoiceAmount">
-        <el-input
-          v-model="queryParams.invoiceAmount"
-          placeholder="请输入开票金额"
-          clearable
-          @keyup.enter.native="handleQuery"
-        />
+      <el-form-item label="结束时间" prop="endTime">
+        <el-date-picker
+          v-model="endTime"
+          type="date"
+          placeholder="选择日期">
+        </el-date-picker>
       </el-form-item>
       <el-form-item label="公司名称" prop="companyName">
         <el-input
           v-model="queryParams.companyName"
           placeholder="请输入公司名称"
-          clearable
-          @keyup.enter.native="handleQuery"
-        />
-      </el-form-item>
-      <el-form-item label="公司ID" prop="companyID">
-        <el-input
-          v-model="queryParams.companyID"
-          placeholder="请输入公司ID"
           clearable
           @keyup.enter.native="handleQuery"
         />
@@ -49,77 +31,15 @@
           @keyup.enter.native="handleQuery"
         />
       </el-form-item>
-      <el-form-item label="票点" prop="ticketPoint">
-        <el-input
-          v-model="queryParams.ticketPoint"
-          placeholder="请输入票点"
-          clearable
-          @keyup.enter.native="handleQuery"
-        />
-      </el-form-item>
-      <el-form-item label="票点金额" prop="ticketPointAmount">
-        <el-input
-          v-model="queryParams.ticketPointAmount"
-          placeholder="请输入票点金额"
-          clearable
-          @keyup.enter.native="handleQuery"
-        />
-      </el-form-item>
-      <el-form-item label="是否订单对应票点" prop="isOrderTax">
-        <el-input
-          v-model="queryParams.isOrderTax"
-          placeholder="请输入是否订单对应票点"
-          clearable
-          @keyup.enter.native="handleQuery"
-        />
-      </el-form-item>
-      <el-form-item label="备注" prop="comments">
-        <el-input
-          v-model="queryParams.comments"
-          placeholder="请输入备注"
-          clearable
-          @keyup.enter.native="handleQuery"
-        />
-      </el-form-item>
-      <el-form-item label="添加时间" prop="addtime">
-        <el-input
-          v-model="queryParams.addtime"
-          placeholder="请输入添加时间"
-          clearable
-          @keyup.enter.native="handleQuery"
-        />
-      </el-form-item>
-      <el-form-item label="操作人员ID" prop="userId">
-        <el-input
-          v-model="queryParams.userId"
-          placeholder="请输入操作人员ID"
-          clearable
-          @keyup.enter.native="handleQuery"
-        />
-      </el-form-item>
-      <el-form-item label="操作人员姓名" prop="UserName">
-        <el-input
-          v-model="queryParams.UserName"
-          placeholder="请输入操作人员姓名"
-          clearable
-          @keyup.enter.native="handleQuery"
-        />
-      </el-form-item>
-      <el-form-item label="删除标记" prop="delFlag">
-        <el-input
-          v-model="queryParams.delFlag"
-          placeholder="请输入删除标记"
-          clearable
-          @keyup.enter.native="handleQuery"
-        />
-      </el-form-item>
       <el-form-item>
-        <el-button type="primary" icon="el-icon-search" size="mini" @click="handleQuery">搜索</el-button>
-        <el-button icon="el-icon-refresh" size="mini" @click="resetQuery">重置</el-button>
+        <el-button type="primary" icon="el-icon-search" size="mini" @click="handleTimesQuery">搜索</el-button>
       </el-form-item>
     </el-form>
 
     <el-row :gutter="10" class="mb8">
+      <el-col :span="1.5">
+        <el-button icon="el-icon-refresh" size="mini" @click="resetQuery">刷新</el-button>
+      </el-col>
       <el-col :span="1.5">
         <el-button
           type="primary"
@@ -128,61 +48,49 @@
           size="mini"
           @click="handleAdd"
           v-hasPermi="['system:invoiceout:add']"
-        >新增</el-button>
+        >新增票点信息
+        </el-button>
       </el-col>
-      <el-col :span="1.5">
-        <el-button
-          type="success"
-          plain
-          icon="el-icon-edit"
-          size="mini"
-          :disabled="single"
-          @click="handleUpdate"
-          v-hasPermi="['system:invoiceout:edit']"
-        >修改</el-button>
-      </el-col>
-      <el-col :span="1.5">
-        <el-button
-          type="danger"
-          plain
-          icon="el-icon-delete"
-          size="mini"
-          :disabled="multiple"
-          @click="handleDelete"
-          v-hasPermi="['system:invoiceout:remove']"
-        >删除</el-button>
-      </el-col>
-      <el-col :span="1.5">
-        <el-button
-          type="warning"
-          plain
-          icon="el-icon-download"
-          size="mini"
-          @click="handleExport"
-          v-hasPermi="['system:invoiceout:export']"
-        >导出</el-button>
-      </el-col>
-      <right-toolbar :showSearch.sync="showSearch" @queryTable="getList"></right-toolbar>
+      <right-toolbar :showSearch.sync="showSearch" @queryTable="getList" :columns="columns">
+        <template v-slot:print>
+          <el-col :span="1.5">
+            <el-button
+              plain
+              icon="el-icon-printer"
+              size="mini"
+              @click="printHTML"
+            >
+            </el-button>
+          </el-col>
+        </template>
+        <!--        导出-->
+        <template v-slot:export>
+          <el-col :span="1.5">
+            <el-button
+              plain
+              icon="el-icon-folder-opened"
+              size="mini"
+              @click="handleExport"
+              v-hasPermi="['system:bankaccount:export']"
+            >
+            </el-button>
+          </el-col>
+        </template>
+      </right-toolbar>
     </el-row>
 
-    <el-table v-loading="loading" :data="invoiceOutList" @selection-change="handleSelectionChange">
-      <el-table-column type="selection" width="55" align="center" />
-      <el-table-column label="id" align="center" prop="id" />
-      <el-table-column label="开票日期" align="center" prop="invoiceDate" />
-      <el-table-column label="我方开票实体" align="center" prop="invoiceObject" />
-      <el-table-column label="开票金额" align="center" prop="invoiceAmount" />
-      <el-table-column label="公司类别" align="center" prop="companyType" />
-      <el-table-column label="公司名称" align="center" prop="companyName" />
-      <el-table-column label="公司ID" align="center" prop="companyID" />
-      <el-table-column label="票据单位名称" align="center" prop="invoiceCompanyName" />
-      <el-table-column label="票点" align="center" prop="ticketPoint" />
-      <el-table-column label="票点金额" align="center" prop="ticketPointAmount" />
-      <el-table-column label="是否订单对应票点" align="center" prop="isOrderTax" />
-      <el-table-column label="备注" align="center" prop="comments" />
-      <el-table-column label="添加时间" align="center" prop="addtime" />
-      <el-table-column label="操作人员ID" align="center" prop="userId" />
-      <el-table-column label="操作人员姓名" align="center" prop="UserName" />
-      <el-table-column label="删除标记" align="center" prop="delFlag" />
+    <el-table border v-loading="loading" :data="invoiceOutList" @selection-change="handleSelectionChange" id="printBox">
+      <el-table-column label="开票日期" align="center" prop="invoiceDate"/>
+      <el-table-column label="我方开票实体" align="center" prop="invoiceObject"/>
+      <el-table-column label="开票金额" align="center" prop="invoiceAmount"/>
+      <el-table-column label="公司类别" align="center" prop="companyType"/>
+      <el-table-column label="公司名称" align="center" prop="companyName"/>
+      <!--      <el-table-column label="公司ID" align="center" prop="companyID"/>-->
+      <el-table-column label="票据单位名称" align="center" prop="invoiceCompanyName"/>
+      <el-table-column label="票点" align="center" prop="ticketPoint"/>
+      <el-table-column label="票点金额" align="center" prop="ticketPointAmount"/>
+      <el-table-column label="是否订单对应票点" align="center" prop="isOrderTax"/>
+      <el-table-column label="备注" align="center" prop="comments"/>
       <el-table-column label="操作" align="center" class-name="small-padding fixed-width">
         <template slot-scope="scope">
           <el-button
@@ -191,18 +99,20 @@
             icon="el-icon-edit"
             @click="handleUpdate(scope.row)"
             v-hasPermi="['system:invoiceout:edit']"
-          >修改</el-button>
+          >修改
+          </el-button>
           <el-button
             size="mini"
             type="text"
             icon="el-icon-delete"
             @click="handleDelete(scope.row)"
             v-hasPermi="['system:invoiceout:remove']"
-          >删除</el-button>
+          >删除
+          </el-button>
         </template>
       </el-table-column>
     </el-table>
-    
+
     <pagination
       v-show="total>0"
       :total="total"
@@ -215,46 +125,34 @@
     <el-dialog :title="title" :visible.sync="open" width="500px" append-to-body>
       <el-form ref="form" :model="form" :rules="rules" label-width="80px">
         <el-form-item label="开票日期" prop="invoiceDate">
-          <el-input v-model="form.invoiceDate" placeholder="请输入开票日期" />
+          <el-input v-model="form.invoiceDate" placeholder="请输入开票日期"/>
         </el-form-item>
         <el-form-item label="我方开票实体" prop="invoiceObject">
-          <el-input v-model="form.invoiceObject" placeholder="请输入我方开票实体" />
+          <el-input v-model="form.invoiceObject" placeholder="请输入我方开票实体"/>
         </el-form-item>
         <el-form-item label="开票金额" prop="invoiceAmount">
-          <el-input v-model="form.invoiceAmount" placeholder="请输入开票金额" />
+          <el-input v-model="form.invoiceAmount" placeholder="请输入开票金额"/>
         </el-form-item>
         <el-form-item label="公司名称" prop="companyName">
-          <el-input v-model="form.companyName" placeholder="请输入公司名称" />
+          <el-input v-model="form.companyName" placeholder="请输入公司名称"/>
         </el-form-item>
-        <el-form-item label="公司ID" prop="companyID">
-          <el-input v-model="form.companyID" placeholder="请输入公司ID" />
-        </el-form-item>
+        <!--        <el-form-item label="公司ID" prop="companyID">-->
+        <!--          <el-input v-model="form.companyID" placeholder="请输入公司ID"/>-->
+        <!--        </el-form-item>-->
         <el-form-item label="票据单位名称" prop="invoiceCompanyName">
-          <el-input v-model="form.invoiceCompanyName" placeholder="请输入票据单位名称" />
+          <el-input v-model="form.invoiceCompanyName" placeholder="请输入票据单位名称"/>
         </el-form-item>
         <el-form-item label="票点" prop="ticketPoint">
-          <el-input v-model="form.ticketPoint" placeholder="请输入票点" />
+          <el-input v-model="form.ticketPoint" placeholder="请输入票点"/>
         </el-form-item>
         <el-form-item label="票点金额" prop="ticketPointAmount">
-          <el-input v-model="form.ticketPointAmount" placeholder="请输入票点金额" />
+          <el-input v-model="form.ticketPointAmount" placeholder="请输入票点金额"/>
         </el-form-item>
         <el-form-item label="是否订单对应票点" prop="isOrderTax">
-          <el-input v-model="form.isOrderTax" placeholder="请输入是否订单对应票点" />
+          <el-input v-model="form.isOrderTax" placeholder="请输入是否订单对应票点"/>
         </el-form-item>
         <el-form-item label="备注" prop="comments">
-          <el-input v-model="form.comments" placeholder="请输入备注" />
-        </el-form-item>
-        <el-form-item label="添加时间" prop="addtime">
-          <el-input v-model="form.addtime" placeholder="请输入添加时间" />
-        </el-form-item>
-        <el-form-item label="操作人员ID" prop="userId">
-          <el-input v-model="form.userId" placeholder="请输入操作人员ID" />
-        </el-form-item>
-        <el-form-item label="操作人员姓名" prop="UserName">
-          <el-input v-model="form.UserName" placeholder="请输入操作人员姓名" />
-        </el-form-item>
-        <el-form-item label="删除标记" prop="delFlag">
-          <el-input v-model="form.delFlag" placeholder="请输入删除标记" />
+          <el-input v-model="form.comments" placeholder="请输入备注"/>
         </el-form-item>
       </el-form>
       <div slot="footer" class="dialog-footer">
@@ -266,10 +164,13 @@
 </template>
 
 <script>
-import { listInvoiceOut, getInvoiceOut, delInvoiceOut, addInvoiceOut, updateInvoiceOut } from "@/api/system/invoiceOut";
+import {listInvoiceOut, getInvoiceOut, delInvoiceOut, addInvoiceOut, updateInvoiceOut} from "@/api/system/invoiceOut";
+import {mixin_printHTML} from "@/views/dashboard/mixins/print";
+import {excludeParams} from "@/api/tool/exclude";
 
 export default {
   name: "InvoiceOut",
+  mixins: [mixin_printHTML],
   data() {
     return {
       // 遮罩层
@@ -313,18 +214,34 @@ export default {
       // 表单参数
       form: {},
       // 表单校验
-      rules: {
-      }
+      rules: {},
+      columns: [
+        {key: 0, label: `账户类型`, visible: true},
+        {key: 1, label: `开户名称`, visible: true},
+        {key: 2, label: `账号(银行卡号)`, visible: true},
+        {key: 3, label: `开户行`, visible: true},
+        {key: 4, label: `公司名称`, visible: true}
+      ],
+      beginTime: '',
+      endTime: ''
     };
   },
   created() {
     this.getList();
   },
   methods: {
+    handleTimesQuery() {
+      listInvoiceOut({
+        ...this.queryParams, beginTime: this.beginTime.getTime(),
+        endTime: this.endTime.getTime()
+      }).then(res => {
+        console.log(res)
+      })
+    },
     /** 查询发票卖出信息列表 */
     getList() {
       this.loading = true;
-      listInvoiceOut(this.queryParams).then(response => {
+      listInvoiceOut(this.queryParams,).then(response => {
         this.invoiceOutList = response.rows;
         this.total = response.total;
         this.loading = false;
@@ -371,7 +288,7 @@ export default {
     // 多选框选中数据
     handleSelectionChange(selection) {
       this.ids = selection.map(item => item.id)
-      this.single = selection.length!==1
+      this.single = selection.length !== 1
       this.multiple = !selection.length
     },
     /** 新增按钮操作 */
@@ -395,12 +312,14 @@ export default {
       this.$refs["form"].validate(valid => {
         if (valid) {
           if (this.form.id != null) {
+            this.form = excludeParams(this.form, this.$exclude)
             updateInvoiceOut(this.form).then(response => {
               this.$modal.msgSuccess("修改成功");
               this.open = false;
               this.getList();
             });
           } else {
+            this.form = excludeParams(this.form, this.$exclude)
             addInvoiceOut(this.form).then(response => {
               this.$modal.msgSuccess("新增成功");
               this.open = false;
@@ -413,12 +332,13 @@ export default {
     /** 删除按钮操作 */
     handleDelete(row) {
       const ids = row.id || this.ids;
-      this.$modal.confirm('是否确认删除发票卖出信息编号为"' + ids + '"的数据项？').then(function() {
+      this.$modal.confirm('是否确认删除发票卖出信息编号为"' + ids + '"的数据项？').then(function () {
         return delInvoiceOut(ids);
       }).then(() => {
         this.getList();
         this.$modal.msgSuccess("删除成功");
-      }).catch(() => {});
+      }).catch(() => {
+      });
     },
     /** 导出按钮操作 */
     handleExport() {

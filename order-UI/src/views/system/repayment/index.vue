@@ -55,9 +55,9 @@
     <el-table border v-loading="loading" :data="repaymentList" @selection-change="handleSelectionChange" id="printBox"
               v-horizontal-scroll="'always'">
       <!--      <el-table-column type="selection" width="55" align="center"/>-->
-      <el-table-column label="id" align="center" prop="id"/>
-      <el-table-column label="贷款编号" align="center" prop="loanNO" v-if="columns[0].visible"/>
-      <el-table-column label="还款编号" align="center" prop="payNO" v-if="columns[1].visible"/>
+      <!--      <el-table-column label="id" align="center" prop="id"/>-->
+      <!--      <el-table-column label="贷款编号" align="center" prop="loanNO" v-if="columns[0].visible"/>-->
+      <!--      <el-table-column label="还款编号" align="center" prop="payNO" v-if="columns[1].visible"/>-->
       <el-table-column label="还款金额" align="center" prop="moneyAmount" v-if="columns[2].visible"/>
       <el-table-column label="付息" align="center" prop="ratio" v-if="columns[3].visible"/>
       <el-table-column label="还款日期" align="center" prop="payDate" v-if="columns[4].visible"/>
@@ -192,8 +192,8 @@ export default {
       // 表单校验
       rules: {},
       columns: [
-        {key: 0, label: `贷款编号`, visible: true},
-        {key: 1, label: `还款编号`, visible: true},
+        // {key: 0, label: `贷款编号`, visible: true},
+        // {key: 1, label: `还款编号`, visible: true},
         {key: 2, label: `还款金额`, visible: true},
         {key: 3, label: `付息`, visible: true},
         {key: 4, label: `还款日期`, visible: true},

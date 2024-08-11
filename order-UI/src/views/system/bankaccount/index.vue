@@ -114,7 +114,7 @@
     <el-table border v-loading="loading" :data="bankAccountList" @selection-change="handleSelectionChange" id="printBox"
               height="300px" v-horizontal-scroll="'always'">
       <!--      <el-table-column type="selection" width="55" align="center"/>-->
-      <el-table-column label="id" align="center" prop="id"/>
+      <!--      <el-table-column label="id" align="center" prop="id"/>-->
       <el-table-column label="账户类型" align="center" prop="acountsType" v-if="columns[0].visible"/>
       <el-table-column label="开户名称(户名)" align="center" prop="acountsName" v-if="columns[1].visible"/>
       <el-table-column label="账号(银行账号)" align="center" prop="bankNo" v-if="columns[2].visible"/>

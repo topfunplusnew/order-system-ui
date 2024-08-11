@@ -35,6 +35,9 @@
       <el-col :span="1.5">
         <el-button icon="el-icon-refresh" size="mini" @click="resetQuery">刷新</el-button>
       </el-col>
+      <el-col :span="1.5">
+        <el-button type="danger" icon="el-icon-refresh" size="mini" @click="addSocial">新增社保基金信息</el-button>
+      </el-col>
       <right-toolbar :showSearch.sync="showSearch" @queryTable="getList" :columns="columns">
         <template v-slot:print>
           <el-col :span="1.5">
@@ -144,10 +147,12 @@
           <el-input v-model="form.insuranceDate" placeholder="请输入缴费时间"/>
         </el-form-item>
         <el-form-item label="是否增员" prop="isRecruiting">
-          <el-input v-model="form.isRecruiting" placeholder="请输入是否增员"/>
+          <el-radio v-model="form.isRecruiting" label="是">是</el-radio>
+          <el-radio v-model="form.isRecruiting" label="否">否</el-radio>
         </el-form-item>
         <el-form-item label="是否减员" prop="isDepletion">
-          <el-input v-model="form.isDepletion" placeholder="请输入是否减员"/>
+          <el-radio v-model="form.isDepletion" label="是">是</el-radio>
+          <el-radio v-model="form.isDepletion" label="否">否</el-radio>
         </el-form-item>
         <el-form-item label="基本医疗保险-个人" prop="healthySecuritySelf">
           <el-input v-model="form.healthySecuritySelf" placeholder="请输入基本医疗保险-个人"/>
@@ -295,6 +300,10 @@ export default {
     this.getList();
   },
   methods: {
+    addSocial() {
+      this.open = true;
+      this.reset()
+    },
     printHTML() {
       this.$print({
         printable: 'printBox',
