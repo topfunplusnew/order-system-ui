@@ -348,7 +348,7 @@ export default {
     exWarehouseDate: {
       set(val) {
         if (val) {
-          this.$emit('changeOrderItemInfo', {...this.orderItemInfo, exWarehouseDate: val.getTime() + ''});
+          this.$emit('changeOrderItemInfo', {...this.orderItemInfo, exWarehouseDate: val.getTime()});
         }
       },
       get() {
