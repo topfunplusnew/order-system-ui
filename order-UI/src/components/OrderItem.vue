@@ -5,6 +5,7 @@ import {listCompany} from "@/api/system/company";
 import {listInventory} from "@/api/system/inventory";
 import {listStoreHouse} from "@/api/system/StoreHouse";
 import {listProductLevel} from "@/api/system/productLevel";
+import {fix} from "@/api/tool/format";
 
 export default {
   name: "OrderItem",
@@ -367,17 +368,17 @@ export default {
           //todo 保留两位小数
           if (this.Tax === '00') {
             //出厂贷款
-            this.paymentFactory = this.length * this.width * this.pieces / 1000000 * this.price + this.sundryCost
+            this.paymentFactory = fix(this.length * this.width * this.pieces / 1000000 * this.price + this.sundryCost)
             //总贷款
-            this.payments = this.length * this.width * this.outPieces / 1000000 * this.paymentUnload + this.paymentsWithSundry
+            this.payments = fix(this.length * this.width * this.outPieces / 1000000 * this.paymentUnload + this.paymentsWithSundry)
             //吨位
-            this.tonnage = (this.height - this.erro) * this.length * this.pieces / 1000000 / 20 / 20
+            this.tonnage = fix((this.height - this.erro) * this.length * this.pieces / 1000000 / 20 / 20)
             //运费
-            this.landFreight = this.tonnage * this.landFreightPrice + this.additionalFees
+            this.landFreight = fix(this.tonnage * this.landFreightPrice + this.additionalFees)
             //利润
-            this.profit = this.payments - this.paymentFactory - this.landFreight
+            this.profit = fix(this.payments - this.paymentFactory - this.landFreight)
             //不含税利润
-            this.profitNoTax = this.payments - this.paymentFactory - this.landFreight - this.otherCost
+            this.profitNoTax = fix(this.payments - this.paymentFactory - this.landFreight - this.otherCost)
           }
         }
       },

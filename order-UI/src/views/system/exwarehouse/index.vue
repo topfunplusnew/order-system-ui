@@ -56,17 +56,17 @@
     </el-form>
 
     <el-row :gutter="10" class="mb8">
-      <el-col :span="1.5">
-        <el-button
-          type="primary"
-          plain
-          icon="el-icon-plus"
-          size="mini"
-          @click="handleAdd"
-          v-hasPermi="['system:exwarehouse:add']"
-        >新增出库信息
-        </el-button>
-      </el-col>
+      <!--      <el-col :span="1.5">-->
+      <!--        <el-button-->
+      <!--          type="primary"-->
+      <!--          plain-->
+      <!--          icon="el-icon-plus"-->
+      <!--          size="mini"-->
+      <!--          @click="handleAdd"-->
+      <!--          v-hasPermi="['system:exwarehouse:add']"-->
+      <!--        >新增出库信息-->
+      <!--        </el-button>-->
+      <!--      </el-col>-->
       <right-toolbar :showSearch.sync="showSearch" @queryTable="getList" :columns="columns">
         <template v-slot:print>
           <el-col :span="1.5">
@@ -109,16 +109,14 @@
           <el-button
             size="mini"
             type="primary"
-            @click="handleUpdate(scope.row)"
-            v-hasPermi="['system:exwarehouse:edit']"
-          >修改
+            @click="checkOrderInfo(scope.row)"
+          >查看订单信息
           </el-button>
           <el-button
             size="mini"
             type="danger"
-            @click="handleDelete(scope.row)"
-            v-hasPermi="['system:exwarehouse:remove']"
-          >删除
+            @click="checkInvoInfo(scope.row)"
+          >查看库存信息
           </el-button>
         </template>
       </el-table-column>
@@ -153,23 +151,68 @@
         <el-form-item label="出库量" prop="outAmount">
           <el-input v-model="form.outAmount" placeholder="请输入出库量"/>
         </el-form-item>
-        <el-form-item label="删除标记" prop="delFlag">
-          <el-input v-model="form.delFlag" placeholder="请输入删除标记"/>
-        </el-form-item>
-        <el-form-item label="添加时间" prop="addtime">
-          <el-input v-model="form.addtime" placeholder="请输入添加时间"/>
-        </el-form-item>
-        <!--        <el-form-item label="操作人员ID" prop="userId">-->
-        <!--          <el-input v-model="form.userId" placeholder="请输入操作人员ID"/>-->
-        <!--        </el-form-item>-->
-        <el-form-item label="操作人员姓名" prop="UserName">
-          <el-input v-model="form.UserName" placeholder="请输入操作人员姓名"/>
-        </el-form-item>
       </el-form>
       <div slot="footer" class="dialog-footer">
         <el-button type="primary" @click="submitForm">确 定</el-button>
         <el-button @click="cancel">取 消</el-button>
       </div>
+    </el-dialog>
+
+
+    <!--    查看订单详情信息-->
+    <el-dialog
+      title="查看订单信息"
+      :visible.sync="checkOrderVisible"
+      width="30%">
+      <el-descriptions title="订单信息" :column="1" border>
+        <el-descriptions-item label="id">{{ orderDetailInfo.id }}</el-descriptions-item>
+        <el-descriptions-item label="日期">{{ orderDetailInfo.orderDate }}</el-descriptions-item>
+        <el-descriptions-item label="客户">{{ orderDetailInfo.customer }}</el-descriptions-item>
+        <el-descriptions-item label="商家姓名">{{ orderDetailInfo.supplierNames }}</el-descriptions-item>
+        <el-descriptions-item label="车队">{{ orderDetailInfo.fleet }}</el-descriptions-item>
+        <el-descriptions-item label="审核状态">
+          <TagsItem :check-info="orderDetailInfo.checkState" checkValue="未审核"/>
+        </el-descriptions-item>
+        <el-descriptions-item label="开票状态">
+          <TagsItem :check-info="orderDetailInfo.invoiceState" checkValue="未开票"/>
+        </el-descriptions-item>
+        <el-descriptions-item label="附件">{{ orderDetailInfo.path }}</el-descriptions-item>
+        <el-descriptions-item label="陆运车牌">{{ orderDetailInfo.landCarNo }}</el-descriptions-item>
+        <el-descriptions-item label="陆运司机电话">{{ orderDetailInfo.landDriverTel }}</el-descriptions-item>
+        <el-descriptions-item label="陆运司机姓名">{{ orderDetailInfo.landDriverName }}</el-descriptions-item>
+        <el-descriptions-item label="海运车牌">{{ orderDetailInfo.seaCarNo }}</el-descriptions-item>
+        <el-descriptions-item label="海运司机电话">{{ orderDetailInfo.seaDriverTel }}</el-descriptions-item>
+        <el-descriptions-item label="海运司机姓名">{{ orderDetailInfo.seaDriverName }}</el-descriptions-item>
+        <el-descriptions-item label="打款状态">{{ orderDetailInfo.PaymentState }}</el-descriptions-item>
+        <el-descriptions-item label="陆运银行户名">{{ orderDetailInfo.landBankName }}</el-descriptions-item>
+        <el-descriptions-item label="陆运银行账号">{{ orderDetailInfo.landBankNo }}</el-descriptions-item>
+        <el-descriptions-item label="海运银行户名">{{ orderDetailInfo.seaBankName }}</el-descriptions-item>
+        <el-descriptions-item label="海运银行账号">{{ orderDetailInfo.seaBankNo }}</el-descriptions-item>
+        <el-descriptions-item label="收到条附件">{{ orderDetailInfo.receiveProof }}</el-descriptions-item>
+        <el-descriptions-item label="是否被调整单">
+          <TagsItem :check-info="orderDetailInfo.isAdjusted " check-value="否"/>
+        </el-descriptions-item>
+        <el-descriptions-item label="调整日期" v-if="orderDetailInfo.isAdjusted">{{
+            orderDetailInfo.adjustDate
+          }}
+        </el-descriptions-item>
+        <el-descriptions-item label="原订单编号">{{ orderDetailInfo.adjustOrderid }}</el-descriptions-item>
+        <el-descriptions-item label="是否可编辑">
+          <TagsItem :check-info="isOrNot(orderDetailInfo.isedit) " check-value="否"/>
+        </el-descriptions-item>
+        <el-descriptions-item label="客户是否开票">
+          <TagsItem :check-info="isOrNot(orderDetailInfo.customerIsInvoice)" check-value="否"/>
+        </el-descriptions-item>
+        <el-descriptions-item label="供应商是否开票">
+          <TagsItem :check-info="isOrNot(orderDetailInfo.customerIsInvoice)" check-value="否"/>
+        </el-descriptions-item>
+        <el-descriptions-item label="陆运费">{{ orderDetailInfo.landFreight }}</el-descriptions-item>
+        <el-descriptions-item label="海运费">{{ orderDetailInfo.seaFreight }}</el-descriptions-item>
+      </el-descriptions>
+      <span slot="footer" class="dialog-footer">
+        <el-button @click="checkOrderVisible = false">取 消</el-button>
+        <el-button type="primary" @click="checkOrderVisible = false">确 定</el-button>
+      </span>
     </el-dialog>
   </div>
 </template>
@@ -182,9 +225,12 @@ import {
   addExWarehouse,
   updateExWarehouse
 } from "@/api/system/exWarehouse";
+import {listGoodsOrder} from "@/api/system/goodsOrder";
+import TagsItem from "@/components/TagsItem/index.vue";
 
 export default {
   name: "ExWarehouse",
+  components: {TagsItem},
   data() {
     return {
       // 遮罩层
@@ -231,12 +277,29 @@ export default {
         {key: 3, label: `开户行`, visible: true},
         {key: 4, label: `公司名称`, visible: true}
       ],
+      checkOrderVisible: false,
+      orderDetailInfo: {},
     };
   },
   created() {
     this.getList();
   },
   methods: {
+    checkOrderInfo(row) {
+      console.log(row)
+      this.checkOrderVisible = true;
+      //查询订单详情
+      listGoodsOrder({ordersNo: row.ordersNo}).then(res => {
+        this.orderDetailInfo = res.rows[0]
+      })
+    },
+    checkInvoInfo(row) {
+
+    },
+    isOrNot(val) {
+      return val === 1 ? "是" : "否";
+    },
+
     /** 查询出库列表 */
     getList() {
       this.loading = true;
