@@ -243,7 +243,9 @@
             <!--   自定义组件查找-->
             <el-col :span="3">
               <SearchOption :get-data="listBankAccount" title="银行卡信息" icon="el-icon-search"
-                            @commitBack="handleCallBack" :limit-info="{acountsType:'己方公司'}">
+                            @commitBack="handleCallBack" :limit-info="{acountsType:'己方公司'}"
+                            @update:queryName="handleCommitBackBank" :query-name="bankQuery" query-info="acountsName"
+                            query-label="户名查询">
                 <template #table-columns>
                   <el-table-column label="账户类型" align="center" prop="acountsType"/>
                   <el-table-column label="开户名称(户名)" align="center" prop="acountsName"/>
@@ -399,7 +401,10 @@ export default {
       //一级分类列表
       OneLevelOption: [],
       //二级分类
-      TwoLevelOption: []
+      TwoLevelOption: [],
+
+      //银行卡查询
+      bankQuery: ''
     };
   },
   created() {
@@ -452,6 +457,11 @@ export default {
     //点击二级
     handleSelectTwoLevel(value) {
       this.currentSort.levelTwo = value;
+    },
+
+    //银行卡输入搜索信息
+    handleCommitBackBank(val) {
+      this.bankQuery = val;
     },
     printHTML() {
       this.$print({

@@ -981,7 +981,7 @@ export default {
       }
       //添加订单 转化时间戳
       const date = this.orderInfo.orderDate.getTime();
-      addGoodsOrder({...this.orderInfo, orderDate: date, paymentState: ''}).then(res => {
+      addGoodsOrder({...this.orderInfo, orderDate: date, PaymentState: ''}).then(res => {
         this.$message.success('订单提交成功')
       }).catch(err => {
         this.$message.error('订单提交失败' + err.msg)

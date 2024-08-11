@@ -34,6 +34,9 @@
       <el-col :span="1.5">
         <el-button icon="el-icon-refresh" size="mini" @click="resetQuery">刷新</el-button>
       </el-col>
+      <el-col :span="1.5">
+        <el-button type="danger" size="mini" @click="handleAdd">新增固定资产信息</el-button>
+      </el-col>
       <right-toolbar :showSearch.sync="showSearch" @queryTable="getList" :columns="columns">
         <template v-slot:print>
           <el-col :span="1.5">
@@ -64,8 +67,7 @@
 
     <el-table border v-horizontal-scroll="'always'" v-loading="loading" :data="fixedAssetsList"
               @selection-change="handleSelectionChange" id="printBox">
-      <el-table-column label="id" align="center" prop="id"/>
-      <el-table-column label="购入日期" align="center" prop="buyDate" v-if="columns[0].visible"/>
+      <el-table-column label="购入日期" align="center" prop="buyDate" v-if="columns[0].visible" width="120px"/>
       <el-table-column label="资产编号" align="center" prop="assetNo" v-if="columns[1].visible"/>
       <el-table-column label="资产名称" align="center" prop="assetName" v-if="columns[2].visible"/>
       <el-table-column label="规格型号" align="center" prop=" specification" v-if="columns[3].visible"/>

@@ -18,7 +18,12 @@ export default {
     //约束条件
     limitInfo: {
       type: Object
-    }
+    },
+    //查询条件
+    queryInfo: '',
+    queryName: '',
+    //查询标签
+    queryLabel: ''
   },
   data() {
     return {
@@ -26,10 +31,21 @@ export default {
       //数据集 通过父组件传入函数来获取
       tableData: [],
       //加载效果
-      loading: false
+      loading: false,
+      queryParams: {}
     }
   },
   created() {
+  },
+  computed: {
+    query: {
+      set(val) {
+        this.$emit('update:queryName', val)
+      },
+      get() {
+        return this.queryName
+      }
+    }
   },
   methods: {
     //点击弹窗
@@ -46,6 +62,29 @@ export default {
     commitSomeThing(row) {
       this.$emit('commitBack', row)
       this.dialogVisible = false
+    },
+    //条件查询
+    handleSearchInfo() {
+      this.getData({
+        ...this.limitInfo
+      }).then(res => {
+        this.tableData = res.rows;
+        this.loading = false;
+      })
+    }
+  },
+  watch: {
+    query: {
+      handler(val) {
+        var queryParams = Object.create({});
+        Object.defineProperty(queryParams, this.queryInfo, {
+          value: this.query,
+          enumerable: true
+        })
+        //Object.assign只能赋值可枚举属性
+        Object.assign(this.limitInfo, queryParams)
+        console.log(this.limitInfo)
+      }
     }
   }
 }
@@ -62,6 +101,19 @@ export default {
       width="30%" append-to-body>
       <!--      弹出的表格内容-->
       <el-row>
+        <div>
+          <el-row :gutter="5">
+            <el-col :span="5">
+              <span style="font-weight: bolder">{{ queryLabel }}</span>
+            </el-col>
+            <el-col :span="10">
+              <el-input type="text" placeholder="请输入" v-model="query"></el-input>
+            </el-col>
+            <el-col :span="3">
+              <el-button type="primary" @click="handleSearchInfo">搜索</el-button>
+            </el-col>
+          </el-row>
+        </div>
         <el-table :data="tableData" v-loading="loading">
           <!--   这里给表格的数据行-->
           <slot name="table-columns"></slot>
