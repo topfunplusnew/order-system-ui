@@ -60,8 +60,9 @@ export default {
       // exWarehouseDate: ''
 
       //库存
-      currentStockNumber: ''
-
+      currentStockNumber: '',
+      //搜索仓库名称
+      searchStoreName: ''
     }
   },
   // 思路  先通过计算属性，拿到属性，渲染到页面 因为计算属性是响应式的 在给计算属性赋值时 提醒父组件改变传递的item对象
@@ -598,6 +599,13 @@ export default {
       })
     }
     ,
+    //弹出的库存信息条件查询
+    searchStoreHouseInfo() {
+      //查询名称库存信息
+      listInventory({storeHouseName: this.searchStoreName}).then(res => {
+        this.inventoryInfo = res.rows;
+      })
+    },
     //查询产品级别信息
     searchProductLevelInfo() {
       this.productLevelDialogVisible = true;
@@ -967,15 +975,15 @@ export default {
       :visible.sync="storeInfoDialogVisible"
       width="60%" append-to-body>
       <el-row>
-        <span style="font-weight: bolder">库存信息</span>
+        <span style="font-weight: bolder">仓库名称</span>
       </el-row>
       <!--      搜索库存信息-->
       <el-row>
-        <el-col :span="12">
-          <el-input type="text"></el-input>
+        <el-col :span="8">
+          <el-input type="text" v-model="searchStoreName"></el-input>
         </el-col>
         <el-col :span="5">
-          <el-button type="primary">搜索</el-button>
+          <el-button type="primary" @click="searchStoreHouseInfo">搜索</el-button>
         </el-col>
       </el-row>
       <br/>

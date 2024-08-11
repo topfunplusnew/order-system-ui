@@ -981,7 +981,7 @@ export default {
       }
       //添加订单 转化时间戳
       const date = this.orderInfo.orderDate.getTime();
-      addGoodsOrder({...this.orderInfo, orderDate: date, PaymentState: null}).then(res => {
+      addGoodsOrder({...this.orderInfo, orderDate: date, paymentState: ''}).then(res => {
         this.$message.success('订单提交成功')
       }).catch(err => {
         this.$message.error('订单提交失败' + err.msg)
@@ -1048,7 +1048,6 @@ export default {
     closeOpenTitle() {
       this.handleOpenTitleDialogVisible = false
     },
-    //todo 添加审核
     handleOpenCheck(val, row) {
       if (!val) {
         auditGoodsOrder({id: row.id, isaudit: true}).then(res => {
