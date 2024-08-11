@@ -44,6 +44,7 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         and delFlag = 0
     </select>
 
+
     <insert id="insertOilCard" parameterType="OilCard" useGeneratedKeys="true" keyProperty="id">
         insert into oilCard
         <trim prefix="(" suffix=")" suffixOverrides=",">
@@ -106,5 +107,9 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         SET moneyAmount = #{moneyAmount}
         WHERE oilCardNo = #{oilCardNo}
     </update>
-
+    <select id="selectOilCardByoilCardNo" parameterType="String" resultMap="OilCardResult">
+        <include refid="selectOilCardVo"/>
+        where oilCardNo = #{oilCardNo}
+        and delFlag = 0
+    </select>
 </mapper>

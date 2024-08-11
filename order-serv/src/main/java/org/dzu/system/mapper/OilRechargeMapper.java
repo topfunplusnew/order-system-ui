@@ -62,4 +62,5 @@ public interface OilRechargeMapper extends BaseMapper<OilRecharge>
     public int deleteOilRechargeByIds(Long[] ids);
 
 
+    public boolean existsByTripId(String bTripId);
 }

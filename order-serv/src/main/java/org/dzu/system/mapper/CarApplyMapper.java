@@ -13,6 +13,8 @@ import java.util.List;
  */
 public interface CarApplyMapper extends BaseMapper<CarApply>
 {
+    public CarApply selectCarApplyByIds(Long[] ids);
+
     /**
      * 查询车辆使用申请
      * 

@@ -8,10 +8,13 @@ import org.dzu.common.utils.StringUtils;
 import org.dzu.system.domain.BusinessTrip;
 import org.dzu.system.domain.CarApply;
 import org.dzu.system.mapper.CarApplyMapper;
+import org.dzu.system.mapper.OilCardConsumeMapper;
+import org.dzu.system.mapper.OilRechargeMapper;
 import org.dzu.system.service.IBusinessTripService;
 import org.dzu.system.service.ICarApplyService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 /**
@@ -28,6 +31,10 @@ public class CarApplyServiceImpl implements ICarApplyService
 
     @Autowired
     private IBusinessTripService businessTripService;
+    @Autowired
+    private OilCardConsumeMapper oilCardConsumeMapper;
+    @Autowired
+    private OilRechargeMapper oilRechargeMapper;
 
     /**
      * 查询车辆使用申请
@@ -99,16 +106,36 @@ public class CarApplyServiceImpl implements ICarApplyService
 
     /**
      * 批量删除车辆使用申请
-     * 
+     *
      * @param ids 需要删除的车辆使用申请主键
      * @return 结果
      */
     @Override
+    @Transactional
     public int deleteCarApplyByIds(Long[] ids)
     {
+        // 查询车辆使用申请记录
+        List<CarApply> canApplyList = (List<CarApply>) carApplyMapper.selectCarApplyByIds(ids);
+        if (canApplyList.isEmpty()) {
+            throw new ServiceException("车辆使用申请记录不存在");
+        }
 
-        // TODO：删除的时候检测对应油卡消费或者充值，如果有，则拒绝删除
+        for (CarApply carApply : canApplyList) {
+            if (hasRelatedOperations(carApply.getbTripId())) {
+                throw new ServiceException("存在相关操作记录，无法删除车辆使用申请");
+            }
+        }
+
         return carApplyMapper.deleteCarApplyByIds(ids);
+
     }
 
+        private boolean hasRelatedOperations(String bTripId) {
+        boolean existsInConsume = oilCardConsumeMapper.existsByTripId(bTripId);
+        boolean existsInRecharge = oilRechargeMapper.existsByTripId(bTripId);
+        return existsInConsume || existsInRecharge;
+    }
+        // TODO：删除的时候检测对应油卡消费或者充值，如果有，则拒绝删除
 }
+
+
