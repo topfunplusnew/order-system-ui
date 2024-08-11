@@ -241,7 +241,6 @@ export default {
     },
     handleChangeOrderItemInfo(index, val) {
       //改变vuex中的数据 传递一个对象 这个对象是修改过的item
-      console.log(index, val)
       this.$store.dispatch('order/changeOrderItem', {...val, index: index})
     },
   },

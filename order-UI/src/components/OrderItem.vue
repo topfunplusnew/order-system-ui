@@ -354,15 +354,97 @@ export default {
       get() {
         return this.orderItemInfo.exWarehouseDate;
       }
-    }
+    },
+
+    //公式计算相关的计算属性
+    //是否含税 厂家否 客户否
+    paymentFactory00() {
+      return fix(this.length * this.width * this.pieces / 1000000 * this.price + Number(this.sundryCost))
+    },
+    payments00() {
+      return fix(this.length * this.width * this.outPieces / 1000000 * this.paymentUnload + this.paymentsWithSundry);
+    },
+    tonnage00() {
+      return fix((this.height - this.erro) * this.length * this.pieces / 1000000 / 20 / 20);
+    },
+    landFreight00() {
+      return fix(this.tonnage * this.landFreightPrice + this.additionalFees);
+    },
+    profit00() {
+      return fix(this.payments - this.paymentFactory - this.landFreight);
+    },
+    profitNoTax00() {
+      return fix(this.payments - this.paymentFactory - this.landFreight - this.otherCost);
+    },
+    //是否含税10
+    paymentFactory10() {
+      return fix(this.length * this.width * this.pieces * this.price / 1000000 + Number(this.sundryCost));
+    },
+    payments10() {
+      return fix(this.length * this.width * this.outPieces * this.paymentUnload / 1000000 + Number(this.paymentsWithSundry));
+    },
+    tonnage10() {
+      return fix((this.height - this.erro) * this.length * this.width * this.pieces / 1000000 / 20 / 20)
+    },
+    landFreight10() {
+      return fix(this.tonnage * this.landFreightPrice + this.additionalFees)
+    },
+    profit10() {
+      return fix(this.payments - this.paymentFactory - this.landFreight)
+    },
+    profitNoTax10() {
+      return fix(this.payments - this.paymentFactory / 1.075 - this.landFreight - this.otherCost)
+    },
+    //是否含税01
+    paymentFactory01() {
+      return fix(this.length * this.width * this.pieces / 1000000 * this.price + Number(this.sundryCost));
+    },
+    payments01() {
+      return fix(this.length * this.width * this.outPieces * this.paymentUnload / 1000000 + Number(this.paymentsWithSundry));
+    },
+    tonnage01() {
+      return fix((this.height - this.erro) * this.length * this.width * this.pieces / 1000000 / 20 / 20)
+    },
+    landFreight01() {
+      console.log(this.tonnage, this.landFreightPrice, this.additionalFees)
+      return fix(Number(this.tonnage * this.landFreightPrice) + Number(this.additionalFees))
+    },
+    profit01() {
+      return fix(this.payments - this.paymentFactory - this.landFreight)
+    },
+    profitNoTax01() {
+      return fix((this.payments / 1.075) - this.paymentFactory - this.landFreight - this.otherCost)
+    },
+    //是否含税11
+    paymentFactory11() {
+      return fix(this.length * this.width * this.pieces * this.price / 1000000 + Number(this.sundryCost));
+    },
+    payments11() {
+      return fix(this.length * this.width * this.outPieces * this.paymentUnload / 1000000 + Number(this.paymentsWithSundry));
+    },
+    tonnage11() {
+      return fix((this.height - this.erro) * this.length * this.width * this.pieces / 1000000 / 20 / 20)
+    },
+    landFreight11() {
+      return fix(this.tonnage * this.landFreightPrice + this.additionalFees)
+    },
+    profit11() {
+      return fix(this.payments - this.paymentFactory - this.landFreight)
+    },
+    profitNoTax11() {
+      return fix(this.payments - this.paymentFactory - (this.landFreight * 1.075) - (this.height * this.length * this.width * this.pieces / 1000000 / 20 * 0.5))
+    },
   },
   watch: {
     //出厂片数
     pieces: {
       handler(val) {
-        if (val > this.currentStockNumber) {
-          this.$message.error("出厂片数不能大于库存量!");
-          this.pieces = this.currentStockNumber;
+        //如果选择的是仓库发货
+        if (this.storeName !== '') {
+          if (val > this.currentStockNumber) {
+            this.$message.error("出厂片数不能大于库存量!");
+            this.pieces = this.currentStockNumber;
+          }
         }
       }
     },
@@ -385,6 +467,7 @@ export default {
 
       }
     },
+    //监听的是整个对象
     orderItemInfo: {
       handler() {
         //如果不是仓库发货
@@ -392,28 +475,40 @@ export default {
           //是否含税 厂家否 客户否
           if (this.Tax === '00') {
             //出厂贷款
-            this.paymentFactory = fix(this.length * this.width * this.pieces / 1000000 * this.price + this.sundryCost)
+            this.paymentFactory = this.paymentFactory00;
             //总贷款
-            this.payments = fix(this.length * this.width * this.outPieces / 1000000 * this.paymentUnload + this.paymentsWithSundry)
+            this.payments = this.payments00;
             //吨位
-            this.tonnage = fix((this.height - this.erro) * this.length * this.pieces / 1000000 / 20 / 20)
+            this.tonnage = this.tonnage00
             //运费
-            this.landFreight = fix(this.tonnage * this.landFreightPrice + this.additionalFees)
+            this.landFreight = this.landFreight00
             //利润
-            this.profit = fix(this.payments - this.paymentFactory - this.landFreight)
+            this.profit = this.profit00
             //不含税利润
-            this.profitNoTax = fix(this.payments - this.paymentFactory - this.landFreight - this.otherCost)
-
+            this.profitNoTax = this.profitNoTax00
             //出厂含税客户不含税
           } else if (this.Tax === '10') {
-            //出厂不含税客户含税
+            this.paymentFactory = this.paymentFactory10;
+            this.payments = this.payments10
+            this.tonnage = this.tonnage10
+            this.landFreight = this.landFreight10
+            this.profit = this.profit10
+            this.profitNoTax = this.profitNoTax10
           } else if (this.Tax === '01') {
-
-            //都含税
+            this.paymentFactory = this.paymentFactory01;
+            this.payments = this.payments01
+            this.tonnage = this.tonnage01
+            this.landFreight = this.landFreight01
+            this.profit = this.profit01
+            this.profitNoTax = this.profitNoTax01
           } else {
-
+            this.paymentFactory = this.paymentFactory11;
+            this.payments = this.payments11
+            this.tonnage = this.tonnage11
+            this.landFreight = this.landFreight11
+            this.profit = this.profit11
+            this.profitNoTax = this.profitNoTax11
           }
-
           //如果仓库发货 根据出厂片数自动计算
         } else {
 
