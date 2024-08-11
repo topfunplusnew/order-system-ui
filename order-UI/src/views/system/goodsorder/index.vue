@@ -614,6 +614,7 @@ import {listBankAccount} from "@/api/system/bankAccount";
 import {listCompany} from "@/api/system/company";
 import {addRebate} from "@/api/system/Rebate";
 import {formatDate} from "@/utils";
+import {addOrderFreight} from "@/api/system/orderFreight";
 
 export default {
   name: "GoodsOrder",
@@ -969,6 +970,11 @@ export default {
       }).catch(err => {
         this.$message.error('订单提交失败' + err.msg)
       })
+
+      //同时添加运费信息 todo 运费添加
+      // addOrderFreight().then(res => {
+      //   console.log(res)
+      // })
     },
 
     //表格统计

@@ -217,7 +217,6 @@
 
     <el-table v-horizontal-scroll="'always'" border v-loading="loading" :data="orderFreightList"
               @selection-change="handleSelectionChange" id="printBox">
-      <el-table-column label="id" align="center" prop="id"/>
       <el-table-column label="订单编号" align="center" prop="ordersNo"/>
       <el-table-column label="运费类型" align="center" prop="freightType"/>
       <el-table-column label="金额" align="center" prop="moneyAmount"/>
@@ -228,34 +227,61 @@
       <el-table-column label="对方账号" align="center" prop="otherBankNo"/>
       <el-table-column label="对方开户行" align="center" prop="otherBankName"/>
       <el-table-column label="备注" align="center" prop="content"/>
-      <el-table-column label="支付状态" align="center" prop="paymentState"/>
+      <el-table-column label="支付状态" align="center" prop="paymentState">
+        <template slot-scope="scope">
+          <el-tag :type="scope.row.paymentState === '未支付' ? 'danger' : 'success'">
+            {{ scope.row.paymentState }}
+          </el-tag>
+        </template>
+      </el-table-column>
       <el-table-column label="司机姓名" align="center" prop="driverName"/>
-      <el-table-column label="司机ID" align="center" prop="driverId"/>
+      <!--      <el-table-column label="司机ID" align="center" prop="driverId"/>-->
       <el-table-column label="车牌号" align="center" prop="CarNo"/>
       <el-table-column label="车队" align="center" prop="fleet"/>
       <!--      <el-table-column label="申请人员ID" align="center" prop="applyUserId"/>-->
       <el-table-column label="申请人员姓名" align="center" prop="applyUserName"/>
       <el-table-column label="申请日期" align="center" prop="applyDate"/>
-      <el-table-column label="是否可编辑" align="center" prop="isedit"/>
+      <el-table-column label="是否可编辑" align="center" prop="isedit">
+        <template slot-scope="scope">
+          <el-tag :type="scope.row.isedit === 0 ? 'danger' : 'success'" disable-transitions
+                  v-if="scope.row.isedit === 0">不可编辑
+          </el-tag>
+          <el-tag :type="scope.row.isedit === 1 ? 'success' : 'danger'" disable-transitions
+                  v-if="scope.row.isedit === 1">可编辑
+          </el-tag>
+        </template>
+      </el-table-column>
       <!--      <el-table-column label="付款人员ID" align="center" prop="payUserId"/>-->
       <el-table-column label="付款人员姓名" align="center" prop="payUserName"/>
       <el-table-column label="付款日期" align="center" prop="payDate"/>
-      <el-table-column label="作废标记" align="center" prop="cancelFlag"/>
       <el-table-column label="备注" align="center" prop="comments"/>
-      <el-table-column label="操作" align="center" class-name="small-padding fixed-width" fixed="right">
+      <el-table-column label="操作" align="center" class-name="small-padding fixed-width" fixed="right" width="250">
         <template slot-scope="scope">
           <el-button
             size="mini"
-            type="text"
-            icon="el-icon-edit"
+            type="warning"
+            @click="applyForLand(scope.row)"
+            v-if="scope.row.freightType=== '陆运'"
+          >申请陆运费
+          </el-button>
+          <!--          只有海运费不为零才能申请海运费-->
+          <el-button
+            size="mini"
+            type="warning"
+            @click="applyForSea(scope.row)"
+            v-if="scope.row.freightType=== '海运'"
+          >申请海运费
+          </el-button>
+          <el-button
+            size="mini"
+            type="primary"
             @click="handleUpdate(scope.row)"
             v-hasPermi="['system:orderfreight:edit']"
           >修改
           </el-button>
           <el-button
             size="mini"
-            type="text"
-            icon="el-icon-delete"
+            type="danger"
             @click="handleDelete(scope.row)"
             v-hasPermi="['system:orderfreight:remove']"
           >删除
@@ -496,6 +522,14 @@ export default {
       this.form.otherAcountsName = val.acountsName;
       this.form.otherBankNo = val.bankNo;
       this.form.otherBankName = val.bankName
+    },
+
+    //添加海运费或者陆运费
+    applyForLand(row) {
+      console.log(row)
+    },
+    applyForSea(row) {
+      console.log(row)
     },
     /** 查询订单运费列表 */
     getList() {
