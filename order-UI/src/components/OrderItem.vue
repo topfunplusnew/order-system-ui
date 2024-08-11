@@ -436,18 +436,7 @@ export default {
     },
   },
   watch: {
-    //出厂片数
-    pieces: {
-      handler(val) {
-        //如果选择的是仓库发货
-        if (this.storeName !== '') {
-          if (val > this.currentStockNumber) {
-            this.$message.error("出厂片数不能大于库存量!");
-            this.pieces = this.currentStockNumber;
-          }
-        }
-      }
-    },
+
     //出厂是否含税
     isIncludeTaxFactory: {
       handler(val) {
@@ -509,13 +498,52 @@ export default {
             this.profit = this.profit11
             this.profitNoTax = this.profitNoTax11
           }
-          //如果仓库发货 根据出厂片数自动计算
-        } else {
-
         }
       },
       deep: true
-    }
+    },
+    //出厂片数
+    pieces: {
+      handler(val) {
+        //如果选择的是仓库发货
+        if (this.storeName !== '') {
+          if (val > this.currentStockNumber) {
+            this.$message.error("出厂片数不能大于库存量!");
+            this.pieces = this.currentStockNumber;
+          }
+          //修改片数自动计算
+          if (this.Tax === '00') {
+            this.paymentFactory = this.paymentFactory00;
+            this.payments = this.payments00;
+            this.tonnage = this.tonnage00
+            this.landFreight = this.landFreight00
+            this.profit = this.profit00
+            this.profitNoTax = this.profitNoTax00
+          } else if (this.Tax === '10') {
+            this.paymentFactory = this.paymentFactory10;
+            this.payments = this.payments10
+            this.tonnage = this.tonnage10
+            this.landFreight = this.landFreight10
+            this.profit = this.profit10
+            this.profitNoTax = this.profitNoTax10
+          } else if (this.Tax === '01') {
+            this.paymentFactory = this.paymentFactory01;
+            this.payments = this.payments01
+            this.tonnage = this.tonnage01
+            this.landFreight = this.landFreight01
+            this.profit = this.profit01
+            this.profitNoTax = this.profitNoTax01
+          } else {
+            this.paymentFactory = this.paymentFactory11;
+            this.payments = this.payments11
+            this.tonnage = this.tonnage11
+            this.landFreight = this.landFreight11
+            this.profit = this.profit11
+            this.profitNoTax = this.profitNoTax11
+          }
+        }
+      }
+    },
   },
   methods: {
     //todo 供应商和库存操作 选择供应商或者仓库后，还要选择级别编码 然后查询库存信息的基本信息
