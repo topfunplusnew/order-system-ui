@@ -233,11 +233,11 @@
       <el-table-column label="司机ID" align="center" prop="driverId"/>
       <el-table-column label="车牌号" align="center" prop="CarNo"/>
       <el-table-column label="车队" align="center" prop="fleet"/>
-      <el-table-column label="申请人员ID" align="center" prop="applyUserId"/>
+      <!--      <el-table-column label="申请人员ID" align="center" prop="applyUserId"/>-->
       <el-table-column label="申请人员姓名" align="center" prop="applyUserName"/>
       <el-table-column label="申请日期" align="center" prop="applyDate"/>
       <el-table-column label="是否可编辑" align="center" prop="isedit"/>
-      <el-table-column label="付款人员ID" align="center" prop="payUserId"/>
+      <!--      <el-table-column label="付款人员ID" align="center" prop="payUserId"/>-->
       <el-table-column label="付款人员姓名" align="center" prop="payUserName"/>
       <el-table-column label="付款日期" align="center" prop="payDate"/>
       <el-table-column label="作废标记" align="center" prop="cancelFlag"/>
@@ -354,9 +354,9 @@
         <!--        <el-form-item label="申请人员ID" prop="applyUserId">-->
         <!--          <el-input v-model="form.applyUserId" placeholder="请输入申请人员ID"/>-->
         <!--        </el-form-item>-->
-        <el-form-item label="申请人员姓名" prop="applyUserName">
-          <el-input v-model="form.applyUserName" placeholder="请输入申请人员姓名"/>
-        </el-form-item>
+        <!--        <el-form-item label="申请人员姓名" prop="applyUserName">-->
+        <!--          <el-input v-model="form.applyUserName" placeholder="请输入申请人员姓名"/>-->
+        <!--        </el-form-item>-->
         <el-form-item label="申请日期" prop="applyDate">
           <!--          <el-input v-model="form.applyDate" placeholder="请输入申请日期"/>-->
           <el-date-picker

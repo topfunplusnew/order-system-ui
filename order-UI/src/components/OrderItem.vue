@@ -53,6 +53,9 @@ export default {
       storeHouseID: '',
       storeID: '',
 
+      //卸货片数
+      outPieces: 0
+
     }
   },
   // 思路  先通过计算属性，拿到属性，渲染到页面 因为计算属性是响应式的 在给计算属性赋值时 提醒父组件改变传递的item对象
@@ -169,6 +172,7 @@ export default {
         return this.orderItemInfo.sundryCost;
       }
     },
+    //出厂贷款 = 长度 * 宽度 * 出厂片数 / 1000000 * 出厂单价 + 杂费
     paymentFactory: {
       set(val) {
         this.$emit('changeOrderItemInfo', {...this.orderItemInfo, paymentFactory: val})
@@ -187,7 +191,7 @@ export default {
       }
     },
 
-    //GPT
+    //销售是否含税
     isIncludeTaxSale: {
       set(val) {
         this.$emit('changeOrderItemInfo', {...this.orderItemInfo, isIncludeTaxSale: val});
@@ -316,7 +320,6 @@ export default {
         return this.orderItemInfo.comments;
       }
     },
-
     //级别编码levelNo
     levelID: {
       set(val) {
@@ -325,6 +328,60 @@ export default {
       get() {
         return this.orderItemInfo.levelID;
       }
+    },
+    //销售是否含税和出厂是否含税的组合
+    Tax: {
+      set() {
+
+      },
+      get() {
+        return this.isIncludeTaxFactory + this.isIncludeTaxSale;
+      }
+    }
+  },
+  watch: {
+    //出厂是否含税
+    isIncludeTaxFactory: {
+      handler(val) {
+        console.log('isIncludeTaxFactory:', val)
+      },
+    },
+    //销售是否含税
+    isIncludeTaxSale: {
+      handler(val) {
+        console.log('isIncludeTaxSale:', val)
+      },
+    },
+    //组合
+    Tax: {
+      handler(val) {
+        console.log('both:', val)
+
+      }
+    },
+    orderItemInfo: {
+      handler() {
+        //如果不是仓库发货
+        if (this.storeHouseName === undefined) {
+          //是否含税 厂家否 客户否
+          //todo 保留两位小数
+          if (this.Tax === '00') {
+            //出厂贷款
+            this.paymentFactory = this.length * this.width * this.pieces / 1000000 * this.price + this.sundryCost
+            //总贷款
+            this.payments = this.length * this.width * this.outPieces / 1000000 * this.paymentUnload + this.paymentsWithSundry
+            //吨位
+            this.tonnage = (this.height - this.erro) * this.length * this.pieces / 1000000 / 20 / 20
+            //运费
+            this.landFreight = this.tonnage * this.landFreightPrice + this.additionalFees
+            //利润
+            this.profit = this.payments - this.paymentFactory - this.landFreight
+            //不含税利润
+            this.profitNoTax = this.payments - this.paymentFactory - this.landFreight - this.otherCost
+          }
+        }
+      },
+      deep: true
     }
   },
   methods: {
@@ -371,15 +428,15 @@ export default {
     commitStoreInfo(row) {
       this.orderItemInfo.storeID = row.id;  //goodsOrderList ->仓库ID
       this.orderItemInfo.storeHouseID = row.id //goodsOrderList ->库存ID
-      if (this.supplier) {
-        this.supplier = null;
-      }
-      // this.storeName = row.storeHouseName
       //自动填充数据
       const computedProperties = this.$options.computed;
       Object.keys(computedProperties).forEach(key => {
         this[key] = row[key];
       })
+      if (this.supplier) {
+        this.supplier = null;
+      }
+      this.storeName = row.storeHouseName
       this.length = row.length;
       this.width = row.width;
       this.levelID = row.levelID;
@@ -532,27 +589,32 @@ export default {
         <el-input type="text" placeholder="请输入杂费" v-model="sundryCost"></el-input>
       </div>
       <div class="order-item">
+        <span class="text-bold">销售是否含税</span>
+        <hr/>
+        <el-radio v-model="isIncludeTaxSale" label="1">是</el-radio>
+        <el-radio v-model="isIncludeTaxSale" label="0">否</el-radio>
+      </div>
+      <div class="order-item">
         <span class="text-bold">出厂货款</span>
         <hr/>
         <el-input type="text" placeholder="请输入出厂贷款"
                   v-model="paymentFactory"></el-input>
       </div>
-      <!--          todo-->
-      <!--      <div class="order-item">-->
-      <!--        <span class="text-bold">卸货片数</span>-->
-      <!--        <hr/>-->
-      <!--        <el-input type="text" placeholder="请输入卸货片数"></el-input>-->
-      <!--      </div>-->
+      <div class="order-item">
+        <span class="text-bold">卸货片数</span>
+        <hr/>
+        <el-input type="text" placeholder="请输入卸货片数" v-model="outPieces"></el-input>
+      </div>
       <div class="order-item">
         <span class="text-bold">卸货价</span>
         <hr/>
         <el-input type="text" placeholder="请输入卸货价" v-model="paymentUnload"></el-input>
       </div>
       <div class="order-item">
-        <span class="text-bold">销售是否含税</span>
+        <span class="text-bold">总货款杂费</span>
         <hr/>
-        <el-radio v-model="isIncludeTaxSale" label="1">是</el-radio>
-        <el-radio v-model="isIncludeTaxSale" label="0">否</el-radio>
+        <el-input type="text" placeholder="总货款杂费"
+                  v-model="paymentsWithSundry"></el-input>
       </div>
       <div class="order-item">
         <span class="text-bold">总货款</span>
@@ -576,6 +638,11 @@ export default {
                   v-model="landFreightPrice"></el-input>
       </div>
       <div class="order-item">
+        <span class="text-bold">加费</span>
+        <hr/>
+        <el-input type="text" placeholder="加费" v-model="additionalFees"></el-input>
+      </div>
+      <div class="order-item">
         <span class="text-bold">陆运费</span>
         <hr/>
         <el-input type="text" placeholder="陆运费" v-model="landFreight"></el-input>
@@ -590,11 +657,7 @@ export default {
         <hr/>
         <el-input type="text" placeholder="总运费" v-model="freight"></el-input>
       </div>
-      <div class="order-item">
-        <span class="text-bold">加费</span>
-        <hr/>
-        <el-input type="text" placeholder="加费" v-model="additionalFees"></el-input>
-      </div>
+
       <div class="order-item">
         <span class="text-bold">其他费用</span>
         <hr/>
@@ -615,12 +678,7 @@ export default {
         <hr/>
         <el-input type="text" placeholder="实际片数" v-model="actualPieces"></el-input>
       </div>
-      <div class="order-item">
-        <span class="text-bold">总货款杂费</span>
-        <hr/>
-        <el-input type="text" placeholder="总货款杂费"
-                  v-model="paymentsWithSundry"></el-input>
-      </div>
+
       <!--      <div class="order-item">-->
       <!--        <span class="text-bold">物流利润</span>-->
       <!--        <hr/>-->
