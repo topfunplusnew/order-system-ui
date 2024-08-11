@@ -510,41 +510,43 @@ export default {
           if (val > this.currentStockNumber) {
             this.$message.error("出厂片数不能大于库存量!");
             this.pieces = this.currentStockNumber;
-          }
-          //修改片数自动计算
-          if (this.Tax === '00') {
-            this.paymentFactory = this.paymentFactory00;
-            this.payments = this.payments00;
-            this.tonnage = this.tonnage00
-            this.landFreight = this.landFreight00
-            this.profit = this.profit00
-            this.profitNoTax = this.profitNoTax00
-          } else if (this.Tax === '10') {
-            this.paymentFactory = this.paymentFactory10;
-            this.payments = this.payments10
-            this.tonnage = this.tonnage10
-            this.landFreight = this.landFreight10
-            this.profit = this.profit10
-            this.profitNoTax = this.profitNoTax10
-          } else if (this.Tax === '01') {
-            this.paymentFactory = this.paymentFactory01;
-            this.payments = this.payments01
-            this.tonnage = this.tonnage01
-            this.landFreight = this.landFreight01
-            this.profit = this.profit01
-            this.profitNoTax = this.profitNoTax01
           } else {
-            this.paymentFactory = this.paymentFactory11;
-            this.payments = this.payments11
-            this.tonnage = this.tonnage11
-            this.landFreight = this.landFreight11
-            this.profit = this.profit11
-            this.profitNoTax = this.profitNoTax11
+            //修改片数自动计算
+            if (this.Tax === '00') {
+              this.paymentFactory = this.paymentFactory00;
+              this.payments = this.payments00;
+              this.tonnage = this.tonnage00
+              this.landFreight = this.landFreight00
+              this.profit = this.profit00
+              this.profitNoTax = this.profitNoTax00
+            } else if (this.Tax === '10') {
+              this.paymentFactory = this.paymentFactory10;
+              this.payments = this.payments10
+              this.tonnage = this.tonnage10
+              this.landFreight = this.landFreight10
+              this.profit = this.profit10
+              this.profitNoTax = this.profitNoTax10
+            } else if (this.Tax === '01') {
+              this.paymentFactory = this.paymentFactory01;
+              this.payments = this.payments01
+              this.tonnage = this.tonnage01
+              this.landFreight = this.landFreight01
+              this.profit = this.profit01
+              this.profitNoTax = this.profitNoTax01
+            } else {
+              this.paymentFactory = this.paymentFactory11;
+              this.payments = this.payments11
+              this.tonnage = this.tonnage11
+              this.landFreight = this.landFreight11
+              this.profit = this.profit11
+              this.profitNoTax = this.profitNoTax11
+            }
           }
         }
       }
     },
-  },
+  }
+  ,
   methods: {
     //todo 供应商和库存操作 选择供应商或者仓库后，还要选择级别编码 然后查询库存信息的基本信息
     //供应商信息
@@ -554,7 +556,8 @@ export default {
       listCompany({companyType: '供应商', companyName: this.companyName}).then(res => {
         this.companyGiveInfo = res.rows;
       })
-    },
+    }
+    ,
     //查询仓库信息
     searchStoreInfo() {
       this.storeInfoDialogVisible = true;
@@ -568,7 +571,8 @@ export default {
       listStoreHouse().then(res => {
         this.storeInfo = res.rows;
       })
-    },
+    }
+    ,
     //查询产品级别信息
     searchProductLevelInfo() {
       this.productLevelDialogVisible = true;
@@ -576,7 +580,8 @@ export default {
       listProductLevel({width: this.productLevel.width, levelName: this.productLevel.level}).then(res => {
         this.productLevelInfo = res.rows;
       })
-    },
+    }
+    ,
 
     //以下信息保存在goodsOrderList中
     //供应商信息确认 选择供应商后还要选择产品级别
@@ -584,7 +589,8 @@ export default {
       this.orderItemInfo.supplierID = row.id;   //goodsOrderList->供应商ID
       this.supplier = row.companyName
       this.companyGiveDialogVisible = false;
-    },
+    }
+    ,
     //仓库确认
     commitStoreInfo(row) {
       this.orderItemInfo.storeID = row.id;  //goodsOrderList ->仓库ID
@@ -606,7 +612,8 @@ export default {
       this.pieces = row.stockNumber;
       this.currentStockNumber = row.stockNumber;//暂存
       this.storeInfoDialogVisible = false;
-    },
+    }
+    ,
     //产品级别确认
     commitProductLevelInfo(row) {
       //确定产品级别编码信息
@@ -624,7 +631,8 @@ export default {
       this.width = row.width;
       this.levelNo = row.levelNo;
       this.productLevelDialogVisible = false;
-    },
+    }
+    ,
 
     //查询库存信息
     searchSupplierInventory(row) {
@@ -645,7 +653,8 @@ export default {
           this.levelNo = row.levelNo;
         }
       })
-    },
+    }
+    ,
     searchStoreInventory(row) {
       //填充表格数据
       listInventory({storeHouseName: this.supplier, levelID: this.levelID}).then(res => {
@@ -660,7 +669,8 @@ export default {
           this.levelNo = row.levelNo;
         }
       })
-    },
+    }
+    ,
     //todo 测试用 打印所有计算属性的值
     printAllComputers() {
       const computedProperties = this.$options.computed;
