@@ -283,7 +283,7 @@ public class OrderDetail extends BaseEntity {
      * 仓库ID
      */
     @Excel(name = "仓库ID")
-    @NotNull(message = "仓库ID不能为空")
+//    @NotNull(message = "仓库ID不能为空")
     @TableField(value = "storeHouseID")
     private Long storeHouseID;
 
