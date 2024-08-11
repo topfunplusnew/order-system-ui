@@ -11,14 +11,16 @@ export default {
 </script>
 
 <template>
-  <el-tag size="small" type="danger" v-if="checkInfo === checkValue">{{
-      checkInfo
-    }}
-  </el-tag>
-  <el-tag size="small" v-else>{{
-      checkInfo
-    }}
-  </el-tag>
+  <div>
+    <el-tag size="small" type="danger" v-if="checkInfo === checkValue">{{
+        checkInfo
+      }}
+    </el-tag>
+    <el-tag size="small" v-else>{{
+        checkInfo
+      }}
+    </el-tag>
+  </div>
 </template>
 
 <style scoped lang="scss">

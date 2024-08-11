@@ -227,6 +227,7 @@ import {
 } from "@/api/system/exWarehouse";
 import {listGoodsOrder} from "@/api/system/goodsOrder";
 import TagsItem from "@/components/TagsItem/index.vue";
+import {getInventory, listInventory} from "@/api/system/inventory";
 
 export default {
   name: "ExWarehouse",
@@ -293,8 +294,13 @@ export default {
         this.orderDetailInfo = res.rows[0]
       })
     },
-    checkInvoInfo(row) {
 
+    //查看库存信息 查询当前行的库存信息
+    checkInvoInfo(row) {
+      console.log(row)
+      listInventory({storeHouseid: row.storeHouseid}).then(res => {
+        console.log(res)
+      })
     },
     isOrNot(val) {
       return val === 1 ? "是" : "否";

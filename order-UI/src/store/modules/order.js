@@ -21,9 +21,6 @@ const mutations = {
     //Vue.set(state.orderItemList[index], key, value);
     // state.orderItemList[index] = orderItem;  这样会失去响应式
     for (let property in orderItem) {
-      if (property === 'exWarehouseDate') {
-        Vue.set(state.orderItemList[index], `${property}`, orderItem[property] + '')
-      }
       Vue.set(state.orderItemList[index], `${property}`, orderItem[property])
     }
   },

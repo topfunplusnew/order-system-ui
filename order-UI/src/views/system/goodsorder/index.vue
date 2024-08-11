@@ -221,20 +221,20 @@
       <el-table-column label="销售经理" align="center" prop="saleManager" v-if="columns[7].visible"/>
       <el-table-column label="车队" align="center" prop="fleet" v-if="columns[8].visible"/>
       <!--      是与否-->
-      <el-table-column label="审核状态" align="center" prop="checkState" v-if="columns[9].visible">
+      <el-table-column label="审核状态" align="center" prop="checkState" v-if="columns[9].visible" width="120">
         <template slot-scope="scope">
-          <el-tag
-            :type="scope.row.checkState === '未审核' ? 'danger' : 'success'"
-            disable-transitions>{{ scope.row.checkState }}
-          </el-tag>
+          <SwitchBarForCheck :model-value="scope.row.checkState==='未审核'"
+                             @update:modelValue="handleOpenCheck($event,scope.row)"/>
         </template>
       </el-table-column>
-      <el-table-column label="开票状态" align="center" prop="invoiceState" v-if="columns[10].visible">
+      <el-table-column label="开票状态" align="center" prop="invoiceState" v-if="columns[10].visible" width="120px">
         <template slot-scope="scope">
-          <el-tag
-            :type="scope.row.invoiceState === '未开票' ? 'danger' : 'success'"
-            disable-transitions>{{ scope.row.invoiceState }}
-          </el-tag>
+          <!--          <el-tag-->
+          <!--            :type="scope.row.invoiceState === '未开票' ? 'danger' : 'success'"-->
+          <!--            disable-transitions>{{ scope.row.invoiceState }}-->
+          <!--          </el-tag>-->
+          <SwitchBarItem :model-value="scope.row.customerIsInvoice==='未开票'"
+                         @update:modelValue="handleOpenTitle"/>
         </template>
       </el-table-column>
 
@@ -287,20 +287,18 @@
           </el-tag>
         </template>
       </el-table-column>
-      <el-table-column label="客户是否开票" align="center" prop="customerIsInvoice" v-if="columns[23].visible">
+      <el-table-column label="客户是否开票" align="center" prop="customerIsInvoice" v-if="columns[23].visible"
+                       width="150px">
         <template slot-scope="scope">
-          <el-tag
-            :type="scope.row.customerIsInvoice === 0 ? 'danger' :'success'"
-            disable-transitions>{{ isOrNot(scope.row.customerIsInvoice) }}
-          </el-tag>
+          <SwitchBarItem :model-value="scope.row.customerIsInvoice===1"
+                         @update:modelValue="handleOpenTitle"/>
         </template>
       </el-table-column>
-      <el-table-column label="供应商是否开票" align="center" prop="isSupplierInvoice" v-if="columns[24].visible">
+      <el-table-column label="供应商是否开票" align="center" prop="isSupplierInvoice" v-if="columns[24].visible"
+                       width="120px">
         <template slot-scope="scope">
-          <el-tag
-            :type="scope.row.isSupplierInvoice === 0 ? 'danger' :'success'"
-            disable-transitions>{{ isOrNot(scope.row.isSupplierInvoice) }}
-          </el-tag>
+          <SwitchBarItem :model-value="scope.row.customerIsInvoice===1"
+                         @update:modelValue="handleOpenTitle"/>
         </template>
       </el-table-column>
       <!--      <el-table-column label="客户ID" align="center" prop="customerID"/>-->
@@ -592,6 +590,19 @@
     <el-button type="primary" @click="addMoneyBackInfo">添加</el-button>
   </span>
     </el-dialog>
+
+
+    <!--    开票弹窗-->
+    <el-dialog
+      title="开票"
+      :visible.sync="handleOpenTitleDialogVisible"
+      width="30%">
+      <span>开票?</span>
+      <span slot="footer" class="dialog-footer">
+    <el-button @click="closeOpenTitle">取 消</el-button>
+    <el-button type="primary" @click="submitOpenTitle">确 定</el-button>
+  </span>
+    </el-dialog>
   </div>
 </template>
 
@@ -602,7 +613,7 @@ import {
   delGoodsOrder,
   addGoodsOrder,
   updateGoodsOrder,
-  adjustGoodsOrder
+  adjustGoodsOrder, auditGoodsOrder
 } from "@/api/system/goodsOrder";
 import TagsItem from "@/components/TagsItem/index.vue";
 import OrderForm from "@/components/OrderForm.vue";
@@ -615,10 +626,12 @@ import {listCompany} from "@/api/system/company";
 import {addRebate} from "@/api/system/Rebate";
 import {formatDate} from "@/utils";
 import {addOrderFreight} from "@/api/system/orderFreight";
+import SwitchBarItem from "@/components/SwitchBarItem.vue";
+import SwitchBarForCheck from "@/components/SwitchBarForCheck.vue";
 
 export default {
   name: "GoodsOrder",
-  components: {SearchOption, OrderForm, TagsItem},
+  components: {SwitchBarForCheck, SwitchBarItem, SearchOption, OrderForm, TagsItem},
   data() {
     return {
       // 遮罩层
@@ -749,6 +762,8 @@ export default {
       addMoneyBackVisible: false,
       //添加新订单的弹窗
       addOrderItemVisible: false,
+      //开票
+      handleOpenTitleDialogVisible: false,
       //查看订单中的列表
       orderDetailInfo: {},
       //返利回扣信息
@@ -962,10 +977,11 @@ export default {
         //是否含税
         item.isIncludeTaxFactory = item.isIncludeTaxFactory === '是' ? '1' : '0';
         item.isIncludeTaxSale = item.isIncludeTaxSale === '是' ? '1' : '0';
+        //时间处理
       }
       //添加订单 转化时间戳
       const date = this.orderInfo.orderDate.getTime();
-      addGoodsOrder({...this.orderInfo, orderDate: date, PaymentState: ''}).then(res => {
+      addGoodsOrder({...this.orderInfo, orderDate: date, PaymentState: null}).then(res => {
         this.$message.success('订单提交成功')
       }).catch(err => {
         this.$message.error('订单提交失败' + err.msg)
@@ -1014,6 +1030,32 @@ export default {
       return sums;
     },
 
+
+    //todo  开票弹窗
+    handleOpenTitle(val) {
+      //这里是反的,如果是true,代表未开票 false代表已开票
+      if (val) {
+        //关闭开票
+      } else {
+        //准备开票
+        this.handleOpenTitleDialogVisible = true;
+      }
+    },
+    //todo 添加开票
+    submitOpenTitle() {
+
+    },
+    closeOpenTitle() {
+      this.handleOpenTitleDialogVisible = false
+    },
+    //todo 添加审核
+    handleOpenCheck(val, row) {
+      if (!val) {
+        auditGoodsOrder({id: row.id, isaudit: true}).then(res => {
+          this.$message.success('审核成功')
+        })
+      }
+    },
     //打印
     printHTML() {
       this.$print({

@@ -59,3 +59,15 @@ export function adjustGoodsOrder(data) {
     data: data
   })
 }
+
+//审核订单
+export function auditGoodsOrder(data) {
+  return request({
+    url: '/system/goodsOrder/audit',
+    method: 'put',
+    params: {
+      id: data.id,
+      isaudit: data.isaudit
+    }
+  })
+}

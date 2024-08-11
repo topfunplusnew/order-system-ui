@@ -2,9 +2,10 @@
 
 import SearchOption from "@/components/SearchOption.vue";
 import {listCars} from "@/api/system/cars";
+import SwitchBarItem from "@/components/SwitchBarItem.vue";
 
 export default {
-  components: {SearchOption},
+  components: {SwitchBarItem, SearchOption},
   data() {
     return {
       //tableData每一个对象代表的是图表的每一个行
@@ -40,7 +41,7 @@ export default {
         amount3: 15
       }],
 
-
+      modelValue: false
     };
   },
   methods: {
@@ -87,6 +88,9 @@ export default {
     handleCommitBack(val) {
       console.log(val)
     },
+    handleUpdate(val) {
+      console.log(val)
+    }
   },
   created() {
 
@@ -181,6 +185,9 @@ export default {
           </el-table-column>
         </template>
       </SearchOption>
+    </el-row>
+    <el-row>
+      <SwitchBarItem :model-value="modelValue" @update:modelValue="handleUpdate"/>
     </el-row>
   </div>
 </template>
