@@ -33,8 +33,13 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
             <if test="futuresNO != null  and futuresNO != ''"> and futuresNO = #{futuresNO}</if>
             <if test="recoverNO != null  and recoverNO != ''"> and recoverNO = #{recoverNO}</if>
             <if test="moneyAmount != null "> and moneyAmount = #{moneyAmount}</if>
-            <if test="recoverDate != null  and recoverDate != ''"> and recoverDate = #{recoverDate}</if>
             <if test="acountsName != null  and acountsName != ''"> and acountsName like concat('%', #{acountsName}, '%')</if>
+            <if test="startTime != null and startTime != ''">
+                and recoverDate &gt;= #{startTime}
+            </if>
+            <if test="endTime != null and endTime != ''">
+                and recoverDate &lt;= #{endTime}
+            </if>
             <if test="bankNo != null  and bankNo != ''"> and bankNo = #{bankNo}</if>
             <if test="comments != null  and comments != ''"> and comments = #{comments}</if>
             <if test="addtime != null  and addtime != ''"> and addtime = #{addtime}</if>

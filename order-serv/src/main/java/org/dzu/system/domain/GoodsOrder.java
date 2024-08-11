@@ -156,9 +156,8 @@ public class GoodsOrder extends BaseEntity
     private String path;
 
     /** 打款状态(申请中，已打款，未打款) */
-    @Excel(name = "打款状态(申请中，已打款，未打款)")
+    @Excel(name = "打款状态)")
     @TableField(value = "PaymentState")
-    @Pattern(regexp = "申请中|已打款|未打款")
     private String PaymentState;
 
     /** 陆运银行户名 */

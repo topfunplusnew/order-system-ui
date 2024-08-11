@@ -95,7 +95,6 @@ public class BankAcceptance extends BaseEntity
     private Double billAmount;
 
     /** 贴息点数 */
-    @DecimalMaxDigits
     @NotNull(message = "贴息点数不能为空")
     @TableField("inDiscountPoints")
     private Double inDiscountPoints;
@@ -168,6 +167,69 @@ public class BankAcceptance extends BaseEntity
     @TableField("delFlag")
     private Long delFlag;
 
+    //  dueDate issueDate operateDate 三个用于只是时间段搜索的6个字段
+    @TableField(exist = false)
+    private String dueDateStart;
+    @TableField(exist = false)
+    private String issueDateEnd;
+    @TableField(exist = false)
+    private String operateDateStart;
+    @TableField(exist = false)
+    private String operateDateEnd;
+    @TableField(exist = false)
+    private String dueDateEnd;
+
+    public String getIssueDateStart() {
+        return issueDateStart;
+    }
+
+    public void setIssueDateStart(String issueDateStart) {
+        this.issueDateStart = issueDateStart;
+    }
+
+    public String getDueDateEnd() {
+        return dueDateEnd;
+    }
+
+    public void setDueDateEnd(String dueDateEnd) {
+        this.dueDateEnd = dueDateEnd;
+    }
+
+    public String getOperateDateEnd() {
+        return operateDateEnd;
+    }
+
+    public void setOperateDateEnd(String operateDateEnd) {
+        this.operateDateEnd = operateDateEnd;
+    }
+
+    public String getOperateDateStart() {
+        return operateDateStart;
+    }
+
+    public void setOperateDateStart(String operateDateStart) {
+        this.operateDateStart = operateDateStart;
+    }
+
+    public String getIssueDateEnd() {
+        return issueDateEnd;
+    }
+
+    public void setIssueDateEnd(String issueDateEnd) {
+        this.issueDateEnd = issueDateEnd;
+    }
+
+    public String getDueDateStart() {
+        return dueDateStart;
+    }
+
+    public void setDueDateStart(String dueDateStart) {
+        this.dueDateStart = dueDateStart;
+    }
+
+    @TableField(exist = false)
+    private String issueDateStart;
+
     public void setId(Long id) 
     {
         this.id = id;
@@ -182,12 +244,8 @@ public class BankAcceptance extends BaseEntity
         this.operateDate = operateDate;
     }
 
-    @AutoTimestamps
-    public String getOperateDate() 
+    public String getOperateDate()
     {
-        if (this.operateDate == null || this.operateDate.isEmpty()) {
-            this.operateDate = new SimpleDateFormat("yyyy-MM-dd").format(new Date());
-        }
         return operateDate;
     }
     public void setBillNo(String billNo) 

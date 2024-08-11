@@ -66,7 +66,12 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
             <if test="payNO != null  and payNO != ''"> and r.payNO = #{payNO}</if>
             <if test="moneyAmount != null "> and r.moneyAmount = #{moneyAmount}</if>
             <if test="ratio != null "> and r.ratio = #{ratio}</if>
-            <if test="payDate != null  and payDate != ''"> and r.payDate = #{payDate}</if>
+            <if test="startTime != null and startTime != ''">
+                and r.payDate &gt;= #{startTime}
+            </if>
+            <if test="endTime != null and endTime != ''">
+                and r.payDate &lt;= #{endTime}
+            </if>
             <if test="acountsName != null  and acountsName != ''"> and r.acountsName like concat('%', #{acountsName}, '%')</if>
             <if test="bankNo != null  and bankNo != ''"> and r.bankNo = #{bankNo}</if>
             <if test="comments != null  and comments != ''"> and r.comments = #{comments}</if>
