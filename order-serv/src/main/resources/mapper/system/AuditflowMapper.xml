@@ -24,7 +24,8 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
             <if test="flowname != null  and flowname != ''"> and flowname like concat('%', #{flowname}, '%')</if>
             <if test="stepnum != null "> and stepnum = #{stepnum}</if>
             <if test="step != null "> and step = #{step}</if>
-            <if test="auditauthority != null  and auditauthority != ''"> and auditauthority = #{auditauthority}</if>
+            <if test="auditauthority != null  and auditauthority != ''"> and auditauthority like concat('%', #{auditauthority}, '%')
+            </if>
         </where>
         order by step asc
     </select>
