@@ -42,3 +42,12 @@ export function delAuditInfo(id) {
     method: 'delete'
   })
 }
+
+// 查询分组审核列表
+export function listAuditInfoGroup(query) {
+  return request({
+    url: '/system/auditInfo/group',
+    method: 'get',
+    params: query
+  })
+}
