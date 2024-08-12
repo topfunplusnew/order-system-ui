@@ -36,6 +36,9 @@
       <el-col :span="1.5">
         <el-button icon="el-icon-refresh" size="mini" @click="resetQuery">刷新</el-button>
       </el-col>
+      <el-col :span="1.5">
+        <el-button type="danger" size="mini" @click="handleAdd">新增资金借出信息</el-button>
+      </el-col>
       <right-toolbar :showSearch.sync="showSearch" @queryTable="getList" :columns="columns">
         <template v-slot:print>
           <el-col :span="1.5">
@@ -73,7 +76,9 @@
                        v-if="columns[2].visible"/>
       <el-table-column label="对象(员工姓名、公司名称)" align="center" prop="target" v-if="columns[3].visible"/>
       <el-table-column label="保证金金额" align="center" prop="moneyAmount" v-if="columns[4].visible"/>
-      <el-table-column label="对方账户" align="center" prop="targetAcountsName" v-if="columns[5].visible"/>
+      <el-table-column label="对方账户" align="center" prop="targetAcountsName" v-if="columns[5].visible">
+
+      </el-table-column>
       <el-table-column label="对方账号" align="center" prop="targetBankNo" v-if="columns[6].visible"/>
       <el-table-column label="对方开户行" align="center" prop="targetBankName" v-if="columns[7].visible"/>
       <el-table-column label="我方支付账户" align="center" prop="selfAcountsName" v-if="columns[8].visible"/>
@@ -119,9 +124,9 @@
     <!-- 添加或修改向外部借出款信息对话框 -->
     <el-dialog :title="title" :visible.sync="open" width="500px" append-to-body>
       <el-form ref="form" :model="form" :rules="rules" label-width="80px">
-        <el-form-item label="借出款编号" prop="futuresNO">
-          <el-input v-model="form.futuresNO" placeholder="请输入借出款编号"/>
-        </el-form-item>
+        <!--        <el-form-item label="借出款编号" prop="futuresNO">-->
+        <!--          <el-input v-model="form.futuresNO" placeholder="请输入借出款编号"/>-->
+        <!--        </el-form-item>-->
         <el-form-item label="期货保证金公司" prop="futuresMarginCompany">
           <el-input v-model="form.futuresMarginCompany" placeholder="请输入期货保证金公司"/>
         </el-form-item>
@@ -132,7 +137,24 @@
           <el-input v-model="form.moneyAmount" placeholder="请输入保证金金额"/>
         </el-form-item>
         <el-form-item label="对方账户" prop="targetAcountsName">
-          <el-input v-model="form.targetAcountsName" placeholder="请输入对方账户"/>
+          <el-row>
+            <el-col :span="10">
+              <el-input v-model="form.targetAcountsName" placeholder="请输入对方账户"/>
+            </el-col>
+            <el-col :span="3">
+              <SearchOption :get-data="listBankAccount" icon="el-icon-search" @commitBack="handleCommitBack"
+                            :limit-info="{}" query-label="户名查找" query-info="acountsName" :query-name="queryBank"
+                            @update:queryName="handleUpdateQueryName">
+                <template #table-columns>
+                  <el-table-column label="公司名称" align="center" prop="companyName"/>
+                  <el-table-column label="公司类型" align="center" prop="companyType"/>
+                  <el-table-column label="开户行" align="center" prop="bankName"/>
+                  <el-table-column label="开户名" align="center" prop="acountsName"/>
+                  <el-table-column label="账号" align="center" prop="bankNo"/>
+                </template>
+              </SearchOption>
+            </el-col>
+          </el-row>
         </el-form-item>
         <el-form-item label="对方账号" prop="targetBankNo">
           <el-input v-model="form.targetBankNo" placeholder="请输入对方账号"/>
@@ -141,7 +163,24 @@
           <el-input v-model="form.targetBankName" placeholder="请输入对方开户行"/>
         </el-form-item>
         <el-form-item label="我方支付账户" prop="selfAcountsName">
-          <el-input v-model="form.selfAcountsName" placeholder="请输入我方支付账户"/>
+          <el-row>
+            <el-col :span="10">
+              <el-input v-model="form.selfAcountsName" placeholder="请输入我方支付账户"/>
+            </el-col>
+            <el-col :span="3">
+              <SearchOption :get-data="listBankAccount" icon="el-icon-search" @commitBack="handleCommitBackSelf"
+                            :limit-info="{acountsType:'己方公司'}" query-label="户名查找" query-info="acountsName"
+                            :query-name="queryBank"
+                            @update:queryName="handleUpdateQueryName">
+                <template #table-columns>
+                  <el-table-column label="账户类型" align="center" prop="acountsType"/>
+                  <el-table-column label="开户行" align="center" prop="bankName"/>
+                  <el-table-column label="开户名" align="center" prop="acountsName"/>
+                  <el-table-column label="账号" align="center" prop="bankNo"/>
+                </template>
+              </SearchOption>
+            </el-col>
+          </el-row>
         </el-form-item>
         <el-form-item label="我方账号" prop="selfBankNo">
           <el-input v-model="form.selfBankNo" placeholder="请输入我方账号"/>
@@ -273,9 +312,13 @@ import {listLendMoney, getLendMoney, delLendMoney, addLendMoney, updateLendMoney
 import {mapGetters} from "vuex";
 import {addRecoverMoney, getRecoverMoneyByUuid} from "@/api/system/recoverMoney";
 import {addReceiveMoney} from "@/api/system/receiveMoney";
+import SearchOption from "@/components/SearchOption.vue";
+import {listBankAccount} from "@/api/system/bankAccount";
+import {listCompany} from "@/api/system/company";
 
 export default {
   name: "LendMoney",
+  components: {SearchOption},
   data() {
     return {
       // 遮罩层
@@ -377,7 +420,11 @@ export default {
       currentAccountsName: '',
       currentCompanyName: '',
       //对方公司或者客户名称
-      currentTargetAcountsName: ''
+      currentTargetAcountsName: '',
+
+
+      //
+      queryBank: ''
     };
   },
   created() {
@@ -389,6 +436,8 @@ export default {
     ...mapGetters(['tempLendMoneyList'])
   },
   methods: {
+    listCompany,
+    listBankAccount,
     //点击收回资金按钮
     handleGetBackMoney(row) {
       console.log(row)
@@ -494,6 +543,25 @@ export default {
         }
       })
     },
+
+
+    //
+    handleCommitBack(val) {
+      this.form.targetBankNo = val.bankNo;
+      this.form.targetBankName = val.bankName;
+      this.form.targetAcountsName = val.acountsName;
+    },
+    //
+    handleUpdateQueryName(val) {
+      this.queryCompany = val;
+    },
+    //
+    handleCommitBackSelf(val) {
+      this.form.selfBankNo = val.bankNo;
+      this.form.selfBankName = val.bankName;
+      this.form.selfAcountsName = val.acountsName;
+    },
+
     printHTML() {
       this.$print({
         printable: 'printBox',
