@@ -819,6 +819,10 @@ export default {
     cancelSubmit() {
       this.orderInfo = {};
       this.addOrderItemVisible = false
+      //清空订单详情填写信息
+      this.$store.dispatch('order/clearOrderItemList');
+      //清空订单列表基础信息
+      this.orderInfo = {}
     },
     //时间查询
     handleTimesQuery() {

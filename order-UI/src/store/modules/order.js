@@ -17,6 +17,10 @@ const mutations = {
   DELETE_ORDER_ITEM(state, index) {
     state.orderItemList.splice(index, 1)
   },
+  //清空填写缓存
+  CLEAR_ORDER_ITEM_LIST(state) {
+    state.orderItemList = []
+  },
   //修改订单详情
   CHANGE_ORDER_ITEM(state, orderItemInfo) {
     //组装orderItem对象 剔除index属性
@@ -51,7 +55,10 @@ const actions = {
   changeOrderItem({commit}, orderItemInfo) {
     commit('CHANGE_ORDER_ITEM', orderItemInfo)
   },
-
+  //清空填写缓存
+  clearOrderItemList({commit}) {
+    commit('CLEAR_ORDER_ITEM_LIST')
+  },
 
   //2.订单列表
   //查询订单列表 赋值
