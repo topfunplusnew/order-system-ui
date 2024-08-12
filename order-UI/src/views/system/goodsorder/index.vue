@@ -926,9 +926,7 @@ export default {
       updateGoodsOrder({...this.tempOrderInfo, path: val})
         .then(res => {
           this.$message.success('上传成功')
-        }).catch(err => {
-        this.$message.error('上传失败' + err.msg)
-      })
+        })
     },
 
     //调整单
@@ -953,8 +951,6 @@ export default {
           this.$message.success('调整单提交成功')
           this.handleOrderVisible = false
           this.getList();
-        }).catch(err => {
-          this.$message.error('调整单提交失败' + err.msg)
         })
       })
     },
@@ -982,8 +978,6 @@ export default {
       const date = this.orderInfo.orderDate.getTime();
       addGoodsOrder({...this.orderInfo, orderDate: date, PaymentState: ''}).then(res => {
         this.$message.success('订单提交成功')
-      }).catch(err => {
-        this.$message.error('订单提交失败' + err.msg)
       })
 
       //同时添加运费信息 todo 运费添加
@@ -1188,8 +1182,7 @@ export default {
       }).then(() => {
         this.getList();
         this.$modal.msgSuccess("删除成功");
-      }).catch(() => {
-      });
+      })
     },
     /** 导出按钮操作 */
     handleExport() {
