@@ -1,3 +1,4 @@
+<!--付款申请弹窗-->
 <template>
   <div class="app-container">
     <!-- 2.添加或修改付款信息对话框 -->
@@ -89,7 +90,7 @@
         <el-input v-model="form.comments" placeholder="请输入备注"/>
       </el-form-item>
     </el-form>
-    <div slot="footer" class="dialog-footer">
+    <div slot="footer" class="dialog-footer" style="text-align: center">
       <el-button type="primary" @click="submitForm">确 定</el-button>
       <el-button @click="cancel">取 消</el-button>
     </div>
@@ -298,6 +299,8 @@ export default {
             if (this.addMoney !== '') {
               this.form.moneyAmount = Number(this.form.moneyAmount) + Number(this.addMoney)
             }
+            //审核状态赋空
+            this.form.checkState = ''
             addPaymentApply(this.form).then(response => {
               this.$modal.msgSuccess("还款申请添加成功");
               this.opened = false;

@@ -238,15 +238,21 @@
                   是否偿还利息
                 </span>
               </el-col>
-              <el-col :span="10">
+              <el-col :span="6">
                 <el-radio v-model="isNeedRatio" label="0">否</el-radio>
                 <el-radio v-model="isNeedRatio" label="1">是</el-radio>
               </el-col>
+
             </el-row>
-            <el-row>
-              <el-col :span="8" :offset="4">
-                <el-input v-model="currentGiveBackMoneyInfo.ratio" placeholder="请输入付息金额"
-                          v-if="isNeedRatio === '1'"/>
+            <br/>
+            <el-row v-if="isNeedRatio === '1'">
+              <el-col :span="5">
+                <span style="font-weight: bolder;line-height: 38px">
+                  付息金额
+                </span>
+              </el-col>
+              <el-col :span="10">
+                <el-input v-model="currentGiveBackMoneyInfo.ratio" placeholder="请输入付息金额"/>
               </el-col>
             </el-row>
             <!--            还款 付款申请-->
