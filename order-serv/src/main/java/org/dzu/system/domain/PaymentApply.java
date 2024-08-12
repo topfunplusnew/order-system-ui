@@ -11,6 +11,8 @@ import org.dzu.common.annotation.FlagOnlyZeroOrOne;
 import org.dzu.common.core.domain.BaseEntity;
 import org.hibernate.validator.constraints.Length;
 
+import javax.validation.constraints.Min;
+import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Pattern;
 
 /**
@@ -51,12 +53,14 @@ public class PaymentApply extends BaseEntity
     @Excel(name = "支付类型")
     @Length(max = 55, message = "支付类型长度不能超过55个字符")
     @TableField(value = "payType")
+    @NotNull(message = "请选择支付类型")
     private String payType;
 
     /** 金额 */
     @DecimalMaxDigits
     @Excel(name = "金额")
     @TableField(value = "moneyAmount")
+    @Min(value = 0,message = "金额必须是一个大于0的数")
     private Double moneyAmount;
 
     /** 对方户名 */
