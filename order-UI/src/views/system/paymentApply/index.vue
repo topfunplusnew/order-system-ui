@@ -306,7 +306,6 @@
 
         <!--        文件-->
         <el-form-item label="附件" prop="attachment">
-          <!--          <el-input v-model="form.attachment" type="textarea" placeholder="请输入内容"/>-->
           <file-upload @input="handleCommitUpload"/>
         </el-form-item>
 
