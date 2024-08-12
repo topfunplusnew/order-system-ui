@@ -150,7 +150,7 @@
           <el-row :gutter="5">
             <!--            一级分类-->
             <el-col :span="8">
-              <el-select v-model="currentSort.levelOne" placeholder="请选择一级分类" @change="handleSelectOneLevel">
+              <el-select v-model="currentSort.levelOne" placeholder="请选择一级支付类型" @change="handleSelectOneLevel">
                 <el-option
                   v-for="item in OneLevelOption"
                   :key="item.id"
@@ -161,7 +161,7 @@
             </el-col>
             <!--            二级分类-->
             <el-col :span="8">
-              <el-select v-model="currentSort.levelTwo" placeholder="请选择二级分类" @change="handleSelectTwoLevel">
+              <el-select v-model="currentSort.levelTwo" placeholder="请选择二级支付类型" @change="handleSelectTwoLevel">
                 <el-option
                   v-for="item in TwoLevelOption"
                   :key="item.id"
