@@ -231,45 +231,27 @@
             title="还款(付款)申请"
             :visible.sync="innerVisible"
             append-to-body>
-            <!-- 还款表单-->
-            <!--            <el-form :model="currentGiveBackMoneyInfo" class="demo-form-inline">-->
-            <!--              &lt;!&ndash;还款银行卡&ndash;&gt;-->
-            <!--              <el-form-item label="还款账号" prop="bankNo">-->
-            <!--                &lt;!&ndash;                <el-input v-model="currentGiveBackMoneyInfo.bankNo" placeholder="请输入还款账号"/>&ndash;&gt;-->
-            <!--                <span>{{ currentGiveBackMoneyInfo.bankNo }}</span>-->
-            <!--              </el-form-item>-->
-            <!--              <el-form-item label="还款金额" prop="moneyAmount">-->
-            <!--                <el-input v-model="currentGiveBackMoneyInfo.moneyAmount" placeholder="请输入还款金额"/>-->
-            <!--              </el-form-item>-->
-            <!--              &lt;!&ndash;还款账户&ndash;&gt;-->
-            <!--              <el-form-item label="还款账户" prop="acountsName">-->
-            <!--                <el-input v-model="currentGiveBackMoneyInfo.acountsName" placeholder="请输入还款账户"/>-->
-            <!--              </el-form-item>-->
-            <!--              &lt;!&ndash; 付息金额(自动计算)&ndash;&gt;-->
-            <!--              <el-form-item label="是否偿还利息" prop="ratio">-->
-            <!--                <el-radio v-model="isNeedRatio" label="0">否</el-radio>-->
-            <!--                <el-radio v-model="isNeedRatio" label="1">是</el-radio>-->
-            <!--                <el-input v-model="currentGiveBackMoneyInfo.ratio" placeholder="请输入付息金额"-->
-            <!--                          v-if="isNeedRatio === '1'"/>-->
-            <!--              </el-form-item>-->
-            <!--              <el-form-item label="还款日期" prop="payDate">-->
-            <!--                <el-date-picker-->
-            <!--                  v-model="currentGiveBackMoneyInfo.payDate"-->
-            <!--                  type="date"-->
-            <!--                  placeholder="请选择还款日期" value-format="yyyy-MM-dd">-->
-            <!--                </el-date-picker>-->
-            <!--              </el-form-item>-->
-            <!--              <el-form-item label="备注信息" prop="comments">-->
-            <!--                <el-input v-model="currentGiveBackMoneyInfo.comments" placeholder="请输入备注信息"/>-->
-            <!--              </el-form-item>-->
-            <!--              <el-form-item>-->
-            <!--                <el-button type="primary" @click="GiveBackMoney">还款</el-button>-->
-            <!--              </el-form-item>-->
-            <!--            </el-form>-->
-
+            <!-- 付息金额(自动计算)-->
+            <el-row>
+              <el-col :span="8">
+                <span style="font-weight: bolder">
+                  是否偿还利息
+                </span>
+              </el-col>
+              <el-col :span="10">
+                <el-radio v-model="isNeedRatio" label="0">否</el-radio>
+                <el-radio v-model="isNeedRatio" label="1">是</el-radio>
+              </el-col>
+            </el-row>
+            <el-row>
+              <el-col :span="8" :offset="4">
+                <el-input v-model="currentGiveBackMoneyInfo.ratio" placeholder="请输入付息金额"
+                          v-if="isNeedRatio === '1'"/>
+              </el-col>
+            </el-row>
             <!--            还款 付款申请-->
-            <ApplyPayment/>
-
+            <ApplyPayment table-name="borrowedmoney" t-i-d="id" @changeOpen="innerVisible = false"
+                          :addMoney="currentGiveBackMoneyInfo.ratio"/>
           </el-dialog>
         </el-card>
       </div>

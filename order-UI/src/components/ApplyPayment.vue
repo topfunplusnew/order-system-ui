@@ -1,96 +1,96 @@
 <template>
   <div class="app-container">
     <!-- 2.添加或修改付款信息对话框 -->
-      <el-form ref="form" :model="form" :rules="rules" label-width="80px">
-        <!--        表名要自动填充 手动添加无需-->
-        <!--        <el-form-item label="对应的表名" prop="tableName">-->
-        <!--          <el-input v-model="form.tableName" placeholder="请输入对应的表名"/>-->
-        <!--        </el-form-item>-->
-        <!--        <el-form-item label="对应的表主键" prop="tID">-->
-        <!--          <el-input v-model="form.tID" placeholder="请输入对应的表主键"/>-->
-        <!--        </el-form-item>-->
-        <el-form-item label="日期" prop="fundsDate">
-          <el-date-picker
-            v-model="form.fundsDate"
-            type="date"
-            placeholder="选择日期">
-          </el-date-picker>
-        </el-form-item>
-        <el-form-item label="支付类型" prop="payType">
-          <!--          <el-i99999nput v-model="form.receiveType" placeholder="请输入支付类型"/>-->
-          <el-row :gutter="5">
-            <!--            一级分类-->
-            <el-col :span="8">
-              <el-select v-model="currentSort.levelOne" placeholder="请选择一级分类" @change="handleSelectOneLevel">
-                <el-option
-                  v-for="item in OneLevelOption"
-                  :key="item.id"
-                  :label="item.title"
-                  :value="item.title">
-                </el-option>
-              </el-select>
-            </el-col>
-            <!--            二级分类-->
-            <el-col :span="8">
-              <el-select v-model="currentSort.levelTwo" placeholder="请选择二级分类" @change="handleSelectTwoLevel">
-                <el-option
-                  v-for="item in TwoLevelOption"
-                  :key="item.id"
-                  :label="item.title"
-                  :value="item.title">
-                </el-option>
-              </el-select>
-            </el-col>
-          </el-row>
-        </el-form-item>
-        <el-form-item label="金额" prop="moneyAmount">
-          <el-input v-model="form.moneyAmount" placeholder="请输入金额"/>
-        </el-form-item>
+    <el-form ref="form" :model="form" :rules="rules" label-width="80px">
+      <!--        表名要自动填充 手动添加无需-->
+      <!--        <el-form-item label="对应的表名" prop="tableName">-->
+      <!--          <el-input v-model="form.tableName" placeholder="请输入对应的表名"/>-->
+      <!--        </el-form-item>-->
+      <!--        <el-form-item label="对应的表主键" prop="tID">-->
+      <!--          <el-input v-model="form.tID" placeholder="请输入对应的表主键"/>-->
+      <!--        </el-form-item>-->
+      <el-form-item label="日期" prop="fundsDate">
+        <el-date-picker
+          v-model="form.fundsDate"
+          type="date"
+          placeholder="选择日期">
+        </el-date-picker>
+      </el-form-item>
+      <el-form-item label="支付类型" prop="payType">
+        <!--          <el-i99999nput v-model="form.receiveType" placeholder="请输入支付类型"/>-->
+        <el-row :gutter="5">
+          <!--            一级分类-->
+          <el-col :span="8">
+            <el-select v-model="currentSort.levelOne" placeholder="请选择一级分类" @change="handleSelectOneLevel">
+              <el-option
+                v-for="item in OneLevelOption"
+                :key="item.id"
+                :label="item.title"
+                :value="item.title">
+              </el-option>
+            </el-select>
+          </el-col>
+          <!--            二级分类-->
+          <el-col :span="8">
+            <el-select v-model="currentSort.levelTwo" placeholder="请选择二级分类" @change="handleSelectTwoLevel">
+              <el-option
+                v-for="item in TwoLevelOption"
+                :key="item.id"
+                :label="item.title"
+                :value="item.title">
+              </el-option>
+            </el-select>
+          </el-col>
+        </el-row>
+      </el-form-item>
+      <el-form-item label="金额" prop="moneyAmount">
+        <el-input v-model="form.moneyAmount" placeholder="请输入金额"/>
+      </el-form-item>
 
-        <!--        对方信息-->
-        <el-form-item label="对方户名" prop="otherAcountsName">
-          <el-row>
-            <el-col :span="10">
-              <el-input v-model="form.otherAcountsName" placeholder="请输入对方户名"/>
-            </el-col>
-            <el-col :span="3">
-              <SearchOption :get-data="listCompany" icon="el-icon-search" @commitBack="handleCommitBack">
-                <template #table-columns>
-                  <el-table-column label="公司名称" align="center" prop="companyName"/>
-                  <el-table-column label="公司类型" align="center" prop="companyType"/>
-                  <el-table-column label="开户行" align="center" prop="bankName"/>
-                  <el-table-column label="开户名" align="center" prop="acountsName"/>
-                  <el-table-column label="账号" align="center" prop="bankNo"/>
-                </template>
-              </SearchOption>
-            </el-col>
-          </el-row>
-        </el-form-item>
-        <el-form-item label="对方账号" prop="otherBankNo">
-          <el-input v-model="form.otherBankNo" placeholder="请输入对方账号"/>
-        </el-form-item>
-        <el-form-item label="对方开户行" prop="otherBankName">
-          <el-input v-model="form.otherBankName" placeholder="请输入对方开户行"/>
-        </el-form-item>
-        <el-form-item label="对方公司" prop="companyName">
-          <el-input v-model="form.companyName" placeholder="请输入对方公司"/>
-        </el-form-item>
-        <el-form-item label="付款原因" prop="reason">
-          <el-input v-model="form.reason" type="textarea" placeholder="请输入内容"/>
-        </el-form-item>
-        <!--        文件-->
-        <el-form-item label="附件" prop="attachment">
-          <!--          <el-input v-model="form.attachment" type="textarea" placeholder="请输入内容"/>-->
-          <file-upload @input="handleCommitUpload"/>
-        </el-form-item>
-        <el-form-item label="备注" prop="comments">
-          <el-input v-model="form.comments" placeholder="请输入备注"/>
-        </el-form-item>
-      </el-form>
-      <div slot="footer" class="dialog-footer">
-        <el-button type="primary" @click="submitForm">确 定</el-button>
-        <el-button @click="cancel">取 消</el-button>
-      </div>
+      <!--        对方信息-->
+      <el-form-item label="对方户名" prop="otherAcountsName">
+        <el-row>
+          <el-col :span="10">
+            <el-input v-model="form.otherAcountsName" placeholder="请输入对方户名"/>
+          </el-col>
+          <el-col :span="3">
+            <SearchOption :get-data="listCompany" icon="el-icon-search" @commitBack="handleCommitBack">
+              <template #table-columns>
+                <el-table-column label="公司名称" align="center" prop="companyName"/>
+                <el-table-column label="公司类型" align="center" prop="companyType"/>
+                <el-table-column label="开户行" align="center" prop="bankName"/>
+                <el-table-column label="开户名" align="center" prop="acountsName"/>
+                <el-table-column label="账号" align="center" prop="bankNo"/>
+              </template>
+            </SearchOption>
+          </el-col>
+        </el-row>
+      </el-form-item>
+      <el-form-item label="对方账号" prop="otherBankNo">
+        <el-input v-model="form.otherBankNo" placeholder="请输入对方账号"/>
+      </el-form-item>
+      <el-form-item label="对方开户行" prop="otherBankName">
+        <el-input v-model="form.otherBankName" placeholder="请输入对方开户行"/>
+      </el-form-item>
+      <el-form-item label="对方公司" prop="companyName">
+        <el-input v-model="form.companyName" placeholder="请输入对方公司"/>
+      </el-form-item>
+      <el-form-item label="付款原因" prop="reason">
+        <el-input v-model="form.reason" type="textarea" placeholder="请输入内容"/>
+      </el-form-item>
+      <!--        文件-->
+      <el-form-item label="附件" prop="attachment">
+        <!--          <el-input v-model="form.attachment" type="textarea" placeholder="请输入内容"/>-->
+        <file-upload @input="handleCommitUpload"/>
+      </el-form-item>
+      <el-form-item label="备注" prop="comments">
+        <el-input v-model="form.comments" placeholder="请输入备注"/>
+      </el-form-item>
+    </el-form>
+    <div slot="footer" class="dialog-footer">
+      <el-button type="primary" @click="submitForm">确 定</el-button>
+      <el-button @click="cancel">取 消</el-button>
+    </div>
   </div>
 </template>
 
@@ -112,7 +112,10 @@ export default {
   name: "ApplyPayment",
   components: {SearchOption},
   props: {
-    open: Boolean
+    open: Boolean,
+    tableName: '',
+    tID: '',
+    addMoney: ''
   },
   data() {
     return {
@@ -127,7 +130,25 @@ export default {
       // 弹出层标题
       title: "",
       // 表单参数
-      form: {},
+      form: {
+        tID: null,
+        tableName: null,
+        fundsDate: null,
+        payType: null,
+        moneyAmount: null,
+        otherAcountsName: null,
+        otherBankNo: null,
+        otherBankName: null,
+        companyName: null,
+        companyId: null,
+        companyType: null,
+        reason: null,
+        attachment: null,
+        applyPerson: null,
+        applyPersonID: null,
+        checkState: null,
+        comments: null,
+      },
       // 表单校验
       rules: {},
       //付款分类信息
@@ -144,6 +165,7 @@ export default {
     };
   },
   created() {
+    this.reset();
     this.getList();
     listSubject().then(res => {
       this.subjectTree = this.handleTree(res.data, "id", "parentId");
@@ -154,9 +176,9 @@ export default {
     fullLevel() {
       return this.currentSort.levelOne + '-' + this.currentSort.levelTwo;
     },
-    open: {
+    opened: {
       set(value) {
-        this.$emit('changeOpen',value)
+        this.$emit('changeOpen', value)
       },
       get() {
         return this.open;
@@ -208,7 +230,7 @@ export default {
     },
     // 取消按钮
     cancel() {
-      this.open = false;
+      this.opened = false;
       this.reset();
     },
     // 表单重置
@@ -249,17 +271,25 @@ export default {
           if (this.form.id != null) {
             //排除不必要字段
             excludeParams(this, this.$exclude)
+            this.form.tableName = this.tableName;
+            this.form.tID = this.tID;
             updatePaymentApply(this.form).then(response => {
               this.$modal.msgSuccess("修改成功");
-              this.open = false;
+              this.opened = false;
               this.getList();
             });
           } else {
             excludeParams(this, this.$exclude)
+            this.form.tableName = this.tableName;
+            this.form.tID = this.tID;
             this.form.payType = this.fullLevel;
+            //加上额外金额
+            if (this.addMoney !== '') {
+              this.form.moneyAmount = Number(this.form.moneyAmount) + Number(this.addMoney)
+            }
             addPaymentApply(this.form).then(response => {
-              this.$modal.msgSuccess("新增成功");
-              this.open = false;
+              this.$modal.msgSuccess("还款申请添加成功");
+              this.opened = false;
               this.getList();
             });
           }
