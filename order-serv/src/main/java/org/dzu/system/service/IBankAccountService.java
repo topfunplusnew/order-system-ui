@@ -59,11 +59,4 @@ public interface IBankAccountService
      */
     public int deleteBankAccountByIds(Long[] ids);
 
-    /**
-     * 删除银行账号信息
-     * 
-     * @param id 银行账号主键
-     * @return 结果
-     */
-    public int deleteBankAccountById(Long id);
 }

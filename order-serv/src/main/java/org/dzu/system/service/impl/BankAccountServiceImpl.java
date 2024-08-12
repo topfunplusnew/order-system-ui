@@ -1,15 +1,19 @@
 package org.dzu.system.service.impl;
 
+import org.dzu.common.constant.BankaccountConstants;
 import org.dzu.common.constant.DelConstants;
 import org.dzu.common.exception.ServiceException;
 import org.dzu.system.domain.BankAccount;
+import org.dzu.system.domain.Cars;
 import org.dzu.system.mapper.BankAccountMapper;
+import org.dzu.system.mapper.CarsMapper;
 import org.dzu.system.service.IBankAccountService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Isolation;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.Arrays;
 import java.util.List;
 
 /**
@@ -23,6 +27,8 @@ public class BankAccountServiceImpl implements IBankAccountService
 {
     @Autowired
     private BankAccountMapper bankAccountMapper;
+    @Autowired
+    private CarsMapper carsMapper;
 
     @Override
     public BankAccount selectBankAccountByBankNo(String bankNo) {
@@ -86,7 +92,6 @@ public class BankAccountServiceImpl implements IBankAccountService
     @Transactional(isolation = Isolation.SERIALIZABLE,rollbackFor = Exception.class)//多次sql操作，需要保证事务
     public int updateBankAccount(BankAccount bankAccount)
     {
-
         BankAccount query = new BankAccount();
         query.setBankNo(bankAccount.getBankNo());
         query.setAcountsType(bankAccount.getAcountsType());
@@ -105,20 +110,21 @@ public class BankAccountServiceImpl implements IBankAccountService
      * @return 结果
      */
     @Override
+    @Transactional
     public int deleteBankAccountByIds(Long[] ids)
     {
+        // 先搜索全部要删除的信息,检测有无司机
+        List<BankAccount> bankAccounts = bankAccountMapper.selectBatchIds(Arrays.asList(ids));
+        bankAccounts.forEach(bankAccount -> {
+            if(bankAccount.getAcountsType().equals(BankaccountConstants.DRIVER)){
+                // 去搜索cars表,看看对应的司机的银行卡是不是本次的卡
+                Cars cars = carsMapper.selectCarsById(bankAccount.getCompanyId());
+                if(cars.getBankNo().equals(bankAccount.getBankNo())){
+                    throw new ServiceException("存在司机使用本次银行卡，无法删除！");
+                }
+            }
+        });
         return bankAccountMapper.deleteBankAccountByIds(ids);
     }
 
-    /**
-     * 删除银行账号信息
-     * 
-     * @param id 银行账号主键
-     * @return 结果
-     */
-    @Override
-    public int deleteBankAccountById(Long id)
-    {
-        return bankAccountMapper.deleteBankAccountById(id);
-    }
 }
