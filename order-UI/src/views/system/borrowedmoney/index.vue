@@ -242,7 +242,6 @@
                 <el-radio v-model="isNeedRatio" label="0">否</el-radio>
                 <el-radio v-model="isNeedRatio" label="1">是</el-radio>
               </el-col>
-
             </el-row>
             <br/>
             <el-row v-if="isNeedRatio === '1'">

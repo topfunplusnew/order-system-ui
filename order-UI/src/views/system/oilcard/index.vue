@@ -1,3 +1,4 @@
+<!--todo 加油卡管理，要分开管理 分为加油卡主卡和加油卡副卡-->
 <template>
   <div class="app-container">
     <el-form :model="queryParams" ref="queryForm" size="small" :inline="true" v-show="showSearch" label-width="68px">
@@ -83,40 +84,22 @@
 
     <el-table border v-loading="loading" :data="oilCardList" @selection-change="handleSelectionChange" id="printBox"
               v-horizontal-scroll="'always'">
-      <!--      <el-table-column type="selection" width="55" align="center">-->
-      <el-table-column label="id" align="center" prop="id"/>
       <el-table-column label="加油卡卡号" align="center" prop="oilCardNo" v-if="columns[0].visible"/>
-      <el-table-column label="使用加油卡时间" align="center" prop="useDate" v-if="columns[1].visible"/>
-      <el-table-column label="使用加油卡车辆车牌号" align="center" prop="carNo" v-if="columns[2].visible"/>
-      <el-table-column label="地点、事由" align="center" prop="destination" v-if="columns[3].visible"/>
-      <el-table-column label="充值金额(元）" align="center" prop="rechargeMoney" v-if="columns[4].visible"/>
-      <el-table-column label="期初余额" align="center" prop="startCardSurplus" v-if="columns[5].visible"/>
-      <el-table-column label="主卡转副卡充值金额" align="center" prop="toPlusCardMoney" v-if="columns[6].visible"/>
-      <el-table-column label="加油量" align="center" prop="refuelingNumber" v-if="columns[7].visible"/>
-      <el-table-column label="单价" align="center" prop="unitPrice" v-if="columns[8].visible"/>
-      <el-table-column label="加油金额(元）" align="center" prop="refuelingMoney" v-if="columns[9].visible"/>
-      <el-table-column label="是否有小票" align="center" prop="isTicket" v-if="columns[10].visible"/>
-      <el-table-column label="加油卡余额" align="center" prop="endCardSurplus" v-if="columns[11].visible"/>
       <el-table-column label="加油卡类别" align="center" prop="oilType" v-if="columns[12].visible"/>
+      <!--      <el-table-column label="使用加油卡时间" align="center" prop="useDate" v-if="columns[1].visible"/>-->
+      <!--      <el-table-column label="使用加油卡车辆车牌号" align="center" prop="carNo" v-if="columns[2].visible"/>-->
+      <!--      <el-table-column label="地点、事由" align="center" prop="destination" v-if="columns[3].visible"/>-->
+      <!--      <el-table-column label="充值金额(元）" align="center" prop="rechargeMoney" v-if="columns[4].visible"/>-->
+      <el-table-column label="期初余额" align="center" prop="startCardSurplus" v-if="columns[5].visible"/>
+      <!--      <el-table-column label="主卡转副卡充值金额" align="center" prop="toPlusCardMoney" v-if="columns[6].visible"/>-->
+      <!--      <el-table-column label="加油量" align="center" prop="refuelingNumber" v-if="columns[7].visible"/>-->
+      <!--      <el-table-column label="单价" align="center" prop="unitPrice" v-if="columns[8].visible"/>-->
+      <!--      <el-table-column label="加油金额(元）" align="center" prop="refuelingMoney" v-if="columns[9].visible"/>-->
+      <!--      <el-table-column label="是否有小票" align="center" prop="isTicket" v-if="columns[10].visible"/>-->
+      <el-table-column label="加油卡余额" align="center" prop="endCardSurplus" v-if="columns[11].visible"/>
       <el-table-column label="备注" align="center" prop="comments" v-if="columns[13].visible"/>
       <el-table-column label="操作" align="center" class-name="small-padding fixed-width" fixed="right">
         <template slot-scope="scope">
-          <!--          <el-button
-                      size="mini"
-                      type="text"
-                      icon="el-icon-edit"
-                      @click="handleUpdate(scope.row)"
-                      v-hasPermi="['system:oilcard:edit']"
-                    >修改
-                    </el-button>
-                    <el-button
-                      size="mini"
-                      type="text"
-                      icon="el-icon-delete"
-                      @click="handleDelete(scope.row)"
-                      v-hasPermi="['system:oilcard:remove']"
-                    >删除
-                    </el-button>-->
           <el-button
             size="mini"
             type="primary"
