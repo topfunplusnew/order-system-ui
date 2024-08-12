@@ -274,11 +274,10 @@
             <el-input v-model="form.otherBankNo" placeholder="请输入对方账号"/>
           </el-col>
           <el-col :span="3">
-            <!--            todo 这里查的不是银行卡表 客户表 银行卡表中查不到客户银行卡信息-->
-            <SearchOption :get-data="listCompany" title="客户银行卡信息" icon="el-icon-search"
+            <SearchOption :get-data="listBankAccount" title="客户银行卡信息" icon="el-icon-search"
                           @commitBack="handleCallBackCompany" :limit-info="{acountsType:'客户'}">
               <template #table-columns>
-                <el-table-column label="客户" align="center" prop="companyName"/>
+                <el-table-column label="账户类型" align="center" prop="acountsType"/>
                 <el-table-column label="开户名称(户名)" align="center" prop="acountsName"/>
                 <el-table-column label="账号(银行账号)" align="center" prop="bankNo"/>
                 <el-table-column label="开户行" align="center" prop="bankName"/>
@@ -574,6 +573,7 @@ export default {
             // form.tableName form.tID
             addReceiveMoney(this.form).then(response => {
               this.$modal.msgSuccess("新增成功");
+              this.$close();//结束加载
               this.open = false;
               this.getList();
             }).catch(err => {
