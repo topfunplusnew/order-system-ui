@@ -1,6 +1,7 @@
 package org.dzu.system.service;
 
 import org.dzu.system.domain.AuditInfo;
+import org.dzu.system.domain.AuditInfoGroupedResult;
 import org.dzu.system.domain.PaymentApply;
 
 import java.util.List;
@@ -28,6 +29,8 @@ public interface IAuditInfoService
      * @return 审核流程集合
      */
     public List<AuditInfo> selectAuditInfoList(AuditInfo auditInfo);
+
+    List<AuditInfoGroupedResult> selectAuditInfoGroupByApplyId(AuditInfo auditInfo);
 
     /**
      * 新增审核流程

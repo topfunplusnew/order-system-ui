@@ -6,6 +6,7 @@ import org.dzu.common.exception.ServiceException;
 import org.dzu.common.utils.DateUtils;
 import org.dzu.common.utils.SecurityUtils;
 import org.dzu.system.domain.AuditInfo;
+import org.dzu.system.domain.AuditInfoGroupedResult;
 import org.dzu.system.domain.Auditflow;
 import org.dzu.system.domain.PaymentApply;
 import org.dzu.system.mapper.AuditInfoMapper;
@@ -19,8 +20,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Isolation;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.Arrays;
-import java.util.List;
+import java.util.*;
+import java.util.stream.Collectors;
 
 /**
  * 审核流程Service业务层处理
@@ -62,6 +63,54 @@ public class AuditInfoServiceImpl implements IAuditInfoService {
     public List<AuditInfo> selectAuditInfoList(AuditInfo auditInfo) {
         return auditInfoMapper.selectAuditInfoList(auditInfo);
     }
+
+
+    /**
+     * 查询审核流程列表,但是按applyid分组
+     *
+     * @param auditInfo 审核流程
+     * @return 审核流程
+     */
+   @Override
+public List<AuditInfoGroupedResult> selectAuditInfoGroupByApplyId(AuditInfo auditInfo) {
+    // Get the list of applyIds
+    List<Map<String, Object>> results = auditInfoMapper.selectApplyIdList(auditInfo);
+
+    // Extract unique applyIds
+    List<Long> applyIds = results.stream()
+        .map(result -> {
+            Object applyIdObj = result.get("applyId");
+            if (applyIdObj instanceof Integer) {
+                return ((Integer) applyIdObj).longValue();
+            } else if (applyIdObj instanceof Long) {
+                return (Long) applyIdObj;
+            } else if (applyIdObj instanceof String) {
+                return Long.valueOf((String) applyIdObj);
+            } else {
+                throw new ServiceException("Unexpected type for applyId: " + applyIdObj.getClass().getName());
+            }
+        })
+        .collect(Collectors.toList());
+
+    // 获取 AuditInfo 对象列表
+    List<AuditInfo> auditInfos = auditInfoMapper.selectAuditInfoGroupedByApplyId(applyIds);
+
+    // 按 applyId 对 AuditInfo 对象进行分组
+    Map<Long, List<AuditInfo>> groupedAuditInfos = auditInfos.stream()
+        .collect(Collectors.groupingBy(AuditInfo::getApplyID));
+
+    //将分组数据转换为 AuditInfoGroupedResult 列表
+    List<AuditInfoGroupedResult> groupedResults = groupedAuditInfos.entrySet().stream()
+        .map(entry -> {
+            AuditInfoGroupedResult groupedResult = new AuditInfoGroupedResult();
+            groupedResult.setAuditInfos(entry.getValue());
+            return groupedResult;
+        })
+        .collect(Collectors.toList());
+
+    return groupedResults;
+}
+
 
     /**
      * 新增审核流程

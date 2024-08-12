@@ -7,6 +7,7 @@ import org.dzu.common.core.page.TableDataInfo;
 import org.dzu.common.enums.BusinessType;
 import org.dzu.common.utils.poi.ExcelUtil;
 import org.dzu.system.domain.AuditInfo;
+import org.dzu.system.domain.AuditInfoGroupedResult;
 import org.dzu.system.service.IAuditInfoService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -38,6 +39,18 @@ public class AuditInfoController extends BaseController
     {
         startPage();
         List<AuditInfo> list = auditInfoService.selectAuditInfoList(auditInfo);
+        return getDataTable(list);
+    }
+
+    /**
+     * 查询审核流程列表
+     */
+    @PreAuthorize("@ss.hasPermi('system:auditinfo:list')")
+    @GetMapping("/group")
+    public TableDataInfo group(AuditInfo auditInfo)
+    {
+        startPage();
+        List<AuditInfoGroupedResult> list = auditInfoService.selectAuditInfoGroupByApplyId(auditInfo);
         return getDataTable(list);
     }
 
