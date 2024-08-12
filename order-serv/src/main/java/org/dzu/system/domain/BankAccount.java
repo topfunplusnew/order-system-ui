@@ -34,7 +34,6 @@ public class BankAccount extends BaseEntity
     /** 公司名称 */
     @Excel(name = "公司名称")
     @Length(max = 50, message = "公司名称的字符长度不允许超过50")
-    @NotNull(message = "公司名称不能为空")
     @TableField("companyName")
     private String companyName;
 
