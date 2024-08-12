@@ -1,19 +1,18 @@
 <template>
   <div class="app-container">
     <el-form :model="queryParams" ref="queryForm" size="small" :inline="true" v-show="showSearch" label-width="100px">
-      <el-form-item label="收款编号" prop="receiveNO">
-        <el-input
-          v-model="queryParams.receiveNO"
-          placeholder="请输入收款编号"
-          clearable
-          @keyup.enter.native="handleQuery" class="w-85px"
-        />
-      </el-form-item>
-      <el-form-item label="日期" prop="fundsDate">
+      <el-form-item label="开始日期" prop="fundsDate">
         <el-date-picker
-          v-model="queryParams.fundsDate"
+          v-model="queryParams.beginTime"
           type="date"
-          placeholder="请选择日期" value-format="yyyy-MM-dd" class="w-85px">
+          placeholder="请选择日期" value-format="timestamp" class="w-85px">
+        </el-date-picker>
+      </el-form-item>
+      <el-form-item label="结束日期" prop="fundsDate">
+        <el-date-picker
+          v-model="queryParams.endTime"
+          type="date"
+          placeholder="请选择日期" value-format="timestamp" class="w-85px">
         </el-date-picker>
       </el-form-item>
       <el-form-item label="己方户名" prop="selfAcountsName">
@@ -24,66 +23,11 @@
           @keyup.enter.native="handleQuery" class="w-85px"
         />
       </el-form-item>
-      <el-form-item label="己方账号" prop="selfBankNo">
-        <el-input
-          v-model="queryParams.selfBankNo"
-          placeholder="请输入己方账号"
-          clearable
-          @keyup.enter.native="handleQuery" class="w-85px"
-        />
-      </el-form-item>
-      <el-form-item label="己方开户行" prop="selfBankName">
-        <el-input
-          v-model="queryParams.selfBankName"
-          placeholder="请输入己方开户行"
-          clearable
-          @keyup.enter.native="handleQuery" class="w-85px"
-        />
-      </el-form-item>
+
       <el-form-item label="对方户名" prop="otherAcountsName">
         <el-input
           v-model="queryParams.otherAcountsName"
           placeholder="请输入对方户名"
-          clearable
-          @keyup.enter.native="handleQuery" class="w-85px"
-        />
-      </el-form-item>
-      <el-form-item label="对方账号" prop="otherBankNo">
-        <el-input
-          v-model="queryParams.otherBankNo"
-          placeholder="请输入对方账号"
-          clearable
-          @keyup.enter.native="handleQuery" class="w-85px"
-        />
-      </el-form-item>
-      <el-form-item label="对方开户行" prop="otherBankName">
-        <el-input
-          v-model="queryParams.otherBankName"
-          placeholder="请输入对方开户行"
-          clearable
-          @keyup.enter.native="handleQuery" class="w-85px"
-        />
-      </el-form-item>
-      <el-form-item label="对方公司" prop="companyName">
-        <el-input
-          v-model="queryParams.companyName"
-          placeholder="请输入对方公司"
-          clearable
-          @keyup.enter.native="handleQuery" class="w-85px"
-        />
-      </el-form-item>
-      <!--      <el-form-item label="对方公司ID" prop="companyId">-->
-      <!--        <el-input-->
-      <!--          v-model="queryParams.companyId"-->
-      <!--          placeholder="请输入对方公司ID"-->
-      <!--          clearable-->
-      <!--          @keyup.enter.native="handleQuery" class="w-85px"-->
-      <!--        />-->
-      <!--      </el-form-item>-->
-      <el-form-item label="备注" prop="comments">
-        <el-input
-          v-model="queryParams.comments"
-          placeholder="请输入备注"
           clearable
           @keyup.enter.native="handleQuery" class="w-85px"
         />
@@ -138,7 +82,7 @@
 
     <el-table border v-horizontal-scroll="'always'" v-loading="loading" :data="receiveMoneyList"
               @selection-change="handleSelectionChange" id="printBox">
-      <el-table-column label="收款编号" align="center" prop="receiveNO" v-if="columns[0].visible"/>
+      <!--      <el-table-column label="收款编号" align="center" prop="receiveNO" v-if="columns[0].visible"/>-->
       <el-table-column label="日期" align="center" prop="fundsDate" v-if="columns[1].visible"/>
       <el-table-column label="支付类型" align="center" prop="receiveType" v-if="columns[2].visible"/>
       <!--      <el-table-column label="对应的表名" align="center" prop="tableName"/>-->
