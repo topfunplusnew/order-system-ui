@@ -122,8 +122,7 @@ public class PaymentApply extends BaseEntity
     private Long applyPersonID;
 
     /** 审核状态（审核中、通过、未通过） */
-    @Excel(name = "审核状态", readConverterExp = "审=核中、通过、未通过")
-    @Pattern(regexp = "审核中|通过|未通过", message = "审核状态只能是'审核中'、'通过'或'未通过'")
+    @Excel(name = "审核状态" )
     @TableField(value = "checkState")
     private String checkState;
 
