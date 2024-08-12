@@ -35,7 +35,7 @@ public class LendMoney extends BaseEntity {
     @Excel(name = "借出款编号")
     @Length(max = 50, message = "借出款编号的字符长度不允许超过50")
     @TableField("futuresNO")
-    @NotNull(message = "借出款编号不能为空")
+//    @NotNull(message = "借出款编号不能为空")
     private String futuresNO;
 
     /**
@@ -186,7 +186,9 @@ public class LendMoney extends BaseEntity {
         this.checkState = checkState;
     }
 
-    /** 额外字段 */
+    /**
+     * 额外字段
+     */
     @TableField(exist = false)
     private String checkState;
     // Getters and Setters
