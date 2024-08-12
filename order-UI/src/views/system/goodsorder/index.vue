@@ -504,9 +504,9 @@
       :visible.sync="addMoneyBackVisible"
       width="40%">
       <el-form :model="moneyBackInfo" label-width="80px">
-        <el-form-item label="订单编号" prop="ordersNo">
-          <span style="font-weight: bolder">{{ moneyBackInfo.ordersNo }}</span>
-        </el-form-item>
+        <!--        <el-form-item label="订单编号" prop="ordersNo">-->
+        <!--          <span style="font-weight: bolder">{{ moneyBackInfo.ordersNo }}</span>-->
+        <!--        </el-form-item>-->
         <el-form-item label="日期" prop="rebateDate">
           <el-date-picker
             v-model="moneyBackInfo.rebateDate"
