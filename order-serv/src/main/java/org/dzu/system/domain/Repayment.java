@@ -50,7 +50,6 @@ public class Repayment extends BaseEntity  {
 
     /** 付息（金额） */
     @Excel(name = "付息(金额)")
-    @NotNull(message = "付息(金额)不能为空")
     @DecimalMaxDigits
     @TableField("ratio")
     private Double ratio;
@@ -112,6 +111,7 @@ public class Repayment extends BaseEntity  {
     private String startTime;
 
     /** 额外字段,结束时间*/
+    @TableField(exist = false)
     private String endTime;
 
     public String getStartTime() {

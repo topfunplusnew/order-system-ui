@@ -1,5 +1,6 @@
 package org.dzu.system.service.impl;
 
+import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import org.dzu.common.constant.BankChangeConstant;
 import org.dzu.common.constant.BorrowedMoneyConstants;
 import org.dzu.common.constant.DelConstants;
@@ -12,7 +13,9 @@ import org.dzu.common.utils.uuid.UUID;
 import org.dzu.system.domain.BankAccount;
 import org.dzu.system.domain.BankAccountChange;
 import org.dzu.system.domain.BorrowedMoney;
+import org.dzu.system.domain.Repayment;
 import org.dzu.system.mapper.BorrowedMoneyMapper;
+import org.dzu.system.mapper.RepaymentMapper;
 import org.dzu.system.service.IBankAccountChangeService;
 import org.dzu.system.service.IBankAccountService;
 import org.dzu.system.service.IBorrowedMoneyService;
@@ -21,8 +24,10 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Isolation;
 import org.springframework.transaction.annotation.Transactional;
 
+import javax.management.Query;
 import java.util.Arrays;
 import java.util.List;
+import java.util.stream.Collectors;
 
 /**
  * 从外部借款信息Service业务层处理
@@ -40,6 +45,8 @@ public class BorrowedMoneyServiceImpl implements IBorrowedMoneyService {
 
     @Autowired
     private IBankAccountService bankAccountService;
+    @Autowired
+    private RepaymentMapper repaymentMapper;
 
     /**
      * 查询从外部借款信息
@@ -169,6 +176,22 @@ public class BorrowedMoneyServiceImpl implements IBorrowedMoneyService {
     @Override
     @Transactional(rollbackFor = Exception.class, isolation = Isolation.SERIALIZABLE)
     public int deleteBorrowedMoneyByIds(Long[] ids) {
+
+        // 检测是否有还款记录
+        List<BorrowedMoney> borrowedMonies = borrowedMoneyMapper.selectBatchIds(Arrays.asList(ids));
+
+        // 收集所有的loanNO
+        List<String> loanNoS = borrowedMonies.parallelStream().map(BorrowedMoney::getLoanNO).collect(Collectors.toList());
+
+        // 查询是否有还款记录
+        QueryWrapper<Repayment> queryWrapper = new QueryWrapper<>();
+        queryWrapper.in("loanNO",loanNoS);
+        Long l = repaymentMapper.selectCount(queryWrapper);
+        if(l>0){
+            throw new ServiceException("请先删除信息对应的还款记录");
+        }
+
+
         // 先删除对应流水
         Arrays.stream(ids).parallel().forEach(id ->
                 bankAccountChangeService.deleteBankAccountChangeByUUID(new String[]{borrowedMoneyMapper.selectBorrowedMoneyById(id).getLoanNO()})

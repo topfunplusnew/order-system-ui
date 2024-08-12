@@ -187,14 +187,12 @@ public class RepaymentServiceImpl implements IRepaymentService {
     @Transactional(rollbackFor = Exception.class, isolation = Isolation.SERIALIZABLE)// 开启最高级别事务，以及最小容忍错误，防止金额记录出现问题
     public int deleteRepaymentByIds(Long[] ids) {
         // 需要删除银行卡变动，需要修改借款标志
-
         List<Repayment> repayments = repaymentMapper.selectBatchIds(Arrays.asList(ids));
         // 提取loanNO和payNo
         List<String> Loans = new ArrayList<String>();
         List<String> Pays = new ArrayList<String>();
         repayments.parallelStream().forEach(
                 r -> {
-//                    Loans.add(r.getLoanNO());
                     Pays.add(r.getPayNO());
                 }
         );
