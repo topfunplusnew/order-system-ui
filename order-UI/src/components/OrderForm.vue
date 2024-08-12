@@ -178,8 +178,7 @@ export default {
     //陆运车牌信息
     searchLandInfo() {
       this.landInfoDialogVisible = true
-      //搜索车队信息
-      listCars().then(res => {
+      listCars({carType: '陆运'}).then(res => {
         this.landInfo = res.rows;
       })
     },
