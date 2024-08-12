@@ -1,7 +1,6 @@
 package org.dzu.system.mapper;
 
 
-import org.apache.ibatis.annotations.Mapper;
 import org.dzu.system.domain.AllInvoice;
 
 import java.util.List;

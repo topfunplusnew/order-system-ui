@@ -1,7 +1,6 @@
 package org.dzu.system.service.impl;
 
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
-import org.dzu.common.constant.BankChangeConstant;
 import org.dzu.common.constant.DelConstants;
 import org.dzu.common.enums.TableName;
 import org.dzu.common.exception.ServiceException;
@@ -9,10 +8,8 @@ import org.dzu.common.utils.DateUtils;
 import org.dzu.common.utils.SecurityUtils;
 import org.dzu.common.utils.uuid.UUID;
 import org.dzu.system.domain.BankAccount;
-import org.dzu.system.domain.BankAccountChange;
 import org.dzu.system.domain.LendMoney;
 import org.dzu.system.mapper.LendMoneyMapper;
-import org.dzu.system.service.IBankAccountChangeService;
 import org.dzu.system.service.IBankAccountService;
 import org.dzu.system.service.ILendMoneyService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -20,9 +17,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Isolation;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.Arrays;
 import java.util.List;
-import java.util.stream.Collectors;
 
 /**
  * 向外部借出款信息Service业务层处理
@@ -31,16 +26,15 @@ import java.util.stream.Collectors;
  * @date 2024-07-29
  */
 @Service
-public class LendMoneyServiceImpl implements ILendMoneyService
-{
+public class LendMoneyServiceImpl implements ILendMoneyService {
     @Autowired
     private LendMoneyMapper lendMoneyMapper;
 
     @Autowired
-    private IBankAccountChangeService bankAccountChangeService;
+    private IBankAccountService bankAccountService;
 
     @Autowired
-    private IBankAccountService bankAccountService;
+    private PaymentApplyServiceImpl paymentApplyServiceImpl;
 
 
     /**
@@ -50,8 +44,7 @@ public class LendMoneyServiceImpl implements ILendMoneyService
      * @return 向外部借出款信息
      */
     @Override
-    public LendMoney selectLendMoneyById(Long id)
-    {
+    public LendMoney selectLendMoneyById(Long id) {
         return lendMoneyMapper.selectLendMoneyById(id);
     }
 
@@ -62,8 +55,7 @@ public class LendMoneyServiceImpl implements ILendMoneyService
      * @return 向外部借出款信息
      */
     @Override
-    public List<LendMoney> selectLendMoneyList(LendMoney lendMoney)
-    {
+    public List<LendMoney> selectLendMoneyList(LendMoney lendMoney) {
         return lendMoneyMapper.selectLendMoneyList(lendMoney);
     }
 
@@ -74,9 +66,8 @@ public class LendMoneyServiceImpl implements ILendMoneyService
      * @return 结果
      */
     @Override
-    @Transactional(isolation = Isolation.SERIALIZABLE,rollbackFor = Exception.class) // 开启最高级别的事务和最小容忍错误
-    public int insertLendMoney(LendMoney lendMoney)
-    {
+    @Transactional(isolation = Isolation.SERIALIZABLE, rollbackFor = Exception.class) // 开启最高级别的事务和最小容忍错误
+    public int insertLendMoney(LendMoney lendMoney) {
         // 设置基础信息
         lendMoney.setAddtime(String.valueOf(DateUtils.getNowDate()));
         lendMoney.setUserId(SecurityUtils.getUserId());
@@ -93,22 +84,22 @@ public class LendMoneyServiceImpl implements ILendMoneyService
             throw new ServiceException("银行卡号不存在");
         }
         // 判断账户名是否为null，是的话填充数据库中的信息
-        if(lendMoney.getSelfAcountsName()==null){
+        if (lendMoney.getSelfAcountsName() == null) {
             lendMoney.setSelfAcountsName(bankAccount.getBankName());
         }
         // 判断银行名是否为null,是的话填充数据库中的信息
-        if(lendMoney.getSelfBankName()==null){
+        if (lendMoney.getSelfBankName() == null) {
             lendMoney.setSelfBankName(bankAccount.getBankName());
         }
 
-        // 同步信息到银行卡变动表
-        BankAccountChange bankAccountChange = new BankAccountChange();
-        bankAccountChange.setPayNO(lendMoney.getFuturesNO());
-        bankAccountChange.setMoneyAmount(lendMoney.getMoneyAmount());
-        bankAccountChange.setSelfBankNo(lendMoney.getSelfBankNo());
-        bankAccountChange.setTableName(TableName.LEND_MONEY.get());
-        bankAccountChange.setChangeType(BankChangeConstant.PaymentType.PAYMENT.get());
-        bankAccountChangeService.insertBankAccountChange(bankAccountChange);
+//        // 同步信息到银行卡变动表
+//        BankAccountChange bankAccountChange = new BankAccountChange();
+//        bankAccountChange.setPayNO(lendMoney.getFuturesNO());
+//        bankAccountChange.setMoneyAmount(lendMoney.getMoneyAmount());
+//        bankAccountChange.setSelfBankNo(lendMoney.getSelfBankNo());
+//        bankAccountChange.setTableName(TableName.LEND_MONEY.get());
+//        bankAccountChange.setChangeType(BankChangeConstant.PaymentType.PAYMENT.get());
+//        bankAccountChangeService.insertBankAccountChange(bankAccountChange);
 
         // 插入真正的数据
         return lendMoneyMapper.insertLendMoney(lendMoney);
@@ -116,14 +107,13 @@ public class LendMoneyServiceImpl implements ILendMoneyService
 
     /**
      * 修改向外部借出款信息
-     * 
+     *
      * @param lendMoney 向外部借出款信息
      * @return 结果
      */
     @Override
-    @Transactional(isolation = Isolation.SERIALIZABLE,rollbackFor = Exception.class) // 开启最高级别的事务和最小容忍错误
-    public int updateLendMoney(LendMoney lendMoney)
-    {
+    @Transactional(isolation = Isolation.SERIALIZABLE, rollbackFor = Exception.class) // 开启最高级别的事务和最小容忍错误
+    public int updateLendMoney(LendMoney lendMoney) {
         // 完善基础信息
         lendMoney.setUserId(SecurityUtils.getUserId());
         lendMoney.setUserName(SecurityUtils.getUserTruename());
@@ -134,20 +124,24 @@ public class LendMoneyServiceImpl implements ILendMoneyService
         if (!oldinfo.getFuturesNO().equals(lendMoney.getFuturesNO())) {
             throw new ServiceException("不允许修改uuid");
         }
+        if (paymentApplyServiceImpl.checkExist(TableName.LEND_MONEY.get(), lendMoney.getId())) {
+            throw new ServiceException("对应信息存在审核记录,且审核记录不为不通过");
+        }
+
         // 检查银行卡卡号是否存在
         if (bankAccountService.selectBankAccountByBankNo(lendMoney.getSelfBankNo()) == null) {
             // 丢出错误信息异常
             throw new ServiceException("银行卡号不存在");
         }
-        // 同步信息到银行卡变动表
-        BankAccountChange bankAccountChange = new BankAccountChange();
-        bankAccountChange.setPayNO(lendMoney.getFuturesNO());
-        bankAccountChange.setMoneyAmount(lendMoney.getMoneyAmount());
-        bankAccountChange.setSelfBankNo(lendMoney.getSelfBankNo());
-        bankAccountChange.setTableName(TableName.LEND_MONEY.get());
-        bankAccountChange.setChangeType(BankChangeConstant.PaymentType.PAYMENT.get());
-
-        bankAccountChangeService.updateBankAccountChangeByUUID(bankAccountChange);
+//        // 同步信息到银行卡变动表
+//        BankAccountChange bankAccountChange = new BankAccountChange();
+//        bankAccountChange.setPayNO(lendMoney.getFuturesNO());
+//        bankAccountChange.setMoneyAmount(lendMoney.getMoneyAmount());
+//        bankAccountChange.setSelfBankNo(lendMoney.getSelfBankNo());
+//        bankAccountChange.setTableName(TableName.LEND_MONEY.get());
+//        bankAccountChange.setChangeType(BankChangeConstant.PaymentType.PAYMENT.get());
+//
+//        bankAccountChangeService.updateBankAccountChangeByUUID(bankAccountChange);
 
 
         // 更新数据
@@ -156,22 +150,18 @@ public class LendMoneyServiceImpl implements ILendMoneyService
 
     /**
      * 批量删除向外部借出款信息
-     * 
+     *
      * @param ids 需要删除的向外部借出款信息主键
      * @return 结果
      */
     @Override
-    @Transactional(isolation = Isolation.SERIALIZABLE,rollbackFor = Exception.class) // 开启最高级别的事务和最小容忍错误
-    public int deleteLendMoneyByIds(Long[] ids)
-    {
-        // 通过mybatis plus批量查询主键
-        List<LendMoney> lendMoneys = lendMoneyMapper.selectBatchIds(Arrays.asList(ids));
-        // 获取所有的uuid
-        List<String> collect = lendMoneys.parallelStream().map(LendMoney::getFuturesNO).collect(Collectors.toList());
-        // 批量删除掉对应的资金变动日志
-        bankAccountChangeService.deleteBankAccountChangeByUUID(collect.toArray(new String[0]));
-
-
+    @Transactional(isolation = Isolation.SERIALIZABLE, rollbackFor = Exception.class) // 开启最高级别的事务和最小容忍错误
+    public int deleteLendMoneyByIds(Long[] ids) {
+        for (Long id : ids) {
+            if (paymentApplyServiceImpl.checkExist(TableName.LEND_MONEY.get(), id)) {
+                throw new ServiceException("对应信息存在审核记录,且审核记录不为不通过");
+            }
+        }
         // 真正的删除数据
         return lendMoneyMapper.deleteLendMoneyByIds(ids);
     }
@@ -179,7 +169,7 @@ public class LendMoneyServiceImpl implements ILendMoneyService
     @Override
     public LendMoney selectLendMoneyByFuturesNO(String futuresNO) {
         QueryWrapper<LendMoney> query = new QueryWrapper<>();
-        query.select().eq("futuresNO",futuresNO).eq("delFlag",DelConstants.NODEL);
+        query.select().eq("futuresNO", futuresNO).eq("delFlag", DelConstants.NODEL);
         return lendMoneyMapper.selectOne(query);
 
     }

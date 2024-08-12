@@ -52,14 +52,6 @@ public interface IBorrowedMoneyService
      */
     public int deleteBorrowedMoneyByIds(Long[] ids);
 
-    /**
-     * 删除从外部借款信息信息
-     * 
-     * @param id 从外部借款信息主键
-     * @return 结果
-     */
-    public int deleteBorrowedMoneyById(Long id);
-
 
     public BorrowedMoney seleteBorrowedMoneyByUUID(String  uuid);
 

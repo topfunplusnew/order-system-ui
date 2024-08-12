@@ -1,7 +1,6 @@
 package org.dzu.system.service.impl;
 
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
-import org.dzu.common.constant.BankChangeConstant;
 import org.dzu.common.constant.DelConstants;
 import org.dzu.common.enums.TableName;
 import org.dzu.common.exception.ServiceException;
@@ -9,12 +8,9 @@ import org.dzu.common.utils.DateUtils;
 import org.dzu.common.utils.SecurityUtils;
 import org.dzu.common.utils.uuid.UUID;
 import org.dzu.system.domain.BankAccount;
-import org.dzu.system.domain.BankAccountChange;
 import org.dzu.system.domain.BorrowedMoney;
 import org.dzu.system.domain.Repayment;
-import org.dzu.system.mapper.BorrowedMoneyMapper;
 import org.dzu.system.mapper.RepaymentMapper;
-import org.dzu.system.service.IBankAccountChangeService;
 import org.dzu.system.service.IBankAccountService;
 import org.dzu.system.service.IBorrowedMoneyService;
 import org.dzu.system.service.IRepaymentService;
@@ -23,8 +19,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Isolation;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 
 /**
@@ -43,12 +37,8 @@ public class RepaymentServiceImpl implements IRepaymentService {
 
     @Autowired
     private IBankAccountService bankAccountService;
-
     @Autowired
-    private IBankAccountChangeService bankAccountChangeService;
-
-    @Autowired
-    private BorrowedMoneyMapper borrowedMoneyMapper;
+    private PaymentApplyServiceImpl paymentApplyServiceImpl;
 
     /**
      * 查询贷款还款信息
@@ -95,6 +85,7 @@ public class RepaymentServiceImpl implements IRepaymentService {
             throw new ServiceException("LoanNo_miss");
         }
 
+
         // 确定存在后生成还款UUID
         repayment.setPayNO(UUID.fastUUID().toString());
 
@@ -109,14 +100,14 @@ public class RepaymentServiceImpl implements IRepaymentService {
             repayment.setAcountsName(bankAccount.getAcountsName());
         }
 
-        // 准备同步到变动表
-        BankAccountChange bankAccountChange = new BankAccountChange();
-        bankAccountChange.setSelfBankNo(repayment.getBankNo());
-        bankAccountChange.setMoneyAmount(repayment.getMoneyAmount());
-        bankAccountChange.setPayNO(repayment.getPayNO());
-        bankAccountChange.setChangeType(BankChangeConstant.PaymentType.PAYMENT.get());
-        bankAccountChange.setTableName(TableName.REPAYMENT.get());
-        bankAccountChangeService.insertBankAccountChange(bankAccountChange);
+//        // 准备同步到变动表
+//        BankAccountChange bankAccountChange = new BankAccountChange();
+//        bankAccountChange.setSelfBankNo(repayment.getBankNo());
+//        bankAccountChange.setMoneyAmount(repayment.getMoneyAmount());
+//        bankAccountChange.setPayNO(repayment.getPayNO());
+//        bankAccountChange.setChangeType(BankChangeConstant.PaymentType.PAYMENT.get());
+//        bankAccountChange.setTableName(TableName.REPAYMENT.get());
+//        bankAccountChangeService.insertBankAccountChange(bankAccountChange);
         int i = repaymentMapper.insertRepayment(repayment);
         // 判断是否需要更新对应借款的isEnd属性,如果需要，自动更新
         updateIsEnd(repayment.getLoanNO());
@@ -146,6 +137,10 @@ public class RepaymentServiceImpl implements IRepaymentService {
             throw new ServiceException("LoanNo_miss");
         }
 
+        if (paymentApplyServiceImpl.checkExist(TableName.REPAYMENT.get(), repayment.getId())) {
+            throw new ServiceException("对应信息存在审核记录,且审核记录不为不通过");
+        }
+
         // 确定没有修改UUID
         if (!repaymentMapper.selectRepaymentById(repayment.getId()).getPayNO().equals(repayment.getPayNO())) {
             throw new ServiceException("PayNO_error");
@@ -162,14 +157,14 @@ public class RepaymentServiceImpl implements IRepaymentService {
             repayment.setAcountsName(bankAccount.getAcountsName());
         }
 
-        // 准备同步到变动表
-        BankAccountChange bankAccountChange = new BankAccountChange();
-        bankAccountChange.setSelfBankNo(repayment.getBankNo());
-        bankAccountChange.setMoneyAmount(repayment.getMoneyAmount());
-        bankAccountChange.setPayNO(repayment.getPayNO());
-        bankAccountChange.setChangeType(BankChangeConstant.PaymentType.PAYMENT.get());
-        bankAccountChange.setTableName(TableName.REPAYMENT.get());
-        bankAccountChangeService.updateBankAccountChangeByUUID(bankAccountChange);
+//        // 准备同步到变动表
+//        BankAccountChange bankAccountChange = new BankAccountChange();
+//        bankAccountChange.setSelfBankNo(repayment.getBankNo());
+//        bankAccountChange.setMoneyAmount(repayment.getMoneyAmount());
+//        bankAccountChange.setPayNO(repayment.getPayNO());
+//        bankAccountChange.setChangeType(BankChangeConstant.PaymentType.PAYMENT.get());
+//        bankAccountChange.setTableName(TableName.REPAYMENT.get());
+//        bankAccountChangeService.updateBankAccountChangeByUUID(bankAccountChange);
 
         // 判断是否需要更新对应借款的isEnd属性,如果需要，自动更新
         updateIsEnd(repayment.getLoanNO());
@@ -186,22 +181,22 @@ public class RepaymentServiceImpl implements IRepaymentService {
     @Override
     @Transactional(rollbackFor = Exception.class, isolation = Isolation.SERIALIZABLE)// 开启最高级别事务，以及最小容忍错误，防止金额记录出现问题
     public int deleteRepaymentByIds(Long[] ids) {
-        // 需要删除银行卡变动，需要修改借款标志
-        List<Repayment> repayments = repaymentMapper.selectBatchIds(Arrays.asList(ids));
-        // 提取loanNO和payNo
-        List<String> Loans = new ArrayList<String>();
-        List<String> Pays = new ArrayList<String>();
-        repayments.parallelStream().forEach(
-                r -> {
-                    Pays.add(r.getPayNO());
-                }
-        );
-
-        //根据uuid删除
-        // 创建一个大小合适的数组并使用Arrays.copyOf
-        String[] array = Arrays.copyOf(Pays.toArray(), Pays.size(), String[].class);
-        bankAccountChangeService.deleteBankAccountChangeByUUID(array);
-
+//        // 需要删除银行卡变动，需要修改借款标志
+//        List<Repayment> repayments = repaymentMapper.selectBatchIds(Arrays.asList(ids));
+//        // 提取loanNO和payNo
+//        List<String> Loans = new ArrayList<String>();
+//        List<String> Pays = new ArrayList<String>();
+//        repayments.parallelStream().forEach(
+//                r -> {
+//                    Pays.add(r.getPayNO());
+//                }
+//        );
+//
+//        //根据uuid删除
+//        // 创建一个大小合适的数组并使用Arrays.copyOf
+//        String[] array = Arrays.copyOf(Pays.toArray(), Pays.size(), String[].class);
+//        bankAccountChangeService.deleteBankAccountChangeByUUID(array);
+//
 //        //修改借款标志
 //        QueryWrapper<BorrowedMoney> borrowedMoneyQueryWrapper = new QueryWrapper<>();
 //        borrowedMoneyQueryWrapper.in("LoanNO", Pays.toArray());
@@ -209,6 +204,11 @@ public class RepaymentServiceImpl implements IRepaymentService {
 //        borrowedMoney.setIsEnd(BorrowedMoneyConstants.noEnd);
 //        borrowedMoneyMapper.update(borrowedMoney, borrowedMoneyQueryWrapper);
 
+        for (Long id : ids) {
+            if (paymentApplyServiceImpl.checkExist(TableName.REPAYMENT.get(), id)) {
+                throw new ServiceException("对应信息存在审核记录,且审核记录不为不通过");
+            }
+        }
         return repaymentMapper.deleteRepaymentByIds(ids);
     }
 

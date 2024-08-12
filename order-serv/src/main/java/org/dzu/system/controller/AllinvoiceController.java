@@ -4,7 +4,6 @@ package org.dzu.system.controller;
 import org.dzu.common.core.controller.BaseController;
 import org.dzu.common.core.page.TableDataInfo;
 import org.dzu.system.domain.AllInvoice;
-import org.dzu.system.domain.Auditflow;
 import org.dzu.system.service.impl.AllinvoiceService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.prepost.PreAuthorize;

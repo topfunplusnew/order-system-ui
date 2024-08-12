@@ -24,7 +24,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Isolation;
 import org.springframework.transaction.annotation.Transactional;
 
-import javax.management.Query;
 import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -200,19 +199,6 @@ public class BorrowedMoneyServiceImpl implements IBorrowedMoneyService {
 
     }
 
-    /**
-     * 删除从外部借款信息信息
-     *
-     * @param id 从外部借款信息主键
-     * @return 结果
-     */
-    @Override
-    @Transactional(rollbackFor = Exception.class, isolation = Isolation.SERIALIZABLE)
-    public int deleteBorrowedMoneyById(Long id) {
-        String loanNO = borrowedMoneyMapper.selectBorrowedMoneyById(id).getLoanNO();
-        bankAccountChangeService.deleteBankAccountChangeByUUID(new String[]{loanNO});
-        return borrowedMoneyMapper.deleteBorrowedMoneyById(id);
-    }
 
     @Override
     public BorrowedMoney seleteBorrowedMoneyByUUID(String uuid) {
