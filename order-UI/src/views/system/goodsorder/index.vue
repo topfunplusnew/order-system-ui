@@ -242,12 +242,11 @@
       <el-table-column label="附件路径" align="center" prop="path" v-if="columns[11].visible"/>
 
       <!--      无字典 转换-->
-      <el-table-column label="打款状态(申请中，已打款，未打款)" align="center" prop="PaymentState"
+      <el-table-column label="打款状态" align="center" prop="paymentState"
                        v-if="columns[12].visible">
         <template slot-scope="scope">
           <el-tag
-            :type="scope.row.PaymentState === '未打款' ? 'danger' : scope.row.PaymentState === '申请中'?'primary':'success'"
-            disable-transitions>{{ scope.row.PaymentState }}
+            disable-transitions>{{ scope.row.paymentState }}
           </el-tag>
         </template>
       </el-table-column>
@@ -950,7 +949,7 @@ export default {
         orderInfo.userId = null;
         orderInfo.cancelFlag = null;
         //调整单
-        adjustGoodsOrder({...orderInfo, ordersNo: ''}).then(res => {
+        adjustGoodsOrder({...orderInfo, ordersNo: '', adjustDate: new Date().getTime()}).then(res => {
           this.$message.success('调整单提交成功')
           this.handleOrderVisible = false
           this.getList();

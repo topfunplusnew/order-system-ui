@@ -138,7 +138,6 @@
 
     <el-table border v-horizontal-scroll="'always'" v-loading="loading" :data="receiveMoneyList"
               @selection-change="handleSelectionChange" id="printBox">
-      <el-table-column label="id" align="center" prop="id"/>
       <el-table-column label="收款编号" align="center" prop="receiveNO" v-if="columns[0].visible"/>
       <el-table-column label="日期" align="center" prop="fundsDate" v-if="columns[1].visible"/>
       <el-table-column label="支付类型" align="center" prop="receiveType" v-if="columns[2].visible"/>

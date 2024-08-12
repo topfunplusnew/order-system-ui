@@ -26,6 +26,7 @@
     <el-row :gutter="10" class="mb8">
       <el-col :span="1.5">
         <el-button icon="el-icon-refresh" size="mini" @click="resetQuery">刷新</el-button>
+        <el-button type="danger" size="mini" @click="handleAdd">新增加入款信息</el-button>
       </el-col>
       <!--      右侧工具栏-->
       <right-toolbar :showSearch.sync="showSearch" @queryTable="getList" :columns="columns">
@@ -111,9 +112,6 @@
     <!-- 添加或修改从外部借款信息对话框 -->
     <el-dialog :title="title" :visible.sync="open" width="500px" append-to-body>
       <el-form ref="form" :model="form" :rules="rules" label-width="80px">
-        <el-form-item label="贷款编号" prop="loanNO">
-          <el-input v-model="form.loanNO" placeholder="请输入贷款编号" v-if="columns[0].visible"/>
-        </el-form-item>
         <el-form-item label="贷款来源" prop="origin">
           <el-input v-model="form.origin" placeholder="请输入贷款来源" v-if="columns[0].visible"/>
         </el-form-item>
@@ -138,9 +136,9 @@
         <el-form-item label="打入账号" prop="bankNo">
           <el-input v-model="form.bankNo" placeholder="请输入打入账号"/>
         </el-form-item>
-        <el-form-item label="已还款标记(1是0否)" prop="isEnd">
-          <el-input v-model="form.isEnd" placeholder="请输入已还款标记"/>
-        </el-form-item>
+        <!--        <el-form-item label="已还款标记(1是0否)" prop="isEnd">-->
+        <!--          <el-input v-model="form.isEnd" placeholder="请输入已还款标记"/>-->
+        <!--        </el-form-item>-->
         <el-form-item label="备注" prop="comments">
           <el-input v-model="form.comments" placeholder="请输入备注"/>
         </el-form-item>
@@ -404,6 +402,7 @@ export default {
     },
     //处理还款的事件函数
     handleGiveBackMoney(row) {
+      console.log(row)
       this.currentUUID = row.loanNO
       this.currentBankNo = row.bankNo
       this.currentGiveBackMoneyInfo.bankNo = row.bankNo
