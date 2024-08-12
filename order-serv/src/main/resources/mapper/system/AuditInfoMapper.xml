@@ -3,36 +3,90 @@
         PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="org.dzu.system.mapper.AuditInfoMapper">
-    <resultMap type="AuditInfo" id="AuditInfoResult">
-        <result property="id" column="id"/>
-        <result property="flowname" column="flowname"/>
-        <result property="applyID" column="applyID"/>
-        <result property="stepnum" column="stepnum"/>
-        <result property="step" column="step"/>
-        <result property="auditauthority" column="auditauthority"/>
-        <result property="auditdate" column="auditdate"/>
-        <result property="userId" column="userId"/>
-        <result property="UserName" column="UserName"/>
-        <result property="checkState" column="checkState"/>
-        <result property="auditcomment" column="auditcomment"/>
-        <result property="submitflag" column="submitflag"/>
+    <resultMap id="paymentApplyResultMap" type="PaymentApply">
+        <id property="id" column="p_id"/>
+        <result property="tableName" column="p_tableName"/>
+        <result property="tID" column="p_tID"/>
+        <result property="fundsDate" column="p_fundsDate"/>
+        <result property="payType" column="p_payType"/>
+        <result property="moneyAmount" column="p_moneyAmount"/>
+        <result property="otherAcountsName" column="p_otherAcountsName"/>
+        <result property="otherBankNo" column="p_otherBankNo"/>
+        <result property="otherBankName" column="p_otherBankName"/>
+        <result property="companyName" column="p_companyName"/>
+        <result property="companyId" column="p_companyId"/>
+        <result property="companyType" column="p_companyType"/>
+        <result property="reason" column="p_reason"/>
+        <result property="attachment" column="p_attachment"/>
+        <result property="applyPerson" column="p_applyPerson"/>
+        <result property="applyPersonID" column="p_applyPersonID"/>
+        <result property="checkState" column="p_checkState"/>
+        <result property="comments" column="p_comments"/>
+        <result property="addtime" column="p_addtime"/>
+        <result property="userId" column="p_userId"/>
+        <result property="UserName" column="p_UserName"/>
+        <result property="updateTime" column="p_update_time"/>
+        <result property="delFlag" column="p_delFlag"/>
+        <result property="submitflag" column="p_submitflag"/>
+    </resultMap>
+
+    <resultMap id="AuditInfoResult" type="AuditInfo">
+        <id property="id" column="a_id"/>
+        <result property="flowname" column="a_flowname"/>
+        <result property="applyID" column="a_applyID"/>
+        <result property="stepnum" column="a_stepnum"/>
+        <result property="step" column="a_step"/>
+        <result property="auditauthority" column="a_auditauthority"/>
+        <result property="auditdate" column="a_auditdate"/>
+        <result property="userId" column="a_userId"/>
+        <result property="UserName" column="a_UserName"/>
+        <result property="checkState" column="a_checkState"/>
+        <result property="auditcomment" column="a_auditcomment"/>
+        <result property="submitflag" column="a_submitflag"/>
+        <association property="paymentApply" javaType="PaymentApply" resultMap="paymentApplyResultMap"/>
     </resultMap>
 
 
     <sql id="selectAuditInfoVo">
-        select id,
-               flowname,
-               applyID,
-               stepnum,
-               step,
-               auditauthority,
-               auditdate,
-               userId,
-               UserName,
-               checkState,
-               auditcomment,
-               submitflag
-        from auditInfo
+        SELECT a.id AS a_id,
+               a.flowname AS a_flowname,
+               a.applyID AS a_applyID,
+               a.stepnum AS a_stepnum,
+               a.step AS a_step,
+               a.auditauthority AS a_auditauthority,
+               a.auditdate AS a_auditdate,
+               a.userId AS a_userId,
+               a.UserName AS a_UserName,
+               a.checkState AS a_checkState,
+               a.auditcomment AS a_auditcomment,
+               a.submitflag AS a_submitflag,
+               p.id AS p_id,
+               p.tableName AS p_tableName,
+               p.tID AS p_tID,
+               p.fundsDate AS p_fundsDate,
+               p.payType AS p_payType,
+               p.moneyAmount AS p_moneyAmount,
+               p.otherAcountsName AS p_otherAcountsName,
+               p.otherBankNo AS p_otherBankNo,
+               p.otherBankName AS p_otherBankName,
+               p.companyName AS p_companyName,
+               p.companyId AS p_companyId,
+               p.companyType AS p_companyType,
+               p.reason AS p_reason,
+               p.attachment AS p_attachment,
+               p.applyPerson AS p_applyPerson,
+               p.applyPersonID AS p_applyPersonID,
+               p.checkState AS p_checkState,
+               p.comments AS p_comments,
+               p.addtime AS p_addtime,
+               p.userId AS p_userId,
+               p.UserName AS p_UserName,
+               p.update_time AS p_update_time,
+               p.delFlag AS p_delFlag,
+               p.submitflag AS p_submitflag
+        FROM auditInfo a
+                 LEFT JOIN paymentApply p ON a.applyID = p.id
+
     </sql>
 
 
@@ -78,13 +132,14 @@
     </select>
 
     <select id="selectAuditInfoGroupedByApplyId" parameterType="java.util.List" resultMap="AuditInfoResult">
-        <foreach collection="list" item="applyId" open="SELECT * FROM (" separator=" UNION ALL "
-                 close=") AS temp ORDER BY temp.applyId, temp.addtime DESC">
-            SELECT *
-            FROM auditInfo
-            WHERE applyId = #{applyId}
+        <include refid="selectAuditInfoVo"/>
+        WHERE a.applyID IN
+        <foreach collection="list" item="applyId" open="(" separator="," close=")">
+            #{applyId}
         </foreach>
+        ORDER BY a.applyID, a.addtime DESC
     </select>
+
 
     <select id="selectAuditInfoList" parameterType="AuditInfo" resultMap="AuditInfoResult">
         <include refid="selectAuditInfoVo"/>
@@ -127,7 +182,7 @@
 
     <select id="selectAuditInfoById" parameterType="Long" resultMap="AuditInfoResult">
         <include refid="selectAuditInfoVo"/>
-        where id = #{id}
+        where a.id = #{id}
     </select>
 
     <insert id="insertAuditInfo" parameterType="AuditInfo" useGeneratedKeys="true" keyProperty="id">

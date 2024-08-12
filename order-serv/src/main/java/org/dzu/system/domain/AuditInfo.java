@@ -100,8 +100,19 @@ public class AuditInfo extends BaseEntity
     @TableField(value = "submitflag")
     private Long submitflag;
 
+    /** 审核信息对应的申请信息*/
+    @TableField(exist = false)
+    private PaymentApply paymentApply;
 
-    public void setId(Long id) 
+    public PaymentApply getPaymentApply() {
+        return paymentApply;
+    }
+
+    public void setPaymentApply(PaymentApply paymentApply) {
+        this.paymentApply = paymentApply;
+    }
+
+    public void setId(Long id)
     {
         this.id = id;
     }

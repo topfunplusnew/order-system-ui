@@ -45,17 +45,67 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         <result property="dataScope"    column="data_scope"     />
         <result property="status"       column="role_status"    />
     </resultMap>
-	
+
 	<sql id="selectUserVo">
-        select u.user_id, u.dept_id, u.user_name, u.nick_name, u.email, u.avatar, u.phonenumber, u.password, u.sex, u.status, u.del_flag, u.login_ip, u.login_date, u.create_by, u.create_time, u.remark, 
-        d.dept_id, d.parent_id, d.ancestors, d.dept_name, d.order_num, d.leader, d.status as dept_status,
-        r.role_id, r.role_name, r.role_key, r.role_sort, r.data_scope, r.status as role_status
-        from sys_user u
-		    left join sys_dept d on u.dept_id = d.dept_id
-		    left join sys_user_role ur on u.user_id = ur.user_id
-		    left join sys_role r on r.role_id = ur.role_id
-    </sql>
-    
+		SELECT
+		u.user_id,
+		u.dept_id,
+		u.user_name,
+		u.nick_name,
+		u.user_type,         <!-- 新字段 -->
+		u.email,
+		u.avatar,
+		u.PASSWORD,          <!-- 注意字段名的大小写 -->
+		u.STATUS,           <!-- 注意字段名的大小写 -->
+		u.del_flag,
+		u.login_ip,
+		u.login_date,
+		u.create_by,
+		u.create_time,
+		u.update_by,        <!-- 新字段 -->
+		u.update_time,      <!-- 新字段 -->
+		u.remark,
+		u.trueName,         <!-- 新字段 -->
+		u.postName,         <!-- 新字段 -->
+		u.state,            <!-- 新字段 -->
+		u.startDate,        <!-- 新字段 -->
+		u.iDCard,           <!-- 新字段 -->
+		u.phonenumber,
+		u.sex,
+		u.birthday,         <!-- 新字段 -->
+		u.nation,           <!-- 新字段 -->
+		u.politicalStatus,  <!-- 新字段 -->
+		u.maritalStatus,    <!-- 新字段 -->
+		u.domicileAddress,  <!-- 新字段 -->
+		u.residentialAddress, <!-- 新字段 -->
+		u.relationPerson,   <!-- 新字段 -->
+		u.relationPersonTel,<!-- 新字段 -->
+		u.relationship,     <!-- 新字段 -->
+		u.education,        <!-- 新字段 -->
+		u.gradualUniversity,<!-- 新字段 -->
+		u.profession,       <!-- 新字段 -->
+		u.gradualDate,      <!-- 新字段 -->
+		u.bankName,         <!-- 新字段 -->
+		u.bankNo,           <!-- 新字段 -->
+		d.dept_id,
+		d.parent_id,
+		d.ancestors,
+		d.dept_name,
+		d.order_num,
+		d.leader,
+		d.status AS dept_status,
+		r.role_id,
+		r.role_name,
+		r.role_key,
+		r.role_sort,
+		r.data_scope,
+		r.status AS role_status
+		FROM sys_user u
+		LEFT JOIN sys_dept d ON u.dept_id = d.dept_id
+		LEFT JOIN sys_user_role ur ON u.user_id = ur.user_id
+		LEFT JOIN sys_role r ON r.role_id = ur.role_id
+	</sql>
+
     <select id="selectUserList" parameterType="SysUser" resultMap="SysUserResult">
 		select u.user_id, u.dept_id, u.nick_name, u.user_name, u.email, u.avatar, u.phonenumber, u.sex, u.status, u.del_flag, u.login_ip, u.login_date, u.create_by, u.create_time, u.remark, d.dept_name, d.leader from sys_user u
 		left join sys_dept d on u.dept_id = d.dept_id
@@ -218,4 +268,4 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         </foreach> 
  	</delete>
 	
-</mapper> 
+</mapper>

@@ -84,6 +84,7 @@ public class PaymentApplyServiceImpl implements IPaymentApplyService
         paymentApply.setUserId(SecurityUtils.getUserId());
         paymentApply.setUserName(SecurityUtils.getUserTruename());
         paymentApply.setDelFlag(Long.valueOf(DelConstants.NODEL));
+
         // 检查申请信息的依赖信息
         String otherBankNo = paymentApply.getOtherBankNo();
         if(otherBankNo==null || otherBankNo.isEmpty()){
