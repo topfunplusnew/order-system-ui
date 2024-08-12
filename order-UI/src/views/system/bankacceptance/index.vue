@@ -1,11 +1,18 @@
 <template>
   <div class="app-container">
     <el-form :model="queryParams" ref="queryForm" size="small" :inline="true" v-show="showSearch" label-width="68px">
-      <el-form-item label="操作日期" prop="issueDate">
+      <el-form-item label="开始时间" prop="beginTime">
         <el-date-picker
-          v-model="queryParams.issueDate"
+          v-model="queryParams.beginTime"
           type="date"
-          placeholder="选择日期" value-format="yyyy-MM-dd">
+          placeholder="选择日期" value-format="timestamp">
+        </el-date-picker>
+      </el-form-item>
+      <el-form-item label="结束时间" prop="endTime">
+        <el-date-picker
+          v-model="queryParams.endTime"
+          type="date"
+          placeholder="选择日期" value-format="timestamp">
         </el-date-picker>
       </el-form-item>
       <el-form-item label="票据号码" prop="billNo">
