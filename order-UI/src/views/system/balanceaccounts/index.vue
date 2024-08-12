@@ -28,74 +28,6 @@
         <!--        <el-button icon="el-icon-refresh" size="mini" @click="resetQuery">重置</el-button>-->
       </el-form-item>
     </el-form>
-    <!--    <el-form :model="queryParams" ref="queryForm" size="small" :inline="true" v-show="showSearch" label-width="68px">-->
-    <!--      &lt;!&ndash;      <el-form-item label="操作时间" prop="operateDate">-->
-    <!--              <el-input-->
-    <!--                v-model="queryParams.operateDate"-->
-    <!--                placeholder="请输入操作时间"-->
-    <!--                clearable-->
-    <!--                @keyup.enter.native="handleQuery"-->
-    <!--              />-->
-    <!--            </el-form-item>&ndash;&gt;-->
-    <!--      &lt;!&ndash;      <el-form-item label="金额" prop="moneyAmount">-->
-    <!--              <el-input-->
-    <!--                v-model="queryParams.moneyAmount"-->
-    <!--                placeholder="请输入金额"-->
-    <!--                clearable-->
-    <!--                @keyup.enter.native="handleQuery"-->
-    <!--              />-->
-    <!--            </el-form-item>&ndash;&gt;-->
-    <!--   -->
-    <!--      &lt;!&ndash;      <el-form-item label="对方公司ID" prop="companyID">&ndash;&gt;-->
-    <!--      &lt;!&ndash;        <el-input&ndash;&gt;-->
-    <!--      &lt;!&ndash;          v-model="queryParams.companyID"&ndash;&gt;-->
-    <!--      &lt;!&ndash;          placeholder="请输入对方公司ID"&ndash;&gt;-->
-    <!--      &lt;!&ndash;          clearable&ndash;&gt;-->
-    <!--      &lt;!&ndash;          @keyup.enter.native="handleQuery"&ndash;&gt;-->
-    <!--      &lt;!&ndash;        />&ndash;&gt;-->
-    <!--      &lt;!&ndash;      </el-form-item>&ndash;&gt;-->
-    <!--      &lt;!&ndash;      <el-form-item label="备注" prop="comments">-->
-    <!--              <el-input-->
-    <!--                v-model="queryParams.comments"-->
-    <!--                placeholder="请输入备注"-->
-    <!--                clearable-->
-    <!--                @keyup.enter.native="handleQuery"-->
-    <!--              />-->
-    <!--            </el-form-item>&ndash;&gt;-->
-    <!--      &lt;!&ndash;      <el-form-item label="添加时间" prop="addtime">-->
-    <!--              <el-input-->
-    <!--                v-model="queryParams.addtime"-->
-    <!--                placeholder="请输入添加时间"-->
-    <!--                clearable-->
-    <!--                @keyup.enter.native="handleQuery"-->
-    <!--              />-->
-    <!--            </el-form-item>&ndash;&gt;-->
-    <!--      &lt;!&ndash;      <el-form-item label="操作人员ID" prop="userId">-->
-    <!--              <el-input-->
-    <!--                v-model="queryParams.userId"-->
-    <!--                placeholder="请输入操作人员ID"-->
-    <!--                clearable-->
-    <!--                @keyup.enter.native="handleQuery"-->
-    <!--              />-->
-    <!--            </el-form-item>-->
-    <!--            <el-form-item label="操作人员姓名" prop="UserName">-->
-    <!--              <el-input-->
-    <!--                v-model="queryParams.UserName"-->
-    <!--                placeholder="请输入操作人员姓名"-->
-    <!--                clearable-->
-    <!--                @keyup.enter.native="handleQuery"-->
-    <!--              />-->
-    <!--            </el-form-item>&ndash;&gt;-->
-    <!--      &lt;!&ndash;      <el-form-item label="删除标记" prop="delFlag">-->
-    <!--              <el-input-->
-    <!--                v-model="queryParams.delFlag"-->
-    <!--                placeholder="请输入删除标记"-->
-    <!--                clearable-->
-    <!--                @keyup.enter.native="handleQuery"-->
-    <!--              />-->
-    <!--            </el-form-item>&ndash;&gt;-->
-    <!--      -->
-    <!--    </el-form>-->
 
     <el-row :gutter="10" class="mb8">
       <!-- 刷新按钮-->
@@ -104,13 +36,13 @@
       </el-col>
       <el-col :span="1.5">
         <el-button
-          type="primary"
+          type="danger"
           plain
           icon="el-icon-plus"
           size="mini"
           @click="handleAdd"
           v-hasPermi="['system:balanceaccounts:add']"
-        >新增
+        >新增平账信息
         </el-button>
       </el-col>
 
@@ -145,15 +77,16 @@
     <el-table border v-loading="loading" :data="BalanceAccountsList" @selection-change="handleSelectionChange"
               id="printBox"
               v-horizontal-scroll="'always'">
-      <el-table-column label="id" align="center" prop="id"/>
       <el-table-column label="操作时间" align="center" prop="operateDate" v-if="columns[0].visible"/>
       <el-table-column label="金额" align="center" prop="moneyAmount" v-if="columns[1].visible"/>
       <el-table-column label="对方公司" align="center" prop="companyName" v-if="columns[2].visible"/>
-      <el-table-column label="对方公司ID" align="center" prop="companyID" v-if="columns[3].visible"/>
-      <el-table-column label="对方公司类型" align="center" prop="companyType"/>
+      <el-table-column label="对方公司类型" align="center" prop="companyType">
+        <template slot-scope="scope">
+          {{ scope.row.companyType === 1 ? '客户' : '供应商' }}
+        </template>
+      </el-table-column>
       <el-table-column label="备注" align="center" prop="comments" v-if="columns[4].visible"/>
       <el-table-column label="添加时间" align="center" prop="addtime" v-if="columns[5].visible"/>
-      <el-table-column label="操作人员ID" align="center" prop="userId" v-if="columns[6].visible"/>
       <el-table-column label="操作" align="center" class-name="small-padding fixed-width">
         <template slot-scope="scope">
           <el-button
@@ -206,17 +139,18 @@
             </el-col>
           </el-row>
         </el-form-item>
-        <el-form-item label="对方公司ID" prop="companyID">
-          <el-row>
-            <el-col :span="12">
-              <el-input v-model="form.companyID" placeholder="请输入对方公司ID"/>
-            </el-col>
-          </el-row>
-        </el-form-item>
+        <!--        <el-form-item label="对方公司ID" prop="companyID">-->
+        <!--          <el-row>-->
+        <!--            <el-col :span="12">-->
+        <!--              <el-input v-model="form.companyID" placeholder="请输入对方公司ID"/>-->
+        <!--            </el-col>-->
+        <!--          </el-row>-->
+        <!--        </el-form-item>-->
         <!--        单选-->
         <el-form-item label="对方公司类型" prop="companyType">
-          <el-radio v-model="form.companyType" label="1">客户</el-radio>
-          <el-radio v-model="form.companyType" label="2">供应商</el-radio>
+          <!--          <el-radio v-model="form.companyType" label="1">客户</el-radio>-->
+          <!--          <el-radio v-model="form.companyType" label="2">供应商</el-radio>-->
+          <el-input v-model="form.companyType" type="text">供应商</el-input>
         </el-form-item>
         <el-form-item label="备注" prop="comments">
           <el-input v-model="form.comments" placeholder="请输入备注"/>
@@ -379,9 +313,9 @@ export default {
     commitCompanyInfo(row) {
       this.form.companyName = row.companyName;
       this.form.companyID = row.id
+      this.form.companyType = row.companyType;
       this.companyDialogVisible = false;
     },
-    //todo 时间查询
     handleTimesQuery() {
       this.BalanceAccountsList = this.tempbalanceaccountsList;
       console.log(this.timesQuery)
@@ -478,6 +412,8 @@ export default {
             this.form.addtime = null;
             this.form.updateTime = null;
             this.form.userId = null;
+            this.form.companyType = this.form.companyType === '供应商' ? 2 : 1
+            this.form.operateDate = this.form.operateDate.getTime()
             updateBalanceAccounts(this.form).then(response => {
               this.$modal.msgSuccess("修改成功");
               this.open = false;
@@ -488,6 +424,8 @@ export default {
             this.form.addtime = null;
             this.form.updateTime = null;
             this.form.userId = null;
+            this.form.companyType = this.form.companyType === '供应商' ? 2 : 1
+            this.form.operateDate = this.form.operateDate.getTime()
             addBalanceAccounts(this.form).then(response => {
               this.$modal.msgSuccess("新增成功");
               this.open = false;

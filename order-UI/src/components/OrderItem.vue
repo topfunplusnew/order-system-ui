@@ -474,6 +474,8 @@ export default {
         if (this.storeHouseName === undefined) {
           //是否含税 厂家否 客户否
           if (this.Tax === '00') {
+            //误差为0.8
+            this.erro = 0.8;
             //出厂贷款
             this.paymentFactory = this.paymentFactory00;
             //总贷款
@@ -488,6 +490,8 @@ export default {
             this.profitNoTax = this.profitNoTax00
             //出厂含税客户不含税
           } else if (this.Tax === '10') {
+            //误差为0
+            this.erro = 0;
             this.paymentFactory = this.paymentFactory10;
             this.payments = this.payments10
             this.tonnage = this.tonnage10
@@ -495,6 +499,8 @@ export default {
             this.profit = this.profit10
             this.profitNoTax = this.profitNoTax10
           } else if (this.Tax === '01') {
+            //误差为0
+            this.erro = 0;
             this.paymentFactory = this.paymentFactory01;
             this.payments = this.payments01
             this.tonnage = this.tonnage01
@@ -502,6 +508,8 @@ export default {
             this.profit = this.profit01
             this.profitNoTax = this.profitNoTax01
           } else {
+            //误差为0
+            this.erro = 0;
             this.paymentFactory = this.paymentFactory11;
             this.payments = this.payments11
             this.tonnage = this.tonnage11
@@ -837,7 +845,7 @@ export default {
       <div class="order-item">
         <span class="text-bold">误差</span>
         <hr/>
-        <el-input type="text" placeholder="请输入误差" v-model="erro"></el-input>
+        <el-input type="text" placeholder="请输入误差" v-model="erro" disabled></el-input>
       </div>
       <div class="order-item">
         <span class="text-bold">吨位</span>

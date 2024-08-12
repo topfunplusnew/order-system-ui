@@ -504,9 +504,9 @@
       :visible.sync="addMoneyBackVisible"
       width="40%">
       <el-form :model="moneyBackInfo" label-width="80px">
-        <el-form-item label="订单编号" prop="ordersNo">
-          <span style="font-weight: bolder">{{ moneyBackInfo.ordersNo }}</span>
-        </el-form-item>
+        <!--        <el-form-item label="订单编号" prop="ordersNo">-->
+        <!--          <span style="font-weight: bolder">{{ moneyBackInfo.ordersNo }}</span>-->
+        <!--        </el-form-item>-->
         <el-form-item label="日期" prop="rebateDate">
           <el-date-picker
             v-model="moneyBackInfo.rebateDate"
@@ -819,6 +819,10 @@ export default {
     cancelSubmit() {
       this.orderInfo = {};
       this.addOrderItemVisible = false
+      //清空订单详情填写信息
+      this.$store.dispatch('order/clearOrderItemList');
+      //清空订单列表基础信息
+      this.orderInfo = {}
     },
     //时间查询
     handleTimesQuery() {
@@ -926,9 +930,7 @@ export default {
       updateGoodsOrder({...this.tempOrderInfo, path: val})
         .then(res => {
           this.$message.success('上传成功')
-        }).catch(err => {
-        this.$message.error('上传失败' + err.msg)
-      })
+        })
     },
 
     //调整单
@@ -953,8 +955,6 @@ export default {
           this.$message.success('调整单提交成功')
           this.handleOrderVisible = false
           this.getList();
-        }).catch(err => {
-          this.$message.error('调整单提交失败' + err.msg)
         })
       })
     },
@@ -982,8 +982,6 @@ export default {
       const date = this.orderInfo.orderDate.getTime();
       addGoodsOrder({...this.orderInfo, orderDate: date, PaymentState: ''}).then(res => {
         this.$message.success('订单提交成功')
-      }).catch(err => {
-        this.$message.error('订单提交失败' + err.msg)
       })
 
       //同时添加运费信息 todo 运费添加
@@ -1188,8 +1186,7 @@ export default {
       }).then(() => {
         this.getList();
         this.$modal.msgSuccess("删除成功");
-      }).catch(() => {
-      });
+      })
     },
     /** 导出按钮操作 */
     handleExport() {

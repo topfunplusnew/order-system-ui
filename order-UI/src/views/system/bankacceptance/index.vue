@@ -1,9 +1,16 @@
 <template>
   <div class="app-container">
     <el-form :model="queryParams" ref="queryForm" size="small" :inline="true" v-show="showSearch" label-width="68px">
-      <el-form-item label="操作日期" prop="issueDate">
+      <el-form-item label="开始时间" prop="issueDateStart">
         <el-date-picker
-          v-model="queryParams.issueDate"
+          v-model="queryParams.issueDateStart"
+          type="date"
+          placeholder="选择日期" value-format="yyyy-MM-dd">
+        </el-date-picker>
+      </el-form-item>
+      <el-form-item label="结束时间" prop="issueDateEnd">
+        <el-date-picker
+          v-model="queryParams.issueDateEnd"
           type="date"
           placeholder="选择日期" value-format="yyyy-MM-dd">
         </el-date-picker>
@@ -296,6 +303,8 @@ export default {
       open: false,
       // 查询参数
       queryParams: {
+        issueDateStart: null,
+        issueDateEnd: null,
         pageNum: 1,
         pageSize: 10,
         operateDate: null,

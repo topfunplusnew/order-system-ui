@@ -178,8 +178,7 @@ export default {
     //陆运车牌信息
     searchLandInfo() {
       this.landInfoDialogVisible = true
-      //搜索车队信息
-      listCars().then(res => {
+      listCars({carType: '陆运'}).then(res => {
         this.landInfo = res.rows;
       })
     },
@@ -242,6 +241,11 @@ export default {
     handleChangeOrderItemInfo(index, val) {
       //改变vuex中的数据 传递一个对象 这个对象是修改过的item
       this.$store.dispatch('order/changeOrderItem', {...val, index: index})
+    },
+
+    //删除订单详情
+    handleDeleteOrderDetail(index, event) {
+      this.$store.dispatch('order/deleteOrderItem', index)
     },
   },
   created() {
@@ -343,9 +347,16 @@ export default {
         <!--        订单个体 传递给子组件订单详情个体   -->
         <OrderItem :order-item-info="item" :isLand="isLand" :isSea="isSea" :index="index"
                    @changeOrderItemInfo="handleChangeOrderItemInfo(index,$event)"/>
+        <el-row>
+          <el-button type="danger" @click="handleDeleteOrderDetail(index,$event)">删除该订单详情信息</el-button>
+        </el-row>
       </div>
       <div class="option">
-        <el-button type="primary" @click="addOrderItem" icon="el-icon-plus">继续添加订单详情</el-button>
+        <el-row>
+          <el-col style="text-align: center">
+            <el-button type="primary" @click="addOrderItem" icon="el-icon-plus">继续添加订单详情</el-button>
+          </el-col>
+        </el-row>
       </div>
     </div>
     <div v-else>
