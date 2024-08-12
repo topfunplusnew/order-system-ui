@@ -156,7 +156,12 @@ public class ReceiveMoney extends BaseEntity
     @TableField(exist = false)
     private String startTime;
 
+    public void setEndTime(String endTime) {
+        this.endTime = endTime;
+    }
+
     /** 额外字段,结束时间*/
+    @TableField(exist = false)
     private String endTime;
 
     public String getStartTime() {

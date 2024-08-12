@@ -101,6 +101,7 @@ public class RecoverMoney extends BaseEntity {
     private String startTime;
 
     /** 额外字段,结束时间*/
+    @TableField(exist = false)
     private String endTime;
 
     public String getStartTime() {
