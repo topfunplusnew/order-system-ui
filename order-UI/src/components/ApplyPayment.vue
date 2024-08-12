@@ -54,7 +54,9 @@
             <el-input v-model="form.otherAcountsName" placeholder="请输入对方户名"/>
           </el-col>
           <el-col :span="3">
-            <SearchOption :get-data="listCompany" icon="el-icon-search" @commitBack="handleCommitBack">
+            <SearchOption :get-data="listCompany" icon="el-icon-search" @commitBack="handleCommitBack"
+                          :limit-info="{}" query-label="户名查找" query-info="acountsName" :query-name="queryCompany"
+                          @update:queryName="handleUpdateQueryName">
               <template #table-columns>
                 <el-table-column label="公司名称" align="center" prop="companyName"/>
                 <el-table-column label="公司类型" align="center" prop="companyType"/>
@@ -161,7 +163,11 @@ export default {
       //一级分类列表
       OneLevelOption: [],
       //二级分类
-      TwoLevelOption: []
+      TwoLevelOption: [],
+
+
+      //
+      queryCompany: '',
     };
   },
   created() {
@@ -219,6 +225,11 @@ export default {
     //上传的回调函数
     handleCommitUpload(val) {
       this.form.attachment = val;
+    },
+
+    //update
+    handleUpdateQueryName(val) {
+      this.queryCompany = val;
     },
     getList() {
       this.loading = true;

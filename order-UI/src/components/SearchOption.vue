@@ -27,6 +27,10 @@ export default {
   },
   data() {
     return {
+      //显示总行数
+      total: 0,
+      pageNum: 0,
+      pageSize: 0,
       dialogVisible: false,
       //数据集 通过父组件传入函数来获取
       tableData: [],
@@ -127,6 +131,16 @@ export default {
             </template>
           </el-table-column>
         </el-table>
+      </el-row>
+      <!--      分页-->
+      <el-row>
+        <!--        <pagination-->
+        <!--          v-show="total>0"-->
+        <!--          :total="total"-->
+        <!--          :page.sync="pageNum"-->
+        <!--          :limit.sync="pageSize"-->
+        <!--          @pagination="getData"-->
+        <!--        />-->
       </el-row>
       <span slot="footer" class="dialog-footer">
     <el-button @click="dialogVisible = false">取 消</el-button>
