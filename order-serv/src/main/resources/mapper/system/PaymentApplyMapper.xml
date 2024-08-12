@@ -35,7 +35,31 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
  
 
     <sql id="selectPaymentApplyVo">
-        select id, tableName, tID, fundsDate, payType, moneyAmount, otherAcountsName, otherBankNo, otherBankName, companyName, companyId, companyType, reason, attachment, applyPerson, applyPersonID, checkState, comments, addtime, userId, UserName, update_time, delFlag, submitflag from paymentApply
+        select id,
+               tableName,
+               tID,
+               fundsDate,
+               payType,
+               moneyAmount,
+               otherAcountsName,
+               otherBankNo,
+               otherBankName,
+               companyName,
+               companyId,
+               companyType,
+               reason,
+               attachment,
+               applyPerson,
+               applyPersonID,
+               checkState,
+               comments,
+               addtime,
+               userId,
+               UserName,
+               update_time,
+               delFlag,
+               submitflag
+        from paymentApply
     </sql>
 
     <select id="selectPaymentApplyList" parameterType="PaymentApply" resultMap="PaymentApplyResult">
