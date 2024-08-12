@@ -7,10 +7,13 @@ import org.dzu.common.exception.ServiceException;
 import org.dzu.common.utils.DateUtils;
 import org.dzu.common.utils.SecurityUtils;
 import org.dzu.system.domain.AuditInfo;
+import org.dzu.system.domain.BankAccount;
 import org.dzu.system.domain.PaymentApply;
 import org.dzu.system.mapper.AuditInfoMapper;
+import org.dzu.system.mapper.BankAccountMapper;
 import org.dzu.system.mapper.PaymentApplyMapper;
 import org.dzu.system.service.IAuditInfoService;
+import org.dzu.system.service.IBankAccountService;
 import org.dzu.system.service.IPaymentApplyService;
 import org.dzu.system.service.IPaymentService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -38,6 +41,10 @@ public class PaymentApplyServiceImpl implements IPaymentApplyService
 
     @Autowired
     private IPaymentService paymentService;
+    @Autowired
+    private BankAccountMapper bankAccountMapper;
+    @Autowired
+    private BankAccountServiceImpl bankAccountServiceImpl;
 
     /**
      * 查询付款信息
@@ -77,7 +84,15 @@ public class PaymentApplyServiceImpl implements IPaymentApplyService
         paymentApply.setUserId(SecurityUtils.getUserId());
         paymentApply.setUserName(SecurityUtils.getUserTruename());
         paymentApply.setDelFlag(Long.valueOf(DelConstants.NODEL));
-
+        // 检查申请信息的依赖信息
+        String otherBankNo = paymentApply.getOtherBankNo();
+        if(otherBankNo==null || otherBankNo.isEmpty()){
+            throw new ServiceException("对方账号不能为空");
+        }
+        BankAccount other = bankAccountServiceImpl.selectBankAccountByBankNo(otherBankNo);
+        if(other==null){
+            throw new ServiceException("搜索不到卡号:"+otherBankNo+"的对方账号");
+        }
 
         // 补充申请人信息
         paymentApply.setApplyPerson(SecurityUtils.getUserTruename());
