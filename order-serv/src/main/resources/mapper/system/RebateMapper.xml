@@ -3,7 +3,7 @@
 PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
 "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="org.dzu.system.mapper.RebateMapper">
-    
+
     <resultMap type="Rebate" id="RebateResult">
         <result property="id"    column="id"    />
         <result property="orderDetailID"    column="orderDetailID"    />
@@ -26,7 +26,7 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
     </resultMap>
 
 
- 
+
 
     <sql id="selectRebateVo">
         select id, orderDetailID, rebateDate, rebate, rebateType, inAcountsName, inBankNo, supplier, supplierID, outAcountsName, outBankNo, rebateReason, comments, addtime, userId, UserName, update_time, delFlag from Rebate
@@ -34,15 +34,15 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
 
     <select id="selectRebateList" parameterType="Rebate" resultMap="RebateResult">
         <include refid="selectRebateVo"/>
-        <where>  
+        <where>
             <if test="orderDetailID != null  and orderDetailID != ''"> and orderDetailID = #{orderDetailID}</if>
             <if test="rebateDate != null  and rebateDate != ''"> and rebateDate = #{rebateDate}</if>
             <if test="rebate != null "> and rebate = #{rebate}</if>
             <if test="rebateType != null  and rebateType != ''"> and rebateType = #{rebateType}</if>
             <if test="inAcountsName != null  and inAcountsName != ''"> and inAcountsName like concat('%', #{inAcountsName}, '%')</if>
             <if test="inBankNo != null  and inBankNo != ''"> and inBankNo = #{inBankNo}</if>
-            <if test="supplier != null  and supplier != ''"> and supplier = #{supplier}</if>
             <if test="supplierID != null "> and supplierID = #{supplierID}</if>
+            <if test="supplier != null and supplier != ''">and supplier like concat('%','#{supplier},'%')</if>
             <if test="outAcountsName != null  and outAcountsName != ''"> and outAcountsName like concat('%', #{outAcountsName}, '%')</if>
             <if test="outBankNo != null  and outBankNo != ''"> and outBankNo = #{outBankNo}</if>
             <if test="rebateReason != null  and rebateReason != ''"> and rebateReason = #{rebateReason}</if>
@@ -53,7 +53,7 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
             and delFlag = 0
         </where>
     </select>
-    
+
     <select id="selectRebateById" parameterType="Long" resultMap="RebateResult">
         <include refid="selectRebateVo"/>
         where id = #{id}
