@@ -146,12 +146,6 @@ public class RebateServiceImpl implements IRebateService {
         if (supplier == null) {
             throw new RuntimeException("数据库中搜索不到对应供应商");
         }
-        // 搜索订单是否存在
-        if (goodsOrderService.selectGoodsOrderByOrderNO(rebate.getOrdersNo()) == null) {
-            throw new RuntimeException("数据库中搜索不到对应订单");
-        }
-
-
     }
 
     private void SyncToBankChange(Rebate rebate) {

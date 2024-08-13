@@ -6,7 +6,7 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
     
     <resultMap type="Rebate" id="RebateResult">
         <result property="id"    column="id"    />
-        <result property="ordersNo"    column="ordersNo"    />
+        <result property="orderDetailID"    column="orderDetailID"    />
         <result property="rebateDate"    column="rebateDate"    />
         <result property="rebate"    column="rebate"    />
         <result property="rebateType"    column="rebateType"    />
@@ -29,13 +29,13 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
  
 
     <sql id="selectRebateVo">
-        select id, ordersNo, rebateDate, rebate, rebateType, inAcountsName, inBankNo, supplier, supplierID, outAcountsName, outBankNo, rebateReason, comments, addtime, userId, UserName, update_time, delFlag from Rebate
+        select id, orderDetailID, rebateDate, rebate, rebateType, inAcountsName, inBankNo, supplier, supplierID, outAcountsName, outBankNo, rebateReason, comments, addtime, userId, UserName, update_time, delFlag from Rebate
     </sql>
 
     <select id="selectRebateList" parameterType="Rebate" resultMap="RebateResult">
         <include refid="selectRebateVo"/>
         <where>  
-            <if test="ordersNo != null  and ordersNo != ''"> and ordersNo = #{ordersNo}</if>
+            <if test="orderDetailID != null  and orderDetailID != ''"> and orderDetailID = #{orderDetailID}</if>
             <if test="rebateDate != null  and rebateDate != ''"> and rebateDate = #{rebateDate}</if>
             <if test="rebate != null "> and rebate = #{rebate}</if>
             <if test="rebateType != null  and rebateType != ''"> and rebateType = #{rebateType}</if>
@@ -63,7 +63,7 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
     <insert id="insertRebate" parameterType="Rebate" useGeneratedKeys="true" keyProperty="id">
         insert into Rebate
         <trim prefix="(" suffix=")" suffixOverrides=",">
-            <if test="ordersNo != null">ordersNo,</if>
+            <if test="orderDetailID != null">orderDetailID,</if>
             <if test="rebateDate != null">rebateDate,</if>
             <if test="rebate != null">rebate,</if>
             <if test="rebateType != null">rebateType,</if>
@@ -82,7 +82,7 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
             <if test="delFlag != null">delFlag,</if>
          </trim>
         <trim prefix="values (" suffix=")" suffixOverrides=",">
-            <if test="ordersNo != null">#{ordersNo},</if>
+            <if test="orderDetailID != null">#{orderDetailID},</if>
             <if test="rebateDate != null">#{rebateDate},</if>
             <if test="rebate != null">#{rebate},</if>
             <if test="rebateType != null">#{rebateType},</if>
@@ -105,7 +105,7 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
     <update id="updateRebate" parameterType="Rebate">
         update Rebate
         <trim prefix="SET" suffixOverrides=",">
-            <if test="ordersNo != null">ordersNo = #{ordersNo},</if>
+            <if test="orderDetailID != null">orderDetailID = #{orderDetailID},</if>
             <if test="rebateDate != null">rebateDate = #{rebateDate},</if>
             <if test="rebate != null">rebate = #{rebate},</if>
             <if test="rebateType != null">rebateType = #{rebateType},</if>

@@ -1,26 +1,22 @@
-<?xml version="1.0" encoding="UTF-8" ?>
-<!DOCTYPE mapper
-PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
-"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="org.dzu.system.mapper.BusinessTripMapper">
-    
-    <resultMap type="BusinessTrip" id="BusinessTripResult">
-        <result property="id"    column="id"    />
-        <result property="employeeID"    column="employeeID"    />
-        <result property="employee"    column="employee"    />
-        <result property="personnel"    column="personnel"    />
-        <result property="starttime"    column="starttime"    />
-        <result property="endtime"    column="endtime"    />
-        <result property="attachmentPath"    column="attachmentPath"    />
-        <result property="isReimburse"    column="isReimburse"    />
-        <result property="comments"    column="comments"    />
-        <result property="addtime"    column="addtime"    />
-        <result property="userId"    column="userId"    />
-        <result property="UserName"    column="UserName"    />
-        <result property="updateTime"    column="update_time"    />
-        <result property="delFlag"    column="delFlag"    />
-        <result property="checkState" column="checkState"/>
 
+    <resultMap type="BusinessTrip" id="BusinessTripResult">
+        <result property="id" column="id" />
+        <result property="employeeID" column="employeeID" />
+        <result property="employee" column="employee" />
+        <result property="personnel" column="personnel" />
+        <result property="starttime" column="starttime" />
+        <result property="endtime" column="endtime" />
+        <result property="attachmentPath" column="attachmentPath" />
+        <result property="isReimburse" column="isReimburse" />
+        <result property="comments" column="comments" />
+        <result property="addtime" column="addtime" />
+        <result property="userId" column="userId" />
+        <result property="UserName" column="UserName" />
+        <result property="updateTime" column="update_time" />
+        <result property="delFlag" column="delFlag" />
+        <result property="checkState" column="checkState" />
+        <result property="deptName" column="deptName" />
     </resultMap>
 
     <resultMap id="BusinessTripTripReimbursementResult" type="BusinessTrip" extends="BusinessTripResult">
@@ -28,19 +24,17 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
     </resultMap>
 
     <resultMap type="TripReimbursement" id="TripReimbursementResult">
-        <result property="id"    column="id"    />
-        <result property="bTripId"    column="bTripId"    />
-        <result property="item"    column="item"    />
-        <result property="itemCost"    column="itemCost"    />
-        <result property="comments"    column="comments"    />
-        <result property="addtime"    column="addtime"    />
-        <result property="userId"    column="userId"    />
-        <result property="UserName"    column="UserName"    />
-        <result property="updateTime"    column="update_time"    />
-        <result property="delFlag"    column="delFlag"    />
+        <result property="id" column="id" />
+        <result property="bTripId" column="bTripId" />
+        <result property="item" column="item" />
+        <result property="itemCost" column="itemCost" />
+        <result property="comments" column="comments" />
+        <result property="addtime" column="addtime" />
+        <result property="userId" column="userId" />
+        <result property="UserName" column="UserName" />
+        <result property="updateTime" column="update_time" />
+        <result property="delFlag" column="delFlag" />
     </resultMap>
-
-
 
     <sql id="selectBusinessTripVo">
         select
@@ -58,6 +52,7 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         bt.UserName,
         bt.update_time,
         bt.delFlag,
+        bt.deptName,
         CASE
         WHEN pa.checkState = '通过' THEN p.paymentState
         ELSE COALESCE(pa.checkState, '未申请')
@@ -91,6 +86,7 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
             <if test="addtime != null  and addtime != ''"> and bt.addtime = #{addtime}</if>
             <if test="userId != null "> and bt.userId = #{userId}</if>
             <if test="UserName != null  and UserName != ''"> and bt.UserName like concat('%', #{UserName}, '%')</if>
+            <if test="deptName != null  and deptName != ''"> and bt.deptName like concat('%', #{deptName}, '%')</if>
             and bt.delFlag = 0
         </where>
         order by bt.starttime desc, bt.endtime asc
@@ -107,7 +103,6 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         select id, bTripId, item, itemCost, comments, addtime, userId, UserName, update_time, delFlag
         from tripReimbursement
         where bTripId = #{bTripId}
-
     </select>
 
     <insert id="insertBusinessTrip" parameterType="BusinessTrip" useGeneratedKeys="true" keyProperty="id">
@@ -126,6 +121,7 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
             <if test="UserName != null">UserName,</if>
             <if test="updateTime != null">update_time,</if>
             <if test="delFlag != null">delFlag,</if>
+            <if test="deptName != null">deptName,</if>
          </trim>
         <trim prefix="values (" suffix=")" suffixOverrides=",">
             <if test="employeeID != null">#{employeeID},</if>
@@ -141,6 +137,7 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
             <if test="UserName != null">#{UserName},</if>
             <if test="updateTime != null">#{updateTime},</if>
             <if test="delFlag != null">#{delFlag},</if>
+            <if test="deptName != null">#{deptName},</if>
          </trim>
     </insert>
 
@@ -160,20 +157,24 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
             <if test="UserName != null">UserName = #{UserName},</if>
             <if test="updateTime != null">update_time = #{updateTime},</if>
             <if test="delFlag != null">delFlag = #{delFlag},</if>
+            <if test="deptName != null">deptName = #{deptName},</if>
         </trim>
         where id = #{id}
     </update>
+
     <update id="deleteBusinessTripById" parameterType="Long">
         update BusinessTrip set delFlag = 1 where id = #{id}
     </update>
+
     <update id="deleteBusinessTripByIds" parameterType="String">
         update BusinessTrip set delFlag = 1 where id in
         <foreach item="id" collection="array" open="(" separator="," close=")">
             #{id}
         </foreach>
     </update>
+
     <delete id="deleteTripReimbursementByBTripIds" parameterType="String">
-        delete from tripReimbursement where bTripId in 
+        delete from tripReimbursement where bTripId in
         <foreach item="bTripId" collection="array" open="(" separator="," close=")">
             #{bTripId}
         </foreach>
