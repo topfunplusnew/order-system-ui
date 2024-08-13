@@ -20,8 +20,12 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Isolation;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.*;
+import java.util.Arrays;
+import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
+
+import static org.dzu.common.utils.PageUtils.startPage;
 
 /**
  * 审核流程Service业务层处理
@@ -42,6 +46,7 @@ public class AuditInfoServiceImpl implements IAuditInfoService {
 
     @Autowired
     private PaymentApplyMapper paymentApplyMapper;
+
     /**
      * 查询审核流程
      *
@@ -71,45 +76,53 @@ public class AuditInfoServiceImpl implements IAuditInfoService {
      * @param auditInfo 审核流程
      * @return 审核流程
      */
-   @Override
-public List<AuditInfoGroupedResult> selectAuditInfoGroupByApplyId(AuditInfo auditInfo) {
-    // Get the list of applyIds
-    List<Map<String, Object>> results = auditInfoMapper.selectApplyIdList(auditInfo);
+    @Override
+    public List<AuditInfoGroupedResult> selectAuditInfoGroupByApplyId(AuditInfo auditInfo) {
+        startPage();
+        // 获取applyId列表
+        List<Map<String, Object>> results = auditInfoMapper.selectApplyIdList(auditInfo);
 
-    // Extract unique applyIds
-    List<Long> applyIds = results.stream()
-        .map(result -> {
-            Object applyIdObj = result.get("applyId");
-            if (applyIdObj instanceof Integer) {
-                return ((Integer) applyIdObj).longValue();
-            } else if (applyIdObj instanceof Long) {
-                return (Long) applyIdObj;
-            } else if (applyIdObj instanceof String) {
-                return Long.valueOf((String) applyIdObj);
-            } else {
-                throw new ServiceException("Unexpected type for applyId: " + applyIdObj.getClass().getName());
-            }
-        })
-        .collect(Collectors.toList());
 
-    // 获取 AuditInfo 对象列表
-    List<AuditInfo> auditInfos = auditInfoMapper.selectAuditInfoGroupedByApplyId(applyIds);
 
-    // 按 applyId 对 AuditInfo 对象进行分组
-    Map<Long, List<AuditInfo>> groupedAuditInfos = auditInfos.stream()
-        .collect(Collectors.groupingBy(AuditInfo::getApplyID));
+        // 因为分页插件的分页参数已经被搜索results消耗,所以此处检测是否为0,否则会导致下方sql全表打包分组
+        if(results.isEmpty()){
+            throw new ServiceException("本次选择的筛选条件下无任何可返回数据!");
+        }
 
-    //将分组数据转换为 AuditInfoGroupedResult 列表
-    List<AuditInfoGroupedResult> groupedResults = groupedAuditInfos.entrySet().stream()
-        .map(entry -> {
-            AuditInfoGroupedResult groupedResult = new AuditInfoGroupedResult();
-            groupedResult.setAuditInfos(entry.getValue());
-            return groupedResult;
-        })
-        .collect(Collectors.toList());
+        // Extract unique applyIds
+        List<Long> applyIds = results.stream()
+                .map(result -> {
+                    Object applyIdObj = result.get("applyId");
+                    if (applyIdObj instanceof Integer) {
+                        return ((Integer) applyIdObj).longValue();
+                    } else if (applyIdObj instanceof Long) {
+                        return (Long) applyIdObj;
+                    } else if (applyIdObj instanceof String) {
+                        return Long.valueOf((String) applyIdObj);
+                    } else {
+                        throw new ServiceException("Unexpected type for applyId: " + applyIdObj.getClass().getName());
+                    }
+                })
+                .collect(Collectors.toList());
 
-    return groupedResults;
-}
+        // 获取 AuditInfo 对象列表
+        List<AuditInfo> auditInfos = auditInfoMapper.selectAuditInfoGroupedByApplyId(applyIds);
+
+        // 按 applyId 对 AuditInfo 对象进行分组
+        Map<Long, List<AuditInfo>> groupedAuditInfos = auditInfos.stream()
+                .collect(Collectors.groupingBy(AuditInfo::getApplyID));
+
+        //将分组数据转换为 AuditInfoGroupedResult 列表
+        List<AuditInfoGroupedResult> groupedResults = groupedAuditInfos.entrySet().stream()
+                .map(entry -> {
+                    AuditInfoGroupedResult groupedResult = new AuditInfoGroupedResult();
+                    groupedResult.setAuditInfos(entry.getValue());
+                    return groupedResult;
+                })
+                .collect(Collectors.toList());
+
+        return groupedResults;
+    }
 
 
     /**
