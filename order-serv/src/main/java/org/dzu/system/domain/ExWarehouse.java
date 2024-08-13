@@ -14,179 +14,186 @@ import javax.validation.constraints.NotNull;
 
 /**
  * 出库对象 exWarehouse
- * 
- * @author ml
- * @date 2024-08-01
+ *
  */
 @TableName("exWarehouse")
-public class ExWarehouse extends BaseEntity
-{
+public class ExWarehouse extends BaseEntity {
     private static final long serialVersionUID = 1L;
 
-    /** id */
     @TableId(value = "id")
     private Long id;
 
-    /** 订单编号（UUID） */
     @Excel(name = "订单编号")
     @TableField(value = "ordersNo")
     @NotNull(message = "订单编号不能为空")
     @Length(max = 64, message = "订单编号长度不能超过64个字符")
     private String ordersNo;
 
-    /** 仓库ID */
     @Excel(name = "仓库ID")
     @TableField(value = "storeHouseid")
     @NotNull(message = "仓库ID不能为空")
     private Long storeHouseid;
 
-    /** 仓库名称 */
     @Excel(name = "仓库名称")
     @TableField(value = "storeHouseName")
     @Length(max = 64, message = "仓库名称长度不能超过64个字符")
     @NotNull(message = "仓库名称不能为空")
     private String storeHouseName;
 
-    /** 仓库存储的货物ID */
     @Excel(name = "仓库存储的货物ID")
     @TableField(value = "storeID")
     @NotNull(message = "仓库存储的货物ID不能为空")
     private Long storeID;
 
-    /** 出库日期 */
-    @Excel(name = "出库日期",dateFormat = "yyyy-MM-dd")
+    @Excel(name = "出库日期", dateFormat = "yyyy-MM-dd")
     @TableField(value = "outDate")
     private String outDate;
 
-    /** 出库量（片数） */
     @Excel(name = "出库量", readConverterExp = "片数")
     @TableField(value = "outAmount")
     @NotNull(message = "出库量不能为空")
     private Long outAmount;
 
-    /** 删除标记 */
     @FlagOnlyZeroOrOne
     @TableField(value = "delFlag")
     private Long delFlag;
 
-    /** 添加时间 */
     @Excel(name = "添加时间")
     @TableField(value = "addtime")
     private String addtime;
 
-    /** 操作人员ID */
     @Excel(name = "操作人员ID")
     @TableField(value = "userId")
     private Long userId;
 
-    /** 操作人员姓名 */
     @Excel(name = "操作人员姓名")
     @TableField(value = "UserName")
     private String UserName;
 
-    public void setId(Long id) 
-    {
+    @TableField(exist = false)
+    private String outDateStart;
+
+    @TableField(exist = false)
+    private String outDateEnd;
+
+    @TableField(exist = false)
+    private String  isOrder;
+
+    public Long getId() {
+        return id;
+    }
+
+    public void setId(Long id) {
         this.id = id;
     }
 
-    public Long getId() 
-    {
-        return id;
+    public String getOrdersNo() {
+        return ordersNo;
     }
-    public void setOrdersNo(String ordersNo) 
-    {
+
+    public void setOrdersNo(String ordersNo) {
         this.ordersNo = ordersNo;
     }
 
-    public String getOrdersNo() 
-    {
-        return ordersNo;
+    public Long getStoreHouseid() {
+        return storeHouseid;
     }
-    public void setStoreHouseid(Long storeHouseid) 
-    {
+
+    public void setStoreHouseid(Long storeHouseid) {
         this.storeHouseid = storeHouseid;
     }
 
-    public Long getStoreHouseid() 
-    {
-        return storeHouseid;
+    public String getStoreHouseName() {
+        return storeHouseName;
     }
-    public void setStoreHouseName(String storeHouseName) 
-    {
+
+    public void setStoreHouseName(String storeHouseName) {
         this.storeHouseName = storeHouseName;
     }
 
-    public String getStoreHouseName() 
-    {
-        return storeHouseName;
+    public Long getStoreID() {
+        return storeID;
     }
-    public void setStoreID(Long storeID) 
-    {
+
+    public void setStoreID(Long storeID) {
         this.storeID = storeID;
     }
 
-    public Long getStoreID() 
-    {
-        return storeID;
+    public String getOutDate() {
+        return outDate;
     }
-    public void setOutDate(String outDate) 
-    {
+
+    public void setOutDate(String outDate) {
         this.outDate = outDate;
     }
 
-    public String getOutDate() 
-    {
-        return outDate;
+    public Long getOutAmount() {
+        return outAmount;
     }
-    public void setOutAmount(Long outAmount) 
-    {
+
+    public void setOutAmount(Long outAmount) {
         this.outAmount = outAmount;
     }
 
-    public Long getOutAmount() 
-    {
-        return outAmount;
+    public Long getDelFlag() {
+        return delFlag;
     }
-    public void setDelFlag(Long delFlag) 
-    {
+
+    public void setDelFlag(Long delFlag) {
         this.delFlag = delFlag;
     }
 
-    public Long getDelFlag() 
-    {
-        return delFlag;
+    public String getAddtime() {
+        return addtime;
     }
-    public void setAddtime(String addtime) 
-    {
+
+    public void setAddtime(String addtime) {
         this.addtime = addtime;
     }
 
-    public String getAddtime() 
-    {
-        return addtime;
+    public Long getUserId() {
+        return userId;
     }
-    public void setUserId(Long userId) 
-    {
+
+    public void setUserId(Long userId) {
         this.userId = userId;
     }
 
-    public Long getUserId() 
-    {
-        return userId;
+    public String getUserName() {
+        return UserName;
     }
-    public void setUserName(String UserName) 
-    {
+
+    public void setUserName(String UserName) {
         this.UserName = UserName;
     }
 
-    public String getUserName() 
-    {
-        return UserName;
+    public String getOutDateStart() {
+        return outDateStart;
+    }
+
+    public void setOutDateStart(String outDateStart) {
+        this.outDateStart = outDateStart;
+    }
+
+    public String getOutDateEnd() {
+        return outDateEnd;
+    }
+
+    public void setOutDateEnd(String outDateEnd) {
+        this.outDateEnd = outDateEnd;
+    }
+
+    public String  getIsOrder() {
+        return isOrder;
+    }
+
+    public void setIsOrder(String  isOrder) {
+        this.isOrder = isOrder;
     }
 
     @Override
     public String toString() {
-        return new ToStringBuilder(this,ToStringStyle.MULTI_LINE_STYLE)
+        return new ToStringBuilder(this, ToStringStyle.MULTI_LINE_STYLE)
             .append("id", getId())
             .append("ordersNo", getOrdersNo())
             .append("storeHouseid", getStoreHouseid())
@@ -199,6 +206,7 @@ public class ExWarehouse extends BaseEntity
             .append("addtime", getAddtime())
             .append("userId", getUserId())
             .append("UserName", getUserName())
+            .append("isOrder", getIsOrder())
             .toString();
     }
 }

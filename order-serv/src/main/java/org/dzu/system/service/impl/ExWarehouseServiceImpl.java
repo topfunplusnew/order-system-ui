@@ -82,7 +82,37 @@ public class ExWarehouseServiceImpl implements IExWarehouseService
 
         return exWarehouseMapper.insertExWarehouse(exWarehouse);
     }
+    @Override
+    @Transactional(isolation = Isolation.SERIALIZABLE,rollbackFor = Exception.class)
+    public int insertExWarehouseByFront(ExWarehouse exWarehouse)
+    {
+        // 设置基础信息
+        exWarehouse.setAddtime(String.valueOf(DateUtils.getNowDate()));
+        exWarehouse.setUserId(SecurityUtils.getUserId());
+        exWarehouse.setUserName(SecurityUtils.getUserTruename());
+        exWarehouse.setDelFlag(Long.valueOf(DelConstants.NODEL));
+        // 前端插入的时候,OrderNo要么是二次加工,要么是货物破损
+        String flag = exWarehouse.getOrdersNo();
+        if(StringUtils.isEmpty(flag)){
+            throw new ServiceException("OrderNO的值必须为二次加工或者货物破损");
+        }
+        if(!flag.equals("二次加工") && !flag.equals("货物破损")){
+            throw new ServiceException("OrderNO的值必须为二次加工或者货物破损");
+        }
+        Inventory inventory = inventoryMapper.selectInventoryById(exWarehouse.getStoreID());
+        if (StringUtils.isNull(inventory)) {
+            throw new ServiceException("库存不存在");
+        }
+        if (inventory.getStockNumber() < exWarehouse.getOutAmount()) {
+            throw new ServiceException("库存不足");
+        }
 
+        inventory.setStockNumber(inventory.getStockNumber() - exWarehouse.getOutAmount());
+        // 写回
+        inventoryMapper.updateInventory(inventory);
+
+        return exWarehouseMapper.insertExWarehouse(exWarehouse);
+    }
     /**
      * 修改出库
      * 
@@ -92,10 +122,9 @@ public class ExWarehouseServiceImpl implements IExWarehouseService
     @Override
     public int updateExWarehouse(ExWarehouse exWarehouse)
     {
-        exWarehouse.setUpdateTime(DateUtils.getNowDate());
-        exWarehouse.setUserId(SecurityUtils.getUserId());
-        exWarehouse.setUserName(SecurityUtils.getUserTruename());
-        return exWarehouseMapper.updateExWarehouse(exWarehouse);
+        // 因为修改需要设计库存操作,所以这里直接先删除后插入
+        deleteExWarehouseByIds(new Long[]{exWarehouse.getId()});
+        return insertExWarehouseByFront(exWarehouse);
     }
 
     /**
@@ -117,22 +146,6 @@ public class ExWarehouseServiceImpl implements IExWarehouseService
         return exWarehouseMapper.deleteExWarehouseByIds(ids);
     }
 
-    /**
-     * 删除出库信息
-     * 
-     * @param id 出库主键
-     * @return 结果
-     */
-    @Override
-    @Transactional(isolation = Isolation.SERIALIZABLE,rollbackFor = Exception.class)
-    public int deleteExWarehouseById(Long id)
-    {
-        // 打上删除标记的同时还原库存
-        ExWarehouse exWarehouse = exWarehouseMapper.selectExWarehouseById(id);
-        InventoryToBack(exWarehouse.getStoreID(), exWarehouse.getOutAmount());
-
-        return exWarehouseMapper.deleteExWarehouseById(id);
-    }
 
     /**
      * 删除出库信息
@@ -186,7 +199,7 @@ public class ExWarehouseServiceImpl implements IExWarehouseService
     private void InventoryToBack(Long InventoryId, Long outAmount) {
         Inventory inventory = inventoryMapper.selectInventoryById(InventoryId);
         if (StringUtils.isNull(inventory)) {
-            throw new ServiceException("库存不存在");
+            throw new ServiceException("出现错误!数据损坏:检测不到对应的库存信息!");
         }
         inventory.setStockNumber(inventory.getStockNumber() + outAmount);
         // 写回

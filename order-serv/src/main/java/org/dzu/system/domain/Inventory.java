@@ -329,8 +329,56 @@ public class Inventory extends BaseEntity
     @TableField(value = "showFlag")
     @Excel(name = "订单仓库选择时是否显示")
     private Long showFlag;
+    // goodsCompany
 
-    public void setId(Long id) 
+    @TableField(value = "goodsCompany")
+    @Excel(name = "货物来源公司")
+    private String goodsCompany;
+
+    //exWareHoustId
+    @TableField(value = "exWareHoustId")
+    private Long exWareHoustId;
+
+
+    // storeDate的开始和结束时间
+    @TableField(exist = false)
+    private String storeDateBegin;
+    @TableField(exist = false)
+    private String storeDateEnd;
+
+    public String getStoreDateEnd() {
+        return storeDateEnd;
+    }
+
+    public void setStoreDateEnd(String storeDateEnd) {
+        this.storeDateEnd = storeDateEnd;
+    }
+
+    public String getStoreDateBegin() {
+        return storeDateBegin;
+    }
+
+    public void setStoreDateBegin(String storeDateBegin) {
+        this.storeDateBegin = storeDateBegin;
+    }
+
+    public String getGoodsCompany() {
+        return goodsCompany;
+    }
+
+    public void setGoodsCompany(String goodsCompany) {
+        this.goodsCompany = goodsCompany;
+    }
+
+    public Long getExWareHoustId() {
+        return exWareHoustId;
+    }
+
+    public void setExWareHoustId(Long exWareHoustId) {
+        this.exWareHoustId = exWareHoustId;
+    }
+
+    public void setId(Long id)
     {
         this.id = id;
     }

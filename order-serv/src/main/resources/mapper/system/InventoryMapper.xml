@@ -57,13 +57,15 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         <result property="updateTime"    column="update_time"    />
         <result property="delFlag"    column="delFlag"    />
         <result property="showFlag"    column="showFlag"    />
+        <result property="exWareHoustId"    column="exWareHoustId"    />
+        <result property="goodsCompany"    column="goodsCompany"    />
     </resultMap>
 
 
  
 
     <sql id="selectInventoryVo">
-        select id, storeHouseid, storeHouseName, storeDate, stockNumber, supplier, supplierId, levelID, levelName, countingUnit, height, length, width, pieces, piecesPerPack, packs, price, isIncludeTaxFactory, sundryCost, paymentFactory, paymentUnload, isIncludeTaxSale, payments, landCarID, landCarNo, landDriverTel, landDriverName, seaCarID, seaCarNo, seaDriverTel, seaDriverName, erro, tonnage, landFreightPrice, landFreight, seaFreight, freight, otherCost, profit, profitNoTax, actualPieces, paymentsWithSundry, additionalFees, rebate, customerCommission, comments, addtime, userId, UserName, update_time, delFlag, showFlag from inventory
+        select id, storeHouseid, storeHouseName, storeDate, stockNumber, supplier, supplierId, levelID, levelName, countingUnit, height, length, width, pieces, piecesPerPack, packs, price, isIncludeTaxFactory, sundryCost, paymentFactory, paymentUnload, isIncludeTaxSale, payments, landCarID, landCarNo, landDriverTel, landDriverName, seaCarID, seaCarNo, seaDriverTel, seaDriverName, erro, tonnage, landFreightPrice, landFreight, seaFreight, freight, otherCost, profit, profitNoTax, actualPieces, paymentsWithSundry, additionalFees, rebate, customerCommission, comments, addtime, userId, UserName, update_time, delFlag, showFlag,goodsCompany,exWareHoustId from inventory
     </sql>
 
     <select id="selectInventoryList" parameterType="Inventory" resultMap="InventoryResult">
@@ -71,7 +73,8 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         <where>  
             <if test="storeHouseid != null "> and storeHouseid = #{storeHouseid}</if>
             <if test="storeHouseName != null  and storeHouseName != ''"> and storeHouseName like concat('%', #{storeHouseName}, '%')</if>
-            <if test="storeDate != null  and storeDate != ''"> and storeDate = #{storeDate}</if>
+            <if test="storeDateBegin != null and storeDateBegin != ''"> and storeDate &gt;= #{storeDateBegin}</if>
+            <if test="storeDateEnd != null and storeDateEnd != ''"> and storeDate &lt;= #{storeDateEnd}</if>
             <if test="stockNumber != null "> and stockNumber = #{stockNumber}</if>
             <if test="supplier != null  and supplier != ''"> and supplier = #{supplier}</if>
             <if test="supplierId != null "> and supplierId = #{supplierId}</if>
@@ -119,6 +122,9 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
             <if test="UserName != null  and UserName != ''"> and UserName like concat('%', #{UserName}, '%')</if>
             and delFlag = 0
             <if test="showFlag != null "> and showFlag = #{showFlag}</if>
+            <if test="goodsCompany != null and goodsCompany != ''"> and goodsCompany like concat('%', #{goodsCompany}, '%')</if>
+           <if test="exWareHoustId != null "> and exWareHoustId = #{exWareHoustId} </if>
+
         </where>
     </select>
     
@@ -182,6 +188,8 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
             <if test="updateTime != null">update_time,</if>
             <if test="delFlag != null">delFlag,</if>
             <if test="showFlag != null">showFlag,</if>
+            <if test="exWareHoustId != null">exWareHoustId,</if>
+            <if test="goodsCompany != null">goodsCompany,</if>
          </trim>
         <trim prefix="values (" suffix=")" suffixOverrides=",">
             <if test="storeHouseid != null">#{storeHouseid},</if>
@@ -235,6 +243,8 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
             <if test="updateTime != null">#{updateTime},</if>
             <if test="delFlag != null">#{delFlag},</if>
             <if test="showFlag != null">#{showFlag},</if>
+            <if test="exWareHoustId != null">#{exWareHoustId},</if>
+            <if test="goodsCompany != null">#{goodsCompany},</if>
          </trim>
     </insert>
 
@@ -292,6 +302,8 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
             <if test="updateTime != null">update_time = #{updateTime},</if>
             <if test="delFlag != null">delFlag = #{delFlag},</if>
             <if test="showFlag != null">showFlag = #{showFlag},</if>
+            <if test="exWareHoustId != null">exWareHoustId = #{exWareHoustId},</if>
+            <if test="goodsCompany != null">goodsCompany = #{goodsCompany},</if>
         </trim>
         where id = #{id}
     </update>
@@ -311,7 +323,8 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
              pieces >= stockNumber
             <if test="storeHouseid != null "> and storeHouseid = #{storeHouseid}</if>
             <if test="storeHouseName != null  and storeHouseName != ''"> and storeHouseName like concat('%', #{storeHouseName}, '%')</if>
-            <if test="storeDate != null  and storeDate != ''"> and storeDate = #{storeDate}</if>
+             <if test="storeDateBegin != null and storeDateBegin != ''"> and storeDate &gt;= #{storeDateBegin}</if>
+             <if test="storeDateEnd != null and storeDateEnd != ''"> and storeDate &lt;= #{storeDateEnd}</if>
             <if test="stockNumber != null "> and stockNumber = #{stockNumber}</if>
             <if test="supplier != null  and supplier != ''"> and supplier = #{supplier}</if>
             <if test="supplierId != null "> and supplierId = #{supplierId}</if>
@@ -359,6 +372,7 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
             <if test="UserName != null  and UserName != ''"> and UserName like concat('%', #{UserName}, '%')</if>
             and delFlag = 0
             <if test="showFlag != null "> and showFlag = #{showFlag}</if>
+             <if test="goodsCompany != null and goodsCompany != ''"> and goodsCompany like concat('%', #{goodsCompany}, '%')</if>
         </where>
     </select>
 </mapper>

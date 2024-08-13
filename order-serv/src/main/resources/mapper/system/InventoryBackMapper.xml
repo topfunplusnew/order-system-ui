@@ -58,13 +58,15 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         <result property="updateTime"    column="update_time"    />
         <result property="delFlag"    column="delFlag"    />
         <result property="showFlag"    column="showFlag"    />
+        <result property="goodsCompany"    column="goodsCompany"    />
+        <result property="exWareHoustId"    column="exWareHoustId"    />
     </resultMap>
 
 
  
 
     <sql id="selectInventoryBackVo">
-        select id, inventoryID, storeHouseid, storeHouseName, storeDate, stockNumber, supplier, supplierId, levelID, levelName, countingUnit, height, length, width, pieces, piecesPerPack, packs, price, isIncludeTaxFactory, sundryCost, paymentFactory, paymentUnload, isIncludeTaxSale, payments, landCarID, landCarNo, landDriverTel, landDriverName, seaCarID, seaCarNo, seaDriverTel, seaDriverName, erro, tonnage, landFreightPrice, landFreight, seaFreight, freight, otherCost, profit, profitNoTax, actualPieces, paymentsWithSundry, additionalFees, rebate, customerCommission, comments, addtime, userId, UserName, update_time, delFlag, showFlag from inventory_back
+        select id, inventoryID, storeHouseid, storeHouseName, storeDate, stockNumber, supplier, supplierId, levelID, levelName, countingUnit, height, length, width, pieces, piecesPerPack, packs, price, isIncludeTaxFactory, sundryCost, paymentFactory, paymentUnload, isIncludeTaxSale, payments, landCarID, landCarNo, landDriverTel, landDriverName, seaCarID, seaCarNo, seaDriverTel, seaDriverName, erro, tonnage, landFreightPrice, landFreight, seaFreight, freight, otherCost, profit, profitNoTax, actualPieces, paymentsWithSundry, additionalFees, rebate, customerCommission, comments, addtime, userId, UserName, update_time, delFlag, showFlag,goodsComPany,exWareHoustId from inventory_back
     </sql>
 
     <select id="selectInventoryBackList" parameterType="InventoryBack" resultMap="InventoryBackResult">
