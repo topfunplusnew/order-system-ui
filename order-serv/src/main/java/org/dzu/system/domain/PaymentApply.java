@@ -49,6 +49,12 @@ public class PaymentApply extends BaseEntity
     @TableField(value = "fundsDate")
     private String fundsDate;
 
+    // 日期的开始和结束时间段,用于搜索
+    @TableField(exist = false)
+    private String fundsDateBegin;
+    @TableField(exist = false)
+    private String fundsDateEnd;
+
     /** 支付类型 */
     @Excel(name = "支付类型")
     @Length(max = 55, message = "支付类型长度不能超过55个字符")
@@ -288,7 +294,23 @@ public class PaymentApply extends BaseEntity
         this.applyPerson = applyPerson;
     }
 
-    public String getApplyPerson() 
+    public String getFundsDateBegin() {
+        return fundsDateBegin;
+    }
+
+    public void setFundsDateBegin(String fundsDateBegin) {
+        this.fundsDateBegin = fundsDateBegin;
+    }
+
+    public String getFundsDateEnd() {
+        return fundsDateEnd;
+    }
+
+    public void setFundsDateEnd(String fundsDateEnd) {
+        this.fundsDateEnd = fundsDateEnd;
+    }
+
+    public String getApplyPerson()
     {
         return applyPerson;
     }

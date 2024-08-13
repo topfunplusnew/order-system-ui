@@ -31,10 +31,10 @@ public class Rebate extends BaseEntity
 
     /** 订单编号（UUID） */
     @Excel(name = "订单编号")
-    @Length(max = 50, message = "订单编号长度不能超过32个字符")
+    @Length(max = 400, message = "订单编号长度不能超过400个字符")
     @NotNull(message = "订单编号不能为空")
-    @TableField(value = "ordersNo")
-    private String ordersNo;
+    @TableField(value = "orderDetailID")
+    private String orderDetailID;
 
     /** 日期 */
     @Excel(name = "日期")
@@ -135,16 +135,16 @@ public class Rebate extends BaseEntity
     {
         return id;
     }
-    public void setOrdersNo(String ordersNo) 
-    {
-        this.ordersNo = ordersNo;
+
+    public String getOrderDetailID() {
+        return orderDetailID;
     }
 
-    public String getOrdersNo() 
-    {
-        return ordersNo;
+    public void setOrderDetailID(String orderDetailID) {
+        this.orderDetailID = orderDetailID;
     }
-    public void setRebateDate(String rebateDate) 
+
+    public void setRebateDate(String rebateDate)
     {
         this.rebateDate = rebateDate;
     }
@@ -284,7 +284,7 @@ public class Rebate extends BaseEntity
     public String toString() {
         return new ToStringBuilder(this,ToStringStyle.MULTI_LINE_STYLE)
             .append("id", getId())
-            .append("ordersNo", getOrdersNo())
+            .append("ordetDetaildId", getOrderDetailID())
             .append("rebateDate", getRebateDate())
             .append("rebate", getRebate())
             .append("rebateType", getRebateType())
