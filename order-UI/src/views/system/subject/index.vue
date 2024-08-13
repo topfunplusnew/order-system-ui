@@ -70,21 +70,21 @@
           </el-col>
           <el-col :span="1.5">
             <el-button
+              type="primary"
+              plain
+              size="mini"
+              @click="handleAddType"
+            >1-添加科目类型
+            </el-button>
+          </el-col>
+          <el-col :span="1.5">
+            <el-button
               type="danger"
               plain
               size="mini"
               @click="handleAdd"
               v-hasPermi="['system:subject:add']"
-            >添加科目信息
-            </el-button>
-          </el-col>
-          <el-col :span="1.5">
-            <el-button
-              type="primary"
-              plain
-              size="mini"
-              @click="handleAddType"
-            >添加科目类型
+            >2-添加科目信息
             </el-button>
           </el-col>
           <right-toolbar :showSearch.sync="showSearch" @queryTable="getList"></right-toolbar>
@@ -381,7 +381,7 @@ export default {
     getTreeselect() {
       listSubject().then(response => {
         this.subjectOptions = [];
-        const data = {id: 0, title: '请选择一级分类', children: []};
+        const data = {id: 0, title: '科目根信息', children: []};
         data.children = this.handleTree(response.data, "id", "parentId");
         this.subjectOptions.push(data);
       });
