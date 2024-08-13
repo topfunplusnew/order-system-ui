@@ -2,14 +2,18 @@
 当前账号需要审核的流程 审核的过程调用修改接口-->
 <script>
 import {getPaymentApply, listPaymentApply} from "@/api/system/paymentApply";
+import {listAuditInfoGroup} from "@/api/system/auditInfo";
+import StepInfo from "@/components/StepInfo.vue";
 
 export default {
   name: "index",
+  components: {StepInfo},
   data() {
     return {
       //查看付款信息的
       checkInfoDialogVisible: false,
-
+      //查看审核流程
+      checkApplyInfoDialogVisible: false,
       options: [{
         value: '所有审核信息',
         label: '所有审核信息'
@@ -22,7 +26,11 @@ export default {
       //付款信息列表
       paymentList: [],
       //查看付款信息的描述表
-      checkPaymentInfo: {}
+      checkPaymentInfo: {},
+
+
+      auditInfoList: [],
+      auditItemList: []
     }
   },
   methods: {
@@ -35,11 +43,29 @@ export default {
         this.checkPaymentInfo = res.data
       })
     },
+
+    //查看某一行的审核流程信息
+    handleCheckApplyInfo(row) {
+      this.checkApplyInfoDialogVisible = true
+      //根据当前行的applyID查询
+      console.log(row)
+      listAuditInfoGroup({applyID: row.id}).then(res => {
+        this.auditInfoList = res.rows
+      })
+    },
   },
   created() {
     //获取付款信息
     listPaymentApply().then(res => {
       this.paymentList = res.rows;
+    })
+
+    //查询审核流程列表
+    //数据结构描述：
+    //返回rows数组 数组每一项为一个付款信息的审核流程数组 里面每一个是一个审核流程
+    //每一个付款申请包含多个审核流程
+    listAuditInfoGroup().then(res => {
+      console.log(res)
     })
   }
 }
@@ -47,23 +73,6 @@ export default {
 
 <template>
   <div class="app-container">
-    <!--    筛选仅仅是我需要考虑的审核流程-->
-    <el-row>
-      <el-col :span="2">
-        <span class="text-bolder">审核信息筛选</span>
-      </el-col>
-      <el-col :span="5">
-        <el-select v-model="select" placeholder="请选择">
-          <el-option
-            v-for="item in options"
-            :key="item.value"
-            :label="item.label"
-            :value="item.value">
-          </el-option>
-        </el-select>
-      </el-col>
-    </el-row>
-    <br/>
     <!--    放置付款信息列表-->
     <el-row>
       <el-table
@@ -119,10 +128,9 @@ export default {
         <el-table-column
           fixed="right"
           label="操作"
-          width="200">
+          width="80">
           <template slot-scope="scope">
             <el-button @click="handleCheckInfo(scope.row)" type="primary" size="small">查看</el-button>
-            <el-button type="warning" size="small">审核付款信息</el-button>
           </template>
         </el-table-column>
         <!-- 审核流程：只有上一个人审核后，才会有下一个审核信息-->
@@ -130,15 +138,9 @@ export default {
         <el-table-column
           fixed="right"
           label="审核流程"
-          width="400">
+          width="200">
           <template slot-scope="scope">
-            <el-steps :active="1" finish-status="success" simple style="margin-top: 20px">
-              <!--  渲染的时候:先获取每个订单的审核流程列表 然后绑定到title上-->
-              <!--  获取审核列表最晚的step赋值给active-->
-              <el-step title="步骤 1"></el-step>
-              <el-step title="步骤 2"></el-step>
-              <el-step title="步骤 3"></el-step>
-            </el-steps>
+            <el-button type="warning" @click="handleCheckApplyInfo(scope.row)">查看审核流程信息</el-button>
           </template>
         </el-table-column>
       </el-table>
@@ -177,9 +179,49 @@ export default {
         </el-descriptions-item>
       </el-descriptions>
       <span slot="footer" class="dialog-footer">
-    <el-button @click="checkInfoDialogVisible = false">取 消</el-button>
-    <el-button type="primary" @click="checkInfoDialogVisible = false">确 定</el-button>
-  </span>
+        <el-button @click="checkInfoDialogVisible = false">取 消</el-button>
+        <el-button type="primary" @click="checkInfoDialogVisible = false">确 定</el-button>
+       </span>
+    </el-dialog>
+
+
+    <el-dialog :visible.sync="checkApplyInfoDialogVisible" title="审核流程多项信息" width="80%">
+      <!--      筛选条件-->
+      <!--    筛选仅仅是我需要考虑的审核流程-->
+      <el-row>
+        <el-col :span="2">
+          <span class="text-bolder">审核信息筛选</span>
+        </el-col>
+        <el-col :span="5">
+          <el-select v-model="select" placeholder="请选择">
+            <el-option
+              v-for="item in options"
+              :key="item.value"
+              :label="item.label"
+              :value="item.value">
+            </el-option>
+          </el-select>
+        </el-col>
+      </el-row>
+      <br/>
+      <!--      审核流程步骤图信息  -->
+      <el-row v-for="(item,index) in auditInfoList">
+        <el-row>
+          <span class="text-bolder">审核流程{{ index + 1 }}</span>
+        </el-row>
+        <el-row>
+          <el-col :span="10" :offset="4">
+            <StepInfo :processInfo="item.auditInfos"/>
+          </el-col>
+          <el-col :span="10">
+            <el-button type="warning">审核</el-button>
+          </el-col>
+        </el-row>
+      </el-row>
+      <span slot="footer" class="dialog-footer">
+        <el-button @click="checkApplyInfoDialogVisible = false">取 消</el-button>
+        <el-button type="primary" @click="checkApplyInfoDialogVisible = false">确 定</el-button>
+       </span>
     </el-dialog>
   </div>
 </template>
