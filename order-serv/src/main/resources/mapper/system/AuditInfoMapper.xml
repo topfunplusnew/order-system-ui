@@ -131,14 +131,18 @@
         ORDER BY addtime DESC
     </select>
 
-    <select id="selectAuditInfoGroupedByApplyId" parameterType="java.util.List" resultMap="AuditInfoResult">
-        <include refid="selectAuditInfoVo"/>
-        WHERE a.applyID IN
-        <foreach collection="list" item="applyId" open="(" separator="," close=")">
-            #{applyId}
-        </foreach>
-        ORDER BY a.applyID, a.addtime DESC
-    </select>
+<select id="selectAuditInfoGroupedByApplyId" parameterType="java.util.List" resultMap="AuditInfoResult">
+    <include refid="selectAuditInfoVo"/>
+    <where>
+        <if test="list != null and list.size() > 0">
+            a.applyID IN
+            <foreach collection="list" item="applyId" open="(" separator="," close=")">
+                #{applyId}
+            </foreach>
+        </if>
+    </where>
+    ORDER BY a.applyID, a.addtime DESC
+</select>
 
 
     <select id="selectAuditInfoList" parameterType="AuditInfo" resultMap="AuditInfoResult">

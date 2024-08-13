@@ -49,7 +49,6 @@ public class AuditInfoController extends BaseController
     @GetMapping("/group")
     public TableDataInfo group(AuditInfo auditInfo)
     {
-        startPage();
         List<AuditInfoGroupedResult> list = auditInfoService.selectAuditInfoGroupByApplyId(auditInfo);
         return getDataTable(list);
     }
