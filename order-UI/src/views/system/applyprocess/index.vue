@@ -2,7 +2,7 @@
 当前账号需要审核的流程 审核的过程调用修改接口-->
 <script>
 import {getPaymentApply, listPaymentApply} from "@/api/system/paymentApply";
-import {listAuditInfoGroup} from "@/api/system/auditInfo";
+import {listAuditInfo, listAuditInfoGroup} from "@/api/system/auditInfo";
 import StepInfo from "@/components/StepInfo.vue";
 
 export default {
@@ -14,6 +14,7 @@ export default {
       checkInfoDialogVisible: false,
       //查看审核流程
       checkApplyInfoDialogVisible: false,
+      //筛选项
       options: [{
         value: '所有审核信息',
         label: '所有审核信息'
@@ -23,6 +24,8 @@ export default {
       }],
       //筛选限制值
       select: '',
+      //折叠面板默认打开
+      activeNames: '',
       //付款信息列表
       paymentList: [],
       //查看付款信息的描述表
@@ -30,13 +33,15 @@ export default {
 
 
       auditInfoList: [],
-      auditItemList: []
+      auditItemList: [],
+
+      //所有的审核流程列表 后期需要筛选这里面的审核流程
+      allAuditInfoList: [],
     }
   },
   methods: {
     //查看某一个行的信息
     handleCheckInfo(row) {
-      console.log(row)
       this.checkInfoDialogVisible = true;
       //获取该行付款信息的详细信息 赋值到弹出框的描述表中
       getPaymentApply(row.id).then(res => {
@@ -47,11 +52,14 @@ export default {
     //查看某一行的审核流程信息
     handleCheckApplyInfo(row) {
       this.checkApplyInfoDialogVisible = true
-      //根据当前行的applyID查询
-      console.log(row)
       listAuditInfoGroup({applyID: row.id}).then(res => {
         this.auditInfoList = res.rows
       })
+    },
+
+    //折叠面板打开某一个的回调
+    handleChangeApplyItem(e) {
+      console.log(e)
     },
   },
   created() {
@@ -59,13 +67,9 @@ export default {
     listPaymentApply().then(res => {
       this.paymentList = res.rows;
     })
-
-    //查询审核流程列表
-    //数据结构描述：
-    //返回rows数组 数组每一项为一个付款信息的审核流程数组 里面每一个是一个审核流程
-    //每一个付款申请包含多个审核流程
-    listAuditInfoGroup().then(res => {
-      console.log(res)
+    //获取所有的审核流程
+    listAuditInfo().then(res => {
+      this.allAuditInfoList = res.rows;
     })
   }
 }
@@ -205,19 +209,25 @@ export default {
       </el-row>
       <br/>
       <!--      审核流程步骤图信息  -->
-      <el-row v-for="(item,index) in auditInfoList">
-        <el-row>
-          <span class="text-bolder">审核流程{{ index + 1 }}</span>
-        </el-row>
-        <el-row>
-          <el-col :span="10" :offset="4">
-            <StepInfo :processInfo="item.auditInfos"/>
-          </el-col>
-          <el-col :span="10">
-            <el-button type="warning">审核</el-button>
-          </el-col>
-        </el-row>
+      <el-row v-for="(item,index) in auditInfoList" :key="index">
+        <el-collapse v-model="activeNames" @change="handleChangeApplyItem">
+          <el-collapse-item name="1">
+            <template #title>
+              <el-row>
+                <span class="text-bolder">审核流程{{ index + 1 }}</span>
+              </el-row>
+            </template>
+            <el-row>
+              <el-col :span="24">
+                <StepInfo :processInfo="item.auditInfos"/>
+              </el-col>
+            </el-row>
+          </el-collapse-item>
+        </el-collapse>
+
       </el-row>
+
+
       <span slot="footer" class="dialog-footer">
         <el-button @click="checkApplyInfoDialogVisible = false">取 消</el-button>
         <el-button type="primary" @click="checkApplyInfoDialogVisible = false">确 定</el-button>
