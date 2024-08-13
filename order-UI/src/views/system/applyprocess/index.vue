@@ -4,6 +4,7 @@
 import {getPaymentApply, listPaymentApply} from "@/api/system/paymentApply";
 import {listAuditInfo, listAuditInfoGroup} from "@/api/system/auditInfo";
 import StepInfo from "@/components/StepInfo.vue";
+import {listPayment} from "@/api/system/payment";
 
 export default {
   name: "index",
@@ -37,6 +38,11 @@ export default {
 
       //所有的审核流程列表 后期需要筛选这里面的审核流程
       allAuditInfoList: [],
+
+      //分页信息
+      pageNum: 1,
+      pageSize: 10,
+      total: 0
     }
   },
   watch: {
@@ -57,9 +63,26 @@ export default {
           console.log('仅仅我需要展示')
         }
       }
+    },
+    pageNum: {
+      handler(val) {
+        console.log(val)
+      }
+    },
+    pageSize: {
+      handler(val) {
+        console.log(val)
+      }
     }
   },
   methods: {
+    getPaymentList() {
+      this.$wait()
+      listPaymentApply({pageNum: this.pageNum, pageSize: this.pageSize}).then(res => {
+        this.paymentList = res.rows;
+        this.$close()
+      })
+    },
     //查看某一个行的信息
     handleCheckInfo(row) {
       this.checkInfoDialogVisible = true;
@@ -84,8 +107,9 @@ export default {
   },
   created() {
     //获取付款信息
-    listPaymentApply().then(res => {
+    listPaymentApply({pageNum: this.pageNum, pageSize: this.pageSize}).then(res => {
       this.paymentList = res.rows;
+      this.total = res.total;
     })
     //获取所有的审核流程
     listAuditInfo().then(res => {
@@ -168,6 +192,14 @@ export default {
           </template>
         </el-table-column>
       </el-table>
+      <!--      分页-->
+      <pagination
+        v-show="total>0"
+        :total="total"
+        :page.sync="pageNum"
+        :limit.sync="pageSize"
+        @pagination="getPaymentList"
+      />
     </el-row>
 
 
