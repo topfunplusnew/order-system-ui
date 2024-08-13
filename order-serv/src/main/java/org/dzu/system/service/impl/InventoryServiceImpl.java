@@ -7,6 +7,7 @@ import org.dzu.common.utils.DateUtils;
 import org.dzu.common.utils.SecurityUtils;
 import org.dzu.common.utils.StringUtils;
 import org.dzu.common.utils.bean.BeanUtils;
+import org.dzu.system.domain.Company;
 import org.dzu.system.domain.ExWarehouse;
 import org.dzu.system.domain.Inventory;
 import org.dzu.system.domain.InventoryBack;
@@ -36,6 +37,8 @@ public class InventoryServiceImpl implements IInventoryService {
 
     @Autowired
     private ExWarehouseMapper exWarehouseMapper;
+    @Autowired
+    private CompanyServiceImpl companyServiceImpl;
 
     /**
      * 查询库存
@@ -84,6 +87,28 @@ public class InventoryServiceImpl implements IInventoryService {
         inventory.setUserId(SecurityUtils.getUserId());
         inventory.setUserName(SecurityUtils.getUserTruename());
         inventory.setDelFlag(Long.valueOf(DelConstants.NODEL));
+
+        // 检测供应商是否存在
+        if (inventory.getSupplierId() == 0) {
+            // 货物二次入库的时候触发
+//            inventory.setSupplier("本公司");TODO: 相信前端传入
+
+            // 二次入库获取对应的出库信息
+            ExWarehouse exWarehouse = exWarehouseMapper.selectExWarehouseById(inventory.getExWareHoustId());
+            if(exWarehouse==null){
+                throw new ServiceException("出库信息不存在");
+            }
+            // 二次入库的库存数量只能比出库的少，不能多
+            if (inventory.getStockNumber() > exWarehouse.getOutAmount()) {
+                throw new ServiceException("二次入库数量大于出库数量，无法入库,信息错误");
+            }
+
+        } else {
+            Company supplier = companyServiceImpl.selectCompanyById(inventory.getSupplierId());
+            if(StringUtils.isNull(supplier)){
+                throw new ServiceException("供应商不存在");
+            }
+        }
         return inventoryMapper.insertInventory(inventory);
     }
 
@@ -117,7 +142,7 @@ public class InventoryServiceImpl implements IInventoryService {
             return inventoryMapper.updateInventory(inventory);
         } else {
             // 判断新旧信息除了库存数量外是否有其他不同，如果有，则拒绝修改，因为已经根据这些信息创建了订单了
-            if(hasOtherChanges(inventory, old)){
+            if (hasOtherChanges(inventory, old)) {
                 throw new ServiceException("本次修改中除了库存数量和司机信息，其他信息发生了变化，由于已经产生订单，无法修改！");
             }
 
@@ -189,85 +214,86 @@ public class InventoryServiceImpl implements IInventoryService {
 
     /**
      * 判断除了库存数量外，是否有其他信息发生了变化
+     *
      * @param newInfo
      * @param oldInfo
      * @return
      */
 
-private boolean hasOtherChanges(Inventory newInfo, Inventory oldInfo) {
-    // 仓库ID
-    if (!newInfo.getStoreHouseid().equals(oldInfo.getStoreHouseid())) return true;
-    // 仓库名称
-    if (!newInfo.getStoreHouseName().equals(oldInfo.getStoreHouseName())) return true;
-    // 入库日期
-    if (!newInfo.getStoreDate().equals(oldInfo.getStoreDate())) return true;
-    // 供应商
-    if (!newInfo.getSupplier().equals(oldInfo.getSupplier())) return true;
-    // 供应商ID
-    if (!newInfo.getSupplierId().equals(oldInfo.getSupplierId())) return true;
-    // 级别编码
-    if (!newInfo.getLevelID().equals(oldInfo.getLevelID())) return true;
-    // 级别名称
-    if (!newInfo.getLevelName().equals(oldInfo.getLevelName())) return true;
-    // 计量单位
-    if (!newInfo.getCountingUnit().equals(oldInfo.getCountingUnit())) return true;
-    // 厚度
-    if (!newInfo.getHeight().equals(oldInfo.getHeight())) return true;
-    // 长度
-    if (!newInfo.getLength().equals(oldInfo.getLength())) return true;
-    // 宽度
-    if (!newInfo.getWidth().equals(oldInfo.getWidth())) return true;
-    // 出厂片数
-    if (!newInfo.getPieces().equals(oldInfo.getPieces())) return true;
-    // 每包片数
-    if (!newInfo.getPiecesPerPack().equals(oldInfo.getPiecesPerPack())) return true;
-    // 包数
-    if (!newInfo.getPacks().equals(oldInfo.getPacks())) return true;
-    // 出厂单价
-    if (!newInfo.getPrice().equals(oldInfo.getPrice())) return true;
-    // 出厂是否含税
-    if (!newInfo.getIsIncludeTaxFactory().equals(oldInfo.getIsIncludeTaxFactory())) return true;
-    // 杂费
-    if (!newInfo.getSundryCost().equals(oldInfo.getSundryCost())) return true;
-    // 出厂货款
-    if (!newInfo.getPaymentFactory().equals(oldInfo.getPaymentFactory())) return true;
-    // 卸货价
-    if (!newInfo.getPaymentUnload().equals(oldInfo.getPaymentUnload())) return true;
-    // 销售是否含税
-    if (!newInfo.getIsIncludeTaxSale().equals(oldInfo.getIsIncludeTaxSale())) return true;
-    // 总货款
-    if (!newInfo.getSeaDriverName().equals(oldInfo.getSeaDriverName())) return true;
-    // 误差
-    if (!newInfo.getErro().equals(oldInfo.getErro())) return true;
-    // 吨位
-    if (!newInfo.getTonnage().equals(oldInfo.getTonnage())) return true;
-    // 陆运费单价
-    if (!newInfo.getLandFreightPrice().equals(oldInfo.getLandFreightPrice())) return true;
-    // 陆运费
-    if (!newInfo.getLandFreight().equals(oldInfo.getLandFreight())) return true;
-    // 海运费
-    if (!newInfo.getSeaFreight().equals(oldInfo.getSeaFreight())) return true;
-    // 运费
-    if (!newInfo.getFreight().equals(oldInfo.getFreight())) return true;
-    // 其他费用
-    if (!newInfo.getOtherCost().equals(oldInfo.getOtherCost())) return true;
-    // 利润
-    if (!newInfo.getProfit().equals(oldInfo.getProfit())) return true;
-    // 不含税利润
-    if (!newInfo.getProfitNoTax().equals(oldInfo.getProfitNoTax())) return true;
-    // 实际片数
-    if (!newInfo.getActualPieces().equals(oldInfo.getActualPieces())) return true;
-    // 总货款杂费
-    if (!newInfo.getPaymentsWithSundry().equals(oldInfo.getPaymentsWithSundry())) return true;
-    // 加费
-    if (!newInfo.getAdditionalFees().equals(oldInfo.getAdditionalFees())) return true;
-    // 返利金额
-    if (!newInfo.getRebate().equals(oldInfo.getRebate())) return true;
-    // 客户佣金
-    if (!newInfo.getCustomerCommission().equals(oldInfo.getCustomerCommission())) return true;
-    // 备注
+    private boolean hasOtherChanges(Inventory newInfo, Inventory oldInfo) {
+        // 仓库ID
+        if (!newInfo.getStoreHouseid().equals(oldInfo.getStoreHouseid())) return true;
+        // 仓库名称
+        if (!newInfo.getStoreHouseName().equals(oldInfo.getStoreHouseName())) return true;
+        // 入库日期
+        if (!newInfo.getStoreDate().equals(oldInfo.getStoreDate())) return true;
+        // 供应商
+        if (!newInfo.getSupplier().equals(oldInfo.getSupplier())) return true;
+        // 供应商ID
+        if (!newInfo.getSupplierId().equals(oldInfo.getSupplierId())) return true;
+        // 级别编码
+        if (!newInfo.getLevelID().equals(oldInfo.getLevelID())) return true;
+        // 级别名称
+        if (!newInfo.getLevelName().equals(oldInfo.getLevelName())) return true;
+        // 计量单位
+        if (!newInfo.getCountingUnit().equals(oldInfo.getCountingUnit())) return true;
+        // 厚度
+        if (!newInfo.getHeight().equals(oldInfo.getHeight())) return true;
+        // 长度
+        if (!newInfo.getLength().equals(oldInfo.getLength())) return true;
+        // 宽度
+        if (!newInfo.getWidth().equals(oldInfo.getWidth())) return true;
+        // 出厂片数
+        if (!newInfo.getPieces().equals(oldInfo.getPieces())) return true;
+        // 每包片数
+        if (!newInfo.getPiecesPerPack().equals(oldInfo.getPiecesPerPack())) return true;
+        // 包数
+        if (!newInfo.getPacks().equals(oldInfo.getPacks())) return true;
+        // 出厂单价
+        if (!newInfo.getPrice().equals(oldInfo.getPrice())) return true;
+        // 出厂是否含税
+        if (!newInfo.getIsIncludeTaxFactory().equals(oldInfo.getIsIncludeTaxFactory())) return true;
+        // 杂费
+        if (!newInfo.getSundryCost().equals(oldInfo.getSundryCost())) return true;
+        // 出厂货款
+        if (!newInfo.getPaymentFactory().equals(oldInfo.getPaymentFactory())) return true;
+        // 卸货价
+        if (!newInfo.getPaymentUnload().equals(oldInfo.getPaymentUnload())) return true;
+        // 销售是否含税
+        if (!newInfo.getIsIncludeTaxSale().equals(oldInfo.getIsIncludeTaxSale())) return true;
+        // 总货款
+        if (!newInfo.getSeaDriverName().equals(oldInfo.getSeaDriverName())) return true;
+        // 误差
+        if (!newInfo.getErro().equals(oldInfo.getErro())) return true;
+        // 吨位
+        if (!newInfo.getTonnage().equals(oldInfo.getTonnage())) return true;
+        // 陆运费单价
+        if (!newInfo.getLandFreightPrice().equals(oldInfo.getLandFreightPrice())) return true;
+        // 陆运费
+        if (!newInfo.getLandFreight().equals(oldInfo.getLandFreight())) return true;
+        // 海运费
+        if (!newInfo.getSeaFreight().equals(oldInfo.getSeaFreight())) return true;
+        // 运费
+        if (!newInfo.getFreight().equals(oldInfo.getFreight())) return true;
+        // 其他费用
+        if (!newInfo.getOtherCost().equals(oldInfo.getOtherCost())) return true;
+        // 利润
+        if (!newInfo.getProfit().equals(oldInfo.getProfit())) return true;
+        // 不含税利润
+        if (!newInfo.getProfitNoTax().equals(oldInfo.getProfitNoTax())) return true;
+        // 实际片数
+        if (!newInfo.getActualPieces().equals(oldInfo.getActualPieces())) return true;
+        // 总货款杂费
+        if (!newInfo.getPaymentsWithSundry().equals(oldInfo.getPaymentsWithSundry())) return true;
+        // 加费
+        if (!newInfo.getAdditionalFees().equals(oldInfo.getAdditionalFees())) return true;
+        // 返利金额
+        if (!newInfo.getRebate().equals(oldInfo.getRebate())) return true;
+        // 客户佣金
+        if (!newInfo.getCustomerCommission().equals(oldInfo.getCustomerCommission())) return true;
+        // 备注
 
 
-    return false;
-}
+        return false;
+    }
 }

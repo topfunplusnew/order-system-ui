@@ -37,6 +37,8 @@ public interface IExWarehouseService
      */
     public int insertExWarehouse(ExWarehouse exWarehouse);
 
+    int insertExWarehouseByFront(ExWarehouse exWarehouse);
+
     /**
      * 修改出库
      * 
@@ -53,15 +55,7 @@ public interface IExWarehouseService
      */
     public int deleteExWarehouseByIds(Long[] ids);
 
-    /**
-     * 删除出库信息
-     * 
-     * @param id 出库主键
-     * @return 结果
-     */
-    public int deleteExWarehouseById(Long id);
 
-    @Transactional
     void InventoryToEx(Long InventoryId, Long outAmount, String OrderNo, String outDate);
 
     int deleteExWarehouseByOrderNo(String detail);

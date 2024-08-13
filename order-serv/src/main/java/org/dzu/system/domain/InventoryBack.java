@@ -289,8 +289,31 @@ public class InventoryBack extends BaseEntity
     @Excel(name = "订单仓库选择时是否显示", readConverterExp = "显=示，,不=显示")
     @TableField(value = "showFlag")
     private Long showFlag;
+    @TableField(value = "goodsCompany")
+    @Excel(name = "货物来源公司")
+    private String goodsCompany;
 
-    public void setId(Long id) 
+    //exWareHoustId
+    @TableField(value = "exWareHoustId")
+    private Long exWareHoustId;
+
+    public String getGoodsCompany() {
+        return goodsCompany;
+    }
+
+    public void setGoodsCompany(String goodsCompany) {
+        this.goodsCompany = goodsCompany;
+    }
+
+    public Long getExWareHoustId() {
+        return exWareHoustId;
+    }
+
+    public void setExWareHoustId(Long exWareHoustId) {
+        this.exWareHoustId = exWareHoustId;
+    }
+
+    public void setId(Long id)
     {
         this.id = id;
     }
