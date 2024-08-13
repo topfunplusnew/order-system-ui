@@ -244,21 +244,19 @@
       <el-row>
         <span style="font-weight: bolder">已绑定银行卡列表</span>
       </el-row>
-
-
       <el-row>
         <!--        已经绑定的银行卡列表-->
         <el-table v-loading="loading" :data="singleInfo" @selection-change="handleSelectionChange">
           <!--          添加银行卡信息-->
-          <template #append>
-            <div style="text-align: center">
-              <el-button type="primary" @click="handleAddBankInfo">添加银行卡信息</el-button>
-            </div>
-          </template>
-          <el-table-column label="序号" align="center" prop="id"/>
-          <el-table-column label="客户名称" align="center" prop="relationName"/>
-          <el-table-column label="银行卡号" align="center" prop="bankNo"/>
+          <!--          <template #append>-->
+          <!--            <div style="text-align: center">-->
+          <!--              <el-button type="primary" @click="handleAddBankInfo">添加银行卡信息</el-button>-->
+          <!--            </div>-->
+          <!--          </template>-->
+          <!--          <el-table-column label="序号" align="center" prop="id"/>-->
+          <!--          <el-table-column label="客户名称" align="center" prop="acountsName"/>-->
           <el-table-column label="户名" align="center" prop="acountsName"/>
+          <el-table-column label="银行卡号" align="center" prop="bankNo"/>
           <el-table-column label="操作" align="center" class-name="small-padding fixed-width" fixed="right" width="180">
             <template slot-scope="scope">
               <el-button
@@ -553,7 +551,8 @@ export default {
       this.currentInfo.comments = row.comments
       this.currentInfo.companyName = row.companyName
       this.dialogFormVisible = true
-      //查询某客户的银行卡信息
+      //查询某客户的银行卡信息 应该查询的是company表中的银行卡信息
+      //如果acountsName不为用户的名称 说明没有绑定银行卡
       listBankAccount({acountsName: this.currentInfo.relationName, acountsType: '客户'}).then(res => {
         this.singleInfo = res.rows
       })
@@ -591,7 +590,7 @@ export default {
         this.currentInfo.bankNo = row.bankNo;
         this.currentInfo.bankName = row.bankName;
         this.currentInfo.acountsName = row.acountsName
-        // 应该是调用修改客户信息的修改银行卡信息
+        //如果该用户没有银行卡，那么就修改客户信息里面的银行卡信息，如果有银行卡 添加
         updateCompany(this.currentInfo).then(res => {
           this.$message.success("添加成功")
         })

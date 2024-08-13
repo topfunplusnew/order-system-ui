@@ -240,7 +240,7 @@
       <el-form :model="currentInfo">
         <el-row :gutter="4">
           <el-col :span="4">
-            {{ currentInfo.relationName }}
+            {{ currentInfo.companyName }}
           </el-col>
           <el-col :span="8">
             <el-form-item label="账号" :label-width="formLabelWidth">
@@ -262,20 +262,18 @@
       <el-row>
         <span style="font-weight: bolder">已绑定银行卡列表</span>
       </el-row>
-
-
       <el-row>
         <el-table v-loading="loading" :data="singleInfo" @selection-change="handleSelectionChange">
           <!--          添加银行卡信息-->
-          <template #append>
-            <div style="text-align: center">
-              <el-button type="primary" @click="handleAddBankInfo">添加银行卡信息</el-button>
-            </div>
-          </template>
+          <!--          <template #append>-->
+          <!--            <div style="text-align: center">-->
+          <!--              <el-button type="primary" @click="handleAddBankInfo">添加银行卡信息</el-button>-->
+          <!--            </div>-->
+          <!--          </template>-->
           <el-table-column label="序号" align="center" prop="id"/>
-          <el-table-column label="供应商名称" align="center" prop="relationName"/>
-          <el-table-column label="银行卡号" align="center" prop="bankNo"/>
+          <!--          <el-table-column label="供应商名称" align="center" prop="relationName"/>-->
           <el-table-column label="户名" align="center" prop="acountsName"/>
+          <el-table-column label="银行卡号" align="center" prop="bankNo"/>
           <el-table-column label="操作" align="center" class-name="small-padding fixed-width" fixed="right" width="180">
             <template slot-scope="scope">
               <el-button
@@ -574,8 +572,8 @@ export default {
       this.currentInfo.comments = row.comments
       this.currentInfo.companyName = row.companyName
       this.dialogFormVisible = true
-      //查询某供应商信息
-      listBankAccount({acountsName: this.currentInfo.relationName, acountsType: '供应商'}).then(res => {
+      //查询某供应商信息 账户名称应该是公司名称
+      listBankAccount({acountsName: this.currentInfo.companyName, acountsType: '供应商'}).then(res => {
         this.singleInfo = res.rows
       })
     },
@@ -602,7 +600,7 @@ export default {
       //添加银行卡信息
 
       //如果账户名不一样不允许添加银行卡
-      if (this.currentInfo.relationName !== row.acountsName) {
+      if (this.currentInfo.companyName !== row.acountsName) {
         this.$message.error("不允许添加非己银行卡!");
       } else {
         this.currentInfo.bankNo = row.bankNo;

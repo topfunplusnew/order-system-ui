@@ -166,17 +166,17 @@
         </el-form-item>
         <el-form-item label="公司名称" prop="companyName" v-if="isNeed">
           <el-row>
-            <el-col :span="10">
+            <el-col :span="24">
               <el-input v-model="form.companyName" placeholder="请输入公司名称"/>
             </el-col>
-            <el-col :span="3">
-              <SearchOption :get-data="listCompany" :limit-info="{acountsType:'供应商'|'客户'}"
-                            icon="el-icon-search" title="供应商信息" @commitBack="handleCommitBack">
-                <template #table-columns>
-                  <el-table-column label="公司名称" align="center" prop="companyName"/>
-                </template>
-              </SearchOption>
-            </el-col>
+            <!--            <el-col :span="3">-->
+            <!--              <SearchOption :get-data="listCompany" :limit-info="{acountsType:'供应商'|'客户'}"-->
+            <!--                            icon="el-icon-search" title="供应商信息" @commitBack="handleCommitBack">-->
+            <!--                <template #table-columns>-->
+            <!--                  <el-table-column label="公司名称" align="center" prop="companyName"/>-->
+            <!--                </template>-->
+            <!--              </SearchOption>-->
+            <!--            </el-col>-->
           </el-row>
         </el-form-item>
         <el-form-item label="银行账号" prop="bankNo">
