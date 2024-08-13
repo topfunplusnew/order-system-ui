@@ -30,6 +30,8 @@ const getters = {
   //平账信息
   tempbalanceaccountsList: state => state.balanceaccounts.balanceaccountsList,
   //固定资产信息
-  fixedassetsList: state => state.fixedassets.fixedassetsList
+  fixedassetsList: state => state.fixedassets.fixedassetsList,
+  //刷新标记
+  checked: state => state.apply.checked
 }
 export default getters

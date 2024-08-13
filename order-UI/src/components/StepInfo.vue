@@ -1,12 +1,24 @@
 <script>
 import {getUserProfile} from "@/api/system/user";
+import CheckApply from "@/components/CheckApply.vue";
+import {listAuditflow, updateAuditflow} from "@/api/system/auditflow";
+import {updateAuditInfo} from "@/api/system/auditInfo";
 
 export default {
   name: "StepInfo",
+  components: {CheckApply},
   data() {
     return {
       //当前登录用户
-      loginUser: {}
+      loginUser: {},
+      //审核页
+      checkPaymentApplyDialogVisible: false,
+      //当前审核页需要审核的付款信息
+      currentCheckPaymentApply: {},
+      //审核流程步骤信息
+      checkApplyInfo: {},
+      //需要的applyID 给父组件用来更新
+      useApplyID: ''
     }
   },
   props: {
@@ -58,20 +70,34 @@ export default {
     isTag(item) {
       return item.checkState === '通过' ? 'success' : 'danger'
     },
-    //是否添加遮罩层
-    //todo
     isChecked(item) {
       if (item.checkState === '通过') {
         return true;
-      } else {
-        return false;
-      }
+      } else return item.checkState === '未通过';
     },
 
     //审核
     handleCheckState(item) {
-      console.log(item)
+      //赋值 先拿到付款申请对象
+      this.currentCheckPaymentApply = item.paymentApply
+      //组装审核基本对象 传递给子组件审核页面
+      this.checkApplyInfo = {
+        id: item.id,
+        applyID: item.applyID,
+        flowname: item.flowname,
+        stepnum: item.stepnum,
+        step: item.step,
+        auditauthority: item.auditauthority,
+      }
+      this.useApplyID = item.applyID
+      //打开该审核流程步骤的审核页面
+      this.checkPaymentApplyDialogVisible = true;
     },
+
+    //修改审核状态 修改任意状态 关闭弹窗
+    handleUpdateCheckState(val) {
+      this.checkPaymentApplyDialogVisible = false //关闭
+    }
   }
 }
 </script>
@@ -144,6 +170,21 @@ export default {
             </el-card>
           </el-timeline-item>
         </el-timeline>
+
+        <!-- 审核页面 checkPaymentApplyDialogVisible-->
+        <el-dialog
+          title="流程审核"
+          :visible.sync="checkPaymentApplyDialogVisible"
+          width="65%"
+          append-to-body>
+          <CheckApply :payment-apply-info="currentCheckPaymentApply"
+                      :check-apply-info="checkApplyInfo"
+                      @update:isCheckState="handleUpdateCheckState"/>
+          <span slot="footer" class="dialog-footer">
+                <el-button @click="checkPaymentApplyDialogVisible = false">取 消</el-button>
+                <el-button type="primary" @click="checkPaymentApplyDialogVisible = false">确 定</el-button>
+          </span>
+        </el-dialog>
       </el-col>
     </el-row>
   </div>

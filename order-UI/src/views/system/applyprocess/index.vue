@@ -4,7 +4,7 @@
 import {getPaymentApply, listPaymentApply} from "@/api/system/paymentApply";
 import {listAuditInfo, listAuditInfoGroup} from "@/api/system/auditInfo";
 import StepInfo from "@/components/StepInfo.vue";
-import {listPayment} from "@/api/system/payment";
+import {mapGetters} from "vuex";
 
 export default {
   name: "index",
@@ -26,7 +26,7 @@ export default {
       //筛选限制值
       select: '',
       //折叠面板默认打开
-      activeNames: '',
+      activeNames: '1',
       //付款信息列表
       paymentList: [],
       //查看付款信息的描述表
@@ -64,22 +64,37 @@ export default {
         }
       }
     },
-    pageNum: {
+    //监听刷新标记
+    checked: {
       handler(val) {
-        console.log(val)
-      }
-    },
-    pageSize: {
-      handler(val) {
-        console.log(val)
-      }
+        if (val !== '') {
+          setTimeout(() => {
+            this.refreshApplyCheckInfo(val)
+            this.$store.dispatch('apply/clearChecked')
+          }, 500)
+        }
+      },
     }
   },
   methods: {
+    //重新刷新审核树
+    refreshApplyCheckInfo(applyID) {
+      this.$wait()
+      //获取所有的审核流程
+      listAuditInfoGroup({applyID: applyID}).then(res => {
+        this.auditInfoList = res.rows;
+        this.$close()
+      }).catch(err => {
+        this.$close()
+      })
+    },
+    //分页获取列表
     getPaymentList() {
       this.$wait()
       listPaymentApply({pageNum: this.pageNum, pageSize: this.pageSize}).then(res => {
         this.paymentList = res.rows;
+        this.$close()
+      }).catch(err => {
         this.$close()
       })
     },
@@ -115,6 +130,9 @@ export default {
     listAuditInfo().then(res => {
       this.allAuditInfoList = res.rows;
     })
+  },
+  computed: {
+    ...mapGetters(['checked'])
   }
 }
 </script>
@@ -266,11 +284,14 @@ export default {
           <el-collapse-item name="1">
             <template #title>
               <el-row>
-                <span class="text-bolder">审核流程{{ index + 1 }}</span>
+                <!-- todo  只保留了一组审核信息-->
+                <!--  <span class="text-bolder">审核流程{{ index + 1 }}</span>-->
+                <span class="text-bolder">审核流程</span>
               </el-row>
             </template>
             <el-row>
               <el-col :span="24">
+                <!--  @getPaymentApplyCheckList需要重新刷新-->
                 <StepInfo :processInfo="item.auditInfos"/>
               </el-col>
             </el-row>
