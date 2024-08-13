@@ -136,9 +136,10 @@ public class Payment extends BaseEntity
     @Excel(name = "对方公司类型")
     @NotNull(message = "对方公司类型不能为空")
     @TableField(value = "companyType")
-    @Min(value = 1, message = "类型只能为1-5,代表客户、供应商、司机、个人、其他")
-    @Max(value = 5, message = "类型只能为1-5,代表客户、供应商、司机、个人、其他")
-    private Long companyType;
+//    @Min(value = 1, message = "类型只能为1-5,代表客户、供应商、司机、个人、其他")
+//    @Max(value = 5, message = "类型只能为1-5,代表客户、供应商、司机、个人、其他")
+    @Pattern(regexp = "^(客户|供应商|司机|个人|其他)$", message = "类型只能为客户、供应商、司机、个人、其他")
+    private String companyType;
 
     /** 备注 */
     @Excel(name = "备注")
@@ -318,12 +319,12 @@ public class Payment extends BaseEntity
     {
         return companyId;
     }
-    public void setCompanyType(Long companyType) 
+    public void setCompanyType(String  companyType)
     {
         this.companyType = companyType;
     }
 
-    public Long getCompanyType() 
+    public String  getCompanyType()
     {
         return companyType;
     }
