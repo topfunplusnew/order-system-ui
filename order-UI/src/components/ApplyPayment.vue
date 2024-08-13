@@ -302,7 +302,7 @@ export default {
             //审核状态赋空
             this.form.checkState = ''
             addPaymentApply(this.form).then(response => {
-              this.$modal.msgSuccess("还款申请添加成功");
+              this.$modal.msgSuccess("付款申请添加成功");
               this.opened = false;
               this.getList();
             });
