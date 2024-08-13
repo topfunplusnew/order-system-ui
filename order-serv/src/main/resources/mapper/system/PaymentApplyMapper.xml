@@ -67,8 +67,9 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         <where>  
             <if test="tableName != null  and tableName != ''"> and tableName like concat('%', #{tableName}, '%')</if>
             <if test="tID != null  and tID != ''"> and tID = #{tID}</if>
-            <if test="fundsDate != null  and fundsDate != ''"> and fundsDate = #{fundsDate}</if>
             <if test="payType != null  and payType != ''"> and payType = #{payType}</if>
+            <if test="fundsDateBegin != null and fundsDateBegin != ''"> and fundsDate &gt;= #{fundsDateBegin}</if>
+            <if test="fundsDateEnd != null and fundsDateEnd != ''"> and fundsDate &lt;= #{fundsDateEnd}</if>
             <if test="moneyAmount != null "> and moneyAmount = #{moneyAmount}</if>
             <if test="otherAcountsName != null  and otherAcountsName != ''"> and otherAcountsName like concat('%', #{otherAcountsName}, '%')</if>
             <if test="otherBankNo != null  and otherBankNo != ''"> and otherBankNo = #{otherBankNo}</if>
