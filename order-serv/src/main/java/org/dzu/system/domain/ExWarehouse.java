@@ -87,35 +87,35 @@ public class ExWarehouse extends BaseEntity {
         this.id = id;
     }
 
-    public String getOrdersNo() {
+    public @NotNull(message = "订单编号不能为空") @Length(max = 64, message = "订单编号长度不能超过64个字符") String getOrdersNo() {
         return ordersNo;
     }
 
-    public void setOrdersNo(String ordersNo) {
+    public void setOrdersNo(@NotNull(message = "订单编号不能为空") @Length(max = 64, message = "订单编号长度不能超过64个字符") String ordersNo) {
         this.ordersNo = ordersNo;
     }
 
-    public Long getStoreHouseid() {
+    public @NotNull(message = "仓库ID不能为空") Long getStoreHouseid() {
         return storeHouseid;
     }
 
-    public void setStoreHouseid(Long storeHouseid) {
+    public void setStoreHouseid(@NotNull(message = "仓库ID不能为空") Long storeHouseid) {
         this.storeHouseid = storeHouseid;
     }
 
-    public String getStoreHouseName() {
+    public @Length(max = 64, message = "仓库名称长度不能超过64个字符") @NotNull(message = "仓库名称不能为空") String getStoreHouseName() {
         return storeHouseName;
     }
 
-    public void setStoreHouseName(String storeHouseName) {
+    public void setStoreHouseName(@Length(max = 64, message = "仓库名称长度不能超过64个字符") @NotNull(message = "仓库名称不能为空") String storeHouseName) {
         this.storeHouseName = storeHouseName;
     }
 
-    public Long getStoreID() {
+    public @NotNull(message = "仓库存储的货物ID不能为空") Long getStoreID() {
         return storeID;
     }
 
-    public void setStoreID(Long storeID) {
+    public void setStoreID(@NotNull(message = "仓库存储的货物ID不能为空") Long storeID) {
         this.storeID = storeID;
     }
 
@@ -127,11 +127,11 @@ public class ExWarehouse extends BaseEntity {
         this.outDate = outDate;
     }
 
-    public Long getOutAmount() {
+    public @NotNull(message = "出库量不能为空") Long getOutAmount() {
         return outAmount;
     }
 
-    public void setOutAmount(Long outAmount) {
+    public void setOutAmount(@NotNull(message = "出库量不能为空") Long outAmount) {
         this.outAmount = outAmount;
     }
 
@@ -163,8 +163,8 @@ public class ExWarehouse extends BaseEntity {
         return UserName;
     }
 
-    public void setUserName(String UserName) {
-        this.UserName = UserName;
+    public void setUserName(String userName) {
+        UserName = userName;
     }
 
     public String getOutDateStart() {
@@ -183,11 +183,11 @@ public class ExWarehouse extends BaseEntity {
         this.outDateEnd = outDateEnd;
     }
 
-    public String  getIsOrder() {
+    public String getIsOrder() {
         return isOrder;
     }
 
-    public void setIsOrder(String  isOrder) {
+    public void setIsOrder(String isOrder) {
         this.isOrder = isOrder;
     }
 

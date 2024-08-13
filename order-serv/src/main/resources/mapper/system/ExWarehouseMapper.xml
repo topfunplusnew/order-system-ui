@@ -42,11 +42,11 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
             <if test="UserName != null  and UserName != ''"> and UserName like concat('%', #{UserName}, '%')</if>
 
             <if test="isOrder != null and isOrder != ''">
-<!--                这里寻找orderNo长度大于11的-->
-                and length(ordersNo) > 11
+<!--                这里寻找orderNo长度大于12的-->
+                and length(ordersNo) > 12
             </if>
             <if test="isOrder == null or isOrder == ''">
-                and (ordersNo = '货物破损' or ordersNo = '二次入库')
+                 and length(ordersNo) = 12
             </if>
         </where>
     </select>
