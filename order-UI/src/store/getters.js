@@ -23,6 +23,8 @@ const getters = {
   tempLendMoneyList: state => state.money.tempLendMoneyList,
   //资金收回
   tempRecoverMoneyList: state => state.money.tempRecoverMoneyList,
+  //运费自动填充字段
+  freightFree: state => state.money.freightFee,
   //订单详情列表
   orderItemList: state => state.order.orderItemList,
   //订单列表

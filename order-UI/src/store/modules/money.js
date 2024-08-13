@@ -16,6 +16,9 @@ const state = {
   tempLendMoneyList: [],
   //资金收回
   tempRecoverMoneyList: [],
+
+  //运费自动填充字段
+  freightFee: 0,
 }
 
 const mutations = {
@@ -35,6 +38,15 @@ const mutations = {
   setTempRecoverMoneyList(state, tempRecoverMoneyList) {
     state.tempRecoverMoneyList = tempRecoverMoneyList
   },
+
+  //运费填充
+  setFreightFee(state, freightFee) {
+    state.freightFee = freightFee
+  },
+  //清空状态
+  clearFreightFeeState(state) {
+    state.freightFee = ''
+  }
 }
 
 const actions = {
@@ -87,6 +99,15 @@ const actions = {
         })
       }
     )
+  },
+
+  //填充运费
+  setFreightFree({commit}, payload) {
+    commit('setFreightFee', payload)
+  },
+  //清空运费
+  clearFreightFree({commit}) {
+    commit('clearFreightFeeState')
   }
 }
 

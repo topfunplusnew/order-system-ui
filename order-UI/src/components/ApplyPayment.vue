@@ -45,7 +45,7 @@
         </el-row>
       </el-form-item>
       <el-form-item label="金额" prop="moneyAmount">
-        <el-input v-model="form.moneyAmount" placeholder="请输入金额"/>
+        <el-input v-model="form.moneyAmount" placeholder="请输入金额" :disabled="inputDisabled"/>
       </el-form-item>
 
       <!--        对方信息-->
@@ -110,6 +110,8 @@ import {listSubject} from "@/api/system/subject";
 import {formatDate} from "@/utils";
 import SearchOption from "@/components/SearchOption.vue";
 import {listCompany} from "@/api/system/company";
+import {mapGetters} from "vuex";
+import {listBankAccount} from "@/api/system/bankAccount";
 
 export default {
   name: "ApplyPayment",
@@ -118,7 +120,16 @@ export default {
     open: Boolean,
     tableName: '',
     tID: '',
-    addMoney: ''
+    addMoney: '',
+
+    //需要自动填充的钱
+    needMoney: {
+      type: Number
+    },
+    //需要自动填充的信息
+    needInfo: {
+      type: Object
+    }
   },
   data() {
     return {
@@ -169,15 +180,38 @@ export default {
 
       //
       queryCompany: '',
+      //禁用输入框
+      inputDisabled: false
     };
   },
   created() {
     this.reset();
     this.getList();
+    //查询科目信息
     listSubject().then(res => {
       this.subjectTree = this.handleTree(res.data, "id", "parentId");
       this.OneLevelOption = this.subjectTree;
     })
+
+  },
+  mounted() {
+    //如果传入的必须自动填充的金额大于0 则自动填充 且无法修改
+    if (this.needMoney > 0) {
+      this.form.moneyAmount = this.needMoney;
+      this.inputDisabled = true;
+    }
+    //如果有司机信息 自动填充
+    if (this.needInfo.isExit === true) {
+      //自动填充
+      this.form.otherAcountsName = this.needInfo.otherAcountsName
+      this.form.companyName = this.needInfo.companyName
+      //查询司机的银行卡信息
+      listBankAccount({acountsType: '司机', acountsName: this.needInfo.otherAcountsName})
+        .then(res => {
+          this.form.otherBankNo = res.rows[0].bankNo
+          this.form.otherBankName = res.rows[0].bankName
+        })
+    }
   },
   computed: {
     fullLevel() {
@@ -189,6 +223,16 @@ export default {
       },
       get() {
         return this.open;
+      }
+    },
+  },
+  watch: {
+    freightFree: {
+      handler(val) {
+        if (val !== '') {
+          this.form.moneyAmount = val;
+          this.$store.dispatch('money/clearFreightFree') //清空状态
+        }
       }
     }
   },
@@ -289,7 +333,9 @@ export default {
               this.$modal.msgSuccess("修改成功");
               this.opened = false;
               this.getList();
-            });
+            }).catch(err => {
+              this.opened = false
+            })
           } else {
             excludeParams(this, this.$exclude)
             this.form.tableName = this.tableName;
@@ -305,7 +351,9 @@ export default {
               this.$modal.msgSuccess("付款申请添加成功");
               this.opened = false;
               this.getList();
-            });
+            }).catch(err => {
+              this.opened = false
+            })
           }
         }
       });

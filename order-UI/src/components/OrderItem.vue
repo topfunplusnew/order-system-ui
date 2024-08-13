@@ -369,7 +369,8 @@ export default {
       return fix(this.length * this.width * this.outPieces / 1000000 * this.paymentUnload + Number(this.paymentsWithSundry));
     },
     tonnage00() {
-      return fix((this.height - this.erro) * this.length * this.pieces / 1000000 / 20 / 20);
+      //todo 这里会有一个小bug，如果产品规格过小 会导致结果变为0
+      return fix((Number(this.height) - Number(this.erro)) * this.length * this.pieces / 1000000 / 20 / 20);
     },
     landFreight00() {
       return fix(this.tonnage * this.landFreightPrice + Number(this.additionalFees));
