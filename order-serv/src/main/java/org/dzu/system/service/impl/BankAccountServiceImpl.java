@@ -2,9 +2,12 @@ package org.dzu.system.service.impl;
 
 import org.dzu.common.constant.BankaccountConstants;
 import org.dzu.common.constant.DelConstants;
+import org.dzu.common.enums.TableName;
 import org.dzu.common.exception.ServiceException;
 import org.dzu.system.domain.BankAccount;
+import org.dzu.system.domain.BankAccountChange;
 import org.dzu.system.domain.Cars;
+import org.dzu.system.domain.vo.TranseferMoney;
 import org.dzu.system.mapper.BankAccountMapper;
 import org.dzu.system.mapper.CarsMapper;
 import org.dzu.system.service.IBankAccountService;
@@ -29,6 +32,8 @@ public class BankAccountServiceImpl implements IBankAccountService
     private BankAccountMapper bankAccountMapper;
     @Autowired
     private CarsMapper carsMapper;
+    @Autowired
+    private BankAccountChangeServiceImpl bankAccountChangeServiceImpl;
 
     @Override
     public BankAccount selectBankAccountByBankNo(String bankNo) {
@@ -125,6 +130,46 @@ public class BankAccountServiceImpl implements IBankAccountService
             }
         });
         return bankAccountMapper.deleteBankAccountByIds(ids);
+    }
+
+
+    // 提供接口允许两个银行卡进行转账
+    @Override
+    @Transactional(isolation = Isolation.SERIALIZABLE,rollbackFor = Exception.class)
+    public TranseferMoney transferMoney(TranseferMoney transeferMoney){
+        // 首先检测两个银行卡是否存在
+        BankAccount fromBank = bankAccountMapper.selectBankAccountByBankNo(transeferMoney.getFromBankNo());
+        BankAccount toBank = bankAccountMapper.selectBankAccountByBankNo(transeferMoney.getToBankNo());
+        // 非空判断,防止空指针
+        if(fromBank==null||toBank==null){
+            throw new ServiceException("银行卡不存在！");
+        }
+
+        // 检测本次的金额是否支持转账
+        if(fromBank.getAmount()<transeferMoney.getMoney()){
+            throw new ServiceException("转账金额超过本次银行卡余额！");
+        }
+
+        // 如果卡号相同,则拒绝
+        if(fromBank.getBankNo().equals(toBank.getBankNo())){
+            throw new ServiceException("两个银行卡号相同！");
+        }
+
+        // 准备转账
+        BankAccountChange fromChange = new BankAccountChange();
+        fromChange.setSelfBankNo(transeferMoney.getFromBankNo());
+        fromChange.setMoneyAmount(-transeferMoney.getMoney());
+        fromChange.setPayNO(transeferMoney.getFromBankNo());
+        fromChange.setTableName(TableName.BANK_ACCOUNT.get());
+        bankAccountChangeServiceImpl.insertPaymenyChange(fromChange);
+        BankAccountChange toChange = new BankAccountChange();
+        toChange.setSelfBankNo(transeferMoney.getToBankNo());
+        toChange.setMoneyAmount(transeferMoney.getMoney());
+        toChange.setPayNO(transeferMoney.getFromBankNo());
+        toChange.setTableName(TableName.BANK_ACCOUNT.get());
+        bankAccountChangeServiceImpl.insertReceiptChange(toChange);
+
+        return transeferMoney;
     }
 
 }

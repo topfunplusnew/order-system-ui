@@ -1,6 +1,7 @@
 package org.dzu.common.enums;
 
 public enum TableName {
+    BANK_ACCOUNT("bankAccount"),
     BANK_ACCOUNT_CHANGE("bankaccountchange"),
     BORROWED_MONEY("borrowedmoney"),
     BUSINESS_TRIP("businesstrip"),
