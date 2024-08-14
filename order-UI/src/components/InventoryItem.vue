@@ -359,7 +359,17 @@ export default {
         return this.orderItemInfo.exWarehouseDate;
       }
     },
-
+    //库存量
+    stockNumber: {
+      set(val) {
+        if (val) {
+          this.$emit('changeOrderItemInfo', {...this.orderItemInfo, stockNumber: val});
+        }
+      },
+      get() {
+        return this.orderItemInfo.stockNumber;
+      }
+    },
     //公式计算相关的计算属性
     //是否含税 厂家否 客户否
     paymentFactory00() {
@@ -581,14 +591,6 @@ export default {
       })
     }
     ,
-    //弹出的库存信息条件查询
-    searchStoreHouseInfo() {
-      //查询名称库存信息
-      listInventory({storeHouseName: this.searchStoreName}).then(res => {
-        this.inventoryInfo = res.rows;
-      })
-    }
-    ,
     //查询产品级别信息
     searchProductLevelInfo() {
       this.productLevelDialogVisible = true;
@@ -607,87 +609,18 @@ export default {
       this.companyGiveDialogVisible = false;
     }
     ,
-    //仓库确认
-    commitStoreInfo(row) {
-      this.orderItemInfo.storeID = row.id;  //goodsOrderList ->仓库ID
-      this.orderItemInfo.storeHouseid = row.id //goodsOrderList ->库存ID
-      //自动填充数据
-      const computedProperties = this.$options.computed;
-      Object.keys(computedProperties).forEach(key => {
-        this[key] = row[key];
-      })
-      if (this.supplier) {
-        this.supplier = null;
-      }
-      this.storeName = row.storeHouseName
-      this.length = row.length;
-      this.width = row.width;
-      this.levelID = row.levelID;
-
-      //出厂片数让用户自己填
-      this.pieces = row.stockNumber;
-      this.currentStockNumber = row.stockNumber;//暂存
-      this.storeInfoDialogVisible = false;
-    }
-    ,
     //产品级别确认
     commitProductLevelInfo(row) {
       //确定产品级别编码信息
       this.levelID = row.id;
-      //如果供应商此时没值
-      // if (this.supplier === '' || this.supplier === undefined || this.supplier === null) {
-      //   this.searchSupplierInventory(row)
-      // } else {
-      //   this.searchStoreInventory(row)
-      // }
-      //填充级别信息
       this.levelName = row.levelName;
       this.height = row.height;
       this.length = row.length;
       this.width = row.width;
       this.levelNo = row.levelNo;
       this.productLevelDialogVisible = false;
-    }
-    ,
+    },
 
-    //查询库存信息
-    searchSupplierInventory(row) {
-      //填充表格数据
-      listInventory({supplier: this.supplier, levelID: this.levelID}).then(res => {
-        if (res.rows.length === 0) {
-          this.$message.error("没有该库存信息!")
-          //自动填写某些字段
-        } else {
-          this.levelName = row.levelName;
-          //数据库查询的筛选后的库存信息
-          //todo 如果有多个库存信息 应该如何做
-          const info = res.rows[0];
-          this.height = info.height;
-          this.length = info.length;
-          this.width = info.width;
-          //添加产品级别编码
-          this.levelNo = row.levelNo;
-        }
-      })
-    }
-    ,
-    searchStoreInventory(row) {
-      //填充表格数据
-      listInventory({storeHouseName: this.supplier, levelID: this.levelID}).then(res => {
-        if (res.rows.length === 0) {
-          this.$message.error("没有该库存信息!")
-        } else {
-          this.levelName = row.levelName;
-          const info = res.rows[0];
-          this.height = info.height;
-          this.length = info.length;
-          this.width = info.width;
-          this.levelNo = row.levelNo;
-        }
-      })
-    }
-    ,
-    //todo 测试用 打印所有计算属性的值
     printAllComputers() {
       const computedProperties = this.$options.computed;
       Object.keys(computedProperties).forEach(key => {
@@ -752,6 +685,11 @@ export default {
         <span class="text-bold">包数</span>
         <hr/>
         <el-input type="text" placeholder="请输入包数" v-model="packs"></el-input>
+      </div>
+      <div class="order-item">
+        <span class="text-bold">库存量</span>
+        <hr/>
+        <el-input type="text" placeholder="请输入出厂片数" v-model="stockNumber"></el-input>
       </div>
       <div class="order-item">
         <span class="text-bold">出厂片数</span>

@@ -46,13 +46,11 @@ export default {
   watch: {
     currentInventoryInfo: {
       handler(val) {
-        console.log('更新库存信息', val)
       },
       deep: true
     },
     goodsInfo: {
       handler(val) {
-        console.log('监听货物', val)
       }
     }
   },
@@ -66,13 +64,22 @@ export default {
       this.queryStoreHouseName = val
     },
     handleCommitBackStoreHouseName(val) {
-      this.currentInventoryInfo = {...this.currentInventoryInfo, storeHouseName: val.storeHouseName}
+      this.currentInventoryInfo = {
+        ...this.currentInventoryInfo,
+        storeHouseName: val.storeHouseName,
+        storeHouseid: val.id
+      }
     },
     handleUpdateQueryCars(val) {
       this.queryCars = val
     },
     handleCommitBackCars(val) {
-      this.currentInventoryInfo = {...this.currentInventoryInfo, driver: val.driver, carNo: val.carNo, tel: val.tel}
+      this.currentInventoryInfo = {
+        ...this.currentInventoryInfo,
+        landDriverName: val.driver,
+        landCarNo: val.carNo,
+        landDriverTel: val.tel
+      }
     },
     handleUpdateQueryFleet(val) {
       this.queryFleet = val
@@ -145,7 +152,7 @@ export default {
             <span style="font-weight: bolder">车牌:</span>
           </el-col>
           <el-col :span="12">
-            <el-input type="text" v-model="currentInventoryInfo.carNo"
+            <el-input type="text" v-model="currentInventoryInfo.landCarNo"
                       placeholder="请输入车牌"></el-input>
           </el-col>
           <el-col :span="2">
@@ -167,7 +174,7 @@ export default {
             <span style="font-weight: bolder">司机电话:</span>
           </el-col>
           <el-col :span="12">
-            <el-input type="text" v-model="currentInventoryInfo.tel"
+            <el-input type="text" v-model="currentInventoryInfo.landDriverTel"
                       placeholder="请输入司机电话"></el-input>
           </el-col>
         </el-row>

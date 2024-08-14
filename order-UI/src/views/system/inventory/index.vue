@@ -81,20 +81,20 @@
       <el-table-column label="卸货价" align="center" prop="paymentUnload"/>
       <el-table-column label="销售是否含税" align="center" prop="isIncludeTaxSale"/>
       <el-table-column label="总货款" align="center" prop="payments"/>
-      <el-table-column label="陆运车辆ID" align="center" prop="landCarID"/>
+      <!--      <el-table-column label="陆运车辆ID" align="center" prop="landCarID"/>-->
       <el-table-column label="陆运车牌" align="center" prop="landCarNo"/>
       <el-table-column label="陆运司机电话" align="center" prop="landDriverTel"/>
       <el-table-column label="陆地司机姓名" align="center" prop="landDriverName"/>
-      <el-table-column label="海运车辆ID" align="center" prop="seaCarID"/>
-      <el-table-column label="海运车牌" align="center" prop="seaCarNo"/>
-      <el-table-column label="海运司机电话" align="center" prop="seaDriverTel"/>
-      <el-table-column label="海运司机姓名" align="center" prop="seaDriverName"/>
+      <!--      <el-table-column label="海运车辆ID" align="center" prop="seaCarID"/>-->
+      <!--      <el-table-column label="海运车牌" align="center" prop="seaCarNo"/>-->
+      <!--      <el-table-column label="海运司机电话" align="center" prop="seaDriverTel"/>-->
+      <!--      <el-table-column label="海运司机姓名" align="center" prop="seaDriverName"/>-->
       <el-table-column label="误差" align="center" prop="erro"/>
       <el-table-column label="吨位" align="center" prop="tonnage"/>
       <el-table-column label="陆运费单价" align="center" prop="landFreightPrice"/>
       <el-table-column label="陆运费" align="center" prop="landFreight"/>
-      <el-table-column label="海运费" align="center" prop="seaFreight"/>
-      <el-table-column label="运费" align="center" prop="freight"/>
+      <!--      <el-table-column label="海运费" align="center" prop="seaFreight"/>-->
+      <!--      <el-table-column label="运费" align="center" prop="freight"/>-->
       <el-table-column label="其他费用" align="center" prop="otherCost"/>
       <el-table-column label="利润" align="center" prop="profit"/>
       <el-table-column label="不含税利润" align="center" prop="profitNoTax"/>
@@ -546,9 +546,14 @@ export default {
     //获取入库
     submitInvoiceIn() {
       //调用货物入库接口
+      this.$wait();
       addInventory(this.inventoryInfoAll).then(res => {
-        console.log(res)
+        this.$message.success('入库成功')
+        this.$close();
+      }).catch(err => {
+        this.$close()
       })
+      this.getList()
       this.invoiceInVisible = false
     },
     //子组件改变库存状态
