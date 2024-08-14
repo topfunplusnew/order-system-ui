@@ -17,14 +17,6 @@
           placeholder="选择结束时间">
         </el-date-picker>
       </el-form-item>
-      <!--      <el-form-item label="业务员名称" prop="saleManager">-->
-      <!--        <el-input-->
-      <!--          v-model="timesQuery.saleManager"-->
-      <!--          placeholder="请输入陆运车牌"-->
-      <!--          clearable-->
-      <!--          @keyup.enter.native="handleQuery"-->
-      <!--        />-->
-      <!--      </el-form-item>-->
       <el-form-item label="客户名称" prop="customer">
         <el-input
           v-model="paramQuery.customer"
@@ -53,59 +45,8 @@
           </el-option>
         </el-select>
       </el-form-item>
-      <!--      基础信息-->
-      <!--      <el-form-item label="陆运车牌" prop="landCarNo">-->
-      <!--        <el-input-->
-      <!--          v-model="queryParams.landCarNo"-->
-      <!--          placeholder="请输入陆运车牌"-->
-      <!--          clearable-->
-      <!--          @keyup.enter.native="handleQuery"-->
-      <!--        />-->
-      <!--      </el-form-item>-->
-      <!--      <el-form-item label="陆运司机电话" prop="landDriverTel">-->
-      <!--        <el-input-->
-      <!--          v-model="queryParams.landDriverTel"-->
-      <!--          placeholder="请输入陆运司机电话"-->
-      <!--          clearable-->
-      <!--          @keyup.enter.native="handleQuery"-->
-      <!--        />-->
-      <!--      </el-form-item>-->
-      <!--      <el-form-item label="陆地司机姓名" prop="landDriverName">-->
-      <!--        <el-input-->
-      <!--          v-model="queryParams.landDriverName"-->
-      <!--          placeholder="请输入陆地司机姓名"-->
-      <!--          clearable-->
-      <!--          @keyup.enter.native="handleQuery"-->
-      <!--        />-->
-      <!--      </el-form-item>-->
-
-      <!--      <el-form-item label="海运车牌" prop="seaCarNo">-->
-      <!--        <el-input-->
-      <!--          v-model="queryParams.seaCarNo"-->
-      <!--          placeholder="请输入海运车牌"-->
-      <!--          clearable-->
-      <!--          @keyup.enter.native="handleQuery"-->
-      <!--        />-->
-      <!--      </el-form-item>-->
-      <!--      <el-form-item label="海运司机电话" prop="seaDriverTel">-->
-      <!--        <el-input-->
-      <!--          v-model="queryParams.seaDriverTel"-->
-      <!--          placeholder="请输入海运司机电话"-->
-      <!--          clearable-->
-      <!--          @keyup.enter.native="handleQuery"-->
-      <!--        />-->
-      <!--      </el-form-item>-->
-      <!--      <el-form-item label="海运司机姓名" prop="seaDriverName">-->
-      <!--        <el-input-->
-      <!--          v-model="queryParams.seaDriverName"-->
-      <!--          placeholder="请输入海运司机姓名"-->
-      <!--          clearable-->
-      <!--          @keyup.enter.native="handleQuery"-->
-      <!--        />-->
-      <!--      </el-form-item>-->
       <el-form-item>
         <el-button type="primary" icon="el-icon-search" size="mini" @click="handleTimesQuery">搜索</el-button>
-        <!--        <el-button icon="el-icon-refresh" size="mini" @click="resetQuery">重置</el-button>-->
       </el-form-item>
     </el-form>
 
@@ -205,11 +146,9 @@
         </template>
       </el-table-column>
       <!--      固定列-->
-      <el-table-column label="id" align="center" prop="id" fixed="left"/>
+      <!--      <el-table-column label="id" align="center" prop="id" fixed="left"/>-->
       <el-table-column label="日期" align="center" prop="orderDate" fixed="left"/>
       <el-table-column label="客户" align="center" prop="customer" fixed="left"/>
-
-      <!--      以下字段可动-->
       <!--      以下字段可动-->
       <el-table-column label="订单编号" align="center" prop="ordersNo" v-if="columns[0].visible"/>
       <el-table-column label="陆运车牌" align="center" prop="landCarNo" v-if="columns[1].visible"/>
@@ -250,13 +189,11 @@
           </el-tag>
         </template>
       </el-table-column>
-      <el-table-column label="陆运银行户名" align="center" prop="landBankName" v-if="columns[13].visible"/>
-      <el-table-column label="陆运银行账号" align="center" prop="landBankNo" v-if="columns[14].visible"/>
-      <el-table-column label="海运银行户名" align="center" prop="seaBankName" v-if="columns[15].visible"/>
-      <el-table-column label="海运银行账号" align="center" prop="seaBankNo" v-if="columns[16].visible"/>
+      <!--      <el-table-column label="陆运银行户名" align="center" prop="landBankName" v-if="columns[13].visible"/>-->
+      <!--      <el-table-column label="陆运银行账号" align="center" prop="landBankNo" v-if="columns[14].visible"/>-->
+      <!--      <el-table-column label="海运银行户名" align="center" prop="seaBankName" v-if="columns[15].visible"/>-->
+      <!--      <el-table-column label="海运银行账号" align="center" prop="seaBankNo" v-if="columns[16].visible"/>-->
       <el-table-column label="收到条附件路径" align="center" prop="receiveProof" v-if="columns[17].visible"/>
-
-      <!--      是与否-->
       <el-table-column label="是否被调整单" align="center" prop="isAdjusted" v-if="columns[18].visible">
         <template slot-scope="scope">
           <el-tag
@@ -273,11 +210,8 @@
           </el-tag>
         </template>
       </el-table-column>
-
       <el-table-column label="调整日期" align="center" prop="adjustDate" v-if="columns[20].visible"/>
       <el-table-column label="原订单编号" align="center" prop="adjustOrderid" v-if="columns[21].visible"/>
-
-      <!--      是与否-->
       <el-table-column label="是否可编辑" align="center" prop="isedit" v-if="columns[22].visible">
         <template slot-scope="scope">
           <el-tag
@@ -300,10 +234,6 @@
                          @update:modelValue="handleOpenTitle"/>
         </template>
       </el-table-column>
-      <!--      <el-table-column label="客户ID" align="center" prop="customerID"/>-->
-      <!--      <el-table-column label="审核人编号" align="center" prop="checkUserId"/>-->
-      <!--      <el-table-column label="陆运车辆ID" align="center" prop="landCarID"/>-->
-      <!--      <el-table-column label="海运车辆ID" align="center" prop="seaCarID"/>-->
       <!--      右侧操作栏-->
       <el-table-column label="操作" align="center" class-name="small-padding fixed-width" width="300px" fixed="right">
         <template slot-scope="scope">
@@ -311,23 +241,11 @@
             size="mini"
             @click="handleOrder1(scope.row)"
             v-hasPermi="['system:orderdetail:edit']"
-          >发货单1
+          >发货单
           </el-button>
           <el-button
             size="mini"
-            @click="handleOrder2(scope.row)"
-            v-hasPermi="['system:orderdetail:edit']"
-          >发货单2
-          </el-button>
-          <el-button
-            size="mini"
-            @click="handleOrder3(scope.row)"
-            v-hasPermi="['system:orderdetail:edit']"
-          >发货单3
-          </el-button>
-          <el-button
-            size="mini"
-            type="primary"
+            type="danger"
             @click="handleUpload(scope.row)"
           >上传附件
           </el-button>
@@ -336,6 +254,31 @@
             @click="handleCommit(scope.row)"
             v-hasPermi="['system:orderdetail:remove']"
           >上传收到条
+          </el-button>
+          <!--
+          运费申请 运费申请功能；页面判断是否海运费为0
+          ，如果不为0，在页面显示“海运费申请”“陆运费申请”两个按钮，否则只显示“
+          陆运费申请”；如果相关运费信息已经存在，则按钮不可用；点击相关按钮时，
+          根据订单中的司机相关信息填充相应的收款方账号信息，并根据订单中陆运费和海
+          运费信息填充金额，金额不能修改；
+          -->
+          <el-button
+            :disabled="isHaveLandFree(scope.row)"
+            v-if="scope.row.landFreight>0"
+            size="mini"
+            type="warning"
+            @click="handleApplyLandFree(scope.row)"
+            v-hasPermi="['system:orderdetail:remove']"
+          >陆运费申请
+          </el-button>
+          <el-button
+            :disabled="isHaveSeaFree(scope.row)"
+            v-if="scope.row.seaFreight>0"
+            type="primary"
+            size="mini"
+            @click="handleApplySeaFree(scope.row)"
+            v-hasPermi="['system:orderdetail:remove']"
+          >海运费申请
           </el-button>
         </template>
       </el-table-column>
@@ -422,40 +365,18 @@
   </span>
     </el-dialog>
 
-    <!--    点击发货单1的弹窗-->
+    <!--    点击发货单的弹窗-->
     <el-dialog
-      title="提示"
+      title="发货单"
       :visible.sync="Order1Visible"
-      width="30%">
-      <span>点击发货单1的弹窗</span>
+      width="75%">
+      <!--      发货单主体-->
+      <el-row>
+        <ChatForm/>
+      </el-row>
       <span slot="footer" class="dialog-footer">
     <el-button @click="Order1Visible = false">取 消</el-button>
     <el-button type="primary" @click="Order1Visible = false">确 定</el-button>
-  </span>
-    </el-dialog>
-
-    <!--    点击发货单2的弹窗-->
-    <el-dialog
-      title="提示"
-      :visible.sync="Order2Visible"
-      width="30%">
-      <span>点击发货单2的弹窗</span>
-      <span slot="footer" class="dialog-footer">
-    <el-button @click="Order2Visible = false">取 消</el-button>
-    <el-button type="primary" @click="Order2Visible = false">确 定</el-button>
-  </span>
-    </el-dialog>
-
-
-    <!--    点击发货单3的弹窗-->
-    <el-dialog
-      title="提示"
-      :visible.sync="Order3Visible"
-      width="30%">
-      <span>点击发货单3的弹窗</span>
-      <span slot="footer" class="dialog-footer">
-    <el-button @click="Order3Visible = false">取 消</el-button>
-    <el-button type="primary" @click="Order3Visible = false">确 定</el-button>
   </span>
     </el-dialog>
 
@@ -602,6 +523,25 @@
     <el-button type="primary" @click="submitOpenTitle">确 定</el-button>
   </span>
     </el-dialog>
+
+    <!--    陆运费申请 指定destroy-on-close来销毁dialog的元素让其下次打开重新渲染 从而反复执行created-->
+    <el-dialog
+      title="陆运费申请"
+      :visible.sync="landFreeDialogVisible"
+      width="50%" destroy-on-close>
+      <!--      传入运费-->
+      <ApplyPayment table-name="orderfreight" t-i-d="id" @changeOpen="landFreeDialogVisible = false"
+                    :need-money="landFreightFree" :need-info="driverInfo"/>
+    </el-dialog>
+
+    <!--    海运费申请 :key="keyFlag"-->
+    <el-dialog
+      title="海运费申请"
+      :visible.sync="seaFreeDialogVisible"
+      width="50%" destroy-on-close>
+      <ApplyPayment table-name="orderfreight" t-i-d="id" @changeOpen="seaFreeDialogVisible = false"
+                    :need-money="seaFreightFree" :need-info="driverInfo"/>
+    </el-dialog>
   </div>
 </template>
 
@@ -627,10 +567,12 @@ import {formatDate} from "@/utils";
 import {addOrderFreight} from "@/api/system/orderFreight";
 import SwitchBarItem from "@/components/SwitchBarItem.vue";
 import SwitchBarForCheck from "@/components/SwitchBarForCheck.vue";
+import ApplyPayment from "@/components/ApplyPayment.vue";
+import ChatForm from "@/components/ChatForm.vue";
 
 export default {
   name: "GoodsOrder",
-  components: {SwitchBarForCheck, SwitchBarItem, SearchOption, OrderForm, TagsItem},
+  components: {ChatForm, ApplyPayment, SwitchBarForCheck, SwitchBarItem, SearchOption, OrderForm, TagsItem},
   data() {
     return {
       // 遮罩层
@@ -649,6 +591,8 @@ export default {
       goodsOrderList: [],
       // 弹出层标题
       title: "",
+      //key强制重新渲染组件
+      keyFlag: 0,
       // 是否显示弹出层
       open: false,
       // 查询参数
@@ -753,8 +697,6 @@ export default {
       handleOrderVisible: false,
       //订单弹窗
       Order1Visible: false,
-      Order2Visible: false,
-      Order3Visible: false,
       //上传和收到条
       handleUploadVisible: false,
       handleCommitVisible: false,
@@ -784,7 +726,16 @@ export default {
       //订单输入详情信息
       orderInfo: {},
       //上传附件临时保存当前点击订单信息
-      tempOrderInfo: {}
+      tempOrderInfo: {},
+
+      //运费的弹窗
+      landFreeDialogVisible: false,
+      seaFreeDialogVisible: false,
+      //运费
+      landFreightFree: 0,
+      seaFreightFree: 0,
+      //订单中的司机相关信息 自动填充响应的收款方账号信息
+      driverInfo: {},
     };
   },
   created() {
@@ -810,7 +761,6 @@ export default {
 
       }
     },
-
     //获取订单列表
     ...mapGetters(['orderItemList']),
     ...mapGetters(['orderList'])
@@ -888,12 +838,6 @@ export default {
     //订单发货单123
     handleOrder1(row) {
       this.Order1Visible = true
-    },
-    handleOrder2(row) {
-      this.Order2Visible = true
-    },
-    handleOrder3(row) {
-      this.Order3Visible = true
     },
 
     //todo 压缩上传和收到条
@@ -1051,6 +995,47 @@ export default {
           this.$message.success('审核成功')
         })
       }
+    },
+
+
+    //申请运费相关
+    //是否已经有了相关运费信息
+    isHaveLandFree(row) {
+      console.log('陆运费', row)
+      //todo 查询订单运费信息
+      return false
+    },
+    isHaveSeaFree(row) {
+      console.log(row)
+      return false
+    },
+
+    //申请陆运费
+    handleApplyLandFree(row) {
+      console.log(row)
+      // this.keyFlag += 1 //让dialog组件重新渲染
+      this.landFreightFree = row.landFreight
+
+      //组装司机信息
+      this.driverInfo = {
+        otherAcountsName: row.landDriverName,
+        companyName: null,
+        isExit: true,//用这个字段来表示有司机信息
+      }
+      this.landFreeDialogVisible = true;
+    },
+    //申请海运费
+    handleApplySeaFree(row) {
+      console.log(row)
+      // this.keyFlag += 1 //让dialog组件重新渲染
+      this.seaFreightFree = row.seaFreight
+      //组装司机信息
+      this.driverInfo = {
+        otherAcountsName: row.seaDriverName,
+        companyName: null,
+        isExit: true,//用这个字段来表示有司机信息
+      }
+      this.seaFreeDialogVisible = true;
     },
     //打印
     printHTML() {

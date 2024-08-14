@@ -279,7 +279,7 @@ import {
   listProductLevel,
   updateProductLevel
 } from "@/api/system/productLevel";
-import {addData} from "@/api/system/dict/data";
+import {addData, getDicts, listData} from "@/api/system/dict/data";
 
 export default {
   name: "ProductLevel",
@@ -367,11 +367,18 @@ export default {
       //添加产品级别的表单参数
       addCategoryModel: {},
       //字典列表
-      dictObj: {}
+      dictObj: {},
+
+      //created 查询类型字典信息
+      dictList: [],
     };
   },
   created() {
     this.getList();
+    //获取产品字典信息
+    getDicts('order_product_categories').then(res => {
+      this.dictList = res.data;
+    })
     if (localStorage.getItem('productlevel-columns') === 'null'
       || !localStorage.getItem('productlevel-columns')) {
       //设置localStorage
@@ -387,6 +394,11 @@ export default {
         localStorage.setItem("productlevel-columns", JSON.stringify(newVal))
       },
       deep: true,
+    },
+    //监听产品级别变化 自动填充级别编码
+    'addCategoryModel.categoryName': function (newVal) {
+      //查询该级别名称对应的级别编码
+      this.addCategoryModel.levelNo = this.dictList.find(item => item.dictLabel === newVal).dictValue
     }
   },
   methods: {
