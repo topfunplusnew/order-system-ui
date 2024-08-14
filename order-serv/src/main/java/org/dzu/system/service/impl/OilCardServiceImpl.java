@@ -9,7 +9,10 @@ import org.dzu.system.domain.OilCard;
 import org.dzu.system.mapper.OilCardMapper;
 import org.dzu.system.service.IOilCardService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.DuplicateKeyException;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Isolation;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 /**
@@ -55,6 +58,7 @@ public class OilCardServiceImpl implements IOilCardService
      * @return 结果
      */
     @Override
+    @Transactional(isolation = Isolation.SERIALIZABLE, rollbackFor = Exception.class)
     public int insertOilCard(OilCard oilCard)
     {
         // 根据卡号搜索，如果搜索到id不是这个但是卡号相同的`，提示已经有了
@@ -67,7 +71,11 @@ public class OilCardServiceImpl implements IOilCardService
         oilCard.setUserId(SecurityUtils.getUserId());
         oilCard.setUserName(SecurityUtils.getUserTruename());
         oilCard.setDelFlag(Long.valueOf(DelConstants.NODEL));
-        return oilCardMapper.insertOilCard(oilCard);
+        try {
+            return oilCardMapper.insertOilCard(oilCard);
+        } catch (DuplicateKeyException e) {
+            throw new ServiceException("对应卡号已经录入");
+        }
     }
 
     /**
@@ -77,18 +85,22 @@ public class OilCardServiceImpl implements IOilCardService
      * @return 结果
      */
     @Override
+    @Transactional(isolation = Isolation.SERIALIZABLE, rollbackFor = Exception.class)
     public int updateOilCard(OilCard oilCard)
     {
         // 根据卡号搜索，如果搜索到id不是这个但是卡号相同的`，提示已经有了
         QueryWrapper<OilCard> query = new QueryWrapper<OilCard>().eq("oilCardNo", oilCard.getOilCardNo()).ne("id", oilCard.getId());
-        if(oilCardMapper.selectCount(query)>0){
-            throw new ServiceException("对应卡号已经录入");
-        }
-
         oilCard.setUserId(SecurityUtils.getUserId());
         oilCard.setUserName(SecurityUtils.getUserTruename());
         oilCard.setUpdateTime(DateUtils.getNowDate());
-        return oilCardMapper.updateOilCard(oilCard);
+
+        // 修改金额操作只能在充值和圈存模块进行
+        oilCard.setMoneyAmount(null);
+        try {
+            return oilCardMapper.updateOilCard(oilCard);
+        } catch (DuplicateKeyException e) {
+            throw new RuntimeException("对应卡号已经录入");
+        }
     }
 
     /**

@@ -45,7 +45,6 @@ public class OilCard extends BaseEntity
     private String oilType;
 
     /** 当前金额 */
-    @NotNull(message = "当前金额不能为空")
     @TableField("moneyAmount")
     @DecimalMaxDigits
     @Max(value = 10000000, message = "当前金额不能超过100万")
