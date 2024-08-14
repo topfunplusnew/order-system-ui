@@ -16,17 +16,12 @@ spring:
         url:
         username:
         password:
-#      # 初始连接数
-#      initialSize: 5
-#      # 最小连接池数量
-#      minIdle: 10
-#      # 最大连接池数量
-#      maxActive: 20
-      initialSize: 2
+      # 初始连接数
+      initialSize: 5
       # 最小连接池数量
-      minIdle: 4
+      minIdle: 10
       # 最大连接池数量
-      maxActive: 6
+      maxActive: 20
       # 配置获取连接等待超时的时间
       maxWait: 60000
       # 配置连接超时时间
