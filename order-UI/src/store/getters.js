@@ -38,5 +38,8 @@ const getters = {
 
   //库存信息
   inventoryInfoAll: state => state.inventory.inventoryInfoAll,
+
+  //审核流程列表
+  checkStepList: state => state.paymentApply.checkStepList
 }
 export default getters

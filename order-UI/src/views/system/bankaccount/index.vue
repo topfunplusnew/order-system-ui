@@ -194,6 +194,39 @@
         <el-button @click="transformDialogVisible = false">取 消</el-button>
       </div>
     </el-dialog>
+
+
+    <!--    银行卡流水-->
+    <el-dialog title="银行卡流水" :visible.sync="bankChangeDialogVisible" width="55%" append-to-body>
+      <el-row>
+        <el-table
+          :data="bankChangeList"
+          style="width: 100%">
+          <el-table-column
+            prop="selfBankNo"
+            label="己方账号"
+            width="180">
+          </el-table-column>
+          <el-table-column
+            prop="operateDate"
+            label="日期"
+            width="180">
+          </el-table-column>
+          <el-table-column
+            prop="changeType"
+            label="变动类型">
+          </el-table-column>
+          <el-table-column
+            prop="moneyAmount"
+            label="金额">
+          </el-table-column>
+        </el-table>
+      </el-row>
+      <div slot="footer" class="dialog-footer">
+        <el-button type="primary" @click="submitBankChange">确 定</el-button>
+        <el-button @click="bankChangeDialogVisible = false">取 消</el-button>
+      </div>
+    </el-dialog>
   </div>
 </template>
 
@@ -208,6 +241,7 @@ import {
 import {listCompany} from "@/api/system/company";
 import SearchOption from "@/components/SearchOption.vue";
 import {mixin_printHTML} from "@/views/dashboard/mixins/print";
+import {listBankAccountChange} from "@/api/system/bankAccountChange";
 
 export default {
   name: "BankAccount",
@@ -314,7 +348,11 @@ export default {
         fromBankNo: null,
         toBankNo: null,
         money: null
-      }
+      },
+
+      //银行卡流水
+      bankChangeDialogVisible: false,
+      bankChangeList: []
     };
   },
   created() {
@@ -376,8 +414,15 @@ export default {
     },
 
     //银行卡变动流水
-    checkBankChangeFlow() {
-
+    checkBankChangeFlow(row) {
+      //发送请求
+      listBankAccountChange(row.bankNo).then(res => {
+        this.bankChangeList = res.rows;
+      })
+      this.bankChangeDialogVisible = true;
+    },
+    submitBankChange() {
+      this.bankChangeDialogVisible = false
     },
     /** 查询银行账号列表 */
     getList() {

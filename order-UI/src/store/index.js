@@ -13,6 +13,7 @@ import balanceaccounts from "@/store/modules/balanceaccounts";
 import fixedassets from "@/store/modules/fixedassets";
 import apply from "@/store/modules/apply";
 import inventory from "@/store/modules/inventory";
+import paymentApply from "@/store/modules/paymentApply";
 
 
 Vue.use(Vuex)
@@ -32,7 +33,8 @@ const store = new Vuex.Store({
     balanceaccounts,
     fixedassets,
     apply,
-    inventory
+    inventory,
+    paymentApply
   },
   getters
 })
