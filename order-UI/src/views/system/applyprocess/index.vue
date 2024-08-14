@@ -42,28 +42,32 @@ export default {
       //分页信息
       pageNum: 1,
       pageSize: 10,
-      total: 0
+      total: 0,
+
+
+      //付款审核
+      addCheckApplyProcessVisible: false
     }
   },
   watch: {
-    //选择 仅仅我看还是所有的审核信息全部展示
-    select: {
-      handler(val) {
-        console.log(val)
-        //如果val是1 所有审核信息
-        if (Number(val) === 1) {
-          console.log('所有审核信息全部展示')
-          //调用接口获取所有的审核流程列表
-          listAuditInfo().then(res => {
-            this.allAuditInfoList = res.rows;
-          })
-        }
-        //如果val是2 仅我需要审核
-        if (Number(val) === 2) {
-          console.log('仅仅我需要展示')
-        }
-      }
-    },
+    // //选择 仅仅我看还是所有的审核信息全部展示
+    // select: {
+    //   handler(val) {
+    //     console.log(val)
+    //     //如果val是1 所有审核信息
+    //     if (Number(val) === 1) {
+    //       console.log('所有审核信息全部展示')
+    //       //调用接口获取所有的审核流程列表
+    //       listAuditInfo().then(res => {
+    //         this.allAuditInfoList = res.rows;
+    //       })
+    //     }
+    //     //如果val是2 仅我需要审核
+    //     if (Number(val) === 2) {
+    //       console.log('仅仅我需要展示')
+    //     }
+    //   }
+    // },
     //监听刷新标记
     checked: {
       handler(val) {
@@ -119,6 +123,12 @@ export default {
     handleChangeApplyItem(e) {
       console.log(e)
     },
+
+    //添加付款审核流程
+    addCheckApplyProcess() {
+      console.log('添加付款审核')
+      this.addCheckApplyProcessVisible = true;
+    }
   },
   created() {
     //获取付款信息
@@ -139,6 +149,14 @@ export default {
 
 <template>
   <div class="app-container">
+    <el-row>
+      <el-col>
+        <el-button type="danger" @click="addCheckApplyProcess">
+          添加付款审核流程
+        </el-button>
+      </el-col>
+    </el-row>
+    <br/>
     <!--    放置付款信息列表-->
     <el-row>
       <el-table
@@ -260,24 +278,6 @@ export default {
 
 
     <el-dialog :visible.sync="checkApplyInfoDialogVisible" title="审核流程多项信息" width="80%">
-      <!--      筛选条件-->
-      <!--    筛选仅仅是我需要考虑的审核流程-->
-      <!--      <el-row>-->
-      <!--        <el-col :span="2">-->
-      <!--          <span class="text-bolder">审核信息筛选</span>-->
-      <!--        </el-col>-->
-      <!--        <el-col :span="5">-->
-      <!--          <el-select v-model="select" placeholder="请选择">-->
-      <!--            <el-option-->
-      <!--              v-for="item in options"-->
-      <!--              :key="item.value"-->
-      <!--              :label="item.label"-->
-      <!--              :value="item.value">-->
-      <!--            </el-option>-->
-      <!--          </el-select>-->
-      <!--        </el-col>-->
-      <!--      </el-row>-->
-      <br/>
       <!--      审核流程步骤图信息  -->
       <el-row v-for="(item,index) in auditInfoList" :key="index">
         <el-collapse v-model="activeNames" @change="handleChangeApplyItem">
@@ -297,13 +297,21 @@ export default {
             </el-row>
           </el-collapse-item>
         </el-collapse>
-
       </el-row>
-
 
       <span slot="footer" class="dialog-footer">
         <el-button @click="checkApplyInfoDialogVisible = false">取 消</el-button>
         <el-button type="primary" @click="checkApplyInfoDialogVisible = false">确 定</el-button>
+       </span>
+    </el-dialog>
+
+
+    <!--    添加付款审核弹窗-->
+    <el-dialog :visible.sync="addCheckApplyProcessVisible" title="添加审核流程" width="80%">
+
+      <span slot="footer" class="dialog-footer">
+        <el-button @click="addCheckApplyProcessVisible = false">取 消</el-button>
+        <el-button type="primary" @click="addCheckApplyProcessVisible = false">确 定</el-button>
        </span>
     </el-dialog>
   </div>

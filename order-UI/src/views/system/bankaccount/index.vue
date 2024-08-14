@@ -41,11 +41,20 @@
         <el-button
           type="danger"
           plain
-          icon="el-icon-plus"
           size="mini"
           @click="handleAdd"
           v-hasPermi="['system:bankaccount:add']"
         >新增银行卡信息
+        </el-button>
+      </el-col>
+      <el-col :span="1.5">
+        <el-button
+          type="warning"
+          plain
+          size="mini"
+          @click="handleTransformBank"
+          v-hasPermi="['system:bankaccount:add']"
+        >银行卡转账
         </el-button>
       </el-col>
       <!--      <el-col :span="1.5">-->
@@ -191,6 +200,28 @@
         <el-button @click="cancel">取 消</el-button>
       </div>
     </el-dialog>
+
+
+    <!--    银行卡之间转账-->
+    <el-dialog title="银行卡转账" :visible.sync="transformDialogVisible" width="500px" append-to-body>
+      <el-row>
+        <el-form :model="transformInfo" label-width="100px">
+          <el-form-item label="转账银行卡" prop="fromBankNo">
+            <el-input v-model="transformInfo.fromBankNo" placeholder="请输入转账银行卡"/>
+          </el-form-item>
+          <el-form-item label="目标银行卡" prop="toBankNo">
+            <el-input v-model="transformInfo.toBankNo" placeholder="请输入目标银行卡"/>
+          </el-form-item>
+          <el-form-item label="转账金额" prop="money">
+            <el-input v-model="transformInfo.money" placeholder="请输入转账金额"/>
+          </el-form-item>
+        </el-form>
+      </el-row>
+      <div slot="footer" class="dialog-footer">
+        <el-button type="primary" @click="submitTransformBank">确 定</el-button>
+        <el-button @click="transformDialogVisible = false">取 消</el-button>
+      </div>
+    </el-dialog>
   </div>
 </template>
 
@@ -200,7 +231,7 @@ import {
   getBankAccount,
   delBankAccount,
   addBankAccount,
-  updateBankAccount
+  updateBankAccount, transfer
 } from "@/api/system/bankAccount";
 import {listCompany} from "@/api/system/company";
 import SearchOption from "@/components/SearchOption.vue";
@@ -300,7 +331,16 @@ export default {
         {key: 3, label: `开户行`, visible: true},
         {key: 4, label: `公司名称`, visible: true}
       ],
-      companyList: []
+      companyList: [],
+
+      //银行卡之间转账
+      transformDialogVisible: false,
+      //转账银行卡信息
+      transformInfo: {
+        fromBankNo: null,
+        toBankNo: null,
+        money: null
+      }
     };
   },
   created() {
@@ -337,6 +377,22 @@ export default {
       console.log(val)
       this.form.companyName = val.companyName
       this.form.companyId = val.id;
+    },
+    //银行卡之间转账
+    handleTransformBank() {
+      this.transformDialogVisible = true
+    },
+    //提交转账信息
+    submitTransformBank() {
+      //调用接口 进行转账
+      this.$wait();
+      transfer(this.transformInfo).then(res => {
+        this.$message.success('转账成功~')
+        this.transformDialogVisible = false
+        this.$close()
+      }).catch(err => {
+        this.$close();
+      })
     },
     printHTML() {
       this.$print({

@@ -19,9 +19,8 @@
         <el-button
           type="danger"
           plain
-          icon="el-icon-plus"
           size="mini"
-          @click="handleAdd"
+          @click="addNewInventory"
           v-hasPermi="['system:inventory:add']"
         >新增货物
         </el-button>
@@ -356,6 +355,17 @@
         <el-button @click="cancel">取 消</el-button>
       </div>
     </el-dialog>
+
+
+    <!--    添加入库信息 与订单结构类似-->
+    <el-dialog title="货物入库" :visible.sync="invoiceInVisible" width="80%" append-to-body>
+      <!--      todo-->
+      <InventoryForm :inventory-info="inventoryInfo" @changeInventoryInfo="handleChangeInventoryInfo"/>
+      <div slot="footer" class="dialog-footer">
+        <el-button type="primary" @click="submitInvoiceIn">确 定</el-button>
+        <el-button @click="invoiceInVisible= false">取 消</el-button>
+      </div>
+    </el-dialog>
   </div>
 </template>
 
@@ -367,10 +377,12 @@ import {listCompany} from "@/api/system/company";
 import {listProductLevel} from "@/api/system/productLevel";
 import {listCars} from "@/api/system/cars";
 import {excludeParams} from "@/api/tool/exclude";
+import InventoryForm from "@/components/InventoryForm.vue";
+import {mapGetters} from "vuex";
 
 export default {
   name: "Inventory",
-  components: {SearchOption},
+  components: {InventoryForm, SearchOption},
   data() {
     return {
       // 遮罩层
@@ -465,7 +477,21 @@ export default {
         {key: 10, label: `出厂单价`, visible: true},
         {key: 11, label: `出厂是否含税`, visible: true},
       ],
+
+      //货物入库
+      invoiceInVisible: false,
+      //库存信息
+      inventoryInfo: {
+        storeDate: '',
+        storeHouseName: '',
+        carNo: '',
+        tel: ''
+      }
     };
+  },
+  computed: {
+    //拿到完整的货物信息
+    ...mapGetters(['inventoryInfoAll'])
   },
   created() {
     this.getList();
@@ -501,6 +527,34 @@ export default {
       this.form.seaDriverTel = val.tel;
       this.form.seaDriverName = val.driver;
       this.form.seaCarID = val.id;
+    },
+
+    //添加货物
+    addNewInventory() {
+      this.resetInventoryInfo()
+      this.invoiceInVisible = true
+    },
+    //充值仓库信息
+    resetInventoryInfo() {
+      this.inventoryInfo = {
+        storeDate: '',
+        storeHouseName: '',
+        carNo: '',
+        tel: ''
+      }
+    },
+    //获取入库
+    submitInvoiceIn() {
+      //调用货物入库接口
+      addInventory(this.inventoryInfoAll).then(res => {
+        console.log(res)
+      })
+      this.invoiceInVisible = false
+    },
+    //子组件改变库存状态
+    handleChangeInventoryInfo(val) {
+      console.log('--', val)
+      this.inventoryInfo = val;
     },
     /** 查询库存列表 */
     getList() {

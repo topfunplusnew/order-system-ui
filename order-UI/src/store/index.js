@@ -12,6 +12,8 @@ import order from "@/store/modules/order";
 import balanceaccounts from "@/store/modules/balanceaccounts";
 import fixedassets from "@/store/modules/fixedassets";
 import apply from "@/store/modules/apply";
+import inventory from "@/store/modules/inventory";
+
 
 Vue.use(Vuex)
 
@@ -29,7 +31,8 @@ const store = new Vuex.Store({
     //平账信息
     balanceaccounts,
     fixedassets,
-    apply
+    apply,
+    inventory
   },
   getters
 })

@@ -15,9 +15,10 @@ export default {
       type: Function,
       required: true
     },
-    //约束条件
+    //约束条件 必须传入 这个字段为查找data的筛选属性，如果不需要传{}空对象
     limitInfo: {
-      type: Object
+      type: Object,
+      required: true
     },
     //查询条件
     queryInfo: '',
@@ -78,16 +79,21 @@ export default {
     }
   },
   watch: {
+    queryInfo: {
+      handler(val) {
+        console.log('传入的需要查找的字段为', val)
+      }
+    },
     query: {
       handler(val) {
-        var queryParams = Object.create({});
+        var queryParams = Object.create({}); //创建一个代理对象
+        //传入的queryInfo是需要查询的字段名 queryName绑定的是需要查找的变量
         Object.defineProperty(queryParams, this.queryInfo, {
           value: this.query,
           enumerable: true
         })
         //Object.assign只能赋值可枚举属性
         Object.assign(this.limitInfo, queryParams)
-        console.log(this.limitInfo)
       }
     }
   }
