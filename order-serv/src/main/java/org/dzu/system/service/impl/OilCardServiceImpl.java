@@ -1,5 +1,6 @@
 package org.dzu.system.service.impl;
 
+import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import org.dzu.common.constant.DelConstants;
 import org.dzu.common.exception.ServiceException;
 import org.dzu.common.utils.DateUtils;
@@ -56,10 +57,9 @@ public class OilCardServiceImpl implements IOilCardService
     @Override
     public int insertOilCard(OilCard oilCard)
     {
-        // 根据卡号搜索，如果搜索到，提示已经有了
-        OilCard query = new OilCard();
-        query.setOilCardNo(oilCard.getOilCardNo());
-        if(selectOilCardList(query).size()>0){
+        // 根据卡号搜索，如果搜索到id不是这个但是卡号相同的`，提示已经有了
+        QueryWrapper<OilCard> query = new QueryWrapper<OilCard>().eq("oilCardNo", oilCard.getOilCardNo()).ne("id", oilCard.getId());
+        if(oilCardMapper.selectCount(query)>0){
             throw new ServiceException("对应卡号已经录入");
         }
 
@@ -79,12 +79,12 @@ public class OilCardServiceImpl implements IOilCardService
     @Override
     public int updateOilCard(OilCard oilCard)
     {
-        // 根据卡号搜索，如果搜索到，提示已经有了
-        OilCard query = new OilCard();
-        query.setOilCardNo(oilCard.getOilCardNo());
-        if(selectOilCardList(query).size()>0){
+        // 根据卡号搜索，如果搜索到id不是这个但是卡号相同的`，提示已经有了
+        QueryWrapper<OilCard> query = new QueryWrapper<OilCard>().eq("oilCardNo", oilCard.getOilCardNo()).ne("id", oilCard.getId());
+        if(oilCardMapper.selectCount(query)>0){
             throw new ServiceException("对应卡号已经录入");
         }
+
         oilCard.setUserId(SecurityUtils.getUserId());
         oilCard.setUserName(SecurityUtils.getUserTruename());
         oilCard.setUpdateTime(DateUtils.getNowDate());
