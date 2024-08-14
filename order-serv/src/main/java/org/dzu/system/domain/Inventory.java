@@ -242,7 +242,6 @@ public class Inventory extends BaseEntity
     private Double landFreight;
 
     /** 海运费 */
-    @NotNull(message = "海运费不能为空")
     @DecimalMaxDigits
     @TableField(value = "seaFreight")
     private Double seaFreight;

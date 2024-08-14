@@ -7,6 +7,7 @@ import org.dzu.common.core.page.TableDataInfo;
 import org.dzu.common.enums.BusinessType;
 import org.dzu.common.utils.poi.ExcelUtil;
 import org.dzu.system.domain.BankAccount;
+import org.dzu.system.domain.vo.TranseferMoney;
 import org.dzu.system.service.IBankAccountService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -95,5 +96,16 @@ public class BankAccountController extends BaseController
     public AjaxResult remove(@PathVariable Long[] ids)
     {
         return toAjax(bankAccountService.deleteBankAccountByIds(ids));
+    }
+
+    /**
+     *  两张卡之间进行转账
+     */
+    @PreAuthorize("@ss.hasPermi('system:bankaccount:edit')")
+    @Log(title = "银行账号", businessType = BusinessType.UPDATE)
+    @PostMapping("/transfer")
+    public AjaxResult transfer(@Validated @RequestBody TranseferMoney transeferMoney)
+    {
+        return success(bankAccountService.transferMoney(transeferMoney));
     }
 }

@@ -45,7 +45,6 @@ public class OilCard extends BaseEntity
     private String oilType;
 
     /** 当前金额 */
-    @NotNull(message = "当前金额不能为空")
     @TableField("moneyAmount")
     @DecimalMaxDigits
     @Max(value = 10000000, message = "当前金额不能超过100万")
@@ -76,7 +75,30 @@ public class OilCard extends BaseEntity
     @TableField("delFlag")
     private Long delFlag;
 
-    public void setId(Long id) 
+
+    // 搜索用的字段, 金额区间
+    @TableField(exist = false)
+    private Double moneyAmountMin;
+    @TableField(exist = false)
+    private Double moneyAmountMax;
+
+    public Double getMoneyAmountMin() {
+        return moneyAmountMin;
+    }
+
+    public void setMoneyAmountMin(Double moneyAmountMin) {
+        this.moneyAmountMin = moneyAmountMin;
+    }
+
+    public Double getMoneyAmountMax() {
+        return moneyAmountMax;
+    }
+
+    public void setMoneyAmountMax(Double moneyAmountMax) {
+        this.moneyAmountMax = moneyAmountMax;
+    }
+
+    public void setId(Long id)
     {
         this.id = id;
     }

@@ -1,6 +1,7 @@
 package org.dzu.system.service;
 
 import org.dzu.system.domain.BankAccount;
+import org.dzu.system.domain.vo.TranseferMoney;
 
 import java.util.List;
 
@@ -59,4 +60,6 @@ public interface IBankAccountService
      */
     public int deleteBankAccountByIds(Long[] ids);
 
+    // 提供接口允许两个银行卡进行转账
+    TranseferMoney transferMoney(TranseferMoney transeferMoney);
 }

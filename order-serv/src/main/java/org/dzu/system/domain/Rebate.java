@@ -13,6 +13,7 @@ import org.hibernate.validator.constraints.Length;
 
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Pattern;
+import java.util.List;
 
 /**
  * 返利回扣对象 Rebate
@@ -126,7 +127,70 @@ public class Rebate extends BaseEntity
     @TableField(value = "delFlag")
     private Long delFlag;
 
-    public void setId(Long id) 
+    /** 对应的订单详情 */
+    @TableField(exist = false)
+    private List<OrderDetail> orderDetails;
+
+
+
+
+    // 接下来的字段不关联返利,仅仅是传递搜索信息
+
+    /** 订单的开始时间 */
+    @TableField(exist = false)
+    private String orderStartTime;
+    /** 订单的结束时间 */
+    @TableField(exist = false)
+    private String orderEndTime;
+
+    /** 返利的开始时间 */
+    @TableField(exist = false)
+    private String rebateStartTime;
+    /** 返利的结束时间 */
+    @TableField(exist = false)
+    private String rebateEndTime;
+
+    public String getRebateStartTime() {
+        return rebateStartTime;
+    }
+
+    public void setRebateStartTime(String rebateStartTime) {
+        this.rebateStartTime = rebateStartTime;
+    }
+
+    public String getRebateEndTime() {
+        return rebateEndTime;
+    }
+
+    public void setRebateEndTime(String rebateEndTime) {
+        this.rebateEndTime = rebateEndTime;
+    }
+
+    public String getOrderStartTime() {
+        return orderStartTime;
+    }
+
+    public void setOrderStartTime(String orderStartTime) {
+        this.orderStartTime = orderStartTime;
+    }
+
+    public String getOrderEndTime() {
+        return orderEndTime;
+    }
+
+    public void setOrderEndTime(String orderEndTime) {
+        this.orderEndTime = orderEndTime;
+    }
+
+    public List<OrderDetail> getOrderDetails() {
+        return orderDetails;
+    }
+
+    public void setOrderDetails(List<OrderDetail> orderDetails) {
+        this.orderDetails = orderDetails;
+    }
+
+    public void setId(Long id)
     {
         this.id = id;
     }

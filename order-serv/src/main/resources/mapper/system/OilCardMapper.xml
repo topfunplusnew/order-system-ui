@@ -26,14 +26,13 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
 
     <select id="selectOilCardList" parameterType="OilCard" resultMap="OilCardResult">
         <include refid="selectOilCardVo"/>
-        <where>  
-            <if test="oilCardNo != null  and oilCardNo != ''"> and oilCardNo = #{oilCardNo}</if>
+        <where>
+            <if test="moneyAmountMax != null "> and moneyAmount &lt;= #{moneyAmountMax}</if>
+            <if test="moneyAmountMin != null "> and moneyAmount &gt;= #{moneyAmountMin}</if>
+            <if test="oilCardNo != null  and oilCardNo != ''"> and oilCardNo like concat('%',oilCardNo,'%')</if>
             <if test="oilType != null  and oilType != ''"> and oilType = #{oilType}</if>
             <if test="moneyAmount != null "> and moneyAmount = #{moneyAmount}</if>
             <if test="comments != null  and comments != ''"> and comments = #{comments}</if>
-            <if test="addtime != null  and addtime != ''"> and addtime = #{addtime}</if>
-            <if test="userId != null "> and userId = #{userId}</if>
-            <if test="UserName != null  and UserName != ''"> and UserName like concat('%', #{UserName}, '%')</if>
             and delFlag = 0
         </where>
     </select>
