@@ -146,7 +146,7 @@
         </template>
       </el-table-column>
       <!--      固定列-->
-      <el-table-column label="id" align="center" prop="id" fixed="left"/>
+      <!--      <el-table-column label="id" align="center" prop="id" fixed="left"/>-->
       <el-table-column label="日期" align="center" prop="orderDate" fixed="left"/>
       <el-table-column label="客户" align="center" prop="customer" fixed="left"/>
       <!--      以下字段可动-->
@@ -241,19 +241,7 @@
             size="mini"
             @click="handleOrder1(scope.row)"
             v-hasPermi="['system:orderdetail:edit']"
-          >发货单1
-          </el-button>
-          <el-button
-            size="mini"
-            @click="handleOrder2(scope.row)"
-            v-hasPermi="['system:orderdetail:edit']"
-          >发货单2
-          </el-button>
-          <el-button
-            size="mini"
-            @click="handleOrder3(scope.row)"
-            v-hasPermi="['system:orderdetail:edit']"
-          >发货单3
+          >发货单
           </el-button>
           <el-button
             size="mini"
@@ -377,40 +365,18 @@
   </span>
     </el-dialog>
 
-    <!--    点击发货单1的弹窗-->
+    <!--    点击发货单的弹窗-->
     <el-dialog
-      title="提示"
+      title="发货单"
       :visible.sync="Order1Visible"
-      width="30%">
-      <span>点击发货单1的弹窗</span>
+      width="75%">
+      <!--      发货单主体-->
+      <el-row>
+        <ChatForm/>
+      </el-row>
       <span slot="footer" class="dialog-footer">
     <el-button @click="Order1Visible = false">取 消</el-button>
     <el-button type="primary" @click="Order1Visible = false">确 定</el-button>
-  </span>
-    </el-dialog>
-
-    <!--    点击发货单2的弹窗-->
-    <el-dialog
-      title="提示"
-      :visible.sync="Order2Visible"
-      width="30%">
-      <span>点击发货单2的弹窗</span>
-      <span slot="footer" class="dialog-footer">
-    <el-button @click="Order2Visible = false">取 消</el-button>
-    <el-button type="primary" @click="Order2Visible = false">确 定</el-button>
-  </span>
-    </el-dialog>
-
-
-    <!--    点击发货单3的弹窗-->
-    <el-dialog
-      title="提示"
-      :visible.sync="Order3Visible"
-      width="30%">
-      <span>点击发货单3的弹窗</span>
-      <span slot="footer" class="dialog-footer">
-    <el-button @click="Order3Visible = false">取 消</el-button>
-    <el-button type="primary" @click="Order3Visible = false">确 定</el-button>
   </span>
     </el-dialog>
 
@@ -602,10 +568,11 @@ import {addOrderFreight} from "@/api/system/orderFreight";
 import SwitchBarItem from "@/components/SwitchBarItem.vue";
 import SwitchBarForCheck from "@/components/SwitchBarForCheck.vue";
 import ApplyPayment from "@/components/ApplyPayment.vue";
+import ChatForm from "@/components/ChatForm.vue";
 
 export default {
   name: "GoodsOrder",
-  components: {ApplyPayment, SwitchBarForCheck, SwitchBarItem, SearchOption, OrderForm, TagsItem},
+  components: {ChatForm, ApplyPayment, SwitchBarForCheck, SwitchBarItem, SearchOption, OrderForm, TagsItem},
   data() {
     return {
       // 遮罩层
@@ -730,8 +697,6 @@ export default {
       handleOrderVisible: false,
       //订单弹窗
       Order1Visible: false,
-      Order2Visible: false,
-      Order3Visible: false,
       //上传和收到条
       handleUploadVisible: false,
       handleCommitVisible: false,
@@ -873,12 +838,6 @@ export default {
     //订单发货单123
     handleOrder1(row) {
       this.Order1Visible = true
-    },
-    handleOrder2(row) {
-      this.Order2Visible = true
-    },
-    handleOrder3(row) {
-      this.Order3Visible = true
     },
 
     //todo 压缩上传和收到条
