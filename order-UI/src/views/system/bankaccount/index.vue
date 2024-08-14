@@ -57,40 +57,6 @@
         >银行卡转账
         </el-button>
       </el-col>
-      <!--      <el-col :span="1.5">-->
-      <!--        <el-button-->
-      <!--          type="danger"-->
-      <!--          plain-->
-      <!--          icon="el-icon-delete"-->
-      <!--          size="mini"-->
-      <!--          :disabled="multiple"-->
-      <!--          @click="handleDelete"-->
-      <!--          v-hasPermi="['system:bankaccount:remove']"-->
-      <!--        >批量删除-->
-      <!--        </el-button>-->
-      <!--      </el-col>-->
-      <!--            <el-col :span="1.5">-->
-      <!--              <el-button-->
-      <!--                type="warning"-->
-      <!--                plain-->
-      <!--                icon="el-icon-download"-->
-      <!--                size="mini"-->
-      <!--                @click="handleExport"-->
-      <!--                v-hasPermi="['system:bankaccount:export']"-->
-      <!--              >导出-->
-      <!--              </el-button>-->
-      <!--            </el-col>-->
-      <!--      <el-col :span="1.5">-->
-      <!--        <el-button-->
-      <!--          type="primary"-->
-      <!--          plain-->
-      <!--          icon="el-icon-printer"-->
-      <!--          size="mini"-->
-      <!--          @click="printHTML"-->
-      <!--        >打印-->
-      <!--        </el-button>-->
-      <!--      </el-col>-->
-
       <right-toolbar :showSearch.sync="showSearch" @queryTable="getList" :columns="columns">
         <template v-slot:print>
           <el-col :span="1.5">
@@ -131,6 +97,12 @@
       <el-table-column label="公司名称" align="center" prop="companyName" v-if="columns[4].visible"/>
       <el-table-column label="操作" align="center" class-name="small-padding fixed-width">
         <template slot-scope="scope">
+          <el-button
+            size="mini"
+            type="warning"
+            @click="checkBankChangeFlow(scope.row)"
+          >变动流水
+          </el-button>
           <el-button
             size="mini"
             type="primary"
@@ -235,10 +207,12 @@ import {
 } from "@/api/system/bankAccount";
 import {listCompany} from "@/api/system/company";
 import SearchOption from "@/components/SearchOption.vue";
+import {mixin_printHTML} from "@/views/dashboard/mixins/print";
 
 export default {
   name: "BankAccount",
   components: {SearchOption},
+  mixins: [mixin_printHTML],
   data() {
     return {
       // 遮罩层
@@ -394,18 +368,16 @@ export default {
         this.$close();
       })
     },
-    printHTML() {
-      this.$print({
-        printable: 'printBox',
-        type: 'html',
-        targetStyles: ['*'], // 打印内容使用所有HTML样式，没有设置这个属性/值，设置分页打印没有效果
-      })
-    },
     //查询客户 供应商信息
     getCompanyInfo() {
       listCompany(this.queryParamsCompany).then(res => {
         this.companyList = res.rows;
       })
+    },
+
+    //银行卡变动流水
+    checkBankChangeFlow() {
+
     },
     /** 查询银行账号列表 */
     getList() {
