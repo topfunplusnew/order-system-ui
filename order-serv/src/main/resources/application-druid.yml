@@ -6,9 +6,9 @@ spring:
     druid:
       # 主库数据源
       master:
-        url: jdbc:mysql://47.121.126.94:3306/order?useUnicode=true&characterEncoding=utf8&zeroDateTimeBehavior=convertToNull&useSSL=true&serverTimezone=GMT%2B8
+        url: jdbc:mysql://24.233.1.45:43307/order?useUnicode=true&characterEncoding=utf8&zeroDateTimeBehavior=convertToNull&useSSL=true&serverTimezone=GMT%2B8
         username: order
-        password: 123456
+        password: Bnm3RmxwWb87e6fH
       # 从库数据源
       slave:
         # 从数据源开关/默认关闭
@@ -16,12 +16,17 @@ spring:
         url:
         username:
         password:
-      # 初始连接数
-      initialSize: 5
+#      # 初始连接数
+#      initialSize: 5
+#      # 最小连接池数量
+#      minIdle: 10
+#      # 最大连接池数量
+#      maxActive: 20
+      initialSize: 2
       # 最小连接池数量
-      minIdle: 10
+      minIdle: 4
       # 最大连接池数量
-      maxActive: 20
+      maxActive: 6
       # 配置获取连接等待超时的时间
       maxWait: 60000
       # 配置连接超时时间
