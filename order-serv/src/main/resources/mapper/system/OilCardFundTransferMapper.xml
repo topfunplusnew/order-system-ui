@@ -22,39 +22,10 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
 
 
 
-    <sql id="selectOilCardFundTransferVo">
-        select
-            OCFT.id,
-            OCFT.oilMainCardNo,
-            OCFT.oilSecondCardNo,
-            OCFT.rechargeMoney,
-            OCFT.rechargeDate,
-            OCFT.rechargeName,
-            OCFT.comments,
-            OCFT.addtime,
-            OCFT.userId,
-            OCFT.UserName,
-            OCFT.updateTime,
-            OCFT.delFlag,
-            CASE
-                WHEN pa.checkState = '通过' THEN p.paymentState
-                ELSE COALESCE(pa.checkState, '未申请')
-                END as checkState
-        from
-            oilCardFundTransfer OCFT
-                left join
-            paymentApply pa
-            on
-                pa.tableName = 'oilCardFundTransfer'
-                    and pa.tID = OCFT.id
-                    and (pa.checkState = '审核中' or pa.checkState = '通过')
-                left join
-            payment p
-            on
-                p.applyId = pa.id
-                    and p.delFlag = 0
-    </sql>
 
+    <sql id="selectOilCardFundTransferVo">
+        select id, oilMainCardNo, oilSecondCardNo, rechargeMoney, rechargeDate, rechargeName, comments, addtime, userId, UserName, update_time, delFlag from oilCardFundTransfer
+    </sql>
 
     <select id="selectOilCardFundTransferList" parameterType="OilCardFundTransfer" resultMap="OilCardFundTransferResult">
         <include refid="selectOilCardFundTransferVo"/>

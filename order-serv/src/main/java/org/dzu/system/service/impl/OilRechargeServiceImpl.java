@@ -10,7 +10,6 @@ import org.dzu.common.utils.SecurityUtils;
 import org.dzu.common.utils.StringUtils;
 import org.dzu.system.domain.BankAccount;
 import org.dzu.system.domain.OilCard;
-import org.dzu.system.domain.OilCardFundTransfer;
 import org.dzu.system.domain.OilRecharge;
 import org.dzu.system.mapper.OilCardConsumeMapper;
 import org.dzu.system.mapper.OilCardMapper;
@@ -75,7 +74,7 @@ public class OilRechargeServiceImpl implements IOilRechargeService {
         // 检测对应的油卡是否存在
         QueryWrapper<OilCard> query = new QueryWrapper<OilCard>().eq("oilCardNo", oilRecharge.getOilCardNo()).eq("delFlag", DelConstants.NODEL);
         OilCard oilCard = oilCardMapper.selectOne(query);
-        if(oilCard == null) {
+        if (oilCard == null) {
             throw new ServiceException("油卡不存在");
         }
 
@@ -85,9 +84,10 @@ public class OilRechargeServiceImpl implements IOilRechargeService {
             if (bankAccount == null) {
                 throw new ServiceException("银行卡号不存在");
             }
-        }else {
+        } else {
             // 现金充值,进行油卡金额变动
-            oilCardServiceImpl.updateOilCardMoney(oilRecharge.getOilCardNo(), oilRecharge.getRechargeMoney());
+//            oilCardServiceImpl.updateOilCardMoney(oilRecharge.getOilCardNo(), oilRecharge.getRechargeMoney());
+            // 目前客户的逻辑似乎是无论现金还是银行卡,都是审核通过后变动,此处先进行注释
         }
         return oilRechargeMapper.insertOilRecharge(oilRecharge);
     }
@@ -115,21 +115,22 @@ public class OilRechargeServiceImpl implements IOilRechargeService {
             throw new ServiceException("油卡卡号不支持修改");
         }
 
+        // 判断审核信息
+        if (paymentApplyServiceImpl.checkExist(TableName.OIL_RECHARGE.get(), oilRecharge.getId())) {
+            throw new ServiceException("存在正在进行或者已经通过的审核信息,不可修改");
+        }
         // 判断现金还是银行卡充值
         if (OilRechargeConstant.BankCord.equals(oilRecharge.getRechargeType())) {
-            // 判断审核信息
-            if (paymentApplyServiceImpl.checkExist(TableName.OIL_RECHARGE.get(), oilRecharge.getId())) {
-                throw new ServiceException("存在正在进行或者已经通过的审核信息,不可修改");
-            }
 
             BankAccount bankAccount = bankAccountService.selectBankAccountByBankNo(oilRecharge.getBankNo());
             if (bankAccount == null) {
                 throw new ServiceException("银行卡号不存在");
             }
-        }else{
-            // 现金充值  先把旧充值金额归还,再把新充值金额加入
-            oilCardServiceImpl.updateOilCardMoney(oldOilRecharge.getOilCardNo(), -oldOilRecharge.getRechargeMoney());
-            oilCardServiceImpl.updateOilCardMoney(oilRecharge.getOilCardNo(), oilRecharge.getRechargeMoney());
+        } else {
+//            // 现金充值  先把旧充值金额归还,再把新充值金额加入
+//            oilCardServiceImpl.updateOilCardMoney(oldOilRecharge.getOilCardNo(), -oldOilRecharge.getRechargeMoney());
+//            oilCardServiceImpl.updateOilCardMoney(oilRecharge.getOilCardNo(), oilRecharge.getRechargeMoney());
+            // 此处注释原因同新增
         }
 
         return oilRechargeMapper.updateOilRecharge(oilRecharge);
@@ -142,22 +143,14 @@ public class OilRechargeServiceImpl implements IOilRechargeService {
      * @return 结果
      */
     @Override
-    @Transactional(isolation = Isolation.SERIALIZABLE,rollbackFor = Exception.class)
+    @Transactional(isolation = Isolation.SERIALIZABLE, rollbackFor = Exception.class)
     public int deleteOilRechargeByIds(Long[] ids) {
         // 搜索本次删除的充值信息
         List<OilRecharge> oilRecharges = oilRechargeMapper.selectBatchIds(Arrays.asList(ids));
         for (OilRecharge oilRecharge : oilRecharges) {
             // 根据充值方式做不同的针对判断
-            if (OilRechargeConstant.BankCord.equals(oilRecharge.getRechargeType())) {
-                // 判断有审核款信息,有则拒绝
-                if (paymentApplyServiceImpl.checkExist(TableName.OIL_RECHARGE.get(), oilRecharge.getId())) {
-                    throw new ServiceException("存在正在进行或者已经通过的审核信息,不可删除");
-                }else {
-                    // 说明没发起付款申请,直接删除就行
-                }
-            }else {
-                // 现金充值,进行金额回退
-                oilCardServiceImpl.updateOilCardMoney(oilRecharge.getOilCardNo(), -oilRecharge.getRechargeMoney());
+            if (paymentApplyServiceImpl.checkExist(TableName.OIL_RECHARGE.get(), oilRecharge.getId())) {
+                throw new ServiceException("存在正在进行或者已经通过的审核信息,不可删除");
             }
         }
 

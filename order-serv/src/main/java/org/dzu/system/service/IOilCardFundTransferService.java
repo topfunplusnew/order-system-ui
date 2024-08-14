@@ -52,11 +52,4 @@ public interface IOilCardFundTransferService
      */
     public int deleteOilCardFundTransferByIds(Long[] ids);
 
-    /**
-     * 删除加油卡圈存信息
-     * 
-     * @param id 加油卡圈存主键
-     * @return 结果
-     */
-    public int deleteOilCardFundTransferById(Long id);
 }

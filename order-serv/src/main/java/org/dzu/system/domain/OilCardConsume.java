@@ -29,76 +29,77 @@ public class OilCardConsume extends BaseEntity
 
     /** 出差编号UUID */
     @Excel(name = "出差编号UUID")
-    @Length(min = 0, max = 30, message = "出差编号UUID长度不能超过 30 个字符")
+    @Length(max = 50, message = "出差编号UUID长度不能超过 50 个字符")
     @NotNull(message = "出差编号UUID不能为空")
     @TableField(value = "bTripId")
     private String bTripId;
 
     /** 加油卡卡号 */
     @Excel(name = "加油卡卡号")
-    @Length(min = 0, max = 55, message = "加油卡卡号长度不能超过 55 个字符")
+    @Length(max = 55, message = "加油卡卡号长度不能超过 55 个字符")
     @NotNull(message = "加油卡卡号不能为空")
     @TableField(value = "oilCardNo")
     private String oilCardNo;
 
     /** 使用加油卡时间 */
     @Excel(name = "使用加油卡时间")
+    @Length(max = 50, message = "使用加油卡时间长度不能超过 50 个字符")
     @NotNull(message = "使用加油卡时间不能为空")
-    @Length(min = 0, max = 40, message = "使用加油卡时间长度不能超过 40 个字符")
     @TableField(value = "useDate")
     private String useDate;
 
     /** 使用加油卡车辆车牌号 */
     @Excel(name = "使用加油卡车辆车牌号")
+    @Length(max = 55, message = "使用加油卡车辆车牌号长度不能超过 55 个字符")
     @NotNull(message = "使用加油卡车辆车牌号不能为空")
-    @Length(min = 0, max = 55, message = "使用加油卡车辆车牌号长度不能超过 55个字符")
     @TableField(value = "carNo")
     private String carNo;
 
     /** 期初余额 */
     @Excel(name = "期初余额")
-    @Length(min = 0, max = 30, message = "期初余额长度不能超过 30 个字符")
+    @Length(max = 55, message = "期初余额长度不能超过 55 个字符")
     @TableField(value = "startCardSurplus")
     private String startCardSurplus;
 
     /** 加油量（升） */
     @Excel(name = "加油量", readConverterExp = "升")
+    @Length(max = 255, message = "加油量长度不能超过 255 个字符")
     @TableField(value = "refuelingNumber")
-    @Length(min = 0, max = 55, message = "加油量长度不能超过 55 个字符")
     private String refuelingNumber;
 
     /** 单价 */
     @Excel(name = "单价")
-    @Length(min = 0, max = 55, message = "单价长度不能超过 55 个字符")
+    @Length(max = 255, message = "单价长度不能超过 255 个字符")
     @TableField(value = "unitPrice")
     private String unitPrice;
 
     /** 加油金额(元） */
     @Excel(name = "加油金额(元）")
-    @Length(min = 0, max = 55, message = "加油金额(元）长度不能超过 55 个字符")
+    @Length(max = 255, message = "加油金额(元）长度不能超过 255 个字符")
     @TableField(value = "refuelingMoney")
     private String refuelingMoney;
 
     /** 充值金额(元） */
     @Excel(name = "充值金额(元）")
-    @Length(min = 0, max = 55, message = "充值金额(元）长度不能超过 55 个字符")
+    @Length(max = 255, message = "充值金额(元）长度不能超过 255 个字符")
     @TableField(value = "rechargeMoney")
     private String rechargeMoney;
 
     /** 加油卡余额 */
     @Excel(name = "加油卡余额")
-    @Length(min = 0, max = 55, message = "加油卡余额长度不能超过 55 个字符")
+    @Length(max = 255, message = "加油卡余额长度不能超过 255 个字符")
     @TableField(value = "endCardSurplus")
     private String endCardSurplus;
 
     /** 加油小票附件 */
     @Excel(name = "加油小票附件")
+    @Length(max = 300, message = "加油小票附件长度不能超过 300 个字符")
     @TableField(value = "attachmentOiladd")
     private String attachmentOiladd;
 
     /** 备注 */
     @Excel(name = "备注")
-    @Length(min = 0, max = 255, message = "备注长度不能超过 255 个字符")
+    @Length(max = 200, message = "备注长度不能超过 200 个字符")
     @TableField(value = "comments")
     private String comments;
 

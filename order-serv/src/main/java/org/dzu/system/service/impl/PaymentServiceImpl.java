@@ -1,7 +1,6 @@
 package org.dzu.system.service.impl;
 
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
-import org.dzu.common.constant.BankChangeConstant;
 import org.dzu.common.constant.DelConstants;
 import org.dzu.common.constant.PaymentState;
 import org.dzu.common.constant.YesOrNoConstants;
@@ -103,11 +102,11 @@ public class PaymentServiceImpl implements IPaymentService {
         payment.setPaymentState(PaymentState.NO_OVER);
 
         // 检查双方的银行卡是否存在
-        if (bankAccountService.selectBankAccountByBankNo(payment.getOtherBankNo()) == null) {
-            throw new RuntimeException("付款方银行卡不存在");
+        if (payment.getOtherBankNo() != null && bankAccountService.selectBankAccountByBankNo(payment.getOtherBankNo()) == null) {
+            throw new RuntimeException("收款方银行卡不存在");
         }
         if (bankAccountService.selectBankAccountByBankNo(payment.getSelfBankNo()) == null) {
-            throw new RuntimeException("收款方银行卡不存在");
+            throw new RuntimeException("己方付款银行卡不存在");
         }
 
         // 确定两方银行卡存在后生成uuid
@@ -126,11 +125,11 @@ public class PaymentServiceImpl implements IPaymentService {
     @Transactional(isolation = Isolation.SERIALIZABLE, rollbackFor = Exception.class) // 开启最高级别的事务隔离和最小容忍异��
     public int updatePayment(Payment payment) {
         // 检查双方的银行卡是否存在
-        if (bankAccountService.selectBankAccountByBankNo(payment.getOtherBankNo()) == null) {
-            throw new RuntimeException("付款方银行卡不存在");
+        if (payment.getOtherBankNo() != null && bankAccountService.selectBankAccountByBankNo(payment.getOtherBankNo()) == null) {
+            throw new RuntimeException("收款方银行卡不存在");
         }
         if (bankAccountService.selectBankAccountByBankNo(payment.getSelfBankNo()) == null) {
-            throw new RuntimeException("收款方银行卡不存在");
+            throw new RuntimeException("己方付款银行卡不存在");
         }
 
         //确定没有修改UUID
@@ -144,7 +143,7 @@ public class PaymentServiceImpl implements IPaymentService {
         }
         // 如果本次更改是修改状态为支付，那么需要复杂的联动修改其他表
         if (payment.getPaymentState().equals(PaymentState.OVER)) {
-            if(payment.getSelfBankNo()==null){
+            if (payment.getSelfBankNo() == null) {
                 throw new ServiceException("请选择支付卡");
             }
             // 检测选择支付的卡是否存在
@@ -154,8 +153,6 @@ public class PaymentServiceImpl implements IPaymentService {
             }
             syncToOtherTable(payment, oldPayment);
         }
-
-
         return paymentMapper.updatePayment(payment);
     }
 
@@ -206,13 +203,12 @@ public class PaymentServiceImpl implements IPaymentService {
         // if判断是因为有的付款信息是从付款页面直接发起的,这种没有关联表名和tid,所以直接赋值为payment的相关信息
         if (payment.getPayNO() != null) {
             self.setPayNO(payment.gettID());
-        }else {
+        } else {
             self.setPayNO(String.valueOf(payment.getId()));
         }
         if (payment.getTableName() != null) {
             self.setTableName(payment.getTableName());
-        }
-        else {
+        } else {
             self.setTableName(TableName.PAYMENT.get());
         }
         bankAccountChangeService.insertPaymenyChange(self);
@@ -221,13 +217,12 @@ public class PaymentServiceImpl implements IPaymentService {
         other.setMoneyAmount(payment.getMoneyAmount());
         if (payment.getPayNO() != null) {
             other.setPayNO(payment.gettID());
-        }else {
+        } else {
             other.setPayNO(String.valueOf(payment.getId()));
         }
         if (payment.getTableName() != null) {
             other.setTableName(payment.getTableName());
-        }
-        else {
+        } else {
             other.setTableName(TableName.PAYMENT.get());
         }
         bankAccountChangeService.insertReceiptChange(other);
@@ -264,8 +259,10 @@ public class PaymentServiceImpl implements IPaymentService {
                 // 进行油卡金额的变动
                 QueryWrapper<OilRecharge> queryOliRecharge = new QueryWrapper<OilRecharge>().eq("id", payment.gettID()).eq("delFlag", DelConstants.NODEL);
 
+
+                // 这里不使用油卡充值中的金额,而是使用付款信息中的金额
                 for (OilRecharge oilRecharge : oilRechargeMapper.selectList(queryOliRecharge)) {
-                    oilCardServiceImpl.updateOilCardMoney(oilRecharge.getOilCardNo(), oilRecharge.getRechargeMoney());
+                    oilCardServiceImpl.updateOilCardMoney(oilRecharge.getOilCardNo(), payment.getMoneyAmount());
                 }
 
                 break;
