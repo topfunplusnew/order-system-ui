@@ -1,12 +1,15 @@
 package org.dzu.system.service.impl;
 
+import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import org.dzu.common.constant.DelConstants;
 import org.dzu.common.constant.OilRechargeConstant;
+import org.dzu.common.enums.TableName;
 import org.dzu.common.exception.ServiceException;
 import org.dzu.common.utils.DateUtils;
 import org.dzu.common.utils.SecurityUtils;
 import org.dzu.common.utils.StringUtils;
 import org.dzu.system.domain.BankAccount;
+import org.dzu.system.domain.OilCard;
 import org.dzu.system.domain.OilCardFundTransfer;
 import org.dzu.system.domain.OilRecharge;
 import org.dzu.system.mapper.OilCardConsumeMapper;
@@ -19,6 +22,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Isolation;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.Arrays;
 import java.util.List;
 
 @Service
@@ -32,6 +36,10 @@ public class OilRechargeServiceImpl implements IOilRechargeService {
     private OilCardMapper oilCardMapper;
     @Autowired
     private OilCardConsumeMapper oilCardConsumeMapper;
+    @Autowired
+    private OilCardServiceImpl oilCardServiceImpl;
+    @Autowired
+    private PaymentApplyServiceImpl paymentApplyServiceImpl;
 
     @Override
     public OilRecharge selectOilRechargeById(Long id) {
@@ -47,10 +55,6 @@ public class OilRechargeServiceImpl implements IOilRechargeService {
     @Override
     public List<OilRecharge> selectOilRechargeList(OilRecharge oilRecharge) {
         return oilRechargeMapper.selectOilRechargeList(oilRecharge);
-    }  private void validate(OilRecharge oilRecharge) {
-        if (OilRechargeConstant.BankCord.equals(oilRecharge.getRechargeType()) && StringUtils.isEmpty(oilRecharge.getBankNo())) {
-            throw new ServiceException("银行卡必须有银行卡号");
-        }
     }
 
     /**
@@ -62,61 +66,32 @@ public class OilRechargeServiceImpl implements IOilRechargeService {
     @Override
     @Transactional(isolation = Isolation.SERIALIZABLE, rollbackFor = Exception.class)
     public int insertOilRecharge(OilRecharge oilRecharge) {
-
-        // 校验逻辑
-        validate(oilRecharge);
-
-        // 验证银行卡号是否存在
-        if (OilRechargeConstant.BankCord.equals(oilRecharge.getRechargeType())) {
-            BankAccount bankAccount = bankAccountService.selectBankAccountByBankNo(oilRecharge.getBankNo());
-            if (bankAccount == null) {
-                throw new RuntimeException("银行卡号不存在");
-            }
-        }
-
-        // 检查银行卡余额是否足够
-        BankAccount bankAccount=new BankAccount();
-        Double currentBalance = bankAccount.getAmount();
-        if (currentBalance < oilRecharge.getRechargeMoney()) {
-            throw new RuntimeException("银行卡余额不足");
-        }
-
+        // 设置基础信息
         oilRecharge.setAddtime(String.valueOf(DateUtils.getNowDate()));
         oilRecharge.setUserId(SecurityUtils.getUserId());
         oilRecharge.setUserName(SecurityUtils.getUserTruename());
         oilRecharge.setDelFlag(Long.valueOf(DelConstants.NODEL));
 
+        // 检测对应的油卡是否存在
+        QueryWrapper<OilCard> query = new QueryWrapper<OilCard>().eq("oilCardNo", oilRecharge.getOilCardNo()).eq("delFlag", DelConstants.NODEL);
+        OilCard oilCard = oilCardMapper.selectOne(query);
+        if(oilCard == null) {
+            throw new ServiceException("油卡不存在");
+        }
+
+        // 判断现金还是银行卡充值
+        if (OilRechargeConstant.BankCord.equals(oilRecharge.getRechargeType())) {
+            BankAccount bankAccount = bankAccountService.selectBankAccountByBankNo(oilRecharge.getBankNo());
+            if (bankAccount == null) {
+                throw new ServiceException("银行卡号不存在");
+            }
+        }else {
+            // 现金充值,进行油卡金额变动
+            oilCardServiceImpl.updateOilCardMoney(oilRecharge.getOilCardNo(), oilRecharge.getRechargeMoney());
+        }
         return oilRechargeMapper.insertOilRecharge(oilRecharge);
     }
-    @Override
-    public void calculateCardBalances(OilRecharge oilRecharge) {
-        // 获取主卡卡号
-        OilCardFundTransfer oilCardFundTransfer = new OilCardFundTransfer();
-        String mainoilCardNo = String.valueOf(oilCardFundTransfer.getOilMainCardNo());
 
-        // 获取副卡卡号
-        String secondoilCardNo = String.valueOf(oilCardFundTransfer.getOilSecondCardNo());
-
-        // 获取主卡消费金额总和
-        Double mainCardTotalSpent = oilCardConsumeMapper.getrefuelingMoney(mainoilCardNo);
-
-        // 获取副卡消费金额总和
-        Double secondCardTotalSpent =oilCardConsumeMapper.getrefuelingMoney(secondoilCardNo);
-
-        // 获取圈存副卡金额
-        Double secondCardRechargeAmount = oilRecharge.getRechargeMoney(); // 圈存金额是充值到副卡的金额
-        // 获取主卡当前金额
-        Double mainCardmoneyAmount = oilCardMapper.getmoneyAmount(mainoilCardNo);
-        Double newMainOilCardmoneyAmount = mainCardmoneyAmount - mainCardTotalSpent - secondCardRechargeAmount;
-
-        // 获取副卡当前金额
-        Double secondmoneyAmount = oilCardMapper.getmoneyAmount(secondoilCardNo);
-        Double newSecondOilCardmoneyAmount = secondCardRechargeAmount - secondCardTotalSpent;
-
-        // 更新主卡和副卡余额
-        oilCardMapper.updatemoneyAmount(mainoilCardNo, newMainOilCardmoneyAmount);
-        oilCardMapper.updatemoneyAmount(secondoilCardNo, newSecondOilCardmoneyAmount);
-    }
     /**
      * 修改加油卡充值信息
      *
@@ -126,31 +101,35 @@ public class OilRechargeServiceImpl implements IOilRechargeService {
     @Override
     @Transactional(isolation = Isolation.SERIALIZABLE, rollbackFor = Exception.class)
     public int updateOilRecharge(OilRecharge oilRecharge) {
-        oilRecharge.setUserId(SecurityUtils.getUserId());
-        oilRecharge.setUserName(SecurityUtils.getUserTruename());
+        // 搜索旧充值信息
+        OilRecharge oldOilRecharge = oilRechargeMapper.selectOilRechargeById(oilRecharge.getId());
+
+        // 设置基础信息
         oilRecharge.setUpdateTime(DateUtils.getNowDate());
+        // 如果修改了充值方式,则拒绝
+        if (!StringUtils.equals(oldOilRecharge.getRechargeType(), oilRecharge.getRechargeType())) {
+            throw new ServiceException("充值方式不支持修改");
+        }
+        // 如果修改了油卡卡号,则拒绝
+        if (!StringUtils.equals(oldOilRecharge.getOilCardNo(), oilRecharge.getOilCardNo())) {
+            throw new ServiceException("油卡卡号不支持修改");
+        }
 
-        // 校验逻辑
-        validate(oilRecharge);
-
-        // 验证银行卡号是否存在
+        // 判断现金还是银行卡充值
         if (OilRechargeConstant.BankCord.equals(oilRecharge.getRechargeType())) {
+            // 判断审核信息
+            if (paymentApplyServiceImpl.checkExist(TableName.OIL_RECHARGE.get(), oilRecharge.getId())) {
+                throw new ServiceException("存在正在进行或者已经通过的审核信息,不可修改");
+            }
+
             BankAccount bankAccount = bankAccountService.selectBankAccountByBankNo(oilRecharge.getBankNo());
             if (bankAccount == null) {
-                throw new RuntimeException("银行卡号不存在");
+                throw new ServiceException("银行卡号不存在");
             }
-        }
-        // 检查银行卡余额是否足够
-        BankAccount bankAccount=new BankAccount();
-        Double currentBalance = bankAccount.getAmount();
-        if (currentBalance < oilRecharge.getRechargeMoney()) {
-            throw new RuntimeException("银行卡余额不足");
-        }
-
-        // 检查是否存在相同的卡号
-        List<OilRecharge> oilRecharges = selectOilRechargeList(oilRecharge);
-        if (!oilRecharges.isEmpty()) {
-            throw new ServiceException("存在相同的银行卡号！请删除原有的或更改本次的");
+        }else{
+            // 现金充值  先把旧充值金额归还,再把新充值金额加入
+            oilCardServiceImpl.updateOilCardMoney(oldOilRecharge.getOilCardNo(), -oldOilRecharge.getRechargeMoney());
+            oilCardServiceImpl.updateOilCardMoney(oilRecharge.getOilCardNo(), oilRecharge.getRechargeMoney());
         }
 
         return oilRechargeMapper.updateOilRecharge(oilRecharge);
@@ -163,18 +142,25 @@ public class OilRechargeServiceImpl implements IOilRechargeService {
      * @return 结果
      */
     @Override
+    @Transactional(isolation = Isolation.SERIALIZABLE,rollbackFor = Exception.class)
     public int deleteOilRechargeByIds(Long[] ids) {
-        return oilRechargeMapper.deleteOilRechargeByIds(ids);
-    }
+        // 搜索本次删除的充值信息
+        List<OilRecharge> oilRecharges = oilRechargeMapper.selectBatchIds(Arrays.asList(ids));
+        for (OilRecharge oilRecharge : oilRecharges) {
+            // 根据充值方式做不同的针对判断
+            if (OilRechargeConstant.BankCord.equals(oilRecharge.getRechargeType())) {
+                // 判断有审核款信息,有则拒绝
+                if (paymentApplyServiceImpl.checkExist(TableName.OIL_RECHARGE.get(), oilRecharge.getId())) {
+                    throw new ServiceException("存在正在进行或者已经通过的审核信息,不可删除");
+                }else {
+                    // 说明没发起付款申请,直接删除就行
+                }
+            }else {
+                // 现金充值,进行金额回退
+                oilCardServiceImpl.updateOilCardMoney(oilRecharge.getOilCardNo(), -oilRecharge.getRechargeMoney());
+            }
+        }
 
-    /**
-     * 删除加油卡充值信息信息
-     *
-     * @param id 加油卡充值信息主键
-     * @return 结果
-     */
-    @Override
-    public int deleteOilRechargeById(Long id) {
-        return oilRechargeMapper.deleteOilRechargeById(id);
+        return oilRechargeMapper.deleteOilRechargeByIds(ids);
     }
 }

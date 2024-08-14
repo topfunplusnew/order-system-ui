@@ -6,7 +6,9 @@ import org.dzu.common.exception.ServiceException;
 import org.dzu.common.utils.DateUtils;
 import org.dzu.common.utils.SecurityUtils;
 import org.dzu.system.domain.OilCard;
+import org.dzu.system.domain.OilRecharge;
 import org.dzu.system.mapper.OilCardMapper;
+import org.dzu.system.mapper.OilRechargeMapper;
 import org.dzu.system.service.IOilCardService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DuplicateKeyException;
@@ -26,6 +28,7 @@ public class OilCardServiceImpl implements IOilCardService
 {
     @Autowired
     private OilCardMapper oilCardMapper;
+    private OilRechargeMapper oilRechargeMapper;
 
     /**
      * 查询加油卡信息
@@ -38,6 +41,9 @@ public class OilCardServiceImpl implements IOilCardService
     {
         return oilCardMapper.selectOilCardById(id);
     }
+
+
+
 
     /**
      * 查询加油卡信息列表
@@ -125,5 +131,24 @@ public class OilCardServiceImpl implements IOilCardService
     public int deleteOilCardById(Long id)
     {
         return oilCardMapper.deleteOilCardById(id);
+    }
+
+
+    /**
+     * 对油卡进行金额变动
+     */
+    @Override
+    @Transactional(isolation = Isolation.SERIALIZABLE, rollbackFor = Exception.class)
+    public int updateOilCardMoney(String oilcardNo, Double moneyAmount){
+        QueryWrapper<OilCard> query = new QueryWrapper<OilCard>().eq("oilCardNo", oilcardNo).eq("delFlag", DelConstants.NODEL);
+        OilCard oilCard = oilCardMapper.selectOne(query);
+        // 金额变动可能为正可能为负,此处判断,如果金额变动后小于0,则抛出异常
+        if(oilCard.getMoneyAmount() + moneyAmount < 0){
+            throw new ServiceException("改动后油卡余额小于0,拒绝修改");
+        }
+        // 进行金额变动
+        oilCard.setMoneyAmount(oilCard.getMoneyAmount() + moneyAmount);
+
+        return oilCardMapper.update(oilCard,query);
     }
 }

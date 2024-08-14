@@ -41,11 +41,20 @@ public enum TableName {
     STOREHOUSE("storehouse");
     private final String tableName;
 
+
     TableName(String tableName) {
         this.tableName = tableName;
     }
 
     public String get() {
         return tableName;
+    }
+    public static TableName fromTableName(String tableName) {
+        for (TableName t : TableName.values()) {
+            if (t.get().equalsIgnoreCase(tableName.trim())) {
+                return t;
+            }
+        }
+        throw new IllegalArgumentException("No enum constant with tableName: " + tableName);
     }
 }

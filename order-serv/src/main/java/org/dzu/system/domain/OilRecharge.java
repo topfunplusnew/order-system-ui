@@ -11,6 +11,7 @@ import org.dzu.common.annotation.FlagOnlyZeroOrOne;
 import org.dzu.common.core.domain.BaseEntity;
 import org.hibernate.validator.constraints.Length;
 
+import javax.validation.constraints.Min;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Pattern;
 
@@ -31,14 +32,13 @@ public class OilRecharge extends BaseEntity
 
     /** 出差编号UUID */
     @Excel(name = "出差编号UUID")
-    @Length( max = 24, message = "出差编号长度不能超过24个字符")
-    @NotNull(message = "出差编号不能为空")
+    @Length(max = 50, message = "出差编号长度不能超过50个字符")
     @TableField(value = "bTripId")
     private String bTripId;
 
     /** 加油卡卡号 */
     @Excel(name = "加油卡卡号")
-    @Length( max = 24, message = "加油卡卡号长度不能超过24个字符")
+    @Length(max = 55, message = "加油卡卡号长度不能超过55个字符")
     @NotNull(message = "加油卡卡号不能为空")
     @TableField(value = "oilCardNo")
     private String oilCardNo;
@@ -52,40 +52,43 @@ public class OilRecharge extends BaseEntity
     /** 充值金额 */
     @DecimalMaxDigits
     @TableField(value = "rechargeMoney")
+    @Min(value = 0,message = "充值金额不能为负数")
     private Double rechargeMoney;
 
     /** 充值时间 */
     @Excel(name = "充值时间")
+    @Length(max = 50, message = "充值时间的字符长度不允许超过50")
     @TableField(value = "rechargeDate")
     private String rechargeDate;
 
     /** 银行开户名 */
     @Excel(name = "银行开户名")
-    @Length( max = 24, message = "银行开户名长度不能超过24个字符")
+    @Length(max = 50, message = "银行开户名长度不能超过50个字符")
     @TableField(value = "acountsName")
     private String acountsName;
 
     /** 银行账号 */
     @Excel(name = "银行账号")
+    @Length(max = 50, message = "银行账号长度不能超过50个字符")
     @TableField(value = "bankNo")
-    @Length( max = 24, message = "银行账号长度不能超过24个字符")
     private String bankNo;
 
     /** 充值人员姓名 */
     @Excel(name = "充值人员姓名")
     @NotNull(message = "充值人员姓名不能为空")
-    @Length( max = 24, message = "充值人员姓名长度不能超过24个字符")
+    @Length(max = 50, message = "充值人员姓名长度不能超过50个字符")
     @TableField(value = "rechargeName")
     private String rechargeName;
 
     /** 充值附件 */
     @Excel(name = "充值附件")
+    @Length(max = 300, message = "充值附件长度不能超过300个字符")
     @TableField(value = "attachment")
     private String attachment;
 
     /** 备注 */
     @Excel(name = "备注")
-    @Length( max = 200, message = "备注长度不能超过200个字符")
+    @Length(max = 200, message = "备注长度不能超过200个字符")
     @TableField(value = "comments")
     private String comments;
 
@@ -108,6 +111,19 @@ public class OilRecharge extends BaseEntity
     @FlagOnlyZeroOrOne
     @TableField(value = "delFlag")
     private Long delFlag;
+
+
+    /** 额外字段,审核状态 */
+    @TableField(exist = false)
+    private String checkState;
+
+    public String getCheckState() {
+        return checkState;
+    }
+
+    public void setCheckState(String checkState) {
+        this.checkState = checkState;
+    }
 
     public void setId(Long id) 
     {

@@ -1,6 +1,8 @@
 package org.dzu.system.service;
 
 import org.dzu.system.domain.OilCard;
+import org.springframework.transaction.annotation.Isolation;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
@@ -59,4 +61,7 @@ public interface IOilCardService
      * @return 结果
      */
     public int deleteOilCardById(Long id);
+
+    @Transactional(isolation = Isolation.SERIALIZABLE, rollbackFor = Exception.class)
+    int updateOilCardMoney(String oilcardNo, Double moneyAmount);
 }
