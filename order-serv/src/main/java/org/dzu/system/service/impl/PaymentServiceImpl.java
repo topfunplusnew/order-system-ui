@@ -144,6 +144,9 @@ public class PaymentServiceImpl implements IPaymentService {
         }
         // 如果本次更改是修改状态为支付，那么需要复杂的联动修改其他表
         if (payment.getPaymentState().equals(PaymentState.OVER)) {
+            if(payment.getSelfBankNo()==null){
+                throw new ServiceException("请选择支付卡");
+            }
             // 检测选择支付的卡是否存在
             BankAccount bankAccount = bankAccountService.selectBankAccountByBankNo(payment.getSelfBankNo());
             if (bankAccount == null) {
