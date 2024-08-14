@@ -42,3 +42,12 @@ export function delBankAccount(id) {
     method: 'delete'
   })
 }
+
+//银行卡转账
+export function transfer(data) {
+  return request({
+    url: '/system/bankAccount/transfer',
+    method: 'post',
+    data: data
+  })
+}

@@ -476,9 +476,6 @@
             </el-col>
           </el-row>
         </el-form-item>
-        <!--        <el-form-item label="供应商ID" prop="supplierID">-->
-        <!--          <el-input v-model="moneyBackInfo.supplierID" placeholder="请输入供应商ID"/>-->
-        <!--        </el-form-item>-->
         <el-form-item label="付款户名" prop="outAcountsName">
           <el-row>
             <el-col :span="10">

@@ -34,6 +34,9 @@ const getters = {
   //固定资产信息
   fixedassetsList: state => state.fixedassets.fixedassetsList,
   //刷新标记
-  checked: state => state.apply.checked
+  checked: state => state.apply.checked,
+
+  //库存信息
+  inventoryInfoAll: state => state.inventory.inventoryInfoAll,
 }
 export default getters
