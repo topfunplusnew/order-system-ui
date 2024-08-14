@@ -59,7 +59,7 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
             <if test="paymentState != null  and paymentState != ''"> and paymentState = #{paymentState}</if>
             <if test="companyName != null  and companyName != ''"> and companyName like concat('%', #{companyName}, '%')</if>
             <if test="companyId != null "> and companyId = #{companyId}</if>
-            <if test="companyType != null "> and companyType = #{companyType}</if>
+            <if test="companyType != null  and comments != '' "> and companyType = #{companyType}</if>
             <if test="comments != null  and comments != ''"> and comments = #{comments}</if>
             <if test="addtime != null  and addtime != ''"> and addtime = #{addtime}</if>
             <if test="userId != null "> and userId = #{userId}</if>

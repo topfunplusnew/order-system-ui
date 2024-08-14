@@ -36,8 +36,6 @@ public interface IOilRechargeService
      */
     public int insertOilRecharge(OilRecharge oilRecharge);
 
-    void calculateCardBalances(OilRecharge oilRecharge);
-
     /**
      * 修改加油卡充值信息
      * 
@@ -54,11 +52,5 @@ public interface IOilRechargeService
      */
     public int deleteOilRechargeByIds(Long[] ids);
 
-    /**
-     * 删除加油卡充值信息信息
-     * 
-     * @param id 加油卡充值信息主键
-     * @return 结果
-     */
-    public int deleteOilRechargeById(Long id);
+
 }

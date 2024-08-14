@@ -11,6 +11,7 @@ import org.dzu.common.annotation.FlagOnlyZeroOrOne;
 import org.dzu.common.core.domain.BaseEntity;
 import org.hibernate.validator.constraints.Length;
 
+import javax.validation.constraints.Min;
 import javax.validation.constraints.NotNull;
 
 /**
@@ -30,14 +31,14 @@ public class OilCardFundTransfer extends BaseEntity
 
     /** 主加油卡卡号 */
     @Excel(name = "主加油卡卡号")
-    @Length( max = 25, message = "主加油卡卡号长度不能超过25")
+    @Length(max = 55, message = "主加油卡卡号长度不能超过55个字符")
     @NotNull(message = "主加油卡卡号不能为空")
     @TableField(value = "oilMainCardNo")
     private String oilMainCardNo;
 
     /** 副加油卡卡号 */
     @Excel(name = "副加油卡卡号")
-    @Length( max = 25, message = "副加油卡卡号长度不能超过25")
+    @Length(max = 55, message = "副加油卡卡号长度不能超过55个字符")
     @NotNull(message = "副加油卡卡号不能为空")
     @TableField(value = "oilSecondCardNo")
     private String oilSecondCardNo;
@@ -45,23 +46,25 @@ public class OilCardFundTransfer extends BaseEntity
     /** 充值金额 */
     @DecimalMaxDigits
     @TableField(value = "rechargeMoney")
+    @Min(value = 0,message = "充值金额不能为负数")
     private Double rechargeMoney;
 
     /** 充值时间 */
     @Excel(name = "充值时间")
+    @Length(max = 50, message = "充值时间长度不能超过50个字符")
     @TableField(value = "rechargeDate")
     private String rechargeDate;
 
     /** 充值人员姓名 */
     @Excel(name = "充值人员姓名")
     @NotNull(message = "充值人员姓名不能为空")
-    @Length( max = 25, message = "充值人员姓名长度不能超过25")
+    @Length(max = 50, message = "充值人员姓名长度不能超过50个字符")
     @TableField(value = "rechargeName")
     private String rechargeName;
 
     /** 备注 */
     @Excel(name = "备注")
-    @Length( max = 255, message = "备注长度不能超过255")
+    @Length(max = 200, message = "备注长度不能超过200个字符")
     @TableField(value = "comments")
     private String comments;
 

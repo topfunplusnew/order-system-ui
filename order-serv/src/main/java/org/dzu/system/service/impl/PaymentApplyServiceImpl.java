@@ -6,6 +6,7 @@ import org.dzu.common.constant.DelConstants;
 import org.dzu.common.exception.ServiceException;
 import org.dzu.common.utils.DateUtils;
 import org.dzu.common.utils.SecurityUtils;
+import org.dzu.common.utils.StringUtils;
 import org.dzu.system.domain.AuditInfo;
 import org.dzu.system.domain.BankAccount;
 import org.dzu.system.domain.PaymentApply;
@@ -85,14 +86,17 @@ public class PaymentApplyServiceImpl implements IPaymentApplyService
         paymentApply.setUserName(SecurityUtils.getUserTruename());
         paymentApply.setDelFlag(Long.valueOf(DelConstants.NODEL));
 
-        // 检查申请信息的依赖信息
-        String otherBankNo = paymentApply.getOtherBankNo();
-        if(otherBankNo==null || otherBankNo.isEmpty()){
-            throw new ServiceException("对方账号不能为空");
-        }
-        BankAccount other = bankAccountServiceImpl.selectBankAccountByBankNo(otherBankNo);
-        if(other==null){
-            throw new ServiceException("搜索不到卡号:"+otherBankNo+"的对方账号");
+        // 检查申请信息的依赖信息,只要填写了卡号,就必须检测,如果不写,例如加油卡充值,则跳过校验
+        if (StringUtils.isNotNull(paymentApply.getOtherBankNo())) {
+            String otherBankNo = paymentApply.getOtherBankNo();
+            if(otherBankNo==null || otherBankNo.isEmpty()){
+                throw new ServiceException("对方账号不能为空");
+            }
+
+            BankAccount other = bankAccountServiceImpl.selectBankAccountByBankNo(otherBankNo);
+            if(other==null){
+                throw new ServiceException("搜索不到卡号:"+otherBankNo+"的对方账号");
+            }
         }
 
         // 补充申请人信息
@@ -120,10 +124,7 @@ public class PaymentApplyServiceImpl implements IPaymentApplyService
     public int updatePaymentApply(PaymentApply paymentApply)
     {
         // 设置基础信息
-        paymentApply.setUserId(SecurityUtils.getUserId());
-        paymentApply.setUserName(SecurityUtils.getUserTruename());
         paymentApply.setUpdateTime(DateUtils.getNowDate());
-
         return paymentApplyMapper.updatePaymentApply(paymentApply);
     }
 
