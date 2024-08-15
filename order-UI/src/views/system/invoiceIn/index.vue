@@ -68,10 +68,6 @@
       <el-table-column label="票点金额" align="center" prop="ticketPointAmount" />
       <el-table-column label="是否订单对应票点" align="center" prop="isOrderTax" />
       <el-table-column label="备注" align="center" prop="comments" />
-<!--      <el-table-column label="添加时间" align="center" prop="addtime" />-->
-<!--      <el-table-column label="操作人员ID" align="center" prop="userId" />-->
-<!--      <el-table-column label="操作人员姓名" align="center" prop="UserName" />-->
-<!--      <el-table-column label="删除标记" align="center" prop="delFlag" />-->
       <el-table-column label="操作" align="center" class-name="small-padding fixed-width">
         <template slot-scope="scope">
           <el-button
@@ -104,7 +100,12 @@
     <el-dialog :title="title" :visible.sync="open" width="500px" append-to-body>
       <el-form ref="form" :model="form" :rules="rules" label-width="80px">
         <el-form-item label="开票日期" prop="invoiceDate">
-          <el-input v-model="form.invoiceDate" placeholder="请输入开票日期" />
+          <el-date-picker
+            v-model="form.invoiceDate"
+            type="date"
+            placeholder="选择日期"
+            value-format="timestamp">
+          </el-date-picker>
         </el-form-item>
         <el-form-item label="我方开票实体" prop="invoiceObject">
           <el-input v-model="form.invoiceObject" placeholder="请输入我方开票实体" />
@@ -113,11 +114,23 @@
           <el-input v-model="form.invoiceAmount" placeholder="请输入开票金额" />
         </el-form-item>
         <el-form-item label="对方公司名称" prop="companyName">
-          <el-input v-model="form.companyName" placeholder="请输入对方公司名称" />
+          <el-row>
+            <el-col :span="10">
+              <el-input v-model="form.companyName" placeholder="请输入对方公司名称" />
+            </el-col>
+            <el-col :span="2">
+<!--              todo-->
+              <SearchOption :limit-info="{}" :get-data="listCompany">
+                <template #table-columns>
+
+                </template>
+              </SearchOption>
+            </el-col>
+          </el-row>
         </el-form-item>
-        <el-form-item label="对方公司ID" prop="companyID">
-          <el-input v-model="form.companyID" placeholder="请输入对方公司ID" />
-        </el-form-item>
+<!--        <el-form-item label="对方公司ID" prop="companyID">-->
+<!--          <el-input v-model="form.companyID" placeholder="请输入对方公司ID" />-->
+<!--        </el-form-item>-->
         <el-form-item label="票据单位名称" prop="invoiceCompanyName">
           <el-input v-model="form.invoiceCompanyName" placeholder="请输入票据单位名称" />
         </el-form-item>
@@ -125,25 +138,13 @@
           <el-input v-model="form.ticketPoint" placeholder="请输入票点" />
         </el-form-item>
         <el-form-item label="票点金额" prop="ticketPointAmount">
-          <el-input v-model="form.ticketPointAmount" placeholder="请输入票点金额" />
+          <el-input v-model="invoiceAmount" placeholder="请输入票点金额" disabled/>
         </el-form-item>
         <el-form-item label="是否订单对应票点" prop="isOrderTax">
           <el-input v-model="form.isOrderTax" placeholder="请输入是否订单对应票点" />
         </el-form-item>
         <el-form-item label="备注" prop="comments">
           <el-input v-model="form.comments" placeholder="请输入备注" />
-        </el-form-item>
-        <el-form-item label="添加时间" prop="addtime">
-          <el-input v-model="form.addtime" placeholder="请输入添加时间" />
-        </el-form-item>
-        <el-form-item label="操作人员ID" prop="userId">
-          <el-input v-model="form.userId" placeholder="请输入操作人员ID" />
-        </el-form-item>
-        <el-form-item label="操作人员姓名" prop="UserName">
-          <el-input v-model="form.UserName" placeholder="请输入操作人员姓名" />
-        </el-form-item>
-        <el-form-item label="删除标记" prop="delFlag">
-          <el-input v-model="form.delFlag" placeholder="请输入删除标记" />
         </el-form-item>
       </el-form>
       <div slot="footer" class="dialog-footer">
@@ -157,9 +158,12 @@
 <script>
 import { listInvoiceIn, getInvoiceIn, delInvoiceIn, addInvoiceIn, updateInvoiceIn } from "@/api/system/invoiceIn";
 import {mixin_printHTML} from "@/views/dashboard/mixins/print";
+import SearchOption from "@/components/SearchOption.vue";
+import {listCompany} from "@/api/system/company";
 
 export default {
   name: "InvoiceIn",
+  components: {SearchOption},
   mixins:[mixin_printHTML],
   data() {
     return {
@@ -238,7 +242,19 @@ export default {
   created() {
     this.getList();
   },
+  computed:{
+    //票点金额 开票金额*票点
+    invoiceAmount:{
+      set(val){
+        this.form.ticketPointAmount = val;
+      },
+      get(){
+        return this.form.invoiceAmount * this.form.ticketPoint
+      }
+    }
+  },
   methods: {
+    listCompany,
     /** 查询发票购入信息列表 */
     getList() {
       this.loading = true;

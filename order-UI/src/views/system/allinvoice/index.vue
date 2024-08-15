@@ -105,11 +105,7 @@
       <el-table-column label="票点成本（点数）" align="center" prop="ticketPointCost" />
       <el-table-column label="总货款" align="center" prop="allPayments" />
       <el-table-column label="实际开票日期" align="center" prop="orderDate" />
-      <el-table-column label="当月欠票" align="center" prop="orderDate" >
-<!--        parseTime(scope.row.orderDate, '{y}-{m}')-->
-        <template #default="scope">
-          <span>{{ scope.row.allPayments }}</span>
-        </template>
+      <el-table-column label="当月欠票" align="center" prop="oweamount" >
       </el-table-column>
 
 
