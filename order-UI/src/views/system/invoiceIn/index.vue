@@ -1,14 +1,20 @@
 <template>
   <div class="app-container">
-    <el-form :model="queryParams" ref="queryForm" size="small" :inline="true" v-show="showSearch" label-width="68px">
+    <el-form :model="queryParams" ref="queryForm" size="small" :inline="true" v-show="showSearch" label-width="150px">
       <!--      时间查询-->
-      <el-form-item label="开票日期" prop="invoiceDate">
-        <el-input
-          v-model="queryParams.invoiceDate"
-          placeholder="请输入开票日期"
-          clearable
-          @keyup.enter.native="handleQuery"
-        />
+      <el-form-item label="开票开始日期" prop="beginTime">
+        <el-date-picker
+          v-model="queryParams.beginTime"
+          type="date"
+          placeholder="选择日期" value-format="timestamp">
+        </el-date-picker>
+      </el-form-item>
+      <el-form-item label="开票结束日期" prop="endTime">
+        <el-date-picker
+          v-model="queryParams.endTime"
+          type="date"
+          placeholder="选择日期" value-format="timestamp">
+        </el-date-picker>
       </el-form-item>
       <el-form-item>
         <el-button type="primary" icon="el-icon-search" size="mini" @click="handleQuery">搜索</el-button>
@@ -58,13 +64,11 @@
 
     <el-table id="printBox" v-horizontal-scroll="'always'" border v-loading="loading" :data="invoiceInList"
               @selection-change="handleSelectionChange">
-      <el-table-column label="id" align="center" prop="id"/>
       <el-table-column label="开票日期" align="center" prop="invoiceDate"/>
       <el-table-column label="我方开票实体" align="center" prop="invoiceObject"/>
       <el-table-column label="开票金额" align="center" prop="invoiceAmount"/>
       <el-table-column label="对方公司类别" align="center" prop="companyType"/>
       <el-table-column label="对方公司名称" align="center" prop="companyName"/>
-      <!--      <el-table-column label="对方公司ID" align="center" prop="companyID" />-->
       <el-table-column label="票据单位名称" align="center" prop="invoiceCompanyName"/>
       <el-table-column label="票点" align="center" prop="ticketPoint"/>
       <el-table-column label="票点金额" align="center" prop="ticketPointAmount"/>
@@ -136,9 +140,6 @@
             </el-col>
           </el-row>
         </el-form-item>
-        <!--        <el-form-item label="对方公司ID" prop="companyID">-->
-        <!--          <el-input v-model="form.companyID" placeholder="请输入对方公司ID" />-->
-        <!--        </el-form-item>-->
         <el-form-item label="票据单位名称" prop="invoiceCompanyName">
           <el-input v-model="form.invoiceCompanyName" placeholder="请输入票据单位名称"/>
         </el-form-item>
@@ -148,9 +149,6 @@
         <el-form-item label="票点金额" prop="ticketPointAmount">
           <el-input v-model="invoiceAmount" placeholder="请输入票点金额" disabled/>
         </el-form-item>
-        <!--        <el-form-item label="是否订单对应票点" prop="isOrderTax">-->
-        <!--          <el-input v-model="form.isOrderTax" placeholder="请输入是否订单对应票点"/>-->
-        <!--        </el-form-item>-->
         <el-form-item label="备注" prop="comments">
           <el-input v-model="form.comments" placeholder="请输入备注"/>
         </el-form-item>
