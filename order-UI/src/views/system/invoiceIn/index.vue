@@ -82,7 +82,7 @@
               </el-tag>
             </el-col>
             <el-col :span="12">
-              <el-button size="mini" type="warning" v-if="scope.row.checkState ==='未申请'"
+              <el-button size="mini" type="warning" :disabled="scope.row.checkState!=='未申请'"
                          @click="addPaymentApplyInfos(scope.row)">
                 添加付款申请
               </el-button>

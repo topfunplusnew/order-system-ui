@@ -89,7 +89,16 @@
       <el-table-column label="票据单位名称" align="center" prop="invoiceCompanyName"/>
       <el-table-column label="票点" align="center" prop="ticketPoint"/>
       <el-table-column label="票点金额" align="center" prop="ticketPointAmount"/>
-      <el-table-column label="是否订单对应票点" align="center" prop="isOrderTax"/>
+      <el-table-column label="是否订单对应票点" align="center" prop="isOrderTax" width="180">
+        <template slot-scope="scope">
+          <el-row v-if="scope.row.isOrderTax===0">
+            <el-tag>否</el-tag>
+          </el-row>
+          <el-row v-else>
+            <el-button size="mini" type="warning" @click="checkOrderInfo(scope.row)">查看订单信息</el-button>
+          </el-row>
+        </template>
+      </el-table-column>
       <el-table-column label="备注" align="center" prop="comments"/>
       <el-table-column label="操作" align="center" class-name="small-padding fixed-width">
         <template slot-scope="scope">
@@ -174,6 +183,11 @@
         <el-button @click="cancel">取 消</el-button>
       </div>
     </el-dialog>
+
+    <!--    查看订单信息的表格-->
+    <el-dialog title="查看订单信息" :visible.sync="checkOrderInfoVisible" width="70%" append-to-body>
+      <OrderInfos :order-info="orderInfo"/>
+    </el-dialog>
   </div>
 </template>
 
@@ -183,10 +197,12 @@ import {mixin_printHTML} from "@/views/dashboard/mixins/print";
 import {excludeParams} from "@/api/tool/exclude";
 import SearchOption from "@/components/SearchOption.vue";
 import {listCompany} from "@/api/system/company";
+import {getGoodsOrder} from "@/api/system/goodsOrder";
+import OrderInfos from "@/components/OrderInfos.vue";
 
 export default {
   name: "InvoiceOut",
-  components: {SearchOption},
+  components: {OrderInfos, SearchOption},
   mixins: [mixin_printHTML],
   data() {
     return {
@@ -245,7 +261,11 @@ export default {
       endTime: '',
 
       //公司名称
-      companyName: ''
+      companyName: '',
+
+      //查看订单信息
+      checkOrderInfoVisible: false,
+      orderInfo: {}
     };
   },
   created() {
@@ -292,6 +312,15 @@ export default {
       this.form.companyName = val.companyName;
       this.form.companyID = val.id;
       this.form.companyType = val.companyType;
+    },
+
+    //表格中查看订单信息
+    checkOrderInfo(row) {
+      //发请求 查看订单信息
+      getGoodsOrder(row.isOrderTax).then(res => {
+        this.orderInfo = res.data;
+      });
+      this.checkOrderInfoVisible = true;
     },
     /** 查询发票卖出信息列表 */
     getList() {
