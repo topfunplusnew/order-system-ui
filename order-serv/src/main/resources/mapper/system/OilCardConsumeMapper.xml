@@ -28,48 +28,17 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
 
 
     <sql id="selectOilCardConsumeVo">
-        select
-            OCC.id,
-            OCC.bTripId,
-            OCC.oilCardNo,
-            OCC.useDdate,
-            OCC.carNo,
-            OCC.refuelingNumber,
-            OCC.unitPrice,
-            OCC.refuelingMoney,
-            OCC.rechargeMoney,
-            OCC.endCardSurplus,
-            OCC.attachmentOiladd,
-            OCC.comments,
-            OCC.addtime,
-            OCC.userId,
-            OCC.UserName,
-            OCC.update_time,
-            OCC.delFlag,
-            CASE
-                WHEN pa.checkState = '通过' THEN p.paymentState
-                ELSE COALESCE(pa.checkState, '未申请')
-                END as checkState
-        from
-            OilCardConsume OCC
-                left join
-            paymentApply pa
-            on
-                pa.tableName = 'lendmoney'
-                    and pa.tID = l.id
-                    and (pa.checkState = '审核中' or pa.checkState = '通过')
-                left join
-            payment p
-            on
-                p.applyId = pa.id
-                    and p.delFlag = 0
+        select id, bTripId, oilCardNo, useDate, carNo, startCardSurplus, refuelingNumber, unitPrice, refuelingMoney, rechargeMoney, endCardSurplus, attachmentOiladd, comments, addtime, userId, UserName, update_time, delFlag from OilCardConsume
     </sql>
+
+
     <select id="selectOilCardConsumeList" parameterType="OilCardConsume" resultMap="OilCardConsumeResult">
         <include refid="selectOilCardConsumeVo"/>
-        <where>  
+        <where>
+            <if test="useDateStart != null  and useDateStart != ''"> and useDate &gt;= #{useDateStart}</if>
+            <if test="useDateEnd != null  and useDateEnd != ''"> and useDate &lt;= #{useDateEnd}</if>
             <if test="bTripId != null  and bTripId != ''"> and bTripId = #{bTripId}</if>
-            <if test="oilCardNo != null  and oilCardNo != ''"> and oilCardNo = #{oilCardNo}</if>
-            <if test="useDate != null  and useDate != ''"> and useDate = #{useDate}</if>
+            <if test="oilCardNo != null  and oilCardNo != ''"> and oilCardNo like concat('%',#{oilCardNo},'%')</if>
             <if test="carNo != null  and carNo != ''"> and carNo = #{carNo}</if>
             <if test="startCardSurplus != null  and startCardSurplus != ''"> and startCardSurplus = #{startCardSurplus}</if>
             <if test="refuelingNumber != null  and refuelingNumber != ''"> and refuelingNumber = #{refuelingNumber}</if>
@@ -174,7 +143,7 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
     </select>
     <select id="existsByTripId" resultType="boolean">
         SELECT COUNT(*) > 0
-        FROM oil_recharge
+        FROM oilRecharge
         WHERE bTripId = #{bTripId}
     </select>
 

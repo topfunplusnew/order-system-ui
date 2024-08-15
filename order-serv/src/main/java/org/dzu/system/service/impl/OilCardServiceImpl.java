@@ -144,7 +144,8 @@ public class OilCardServiceImpl implements IOilCardService
         OilCard oilCard = oilCardMapper.selectOne(query);
         // 金额变动可能为正可能为负,此处判断,如果金额变动后小于0,则抛出异常
         if(oilCard.getMoneyAmount() + moneyAmount < 0){
-            throw new ServiceException("改动后油卡余额小于0,拒绝修改");
+            throw new ServiceException("改动后油卡余额小于0,拒绝修改;请等待对应充值记录审核通过或发起充值审核");
+
         }
         // 进行金额变动
         oilCard.setMoneyAmount(oilCard.getMoneyAmount() + moneyAmount);
