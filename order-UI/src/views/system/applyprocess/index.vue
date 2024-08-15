@@ -50,24 +50,6 @@ export default {
     }
   },
   watch: {
-    // //选择 仅仅我看还是所有的审核信息全部展示
-    // select: {
-    //   handler(val) {
-    //     console.log(val)
-    //     //如果val是1 所有审核信息
-    //     if (Number(val) === 1) {
-    //       console.log('所有审核信息全部展示')
-    //       //调用接口获取所有的审核流程列表
-    //       listAuditInfo().then(res => {
-    //         this.allAuditInfoList = res.rows;
-    //       })
-    //     }
-    //     //如果val是2 仅我需要审核
-    //     if (Number(val) === 2) {
-    //       console.log('仅仅我需要展示')
-    //     }
-    //   }
-    // },
     //监听刷新标记
     checked: {
       handler(val) {

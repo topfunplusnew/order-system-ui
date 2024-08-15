@@ -9,30 +9,6 @@
           @keyup.enter.native="handleQuery"
         />
       </el-form-item>
-      <!--      <el-form-item label="司机" prop="driver">-->
-      <!--        <el-input-->
-      <!--          v-model="queryParams.driver"-->
-      <!--          placeholder="请输入司机"-->
-      <!--          clearable-->
-      <!--          @keyup.enter.native="handleQuery"-->
-      <!--        />-->
-      <!--      </el-form-item>-->
-      <!--      <el-form-item label="司机电话" prop="tel">-->
-      <!--        <el-input-->
-      <!--          v-model="queryParams.tel"-->
-      <!--          placeholder="请输入司机电话"-->
-      <!--          clearable-->
-      <!--          @keyup.enter.native="handleQuery"-->
-      <!--        />-->
-      <!--      </el-form-item>-->
-      <!--      <el-form-item label="开户行" prop="bankName">-->
-      <!--        <el-input-->
-      <!--          v-model="queryParams.bankName"-->
-      <!--          placeholder="请输入开户行"-->
-      <!--          clearable-->
-      <!--          @keyup.enter.native="handleQuery"-->
-      <!--        />-->
-      <!--      </el-form-item>-->
       <el-form-item label="户名" prop="acountsName">
         <el-input
           v-model="queryParams.acountsName"
@@ -41,46 +17,6 @@
           @keyup.enter.native="handleQuery"
         />
       </el-form-item>
-      <!--      <el-form-item label="账号" prop="bankNo">-->
-      <!--        <el-input-->
-      <!--          v-model="queryParams.bankNo"-->
-      <!--          placeholder="请输入账号"-->
-      <!--          clearable-->
-      <!--          @keyup.enter.native="handleQuery"-->
-      <!--        />-->
-      <!--      </el-form-item>-->
-      <!--      <el-form-item label="添加时间" prop="addtime">-->
-      <!--        <el-input-->
-      <!--          v-model="queryParams.addtime"-->
-      <!--          placeholder="请输入添加时间"-->
-      <!--          clearable-->
-      <!--          @keyup.enter.native="handleQuery"-->
-      <!--        />-->
-      <!--      </el-form-item>-->
-      <!--      <el-form-item label="操作人员ID" prop="userId">-->
-      <!--        <el-input-->
-      <!--          v-model="queryParams.userId"-->
-      <!--          placeholder="请输入操作人员ID"-->
-      <!--          clearable-->
-      <!--          @keyup.enter.native="handleQuery"-->
-      <!--        />-->
-      <!--      </el-form-item>-->
-      <!--      <el-form-item label="操作人员姓名" prop="UserName">-->
-      <!--        <el-input-->
-      <!--          v-model="queryParams.UserName"-->
-      <!--          placeholder="请输入操作人员姓名"-->
-      <!--          clearable-->
-      <!--          @keyup.enter.native="handleQuery"-->
-      <!--        />-->
-      <!--      </el-form-item>-->
-      <!--      <el-form-item label="删除标记" prop="delFlag">-->
-      <!--        <el-input-->
-      <!--          v-model="queryParams.delFlag"-->
-      <!--          placeholder="请输入删除标记"-->
-      <!--          clearable-->
-      <!--          @keyup.enter.native="handleQuery"-->
-      <!--        />-->
-      <!--      </el-form-item>-->
       <el-form-item>
         <el-button type="primary" size="mini" @click="handleQuery">搜索</el-button>
         <!--        <el-button icon="el-icon-refresh" size="mini" @click="resetQuery">重置</el-button>-->
@@ -93,7 +29,6 @@
         <el-button icon="el-icon-refresh" size="mini" @click="resetQuery">刷新</el-button>
       </el-col>
       <el-col :span="1.5">
-
         <el-button
           type="danger"
           plain

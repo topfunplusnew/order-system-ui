@@ -712,7 +712,8 @@ export default {
       paymentInfoHashMap: {},
 
       //tid
-      tID: ''
+      tID: '',
+
     };
   },
   created() {
@@ -955,6 +956,7 @@ export default {
     },
     //val是选中行的订单信息 包含订单详细信息
     handleOpenTitle(event, val) {
+      console.log(event, val)
       //先把订单信息扔进暂存
       this.$store.dispatch('trash/setCurrentOrderInfo', val)
       // //这里是反的,如果是true,代表未开票 false代表已开票
@@ -996,6 +998,9 @@ export default {
     },
     closeOpenTitle() {
       this.handleOpenTitleDialogVisible = false
+      setTimeout(() => {
+        location.reload()
+      }, 200)
     },
     handleOpenCheck(val, row) {
       if (!val) {
@@ -1004,13 +1009,10 @@ export default {
         })
       }
     },
-
-
     //申请运费相关
     //是否已经有了相关运费信息
     isHaveLandFree(row) {
       //判断标准为名字和运费
-      console.log('订单个体信息', row)
       console.log(this.paymentInfoHashMap)
     },
     isHaveSeaFree(row) {
