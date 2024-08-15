@@ -202,16 +202,18 @@ export default {
       this.inputDisabled = true;
     }
     //如果有司机信息 自动填充
-    if (this.needInfo.isExit === true) {
-      //自动填充
-      this.form.otherAcountsName = this.needInfo.otherAcountsName
-      this.form.companyName = this.needInfo.companyName
-      //查询司机的银行卡信息
-      listBankAccount({acountsType: '司机', acountsName: this.needInfo.otherAcountsName})
-        .then(res => {
-          this.form.otherBankNo = res.rows[0].bankNo
-          this.form.otherBankName = res.rows[0].bankName
-        })
+    if (this.needInfo.isExit !== undefined) {
+      if (this.needInfo.isExit === true) {
+        //自动填充
+        this.form.otherAcountsName = this.needInfo.otherAcountsName
+        this.form.companyName = this.needInfo.companyName
+        //查询司机的银行卡信息
+        listBankAccount({acountsType: '司机', acountsName: this.needInfo.otherAcountsName})
+          .then(res => {
+            this.form.otherBankNo = res.rows[0].bankNo
+            this.form.otherBankName = res.rows[0].bankName
+          })
+      }
     }
   },
   computed: {

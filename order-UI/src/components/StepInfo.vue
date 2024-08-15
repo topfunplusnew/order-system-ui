@@ -3,10 +3,14 @@ import {getUserProfile} from "@/api/system/user";
 import CheckApply from "@/components/CheckApply.vue";
 import {listAuditflow, updateAuditflow} from "@/api/system/auditflow";
 import {updateAuditInfo} from "@/api/system/auditInfo";
+import {TableName} from "@/api/tool/enums";
+import {getOrderFreight} from "@/api/system/orderFreight";
+import {getBorrowedMoney} from "@/api/system/borrowedMoney";
+import NeedToShowInfo from "@/components/NeedToShowInfo.vue";
 
 export default {
   name: "StepInfo",
-  components: {CheckApply},
+  components: {NeedToShowInfo, CheckApply},
   data() {
     return {
       //当前登录用户
@@ -18,7 +22,12 @@ export default {
       //审核流程步骤信息
       checkApplyInfo: {},
       //需要的applyID 给父组件用来更新
-      useApplyID: ''
+      useApplyID: '',
+
+
+      needToShowInfo: {},
+      //表名
+      tableNameToProp: ''
     }
   },
   props: {
@@ -37,7 +46,6 @@ export default {
   created() {
     //获取当前登录用户信息
     getUserProfile().then(res => {
-      console.log(res)
       this.loginUser = res.data;
     })
   },
@@ -78,6 +86,11 @@ export default {
 
     //审核
     handleCheckState(item) {
+      // console.log(item.tID, item.tableName) 根据这俩 给needToShowInfo
+      //根据tableName来决定给哪个发请求
+      console.log('item', item)
+      this.checkWithTableName(item.paymentApply.tableName, item.paymentApply.tID)
+
       //赋值 先拿到付款申请对象
       this.currentCheckPaymentApply = item.paymentApply
       //组装审核基本对象 传递给子组件审核页面
@@ -97,6 +110,35 @@ export default {
     //修改审核状态 修改任意状态 关闭弹窗
     handleUpdateCheckState(val) {
       this.checkPaymentApplyDialogVisible = false //关闭
+    },
+
+    //根据表名查询
+    checkWithTableName(tableName, tID) {
+      //展示对应表信息
+      this.tableNameToProp = tableName;
+      console.log(tableName, tID)
+      switch (tableName) {
+        //订单运费
+        case TableName.ORDER_FREIGHT: {
+          //发请求 获取订单运费信息
+          getOrderFreight(tID).then(res => {
+            console.log('运费信息', res)
+            this.needToShowInfo = res.data
+          })
+          break;
+        }
+        case TableName.BORROWED_MONEY:
+          getBorrowedMoney(tID).then(res => {
+            console.log('借款信息', res)
+            this.needToShowInfo = res.data
+          })
+          break;
+        case 'paymentApplyDetailItem':
+          this.needToShowInfo = item.paymentApplyDetailItem
+          break;
+        default:
+          break;
+      }
     }
   }
 }
@@ -177,6 +219,9 @@ export default {
           :visible.sync="checkPaymentApplyDialogVisible"
           width="65%"
           append-to-body>
+          <!--   需要展示的对应的表信息-->
+          <NeedToShowInfo :need-to-show-info="needToShowInfo" :table-name-to-prop="tableNameToProp"/>
+          <hr/>
           <CheckApply :payment-apply-info="currentCheckPaymentApply"
                       :check-apply-info="checkApplyInfo"
                       @update:isCheckState="handleUpdateCheckState"/>

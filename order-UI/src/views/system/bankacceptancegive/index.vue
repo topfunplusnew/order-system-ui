@@ -110,14 +110,14 @@
               @selection-change="handleSelectionChange" show-summary :summary-method="getSummaries" height="480px"
               id="printBox">
       <!--  <el-table-column type="selection" width="55" align="center"/>-->
-      <el-table-column label="id" align="center" prop="id"/>
+      <!--      <el-table-column label="id" align="center" prop="id"/>-->
       <el-table-column label="操作日期" align="center" prop="operateDate" v-if="columns[0].visible"/>
       <el-table-column label="票据号码" align="center" prop="billNo" v-if="columns[1].visible"/>
       <el-table-column label="出票日期" align="center" prop="issueDate" v-if="columns[2].visible"/>
       <el-table-column label="到期日期" align="center" prop="dueDate" v-if="columns[3].visible"/>
       <el-table-column label="我方承兑账户" align="center" prop="billAccount" v-if="columns[4].visible"/>
       <el-table-column label="票据日期" align="center" prop="billDate" v-if="columns[5].visible"/>
-      <el-table-column label="分类" align="center" prop="billType" v-if="columns[6].visible"/>
+      <!--      <el-table-column label="分类" align="center" prop="billType" v-if="columns[6].visible"/>-->
       <el-table-column label="事由" align="center" prop="reason" v-if="columns[7].visible"/>
       <el-table-column label="票据金额" align="center" prop="billAmount" v-if="columns[8].visible"/>
       <el-table-column label="贴息点数" align="center" prop="inDiscountPoints" v-if="columns[9].visible"/>

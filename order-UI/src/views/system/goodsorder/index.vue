@@ -119,6 +119,7 @@
           >查看
           </el-button>
           <el-button
+            :disabled="scope.row.isAdjusted ==='是'"
             size="mini"
             type="primary"
             @click="handleOrderItemInfo(scope.row)"
@@ -464,7 +465,7 @@
       :visible.sync="landFreeDialogVisible"
       width="50%" destroy-on-close>
       <!--      传入运费-->
-      <ApplyPayment table-name="orderfreight" t-i-d="id" @changeOpen="landFreeDialogVisible = false"
+      <ApplyPayment :table-name="TableName.ORDER_FREIGHT" :t-i-d="tID" @changeOpen="landFreeDialogVisible = false"
                     :need-money="landFreightFree" :need-info="driverInfo"/>
     </el-dialog>
 
@@ -473,7 +474,7 @@
       title="海运费申请"
       :visible.sync="seaFreeDialogVisible"
       width="50%" destroy-on-close>
-      <ApplyPayment table-name="orderfreight" t-i-d="id" @changeOpen="seaFreeDialogVisible = false"
+      <ApplyPayment :table-name="TableName.ORDER_FREIGHT" :t-i-d="tID" @changeOpen="seaFreeDialogVisible = false"
                     :need-money="seaFreightFree" :need-info="driverInfo"/>
     </el-dialog>
 
@@ -709,6 +710,10 @@ export default {
       isFreight: '',
       //付款信息哈希表
       paymentInfoHashMap: {},
+
+      //tid
+      tID: '',
+
     };
   },
   created() {
@@ -716,6 +721,9 @@ export default {
     this.$store.dispatch('order/getOrderList')
   },
   computed: {
+    TableName() {
+      return TableName
+    },
     //票点金额 开票金额*票点
     invoiceAmount: {
       set(val) {
@@ -948,6 +956,7 @@ export default {
     },
     //val是选中行的订单信息 包含订单详细信息
     handleOpenTitle(event, val) {
+      console.log(event, val)
       //先把订单信息扔进暂存
       this.$store.dispatch('trash/setCurrentOrderInfo', val)
       // //这里是反的,如果是true,代表未开票 false代表已开票
@@ -989,6 +998,9 @@ export default {
     },
     closeOpenTitle() {
       this.handleOpenTitleDialogVisible = false
+      setTimeout(() => {
+        location.reload()
+      }, 200)
     },
     handleOpenCheck(val, row) {
       if (!val) {
@@ -997,13 +1009,10 @@ export default {
         })
       }
     },
-
-
     //申请运费相关
     //是否已经有了相关运费信息
     isHaveLandFree(row) {
       //判断标准为名字和运费
-      console.log('订单个体信息', row)
       console.log(this.paymentInfoHashMap)
     },
     isHaveSeaFree(row) {
@@ -1016,7 +1025,8 @@ export default {
     handleApplyLandFree(row) {
       // this.keyFlag += 1 //让dialog组件重新渲染
       this.landFreightFree = row.landFreight
-
+      //tid
+      this.tID = row.id;
       //组装司机信息
       this.driverInfo = {
         otherAcountsName: row.landDriverName,
@@ -1029,6 +1039,7 @@ export default {
     handleApplySeaFree(row) {
       // this.keyFlag += 1 //让dialog组件重新渲染
       this.seaFreightFree = row.seaFreight
+      this.tID = row.id;
       //组装司机信息
       this.driverInfo = {
         otherAcountsName: row.seaDriverName,
