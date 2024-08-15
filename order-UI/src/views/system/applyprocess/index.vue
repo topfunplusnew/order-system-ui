@@ -149,14 +149,6 @@ export default {
 
 <template>
   <div class="app-container">
-    <el-row>
-      <el-col>
-        <el-button type="danger" @click="addCheckApplyProcess">
-          添加付款审核流程
-        </el-button>
-      </el-col>
-    </el-row>
-    <br/>
     <!--    放置付款信息列表-->
     <el-row>
       <el-table
@@ -298,20 +290,9 @@ export default {
           </el-collapse-item>
         </el-collapse>
       </el-row>
-
       <span slot="footer" class="dialog-footer">
         <el-button @click="checkApplyInfoDialogVisible = false">取 消</el-button>
         <el-button type="primary" @click="checkApplyInfoDialogVisible = false">确 定</el-button>
-       </span>
-    </el-dialog>
-
-
-    <!--    添加付款审核弹窗-->
-    <el-dialog :visible.sync="addCheckApplyProcessVisible" title="添加审核流程" width="80%">
-
-      <span slot="footer" class="dialog-footer">
-        <el-button @click="addCheckApplyProcessVisible = false">取 消</el-button>
-        <el-button type="primary" @click="addCheckApplyProcessVisible = false">确 定</el-button>
        </span>
     </el-dialog>
   </div>

@@ -14,6 +14,7 @@ import fixedassets from "@/store/modules/fixedassets";
 import apply from "@/store/modules/apply";
 import inventory from "@/store/modules/inventory";
 import paymentApply from "@/store/modules/paymentApply";
+import trash from "@/store/modules/trash";
 
 
 Vue.use(Vuex)
@@ -34,7 +35,9 @@ const store = new Vuex.Store({
     fixedassets,
     apply,
     inventory,
-    paymentApply
+    paymentApply,
+    //垃圾桶
+    trash
   },
   getters
 })
