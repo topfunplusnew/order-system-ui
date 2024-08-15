@@ -114,7 +114,7 @@
 
     <!--    表格列-->
     <el-table border v-loading="loading" :data="goodsOrderList" @selection-change="handleSelectionChange"
-              id="printBox" :row-class-name="tableRowClassName"
+              id="printBox" :row-class-name="tableRowClassName" v-horizontal-scroll="'always'"
               max-height="500">
       <!--      左侧操作栏-->
       <el-table-column label="操作" align="center" class-name="small-padding fixed-width" width="170px" fixed="left">
@@ -397,7 +397,7 @@
       title="提示"
       :visible.sync="handleCommitVisible"
       width="30%">
-      <span>上传收到条的弹窗</span>
+      <file-upload @input="handleCommitGet"/>
       <span slot="footer" class="dialog-footer">
     <el-button @click="handleCommitVisible = false">取 消</el-button>
     <el-button type="primary" @click="handleCommitVisible = false">确 定</el-button>
@@ -444,7 +444,7 @@
               <el-input v-model="moneyBackInfo.inAcountsName" placeholder="请输入收款户名"/>
             </el-col>
             <el-col :span="3">
-              <SearchOption :get-data="listBankAccount" @commitBack="handleCommitBankAccount">
+              <SearchOption :limit-info="{}" :get-data="listBankAccount" @commitBack="handleCommitBankAccount">
                 <template #table-columns>
                   <el-table-column label="开户行" align="center" prop="bankName"/>
                   <el-table-column label="开户名" align="center" prop="acountsName"/>
@@ -847,6 +847,19 @@ export default {
     },
     handleCommit(row) {
       this.handleCommitVisible = true
+      //点击收到条的时候查询当前订单详细信息
+      getGoodsOrder(row.id).then(res => {
+        this.tempOrderInfo = res.data;
+      })
+    },
+    //收到条回调
+    handleCommitGet(value){
+      this.tempOrderInfo.receiveProof = value;
+      excludeParams(this.tempOrderInfo,this.$exclude)
+      //更新订单状态
+      updateGoodsOrder(this.tempOrderInfo).then(res=>{
+        console.log(res)
+      })
     },
     //
     handleCommitBankAccount(val) {

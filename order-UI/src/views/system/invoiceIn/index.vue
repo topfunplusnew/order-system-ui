@@ -1,114 +1,11 @@
 <template>
   <div class="app-container">
     <el-form :model="queryParams" ref="queryForm" size="small" :inline="true" v-show="showSearch" label-width="68px">
+      <!--      时间查询-->
       <el-form-item label="开票日期" prop="invoiceDate">
         <el-input
           v-model="queryParams.invoiceDate"
           placeholder="请输入开票日期"
-          clearable
-          @keyup.enter.native="handleQuery"
-        />
-      </el-form-item>
-      <el-form-item label="我方开票实体" prop="invoiceObject">
-        <el-input
-          v-model="queryParams.invoiceObject"
-          placeholder="请输入我方开票实体"
-          clearable
-          @keyup.enter.native="handleQuery"
-        />
-      </el-form-item>
-      <el-form-item label="开票金额" prop="invoiceAmount">
-        <el-input
-          v-model="queryParams.invoiceAmount"
-          placeholder="请输入开票金额"
-          clearable
-          @keyup.enter.native="handleQuery"
-        />
-      </el-form-item>
-      <el-form-item label="对方公司名称" prop="companyName">
-        <el-input
-          v-model="queryParams.companyName"
-          placeholder="请输入对方公司名称"
-          clearable
-          @keyup.enter.native="handleQuery"
-        />
-      </el-form-item>
-      <el-form-item label="对方公司ID" prop="companyID">
-        <el-input
-          v-model="queryParams.companyID"
-          placeholder="请输入对方公司ID"
-          clearable
-          @keyup.enter.native="handleQuery"
-        />
-      </el-form-item>
-      <el-form-item label="票据单位名称" prop="invoiceCompanyName">
-        <el-input
-          v-model="queryParams.invoiceCompanyName"
-          placeholder="请输入票据单位名称"
-          clearable
-          @keyup.enter.native="handleQuery"
-        />
-      </el-form-item>
-      <el-form-item label="票点" prop="ticketPoint">
-        <el-input
-          v-model="queryParams.ticketPoint"
-          placeholder="请输入票点"
-          clearable
-          @keyup.enter.native="handleQuery"
-        />
-      </el-form-item>
-      <el-form-item label="票点金额" prop="ticketPointAmount">
-        <el-input
-          v-model="queryParams.ticketPointAmount"
-          placeholder="请输入票点金额"
-          clearable
-          @keyup.enter.native="handleQuery"
-        />
-      </el-form-item>
-      <el-form-item label="是否订单对应票点" prop="isOrderTax">
-        <el-input
-          v-model="queryParams.isOrderTax"
-          placeholder="请输入是否订单对应票点"
-          clearable
-          @keyup.enter.native="handleQuery"
-        />
-      </el-form-item>
-      <el-form-item label="备注" prop="comments">
-        <el-input
-          v-model="queryParams.comments"
-          placeholder="请输入备注"
-          clearable
-          @keyup.enter.native="handleQuery"
-        />
-      </el-form-item>
-      <el-form-item label="添加时间" prop="addtime">
-        <el-input
-          v-model="queryParams.addtime"
-          placeholder="请输入添加时间"
-          clearable
-          @keyup.enter.native="handleQuery"
-        />
-      </el-form-item>
-      <el-form-item label="操作人员ID" prop="userId">
-        <el-input
-          v-model="queryParams.userId"
-          placeholder="请输入操作人员ID"
-          clearable
-          @keyup.enter.native="handleQuery"
-        />
-      </el-form-item>
-      <el-form-item label="操作人员姓名" prop="UserName">
-        <el-input
-          v-model="queryParams.UserName"
-          placeholder="请输入操作人员姓名"
-          clearable
-          @keyup.enter.native="handleQuery"
-        />
-      </el-form-item>
-      <el-form-item label="删除标记" prop="delFlag">
-        <el-input
-          v-model="queryParams.delFlag"
-          placeholder="请输入删除标记"
           clearable
           @keyup.enter.native="handleQuery"
         />
@@ -130,59 +27,51 @@
           v-hasPermi="['system:invoicein:add']"
         >新增</el-button>
       </el-col>
-      <el-col :span="1.5">
-        <el-button
-          type="success"
-          plain
-          icon="el-icon-edit"
-          size="mini"
-          :disabled="single"
-          @click="handleUpdate"
-          v-hasPermi="['system:invoicein:edit']"
-        >修改</el-button>
-      </el-col>
-      <el-col :span="1.5">
-        <el-button
-          type="danger"
-          plain
-          icon="el-icon-delete"
-          size="mini"
-          :disabled="multiple"
-          @click="handleDelete"
-          v-hasPermi="['system:invoicein:remove']"
-        >删除</el-button>
-      </el-col>
-      <el-col :span="1.5">
-        <el-button
-          type="warning"
-          plain
-          icon="el-icon-download"
-          size="mini"
-          @click="handleExport"
-          v-hasPermi="['system:invoicein:export']"
-        >导出</el-button>
-      </el-col>
-      <right-toolbar :showSearch.sync="showSearch" @queryTable="getList"></right-toolbar>
+      <right-toolbar :showSearch.sync="showSearch" @queryTable="getList" :columns="columns">
+        <template v-slot:print>
+          <el-col :span="1.5">
+            <el-button
+              plain
+              icon="el-icon-printer"
+              size="mini"
+              @click="printHTML"
+            >
+            </el-button>
+          </el-col>
+        </template>
+        <!--        导出-->
+        <template v-slot:export>
+          <el-col :span="1.5">
+            <el-button
+              plain
+              icon="el-icon-folder-opened"
+              size="mini"
+              @click="handleExport"
+              v-hasPermi="['system:orderdetail:export']"
+            >
+            </el-button>
+          </el-col>
+        </template>
+      </right-toolbar>
     </el-row>
 
-    <el-table v-loading="loading" :data="invoiceInList" @selection-change="handleSelectionChange">
-      <el-table-column type="selection" width="55" align="center" />
+    <el-table id="printBox" v-horizontal-scroll="'always'" border v-loading="loading" :data="invoiceInList" @selection-change="handleSelectionChange">
       <el-table-column label="id" align="center" prop="id" />
       <el-table-column label="开票日期" align="center" prop="invoiceDate" />
       <el-table-column label="我方开票实体" align="center" prop="invoiceObject" />
       <el-table-column label="开票金额" align="center" prop="invoiceAmount" />
       <el-table-column label="对方公司类别" align="center" prop="companyType" />
       <el-table-column label="对方公司名称" align="center" prop="companyName" />
-      <el-table-column label="对方公司ID" align="center" prop="companyID" />
+<!--      <el-table-column label="对方公司ID" align="center" prop="companyID" />-->
       <el-table-column label="票据单位名称" align="center" prop="invoiceCompanyName" />
       <el-table-column label="票点" align="center" prop="ticketPoint" />
       <el-table-column label="票点金额" align="center" prop="ticketPointAmount" />
       <el-table-column label="是否订单对应票点" align="center" prop="isOrderTax" />
       <el-table-column label="备注" align="center" prop="comments" />
-      <el-table-column label="添加时间" align="center" prop="addtime" />
-      <el-table-column label="操作人员ID" align="center" prop="userId" />
-      <el-table-column label="操作人员姓名" align="center" prop="UserName" />
-      <el-table-column label="删除标记" align="center" prop="delFlag" />
+<!--      <el-table-column label="添加时间" align="center" prop="addtime" />-->
+<!--      <el-table-column label="操作人员ID" align="center" prop="userId" />-->
+<!--      <el-table-column label="操作人员姓名" align="center" prop="UserName" />-->
+<!--      <el-table-column label="删除标记" align="center" prop="delFlag" />-->
       <el-table-column label="操作" align="center" class-name="small-padding fixed-width">
         <template slot-scope="scope">
           <el-button
@@ -202,7 +91,7 @@
         </template>
       </el-table-column>
     </el-table>
-    
+
     <pagination
       v-show="total>0"
       :total="total"
@@ -267,9 +156,11 @@
 
 <script>
 import { listInvoiceIn, getInvoiceIn, delInvoiceIn, addInvoiceIn, updateInvoiceIn } from "@/api/system/invoiceIn";
+import {mixin_printHTML} from "@/views/dashboard/mixins/print";
 
 export default {
   name: "InvoiceIn",
+  mixins:[mixin_printHTML],
   data() {
     return {
       // 遮罩层
@@ -314,7 +205,34 @@ export default {
       form: {},
       // 表单校验
       rules: {
-      }
+      },
+      columns: [
+        {key: 0, label: `订单编号`, visible: true},
+        {key: 1, label: `陆运车牌`, visible: true},
+        {key: 2, label: `陆运司机电话`, visible: true},
+        {key: 3, label: `陆运司机姓名`, visible: true},
+        {key: 4, label: `海运车牌`, visible: true},
+        {key: 5, label: `海运司机电话`, visible: true},
+        {key: 6, label: `海运司机姓名`, visible: true},
+        {key: 7, label: `销售经理`, visible: true},
+        {key: 8, label: `车队`, visible: true},
+        {key: 9, label: `审核状态`, visible: true},
+        {key: 10, label: `开票状态`, visible: true},
+        {key: 11, label: `附件路径`, visible: true},
+        {key: 12, label: `打款状态`, visible: true},
+        {key: 13, label: `陆运银行户名`, visible: true},
+        {key: 14, label: `陆运银行账号`, visible: true},
+        {key: 15, label: `海运银行户名`, visible: true},
+        {key: 16, label: `海运银行账号`, visible: true},
+        {key: 17, label: `收到条附件路径`, visible: true},
+        {key: 18, label: `是否被调整单`, visible: true},
+        {key: 19, label: `是否调整单`, visible: true},
+        {key: 20, label: `调整日期`, visible: true},
+        {key: 21, label: `原订单编号`, visible: true},
+        {key: 22, label: `是否可编辑`, visible: true},
+        {key: 23, label: `客户是否开票`, visible: true},
+        {key: 24, label: `供应商是否开票`, visible: true},
+      ],
     };
   },
   created() {
