@@ -159,7 +159,6 @@
       <el-table-column label="海运司机姓名" align="center" prop="seaDriverName" v-if="columns[6].visible"/>
       <el-table-column label="销售经理" align="center" prop="saleManager" v-if="columns[7].visible"/>
       <el-table-column label="车队" align="center" prop="fleet" v-if="columns[8].visible"/>
-      <!--      是与否-->
       <el-table-column label="审核状态" align="center" prop="checkState" v-if="columns[9].visible" width="120">
         <template slot-scope="scope">
           <SwitchBarForCheck :model-value="scope.row.checkState==='未审核'"
@@ -168,12 +167,8 @@
       </el-table-column>
       <el-table-column label="开票状态" align="center" prop="invoiceState" v-if="columns[10].visible" width="120px">
         <template slot-scope="scope">
-          <!--          <el-tag-->
-          <!--            :type="scope.row.invoiceState === '未开票' ? 'danger' : 'success'"-->
-          <!--            disable-transitions>{{ scope.row.invoiceState }}-->
-          <!--          </el-tag>-->
           <SwitchBarItem :model-value="scope.row.customerIsInvoice==='未开票'"
-                         @update:modelValue="handleOpenTitle"/>
+                         @update:modelValue="handleOpenTitle($event,scope.row)"/>
         </template>
       </el-table-column>
 
@@ -255,13 +250,6 @@
             v-hasPermi="['system:orderdetail:remove']"
           >上传收到条
           </el-button>
-          <!--
-          运费申请 运费申请功能；页面判断是否海运费为0
-          ，如果不为0，在页面显示“海运费申请”“陆运费申请”两个按钮，否则只显示“
-          陆运费申请”；如果相关运费信息已经存在，则按钮不可用；点击相关按钮时，
-          根据订单中的司机相关信息填充相应的收款方账号信息，并根据订单中陆运费和海
-          运费信息填充金额，金额不能修改；
-          -->
           <el-button
             :disabled="isHaveLandFree(scope.row)"
             v-if="scope.row.landFreight>0"
@@ -302,17 +290,14 @@
         <el-descriptions-item label="id">{{ orderDetailInfo.id }}</el-descriptions-item>
         <el-descriptions-item label="日期">{{ orderDetailInfo.orderDate }}</el-descriptions-item>
         <el-descriptions-item label="客户">{{ orderDetailInfo.customer }}</el-descriptions-item>
-        <!--        <el-descriptions-item label="供应商">{{ orderDetailInfo.supplier }}</el-descriptions-item>-->
         <el-descriptions-item label="商家姓名">{{ orderDetailInfo.supplierNames }}</el-descriptions-item>
         <el-descriptions-item label="车队">{{ orderDetailInfo.fleet }}</el-descriptions-item>
-        <!--  todo      审核状态 是否字典-->
         <el-descriptions-item label="审核状态">
           <TagsItem :check-info="orderDetailInfo.checkState" checkValue="未审核"/>
         </el-descriptions-item>
         <el-descriptions-item label="开票状态">
           <TagsItem :check-info="orderDetailInfo.invoiceState" checkValue="未开票"/>
         </el-descriptions-item>
-        <!-- todo       附件-->
         <el-descriptions-item label="附件">{{ orderDetailInfo.path }}</el-descriptions-item>
         <el-descriptions-item label="陆运车牌">{{ orderDetailInfo.landCarNo }}</el-descriptions-item>
         <el-descriptions-item label="陆运司机电话">{{ orderDetailInfo.landDriverTel }}</el-descriptions-item>
@@ -425,9 +410,6 @@
       :visible.sync="addMoneyBackVisible"
       width="40%">
       <el-form :model="moneyBackInfo" label-width="80px">
-        <!--        <el-form-item label="订单编号" prop="ordersNo">-->
-        <!--          <span style="font-weight: bolder">{{ moneyBackInfo.ordersNo }}</span>-->
-        <!--        </el-form-item>-->
         <el-form-item label="日期" prop="rebateDate">
           <el-date-picker
             v-model="moneyBackInfo.rebateDate"
@@ -482,7 +464,7 @@
               <el-input v-model="moneyBackInfo.outAcountsName" placeholder="请输入付款户名"/>
             </el-col>
             <el-col :span="3">
-              <SearchOption :get-data="listBankAccount" @commitBack="handleCommitBankAccountOut">
+              <SearchOption :limit-info="{}" :get-data="listBankAccount" @commitBack="handleCommitBankAccountOut">
                 <template #table-columns>
                   <el-table-column label="开户行" align="center" prop="bankName"/>
                   <el-table-column label="开户名" align="center" prop="acountsName"/>
@@ -514,7 +496,55 @@
       title="开票"
       :visible.sync="handleOpenTitleDialogVisible"
       width="30%">
-      <span>开票?</span>
+      <el-form :model="openTitleInfo" label-width="110px">
+        <el-form-item label="开票日期" prop="invoiceDate">
+          <el-date-picker
+            v-model="openTitleInfo.invoiceDate"
+            type="date"
+            placeholder="选择日期"
+            value-format="timestamp">
+          </el-date-picker>
+        </el-form-item>
+        <el-form-item label="我方开票实体" prop="invoiceObject">
+          <el-input v-model="openTitleInfo.invoiceObject" placeholder="请输入我方开票实体"/>
+        </el-form-item>
+        <el-form-item label="开票金额" prop="invoiceAmount">
+          <el-input v-model="openTitleInfo.invoiceAmount" placeholder="请输入开票金额"/>
+        </el-form-item>
+        <el-form-item label="公司名称" prop="companyName">
+          <el-row>
+            <el-col :span="10">
+              <el-input v-model="openTitleInfo.companyName" placeholder="请输入对方公司名称"/>
+            </el-col>
+            <el-col :span="2">
+              <SearchOption :limit-info="{}" :get-data="listCompany" query-info="companyName"
+                            query-label="公司名称" :query-name="queryCompanyName"
+                            @update:queryName="handleUpdateCompanyName" @commitBack="handleCommitBackCompany">
+                <template #table-columns>
+                  <el-table-column label="客户" align="center" prop="relationName"/>
+                  <el-table-column label="老板姓名" align="center" prop="leader"/>
+                  <el-table-column label="老板电话" align="center" prop="leaderTel"/>
+                  <el-table-column label="区域" align="center" prop="region"/>
+                  <el-table-column label="公司名称" align="center" prop="companyName"/>
+                  <el-table-column label="销售经理" align="center" prop="salesManager"/>
+                </template>
+              </SearchOption>
+            </el-col>
+          </el-row>
+        </el-form-item>
+        <el-form-item label="票据单位名称" prop="invoiceCompanyName">
+          <el-input v-model="openTitleInfo.invoiceCompanyName" placeholder="请输入票据单位名称"/>
+        </el-form-item>
+        <el-form-item label="票点" prop="ticketPoint">
+          <el-input v-model="openTitleInfo.ticketPoint" placeholder="请输入票点"/>
+        </el-form-item>
+        <el-form-item label="票点金额" prop="ticketPointAmount">
+          <el-input v-model="invoiceAmount" placeholder="请输入票点金额" disabled/>
+        </el-form-item>
+        <el-form-item label="备注" prop="comments">
+          <el-input v-model="openTitleInfo.comments" placeholder="请输入备注"/>
+        </el-form-item>
+      </el-form>
       <span slot="footer" class="dialog-footer">
     <el-button @click="closeOpenTitle">取 消</el-button>
     <el-button type="primary" @click="submitOpenTitle">确 定</el-button>
@@ -566,6 +596,7 @@ import SwitchBarItem from "@/components/SwitchBarItem.vue";
 import SwitchBarForCheck from "@/components/SwitchBarForCheck.vue";
 import ApplyPayment from "@/components/ApplyPayment.vue";
 import ChatForm from "@/components/ChatForm.vue";
+import {addInvoiceOut} from "@/api/system/invoiceOut";
 
 export default {
   name: "GoodsOrder",
@@ -733,6 +764,31 @@ export default {
       seaFreightFree: 0,
       //订单中的司机相关信息 自动填充响应的收款方账号信息
       driverInfo: {},
+
+
+      //开票信息
+      openTitleInfo: {
+        id: null,
+        invoiceDate: null,
+        invoiceObject: null,
+        invoiceAmount: null,
+        companyType: null,
+        companyName: null,
+        companyID: null,
+        invoiceCompanyName: null,
+        ticketPoint: null,
+        ticketPointAmount: null,
+        isOrderTax: 0,
+        comments: null,
+        addtime: null,
+        userId: null,
+        UserName: null,
+        updateTime: null,
+        delFlag: null
+      },
+      //当前订单id
+      currentOrderId: null,
+      queryCompanyName: '',
     };
   },
   created() {
@@ -740,27 +796,29 @@ export default {
     this.$store.dispatch('order/getOrderList')
   },
   computed: {
-    //审核状态
-    tempCheckState: {
-      get() {
-
+    //票点金额 开票金额*票点
+    invoiceAmount: {
+      set(val) {
+        this.openTitleInfo.ticketPointAmount = val;
       },
-      set() {
-
-      }
-    },
-    //开票状态
-    tempOpenTicketState: {
       get() {
-
-      },
-      set() {
-
+        return this.openTitleInfo.invoiceAmount * this.openTitleInfo.ticketPoint
       }
     },
     //获取订单列表
     ...mapGetters(['orderItemList']),
-    ...mapGetters(['orderList'])
+    ...mapGetters(['orderList']),
+    //拿到暂存里的订单信息
+    ...mapGetters(['currentOrderInfo'])
+  },
+  //监听开票表单的变化 如果有 就赋值
+  watch: {
+    openTitleInfo: {
+      handler(val) {
+        this.invoiceAmount = this.openTitleInfo.invoiceAmount * this.openTitleInfo.ticketPoint;
+      },
+      deep: true
+    }
   },
   methods: {
     cancelSubmit() {
@@ -793,7 +851,6 @@ export default {
     },
     listCompany,
     listBankAccount,
-    listGoodsOrder,
     //子组件提醒父组件修改orderInfo信息
     handleChangeOrderInfo(val) {
       this.orderInfo = val;
@@ -832,7 +889,7 @@ export default {
       })
       this.addMoneyBackVisible = false;
     },
-    //订单发货单123
+    //订单发货单
     handleOrder1(row) {
       this.Order1Visible = true
     },
@@ -853,11 +910,11 @@ export default {
       })
     },
     //收到条回调
-    handleCommitGet(value){
+    handleCommitGet(value) {
       this.tempOrderInfo.receiveProof = value;
-      excludeParams(this.tempOrderInfo,this.$exclude)
+      excludeParams(this.tempOrderInfo, this.$exclude)
       //更新订单状态
-      updateGoodsOrder(this.tempOrderInfo).then(res=>{
+      updateGoodsOrder(this.tempOrderInfo).then(res => {
         console.log(res)
       })
     },
@@ -933,8 +990,7 @@ export default {
         //时间处理
       }
       //添加订单 转化时间戳
-      const date = this.orderInfo.orderDate.getTime();
-      addGoodsOrder({...this.orderInfo, orderDate: date, PaymentState: ''}).then(res => {
+      addGoodsOrder({...this.orderInfo, PaymentState: ''}).then(res => {
         this.$message.success('订单提交成功')
       })
 
@@ -982,19 +1038,55 @@ export default {
     },
 
 
-    //todo  开票弹窗
-    handleOpenTitle(val) {
-      //这里是反的,如果是true,代表未开票 false代表已开票
-      if (val) {
+    //开票信息弹窗
+    handleUpdateCompanyName(val) {
+      this.queryCompanyName = val;
+    },
+    handleCommitBackCompany(val) {
+      this.openTitleInfo.companyName = val.companyName;
+      this.openTitleInfo.companyID = val.id;
+      this.openTitleInfo.companyType = val.companyType;
+    },
+    //val是选中行的订单信息 包含订单详细信息
+    handleOpenTitle(event, val) {
+      //先把订单信息扔进暂存
+      this.$store.dispatch('trash/setCurrentOrderInfo', val)
+      // //这里是反的,如果是true,代表未开票 false代表已开票
+      if (event) {
         //关闭开票
+        alert('关闭订单开票操作')
       } else {
-        //准备开票
+        //准备开票 传递订单的id
+        this.currentOrderId = val.id
         this.handleOpenTitleDialogVisible = true;
       }
     },
-    //todo 添加开票
+    //添加开票 是否订单开票要给订单id
     submitOpenTitle() {
-
+      //排除不必要的字段
+      this.openTitleInfo = excludeParams(this.openTitleInfo, this.$exclude)
+      //传入订单id
+      this.openTitleInfo.isOrderTax = this.currentOrderId;
+      //添加开票信息
+      this.$wait();
+      addInvoiceOut(this.openTitleInfo).then(response => {
+        this.$modal.msgSuccess("开票成功~");
+        this.handleOpenTitleDialogVisible = false;
+        this.$close();
+        this.getList();
+      }).catch(err => {
+        this.$close();
+      })
+      let info = {...this.currentOrderInfo, invoiceState: '已开票'} //修改后的订单信息
+      //修改开票信息
+      setTimeout(() => {
+        this.$wait();
+        //排除不必要字段
+        updateGoodsOrder(excludeParams(info, this.$exclude)).then(res => {
+          this.$message.success('开票状态设置成功~')
+          this.$close();
+        })
+      }, 20)
     },
     closeOpenTitle() {
       this.handleOpenTitleDialogVisible = false
@@ -1060,11 +1152,6 @@ export default {
       this.loading = true;
       listGoodsOrder(this.queryParams).then(response => {
         this.goodsOrderList = response.rows;
-        //处理日期 将时间戳转化为时间
-        this.goodsOrderList.forEach(item => {
-          //这里item.orderDate是一个字符串 要转成Number
-          item.orderDate = formatDate(new Date(Number(item.orderDate)));
-        })
         this.total = response.total;
         this.loading = false;
       });

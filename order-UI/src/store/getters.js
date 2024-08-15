@@ -1,4 +1,6 @@
 const getters = {
+  //特别 垃圾桶信息存放
+  currentOrderInfo:state=>state.trash.currentOrderInfo,
   sidebar: state => state.app.sidebar,
   size: state => state.app.size,
   device: state => state.app.device,
