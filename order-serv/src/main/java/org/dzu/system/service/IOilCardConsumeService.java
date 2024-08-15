@@ -52,12 +52,4 @@ public interface IOilCardConsumeService
      */
     public int deleteOilCardConsumeByIds(Long[] ids);
 
-    /**
-     * 删除加油卡消费信息信息
-     * 
-     * @param id 加油卡消费信息主键
-     * @return 结果
-     */
-    public int deleteOilCardConsumeById(Long id);
-
 }

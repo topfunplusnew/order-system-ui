@@ -1,8 +1,12 @@
 package org.dzu.system.service.impl;
 
+import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import org.dzu.common.constant.DelConstants;
+import org.dzu.common.exception.ServiceException;
 import org.dzu.common.utils.DateUtils;
 import org.dzu.common.utils.SecurityUtils;
+import org.dzu.common.utils.StringUtils;
+import org.dzu.system.domain.BusinessTrip;
 import org.dzu.system.domain.OilCard;
 import org.dzu.system.domain.OilCardConsume;
 import org.dzu.system.mapper.OilCardConsumeMapper;
@@ -12,6 +16,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.Arrays;
 import java.util.List;
 
 /**
@@ -27,6 +32,11 @@ public class OilCardConsumeServiceImpl implements IOilCardConsumeService
     private OilCardConsumeMapper oilCardConsumeMapper;
     @Autowired
     private OilCardMapper oilCardMapper;
+    @Autowired
+    private BusinessTripServiceImpl businessTripServiceImpl;
+    @Autowired
+    private OilCardServiceImpl oilCardServiceImpl;
+
     /**
      * 查询加油卡消费信息
      *
@@ -51,46 +61,6 @@ public class OilCardConsumeServiceImpl implements IOilCardConsumeService
         return oilCardConsumeMapper.selectOilCardConsumeList(oilCardConsume);
     }
 
-    @Transactional // 表示此方法需要事务管理
-    public boolean saveOilCardConsume(OilCardConsume oilCardConsume) {
-        // 检查加油金额是否正确
-        if (!validateRefuelingMoney(oilCardConsume)) {
-            throw new IllegalArgumentException("加油金额不正确，加油金额应等于加油量乘以单价");
-        }
-
-        // 保存加油卡消费信息
-        return oilCardConsumeMapper.insertOilCardConsume(oilCardConsume) > 0;
-    }
-
-    /**
-     * 校验加油金额是否正确
-     *
-     * @param oilCardConsume 加油卡消费信息对象
-     * @return 校验结果，正确返回 true，否则返回 false
-     */
-    private boolean validateRefuelingMoney(OilCardConsume oilCardConsume) {
-        String refuelingNumber = oilCardConsume.getRefuelingNumber();
-        String unitPrice = oilCardConsume.getUnitPrice();
-        String refuelingMoney = oilCardConsume.getRefuelingMoney();
-
-        if (refuelingNumber != null && unitPrice != null && refuelingMoney != null) {
-            try {
-                // 将字符串转换为 double 类型
-                double refuelingNum = Double.parseDouble(refuelingNumber);
-                double unitPrc = Double.parseDouble(unitPrice);
-                double refuelMoney = Double.parseDouble(refuelingMoney);
-
-                // 校验加油金额是否等于加油量乘以单价
-                return Math.abs(refuelMoney - (refuelingNum * unitPrc)) < 0.01;
-            } catch (NumberFormatException e) {
-                // 如果转换失败，表示输入数据有误
-                return false;
-            }
-        }
-
-        // 如果任何一个值为空，则表示数据不完整，校验失败
-        return false;
-    }
     /**
      * 新增加油卡消费信息
      *
@@ -100,12 +70,42 @@ public class OilCardConsumeServiceImpl implements IOilCardConsumeService
     @Override
     public int insertOilCardConsume(OilCardConsume oilCardConsume)
     {
-        saveOilCardConsume(oilCardConsume);
-        validateRefuelingMoney(oilCardConsume);
+        // 设置基础信息
         oilCardConsume.setAddtime(String.valueOf(DateUtils.getNowDate()));
         oilCardConsume.setUserId(SecurityUtils.getUserId());
         oilCardConsume.setUserName(SecurityUtils.getUserTruename());
         oilCardConsume.setDelFlag(Long.valueOf(DelConstants.NODEL));
+        // 对数字进行强转校验,如果catch到异常则封装成另一种
+        Double rechargeMoney = 0.0;
+        Double refuelingMoney = 0.0;
+        try{
+            rechargeMoney = Double.parseDouble(oilCardConsume.getRechargeMoney());
+            refuelingMoney = Double.parseDouble(oilCardConsume.getRefuelingMoney());
+        }catch (Exception e){
+            throw new ServiceException("请输入正确的数字");
+        }
+
+        // 检测对应的出差id是否存在
+        if(StringUtils.isNull(oilCardConsume.getbTripId())){
+            throw new ServiceException("必须选择对应的出差记录");
+        }
+        BusinessTrip businessTrip = businessTripServiceImpl.selectBusinessTripById(Long.valueOf(oilCardConsume.getbTripId()));
+
+        if(StringUtils.isNull(businessTrip)){
+            throw new ServiceException("对应的出差记录不存在");
+        }
+
+        //确定对应的油卡存在
+        QueryWrapper<OilCard> query = new QueryWrapper<OilCard>().eq("oilCardNo", oilCardConsume.getOilCardNo()).ne("delFlag", DelConstants.DEL);
+        if(oilCardMapper.selectCount(query)==0){
+            throw new ServiceException("对应油卡不存在");
+        }
+
+
+        // 进行油卡金额的变动
+        oilCardServiceImpl.updateOilCardMoney(oilCardConsume.getOilCardNo(), rechargeMoney - refuelingMoney);
+
+
         return oilCardConsumeMapper.insertOilCardConsume(oilCardConsume);
     }
 
@@ -119,15 +119,33 @@ public class OilCardConsumeServiceImpl implements IOilCardConsumeService
     @Override
     public int updateOilCardConsume(OilCardConsume oilCardConsume)
     {
-        saveOilCardConsume(oilCardConsume);
-        validateRefuelingMoney(oilCardConsume);
-        // 更新油卡余额
-        String oilCardNo = oilCardConsume.getOilCardNo();
-        // 获取油卡的当前余额
-        OilCard oilCard = oilCardMapper.selectOilCardById(oilCardConsume.getId());
-        oilCardConsume.setUserId(SecurityUtils.getUserId());
-        oilCardConsume.setUserName(SecurityUtils.getUserTruename());
-        oilCardConsume.setUpdateTime(DateUtils.getNowDate());
+        // 获取对应的旧信息
+        OilCardConsume old = oilCardConsumeMapper.selectOilCardConsumeById(oilCardConsume.getId());
+
+        // 对数字进行强转校验,如果catch到异常则封装成另一种
+        Double rechargeMoney = 0.0;
+        Double refuelingMoney = 0.0;
+        try{
+            rechargeMoney = Double.parseDouble(oilCardConsume.getRechargeMoney());
+            refuelingMoney = Double.parseDouble(oilCardConsume.getRefuelingMoney());
+        }catch (Exception e){
+            throw new ServiceException("请输入正确的数字");
+        }
+        // 检测前后的出差id是否一致
+        if(!old.getbTripId().equals(oilCardConsume.getbTripId())){
+            throw new ServiceException("不支持修改信息对应的出差记录");
+        }
+
+        // 检测是否修改油卡号
+        if(!old.getOilCardNo().equals(oilCardConsume.getOilCardNo())){
+            throw new ServiceException("若需修改油卡编号,请删除本信息后重新录入");
+        }
+
+        // 进行油卡金额的变动,此时先依据旧信息模拟还原金额,再依据新信息进行金额变动
+        oilCardServiceImpl.updateOilCardMoney(old.getOilCardNo(), Double.parseDouble(old.getRechargeMoney()) - Double.parseDouble(old.getRefuelingMoney())+rechargeMoney-refuelingMoney);
+
+
+
         return oilCardConsumeMapper.updateOilCardConsume(oilCardConsume);
     }
 
@@ -138,20 +156,15 @@ public class OilCardConsumeServiceImpl implements IOilCardConsumeService
      * @return 结果
      */
     @Override
+    @Transactional
     public int deleteOilCardConsumeByIds(Long[] ids)
     {
+        // 搜索全部的数据用来归还金额
+        List<OilCardConsume> oilCardConsumes = oilCardConsumeMapper.selectBatchIds(Arrays.asList(ids));
+        for (OilCardConsume oilCardConsume : oilCardConsumes) {
+            oilCardServiceImpl.updateOilCardMoney(oilCardConsume.getOilCardNo(), Double.parseDouble(oilCardConsume.getRefuelingMoney()) - Double.parseDouble(oilCardConsume.getRechargeMoney()));
+        }
         return oilCardConsumeMapper.deleteOilCardConsumeByIds(ids);
     }
 
-    /**
-     * 删除加油卡消费信息信息
-     *
-     * @param id 加油卡消费信息主键
-     * @return 结果
-     */
-    @Override
-    public int deleteOilCardConsumeById(Long id)
-    {
-        return oilCardConsumeMapper.deleteOilCardConsumeById(id);
-    }
 }

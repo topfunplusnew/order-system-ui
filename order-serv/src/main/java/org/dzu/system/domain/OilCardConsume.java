@@ -123,7 +123,31 @@ public class OilCardConsume extends BaseEntity
     @TableField(value = "delFlag")
     private Long delFlag;
 
-    public void setId(Long id) 
+    /** 额外字段,加油时间开始 */
+    @TableField(exist = false)
+    private String useDateStart;
+
+     /** 额外字段,加油时间结束 */
+    @TableField(exist = false)
+    private String useDateEnd;
+
+    public String getUseDateStart() {
+        return useDateStart;
+    }
+
+    public void setUseDateStart(String useDateStart) {
+        this.useDateStart = useDateStart;
+    }
+
+    public String getUseDateEnd() {
+        return useDateEnd;
+    }
+
+    public void setUseDateEnd(String useDateEnd) {
+        this.useDateEnd = useDateEnd;
+    }
+
+    public void setId(Long id)
     {
         this.id = id;
     }

@@ -30,10 +30,10 @@ public class Rebate extends BaseEntity
     @TableId(value = "id")
     private Long id;
 
-    /** 订单编号（UUID） */
-    @Excel(name = "订单编号")
-    @Length(max = 400, message = "订单编号长度不能超过400个字符")
-    @NotNull(message = "订单编号不能为空")
+    /** 订单详情 */
+    @Excel(name = "订单详情")
+    @Length(max = 400, message = "超过数据库最大存储id!,请联系开发人员进行调整")
+    @NotNull(message = "订单详情id集合不允许为空,请至少关联一个订单详情!")
     @TableField(value = "orderDetailID")
     private String orderDetailID;
 
