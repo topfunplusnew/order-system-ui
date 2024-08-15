@@ -185,6 +185,7 @@ export default {
     };
   },
   created() {
+    console.log('传入的金额', this.needMoney)
     this.reset();
     this.getList();
     //查询科目信息
@@ -341,12 +342,9 @@ export default {
             this.form.tableName = this.tableName;
             this.form.tID = this.tID;
             this.form.payType = this.fullLevel;
-            //加上额外金额
-            if (this.addMoney !== '') {
-              this.form.moneyAmount = Number(this.form.moneyAmount) + Number(this.addMoney)
-            }
             //审核状态赋空
             this.form.checkState = ''
+            console.log('提交的付款表单', this.form)
             addPaymentApply(this.form).then(response => {
               this.$modal.msgSuccess("付款申请添加成功");
               this.opened = false;

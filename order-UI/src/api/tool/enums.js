@@ -35,5 +35,5 @@ export const TableName = Object.freeze({
   REPAYMENT: "repayment",
   SOCIAL_INSURANCE: "socialinsurance",
   BALANCEACCOUNT: "balanceaccounts",
-  STOREHOUSE: "storehouse"
+  STOREHOUSE: "storehouse",
 });

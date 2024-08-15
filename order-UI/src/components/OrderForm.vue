@@ -115,6 +115,27 @@ export default {
         }, 30)
       }
     },
+    //司机银行卡信息
+    landBankName: {
+      get() {
+        return this.orderInfo.landBankName;
+      },
+      set(val) {
+        setTimeout(() => {
+          this.handleUpdateOrderInfo({...this.orderInfo, landBankName: val})
+        }, 40)
+      }
+    },
+    landBankNo: {
+      get() {
+        return this.orderInfo.landBankNo;
+      },
+      set(val) {
+        setTimeout(() => {
+          this.handleUpdateOrderInfo({...this.orderInfo, landBankNo: val})
+        }, 50)
+      }
+    },
     //车队
     fleet: {
       get() {
@@ -217,6 +238,8 @@ export default {
       //填充银行信息
       this.orderInfo.landBankName = row.acountsName;
       this.orderInfo.landBankNo = row.bankNo;
+      this.landBankName = row.acountsName;
+      this.landBankNo = row.bankNo
       this.landInfoDialogVisible = false;
     },
     //车队信息的确认

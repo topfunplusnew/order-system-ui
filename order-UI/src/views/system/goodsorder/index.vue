@@ -140,10 +140,8 @@
         </template>
       </el-table-column>
       <!--      固定列-->
-      <!--      <el-table-column label="id" align="center" prop="id" fixed="left"/>-->
       <el-table-column label="日期" align="center" prop="orderDate" fixed="left"/>
       <el-table-column label="客户" align="center" prop="customer" fixed="left"/>
-      <!--      以下字段可动-->
       <el-table-column label="订单编号" align="center" prop="ordersNo" v-if="columns[0].visible"/>
       <el-table-column label="陆运车牌" align="center" prop="landCarNo" v-if="columns[1].visible"/>
       <el-table-column label="陆运司机电话" align="center" prop="landDriverTel" v-if="columns[2].visible"/>
@@ -153,6 +151,8 @@
       <el-table-column label="海运司机姓名" align="center" prop="seaDriverName" v-if="columns[6].visible"/>
       <el-table-column label="销售经理" align="center" prop="saleManager" v-if="columns[7].visible"/>
       <el-table-column label="车队" align="center" prop="fleet" v-if="columns[8].visible"/>
+
+
       <el-table-column label="审核状态" align="center" prop="checkState" v-if="columns[9].visible" width="120">
         <template slot-scope="scope">
           <SwitchBarForCheck :model-value="scope.row.checkState==='未审核'"
@@ -169,7 +169,6 @@
       <!--  todo    压缩上传-->
       <el-table-column label="附件路径" align="center" prop="path" v-if="columns[11].visible"/>
 
-      <!--      无字典 转换-->
       <el-table-column label="打款状态" align="center" prop="paymentState"
                        v-if="columns[12].visible">
         <template slot-scope="scope">
@@ -244,6 +243,8 @@
             v-hasPermi="['system:orderdetail:remove']"
           >上传收到条
           </el-button>
+
+          <!--      todo 点开的时候 查询订单运费 如果有订单运费 提示 然后禁用按钮-->
           <el-button
             :disabled="isHaveLandFree(scope.row)"
             v-if="scope.row.landFreight>0"
@@ -281,7 +282,6 @@
       :visible.sync="checkOrderVisible"
       width="30%">
       <el-descriptions title="订单信息" :column="1" border>
-        <el-descriptions-item label="id">{{ orderDetailInfo.id }}</el-descriptions-item>
         <el-descriptions-item label="日期">{{ orderDetailInfo.orderDate }}</el-descriptions-item>
         <el-descriptions-item label="客户">{{ orderDetailInfo.customer }}</el-descriptions-item>
         <el-descriptions-item label="商家姓名">{{ orderDetailInfo.supplierNames }}</el-descriptions-item>
@@ -516,6 +516,9 @@ import ChatForm from "@/components/ChatForm.vue";
 import {addInvoiceOut} from "@/api/system/invoiceOut";
 import OrderDetail from "@/views/system/orderdetail/index.vue";
 import OrderDetailInfo from "@/components/OrderDetailInfo.vue";
+import {listPaymentApply} from "@/api/system/paymentApply";
+import Vue from "vue";
+import {TableName} from "@/api/tool/enums";
 
 export default {
   name: "GoodsOrder",
@@ -699,6 +702,13 @@ export default {
       //当前订单id
       currentOrderId: null,
       queryCompanyName: '',
+
+
+      //付款申请信息列表 用于判断海运费和陆运费按钮是否可用
+      paymentApplyInfoList: [],
+      isFreight: '',
+      //付款信息哈希表
+      paymentInfoHashMap: {},
     };
   },
   created() {
@@ -992,10 +1002,13 @@ export default {
     //申请运费相关
     //是否已经有了相关运费信息
     isHaveLandFree(row) {
-      //todo 查询订单运费信息
-      return false
+      //判断标准为名字和运费
+      console.log('订单个体信息', row)
+      console.log(this.paymentInfoHashMap)
     },
     isHaveSeaFree(row) {
+      // this.hasSeaFreight = row;
+      // return this.hasSeaFreight;
       return false
     },
 

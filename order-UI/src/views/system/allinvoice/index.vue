@@ -96,10 +96,12 @@
       <el-table-column label="是否为订单税" align="center" prop="isOrderTax">
         <template slot-scope="scope">
           <el-tag :type="scope.row.isOrderTax===0?'danger':'success'" disable-transitions>
-            {{ scope.row.isOrderTax === 0 ? '否' : '是'}}
+            {{ scope.row.isOrderTax === 0 ? '否' : '是' }}
           </el-tag>
         </template>
       </el-table-column>
+
+
       <el-table-column label="供应商名称" align="center" prop="supplier"/>
       <el-table-column label="客户名称" align="center" prop="customer"/>
       <el-table-column label="采购发票金额" align="center" prop="purchaseInvoiceAmount"/>
@@ -200,6 +202,7 @@
 <script>
 import {listInvoiceIn, getInvoiceIn, delInvoiceIn, addInvoiceIn, updateInvoiceIn} from "@/api/system/invoiceIn";
 import {mixin_printHTML} from "@/views/dashboard/mixins/print";
+import {listInvoiceAll} from "@/api/system/allInvoice";
 
 export default {
   name: "InvoiceIn",
@@ -295,8 +298,9 @@ export default {
     /** 查询发票购入信息列表 */
     getList() {
       this.loading = true;
-      listInvoiceIn(this.queryParams).then(response => {
+      listInvoiceAll(this.queryParams).then(response => {
         this.invoiceInList = response.rows;
+        console.log('发货总台帐信息', this.invoiceInList)
         this.total = response.total;
         this.loading = false;
       });
