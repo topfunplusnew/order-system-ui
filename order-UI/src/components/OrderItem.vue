@@ -352,7 +352,7 @@ export default {
     exWarehouseDate: {
       set(val) {
         if (val) {
-          this.$emit('changeOrderItemInfo', {...this.orderItemInfo, exWarehouseDate: val.getTime()});
+          this.$emit('changeOrderItemInfo', {...this.orderItemInfo, exWarehouseDate: val});
         }
       },
       get() {
@@ -753,7 +753,8 @@ export default {
         <el-date-picker
           v-model="exWarehouseDate"
           type="date"
-          placeholder="选择日期">
+          placeholder="选择日期"
+          value-format="timestamp">
         </el-date-picker>
       </div>
       <div class="order-item">

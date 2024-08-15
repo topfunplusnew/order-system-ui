@@ -267,7 +267,7 @@ export default {
         <el-date-picker
           v-model="orderDate"
           type="date"
-          placeholder="选择日期" style="width: 70%">
+          placeholder="选择日期" value-format="timestamp" style="width: 70%">
         </el-date-picker>
       </div>
       <div class="header-item">

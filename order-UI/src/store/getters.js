@@ -1,4 +1,6 @@
 const getters = {
+  //特别 垃圾桶信息存放
+  currentOrderInfo:state=>state.trash.currentOrderInfo,
   sidebar: state => state.app.sidebar,
   size: state => state.app.size,
   device: state => state.app.device,
@@ -38,5 +40,8 @@ const getters = {
 
   //库存信息
   inventoryInfoAll: state => state.inventory.inventoryInfoAll,
+
+  //审核流程列表
+  checkStepList: state => state.paymentApply.checkStepList
 }
 export default getters

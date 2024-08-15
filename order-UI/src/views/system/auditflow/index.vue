@@ -1,44 +1,5 @@
 <template>
   <div class="app-container">
-    <el-form :model="queryParams" ref="queryForm" size="small" :inline="true" v-show="showSearch" label-width="68px">
-      <el-form-item label="流程名称" prop="flowname">
-        <el-input
-          v-model="queryParams.flowname"
-          placeholder="请输入流程名称"
-          clearable
-          @keyup.enter.native="handleQuery"
-        />
-      </el-form-item>
-      <el-form-item label="审核步骤" prop="stepnum">
-        <el-input
-          v-model="queryParams.stepnum"
-          placeholder="请输入审核步骤"
-          clearable
-          @keyup.enter.native="handleQuery"
-        />
-      </el-form-item>
-      <el-form-item label="步骤序号" prop="step">
-        <el-input
-          v-model="queryParams.step"
-          placeholder="请输入步骤序号"
-          clearable
-          @keyup.enter.native="handleQuery"
-        />
-      </el-form-item>
-      <el-form-item label="允许的审核人员ID" prop="auditauthority">
-        <el-input
-          v-model="queryParams.auditauthority"
-          placeholder="请输入允许的审核人员ID"
-          clearable
-          @keyup.enter.native="handleQuery"
-        />
-      </el-form-item>
-      <el-form-item>
-        <el-button type="primary" icon="el-icon-search" size="mini" @click="handleQuery">搜索</el-button>
-        <el-button icon="el-icon-refresh" size="mini" @click="resetQuery">重置</el-button>
-      </el-form-item>
-    </el-form>
-
     <el-row :gutter="10" class="mb8">
       <el-col :span="1.5">
         <el-button
@@ -48,95 +9,64 @@
           size="mini"
           @click="handleAdd"
           v-hasPermi="['system:auditflow:add']"
-        >新增</el-button>
+        >新增审核流程
+        </el-button>
       </el-col>
       <el-col :span="1.5">
-        <el-button
-          type="success"
-          plain
-          icon="el-icon-edit"
-          size="mini"
-          :disabled="single"
-          @click="handleUpdate"
-          v-hasPermi="['system:auditflow:edit']"
-        >修改</el-button>
+        <el-button icon="el-icon-refresh" size="mini" @click="resetQuery">刷新</el-button>
       </el-col>
-      <el-col :span="1.5">
-        <el-button
-          type="danger"
-          plain
-          icon="el-icon-delete"
-          size="mini"
-          :disabled="multiple"
-          @click="handleDelete"
-          v-hasPermi="['system:auditflow:remove']"
-        >删除</el-button>
-      </el-col>
-      <el-col :span="1.5">
-        <el-button
-          type="warning"
-          plain
-          icon="el-icon-download"
-          size="mini"
-          @click="handleExport"
-          v-hasPermi="['system:auditflow:export']"
-        >导出</el-button>
-      </el-col>
-      <right-toolbar :showSearch.sync="showSearch" @queryTable="getList"></right-toolbar>
+    </el-row>
+    <br/>
+    <br/>
+    <br/>
+    <el-row>
+      <el-steps :active="auditflowList.length" align-center>
+        <el-step v-for="(item,index) in auditflowList" :key="index" :title="item.flowname">
+          <template #description>
+            <el-row>
+              <span>允许审核的人员ID:{{ item.auditauthority }}</span>
+            </el-row>
+          </template>
+        </el-step>
+      </el-steps>
     </el-row>
 
-    <el-table v-loading="loading" :data="auditflowList" @selection-change="handleSelectionChange">
-      <el-table-column type="selection" width="55" align="center" />
-      <el-table-column label="${comment}" align="center" prop="id" />
-      <el-table-column label="流程名称" align="center" prop="flowname" />
-      <el-table-column label="审核步骤" align="center" prop="stepnum" />
-      <el-table-column label="步骤序号" align="center" prop="step" />
-      <el-table-column label="允许的审核人员ID" align="center" prop="auditauthority" />
-      <el-table-column label="操作" align="center" class-name="small-padding fixed-width">
-        <template slot-scope="scope">
-          <el-button
-            size="mini"
-            type="text"
-            icon="el-icon-edit"
-            @click="handleUpdate(scope.row)"
-            v-hasPermi="['system:auditflow:edit']"
-          >修改</el-button>
-          <el-button
-            size="mini"
-            type="text"
-            icon="el-icon-delete"
-            @click="handleDelete(scope.row)"
-            v-hasPermi="['system:auditflow:remove']"
-          >删除</el-button>
-        </template>
-      </el-table-column>
-    </el-table>
-    
-    <pagination
-      v-show="total>0"
-      :total="total"
-      :page.sync="queryParams.pageNum"
-      :limit.sync="queryParams.pageSize"
-      @pagination="getList"
-    />
-
     <!-- 添加或修改审核流程对话框 -->
-    <el-dialog :title="title" :visible.sync="open" width="500px" append-to-body>
-      <el-form ref="form" :model="form" :rules="rules" label-width="80px">
-        <el-form-item label="流程名称" prop="flowname">
-          <el-input v-model="form.flowname" placeholder="请输入流程名称" />
-        </el-form-item>
-        <el-form-item label="审核步骤" prop="stepnum">
-          <el-input v-model="form.stepnum" placeholder="请输入审核步骤" />
-        </el-form-item>
-        <el-form-item label="步骤序号" prop="step">
-          <el-input v-model="form.step" placeholder="请输入步骤序号" />
-        </el-form-item>
-        <el-form-item label="允许的审核人员ID" prop="auditauthority">
-          <el-input v-model="form.auditauthority" placeholder="请输入允许的审核人员ID" />
-        </el-form-item>
-      </el-form>
+    <el-dialog :title="title" :visible.sync="open" width="40%" append-to-body>
+      <el-steps :active="stepLength" align-center direction="vertical">
+        <!--        第一个审核-->
+        <el-step>
+          <template #icon>
+            <span>{{ stepInfo.step = 1 }}</span>
+          </template>
+          <template #title>
+            <!-- 审核步骤-->
+            <el-input type="text" placeholder="请输入允许审核的人员id,用逗号分隔"
+                      v-model="stepInfo.auditauthority"></el-input>
+          </template>
+          <template #description>
+            <!--  审核名称-->
+            <el-input type="text" placeholder="请输入审核名称" v-model="stepInfo.flowname"></el-input>
+          </template>
+        </el-step>
+
+        <!--        额外的 需要添加的-->
+        <div v-if="checkStepList.length !==0">
+          <el-step v-for="(item,index) in checkStepList" :key="index">
+            <template #icon>
+              <span>{{ item.step = index + 2 }}</span>
+            </template>
+            <template #title>
+              <el-input type="text" placeholder="请输入允许审核的人员id" v-model="item.auditauthority"></el-input>
+            </template>
+            <template #description>
+              <el-input type="text" placeholder="请输入审核名称" v-model="item.flowname"></el-input>
+            </template>
+          </el-step>
+        </div>
+      </el-steps>
       <div slot="footer" class="dialog-footer">
+        <el-button icon="el-icon-circle-plus-outline" @click="addCheckStateStep" type="success">添加审核步骤</el-button>
         <el-button type="primary" @click="submitForm">确 定</el-button>
         <el-button @click="cancel">取 消</el-button>
       </div>
@@ -145,10 +75,13 @@
 </template>
 
 <script>
-import { listAuditflow, getAuditflow, delAuditflow, addAuditflow, updateAuditflow } from "@/api/system/auditflow";
+import {listAuditflow, getAuditflow, delAuditflow, addAuditflow, updateAuditflow} from "@/api/system/auditflow";
+import {mixin_printHTML} from "@/views/dashboard/mixins/print";
+import {mapGetters} from "vuex";
 
 export default {
   name: "Auditflow",
+  mixins: [mixin_printHTML],
   data() {
     return {
       // 遮罩层
@@ -181,32 +114,64 @@ export default {
       // 表单参数
       form: {},
       // 表单校验
-      rules: {
+      rules: {},
+      columns: [
+        {key: 0, label: `账户类型`, visible: true},
+        {key: 1, label: `开户名称`, visible: true},
+        {key: 2, label: `账号(银行卡号)`, visible: true},
+        {key: 3, label: `开户行`, visible: true},
+        {key: 4, label: `公司名称`, visible: true}
+      ],
+
+      //审核信息
+      stepInfo: {
+        id: 1,
+        flowname: '',
+        stepnum: null,
+        step: null,
+        auditauthority: null,
       }
     };
   },
   created() {
     this.getList();
   },
+  computed: {
+    stepLength() {
+      console.log(this.checkStepList)
+      return this.checkStepList.length;
+    },
+    ...mapGetters(['checkStepList'])
+  },
   methods: {
+    //添加审核流程
+    addCheckStateStep() {
+      //推入一个空对象
+      this.$store.dispatch('paymentApply/addCheckStep', {
+        flowname: '',
+        stepnum: null,
+        step: null,
+        auditauthority: null,
+      })
+    },
     /** 查询审核流程列表 */
     getList() {
       this.loading = true;
       listAuditflow(this.queryParams).then(response => {
         this.auditflowList = response.rows;
-        this.total = response.total;
+        console.log(this.auditflowList)
         this.loading = false;
       });
     },
     // 取消按钮
     cancel() {
+      this.$store.dispatch('paymentApply/clearCheckStepList')
       this.open = false;
       this.reset();
     },
     // 表单重置
     reset() {
       this.form = {
-        id: null,
         flowname: null,
         stepnum: null,
         step: null,
@@ -227,7 +192,7 @@ export default {
     // 多选框选中数据
     handleSelectionChange(selection) {
       this.ids = selection.map(item => item.id)
-      this.single = selection.length!==1
+      this.single = selection.length !== 1
       this.multiple = !selection.length
     },
     /** 新增按钮操作 */
@@ -236,45 +201,38 @@ export default {
       this.open = true;
       this.title = "添加审核流程";
     },
-    /** 修改按钮操作 */
+    //修改审核步骤
     handleUpdate(row) {
-      this.reset();
-      const id = row.id || this.ids
-      getAuditflow(id).then(response => {
-        this.form = response.data;
-        this.open = true;
-        this.title = "修改审核流程";
-      });
+
     },
-    /** 提交按钮 */
+    //添加审核步骤
     submitForm() {
-      this.$refs["form"].validate(valid => {
-        if (valid) {
-          if (this.form.id != null) {
-            updateAuditflow(this.form).then(response => {
-              this.$modal.msgSuccess("修改成功");
-              this.open = false;
-              this.getList();
-            });
-          } else {
-            addAuditflow(this.form).then(response => {
-              this.$modal.msgSuccess("新增成功");
-              this.open = false;
-              this.getList();
-            });
-          }
-        }
-      });
+      this.stepInfo.stepnum = this.checkStepList.length + 1
+      this.$store.dispatch('paymentApply/updateStepNum', this.checkStepList.length + 1)
+      //按照step的大小排序
+      let info = [...this.checkStepList, this.stepInfo]
+      //对info数组按照step的大小排序
+      info.sort((a, b) => {
+        return a.step - b.step
+      })
+      this.$wait()
+      updateAuditflow(info).then(res => {
+        this.$message.success('添加审核流程成功')
+        this.$close()
+      }).catch(err => {
+        this.$close()
+      })
+      this.open = false
+      setTimeout(() => {
+        //清空状态
+        this.$store.dispatch('paymentApply/clearCheckStepList')
+        this.stepInfo = {}
+        this.getList()
+      }, 20)
     },
-    /** 删除按钮操作 */
+    //删除审核步骤 就是传null
     handleDelete(row) {
-      const ids = row.id || this.ids;
-      this.$modal.confirm('是否确认删除审核流程编号为"' + ids + '"的数据项？').then(function() {
-        return delAuditflow(ids);
-      }).then(() => {
-        this.getList();
-        this.$modal.msgSuccess("删除成功");
-      }).catch(() => {});
+
     },
     /** 导出按钮操作 */
     handleExport() {

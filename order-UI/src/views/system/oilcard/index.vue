@@ -10,17 +10,6 @@
           @keyup.enter.native="handleQuery"
         />
       </el-form-item>
-      <el-form-item label="使用加油卡时间">
-        <el-date-picker
-          v-model="dateRange"
-          style="width: 240px"
-          value-format="yyyy-MM-dd"
-          type="daterange"
-          range-separator="-"
-          start-placeholder="开始日期"
-          end-placeholder="结束日期"
-        ></el-date-picker>
-      </el-form-item>
       <el-form-item>
         <el-button type="primary" icon="el-icon-search" size="mini" @click="handleQuery">搜索</el-button>
         <!--        <el-button icon="el-icon-refresh" size="mini" @click="resetQuery">重置</el-button>-->
@@ -85,19 +74,9 @@
     <el-table border v-loading="loading" :data="oilCardList" @selection-change="handleSelectionChange" id="printBox"
               v-horizontal-scroll="'always'">
       <el-table-column label="加油卡卡号" align="center" prop="oilCardNo" v-if="columns[0].visible"/>
-      <el-table-column label="加油卡类别" align="center" prop="oilType" v-if="columns[12].visible"/>
-      <!--      <el-table-column label="使用加油卡时间" align="center" prop="useDate" v-if="columns[1].visible"/>-->
-      <!--      <el-table-column label="使用加油卡车辆车牌号" align="center" prop="carNo" v-if="columns[2].visible"/>-->
-      <!--      <el-table-column label="地点、事由" align="center" prop="destination" v-if="columns[3].visible"/>-->
-      <!--      <el-table-column label="充值金额(元）" align="center" prop="rechargeMoney" v-if="columns[4].visible"/>-->
-      <el-table-column label="期初余额" align="center" prop="startCardSurplus" v-if="columns[5].visible"/>
-      <!--      <el-table-column label="主卡转副卡充值金额" align="center" prop="toPlusCardMoney" v-if="columns[6].visible"/>-->
-      <!--      <el-table-column label="加油量" align="center" prop="refuelingNumber" v-if="columns[7].visible"/>-->
-      <!--      <el-table-column label="单价" align="center" prop="unitPrice" v-if="columns[8].visible"/>-->
-      <!--      <el-table-column label="加油金额(元）" align="center" prop="refuelingMoney" v-if="columns[9].visible"/>-->
-      <!--      <el-table-column label="是否有小票" align="center" prop="isTicket" v-if="columns[10].visible"/>-->
-      <el-table-column label="加油卡余额" align="center" prop="endCardSurplus" v-if="columns[11].visible"/>
-      <el-table-column label="备注" align="center" prop="comments" v-if="columns[13].visible"/>
+      <el-table-column label="加油卡类别" align="center" prop="oilType" v-if="columns[1].visible"/>
+      <el-table-column label="当前金额" align="center" prop="moneyAmount" v-if="columns[2].visible"/>
+      <el-table-column label="备注" align="center" prop="comments" v-if="columns[3].visible"/>
       <el-table-column label="操作" align="center" class-name="small-padding fixed-width" fixed="right">
         <template slot-scope="scope">
           <el-button
@@ -128,46 +107,19 @@
 
     <!-- 添加或修改加油卡信息对话框 -->
     <el-dialog :title="title" :visible.sync="open" width="500px" append-to-body>
-
       <el-form ref="form" :model="form" :rules="rules" label-width="80px">
         <el-form-item label="加油卡卡号" prop="oilCardNo">
           <el-input v-model="form.oilCardNo" placeholder="请输入加油卡卡号"/>
         </el-form-item>
-        <el-form-item label="使用加油卡时间" prop="useDate">
-          <el-input v-model="form.useDate" placeholder="请输入使用加油卡时间"/>
+        <el-form-item label="加油卡类别" prop="oilType">
+          <el-radio v-model="form.oilType" label="主卡">主卡</el-radio>
+          <el-radio v-model="form.oilType" label="副卡">副卡</el-radio>
         </el-form-item>
-        <el-form-item label="使用加油卡车辆车牌号" prop="carNo">
-          <el-input v-model="form.carNo" placeholder="请输入使用加油卡车辆车牌号"/>
-        </el-form-item>
-        <el-form-item label="地点、事由" prop="destination">
-          <el-input v-model="form.destination" placeholder="请输入地点、事由"/>
-        </el-form-item>
-        <el-form-item label="充值金额(元）" prop="rechargeMoney">
-          <el-input v-model="form.rechargeMoney" placeholder="请输入充值金额(元）"/>
-        </el-form-item>
-        <el-form-item label="期初余额" prop="startCardSurplus">
-          <el-input v-model="form.startCardSurplus" placeholder="请输入期初余额"/>
-        </el-form-item>
-        <el-form-item label="主卡转副卡充值金额" prop="toPlusCardMoney">
-          <el-input v-model="form.toPlusCardMoney" placeholder="请输入主卡转副卡充值金额"/>
-        </el-form-item>
-        <el-form-item label="加油量" prop="refuelingNumber">
-          <el-input v-model="form.refuelingNumber" placeholder="请输入加油量"/>
-        </el-form-item>
-        <el-form-item label="单价" prop="unitPrice">
-          <el-input v-model="form.unitPrice" placeholder="请输入单价"/>
-        </el-form-item>
-        <el-form-item label="加油金额(元）" prop="refuelingMoney">
-          <el-input v-model="form.refuelingMoney" placeholder="请输入加油金额(元）"/>
-        </el-form-item>
-        <el-form-item label="是否有小票" prop="isTicket">
-          <el-input v-model="form.isTicket" placeholder="请输入是否有小票"/>
-        </el-form-item>
-        <el-form-item label="加油卡余额" prop="endCardSurplus">
-          <el-input v-model="form.endCardSurplus" placeholder="请输入加油卡余额"/>
+        <el-form-item label="加油卡金额" prop="moneyAmount">
+          <el-input v-model="form.moneyAmount" placeholder="请输入使用加油卡时间"/>
         </el-form-item>
         <el-form-item label="备注" prop="comments">
-          <el-input v-model="form.comments" placeholder="请输入备注 "/>
+          <el-input v-model="form.comments" placeholder="请输入使用加油卡时间"/>
         </el-form-item>
       </el-form>
       <div slot="footer" class="dialog-footer">
@@ -276,19 +228,9 @@ export default {
       rules: {},
       columns: [
         {key: 0, label: `加油卡卡号`, visible: true},
-        {key: 1, label: `使用加油卡时间`, visible: true},
-        {key: 2, label: `使用加油卡车辆车牌号`, visible: true},
-        {key: 3, label: `地点、事由`, visible: true},
-        {key: 4, label: `充值金额(元)`, visible: true},
-        {key: 5, label: `期初余额`, visible: true},
-        {key: 6, label: `主卡转副卡充值金额`, visible: true},
-        {key: 7, label: `加油量`, visible: true},
-        {key: 8, label: `单价`, visible: true},
-        {key: 9, label: `加油金额(元)`, visible: true},
-        {key: 10, label: `是否有小票`, visible: true},
-        {key: 11, label: `加油卡余额`, visible: true},
-        {key: 12, label: `加油卡类别`, visible: true},
-        {key: 13, label: `备注`, visible: true},
+        {key: 1, label: `加油卡类别`, visible: true},
+        {key: 2, label: `当前金额`, visible: true},
+        {key: 3, label: `备注`, visible: true},
       ],
 
       //加油卡充值界面的弹窗
