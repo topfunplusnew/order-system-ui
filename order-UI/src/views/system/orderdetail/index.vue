@@ -619,49 +619,6 @@
         </template>
       </el-table-column>
       <el-table-column label="调整日期" align="center" prop="adjustDate" v-if="columns[35].visible"/>
-
-
-      <!--      <el-table-column label="作废标记" align="center" prop="cancelFlag"/>-->
-      <!--      <el-table-column label="备注" align="center" prop="comments"/>-->
-      <!--      <el-table-column label="添加时间" align="center" prop="addtime"/>-->
-      <!--      <el-table-column label="操作人员ID" align="center" prop="userId"/>-->
-      <!--      <el-table-column label="操作人员姓名" align="center" prop="UserName"/>-->
-      <!--      右侧操作列-->
-      <!--      <el-table-column label="操作" align="center" class-name="small-padding fixed-width" width="300px" fixed="right">-->
-      <!--        <template slot-scope="scope">-->
-      <!--          <el-button-->
-      <!--            size="mini"-->
-      <!--            @click="handleOrder1(scope.row)"-->
-      <!--            v-hasPermi="['system:orderdetail:edit']"-->
-      <!--          >发货单1-->
-      <!--          </el-button>-->
-      <!--          <el-button-->
-      <!--            size="mini"-->
-      <!--            @click="handleOrder2(scope.row)"-->
-      <!--            v-hasPermi="['system:orderdetail:edit']"-->
-      <!--          >发货单2-->
-      <!--          </el-button>-->
-      <!--          <el-button-->
-      <!--            size="mini"-->
-      <!--            @click="handleOrder3(scope.row)"-->
-      <!--            v-hasPermi="['system:orderdetail:edit']"-->
-      <!--          >发货单3-->
-      <!--          </el-button>-->
-      <!--          <el-button-->
-      <!--            size="mini"-->
-      <!--            type="primary"-->
-      <!--            @click="handleUpload(scope.row)"-->
-      <!--            v-hasPermi="['system:orderdetail:remove']"-->
-      <!--          >上传附件-->
-      <!--          </el-button>-->
-      <!--          <el-button-->
-      <!--            size="mini"-->
-      <!--            @click="handleCommit(scope.row)"-->
-      <!--            v-hasPermi="['system:orderdetail:remove']"-->
-      <!--          >上传收到条-->
-      <!--          </el-button>-->
-      <!--        </template>-->
-      <!--      </el-table-column>-->
     </el-table>
 
     <pagination
