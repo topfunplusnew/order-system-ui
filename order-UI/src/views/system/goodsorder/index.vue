@@ -119,6 +119,7 @@
           >查看
           </el-button>
           <el-button
+            :disabled="scope.row.isAdjusted ==='是'"
             size="mini"
             type="primary"
             @click="handleOrderItemInfo(scope.row)"
