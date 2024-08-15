@@ -414,7 +414,7 @@
           <el-date-picker
             v-model="moneyBackInfo.rebateDate"
             type="date"
-            placeholder="选择日期">
+            placeholder="选择日期" value-format="timestamp">
           </el-date-picker>
         </el-form-item>
         <el-form-item label="金额" prop="rebate">
@@ -883,7 +883,6 @@ export default {
     //添加返利回扣信息
     addMoneyBackInfo() {
       //转成时间戳
-      this.moneyBackInfo.rebateDate = this.moneyBackInfo.rebateDate.getTime();
       addRebate(this.moneyBackInfo).then(res => {
         this.$message.success('添加成功~')
       })
