@@ -69,8 +69,8 @@
 
     <el-table border v-loading="loading" :data="lendMoneyList" @selection-change="handleSelectionChange"
               v-horizontal-scroll="'always'" id="printBox">
-      <el-table-column label="id" align="center" prop="id"/>
-      <el-table-column label="借出款编号" align="center" prop="futuresNO" v-if="columns[0].visible"/>
+      <!--      <el-table-column label="id" align="center" prop="id"/>-->
+      <!--      <el-table-column label="借出款编号" align="center" prop="futuresNO" v-if="columns[0].visible"/>-->
       <el-table-column label="期货保证金公司" align="center" prop="futuresMarginCompany" v-if="columns[1].visible"/>
       <el-table-column label="对象类型(员工、客户、供应商、其他)" align="center" prop="targetType"
                        v-if="columns[2].visible"/>
@@ -225,16 +225,16 @@
           <el-table
             :data="needGetBackMoneyList"
             style="width: 100%" border v-loading="needMoneyLoading">
-            <el-table-column
-              prop="id"
-              label="ID"
-              width="60">
-            </el-table-column>
-            <el-table-column
-              prop="futuresNO"
-              label="借出款编号"
-              width="130">
-            </el-table-column>
+            <!--            <el-table-column-->
+            <!--              prop="id"-->
+            <!--              label="ID"-->
+            <!--              width="60">-->
+            <!--            </el-table-column>-->
+            <!--            <el-table-column-->
+            <!--              prop="futuresNO"-->
+            <!--              label="借出款编号"-->
+            <!--              width="130">-->
+            <!--            </el-table-column>-->
             <el-table-column
               prop="moneyAmount"
               label="收回金额">
