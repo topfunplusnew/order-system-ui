@@ -465,7 +465,7 @@
       :visible.sync="landFreeDialogVisible"
       width="50%" destroy-on-close>
       <!--      传入运费-->
-      <ApplyPayment table-name="orderfreight" t-i-d="id" @changeOpen="landFreeDialogVisible = false"
+      <ApplyPayment :table-name="TableName.ORDER_FREIGHT" :t-i-d="tID" @changeOpen="landFreeDialogVisible = false"
                     :need-money="landFreightFree" :need-info="driverInfo"/>
     </el-dialog>
 
@@ -474,7 +474,7 @@
       title="海运费申请"
       :visible.sync="seaFreeDialogVisible"
       width="50%" destroy-on-close>
-      <ApplyPayment table-name="orderfreight" t-i-d="id" @changeOpen="seaFreeDialogVisible = false"
+      <ApplyPayment :table-name="TableName.ORDER_FREIGHT" :t-i-d="tID" @changeOpen="seaFreeDialogVisible = false"
                     :need-money="seaFreightFree" :need-info="driverInfo"/>
     </el-dialog>
 
@@ -710,6 +710,9 @@ export default {
       isFreight: '',
       //付款信息哈希表
       paymentInfoHashMap: {},
+
+      //tid
+      tID: ''
     };
   },
   created() {
@@ -717,6 +720,9 @@ export default {
     this.$store.dispatch('order/getOrderList')
   },
   computed: {
+    TableName() {
+      return TableName
+    },
     //票点金额 开票金额*票点
     invoiceAmount: {
       set(val) {
@@ -1017,7 +1023,8 @@ export default {
     handleApplyLandFree(row) {
       // this.keyFlag += 1 //让dialog组件重新渲染
       this.landFreightFree = row.landFreight
-
+      //tid
+      this.tID = row.id;
       //组装司机信息
       this.driverInfo = {
         otherAcountsName: row.landDriverName,
@@ -1030,6 +1037,7 @@ export default {
     handleApplySeaFree(row) {
       // this.keyFlag += 1 //让dialog组件重新渲染
       this.seaFreightFree = row.seaFreight
+      this.tID = row.id;
       //组装司机信息
       this.driverInfo = {
         otherAcountsName: row.seaDriverName,

@@ -255,8 +255,8 @@
               </el-col>
             </el-row>
             <!--            还款 付款申请-->
-            <ApplyPayment table-name="borrowedmoney" t-i-d="id" @changeOpen="innerVisible = false"
-                          :addMoney="currentGiveBackMoneyInfo.ratio"/>
+            <ApplyPayment :table-name="TableName.BORROWED_MONEY" :t-i-d="tID" @changeOpen="innerVisible = false"
+                          :addMoney="currentGiveBackMoneyInfo.ratio" :need-info="{}"/>
           </el-dialog>
         </el-card>
       </div>
@@ -278,6 +278,7 @@ import SearchOption from "@/components/SearchOption.vue";
 import {listBankAccount} from "@/api/system/bankAccount";
 import {listCompany} from "@/api/system/company";
 import ApplyPayment from "@/components/ApplyPayment.vue";
+import {TableName} from "@/api/tool/enums";
 
 export default {
   name: "BorrowedMoney",
@@ -404,7 +405,10 @@ export default {
       //一级分类列表
       OneLevelOption: [],
       //二级分类
-      TwoLevelOption: []
+      TwoLevelOption: [],
+
+      //tid
+      tID: ''
     };
   },
   created() {
@@ -412,6 +416,9 @@ export default {
     this.$store.dispatch('money/getTempBorrowedMoneyList')
   },
   computed: {
+    TableName() {
+      return TableName
+    },
     fullLevel() {
       return this.currentSort.levelOne + '-' + this.currentSort.levelTwo;
     },
@@ -442,6 +449,9 @@ export default {
     //处理还款的事件函数
     handleGiveBackMoney(row) {
       console.log(row)
+      //tid
+      this.tID = row.id;
+      //
       this.currentUUID = row.loanNO
       this.currentBankNo = row.bankNo
       this.currentGiveBackMoneyInfo.bankNo = row.bankNo
