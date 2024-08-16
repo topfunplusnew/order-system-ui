@@ -3,47 +3,47 @@
     <el-form :model="queryParams" ref="queryForm" size="small" :inline="true" v-show="showSearch" label-width="68px">
       <el-form-item label="客户" prop="customer">
         <el-input
-          v-model="queryParams.customer"
-          placeholder="请输入客户姓名"
-          clearable
-          @keyup.enter.native="handleQuery"
+            v-model="queryParams.customer"
+            placeholder="请输入客户姓名"
+            clearable
+            @keyup.enter.native="handleQuery"
         />
       </el-form-item>
 
       <el-form-item label="区域" prop="region">
         <el-input
-          v-model="queryParams.region"
-          placeholder="请输入区域"
-          clearable
-          @keyup.enter.native="handleQuery"
+            v-model="queryParams.region"
+            placeholder="请输入区域"
+            clearable
+            @keyup.enter.native="handleQuery"
         />
       </el-form-item>
 
       <el-form-item label="日期" prop="submittime">
         <el-input
-          v-model="queryParams.submittime"
-          placeholder="请输入日期"
-          clearable
-          @keyup.enter.native="handleQuery"
+            v-model="queryParams.submittime"
+            placeholder="请输入日期"
+            clearable
+            @keyup.enter.native="handleQuery"
         />
       </el-form-item>
 
       <el-form-item label="姓名" prop="personnel">
         <el-input
-          v-model="queryParams.personnel"
-          placeholder="请输入姓名"
-          clearable
-          @keyup.enter.native="handleQuery"
+            v-model="queryParams.personnel"
+            placeholder="请输入姓名"
+            clearable
+            @keyup.enter.native="handleQuery"
         />
       </el-form-item>
 
       <el-form-item>
-      <el-button type="primary" icon="el-icon-search" size="mini" @click="handleQuery">搜索</el-button>
+        <el-button type="primary" icon="el-icon-search" size="mini" @click="handleQuery">搜索</el-button>
       </el-form-item>
 
-<!--      <el-form-item>-->
-<!--        <el-button icon="el-icon-refresh" size="mini" @click="resetQuery">刷新</el-button>-->
-<!--      </el-form-item>-->
+      <!--      <el-form-item>-->
+      <!--        <el-button icon="el-icon-refresh" size="mini" @click="resetQuery">刷新</el-button>-->
+      <!--      </el-form-item>-->
     </el-form>
 
     <el-row :gutter="10" class="mb8">
@@ -53,58 +53,23 @@
       </el-col>
       <el-col :span="1.5">
         <el-button
-          type="danger"
-          plain
-          icon="el-icon-plus"
-          size="mini"
-          @click="handleAdd"
-          v-hasPermi="['system:customervisit:add']"
+            type="danger"
+            plain
+            icon="el-icon-plus"
+            size="mini"
+            @click="handleAdd"
+            v-hasPermi="['system:customervisit:add']"
         >新增走访记录
         </el-button>
       </el-col>
-
-<!--      <el-col :span="1.5">
-        <el-button
-          type="success"
-          plain
-          icon="el-icon-edit"
-          size="mini"
-          @click="handleUpdate"
-          :disabled="single"
-          v-hasPermi="['system:customervisit:edit']"
-        >修改</el-button>
-        &lt;!&ndash;初始状态不能点击&ndash;&gt;
-      </el-col>-->
-<!--      <el-col :span="1.5">
-        <el-button
-          type="danger"
-          plain
-          icon="el-icon-delete"
-          size="mini"
-          @click="handleDelete"
-          :disabled="multiple"
-          v-hasPermi="['system:customervisit:remove']"
-        >删除</el-button>
-         &lt;!&ndash;初始状态不能点击&ndash;&gt;
-      </el-col>-->
-<!--      <el-col :span="1.5">
-        <el-button
-          type="warning"
-          plain
-          size="mini"
-          icon="el-icon-download"
-          @click="handleExport"
-          v-hasPermi="['system:customervisit:export']"
-        >导出</el-button>
-      </el-col>-->
       <right-toolbar :showSearch.sync="showSearch" @queryTable="getList" :columns="columns">
         <template v-slot:print>
           <el-col :span="1.5">
             <el-button
-              plain
-              icon="el-icon-printer"
-              size="mini"
-              @click="printHTML"
+                plain
+                icon="el-icon-printer"
+                size="mini"
+                @click="printHTML"
             >
             </el-button>
           </el-col>
@@ -113,11 +78,11 @@
         <template v-slot:export>
           <el-col :span="1.5">
             <el-button
-              plain
-              icon="el-icon-folder-opened"
-              size="mini"
-              @click="handleExport"
-              v-hasPermi="['system:customervisit:export']"
+                plain
+                icon="el-icon-folder-opened"
+                size="mini"
+                @click="handleExport"
+                v-hasPermi="['system:customervisit:export']"
             >
             </el-button>
           </el-col>
@@ -125,10 +90,11 @@
       </right-toolbar>
     </el-row>
 
-    <el-table border v-loading="loading" :data="CustomerVisitList" @selection-change="handleSelectionChange" id="printBox"
+    <el-table border v-loading="loading" :data="CustomerVisitList" @selection-change="handleSelectionChange"
+              id="printBox"
               v-horizontal-scroll="'always'">
-<!--      <el-table-column type="selection" width="55" align="center" />-->
-      <el-table-column label="id" align="center" prop="id" />
+      <!--      <el-table-column type="selection" width="55" align="center" />-->
+      <el-table-column label="id" align="center" prop="id"/>
       <el-table-column label="是否审核" align="center" prop="isCheckState" v-if="columns[0].visible"/>
       <el-table-column label="人员" align="center" prop="personnel" v-if="columns[1].visible"/>
       <el-table-column label="区域" align="center" prop="region" v-if="columns[2].visible"/>
@@ -140,106 +106,95 @@
       <el-table-column label="当地经销商" align="center" prop="localDealer" v-if="columns[8].visible"/>
       <el-table-column label="月用货量" align="center" prop="monthlyConsumption" v-if="columns[9].visible"/>
       <el-table-column label="白玻用货习惯及厂家" align="center" prop="whiteGlassFactory" v-if="columns[10].visible"/>
-      <el-table-column label="lowe玻璃用货厂家及用量" align="center" prop="loweGlassConsumption" v-if="columns[11].visible"/>
-      <el-table-column label="色玻、过度色玻璃用货厂家及用量" align="center" prop="colorGlassConsumption" v-if="columns[12].visible"/>
-      <el-table-column label="特色厚度、特殊尺寸、协议品用货厂家及用量" align="center" prop="specialGlassConsumption" v-if="columns[13].visible"/>
+      <el-table-column label="lowe玻璃用货厂家及用量" align="center" prop="loweGlassConsumption"
+                       v-if="columns[11].visible"/>
+      <el-table-column label="色玻、过度色玻璃用货厂家及用量" align="center" prop="colorGlassConsumption"
+                       v-if="columns[12].visible"/>
+      <el-table-column label="特色厚度、特殊尺寸、协议品用货厂家及用量" align="center" prop="specialGlassConsumption"
+                       v-if="columns[13].visible"/>
       <el-table-column label="备注" align="center" prop="comments" v-if="columns[14].visible"/>
       <el-table-column label="提交时间" align="center" prop="submittime" v-if="columns[15].visible"/>
       <el-table-column label="操作" align="center" class-name="small-padding fixed-width">
         <template slot-scope="scope">
           <el-button
-            size="mini"
-            type="primary"
-            @click="handleUpdate(scope.row)"
-            v-hasPermi="['system:customervisit:edit']"
+              size="mini"
+              type="primary"
+              @click="handleUpdate(scope.row)"
+              v-hasPermi="['system:customervisit:edit']"
           >编辑
           </el-button>
           <el-button
-            size="mini"
-            type="danger"
-            @click="handleDelete(scope.row)"
-            v-hasPermi="['system:customervisit:remove']"
+              size="mini"
+              type="danger"
+              @click="handleDelete(scope.row)"
+              v-hasPermi="['system:customervisit:remove']"
           >删除
           </el-button>
-<!--          <el-button
-            size="mini"
-            type="text"
-            icon="el-icon-edit"
-            @click="handleUpdate(scope.row)"
-            v-hasPermi="['system:customervisit:edit']"
-          >修改</el-button>-->
-<!--          <el-button
-            size="mini"
-            type="text"
-            icon="el-icon-delete"
-            @click="handleDelete(scope.row)"
-            v-hasPermi="['system:customervisit:remove']"
-          >删除</el-button>-->
         </template>
       </el-table-column>
     </el-table>
 
     <pagination
-      v-show="total>0"
-      :total="total"
-      :page.sync="queryParams.pageNum"
-      :limit.sync="queryParams.pageSize"
-      @pagination="getList"
+        v-show="total>0"
+        :total="total"
+        :page.sync="queryParams.pageNum"
+        :limit.sync="queryParams.pageSize"
+        @pagination="getList"
     />
 
     <!-- 添加或修改走访记录对话框 -->
     <el-dialog :title="title" :visible.sync="open" width="500px" append-to-body>
       <el-form ref="form" :model="form" :rules="rules" label-width="80px">
-        <el-form-item label="id" prop="id">
-          <el-input v-model="form.province" placeholder="请输入ID" />
-        </el-form-item>
+        <!--        <el-form-item label="id" prop="id">-->
+        <!--          <el-input v-model="form.province" placeholder="请输入ID"/>-->
+        <!--        </el-form-item>-->
         <el-form-item label="是否审核" prop="isCheckState">
-          <el-input v-model="form.checkState" placeholder="请输入审核标志" />
+          <el-input v-model="form.checkState" placeholder="请输入审核标志"/>
         </el-form-item>
         <el-form-item label="人员" prop="personnel">
-          <el-input v-model="form.county" placeholder="请输入人员" />
+          <el-input v-model="form.county" placeholder="请输入人员"/>
         </el-form-item>
         <el-form-item label="区域" prop="region">
-          <el-input v-model="form.customer" type="textarea" placeholder="请输入区域" />
+          <el-input v-model="form.customer" type="textarea" placeholder="请输入区域"/>
         </el-form-item>
         <el-form-item label="客户名称" prop="customer">
-          <el-input v-model="form.city" placeholder="请输入客户名称" />
+          <el-input v-model="form.city" placeholder="请输入客户名称"/>
         </el-form-item>
         <el-form-item label="负责人" prop="leaderName">
-          <el-input v-model="form.leaderName" type="textarea" placeholder="请输入内容" />
+          <el-input v-model="form.leaderName" type="textarea" placeholder="请输入内容"/>
         </el-form-item>
         <el-form-item label="负责人电话" prop="LeaderTel">
-          <el-input v-model="form.LeaderTel" type="textarea" placeholder="请输入内容" />
+          <el-input v-model="form.LeaderTel" type="textarea" placeholder="请输入内容"/>
         </el-form-item>
         <el-form-item label="厂房设备" prop="equipment">
-          <el-input v-model="form.equipment" placeholder="请输入厂房设备" />
+          <el-input v-model="form.equipment" placeholder="请输入厂房设备"/>
         </el-form-item>
         <el-form-item label="竞争对手" prop="competitor">
-          <el-input v-model="form.competitor" placeholder="请输入竞争对手" />
+          <el-input v-model="form.competitor" placeholder="请输入竞争对手"/>
         </el-form-item>
         <el-form-item label="当地经销商" prop="localDealer">
-          <el-input v-model="form.localDealer" placeholder="请输入当地经销商" />
+          <el-input v-model="form.localDealer" placeholder="请输入当地经销商"/>
         </el-form-item>
         <el-form-item label="月用货量" prop="monthlyConsumption">
-          <el-input v-model="form.monthlyConsumption" placeholder="请输入月用货量" />
+          <el-input v-model="form.monthlyConsumption" placeholder="请输入月用货量"/>
         </el-form-item>
         <el-form-item label="白玻用货习惯及厂家" prop="whiteGlassFactory">
-          <el-input v-model="form.whiteGlassFactory" placeholder="请输入白玻用货习惯及厂家" />
+          <el-input v-model="form.whiteGlassFactory" placeholder="请输入白玻用货习惯及厂家"/>
         </el-form-item>
         <el-form-item label="lowe玻璃用货厂家及用量" prop="loweGlassConsumption">
-          <el-input v-model="form.loweGlassConsumption" placeholder="请输入lowe玻璃用货厂家及用量" />
+          <el-input v-model="form.loweGlassConsumption" placeholder="请输入lowe玻璃用货厂家及用量"/>
         </el-form-item>
         <el-form-item label="色玻、过度色玻璃用货厂家及用量" prop="colorGlassConsumption">
-          <el-input v-model="form.colorGlassConsumption" placeholder="请输入色玻、过度色玻璃用货厂家及用量" />
+          <el-input v-model="form.colorGlassConsumption" placeholder="请输入色玻、过度色玻璃用货厂家及用量"/>
         </el-form-item>
         <el-form-item label="特色厚度、特殊尺寸、协议品用货厂家及用量" prop="specialGlassConsumption">
-          <el-input v-model="form.specialGlassConsumption" placeholder="请输入特色厚度、特殊尺寸、协议品用货厂家及用量" />
+          <el-input v-model="form.specialGlassConsumption" placeholder="请输入特色厚度、特殊尺寸、协议品用货厂家及用量"/>
         </el-form-item>
         <el-form-item label="备注" prop="comments">
-          <el-input v-model="form.comments" placeholder="请输入备注" />
+          <el-input v-model="form.comments" placeholder="请输入备注"/>
         </el-form-item>
         <el-form-item label="提交时间" prop="submittime">
-          <el-input v-model="form.submittime" placeholder="请输入添加时间" />
+          <el-input v-model="form.submittime" placeholder="请输入添加时间"/>
         </el-form-item>
 
       </el-form>
@@ -252,7 +207,13 @@
 </template>
 
 <script>
-import { listCustomerVisit, getCustomerVisit, delCustomerVisit, addCustomerVisit, updateCustomerVisit } from "@/api/system/CustomerVisit";
+import {
+  listCustomerVisit,
+  getCustomerVisit,
+  delCustomerVisit,
+  addCustomerVisit,
+  updateCustomerVisit
+} from "@/api/system/CustomerVisit";
 
 export default {
   name: "CustomerVisit",
@@ -307,8 +268,7 @@ export default {
       // 表单参数
       form: {},
       // 表单校验
-      rules: {
-      },
+      rules: {},
       columns: [
         {key: 0, label: `是否审核`, visible: true},
         {key: 1, label: `人员`, visible: true},
@@ -333,7 +293,7 @@ export default {
   created() {
     this.getList();
     if (localStorage.getItem('customervisit-columns') === 'null'
-      || !localStorage.getItem('customervisit-columns')) {
+        || !localStorage.getItem('customervisit-columns')) {
       //设置localStorage
       localStorage.setItem("customervisit-columns", JSON.stringify(this.columns))
     } else {
@@ -407,7 +367,7 @@ export default {
     // 多选框选中数据
     handleSelectionChange(selection) {
       this.ids = selection.map(item => item.id)
-      this.single = selection.length!==1
+      this.single = selection.length !== 1
       this.multiple = !selection.length
     },
     /** 新增按钮操作 */
@@ -449,12 +409,13 @@ export default {
     /** 删除按钮操作 */
     handleDelete(row) {
       const ids = row.id || this.ids;
-      this.$modal.confirm('是否确认删除走访记录编号为"' + ids + '"的数据项？').then(function() {
+      this.$modal.confirm('是否确认删除走访记录编号为"' + ids + '"的数据项？').then(function () {
         return delCustomerVisit(ids);
       }).then(() => {
         this.getList();
         this.$modal.msgSuccess("删除成功");
-      }).catch(() => {});
+      }).catch(() => {
+      });
     },
     /** 导出按钮操作 */
     handleExport() {

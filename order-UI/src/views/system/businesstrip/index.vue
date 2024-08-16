@@ -33,7 +33,32 @@
       <el-col :span="1.5">
         <el-button icon="el-icon-refresh" size="mini" @click="resetQuery">刷新</el-button>
       </el-col>
-      <right-toolbar :showSearch.sync="showSearch" @queryTable="getList"></right-toolbar>
+      <right-toolbar :showSearch.sync="showSearch" @queryTable="getList" :columns="columns">
+        <template v-slot:print>
+          <el-col :span="1.5">
+            <el-button
+                plain
+                icon="el-icon-printer"
+                size="mini"
+                @click="printHTML"
+            >
+            </el-button>
+          </el-col>
+        </template>
+        <!--        导出-->
+        <template v-slot:export>
+          <el-col :span="1.5">
+            <el-button
+                plain
+                icon="el-icon-folder-opened"
+                size="mini"
+                @click="handleExport"
+                v-hasPermi="['system:company:export']"
+            >
+            </el-button>
+          </el-col>
+        </template>
+      </right-toolbar>
     </el-row>
 
     <el-table border v-horizontal-scroll="'always'" v-loading="loading" :data="BusinessTripList"
@@ -176,9 +201,11 @@ import {
   addBusinessTrip,
   updateBusinessTrip
 } from "@/api/system/BusinessTrip";
+import {mixin_printHTML} from "@/views/dashboard/mixins/print";
 
 export default {
   name: "BusinessTrip",
+  mixins: [mixin_printHTML],
   data() {
     return {
       // 遮罩层
@@ -223,7 +250,23 @@ export default {
       // 表单参数
       form: {},
       // 表单校验
-      rules: {}
+      rules: {},
+      columns: [
+        {key: 0, label: `收款编号`, visible: true},
+        {key: 1, label: `日期`, visible: true},
+        {key: 2, label: `支付类型`, visible: true},
+        {key: 3, label: `金额`, visible: true},
+        {key: 4, label: `己方户名`, visible: true},
+        {key: 5, label: `己方账号`, visible: true},
+        {key: 6, label: `己方开户行`, visible: true},
+        {key: 7, label: `己方账号ID`, visible: true},
+        {key: 8, label: `对方户名`, visible: true},
+        {key: 9, label: `对方账号`, visible: true},
+        {key: 10, label: `对方开户行`, visible: true},
+        {key: 11, label: `对方公司`, visible: true},
+        {key: 12, label: `对方公司ID`, visible: true},
+        {key: 13, label: `对方公司类型`, visible: true},
+      ],
     };
   },
   created() {
