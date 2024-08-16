@@ -13,7 +13,6 @@ export default {
   },
   watch: {
     needToShowInfo(val) {
-      console.log('展示组件', val)
       this.needToShow = val
     }
   }
