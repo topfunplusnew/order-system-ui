@@ -3,10 +3,10 @@
     <el-form :model="queryParams" ref="queryForm" size="small" :inline="true" v-show="showSearch" label-width="68px">
       <el-form-item label="级别名称" prop="levelName">
         <el-input
-          v-model="queryParams.levelName"
-          placeholder="请输入级别名称"
-          clearable
-          @keyup.enter.native="handleQuery"
+            v-model="queryParams.levelName"
+            placeholder="请输入级别名称"
+            clearable
+            @keyup.enter.native="handleQuery"
         />
       </el-form-item>
       <el-form-item>
@@ -17,11 +17,11 @@
     <el-row :gutter="10" class="mb8">
       <el-col :span="1.5">
         <el-button
-          type="danger"
-          plain
-          size="mini"
-          @click="addNewInventory"
-          v-hasPermi="['system:inventory:add']"
+            type="danger"
+            plain
+            size="mini"
+            @click="addNewInventory"
+            v-hasPermi="['system:inventory:add']"
         >新增货物
         </el-button>
       </el-col>
@@ -32,10 +32,10 @@
         <template v-slot:print>
           <el-col :span="1.5">
             <el-button
-              plain
-              icon="el-icon-printer"
-              size="mini"
-              @click="printHTML"
+                plain
+                icon="el-icon-printer"
+                size="mini"
+                @click="printHTML"
             >
             </el-button>
           </el-col>
@@ -44,11 +44,11 @@
         <template v-slot:export>
           <el-col :span="1.5">
             <el-button
-              plain
-              icon="el-icon-folder-opened"
-              size="mini"
-              @click="handleExport"
-              v-hasPermi="['system:company:export']"
+                plain
+                icon="el-icon-folder-opened"
+                size="mini"
+                @click="handleExport"
+                v-hasPermi="['system:company:export']"
             >
             </el-button>
           </el-col>
@@ -107,17 +107,24 @@
       <el-table-column label="操作" align="center" class-name="small-padding fixed-width" width="170px" fixed="right">
         <template slot-scope="scope">
           <el-button
-            size="mini"
-            type="primary"
-            @click="handleUpdate(scope.row)"
-            v-hasPermi="['system:inventory:edit']"
+              size="mini"
+              type="warning"
+              @click="secondryInventoryOut(scope.row)"
+              v-hasPermi="['system:inventory:edit']"
+          >出库
+          </el-button>
+          <el-button
+              size="mini"
+              type="primary"
+              @click="handleUpdate(scope.row)"
+              v-hasPermi="['system:inventory:edit']"
           >修改
           </el-button>
           <el-button
-            size="mini"
-            type="danger"
-            @click="handleDelete(scope.row)"
-            v-hasPermi="['system:inventory:remove']"
+              size="mini"
+              type="danger"
+              @click="handleDelete(scope.row)"
+              v-hasPermi="['system:inventory:remove']"
           >删除
           </el-button>
         </template>
@@ -125,11 +132,11 @@
     </el-table>
 
     <pagination
-      v-show="total>0"
-      :total="total"
-      :page.sync="queryParams.pageNum"
-      :limit.sync="queryParams.pageSize"
-      @pagination="getList"
+        v-show="total>0"
+        :total="total"
+        :page.sync="queryParams.pageNum"
+        :limit.sync="queryParams.pageSize"
+        @pagination="getList"
     />
 
 
@@ -157,9 +164,9 @@
         </el-form-item>
         <el-form-item label="入库日期" prop="storeDate">
           <el-date-picker
-            v-model="form.storeDate"
-            type="date"
-            placeholder="入库日期">
+              v-model="form.storeDate"
+              type="date"
+              placeholder="入库日期">
           </el-date-picker>
         </el-form-item>
         <el-form-item label="库存量" prop="stockNumber">
@@ -359,11 +366,20 @@
 
     <!--    添加入库信息 与订单结构类似-->
     <el-dialog title="货物入库" :visible.sync="invoiceInVisible" width="80%" append-to-body>
-      <!--      todo-->
       <InventoryForm :inventory-info="inventoryInfo" @changeInventoryInfo="handleChangeInventoryInfo"/>
       <div slot="footer" class="dialog-footer">
         <el-button type="primary" @click="submitInvoiceIn">确 定</el-button>
         <el-button @click="invoiceInVisible= false">取 消</el-button>
+      </div>
+    </el-dialog>
+
+
+    <!--    二次出库-->
+    <el-dialog title="二次出库" :visible.sync="secondInvoiceInVisible" width="80%" append-to-body>
+      <InventoryForm :inventory-info="secondInvoiceIn" @changeInventoryInfo="handleChangeSecondInvoiceIn"/>
+      <div slot="footer" class="dialog-footer">
+        <el-button type="primary" @click="submitSecondInvoiceIn">确 定</el-button>
+        <el-button @click="secondInvoiceInVisible= false">取 消</el-button>
       </div>
     </el-dialog>
   </div>
@@ -486,7 +502,12 @@ export default {
         storeHouseName: '',
         carNo: '',
         tel: ''
-      }
+      },
+
+      //二次出库
+      secondInvoiceIn: {},
+      secondInvoiceInVisible: false,
+
     };
   },
   computed: {
@@ -560,6 +581,17 @@ export default {
     handleChangeInventoryInfo(val) {
       console.log('--', val)
       this.inventoryInfo = val;
+    },
+    //二次出库
+    secondryInventoryOut(row) {
+      console.log(row)
+      this.secondInvoiceInVisible = true;
+    },
+    handleChangeSecondInvoiceIn(val) {
+      console.log(val)
+    },
+    submitSecondInvoiceIn() {
+      this.secondInvoiceInVisible = false
     },
     /** 查询库存列表 */
     getList() {
