@@ -462,9 +462,6 @@
       title="陆运费申请"
       :visible.sync="landFreeDialogVisible"
       width="50%" destroy-on-close>
-      <!--      传入运费-->
-      <!--      <ApplyPayment :table-name="TableName.ORDER_FREIGHT" :t-i-d="tID" @changeOpen="landFreeDialogVisible = false"-->
-      <!--                    :need-money="landFreightFree" :need-info="driverInfo"/>-->
       <FreeApply :order-info="landFreightInfo"/>
     </el-dialog>
 
@@ -473,9 +470,7 @@
       title="海运费申请"
       :visible.sync="seaFreeDialogVisible"
       width="50%" destroy-on-close>
-      <!--      <ApplyPayment :table-name="TableName.ORDER_FREIGHT" :t-i-d="tID" @changeOpen="seaFreeDialogVisible = false"-->
-      <!--                    :need-money="seaFreightFree" :need-info="driverInfo"/>-->
-      <FreeApply/>
+      <FreeApply :order-info="seaFreightInfo"/>
     </el-dialog>
 
 
@@ -509,7 +504,7 @@ import {listBankAccount} from "@/api/system/bankAccount";
 import {listCompany} from "@/api/system/company";
 import {addRebate} from "@/api/system/Rebate";
 import {formatDate} from "@/utils";
-import {addOrderFreight} from "@/api/system/orderFreight";
+import {addOrderFreight, listOrderFreight} from "@/api/system/orderFreight";
 import SwitchBarItem from "@/components/SwitchBarItem.vue";
 import SwitchBarForCheck from "@/components/SwitchBarForCheck.vue";
 import ApplyPayment from "@/components/ApplyPayment.vue";
@@ -705,21 +700,12 @@ export default {
       //当前订单id
       currentOrderId: null,
       queryCompanyName: '',
-
-
       //付款申请信息列表 用于判断海运费和陆运费按钮是否可用
       paymentApplyInfoList: [],
       isFreight: '',
-      //付款信息哈希表
-      paymentInfoHashMap: {},
-
-      //tid
-      tID: '',
-
       //陆运费信息
       landFreightInfo: {},
       seaFreightInfo: {},
-
     };
   },
   created() {
@@ -1010,21 +996,8 @@ export default {
         })
       }
     },
-    //申请运费相关
-    //是否已经有了相关运费信息
-    isHaveLandFree(row) {
-      //判断标准为名字和运费
-      console.log(this.paymentInfoHashMap)
-    },
-    isHaveSeaFree(row) {
-      // this.hasSeaFreight = row;
-      // return this.hasSeaFreight;
-      return false
-    },
-
     //申请陆运费
     handleApplyLandFree(row) {
-      console.log('row', row)
       //组装订单运费信息 己方银行卡信息弹窗自己选
       this.landFreightInfo = {
         ordersNo: row.ordersNo,
@@ -1039,45 +1012,53 @@ export default {
         carNo: row.landCarNo,
         fleet: row.fleet,
       }
-      //首先去运费表查看是否有运费信息 todo
-
-      // this.keyFlag += 1 //让dialog组件重新渲染
-      this.landFreightFree = row.landFreight
-      //tid
-      this.tID = row.id;
-      //组装司机信息
-      this.driverInfo = {
-        otherAcountsName: row.landDriverName,
-        companyName: null,
-        isExit: true,//用这个字段来表示有司机信息
-      }
-      this.landFreeDialogVisible = true;
+      //首先去运费表查看是否有运费信息
+      listOrderFreight({...this.landFreightInfo, paymentState: '未支付'}).then(res => {
+        if (res.rows.length === 0) {
+          // this.keyFlag += 1 //让dialog组件重新渲染
+          this.landFreightFree = row.landFreight
+          //组装司机信息
+          this.driverInfo = {
+            otherAcountsName: row.landDriverName,
+            companyName: null,
+            isExit: true,//用这个字段来表示有司机信息
+          }
+          this.landFreeDialogVisible = true;
+        } else {
+          alert('该订单已有陆运费信息!')
+        }
+      })
     },
     //申请海运费
     handleApplySeaFree(row) {
-      // this.keyFlag += 1 //让dialog组件重新渲染
-      this.seaFreightFree = row.seaFreight
-      this.tID = row.id;
+      //组装海运费信息
       this.seaFreightInfo = {
         ordersNo: row.ordersNo,
-        freightType: '陆运',
+        freightType: '海运',
         moneyAmount: row.seaFreight,
         otherAcountsName: row.seaDriverName,
         otherBankNo: row.seaBankNo,
         otherBankName: row.seaBankName,
-        paymentState: row.paymentState,
+        paymentState: '申请中',
         driverName: row.seaDriverName,
         driverId: row.seaCarID,
         carNo: row.seaCarNo,
-        fleet: row.fleet,
+        fleet: '',
       }
-      //组装司机信息
-      this.driverInfo = {
-        otherAcountsName: row.seaDriverName,
-        companyName: null,
-        isExit: true,//用这个字段来表示有司机信息
-      }
-      this.seaFreeDialogVisible = true;
+      listOrderFreight({...this.seaFreightInfo, paymentState: '未支付'}).then(res => {
+        if (res.rows.length === 0) {
+          this.seaFreightFree = row.seaFreight
+          this.driverInfo = {
+            otherAcountsName: row.seaDriverName,
+            companyName: null,
+            isExit: true,
+          }
+          this.seaFreeDialogVisible = true;
+        } else {
+          alert('该订单已有陆运费信息!')
+        }
+      })
+
     },
     //打印
     printHTML() {

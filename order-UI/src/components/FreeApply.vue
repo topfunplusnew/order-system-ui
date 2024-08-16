@@ -32,8 +32,10 @@ export default {
       Object.assign(this.form, this.orderInfo)
       //发送请求 添加运费信息
       addOrderFreight(this.form).then(res => {
-        console.log(res)
         this.$message.success('运费信息添加成功~')
+        setTimeout(() => {
+          this.$router.push('/order/orderFreight')
+        })
       })
     },
     handleCommitBack(val) {
