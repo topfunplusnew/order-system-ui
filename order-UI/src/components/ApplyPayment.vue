@@ -12,9 +12,9 @@
       <!--        </el-form-item>-->
       <el-form-item label="日期" prop="fundsDate">
         <el-date-picker
-          v-model="form.fundsDate"
-          type="date"
-          placeholder="选择日期">
+            v-model="form.fundsDate"
+            type="date"
+            placeholder="选择日期">
         </el-date-picker>
       </el-form-item>
       <el-form-item label="支付类型" prop="payType">
@@ -24,10 +24,10 @@
           <el-col :span="8">
             <el-select v-model="currentSort.levelOne" placeholder="请选择一级分类" @change="handleSelectOneLevel">
               <el-option
-                v-for="item in OneLevelOption"
-                :key="item.id"
-                :label="item.title"
-                :value="item.title">
+                  v-for="item in OneLevelOption"
+                  :key="item.id"
+                  :label="item.title"
+                  :value="item.title">
               </el-option>
             </el-select>
           </el-col>
@@ -35,10 +35,10 @@
           <el-col :span="8">
             <el-select v-model="currentSort.levelTwo" placeholder="请选择二级分类" @change="handleSelectTwoLevel">
               <el-option
-                v-for="item in TwoLevelOption"
-                :key="item.id"
-                :label="item.title"
-                :value="item.title">
+                  v-for="item in TwoLevelOption"
+                  :key="item.id"
+                  :label="item.title"
+                  :value="item.title">
               </el-option>
             </el-select>
           </el-col>
@@ -92,7 +92,6 @@
     </el-form>
     <div slot="footer" class="dialog-footer" style="text-align: center">
       <el-button type="primary" @click="submitForm">确 定</el-button>
-      <el-button @click="cancel">取 消</el-button>
     </div>
   </div>
 </template>
@@ -185,18 +184,14 @@ export default {
     };
   },
   created() {
-    console.log('传入的金额', this.needMoney)
-    this.reset();
-    this.getList();
     //查询科目信息
     listSubject().then(res => {
       this.subjectTree = this.handleTree(res.data, "id", "parentId");
       this.OneLevelOption = this.subjectTree;
     })
-
   },
   mounted() {
-    //如果传入的必须自动填充的金额大于0 则自动填充 且无法修改
+    // 如果传入的必须自动填充的金额大于0 则自动填充 且无法修改
     if (this.needMoney > 0) {
       this.form.moneyAmount = this.needMoney;
       this.inputDisabled = true;
@@ -209,10 +204,10 @@ export default {
         this.form.companyName = this.needInfo.companyName
         //查询司机的银行卡信息
         listBankAccount({acountsType: '司机', acountsName: this.needInfo.otherAcountsName})
-          .then(res => {
-            this.form.otherBankNo = res.rows[0].bankNo
-            this.form.otherBankName = res.rows[0].bankName
-          })
+            .then(res => {
+              this.form.otherBankNo = res.rows[0].bankNo
+              this.form.otherBankName = res.rows[0].bankName
+            })
       }
     }
   },
@@ -220,22 +215,29 @@ export default {
     fullLevel() {
       return this.currentSort.levelOne + '-' + this.currentSort.levelTwo;
     },
-    opened: {
-      set(value) {
-        this.$emit('changeOpen', value)
-      },
-      get() {
-        return this.open;
-      }
-    },
   },
   watch: {
-    freightFree: {
+    //可以监听到props的变化
+    needInfo: {
       handler(val) {
-        if (val !== '') {
-          this.form.moneyAmount = val;
-          this.$store.dispatch('money/clearFreightFree') //清空状态
+        if (this.needInfo.isExit !== undefined) {
+          if (this.needInfo.isExit === true) {
+            //自动填充
+            this.form.otherAcountsName = this.needInfo.otherAcountsName
+            this.form.companyName = this.needInfo.companyName
+            //查询司机的银行卡信息
+            listBankAccount({acountsType: '司机', acountsName: this.needInfo.otherAcountsName})
+                .then(res => {
+                  this.form.otherBankNo = res.rows[0].bankNo
+                  this.form.otherBankName = res.rows[0].bankName
+                })
+          }
         }
+      }
+    },
+    needMoney: {
+      handler(val) {
+        this.form.moneyAmount = val;
       }
     }
   },
@@ -289,7 +291,6 @@ export default {
     },
     // 取消按钮
     cancel() {
-      this.opened = false;
       this.reset();
     },
     // 表单重置
@@ -334,10 +335,7 @@ export default {
             this.form.tID = this.tID;
             updatePaymentApply(this.form).then(response => {
               this.$modal.msgSuccess("修改成功");
-              this.opened = false;
               this.getList();
-            }).catch(err => {
-              this.opened = false
             })
           } else {
             excludeParams(this, this.$exclude)
@@ -349,10 +347,7 @@ export default {
             console.log('提交的付款表单', this.form)
             addPaymentApply(this.form).then(response => {
               this.$modal.msgSuccess("付款申请添加成功");
-              this.opened = false;
               this.getList();
-            }).catch(err => {
-              this.opened = false
             })
           }
         }

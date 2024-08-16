@@ -5,7 +5,7 @@ const state = {
   //订单详情列表
   orderItemList: [],
   //订单列表
-  orderList: []
+  orderList: [],
 }
 
 const mutations = {
