@@ -418,14 +418,14 @@ export default {
         {key: 7, label: `己方户名`, visible: true},
         {key: 8, label: `己方账号`, visible: true},
         {key: 9, label: `己方开户行`, visible: true},
-        // {key: 10, label: `己方账号ID`, visible: true},
+        {key: 10, label: `己方账号ID`, visible: false},
         {key: 11, label: `对方户名`, visible: true},
         {key: 12, label: `对方账号`, visible: true},
         {key: 13, label: `对方开户行`, visible: true},
         {key: 14, label: `对方公司`, visible: true},
         {key: 15, label: `支付状态`, visible: true},
         {key: 16, label: `对方公司`, visible: true},
-        // {key: 17, label: `对方公司ID`, visible: true},
+        {key: 17, label: `对方公司ID`, visible: false},
         {key: 18, label: `对方公司类型`, visible: true},
 
 
