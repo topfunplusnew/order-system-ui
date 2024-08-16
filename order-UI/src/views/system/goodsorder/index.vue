@@ -247,7 +247,6 @@
 
           <!--      todo 点开的时候 查询订单运费 如果有订单运费 提示 然后禁用按钮-->
           <el-button
-            :disabled="isHaveLandFree(scope.row)"
             v-if="scope.row.landFreight>0"
             size="mini"
             type="warning"
@@ -256,7 +255,6 @@
           >陆运费申请
           </el-button>
           <el-button
-            :disabled="isHaveSeaFree(scope.row)"
             v-if="scope.row.seaFreight>0"
             type="primary"
             size="mini"
@@ -465,8 +463,9 @@
       :visible.sync="landFreeDialogVisible"
       width="50%" destroy-on-close>
       <!--      传入运费-->
-      <ApplyPayment :table-name="TableName.ORDER_FREIGHT" :t-i-d="tID" @changeOpen="landFreeDialogVisible = false"
-                    :need-money="landFreightFree" :need-info="driverInfo"/>
+      <!--      <ApplyPayment :table-name="TableName.ORDER_FREIGHT" :t-i-d="tID" @changeOpen="landFreeDialogVisible = false"-->
+      <!--                    :need-money="landFreightFree" :need-info="driverInfo"/>-->
+      <FreeApply :order-info="landFreightInfo"/>
     </el-dialog>
 
     <!--    海运费申请 :key="keyFlag"-->
@@ -474,8 +473,9 @@
       title="海运费申请"
       :visible.sync="seaFreeDialogVisible"
       width="50%" destroy-on-close>
-      <ApplyPayment :table-name="TableName.ORDER_FREIGHT" :t-i-d="tID" @changeOpen="seaFreeDialogVisible = false"
-                    :need-money="seaFreightFree" :need-info="driverInfo"/>
+      <!--      <ApplyPayment :table-name="TableName.ORDER_FREIGHT" :t-i-d="tID" @changeOpen="seaFreeDialogVisible = false"-->
+      <!--                    :need-money="seaFreightFree" :need-info="driverInfo"/>-->
+      <FreeApply/>
     </el-dialog>
 
 
@@ -520,10 +520,12 @@ import OrderDetailInfo from "@/components/OrderDetailInfo.vue";
 import {listPaymentApply} from "@/api/system/paymentApply";
 import Vue from "vue";
 import {TableName} from "@/api/tool/enums";
+import FreeApply from "@/components/FreeApply.vue";
 
 export default {
   name: "GoodsOrder",
   components: {
+    FreeApply,
     OrderDetailInfo,
     OrderDetail, ChatForm, ApplyPayment, SwitchBarForCheck, SwitchBarItem, SearchOption, OrderForm, TagsItem
   },
@@ -714,6 +716,10 @@ export default {
       //tid
       tID: '',
 
+      //陆运费信息
+      landFreightInfo: {},
+      seaFreightInfo: {},
+
     };
   },
   created() {
@@ -900,11 +906,6 @@ export default {
       addGoodsOrder({...this.orderInfo, PaymentState: ''}).then(res => {
         this.$message.success('订单提交成功')
       })
-
-      //同时添加运费信息 todo 运费添加
-      // addOrderFreight().then(res => {
-      //   console.log(res)
-      // })
     },
 
     //表格统计
@@ -1023,6 +1024,23 @@ export default {
 
     //申请陆运费
     handleApplyLandFree(row) {
+      console.log('row', row)
+      //组装订单运费信息 己方银行卡信息弹窗自己选
+      this.landFreightInfo = {
+        ordersNo: row.ordersNo,
+        freightType: '陆运',
+        moneyAmount: row.landFreight,
+        otherAcountsName: row.landDriverName,
+        otherBankNo: row.landBankNo,
+        otherBankName: row.landBankName,
+        paymentState: '申请中',
+        driverName: row.landDriverName,
+        driverId: row.landCarID,
+        carNo: row.landCarNo,
+        fleet: row.fleet,
+      }
+      //首先去运费表查看是否有运费信息 todo
+
       // this.keyFlag += 1 //让dialog组件重新渲染
       this.landFreightFree = row.landFreight
       //tid
@@ -1040,6 +1058,19 @@ export default {
       // this.keyFlag += 1 //让dialog组件重新渲染
       this.seaFreightFree = row.seaFreight
       this.tID = row.id;
+      this.seaFreightInfo = {
+        ordersNo: row.ordersNo,
+        freightType: '陆运',
+        moneyAmount: row.seaFreight,
+        otherAcountsName: row.seaDriverName,
+        otherBankNo: row.seaBankNo,
+        otherBankName: row.seaBankName,
+        paymentState: row.paymentState,
+        driverName: row.seaDriverName,
+        driverId: row.seaCarID,
+        carNo: row.seaCarNo,
+        fleet: row.fleet,
+      }
       //组装司机信息
       this.driverInfo = {
         otherAcountsName: row.seaDriverName,
