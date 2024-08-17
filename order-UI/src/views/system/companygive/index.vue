@@ -651,7 +651,6 @@ export default {
       this.dialogBankInfoVisible = false;
       this.dialogFormVisible = false;
       //添加银行卡信息
-
       //如果账户名不一样不允许添加银行卡
       if (this.currentInfo.companyName !== row.acountsName) {
         this.$message.error("不允许添加非己银行卡!");

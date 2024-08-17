@@ -5,9 +5,16 @@ import {listCars} from "@/api/system/cars";
 import SwitchBarItem from "@/components/SwitchBarItem.vue";
 import ChatForm from "@/components/ChatForm.vue";
 import AreaSelect from "@/components/AreaSelect.vue";
+import EditReason from "@/components/EditReason.vue";
+import {TableName} from "@/api/tool/enums";
 
 export default {
-  components: {AreaSelect, ChatForm, SwitchBarItem, SearchOption},
+  computed: {
+    TableName() {
+      return TableName
+    }
+  },
+  components: {EditReason, AreaSelect, ChatForm, SwitchBarItem, SearchOption},
   data() {
     return {
       //tableData每一个对象代表的是图表的每一个行
@@ -102,9 +109,10 @@ export default {
       <AreaSelect/>
     </div>
     <div>
-
+      <el-row>
+        <EditReason :table-name="TableName.PAYMENT" :tid="1"/>
+      </el-row>
     </div>
-
 
 
   </div>
