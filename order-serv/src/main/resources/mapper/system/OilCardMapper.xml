@@ -35,8 +35,8 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
             <if test="comments != null  and comments != ''"> and comments = #{comments}</if>
             and delFlag = 0
         </where>
+       order by id desc
     </select>
-    
     <select id="selectOilCardById" parameterType="Long" resultMap="OilCardResult">
         <include refid="selectOilCardVo"/>
         where id = #{id}

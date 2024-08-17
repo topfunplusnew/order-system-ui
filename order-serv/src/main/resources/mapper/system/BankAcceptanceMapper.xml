@@ -68,6 +68,7 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
 
             and delFlag = 0
         </where>
+        order by id desc
     </select>
     <select id="selectBankAcceptanceById" parameterType="Long" resultMap="BankAcceptanceResult">
         <include refid="selectBankAcceptanceVo"/>

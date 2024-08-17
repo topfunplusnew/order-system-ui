@@ -35,9 +35,8 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
             <if test="orderNum != null "> and order_num = #{orderNum}</if>
             <if test="STATUS != null  and STATUS != ''"> and STATUS = #{STATUS}</if>
         </where>
-    </select>
-    
-    <select id="selectSubjectById" parameterType="Long" resultMap="SubjectResult">
+       order by id desc
+    </select>    <select id="selectSubjectById" parameterType="Long" resultMap="SubjectResult">
         <include refid="selectSubjectVo"/>
         where id = #{id}
     </select>

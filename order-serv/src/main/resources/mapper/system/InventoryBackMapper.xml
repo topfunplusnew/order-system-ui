@@ -124,6 +124,7 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
             and delFlag = 0
             <if test="showFlag != null "> and showFlag = #{showFlag}</if>
         </where>
+        order by id desc
     </select>
     
     <select id="selectInventoryBackById" parameterType="Long" resultMap="InventoryBackResult">

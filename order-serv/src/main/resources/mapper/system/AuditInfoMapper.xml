@@ -182,8 +182,8 @@
                 and submitflag = #{submitflag}
             </if>
         </where>
+       order by id desc
     </select>
-
     <select id="selectAuditInfoById" parameterType="Long" resultMap="AuditInfoResult">
         <include refid="selectAuditInfoVo"/>
         where a.id = #{id}

@@ -41,8 +41,8 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
             <if test="tonnage != null "> and tonnage = #{tonnage}</if>
             and delFlag = 0
         </where>
+       order by id desc
     </select>
-    
     <select id="selectProductLevelById" parameterType="Long" resultMap="ProductLevelResult">
         <include refid="selectProductLevelVo"/>
         where id = #{id}

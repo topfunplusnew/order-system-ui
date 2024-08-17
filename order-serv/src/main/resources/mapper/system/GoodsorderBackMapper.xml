@@ -94,6 +94,7 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
             <if test="userId != null "> and userId = #{userId}</if>
             <if test="UserName != null  and UserName != ''"> and UserName like concat('%', #{UserName}, '%')</if>
         </where>
+        order by id desc
     </select>
     
     <select id="selectGoodsorderBackById" parameterType="Long" resultMap="GoodsorderBackResult">
