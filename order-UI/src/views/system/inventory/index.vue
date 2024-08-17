@@ -148,17 +148,13 @@
     <!-- 添加或修改库存对话框 -->
     <el-dialog :title="title" :visible.sync="open" width="500px" append-to-body>
       <el-form ref="form" :model="form" :rules="rules" label-width="80px">
-        <!--        根据仓库名称自动查询-->
-        <!--        <el-form-item label="仓库ID" prop="storeHouseid">-->
-        <!--          <el-input v-model="form.storeHouseid" placeholder="请输入仓库ID"/>-->
-        <!--        </el-form-item>-->
         <el-form-item label="仓库名称" prop="storeHouseName">
           <el-row>
             <el-col :span="10">
               <el-input v-model="form.storeHouseName" placeholder="请输入仓库名称"/>
             </el-col>
             <el-col :span="3">
-              <SearchOption :get-data="listStoreHouse" @commitBack="handleCommitBackStoreHouse">
+              <SearchOption :limit-info="{}" :get-data="listStoreHouse" @commitBack="handleCommitBackStoreHouse">
                 <template #table-columns>
                   <el-table-column label="仓库名称" align="center" prop="storeHouseName"/>
                   <el-table-column label="地址" align="center" prop="address"/>
@@ -204,7 +200,7 @@
               <el-input v-model="form.levelID" placeholder="请输入级别编码"/>
             </el-col>
             <el-col :span="3">
-              <SearchOption :get-data="listProductLevel" @commitBack="handleCommitBackProductLevel">
+              <SearchOption :limit-info="{}" :get-data="listProductLevel" @commitBack="handleCommitBackProductLevel">
                 <template #table-columns>
                   <el-table-column label="级别编码" align="center" prop="levelNo"/>
                   <el-table-column label="级别名称" align="center" prop="levelName"/>
@@ -425,6 +421,9 @@ import {excludeParams} from "@/api/tool/exclude";
 import InventoryForm from "@/components/InventoryForm.vue";
 import {mapGetters} from "vuex";
 import {addExWarehouse} from "@/api/system/exWarehouse";
+import {addReason} from "@/api/system/user";
+import {TableName} from "@/api/tool/enums";
+import {getInvoiceOther} from "@/api/system/invoiceOther";
 
 export default {
   name: "Inventory",
@@ -739,13 +738,30 @@ export default {
     },
     /** 修改按钮操作 */
     handleUpdate(row) {
-      this.reset();
-      const id = row.id || this.ids
-      getInventory(id).then(response => {
-        this.form = response.data;
-        this.open = true;
-        this.title = "修改库存";
+      this.$prompt('请输入编辑原因', '提示', {
+        confirmButtonText: '确定',
+        cancelButtonText: '取消',
+        type: 'warning'
+      }).then(({value}) => {
+        addReason({reason: value, tableName: TableName.INVENTORY, tid: row.id, modifyTime: this.modifyTime})
+          .then(res => {
+            this.$message.success('提交成功')
+            this.reset();
+            const id = row.id || this.ids
+            getInventory(id).then(response => {
+              this.form = response.data;
+              this.open = true;
+              this.title = "修改库存";
+            });
+          })
+      }).catch(() => {
+        this.$message({
+          type: 'warning',
+          message: '请先输入编辑原因!'
+        });
       });
+
+
     },
     /** 提交按钮 */
     submitForm() {
