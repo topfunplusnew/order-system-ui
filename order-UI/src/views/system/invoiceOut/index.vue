@@ -199,6 +199,9 @@ import SearchOption from "@/components/SearchOption.vue";
 import {listCompany} from "@/api/system/company";
 import {getGoodsOrder} from "@/api/system/goodsOrder";
 import OrderInfos from "@/components/OrderInfos.vue";
+import {addReason} from "@/api/system/user";
+import {TableName} from "@/api/tool/enums";
+import {getInvoiceIn} from "@/api/system/invoiceIn";
 
 export default {
   name: "InvoiceOut",
@@ -383,12 +386,27 @@ export default {
     },
     /** 修改按钮操作 */
     handleUpdate(row) {
-      this.reset();
-      const id = row.id || this.ids
-      getInvoiceOut(id).then(response => {
-        this.form = response.data;
-        this.open = true;
-        this.title = "修改发票卖出信息";
+      this.$prompt('请输入编辑原因', '提示', {
+        confirmButtonText: '确定',
+        cancelButtonText: '取消',
+        type: 'warning'
+      }).then(({value}) => {
+        addReason({reason: value, tableName: TableName.INVOICE_OUT, tid: row.id, modifyTime: this.modifyTime})
+          .then(res => {
+            this.$message.success('提交成功')
+            this.reset();
+            const id = row.id || this.ids
+            getInvoiceOut(id).then(response => {
+              this.form = response.data;
+              this.open = true;
+              this.title = "修改发票卖出信息";
+            });
+          })
+      }).catch(() => {
+        this.$message({
+          type: 'warning',
+          message: '请先输入编辑原因!'
+        });
       });
     },
     /** 提交按钮 */

@@ -394,7 +394,7 @@ export default {
 
     //3.银行卡变动流水
     checkBankChangeFlow(row) {
-      listBankAccountChange(row.bankNo).then(res => {
+      listBankAccountChange({selfBankNo: row.bankNo}).then(res => {
         this.bankChangeList = res.rows;
       })
       this.bankChangeDialogVisible = true;

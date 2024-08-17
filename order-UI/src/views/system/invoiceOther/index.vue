@@ -3,18 +3,18 @@
     <el-form :model="queryParams" ref="queryForm" size="small" :inline="true" v-show="showSearch" label-width="150px">
       <el-form-item label="开票日期" prop="invoiceDate">
         <el-input
-            v-model="queryParams.invoiceDate"
-            placeholder="请输入开票日期"
-            clearable
-            @keyup.enter.native="handleQuery"
+          v-model="queryParams.invoiceDate"
+          placeholder="请输入开票日期"
+          clearable
+          @keyup.enter.native="handleQuery"
         />
       </el-form-item>
       <el-form-item label="票据单位名称" prop="invoiceCompanyName">
         <el-input
-            v-model="queryParams.invoiceCompanyName"
-            placeholder="请输入票据单位名称"
-            clearable
-            @keyup.enter.native="handleQuery"
+          v-model="queryParams.invoiceCompanyName"
+          placeholder="请输入票据单位名称"
+          clearable
+          @keyup.enter.native="handleQuery"
         />
       </el-form-item>
       <el-form-item>
@@ -24,12 +24,12 @@
     <el-row :gutter="10" class="mb8">
       <el-col :span="1.5">
         <el-button
-            type="primary"
-            plain
-            icon="el-icon-plus"
-            size="mini"
-            @click="handleAdd"
-            v-hasPermi="['system:invoiceother:add']"
+          type="primary"
+          plain
+          icon="el-icon-plus"
+          size="mini"
+          @click="handleAdd"
+          v-hasPermi="['system:invoiceother:add']"
         >新增
         </el-button>
       </el-col>
@@ -40,10 +40,10 @@
         <template v-slot:print>
           <el-col :span="1.5">
             <el-button
-                plain
-                icon="el-icon-printer"
-                size="mini"
-                @click="printHTML"
+              plain
+              icon="el-icon-printer"
+              size="mini"
+              @click="printHTML"
             >
             </el-button>
           </el-col>
@@ -52,11 +52,11 @@
         <template v-slot:export>
           <el-col :span="1.5">
             <el-button
-                plain
-                icon="el-icon-folder-opened"
-                size="mini"
-                @click="handleExport"
-                v-hasPermi="['system:company:export']"
+              plain
+              icon="el-icon-folder-opened"
+              size="mini"
+              @click="handleExport"
+              v-hasPermi="['system:company:export']"
             >
             </el-button>
           </el-col>
@@ -81,19 +81,19 @@
       <el-table-column label="操作" align="center" class-name="small-padding fixed-width">
         <template slot-scope="scope">
           <el-button
-              size="mini"
-              type="text"
-              icon="el-icon-edit"
-              @click="handleUpdate(scope.row)"
-              v-hasPermi="['system:invoiceother:edit']"
+            size="mini"
+            type="text"
+            icon="el-icon-edit"
+            @click="handleUpdate(scope.row)"
+            v-hasPermi="['system:invoiceother:edit']"
           >修改
           </el-button>
           <el-button
-              size="mini"
-              type="text"
-              icon="el-icon-delete"
-              @click="handleDelete(scope.row)"
-              v-hasPermi="['system:invoiceother:remove']"
+            size="mini"
+            type="text"
+            icon="el-icon-delete"
+            @click="handleDelete(scope.row)"
+            v-hasPermi="['system:invoiceother:remove']"
           >删除
           </el-button>
         </template>
@@ -101,11 +101,11 @@
     </el-table>
 
     <pagination
-        v-show="total>0"
-        :total="total"
-        :page.sync="queryParams.pageNum"
-        :limit.sync="queryParams.pageSize"
-        @pagination="getList"
+      v-show="total>0"
+      :total="total"
+      :page.sync="queryParams.pageNum"
+      :limit.sync="queryParams.pageSize"
+      @pagination="getList"
     />
 
     <!-- 添加或修改商家直接给客户开发票对话框 -->
@@ -168,6 +168,9 @@ import {
   updateInvoiceOther
 } from "@/api/system/invoiceOther";
 import {mixin_printHTML} from "@/views/dashboard/mixins/print";
+import {addReason} from "@/api/system/user";
+import {TableName} from "@/api/tool/enums";
+import {getInvoiceOut} from "@/api/system/invoiceOut";
 
 export default {
   name: "InvoiceOther",
@@ -303,12 +306,27 @@ export default {
     },
     /** 修改按钮操作 */
     handleUpdate(row) {
-      this.reset();
-      const id = row.id || this.ids
-      getInvoiceOther(id).then(response => {
-        this.form = response.data;
-        this.open = true;
-        this.title = "修改商家直接给客户开发票";
+      this.$prompt('请输入编辑原因', '提示', {
+        confirmButtonText: '确定',
+        cancelButtonText: '取消',
+        type: 'warning'
+      }).then(({value}) => {
+        addReason({reason: value, tableName: TableName.INVOICE_OTHER, tid: row.id, modifyTime: this.modifyTime})
+          .then(res => {
+            this.$message.success('提交成功')
+            this.reset();
+            const id = row.id || this.ids
+            getInvoiceOther(id).then(response => {
+              this.form = response.data;
+              this.open = true;
+              this.title = "修改商家直接给客户开发票";
+            });
+          })
+      }).catch(() => {
+        this.$message({
+          type: 'warning',
+          message: '请先输入编辑原因!'
+        });
       });
     },
     /** 提交按钮 */
