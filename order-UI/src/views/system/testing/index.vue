@@ -85,39 +85,13 @@ export default {
       }],
       value: '',
 
-      //省市县
-      provinceList: [],
-      cityList: [],
-      districtList: [],
-      //
-      province: '',
-      city: '',
-      district: '',
+
     }
 
   }
   ,
-  watch: {
-    province(val) {
-      console.log('省', val.name)
-    }
-  }
-  ,
-  created() {
-    fetch('/area.json')
-      .then(res => res.json())
-      .then(res => {
-        this.provinceList = res;
-        console.log(res)
-      })
-  }
-  ,
-  methods: {
-    //省改变了 要赋值市
-    changeProvince(e) {
-      console.log('e', e)
-    }
-  }
+
+
 }
 </script>
 
@@ -128,14 +102,7 @@ export default {
       <AreaSelect/>
     </div>
     <div>
-      <el-select v-model="province" placeholder="请选择省" @change="changeProvince">
-        <el-option
-          v-for="item in provinceList"
-          :key="item.code"
-          :label="item.name"
-          :value="item.name">
-        </el-option>
-      </el-select>
+
     </div>
   </div>
 </template>

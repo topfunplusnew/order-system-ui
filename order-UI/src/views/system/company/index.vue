@@ -151,10 +151,26 @@
           <el-input v-model="form.salesManager" placeholder="请输入销售经理"/>
         </el-form-item>
         <el-form-item label="省" prop="province">
-          <el-input v-model="form.province" placeholder="请输入省"/>
+          <!--          <el-input v-model="form.province" placeholder="请输入省"/>-->
+          <el-select v-model="form.province" placeholder="请选择省" @change="changeProvince">
+            <el-option
+              v-for="item in provinceList"
+              :key="item.code"
+              :label="item.name"
+              :value="item.name">
+            </el-option>
+          </el-select>
         </el-form-item>
         <el-form-item label="市县" prop="city">
-          <el-input v-model="form.city" placeholder="请输入市县"/>
+          <!--          <el-input v-model="form.city" placeholder="请输入市县"/>-->
+          <el-select v-model="form.city" placeholder="请选择市" @change="changeCity">
+            <el-option
+              v-for="item in cityList"
+              :key="item.code"
+              :label="item.name"
+              :value="item.name">
+            </el-option>
+          </el-select>
         </el-form-item>
         <el-form-item label="乡镇" prop="county">
           <el-input v-model="form.county" placeholder="请输入乡镇"/>
@@ -433,8 +449,14 @@ export default {
       }, {
         value: '其他',
         label: '其他'
-      }]
-
+      }],
+      //省市县
+      provinceList: [],
+      cityList: [],
+      districtList: [],
+      province: '',
+      city: '',
+      district: '',
     };
   },
   created() {
@@ -446,6 +468,12 @@ export default {
     } else {
       this.columns = JSON.parse(localStorage.getItem('company-columns'));
     }
+    //获取城市信息
+    fetch('/area.json')
+      .then(res => res.json())
+      .then(res => {
+        this.provinceList = res;
+      })
   },
   //展示与隐藏
   watch: {
@@ -454,9 +482,34 @@ export default {
         localStorage.setItem("company-columns", JSON.stringify(newVal))
       },
       deep: true,
+    },
+    //城市变化
+    'form.province': function (val) {
+      this.provinceList.forEach(item => {
+        if (item.name === val) {
+          this.cityList = item.areaList;
+        }
+      })
+    },
+    'form.city': function (val) {
+      this.cityList.forEach(item => {
+        if (item.name === val) {
+          this.districtList = item.areaList;
+        }
+      })
     }
   },
   methods: {
+    //城市变化
+    changeProvince(e) {
+      this.province = e;
+    },
+    changeCity(e) {
+      this.city = e;
+    },
+    changeDis(e) {
+      this.district = e;
+    },
     //账号搜索
     handleSearch() {
       this.dialogFormSearchVisible = true;
