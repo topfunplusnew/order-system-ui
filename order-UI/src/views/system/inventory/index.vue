@@ -380,14 +380,36 @@
 
 
     <!--    二次出库-->
-    <el-dialog title="二次出库" :visible.sync="secondInvoiceInVisible" width="80%" append-to-body>
-      <InventoryForm :inventory-info="secondInvoiceIn" @changeInventoryInfo="handleChangeSecondInvoiceIn"/>
+    <el-dialog title="二次出库" :visible.sync="secondInvoiceInVisible" width="50%" append-to-body>
       <div slot="footer" class="dialog-footer">
+        <el-row :gutter="5">
+          <el-col :span="4">
+            <span style="font-weight: bolder;line-height: 30px">请输入出库数量</span>
+          </el-col>
+          <el-col :span="10">
+            <el-input v-model="secondNumber" placeholder="请输入出库数量"/>
+          </el-col>
+        </el-row>
         <el-button type="primary" @click="submitSecondInvoiceIn">确 定</el-button>
         <el-button @click="secondInvoiceInVisible= false">取 消</el-button>
       </div>
     </el-dialog>
 
+    <!--    货物破损出库-->
+    <el-dialog title="货物破损出库" :visible.sync="breakInvoiceInVisible" width="50%" append-to-body>
+      <div slot="footer" class="dialog-footer">
+        <el-row :gutter="5">
+          <el-col :span="4">
+            <span style="font-weight: bolder;line-height: 30px">请输入出库数量</span>
+          </el-col>
+          <el-col :span="10">
+            <el-input v-model="breakNumber" placeholder="请输入出库数量"/>
+          </el-col>
+        </el-row>
+        <el-button type="primary" @click="submitBreakInvoiceIn">确 定</el-button>
+        <el-button @click="breakInvoiceInVisible= false">取 消</el-button>
+      </div>
+    </el-dialog>
 
   </div>
 </template>
@@ -402,6 +424,7 @@ import {listCars} from "@/api/system/cars";
 import {excludeParams} from "@/api/tool/exclude";
 import InventoryForm from "@/components/InventoryForm.vue";
 import {mapGetters} from "vuex";
+import {addExWarehouse} from "@/api/system/exWarehouse";
 
 export default {
   name: "Inventory",
@@ -497,8 +520,13 @@ export default {
         tel: ''
       },
       //二次出库
-      secondInvoiceIn: {},
+      secondNumber: 0,
       secondInvoiceInVisible: false,
+      secondInfo: {},
+      //货物破损
+      breakNumber: 0,
+      breakInvoiceInVisible: false,
+      breakInfo: {},
     };
   },
   computed: {
@@ -570,18 +598,42 @@ export default {
     },
     //二次出库
     secondryInventoryOut(row) {
-      console.log(row)
-      this.secondInvoiceInVisible = true;
+      //组装二次出库需要的信息
+      this.secondInfo = {
+        ordersNo: '二次加工',
+        storeHouseid: row.storeHouseid,
+        storeHouseName: row.storeHouseName,
+        storeID: row.id,
+        outDate: new Date().getTime()
+      };
+      this.secondInvoiceInVisible = true
     },
-    handleChangeSecondInvoiceIn(val) {
-      console.log(val)
-    },
+    //提交二次出库信息
     submitSecondInvoiceIn() {
+      this.secondInfo.outAmount = this.secondNumber
+      addExWarehouse(this.secondInfo).then(res => {
+        this.$message.success('加工后出库成功~')
+      })
       this.secondInvoiceInVisible = false
     },
-    //货物破损
-    afterbreakInventoryOut() {
-
+    //货物破损出库
+    afterbreakInventoryOut(row) {
+      this.breakInfo = {
+        ordersNo: '货物破损',
+        storeHouseid: row.storeHouseid,
+        storeHouseName: row.storeHouseName,
+        storeID: row.id,
+        outDate: new Date().getTime()
+      };
+      this.breakInvoiceInVisible = true
+    },
+    //提交货物破损出库
+    submitBreakInvoiceIn() {
+      this.breakInfo.outAmount = this.breakNumber
+      addExWarehouse(this.breakInfo).then(res => {
+        this.$message.success('货物破损出库成功~')
+      })
+      this.breakInvoiceInVisible = false
     },
     /** 查询库存列表 */
     getList() {

@@ -51,3 +51,11 @@ export function transfer(data) {
     data: data
   })
 }
+//将某张卡设置为默认卡
+export function setDefault(data) {
+  return request({
+    url: '/system/bankAccount/toDefault',
+    method: 'post',
+    data: data
+  })
+}

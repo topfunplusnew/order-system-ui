@@ -216,21 +216,40 @@
           </el-col>
         </el-row>
       </el-form>
-
       <hr/>
+      <el-row>
+        <el-row>
+          <el-row v-if="defaultBankCardInfo.not !== true">
+            <el-descriptions title="默认银行卡信息">
+              <el-descriptions-item label="户名">{{ defaultBankCardInfo.acountsName }}</el-descriptions-item>
+              <el-descriptions-item label="开户行">{{ defaultBankCardInfo.bankName }}</el-descriptions-item>
+              <el-descriptions-item label="银行卡号">{{ defaultBankCardInfo.bankNo }}</el-descriptions-item>
+              <el-descriptions-item label="余额">
+                <el-tag size="small">{{ defaultBankCardInfo.amount }}</el-tag>
+              </el-descriptions-item>
+            </el-descriptions>
+          </el-row>
+          <el-row v-else>
+            <el-descriptions title="默认银行卡信息">
+              <el-descriptions-item label="户名">暂无</el-descriptions-item>
+              <el-descriptions-item label="开户行">暂无</el-descriptions-item>
+              <el-descriptions-item label="银行卡号">暂无</el-descriptions-item>
+              <el-descriptions-item label="余额">
+                <el-tag size="small">暂无</el-tag>
+              </el-descriptions-item>
+              <el-descriptions-item>
+                <el-button size="mini" type="primary" @click="addDefaultCard($event)">添加默认银行卡</el-button>
+              </el-descriptions-item>
+            </el-descriptions>
+          </el-row>
+        </el-row>
+      </el-row>
       <el-row>
         <span style="font-weight: bolder">已绑定银行卡列表</span>
       </el-row>
       <el-row>
         <el-table v-loading="loading" :data="singleInfo" @selection-change="handleSelectionChange">
-          <!--          添加银行卡信息-->
-          <!--          <template #append>-->
-          <!--            <div style="text-align: center">-->
-          <!--              <el-button type="primary" @click="handleAddBankInfo">添加银行卡信息</el-button>-->
-          <!--            </div>-->
-          <!--          </template>-->
           <el-table-column label="序号" align="center" prop="id"/>
-          <!--          <el-table-column label="供应商名称" align="center" prop="relationName"/>-->
           <el-table-column label="户名" align="center" prop="acountsName"/>
           <el-table-column label="银行卡号" align="center" prop="bankNo"/>
           <el-table-column label="操作" align="center" class-name="small-padding fixed-width" fixed="right" width="180">
@@ -247,12 +266,16 @@
                 v-hasPermi="['system:company:remove']"
               ><i class="el-icon-delete"></i>
               </el-button>
+              <el-button
+                size="mini"
+                @click="addDefaultCard(scope.row)"
+                v-hasPermi="['system:company:remove']"
+              >添加为默认
+              </el-button>
             </template>
           </el-table-column>
         </el-table>
       </el-row>
-
-
       <div slot="footer" class="dialog-footer">
         <el-button @click="dialogFormVisible = false">取 消</el-button>
         <el-button type="primary" @click="dialogFormVisible = false">确 定</el-button>
@@ -371,12 +394,34 @@
         @pagination="getList"
       />
     </el-dialog>
+
+
+    <el-dialog title="设置默认银行卡" :visible.sync="addDefaultCardVisible" width="500px" append-to-body>
+      <el-table border v-loading="loading" :data="singleInfo" @selection-change="handleSelectionChange"
+                height="300px" v-horizontal-scroll="'always'">
+        <el-table-column label="账户类型" align="center" prop="acountsType"/>
+        <el-table-column label="开户名称(户名)" align="center" prop="acountsName"/>
+        <el-table-column label="账号(银行账号)" align="center" prop="bankNo"/>
+        <el-table-column label="开户行" align="center" prop="bankName"/>
+        <el-table-column label="公司名称" align="center" prop="companyName"/>
+        <el-table-column label="操作" align="center" class-name="small-padding fixed-width" fixed="right">
+          <template slot-scope="scope">
+            <el-button
+              size="mini"
+              type="primary"
+              @click="addDefaultCard(scope.row)">添加为默认
+            </el-button>
+          </template>
+        </el-table-column>
+      </el-table>
+    </el-dialog>
   </div>
 </template>
 
 <script>
 import {listCompany, getCompany, delCompany, addCompany, updateCompany} from "@/api/system/company";
-import {listBankAccount} from "@/api/system/bankAccount";
+import {listBankAccount, setDefault} from "@/api/system/bankAccount";
+import {excludeParams} from "@/api/tool/exclude";
 
 export default {
   name: "Company",
@@ -490,6 +535,8 @@ export default {
       province: '',
       city: '',
       district: '',
+      defaultBankCardInfo: {},
+      addDefaultCardVisible: false
     };
   },
   created() {
@@ -568,10 +615,19 @@ export default {
       this.currentInfo.county = row.county
       this.currentInfo.comments = row.comments
       this.currentInfo.companyName = row.companyName
-      this.dialogFormVisible = true
       //查询某供应商信息 账户名称应该是公司名称
       listBankAccount({companyId: row.id, acountsType: '供应商'}).then(res => {
         this.singleInfo = res.rows
+      })
+      listBankAccount({acountsType: '供应商默认', companyId: row.id}).then(res => {
+        if (res.rows.length > 0) {
+          this.defaultBankCardInfo = res.rows[0]
+        } else {
+          this.defaultBankCardInfo.not = true
+        }
+        setTimeout(() => {
+          this.dialogFormVisible = true
+        }, 20)
       })
     },
     //添加银行卡信息
@@ -629,6 +685,38 @@ export default {
     handleUpdateBankPop(row) {
       this.currentInfo.bankNo = row.bankNo;
       this.currentInfo.acountsName = row.acountsName;
+    },
+    addDefaultCard(row) {
+      //如果是undefined 代表是个对象
+      if (row.target === undefined) {
+        setDefault({...excludeParams(row, this.$exclude), acountsType: '供应商默认'})
+          .then(res => {
+            this.$message.success("设置成功~")
+            this.dialogFormVisible = false //关闭银行卡弹窗
+            this.addDefaultCardVisible = false
+            this.getList()
+          })
+      } else {
+        //如果还没有添加过银行卡信息
+        //先查询
+        console.log(this.currentInfo)
+        listBankAccount({companyId: this.currentInfo.id, acountsType: '供应商'})
+          .then(res => {
+            if (res.rows.length === 0) {
+              this.$confirm('您还没有设置银行卡信息，是否前往设置?', '提示', {
+                confirmButtonText: '确定',
+                cancelButtonText: '取消',
+                type: 'warning'
+              }).then(() => {
+                this.dialogFormVisible = false
+                this.$router.push('/baseInfo/bankaccount')
+              }).catch(err => {
+              })
+            } else {
+              this.addDefaultCardVisible = true;
+            }
+          })
+      }
     },
     printHTML() {
       this.$print({
