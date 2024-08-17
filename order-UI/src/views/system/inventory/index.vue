@@ -3,10 +3,10 @@
     <el-form :model="queryParams" ref="queryForm" size="small" :inline="true" v-show="showSearch" label-width="68px">
       <el-form-item label="级别名称" prop="levelName">
         <el-input
-            v-model="queryParams.levelName"
-            placeholder="请输入级别名称"
-            clearable
-            @keyup.enter.native="handleQuery"
+          v-model="queryParams.levelName"
+          placeholder="请输入级别名称"
+          clearable
+          @keyup.enter.native="handleQuery"
         />
       </el-form-item>
       <el-form-item>
@@ -17,11 +17,11 @@
     <el-row :gutter="10" class="mb8">
       <el-col :span="1.5">
         <el-button
-            type="danger"
-            plain
-            size="mini"
-            @click="addNewInventory"
-            v-hasPermi="['system:inventory:add']"
+          type="danger"
+          plain
+          size="mini"
+          @click="addNewInventory"
+          v-hasPermi="['system:inventory:add']"
         >新增货物
         </el-button>
       </el-col>
@@ -32,10 +32,10 @@
         <template v-slot:print>
           <el-col :span="1.5">
             <el-button
-                plain
-                icon="el-icon-printer"
-                size="mini"
-                @click="printHTML"
+              plain
+              icon="el-icon-printer"
+              size="mini"
+              @click="printHTML"
             >
             </el-button>
           </el-col>
@@ -44,11 +44,11 @@
         <template v-slot:export>
           <el-col :span="1.5">
             <el-button
-                plain
-                icon="el-icon-folder-opened"
-                size="mini"
-                @click="handleExport"
-                v-hasPermi="['system:company:export']"
+              plain
+              icon="el-icon-folder-opened"
+              size="mini"
+              @click="handleExport"
+              v-hasPermi="['system:company:export']"
             >
             </el-button>
           </el-col>
@@ -107,24 +107,29 @@
       <el-table-column label="操作" align="center" class-name="small-padding fixed-width" width="170px" fixed="right">
         <template slot-scope="scope">
           <el-button
-              size="mini"
-              type="warning"
-              @click="secondryInventoryOut(scope.row)"
-              v-hasPermi="['system:inventory:edit']"
-          >出库
+            size="mini"
+            type="warning"
+            @click="secondryInventoryOut(scope.row)"
+          >加工后出库
           </el-button>
           <el-button
-              size="mini"
-              type="primary"
-              @click="handleUpdate(scope.row)"
-              v-hasPermi="['system:inventory:edit']"
+            size="mini"
+            type="warning"
+            @click="afterbreakInventoryOut(scope.row)"
+          >破损后出库
+          </el-button>
+          <el-button
+            size="mini"
+            type="primary"
+            @click="handleUpdate(scope.row)"
+            v-hasPermi="['system:inventory:edit']"
           >修改
           </el-button>
           <el-button
-              size="mini"
-              type="danger"
-              @click="handleDelete(scope.row)"
-              v-hasPermi="['system:inventory:remove']"
+            size="mini"
+            type="danger"
+            @click="handleDelete(scope.row)"
+            v-hasPermi="['system:inventory:remove']"
           >删除
           </el-button>
         </template>
@@ -132,11 +137,11 @@
     </el-table>
 
     <pagination
-        v-show="total>0"
-        :total="total"
-        :page.sync="queryParams.pageNum"
-        :limit.sync="queryParams.pageSize"
-        @pagination="getList"
+      v-show="total>0"
+      :total="total"
+      :page.sync="queryParams.pageNum"
+      :limit.sync="queryParams.pageSize"
+      @pagination="getList"
     />
 
 
@@ -164,9 +169,9 @@
         </el-form-item>
         <el-form-item label="入库日期" prop="storeDate">
           <el-date-picker
-              v-model="form.storeDate"
-              type="date"
-              placeholder="入库日期">
+            v-model="form.storeDate"
+            type="date"
+            placeholder="入库日期">
           </el-date-picker>
         </el-form-item>
         <el-form-item label="库存量" prop="stockNumber">
@@ -382,6 +387,8 @@
         <el-button @click="secondInvoiceInVisible= false">取 消</el-button>
       </div>
     </el-dialog>
+
+
   </div>
 </template>
 
@@ -401,25 +408,15 @@ export default {
   components: {InventoryForm, SearchOption},
   data() {
     return {
-      // 遮罩层
       loading: true,
-      // 选中数组
       ids: [],
-      // 非单个禁用
       single: true,
-      // 非多个禁用
       multiple: true,
-      // 显示搜索条件
       showSearch: true,
-      // 总条数
       total: 0,
-      // 库存表格数据
       inventoryList: [],
-      // 弹出层标题
       title: "",
-      // 是否显示弹出层
       open: false,
-      // 查询参数
       queryParams: {
         pageNum: 1,
         pageSize: 10,
@@ -474,12 +471,9 @@ export default {
         delFlag: null,
         showFlag: null
       },
-      // 表单参数
       form: {},
-      // 表单校验
       rules: {},
       columns: [
-        // {key: 50, label: ` 供应商ID`, visible: true},
         {key: 0, label: ` 客户ID`, visible: true},
         {key: 1, label: `级别编码`, visible: true},
         {key: 2, label: `级别名称`, visible: true},
@@ -493,7 +487,6 @@ export default {
         {key: 10, label: `出厂单价`, visible: true},
         {key: 11, label: `出厂是否含税`, visible: true},
       ],
-
       //货物入库
       invoiceInVisible: false,
       //库存信息
@@ -503,11 +496,9 @@ export default {
         carNo: '',
         tel: ''
       },
-
       //二次出库
       secondInvoiceIn: {},
       secondInvoiceInVisible: false,
-
     };
   },
   computed: {
@@ -566,13 +557,8 @@ export default {
     },
     //获取入库
     submitInvoiceIn() {
-      //调用货物入库接口
-      this.$wait();
       addInventory(this.inventoryInfoAll).then(res => {
         this.$message.success('入库成功')
-        this.$close();
-      }).catch(err => {
-        this.$close()
       })
       this.getList()
       this.invoiceInVisible = false
@@ -592,6 +578,10 @@ export default {
     },
     submitSecondInvoiceIn() {
       this.secondInvoiceInVisible = false
+    },
+    //货物破损
+    afterbreakInventoryOut() {
+
     },
     /** 查询库存列表 */
     getList() {

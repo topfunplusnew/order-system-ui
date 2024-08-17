@@ -85,7 +85,6 @@
 
     <el-table border v-loading="loading" :data="carApplyList" @selection-change="handleSelectionChange" id="printBox"
               v-horizontal-scroll="'always'">
-<!--      <el-table-column label="出差编号UUID" align="center" prop="bTripId"/>-->
       <el-table-column label="申请时间" align="center" prop="applyDate"/>
       <el-table-column label="申请人" align="center" prop="applyUser"/>
       <el-table-column label="部门" align="center" prop="department"/>

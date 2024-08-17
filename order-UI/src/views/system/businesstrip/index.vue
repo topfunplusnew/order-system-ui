@@ -208,29 +208,17 @@ export default {
   mixins: [mixin_printHTML],
   data() {
     return {
-      // 遮罩层
       loading: true,
-      // 选中数组
       ids: [],
-      // 子表选中数据
       checkedTripReimbursement: [],
-      // 非单个禁用
       single: true,
-      // 非多个禁用
       multiple: true,
-      // 显示搜索条件
       showSearch: true,
-      // 总条数
       total: 0,
-      // 出差表格数据
       BusinessTripList: [],
-      // 出差报销表格数据
       tripReimbursementList: [],
-      // 弹出层标题
       title: "",
-      // 是否显示弹出层
       open: false,
-      // 查询参数
       queryParams: {
         pageNum: 1,
         pageSize: 10,
@@ -247,9 +235,7 @@ export default {
         UserName: null,
         delFlag: null
       },
-      // 表单参数
       form: {},
-      // 表单校验
       rules: {},
       columns: [
         {key: 0, label: `收款编号`, visible: true},

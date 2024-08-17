@@ -11,7 +11,6 @@
       </el-form-item>
       <el-form-item>
         <el-button type="primary" icon="el-icon-search" size="mini" @click="handleQuery">搜索</el-button>
-        <!--        <el-button icon="el-icon-refresh" size="mini" @click="resetQuery">刷新</el-button>-->
       </el-form-item>
     </el-form>
 
@@ -30,39 +29,6 @@
         >新增供应商信息
         </el-button>
       </el-col>
-      <!--      <el-col :span="1.5">-->
-      <!--        <el-button-->
-      <!--          type="danger"-->
-      <!--          plain-->
-      <!--          icon="el-icon-delete"-->
-      <!--          size="mini"-->
-      <!--          :disabled="multiple"-->
-      <!--          @click="handleDelete"-->
-      <!--          v-hasPermi="['system:company:remove']"-->
-      <!--        >批量删除-->
-      <!--        </el-button>-->
-      <!--      </el-col>-->
-      <!--      <el-col :span="1.5">-->
-      <!--        <el-button-->
-      <!--          type="warning"-->
-      <!--          plain-->
-      <!--          icon="el-icon-download"-->
-      <!--          size="mini"-->
-      <!--          @click="handleExport"-->
-      <!--          v-hasPermi="['system:company:export']"-->
-      <!--        >导出-->
-      <!--        </el-button>-->
-      <!--      </el-col>-->
-      <!--      <el-col :span="1.5">-->
-      <!--        <el-button-->
-      <!--          type="primary"-->
-      <!--          plain-->
-      <!--          icon="el-icon-printer"-->
-      <!--          size="mini"-->
-      <!--          @click="printHTML"-->
-      <!--        >打印-->
-      <!--        </el-button>-->
-      <!--      </el-col>-->
       <el-col :span="1.5">
         <el-button
           type="warning"
@@ -85,7 +51,6 @@
             </el-button>
           </el-col>
         </template>
-        <!--        导出-->
         <template v-slot:export>
           <el-col :span="1.5">
             <el-button
@@ -103,25 +68,23 @@
 
     <el-table border v-loading="loading" :data="companyList" @selection-change="handleSelectionChange" id="printBox"
               height="300px" v-horizontal-scroll="'always'">
-      <!--      <el-table-column type="selection" width="55" align="center"/>-->
       <el-table-column label="id" align="center" prop="id"/>
       <el-table-column label="供应商" align="center" prop="companyName" v-if="columns[0].visible"/>
       <el-table-column label="地址" align="center" prop="address" v-if="columns[1].visible"/>
       <el-table-column label="联系人" align="center" prop="relationName" v-if="columns[2].visible"/>
       <el-table-column label="银行卡账号" align="center" prop="bankNo" v-if="columns[3].visible"/>
-      <!--      <el-table-column label="老板电话" align="center" prop="leaderTel" v-if="columns[3].visible"/>-->
-      <!--      银行信息-->
+      <el-table-column label="老板电话" align="center" prop="leaderTel" v-if="columns[3].visible"/>
       <el-table-column label="开户名" align="center" prop="acountsName" v-if="columns[4].visible"/>
       <el-table-column label="开户行" align="center" prop="bankName" v-if="columns[5].visible"/>
+      <el-table-column label="电话" align="center" prop="relationTel" v-if="columns[6].visible"/>
+      <el-table-column label="备注" align="center" prop="comments" v-if="columns[7].visible"/>
+      <!--      <el-table-column label="乡镇" align="center" prop="county"/>-->
       <!--      <el-table-column label="余额" align="center" prop="surplusMoney"/>-->
       <!--      <el-table-column label="业务员" align="center" prop="salesman"/>-->
       <!--      <el-table-column label="区域" align="center" prop="region" v-if="columns[6].visible"/>-->
       <!--      <el-table-column label="销售经理" align="center" prop="salesManager" v-if="columns[7].visible"/>-->
       <!--      <el-table-column label="省" align="center" prop="province"/>-->
       <!--      <el-table-column label="市县" align="center" prop="city"/>-->
-      <el-table-column label="电话" align="center" prop="relationTel" v-if="columns[6].visible"/>
-      <!--      <el-table-column label="乡镇" align="center" prop="county"/>-->
-      <el-table-column label="备注" align="center" prop="comments" v-if="columns[7].visible"/>
       <!--      <el-table-column label="添加时间" align="center" prop="addtime"/>-->
       <!--      <el-table-column label="操作人员ID" align="center" prop="userId"/>-->
       <!--      <el-table-column label="操作人员姓名" align="center" prop="UserName"/>-->
@@ -198,12 +161,6 @@
         <el-form-item label="老板电话" prop="leaderTel">
           <el-input v-model="form.leaderTel" placeholder="请输入联系人电话"/>
         </el-form-item>
-        <!--        <el-form-item label="区域" prop="region">-->
-        <!--          <el-input v-model="form.region" placeholder="请输入区域"/>-->
-        <!--        </el-form-item>-->
-        <!--        <el-form-item label="销售经理" prop="salesManager">-->
-        <!--          <el-input v-model="form.salesManager" placeholder="请输入销售经理"/>-->
-        <!--        </el-form-item>-->
         <el-form-item label="省" prop="province">
           <el-input v-model="form.province" placeholder="请输入省"/>
         </el-form-item>
@@ -216,18 +173,6 @@
         <el-form-item label="备注" prop="comments">
           <el-input v-model="form.comments" placeholder="请输入备注"/>
         </el-form-item>
-        <!--        <el-form-item label="添加时间" prop="addtime">-->
-        <!--          <el-input v-model="form.addtime" placeholder="请输入添加时间"/>-->
-        <!--        </el-form-item>-->
-        <!--        <el-form-item label="操作人员ID" prop="userId">-->
-        <!--          <el-input v-model="form.userId" placeholder="请输入操作人员ID"/>-->
-        <!--        </el-form-item>-->
-        <!--        <el-form-item label="操作人员姓名" prop="UserName">-->
-        <!--          <el-input v-model="form.UserName" placeholder="请输入操作人员姓名"/>-->
-        <!--        </el-form-item>-->
-        <!--        <el-form-item label="删除标记" prop="delFlag">-->
-        <!--          <el-input v-model="form.delFlag" placeholder="请输入删除标记"/>-->
-        <!--        </el-form-item>-->
       </el-form>
       <div slot="footer" class="dialog-footer">
         <el-button type="primary" @click="submitForm">确 定</el-button>
@@ -573,7 +518,7 @@ export default {
       this.currentInfo.companyName = row.companyName
       this.dialogFormVisible = true
       //查询某供应商信息 账户名称应该是公司名称
-      listBankAccount({acountsName: this.currentInfo.companyName, acountsType: '供应商'}).then(res => {
+      listBankAccount({companyId: row.id, acountsType: '供应商'}).then(res => {
         this.singleInfo = res.rows
       })
     },

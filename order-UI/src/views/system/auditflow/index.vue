@@ -3,23 +3,20 @@
     <el-row :gutter="10" class="mb8">
       <el-col :span="1.5">
         <el-button
-          type="primary"
-          plain
-          icon="el-icon-plus"
-          size="mini"
-          @click="handleAdd"
-          v-hasPermi="['system:auditflow:add']"
-        >新增审核流程
+            type="primary"
+            plain
+            icon="el-icon-plus"
+            size="mini"
+            @click="handleAdd"
+            v-hasPermi="['system:auditflow:add']"
+        >修改审核流程
         </el-button>
       </el-col>
       <el-col :span="1.5">
         <el-button icon="el-icon-refresh" size="mini" @click="resetQuery">刷新</el-button>
       </el-col>
     </el-row>
-    <br/>
-    <br/>
-    <br/>
-    <el-row>
+    <el-row style="margin-top: 60px">
       <el-steps :active="auditflowList.length" align-center>
         <el-step v-for="(item,index) in auditflowList" :key="index" :title="item.flowname">
           <template #description>
@@ -34,18 +31,15 @@
     <!-- 添加或修改审核流程对话框 -->
     <el-dialog :title="title" :visible.sync="open" width="40%" append-to-body>
       <el-steps :active="stepLength" align-center direction="vertical">
-        <!--        第一个审核-->
         <el-step>
           <template #icon>
             <span>{{ stepInfo.step = 1 }}</span>
           </template>
           <template #title>
-            <!-- 审核步骤-->
             <el-input type="text" placeholder="请输入允许审核的人员id,用逗号分隔"
                       v-model="stepInfo.auditauthority"></el-input>
           </template>
           <template #description>
-            <!--  审核名称-->
             <el-input type="text" placeholder="请输入审核名称" v-model="stepInfo.flowname"></el-input>
           </template>
         </el-step>
@@ -115,14 +109,6 @@ export default {
       form: {},
       // 表单校验
       rules: {},
-      columns: [
-        {key: 0, label: `账户类型`, visible: true},
-        {key: 1, label: `开户名称`, visible: true},
-        {key: 2, label: `账号(银行卡号)`, visible: true},
-        {key: 3, label: `开户行`, visible: true},
-        {key: 4, label: `公司名称`, visible: true}
-      ],
-
       //审核信息
       stepInfo: {
         id: 1,
@@ -138,7 +124,6 @@ export default {
   },
   computed: {
     stepLength() {
-      console.log(this.checkStepList)
       return this.checkStepList.length;
     },
     ...mapGetters(['checkStepList'])
@@ -201,10 +186,6 @@ export default {
       this.open = true;
       this.title = "添加审核流程";
     },
-    //修改审核步骤
-    handleUpdate(row) {
-
-    },
     //添加审核步骤
     submitForm() {
       this.stepInfo.stepnum = this.checkStepList.length + 1
@@ -229,10 +210,6 @@ export default {
         this.stepInfo = {}
         this.getList()
       }, 20)
-    },
-    //删除审核步骤 就是传null
-    handleDelete(row) {
-
     },
     /** 导出按钮操作 */
     handleExport() {

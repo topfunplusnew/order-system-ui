@@ -31,20 +31,14 @@ export default {
       paymentList: [],
       //查看付款信息的描述表
       checkPaymentInfo: {},
-
-
       auditInfoList: [],
       auditItemList: [],
-
       //所有的审核流程列表 后期需要筛选这里面的审核流程
       allAuditInfoList: [],
-
       //分页信息
       pageNum: 1,
       pageSize: 10,
       total: 0,
-
-
       //付款审核
       addCheckApplyProcessVisible: false
     }
@@ -61,6 +55,20 @@ export default {
         }
       },
     }
+  },
+  created() {
+    //获取付款信息
+    listPaymentApply({pageNum: this.pageNum, pageSize: this.pageSize}).then(res => {
+      this.paymentList = res.rows;
+      this.total = res.total;
+    })
+    //获取所有的审核流程
+    listAuditInfo().then(res => {
+      this.allAuditInfoList = res.rows;
+    })
+  },
+  computed: {
+    ...mapGetters(['checked'])
   },
   methods: {
     //重新刷新审核树
@@ -92,7 +100,6 @@ export default {
         this.checkPaymentInfo = res.data
       })
     },
-
     //查看某一行的审核流程信息
     handleCheckApplyInfo(row) {
       this.checkApplyInfoDialogVisible = true
@@ -100,32 +107,11 @@ export default {
         this.auditInfoList = res.rows
       })
     },
-
     //折叠面板打开某一个的回调
     handleChangeApplyItem(e) {
       console.log(e)
     },
-
-    //添加付款审核流程
-    addCheckApplyProcess() {
-      console.log('添加付款审核')
-      this.addCheckApplyProcessVisible = true;
-    }
   },
-  created() {
-    //获取付款信息
-    listPaymentApply({pageNum: this.pageNum, pageSize: this.pageSize}).then(res => {
-      this.paymentList = res.rows;
-      this.total = res.total;
-    })
-    //获取所有的审核流程
-    listAuditInfo().then(res => {
-      this.allAuditInfoList = res.rows;
-    })
-  },
-  computed: {
-    ...mapGetters(['checked'])
-  }
 }
 </script>
 
@@ -134,69 +120,67 @@ export default {
     <!--    放置付款信息列表-->
     <el-row>
       <el-table
-        :data="paymentList"
-        border
-        style="width: 100%">
+          :data="paymentList"
+          border
+          style="width: 100%">
         <el-table-column
-          fixed
-          prop="fundsDate"
-          label="日期"
-          width="150">
+            fixed
+            prop="fundsDate"
+            label="日期"
+            width="150">
         </el-table-column>
         <el-table-column
-          prop="payType"
-          label="支付类型"
-          width="120">
+            prop="payType"
+            label="支付类型"
+            width="120">
         </el-table-column>
         <el-table-column
-          prop="moneyAmount"
-          label="金额"
-          width="120">
+            prop="moneyAmount"
+            label="金额"
+            width="120">
         </el-table-column>
         <el-table-column
-          prop="otherBankNo"
-          label="对方账号"
-          width="300">
+            prop="otherBankNo"
+            label="对方账号"
+            width="300">
         </el-table-column>
         <el-table-column
-          prop="companyName"
-          label="对方公司"
-          width="120">
+            prop="companyName"
+            label="对方公司"
+            width="120">
         </el-table-column>
         <el-table-column
-          prop="reason"
-          label="付款原因"
-          width="120">
+            prop="reason"
+            label="付款原因"
+            width="120">
         </el-table-column>
         <el-table-column
-          prop="attachment"
-          label="附件"
-          width="120">
+            prop="attachment"
+            label="附件"
+            width="120">
         </el-table-column>
         <el-table-column
-          prop="applyPerson"
-          label="申请人"
-          width="120">
+            prop="applyPerson"
+            label="申请人"
+            width="120">
         </el-table-column>
         <el-table-column
-          prop="comments"
-          label="备注"
-          width="120">
+            prop="comments"
+            label="备注"
+            width="120">
         </el-table-column>
         <el-table-column
-          fixed="right"
-          label="操作"
-          width="80">
+            fixed="right"
+            label="操作"
+            width="80">
           <template slot-scope="scope">
             <el-button @click="handleCheckInfo(scope.row)" type="primary" size="small">查看</el-button>
           </template>
         </el-table-column>
-        <!-- 审核流程：只有上一个人审核后，才会有下一个审核信息-->
-        <!--  step代表审核步骤进行到了哪里 -->
         <el-table-column
-          fixed="right"
-          label="审核流程"
-          width="200">
+            fixed="right"
+            label="审核流程"
+            width="200">
           <template slot-scope="scope">
             <el-button type="warning" @click="handleCheckApplyInfo(scope.row)">查看审核流程信息</el-button>
           </template>
@@ -204,20 +188,20 @@ export default {
       </el-table>
       <!--      分页-->
       <pagination
-        v-show="total>0"
-        :total="total"
-        :page.sync="pageNum"
-        :limit.sync="pageSize"
-        @pagination="getPaymentList"
+          v-show="total>0"
+          :total="total"
+          :page.sync="pageNum"
+          :limit.sync="pageSize"
+          @pagination="getPaymentList"
       />
     </el-row>
 
 
     <!--    查看付款信息的详细信息-->
     <el-dialog
-      title="付款信息详细"
-      :visible.sync="checkInfoDialogVisible"
-      width="50%">
+        title="付款信息详细"
+        :visible.sync="checkInfoDialogVisible"
+        width="50%">
       <el-descriptions title="付款信息明细">
         <el-descriptions-item label="申请人">{{ checkPaymentInfo.applyPerson }}</el-descriptions-item>
         <el-descriptions-item label="申请金额">{{ checkPaymentInfo.moneyAmount }}</el-descriptions-item>
@@ -251,21 +235,18 @@ export default {
     </el-dialog>
 
 
+    <!--      审核流程步骤图信息  -->
     <el-dialog :visible.sync="checkApplyInfoDialogVisible" title="审核流程多项信息" width="80%">
-      <!--      审核流程步骤图信息  -->
       <el-row v-for="(item,index) in auditInfoList" :key="index">
         <el-collapse v-model="activeNames" @change="handleChangeApplyItem">
           <el-collapse-item name="1">
             <template #title>
               <el-row>
-                <!-- todo  只保留了一组审核信息-->
-                <!--  <span class="text-bolder">审核流程{{ index + 1 }}</span>-->
                 <span class="text-bolder">审核流程</span>
               </el-row>
             </template>
             <el-row>
               <el-col :span="24">
-                <!--  @getPaymentApplyCheckList需要重新刷新-->
                 <StepInfo :processInfo="item.auditInfos"/>
               </el-col>
             </el-row>
