@@ -126,12 +126,12 @@
             </if>
             and delFlag = 0
         </where>
-       order by id desc
+       order by o.id desc
     </select>
     <select id="selectInvoiceOutById" parameterType="Long" resultMap="InvoiceOutResult">
         <include refid="selectInvoiceOutVo"/>
-        where id = #{id}
-          and delFlag = 0
+        where o.id = #{id}
+          and o.delFlag = 0
     </select>
 
     <insert id="insertInvoiceOut" parameterType="InvoiceOut" useGeneratedKeys="true" keyProperty="id">

@@ -76,7 +76,7 @@
                  ba.acountsType,
                  ba.comments,
                  ba.delFlag
-        order by id desc
+        order by ba.id desc
     </select>
 
     <select id="selectBankAccountById" parameterType="Long" resultMap="BankAccountResult">

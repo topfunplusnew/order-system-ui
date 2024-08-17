@@ -128,7 +128,7 @@
                 and submitflag = #{submitflag}
             </if>
         </where>
-        ORDER BY addtime DESC
+        ORDER BY auditinfo.addtime DESC
     </select>
 
 <select id="selectAuditInfoGroupedByApplyId" parameterType="java.util.List" resultMap="AuditInfoResult">

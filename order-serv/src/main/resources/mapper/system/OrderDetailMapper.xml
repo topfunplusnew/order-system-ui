@@ -112,7 +112,7 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
             <if test="userId != null "> and userId = #{userId}</if>
             <if test="UserName != null  and UserName != ''"> and UserName like concat('%', #{UserName}, '%')</if>
         </where>
-       order by id desc
+       order by o.id desc
     </select>
     <select id="selectOrderDetailById" parameterType="Long" resultMap="OrderDetailResult">
         <include refid="selectOrderDetailVo"/>

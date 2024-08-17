@@ -102,7 +102,7 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
             <if test="UserName != null  and UserName != ''"> and i.UserName like concat('%', #{UserName}, '%')</if>
             and i.delFlag = 0
         </where>
-        order by id desc
+        order by i.id desc
     </select>
 
     <select id="selectInvoiceInById" parameterType="Long" resultMap="InvoiceInResult">
