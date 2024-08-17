@@ -8,7 +8,7 @@ import org.dzu.common.enums.BusinessType;
 import org.dzu.common.utils.poi.ExcelUtil;
 import org.dzu.system.domain.BankAccount;
 import org.dzu.system.domain.vo.TranseferMoney;
-import org.dzu.system.service.IBankAccountService;
+import org.dzu.system.service.impl.BankAccountServiceImpl;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.validation.annotation.Validated;
@@ -28,7 +28,7 @@ import java.util.List;
 public class BankAccountController extends BaseController
 {
     @Autowired
-    private IBankAccountService bankAccountService;
+    private BankAccountServiceImpl bankAccountService;
 
     /**
      * 查询银行账号列表

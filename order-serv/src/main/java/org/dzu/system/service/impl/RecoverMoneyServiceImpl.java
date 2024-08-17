@@ -14,8 +14,6 @@ import org.dzu.system.domain.LendMoney;
 import org.dzu.system.domain.RecoverMoney;
 import org.dzu.system.mapper.LendMoneyMapper;
 import org.dzu.system.mapper.RecoverMoneyMapper;
-import org.dzu.system.service.IBankAccountChangeService;
-import org.dzu.system.service.IBankAccountService;
 import org.dzu.system.service.ILendMoneyService;
 import org.dzu.system.service.IRecoverMoneyService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -37,7 +35,7 @@ import java.util.stream.Collectors;
 public class RecoverMoneyServiceImpl implements IRecoverMoneyService
 {
     @Autowired
-    private IBankAccountService bankAccountServic;
+    private BankAccountServiceImpl bankAccountServic;
 
 
     @Autowired
@@ -47,7 +45,7 @@ public class RecoverMoneyServiceImpl implements IRecoverMoneyService
     private ILendMoneyService lendMoneyService;
 
     @Autowired
-    private IBankAccountChangeService bankAccountChangeService;
+    private BankAccountChangeServiceImpl bankAccountChangeService;
 
     @Autowired
     private LendMoneyMapper lendMoneyMapper;

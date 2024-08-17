@@ -12,7 +12,6 @@ import org.dzu.system.domain.PaymentApply;
 import org.dzu.system.mapper.AuditInfoMapper;
 import org.dzu.system.mapper.PaymentApplyMapper;
 import org.dzu.system.service.IAuditInfoService;
-import org.dzu.system.service.IAuditflowService;
 import org.dzu.system.service.IPaymentApplyService;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -39,7 +38,7 @@ public class AuditInfoServiceImpl implements IAuditInfoService {
     private AuditInfoMapper auditInfoMapper;
 
     @Autowired
-    private IAuditflowService auditflowService;
+    private AuditflowServiceImpl auditflowService;
 
     @Autowired
     private IPaymentApplyService paymentApplyService;

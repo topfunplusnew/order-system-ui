@@ -9,7 +9,6 @@ import org.dzu.system.domain.Company;
 import org.dzu.system.domain.GoodsOrder;
 import org.dzu.system.domain.InvoiceOther;
 import org.dzu.system.mapper.InvoiceOtherMapper;
-import org.dzu.system.service.ICompanyService;
 import org.dzu.system.service.IGoodsOrderService;
 import org.dzu.system.service.IInvoiceOtherService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -29,7 +28,7 @@ public class InvoiceOtherServiceImpl implements IInvoiceOtherService
     private InvoiceOtherMapper invoiceOtherMapper;
 
     @Autowired
-    private ICompanyService companyService;
+    private CompanyServiceImpl companyService;
 
     @Autowired
     private IGoodsOrderService goodsOrderService;

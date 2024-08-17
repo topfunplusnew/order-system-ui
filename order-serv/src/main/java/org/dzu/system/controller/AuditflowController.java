@@ -6,7 +6,7 @@ import org.dzu.common.core.domain.AjaxResult;
 import org.dzu.common.core.page.TableDataInfo;
 import org.dzu.common.enums.BusinessType;
 import org.dzu.system.domain.Auditflow;
-import org.dzu.system.service.IAuditflowService;
+import org.dzu.system.service.impl.AuditflowServiceImpl;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.validation.annotation.Validated;
@@ -25,7 +25,7 @@ import java.util.List;
 public class AuditflowController extends BaseController
 {
     @Autowired
-    private IAuditflowService auditflowService;
+    private AuditflowServiceImpl auditflowService;
 
     /**
      * 查询审核流程列表

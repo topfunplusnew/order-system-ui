@@ -16,8 +16,6 @@ import org.dzu.system.domain.BorrowedMoney;
 import org.dzu.system.domain.Repayment;
 import org.dzu.system.mapper.BorrowedMoneyMapper;
 import org.dzu.system.mapper.RepaymentMapper;
-import org.dzu.system.service.IBankAccountChangeService;
-import org.dzu.system.service.IBankAccountService;
 import org.dzu.system.service.IBorrowedMoneyService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -40,10 +38,10 @@ public class BorrowedMoneyServiceImpl implements IBorrowedMoneyService {
     private BorrowedMoneyMapper borrowedMoneyMapper;
 
     @Autowired
-    private IBankAccountChangeService bankAccountChangeService;
+    private BankAccountChangeServiceImpl bankAccountChangeService;
 
     @Autowired
-    private IBankAccountService bankAccountService;
+    private BankAccountServiceImpl bankAccountService;
     @Autowired
     private RepaymentMapper repaymentMapper;
 

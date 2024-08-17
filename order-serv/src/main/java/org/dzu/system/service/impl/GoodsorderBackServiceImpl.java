@@ -5,7 +5,6 @@ import org.dzu.common.utils.DateUtils;
 import org.dzu.common.utils.SecurityUtils;
 import org.dzu.system.domain.GoodsorderBack;
 import org.dzu.system.mapper.GoodsorderBackMapper;
-import org.dzu.system.service.IGoodsorderBackService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -17,8 +16,7 @@ import java.util.List;
  * @date 2024-07-29
  */
 @Service
-public class GoodsorderBackServiceImpl implements IGoodsorderBackService
-{
+public class GoodsorderBackServiceImpl {
     @Autowired
     private GoodsorderBackMapper goodsorderBackMapper;
 
@@ -28,7 +26,6 @@ public class GoodsorderBackServiceImpl implements IGoodsorderBackService
      * @param id 订单备份主键
      * @return 订单备份
      */
-    @Override
     public GoodsorderBack selectGoodsorderBackById(Long id)
     {
         return goodsorderBackMapper.selectGoodsorderBackById(id);
@@ -40,7 +37,6 @@ public class GoodsorderBackServiceImpl implements IGoodsorderBackService
      * @param goodsorderBack 订单备份
      * @return 订单备份
      */
-    @Override
     public List<GoodsorderBack> selectGoodsorderBackList(GoodsorderBack goodsorderBack)
     {
         return goodsorderBackMapper.selectGoodsorderBackList(goodsorderBack);
@@ -52,7 +48,6 @@ public class GoodsorderBackServiceImpl implements IGoodsorderBackService
      * @param goodsorderBack 订单备份
      * @return 结果
      */
-    @Override
     public int insertGoodsorderBack(GoodsorderBack goodsorderBack)
     {
         goodsorderBack.setAddtime(String.valueOf(DateUtils.getNowDate()));
@@ -68,7 +63,6 @@ public class GoodsorderBackServiceImpl implements IGoodsorderBackService
      * @param goodsorderBack 订单备份
      * @return 结果
      */
-    @Override
     public int updateGoodsorderBack(GoodsorderBack goodsorderBack)
     {
         goodsorderBack.setUserId(SecurityUtils.getUserId());
@@ -83,7 +77,6 @@ public class GoodsorderBackServiceImpl implements IGoodsorderBackService
      * @param ids 需要删除的订单备份主键
      * @return 结果
      */
-    @Override
     public int deleteGoodsorderBackByIds(Long[] ids)
     {
         return goodsorderBackMapper.deleteGoodsorderBackByIds(ids);
@@ -95,7 +88,6 @@ public class GoodsorderBackServiceImpl implements IGoodsorderBackService
      * @param id 订单备份主键
      * @return 结果
      */
-    @Override
     public int deleteGoodsorderBackById(Long id)
     {
         return goodsorderBackMapper.deleteGoodsorderBackById(id);

@@ -10,7 +10,6 @@ import org.dzu.common.utils.uuid.UUID;
 import org.dzu.system.domain.BankAccount;
 import org.dzu.system.domain.LendMoney;
 import org.dzu.system.mapper.LendMoneyMapper;
-import org.dzu.system.service.IBankAccountService;
 import org.dzu.system.service.ILendMoneyService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -31,7 +30,7 @@ public class LendMoneyServiceImpl implements ILendMoneyService {
     private LendMoneyMapper lendMoneyMapper;
 
     @Autowired
-    private IBankAccountService bankAccountService;
+    private BankAccountServiceImpl bankAccountService;
 
     @Autowired
     private PaymentApplyServiceImpl paymentApplyServiceImpl;

@@ -13,7 +13,6 @@ import org.dzu.system.domain.Company;
 import org.dzu.system.domain.vo.TranseferMoney;
 import org.dzu.system.mapper.BankAccountMapper;
 import org.dzu.system.mapper.CarsMapper;
-import org.dzu.system.service.IBankAccountService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Isolation;
@@ -29,8 +28,7 @@ import java.util.List;
  * @date 2024-07-29
  */
 @Service
-public class BankAccountServiceImpl implements IBankAccountService
-{
+public class BankAccountServiceImpl {
     @Autowired
     private BankAccountMapper bankAccountMapper;
     @Autowired
@@ -40,7 +38,6 @@ public class BankAccountServiceImpl implements IBankAccountService
     @Autowired
     private CompanyServiceImpl companyServiceImpl;
 
-    @Override
     public BankAccount selectBankAccountByBankNo(String bankNo) {
         return bankAccountMapper.selectBankAccountByBankNo(bankNo);
     }
@@ -51,7 +48,6 @@ public class BankAccountServiceImpl implements IBankAccountService
      * @param id 银行账号主键
      * @return 银行账号
      */
-    @Override
     public BankAccount selectBankAccountById(Long id)
     {
         return bankAccountMapper.selectBankAccountById(id);
@@ -63,7 +59,6 @@ public class BankAccountServiceImpl implements IBankAccountService
      * @param bankAccount 银行账号
      * @return 银行账号
      */
-    @Override
     public List<BankAccount> selectBankAccountList(BankAccount bankAccount)
     {
         return bankAccountMapper.selectBankAccountList(bankAccount);
@@ -75,7 +70,6 @@ public class BankAccountServiceImpl implements IBankAccountService
      * @param bankAccount 银行账号
      * @return 结果
      */
-    @Override
     @Transactional(isolation = Isolation.SERIALIZABLE,rollbackFor = Exception.class)
     public int insertBankAccount(BankAccount bankAccount)
     {
@@ -99,7 +93,6 @@ public class BankAccountServiceImpl implements IBankAccountService
      * @param bankAccount 银行账号
      * @return 结果
      */
-    @Override
     @Transactional(isolation = Isolation.SERIALIZABLE,rollbackFor = Exception.class)
     public int insertCompanyDefaultBankAccount(BankAccount bankAccount)
     {
@@ -154,7 +147,6 @@ public class BankAccountServiceImpl implements IBankAccountService
      * @param bankAccount 银行账号
      * @return 结果
      */
-    @Override
     @Transactional(isolation = Isolation.SERIALIZABLE,rollbackFor = Exception.class)//多次sql操作，需要保证事务
     public int updateBankAccount(BankAccount bankAccount)
     {
@@ -175,7 +167,6 @@ public class BankAccountServiceImpl implements IBankAccountService
      * @param ids 需要删除的银行账号主键
      * @return 结果
      */
-    @Override
     @Transactional
     public int deleteBankAccountByIds(Long[] ids)
     {
@@ -195,7 +186,6 @@ public class BankAccountServiceImpl implements IBankAccountService
 
 
     // 提供接口允许两个银行卡进行转账
-    @Override
     @Transactional(isolation = Isolation.SERIALIZABLE,rollbackFor = Exception.class)
     public TranseferMoney transferMoney(TranseferMoney transeferMoney){
         // 首先检测两个银行卡是否存在

@@ -33,13 +33,13 @@ public class GoodsOrderServiceImpl implements IGoodsOrderService {
     private GoodsOrderMapper goodsOrderMapper;
 
     @Autowired
-    private ICarsService carsService;
+    private CarsServiceImpl carsService;
 
     @Autowired
-    private IBankAccountService bankAccountService;
+    private BankAccountServiceImpl bankAccountService;
 
     @Autowired
-    private ICompanyService companyService;
+    private CompanyServiceImpl companyService;
 
     @Autowired
     private IOrderDetailService orderDetailService;

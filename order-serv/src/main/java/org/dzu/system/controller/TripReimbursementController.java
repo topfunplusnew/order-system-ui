@@ -7,7 +7,7 @@ import org.dzu.common.core.page.TableDataInfo;
 import org.dzu.common.enums.BusinessType;
 import org.dzu.common.utils.poi.ExcelUtil;
 import org.dzu.system.domain.TripReimbursement;
-import org.dzu.system.service.ITripReimbursementService;
+import org.dzu.system.service.impl.TripReimbursementServiceImpl;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.validation.annotation.Validated;
@@ -27,7 +27,7 @@ import java.util.List;
 public class TripReimbursementController extends BaseController
 {
     @Autowired
-    private ITripReimbursementService tripReimbursementService;
+    private TripReimbursementServiceImpl tripReimbursementService;
 
     /**
      * 查询出差报销列表

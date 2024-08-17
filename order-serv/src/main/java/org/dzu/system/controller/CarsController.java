@@ -7,7 +7,7 @@ import org.dzu.common.core.page.TableDataInfo;
 import org.dzu.common.enums.BusinessType;
 import org.dzu.common.utils.poi.ExcelUtil;
 import org.dzu.system.domain.Cars;
-import org.dzu.system.service.ICarsService;
+import org.dzu.system.service.impl.CarsServiceImpl;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.validation.annotation.Validated;
@@ -27,7 +27,7 @@ import java.util.List;
 public class CarsController extends BaseController
 {
     @Autowired
-    private ICarsService carsService;
+    private CarsServiceImpl carsService;
 
     /**
      * 查询外部车辆信息列表

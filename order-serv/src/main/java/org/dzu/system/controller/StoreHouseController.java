@@ -7,7 +7,7 @@ import org.dzu.common.core.page.TableDataInfo;
 import org.dzu.common.enums.BusinessType;
 import org.dzu.common.utils.poi.ExcelUtil;
 import org.dzu.system.domain.StoreHouse;
-import org.dzu.system.service.IStoreHouseService;
+import org.dzu.system.service.impl.StoreHouseServiceImpl;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.validation.annotation.Validated;
@@ -27,7 +27,7 @@ import java.util.List;
 public class StoreHouseController extends BaseController
 {
     @Autowired
-    private IStoreHouseService storeHouseService;
+    private StoreHouseServiceImpl storeHouseService;
 
     /**
      * 查询库房列表

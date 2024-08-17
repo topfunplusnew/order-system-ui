@@ -7,7 +7,7 @@ import org.dzu.common.core.page.TableDataInfo;
 import org.dzu.common.enums.BusinessType;
 import org.dzu.common.utils.poi.ExcelUtil;
 import org.dzu.system.domain.InventoryBack;
-import org.dzu.system.service.IInventoryBackService;
+import org.dzu.system.service.impl.InventoryBackServiceImpl;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.validation.annotation.Validated;
@@ -27,7 +27,7 @@ import java.util.List;
 public class InventoryBackController extends BaseController
 {
     @Autowired
-    private IInventoryBackService inventoryBackService;
+    private InventoryBackServiceImpl inventoryBackService;
 
     /**
      * 查询库存备份列表

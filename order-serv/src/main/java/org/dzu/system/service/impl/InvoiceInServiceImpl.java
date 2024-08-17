@@ -11,7 +11,6 @@ import org.dzu.system.domain.Company;
 import org.dzu.system.domain.GoodsOrder;
 import org.dzu.system.domain.InvoiceIn;
 import org.dzu.system.mapper.InvoiceInMapper;
-import org.dzu.system.service.ICompanyService;
 import org.dzu.system.service.IGoodsOrderService;
 import org.dzu.system.service.IInvoiceInService;
 import org.dzu.system.service.IPaymentApplyService;
@@ -32,7 +31,7 @@ public class InvoiceInServiceImpl implements IInvoiceInService {
     private InvoiceInMapper invoiceInMapper;
 
     @Autowired
-    private ICompanyService companyService;
+    private CompanyServiceImpl companyService;
 
     @Autowired
     private IPaymentApplyService paymentApplyService;

@@ -5,7 +5,6 @@ import org.dzu.common.utils.DateUtils;
 import org.dzu.common.utils.SecurityUtils;
 import org.dzu.system.domain.FixedAssets;
 import org.dzu.system.mapper.FixedAssetsMapper;
-import org.dzu.system.service.IFixedAssetsService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -17,8 +16,7 @@ import java.util.List;
  * @date 2024-07-29
  */
 @Service
-public class FixedAssetsServiceImpl implements IFixedAssetsService
-{
+public class FixedAssetsServiceImpl {
     @Autowired
     private FixedAssetsMapper fixedAssetsMapper;
 
@@ -28,7 +26,6 @@ public class FixedAssetsServiceImpl implements IFixedAssetsService
      * @param id 固定资产主键
      * @return 固定资产
      */
-    @Override
     public FixedAssets selectFixedAssetsById(Long id)
     {
         return fixedAssetsMapper.selectFixedAssetsById(id);
@@ -40,7 +37,6 @@ public class FixedAssetsServiceImpl implements IFixedAssetsService
      * @param fixedAssets 固定资产
      * @return 固定资产
      */
-    @Override
     public List<FixedAssets> selectFixedAssetsList(FixedAssets fixedAssets)
     {
         return fixedAssetsMapper.selectFixedAssetsList(fixedAssets);
@@ -52,7 +48,6 @@ public class FixedAssetsServiceImpl implements IFixedAssetsService
      * @param fixedAssets 固定资产
      * @return 结果
      */
-    @Override
     public int insertFixedAssets(FixedAssets fixedAssets)
     {
         fixedAssets.setAddtime(String.valueOf(DateUtils.getNowDate()));
@@ -68,7 +63,6 @@ public class FixedAssetsServiceImpl implements IFixedAssetsService
      * @param fixedAssets 固定资产
      * @return 结果
      */
-    @Override
     public int updateFixedAssets(FixedAssets fixedAssets)
     {
         fixedAssets.setUserId(SecurityUtils.getUserId());
@@ -83,7 +77,6 @@ public class FixedAssetsServiceImpl implements IFixedAssetsService
      * @param ids 需要删除的固定资产主键
      * @return 结果
      */
-    @Override
     public int deleteFixedAssetsByIds(Long[] ids)
     {
         return fixedAssetsMapper.deleteFixedAssetsByIds(ids);
@@ -95,7 +88,6 @@ public class FixedAssetsServiceImpl implements IFixedAssetsService
      * @param id 固定资产主键
      * @return 结果
      */
-    @Override
     public int deleteFixedAssetsById(Long id)
     {
         return fixedAssetsMapper.deleteFixedAssetsById(id);

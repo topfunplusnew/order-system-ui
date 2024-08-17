@@ -7,7 +7,7 @@ import org.dzu.common.core.page.TableDataInfo;
 import org.dzu.common.enums.BusinessType;
 import org.dzu.common.utils.poi.ExcelUtil;
 import org.dzu.system.domain.OrderdetailBack;
-import org.dzu.system.service.IOrderdetailBackService;
+import org.dzu.system.service.impl.OrderdetailBackServiceImpl;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.validation.annotation.Validated;
@@ -27,7 +27,7 @@ import java.util.List;
 public class OrderdetailBackController extends BaseController
 {
     @Autowired
-    private IOrderdetailBackService orderdetailBackService;
+    private OrderdetailBackServiceImpl orderdetailBackService;
 
     /**
      * 查询订单详情备份列表
