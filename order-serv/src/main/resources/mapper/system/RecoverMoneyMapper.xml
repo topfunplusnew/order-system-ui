@@ -47,8 +47,8 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
             <if test="UserName != null  and UserName != ''"> and UserName like concat('%', #{UserName}, '%')</if>
             and delFlag = 0
         </where>
+       order by id desc
     </select>
-    
     <select id="selectRecoverMoneyById" parameterType="Long" resultMap="RecoverMoneyResult">
         <include refid="selectRecoverMoneyVo"/>
         where id = #{id}

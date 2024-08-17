@@ -126,6 +126,7 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
            <if test="exWareHoustId != null "> and exWareHoustId = #{exWareHoustId} </if>
 
         </where>
+        order by id desc
     </select>
     
     <select id="selectInventoryById" parameterType="Long" resultMap="InventoryResult">
@@ -374,5 +375,5 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
             <if test="showFlag != null "> and showFlag = #{showFlag}</if>
              <if test="goodsCompany != null and goodsCompany != ''"> and goodsCompany like concat('%', #{goodsCompany}, '%')</if>
         </where>
-    </select>
-</mapper>
+       order by id desc
+    </select></mapper>

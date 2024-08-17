@@ -2,6 +2,8 @@ package org.dzu.system.service;
 
 import org.dzu.system.domain.BankAccount;
 import org.dzu.system.domain.vo.TranseferMoney;
+import org.springframework.transaction.annotation.Isolation;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
@@ -43,6 +45,9 @@ public interface IBankAccountService
      * @return 结果
      */
     public int insertBankAccount(BankAccount bankAccount);
+
+    @Transactional(isolation = Isolation.SERIALIZABLE,rollbackFor = Exception.class)
+    int insertCompanyDefaultBankAccount(BankAccount bankAccount);
 
     /**
      * 修改银行账号

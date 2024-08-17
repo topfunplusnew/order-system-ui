@@ -92,6 +92,7 @@
             </if>
             and delFlag = 0
         </where>
+        order by id desc
     </select>
 
     <select id="selectBorrowedMoneyById" parameterType="Long" resultMap="BorrowedMoneyResult">

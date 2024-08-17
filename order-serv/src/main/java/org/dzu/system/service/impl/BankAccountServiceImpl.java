@@ -1,12 +1,15 @@
 package org.dzu.system.service.impl;
 
+import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import org.dzu.common.constant.BankaccountConstants;
 import org.dzu.common.constant.DelConstants;
 import org.dzu.common.enums.TableName;
 import org.dzu.common.exception.ServiceException;
+import org.dzu.common.utils.StringUtils;
 import org.dzu.system.domain.BankAccount;
 import org.dzu.system.domain.BankAccountChange;
 import org.dzu.system.domain.Cars;
+import org.dzu.system.domain.Company;
 import org.dzu.system.domain.vo.TranseferMoney;
 import org.dzu.system.mapper.BankAccountMapper;
 import org.dzu.system.mapper.CarsMapper;
@@ -34,6 +37,8 @@ public class BankAccountServiceImpl implements IBankAccountService
     private CarsMapper carsMapper;
     @Autowired
     private BankAccountChangeServiceImpl bankAccountChangeServiceImpl;
+    @Autowired
+    private CompanyServiceImpl companyServiceImpl;
 
     @Override
     public BankAccount selectBankAccountByBankNo(String bankNo) {
@@ -87,6 +92,62 @@ public class BankAccountServiceImpl implements IBankAccountService
         return bankAccountMapper.insertBankAccount(bankAccount);
     }
 
+
+    /**
+     * 创建一个客户的默认卡
+     *
+     * @param bankAccount 银行账号
+     * @return 结果
+     */
+    @Override
+    @Transactional(isolation = Isolation.SERIALIZABLE,rollbackFor = Exception.class)
+    public int insertCompanyDefaultBankAccount(BankAccount bankAccount)
+    {
+        // 这里获取一下卡的类别,如果是默认卡,则代表一定绑定到company中的一个客户
+        if(bankAccount.getAcountsType().endsWith(BankaccountConstants.DEFAULT)&&bankAccount.getAcountsType().length()>BankaccountConstants.DEFAULT.length()){
+            if(StringUtils.isNull(bankAccount.getCompanyId())){
+                throw new ServiceException("添加默认卡时必须绑定到客户");
+            }
+            // 抓取对应客户信息
+            Company company = companyServiceImpl.selectCompanyById(bankAccount.getCompanyId());
+            if(StringUtils.isNull(company)){
+                throw new ServiceException("绑定的客户不存在！");
+            }
+            //1. 检测客户的其他默认卡,全改成非默认
+            BankAccount queryDefault = new BankAccount();
+            queryDefault.setCompanyId(bankAccount.getCompanyId());
+            queryDefault.setAcountsType(BankaccountConstants.DEFAULT);
+            List<BankAccount> defaultBankAccounts = selectBankAccountList(queryDefault);
+            for (BankAccount defaultBankAccount : defaultBankAccounts) {
+                // 遍历修改掉原来的默认卡成对应的供应商卡或者客户卡
+                defaultBankAccount.setAcountsType(company.getCompanyType());
+                updateBankAccount(defaultBankAccount);
+            }
+            // 2.修改客户信息中的银行卡信息
+            company.setBankNo(bankAccount.getBankNo());
+            company.setBankName(bankAccount.getBankName());
+            company.setAcountsName(bankAccount.getAcountsName());
+            company.setId(bankAccount.getCompanyId());
+            companyServiceImpl.updateCompany(company);
+
+
+
+
+
+            // 3. 插入默认卡信息
+            // 需要搜索一下是否存在相同的卡号,是的话就不是新增,而是修改
+            QueryWrapper<BankAccount> eq = new QueryWrapper<BankAccount>().eq("bankNo", bankAccount.getBankNo()).eq("companyId", bankAccount.getCompanyId());
+            List<BankAccount> bankAccounts = bankAccountMapper.selectList(eq);
+            if(bankAccounts.size()>0){
+                bankAccount.setId(bankAccounts.get(0).getId());
+                return updateBankAccount(bankAccount);
+            }else {
+                return insertBankAccount(bankAccount);
+            }
+        }else {
+            throw new ServiceException("调用接口参数错误");
+        }
+    }
     /**
      * 修改银行账号
      * 
@@ -171,5 +232,8 @@ public class BankAccountServiceImpl implements IBankAccountService
 
         return transeferMoney;
     }
+
+
+
 
 }

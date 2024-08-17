@@ -126,8 +126,8 @@
             </if>
             and delFlag = 0
         </where>
+       order by id desc
     </select>
-
     <select id="selectInvoiceOutById" parameterType="Long" resultMap="InvoiceOutResult">
         <include refid="selectInvoiceOutVo"/>
         where id = #{id}

@@ -27,18 +27,39 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
 
     <select id="selectBankAccountChangeList" parameterType="BankAccountChange" resultMap="BankAccountChangeResult">
         <include refid="selectBankAccountChangeVo"/>
-        <where>  
-            <if test="selfBankNo != null  and selfBankNo != ''"> and selfBankNo = #{selfBankNo}</if>
-            <if test="tableName != null  and tableName != ''"> and tableName like concat('%', #{tableName}, '%')</if>
-            <if test="payNO != null  and payNO != ''"> and payNO = #{payNO}</if>
-            <if test="operateDate != null  and operateDate != ''"> and operateDate = #{operateDate}</if>
-            <if test="changeType != null  and changeType != ''"> and changeType = #{changeType}</if>
-            <if test="moneyAmount != null "> and moneyAmount = #{moneyAmount}</if>
-            <if test="comments != null  and comments != ''"> and comments = #{comments}</if>
-            <if test="addtime != null  and addtime != ''"> and addtime = #{addtime}</if>
-            <if test="userId != null "> and userId = #{userId}</if>
-            <if test="UserName != null  and UserName != ''"> and UserName like concat('%', #{UserName}, '%')</if>
+        <where>
+            <if test="selfBankNo != null  and selfBankNo != ''">
+                and selfBankNo = #{selfBankNo}
+            </if>
+            <if test="tableName != null  and tableName != ''">
+                and tableName like concat('%', #{tableName}, '%')
+            </if>
+            <if test="payNO != null  and payNO != ''">
+                and payNO = #{payNO}
+            </if>
+            <if test="operateDate != null  and operateDate != ''">
+                and operateDate = #{operateDate}
+            </if>
+            <if test="changeType != null  and changeType != ''">
+                and changeType = #{changeType}
+            </if>
+            <if test="moneyAmount != null">
+                and moneyAmount = #{moneyAmount}
+            </if>
+            <if test="comments != null  and comments != ''">
+                and comments = #{comments}
+            </if>
+            <if test="addtime != null  and addtime != ''">
+                and addtime = #{addtime}
+            </if>
+            <if test="userId != null">
+                and userId = #{userId}
+            </if>
+            <if test="UserName != null  and UserName != ''">
+                and UserName like concat('%', #{UserName}, '%')
+            </if>
         </where>
+        order by id desc
     </select>
     
     <select id="selectBankAccountChangeById" parameterType="Long" resultMap="BankAccountChangeResult">
