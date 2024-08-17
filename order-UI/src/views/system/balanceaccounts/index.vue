@@ -4,56 +4,53 @@
     <el-form :model="timesQuery" ref="queryForm" size="small" :inline="true" v-show="showSearch" label-width="68px">
       <el-form-item label="开始时间" prop="beginTime">
         <el-date-picker
-          v-model="timesQuery.beginTime"
-          type="date"
-          placeholder="请选择开始时间">
+            v-model="timesQuery.beginTime"
+            type="date"
+            placeholder="请选择开始时间">
         </el-date-picker>
       </el-form-item>
       <el-form-item label="结束时间" prop="endTime">
         <el-date-picker
-          v-model="timesQuery.endTime"
-          type="date"
-          placeholder="请选择结束时间">
+            v-model="timesQuery.endTime"
+            type="date"
+            placeholder="请选择结束时间">
         </el-date-picker>
       </el-form-item>
       <el-form-item label="对方公司" prop="companyName">
         <el-input
-          v-model="timesQuery.companyName"
-          placeholder="请输入对方公司"
-          clearable
+            v-model="timesQuery.companyName"
+            placeholder="请输入对方公司"
+            clearable
         />
       </el-form-item>
       <el-form-item>
         <el-button type="primary" icon="el-icon-search" size="mini" @click="handleTimesQuery">搜索</el-button>
-        <!--        <el-button icon="el-icon-refresh" size="mini" @click="resetQuery">重置</el-button>-->
       </el-form-item>
     </el-form>
 
     <el-row :gutter="10" class="mb8">
-      <!-- 刷新按钮-->
       <el-col :span="1.5">
         <el-button icon="el-icon-refresh" size="mini" @click="resetQuery">刷新</el-button>
       </el-col>
       <el-col :span="1.5">
         <el-button
-          type="danger"
-          plain
-          icon="el-icon-plus"
-          size="mini"
-          @click="handleAdd"
-          v-hasPermi="['system:balanceaccounts:add']"
+            type="danger"
+            plain
+            icon="el-icon-plus"
+            size="mini"
+            @click="handleAdd"
+            v-hasPermi="['system:balanceaccounts:add']"
         >新增平账信息
         </el-button>
       </el-col>
-
       <right-toolbar :showSearch.sync="showSearch" @queryTable="getList" :columns="columns">
         <template v-slot:print>
           <el-col :span="1.5">
             <el-button
-              plain
-              icon="el-icon-printer"
-              size="mini"
-              @click="printHTML"
+                plain
+                icon="el-icon-printer"
+                size="mini"
+                @click="printHTML"
             >
             </el-button>
           </el-col>
@@ -62,11 +59,11 @@
         <template v-slot:export>
           <el-col :span="1.5">
             <el-button
-              plain
-              icon="el-icon-folder-opened"
-              size="mini"
-              @click="handleExport"
-              v-hasPermi="['system:balanceaccounts:export']"
+                plain
+                icon="el-icon-folder-opened"
+                size="mini"
+                @click="handleExport"
+                v-hasPermi="['system:balanceaccounts:export']"
             >
             </el-button>
           </el-col>
@@ -75,8 +72,7 @@
     </el-row>
 
     <el-table border v-loading="loading" :data="BalanceAccountsList" @selection-change="handleSelectionChange"
-              id="printBox"
-              v-horizontal-scroll="'always'">
+              id="printBox" v-horizontal-scroll="'always'">
       <el-table-column label="操作时间" align="center" prop="operateDate" v-if="columns[0].visible"/>
       <el-table-column label="金额" align="center" prop="moneyAmount" v-if="columns[1].visible"/>
       <el-table-column label="对方公司" align="center" prop="companyName" v-if="columns[2].visible"/>
@@ -90,30 +86,26 @@
       <el-table-column label="操作" align="center" class-name="small-padding fixed-width">
         <template slot-scope="scope">
           <el-button
-            size="mini"
-            type="primary"
-            @click="handleUpdate(scope.row)"
-            v-hasPermi="['system:balanceaccounts:edit']"
-          >编辑
+              size="mini"
+              type="primary"
+              @click="handleUpdate(scope.row)"
+              v-hasPermi="['system:balanceaccounts:edit']">编辑
           </el-button>
           <el-button
-            size="mini"
-            type="danger"
-            @click="handleDelete(scope.row)"
-            v-hasPermi="['system:balanceaccounts:remove']"
-          >删除
+              size="mini"
+              type="danger"
+              @click="handleDelete(scope.row)"
+              v-hasPermi="['system:balanceaccounts:remove']">删除
           </el-button>
         </template>
       </el-table-column>
     </el-table>
-
     <pagination
-      v-show="total>0"
-      :total="total"
-      :page.sync="queryParams.pageNum"
-      :limit.sync="queryParams.pageSize"
-      @pagination="getList"
-    />
+        v-show="total>0"
+        :total="total"
+        :page.sync="queryParams.pageNum"
+        :limit.sync="queryParams.pageSize"
+        @pagination="getList"/>
 
     <!-- 添加或修改平账信息对话框 -->
     <el-dialog :title="title" :visible.sync="open" width="500px" append-to-body>
@@ -121,9 +113,9 @@
         <el-form-item label="操作时间" prop="operateDate">
           <!--          <el-input v-model="form.operateDate" placeholder="请输入操作时间"/>-->
           <el-date-picker
-            v-model="form.operateDate"
-            type="date"
-            placeholder="选择操作时间">
+              v-model="form.operateDate"
+              type="date"
+              placeholder="选择操作时间">
           </el-date-picker>
         </el-form-item>
         <el-form-item label="金额" prop="moneyAmount">
@@ -139,25 +131,12 @@
             </el-col>
           </el-row>
         </el-form-item>
-        <!--        <el-form-item label="对方公司ID" prop="companyID">-->
-        <!--          <el-row>-->
-        <!--            <el-col :span="12">-->
-        <!--              <el-input v-model="form.companyID" placeholder="请输入对方公司ID"/>-->
-        <!--            </el-col>-->
-        <!--          </el-row>-->
-        <!--        </el-form-item>-->
-        <!--        单选-->
         <el-form-item label="对方公司类型" prop="companyType">
-          <!--          <el-radio v-model="form.companyType" label="1">客户</el-radio>-->
-          <!--          <el-radio v-model="form.companyType" label="2">供应商</el-radio>-->
           <el-input v-model="form.companyType" type="text">供应商</el-input>
         </el-form-item>
         <el-form-item label="备注" prop="comments">
           <el-input v-model="form.comments" placeholder="请输入备注"/>
         </el-form-item>
-        <!--        <el-form-item label="操作人员ID" prop="userId">-->
-        <!--          <el-input v-model="form.userId" placeholder="请输入操作人员ID"/>-->
-        <!--        </el-form-item>-->
       </el-form>
       <div slot="footer" class="dialog-footer">
         <el-button type="primary" @click="submitForm">确 定</el-button>
@@ -167,20 +146,20 @@
 
     <!--    点击公司查询的弹窗-->
     <el-dialog
-      title="提示"
-      :visible.sync="companyDialogVisible"
-      width="40%">
+        title="公司查询"
+        :visible.sync="companyDialogVisible"
+        width="40%">
       <el-row>
         <el-table
-          :data="companyInfoList"
-          border
-          style="width: 100%">
+            :data="companyInfoList"
+            border
+            style="width: 100%">
           <el-table-column label="公司名称" align="center" prop="companyName"/>
           <el-table-column label="公司id" align="center" prop="id"/>
           <el-table-column
-            fixed="right"
-            label="操作"
-            width="100">
+              fixed="right"
+              label="操作"
+              width="100">
             <template slot-scope="scope">
               <el-button @click="commitCompanyInfo(scope.row)" type="danger" size="small">确定</el-button>
             </template>
@@ -268,10 +247,8 @@ export default {
       ],
       // 表单校验
       rules: {},
-
       //点击公司的弹窗
       companyDialogVisible: false,
-
       //公司信息
       companyInfoList: [],
     };
@@ -282,8 +259,7 @@ export default {
     this.$store.dispatch('balanceaccounts/getbalanceaccountsList')
     //控制隐藏列
     if (localStorage.getItem('balanceaccounts-columns') === 'null'
-      || !localStorage.getItem('balanceaccounts-columns')) {
-      //设置localStorage
+        || !localStorage.getItem('balanceaccounts-columns')) {
       localStorage.setItem("balanceaccounts-columns", JSON.stringify(this.columns))
     } else {
       this.columns = JSON.parse(localStorage.getItem('balanceaccounts-columns'));
@@ -298,7 +274,6 @@ export default {
       deep: true,
     }
   },
-
   methods: {
     //搜索公司信息
     searchCompanyInfo() {

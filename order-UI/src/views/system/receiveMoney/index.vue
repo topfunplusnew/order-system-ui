@@ -484,6 +484,9 @@ export default {
       const id = row.id || this.ids
       getReceiveMoney(id).then(response => {
         this.form = response.data;
+        //修改类型
+        this.currentSort.levelOne = this.form.receiveType.split('-')[0]
+        this.currentSort.levelTwo = this.form.receiveType.split('-')[1]
         this.open = true;
         this.title = "修改收款信息";
       });

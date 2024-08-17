@@ -73,6 +73,23 @@
       <el-table-column label="票点" align="center" prop="ticketPoint"/>
       <el-table-column label="票点金额" align="center" prop="ticketPointAmount"/>
       <el-table-column label="是否订单对应票点" align="center" prop="isOrderTax"/>
+      <el-table-column label="审核状态" align="center" prop="checkState" width="240">
+        <template #default="scope">
+          <el-row>
+            <el-col :span="12">
+              <el-tag>
+                {{ scope.row.checkState }}
+              </el-tag>
+            </el-col>
+            <el-col :span="12">
+              <el-button size="mini" type="warning" :disabled="scope.row.checkState!=='未申请'"
+                         @click="addPaymentApplyInfos(scope.row)">
+                添加付款申请
+              </el-button>
+            </el-col>
+          </el-row>
+        </template>
+      </el-table-column>
       <el-table-column label="备注" align="center" prop="comments"/>
       <el-table-column label="操作" align="center" class-name="small-padding fixed-width">
         <template slot-scope="scope">
@@ -158,6 +175,12 @@
         <el-button @click="cancel">取 消</el-button>
       </div>
     </el-dialog>
+
+    <!--    添加付款申请-->
+    <el-dialog title="付款申请" :visible.sync="PaymentApplyInfoVisible" width="500px" append-to-body>
+      <ApplyPayment :table-name="TableName.INVOICE_IN" @changeOpen="changePaymentApplyInfoVisible"
+                    :t-i-d="tID" :need-money="needMoney" :need-info="{}"/>
+    </el-dialog>
   </div>
 </template>
 
@@ -166,10 +189,12 @@ import {listInvoiceIn, getInvoiceIn, delInvoiceIn, addInvoiceIn, updateInvoiceIn
 import {mixin_printHTML} from "@/views/dashboard/mixins/print";
 import SearchOption from "@/components/SearchOption.vue";
 import {listCompany} from "@/api/system/company";
+import ApplyPayment from "@/components/ApplyPayment.vue";
+import {TableName} from "@/api/tool/enums";
 
 export default {
   name: "InvoiceIn",
-  components: {SearchOption},
+  components: {ApplyPayment, SearchOption},
   mixins: [mixin_printHTML],
   data() {
     return {
@@ -244,13 +269,20 @@ export default {
       ],
 
       //公司名称
-      companyName: ''
+      companyName: '',
+      //付款申请
+      PaymentApplyInfoVisible: false,
+      tID: '',
+      needMoney: 0
     };
   },
   created() {
     this.getList();
   },
   computed: {
+    TableName() {
+      return TableName
+    },
     //票点金额 开票金额*票点
     invoiceAmount: {
       set(val) {
@@ -288,6 +320,16 @@ export default {
       this.form.companyName = val.companyName;
       this.form.companyID = val.id;
       this.form.companyType = val.companyType;
+    },
+
+    //添加付款申请
+    addPaymentApplyInfos(row) {
+      this.tID = row.id;
+      this.needMoney = row.ticketPointAmount;
+      this.PaymentApplyInfoVisible = true
+    },
+    changePaymentApplyInfoVisible(val) {
+      this.PaymentApplyInfoVisible = val;
     },
     // 取消按钮
     cancel() {

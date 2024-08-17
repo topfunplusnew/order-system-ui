@@ -1,53 +1,41 @@
 <template>
   <div class="app-container">
     <el-form :model="queryParams" ref="queryForm" size="small" :inline="true" v-show="showSearch" label-width="120px">
-      <!--      时间查询-->
       <el-form-item label="开始日期" prop="startDate">
         <el-date-picker
-          v-model="queryParams.startDate"
-          type="date"
-          placeholder="选择日期" value-format="timestamp">
+            v-model="queryParams.startDate"
+            type="date"
+            placeholder="选择日期" value-format="timestamp">
         </el-date-picker>
       </el-form-item>
       <el-form-item label="结束日期" prop="endDate">
         <el-date-picker
-          v-model="queryParams.endDate"
-          type="date"
-          placeholder="选择日期" value-format="timestamp">
+            v-model="queryParams.endDate"
+            type="date"
+            placeholder="选择日期" value-format="timestamp">
         </el-date-picker>
       </el-form-item>
       <el-form-item label="供应商/客户" prop="searchCompamyName">
         <el-input
-          v-model="queryParams.searchCompamyName"
-          placeholder="请输入开票日期"
-          clearable
-          @keyup.enter.native="handleQuery"
+            v-model="queryParams.searchCompamyName"
+            placeholder="请输入开票日期"
+            clearable
+            @keyup.enter.native="handleQuery"
         />
       </el-form-item>
       <el-form-item label="开票单位" prop="searchInvoiceCompanyName">
         <el-input
-          v-model="queryParams.searchInvoiceCompanyName"
-          placeholder="请输入开票日期"
-          clearable
-          @keyup.enter.native="handleQuery"
+            v-model="queryParams.searchInvoiceCompanyName"
+            placeholder="请输入开票日期"
+            clearable
+            @keyup.enter.native="handleQuery"
         />
       </el-form-item>
       <el-form-item>
         <el-button type="primary" icon="el-icon-search" size="mini" @click="handleQuery">搜索</el-button>
       </el-form-item>
     </el-form>
-
     <el-row :gutter="10" class="mb8">
-      <!--      <el-col :span="1.5">-->
-      <!--        <el-button-->
-      <!--          type="primary"-->
-      <!--          plain-->
-      <!--          icon="el-icon-plus"-->
-      <!--          size="mini"-->
-      <!--          @click="handleAdd"-->
-      <!--          v-hasPermi="['system:invoicein:add']"-->
-      <!--        >新增</el-button>-->
-      <!--      </el-col>-->
       <el-col :span="1.5">
         <el-button icon="el-icon-refresh" size="mini" @click="resetQuery">重置</el-button>
       </el-col>
@@ -55,11 +43,10 @@
         <template v-slot:print>
           <el-col :span="1.5">
             <el-button
-              plain
-              icon="el-icon-printer"
-              size="mini"
-              @click="printHTML"
-            >
+                plain
+                icon="el-icon-printer"
+                size="mini"
+                @click="printHTML">
             </el-button>
           </el-col>
         </template>
@@ -67,12 +54,11 @@
         <template v-slot:export>
           <el-col :span="1.5">
             <el-button
-              plain
-              icon="el-icon-folder-opened"
-              size="mini"
-              @click="handleExport"
-              v-hasPermi="['system:orderdetail:export']"
-            >
+                plain
+                icon="el-icon-folder-opened"
+                size="mini"
+                @click="handleExport"
+                v-hasPermi="['system:orderdetail:export']">
             </el-button>
           </el-col>
         </template>
@@ -96,7 +82,7 @@
       <el-table-column label="是否为订单税" align="center" prop="isOrderTax">
         <template slot-scope="scope">
           <el-tag :type="scope.row.isOrderTax===0?'danger':'success'" disable-transitions>
-            {{ scope.row.isOrderTax === 0 ? '否' : '是'}}
+            {{ scope.row.isOrderTax === 0 ? '否' : '是' }}
           </el-tag>
         </template>
       </el-table-column>
@@ -118,29 +104,28 @@
       <el-table-column label="操作" align="center" class-name="small-padding fixed-width" fixed="right">
         <template slot-scope="scope">
           <el-button
-            size="mini"
-            type="primary"
-            @click="handleUpdate(scope.row)"
-            v-hasPermi="['system:invoicein:edit']"
+              size="mini"
+              type="primary"
+              @click="handleUpdate(scope.row)"
+              v-hasPermi="['system:invoicein:edit']"
           >修改
           </el-button>
           <el-button
-            size="mini"
-            type="danger"
-            @click="handleDelete(scope.row)"
-            v-hasPermi="['system:invoicein:remove']"
+              size="mini"
+              type="danger"
+              @click="handleDelete(scope.row)"
+              v-hasPermi="['system:invoicein:remove']"
           >删除
           </el-button>
         </template>
       </el-table-column>
     </el-table>
-
     <pagination
-      v-show="total>0"
-      :total="total"
-      :page.sync="queryParams.pageNum"
-      :limit.sync="queryParams.pageSize"
-      @pagination="getList"
+        v-show="total>0"
+        :total="total"
+        :page.sync="queryParams.pageNum"
+        :limit.sync="queryParams.pageSize"
+        @pagination="getList"
     />
 
     <!-- 添加或修改发票购入信息对话框 -->
@@ -200,6 +185,7 @@
 <script>
 import {listInvoiceIn, getInvoiceIn, delInvoiceIn, addInvoiceIn, updateInvoiceIn} from "@/api/system/invoiceIn";
 import {mixin_printHTML} from "@/views/dashboard/mixins/print";
+import {listInvoiceAll} from "@/api/system/allInvoice";
 
 export default {
   name: "InvoiceIn",
@@ -295,8 +281,9 @@ export default {
     /** 查询发票购入信息列表 */
     getList() {
       this.loading = true;
-      listInvoiceIn(this.queryParams).then(response => {
+      listInvoiceAll(this.queryParams).then(response => {
         this.invoiceInList = response.rows;
+        console.log('发货总台帐信息', this.invoiceInList)
         this.total = response.total;
         this.loading = false;
       });

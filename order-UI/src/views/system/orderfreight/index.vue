@@ -3,18 +3,18 @@
     <el-form :model="queryParams" ref="queryForm" size="small" :inline="true" v-show="showSearch" label-width="68px">
       <el-form-item label="申请开始日期" prop="applyDate">
         <el-input
-          v-model="queryParams.applyDate"
-          placeholder="请输入申请日期"
-          clearable
-          @keyup.enter.native="handleQuery"
+            v-model="queryParams.applyDate"
+            placeholder="请输入申请日期"
+            clearable
+            @keyup.enter.native="handleQuery"
         />
       </el-form-item>
       <el-form-item label="申请结束日期" prop="applyDate">
         <el-input
-          v-model="queryParams.applyDate"
-          placeholder="请输入申请日期"
-          clearable
-          @keyup.enter.native="handleQuery"
+            v-model="queryParams.applyDate"
+            placeholder="请输入申请日期"
+            clearable
+            @keyup.enter.native="handleQuery"
         />
       </el-form-item>
       <el-form-item>
@@ -24,25 +24,25 @@
     </el-form>
 
     <el-row :gutter="10" class="mb8">
-      <el-col :span="1.5">
-        <el-button
-          type="primary"
-          plain
-          icon="el-icon-plus"
-          size="mini"
-          @click="handleAdd"
-          v-hasPermi="['system:orderfreight:add']"
-        >新增订单运费申请
-        </el-button>
-      </el-col>
+      <!--      <el-col :span="1.5">-->
+      <!--        <el-button-->
+      <!--          type="primary"-->
+      <!--          plain-->
+      <!--          icon="el-icon-plus"-->
+      <!--          size="mini"-->
+      <!--          @click="handleAdd"-->
+      <!--          v-hasPermi="['system:orderfreight:add']"-->
+      <!--        >新增订单运费申请-->
+      <!--        </el-button>-->
+      <!--      </el-col>-->
       <right-toolbar :showSearch.sync="showSearch" @queryTable="getList" :columns="columns">
         <template v-slot:print>
           <el-col :span="1.5">
             <el-button
-              plain
-              icon="el-icon-printer"
-              size="mini"
-              @click="printHTML"
+                plain
+                icon="el-icon-printer"
+                size="mini"
+                @click="printHTML"
             >
             </el-button>
           </el-col>
@@ -51,11 +51,11 @@
         <template v-slot:export>
           <el-col :span="1.5">
             <el-button
-              plain
-              icon="el-icon-folder-opened"
-              size="mini"
-              @click="handleExport"
-              v-hasPermi="['system:company:export']"
+                plain
+                icon="el-icon-folder-opened"
+                size="mini"
+                @click="handleExport"
+                v-hasPermi="['system:company:export']"
             >
             </el-button>
           </el-col>
@@ -64,7 +64,7 @@
     </el-row>
 
     <el-table v-horizontal-scroll="'always'" border v-loading="loading" :data="orderFreightList"
-              @selection-change="handleSelectionChange" id="printBox">
+              @selection-change="handleSelectionChange" id="printBox" max-height="600px">
       <el-table-column label="订单编号" align="center" prop="ordersNo"/>
       <el-table-column label="运费类型" align="center" prop="freightType"/>
       <el-table-column label="金额" align="center" prop="moneyAmount"/>
@@ -106,32 +106,31 @@
       <el-table-column label="操作" align="center" class-name="small-padding fixed-width" fixed="right" width="250">
         <template slot-scope="scope">
           <el-button
-            size="mini"
-            type="warning"
-            @click="applyForLand(scope.row)"
-            v-if="scope.row.freightType=== '陆运'"
+              size="mini"
+              type="warning"
+              @click="applyForLand(scope.row)"
+              v-if="scope.row.freightType=== '陆运'"
           >申请陆运费
           </el-button>
           <!--          只有海运费不为零才能申请海运费-->
           <el-button
-            size="mini"
-            type="warning"
-            @click="applyForSea(scope.row)"
-            v-if="scope.row.freightType=== '海运'"
+              size="mini"
+              type="primary"
+              @click="applyForSea(scope.row)"
+              v-if="scope.row.freightType=== '海运'"
           >申请海运费
           </el-button>
           <el-button
-            size="mini"
-            type="primary"
-            @click="handleUpdate(scope.row)"
-            v-hasPermi="['system:orderfreight:edit']"
+              size="mini"
+              @click="handleUpdate(scope.row)"
+              v-hasPermi="['system:orderfreight:edit']"
           >修改
           </el-button>
           <el-button
-            size="mini"
-            type="danger"
-            @click="handleDelete(scope.row)"
-            v-hasPermi="['system:orderfreight:remove']"
+              size="mini"
+              type="danger"
+              @click="handleDelete(scope.row)"
+              v-hasPermi="['system:orderfreight:remove']"
           >删除
           </el-button>
         </template>
@@ -139,16 +138,17 @@
     </el-table>
 
     <pagination
-      v-show="total>0"
-      :total="total"
-      :page.sync="queryParams.pageNum"
-      :limit.sync="queryParams.pageSize"
-      @pagination="getList"
+        v-show="total>0"
+        :total="total"
+        :page.sync="queryParams.pageNum"
+        :limit.sync="queryParams.pageSize"
+        @pagination="getList"
     />
-
-    <!-- 添加或修改订单运费对话框 -->
-    <el-dialog :title="title" :visible.sync="open" width="500px" append-to-body>
-      <ApplyPayment tableName="orderfreight" tID="id"/>
+    <!--    created第一次传递的props，然后监听后来props的变化-->
+    <el-dialog title="运费付款申请" :visible.sync="open" width="500px"
+               append-to-body :before-close="beforeCloseApply">
+      <ApplyPayment :tableName="TableName.ORDER_FREIGHT" :t-i-d="tID"
+                    :need-info="{...applyInfo,isExit:true}" :need-money="freight"/>
     </el-dialog>
   </div>
 </template>
@@ -164,9 +164,15 @@ import {
 import SearchOption from "@/components/SearchOption.vue";
 import {listBankAccount} from "@/api/system/bankAccount";
 import ApplyPayment from "@/components/ApplyPayment.vue";
+import {TableName} from "@/api/tool/enums";
 
 export default {
   name: "OrderFreight",
+  computed: {
+    TableName() {
+      return TableName
+    }
+  },
   components: {ApplyPayment, SearchOption},
   data() {
     return {
@@ -236,6 +242,11 @@ export default {
         {key: 7, label: `销售经理`, visible: true},
         {key: 8, label: `备注`, visible: true},
       ],
+
+
+      tID: null,
+      freight: null,
+      applyInfo: null,
     };
   },
   created() {
@@ -254,13 +265,27 @@ export default {
       this.form.otherBankNo = val.bankNo;
       this.form.otherBankName = val.bankName
     },
-
+    //关闭之前的回调 关闭之前就给状态赋空 done()
+    beforeCloseApply(done) {
+      this.applyInfo = {};
+      this.tID = null;
+      this.freight = null;
+      done();
+    },
     //添加海运费或者陆运费
     applyForLand(row) {
       console.log(row)
+      this.applyInfo = row;
+      this.tID = row.id
+      this.freight = Number(row.moneyAmount);
+      this.open = true;
     },
     applyForSea(row) {
       console.log(row)
+      this.applyInfo = row;
+      this.tID = row.id
+      this.freight = Number(row.moneyAmount);
+      this.open = true;
     },
     /** 查询订单运费列表 */
     getList() {

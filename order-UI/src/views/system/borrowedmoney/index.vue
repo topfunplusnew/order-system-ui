@@ -1,68 +1,58 @@
 <template>
   <div class="app-container">
-    <!--    搜索框-->
     <el-form :model="timesQuery" ref="queryForm" size="small" :inline="true" v-show="showSearch" label-width="68px">
       <el-form-item label="开始时间" prop="beginTime">
         <el-date-picker
-          v-model="timesQuery.beginTime"
-          type="date"
-          placeholder="请选择开始时间">
+            v-model="timesQuery.beginTime"
+            type="date"
+            placeholder="请选择开始时间">
         </el-date-picker>
       </el-form-item>
       <el-form-item label="结束时间" prop="endTime">
         <el-date-picker
-          v-model="timesQuery.endTime"
-          type="date"
-          placeholder="请选择结束时间">
+            v-model="timesQuery.endTime"
+            type="date"
+            placeholder="请选择结束时间">
         </el-date-picker>
       </el-form-item>
       <el-form-item>
         <el-button type="primary" icon="el-icon-search" size="mini" @click="handleQueryTime">搜索</el-button>
-        <!-- <el-button icon="el-icon-refresh" size="mini" @click="resetQuery">重置</el-button>-->
       </el-form-item>
     </el-form>
 
-    <!--    按钮组-->
     <el-row :gutter="10" class="mb8">
       <el-col :span="1.5">
         <el-button icon="el-icon-refresh" size="mini" @click="resetQuery">刷新</el-button>
         <el-button type="danger" size="mini" @click="handleAdd">新增加入款信息</el-button>
       </el-col>
-      <!--      右侧工具栏-->
       <right-toolbar :showSearch.sync="showSearch" @queryTable="getList" :columns="columns">
         <template v-slot:print>
           <el-col :span="1.5">
             <el-button
-              plain
-              icon="el-icon-printer"
-              size="mini"
-              @click="printHTML"
-            >
+                plain
+                icon="el-icon-printer"
+                size="mini"
+                @click="printHTML">
             </el-button>
           </el-col>
         </template>
-        <!--        导出-->
         <template v-slot:export>
           <el-col :span="1.5">
             <el-button
-              plain
-              icon="el-icon-folder-opened"
-              size="mini"
-              @click="handleExport"
-              v-hasPermi="['system:company:export']"
-            >
+                plain
+                icon="el-icon-folder-opened"
+                size="mini"
+                @click="handleExport"
+                v-hasPermi="['system:company:export']">
             </el-button>
           </el-col>
         </template>
       </right-toolbar>
     </el-row>
 
-    <!--   数据表格-->
     <el-table border v-loading="loading" :data="borrowedMoneyList" @selection-change="handleSelectionChange"
               v-horizontal-scroll="'always'" id="printBox" show-summary :summary-method="getSummaries">
       <el-table-column label="id" align="center" prop="id"/>
-      <!--      应该可以优化columns -->
-      <el-table-column label="贷款编号" align="center" prop="loanNO" v-if="columns[0].visible"/>
       <el-table-column label="贷款来源" align="center" prop="origin" v-if="columns[1].visible"/>
       <el-table-column label="借入金额" align="center" prop="moneyAmount" v-if="columns[2].visible"/>
       <el-table-column label="贷款利率" align="center" prop="ratio" v-if="columns[3].visible"/>
@@ -76,38 +66,32 @@
       <el-table-column label="操作" align="center" class-name="small-padding fixed-width" width="160px" fixed="right">
         <template slot-scope="scope">
           <el-button
-            size="mini"
-            type="warning"
-            @click="handleGiveBackMoney(scope.row)"
-            v-if="scope.row.isEnd ==='否'"
-          >还款
+              size="mini"
+              type="warning"
+              @click="handleGiveBackMoney(scope.row)"
+              v-if="scope.row.isEnd ==='否'">还款
           </el-button>
           <el-button
-            size="mini"
-            type="primary"
-            @click="handleUpdate(scope.row)"
-            v-hasPermi="['system:borrowedmoney:edit']"
-          >编辑
+              size="mini"
+              type="primary"
+              @click="handleUpdate(scope.row)"
+              v-hasPermi="['system:borrowedmoney:edit']">编辑
           </el-button>
           <el-button
-            size="mini"
-            type="danger"
-            @click="handleDelete(scope.row)"
-            v-hasPermi="['system:borrowedmoney:remove']"
-          >删除
+              size="mini"
+              type="danger"
+              @click="handleDelete(scope.row)"
+              v-hasPermi="['system:borrowedmoney:remove']">删除
           </el-button>
         </template>
       </el-table-column>
     </el-table>
-
-    <!--    分页信息-->
     <pagination
-      v-show="total>0"
-      :total="total"
-      :page.sync="queryParams.pageNum"
-      :limit.sync="queryParams.pageSize"
-      @pagination="getList"
-    />
+        v-show="total>0"
+        :total="total"
+        :page.sync="queryParams.pageNum"
+        :limit.sync="queryParams.pageSize"
+        @pagination="getList"/>
 
     <!-- 添加或修改从外部借款信息对话框 -->
     <el-dialog :title="title" :visible.sync="open" width="500px" append-to-body>
@@ -123,9 +107,9 @@
         </el-form-item>
         <el-form-item label="贷款发放日期" prop="loanDate">
           <el-date-picker
-            v-model="form.loanDate"
-            type="date"
-            placeholder="选择日期" value-format="timestamp">
+              v-model="form.loanDate"
+              type="date"
+              placeholder="选择日期" value-format="timestamp">
           </el-date-picker>
         </el-form-item>
         <el-form-item label="贷款年限" prop="loanDuring">
@@ -152,14 +136,10 @@
               </SearchOption>
             </el-col>
           </el-row>
-
         </el-form-item>
         <el-form-item label="打入账号" prop="bankNo">
           <el-input v-model="form.bankNo" placeholder="请输入打入账号"/>
         </el-form-item>
-        <!--        <el-form-item label="已还款标记(1是0否)" prop="isEnd">-->
-        <!--          <el-input v-model="form.isEnd" placeholder="请输入已还款标记"/>-->
-        <!--        </el-form-item>-->
         <el-form-item label="备注" prop="comments">
           <el-input v-model="form.comments" placeholder="请输入备注"/>
         </el-form-item>
@@ -173,65 +153,58 @@
 
     <!--    点击还款的弹框-->
     <el-dialog title="还款操作" :visible.sync="giveBackMoneyShow">
-      <!--      历史还款信息列表-->
       <div id="back-money-info">
         <el-card class="box-card">
           <div slot="header" class="clearfix">
             <span>历史还款记录</span>
-            <!--   刷新-->
-            <el-button style="float: right; padding: 3px 0" @click="handleRefreshNeedGiveBackMoneyList">
-              刷新
+            <el-button style="float: right; padding: 3px 0" @click="handleRefreshNeedGiveBackMoneyList">刷新
             </el-button>
           </div>
           <el-table
-            :data="needGiveBackMoneyList"
-            style="width: 100%" border v-loading="needMoneyLoading">
+              :data="needGiveBackMoneyList"
+              style="width: 100%" border v-loading="needMoneyLoading">
             <el-table-column
-              prop="id"
-              label="ID"
-              width="60">
+                prop="id"
+                label="ID"
+                width="60">
             </el-table-column>
             <el-table-column
-              prop="loanNO"
-              label="贷款编号"
-              width="130">
+                prop="loanNO"
+                label="贷款编号"
+                width="130">
             </el-table-column>
             <el-table-column
-              prop="moneyAmount"
-              label="还(本)金额">
+                prop="moneyAmount"
+                label="还(本)金额">
             </el-table-column>
             <el-table-column
-              prop="ratio"
-              label="付息金额">
+                prop="ratio"
+                label="付息金额">
             </el-table-column>
             <el-table-column
-              prop="payDate"
-              label="还款日期">
+                prop="payDate"
+                label="还款日期">
             </el-table-column>
             <el-table-column
-              prop="bankNo"
-              label="还款账号">
+                prop="bankNo"
+                label="还款账号">
             </el-table-column>
             <el-table-column
-              prop="acountsName"
-              label="还款账户">
+                prop="acountsName"
+                label="还款账户">
             </el-table-column>
           </el-table>
         </el-card>
         <br/>
         <el-card class="box-card">
           <div slot="header" class="clearfix">
-            <h4 style="font-weight: bolder">贷款编号:{{ currentUUID }}
-              <el-button type="primary" @click="innerVisible = true">还款</el-button>
-            </h4>
+            <el-button type="primary" @click="innerVisible = true">还款</el-button>
           </div>
-          <!--内层-->
           <el-dialog
-            width="30%"
-            title="还款(付款)申请"
-            :visible.sync="innerVisible"
-            append-to-body>
-            <!-- 付息金额(自动计算)-->
+              width="30%"
+              title="还款(付款)申请"
+              :visible.sync="innerVisible"
+              append-to-body>
             <el-row>
               <el-col :span="8">
                 <span style="font-weight: bolder">
@@ -254,9 +227,10 @@
                 <el-input v-model="currentGiveBackMoneyInfo.ratio" placeholder="请输入付息金额"/>
               </el-col>
             </el-row>
-            <!--            还款 付款申请-->
-            <ApplyPayment table-name="borrowedmoney" t-i-d="id" @changeOpen="innerVisible = false"
-                          :addMoney="currentGiveBackMoneyInfo.ratio"/>
+            <el-row>
+              <ApplyPayment :table-name="TableName.BORROWED_MONEY" :t-i-d="tID" @changeOpen="innerVisible = false"
+                            :addMoney="currentGiveBackMoneyInfo.ratio" :need-info="{}"/>
+            </el-row>
           </el-dialog>
         </el-card>
       </div>
@@ -278,12 +252,13 @@ import SearchOption from "@/components/SearchOption.vue";
 import {listBankAccount} from "@/api/system/bankAccount";
 import {listCompany} from "@/api/system/company";
 import ApplyPayment from "@/components/ApplyPayment.vue";
+import {TableName} from "@/api/tool/enums";
 
 export default {
   name: "BorrowedMoney",
   components: {ApplyPayment, SearchOption},
   data() {
-    //loanNO校验方法
+    //todo rule校验
     var validateloanNO = (rule, value, callback) => {
       if (value === '') {
         callback(new Error('请输入loanNO'));
@@ -300,27 +275,16 @@ export default {
         user: '',
         region: ''
       },
-
-
-      // 遮罩层
+      //ruoyi
       loading: true,
-      // 选中数组
       ids: [],
-      // 非单个禁用
       single: true,
-      // 非多个禁用
       multiple: true,
-      // 显示搜索条件
       showSearch: true,
-      // 总条数
       total: 0,
-      // 从外部借款信息表格数据
       borrowedMoneyList: [],
-      // 弹出层标题
       title: "",
-      // 是否显示弹出层
       open: false,
-      // 查询参数
       queryParams: {
         pageNum: 1,
         pageSize: 10,
@@ -340,14 +304,13 @@ export default {
         UserName: null,
         delFlag: null
       },
-      // 表单参数
       form: {},
-      // 表单校验
       rules: {
         loanNO: [
           {validator: validateloanNO, trigger: 'blur'}
         ],
       },
+      //
       columns: [
         {key: 0, label: `贷款编号`, visible: true},
         {key: 1, label: `贷款来源`, visible: true},
@@ -360,7 +323,6 @@ export default {
         {key: 8, label: `打入账号`, visible: true},
         {key: 9, label: `已还款标记`, visible: true},
       ],
-      //搜索参数
       timesQuery: {
         beginTime: '',
         endTime: '',
@@ -375,25 +337,11 @@ export default {
       //当前选中的UUID和银行卡号
       currentUUID: '',
       currentBankNo: '',
-      //继续还款中的还款信息
-      /*
-        loanNo: '',
-        moneyAmount: null,
-        ratio: '',
-        payDate: '',
-        acountsName: '',
-        bankNo: '',
-        comments: ''
-       */
       currentGiveBackMoneyInfo: {},
       //是否偿还利息
       isNeedRatio: false,
-
       //点击银行卡 查询银行卡
       queryBank: '',
-
-
-      //分类信息(还款的付款申请)
       //付款分类信息
       subjectTree: [],
       //分类信息
@@ -404,7 +352,9 @@ export default {
       //一级分类列表
       OneLevelOption: [],
       //二级分类
-      TwoLevelOption: []
+      TwoLevelOption: [],
+      //tid
+      tID: ''
     };
   },
   created() {
@@ -412,6 +362,9 @@ export default {
     this.$store.dispatch('money/getTempBorrowedMoneyList')
   },
   computed: {
+    TableName() {
+      return TableName
+    },
     fullLevel() {
       return this.currentSort.levelOne + '-' + this.currentSort.levelTwo;
     },
@@ -420,17 +373,12 @@ export default {
   methods: {
     listCompany,
     listBankAccount,
-    //时间查询
     handleQueryTime() {
-      //重置
       this.borrowedMoneyList = this.tempBorrowedMoneyList
-      //筛选
       this.borrowedMoneyList = this.filterTime()
     },
-    //筛选方法
     filterTime() {
       return this.borrowedMoneyList.filter(item => {
-        //时间转换
         const time_search = new Date(item.loanDate).getTime()
         const time_start = new Date(this.timesQuery.beginTime).getTime()
         const date = new Date(this.timesQuery.endTime)
@@ -441,12 +389,11 @@ export default {
     },
     //处理还款的事件函数
     handleGiveBackMoney(row) {
-      console.log(row)
+      this.tID = row.id;
       this.currentUUID = row.loanNO
       this.currentBankNo = row.bankNo
       this.currentGiveBackMoneyInfo.bankNo = row.bankNo
       this.needMoneyLoading = true
-      //防抖
       setTimeout(() => {
         //查询借款uuid对应的信息
         getBorrowedMoneyByUuid(this.currentUUID).then(res => {
@@ -459,57 +406,40 @@ export default {
     handleRefreshNeedGiveBackMoneyList() {
       this.handleGiveBackMoney({loanNO: this.currentUUID}); //刷新
     },
-
-
-    //还款
-    GiveBackMoney() {
-      addRepayment({...this.currentGiveBackMoneyInfo, loanNO: this.currentUUID, bankNo: this.currentBankNo})
-        .then(res => {
-          this.$modal.msgSuccess("修改成功");
-          this.giveBackMoneyShow = false
-          this.innerVisible = false
-        }).catch(err => {
-        this.$modal.msgError("修改失败:" + err.msg);
-      })
-    },
+    //分类信息处理
     handleSelectOneLevel(value) {
       this.currentSort.levelOne = value;
       for (var i = 0; i < this.OneLevelOption.length; i++) {
         //每个一级分类
         var oneSubject = this.OneLevelOption[i]
-        //判断：所有一级分类id和点击一级分类id是否一样
         if (value === oneSubject.title) {  //===即比较值 还要比较类型
-          //从一级分类中获取所有的二级分类
           this.TwoLevelOption = oneSubject.children
-          //把二级分类Id值清空
           this.currentSort.levelTwo = ''
         }
       }
     },
-    //点击二级
     handleSelectTwoLevel(value) {
       this.currentSort.levelTwo = value;
     },
-
-    //对方信息 - 点击确认后自动填充
-    handleCommitBack(val) {
-      this.currentGiveBackMoneyInfo.otherBankNo = val.bankNo;
-      this.currentGiveBackMoneyInfo.otherBankName = val.bankName;
-      this.currentGiveBackMoneyInfo.companyName = val.companyName;
-      this.currentGiveBackMoneyInfo.companyId = val.id;
-      this.form.otherAcountsName = val.acountsName;
-      this.currentGiveBackMoneyInfo.companyType = val.companyType
+    //点击确定银行卡的回调
+    handleCommitBackBank(val) {
+      this.form.acountsName = val.acountsName;
+      this.form.bankNo = val.bankNo
     },
-    //上传的回调函数
-    handleCommitUpload(val) {
-      this.currentGiveBackMoneyInfo.attachment = val;
+    handleCommitBackQueryName(val) {
+      this.queryBank = val;
     },
 
-
-    //自定义列统计总函数
+    printHTML() {
+      this.$print({
+        printable: 'printBox',
+        type: 'html',
+        maxWidth: 3000,
+        targetStyles: ['*'], // 打印内容使用所有HTML样式，没有设置这个属性/值，设置分页打印没有效果
+      })
+    },
     getSummaries(param) {
       const {columns, data} = param;
-      // console.log(param)
       const sums = [];
       columns.forEach((column, index) => {
         if (index === 0) {
@@ -519,11 +449,7 @@ export default {
         const values = data.map(item => {
           return Number(item[column.property])
         });
-
         if (!values.every(value => isNaN(value))) {
-          //对指定列进行计算
-          // if(index)
-          //排除打入账户
           if (index !== 9) {
             sums[index] = values.reduce((prev, curr) => {
               const value = Number(curr);
@@ -540,22 +466,6 @@ export default {
         }
       });
       return sums;
-    },
-    //点击确定银行卡的回调
-    handleCommitBackBank(val) {
-      this.form.acountsName = val.acountsName;
-      this.form.bankNo = val.bankNo
-    },
-    handleCommitBackQueryName(val) {
-      this.queryBank = val;
-    },
-    printHTML() {
-      this.$print({
-        printable: 'printBox',
-        type: 'html',
-        maxWidth: 3000,
-        targetStyles: ['*'], // 打印内容使用所有HTML样式，没有设置这个属性/值，设置分页打印没有效果
-      })
     },
     /** 查询从外部借款信息列表 */
     getList() {

@@ -4,9 +4,10 @@ import SearchOption from "@/components/SearchOption.vue";
 import {listCars} from "@/api/system/cars";
 import SwitchBarItem from "@/components/SwitchBarItem.vue";
 import ChatForm from "@/components/ChatForm.vue";
+import AreaSelect from "@/components/AreaSelect.vue";
 
 export default {
-  components: {ChatForm, SwitchBarItem, SearchOption},
+  components: {AreaSelect, ChatForm, SwitchBarItem, SearchOption},
   data() {
     return {
       //tableData每一个对象代表的是图表的每一个行
@@ -63,108 +64,46 @@ export default {
 
       modelValue: false,
       size: '',
-      methods: {}
-      ,
-      created() {
 
-      },
-      mounted() {
 
-      }
+      selected: [],
+      options: [{
+        value: '选项1',
+        label: '黄金糕'
+      }, {
+        value: '选项2',
+        label: '双皮奶'
+      }, {
+        value: '选项3',
+        label: '蚵仔煎'
+      }, {
+        value: '选项4',
+        label: '龙须面'
+      }, {
+        value: '选项5',
+        label: '北京烤鸭'
+      }],
+      value: '',
+
+
     }
+
   }
+  ,
+
+
 }
 </script>
 
 <template>
   <div>
     <h1 style="font-weight: bolder;color: red">!测试请添加el-row!</h1>
-    <el-row>
-      <el-radio-group v-model="size">
-        <el-radio label="">默认</el-radio>
-        <el-radio label="medium">中等</el-radio>
-        <el-radio label="small">小型</el-radio>
-        <el-radio label="mini">超小</el-radio>
-      </el-radio-group>
+    <div>
+      <AreaSelect/>
+    </div>
+    <div>
 
-      <el-descriptions class="margin-top" title="带边框列表" :column="3" size="small" border>
-        <template slot="extra">
-          <el-button type="primary" size="small">操作</el-button>
-        </template>
-        <el-descriptions-item>
-          <template slot="label">
-            <i class="el-icon-user"></i>
-            用户名
-          </template>
-          kooriookami
-        </el-descriptions-item>
-        <el-descriptions-item>
-          <template slot="label">
-            <i class="el-icon-mobile-phone"></i>
-            手机号
-          </template>
-          18100000000
-        </el-descriptions-item>
-        <el-descriptions-item>
-          <template slot="label">
-            <i class="el-icon-location-outline"></i>
-            居住地
-          </template>
-          苏州市
-        </el-descriptions-item>
-        <el-descriptions-item>
-          <template slot="label">
-            <i class="el-icon-tickets"></i>
-            备注
-          </template>
-          <el-tag size="small">学校</el-tag>
-        </el-descriptions-item>
-        <el-descriptions-item>
-          <template slot="label">
-            <i class="el-icon-office-building"></i>
-            联系地址
-          </template>
-          江苏省苏州市吴中区吴中大道 1188 号
-        </el-descriptions-item>
-      </el-descriptions>
-      <el-descriptions direction="vertical" :column="4" border>
-        <el-descriptions-item label="用户名">kooriookami</el-descriptions-item>
-        <el-descriptions-item label="手机号">18100000000</el-descriptions-item>
-        <el-descriptions-item label="居住地" :span="2">苏州市</el-descriptions-item>
-        <el-descriptions-item label="备注">
-          <el-tag size="small">学校</el-tag>
-        </el-descriptions-item>
-        <el-descriptions-item label="联系地址">江苏省苏州市吴中区吴中大道 1188 号</el-descriptions-item>
-      </el-descriptions>
-      <br/>
-      <el-descriptions class="margin-top" title="无边框列表" :column="3" :size="size">
-        <template slot="extra">
-          <el-button type="primary" size="small">操作</el-button>
-        </template>
-        <el-descriptions-item label="用户名">kooriookami</el-descriptions-item>
-        <el-descriptions-item label="手机号">18100000000</el-descriptions-item>
-        <el-descriptions-item label="居住地">苏州市</el-descriptions-item>
-        <el-descriptions-item label="备注">
-          <el-tag size="small">学校</el-tag>
-        </el-descriptions-item>
-        <el-descriptions-item label="联系地址">江苏省苏州市吴中区吴中大道 1188 号</el-descriptions-item>
-      </el-descriptions>
-      <el-descriptions title="垂直带边框列表" direction="vertical" :column="4" border>
-        <el-descriptions-item label="用户名">kooriookami</el-descriptions-item>
-        <el-descriptions-item label="手机号">18100000000</el-descriptions-item>
-        <el-descriptions-item label="居住地" :span="2">苏州市</el-descriptions-item>
-        <el-descriptions-item label="备注">
-          <el-tag size="small">学校</el-tag>
-        </el-descriptions-item>
-        <el-descriptions-item label="联系地址">江苏省苏州市吴中区吴中大道 1188 号</el-descriptions-item>
-      </el-descriptions>
-    </el-row>
-    <el-row>
-      <h1>
-        发货单
-      </h1>
-      <ChatForm/>
-    </el-row>
+    </div>
   </div>
 </template>
 

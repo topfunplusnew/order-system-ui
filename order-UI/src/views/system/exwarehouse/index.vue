@@ -9,14 +9,6 @@
           @keyup.enter.native="handleQuery"
         />
       </el-form-item>
-      <!--      <el-form-item label="仓库ID" prop="storeHouseid">-->
-      <!--        <el-input-->
-      <!--          v-model="queryParams.storeHouseid"-->
-      <!--          placeholder="请输入仓库ID"-->
-      <!--          clearable-->
-      <!--          @keyup.enter.native="handleQuery"-->
-      <!--        />-->
-      <!--      </el-form-item>-->
       <el-form-item label="仓库名称" prop="storeHouseName">
         <el-input
           v-model="queryParams.storeHouseName"
@@ -25,14 +17,6 @@
           @keyup.enter.native="handleQuery"
         />
       </el-form-item>
-      <!--      <el-form-item label="仓库存储的货物ID" prop="storeID">-->
-      <!--        <el-input-->
-      <!--          v-model="queryParams.storeID"-->
-      <!--          placeholder="请输入仓库存储的货物ID"-->
-      <!--          clearable-->
-      <!--          @keyup.enter.native="handleQuery"-->
-      <!--        />-->
-      <!--      </el-form-item>-->
       <el-form-item label="出库日期" prop="outDate">
         <el-input
           v-model="queryParams.outDate"
@@ -41,14 +25,6 @@
           @keyup.enter.native="handleQuery"
         />
       </el-form-item>
-      <!--      <el-form-item label="出库量" prop="outAmount">-->
-      <!--        <el-input-->
-      <!--          v-model="queryParams.outAmount"-->
-      <!--          placeholder="请输入出库量"-->
-      <!--          clearable-->
-      <!--          @keyup.enter.native="handleQuery"-->
-      <!--        />-->
-      <!--      </el-form-item>-->
       <el-form-item>
         <el-button type="primary" icon="el-icon-search" size="mini" @click="handleQuery">搜索</el-button>
         <el-button icon="el-icon-refresh" size="mini" @click="resetQuery">重置</el-button>
@@ -56,17 +32,6 @@
     </el-form>
 
     <el-row :gutter="10" class="mb8">
-      <!--      <el-col :span="1.5">-->
-      <!--        <el-button-->
-      <!--          type="primary"-->
-      <!--          plain-->
-      <!--          icon="el-icon-plus"-->
-      <!--          size="mini"-->
-      <!--          @click="handleAdd"-->
-      <!--          v-hasPermi="['system:exwarehouse:add']"-->
-      <!--        >新增出库信息-->
-      <!--        </el-button>-->
-      <!--      </el-col>-->
       <right-toolbar :showSearch.sync="showSearch" @queryTable="getList" :columns="columns">
         <template v-slot:print>
           <el-col :span="1.5">
@@ -79,7 +44,6 @@
             </el-button>
           </el-col>
         </template>
-        <!--        导出-->
         <template v-slot:export>
           <el-col :span="1.5">
             <el-button
@@ -99,9 +63,7 @@
               @selection-change="handleSelectionChange" id="printBox">
       <el-table-column label="id" align="center" prop="id"/>
       <el-table-column label="订单编号" align="center" prop="ordersNo"/>
-      <!--      <el-table-column label="仓库ID" align="center" prop="storeHouseid"/>-->
       <el-table-column label="仓库名称" align="center" prop="storeHouseName"/>
-      <!--      <el-table-column label="仓库存储的货物ID" align="center" prop="storeID"/>-->
       <el-table-column label="出库日期" align="center" prop="outDate"/>
       <el-table-column label="出库量" align="center" prop="outAmount"/>
       <el-table-column label="操作" align="center" class-name="small-padding fixed-width">
@@ -136,9 +98,6 @@
         <el-form-item label="订单编号" prop="ordersNo">
           <el-input v-model="form.ordersNo" placeholder="请输入订单编号"/>
         </el-form-item>
-        <!--        <el-form-item label="仓库ID" prop="storeHouseid">-->
-        <!--          <el-input v-model="form.storeHouseid" placeholder="请输入仓库ID"/>-->
-        <!--        </el-form-item>-->
         <el-form-item label="仓库名称" prop="storeHouseName">
           <el-input v-model="form.storeHouseName" placeholder="请输入仓库名称"/>
         </el-form-item>
@@ -234,25 +193,15 @@ export default {
   components: {TagsItem},
   data() {
     return {
-      // 遮罩层
       loading: true,
-      // 选中数组
       ids: [],
-      // 非单个禁用
       single: true,
-      // 非多个禁用
       multiple: true,
-      // 显示搜索条件
       showSearch: true,
-      // 总条数
       total: 0,
-      // 出库表格数据
       exWarehouseList: [],
-      // 弹出层标题
       title: "",
-      // 是否显示弹出层
       open: false,
-      // 查询参数
       queryParams: {
         pageNum: 1,
         pageSize: 10,
@@ -265,11 +214,10 @@ export default {
         delFlag: null,
         addtime: null,
         userId: null,
-        UserName: null
+        UserName: null,
+        isOrder: 'isOrder'
       },
-      // 表单参数
       form: {},
-      // 表单校验
       rules: {},
       columns: [
         {key: 0, label: `账户类型`, visible: true},
@@ -287,7 +235,6 @@ export default {
   },
   methods: {
     checkOrderInfo(row) {
-      console.log(row)
       this.checkOrderVisible = true;
       //查询订单详情
       listGoodsOrder({ordersNo: row.ordersNo}).then(res => {

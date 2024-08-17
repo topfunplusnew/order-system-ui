@@ -4,9 +4,6 @@
 import {listCompany} from "@/api/system/company";
 import {listCars} from "@/api/system/cars";
 import {listFleet} from "@/api/system/fleet";
-import {listStoreHouse} from "@/api/system/StoreHouse";
-import {listProductLevel} from "@/api/system/productLevel";
-import {listInventory} from "@/api/system/inventory";
 import OrderItem from "@/components/OrderItem.vue";
 import {mapGetters} from "vuex";
 
@@ -115,6 +112,27 @@ export default {
         }, 30)
       }
     },
+    //司机银行卡信息
+    landBankName: {
+      get() {
+        return this.orderInfo.landBankName;
+      },
+      set(val) {
+        setTimeout(() => {
+          this.handleUpdateOrderInfo({...this.orderInfo, landBankName: val})
+        }, 40)
+      }
+    },
+    landBankNo: {
+      get() {
+        return this.orderInfo.landBankNo;
+      },
+      set(val) {
+        setTimeout(() => {
+          this.handleUpdateOrderInfo({...this.orderInfo, landBankNo: val})
+        }, 50)
+      }
+    },
     //车队
     fleet: {
       get() {
@@ -151,6 +169,27 @@ export default {
         setTimeout(() => {
           this.handleUpdateOrderInfo({...this.orderInfo, seaDriverTel: val})
         }, 25)
+      }
+    },
+    //海运司机银行卡信息
+    seaBankName: {
+      get() {
+        return this.orderInfo.seaBankName;
+      },
+      set(val) {
+        setTimeout(() => {
+          this.handleUpdateOrderInfo({...this.orderInfo, seaBankName: val})
+        }, 30)
+      }
+    },
+    seaBankNo: {
+      get() {
+        return this.orderInfo.seaBankNo;
+      },
+      set(val) {
+        setTimeout(() => {
+          this.handleUpdateOrderInfo({...this.orderInfo, seaBankNo: val})
+        }, 40)
       }
     },
     //获取订单列表
@@ -217,6 +256,8 @@ export default {
       //填充银行信息
       this.orderInfo.landBankName = row.acountsName;
       this.orderInfo.landBankNo = row.bankNo;
+      this.landBankName = row.bankName;
+      this.landBankNo = row.bankNo
       this.landInfoDialogVisible = false;
     },
     //车队信息的确认
@@ -226,11 +267,17 @@ export default {
     },
     //海运信息的确认
     commitSeaInfo(row) {
+      console.log(row)
       this.orderInfo.seaCarID = row.id;   //orderInfo->陆运车ID
       //与上面填充客户信息同理
       this.seaCarNo = row.carNo;
       this.seaDriverName = row.driver;
       this.seaDriverTel = row.tel;
+      //填充银行信息
+      this.orderInfo.seaBankName = row.acountsName;
+      this.orderInfo.seaBankNo = row.bankNo;
+      this.seaBankName = row.bankName;
+      this.seaBankNo = row.bankNo
       this.seaInfoDialogVisible = false
     },
     //添加订单vuex

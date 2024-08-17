@@ -86,7 +86,7 @@
       </el-form-item>
       <el-form-item>
         <el-button type="primary" icon="el-icon-search" size="mini" @click="handleQuery">搜索</el-button>
-          <el-button icon="el-icon-refresh" size="mini" @click="resetQuery">重置</el-button>
+<!--          <el-button icon="el-icon-refresh" size="mini" @click="resetQuery">重置</el-button>-->
       </el-form-item>
     </el-form>
 
@@ -95,16 +95,16 @@
       <el-col :span="1.5">
         <el-button icon="el-icon-refresh" size="mini" @click="resetQuery">刷新</el-button>
       </el-col>
-      <el-col :span="1.5">
-        <el-button
-          type="warning"
-          plain
-          icon="el-icon-search"
-          size="mini"
-          @click="handleSearch"
-        >账号搜索
-        </el-button>
-      </el-col>
+<!--      <el-col :span="1.5">-->
+<!--        <el-button-->
+<!--          type="warning"-->
+<!--          plain-->
+<!--          icon="el-icon-search"-->
+<!--          size="mini"-->
+<!--          @click="handleSearch"-->
+<!--        >账号搜索-->
+<!--        </el-button>-->
+<!--      </el-col>-->
       <el-col :span="1.5">
         <el-button
           type="primary"
@@ -187,7 +187,7 @@
 <!--        <el-table border v-loading="loading" :data="companyList" @selection-change="handleSelectionChange" id="printBox"-->
 <!--                  v-horizontal-scroll="'always'">-->
 <!--      <el-table-column type="selection" width="55" align="center"/>-->
-      <el-table-column label="id" align="center" prop="id" v-if="columns[0].visible" />
+      <el-table-column label="id" align="center" prop="id" v-if="columns[0].visible"/>
       <el-table-column label="付款编号" align="center" prop="payNO" v-if="columns[1].visible"/>
       <el-table-column label="日期" align="center" prop="fundsDate" v-if="columns[2].visible"/>
       <el-table-column label="支付类型" align="center" prop="payType" v-if="columns[3].visible"/>
@@ -197,20 +197,20 @@
       <el-table-column label="己方户名" align="center" prop="selfAcountsName" v-if="columns[7].visible"/>
       <el-table-column label="己方账号" align="center" prop="selfBankNo" v-if="columns[8].visible"/>
       <el-table-column label="己方开户行" align="center" prop="selfBankName" v-if="columns[9].visible"/>
-      <el-table-column label="己方账号ID" align="center" prop="selfBankID" v-if="columns[10].visible"/>
+<!--      <el-table-column label="己方账号ID" align="center" prop="selfBankID" v-if="columns[10].visible"/>-->
       <el-table-column label="对方户名" align="center" prop="otherAcountsName" v-if="columns[11].visible"/>
       <el-table-column label="对方账号" align="center" prop="otherBankNo" v-if="columns[12].visible"/>
       <el-table-column label="对方开户行" align="center" prop="otherBankName" v-if="columns[13].visible"/>
       <el-table-column label="支付状态" align="center" prop="paymentState" v-if="columns[14].visible"/>
       <el-table-column label="对方公司" align="center" prop="companyName" v-if="columns[15].visible"/>
-      <el-table-column label="对方公司ID" align="center" prop="companyId" v-if="columns[16].visible"/>
+<!--      <el-table-column label="对方公司ID" align="center" prop="companyId" v-if="columns[16].visible"/>-->
       <el-table-column label="对方公司类型" align="center" prop="companyType" v-if="columns[17].visible"/>
 <!--      <el-table-column label="备注" align="center" prop="comments"/>-->
 <!--      <el-table-column label="添加时间" align="center" prop="addtime"/>-->
 <!--      <el-table-column label="操作人员ID" align="center" prop="userId"/>-->
 <!--      <el-table-column label="操作人员姓名" align="center" prop="UserName"/>-->
 <!--      <el-table-column label="删除标记" align="center" prop="delFlag"/>-->
-<!--      <el-table-column label="操作" align="center" class-name="small-padding fixed-width" width="100px">-->
+      <el-table-column label="操作" align="center" class-name="small-padding fixed-width" width="100px">
         <template slot-scope="scope">
           <el-button
             size="mini"
@@ -227,7 +227,7 @@
           >删除
           </el-button>
         </template>
-<!--      </el-table-column>-->
+      </el-table-column>
     </el-table>
 
     <pagination
@@ -241,33 +241,69 @@
     <!-- 添加或修改付款信息对话框 -->
     <el-dialog :title="title" :visible.sync="open" width="500px" append-to-body>
       <el-form ref="form" :model="form" :rules="rules" label-width="80px">
-        <el-form-item label="付款编号" prop="payNO">
-          <el-input v-model="form.payNO" placeholder="请输入付款编号"/>
-        </el-form-item>
+<!--        <el-form-item label="付款编号" prop="payNO">-->
+<!--          <el-input v-model="form.payNO" placeholder="请输入付款编号111"/>-->
+<!--        </el-form-item>-->
         <el-form-item label="日期" prop="fundsDate">
-          <el-input v-model="form.fundsDate" placeholder="请输入日期"/>
+          <el-date-picker
+            v-model="form.fundsDate"
+            type="date"
+            placeholder="选择日期">
+          </el-date-picker>
         </el-form-item>
-        <el-form-item label="对应的表名" prop="tableName">
-          <el-input v-model="form.tableName" placeholder="请输入对应的表名"/>
-        </el-form-item>
-        <el-form-item label="对应的表主键" prop="tID">
-          <el-input v-model="form.tID" placeholder="请输入对应的表主键"/>
-        </el-form-item>
+
+<!--        <el-form-item label="日期" prop="fundsDate">-->
+<!--          <el-input-->
+<!--            v-model="queryParams.fundsDate"-->
+<!--            placeholder="请输入日期"-->
+<!--            clearable-->
+<!--            @keyup.enter.native="handleQuery"-->
+<!--          />-->
+<!--        </el-form-item>-->
+<!--        <el-form-item label="日期" prop="fundsDate">-->
+<!--          <el-input v-model="form.fundsDate" placeholder="请输入日期"/>-->
+<!--        </el-form-item>-->
+<!--        <el-form-item label="对应的表名" prop="tableName">-->
+<!--          <el-input v-model="form.tableName" placeholder="请输入对应的表名"/>-->
+<!--        </el-form-item>-->
+<!--        <el-form-item label="对应的表主键" prop="tID">-->
+<!--          <el-input v-model="form.tID" placeholder="请输入对应的表主键"/>-->
+<!--        </el-form-item>-->
         <el-form-item label="金额" prop="moneyAmount">
           <el-input v-model="form.moneyAmount" placeholder="请输入金额"/>
         </el-form-item>
+        <!--        对方信息-->
         <el-form-item label="己方户名" prop="selfAcountsName">
-          <el-input v-model="form.selfAcountsName" placeholder="请输入己方户名"/>
+          <el-row>
+            <el-col :span="10">
+              <el-input v-model="form.selfAcountsName" placeholder="请输入己方户名"/>
+            </el-col>
+            <el-col :span="3">
+              <SearchOption :get-data="listCompany" icon="el-icon-search" @commitBack="handleCommitBack">
+                <template #table-columns>
+                  <el-table-column label="公司名称" align="center" prop="companyName"/>
+                  <el-table-column label="公司类型" align="center" prop="companyType"/>
+                  <el-table-column label="开户行" align="center" prop="bankName"/>
+                  <el-table-column label="开户名" align="center" prop="acountsName"/>
+                  <el-table-column label="账号" align="center" prop="bankNo"/>
+                </template>
+              </SearchOption>
+            </el-col>
+          </el-row>
         </el-form-item>
+<!--        <el-form-item label="己方户名" prop="selfAcountsName">-->
+<!--          <el-input v-model="form.selfAcountsName" placeholder="请输入己方户名"/>-->
+<!--        </el-form-item>-->
+
         <el-form-item label="己方账号" prop="selfBankNo">
           <el-input v-model="form.selfBankNo" placeholder="请输入己方账号"/>
         </el-form-item>
         <el-form-item label="己方开户行" prop="selfBankName">
           <el-input v-model="form.selfBankName" placeholder="请输入己方开户行"/>
         </el-form-item>
-        <el-form-item label="己方账号ID" prop="selfBankID">
-          <el-input v-model="form.selfBankID" placeholder="请输入己方账号ID"/>
-        </el-form-item>
+<!--        <el-form-item label="己方账号ID" prop="selfBankID">-->
+<!--          <el-input v-model="form.selfBankID" placeholder="请输入己方账号ID"/>-->
+<!--        </el-form-item>-->
         <el-form-item label="对方户名" prop="otherAcountsName">
           <el-input v-model="form.otherAcountsName" placeholder="请输入对方户名"/>
         </el-form-item>
@@ -283,9 +319,9 @@
         <el-form-item label="对方公司" prop="companyName">
           <el-input v-model="form.companyName" placeholder="请输入对方公司"/>
         </el-form-item>
-        <el-form-item label="对方公司ID" prop="companyId">
-          <el-input v-model="form.companyId" placeholder="请输入对方公司ID"/>
-        </el-form-item>
+<!--        <el-form-item label="对方公司ID" prop="companyId">-->
+<!--          <el-input v-model="form.companyId" placeholder="请输入对方公司ID"/>-->
+<!--        </el-form-item>-->
         <el-form-item label="备注" prop="comments">
           <el-input v-model="form.comments" placeholder="请输入备注"/>
         </el-form-item>
@@ -313,9 +349,11 @@
 
 <script>
 import {listPayment, getPayment, delPayment, addPayment, updatePayment} from "@/api/system/payment";
+import SearchOption from "@/components/SearchOption.vue";
 
 export default {
   name: "Payment",
+  components: {SearchOption},
   data() {
     return {
       // 遮罩层
@@ -380,14 +418,14 @@ export default {
         {key: 7, label: `己方户名`, visible: true},
         {key: 8, label: `己方账号`, visible: true},
         {key: 9, label: `己方开户行`, visible: true},
-        {key: 10, label: `己方账号ID`, visible: true},
+        {key: 10, label: `己方账号ID`, visible: false},
         {key: 11, label: `对方户名`, visible: true},
         {key: 12, label: `对方账号`, visible: true},
         {key: 13, label: `对方开户行`, visible: true},
         {key: 14, label: `对方公司`, visible: true},
         {key: 15, label: `支付状态`, visible: true},
         {key: 16, label: `对方公司`, visible: true},
-        {key: 17, label: `对方公司ID`, visible: true},
+        {key: 17, label: `对方公司ID`, visible: false},
         {key: 18, label: `对方公司类型`, visible: true},
 
 

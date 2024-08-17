@@ -3,149 +3,49 @@
     <el-form :model="queryParams" ref="queryForm" size="small" :inline="true" v-show="showSearch" label-width="68px">
       <el-form-item label="车牌" prop="carNo">
         <el-input
-          v-model="queryParams.carNo"
-          placeholder="请输入车牌"
-          clearable
-          @keyup.enter.native="handleQuery"
+            v-model="queryParams.carNo"
+            placeholder="请输入车牌"
+            clearable
+            @keyup.enter.native="handleQuery"
         />
       </el-form-item>
-      <!--      <el-form-item label="司机" prop="driver">-->
-      <!--        <el-input-->
-      <!--          v-model="queryParams.driver"-->
-      <!--          placeholder="请输入司机"-->
-      <!--          clearable-->
-      <!--          @keyup.enter.native="handleQuery"-->
-      <!--        />-->
-      <!--      </el-form-item>-->
-      <!--      <el-form-item label="司机电话" prop="tel">-->
-      <!--        <el-input-->
-      <!--          v-model="queryParams.tel"-->
-      <!--          placeholder="请输入司机电话"-->
-      <!--          clearable-->
-      <!--          @keyup.enter.native="handleQuery"-->
-      <!--        />-->
-      <!--      </el-form-item>-->
-      <!--      <el-form-item label="开户行" prop="bankName">-->
-      <!--        <el-input-->
-      <!--          v-model="queryParams.bankName"-->
-      <!--          placeholder="请输入开户行"-->
-      <!--          clearable-->
-      <!--          @keyup.enter.native="handleQuery"-->
-      <!--        />-->
-      <!--      </el-form-item>-->
       <el-form-item label="户名" prop="acountsName">
         <el-input
-          v-model="queryParams.acountsName"
-          placeholder="请输入户名"
-          clearable
-          @keyup.enter.native="handleQuery"
+            v-model="queryParams.acountsName"
+            placeholder="请输入户名"
+            clearable
+            @keyup.enter.native="handleQuery"
         />
       </el-form-item>
-      <!--      <el-form-item label="账号" prop="bankNo">-->
-      <!--        <el-input-->
-      <!--          v-model="queryParams.bankNo"-->
-      <!--          placeholder="请输入账号"-->
-      <!--          clearable-->
-      <!--          @keyup.enter.native="handleQuery"-->
-      <!--        />-->
-      <!--      </el-form-item>-->
-      <!--      <el-form-item label="添加时间" prop="addtime">-->
-      <!--        <el-input-->
-      <!--          v-model="queryParams.addtime"-->
-      <!--          placeholder="请输入添加时间"-->
-      <!--          clearable-->
-      <!--          @keyup.enter.native="handleQuery"-->
-      <!--        />-->
-      <!--      </el-form-item>-->
-      <!--      <el-form-item label="操作人员ID" prop="userId">-->
-      <!--        <el-input-->
-      <!--          v-model="queryParams.userId"-->
-      <!--          placeholder="请输入操作人员ID"-->
-      <!--          clearable-->
-      <!--          @keyup.enter.native="handleQuery"-->
-      <!--        />-->
-      <!--      </el-form-item>-->
-      <!--      <el-form-item label="操作人员姓名" prop="UserName">-->
-      <!--        <el-input-->
-      <!--          v-model="queryParams.UserName"-->
-      <!--          placeholder="请输入操作人员姓名"-->
-      <!--          clearable-->
-      <!--          @keyup.enter.native="handleQuery"-->
-      <!--        />-->
-      <!--      </el-form-item>-->
-      <!--      <el-form-item label="删除标记" prop="delFlag">-->
-      <!--        <el-input-->
-      <!--          v-model="queryParams.delFlag"-->
-      <!--          placeholder="请输入删除标记"-->
-      <!--          clearable-->
-      <!--          @keyup.enter.native="handleQuery"-->
-      <!--        />-->
-      <!--      </el-form-item>-->
       <el-form-item>
         <el-button type="primary" size="mini" @click="handleQuery">搜索</el-button>
-        <!--        <el-button icon="el-icon-refresh" size="mini" @click="resetQuery">重置</el-button>-->
       </el-form-item>
     </el-form>
     <el-row :gutter="10" class="mb8">
 
-      <!-- 刷新按钮-->
       <el-col :span="1.5">
         <el-button icon="el-icon-refresh" size="mini" @click="resetQuery">刷新</el-button>
       </el-col>
       <el-col :span="1.5">
-
         <el-button
-          type="danger"
-          plain
-          icon="el-icon-plus"
-          size="mini"
-          @click="handleAdd"
-          v-hasPermi="['system:cars:add']"
+            type="danger"
+            plain
+            icon="el-icon-plus"
+            size="mini"
+            @click="handleAdd"
+            v-hasPermi="['system:cars:add']"
         >添加车辆信息
         </el-button>
       </el-col>
-      <!--      <el-col :span="1.5">-->
-      <!--        <el-button-->
-      <!--          type="danger"-->
-      <!--          plain-->
-      <!--          icon="el-icon-delete"-->
-      <!--          size="mini"-->
-      <!--          :disabled="multiple"-->
-      <!--          @click="handleDelete"-->
-      <!--          v-hasPermi="['system:bankaccount:remove']"-->
-      <!--        >批量删除-->
-      <!--        </el-button>-->
-      <!--      </el-col>-->
-      <!--            <el-col :span="1.5">-->
-      <!--              <el-button-->
-      <!--                type="warning"-->
-      <!--                plain-->
-      <!--                icon="el-icon-download"-->
-      <!--                size="mini"-->
-      <!--                @click="handleExport"-->
-      <!--                v-hasPermi="['system:bankaccount:export']"-->
-      <!--              >导出-->
-      <!--              </el-button>-->
-      <!--            </el-col>-->
-      <!--            <el-col :span="1.5">-->
-      <!--              <el-button-->
-      <!--                type="primary"-->
-      <!--                plain-->
-      <!--                icon="el-icon-printer"-->
-      <!--                size="mini"-->
-      <!--                @click="printHTML"-->
-      <!--              >打印-->
-      <!--              </el-button>-->
-      <!--            </el-col>-->
       <right-toolbar :showSearch.sync="showSearch" @queryTable="getList" :columns="columns">
 
         <template v-slot:print>
           <el-col :span="1.5">
             <el-button
-              plain
-              icon="el-icon-printer"
-              size="mini"
-              @click="printHTML"
+                plain
+                icon="el-icon-printer"
+                size="mini"
+                @click="printHTML"
             >
             </el-button>
           </el-col>
@@ -154,11 +54,11 @@
         <template v-slot:export>
           <el-col :span="1.5">
             <el-button
-              plain
-              icon="el-icon-folder-opened"
-              size="mini"
-              @click="handleExport"
-              v-hasPermi="['system:bankaccount:export']"
+                plain
+                icon="el-icon-folder-opened"
+                size="mini"
+                @click="handleExport"
+                v-hasPermi="['system:bankaccount:export']"
             >
             </el-button>
           </el-col>
@@ -168,9 +68,6 @@
 
     <el-table border v-loading="loading" :data="carsList" @selection-change="handleSelectionChange" id="printBox"
               height="550px" v-horizontal-scroll="'always'">
-      <!--            复选框-->
-      <!--            首行-->
-      <!--      <el-table-column type="selection" width="55" align="center" />-->
       <el-table-column label="id" align="center" prop="id"/>
       <el-table-column label="车牌" align="center" prop="carNo" v-if="columns[0].visible"/>
       <el-table-column label="司机姓名" align="center" prop="driver" v-if="columns[1].visible"/>
@@ -178,27 +75,20 @@
       <el-table-column label="户名" align="center" prop="acountsName" v-if="columns[3].visible"/>
       <el-table-column label="银行账号" align="center" prop="bankNo" v-if="columns[4].visible"/>
       <el-table-column label="开户行" align="center" prop="bankName" v-if="columns[5].visible"/>
-
-      <!--      <el-table-column label="账号类型" align="center" prop="acountsType" />-->
-      <!--      <el-table-column label="运输类型(陆运，海运)" align="center" prop="carType" />-->
-      <!--      <el-table-column label="添加时间" align="center" prop="addtime" />-->
-      <!--      <el-table-column label="操作人员ID" align="center" prop="userId" />-->
-      <!--      <el-table-column label="操作人员姓名" align="center" prop="UserName" />-->
-      <!--      <el-table-column label="删除标记" align="center" prop="delFlag" />-->
       <el-table-column label="操作" align="center" class-name="small-padding fixed-width">
         <template slot-scope="scope">
           <el-button
-            size="mini"
-            type="primary"
-            @click="handleUpdate(scope.row)"
-            v-hasPermi="['system:cars:edit']"
+              size="mini"
+              type="primary"
+              @click="handleUpdate(scope.row)"
+              v-hasPermi="['system:cars:edit']"
           >编辑
           </el-button>
           <el-button
-            size="mini"
-            type="danger"
-            @click="handleDelete(scope.row)"
-            v-hasPermi="['system:cars:remove']"
+              size="mini"
+              type="danger"
+              @click="handleDelete(scope.row)"
+              v-hasPermi="['system:cars:remove']"
           >删除
           </el-button>
         </template>
@@ -206,11 +96,11 @@
     </el-table>
 
     <pagination
-      v-show="total>0"
-      :total="total"
-      :page.sync="queryParams.pageNum"
-      :limit.sync="queryParams.pageSize"
-      @pagination="getList"
+        v-show="total>0"
+        :total="total"
+        :page.sync="queryParams.pageNum"
+        :limit.sync="queryParams.pageSize"
+        @pagination="getList"
     />
 
     <!-- 添加或修改外部车辆信息对话框 -->
@@ -234,29 +124,15 @@
         <el-form-item label="账号" prop="bankNo">
           <el-input v-model="form.bankNo" placeholder="请输入账号"/>
         </el-form-item>
-        <!--        单选-->
         <el-form-item label="账号类型" prop="acountsType">
           <el-radio v-model="form.acountsType" label="1">收款</el-radio>
           <el-radio v-model="form.acountsType" label="2">付款</el-radio>
         </el-form-item>
 
         <el-form-item label="运输类型" prop="carType">
-          <!--          <el-input v-model="form.bankNo" placeholder="请输入账号" />-->
           <el-radio v-model="form.carType" label="陆运">陆运</el-radio>
           <el-radio v-model="form.carType" label="海运">海运</el-radio>
         </el-form-item>
-        <!--        <el-form-item label="添加时间" prop="addtime">-->
-        <!--          <el-input v-model="form.addtime" placeholder="请输入添加时间" />-->
-        <!--        </el-form-item>-->
-        <!--        <el-form-item label="操作人员ID" prop="userId">-->
-        <!--          <el-input v-model="form.userId" placeholder="请输入操作人员ID" />-->
-        <!--        </el-form-item>-->
-        <!--        <el-form-item label="操作人员姓名" prop="UserName">-->
-        <!--          <el-input v-model="form.UserName" placeholder="请输入操作人员姓名" />-->
-        <!--        </el-form-item>-->
-        <!--        <el-form-item label="删除标记" prop="delFlag">-->
-        <!--          <el-input v-model="form.delFlag" placeholder="请输入删除标记" />-->
-        <!--        </el-form-item>-->
       </el-form>
       <div slot="footer" class="dialog-footer">
         <el-button type="primary" @click="submitForm">确 定</el-button>
@@ -276,25 +152,15 @@ export default {
   name: "Cars",
   data() {
     return {
-      // 遮罩层
       loading: true,
-      // 选中数组
       ids: [],
-      // 非单个禁用
       single: true,
-      // 非多个禁用
       multiple: true,
-      // 显示搜索条件
       showSearch: true,
-      // 总条数
       total: 0,
-      // 外部车辆信息表格数据
       carsList: [],
-      // 弹出层标题
       title: "",
-      // 是否显示弹出层
       open: false,
-      // 查询参数
       queryParams: {
         pageNum: 1,
         pageSize: 10,
@@ -311,9 +177,7 @@ export default {
         UserName: null,
         delFlag: null
       },
-      // 表单参数
       form: {},
-      // 表单校验
       rules: {}
       ,
       options: [
@@ -325,7 +189,6 @@ export default {
           label: '付款'
         }
       ],
-      //隐藏列信息
       columns: [
         {key: 0, label: `车牌`, visible: true},
         {key: 1, label: `司机姓名`, visible: true},
@@ -340,12 +203,8 @@ export default {
   },
   created() {
     this.getList();
-    // this.getcarsInfo()
-    //如果本地不为空 更新值
-    //如果是空
     if (localStorage.getItem('car-columns') === 'null'
-      || !localStorage.getItem('car-columns')) {
-      //设置localStorage
+        || !localStorage.getItem('car-columns')) {
       localStorage.setItem("car-columns", JSON.stringify(this.columns))
     } else {
       this.columns = JSON.parse(localStorage.getItem('car-columns'));
@@ -370,11 +229,6 @@ export default {
         this.total = response.total;
         this.loading = false;
       });
-    },
-    getcarsInfo() {
-      listcars(this.queryParamsCompany).then(res => {
-        this.carsList = res.data.rows;
-      })
     },
     //打印
     printHTML() {
