@@ -77,6 +77,16 @@ public class BankAccountController extends BaseController
     }
 
     /**
+     * 将某个卡调整为默认卡
+     */
+    @PreAuthorize("@ss.hasPermi('system:bankaccount:add')")
+    @Log(title = "银行账号", businessType = BusinessType.INSERT)
+    @PostMapping("/toDefault")
+    public AjaxResult toDefault(@Validated @RequestBody BankAccount bankAccount)
+    {
+        return toAjax(bankAccountService.insertCompanyDefaultBankAccount(bankAccount));
+    }
+    /**
      * 修改银行账号
      */
     @PreAuthorize("@ss.hasPermi('system:bankaccount:edit')")

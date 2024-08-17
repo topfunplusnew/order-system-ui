@@ -65,7 +65,7 @@ public class BankAccount extends BaseEntity
 
     /** 账户类型（己方公司，客户，供应商，司机，其它） */
     @Excel(name = "账户类型")
-    @Pattern(regexp = "己方公司|客户|供应商|司机|其它", message = "账户类型必须是：己方公司、客户、供应商、司机、其它")
+    @Pattern(regexp = "己方公司|客户|供应商|司机|其它|(客户|供应商)默认", message = "账户类型必须是：己方公司、客户、供应商、司机、其它或对应以默认结尾的字符串")
     @NotNull(message = "账户类型不能为空")
     @TableField("acountsType")
     private String acountsType;

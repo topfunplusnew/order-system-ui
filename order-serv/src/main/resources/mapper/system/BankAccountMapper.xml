@@ -57,7 +57,7 @@
                 and ba.bankNo = concat('%', #{bankNo}, '%')
             </if>
             <if test="acountsType != null  and acountsType != ''">
-                and ba.acountsType = #{acountsType}
+                and ba.acountsType like concat('%', #{acountsType}, '%')
             </if>
             <if test="amount != null">
                 and amount = #{amount}
