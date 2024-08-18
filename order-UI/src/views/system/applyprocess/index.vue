@@ -71,6 +71,16 @@ export default {
     ...mapGetters(['checked'])
   },
   methods: {
+    refresh() {
+      listPaymentApply({pageNum: this.pageNum, pageSize: this.pageSize}).then(res => {
+        this.paymentList = res.rows;
+        this.total = res.total;
+      })
+      //获取所有的审核流程
+      listAuditInfo().then(res => {
+        this.allAuditInfoList = res.rows;
+      })
+    },
     //重新刷新审核树
     refreshApplyCheckInfo(applyID) {
       this.$wait()
@@ -117,70 +127,75 @@ export default {
 
 <template>
   <div class="app-container">
+    <el-row>
+      <el-col :span="4">
+        <el-button @click="refresh">刷新</el-button>
+      </el-col>
+    </el-row>
     <!--    放置付款信息列表-->
     <el-row>
       <el-table
-          :data="paymentList"
-          border
-          style="width: 100%">
+        :data="paymentList"
+        border
+        style="width: 100%">
         <el-table-column
-            fixed
-            prop="fundsDate"
-            label="日期"
-            width="150">
+          fixed
+          prop="fundsDate"
+          label="日期"
+          width="150">
         </el-table-column>
         <el-table-column
-            prop="payType"
-            label="支付类型"
-            width="120">
+          prop="payType"
+          label="支付类型"
+          width="120">
         </el-table-column>
         <el-table-column
-            prop="moneyAmount"
-            label="金额"
-            width="120">
+          prop="moneyAmount"
+          label="金额"
+          width="120">
         </el-table-column>
         <el-table-column
-            prop="otherBankNo"
-            label="对方账号"
-            width="300">
+          prop="otherBankNo"
+          label="对方账号"
+          width="300">
         </el-table-column>
         <el-table-column
-            prop="companyName"
-            label="对方公司"
-            width="120">
+          prop="companyName"
+          label="对方公司"
+          width="120">
         </el-table-column>
         <el-table-column
-            prop="reason"
-            label="付款原因"
-            width="120">
+          prop="reason"
+          label="付款原因"
+          width="120">
         </el-table-column>
         <el-table-column
-            prop="attachment"
-            label="附件"
-            width="120">
+          prop="attachment"
+          label="附件"
+          width="120">
         </el-table-column>
         <el-table-column
-            prop="applyPerson"
-            label="申请人"
-            width="120">
+          prop="applyPerson"
+          label="申请人"
+          width="120">
         </el-table-column>
         <el-table-column
-            prop="comments"
-            label="备注"
-            width="120">
+          prop="comments"
+          label="备注"
+          width="120">
         </el-table-column>
         <el-table-column
-            fixed="right"
-            label="操作"
-            width="80">
+          fixed="right"
+          label="操作"
+          width="80">
           <template slot-scope="scope">
             <el-button @click="handleCheckInfo(scope.row)" type="primary" size="small">查看</el-button>
           </template>
         </el-table-column>
         <el-table-column
-            fixed="right"
-            label="审核流程"
-            width="200">
+          fixed="right"
+          label="审核流程"
+          width="200">
           <template slot-scope="scope">
             <el-button type="warning" @click="handleCheckApplyInfo(scope.row)">查看审核流程信息</el-button>
           </template>
@@ -188,20 +203,20 @@ export default {
       </el-table>
       <!--      分页-->
       <pagination
-          v-show="total>0"
-          :total="total"
-          :page.sync="pageNum"
-          :limit.sync="pageSize"
-          @pagination="getPaymentList"
+        v-show="total>0"
+        :total="total"
+        :page.sync="pageNum"
+        :limit.sync="pageSize"
+        @pagination="getPaymentList"
       />
     </el-row>
 
 
     <!--    查看付款信息的详细信息-->
     <el-dialog
-        title="付款信息详细"
-        :visible.sync="checkInfoDialogVisible"
-        width="50%">
+      title="付款信息详细"
+      :visible.sync="checkInfoDialogVisible"
+      width="50%">
       <el-descriptions title="付款信息明细">
         <el-descriptions-item label="申请人">{{ checkPaymentInfo.applyPerson }}</el-descriptions-item>
         <el-descriptions-item label="申请金额">{{ checkPaymentInfo.moneyAmount }}</el-descriptions-item>
