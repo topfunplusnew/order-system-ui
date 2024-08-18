@@ -47,8 +47,6 @@
       <el-form-item label="金额" prop="moneyAmount">
         <el-input v-model="form.moneyAmount" placeholder="请输入金额" :disabled="inputDisabled"/>
       </el-form-item>
-
-      <!--        对方信息-->
       <el-form-item label="对方户名" prop="otherAcountsName">
         <el-row>
           <el-col :span="10">
@@ -83,7 +81,6 @@
       </el-form-item>
       <!--        文件-->
       <el-form-item label="附件" prop="attachment">
-        <!--          <el-input v-model="form.attachment" type="textarea" placeholder="请输入内容"/>-->
         <file-upload @input="handleCommitUpload"/>
       </el-form-item>
       <el-form-item label="备注" prop="comments">
@@ -235,16 +232,37 @@ export default {
     //可以监听到props的变化
     needInfo: {
       handler(val) {
-        if (this.needInfo.isExit !== undefined) {
-          if (this.needInfo.isExit === true) {
-            //自动填充
-            this.form.otherAcountsName = this.needInfo.otherAcountsName
-            this.form.companyName = this.needInfo.companyName
-            //查询司机的银行卡信息
-            listBankAccount({acountsType: '司机', acountsName: this.needInfo.otherAcountsName})
+        // 如果传入的必须自动填充的金额大于0 则自动填充 且无法修改
+        if (this.needMoney > 0) {
+          this.form.moneyAmount = this.needMoney;
+          this.inputDisabled = true;
+        }
+        if (JSON.stringify(this.needInfo) === '{}') {
+          //todo
+          console.log('无任何信息')
+        } else {
+          if (this.needInfo.isExit !== undefined) {
+            if (this.needInfo.isExit === true) {
+              //自动填充
+              this.form.otherAcountsName = this.needInfo.otherAcountsName
+              this.form.companyName = this.needInfo.companyName
+              //查询司机的银行卡信息
+              listBankAccount({acountsType: '司机', acountsName: this.needInfo.otherAcountsName})
+                .then(res => {
+                  this.form.otherBankNo = res.rows[0].bankNo
+                  this.form.otherBankName = res.rows[0].bankName
+                })
+            }
+          } else {
+            listBankAccount({bankNo: this.needInfo.bankNo})
               .then(res => {
-                this.form.otherBankNo = res.rows[0].bankNo
-                this.form.otherBankName = res.rows[0].bankName
+                if (res.rows.length === 0) {
+                  this.$message.error('未查询到该银行卡信息')
+                } else {
+                  this.form.otherAcountsName = res.rows[0].acountsName
+                  this.form.otherBankNo = res.rows[0].bankNo
+                  this.form.otherBankName = res.rows[0].bankName
+                }
               })
           }
         }

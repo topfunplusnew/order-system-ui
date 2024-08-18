@@ -18,7 +18,6 @@
       </el-form-item>
       <el-form-item>
         <el-button type="primary" icon="el-icon-search" size="mini" @click="handleQuery">搜索</el-button>
-        <el-button icon="el-icon-refresh" size="mini" @click="resetQuery">重置</el-button>
       </el-form-item>
     </el-form>
 
@@ -33,6 +32,9 @@
           v-hasPermi="['system:oilrecharge:add']"
         >新增加油卡充值信息
         </el-button>
+      </el-col>
+      <el-col :span="1.5">
+        <el-button icon="el-icon-refresh" size="mini" @click="resetQuery">刷新</el-button>
       </el-col>
       <right-toolbar :showSearch.sync="showSearch" @queryTable="getList" :columns="columns">
         <template v-slot:print>
@@ -151,17 +153,18 @@
     <!--    加油卡付款申请-->
     <el-dialog title="加油卡付款申请" :visible.sync="paymentApplyVisible" width="500px" append-to-body>
       <ApplyPayment :table-name="TableName.OIL_RECHARGE" :t-i-d="tid" :need-money="needMoney"
-                    :need-info="{...needInfo,otherAcountsName:needInfo.acountsName}"/>
+                    :need-info="{...needInfo,otherAcountsName:needInfo.acountsName}"
+                    @changeOpen="paymentApplyVisible = false"/>
     </el-dialog>
   </div>
 </template>
 
 <script>
 import {
-  listOilRecharge,
-  getOilRecharge,
-  delOilRecharge,
   addOilRecharge,
+  delOilRecharge,
+  getOilRecharge,
+  listOilRecharge,
   updateOilRecharge
 } from "@/api/system/oilRecharge";
 import {mixin_printHTML} from "@/views/dashboard/mixins/print";
@@ -267,6 +270,7 @@ export default {
   },
   created() {
     this.getList();
+    this.resetQuery();
   },
   methods: {
     //加油卡付款申请
