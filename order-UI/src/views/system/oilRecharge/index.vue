@@ -239,7 +239,7 @@ export default {
         oilCardNo: null,
         rechargeType: null,
         rechargeMoney: null,
-        rechargeDate: new Date().getTime(),
+        rechargeDate: null,
         acountsName: null,
         bankNo: null,
         rechargeName: null,
@@ -252,7 +252,8 @@ export default {
       },
       // 表单参数
       form: {
-        rechargeDate: new Date().getTime()
+        rechargeDate: new Date().getTime(),
+        rechargeType: '银行卡'
       },
       // 表单校验
       rules: {},
@@ -355,9 +356,9 @@ export default {
         id: null,
         bTripId: null,
         oilCardNo: null,
-        rechargeType: null,
+        rechargeType: '银行卡',
         rechargeMoney: null,
-        rechargeDate: null,
+        rechargeDate: new Date().getTime(),
         acountsName: null,
         bankNo: null,
         rechargeName: null,

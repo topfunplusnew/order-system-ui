@@ -207,7 +207,7 @@ export default {
         oilMainCardNo: null,
         oilSecondCardNo: null,
         rechargeMoney: null,
-        rechargeDate: new Date().getTime(),
+        rechargeDate: null,
         rechargeName: null,
         comments: null,
         addtime: null,
