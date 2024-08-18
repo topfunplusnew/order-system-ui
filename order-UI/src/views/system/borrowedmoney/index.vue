@@ -3,16 +3,16 @@
     <el-form :model="timesQuery" ref="queryForm" size="small" :inline="true" v-show="showSearch" label-width="68px">
       <el-form-item label="开始时间" prop="beginTime">
         <el-date-picker
-            v-model="timesQuery.beginTime"
-            type="date"
-            placeholder="请选择开始时间">
+          v-model="timesQuery.beginTime"
+          type="date"
+          placeholder="请选择开始时间">
         </el-date-picker>
       </el-form-item>
       <el-form-item label="结束时间" prop="endTime">
         <el-date-picker
-            v-model="timesQuery.endTime"
-            type="date"
-            placeholder="请选择结束时间">
+          v-model="timesQuery.endTime"
+          type="date"
+          placeholder="请选择结束时间">
         </el-date-picker>
       </el-form-item>
       <el-form-item>
@@ -29,21 +29,21 @@
         <template v-slot:print>
           <el-col :span="1.5">
             <el-button
-                plain
-                icon="el-icon-printer"
-                size="mini"
-                @click="printHTML">
+              plain
+              icon="el-icon-printer"
+              size="mini"
+              @click="printHTML">
             </el-button>
           </el-col>
         </template>
         <template v-slot:export>
           <el-col :span="1.5">
             <el-button
-                plain
-                icon="el-icon-folder-opened"
-                size="mini"
-                @click="handleExport"
-                v-hasPermi="['system:company:export']">
+              plain
+              icon="el-icon-folder-opened"
+              size="mini"
+              @click="handleExport"
+              v-hasPermi="['system:company:export']">
             </el-button>
           </el-col>
         </template>
@@ -66,32 +66,32 @@
       <el-table-column label="操作" align="center" class-name="small-padding fixed-width" width="160px" fixed="right">
         <template slot-scope="scope">
           <el-button
-              size="mini"
-              type="warning"
-              @click="handleGiveBackMoney(scope.row)"
-              v-if="scope.row.isEnd ==='否'">还款
+            size="mini"
+            type="warning"
+            @click="handleGiveBackMoney(scope.row)"
+            v-if="scope.row.isEnd ==='否'">还款
           </el-button>
           <el-button
-              size="mini"
-              type="primary"
-              @click="handleUpdate(scope.row)"
-              v-hasPermi="['system:borrowedmoney:edit']">编辑
+            size="mini"
+            type="primary"
+            @click="handleUpdate(scope.row)"
+            v-hasPermi="['system:borrowedmoney:edit']">编辑
           </el-button>
           <el-button
-              size="mini"
-              type="danger"
-              @click="handleDelete(scope.row)"
-              v-hasPermi="['system:borrowedmoney:remove']">删除
+            size="mini"
+            type="danger"
+            @click="handleDelete(scope.row)"
+            v-hasPermi="['system:borrowedmoney:remove']">删除
           </el-button>
         </template>
       </el-table-column>
     </el-table>
     <pagination
-        v-show="total>0"
-        :total="total"
-        :page.sync="queryParams.pageNum"
-        :limit.sync="queryParams.pageSize"
-        @pagination="getList"/>
+      v-show="total>0"
+      :total="total"
+      :page.sync="queryParams.pageNum"
+      :limit.sync="queryParams.pageSize"
+      @pagination="getList"/>
 
     <!-- 添加或修改从外部借款信息对话框 -->
     <el-dialog :title="title" :visible.sync="open" width="500px" append-to-body>
@@ -107,9 +107,9 @@
         </el-form-item>
         <el-form-item label="贷款发放日期" prop="loanDate">
           <el-date-picker
-              v-model="form.loanDate"
-              type="date"
-              placeholder="选择日期" value-format="timestamp">
+            v-model="form.loanDate"
+            type="date"
+            placeholder="选择日期" value-format="timestamp">
           </el-date-picker>
         </el-form-item>
         <el-form-item label="贷款年限" prop="loanDuring">
@@ -161,37 +161,37 @@
             </el-button>
           </div>
           <el-table
-              :data="needGiveBackMoneyList"
-              style="width: 100%" border v-loading="needMoneyLoading">
+            :data="needGiveBackMoneyList"
+            style="width: 100%" border v-loading="needMoneyLoading">
             <el-table-column
-                prop="id"
-                label="ID"
-                width="60">
+              prop="id"
+              label="ID"
+              width="60">
             </el-table-column>
             <el-table-column
-                prop="loanNO"
-                label="贷款编号"
-                width="130">
+              prop="loanNO"
+              label="贷款编号"
+              width="130">
             </el-table-column>
             <el-table-column
-                prop="moneyAmount"
-                label="还(本)金额">
+              prop="moneyAmount"
+              label="还(本)金额">
             </el-table-column>
             <el-table-column
-                prop="ratio"
-                label="付息金额">
+              prop="ratio"
+              label="付息金额">
             </el-table-column>
             <el-table-column
-                prop="payDate"
-                label="还款日期">
+              prop="payDate"
+              label="还款日期">
             </el-table-column>
             <el-table-column
-                prop="bankNo"
-                label="还款账号">
+              prop="bankNo"
+              label="还款账号">
             </el-table-column>
             <el-table-column
-                prop="acountsName"
-                label="还款账户">
+              prop="acountsName"
+              label="还款账户">
             </el-table-column>
           </el-table>
         </el-card>
@@ -201,10 +201,10 @@
             <el-button type="primary" @click="innerVisible = true">还款</el-button>
           </div>
           <el-dialog
-              width="30%"
-              title="还款(付款)申请"
-              :visible.sync="innerVisible"
-              append-to-body>
+            width="30%"
+            title="还款(付款)申请"
+            :visible.sync="innerVisible"
+            append-to-body>
             <el-row>
               <el-col :span="8">
                 <span style="font-weight: bolder">
@@ -443,14 +443,15 @@ export default {
       const sums = [];
       columns.forEach((column, index) => {
         if (index === 0) {
-          sums[index] = '总价';
+          sums[index] = '统计';
           return;
         }
         const values = data.map(item => {
           return Number(item[column.property])
         });
+        const includes = [2]
         if (!values.every(value => isNaN(value))) {
-          if (index !== 9) {
+          if (includes.includes(index)) {
             sums[index] = values.reduce((prev, curr) => {
               const value = Number(curr);
               if (!isNaN(value)) {
