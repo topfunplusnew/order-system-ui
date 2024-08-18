@@ -46,7 +46,7 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
 
     <select id="selectCarApplyList" parameterType="CarApply" resultMap="CarApplyResult">
         <include refid="selectCarApplyVo"/>
-        <where>  
+        <where>
             <if test="bTripId != null  and bTripId != ''"> and bTripId = #{bTripId}</if>
             <if test="applyDate != null  and applyDate != ''"> and applyDate = #{applyDate}</if>
             <if test="applyUser != null  and applyUser != ''"> and applyUser = #{applyUser}</if>
@@ -76,6 +76,7 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
             and delFlag = 0
             <if test="path != null  and path != ''"> and path = #{path}</if>
         </where>
+        order by id desc
     </select>
     <select id="selectCarApplyByIds" parameterType="java.util.List" resultMap="CarApplyResult">
         <include refid="selectCarApplyVo"/>

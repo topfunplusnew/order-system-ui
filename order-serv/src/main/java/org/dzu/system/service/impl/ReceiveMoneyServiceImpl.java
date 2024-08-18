@@ -11,8 +11,6 @@ import org.dzu.common.utils.uuid.UUID;
 import org.dzu.system.domain.BankAccountChange;
 import org.dzu.system.domain.ReceiveMoney;
 import org.dzu.system.mapper.ReceiveMoneyMapper;
-import org.dzu.system.service.IBankAccountChangeService;
-import org.dzu.system.service.IBankAccountService;
 import org.dzu.system.service.IReceiveMoneyService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -36,10 +34,10 @@ public class ReceiveMoneyServiceImpl implements IReceiveMoneyService
     private ReceiveMoneyMapper receiveMoneyMapper;
 
     @Autowired
-    private IBankAccountService bankAccountService;
+    private BankAccountServiceImpl bankAccountService;
 
     @Autowired
-    private IBankAccountChangeService bankAccountChangeService;
+    private BankAccountChangeServiceImpl bankAccountChangeService;
     /**
      * 查询收款信息
      *

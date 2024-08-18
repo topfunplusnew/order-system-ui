@@ -5,7 +5,6 @@ import org.dzu.common.utils.DateUtils;
 import org.dzu.common.utils.SecurityUtils;
 import org.dzu.system.domain.Company;
 import org.dzu.system.mapper.CompanyMapper;
-import org.dzu.system.service.ICompanyService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -17,8 +16,7 @@ import java.util.List;
  * @date 2024-07-29
  */
 @Service
-public class CompanyServiceImpl implements ICompanyService
-{
+public class CompanyServiceImpl {
     @Autowired
     private CompanyMapper companyMapper;
 
@@ -28,7 +26,6 @@ public class CompanyServiceImpl implements ICompanyService
      * @param id 客户、供应商信息主键
      * @return 客户、供应商信息
      */
-    @Override
     public Company selectCompanyById(Long id)
     {
         return companyMapper.selectCompanyById(id);
@@ -40,7 +37,6 @@ public class CompanyServiceImpl implements ICompanyService
      * @param company 客户、供应商信息
      * @return 客户、供应商信息
      */
-    @Override
     public List<Company> selectCompanyList(Company company)
     {
         return companyMapper.selectCompanyList(company);
@@ -52,7 +48,6 @@ public class CompanyServiceImpl implements ICompanyService
      * @param company 客户、供应商信息
      * @return 结果
      */
-    @Override
     public int insertCompany(Company company)
     {
         company.setAddtime(String.valueOf(DateUtils.getNowDate()));
@@ -68,7 +63,6 @@ public class CompanyServiceImpl implements ICompanyService
      * @param company 客户、供应商信息
      * @return 结果
      */
-    @Override
     public int updateCompany(Company company)
     {
         company.setUserId(SecurityUtils.getUserId());
@@ -83,7 +77,6 @@ public class CompanyServiceImpl implements ICompanyService
      * @param ids 需要删除的客户、供应商信息主键
      * @return 结果
      */
-    @Override
     public int deleteCompanyByIds(Long[] ids)
     {
         return companyMapper.deleteCompanyByIds(ids);
@@ -95,7 +88,6 @@ public class CompanyServiceImpl implements ICompanyService
      * @param id 客户、供应商信息主键
      * @return 结果
      */
-    @Override
     public int deleteCompanyById(Long id)
     {
         return companyMapper.deleteCompanyById(id);

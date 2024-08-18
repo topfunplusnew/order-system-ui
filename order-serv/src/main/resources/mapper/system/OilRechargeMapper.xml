@@ -109,8 +109,8 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
             </if>
             and o.delFlag = 0
         </where>
+       order by o.id desc
     </select>
-    
     <select id="selectOilRechargeById" parameterType="Long" resultMap="OilRechargeResult">
         <include refid="selectOilRechargeVo"/>
         where o.id = #{id}

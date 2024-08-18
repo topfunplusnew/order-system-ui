@@ -14,7 +14,6 @@ import org.dzu.system.domain.OilRecharge;
 import org.dzu.system.mapper.OilCardConsumeMapper;
 import org.dzu.system.mapper.OilCardMapper;
 import org.dzu.system.mapper.OilRechargeMapper;
-import org.dzu.system.service.IBankAccountService;
 import org.dzu.system.service.IOilRechargeService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -30,7 +29,7 @@ public class OilRechargeServiceImpl implements IOilRechargeService {
     @Autowired
     private OilRechargeMapper oilRechargeMapper;
     @Autowired
-    private IBankAccountService bankAccountService;
+    private BankAccountServiceImpl bankAccountService;
     @Autowired
     private OilCardMapper oilCardMapper;
     @Autowired

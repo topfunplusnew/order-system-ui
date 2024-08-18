@@ -19,10 +19,10 @@
       <!--      </el-form-item>-->
       <el-form-item label="日期" prop="fundsDate">
         <el-input
-          v-model="queryParams.fundsDate"
-          placeholder="请输入日期"
-          clearable
-          @keyup.enter.native="handleQuery"
+            v-model="queryParams.fundsDate"
+            placeholder="请输入日期"
+            clearable
+            @keyup.enter.native="handleQuery"
         />
       </el-form-item>
       <!--      <el-form-item label="金额" prop="moneyAmount">-->
@@ -35,34 +35,34 @@
       <!--      </el-form-item>-->
       <el-form-item label="对方户名" prop="otherAcountsName">
         <el-input
-          v-model="queryParams.otherAcountsName"
-          placeholder="请输入对方户名"
-          clearable
-          @keyup.enter.native="handleQuery"
+            v-model="queryParams.otherAcountsName"
+            placeholder="请输入对方户名"
+            clearable
+            @keyup.enter.native="handleQuery"
         />
       </el-form-item>
       <el-form-item label="对方账号" prop="otherBankNo">
         <el-input
-          v-model="queryParams.otherBankNo"
-          placeholder="请输入对方账号"
-          clearable
-          @keyup.enter.native="handleQuery"
+            v-model="queryParams.otherBankNo"
+            placeholder="请输入对方账号"
+            clearable
+            @keyup.enter.native="handleQuery"
         />
       </el-form-item>
       <el-form-item label="对方开户行" prop="otherBankName">
         <el-input
-          v-model="queryParams.otherBankName"
-          placeholder="请输入对方开户行"
-          clearable
-          @keyup.enter.native="handleQuery"
+            v-model="queryParams.otherBankName"
+            placeholder="请输入对方开户行"
+            clearable
+            @keyup.enter.native="handleQuery"
         />
       </el-form-item>
       <el-form-item label="对方公司" prop="companyName">
         <el-input
-          v-model="queryParams.companyName"
-          placeholder="请输入对方公司"
-          clearable
-          @keyup.enter.native="handleQuery"
+            v-model="queryParams.companyName"
+            placeholder="请输入对方公司"
+            clearable
+            @keyup.enter.native="handleQuery"
         />
       </el-form-item>
       <!--      <el-form-item label="对方公司ID" prop="companyId">-->
@@ -114,24 +114,24 @@
     <el-row :gutter="10" class="mb8">
       <el-col :span="1.5">
         <el-button
-          type="primary"
-          plain
-          icon="el-icon-plus"
-          size="mini"
-          @click="handleAdd"
-          v-hasPermi="['system:paymentapply:add']"
+            type="primary"
+            plain
+            icon="el-icon-plus"
+            size="mini"
+            @click="handleAdd"
+            v-hasPermi="['system:paymentapply:add']"
         >新增付款信息
         </el-button>
       </el-col>
       <el-col :span="1.5">
         <el-button
-          type="danger"
-          plain
-          icon="el-icon-delete"
-          size="mini"
-          :disabled="multiple"
-          @click="handleDelete"
-          v-hasPermi="['system:paymentapply:remove']"
+            type="danger"
+            plain
+            icon="el-icon-delete"
+            size="mini"
+            :disabled="multiple"
+            @click="handleDelete"
+            v-hasPermi="['system:paymentapply:remove']"
         >删除
         </el-button>
       </el-col>
@@ -139,10 +139,10 @@
         <template v-slot:print>
           <el-col :span="1.5">
             <el-button
-              plain
-              icon="el-icon-printer"
-              size="mini"
-              @click="printHTML"
+                plain
+                icon="el-icon-printer"
+                size="mini"
+                @click="printHTML"
             >
             </el-button>
           </el-col>
@@ -151,11 +151,11 @@
         <template v-slot:export>
           <el-col :span="1.5">
             <el-button
-              plain
-              icon="el-icon-folder-opened"
-              size="mini"
-              @click="handleExport"
-              v-hasPermi="['system:company:export']"
+                plain
+                icon="el-icon-folder-opened"
+                size="mini"
+                @click="handleExport"
+                v-hasPermi="['system:company:export']"
             >
             </el-button>
           </el-col>
@@ -167,7 +167,6 @@
     <!--    列表-->
     <el-table border v-horizontal-scroll="'always'" v-loading="loading" :data="paymentApplyList"
               @selection-change="handleSelectionChange" id="printBox">
-      <el-table-column label="id" align="center" prop="id"/>
       <!--      <el-table-column label="对应的表名" align="center" prop="tableName"/>-->
       <!--      <el-table-column label="对应的表主键" align="center" prop="tID"/>-->
       <el-table-column label="日期" align="center" prop="fundsDate"/>
@@ -177,17 +176,17 @@
       <el-table-column label="对方账号" align="center" prop="otherBankNo"/>
       <el-table-column label="对方开户行" align="center" prop="otherBankName"/>
       <el-table-column label="对方公司" align="center" prop="companyName"/>
-      <el-table-column label="对方公司ID" align="center" prop="companyId"/>
+      <!--      <el-table-column label="对方公司ID" align="center" prop="companyId"/>-->
       <el-table-column label="对方公司类型" align="center" prop="companyType"/>
       <el-table-column label="付款原因" align="center" prop="reason"/>
       <el-table-column label="附件" align="center" prop="attachment"/>
       <el-table-column label="申请人" align="center" prop="applyPerson"/>
-      <el-table-column label="申请人ID" align="center" prop="applyPersonID"/>
+      <!--      <el-table-column label="申请人ID" align="center" prop="applyPersonID"/>-->
       <el-table-column label="审核状态" align="center" prop="checkState">
         <template slot-scope="scope">
           <el-tag
-            :type="scope.row.checkState === '通过' ? 'success' : 'danger'"
-            disable-transitions>{{ scope.row.checkState }}
+              :type="scope.row.checkState === '通过' ? 'success' : 'danger'"
+              disable-transitions>{{ scope.row.checkState }}
           </el-tag>
         </template>
       </el-table-column>
@@ -195,29 +194,35 @@
       <el-table-column label="操作" align="center" class-name="small-padding fixed-width" fixed="right">
         <template slot-scope="scope">
           <el-button
-            size="mini"
-            type="primary"
-            @click="handleUpdate(scope.row)"
-            v-hasPermi="['system:paymentapply:edit']"
+              size="mini"
+              type="primary"
+              @click="handleUpdate(scope.row)"
+              v-hasPermi="['system:paymentapply:edit']"
           >修改
           </el-button>
           <el-button
-            size="mini"
-            type="danger"
-            @click="handleDelete(scope.row)"
-            v-hasPermi="['system:paymentapply:remove']"
+              size="mini"
+              type="danger"
+              @click="handleDelete(scope.row)"
+              v-hasPermi="['system:paymentapply:remove']"
           >删除
+          </el-button>
+          <el-button
+              size="mini"
+              @click="checkPaymentApplyInfo(scope.row)"
+              v-hasPermi="['system:paymentapply:remove']"
+          >查看信息
           </el-button>
         </template>
       </el-table-column>
     </el-table>
 
     <pagination
-      v-show="total>0"
-      :total="total"
-      :page.sync="queryParams.pageNum"
-      :limit.sync="queryParams.pageSize"
-      @pagination="getList"
+        v-show="total>0"
+        :total="total"
+        :page.sync="queryParams.pageNum"
+        :limit.sync="queryParams.pageSize"
+        @pagination="getList"
     />
 
     <!-- 2.添加或修改付款信息对话框 -->
@@ -232,9 +237,9 @@
         <!--        </el-form-item>-->
         <el-form-item label="日期" prop="fundsDate">
           <el-date-picker
-            v-model="form.fundsDate"
-            type="date"
-            placeholder="选择日期">
+              v-model="form.fundsDate"
+              type="date"
+              placeholder="选择日期">
           </el-date-picker>
         </el-form-item>
         <el-form-item label="支付类型" prop="payType">
@@ -244,10 +249,10 @@
             <el-col :span="8">
               <el-select v-model="currentSort.levelOne" placeholder="请选择一级分类" @change="handleSelectOneLevel">
                 <el-option
-                  v-for="item in OneLevelOption"
-                  :key="item.id"
-                  :label="item.title"
-                  :value="item.title">
+                    v-for="item in OneLevelOption"
+                    :key="item.id"
+                    :label="item.title"
+                    :value="item.title">
                 </el-option>
               </el-select>
             </el-col>
@@ -255,10 +260,10 @@
             <el-col :span="8">
               <el-select v-model="currentSort.levelTwo" placeholder="请选择二级分类" @change="handleSelectTwoLevel">
                 <el-option
-                  v-for="item in TwoLevelOption"
-                  :key="item.id"
-                  :label="item.title"
-                  :value="item.title">
+                    v-for="item in TwoLevelOption"
+                    :key="item.id"
+                    :label="item.title"
+                    :value="item.title">
                 </el-option>
               </el-select>
             </el-col>
@@ -328,6 +333,18 @@
         <el-button @click="cancel">取 消</el-button>
       </div>
     </el-dialog>
+
+    <!--    查看-->
+    <el-dialog
+        title="查看信息"
+        :visible.sync="checkVisible"
+        width="30%">
+      <NeedToShowInfo :need-to-show-info="needToShowInfo" :table-name-to-prop="tableName"/>
+      <span slot="footer" class="dialog-footer">
+    <el-button @click="checkVisible = false">取 消</el-button>
+    <el-button type="primary" @click="checkVisible = false">确 定</el-button>
+  </span>
+    </el-dialog>
   </div>
 </template>
 
@@ -344,10 +361,14 @@ import {listSubject} from "@/api/system/subject";
 import {formatDate} from "@/utils";
 import SearchOption from "@/components/SearchOption.vue";
 import {listCompany} from "@/api/system/company";
+import NeedToShowInfo from "@/components/NeedToShowInfo.vue";
+import {TableName} from "@/api/tool/enums";
+import {getOrderFreight} from "@/api/system/orderFreight";
+import {getBorrowedMoney} from "@/api/system/borrowedMoney";
 
 export default {
   name: "PaymentApply",
-  components: {SearchOption},
+  components: {NeedToShowInfo, SearchOption},
   data() {
     return {
       // 遮罩层
@@ -425,7 +446,11 @@ export default {
       //一级分类列表
       OneLevelOption: [],
       //二级分类
-      TwoLevelOption: []
+      TwoLevelOption: [],
+
+      checkVisible: false,
+      needToShowInfo: {},
+      tableName: ''
     };
   },
   created() {
@@ -436,6 +461,9 @@ export default {
     })
   },
   computed: {
+    TableName() {
+      return TableName
+    },
     fullLevel() {
       return this.currentSort.levelOne + '-' + this.currentSort.levelTwo;
     }
@@ -481,6 +509,38 @@ export default {
         type: 'html',
         targetStyles: ['*'], // 打印内容使用所有HTML样式，没有设置这个属性/值，设置分页打印没有效果
       })
+    },
+    checkPaymentApplyInfo(row) {
+      console.log(row)
+      //根据TableId发请求
+      switch (row.tableName) {
+          //订单运费
+        case TableName.ORDER_FREIGHT: {
+          //发请求 获取订单运费信息
+          getOrderFreight(row.tID).then(res => {
+            console.log('运费信息', res)
+            this.needToShowInfo = res.data
+            this.tableName = TableName.ORDER_FREIGHT
+          })
+          break;
+        }
+        case TableName.BORROWED_MONEY:
+          getBorrowedMoney(row.tID).then(res => {
+            console.log('借款信息', res)
+            this.needToShowInfo = res.data
+            this.tableName = TableName.BORROWED_MONEY
+          })
+          break;
+
+          //todo 这里继续加表名 然后发请求获取数据 赋值给需要展示的needToShowInfo 然后创建组件
+        case 'paymentApplyDetailItem':
+          this.needToShowInfo = item.paymentApplyDetailItem
+          break;
+        default:
+          break;
+      }
+      //查询信息
+      this.checkVisible = true;
     },
     /** 查询付款信息列表 */
     getList() {

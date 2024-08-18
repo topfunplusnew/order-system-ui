@@ -7,7 +7,7 @@ import org.dzu.common.core.page.TableDataInfo;
 import org.dzu.common.enums.BusinessType;
 import org.dzu.common.utils.poi.ExcelUtil;
 import org.dzu.system.domain.Company;
-import org.dzu.system.service.ICompanyService;
+import org.dzu.system.service.impl.CompanyServiceImpl;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.validation.annotation.Validated;
@@ -27,7 +27,7 @@ import java.util.List;
 public class CompanyController extends BaseController
 {
     @Autowired
-    private ICompanyService companyService;
+    private CompanyServiceImpl companyService;
 
     /**
      * 查询客户、供应商信息列表

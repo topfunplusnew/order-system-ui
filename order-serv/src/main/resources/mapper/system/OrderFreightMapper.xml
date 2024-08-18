@@ -76,8 +76,8 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
             <if test="UserName != null  and UserName != ''"> and UserName like concat('%', #{UserName}, '%')</if>
             <if test="delFlag != null "> and delFlag = #{delFlag}</if>
         </where>
+       order by o.id desc
     </select>
-    
     <select id="selectOrderFreightById" parameterType="Long" resultMap="OrderFreightResult">
         <include refid="selectOrderFreightVo"/>
         where id = #{id}

@@ -5,7 +5,6 @@ import org.dzu.common.utils.DateUtils;
 import org.dzu.common.utils.SecurityUtils;
 import org.dzu.system.domain.SocialInsurance;
 import org.dzu.system.mapper.SocialInsuranceMapper;
-import org.dzu.system.service.ISocialInsuranceService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -17,8 +16,7 @@ import java.util.List;
  * @date 2024-07-29
  */
 @Service
-public class SocialInsuranceServiceImpl implements ISocialInsuranceService
-{
+public class SocialInsuranceServiceImpl {
     @Autowired
     private SocialInsuranceMapper socialInsuranceMapper;
 
@@ -28,7 +26,6 @@ public class SocialInsuranceServiceImpl implements ISocialInsuranceService
      * @param id 社保基金主键
      * @return 社保基金
      */
-    @Override
     public SocialInsurance selectSocialInsuranceById(Long id)
     {
         return socialInsuranceMapper.selectSocialInsuranceById(id);
@@ -40,7 +37,6 @@ public class SocialInsuranceServiceImpl implements ISocialInsuranceService
      * @param socialInsurance 社保基金
      * @return 社保基金
      */
-    @Override
     public List<SocialInsurance> selectSocialInsuranceList(SocialInsurance socialInsurance)
     {
         return socialInsuranceMapper.selectSocialInsuranceList(socialInsurance);
@@ -52,7 +48,6 @@ public class SocialInsuranceServiceImpl implements ISocialInsuranceService
      * @param socialInsurance 社保基金
      * @return 结果
      */
-    @Override
     public int insertSocialInsurance(SocialInsurance socialInsurance)
     {
         socialInsurance.setAddtime(String.valueOf(DateUtils.getNowDate()));
@@ -68,7 +63,6 @@ public class SocialInsuranceServiceImpl implements ISocialInsuranceService
      * @param socialInsurance 社保基金
      * @return 结果
      */
-    @Override
     public int updateSocialInsurance(SocialInsurance socialInsurance)
     {
         socialInsurance.setUserId(SecurityUtils.getUserId());
@@ -83,7 +77,6 @@ public class SocialInsuranceServiceImpl implements ISocialInsuranceService
      * @param ids 需要删除的社保基金主键
      * @return 结果
      */
-    @Override
     public int deleteSocialInsuranceByIds(Long[] ids)
     {
         return socialInsuranceMapper.deleteSocialInsuranceByIds(ids);
@@ -95,7 +88,6 @@ public class SocialInsuranceServiceImpl implements ISocialInsuranceService
      * @param id 社保基金主键
      * @return 结果
      */
-    @Override
     public int deleteSocialInsuranceById(Long id)
     {
         return socialInsuranceMapper.deleteSocialInsuranceById(id);

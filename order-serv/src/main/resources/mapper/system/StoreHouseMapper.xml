@@ -25,9 +25,8 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
             <if test="address != null  and address != ''"> and address = #{address}</if>
             and delFlag = 0
         </where>
-    </select>
-    
-    <select id="selectStoreHouseById" parameterType="Long" resultMap="StoreHouseResult">
+       order by id desc
+    </select>    <select id="selectStoreHouseById" parameterType="Long" resultMap="StoreHouseResult">
         <include refid="selectStoreHouseVo"/>
         where id = #{id}
         and delFlag = 0

@@ -14,6 +14,10 @@ export default {
     inventoryInfo: {
       type: Object,
       required: true
+    },
+    //是否为二次出库
+    isSecond: {
+      type: Boolean
     }
   },
   data() {
@@ -117,10 +121,10 @@ export default {
           </el-col>
           <el-col :span="12">
             <el-date-picker
-              v-model="currentInventoryInfo.storeDate"
-              type="date"
-              placeholder="选择日期" style="width: 70%"
-              value-format="timestamp">
+                v-model="currentInventoryInfo.storeDate"
+                type="date"
+                placeholder="选择日期" style="width: 70%"
+                value-format="timestamp">
             </el-date-picker>
           </el-col>
         </el-row>

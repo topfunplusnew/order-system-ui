@@ -11,7 +11,6 @@ import org.dzu.system.domain.*;
 import org.dzu.system.mapper.GoodsOrderMapper;
 import org.dzu.system.mapper.OrderDetailMapper;
 import org.dzu.system.mapper.OrderdetailBackMapper;
-import org.dzu.system.service.ICompanyService;
 import org.dzu.system.service.IExWarehouseService;
 import org.dzu.system.service.IInventoryService;
 import org.dzu.system.service.IOrderDetailService;
@@ -32,7 +31,7 @@ public class OrderDetailServiceImpl implements IOrderDetailService {
     private OrderDetailMapper orderDetailMapper;
 
     @Autowired
-    private ICompanyService companyService;
+    private CompanyServiceImpl companyService;
 
     @Autowired
     private IInventoryService inventoryService;

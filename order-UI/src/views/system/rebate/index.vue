@@ -3,41 +3,44 @@
     <el-form :model="queryParams" ref="queryForm" size="small" :inline="true" v-show="showSearch" label-width="68px">
       <el-form-item label="返利开始日期" prop="rebateStartTime">
         <el-date-picker
-            v-model="queryParams.rebateStartTime"
-            type="date"
-            placeholder="选择开始时间">
+          v-model="queryParams.rebateStartTime"
+          type="date"
+          placeholder="选择开始时间">
         </el-date-picker>
       </el-form-item>
       <el-form-item label="返利结束日期" prop="rebateEndTime">
         <el-date-picker
-            v-model="queryParams.rebateEndTime"
-            type="date"
-            placeholder="选择开始时间">
+          v-model="queryParams.rebateEndTime"
+          type="date"
+          placeholder="选择开始时间">
         </el-date-picker>
       </el-form-item>
       <el-form-item label="供应商" prop="supplier">
         <el-input
-            v-model="queryParams.supplier"
-            placeholder="请输入供应商"
-            clearable
-            @keyup.enter.native="handleQuery"
+          v-model="queryParams.supplier"
+          placeholder="请输入供应商"
+          clearable
+          @keyup.enter.native="handleQuery"
         />
       </el-form-item>
       <el-form-item>
         <el-button type="primary" icon="el-icon-search" size="mini" @click="handleQuery">搜索</el-button>
-        <!--        <el-button icon="el-icon-refresh" size="mini" @click="resetQuery">重置</el-button>-->
       </el-form-item>
     </el-form>
 
     <el-row :gutter="10" class="mb8">
+      <!-- 刷新按钮-->
+      <el-col :span="1.5">
+        <el-button icon="el-icon-refresh" size="mini" @click="resetQuery">刷新</el-button>
+      </el-col>
       <el-col :span="1.5">
         <el-button
-            type="primary"
-            plain
-            icon="el-icon-plus"
-            size="mini"
-            @click="handleAdd"
-            v-hasPermi="['system:rebate:add']"
+          type="primary"
+          plain
+          icon="el-icon-plus"
+          size="mini"
+          @click="handleAdd"
+          v-hasPermi="['system:rebate:add']"
         >新增供应商返利信息
         </el-button>
       </el-col>
@@ -45,10 +48,10 @@
         <template v-slot:print>
           <el-col :span="1.5">
             <el-button
-                plain
-                icon="el-icon-printer"
-                size="mini"
-                @click="printHTML"
+              plain
+              icon="el-icon-printer"
+              size="mini"
+              @click="printHTML"
             >
             </el-button>
           </el-col>
@@ -57,11 +60,11 @@
         <template v-slot:export>
           <el-col :span="1.5">
             <el-button
-                plain
-                icon="el-icon-folder-opened"
-                size="mini"
-                @click="handleExport"
-                v-hasPermi="['system:orderdetail:export']"
+              plain
+              icon="el-icon-folder-opened"
+              size="mini"
+              @click="handleExport"
+              v-hasPermi="['system:rebate:export']"
             >
             </el-button>
           </el-col>
@@ -71,32 +74,36 @@
 
     <el-table border v-horizontal-scroll="'always'" v-loading="loading" :data="RebateList"
               @selection-change="handleSelectionChange" id="printBox">
-      <!--      <el-table-column label="订单编号" align="center" prop="ordersNo"/>-->
-      <el-table-column label="日期" align="center" prop="rebateDate"/>
-      <el-table-column label="金额" align="center" prop="rebate"/>
-      <el-table-column label="类型" align="center" prop="rebateType"/>
-      <el-table-column label="收款户名" align="center" prop="inAcountsName"/>
-      <el-table-column label="收款账号" align="center" prop="inBankNo"/>
-      <el-table-column label="供应商" align="center" prop="supplier"/>
-      <!--      <el-table-column label="供应商ID" align="center" prop="supplierID"/>-->
-      <el-table-column label="付款户名" align="center" prop="outAcountsName"/>
-      <el-table-column label="付款款账号" align="center" prop="outBankNo"/>
-      <el-table-column label="返利原因" align="center" prop="rebateReason"/>
-      <el-table-column label="备注" align="center" prop="comments"/>
+      <el-table-column label="日期" align="center" prop="rebateDate" v-if="columns[0].visible"/>
+      <el-table-column label="金额" align="center" prop="rebate" v-if="columns[1].visible"/>
+      <el-table-column label="类型" align="center" prop="rebateType" v-if="columns[2].visible"/>
+      <el-table-column label="收款户名" align="center" prop="inAcountsName" v-if="columns[3].visible"/>
+      <el-table-column label="收款账号" align="center" prop="inBankNo" v-if="columns[4].visible"/>
+      <el-table-column label="供应商" align="center" prop="supplier" v-if="columns[5].visible"/>
+      <el-table-column label="付款户名" align="center" prop="outAcountsName" v-if="columns[6].visible"/>
+      <el-table-column label="付款款账号" align="center" prop="outBankNo" v-if="columns[7].visible"/>
+      <el-table-column label="返利原因" align="center" prop="rebateReason" v-if="columns[8].visible"/>
+      <el-table-column label="备注" align="center" prop="comments" v-if="columns[9].visible"/>
       <el-table-column label="操作" align="center" class-name="small-padding fixed-width">
         <template slot-scope="scope">
           <el-button
-              size="mini"
-              type="primary"
-              @click="handleUpdate(scope.row)"
-              v-hasPermi="['system:rebate:edit']"
+            size="mini"
+            type="warning"
+            @click="addPaymentApply(scope.row)"
+          >付款返利
+          </el-button>
+          <el-button
+            size="mini"
+            type="primary"
+            @click="handleUpdate(scope.row)"
+            v-hasPermi="['system:rebate:edit']"
           >修改
           </el-button>
           <el-button
-              size="mini"
-              type="danger"
-              @click="handleDelete(scope.row)"
-              v-hasPermi="['system:rebate:remove']"
+            size="mini"
+            type="danger"
+            @click="handleDelete(scope.row)"
+            v-hasPermi="['system:rebate:remove']"
           >删除
           </el-button>
         </template>
@@ -104,11 +111,11 @@
     </el-table>
 
     <pagination
-        v-show="total>0"
-        :total="total"
-        :page.sync="queryParams.pageNum"
-        :limit.sync="queryParams.pageSize"
-        @pagination="getList"
+      v-show="total>0"
+      :total="total"
+      :page.sync="queryParams.pageNum"
+      :limit.sync="queryParams.pageSize"
+      @pagination="getList"
     />
 
     <!-- 添加或修改返利回扣对话框 -->
@@ -153,15 +160,31 @@
         <el-button @click="cancel">取 消</el-button>
       </div>
     </el-dialog>
+
+
+    <!--    加油卡付款申请-->
+    <el-dialog title="返利付款申请" :visible.sync="paymentApplyVisible" width="500px" append-to-body>
+      <ApplyPayment :table-name="TableName.REBATE" :t-i-d="tid" :need-money="needMoney"
+                    :need-info="{...needInfo,otherAcountsName:needInfo.acountsName}"
+                    @changeOpen="paymentApplyVisible = false"/>
+    </el-dialog>
   </div>
 </template>
 
 <script>
 import {listRebate, getRebate, delRebate, addRebate, updateRebate} from "@/api/system/Rebate";
 import {mixin_printHTML} from "@/views/dashboard/mixins/print";
+import ApplyPayment from "@/components/ApplyPayment.vue";
+import {TableName} from "@/api/tool/enums";
 
 export default {
   name: "Rebate",
+  computed: {
+    TableName() {
+      return TableName
+    }
+  },
+  components: {ApplyPayment},
   mixins: [mixin_printHTML],
   data() {
     return {
@@ -211,38 +234,33 @@ export default {
       // 表单校验
       rules: {},
       columns: [
-        {key: 0, label: `订单编号`, visible: true},
-        {key: 1, label: `陆运车牌`, visible: true},
-        {key: 2, label: `陆运司机电话`, visible: true},
-        {key: 3, label: `陆运司机姓名`, visible: true},
-        {key: 4, label: `海运车牌`, visible: true},
-        {key: 5, label: `海运司机电话`, visible: true},
-        {key: 6, label: `海运司机姓名`, visible: true},
-        {key: 7, label: `销售经理`, visible: true},
-        {key: 8, label: `车队`, visible: true},
-        {key: 9, label: `审核状态`, visible: true},
-        {key: 10, label: `开票状态`, visible: true},
-        {key: 11, label: `附件路径`, visible: true},
-        {key: 12, label: `打款状态`, visible: true},
-        {key: 13, label: `陆运银行户名`, visible: true},
-        {key: 14, label: `陆运银行账号`, visible: true},
-        {key: 15, label: `海运银行户名`, visible: true},
-        {key: 16, label: `海运银行账号`, visible: true},
-        {key: 17, label: `收到条附件路径`, visible: true},
-        {key: 18, label: `是否被调整单`, visible: true},
-        {key: 19, label: `是否调整单`, visible: true},
-        {key: 20, label: `调整日期`, visible: true},
-        {key: 21, label: `原订单编号`, visible: true},
-        {key: 22, label: `是否可编辑`, visible: true},
-        {key: 23, label: `客户是否开票`, visible: true},
-        {key: 24, label: `供应商是否开票`, visible: true},
+        {key: 0, label: `日期`, visible: true},
+        {key: 1, label: `金额`, visible: true},
+        {key: 2, label: `类型`, visible: true},
+        {key: 3, label: `收款户名`, visible: true},
+        {key: 4, label: `收款账号`, visible: true},
+        {key: 5, label: `供应商`, visible: true},
+        {key: 6, label: `付款户名`, visible: true},
+        {key: 7, label: `付款款账号`, visible: true},
+        {key: 8, label: `返利原因`, visible: true},
+        {key: 9, label: `备注`, visible: true},
       ],
+      needInfo: '',
+      paymentApplyVisible: false,
+      tid: '',
+      needMoney: 0
     };
   },
   created() {
     this.getList();
   },
   methods: {
+    addPaymentApply(row) {
+      this.tid = row.id;
+      this.paymentApplyVisible = true;
+      this.needMoney = row.rebate;
+      this.needInfo = row;
+    },
     /** 查询返利回扣列表 */
     getList() {
       this.loading = true;

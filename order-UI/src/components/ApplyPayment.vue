@@ -12,9 +12,9 @@
       <!--        </el-form-item>-->
       <el-form-item label="日期" prop="fundsDate">
         <el-date-picker
-            v-model="form.fundsDate"
-            type="date"
-            placeholder="选择日期">
+          v-model="form.fundsDate"
+          type="date"
+          placeholder="选择日期">
         </el-date-picker>
       </el-form-item>
       <el-form-item label="支付类型" prop="payType">
@@ -24,10 +24,10 @@
           <el-col :span="8">
             <el-select v-model="currentSort.levelOne" placeholder="请选择一级分类" @change="handleSelectOneLevel">
               <el-option
-                  v-for="item in OneLevelOption"
-                  :key="item.id"
-                  :label="item.title"
-                  :value="item.title">
+                v-for="item in OneLevelOption"
+                :key="item.id"
+                :label="item.title"
+                :value="item.title">
               </el-option>
             </el-select>
           </el-col>
@@ -35,10 +35,10 @@
           <el-col :span="8">
             <el-select v-model="currentSort.levelTwo" placeholder="请选择二级分类" @change="handleSelectTwoLevel">
               <el-option
-                  v-for="item in TwoLevelOption"
-                  :key="item.id"
-                  :label="item.title"
-                  :value="item.title">
+                v-for="item in TwoLevelOption"
+                :key="item.id"
+                :label="item.title"
+                :value="item.title">
               </el-option>
             </el-select>
           </el-col>
@@ -47,14 +47,12 @@
       <el-form-item label="金额" prop="moneyAmount">
         <el-input v-model="form.moneyAmount" placeholder="请输入金额" :disabled="inputDisabled"/>
       </el-form-item>
-
-      <!--        对方信息-->
       <el-form-item label="对方户名" prop="otherAcountsName">
         <el-row>
           <el-col :span="10">
-            <el-input v-model="form.otherAcountsName" placeholder="请输入对方户名"/>
+            <el-input v-model="form.otherAcountsName" placeholder="请输入对方户名" :disabled="bankInputDisabled"/>
           </el-col>
-          <el-col :span="3">
+          <el-col :span="3" v-if="bankInputDisabled === false">
             <SearchOption :get-data="listCompany" icon="el-icon-search" @commitBack="handleCommitBack"
                           :limit-info="{}" query-label="户名查找" query-info="acountsName" :query-name="queryCompany"
                           @update:queryName="handleUpdateQueryName">
@@ -70,10 +68,10 @@
         </el-row>
       </el-form-item>
       <el-form-item label="对方账号" prop="otherBankNo">
-        <el-input v-model="form.otherBankNo" placeholder="请输入对方账号"/>
+        <el-input v-model="form.otherBankNo" placeholder="请输入对方账号" :disabled="bankInputDisabled"/>
       </el-form-item>
       <el-form-item label="对方开户行" prop="otherBankName">
-        <el-input v-model="form.otherBankName" placeholder="请输入对方开户行"/>
+        <el-input v-model="form.otherBankName" placeholder="请输入对方开户行" :disabled="bankInputDisabled"/>
       </el-form-item>
       <el-form-item label="对方公司" prop="companyName">
         <el-input v-model="form.companyName" placeholder="请输入对方公司"/>
@@ -83,7 +81,6 @@
       </el-form-item>
       <!--        文件-->
       <el-form-item label="附件" prop="attachment">
-        <!--          <el-input v-model="form.attachment" type="textarea" placeholder="请输入内容"/>-->
         <file-upload @input="handleCommitUpload"/>
       </el-form-item>
       <el-form-item label="备注" prop="comments">
@@ -180,7 +177,9 @@ export default {
       //
       queryCompany: '',
       //禁用输入框
-      inputDisabled: false
+      inputDisabled: false,
+      //禁用银行卡输入 因为现金支付不需要银行卡信息
+      bankInputDisabled: false,
     };
   },
   created() {
@@ -191,23 +190,45 @@ export default {
     })
   },
   mounted() {
+    console.log('传入信息', this.needInfo, this.needMoney)
     // 如果传入的必须自动填充的金额大于0 则自动填充 且无法修改
     if (this.needMoney > 0) {
       this.form.moneyAmount = this.needMoney;
       this.inputDisabled = true;
     }
-    //如果有司机信息 自动填充
-    if (this.needInfo.isExit !== undefined) {
-      if (this.needInfo.isExit === true) {
-        //自动填充
-        this.form.otherAcountsName = this.needInfo.otherAcountsName
-        this.form.companyName = this.needInfo.companyName
-        //查询司机的银行卡信息
-        listBankAccount({acountsType: '司机', acountsName: this.needInfo.otherAcountsName})
+    if (JSON.stringify(this.needInfo) === '{}') {
+      //todo
+      console.log('无任何信息')
+    } else {
+      //需要司机信息
+      if (this.needInfo.isExit !== undefined) {
+        if (this.needInfo.isExit === true) {
+          //自动填充
+          this.form.otherAcountsName = this.needInfo.otherAcountsName
+          this.form.companyName = this.needInfo.companyName
+          //查询司机的银行卡信息
+          listBankAccount({acountsType: '司机', acountsName: this.needInfo.otherAcountsName})
             .then(res => {
               this.form.otherBankNo = res.rows[0].bankNo
               this.form.otherBankName = res.rows[0].bankName
             })
+        }
+      } else {
+        //如果有银行卡信息
+        if (this.needInfo.bankNo === "") {
+          this.bankInputDisabled = true;
+        } else {
+          listBankAccount({bankNo: this.needInfo.bankNo})
+            .then(res => {
+              if (res.rows.length === 0) {
+                this.$message.error('未查询到该银行卡信息')
+              } else {
+                this.form.otherAcountsName = res.rows[0].acountsName
+                this.form.otherBankNo = res.rows[0].bankNo
+                this.form.otherBankName = res.rows[0].bankName
+              }
+            })
+        }
       }
     }
   },
@@ -220,17 +241,44 @@ export default {
     //可以监听到props的变化
     needInfo: {
       handler(val) {
-        if (this.needInfo.isExit !== undefined) {
-          if (this.needInfo.isExit === true) {
-            //自动填充
-            this.form.otherAcountsName = this.needInfo.otherAcountsName
-            this.form.companyName = this.needInfo.companyName
-            //查询司机的银行卡信息
-            listBankAccount({acountsType: '司机', acountsName: this.needInfo.otherAcountsName})
+        // 如果传入的必须自动填充的金额大于0 则自动填充 且无法修改
+        if (this.needMoney > 0) {
+          this.form.moneyAmount = this.needMoney;
+          this.inputDisabled = true;
+        }
+        if (JSON.stringify(this.needInfo) === '{}') {
+          //todo
+          console.log('无任何信息')
+        } else {
+          //需要司机信息
+          if (this.needInfo.isExit !== undefined) {
+            if (this.needInfo.isExit === true) {
+              //自动填充
+              this.form.otherAcountsName = this.needInfo.otherAcountsName
+              this.form.companyName = this.needInfo.companyName
+              //查询司机的银行卡信息
+              listBankAccount({acountsType: '司机', acountsName: this.needInfo.otherAcountsName})
                 .then(res => {
                   this.form.otherBankNo = res.rows[0].bankNo
                   this.form.otherBankName = res.rows[0].bankName
                 })
+            }
+          } else {
+            //如果有银行卡信息
+            if (this.needInfo.bankNo === "") {
+              this.bankInputDisabled = true;
+            } else {
+              listBankAccount({bankNo: this.needInfo.bankNo})
+                .then(res => {
+                  if (res.rows.length === 0) {
+                    this.$message.error('未查询到该银行卡信息')
+                  } else {
+                    this.form.otherAcountsName = res.rows[0].acountsName
+                    this.form.otherBankNo = res.rows[0].bankNo
+                    this.form.otherBankName = res.rows[0].bankName
+                  }
+                })
+            }
           }
         }
       }
@@ -347,6 +395,7 @@ export default {
             console.log('提交的付款表单', this.form)
             addPaymentApply(this.form).then(response => {
               this.$modal.msgSuccess("付款申请添加成功");
+              this.$emit('changeOpen')
               this.getList();
             })
           }

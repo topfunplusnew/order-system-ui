@@ -7,7 +7,7 @@ import org.dzu.common.core.page.TableDataInfo;
 import org.dzu.common.enums.BusinessType;
 import org.dzu.common.utils.poi.ExcelUtil;
 import org.dzu.system.domain.ProductLevel;
-import org.dzu.system.service.IProductLevelService;
+import org.dzu.system.service.impl.ProductLevelServiceImpl;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.validation.annotation.Validated;
@@ -27,7 +27,7 @@ import java.util.List;
 public class ProductLevelController extends BaseController
 {
     @Autowired
-    private IProductLevelService productLevelService;
+    private ProductLevelServiceImpl productLevelService;
 
     /**
      * 查询产品级别列表

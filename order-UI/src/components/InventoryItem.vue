@@ -643,8 +643,6 @@ export default {
         <!--        供应商弹窗按钮-->
         <el-button size="mini" type="primary" icon="el-icon-user" circle @click="searchCompanyGiveInfo">
         </el-button>
-        <el-button size="mini" icon="el-icon-s-home" circle @click="searchStoreInfo">
-        </el-button>
       </div>
       <div class="order-item">
         <span class="text-bold">产品名称</span>

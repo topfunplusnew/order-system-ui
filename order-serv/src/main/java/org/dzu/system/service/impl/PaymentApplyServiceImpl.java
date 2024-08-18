@@ -14,7 +14,6 @@ import org.dzu.system.mapper.AuditInfoMapper;
 import org.dzu.system.mapper.BankAccountMapper;
 import org.dzu.system.mapper.PaymentApplyMapper;
 import org.dzu.system.service.IAuditInfoService;
-import org.dzu.system.service.IBankAccountService;
 import org.dzu.system.service.IPaymentApplyService;
 import org.dzu.system.service.IPaymentService;
 import org.springframework.beans.factory.annotation.Autowired;

@@ -7,7 +7,7 @@ import org.dzu.common.core.page.TableDataInfo;
 import org.dzu.common.enums.BusinessType;
 import org.dzu.common.utils.poi.ExcelUtil;
 import org.dzu.system.domain.VirtualBankAccountChange;
-import org.dzu.system.service.IVirtualBankAccountChangeService;
+import org.dzu.system.service.impl.VirtualBankAccountChangeServiceImpl;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.validation.annotation.Validated;
@@ -27,7 +27,7 @@ import java.util.List;
 public class VirtualBankAccountChangeController extends BaseController
 {
     @Autowired
-    private IVirtualBankAccountChangeService virtualBankAccountChangeService;
+    private VirtualBankAccountChangeServiceImpl virtualBankAccountChangeService;
 
     /**
      * 查询虚拟银行账号列表

@@ -6,10 +6,8 @@ import org.dzu.common.exception.ServiceException;
 import org.dzu.common.utils.DateUtils;
 import org.dzu.common.utils.SecurityUtils;
 import org.dzu.system.domain.OilCard;
-import org.dzu.system.domain.OilRecharge;
 import org.dzu.system.mapper.OilCardMapper;
 import org.dzu.system.mapper.OilRechargeMapper;
-import org.dzu.system.service.IOilCardService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DuplicateKeyException;
 import org.springframework.stereotype.Service;
@@ -24,8 +22,7 @@ import java.util.List;
  * @date 2024-07-29
  */
 @Service
-public class OilCardServiceImpl implements IOilCardService
-{
+public class OilCardServiceImpl {
     @Autowired
     private OilCardMapper oilCardMapper;
     private OilRechargeMapper oilRechargeMapper;
@@ -36,7 +33,6 @@ public class OilCardServiceImpl implements IOilCardService
      * @param id 加油卡信息主键
      * @return 加油卡信息
      */
-    @Override
     public OilCard selectOilCardById(Long id)
     {
         return oilCardMapper.selectOilCardById(id);
@@ -51,7 +47,6 @@ public class OilCardServiceImpl implements IOilCardService
      * @param oilCard 加油卡信息
      * @return 加油卡信息
      */
-    @Override
     public List<OilCard> selectOilCardList(OilCard oilCard)
     {
         return oilCardMapper.selectOilCardList(oilCard);
@@ -63,7 +58,6 @@ public class OilCardServiceImpl implements IOilCardService
      * @param oilCard 加油卡信息
      * @return 结果
      */
-    @Override
     @Transactional(isolation = Isolation.SERIALIZABLE, rollbackFor = Exception.class)
     public int insertOilCard(OilCard oilCard)
     {
@@ -90,7 +84,6 @@ public class OilCardServiceImpl implements IOilCardService
      * @param oilCard 加油卡信息
      * @return 结果
      */
-    @Override
     @Transactional(isolation = Isolation.SERIALIZABLE, rollbackFor = Exception.class)
     public int updateOilCard(OilCard oilCard)
     {
@@ -115,7 +108,6 @@ public class OilCardServiceImpl implements IOilCardService
      * @param ids 需要删除的加油卡信息主键
      * @return 结果
      */
-    @Override
     public int deleteOilCardByIds(Long[] ids)
     {
         return oilCardMapper.deleteOilCardByIds(ids);
@@ -127,7 +119,6 @@ public class OilCardServiceImpl implements IOilCardService
      * @param id 加油卡信息主键
      * @return 结果
      */
-    @Override
     public int deleteOilCardById(Long id)
     {
         return oilCardMapper.deleteOilCardById(id);
@@ -137,7 +128,6 @@ public class OilCardServiceImpl implements IOilCardService
     /**
      * 对油卡进行金额变动
      */
-    @Override
     @Transactional(isolation = Isolation.SERIALIZABLE, rollbackFor = Exception.class)
     public int updateOilCardMoney(String oilcardNo, Double moneyAmount){
         QueryWrapper<OilCard> query = new QueryWrapper<OilCard>().eq("oilCardNo", oilcardNo).eq("delFlag", DelConstants.NODEL);

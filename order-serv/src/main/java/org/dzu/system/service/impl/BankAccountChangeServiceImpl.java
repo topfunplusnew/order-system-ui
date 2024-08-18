@@ -6,7 +6,6 @@ import org.dzu.common.utils.DateUtils;
 import org.dzu.common.utils.SecurityUtils;
 import org.dzu.system.domain.BankAccountChange;
 import org.dzu.system.mapper.BankAccountChangeMapper;
-import org.dzu.system.service.IBankAccountChangeService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -19,7 +18,7 @@ import java.util.List;
  * @date 2024-07-29
  */
 @Service
-public class BankAccountChangeServiceImpl implements IBankAccountChangeService {
+public class BankAccountChangeServiceImpl {
     @Autowired
     private BankAccountChangeMapper bankAccountChangeMapper;
 
@@ -29,7 +28,6 @@ public class BankAccountChangeServiceImpl implements IBankAccountChangeService {
      * @param id 银行账号变动流水主键
      * @return 银行账号变动流水
      */
-    @Override
     public BankAccountChange selectBankAccountChangeById(Long id) {
         return bankAccountChangeMapper.selectBankAccountChangeById(id);
     }
@@ -40,7 +38,6 @@ public class BankAccountChangeServiceImpl implements IBankAccountChangeService {
      * @param bankAccountChange 银行账号变动流水
      * @return 银行账号变动流水
      */
-    @Override
     public List<BankAccountChange> selectBankAccountChangeList(BankAccountChange bankAccountChange) {
         return bankAccountChangeMapper.selectBankAccountChangeList(bankAccountChange);
     }
@@ -51,7 +48,6 @@ public class BankAccountChangeServiceImpl implements IBankAccountChangeService {
      * @param bankAccountChange 银行账号变动流水
      * @return 结果
      */
-    @Override
     public int insertBankAccountChange(BankAccountChange bankAccountChange) {
         bankAccountChange.setAddtime(String.valueOf(DateUtils.getNowDate()));
         bankAccountChange.setUserId(SecurityUtils.getUserId());
@@ -66,7 +62,6 @@ public class BankAccountChangeServiceImpl implements IBankAccountChangeService {
      * @param bankAccountChange
      * @return
      */
-    @Override
     public int insertPaymenyChange(BankAccountChange bankAccountChange) {
         bankAccountChange.setChangeType(BankChangeConstant.PaymentType.PAYMENT.get());
         return insertBankAccountChange(bankAccountChange);
@@ -78,7 +73,6 @@ public class BankAccountChangeServiceImpl implements IBankAccountChangeService {
      * @param bankAccountChange
      * @return
      */
-    @Override
     public int insertReceiptChange(BankAccountChange bankAccountChange) {
         bankAccountChange.setChangeType(BankChangeConstant.PaymentType.RECEIPT.get());
         return insertBankAccountChange(bankAccountChange);
@@ -90,7 +84,6 @@ public class BankAccountChangeServiceImpl implements IBankAccountChangeService {
      * @param bankAccountChange 银行账号变动流水
      * @return 结果
      */
-    @Override
     public int updateBankAccountChange(BankAccountChange bankAccountChange) {
         bankAccountChange.setUserId(SecurityUtils.getUserId());
         bankAccountChange.setUserName(SecurityUtils.getUserTruename());
@@ -105,7 +98,6 @@ public class BankAccountChangeServiceImpl implements IBankAccountChangeService {
      * @param ids 需要删除的银行账号变动流水主键
      * @return 结果
      */
-    @Override
     public int deleteBankAccountChangeByIds(Long[] ids) {
         return bankAccountChangeMapper.deleteBankAccountChangeByIds(ids);
     }
@@ -117,26 +109,22 @@ public class BankAccountChangeServiceImpl implements IBankAccountChangeService {
      * @param bankAccountChange
      * @return
      */
-    @Override
     public int updateBankAccountChangeByUUID(BankAccountChange bankAccountChange) {
         return bankAccountChangeMapper.updateBankAccountChangeByUUID(bankAccountChange);
     }
 
-    @Override
     public int deleteBankAccountChangeByUUID(String[] uuids) {
         return bankAccountChangeMapper.deleteBankAccountChangeByUUIDS(uuids);
     }
 
 
     // 通过指定表名和对应主键和支付类型来删除
-    @Override
     public int deleteChange(String tableName, String id, String type) {
         QueryWrapper<BankAccountChange> query = new QueryWrapper<BankAccountChange>().eq("tableName", tableName).eq("payNO", id).eq("changeType", type);
         return bankAccountChangeMapper.delete(query);
     }
 
     // 通过指定表名和主键来删除
-    @Override
     public int deleteChange(String tableName, String id) {
         QueryWrapper<BankAccountChange> query = new QueryWrapper<BankAccountChange>().eq("tableName", tableName).eq("payNO", id);
         return bankAccountChangeMapper.delete(query);

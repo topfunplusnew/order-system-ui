@@ -9,7 +9,6 @@ import org.dzu.common.utils.StringUtils;
 import org.dzu.system.domain.BankAccount;
 import org.dzu.system.domain.Cars;
 import org.dzu.system.mapper.CarsMapper;
-import org.dzu.system.service.ICarsService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -23,7 +22,7 @@ import java.util.List;
  * @date 2024-07-29
  */
 @Service
-public class CarsServiceImpl implements ICarsService {
+public class CarsServiceImpl {
     @Autowired
     private CarsMapper carsMapper;
 
@@ -36,7 +35,6 @@ public class CarsServiceImpl implements ICarsService {
      * @param id 外部车辆信息主键
      * @return 外部车辆信息
      */
-    @Override
     public Cars selectCarsById(Long id) {
         return carsMapper.selectCarsById(id);
     }
@@ -47,7 +45,6 @@ public class CarsServiceImpl implements ICarsService {
      * @param cars 外部车辆信息
      * @return 外部车辆信息
      */
-    @Override
     public List<Cars> selectCarsList(Cars cars) {
         return carsMapper.selectCarsList(cars);
     }
@@ -58,7 +55,6 @@ public class CarsServiceImpl implements ICarsService {
      * @param cars 外部车辆信息
      * @return 结果
      */
-    @Override
     @Transactional(rollbackFor = Exception.class)
     public int insertCars(Cars cars) {
         cars.setAddtime(String.valueOf(DateUtils.getNowDate()));
@@ -82,7 +78,6 @@ public class CarsServiceImpl implements ICarsService {
      * @param cars 外部车辆信息
      * @return 结果
      */
-    @Override
     @Transactional(rollbackFor = Exception.class)
     public int updateCars(Cars cars) {
         cars.setUserId(SecurityUtils.getUserId());
@@ -102,7 +97,6 @@ public class CarsServiceImpl implements ICarsService {
      * @param ids 需要删除的外部车辆信息主键
      * @return 结果
      */
-    @Override
     public int deleteCarsByIds(Long[] ids) {
         return carsMapper.deleteCarsByIds(ids);
     }
@@ -113,7 +107,6 @@ public class CarsServiceImpl implements ICarsService {
      * @param id 外部车辆信息主键
      * @return 结果
      */
-    @Override
     public int deleteCarsById(Long id) {
         return carsMapper.deleteCarsById(id);
     }

@@ -7,7 +7,7 @@ import org.dzu.common.core.page.TableDataInfo;
 import org.dzu.common.enums.BusinessType;
 import org.dzu.common.utils.poi.ExcelUtil;
 import org.dzu.system.domain.TableEditMessage;
-import org.dzu.system.service.ITableEditMessageService;
+import org.dzu.system.service.impl.TableEditMessageServiceImpl;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.validation.annotation.Validated;
@@ -27,7 +27,7 @@ import java.util.List;
 public class TableEditMessageController extends BaseController
 {
     @Autowired
-    private ITableEditMessageService tableEditMessageService;
+    private TableEditMessageServiceImpl tableEditMessageService;
 
     /**
      * 查询编辑原因列表

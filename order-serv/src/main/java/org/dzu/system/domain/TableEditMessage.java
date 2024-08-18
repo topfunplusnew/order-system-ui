@@ -9,6 +9,8 @@ import org.dzu.common.annotation.Excel;
 import org.dzu.common.core.domain.BaseEntity;
 import org.hibernate.validator.constraints.Length;
 
+import javax.validation.constraints.NotNull;
+
 /**
  * 编辑原因对象 tableEditMessage
  * 
@@ -23,29 +25,28 @@ public class TableEditMessage extends BaseEntity
     /** id */
     @TableId(value = "id")
     private Long id;
-
     /** 表名 */
     @Excel(name = "表名")
-    @Length(max = 24, message = "表名长度不能超过24个字符")
+    @Length(max = 50, message = "表名长度不能超过 50 个字符")
     @TableField(value = "tableName")
     private String tableName;
 
     /** 修改时间 */
     @Excel(name = "修改时间")
+    @Length(max = 80, message = "修改时间长度不能超过 80 个字符")
     @TableField(value = "modifyTime")
-    @Length(max = 20, message = "修改时间长度不能超过20个字符")
     private String modifyTime;
 
     /** 修改原因 */
     @Excel(name = "修改原因")
-    @Length(max = 200, message = "修改原因长度不能超过200个字符")
+    @Length(max = 280, message = "修改原因长度不能超过 280 个字符")
     @TableField(value = "reason")
     private String reason;
 
     /** 修改表对应信息的id */
     @Excel(name = "修改表对应信息的id")
     @TableField(value = "tid")
-    @Length(max = 20, message = "修改表对应信息的id长度不能超过20个字符")
+    @NotNull(message = "修改表对应信息的id不能为空")
     private Long tid;
 
     /** 添加时间 */

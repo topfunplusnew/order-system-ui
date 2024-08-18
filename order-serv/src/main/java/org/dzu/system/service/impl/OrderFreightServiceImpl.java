@@ -34,13 +34,13 @@ public class OrderFreightServiceImpl implements IOrderFreightService {
     private OrderFreightMapper orderFreightMapper;
 
     @Autowired
-    private IBankAccountChangeService bankAccountChangeService;
+    private BankAccountChangeServiceImpl bankAccountChangeService;
 
     @Autowired
-    private IBankAccountService bankAccountService;
+    private BankAccountServiceImpl bankAccountService;
 
     @Autowired
-    private ICarsService carsService;
+    private CarsServiceImpl carsService;
 
     @Autowired
     private IGoodsOrderService goodsOrderService;

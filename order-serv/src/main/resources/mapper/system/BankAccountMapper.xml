@@ -54,10 +54,10 @@
                 and ba.acountsName like concat('%', #{acountsName}, '%')
             </if>
             <if test="bankNo != null  and bankNo != ''">
-                and ba.bankNo = concat('%', #{bankNo}, '%')
+                and ba.bankNo  like concat('%', #{bankNo}, '%')
             </if>
             <if test="acountsType != null  and acountsType != ''">
-                and ba.acountsType = #{acountsType}
+                and ba.acountsType like concat('%', #{acountsType}, '%')
             </if>
             <if test="amount != null">
                 and amount = #{amount}
@@ -76,6 +76,7 @@
                  ba.acountsType,
                  ba.comments,
                  ba.delFlag
+        order by ba.id desc
     </select>
 
     <select id="selectBankAccountById" parameterType="Long" resultMap="BankAccountResult">

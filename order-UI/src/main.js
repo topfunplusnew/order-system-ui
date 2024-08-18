@@ -43,8 +43,7 @@ import horizontalScroll from 'el-table-horizontal-scroll'
 //打印
 import 'print-js/dist/print.css';
 import print from 'print-js'
-import {excludeParams} from "@/api/tool/exclude";
-import data from "@/views/system/dict/data.vue";
+
 
 //todo 全局方法挂载
 Vue.prototype.getDicts = getDicts

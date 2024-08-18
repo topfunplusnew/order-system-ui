@@ -31,20 +31,14 @@ export default {
       paymentList: [],
       //查看付款信息的描述表
       checkPaymentInfo: {},
-
-
       auditInfoList: [],
       auditItemList: [],
-
       //所有的审核流程列表 后期需要筛选这里面的审核流程
       allAuditInfoList: [],
-
       //分页信息
       pageNum: 1,
       pageSize: 10,
       total: 0,
-
-
       //付款审核
       addCheckApplyProcessVisible: false
     }
@@ -62,7 +56,31 @@ export default {
       },
     }
   },
+  created() {
+    //获取付款信息
+    listPaymentApply({pageNum: this.pageNum, pageSize: this.pageSize}).then(res => {
+      this.paymentList = res.rows;
+      this.total = res.total;
+    })
+    //获取所有的审核流程
+    listAuditInfo().then(res => {
+      this.allAuditInfoList = res.rows;
+    })
+  },
+  computed: {
+    ...mapGetters(['checked'])
+  },
   methods: {
+    refresh() {
+      listPaymentApply({pageNum: this.pageNum, pageSize: this.pageSize}).then(res => {
+        this.paymentList = res.rows;
+        this.total = res.total;
+      })
+      //获取所有的审核流程
+      listAuditInfo().then(res => {
+        this.allAuditInfoList = res.rows;
+      })
+    },
     //重新刷新审核树
     refreshApplyCheckInfo(applyID) {
       this.$wait()
@@ -92,7 +110,6 @@ export default {
         this.checkPaymentInfo = res.data
       })
     },
-
     //查看某一行的审核流程信息
     handleCheckApplyInfo(row) {
       this.checkApplyInfoDialogVisible = true
@@ -100,37 +117,21 @@ export default {
         this.auditInfoList = res.rows
       })
     },
-
     //折叠面板打开某一个的回调
     handleChangeApplyItem(e) {
       console.log(e)
     },
-
-    //添加付款审核流程
-    addCheckApplyProcess() {
-      console.log('添加付款审核')
-      this.addCheckApplyProcessVisible = true;
-    }
   },
-  created() {
-    //获取付款信息
-    listPaymentApply({pageNum: this.pageNum, pageSize: this.pageSize}).then(res => {
-      this.paymentList = res.rows;
-      this.total = res.total;
-    })
-    //获取所有的审核流程
-    listAuditInfo().then(res => {
-      this.allAuditInfoList = res.rows;
-    })
-  },
-  computed: {
-    ...mapGetters(['checked'])
-  }
 }
 </script>
 
 <template>
   <div class="app-container">
+    <el-row>
+      <el-col :span="4">
+        <el-button @click="refresh">刷新</el-button>
+      </el-col>
+    </el-row>
     <!--    放置付款信息列表-->
     <el-row>
       <el-table
@@ -191,8 +192,6 @@ export default {
             <el-button @click="handleCheckInfo(scope.row)" type="primary" size="small">查看</el-button>
           </template>
         </el-table-column>
-        <!-- 审核流程：只有上一个人审核后，才会有下一个审核信息-->
-        <!--  step代表审核步骤进行到了哪里 -->
         <el-table-column
           fixed="right"
           label="审核流程"
@@ -251,21 +250,18 @@ export default {
     </el-dialog>
 
 
+    <!--      审核流程步骤图信息  -->
     <el-dialog :visible.sync="checkApplyInfoDialogVisible" title="审核流程多项信息" width="80%">
-      <!--      审核流程步骤图信息  -->
       <el-row v-for="(item,index) in auditInfoList" :key="index">
         <el-collapse v-model="activeNames" @change="handleChangeApplyItem">
           <el-collapse-item name="1">
             <template #title>
               <el-row>
-                <!-- todo  只保留了一组审核信息-->
-                <!--  <span class="text-bolder">审核流程{{ index + 1 }}</span>-->
                 <span class="text-bolder">审核流程</span>
               </el-row>
             </template>
             <el-row>
               <el-col :span="24">
-                <!--  @getPaymentApplyCheckList需要重新刷新-->
                 <StepInfo :processInfo="item.auditInfos"/>
               </el-col>
             </el-row>

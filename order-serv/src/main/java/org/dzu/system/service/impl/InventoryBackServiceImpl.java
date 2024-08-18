@@ -5,7 +5,6 @@ import org.dzu.common.utils.DateUtils;
 import org.dzu.common.utils.SecurityUtils;
 import org.dzu.system.domain.InventoryBack;
 import org.dzu.system.mapper.InventoryBackMapper;
-import org.dzu.system.service.IInventoryBackService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -17,8 +16,7 @@ import java.util.List;
  * @date 2024-07-29
  */
 @Service
-public class InventoryBackServiceImpl implements IInventoryBackService
-{
+public class InventoryBackServiceImpl {
     @Autowired
     private InventoryBackMapper inventoryBackMapper;
 
@@ -28,7 +26,6 @@ public class InventoryBackServiceImpl implements IInventoryBackService
      * @param id 库存备份主键
      * @return 库存备份
      */
-    @Override
     public InventoryBack selectInventoryBackById(Long id)
     {
         return inventoryBackMapper.selectInventoryBackById(id);
@@ -40,7 +37,6 @@ public class InventoryBackServiceImpl implements IInventoryBackService
      * @param inventoryBack 库存备份
      * @return 库存备份
      */
-    @Override
     public List<InventoryBack> selectInventoryBackList(InventoryBack inventoryBack)
     {
         return inventoryBackMapper.selectInventoryBackList(inventoryBack);
@@ -52,7 +48,6 @@ public class InventoryBackServiceImpl implements IInventoryBackService
      * @param inventoryBack 库存备份
      * @return 结果
      */
-    @Override
     public int insertInventoryBack(InventoryBack inventoryBack)
     {
         inventoryBack.setAddtime(String.valueOf(DateUtils.getNowDate()));
@@ -68,7 +63,6 @@ public class InventoryBackServiceImpl implements IInventoryBackService
      * @param inventoryBack 库存备份
      * @return 结果
      */
-    @Override
     public int updateInventoryBack(InventoryBack inventoryBack)
     {
         inventoryBack.setUserId(SecurityUtils.getUserId());
@@ -83,7 +77,6 @@ public class InventoryBackServiceImpl implements IInventoryBackService
      * @param ids 需要删除的库存备份主键
      * @return 结果
      */
-    @Override
     public int deleteInventoryBackByIds(Long[] ids)
     {
         return inventoryBackMapper.deleteInventoryBackByIds(ids);
@@ -95,7 +88,6 @@ public class InventoryBackServiceImpl implements IInventoryBackService
      * @param id 库存备份主键
      * @return 结果
      */
-    @Override
     public int deleteInventoryBackById(Long id)
     {
         return inventoryBackMapper.deleteInventoryBackById(id);

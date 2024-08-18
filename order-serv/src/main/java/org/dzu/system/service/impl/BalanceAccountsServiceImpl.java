@@ -10,8 +10,6 @@ import org.dzu.system.domain.Company;
 import org.dzu.system.domain.VirtualBankAccountChange;
 import org.dzu.system.mapper.BalanceAccountsMapper;
 import org.dzu.system.service.IBalanceAccountsService;
-import org.dzu.system.service.ICompanyService;
-import org.dzu.system.service.IVirtualBankAccountChangeService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -30,10 +28,10 @@ public class BalanceAccountsServiceImpl implements IBalanceAccountsService {
     private BalanceAccountsMapper balanceAccountsMapper;
 
     @Autowired
-    private IVirtualBankAccountChangeService bankAccountChangeService;
+    private VirtualBankAccountChangeServiceImpl bankAccountChangeService;
 
     @Autowired
-    private ICompanyService companyService;
+    private CompanyServiceImpl companyService;
 
     /**
      * 查询平账信息

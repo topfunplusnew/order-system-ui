@@ -6,7 +6,6 @@ import org.dzu.common.utils.DateUtils;
 import org.dzu.common.utils.SecurityUtils;
 import org.dzu.system.domain.ProductLevel;
 import org.dzu.system.mapper.ProductLevelMapper;
-import org.dzu.system.service.IProductLevelService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DuplicateKeyException;
 import org.springframework.stereotype.Service;
@@ -20,7 +19,7 @@ import java.util.List;
  * @date 2024-07-29
  */
 @Service
-public class ProductLevelServiceImpl implements IProductLevelService {
+public class ProductLevelServiceImpl {
     @Autowired
     private ProductLevelMapper productLevelMapper;
 
@@ -30,7 +29,6 @@ public class ProductLevelServiceImpl implements IProductLevelService {
      * @param id 产品级别主键
      * @return 产品级别
      */
-    @Override
     public ProductLevel selectProductLevelById(Long id) {
         return productLevelMapper.selectProductLevelById(id);
     }
@@ -41,7 +39,6 @@ public class ProductLevelServiceImpl implements IProductLevelService {
      * @param productLevel 产品级别
      * @return 产品级别
      */
-    @Override
     public List<ProductLevel> selectProductLevelList(ProductLevel productLevel) {
         return productLevelMapper.selectProductLevelList(productLevel);
     }
@@ -52,7 +49,6 @@ public class ProductLevelServiceImpl implements IProductLevelService {
      * @param productLevel 产品级别
      * @return 结果
      */
-    @Override
     public int insertProductLevel(ProductLevel productLevel) {
         // 设置基础属性
         productLevel.setAddtime(String.valueOf(DateUtils.getNowDate()));
@@ -76,7 +72,6 @@ public class ProductLevelServiceImpl implements IProductLevelService {
      * @param productLevel 产品级别
      * @return 结果
      */
-    @Override
     public int updateProductLevel(ProductLevel productLevel) {
         // 设置基础属性
         productLevel.setUserId(SecurityUtils.getUserId());
@@ -98,7 +93,6 @@ public class ProductLevelServiceImpl implements IProductLevelService {
      * @param ids 需要删除的产品级别主键
      * @return 结果
      */
-    @Override
     public int deleteProductLevelByIds(Long[] ids) {
         return productLevelMapper.deleteProductLevelByIds(ids);
     }
@@ -109,7 +103,6 @@ public class ProductLevelServiceImpl implements IProductLevelService {
      * @param id 产品级别主键
      * @return 结果
      */
-    @Override
     public int deleteProductLevelById(Long id) {
         return productLevelMapper.deleteProductLevelById(id);
     }

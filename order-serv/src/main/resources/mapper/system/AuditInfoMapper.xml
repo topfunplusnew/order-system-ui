@@ -128,7 +128,7 @@
                 and submitflag = #{submitflag}
             </if>
         </where>
-        ORDER BY addtime DESC
+        ORDER BY auditinfo.addtime DESC
     </select>
 
 <select id="selectAuditInfoGroupedByApplyId" parameterType="java.util.List" resultMap="AuditInfoResult">
@@ -141,7 +141,7 @@
             </foreach>
         </if>
     </where>
-    ORDER BY a.applyID, a.addtime DESC
+    ORDER BY a.applyID desc , a.addtime DESC
 </select>
 
 
@@ -182,8 +182,8 @@
                 and submitflag = #{submitflag}
             </if>
         </where>
+       order by a.id desc
     </select>
-
     <select id="selectAuditInfoById" parameterType="Long" resultMap="AuditInfoResult">
         <include refid="selectAuditInfoVo"/>
         where a.id = #{id}

@@ -14,8 +14,6 @@ import org.dzu.system.domain.*;
 import org.dzu.system.mapper.OilRechargeMapper;
 import org.dzu.system.mapper.OrderFreightMapper;
 import org.dzu.system.mapper.PaymentMapper;
-import org.dzu.system.service.IBankAccountChangeService;
-import org.dzu.system.service.IBankAccountService;
 import org.dzu.system.service.IPaymentService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -38,10 +36,10 @@ public class PaymentServiceImpl implements IPaymentService {
     private PaymentMapper paymentMapper;
 
     @Autowired
-    private IBankAccountService bankAccountService;
+    private BankAccountServiceImpl bankAccountService;
 
     @Autowired
-    private IBankAccountChangeService bankAccountChangeService;
+    private BankAccountChangeServiceImpl bankAccountChangeService;
 
     @Autowired
     private OrderFreightMapper orderFreightMapper;

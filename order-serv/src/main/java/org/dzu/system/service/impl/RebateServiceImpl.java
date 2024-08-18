@@ -32,19 +32,19 @@ public class RebateServiceImpl implements IRebateService {
     private RebateMapper rebateMapper;
 
     @Autowired
-    private IBankAccountService bankAccountService;
+    private BankAccountServiceImpl bankAccountService;
 
     @Autowired
     private BankAccountChangeMapper bankAccountChangeMapper;
 
     @Autowired
-    private IBankAccountChangeService bankAccountChangeService;
+    private BankAccountChangeServiceImpl bankAccountChangeService;
 
     @Autowired
     private IGoodsOrderService goodsOrderService;
 
     @Autowired
-    private ICompanyService companyService;
+    private CompanyServiceImpl companyService;
 
     /**
      * 查询返利回扣

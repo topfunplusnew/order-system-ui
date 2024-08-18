@@ -29,7 +29,6 @@
       </el-form-item>
       <el-form-item>
         <el-button type="primary" icon="el-icon-search" size="mini" @click="handleQuery">搜索</el-button>
-        <!--        <el-button icon="el-icon-refresh" size="mini" @click="resetQuery">重置</el-button>-->
       </el-form-item>
     </el-form>
 
@@ -43,8 +42,7 @@
           plain
           size="mini"
           @click="handleAdd"
-          v-hasPermi="['system:bankaccount:add']"
-        >新增银行卡信息
+          v-hasPermi="['system:bankaccount:add']">新增银行卡信息
         </el-button>
       </el-col>
       <el-col :span="1.5">
@@ -53,8 +51,7 @@
           plain
           size="mini"
           @click="handleTransformBank"
-          v-hasPermi="['system:bankaccount:add']"
-        >银行卡转账
+          v-hasPermi="['system:bankaccount:add']">银行卡转账
         </el-button>
       </el-col>
       <right-toolbar :showSearch.sync="showSearch" @queryTable="getList" :columns="columns">
@@ -64,12 +61,10 @@
               plain
               icon="el-icon-printer"
               size="mini"
-              @click="printHTML"
-            >
+              @click="printHTML">
             </el-button>
           </el-col>
         </template>
-        <!--        导出-->
         <template v-slot:export>
           <el-col :span="1.5">
             <el-button
@@ -77,8 +72,7 @@
               icon="el-icon-folder-opened"
               size="mini"
               @click="handleExport"
-              v-hasPermi="['system:bankaccount:export']"
-            >
+              v-hasPermi="['system:bankaccount:export']">
             </el-button>
           </el-col>
         </template>
@@ -86,10 +80,9 @@
     </el-row>
 
     <!-- 打印内容 -->
-    <el-table border v-loading="loading" :data="bankAccountList" @selection-change="handleSelectionChange" id="printBox"
-              height="300px" v-horizontal-scroll="'always'">
-      <!--      <el-table-column type="selection" width="55" align="center"/>-->
-      <!--      <el-table-column label="id" align="center" prop="id"/>-->
+    <el-table border v-loading="loading" :data="bankAccountList" @selection-change="handleSelectionChange"
+              id="printBox" height="300px" v-horizontal-scroll="'always'">
+      <el-table-column label="id" align="center" prop="id"/>
       <el-table-column label="账户类型" align="center" prop="acountsType" v-if="columns[0].visible"/>
       <el-table-column label="开户名称(户名)" align="center" prop="acountsName" v-if="columns[1].visible"/>
       <el-table-column label="账号(银行账号)" align="center" prop="bankNo" v-if="columns[2].visible"/>
@@ -100,34 +93,29 @@
           <el-button
             size="mini"
             type="warning"
-            @click="checkBankChangeFlow(scope.row)"
-          >变动流水
+            @click="checkBankChangeFlow(scope.row)">变动流水
           </el-button>
           <el-button
             size="mini"
             type="primary"
             @click="handleUpdate(scope.row)"
-            v-hasPermi="['system:bankaccount:edit']"
-          >编辑
+            v-hasPermi="['system:bankaccount:edit']">编辑
           </el-button>
           <el-button
             size="mini"
             type="danger"
             @click="handleDelete(scope.row)"
-            v-hasPermi="['system:bankaccount:remove']"
-          >删除
+            v-hasPermi="['system:bankaccount:remove']">删除
           </el-button>
         </template>
       </el-table-column>
     </el-table>
-
     <pagination
       v-show="total>0"
       :total="total"
       :page.sync="queryParams.pageNum"
       :limit.sync="queryParams.pageSize"
-      @pagination="getList"
-    />
+      @pagination="getList"/>
 
     <!-- 添加或修改银行账号对话框 -->
     <el-dialog :title="title" :visible.sync="open" width="500px" append-to-body>
@@ -147,17 +135,32 @@
         </el-form-item>
         <el-form-item label="公司名称" prop="companyName" v-if="isNeed">
           <el-row>
-            <el-col :span="24">
+            <el-col :span="10">
               <el-input v-model="form.companyName" placeholder="请输入公司名称"/>
             </el-col>
-            <!--            <el-col :span="3">-->
-            <!--              <SearchOption :get-data="listCompany" :limit-info="{acountsType:'供应商'|'客户'}"-->
-            <!--                            icon="el-icon-search" title="供应商信息" @commitBack="handleCommitBack">-->
-            <!--                <template #table-columns>-->
-            <!--                  <el-table-column label="公司名称" align="center" prop="companyName"/>-->
-            <!--                </template>-->
-            <!--              </SearchOption>-->
-            <!--            </el-col>-->
+            <!-- 供应商信息搜索-->
+            <el-col :span="2" v-if="form.acountsType === '供应商'">
+              <SearchOption :limit-info="{companyType:'供应商'}" :get-data="listCompany"
+                            @commitBack="handleCommitBackCompanyGive" @update:queryName="handleQueryCompanyGive">
+                <template #table-columns>
+                  <el-table-column label="供应商" align="center" prop="companyName"/>
+                  <el-table-column label="地址" align="center" prop="address"/>
+                </template>
+              </SearchOption>
+            </el-col>
+            <!-- 客户信息搜索-->
+            <el-col :span="2" v-if="form.acountsType === '客户'">
+              <SearchOption :limit-info="{companyType:'客户'}" :get-data="listCompany"
+                            @commitBack="handleCommitBackCompany" @update:queryName="handleQueryCompany">
+                <template #table-columns>
+                  <el-table-column label="客户" align="center" prop="relationName"/>
+                  <el-table-column label="老板姓名" align="center" prop="leader"/>
+                  <el-table-column label="老板电话" align="center" prop="leaderTel"/>
+                  <el-table-column label="公司名称" align="center" prop="companyName"/>
+                  <el-table-column label="销售经理" align="center" prop="salesManager"/>
+                </template>
+              </SearchOption>
+            </el-col>
           </el-row>
         </el-form-item>
         <el-form-item label="银行账号" prop="bankNo">
@@ -249,25 +252,15 @@ export default {
   mixins: [mixin_printHTML],
   data() {
     return {
-      // 遮罩层
       loading: true,
-      // 选中数组
       ids: [],
-      // 非单个禁用
       single: true,
-      // 非多个禁用
       multiple: true,
-      // 显示搜索条件
       showSearch: true,
-      // 总条数
       total: 0,
-      // 银行账号表格数据
       bankAccountList: [],
-      // 弹出层标题
       title: "",
-      // 是否显示弹出层
       open: false,
-      // 查询参数
       queryParams: {
         pageNum: 1,
         pageSize: 10,
@@ -340,34 +333,32 @@ export default {
         {key: 4, label: `公司名称`, visible: true}
       ],
       companyList: [],
-
       //银行卡之间转账
       transformDialogVisible: false,
-      //转账银行卡信息
       transformInfo: {
         fromBankNo: null,
         toBankNo: null,
         money: null
       },
-
       //银行卡流水
       bankChangeDialogVisible: false,
-      bankChangeList: []
+      bankChangeList: [],
+
+      //供应商搜索组件
+      queryCompanyGive: '',
+      queryCompany: ''
     };
   },
   created() {
     this.getList();
     this.getCompanyInfo()
-    //如果是空
     if (localStorage.getItem('bankaccount-columns') === 'null'
       || !localStorage.getItem('bankaccount-columns')) {
-      //设置localStorage
       localStorage.setItem("bankaccount-columns", JSON.stringify(this.columns))
     } else {
       this.columns = JSON.parse(localStorage.getItem('bankaccount-columns'));
     }
   },
-  //展示与隐藏
   watch: {
     columns: {
       handler: (newVal) => {
@@ -384,45 +375,48 @@ export default {
   },
   methods: {
     listCompany,
-    //打印
-    handleCommitBack(val) {
-      console.log(val)
-      this.form.companyName = val.companyName
-      this.form.companyId = val.id;
-    },
-    //银行卡之间转账
+    //1.银行卡之间转账
     handleTransformBank() {
       this.transformDialogVisible = true
     },
-    //提交转账信息
     submitTransformBank() {
-      //调用接口 进行转账
-      this.$wait();
       transfer(this.transformInfo).then(res => {
         this.$message.success('转账成功~')
         this.transformDialogVisible = false
-        this.$close()
-      }).catch(err => {
-        this.$close();
       })
     },
-    //查询客户 供应商信息
+    //2.查询客户 供应商信息
     getCompanyInfo() {
       listCompany(this.queryParamsCompany).then(res => {
         this.companyList = res.rows;
       })
     },
 
-    //银行卡变动流水
+    //3.银行卡变动流水
     checkBankChangeFlow(row) {
-      //发送请求
-      listBankAccountChange(row.bankNo).then(res => {
+      listBankAccountChange({selfBankNo: row.bankNo}).then(res => {
         this.bankChangeList = res.rows;
       })
       this.bankChangeDialogVisible = true;
     },
     submitBankChange() {
       this.bankChangeDialogVisible = false
+    },
+
+    //搜索供应商信息的回调
+    handleCommitBackCompanyGive(val) {
+      this.form.companyName = val.companyName;
+      this.form.companyId = val.id;
+    },
+    handleCommitBackCompany(val) {
+      this.form.companyName = val.companyName;
+      this.form.companyId = val.id;
+    },
+    handleQueryCompanyGive(value) {
+      this.queryCompanyGive = value;
+    },
+    handleQueryCompany(value) {
+      this.queryCompany = value;
     },
     /** 查询银行账号列表 */
     getList() {
