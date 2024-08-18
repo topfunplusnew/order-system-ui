@@ -33,14 +33,26 @@
       <!--          @keyup.enter.native="handleQuery"-->
       <!--        />-->
       <!--      </el-form-item>-->
-      <el-form-item label="出库日期" prop="outDate">
-        <el-input
-          v-model="queryParams.outDate"
-          placeholder="请输入出库日期"
-          clearable
-          @keyup.enter.native="handleQuery"
-        />
+
+      <el-form-item label="创建时间">
+        <el-date-picker
+          v-model="dateRange"
+          style="width: 240px"
+          value-format="yyyy-MM-dd"
+          type="daterange"
+          range-separator="-"
+          start-placeholder="开始日期"
+          end-placeholder="结束日期"
+        ></el-date-picker>
       </el-form-item>
+<!--      <el-form-item label="出库日期" prop="outDate">-->
+<!--        <el-input-->
+<!--          v-model="queryParams.outDate"-->
+<!--          placeholder="请输入出库日期"-->
+<!--          clearable-->
+<!--          @keyup.enter.native="handleQuery"-->
+<!--        />-->
+<!--      </el-form-item>-->
       <!--      <el-form-item label="出库量" prop="outAmount">-->
       <!--        <el-input-->
       <!--          v-model="queryParams.outAmount"-->
