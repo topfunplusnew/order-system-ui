@@ -119,16 +119,43 @@
         <!--          <el-input v-model="form.bTripId" placeholder="请输入出差编号UUID"/>-->
         <!--        </el-form-item>-->
         <el-form-item label="加油卡卡号" prop="oilCardNo">
-          <el-input v-model="form.oilCardNo" placeholder="请输入加油卡卡号"/>
+          <el-row>
+            <el-col :span="10">
+              <el-input v-model="form.oilCardNo" placeholder="请输入加油卡卡号"/>
+            </el-col>
+            <el-col :span="4">
+              <SearchOption :get-data="listOilCard" @commitBack="handleCommitBackOilCard" query-info="oilCardNo"
+                            :query-name="queryOilCard" query-label="油卡账号查询"
+                            @update:queryName="handleCommitBackQueryOilCard" :limit-info="{oilType:'主卡'}">
+                <template #table-columns>
+                  <el-table-column label="加油卡卡号" align="center" prop="oilCardNo"/>
+                  <el-table-column label="当前金额" align="center" prop="moneyAmount"/>
+                </template>
+              </SearchOption>
+            </el-col>
+          </el-row>
         </el-form-item>
         <el-form-item label="充值金额" prop="rechargeMoney">
           <el-input v-model="form.rechargeMoney" placeholder="请输入充值金额"/>
         </el-form-item>
-        <el-form-item label="充值时间" prop="rechargeDate">
-          <el-input v-model="form.rechargeDate" placeholder="请输入充值时间"/>
-        </el-form-item>
         <el-form-item label="银行开户名" prop="acountsName">
-          <el-input v-model="form.acountsName" placeholder="请输入银行开户名"/>
+          <el-row>
+            <el-col :span="10">
+              <el-input v-model="form.acountsName" placeholder="请输入银行开户名"/>
+            </el-col>
+            <el-col :span="4">
+              <SearchOption :get-data="listBankAccount" @commitBack="handleCommitBackBank" query-info="acountsName"
+                            :query-name="queryBank" query-label="户名查询"
+                            @update:queryName="handleCommitBackQueryBank" :limit-info="{}">
+                <template #table-columns>
+                  <el-table-column label="账户类型" align="center" prop="acountsType"/>
+                  <el-table-column label="开户名称(户名)" align="center" prop="acountsName"/>
+                  <el-table-column label="账号(银行账号)" align="center" prop="bankNo"/>
+                  <el-table-column label="开户行" align="center" prop="bankName"/>
+                </template>
+              </SearchOption>
+            </el-col>
+          </el-row>
         </el-form-item>
         <el-form-item label="银行账号" prop="bankNo">
           <el-input v-model="form.bankNo" placeholder="请输入银行账号"/>
@@ -137,7 +164,8 @@
           <el-input v-model="form.rechargeName" placeholder="请输入充值人员姓名"/>
         </el-form-item>
         <el-form-item label="充值附件" prop="attachment">
-          <el-input v-model="form.attachment" placeholder="请输入充值附件"/>
+          <!--          <el-input v-model="form.attachment" placeholder="请输入充值附件"/>-->
+          <file-upload @input="handleUpload"/>
         </el-form-item>
         <el-form-item label="备注" prop="comments">
           <el-input v-model="form.comments" placeholder="请输入备注"/>
@@ -170,6 +198,9 @@ import {
 import {mixin_printHTML} from "@/views/dashboard/mixins/print";
 import ApplyPayment from "@/components/ApplyPayment.vue";
 import {TableName} from "@/api/tool/enums";
+import SearchOption from "@/components/SearchOption.vue";
+import {listOilCard} from "@/api/system/oilCard";
+import {listBankAccount} from "@/api/system/bankAccount";
 
 export default {
   name: "OilRecharge",
@@ -178,7 +209,7 @@ export default {
       return TableName
     }
   },
-  components: {ApplyPayment},
+  components: {SearchOption, ApplyPayment},
   mixins: [mixin_printHTML],
   data() {
     return {
@@ -208,7 +239,7 @@ export default {
         oilCardNo: null,
         rechargeType: null,
         rechargeMoney: null,
-        rechargeDate: null,
+        rechargeDate: new Date().getTime(),
         acountsName: null,
         bankNo: null,
         rechargeName: null,
@@ -220,7 +251,9 @@ export default {
         delFlag: null
       },
       // 表单参数
-      form: {},
+      form: {
+        rechargeDate: new Date().getTime()
+      },
       // 表单校验
       rules: {},
       columns: [
@@ -266,6 +299,8 @@ export default {
       paymentApplyVisible: false,
       needMoney: 0,
       needInfo: {},
+      queryOilCard: '',
+      queryBank: ''
     };
   },
   created() {
@@ -273,12 +308,32 @@ export default {
     this.resetQuery();
   },
   methods: {
+    listBankAccount,
+    listOilCard,
+    //主卡
+    handleCommitBackOilCard(val) {
+      this.form.oilCardNo = val.oilCardNo;
+    },
+    handleCommitBackQueryOilCard(val) {
+      this.queryOilCard = val;
+    },
+    //银行卡
+    handleCommitBackBank(val) {
+      this.form.acountsName = val.acountsName;
+      this.form.bankNo = val.bankNo;
+    },
+    handleCommitBackQueryBank(val) {
+      this.queryBank = val
+    },
     //加油卡付款申请
     addPaymentApply(row) {
       this.tid = row.id;
       this.needMoney = row.rechargeMoney;
       this.needInfo = row;
       this.paymentApplyVisible = true;
+    },
+    handleUpload(val) {
+      this.form.attachment = val;
     },
     /** 查询加油卡充值信息列表 */
     getList() {

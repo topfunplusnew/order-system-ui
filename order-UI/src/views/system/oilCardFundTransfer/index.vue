@@ -112,34 +112,47 @@
     <el-dialog :title="title" :visible.sync="open" width="500px" append-to-body>
       <el-form ref="form" :model="form" :rules="rules" label-width="80px">
         <el-form-item label="主加油卡卡号" prop="oilMainCardNo">
-          <el-input v-model="form.oilMainCardNo" placeholder="请输入主加油卡卡号"/>
+          <el-row>
+            <el-col :span="10">
+              <el-input v-model="form.oilMainCardNo" placeholder="请输入主加油卡卡号"/>
+            </el-col>
+            <el-col :span="4">
+              <SearchOption :get-data="listOilCard" @commitBack="handleCommitBackOilCard" query-info="oilCardNo"
+                            :query-name="queryOilCard" query-label="油卡账号查询"
+                            @update:queryName="handleCommitBackQueryOilCard" :limit-info="{oilType:'主卡'}">
+                <template #table-columns>
+                  <el-table-column label="加油卡卡号" align="center" prop="oilCardNo"/>
+                  <el-table-column label="当前金额" align="center" prop="moneyAmount"/>
+                </template>
+              </SearchOption>
+            </el-col>
+          </el-row>
         </el-form-item>
         <el-form-item label="副加油卡卡号" prop="oilSecondCardNo">
-          <el-input v-model="form.oilSecondCardNo" placeholder="请输入副加油卡卡号"/>
+          <el-row>
+            <el-col :span="10">
+              <el-input v-model="form.oilSecondCardNo" placeholder="请输入副加油卡卡号"/>
+            </el-col>
+            <el-col :span="4">
+              <SearchOption :get-data="listOilCard" @commitBack="handleCommitBackOilCardOther" query-info="oilCardNo"
+                            :query-name="queryOilCardOther" query-label="油卡账号查询"
+                            @update:queryName="handleCommitBackQueryOilCardOther" :limit-info="{oilType:'副卡'}">
+                <template #table-columns>
+                  <el-table-column label="加油卡卡号" align="center" prop="oilCardNo"/>
+                  <el-table-column label="当前金额" align="center" prop="moneyAmount"/>
+                </template>
+              </SearchOption>
+            </el-col>
+          </el-row>
         </el-form-item>
         <el-form-item label="充值金额" prop="rechargeMoney">
           <el-input v-model="form.rechargeMoney" placeholder="请输入充值金额"/>
-        </el-form-item>
-        <el-form-item label="充值时间" prop="rechargeDate">
-          <el-input v-model="form.rechargeDate" placeholder="请输入充值时间"/>
         </el-form-item>
         <el-form-item label="充值人员姓名" prop="rechargeName">
           <el-input v-model="form.rechargeName" placeholder="请输入充值人员姓名"/>
         </el-form-item>
         <el-form-item label="备注" prop="comments">
           <el-input v-model="form.comments" placeholder="请输入备注"/>
-        </el-form-item>
-        <el-form-item label="添加时间" prop="addtime">
-          <el-input v-model="form.addtime" placeholder="请输入添加时间"/>
-        </el-form-item>
-        <el-form-item label="操作人员ID" prop="userId">
-          <el-input v-model="form.userId" placeholder="请输入操作人员ID"/>
-        </el-form-item>
-        <el-form-item label="操作人员姓名" prop="UserName">
-          <el-input v-model="form.UserName" placeholder="请输入操作人员姓名"/>
-        </el-form-item>
-        <el-form-item label="删除标记" prop="delFlag">
-          <el-input v-model="form.delFlag" placeholder="请输入删除标记"/>
         </el-form-item>
       </el-form>
       <div slot="footer" class="dialog-footer">
@@ -159,9 +172,13 @@ import {
   updateOilCardFundTransfer
 } from "@/api/system/oilCardFundTransfer";
 import {mixin_printHTML} from "@/views/dashboard/mixins/print";
+import SearchOption from "@/components/SearchOption.vue";
+import {listOilCard} from "@/api/system/oilCard";
+import {excludeParams} from "@/api/tool/exclude";
 
 export default {
   name: "OilCardFundTransfer",
+  components: {SearchOption},
   mixins: [mixin_printHTML],
   data() {
     return {
@@ -190,7 +207,7 @@ export default {
         oilMainCardNo: null,
         oilSecondCardNo: null,
         rechargeMoney: null,
-        rechargeDate: null,
+        rechargeDate: new Date().getTime(),
         rechargeName: null,
         comments: null,
         addtime: null,
@@ -199,16 +216,36 @@ export default {
         delFlag: null
       },
       // 表单参数
-      form: {},
+      form: {
+        rechargeDate: new Date().getTime()
+      },
       // 表单校验
       rules: {},
-      columns: []
+      columns: [],
+
+      queryOilCard: '',
+      queryOilCardOther: ''
     };
   },
   created() {
     this.getList();
   },
   methods: {
+    listOilCard,
+    //主卡
+    handleCommitBackOilCard(val) {
+      this.form.oilMainCardNo = val.oilCardNo;
+    },
+    handleCommitBackQueryOilCard(val) {
+      this.queryOilCard = val;
+    },
+    //副卡
+    handleCommitBackOilCardOther(val) {
+      this.form.oilSecondCardNo = val.oilCardNo;
+    },
+    handleCommitBackQueryOilCardOther(val) {
+      this.queryOilCardOther = val;
+    },
     /** 查询加油卡圈存列表 */
     getList() {
       this.loading = true;
@@ -230,7 +267,7 @@ export default {
         oilMainCardNo: null,
         oilSecondCardNo: null,
         rechargeMoney: null,
-        rechargeDate: null,
+        rechargeDate: new Date().getTime(),
         rechargeName: null,
         comments: null,
         addtime: null,
@@ -278,12 +315,14 @@ export default {
       this.$refs["form"].validate(valid => {
         if (valid) {
           if (this.form.id != null) {
+            this.form = excludeParams(this.form, this.$exclude)
             updateOilCardFundTransfer(this.form).then(response => {
               this.$modal.msgSuccess("修改成功");
               this.open = false;
               this.getList();
             });
           } else {
+            this.form = excludeParams(this.form, this.$exclude)
             addOilCardFundTransfer(this.form).then(response => {
               this.$modal.msgSuccess("新增成功");
               this.open = false;
