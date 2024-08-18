@@ -188,7 +188,7 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         pa.otherAcountsName,
         pa.otherBankNo,
         pa.otherBankName,
-        '申请中' AS paymentState, -- 默认设置为申请中
+        '未支付' AS paymentState, -- 默认设置为未支付
         pa.companyName,
         pa.companyId,
         pa.companyType,
