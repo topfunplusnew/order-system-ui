@@ -18,7 +18,6 @@
       </el-form-item>
       <el-form-item>
         <el-button type="primary" icon="el-icon-search" size="mini" @click="handleQuery">搜索</el-button>
-        <el-button icon="el-icon-refresh" size="mini" @click="resetQuery">重置</el-button>
       </el-form-item>
     </el-form>
     <el-row :gutter="10" class="mb8">
@@ -33,6 +32,9 @@
       <!--        >新增加油卡消费信息-->
       <!--        </el-button>-->
       <!--      </el-col>-->
+      <el-col>
+        <el-button icon="el-icon-refresh" size="mini" @click="resetQuery">刷新</el-button>
+      </el-col>
       <right-toolbar :showSearch.sync="showSearch" @queryTable="getList" :columns="columns">
         <template v-slot:print>
           <el-col :span="1.5">
