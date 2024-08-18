@@ -196,17 +196,32 @@ export default {
       this.form.moneyAmount = this.needMoney;
       this.inputDisabled = true;
     }
-    //如果有司机信息 自动填充
-    if (this.needInfo.isExit !== undefined) {
-      if (this.needInfo.isExit === true) {
-        //自动填充
-        this.form.otherAcountsName = this.needInfo.otherAcountsName
-        this.form.companyName = this.needInfo.companyName
-        //查询司机的银行卡信息
-        listBankAccount({acountsType: '司机', acountsName: this.needInfo.otherAcountsName})
+    if (JSON.stringify(this.needInfo) === '{}') {
+      //todo
+      console.log('无任何信息')
+    } else {
+      if (this.needInfo.isExit !== undefined) {
+        if (this.needInfo.isExit === true) {
+          //自动填充
+          this.form.otherAcountsName = this.needInfo.otherAcountsName
+          this.form.companyName = this.needInfo.companyName
+          //查询司机的银行卡信息
+          listBankAccount({acountsType: '司机', acountsName: this.needInfo.otherAcountsName})
+            .then(res => {
+              this.form.otherBankNo = res.rows[0].bankNo
+              this.form.otherBankName = res.rows[0].bankName
+            })
+        }
+      } else {
+        listBankAccount({bankNo: this.needInfo.bankNo})
           .then(res => {
-            this.form.otherBankNo = res.rows[0].bankNo
-            this.form.otherBankName = res.rows[0].bankName
+            if (res.rows.length === 0) {
+              this.$message.error('未查询到该银行卡信息')
+            } else {
+              this.form.otherAcountsName = res.rows[0].acountsName
+              this.form.otherBankNo = res.rows[0].bankNo
+              this.form.otherBankName = res.rows[0].bankName
+            }
           })
       }
     }

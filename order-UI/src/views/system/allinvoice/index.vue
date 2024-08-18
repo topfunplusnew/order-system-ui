@@ -36,8 +36,12 @@
       </el-form-item>
     </el-form>
     <el-row :gutter="10" class="mb8">
-      <el-col :span="1.5">
+<!--      <el-col :span="1.5">
         <el-button icon="el-icon-refresh" size="mini" @click="resetQuery">重置</el-button>
+      </el-col>-->
+      <!-- 刷新按钮-->
+      <el-col :span="1.5">
+        <el-button icon="el-icon-refresh" size="mini" @click="resetQuery">刷新</el-button>
       </el-col>
       <right-toolbar :showSearch.sync="showSearch" @queryTable="getList" :columns="columns">
         <template v-slot:print>
@@ -58,7 +62,7 @@
               icon="el-icon-folder-opened"
               size="mini"
               @click="handleExport"
-              v-hasPermi="['system:orderdetail:export']">
+              v-hasPermi="['system:allinvoice:export']">
             </el-button>
           </el-col>
         </template>
@@ -71,50 +75,50 @@
     </el-row>
     <el-table id="printBox" v-horizontal-scroll="'always'" border v-loading="loading" :data="invoiceInList"
               @selection-change="handleSelectionChange">
-      <el-table-column label="id" align="center" prop="id"/>
-      <el-table-column label="开票日期" align="center" prop="invoiceDate"/>
-      <el-table-column label="发票金额" align="center" prop="invoiceAmount"/>
-      <el-table-column label="公司类型" align="center" prop="companyType"/>
-      <el-table-column label="公司名称" align="center" prop="companyName"/>
-      <el-table-column label="开票单位名称" align="center" prop="invoiceCompanyName"/>
-      <el-table-column label="票点" align="center" prop="ticketPoint"/>
-      <el-table-column label="票点金额" align="center" prop="ticketPointAmount"/>
-      <el-table-column label="是否为订单税" align="center" prop="isOrderTax">
+      <el-table-column label="id" align="center" prop="id" v-if="columns[0].visible"/>
+      <el-table-column label="开票日期" align="center" prop="invoiceDate" v-if="columns[1].visible"/>
+      <el-table-column label="发票金额" align="center" prop="invoiceAmount" v-if="columns[2].visible"/>
+      <el-table-column label="公司类型" align="center" prop="companyType" v-if="columns[3].visible"/>
+      <el-table-column label="公司名称" align="center" prop="companyName" v-if="columns[4].visible"/>
+      <el-table-column label="开票单位名称" align="center" prop="invoiceCompanyName" v-if="columns[5].visible"/>
+      <el-table-column label="票点" align="center" prop="ticketPoint" v-if="columns[6].visible"/>
+      <el-table-column label="票点金额" align="center" prop="ticketPointAmount" v-if="columns[7].visible"/>
+      <el-table-column label="是否为订单税" align="center" prop="isOrderTax" v-if="columns[8].visible">
         <template slot-scope="scope">
           <el-tag :type="scope.row.isOrderTax===0?'danger':'success'" disable-transitions>
             {{ scope.row.isOrderTax === 0 ? '否' : '是' }}
           </el-tag>
         </template>
       </el-table-column>
-      <el-table-column label="供应商名称" align="center" prop="supplier"/>
-      <el-table-column label="客户名称" align="center" prop="customer"/>
-      <el-table-column label="采购发票金额" align="center" prop="purchaseInvoiceAmount"/>
-      <el-table-column label="票点成本（点数）" align="center" prop="ticketPointCost"/>
-      <el-table-column label="票点成本（金额）" align="center" prop="ticketPointCostAmount"/>
-      <el-table-column label="票点收入（点数）" align="center" prop="ticketPointIncome"/>
-      <el-table-column label="票点收入（金额）" align="center" prop="ticketPointIncomeAmount"/>
-      <el-table-column label="票点差额" align="center" prop="ticketPointDifference"/>
-      <el-table-column label="票点成本（点数）" align="center" prop="ticketPointCost"/>
-      <el-table-column label="票点成本（点数）" align="center" prop="ticketPointCost"/>
-      <el-table-column label="总货款" align="center" prop="allPayments"/>
-      <el-table-column label="实际开票日期" align="center" prop="orderDate"/>
-      <el-table-column label="当月欠票" align="center" prop="oweamount">
+      <el-table-column label="供应商名称" align="center" prop="supplier" v-if="columns[9].visible"/>
+      <el-table-column label="客户名称" align="center" prop="customer" v-if="columns[10].visible"/>
+      <el-table-column label="采购发票金额" align="center" prop="purchaseInvoiceAmount" v-if="columns[11].visible"/>
+      <el-table-column label="票点成本（点数）" align="center" prop="ticketPointCost" v-if="columns[12].visible"/>
+      <el-table-column label="票点成本（金额）" align="center" prop="ticketPointCostAmount" v-if="columns[13].visible"/>
+      <el-table-column label="票点收入（点数）" align="center" prop="ticketPointIncome" v-if="columns[14].visible"/>
+      <el-table-column label="票点收入（金额）" align="center" prop="ticketPointIncomeAmount" v-if="columns[15].visible"/>
+      <el-table-column label="票点差额" align="center" prop="ticketPointDifference" v-if="columns[16].visible"/>
+<!--      <el-table-column label="票点成本（点数）" align="center" prop="ticketPointCost" v-if="columns[17].visible"/>
+      <el-table-column label="票点成本（点数）" align="center" prop="ticketPointCost" v-if="columns[18].visible"/>-->
+      <el-table-column label="总货款" align="center" prop="allPayments" v-if="columns[17].visible"/>
+      <el-table-column label="实际开票日期" align="center" prop="orderDate" v-if="columns[18].visible"/>
+      <el-table-column label="当月欠票" align="center" prop="oweamount" v-if="columns[19].visible">
       </el-table-column>
-      <el-table-column label="备注" align="center" prop="comments"/>
+      <el-table-column label="备注" align="center" prop="comments" v-if="columns[20].visible"/>
       <el-table-column label="操作" align="center" class-name="small-padding fixed-width" fixed="right">
         <template slot-scope="scope">
           <el-button
             size="mini"
             type="primary"
             @click="handleUpdate(scope.row)"
-            v-hasPermi="['system:invoicein:edit']"
+            v-hasPermi="['system:allinvoice:edit']"
           >修改
           </el-button>
           <el-button
             size="mini"
             type="danger"
             @click="handleDelete(scope.row)"
-            v-hasPermi="['system:invoicein:remove']"
+            v-hasPermi="['system:allinvoice:remove']"
           >删除
           </el-button>
         </template>
@@ -249,31 +253,27 @@ export default {
       // 表单校验
       rules: {},
       columns: [
-        {key: 0, label: `订单编号`, visible: true},
-        {key: 1, label: `陆运车牌`, visible: true},
-        {key: 2, label: `陆运司机电话`, visible: true},
-        {key: 3, label: `陆运司机姓名`, visible: true},
-        {key: 4, label: `海运车牌`, visible: true},
-        {key: 5, label: `海运司机电话`, visible: true},
-        {key: 6, label: `海运司机姓名`, visible: true},
-        {key: 7, label: `销售经理`, visible: true},
-        {key: 8, label: `车队`, visible: true},
-        {key: 9, label: `审核状态`, visible: true},
-        {key: 10, label: `开票状态`, visible: true},
-        {key: 11, label: `附件路径`, visible: true},
-        {key: 12, label: `打款状态`, visible: true},
-        {key: 13, label: `陆运银行户名`, visible: true},
-        {key: 14, label: `陆运银行账号`, visible: true},
-        {key: 15, label: `海运银行户名`, visible: true},
-        {key: 16, label: `海运银行账号`, visible: true},
-        {key: 17, label: `收到条附件路径`, visible: true},
-        {key: 18, label: `是否被调整单`, visible: true},
-        {key: 19, label: `是否调整单`, visible: true},
-        {key: 20, label: `调整日期`, visible: true},
-        {key: 21, label: `原订单编号`, visible: true},
-        {key: 22, label: `是否可编辑`, visible: true},
-        {key: 23, label: `客户是否开票`, visible: true},
-        {key: 24, label: `供应商是否开票`, visible: true},
+        {key: 0, label: `id`, visible: true},
+        {key: 1, label: `开票日期`, visible: true},
+        {key: 2, label: `发票金额`, visible: true},
+        {key: 3, label: `公司类型`, visible: true},
+        {key: 4, label: `公司名称`, visible: true},
+        {key: 5, label: `开票单位名称`, visible: true},
+        {key: 6, label: `票点`, visible: true},
+        {key: 7, label: `票点金额`, visible: true},
+        {key: 8, label: `是否为订单税`, visible: true},
+        {key: 9, label: `供应商名称`, visible: true},
+        {key: 10, label: `客户名称`, visible: true},
+        {key: 11, label: `采购发票金额`, visible: true},
+        {key: 12, label: `票点成本（点数）`, visible: true},
+        {key: 13, label: `票点成本（金额）`, visible: true},
+        {key: 14, label: `票点收入（点数）`, visible: true},
+        {key: 15, label: `票点收入（金额）`, visible: true},
+        {key: 16, label: `票点差额`, visible: true},
+        {key: 17, label: `总贷款`, visible: true},
+        {key: 18, label: `实际开票日期`, visible: true},
+        {key: 19, label: `当月欠票`, visible: true},
+        {key: 20, label: `备注`, visible: true},
       ],
       options: [{
         value: '已开发票',
@@ -286,6 +286,22 @@ export default {
   },
   created() {
     this.getList();
+    if (localStorage.getItem('allinvoice-columns') === 'null'
+      || !localStorage.getItem('allinvoice-columns')) {
+      //设置localStorage
+      localStorage.setItem("allinvoice-columns", JSON.stringify(this.columns))
+    } else {
+      this.columns = JSON.parse(localStorage.getItem('allinvoice-columns'));
+    }
+  },
+  //展示与隐藏
+  watch: {
+    columns: {
+      handler: (newVal) => {
+        localStorage.setItem("allinvoice-columns", JSON.stringify(newVal))
+      },
+      deep: true,
+    }
   },
   methods: {
     /** 查询发票购入信息列表 */

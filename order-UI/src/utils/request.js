@@ -24,7 +24,7 @@ let loadingInstance = null;
 // request拦截器
 service.interceptors.request.use(config => {
   //开始加载
-  loadingInstance = Loading.service({fullscreen: true});
+  loadingInstance = Loading.service({fullscreen: true, text: '正在加载,请耐心等待😊....'});
   // 是否需要设置 token
   const isToken = (config.headers || {}).isToken === false
   // 是否需要防止数据重复提交
