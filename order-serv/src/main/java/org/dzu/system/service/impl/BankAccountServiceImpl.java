@@ -170,7 +170,7 @@ public class BankAccountServiceImpl {
     @Transactional
     public int deleteBankAccountByIds(Long[] ids)
     {
-        // 先搜索全部要删除的信息,检测有无司机
+        // 先搜索全部要删除的信息
         List<BankAccount> bankAccounts = bankAccountMapper.selectBatchIds(Arrays.asList(ids));
         bankAccounts.forEach(bankAccount -> {
             if(bankAccount.getAcountsType().equals(BankaccountConstants.DRIVER)){
@@ -180,6 +180,15 @@ public class BankAccountServiceImpl {
                     throw new ServiceException("存在司机使用本次银行卡，无法删除！");
                 }
             }
+            // 检测是否为默认卡
+            if(bankAccount.getAcountsType().equals(BankaccountConstants.DEFAULT)){
+                // 检测是否为客户默认卡
+                Company company = companyServiceImpl.selectCompanyById(bankAccount.getCompanyId());
+                if(company.getBankNo().equals(bankAccount.getBankNo())){
+                    throw new ServiceException("该卡:"+bankAccount.getBankNo()+"被供应商/客户绑定为默认卡,请前往对应页面调整！");
+                }
+            }
+
         });
         return bankAccountMapper.deleteBankAccountByIds(ids);
     }
