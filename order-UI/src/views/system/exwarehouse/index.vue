@@ -65,6 +65,10 @@
         <el-button type="primary" icon="el-icon-search" size="mini" @click="handleQuery">搜索</el-button>
         <el-button icon="el-icon-refresh" size="mini" @click="resetQuery">重置</el-button>
       </el-form-item>
+<!--      <el-form-item>-->
+<!--        <el-button type="primary" icon="el-icon-search" size="mini" @click="handleQuery">搜索</el-button>-->
+<!--        <el-button icon="el-icon-refresh" size="mini" @click="resetQuery">重置</el-button>-->
+<!--      </el-form-item>-->
     </el-form>
 
     <el-row :gutter="10" class="mb8">
@@ -114,6 +118,7 @@
       <!--      <el-table-column label="仓库ID" align="center" prop="storeHouseid"/>-->
       <el-table-column label="仓库名称" align="center" prop="storeHouseName"/>
       <!--      <el-table-column label="仓库存储的货物ID" align="center" prop="storeID"/>-->
+
       <el-table-column label="出库日期" align="center" prop="outDate"/>
       <el-table-column label="出库量" align="center" prop="outAmount"/>
       <el-table-column label="操作" align="center" class-name="small-padding fixed-width">
@@ -240,6 +245,7 @@ import {
 import {listGoodsOrder} from "@/api/system/goodsOrder";
 import TagsItem from "@/components/TagsItem/index.vue";
 import {getInventory, listInventory} from "@/api/system/inventory";
+import {listConfig} from "@/api/system/config";
 
 export default {
   name: "ExWarehouse",
@@ -262,6 +268,8 @@ export default {
       exWarehouseList: [],
       // 弹出层标题
       title: "",
+      // 日期范围
+      dateRange: [],
       // 是否显示弹出层
       open: false,
       // 查询参数
@@ -297,6 +305,12 @@ export default {
   created() {
     this.getList();
   },
+
+    // 取消按钮
+    cancel() {
+      this.open = false;
+      this.reset();
+    },
   methods: {
     checkOrderInfo(row) {
       console.log(row)
@@ -321,12 +335,15 @@ export default {
     /** 查询出库列表 */
     getList() {
       this.loading = true;
-      listExWarehouse(this.queryParams).then(response => {
+      listExWarehouse(this.addDateRange(this.queryParams, this.dateRange)).then(response => {
         this.exWarehouseList = response.rows;
         this.total = response.total;
         this.loading = false;
       });
+
     },
+    /** 查询参数列表 */
+
     // 取消按钮
     cancel() {
       this.open = false;
@@ -357,6 +374,7 @@ export default {
     },
     /** 重置按钮操作 */
     resetQuery() {
+      this.dateRange = [];
       this.resetForm("queryForm");
       this.handleQuery();
     },
