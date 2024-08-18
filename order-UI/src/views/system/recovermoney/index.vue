@@ -44,7 +44,7 @@
               icon="el-icon-folder-opened"
               size="mini"
               @click="handleExport"
-              v-hasPermi="['system:company:export']"
+              v-hasPermi="['system:recovermoney:export']"
             >
             </el-button>
           </el-col>
@@ -300,7 +300,7 @@ export default {
       this.open = true;
       this.title = "添加借出款收回信息";
     },
-    /** 修改按钮操作 */
+    /*/!** 修改按钮操作 *!/
     handleUpdate(row) {
       this.reset();
       const id = row.id || this.ids
@@ -308,6 +308,31 @@ export default {
         this.form = response.data;
         this.open = true;
         this.title = "修改借出款收回信息";
+      });
+    },*/
+    /** 修改按钮操作 */
+    handleUpdate(row) {
+      this.$prompt('请输入编辑原因', '提示', {
+        confirmButtonText: '确定',
+        cancelButtonText: '取消',
+        type: 'warning'
+      }).then(({value}) => {
+        addReason({reason: value, tableName: TableName.RECOVER_MONEY, tid: row.id, modifyTime: this.modifyTime})
+          .then(res => {
+            this.$message.success('提交成功')
+            this.reset();
+            const id = row.id || this.ids
+            getInventory(id).then(response => {
+              this.form = response.data;
+              this.open = true;
+              this.title = "修改借出款收回信息";
+            });
+          })
+      }).catch(() => {
+        this.$message({
+          type: 'warning',
+          message: '请先输入编辑原因!'
+        });
       });
     },
     /** 提交按钮 */

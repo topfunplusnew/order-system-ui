@@ -63,7 +63,7 @@
             icon="el-icon-plus"
             size="mini"
             @click="handleAdd"
-            v-hasPermi="['system:orderdetail:add']"
+            v-hasPermi="['system:goodsorder:add']"
         >添加订单信息
         </el-button>
       </el-col>
@@ -74,7 +74,7 @@
             icon="el-icon-download"
             size="mini"
             @click="handleExport"
-            v-hasPermi="['system:orderdetail:export']"
+            v-hasPermi="['system:goodsorder:export']"
         >导出订单数据
         </el-button>
       </el-col>
@@ -135,7 +135,7 @@
               size="mini"
               type="danger"
               @click="handleDelete(scope.row)"
-              v-hasPermi="['system:orderdetail:remove']"
+              v-hasPermi="['system:goodsorder:remove']"
           >删除
           </el-button>
         </template>
@@ -229,7 +229,7 @@
           <el-button
               size="mini"
               @click="handleOrder1(scope.row)"
-              v-hasPermi="['system:orderdetail:edit']"
+              v-hasPermi="['system:goodsorder:edit']"
           >发货单
           </el-button>
           <el-button
@@ -241,7 +241,7 @@
           <el-button
               size="mini"
               @click="handleCommit(scope.row)"
-              v-hasPermi="['system:orderdetail:remove']"
+              v-hasPermi="['system:goodsorder:remove']"
           >上传收到条
           </el-button>
 
@@ -250,7 +250,7 @@
               size="mini"
               type="warning"
               @click="handleApplyLandFree(scope.row)"
-              v-hasPermi="['system:orderdetail:remove']"
+              v-hasPermi="['system:goodsorder:remove']"
           >陆运费申请
           </el-button>
           <el-button
@@ -258,7 +258,7 @@
               type="primary"
               size="mini"
               @click="handleApplySeaFree(scope.row)"
-              v-hasPermi="['system:orderdetail:remove']"
+              v-hasPermi="['system:goodsorder:remove']"
           >海运费申请
           </el-button>
         </template>
