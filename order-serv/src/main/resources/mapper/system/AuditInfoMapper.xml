@@ -141,7 +141,7 @@
             </foreach>
         </if>
     </where>
-    ORDER BY a.applyID, a.addtime DESC
+    ORDER BY a.applyID desc , a.addtime DESC
 </select>
 
 
