@@ -1,14 +1,6 @@
 <template>
   <div class="app-container">
-    <el-form :model="queryParams" ref="queryForm" size="small" :inline="true" v-show="showSearch" label-width="68px">
-      <el-form-item label="出差编号UUID" prop="bTripId">
-        <el-input
-          v-model="queryParams.bTripId"
-          placeholder="请输入出差编号UUID"
-          clearable
-          @keyup.enter.native="handleQuery"
-        />
-      </el-form-item>
+    <el-form :model="queryParams" ref="queryForm" size="small" :inline="true" v-show="showSearch" label-width="120px">
       <el-form-item label="加油卡卡号" prop="oilCardNo">
         <el-input
           v-model="queryParams.oilCardNo"
@@ -18,208 +10,93 @@
         />
       </el-form-item>
       <el-form-item label="使用加油卡时间" prop="useDate">
-        <el-input
+        <el-date-picker
           v-model="queryParams.useDate"
-          placeholder="请输入使用加油卡时间"
-          clearable
-          @keyup.enter.native="handleQuery"
-        />
-      </el-form-item>
-      <el-form-item label="使用加油卡车辆车牌号" prop="carNo">
-        <el-input
-          v-model="queryParams.carNo"
-          placeholder="请输入使用加油卡车辆车牌号"
-          clearable
-          @keyup.enter.native="handleQuery"
-        />
-      </el-form-item>
-      <el-form-item label="期初余额" prop="startCardSurplus">
-        <el-input
-          v-model="queryParams.startCardSurplus"
-          placeholder="请输入期初余额"
-          clearable
-          @keyup.enter.native="handleQuery"
-        />
-      </el-form-item>
-      <el-form-item label="加油量" prop="refuelingNumber">
-        <el-input
-          v-model="queryParams.refuelingNumber"
-          placeholder="请输入加油量"
-          clearable
-          @keyup.enter.native="handleQuery"
-        />
-      </el-form-item>
-      <el-form-item label="单价" prop="unitPrice">
-        <el-input
-          v-model="queryParams.unitPrice"
-          placeholder="请输入单价"
-          clearable
-          @keyup.enter.native="handleQuery"
-        />
-      </el-form-item>
-      <el-form-item label="加油金额(元）" prop="refuelingMoney">
-        <el-input
-          v-model="queryParams.refuelingMoney"
-          placeholder="请输入加油金额(元）"
-          clearable
-          @keyup.enter.native="handleQuery"
-        />
-      </el-form-item>
-      <el-form-item label="充值金额(元）" prop="rechargeMoney">
-        <el-input
-          v-model="queryParams.rechargeMoney"
-          placeholder="请输入充值金额(元）"
-          clearable
-          @keyup.enter.native="handleQuery"
-        />
-      </el-form-item>
-      <el-form-item label="加油卡余额" prop="endCardSurplus">
-        <el-input
-          v-model="queryParams.endCardSurplus"
-          placeholder="请输入加油卡余额"
-          clearable
-          @keyup.enter.native="handleQuery"
-        />
-      </el-form-item>
-      <el-form-item label="加油小票附件" prop="attachmentOiladd">
-        <el-input
-          v-model="queryParams.attachmentOiladd"
-          placeholder="请输入加油小票附件"
-          clearable
-          @keyup.enter.native="handleQuery"
-        />
-      </el-form-item>
-      <el-form-item label="备注" prop="comments">
-        <el-input
-          v-model="queryParams.comments"
-          placeholder="请输入备注"
-          clearable
-          @keyup.enter.native="handleQuery"
-        />
-      </el-form-item>
-      <el-form-item label="添加时间" prop="addtime">
-        <el-input
-          v-model="queryParams.addtime"
-          placeholder="请输入添加时间"
-          clearable
-          @keyup.enter.native="handleQuery"
-        />
-      </el-form-item>
-      <el-form-item label="操作人员ID" prop="userId">
-        <el-input
-          v-model="queryParams.userId"
-          placeholder="请输入操作人员ID"
-          clearable
-          @keyup.enter.native="handleQuery"
-        />
-      </el-form-item>
-      <el-form-item label="操作人员姓名" prop="UserName">
-        <el-input
-          v-model="queryParams.UserName"
-          placeholder="请输入操作人员姓名"
-          clearable
-          @keyup.enter.native="handleQuery"
-        />
-      </el-form-item>
-      <el-form-item label="删除标记" prop="delFlag">
-        <el-input
-          v-model="queryParams.delFlag"
-          placeholder="请输入删除标记"
-          clearable
-          @keyup.enter.native="handleQuery"
-        />
+          type="date"
+          placeholder="选择使用加油卡时间" value-format="timestamp">
+        </el-date-picker>
       </el-form-item>
       <el-form-item>
         <el-button type="primary" icon="el-icon-search" size="mini" @click="handleQuery">搜索</el-button>
         <el-button icon="el-icon-refresh" size="mini" @click="resetQuery">重置</el-button>
       </el-form-item>
     </el-form>
-
     <el-row :gutter="10" class="mb8">
-      <el-col :span="1.5">
-        <el-button
-          type="primary"
-          plain
-          icon="el-icon-plus"
-          size="mini"
-          @click="handleAdd"
-          v-hasPermi="['system:oilcardconsume:add']"
-        >新增</el-button>
-      </el-col>
-      <el-col :span="1.5">
-        <el-button
-          type="success"
-          plain
-          icon="el-icon-edit"
-          size="mini"
-          :disabled="single"
-          @click="handleUpdate"
-          v-hasPermi="['system:oilcardconsume:edit']"
-        >修改</el-button>
-      </el-col>
-      <el-col :span="1.5">
-        <el-button
-          type="danger"
-          plain
-          icon="el-icon-delete"
-          size="mini"
-          :disabled="multiple"
-          @click="handleDelete"
-          v-hasPermi="['system:oilcardconsume:remove']"
-        >删除</el-button>
-      </el-col>
-      <el-col :span="1.5">
-        <el-button
-          type="warning"
-          plain
-          icon="el-icon-download"
-          size="mini"
-          @click="handleExport"
-          v-hasPermi="['system:oilcardconsume:export']"
-        >导出</el-button>
-      </el-col>
-      <right-toolbar :showSearch.sync="showSearch" @queryTable="getList"></right-toolbar>
+      <!--      <el-col :span="1.5">-->
+      <!--        <el-button-->
+      <!--          type="primary"-->
+      <!--          plain-->
+      <!--          icon="el-icon-plus"-->
+      <!--          size="mini"-->
+      <!--          @click="handleAdd"-->
+      <!--          v-hasPermi="['system:oilcardconsume:add']"-->
+      <!--        >新增加油卡消费信息-->
+      <!--        </el-button>-->
+      <!--      </el-col>-->
+      <right-toolbar :showSearch.sync="showSearch" @queryTable="getList" :columns="columns">
+        <template v-slot:print>
+          <el-col :span="1.5">
+            <el-button
+              plain
+              icon="el-icon-printer"
+              size="mini"
+              @click="printHTML"
+            >
+            </el-button>
+          </el-col>
+        </template>
+        <!--        导出-->
+        <template v-slot:export>
+          <el-col :span="1.5">
+            <el-button
+              plain
+              icon="el-icon-folder-opened"
+              size="mini"
+              @click="handleExport"
+              v-hasPermi="['system:inventory:export']"
+            >
+            </el-button>
+          </el-col>
+        </template>
+      </right-toolbar>
     </el-row>
 
-    <el-table v-loading="loading" :data="OilCardConsumeList" @selection-change="handleSelectionChange">
-      <el-table-column type="selection" width="55" align="center" />
-      <el-table-column label="id" align="center" prop="id" />
-      <el-table-column label="出差编号UUID" align="center" prop="bTripId" />
-      <el-table-column label="加油卡卡号" align="center" prop="oilCardNo" />
-      <el-table-column label="使用加油卡时间" align="center" prop="useDate" />
-      <el-table-column label="使用加油卡车辆车牌号" align="center" prop="carNo" />
-      <el-table-column label="期初余额" align="center" prop="startCardSurplus" />
-      <el-table-column label="加油量" align="center" prop="refuelingNumber" />
-      <el-table-column label="单价" align="center" prop="unitPrice" />
-      <el-table-column label="加油金额(元）" align="center" prop="refuelingMoney" />
-      <el-table-column label="充值金额(元）" align="center" prop="rechargeMoney" />
-      <el-table-column label="加油卡余额" align="center" prop="endCardSurplus" />
-      <el-table-column label="加油小票附件" align="center" prop="attachmentOiladd" />
-      <el-table-column label="备注" align="center" prop="comments" />
-      <el-table-column label="添加时间" align="center" prop="addtime" />
-      <el-table-column label="操作人员ID" align="center" prop="userId" />
-      <el-table-column label="操作人员姓名" align="center" prop="UserName" />
-      <el-table-column label="删除标记" align="center" prop="delFlag" />
+    <el-table border v-loading="loading" :data="OilCardConsumeList" @selection-change="handleSelectionChange"
+              v-horizontal-scroll="'always'" id="printBox">
+      <el-table-column label="id" align="center" prop="id"/>
+      <!--      <el-table-column label="出差编号UUID" align="center" prop="bTripId"/>-->
+      <el-table-column label="加油卡卡号" align="center" prop="oilCardNo"/>
+      <el-table-column label="使用加油卡时间" align="center" prop="useDate"/>
+      <el-table-column label="使用加油卡车辆车牌号" align="center" prop="carNo"/>
+      <el-table-column label="期初余额" align="center" prop="startCardSurplus"/>
+      <el-table-column label="加油量" align="center" prop="refuelingNumber"/>
+      <el-table-column label="单价" align="center" prop="unitPrice"/>
+      <el-table-column label="加油金额(元）" align="center" prop="refuelingMoney"/>
+      <el-table-column label="充值金额(元）" align="center" prop="rechargeMoney"/>
+      <el-table-column label="加油卡余额" align="center" prop="endCardSurplus"/>
+      <el-table-column label="加油小票附件" align="center" prop="attachmentOiladd"/>
+      <el-table-column label="备注" align="center" prop="comments"/>
       <el-table-column label="操作" align="center" class-name="small-padding fixed-width">
         <template slot-scope="scope">
+          <!--          <el-button-->
+          <!--            size="mini"-->
+          <!--            type="text"-->
+          <!--            icon="el-icon-edit"-->
+          <!--            @click="handleUpdate(scope.row)"-->
+          <!--            v-hasPermi="['system:oilcardconsume:edit']"-->
+          <!--          >修改-->
+          <!--          </el-button>-->
           <el-button
             size="mini"
-            type="text"
-            icon="el-icon-edit"
-            @click="handleUpdate(scope.row)"
-            v-hasPermi="['system:oilcardconsume:edit']"
-          >修改</el-button>
-          <el-button
-            size="mini"
-            type="text"
-            icon="el-icon-delete"
+            type="danger"
             @click="handleDelete(scope.row)"
             v-hasPermi="['system:oilcardconsume:remove']"
-          >删除</el-button>
+          >删除
+          </el-button>
         </template>
       </el-table-column>
     </el-table>
-    
+
     <pagination
       v-show="total>0"
       :total="total"
@@ -231,53 +108,38 @@
     <!-- 添加或修改加油卡消费信息对话框 -->
     <el-dialog :title="title" :visible.sync="open" width="500px" append-to-body>
       <el-form ref="form" :model="form" :rules="rules" label-width="80px">
-        <el-form-item label="出差编号UUID" prop="bTripId">
-          <el-input v-model="form.bTripId" placeholder="请输入出差编号UUID" />
-        </el-form-item>
         <el-form-item label="加油卡卡号" prop="oilCardNo">
-          <el-input v-model="form.oilCardNo" placeholder="请输入加油卡卡号" />
+          <el-input v-model="form.oilCardNo" placeholder="请输入加油卡卡号"/>
         </el-form-item>
         <el-form-item label="使用加油卡时间" prop="useDate">
-          <el-input v-model="form.useDate" placeholder="请输入使用加油卡时间" />
+          <el-input v-model="form.useDate" placeholder="请输入使用加油卡时间"/>
         </el-form-item>
         <el-form-item label="使用加油卡车辆车牌号" prop="carNo">
-          <el-input v-model="form.carNo" placeholder="请输入使用加油卡车辆车牌号" />
+          <el-input v-model="form.carNo" placeholder="请输入使用加油卡车辆车牌号"/>
         </el-form-item>
         <el-form-item label="期初余额" prop="startCardSurplus">
-          <el-input v-model="form.startCardSurplus" placeholder="请输入期初余额" />
+          <el-input v-model="form.startCardSurplus" placeholder="请输入期初余额"/>
         </el-form-item>
         <el-form-item label="加油量" prop="refuelingNumber">
-          <el-input v-model="form.refuelingNumber" placeholder="请输入加油量" />
+          <el-input v-model="form.refuelingNumber" placeholder="请输入加油量"/>
         </el-form-item>
         <el-form-item label="单价" prop="unitPrice">
-          <el-input v-model="form.unitPrice" placeholder="请输入单价" />
+          <el-input v-model="form.unitPrice" placeholder="请输入单价"/>
         </el-form-item>
         <el-form-item label="加油金额(元）" prop="refuelingMoney">
-          <el-input v-model="form.refuelingMoney" placeholder="请输入加油金额(元）" />
+          <el-input v-model="form.refuelingMoney" placeholder="请输入加油金额(元）"/>
         </el-form-item>
         <el-form-item label="充值金额(元）" prop="rechargeMoney">
-          <el-input v-model="form.rechargeMoney" placeholder="请输入充值金额(元）" />
+          <el-input v-model="form.rechargeMoney" placeholder="请输入充值金额(元）"/>
         </el-form-item>
         <el-form-item label="加油卡余额" prop="endCardSurplus">
-          <el-input v-model="form.endCardSurplus" placeholder="请输入加油卡余额" />
+          <el-input v-model="form.endCardSurplus" placeholder="请输入加油卡余额"/>
         </el-form-item>
         <el-form-item label="加油小票附件" prop="attachmentOiladd">
-          <el-input v-model="form.attachmentOiladd" placeholder="请输入加油小票附件" />
+          <el-input v-model="form.attachmentOiladd" placeholder="请输入加油小票附件"/>
         </el-form-item>
         <el-form-item label="备注" prop="comments">
-          <el-input v-model="form.comments" placeholder="请输入备注" />
-        </el-form-item>
-        <el-form-item label="添加时间" prop="addtime">
-          <el-input v-model="form.addtime" placeholder="请输入添加时间" />
-        </el-form-item>
-        <el-form-item label="操作人员ID" prop="userId">
-          <el-input v-model="form.userId" placeholder="请输入操作人员ID" />
-        </el-form-item>
-        <el-form-item label="操作人员姓名" prop="UserName">
-          <el-input v-model="form.UserName" placeholder="请输入操作人员姓名" />
-        </el-form-item>
-        <el-form-item label="删除标记" prop="delFlag">
-          <el-input v-model="form.delFlag" placeholder="请输入删除标记" />
+          <el-input v-model="form.comments" placeholder="请输入备注"/>
         </el-form-item>
       </el-form>
       <div slot="footer" class="dialog-footer">
@@ -289,10 +151,18 @@
 </template>
 
 <script>
-import { listOilCardConsume, getOilCardConsume, delOilCardConsume, addOilCardConsume, updateOilCardConsume } from "@/api/system/OilCardConsume";
+import {
+  listOilCardConsume,
+  getOilCardConsume,
+  delOilCardConsume,
+  addOilCardConsume,
+  updateOilCardConsume
+} from "@/api/system/OilCardConsume";
+import {mixin_printHTML} from "@/views/dashboard/mixins/print";
 
 export default {
   name: "OilCardConsume",
+  mixins: [mixin_printHTML],
   data() {
     return {
       // 遮罩层
@@ -337,8 +207,46 @@ export default {
       // 表单参数
       form: {},
       // 表单校验
-      rules: {
-      }
+      rules: {},
+      columns: [
+        {key: 0, label: `id`, visible: true},
+        {key: 1, label: `仓库名称`, visible: true},
+        {key: 2, label: `入库日期`, visible: true},
+        {key: 3, label: `库存量`, visible: true},
+        {key: 4, label: `供应商`, visible: true},
+        {key: 5, label: `级别编码`, visible: true},
+        {key: 6, label: `级别名称`, visible: true},
+        {key: 7, label: `计量单位`, visible: true},
+        {key: 8, label: `厚度`, visible: true},
+        {key: 9, label: `长度`, visible: true},
+        {key: 10, label: `宽度`, visible: true},
+        {key: 11, label: `出厂片数`, visible: true},
+        {key: 12, label: `每包片数`, visible: true},
+        {key: 13, label: `包数`, visible: true},
+        {key: 14, label: `出厂单价`, visible: true},
+        {key: 15, label: `出厂是否含税`, visible: true},
+        {key: 16, label: `杂费`, visible: true},
+        {key: 17, label: `出厂贷款`, visible: true},
+        {key: 18, label: `卸货价`, visible: true},
+        {key: 19, label: `销售是否含税`, visible: true},
+        {key: 20, label: `总货款`, visible: true},
+        {key: 21, label: `陆运车牌`, visible: true},
+        {key: 22, label: `陆运司机姓名`, visible: true},
+        {key: 23, label: `陆运司机电话`, visible: true},
+        {key: 24, label: `误差`, visible: true},
+        {key: 25, label: `吨位`, visible: true},
+        {key: 26, label: `陆运费单价`, visible: true},
+        {key: 27, label: `陆运费`, visible: true},
+        {key: 28, label: `其他费用`, visible: true},
+        {key: 29, label: `利润`, visible: true},
+        {key: 30, label: `不含利润率`, visible: true},
+        {key: 31, label: `实际片数`, visible: true},
+        {key: 32, label: `总贷款杂费`, visible: true},
+        {key: 33, label: `加费`, visible: true},
+        {key: 34, label: `返利金额`, visible: true},
+        {key: 35, label: `客户佣金`, visible: true},
+        {key: 36, label: `备注`, visible: true},
+      ],
     };
   },
   created() {
@@ -396,7 +304,7 @@ export default {
     // 多选框选中数据
     handleSelectionChange(selection) {
       this.ids = selection.map(item => item.id)
-      this.single = selection.length!==1
+      this.single = selection.length !== 1
       this.multiple = !selection.length
     },
     /** 新增按钮操作 */
@@ -438,12 +346,13 @@ export default {
     /** 删除按钮操作 */
     handleDelete(row) {
       const ids = row.id || this.ids;
-      this.$modal.confirm('是否确认删除加油卡消费信息编号为"' + ids + '"的数据项？').then(function() {
+      this.$modal.confirm('是否确认删除加油卡消费信息编号为"' + ids + '"的数据项？').then(function () {
         return delOilCardConsume(ids);
       }).then(() => {
         this.getList();
         this.$modal.msgSuccess("删除成功");
-      }).catch(() => {});
+      }).catch(() => {
+      });
     },
     /** 导出按钮操作 */
     handleExport() {
