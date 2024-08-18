@@ -75,20 +75,25 @@
       <el-table-column label="充值人员姓名" align="center" prop="rechargeName"/>
       <el-table-column label="充值附件" align="center" prop="attachment"/>
       <el-table-column label="备注" align="center" prop="comments"/>
-      <el-table-column label="操作" align="center" class-name="small-padding fixed-width">
+      <el-table-column label="操作" align="center" class-name="small-padding fixed-width" fixed="right"
+                       width="150px">
         <template slot-scope="scope">
           <el-button
             size="mini"
-            type="text"
-            icon="el-icon-edit"
+            type="warning"
+            @click="addPaymentApply(scope.row)"
+          >申请付款
+          </el-button>
+          <el-button
+            size="mini"
+            type="primary"
             @click="handleUpdate(scope.row)"
             v-hasPermi="['system:oilrecharge:edit']"
           >修改
           </el-button>
           <el-button
             size="mini"
-            type="text"
-            icon="el-icon-delete"
+            type="danger"
             @click="handleDelete(scope.row)"
             v-hasPermi="['system:oilrecharge:remove']"
           >删除
@@ -141,6 +146,13 @@
         <el-button @click="cancel">取 消</el-button>
       </div>
     </el-dialog>
+
+
+    <!--    加油卡付款申请-->
+    <el-dialog title="加油卡付款申请" :visible.sync="paymentApplyVisible" width="500px" append-to-body>
+      <ApplyPayment :table-name="TableName.OIL_RECHARGE" :t-i-d="tid" :need-money="needMoney"
+                    :need-info="{...needInfo,otherAcountsName:needInfo.acountsName}"/>
+    </el-dialog>
   </div>
 </template>
 
@@ -153,9 +165,17 @@ import {
   updateOilRecharge
 } from "@/api/system/oilRecharge";
 import {mixin_printHTML} from "@/views/dashboard/mixins/print";
+import ApplyPayment from "@/components/ApplyPayment.vue";
+import {TableName} from "@/api/tool/enums";
 
 export default {
   name: "OilRecharge",
+  computed: {
+    TableName() {
+      return TableName
+    }
+  },
+  components: {ApplyPayment},
   mixins: [mixin_printHTML],
   data() {
     return {
@@ -239,12 +259,23 @@ export default {
         {key: 35, label: `客户佣金`, visible: true},
         {key: 36, label: `备注`, visible: true},
       ],
+      tid: '',
+      paymentApplyVisible: false,
+      needMoney: 0,
+      needInfo: {},
     };
   },
   created() {
     this.getList();
   },
   methods: {
+    //加油卡付款申请
+    addPaymentApply(row) {
+      this.tid = row.id;
+      this.needMoney = row.rechargeMoney;
+      this.needInfo = row;
+      this.paymentApplyVisible = true;
+    },
     /** 查询加油卡充值信息列表 */
     getList() {
       this.loading = true;
