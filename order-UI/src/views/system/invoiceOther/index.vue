@@ -23,6 +23,9 @@
     </el-form>
     <el-row :gutter="10" class="mb8">
       <el-col :span="1.5">
+        <el-button icon="el-icon-refresh" size="mini" @click="resetQuery">刷新</el-button>
+      </el-col>
+      <el-col :span="1.5">
         <el-button
           type="primary"
           plain
@@ -33,9 +36,9 @@
         >新增
         </el-button>
       </el-col>
-      <el-col :span="1.5">
+<!--      <el-col :span="1.5">
         <el-button icon="el-icon-refresh" size="mini" @click="resetQuery">刷新</el-button>
-      </el-col>
+      </el-col>-->
       <right-toolbar :showSearch.sync="showSearch" @queryTable="getList" :columns="columns">
         <template v-slot:print>
           <el-col :span="1.5">
@@ -66,18 +69,18 @@
 
     <el-table border v-horizontal-scroll="'always'" v-loading="loading" :data="invoiceOtherList"
               @selection-change="handleSelectionChange">
-      <el-table-column label="开票日期" align="center" prop="invoiceDate"/>
-      <el-table-column label="开票金额" align="center" prop="invoiceAmount"/>
-      <el-table-column label="供应商票点" align="center" prop="supplierTicketPoint"/>
-      <el-table-column label="供应商票点金额" align="center" prop="supplierPointAmount"/>
-      <el-table-column label="供应商公司名称" align="center" prop="Supplier"/>
+      <el-table-column label="开票日期" align="center" prop="invoiceDate" v-if="columns[0].visible"/>
+      <el-table-column label="开票金额" align="center" prop="invoiceAmount" v-if="columns[1].visible"/>
+      <el-table-column label="供应商票点" align="center" prop="supplierTicketPoint" v-if="columns[2].visible"/>
+      <el-table-column label="供应商票点金额" align="center" prop="supplierPointAmount" v-if="columns[3].visible"/>
+      <el-table-column label="供应商公司名称" align="center" prop="Supplier" v-if="columns[4].visible"/>
       <!--      <el-table-column label="供应商ID" align="center" prop="SupplierID"/>-->
-      <el-table-column label="客户公司名称" align="center" prop="customer"/>
+      <el-table-column label="客户公司名称" align="center" prop="customer" v-if="columns[5].visible"/>
       <!--      <el-table-column label="客户ID" align="center" prop="CustomerID"/>-->
-      <el-table-column label="票据单位名称" align="center" prop="invoiceCompanyName"/>
-      <el-table-column label="客户票点" align="center" prop="customerTicketPoint"/>
-      <el-table-column label="票点金额" align="center" prop="customerPointAmount"/>
-      <el-table-column label="备注" align="center" prop="comments"/>
+      <el-table-column label="票据单位名称" align="center" prop="invoiceCompanyName"v-if="columns[6].visible"/>
+      <el-table-column label="客户票点" align="center" prop="customerTicketPoint" v-if="columns[7].visible"/>
+      <el-table-column label="票点金额" align="center" prop="customerPointAmount" v-if="columns[8].visible"/>
+      <el-table-column label="备注" align="center" prop="comments" v-if="columns[9].visible"/>
       <el-table-column label="操作" align="center" class-name="small-padding fixed-width">
         <template slot-scope="scope">
           <el-button
@@ -222,25 +225,37 @@ export default {
       // 表单校验
       rules: {},
       columns: [
-        {key: 0, label: `收款编号`, visible: true},
-        {key: 1, label: `日期`, visible: true},
-        {key: 2, label: `支付类型`, visible: true},
-        {key: 3, label: `金额`, visible: true},
-        {key: 4, label: `己方户名`, visible: true},
-        {key: 5, label: `己方账号`, visible: true},
-        {key: 6, label: `己方开户行`, visible: true},
-        {key: 7, label: `己方账号ID`, visible: true},
-        {key: 8, label: `对方户名`, visible: true},
-        {key: 9, label: `对方账号`, visible: true},
-        {key: 10, label: `对方开户行`, visible: true},
-        {key: 11, label: `对方公司`, visible: true},
-        {key: 12, label: `对方公司ID`, visible: true},
-        {key: 13, label: `对方公司类型`, visible: true},
+        {key: 0, label: `开票日期`, visible: true},
+        {key: 1, label: `开票金额`, visible: true},
+        {key: 2, label: `供应商票点`, visible: true},
+        {key: 3, label: `供应商票点金额`, visible: true},
+        {key: 4, label: `供应商公司名称`, visible: true},
+        {key: 5, label: `客户公司名称`, visible: true},
+        {key: 6, label: `票据单位名称`, visible: true},
+        {key: 7, label: `客户票点`, visible: true},
+        {key: 8, label: `票点金额`, visible: true},
+        {key: 9, label: `备注`, visible: true},
       ],
     };
   },
   created() {
     this.getList();
+    if (localStorage.getItem('invoiceother-columns') === 'null'
+      || !localStorage.getItem('invoiceother-columns')) {
+      //设置localStorage
+      localStorage.setItem("invoiceother-columns", JSON.stringify(this.columns))
+    } else {
+      this.columns = JSON.parse(localStorage.getItem('invoiceother-columns'));
+    }
+  },
+  //展示与隐藏
+  watch: {
+    columns: {
+      handler: (newVal) => {
+        localStorage.setItem("invoiceother-columns", JSON.stringify(newVal))
+      },
+      deep: true,
+    }
   },
   methods: {
     /** 查询商家直接给客户开发票列表 */

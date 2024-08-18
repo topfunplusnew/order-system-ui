@@ -260,7 +260,7 @@ export default {
     }
   },
   methods: {
-    listOilCard,
+    /*listOilCard,*/
     //加油卡充值
     handleMoney() {
       this.moneyDialogVisible = true
