@@ -61,6 +61,12 @@
         <template slot-scope="scope">
           <el-button
             size="mini"
+            type="warning"
+            @click="secondInventory(scope.row)"
+          >二次入库
+          </el-button>
+          <el-button
+            size="mini"
             type="danger"
             @click="checkInvoInfo(scope.row)"
           >查看库存信息
@@ -199,7 +205,8 @@ import {
 } from "@/api/system/exWarehouse";
 import {listGoodsOrder} from "@/api/system/goodsOrder";
 import TagsItem from "@/components/TagsItem/index.vue";
-import {getInventory, listInventory} from "@/api/system/inventory";
+import {addInventory, getInventory, listInventory} from "@/api/system/inventory";
+import {excludeParams} from "@/api/tool/exclude";
 
 export default {
   name: "ExWarehouse",
@@ -248,7 +255,6 @@ export default {
     this.getList();
   },
   methods: {
-
     checkOrderInfo(row) {
       this.checkOrderVisible = true;
       //查询订单详情
@@ -263,10 +269,24 @@ export default {
         this.inventoryInfoVisible = true;
       })
     },
+    //二次入库
+    secondInventory(row) {
+      //查询该行的货物信息
+      getInventory(row.storeID).then(res => {
+        this.$confirm('是否二次出库?', '提示', {
+          confirmButtonText: '确定',
+          cancelButtonText: '取消',
+          type: 'warning'
+        }).then(() => {
+          addInventory(excludeParams(res.data, this.$exclude)).then(res => {
+            this.$message.success('二次出库成功')
+          })
+        })
+      })
+    },
     isOrNot(val) {
       return val === 1 ? "是" : "否";
     },
-
     /** 查询出库列表 */
     getList() {
       this.loading = true;
