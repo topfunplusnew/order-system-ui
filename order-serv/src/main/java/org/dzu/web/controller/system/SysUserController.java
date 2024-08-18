@@ -47,7 +47,7 @@ public class SysUserController extends BaseController
     /**
      * 获取用户列表
      */
-    @PreAuthorize("@ss.hasPermi('system:user:list')")
+    @PreAuthorize("@ss.hasAnyPermi('system:user:list,system:auditflow:edit')")
     @GetMapping("/list")
     public TableDataInfo list(SysUser user)
     {
