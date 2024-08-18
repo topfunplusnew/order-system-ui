@@ -148,13 +148,17 @@
     <!-- 添加或修改库存对话框 -->
     <el-dialog :title="title" :visible.sync="open" width="500px" append-to-body>
       <el-form ref="form" :model="form" :rules="rules" label-width="80px">
+        <!--        根据仓库名称自动查询-->
+        <!--        <el-form-item label="仓库ID" prop="storeHouseid">-->
+        <!--          <el-input v-model="form.storeHouseid" placeholder="请输入仓库ID"/>-->
+        <!--        </el-form-item>-->
         <el-form-item label="仓库名称" prop="storeHouseName">
           <el-row>
             <el-col :span="10">
               <el-input v-model="form.storeHouseName" placeholder="请输入仓库名称"/>
             </el-col>
             <el-col :span="3">
-              <SearchOption :limit-info="{}" :get-data="listStoreHouse" @commitBack="handleCommitBackStoreHouse">
+              <SearchOption :get-data="listStoreHouse" @commitBack="handleCommitBackStoreHouse">
                 <template #table-columns>
                   <el-table-column label="仓库名称" align="center" prop="storeHouseName"/>
                   <el-table-column label="地址" align="center" prop="address"/>
@@ -200,7 +204,7 @@
               <el-input v-model="form.levelID" placeholder="请输入级别编码"/>
             </el-col>
             <el-col :span="3">
-              <SearchOption :limit-info="{}" :get-data="listProductLevel" @commitBack="handleCommitBackProductLevel">
+              <SearchOption :get-data="listProductLevel" @commitBack="handleCommitBackProductLevel">
                 <template #table-columns>
                   <el-table-column label="级别编码" align="center" prop="levelNo"/>
                   <el-table-column label="级别名称" align="center" prop="levelName"/>
@@ -760,8 +764,6 @@ export default {
           message: '请先输入编辑原因!'
         });
       });
-
-
     },
     /** 提交按钮 */
     submitForm() {
