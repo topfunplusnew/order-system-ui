@@ -8,9 +8,6 @@
         <tags-view v-if="needTagsView"/>
       </div>
       <app-main/>
-      <!--      <right-panel>-->
-      <!--        <settings/>-->
-      <!--      </right-panel>-->
     </div>
   </div>
 </template>

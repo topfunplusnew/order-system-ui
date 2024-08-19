@@ -17,22 +17,11 @@
             @keyup.enter.native="handleQuery"
         />
       </el-form-item>
-      <!--      <el-form-item label="删除标记" prop="delFlag">
-              <el-input
-                v-model="queryParams.delFlag"
-                placeholder="请输入删除标记"
-                clearable
-                @keyup.enter.native="handleQuery"
-              />
-            </el-form-item>-->
       <el-form-item>
         <el-button type="primary" icon="el-icon-search" size="mini" @click="handleQuery">搜索</el-button>
-        <!--        <el-button icon="el-icon-refresh" size="mini" @click="resetQuery">重置</el-button>-->
       </el-form-item>
     </el-form>
-
     <el-row :gutter="10" class="mb8">
-      <!-- 刷新按钮-->
       <el-col :span="1.5">
         <el-button icon="el-icon-refresh" size="mini" @click="resetQuery">刷新</el-button>
       </el-col>
@@ -47,38 +36,6 @@
         >添加仓库商信息
         </el-button>
       </el-col>
-      <!--      <el-col :span="1.5">
-              <el-button
-                type="success"
-                plain
-                icon="el-icon-edit"
-                size="mini"
-                :disabled="single"
-                @click="handleUpdate"
-                v-hasPermi="['system:storehouse:edit']"
-              >修改</el-button>
-            </el-col>
-            <el-col :span="1.5">
-              <el-button
-                type="danger"
-                plain
-                icon="el-icon-delete"
-                size="mini"
-                :disabled="multiple"
-                @click="handleDelete"
-                v-hasPermi="['system:storehouse:remove']"
-              >删除</el-button>
-            </el-col>
-            <el-col :span="1.5">
-              <el-button
-                type="warning"
-                plain
-                icon="el-icon-download"
-                size="mini"
-                @click="handleExport"
-                v-hasPermi="['system:storehouse:export']"
-              >导出</el-button>
-            </el-col>-->
       <right-toolbar :showSearch.sync="showSearch" @queryTable="getList" :columns="columns">
         <template v-slot:print>
           <el-col :span="1.5">
@@ -91,7 +48,6 @@
             </el-button>
           </el-col>
         </template>
-        <!--        导出-->
         <template v-slot:export>
           <el-col :span="1.5">
             <el-button
@@ -109,11 +65,9 @@
 
     <el-table border v-horizontal-scroll="'always'" v-loading="loading" :data="StoreHouseList"
               @selection-change="handleSelectionChange" id="printBox">
-      <!--      <el-table-column type="selection" width="55" align="center"/>-->
       <el-table-column label="id" align="center" prop="id"/>
       <el-table-column label="仓库名称" align="center" prop="storeHouseName" v-if="columns[0].visible"/>
       <el-table-column label="地址" align="center" prop="address" v-if="columns[1].visible"/>
-      <!--      <el-table-column label="删除标记" align="center" prop="delFlag" />-->
       <el-table-column label="操作" align="center" class-name="small-padding fixed-width" fixed="right" width="180">
         <template slot-scope="scope">
           <el-button
@@ -151,9 +105,6 @@
         <el-form-item label="地址" prop="address">
           <el-input v-model="form.address" placeholder="请输入地址"/>
         </el-form-item>
-        <!--        <el-form-item label="删除标记" prop="delFlag">
-                  <el-input v-model="form.delFlag" placeholder="请输入删除标记" />
-                </el-form-item>-->
       </el-form>
       <div slot="footer" class="dialog-footer">
         <el-button type="primary" @click="submitForm">确 定</el-button>
