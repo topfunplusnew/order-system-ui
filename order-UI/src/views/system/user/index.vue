@@ -90,7 +90,7 @@
               size="mini"
               @click="handleAdd"
               v-hasPermi="['system:user:add']"
-            >新增
+            >新增用户信息
             </el-button>
           </el-col>
           <el-col :span="1.5">
@@ -142,7 +142,7 @@
           <right-toolbar :showSearch.sync="showSearch" @queryTable="getList" :columns="columns"></right-toolbar>
         </el-row>
 
-        <el-table v-loading="loading" :data="userList" @selection-change="handleSelectionChange">
+        <el-table border v-loading="loading" :data="userList" @selection-change="handleSelectionChange">
           <el-table-column type="selection" width="50" align="center"/>
           <el-table-column label="用户编号" align="center" key="userId" prop="userId"/>
           <el-table-column label="用户名称" align="center" key="userName" prop="userName"
@@ -210,14 +210,22 @@
               <span>{{ parseTime(scope.row.createTime) }}</span>
             </template>
           </el-table-column>
+          <!-- 操作栏-->
           <el-table-column
             label="操作"
             align="center"
-            width="160"
+            width="200"
             class-name="small-padding fixed-width"
             fixed="right"
           >
             <template slot-scope="scope" v-if="scope.row.userId !== 1">
+              <el-button
+                size="mini"
+                type="warning"
+                @click="checkRowInfo(scope.row)"
+                v-hasPermi="['system:user:edit']"
+              >查看用户信息
+              </el-button>
               <el-button
                 size="mini"
                 type="primary"
@@ -481,6 +489,146 @@
         <el-button @click="upload.open = false">取 消</el-button>
       </div>
     </el-dialog>
+
+
+    <!--    查看个人信息-->
+    <el-dialog
+      title="用户信息查看"
+      :visible.sync="checkUserDialogVisible"
+      width="30%">
+      <el-descriptions class="margin-top" title="用户信息查看" :column="3" border>
+        <el-descriptions-item>
+          <template slot="label">
+            <i class="el-icon-user"></i>
+            用户名
+          </template>
+          {{ currentUserInfo.userName }}
+        </el-descriptions-item>
+        <el-descriptions-item>
+          <template slot="label">
+            <i class="el-icon-mobile-phone"></i>
+            手机号
+          </template>
+          {{ currentUserInfo.phonenumber }}
+        </el-descriptions-item>
+        <el-descriptions-item>
+          <template slot="label">
+            <i class="el-icon-location-outline"></i>
+            用户性别
+          </template>
+          {{ currentUserInfo.sex }}
+        </el-descriptions-item>
+        <el-descriptions-item>
+          <template slot="label">
+            <i class="el-icon-tickets"></i>
+            出生日期
+          </template>
+          {{ currentUserInfo.birthday }}
+        </el-descriptions-item>
+        <el-descriptions-item>
+          <template slot="label">
+            <i class="el-icon-office-building"></i>
+            民族
+          </template>
+          {{ currentUserInfo.nation }}
+        </el-descriptions-item>
+        <el-descriptions-item>
+          <template slot="label">
+            <i class="el-icon-office-building"></i>
+            政治面貌
+          </template>
+          {{ currentUserInfo.politicalStatus }}
+        </el-descriptions-item>
+        <el-descriptions-item>
+          <template slot="label">
+            <i class="el-icon-office-building"></i>
+            婚姻状况
+          </template>
+          {{ currentUserInfo.maritalStatus }}
+        </el-descriptions-item>
+        <el-descriptions-item>
+          <template slot="label">
+            <i class="el-icon-office-building"></i>
+            户籍地址
+          </template>
+          {{ currentUserInfo.domicileAddress }}
+        </el-descriptions-item>
+        <el-descriptions-item>
+          <template slot="label">
+            <i class="el-icon-office-building"></i>
+            居住地址
+          </template>
+          {{ currentUserInfo.residentialAddress }}
+        </el-descriptions-item>
+        <el-descriptions-item>
+          <template slot="label">
+            <i class="el-icon-office-building"></i>
+            紧急联系人
+          </template>
+          {{ currentUserInfo.relationPerson }}
+        </el-descriptions-item>
+        <el-descriptions-item>
+          <template slot="label">
+            <i class="el-icon-office-building"></i>
+            紧急联系人电话
+          </template>
+          {{ currentUserInfo.relationPersonTel }}
+        </el-descriptions-item>
+        <el-descriptions-item>
+          <template slot="label">
+            <i class="el-icon-office-building"></i>
+            关系
+          </template>
+          {{ currentUserInfo.relationship }}
+        </el-descriptions-item>
+        <el-descriptions-item>
+          <template slot="label">
+            <i class="el-icon-office-building"></i>
+            学历
+          </template>
+          {{ currentUserInfo.education }}
+        </el-descriptions-item>
+        <el-descriptions-item>
+          <template slot="label">
+            <i class="el-icon-office-building"></i>
+            毕业院校
+          </template>
+          {{ currentUserInfo.gradualUniversity }}
+        </el-descriptions-item>
+        <el-descriptions-item>
+          <template slot="label">
+            <i class="el-icon-office-building"></i>
+            专业
+          </template>
+          {{ currentUserInfo.profession }}
+        </el-descriptions-item>
+        <el-descriptions-item>
+          <template slot="label">
+            <i class="el-icon-office-building"></i>
+            毕业时间
+          </template>
+          {{ currentUserInfo.gradualDate }}
+        </el-descriptions-item>
+        <el-descriptions-item>
+          <template slot="label">
+            <i class="el-icon-office-building"></i>
+            开户银行
+          </template>
+          {{ currentUserInfo.bankName }}
+        </el-descriptions-item>
+        <el-descriptions-item>
+          <template slot="label">
+            <i class="el-icon-office-building"></i>
+            开户银行账号
+          </template>
+          {{ currentUserInfo.bankNo }}
+        </el-descriptions-item>
+      </el-descriptions>
+      <span slot="footer" class="dialog-footer">
+    <el-button @click="checkUserDialogVisible = false">取 消</el-button>
+    <el-button type="primary" @click="checkUserDialogVisible = false">确 定</el-button>
+  </span>
+    </el-dialog>
   </div>
 </template>
 
@@ -604,8 +752,10 @@ export default {
             message: "请输入正确的手机号码",
             trigger: "blur"
           }
-        ]
-      }
+        ],
+      },
+      checkUserDialogVisible: false,
+      currentUserInfo: {}
     };
   },
   watch: {
@@ -623,6 +773,11 @@ export default {
   },
   methods: {
     parseTime,
+    //查看某一行用户的信息
+    checkRowInfo(row) {
+      this.currentUserInfo = row;
+      this.checkUserDialogVisible = true;
+    },
     /** 查询用户列表 */
     getList() {
       this.loading = true;
