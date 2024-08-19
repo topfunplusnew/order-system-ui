@@ -1,6 +1,22 @@
 <template>
   <div class="app-container">
     <el-form :model="queryParams" ref="queryForm" size="small" :inline="true" v-show="showSearch" label-width="68px">
+      <el-form-item label="订单编号" prop="ordersNo">
+        <el-input
+          v-model="queryParams.ordersNo"
+          placeholder="请输入订单编号"
+          clearable
+          @keyup.enter.native="handleQuery"
+        />
+      </el-form-item>
+      <!--      <el-form-item label="仓库ID" prop="storeHouseid">-->
+      <!--        <el-input-->
+      <!--          v-model="queryParams.storeHouseid"-->
+      <!--          placeholder="请输入仓库ID"-->
+      <!--          clearable-->
+      <!--          @keyup.enter.native="handleQuery"-->
+      <!--        />-->
+      <!--      </el-form-item>-->
       <el-form-item label="仓库名称" prop="storeHouseName">
         <el-input
           v-model="queryParams.storeHouseName"
@@ -9,25 +25,64 @@
           @keyup.enter.native="handleQuery"
         />
       </el-form-item>
-      <el-form-item label="出库日期" prop="outDate">
-        <el-input
-          v-model="queryParams.outDate"
-          placeholder="请输入出库日期"
-          clearable
-          @keyup.enter.native="handleQuery"
-        />
+      <!--      <el-form-item label="仓库存储的货物ID" prop="storeID">-->
+      <!--        <el-input-->
+      <!--          v-model="queryParams.storeID"-->
+      <!--          placeholder="请输入仓库存储的货物ID"-->
+      <!--          clearable-->
+      <!--          @keyup.enter.native="handleQuery"-->
+      <!--        />-->
+      <!--      </el-form-item>-->
+
+      <el-form-item label="创建时间">
+        <el-date-picker
+          v-model="dateRange"
+          style="width: 240px"
+          value-format="yyyy-MM-dd"
+          type="daterange"
+          range-separator="-"
+          start-placeholder="开始日期"
+          end-placeholder="结束日期"
+        ></el-date-picker>
       </el-form-item>
+<!--      <el-form-item label="出库日期" prop="outDate">-->
+<!--        <el-input-->
+<!--          v-model="queryParams.outDate"-->
+<!--          placeholder="请输入出库日期"-->
+<!--          clearable-->
+<!--          @keyup.enter.native="handleQuery"-->
+<!--        />-->
+<!--      </el-form-item>-->
+      <!--      <el-form-item label="出库量" prop="outAmount">-->
+      <!--        <el-input-->
+      <!--          v-model="queryParams.outAmount"-->
+      <!--          placeholder="请输入出库量"-->
+      <!--          clearable-->
+      <!--          @keyup.enter.native="handleQuery"-->
+      <!--        />-->
+      <!--      </el-form-item>-->
       <el-form-item>
         <el-button type="primary" icon="el-icon-search" size="mini" @click="handleQuery">搜索</el-button>
-<!--        <el-button icon="el-icon-refresh" size="mini" @click="resetQuery">重置</el-button>-->
+        <el-button icon="el-icon-refresh" size="mini" @click="resetQuery">重置</el-button>
       </el-form-item>
+<!--      <el-form-item>-->
+<!--        <el-button type="primary" icon="el-icon-search" size="mini" @click="handleQuery">搜索</el-button>-->
+<!--        <el-button icon="el-icon-refresh" size="mini" @click="resetQuery">重置</el-button>-->
+<!--      </el-form-item>-->
     </el-form>
 
     <el-row :gutter="10" class="mb8">
-      <!-- 刷新按钮-->
-      <el-col :span="1.5">
-        <el-button icon="el-icon-refresh" size="mini" @click="resetQuery">刷新</el-button>
-      </el-col>
+      <!--      <el-col :span="1.5">-->
+      <!--        <el-button-->
+      <!--          type="primary"-->
+      <!--          plain-->
+      <!--          icon="el-icon-plus"-->
+      <!--          size="mini"-->
+      <!--          @click="handleAdd"-->
+      <!--          v-hasPermi="['system:exwarehouse:add']"-->
+      <!--        >新增出库信息-->
+      <!--        </el-button>-->
+      <!--      </el-col>-->
       <right-toolbar :showSearch.sync="showSearch" @queryTable="getList" :columns="columns">
         <template v-slot:print>
           <el-col :span="1.5">
@@ -40,6 +95,7 @@
             </el-button>
           </el-col>
         </template>
+        <!--        导出-->
         <template v-slot:export>
           <el-col :span="1.5">
             <el-button
@@ -47,7 +103,7 @@
               icon="el-icon-folder-opened"
               size="mini"
               @click="handleExport"
-              v-hasPermi="['system:exwarehouse:export']"
+              v-hasPermi="['system:bankaccount:export']"
             >
             </el-button>
           </el-col>
@@ -57,10 +113,14 @@
 
     <el-table border v-horizontal-scroll="'always'" v-loading="loading" :data="exWarehouseList"
               @selection-change="handleSelectionChange" id="printBox">
-      <el-table-column label="id" align="center" prop="id" v-if="columns[0].visible"/>
-      <el-table-column label="仓库名称" align="center" prop="storeHouseName" v-if="columns[1].visible"/>
-      <el-table-column label="出库日期" align="center" prop="outDate" v-if="columns[2].visible"/>
-      <el-table-column label="出库量" align="center" prop="outAmount" v-if="columns[3].visible"/>
+      <el-table-column label="id" align="center" prop="id"/>
+      <el-table-column label="订单编号" align="center" prop="ordersNo"/>
+      <!--      <el-table-column label="仓库ID" align="center" prop="storeHouseid"/>-->
+      <el-table-column label="仓库名称" align="center" prop="storeHouseName"/>
+      <!--      <el-table-column label="仓库存储的货物ID" align="center" prop="storeID"/>-->
+
+      <el-table-column label="出库日期" align="center" prop="outDate"/>
+      <el-table-column label="出库量" align="center" prop="outAmount"/>
       <el-table-column label="操作" align="center" class-name="small-padding fixed-width">
         <template slot-scope="scope">
           <el-button
@@ -93,6 +153,9 @@
         <el-form-item label="订单编号" prop="ordersNo">
           <el-input v-model="form.ordersNo" placeholder="请输入订单编号"/>
         </el-form-item>
+        <!--        <el-form-item label="仓库ID" prop="storeHouseid">-->
+        <!--          <el-input v-model="form.storeHouseid" placeholder="请输入仓库ID"/>-->
+        <!--        </el-form-item>-->
         <el-form-item label="仓库名称" prop="storeHouseName">
           <el-input v-model="form.storeHouseName" placeholder="请输入仓库名称"/>
         </el-form-item>
@@ -119,6 +182,7 @@
       :visible.sync="checkOrderVisible"
       width="30%">
       <el-descriptions title="订单信息" :column="1" border>
+        <el-descriptions-item label="id">{{ orderDetailInfo.id }}</el-descriptions-item>
         <el-descriptions-item label="日期">{{ orderDetailInfo.orderDate }}</el-descriptions-item>
         <el-descriptions-item label="客户">{{ orderDetailInfo.customer }}</el-descriptions-item>
         <el-descriptions-item label="商家姓名">{{ orderDetailInfo.supplierNames }}</el-descriptions-item>
@@ -129,6 +193,7 @@
         <el-descriptions-item label="开票状态">
           <TagsItem :check-info="orderDetailInfo.invoiceState" checkValue="未开票"/>
         </el-descriptions-item>
+        <el-descriptions-item label="附件">{{ orderDetailInfo.path }}</el-descriptions-item>
         <el-descriptions-item label="陆运车牌">{{ orderDetailInfo.landCarNo }}</el-descriptions-item>
         <el-descriptions-item label="陆运司机电话">{{ orderDetailInfo.landDriverTel }}</el-descriptions-item>
         <el-descriptions-item label="陆运司机姓名">{{ orderDetailInfo.landDriverName }}</el-descriptions-item>
@@ -136,6 +201,11 @@
         <el-descriptions-item label="海运司机电话">{{ orderDetailInfo.seaDriverTel }}</el-descriptions-item>
         <el-descriptions-item label="海运司机姓名">{{ orderDetailInfo.seaDriverName }}</el-descriptions-item>
         <el-descriptions-item label="打款状态">{{ orderDetailInfo.PaymentState }}</el-descriptions-item>
+        <el-descriptions-item label="陆运银行户名">{{ orderDetailInfo.landBankName }}</el-descriptions-item>
+        <el-descriptions-item label="陆运银行账号">{{ orderDetailInfo.landBankNo }}</el-descriptions-item>
+        <el-descriptions-item label="海运银行户名">{{ orderDetailInfo.seaBankName }}</el-descriptions-item>
+        <el-descriptions-item label="海运银行账号">{{ orderDetailInfo.seaBankNo }}</el-descriptions-item>
+        <el-descriptions-item label="收到条附件">{{ orderDetailInfo.receiveProof }}</el-descriptions-item>
         <el-descriptions-item label="是否被调整单">
           <TagsItem :check-info="orderDetailInfo.isAdjusted " check-value="否"/>
         </el-descriptions-item>
@@ -156,93 +226,11 @@
         <el-descriptions-item label="陆运费">{{ orderDetailInfo.landFreight }}</el-descriptions-item>
         <el-descriptions-item label="海运费">{{ orderDetailInfo.seaFreight }}</el-descriptions-item>
       </el-descriptions>
+      <span slot="footer" class="dialog-footer">
+        <el-button @click="checkOrderVisible = false">取 消</el-button>
+        <el-button type="primary" @click="checkOrderVisible = false">确 定</el-button>
+      </span>
     </el-dialog>
-
-
-    <el-dialog title="库存信息" :visible.sync="inventoryInfoVisible" width="500px" append-to-body>
-      <el-descriptions title="库存详情" border>
-        <el-descriptions-item label="陆地车号">
-          {{ inventoryInfo.landCarNo }}
-        </el-descriptions-item>
-        <el-descriptions-item label="陆地司机姓名">
-          {{ inventoryInfo.landDriverName }}
-        </el-descriptions-item>
-        <el-descriptions-item label="陆地司机电话">
-          {{ inventoryInfo.landDriverTel }}
-        </el-descriptions-item>
-        <el-descriptions-item label="陆地运费">
-          {{ inventoryInfo.landFreight }}
-        </el-descriptions-item>
-        <el-descriptions-item label="陆地运费单价">
-          {{ inventoryInfo.landFreightPrice }}
-        </el-descriptions-item>
-        <el-descriptions-item label="长度">
-          {{ inventoryInfo.length }}
-        </el-descriptions-item>
-        <el-descriptions-item label="宽度">
-          {{ inventoryInfo.width }}
-        </el-descriptions-item>
-        <el-descriptions-item label="厚度">
-          {{ inventoryInfo.height }}
-        </el-descriptions-item>
-        <el-descriptions-item label="吨位">
-          {{ inventoryInfo.freight }}
-        </el-descriptions-item>
-        <el-descriptions-item label="单位">
-          {{ inventoryInfo.countingUnit }}
-        </el-descriptions-item>
-        <el-descriptions-item label="误差">
-          {{ inventoryInfo.erro }}
-        </el-descriptions-item>
-        <el-descriptions-item label="等级名称">
-          {{ inventoryInfo.levelName }}
-        </el-descriptions-item>
-        <el-descriptions-item label="其他费用">
-          {{ inventoryInfo.otherCost }}
-        </el-descriptions-item>
-        <el-descriptions-item label="包数">
-          {{ inventoryInfo.packs }}
-        </el-descriptions-item>
-        <el-descriptions-item label="出厂货款">
-          {{ inventoryInfo.paymentFactory }}
-        </el-descriptions-item>
-        <el-descriptions-item label="卸货付款">
-          {{ inventoryInfo.paymentUnload }}
-        </el-descriptions-item>
-        <el-descriptions-item label="总货款">
-          {{ inventoryInfo.payments }}
-        </el-descriptions-item>
-        <!-- 省略了部分字段，继续按照此模式添加 -->
-        <el-descriptions-item label="产品级别">
-          {{ inventoryInfo.levelName }}
-        </el-descriptions-item>
-        <el-descriptions-item label="产品级别">
-          {{ inventoryInfo.levelName }}
-        </el-descriptions-item>
-        <el-descriptions-item label="剩余库存量">
-          {{ inventoryInfo.stockNumber }}
-        </el-descriptions-item>
-        <el-descriptions-item label="供应商">
-          {{ inventoryInfo.supplier }}
-        </el-descriptions-item>
-        <el-descriptions-item label="重量">
-          {{ inventoryInfo.tonnage }}
-        </el-descriptions-item>
-        <el-descriptions-item label="库存编号">
-          {{ inventoryInfo.stockNumber }}
-        </el-descriptions-item>
-        <el-descriptions-item label="存储日期">
-          {{ inventoryInfo.storeDate }}
-        </el-descriptions-item>
-        <el-descriptions-item label="仓库名称">
-          {{ inventoryInfo.storeHouseName }}
-        </el-descriptions-item>
-        <el-descriptions-item label="杂费">
-          {{ inventoryInfo.sundryCost }}
-        </el-descriptions-item>
-      </el-descriptions>
-    </el-dialog>
-
   </div>
 </template>
 
@@ -257,21 +245,34 @@ import {
 import {listGoodsOrder} from "@/api/system/goodsOrder";
 import TagsItem from "@/components/TagsItem/index.vue";
 import {getInventory, listInventory} from "@/api/system/inventory";
+import {listConfig} from "@/api/system/config";
 
 export default {
   name: "ExWarehouse",
   components: {TagsItem},
   data() {
     return {
+      // 遮罩层
       loading: true,
+      // 选中数组
       ids: [],
+      // 非单个禁用
       single: true,
+      // 非多个禁用
       multiple: true,
+      // 显示搜索条件
       showSearch: true,
+      // 总条数
       total: 0,
+      // 出库表格数据
       exWarehouseList: [],
+      // 弹出层标题
       title: "",
+      // 日期范围
+      dateRange: [],
+      // 是否显示弹出层
       open: false,
+      // 查询参数
       queryParams: {
         pageNum: 1,
         pageSize: 10,
@@ -284,46 +285,35 @@ export default {
         delFlag: null,
         addtime: null,
         userId: null,
-        UserName: null,
-        isOrder: 'isOrder'
+        UserName: null
       },
+      // 表单参数
       form: {},
+      // 表单校验
       rules: {},
       columns: [
-        {key: 0, label: `id`, visible: true},
-        {key: 1, label: `仓库名称`, visible: true},
-        {key: 2, label: `出库日期`, visible: true},
-        {key: 3, label: `出库量`, visible: true},
+        {key: 0, label: `账户类型`, visible: true},
+        {key: 1, label: `开户名称`, visible: true},
+        {key: 2, label: `账号(银行卡号)`, visible: true},
+        {key: 3, label: `开户行`, visible: true},
+        {key: 4, label: `公司名称`, visible: true}
       ],
       checkOrderVisible: false,
       orderDetailInfo: {},
-
-      //库存信息
-      inventoryInfo: {},
-      inventoryInfoVisible: false,
     };
   },
   created() {
     this.getList();
-    if (localStorage.getItem('exwarehouse-columns') === 'null'
-      || !localStorage.getItem('exwarehouse-columns')) {
-      //设置localStorage
-      localStorage.setItem("exwarehouse-columns", JSON.stringify(this.columns))
-    } else {
-      this.columns = JSON.parse(localStorage.getItem('exwarehouse-columns'));
-    }
   },
-  //展示与隐藏
-  watch: {
-    columns: {
-      handler: (newVal) => {
-        localStorage.setItem("exwarehouse-columns", JSON.stringify(newVal))
-      },
-      deep: true,
-    }
-  },
+
+    // 取消按钮
+    cancel() {
+      this.open = false;
+      this.reset();
+    },
   methods: {
     checkOrderInfo(row) {
+      console.log(row)
       this.checkOrderVisible = true;
       //查询订单详情
       listGoodsOrder({ordersNo: row.ordersNo}).then(res => {
@@ -333,9 +323,9 @@ export default {
 
     //查看库存信息 查询当前行的库存信息
     checkInvoInfo(row) {
-      getInventory(row.storeID).then(res => {
-        this.inventoryInfo = res.data
-        this.inventoryInfoVisible = true;
+      console.log(row)
+      listInventory({storeHouseid: row.storeHouseid}).then(res => {
+        console.log(res)
       })
     },
     isOrNot(val) {
@@ -345,12 +335,15 @@ export default {
     /** 查询出库列表 */
     getList() {
       this.loading = true;
-      listExWarehouse(this.queryParams).then(response => {
+      listExWarehouse(this.addDateRange(this.queryParams, this.dateRange)).then(response => {
         this.exWarehouseList = response.rows;
         this.total = response.total;
         this.loading = false;
       });
+
     },
+    /** 查询参数列表 */
+
     // 取消按钮
     cancel() {
       this.open = false;
@@ -381,6 +374,7 @@ export default {
     },
     /** 重置按钮操作 */
     resetQuery() {
+      this.dateRange = [];
       this.resetForm("queryForm");
       this.handleQuery();
     },
