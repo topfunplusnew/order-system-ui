@@ -5,43 +5,43 @@
     <el-form :model="timesQuery" ref="queryForm" size="small" :inline="true" v-show="showSearch" label-width="100px">
       <el-form-item label="开始时间" prop="beginTime">
         <el-date-picker
-            v-model="timesQuery.beginTime"
-            type="date"
-            placeholder="选择开始时间">
+          v-model="timesQuery.beginTime"
+          type="date"
+          placeholder="选择开始时间">
         </el-date-picker>
       </el-form-item>
       <el-form-item label="结束时间" prop="endTime">
         <el-date-picker
-            v-model="timesQuery.endTime"
-            type="date"
-            placeholder="选择结束时间">
+          v-model="timesQuery.endTime"
+          type="date"
+          placeholder="选择结束时间">
         </el-date-picker>
       </el-form-item>
       <el-form-item label="客户名称" prop="customer">
         <el-input
-            v-model="paramQuery.customer"
-            placeholder="请输入陆运车牌"
-            clearable
-            @keyup.enter.native="handleQuery"
+          v-model="paramQuery.customer"
+          placeholder="请输入陆运车牌"
+          clearable
+          @keyup.enter.native="handleQuery"
         />
       </el-form-item>
       <el-form-item label="审核状态" prop="checkState">
         <el-select v-model="paramQuery.checkState" placeholder="请选择">
           <el-option
-              v-for="item in options"
-              :key="item.value"
-              :label="item.label"
-              :value="item.value">
+            v-for="item in options"
+            :key="item.value"
+            :label="item.label"
+            :value="item.value">
           </el-option>
         </el-select>
       </el-form-item>
       <el-form-item label="开票状态" prop="invoiceState">
         <el-select v-model="paramQuery.invoiceState" placeholder="请选择">
           <el-option
-              v-for="item in optionsInvoice"
-              :key="item.value"
-              :label="item.label"
-              :value="item.value">
+            v-for="item in optionsInvoice"
+            :key="item.value"
+            :label="item.label"
+            :value="item.value">
           </el-option>
         </el-select>
       </el-form-item>
@@ -58,23 +58,23 @@
       <el-col :span="1.5">
         <!--        todo 审核的时候添加审核权限 -->
         <el-button
-            type="danger"
-            plain
-            icon="el-icon-plus"
-            size="mini"
-            @click="handleAdd"
-            v-hasPermi="['system:goodsorder:add']"
+          type="danger"
+          plain
+          icon="el-icon-plus"
+          size="mini"
+          @click="handleAdd"
+          v-hasPermi="['system:goodsorder:add']"
         >添加订单信息
         </el-button>
       </el-col>
       <el-col :span="1.5">
         <el-button
-            type="warning"
-            plain
-            icon="el-icon-download"
-            size="mini"
-            @click="handleExport"
-            v-hasPermi="['system:goodsorder:export']"
+          type="warning"
+          plain
+          icon="el-icon-download"
+          size="mini"
+          @click="handleExport"
+          v-hasPermi="['system:goodsorder:export']"
         >导出订单数据
         </el-button>
       </el-col>
@@ -83,10 +83,10 @@
         <template v-slot:print>
           <el-col :span="1.5">
             <el-button
-                plain
-                icon="el-icon-printer"
-                size="mini"
-                @click="printHTML"
+              plain
+              icon="el-icon-printer"
+              size="mini"
+              @click="printHTML"
             >
             </el-button>
           </el-col>
@@ -95,11 +95,11 @@
         <template v-slot:export>
           <el-col :span="1.5">
             <el-button
-                plain
-                icon="el-icon-folder-opened"
-                size="mini"
-                @click="handleExport"
-                v-hasPermi="['system:orderdetail:export']"
+              plain
+              icon="el-icon-folder-opened"
+              size="mini"
+              @click="handleExport"
+              v-hasPermi="['system:orderdetail:export']"
             >
             </el-button>
           </el-col>
@@ -114,28 +114,28 @@
       <el-table-column label="操作" align="center" class-name="small-padding fixed-width" width="170px" fixed="left">
         <template slot-scope="scope">
           <el-button
-              size="mini"
-              @click="checkOrderItemInfo(scope.row)"
+            size="mini"
+            @click="checkOrderItemInfo(scope.row)"
           >查看
           </el-button>
           <el-button
-              :disabled="scope.row.isAdjusted ==='是'"
-              size="mini"
-              type="primary"
-              @click="handleOrderItemInfo(scope.row)"
+            :disabled="scope.row.isAdjusted ==='是'"
+            size="mini"
+            type="primary"
+            @click="handleOrderItemInfo(scope.row)"
           >调整单
           </el-button>
           <el-button
-              size="mini"
-              type="warning"
-              @click="handleCheckOrderDetailInfo(scope.row)"
+            size="mini"
+            type="warning"
+            @click="handleCheckOrderDetailInfo(scope.row)"
           >订单详情
           </el-button>
           <el-button
-              size="mini"
-              type="danger"
-              @click="handleDelete(scope.row)"
-              v-hasPermi="['system:goodsorder:remove']"
+            size="mini"
+            type="danger"
+            @click="handleDelete(scope.row)"
+            v-hasPermi="['system:goodsorder:remove']"
           >删除
           </el-button>
         </template>
@@ -152,8 +152,6 @@
       <el-table-column label="海运司机姓名" align="center" prop="seaDriverName" v-if="columns[6].visible"/>
       <el-table-column label="销售经理" align="center" prop="saleManager" v-if="columns[7].visible"/>
       <el-table-column label="车队" align="center" prop="fleet" v-if="columns[8].visible"/>
-
-
       <el-table-column label="审核状态" align="center" prop="checkState" v-if="columns[9].visible" width="120">
         <template slot-scope="scope">
           <SwitchBarForCheck :model-value="scope.row.checkState==='未审核'"
@@ -166,7 +164,6 @@
                          @update:modelValue="handleOpenTitle($event,scope.row)"/>
         </template>
       </el-table-column>
-
       <!--  todo    压缩上传-->
       <el-table-column label="附件路径" align="center" prop="path" v-if="columns[11].visible"/>
 
@@ -174,7 +171,7 @@
                        v-if="columns[12].visible">
         <template slot-scope="scope">
           <el-tag
-              disable-transitions>{{ scope.row.paymentState }}
+            disable-transitions>{{ scope.row.paymentState }}
           </el-tag>
         </template>
       </el-table-column>
@@ -186,16 +183,16 @@
       <el-table-column label="是否被调整单" align="center" prop="isAdjusted" v-if="columns[18].visible">
         <template slot-scope="scope">
           <el-tag
-              :type="scope.row.isAdjusted === '否' ? 'danger' :'success'"
-              disable-transitions>{{ scope.row.isAdjusted }}
+            :type="scope.row.isAdjusted === '否' ? 'danger' :'success'"
+            disable-transitions>{{ scope.row.isAdjusted }}
           </el-tag>
         </template>
       </el-table-column>
       <el-table-column label="是否调整单" align="center" prop="isAdjust" v-if="columns[19].visible">
         <template slot-scope="scope">
           <el-tag
-              :type="scope.row.isAdjust === '否' ? 'danger' :'success'"
-              disable-transitions>{{ scope.row.isAdjust }}
+            :type="scope.row.isAdjust === '否' ? 'danger' :'success'"
+            disable-transitions>{{ scope.row.isAdjust }}
           </el-tag>
         </template>
       </el-table-column>
@@ -204,8 +201,8 @@
       <el-table-column label="是否可编辑" align="center" prop="isedit" v-if="columns[22].visible">
         <template slot-scope="scope">
           <el-tag
-              :type="scope.row.isedit === 0 ? 'danger' :'success'"
-              disable-transitions>{{ isOrNot(scope.row.isedit) }}
+            :type="scope.row.isedit === 0 ? 'danger' :'success'"
+            disable-transitions>{{ isOrNot(scope.row.isedit) }}
           </el-tag>
         </template>
       </el-table-column>
@@ -223,42 +220,43 @@
                          @update:modelValue="handleOpenTitle"/>
         </template>
       </el-table-column>
+      <el-table-column label="备注" align="center" prop="comments" v-if="columns[25].visible"/>
       <!--      右侧操作栏-->
       <el-table-column label="操作" align="center" class-name="small-padding fixed-width" width="300px" fixed="right">
         <template slot-scope="scope">
           <el-button
-              size="mini"
-              @click="handleOrder1(scope.row)"
-              v-hasPermi="['system:goodsorder:edit']"
+            size="mini"
+            @click="handleOrder1(scope.row)"
+            v-hasPermi="['system:goodsorder:edit']"
           >发货单
           </el-button>
           <el-button
-              size="mini"
-              type="danger"
-              @click="handleUpload(scope.row)"
+            size="mini"
+            type="danger"
+            @click="handleUpload(scope.row)"
           >上传附件
           </el-button>
           <el-button
-              size="mini"
-              @click="handleCommit(scope.row)"
-              v-hasPermi="['system:goodsorder:remove']"
+            size="mini"
+            @click="handleCommit(scope.row)"
+            v-hasPermi="['system:goodsorder:remove']"
           >上传收到条
           </el-button>
 
           <el-button
-              v-if="scope.row.landFreight>0"
-              size="mini"
-              type="warning"
-              @click="handleApplyLandFree(scope.row)"
-              v-hasPermi="['system:goodsorder:remove']"
+            v-if="scope.row.landFreight>0"
+            size="mini"
+            type="warning"
+            @click="handleApplyLandFree(scope.row)"
+            v-hasPermi="['system:goodsorder:remove']"
           >陆运费申请
           </el-button>
           <el-button
-              v-if="scope.row.seaFreight>0"
-              type="primary"
-              size="mini"
-              @click="handleApplySeaFree(scope.row)"
-              v-hasPermi="['system:goodsorder:remove']"
+            v-if="scope.row.seaFreight>0"
+            type="primary"
+            size="mini"
+            @click="handleApplySeaFree(scope.row)"
+            v-hasPermi="['system:goodsorder:remove']"
           >海运费申请
           </el-button>
         </template>
@@ -266,19 +264,19 @@
     </el-table>
 
     <pagination
-        v-show="total>0"
-        :total="total"
-        :page.sync="queryParams.pageNum"
-        :limit.sync="queryParams.pageSize"
-        @pagination="getList"
+      v-show="total>0"
+      :total="total"
+      :page.sync="queryParams.pageNum"
+      :limit.sync="queryParams.pageSize"
+      @pagination="getList"
     />
 
 
     <!--        点击查看某个订单的弹窗   -->
     <el-dialog
-        title="查看订单信息"
-        :visible.sync="checkOrderVisible"
-        width="30%">
+      title="查看订单信息"
+      :visible.sync="checkOrderVisible"
+      width="30%">
       <el-descriptions title="订单信息" :column="1" border>
         <el-descriptions-item label="日期">{{ orderDetailInfo.orderDate }}</el-descriptions-item>
         <el-descriptions-item label="客户">{{ orderDetailInfo.customer }}</el-descriptions-item>
@@ -332,9 +330,9 @@
 
     <!--    点击调整单的弹窗-->
     <el-dialog
-        title="提示"
-        :visible.sync="handleOrderVisible"
-        width="30%">
+      title="提示"
+      :visible.sync="handleOrderVisible"
+      width="30%">
       <span>是否将订单设置为调整单?</span>
       <span slot="footer" class="dialog-footer">
     <el-button @click="handleOrderVisible = false">取 消</el-button>
@@ -344,9 +342,9 @@
 
     <!--    点击发货单的弹窗-->
     <el-dialog
-        title="发货单"
-        :visible.sync="Order1Visible"
-        width="75%">
+      title="发货单"
+      :visible.sync="Order1Visible"
+      width="75%">
       <!--      发货单主体-->
       <el-row>
         <ChatForm/>
@@ -359,9 +357,9 @@
 
     <!--    上传附件的弹窗-->
     <el-dialog
-        title="上传附件"
-        :visible.sync="handleUploadVisible"
-        width="30%">
+      title="上传附件"
+      :visible.sync="handleUploadVisible"
+      width="30%">
       <file-upload is-show-tip @input="handleBackUpload"/>
       <span slot="footer" class="dialog-footer">
     <el-button @click="handleUploadVisible = false">取 消</el-button>
@@ -371,9 +369,9 @@
 
     <!--    上传收到条的弹窗-->
     <el-dialog
-        title="提示"
-        :visible.sync="handleCommitVisible"
-        width="30%">
+      title="提示"
+      :visible.sync="handleCommitVisible"
+      width="30%">
       <file-upload @input="handleCommitGet"/>
       <span slot="footer" class="dialog-footer">
     <el-button @click="handleCommitVisible = false">取 消</el-button>
@@ -384,9 +382,9 @@
 
     <!--    添加订单的新弹窗 原有的新增不使用-->
     <el-dialog
-        title="订单信息"
-        :visible.sync="addOrderItemVisible"
-        width="80%">
+      title="订单信息"
+      :visible.sync="addOrderItemVisible"
+      width="80%">
       <!--      添加订单 传递本组件的orderInfo信息 -->
       <OrderForm :orderInfo="orderInfo" @updateOrderInfo="handleChangeOrderInfo"/>
       <span slot="footer" class="dialog-footer">
@@ -398,16 +396,16 @@
 
     <!--    开票弹窗-->
     <el-dialog
-        title="开票"
-        :visible.sync="handleOpenTitleDialogVisible"
-        width="30%">
+      title="开票"
+      :visible.sync="handleOpenTitleDialogVisible"
+      width="30%">
       <el-form :model="openTitleInfo" label-width="110px">
         <el-form-item label="开票日期" prop="invoiceDate">
           <el-date-picker
-              v-model="openTitleInfo.invoiceDate"
-              type="date"
-              placeholder="选择日期"
-              value-format="timestamp">
+            v-model="openTitleInfo.invoiceDate"
+            type="date"
+            placeholder="选择日期"
+            value-format="timestamp">
           </el-date-picker>
         </el-form-item>
         <el-form-item label="我方开票实体" prop="invoiceObject">
@@ -458,26 +456,26 @@
 
     <!--    陆运费申请 指定destroy-on-close来销毁dialog的元素让其下次打开重新渲染 从而反复执行created-->
     <el-dialog
-        title="陆运费申请"
-        :visible.sync="landFreeDialogVisible"
-        width="50%" destroy-on-close>
+      title="陆运费申请"
+      :visible.sync="landFreeDialogVisible"
+      width="50%" destroy-on-close>
       <FreeApply :order-info="landFreightInfo"/>
     </el-dialog>
 
     <!--    海运费申请 :key="keyFlag"-->
     <el-dialog
-        title="海运费申请"
-        :visible.sync="seaFreeDialogVisible"
-        width="50%" destroy-on-close>
+      title="海运费申请"
+      :visible.sync="seaFreeDialogVisible"
+      width="50%" destroy-on-close>
       <FreeApply :order-info="seaFreightInfo"/>
     </el-dialog>
 
 
     <!--    订单详情-->
     <el-dialog
-        title="订单详情"
-        :visible.sync="checkOrderDetailInfoVisible"
-        width="70%" destroy-on-close>
+      title="订单详情"
+      :visible.sync="checkOrderDetailInfoVisible"
+      width="70%" destroy-on-close>
       <!--      传递订单详情列表-->
       <OrderDetailInfo :orderDetailInfoList="orderDetailInfoList"/>
     </el-dialog>
@@ -638,6 +636,7 @@ export default {
         {key: 22, label: `是否可编辑`, visible: true},
         {key: 23, label: `客户是否开票`, visible: true},
         {key: 24, label: `供应商是否开票`, visible: true},
+        {key: 25, label: `备注`, visible: true},
       ],
       //顶部条件搜索
       queryOrderInfo: {},
@@ -762,11 +761,11 @@ export default {
         })
         if (this.timesQuery.beginTime && this.timesQuery.endTime) {
           this.goodsOrderList =
-              this.$dateRange(this, 'goodsOrderList', 'orderDate', this.timesQuery.beginTime, this.timesQuery.endTime);
+            this.$dateRange(this, 'goodsOrderList', 'orderDate', this.timesQuery.beginTime, this.timesQuery.endTime);
         }
       } else {
         this.goodsOrderList =
-            this.$dateRange(this, 'goodsOrderList', 'orderDate', this.timesQuery.beginTime, this.timesQuery.endTime);
+          this.$dateRange(this, 'goodsOrderList', 'orderDate', this.timesQuery.beginTime, this.timesQuery.endTime);
       }
     },
     listCompany,
@@ -838,9 +837,9 @@ export default {
       this.tempOrderInfo = excludeParams(this.tempOrderInfo, this.$exclude)
       //修改订单信息
       updateGoodsOrder({...this.tempOrderInfo, path: val})
-          .then(res => {
-            this.$message.success('上传成功')
-          })
+        .then(res => {
+          this.$message.success('上传成功')
+        })
     },
 
     //调整单

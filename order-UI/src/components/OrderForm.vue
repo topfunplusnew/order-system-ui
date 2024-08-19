@@ -81,6 +81,18 @@ export default {
         }, 20)
       }
     },
+    //备注
+    comments: {
+      get() {
+        return this.orderInfo.comments;
+      },
+      set(val) {
+        //将新输入的值更新到父组件 添加延时操作 避免解构赋空
+        setTimeout(() => {
+          this.handleUpdateOrderInfo({...this.orderInfo, comments: val})
+        }, 20)
+      }
+    },
     //陆运车牌
     landCarNo: {
       get() {
@@ -329,6 +341,12 @@ export default {
         <el-input type="text" v-model="saleManager" style="width: 60%"
                   placeholder="请输入销售经理名称"></el-input>
       </div>
+      <div class="header-item">
+        <span style="font-weight: bolder">备注:</span>
+        <el-input type="text" v-model="comments" style="width: 60%"
+                  placeholder="请输入备注"></el-input>
+      </div>
+
       <!--      多选框-->
       <div class="header-item">
         <span style="font-weight: bolder;">交通运输方式: </span>
@@ -386,7 +404,7 @@ export default {
         </div>
       </div>
     </div>
-
+    <br/>
     <!--    订单主体-->
     <div v-if="orderItemList.length!==0">
       <!--      从vuex中拿到订单详细列表-->
