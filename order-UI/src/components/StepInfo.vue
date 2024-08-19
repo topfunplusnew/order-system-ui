@@ -185,7 +185,7 @@ export default {
                             placement="top">
             <el-card :class="{'shadow':isDisable(item)}">
               <el-row>
-                <el-col :span="22">
+                <el-col :span="18">
                   <h2>{{ item.flowname }}</h2>
                   <p>
                     <span class="tx-bolder">审核结果:</span>
@@ -197,7 +197,7 @@ export default {
                     <span v-else> <el-tag type="warning">待审核</el-tag></span>
                   </p>
                 </el-col>
-                <el-col :span="2">
+                <el-col :span="4">
                   <!--  判断当前审核过程是否为登录用户的userId-->
                   <el-tooltip class="item" effect="dark"
                               :content="!isDisable?'您不用审核该项':'审核'"

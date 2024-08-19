@@ -251,7 +251,7 @@ export default {
 
 
     <!--      审核流程步骤图信息  -->
-    <el-dialog :visible.sync="checkApplyInfoDialogVisible" title="审核流程多项信息" width="80%">
+    <el-dialog :visible.sync="checkApplyInfoDialogVisible" title="审核流程多项信息" width="58%">
       <el-row v-for="(item,index) in auditInfoList" :key="index">
         <el-collapse v-model="activeNames" @change="handleChangeApplyItem">
           <el-collapse-item name="1">

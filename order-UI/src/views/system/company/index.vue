@@ -3,10 +3,10 @@
     <el-form :model="queryParams" ref="queryForm" size="small" :inline="true" v-show="showSearch" label-width="68px">
       <el-form-item label="客户名称" prop="relationName">
         <el-input
-            v-model="queryParams.relationName"
-            placeholder="请输入客户名称"
-            clearable
-            @keyup.enter.native="handleQuery"
+          v-model="queryParams.relationName"
+          placeholder="请输入客户名称"
+          clearable
+          @keyup.enter.native="handleQuery"
         />
       </el-form-item>
       <el-form-item>
@@ -20,20 +20,20 @@
       </el-col>
       <el-col :span="1.5">
         <el-button
-            type="danger"
-            plain
-            size="mini"
-            @click="handleAdd"
-            v-hasPermi="['system:company:add']"
+          type="danger"
+          plain
+          size="mini"
+          @click="handleAdd"
+          v-hasPermi="['system:company:add']"
         >新增客户信息
         </el-button>
       </el-col>
       <el-col :span="1.5">
         <el-button
-            type="warning"
-            plain
-            size="mini"
-            @click="handleSearch"
+          type="warning"
+          plain
+          size="mini"
+          @click="handleSearch"
         >账号搜索
         </el-button>
       </el-col>
@@ -41,10 +41,10 @@
         <template v-slot:print>
           <el-col :span="1.5">
             <el-button
-                plain
-                icon="el-icon-printer"
-                size="mini"
-                @click="printHTML"
+              plain
+              icon="el-icon-printer"
+              size="mini"
+              @click="printHTML"
             >
             </el-button>
           </el-col>
@@ -53,11 +53,11 @@
         <template v-slot:export>
           <el-col :span="1.5">
             <el-button
-                plain
-                icon="el-icon-folder-opened"
-                size="mini"
-                @click="handleExport"
-                v-hasPermi="['system:company:export']"
+              plain
+              icon="el-icon-folder-opened"
+              size="mini"
+              @click="handleExport"
+              v-hasPermi="['system:company:export']"
             >
             </el-button>
           </el-col>
@@ -66,17 +66,17 @@
     </el-row>
 
     <el-table border v-loading="loading" :data="companyList" @selection-change="handleSelectionChange" id="printBox"
-              v-horizontal-scroll="'always'">
+              v-horizontal-scroll="'always'" size="mini">
       <el-table-column label="id" align="center" prop="id"/>
-      <el-table-column label="客户" align="center" prop="relationName" v-if="columns[0].visible"/>
-      <el-table-column label="老板姓名" align="center" prop="leader" v-if="columns[1].visible"/>
-      <el-table-column label="老板电话" align="center" prop="leaderTel" v-if="columns[3].visible"/>
-      <el-table-column label="区域" align="center" prop="region" v-if="columns[6].visible"/>
-      <el-table-column label="公司名称" align="center" prop="companyName" v-if="columns[2].visible"/>
-      <el-table-column label="销售经理" align="center" prop="salesManager" v-if="columns[7].visible"/>
-      <el-table-column label="地址" align="center" prop="address" v-if="columns[5].visible"/>
-      <el-table-column label="电话" align="center" prop="relationTel" v-if="columns[4].visible"/>
-      <el-table-column label="备注" align="center" prop="comments" v-if="columns[8].visible"/>
+      <el-table-column label="客户" align="center" prop="relationName" v-if="columns[0].visible" width="200"/>
+      <el-table-column label="老板姓名" align="center" prop="leader" v-if="columns[1].visible" width="200"/>
+      <el-table-column label="老板电话" align="center" prop="leaderTel" v-if="columns[3].visible" width="200"/>
+      <el-table-column label="区域" align="center" prop="region" v-if="columns[6].visible" width="200"/>
+      <el-table-column label="公司名称" align="center" prop="companyName" v-if="columns[2].visible" width="200"/>
+      <el-table-column label="销售经理" align="center" prop="salesManager" v-if="columns[7].visible" width="200"/>
+      <el-table-column label="地址" align="center" prop="address" v-if="columns[5].visible" width="200"/>
+      <el-table-column label="电话" align="center" prop="relationTel" v-if="columns[4].visible" width="200"/>
+      <el-table-column label="备注" align="center" prop="comments" v-if="columns[8].visible" width="200"/>
       <!--      银行信息-->
       <!--      <el-table-column label="开户行" align="center" prop="bankName"/>-->
       <!--      <el-table-column label="开户名" align="center" prop="acountsName"/>-->
@@ -93,33 +93,33 @@
       <el-table-column label="操作" align="center" class-name="small-padding fixed-width" fixed="right" width="180">
         <template slot-scope="scope">
           <el-button
-              size="mini"
-              @click="jumpBankNo(scope.row)"
+            size="mini"
+            @click="jumpBankNo(scope.row)"
           >银行卡号
           </el-button>
           <el-button
-              size="mini"
-              type="primary"
-              @click="handleUpdate(scope.row)"
-              v-hasPermi="['system:company:edit']"
+            size="mini"
+            type="primary"
+            @click="handleUpdate(scope.row)"
+            v-hasPermi="['system:company:edit']"
           >编辑
           </el-button>
           <el-button
-              size="mini"
-              type="danger"
-              @click="handleDelete(scope.row)"
-              v-hasPermi="['system:company:remove']"
+            size="mini"
+            type="danger"
+            @click="handleDelete(scope.row)"
+            v-hasPermi="['system:company:remove']"
           >删除
           </el-button>
         </template>
       </el-table-column>
     </el-table>
     <pagination
-        v-show="total>0"
-        :total="total"
-        :page.sync="queryParams.pageNum"
-        :limit.sync="queryParams.pageSize"
-        @pagination="getList"
+      v-show="total>0"
+      :total="total"
+      :page.sync="queryParams.pageNum"
+      :limit.sync="queryParams.pageSize"
+      @pagination="getList"
     />
 
 
@@ -158,10 +158,10 @@
               <!--          <el-input v-model="form.province" placeholder="请输入省"/>-->
               <el-select v-model="form.province" placeholder="请选择省" @change="changeProvince">
                 <el-option
-                    v-for="item in provinceList"
-                    :key="item.code"
-                    :label="item.name"
-                    :value="item.name">
+                  v-for="item in provinceList"
+                  :key="item.code"
+                  :label="item.name"
+                  :value="item.name">
                 </el-option>
               </el-select>
             </el-form-item>
@@ -169,10 +169,10 @@
               <!--          <el-input v-model="form.city" placeholder="请输入市县"/>-->
               <el-select v-model="form.city" placeholder="请选择市" @change="changeCity">
                 <el-option
-                    v-for="item in cityList"
-                    :key="item.code"
-                    :label="item.name"
-                    :value="item.name">
+                  v-for="item in cityList"
+                  :key="item.code"
+                  :label="item.name"
+                  :value="item.name">
                 </el-option>
               </el-select>
             </el-form-item>
@@ -215,9 +215,9 @@
         <el-table-column label="操作" align="center" class-name="small-padding fixed-width" fixed="left" width="180">
           <template slot-scope="scope">
             <el-button
-                type="danger"
-                size="mini"
-                @click="dialogFormSearchVisible = false"
+              type="danger"
+              size="mini"
+              @click="dialogFormSearchVisible = false"
             >确认
             </el-button>
           </template>
@@ -227,11 +227,11 @@
         <el-table-column label="户名" align="center" prop="acountsName"/>
       </el-table>
       <pagination
-          v-show="total>0"
-          :total="total"
-          :page.sync="queryParams.pageNum"
-          :limit.sync="queryParams.pageSize"
-          @pagination="getList"
+        v-show="total>0"
+        :total="total"
+        :page.sync="queryParams.pageNum"
+        :limit.sync="queryParams.pageSize"
+        @pagination="getList"
       />
     </el-dialog>
 
@@ -298,21 +298,21 @@
           <el-table-column label="操作" align="center" class-name="small-padding fixed-width" fixed="right" width="180">
             <template slot-scope="scope">
               <el-button
-                  size="mini"
-                  @click="handleUpdateBankPop(scope.row)"
-                  v-hasPermi="['system:company:edit']"
+                size="mini"
+                @click="handleUpdateBankPop(scope.row)"
+                v-hasPermi="['system:company:edit']"
               ><i class="el-icon-edit"></i>
               </el-button>
               <el-button
-                  size="mini"
-                  @click="handleDelete(scope.row)"
-                  v-hasPermi="['system:company:remove']"
+                size="mini"
+                @click="handleDelete(scope.row)"
+                v-hasPermi="['system:company:remove']"
               ><i class="el-icon-delete"></i>
               </el-button>
               <el-button
-                  size="mini"
-                  @click="addDefaultCard(scope.row)"
-                  v-hasPermi="['system:company:remove']"
+                size="mini"
+                @click="addDefaultCard(scope.row)"
+                v-hasPermi="['system:company:remove']"
               >添加为默认
               </el-button>
             </template>
@@ -324,11 +324,11 @@
         <el-button type="primary" @click="dialogFormVisible = false">确 定</el-button>
       </div>
       <pagination
-          v-show="total>0"
-          :total="total"
-          :page.sync="queryParams.pageNum"
-          :limit.sync="queryParams.pageSize"
-          @pagination="getList"/>
+        v-show="total>0"
+        :total="total"
+        :page.sync="queryParams.pageNum"
+        :limit.sync="queryParams.pageSize"
+        @pagination="getList"/>
 
 
       <!--    银行信息-->
@@ -339,10 +339,10 @@
               <el-form-item label="账号类型" :label-width="formLabelWidth">
                 <el-select v-model="queryBankInfo.acountsType" placeholder="请选择">
                   <el-option
-                      v-for="item in acountsTypeList"
-                      :key="item.value"
-                      :label="item.label"
-                      :value="item.value">
+                    v-for="item in acountsTypeList"
+                    :key="item.value"
+                    :label="item.label"
+                    :value="item.value">
                   </el-option>
                 </el-select>
               </el-form-item>
@@ -366,8 +366,8 @@
                              width="180">
               <template slot-scope="scope">
                 <el-button
-                    type="danger"
-                    @click="addThisBankInfo(scope.row)"
+                  type="danger"
+                  @click="addThisBankInfo(scope.row)"
                 >添加该银行卡
                 </el-button>
               </template>
@@ -379,11 +379,11 @@
           <el-button type="primary" @click="dialogBankInfoVisible = false">确 定</el-button>
         </div>
         <pagination
-            v-show="total>0"
-            :total="total"
-            :page.sync="queryParams.pageNum"
-            :limit.sync="queryParams.pageSize"
-            @pagination="getList"
+          v-show="total>0"
+          :total="total"
+          :page.sync="queryParams.pageNum"
+          :limit.sync="queryParams.pageSize"
+          @pagination="getList"
         />
       </el-dialog>
     </el-dialog>
@@ -400,9 +400,9 @@
         <el-table-column label="操作" align="center" class-name="small-padding fixed-width" fixed="right">
           <template slot-scope="scope">
             <el-button
-                size="mini"
-                type="primary"
-                @click="addDefaultCard(scope.row)">添加为默认
+              size="mini"
+              type="primary"
+              @click="addDefaultCard(scope.row)">添加为默认
             </el-button>
           </template>
         </el-table-column>
@@ -526,7 +526,7 @@ export default {
   created() {
     this.getList();
     if (localStorage.getItem('company-columns') === 'null'
-        || !localStorage.getItem('company-columns')) {
+      || !localStorage.getItem('company-columns')) {
       //设置localStorage
       localStorage.setItem("company-columns", JSON.stringify(this.columns))
     } else {
@@ -534,10 +534,10 @@ export default {
     }
     //获取城市信息
     fetch('/area.json')
-        .then(res => res.json())
-        .then(res => {
-          this.provinceList = res;
-        })
+      .then(res => res.json())
+      .then(res => {
+        this.provinceList = res;
+      })
   },
   //展示与隐藏
   watch: {
@@ -626,9 +626,9 @@ export default {
     //查询银行卡
     handleSearchBankInfo() {
       listBankAccount({acountsType: this.queryBankInfo.acountsType, acountsName: this.queryBankInfo.acountsName})
-          .then(res => {
-            this.bankInfo = res.rows;
-          })
+        .then(res => {
+          this.bankInfo = res.rows;
+        })
     },
     addThisBankInfo(row) {
       this.dialogBankInfoVisible = false;
@@ -675,32 +675,32 @@ export default {
       //如果是undefined 代表是个对象
       if (row.target === undefined) {
         setDefault({...excludeParams(row, this.$exclude), acountsType: '客户默认'})
-            .then(res => {
-              this.$message.success("设置成功~")
-              this.dialogFormVisible = false //关闭银行卡弹窗
-              this.addDefaultCardVisible = false
-              this.getList()
-            })
+          .then(res => {
+            this.$message.success("设置成功~")
+            this.dialogFormVisible = false //关闭银行卡弹窗
+            this.addDefaultCardVisible = false
+            this.getList()
+          })
       } else {
         //如果还没有添加过银行卡信息
         //先查询
         console.log(this.currentInfo)
         listBankAccount({companyId: this.currentInfo.id, acountsType: '客户'})
-            .then(res => {
-              if (res.rows.length === 0) {
-                this.$confirm('您还没有设置银行卡信息，是否前往设置?', '提示', {
-                  confirmButtonText: '确定',
-                  cancelButtonText: '取消',
-                  type: 'warning'
-                }).then(() => {
-                  this.dialogFormVisible = false
-                  this.$router.push('/baseInfo/bankaccount')
-                }).catch(err => {
-                })
-              } else {
-                this.addDefaultCardVisible = true;
-              }
-            })
+          .then(res => {
+            if (res.rows.length === 0) {
+              this.$confirm('您还没有设置银行卡信息，是否前往设置?', '提示', {
+                confirmButtonText: '确定',
+                cancelButtonText: '取消',
+                type: 'warning'
+              }).then(() => {
+                this.dialogFormVisible = false
+                this.$router.push('/baseInfo/bankaccount')
+              }).catch(err => {
+              })
+            } else {
+              this.addDefaultCardVisible = true;
+            }
+          })
       }
     },
     printHTML() {

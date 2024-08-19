@@ -81,13 +81,13 @@
 
     <!-- 打印内容 -->
     <el-table border v-loading="loading" :data="bankAccountList" @selection-change="handleSelectionChange"
-              id="printBox" height="300px" v-horizontal-scroll="'always'">
+              id="printBox" height="450px" v-horizontal-scroll="'always'" size="mini">
       <el-table-column label="id" align="center" prop="id"/>
-      <el-table-column label="账户类型" align="center" prop="acountsType" v-if="columns[0].visible"/>
-      <el-table-column label="开户名称(户名)" align="center" prop="acountsName" v-if="columns[1].visible"/>
-      <el-table-column label="账号(银行账号)" align="center" prop="bankNo" v-if="columns[2].visible"/>
-      <el-table-column label="开户行" align="center" prop="bankName" v-if="columns[3].visible"/>
-      <el-table-column label="公司名称" align="center" prop="companyName" v-if="columns[4].visible"/>
+      <el-table-column label="账户类型" align="center" prop="acountsType" v-if="columns[0].visible" width="200"/>
+      <el-table-column label="开户名称(户名)" align="center" prop="acountsName" v-if="columns[1].visible" width="200"/>
+      <el-table-column label="账号(银行账号)" align="center" prop="bankNo" v-if="columns[2].visible" width="200"/>
+      <el-table-column label="开户行" align="center" prop="bankName" v-if="columns[3].visible" width="200"/>
+      <el-table-column label="公司名称" align="center" prop="companyName" v-if="columns[4].visible" width="200"/>
       <el-table-column label="操作" align="center" class-name="small-padding fixed-width">
         <template slot-scope="scope">
           <el-button
