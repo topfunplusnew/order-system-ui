@@ -863,9 +863,9 @@ export default {
         //调整单
         adjustGoodsOrder({...orderInfo, ordersNo: '', adjustDate: new Date().getTime()}).then(res => {
           this.$message.success('调整单提交成功')
-          this.handleOrderVisible = false
           this.getList();
         })
+        this.handleOrderVisible = false
       })
     },
 

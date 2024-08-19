@@ -352,7 +352,8 @@
                 <el-date-picker
                   v-model="form.birthday"
                   type="date"
-                  placeholder="选择出生日期">
+                  placeholder="选择出生日期"
+                  value-format="yyyy-MM-dd">
                 </el-date-picker>
               </el-form-item>
               <el-form-item label="民族">
@@ -383,19 +384,12 @@
                 <el-date-picker
                   v-model="form.gradualDate"
                   type="date"
-                  placeholder="选择毕业时间">
+                  placeholder="选择毕业时间"
+                  value-format="yyyy-MM-dd">
                 </el-date-picker>
               </el-form-item>
               <el-form-item label="岗位">
-                <el-select v-model="form.postIds" multiple placeholder="请选择岗位">
-                  <el-option
-                    v-for="item in postOptions"
-                    :key="item.postId"
-                    :label="item.postName"
-                    :value="item.postId"
-                    :disabled="item.status == 1"
-                  ></el-option>
-                </el-select>
+                <el-input v-model="form.postName" placeholder="请输入岗位"/>
               </el-form-item>
               <el-form-item label="在职状态">
                 <el-radio v-model="form.state" label="在职">在职</el-radio>
@@ -405,7 +399,8 @@
                 <el-date-picker
                   v-model="form.startDate"
                   type="date"
-                  placeholder="选择入职时间">
+                  placeholder="选择入职时间"
+                  value-format="yyyy-MM-dd">
                 </el-date-picker>
               </el-form-item>
               <el-form-item label="备注">
