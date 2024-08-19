@@ -7,6 +7,7 @@ import ChatForm from "@/components/ChatForm.vue";
 import AreaSelect from "@/components/AreaSelect.vue";
 import EditReason from "@/components/EditReason.vue";
 import {TableName} from "@/api/tool/enums";
+import ShowLabel from "@/components/ShowLabel.vue";
 
 export default {
   computed: {
@@ -14,7 +15,7 @@ export default {
       return TableName
     }
   },
-  components: {EditReason, AreaSelect, ChatForm, SwitchBarItem, SearchOption},
+  components: {ShowLabel, EditReason, AreaSelect, ChatForm, SwitchBarItem, SearchOption},
   data() {
     return {
       //tableData每一个对象代表的是图表的每一个行
@@ -113,7 +114,9 @@ export default {
         <EditReason :table-name="TableName.PAYMENT" :tid="1"/>
       </el-row>
     </div>
-
+    <el-row>
+      <ShowLabel/>
+    </el-row>
 
   </div>
 </template>

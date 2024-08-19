@@ -261,23 +261,19 @@
     <!-- 添加或修改用户配置对话框 -->
     <el-dialog :title="title" :visible.sync="open" width="80%" append-to-body>
       <el-form ref="form" :model="form" :rules="rules" label-width="80px">
-        <el-row>
+        <el-row :gutter="10">
           <el-col :span="6">
             <el-row>
-              123
+              <ShowLabel title="账号信息">
+                <template #icon>
+                  <i class="el-icon-s-tools"></i>
+                </template>
+              </ShowLabel>
             </el-row>
+            <br/>
             <el-row>
               <el-form-item label="用户昵称" prop="nickName">
                 <el-input v-model="form.nickName" placeholder="请输入用户昵称" maxlength="30"/>
-              </el-form-item>
-              <el-form-item label="归属部门" prop="deptId">
-                <treeselect v-model="form.deptId" :options="deptOptions" :show-count="true" placeholder="请选择归属部门"/>
-              </el-form-item>
-              <el-form-item label="手机号码" prop="phonenumber">
-                <el-input v-model="form.phonenumber" placeholder="请输入手机号码" maxlength="11"/>
-              </el-form-item>
-              <el-form-item label="邮箱" prop="email">
-                <el-input v-model="form.email" placeholder="请输入邮箱" maxlength="50"/>
               </el-form-item>
               <el-form-item v-if="form.userId == undefined" label="用户名称" prop="userName">
                 <el-input v-model="form.userName" placeholder="请输入用户名称" maxlength="30"/>
@@ -296,6 +292,24 @@
                   ></el-option>
                 </el-select>
               </el-form-item>
+              <el-form-item label="角色">
+                <el-select v-model="form.roleIds" multiple placeholder="请选择角色">
+                  <el-option
+                    v-for="item in roleOptions"
+                    :key="item.roleId"
+                    :label="item.roleName"
+                    :value="item.roleId"
+                    :disabled="item.status == 1"
+                  ></el-option>
+                </el-select>
+              </el-form-item>
+              <el-form-item label="归属部门" prop="deptId">
+                <treeselect v-model="form.deptId" :options="deptOptions" :show-count="true"
+                            placeholder="请选择归属部门"/>
+              </el-form-item>
+              <el-form-item label="邮箱" prop="email">
+                <el-input v-model="form.email" placeholder="请输入邮箱" maxlength="50"/>
+              </el-form-item>
               <el-form-item label="状态">
                 <el-radio-group v-model="form.status">
                   <el-radio
@@ -306,110 +320,131 @@
                   </el-radio>
                 </el-radio-group>
               </el-form-item>
+
+            </el-row>
+          </el-col>
+          <el-col :span="6">
+            <el-row>
+              <ShowLabel title="个人信息">
+                <template #icon>
+                  <i class="el-icon-s-custom"></i>
+                </template>
+              </ShowLabel>
+            </el-row>
+            <br/>
+            <el-row>
+              <el-form-item label="真实姓名">
+                <el-input v-model="form.trueName" placeholder="请输入真实姓名"/>
+              </el-form-item>
+              <el-form-item label="手机号码" prop="phonenumber">
+                <el-input v-model="form.phonenumber" placeholder="请输入手机号码" maxlength="11"/>
+              </el-form-item>
+              <el-form-item label="身份证号码">
+                <el-input v-model="form.iDCard" placeholder="请输入身份证号码"/>
+              </el-form-item>
+              <el-form-item label="开户银行">
+                <el-input v-model="form.bankName" placeholder="请输入开户银行"/>
+              </el-form-item>
+              <el-form-item label="银行账号">
+                <el-input v-model="form.bankNo" placeholder="请输入银行账号"/>
+              </el-form-item>
+              <el-form-item label="出生日期">
+                <el-date-picker
+                  v-model="form.birthday"
+                  type="date"
+                  placeholder="选择出生日期">
+                </el-date-picker>
+              </el-form-item>
               <el-form-item label="民族">
                 <el-input v-model="form.nation" placeholder="请输入民族"/>
               </el-form-item>
             </el-row>
           </el-col>
-
           <el-col :span="6">
-            <el-form-item label="岗位">
-              <el-select v-model="form.postIds" multiple placeholder="请选择岗位">
-                <el-option
-                  v-for="item in postOptions"
-                  :key="item.postId"
-                  :label="item.postName"
-                  :value="item.postId"
-                  :disabled="item.status == 1"
-                ></el-option>
-              </el-select>
-            </el-form-item>
-            <el-form-item label="角色">
-              <el-select v-model="form.roleIds" multiple placeholder="请选择角色">
-                <el-option
-                  v-for="item in roleOptions"
-                  :key="item.roleId"
-                  :label="item.roleName"
-                  :value="item.roleId"
-                  :disabled="item.status == 1"
-                ></el-option>
-              </el-select>
-            </el-form-item>
-            <el-form-item label="真实姓名">
-              <el-input v-model="form.trueName" placeholder="请输入真实姓名"/>
-            </el-form-item>
-            <el-form-item label="在职状态">
-              <el-radio v-model="form.state" label="在职">在职</el-radio>
-              <el-radio v-model="form.state" label="离职">离职</el-radio>
-            </el-form-item>
-            <el-form-item label="入职时间">
-              <el-date-picker
-                v-model="form.startDate"
-                type="date"
-                placeholder="选择入职时间">
-              </el-date-picker>
-            </el-form-item>
-            <el-form-item label="身份证号码">
-              <el-input v-model="form.iDCard" placeholder="请输入身份证号码"/>
-            </el-form-item>
+            <el-row>
+              <ShowLabel title="学历及入职信息">
+                <template #icon>
+                  <i class="el-icon-notebook-2"></i>
+                </template>
+              </ShowLabel>
+            </el-row>
+            <br/>
+            <el-row>
+              <el-form-item label="学历">
+                <el-input v-model="form.education" placeholder="请输入学历"/>
+              </el-form-item>
+              <el-form-item label="毕业院校">
+                <el-input v-model="form.gradualUniversity" placeholder="请输入毕业院校"/>
+              </el-form-item>
+              <el-form-item label="专业">
+                <el-input v-model="form.profession" placeholder="请输入专业"/>
+              </el-form-item>
+              <el-form-item label="毕业时间">
+                <el-date-picker
+                  v-model="form.gradualDate"
+                  type="date"
+                  placeholder="选择毕业时间">
+                </el-date-picker>
+              </el-form-item>
+              <el-form-item label="岗位">
+                <el-select v-model="form.postIds" multiple placeholder="请选择岗位">
+                  <el-option
+                    v-for="item in postOptions"
+                    :key="item.postId"
+                    :label="item.postName"
+                    :value="item.postId"
+                    :disabled="item.status == 1"
+                  ></el-option>
+                </el-select>
+              </el-form-item>
+              <el-form-item label="在职状态">
+                <el-radio v-model="form.state" label="在职">在职</el-radio>
+                <el-radio v-model="form.state" label="离职">离职</el-radio>
+              </el-form-item>
+              <el-form-item label="入职时间">
+                <el-date-picker
+                  v-model="form.startDate"
+                  type="date"
+                  placeholder="选择入职时间">
+                </el-date-picker>
+              </el-form-item>
+              <el-form-item label="备注">
+                <el-input v-model="form.remark" type="textarea" placeholder="请输入内容"></el-input>
+              </el-form-item>
+            </el-row>
           </el-col>
           <el-col :span="6">
-            <el-form-item label="出生日期">
-              <el-date-picker
-                v-model="form.birthday"
-                type="date"
-                placeholder="选择出生日期">
-              </el-date-picker>
-            </el-form-item>
-
-            <el-form-item label="政治面貌">
-              <el-input v-model="form.politicalStatus" placeholder="请输入政治面貌"/>
-            </el-form-item>
-            <el-form-item label="婚姻状况">
-              <el-input v-model="form.maritalStatus" placeholder="请输入婚姻状况"/>
-            </el-form-item>
-            <el-form-item label="户籍地址">
-              <el-input v-model="form.domicileAddress" placeholder="请输入户籍地址"/>
-            </el-form-item>
-            <el-form-item label="居住地址">
-              <el-input v-model="form.residentialAddress" placeholder="请输入居住地址"/>
-            </el-form-item>
-            <el-form-item label="紧急联系人">
-              <el-input v-model="form.relationPerson" placeholder="请输入紧急联系人"/>
-            </el-form-item>
-            <el-form-item label="紧急联系人电话">
-              <el-input v-model="form.relationPersonTel" placeholder="请输入紧急联系人电话"/>
-            </el-form-item>
-            <el-form-item label="关系">
-              <el-input v-model="form.relationship" placeholder="请输入关系"/>
-            </el-form-item>
-          </el-col>
-          <el-col :span="6">
-            <el-form-item label="学历">
-              <el-input v-model="form.education" placeholder="请输入学历"/>
-            </el-form-item>
-            <el-form-item label="毕业院校">
-              <el-input v-model="form.gradualUniversity" placeholder="请输入毕业院校"/>
-            </el-form-item>
-            <el-form-item label="专业">
-              <el-input v-model="form.profession" placeholder="请输入专业"/>
-            </el-form-item>
-            <el-form-item label="毕业时间">
-              <el-date-picker
-                v-model="form.gradualDate"
-                type="date"
-                placeholder="选择毕业时间">
-              </el-date-picker>
-            </el-form-item>
-            <el-form-item label="开户银行">
-              <el-input v-model="form.bankName" placeholder="请输入开户银行"/>
-            </el-form-item>
-            <el-form-item label="银行账号">
-              <el-input v-model="form.bankNo" placeholder="请输入银行账号"/>
-            </el-form-item>
-            <el-form-item label="备注">
-              <el-input v-model="form.remark" type="textarea" placeholder="请输入内容"></el-input>
-            </el-form-item>
+            <el-row>
+              <ShowLabel title="其他信息">
+                <template #icon>
+                  <i class="el-icon-s-unfold"></i>
+                </template>
+              </ShowLabel>
+            </el-row>
+            <br/>
+            <el-row>
+              <el-form-item label="政治面貌">
+                <el-input v-model="form.politicalStatus" placeholder="请输入政治面貌"/>
+              </el-form-item>
+              <el-form-item label="婚姻状况">
+                <el-input v-model="form.maritalStatus" placeholder="请输入婚姻状况"/>
+              </el-form-item>
+              <el-form-item label="户籍地址">
+                <el-input v-model="form.domicileAddress" placeholder="请输入户籍地址"/>
+              </el-form-item>
+              <el-form-item label="居住地址">
+                <el-input v-model="form.residentialAddress" placeholder="请输入居住地址"/>
+              </el-form-item>
+              <el-form-item label="紧急联系人">
+                <el-input v-model="form.relationPerson" placeholder="请输入紧急联系人"/>
+              </el-form-item>
+              <el-form-item label="紧急联系人电话">
+                <el-input v-model="form.relationPersonTel" placeholder="请输入紧急联系人电话"/>
+              </el-form-item>
+              <el-form-item label="关系">
+                <el-input v-model="form.relationship" placeholder="请输入关系"/>
+              </el-form-item>
+            </el-row>
           </el-col>
         </el-row>
       </el-form>
@@ -469,11 +504,12 @@ import {getToken} from "@/utils/auth";
 import Treeselect from "@riophae/vue-treeselect";
 import "@riophae/vue-treeselect/dist/vue-treeselect.css";
 import {parseTime} from "../../../utils/ruoyi";
+import ShowLabel from "@/components/ShowLabel.vue";
 
 export default {
   name: "User",
   dicts: ['sys_normal_disable', 'sys_user_sex'],
-  components: {Treeselect},
+  components: {ShowLabel, Treeselect},
   data() {
     return {
       // 遮罩层
@@ -711,7 +747,7 @@ export default {
         this.postOptions = response.posts;
         this.roleOptions = response.roles;
         this.open = true;
-        this.title = "添加用户";
+        this.title = "添加用户信息";
         this.form.password = this.initPassword;
       });
     },
