@@ -273,7 +273,7 @@ export default {
     secondInventory(row) {
       //查询该行的货物信息
       getInventory(row.storeID).then(res => {
-        this.$confirm('是否二次出库?', '提示', {
+        this.$confirm('是否二次入库?', '提示', {
           confirmButtonText: '确定',
           cancelButtonText: '取消',
           type: 'warning'

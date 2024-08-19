@@ -111,7 +111,7 @@
     <!--    表格列-->
     <el-table border v-loading="loading" :data="goodsOrderList" @selection-change="handleSelectionChange"
               id="printBox" :row-class-name="tableRowClassName" v-horizontal-scroll="'always'"
-              max-height="500">
+              max-height="750">
       <!--      左侧操作栏-->
       <el-table-column label="操作" align="center" class-name="small-padding fixed-width" width="170px" fixed="left">
         <template slot-scope="scope">
@@ -177,10 +177,6 @@
           </el-tag>
         </template>
       </el-table-column>
-      <!--      <el-table-column label="陆运银行户名" align="center" prop="landBankName" v-if="columns[13].visible"/>-->
-      <!--      <el-table-column label="陆运银行账号" align="center" prop="landBankNo" v-if="columns[14].visible"/>-->
-      <!--      <el-table-column label="海运银行户名" align="center" prop="seaBankName" v-if="columns[15].visible"/>-->
-      <!--      <el-table-column label="海运银行账号" align="center" prop="seaBankNo" v-if="columns[16].visible"/>-->
       <el-table-column label="收到条附件路径" align="center" prop="receiveProof" v-if="columns[17].visible"/>
       <el-table-column label="是否被调整单" align="center" prop="isAdjusted" v-if="columns[18].visible">
         <template slot-scope="scope">
@@ -460,7 +456,7 @@
     <el-dialog
       title="陆运费申请"
       :visible.sync="landFreeDialogVisible"
-      width="50%" destroy-on-close>
+      width="30%" destroy-on-close>
       <FreeApply :order-info="landFreightInfo"/>
     </el-dialog>
 
@@ -468,7 +464,7 @@
     <el-dialog
       title="海运费申请"
       :visible.sync="seaFreeDialogVisible"
-      width="50%" destroy-on-close>
+      width="30%" destroy-on-close>
       <FreeApply :order-info="seaFreightInfo"/>
     </el-dialog>
 

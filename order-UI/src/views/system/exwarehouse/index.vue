@@ -9,14 +9,6 @@
           @keyup.enter.native="handleQuery"
         />
       </el-form-item>
-      <!--      <el-form-item label="仓库ID" prop="storeHouseid">-->
-      <!--        <el-input-->
-      <!--          v-model="queryParams.storeHouseid"-->
-      <!--          placeholder="请输入仓库ID"-->
-      <!--          clearable-->
-      <!--          @keyup.enter.native="handleQuery"-->
-      <!--        />-->
-      <!--      </el-form-item>-->
       <el-form-item label="仓库名称" prop="storeHouseName">
         <el-input
           v-model="queryParams.storeHouseName"
@@ -25,16 +17,7 @@
           @keyup.enter.native="handleQuery"
         />
       </el-form-item>
-      <!--      <el-form-item label="仓库存储的货物ID" prop="storeID">-->
-      <!--        <el-input-->
-      <!--          v-model="queryParams.storeID"-->
-      <!--          placeholder="请输入仓库存储的货物ID"-->
-      <!--          clearable-->
-      <!--          @keyup.enter.native="handleQuery"-->
-      <!--        />-->
-      <!--      </el-form-item>-->
-
-      <el-form-item label="创建时间">
+      <el-form-item label="出库日期">
         <el-date-picker
           v-model="dateRange"
           style="width: 240px"
@@ -45,30 +28,10 @@
           end-placeholder="结束日期"
         ></el-date-picker>
       </el-form-item>
-<!--      <el-form-item label="出库日期" prop="outDate">-->
-<!--        <el-input-->
-<!--          v-model="queryParams.outDate"-->
-<!--          placeholder="请输入出库日期"-->
-<!--          clearable-->
-<!--          @keyup.enter.native="handleQuery"-->
-<!--        />-->
-<!--      </el-form-item>-->
-      <!--      <el-form-item label="出库量" prop="outAmount">-->
-      <!--        <el-input-->
-      <!--          v-model="queryParams.outAmount"-->
-      <!--          placeholder="请输入出库量"-->
-      <!--          clearable-->
-      <!--          @keyup.enter.native="handleQuery"-->
-      <!--        />-->
-      <!--      </el-form-item>-->
       <el-form-item>
         <el-button type="primary" icon="el-icon-search" size="mini" @click="handleQuery">搜索</el-button>
         <el-button icon="el-icon-refresh" size="mini" @click="resetQuery">重置</el-button>
       </el-form-item>
-<!--      <el-form-item>-->
-<!--        <el-button type="primary" icon="el-icon-search" size="mini" @click="handleQuery">搜索</el-button>-->
-<!--        <el-button icon="el-icon-refresh" size="mini" @click="resetQuery">重置</el-button>-->
-<!--      </el-form-item>-->
     </el-form>
 
     <el-row :gutter="10" class="mb8">
@@ -114,7 +77,18 @@
     <el-table border v-horizontal-scroll="'always'" v-loading="loading" :data="exWarehouseList"
               @selection-change="handleSelectionChange" id="printBox">
       <el-table-column label="id" align="center" prop="id"/>
-      <el-table-column label="订单编号" align="center" prop="ordersNo"/>
+      <el-table-column label="订单编号" align="center" prop="ordersNo">
+        <template slot-scope="scope">
+          <el-tag type="success" v-if="scope.row.ordersNo ==='二次加工' || '货物破损'">
+            <span>
+              {{ scope.row.ordersNo }}货物
+            </span>
+          </el-tag>
+          <span v-else>
+            {{ scope.row.ordersNo }}
+          </span>
+        </template>
+      </el-table-column>
       <!--      <el-table-column label="仓库ID" align="center" prop="storeHouseid"/>-->
       <el-table-column label="仓库名称" align="center" prop="storeHouseName"/>
       <!--      <el-table-column label="仓库存储的货物ID" align="center" prop="storeID"/>-->
@@ -123,12 +97,17 @@
       <el-table-column label="出库量" align="center" prop="outAmount"/>
       <el-table-column label="操作" align="center" class-name="small-padding fixed-width">
         <template slot-scope="scope">
-          <el-button
-            size="mini"
-            type="primary"
-            @click="checkOrderInfo(scope.row)"
-          >查看订单信息
-          </el-button>
+          <el-tooltip class="item" effect="dark"
+                      :content="scope.row.ordersNo ==='二次加工' || '货物破损'?'特殊货物无法查看':'查看订单信息'"
+                      placement="top-start">
+            <el-button
+              size="mini"
+              type="primary"
+              @click="checkOrderInfo(scope.row)"
+              :disabled="scope.row.ordersNo ==='二次加工' ||scope.row.ordersNo === '货物破损'"
+            >查看订单信息
+            </el-button>
+          </el-tooltip>
           <el-button
             size="mini"
             type="danger"
@@ -180,8 +159,8 @@
     <el-dialog
       title="查看订单信息"
       :visible.sync="checkOrderVisible"
-      width="30%">
-      <el-descriptions title="订单信息" :column="1" border>
+      width="65%">
+      <el-descriptions title="订单信息" :column="3" border>
         <el-descriptions-item label="id">{{ orderDetailInfo.id }}</el-descriptions-item>
         <el-descriptions-item label="日期">{{ orderDetailInfo.orderDate }}</el-descriptions-item>
         <el-descriptions-item label="客户">{{ orderDetailInfo.customer }}</el-descriptions-item>
@@ -231,6 +210,8 @@
         <el-button type="primary" @click="checkOrderVisible = false">确 定</el-button>
       </span>
     </el-dialog>
+
+
   </div>
 </template>
 
@@ -306,14 +287,14 @@ export default {
     this.getList();
   },
 
-    // 取消按钮
-    cancel() {
-      this.open = false;
-      this.reset();
-    },
+  // 取消按钮
+  cancel() {
+    this.open = false;
+    this.reset();
+  },
   methods: {
     checkOrderInfo(row) {
-      console.log(row)
+      console.log('订单信息', row)
       this.checkOrderVisible = true;
       //查询订单详情
       listGoodsOrder({ordersNo: row.ordersNo}).then(res => {
@@ -335,7 +316,7 @@ export default {
     /** 查询出库列表 */
     getList() {
       this.loading = true;
-      listExWarehouse(this.addDateRange(this.queryParams, this.dateRange)).then(response => {
+      listExWarehouse(this.queryParams).then(response => {
         this.exWarehouseList = response.rows;
         this.total = response.total;
         this.loading = false;

@@ -411,6 +411,7 @@ import {addExWarehouse} from "@/api/system/exWarehouse";
 import {addReason} from "@/api/system/user";
 import {TableName} from "@/api/tool/enums";
 import {getInvoiceOther} from "@/api/system/invoiceOther";
+import {formatDate} from "@/utils";
 
 export default {
   name: "Inventory",
@@ -631,7 +632,7 @@ export default {
         storeHouseid: row.storeHouseid,
         storeHouseName: row.storeHouseName,
         storeID: row.id,
-        outDate: new Date().getTime()
+        outDate: formatDate(new Date())
       };
       this.secondInvoiceInVisible = true
     },
@@ -650,7 +651,7 @@ export default {
         storeHouseid: row.storeHouseid,
         storeHouseName: row.storeHouseName,
         storeID: row.id,
-        outDate: new Date().getTime()
+        outDate: formatDate(new Date())
       };
       this.breakInvoiceInVisible = true
     },
