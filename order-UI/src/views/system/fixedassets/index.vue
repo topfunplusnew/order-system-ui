@@ -5,14 +5,16 @@
         <el-date-picker
           v-model="timesQuery.beginTime"
           type="date"
-          placeholder="选择开始时间">
+          placeholder="选择开始时间"
+        value-format="yyyy-MM-dd">
         </el-date-picker>
       </el-form-item>
       <el-form-item label="结束时间" prop="endTime">
         <el-date-picker
           v-model="timesQuery.endTime"
           type="date"
-          placeholder="选择结束时间">
+          placeholder="选择结束时间"
+        value-format="yyyy-MM-dd">
         </el-date-picker>
       </el-form-item>
       <!--      <el-form-item label="对象类型" prop="objectType">-->

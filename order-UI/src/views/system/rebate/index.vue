@@ -5,14 +5,14 @@
         <el-date-picker
           v-model="queryParams.rebateStartTime"
           type="date"
-          placeholder="选择开始时间">
+          placeholder="选择开始时间" value-format="yyyy-MM-dd">
         </el-date-picker>
       </el-form-item>
       <el-form-item label="返利结束日期" prop="rebateEndTime">
         <el-date-picker
           v-model="queryParams.rebateEndTime"
           type="date"
-          placeholder="选择开始时间">
+          placeholder="选择开始时间" value-format="yyyy-MM-dd">
         </el-date-picker>
       </el-form-item>
       <el-form-item label="供应商" prop="supplier">

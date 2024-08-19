@@ -13,7 +13,7 @@
         <el-date-picker
           v-model="queryParams.rechargeDate"
           type="date"
-          placeholder="选择充值时间" value-format="timestamp">
+          placeholder="选择充值时间" value-format="yyyy-MM-dd">
         </el-date-picker>
       </el-form-item>
       <el-form-item>

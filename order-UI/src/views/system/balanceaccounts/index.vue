@@ -6,14 +6,16 @@
         <el-date-picker
             v-model="timesQuery.beginTime"
             type="date"
-            placeholder="请选择开始时间">
+            placeholder="请选择开始时间"
+        value-format="yyyy-MM-dd">
         </el-date-picker>
       </el-form-item>
       <el-form-item label="结束时间" prop="endTime">
         <el-date-picker
             v-model="timesQuery.endTime"
             type="date"
-            placeholder="请选择结束时间">
+            placeholder="请选择结束时间"
+        value-format="yyyy-MM-dd">
         </el-date-picker>
       </el-form-item>
       <el-form-item label="对方公司" prop="companyName">
@@ -115,7 +117,8 @@
           <el-date-picker
               v-model="form.operateDate"
               type="date"
-              placeholder="选择操作时间">
+              placeholder="选择操作时间"
+          value-format="yyyy-MM-dd">
           </el-date-picker>
         </el-form-item>
         <el-form-item label="金额" prop="moneyAmount">

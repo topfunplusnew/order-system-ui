@@ -5,14 +5,16 @@
         <el-date-picker
           v-model="timesQuery.beginTime"
           type="date"
-          placeholder="请选择开始时间">
+          placeholder="请选择开始时间"
+          value-format="yyyy-MM-dd">
         </el-date-picker>
       </el-form-item>
       <el-form-item label="结束时间" prop="endTime">
         <el-date-picker
           v-model="timesQuery.endTime"
           type="date"
-          placeholder="请选择结束时间">
+          placeholder="请选择结束时间"
+        value-format="yyyy-MM-dd">
         </el-date-picker>
       </el-form-item>
       <el-form-item>
@@ -109,7 +111,7 @@
           <el-date-picker
             v-model="form.loanDate"
             type="date"
-            placeholder="选择日期" value-format="timestamp">
+            placeholder="选择日期" value-format="yyyy-MM-dd">
           </el-date-picker>
         </el-form-item>
         <el-form-item label="贷款年限" prop="loanDuring">

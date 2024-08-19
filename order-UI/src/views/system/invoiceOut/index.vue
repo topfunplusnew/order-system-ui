@@ -5,14 +5,16 @@
         <el-date-picker
           v-model="beginTime"
           type="date"
-          placeholder="选择日期">
+          placeholder="选择日期"
+        value-format="yyyy-MM-dd">
         </el-date-picker>
       </el-form-item>
       <el-form-item label="结束时间" prop="endTime">
         <el-date-picker
           v-model="endTime"
           type="date"
-          placeholder="选择日期">
+          placeholder="选择日期"
+        value-format="yyyy-MM-dd">
         </el-date-picker>
       </el-form-item>
       <el-form-item label="公司名称" prop="companyName">
@@ -135,7 +137,7 @@
             v-model="form.invoiceDate"
             type="date"
             placeholder="选择日期"
-            value-format="timestamp">
+            value-format="yyyy-MM-dd">
           </el-date-picker>
         </el-form-item>
         <el-form-item label="我方开票实体" prop="invoiceObject">

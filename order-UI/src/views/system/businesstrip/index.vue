@@ -5,14 +5,14 @@
         <el-date-picker
             v-model="queryParams.starttime"
             type="date"
-            placeholder="选择日期" value-format="timestamp">
+            placeholder="选择日期" value-format="yyyy-MM-dd">
         </el-date-picker>
       </el-form-item>
       <el-form-item label="返回时间" prop="endtime">
         <el-date-picker
             v-model="queryParams.endtime"
             type="date"
-            placeholder="选择日期" value-format="timestamp">
+            placeholder="选择日期" value-format="yyyy-MM-dd">
         </el-date-picker>
       </el-form-item>
       <el-form-item>
