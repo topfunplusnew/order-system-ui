@@ -13,7 +13,6 @@
         <el-button type="primary" icon="el-icon-search" size="mini" @click="handleQuery">搜索</el-button>
       </el-form-item>
     </el-form>
-
     <el-row :gutter="10" class="mb8">
       <!-- 刷新按钮-->
       <el-col :span="1.5">
@@ -28,9 +27,6 @@
           v-hasPermi="['system:inventory:add']"
         >新增货物
         </el-button>
-      </el-col>
-      <el-col :span="1.5">
-        <el-button icon="el-icon-refresh" size="mini" @click="resetQuery">刷新</el-button>
       </el-col>
       <right-toolbar :showSearch.sync="showSearch" @queryTable="getList" :columns="columns">
         <template v-slot:print>
@@ -63,12 +59,10 @@
     <el-table border v-horizontal-scroll="'always'" v-loading="loading" :data="inventoryList"
               @selection-change="handleSelectionChange">
       <el-table-column label="id" align="center" prop="id" v-if="columns[0].visible"/>
-      <!--      <el-table-column label="仓库ID" align="center" prop="storeHouseid"/>-->
       <el-table-column label="仓库名称" align="center" prop="storeHouseName" v-if="columns[1].visible"/>
       <el-table-column label="入库日期" align="center" prop="storeDate" v-if="columns[2].visible"/>
       <el-table-column label="库存量" align="center" prop="stockNumber" v-if="columns[3].visible"/>
       <el-table-column label="供应商" align="center" prop="supplier" v-if="columns[4].visible"/>
-      <!--      <el-table-column label="供应商ID" align="center" prop="supplierId"/>-->
       <el-table-column label="级别编码" align="center" prop="levelID" v-if="columns[5].visible"/>
       <el-table-column label="级别名称" align="center" prop="levelName" v-if="columns[6].visible"/>
       <el-table-column label="计量单位" align="center" prop="countingUnit" v-if="columns[7].visible"/>
@@ -85,30 +79,23 @@
       <el-table-column label="卸货价" align="center" prop="paymentUnload" v-if="columns[18].visible"/>
       <el-table-column label="销售是否含税" align="center" prop="isIncludeTaxSale" v-if="columns[19].visible"/>
       <el-table-column label="总货款" align="center" prop="payments" v-if="columns[20].visible"/>
-      <!--      <el-table-column label="陆运车辆ID" align="center" prop="landCarID"/>-->
       <el-table-column label="陆运车牌" align="center" prop="landCarNo" v-if="columns[21].visible"/>
       <el-table-column label="陆运司机电话" align="center" prop="landDriverTel" v-if="columns[22].visible"/>
-      <el-table-column label="陆地司机姓名" align="center" prop="landDriverName"  v-if="columns[23].visible"/>
-      <!--      <el-table-column label="海运车辆ID" align="center" prop="seaCarID"/>-->
-      <!--      <el-table-column label="海运车牌" align="center" prop="seaCarNo"/>-->
-      <!--      <el-table-column label="海运司机电话" align="center" prop="seaDriverTel"/>-->
-      <!--      <el-table-column label="海运司机姓名" align="center" prop="seaDriverName"/>-->
+      <el-table-column label="陆地司机姓名" align="center" prop="landDriverName" v-if="columns[23].visible"/>
       <el-table-column label="误差" align="center" prop="erro" v-if="columns[24].visible"/>
       <el-table-column label="吨位" align="center" prop="tonnage" v-if="columns[25].visible"/>
       <el-table-column label="陆运费单价" align="center" prop="landFreightPrice" v-if="columns[26].visible"/>
       <el-table-column label="陆运费" align="center" prop="landFreight" v-if="columns[27].visible"/>
-      <!--      <el-table-column label="海运费" align="center" prop="seaFreight"/>-->
-      <!--      <el-table-column label="运费" align="center" prop="freight"/>-->
       <el-table-column label="其他费用" align="center" prop="otherCost" v-if="columns[28].visible"/>
       <el-table-column label="利润" align="center" prop="profit" v-if="columns[29].visible"/>
       <el-table-column label="不含税利润" align="center" prop="profitNoTax" v-if="columns[30].visible"/>
       <el-table-column label="实际片数" align="center" prop="actualPieces" v-if="columns[31].visible"/>
       <el-table-column label="总货款杂费" align="center" prop="paymentsWithSundry" v-if="columns[32].visible"/>
-      <el-table-column label="加费" align="center" prop="additionalFees"  v-if="columns[33].visible"/>
+      <el-table-column label="加费" align="center" prop="additionalFees" v-if="columns[33].visible"/>
       <el-table-column label="返利金额" align="center" prop="rebate" v-if="columns[34].visible"/>
       <el-table-column label="客户佣金" align="center" prop="customerCommission" v-if="columns[35].visible"/>
       <el-table-column label="备注" align="center" prop="comments" v-if="columns[36].visible"/>
-      <el-table-column label="操作" align="center" class-name="small-padding fixed-width" width="170px" fixed="right">
+      <el-table-column label="操作" align="center" class-name="small-padding fixed-width" width="250px" fixed="right">
         <template slot-scope="scope">
           <el-button
             size="mini"
@@ -152,10 +139,6 @@
     <!-- 添加或修改库存对话框 -->
     <el-dialog :title="title" :visible.sync="open" width="500px" append-to-body>
       <el-form ref="form" :model="form" :rules="rules" label-width="80px">
-        <!--        根据仓库名称自动查询-->
-        <!--        <el-form-item label="仓库ID" prop="storeHouseid">-->
-        <!--          <el-input v-model="form.storeHouseid" placeholder="请输入仓库ID"/>-->
-        <!--        </el-form-item>-->
         <el-form-item label="仓库名称" prop="storeHouseName">
           <el-row>
             <el-col :span="10">
@@ -199,16 +182,13 @@
             </el-col>
           </el-row>
         </el-form-item>
-        <!--        <el-form-item label="供应商ID" prop="supplierId">-->
-        <!--          <el-input v-model="form.supplierId" placeholder="请输入供应商ID"/>-->
-        <!--        </el-form-item>-->
         <el-form-item label="级别编码" prop="levelID">
           <el-row>
             <el-col :span="10">
               <el-input v-model="form.levelID" placeholder="请输入级别编码"/>
             </el-col>
             <el-col :span="3">
-              <SearchOption :get-data="listProductLevel" @commitBack="handleCommitBackProductLevel">
+              <SearchOption :limit-info="{}" :get-data="listProductLevel" @commitBack="handleCommitBackProductLevel">
                 <template #table-columns>
                   <el-table-column label="级别编码" align="center" prop="levelNo"/>
                   <el-table-column label="级别名称" align="center" prop="levelName"/>
@@ -245,7 +225,6 @@
         <el-form-item label="出厂单价" prop="price">
           <el-input v-model="form.price" placeholder="请输入出厂单价"/>
         </el-form-item>
-        <!--        单选框-->
         <el-form-item label="出厂是否含税" prop="isIncludeTaxFactory">
           <el-radio v-model="form.isIncludeTaxFactory" label="1">是</el-radio>
           <el-radio v-model="form.isIncludeTaxFactory" label="2">否</el-radio>

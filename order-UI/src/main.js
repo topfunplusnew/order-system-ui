@@ -18,7 +18,7 @@ import './assets/icons' // icon
 import './permission' // permission control
 import {getDicts} from "@/api/system/dict/data";
 import {getConfigKey} from "@/api/system/config";
-import {parseTime, resetForm, addDateRange, selectDictLabel, selectDictLabels, handleTree} from "@/utils/ruoyi";
+import {addDateRange, handleTree, parseTime, resetForm, selectDictLabel, selectDictLabels} from "@/utils/ruoyi";
 // 分页组件
 import Pagination from "@/components/Pagination";
 // 自定义表格工具组件
@@ -44,8 +44,6 @@ import horizontalScroll from 'el-table-horizontal-scroll'
 import 'print-js/dist/print.css';
 import print from 'print-js'
 
-
-//todo 全局方法挂载
 Vue.prototype.getDicts = getDicts
 Vue.prototype.getConfigKey = getConfigKey
 Vue.prototype.parseTime = parseTime
@@ -60,7 +58,7 @@ Vue.prototype.$print = print;
 //todo 以下是自己封装的一些常用的繁琐操作函数
 //1.需要排除的字段信息
 //使用: this.form = excludeParams(this.form, this.$exclude)  api/tool/exclude.js
-Vue.prototype.$exclude = ['addtime', 'userId', 'UserName', 'delFlag', 'submitflag', 'cancelFlag', 'createBy', 'createTime', 'updateBy', 'updateTime']
+Vue.prototype.$exclude = ['addtime', 'userId', 'UserName', 'delFlag', 'submitflag', 'cancelFlag', 'createBy', 'createTime', 'updateBy', 'updateTime', 'isedit', 'userName']
 
 //2.挂载加载中动态效果
 //使用: 数据加载前:this.$wait()  数据加载后:this.$close()
@@ -103,6 +101,30 @@ Vue.prototype.$dateRange = function (_this, targetList, targetProperty, startTim
   }
 }
 
+//todo #############
+let car = {
+  'brand': 'ABC',
+  'price': '3000'
+}
+console.log(car.price)
+
+let obj = {}
+let money = 3000
+Object.defineProperty(obj, 'price', {
+  enumerable: true,
+  configurable: true,
+  get() {
+    console.log('price被读取了')
+    return money;
+  },
+  set(value) {
+    console.log('price被修改了')
+    money = value;
+  }
+})
+
+//todo #############
+
 
 // 全局组件挂载
 Vue.component('DictTag', DictTag)
@@ -112,16 +134,12 @@ Vue.component('Editor', Editor)
 Vue.component('FileUpload', FileUpload)
 Vue.component('ImageUpload', ImageUpload)
 Vue.component('ImagePreview', ImagePreview)
-
-
 Vue.use(directive)
 Vue.use(plugins)
 Vue.use(VueMeta)
 // 引入表格横向滚动插件
 Vue.use(horizontalScroll)
 DictData.install()
-
-
 Vue.use(Element, {
   size: Cookies.get('size') || 'medium' // set element-ui default size
 })

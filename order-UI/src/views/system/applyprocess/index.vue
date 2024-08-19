@@ -189,7 +189,7 @@ export default {
           label="操作"
           width="80">
           <template slot-scope="scope">
-            <el-button @click="handleCheckInfo(scope.row)" type="primary" size="small">查看</el-button>
+            <el-button @click="handleCheckInfo(scope.row)" type="primary" size="mini">查看</el-button>
           </template>
         </el-table-column>
         <el-table-column
@@ -197,7 +197,7 @@ export default {
           label="审核流程"
           width="200">
           <template slot-scope="scope">
-            <el-button type="warning" @click="handleCheckApplyInfo(scope.row)">查看审核流程信息</el-button>
+            <el-button type="warning" @click="handleCheckApplyInfo(scope.row)" size="mini">查看审核流程信息</el-button>
           </template>
         </el-table-column>
       </el-table>

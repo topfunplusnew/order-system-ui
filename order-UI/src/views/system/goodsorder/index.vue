@@ -8,7 +8,7 @@
           v-model="timesQuery.beginTime"
           type="date"
           placeholder="选择开始时间"
-        value-format="yyyy-MM-dd">
+          value-format="yyyy-MM-dd">
         </el-date-picker>
       </el-form-item>
       <el-form-item label="结束时间" prop="endTime">
@@ -16,7 +16,7 @@
           v-model="timesQuery.endTime"
           type="date"
           placeholder="选择结束时间"
-        value-format="yyyy-MM-dd">
+          value-format="yyyy-MM-dd">
         </el-date-picker>
       </el-form-item>
       <el-form-item label="客户名称" prop="customer">
@@ -278,8 +278,8 @@
     <el-dialog
       title="查看订单信息"
       :visible.sync="checkOrderVisible"
-      width="30%">
-      <el-descriptions title="订单信息" :column="1" border>
+      width="60%">
+      <el-descriptions title="订单信息" :column="4" border size="medium">
         <el-descriptions-item label="日期">{{ orderDetailInfo.orderDate }}</el-descriptions-item>
         <el-descriptions-item label="客户">{{ orderDetailInfo.customer }}</el-descriptions-item>
         <el-descriptions-item label="商家姓名">{{ orderDetailInfo.supplierNames }}</el-descriptions-item>
@@ -665,7 +665,9 @@ export default {
       //订单输入详情信息
       orderInfo: {},
       //上传附件临时保存当前点击订单信息
-      tempOrderInfo: {},
+      tempOrderInfo: {
+        receiveProof: ''
+      },
       //运费的弹窗
       landFreeDialogVisible: false,
       seaFreeDialogVisible: false,
@@ -826,10 +828,11 @@ export default {
     //收到条回调
     handleCommitGet(value) {
       this.tempOrderInfo.receiveProof = value;
-      excludeParams(this.tempOrderInfo, this.$exclude)
+      this.tempOrderInfo = excludeParams(this.tempOrderInfo, this.$exclude)
+      console.log('收到', this.tempOrderInfo)
       //更新订单状态
       updateGoodsOrder(this.tempOrderInfo).then(res => {
-        console.log(res)
+        this.$message.success('上传成功')
       })
     },
 
@@ -854,15 +857,13 @@ export default {
         let orderInfo = res.data
         for (let i = 0; i < orderInfo.orderDetailList.length; i++) {
           orderInfo.orderDetailList[i].ordersNo = ''
+          orderInfo.orderDetailList[i] = excludeParams(orderInfo.orderDetailList[i], this.$exclude)
         }
         //去除字段
-        orderInfo.delFlag = null;
-        orderInfo.addtime = null;
-        orderInfo.updateTime = null;
-        orderInfo.userId = null;
-        orderInfo.cancelFlag = null;
+        orderInfo = excludeParams(orderInfo, this.$exclude)
+        console.log('调整单', orderInfo)
         //调整单
-        adjustGoodsOrder({...orderInfo, ordersNo: '', adjustDate: new Date().getTime()}).then(res => {
+        adjustGoodsOrder({...orderInfo, ordersNo: '', adjustDate: formatDate(new Date())}).then(res => {
           this.$message.success('调整单提交成功')
           this.getList();
         })
