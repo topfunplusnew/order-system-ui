@@ -1,34 +1,34 @@
 <template>
   <div class="app-container">
     <el-row :gutter="20">
-      <!--部门数据-->
-      <el-col :span="4" :xs="24">
-        <div class="head-container">
-          <el-input
-            v-model="deptName"
-            placeholder="请输入部门名称"
-            clearable
-            size="small"
-            prefix-icon="el-icon-search"
-            style="margin-bottom: 20px"
-          />
-        </div>
-        <div class="head-container">
-          <el-tree
-            :data="deptOptions"
-            :props="defaultProps"
-            :expand-on-click-node="false"
-            :filter-node-method="filterNode"
-            ref="tree"
-            node-key="id"
-            default-expand-all
-            highlight-current
-            @node-click="handleNodeClick"
-          />
-        </div>
-      </el-col>
+      <!--      &lt;!&ndash;部门数据&ndash;&gt;-->
+      <!--      <el-col :span="4" :xs="24">-->
+      <!--        <div class="head-container">-->
+      <!--          <el-input-->
+      <!--            v-model="deptName"-->
+      <!--            placeholder="请输入部门名称"-->
+      <!--            clearable-->
+      <!--            size="small"-->
+      <!--            prefix-icon="el-icon-search"-->
+      <!--            style="margin-bottom: 20px"-->
+      <!--          />-->
+      <!--        </div>-->
+      <!--        <div class="head-container">-->
+      <!--          <el-tree-->
+      <!--            :data="deptOptions"-->
+      <!--            :props="defaultProps"-->
+      <!--            :expand-on-click-node="false"-->
+      <!--            :filter-node-method="filterNode"-->
+      <!--            ref="tree"-->
+      <!--            node-key="id"-->
+      <!--            default-expand-all-->
+      <!--            highlight-current-->
+      <!--            @node-click="handleNodeClick"-->
+      <!--          />-->
+      <!--        </div>-->
+      <!--      </el-col>-->
       <!--用户数据-->
-      <el-col :span="20" :xs="24">
+      <el-col :span="24" :xs="24">
         <el-form :model="queryParams" ref="queryForm" size="small" :inline="true" v-show="showSearch"
                  label-width="68px">
           <el-form-item label="用户名称" prop="userName">
@@ -144,16 +144,58 @@
 
         <el-table v-loading="loading" :data="userList" @selection-change="handleSelectionChange">
           <el-table-column type="selection" width="50" align="center"/>
-          <el-table-column label="用户编号" align="center" key="userId" prop="userId" v-if="columns[0].visible"/>
-          <el-table-column label="用户名称" align="center" key="userName" prop="userName" v-if="columns[1].visible"
+          <el-table-column label="用户编号" align="center" key="userId" prop="userId"/>
+          <el-table-column label="用户名称" align="center" key="userName" prop="userName"
                            :show-overflow-tooltip="true"/>
-          <el-table-column label="用户昵称" align="center" key="nickName" prop="nickName" v-if="columns[2].visible"
+          <el-table-column label="用户昵称" align="center" key="nickName" prop="nickName"
                            :show-overflow-tooltip="true"/>
-          <el-table-column label="部门" align="center" key="deptName" prop="dept.deptName" v-if="columns[3].visible"
+          <el-table-column label="真实姓名" align="center" key="nickName" prop="trueName"
+                           :show-overflow-tooltip="true"/>
+          <el-table-column label="岗位" align="center" key="deptName" prop="postName"
                            :show-overflow-tooltip="true"/>
           <el-table-column label="手机号码" align="center" key="phonenumber" prop="phonenumber"
-                           v-if="columns[4].visible" width="120"/>
-          <el-table-column label="状态" align="center" key="status" v-if="columns[5].visible">
+                           width="120"/>
+          <el-table-column label="就职状态" align="center" key="phonenumber" prop="state"
+                           width="120"/>
+          <el-table-column label="入职时间" align="center" key="phonenumber" prop="startDate"
+                           width="120"/>
+          <el-table-column label="身份证号码" align="center" key="phonenumber" prop="iDCard"
+                           width="120"/>
+          <el-table-column label="联系电话" align="center" key="phonenumber" prop="phonenumber"
+                           width="120"/>
+          <el-table-column label="性别" align="center" key="phonenumber" prop="sex"
+                           width="120"/>
+          <el-table-column label="出生日期" align="center" key="phonenumber" prop="birthday"
+                           width="120"/>
+          <el-table-column label="民族" align="center" key="phonenumber" prop="nation"
+                           width="120"/>
+          <el-table-column label="政治面貌" align="center" key="phonenumber" prop="politicalStatus"
+                           width="120"/>
+          <el-table-column label="婚姻状况" align="center" key="phonenumber" prop="maritalStatus"
+                           width="120"/>
+          <el-table-column label="户籍地址" align="center" key="phonenumber" prop="domicileAddress"
+                           width="120"/>
+          <el-table-column label="居住地址" align="center" key="phonenumber" prop="residentialAddress"
+                           width="120"/>
+          <el-table-column label="紧急联系人" align="center" key="phonenumber" prop="relationPerson"
+                           width="120"/>
+          <el-table-column label="紧急联系人电话" align="center" key="phonenumber" prop="relationPersonTel"
+                           width="120"/>
+          <el-table-column label="关系" align="center" key="phonenumber" prop="relationship"
+                           width="120"/>
+          <el-table-column label="学历" align="center" key="phonenumber" prop="education"
+                           width="120"/>
+          <el-table-column label="毕业院校" align="center" key="phonenumber" prop="gradualUniversity"
+                           width="120"/>
+          <el-table-column label="专业" align="center" key="phonenumber" prop="profession"
+                           width="120"/>
+          <el-table-column label="毕业时间" align="center" key="phonenumber" prop="gradualDate"
+                           width="120"/>
+          <el-table-column label="开户银行" align="center" key="phonenumber" prop="bankName"
+                           width="120"/>
+          <el-table-column label="银行账号" align="center" key="phonenumber" prop="bankNo"
+                           width="120"/>
+          <el-table-column label="状态" align="center" key="status">
             <template slot-scope="scope">
               <el-switch
                 v-model="scope.row.status"
@@ -163,7 +205,7 @@
               ></el-switch>
             </template>
           </el-table-column>
-          <el-table-column label="创建时间" align="center" prop="createTime" v-if="columns[6].visible" width="160">
+          <el-table-column label="创建时间" align="center" prop="createTime" width="160">
             <template slot-scope="scope">
               <span>{{ parseTime(scope.row.createTime) }}</span>
             </template>
@@ -173,27 +215,26 @@
             align="center"
             width="160"
             class-name="small-padding fixed-width"
+            fixed="right"
           >
             <template slot-scope="scope" v-if="scope.row.userId !== 1">
               <el-button
                 size="mini"
-                type="text"
-                icon="el-icon-edit"
+                type="primary"
                 @click="handleUpdate(scope.row)"
                 v-hasPermi="['system:user:edit']"
               >修改
               </el-button>
               <el-button
                 size="mini"
-                type="text"
-                icon="el-icon-delete"
+                type="danger"
                 @click="handleDelete(scope.row)"
                 v-hasPermi="['system:user:remove']"
               >删除
               </el-button>
               <el-dropdown size="mini" @command="(command) => handleCommand(command, scope.row)"
                            v-hasPermi="['system:user:resetpwd', 'system:user:edit']">
-                <el-button size="mini" type="text" icon="el-icon-d-arrow-right">更多</el-button>
+                <el-button size="mini" type="warning">更多</el-button>
                 <el-dropdown-menu slot="dropdown">
                   <el-dropdown-item command="handleResetPwd" icon="el-icon-key"
                                     v-hasPermi="['system:user:resetpwd']">重置密码
@@ -218,73 +259,60 @@
     </el-row>
 
     <!-- 添加或修改用户配置对话框 -->
-    <el-dialog :title="title" :visible.sync="open" width="600px" append-to-body>
+    <el-dialog :title="title" :visible.sync="open" width="80%" append-to-body>
       <el-form ref="form" :model="form" :rules="rules" label-width="80px">
         <el-row>
-          <el-col :span="12">
-            <el-form-item label="用户昵称" prop="nickName">
-              <el-input v-model="form.nickName" placeholder="请输入用户昵称" maxlength="30"/>
-            </el-form-item>
+          <el-col :span="6">
+            <el-row>
+              123
+            </el-row>
+            <el-row>
+              <el-form-item label="用户昵称" prop="nickName">
+                <el-input v-model="form.nickName" placeholder="请输入用户昵称" maxlength="30"/>
+              </el-form-item>
+              <el-form-item label="归属部门" prop="deptId">
+                <treeselect v-model="form.deptId" :options="deptOptions" :show-count="true" placeholder="请选择归属部门"/>
+              </el-form-item>
+              <el-form-item label="手机号码" prop="phonenumber">
+                <el-input v-model="form.phonenumber" placeholder="请输入手机号码" maxlength="11"/>
+              </el-form-item>
+              <el-form-item label="邮箱" prop="email">
+                <el-input v-model="form.email" placeholder="请输入邮箱" maxlength="50"/>
+              </el-form-item>
+              <el-form-item v-if="form.userId == undefined" label="用户名称" prop="userName">
+                <el-input v-model="form.userName" placeholder="请输入用户名称" maxlength="30"/>
+              </el-form-item>
+              <el-form-item v-if="form.userId == undefined" label="用户密码" prop="password">
+                <el-input v-model="form.password" placeholder="请输入用户密码" type="password" maxlength="20"
+                          show-password/>
+              </el-form-item>
+              <el-form-item label="用户性别">
+                <el-select v-model="form.sex" placeholder="请选择性别">
+                  <el-option
+                    v-for="dict in dict.type.sys_user_sex"
+                    :key="dict.value"
+                    :label="dict.label"
+                    :value="dict.value"
+                  ></el-option>
+                </el-select>
+              </el-form-item>
+              <el-form-item label="状态">
+                <el-radio-group v-model="form.status">
+                  <el-radio
+                    v-for="dict in dict.type.sys_normal_disable"
+                    :key="dict.value"
+                    :label="dict.value"
+                  >{{ dict.label }}
+                  </el-radio>
+                </el-radio-group>
+              </el-form-item>
+              <el-form-item label="民族">
+                <el-input v-model="form.nation" placeholder="请输入民族"/>
+              </el-form-item>
+            </el-row>
           </el-col>
-          <el-col :span="12">
-            <el-form-item label="归属部门" prop="deptId">
-              <treeselect v-model="form.deptId" :options="deptOptions" :show-count="true" placeholder="请选择归属部门"/>
-            </el-form-item>
-          </el-col>
-        </el-row>
-        <el-row>
-          <el-col :span="12">
-            <el-form-item label="手机号码" prop="phonenumber">
-              <el-input v-model="form.phonenumber" placeholder="请输入手机号码" maxlength="11"/>
-            </el-form-item>
-          </el-col>
-          <el-col :span="12">
-            <el-form-item label="邮箱" prop="email">
-              <el-input v-model="form.email" placeholder="请输入邮箱" maxlength="50"/>
-            </el-form-item>
-          </el-col>
-        </el-row>
-        <el-row>
-          <el-col :span="12">
-            <el-form-item v-if="form.userId == undefined" label="用户名称" prop="userName">
-              <el-input v-model="form.userName" placeholder="请输入用户名称" maxlength="30"/>
-            </el-form-item>
-          </el-col>
-          <el-col :span="12">
-            <el-form-item v-if="form.userId == undefined" label="用户密码" prop="password">
-              <el-input v-model="form.password" placeholder="请输入用户密码" type="password" maxlength="20"
-                        show-password/>
-            </el-form-item>
-          </el-col>
-        </el-row>
-        <el-row>
-          <el-col :span="12">
-            <el-form-item label="用户性别">
-              <el-select v-model="form.sex" placeholder="请选择性别">
-                <el-option
-                  v-for="dict in dict.type.sys_user_sex"
-                  :key="dict.value"
-                  :label="dict.label"
-                  :value="dict.value"
-                ></el-option>
-              </el-select>
-            </el-form-item>
-          </el-col>
-          <el-col :span="12">
-            <el-form-item label="状态">
-              <el-radio-group v-model="form.status">
-                <el-radio
-                  v-for="dict in dict.type.sys_normal_disable"
-                  :key="dict.value"
-                  :label="dict.value"
-                >{{ dict.label }}
-                </el-radio>
-              </el-radio-group>
-            </el-form-item>
-          </el-col>
-        </el-row>
-        <el-row>
-          <el-col :span="12">
+
+          <el-col :span="6">
             <el-form-item label="岗位">
               <el-select v-model="form.postIds" multiple placeholder="请选择岗位">
                 <el-option
@@ -296,8 +324,6 @@
                 ></el-option>
               </el-select>
             </el-form-item>
-          </el-col>
-          <el-col :span="12">
             <el-form-item label="角色">
               <el-select v-model="form.roleIds" multiple placeholder="请选择角色">
                 <el-option
@@ -309,10 +335,78 @@
                 ></el-option>
               </el-select>
             </el-form-item>
+            <el-form-item label="真实姓名">
+              <el-input v-model="form.trueName" placeholder="请输入真实姓名"/>
+            </el-form-item>
+            <el-form-item label="在职状态">
+              <el-radio v-model="form.state" label="在职">在职</el-radio>
+              <el-radio v-model="form.state" label="离职">离职</el-radio>
+            </el-form-item>
+            <el-form-item label="入职时间">
+              <el-date-picker
+                v-model="form.startDate"
+                type="date"
+                placeholder="选择入职时间">
+              </el-date-picker>
+            </el-form-item>
+            <el-form-item label="身份证号码">
+              <el-input v-model="form.iDCard" placeholder="请输入身份证号码"/>
+            </el-form-item>
           </el-col>
-        </el-row>
-        <el-row>
-          <el-col :span="24">
+          <el-col :span="6">
+            <el-form-item label="出生日期">
+              <el-date-picker
+                v-model="form.birthday"
+                type="date"
+                placeholder="选择出生日期">
+              </el-date-picker>
+            </el-form-item>
+
+            <el-form-item label="政治面貌">
+              <el-input v-model="form.politicalStatus" placeholder="请输入政治面貌"/>
+            </el-form-item>
+            <el-form-item label="婚姻状况">
+              <el-input v-model="form.maritalStatus" placeholder="请输入婚姻状况"/>
+            </el-form-item>
+            <el-form-item label="户籍地址">
+              <el-input v-model="form.domicileAddress" placeholder="请输入户籍地址"/>
+            </el-form-item>
+            <el-form-item label="居住地址">
+              <el-input v-model="form.residentialAddress" placeholder="请输入居住地址"/>
+            </el-form-item>
+            <el-form-item label="紧急联系人">
+              <el-input v-model="form.relationPerson" placeholder="请输入紧急联系人"/>
+            </el-form-item>
+            <el-form-item label="紧急联系人电话">
+              <el-input v-model="form.relationPersonTel" placeholder="请输入紧急联系人电话"/>
+            </el-form-item>
+            <el-form-item label="关系">
+              <el-input v-model="form.relationship" placeholder="请输入关系"/>
+            </el-form-item>
+          </el-col>
+          <el-col :span="6">
+            <el-form-item label="学历">
+              <el-input v-model="form.education" placeholder="请输入学历"/>
+            </el-form-item>
+            <el-form-item label="毕业院校">
+              <el-input v-model="form.gradualUniversity" placeholder="请输入毕业院校"/>
+            </el-form-item>
+            <el-form-item label="专业">
+              <el-input v-model="form.profession" placeholder="请输入专业"/>
+            </el-form-item>
+            <el-form-item label="毕业时间">
+              <el-date-picker
+                v-model="form.gradualDate"
+                type="date"
+                placeholder="选择毕业时间">
+              </el-date-picker>
+            </el-form-item>
+            <el-form-item label="开户银行">
+              <el-input v-model="form.bankName" placeholder="请输入开户银行"/>
+            </el-form-item>
+            <el-form-item label="银行账号">
+              <el-input v-model="form.bankNo" placeholder="请输入银行账号"/>
+            </el-form-item>
             <el-form-item label="备注">
               <el-input v-model="form.remark" type="textarea" placeholder="请输入内容"></el-input>
             </el-form-item>
@@ -374,6 +468,7 @@ import {
 import {getToken} from "@/utils/auth";
 import Treeselect from "@riophae/vue-treeselect";
 import "@riophae/vue-treeselect/dist/vue-treeselect.css";
+import {parseTime} from "../../../utils/ruoyi";
 
 export default {
   name: "User",
@@ -496,6 +591,7 @@ export default {
     });
   },
   methods: {
+    parseTime,
     /** 查询用户列表 */
     getList() {
       this.loading = true;
@@ -552,7 +648,27 @@ export default {
         status: "0",
         remark: undefined,
         postIds: [],
-        roleIds: []
+        roleIds: [],
+        trueName: null,
+        postName: null,
+        state: null,
+        startDate: null,
+        iDCard: null,
+        birthday: null,
+        nation: null,
+        politicalStatus: null,
+        maritalStatus: null,
+        domicileAddress: null,
+        residentialAddress: null,
+        relationPerson: null,
+        relationPersonTel: null,
+        relationship: null,
+        education: null,
+        gradualUniversity: null,
+        profession: null,
+        gradualDate: null,
+        bankName: null,
+        bankNo: null,
       };
       this.resetForm("form");
     },

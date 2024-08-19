@@ -124,60 +124,66 @@
 
 
     <!-- 添加或修改客户、供应商信息对话框 -->
-    <el-dialog :title="title" :visible.sync="open" width="500px" append-to-body>
+    <el-dialog :title="title" :visible.sync="open" width="54%" append-to-body>
       <el-form ref="form" :model="form" :rules="rules" label-width="80px">
-        <el-form-item label="客户" prop="relationName">
-          <el-input v-model="form.relationName" placeholder="请输入客户名称"/>
-        </el-form-item>
-        <el-form-item label="公司名称" prop="companyName">
-          <el-input v-model="form.companyName" placeholder="请输入公司名称"/>
-        </el-form-item>
-        <el-form-item label="客户电话" prop="relationTel">
-          <el-input v-model="form.relationTel" placeholder="请输入联系人电话"/>
-        </el-form-item>
-        <el-form-item label="地址" prop="address">
-          <el-input v-model="form.address" placeholder="请输入地址"/>
-        </el-form-item>
-        <el-form-item label="业务员" prop="salesman">
-          <el-input v-model="form.salesman" placeholder="请输入业务员"/>
-        </el-form-item>
-        <el-form-item label="老板姓名" prop="leader">
-          <el-input v-model="form.leader" placeholder="请输入老板姓名"/>
-        </el-form-item>
-        <el-form-item label="老板电话" prop="leaderTel">
-          <el-input v-model="form.leaderTel" placeholder="请输入联系人电话"/>
-        </el-form-item>
-        <el-form-item label="销售经理" prop="salesManager">
-          <el-input v-model="form.salesManager" placeholder="请输入销售经理"/>
-        </el-form-item>
-        <el-form-item label="省" prop="province">
-          <!--          <el-input v-model="form.province" placeholder="请输入省"/>-->
-          <el-select v-model="form.province" placeholder="请选择省" @change="changeProvince">
-            <el-option
-                v-for="item in provinceList"
-                :key="item.code"
-                :label="item.name"
-                :value="item.name">
-            </el-option>
-          </el-select>
-        </el-form-item>
-        <el-form-item label="市县" prop="city">
-          <!--          <el-input v-model="form.city" placeholder="请输入市县"/>-->
-          <el-select v-model="form.city" placeholder="请选择市" @change="changeCity">
-            <el-option
-                v-for="item in cityList"
-                :key="item.code"
-                :label="item.name"
-                :value="item.name">
-            </el-option>
-          </el-select>
-        </el-form-item>
-        <el-form-item label="乡镇" prop="county">
-          <el-input v-model="form.county" placeholder="请输入乡镇"/>
-        </el-form-item>
-        <el-form-item label="备注" prop="comments">
-          <el-input v-model="form.comments" placeholder="请输入备注"/>
-        </el-form-item>
+        <el-row :gutter="4">
+          <el-col :span="12">
+            <el-form-item label="客户" prop="relationName">
+              <el-input v-model="form.relationName" placeholder="请输入客户名称"/>
+            </el-form-item>
+            <el-form-item label="公司名称" prop="companyName">
+              <el-input v-model="form.companyName" placeholder="请输入公司名称"/>
+            </el-form-item>
+            <el-form-item label="客户电话" prop="relationTel">
+              <el-input v-model="form.relationTel" placeholder="请输入联系人电话"/>
+            </el-form-item>
+            <el-form-item label="地址" prop="address">
+              <el-input v-model="form.address" placeholder="请输入地址"/>
+            </el-form-item>
+            <el-form-item label="业务员" prop="salesman">
+              <el-input v-model="form.salesman" placeholder="请输入业务员"/>
+            </el-form-item>
+            <el-form-item label="老板姓名" prop="leader">
+              <el-input v-model="form.leader" placeholder="请输入老板姓名"/>
+            </el-form-item>
+            <el-form-item label="老板电话" prop="leaderTel">
+              <el-input v-model="form.leaderTel" placeholder="请输入联系人电话"/>
+            </el-form-item>
+          </el-col>
+          <el-col :span="12">
+            <el-form-item label="销售经理" prop="salesManager">
+              <el-input v-model="form.salesManager" placeholder="请输入销售经理"/>
+            </el-form-item>
+            <el-form-item label="省" prop="province">
+              <!--          <el-input v-model="form.province" placeholder="请输入省"/>-->
+              <el-select v-model="form.province" placeholder="请选择省" @change="changeProvince">
+                <el-option
+                    v-for="item in provinceList"
+                    :key="item.code"
+                    :label="item.name"
+                    :value="item.name">
+                </el-option>
+              </el-select>
+            </el-form-item>
+            <el-form-item label="市县" prop="city">
+              <!--          <el-input v-model="form.city" placeholder="请输入市县"/>-->
+              <el-select v-model="form.city" placeholder="请选择市" @change="changeCity">
+                <el-option
+                    v-for="item in cityList"
+                    :key="item.code"
+                    :label="item.name"
+                    :value="item.name">
+                </el-option>
+              </el-select>
+            </el-form-item>
+            <el-form-item label="乡镇" prop="county">
+              <el-input v-model="form.county" placeholder="请输入乡镇"/>
+            </el-form-item>
+            <el-form-item label="备注" prop="comments">
+              <el-input v-model="form.comments" placeholder="请输入备注"/>
+            </el-form-item>
+          </el-col>
+        </el-row>
       </el-form>
       <div slot="footer" class="dialog-footer">
         <el-button type="primary" @click="submitForm">确 定</el-button>
