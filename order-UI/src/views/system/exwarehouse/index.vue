@@ -30,7 +30,7 @@
       </el-form-item>
       <el-form-item>
         <el-button type="primary" icon="el-icon-search" size="mini" @click="handleQuery">搜索</el-button>
-        <el-button icon="el-icon-refresh" size="mini" @click="resetQuery">重置</el-button>
+<!--        <el-button icon="el-icon-refresh" size="mini" @click="resetQuery">重置</el-button>-->
       </el-form-item>
     </el-form>
 
@@ -46,6 +46,10 @@
       <!--        >新增出库信息-->
       <!--        </el-button>-->
       <!--      </el-col>-->
+      <!-- 刷新按钮-->
+      <el-col :span="1.5">
+        <el-button icon="el-icon-refresh" size="mini" @click="resetQuery">刷新</el-button>
+      </el-col>
       <right-toolbar :showSearch.sync="showSearch" @queryTable="getList" :columns="columns">
         <template v-slot:print>
           <el-col :span="1.5">
@@ -66,7 +70,7 @@
               icon="el-icon-folder-opened"
               size="mini"
               @click="handleExport"
-              v-hasPermi="['system:bankaccount:export']"
+              v-hasPermi="['system:exwarehouse:export']"
             >
             </el-button>
           </el-col>
@@ -76,8 +80,8 @@
 
     <el-table border v-horizontal-scroll="'always'" v-loading="loading" :data="exWarehouseList"
               @selection-change="handleSelectionChange" id="printBox">
-      <el-table-column label="id" align="center" prop="id"/>
-      <el-table-column label="订单编号" align="center" prop="ordersNo">
+      <el-table-column label="id" align="center" prop="id" v-if="columns[0].visible"/>
+      <el-table-column label="订单编号" align="center" prop="ordersNo" v-if="columns[1].visible">
         <template slot-scope="scope">
           <el-tag type="success" v-if="scope.row.ordersNo ==='二次加工' || '货物破损'">
             <span>
@@ -90,11 +94,11 @@
         </template>
       </el-table-column>
       <!--      <el-table-column label="仓库ID" align="center" prop="storeHouseid"/>-->
-      <el-table-column label="仓库名称" align="center" prop="storeHouseName"/>
+      <el-table-column label="仓库名称" align="center" prop="storeHouseName" v-if="columns[2].visible"/>
       <!--      <el-table-column label="仓库存储的货物ID" align="center" prop="storeID"/>-->
 
-      <el-table-column label="出库日期" align="center" prop="outDate"/>
-      <el-table-column label="出库量" align="center" prop="outAmount"/>
+      <el-table-column label="出库日期" align="center" prop="outDate" v-if="columns[3].visible"/>
+      <el-table-column label="出库量" align="center" prop="outAmount" v-if="columns[4].visible"/>
       <el-table-column label="操作" align="center" class-name="small-padding fixed-width">
         <template slot-scope="scope">
           <el-tooltip class="item" effect="dark"
@@ -210,8 +214,6 @@
         <el-button type="primary" @click="checkOrderVisible = false">确 定</el-button>
       </span>
     </el-dialog>
-
-
   </div>
 </template>
 
@@ -227,7 +229,6 @@ import {listGoodsOrder} from "@/api/system/goodsOrder";
 import TagsItem from "@/components/TagsItem/index.vue";
 import {getInventory, listInventory} from "@/api/system/inventory";
 import {listConfig} from "@/api/system/config";
-
 export default {
   name: "ExWarehouse",
   components: {TagsItem},
@@ -273,11 +274,11 @@ export default {
       // 表单校验
       rules: {},
       columns: [
-        {key: 0, label: `账户类型`, visible: true},
-        {key: 1, label: `开户名称`, visible: true},
-        {key: 2, label: `账号(银行卡号)`, visible: true},
-        {key: 3, label: `开户行`, visible: true},
-        {key: 4, label: `公司名称`, visible: true}
+        {key: 0, label: `id`, visible: true},
+        {key: 1, label: `订单编号`, visible: true},
+        {key: 2, label: `仓库名称`, visible: true},
+        {key: 3, label: `出库日期`, visible: true},
+        {key: 4, label: `出库量`, visible: true}
       ],
       checkOrderVisible: false,
       orderDetailInfo: {},
@@ -285,8 +286,23 @@ export default {
   },
   created() {
     this.getList();
+    if (localStorage.getItem('exwarehouse-columns') === 'null'
+      || !localStorage.getItem('exwarehouse-columns')) {
+      //设置localStorage
+      localStorage.setItem("exwarehouse-columns", JSON.stringify(this.columns))
+    } else {
+      this.columns = JSON.parse(localStorage.getItem('exwarehouse-columns'));
+    }
   },
-
+  //展示与隐藏
+  watch: {
+    columns: {
+      handler: (newVal) => {
+        localStorage.setItem("exwarehouse-columns", JSON.stringify(newVal))
+      },
+      deep: true,
+    }
+  },
   // 取消按钮
   cancel() {
     this.open = false;

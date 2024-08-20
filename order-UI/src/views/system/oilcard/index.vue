@@ -77,8 +77,8 @@
                     @selection-change="handleSelectionChange" id="printBox"
                     v-horizontal-scroll="'always'">
             <el-table-column label="加油卡卡号" align="center" prop="oilCardNo" v-if="columns[0].visible"/>
-            <el-table-column label="当前金额" align="center" prop="moneyAmount" v-if="columns[2].visible"/>
-            <el-table-column label="备注" align="center" prop="comments" v-if="columns[3].visible"/>
+            <el-table-column label="当前金额" align="center" prop="moneyAmount" v-if="columns[1].visible"/>
+            <el-table-column label="备注" align="center" prop="comments" v-if="columns[2].visible"/>
             <el-table-column label="操作" align="center" class-name="small-padding fixed-width" fixed="right">
               <template slot-scope="scope">
                 <el-button
@@ -112,8 +112,8 @@
                     @selection-change="handleSelectionChange" id="printBox"
                     v-horizontal-scroll="'always'">
             <el-table-column label="加油卡卡号" align="center" prop="oilCardNo" v-if="columns[0].visible"/>
-            <el-table-column label="当前金额" align="center" prop="moneyAmount" v-if="columns[2].visible"/>
-            <el-table-column label="备注" align="center" prop="comments" v-if="columns[3].visible"/>
+            <el-table-column label="当前金额" align="center" prop="moneyAmount" v-if="columns[1].visible"/>
+            <el-table-column label="备注" align="center" prop="comments" v-if="columns[2].visible"/>
             <el-table-column label="操作" align="center" class-name="small-padding fixed-width" fixed="right">
               <template slot-scope="scope">
                 <el-button
@@ -298,9 +298,8 @@ export default {
       rules: {},
       columns: [
         {key: 0, label: `加油卡卡号`, visible: true},
-        {key: 1, label: `加油卡类别`, visible: true},
-        {key: 2, label: `当前金额`, visible: true},
-        {key: 3, label: `备注`, visible: true},
+        {key: 1, label: `当前金额`, visible: true},
+        {key: 2, label: `备注`, visible: true},
       ],
 
       //加油卡充值界面的弹窗

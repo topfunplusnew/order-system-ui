@@ -87,12 +87,39 @@
             >2-添加科目信息
             </el-button>
           </el-col>
-          <right-toolbar :showSearch.sync="showSearch" @queryTable="getList"></right-toolbar>
+          <right-toolbar :showSearch.sync="showSearch" @queryTable="getList">
+            <!--    打印    -->
+            <template v-slot:print>
+              <el-col :span="1.5">
+                <el-button
+                  plain
+                  icon="el-icon-printer"
+                  size="mini"
+                  @click="printHTML"
+                >
+                </el-button>
+              </el-col>
+            </template>
+            <!--        导出-->
+            <template v-slot:export>
+              <el-col :span="1.5">
+                <el-button
+                  plain
+                  icon="el-icon-folder-opened"
+                  size="mini"
+                  @click="handleExport"
+                  v-hasPermi="['system:subject:export']"
+                >
+                </el-button>
+              </el-col>
+            </template>
+          </right-toolbar>
         </el-row>
 
         <!--        表格-->
         <el-table
           border
+          id="printBox"
           v-if="refreshTable"
           v-loading="loading"
           :data="subjectList"
@@ -100,13 +127,13 @@
           :default-expand-all="isExpandAll"
           :tree-props="{children: 'children', hasChildren: 'hasChildren'}"
         >
-          <el-table-column label="科目名称" prop="title"/>
-          <el-table-column label="科目编码" align="center" prop="subjectNo"/>
-          <el-table-column label="科目类别" align="center" prop="type"/>
-          <el-table-column label="父级ID" align="center" prop="parentId"/>
+          <el-table-column label="科目名称" prop="title" v-if="columns[0].visible"/>
+          <el-table-column label="科目编码" align="center" prop="subjectNo" v-if="columns[1].visible"/>
+          <el-table-column label="科目类别" align="center" prop="type" v-if="columns[2].visible"/>
+          <el-table-column label="父级ID" align="center" prop="parentId" v-if="columns[3].visible"/>
           <!--          <el-table-column label="显示顺序" align="center" prop="orderNum"/>-->
           <!--          <el-table-column label="状态" align="center" prop="STATUS"/>-->
-          <el-table-column label="备注" align="center" prop="remark"/>
+          <el-table-column label="备注" align="center" prop="remark" v-if="columns[5].visible"/>
           <el-table-column label="操作" align="center" class-name="small-padding fixed-width">
             <template slot-scope="scope">
               <el-button
@@ -339,6 +366,14 @@ export default {
     }
   },
   methods: {
+    /*打印信息*/
+    printHTML() {
+      this.$print({
+        printable: 'printBox',
+        type: 'html',
+        targetStyles: ['*'], // 打印内容使用所有HTML样式，没有设置这个属性/值，设置分页打印没有效果
+      })
+    },
     //添加科目分类
     handleAddType() {
       this.openType = true;
