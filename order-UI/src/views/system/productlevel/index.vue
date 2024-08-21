@@ -3,10 +3,10 @@
     <el-form :model="queryParams" ref="queryForm" size="small" :inline="true" v-show="showSearch" label-width="68px">
       <el-form-item label="分类名称" prop="categoryName">
         <el-input
-            v-model="queryParams.categoryName"
-            placeholder="请输入分类名称"
-            clearable
-            @keyup.enter.native="handleQuery"
+          v-model="queryParams.categoryName"
+          placeholder="请输入分类名称"
+          clearable
+          @keyup.enter.native="handleQuery"
         />
       </el-form-item>
       <el-form-item>
@@ -31,19 +31,19 @@
           </el-col>
           <el-col :span="1.5">
             <el-button
-                type="primary"
-                plain
-                size="mini"
-                @click="handleAddProductSort"
+              type="primary"
+              plain
+              size="mini"
+              @click="handleAddProductSort"
             >添加产品分类
             </el-button>
           </el-col>
           <el-col :span="1.5">
             <el-button
-                type="danger"
-                plain
-                size="mini"
-                @click="handleAddProductLevel"
+              type="danger"
+              plain
+              size="mini"
+              @click="handleAddProductLevel"
             >新增产品级别信息
             </el-button>
           </el-col>
@@ -51,10 +51,10 @@
             <template v-slot:print>
               <el-col :span="1.5">
                 <el-button
-                    plain
-                    icon="el-icon-printer"
-                    size="mini"
-                    @click="printHTML"
+                  plain
+                  icon="el-icon-printer"
+                  size="mini"
+                  @click="printHTML"
                 >
                 </el-button>
               </el-col>
@@ -63,11 +63,11 @@
             <template v-slot:export>
               <el-col :span="1.5">
                 <el-button
-                    plain
-                    icon="el-icon-folder-opened"
-                    size="mini"
-                    @click="handleExport"
-                    v-hasPermi="['system:company:export']"
+                  plain
+                  icon="el-icon-folder-opened"
+                  size="mini"
+                  @click="handleExport"
+                  v-hasPermi="['system:company:export']"
                 >
                 </el-button>
               </el-col>
@@ -88,17 +88,17 @@
           <el-table-column label="操作" align="center" class-name="small-padding fixed-width" fixed="right">
             <template slot-scope="scope">
               <el-button
-                  size="mini"
-                  type="primary"
-                  @click="handleUpdate(scope.row)"
-                  v-hasPermi="['system:productlevel:edit']"
+                size="mini"
+                type="primary"
+                @click="handleUpdate(scope.row)"
+                v-hasPermi="['system:productlevel:edit']"
               >修改
               </el-button>
               <el-button
-                  size="mini"
-                  type="danger"
-                  @click="handleDelete(scope.row)"
-                  v-hasPermi="['system:productlevel:remove']"
+                size="mini"
+                type="danger"
+                @click="handleDelete(scope.row)"
+                v-hasPermi="['system:productlevel:remove']"
               >删除
               </el-button>
             </template>
@@ -108,17 +108,17 @@
     </el-row>
 
     <pagination
-        v-show="total>0"
-        :total="total"
-        :page.sync="queryParams.pageNum"
-        :limit.sync="queryParams.pageSize"
-        @pagination="getList"
+      v-show="total>0"
+      :total="total"
+      :page.sync="queryParams.pageNum"
+      :limit.sync="queryParams.pageSize"
+      @pagination="getList"
     />
     <!--    添加产品分类的弹窗-->
     <el-dialog
-        title="添加产品分类"
-        :visible.sync="addCategoryOpen"
-        width="40%">
+      title="添加产品分类"
+      :visible.sync="addCategoryOpen"
+      width="40%">
       <el-row>
         <el-col :span="12">
           <el-row>
@@ -133,14 +133,7 @@
             <span>分类名称</span>
           </el-row>
           <el-row>
-            <el-select v-model="tempCategoryInfo.categoryName" placeholder="请选择分类名称">
-              <el-option
-                  v-for="item in dict.type.order_product_categories"
-                  :key="item.value"
-                  :label="item.label"
-                  :value="item.label">
-              </el-option>
-            </el-select>
+            <el-input v-model="tempCategoryInfo.categoryName" placeholder="请输入分类名称"></el-input>
           </el-row>
         </el-col>
       </el-row>
@@ -151,31 +144,39 @@
       <br/>
       <el-row>
         <el-table
-            :data="tempCategoryList"
-            border
-            style="width: 100%">
+          :data="tempCategoryList"
+          border
+          style="width: 100%">
           <el-table-column
-              fixed
-              prop="categoryNo"
-              label="分类编码"
+            fixed
+            prop="dictValue"
+            label="分类编码"
           >
           </el-table-column>
           <el-table-column
-              fixed
-              prop="categoryName"
-              label="分类名称"
+            fixed
+            prop="dictLabel"
+            label="分类名称"
           >
           </el-table-column>
           <el-table-column
-              label="操作"
-              width="100">
+            label="操作"
+            width="100">
             <template slot-scope="scope">
               <el-button @click="handleClickCategoryList(scope.row)" type="primary" size="small">编辑</el-button>
-              <!--              字典中管理-->
-              <!--              <el-button type="text" size="small" @click="handleDeleteCategoryList(scope.row)">删除</el-button>-->
             </template>
           </el-table-column>
         </el-table>
+
+        <!--        分页-->
+        <pagination
+          v-show="level_total>0"
+          :total="level_total"
+          :page.sync="level_pageNum"
+          :limit.sync="level_pageSize"
+          @pagination="getDictsData"
+        />
+
       </el-row>
       <span slot="footer" class="dialog-footer">
       <el-button @click="addCategoryOpen = false">取 消</el-button>
@@ -186,19 +187,19 @@
 
     <!--    添加产品级别的弹窗-->
     <el-dialog
-        title="添加产品级别"
-        :visible.sync="addProductLevelOpen"
-        width="30%">
+      title="添加产品级别"
+      :visible.sync="addProductLevelOpen"
+      width="30%">
       <!--      添加产品级别的表单-->
       <el-form :model="addCategoryModel" ref="queryForm" size="small" label-width="68px">
         <!--        分类 也是字典数据-->
         <el-form-item label="分类" prop="categoryName">
           <el-select v-model="addCategoryModel.categoryName" placeholder="请选择分类名称">
             <el-option
-                v-for="item in dict.type.order_product_categories"
-                :key="item.value"
-                :label="item.label"
-                :value="item.label">
+              v-for="item in dict.type.order_product_categories"
+              :key="item.value"
+              :label="item.label"
+              :value="item.label">
             </el-option>
           </el-select>
         </el-form-item>
@@ -243,10 +244,10 @@
         <el-form-item label="分类名称" prop="categoryName">
           <el-select v-model="form.categoryName" placeholder="请选择分类名称">
             <el-option
-                v-for="item in dict.type.order_product_categories"
-                :key="item.value"
-                :label="item.label"
-                :value="item.label">
+              v-for="item in dict.type.order_product_categories"
+              :key="item.value"
+              :label="item.label"
+              :value="item.label">
             </el-option>
           </el-select>
         </el-form-item>
@@ -279,7 +280,7 @@ import {
   listProductLevel,
   updateProductLevel
 } from "@/api/system/productLevel";
-import {addData, getDicts, listData} from "@/api/system/dict/data";
+import {addData, getData, getDicts, listData} from "@/api/system/dict/data";
 
 export default {
   name: "ProductLevel",
@@ -371,6 +372,11 @@ export default {
 
       //created 查询类型字典信息
       dictList: [],
+
+      //分类
+      level_total: 0,
+      level_pageNum: 1,
+      level_pageSize: 10
     };
   },
   created() {
@@ -380,7 +386,7 @@ export default {
       this.dictList = res.data;
     })
     if (localStorage.getItem('productlevel-columns') === 'null'
-        || !localStorage.getItem('productlevel-columns')) {
+      || !localStorage.getItem('productlevel-columns')) {
       //设置localStorage
       localStorage.setItem("productlevel-columns", JSON.stringify(this.columns))
     } else {
@@ -396,10 +402,10 @@ export default {
       deep: true,
     },
     //监听产品级别变化 自动填充级别编码
-    'addCategoryModel.categoryName': function (newVal) {
-      //查询该级别名称对应的级别编码
-      this.addCategoryModel.levelNo = this.dictList.find(item => item.dictLabel === newVal).dictValue
-    }
+    // 'addCategoryModel.categoryName': function (newVal) {
+    //   //查询该级别名称对应的级别编码
+    //   this.addCategoryModel.levelNo = this.dictList.find(item => item.dictLabel === newVal).dictValue
+    // }
   },
   methods: {
     //添加产品分类信息
@@ -425,27 +431,18 @@ export default {
       //重新抓取信息
       this.addCategoryOpen = false;
     },
-
-    //获取产品分类
-    getCategoryList() {
-
-    },
     //点击分类
     handleNodeClick(data) {
-      console.log(data);
-      this.productLevelList = this.productLevelList.filter(item => {
-        return item.categoryName === data.label
-      })
+      //发请求  获取数据
+      listProductLevel({categoryNo: data.value})
+        .then(res => {
+          this.productLevelList = res.rows;
+        })
     },
     //点击编辑
     handleClickCategoryList(row) {
-      console.log(row)
-      this.tempCategoryInfo.levelNo = row.categoryNo;
-      this.tempCategoryInfo.categoryName = row.categoryName
-    },
-    //删除 由字典管理
-    handleDeleteCategoryList(row) {
-      console.log(row)
+      this.tempCategoryInfo.levelNo = row.dictValue
+      this.tempCategoryInfo.categoryName = row.dictLabel
     },
     //点击添加级别信息
     submitAddLevel() {
@@ -458,10 +455,10 @@ export default {
       }
       //添加级别信息
       addProductLevel({...this.addCategoryModel, categoryNo: categoryNo})
-          .then(res => {
-            this.$message.success("添加成功~")
-            this.addProductLevelOpen = false
-          }).catch(err => {
+        .then(res => {
+          this.$message.success("添加成功~")
+          this.addProductLevelOpen = false
+        }).catch(err => {
         this.$message.error("添加失败，请重试:" + err.msg)
       })
 
@@ -484,6 +481,7 @@ export default {
     getList() {
       this.loading = true;
       listProductLevel(this.queryParams).then(response => {
+        console.log('res', response)
         this.productLevelList = response.rows;
         this.total = response.total;
         this.loading = false;
@@ -494,18 +492,23 @@ export default {
             children: ''
           }
         })
-        //去重
-        const needList = [...this.categoryList]
-        this.categoryList = this.uniqueObjects(needList);
-
-        //弹窗中的分类信息
-        this.tempCategoryList = response.rows.map(item => {
-          return {
-            categoryNo: item.categoryNo,
-            categoryName: item.categoryName
-          }
+        //去重 拿到字典里
+        listData({dictType: 'order_product_categories'}).then(res => {
+          this.tempCategoryList = res.rows;
+          this.level_total = res.total;
         })
       });
+    },
+    //分页获取
+    getDictsData() {
+      listData({
+        dictType: 'order_product_categories',
+        pageNum: this.level_pageNum,
+        pageSize: this.level_pageSize
+      }).then(res => {
+        this.tempCategoryList = res.rows;
+        this.level_total = res.total;
+      })
     },
     //去重方法
     uniqueObjects(arr) {
