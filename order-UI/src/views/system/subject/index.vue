@@ -87,7 +87,33 @@
             >2-添加科目信息
             </el-button>
           </el-col>
-          <right-toolbar :showSearch.sync="showSearch" @queryTable="getList"></right-toolbar>
+          <right-toolbar :showSearch.sync="showSearch" @queryTable="getList">
+            <!--    打印    -->
+            <template v-slot:print>
+              <el-col :span="1.5">
+                <el-button
+                  plain
+                  icon="el-icon-printer"
+                  size="mini"
+                  @click="printHTML"
+                >
+                </el-button>
+              </el-col>
+            </template>
+            <!--        导出-->
+            <template v-slot:export>
+              <el-col :span="1.5">
+                <el-button
+                  plain
+                  icon="el-icon-folder-opened"
+                  size="mini"
+                  @click="handleExport"
+                  v-hasPermi="['system:subject:export']"
+                >
+                </el-button>
+              </el-col>
+            </template>
+          </right-toolbar>
         </el-row>
 
         <!--        表格-->
@@ -99,15 +125,14 @@
           row-key="id"
           :default-expand-all="isExpandAll"
           :tree-props="{children: 'children', hasChildren: 'hasChildren'}"
-          size="mini"
         >
-          <el-table-column label="科目名称" prop="title" width="200"/>
-          <el-table-column label="科目编码" align="center" prop="subjectNo" width="200"/>
-          <el-table-column label="科目类别" align="center" prop="type" width="200"/>
-          <el-table-column label="父级ID" align="center" prop="parentId" width="200"/>
+          <el-table-column label="科目名称" prop="title"/>
+          <el-table-column label="科目编码" align="center" prop="subjectNo"/>
+          <el-table-column label="科目类别" align="center" prop="type"/>
+          <el-table-column label="父级ID" align="center" prop="parentId"/>
           <!--          <el-table-column label="显示顺序" align="center" prop="orderNum"/>-->
           <!--          <el-table-column label="状态" align="center" prop="STATUS"/>-->
-          <el-table-column label="备注" align="center" prop="remark" width="200"/>
+          <el-table-column label="备注" align="center" prop="remark"/>
           <el-table-column label="操作" align="center" class-name="small-padding fixed-width">
             <template slot-scope="scope">
               <el-button
