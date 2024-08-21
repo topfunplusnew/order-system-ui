@@ -161,9 +161,16 @@
           </el-table-column>
           <el-table-column
             label="操作"
-            width="100">
+            width="200">
             <template slot-scope="scope">
-              <el-button @click="handleClickCategoryList(scope.row)" type="primary" size="small">编辑</el-button>
+              <el-row>
+                <el-col :span="12">
+                  <el-button @click="handleClickCategoryList(scope.row)" type="primary" size="mini">编辑</el-button>
+                </el-col>
+                <el-col :span="12">
+                  <el-button @click="handleDeteleLevel(scope.row)" type="primary" size="mini">删除分类</el-button>
+                </el-col>
+              </el-row>
             </template>
           </el-table-column>
         </el-table>
@@ -280,7 +287,7 @@ import {
   listProductLevel,
   updateProductLevel
 } from "@/api/system/productLevel";
-import {addData, getData, getDicts, listData} from "@/api/system/dict/data";
+import {addData, delData, getData, getDicts, listData} from "@/api/system/dict/data";
 
 export default {
   name: "ProductLevel",
@@ -443,6 +450,22 @@ export default {
     handleClickCategoryList(row) {
       this.tempCategoryInfo.levelNo = row.dictValue
       this.tempCategoryInfo.categoryName = row.dictLabel
+    },
+    //删除分类 row.dictCode
+    handleDeteleLevel(row) {
+      this.$confirm('是否要删除该分类?', '提示', {
+        confirmButtonText: '确定',
+        cancelButtonText: '取消',
+        type: 'warning'
+      }).then(() => {
+        delData(row.dictCode).then(res => {
+          this.$message({
+            type: 'success',
+            message: '删除成功!'
+          });
+        })
+        this.getDictsData()
+      })
     },
     //点击添加级别信息
     submitAddLevel() {
