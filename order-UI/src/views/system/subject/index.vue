@@ -87,7 +87,7 @@
             >2-添加科目信息
             </el-button>
           </el-col>
-          <right-toolbar :showSearch.sync="showSearch" @queryTable="getList">
+          <right-toolbar :showSearch.sync="showSearch" @queryTable="getList" :columns="columns">
             <!--    打印    -->
             <template v-slot:print>
               <el-col :span="1.5">
@@ -126,13 +126,13 @@
           :default-expand-all="isExpandAll"
           :tree-props="{children: 'children', hasChildren: 'hasChildren'}"
         >
-          <el-table-column label="科目名称" prop="title"/>
-          <el-table-column label="科目编码" align="center" prop="subjectNo"/>
-          <el-table-column label="科目类别" align="center" prop="type"/>
-          <el-table-column label="父级ID" align="center" prop="parentId"/>
+          <el-table-column label="科目名称" prop="title" v-if="columns[0].visible"/>
+          <el-table-column label="科目编码" align="center" prop="subjectNo" v-if="columns[1].visible"/>
+          <el-table-column label="科目类别" align="center" prop="type" v-if="columns[2].visible"/>
+          <el-table-column label="父级ID" align="center" prop="parentId" v-if="columns[3].visible"/>
           <!--          <el-table-column label="显示顺序" align="center" prop="orderNum"/>-->
           <!--          <el-table-column label="状态" align="center" prop="STATUS"/>-->
-          <el-table-column label="备注" align="center" prop="remark"/>
+          <el-table-column label="备注" align="center" prop="remark" v-if="columns[4].visible"/>
           <el-table-column label="操作" align="center" class-name="small-padding fixed-width">
             <template slot-scope="scope">
               <el-button
@@ -256,6 +256,13 @@ export default {
       },
       // 表单参数
       form: {},
+      columns: [
+        {key: 0, label: `科目名称`, visible: true},
+        {key: 1, label: `科目编码`, visible: true},
+        {key: 2, label: `科目类别`, visible: true},
+        {key: 3, label: `父级ID`, visible: true},
+        {key: 4, label: `备注`, visible: true},
+      ],
       // 表单校验
       rules: {
         title: [
@@ -329,7 +336,15 @@ export default {
   },
   created() {
     this.getList();
+    if (localStorage.getItem('subject-columns') === 'null'
+      || !localStorage.getItem('subject-columns')) {
+      //设置localStorage
+      localStorage.setItem("subject-columns", JSON.stringify(this.columns))
+    } else {
+      this.columns = JSON.parse(localStorage.getItem('subject-columns'));
+    }
   },
+
   computed: {
     //利用computed做中间层
     formId() {
@@ -337,6 +352,13 @@ export default {
     }
   },
   watch: {
+    //展示与隐藏
+    columns: {
+      handler: (newVal) => {
+        localStorage.setItem("subject-columns", JSON.stringify(newVal))
+      },
+      deep: true,
+    },
     formId: {
       //handler不该用箭头函数 会拿不到this
       handler: function (val) {

@@ -101,7 +101,7 @@
               icon="el-icon-folder-opened"
               size="mini"
               @click="handleExport"
-              v-hasPermi="['system:orderdetail:export']"
+              v-hasPermi="['system:goodsorder:export']"
             >
             </el-button>
           </el-col>
@@ -177,8 +177,8 @@
           </el-tag>
         </template>
       </el-table-column>
-      <el-table-column label="收到条附件路径" align="center" prop="receiveProof" v-if="columns[17].visible"/>
-      <el-table-column label="是否被调整单" align="center" prop="isAdjusted" v-if="columns[18].visible">
+      <el-table-column label="收到条附件路径" align="center" prop="receiveProof" v-if="columns[13].visible"/>
+      <el-table-column label="是否被调整单" align="center" prop="isAdjusted" v-if="columns[14].visible">
         <template slot-scope="scope">
           <el-tag
             :type="scope.row.isAdjusted === '否' ? 'danger' :'success'"
@@ -186,7 +186,7 @@
           </el-tag>
         </template>
       </el-table-column>
-      <el-table-column label="是否调整单" align="center" prop="isAdjust" v-if="columns[19].visible">
+      <el-table-column label="是否调整单" align="center" prop="isAdjust" v-if="columns[15].visible">
         <template slot-scope="scope">
           <el-tag
             :type="scope.row.isAdjust === '否' ? 'danger' :'success'"
@@ -194,9 +194,9 @@
           </el-tag>
         </template>
       </el-table-column>
-      <el-table-column label="调整日期" align="center" prop="adjustDate" v-if="columns[20].visible"/>
-      <el-table-column label="原订单编号" align="center" prop="adjustOrderid" v-if="columns[21].visible"/>
-      <el-table-column label="是否可编辑" align="center" prop="isedit" v-if="columns[22].visible">
+      <el-table-column label="调整日期" align="center" prop="adjustDate" v-if="columns[16].visible"/>
+      <el-table-column label="原订单编号" align="center" prop="adjustOrderid" v-if="columns[17].visible"/>
+      <el-table-column label="是否可编辑" align="center" prop="isedit" v-if="columns[18].visible">
         <template slot-scope="scope">
           <el-tag
             :type="scope.row.isedit === 0 ? 'danger' :'success'"
@@ -204,21 +204,21 @@
           </el-tag>
         </template>
       </el-table-column>
-      <el-table-column label="客户是否开票" align="center" prop="customerIsInvoice" v-if="columns[23].visible"
+      <el-table-column label="客户是否开票" align="center" prop="customerIsInvoice" v-if="columns[19].visible"
                        width="150px">
         <template slot-scope="scope">
           <SwitchBarItem :model-value="scope.row.customerIsInvoice===1"
                          @update:modelValue="handleOpenTitle"/>
         </template>
       </el-table-column>
-      <el-table-column label="供应商是否开票" align="center" prop="isSupplierInvoice" v-if="columns[24].visible"
+      <el-table-column label="供应商是否开票" align="center" prop="isSupplierInvoice" v-if="columns[20].visible"
                        width="120px">
         <template slot-scope="scope">
           <SwitchBarItem :model-value="scope.row.customerIsInvoice===1"
                          @update:modelValue="handleOpenTitle"/>
         </template>
       </el-table-column>
-      <el-table-column label="备注" align="center" prop="comments" v-if="columns[25].visible"/>
+      <el-table-column label="备注" align="center" prop="comments" v-if="columns[21].visible"/>
       <!--      右侧操作栏-->
       <el-table-column label="操作" align="center" class-name="small-padding fixed-width" width="300px" fixed="right">
         <template slot-scope="scope">
@@ -622,19 +622,19 @@ export default {
         {key: 10, label: `开票状态`, visible: true},
         {key: 11, label: `附件路径`, visible: true},
         {key: 12, label: `打款状态`, visible: true},
-        {key: 13, label: `陆运银行户名`, visible: true},
+       /* {key: 13, label: `陆运银行户名`, visible: true},
         {key: 14, label: `陆运银行账号`, visible: true},
         {key: 15, label: `海运银行户名`, visible: true},
-        {key: 16, label: `海运银行账号`, visible: true},
-        {key: 17, label: `收到条附件路径`, visible: true},
-        {key: 18, label: `是否被调整单`, visible: true},
-        {key: 19, label: `是否调整单`, visible: true},
-        {key: 20, label: `调整日期`, visible: true},
-        {key: 21, label: `原订单编号`, visible: true},
-        {key: 22, label: `是否可编辑`, visible: true},
-        {key: 23, label: `客户是否开票`, visible: true},
-        {key: 24, label: `供应商是否开票`, visible: true},
-        {key: 25, label: `备注`, visible: true},
+        {key: 16, label: `海运银行账号`, visible: true},*/
+        {key: 13, label: `收到条附件路径`, visible: true},
+        {key: 14, label: `是否被调整单`, visible: true},
+        {key: 15, label: `是否调整单`, visible: true},
+        {key: 16, label: `调整日期`, visible: true},
+        {key: 17, label: `原订单编号`, visible: true},
+        {key: 18, label: `是否可编辑`, visible: true},
+        {key: 19, label: `客户是否开票`, visible: true},
+        {key: 20, label: `供应商是否开票`, visible: true},
+        {key: 21, label: `备注`, visible: true},
       ],
       //顶部条件搜索
       queryOrderInfo: {},
@@ -709,9 +709,22 @@ export default {
   },
   created() {
     this.getList();
+    if (localStorage.getItem('goodsorder-columns') === 'null'
+      || !localStorage.getItem('goodsorder-columns')) {
+      //设置localStorage
+      localStorage.setItem("goodsorder-columns", JSON.stringify(this.columns))
+    } else {
+      this.columns = JSON.parse(localStorage.getItem('goodsorder-columns'));
+    }
     this.$store.dispatch('order/getOrderList')
   },
   computed: {
+    columns: {
+      handler: (newVal) => {
+        localStorage.setItem("goodsorder-columns", JSON.stringify(newVal))
+      },
+      deep: true,
+    },
     TableName() {
       return TableName
     },
