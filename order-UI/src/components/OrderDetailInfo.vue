@@ -66,7 +66,9 @@ export default {
 <template>
   <div>
     <el-row>
-      <el-col :span="8">订单详情列表</el-col>
+      <el-col :span="8">
+        <span style="font-weight: bolder">订单详情列表</span>
+      </el-col>
     </el-row>
     <el-row>
       <el-table border :data="orderDetailInfoList" id="printBox" max-height="700">
