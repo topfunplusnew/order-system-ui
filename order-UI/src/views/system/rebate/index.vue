@@ -253,6 +253,22 @@ export default {
   },
   created() {
     this.getList();
+    if (localStorage.getItem('rebate-columns') === 'null'
+      || !localStorage.getItem('rebate-columns')) {
+      //设置localStorage
+      localStorage.setItem("rebate-columns", JSON.stringify(this.columns))
+    } else {
+      this.columns = JSON.parse(localStorage.getItem('rebate-columns'));
+    }
+  },
+  //展示与隐藏
+  watch: {
+    columns: {
+      handler: (newVal) => {
+        localStorage.setItem("rebate-columns", JSON.stringify(newVal))
+      },
+      deep: true,
+    }
   },
   methods: {
     addPaymentApply(row) {

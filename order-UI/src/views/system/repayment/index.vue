@@ -44,7 +44,7 @@
               icon="el-icon-folder-opened"
               size="mini"
               @click="handleExport"
-              v-hasPermi="['system:company:export']"
+              v-hasPermi="['system:repayment:export']"
             >
             </el-button>
           </el-col>
@@ -213,7 +213,23 @@ export default {
   },
   created() {
     this.getList();
+    if (localStorage.getItem('repayment-columns') === 'null'
+      || !localStorage.getItem('repayment-columns')) {
+      //设置localStorage
+      localStorage.setItem("repayment-columns", JSON.stringify(this.columns))
+    } else {
+      this.columns = JSON.parse(localStorage.getItem('repayment-columns'));
+    }
     this.$store.dispatch('money/getRepaymentList')
+  },
+  //展示与隐藏
+  watch: {
+    columns: {
+      handler: (newVal) => {
+        localStorage.setItem("repayment-columns", JSON.stringify(newVal))
+      },
+      deep: true,
+    }
   },
   computed: {
     ...mapGetters(['tempRepaymentList'])

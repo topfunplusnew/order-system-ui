@@ -53,7 +53,7 @@
                 icon="el-icon-folder-opened"
                 size="mini"
                 @click="handleExport"
-                v-hasPermi="['system:company:export']"
+                v-hasPermi="['system:BusinessTrip:export']"
             >
             </el-button>
           </el-col>
@@ -64,13 +64,13 @@
     <el-table border v-horizontal-scroll="'always'" v-loading="loading" :data="BusinessTripList"
               @selection-change="handleSelectionChange">
       <!--      <el-table-column label="报销人ID" align="center" prop="employeeID"/>-->
-      <el-table-column label="报销人" align="center" prop="employee"/>
-      <el-table-column label="共同出差人员" align="center" prop="personnel"/>
-      <el-table-column label="出差时间" align="center" prop="starttime"/>
-      <el-table-column label="出差结束时间" align="center" prop="endtime"/>
-      <el-table-column label="附件地址" align="center" prop="attachmentPath"/>
-      <el-table-column label="是否已报销" align="center" prop="isReimburse"/>
-      <el-table-column label="备注" align="center" prop="comments"/>
+      <el-table-column label="报销人" align="center" prop="employee" v-if="columns[0].visible"/>
+      <el-table-column label="共同出差人员" align="center" prop="personnel" v-if="columns[1].visible"/>
+      <el-table-column label="出差时间" align="center" prop="starttime" v-if="columns[2].visible"/>
+      <el-table-column label="出差结束时间" align="center" prop="endtime" v-if="columns[3].visible"/>
+      <el-table-column label="附件地址" align="center" prop="attachmentPath" v-if="columns[4].visible"/>
+      <el-table-column label="是否已报销" align="center" prop="isReimburse" v-if="columns[5].visible"/>
+      <el-table-column label="备注" align="center" prop="comments" v-if="columns[6].visible"/>
       <el-table-column label="操作" align="center" class-name="small-padding fixed-width">
         <template slot-scope="scope">
           <el-button
@@ -238,25 +238,34 @@ export default {
       form: {},
       rules: {},
       columns: [
-        {key: 0, label: `收款编号`, visible: true},
-        {key: 1, label: `日期`, visible: true},
-        {key: 2, label: `支付类型`, visible: true},
-        {key: 3, label: `金额`, visible: true},
-        {key: 4, label: `己方户名`, visible: true},
-        {key: 5, label: `己方账号`, visible: true},
-        {key: 6, label: `己方开户行`, visible: true},
-        {key: 7, label: `己方账号ID`, visible: true},
-        {key: 8, label: `对方户名`, visible: true},
-        {key: 9, label: `对方账号`, visible: true},
-        {key: 10, label: `对方开户行`, visible: true},
-        {key: 11, label: `对方公司`, visible: true},
-        {key: 12, label: `对方公司ID`, visible: true},
-        {key: 13, label: `对方公司类型`, visible: true},
+        {key: 0, label: `报销人`, visible: true},
+        {key: 1, label: `共同出差人员`, visible: true},
+        {key: 2, label: `出差时间`, visible: true},
+        {key: 3, label: `出差结束时间`, visible: true},
+        {key: 4, label: `附件地址`, visible: true},
+        {key: 5, label: `是否已报销`, visible: true},
+        {key: 6, label: `备注`, visible: true},
       ],
     };
   },
   created() {
     this.getList();
+    if (localStorage.getItem('BusinessTrip-columns') === 'null'
+      || !localStorage.getItem('BusinessTrip-columns')) {
+      //设置localStorage
+      localStorage.setItem("BusinessTrip-columns", JSON.stringify(this.columns))
+    } else {
+      this.columns = JSON.parse(localStorage.getItem('BusinessTrip-columns'));
+    }
+  },
+  //展示与隐藏
+  watch: {
+    columns: {
+      handler: (newVal) => {
+        localStorage.setItem("BusinessTrip-columns", JSON.stringify(newVal))
+      },
+      deep: true,
+    }
   },
   methods: {
     /** 查询出差列表 */

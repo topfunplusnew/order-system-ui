@@ -213,10 +213,26 @@ export default {
   },
   created() {
     this.getList();
+    if (localStorage.getItem('recovermoney-columns') === 'null'
+      || !localStorage.getItem('recovermoney-columns')) {
+      //设置localStorage
+      localStorage.setItem("recovermoney-columns", JSON.stringify(this.columns))
+    } else {
+      this.columns = JSON.parse(localStorage.getItem('recovermoney-columns'));
+    }
     this.$store.dispatch('money/getTempRecoverMoneyList')
   },
   computed: {
     ...mapGetters(['tempRecoverMoneyList'])
+  },
+  //展示与隐藏
+  watch: {
+    columns: {
+      handler: (newVal) => {
+        localStorage.setItem("recovermoney-columns", JSON.stringify(newVal))
+      },
+      deep: true,
+    }
   },
   methods: {
     //时间查询

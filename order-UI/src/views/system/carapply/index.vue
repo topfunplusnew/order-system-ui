@@ -75,7 +75,7 @@
                 icon="el-icon-folder-opened"
                 size="mini"
                 @click="handleExport"
-                v-hasPermi="['system:customervisit:export']"
+                v-hasPermi="['system:carapply:export']"
             >
             </el-button>
           </el-col>
@@ -85,29 +85,29 @@
 
     <el-table border v-loading="loading" :data="carApplyList" @selection-change="handleSelectionChange" id="printBox"
               v-horizontal-scroll="'always'">
-      <el-table-column label="申请时间" align="center" prop="applyDate"/>
-      <el-table-column label="申请人" align="center" prop="applyUser"/>
-      <el-table-column label="部门" align="center" prop="department"/>
-      <el-table-column label="车牌" align="center" prop="carNo"/>
-      <el-table-column label="是否携带油卡" align="center" prop="isUseOilCard"/>
-      <el-table-column label="随同乘车人员" align="center" prop="peers"/>
-      <el-table-column label="用车时间" align="center" prop="startTime"/>
-      <el-table-column label="还车时间" align="center" prop="endTime"/>
-      <el-table-column label="用车事由" align="center" prop="ApplyPurpose"/>
-      <el-table-column label="出车前里程" align="center" prop="startMile"/>
-      <el-table-column label="出车前车况" align="center" prop="startCarState"/>
-      <el-table-column label="回来后里程" align="center" prop="endMile"/>
-      <el-table-column label="回来后车况" align="center" prop="endCarState"/>
-      <el-table-column label="用车里程数" align="center" prop="miles"/>
-      <el-table-column label="回程停靠位置" align="center" prop="backStopPlace"/>
-      <el-table-column label="行程中违法次数" align="center" prop="violationsCount"/>
-      <el-table-column label="违章罚款金额金额" align="center" prop="fine"/>
-      <el-table-column label="行程中是否维修/保养" align="center" prop="isMaintenance"/>
-      <el-table-column label="保养金额" align="center" prop="maintenanceMoney"/>
-      <el-table-column label="行程中使用加油卡加油次数" align="center" prop="refuelingFrequency"/>
-      <el-table-column label="派车人" align="center" prop="dispatchPerson"/>
-      <el-table-column label="备注" align="center" prop="comments"/>
-      <el-table-column label="附件路径" align="center" prop="path"/>
+      <el-table-column label="申请时间" align="center" prop="applyDate" v-if="columns[0].visible"/>
+      <el-table-column label="申请人" align="center" prop="applyUser" v-if="columns[1].visible"/>
+      <el-table-column label="部门" align="center" prop="department" v-if="columns[2].visible"/>
+      <el-table-column label="车牌" align="center" prop="carNo" v-if="columns[3].visible"/>
+      <el-table-column label="是否携带油卡" align="center" prop="isUseOilCard" v-if="columns[4].visible"/>
+      <el-table-column label="随同乘车人员" align="center" prop="peers" v-if="columns[5].visible"/>
+      <el-table-column label="用车时间" align="center" prop="startTime" v-if="columns[6].visible"/>
+      <el-table-column label="还车时间" align="center" prop="endTime" v-if="columns[7].visible"/>
+      <el-table-column label="用车事由" align="center" prop="ApplyPurpose" v-if="columns[8].visible"/>
+      <el-table-column label="出车前里程" align="center" prop="startMile" v-if="columns[9].visible"/>
+      <el-table-column label="出车前车况" align="center" prop="startCarState" v-if="columns[10].visible"/>
+      <el-table-column label="回来后里程" align="center" prop="endMile" v-if="columns[11].visible"/>
+      <el-table-column label="回来后车况" align="center" prop="endCarState" v-if="columns[12].visible"/>
+      <el-table-column label="用车里程数" align="center" prop="miles" v-if="columns[13].visible"/>
+      <el-table-column label="回程停靠位置" align="center" prop="backStopPlace" v-if="columns[14].visible"/>
+      <el-table-column label="行程中违法次数" align="center" prop="violationsCount" v-if="columns[15].visible"/>
+      <el-table-column label="违章罚款金额" align="center" prop="fine" v-if="columns[16].visible"/>
+      <el-table-column label="行程中是否维修/保养" align="center" prop="isMaintenance" v-if="columns[17].visible"/>
+      <el-table-column label="保养金额" align="center" prop="maintenanceMoney" v-if="columns[18].visible"/>
+      <el-table-column label="行程中使用加油卡加油次数" align="center" prop="refuelingFrequency" v-if="columns[19].visible"/>
+      <el-table-column label="派车人" align="center" prop="dispatchPerson" v-if="columns[20].visible"/>
+      <el-table-column label="备注" align="center" prop="comments" v-if="columns[21].visible"/>
+      <el-table-column label="附件路径" align="center" prop="path" v-if="columns[22].visible"/>
       <el-table-column label="操作" align="center" class-name="small-padding fixed-width">
         <template slot-scope="scope">
           <el-button
@@ -287,27 +287,51 @@ export default {
       // 表单校验
       rules: {},
       columns: [
-        {key: 0, label: `是否审核`, visible: true},
-        {key: 1, label: `人员`, visible: true},
-        {key: 2, label: `区域`, visible: true},
-        {key: 3, label: `客户名称`, visible: true},
-        {key: 4, label: `负责人姓名`, visible: true},
-        {key: 5, label: `负责人电话`, visible: true},
-        {key: 6, label: `厂房设备`, visible: true},
-        {key: 7, label: `竞争对手`, visible: true},
-        {key: 8, label: `当地经销商`, visible: true},
-        {key: 9, label: `月用货量`, visible: true},
-        {key: 10, label: `白玻用货习惯及厂家`, visible: true},
-        {key: 11, label: `lowe玻璃用货厂家及用量`, visible: true},
-        {key: 12, label: `色玻、过度色玻璃用货厂家及用量`, visible: true},
-        {key: 13, label: `特色厚度、特殊尺寸、协议品用货厂家及用量`, visible: true},
-        {key: 14, label: `备注`, visible: true},
-        {key: 15, label: `提交时间`, visible: true},
+        {key: 0, label: `申请时间`, visible: true},
+        {key: 1, label: `申请人`, visible: true},
+        {key: 2, label: `部门`, visible: true},
+        {key: 3, label: `车牌`, visible: true},
+        {key: 4, label: `是否携带油卡`, visible: true},
+        {key: 5, label: `随同乘车人员`, visible: true},
+        {key: 6, label: `用车时间`, visible: true},
+        {key: 7, label: `还车时间`, visible: true},
+        {key: 8, label: `用车事由`, visible: true},
+        {key: 9, label: `出车前里程`, visible: true},
+        {key: 10, label: `出车前车况`, visible: true},
+        {key: 11, label: `回来后历程`, visible: true},
+        {key: 12, label: `回来后车况`, visible: true},
+        {key: 13, label: `用车里程数`, visible: true},
+        {key: 14, label: `回程停靠位置`, visible: true},
+        {key: 15, label: `行程中违法次数`, visible: true},
+        {key: 16, label: `违章罚款金额`, visible: true},
+        {key: 17, label: `行程中是否维修/保养`, visible: true},
+        {key: 18, label: `保养金额`, visible: true},
+        {key: 19, label: `行程中使用加油卡加油次数`, visible: true},
+        {key: 20, label: `派车人`, visible: true},
+        {key: 21, label: `备注`, visible: true},
+        {key: 22, label: `附件路径`, visible: true},
+
       ],
     };
   },
   created() {
     this.getList();
+    if (localStorage.getItem('carapply-columns') === 'null'
+      || !localStorage.getItem('carapply-columns')) {
+      //设置localStorage
+      localStorage.setItem("carapply-columns", JSON.stringify(this.columns))
+    } else {
+      this.columns = JSON.parse(localStorage.getItem('carapply-columns'));
+    }
+  },
+  //展示与隐藏
+  watch: {
+    columns: {
+      handler: (newVal) => {
+        localStorage.setItem("carapply-columns", JSON.stringify(newVal))
+      },
+      deep: true,
+    }
   },
   methods: {
     /** 查询车辆使用申请列表 */

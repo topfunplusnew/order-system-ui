@@ -63,7 +63,7 @@
               icon="el-icon-folder-opened"
               size="mini"
               @click="handleExport"
-              v-hasPermi="['system:inventory:export']"
+              v-hasPermi="['system:oilcardfundtransfer:export']"
             >
             </el-button>
           </el-col>
@@ -73,13 +73,13 @@
 
     <el-table border v-loading="loading" :data="oilCardFundTransferList" @selection-change="handleSelectionChange"
               v-horizontal-scroll="'always'" id="printBox">
-      <el-table-column label="id" align="center" prop="id"/>
-      <el-table-column label="主加油卡卡号" align="center" prop="oilMainCardNo"/>
-      <el-table-column label="副加油卡卡号" align="center" prop="oilSecondCardNo"/>
-      <el-table-column label="充值金额" align="center" prop="rechargeMoney"/>
-      <el-table-column label="充值时间" align="center" prop="rechargeDate"/>
-      <el-table-column label="充值人员姓名" align="center" prop="rechargeName"/>
-      <el-table-column label="备注" align="center" prop="comments"/>
+      <el-table-column label="id" align="center" prop="id"  v-if="columns[0].visible"/>
+      <el-table-column label="主加油卡卡号" align="center" prop="oilMainCardNo"  v-if="columns[1].visible"/>
+      <el-table-column label="副加油卡卡号" align="center" prop="oilSecondCardNo"  v-if="columns[2].visible"/>
+      <el-table-column label="充值金额" align="center" prop="rechargeMoney"  v-if="columns[3].visible"/>
+      <el-table-column label="充值时间" align="center" prop="rechargeDate"  v-if="columns[4].visible"/>
+      <el-table-column label="充值人员姓名" align="center" prop="rechargeName"  v-if="columns[5].visible"/>
+      <el-table-column label="备注" align="center" prop="comments"  v-if="columns[6].visible"/>
       <el-table-column label="操作" align="center" class-name="small-padding fixed-width">
         <template slot-scope="scope">
           <el-button
@@ -221,7 +221,15 @@ export default {
       },
       // 表单校验
       rules: {},
-      columns: [],
+      columns: [
+        {key: 0, label: `id`, visible: true},
+        {key: 1, label: `主加油卡卡号`, visible: true},
+        {key: 2, label: `副加油卡卡号`, visible: true},
+        {key: 3, label: `充值金额`, visible: true},
+        {key: 4, label: `充值时间`, visible: true},
+        {key: 5, label: `充值人员姓名`, visible: true},
+        {key: 6, label: `备注`, visible: true},
+      ],
 
       queryOilCard: '',
       queryOilCardOther: ''
@@ -229,6 +237,22 @@ export default {
   },
   created() {
     this.getList();
+    if (localStorage.getItem('oilcardfundtransfer-columns') === 'null'
+      || !localStorage.getItem('oilcardfundtransfer-columns')) {
+      //设置localStorage
+      localStorage.setItem("oilcardfundtransfer-columns", JSON.stringify(this.columns))
+    } else {
+      this.columns = JSON.parse(localStorage.getItem('oilcardfundtransfer-columns'));
+    }
+  },
+  //展示与隐藏
+  watch: {
+    columns: {
+      handler: (newVal) => {
+        localStorage.setItem("oilcardfundtransfer-columns", JSON.stringify(newVal))
+      },
+      deep: true,
+    }
   },
   methods: {
     listOilCard,

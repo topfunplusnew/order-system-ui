@@ -19,7 +19,7 @@
       </el-form-item>
       <el-form-item>
         <el-button type="primary" icon="el-icon-search" size="mini" @click="handleQuery">搜索</el-button>
-        <el-button icon="el-icon-refresh" size="mini" @click="resetQuery">重置</el-button>
+<!--        <el-button icon="el-icon-refresh" size="mini" @click="resetQuery">重置</el-button>-->
       </el-form-item>
     </el-form>
 
@@ -43,7 +43,7 @@
               icon="el-icon-folder-opened"
               size="mini"
               @click="handleExport"
-              v-hasPermi="['system:bankaccount:export']"
+              v-hasPermi="['system:breakout:export']"
             >
             </el-button>
           </el-col>
@@ -53,10 +53,10 @@
 
     <el-table border v-horizontal-scroll="'always'" v-loading="loading" :data="exWarehouseList"
               @selection-change="handleSelectionChange" id="printBox">
-      <el-table-column label="id" align="center" prop="id"/>
-      <el-table-column label="仓库名称" align="center" prop="storeHouseName"/>
-      <el-table-column label="出库日期" align="center" prop="outDate"/>
-      <el-table-column label="出库量" align="center" prop="outAmount"/>
+      <el-table-column label="id" align="center" prop="id" v-if="columns[0].visible"/>
+      <el-table-column label="仓库名称" align="center" prop="storeHouseName" v-if="columns[1].visible"/>
+      <el-table-column label="出库日期" align="center" prop="outDate" v-if="columns[2].visible"/>
+      <el-table-column label="出库量" align="center" prop="outAmount" v-if="columns[3].visible"/>
       <el-table-column label="操作" align="center" class-name="small-padding fixed-width">
         <template slot-scope="scope">
           <el-button
@@ -231,11 +231,10 @@ export default {
       form: {},
       rules: {},
       columns: [
-        {key: 0, label: `账户类型`, visible: true},
-        {key: 1, label: `开户名称`, visible: true},
-        {key: 2, label: `账号(银行卡号)`, visible: true},
-        {key: 3, label: `开户行`, visible: true},
-        {key: 4, label: `公司名称`, visible: true}
+        {key: 0, label: `id`, visible: true},
+        {key: 1, label: `仓库名称`, visible: true},
+        {key: 2, label: `出库日期`, visible: true},
+        {key: 3, label: `出库量`, visible: true},
       ],
       checkOrderVisible: false,
       orderDetailInfo: {},
@@ -245,6 +244,22 @@ export default {
   },
   created() {
     this.getList();
+    if (localStorage.getItem('breakout-columns') === 'null'
+      || !localStorage.getItem('breakout-columns')) {
+      //设置localStorage
+      localStorage.setItem("breakout-columns", JSON.stringify(this.columns))
+    } else {
+      this.columns = JSON.parse(localStorage.getItem('breakout-columns'));
+    }
+  },
+  //显示与隐藏
+  watch:{
+    columns: {
+      handler: (newVal) => {
+        localStorage.setItem("breakout-columns", JSON.stringify(newVal))
+      },
+      deep: true,
+    }
   },
   methods: {
     checkOrderInfo(row) {

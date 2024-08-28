@@ -11,6 +11,18 @@ export default {
   components: {StepInfo},
   data() {
     return {
+      columns: [
+        {key: 0, label: `日期`, visible: true},
+        {key: 1, label: `支付类型`, visible: true},
+        {key: 2, label: `金额`, visible: true},
+        {key: 3, label: `对方账号`, visible: true},
+        {key: 4, label: `对方公司`, visible: true},
+        {key: 5, label: `付款原因`, visible: true},
+        {key: 6, label: `附件`, visible: true},
+        {key: 7, label: `申请人`, visible: true},
+        {key: 8, label: `备注`, visible: true},
+        {key: 9, label: `审核流程`, visible: true},
+      ],
       //查看付款信息的
       checkInfoDialogVisible: false,
       //查看审核流程
@@ -46,6 +58,12 @@ export default {
   watch: {
     //监听刷新标记
     checked: {
+      columns: {
+        handler: (newVal) => {
+          localStorage.setItem("applyprocess-columns", JSON.stringify(newVal))
+        },
+        deep: true,
+      },
       handler(val) {
         if (val !== '') {
           setTimeout(() => {
@@ -57,6 +75,13 @@ export default {
     }
   },
   created() {
+    if (localStorage.getItem('applyprocess-columns') === 'null'
+      || !localStorage.getItem('applyprocess-columns')) {
+      //设置localStorage
+      localStorage.setItem("applyprocess-columns", JSON.stringify(this.columns))
+    } else {
+      this.columns = JSON.parse(localStorage.getItem('applyprocess-columns'));
+    }
     //获取付款信息
     listPaymentApply({pageNum: this.pageNum, pageSize: this.pageSize}).then(res => {
       this.paymentList = res.rows;
@@ -127,10 +152,38 @@ export default {
 
 <template>
   <div class="app-container">
-    <el-row>
-      <el-col :span="4">
+    <el-row :gutter="10" class="mb8">
+      <el-col :span="1.5">
         <el-button @click="refresh">刷新</el-button>
       </el-col>
+
+      <right-toolbar :showSearch.sync="showSearch" @queryTable="getList" :columns="columns">
+        <!--    打印    -->
+        <template v-slot:print>
+          <el-col :span="1.5">
+            <el-button
+              plain
+              icon="el-icon-printer"
+              size="mini"
+              @click="printHTML"
+            >
+            </el-button>
+          </el-col>
+        </template>
+        <!--        导出-->
+        <template v-slot:export>
+          <el-col :span="1.5">
+            <el-button
+              plain
+              icon="el-icon-folder-opened"
+              size="mini"
+              @click="handleExport"
+              v-hasPermi="['system:applyprocess:export']"
+            >
+            </el-button>
+          </el-col>
+        </template>
+      </right-toolbar>
     </el-row>
     <!--    放置付款信息列表-->
     <el-row>
@@ -142,47 +195,47 @@ export default {
           fixed
           prop="fundsDate"
           label="日期"
-          width="150">
+          width="150" v-if="columns[0].visible">
         </el-table-column>
         <el-table-column
           prop="payType"
           label="支付类型"
-          width="120">
+          width="120" v-if="columns[1].visible">
         </el-table-column>
         <el-table-column
           prop="moneyAmount"
           label="金额"
-          width="120">
+          width="120" v-if="columns[2].visible">
         </el-table-column>
         <el-table-column
           prop="otherBankNo"
           label="对方账号"
-          width="300">
+          width="300" v-if="columns[3].visible">
         </el-table-column>
         <el-table-column
           prop="companyName"
           label="对方公司"
-          width="120">
+          width="120" v-if="columns[4].visible">
         </el-table-column>
         <el-table-column
           prop="reason"
           label="付款原因"
-          width="120">
+          width="120" v-if="columns[5].visible">
         </el-table-column>
         <el-table-column
           prop="attachment"
           label="附件"
-          width="120">
+          width="120" v-if="columns[6].visible">
         </el-table-column>
         <el-table-column
           prop="applyPerson"
           label="申请人"
-          width="120">
+          width="120" v-if="columns[7].visible">
         </el-table-column>
         <el-table-column
           prop="comments"
           label="备注"
-          width="120">
+          width="120" v-if="columns[8].visible">
         </el-table-column>
         <el-table-column
           fixed="right"
@@ -195,7 +248,7 @@ export default {
         <el-table-column
           fixed="right"
           label="审核流程"
-          width="200">
+          width="200" v-if="columns[9].visible">
           <template slot-scope="scope">
             <el-button type="warning" @click="handleCheckApplyInfo(scope.row)" size="mini">查看审核流程信息</el-button>
           </template>

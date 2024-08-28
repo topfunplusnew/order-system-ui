@@ -56,7 +56,7 @@
               icon="el-icon-folder-opened"
               size="mini"
               @click="handleExport"
-              v-hasPermi="['system:inventory:export']"
+              v-hasPermi="['system:oilrecharge:export']"
             >
             </el-button>
           </el-col>
@@ -66,17 +66,17 @@
 
     <el-table border v-loading="loading" :data="oilRechargeList" @selection-change="handleSelectionChange"
               v-horizontal-scroll="'always'" id="printBox">
-      <el-table-column label="id" align="center" prop="id"/>
+      <el-table-column label="id" align="center" prop="id" v-if="columns[0].visible"/>
       <!--      <el-table-column label="出差编号UUID" align="center" prop="bTripId"/>-->
-      <el-table-column label="加油卡卡号" align="center" prop="oilCardNo"/>
-      <el-table-column label="充值类型" align="center" prop="rechargeType"/>
-      <el-table-column label="充值金额" align="center" prop="rechargeMoney"/>
-      <el-table-column label="充值时间" align="center" prop="rechargeDate"/>
-      <el-table-column label="银行开户名" align="center" prop="acountsName"/>
-      <el-table-column label="银行账号" align="center" prop="bankNo"/>
-      <el-table-column label="充值人员姓名" align="center" prop="rechargeName"/>
-      <el-table-column label="充值附件" align="center" prop="attachment"/>
-      <el-table-column label="备注" align="center" prop="comments"/>
+      <el-table-column label="加油卡卡号" align="center" prop="oilCardNo" v-if="columns[1].visible"/>
+      <el-table-column label="充值类型" align="center" prop="rechargeType" v-if="columns[2].visible"/>
+      <el-table-column label="充值金额" align="center" prop="rechargeMoney" v-if="columns[3].visible"/>
+      <el-table-column label="充值时间" align="center" prop="rechargeDate" v-if="columns[4].visible"/>
+      <el-table-column label="银行开户名" align="center" prop="acountsName" v-if="columns[5].visible"/>
+      <el-table-column label="银行账号" align="center" prop="bankNo" v-if="columns[6].visible"/>
+      <el-table-column label="充值人员姓名" align="center" prop="rechargeName" v-if="columns[7].visible"/>
+      <el-table-column label="充值附件" align="center" prop="attachment" v-if="columns[8].visible"/>
+      <el-table-column label="备注" align="center" prop="comments" v-if="columns[9].visible"/>
       <el-table-column label="操作" align="center" class-name="small-padding fixed-width" fixed="right"
                        width="150px">
         <template slot-scope="scope">
@@ -259,42 +259,15 @@ export default {
       rules: {},
       columns: [
         {key: 0, label: `id`, visible: true},
-        {key: 1, label: `仓库名称`, visible: true},
-        {key: 2, label: `入库日期`, visible: true},
-        {key: 3, label: `库存量`, visible: true},
-        {key: 4, label: `供应商`, visible: true},
-        {key: 5, label: `级别编码`, visible: true},
-        {key: 6, label: `级别名称`, visible: true},
-        {key: 7, label: `计量单位`, visible: true},
-        {key: 8, label: `厚度`, visible: true},
-        {key: 9, label: `长度`, visible: true},
-        {key: 10, label: `宽度`, visible: true},
-        {key: 11, label: `出厂片数`, visible: true},
-        {key: 12, label: `每包片数`, visible: true},
-        {key: 13, label: `包数`, visible: true},
-        {key: 14, label: `出厂单价`, visible: true},
-        {key: 15, label: `出厂是否含税`, visible: true},
-        {key: 16, label: `杂费`, visible: true},
-        {key: 17, label: `出厂贷款`, visible: true},
-        {key: 18, label: `卸货价`, visible: true},
-        {key: 19, label: `销售是否含税`, visible: true},
-        {key: 20, label: `总货款`, visible: true},
-        {key: 21, label: `陆运车牌`, visible: true},
-        {key: 22, label: `陆运司机姓名`, visible: true},
-        {key: 23, label: `陆运司机电话`, visible: true},
-        {key: 24, label: `误差`, visible: true},
-        {key: 25, label: `吨位`, visible: true},
-        {key: 26, label: `陆运费单价`, visible: true},
-        {key: 27, label: `陆运费`, visible: true},
-        {key: 28, label: `其他费用`, visible: true},
-        {key: 29, label: `利润`, visible: true},
-        {key: 30, label: `不含利润率`, visible: true},
-        {key: 31, label: `实际片数`, visible: true},
-        {key: 32, label: `总贷款杂费`, visible: true},
-        {key: 33, label: `加费`, visible: true},
-        {key: 34, label: `返利金额`, visible: true},
-        {key: 35, label: `客户佣金`, visible: true},
-        {key: 36, label: `备注`, visible: true},
+        {key: 1, label: `加油卡卡号`, visible: true},
+        {key: 2, label: `充值类型`, visible: true},
+        {key: 3, label: `充值金额`, visible: true},
+        {key: 4, label: `充值时间`, visible: true},
+        {key: 5, label: `银行开户名`, visible: true},
+        {key: 6, label: `银行账号`, visible: true},
+        {key: 7, label: `充值人员姓名`, visible: true},
+        {key: 8, label: `充值附件`, visible: true},
+        {key: 9, label: `备注`, visible: true},
       ],
       tid: '',
       paymentApplyVisible: false,
@@ -306,7 +279,23 @@ export default {
   },
   created() {
     this.getList();
+    if (localStorage.getItem('oilrecharge-columns') === 'null'
+      || !localStorage.getItem('oilrecharge-columns')) {
+      //设置localStorage
+      localStorage.setItem("oilrecharge-columns", JSON.stringify(this.columns))
+    } else {
+      this.columns = JSON.parse(localStorage.getItem('oilrecharge-columns'));
+    }
     this.resetQuery();
+  },
+  //展示与隐藏
+  watch: {
+    columns: {
+      handler: (newVal) => {
+        localStorage.setItem("oilrecharge-columns", JSON.stringify(newVal))
+      },
+      deep: true,
+    }
   },
   methods: {
     listBankAccount,

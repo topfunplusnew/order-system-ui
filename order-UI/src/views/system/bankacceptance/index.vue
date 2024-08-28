@@ -59,7 +59,7 @@
                 icon="el-icon-folder-opened"
                 size="mini"
                 @click="handleExport"
-                v-hasPermi="['system:company:export']">
+                v-hasPermi="['system:bankacceptance:export']">
             </el-button>
           </el-col>
         </template>
@@ -292,6 +292,22 @@ export default {
   },
   created() {
     this.getList();
+    if (localStorage.getItem('bankacceptance-columns') === 'null'
+      || !localStorage.getItem('bankacceptance-columns')) {
+      //设置localStorage
+      localStorage.setItem("bankacceptance-columns", JSON.stringify(this.columns))
+    } else {
+      this.columns = JSON.parse(localStorage.getItem('bankacceptance-columns'));
+    }
+  },
+  //展示与隐藏
+  watch: {
+    columns: {
+      handler: (newVal) => {
+        localStorage.setItem("bankacceptance-columns", JSON.stringify(newVal))
+      },
+      deep: true,
+    }
   },
   methods: {
     listBankAccount,

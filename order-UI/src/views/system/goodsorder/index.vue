@@ -719,12 +719,6 @@ export default {
     this.$store.dispatch('order/getOrderList')
   },
   computed: {
-    columns: {
-      handler: (newVal) => {
-        localStorage.setItem("goodsorder-columns", JSON.stringify(newVal))
-      },
-      deep: true,
-    },
     TableName() {
       return TableName
     },
@@ -745,6 +739,12 @@ export default {
   },
   //监听开票表单的变化 如果有 就赋值
   watch: {
+    columns: {
+      handler: (newVal) => {
+        localStorage.setItem("goodsorder-columns", JSON.stringify(newVal))
+      },
+      deep: true,
+    },
     openTitleInfo: {
       handler(val) {
         this.invoiceAmount = this.openTitleInfo.invoiceAmount * this.openTitleInfo.ticketPoint;

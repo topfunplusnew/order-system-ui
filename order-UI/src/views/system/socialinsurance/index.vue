@@ -58,7 +58,7 @@
               icon="el-icon-folder-opened"
               size="mini"
               @click="handleExport"
-              v-hasPermi="['system:company:export']"
+              v-hasPermi="['system:socialinsurance:export']"
             >
             </el-button>
           </el-col>
@@ -298,6 +298,22 @@ export default {
   },
   created() {
     this.getList();
+    if (localStorage.getItem('socialinsurance-columns') === 'null'
+      || !localStorage.getItem('socialinsurance-columns')) {
+      //设置localStorage
+      localStorage.setItem("socialinsurance-columns", JSON.stringify(this.columns))
+    } else {
+      this.columns = JSON.parse(localStorage.getItem('socialinsurance-columns'));
+    }
+  },
+  //展示与隐藏
+  watch: {
+    columns: {
+      handler: (newVal) => {
+        localStorage.setItem("socialinsurance-columns", JSON.stringify(newVal))
+      },
+      deep: true,
+    }
   },
   methods: {
     addSocial() {
