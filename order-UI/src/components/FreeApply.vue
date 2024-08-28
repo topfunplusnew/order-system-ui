@@ -4,6 +4,8 @@ import {addOrderFreight} from "@/api/system/orderFreight";
 import SearchOption from "@/components/SearchOption.vue";
 import {listCompany} from "@/api/system/company";
 import {listBankAccount} from "@/api/system/bankAccount";
+import {reset} from "chalk";
+import {getCars} from "@/api/system/cars";
 
 export default {
   name: "FreeApply",
@@ -15,14 +17,25 @@ export default {
     return {
       queryAcountsName: '',
       form: {
-        selfAcountsName: null,
-        selfBankNo: null,
-        selfBankName: null,
+        otherAcountsName: null,
+        otherBankNo: null,
+        otherBankName: null,
         payDate: null,
         comments: null,
         content: null,
       }
     }
+  },
+  created() {
+    this.reset();
+    getCars(this.orderInfo.driverId).then(res => {
+      setTimeout(() => {
+        //自动填充司机信息
+        this.form.otherAcountsName = res.data.acountsName;
+        this.form.otherBankNo = res.data.bankNo;
+        this.form.otherBankName = res.data.bankName;
+      }, 50)
+    })
   },
   methods: {
     listBankAccount,
@@ -37,14 +50,18 @@ export default {
           this.$router.push('/order/orderFreight')
         })
       })
+      this.reset()
     },
     handleCommitBack(val) {
-      this.form.selfAcountsName = val.acountsName;
-      this.form.selfBankName = val.bankName;
-      this.form.selfBankNo = val.bankNo
+      this.form.otherAcountsName = val.acountsName;
+      this.form.otherBankName = val.bankName;
+      this.form.otherBankNo = val.bankNo
     },
     handleChange(val) {
       this.queryAcountsName = val;
+    },
+    reset() {
+      this.form = this.$refreshParams(this.form)
     }
   }
 }
@@ -53,13 +70,15 @@ export default {
 <template>
   <div>
     <el-form ref="form" :model="form" label-width="80px">
-      <el-form-item label="己方户名">
+      <el-form-item label="对方户名">
         <el-row>
           <el-col :span="10">
-            <el-input v-model="form.selfAcountsName"></el-input>
+            <el-input v-model="form.otherAcountsName"></el-input>
           </el-col>
           <el-col :span="4">
-            <SearchOption :limit-info="{companyType:'己方公司'}" :get-data="listBankAccount"
+            <!--搜索银行卡信息-->
+            <SearchOption :limit-info="{companyType:'司机',acountsName:this.orderInfo.otherAcountsName}"
+                          :get-data="listBankAccount"
                           query-label="户名搜索" query-info="acountsName" :query-name="queryAcountsName"
                           @commitBack="handleCommitBack" @update:queryName="handleChange">
               <template #table-columns>
@@ -72,11 +91,11 @@ export default {
           </el-col>
         </el-row>
       </el-form-item>
-      <el-form-item label="己方账号">
-        <el-input v-model="form.selfBankNo"></el-input>
+      <el-form-item label="对方账号">
+        <el-input v-model="form.otherBankNo"></el-input>
       </el-form-item>
-      <el-form-item label="己方开户行">
-        <el-input v-model="form.selfBankName"></el-input>
+      <el-form-item label="对方开户行">
+        <el-input v-model="form.otherBankName"></el-input>
       </el-form-item>
       <el-form-item label="支付日期">
         <el-date-picker

@@ -125,6 +125,7 @@
           row-key="id"
           :default-expand-all="isExpandAll"
           :tree-props="{children: 'children', hasChildren: 'hasChildren'}"
+          size="mini"
         >
           <el-table-column label="科目名称" prop="title" v-if="columns[0].visible"/>
           <el-table-column label="科目编码" align="center" prop="subjectNo" v-if="columns[1].visible"/>
