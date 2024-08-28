@@ -622,10 +622,10 @@ export default {
         {key: 10, label: `开票状态`, visible: true},
         {key: 11, label: `附件路径`, visible: true},
         {key: 12, label: `打款状态`, visible: true},
-       /* {key: 13, label: `陆运银行户名`, visible: true},
-        {key: 14, label: `陆运银行账号`, visible: true},
-        {key: 15, label: `海运银行户名`, visible: true},
-        {key: 16, label: `海运银行账号`, visible: true},*/
+        /* {key: 13, label: `陆运银行户名`, visible: true},
+         {key: 14, label: `陆运银行账号`, visible: true},
+         {key: 15, label: `海运银行户名`, visible: true},
+         {key: 16, label: `海运银行账号`, visible: true},*/
         {key: 13, label: `收到条附件路径`, visible: true},
         {key: 14, label: `是否被调整单`, visible: true},
         {key: 15, label: `是否调整单`, visible: true},

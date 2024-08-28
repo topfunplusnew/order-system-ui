@@ -100,7 +100,17 @@ Vue.prototype.$dateRange = function (_this, targetList, targetProperty, startTim
     })
   }
 }
-
+//4.参数置空
+Vue.prototype.$refreshParams = function (object) {
+  let newObject = object;
+  if (object === null || object === undefined) {
+    throw new Error("对象不合法")
+  }
+  for (let property of Object.keys(newObject)) {
+    Vue.set(newObject, property, '')
+  }
+  return newObject
+}
 //todo #############
 let car = {
   'brand': 'ABC',
@@ -122,7 +132,6 @@ Object.defineProperty(obj, 'price', {
     money = value;
   }
 })
-
 //todo #############
 
 
