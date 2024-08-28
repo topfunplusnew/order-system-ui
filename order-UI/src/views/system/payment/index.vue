@@ -247,13 +247,30 @@
         <!--          <el-input v-model="form.selfBankID" placeholder="请输入己方账号ID"/>-->
         <!--        </el-form-item>-->
         <el-form-item label="对方户名" prop="otherAcountsName">
-          <el-input v-model="form.otherAcountsName" placeholder="请输入对方户名"/>
+          <el-row>
+            <el-col :span="10">
+              <el-input v-model="form.otherAcountsName" placeholder="请输入对方户名"/>
+            </el-col>
+            <el-col :span="3">
+              <SearchOption :limit-info="{}" :get-data="listCompany" icon="el-icon-search"
+                            @commitBack="handleCommitBackOther">
+                <template #table-columns>
+                  <el-table-column label="公司名称" align="center" prop="companyName"/>
+                  <el-table-column label="公司类型" align="center" prop="companyType"/>
+                  <el-table-column label="开户行" align="center" prop="bankName"/>
+                  <el-table-column label="开户名" align="center" prop="acountsName"/>
+                  <el-table-column label="账号" align="center" prop="bankNo"/>
+                </template>
+              </SearchOption>
+            </el-col>
+          </el-row>
         </el-form-item>
         <el-form-item label="对方账号" prop="otherBankNo">
           <el-input v-model="form.otherBankNo" placeholder="请输入对方账号"/>
         </el-form-item>
         <el-form-item label="对方开户行" prop="otherBankName">
           <el-input v-model="form.otherBankName" placeholder="请输入对方开户行"/>
+
         </el-form-item>
         <el-form-item label="支付状态" prop="paymentState">
           <el-input v-model="form.paymentState" placeholder="请输入支付状态"/>
@@ -267,18 +284,6 @@
         <el-form-item label="备注" prop="comments">
           <el-input v-model="form.comments" placeholder="请输入备注"/>
         </el-form-item>
-        <!--        <el-form-item label="添加时间" prop="addtime">-->
-        <!--          <el-input v-model="form.addtime" placeholder="请输入添加时间"/>-->
-        <!--        </el-form-item>-->
-        <!--        <el-form-item label="操作人员ID" prop="userId">-->
-        <!--          <el-input v-model="form.userId" placeholder="请输入操作人员ID"/>-->
-        <!--        </el-form-item>-->
-        <!--        <el-form-item label="操作人员姓名" prop="UserName">-->
-        <!--          <el-input v-model="form.UserName" placeholder="请输入操作人员姓名"/>-->
-        <!--        </el-form-item>-->
-        <!--        <el-form-item label="删除标记" prop="delFlag">-->
-        <!--          <el-input v-model="form.delFlag" placeholder="请输入删除标记"/>-->
-        <!--        </el-form-item>-->
       </el-form>
       <div slot="footer" class="dialog-footer">
         <el-button type="primary" @click="submitForm">确 定</el-button>
@@ -449,8 +454,17 @@ export default {
   },
   methods: {
     listCompany,
+    //自动填充己方信息
     handleCommitBack(val) {
-
+      this.form.selfBankName = val.bankName;
+      this.form.selfAcountsName = val.acountsName
+      this.form.selfBankNo = val.bankNo
+    },
+    //自动填充对方信息
+    handleCommitBackOther(val) {
+      this.form.otherBankName = val.bankName;
+      this.form.otherAcountsName = val.acountsName
+      this.form.otherBankNo = val.bankNo
     },
     printHTML() {
       this.$print({
