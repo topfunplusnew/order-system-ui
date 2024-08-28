@@ -274,7 +274,6 @@ export default {
         {key: 1, label: `车队经理`, visible: true},
         {key: 2, label: `车队经理电话`, visible: true},
         {key: 3, label: `地址`, visible: true},
-
       ]
     };
   },
