@@ -6,7 +6,7 @@
           v-model="timesQuery.beginTime"
           type="date"
           placeholder="选择开始时间"
-        value-format="yyyy-MM-dd">
+          value-format="yyyy-MM-dd">
         </el-date-picker>
       </el-form-item>
       <el-form-item label="结束时间" prop="endTime">
@@ -14,19 +14,9 @@
           v-model="timesQuery.endTime"
           type="date"
           placeholder="选择结束时间"
-        value-format="yyyy-MM-dd">
+          value-format="yyyy-MM-dd">
         </el-date-picker>
       </el-form-item>
-      <!--      <el-form-item label="对象类型" prop="objectType">-->
-      <!--        <el-select v-model="timesQuery.objectType" placeholder="请选择对象类型">-->
-      <!--          <el-option-->
-      <!--            v-for="item in options"-->
-      <!--            :key="item.value"-->
-      <!--            :label="item.label"-->
-      <!--            :value="item.value">-->
-      <!--          </el-option>-->
-      <!--        </el-select>-->
-      <!--      </el-form-item>-->
       <el-form-item>
         <el-button type="primary" icon="el-icon-search" size="mini" @click="handleTimesQuery">搜索</el-button>
       </el-form-item>
@@ -114,7 +104,12 @@
     <el-dialog :title="title" :visible.sync="open" width="500px" append-to-body>
       <el-form ref="form" :model="form" :rules="rules" label-width="80px">
         <el-form-item label="购入日期" prop="buyDate">
-          <el-input v-model="form.buyDate" placeholder="请输入购入日期"/>
+          <el-date-picker
+            v-model="form.buyDate"
+            type="date"
+            placeholder="购入日期"
+            value-format="yyyy-MM-dd">
+          </el-date-picker>
         </el-form-item>
         <el-form-item label="资产编号" prop="assetNo">
           <el-input v-model="form.assetNo" placeholder="请输入资产编号"/>
@@ -123,13 +118,13 @@
           <el-input v-model="form.assetName" placeholder="请输入资产名称"/>
         </el-form-item>
         <el-form-item label="规格型号" prop=" specification">
-          <el-input v-model="form. specification" placeholder="请输入规格型号"/>
+          <el-input v-model="form.specification" placeholder="请输入规格型号"/>
         </el-form-item>
         <el-form-item label="数量" prop="number">
           <el-input v-model="form.number" placeholder="请输入数量"/>
         </el-form-item>
         <el-form-item label="计量单位" prop="measurementUnit ">
-          <el-input v-model="form.measurementUnit " placeholder="请输入计量单位"/>
+          <el-input v-model="form.measurementUnit" placeholder="请输入计量单位"/>
         </el-form-item>
         <el-form-item label="含税金额" prop="amountIncludeTax">
           <el-input v-model="form.amountIncludeTax" placeholder="请输入含税金额"/>
@@ -138,13 +133,19 @@
           <el-input v-model="form.amountNoTax" placeholder="请输入不含税金额"/>
         </el-form-item>
         <el-form-item label="户名名称" prop="account">
-          <el-input v-model="form.account" placeholder="请输入户名名称"/>
+          <el-radio v-model="form.account" label="公户">公户</el-radio>
+          <el-radio v-model="form.account" label="个人">个人</el-radio>
         </el-form-item>
         <el-form-item label="使用部门" prop="department">
           <el-input v-model="form.department" placeholder="请输入使用部门"/>
         </el-form-item>
         <el-form-item label="固定资产清理时间" prop="scrapDate">
-          <el-input v-model="form.scrapDate" placeholder="请输入固定资产清理时间"/>
+          <el-date-picker
+            v-model="form.scrapDate"
+            type="date"
+            placeholder="固定资产清理时间"
+            value-format="yyyy-MM-dd">
+          </el-date-picker>
         </el-form-item>
         <el-form-item label="清理/变卖价值" prop="saleAmount">
           <el-input v-model="form.saleAmount" placeholder="请输入清理/变卖价值"/>
