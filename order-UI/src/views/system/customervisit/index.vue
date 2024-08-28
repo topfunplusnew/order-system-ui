@@ -300,6 +300,15 @@ export default {
       this.columns = JSON.parse(localStorage.getItem('customervisit-columns'));
     }
   },
+  //展示与隐藏
+  watch: {
+    columns: {
+      handler: (newVal) => {
+        localStorage.setItem("customervisit-columns", JSON.stringify(newVal))
+      },
+      deep: true,
+    }
+  },
   methods: {
     /** 查询走访记录列表 */
     getList() {

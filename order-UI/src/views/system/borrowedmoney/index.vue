@@ -45,7 +45,7 @@
               icon="el-icon-folder-opened"
               size="mini"
               @click="handleExport"
-              v-hasPermi="['system:company:export']">
+              v-hasPermi="['system:borrowedmoney:export']">
             </el-button>
           </el-col>
         </template>
@@ -54,7 +54,7 @@
 
     <el-table border v-loading="loading" :data="borrowedMoneyList" @selection-change="handleSelectionChange"
               v-horizontal-scroll="'always'" id="printBox" show-summary :summary-method="getSummaries">
-      <el-table-column label="id" align="center" prop="id"/>
+      <el-table-column label="id" align="center" prop="id" v-if="columns[0].visible"/>
       <el-table-column label="贷款来源" align="center" prop="origin" v-if="columns[1].visible"/>
       <el-table-column label="借入金额" align="center" prop="moneyAmount" v-if="columns[2].visible"/>
       <el-table-column label="贷款利率" align="center" prop="ratio" v-if="columns[3].visible"/>
@@ -314,7 +314,7 @@ export default {
       },
       //
       columns: [
-        {key: 0, label: `贷款编号`, visible: true},
+        {key: 0, label: `id`, visible: true},
         {key: 1, label: `贷款来源`, visible: true},
         {key: 2, label: `借入金额`, visible: true},
         {key: 3, label: `贷款利率`, visible: true},
@@ -361,6 +361,13 @@ export default {
   },
   created() {
     this.getList();
+    if (localStorage.getItem('borrowedmoney-columns') === 'null'
+      || !localStorage.getItem('borrowedmoney-columns')) {
+      //设置localStorage
+      localStorage.setItem("borrowedmoney-columns", JSON.stringify(this.columns))
+    } else {
+      this.columns = JSON.parse(localStorage.getItem('borrowedmoney-columns'));
+    }
     this.$store.dispatch('money/getTempBorrowedMoneyList')
   },
   computed: {
@@ -371,6 +378,15 @@ export default {
       return this.currentSort.levelOne + '-' + this.currentSort.levelTwo;
     },
     ...mapGetters(['tempBorrowedMoneyList'])
+  },
+  //展示与隐藏
+  watch: {
+    columns: {
+      handler: (newVal) => {
+        localStorage.setItem("borrowedmoney-columns", JSON.stringify(newVal))
+      },
+      deep: true,
+    }
   },
   methods: {
     listCompany,

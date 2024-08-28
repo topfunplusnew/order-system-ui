@@ -83,15 +83,15 @@
 
     <el-table v-horizontal-scroll="'always'" border v-loading="loading" :data="invoiceOutList"
               @selection-change="handleSelectionChange" id="printBox">
-      <el-table-column label="开票日期" align="center" prop="invoiceDate"/>
-      <el-table-column label="我方开票实体" align="center" prop="invoiceObject"/>
-      <el-table-column label="开票金额" align="center" prop="invoiceAmount"/>
-      <el-table-column label="公司类别" align="center" prop="companyType"/>
-      <el-table-column label="公司名称" align="center" prop="companyName"/>
-      <el-table-column label="票据单位名称" align="center" prop="invoiceCompanyName"/>
-      <el-table-column label="票点" align="center" prop="ticketPoint"/>
-      <el-table-column label="票点金额" align="center" prop="ticketPointAmount"/>
-      <el-table-column label="是否订单对应票点" align="center" prop="isOrderTax" width="180">
+      <el-table-column label="开票日期" align="center" prop="invoiceDate" v-if="columns[0].visible"/>
+      <el-table-column label="我方开票实体" align="center" prop="invoiceObject" v-if="columns[1].visible"/>
+      <el-table-column label="开票金额" align="center" prop="invoiceAmount" v-if="columns[2].visible"/>
+      <el-table-column label="公司类别" align="center" prop="companyType" v-if="columns[3].visible"/>
+      <el-table-column label="公司名称" align="center" prop="companyName" v-if="columns[4].visible"/>
+      <el-table-column label="票据单位名称" align="center" prop="invoiceCompanyName" v-if="columns[5].visible"/>
+      <el-table-column label="票点" align="center" prop="ticketPoint" v-if="columns[6].visible"/>
+      <el-table-column label="票点金额" align="center" prop="ticketPointAmount" v-if="columns[7].visible"/>
+      <el-table-column label="是否订单对应票点" align="center" prop="isOrderTax" width="180" v-if="columns[8].visible">
         <template slot-scope="scope">
           <el-row v-if="scope.row.isOrderTax===0">
             <el-tag>否</el-tag>
@@ -101,7 +101,7 @@
           </el-row>
         </template>
       </el-table-column>
-      <el-table-column label="备注" align="center" prop="comments"/>
+      <el-table-column label="备注" align="center" prop="comments" v-if="columns[9].visible"/>
       <el-table-column label="操作" align="center" class-name="small-padding fixed-width">
         <template slot-scope="scope">
           <el-button
@@ -256,11 +256,16 @@ export default {
       // 表单校验
       rules: {},
       columns: [
-        {key: 0, label: `账户类型`, visible: true},
-        {key: 1, label: `开户名称`, visible: true},
-        {key: 2, label: `账号(银行卡号)`, visible: true},
-        {key: 3, label: `开户行`, visible: true},
-        {key: 4, label: `公司名称`, visible: true}
+        {key: 0, label: `开票日期`, visible: true},
+        {key: 1, label: `我方开票实体`, visible: true},
+        {key: 2, label: `开票金额`, visible: true},
+        {key: 3, label: `公司类别`, visible: true},
+        {key: 4, label: `公司名称`, visible: true},
+        {key: 5, label: `票据单位名称`, visible: true},
+        {key: 6, label: `票点`, visible: true},
+        {key: 7, label: `票点金额`, visible: true},
+        {key: 8, label: `是否订单对应票点`, visible: true},
+        {key: 9, label: `备注`, visible: true},
       ],
       beginTime: '',
       endTime: '',
@@ -275,6 +280,13 @@ export default {
   },
   created() {
     this.getList();
+    if (localStorage.getItem('invoiceout-columns') === 'null'
+      || !localStorage.getItem('invoiceout-columns')) {
+      //设置localStorage
+      localStorage.setItem("invoiceout-columns", JSON.stringify(this.columns))
+    } else {
+      this.columns = JSON.parse(localStorage.getItem('invoiceout-columns'));
+    }
   },
   computed: {
     //票点金额 开票金额*票点
@@ -288,6 +300,12 @@ export default {
     },
   },
   watch: {
+    columns: {
+      handler: (newVal) => {
+        localStorage.setItem("invoiceout-columns", JSON.stringify(newVal))
+      },
+      deep: true,
+    },
     form: {
       handler(val) {
         this.invoiceAmount = this.form.invoiceAmount * this.form.ticketPoint;

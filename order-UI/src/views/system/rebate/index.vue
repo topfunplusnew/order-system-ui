@@ -450,6 +450,13 @@ export default {
       //保存到session 后续可以少发一次请求
       sessionStorage.setItem('orderList', JSON.stringify(res.rows))
     })
+    if (localStorage.getItem('rebate-columns') === 'null'
+      || !localStorage.getItem('rebate-columns')) {
+      //设置localStorage
+      localStorage.setItem("rebate-columns", JSON.stringify(this.columns))
+    } else {
+      this.columns = JSON.parse(localStorage.getItem('rebate-columns'));
+    }
   },
   watch: {
     //监听选择的一级
@@ -468,6 +475,12 @@ export default {
       console.log('选择的货物详情', newVal)
       this.form.orderDetailID = newVal;
       this.orderDialogVisible = false;
+    },
+    columns: {
+      handler: (newVal) => {
+        localStorage.setItem("rebate-columns", JSON.stringify(newVal))
+      },
+      deep: true,
     }
   },
   methods: {

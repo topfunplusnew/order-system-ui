@@ -136,20 +136,20 @@
               v-horizontal-scroll="'always'">
       <el-table-column label="id" align="center" prop="id" v-if="columns[0].visible"/>
       <!--      <el-table-column label="付款编号" align="center" prop="payNO" v-if="columns[1].visible"/>-->
-      <el-table-column label="日期" align="center" prop="fundsDate" v-if="columns[2].visible"/>
-      <el-table-column label="支付类型" align="center" prop="payType" v-if="columns[3].visible"/>
-      <el-table-column label="对应的表名" align="center" prop="tableName" v-if="columns[4].visible"/>
-      <el-table-column label="对应的表主键" align="center" prop="tID" v-if="columns[5].visible"/>
-      <el-table-column label="金额" align="center" prop="moneyAmount" v-if="columns[6].visible"/>
-      <el-table-column label="己方户名" align="center" prop="selfAcountsName" v-if="columns[7].visible"/>
-      <el-table-column label="己方账号" align="center" prop="selfBankNo" v-if="columns[8].visible"/>
-      <el-table-column label="己方开户行" align="center" prop="selfBankName" v-if="columns[9].visible"/>
-      <el-table-column label="对方户名" align="center" prop="otherAcountsName" v-if="columns[11].visible"/>
-      <el-table-column label="对方账号" align="center" prop="otherBankNo" v-if="columns[12].visible"/>
-      <el-table-column label="对方开户行" align="center" prop="otherBankName" v-if="columns[13].visible"/>
-      <el-table-column label="支付状态" align="center" prop="paymentState" v-if="columns[14].visible"/>
-      <el-table-column label="对方公司" align="center" prop="companyName" v-if="columns[15].visible"/>
-      <el-table-column label="对方公司类型" align="center" prop="companyType" v-if="columns[17].visible"/>
+      <el-table-column label="日期" align="center" prop="fundsDate" v-if="columns[1].visible"/>
+      <el-table-column label="支付类型" align="center" prop="payType" v-if="columns[2].visible"/>
+      <el-table-column label="对应的表名" align="center" prop="tableName" v-if="columns[3].visible"/>
+      <el-table-column label="对应的表主键" align="center" prop="tID" v-if="columns[4].visible"/>
+      <el-table-column label="金额" align="center" prop="moneyAmount" v-if="columns[5].visible"/>
+      <el-table-column label="己方户名" align="center" prop="selfAcountsName" v-if="columns[6].visible"/>
+      <el-table-column label="己方账号" align="center" prop="selfBankNo" v-if="columns[7].visible"/>
+      <el-table-column label="己方开户行" align="center" prop="selfBankName" v-if="columns[8].visible"/>
+      <el-table-column label="对方户名" align="center" prop="otherAcountsName" v-if="columns[9].visible"/>
+      <el-table-column label="对方账号" align="center" prop="otherBankNo" v-if="columns[10].visible"/>
+      <el-table-column label="对方开户行" align="center" prop="otherBankName" v-if="columns[11].visible"/>
+      <el-table-column label="支付状态" align="center" prop="paymentState" v-if="columns[12].visible"/>
+      <el-table-column label="对方公司" align="center" prop="companyName" v-if="columns[13].visible"/>
+      <el-table-column label="对方公司类型" align="center" prop="companyType" v-if="columns[14].visible"/>
       <el-table-column label="操作" align="center" class-name="small-padding fixed-width" width="100px">
         <template slot-scope="scope">
           <el-button
@@ -358,24 +358,24 @@ export default {
         // {key: 50, label: ` 供应商ID`, visible: true},
 
         {key: 0, label: ` id`, visible: true},
-        {key: 1, label: `付款编号`, visible: true},
-        {key: 2, label: `日期`, visible: true},
-        {key: 3, label: `支付类型`, visible: true},
-        {key: 4, label: `对应的表名`, visible: true},
-        {key: 5, label: `对应的表主键`, visible: true},
-        {key: 6, label: `金额`, visible: true},
-        {key: 7, label: `己方户名`, visible: true},
-        {key: 8, label: `己方账号`, visible: true},
-        {key: 9, label: `己方开户行`, visible: true},
-        {key: 10, label: `己方账号ID`, visible: false},
-        {key: 11, label: `对方户名`, visible: true},
-        {key: 12, label: `对方账号`, visible: true},
-        {key: 13, label: `对方开户行`, visible: true},
-        {key: 14, label: `对方公司`, visible: true},
-        {key: 15, label: `支付状态`, visible: true},
-        {key: 16, label: `对方公司`, visible: true},
-        {key: 17, label: `对方公司ID`, visible: false},
-        {key: 18, label: `对方公司类型`, visible: true},
+       /* {key: 1, label: `付款编号`, visible: true},*/
+        {key: 1, label: `日期`, visible: true},
+        {key: 2, label: `支付类型`, visible: true},
+        {key: 3, label: `对应的表名`, visible: true},
+        {key: 4, label: `对应的表主键`, visible: true},
+        {key: 5, label: `金额`, visible: true},
+        {key: 6, label: `己方户名`, visible: true},
+        {key: 7, label: `己方账号`, visible: true},
+        {key: 8, label: `己方开户行`, visible: true},
+       /* {key: 9, label: `己方账号ID`, visible: false},*/
+        {key: 9, label: `对方户名`, visible: true},
+        {key: 10, label: `对方账号`, visible: true},
+        {key: 11, label: `对方开户行`, visible: true},
+        {key: 12, label: `支付状态`, visible: true},
+        {key: 13, label: `对方公司`, visible: true},
+        {key: 14, label: `对方公司类型`, visible: true},
+      /*  {key: 16, label: `对方公司ID`, visible: false},*/
+        /*{key: 15, label: `对方公司类型`, visible: true},*/
 
 
       ],
@@ -442,6 +442,13 @@ export default {
   },
   created() {
     this.getList();
+    if (localStorage.getItem('payment-columns') === 'null'
+      || !localStorage.getItem('payment-columns')) {
+      //设置localStorage
+      localStorage.setItem("payment-columns", JSON.stringify(this.columns))
+    } else {
+      this.columns = JSON.parse(localStorage.getItem('payment-columns'));
+    }
   },
   //展示与隐藏
   watch: {
