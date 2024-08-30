@@ -27,7 +27,7 @@ export default {
 
 <template>
   <div>
-    <el-descriptions title="订单信息">
+    <el-descriptions title="订单信息" size="mini">
       <el-descriptions-item label="日期">{{ orderInfo.orderDate }}</el-descriptions-item>
       <el-descriptions-item label="客户">{{ orderInfo.customer }}</el-descriptions-item>
       <el-descriptions-item label="商家姓名">{{ orderInfo.supplierNames }}</el-descriptions-item>

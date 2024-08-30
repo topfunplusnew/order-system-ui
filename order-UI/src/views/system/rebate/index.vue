@@ -121,29 +121,89 @@
     <!-- 添加或修改返利回扣对话框 -->
     <el-dialog :title="title" :visible.sync="open" width="500px" append-to-body>
       <el-form ref="form" :model="form" :rules="rules" label-width="80px">
-        <!--        <el-form-item label="订单编号" prop="ordersNo">-->
-        <!--          <el-input v-model="form.ordersNo" placeholder="请输入订单编号"/>-->
-        <!--        </el-form-item>-->
+        <!--        多选 且树表 展示多个订单 每个订单里面有多个订单详情-->
+        <el-form-item label="订单编号" prop="ordersNo">
+          <!--          <el-input v-model="form.ordersNo" placeholder="请输入订单编号"/>-->
+          <el-button @click="orderDialogVisible = true">
+            {{ form.ordersNo === null ? '选择订单编号' : '已选择:' + form.ordersNo }}
+          </el-button>
+        </el-form-item>
         <el-form-item label="日期" prop="rebateDate">
-          <el-input v-model="form.rebateDate" placeholder="请输入日期"/>
+          <el-date-picker
+            v-model="form.rebateDate"
+            type="date"
+            placeholder="日期"
+            value-format="yyyy-MM-dd">
+          </el-date-picker>
         </el-form-item>
         <el-form-item label="金额" prop="rebate">
           <el-input v-model="form.rebate" placeholder="请输入金额"/>
         </el-form-item>
         <el-form-item label="收款户名" prop="inAcountsName">
-          <el-input v-model="form.inAcountsName" placeholder="请输入收款户名"/>
+          <el-row>
+            <el-col :span="20">
+              <el-input v-model="form.inAcountsName" placeholder="请输入收款户名"/>
+            </el-col>
+            <el-col :span="4">
+              <SearchOption :limit-info="{}" :get-data="listBankAccount" @commitBack="handleCommitBackBankAcount"
+                            @update:queryName="handleUpdateQueryBankAcount" :query-name="queryBankAcount"
+                            query-label="户名查找" query-info="acountsName">
+                <template #table-columns>
+                  <el-table-column label="账户类型" align="center" prop="acountsType"/>
+                  <el-table-column label="开户名称(户名)" align="center" prop="acountsName"/>
+                  <el-table-column label="账号(银行账号)" align="center" prop="bankNo"/>
+                  <el-table-column label="开户行" align="center" prop="bankName"/>
+                  <el-table-column label="公司名称" align="center" prop="companyName"/>
+                </template>
+              </SearchOption>
+            </el-col>
+          </el-row>
         </el-form-item>
         <el-form-item label="收款账号" prop="inBankNo">
           <el-input v-model="form.inBankNo" placeholder="请输入收款账号"/>
         </el-form-item>
-        <el-form-item label="供应商" prop="supplier">
-          <el-input v-model="form.supplier" placeholder="请输入供应商"/>
+        <!--        供应商直接选择 不要自己填-->
+        <el-form-item label="请选择供应商" prop="supplier">
+          <el-row>
+            <el-col :span="20">
+              <el-input disabled v-model="form.supplier" placeholder="请选择供应商"/>
+            </el-col>
+            <el-col :span="4">
+              <SearchOption :limit-info="{companyType:'供应商'}" :get-data="listCompany"
+                            @commitBack="handleCommitBackCompanyGive" @update:queryName="handleQueryCompanyGive"
+                            :query-name="queryCompanyGive" query-info="companyName" query-label="供应商查找">
+                <template #table-columns>
+                  <el-table-column label="供应商" align="center" prop="companyName"/>
+                  <el-table-column label="地址" align="center" prop="address"/>
+                </template>
+              </SearchOption>
+            </el-col>
+          </el-row>
         </el-form-item>
         <!--        <el-form-item label="供应商ID" prop="supplierID">-->
         <!--          <el-input v-model="form.supplierID" placeholder="请输入供应商ID"/>-->
         <!--        </el-form-item>-->
         <el-form-item label="付款户名" prop="outAcountsName">
-          <el-input v-model="form.outAcountsName" placeholder="请输入付款户名"/>
+          <el-row>
+            <el-col :span="20">
+              <el-input v-model="form.outAcountsName" placeholder="请输入付款户名"/>
+            </el-col>
+            <el-col :span="4">
+              <SearchOption :limit-info="{acountsType:'己方公司'}" :get-data="listBankAccount"
+                            @commitBack="handleCommitBackBankAcountSelf"
+                            @update:queryName="handleUpdateQueryBankAcountSelf"
+                            :query-name="bankAcountSelf"
+                            query-label="户名查找" query-info="acountsName">
+                <template #table-columns>
+                  <el-table-column label="账户类型" align="center" prop="acountsType"/>
+                  <el-table-column label="开户名称(户名)" align="center" prop="acountsName"/>
+                  <el-table-column label="账号(银行账号)" align="center" prop="bankNo"/>
+                  <el-table-column label="开户行" align="center" prop="bankName"/>
+                  <el-table-column label="公司名称" align="center" prop="companyName"/>
+                </template>
+              </SearchOption>
+            </el-col>
+          </el-row>
         </el-form-item>
         <el-form-item label="付款款账号" prop="outBankNo">
           <el-input v-model="form.outBankNo" placeholder="请输入付款款账号"/>
@@ -168,6 +228,114 @@
                     :need-info="{...needInfo,otherAcountsName:needInfo.acountsName}"
                     @changeOpen="paymentApplyVisible = false"/>
     </el-dialog>
+
+
+    <!--    选择订单详情-->
+    <el-dialog
+      title="订单选择"
+      :visible.sync="orderDialogVisible"
+      width="50%">
+      <el-row>
+        <el-col :span="12">
+          <el-row>
+            <el-col :span="7">
+              <span style="font-weight: bolder;line-height: 40px">请选择订单信息</span>
+            </el-col>
+            <el-col :span="17">
+              <el-select v-model="valueOrder" placeholder="请选择订单">
+                <el-option
+                  v-for="item in orderList"
+                  :key="item.ordersNo"
+                  :label="item.ordersNo"
+                  :value="item.id">
+                </el-option>
+              </el-select>
+            </el-col>
+          </el-row>
+        </el-col>
+        <el-col :span="12">
+          <el-row>
+            <el-col :span="7">
+              <span style="font-weight: bolder;line-height: 40px">请选择货物详情信息</span>
+            </el-col>
+            <el-col :span="17">
+              <el-select :disabled="valueOrder === ''"
+                         :placeholder="valueOrder ===''?'请先选择订单信息':'请选择货物详情信息'"
+                         v-model="valueOrderDetail">
+                <el-option
+                  v-for="item in orderDetailList"
+                  :key="item.ordersNo"
+                  :label="item.ordersNo"
+                  :value="item.id">
+                </el-option>
+              </el-select>
+            </el-col>
+          </el-row>
+        </el-col>
+      </el-row>
+      <hr/>
+      <!--      展示-->
+      <el-row>
+        <el-row>
+          <OrderInfos :orderInfo="orderInfo"/>
+        </el-row>
+        <el-row>
+          <el-row>
+            <span style="font-weight: bolder">货物详情列表</span>
+          </el-row>
+          <el-row>
+            <el-table border :data="orderDetailList" id="printBox" max-height="700">
+              <el-table-column label="订单编号" align="center" prop="ordersNo" fixed="left"/>
+              <el-table-column label="订单日期" align="center" prop="orderDate" fixed="left"/>
+              <el-table-column label="客户" align="center" prop="customer"/>
+              <el-table-column label="供应商" align="center" prop="supplier"/>
+              <el-table-column label="级别名称" align="center" prop="levelName"/>
+              <el-table-column label="计量单位" align="center" prop="countingUnit"/>
+              <el-table-column label="厚度" align="center" prop="height"/>
+              <el-table-column label="长度" align="center" prop="length"/>
+              <el-table-column label="宽度" align="center" prop="width"/>
+              <el-table-column label="出厂片数" align="center" prop="pieces"/>
+              <el-table-column label="每包片数" align="center" prop="piecesPerPack"/>
+              <el-table-column label="包数" align="center" prop="packs"/>
+              <el-table-column label="出厂单价" align="center" prop="price"/>
+              <el-table-column label="出厂是否含税" align="center" prop="isIncludeTaxFactory">
+                <template slot-scope="scope">
+                  <el-tag
+                    disable-transitions>{{ scope.row.isIncludeTaxFactory === 0 ? "否" : "是" }}
+                  </el-tag>
+                </template>
+              </el-table-column>
+              <el-table-column label="杂费" align="center" prop="sundryCost"/>
+              <el-table-column label="出厂货款" align="center" prop="paymentFactory"/>
+              <el-table-column label="卸货价" align="center" prop="paymentUnload"/>
+              <el-table-column label="销售是否含税" align="center" prop="isIncludeTaxSale">
+                <template slot-scope="scope">
+                  <el-tag
+                    disable-transitions>{{ scope.row.isIncludeTaxSale === 0 ? "否" : "是" }}
+                  </el-tag>
+                </template>
+              </el-table-column>
+              <el-table-column label="总货款" align="center" prop="payments"/>
+              <el-table-column label="误差" align="center" prop="erro"/>
+              <el-table-column label="吨位" align="center" prop="tonnage"/>
+              <el-table-column label="陆运费单价" align="center" prop="landFreightPrice"/>
+              <el-table-column label="陆运费" align="center" prop="landFreight"/>
+              <el-table-column label="海运费" align="center" prop="seaFreight"/>
+              <el-table-column label="总运费" align="center" prop="freight"/>
+              <el-table-column label="其他费用" align="center" prop="otherCost"/>
+              <el-table-column label="利润" align="center" prop="profit"/>
+              <el-table-column label="不含税利润" align="center" prop="profitNoTax"/>
+              <el-table-column label="实际片数" align="center" prop="actualPieces"/>
+              <el-table-column label="总货款杂费" align="center" prop="paymentsWithSundry"/>
+              <el-table-column label="加费" align="center" prop="additionalFees"/>
+              <el-table-column label="仓库名称" align="center" prop="storeHouseName"/>
+              <el-table-column label="物流利润" align="center" prop="logisticsProfit"/>
+              <el-table-column label="客户佣金" align="center" prop="customerCommission"/>
+            </el-table>
+          </el-row>
+        </el-row>
+      </el-row>
+    </el-dialog>
   </div>
 </template>
 
@@ -176,6 +344,12 @@ import {listRebate, getRebate, delRebate, addRebate, updateRebate} from "@/api/s
 import {mixin_printHTML} from "@/views/dashboard/mixins/print";
 import ApplyPayment from "@/components/ApplyPayment.vue";
 import {TableName} from "@/api/tool/enums";
+import {getGoodsOrder, listGoodsOrder} from "@/api/system/goodsOrder";
+import OrderInfos from "@/components/OrderInfos.vue";
+import OrderDetailInfo from "@/components/OrderDetailInfo.vue";
+import {listBankAccount} from "@/api/system/bankAccount";
+import {listCompany} from "@/api/system/company";
+import SearchOption from "@/components/SearchOption.vue";
 
 export default {
   name: "Rebate",
@@ -184,7 +358,7 @@ export default {
       return TableName
     }
   },
-  components: {ApplyPayment},
+  components: {SearchOption, OrderDetailInfo, OrderInfos, ApplyPayment},
   mixins: [mixin_printHTML],
   data() {
     return {
@@ -248,11 +422,34 @@ export default {
       needInfo: '',
       paymentApplyVisible: false,
       tid: '',
-      needMoney: 0
+      needMoney: 0,
+
+      //订单列表 级联
+      orderList: [],
+      //订单详情列表 级联
+      orderDetailList: [],
+      //选择的订单个体orderId
+      valueOrder: '',
+      //订单详情orderDetail编号
+      valueOrderDetail: '',
+      orderDialogVisible: false,
+      //订单个人信息和订单详情信息
+      orderInfo: {},
+      queryBankAcount: '',
+
+      //搜索供应商
+      queryCompanyGive: '',
+      bankAcountSelf: ''
     };
   },
   created() {
     this.getList();
+    //获取订单列表 级联选择
+    listGoodsOrder().then(res => {
+      this.orderList = res.rows;
+      //保存到session 后续可以少发一次请求
+      sessionStorage.setItem('orderList', JSON.stringify(res.rows))
+    })
     if (localStorage.getItem('rebate-columns') === 'null'
       || !localStorage.getItem('rebate-columns')) {
       //设置localStorage
@@ -261,8 +458,24 @@ export default {
       this.columns = JSON.parse(localStorage.getItem('rebate-columns'));
     }
   },
-  //展示与隐藏
   watch: {
+    //监听选择的一级
+    valueOrder(newVal) {
+      //获取订单详情信息
+      getGoodsOrder(newVal).then(res => {
+        this.orderDetailList = res.data.orderDetailList
+      })
+      //保存订单信息
+      this.orderInfo = this.orderList.filter(item => item.id === newVal)[0]
+      //重置
+      this.orderList = JSON.parse(sessionStorage.getItem('orderList'))
+    },
+    //货物编号 自动填充
+    valueOrderDetail(newVal) {
+      console.log('选择的货物详情', newVal)
+      this.form.orderDetailID = newVal;
+      this.orderDialogVisible = false;
+    },
     columns: {
       handler: (newVal) => {
         localStorage.setItem("rebate-columns", JSON.stringify(newVal))
@@ -271,11 +484,34 @@ export default {
     }
   },
   methods: {
+    listCompany,
+    listBankAccount,
     addPaymentApply(row) {
       this.tid = row.id;
       this.paymentApplyVisible = true;
       this.needMoney = row.rebate;
       this.needInfo = row;
+    },
+    handleCommitBackBankAcount(val) {
+      this.form.inAcountsName = val.acountsName
+      this.form.inBankNo = val.bankNo
+    },
+    handleUpdateQueryBankAcount(val) {
+      this.queryBankAcount = val;
+    },
+    handleCommitBackCompanyGive(val) {
+      this.form.supplier = val.companyName
+      this.form.supplierID = val.id;
+    },
+    handleQueryCompanyGive(val) {
+      this.queryCompanyGive = val;
+    },
+    handleCommitBackBankAcountSelf(val) {
+      this.form.outAcountsName = val.acountsName;
+      this.form.outBankNo = val.bankNo;
+    },
+    handleUpdateQueryBankAcountSelf(val) {
+      this.bankAcountSelf = val;
     },
     /** 查询返利回扣列表 */
     getList() {

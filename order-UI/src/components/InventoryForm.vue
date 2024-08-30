@@ -119,7 +119,7 @@ export default {
           <el-col :span="4">
             <span style="font-weight: bolder">日期:</span>
           </el-col>
-          <el-col :span="12">
+          <el-col :span="20">
             <el-date-picker
                 v-model="currentInventoryInfo.storeDate"
                 type="date"
