@@ -92,6 +92,12 @@
         <template slot-scope="scope">
           <el-button
             size="mini"
+            type="primary"
+            @click="handleAdjust(scope.row)"
+            v-hasPermi="['system:balanceaccounts:adjust']">银行卡调整
+          </el-button>
+          <el-button
+            size="mini"
             type="warning"
             @click="checkBankChangeFlow(scope.row)">变动流水
           </el-button>
@@ -177,6 +183,27 @@
     </el-dialog>
 
 
+
+    <!-- 调整银行卡对话框 -->
+    <el-dialog title="调整银行卡信息" :visible.sync="Adjustment" width="500px" append-to-body>
+      <el-form ref="form" :model="form" :rules="rules" label-width="80px">
+        <el-form-item label="变动类型" prop="changeType">
+<!--          <el-input v-model="form.changeType" placeholder="请输入变动类型(收入、支出)"/>-->
+          <el-radio v-model="form.changeType" label="收入">收入</el-radio>
+          <el-radio v-model="form.changeType" label="支出">支出</el-radio>
+        </el-form-item>
+        <el-form-item label="金额" prop="moneyAmount">
+          <el-input v-model="form.moneyAmount" placeholder="请输入金额"/>
+        </el-form-item>
+        <el-form-item label="备注" prop="comments">
+          <el-input v-model="form.comments" placeholder="请输入备注"/>
+        </el-form-item>
+      </el-form>
+      <div slot="footer" class="dialog-footer">
+        <el-button type="primary" @click="submitForm">确 定</el-button>
+        <el-button @click="cancel">取 消</el-button>
+      </div>
+    </el-dialog>
     <!--    银行卡之间转账-->
     <el-dialog title="银行卡转账" :visible.sync="transformDialogVisible" width="500px" append-to-body>
       <el-row>
@@ -245,6 +272,9 @@ import {listCompany} from "@/api/system/company";
 import SearchOption from "@/components/SearchOption.vue";
 import {mixin_printHTML} from "@/views/dashboard/mixins/print";
 import {listBankAccountChange} from "@/api/system/bankAccountChange";
+import {addReason} from "@/api/system/user";
+import {TableName} from "@/api/tool/enums";
+import {getBankaccount} from "@/api/system/bankAccountChange";
 
 export default {
   name: "BankAccount",
@@ -333,6 +363,13 @@ export default {
         {key: 4, label: `公司名称`, visible: true}
       ],
       companyList: [],
+      //调整银行卡
+      Adjustment: false,
+      AdjustInfo: {
+        changeType: null,
+        moneyAmount: null,
+        comments: null
+      },
       //银行卡之间转账
       transformDialogVisible: false,
       transformInfo: {
@@ -484,6 +521,32 @@ export default {
         this.form = response.data;
         this.open = true;
         this.title = "修改银行卡信息";
+      });
+    },
+
+    /*调整按钮操作*/
+    handleAdjust(row) {
+      this.$prompt('请输入编辑原因', '提示', {
+        confirmButtonText: '确定',
+        cancelButtonText: '取消',
+        type: 'warning'
+      }).then(({value}) => {
+        addReason({reason: value, tableName: TableName.BANK_ACCOUNT_CHANGE, tid: row.id, modifyTime: this.modifyTime})
+          .then(res => {
+            this.$message.success('提交成功')
+            this.Adjustment = true;
+            this.reset();
+            const id = row.id || this.ids
+            getBankaccount(id).then(response => {
+              this.form = response.data;
+              this.title = "调整银行卡信息";
+            });
+          })
+      }).catch(() => {
+        this.$message({
+          type: 'warning',
+          message: '请先输入编辑原因!'
+        });
       });
     },
     /** 提交按钮 */
