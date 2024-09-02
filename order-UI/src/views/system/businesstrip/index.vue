@@ -3,16 +3,16 @@
     <el-form :model="queryParams" ref="queryForm" size="small" :inline="true" v-show="showSearch" label-width="68px">
       <el-form-item label="出差时间" prop="starttime">
         <el-date-picker
-            v-model="queryParams.starttime"
-            type="date"
-            placeholder="选择日期" value-format="yyyy-MM-dd">
+          v-model="queryParams.starttime"
+          type="date"
+          placeholder="选择日期" value-format="yyyy-MM-dd">
         </el-date-picker>
       </el-form-item>
       <el-form-item label="返回时间" prop="endtime">
         <el-date-picker
-            v-model="queryParams.endtime"
-            type="date"
-            placeholder="选择日期" value-format="yyyy-MM-dd">
+          v-model="queryParams.endtime"
+          type="date"
+          placeholder="选择日期" value-format="yyyy-MM-dd">
         </el-date-picker>
       </el-form-item>
       <el-form-item>
@@ -22,11 +22,11 @@
     <el-row :gutter="10" class="mb8">
       <el-col :span="1.5">
         <el-button
-            type="danger"
-            plain
-            size="mini"
-            @click="handleAdd"
-            v-hasPermi="['system:BusinessTrip:add']"
+          type="danger"
+          plain
+          size="mini"
+          @click="handleAdd"
+          v-hasPermi="['system:BusinessTrip:add']"
         >新增出差信息
         </el-button>
       </el-col>
@@ -37,10 +37,10 @@
         <template v-slot:print>
           <el-col :span="1.5">
             <el-button
-                plain
-                icon="el-icon-printer"
-                size="mini"
-                @click="printHTML"
+              plain
+              icon="el-icon-printer"
+              size="mini"
+              @click="printHTML"
             >
             </el-button>
           </el-col>
@@ -49,11 +49,11 @@
         <template v-slot:export>
           <el-col :span="1.5">
             <el-button
-                plain
-                icon="el-icon-folder-opened"
-                size="mini"
-                @click="handleExport"
-                v-hasPermi="['system:BusinessTrip:export']"
+              plain
+              icon="el-icon-folder-opened"
+              size="mini"
+              @click="handleExport"
+              v-hasPermi="['system:BusinessTrip:export']"
             >
             </el-button>
           </el-col>
@@ -74,17 +74,17 @@
       <el-table-column label="操作" align="center" class-name="small-padding fixed-width">
         <template slot-scope="scope">
           <el-button
-              size="mini"
-              type="primary"
-              @click="handleUpdate(scope.row)"
-              v-hasPermi="['system:BusinessTrip:edit']"
+            size="mini"
+            type="primary"
+            @click="handleUpdate(scope.row)"
+            v-hasPermi="['system:BusinessTrip:edit']"
           >修改
           </el-button>
           <el-button
-              size="mini"
-              type="danger"
-              @click="handleDelete(scope.row)"
-              v-hasPermi="['system:BusinessTrip:remove']"
+            size="mini"
+            type="danger"
+            @click="handleDelete(scope.row)"
+            v-hasPermi="['system:BusinessTrip:remove']"
           >删除
           </el-button>
         </template>
@@ -92,19 +92,19 @@
     </el-table>
 
     <pagination
-        v-show="total>0"
-        :total="total"
-        :page.sync="queryParams.pageNum"
-        :limit.sync="queryParams.pageSize"
-        @pagination="getList"
+      v-show="total>0"
+      :total="total"
+      :page.sync="queryParams.pageNum"
+      :limit.sync="queryParams.pageSize"
+      @pagination="getList"
     />
 
     <!-- 添加或修改出差对话框 -->
     <el-dialog :title="title" :visible.sync="open" width="500px" append-to-body>
       <el-form ref="form" :model="form" :rules="rules" label-width="80px">
-        <el-form-item label="报销人ID" prop="employeeID">
-          <el-input v-model="form.employeeID" placeholder="请输入报销人ID"/>
-        </el-form-item>
+        <!--        <el-form-item label="报销人ID" prop="employeeID">-->
+        <!--          <el-input v-model="form.employeeID" placeholder="请输入报销人ID"/>-->
+        <!--        </el-form-item>-->
         <el-form-item label="报销人" prop="employee">
           <el-input v-model="form.employee" placeholder="请输入报销人"/>
         </el-form-item>
@@ -112,31 +112,31 @@
           <el-input v-model="form.personnel" placeholder="请输入共同出差人员"/>
         </el-form-item>
         <el-form-item label="出差时间" prop="starttime">
-          <el-input v-model="form.starttime" placeholder="请输入出差时间"/>
+          <el-date-picker
+            v-model="form.starttime"
+            type="date"
+            placeholder="选择出差时间"
+            value-format="yyyy-MM-dd">
+          </el-date-picker>
         </el-form-item>
         <el-form-item label="出差结束时间" prop="endtime">
-          <el-input v-model="form.endtime" placeholder="请输入出差结束时间"/>
+          <el-date-picker
+            v-model="form.endtime"
+            type="date"
+            placeholder="选择出差结束时间"
+            value-format="yyyy-MM-dd">
+          </el-date-picker>
         </el-form-item>
         <el-form-item label="附件地址" prop="attachmentPath">
-          <el-input v-model="form.attachmentPath" placeholder="请输入附件地址"/>
+          <!--          <el-input v-model="form.attachmentPath" placeholder="请输入附件地址"/>-->
+          <file-upload @input="handleFileUpload"/>
         </el-form-item>
         <el-form-item label="是否已报销" prop="isReimburse">
-          <el-input v-model="form.isReimburse" placeholder="请输入是否已报销"/>
+          <el-radio v-model="form.isReimburse" label="0">未报销</el-radio>
+          <el-radio v-model="form.isReimburse" label="1">已报销</el-radio>
         </el-form-item>
         <el-form-item label="备注" prop="comments">
           <el-input v-model="form.comments" type="textarea" placeholder="请输入内容"/>
-        </el-form-item>
-        <el-form-item label="添加时间" prop="addtime">
-          <el-input v-model="form.addtime" placeholder="请输入添加时间"/>
-        </el-form-item>
-        <el-form-item label="操作人员ID" prop="userId">
-          <el-input v-model="form.userId" placeholder="请输入操作人员ID"/>
-        </el-form-item>
-        <el-form-item label="操作人员姓名" prop="UserName">
-          <el-input v-model="form.UserName" placeholder="请输入操作人员姓名"/>
-        </el-form-item>
-        <el-form-item label="删除标记" prop="delFlag">
-          <el-input v-model="form.delFlag" placeholder="请输入删除标记"/>
         </el-form-item>
         <el-divider content-position="center">出差报销信息</el-divider>
         <el-row :gutter="10" class="mb8">
@@ -161,26 +161,6 @@
           <el-table-column label="费用" prop="itemCost" width="150">
             <template slot-scope="scope">
               <el-input v-model="scope.row.itemCost" placeholder="请输入费用"/>
-            </template>
-          </el-table-column>
-          <el-table-column label="添加时间" prop="addtime" width="150">
-            <template slot-scope="scope">
-              <el-input v-model="scope.row.addtime" placeholder="请输入添加时间"/>
-            </template>
-          </el-table-column>
-          <el-table-column label="操作人员ID" prop="userId" width="150">
-            <template slot-scope="scope">
-              <el-input v-model="scope.row.userId" placeholder="请输入操作人员ID"/>
-            </template>
-          </el-table-column>
-          <el-table-column label="操作人员姓名" prop="UserName" width="150">
-            <template slot-scope="scope">
-              <el-input v-model="scope.row.UserName" placeholder="请输入操作人员姓名"/>
-            </template>
-          </el-table-column>
-          <el-table-column label="删除标记" prop="delFlag" width="150">
-            <template slot-scope="scope">
-              <el-input v-model="scope.row.delFlag" placeholder="请输入删除标记"/>
             </template>
           </el-table-column>
         </el-table>
@@ -268,6 +248,9 @@ export default {
     }
   },
   methods: {
+    handleFileUpload(url) {
+      this.form.attachmentPath = url;
+    },
     /** 查询出差列表 */
     getList() {
       this.loading = true;
