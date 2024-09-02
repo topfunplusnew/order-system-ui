@@ -75,7 +75,13 @@
       <el-table-column label="银行开户名" align="center" prop="acountsName" v-if="columns[5].visible"/>
       <el-table-column label="银行账号" align="center" prop="bankNo" v-if="columns[6].visible"/>
       <el-table-column label="充值人员姓名" align="center" prop="rechargeName" v-if="columns[7].visible"/>
-      <el-table-column label="充值附件" align="center" prop="attachment" v-if="columns[8].visible"/>
+      <el-table-column label="充值附件" align="center" prop="attachment" v-if="columns[8].visible">
+        <template #default="scope">
+          <img v-if="isPic(scope.row.attachment)" :src="scope.row.attachment" alt=""
+               style="width: 100%;height: 100%">
+          <a v-else :href="scope.row.attachment">文件不支持预览，请手动下载:{{ scope.row.attachment }}</a>
+        </template>
+      </el-table-column>
       <el-table-column label="备注" align="center" prop="comments" v-if="columns[9].visible"/>
       <el-table-column label="操作" align="center" class-name="small-padding fixed-width" fixed="right"
                        width="150px">
@@ -201,6 +207,7 @@ import {TableName} from "@/api/tool/enums";
 import SearchOption from "@/components/SearchOption.vue";
 import {listOilCard} from "@/api/system/oilCard";
 import {listBankAccount} from "@/api/system/bankAccount";
+import {findFileExtension} from "@/utils/trash/utils";
 
 export default {
   name: "OilRecharge",
@@ -300,6 +307,11 @@ export default {
   methods: {
     listBankAccount,
     listOilCard,
+    //附件
+    isPic(url) {
+      console.log(url)
+      return this.$imgs.includes(findFileExtension(url))
+    },
     //主卡
     handleCommitBackOilCard(val) {
       this.form.oilCardNo = val.oilCardNo;

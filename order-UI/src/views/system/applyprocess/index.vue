@@ -5,6 +5,7 @@ import {getPaymentApply, listPaymentApply} from "@/api/system/paymentApply";
 import {listAuditInfo, listAuditInfoGroup} from "@/api/system/auditInfo";
 import StepInfo from "@/components/StepInfo.vue";
 import {mapGetters} from "vuex";
+import {findFileExtension} from "@/utils/trash/utils";
 
 export default {
   name: "index",
@@ -105,6 +106,11 @@ export default {
       listAuditInfo().then(res => {
         this.allAuditInfoList = res.rows;
       })
+    },
+    //附件
+    isPic(url) {
+      console.log(url)
+      return this.$imgs.includes(findFileExtension(url))
     },
     //重新刷新审核树
     refreshApplyCheckInfo(applyID) {
@@ -226,6 +232,11 @@ export default {
           prop="attachment"
           label="附件"
           width="120" v-if="columns[6].visible">
+          <template #default="scope">
+            <img v-if="isPic(scope.row.attachment)" :src="scope.row.attachment" alt=""
+                 style="width: 100%;height: 100%">
+            <a v-else :href="scope.row.attachment">文件不支持预览，请手动下载:{{ scope.row.attachment }}</a>
+          </template>
         </el-table-column>
         <el-table-column
           prop="applyPerson"
