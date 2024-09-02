@@ -9,6 +9,10 @@ export function getUuid() {
 
 
 export function findFileExtension(filename) {
+  //如果filename为空 直接返回
+  if (!filename) {
+    return '';
+  }
   // 使用lastIndexOf找到最后一个'.'的位置
   const index = filename.lastIndexOf('.');
   // 如果没有找到'.'，则没有后缀名
