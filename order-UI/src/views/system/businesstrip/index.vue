@@ -72,10 +72,19 @@
         <template #default="scope">
           <img v-if="isPic(scope.row.attachmentPath)" :src="scope.row.attachmentPath" alt=""
                style="width: 100%;height: 100%">
-          <a v-else :href="scope.row.attachmentPath">文件不支持预览，请手动下载:{{ scope.row.attachmentPath }}</a>
+          <span v-else-if="scope.row.attachmentPath === '' || scope.row.attachmentPath === null">无附件</span>
+          <span v-else>
+            文件不支持预览，请手动下载:
+          <a style="color: red"
+             :href="scope.row.attachmentPath">{{ scope.row.attachmentPath }}</a>
+          </span>
         </template>
       </el-table-column>
-      <el-table-column label="是否已报销" align="center" prop="isReimburse" v-if="columns[5].visible"/>
+      <el-table-column label="是否已报销" align="center" prop="isReimburse" v-if="columns[5].visible">
+        <template slot-scope="scope">
+          {{ scope.row.isReimburse === 0 ? '否' : '是'}}
+        </template>
+      </el-table-column>
       <el-table-column label="备注" align="center" prop="comments" v-if="columns[6].visible"/>
       <el-table-column label="操作" align="center" class-name="small-padding fixed-width">
         <template slot-scope="scope">
