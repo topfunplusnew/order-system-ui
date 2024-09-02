@@ -144,58 +144,58 @@
 
         <el-table border v-loading="loading" :data="userList" @selection-change="handleSelectionChange">
           <el-table-column type="selection" width="50" align="center"/>
-          <el-table-column label="用户编号" align="center" key="userId" prop="userId"/>
+          <el-table-column label="用户编号" align="center" key="userId" prop="userId" v-if="columns[0].visible"/>
           <el-table-column label="用户名称" align="center" key="userName" prop="userName"
-                           :show-overflow-tooltip="true"/>
+                           :show-overflow-tooltip="true" v-if="columns[1].visible"/>
           <el-table-column label="用户昵称" align="center" key="nickName" prop="nickName"
-                           :show-overflow-tooltip="true"/>
+                           :show-overflow-tooltip="true" v-if="columns[2].visible"/>
           <el-table-column label="真实姓名" align="center" key="nickName" prop="trueName"
-                           :show-overflow-tooltip="true"/>
+                           :show-overflow-tooltip="true" v-if="columns[3].visible"/>
           <el-table-column label="岗位" align="center" key="deptName" prop="postName"
-                           :show-overflow-tooltip="true"/>
+                           :show-overflow-tooltip="true" v-if="columns[4].visible"/>
           <el-table-column label="手机号码" align="center" key="phonenumber" prop="phonenumber"
-                           width="120"/>
+                           width="120" v-if="columns[5].visible"/>
           <el-table-column label="就职状态" align="center" key="phonenumber" prop="state"
-                           width="120"/>
+                           width="120" v-if="columns[6].visible"/>
           <el-table-column label="入职时间" align="center" key="phonenumber" prop="startDate"
-                           width="120"/>
+                           width="120" v-if="columns[7].visible"/>
           <el-table-column label="身份证号码" align="center" key="phonenumber" prop="iDCard"
-                           width="120"/>
+                           width="120" v-if="columns[8].visible"/>
           <el-table-column label="联系电话" align="center" key="phonenumber" prop="phonenumber"
-                           width="120"/>
+                           width="120" v-if="columns[9].visible"/>
           <el-table-column label="性别" align="center" key="phonenumber" prop="sex"
-                           width="120"/>
+                           width="120" v-if="columns[10].visible"/>
           <el-table-column label="出生日期" align="center" key="phonenumber" prop="birthday"
-                           width="120"/>
+                           width="120" v-if="columns[11].visible"/>
           <el-table-column label="民族" align="center" key="phonenumber" prop="nation"
-                           width="120"/>
+                           width="120" v-if="columns[12].visible"/>
           <el-table-column label="政治面貌" align="center" key="phonenumber" prop="politicalStatus"
-                           width="120"/>
+                           width="120" v-if="columns[13].visible"/>
           <el-table-column label="婚姻状况" align="center" key="phonenumber" prop="maritalStatus"
-                           width="120"/>
+                           width="120" v-if="columns[14].visible"/>
           <el-table-column label="户籍地址" align="center" key="phonenumber" prop="domicileAddress"
-                           width="120"/>
+                           width="120" v-if="columns[15].visible"/>
           <el-table-column label="居住地址" align="center" key="phonenumber" prop="residentialAddress"
-                           width="120"/>
+                           width="120" v-if="columns[16].visible"/>
           <el-table-column label="紧急联系人" align="center" key="phonenumber" prop="relationPerson"
-                           width="120"/>
+                           width="120" v-if="columns[17].visible"/>
           <el-table-column label="紧急联系人电话" align="center" key="phonenumber" prop="relationPersonTel"
-                           width="120"/>
+                           width="120" v-if="columns[18].visible"/>
           <el-table-column label="关系" align="center" key="phonenumber" prop="relationship"
-                           width="120"/>
+                           width="120" v-if="columns[19].visible"/>
           <el-table-column label="学历" align="center" key="phonenumber" prop="education"
-                           width="120"/>
+                           width="120" v-if="columns[20].visible"/>
           <el-table-column label="毕业院校" align="center" key="phonenumber" prop="gradualUniversity"
-                           width="120"/>
+                           width="120" v-if="columns[21].visible"/>
           <el-table-column label="专业" align="center" key="phonenumber" prop="profession"
-                           width="120"/>
+                           width="120" v-if="columns[22].visible"/>
           <el-table-column label="毕业时间" align="center" key="phonenumber" prop="gradualDate"
-                           width="120"/>
+                           width="120" v-if="columns[23].visible"/>
           <el-table-column label="开户银行" align="center" key="phonenumber" prop="bankName"
-                           width="120"/>
+                           width="120" v-if="columns[24].visible"/>
           <el-table-column label="银行账号" align="center" key="phonenumber" prop="bankNo"
-                           width="120"/>
-          <el-table-column label="状态" align="center" key="status">
+                           width="120" v-if="columns[25].visible"/>
+          <el-table-column label="状态" align="center" key="status" v-if="columns[26].visible">
             <template slot-scope="scope">
               <el-switch
                 v-model="scope.row.status"
@@ -205,7 +205,7 @@
               ></el-switch>
             </template>
           </el-table-column>
-          <el-table-column label="创建时间" align="center" prop="createTime" width="160">
+          <el-table-column label="创建时间" align="center" prop="createTime" width="160" v-if="columns[27].visible">
             <template slot-scope="scope">
               <span>{{ parseTime(scope.row.createTime) }}</span>
             </template>
@@ -720,10 +720,31 @@ export default {
         {key: 0, label: `用户编号`, visible: true},
         {key: 1, label: `用户名称`, visible: true},
         {key: 2, label: `用户昵称`, visible: true},
-        {key: 3, label: `部门`, visible: true},
-        {key: 4, label: `手机号码`, visible: true},
-        {key: 5, label: `状态`, visible: true},
-        {key: 6, label: `创建时间`, visible: true}
+        {key: 3, label: `真实姓名`, visible: true},
+        {key: 4, label: `岗位`, visible: true},
+        {key: 5, label: `手机号码`, visible: true},
+        {key: 6, label: `就职状态`, visible: true},
+        {key: 7, label: `入职时间`, visible: true},
+        {key: 8, label: `身份证号码`, visible: true},
+        {key: 9, label: `联系电话`, visible: true},
+        {key: 10, label: `性别`, visible: true},
+        {key: 11, label: `出生日期`, visible: true},
+        {key: 12, label: `民族`, visible: true},
+        {key: 13, label: `政治面貌`, visible: true},
+        {key: 14, label: `婚姻状况`, visible: true},
+        {key: 15, label: `户籍地址`, visible: true},
+        {key: 16, label: `居住地址`, visible: true},
+        {key: 17, label: `紧急联系人`, visible: true},
+        {key: 18, label: `紧急联系人电话`, visible: true},
+        {key: 19, label: `关系`, visible: true},
+        {key: 20, label: `学历`, visible: true},
+        {key: 21, label: `毕业院校`, visible: true},
+        {key: 22, label: `专业`, visible: true},
+        {key: 23, label: `毕业时间`, visible: true},
+        {key: 24, label: `开户银行`, visible: true},
+        {key: 25, label: `银行账号`, visible: true},
+        {key: 26, label: `状态`, visible: true},
+        {key: 27, label: `创建时间`, visible: true}
       ],
       // 表单校验
       rules: {
@@ -759,6 +780,12 @@ export default {
     };
   },
   watch: {
+    columns: {
+      handler: (newVal) => {
+        localStorage.setItem("user-columns", JSON.stringify(newVal))
+      },
+      deep: true,
+    },
     // 根据名称筛选部门树
     deptName(val) {
       this.$refs.tree.filter(val);
@@ -766,6 +793,13 @@ export default {
   },
   created() {
     this.getList();
+    if (localStorage.getItem('user-columns') === 'null'
+      || !localStorage.getItem('user-columns')) {
+      //设置localStorage
+      localStorage.setItem("user-columns", JSON.stringify(this.columns))
+    } else {
+      this.columns = JSON.parse(localStorage.getItem('user-columns'));
+    }
     this.getDeptTree();
     this.getConfigKey("sys.user.initPassword").then(response => {
       this.initPassword = response.msg;
