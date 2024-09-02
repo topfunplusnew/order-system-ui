@@ -68,7 +68,13 @@
       <el-table-column label="共同出差人员" align="center" prop="personnel" v-if="columns[1].visible"/>
       <el-table-column label="出差时间" align="center" prop="starttime" v-if="columns[2].visible"/>
       <el-table-column label="出差结束时间" align="center" prop="endtime" v-if="columns[3].visible"/>
-      <el-table-column label="附件地址" align="center" prop="attachmentPath" v-if="columns[4].visible"/>
+      <el-table-column label="附件" align="center" prop="attachmentPath" v-if="columns[4].visible">
+        <template #default="scope">
+          <img v-if="isPic(scope.row.attachmentPath)" :src="scope.row.attachmentPath" alt=""
+               style="width: 100%;height: 100%">
+          <a v-else :href="scope.row.attachmentPath">文件不支持预览，请手动下载:{{ scope.row.attachmentPath }}</a>
+        </template>
+      </el-table-column>
       <el-table-column label="是否已报销" align="center" prop="isReimburse" v-if="columns[5].visible"/>
       <el-table-column label="备注" align="center" prop="comments" v-if="columns[6].visible"/>
       <el-table-column label="操作" align="center" class-name="small-padding fixed-width">
@@ -442,6 +448,10 @@ export default {
   },
   methods: {
     listData,
+    isPic(url) {
+      console.log(url)
+      return this.$imgs.includes(findFileExtension(url))
+    },
     before() {
       if (this.active-- <= 0) this.active = 0;
     },
@@ -502,7 +512,7 @@ export default {
       carApplyInfo.department = this.form.deptName;
       //先提交申请信息 回调函数中添加车辆使用信息
       addBusinessTrip(this.form).then(res => {
-        console.log(res)
+        carApplyInfo.bTripId = res.data.id;
         this.$message.success('提交成功')
         //添加车辆信息
         setTimeout(() => {
