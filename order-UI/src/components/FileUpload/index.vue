@@ -164,7 +164,7 @@ export default {
     // 删除文件
     handleDelete(index) {
       this.fileList.splice(index, 1);
-      // this.$emit("input", this.listToString(this.fileList));
+      this.$emit("input", this.listToString(this.fileList));
     },
     // 上传结束处理
     uploadedSuccessfully() {

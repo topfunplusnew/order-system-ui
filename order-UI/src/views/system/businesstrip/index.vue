@@ -130,6 +130,7 @@
         <el-form-item label="附件地址" prop="attachmentPath">
           <!--          <el-input v-model="form.attachmentPath" placeholder="请输入附件地址"/>-->
           <file-upload @input="handleFileUpload"/>
+          <img v-if="isImg" :src="form.attachmentPath" alt="" style="width: 300px;height: 200px">
         </el-form-item>
         <el-form-item label="是否已报销" prop="isReimburse">
           <el-radio v-model="form.isReimburse" label="0">未报销</el-radio>
@@ -182,10 +183,12 @@ import {
   updateBusinessTrip
 } from "@/api/system/BusinessTrip";
 import {mixin_printHTML} from "@/views/dashboard/mixins/print";
+import {findFileExtension, prefix} from "@/utils/trash/utils";
+import {mixin_upload} from "@/views/dashboard/mixins/upload";
 
 export default {
   name: "BusinessTrip",
-  mixins: [mixin_printHTML],
+  mixins: [mixin_printHTML, mixin_upload],
   data() {
     return {
       loading: true,
@@ -245,12 +248,12 @@ export default {
         localStorage.setItem("BusinessTrip-columns", JSON.stringify(newVal))
       },
       deep: true,
-    }
-  },
-  methods: {
-    handleFileUpload(url) {
-      this.form.attachmentPath = url;
     },
+
+  },
+  computed: {},
+  methods: {
+
     /** 查询出差列表 */
     getList() {
       this.loading = true;

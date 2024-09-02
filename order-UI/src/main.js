@@ -59,7 +59,7 @@ Vue.prototype.$print = print;
 //1.需要排除的字段信息
 //使用: this.form = excludeParams(this.form, this.$exclude)  api/tool/exclude.js
 Vue.prototype.$exclude = ['addtime', 'userId', 'UserName', 'delFlag', 'submitflag', 'cancelFlag', 'createBy', 'createTime', 'updateBy', 'updateTime', 'isedit', 'userName']
-
+Vue.prototype.$imgs = ['png', 'jpg', 'jpeg', 'bmp', 'gif', 'webp']
 //2.挂载加载中动态效果
 //使用: 数据加载前:this.$wait()  数据加载后:this.$close()
 Vue.prototype.$wait = () => {
