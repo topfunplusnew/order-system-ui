@@ -1,5 +1,5 @@
-import { login, logout, getInfo } from '@/api/login'
-import { getToken, setToken, removeToken } from '@/utils/auth'
+import {login, logout, getInfo} from '@/api/login'
+import {getToken, setToken, removeToken} from '@/utils/auth'
 
 const user = {
   state: {
@@ -8,7 +8,9 @@ const user = {
     name: '',
     avatar: '',
     roles: [],
-    permissions: []
+    permissions: [],
+    //用户真实姓名
+    trueName: ''
   },
 
   mutations: {
@@ -29,12 +31,29 @@ const user = {
     },
     SET_PERMISSIONS: (state, permissions) => {
       state.permissions = permissions
+    },
+    SET_TRUENAME: (state, trueName) => {
+      state.trueName = trueName
     }
+  },
+
+  getters: {
+    // 用户id
+    getId: state => state.id,
+    // 用户名
+    getUsername: state => state.name,
+    // 用户头像
+    getAvatar: state => state.avatar,
+    // 用户角色
+    getRoles: state => state.roles,
+    // 用户权限
+    getPermissions: state => state.permissions,
+    // 用户真实姓名
   },
 
   actions: {
     // 登录
-    Login({ commit }, userInfo) {
+    Login({commit}, userInfo) {
       const username = userInfo.username.trim()
       const password = userInfo.password
       const code = userInfo.code
@@ -51,7 +70,7 @@ const user = {
     },
 
     // 获取用户信息
-    GetInfo({ commit, state }) {
+    GetInfo({commit, state}) {
       return new Promise((resolve, reject) => {
         getInfo().then(res => {
           const user = res.user
@@ -62,6 +81,7 @@ const user = {
           } else {
             commit('SET_ROLES', ['ROLE_DEFAULT'])
           }
+          commit('SET_TRUENAME', user.trueName)
           commit('SET_ID', user.userId)
           commit('SET_NAME', user.userName)
           commit('SET_AVATAR', avatar)
@@ -73,7 +93,7 @@ const user = {
     },
 
     // 退出系统
-    LogOut({ commit, state }) {
+    LogOut({commit, state}) {
       return new Promise((resolve, reject) => {
         logout(state.token).then(() => {
           commit('SET_TOKEN', '')
@@ -88,7 +108,7 @@ const user = {
     },
 
     // 前端 登出
-    FedLogOut({ commit }) {
+    FedLogOut({commit}) {
       return new Promise(resolve => {
         commit('SET_TOKEN', '')
         removeToken()
