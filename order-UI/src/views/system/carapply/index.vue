@@ -97,21 +97,19 @@
                        v-if="columns[19].visible"/>
       <el-table-column label="派车人" align="center" prop="dispatchPerson" v-if="columns[20].visible"/>
       <el-table-column label="备注" align="center" prop="comments" v-if="columns[21].visible"/>
-      <el-table-column label="附件路径" align="center" prop="path" v-if="columns[22].visible"/>
-      <el-table-column label="操作" align="center" class-name="small-padding fixed-width">
+      <el-table-column label="附件路径" align="center" prop="path" v-if="columns[22].visible" width="300px"/>
+      <el-table-column label="操作" align="center" class-name="small-padding fixed-width" fixed="right">
         <template slot-scope="scope">
           <el-button
             size="mini"
-            type="text"
-            icon="el-icon-edit"
+            type="primary"
             @click="handleUpdate(scope.row)"
             v-hasPermi="['system:carapply:edit']"
           >修改
           </el-button>
           <el-button
             size="mini"
-            type="text"
-            icon="el-icon-delete"
+            type="danger"
             @click="handleDelete(scope.row)"
             v-hasPermi="['system:carapply:remove']"
           >删除

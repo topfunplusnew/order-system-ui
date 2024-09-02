@@ -21,17 +21,6 @@
       </el-form-item>
     </el-form>
     <el-row :gutter="10" class="mb8">
-      <!--      <el-col :span="1.5">-->
-      <!--        <el-button-->
-      <!--          type="primary"-->
-      <!--          plain-->
-      <!--          icon="el-icon-plus"-->
-      <!--          size="mini"-->
-      <!--          @click="handleAdd"-->
-      <!--          v-hasPermi="['system:oilcardconsume:add']"-->
-      <!--        >新增加油卡消费信息-->
-      <!--        </el-button>-->
-      <!--      </el-col>-->
       <el-col>
         <el-button icon="el-icon-refresh" size="mini" @click="resetQuery">刷新</el-button>
       </el-col>
@@ -62,11 +51,9 @@
         </template>
       </right-toolbar>
     </el-row>
-
     <el-table border v-loading="loading" :data="OilCardConsumeList" @selection-change="handleSelectionChange"
               v-horizontal-scroll="'always'" id="printBox">
       <el-table-column label="id" align="center" prop="id" v-if="columns[0].visible"/>
-      <!--      <el-table-column label="出差编号UUID" align="center" prop="bTripId"/>-->
       <el-table-column label="加油卡卡号" align="center" prop="oilCardNo" v-if="columns[1].visible"/>
       <el-table-column label="使用加油卡时间" align="center" prop="useDate" v-if="columns[2].visible"/>
       <el-table-column label="使用加油卡车辆车牌号" align="center" prop="carNo" v-if="columns[3].visible"/>
@@ -76,18 +63,11 @@
       <el-table-column label="加油金额(元）" align="center" prop="refuelingMoney" v-if="columns[7].visible"/>
       <el-table-column label="充值金额(元）" align="center" prop="rechargeMoney" v-if="columns[8].visible"/>
       <el-table-column label="加油卡余额" align="center" prop="endCardSurplus" v-if="columns[9].visible"/>
-      <el-table-column label="加油小票附件" align="center" prop="attachmentOiladd" v-if="columns[10].visible"/>
+      <el-table-column label="加油小票附件" align="center" prop="attachmentOiladd" v-if="columns[10].visible"
+                       width="300px"/>
       <el-table-column label="备注" align="center" prop="comments" v-if="columns[11].visible"/>
       <el-table-column label="操作" align="center" class-name="small-padding fixed-width">
         <template slot-scope="scope">
-          <!--          <el-button-->
-          <!--            size="mini"-->
-          <!--            type="text"-->
-          <!--            icon="el-icon-edit"-->
-          <!--            @click="handleUpdate(scope.row)"-->
-          <!--            v-hasPermi="['system:oilcardconsume:edit']"-->
-          <!--          >修改-->
-          <!--          </el-button>-->
           <el-button
             size="mini"
             type="danger"
@@ -167,25 +147,15 @@ export default {
   mixins: [mixin_printHTML],
   data() {
     return {
-      // 遮罩层
       loading: true,
-      // 选中数组
       ids: [],
-      // 非单个禁用
       single: true,
-      // 非多个禁用
       multiple: true,
-      // 显示搜索条件
       showSearch: true,
-      // 总条数
       total: 0,
-      // 加油卡消费信息表格数据
       OilCardConsumeList: [],
-      // 弹出层标题
       title: "",
-      // 是否显示弹出层
       open: false,
-      // 查询参数
       queryParams: {
         pageNum: 1,
         pageSize: 10,
@@ -206,9 +176,7 @@ export default {
         UserName: null,
         delFlag: null
       },
-      // 表单参数
       form: {},
-      // 表单校验
       rules: {},
       columns: [
         {key: 0, label: `id`, visible: true},
