@@ -60,8 +60,8 @@
     <el-table border v-loading="loading" :data="carsList" @selection-change="handleSelectionChange" id="printBox"
               height="450px" v-horizontal-scroll="'always'" size="mini">
       <!--      <el-table-column label="id" align="center" prop="dictCode"/>-->
-      <el-table-column label="车牌" align="center" prop="dictLabel" v-if="columns[0].visible" width="200"/>
-      <el-table-column label="操作" align="center" class-name="small-padding fixed-width" fixed="right">
+      <el-table-column label="车牌" align="center" prop="dictLabel" v-if="columns[0].visible" min-width="70%"/>
+      <el-table-column label="操作" align="center" class-name="small-padding fixed-width" fixed="right" min-width="30%">
         <template slot-scope="scope">
           <el-button
             size="mini"
@@ -155,12 +155,6 @@ export default {
       ],
       columns: [
         {key: 0, label: `车牌`, visible: true},
-        {key: 1, label: `司机姓名`, visible: true},
-        {key: 2, label: `司机电话`, visible: true},
-        {key: 3, label: `户名`, visible: true},
-        {key: 4, label: `银行账号`, visible: true},
-        {key: 5, label: `开户行`, visible: true}
-
       ],
       companyList: []
     };
