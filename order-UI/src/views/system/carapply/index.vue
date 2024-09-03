@@ -95,8 +95,6 @@
                        v-if="columns[19].visible"/>
       <el-table-column label="派车人" align="center" prop="dispatchPerson" v-if="columns[20].visible"/>
       <el-table-column label="备注" align="center" prop="comments" v-if="columns[21].visible"/>
-      <el-table-column label="附件路径" align="center" prop="path" v-if="columns[22].visible" width="300px"/>
-      <el-table-column label="操作" align="center" class-name="small-padding fixed-width" fixed="right">
       <el-table-column label="附件路径" align="center" prop="path" v-if="columns[22].visible">
         <template #default="scope">
           <img v-if="isPic(scope.row.path)" :src="scope.row.path" alt=""
