@@ -95,8 +95,14 @@
                        v-if="columns[19].visible"/>
       <el-table-column label="派车人" align="center" prop="dispatchPerson" v-if="columns[20].visible"/>
       <el-table-column label="备注" align="center" prop="comments" v-if="columns[21].visible"/>
-      <el-table-column label="附件路径" align="center" prop="path" v-if="columns[22].visible" width="300px"/>
-      <el-table-column label="操作" align="center" class-name="small-padding fixed-width" fixed="right">
+      <el-table-column label="附件路径" align="center" prop="path" v-if="columns[22].visible">
+        <template #default="scope">
+          <img v-if="isPic(scope.row.path)" :src="scope.row.path" alt=""
+               style="width: 100%;height: 100%">
+          <a v-else :href="scope.row.path">文件不支持预览，请手动下载:{{ scope.row.path }}</a>
+        </template>
+      </el-table-column>
+      <el-table-column label="操作" align="center" class-name="small-padding fixed-width">
         <template slot-scope="scope">
           <el-button
             size="mini"
@@ -211,6 +217,7 @@
 <script>
 import {listCarApply, getCarApply, delCarApply, addCarApply, updateCarApply} from "@/api/system/carApply";
 import {mixin_printHTML} from "@/views/dashboard/mixins/print";
+import {findFileExtension} from "@/utils/trash/utils";
 
 export default {
   name: "CarApply",
@@ -385,6 +392,11 @@ export default {
       this.ids = selection.map(item => item.id)
       this.single = selection.length !== 1
       this.multiple = !selection.length
+    },
+    //附件
+    isPic(url) {
+      console.log(url)
+      return this.$imgs.includes(findFileExtension(url))
     },
     /** 新增按钮操作 */
     handleAdd() {

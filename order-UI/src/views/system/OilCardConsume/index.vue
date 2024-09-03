@@ -65,6 +65,13 @@
       <el-table-column label="加油卡余额" align="center" prop="endCardSurplus" v-if="columns[9].visible"/>
       <el-table-column label="加油小票附件" align="center" prop="attachmentOiladd" v-if="columns[10].visible"
                        width="300px"/>
+      <el-table-column label="加油小票附件" align="center" prop="attachmentOiladd" v-if="columns[10].visible">
+        <template #default="scope">
+          <img v-if="isPic(scope.row.attachmentOiladd)" :src="scope.row.attachmentOiladd" alt=""
+               style="width: 100%;height: 100%">
+          <a v-else :href="scope.row.attachmentOiladd">文件不支持预览，请手动下载:{{ scope.row.attachmentOiladd }}</a>
+        </template>
+      </el-table-column>
       <el-table-column label="备注" align="center" prop="comments" v-if="columns[11].visible"/>
       <el-table-column label="操作" align="center" class-name="small-padding fixed-width">
         <template slot-scope="scope">
@@ -141,6 +148,7 @@ import {
   updateOilCardConsume
 } from "@/api/system/OilCardConsume";
 import {mixin_printHTML} from "@/views/dashboard/mixins/print";
+import {findFileExtension} from "@/utils/trash/utils";
 
 export default {
   name: "OilCardConsume",
@@ -267,6 +275,10 @@ export default {
       this.ids = selection.map(item => item.id)
       this.single = selection.length !== 1
       this.multiple = !selection.length
+    },
+    isPic(url) {
+      console.log(url)
+      return this.$imgs.includes(findFileExtension(url))
     },
     /** 新增按钮操作 */
     handleAdd() {
