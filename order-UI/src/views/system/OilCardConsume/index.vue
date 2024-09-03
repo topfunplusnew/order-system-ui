@@ -63,13 +63,18 @@
       <el-table-column label="加油金额(元）" align="center" prop="refuelingMoney" v-if="columns[7].visible"/>
       <el-table-column label="充值金额(元）" align="center" prop="rechargeMoney" v-if="columns[8].visible"/>
       <el-table-column label="加油卡余额" align="center" prop="endCardSurplus" v-if="columns[9].visible"/>
-      <el-table-column label="加油小票附件" align="center" prop="attachmentOiladd" v-if="columns[10].visible"
-                       width="300px"/>
+<!--      <el-table-column label="加油小票附件" align="center" prop="attachmentOiladd" v-if="columns[10].visible"-->
+<!--                       width="300px"/>-->
       <el-table-column label="加油小票附件" align="center" prop="attachmentOiladd" v-if="columns[10].visible">
         <template #default="scope">
           <img v-if="isPic(scope.row.attachmentOiladd)" :src="scope.row.attachmentOiladd" alt=""
                style="width: 100%;height: 100%">
-          <a v-else :href="scope.row.attachmentOiladd">文件不支持预览，请手动下载:{{ scope.row.attachmentOiladd }}</a>
+          <span v-else-if="scope.row.attachmentOiladd === '' || scope.row.attachmentOiladd === null">无附件</span>
+          <span v-else>
+            文件不支持预览，请手动下载:
+          <a style="color: red"
+             :href="scope.row.attachmentOiladd">{{ scope.row.attachmentOiladd }}</a>
+          </span>
         </template>
       </el-table-column>
       <el-table-column label="备注" align="center" prop="comments" v-if="columns[11].visible"/>
