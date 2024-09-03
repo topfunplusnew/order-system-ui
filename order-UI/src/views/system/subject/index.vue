@@ -175,9 +175,6 @@
         <el-form-item label="编号" prop="subjectNo">
           <el-input v-model="form.subjectNo" placeholder="请输入编号"/>
         </el-form-item>
-        <el-form-item label="显示顺序" prop="orderNum">
-          <el-input v-model="form.orderNum" placeholder="请输入显示顺序"/>
-        </el-form-item>
         <el-form-item label="备注" prop="remark">
           <el-input v-model="form.remark" type="textarea" placeholder="请输入内容"/>
         </el-form-item>
@@ -361,22 +358,18 @@ export default {
     formId: {
       //handler不该用箭头函数 会拿不到this
       handler: function (val) {
-        console.log('id', val)
         if (val !== 0 && val !== null && val !== undefined) {
           //应该先getId 填充this.form.type数据
           getSubject(val).then(response => {
-            console.log('个体数据', response)
             this.form.type = response.data.type;
             this.form.subjectNo = response.data.subjectNo
           })
           //val是id 然后再拿id去查找该元素的子元素个数 用来拼接
           listSubject({id: val}).then(response => {
-            console.log('元素', response)
             //查询该id下的子元素数组
             const filters = response.data.filter(item => {
               return item.parentId === val;
             })
-            console.log('子数组', filters)
             this.form.subjectNo += `00${filters.length + 1}`
           });
         }
@@ -387,25 +380,16 @@ export default {
     //添加科目分类
     handleAddType() {
       this.openType = true;
-    }
-    ,
-    handleChangeType(e) {
-      console.log(e)
-    }
-    ,
+    },
     //点击某个树的节点
     handleNodeClick(data) {
-      console.log(data);
-    }
-    ,
+    },
     /** 查询科目列表 */
     getList() {
       this.loading = true;
       listSubject(this.queryParams).then(response => {
         //children:[]
-        console.log(response.data)
-        this.subjectList = this.handleTree(response.data, "id", "parentId"); //转成树
-
+        this.subjectList = this.handleTree(response.data, "id", "parentId").sort((a, b) => a.orderNum - b.orderNum); //转成树
         this.loading = false;
       });
     }
@@ -535,8 +519,6 @@ export default {
         this.$modal.msgSuccess("修改成功");
         this.openType = false;
         this.getList();
-      }).catch(err => {
-        console.log(err)
       })
     }
     ,

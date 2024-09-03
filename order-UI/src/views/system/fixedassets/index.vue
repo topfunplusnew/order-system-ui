@@ -62,9 +62,9 @@
       <el-table-column label="购入日期" align="center" prop="buyDate" v-if="columns[0].visible" width="120px"/>
       <el-table-column label="资产编号" align="center" prop="assetNo" v-if="columns[1].visible"/>
       <el-table-column label="资产名称" align="center" prop="assetName" v-if="columns[2].visible"/>
-      <el-table-column label="规格型号" align="center" prop=" specification" v-if="columns[3].visible"/>
+      <el-table-column label="规格型号" align="center" prop="specification" v-if="columns[3].visible"/>
       <el-table-column label="数量" align="center" prop="number" v-if="columns[4].visible"/>
-      <el-table-column label="计量单位" align="center" prop="measurementUnit " v-if="columns[5].visible"/>
+      <el-table-column label="计量单位" align="center" prop="measurementUnit" v-if="columns[5].visible"/>
       <el-table-column label="含税金额" align="center" prop="amountIncludeTax" v-if="columns[6].visible"/>
       <el-table-column label="不含税金额" align="center" prop="amountNoTax" v-if="columns[7].visible"/>
       <el-table-column label="户名名称" align="center" prop="account" v-if="columns[8].visible"/>
@@ -123,7 +123,7 @@
         <el-form-item label="数量" prop="number">
           <el-input v-model="form.number" placeholder="请输入数量"/>
         </el-form-item>
-        <el-form-item label="计量单位" prop="measurementUnit ">
+        <el-form-item label="计量单位" prop="measurementUnit">
           <el-input v-model="form.measurementUnit" placeholder="请输入计量单位"/>
         </el-form-item>
         <el-form-item label="含税金额" prop="amountIncludeTax">
