@@ -68,7 +68,6 @@
 
     <el-table border v-loading="loading" :data="carsList" @selection-change="handleSelectionChange" id="printBox"
               height="450px" v-horizontal-scroll="'always'" size="mini">
-      <el-table-column label="id" align="center" prop="id"/>
       <el-table-column label="车牌" align="center" prop="carNo" v-if="columns[0].visible" width="200"/>
       <el-table-column label="司机姓名" align="center" prop="driver" v-if="columns[1].visible" width="200"/>
       <el-table-column label="司机电话" align="center" prop="tel" v-if="columns[2].visible" width="200"/>
