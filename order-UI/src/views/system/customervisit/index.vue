@@ -3,37 +3,37 @@
     <el-form :model="queryParams" ref="queryForm" size="small" :inline="true" v-show="showSearch" label-width="68px">
       <el-form-item label="客户" prop="customer">
         <el-input
-            v-model="queryParams.customer"
-            placeholder="请输入客户姓名"
-            clearable
-            @keyup.enter.native="handleQuery"
+          v-model="queryParams.customer"
+          placeholder="请输入客户姓名"
+          clearable
+          @keyup.enter.native="handleQuery"
         />
       </el-form-item>
 
       <el-form-item label="区域" prop="region">
         <el-input
-            v-model="queryParams.region"
-            placeholder="请输入区域"
-            clearable
-            @keyup.enter.native="handleQuery"
+          v-model="queryParams.region"
+          placeholder="请输入区域"
+          clearable
+          @keyup.enter.native="handleQuery"
         />
       </el-form-item>
 
       <el-form-item label="日期" prop="submittime">
         <el-input
-            v-model="queryParams.submittime"
-            placeholder="请输入日期"
-            clearable
-            @keyup.enter.native="handleQuery"
+          v-model="queryParams.submittime"
+          placeholder="请输入日期"
+          clearable
+          @keyup.enter.native="handleQuery"
         />
       </el-form-item>
 
       <el-form-item label="姓名" prop="personnel">
         <el-input
-            v-model="queryParams.personnel"
-            placeholder="请输入姓名"
-            clearable
-            @keyup.enter.native="handleQuery"
+          v-model="queryParams.personnel"
+          placeholder="请输入姓名"
+          clearable
+          @keyup.enter.native="handleQuery"
         />
       </el-form-item>
 
@@ -53,12 +53,12 @@
       </el-col>
       <el-col :span="1.5">
         <el-button
-            type="danger"
-            plain
-            icon="el-icon-plus"
-            size="mini"
-            @click="handleAdd"
-            v-hasPermi="['system:customervisit:add']"
+          type="danger"
+          plain
+          icon="el-icon-plus"
+          size="mini"
+          @click="handleAdd"
+          v-hasPermi="['system:customervisit:add']"
         >新增走访记录
         </el-button>
       </el-col>
@@ -66,10 +66,10 @@
         <template v-slot:print>
           <el-col :span="1.5">
             <el-button
-                plain
-                icon="el-icon-printer"
-                size="mini"
-                @click="printHTML"
+              plain
+              icon="el-icon-printer"
+              size="mini"
+              @click="printHTML"
             >
             </el-button>
           </el-col>
@@ -78,11 +78,11 @@
         <template v-slot:export>
           <el-col :span="1.5">
             <el-button
-                plain
-                icon="el-icon-folder-opened"
-                size="mini"
-                @click="handleExport"
-                v-hasPermi="['system:customervisit:export']"
+              plain
+              icon="el-icon-folder-opened"
+              size="mini"
+              @click="handleExport"
+              v-hasPermi="['system:customervisit:export']"
             >
             </el-button>
           </el-col>
@@ -117,17 +117,17 @@
       <el-table-column label="操作" align="center" class-name="small-padding fixed-width">
         <template slot-scope="scope">
           <el-button
-              size="mini"
-              type="primary"
-              @click="handleUpdate(scope.row)"
-              v-hasPermi="['system:customervisit:edit']"
+            size="mini"
+            type="primary"
+            @click="handleUpdate(scope.row)"
+            v-hasPermi="['system:customervisit:edit']"
           >编辑
           </el-button>
           <el-button
-              size="mini"
-              type="danger"
-              @click="handleDelete(scope.row)"
-              v-hasPermi="['system:customervisit:remove']"
+            size="mini"
+            type="danger"
+            @click="handleDelete(scope.row)"
+            v-hasPermi="['system:customervisit:remove']"
           >删除
           </el-button>
         </template>
@@ -135,68 +135,71 @@
     </el-table>
 
     <pagination
-        v-show="total>0"
-        :total="total"
-        :page.sync="queryParams.pageNum"
-        :limit.sync="queryParams.pageSize"
-        @pagination="getList"
+      v-show="total>0"
+      :total="total"
+      :page.sync="queryParams.pageNum"
+      :limit.sync="queryParams.pageSize"
+      @pagination="getList"
     />
 
     <!-- 添加或修改走访记录对话框 -->
-    <el-dialog :title="title" :visible.sync="open" width="500px" append-to-body>
+    <el-dialog :title="title" :visible.sync="open" width="70%" append-to-body>
       <el-form ref="form" :model="form" :rules="rules" label-width="80px">
-        <!--        <el-form-item label="id" prop="id">-->
-        <!--          <el-input v-model="form.province" placeholder="请输入ID"/>-->
-        <!--        </el-form-item>-->
-        <el-form-item label="是否审核" prop="isCheckState">
-          <el-input v-model="form.checkState" placeholder="请输入审核标志"/>
-        </el-form-item>
-        <el-form-item label="人员" prop="personnel">
-          <el-input v-model="form.county" placeholder="请输入人员"/>
-        </el-form-item>
-        <el-form-item label="区域" prop="region">
-          <el-input v-model="form.customer" type="textarea" placeholder="请输入区域"/>
-        </el-form-item>
-        <el-form-item label="客户名称" prop="customer">
-          <el-input v-model="form.city" placeholder="请输入客户名称"/>
-        </el-form-item>
-        <el-form-item label="负责人" prop="leaderName">
-          <el-input v-model="form.leaderName" type="textarea" placeholder="请输入内容"/>
-        </el-form-item>
-        <el-form-item label="负责人电话" prop="LeaderTel">
-          <el-input v-model="form.LeaderTel" type="textarea" placeholder="请输入内容"/>
-        </el-form-item>
-        <el-form-item label="厂房设备" prop="equipment">
-          <el-input v-model="form.equipment" placeholder="请输入厂房设备"/>
-        </el-form-item>
-        <el-form-item label="竞争对手" prop="competitor">
-          <el-input v-model="form.competitor" placeholder="请输入竞争对手"/>
-        </el-form-item>
-        <el-form-item label="当地经销商" prop="localDealer">
-          <el-input v-model="form.localDealer" placeholder="请输入当地经销商"/>
-        </el-form-item>
-        <el-form-item label="月用货量" prop="monthlyConsumption">
-          <el-input v-model="form.monthlyConsumption" placeholder="请输入月用货量"/>
-        </el-form-item>
-        <el-form-item label="白玻用货习惯及厂家" prop="whiteGlassFactory">
-          <el-input v-model="form.whiteGlassFactory" placeholder="请输入白玻用货习惯及厂家"/>
-        </el-form-item>
-        <el-form-item label="lowe玻璃用货厂家及用量" prop="loweGlassConsumption">
-          <el-input v-model="form.loweGlassConsumption" placeholder="请输入lowe玻璃用货厂家及用量"/>
-        </el-form-item>
-        <el-form-item label="色玻、过度色玻璃用货厂家及用量" prop="colorGlassConsumption">
-          <el-input v-model="form.colorGlassConsumption" placeholder="请输入色玻、过度色玻璃用货厂家及用量"/>
-        </el-form-item>
-        <el-form-item label="特色厚度、特殊尺寸、协议品用货厂家及用量" prop="specialGlassConsumption">
-          <el-input v-model="form.specialGlassConsumption" placeholder="请输入特色厚度、特殊尺寸、协议品用货厂家及用量"/>
-        </el-form-item>
-        <el-form-item label="备注" prop="comments">
-          <el-input v-model="form.comments" placeholder="请输入备注"/>
-        </el-form-item>
-        <el-form-item label="提交时间" prop="submittime">
-          <el-input v-model="form.submittime" placeholder="请输入添加时间"/>
-        </el-form-item>
-
+        <el-col :span="8">
+          <el-form-item label="是否审核" prop="isCheckState">
+            <el-input v-model="form.checkState" placeholder="请输入审核标志"/>
+          </el-form-item>
+          <el-form-item label="人员" prop="personnel">
+            <el-input v-model="form.county" placeholder="请输入人员"/>
+          </el-form-item>
+          <el-form-item label="区域" prop="region">
+            <el-input v-model="form.customer" type="textarea" placeholder="请输入区域"/>
+          </el-form-item>
+          <el-form-item label="客户名称" prop="customer">
+            <el-input v-model="form.city" placeholder="请输入客户名称"/>
+          </el-form-item>
+          <el-form-item label="负责人" prop="leaderName">
+            <el-input v-model="form.leaderName" type="textarea" placeholder="请输入内容"/>
+          </el-form-item>
+          <el-form-item label="负责人电话" prop="LeaderTel">
+            <el-input v-model="form.LeaderTel" type="textarea" placeholder="请输入内容"/>
+          </el-form-item>
+          <el-form-item label="厂房设备" prop="equipment">
+            <el-input v-model="form.equipment" placeholder="请输入厂房设备"/>
+          </el-form-item>
+        </el-col>
+        <el-col :span="8">
+          <el-form-item label="竞争对手" prop="competitor">
+            <el-input v-model="form.competitor" placeholder="请输入竞争对手"/>
+          </el-form-item>
+          <el-form-item label="当地经销商" prop="localDealer">
+            <el-input v-model="form.localDealer" placeholder="请输入当地经销商"/>
+          </el-form-item>
+          <el-form-item label="月用货量" prop="monthlyConsumption">
+            <el-input v-model="form.monthlyConsumption" placeholder="请输入月用货量"/>
+          </el-form-item>
+          <el-form-item label="白玻用货习惯及厂家" prop="whiteGlassFactory">
+            <el-input v-model="form.whiteGlassFactory" placeholder="请输入白玻用货习惯及厂家"/>
+          </el-form-item>
+          <el-form-item label="lowe玻璃用货厂家及用量" prop="loweGlassConsumption">
+            <el-input v-model="form.loweGlassConsumption" placeholder="请输入lowe玻璃用货厂家及用量"/>
+          </el-form-item>
+        </el-col>
+        <el-col :span="8">
+          <el-form-item label="色玻、过度色玻璃用货厂家及用量" prop="colorGlassConsumption">
+            <el-input v-model="form.colorGlassConsumption" placeholder="请输入色玻、过度色玻璃用货厂家及用量"/>
+          </el-form-item>
+          <el-form-item label="特色厚度、特殊尺寸、协议品用货厂家及用量" prop="specialGlassConsumption">
+            <el-input v-model="form.specialGlassConsumption"
+                      placeholder="请输入特色厚度、特殊尺寸、协议品用货厂家及用量"/>
+          </el-form-item>
+          <el-form-item label="备注" prop="comments">
+            <el-input v-model="form.comments" placeholder="请输入备注"/>
+          </el-form-item>
+          <el-form-item label="提交时间" prop="submittime">
+            <el-input v-model="form.submittime" placeholder="请输入添加时间"/>
+          </el-form-item>
+        </el-col>
       </el-form>
       <div slot="footer" class="dialog-footer">
         <el-button type="primary" @click="submitForm">确 定</el-button>
@@ -293,7 +296,7 @@ export default {
   created() {
     this.getList();
     if (localStorage.getItem('customervisit-columns') === 'null'
-        || !localStorage.getItem('customervisit-columns')) {
+      || !localStorage.getItem('customervisit-columns')) {
       //设置localStorage
       localStorage.setItem("customervisit-columns", JSON.stringify(this.columns))
     } else {

@@ -155,6 +155,7 @@
       <el-table-column label="销售经理" align="center" prop="saleManager" v-if="columns[7].visible"/>
       <el-table-column label="车队" align="center" prop="fleet" v-if="columns[8].visible"/>
       <el-table-column label="审核状态" align="center" prop="checkState" v-if="columns[9].visible" width="120">
+
         <template slot-scope="scope">
           <SwitchBarForCheck :model-value="scope.row.checkState==='未审核'"
                              @update:modelValue="handleOpenCheck($event,scope.row)"/>
@@ -167,8 +168,14 @@
         </template>
       </el-table-column>
       <!--  todo    压缩上传-->
-      <el-table-column label="附件路径" align="center" prop="path" v-if="columns[11].visible"/>
 
+      <el-table-column label="附件路径" align="center" prop="path" v-if="columns[11].visible">
+        <template #default="scope">
+          <img v-if="isPic(scope.row.path)" :src="scope.row.path" alt=""
+               style="width: 100%;height: 100%">
+          <a v-else :href="scope.row.path">文件不支持预览，请手动下载:{{ scope.row.path }}</a>
+        </template>
+      </el-table-column>
       <el-table-column label="打款状态" align="center" prop="paymentState"
                        v-if="columns[12].visible">
         <template slot-scope="scope">
@@ -177,7 +184,13 @@
           </el-tag>
         </template>
       </el-table-column>
-      <el-table-column label="收到条附件路径" align="center" prop="receiveProof" v-if="columns[13].visible"/>
+      <el-table-column label="收到条附件路径" align="center" prop="receiveProof" v-if="columns[13].visible">
+        <template #default="scope">
+          <img v-if="isPic(scope.row.receiveProof)" :src="scope.row.receiveProof" alt=""
+               style="width: 100%;height: 100%">
+          <a v-else :href="scope.row.receiveProof">文件不支持预览，请手动下载:{{ scope.row.receiveProof}}</a>
+        </template>
+      </el-table-column>
       <el-table-column label="是否被调整单" align="center" prop="isAdjusted" v-if="columns[14].visible">
         <template slot-scope="scope">
           <el-tag
@@ -511,6 +524,7 @@ import {listPaymentApply} from "@/api/system/paymentApply";
 import Vue from "vue";
 import {TableName} from "@/api/tool/enums";
 import FreeApply from "@/components/FreeApply.vue";
+import {findFileExtension} from "@/utils/trash/utils";
 
 export default {
   name: "GoodsOrder",
@@ -820,6 +834,10 @@ export default {
     },
 
     //todo 压缩上传和收到条
+    isPic(url) {
+      console.log(url)
+      return this.$imgs.includes(findFileExtension(url))
+    },
     handleUpload(row) {
       this.handleUploadVisible = true
       //保存当前订单信息 现根据当前订单列表信息查询详细订单信息

@@ -179,7 +179,18 @@
       <!--      <el-table-column label="对方公司ID" align="center" prop="companyId"/>-->
       <el-table-column label="对方公司类型" align="center" prop="companyType" v-if="columns[7].visible"/>
       <el-table-column label="付款原因" align="center" prop="reason" v-if="columns[8].visible"/>
-      <el-table-column label="附件" align="center" prop="attachment" v-if="columns[9].visible"/>
+      <el-table-column label="附件" align="center" prop="attachment" v-if="columns[9].visible">
+        <template #default="scope">
+          <img v-if="isPic(scope.row.attachment)" :src="scope.row.attachment" alt=""
+               style="width: 100%;height: 100%">
+          <span v-else-if="scope.row.attachment === '' || scope.row.attachment === null">无附件</span>
+          <span v-else>
+            文件不支持预览，请手动下载:
+          <a style="color: red"
+             :href="scope.row.attachment">{{ scope.row.attachment }}</a>
+          </span>
+        </template>
+      </el-table-column>
       <el-table-column label="申请人" align="center" prop="applyPerson" v-if="columns[10].visible"/>
       <!--      <el-table-column label="申请人ID" align="center" prop="applyPersonID"/>-->
       <el-table-column label="审核状态" align="center" prop="checkState" v-if="columns[11].visible">
@@ -365,6 +376,7 @@ import NeedToShowInfo from "@/components/NeedToShowInfo.vue";
 import {TableName} from "@/api/tool/enums";
 import {getOrderFreight} from "@/api/system/orderFreight";
 import {getBorrowedMoney} from "@/api/system/borrowedMoney";
+import {findFileExtension} from "@/utils/trash/utils";
 
 export default {
   name: "PaymentApply",
@@ -485,6 +497,11 @@ export default {
   },
   methods: {
     listCompany,
+    //附件
+    isPic(url) {
+      console.log(url)
+      return this.$imgs.includes(findFileExtension(url))
+    },
     //点击一级分类后的回调
     handleSelectOneLevel(value) {
       this.currentSort.levelOne = value;
