@@ -80,7 +80,12 @@
         <template #default="scope">
           <img v-if="isPic(scope.row.attachment)" :src="scope.row.attachment" alt=""
                style="width: 100%;height: 100%">
-          <a v-else :href="scope.row.attachment">文件不支持预览，请手动下载:{{ scope.row.attachment }}</a>
+          <span v-else-if="scope.row.attachment === '' || scope.row.attachment === null">无附件</span>
+          <span v-else>
+            文件不支持预览，请手动下载:
+          <a style="color: red"
+             :href="scope.row.attachment">{{ scope.row.attachment }}</a>
+          </span>
         </template>
       </el-table-column>
       <el-table-column label="备注" align="center" prop="comments" v-if="columns[9].visible"/>
