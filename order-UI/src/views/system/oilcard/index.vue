@@ -203,7 +203,7 @@
           <el-input v-model="moneyInfo.rechargeMoney" placeholder="请输入充值金额"/>
         </el-form-item>
         <el-form-item label="姓名" prop="rechargeName">
-          <el-input v-model="moneyInfo.rechargeName" placeholder="请输入姓名"/>
+          <el-input disabled v-model="moneyInfo.rechargeName" placeholder="请输入姓名"/>
         </el-form-item>
         <el-form-item v-if="moneyInfo.rechargeType==='银行卡'" label="银行开户名" prop="acountsName">
           <el-col :span="10">
@@ -244,6 +244,7 @@ import SearchOption from "@/components/SearchOption.vue";
 import {excludeParams} from "@/api/tool/exclude";
 import {listBankAccount} from "@/api/system/bankAccount";
 import {addOilRecharge} from "@/api/system/oilRecharge";
+import {mapGetters} from "vuex";
 
 export default {
   name: "OilCard",
@@ -293,7 +294,9 @@ export default {
         delFlag: null
       },
       // 表单参数
-      form: {},
+      form: {
+        rechargeName: ''
+      },
       // 表单校验
       rules: {},
       columns: [
@@ -335,7 +338,8 @@ export default {
       get() {
         return this.isMain
       }
-    }
+    },
+    ...mapGetters(['trueName'])
   },
   created() {
     this.getList();
@@ -380,10 +384,12 @@ export default {
     },
     //加油卡充值
     handleMoney() {
-      this.moneyDialogVisible = true
+      this.moneyDialogVisible = true;
+      this.moneyInfo.rechargeName = this.trueName;
     },
     //确认银行卡充值
     submitMoney() {
+      this.moneyInfo.companyType = '油卡充值'
       //添加
       addOilRecharge(this.moneyInfo).then(res => {
         this.$message.success('充值成功')

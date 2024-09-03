@@ -131,8 +131,6 @@
           <el-table-column label="科目编码" align="center" prop="subjectNo" v-if="columns[1].visible"/>
           <el-table-column label="科目类别" align="center" prop="type" v-if="columns[2].visible"/>
           <el-table-column label="父级ID" align="center" prop="parentId" v-if="columns[3].visible"/>
-          <!--          <el-table-column label="显示顺序" align="center" prop="orderNum"/>-->
-          <!--          <el-table-column label="状态" align="center" prop="STATUS"/>-->
           <el-table-column label="备注" align="center" prop="remark" v-if="columns[4].visible"/>
           <el-table-column label="操作" align="center" class-name="small-padding fixed-width">
             <template slot-scope="scope">
@@ -369,7 +367,6 @@ export default {
           getSubject(val).then(response => {
             console.log('个体数据', response)
             this.form.type = response.data.type;
-            //todo 类型是二级菜单的类型
             this.form.subjectNo = response.data.subjectNo
           })
           //val是id 然后再拿id去查找该元素的子元素个数 用来拼接
@@ -380,7 +377,6 @@ export default {
               return item.parentId === val;
             })
             console.log('子数组', filters)
-            //拼接 todo
             this.form.subjectNo += `00${filters.length + 1}`
           });
         }

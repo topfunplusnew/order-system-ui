@@ -260,8 +260,8 @@
               <el-button
                 size="mini"
                 @click="addDefaultCard(scope.row)"
-                v-hasPermi="['system:company:remove']"
-              >添加为默认
+                v-hasPermi="['system:company:edit']"
+              >设置为默认
               </el-button>
             </template>
           </el-table-column>
@@ -400,7 +400,7 @@
             <el-button
               size="mini"
               type="primary"
-              @click="addDefaultCard(scope.row)">添加为默认
+              @click="addDefaultCard(scope.row)">设置为默认
             </el-button>
           </template>
         </el-table-column>

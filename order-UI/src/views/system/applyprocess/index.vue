@@ -254,7 +254,6 @@ export default {
           width="120" v-if="columns[8].visible">
         </el-table-column>
         <el-table-column
-          fixed="right"
           label="操作"
           width="80">
           <template slot-scope="scope">
