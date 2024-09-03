@@ -111,7 +111,7 @@
     <!--    表格列-->
     <el-table border v-loading="loading" :data="goodsOrderList" @selection-change="handleSelectionChange"
               id="printBox" :row-class-name="tableRowClassName" v-horizontal-scroll="'always'"
-              max-height="750">
+              max-height="750" size="mini">
       <!--      左侧操作栏-->
       <el-table-column label="操作" align="center" class-name="small-padding fixed-width" width="170px" fixed="left">
         <template slot-scope="scope">
@@ -773,6 +773,7 @@ export default {
         this.invoiceAmount = this.openTitleInfo.invoiceAmount * this.openTitleInfo.ticketPoint;
       },
       deep: true
+
     }
   },
   methods: {
@@ -924,9 +925,7 @@ export default {
         //是否含税
         item.isIncludeTaxFactory = item.isIncludeTaxFactory === '是' ? '1' : '0';
         item.isIncludeTaxSale = item.isIncludeTaxSale === '是' ? '1' : '0';
-        //时间处理
       }
-      //添加订单 转化时间戳
       addGoodsOrder({...this.orderInfo, PaymentState: ''}).then(res => {
         this.$message.success('订单提交成功')
       })

@@ -33,7 +33,6 @@ export default {
       fleetInfoDialogVisible: false,
       //海运车牌信息弹窗
       seaInfoDialogVisible: false,
-
       //客户信息
       companyInfo: [],
       //陆运车牌信息
@@ -42,12 +41,10 @@ export default {
       fleetInfo: [],
       //海运车牌信息
       seaInfo: [],
-
       //客户信息弹窗的搜索客户名
       customerName: '',
       //车队搜索
       fleetName: '',
-
     }
   },
   //计算属性 目的是为了避免无法输入修改父组件
@@ -326,7 +323,9 @@ export default {
         <el-date-picker
           v-model="orderDate"
           type="date"
-          placeholder="选择日期" value-format="timestamp" style="width: 70%">
+          placeholder="选择日期"
+          value-format="yyyy-MM-dd"
+          style="width: 70%">
         </el-date-picker>
       </div>
       <div class="header-item">
