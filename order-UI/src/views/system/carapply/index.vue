@@ -99,7 +99,12 @@
         <template #default="scope">
           <img v-if="isPic(scope.row.path)" :src="scope.row.path" alt=""
                style="width: 100%;height: 100%">
-          <a v-else :href="scope.row.path">文件不支持预览，请手动下载:{{ scope.row.path }}</a>
+          <span v-else-if="scope.row.path === '' || scope.row.path === null">无附件</span>
+          <span v-else>
+            文件不支持预览，请手动下载:
+          <a style="color: red"
+             :href="scope.row.path">{{ scope.row.path }}</a>
+          </span>
         </template>
       </el-table-column>
       <el-table-column label="操作" align="center" class-name="small-padding fixed-width">
