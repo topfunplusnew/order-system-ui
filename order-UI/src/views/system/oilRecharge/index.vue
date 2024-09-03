@@ -67,6 +67,7 @@
     <el-table border v-loading="loading" :data="oilRechargeList" @selection-change="handleSelectionChange"
               v-horizontal-scroll="'always'" id="printBox">
       <el-table-column label="id" align="center" prop="id" v-if="columns[0].visible"/>
+      <el-table-column label="审核状态" align="center" prop="checkState"/>
       <!--      <el-table-column label="出差编号UUID" align="center" prop="bTripId"/>-->
       <el-table-column label="加油卡卡号" align="center" prop="oilCardNo" v-if="columns[1].visible"/>
       <el-table-column label="充值类型" align="center" prop="rechargeType" v-if="columns[2].visible"/>
