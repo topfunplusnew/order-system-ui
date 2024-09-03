@@ -188,6 +188,11 @@ export default {
       this.subjectTree = this.handleTree(res.data, "id", "parentId");
       this.OneLevelOption = this.subjectTree;
     })
+
+    //如果是油卡充值 要自动填写公司类型为其他
+    if (this.tableName === 'oilrecharge') {
+      this.form.companyType = '其他'
+    }
   },
   mounted() {
     console.log('传入信息', this.needInfo, this.needMoney)

@@ -389,7 +389,6 @@ export default {
     },
     //确认银行卡充值
     submitMoney() {
-      this.moneyInfo.companyType = '油卡充值'
       //添加
       addOilRecharge(this.moneyInfo).then(res => {
         this.$message.success('充值成功')
