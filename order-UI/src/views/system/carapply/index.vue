@@ -11,20 +11,18 @@
       </el-form-item>
 
       <el-form-item label="用车时间" prop="startTime">
-        <el-input
+        <el-date-picker
           v-model="queryParams.startTime"
-          placeholder="请输入用车时间"
-          clearable
-          @keyup.enter.native="handleQuery"
-        />
+          type="date"
+          placeholder="选择用车时间" value-format="yyyy-MM-dd">
+        </el-date-picker>
       </el-form-item>
       <el-form-item label="还车时间" prop="endTime">
-        <el-input
+        <el-date-picker
           v-model="queryParams.endTime"
-          placeholder="请输入还车时间"
-          clearable
-          @keyup.enter.native="handleQuery"
-        />
+          type="date"
+          placeholder="选择还车时间" value-format="yyyy-MM-dd">
+        </el-date-picker>
       </el-form-item>
 
       <el-form-item label="派车人" prop="dispatchPerson">
