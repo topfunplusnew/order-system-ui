@@ -3,36 +3,36 @@
     <el-form :model="queryParams" ref="queryForm" size="small" :inline="true" v-show="showSearch" label-width="68px">
       <el-form-item label="车牌" prop="carNo">
         <el-input
-            v-model="queryParams.carNo"
-            placeholder="请输入车牌"
-            clearable
-            @keyup.enter.native="handleQuery"
+          v-model="queryParams.carNo"
+          placeholder="请输入车牌"
+          clearable
+          @keyup.enter.native="handleQuery"
         />
       </el-form-item>
 
       <el-form-item label="用车时间" prop="startTime">
         <el-input
-            v-model="queryParams.startTime"
-            placeholder="请输入用车时间"
-            clearable
-            @keyup.enter.native="handleQuery"
+          v-model="queryParams.startTime"
+          placeholder="请输入用车时间"
+          clearable
+          @keyup.enter.native="handleQuery"
         />
       </el-form-item>
       <el-form-item label="还车时间" prop="endTime">
         <el-input
-            v-model="queryParams.endTime"
-            placeholder="请输入还车时间"
-            clearable
-            @keyup.enter.native="handleQuery"
+          v-model="queryParams.endTime"
+          placeholder="请输入还车时间"
+          clearable
+          @keyup.enter.native="handleQuery"
         />
       </el-form-item>
 
       <el-form-item label="派车人" prop="dispatchPerson">
         <el-input
-            v-model="queryParams.dispatchPerson"
-            placeholder="请输入派车人"
-            clearable
-            @keyup.enter.native="handleQuery"
+          v-model="queryParams.dispatchPerson"
+          placeholder="请输入派车人"
+          clearable
+          @keyup.enter.native="handleQuery"
         />
       </el-form-item>
       <el-form-item>
@@ -42,27 +42,16 @@
 
     <el-row :gutter="10" class="mb8">
       <el-col :span="1.5">
-        <el-button
-            type="primary"
-            plain
-            icon="el-icon-plus"
-            size="mini"
-            @click="handleAdd"
-            v-hasPermi="['system:carapply:add']"
-        >新增
-        </el-button>
-      </el-col>
-      <el-col :span="1.5">
         <el-button icon="el-icon-refresh" size="mini" @click="resetQuery">刷新</el-button>
       </el-col>
       <right-toolbar :showSearch.sync="showSearch" @queryTable="getList" :columns="columns">
         <template v-slot:print>
           <el-col :span="1.5">
             <el-button
-                plain
-                icon="el-icon-printer"
-                size="mini"
-                @click="printHTML"
+              plain
+              icon="el-icon-printer"
+              size="mini"
+              @click="printHTML"
             >
             </el-button>
           </el-col>
@@ -71,11 +60,11 @@
         <template v-slot:export>
           <el-col :span="1.5">
             <el-button
-                plain
-                icon="el-icon-folder-opened"
-                size="mini"
-                @click="handleExport"
-                v-hasPermi="['system:carapply:export']"
+              plain
+              icon="el-icon-folder-opened"
+              size="mini"
+              @click="handleExport"
+              v-hasPermi="['system:carapply:export']"
             >
             </el-button>
           </el-col>
@@ -104,9 +93,12 @@
       <el-table-column label="违章罚款金额" align="center" prop="fine" v-if="columns[16].visible"/>
       <el-table-column label="行程中是否维修/保养" align="center" prop="isMaintenance" v-if="columns[17].visible"/>
       <el-table-column label="保养金额" align="center" prop="maintenanceMoney" v-if="columns[18].visible"/>
-      <el-table-column label="行程中使用加油卡加油次数" align="center" prop="refuelingFrequency" v-if="columns[19].visible"/>
+      <el-table-column label="行程中使用加油卡加油次数" align="center" prop="refuelingFrequency"
+                       v-if="columns[19].visible"/>
       <el-table-column label="派车人" align="center" prop="dispatchPerson" v-if="columns[20].visible"/>
       <el-table-column label="备注" align="center" prop="comments" v-if="columns[21].visible"/>
+      <el-table-column label="附件路径" align="center" prop="path" v-if="columns[22].visible" width="300px"/>
+      <el-table-column label="操作" align="center" class-name="small-padding fixed-width" fixed="right">
       <el-table-column label="附件路径" align="center" prop="path" v-if="columns[22].visible">
         <template #default="scope">
           <img v-if="isPic(scope.row.path)" :src="scope.row.path" alt=""
@@ -117,19 +109,17 @@
       <el-table-column label="操作" align="center" class-name="small-padding fixed-width">
         <template slot-scope="scope">
           <el-button
-              size="mini"
-              type="text"
-              icon="el-icon-edit"
-              @click="handleUpdate(scope.row)"
-              v-hasPermi="['system:carapply:edit']"
+            size="mini"
+            type="primary"
+            @click="handleUpdate(scope.row)"
+            v-hasPermi="['system:carapply:edit']"
           >修改
           </el-button>
           <el-button
-              size="mini"
-              type="text"
-              icon="el-icon-delete"
-              @click="handleDelete(scope.row)"
-              v-hasPermi="['system:carapply:remove']"
+            size="mini"
+            type="danger"
+            @click="handleDelete(scope.row)"
+            v-hasPermi="['system:carapply:remove']"
           >删除
           </el-button>
         </template>
@@ -137,11 +127,11 @@
     </el-table>
 
     <pagination
-        v-show="total>0"
-        :total="total"
-        :page.sync="queryParams.pageNum"
-        :limit.sync="queryParams.pageSize"
-        @pagination="getList"
+      v-show="total>0"
+      :total="total"
+      :page.sync="queryParams.pageNum"
+      :limit.sync="queryParams.pageSize"
+      @pagination="getList"
     />
 
     <!-- 添加或修改车辆使用申请对话框 -->

@@ -88,6 +88,7 @@
       <el-table-column label="账号(银行账号)" align="center" prop="bankNo" v-if="columns[2].visible" width="200"/>
       <el-table-column label="开户行" align="center" prop="bankName" v-if="columns[3].visible" width="200"/>
       <el-table-column label="公司名称" align="center" prop="companyName" v-if="columns[4].visible" width="200"/>
+      <el-table-column label="余额" align="center" prop="amount"/>
       <el-table-column label="操作" align="center" class-name="small-padding fixed-width">
         <template slot-scope="scope">
           <el-button
@@ -362,7 +363,7 @@ export default {
         {key: 1, label: `开户名称`, visible: true},
         {key: 2, label: `账号(银行卡号)`, visible: true},
         {key: 3, label: `开户行`, visible: true},
-        {key: 4, label: `公司名称`, visible: true}
+        {key: 4, label: `公司名称`, visible: true},
       ],
       companyList: [],
       //调整银行卡
