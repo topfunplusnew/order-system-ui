@@ -53,7 +53,6 @@
 
     <el-table border v-horizontal-scroll="'always'" v-loading="loading" :data="exWarehouseList"
               @selection-change="handleSelectionChange" id="printBox">
-      <el-table-column label="id" align="center" prop="id" v-if="columns[0].visible"/>
       <el-table-column label="仓库名称" align="center" prop="storeHouseName" v-if="columns[1].visible"/>
       <el-table-column label="出库日期" align="center" prop="outDate" v-if="columns[2].visible"/>
       <el-table-column label="出库量" align="center" prop="outAmount" v-if="columns[3].visible"/>
