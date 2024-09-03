@@ -54,6 +54,7 @@
             </el-button>
           </el-col>
         </template>
+
         <!--        导出-->
         <template v-slot:export>
           <el-col :span="1.5">
@@ -69,9 +70,6 @@
       </right-toolbar>
     </el-row>
     <el-row>
-      <h2>
-        发票总台帐
-      </h2>
     </el-row>
     <el-table id="printBox" v-horizontal-scroll="'always'" border v-loading="loading" :data="invoiceInList"
               @selection-change="handleSelectionChange">
@@ -105,24 +103,24 @@
       <el-table-column label="当月欠票" align="center" prop="oweamount" v-if="columns[19].visible">
       </el-table-column>
       <el-table-column label="备注" align="center" prop="comments" v-if="columns[20].visible"/>
-      <el-table-column label="操作" align="center" class-name="small-padding fixed-width" fixed="right">
-        <template slot-scope="scope">
-          <el-button
-            size="mini"
-            type="primary"
-            @click="handleUpdate(scope.row)"
-            v-hasPermi="['system:allinvoice:edit']"
-          >修改
-          </el-button>
-          <el-button
-            size="mini"
-            type="danger"
-            @click="handleDelete(scope.row)"
-            v-hasPermi="['system:allinvoice:remove']"
-          >删除
-          </el-button>
-        </template>
-      </el-table-column>
+<!--      <el-table-column label="操作" align="center" class-name="small-padding fixed-width" fixed="right">-->
+<!--        <template slot-scope="scope">-->
+<!--          <el-button-->
+<!--            size="mini"-->
+<!--            type="primary"-->
+<!--            @click="handleUpdate(scope.row)"-->
+<!--            v-hasPermi="['system:allinvoice:edit']"-->
+<!--          >修改-->
+<!--          </el-button>-->
+<!--          <el-button-->
+<!--            size="mini"-->
+<!--            type="danger"-->
+<!--            @click="handleDelete(scope.row)"-->
+<!--            v-hasPermi="['system:allinvoice:remove']"-->
+<!--          >删除-->
+<!--          </el-button>-->
+<!--        </template>-->
+<!--      </el-table-column>-->
     </el-table>
     <pagination
       v-show="total>0"
