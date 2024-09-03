@@ -22,7 +22,7 @@
       </el-form-item>
       <el-form-item>
         <el-button type="primary" icon="el-icon-search" size="mini" @click="handleQuery">搜索</el-button>
-<!--        <el-button icon="el-icon-refresh" size="mini" @click="resetQuery">重置</el-button>-->
+        <!--        <el-button icon="el-icon-refresh" size="mini" @click="resetQuery">重置</el-button>-->
       </el-form-item>
     </el-form>
 
@@ -72,29 +72,28 @@
 
     <el-table border v-horizontal-scroll="'always'" v-loading="loading" :data="exWarehouseList"
               @selection-change="handleSelectionChange" id="printBox">
-<!--      <el-table-column label="id" align="center" prop="id" v-if="columns[0].visible"/>-->
-<!--      <el-table-column label="订单编号" align="center" prop="ordersNo" v-if="columns[1].visible">-->
-<!--        <template slot-scope="scope">-->
-<!--          <el-tag type="success" v-if="scope.row.ordersNo ==='二次加工' || '货物破损'">-->
-<!--            <span>-->
-<!--              {{ scope.row.ordersNo }}货物-->
-<!--            </span>-->
-<!--          </el-tag>-->
-<!--          <span v-else>-->
-<!--            {{ scope.row.ordersNo }}-->
-<!--          </span>-->
-<!--        </template>-->
-<!--      </el-table-column>-->
+      <!--      <el-table-column label="id" align="center" prop="id" v-if="columns[0].visible"/>-->
+      <el-table-column label="订单编号" align="center" prop="ordersNo" v-if="columns[1].visible">
+        <template slot-scope="scope">
+          <el-tag type="success" v-if="scope.row.ordersNo ==='二次加工' || scope.row.ordersNo === '货物破损'">
+            <span>
+              {{ scope.row.ordersNo }}货物
+            </span>
+          </el-tag>
+          <span v-else>
+            {{ scope.row.ordersNo }}
+          </span>
+        </template>
+      </el-table-column>
       <!--      <el-table-column label="仓库ID" align="center" prop="storeHouseid"/>-->
       <el-table-column label="仓库名称" align="center" prop="storeHouseName" v-if="columns[2].visible"/>
       <!--      <el-table-column label="仓库存储的货物ID" align="center" prop="storeID"/>-->
-
       <el-table-column label="出库日期" align="center" prop="outDate" v-if="columns[3].visible"/>
       <el-table-column label="出库量" align="center" prop="outAmount" v-if="columns[4].visible"/>
       <el-table-column label="操作" align="center" class-name="small-padding fixed-width">
         <template slot-scope="scope">
           <el-tooltip class="item" effect="dark"
-                      :content="scope.row.ordersNo ==='二次加工' || '货物破损'?'特殊货物无法查看':'查看订单信息'"
+                      :content="scope.row.ordersNo ==='二次加工' ||scope.row.ordersNo === '货物破损'?'特殊货物无法查看':'查看订单信息'"
                       placement="top-start">
             <el-button
               size="mini"
@@ -125,9 +124,9 @@
     <!-- 添加或修改出库对话框 -->
     <el-dialog :title="title" :visible.sync="open" width="500px" append-to-body>
       <el-form ref="form" :model="form" :rules="rules" label-width="80px">
-        <el-form-item label="订单编号" prop="ordersNo">
-          <el-input v-model="form.ordersNo" placeholder="请输入订单编号"/>
-        </el-form-item>
+        <!--        <el-form-item label="订单编号" prop="ordersNo">-->
+        <!--          <el-input v-model="form.ordersNo" placeholder="请输入订单编号"/>-->
+        <!--        </el-form-item>-->
         <!--        <el-form-item label="仓库ID" prop="storeHouseid">-->
         <!--          <el-input v-model="form.storeHouseid" placeholder="请输入仓库ID"/>-->
         <!--        </el-form-item>-->
@@ -157,30 +156,30 @@
       :visible.sync="checkOrderVisible"
       width="65%">
       <el-descriptions title="订单信息" :column="3" border>
-        <el-descriptions-item label="id">{{ orderDetailInfo.id }}</el-descriptions-item>
-        <el-descriptions-item label="日期">{{ orderDetailInfo.orderDate }}</el-descriptions-item>
-        <el-descriptions-item label="客户">{{ orderDetailInfo.customer }}</el-descriptions-item>
-        <el-descriptions-item label="商家姓名">{{ orderDetailInfo.supplierNames }}</el-descriptions-item>
-        <el-descriptions-item label="车队">{{ orderDetailInfo.fleet }}</el-descriptions-item>
+        <el-descriptions-item label="id">{{ orderDetailInfo.id || '-' }}</el-descriptions-item>
+        <el-descriptions-item label="日期">{{ orderDetailInfo.orderDate || '-' }}</el-descriptions-item>
+        <el-descriptions-item label="客户">{{ orderDetailInfo.customer || '-' }}</el-descriptions-item>
+        <el-descriptions-item label="商家姓名">{{ orderDetailInfo.supplierNames || '-' }}</el-descriptions-item>
+        <el-descriptions-item label="车队">{{ orderDetailInfo.fleet || '-' }}</el-descriptions-item>
         <el-descriptions-item label="审核状态">
           <TagsItem :check-info="orderDetailInfo.checkState" checkValue="未审核"/>
         </el-descriptions-item>
         <el-descriptions-item label="开票状态">
           <TagsItem :check-info="orderDetailInfo.invoiceState" checkValue="未开票"/>
         </el-descriptions-item>
-        <el-descriptions-item label="附件">{{ orderDetailInfo.path }}</el-descriptions-item>
-        <el-descriptions-item label="陆运车牌">{{ orderDetailInfo.landCarNo }}</el-descriptions-item>
-        <el-descriptions-item label="陆运司机电话">{{ orderDetailInfo.landDriverTel }}</el-descriptions-item>
-        <el-descriptions-item label="陆运司机姓名">{{ orderDetailInfo.landDriverName }}</el-descriptions-item>
-        <el-descriptions-item label="海运车牌">{{ orderDetailInfo.seaCarNo }}</el-descriptions-item>
-        <el-descriptions-item label="海运司机电话">{{ orderDetailInfo.seaDriverTel }}</el-descriptions-item>
-        <el-descriptions-item label="海运司机姓名">{{ orderDetailInfo.seaDriverName }}</el-descriptions-item>
-        <el-descriptions-item label="打款状态">{{ orderDetailInfo.PaymentState }}</el-descriptions-item>
-        <el-descriptions-item label="陆运银行户名">{{ orderDetailInfo.landBankName }}</el-descriptions-item>
-        <el-descriptions-item label="陆运银行账号">{{ orderDetailInfo.landBankNo }}</el-descriptions-item>
-        <el-descriptions-item label="海运银行户名">{{ orderDetailInfo.seaBankName }}</el-descriptions-item>
-        <el-descriptions-item label="海运银行账号">{{ orderDetailInfo.seaBankNo }}</el-descriptions-item>
-        <el-descriptions-item label="收到条附件">{{ orderDetailInfo.receiveProof }}</el-descriptions-item>
+        <el-descriptions-item label="附件">{{ orderDetailInfo.path || '-' }}</el-descriptions-item>
+        <el-descriptions-item label="陆运车牌">{{ orderDetailInfo.landCarNo || '-' }}</el-descriptions-item>
+        <el-descriptions-item label="陆运司机电话">{{ orderDetailInfo.landDriverTel || '-' }}</el-descriptions-item>
+        <el-descriptions-item label="陆运司机姓名">{{ orderDetailInfo.landDriverName || '-' }}</el-descriptions-item>
+        <el-descriptions-item label="海运车牌">{{ orderDetailInfo.seaCarNo || '-' }}</el-descriptions-item>
+        <el-descriptions-item label="海运司机电话">{{ orderDetailInfo.seaDriverTel || '-' }}</el-descriptions-item>
+        <el-descriptions-item label="海运司机姓名">{{ orderDetailInfo.seaDriverName || '-' }}</el-descriptions-item>
+        <el-descriptions-item label="打款状态">{{ orderDetailInfo.PaymentState || '-' }}</el-descriptions-item>
+        <el-descriptions-item label="陆运银行户名">{{ orderDetailInfo.landBankName || '-' }}</el-descriptions-item>
+        <el-descriptions-item label="陆运银行账号">{{ orderDetailInfo.landBankNo || '-' }}</el-descriptions-item>
+        <el-descriptions-item label="海运银行户名">{{ orderDetailInfo.seaBankName || '-' }}</el-descriptions-item>
+        <el-descriptions-item label="海运银行账号">{{ orderDetailInfo.seaBankNo || '-' }}</el-descriptions-item>
+        <el-descriptions-item label="收到条附件">{{ orderDetailInfo.receiveProof || '-' }}</el-descriptions-item>
         <el-descriptions-item label="是否被调整单">
           <TagsItem :check-info="orderDetailInfo.isAdjusted " check-value="否"/>
         </el-descriptions-item>
@@ -206,6 +205,149 @@
         <el-button type="primary" @click="checkOrderVisible = false">确 定</el-button>
       </span>
     </el-dialog>
+
+
+    <!--    库存信息-->
+    <el-dialog
+      title="查看库存信息"
+      :visible.sync="checkInventoryVisible"
+      width="65%">
+      <el-descriptions title="库存详情" border>
+        <el-descriptions-item label="创建者">
+          {{ inventoryInfo.createBy || '-' }}
+        </el-descriptions-item>
+        <el-descriptions-item label="备注">
+          {{ inventoryInfo.remark || '-' }}
+        </el-descriptions-item>
+        <el-descriptions-item label="仓库名称">
+          {{ inventoryInfo.storeHouseName }}
+        </el-descriptions-item>
+        <el-descriptions-item label="入库日期">
+          {{ inventoryInfo.storeDate }}
+        </el-descriptions-item>
+        <el-descriptions-item label="库存数量">
+          {{ inventoryInfo.stockNumber }}
+        </el-descriptions-item>
+        <el-descriptions-item label="供应商">
+          {{ inventoryInfo.supplier }}
+        </el-descriptions-item>
+        <el-descriptions-item label="等级名称">
+          {{ inventoryInfo.levelName }}
+        </el-descriptions-item>
+        <el-descriptions-item label="计数单位">
+          {{ inventoryInfo.countingUnit }}
+        </el-descriptions-item>
+        <el-descriptions-item label="高度">
+          {{ inventoryInfo.height }}
+        </el-descriptions-item>
+        <el-descriptions-item label="长度">
+          {{ inventoryInfo.length }}
+        </el-descriptions-item>
+        <el-descriptions-item label="宽度">
+          {{ inventoryInfo.width }}
+        </el-descriptions-item>
+        <el-descriptions-item label="总片数">
+          {{ inventoryInfo.pieces }}
+        </el-descriptions-item>
+        <el-descriptions-item label="每包片数">
+          {{ inventoryInfo.piecesPerPack }}
+        </el-descriptions-item>
+        <el-descriptions-item label="包数">
+          {{ inventoryInfo.packs }}
+        </el-descriptions-item>
+        <el-descriptions-item label="单价">
+          {{ inventoryInfo.price }}
+        </el-descriptions-item>
+        <el-descriptions-item label="是否含税出厂">
+          {{ inventoryInfo.isIncludeTaxFactory ? '是' : '否' }}
+        </el-descriptions-item>
+        <el-descriptions-item label="杂费">
+          {{ inventoryInfo.sundryCost }}
+        </el-descriptions-item>
+        <el-descriptions-item label="出厂支付">
+          {{ inventoryInfo.paymentFactory }}
+        </el-descriptions-item>
+        <el-descriptions-item label="卸货费">
+          {{ inventoryInfo.paymentUnload }}
+        </el-descriptions-item>
+        <el-descriptions-item label="是否含税销售">
+          {{ inventoryInfo.isIncludeTaxSale ? '是' : '否' }}
+        </el-descriptions-item>
+        <el-descriptions-item label="总支付">
+          {{ inventoryInfo.payments }}
+        </el-descriptions-item>
+        <el-descriptions-item label="陆运车号">
+          {{ inventoryInfo.landCarNo }}
+        </el-descriptions-item>
+        <el-descriptions-item label="陆运司机电话">
+          {{ inventoryInfo.landDriverTel }}
+        </el-descriptions-item>
+        <el-descriptions-item label="陆运司机姓名">
+          {{ inventoryInfo.landDriverName }}
+        </el-descriptions-item>
+        <el-descriptions-item label="海运车号">
+          {{ inventoryInfo.seaCarNo || '-' }}
+        </el-descriptions-item>
+        <el-descriptions-item label="海运司机电话">
+          {{ inventoryInfo.seaDriverTel || '-' }}
+        </el-descriptions-item>
+        <el-descriptions-item label="海运司机姓名">
+          {{ inventoryInfo.seaDriverName || '-' }}
+        </el-descriptions-item>
+        <el-descriptions-item label="误差率">
+          {{ inventoryInfo.erro }}
+        </el-descriptions-item>
+        <el-descriptions-item label="吨位">
+          {{ inventoryInfo.tonnage }}
+        </el-descriptions-item>
+        <el-descriptions-item label="陆运费单价">
+          {{ inventoryInfo.landFreightPrice }}
+        </el-descriptions-item>
+        <el-descriptions-item label="陆运费">
+          {{ inventoryInfo.landFreight }}
+        </el-descriptions-item>
+        <el-descriptions-item label="海运费">
+          {{ inventoryInfo.seaFreight }}
+        </el-descriptions-item>
+        <el-descriptions-item label="总运费">
+          {{ inventoryInfo.freight }}
+        </el-descriptions-item>
+        <el-descriptions-item label="其他费用">
+          {{ inventoryInfo.otherCost }}
+        </el-descriptions-item>
+        <el-descriptions-item label="利润">
+          {{ inventoryInfo.profit }}
+        </el-descriptions-item>
+        <el-descriptions-item label="未税利润">
+          {{ inventoryInfo.profitNoTax }}
+        </el-descriptions-item>
+        <el-descriptions-item label="实际片数">
+          {{ inventoryInfo.actualPieces }}
+        </el-descriptions-item>
+        <el-descriptions-item label="含杂费总支付">
+          {{ inventoryInfo.paymentsWithSundry }}
+        </el-descriptions-item>
+        <el-descriptions-item label="附加费">
+          {{ inventoryInfo.additionalFees }}
+        </el-descriptions-item>
+        <el-descriptions-item label="返利">
+          {{ inventoryInfo.rebate }}
+        </el-descriptions-item>
+        <el-descriptions-item label="客户佣金">
+          {{ inventoryInfo.customerCommission }}
+        </el-descriptions-item>
+        <el-descriptions-item label="备注信息">
+          {{ inventoryInfo.comments }}
+        </el-descriptions-item>
+        <el-descriptions-item label="用户名">
+          {{ inventoryInfo.userName }}
+        </el-descriptions-item>
+      </el-descriptions>
+      <span slot="footer" class="dialog-footer">
+        <el-button @click="checkInventoryVisible = false">取 消</el-button>
+        <el-button type="primary" @click="checkInventoryVisible = false">确 定</el-button>
+      </span>
+    </el-dialog>
   </div>
 </template>
 
@@ -221,6 +363,8 @@ import {listGoodsOrder} from "@/api/system/goodsOrder";
 import TagsItem from "@/components/TagsItem/index.vue";
 import {getInventory, listInventory} from "@/api/system/inventory";
 import {listConfig} from "@/api/system/config";
+import {formatDate} from "../../../utils";
+
 export default {
   name: "ExWarehouse",
   components: {TagsItem},
@@ -275,6 +419,8 @@ export default {
       ],
       checkOrderVisible: false,
       orderDetailInfo: {},
+      inventoryInfo: {},
+      checkInventoryVisible: false,
     };
   },
   created() {
@@ -302,6 +448,7 @@ export default {
     this.reset();
   },
   methods: {
+    formatDate,
     checkOrderInfo(row) {
       console.log('订单信息', row)
       this.checkOrderVisible = true;
@@ -313,9 +460,9 @@ export default {
 
     //查看库存信息 查询当前行的库存信息
     checkInvoInfo(row) {
-      console.log(row)
-      listInventory({storeHouseid: row.storeHouseid}).then(res => {
-        console.log(res)
+      getInventory(row.storeID).then(res => {
+        this.inventoryInfo = res.data
+        this.checkInventoryVisible = true;
       })
     },
     isOrNot(val) {

@@ -19,7 +19,7 @@
       </el-form-item>
       <el-form-item>
         <el-button type="primary" icon="el-icon-search" size="mini" @click="handleQuery">搜索</el-button>
-<!--        <el-button icon="el-icon-refresh" size="mini" @click="resetQuery">重置</el-button>-->
+        <!--        <el-button icon="el-icon-refresh" size="mini" @click="resetQuery">重置</el-button>-->
       </el-form-item>
     </el-form>
 
@@ -104,6 +104,17 @@
       <div slot="footer" class="dialog-footer">
         <el-button type="primary" @click="submitForm">确 定</el-button>
         <el-button @click="cancel">取 消</el-button>
+      </div>
+    </el-dialog>
+
+
+    <!--    二次入库的弹窗-->
+    <el-dialog title="二次入库" :visible.sync="secondInventoryVisible" append-to-body>
+      <!--      todo-->
+      <InventoryForm :inventory-info="secondInventoryInfo" @changeInventoryInfo="handleCommitInventoryInfo"/>
+      <div slot="footer" class="dialog-footer">
+        <el-button type="primary" @click="handleChangeInventoryInfo">确 定</el-button>
+        <el-button @click="secondInventoryVisible = false">取 消</el-button>
       </div>
     </el-dialog>
 
@@ -206,10 +217,11 @@ import {listGoodsOrder} from "@/api/system/goodsOrder";
 import TagsItem from "@/components/TagsItem/index.vue";
 import {addInventory, getInventory, listInventory} from "@/api/system/inventory";
 import {excludeParams} from "@/api/tool/exclude";
+import InventoryForm from "@/components/InventoryForm.vue";
 
 export default {
   name: "ExWarehouse",
-  components: {TagsItem},
+  components: {InventoryForm, TagsItem},
   data() {
     return {
       loading: true,
@@ -246,7 +258,11 @@ export default {
       checkOrderVisible: false,
       orderDetailInfo: {},
       inventoryInfo: {},
-      inventoryInfoVisible: false
+      inventoryInfoVisible: false,
+      //二次入库
+      secondInventoryVisible: false,
+      //二次入库信息
+      secondInventoryInfo: {}
     };
   },
   created() {
@@ -284,20 +300,39 @@ export default {
         this.inventoryInfoVisible = true;
       })
     },
-    //二次入库
+    //二次入库 应该出来一个二次入库的页面 和货物入库一样
     secondInventory(row) {
       //查询该行的货物信息
       getInventory(row.storeID).then(res => {
-        this.$confirm('是否二次入库?', '提示', {
-          confirmButtonText: '确定',
-          cancelButtonText: '取消',
-          type: 'warning'
-        }).then(() => {
-          addInventory(excludeParams(res.data, this.$exclude)).then(res => {
-            this.$message.success('二次出库成功')
-          })
+        //展示二次入库
+        this.secondInventoryInfo = res.data;
+        //设置本公司
+        this.secondInventoryInfo.supplier = "本公司";
+        this.secondInventoryInfo.supplierId = 0;
+        this.secondInventoryInfo.exWareHoustId = row.id;
+        //设置车队 因为没有
+        this.$set(this.secondInventoryInfo, 'fleet', '')
+        this.secondInventoryVisible = true;
+      })
+    },
+    //提交二次入库
+    handleChangeInventoryInfo(val) {
+      this.inventoryInfo = val;
+      this.$confirm('是否二次入库?', '提示', {
+        confirmButtonText: '确定',
+        cancelButtonText: '取消',
+        type: 'warning'
+      }).then(() => {
+        addInventory(excludeParams(this.secondInventoryInfo, this.$exclude)).then(res => {
+          this.$message.success('二次出库成功')
         })
       })
+    },
+    handleCommitInventoryInfo(val) {
+      this.secondInventoryInfo.storeHouseName = val.storeHouseName;
+      this.secondInventoryInfo.landCarNo = val.landCarNo;
+      this.secondInventoryInfo.landDriverTel = val.landDriverTel;
+      this.secondInventoryInfo.fleet = val.fleet;
     },
     isOrNot(val) {
       return val === 1 ? "是" : "否";
