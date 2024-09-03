@@ -1,5 +1,4 @@
 <!--订单页面-->
-
 <template>
   <div class="app-container">
     <el-form :model="timesQuery" ref="queryForm" size="small" :inline="true" v-show="showSearch" label-width="100px">
@@ -93,7 +92,6 @@
             </el-button>
           </el-col>
         </template>
-        <!--        导出-->
         <template v-slot:export>
           <el-col :span="1.5">
             <el-button
@@ -112,7 +110,6 @@
     <el-table border v-loading="loading" :data="goodsOrderList" @selection-change="handleSelectionChange"
               id="printBox" :row-class-name="tableRowClassName" v-horizontal-scroll="'always'"
               max-height="750" size="mini">
-      <!--      左侧操作栏-->
       <el-table-column label="操作" align="center" class-name="small-padding fixed-width" width="170px" fixed="left">
         <template slot-scope="scope">
           <el-button
@@ -142,16 +139,27 @@
           </el-button>
         </template>
       </el-table-column>
-      <!--      固定列-->
       <el-table-column label="日期" align="center" prop="orderDate" fixed="left"/>
       <el-table-column label="客户" align="center" prop="customer" fixed="left"/>
       <el-table-column label="订单编号" align="center" prop="ordersNo" v-if="columns[0].visible"/>
       <el-table-column label="陆运车牌" align="center" prop="landCarNo" v-if="columns[1].visible"/>
       <el-table-column label="陆运司机电话" align="center" prop="landDriverTel" v-if="columns[2].visible"/>
       <el-table-column label="陆地司机姓名" align="center" prop="landDriverName" v-if="columns[3].visible"/>
-      <el-table-column label="海运车牌" align="center" prop="seaCarNo" v-if="columns[4].visible"/>
-      <el-table-column label="海运司机电话" align="center" prop="seaDriverTel" v-if="columns[5].visible"/>
-      <el-table-column label="海运司机姓名" align="center" prop="seaDriverName" v-if="columns[6].visible"/>
+      <el-table-column label="海运车牌" align="center" prop="seaCarNo" v-if="columns[4].visible">
+        <template #default="scope">
+          {{ scope.row.seaCarNo == null ? '无海运信息' : scope.row.seaCarNo }}
+        </template>
+      </el-table-column>
+      <el-table-column label="海运司机电话" align="center" prop="seaDriverTel" v-if="columns[5].visible">
+        <template #default="scope">
+          {{ scope.row.seaDriverTel == null ? '无海运信息' : scope.row.seaDriverTel }}
+        </template>
+      </el-table-column>
+      <el-table-column label="海运司机姓名" align="center" prop="seaDriverName" v-if="columns[6].visible">
+        <template #default="scope">
+          {{ scope.row.seaDriverName == null ? '无海运信息' : scope.row.seaDriverTel }}
+        </template>
+      </el-table-column>
       <el-table-column label="销售经理" align="center" prop="saleManager" v-if="columns[7].visible"/>
       <el-table-column label="车队" align="center" prop="fleet" v-if="columns[8].visible"/>
       <el-table-column label="审核状态" align="center" prop="checkState" v-if="columns[9].visible" width="120">
@@ -216,7 +224,13 @@
           </el-tag>
         </template>
       </el-table-column>
-      <el-table-column label="调整日期" align="center" prop="adjustDate" v-if="columns[16].visible"/>
+      <el-table-column label="调整日期" align="center" prop="adjustDate" v-if="columns[16].visible">
+        <!--        如果没有日期 就显示未调整-->
+        <template slot-scope="scope">
+          <span v-if="scope.row.adjustDate === '' || scope.row.adjustDate === null">未调整</span>
+          <span v-else>{{ parseTime(scope.row.adjustDate, '{y}-{m}-{d}') }}</span>
+        </template>
+      </el-table-column>
       <el-table-column label="原订单编号" align="center" prop="adjustOrderid" v-if="columns[17].visible"/>
       <el-table-column label="是否可编辑" align="center" prop="isedit" v-if="columns[18].visible">
         <template slot-scope="scope">
@@ -534,6 +548,7 @@ import Vue from "vue";
 import {TableName} from "@/api/tool/enums";
 import FreeApply from "@/components/FreeApply.vue";
 import {findFileExtension} from "@/utils/trash/utils";
+import {parseTime} from "../../../utils/ruoyi";
 
 export default {
   name: "GoodsOrder",
@@ -777,6 +792,7 @@ export default {
     }
   },
   methods: {
+    parseTime,
     cancelSubmit() {
       this.orderInfo = {};
       this.addOrderItemVisible = false
