@@ -73,7 +73,7 @@
     <el-row>
       <el-tabs v-model="activeName" @tab-click="handleClick">
         <el-tab-pane lazy label="加油卡主卡管理" name="first">
-          <el-table border v-loading="loading" :data="oilCardList.filter(item=>item.oilType==='主卡')"
+          <el-table border v-loading="loading" :data="mainOilCardList"
                     @selection-change="handleSelectionChange" id="printBox"
                     v-horizontal-scroll="'always'">
             <el-table-column label="加油卡卡号" align="center" prop="oilCardNo" v-if="columns[0].visible"/>
@@ -100,15 +100,17 @@
           </el-table>
           <!--分页-->
           <pagination
-            v-show="total>0"
-            :total="total"
+            v-show="MainTotal>0"
+            :total="MainTotal"
             :page.sync="queryParams.pageNum"
             :limit.sync="queryParams.pageSize"
-            @pagination="getList"
+            @pagination="getList()"
           />
+          <br/>
+<!--          加个换行,不然分页下部分缺失-->
         </el-tab-pane>
         <el-tab-pane lazy label="加油卡副卡管理" name="second">
-          <el-table border v-loading="loading" :data="oilCardList.filter(item=>item.oilType==='副卡')"
+          <el-table border v-loading="loading" :data="subCardList"
                     @selection-change="handleSelectionChange" id="printBox"
                     v-horizontal-scroll="'always'">
             <el-table-column label="加油卡卡号" align="center" prop="oilCardNo" v-if="columns[0].visible"/>
@@ -135,14 +137,17 @@
           </el-table>
           <!--分页-->
           <pagination
-            v-show="total>0"
-            :total="total"
+            v-show="SubTotal>0"
+            :total="SubTotal"
             :page.sync="queryParams.pageNum"
             :limit.sync="queryParams.pageSize"
             @pagination="getList"
           />
+          <br/>
+<!--          加个换行,不然分页下部分缺失-->
         </el-tab-pane>
       </el-tabs>
+
 
     </el-row>
 
@@ -262,9 +267,11 @@ export default {
       // 显示搜索条件
       showSearch: true,
       // 总条数
-      total: 0,
+      MainTotal: 0,
+      SubTotal: 0,
       // 加油卡信息表格数据
-      oilCardList: [],
+      mainOilCardList: [],
+      subCardList: [],
       // 弹出层标题
       title: "",
       // 是否显示弹出层
@@ -403,9 +410,18 @@ export default {
     /** 查询加油卡信息列表 */
     getList() {
       this.loading = true;
+      // 先获取主卡信息
+      this.queryParams.oilType = '主卡';
       listOilCard(this.queryParams).then(response => {
-        this.oilCardList = response.rows;
-        this.total = response.total;
+        this.mainOilCardList = response.rows;
+        this.MainTotal = response.total;
+        this.loading = false;
+      });
+      // 再获取副卡信息
+      this.queryParams.oilType = '副卡';
+      listOilCard(this.queryParams).then(response => {
+        this.subCardList = response.rows;
+        this.SubTotal = response.total;
         this.loading = false;
       });
     },
