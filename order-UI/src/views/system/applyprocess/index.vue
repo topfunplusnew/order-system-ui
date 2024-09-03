@@ -2,7 +2,7 @@
 当前账号需要审核的流程 审核的过程调用修改接口-->
 <script>
 import {getPaymentApply, listPaymentApply} from "@/api/system/paymentApply";
-import {listAuditInfo, listAuditInfoGroup} from "@/api/system/auditInfo";
+import { listAuditInfoGroup} from "@/api/system/auditInfo";
 import StepInfo from "@/components/StepInfo.vue";
 import {mapGetters} from "vuex";
 import {findFileExtension} from "@/utils/trash/utils";
@@ -101,10 +101,6 @@ export default {
       listPaymentApply({pageNum: this.pageNum, pageSize: this.pageSize}).then(res => {
         this.paymentList = res.rows;
         this.total = res.total;
-      })
-      //获取所有的审核流程
-      listAuditInfo().then(res => {
-        this.allAuditInfoList = res.rows;
       })
     },
     //附件
