@@ -65,7 +65,6 @@
 
     <el-table size="mini" border v-horizontal-scroll="'always'" v-loading="loading" :data="StoreHouseList"
               @selection-change="handleSelectionChange" id="printBox">
-      <el-table-column label="id" align="center" prop="id"/>
       <el-table-column label="仓库名称" align="center" prop="storeHouseName" v-if="columns[0].visible"/>
       <el-table-column label="地址" align="center" prop="address" v-if="columns[1].visible"/>
       <el-table-column label="操作" align="center" class-name="small-padding fixed-width" fixed="right" width="180">
