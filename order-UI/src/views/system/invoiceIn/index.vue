@@ -328,8 +328,8 @@ export default {
       this.PaymentApplyInfoVisible = true
     },
     changePaymentApplyInfoVisible(val) {
-      this.reset()
       this.PaymentApplyInfoVisible = val;
+      this.getList()
     },
     // 取消按钮
     cancel() {
