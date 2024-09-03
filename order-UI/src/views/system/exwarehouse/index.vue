@@ -1,14 +1,6 @@
 <template>
   <div class="app-container">
     <el-form :model="queryParams" ref="queryForm" size="small" :inline="true" v-show="showSearch" label-width="68px">
-      <el-form-item label="订单编号" prop="ordersNo">
-        <el-input
-          v-model="queryParams.ordersNo"
-          placeholder="请输入订单编号"
-          clearable
-          @keyup.enter.native="handleQuery"
-        />
-      </el-form-item>
       <el-form-item label="仓库名称" prop="storeHouseName">
         <el-input
           v-model="queryParams.storeHouseName"
@@ -80,19 +72,19 @@
 
     <el-table border v-horizontal-scroll="'always'" v-loading="loading" :data="exWarehouseList"
               @selection-change="handleSelectionChange" id="printBox">
-      <el-table-column label="id" align="center" prop="id" v-if="columns[0].visible"/>
-      <el-table-column label="订单编号" align="center" prop="ordersNo" v-if="columns[1].visible">
-        <template slot-scope="scope">
-          <el-tag type="success" v-if="scope.row.ordersNo ==='二次加工' || '货物破损'">
-            <span>
-              {{ scope.row.ordersNo }}货物
-            </span>
-          </el-tag>
-          <span v-else>
-            {{ scope.row.ordersNo }}
-          </span>
-        </template>
-      </el-table-column>
+<!--      <el-table-column label="id" align="center" prop="id" v-if="columns[0].visible"/>-->
+<!--      <el-table-column label="订单编号" align="center" prop="ordersNo" v-if="columns[1].visible">-->
+<!--        <template slot-scope="scope">-->
+<!--          <el-tag type="success" v-if="scope.row.ordersNo ==='二次加工' || '货物破损'">-->
+<!--            <span>-->
+<!--              {{ scope.row.ordersNo }}货物-->
+<!--            </span>-->
+<!--          </el-tag>-->
+<!--          <span v-else>-->
+<!--            {{ scope.row.ordersNo }}-->
+<!--          </span>-->
+<!--        </template>-->
+<!--      </el-table-column>-->
       <!--      <el-table-column label="仓库ID" align="center" prop="storeHouseid"/>-->
       <el-table-column label="仓库名称" align="center" prop="storeHouseName" v-if="columns[2].visible"/>
       <!--      <el-table-column label="仓库存储的货物ID" align="center" prop="storeID"/>-->
@@ -267,7 +259,8 @@ export default {
         delFlag: null,
         addtime: null,
         userId: null,
-        UserName: null
+        UserName: null,
+        isOrder: true
       },
       // 表单参数
       form: {},
