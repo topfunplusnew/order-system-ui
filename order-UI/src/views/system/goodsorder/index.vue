@@ -110,38 +110,52 @@
     <el-table border v-loading="loading" :data="goodsOrderList" @selection-change="handleSelectionChange"
               id="printBox" :row-class-name="tableRowClassName" v-horizontal-scroll="'always'"
               max-height="750" size="mini">
-      <el-table-column label="操作" align="center" class-name="small-padding fixed-width" width="170px" fixed="left">
+      <el-table-column label="行操作" align="center" class-name="small-padding fixed-width" width="170px" fixed="left">
         <template slot-scope="scope">
-          <el-button
-            size="mini"
-            @click="checkOrderItemInfo(scope.row)"
-          >查看
-          </el-button>
-          <el-button
-            :disabled="scope.row.isAdjusted ==='是'"
-            size="mini"
-            type="primary"
-            @click="handleOrderItemInfo(scope.row)"
-          >调整单
-          </el-button>
-          <el-button
-            size="mini"
-            type="warning"
-            @click="handleCheckOrderDetailInfo(scope.row)"
-          >订单详情
-          </el-button>
-          <el-button
-            size="mini"
-            type="danger"
-            @click="handleDelete(scope.row)"
-            v-hasPermi="['system:goodsorder:remove']"
-          >删除
-          </el-button>
+          <el-row>
+            <el-col span="12">
+              <el-button
+                size="mini"
+                @click="checkOrderItemInfo(scope.row)"
+              >查看
+              </el-button>
+            </el-col>
+            <el-col :span="12">
+
+              <el-button
+                size="mini"
+                type="primary"
+                @click="handleUpdate(scope.row)"
+                v-hasPermi="['system:goodsorder:edit']"
+              >修改
+              </el-button>
+            </el-col>
+          </el-row>
+          <br/>
+          <el-row>
+            <el-col :span="12">
+              <el-button
+                size="mini"
+                type="warning"
+                @click="handleCheckOrderDetailInfo(scope.row)"
+              >详情
+              </el-button>
+            </el-col>
+            <el-col :span="12">
+              <el-button
+                size="mini"
+                type="danger"
+                @click="handleDelete(scope.row)"
+                v-hasPermi="['system:goodsorder:remove']"
+              >删除
+              </el-button>
+            </el-col>
+          </el-row>
         </template>
       </el-table-column>
       <el-table-column label="日期" align="center" prop="orderDate" fixed="left"/>
       <el-table-column label="客户" align="center" prop="customer" fixed="left"/>
-      <el-table-column label="订单编号" align="center" prop="ordersNo" v-if="columns[0].visible"/>
+      <!--      <el-table-column label="订单编号" align="center" prop="ordersNo" v-if="columns[0].visible"/>-->
       <el-table-column label="陆运车牌" align="center" prop="landCarNo" v-if="columns[1].visible"/>
       <el-table-column label="陆运司机电话" align="center" prop="landDriverTel" v-if="columns[2].visible"/>
       <el-table-column label="陆地司机姓名" align="center" prop="landDriverName" v-if="columns[3].visible"/>
@@ -240,7 +254,8 @@
       </el-table-column>
       <el-table-column label="备注" align="center" prop="comments" v-if="columns[21].visible"/>
       <!--      右侧操作栏-->
-      <el-table-column label="操作" align="center" class-name="small-padding fixed-width" width="300px" fixed="right">
+      <el-table-column label="订单操作" align="center" class-name="small-padding fixed-width" width="300px"
+                       fixed="right">
         <template slot-scope="scope">
           <el-button
             size="mini"
@@ -261,28 +276,38 @@
           >上传收到条
           </el-button>
           <el-button
-            v-if="scope.row.landFreight>0"
+            :disabled="scope.row.isAdjusted ==='是'"
             size="mini"
-            type="warning"
-            @click="handleApplyLandFree(scope.row)"
-            v-hasPermi="['system:goodsorder:remove']"
-          >陆运费申请
-          </el-button>
-          <el-button
-            v-if="scope.row.seaFreight>0"
             type="primary"
-            size="mini"
-            @click="handleApplySeaFree(scope.row)"
-            v-hasPermi="['system:goodsorder:remove']"
-          >海运费申请
+            @click="handleOrderItemInfo(scope.row)"
+          >调整单
           </el-button>
-          <el-button
-            type="primary"
-            size="mini"
-            @click="handleUpdate(scope.row)"
-            v-hasPermi="['system:goodsorder:edit']"
-          >修改
-          </el-button>
+        </template>
+      </el-table-column>
+      <el-table-column label="运费申请" align="center" class-name="small-padding fixed-width" width="170px"
+                       fixed="right">
+        <template slot-scope="scope">
+          <el-row v-if="scope.row.landFreight>0 ||scope.row.seaFreight>0  ">
+            <el-button
+              size="mini"
+              v-if="scope.row.landFreight>0"
+              type="warning"
+              @click="handleApplyLandFree(scope.row)"
+              v-hasPermi="['system:goodsorder:remove']"
+            >陆运费申请
+            </el-button>
+            <el-button
+              size="mini"
+              v-if="scope.row.seaFreight>0"
+              type="primary"
+              @click="handleApplySeaFree(scope.row)"
+              v-hasPermi="['system:goodsorder:remove']"
+            >海运费申请
+            </el-button>
+          </el-row>
+          <el-row v-else>
+            无运费信息
+          </el-row>
         </template>
       </el-table-column>
     </el-table>
