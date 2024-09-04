@@ -163,19 +163,9 @@
       <el-table-column label="销售经理" align="center" prop="saleManager" v-if="columns[7].visible"/>
       <el-table-column label="车队" align="center" prop="fleet" v-if="columns[8].visible"/>
       <el-table-column label="审核状态" align="center" prop="checkState" v-if="columns[9].visible" width="120">
-
-        <template slot-scope="scope">
-          <SwitchBarForCheck :model-value="scope.row.checkState==='未审核'"
-                             @update:modelValue="handleOpenCheck($event,scope.row)"/>
-        </template>
       </el-table-column>
       <el-table-column label="开票状态" align="center" prop="invoiceState" v-if="columns[10].visible" width="120px">
-        <template slot-scope="scope">
-          <SwitchBarItem :model-value="scope.row.customerIsInvoice==='未开票'"
-                         @update:modelValue="handleOpenTitle($event,scope.row)"/>
-        </template>
       </el-table-column>
-      <!--  todo    压缩上传-->
       <el-table-column label="附件路径" align="center" prop="path" v-if="columns[11].visible">
         <template #default="scope">
           <img v-if="isPic(scope.row.path)" :src="scope.row.path" alt=""
@@ -240,19 +230,13 @@
           </el-tag>
         </template>
       </el-table-column>
+      <!--      客户供应商是否开票-->
       <el-table-column label="客户是否开票" align="center" prop="customerIsInvoice" v-if="columns[19].visible"
                        width="150px">
-        <template slot-scope="scope">
-          <SwitchBarItem :model-value="scope.row.customerIsInvoice===1"
-                         @update:modelValue="handleOpenTitle"/>
-        </template>
+
       </el-table-column>
       <el-table-column label="供应商是否开票" align="center" prop="isSupplierInvoice" v-if="columns[20].visible"
                        width="120px">
-        <template slot-scope="scope">
-          <SwitchBarItem :model-value="scope.row.customerIsInvoice===1"
-                         @update:modelValue="handleOpenTitle"/>
-        </template>
       </el-table-column>
       <el-table-column label="备注" align="center" prop="comments" v-if="columns[21].visible"/>
       <!--      右侧操作栏-->
@@ -276,7 +260,6 @@
             v-hasPermi="['system:goodsorder:remove']"
           >上传收到条
           </el-button>
-
           <el-button
             v-if="scope.row.landFreight>0"
             size="mini"
@@ -847,6 +830,8 @@ export default {
     },
     //查看订单详情列表
     handleCheckOrderDetailInfo(row) {
+      //赋值 以便于给子组件id
+      sessionStorage.setItem('order_id', row.id)
       //查询该订单的订单详情，根据id查询  然后扔到暂存里
       getGoodsOrder(row.id).then(res => {
         this.orderDetailInfoList = res.data.orderDetailList;
@@ -858,10 +843,7 @@ export default {
     handleOrder1(row) {
       this.Order1Visible = true
     },
-
-    //todo 压缩上传和收到条
     isPic(url) {
-      console.log(url)
       return this.$imgs.includes(findFileExtension(url))
     },
     handleUpload(row) {

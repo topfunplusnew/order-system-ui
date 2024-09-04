@@ -3,6 +3,8 @@ import {addRebate} from "@/api/system/Rebate";
 import SearchOption from "@/components/SearchOption.vue";
 import {listCompany} from "@/api/system/company";
 import {listBankAccount} from "@/api/system/bankAccount";
+import {getGoodsOrder, updateGoodsOrder} from "@/api/system/goodsOrder";
+import {excludeParams} from "@/api/tool/exclude";
 
 export default {
   name: "OrderDetailInfo",
@@ -10,7 +12,7 @@ export default {
   props: {
     orderDetailInfoList: {
       type: Array
-    }
+    },
   },
   data() {
     return {
@@ -29,6 +31,8 @@ export default {
         comments: ''
       },
     }
+  },
+  created() {
   },
   methods: {
     listBankAccount,
@@ -59,6 +63,26 @@ export default {
           this.addMoneyBackVisible = false
         })
     },
+    //删除订单详情个体
+    deleteOrderDetail(row) {
+      //拿到订单个体 修改这个订单的信息
+      let order_id = sessionStorage.getItem('order_id')
+      let delete_order_detail = {}
+      //获取订单的信息
+      getGoodsOrder(order_id).then(res => {
+        delete_order_detail = res.data
+        //过滤参数
+        delete_order_detail = excludeParams(delete_order_detail, this.$exclude)
+        //删除row.id对应的订单详情
+        delete_order_detail.orderDetailList = delete_order_detail.orderDetailList.filter(item => item.id !== row.id)
+        console.log('删除后的', delete_order_detail.orderDetailList)
+        //修改订单信息
+        updateGoodsOrder(delete_order_detail).then(res => {
+          this.$message.success('删除成功~')
+        })
+      })
+
+    }
   }
 }
 </script>
@@ -79,6 +103,12 @@ export default {
               type="warning"
               @click="handleMoneyBack(scope.row)"
             >返利
+            </el-button>
+            <el-button
+              size="mini"
+              type="warning"
+              @click="deleteOrderDetail(scope.row)"
+            >删除订单该订单详情
             </el-button>
           </template>
         </el-table-column>
