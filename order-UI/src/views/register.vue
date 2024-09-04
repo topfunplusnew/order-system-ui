@@ -157,12 +157,6 @@ export default {
   background-size: cover;
 }
 
-.title {
-  margin: 0px auto 30px auto;
-  text-align: center;
-  color: #707070;
-}
-
 .register-form {
   border-radius: 6px;
   background: #ffffff;
