@@ -138,8 +138,8 @@
       <!--      <el-table-column label="付款编号" align="center" prop="payNO" v-if="columns[1].visible"/>-->
       <el-table-column label="日期" align="center" prop="fundsDate" v-if="columns[1].visible"/>
       <el-table-column label="支付类型" align="center" prop="payType" v-if="columns[2].visible"/>
-      <el-table-column label="对应的表名" align="center" prop="tableName" v-if="columns[3].visible"/>
-      <el-table-column label="对应的表主键" align="center" prop="tID" v-if="columns[4].visible"/>
+      <!--      <el-table-column label="对应的表名" align="center" prop="tableName" v-if="columns[3].visible"/>-->
+      <!--      <el-table-column label="对应的表主键" align="center" prop="tID" v-if="columns[4].visible"/>-->
       <el-table-column label="金额" align="center" prop="moneyAmount" v-if="columns[5].visible"/>
       <el-table-column label="己方户名" align="center" prop="selfAcountsName" v-if="columns[6].visible"/>
       <el-table-column label="己方账号" align="center" prop="selfBankNo" v-if="columns[7].visible"/>

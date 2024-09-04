@@ -264,6 +264,7 @@ import {listBankAccount} from "@/api/system/bankAccount";
 import {Loading} from "element-ui";
 import {listSubject} from "@/api/system/subject";
 import {listCompany} from "@/api/system/company";
+import {excludeParams} from "@/api/tool/exclude";
 
 export default {
   name: "ReceiveMoney",
@@ -516,6 +517,7 @@ export default {
             this.form.userId = null;
             //支付类型
             this.form.receiveType = this.fullLevel;
+            this.form = excludeParams(this.form, this.$exclude)
             updateReceiveMoney(this.form).then(response => {
               this.$modal.msgSuccess("修改成功");
               this.$close();//结束加载
@@ -530,6 +532,7 @@ export default {
             this.form.updateTime = null;
             this.form.userId = null;
             this.form.receiveType = this.fullLevel;
+            this.form = excludeParams(this.form, this.$exclude)
             // form.tableName form.tID
             addReceiveMoney(this.form).then(response => {
               this.$modal.msgSuccess("新增成功");
