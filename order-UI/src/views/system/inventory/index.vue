@@ -621,7 +621,6 @@ export default {
     },
     //子组件改变库存状态
     handleChangeInventoryInfo(val) {
-      console.log('--', val)
       this.inventoryInfo = val;
     },
     //二次出库

@@ -5,6 +5,7 @@ import {listStoreHouse} from "@/api/system/StoreHouse";
 import {listCars} from "@/api/system/cars";
 import {listFleet} from "@/api/system/fleet";
 import Vue from "vue";
+import {getInventory} from "@/api/system/inventory";
 
 export default {
   name: "InventoryForm",
@@ -50,6 +51,7 @@ export default {
   watch: {
     currentInventoryInfo: {
       handler(val) {
+        this.$emit('changeInventoryInfo', val)
       },
       deep: true
     },
@@ -90,6 +92,7 @@ export default {
     },
     handleCommitBackFleet(val) {
       this.currentInventoryInfo = {...this.currentInventoryInfo, fleet: val.fName}
+      console.log(this.currentInventoryInfo)
     },
 
     //修改货物信息
@@ -102,7 +105,7 @@ export default {
     }
   },
   created() {
-
+    this.goodsInfo = this.currentInventoryInfo
   },
   mounted() {
 
@@ -121,10 +124,10 @@ export default {
           </el-col>
           <el-col :span="20">
             <el-date-picker
-                v-model="currentInventoryInfo.storeDate"
-                type="date"
-                placeholder="选择日期" style="width: 70%"
-                value-format="timestamp">
+              v-model="currentInventoryInfo.storeDate"
+              type="date"
+              placeholder="选择日期" style="width: 70%"
+              value-format="timestamp">
             </el-date-picker>
           </el-col>
         </el-row>
