@@ -73,13 +73,13 @@
 
     <el-table border v-loading="loading" :data="oilCardFundTransferList" @selection-change="handleSelectionChange"
               v-horizontal-scroll="'always'" id="printBox">
-      <el-table-column label="id" align="center" prop="id"  v-if="columns[0].visible"/>
-      <el-table-column label="主加油卡卡号" align="center" prop="oilMainCardNo"  v-if="columns[1].visible"/>
-      <el-table-column label="副加油卡卡号" align="center" prop="oilSecondCardNo"  v-if="columns[2].visible"/>
-      <el-table-column label="充值金额" align="center" prop="rechargeMoney"  v-if="columns[3].visible"/>
-      <el-table-column label="充值时间" align="center" prop="rechargeDate"  v-if="columns[4].visible"/>
-      <el-table-column label="充值人员姓名" align="center" prop="rechargeName"  v-if="columns[5].visible"/>
-      <el-table-column label="备注" align="center" prop="comments"  v-if="columns[6].visible"/>
+      <el-table-column label="id" align="center" prop="id" v-if="columns[0].visible"/>
+      <el-table-column label="主加油卡卡号" align="center" prop="oilMainCardNo" v-if="columns[1].visible"/>
+      <el-table-column label="副加油卡卡号" align="center" prop="oilSecondCardNo" v-if="columns[2].visible"/>
+      <el-table-column label="充值金额" align="center" prop="rechargeMoney" v-if="columns[3].visible"/>
+      <el-table-column label="充值时间" align="center" prop="rechargeDate" v-if="columns[4].visible"/>
+      <el-table-column label="充值人员姓名" align="center" prop="rechargeName" v-if="columns[5].visible"/>
+      <el-table-column label="备注" align="center" prop="comments" v-if="columns[6].visible"/>
       <el-table-column label="操作" align="center" class-name="small-padding fixed-width">
         <template slot-scope="scope">
           <el-button
@@ -148,9 +148,9 @@
         <el-form-item label="充值金额" prop="rechargeMoney">
           <el-input v-model="form.rechargeMoney" placeholder="请输入充值金额"/>
         </el-form-item>
-        <el-form-item label="充值人员姓名" prop="rechargeName">
-          <el-input v-model="form.rechargeName" placeholder="请输入充值人员姓名"/>
-        </el-form-item>
+        <!--        <el-form-item label="充值人员姓名" prop="rechargeName">-->
+        <!--          <el-input v-model="form.rechargeName" placeholder="请输入充值人员姓名"/>-->
+        <!--        </el-form-item>-->
         <el-form-item label="备注" prop="comments">
           <el-input v-model="form.comments" placeholder="请输入备注"/>
         </el-form-item>

@@ -217,6 +217,7 @@ import {
   addCustomerVisit,
   updateCustomerVisit
 } from "@/api/system/CustomerVisit";
+import {excludeParams} from "@/api/tool/exclude";
 
 export default {
   name: "CustomerVisit",
@@ -403,12 +404,14 @@ export default {
       this.$refs["form"].validate(valid => {
         if (valid) {
           if (this.form.id != null) {
+            this.form = excludeParams(this.form, this.$exclude)
             updateCustomerVisit(this.form).then(response => {
               this.$modal.msgSuccess("修改成功");
               this.open = false;
               this.getList();
             });
           } else {
+            this.form = excludeParams(this.form, this.$exclude)
             addCustomerVisit(this.form).then(response => {
               this.$modal.msgSuccess("新增成功");
               this.open = false;

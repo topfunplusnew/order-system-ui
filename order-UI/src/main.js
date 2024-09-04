@@ -111,6 +111,8 @@ Vue.prototype.$refreshParams = function (object) {
   }
   return newObject
 }
+
+
 //todo #############
 let car = {
   'brand': 'ABC',

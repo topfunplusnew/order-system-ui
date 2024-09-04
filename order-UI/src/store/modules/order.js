@@ -13,6 +13,10 @@ const mutations = {
   ADD_ORDER_ITEM_LIST(state, orderItem) {
     state.orderItemList.push(orderItem)
   },
+  //直接赋值
+  SET_ORDER_ITEM_LIST(state, orderItemList) {
+    state.orderItemList = orderItemList
+  },
   //删除订单详情
   DELETE_ORDER_ITEM(state, index) {
     state.orderItemList.splice(index, 1)

@@ -173,7 +173,7 @@
           <el-input v-model="form.bankNo" placeholder="请输入银行账号"/>
         </el-form-item>
         <el-form-item label="充值人员姓名" prop="rechargeName">
-          <el-input v-model="form.rechargeName" placeholder="请输入充值人员姓名"/>
+          <el-input disabled v-model="form.rechargeName" placeholder="请输入充值人员姓名"/>
         </el-form-item>
         <el-form-item label="充值附件" prop="attachment">
           <!--          <el-input v-model="form.attachment" placeholder="请输入充值附件"/>-->
@@ -214,13 +214,15 @@ import SearchOption from "@/components/SearchOption.vue";
 import {listOilCard} from "@/api/system/oilCard";
 import {listBankAccount} from "@/api/system/bankAccount";
 import {findFileExtension} from "@/utils/trash/utils";
+import {mapGetters} from "vuex";
 
 export default {
   name: "OilRecharge",
   computed: {
     TableName() {
       return TableName
-    }
+    },
+    ...mapGetters(['trueName'])
   },
   components: {SearchOption, ApplyPayment},
   mixins: [mixin_printHTML],
@@ -265,6 +267,7 @@ export default {
       },
       // 表单参数
       form: {
+        rechargeName: '',
         rechargeDate: new Date().getTime(),
         rechargeType: '银行卡'
       },
@@ -315,7 +318,6 @@ export default {
     listOilCard,
     //附件
     isPic(url) {
-      console.log(url)
       return this.$imgs.includes(findFileExtension(url))
     },
     //主卡
@@ -399,6 +401,8 @@ export default {
     handleAdd() {
       this.reset();
       this.open = true;
+      //填充充值人员姓名
+      this.form.rechargeName = this.trueName
       this.title = "添加加油卡充值信息";
     },
     /** 修改按钮操作 */
