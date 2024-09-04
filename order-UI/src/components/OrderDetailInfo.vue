@@ -79,9 +79,9 @@ export default {
         //修改订单信息
         updateGoodsOrder(delete_order_detail).then(res => {
           this.$message.success('删除成功~')
+          location.reload()
         })
       })
-
     }
   }
 }

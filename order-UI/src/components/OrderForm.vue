@@ -16,7 +16,7 @@ export default {
     orderInfo: {
       type: Object,
       required: true
-    }
+    },
   },
   data() {
     return {
@@ -209,8 +209,9 @@ export default {
     customer: {
       handler(val) {
       },
-    }
+    },
   },
+
   methods: {
     //这个方法用来修改父组件的某一个属性
     handleUpdateOrderInfo(newOrderValue) {
@@ -291,14 +292,12 @@ export default {
     },
     //添加订单vuex
     addOrderItem() {
-      //给vuex扔一个空对象，父组件遍历vuex中的列表 然后再把对象仍回来 子组件再重新赋值对象
       this.$store.dispatch('order/addOrderItemList', {})
     },
     handleChangeOrderItemInfo(index, val) {
       //改变vuex中的数据 传递一个对象 这个对象是修改过的item
       this.$store.dispatch('order/changeOrderItem', {...val, index: index})
     },
-
     //删除订单详情
     handleDeleteOrderDetail(index, event) {
       this.$store.dispatch('order/deleteOrderItem', index)
@@ -307,10 +306,6 @@ export default {
   created() {
 
   },
-  mounted() {
-
-  },
-
 }
 </script>
 
@@ -354,7 +349,7 @@ export default {
       </div>
 
       <!--      陆运-->
-      <div style="margin:20px 0;" v-if="isLand">
+      <div style="margin:20px 0;" v-if="isLand || orderInfo.landFreight > 0">
         <div style="font-weight: bolder;margin-bottom: 10px">陆运信息</div>
         <div style="display: flex;">
           <div>
@@ -382,7 +377,7 @@ export default {
       </div>
 
       <!--      海运-->
-      <div style="margin:10px 0;" v-if="isSea">
+      <div style="margin:10px 0;" v-if="isSea || orderInfo.seaFreight > 0">
         <div style="font-weight: bolder;margin-bottom: 10px">海运信息</div>
         <div style="display: flex;">
           <div>
