@@ -113,7 +113,7 @@
       <el-table-column label="行操作" align="center" class-name="small-padding fixed-width" width="170px" fixed="left">
         <template slot-scope="scope">
           <el-row>
-            <el-col span="12">
+            <el-col :span="12">
               <el-button
                 size="mini"
                 @click="checkOrderItemInfo(scope.row)"
@@ -153,6 +153,7 @@
           </el-row>
         </template>
       </el-table-column>
+      <el-table-column label="ID" align="center" prop="id" fixed="left"/>
       <el-table-column label="日期" align="center" prop="orderDate" fixed="left"/>
       <el-table-column label="客户" align="center" prop="customer" fixed="left"/>
       <!--      <el-table-column label="订单编号" align="center" prop="ordersNo" v-if="columns[0].visible"/>-->
@@ -180,16 +181,33 @@
       </el-table-column>
       <el-table-column label="开票状态" align="center" prop="invoiceState" v-if="columns[10].visible" width="120px">
       </el-table-column>
-      <el-table-column label="附件路径" align="center" prop="path" v-if="columns[11].visible">
+      <el-table-column label="附件" align="center" prop="path" v-if="columns[11].visible" width="150px">
         <template #default="scope">
-          <img v-if="isPic(scope.row.path)" :src="scope.row.path" alt=""
-               style="width: 100%;height: 100%">
-          <span v-else-if="scope.row.path === '' || scope.row.path === null">无附件</span>
-          <span v-else>
+          <el-row>
+            <img v-if="isPic(scope.row.path)" :src="scope.row.path" alt=""
+                 style="width: 100%;height: 100%">
+            <span v-else-if="scope.row.path === '' || scope.row.path === null">无附件</span>
+            <span v-else>
             文件不支持预览，请手动下载:
           <a style="color: red"
              :href="scope.row.path">{{ scope.row.path }}</a>
           </span>
+          </el-row>
+          <el-row v-if="scope.row.path === '' || scope.row.path === null">
+            无操作
+          </el-row>
+          <el-row v-else>
+            <el-col :span="12">
+              <el-button size="mini" type="danger" @click="deletePath(scope.row.path)">
+                删除
+              </el-button>
+            </el-col>
+            <el-col :span="12">
+              <el-button size="mini" type="success" @click="checkAttachment(scope.row.path)">
+                查看
+              </el-button>
+            </el-col>
+          </el-row>
         </template>
       </el-table-column>
       <el-table-column label="打款状态" align="center" prop="paymentState"
@@ -200,16 +218,34 @@
           </el-tag>
         </template>
       </el-table-column>
-      <el-table-column label="收到条附件路径" align="center" prop="receiveProof" v-if="columns[13].visible">
+      <el-table-column label="收到条附件路径" align="center" prop="receiveProof" v-if="columns[13].visible"
+                       width="150px">
         <template #default="scope">
-          <img v-if="isPic(scope.row.receiveProof)" :src="scope.row.receiveProof" alt=""
-               style="width: 100%;height: 100%">
-          <span v-else-if="scope.row.receiveProof === '' || scope.row.receiveProof === null">无附件</span>
-          <span v-else>
+          <el-row>
+            <img v-if="isPic(scope.row.receiveProof)" :src="scope.row.receiveProof" alt=""
+                 style="width: 100%;height: 100%">
+            <span v-else-if="scope.row.receiveProof === '' || scope.row.receiveProof === null">无附件</span>
+            <span v-else>
             文件不支持预览，请手动下载:
           <a style="color: red"
              :href="scope.row.receiveProof">{{ scope.row.receiveProof }}</a>
           </span>
+          </el-row>
+          <el-row v-if="scope.row.receiveProof === '' || scope.row.receiveProof === null">
+            无操作
+          </el-row>
+          <el-row v-else>
+            <el-col :span="12">
+              <el-button size="mini" type="danger" @click="deleteReceiveProof(scope.row.receiveProof)">
+                删除
+              </el-button>
+            </el-col>
+            <el-col :span="12">
+              <el-button size="mini" type="success" @click="checkAttachment(scope.row.receiveProof)">
+                查看
+              </el-button>
+            </el-col>
+          </el-row>
         </template>
       </el-table-column>
       <el-table-column label="是否被调整单" align="center" prop="isAdjusted" v-if="columns[14].visible">
@@ -311,7 +347,6 @@
         </template>
       </el-table-column>
     </el-table>
-
     <pagination
       v-show="total>0"
       :total="total"
@@ -409,7 +444,18 @@
       title="上传附件"
       :visible.sync="handleUploadVisible"
       width="30%">
-      <file-upload is-show-tip @input="handleBackUpload"/>
+      <!--      todo      <file-upload is-show-tip @input="handleBackUpload"/>-->
+      <el-upload
+        class="upload-demo"
+        drag
+        :action="uploadFileUrl"
+        multiple :on-success="handleUploadPathSuccess"
+        :limit="1"
+        :headers="headers">
+        <i class="el-icon-upload"></i>
+        <div class="el-upload__text">将文件拖到此处，或<em>点击上传</em></div>
+        <div class="el-upload__tip" slot="tip">只能上传jpg/png文件，且不超过500kb</div>
+      </el-upload>
       <span slot="footer" class="dialog-footer">
     <el-button @click="handleUploadVisible = false">取 消</el-button>
     <el-button type="primary" @click="handleUploadVisible = false">确 定</el-button>
@@ -421,7 +467,18 @@
       title="提示"
       :visible.sync="handleCommitVisible"
       width="30%">
-      <file-upload @input="handleCommitGet"/>
+      <!--   todo    <file-upload @input="handleCommitGet"/>-->
+      <el-upload
+        class="upload-demo"
+        drag
+        :action="uploadFileUrl"
+        multiple :on-success="handleUploadReceiveProofSuccess"
+        :limit="1"
+        :headers="headers">
+        <i class="el-icon-upload"></i>
+        <div class="el-upload__text">将文件拖到此处，或<em>点击上传</em></div>
+        <div class="el-upload__tip" slot="tip">只能上传jpg/png文件，且不超过500kb</div>
+      </el-upload>
       <span slot="footer" class="dialog-footer">
     <el-button @click="handleCommitVisible = false">取 消</el-button>
     <el-button type="primary" @click="handleCommitVisible = false">确 定</el-button>
@@ -538,6 +595,24 @@
       </div>
     </el-dialog>
 
+
+    <!--    查看附件内容-->
+    <el-dialog
+      title="查看附件"
+      :visible.sync="pathDialogVisible"
+      width="50%">
+      <el-row>
+
+      </el-row>
+      <el-row>
+
+      </el-row>
+      <span slot="footer" class="dialog-footer">
+    <el-button @click="pathDialogVisible = false">取 消</el-button>
+    <el-button type="primary" @click="pathDialogVisible = false">确 定</el-button>
+  </span>
+    </el-dialog>
+
   </div>
 </template>
 
@@ -574,6 +649,7 @@ import {TableName} from "@/api/tool/enums";
 import FreeApply from "@/components/FreeApply.vue";
 import {findFileExtension} from "@/utils/trash/utils";
 import {parseTime} from "../../../utils/ruoyi";
+import {downloadFile} from "@/api/download";
 
 export default {
   name: "GoodsOrder",
@@ -768,6 +844,14 @@ export default {
       landFreightInfo: {},
       seaFreightInfo: {},
 
+      //上传路径
+      uploadFileUrl: process.env.VUE_APP_BASE_API + "/common/upload",
+      headers: {
+        Authorization: "Bearer " + getToken(),
+      },
+
+      //附件路径
+      pathDialogVisible: false
     };
   },
   created() {
@@ -902,28 +986,6 @@ export default {
         this.tempOrderInfo = res.data;
       })
     },
-    //收到条回调
-    handleCommitGet(value) {
-      this.tempOrderInfo.receiveProof = value;
-      this.tempOrderInfo = excludeParams(this.tempOrderInfo, this.$exclude)
-      console.log('收到', this.tempOrderInfo)
-      //更新订单状态
-      updateGoodsOrder(this.tempOrderInfo).then(res => {
-        this.$message.success('上传成功')
-      })
-    },
-
-    //上传组件的回调
-    handleBackUpload(val) {
-      //去除不必要字段
-      this.tempOrderInfo = excludeParams(this.tempOrderInfo, this.$exclude)
-      //修改订单信息
-      updateGoodsOrder({...this.tempOrderInfo, path: val})
-        .then(res => {
-          this.$message.success('上传成功')
-        })
-    },
-
     //调整单
     submitChangeOrder() {
       const id = this.tempId
@@ -938,7 +1000,6 @@ export default {
         }
         //去除字段
         orderInfo = excludeParams(orderInfo, this.$exclude)
-        console.log('调整单', orderInfo)
         //调整单
         adjustGoodsOrder({...orderInfo, ordersNo: '', adjustDate: formatDate(new Date())}).then(res => {
           this.$message.success('调整单提交成功')
@@ -970,7 +1031,71 @@ export default {
         this.$message.success('订单提交成功')
       })
     },
-
+    //查看附件信息
+    checkAttachment(path) {
+      window.open(path)
+    },
+    //删除收到条
+    //todo 删除
+    deleteReceiveProof(row) {
+      this.$confirm('此操作将永久删除该文件, 是否继续?', '提示', {
+        confirmButtonText: '确定',
+        cancelButtonText: '取消',
+        type: 'warning'
+      }).then(() => {
+        getGoodsOrder(row.id)
+          .then(res => {
+            let order = res.data;
+            order.receiveProof = null;
+            updateGoodsOrder(excludeParams(order, this.$exclude))
+              .then(res => {
+                this.$message.success('删除成功')
+                this.getList()
+              });
+          })
+      }).catch(() => {
+        this.$message({
+          type: 'info',
+          message: '已取消删除'
+        });
+      });
+    },
+    //删除附件
+    deletePath(row) {
+      updateGoodsOrder(excludeParams({...row, path: ''}, this.$exclude))
+        .then(res => {
+          this.$message.success('删除成功')
+        })
+    },
+    //上传成功
+    handleUploadReceiveProofSuccess(response, file, fileList) {
+      if (response.code === 200) {
+        //去除不必要字段
+        this.tempOrderInfo = excludeParams(this.tempOrderInfo, this.$exclude)
+        //修改订单信息
+        updateGoodsOrder({...this.tempOrderInfo, receiveProof: response.url})
+          .then(res => {
+            this.$message.success('上传成功')
+          })
+      } else {
+        this.$message.error('上传失败')
+      }
+      fileList.pop();
+    },
+    handleUploadPathSuccess(response, file, fileList) {
+      if (response.code === 200) {
+        //去除不必要字段
+        this.tempOrderInfo = excludeParams(this.tempOrderInfo, this.$exclude)
+        //修改订单信息
+        updateGoodsOrder({...this.tempOrderInfo, path: response.url})
+          .then(res => {
+            this.$message.success('上传成功')
+          })
+      } else {
+        this.$message.error('上传失败')
+      }
+      fileList.pop();
+    },
     //表格统计
     //自定义列统计总函数
     getSummaries(param) {
@@ -1018,21 +1143,6 @@ export default {
       this.openTitleInfo.companyID = val.id;
       this.openTitleInfo.companyType = val.companyType;
     },
-    //val是选中行的订单信息 包含订单详细信息
-    handleOpenTitle(event, val) {
-      console.log(event, val)
-      //先把订单信息扔进暂存
-      this.$store.dispatch('trash/setCurrentOrderInfo', val)
-      // //这里是反的,如果是true,代表未开票 false代表已开票
-      if (event) {
-        //关闭开票
-        alert('关闭订单开票操作')
-      } else {
-        //准备开票 传递订单的id
-        this.currentOrderId = val.id
-        this.handleOpenTitleDialogVisible = true;
-      }
-    },
     //添加开票 是否订单开票要给订单id
     submitOpenTitle() {
       //排除不必要的字段
@@ -1065,13 +1175,6 @@ export default {
       setTimeout(() => {
         location.reload()
       }, 200)
-    },
-    handleOpenCheck(val, row) {
-      if (!val) {
-        auditGoodsOrder({id: row.id, isaudit: true}).then(res => {
-          this.$message.success('审核成功')
-        })
-      }
     },
     //申请陆运费
     handleApplyLandFree(row) {
@@ -1241,14 +1344,9 @@ export default {
     /** 提交按钮 */
     submitForm() {
       if (this.orderInfo.id != null) {
+        this.orderInfo = excludeParams(this.orderInfo, this.$exclude)
         updateGoodsOrder(this.orderInfo).then(response => {
           this.$modal.msgSuccess("修改成功");
-          this.open = false;
-          this.getList();
-        });
-      } else {
-        addGoodsOrder(this.orderInfo).then(response => {
-          this.$modal.msgSuccess("新增成功");
           this.open = false;
           this.getList();
         });

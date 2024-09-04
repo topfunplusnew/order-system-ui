@@ -48,10 +48,10 @@ export default {
   props: {
     // 值
     value: [String, Object, Array],
-    // 数量限制
+    // 数量限制 只能上传一个
     limit: {
       type: Number,
-      default: 5,
+      default: 1,
     },
     // 大小限制(MB)
     fileSize: {
@@ -169,6 +169,9 @@ export default {
     // 上传结束处理
     uploadedSuccessfully() {
       this.$message.success("上传成功")
+      console.log('fileList', this.fileList)
+      console.log('uploadList', this.uploadList)
+      //清空上传过的文件列表
       if (this.number > 0 && this.uploadList.length === this.number) {
         this.fileList = this.fileList.concat(this.uploadList);
         this.uploadList = [];
