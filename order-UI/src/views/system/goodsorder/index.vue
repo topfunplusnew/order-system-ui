@@ -831,7 +831,7 @@ export default {
         invoiceObject: null,
         invoiceAmount: null,
         companyType: null,
-        companyName: null,
+        companyName: '',
         companyID: null,
         invoiceCompanyName: null,
         ticketPoint: null,
@@ -1188,9 +1188,11 @@ export default {
     },
     //开票信息弹窗
     handleUpdateCompanyName(val) {
+      console.log(val)
       this.queryCompanyName = val;
     },
     handleCommitBackCompany(val) {
+      console.log(val)
       this.openTitleInfo.companyName = val.companyName;
       this.openTitleInfo.companyID = val.id;
       this.openTitleInfo.companyType = val.companyType;
