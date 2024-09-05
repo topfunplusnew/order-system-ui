@@ -126,76 +126,85 @@
     />
 
     <!-- 添加或修改社保基金对话框 -->
-    <el-dialog :title="title" :visible.sync="open" width="500px" append-to-body>
+    <el-dialog :title="title" :visible.sync="open" fullscreen append-to-body>
       <el-form ref="form" :model="form" :rules="rules" label-width="80px">
-        <el-form-item label="社保缴纳基数" prop="basicSocialInsurance">
-          <el-input v-model="form.basicSocialInsurance" placeholder="请输入社保缴纳基数"/>
-        </el-form-item>
-        <el-form-item label="公积金基数" prop="basicHousingFund">
-          <el-input v-model="form.basicHousingFund" placeholder="请输入公积金基数"/>
-        </el-form-item>
-        <el-form-item label="部门" prop="depName">
-          <el-input v-model="form.depName" placeholder="请输入部门"/>
-        </el-form-item>
-        <el-form-item label="姓名" prop="employeeName">
-          <el-input v-model="form.employeeName" placeholder="请输入姓名"/>
-        </el-form-item>
-        <el-form-item label="人员编号" prop="employeeID">
-          <el-input v-model="form.employeeID" placeholder="请输入人员编号"/>
-        </el-form-item>
-        <el-form-item label="缴费时间" prop="insuranceDate">
-          <el-input v-model="form.insuranceDate" placeholder="请输入缴费时间"/>
-        </el-form-item>
-        <el-form-item label="是否增员" prop="isRecruiting">
-          <el-radio v-model="form.isRecruiting" label="是">是</el-radio>
-          <el-radio v-model="form.isRecruiting" label="否">否</el-radio>
-        </el-form-item>
-        <el-form-item label="是否减员" prop="isDepletion">
-          <el-radio v-model="form.isDepletion" label="是">是</el-radio>
-          <el-radio v-model="form.isDepletion" label="否">否</el-radio>
-        </el-form-item>
-        <el-form-item label="基本医疗保险-个人" prop="healthySecuritySelf">
-          <el-input v-model="form.healthySecuritySelf" placeholder="请输入基本医疗保险-个人"/>
-        </el-form-item>
-        <el-form-item label="基本医疗保险-公司" prop="healthySecurityCompany">
-          <el-input v-model="form.healthySecurityCompany" placeholder="请输入基本医疗保险-公司"/>
-        </el-form-item>
-        <el-form-item label="工伤保险" prop="injuryInsurance">
-          <el-input v-model="form.injuryInsurance" placeholder="请输入工伤保险"/>
-        </el-form-item>
-        <el-form-item label="失业保险-个人" prop="unemploymentSecuritySelf">
-          <el-input v-model="form.unemploymentSecuritySelf" placeholder="请输入失业保险-个人"/>
-        </el-form-item>
-        <el-form-item label="失业保险-公司" prop="unemploymentSecurityCompany">
-          <el-input v-model="form.unemploymentSecurityCompany" placeholder="请输入失业保险-公司"/>
-        </el-form-item>
-        <el-form-item label="养老保险-个人" prop="retirementSecuritySelf">
-          <el-input v-model="form.retirementSecuritySelf" placeholder="请输入养老保险-个人"/>
-        </el-form-item>
-        <el-form-item label="养老保险-公司" prop="retirementSecurityCompany">
-          <el-input v-model="form.retirementSecurityCompany" placeholder="请输入养老保险-公司"/>
-        </el-form-item>
-        <el-form-item label="大额医保-个人" prop="largeMedicalSecuritySelf">
-          <el-input v-model="form.largeMedicalSecuritySelf" placeholder="请输入大额医保-个人"/>
-        </el-form-item>
-        <el-form-item label="大额医保-公司" prop="largeMedicalSecurityCompany">
-          <el-input v-model="form.largeMedicalSecurityCompany" placeholder="请输入大额医保-公司"/>
-        </el-form-item>
-        <el-form-item label="公积金-个人" prop="housingFundSelf">
-          <el-input v-model="form.housingFundSelf" placeholder="请输入公积金-个人"/>
-        </el-form-item>
-        <el-form-item label="公积金-公司" prop="housingFundCompany">
-          <el-input v-model="form.housingFundCompany" placeholder="请输入公积金-公司"/>
-        </el-form-item>
-        <el-form-item label="个人缴费总额" prop="sumSelf">
-          <el-input v-model="form.sumSelf" placeholder="请输入个人缴费总额"/>
-        </el-form-item>
-        <el-form-item label="公司缴费总额" prop="sumCompany">
-          <el-input v-model="form.sumCompany" placeholder="请输入公司缴费总额"/>
-        </el-form-item>
-        <el-form-item label="备注" prop="comments">
-          <el-input v-model="form.comments" placeholder="请输入备注"/>
-        </el-form-item>
+        <el-col :span="6">
+          <el-form-item label="社保缴纳基数" prop="basicSocialInsurance">
+            <el-input v-model="form.basicSocialInsurance" placeholder="请输入社保缴纳基数"/>
+          </el-form-item>
+          <el-form-item label="公积金基数" prop="basicHousingFund">
+            <el-input v-model="form.basicHousingFund" placeholder="请输入公积金基数"/>
+          </el-form-item>
+          <el-form-item label="部门" prop="depName">
+            <el-input v-model="form.depName" placeholder="请输入部门"/>
+          </el-form-item>
+          <el-form-item label="姓名" prop="employeeName">
+            <el-input v-model="form.employeeName" placeholder="请输入姓名"/>
+          </el-form-item>
+          <el-form-item label="人员编号" prop="employeeID">
+            <el-input v-model="form.employeeID" placeholder="请输入人员编号"/>
+          </el-form-item>
+          <el-form-item label="缴费时间" prop="insuranceDate">
+            <el-input v-model="form.insuranceDate" placeholder="请输入缴费时间"/>
+          </el-form-item>
+          <el-form-item label="是否增员" prop="isRecruiting">
+            <el-radio v-model="form.isRecruiting" label="是">是</el-radio>
+            <el-radio v-model="form.isRecruiting" label="否">否</el-radio>
+          </el-form-item>
+        </el-col>
+        <el-col :span="6">
+          <el-form-item label="是否减员" prop="isDepletion">
+            <el-radio v-model="form.isDepletion" label="是">是</el-radio>
+            <el-radio v-model="form.isDepletion" label="否">否</el-radio>
+          </el-form-item>
+          <el-form-item label="基本医疗保险-个人" prop="healthySecuritySelf">
+            <el-input v-model="form.healthySecuritySelf" placeholder="请输入基本医疗保险-个人"/>
+          </el-form-item>
+          <el-form-item label="基本医疗保险-公司" prop="healthySecurityCompany">
+            <el-input v-model="form.healthySecurityCompany" placeholder="请输入基本医疗保险-公司"/>
+          </el-form-item>
+          <el-form-item label="工伤保险" prop="injuryInsurance">
+            <el-input v-model="form.injuryInsurance" placeholder="请输入工伤保险"/>
+          </el-form-item>
+          <el-form-item label="失业保险-个人" prop="unemploymentSecuritySelf">
+            <el-input v-model="form.unemploymentSecuritySelf" placeholder="请输入失业保险-个人"/>
+          </el-form-item>
+          <el-form-item label="失业保险-公司" prop="unemploymentSecurityCompany">
+            <el-input v-model="form.unemploymentSecurityCompany" placeholder="请输入失业保险-公司"/>
+          </el-form-item>
+          <el-form-item label="养老保险-个人" prop="retirementSecuritySelf">
+            <el-input v-model="form.retirementSecuritySelf" placeholder="请输入养老保险-个人"/>
+          </el-form-item>
+        </el-col>
+        <el-col :span="6">
+          <el-form-item label="养老保险-公司" prop="retirementSecurityCompany">
+            <el-input v-model="form.retirementSecurityCompany" placeholder="请输入养老保险-公司"/>
+          </el-form-item>
+          <el-form-item label="大额医保-个人" prop="largeMedicalSecuritySelf">
+            <el-input v-model="form.largeMedicalSecuritySelf" placeholder="请输入大额医保-个人"/>
+          </el-form-item>
+          <el-form-item label="大额医保-公司" prop="largeMedicalSecurityCompany">
+            <el-input v-model="form.largeMedicalSecurityCompany" placeholder="请输入大额医保-公司"/>
+          </el-form-item>
+          <el-form-item label="公积金-个人" prop="housingFundSelf">
+            <el-input v-model="form.housingFundSelf" placeholder="请输入公积金-个人"/>
+          </el-form-item>
+          <el-form-item label="公积金-公司" prop="housingFundCompany">
+            <el-input v-model="form.housingFundCompany" placeholder="请输入公积金-公司"/>
+          </el-form-item>
+          <el-form-item label="个人缴费总额" prop="sumSelf">
+            <el-input v-model="form.sumSelf" placeholder="请输入个人缴费总额"/>
+          </el-form-item>
+
+        </el-col>
+        <el-col :span="6">
+          <el-form-item label="公司缴费总额" prop="sumCompany">
+            <el-input v-model="form.sumCompany" placeholder="请输入公司缴费总额"/>
+          </el-form-item>
+          <el-form-item label="备注" prop="comments">
+            <el-input v-model="form.comments" placeholder="请输入备注"/>
+          </el-form-item>
+        </el-col>
       </el-form>
       <div slot="footer" class="dialog-footer">
         <el-button type="primary" @click="submitForm">确 定</el-button>

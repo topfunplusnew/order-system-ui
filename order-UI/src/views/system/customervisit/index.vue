@@ -9,13 +9,38 @@
           @keyup.enter.native="handleQuery"
         />
       </el-form-item>
-      <el-form-item label="区域" prop="region">
-        <el-input
-          v-model="queryParams.region"
-          placeholder="请输入区域"
-          clearable
-          @keyup.enter.native="handleQuery"
-        />
+      <!--      <el-form-item label="区域" prop="region">-->
+      <!--        <el-input-->
+      <!--          v-model="queryParams.region"-->
+      <!--          placeholder="请输入区域"-->
+      <!--          clearable-->
+      <!--          @keyup.enter.native="handleQuery"-->
+      <!--        />-->
+      <!--      </el-form-item>-->
+      <el-form-item label="省" prop="province">
+        <!--          <el-input v-model="form.province" placeholder="请输入省"/>-->
+        <el-select v-model="queryParams.province" placeholder="请选择省" @change="changeProvince">
+          <el-option
+            v-for="item in provinceList"
+            :key="item.code"
+            :label="item.name"
+            :value="item.name">
+          </el-option>
+        </el-select>
+      </el-form-item>
+      <el-form-item label="市县" prop="city">
+        <!--          <el-input v-model="form.city" placeholder="请输入市县"/>-->
+        <el-select v-model="queryParams.city" placeholder="请选择市" @change="changeCity">
+          <el-option
+            v-for="item in cityList"
+            :key="item.code"
+            :label="item.name"
+            :value="item.name">
+          </el-option>
+        </el-select>
+      </el-form-item>
+      <el-form-item label="乡镇" prop="county">
+        <el-input v-model="queryParams.county" placeholder="请输入乡镇"/>
       </el-form-item>
       <el-form-item label="走访日期">
         <el-date-picker
@@ -84,6 +109,7 @@
     <el-table border v-loading="loading" :data="CustomerVisitList" @selection-change="handleSelectionChange"
               id="printBox" v-horizontal-scroll="'always'">
       <el-table-column label="id" align="center" prop="id" fixed="left"/>
+      <el-table-column label="走访日期" align="center" prop="visitDate" fixed="left"/>
       <el-table-column label="是否审核" align="center" prop="isCheckState" v-if="columns[0].visible" fixed="left"
                        width="120px">
         <template #default="scope">
@@ -119,7 +145,13 @@
                        v-if="columns[13].visible" width="300px" show-overflow-tooltip/>
       <el-table-column label="备注" align="center" prop="comments" v-if="columns[14].visible" show-overflow-tooltip
                        width="180px"/>
-      <el-table-column label="提交时间" align="center" prop="submittime" v-if="columns[15].visible"/>
+
+      <el-table-column label="省" align="center" prop="province" v-if="columns[15].visible" show-overflow-tooltip
+                       width="180px"/>
+      <el-table-column label="市" align="center" prop="city" v-if="columns[16].visible" show-overflow-tooltip
+                       width="180px"/>
+      <el-table-column label="乡镇" align="center" prop="county" v-if="columns[17].visible" show-overflow-tooltip
+                       width="180px"/>
       <el-table-column label="操作" align="center" class-name="small-padding fixed-width" fixed="right" width="130px">
         <template slot-scope="scope">
           <el-button
@@ -152,8 +184,37 @@
     <el-dialog :title="title" :visible.sync="open" width="70%" append-to-body fullscreen>
       <el-form ref="form" :model="form" :rules="rules" label-width="80px">
         <el-col :span="8">
-          <el-form-item label="区域" prop="region">
-            <el-input v-model="form.region" type="textarea" placeholder="请输入区域"/>
+          <el-form-item label="走访日期" prop="visitDate">
+            <el-date-picker
+              v-model="form.visitDate"
+              type="date"
+              placeholder="选择走访日期"
+              value-format="yyyy-MM-dd">
+            </el-date-picker>
+          </el-form-item>
+          <el-form-item label="省" prop="province">
+            <el-select v-model="form.province" placeholder="请选择省" @change="changeProvince">
+              <el-option
+                v-for="item in provinceList"
+                :key="item.code"
+                :label="item.name"
+                :value="item.name">
+              </el-option>
+            </el-select>
+          </el-form-item>
+          <el-form-item label="市县" prop="city">
+            <!--          <el-input v-model="form.city" placeholder="请输入市县"/>-->
+            <el-select v-model="form.city" placeholder="请选择市" @change="changeCity">
+              <el-option
+                v-for="item in cityList"
+                :key="item.code"
+                :label="item.name"
+                :value="item.name">
+              </el-option>
+            </el-select>
+          </el-form-item>
+          <el-form-item label="乡镇" prop="county">
+            <el-input v-model="form.county" placeholder="请输入乡镇"/>
           </el-form-item>
           <el-form-item label="客户名称" prop="customer">
             <el-input v-model="form.customer" placeholder="请输入客户名称"/>
@@ -292,11 +353,28 @@ export default {
         {key: 13, label: `特色厚度、特殊尺寸、协议品用货厂家及用量`, visible: true},
         {key: 14, label: `备注`, visible: true},
         {key: 15, label: `提交时间`, visible: true},
+        {key: 16, label: `省`, visible: true},
+        {key: 17, label: `市`, visible: true},
+        {key: 18, label: `乡镇`, visible: true},
       ],
+      //省市县
+      provinceList: [],
+      cityList: [],
+      districtList: [],
+      province: '',
+      city: '',
+      district: '',
+
     };
   },
 
   created() {
+    //获取城市信息
+    fetch('/area.json')
+      .then(res => res.json())
+      .then(res => {
+        this.provinceList = res;
+      })
     this.getList();
     if (localStorage.getItem('customervisit-columns') === 'null'
       || !localStorage.getItem('customervisit-columns')) {
@@ -319,9 +397,49 @@ export default {
         console.log(newVal)
       },
       deep: true
+    },
+    //城市变化
+    'queryParams.province': function (val) {
+      this.provinceList.forEach(item => {
+        if (item.name === val) {
+          this.cityList = item.areaList;
+        }
+      })
+    },
+    'queryParams.city': function (val) {
+      this.cityList.forEach(item => {
+        if (item.name === val) {
+          this.districtList = item.areaList;
+        }
+      })
+    },
+    //城市变化
+    'form.province': function (val) {
+      this.provinceList.forEach(item => {
+        if (item.name === val) {
+          this.cityList = item.areaList;
+        }
+      })
+    },
+    'form.city': function (val) {
+      this.cityList.forEach(item => {
+        if (item.name === val) {
+          this.districtList = item.areaList;
+        }
+      })
     }
   },
   methods: {
+    //城市变化
+    changeProvince(e) {
+      this.province = e;
+    },
+    changeCity(e) {
+      this.city = e;
+    },
+    changeDis(e) {
+      this.district = e;
+    },
     //走访记录审核
     handleCheck(row) {
       console.log(row)

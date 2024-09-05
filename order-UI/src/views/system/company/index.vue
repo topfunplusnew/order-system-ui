@@ -598,19 +598,19 @@ export default {
       this.currentInfo.companyName = row.companyName
       listBankAccount({companyId: row.id, acountsType: '客户'})
         .then(res => {
-        this.singleInfo = res.rows
-      })
+          this.singleInfo = res.rows
+        })
       listBankAccount({acountsType: '客户默认', companyId: row.id})
         .then(res => {
-        if (res.rows.length > 0) {
-          this.defaultBankCardInfo = res.rows[0]
-        } else {
-          this.defaultBankCardInfo.not = true
-        }
-        setTimeout(() => {
-          this.dialogFormVisible = true
-        }, 20)
-      })
+          if (res.rows.length > 0) {
+            this.defaultBankCardInfo = res.rows[0]
+          } else {
+            this.defaultBankCardInfo.not = true
+          }
+          setTimeout(() => {
+            this.dialogFormVisible = true
+          }, 20)
+        })
     },
 
     //添加银行卡信息
