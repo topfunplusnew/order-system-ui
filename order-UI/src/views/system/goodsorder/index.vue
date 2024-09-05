@@ -283,10 +283,35 @@
       <!--      客户供应商是否开票-->
       <el-table-column label="客户是否开票" align="center" prop="customerIsInvoice" v-if="columns[19].visible"
                        width="150px">
-
+        <template #default="scope">
+          <el-row v-if="scope.row.customerIsInvoice === 1">
+            <el-tag type="success">客户已开票</el-tag>
+          </el-row>
+          <el-row v-else>
+            <el-row>
+              客户未开票
+            </el-row>
+            <el-row>
+              <el-button type="success" size="mini" @click="openCustomerInvoice(scope.row)">去开票</el-button>
+            </el-row>
+          </el-row>
+        </template>
       </el-table-column>
       <el-table-column label="供应商是否开票" align="center" prop="isSupplierInvoice" v-if="columns[20].visible"
                        width="120px">
+        <template #default="scope">
+          <el-row v-if="scope.row.isSupplierInvoice === 1">
+            <el-tag type="success"> 供应商已开票</el-tag>
+          </el-row>
+          <el-row v-else>
+            <el-row>
+              供应商未开票
+            </el-row>
+            <el-row>
+              <el-button type="success" size="mini" @click="openSupplierInvoice(scope.row)">去开票</el-button>
+            </el-row>
+          </el-row>
+        </template>
       </el-table-column>
       <el-table-column label="备注" align="center" prop="comments" v-if="columns[21].visible"/>
       <!--      右侧操作栏-->
@@ -499,67 +524,6 @@
   </span>
     </el-dialog>
 
-
-    <!--    开票弹窗-->
-    <el-dialog
-      title="开票"
-      :visible.sync="handleOpenTitleDialogVisible"
-      width="30%">
-      <el-form :model="openTitleInfo" label-width="110px">
-        <el-form-item label="开票日期" prop="invoiceDate">
-          <el-date-picker
-            v-model="openTitleInfo.invoiceDate"
-            type="date"
-            placeholder="选择日期"
-            value-format="yyyy-MM-dd">
-          </el-date-picker>
-        </el-form-item>
-        <el-form-item label="我方开票实体" prop="invoiceObject">
-          <el-input v-model="openTitleInfo.invoiceObject" placeholder="请输入我方开票实体"/>
-        </el-form-item>
-        <el-form-item label="开票金额" prop="invoiceAmount">
-          <el-input v-model="openTitleInfo.invoiceAmount" placeholder="请输入开票金额"/>
-        </el-form-item>
-        <el-form-item label="公司名称" prop="companyName">
-          <el-row>
-            <el-col :span="10">
-              <el-input v-model="openTitleInfo.companyName" placeholder="请输入对方公司名称"/>
-            </el-col>
-            <el-col :span="2">
-              <SearchOption :limit-info="{}" :get-data="listCompany" query-info="companyName"
-                            query-label="公司名称" :query-name="queryCompanyName"
-                            @update:queryName="handleUpdateCompanyName" @commitBack="handleCommitBackCompany">
-                <template #table-columns>
-                  <el-table-column label="客户" align="center" prop="relationName"/>
-                  <el-table-column label="老板姓名" align="center" prop="leader"/>
-                  <el-table-column label="老板电话" align="center" prop="leaderTel"/>
-                  <el-table-column label="区域" align="center" prop="region"/>
-                  <el-table-column label="公司名称" align="center" prop="companyName"/>
-                  <el-table-column label="销售经理" align="center" prop="salesManager"/>
-                </template>
-              </SearchOption>
-            </el-col>
-          </el-row>
-        </el-form-item>
-        <el-form-item label="票据单位名称" prop="invoiceCompanyName">
-          <el-input v-model="openTitleInfo.invoiceCompanyName" placeholder="请输入票据单位名称"/>
-        </el-form-item>
-        <el-form-item label="票点" prop="ticketPoint">
-          <el-input v-model="openTitleInfo.ticketPoint" placeholder="请输入票点"/>
-        </el-form-item>
-        <el-form-item label="票点金额" prop="ticketPointAmount">
-          <el-input v-model="invoiceAmount" placeholder="请输入票点金额" disabled/>
-        </el-form-item>
-        <el-form-item label="备注" prop="comments">
-          <el-input v-model="openTitleInfo.comments" placeholder="请输入备注"/>
-        </el-form-item>
-      </el-form>
-      <span slot="footer" class="dialog-footer">
-    <el-button @click="closeOpenTitle">取 消</el-button>
-    <el-button type="primary" @click="submitOpenTitle">确 定</el-button>
-  </span>
-    </el-dialog>
-
     <!--    陆运费申请 指定destroy-on-close来销毁dialog的元素让其下次打开重新渲染 从而反复执行created-->
     <el-dialog
       title="陆运费申请"
@@ -595,24 +559,69 @@
       </div>
     </el-dialog>
 
-
-    <!--    查看附件内容-->
+    <!-- 开发票-->
     <el-dialog
-      title="查看附件"
-      :visible.sync="pathDialogVisible"
+      :title="openTitle"
+      :visible.sync="invoiceOpenVisible"
       width="50%">
       <el-row>
-
-      </el-row>
-      <el-row>
-
+        <el-form :model="openTitleInfo" label-width="110px">
+          <el-form-item label="开票日期" prop="invoiceDate">
+            <el-date-picker
+              v-model="openTitleInfo.invoiceDate"
+              type="date"
+              placeholder="选择日期"
+              value-format="yyyy-MM-dd">
+            </el-date-picker>
+          </el-form-item>
+          <el-form-item label="我方开票实体" prop="invoiceObject">
+            <el-input v-model="openTitleInfo.invoiceObject" placeholder="请输入我方开票实体"/>
+          </el-form-item>
+          <el-form-item label="开票金额" prop="invoiceAmount">
+            <el-input v-model="openTitleInfo.invoiceAmount" placeholder="请输入开票金额"/>
+          </el-form-item>
+          <el-form-item label="公司名称" prop="companyName">
+            <el-row>
+              <el-col :span="10">
+                <el-input v-model="openTitleInfo.companyName" placeholder="请输入对方公司名称"/>
+              </el-col>
+              <el-col :span="2">
+                <SearchOption :limit-info="openTitleInfo.domain === 1? {companyType:'客户'}:{companyType:'供应商'}"
+                              :get-data="listCompany" query-info="companyName"
+                              query-label="公司名称" :query-name="queryCompanyName"
+                              @update:queryName="handleUpdateCompanyName" @commitBack="handleCommitBackCompany">
+                  <template #table-columns>
+                    <el-table-column :label="openTitleInfo.domain === 1? '客户':'供应商'" align="center"
+                                     prop="relationName"/>
+                    <el-table-column label="老板姓名" align="center" prop="leader"/>
+                    <el-table-column label="老板电话" align="center" prop="leaderTel"/>
+                    <el-table-column label="区域" align="center" prop="region"/>
+                    <el-table-column label="公司名称" align="center" prop="companyName"/>
+                    <el-table-column label="销售经理" align="center" prop="salesManager"/>
+                  </template>
+                </SearchOption>
+              </el-col>
+            </el-row>
+          </el-form-item>
+          <el-form-item label="票据单位名称" prop="invoiceCompanyName">
+            <el-input v-model="openTitleInfo.invoiceCompanyName" placeholder="请输入票据单位名称"/>
+          </el-form-item>
+          <el-form-item label="票点" prop="ticketPoint">
+            <el-input v-model="openTitleInfo.ticketPoint" placeholder="请输入票点"/>
+          </el-form-item>
+          <el-form-item label="票点金额" prop="ticketPointAmount">
+            <el-input v-model="openTitleInfo.ticketPointAmount" placeholder="请输入票点金额"/>
+          </el-form-item>
+          <el-form-item label="备注" prop="comments">
+            <el-input v-model="openTitleInfo.comments" placeholder="请输入备注"/>
+          </el-form-item>
+        </el-form>
       </el-row>
       <span slot="footer" class="dialog-footer">
-    <el-button @click="pathDialogVisible = false">取 消</el-button>
-    <el-button type="primary" @click="pathDialogVisible = false">确 定</el-button>
+    <el-button @click="invoiceOpenVisible = false">取 消</el-button>
+    <el-button type="primary" @click="submitOpenTitle">确 定</el-button>
   </span>
     </el-dialog>
-
   </div>
 </template>
 
@@ -650,6 +659,7 @@ import FreeApply from "@/components/FreeApply.vue";
 import {findFileExtension} from "@/utils/trash/utils";
 import {parseTime} from "../../../utils/ruoyi";
 import {downloadFile} from "@/api/download";
+import {addInvoiceIn} from "@/api/system/invoiceIn";
 
 export default {
   name: "GoodsOrder",
@@ -850,8 +860,9 @@ export default {
         Authorization: "Bearer " + getToken(),
       },
 
-      //附件路径
-      pathDialogVisible: false
+      //供应商 && 客户开发票
+      invoiceOpenVisible: false,
+      openTitle: '',
     };
   },
   created() {
@@ -1133,7 +1144,48 @@ export default {
       return sums;
     },
 
-
+    //客户供应商开票功能
+    //添加开票 是否订单开票要给订单id
+    submitOpenTitle() {
+      //排除不必要的字段
+      this.openTitleInfo = excludeParams(this.openTitleInfo, this.$exclude)
+      //这里要判断一下 如果是客户开票 就添加发票卖出信息 如果是供应商开票 则添加发票买入信息
+      if (this.openTitleInfo.domain === 1) {
+        //修改开票信息
+        let info = {...this.openTitleInfo.orderInfo, customerIsInvoice: 1}
+        updateGoodsOrder(excludeParams(info, this.$exclude))
+          .then(res => {
+            this.$message.success('开票状态设置成功~')
+            //删除订单信息
+            delete this.openTitleInfo.orderInfo
+            //客户开票 添加发票卖出信息
+            addInvoiceOut(this.openTitleInfo)
+              .then(res => {
+                this.$message.success('客户开票成功~')
+                this.openTitleInfo = {}
+                this.invoiceOpenVisible = false
+                this.getList()
+              })
+          })
+        //添加发票买入
+      } else {
+        let info = {...this.openTitleInfo.orderInfo, isSupplierInvoice: 1}
+        updateGoodsOrder(excludeParams(info, this.$exclude))
+          .then(res => {
+            this.$message.success('开票状态设置成功~')
+            //删除订单信息
+            delete this.openTitleInfo.orderInfo
+            //客户开票 添加发票卖出信息
+            addInvoiceIn(this.openTitleInfo)
+              .then(res => {
+                this.$message.success('供应商开票成功~')
+                this.openTitleInfo = {}
+                this.invoiceOpenVisible = false
+                this.getList()
+              })
+          })
+      }
+    },
     //开票信息弹窗
     handleUpdateCompanyName(val) {
       this.queryCompanyName = val;
@@ -1143,38 +1195,26 @@ export default {
       this.openTitleInfo.companyID = val.id;
       this.openTitleInfo.companyType = val.companyType;
     },
-    //添加开票 是否订单开票要给订单id
-    submitOpenTitle() {
-      //排除不必要的字段
-      this.openTitleInfo = excludeParams(this.openTitleInfo, this.$exclude)
-      //传入订单id
-      this.openTitleInfo.isOrderTax = this.currentOrderId;
-      //添加开票信息
-      this.$wait();
-      addInvoiceOut(this.openTitleInfo).then(response => {
-        this.$modal.msgSuccess("开票成功~");
-        this.handleOpenTitleDialogVisible = false;
-        this.$close();
-        this.getList();
-      }).catch(err => {
-        this.$close();
-      })
-      let info = {...this.currentOrderInfo, invoiceState: '已开票'} //修改后的订单信息
-      //修改开票信息
-      setTimeout(() => {
-        this.$wait();
-        //排除不必要字段
-        updateGoodsOrder(excludeParams(info, this.$exclude)).then(res => {
-          this.$message.success('开票状态设置成功~')
-          this.$close();
+    //客户开票 && 供应商开票
+    openCustomerInvoice(row) {
+      //客户开发票 即为发票卖出 添加发票卖出信息 1客户开票  2供应商开票
+      this.openTitleInfo.domain = 1
+      this.openTitleInfo.isOrderTax = row.id;
+      //设置该订单信息 需要进行一次查询
+      getGoodsOrder(row.id)
+        .then(res => {
+          this.openTitleInfo.orderInfo = res.data;
         })
-      }, 20)
+      this.invoiceOpenVisible = true;
     },
-    closeOpenTitle() {
-      this.handleOpenTitleDialogVisible = false
-      setTimeout(() => {
-        location.reload()
-      }, 200)
+    openSupplierInvoice(row) {
+      this.openTitleInfo.domain = 2
+      this.openTitleInfo.isOrderTax = row.id;
+      getGoodsOrder(row.id)
+        .then(res => {
+          this.openTitleInfo.orderInfo = res.data;
+        })
+      this.invoiceOpenVisible = true;
     },
     //申请陆运费
     handleApplyLandFree(row) {
@@ -1330,13 +1370,25 @@ export default {
       //打开新的新增框
       this.addOrderItemVisible = true
     },
-    /** 修改按钮操作 */
+    //修改订单的操作
     handleUpdate(row) {
       this.reset();
       const id = row.id || this.ids
       getGoodsOrder(id).then(response => {
         this.orderInfo = response.data;
+        //将数据库拿到的订单列表装入vuex 因为订单添加的货物是从vuex获取的数据 对货物的操作也是操作vuex
         this.$store.commit("order/SET_ORDER_ITEM_LIST", response.data.orderDetailList)
+        //填充供应商和客户id
+        if (response.data.orderDetailList !== null && response.data.orderDetailList !== undefined) {
+          for (let i = 0; i < this.orderInfo.orderDetailList.length; i++) {
+            let item = this.orderInfo.orderDetailList[i];
+            item.customerID = this.orderInfo.customerID;
+            item.customer = this.orderInfo.customer;
+            //是否含税
+            item.isIncludeTaxFactory = item.isIncludeTaxFactory === '是' ? '1' : '0';
+            item.isIncludeTaxSale = item.isIncludeTaxSale === '是' ? '1' : '0';
+          }
+        }
         this.open = true;
         this.title = "修改订单";
       });
