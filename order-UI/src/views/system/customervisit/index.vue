@@ -101,8 +101,6 @@
           </el-row>
         </template>
       </el-table-column>
-      <el-table-column label="人员" align="center" prop="personnel" v-if="columns[1].visible" fixed="left"/>
-      <el-table-column label="区域" align="center" prop="region" v-if="columns[2].visible" fixed="left"/>
       <el-table-column label="客户名称" align="center" prop="customer" v-if="columns[3].visible" fixed="left"
                        width="150px"/>
       <el-table-column label="负责人姓名" align="center" prop="leaderName" v-if="columns[4].visible"/>
@@ -151,20 +149,14 @@
     />
 
     <!-- 添加或修改走访记录对话框 -->
-    <el-dialog :title="title" :visible.sync="open" width="70%" append-to-body>
+    <el-dialog :title="title" :visible.sync="open" width="70%" append-to-body fullscreen>
       <el-form ref="form" :model="form" :rules="rules" label-width="80px">
         <el-col :span="8">
-          <el-form-item label="是否审核" prop="isCheckState">
-            <el-input v-model="form.checkState" placeholder="请输入审核标志"/>
-          </el-form-item>
-          <el-form-item label="人员" prop="personnel">
-            <el-input v-model="form.county" placeholder="请输入人员"/>
-          </el-form-item>
           <el-form-item label="区域" prop="region">
-            <el-input v-model="form.customer" type="textarea" placeholder="请输入区域"/>
+            <el-input v-model="form.region" type="textarea" placeholder="请输入区域"/>
           </el-form-item>
           <el-form-item label="客户名称" prop="customer">
-            <el-input v-model="form.city" placeholder="请输入客户名称"/>
+            <el-input v-model="form.customer" placeholder="请输入客户名称"/>
           </el-form-item>
           <el-form-item label="负责人" prop="leaderName">
             <el-input v-model="form.leaderName" type="textarea" placeholder="请输入内容"/>
@@ -173,40 +165,41 @@
             <el-input v-model="form.LeaderTel" type="textarea" placeholder="请输入内容"/>
           </el-form-item>
           <el-form-item label="厂房设备" prop="equipment">
-            <el-input v-model="form.equipment" placeholder="请输入厂房设备"/>
+            <el-input v-model="form.equipment" placeholder="请输入厂房设备" type="textarea"/>
           </el-form-item>
         </el-col>
         <el-col :span="8">
           <el-form-item label="竞争对手" prop="competitor">
-            <el-input v-model="form.competitor" placeholder="请输入竞争对手"/>
+            <el-input v-model="form.competitor" placeholder="请输入竞争对手" type="textarea"/>
           </el-form-item>
           <el-form-item label="当地经销商" prop="localDealer">
-            <el-input v-model="form.localDealer" placeholder="请输入当地经销商"/>
+            <el-input v-model="form.localDealer" placeholder="请输入当地经销商" type="textarea"/>
           </el-form-item>
           <el-form-item label="月用货量" prop="monthlyConsumption">
-            <el-input v-model="form.monthlyConsumption" placeholder="请输入月用货量"/>
+            <el-input v-model="form.monthlyConsumption" placeholder="请输入月用货量" type="textarea"/>
           </el-form-item>
           <el-form-item label="白玻用货习惯及厂家" prop="whiteGlassFactory">
-            <el-input v-model="form.whiteGlassFactory" placeholder="请输入白玻用货习惯及厂家"/>
+            <el-input v-model="form.whiteGlassFactory" placeholder="请输入白玻用货习惯及厂家" type="textarea"/>
           </el-form-item>
           <el-form-item label="lowe玻璃用货厂家及用量" prop="loweGlassConsumption">
-            <el-input v-model="form.loweGlassConsumption" placeholder="请输入lowe玻璃用货厂家及用量"/>
+            <el-input v-model="form.loweGlassConsumption" placeholder="请输入lowe玻璃用货厂家及用量" type="textarea"/>
           </el-form-item>
         </el-col>
         <el-col :span="8">
           <el-form-item label="色玻、过度色玻璃用货厂家及用量" prop="colorGlassConsumption">
-            <el-input v-model="form.colorGlassConsumption" placeholder="请输入色玻、过度色玻璃用货厂家及用量"/>
+            <el-input v-model="form.colorGlassConsumption" placeholder="请输入色玻、过度色玻璃用货厂家及用量"
+                      type="textarea"/>
           </el-form-item>
           <el-form-item label="特色厚度、特殊尺寸、协议品用货厂家及用量" prop="specialGlassConsumption">
             <el-input v-model="form.specialGlassConsumption"
-                      placeholder="请输入特色厚度、特殊尺寸、协议品用货厂家及用量"/>
+                      placeholder="请输入特色厚度、特殊尺寸、协议品用货厂家及用量" type="textarea"/>
           </el-form-item>
           <el-form-item label="备注" prop="comments">
-            <el-input v-model="form.comments" placeholder="请输入备注"/>
+            <el-input v-model="form.comments" placeholder="请输入备注" type="textarea"/>
           </el-form-item>
-          <el-form-item label="提交时间" prop="submittime">
-            <el-input v-model="form.submittime" placeholder="请输入添加时间"/>
-          </el-form-item>
+          <!--          <el-form-item label="提交时间" prop="submittime">-->
+          <!--            <el-input v-model="form.submittime" placeholder="请输入添加时间"/>-->
+          <!--          </el-form-item>-->
         </el-col>
       </el-form>
       <div slot="footer" class="dialog-footer">
@@ -320,6 +313,12 @@ export default {
         localStorage.setItem("customervisit-columns", JSON.stringify(newVal))
       },
       deep: true,
+    },
+    form: {
+      handler: (newVal) => {
+        console.log(newVal)
+      },
+      deep: true
     }
   },
   methods: {
