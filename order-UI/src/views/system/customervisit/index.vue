@@ -9,7 +9,6 @@
           @keyup.enter.native="handleQuery"
         />
       </el-form-item>
-
       <el-form-item label="区域" prop="region">
         <el-input
           v-model="queryParams.region"
@@ -18,25 +17,17 @@
           @keyup.enter.native="handleQuery"
         />
       </el-form-item>
-
-      <el-form-item label="日期" prop="submittime">
-        <el-input
-          v-model="queryParams.submittime"
-          placeholder="请输入日期"
-          clearable
-          @keyup.enter.native="handleQuery"
-        />
+      <el-form-item label="走访日期">
+        <el-date-picker
+          v-model="dateRange"
+          style="width: 240px"
+          value-format="yyyy-MM-dd"
+          type="daterange"
+          range-separator="-"
+          start-placeholder="开始日期"
+          end-placeholder="结束日期"
+        ></el-date-picker>
       </el-form-item>
-
-      <el-form-item label="姓名" prop="personnel">
-        <el-input
-          v-model="queryParams.personnel"
-          placeholder="请输入姓名"
-          clearable
-          @keyup.enter.native="handleQuery"
-        />
-      </el-form-item>
-
       <el-form-item>
         <el-button type="primary" icon="el-icon-search" size="mini" @click="handleQuery">搜索</el-button>
       </el-form-item>
@@ -91,30 +82,47 @@
     </el-row>
 
     <el-table border v-loading="loading" :data="CustomerVisitList" @selection-change="handleSelectionChange"
-              id="printBox"
-              v-horizontal-scroll="'always'">
-      <!--      <el-table-column type="selection" width="55" align="center" />-->
-      <el-table-column label="id" align="center" prop="id"/>
-      <el-table-column label="是否审核" align="center" prop="isCheckState" v-if="columns[0].visible"/>
-      <el-table-column label="人员" align="center" prop="personnel" v-if="columns[1].visible"/>
-      <el-table-column label="区域" align="center" prop="region" v-if="columns[2].visible"/>
-      <el-table-column label="客户名称" align="center" prop="customer" v-if="columns[3].visible"/>
+              id="printBox" v-horizontal-scroll="'always'">
+      <el-table-column label="id" align="center" prop="id" fixed="left"/>
+      <el-table-column label="是否审核" align="center" prop="isCheckState" v-if="columns[0].visible" fixed="left"
+                       width="120px">
+        <template #default="scope">
+          <el-row v-if="scope.row.checkState === 1">
+            <el-tag type="success">{{ scope.row.checkState === 0 ? '未审核' : '已审核' }}</el-tag>
+          </el-row>
+          <el-row v-else>
+            <el-row>
+              <el-tag type="danger">未审核</el-tag>
+            </el-row>
+            <br/>
+            <el-row>
+              <el-button type="warning" @click="handleCheck(scope.row)" size="mini">去审核</el-button>
+            </el-row>
+          </el-row>
+        </template>
+      </el-table-column>
+      <el-table-column label="人员" align="center" prop="personnel" v-if="columns[1].visible" fixed="left"/>
+      <el-table-column label="区域" align="center" prop="region" v-if="columns[2].visible" fixed="left"/>
+      <el-table-column label="客户名称" align="center" prop="customer" v-if="columns[3].visible" fixed="left"
+                       width="150px"/>
       <el-table-column label="负责人姓名" align="center" prop="leaderName" v-if="columns[4].visible"/>
       <el-table-column label="负责人电话" align="center" prop="LeaderTel" v-if="columns[5].visible"/>
       <el-table-column label="厂房设备" align="center" prop="equipment" v-if="columns[6].visible"/>
       <el-table-column label="竞争对手" align="center" prop="competitor" v-if="columns[7].visible"/>
       <el-table-column label="当地经销商" align="center" prop="localDealer" v-if="columns[8].visible"/>
       <el-table-column label="月用货量" align="center" prop="monthlyConsumption" v-if="columns[9].visible"/>
-      <el-table-column label="白玻用货习惯及厂家" align="center" prop="whiteGlassFactory" v-if="columns[10].visible"/>
+      <el-table-column label="白玻用货习惯及厂家" align="center" prop="whiteGlassFactory" v-if="columns[10].visible"
+                       width="200px" show-overflow-tooltip/>
       <el-table-column label="lowe玻璃用货厂家及用量" align="center" prop="loweGlassConsumption"
-                       v-if="columns[11].visible"/>
+                       v-if="columns[11].visible" width="300px" show-overflow-tooltip/>
       <el-table-column label="色玻、过度色玻璃用货厂家及用量" align="center" prop="colorGlassConsumption"
-                       v-if="columns[12].visible"/>
+                       v-if="columns[12].visible" width="300px" show-overflow-tooltip/>
       <el-table-column label="特色厚度、特殊尺寸、协议品用货厂家及用量" align="center" prop="specialGlassConsumption"
-                       v-if="columns[13].visible"/>
-      <el-table-column label="备注" align="center" prop="comments" v-if="columns[14].visible"/>
+                       v-if="columns[13].visible" width="300px" show-overflow-tooltip/>
+      <el-table-column label="备注" align="center" prop="comments" v-if="columns[14].visible" show-overflow-tooltip
+                       width="180px"/>
       <el-table-column label="提交时间" align="center" prop="submittime" v-if="columns[15].visible"/>
-      <el-table-column label="操作" align="center" class-name="small-padding fixed-width">
+      <el-table-column label="操作" align="center" class-name="small-padding fixed-width" fixed="right" width="130px">
         <template slot-scope="scope">
           <el-button
             size="mini"
@@ -215,7 +223,7 @@ import {
   getCustomerVisit,
   delCustomerVisit,
   addCustomerVisit,
-  updateCustomerVisit
+  updateCustomerVisit, auditCustomerVisit
 } from "@/api/system/CustomerVisit";
 import {excludeParams} from "@/api/tool/exclude";
 
@@ -241,6 +249,7 @@ export default {
       title: "",
       // 是否显示弹出层
       open: false,
+      dateRange: [],
       // 查询参数
       queryParams: {
         pageNum: 1,
@@ -314,10 +323,30 @@ export default {
     }
   },
   methods: {
-    /** 查询走访记录列表 */
+    //走访记录审核
+    handleCheck(row) {
+      console.log(row)
+      //弹出确认和取消
+      this.$confirm('是否审核该信息?', '提示', {
+        confirmButtonText: '确定',
+        cancelButtonText: '取消',
+        type: 'warning'
+      }).then(() => {
+        //修改审核状态
+        auditCustomerVisit({id: row.id, isaudit: true})
+          .then(res => {
+            this.$message({
+              type: 'success',
+              message: '操作成功~!'
+            });
+            this.getList()
+          })
+      })
+    },
     getList() {
       this.loading = true;
-      listCustomerVisit(this.queryParams).then(response => {
+      //范围时间搜索方法
+      listCustomerVisit(this.addDateRange(this.queryParams, this.dateRange, 'visit')).then(response => {
         this.CustomerVisitList = response.rows;
         this.total = response.total;
         this.loading = false;

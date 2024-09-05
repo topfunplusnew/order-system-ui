@@ -54,16 +54,24 @@ export function resetForm(refName) {
 }
 
 // 添加日期范围
+// propName 可以添加一个字符串
 export function addDateRange(params, dateRange, propName) {
+  //如果是走访记录的时间查询
   let search = params;
   search.params = typeof (search.params) === 'object' && search.params !== null && !Array.isArray(search.params) ? search.params : {};
   dateRange = Array.isArray(dateRange) ? dateRange : [];
-  if (typeof (propName) === 'undefined') {
-    search.params['beginTime'] = dateRange[0];
-    search.params['endTime'] = dateRange[1];
+  //需要格式化什么 加if就行了
+  if (propName === 'visit') {
+    search.params['visitDateStartTime'] = dateRange[0];
+    search.params['visitDateEndTime'] = dateRange[1];
   } else {
-    search.params['begin' + propName] = dateRange[0];
-    search.params['end' + propName] = dateRange[1];
+    if (typeof (propName) === 'undefined') {
+      search.params['beginTime'] = dateRange[0];
+      search.params['endTime'] = dateRange[1];
+    } else {
+      search.params['begin' + propName] = dateRange[0];
+      search.params['end' + propName] = dateRange[1];
+    }
   }
   return search;
 }

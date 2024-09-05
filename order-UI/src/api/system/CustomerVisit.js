@@ -42,3 +42,12 @@ export function delCustomerVisit(id) {
     method: 'delete'
   })
 }
+
+//审核走访记录
+export function auditCustomerVisit(query) {
+  return request({
+    url: '/system/CustomerVisit/audit',
+    method: 'put',
+    params: query
+  })
+}

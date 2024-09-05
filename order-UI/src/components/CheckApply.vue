@@ -31,6 +31,7 @@ export default {
     };
   },
   methods: {
+
     //审核通过
     handleCheckSuccess() {
       //调用接口 修改审核状态
