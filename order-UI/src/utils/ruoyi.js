@@ -55,7 +55,7 @@ export function resetForm(refName) {
 
 // 添加日期范围
 // propName 可以添加一个字符串
-export function addDateRange(params, dateRange, propName) {
+export function addDateRange(params, dateRange, propName, otherParams) {
   //如果是走访记录的时间查询
   let search = params;
   search.params = typeof (search.params) === 'object' && search.params !== null && !Array.isArray(search.params) ? search.params : {};
@@ -64,6 +64,7 @@ export function addDateRange(params, dateRange, propName) {
   if (propName === 'visit') {
     search.params['visitDateStartTime'] = dateRange[0];
     search.params['visitDateEndTime'] = dateRange[1];
+    search.params['region'] = otherParams;
   } else {
     if (typeof (propName) === 'undefined') {
       search.params['beginTime'] = dateRange[0];

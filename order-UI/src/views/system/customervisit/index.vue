@@ -9,39 +9,39 @@
           @keyup.enter.native="handleQuery"
         />
       </el-form-item>
-      <!--      <el-form-item label="区域" prop="region">-->
-      <!--        <el-input-->
-      <!--          v-model="queryParams.region"-->
-      <!--          placeholder="请输入区域"-->
-      <!--          clearable-->
-      <!--          @keyup.enter.native="handleQuery"-->
-      <!--        />-->
+      <el-form-item label="区域" prop="region">
+        <el-input
+          v-model="queryParams.region"
+          placeholder="请输入区域"
+          clearable
+          @keyup.enter.native="handleQuery"
+        />
+      </el-form-item>
+      <!--      <el-form-item label="省" prop="province">-->
+      <!--        &lt;!&ndash;          <el-input v-model="form.province" placeholder="请输入省"/>&ndash;&gt;-->
+      <!--        <el-select v-model="queryParams.province" placeholder="请选择省" @change="changeProvince">-->
+      <!--          <el-option-->
+      <!--            v-for="item in provinceList"-->
+      <!--            :key="item.code"-->
+      <!--            :label="item.name"-->
+      <!--            :value="item.name">-->
+      <!--          </el-option>-->
+      <!--        </el-select>-->
       <!--      </el-form-item>-->
-      <el-form-item label="省" prop="province">
-        <!--          <el-input v-model="form.province" placeholder="请输入省"/>-->
-        <el-select v-model="queryParams.province" placeholder="请选择省" @change="changeProvince">
-          <el-option
-            v-for="item in provinceList"
-            :key="item.code"
-            :label="item.name"
-            :value="item.name">
-          </el-option>
-        </el-select>
-      </el-form-item>
-      <el-form-item label="市县" prop="city">
-        <!--          <el-input v-model="form.city" placeholder="请输入市县"/>-->
-        <el-select v-model="queryParams.city" placeholder="请选择市" @change="changeCity">
-          <el-option
-            v-for="item in cityList"
-            :key="item.code"
-            :label="item.name"
-            :value="item.name">
-          </el-option>
-        </el-select>
-      </el-form-item>
-      <el-form-item label="乡镇" prop="county">
-        <el-input v-model="queryParams.county" placeholder="请输入乡镇"/>
-      </el-form-item>
+      <!--      <el-form-item label="市县" prop="city">-->
+      <!--        &lt;!&ndash;          <el-input v-model="form.city" placeholder="请输入市县"/>&ndash;&gt;-->
+      <!--        <el-select v-model="queryParams.city" placeholder="请选择市" @change="changeCity">-->
+      <!--          <el-option-->
+      <!--            v-for="item in cityList"-->
+      <!--            :key="item.code"-->
+      <!--            :label="item.name"-->
+      <!--            :value="item.name">-->
+      <!--          </el-option>-->
+      <!--        </el-select>-->
+      <!--      </el-form-item>-->
+      <!--      <el-form-item label="乡镇" prop="county">-->
+      <!--        <el-input v-model="queryParams.county" placeholder="请输入乡镇"/>-->
+      <!--      </el-form-item>-->
       <el-form-item label="走访日期">
         <el-date-picker
           v-model="dateRange"
@@ -463,7 +463,7 @@ export default {
     getList() {
       this.loading = true;
       //范围时间搜索方法
-      listCustomerVisit(this.addDateRange(this.queryParams, this.dateRange, 'visit')).then(response => {
+      listCustomerVisit(this.addDateRange(this.queryParams, this.dateRange, 'visit',this.queryParams.region)).then(response => {
         this.CustomerVisitList = response.rows;
         this.total = response.total;
         this.loading = false;
