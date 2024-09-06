@@ -812,12 +812,6 @@ export default {
         <el-input type="text" placeholder="请输入杂费" v-model="sundryCost"></el-input>
       </div>
       <div class="order-item">
-        <span class="text-bold">销售是否含税</span>
-        <hr/>
-        <el-radio v-model="isIncludeTaxSale" label="1">是</el-radio>
-        <el-radio v-model="isIncludeTaxSale" label="0">否</el-radio>
-      </div>
-      <div class="order-item">
         <span class="text-bold">出厂货款</span>
         <hr/>
         <el-input type="text" placeholder="请输入出厂贷款"
@@ -834,6 +828,12 @@ export default {
         <el-input type="text" placeholder="请输入卸货价" v-model="paymentUnload"></el-input>
       </div>
       <div class="order-item">
+        <span class="text-bold">销售是否含税</span>
+        <hr/>
+        <el-radio v-model="isIncludeTaxSale" label="1">是</el-radio>
+        <el-radio v-model="isIncludeTaxSale" label="0">否</el-radio>
+      </div>
+      <div class="order-item">
         <span class="text-bold">总货款杂费</span>
         <hr/>
         <el-input type="text" placeholder="总货款杂费"
@@ -844,6 +844,7 @@ export default {
         <hr/>
         <el-input type="text" placeholder="请输入总货款" v-model="payments"></el-input>
       </div>
+
       <div class="order-item">
         <span class="text-bold">误差</span>
         <hr/>
@@ -875,13 +876,11 @@ export default {
         <hr/>
         <el-input type="text" placeholder="海运费" v-model="seaFreight"></el-input>
       </div>
-
       <div class="order-item">
         <span class="text-bold">总运费</span>
         <hr/>
         <el-input type="text" placeholder="总运费" v-model="freight"></el-input>
       </div>
-
       <div class="order-item">
         <span class="text-bold">其他费用</span>
         <hr/>
@@ -897,27 +896,26 @@ export default {
         <hr/>
         <el-input type="text" placeholder="不含税利润" v-model="profitNoTax"></el-input>
       </div>
-      <div class="order-item">
-        <span class="text-bold">实际片数</span>
-        <hr/>
-        <el-input type="text" placeholder="实际片数" v-model="actualPieces"></el-input>
-      </div>
-
       <!--      <div class="order-item">-->
-      <!--        <span class="text-bold">物流利润</span>-->
+      <!--        <span class="text-bold">实际片数</span>-->
       <!--        <hr/>-->
-      <!--        <el-input type="text" placeholder="物流利润" v-model="orderItemInfo.logisticsProfit"></el-input>-->
+      <!--        <el-input type="text" placeholder="实际片数" v-model="actualPieces"></el-input>-->
       <!--      </div>-->
+      <div class="order-item">
+        <span class="text-bold">备注</span>
+        <hr/>
+        <el-input type="text" placeholder="备注" v-model="comments"></el-input>
+      </div>
+      <div class="order-item">
+        <span class="text-bold">物流利润</span>
+        <hr/>
+        <el-input type="text" placeholder="物流利润" v-model="orderItemInfo.logisticsProfit"></el-input>
+      </div>
       <div class="order-item">
         <span class="text-bold">客户佣金</span>
         <hr/>
         <el-input type="text" placeholder="客户佣金"
                   v-model="customerCommission"></el-input>
-      </div>
-      <div class="order-item">
-        <span class="text-bold">备注</span>
-        <hr/>
-        <el-input type="text" placeholder="备注" v-model="comments"></el-input>
       </div>
     </div>
 

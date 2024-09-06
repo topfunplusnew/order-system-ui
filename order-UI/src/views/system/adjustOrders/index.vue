@@ -4,7 +4,7 @@
     <el-form :model="timesQuery" ref="queryForm" size="small" :inline="true" v-show="showSearch" label-width="100px">
       <el-form-item label="开始时间" prop="beginTime">
         <el-date-picker
-          v-model="queryParams.orderDateStart"
+          v-model="timesQuery.beginTime"
           type="date"
           placeholder="选择开始时间"
           value-format="yyyy-MM-dd">
@@ -12,7 +12,7 @@
       </el-form-item>
       <el-form-item label="结束时间" prop="endTime">
         <el-date-picker
-          v-model="queryParams.orderDateEnd"
+          v-model="timesQuery.endTime"
           type="date"
           placeholder="选择结束时间"
           value-format="yyyy-MM-dd">
@@ -20,14 +20,14 @@
       </el-form-item>
       <el-form-item label="客户名称" prop="customer">
         <el-input
-          v-model="queryParams.customer"
+          v-model="paramQuery.customer"
           placeholder="请输入陆运车牌"
           clearable
           @keyup.enter.native="handleQuery"
         />
       </el-form-item>
       <el-form-item label="审核状态" prop="checkState">
-        <el-select v-model="queryParams.checkState" placeholder="请选择">
+        <el-select v-model="paramQuery.checkState" placeholder="请选择">
           <el-option
             v-for="item in options"
             :key="item.value"
@@ -37,7 +37,7 @@
         </el-select>
       </el-form-item>
       <el-form-item label="开票状态" prop="invoiceState">
-        <el-select v-model="queryParams.invoiceState" placeholder="请选择">
+        <el-select v-model="paramQuery.invoiceState" placeholder="请选择">
           <el-option
             v-for="item in optionsInvoice"
             :key="item.value"
@@ -47,7 +47,7 @@
         </el-select>
       </el-form-item>
       <el-form-item>
-        <el-button type="primary" icon="el-icon-search" size="mini" @click="handleQuery">搜索</el-button>
+        <el-button type="primary" icon="el-icon-search" size="mini" @click="handleTimesQuery">搜索</el-button>
       </el-form-item>
     </el-form>
     <!--    表格上方操作栏-->
@@ -273,7 +273,29 @@
           </el-row>
         </template>
       </el-table-column>
-
+      <el-table-column label="是否被调整单" align="center" prop="isAdjusted" v-if="columns[14].visible">
+        <template slot-scope="scope">
+          <el-tag
+            :type="scope.row.isAdjusted === '否' ? 'danger' :'success'"
+            disable-transitions>{{ scope.row.isAdjusted }}
+          </el-tag>
+        </template>
+      </el-table-column>
+      <el-table-column label="是否调整单" align="center" prop="isAdjust" v-if="columns[15].visible">
+        <template slot-scope="scope">
+          <el-tag
+            :type="scope.row.isAdjust === '否' ? 'danger' :'success'"
+            disable-transitions>{{ scope.row.isAdjust }}
+          </el-tag>
+        </template>
+      </el-table-column>
+      <el-table-column label="调整日期" align="center" prop="adjustDate" v-if="columns[16].visible">
+        <!--        如果没有日期 就显示未调整-->
+        <template slot-scope="scope">
+          <span v-if="scope.row.adjustDate === '' || scope.row.adjustDate === null">未调整</span>
+          <span v-else>{{ parseTime(scope.row.adjustDate, '{y}-{m}-{d}') }}</span>
+        </template>
+      </el-table-column>
       <el-table-column label="原订单编号" align="center" prop="adjustOrderid" v-if="columns[17].visible"/>
       <el-table-column label="是否可编辑" align="center" prop="isedit" v-if="columns[18].visible">
         <template slot-scope="scope">
@@ -715,8 +737,6 @@ export default {
       open: false,
       // 查询参数
       queryParams: {
-        orderDateStart: null,
-        orderDateEnd: null,
         pageNum: 1,
         pageSize: 10,
         ordersNo: null,
@@ -743,9 +763,9 @@ export default {
         receiveProof: null,
         saleManager: null,
         fleet: null,
-        isAdjusted: null,
+        isAdjusted: '是',
         adjustDate: null,
-        isAdjust: null,
+        isAdjust: '是',
         adjustOrderid: null,
         isedit: null,
         customerIsInvoice: null,
@@ -1065,7 +1085,6 @@ export default {
       }
       addGoodsOrder({...this.orderInfo, PaymentState: ''}).then(res => {
         this.$message.success('订单提交成功')
-        this.getList()
       })
     },
     //查看附件信息
@@ -1113,7 +1132,6 @@ export default {
         updateGoodsOrder({...this.tempOrderInfo, receiveProof: response.url})
           .then(res => {
             this.$message.success('上传成功')
-            this.getList()
           })
       } else {
         this.$message.error('上传失败')
@@ -1148,7 +1166,6 @@ export default {
         updateGoodsOrder({...this.tempOrderInfo, path: response.url})
           .then(res => {
             this.$message.success('上传成功')
-            this.getList()
           })
       } else {
         this.$message.error('上传失败')
