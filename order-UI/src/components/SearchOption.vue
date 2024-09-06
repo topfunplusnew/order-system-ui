@@ -69,16 +69,19 @@ export default {
     }
   },
   methods: {
+    getList() {
+      this.getData({...this.limitInfo, pageNum: this.pageNum, pageSize: this.pageSize}).then(res => {
+        this.total = res.total;
+        this.tableData = res.rows;
+        this.loading = false;
+      })
+    },
     //点击弹窗
     handleCallBack() {
       this.dialogVisible = true
       this.loading = true;
       //获取数据 渲染表格
-      this.getData(this.limitInfo).then(res => {
-        this.total = res.total;
-        this.tableData = res.rows;
-        this.loading = false;
-      })
+      this.getList()
     },
     //点击确认
     commitSomeThing(row) {
@@ -113,6 +116,14 @@ export default {
         //Object.assign只能赋值可枚举属性
         Object.assign(this.limitInfo, queryParams)
       }
+    },
+    //监听数据
+    tableData: {
+      handler(val) {
+        console.log(val)
+      },
+      deep: true,
+      immediate: true
     }
   }
 }
@@ -160,7 +171,7 @@ export default {
           :total="total"
           :page.sync="pageNum"
           :limit.sync="pageSize"
-          @pagination="getData({pageNum,pageSize})"
+          @pagination="getList"
         />
       </el-row>
       <span slot="footer" class="dialog-footer">
