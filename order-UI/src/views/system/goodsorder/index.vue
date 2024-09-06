@@ -57,7 +57,6 @@
         <el-button icon="el-icon-refresh" size="mini" @click="resetQuery">刷新</el-button>
       </el-col>
       <el-col :span="1.5">
-        <!--        todo 审核的时候添加审核权限 -->
         <el-button
           type="danger"
           plain
@@ -110,47 +109,46 @@
     <el-table border v-loading="loading" :data="goodsOrderList" @selection-change="handleSelectionChange"
               id="printBox" :row-class-name="tableRowClassName" v-horizontal-scroll="'always'"
               max-height="750" size="mini">
-      <el-table-column label="行操作" align="center" class-name="small-padding fixed-width" width="170px" fixed="left">
+      <el-table-column label="行操作" align="center" class-name="small-padding fixed-width" width="100px" fixed="left">
         <template slot-scope="scope">
-          <el-row>
-            <el-col :span="12">
-              <el-button
-                size="mini"
-                @click="checkOrderItemInfo(scope.row)"
-              >查看
-              </el-button>
-            </el-col>
-            <el-col :span="12">
-
-              <el-button
-                size="mini"
-                type="primary"
-                @click="handleUpdate(scope.row)"
-                v-hasPermi="['system:goodsorder:edit']"
-              >修改
-              </el-button>
-            </el-col>
-          </el-row>
-          <br/>
-          <el-row>
-            <el-col :span="12">
-              <el-button
-                size="mini"
-                type="warning"
-                @click="handleCheckOrderDetailInfo(scope.row)"
-              >详情
-              </el-button>
-            </el-col>
-            <el-col :span="12">
-              <el-button
-                size="mini"
-                type="danger"
-                @click="handleDelete(scope.row)"
-                v-hasPermi="['system:goodsorder:remove']"
-              >删除
-              </el-button>
-            </el-col>
-          </el-row>
+          <el-dropdown size="mini" split-button type="primary">
+            操作
+            <el-dropdown-menu slot="dropdown">
+              <el-dropdown-item>
+                <el-button
+                  size="mini"
+                  @click="checkOrderItemInfo(scope.row)"
+                >查看
+                </el-button>
+              </el-dropdown-item>
+              <el-dropdown-item>
+                <el-button
+                  size="mini"
+                  type="primary"
+                  @click="handleUpdate(scope.row)"
+                  v-hasPermi="['system:goodsorder:edit']"
+                >修改
+                </el-button>
+              </el-dropdown-item>
+              <el-dropdown-item>
+                <el-button
+                  size="mini"
+                  type="warning"
+                  @click="handleCheckOrderDetailInfo(scope.row)"
+                >详情
+                </el-button>
+              </el-dropdown-item>
+              <el-dropdown-item>
+                <el-button
+                  size="mini"
+                  type="danger"
+                  @click="handleDelete(scope.row)"
+                  v-hasPermi="['system:goodsorder:remove']"
+                >删除
+                </el-button>
+              </el-dropdown-item>
+            </el-dropdown-menu>
+          </el-dropdown>
         </template>
       </el-table-column>
       <el-table-column label="ID" align="center" prop="id" fixed="left"/>
@@ -178,6 +176,22 @@
       <el-table-column label="销售经理" align="center" prop="saleManager" v-if="columns[7].visible"/>
       <el-table-column label="车队" align="center" prop="fleet" v-if="columns[8].visible"/>
       <el-table-column label="审核状态" align="center" prop="checkState" v-if="columns[9].visible" width="120">
+        <template #default="scope">
+          <el-row v-if="scope.row.checkState === '已审核'">
+            <el-tag type="success">{{ scope.row.checkState }}</el-tag>
+          </el-row>
+          <el-row v-else>
+            <el-row>
+              <el-tag type="danger">未审核</el-tag>
+            </el-row>
+            <br/>
+            <el-row>
+              <el-button type="warning" @click="handleCheck(scope.row)" size="mini"
+                         v-hasPermi="['system:goodsorder:audit']">去审核
+              </el-button>
+            </el-row>
+          </el-row>
+        </template>
       </el-table-column>
       <el-table-column label="开票状态" align="center" prop="invoiceState" v-if="columns[10].visible" width="120px">
       </el-table-column>
@@ -315,60 +329,80 @@
       </el-table-column>
       <el-table-column label="备注" align="center" prop="comments" v-if="columns[21].visible"/>
       <!--      右侧操作栏-->
-      <el-table-column label="订单操作" align="center" class-name="small-padding fixed-width" width="300px"
+      <el-table-column label="订单操作" align="center" class-name="small-padding fixed-width" width="100px"
                        fixed="right">
         <template slot-scope="scope">
-          <el-button
-            size="mini"
-            @click="handleOrder1(scope.row)"
-            v-hasPermi="['system:goodsorder:edit']"
-          >发货单
-          </el-button>
-          <el-button
-            size="mini"
-            type="danger"
-            @click="handleUpload(scope.row)"
-          >上传附件
-          </el-button>
-          <el-button
-            size="mini"
-            @click="handleCommit(scope.row)"
-            v-hasPermi="['system:goodsorder:remove']"
-          >上传收到条
-          </el-button>
-          <el-button
-            :disabled="scope.row.isAdjusted ==='是'"
-            size="mini"
-            type="primary"
-            @click="handleOrderItemInfo(scope.row)"
-          >调整单
-          </el-button>
+          <el-dropdown size="mini" split-button type="primary">
+            操作
+            <el-dropdown-menu slot="dropdown">
+              <el-dropdown-item>
+                <el-button
+                  size="mini"
+                  @click="handleOrder1(scope.row)"
+                  v-hasPermi="['system:goodsorder:edit']"
+                >发货单
+                </el-button>
+              </el-dropdown-item>
+              <el-dropdown-item>
+                <el-button
+                  :disabled="scope.row.isAdjusted ==='是'"
+                  size="mini"
+                  type="primary"
+                  @click="handleOrderItemInfo(scope.row)"
+                >调整单
+                </el-button>
+              </el-dropdown-item>
+              <el-dropdown-item>
+                <el-button
+                  size="mini"
+                  type="danger"
+                  @click="handleUpload(scope.row)"
+                >上传附件
+                </el-button>
+              </el-dropdown-item>
+              <el-dropdown-item>
+                <el-button
+                  size="mini"
+                  @click="handleCommit(scope.row)"
+                  v-hasPermi="['system:goodsorder:remove']"
+                >上传收到条
+                </el-button>
+              </el-dropdown-item>
+            </el-dropdown-menu>
+          </el-dropdown>
         </template>
       </el-table-column>
-      <el-table-column label="运费申请" align="center" class-name="small-padding fixed-width" width="170px"
+      <el-table-column label="运费申请" align="center" class-name="small-padding fixed-width" width="100px"
                        fixed="right">
         <template slot-scope="scope">
-          <el-row v-if="scope.row.landFreight>0 ||scope.row.seaFreight>0  ">
-            <el-button
-              size="mini"
-              v-if="scope.row.landFreight>0"
-              type="warning"
-              @click="handleApplyLandFree(scope.row)"
-              v-hasPermi="['system:goodsorder:remove']"
-            >陆运费申请
-            </el-button>
-            <el-button
-              size="mini"
-              v-if="scope.row.seaFreight>0"
-              type="primary"
-              @click="handleApplySeaFree(scope.row)"
-              v-hasPermi="['system:goodsorder:remove']"
-            >海运费申请
-            </el-button>
-          </el-row>
-          <el-row v-else>
-            无运费信息
-          </el-row>
+          <el-dropdown size="mini" split-button type="primary">
+            操作
+            <el-dropdown-menu slot="dropdown">
+              <el-dropdown-item>
+                <el-row v-if="scope.row.landFreight>0 ||scope.row.seaFreight>0  ">
+                  <el-button
+                    size="mini"
+                    v-if="scope.row.landFreight>0"
+                    type="warning"
+                    @click="handleApplyLandFree(scope.row)"
+                    v-hasPermi="['system:goodsorder:remove']"
+                  >陆运费申请
+                  </el-button>
+                  <el-button
+                    size="mini"
+                    v-if="scope.row.seaFreight>0"
+                    type="primary"
+                    @click="handleApplySeaFree(scope.row)"
+                    v-hasPermi="['system:goodsorder:remove']"
+                  >海运费申请
+                  </el-button>
+                </el-row>
+                <el-row v-else>
+                  无运费信息
+                </el-row>
+              </el-dropdown-item>
+            </el-dropdown-menu>
+          </el-dropdown>
         </template>
       </el-table-column>
     </el-table>
@@ -551,7 +585,7 @@
     </el-dialog>
 
     <!-- 添加或修改订单对话框 -->
-    <el-dialog title="修改订单" :visible.sync="open" append-to-body>
+    <el-dialog title="修改订单" :visible.sync="open" append-to-body width="70%">
       <OrderForm :orderInfo="orderInfo" @updateOrderInfo="handleChangeOrderInfo"/>
       <div slot="footer" class="dialog-footer">
         <el-button type="primary" @click="submitForm">确 定</el-button>
@@ -1092,6 +1126,26 @@ export default {
         this.$message.error('上传失败')
       }
       fileList.pop();
+    },
+    //订单审核
+    handleCheck(row) {
+      console.log(row)
+      //弹出确认和取消
+      this.$confirm('是否审核该信息?', '提示', {
+        confirmButtonText: '确定',
+        cancelButtonText: '取消',
+        type: 'warning'
+      }).then(() => {
+        //修改审核状态
+        auditGoodsOrder({id: row.id, isaudit: true})
+          .then(res => {
+            this.$message({
+              type: 'success',
+              message: '操作成功~!'
+            });
+            this.getList()
+          })
+      })
     },
     handleUploadPathSuccess(response, file, fileList) {
       if (response.code === 200) {

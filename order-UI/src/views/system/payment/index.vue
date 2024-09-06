@@ -172,6 +172,13 @@
             v-else
             size="mini"
             disabled
+            type="warning"
+          >申请中
+          </el-button>
+          <el-button
+            v-else
+            size="mini"
+            disabled
             type="primary"
             v-hasPermi="['system:payment:edit']"
           >审核中
@@ -216,7 +223,7 @@
               <el-input v-model="form.selfAcountsName" placeholder="请输入己方户名"/>
             </el-col>
             <el-col :span="3">
-              <SearchOption :limit-info="{}" :get-data="listCompany" icon="el-icon-search"
+              <SearchOption :limit-info="{companyType:'己方公司'}" :get-data="listCompany" icon="el-icon-search"
                             @commitBack="handleCommitBack">
                 <template #table-columns>
                   <el-table-column label="公司名称" align="center" prop="companyName"/>

@@ -122,7 +122,8 @@
             </el-row>
             <br/>
             <el-row>
-              <el-button type="warning" @click="handleCheck(scope.row)" size="mini">去审核</el-button>
+              <el-button type="warning" @click="handleCheck(scope.row)" size="mini"
+                         v-hasPermi="['system:customervisit:audit']">去审核</el-button>
             </el-row>
           </el-row>
         </template>
