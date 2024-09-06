@@ -88,31 +88,40 @@
       <el-table-column label="开户行" align="center" prop="bankName" v-if="columns[3].visible" width="200"/>
       <el-table-column label="公司名称" align="center" prop="companyName" v-if="columns[4].visible" width="200"/>
       <el-table-column label="余额" align="center" prop="amount"/>
-      <el-table-column label="操作" align="center" class-name="small-padding fixed-width">
+      <el-table-column label="银行卡操作" align="center" class-name="small-padding fixed-width" width="200"
+                       fixed="right">
         <template slot-scope="scope">
-          <el-button
-            size="mini"
-            type="primary"
-            @click="handleAdjust(scope.row)"
-            v-hasPermi="['system:balanceaccounts:adjust']">银行卡调整
-          </el-button>
-          <el-button
-            size="mini"
-            type="warning"
-            @click="checkBankChangeFlow(scope.row)">变动流水
-          </el-button>
-          <el-button
-            size="mini"
-            type="primary"
-            @click="handleUpdate(scope.row)"
-            v-hasPermi="['system:bankaccount:edit']">编辑
-          </el-button>
-          <el-button
-            size="mini"
-            type="danger"
-            @click="handleDelete(scope.row)"
-            v-hasPermi="['system:bankaccount:remove']">删除
-          </el-button>
+          <el-row>
+            <el-button
+              size="mini"
+              type="primary"
+              @click="handleAdjust(scope.row)"
+              v-hasPermi="['system:balanceaccounts:adjust']">银行卡调整
+            </el-button>
+            <el-button
+              size="mini"
+              type="warning"
+              @click="checkBankChangeFlow(scope.row)">变动流水
+            </el-button>
+          </el-row>
+        </template>
+      </el-table-column>
+      <el-table-column label="行操作" align="center" class-name="small-padding fixed-width" fixed="right">
+        <template slot-scope="scope">
+          <el-row>
+            <el-button
+              size="mini"
+              type="primary"
+              @click="handleUpdate(scope.row)"
+              v-hasPermi="['system:bankaccount:edit']">编辑
+            </el-button>
+            <el-button
+              size="mini"
+              type="danger"
+              @click="handleDelete(scope.row)"
+              v-hasPermi="['system:bankaccount:remove']">删除
+            </el-button>
+          </el-row>
         </template>
       </el-table-column>
     </el-table>
@@ -277,6 +286,7 @@ import {addReason} from "@/api/system/user";
 import {TableName} from "@/api/tool/enums";
 import {getBankaccount} from "@/api/system/bankAccountChange";
 import {listJobLog} from "@/api/monitor/jobLog";
+import {parseTime} from "@/utils/ruoyi";
 
 export default {
   name: "BankAccount",
@@ -460,6 +470,7 @@ export default {
       addBankAccountChange({selfBankNo: bankNo, payNO: '手动调整', ...this.adjustmentInfo}).then(res => {
         this.$message.success('调整成功~')
         this.Adjustment = false;
+        this.getList()
       })
     },
     /** 查询银行账号列表 */
@@ -539,7 +550,12 @@ export default {
         cancelButtonText: '取消',
         type: 'warning'
       }).then(({value}) => {
-        addReason({reason: value, tableName: TableName.BANK_ACCOUNT_CHANGE, tid: row.id, modifyTime: this.modifyTime})
+        addReason({
+          reason: value,
+          tableName: TableName.BANK_ACCOUNT_CHANGE,
+          tid: row.id,
+          modifyTime: parseTime(new Date())
+        })
           .then(res => {
             this.$message.success('提交成功')
             this.Adjustment = true;

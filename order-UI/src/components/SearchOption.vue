@@ -29,7 +29,7 @@ export default {
     //获取数据的函数
     getData: {
       type: Function,
-      required: true
+      required: true,
     },
     //约束条件 必须传入 这个字段为查找data的筛选属性，如果不需要传{}空对象
     limitInfo: {
@@ -47,7 +47,7 @@ export default {
       //显示总行数
       total: 0,
       pageNum: 0,
-      pageSize: 0,
+      pageSize: 10,
       dialogVisible: false,
       //数据集 通过父组件传入函数来获取
       tableData: [],
@@ -75,6 +75,7 @@ export default {
       this.loading = true;
       //获取数据 渲染表格
       this.getData(this.limitInfo).then(res => {
+        this.total = res.total;
         this.tableData = res.rows;
         this.loading = false;
       })
@@ -89,6 +90,7 @@ export default {
       this.getData({
         ...this.limitInfo
       }).then(res => {
+        this.total = res.total;
         this.tableData = res.rows;
         this.loading = false;
       })
@@ -124,7 +126,7 @@ export default {
     <el-dialog
       :title="title"
       :visible.sync="dialogVisible"
-      width="30%" append-to-body>
+      width="50%" append-to-body>
       <!--      弹出的表格内容-->
       <el-row>
         <div>
@@ -153,16 +155,13 @@ export default {
             </template>
           </el-table-column>
         </el-table>
-      </el-row>
-      <!--      分页-->
-      <el-row>
-        <!--        <pagination-->
-        <!--          v-show="total>0"-->
-        <!--          :total="total"-->
-        <!--          :page.sync="pageNum"-->
-        <!--          :limit.sync="pageSize"-->
-        <!--          @pagination="getData"-->
-        <!--        />-->
+        <pagination
+          v-show="total>0"
+          :total="total"
+          :page.sync="pageNum"
+          :limit.sync="pageSize"
+          @pagination="getData({pageNum,pageSize})"
+        />
       </el-row>
       <span slot="footer" class="dialog-footer">
     <el-button @click="dialogVisible = false">取 消</el-button>

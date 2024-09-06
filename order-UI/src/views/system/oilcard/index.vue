@@ -107,7 +107,7 @@
             @pagination="getList()"
           />
           <br/>
-<!--          加个换行,不然分页下部分缺失-->
+          <!--          加个换行,不然分页下部分缺失-->
         </el-tab-pane>
         <el-tab-pane lazy label="加油卡副卡管理" name="second">
           <el-table border v-loading="loading" :data="subCardList"
@@ -144,7 +144,7 @@
             @pagination="getList"
           />
           <br/>
-<!--          加个换行,不然分页下部分缺失-->
+          <!--          加个换行,不然分页下部分缺失-->
         </el-tab-pane>
       </el-tabs>
 
@@ -215,7 +215,8 @@
             <el-input v-model="moneyInfo.acountsName" placeholder="请输入银行开户名"/>
           </el-col>
           <el-col :span="4">
-            <SearchOption :limit-info="{}" :get-data="listBankAccount" @commitBack="handleCommitBackBankAcount"
+            <SearchOption :limit-info="{acountsType:'己方公司'}" :get-data="listBankAccount"
+                          @commitBack="handleCommitBackBankAcount"
                           @update:queryName="handleUpdateQueryBankAcount" :query-name="queryBankAcount"
                           query-label="户名查找" query-info="acountsName">
               <template #table-columns>

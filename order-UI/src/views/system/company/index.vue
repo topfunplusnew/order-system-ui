@@ -242,19 +242,19 @@
           <el-col :span="4">
             <span style="font-weight: bolder">{{ currentInfo.relationName }}</span>
           </el-col>
-          <el-col :span="8">
-            <el-form-item label="账号" :label-width="formLabelWidth">
-              <el-input v-model="currentInfo.bankNo" autocomplete="off"></el-input>
-            </el-form-item>
-          </el-col>
-          <el-col :span="8">
-            <el-form-item label="户名" :label-width="formLabelWidth">
-              <el-input v-model="currentInfo.acountsName" autocomplete="off"></el-input>
-            </el-form-item>
-          </el-col>
-          <el-col :span="3">
-            <el-button type="primary" @click="handleCommitCompanyGive">提交</el-button>
-          </el-col>
+          <!--          <el-col :span="8">-->
+          <!--            <el-form-item label="账号" :label-width="formLabelWidth">-->
+          <!--              <el-input v-model="currentInfo.bankNo" autocomplete="off"></el-input>-->
+          <!--            </el-form-item>-->
+          <!--          </el-col>-->
+          <!--          <el-col :span="8">-->
+          <!--            <el-form-item label="户名" :label-width="formLabelWidth">-->
+          <!--              <el-input v-model="currentInfo.acountsName" autocomplete="off"></el-input>-->
+          <!--            </el-form-item>-->
+          <!--          </el-col>-->
+          <!--          <el-col :span="3">-->
+          <!--            <el-button type="primary" @click="handleCommitCompanyGive">提交</el-button>-->
+          <!--          </el-col>-->
         </el-row>
       </el-form>
       <hr/>
@@ -297,15 +297,15 @@
           <el-table-column label="银行卡余额" align="center" prop="amount"/>
           <el-table-column label="操作" align="center" class-name="small-padding fixed-width" fixed="right" width="180">
             <template slot-scope="scope">
+              <!--              <el-button-->
+              <!--                size="mini"-->
+              <!--                @click="handleUpdateBankPop(scope.row)"-->
+              <!--                v-hasPermi="['system:company:edit']"-->
+              <!--              ><i class="el-icon-edit"></i>-->
+              <!--              </el-button>-->
               <el-button
                 size="mini"
-                @click="handleUpdateBankPop(scope.row)"
-                v-hasPermi="['system:company:edit']"
-              ><i class="el-icon-edit"></i>
-              </el-button>
-              <el-button
-                size="mini"
-                @click="handleDelete(scope.row)"
+                @click="handleDeleteBankaccount(scope.row)"
                 v-hasPermi="['system:company:remove']"
               ><i class="el-icon-delete"></i>
               </el-button>
@@ -415,7 +415,7 @@
 <script>
 import {listCompany, getCompany, delCompany, addCompany, updateCompany} from "@/api/system/company";
 import {excludeParams} from "@/api/tool/exclude";
-import {addBankAccount, listBankAccount, setDefault} from "@/api/system/bankAccount";
+import {addBankAccount, delBankAccount, listBankAccount, setDefault} from "@/api/system/bankAccount";
 import {TableName} from "@/api/tool/enums";
 
 export default {
@@ -596,6 +596,7 @@ export default {
       this.currentInfo.county = row.county
       this.currentInfo.comments = row.comments
       this.currentInfo.companyName = row.companyName
+      //查询已绑定的银行卡信息
       listBankAccount({companyId: row.id, acountsType: '客户'})
         .then(res => {
           this.singleInfo = res.rows
@@ -705,6 +706,14 @@ export default {
           })
       }
     },
+    //删除用户已绑定的某张银行卡信息
+    handleDeleteBankaccount(row) {
+      delBankAccount(row.id).then(res => {
+        this.$message.success("删除成功~")
+        this.dialogFormVisible = false
+        this.getList()
+      })
+    },
     printHTML() {
       this.$print({
         printable: 'printBox',
@@ -812,6 +821,7 @@ export default {
     },
     /** 删除按钮操作 */
     handleDelete(row) {
+      console.log(row)
       const ids = row.id || this.ids;
       this.$modal.confirm('是否确认删除客户信息编号为"' + ids + '"的数据项？').then(function () {
         return delCompany(ids);

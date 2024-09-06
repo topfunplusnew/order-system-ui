@@ -191,19 +191,19 @@
           <el-col :span="4">
             {{ currentInfo.companyName }}
           </el-col>
-          <el-col :span="8">
-            <el-form-item label="账号" :label-width="formLabelWidth">
-              <el-input v-model="currentInfo.bankNo" autocomplete="off"></el-input>
-            </el-form-item>
-          </el-col>
-          <el-col :span="8">
-            <el-form-item label="户名" :label-width="formLabelWidth">
-              <el-input v-model="currentInfo.acountsName" autocomplete="off"></el-input>
-            </el-form-item>
-          </el-col>
-          <el-col :span="3">
-            <el-button type="primary" @click="handleCommitCompanyGive">提交</el-button>
-          </el-col>
+          <!--          <el-col :span="8">-->
+          <!--            <el-form-item label="账号" :label-width="formLabelWidth">-->
+          <!--              <el-input v-model="currentInfo.bankNo" autocomplete="off"></el-input>-->
+          <!--            </el-form-item>-->
+          <!--          </el-col>-->
+          <!--          <el-col :span="8">-->
+          <!--            <el-form-item label="户名" :label-width="formLabelWidth">-->
+          <!--              <el-input v-model="currentInfo.acountsName" autocomplete="off"></el-input>-->
+          <!--            </el-form-item>-->
+          <!--          </el-col>-->
+          <!--          <el-col :span="3">-->
+          <!--            <el-button type="primary" @click="handleCommitCompanyGive">提交</el-button>-->
+          <!--          </el-col>-->
         </el-row>
       </el-form>
       <hr/>
@@ -245,15 +245,15 @@
           <el-table-column label="银行卡余额" align="center" prop="amount"/>
           <el-table-column label="操作" align="center" class-name="small-padding fixed-width" fixed="right" width="180">
             <template slot-scope="scope">
+              <!--              <el-button-->
+              <!--                size="mini"-->
+              <!--                @click="handleUpdateBankPop(scope.row)"-->
+              <!--                v-hasPermi="['system:company:edit']"-->
+              <!--              ><i class="el-icon-edit"></i>-->
+              <!--              </el-button>-->
               <el-button
                 size="mini"
-                @click="handleUpdateBankPop(scope.row)"
-                v-hasPermi="['system:company:edit']"
-              ><i class="el-icon-edit"></i>
-              </el-button>
-              <el-button
-                size="mini"
-                @click="handleDelete(scope.row)"
+                @click="handleDeleteBankaccount(scope.row)"
                 v-hasPermi="['system:company:remove']"
               ><i class="el-icon-delete"></i>
               </el-button>
@@ -411,7 +411,7 @@
 
 <script>
 import {listCompany, getCompany, delCompany, addCompany, updateCompany} from "@/api/system/company";
-import {listBankAccount, setDefault} from "@/api/system/bankAccount";
+import {delBankAccount, listBankAccount, setDefault} from "@/api/system/bankAccount";
 import {excludeParams} from "@/api/tool/exclude";
 
 export default {
@@ -707,6 +707,14 @@ export default {
             }
           })
       }
+    },
+    //删除用户已绑定的某张银行卡信息
+    handleDeleteBankaccount(row) {
+      delBankAccount(row.id).then(res => {
+        this.$message.success("删除成功~")
+        this.dialogFormVisible = false
+        this.getList()
+      })
     },
     printHTML() {
       this.$print({
