@@ -9,11 +9,18 @@
           @keyup.enter.native="handleQuery"
         />
       </el-form-item>
-      <el-form-item label="使用加油卡时间" prop="useDate">
+      <el-form-item label="使用加油卡开始时间" prop="useDateStart">
         <el-date-picker
-          v-model="queryParams.useDate"
+          v-model="queryParams.useDateStart"
           type="date"
-          placeholder="选择使用加油卡时间" value-format="timestamp">
+          placeholder="选择使用加油卡时间" value-format="yyyy-MM-dd">
+        </el-date-picker>
+      </el-form-item>
+      <el-form-item label="使用加油卡结束时间" prop="useDateEnd">
+        <el-date-picker
+          v-model="queryParams.useDateEnd"
+          type="date"
+          placeholder="选择使用加油卡时间" value-format="yyyy-MM-dd">
         </el-date-picker>
       </el-form-item>
       <el-form-item>
@@ -63,8 +70,8 @@
       <el-table-column label="加油金额(元）" align="center" prop="refuelingMoney" v-if="columns[7].visible"/>
       <el-table-column label="充值金额(元）" align="center" prop="rechargeMoney" v-if="columns[8].visible"/>
       <el-table-column label="加油卡余额" align="center" prop="endCardSurplus" v-if="columns[9].visible"/>
-<!--      <el-table-column label="加油小票附件" align="center" prop="attachmentOiladd" v-if="columns[10].visible"-->
-<!--                       width="300px"/>-->
+      <!--      <el-table-column label="加油小票附件" align="center" prop="attachmentOiladd" v-if="columns[10].visible"-->
+      <!--                       width="300px"/>-->
       <el-table-column label="加油小票附件" align="center" prop="attachmentOiladd" v-if="columns[10].visible">
         <template #default="scope">
           <img v-if="isPic(scope.row.attachmentOiladd)" :src="scope.row.attachmentOiladd" alt=""
@@ -170,6 +177,8 @@ export default {
       title: "",
       open: false,
       queryParams: {
+        useDateEnd: '',
+        useDateStart: '',
         pageNum: 1,
         pageSize: 10,
         bTripId: null,

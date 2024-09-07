@@ -1,24 +1,19 @@
 <template>
   <div class="app-container">
-    <el-form :model="timesQuery" ref="queryForm" size="small" :inline="true" v-show="showSearch" label-width="68px">
-      <el-form-item label="开始时间" prop="beginTime">
+    <el-form :model="queryParams" ref="queryForm" size="small" :inline="true" v-show="showSearch" label-width="68px">
+      <el-form-item label="付款时间">
         <el-date-picker
-          v-model="timesQuery.beginTime"
-          type="date"
-          placeholder="选择开始时间"
-          value-format="yyyy-MM-dd">
-        </el-date-picker>
-      </el-form-item>
-      <el-form-item label="结束时间" prop="endTime">
-        <el-date-picker
-          v-model="timesQuery.endTime"
-          type="date"
-          placeholder="选择结束时间"
-          value-format="yyyy-MM-dd">
-        </el-date-picker>
+          v-model="dateRange"
+          style="width: 240px"
+          value-format="yyyy-MM-dd"
+          type="daterange"
+          range-separator="-"
+          start-placeholder="开始日期"
+          end-placeholder="结束日期"
+        ></el-date-picker>
       </el-form-item>
       <el-form-item>
-        <el-button type="primary" icon="el-icon-search" size="mini" @click="handleTimesQuery">搜索</el-button>
+        <el-button type="primary" icon="el-icon-search" size="mini" @click="handleQuery">搜索</el-button>
       </el-form-item>
     </el-form>
 
@@ -172,6 +167,7 @@ import {
 } from "@/api/system/fixedAssets";
 import {mapGetters} from "vuex";
 import {excludeParams} from "@/api/tool/exclude";
+import {addDateRange} from "@/utils/ruoyi";
 
 export default {
   name: "FixedAssets",
@@ -195,6 +191,7 @@ export default {
       title: "",
       // 是否显示弹出层
       open: false,
+      dateRange: [],
       // 查询参数
       queryParams: {
         pageNum: 1,
@@ -298,7 +295,8 @@ export default {
     /** 查询固定资产列表 */
     getList() {
       this.loading = true;
-      listFixedAssets(this.queryParams).then(response => {
+      //dateRange buyDateStartTime
+      listFixedAssets(addDateRange(this.queryParams, this.dateRange, 'fixedassets')).then(response => {
         this.fixedAssetsList = response.rows;
         this.total = response.total;
         this.loading = false;

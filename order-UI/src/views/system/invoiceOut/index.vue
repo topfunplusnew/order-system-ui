@@ -3,19 +3,13 @@
     <el-form :model="queryParams" ref="queryForm" size="small" :inline="true" v-show="showSearch" label-width="68px">
       <el-form-item label="开始时间" prop="beginTime">
         <el-date-picker
-          v-model="beginTime"
-          type="date"
-          placeholder="选择日期"
-        value-format="yyyy-MM-dd">
-        </el-date-picker>
-      </el-form-item>
-      <el-form-item label="结束时间" prop="endTime">
-        <el-date-picker
-          v-model="endTime"
-          type="date"
-          placeholder="选择日期"
-        value-format="yyyy-MM-dd">
-        </el-date-picker>
+          v-model="dateRange"
+          style="width: 240px"
+          value-format="yyyy-MM-dd"
+          type="daterange"
+          start-placeholder="开始日期"
+          end-placeholder="结束日期"
+        ></el-date-picker>
       </el-form-item>
       <el-form-item label="公司名称" prop="companyName">
         <el-input
@@ -34,7 +28,7 @@
         />
       </el-form-item>
       <el-form-item>
-        <el-button type="primary" icon="el-icon-search" size="mini" @click="handleTimesQuery">搜索</el-button>
+        <el-button type="primary" icon="el-icon-search" size="mini" @click="handleQuery">搜索</el-button>
       </el-form-item>
     </el-form>
 
@@ -204,6 +198,7 @@ import OrderInfos from "@/components/OrderInfos.vue";
 import {addReason} from "@/api/system/user";
 import {TableName} from "@/api/tool/enums";
 import {getInvoiceIn} from "@/api/system/invoiceIn";
+import {addDateRange, parseTime} from "@/utils/ruoyi";
 
 export default {
   name: "InvoiceOut",
@@ -230,6 +225,7 @@ export default {
       // 是否显示弹出层
       open: false,
       // 查询参数
+      dateRange: [],
       queryParams: {
         beginTime: null,
         endTime: null,
@@ -315,18 +311,18 @@ export default {
   },
   methods: {
     listCompany,
-    handleTimesQuery() {
-      this.$wait()
-      listInvoiceOut({
-        ...this.queryParams, beginTime: this.beginTime.getTime(),
-        endTime: this.endTime.getTime()
-      }).then(res => {
-        this.invoiceOutList = res.rows;
-        this.$close();
-      }).catch(err => {
-        this.$close();
-      })
-    },
+    // handleTimesQuery() {
+    //   this.$wait()
+    //   listInvoiceOut({
+    //     ...this.queryParams, beginTime: parseTime(this.beginTime),
+    //     endTime: parseTime(this.endTime)
+    //   }).then(res => {
+    //     this.invoiceOutList = res.rows;
+    //     this.$close();
+    //   }).catch(err => {
+    //     this.$close();
+    //   })
+    // },
     handleUpdateCompanyName(val) {
       this.companyName = val;
     },
@@ -348,7 +344,8 @@ export default {
     /** 查询发票卖出信息列表 */
     getList() {
       this.loading = true;
-      listInvoiceOut(this.queryParams,).then(response => {
+      //dateRange invoiceDateStartTime
+      listInvoiceOut(addDateRange(this.queryParams, this.dateRange, 'invoiceout')).then(response => {
         this.invoiceOutList = response.rows;
         this.total = response.total;
         this.loading = false;

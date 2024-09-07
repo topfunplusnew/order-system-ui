@@ -1,19 +1,16 @@
 <template>
   <div class="app-container">
-    <el-form :model="queryPayment" ref="queryForm" size="small" :inline="true" v-show="showSearch" label-width="120px">
-      <el-form-item label="开始时间" prop="beginTime">
+    <el-form :model="queryParams" ref="queryForm" size="small" :inline="true" v-show="showSearch" label-width="120px">
+      <el-form-item label="付款时间">
         <el-date-picker
-          v-model="queryParams.beginTime"
-          type="date"
-          value-format="yyyy-MM-dd" class="w-85px">
-        </el-date-picker>
-      </el-form-item>
-      <el-form-item label="结束时间" prop="endTime">
-        <el-date-picker
-          v-model="queryParams.endTime"
-          type="date"
-          value-format="yyyy-MM-dd" class="w-85px">
-        </el-date-picker>
+          v-model="dateRange"
+          style="width: 240px"
+          value-format="yyyy-MM-dd"
+          type="daterange"
+          range-separator="-"
+          start-placeholder="开始日期"
+          end-placeholder="结束日期"
+        ></el-date-picker>
       </el-form-item>
       <!--      客户还是供应商-->
       <el-form-item label="对象类型" prop="companyType">
@@ -296,6 +293,7 @@ import {TableName} from "@/api/tool/enums";
 import {listCompany} from "@/api/system/company";
 import {addReason} from "@/api/system/user";
 import {excludeParams} from "@/api/tool/exclude";
+import {addDateRange} from "@/utils/ruoyi";
 
 export default {
   name: "Payment",
@@ -378,6 +376,7 @@ export default {
       ],
       //顶部筛选框
       queryPayment: {},
+      dateRange: [],
       options_companyType: [
         {
           value: '客户',
@@ -481,7 +480,7 @@ export default {
     /** 查询付款信息列表 */
     getList() {
       this.loading = true;
-      listPayment(this.queryParams).then(response => {
+      listPayment(addDateRange(this.queryParams, this.dateRange, 'payment')).then(response => {
         this.paymentList = response.rows;
         this.total = response.total;
         this.loading = false;

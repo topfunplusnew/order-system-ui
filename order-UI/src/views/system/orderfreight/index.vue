@@ -2,24 +2,18 @@
   <div class="app-container">
     <el-form :model="queryParams" ref="queryForm" size="small" :inline="true" v-show="showSearch" label-width="68px">
       <el-form-item label="申请开始日期" prop="applyDate">
-        <el-input
-            v-model="queryParams.applyDate"
-            placeholder="请输入申请日期"
-            clearable
-            @keyup.enter.native="handleQuery"
-        />
-      </el-form-item>
-      <el-form-item label="申请结束日期" prop="applyDate">
-        <el-input
-            v-model="queryParams.applyDate"
-            placeholder="请输入申请日期"
-            clearable
-            @keyup.enter.native="handleQuery"
-        />
+        <el-date-picker
+          v-model="dateRange"
+          style="width: 240px"
+          value-format="yyyy-MM-dd"
+          type="daterange"
+          start-placeholder="开始日期"
+          end-placeholder="结束日期"
+        ></el-date-picker>
       </el-form-item>
       <el-form-item>
         <el-button type="primary" icon="el-icon-search" size="mini" @click="handleQuery">搜索</el-button>
-<!--        <el-button icon="el-icon-refresh" size="mini" @click="resetQuery">重置</el-button>-->
+        <!--        <el-button icon="el-icon-refresh" size="mini" @click="resetQuery">重置</el-button>-->
       </el-form-item>
     </el-form>
 
@@ -43,10 +37,10 @@
         <template v-slot:print>
           <el-col :span="1.5">
             <el-button
-                plain
-                icon="el-icon-printer"
-                size="mini"
-                @click="printHTML"
+              plain
+              icon="el-icon-printer"
+              size="mini"
+              @click="printHTML"
             >
             </el-button>
           </el-col>
@@ -55,11 +49,11 @@
         <template v-slot:export>
           <el-col :span="1.5">
             <el-button
-                plain
-                icon="el-icon-folder-opened"
-                size="mini"
-                @click="handleExport"
-                v-hasPermi="['system:orderfreight:export']"
+              plain
+              icon="el-icon-folder-opened"
+              size="mini"
+              @click="handleExport"
+              v-hasPermi="['system:orderfreight:export']"
             >
             </el-button>
           </el-col>
@@ -110,31 +104,31 @@
       <el-table-column label="操作" align="center" class-name="small-padding fixed-width" fixed="right" width="250">
         <template slot-scope="scope">
           <el-button
-              size="mini"
-              type="warning"
-              @click="applyForLand(scope.row)"
-              v-if="scope.row.freightType=== '陆运'"
+            size="mini"
+            type="warning"
+            @click="applyForLand(scope.row)"
+            v-if="scope.row.freightType=== '陆运'"
           >申请陆运费
           </el-button>
           <!--          只有海运费不为零才能申请海运费-->
           <el-button
-              size="mini"
-              type="primary"
-              @click="applyForSea(scope.row)"
-              v-if="scope.row.freightType=== '海运'"
+            size="mini"
+            type="primary"
+            @click="applyForSea(scope.row)"
+            v-if="scope.row.freightType=== '海运'"
           >申请海运费
           </el-button>
           <el-button
-              size="mini"
-              @click="handleUpdate(scope.row)"
-              v-hasPermi="['system:orderfreight:edit']"
+            size="mini"
+            @click="handleUpdate(scope.row)"
+            v-hasPermi="['system:orderfreight:edit']"
           >修改
           </el-button>
           <el-button
-              size="mini"
-              type="danger"
-              @click="handleDelete(scope.row)"
-              v-hasPermi="['system:orderfreight:remove']"
+            size="mini"
+            type="danger"
+            @click="handleDelete(scope.row)"
+            v-hasPermi="['system:orderfreight:remove']"
           >删除
           </el-button>
         </template>
@@ -142,11 +136,11 @@
     </el-table>
 
     <pagination
-        v-show="total>0"
-        :total="total"
-        :page.sync="queryParams.pageNum"
-        :limit.sync="queryParams.pageSize"
-        @pagination="getList"
+      v-show="total>0"
+      :total="total"
+      :page.sync="queryParams.pageNum"
+      :limit.sync="queryParams.pageSize"
+      @pagination="getList"
     />
     <!--    created第一次传递的props，然后监听后来props的变化-->
     <el-dialog title="运费付款申请" :visible.sync="open" width="500px"
@@ -169,6 +163,7 @@ import SearchOption from "@/components/SearchOption.vue";
 import {listBankAccount} from "@/api/system/bankAccount";
 import ApplyPayment from "@/components/ApplyPayment.vue";
 import {TableName} from "@/api/tool/enums";
+import {addDateRange} from "@/utils/ruoyi";
 
 export default {
   name: "OrderFreight",
@@ -188,6 +183,7 @@ export default {
       single: true,
       // 非多个禁用
       multiple: true,
+      dateRange: [],
       // 显示搜索条件
       showSearch: true,
       // 总条数
@@ -321,11 +317,13 @@ export default {
     /** 查询订单运费列表 */
     getList() {
       this.loading = true;
-      listOrderFreight(this.queryParams).then(response => {
-        this.orderFreightList = response.rows;
-        this.total = response.total;
-        this.loading = false;
-      });
+      //applyDateStartTime
+      listOrderFreight(addDateRange(this.queryParams, this.dateRange, 'orderfreight'))
+        .then(response => {
+          this.orderFreightList = response.rows;
+          this.total = response.total;
+          this.loading = false;
+        });
     },
     printHTML() {
       this.$print({

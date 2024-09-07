@@ -10,12 +10,12 @@
         />
       </el-form-item>
       <el-form-item label="出库日期" prop="outDate">
-        <el-input
+        <el-date-picker
           v-model="queryParams.outDate"
-          placeholder="请输入出库日期"
-          clearable
-          @keyup.enter.native="handleQuery"
-        />
+          type="date"
+          placeholder="选择时间"
+          value-format="yyyy-MM-dd">
+        </el-date-picker>
       </el-form-item>
       <el-form-item>
         <el-button type="primary" icon="el-icon-search" size="mini" @click="handleQuery">搜索</el-button>

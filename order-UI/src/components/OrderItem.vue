@@ -896,11 +896,11 @@ export default {
         <hr/>
         <el-input type="text" placeholder="不含税利润" v-model="profitNoTax"></el-input>
       </div>
-      <!--      <div class="order-item">-->
-      <!--        <span class="text-bold">实际片数</span>-->
-      <!--        <hr/>-->
-      <!--        <el-input type="text" placeholder="实际片数" v-model="actualPieces"></el-input>-->
-      <!--      </div>-->
+      <div class="order-item">
+        <span class="text-bold">实际片数</span>
+        <hr/>
+        <el-input type="text" placeholder="实际片数" v-model="actualPieces"></el-input>
+      </div>
       <div class="order-item">
         <span class="text-bold">备注</span>
         <hr/>

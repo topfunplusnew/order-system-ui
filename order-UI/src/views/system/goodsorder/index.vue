@@ -209,14 +209,14 @@
       <el-table-column label="附件" align="center" prop="path" v-if="columns[11].visible" width="150px">
         <template #default="scope">
           <el-row>
-            <img v-if="isPic(scope.row.path)" :src="scope.row.path" alt=""
-                 style="width: 100%;height: 100%">
-            <span v-else-if="scope.row.path === '' || scope.row.path === null">无附件</span>
-            <span v-else>
-            文件不支持预览，请手动下载:
-          <a style="color: red"
-             :href="scope.row.path">{{ scope.row.path }}</a>
-          </span>
+            <!--            <img v-if="isPic(scope.row.path)" :src="scope.row.path" alt=""-->
+            <!--                 style="width: 100%;height: 100%">-->
+            <!--            <span v-else-if="scope.row.path === '' || scope.row.path === null">无附件</span>-->
+            <!--            <span>-->
+            <!--            文件不支持预览，请手动下载:-->
+            <!--          <a style="color: red"-->
+            <!--             :href="scope.row.path">{{ scope.row.path }}</a>-->
+            <!--          </span>-->
           </el-row>
           <el-row v-if="scope.row.path === '' || scope.row.path === null">
             无操作
@@ -246,16 +246,16 @@
       <el-table-column label="收到条附件路径" align="center" prop="receiveProof" v-if="columns[13].visible"
                        width="150px">
         <template #default="scope">
-          <el-row>
-            <img v-if="isPic(scope.row.receiveProof)" :src="scope.row.receiveProof" alt=""
-                 style="width: 100%;height: 100%">
-            <span v-else-if="scope.row.receiveProof === '' || scope.row.receiveProof === null">无附件</span>
-            <span v-else>
-            文件不支持预览，请手动下载:
-          <a style="color: red"
-             :href="scope.row.receiveProof">{{ scope.row.receiveProof }}</a>
-          </span>
-          </el-row>
+          <!--          <el-row>-->
+          <!--            <img v-if="isPic(scope.row.receiveProof)" :src="scope.row.receiveProof" alt=""-->
+          <!--                 style="width: 100%;height: 100%">-->
+          <!--            <span v-else-if="scope.row.receiveProof === '' || scope.row.receiveProof === null">无附件</span>-->
+          <!--            <span v-else>-->
+          <!--            文件不支持预览，请手动下载:-->
+          <!--          <a style="color: red"-->
+          <!--             :href="scope.row.receiveProof">{{ scope.row.receiveProof }}</a>-->
+          <!--          </span>-->
+          <!--          </el-row>-->
           <el-row v-if="scope.row.receiveProof === '' || scope.row.receiveProof === null">
             无操作
           </el-row>
@@ -406,52 +406,22 @@
 
     <!--        点击查看某个订单的弹窗   -->
     <el-dialog
-      title="查看订单信息"
+      title="货物信息详细"
       :visible.sync="checkOrderVisible"
       width="60%">
-      <el-descriptions title="订单信息" :column="4" border size="medium">
-        <el-descriptions-item label="日期">{{ orderDetailInfo.orderDate }}</el-descriptions-item>
-        <el-descriptions-item label="客户">{{ orderDetailInfo.customer }}</el-descriptions-item>
-        <el-descriptions-item label="商家姓名">{{ orderDetailInfo.supplierNames }}</el-descriptions-item>
-        <el-descriptions-item label="车队">{{ orderDetailInfo.fleet }}</el-descriptions-item>
-        <el-descriptions-item label="审核状态">
-          <TagsItem :check-info="orderDetailInfo.checkState" checkValue="未审核"/>
+      <!--      orderDetailInfo-->
+      <!--      todo-->
+      <el-descriptions :title="'货物信息'+ `${index+1}` " v-for="(item,index) in orderDetailInfo" :key="index">
+        <el-descriptions-item label="订单日期">{{ item.orderDate }}</el-descriptions-item>
+        <el-descriptions-item label="供应商">{{ item.supplier }}</el-descriptions-item>
+        <el-descriptions-item label="客户">{{ item.customer }}</el-descriptions-item>
+        <el-descriptions-item label="级别编码">{{ item.levelID }}</el-descriptions-item>
+        <el-descriptions-item label="级别名称">{{ item.levelName }}</el-descriptions-item>
+        <el-descriptions-item label="客户">{{ item.customer }}</el-descriptions-item>
+        <el-descriptions-item label="备注">
+          <el-tag size="small">学校</el-tag>
         </el-descriptions-item>
-        <el-descriptions-item label="开票状态">
-          <TagsItem :check-info="orderDetailInfo.invoiceState" checkValue="未开票"/>
-        </el-descriptions-item>
-        <el-descriptions-item label="附件">{{ orderDetailInfo.path }}</el-descriptions-item>
-        <el-descriptions-item label="陆运车牌">{{ orderDetailInfo.landCarNo }}</el-descriptions-item>
-        <el-descriptions-item label="陆运司机电话">{{ orderDetailInfo.landDriverTel }}</el-descriptions-item>
-        <el-descriptions-item label="陆运司机姓名">{{ orderDetailInfo.landDriverName }}</el-descriptions-item>
-        <el-descriptions-item label="海运车牌">{{ orderDetailInfo.seaCarNo }}</el-descriptions-item>
-        <el-descriptions-item label="海运司机电话">{{ orderDetailInfo.seaDriverTel }}</el-descriptions-item>
-        <el-descriptions-item label="海运司机姓名">{{ orderDetailInfo.seaDriverName }}</el-descriptions-item>
-        <el-descriptions-item label="打款状态">{{ orderDetailInfo.PaymentState }}</el-descriptions-item>
-        <el-descriptions-item label="陆运银行户名">{{ orderDetailInfo.landBankName }}</el-descriptions-item>
-        <el-descriptions-item label="陆运银行账号">{{ orderDetailInfo.landBankNo }}</el-descriptions-item>
-        <el-descriptions-item label="海运银行户名">{{ orderDetailInfo.seaBankName }}</el-descriptions-item>
-        <el-descriptions-item label="海运银行账号">{{ orderDetailInfo.seaBankNo }}</el-descriptions-item>
-        <el-descriptions-item label="收到条附件">{{ orderDetailInfo.receiveProof }}</el-descriptions-item>
-        <el-descriptions-item label="是否被调整单">
-          <TagsItem :check-info="orderDetailInfo.isAdjusted " check-value="否"/>
-        </el-descriptions-item>
-        <el-descriptions-item label="调整日期" v-if="orderDetailInfo.isAdjusted">{{
-            orderDetailInfo.adjustDate
-          }}
-        </el-descriptions-item>
-        <el-descriptions-item label="原订单编号">{{ orderDetailInfo.adjustOrderid }}</el-descriptions-item>
-        <el-descriptions-item label="是否可编辑">
-          <TagsItem :check-info="isOrNot(orderDetailInfo.isedit) " check-value="否"/>
-        </el-descriptions-item>
-        <el-descriptions-item label="客户是否开票">
-          <TagsItem :check-info="isOrNot(orderDetailInfo.customerIsInvoice)" check-value="否"/>
-        </el-descriptions-item>
-        <el-descriptions-item label="供应商是否开票">
-          <TagsItem :check-info="isOrNot(orderDetailInfo.customerIsInvoice)" check-value="否"/>
-        </el-descriptions-item>
-        <el-descriptions-item label="陆运费">{{ orderDetailInfo.landFreight }}</el-descriptions-item>
-        <el-descriptions-item label="海运费">{{ orderDetailInfo.seaFreight }}</el-descriptions-item>
+        <el-descriptions-item label="联系地址">江苏省苏州市吴中区吴中大道 1188 号</el-descriptions-item>
       </el-descriptions>
       <span slot="footer" class="dialog-footer">
         <el-button @click="checkOrderVisible = false">取 消</el-button>
@@ -982,7 +952,7 @@ export default {
       this.checkOrderVisible = true;
       const id = row.id;
       getGoodsOrder(id).then(res => {
-        this.orderDetailInfo = res.data;
+        this.orderDetailInfo = res.data.orderDetailList;
       })
     },
     //点击调整单的弹窗
@@ -1447,6 +1417,7 @@ export default {
     submitForm() {
       if (this.orderInfo.id != null) {
         this.orderInfo = excludeParams(this.orderInfo, this.$exclude)
+        console.log('订单:', this.orderInfo)
         updateGoodsOrder(this.orderInfo).then(response => {
           this.$modal.msgSuccess("修改成功");
           this.open = false;

@@ -65,6 +65,21 @@ export function addDateRange(params, dateRange, propName, otherParams) {
     search.params['visitDateStartTime'] = dateRange[0];
     search.params['visitDateEndTime'] = dateRange[1];
     search.params['region'] = otherParams;
+  } else if (propName === 'payment') {
+    search.params['fundsDateStartTime'] = dateRange[0];
+    search.params['fundsDateEndTime'] = dateRange[1];
+  } else if (propName === 'invoiceout') {
+    //invoiceDateStartTime
+    search.params['invoiceDateStartTime'] = dateRange[0];
+    search.params['invoiceDateEndTime'] = dateRange[1];
+  } else if (propName === 'orderfreight') {
+    //applyDateStartTime
+    search.params['applyDateStartTime'] = dateRange[0];
+    search.params['applyDateEndTime'] = dateRange[1];
+  } else if (propName === 'fixedassets') {
+    //buyDateStartTime
+    search.params['buyDateStartTime'] = dateRange[0];
+    search.params['buyDateEndTime'] = dateRange[1];
   } else {
     if (typeof (propName) === 'undefined') {
       search.params['beginTime'] = dateRange[0];

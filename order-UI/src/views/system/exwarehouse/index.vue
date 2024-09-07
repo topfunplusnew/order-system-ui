@@ -364,6 +364,7 @@ import TagsItem from "@/components/TagsItem/index.vue";
 import {getInventory, listInventory} from "@/api/system/inventory";
 import {listConfig} from "@/api/system/config";
 import {formatDate} from "../../../utils";
+import {addDateRange} from "@/utils/ruoyi";
 
 export default {
   name: "ExWarehouse",
@@ -472,7 +473,8 @@ export default {
     /** 查询出库列表 */
     getList() {
       this.loading = true;
-      listExWarehouse(this.queryParams).then(response => {
+      //this.dateRange
+      listExWarehouse(addDateRange(this.queryParams, this.dateRange)).then(response => {
         this.exWarehouseList = response.rows;
         this.total = response.total;
         this.loading = false;
