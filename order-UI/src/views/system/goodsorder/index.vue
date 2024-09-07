@@ -106,10 +106,11 @@
       </right-toolbar>
     </el-row>
     <!--    表格列-->
-    <el-table border v-loading="loading" :data="goodsOrderList" @selection-change="handleSelectionChange"
+    <el-table fit border v-loading="loading" :data="goodsOrderList" @selection-change="handleSelectionChange"
               id="printBox" :row-class-name="tableRowClassName" v-horizontal-scroll="'always'"
-              max-height="750" size="mini">
-      <el-table-column label="行操作" align="center" class-name="small-padding fixed-width" width="100px" fixed="left">
+              max-height="750" size="mini" :cell-style="()=>{return {padding:'.5px'}}">
+      <el-table-column show-overflow-tooltip label="行操作" align="center" class-name="small-padding fixed-width"
+                       width="100px" fixed="left">
         <template slot-scope="scope">
           <el-dropdown size="mini" split-button type="primary">
             操作
@@ -151,31 +152,39 @@
           </el-dropdown>
         </template>
       </el-table-column>
-      <el-table-column label="ID" align="center" prop="id" fixed="left"/>
-      <el-table-column label="日期" align="center" prop="orderDate" fixed="left"/>
-      <el-table-column label="客户" align="center" prop="customer" fixed="left"/>
+      <el-table-column show-overflow-tooltip label="ID" align="center" prop="id" fixed="left"/>
+      <el-table-column show-overflow-tooltip label="日期" align="center" prop="orderDate" fixed="left"/>
+      <el-table-column show-overflow-tooltip label="客户" align="center" prop="customer" fixed="left"/>
+      <el-table-column show-overflow-tooltip label="供应商" align="center" prop="supplierNames" fixed="left"/>
       <!--      <el-table-column label="订单编号" align="center" prop="ordersNo" v-if="columns[0].visible"/>-->
-      <el-table-column label="陆运车牌" align="center" prop="landCarNo" v-if="columns[1].visible"/>
-      <el-table-column label="陆运司机电话" align="center" prop="landDriverTel" v-if="columns[2].visible"/>
-      <el-table-column label="陆地司机姓名" align="center" prop="landDriverName" v-if="columns[3].visible"/>
-      <el-table-column label="海运车牌" align="center" prop="seaCarNo" v-if="columns[4].visible">
+      <el-table-column show-overflow-tooltip label="陆运车牌" align="center" prop="landCarNo"
+                       v-if="columns[1].visible"/>
+      <el-table-column show-overflow-tooltip label="陆运司机电话" align="center" prop="landDriverTel"
+                       v-if="columns[2].visible" width="100px"/>
+      <el-table-column show-overflow-tooltip label="陆地司机姓名" align="center" prop="landDriverName"
+                       v-if="columns[3].visible" width="100px"/>
+      <el-table-column show-overflow-tooltip label="海运车牌" align="center" prop="seaCarNo" v-if="columns[4].visible">
         <template #default="scope">
           {{ scope.row.seaCarNo == null ? '无海运信息' : scope.row.seaCarNo }}
         </template>
       </el-table-column>
-      <el-table-column label="海运司机电话" align="center" prop="seaDriverTel" v-if="columns[5].visible">
+      <el-table-column show-overflow-tooltip label="海运司机电话" align="center" prop="seaDriverTel"
+                       v-if="columns[5].visible" width="100px">
         <template #default="scope">
           {{ scope.row.seaDriverTel == null ? '无海运信息' : scope.row.seaDriverTel }}
         </template>
       </el-table-column>
-      <el-table-column label="海运司机姓名" align="center" prop="seaDriverName" v-if="columns[6].visible">
+      <el-table-column show-overflow-tooltip label="海运司机姓名" align="center" prop="seaDriverName"
+                       v-if="columns[6].visible" width="100px">
         <template #default="scope">
           {{ scope.row.seaDriverName == null ? '无海运信息' : scope.row.seaDriverTel }}
         </template>
       </el-table-column>
-      <el-table-column label="销售经理" align="center" prop="saleManager" v-if="columns[7].visible"/>
-      <el-table-column label="车队" align="center" prop="fleet" v-if="columns[8].visible"/>
-      <el-table-column label="审核状态" align="center" prop="checkState" v-if="columns[9].visible" width="120">
+      <el-table-column show-overflow-tooltip label="销售经理" align="center" prop="saleManager"
+                       v-if="columns[7].visible"/>
+      <el-table-column show-overflow-tooltip label="车队" align="center" prop="fleet" v-if="columns[8].visible"/>
+      <el-table-column show-overflow-tooltip label="审核状态" align="center" prop="checkState" v-if="columns[9].visible"
+                       width="120">
         <template #default="scope">
           <el-row v-if="scope.row.checkState === '已审核'">
             <el-tag type="success">{{ scope.row.checkState }}</el-tag>
@@ -189,7 +198,8 @@
           </el-row>
         </template>
       </el-table-column>
-      <el-table-column label="开票状态" align="center" prop="invoiceState" v-if="columns[10].visible" width="120px">
+      <el-table-column show-overflow-tooltip label="开票状态" align="center" prop="invoiceState"
+                       v-if="columns[10].visible" width="120px">
         <template #default="scope">
           <el-row v-if="scope.row.customerIsInvoice === 1 && scope.row.isSupplierInvoice === 1">
             <el-tag type="success">已开票</el-tag>
@@ -206,7 +216,8 @@
           </el-row>
         </template>
       </el-table-column>
-      <el-table-column label="附件" align="center" prop="path" v-if="columns[11].visible" width="150px">
+      <el-table-column show-overflow-tooltip label="附件" align="center" prop="path" v-if="columns[11].visible"
+                       width="150px">
         <template #default="scope">
           <el-row>
             <!--            <img v-if="isPic(scope.row.path)" :src="scope.row.path" alt=""-->
@@ -235,7 +246,7 @@
           </el-row>
         </template>
       </el-table-column>
-      <el-table-column label="打款状态" align="center" prop="paymentState"
+      <el-table-column show-overflow-tooltip label="打款状态" align="center" prop="paymentState"
                        v-if="columns[12].visible">
         <template slot-scope="scope">
           <el-tag
@@ -243,7 +254,8 @@
           </el-tag>
         </template>
       </el-table-column>
-      <el-table-column label="收到条附件路径" align="center" prop="receiveProof" v-if="columns[13].visible"
+      <el-table-column show-overflow-tooltip label="收到条附件路径" align="center" prop="receiveProof"
+                       v-if="columns[13].visible"
                        width="150px">
         <template #default="scope">
           <!--          <el-row>-->
@@ -273,9 +285,10 @@
           </el-row>
         </template>
       </el-table-column>
-
-      <el-table-column label="原订单编号" align="center" prop="adjustOrderid" v-if="columns[17].visible"/>
-      <el-table-column label="是否可编辑" align="center" prop="isedit" v-if="columns[18].visible">
+      <el-table-column show-overflow-tooltip label="原订单编号" align="center" prop="adjustOrderid"
+                       v-if="columns[17].visible" width="100px"/>
+      <el-table-column show-overflow-tooltip label="是否可编辑" align="center" prop="isedit" v-if="columns[18].visible"
+                       width="100px">
         <template slot-scope="scope">
           <el-tag
             :type="scope.row.isedit === 0 ? 'danger' :'success'"
@@ -284,7 +297,8 @@
         </template>
       </el-table-column>
       <!--      客户供应商是否开票-->
-      <el-table-column label="客户是否开票" align="center" prop="customerIsInvoice" v-if="columns[19].visible"
+      <el-table-column show-overflow-tooltip label="客户是否开票" align="center" prop="customerIsInvoice"
+                       v-if="columns[19].visible"
                        width="150px">
         <template #default="scope">
           <el-row v-if="scope.row.customerIsInvoice === 1">
@@ -300,7 +314,8 @@
           </el-row>
         </template>
       </el-table-column>
-      <el-table-column label="供应商是否开票" align="center" prop="isSupplierInvoice" v-if="columns[20].visible"
+      <el-table-column show-overflow-tooltip label="供应商是否开票" align="center" prop="isSupplierInvoice"
+                       v-if="columns[20].visible"
                        width="120px">
         <template #default="scope">
           <el-row v-if="scope.row.isSupplierInvoice === 1">
@@ -316,52 +331,41 @@
           </el-row>
         </template>
       </el-table-column>
-      <el-table-column label="备注" align="center" prop="comments" v-if="columns[21].visible"/>
+      <el-table-column show-overflow-tooltip label="备注" align="center" prop="comments" v-if="columns[21].visible"/>
       <!--      右侧操作栏-->
-      <el-table-column label="订单操作" align="center" class-name="small-padding fixed-width" width="100px"
+      <el-table-column show-overflow-tooltip label="订单操作" align="center" class-name="small-padding fixed-width"
+                       width="230px"
                        fixed="right">
         <template slot-scope="scope">
-          <el-dropdown size="mini" split-button type="primary">
-            操作
-            <el-dropdown-menu slot="dropdown">
-              <el-dropdown-item>
-                <el-button
-                  size="mini"
-                  @click="handleOrder1(scope.row)"
-                  v-hasPermi="['system:goodsorder:edit']"
-                >发货单
-                </el-button>
-              </el-dropdown-item>
-              <el-dropdown-item>
-                <el-button
-                  :disabled="scope.row.isAdjusted ==='是'"
-                  size="mini"
-                  type="primary"
-                  @click="handleOrderItemInfo(scope.row)"
-                >调整单
-                </el-button>
-              </el-dropdown-item>
-              <el-dropdown-item>
-                <el-button
-                  size="mini"
-                  type="danger"
-                  @click="handleUpload(scope.row)"
-                >上传附件
-                </el-button>
-              </el-dropdown-item>
-              <el-dropdown-item>
-                <el-button
-                  size="mini"
-                  @click="handleCommit(scope.row)"
-                  v-hasPermi="['system:goodsorder:remove']"
-                >上传收到条
-                </el-button>
-              </el-dropdown-item>
-            </el-dropdown-menu>
-          </el-dropdown>
+          <el-button
+            size="mini"
+            @click="handleOrder1(scope.row)"
+            v-hasPermi="['system:goodsorder:edit']"
+          >发货单
+          </el-button>
+          <el-button
+            :disabled="scope.row.isAdjusted ==='是'"
+            size="mini"
+            type="primary"
+            @click="handleOrderItemInfo(scope.row)"
+          >调整单
+          </el-button>
+          <el-button
+            size="mini"
+            type="danger"
+            @click="handleUpload(scope.row)"
+          >上传附件
+          </el-button>
+          <el-button
+            size="mini"
+            @click="handleCommit(scope.row)"
+            v-hasPermi="['system:goodsorder:remove']"
+          >上传收到条
+          </el-button>
         </template>
       </el-table-column>
-      <el-table-column label="运费申请" align="center" class-name="small-padding fixed-width" width="100px"
+      <el-table-column show-overflow-tooltip label="运费申请" align="center" class-name="small-padding fixed-width"
+                       width="100px"
                        fixed="right">
         <template slot-scope="scope">
           <el-dropdown size="mini" split-button type="primary">
@@ -408,21 +412,62 @@
     <el-dialog
       title="货物信息详细"
       :visible.sync="checkOrderVisible"
-      width="60%">
-      <!--      orderDetailInfo-->
-      <!--      todo-->
-      <el-descriptions :title="'货物信息'+ `${index+1}` " v-for="(item,index) in orderDetailInfo" :key="index">
-        <el-descriptions-item label="订单日期">{{ item.orderDate }}</el-descriptions-item>
-        <el-descriptions-item label="供应商">{{ item.supplier }}</el-descriptions-item>
-        <el-descriptions-item label="客户">{{ item.customer }}</el-descriptions-item>
-        <el-descriptions-item label="级别编码">{{ item.levelID }}</el-descriptions-item>
-        <el-descriptions-item label="级别名称">{{ item.levelName }}</el-descriptions-item>
-        <el-descriptions-item label="客户">{{ item.customer }}</el-descriptions-item>
-        <el-descriptions-item label="备注">
-          <el-tag size="small">学校</el-tag>
-        </el-descriptions-item>
-        <el-descriptions-item label="联系地址">江苏省苏州市吴中区吴中大道 1188 号</el-descriptions-item>
+      width="80%">
+      <!--      订单基本信息-->
+      <el-descriptions border>
+        <el-descriptions-item label="订单日期">{{ orderInfo.orderDate }}</el-descriptions-item>
+        <el-descriptions-item label="客户">{{ orderInfo.customer }}</el-descriptions-item>
+        <el-descriptions-item label="销售经理">{{ orderInfo.salesManager }}</el-descriptions-item>
+        <el-descriptions-item label="车牌">{{ orderInfo.landCarNo }}</el-descriptions-item>
+        <el-descriptions-item label="司机姓名">{{ orderInfo.landDriverName }}</el-descriptions-item>
+        <el-descriptions-item label="司机电话">{{ orderInfo.landDriverTel }}</el-descriptions-item>
+        <el-descriptions-item label="车队">{{ orderInfo.fleet }}</el-descriptions-item>
       </el-descriptions>
+      <OrderDetailInfo :order-detail-info-list="orderInfo.orderDetailList"></OrderDetailInfo>
+      <el-descriptions border>
+        <el-descriptions-item label="备注">{{ orderInfo.comments }}</el-descriptions-item>
+      </el-descriptions>
+      <!--      订单货物信息-->
+      <!--      <el-descriptions border :title="'货物信息'+ `${index+1}` " v-for="(item,index) in orderDetailInfo" :key="index">-->
+      <!--        <el-descriptions-item label="供应商" v-if="item.supplier !== null && item.supplier !== ''">{{-->
+      <!--            item.supplier-->
+      <!--          }}-->
+      <!--        </el-descriptions-item>-->
+      <!--        <el-descriptions-item label="仓库名称" v-if="item.storeHouseName !== null && item.storeHouseName !== ''">-->
+      <!--          {{ item.storeHouseName }}-->
+      <!--        </el-descriptions-item>-->
+      <!--        <el-descriptions-item label="级别编码">{{ item.levelID }}</el-descriptions-item>-->
+      <!--        <el-descriptions-item label="级别名称">{{ item.levelName }}</el-descriptions-item>-->
+      <!--        <el-descriptions-item label="计量单位">{{ item.countingUnit }}</el-descriptions-item>-->
+      <!--        <el-descriptions-item label="厚度">{{ item.height }}</el-descriptions-item>-->
+      <!--        <el-descriptions-item label="长度">{{ item.length }}</el-descriptions-item>-->
+      <!--        <el-descriptions-item label="宽度">{{ item.width }}</el-descriptions-item>-->
+      <!--        <el-descriptions-item label="出厂片数">{{ item.pieces }}</el-descriptions-item>-->
+      <!--        <el-descriptions-item label="每包片数">{{ item.piecesPerPack }}</el-descriptions-item>-->
+      <!--        <el-descriptions-item label="包数">{{ item.packs }}</el-descriptions-item>-->
+      <!--        <el-descriptions-item label="出厂单价">{{ item.price }}</el-descriptions-item>-->
+      <!--        <el-descriptions-item label="出厂是否含税">{{ item.isIncludeTaxFactory }}</el-descriptions-item>-->
+      <!--        <el-descriptions-item label="杂费">{{ item.sundryCost }}</el-descriptions-item>-->
+      <!--        <el-descriptions-item label="出厂货款">{{ item.paymentFactory }}</el-descriptions-item>-->
+      <!--        <el-descriptions-item label="卸货价">{{ item.paymentUnload }}</el-descriptions-item>-->
+      <!--        <el-descriptions-item label="销售是否含税">{{ item.isIncludeTaxSale }}</el-descriptions-item>-->
+      <!--        <el-descriptions-item label="总货款">{{ item.payments }}</el-descriptions-item>-->
+      <!--        <el-descriptions-item label="误差">{{ item.erro }}</el-descriptions-item>-->
+      <!--        <el-descriptions-item label="吨位">{{ item.tonnage }}</el-descriptions-item>-->
+      <!--        <el-descriptions-item label="陆运费单价">{{ item.landFreightPrice }}</el-descriptions-item>-->
+      <!--        <el-descriptions-item label="陆运费">{{ item.landFreight }}</el-descriptions-item>-->
+      <!--        <el-descriptions-item label="海运费">{{ item.seaFreight }}</el-descriptions-item>-->
+      <!--        <el-descriptions-item label="总运费">{{ item.freight }}</el-descriptions-item>-->
+      <!--        <el-descriptions-item label="其他费用">{{ item.otherCost }}</el-descriptions-item>-->
+      <!--        <el-descriptions-item label="利润">{{ item.profit }}</el-descriptions-item>-->
+      <!--        <el-descriptions-item label="不含税利润">{{ item.profitNoTax }}</el-descriptions-item>-->
+      <!--        <el-descriptions-item label="实际片数">{{ item.actualPieces }}</el-descriptions-item>-->
+      <!--        <el-descriptions-item label="总货款杂费">{{ item.paymentsWithSundry }}</el-descriptions-item>-->
+      <!--        <el-descriptions-item label="加费">{{ item.additionalFees }}</el-descriptions-item>-->
+      <!--        <el-descriptions-item label="物流利润">{{ item.logisticsProfit }}</el-descriptions-item>-->
+      <!--        <el-descriptions-item label="客户佣金">{{ item.customerCommission }}</el-descriptions-item>-->
+      <!--        <el-descriptions-item label="客户佣金">{{ item.customerCommission }}</el-descriptions-item>-->
+      <!--      </el-descriptions>-->
       <span slot="footer" class="dialog-footer">
         <el-button @click="checkOrderVisible = false">取 消</el-button>
         <el-button type="primary" @click="checkOrderVisible = false">确 定</el-button>
@@ -952,6 +997,7 @@ export default {
       this.checkOrderVisible = true;
       const id = row.id;
       getGoodsOrder(id).then(res => {
+        this.orderInfo = res.data
         this.orderDetailInfo = res.data.orderDetailList;
       })
     },
@@ -1032,6 +1078,7 @@ export default {
         //是否含税
         item.isIncludeTaxFactory = item.isIncludeTaxFactory === '是' ? '1' : '0';
         item.isIncludeTaxSale = item.isIncludeTaxSale === '是' ? '1' : '0';
+        item.orderDate = parseTime(new Date(), '{y}-{m}-{d}')
       }
       addGoodsOrder({...this.orderInfo, PaymentState: ''}).then(res => {
         this.$message.success('订单提交成功')
@@ -1426,6 +1473,8 @@ export default {
           //是否含税
           item.isIncludeTaxFactory = item.isIncludeTaxFactory === '是' ? '1' : '0';
           item.isIncludeTaxSale = item.isIncludeTaxSale === '是' ? '1' : '0';
+          //订单日期
+          item.orderDate = parseTime(new Date(), '{y}-{m}-{d}')
         }
         this.orderInfo = excludeParams(this.orderInfo, this.$exclude)
         console.log('订单:', this.orderInfo)
@@ -1461,5 +1510,9 @@ export default {
   }
 };
 </script>
-
+<style scoped>
+.el-table__cell {
+  padding: 1px; /* 上下内边距为10px，左右内边距为5px */
+}
+</style>
 

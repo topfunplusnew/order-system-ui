@@ -113,7 +113,17 @@ export default {
           </template>
         </el-table-column>
         <el-table-column label="订单日期" align="center" prop="orderDate" fixed="left"/>
-        <el-table-column label="客户" align="center" prop="customer"/>
+        <el-table-column label="客户" align="center" prop="customer">
+          <template slot-scope="scope">
+            {{ scope.row.customer ? scope.row.customer : "-" }}
+          </template>
+        </el-table-column>
+        <el-table-column label="仓库名称" align="center" prop="storeHouseName">
+          <!--          如果有 显示 如果没有 显示- -->
+          <template slot-scope="scope">
+            {{ scope.row.storeHouseName ? scope.row.storeHouseName : "-" }}
+          </template>
+        </el-table-column>
         <el-table-column label="供应商" align="center" prop="supplier"/>
         <el-table-column label="级别名称" align="center" prop="levelName"/>
         <el-table-column label="计量单位" align="center" prop="countingUnit"/>
@@ -154,7 +164,6 @@ export default {
         <el-table-column label="实际片数" align="center" prop="actualPieces"/>
         <el-table-column label="总货款杂费" align="center" prop="paymentsWithSundry"/>
         <el-table-column label="加费" align="center" prop="additionalFees"/>
-        <el-table-column label="仓库名称" align="center" prop="storeHouseName"/>
         <el-table-column label="物流利润" align="center" prop="logisticsProfit"/>
         <el-table-column label="客户佣金" align="center" prop="customerCommission"/>
       </el-table>
