@@ -1043,7 +1043,6 @@ export default {
       window.open(path)
     },
     //删除收到条
-    //todo 删除
     deleteReceiveProof(row) {
       this.$confirm('此操作将永久删除该文件, 是否继续?', '提示', {
         confirmButtonText: '确定',
@@ -1391,11 +1390,13 @@ export default {
       this.addOrderItemVisible = true
     },
     //修改订单的操作
+    //todo
     handleUpdate(row) {
       this.reset();
       const id = row.id || this.ids
       getGoodsOrder(id).then(response => {
         this.orderInfo = response.data;
+        console.log('orderInfo', this.orderInfo)
         //将数据库拿到的订单列表装入vuex 因为订单添加的货物是从vuex获取的数据 对货物的操作也是操作vuex
         this.$store.commit("order/SET_ORDER_ITEM_LIST", response.data.orderDetailList)
         //填充供应商和客户id
@@ -1413,12 +1414,22 @@ export default {
         this.title = "修改订单";
       });
     },
-    /** 提交按钮 */
+    //修改后提交订单信息
     submitForm() {
       if (this.orderInfo.id != null) {
+        this.orderInfo.orderDetailList = this.orderItemList; //从vuex拿到订单详细列表 加入到订单信息中
+        //订单详情添加客户信息
+        for (let i = 0; i < this.orderItemList.length; i++) {
+          let item = this.orderItemList[i];
+          item.customerID = this.orderInfo.customerID;
+          item.customer = this.orderInfo.customer;
+          //是否含税
+          item.isIncludeTaxFactory = item.isIncludeTaxFactory === '是' ? '1' : '0';
+          item.isIncludeTaxSale = item.isIncludeTaxSale === '是' ? '1' : '0';
+        }
         this.orderInfo = excludeParams(this.orderInfo, this.$exclude)
         console.log('订单:', this.orderInfo)
-        updateGoodsOrder(this.orderInfo).then(response => {
+        updateGoodsOrder({...this.orderInfo, PaymentState: ''}).then(response => {
           this.$modal.msgSuccess("修改成功");
           this.open = false;
           this.getList();
