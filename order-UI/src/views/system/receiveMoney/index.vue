@@ -3,7 +3,7 @@
     <el-form :model="queryParams" ref="queryForm" size="small" :inline="true" v-show="showSearch" label-width="100px">
       <el-form-item label="开始日期" prop="fundsDate">
         <el-date-picker
-          v-model="queryParams.beginTime"
+          v-model="queryParams.startTime"
           type="date"
           placeholder="请选择日期" value-format="yyyy-MM-dd" class="w-85px">
         </el-date-picker>

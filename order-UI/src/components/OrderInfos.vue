@@ -38,7 +38,7 @@ export default {
       <el-descriptions-item label="开票状态">
         <TagsItem :check-info="orderInfo.invoiceState" checkValue="未开票"/>
       </el-descriptions-item>
-      <el-descriptions-item label="附件">{{ orderInfo.path }}</el-descriptions-item>
+      <!--      <el-descriptions-item label="附件">{{ orderInfo.path }}</el-descriptions-item>-->
       <el-descriptions-item label="陆运车牌">{{ orderInfo.landCarNo }}</el-descriptions-item>
       <el-descriptions-item label="陆运司机电话">{{ orderInfo.landDriverTel }}</el-descriptions-item>
       <el-descriptions-item label="陆运司机姓名">{{ orderInfo.landDriverName }}</el-descriptions-item>
@@ -50,7 +50,7 @@ export default {
       <el-descriptions-item label="陆运银行账号">{{ orderInfo.landBankNo }}</el-descriptions-item>
       <el-descriptions-item label="海运银行户名">{{ orderInfo.seaBankName }}</el-descriptions-item>
       <el-descriptions-item label="海运银行账号">{{ orderInfo.seaBankNo }}</el-descriptions-item>
-      <el-descriptions-item label="收到条附件">{{ orderInfo.receiveProof }}</el-descriptions-item>
+      <!--      <el-descriptions-item label="收到条附件">{{ orderInfo.receiveProof }}</el-descriptions-item>-->
       <el-descriptions-item label="是否被调整单">
         <TagsItem :check-info=" orderInfo.isAdjusted " check-value="否"/>
       </el-descriptions-item>
