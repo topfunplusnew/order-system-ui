@@ -605,7 +605,7 @@ export default {
     /** 删除按钮操作 */
     handleDelete(row) {
       const ids = row.id || this.ids;
-      this.$modal.confirm('是否确认删除付款信息编号为"' + ids + '"的数据项？').then(function () {
+      this.$modal.confirm('是否确认删除付款信息编号为"' + ids + '"的数据项？删除后只能通过重新发起付款申请恢复').then(function () {
         return delPayment(ids);
       }).then(() => {
         this.getList();
