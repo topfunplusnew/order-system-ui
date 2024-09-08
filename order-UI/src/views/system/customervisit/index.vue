@@ -194,7 +194,7 @@
             </el-date-picker>
           </el-form-item>
           <el-form-item label="省" prop="province">
-            <el-select v-model="form.province" placeholder="请选择省" @change="changeProvince">
+            <el-select filterable v-model="form.province" placeholder="请选择省" @change="changeProvince">
               <el-option
                 v-for="item in provinceList"
                 :key="item.code"
@@ -205,7 +205,7 @@
           </el-form-item>
           <el-form-item label="市县" prop="city">
             <!--          <el-input v-model="form.city" placeholder="请输入市县"/>-->
-            <el-select v-model="form.city" placeholder="请选择市" @change="changeCity">
+            <el-select filterable v-model="form.city" placeholder="请选择市" @change="changeCity">
               <el-option
                 v-for="item in cityList"
                 :key="item.code"
