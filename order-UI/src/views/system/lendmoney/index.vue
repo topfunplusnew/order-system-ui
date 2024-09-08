@@ -38,7 +38,7 @@
         <el-button icon="el-icon-refresh" size="mini" @click="resetQuery">刷新</el-button>
       </el-col>
       <el-col :span="1.5">
-        <el-button type="danger" size="mini" @click="handleAdd">新增资金借出信息</el-button>
+        <el-button  size="mini" @click="handleAdd">新增资金借出</el-button>
       </el-col>
       <right-toolbar :showSearch.sync="showSearch" @queryTable="getList" :columns="columns">
         <template v-slot:print>
@@ -73,9 +73,9 @@
       <!--      <el-table-column label="id" align="center" prop="id"/>-->
       <!--      <el-table-column label="借出款编号" align="center" prop="futuresNO" v-if="columns[0].visible"/>-->
       <el-table-column label="期货保证金公司" align="center" prop="futuresMarginCompany" v-if="columns[1].visible"/>
-      <el-table-column label="对象类型(员工、客户、供应商、其他)" align="center" prop="targetType"
+      <el-table-column label="对象类型" align="center" prop="targetType"
                        v-if="columns[2].visible"/>
-      <el-table-column label="对象(员工姓名、公司名称)" align="center" prop="target" v-if="columns[3].visible"/>
+      <el-table-column label="对象" align="center" prop="target" v-if="columns[3].visible"/>
       <el-table-column label="保证金金额" align="center" prop="moneyAmount" v-if="columns[4].visible"/>
       <el-table-column label="对方账户" align="center" prop="targetAcountsName" v-if="columns[5].visible">
 
@@ -131,7 +131,7 @@
         <el-form-item label="期货保证金公司" prop="futuresMarginCompany">
           <el-input v-model="form.futuresMarginCompany" placeholder="请输入期货保证金公司"/>
         </el-form-item>
-        <el-form-item label="对象(员工姓名、公司名称)" prop="target">
+        <el-form-item label="对象" prop="target">
           <el-input v-model="form.target" placeholder="请输入对象(员工姓名、公司名称)"/>
         </el-form-item>
         <el-form-item label="保证金金额" prop="moneyAmount">
