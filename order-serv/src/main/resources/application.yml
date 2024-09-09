@@ -56,7 +56,7 @@ spring:
   # 文件上传
   servlet:
     multipart:
-      # 单个文件大小
+      # 单个文件大
       max-file-size: 10MB
       # 设置总上传的文件大小
       max-request-size: 20MB
@@ -68,13 +68,13 @@ spring:
   # redis 配置
   redis:
     # 地址
-    host: 123.57.244.82
+    host: localhost
     # 端口，默认为6379
-    port: 6379
+    port: 4477
     # 数据库索引
     database: 0
     # 密码
-    password: mwcKzJjGAcpnKPZp
+    password:
 
     # 连接超时时间
     timeout: 0

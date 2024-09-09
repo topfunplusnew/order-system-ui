@@ -183,6 +183,9 @@
         <el-form-item label="来源" prop="origin">
           <el-input v-model="form.origin" placeholder="请输入来源"/>
         </el-form-item>
+
+
+
         <el-form-item label="背书人" prop="endorser">
           <el-input v-model="form.endorser" placeholder="请输入背书人"/>
         </el-form-item>

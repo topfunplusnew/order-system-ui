@@ -28,7 +28,7 @@
       </el-form-item>
     </el-form>
     <el-row :gutter="10" class="mb8">
-      <el-col>
+      <el-col :span="1.5">
         <el-button icon="el-icon-refresh" size="mini" @click="resetQuery">刷新</el-button>
       </el-col>
       <right-toolbar :showSearch.sync="showSearch" @queryTable="getList" :columns="columns">
@@ -59,7 +59,7 @@
       </right-toolbar>
     </el-row>
     <el-table border v-loading="loading" :data="OilCardConsumeList" @selection-change="handleSelectionChange"
-              v-horizontal-scroll="'always'" id="printBox">
+        v-horizontal-scroll="'always'" id="printBox">
       <el-table-column label="id" align="center" prop="id" v-if="columns[0].visible"/>
       <el-table-column label="加油卡卡号" align="center" prop="oilCardNo" v-if="columns[1].visible"/>
       <el-table-column label="使用加油卡时间" align="center" prop="useDate" v-if="columns[2].visible"/>
