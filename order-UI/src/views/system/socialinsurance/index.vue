@@ -222,6 +222,7 @@ import {
   addSocialInsurance,
   updateSocialInsurance
 } from "@/api/system/socialInsurance";
+import {excludeParams} from "@/api/tool/exclude";
 
 export default {
   name: "SocialInsurance",
@@ -434,6 +435,7 @@ export default {
             this.form.addtime = null;
             this.form.updateTime = null;
             this.form.userId = null;
+            this.form = excludeParams(this.form, this.$exclude)
             updateSocialInsurance(this.form).then(response => {
               this.$modal.msgSuccess("修改成功");
               this.open = false;
@@ -444,6 +446,7 @@ export default {
             this.form.addtime = null;
             this.form.updateTime = null;
             this.form.userId = null;
+            this.form = excludeParams(this.form, this.$exclude)
             addSocialInsurance(this.form).then(response => {
               this.$modal.msgSuccess("新增成功");
               this.open = false;

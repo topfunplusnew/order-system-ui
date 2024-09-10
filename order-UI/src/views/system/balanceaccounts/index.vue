@@ -1,32 +1,26 @@
 <template>
   <div class="app-container">
     <!--    搜索框-->
-    <el-form :model="timesQuery" ref="queryForm" size="small" :inline="true" v-show="showSearch" label-width="68px">
-      <el-form-item label="开始时间" prop="beginTime">
+    <el-form :model="queryParams" ref="queryForm" size="small" :inline="true" v-show="showSearch" label-width="68px">
+      <el-form-item label="操作时间" prop="beginTime">
         <el-date-picker
-            v-model="timesQuery.beginTime"
-            type="date"
-            placeholder="请选择开始时间"
-        value-format="yyyy-MM-dd">
-        </el-date-picker>
-      </el-form-item>
-      <el-form-item label="结束时间" prop="endTime">
-        <el-date-picker
-            v-model="timesQuery.endTime"
-            type="date"
-            placeholder="请选择结束时间"
-        value-format="yyyy-MM-dd">
-        </el-date-picker>
+          v-model="dateRange"
+          style="width: 240px"
+          value-format="yyyy-MM-dd"
+          type="daterange"
+          start-placeholder="开始日期"
+          end-placeholder="结束日期"
+        ></el-date-picker>
       </el-form-item>
       <el-form-item label="对方公司" prop="companyName">
         <el-input
-            v-model="timesQuery.companyName"
-            placeholder="请输入对方公司"
-            clearable
+          v-model="queryParams.companyName"
+          placeholder="请输入对方公司"
+          clearable
         />
       </el-form-item>
       <el-form-item>
-        <el-button type="primary" icon="el-icon-search" size="mini" @click="handleTimesQuery">搜索</el-button>
+        <el-button type="primary" icon="el-icon-search" size="mini" @click="handleQuery">搜索</el-button>
       </el-form-item>
     </el-form>
 
@@ -36,12 +30,12 @@
       </el-col>
       <el-col :span="1.5">
         <el-button
-            type="danger"
-            plain
-            icon="el-icon-plus"
-            size="mini"
-            @click="handleAdd"
-            v-hasPermi="['system:balanceaccounts:add']"
+          type="danger"
+          plain
+          icon="el-icon-plus"
+          size="mini"
+          @click="handleAdd"
+          v-hasPermi="['system:balanceaccounts:add']"
         >新增平账信息
         </el-button>
       </el-col>
@@ -49,10 +43,10 @@
         <template v-slot:print>
           <el-col :span="1.5">
             <el-button
-                plain
-                icon="el-icon-printer"
-                size="mini"
-                @click="printHTML"
+              plain
+              icon="el-icon-printer"
+              size="mini"
+              @click="printHTML"
             >
             </el-button>
           </el-col>
@@ -61,11 +55,11 @@
         <template v-slot:export>
           <el-col :span="1.5">
             <el-button
-                plain
-                icon="el-icon-folder-opened"
-                size="mini"
-                @click="handleExport"
-                v-hasPermi="['system:balanceaccounts:export']"
+              plain
+              icon="el-icon-folder-opened"
+              size="mini"
+              @click="handleExport"
+              v-hasPermi="['system:balanceaccounts:export']"
             >
             </el-button>
           </el-col>
@@ -88,26 +82,26 @@
       <el-table-column label="操作" align="center" class-name="small-padding fixed-width">
         <template slot-scope="scope">
           <el-button
-              size="mini"
-              type="primary"
-              @click="handleUpdate(scope.row)"
-              v-hasPermi="['system:balanceaccounts:edit']">编辑
+            size="mini"
+            type="primary"
+            @click="handleUpdate(scope.row)"
+            v-hasPermi="['system:balanceaccounts:edit']">编辑
           </el-button>
           <el-button
-              size="mini"
-              type="danger"
-              @click="handleDelete(scope.row)"
-              v-hasPermi="['system:balanceaccounts:remove']">删除
+            size="mini"
+            type="danger"
+            @click="handleDelete(scope.row)"
+            v-hasPermi="['system:balanceaccounts:remove']">删除
           </el-button>
         </template>
       </el-table-column>
     </el-table>
     <pagination
-        v-show="total>0"
-        :total="total"
-        :page.sync="queryParams.pageNum"
-        :limit.sync="queryParams.pageSize"
-        @pagination="getList"/>
+      v-show="total>0"
+      :total="total"
+      :page.sync="queryParams.pageNum"
+      :limit.sync="queryParams.pageSize"
+      @pagination="getList"/>
 
     <!-- 添加或修改平账信息对话框 -->
     <el-dialog :title="title" :visible.sync="open" width="500px" append-to-body>
@@ -115,10 +109,10 @@
         <el-form-item label="操作时间" prop="operateDate">
           <!--          <el-input v-model="form.operateDate" placeholder="请输入操作时间"/>-->
           <el-date-picker
-              v-model="form.operateDate"
-              type="date"
-              placeholder="选择操作时间"
-          value-format="yyyy-MM-dd">
+            v-model="form.operateDate"
+            type="date"
+            placeholder="选择操作时间"
+            value-format="yyyy-MM-dd">
           </el-date-picker>
         </el-form-item>
         <el-form-item label="金额" prop="moneyAmount">
@@ -149,20 +143,20 @@
 
     <!--    点击公司查询的弹窗-->
     <el-dialog
-        title="公司查询"
-        :visible.sync="companyDialogVisible"
-        width="40%">
+      title="公司查询"
+      :visible.sync="companyDialogVisible"
+      width="40%">
       <el-row>
         <el-table
-            :data="companyInfoList"
-            border
-            style="width: 100%">
+          :data="companyInfoList"
+          border
+          style="width: 100%">
           <el-table-column label="公司名称" align="center" prop="companyName"/>
           <el-table-column label="公司id" align="center" prop="id"/>
           <el-table-column
-              fixed="right"
-              label="操作"
-              width="100">
+            fixed="right"
+            label="操作"
+            width="100">
             <template slot-scope="scope">
               <el-button @click="commitCompanyInfo(scope.row)" type="danger" size="small">确定</el-button>
             </template>
@@ -188,6 +182,7 @@ import {
 import company from "@/views/system/company/index.vue";
 import {mapGetters} from "vuex";
 import {listCompany} from "@/api/system/company";
+import {addDateRange, parseTime} from "@/utils/ruoyi";
 
 export default {
   name: "BalanceAccounts",
@@ -217,6 +212,7 @@ export default {
       title: "",
       // 是否显示弹出层
       open: false,
+      dateRange: [],
       // 查询参数
       queryParams: {
         pageNum: 1,
@@ -262,7 +258,7 @@ export default {
     this.$store.dispatch('balanceaccounts/getbalanceaccountsList')
     //控制隐藏列
     if (localStorage.getItem('balanceaccounts-columns') === 'null'
-        || !localStorage.getItem('balanceaccounts-columns')) {
+      || !localStorage.getItem('balanceaccounts-columns')) {
       localStorage.setItem("balanceaccounts-columns", JSON.stringify(this.columns))
     } else {
       this.columns = JSON.parse(localStorage.getItem('balanceaccounts-columns'));
@@ -320,7 +316,7 @@ export default {
     /** 查询平账信息列表 */
     getList() {
       this.loading = true;
-      listBalanceAccounts(this.queryParams).then(response => {
+      listBalanceAccounts(addDateRange(this.queryParams, this.dateRange)).then(response => {
         this.BalanceAccountsList = response.rows;
         this.total = response.total;
         this.loading = false;
@@ -391,7 +387,7 @@ export default {
             this.form.updateTime = null;
             this.form.userId = null;
             this.form.companyType = this.form.companyType === '供应商' ? 2 : 1
-            this.form.operateDate = this.form.operateDate.getTime()
+            this.form.operateDate = parseTime(this.form.operateDate)
             updateBalanceAccounts(this.form).then(response => {
               this.$modal.msgSuccess("修改成功");
               this.open = false;
@@ -403,7 +399,7 @@ export default {
             this.form.updateTime = null;
             this.form.userId = null;
             this.form.companyType = this.form.companyType === '供应商' ? 2 : 1
-            this.form.operateDate = this.form.operateDate.getTime()
+            this.form.operateDate = parseTime(this.form.operateDate)
             addBalanceAccounts(this.form).then(response => {
               this.$modal.msgSuccess("新增成功");
               this.open = false;

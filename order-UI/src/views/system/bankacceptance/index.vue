@@ -3,23 +3,23 @@
     <el-form :model="queryParams" ref="queryForm" size="small" :inline="true" v-show="showSearch" label-width="68px">
       <el-form-item label="开始时间" prop="issueDateStart">
         <el-date-picker
-            v-model="queryParams.issueDateStart"
-            type="date"
-            placeholder="选择日期" value-format="yyyy-MM-dd">
+          v-model="queryParams.issueDateStart"
+          type="date"
+          placeholder="选择日期" value-format="yyyy-MM-dd">
         </el-date-picker>
       </el-form-item>
       <el-form-item label="结束时间" prop="issueDateEnd">
         <el-date-picker
-            v-model="queryParams.issueDateEnd"
-            type="date"
-            placeholder="选择日期" value-format="yyyy-MM-dd">
+          v-model="queryParams.issueDateEnd"
+          type="date"
+          placeholder="选择日期" value-format="yyyy-MM-dd">
         </el-date-picker>
       </el-form-item>
       <el-form-item label="票据号码" prop="billNo">
         <el-input
-            v-model="queryParams.billNo"
-            placeholder="请输入票据号码"
-            @keyup.enter.native="handleQuery"/>
+          v-model="queryParams.billNo"
+          placeholder="请输入票据号码"
+          @keyup.enter.native="handleQuery"/>
       </el-form-item>
       <el-form-item>
         <el-button type="primary" icon="el-icon-search" size="mini" @click="handleQuery">搜索</el-button>
@@ -32,22 +32,22 @@
       </el-col>
       <el-col :span="1.5">
         <el-button
-            type="primary"
-            plain
-            icon="el-icon-plus"
-            size="mini"
-            @click="handleAdd"
-            v-hasPermi="['system:bankacceptance:add']">添加商业票据
+          type="primary"
+          plain
+          icon="el-icon-plus"
+          size="mini"
+          @click="handleAdd"
+          v-hasPermi="['system:bankacceptance:add']">添加商业票据
         </el-button>
       </el-col>
       <right-toolbar :showSearch.sync="showSearch" @queryTable="getList" :columns="columns">
         <template v-slot:print>
           <el-col :span="1.5">
             <el-button
-                plain
-                icon="el-icon-printer"
-                size="mini"
-                @click="printHTML">
+              plain
+              icon="el-icon-printer"
+              size="mini"
+              @click="printHTML">
             </el-button>
           </el-col>
         </template>
@@ -55,11 +55,11 @@
         <template v-slot:export>
           <el-col :span="1.5">
             <el-button
-                plain
-                icon="el-icon-folder-opened"
-                size="mini"
-                @click="handleExport"
-                v-hasPermi="['system:bankacceptance:export']">
+              plain
+              icon="el-icon-folder-opened"
+              size="mini"
+              @click="handleExport"
+              v-hasPermi="['system:bankacceptance:export']">
             </el-button>
           </el-col>
         </template>
@@ -89,29 +89,29 @@
       <el-table-column label="操作" align="center" class-name="small-padding fixed-width" width="150px" fixed="right">
         <template slot-scope="scope">
           <el-button
-              size="mini"
-              type="primary"
-              icon="el-icon-edit"
-              @click="handleUpdate(scope.row)"
-              v-hasPermi="['system:bankacceptance:edit']">修改
+            size="mini"
+            type="primary"
+            icon="el-icon-edit"
+            @click="handleUpdate(scope.row)"
+            v-hasPermi="['system:bankacceptance:edit']">修改
           </el-button>
           <el-button
-              size="mini"
-              type="danger"
-              icon="el-icon-delete"
-              @click="handleDelete(scope.row)"
-              v-hasPermi="['system:bankacceptance:remove']">删除
+            size="mini"
+            type="danger"
+            icon="el-icon-delete"
+            @click="handleDelete(scope.row)"
+            v-hasPermi="['system:bankacceptance:remove']">删除
           </el-button>
         </template>
       </el-table-column>
     </el-table>
 
     <pagination
-        v-show="total>0"
-        :total="total"
-        :page.sync="queryParams.pageNum"
-        :limit.sync="queryParams.pageSize"
-        @pagination="getList"
+      v-show="total>0"
+      :total="total"
+      :page.sync="queryParams.pageNum"
+      :limit.sync="queryParams.pageSize"
+      @pagination="getList"
     />
 
     <!-- 添加或修改商业票据、银行承兑对话框 -->
@@ -150,9 +150,9 @@
         </el-form-item>
         <el-form-item label="我方收票日期" prop="billDate">
           <el-date-picker
-              v-model="form.billDate"
-              type="date"
-              placeholder="选择日期" format="yyyy 年 MM 月 dd 日" value-format="yyyy-MM-dd">
+            v-model="form.billDate"
+            type="date"
+            placeholder="选择日期" format="yyyy 年 MM 月 dd 日" value-format="yyyy-MM-dd">
           </el-date-picker>
         </el-form-item>
         <el-form-item label="票据种类" prop="billCategory">
@@ -164,16 +164,16 @@
         </el-form-item>
         <el-form-item label="出票日期" prop="issueDate">
           <el-date-picker
-              v-model="form.issueDate"
-              type="date"
-              placeholder="选择日期" format="yyyy 年 MM 月 dd 日" value-format="yyyy-MM-dd">
+            v-model="form.issueDate"
+            type="date"
+            placeholder="选择日期" format="yyyy 年 MM 月 dd 日" value-format="yyyy-MM-dd">
           </el-date-picker>
         </el-form-item>
         <el-form-item label="到期日期" prop="dueDate">
           <el-date-picker
-              v-model="form.dueDate"
-              type="date"
-              placeholder="选择日期" format="yyyy 年 MM 月 dd 日" value-format="yyyy-MM-dd">
+            v-model="form.dueDate"
+            type="date"
+            placeholder="选择日期" format="yyyy 年 MM 月 dd 日" value-format="yyyy-MM-dd">
           </el-date-picker>
         </el-form-item>
         <el-form-item label="背书事由" prop="endorseReason">
@@ -183,7 +183,6 @@
         <el-form-item label="来源" prop="origin">
           <el-input v-model="form.origin" placeholder="请输入来源"/>
         </el-form-item>
-
 
 
         <el-form-item label="背书人" prop="endorser">
@@ -216,6 +215,7 @@ import {formatTime} from "@/api/tool/format";
 import SearchOption from "@/components/SearchOption.vue";
 import {listBankAccount} from "@/api/system/bankAccount";
 import {mixin_printHTML} from "@/views/dashboard/mixins/print";
+import {excludeParams} from "@/api/tool/exclude";
 
 export default {
   name: "BankAcceptance",
@@ -441,6 +441,7 @@ export default {
             this.form.updateTime = null;
             this.form.userId = null;
             this.form.billType = '收入'
+            this.form = excludeParams(this.form, this.$exclude)
             updateBankAcceptance(this.form).then(response => {
               this.$modal.msgSuccess("修改成功");
               this.open = false;
@@ -452,6 +453,7 @@ export default {
             this.form.updateTime = null;
             this.form.userId = null;
             this.form.billType = '收入'
+            this.form = excludeParams(this.form, this.$exclude)
             addBankAcceptance(this.form).then(response => {
               this.$modal.msgSuccess("新增成功");
               this.open = false;

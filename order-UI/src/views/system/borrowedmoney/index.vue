@@ -1,24 +1,18 @@
 <template>
   <div class="app-container">
-    <el-form :model="timesQuery" ref="queryForm" size="small" :inline="true" v-show="showSearch" label-width="68px">
+    <el-form :model="queryParams" ref="queryForm" size="small" :inline="true" v-show="showSearch" label-width="68px">
       <el-form-item label="开始时间" prop="beginTime">
         <el-date-picker
-          v-model="timesQuery.beginTime"
-          type="date"
-          placeholder="请选择开始时间"
-          value-format="yyyy-MM-dd">
-        </el-date-picker>
-      </el-form-item>
-      <el-form-item label="结束时间" prop="endTime">
-        <el-date-picker
-          v-model="timesQuery.endTime"
-          type="date"
-          placeholder="请选择结束时间"
-        value-format="yyyy-MM-dd">
-        </el-date-picker>
+          v-model="dateRange"
+          style="width: 240px"
+          value-format="yyyy-MM-dd"
+          type="daterange"
+          start-placeholder="开始日期"
+          end-placeholder="结束日期"
+        ></el-date-picker>
       </el-form-item>
       <el-form-item>
-        <el-button type="primary" icon="el-icon-search" size="mini" @click="handleQueryTime">搜索</el-button>
+        <el-button type="primary" icon="el-icon-search" size="mini" @click="handleQuery">搜索</el-button>
       </el-form-item>
     </el-form>
 
@@ -255,6 +249,8 @@ import {listBankAccount} from "@/api/system/bankAccount";
 import {listCompany} from "@/api/system/company";
 import ApplyPayment from "@/components/ApplyPayment.vue";
 import {TableName} from "@/api/tool/enums";
+import {addDateRange} from "@/utils/ruoyi";
+import {excludeParams} from "@/api/tool/exclude";
 
 export default {
   name: "BorrowedMoney",
@@ -312,6 +308,7 @@ export default {
           {validator: validateloanNO, trigger: 'blur'}
         ],
       },
+      dateRange: [],
       //
       columns: [
         {key: 0, label: `id`, visible: true},
@@ -489,7 +486,7 @@ export default {
     /** 查询从外部借款信息列表 */
     getList() {
       this.loading = true;
-      listBorrowedMoney(this.queryParams).then(response => {
+      listBorrowedMoney(addDateRange(this.queryParams, this.dateRange)).then(response => {
         this.borrowedMoneyList = response.rows;
         this.borrowedMoneyList.forEach(item => {
           item.isEnd = item.isEnd ? '是' : '否'
@@ -568,6 +565,7 @@ export default {
             this.form.addtime = null;
             this.form.updateTime = null;
             this.form.userId = null;
+            this.form = excludeParams(this.form, this.$exclude)
             updateBorrowedMoney(this.form).then(response => {
               this.$modal.msgSuccess("修改成功");
               this.open = false;
@@ -580,6 +578,7 @@ export default {
             this.form.updateTime = null;
             this.form.userId = null;
             this.form.isEnd = 0;
+            this.form = excludeParams(this.form, this.$exclude)
             addBorrowedMoney(this.form).then(response => {
               this.$modal.msgSuccess("新增成功");
               this.open = false;

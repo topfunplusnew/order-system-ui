@@ -1,22 +1,18 @@
 <template>
   <div class="app-container">
-    <el-form :model="timesQuery" ref="queryForm" size="small" :inline="true" v-show="showSearch" label-width="68px">
+    <el-form :model="queryParams" ref="queryForm" size="small" :inline="true" v-show="showSearch" label-width="68px">
       <el-form-item label="开始时间" prop="beginTime">
         <el-date-picker
-          v-model="timesQuery.beginTime"
-          type="date"
-          placeholder="请选择开始时间" value-format="yyyy-MM-dd">
-        </el-date-picker>
-      </el-form-item>
-      <el-form-item label="结束时间" prop="endTime">
-        <el-date-picker
-          v-model="timesQuery.endTime"
-          type="date"
-          placeholder="请选择结束时间" value-format="yyyy-MM-dd">
-        </el-date-picker>
+          v-model="dateRange"
+          style="width: 240px"
+          value-format="yyyy-MM-dd"
+          type="daterange"
+          start-placeholder="开始日期"
+          end-placeholder="结束日期"
+        ></el-date-picker>
       </el-form-item>
       <el-form-item>
-        <el-button type="primary" icon="el-icon-search" size="mini" @click="handleQueryTime">搜索</el-button>
+        <el-button type="primary" icon="el-icon-search" size="mini" @click="handleQuery">搜索</el-button>
       </el-form-item>
     </el-form>
 
@@ -145,6 +141,10 @@ import {
   updateRecoverMoney
 } from "@/api/system/recoverMoney";
 import {mapGetters} from "vuex";
+import {addDateRange} from "@/utils/ruoyi";
+import {addReason} from "@/api/system/user";
+import {TableName} from "@/api/tool/enums";
+import {excludeParams} from "@/api/tool/exclude";
 
 export default {
   name: "RecoverMoney",
@@ -168,6 +168,7 @@ export default {
       title: "",
       // 是否显示弹出层
       open: false,
+      dateRange: [],
       // 查询参数
       queryParams: {
         pageNum: 1,
@@ -264,7 +265,7 @@ export default {
     /** 查询借出款收回信息列表 */
     getList() {
       this.loading = true;
-      listRecoverMoney(this.queryParams).then(response => {
+      listRecoverMoney(addDateRange(this.queryParams, this.dateRange)).then(response => {
         this.recoverMoneyList = response.rows;
         this.total = response.total;
         this.loading = false;
@@ -338,7 +339,7 @@ export default {
             this.$message.success('提交成功')
             this.reset();
             const id = row.id || this.ids
-            getInventory(id).then(response => {
+            getRecoverMoney(id).then(response => {
               this.form = response.data;
               this.open = true;
               this.title = "修改借出款收回信息";
@@ -356,12 +357,14 @@ export default {
       this.$refs["form"].validate(valid => {
         if (valid) {
           if (this.form.id != null) {
+            this.form = excludeParams(this.queryParams, this.$exclude)
             updateRecoverMoney(this.form).then(response => {
               this.$modal.msgSuccess("修改成功");
               this.open = false;
               this.getList();
             });
           } else {
+            this.form = excludeParams(this.queryParams, this.$exclude)
             addRecoverMoney(this.form).then(response => {
               this.$modal.msgSuccess("新增成功");
               this.open = false;

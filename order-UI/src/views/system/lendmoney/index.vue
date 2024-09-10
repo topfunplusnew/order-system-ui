@@ -7,7 +7,7 @@
           v-model="timesQuery.beginTime"
           type="date"
           placeholder="请选择开始时间"
-        value-format="yyyy-MM-dd">
+          value-format="yyyy-MM-dd">
         </el-date-picker>
       </el-form-item>
       <el-form-item label="结束时间" prop="endTime">
@@ -38,7 +38,7 @@
         <el-button icon="el-icon-refresh" size="mini" @click="resetQuery">刷新</el-button>
       </el-col>
       <el-col :span="1.5">
-        <el-button  size="mini" @click="handleAdd">新增资金借出</el-button>
+        <el-button size="mini" @click="handleAdd">新增资金借出</el-button>
       </el-col>
       <right-toolbar :showSearch.sync="showSearch" @queryTable="getList" :columns="columns">
         <template v-slot:print>
@@ -88,10 +88,18 @@
       <el-table-column label="支付期货保证金时间" align="center" prop="futuresDate" v-if="columns[11].visible"/>
       <el-table-column label="事由" align="center" prop="reason" v-if="columns[12].visible"/>
       <el-table-column label="备注" align="center" prop="comments"/>
-      <el-table-column label="操作" align="center" class-name="small-padding fixed-width" width="150px" fixed="right">
+      <el-table-column label="操作" align="center" class-name="small-padding fixed-width" width="230px" fixed="right">
         <template slot-scope="scope">
           <el-button
             size="mini"
+            type="warning"
+            @click="applyForPayment(scope.row)"
+            v-hasPermi="['system:lendmoney:remove']"
+          >申请付款
+          </el-button>
+          <el-button
+            size="mini"
+            type="success"
             @click="handleGetBackMoney(scope.row)"
             v-hasPermi="['system:lendmoney:remove']"
           >收回资金
@@ -134,6 +142,18 @@
         <el-form-item label="对象" prop="target">
           <el-input v-model="form.target" placeholder="请输入对象(员工姓名、公司名称)"/>
         </el-form-item>
+        <el-form-item label="对象类型" prop="targetType">
+          <!--          <el-input v-model="form.target" placeholder="请输入对象(员工姓名、公司名称)"/>-->
+          <!--          下拉框 员工 客户 供应商 其他-->
+          <el-select v-model="form.targetType" placeholder="请选择对象类型">
+            <el-option
+              v-for="dict in dict.type.target_type"
+              :key="dict.value"
+              :label="dict.label"
+              :value="dict.value"
+            ></el-option>
+          </el-select>
+        </el-form-item>
         <el-form-item label="保证金金额" prop="moneyAmount">
           <el-input v-model="form.moneyAmount" placeholder="请输入保证金金额"/>
         </el-form-item>
@@ -147,8 +167,7 @@
                             :limit-info="{}" query-label="户名查找" query-info="acountsName" :query-name="queryBank"
                             @update:queryName="handleUpdateQueryName">
                 <template #table-columns>
-                  <el-table-column label="公司名称" align="center" prop="companyName"/>
-                  <el-table-column label="公司类型" align="center" prop="companyType"/>
+                  <el-table-column label="公司名称" align="center" prop="acountsName"/>
                   <el-table-column label="开户行" align="center" prop="bankName"/>
                   <el-table-column label="开户名" align="center" prop="acountsName"/>
                   <el-table-column label="账号" align="center" prop="bankNo"/>
@@ -305,6 +324,16 @@
         </el-card>
       </div>
     </el-dialog>
+
+    <!--    付款申请-->
+    <el-dialog
+      title="提示"
+      :visible.sync="applyDialogVisible"
+      width="65%">
+      <ApplyPayment :table-name="TableName.LEND_MONEY" :t-i-d="tid" :need-money="needMoney"
+                    :need-info="{}"
+                    @changeOpen="applyDialogVisible = false"/>
+    </el-dialog>
   </div>
 </template>
 
@@ -316,10 +345,13 @@ import {addReceiveMoney} from "@/api/system/receiveMoney";
 import SearchOption from "@/components/SearchOption.vue";
 import {listBankAccount} from "@/api/system/bankAccount";
 import {listCompany} from "@/api/system/company";
+import ApplyPayment from "@/components/ApplyPayment.vue";
+import {TableName} from "@/api/tool/enums";
 
 export default {
   name: "LendMoney",
-  components: {SearchOption},
+  components: {ApplyPayment, SearchOption},
+  dicts: ['target_type'],
   data() {
     return {
       // 遮罩层
@@ -425,7 +457,11 @@ export default {
 
 
       //
-      queryBank: ''
+      queryBank: '',
+
+      applyDialogVisible: false,
+      tid: '',
+      needMoney: 0
     };
   },
   created() {
@@ -434,11 +470,20 @@ export default {
     this.$store.dispatch('money/getTempLendMoneyList')
   },
   computed: {
+    TableName() {
+      return TableName
+    },
     ...mapGetters(['tempLendMoneyList'])
   },
   methods: {
     listCompany,
     listBankAccount,
+    // 付款申请
+    applyForPayment(row) {
+      this.applyDialogVisible = true;
+      this.tid = row.id;
+      this.needMoney = row.moneyAmount
+    },
     //点击收回资金按钮
     handleGetBackMoney(row) {
       console.log(row)

@@ -11,10 +11,13 @@
       </el-form-item>
       <el-form-item label="充值时间" prop="rechargeDate">
         <el-date-picker
-          v-model="queryParams.rechargeDate"
-          type="date"
-          placeholder="选择充值时间" value-format="yyyy-MM-dd">
-        </el-date-picker>
+          v-model="dateRange"
+          style="width: 240px"
+          value-format="yyyy-MM-dd"
+          type="daterange"
+          start-placeholder="开始日期"
+          end-placeholder="结束日期"
+        ></el-date-picker>
       </el-form-item>
       <el-form-item>
         <el-button type="primary" icon="el-icon-search" size="mini" @click="handleQuery">搜索</el-button>
@@ -67,7 +70,14 @@
     <el-table border v-loading="loading" :data="oilRechargeList" @selection-change="handleSelectionChange"
               v-horizontal-scroll="'always'" id="printBox">
       <el-table-column label="id" align="center" prop="id" v-if="columns[0].visible"/>
-      <el-table-column label="审核状态" align="center" prop="checkState"/>
+      <el-table-column label="审核状态" align="center" prop="checkState">
+        <!--        添加el-tag-->
+        <template slot-scope="scope">
+          <el-tag v-if="scope.row.checkState === '未申请'" type="warning">未申请</el-tag>
+          <el-tag v-if="scope.row.checkState === '已支付'" type="success">已支付</el-tag>
+          <el-tag v-if="scope.row.checkState === '未支付'" type="danger">未支付</el-tag>
+        </template>
+      </el-table-column>
       <!--      <el-table-column label="出差编号UUID" align="center" prop="bTripId"/>-->
       <el-table-column label="加油卡卡号" align="center" prop="oilCardNo" v-if="columns[1].visible"/>
       <el-table-column label="充值类型" align="center" prop="rechargeType" v-if="columns[2].visible"/>
@@ -215,6 +225,7 @@ import {listOilCard} from "@/api/system/oilCard";
 import {listBankAccount} from "@/api/system/bankAccount";
 import {findFileExtension} from "@/utils/trash/utils";
 import {mapGetters} from "vuex";
+import {addDateRange} from "@/utils/ruoyi";
 
 export default {
   name: "OilRecharge",
@@ -246,6 +257,7 @@ export default {
       title: "",
       // 是否显示弹出层
       open: false,
+      dateRange: [],
       // 查询参数
       queryParams: {
         pageNum: 1,
@@ -348,7 +360,7 @@ export default {
     /** 查询加油卡充值信息列表 */
     getList() {
       this.loading = true;
-      listOilRecharge(this.queryParams).then(response => {
+      listOilRecharge(addDateRange(this.queryParams, this.dateRange)).then(response => {
         this.oilRechargeList = response.rows;
         this.total = response.total;
         this.loading = false;
