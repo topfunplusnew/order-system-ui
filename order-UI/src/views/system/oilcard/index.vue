@@ -251,6 +251,7 @@ import {excludeParams} from "@/api/tool/exclude";
 import {listBankAccount} from "@/api/system/bankAccount";
 import {addOilRecharge} from "@/api/system/oilRecharge";
 import {mapGetters} from "vuex";
+import {parseTime} from "@/utils/ruoyi";
 
 export default {
   name: "OilCard",
@@ -320,7 +321,7 @@ export default {
         oilCardNo: '',
         rechargeType: '',
         rechargeMoney: '',
-        rechargeDate: new Date().getTime(),
+        rechargeDate: parseTime(new Date()),
         rechargeName: "",
         acountsName: "",
         bankNo: "",
