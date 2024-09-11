@@ -853,7 +853,7 @@ export default {
         consumeAmount: this.oilCardConsumeInfo.refuelingMoney
       }).then(res => {
         // 如果余额不足 要进行充值
-        if (res.data.result === 'error') {
+        if (res.data.error === '油卡余额不足') {
           this.$confirm('油卡余额不足,是否充值?', '提示', {
             confirmButtonText: '是',
             cancelButtonText: '否',
@@ -862,6 +862,8 @@ export default {
             this.oilCardDialogVisible = true
             this.moneyInfo.rechargeName = this.trueName;
           })
+        } else if (res.data.error === '油卡不存在') {
+          this.$message.error('油卡不存在')
         } else {
           // 先从session拿出出差信息
           const businessTripInfo = JSON.parse(sessionStorage.getItem('BusinessTrip-form'))
