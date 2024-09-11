@@ -42,3 +42,13 @@ export function delOilCard(id) {
     method: 'delete'
   })
 }
+
+// 检查油卡的余额
+export function checkOilCard(data) {
+  return request({
+    url: '/system/OilCardConsume/check',
+    method: 'post',
+    data: data
+  })
+}
+

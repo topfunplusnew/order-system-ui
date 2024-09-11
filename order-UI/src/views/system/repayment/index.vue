@@ -72,6 +72,13 @@
         <template slot-scope="scope">
           <el-button
             size="mini"
+            type="warning"
+            @click="applyForPayment(scope.row)"
+            v-hasPermi="['system:repayment:edit']"
+          >申请付款
+          </el-button>
+          <el-button
+            size="mini"
             type="primary"
             @click="handleUpdate(scope.row)"
             v-hasPermi="['system:repayment:edit']"
@@ -141,15 +148,24 @@
         <el-button @click="cancel">取 消</el-button>
       </div>
     </el-dialog>
+
+
+    <el-dialog title="付款申请" :visible.sync="PaymentApplyInfoVisible" width="500px" append-to-body>
+      <ApplyPayment :table-name="TableName.REPAYMENT" @changeOpen="changePaymentApplyInfoVisible"
+                    :t-i-d="tID" :need-money="needMoney" :need-info="{}"/>
+    </el-dialog>
   </div>
 </template>
 
 <script>
 import {listRepayment, getRepayment, delRepayment, addRepayment, updateRepayment} from "@/api/system/repayment";
 import {mapGetters} from "vuex";
+import ApplyPayment from "@/components/ApplyPayment.vue";
+import {TableName} from "@/api/tool/enums";
 
 export default {
   name: "Repayment",
+  components: {ApplyPayment},
   data() {
     return {
       // 遮罩层
@@ -208,7 +224,10 @@ export default {
           label: 'test',
           value: 'test'
         }
-      ]
+      ],
+      tID: '',
+      needMoney: 0,
+      PaymentApplyInfoVisible: false
     };
   },
   created() {
@@ -232,9 +251,20 @@ export default {
     }
   },
   computed: {
+    TableName() {
+      return TableName
+    },
     ...mapGetters(['tempRepaymentList'])
   },
   methods: {
+    applyForPayment(row) {
+      this.tID = row.id;
+      this.PaymentApplyInfoVisible = true;
+      this.needMoney = row.moneyAmount
+    },
+    changePaymentApplyInfoVisible() {
+      this.PaymentApplyInfoVisible = false
+    },
     //时间查询
     handleQueryTime() {
       //重置

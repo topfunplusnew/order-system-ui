@@ -166,6 +166,8 @@
                         value-format="yyyy-MM-dd">
                       </el-date-picker>
                     </el-form-item>
+                  </el-col>
+                  <el-col :span="12">
                     <el-form-item label="出差结束时间" prop="endtime">
                       <el-date-picker
                         v-model="form.endtime"
@@ -174,8 +176,6 @@
                         value-format="yyyy-MM-dd">
                       </el-date-picker>
                     </el-form-item>
-                  </el-col>
-                  <el-col :span="12">
                     <el-form-item label="附件地址" prop="attachmentPath">
                       <!--          <el-input v-model="form.attachmentPath" placeholder="请输入附件地址"/>-->
                       <file-upload @input="handleFileUpload"/>
@@ -184,17 +184,9 @@
                     <el-form-item label="备注" prop="comments">
                       <el-input v-model="form.comments" type="textarea" placeholder="请输入内容"/>
                     </el-form-item>
-                    <el-form-item label="是否使用车辆" prop="useCar">
-                      <el-radio v-model="useCar" label="是">是</el-radio>
-                      <el-radio v-model="useCar" label="否">否</el-radio>
-                    </el-form-item>
                   </el-col>
                 </el-form>
               </el-row>
-              <div>
-                <el-button type="primary" @click="handleWriteCarsInfo" v-if="useCar ==='是'">填写车辆使用信息
-                </el-button>
-              </div>
             </el-col>
           </el-row>
           <el-row v-if="active === 1">
@@ -209,6 +201,21 @@
                 </el-button>
               </el-col>
             </el-row>
+            <hr/>
+            <el-row>
+              <el-col :span="8">
+                是否使用车辆
+              </el-col>
+              <el-col :span="5">
+                <el-radio v-model="useCar" label="是">是</el-radio>
+                <el-radio v-model="useCar" label="否">否</el-radio>
+              </el-col>
+            </el-row>
+            <div>
+              <el-button size="mini" type="warning" @click="handleWriteCarsInfo" v-if="useCar ==='是'">填写车辆使用信息
+              </el-button>
+            </div>
+            <hr/>
             <el-table :data="tripReimbursementList" :row-class-name="rowTripReimbursementIndex"
                       @selection-change="handleTripReimbursementSelectionChange" ref="tripReimbursement">
               <el-table-column type="selection" width="50" align="center"/>
@@ -437,32 +444,136 @@
             <el-form-item label="加油量" prop="refuelingNumber">
               <el-input v-model="oilCardConsumeInfo.refuelingNumber" placeholder="请输入加油量"/>
             </el-form-item>
-          </el-col>
-          <el-col :span="12">
             <el-form-item label="单价" prop="unitPrice">
               <el-input v-model="oilCardConsumeInfo.unitPrice" placeholder="请输入单价"/>
             </el-form-item>
-            <el-form-item label="加油金额(元）" prop="refuelingMoney">
-              <el-input v-model="oilCardConsumeInfo.refuelingMoney" placeholder="请输入加油金额(元）"/>
-            </el-form-item>
-            <el-form-item label="充值金额(元）" prop="rechargeMoney">
-              <el-input v-model="oilCardConsumeInfo.rechargeMoney" placeholder="请输入充值金额(元）"/>
-            </el-form-item>
-            <el-form-item label="加油卡余额" prop="endCardSurplus">
-              <el-input v-model="oilCardConsumeInfo.endCardSurplus" placeholder="请输入加油卡余额"/>
-            </el-form-item>
-            <el-form-item label="加油小票附件" prop="attachmentOiladd">
-              <el-input v-model="oilCardConsumeInfo.attachmentOiladd" placeholder="请输入加油小票附件"/>
-            </el-form-item>
-            <el-form-item label="备注" prop="comments">
-              <el-input v-model="oilCardConsumeInfo.comments" placeholder="请输入备注"/>
-            </el-form-item>
+          </el-col>
+          <el-col :span="12">
+            <el-row>
+              <el-form-item label="加油金额(元）" prop="refuelingMoney">
+                <el-input v-model="oilCardConsumeInfo.refuelingMoney" placeholder="请输入加油金额(元）"/>
+              </el-form-item>
+            </el-row>
+            <!--            <el-row>-->
+            <!--              <el-form-item label="充值金额(元）" prop="rechargeMoney">-->
+            <!--                <el-input v-model="oilCardConsumeInfo.rechargeMoney" placeholder="请输入充值金额(元）"/>-->
+            <!--              </el-form-item>-->
+            <!--            </el-row>-->
+            <!--            <el-row>-->
+            <!--              <el-form-item label="加油卡余额" prop="endCardSurplus">-->
+            <!--                <el-input v-model="oilCardConsumeInfo.endCardSurplus" placeholder="请输入加油卡余额"/>-->
+            <!--              </el-form-item>-->
+            <!--            </el-row>-->
+            <el-row>
+              <el-form-item label="加油小票附件" prop="attachmentOiladd">
+                <el-row>
+                  <el-col :span="20">
+                    <el-input v-model="oilCardConsumeInfo.attachmentOiladd" placeholder="加油小票附件路径" disabled/>
+                  </el-col>
+                  <el-col :span="4"
+                          v-if="oilCardConsumeInfo.attachmentOiladd !== null && oilCardConsumeInfo.attachmentOiladd !== ''">
+                    <el-button size="mini" @click="checkPath(oilCardConsumeInfo.attachmentOiladd)">查看附件
+                    </el-button>
+                  </el-col>
+                </el-row>
+                <el-row justify="center">
+                  <el-col :span="20">
+                    <el-upload
+                      class="upload-demo"
+                      drag
+                      :action="uploadFileUrl"
+                      :headers="headers"
+                      :limit="1"
+                      multiple :on-success="handleFileSuccess">
+                      <i class="el-icon-upload"></i>
+                      <div class="el-upload__text">将文件拖到此处，或<em>点击上传</em></div>
+                    </el-upload>
+                  </el-col>
+                </el-row>
+              </el-form-item>
+            </el-row>
+            <el-row>
+              <el-form-item label="备注" prop="comments">
+                <el-input v-model="oilCardConsumeInfo.comments" placeholder="请输入备注"/>
+              </el-form-item>
+            </el-row>
           </el-col>
         </el-row>
       </el-form>
       <div slot="footer" class="dialog-footer">
         <el-button type="primary" @click="submitOilCard">保存填写</el-button>
         <el-button type="primary" @click="clearOilCard">清除填写</el-button>
+      </div>
+    </el-dialog>
+
+
+    <!--    油卡充值的页面-->
+    <el-dialog
+      title="提示"
+      :visible.sync="oilCardDialogVisible"
+      width="30%">
+      <el-form :model="moneyInfo" :rules="rules" label-width="120px">
+        <el-form-item label="加油卡卡号" prop="oilCardNo">
+          <el-row>
+            <el-col :span="10">
+              <el-input v-model="moneyInfo.oilCardNo" placeholder="请输入加油卡卡号"/>
+            </el-col>
+            <el-col :span="3">
+              <SearchOption :get-data="listOilCard" title="选择加油卡" icon="el-icon-search"
+                            :limit-info="{oilType:'主卡'}" @commitBack="handleCommitBack">
+                <template #table-columns>
+                  <el-table-column prop="oilCardNo" label="加油卡卡号"/>
+                  <el-table-column prop="moneyAmount" label="加油卡余额"/>
+                </template>
+              </SearchOption>
+            </el-col>
+          </el-row>
+        </el-form-item>
+        <el-form-item label="请选择充值方式" prop="rechargeType">
+          <el-select v-model="moneyInfo.rechargeType" placeholder="请选择充值方式">
+            <el-option
+              v-for="item in options"
+              :key="item.value"
+              :label="item.label"
+              :value="item.value">
+            </el-option>
+          </el-select>
+        </el-form-item>
+        <el-form-item label="请输入充值金额" prop="rechargeMoney">
+          <el-input v-model="moneyInfo.rechargeMoney" placeholder="请输入充值金额"/>
+        </el-form-item>
+        <el-form-item label="姓名" prop="rechargeName">
+          <el-input disabled v-model="moneyInfo.rechargeName" placeholder="请输入姓名"/>
+        </el-form-item>
+        <el-form-item v-if="moneyInfo.rechargeType==='银行卡'" label="银行开户名" prop="acountsName">
+          <el-col :span="10">
+            <el-input v-model="moneyInfo.acountsName" placeholder="请输入银行开户名"/>
+          </el-col>
+          <el-col :span="4">
+            <SearchOption :limit-info="{acountsType:'己方公司'}" :get-data="listBankAccount"
+                          @commitBack="handleCommitBackBankAcount"
+                          @update:queryName="handleUpdateQueryBankAcount" :query-name="queryBankAcount"
+                          query-label="户名查找" query-info="acountsName">
+              <template #table-columns>
+                <el-table-column label="账户类型" align="center" prop="acountsType"/>
+                <el-table-column label="开户名称(户名)" align="center" prop="acountsName"/>
+                <el-table-column label="账号(银行账号)" align="center" prop="bankNo"/>
+                <el-table-column label="开户行" align="center" prop="bankName"/>
+                <el-table-column label="公司名称" align="center" prop="companyName"/>
+              </template>
+            </SearchOption>
+          </el-col>
+        </el-form-item>
+        <el-form-item v-if="moneyInfo.rechargeType==='银行卡'" label="银行账号" prop="bankNo">
+          <el-input v-model="moneyInfo.bankNo" placeholder="请输入银行账号"/>
+        </el-form-item>
+        <el-form-item label="附件" prop="bankName">
+          <file-upload @input="handleUpload"/>
+        </el-form-item>
+      </el-form>
+      <div slot="footer" class="dialog-footer">
+        <el-button type="primary" @click="submitMoney">确 定</el-button>
+        <el-button @click="oilCardDialogVisible = false">取 消</el-button>
       </div>
     </el-dialog>
   </div>
@@ -486,7 +597,14 @@ import {addCarApply} from "@/api/system/carApply";
 import PaymentApply from "@/views/system/paymentApply/index.vue";
 import ApplyPayment from "@/components/ApplyPayment.vue";
 import {TableName} from "@/api/tool/enums";
-import {listOilCard} from "@/api/system/oilCard";
+import {checkOilCard, listOilCard} from "@/api/system/oilCard";
+import {getToken} from "@/utils/auth";
+import {excludeParams} from "@/api/tool/exclude";
+import {updateGoodsOrder} from "@/api/system/goodsOrder";
+import {listBankAccount} from "@/api/system/bankAccount";
+import {addOilRecharge} from "@/api/system/oilRecharge";
+import {parseTime} from "@/utils/ruoyi";
+import {addOilCardConsume} from "@/api/system/OilCardConsume";
 
 export default {
   name: "BusinessTrip",
@@ -550,11 +668,42 @@ export default {
       tID: '',
       oilCardConsumeInfo: {
         oilCardNo: '',
-        carNo: ''
+        carNo: '',
+        //附件路径
+        attachmentOiladd: ''
       },
       oilCardConsumeVisible: false,
       queryOilCard: '',
-      queryCarNumber: ''
+      queryCarNumber: '',
+
+      // 文件上传
+      baseUrl: process.env.VUE_APP_BASE_API,
+      uploadFileUrl: process.env.VUE_APP_BASE_API + "/common/upload", // 上传文件服务器地址
+      headers: {
+        Authorization: "Bearer " + getToken(),
+      },
+
+      //油卡充值
+      oilCardDialogVisible: false,
+      moneyInfo: {
+        oilCardNo: '',
+        rechargeType: '',
+        rechargeMoney: '',
+        rechargeDate: parseTime(new Date()),
+        rechargeName: "",
+        acountsName: "",
+        bankNo: "",
+        attachment: '',
+        comments: ''
+      },
+      options: [{
+        value: '现金',
+        label: '现金'
+      }, {
+        value: '银行卡',
+        label: '银行卡'
+      }],
+      queryBankAcount: ''
     };
   },
   created() {
@@ -589,6 +738,7 @@ export default {
     ...mapGetters(['trueName'])
   },
   methods: {
+    listBankAccount,
     listOilCard,
     listData,
     isPic(url) {
@@ -599,7 +749,22 @@ export default {
       if (this.active-- <= 0) this.active = 0;
     },
     next() {
-      if (this.active++ > 2) this.active = 0;
+      if (this.active++ > 2) {
+        this.active = 0;
+      }
+      // 发送请求 先增加出差基本信息+
+      addBusinessTrip(this.form).then(res => {
+        if (res.code === 500) {
+          this.$message.error(res.msg)
+          this.active = 0;
+        } else {
+          this.$message.success('添加出差基本信息成功')
+          //保存到会话中
+          sessionStorage.setItem('BusinessTrip-form', JSON.stringify(res.data))
+        }
+      }).catch(err => {
+        this.active = 0
+      })
     },
     //提交车辆使用申请 保存使用车辆信息
     submitCarApply() {
@@ -680,13 +845,44 @@ export default {
       this.getList()
     },
     submitOilCard() {
-      this.oilCardConsumeVisible = false
       this.carApplyForm.isUseOilCard = '1';
+      // 要检查油卡的余额是否够用 如果够用就保存数据 如果不够用 那么就要提示是否充值  如果充值 就要弹出充值页面
+      // 需要油卡号和加油金额
+      checkOilCard({
+        oilCardNo: this.oilCardConsumeInfo.oilCardNo,
+        consumeAmount: this.oilCardConsumeInfo.refuelingMoney
+      }).then(res => {
+        // 如果余额不足 要进行充值
+        if (res.data.result === 'error') {
+          this.$confirm('油卡余额不足,是否充值?', '提示', {
+            confirmButtonText: '是',
+            cancelButtonText: '否',
+            type: 'warning'
+          }).then(() => {
+            this.oilCardDialogVisible = true
+            this.moneyInfo.rechargeName = this.trueName;
+          })
+        } else {
+          // 先从session拿出出差信息
+          const businessTripInfo = JSON.parse(sessionStorage.getItem('BusinessTrip-form'))
+          if (businessTripInfo === undefined || businessTripInfo === {} || businessTripInfo === null) {
+            this.$message.error('出差信息为空!请先添加出差信息')
+          }
+          // 余额充足 要添加油卡消费信息
+          addOilCardConsume({...this.oilCardConsumeInfo, bTripId: businessTripInfo.id}).then(res => {
+            console.log(res)
+            this.$message.success('保存成功~')
+            // 关闭油卡消费添加弹窗
+            this.oilCardConsumeVisible = false
+          })
+        }
+      })
     },
     clearOilCard() {
       this.oilCardConsumeVisible = false;
       this.oilCardConsumeInfo = {}
       this.carApplyForm.isUseOilCard = '0';
+      this.$message.success('已清除')
     },
     handleCommitBackOilCard(val) {
       this.oilCardConsumeInfo.oilCardNo = val.oilCardNo;
@@ -703,6 +899,53 @@ export default {
       this.queryCarNumber = val;
     },
 
+    // 文件上传
+    handleFileSuccess(response, file, fileList) {
+      console.log(response)
+      if (response.code === 200) {
+        this.oilCardConsumeInfo.attachmentOiladd = response.url
+        console.log(this.oilCardConsumeInfo.attachmentOiladd)
+        this.$message.success('上传成功')
+      } else {
+        this.$message.error('上传失败')
+      }
+      fileList.pop();
+    },
+    // 查看附件
+    checkPath(path) {
+      window.open(path)
+    },
+
+    // 油卡充值
+    handleCommitBackBankAcount(val) {
+      this.moneyInfo.acountsName = val.acountsName;
+      this.moneyInfo.bankNo = val.bankNo;
+    },
+    handleUpdateQueryBankAcount(val) {
+      this.queryBankAcount = val
+    },
+    handleUpload(val) {
+      this.moneyInfo.attachment = val;
+    },
+    handleClick(tab, event) {
+      console.log(tab.name, event);
+      if (tab.name === 'first') {
+      } else {
+      }
+    },
+    //确认银行卡充值
+    submitMoney() {
+      //添加
+      addOilRecharge(this.moneyInfo).then(res => {
+        this.$message.success('充值成功')
+      })
+      this.oilCardDialogVisible = false
+    },
+    handleCommitBack(val) {
+      console.log(val)
+      //自动填充加油卡信息
+      this.moneyInfo.oilCardNo = val.oilCardNo
+    },
     /** 查询出差列表 */
     getList() {
       this.loading = true;
@@ -717,6 +960,8 @@ export default {
     cancel() {
       this.open = false;
       this.reset();
+      // 清除session中保存的出差信息
+      window.sessionStorage.removeItem('BusinessTrip-form')
     },
     // 表单重置
     reset() {

@@ -19,7 +19,7 @@
     <el-row :gutter="10" class="mb8">
       <el-col :span="1.5">
         <el-button icon="el-icon-refresh" size="mini" @click="resetQuery">刷新</el-button>
-        <el-button type="danger" size="mini" @click="handleAdd">新增加入款信息</el-button>
+        <el-button type="danger" size="mini" @click="handleAdd">新增借入款信息</el-button>
       </el-col>
       <right-toolbar :showSearch.sync="showSearch" @queryTable="getList" :columns="columns">
         <template v-slot:print>
@@ -92,49 +92,11 @@
     <!-- 添加或修改从外部借款信息对话框 -->
     <el-dialog :title="title" :visible.sync="open" width="500px" append-to-body>
       <el-form ref="form" :model="form" :rules="rules" label-width="80px">
-        <el-form-item label="贷款来源" prop="origin">
+        <el-form-item label="附近" prop="origin">
           <el-input v-model="form.origin" placeholder="请输入贷款来源" v-if="columns[0].visible"/>
         </el-form-item>
         <el-form-item label="借入金额" prop="moneyAmount">
           <el-input v-model="form.moneyAmount" placeholder="请输入借入金额" v-if="columns[0].visible"/>
-        </el-form-item>
-        <el-form-item label="贷款利率" prop="ratio">
-          <el-input v-model="form.ratio" placeholder="请输入贷款利率"/>
-        </el-form-item>
-        <el-form-item label="贷款发放日期" prop="loanDate">
-          <el-date-picker
-            v-model="form.loanDate"
-            type="date"
-            placeholder="选择日期" value-format="yyyy-MM-dd">
-          </el-date-picker>
-        </el-form-item>
-        <el-form-item label="贷款年限" prop="loanDuring">
-          <el-input v-model="form.loanDuring" placeholder="请输入贷款年限"/>
-        </el-form-item>
-        <el-form-item label="抵押担保" prop="mortgageGuarantee">
-          <el-input v-model="form.mortgageGuarantee" placeholder="请输入抵押担保"/>
-        </el-form-item>
-        <el-form-item label="打入账户" prop="acountsName">
-          <el-row>
-            <el-col :span="10">
-              <el-input v-model="form.acountsName" placeholder="请输入打入账户"/>
-            </el-col>
-            <el-col :span="3">
-              <SearchOption :get-data="listBankAccount" @commitBack="handleCommitBackBank" query-info="acountsName"
-                            :query-name="queryBank" query-label="户名查询"
-                            @update:queryName="handleCommitBackQueryName" :limit-info="{acountsType:'己方公司'}">
-                <template #table-columns>
-                  <el-table-column label="账户类型" align="center" prop="acountsType"/>
-                  <el-table-column label="开户名称(户名)" align="center" prop="acountsName"/>
-                  <el-table-column label="账号(银行账号)" align="center" prop="bankNo"/>
-                  <el-table-column label="开户行" align="center" prop="bankName"/>
-                </template>
-              </SearchOption>
-            </el-col>
-          </el-row>
-        </el-form-item>
-        <el-form-item label="打入账号" prop="bankNo">
-          <el-input v-model="form.bankNo" placeholder="请输入打入账号"/>
         </el-form-item>
         <el-form-item label="备注" prop="comments">
           <el-input v-model="form.comments" placeholder="请输入备注"/>
@@ -152,81 +114,73 @@
       <div id="back-money-info">
         <el-card class="box-card">
           <div slot="header" class="clearfix">
-            <span>历史还款记录</span>
-            <el-button style="float: right; padding: 3px 0" @click="handleRefreshNeedGiveBackMoneyList">刷新
-            </el-button>
-          </div>
-          <el-table
-            :data="needGiveBackMoneyList"
-            style="width: 100%" border v-loading="needMoneyLoading">
-            <el-table-column
-              prop="id"
-              label="ID"
-              width="60">
-            </el-table-column>
-            <el-table-column
-              prop="loanNO"
-              label="贷款编号"
-              width="130">
-            </el-table-column>
-            <el-table-column
-              prop="moneyAmount"
-              label="还(本)金额">
-            </el-table-column>
-            <el-table-column
-              prop="ratio"
-              label="付息金额">
-            </el-table-column>
-            <el-table-column
-              prop="payDate"
-              label="还款日期">
-            </el-table-column>
-            <el-table-column
-              prop="bankNo"
-              label="还款账号">
-            </el-table-column>
-            <el-table-column
-              prop="acountsName"
-              label="还款账户">
-            </el-table-column>
-          </el-table>
-        </el-card>
-        <br/>
-        <el-card class="box-card">
-          <div slot="header" class="clearfix">
             <el-button type="primary" @click="innerVisible = true">还款</el-button>
           </div>
           <el-dialog
-            width="30%"
-            title="还款(付款)申请"
+            width="65%"
+            title="添加还款信息"
             :visible.sync="innerVisible"
             append-to-body>
             <el-row>
-              <el-col :span="8">
-                <span style="font-weight: bolder">
-                  是否偿还利息
-                </span>
-              </el-col>
-              <el-col :span="6">
-                <el-radio v-model="isNeedRatio" label="0">否</el-radio>
-                <el-radio v-model="isNeedRatio" label="1">是</el-radio>
-              </el-col>
+              <el-form ref="form" :model="moneyBackInfo" label-width="80px">
+                <el-col :span="12">
+                  <el-form-item label="贷款来源" prop="origin">
+                    <el-input v-model="moneyBackInfo.origin" placeholder="请输入贷款来源"/>
+                  </el-form-item>
+                  <el-form-item label="借入金额" prop="moneyAmount">
+                    <el-input v-model="moneyBackInfo.moneyAmount" placeholder="请输入借入金额"/>
+                  </el-form-item>
+                  <el-form-item label="贷款利率" prop="ratio">
+                    <el-input v-model="moneyBackInfo.ratio" placeholder="请输入贷款利率"/>
+                  </el-form-item>
+                  <el-form-item label="贷款发放日期" prop="loanDate">
+                    <el-date-picker
+                      v-model="moneyBackInfo.loanDate"
+                      type="date"
+                      placeholder="选择贷款发放日期"
+                      value-format="yyyy-MM-dd">
+                    </el-date-picker>
+                  </el-form-item>
+                </el-col>
+                <el-col :span="12">
+                  <el-form-item label="贷款年限" prop="loanDuring">
+                    <el-input v-model="moneyBackInfo.loanDuring" placeholder="请输入贷款年限"/>
+                  </el-form-item>
+                  <el-form-item label="抵押担保" prop="mortgageGuarantee">
+                    <el-input v-model="moneyBackInfo.mortgageGuarantee" placeholder="请输入抵押担保"/>
+                  </el-form-item>
+                  <el-form-item label="打入账户" prop="acountsName">
+                    <el-col :span="20">
+                      <el-input v-model="moneyBackInfo.acountsName" placeholder="请输入打入账户"/>
+                    </el-col>
+                    <el-col :span="4">
+                      <SearchOption :limit-info="{acountsType:'己方公司'}" :get-data="listBankAccount"
+                                    @commitBack="handleCommitBackBankAcount"
+                                    @update:queryName="handleUpdateQueryBankAcount" :query-name="queryBankAcount"
+                                    query-label="户名查找" query-info="acountsName">
+                        <template #table-columns>
+                          <el-table-column label="账户类型" align="center" prop="acountsType"/>
+                          <el-table-column label="开户名称(户名)" align="center" prop="acountsName"/>
+                          <el-table-column label="账号(银行账号)" align="center" prop="bankNo"/>
+                          <el-table-column label="开户行" align="center" prop="bankName"/>
+                          <el-table-column label="公司名称" align="center" prop="companyName"/>
+                        </template>
+                      </SearchOption>
+                    </el-col>
+                  </el-form-item>
+                  <el-form-item label="打入账号" prop="bankNo">
+                    <el-input v-model="moneyBackInfo.bankNo" placeholder="请输入打入账号"/>
+                  </el-form-item>
+                  <el-form-item label="备注" prop="comments">
+                    <el-input v-model="moneyBackInfo.comments" placeholder="请输入备注"/>
+                  </el-form-item>
+                </el-col>
+              </el-form>
             </el-row>
-            <br/>
-            <el-row v-if="isNeedRatio === '1'">
-              <el-col :span="5">
-                <span style="font-weight: bolder;line-height: 38px">
-                  付息金额
-                </span>
-              </el-col>
-              <el-col :span="10">
-                <el-input v-model="currentGiveBackMoneyInfo.ratio" placeholder="请输入付息金额"/>
-              </el-col>
-            </el-row>
-            <el-row>
-              <ApplyPayment :table-name="TableName.BORROWED_MONEY" :t-i-d="tID" @changeOpen="innerVisible = false"
-                            :addMoney="currentGiveBackMoneyInfo.ratio" :need-info="{}"/>
-            </el-row>
+            <div slot="footer" class="dialog-footer">
+              <el-button type="primary" @click="submitAddBorrowedMoney">确 定</el-button>
+              <el-button @click="innerVisible = false">取 消</el-button>
+            </div>
           </el-dialog>
         </el-card>
       </div>
@@ -249,7 +203,7 @@ import {listBankAccount} from "@/api/system/bankAccount";
 import {listCompany} from "@/api/system/company";
 import ApplyPayment from "@/components/ApplyPayment.vue";
 import {TableName} from "@/api/tool/enums";
-import {addDateRange} from "@/utils/ruoyi";
+import {addDateRange, parseTime} from "@/utils/ruoyi";
 import {excludeParams} from "@/api/tool/exclude";
 
 export default {
@@ -353,7 +307,9 @@ export default {
       //二级分类
       TwoLevelOption: [],
       //tid
-      tID: ''
+      tID: '',
+      moneyBackInfo: {},
+      queryBankAcount: ''
     };
   },
   created() {
@@ -388,6 +344,21 @@ export default {
   methods: {
     listCompany,
     listBankAccount,
+
+    // 添加还款信息
+    submitAddBorrowedMoney() {
+      addBorrowedMoney(this.moneyBackInfo).then(res => {
+        this.$message.success('添加成功')
+        this.innerVisible = false
+      })
+    },
+    handleCommitBackBankAcount(val) {
+      this.moneyBackInfo.bankNo = val.bankNo;
+      this.moneyBackInfo.acountsName = val.acountsName
+    },
+    handleUpdateQueryBankAcount(val) {
+      this.queryBankAcount = val;
+    },
     handleQueryTime() {
       this.borrowedMoneyList = this.tempBorrowedMoneyList
       this.borrowedMoneyList = this.filterTime()
@@ -402,24 +373,25 @@ export default {
         return time_search >= time_start && time_search <= time_end
       })
     },
-    //处理还款的事件函数
+    //处理还款的事件函数  这里应该先填写还款信息 然后在还款信息页面申请付款
     handleGiveBackMoney(row) {
-      this.tID = row.id;
-      this.currentUUID = row.loanNO
-      this.currentBankNo = row.bankNo
-      this.currentGiveBackMoneyInfo.bankNo = row.bankNo
-      this.needMoneyLoading = true
-      setTimeout(() => {
-        //查询借款uuid对应的信息
-        getBorrowedMoneyByUuid(this.currentUUID).then(res => {
-          this.needGiveBackMoneyList = res.data
-          this.giveBackMoneyShow = true
-          this.needMoneyLoading = false
+      this.$prompt('请输入备注', '是否添加还款信息?', {
+        confirmButtonText: '确定',
+        cancelButtonText: '取消',
+        type: 'warning'
+      }).then(({value}) => {
+        //直接添加还款信息
+        addRepayment({
+          ...excludeParams(row, this.$exclude),
+          payDate: parseTime(new Date()),
+          comments: value
+        }).then(res => {
+          this.$message.success('添加还款信息成功,请前往贷款还款记录查看详细')
+          setTimeout(() => {
+            location.href = '/fund/repayment'
+          }, 600)
         })
-      }, 200)
-    },
-    handleRefreshNeedGiveBackMoneyList() {
-      this.handleGiveBackMoney({loanNO: this.currentUUID}); //刷新
+      })
     },
     //分类信息处理
     handleSelectOneLevel(value) {
@@ -441,10 +413,6 @@ export default {
       this.form.acountsName = val.acountsName;
       this.form.bankNo = val.bankNo
     },
-    handleCommitBackQueryName(val) {
-      this.queryBank = val;
-    },
-
     printHTML() {
       this.$print({
         printable: 'printBox',
