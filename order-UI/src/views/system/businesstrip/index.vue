@@ -26,7 +26,7 @@
           plain
           size="mini"
           @click="handleAdd"
-          v-hasPermi="['system:BusinessTrip:add']"
+          v-hasPermi="['system:businesstrip:add']"
         >新增出差信息
         </el-button>
       </el-col>
@@ -53,7 +53,7 @@
               icon="el-icon-folder-opened"
               size="mini"
               @click="handleExport"
-              v-hasPermi="['system:BusinessTrip:export']"
+              v-hasPermi="['system:businesstrip:export']"
             >
             </el-button>
           </el-col>
@@ -98,14 +98,14 @@
             size="mini"
             type="primary"
             @click="handleUpdate(scope.row)"
-            v-hasPermi="['system:BusinessTrip:edit']"
+            v-hasPermi="['system:businesstrip:edit']"
           >修改
           </el-button>
           <el-button
             size="mini"
             type="danger"
             @click="handleDelete(scope.row)"
-            v-hasPermi="['system:BusinessTrip:remove']"
+            v-hasPermi="['system:businesstrip:remove']"
           >删除
           </el-button>
         </template>
