@@ -2,7 +2,7 @@
 <template>
   <div class="app-container">
     <!-- 2.添加或修改付款信息对话框 -->
-    <el-form ref="form" :model="form" :rules="rules" label-width="80px">
+    <el-form ref="form" :model="form" :rules="rules" label-width="120px">
       <!--        表名要自动填充 手动添加无需-->
       <!--        <el-form-item label="对应的表名" prop="tableName">-->
       <!--          <el-input v-model="form.tableName" placeholder="请输入对应的表名"/>-->

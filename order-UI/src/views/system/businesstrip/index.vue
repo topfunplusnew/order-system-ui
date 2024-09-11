@@ -252,8 +252,8 @@
 
 
     <!--    车辆使用申请-->
-    <el-dialog title="车辆使用申请" :visible.sync="carApplyVisible" append-to-body width="80%">
-      <el-form ref="carApplyForm" :model="carApplyForm" :rules="rules" label-width="80px">
+    <el-dialog title="车辆使用申请" :visible.sync="carApplyVisible" fullscreen append-to-body width="80%">
+      <el-form ref="carApplyForm" :model="carApplyForm" :rules="rules" label-width="150px">
         <!--        自动填充以下字段-->
         <!--          <el-form-item label="申请人" prop="applyUser">-->
         <!--            <el-input v-model="carApplyForm.applyUser" placeholder="请输入申请人"/>-->
@@ -299,10 +299,13 @@
             <el-button v-if="carApplyForm.isUseOilCard === '1'" type="warning" size="mini"
                        @click="oilCardConsumeVisible=true">重新填写油卡信息
             </el-button>
-
           </el-form-item>
-          <el-form-item label="随同乘车人员" prop="peers">
-            <el-input v-model="carApplyForm.peers" placeholder="请输入随同乘车人员"/>
+          <el-form-item label="行程中使用加油卡加油次数" prop="refuelingFrequency"
+                        v-if="carApplyForm.isUseOilCard==='1'">
+            <el-input v-model="carApplyForm.refuelingFrequency" placeholder="请输入行程中使用加油卡加油次数"/>
+          </el-form-item>
+          <el-form-item label="用车事由" prop="ApplyPurpose">
+            <el-input v-model="carApplyForm.ApplyPurpose" placeholder="请输入用车事由"/>
           </el-form-item>
           <el-form-item label="用车时间" prop="startTime">
             <el-date-picker
@@ -320,16 +323,22 @@
               value-format="yyyy-MM-dd">
             </el-date-picker>
           </el-form-item>
-          <el-form-item label="回来后里程" prop="endMile">
-            <el-input v-model="carApplyForm.endMile" placeholder="请输入回来后里程"/>
-          </el-form-item>
-          <el-form-item label="回来后车况" prop="endCarState">
-            <el-input v-model="carApplyForm.endCarState" placeholder="请输入回来后车况"/>
+          <el-form-item label="用车里程数" prop="miles">
+            <el-input v-model="carApplyForm.miles" placeholder="请输入用车里程数"/>
           </el-form-item>
         </el-col>
         <el-col :span="8">
-          <el-form-item label="用车里程数" prop="miles">
-            <el-input v-model="carApplyForm.miles" placeholder="请输入用车里程数"/>
+          <el-form-item label="回来后里程" prop="endMile">
+            <el-input v-model="carApplyForm.endMile" placeholder="请输入回来后里程"/>
+          </el-form-item>
+          <el-form-item label="出车前里程" prop="startMile">
+            <el-input v-model="carApplyForm.startMile" placeholder="请输入出车前里程"/>
+          </el-form-item>
+          <el-form-item label="出车前车况" prop="startCarState">
+            <el-input v-model="carApplyForm.startCarState" placeholder="请输入出车前车况"/>
+          </el-form-item>
+          <el-form-item label="回来后车况" prop="endCarState">
+            <el-input v-model="carApplyForm.endCarState" placeholder="请输入回来后车况"/>
           </el-form-item>
           <el-form-item label="回程停靠位置" prop="backStopPlace">
             <el-input v-model="carApplyForm.backStopPlace" placeholder="请输入回程停靠位置"/>
@@ -340,29 +349,20 @@
           <el-form-item label="违章罚款金额金额" prop="fine">
             <el-input v-model="carApplyForm.fine" placeholder="请输入违章罚款金额金额"/>
           </el-form-item>
-          <el-form-item label="用车事由" prop="ApplyPurpose">
-            <el-input v-model="carApplyForm.ApplyPurpose" placeholder="请输入用车事由"/>
-          </el-form-item>
-          <el-form-item label="出车前里程" prop="startMile">
-            <el-input v-model="carApplyForm.startMile" placeholder="请输入出车前里程"/>
-          </el-form-item>
-          <el-form-item label="出车前车况" prop="startCarState">
-            <el-input v-model="carApplyForm.startCarState" placeholder="请输入出车前车况"/>
-          </el-form-item>
         </el-col>
         <el-col :span="8">
           <el-form-item label="行程中是否维修/保养" prop="isMaintenance">
             <el-radio v-model="carApplyForm.isMaintenance" label="是">是</el-radio>
             <el-radio v-model="carApplyForm.isMaintenance" label="否">否</el-radio>
           </el-form-item>
-          <el-form-item label="保养金额" prop="maintenanceMoney">
+          <el-form-item label="保养金额" prop="maintenanceMoney" v-if="carApplyForm.isMaintenance === '是'">
             <el-input v-model="carApplyForm.maintenanceMoney" placeholder="请输入保养金额"/>
-          </el-form-item>
-          <el-form-item label="行程中使用加油卡加油次数" prop="refuelingFrequency">
-            <el-input v-model="carApplyForm.refuelingFrequency" placeholder="请输入行程中使用加油卡加油次数"/>
           </el-form-item>
           <el-form-item label="派车人" prop="dispatchPerson">
             <el-input v-model="carApplyForm.dispatchPerson" placeholder="请输入派车人"/>
+          </el-form-item>
+          <el-form-item label="随同乘车人员" prop="peers">
+            <el-input v-model="carApplyForm.peers" placeholder="请输入随同乘车人员"/>
           </el-form-item>
           <el-form-item label="备注" prop="comments">
             <el-input v-model="carApplyForm.comments" placeholder="请输入备注"/>
@@ -834,6 +834,10 @@ export default {
 
     //发起付款申请
     applyForPayment(row) {
+      // 出差费用包含 报销项 车辆使用申请的保养金额 加油金额 初期金额
+      getBusinessTrip(row.id).then(res => {
+        console.log('出差信息', res)
+      })
       this.tID = row.id;
       this.applyForPaymentDialogVisible = true
     },
@@ -844,6 +848,7 @@ export default {
       this.applyForPaymentDialogVisible = val;
       this.getList()
     },
+    // 添加油卡消费信息
     submitOilCard() {
       this.carApplyForm.isUseOilCard = '1';
       // 要检查油卡的余额是否够用 如果够用就保存数据 如果不够用 那么就要提示是否充值  如果充值 就要弹出充值页面
