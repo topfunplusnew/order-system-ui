@@ -273,6 +273,12 @@
               value-format="yyyy-MM-dd">
             </el-date-picker>
           </el-form-item>
+          <el-form-item label="申请人" prop="applyUser">
+            <el-input v-model="carApplyForm.applyUser" disabled/>
+          </el-form-item>
+          <el-form-item label="部门" prop="department">
+            <el-input v-model="carApplyForm.department" disabled/>
+          </el-form-item>
           <!--          车辆信息搜索-->
           <el-form-item label="车牌" prop="carNo">
             <el-row>
@@ -665,8 +671,8 @@ export default {
         {key: 6, label: `备注`, visible: true},
       ],
       active: 0,
-      //是否使用车辆
-      useCar: '',
+      //是否使用车辆 默认为否
+      useCar: '否',
       carApplyForm: {
         carNo: '',
         isMaintenance: '',
@@ -868,25 +874,45 @@ export default {
         })
         // 添加
       } else {
-        //保存报销信息
-        this.form.tripReimbursementList = this.tripReimbursementList;
-        //form 是出差申请基本信息 carApplyInfo是车辆使用信息
-        let carApplyInfo = JSON.parse(sessionStorage.getItem('carApplyForm'))
-        //填充某些字段
-        carApplyInfo.applyUser = this.form.employee;
-        carApplyInfo.department = this.form.deptName;
-        //先提交申请信息 回调函数中添加车辆使用信息
-        addBusinessTrip(this.form).then(res => {
-          carApplyInfo.bTripId = res.data.id;
-          this.$message.success('提交成功')
-          //添加车辆信息
-          setTimeout(() => {
-            addCarApply(carApplyInfo).then(res => {
-              this.$message.success('车辆信息提交成功')
-              this.active++;
-            })
-          }, 30)
-        })
+        // 如果不使用车辆
+        if (this.useCar !== '是') {
+          //先提交申请信息 回调函数中添加车辆使用信息
+          addBusinessTrip(this.form).then(res => {
+            this.$message.success('提交成功,本次无车辆使用信息')
+            this.active++;
+            // 清除状态
+            this.carApplyForm = {}
+            this.oilCardConsumeInfo = {}
+            this.form = {}
+            this.getList()
+          })
+          // 如果使用车辆
+        } else {
+          //保存报销信息
+          this.form.tripReimbursementList = this.tripReimbursementList;
+          //form 是出差申请基本信息 carApplyInfo是车辆使用信息
+          let carApplyInfo = JSON.parse(sessionStorage.getItem('carApplyForm'))
+          //填充某些字段
+          carApplyInfo.applyUser = this.form.employee;
+          carApplyInfo.department = this.form.deptName;
+          //先提交申请信息 回调函数中添加车辆使用信息
+          addBusinessTrip(this.form).then(res => {
+            carApplyInfo.bTripId = res.data.id;
+            this.$message.success('提交成功')
+            //添加车辆信息
+            setTimeout(() => {
+              addCarApply(carApplyInfo).then(res => {
+                this.$message.success('车辆信息提交成功')
+                this.active++;
+                // 清除状态
+                this.carApplyForm = {}
+                this.oilCardConsumeInfo = {}
+                this.form = {}
+                this.getList()
+              })
+            }, 30)
+          })
+        }
       }
     },
 
@@ -1124,6 +1150,9 @@ export default {
           // 如果没有车辆使用信息
           else {
             this.$message.warning('该出差信息无车辆使用信息')
+            //自动填充填写人和部门
+            this.carApplyForm.applyUser = this.trueName;
+            this.carApplyForm.department = this.form.deptName;
           }
         })
         // 报销项信息保存状态
@@ -1132,29 +1161,6 @@ export default {
         this.title = "修改出差";
       });
     },
-    /** 提交按钮 */
-    // submitForm() {
-    //   this.$refs["form"].validate(valid => {
-    //     if (valid) {
-    //       this.form.tripReimbursementList = this.tripReimbursementList;
-    //       if (this.form.id != null) {
-    //         this.form = excludeParams(this.form, this.$exclude)
-    //         updateBusinessTrip(this.form).then(response => {
-    //           this.$modal.msgSuccess("修改成功");
-    //           this.open = false;
-    //           this.getList();
-    //         });
-    //       } else {
-    //         this.form = excludeParams(this.form, this.$exclude)
-    //         addBusinessTrip(this.form).then(response => {
-    //           this.$modal.msgSuccess("新增成功");
-    //           this.open = false;
-    //           this.getList();
-    //         });
-    //       }
-    //     }
-    //   });
-    // },
     /** 删除按钮操作 */
     handleDelete(row) {
       const ids = row.id || this.ids;

@@ -164,7 +164,7 @@
           <el-input v-model="form.ticketPoint" placeholder="请输入票点"/>
         </el-form-item>
         <el-form-item label="票点金额" prop="ticketPointAmount">
-          <el-input v-model="invoiceAmount" placeholder="请输入票点金额" disabled/>
+          <el-input v-model="invoiceAmount" placeholder="请输入票点金额"/>
         </el-form-item>
         <el-form-item label="备注" prop="comments">
           <el-input v-model="form.comments" placeholder="请输入备注"/>
@@ -285,7 +285,8 @@ export default {
         this.form.ticketPointAmount = val;
       },
       get() {
-        return this.form.invoiceAmount * this.form.ticketPoint
+        // 保留两位小数
+        return Number(this.form.invoiceAmount * this.form.ticketPoint).toFixed(2)
       }
     },
   },
@@ -385,15 +386,15 @@ export default {
       this.title = "添加发票购入信息";
     },
     /** 修改按钮操作 */
-   /* handleUpdate(row) {
-      this.reset();
-      const id = row.id || this.ids
-      getInvoiceIn(id).then(response => {
-        this.form = response.data;
-        this.open = true;
-        this.title = "修改发票购入信息";
-      });
-    },*/
+    /* handleUpdate(row) {
+       this.reset();
+       const id = row.id || this.ids
+       getInvoiceIn(id).then(response => {
+         this.form = response.data;
+         this.open = true;
+         this.title = "修改发票购入信息";
+       });
+     },*/
 
     handleUpdate(row) {
       this.$prompt('请输入编辑原因', '提示', {
