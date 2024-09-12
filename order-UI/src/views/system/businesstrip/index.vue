@@ -771,9 +771,9 @@ export default {
       if (this.active++ > 2) {
         this.active = 0;
       }
-      this.form = excludeParams(this.form, this.$exclude)
       // id 不为空则为修改
-      if (this.form.id !== null && this.form.id !== '') {
+      if (this.form.id !== null && this.form.id !== '' && this.form.id !== undefined) {
+        this.form = excludeParams(this.form, this.$exclude)
         updateBusinessTrip({...this.form, UUID: this.UUID}).then(res => {
           if (res.code === 500) {
             this.$message.error(res.msg)
@@ -787,6 +787,7 @@ export default {
           this.active = 0
         })
       } else {
+        this.form = excludeParams(this.form, this.$exclude)
         addBusinessTrip({...this.form, UUID: this.UUID}).then(res => {
           if (res.code === 500) {
             this.$message.error(res.msg)
@@ -806,7 +807,7 @@ export default {
       sessionStorage.setItem('carApplyForm', JSON.stringify(this.carApplyForm))
       this.$message.success('车辆信息保存成功~')
       //清除状态
-      this.carApplyForm = this.$refreshParams(this.carApplyForm)
+      // this.carApplyForm = this.$refreshParams(this.carApplyForm)
       this.carApplyVisible = false
     },
     //清除缓存
@@ -846,33 +847,26 @@ export default {
     },
     //完成提交
     nextAndSubmit() {
-      if (this.form.id !== null && this.form.id !== '') {
+      // 修改 修改的时候
+      if (this.form.id !== null && this.form.id !== '' && this.form.id !== undefined) {
         //保存报销信息
         this.form.tripReimbursementList = this.tripReimbursementList;
-        //form 是出差申请基本信息 carApplyInfo是车辆使用信息
-        let carApplyInfo = null
-        getCarApply(this.form.id).then(res => {
-          carApplyInfo = res.data
-          setTimeout(() => {
-            updateBusinessTrip(this.form).then(res => {
-              this.$message.success('修改成功')
-              //添加车辆信息
-              if (carApplyInfo !== null && carApplyInfo !== undefined) {
-                updateCarApply(carApplyInfo).then(res => {
-                  this.$message.success('车辆信息修改成功')
-                  this.active++;
-                  // 清除状态
-                  sessionStorage.removeItem('carApplyForm')
-                  sessionStorage.removeItem('BusinessTrip-form')
-                  this.carApplyForm = {}
-                  this.oilCardConsumeInfo = {}
-                  this.form = {}
-                  this.getList()
-                })
-              }
-            })
-          }, 30)
+        updateBusinessTrip(excludeParams(this.form, this.$exclude)).then(res => {
+          this.$message.success('修改成功')
+          //添加车辆信息
+          updateCarApply(excludeParams(this.carApplyForm, this.$exclude)).then(res => {
+            this.$message.success('车辆信息修改成功')
+            this.active++;
+            // 清除状态
+            sessionStorage.removeItem('carApplyForm')
+            sessionStorage.removeItem('BusinessTrip-form')
+            this.carApplyForm = {}
+            this.oilCardConsumeInfo = {}
+            this.form = {}
+            this.getList()
+          })
         })
+        // 添加
       } else {
         //保存报销信息
         this.form.tripReimbursementList = this.tripReimbursementList;
@@ -930,15 +924,19 @@ export default {
             this.oilCardDialogVisible = true
             this.moneyInfo.rechargeName = this.trueName;
           })
+          // 如果油卡信息不存在
         } else if (res.data.error === '油卡不存在') {
           this.$message.error('油卡不存在')
         } else {
-          // 先从session拿出出差信息
+          // 先从session拿出出差信息 判断是否存在
           const businessTripInfo = JSON.parse(sessionStorage.getItem('BusinessTrip-form'))
           if (businessTripInfo === undefined || businessTripInfo === {} || businessTripInfo === null) {
             this.$message.error('出差信息为空!请先添加出差信息')
           }
+          // 纠正money
           this.oilCardConsumeInfo.rechargeMoney = this.isRecharge === '2' ? '0' : this.oilCardConsumeInfo.rechargeMoney
+
+          // 添加油卡消费信息
           addOilCardConsume({
             ...this.oilCardConsumeInfo,
             bTripId: businessTripInfo.id,
@@ -1102,10 +1100,18 @@ export default {
     /** 修改按钮操作 */
     handleUpdate(row) {
       this.reset();
+      // 清除状态
+      sessionStorage.removeItem('carApplyForm')
+      sessionStorage.removeItem('BusinessTrip-form')
+      this.carApplyForm = {}
+      this.oilCardConsumeInfo = {}
+      this.form = {}
+
       const id = row.id || this.ids
+      // 拿到该行id对应的出差信息
       getBusinessTrip(id).then(response => {
         this.form = response.data;
-        // 需要判断一下是否有车辆使用信息
+        // 需要判断一下是否有车辆使用信息 保存状态
         listCarApply({bTripId: response.data.id}).then(res => {
           // 如果有车辆使用信息
           if (res.rows.length !== 0) {
@@ -1120,6 +1126,7 @@ export default {
             this.$message.warning('该出差信息无车辆使用信息')
           }
         })
+        // 报销项信息保存状态
         this.tripReimbursementList = response.data.tripReimbursementList;
         this.open = true;
         this.title = "修改出差";

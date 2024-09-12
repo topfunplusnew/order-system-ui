@@ -226,6 +226,7 @@ import {listBankAccount} from "@/api/system/bankAccount";
 import {findFileExtension} from "@/utils/trash/utils";
 import {mapGetters} from "vuex";
 import {addDateRange} from "@/utils/ruoyi";
+import {excludeParams} from "@/api/tool/exclude";
 
 export default {
   name: "OilRecharge",
@@ -432,12 +433,14 @@ export default {
       this.$refs["form"].validate(valid => {
         if (valid) {
           if (this.form.id != null) {
+            this.form = excludeParams(this.form, this.$exclude)
             updateOilRecharge(this.form).then(response => {
               this.$modal.msgSuccess("修改成功");
               this.open = false;
               this.getList();
             });
           } else {
+            this.form = excludeParams(this.form, this.$exclude)
             addOilRecharge(this.form).then(response => {
               this.$modal.msgSuccess("新增成功");
               this.open = false;

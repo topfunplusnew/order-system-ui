@@ -183,6 +183,7 @@ import company from "@/views/system/company/index.vue";
 import {mapGetters} from "vuex";
 import {listCompany} from "@/api/system/company";
 import {addDateRange, parseTime} from "@/utils/ruoyi";
+import {excludeParams} from "@/api/tool/exclude";
 
 export default {
   name: "BalanceAccounts",
@@ -388,6 +389,7 @@ export default {
             this.form.userId = null;
             this.form.companyType = this.form.companyType === '供应商' ? 2 : 1
             this.form.operateDate = parseTime(this.form.operateDate)
+            this.form = excludeParams(this.form, this.$exclude)
             updateBalanceAccounts(this.form).then(response => {
               this.$modal.msgSuccess("修改成功");
               this.open = false;
@@ -400,6 +402,7 @@ export default {
             this.form.userId = null;
             this.form.companyType = this.form.companyType === '供应商' ? 2 : 1
             this.form.operateDate = parseTime(this.form.operateDate)
+            this.form = excludeParams(this.form, this.$exclude)
             addBalanceAccounts(this.form).then(response => {
               this.$modal.msgSuccess("新增成功");
               this.open = false;
