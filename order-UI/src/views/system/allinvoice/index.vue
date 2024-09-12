@@ -363,7 +363,7 @@ export default {
       this.title = "添加发票购入信息";
     },
     /** 修改按钮操作 */
-    handleUpdate(row) {
+    /*handleUpdate(row) {
       //修改之前的操作
       this.$prompt('请输入编辑原因', '提示', {
         confirmButtonText: '确定',
@@ -386,6 +386,15 @@ export default {
           type: 'warning',
           message: '请先输入编辑原因!'
         });
+      });
+    },*/
+    handleUpdate(row) {
+      this.reset();
+      const id = row.id || this.ids
+      getAllinvoice(id).then(response => {
+        this.form = response.data;
+        this.open = true;
+        this.title = "修改发票购入信息";
       });
     },
     /** 提交按钮 */

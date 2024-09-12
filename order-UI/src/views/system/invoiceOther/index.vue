@@ -59,7 +59,7 @@
               icon="el-icon-folder-opened"
               size="mini"
               @click="handleExport"
-              v-hasPermi="['system:company:export']"
+              v-hasPermi="['system:invoiceother:export']"
             >
             </el-button>
           </el-col>
