@@ -790,7 +790,7 @@ export default {
             this.$message.error(res.msg)
             this.active = 0;
           } else {
-            this.$message.success('添加出差基本信息成功')
+            this.$message.success('成功保存信息')
             //保存到会话中
             sessionStorage.setItem('BusinessTrip-form', JSON.stringify(res.data))
           }
