@@ -1161,29 +1161,6 @@ export default {
         this.title = "修改出差";
       });
     },
-    /** 提交按钮 */
-    // submitForm() {
-    //   this.$refs["form"].validate(valid => {
-    //     if (valid) {
-    //       this.form.tripReimbursementList = this.tripReimbursementList;
-    //       if (this.form.id != null) {
-    //         this.form = excludeParams(this.form, this.$exclude)
-    //         updateBusinessTrip(this.form).then(response => {
-    //           this.$modal.msgSuccess("修改成功");
-    //           this.open = false;
-    //           this.getList();
-    //         });
-    //       } else {
-    //         this.form = excludeParams(this.form, this.$exclude)
-    //         addBusinessTrip(this.form).then(response => {
-    //           this.$modal.msgSuccess("新增成功");
-    //           this.open = false;
-    //           this.getList();
-    //         });
-    //       }
-    //     }
-    //   });
-    // },
     /** 删除按钮操作 */
     handleDelete(row) {
       const ids = row.id || this.ids;
