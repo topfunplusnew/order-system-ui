@@ -605,7 +605,7 @@ import {mixin_upload} from "@/views/dashboard/mixins/upload";
 import SearchOption from "@/components/SearchOption.vue";
 import {listData} from "@/api/system/dict/data";
 import {mapGetters} from "vuex";
-import {addCarApply, getCarApply, updateCarApply} from "@/api/system/carApply";
+import {addCarApply, getCarApply, listCarApply, updateCarApply} from "@/api/system/carApply";
 import PaymentApply from "@/views/system/paymentApply/index.vue";
 import ApplyPayment from "@/components/ApplyPayment.vue";
 import {TableName} from "@/api/tool/enums";
@@ -666,7 +666,7 @@ export default {
       ],
       active: 0,
       //是否使用车辆
-      useCar: false,
+      useCar: '',
       carApplyForm: {
         carNo: '',
         isMaintenance: '',
@@ -861,6 +861,13 @@ export default {
                 updateCarApply(carApplyInfo).then(res => {
                   this.$message.success('车辆信息修改成功')
                   this.active++;
+                  // 清除状态
+                  sessionStorage.removeItem('carApplyForm')
+                  sessionStorage.removeItem('BusinessTrip-form')
+                  this.carApplyForm = {}
+                  this.oilCardConsumeInfo = {}
+                  this.form = {}
+                  this.getList()
                 })
               }
             })
@@ -1078,6 +1085,13 @@ export default {
     handleAdd() {
       //这里重置了form
       this.reset();
+      // 清除状态
+      sessionStorage.removeItem('carApplyForm')
+      sessionStorage.removeItem('BusinessTrip-form')
+      this.carApplyForm = {}
+      this.oilCardConsumeInfo = {}
+      this.form = {}
+
       //自动填充填写人
       this.form.employee = this.trueName;
       this.open = true;
@@ -1091,6 +1105,21 @@ export default {
       const id = row.id || this.ids
       getBusinessTrip(id).then(response => {
         this.form = response.data;
+        // 需要判断一下是否有车辆使用信息
+        listCarApply({bTripId: response.data.id}).then(res => {
+          // 如果有车辆使用信息
+          if (res.rows.length !== 0) {
+            this.useCar = '是'
+            setTimeout(() => {
+              this.$message.success('该出差信息车辆信息填写成功')
+              this.carApplyForm = res.rows[0];
+            }, 50)
+          }
+          // 如果没有车辆使用信息
+          else {
+            this.$message.warning('该出差信息无车辆使用信息')
+          }
+        })
         this.tripReimbursementList = response.data.tripReimbursementList;
         this.open = true;
         this.title = "修改出差";
