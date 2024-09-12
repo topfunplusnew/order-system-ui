@@ -33,7 +33,9 @@ export default {
       queryFleet: '',
 
       //货物信息
-      goodsInfo: {}
+      goodsInfo: {},
+
+
     }
   },
   computed: {

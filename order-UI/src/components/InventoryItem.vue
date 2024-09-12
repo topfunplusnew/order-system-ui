@@ -373,7 +373,7 @@ export default {
     //公式计算相关的计算属性
     //是否含税 厂家否 客户否
     paymentFactory00() {
-      return fix(this.length * this.width * this.pieces / 1000000 * this.price + Number(this.sundryCost))
+      return fix((this.length * this.width * this.pieces) / 1000000 * Number(this.price) + Number(this.sundryCost))
     },
     payments00() {
       return fix(this.length * this.width * this.outPieces / 1000000 * this.paymentUnload + Number(this.paymentsWithSundry));
@@ -421,7 +421,6 @@ export default {
       return fix((this.height - this.erro) * this.length * this.width * this.pieces / 1000000 / 20 / 20)
     },
     landFreight01() {
-      console.log(this.tonnage, this.landFreightPrice, this.additionalFees)
       return fix(Number(this.tonnage * this.landFreightPrice) + Number(this.additionalFees))
     },
     profit01() {
@@ -454,72 +453,66 @@ export default {
     //出厂是否含税
     isIncludeTaxFactory: {
       handler(val) {
-        console.log('isIncludeTaxFactory:', val)
       },
     },
     //销售是否含税
     isIncludeTaxSale: {
       handler(val) {
-        console.log('isIncludeTaxSale:', val)
       },
     },
     //组合
     Tax: {
       handler(val) {
-        console.log('both:', val)
-
       }
     },
     //监听的是整个对象
     orderItemInfo: {
       handler() {
         //如果不是仓库发货
-        if (this.storeHouseName === undefined) {
-          //是否含税 厂家否 客户否
-          if (this.Tax === '00') {
-            //误差为0.8
-            this.erro = 0.8;
-            //出厂贷款
-            this.paymentFactory = this.paymentFactory00;
-            //总贷款
-            this.payments = this.payments00;
-            //吨位
-            this.tonnage = this.tonnage00
-            //运费
-            this.landFreight = this.landFreight00
-            //利润
-            this.profit = this.profit00
-            //不含税利润
-            this.profitNoTax = this.profitNoTax00
-            //出厂含税客户不含税
-          } else if (this.Tax === '10') {
-            //误差为0
-            this.erro = 0;
-            this.paymentFactory = this.paymentFactory10;
-            this.payments = this.payments10
-            this.tonnage = this.tonnage10
-            this.landFreight = this.landFreight10
-            this.profit = this.profit10
-            this.profitNoTax = this.profitNoTax10
-          } else if (this.Tax === '01') {
-            //误差为0
-            this.erro = 0;
-            this.paymentFactory = this.paymentFactory01;
-            this.payments = this.payments01
-            this.tonnage = this.tonnage01
-            this.landFreight = this.landFreight01
-            this.profit = this.profit01
-            this.profitNoTax = this.profitNoTax01
-          } else {
-            //误差为0
-            this.erro = 0;
-            this.paymentFactory = this.paymentFactory11;
-            this.payments = this.payments11
-            this.tonnage = this.tonnage11
-            this.landFreight = this.landFreight11
-            this.profit = this.profit11
-            this.profitNoTax = this.profitNoTax11
-          }
+        //是否含税 厂家否 客户否
+        if (this.Tax === '00') {
+          //误差为0.8
+          this.erro = 0.8;
+          //出厂贷款
+          this.paymentFactory = this.paymentFactory00;
+          //总贷款
+          this.payments = this.payments00;
+          //吨位
+          this.tonnage = this.tonnage00
+          //运费
+          this.landFreight = this.landFreight00
+          //利润
+          this.profit = this.profit00
+          //不含税利润
+          this.profitNoTax = this.profitNoTax00
+          //出厂含税客户不含税
+        } else if (this.Tax === '10') {
+          //误差为0
+          this.erro = 0;
+          this.paymentFactory = this.paymentFactory10;
+          this.payments = this.payments10
+          this.tonnage = this.tonnage10
+          this.landFreight = this.landFreight10
+          this.profit = this.profit10
+          this.profitNoTax = this.profitNoTax10
+        } else if (this.Tax === '01') {
+          //误差为0
+          this.erro = 0;
+          this.paymentFactory = this.paymentFactory01;
+          this.payments = this.payments01
+          this.tonnage = this.tonnage01
+          this.landFreight = this.landFreight01
+          this.profit = this.profit01
+          this.profitNoTax = this.profitNoTax01
+        } else {
+          //误差为0
+          this.erro = 0;
+          this.paymentFactory = this.paymentFactory11;
+          this.payments = this.payments11
+          this.tonnage = this.tonnage11
+          this.landFreight = this.landFreight11
+          this.profit = this.profit11
+          this.profitNoTax = this.profitNoTax11
         }
         //运费自动填充
         if (this.seaFreight === undefined) {
@@ -603,7 +596,6 @@ export default {
 
     //供应商信息确认 选择供应商后还要选择产品级别
     commitCompanyGiveInfo(row) {
-      console.log(row)
       this.orderItemInfo.supplierId = row.id;   //goodsOrderList->供应商ID
       this.supplier = row.companyName
       this.companyGiveDialogVisible = false;
@@ -624,7 +616,6 @@ export default {
     printAllComputers() {
       const computedProperties = this.$options.computed;
       Object.keys(computedProperties).forEach(key => {
-        console.log('计算属性+>', key, computedProperties[key])
       })
     }
   }
@@ -690,6 +681,11 @@ export default {
         <el-input type="text" placeholder="请输入出厂片数" v-model="stockNumber"></el-input>
       </div>
       <div class="order-item">
+        <span class="text-bold">实际片数</span>
+        <hr/>
+        <el-input type="text" placeholder="请输入实际片数" v-model="actualPieces"></el-input>
+      </div>
+      <div class="order-item">
         <span class="text-bold">出厂片数</span>
         <hr/>
         <el-input type="text" placeholder="请输入出厂片数" v-model="pieces"></el-input>
@@ -711,12 +707,6 @@ export default {
         <el-input type="text" placeholder="请输入杂费" v-model="sundryCost"></el-input>
       </div>
       <div class="order-item">
-        <span class="text-bold">销售是否含税</span>
-        <hr/>
-        <el-radio v-model="isIncludeTaxSale" label="1">是</el-radio>
-        <el-radio v-model="isIncludeTaxSale" label="0">否</el-radio>
-      </div>
-      <div class="order-item">
         <span class="text-bold">出厂货款</span>
         <hr/>
         <el-input type="text" placeholder="请输入出厂贷款"
@@ -728,26 +718,30 @@ export default {
         <el-input type="text" placeholder="请输入卸货片数" v-model="outPieces"></el-input>
       </div>
       <div class="order-item">
-        <span class="text-bold">实际片数</span>
-        <hr/>
-        <el-input type="text" placeholder="请输入实际片数" v-model="actualPieces"></el-input>
-      </div>
-      <div class="order-item">
         <span class="text-bold">卸货价</span>
         <hr/>
         <el-input type="text" placeholder="请输入卸货价" v-model="paymentUnload"></el-input>
       </div>
+      <div class="order-item">
+        <span class="text-bold">销售是否含税</span>
+        <hr/>
+        <el-radio v-model="isIncludeTaxSale" label="1">是</el-radio>
+        <el-radio v-model="isIncludeTaxSale" label="0">否</el-radio>
+      </div>
+
       <div class="order-item">
         <span class="text-bold">总货款杂费</span>
         <hr/>
         <el-input type="text" placeholder="总货款杂费"
                   v-model="paymentsWithSundry"></el-input>
       </div>
+
       <div class="order-item">
         <span class="text-bold">总货款</span>
         <hr/>
         <el-input type="text" placeholder="请输入总货款" v-model="payments"></el-input>
       </div>
+
       <div class="order-item">
         <span class="text-bold">误差</span>
         <hr/>
@@ -759,7 +753,7 @@ export default {
         <el-input type="text" placeholder="请输入吨位" v-model="tonnage"></el-input>
       </div>
       <div class="order-item">
-        <span class="text-bold">运费单价</span>
+        <span class="text-bold">陆运费单价</span>
         <hr/>
         <el-input type="text" placeholder="请输入陆运费单价"
                   v-model="landFreightPrice"></el-input>
@@ -774,17 +768,12 @@ export default {
         <hr/>
         <el-input type="text" placeholder="陆运费" v-model="landFreight"></el-input>
       </div>
-      <!--      <div class="order-item" v-if="isSea">-->
-      <!--        <span class="text-bold">海运费</span>-->
-      <!--        <hr/>-->
-      <!--        <el-input type="text" placeholder="海运费" v-model="seaFreight"></el-input>-->
-      <!--      </div>-->
 
-      <!--      <div class="order-item">-->
-      <!--        <span class="text-bold">总运费</span>-->
-      <!--        <hr/>-->
-      <!--        <el-input type="text" placeholder="总运费" v-model="freight"></el-input>-->
-      <!--      </div>-->
+      <div class="order-item">
+        <span class="text-bold">总运费</span>
+        <hr/>
+        <el-input type="text" placeholder="总运费" v-model="freight"></el-input>
+      </div>
 
       <div class="order-item">
         <span class="text-bold">其他费用</span>

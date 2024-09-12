@@ -109,13 +109,13 @@
             @click="afterbreakInventoryOut(scope.row)"
           >破损后出库
           </el-button>
-          <el-button
-            size="mini"
-            type="primary"
-            @click="handleUpdate(scope.row)"
-            v-hasPermi="['system:inventory:edit']"
-          >修改
-          </el-button>
+          <!--          <el-button-->
+          <!--            size="mini"-->
+          <!--            type="primary"-->
+          <!--            @click="handleUpdate(scope.row)"-->
+          <!--            v-hasPermi="['system:inventory:edit']"-->
+          <!--          >修改-->
+          <!--          </el-button>-->
           <el-button
             size="mini"
             type="danger"

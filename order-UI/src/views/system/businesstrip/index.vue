@@ -396,7 +396,7 @@
       :visible.sync="applyForPaymentDialogVisible"
       width="60%">
       <ApplyPayment :table-name="TableName.BUSINESS_TRIP" @changeOpen="changePaymentApplyInfoVisible"
-                    :t-i-d="tID" :need-info="{}"/>
+                    :t-i-d="tID" :need-info="{}" :need-money="needMoney"/>
     </el-dialog>
 
 
@@ -472,16 +472,6 @@
                 <el-input v-model="oilCardConsumeInfo.refuelingMoney" placeholder="请输入加油金额(元）"/>
               </el-form-item>
             </el-row>
-            <!--            <el-row>-->
-            <!--              <el-form-item label="充值金额(元）" prop="rechargeMoney">-->
-            <!--                <el-input v-model="oilCardConsumeInfo.rechargeMoney" placeholder="请输入充值金额(元）"/>-->
-            <!--              </el-form-item>-->
-            <!--            </el-row>-->
-            <!--            <el-row>-->
-            <!--              <el-form-item label="加油卡余额" prop="endCardSurplus">-->
-            <!--                <el-input v-model="oilCardConsumeInfo.endCardSurplus" placeholder="请输入加油卡余额"/>-->
-            <!--              </el-form-item>-->
-            <!--            </el-row>-->
             <el-row>
               <el-form-item label="加油小票附件" prop="attachmentOiladd">
                 <el-row>
@@ -684,6 +674,7 @@ export default {
       //发起付款申请的
       applyForPaymentDialogVisible: false,
       tID: '',
+      needMoney: 0,
       isRecharge: '',
       oilCardConsumeInfo: {
         oilCardNo: '',
@@ -815,6 +806,14 @@ export default {
       //清除状态
       // this.carApplyForm = this.$refreshParams(this.carApplyForm)
       this.carApplyVisible = false
+
+      // 将保养金额填充到列表里
+      this.tripReimbursementList.push({
+        index: this.tripReimbursementList.length + 1,
+        item: '车辆保养金额',
+        itemCost: this.carApplyForm.maintenanceMoney,
+        isDisabled: true // 不可更改
+      })
     },
     //清除缓存
     clearCarApply() {
@@ -876,8 +875,10 @@ export default {
       } else {
         // 如果不使用车辆
         if (this.useCar !== '是') {
+          //保存报销信息
+          this.form.tripReimbursementList = this.tripReimbursementList;
           //先提交申请信息 回调函数中添加车辆使用信息
-          addBusinessTrip(this.form).then(res => {
+          addBusinessTrip({...this.form, UUID: this.UUID}).then(res => {
             this.$message.success('提交成功,本次无车辆使用信息')
             this.active++;
             // 清除状态
@@ -890,13 +891,13 @@ export default {
         } else {
           //保存报销信息
           this.form.tripReimbursementList = this.tripReimbursementList;
-          //form 是出差申请基本信息 carApplyInfo是车辆使用信息
+          // 拿取车辆信息
           let carApplyInfo = JSON.parse(sessionStorage.getItem('carApplyForm'))
           //填充某些字段
           carApplyInfo.applyUser = this.form.employee;
           carApplyInfo.department = this.form.deptName;
           //先提交申请信息 回调函数中添加车辆使用信息
-          addBusinessTrip(this.form).then(res => {
+          addBusinessTrip({...this.form, UUID: this.UUID}).then(res => {
             carApplyInfo.bTripId = res.data.id;
             this.$message.success('提交成功')
             //添加车辆信息
@@ -918,10 +919,17 @@ export default {
 
     //发起付款申请
     applyForPayment(row) {
+      console.log(row)
       // 出差费用包含 报销项 车辆使用申请的保养金额 加油金额 初期金额
-      getBusinessTrip(row.id).then(res => {
-        console.log('出差信息', res)
-      })
+      if (row.tripReimbursementList !== null && row.tripReimbursementList !== undefined) {
+        if (row.tripReimbursementList.length > 0) {
+          this.needMoney = row.tripReimbursementList.reduce((sum, item) => sum + item)
+        } else {
+          this.needMoney = 0
+        }
+      } else {
+        this.needMoney = 0
+      }
       this.tID = row.id;
       this.applyForPaymentDialogVisible = true
     },

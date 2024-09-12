@@ -202,7 +202,6 @@ export default {
       this.inputDisabled = true;
     }
     if (JSON.stringify(this.needInfo) === '{}') {
-      //todo
       console.log('无任何信息')
     } else {
       //需要司机信息
@@ -252,7 +251,6 @@ export default {
           this.inputDisabled = true;
         }
         if (JSON.stringify(this.needInfo) === '{}') {
-          //todo
           console.log('无任何信息')
         } else {
           //需要司机信息
