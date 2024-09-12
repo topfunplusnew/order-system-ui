@@ -868,25 +868,45 @@ export default {
         })
         // 添加
       } else {
-        //保存报销信息
-        this.form.tripReimbursementList = this.tripReimbursementList;
-        //form 是出差申请基本信息 carApplyInfo是车辆使用信息
-        let carApplyInfo = JSON.parse(sessionStorage.getItem('carApplyForm'))
-        //填充某些字段
-        carApplyInfo.applyUser = this.form.employee;
-        carApplyInfo.department = this.form.deptName;
-        //先提交申请信息 回调函数中添加车辆使用信息
-        addBusinessTrip(this.form).then(res => {
-          carApplyInfo.bTripId = res.data.id;
-          this.$message.success('提交成功')
-          //添加车辆信息
-          setTimeout(() => {
-            addCarApply(carApplyInfo).then(res => {
-              this.$message.success('车辆信息提交成功')
-              this.active++;
-            })
-          }, 30)
-        })
+        // 如果不使用车辆
+        if (this.useCar !== '是') {
+          //先提交申请信息 回调函数中添加车辆使用信息
+          addBusinessTrip(this.form).then(res => {
+            this.$message.success('提交成功,本次无车辆使用信息')
+            this.active++;
+            // 清除状态
+            this.carApplyForm = {}
+            this.oilCardConsumeInfo = {}
+            this.form = {}
+            this.getList()
+          })
+          // 如果使用车辆
+        } else {
+          //保存报销信息
+          this.form.tripReimbursementList = this.tripReimbursementList;
+          //form 是出差申请基本信息 carApplyInfo是车辆使用信息
+          let carApplyInfo = JSON.parse(sessionStorage.getItem('carApplyForm'))
+          //填充某些字段
+          carApplyInfo.applyUser = this.form.employee;
+          carApplyInfo.department = this.form.deptName;
+          //先提交申请信息 回调函数中添加车辆使用信息
+          addBusinessTrip(this.form).then(res => {
+            carApplyInfo.bTripId = res.data.id;
+            this.$message.success('提交成功')
+            //添加车辆信息
+            setTimeout(() => {
+              addCarApply(carApplyInfo).then(res => {
+                this.$message.success('车辆信息提交成功')
+                this.active++;
+                // 清除状态
+                this.carApplyForm = {}
+                this.oilCardConsumeInfo = {}
+                this.form = {}
+                this.getList()
+              })
+            }, 30)
+          })
+        }
       }
     },
 
