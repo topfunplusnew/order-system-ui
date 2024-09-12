@@ -61,11 +61,12 @@
       </right-toolbar>
     </el-row>
 
-    <el-table border v-horizontal-scroll="'always'" v-loading="loading" :data="BusinessTripList"
+    <el-table size="mini" border v-horizontal-scroll="'always'" v-loading="loading" :data="BusinessTripList"
               @selection-change="handleSelectionChange">
       <!--      <el-table-column label="报销人ID" align="center" prop="employeeID"/>-->
       <el-table-column label="报销人" align="center" prop="employee" v-if="columns[0].visible"/>
       <el-table-column label="共同出差人员" align="center" prop="personnel" v-if="columns[1].visible"/>
+      <el-table-column label="部门" align="center" prop="deptName"/>
       <el-table-column label="出差时间" align="center" prop="starttime" v-if="columns[2].visible"/>
       <el-table-column label="出差结束时间" align="center" prop="endtime" v-if="columns[3].visible"/>
       <el-table-column label="附件" align="center" prop="attachmentPath" v-if="columns[4].visible">
@@ -86,7 +87,7 @@
         </template>
       </el-table-column>
       <el-table-column label="备注" align="center" prop="comments" v-if="columns[6].visible"/>
-      <el-table-column label="操作" align="center" class-name="small-padding fixed-width">
+      <el-table-column label="操作" align="center" class-name="small-padding " width="260px" fixed="right">
         <template slot-scope="scope">
           <el-button
             size="mini"
@@ -190,7 +191,24 @@
             </el-col>
           </el-row>
           <el-row v-if="active === 1">
+            <el-row>
+              <el-col :span="5">
+                <span style="font-weight: bolder">
+                  是否使用车辆
+                </span>
+              </el-col>
+              <el-col :span="5">
+                <el-radio v-model="useCar" label="是">是</el-radio>
+                <el-radio v-model="useCar" label="否">否</el-radio>
+              </el-col>
+              <el-button size="mini" type="warning" @click="handleWriteCarsInfo" v-if="useCar ==='是'">填写车辆使用信息
+              </el-button>
+            </el-row>
+            <hr/>
             <el-row :gutter="10" class="mb8">
+              <el-col :span="5">
+                <span style="font-weight: bolder">填写报销项</span>
+              </el-col>
               <el-col :span="1.5">
                 <el-button type="primary" icon="el-icon-plus" size="mini" @click="handleAddTripReimbursement">添加
                 </el-button>
@@ -201,33 +219,18 @@
                 </el-button>
               </el-col>
             </el-row>
-            <hr/>
-            <el-row>
-              <el-col :span="8">
-                是否使用车辆
-              </el-col>
-              <el-col :span="5">
-                <el-radio v-model="useCar" label="是">是</el-radio>
-                <el-radio v-model="useCar" label="否">否</el-radio>
-              </el-col>
-            </el-row>
-            <div>
-              <el-button size="mini" type="warning" @click="handleWriteCarsInfo" v-if="useCar ==='是'">填写车辆使用信息
-              </el-button>
-            </div>
-            <hr/>
             <el-table :data="tripReimbursementList" :row-class-name="rowTripReimbursementIndex"
                       @selection-change="handleTripReimbursementSelectionChange" ref="tripReimbursement">
               <el-table-column type="selection" width="50" align="center"/>
               <el-table-column label="序号" align="center" prop="index" width="50"/>
               <el-table-column label="报销项" prop="item" width="150">
                 <template slot-scope="scope">
-                  <el-input v-model="scope.row.item" placeholder="请输入报销项"/>
+                  <el-input v-model="scope.row.item" placeholder="请输入报销项" :disabled="scope.row.isDisabled"/>
                 </template>
               </el-table-column>
               <el-table-column label="费用" prop="itemCost">
                 <template slot-scope="scope">
-                  <el-input v-model="scope.row.itemCost" placeholder="请输入费用"/>
+                  <el-input v-model="scope.row.itemCost" placeholder="请输入费用" :disabled="scope.row.isDisabled"/>
                 </template>
               </el-table-column>
             </el-table>
@@ -393,7 +396,7 @@
 
     <!--    新增油卡消费记录-->
     <el-dialog title="油卡消费记录" :visible.sync="oilCardConsumeVisible" width="75%" append-to-body>
-      <el-form ref="form" :model="oilCardConsumeInfo" label-width="80px">
+      <el-form ref="form" :model="oilCardConsumeInfo" label-width="160px">
         <el-row>
           <el-col :span="12">
             <el-form-item label="加油卡卡号" prop="oilCardNo">
@@ -440,6 +443,15 @@
             </el-form-item>
             <el-form-item label="期初余额" prop="startCardSurplus">
               <el-input v-model="oilCardConsumeInfo.startCardSurplus" placeholder="请输入期初余额"/>
+            </el-form-item>
+            <!--            途中是否自己充钱 如果自己充了 那么下面的保存填写后要加上这个充值金额，如果没充，默认是0-->
+            <el-form-item label="途中是否充值">
+              <el-radio v-model="isRecharge" label="1">是</el-radio>
+              <el-radio v-model="isRecharge" label="2">否</el-radio>
+            </el-form-item>
+            <el-form-item label="充值金额" prop="rechargeMoney" v-if="isRecharge === '1'">
+              <el-input v-model="oilCardConsumeInfo.rechargeMoney"
+                        placeholder="请输入充值金额,此金额为过程中使用现金充值金额"/>
             </el-form-item>
             <el-form-item label="加油量" prop="refuelingNumber">
               <el-input v-model="oilCardConsumeInfo.refuelingNumber" placeholder="请输入加油量"/>
@@ -588,12 +600,12 @@ import {
   updateBusinessTrip
 } from "@/api/system/BusinessTrip";
 import {mixin_printHTML} from "@/views/dashboard/mixins/print";
-import {findFileExtension} from "@/utils/trash/utils";
+import {findFileExtension, getUuid} from "@/utils/trash/utils";
 import {mixin_upload} from "@/views/dashboard/mixins/upload";
 import SearchOption from "@/components/SearchOption.vue";
 import {listData} from "@/api/system/dict/data";
 import {mapGetters} from "vuex";
-import {addCarApply} from "@/api/system/carApply";
+import {addCarApply, getCarApply, updateCarApply} from "@/api/system/carApply";
 import PaymentApply from "@/views/system/paymentApply/index.vue";
 import ApplyPayment from "@/components/ApplyPayment.vue";
 import {TableName} from "@/api/tool/enums";
@@ -666,11 +678,14 @@ export default {
       //发起付款申请的
       applyForPaymentDialogVisible: false,
       tID: '',
+      isRecharge: '',
       oilCardConsumeInfo: {
         oilCardNo: '',
         carNo: '',
         //附件路径
-        attachmentOiladd: ''
+        attachmentOiladd: '',
+        //充值金额 默认为0
+        rechargeMoney: '0'
       },
       oilCardConsumeVisible: false,
       queryOilCard: '',
@@ -703,7 +718,11 @@ export default {
         value: '银行卡',
         label: '银行卡'
       }],
-      queryBankAcount: ''
+      queryBankAcount: '',
+
+
+      // 互斥变量UUID
+      UUID: ''
     };
   },
   created() {
@@ -752,19 +771,35 @@ export default {
       if (this.active++ > 2) {
         this.active = 0;
       }
-      // 发送请求 先增加出差基本信息+
-      addBusinessTrip(this.form).then(res => {
-        if (res.code === 500) {
-          this.$message.error(res.msg)
-          this.active = 0;
-        } else {
-          this.$message.success('添加出差基本信息成功')
-          //保存到会话中
-          sessionStorage.setItem('BusinessTrip-form', JSON.stringify(res.data))
-        }
-      }).catch(err => {
-        this.active = 0
-      })
+      this.form = excludeParams(this.form, this.$exclude)
+      // id 不为空则为修改
+      if (this.form.id !== null && this.form.id !== '') {
+        updateBusinessTrip({...this.form, UUID: this.UUID}).then(res => {
+          if (res.code === 500) {
+            this.$message.error(res.msg)
+            this.active = 0;
+          } else {
+            this.$message.success('修改出差基本信息成功')
+            //保存到会话中
+            sessionStorage.setItem('BusinessTrip-form', JSON.stringify(this.form))
+          }
+        }).catch(err => {
+          this.active = 0
+        })
+      } else {
+        addBusinessTrip({...this.form, UUID: this.UUID}).then(res => {
+          if (res.code === 500) {
+            this.$message.error(res.msg)
+            this.active = 0;
+          } else {
+            this.$message.success('添加出差基本信息成功')
+            //保存到会话中
+            sessionStorage.setItem('BusinessTrip-form', JSON.stringify(res.data))
+          }
+        }).catch(err => {
+          this.active = 0
+        })
+      }
     },
     //提交车辆使用申请 保存使用车辆信息
     submitCarApply() {
@@ -811,25 +846,47 @@ export default {
     },
     //完成提交
     nextAndSubmit() {
-      //保存报销信息
-      this.form.tripReimbursementList = this.tripReimbursementList;
-      //form 是出差申请基本信息 carApplyInfo是车辆使用信息
-      let carApplyInfo = JSON.parse(sessionStorage.getItem('carApplyForm'))
-      //填充某些字段
-      carApplyInfo.applyUser = this.form.employee;
-      carApplyInfo.department = this.form.deptName;
-      //先提交申请信息 回调函数中添加车辆使用信息
-      addBusinessTrip(this.form).then(res => {
-        carApplyInfo.bTripId = res.data.id;
-        this.$message.success('提交成功')
-        //添加车辆信息
-        setTimeout(() => {
-          addCarApply(carApplyInfo).then(res => {
-            this.$message.success('车辆信息提交成功')
-            this.active++;
-          })
-        }, 30)
-      })
+      if (this.form.id !== null && this.form.id !== '') {
+        //保存报销信息
+        this.form.tripReimbursementList = this.tripReimbursementList;
+        //form 是出差申请基本信息 carApplyInfo是车辆使用信息
+        let carApplyInfo = null
+        getCarApply(this.form.id).then(res => {
+          carApplyInfo = res.data
+          setTimeout(() => {
+            updateBusinessTrip(this.form).then(res => {
+              this.$message.success('修改成功')
+              //添加车辆信息
+              if (carApplyInfo !== null && carApplyInfo !== undefined) {
+                updateCarApply(carApplyInfo).then(res => {
+                  this.$message.success('车辆信息修改成功')
+                  this.active++;
+                })
+              }
+            })
+          }, 30)
+        })
+      } else {
+        //保存报销信息
+        this.form.tripReimbursementList = this.tripReimbursementList;
+        //form 是出差申请基本信息 carApplyInfo是车辆使用信息
+        let carApplyInfo = JSON.parse(sessionStorage.getItem('carApplyForm'))
+        //填充某些字段
+        carApplyInfo.applyUser = this.form.employee;
+        carApplyInfo.department = this.form.deptName;
+        //先提交申请信息 回调函数中添加车辆使用信息
+        addBusinessTrip(this.form).then(res => {
+          carApplyInfo.bTripId = res.data.id;
+          this.$message.success('提交成功')
+          //添加车辆信息
+          setTimeout(() => {
+            addCarApply(carApplyInfo).then(res => {
+              this.$message.success('车辆信息提交成功')
+              this.active++;
+            })
+          }, 30)
+        })
+      }
     },
 
     //发起付款申请
@@ -852,7 +909,6 @@ export default {
     submitOilCard() {
       this.carApplyForm.isUseOilCard = '1';
       // 要检查油卡的余额是否够用 如果够用就保存数据 如果不够用 那么就要提示是否充值  如果充值 就要弹出充值页面
-      // 需要油卡号和加油金额
       checkOilCard({
         oilCardNo: this.oilCardConsumeInfo.oilCardNo,
         consumeAmount: this.oilCardConsumeInfo.refuelingMoney
@@ -875,10 +931,21 @@ export default {
           if (businessTripInfo === undefined || businessTripInfo === {} || businessTripInfo === null) {
             this.$message.error('出差信息为空!请先添加出差信息')
           }
-          // 余额充足 要添加油卡消费信息
-          addOilCardConsume({...this.oilCardConsumeInfo, bTripId: businessTripInfo.id}).then(res => {
-            console.log(res)
+          this.oilCardConsumeInfo.rechargeMoney = this.isRecharge === '2' ? '0' : this.oilCardConsumeInfo.rechargeMoney
+          addOilCardConsume({
+            ...this.oilCardConsumeInfo,
+            bTripId: businessTripInfo.id,
+          }).then(res => {
             this.$message.success('保存成功~')
+
+            // 回写充值账户信息到报销项中
+            this.tripReimbursementList.push({
+              index: this.tripReimbursementList.length + 1,
+              item: '加油卡现金充值金额',
+              itemCost: this.oilCardConsumeInfo.rechargeMoney,
+              isDisabled: true // 不可更改
+            })
+
             // 关闭油卡消费添加弹窗
             this.oilCardConsumeVisible = false
           })
@@ -1015,6 +1082,8 @@ export default {
       this.form.employee = this.trueName;
       this.open = true;
       this.title = "添加出差";
+      // 生成一个UUID 保存在Vue实例上，单次填写生成的UUID是唯一的
+      this.UUID = getUuid()
     },
     /** 修改按钮操作 */
     handleUpdate(row) {
@@ -1028,26 +1097,28 @@ export default {
       });
     },
     /** 提交按钮 */
-    submitForm() {
-      this.$refs["form"].validate(valid => {
-        if (valid) {
-          this.form.tripReimbursementList = this.tripReimbursementList;
-          if (this.form.id != null) {
-            updateBusinessTrip(this.form).then(response => {
-              this.$modal.msgSuccess("修改成功");
-              this.open = false;
-              this.getList();
-            });
-          } else {
-            addBusinessTrip(this.form).then(response => {
-              this.$modal.msgSuccess("新增成功");
-              this.open = false;
-              this.getList();
-            });
-          }
-        }
-      });
-    },
+    // submitForm() {
+    //   this.$refs["form"].validate(valid => {
+    //     if (valid) {
+    //       this.form.tripReimbursementList = this.tripReimbursementList;
+    //       if (this.form.id != null) {
+    //         this.form = excludeParams(this.form, this.$exclude)
+    //         updateBusinessTrip(this.form).then(response => {
+    //           this.$modal.msgSuccess("修改成功");
+    //           this.open = false;
+    //           this.getList();
+    //         });
+    //       } else {
+    //         this.form = excludeParams(this.form, this.$exclude)
+    //         addBusinessTrip(this.form).then(response => {
+    //           this.$modal.msgSuccess("新增成功");
+    //           this.open = false;
+    //           this.getList();
+    //         });
+    //       }
+    //     }
+    //   });
+    // },
     /** 删除按钮操作 */
     handleDelete(row) {
       const ids = row.id || this.ids;
