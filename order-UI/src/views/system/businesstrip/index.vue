@@ -273,6 +273,12 @@
               value-format="yyyy-MM-dd">
             </el-date-picker>
           </el-form-item>
+          <el-form-item label="申请人" prop="applyUser">
+            <el-input v-model="carApplyForm.applyUser" disabled/>
+          </el-form-item>
+          <el-form-item label="部门" prop="department">
+            <el-input v-model="carApplyForm.department" disabled/>
+          </el-form-item>
           <!--          车辆信息搜索-->
           <el-form-item label="车牌" prop="carNo">
             <el-row>
@@ -665,8 +671,8 @@ export default {
         {key: 6, label: `备注`, visible: true},
       ],
       active: 0,
-      //是否使用车辆
-      useCar: '',
+      //是否使用车辆 默认为否
+      useCar: '否',
       carApplyForm: {
         carNo: '',
         isMaintenance: '',
@@ -1144,6 +1150,9 @@ export default {
           // 如果没有车辆使用信息
           else {
             this.$message.warning('该出差信息无车辆使用信息')
+            //自动填充填写人和部门
+            this.carApplyForm.applyUser = this.trueName;
+            this.carApplyForm.department = this.form.deptName;
           }
         })
         // 报销项信息保存状态
