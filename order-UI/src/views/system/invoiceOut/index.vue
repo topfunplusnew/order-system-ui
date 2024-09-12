@@ -168,7 +168,7 @@
           <el-input v-model="form.ticketPoint" placeholder="请输入票点"/>
         </el-form-item>
         <el-form-item label="票点金额" prop="ticketPointAmount">
-          <el-input v-model="invoiceAmount" placeholder="请输入票点金额" disabled/>
+          <el-input v-model="invoiceAmount" placeholder="请输入票点金额"/>
         </el-form-item>
         <el-form-item label="备注" prop="comments">
           <el-input v-model="form.comments" placeholder="请输入备注"/>
@@ -291,7 +291,7 @@ export default {
         this.form.ticketPointAmount = val;
       },
       get() {
-        return this.form.invoiceAmount * this.form.ticketPoint
+        return Number(this.form.invoiceAmount * this.form.ticketPoint).toFixed(2)
       }
     },
   },

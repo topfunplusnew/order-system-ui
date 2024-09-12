@@ -129,7 +129,7 @@ export default {
               v-model="currentInventoryInfo.storeDate"
               type="date"
               placeholder="选择日期" style="width: 70%"
-              value-format="timestamp">
+              value-format="yyyy-MM-dd">
             </el-date-picker>
           </el-col>
         </el-row>

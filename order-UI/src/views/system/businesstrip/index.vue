@@ -857,11 +857,9 @@ export default {
         //保存报销信息
         this.form.tripReimbursementList = this.tripReimbursementList;
         updateBusinessTrip(excludeParams(this.form, this.$exclude)).then(res => {
-          this.$message.success('修改成功')
-          //添加车辆信息
-          updateCarApply(excludeParams(this.carApplyForm, this.$exclude)).then(res => {
-            this.$message.success('车辆信息修改成功')
-            this.active++;
+          // 如果不使用车辆信息
+          if (this.useCar !== '是') {
+            this.$message.success('修改成功')
             // 清除状态
             sessionStorage.removeItem('carApplyForm')
             sessionStorage.removeItem('BusinessTrip-form')
@@ -869,7 +867,23 @@ export default {
             this.oilCardConsumeInfo = {}
             this.form = {}
             this.getList()
-          })
+            this.open = false
+          } else {
+            this.$message.success('修改成功')
+            //添加车辆信息
+            updateCarApply(excludeParams(this.carApplyForm, this.$exclude)).then(res => {
+              this.$message.success('车辆信息修改成功')
+              this.active++;
+              // 清除状态
+              sessionStorage.removeItem('carApplyForm')
+              sessionStorage.removeItem('BusinessTrip-form')
+              this.carApplyForm = {}
+              this.oilCardConsumeInfo = {}
+              this.form = {}
+              this.open = false
+              this.getList()
+            })
+          }
         })
         // 添加
       } else {

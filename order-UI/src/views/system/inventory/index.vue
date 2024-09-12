@@ -145,7 +145,7 @@
               <el-input v-model="form.storeHouseName" placeholder="请输入仓库名称"/>
             </el-col>
             <el-col :span="3">
-              <SearchOption :get-data="listStoreHouse" @commitBack="handleCommitBackStoreHouse">
+              <SearchOption :get-data="listStoreHouse" @commitBack="handleCommitBackStoreHouse" :limit-info="{}">
                 <template #table-columns>
                   <el-table-column label="仓库名称" align="center" prop="storeHouseName"/>
                   <el-table-column label="地址" align="center" prop="address"/>
@@ -158,7 +158,8 @@
           <el-date-picker
             v-model="form.storeDate"
             type="date"
-            placeholder="入库日期" value-format="yyyy-MM-dd">
+            placeholder="入库日期"
+            value-format="yyyy-MM-dd">
           </el-date-picker>
         </el-form-item>
         <el-form-item label="库存量" prop="stockNumber">
@@ -614,6 +615,7 @@ export default {
     },
     //获取入库
     submitInvoiceIn() {
+      console.log('仓库信息', this.inventoryInfoAll)
       addInventory(this.inventoryInfoAll).then(res => {
         this.$message.success('入库成功')
       })
@@ -622,6 +624,8 @@ export default {
     },
     //子组件改变库存状态
     handleChangeInventoryInfo(val) {
+      console.log('11返回', val)
+      this.inventoryInfo.storeHouseName = val.storeHouseName
       this.inventoryInfo = val;
     },
     //二次出库
