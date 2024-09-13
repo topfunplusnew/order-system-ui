@@ -252,8 +252,8 @@
           <el-row v-if="scope.row.paymentState === '未申请'">
             <el-button size="mini" type="primary" @click="applyForPayment(scope.row)">申请打款</el-button>
           </el-row>
-          <el-row v-if="scope.row.paymentState === '申请中'">
-            <el-tag type="warning">申请中</el-tag>
+          <el-row v-if="scope.row.paymentState === '审核中'">
+            <el-tag type="warning">审核中</el-tag>
           </el-row>
           <el-row v-if="scope.row.paymentState === '未打款'">
             <el-tag type="warning">订单未打款</el-tag>
