@@ -250,7 +250,10 @@
                        v-if="columns[12].visible" width="120px">
         <template slot-scope="scope">
           <el-row v-if="scope.row.paymentState === '未申请'">
-            <el-button size="mini" type="primary">申请打款</el-button>
+            <el-button size="mini" type="primary" @click="applyForPayment(scope.row)">申请打款</el-button>
+          </el-row>
+          <el-row v-if="scope.row.paymentState === '申请中'">
+            <el-tag type="warning">申请中</el-tag>
           </el-row>
           <el-row v-if="scope.row.paymentState === '未打款'">
             <el-tag type="warning">订单未打款</el-tag>
@@ -667,6 +670,15 @@
     <el-button type="primary" @click="submitOpenTitle">确 定</el-button>
   </span>
     </el-dialog>
+
+
+    <!--    订单打款申请-->
+    <el-dialog title="订单打款申请" :visible.sync="paymentApplyVisible" width="60%" append-to-body>
+      <ApplyPayment :table-name="TableName.GOODS_ORDER" :t-i-d="tID" :need-money="needMoney"
+                    :need-info="{}"
+                    @changeOpen="paymentApplyVisible = false"/>
+    </el-dialog>
+
   </div>
 </template>
 
@@ -910,6 +922,11 @@ export default {
       //供应商 && 客户开发票
       invoiceOpenVisible: false,
       openTitle: '',
+
+      // 订单申请打款
+      tID: '',
+      paymentApplyVisible: false,
+      needMoney: 0
     };
   },
   created() {
@@ -1142,6 +1159,11 @@ export default {
         this.$message.error('上传失败')
       }
       fileList.pop();
+    },
+    // 订单申请打款
+    applyForPayment(row) {
+      this.paymentApplyVisible = true;
+      this.tID = row.id;
     },
     //订单审核
     handleCheck(row) {
