@@ -25,7 +25,7 @@
           icon="el-icon-plus"
           size="mini"
           @click="handleAdd"
-          v-hasPermi="['system:cars:add']"
+          v-hasPermi="['system:companycar:add']"
         >添加公司车辆信息
         </el-button>
       </el-col>
@@ -49,7 +49,7 @@
               icon="el-icon-folder-opened"
               size="mini"
               @click="handleExport"
-              v-hasPermi="['system:bankaccount:export']"
+              v-hasPermi="['system:companycar:export']"
             >
             </el-button>
           </el-col>
@@ -67,14 +67,14 @@
             size="mini"
             type="primary"
             @click="handleUpdate(scope.row)"
-            v-hasPermi="['system:cars:edit']"
+            v-hasPermi="['system:companycar:edit']"
           >编辑
           </el-button>
           <el-button
             size="mini"
             type="danger"
             @click="handleDelete(scope.row)"
-            v-hasPermi="['system:cars:remove']"
+            v-hasPermi="['system:companycar:remove']"
           >删除
           </el-button>
         </template>
@@ -161,18 +161,18 @@ export default {
   },
   created() {
     this.getList();
-    if (localStorage.getItem('car-columns') === 'null'
-      || !localStorage.getItem('car-columns')) {
-      localStorage.setItem("car-columns", JSON.stringify(this.columns))
+    if (localStorage.getItem('companycar-columns') === 'null'
+      || !localStorage.getItem('companycar-columns')) {
+      localStorage.setItem("companycar-columns", JSON.stringify(this.columns))
     } else {
-      this.columns = JSON.parse(localStorage.getItem('car-columns'));
+      this.columns = JSON.parse(localStorage.getItem('companycar-columns'));
     }
   },
   //展示与隐藏
   watch: {
     columns: {
       handler: (newVal) => {
-        localStorage.setItem("car-columns", JSON.stringify(newVal))
+        localStorage.setItem("companycar-columns", JSON.stringify(newVal))
       },
       deep: true,
     }
@@ -279,7 +279,7 @@ export default {
     },
     /** 导出按钮操作 */
     handleExport() {
-      this.download('system/cars/export', {
+      this.download('system/companycar/export', {
         ...this.queryParams
       }, `cars_${new Date().getTime()}.xlsx`)
     }
