@@ -247,11 +247,18 @@
         </template>
       </el-table-column>
       <el-table-column show-overflow-tooltip label="打款状态" align="center" prop="paymentState"
-                       v-if="columns[12].visible">
+                       v-if="columns[12].visible" width="120px">
         <template slot-scope="scope">
-          <el-tag
-            disable-transitions>{{ scope.row.paymentState }}
-          </el-tag>
+          <el-row v-if="scope.row.paymentState === '未申请'">
+            <el-button size="mini" type="primary">申请打款</el-button>
+          </el-row>
+          <el-row v-if="scope.row.paymentState === '未打款'">
+            <el-tag type="warning">订单未打款</el-tag>
+            <el-button>前往打款</el-button>
+          </el-row>
+          <el-row v-if="scope.row.paymentState === '已打款'">
+            <el-tag type="success">订单已打款</el-tag>
+          </el-row>
         </template>
       </el-table-column>
       <el-table-column show-overflow-tooltip label="收到条附件路径" align="center" prop="receiveProof"
