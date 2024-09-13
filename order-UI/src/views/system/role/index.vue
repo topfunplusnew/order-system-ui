@@ -218,8 +218,8 @@
     </el-dialog>
 
     <!-- 分配角色数据权限对话框 -->
-    <el-dialog :title="title" :visible.sync="openDataScope" width="500px" append-to-body>
-      <el-form :model="form" label-width="80px">
+    <el-dialog :title="title" :visible.sync="openDataScope" width="30%" append-to-body>
+      <el-form :model="form" label-width="140px">
         <el-form-item label="角色名称">
           <el-input v-model="form.roleName" :disabled="true"/>
         </el-form-item>
@@ -238,7 +238,7 @@
           </el-select>
         </el-form-item>
         <!--        系统权限范围-->
-        <el-form-item label="company数据权限">
+        <el-form-item label="客户供应商数据权限">
           <el-select v-model="form.companyDataScope" @change="dataSystemScopeSelectChange">
             <el-option
               v-for="item in companyDataScopeOptions"
