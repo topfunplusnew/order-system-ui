@@ -227,10 +227,10 @@
           <el-input v-model="form.roleKey" :disabled="true"/>
         </el-form-item>
         <!--        若依数据权限-->
-        <el-form-item label="权限范围">
-          <el-select v-model="form.dataScope" @change="dataScopeSelectChange">
+        <el-form-item label="订单数据权限">
+          <el-select v-model="form.orderDataScope" @change="dataScopeSelectChange">
             <el-option
-              v-for="item in dataScopeOptions"
+              v-for="item in orderDataScopeOptions"
               :key="item.value"
               :label="item.label"
               :value="item.value"
@@ -238,21 +238,31 @@
           </el-select>
         </el-form-item>
         <!--        系统权限范围-->
-        <el-form-item label="系统数据权限范围">
-          <el-select v-model="form.systemDataScope" @change="dataSystemScopeSelectChange">
+        <el-form-item label="company数据权限">
+          <el-select v-model="form.companyDataScope" @change="dataSystemScopeSelectChange">
             <el-option
-              v-for="item in systemDataScopeOptions"
+              v-for="item in companyDataScopeOptions"
               :key="item.value"
               :label="item.label"
               :value="item.value"
             ></el-option>
           </el-select>
         </el-form-item>
-        <!--        客户供应商-->
-        <el-form-item label="系统数据权限范围">
-          <el-select v-model="form.companyDataScopeOptions" @change="companySystemScopeSelectChange">
+        <!--        付款申请供应商-->
+        <el-form-item label="付款申请数据权限">
+          <el-select v-model="form.paymentApplyDataScope" @change="companySystemScopeSelectChange">
             <el-option
-              v-for="item in systemDataScopeOptions"
+              v-for="item in paymentDataScopeOptions"
+              :key="item.value"
+              :label="item.label"
+              :value="item.value"
+            ></el-option>
+          </el-select>
+        </el-form-item>
+        <el-form-item label="部门数据权限">
+          <el-select v-model="form.deptDataScope" @change="companySystemScopeSelectChange">
+            <el-option
+              v-for="item in deptDataScopeOptions"
               :key="item.value"
               :label="item.label"
               :value="item.value"
@@ -330,8 +340,58 @@ export default {
       deptNodeAll: false,
       // 日期范围
       dateRange: [],
-      // 数据范围选项
-      dataScopeOptions: [
+
+      // 订单数据权限
+      orderDataScopeOptions: [
+        {
+          value: "1",
+          label: "仅能查看自己录入的"
+        },
+        {
+          value: "2",
+          label: "仅自己负责的客户"
+        },
+        {
+          value: "3",
+          label: "能查看自己录入的,且自己负责的客户"
+        },
+        {
+          value: "0",
+          label: "不做任何限制"
+        },
+      ],
+      //company数据权限
+      companyDataScopeOptions: [
+        {
+          value: "1",
+          label: "仅能查看自己录入的"
+        },
+        {
+          value: "2",
+          label: "仅能查看业务员是自己的"
+        },
+        {
+          value: "3",
+          label: "能查看自己录入,且能查看业务员是自己的"
+        },
+        {
+          value: "0",
+          label: "不做任何限制"
+        },
+      ],
+      // 付款申请数据权限
+      paymentDataScopeOptions: [
+        {
+          value: "0",
+          label: "不做限制"
+        },
+        {
+          value: "1",
+          label: "只可以查看自己录入的"
+        },
+      ],
+      // 部门数据权限
+      deptDataScopeOptions: [
         {
           value: "1",
           label: "全部数据权限"
@@ -342,52 +402,15 @@ export default {
         },
         {
           value: "3",
-          label: "本部门数据权限"
+          label: "部门数据权限"
         },
         {
           value: "4",
-          label: "本部门及以下数据权限"
+          label: "部门及以下数据权限"
         },
         {
           value: "5",
           label: "仅本人数据权限"
-        }
-      ],
-      //系统订单数据权限
-      systemDataScopeOptions: [
-        {
-          value: "0",
-          label: "不做限制"
-        },
-        {
-          value: "1",
-          label: "仅能査看自己录入的"
-        },
-        {
-          value: "2",
-          label: "对应仅自己负责客户"
-        },
-        {
-          value: "3",
-          label: "既能查看自己录入且能查看自己负责的客户"
-        },
-      ],
-      companyDataScopeOptions: [
-        {
-          value: "0",
-          label: "不做限制"
-        },
-        {
-          value: "1",
-          label: "只可以查看自己录入的"
-        },
-        {
-          value: "2",
-          label: "只可以查看业务员是本人的"
-        },
-        {
-          value: "3",
-          label: "既能查看自己录入且能查看业务员是本人的"
         },
       ],
       // 菜单列表
@@ -403,7 +426,12 @@ export default {
         status: undefined
       },
       // 表单参数
-      form: {},
+      form: {
+        deptDataScope: '',        // 最后一位
+        paymentApplyDataScope: '', // 第三位
+        companyDataScope: '', // 第二位
+        orderDataScope: '', // 第一位
+      },
       defaultProps: {
         children: "children",
         label: "label"
@@ -661,9 +689,10 @@ export default {
         }
       });
     },
-    /** 提交按钮（数据权限） */
+    // todo 提交按钮（数据权限）
     submitDataScope: function () {
-      this.form.dataScope = this.form.systemDataScope + this.form.companyDataScopeOptions + '00000000000000000' + this.form.dataScope
+      // 组装数据权限
+      this.form.dataScope = this.form.orderDataScope + this.form.companyDataScope + this.form.paymentApplyDataScope + '0000000000000000' + this.form.dataScope
       if (this.form.roleId != undefined) {
         this.form.deptIds = this.getDeptAllCheckedKeys();
         dataScope(this.form).then(response => {
