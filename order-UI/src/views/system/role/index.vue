@@ -228,7 +228,7 @@
         </el-form-item>
         <!--        若依数据权限-->
         <el-form-item label="订单数据权限">
-          <el-select v-model="form.orderDataScope" @change="dataScopeSelectChange">
+          <el-select v-model="form.orderDataScope" @change="orderDataScopeScopeSelectChange">
             <el-option
               v-for="item in orderDataScopeOptions"
               :key="item.value"
@@ -239,7 +239,7 @@
         </el-form-item>
         <!--        系统权限范围-->
         <el-form-item label="客户供应商数据权限">
-          <el-select v-model="form.companyDataScope" @change="dataSystemScopeSelectChange">
+          <el-select v-model="form.companyDataScope" @change="companyDataScopeSystemScopeSelectChange">
             <el-option
               v-for="item in companyDataScopeOptions"
               :key="item.value"
@@ -250,7 +250,7 @@
         </el-form-item>
         <!--        付款申请供应商-->
         <el-form-item label="付款申请数据权限">
-          <el-select v-model="form.paymentApplyDataScope" @change="companySystemScopeSelectChange">
+          <el-select v-model="form.paymentApplyDataScope" @change="paymentApplyDataScopeSystemScopeSelectChange">
             <el-option
               v-for="item in paymentDataScopeOptions"
               :key="item.value"
@@ -260,7 +260,7 @@
           </el-select>
         </el-form-item>
         <el-form-item label="部门数据权限">
-          <el-select v-model="form.deptDataScope" @change="companySystemScopeSelectChange">
+          <el-select v-model="form.deptDataScope" @change="deptDataScopeSystemScopeSelectChange">
             <el-option
               v-for="item in deptDataScopeOptions"
               :key="item.value"
@@ -533,6 +533,10 @@ export default {
         this.deptExpand = true,
         this.deptNodeAll = false,
         this.form = {
+          deptDataScope: '',        // 最后一位
+          paymentApplyDataScope: '', // 第三位
+          companyDataScope: '', // 第二位
+          orderDataScope: '', // 第一位
           roleId: undefined,
           roleName: undefined,
           roleKey: undefined,
@@ -640,21 +644,32 @@ export default {
         this.$refs.dept.setCheckedKeys([]);
       }
     },
-    //系统数据权限
-    dataSystemScopeSelectChange() {
-
+    deptDataScopeSystemScopeSelectChange(e) {
+      this.form.deptDataScope = e
     },
-    companySystemScopeSelectChange() {
-
+    paymentApplyDataScopeSystemScopeSelectChange(e) {
+      this.form.paymentApplyDataScope = e
+    },
+    companyDataScopeSystemScopeSelectChange(e) {
+      this.form.companyDataScope = e
+    },
+    orderDataScopeScopeSelectChange(e) {
+      this.form.orderDataScope = e
     },
     /** 分配数据权限操作 */
     handleDataScope(row) {
       this.reset();
       const deptTreeSelect = this.getDeptTree(row.roleId);
+
       getRole(row.roleId).then(response => {
         this.form = response.data;
         this.openDataScope = true;
         this.$nextTick(() => {
+          this.$set(this.form, 'orderDataScope', response.data.dataScope.charAt(0))
+          this.$set(this.form, 'companyDataScope', response.data.dataScope.charAt(1))
+          this.$set(this.form, 'paymentApplyDataScope', response.data.dataScope.charAt(2))
+          this.$set(this.form, 'deptDataScope', response.data.dataScope.charAt(response.data.dataScope.length - 1))
+          console.log('form', this.form)
           deptTreeSelect.then(res => {
             this.$refs.dept.setCheckedKeys(res.checkedKeys);
           });
@@ -689,17 +704,17 @@ export default {
         }
       });
     },
-    // todo 提交按钮（数据权限）
     submitDataScope: function () {
+      this.form.dataScope = ''
       // 组装数据权限
-      this.form.dataScope = this.form.orderDataScope + this.form.companyDataScope + this.form.paymentApplyDataScope + '0000000000000000' + this.form.dataScope
+      this.form.dataScope = this.form.orderDataScope + this.form.companyDataScope + this.form.paymentApplyDataScope + '0000000000000000' + this.form.deptDataScope
       if (this.form.roleId != undefined) {
         this.form.deptIds = this.getDeptAllCheckedKeys();
         dataScope(this.form).then(response => {
-          this.$modal.msgSuccess("修改成功");
+          this.$modal.msgSuccess("修改成功,被影响的账号需要重新登录生效");
           this.openDataScope = false;
-          this.getList();
-        });
+          this.getList()
+        })
       }
     },
     /** 删除按钮操作 */
