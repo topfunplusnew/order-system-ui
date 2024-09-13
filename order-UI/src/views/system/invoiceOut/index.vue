@@ -302,6 +302,7 @@ export default {
       },
       deep: true,
     },
+    // 监听
     form: {
       handler(val) {
         this.invoiceAmount = this.form.invoiceAmount * this.form.ticketPoint;

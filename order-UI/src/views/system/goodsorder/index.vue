@@ -352,7 +352,7 @@
           </el-button>
           <el-button
             size="mini"
-            type="danger"
+            type="primary"
             @click="handleUpload(scope.row)"
           >上传附件
           </el-button>

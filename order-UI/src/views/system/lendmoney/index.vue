@@ -147,7 +147,7 @@
           <!--          下拉框 员工 客户 供应商 其他-->
           <el-select v-model="form.targetType" placeholder="请选择对象类型">
             <el-option
-              v-for="dict in dict.type.target_type"
+              v-for="dict in dict.type.order_target_type"
               :key="dict.value"
               :label="dict.label"
               :value="dict.value"
@@ -351,7 +351,7 @@ import {TableName} from "@/api/tool/enums";
 export default {
   name: "LendMoney",
   components: {ApplyPayment, SearchOption},
-  dicts: ['target_type'],
+  dicts: ['order_target_type'],
   data() {
     return {
       // 遮罩层
