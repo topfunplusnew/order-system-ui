@@ -56,17 +56,17 @@
       <el-col :span="1.5">
         <el-button icon="el-icon-refresh" size="mini" @click="resetQuery">刷新</el-button>
       </el-col>
-      <el-col :span="1.5">
-        <el-button
-          type="danger"
-          plain
-          icon="el-icon-plus"
-          size="mini"
-          @click="handleAdd"
-          v-hasPermi="['system:goodsorder:add']"
-        >添加订单信息
-        </el-button>
-      </el-col>
+      <!--      <el-col :span="1.5">-->
+      <!--        <el-button-->
+      <!--          type="danger"-->
+      <!--          plain-->
+      <!--          icon="el-icon-plus"-->
+      <!--          size="mini"-->
+      <!--          @click="handleAdd"-->
+      <!--          v-hasPermi="['system:goodsorder:add']"-->
+      <!--        >添加订单信息-->
+      <!--        </el-button>-->
+      <!--      </el-col>-->
       <el-col :span="1.5">
         <el-button
           type="warning"
@@ -208,16 +208,16 @@
       </el-table-column>
       <el-table-column label="附件" align="center" prop="path" v-if="columns[11].visible" width="150px">
         <template #default="scope">
-          <el-row>
-            <img v-if="isPic(scope.row.path)" :src="scope.row.path" alt=""
-                 style="width: 100%;height: 100%">
-            <span v-else-if="scope.row.path === '' || scope.row.path === null">无附件</span>
-            <span v-else>
-            文件不支持预览，请手动下载:
-          <a style="color: red"
-             :href="scope.row.path">{{ scope.row.path }}</a>
-          </span>
-          </el-row>
+          <!--          <el-row>-->
+          <!--            <img v-if="isPic(scope.row.path)" :src="scope.row.path" alt=""-->
+          <!--                 style="width: 100%;height: 100%">-->
+          <!--            <span v-else-if="scope.row.path === '' || scope.row.path === null">无附件</span>-->
+          <!--            <span v-else>-->
+          <!--            文件不支持预览，请手动下载:-->
+          <!--          <a style="color: red"-->
+          <!--             :href="scope.row.path">{{ scope.row.path }}</a>-->
+          <!--          </span>-->
+          <!--          </el-row>-->
           <el-row v-if="scope.row.path === '' || scope.row.path === null">
             无操作
           </el-row>
@@ -246,16 +246,16 @@
       <el-table-column label="收到条附件路径" align="center" prop="receiveProof" v-if="columns[13].visible"
                        width="150px">
         <template #default="scope">
-          <el-row>
-            <img v-if="isPic(scope.row.receiveProof)" :src="scope.row.receiveProof" alt=""
-                 style="width: 100%;height: 100%">
-            <span v-else-if="scope.row.receiveProof === '' || scope.row.receiveProof === null">无附件</span>
-            <span v-else>
-            文件不支持预览，请手动下载:
-          <a style="color: red"
-             :href="scope.row.receiveProof">{{ scope.row.receiveProof }}</a>
-          </span>
-          </el-row>
+          <!--          <el-row>-->
+          <!--            <img v-if="isPic(scope.row.receiveProof)" :src="scope.row.receiveProof" alt=""-->
+          <!--                 style="width: 100%;height: 100%">-->
+          <!--            <span v-else-if="scope.row.receiveProof === '' || scope.row.receiveProof === null">无附件</span>-->
+          <!--            <span v-else>-->
+          <!--            文件不支持预览，请手动下载:-->
+          <!--          <a style="color: red"-->
+          <!--             :href="scope.row.receiveProof">{{ scope.row.receiveProof }}</a>-->
+          <!--          </span>-->
+          <!--          </el-row>-->
           <el-row v-if="scope.row.receiveProof === '' || scope.row.receiveProof === null">
             无操作
           </el-row>

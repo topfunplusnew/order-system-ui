@@ -123,7 +123,7 @@
       <el-form ref="form" :model="form" :rules="rules" label-width="80px">
         <!--        多选 且树表 展示多个订单 每个订单里面有多个订单详情-->
         <el-form-item label="订单编号" prop="ordersNo">
-          <!--          <el-input v-model="form.ordersNo" placeholder="请输入订单编号"/>-->
+          <el-input v-model="form.ordersNo" placeholder="请输入订单编号"/>
           <el-button @click="orderDialogVisible = true">
             {{ form.ordersNo === null ? '选择订单编号' : '已选择:' + form.ordersNo }}
           </el-button>
@@ -135,6 +135,16 @@
             placeholder="日期"
             value-format="yyyy-MM-dd">
           </el-date-picker>
+        </el-form-item>
+        <el-form-item label="类型" prop="rebateType">
+          <el-select v-model="form.rebateType" placeholder="请选择">
+            <el-option
+              v-for="item in rebateTypes"
+              :key="item.value"
+              :label="item.label"
+              :value="item.value">
+            </el-option>
+          </el-select>
         </el-form-item>
         <el-form-item label="金额" prop="rebate">
           <el-input v-model="form.rebate" placeholder="请输入金额"/>
@@ -405,6 +415,16 @@ export default {
       },
       // 表单参数
       form: {},
+      rebateTypes: [{
+        value: '返利',
+        label: '返利'
+      }, {
+        value: '降价',
+        label: '降价'
+      }, {
+        value: '售后质量赔偿',
+        label: '售后质量赔偿'
+      }],
       // 表单校验
       rules: {},
       columns: [
@@ -474,6 +494,7 @@ export default {
     valueOrderDetail(newVal) {
       console.log('选择的货物详情', newVal)
       this.form.orderDetailID = newVal;
+      this.form.ordersNo = newVal;
       this.orderDialogVisible = false;
     },
     columns: {

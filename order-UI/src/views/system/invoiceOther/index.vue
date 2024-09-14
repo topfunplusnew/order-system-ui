@@ -2,12 +2,14 @@
   <div class="app-container">
     <el-form :model="queryParams" ref="queryForm" size="small" :inline="true" v-show="showSearch" label-width="150px">
       <el-form-item label="开票日期" prop="invoiceDate">
-        <el-input
-          v-model="queryParams.invoiceDate"
-          placeholder="请输入开票日期"
-          clearable
-          @keyup.enter.native="handleQuery"
-        />
+        <el-date-picker
+          v-model="dateRange"
+          style="width: 240px"
+          value-format="yyyy-MM-dd"
+          type="daterange"
+          start-placeholder="开始日期"
+          end-placeholder="结束日期"
+        ></el-date-picker>
       </el-form-item>
       <el-form-item label="票据单位名称" prop="invoiceCompanyName">
         <el-input
@@ -286,6 +288,7 @@ import {getInvoiceOut} from "@/api/system/invoiceOut";
 import SearchOption from "@/components/SearchOption.vue";
 import {listCompany} from "@/api/system/company";
 import {listGoodsOrder} from "@/api/system/goodsOrder";
+import {addDateRange} from "@/utils/ruoyi";
 
 export default {
   name: "InvoiceOther",
@@ -311,6 +314,7 @@ export default {
       title: "",
       // 是否显示弹出层
       open: false,
+      dateRange: [],
       // 查询参数
       queryParams: {
         pageNum: 1,
@@ -407,7 +411,7 @@ export default {
     /** 查询商家直接给客户开发票列表 */
     getList() {
       this.loading = true;
-      listInvoiceOther(this.queryParams).then(response => {
+      listInvoiceOther(addDateRange(this.queryParams, this.dateRange)).then(response => {
         this.invoiceOtherList = response.rows;
         this.total = response.total;
         this.loading = false;

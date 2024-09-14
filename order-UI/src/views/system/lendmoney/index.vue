@@ -131,7 +131,7 @@
     />
 
     <!-- 添加或修改向外部借出款信息对话框 -->
-    <el-dialog :title="title" :visible.sync="open" width="500px" append-to-body>
+    <el-dialog title="新增资金借出信息" :visible.sync="open" width="500px" append-to-body>
       <el-form ref="form" :model="form" :rules="rules" label-width="80px">
         <!--        <el-form-item label="借出款编号" prop="futuresNO">-->
         <!--          <el-input v-model="form.futuresNO" placeholder="请输入借出款编号"/>-->
@@ -347,6 +347,7 @@ import {listBankAccount} from "@/api/system/bankAccount";
 import {listCompany} from "@/api/system/company";
 import ApplyPayment from "@/components/ApplyPayment.vue";
 import {TableName} from "@/api/tool/enums";
+import {excludeParams} from "@/api/tool/exclude";
 
 export default {
   name: "LendMoney",
@@ -696,6 +697,7 @@ export default {
             this.form.addtime = null;
             this.form.updateTime = null;
             this.form.userId = null;
+            this.form = excludeParams(this.form, this.$exclude)
             updateLendMoney(this.form).then(response => {
               this.$modal.msgSuccess("修改成功");
               this.open = false;
@@ -706,6 +708,7 @@ export default {
             this.form.addtime = null;
             this.form.updateTime = null;
             this.form.userId = null;
+            this.form = excludeParams(this.form, this.$exclude)
             addLendMoney(this.form).then(response => {
               this.$modal.msgSuccess("新增成功");
               this.open = false;

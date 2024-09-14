@@ -90,17 +90,65 @@
       @pagination="getList"/>
 
     <!-- 添加或修改从外部借款信息对话框 -->
-    <el-dialog :title="title" :visible.sync="open" width="500px" append-to-body>
-      <el-form ref="form" :model="form" :rules="rules" label-width="80px">
-        <el-form-item label="附近" prop="origin">
-          <el-input v-model="form.origin" placeholder="请输入贷款来源" v-if="columns[0].visible"/>
-        </el-form-item>
-        <el-form-item label="借入金额" prop="moneyAmount">
-          <el-input v-model="form.moneyAmount" placeholder="请输入借入金额" v-if="columns[0].visible"/>
-        </el-form-item>
-        <el-form-item label="备注" prop="comments">
-          <el-input v-model="form.comments" placeholder="请输入备注"/>
-        </el-form-item>
+    <el-dialog :title="title" :visible.sync="open" width="60%" append-to-body>
+      <el-form ref="form" :model="form" :rules="rules" label-width="120px">
+        <el-row>
+          <el-col :span="12">
+            <el-form-item label="贷款来源" prop="origin">
+              <el-input v-model="form.origin" placeholder="请输入贷款来源"/>
+            </el-form-item>
+            <el-form-item label="借入金额" prop="moneyAmount">
+              <el-input v-model="form.moneyAmount" placeholder="请输入借入金额"/>
+            </el-form-item>
+            <el-form-item label="贷款利率" prop="ratio">
+              <el-input v-model="form.ratio" placeholder="请输入贷款利率"/>
+            </el-form-item>
+            <el-form-item label="贷款发放日期" prop="loanDate">
+              <el-date-picker
+                v-model="form.loanDate"
+                type="date"
+                placeholder="请选择贷款发放日期"
+                value-format="yyyy-MM-dd">
+              </el-date-picker>
+            </el-form-item>
+          </el-col>
+          <el-col :span="12">
+            <el-form-item label="贷款年限" prop="loanDuring">
+              <el-input v-model="form.loanDuring" placeholder="请输入贷款年限"/>
+            </el-form-item>
+            <el-form-item label="抵押担保" prop="mortgageGuarantee">
+              <el-input v-model="form.mortgageGuarantee" placeholder="请输入抵押担保"/>
+            </el-form-item>
+            <el-form-item label="打入账户" prop="acountsName">
+              <el-row>
+                <el-col :span="20">
+                  <el-input v-model="form.acountsName" placeholder="请输入抵押担保"/>
+                </el-col>
+                <el-col :span="4">
+                  <SearchOption :get-data="listBankAccount" icon="el-icon-search"
+                                @commitBack="handleCommitBackBankAcountForm"
+                                :limit-info="{acountsType:'己方公司'}" query-label="户名查找" query-info="acountsName"
+                                :query-name="queryBank"
+                                @update:queryName="handleUpdateQueryBankAcountForm">
+                    <template #table-columns>
+                      <el-table-column label="账户类型" align="center" prop="acountsType"/>
+                      <el-table-column label="开户行" align="center" prop="bankName"/>
+                      <el-table-column label="开户名" align="center" prop="acountsName"/>
+                      <el-table-column label="账号" align="center" prop="bankNo"/>
+                    </template>
+                  </SearchOption>
+                </el-col>
+              </el-row>
+            </el-form-item>
+            <el-form-item label="打入账号" prop="bankNo">
+              <el-input v-model="form.bankNo" placeholder="请输入抵押担保"/>
+            </el-form-item>
+            <el-form-item label="备注" prop="comments">
+              <el-input v-model="form.comments" placeholder="请输入备注"/>
+            </el-form-item>
+          </el-col>
+        </el-row>
+
       </el-form>
       <div slot="footer" class="dialog-footer">
         <el-button type="primary" @click="submitForm">确 定</el-button>
@@ -358,6 +406,13 @@ export default {
     },
     handleUpdateQueryBankAcount(val) {
       this.queryBankAcount = val;
+    },
+    handleUpdateQueryBankAcountForm(val) {
+      this.queryBankAcount = val;
+    },
+    handleCommitBackBankAcountForm(val) {
+      this.form.bankNo = val.bankNo;
+      this.form.acountsName = val.acountsName
     },
     handleQueryTime() {
       this.borrowedMoneyList = this.tempBorrowedMoneyList
