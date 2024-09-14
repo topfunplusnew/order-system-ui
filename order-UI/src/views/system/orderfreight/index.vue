@@ -1,6 +1,6 @@
 <template>
   <div class="app-container">
-    <el-form :model="queryParams" ref="queryForm" size="mini" :inline="true" v-show="showSearch" label-width="68px">
+    <el-form :model="queryParams" ref="queryForm" size="mini" :inline="true" v-show="showSearch" label-width="120px">
       <el-form-item label="申请开始日期" prop="applyDate">
         <el-date-picker
           v-model="dateRange"
@@ -62,7 +62,7 @@
     </el-row>
 
     <el-table v-horizontal-scroll="'always'" border v-loading="loading" :data="orderFreightList"
-              @selection-change="handleSelectionChange" id="printBox" max-height="600px">
+              @selection-change="handleSelectionChange" id="printBox" max-height="600px" size="mini">
       <el-table-column label="订单编号" align="center" prop="ordersNo" v-if="columns[0].visible"/>
       <el-table-column label="运费类型" align="center" prop="freightType" v-if="columns[1].visible"/>
       <el-table-column label="金额" align="center" prop="moneyAmount" v-if="columns[2].visible"/>

@@ -73,7 +73,7 @@
     <el-row>
       <el-tabs v-model="activeName" @tab-click="handleClick">
         <el-tab-pane lazy label="加油卡主卡管理" name="first">
-          <el-table border v-loading="loading" :data="mainOilCardList"
+          <el-table size="mini" border v-loading="loading" :data="mainOilCardList"
                     @selection-change="handleSelectionChange" id="printBox"
                     v-horizontal-scroll="'always'">
             <el-table-column label="加油卡卡号" align="center" prop="oilCardNo" v-if="columns[0].visible"/>
