@@ -265,6 +265,9 @@ import {Loading} from "element-ui";
 import {listSubject} from "@/api/system/subject";
 import {listCompany} from "@/api/system/company";
 import {excludeParams} from "@/api/tool/exclude";
+import {addReason} from "@/api/system/user";
+import {TableName} from "@/api/tool/enums";
+import {getRecoverMoney} from "@/api/system/recoverMoney";
 
 export default {
   name: "ReceiveMoney",
@@ -493,7 +496,7 @@ export default {
       this.title = "添加收款信息";
     },
     /** 修改按钮操作 */
-    handleUpdate(row) {
+  /*  handleUpdate(row) {
       this.reset();
       const id = row.id || this.ids
       getReceiveMoney(id).then(response => {
@@ -503,6 +506,31 @@ export default {
         this.currentSort.levelTwo = this.form.receiveType.split('-')[1]
         this.open = true;
         this.title = "修改收款信息";
+      });
+    },*/
+    /** 修改按钮操作 */
+    handleUpdate(row) {
+      this.$prompt('请输入编辑原因', '提示', {
+        confirmButtonText: '确定',
+        cancelButtonText: '取消',
+        type: 'warning'
+      }).then(({value}) => {
+        addReason({reason: value, tableName: TableName. RECEIVE_MONEY, tid: row.id, modifyTime: this.modifyTime})
+          .then(res => {
+            this.$message.success('提交成功')
+            this.reset();
+            const id = row.id || this.ids
+            getReceiveMoney(id).then(response => {
+              this.form = response.data;
+              this.open = true;
+              this.title = "修改收款信息";
+            });
+          })
+      }).catch(() => {
+        this.$message({
+          type: 'warning',
+          message: '请先输入编辑原因!'
+        });
       });
     },
     /** 提交按钮 */
