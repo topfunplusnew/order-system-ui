@@ -29,7 +29,7 @@
       <!--      </el-col>-->
       <!--用户数据-->
       <el-col :span="24" :xs="24">
-        <el-form :model="queryParams" ref="queryForm" size="small" :inline="true" v-show="showSearch"
+        <el-form :model="queryParams" ref="queryForm" size="mini" :inline="true" v-show="showSearch"
                  label-width="68px">
           <el-form-item label="用户名称" prop="userName">
             <el-input

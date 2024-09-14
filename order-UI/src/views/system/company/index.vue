@@ -1,6 +1,6 @@
 <template>
   <div class="app-container">
-    <el-form :model="queryParams" ref="queryForm" size="small" :inline="true" v-show="showSearch" label-width="68px">
+    <el-form :model="queryParams" ref="queryForm" size="mini" :inline="true" v-show="showSearch" label-width="68px">
       <el-form-item label="客户名称" prop="relationName">
         <el-input
           v-model="queryParams.relationName"
@@ -66,17 +66,17 @@
     </el-row>
 
     <el-table border v-loading="loading" :data="companyList" @selection-change="handleSelectionChange" id="printBox"
-              v-horizontal-scroll="'always'" size="mini">
-      <el-table-column label="id" align="center" prop="id"/>
-      <el-table-column label="客户" align="center" prop="relationName" v-if="columns[0].visible" width="200"/>
-      <el-table-column label="老板姓名" align="center" prop="leader" v-if="columns[1].visible" width="200"/>
-      <el-table-column label="老板电话" align="center" prop="leaderTel" v-if="columns[3].visible" width="200"/>
-      <el-table-column label="区域" align="center" prop="region" v-if="columns[6].visible" width="200"/>
-      <el-table-column label="公司名称" align="center" prop="companyName" v-if="columns[2].visible" width="200"/>
-      <el-table-column label="销售经理" align="center" prop="salesManager" v-if="columns[7].visible" width="200"/>
-      <el-table-column label="地址" align="center" prop="address" v-if="columns[5].visible" width="200"/>
-      <el-table-column label="电话" align="center" prop="relationTel" v-if="columns[4].visible" width="200"/>
-      <el-table-column label="备注" align="center" prop="comments" v-if="columns[8].visible" width="200"/>
+              v-horizontal-scroll="'always'" size="mini" :cell-style="()=>{return {padding:'.5px'}}">
+      <el-table-column label="id" align="center" prop="id" width="70"/>
+      <el-table-column label="客户" align="center" prop="relationName" v-if="columns[0].visible" width="100"/>
+      <el-table-column label="老板姓名" align="center" prop="leader" v-if="columns[1].visible" width="100"/>
+      <el-table-column label="老板电话" align="center" prop="leaderTel" v-if="columns[3].visible" width="100"/>
+      <el-table-column label="区域" align="center" prop="region" v-if="columns[6].visible" width="100"/>
+      <el-table-column label="公司名称" align="center" prop="companyName" v-if="columns[2].visible" width="100"/>
+      <el-table-column label="销售经理" align="center" prop="salesManager" v-if="columns[7].visible" width="100"/>
+      <el-table-column label="地址" align="center" prop="address" v-if="columns[5].visible" width="150"/>
+      <el-table-column label="电话" align="center" prop="relationTel" v-if="columns[4].visible" width="100"/>
+      <el-table-column label="备注" align="center" prop="comments" v-if="columns[8].visible" width="100"/>
       <!--      银行信息-->
       <!--      <el-table-column label="开户行" align="center" prop="bankName"/>-->
       <!--      <el-table-column label="开户名" align="center" prop="acountsName"/>-->
@@ -237,24 +237,11 @@
 
     <!--    搜索已绑定的银行卡信息-->
     <el-dialog title="银行卡号" :visible.sync="dialogFormVisible">
-      <el-form :model="currentInfo" v-if="singleInfo.length !== 0">
+      <el-form :model="currentInfo">
         <el-row :gutter="4">
           <el-col :span="4">
-            <span style="font-weight: bolder">{{ currentInfo.relationName }}</span>
+            <span style="font-weight: bolder">{{ currentInfo.companyName }}</span>
           </el-col>
-          <!--          <el-col :span="8">-->
-          <!--            <el-form-item label="账号" :label-width="formLabelWidth">-->
-          <!--              <el-input v-model="currentInfo.bankNo" autocomplete="off"></el-input>-->
-          <!--            </el-form-item>-->
-          <!--          </el-col>-->
-          <!--          <el-col :span="8">-->
-          <!--            <el-form-item label="户名" :label-width="formLabelWidth">-->
-          <!--              <el-input v-model="currentInfo.acountsName" autocomplete="off"></el-input>-->
-          <!--            </el-form-item>-->
-          <!--          </el-col>-->
-          <!--          <el-col :span="3">-->
-          <!--            <el-button type="primary" @click="handleCommitCompanyGive">提交</el-button>-->
-          <!--          </el-col>-->
         </el-row>
       </el-form>
       <hr/>
@@ -297,12 +284,6 @@
           <el-table-column label="银行卡余额" align="center" prop="amount"/>
           <el-table-column label="操作" align="center" class-name="small-padding fixed-width" fixed="right" width="180">
             <template slot-scope="scope">
-              <!--              <el-button-->
-              <!--                size="mini"-->
-              <!--                @click="handleUpdateBankPop(scope.row)"-->
-              <!--                v-hasPermi="['system:company:edit']"-->
-              <!--              ><i class="el-icon-edit"></i>-->
-              <!--              </el-button>-->
               <el-button
                 size="mini"
                 @click="handleDeleteBankaccount(scope.row)"
@@ -580,37 +561,39 @@ export default {
     },
     //点击银行卡后弹窗
     jumpBankNo(row) {
-      console.log(row)
-      this.currentInfo.relationName = row.relationName
-      this.currentInfo.id = row.id
-      this.currentInfo.relationTel = row.relationTel
-      this.currentInfo.address = row.address;
-      this.currentInfo.surplusMoney = row.surplusMoney
-      this.currentInfo.salesman = row.salesman
-      this.currentInfo.leader = row.leader
-      this.currentInfo.leaderTel = row.leaderTel
-      this.currentInfo.region = row.region
-      this.currentInfo.salesManager = row.salesManager
-      this.currentInfo.province = row.province
-      this.currentInfo.city = row.city
-      this.currentInfo.county = row.county
-      this.currentInfo.comments = row.comments
-      this.currentInfo.companyName = row.companyName
+      this.currentInfo = Object.assign(this.currentInfo, {
+        relationName: row.relationName,
+        id: row.id,
+        relationTel: row.relationTel,
+        address: row.address,
+        surplusMoney: row.surplusMoney,
+        salesman: row.salesman,
+        leader: row.leader,
+        leaderTel: row.leaderTel,
+        region: row.region,
+        salesManager: row.salesManager,
+        province: row.province,
+        city: row.city,
+        county: row.county,
+        comments: row.comments,
+        companyName: row.companyName
+      });
       //查询已绑定的银行卡信息
       listBankAccount({companyId: row.id, acountsType: '客户'})
         .then(res => {
           this.singleInfo = res.rows
-        })
-      listBankAccount({acountsType: '客户默认', companyId: row.id})
-        .then(res => {
-          if (res.rows.length > 0) {
-            this.defaultBankCardInfo = res.rows[0]
-          } else {
-            this.defaultBankCardInfo.not = true
-          }
-          setTimeout(() => {
-            this.dialogFormVisible = true
-          }, 20)
+          // 查询客户的默认银行卡信息
+          listBankAccount({acountsType: '客户默认', companyId: row.id})
+            .then(res => {
+              if (res.rows.length > 0) {
+                this.defaultBankCardInfo = res.rows[0]
+              } else {
+                this.defaultBankCardInfo.not = true
+              }
+              setTimeout(() => {
+                this.dialogFormVisible = true
+              }, 20)
+            })
         })
     },
 
@@ -687,7 +670,6 @@ export default {
       } else {
         //如果还没有添加过银行卡信息
         //先查询
-        console.log(this.currentInfo)
         listBankAccount({companyId: this.currentInfo.id, acountsType: '客户'})
           .then(res => {
             if (res.rows.length === 0) {
@@ -821,7 +803,6 @@ export default {
     },
     /** 删除按钮操作 */
     handleDelete(row) {
-      console.log(row)
       const ids = row.id || this.ids;
       this.$modal.confirm('是否确认删除客户信息编号为"' + ids + '"的数据项？').then(function () {
         return delCompany(ids);

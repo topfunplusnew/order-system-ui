@@ -1,6 +1,6 @@
 <template>
   <div class="app-container">
-    <el-form :model="queryParams" ref="queryForm" size="small" :inline="true" v-show="showSearch" label-width="150px">
+    <el-form :model="queryParams" ref="queryForm" size="mini" :inline="true" v-show="showSearch" label-width="150px">
       <!--      时间查询-->
       <el-form-item label="开票开始日期" prop="beginTime">
         <el-date-picker
@@ -63,16 +63,17 @@
     </el-row>
 
     <el-table id="printBox" v-horizontal-scroll="'always'" border v-loading="loading" :data="invoiceInList"
-              @selection-change="handleSelectionChange">
+              @selection-change="handleSelectionChange" fit size="mini">
       <el-table-column label="开票日期" align="center" prop="invoiceDate" v-if="columns[0].visible"/>
-      <el-table-column label="我方开票实体" align="center" prop="invoiceObject" v-if="columns[1 ].visible"/>
+      <el-table-column label="我方开票实体" align="center" prop="invoiceObject" v-if="columns[1 ].visible"
+                       width="100px"/>
       <el-table-column label="开票金额" align="center" prop="invoiceAmount" v-if="columns[2 ].visible"/>
-      <el-table-column label="对方公司类别" align="center" prop="companyType" v-if="columns[3].visible"/>
-      <el-table-column label="对方公司名称" align="center" prop="companyName" v-if="columns[4].visible"/>
-      <el-table-column label="票据单位名称" align="center" prop="invoiceCompanyName" v-if="columns[5].visible"/>
+      <el-table-column label="对方公司类别" align="center" prop="companyType" v-if="columns[3].visible" width="100px"/>
+      <el-table-column label="对方公司名称" align="center" prop="companyName" v-if="columns[4].visible" width="100px"/>
+      <el-table-column label="票据单位名称" align="center" prop="invoiceCompanyName" v-if="columns[5].visible"
+                       width="100px"/>
       <el-table-column label="票点" align="center" prop="ticketPoint" v-if="columns[6].visible"/>
       <el-table-column label="票点金额" align="center" prop="ticketPointAmount" v-if="columns[7].visible"/>
-      <el-table-column label="是否订单对应票点" align="center" prop="isOrderTax" v-if="columns[8].visible"/>
       <el-table-column label="审核状态" align="center" prop="checkState" width="240" v-if="columns[9].visible">
         <template #default="scope">
           <el-row>
@@ -91,6 +92,17 @@
         </template>
       </el-table-column>
       <el-table-column label="备注" align="center" prop="comments" v-if="columns[10].visible"/>
+      <el-table-column label="是否订单对应票点" align="center" prop="isOrderTax" v-if="columns[8].visible"
+                       width="140px">
+        <template slot-scope="scope">
+          <el-row v-if="scope.row.isOrderTax===0">
+            <el-tag>否</el-tag>
+          </el-row>
+          <el-row v-else>
+            <el-button size="mini" type="warning" @click="checkOrderInfo(scope.row)">查看订单信息</el-button>
+          </el-row>
+        </template>
+      </el-table-column>
       <el-table-column label="操作" align="center" class-name="small-padding fixed-width">
         <template slot-scope="scope">
           <el-button
@@ -181,6 +193,10 @@
       <ApplyPayment :table-name="TableName.INVOICE_IN" @changeOpen="changePaymentApplyInfoVisible"
                     :t-i-d="tID" :need-money="needMoney" :need-info="{}"/>
     </el-dialog>
+
+    <el-dialog title="查看订单信息" :visible.sync="checkOrderInfoVisible" width="70%" append-to-body>
+      <OrderInfos :order-info="orderInfo"/>
+    </el-dialog>
   </div>
 </template>
 
@@ -194,10 +210,12 @@ import {TableName} from "@/api/tool/enums";
 import {excludeParams} from "@/api/tool/exclude";
 import {addReason} from "@/api/system/user";
 import {getRecoverMoney} from "@/api/system/recoverMoney";
+import {getGoodsOrder} from "@/api/system/goodsOrder";
+import OrderInfos from "@/components/OrderInfos.vue";
 
 export default {
   name: "InvoiceIn",
-  components: {ApplyPayment, SearchOption},
+  components: {OrderInfos, ApplyPayment, SearchOption},
   mixins: [mixin_printHTML],
   data() {
     return {
@@ -241,6 +259,8 @@ export default {
       },
       // 表单参数
       form: {},
+      orderInfo: {},
+      checkOrderInfoVisible: false,
       // 表单校验
       rules: {},
       columns: [
@@ -324,7 +344,13 @@ export default {
       this.form.companyID = val.id;
       this.form.companyType = val.companyType;
     },
-
+    checkOrderInfo(row) {
+      //发请求 查看订单信息
+      getGoodsOrder(row.isOrderTax).then(res => {
+        this.orderInfo = res.data;
+      });
+      this.checkOrderInfoVisible = true;
+    },
     //添加付款申请
     addPaymentApplyInfos(row) {
       this.tID = row.id;

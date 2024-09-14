@@ -1,6 +1,6 @@
 <template>
   <div class="app-container">
-    <el-form :model="queryParams" ref="queryForm" size="small" :inline="true" v-show="showSearch" label-width="68px">
+    <el-form :model="queryParams" ref="queryForm" size="mini" :inline="true" v-show="showSearch" label-width="68px">
       <el-form-item label="分类名称" prop="categoryName">
         <el-input
           v-model="queryParams.categoryName"
@@ -75,7 +75,7 @@
           </right-toolbar>
         </el-row>
         <el-table border v-horizontal-scroll="'always'" v-loading="loading" :data="productLevelList"
-                  @selection-change="handleSelectionChange" id="printBox">
+                  @selection-change="handleSelectionChange" id="printBox" size="mini">
           <el-table-column label="级别编码" align="center" prop="levelNo" v-if="columns[0].visible"/>
           <el-table-column label="级别名称" align="center" prop="levelName" v-if="columns[1].visible"/>
           <el-table-column label="分类编号" align="center" prop="categoryNo" v-if="columns[2].visible"/>
@@ -408,10 +408,10 @@ export default {
       deep: true,
     },
     //监听产品级别变化 自动填充级别编码
-    // 'addCategoryModel.categoryName': function (newVal) {
-    //   //查询该级别名称对应的级别编码
-    //   this.addCategoryModel.levelNo = this.dictList.find(item => item.dictLabel === newVal).dictValue
-    // }
+    'addCategoryModel.categoryName': function (newVal) {
+      //查询该级别名称对应的级别编码
+      this.addCategoryModel.levelNo = this.dictList.find(item => item.dictLabel === newVal).dictValue
+    }
   },
   methods: {
     //添加产品分类信息
@@ -463,7 +463,7 @@ export default {
             message: '删除成功!'
           });
         })
-        this.getDictsData()
+        this.getList()
       })
     },
     //点击添加级别信息
@@ -480,6 +480,7 @@ export default {
         .then(res => {
           this.$message.success("添加成功~")
           this.addProductLevelOpen = false
+          this.getList()
         }).catch(err => {
         this.$message.error("添加失败，请重试:" + err.msg)
       })

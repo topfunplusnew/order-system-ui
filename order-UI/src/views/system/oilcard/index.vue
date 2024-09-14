@@ -1,7 +1,7 @@
 <!--todo 加油卡管理，要分开管理 分为加油卡主卡和加油卡副卡-->
 <template>
   <div class="app-container">
-    <el-form :model="queryParams" ref="queryForm" size="small" :inline="true" v-show="showSearch" label-width="68px">
+    <el-form :model="queryParams" ref="queryForm" size="mini" :inline="true" v-show="showSearch" label-width="68px">
       <el-form-item label="加油卡卡号" prop="oilCardNo">
         <el-input
           v-model="queryParams.oilCardNo"

@@ -1,6 +1,6 @@
 <template>
   <div class="app-container">
-    <el-form :model="queryParams" ref="queryForm" size="small" :inline="true" v-show="showSearch" label-width="150px">
+    <el-form :model="queryParams" ref="queryForm" size="mini" :inline="true" v-show="showSearch" label-width="150px">
       <el-form-item label="开票日期" prop="invoiceDate">
         <el-date-picker
           v-model="dateRange"
@@ -70,7 +70,7 @@
     </el-row>
 
     <el-table border v-horizontal-scroll="'always'" v-loading="loading" :data="invoiceOtherList"
-              @selection-change="handleSelectionChange">
+              @selection-change="handleSelectionChange" size="mini">
       <el-table-column label="开票日期" align="center" prop="invoiceDate" v-if="columns[0].visible"/>
       <el-table-column label="开票金额" align="center" prop="invoiceAmount" v-if="columns[1].visible"/>
       <el-table-column label="供应商票点" align="center" prop="supplierTicketPoint" v-if="columns[2].visible"/>

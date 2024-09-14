@@ -1,7 +1,7 @@
 <!--向外借钱-->
 <template>
   <div class="app-container">
-    <el-form :model="timesQuery" ref="queryForm" size="small" :inline="true" v-show="showSearch" label-width="68px">
+    <el-form :model="timesQuery" ref="queryForm" size="mini" :inline="true" v-show="showSearch" label-width="68px">
       <el-form-item label="开始时间" prop="beginTime">
         <el-date-picker
           v-model="timesQuery.beginTime"

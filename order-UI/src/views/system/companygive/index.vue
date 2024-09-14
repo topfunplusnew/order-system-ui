@@ -1,6 +1,6 @@
 <template>
   <div class="app-container">
-    <el-form :model="queryParams" ref="queryForm" size="small" :inline="true" v-show="showSearch" label-width="100px">
+    <el-form :model="queryParams" ref="queryForm" size="mini" :inline="true" v-show="showSearch" label-width="100px">
       <el-form-item label="供应商名称" prop="companyName">
         <el-input
           v-model="queryParams.companyName"
@@ -189,21 +189,10 @@
       <el-form :model="currentInfo">
         <el-row :gutter="4">
           <el-col :span="4">
-            {{ currentInfo.companyName }}
+            <span style="font-weight: bolder">
+              {{ currentInfo.companyName }}
+            </span>
           </el-col>
-          <!--          <el-col :span="8">-->
-          <!--            <el-form-item label="账号" :label-width="formLabelWidth">-->
-          <!--              <el-input v-model="currentInfo.bankNo" autocomplete="off"></el-input>-->
-          <!--            </el-form-item>-->
-          <!--          </el-col>-->
-          <!--          <el-col :span="8">-->
-          <!--            <el-form-item label="户名" :label-width="formLabelWidth">-->
-          <!--              <el-input v-model="currentInfo.acountsName" autocomplete="off"></el-input>-->
-          <!--            </el-form-item>-->
-          <!--          </el-col>-->
-          <!--          <el-col :span="3">-->
-          <!--            <el-button type="primary" @click="handleCommitCompanyGive">提交</el-button>-->
-          <!--          </el-col>-->
         </el-row>
       </el-form>
       <hr/>
@@ -245,12 +234,6 @@
           <el-table-column label="银行卡余额" align="center" prop="amount"/>
           <el-table-column label="操作" align="center" class-name="small-padding fixed-width" fixed="right" width="180">
             <template slot-scope="scope">
-              <!--              <el-button-->
-              <!--                size="mini"-->
-              <!--                @click="handleUpdateBankPop(scope.row)"-->
-              <!--                v-hasPermi="['system:company:edit']"-->
-              <!--              ><i class="el-icon-edit"></i>-->
-              <!--              </el-button>-->
               <el-button
                 size="mini"
                 @click="handleDeleteBankaccount(scope.row)"
@@ -591,34 +574,36 @@ export default {
     },
     //点击银行卡后弹窗
     jumpBankNo(row) {
-      this.currentInfo.relationName = row.relationName
-      this.currentInfo.id = row.id
-      this.currentInfo.relationTel = row.relationTel
-      this.currentInfo.address = row.address;
-      this.currentInfo.surplusMoney = row.surplusMoney
-      this.currentInfo.salesman = row.salesman
-      this.currentInfo.leader = row.leader
-      this.currentInfo.leaderTel = row.leaderTel
-      this.currentInfo.region = row.region
-      this.currentInfo.salesManager = row.salesManager
-      this.currentInfo.province = row.province
-      this.currentInfo.city = row.city
-      this.currentInfo.county = row.county
-      this.currentInfo.comments = row.comments
-      this.currentInfo.companyName = row.companyName
+      this.currentInfo = Object.assign(this.currentInfo, {
+        relationName: row.relationName,
+        id: row.id,
+        relationTel: row.relationTel,
+        address: row.address,
+        surplusMoney: row.surplusMoney,
+        salesman: row.salesman,
+        leader: row.leader,
+        leaderTel: row.leaderTel,
+        region: row.region,
+        salesManager: row.salesManager,
+        province: row.province,
+        city: row.city,
+        county: row.county,
+        comments: row.comments,
+        companyName: row.companyName
+      });
       //查询某供应商信息 账户名称应该是公司名称
       listBankAccount({companyId: row.id, acountsType: '供应商'}).then(res => {
-        this.singleInfo = res.rows
-      })
-      listBankAccount({acountsType: '供应商默认', companyId: row.id}).then(res => {
-        if (res.rows.length > 0) {
-          this.defaultBankCardInfo = res.rows[0]
-        } else {
-          this.defaultBankCardInfo.not = true
-        }
-        setTimeout(() => {
-          this.dialogFormVisible = true
-        }, 20)
+        this.singleInfo = res.rows;
+        listBankAccount({acountsType: '供应商默认', companyId: row.id}).then(res => {
+          if (res.rows.length > 0) {
+            this.defaultBankCardInfo = res.rows[0]
+          } else {
+            this.defaultBankCardInfo.not = true
+          }
+          setTimeout(() => {
+            this.dialogFormVisible = true
+          }, 20)
+        });
       })
     },
     //添加银行卡信息

@@ -1,6 +1,6 @@
 <template>
   <div class="app-container">
-    <el-form :model="queryParams" ref="queryForm" size="small" :inline="true" v-show="showSearch" label-width="68px">
+    <el-form :model="queryParams" ref="queryForm" size="mini" :inline="true" v-show="showSearch" label-width="68px">
       <el-form-item label="开始时间" prop="beginTime">
         <el-date-picker
           v-model="dateRange"
@@ -76,7 +76,7 @@
     </el-row>
 
     <el-table v-horizontal-scroll="'always'" border v-loading="loading" :data="invoiceOutList"
-              @selection-change="handleSelectionChange" id="printBox">
+              @selection-change="handleSelectionChange" id="printBox" size="mini">
       <el-table-column label="开票日期" align="center" prop="invoiceDate" v-if="columns[0].visible"/>
       <el-table-column label="我方开票实体" align="center" prop="invoiceObject" v-if="columns[1].visible"/>
       <el-table-column label="开票金额" align="center" prop="invoiceAmount" v-if="columns[2].visible"/>
@@ -85,6 +85,8 @@
       <el-table-column label="票据单位名称" align="center" prop="invoiceCompanyName" v-if="columns[5].visible"/>
       <el-table-column label="票点" align="center" prop="ticketPoint" v-if="columns[6].visible"/>
       <el-table-column label="票点金额" align="center" prop="ticketPointAmount" v-if="columns[7].visible"/>
+
+      <el-table-column label="备注" align="center" prop="comments" v-if="columns[9].visible"/>
       <el-table-column label="是否订单对应票点" align="center" prop="isOrderTax" width="180" v-if="columns[8].visible">
         <template slot-scope="scope">
           <el-row v-if="scope.row.isOrderTax===0">
@@ -95,7 +97,6 @@
           </el-row>
         </template>
       </el-table-column>
-      <el-table-column label="备注" align="center" prop="comments" v-if="columns[9].visible"/>
       <el-table-column label="操作" align="center" class-name="small-padding fixed-width">
         <template slot-scope="scope">
           <el-button

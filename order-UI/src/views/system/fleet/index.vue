@@ -1,6 +1,6 @@
 <template>
   <div class="app-container">
-    <el-form :model="queryParams" ref="queryForm" size="small" :inline="true" v-show="showSearch" label-width="68px">
+    <el-form :model="queryParams" ref="queryForm" size="mini" :inline="true" v-show="showSearch" label-width="80px">
       <el-form-item label="车队名称" prop="fName">
         <el-input
           v-model="queryParams.fName"
@@ -17,7 +17,7 @@
           @keyup.enter.native="handleQuery"
         />
       </el-form-item>
-      <el-form-item label="车队经理电话" prop="tel">
+      <el-form-item label="经理电话" prop="tel">
         <el-input
           v-model="queryParams.tel"
           placeholder="请输入车队经理电话"
@@ -33,33 +33,8 @@
           @keyup.enter.native="handleQuery"
         />
       </el-form-item>
-      <!--      <el-form-item label="添加时间" prop="addtime">
-              <el-input
-                v-model="queryParams.addtime"
-                placeholder="请输入添加时间"
-                clearable
-                @keyup.enter.native="handleQuery"
-              />
-            </el-form-item>
-            <el-form-item label="编辑时间" prop="editTime">
-              <el-input
-                v-model="queryParams.editTime"
-                placeholder="请输入编辑时间"
-                clearable
-                @keyup.enter.native="handleQuery"
-              />
-            </el-form-item>-->
-      <!--      <el-form-item label="删除标记" prop="delFlag">
-              <el-input
-                v-model="queryParams.delFlag"
-                placeholder="请输入删除标记"
-                clearable
-                @keyup.enter.native="handleQuery"
-              />
-            </el-form-item>-->
       <el-form-item>
         <el-button type="primary" icon="el-icon-search" size="mini" @click="handleQuery">搜索</el-button>
-        <!--        <el-button icon="el-icon-refresh" size="mini" @click="resetQuery">重置</el-button>-->
       </el-form-item>
     </el-form>
 
@@ -80,38 +55,6 @@
         >添加车队信息
         </el-button>
       </el-col>
-      <!--      <el-col :span="1.5">
-              <el-button
-                type="success"
-                plain
-                icon="el-icon-edit"
-                size="mini"
-                :disabled="single"
-                @click="handleUpdate"
-                v-hasPermi="['system:fleet:edit']"
-              >修改</el-button>
-            </el-col>
-            <el-col :span="1.5">
-              <el-button
-                type="danger"
-                plain
-                icon="el-icon-delete"
-                size="mini"
-                :disabled="multiple"
-                @click="handleDelete"
-                v-hasPermi="['system:fleet:remove']"
-              >删除</el-button>
-            </el-col>
-            <el-col :span="1.5">
-              <el-button
-                type="warning"
-                plain
-                icon="el-icon-download"
-                size="mini"
-                @click="handleExport"
-                v-hasPermi="['system:fleet:export']"
-              >导出</el-button>
-            </el-col>-->
 
       <right-toolbar :showSearch.sync="showSearch" @queryTable="getList" :columns="columns">
         <!--    打印    -->
@@ -143,32 +86,13 @@
     </el-row>
 
     <el-table border v-horizontal-scroll="'always'" v-loading="loading" :data="fleetList"
-              @selection-change="handleSelectionChange" id="printBox">
-      <!--      <el-table-column type="selection" width="55" align="center" />-->
-      <!--      <el-table-column label="id" align="center" prop="id" />-->
+              @selection-change="handleSelectionChange" id="printBox" size="mini">
       <el-table-column label="车队名称" align="center" prop="fName" v-if="columns[0].visible"/>
       <el-table-column label="车队经理" align="center" prop="fLeader" v-if="columns[1].visible"/>
       <el-table-column label="车队经理电话" align="center" prop="tel" v-if="columns[2].visible"/>
       <el-table-column label="地址" align="center" prop="address" v-if="columns[3].visible"/>
-      <!--      <el-table-column label="添加时间" align="center" prop="addtime" />
-            <el-table-column label="编辑时间" align="center" prop="editTime" />-->
-      <!--      <el-table-column label="删除标记" align="center" prop="delFlag" />-->
       <el-table-column label="操作" align="center" class-name="small-padding fixed-width">
         <template slot-scope="scope">
-          <!--          <el-button
-                      size="mini"
-                      type="text"
-                      icon="el-icon-edit"
-                      @click="handleUpdate(scope.row)"
-                      v-hasPermi="['system:fleet:edit']"
-                    >修改</el-button>
-                    <el-button
-                      size="mini"
-                      type="text"
-                      icon="el-icon-delete"
-                      @click="handleDelete(scope.row)"
-                      v-hasPermi="['system:fleet:remove']"
-                    >删除</el-button>-->
           <el-button
             size="mini"
             type="primary"
