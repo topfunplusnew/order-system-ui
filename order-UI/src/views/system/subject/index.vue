@@ -167,7 +167,15 @@
                       placeholder="请选择父级ID"/>
         </el-form-item>
         <el-form-item label="分类名称" prop="type">
-          <el-input v-model="form.type" placeholder="请输入分类名称"/>
+          <!--          <el-input v-model="form.type" placeholder="请输入分类名称"/>-->
+          <el-select v-model="form.type" placeholder="请选择">
+            <el-option
+              v-for="item in options"
+              :key="item.value"
+              :label="item.label"
+              :value="item.value">
+            </el-option>
+          </el-select>
         </el-form-item>
         <el-form-item label="科目名称" prop="title">
           <el-input v-model="form.title" placeholder="请输入科目名称"/>
@@ -223,6 +231,7 @@ export default {
   components: {
     Treeselect
   },
+  dicts: ['order_product_categories'],
   data() {
     return {
       // 遮罩层
@@ -251,7 +260,8 @@ export default {
         STATUS: null,
       },
       // 表单参数
-      form: {},
+      form: {type: ''},
+      titleOptions: [],
       columns: [
         {key: 0, label: `科目名称`, visible: true},
         {key: 1, label: `科目编码`, visible: true},
@@ -339,6 +349,14 @@ export default {
     } else {
       this.columns = JSON.parse(localStorage.getItem('subject-columns'));
     }
+
+    // 获取科目分类列表
+    listSubject().then(response => {
+      this.titleOptions = [];
+      const data = {id: 0, title: '科目根信息', children: []};
+      data.children = this.handleTree(response.data, "id", "parentId");
+      this.titleOptions.push(data);
+    });
   },
 
   computed: {
@@ -381,6 +399,11 @@ export default {
     handleAddType() {
       this.openType = true;
     },
+    // 级联选择器
+    handleChange() {
+
+    },
+
     //点击某个树的节点
     handleNodeClick(data) {
     },
