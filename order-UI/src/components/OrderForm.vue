@@ -49,6 +49,7 @@ export default {
   },
   //计算属性 目的是为了避免无法输入修改父组件
   computed: {
+    // 日期
     orderDate: {
       get() {
         return this.orderInfo.orderDate;

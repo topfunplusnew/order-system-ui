@@ -67,7 +67,7 @@
     </el-row>
 
     <el-table border v-loading="loading" :data="socialInsuranceList" @selection-change="handleSelectionChange"
-              id="printBox" v-horizontal-scroll="'always'">
+              id="printBox" v-horizontal-scroll="'always'" :cell-style="()=>{return {padding:'.5px'}}">
       <el-table-column label="id" align="center" prop="id"/>
       <el-table-column label="社保缴纳基数" align="center" prop="basicSocialInsurance" v-if="columns[0].visible"/>
       <el-table-column label="公积金基数" align="center" prop="basicHousingFund" v-if="columns[1].visible"/>
@@ -126,8 +126,8 @@
     />
 
     <!-- 添加或修改社保基金对话框 -->
-    <el-dialog :title="title" :visible.sync="open" fullscreen append-to-body>
-      <el-form ref="form" :model="form" :rules="rules" label-width="80px">
+    <el-dialog title="社保基金" :visible.sync="open" append-to-body width="70%">
+      <el-form ref="form" :model="form" :rules="rules" label-width="140px">
         <el-col :span="6">
           <el-form-item label="社保缴纳基数" prop="basicSocialInsurance">
             <el-input v-model="form.basicSocialInsurance" placeholder="请输入社保缴纳基数"/>
@@ -147,12 +147,12 @@
           <el-form-item label="缴费时间" prop="insuranceDate">
             <el-input v-model="form.insuranceDate" placeholder="请输入缴费时间"/>
           </el-form-item>
+        </el-col>
+        <el-col :span="6">
           <el-form-item label="是否增员" prop="isRecruiting">
             <el-radio v-model="form.isRecruiting" label="是">是</el-radio>
             <el-radio v-model="form.isRecruiting" label="否">否</el-radio>
           </el-form-item>
-        </el-col>
-        <el-col :span="6">
           <el-form-item label="是否减员" prop="isDepletion">
             <el-radio v-model="form.isDepletion" label="是">是</el-radio>
             <el-radio v-model="form.isDepletion" label="否">否</el-radio>
@@ -169,14 +169,14 @@
           <el-form-item label="失业保险-个人" prop="unemploymentSecuritySelf">
             <el-input v-model="form.unemploymentSecuritySelf" placeholder="请输入失业保险-个人"/>
           </el-form-item>
+        </el-col>
+        <el-col :span="6">
           <el-form-item label="失业保险-公司" prop="unemploymentSecurityCompany">
             <el-input v-model="form.unemploymentSecurityCompany" placeholder="请输入失业保险-公司"/>
           </el-form-item>
           <el-form-item label="养老保险-个人" prop="retirementSecuritySelf">
             <el-input v-model="form.retirementSecuritySelf" placeholder="请输入养老保险-个人"/>
           </el-form-item>
-        </el-col>
-        <el-col :span="6">
           <el-form-item label="养老保险-公司" prop="retirementSecurityCompany">
             <el-input v-model="form.retirementSecurityCompany" placeholder="请输入养老保险-公司"/>
           </el-form-item>
@@ -186,6 +186,8 @@
           <el-form-item label="大额医保-公司" prop="largeMedicalSecurityCompany">
             <el-input v-model="form.largeMedicalSecurityCompany" placeholder="请输入大额医保-公司"/>
           </el-form-item>
+        </el-col>
+        <el-col :span="6">
           <el-form-item label="公积金-个人" prop="housingFundSelf">
             <el-input v-model="form.housingFundSelf" placeholder="请输入公积金-个人"/>
           </el-form-item>
@@ -195,9 +197,6 @@
           <el-form-item label="个人缴费总额" prop="sumSelf">
             <el-input v-model="form.sumSelf" placeholder="请输入个人缴费总额"/>
           </el-form-item>
-
-        </el-col>
-        <el-col :span="6">
           <el-form-item label="公司缴费总额" prop="sumCompany">
             <el-input v-model="form.sumCompany" placeholder="请输入公司缴费总额"/>
           </el-form-item>
@@ -303,7 +302,71 @@ export default {
       // 表单参数
       form: {},
       // 表单校验
-      rules: {}
+      rules: {
+        basicSocialInsurance: [
+          {required: true, message: '基本医疗保险不能为空', trigger: 'blur'}],
+
+        basicHousingFund: [
+          {required: true, message: '公积金基数不能为空', trigger: 'blur'}],
+
+        depName: [
+          {required: true, message: '部门不能为空', trigger: 'blur'}],
+
+        employeeName: [
+          {required: true, message: '姓名不能为空', trigger: 'blur'}],
+
+        employeeID: [
+          {required: true, message: '人员编号不能为空', trigger: 'blur'}],
+
+        insuranceDate: [
+          {required: true, message: '缴费时间不能为空', trigger: 'blur'}],
+
+        isRecruiting: [
+          {required: true, message: '是否增员不能为空', trigger: 'change'}],
+
+        isDepletion: [
+          {required: true, message: '是否减员不能为空', trigger: 'change'}],
+
+
+        healthySecuritySelf: [
+          {required: true, message: '个人基本医疗保险不能为空', trigger: 'blur'}],
+
+        healthySecurityCompany: [
+          {required: true, message: '公司基本医疗保险不能为空', trigger: 'blur'}],
+        injuryInsurance: [
+          {required: true, message: '工伤保险不能为空', trigger: 'blur'}
+        ],
+        unemploymentSecuritySelf: [
+          {required: true, message: '失业保险不能为空', trigger: 'blur'}],
+
+        unemploymentSecurityCompany: [
+          {required: true, message: '公司失业保险不能为空', trigger: 'blur'}
+        ],
+        retirementSecuritySelf: [
+          {required: true, message: '养老保险-个人不能为空', trigger: 'blur'}
+        ],
+        retirementSecurityCompany: [
+          {required: true, message: '养老保险-公司不能为空', trigger: 'blur'}
+        ],
+        largeMedicalSecuritySelf: [
+          {required: true, message: '大额医保-个人不能为空', trigger: 'blur'}
+        ],
+        largeMedicalSecurityCompany: [
+          {required: true, message: '大额医保-公司不能为空', trigger: 'blur'}
+        ],
+        housingFundSelf: [
+          {required: true, message: '公积金-个人不能为空', trigger: 'blur'}
+        ],
+        housingFundCompany: [
+          {required: true, message: '公积金-公司不能为空', trigger: 'blur'}
+        ],
+        sumSelf: [
+          {required: true, message: '个人缴费总额不能为空', trigger: 'blur'}
+        ],
+        sumCompany: [
+          {required: true, message: '公司缴费总额不能为空', trigger: 'blur'}
+        ]
+      }
     };
   },
   created() {

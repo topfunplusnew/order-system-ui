@@ -160,7 +160,25 @@ export default {
         comments: null,
       },
       // 表单校验
-      rules: {},
+      rules: {
+        fundsDate: [
+          {required: true, message: "付款日期不能为空", trigger: "blur"},
+        ],
+        payType: [
+          {required: true, message: "付款方式不能为空", trigger: "blur"}],
+        moneyAmount: [
+          {required: true, message: "付款金额不能为空", trigger: "blur"}],
+        otherAcountsName: [
+          {required: true, message: "对方户名不能为空", trigger: "blur"}],
+        otherBankNo: [
+          {required: true, message: "对方账号不能为空", trigger: "blur"}],
+        otherBankName: [
+          {required: true, message: "对方开户行不能为空", trigger: "blur"}],
+        companyName: [
+          {required: true, message: "公司名称不能为空", trigger: "blur"}],
+        reason: [
+          {required: true, message: "付款事由不能为空", trigger: "blur"}],
+      },
       //付款分类信息
       subjectTree: [],
       //分类信息

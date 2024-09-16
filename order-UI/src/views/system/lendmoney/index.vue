@@ -38,7 +38,7 @@
         <el-button icon="el-icon-refresh" size="mini" @click="resetQuery">刷新</el-button>
       </el-col>
       <el-col :span="1.5">
-        <el-button size="mini" @click="handleAdd">新增资金借出</el-button>
+        <el-button size="mini" @click="handleAdd" type="danger">新增资金借出</el-button>
       </el-col>
       <right-toolbar :showSearch.sync="showSearch" @queryTable="getList" :columns="columns">
         <template v-slot:print>
@@ -131,99 +131,106 @@
     />
 
     <!-- 添加或修改向外部借出款信息对话框 -->
-    <el-dialog title="新增资金借出信息" :visible.sync="open" width="500px" append-to-body>
-      <el-form ref="form" :model="form" :rules="rules" label-width="80px">
-        <!--        <el-form-item label="借出款编号" prop="futuresNO">-->
-        <!--          <el-input v-model="form.futuresNO" placeholder="请输入借出款编号"/>-->
-        <!--        </el-form-item>-->
-        <el-form-item label="期货保证金公司" prop="futuresMarginCompany">
-          <el-input v-model="form.futuresMarginCompany" placeholder="请输入期货保证金公司"/>
-        </el-form-item>
-        <el-form-item label="对象" prop="target">
-          <el-input v-model="form.target" placeholder="请输入对象(员工姓名、公司名称)"/>
-        </el-form-item>
-        <el-form-item label="对象类型" prop="targetType">
-          <!--          <el-input v-model="form.target" placeholder="请输入对象(员工姓名、公司名称)"/>-->
-          <!--          下拉框 员工 客户 供应商 其他-->
-          <el-select v-model="form.targetType" placeholder="请选择对象类型">
-            <el-option
-              v-for="dict in dict.type.order_target_type"
-              :key="dict.value"
-              :label="dict.label"
-              :value="dict.value"
-            ></el-option>
-          </el-select>
-        </el-form-item>
-        <el-form-item label="保证金金额" prop="moneyAmount">
-          <el-input v-model="form.moneyAmount" placeholder="请输入保证金金额"/>
-        </el-form-item>
-        <el-form-item label="对方账户" prop="targetAcountsName">
-          <el-row>
-            <el-col :span="10">
-              <el-input v-model="form.targetAcountsName" placeholder="请输入对方账户"/>
-            </el-col>
-            <el-col :span="3">
-              <SearchOption :get-data="listBankAccount" icon="el-icon-search" @commitBack="handleCommitBack"
-                            :limit-info="{}" query-label="户名查找" query-info="acountsName" :query-name="queryBank"
-                            @update:queryName="handleUpdateQueryName">
-                <template #table-columns>
-                  <el-table-column label="公司名称" align="center" prop="acountsName"/>
-                  <el-table-column label="开户行" align="center" prop="bankName"/>
-                  <el-table-column label="开户名" align="center" prop="acountsName"/>
-                  <el-table-column label="账号" align="center" prop="bankNo"/>
-                </template>
-              </SearchOption>
-            </el-col>
-          </el-row>
-        </el-form-item>
-        <el-form-item label="对方账号" prop="targetBankNo">
-          <el-input v-model="form.targetBankNo" placeholder="请输入对方账号"/>
-        </el-form-item>
-        <el-form-item label="对方开户行" prop="targetBankName">
-          <el-input v-model="form.targetBankName" placeholder="请输入对方开户行"/>
-        </el-form-item>
-        <el-form-item label="我方支付账户" prop="selfAcountsName">
-          <el-row>
-            <el-col :span="10">
-              <el-input v-model="form.selfAcountsName" placeholder="请输入我方支付账户"/>
-            </el-col>
-            <el-col :span="3">
-              <SearchOption :get-data="listBankAccount" icon="el-icon-search" @commitBack="handleCommitBackSelf"
-                            :limit-info="{acountsType:'己方公司'}" query-label="户名查找" query-info="acountsName"
-                            :query-name="queryBank"
-                            @update:queryName="handleUpdateQueryName">
-                <template #table-columns>
-                  <el-table-column label="账户类型" align="center" prop="acountsType"/>
-                  <el-table-column label="开户行" align="center" prop="bankName"/>
-                  <el-table-column label="开户名" align="center" prop="acountsName"/>
-                  <el-table-column label="账号" align="center" prop="bankNo"/>
-                </template>
-              </SearchOption>
-            </el-col>
-          </el-row>
-        </el-form-item>
-        <el-form-item label="我方账号" prop="selfBankNo">
-          <el-input v-model="form.selfBankNo" placeholder="请输入我方账号"/>
-        </el-form-item>
-        <el-form-item label="我方开户行" prop="selfBankName">
-          <el-input v-model="form.selfBankName" placeholder="请输入我方开户行"/>
-        </el-form-item>
-        <!--        时间选择-->
-        <el-form-item label="支付期货保证金时间" prop="futuresDate">
-          <!--          <el-input v-model="form.futuresDate" placeholder="请输入支付期货保证金时间"/>-->
-          <el-date-picker
-            v-model="form.futuresDate"
-            type="date"
-            placeholder="请选择支付期货保证金时间"
-            value-format="yyyy-MM-dd">
-          </el-date-picker>
-        </el-form-item>
-        <el-form-item label="事由" prop="reason">
-          <el-input v-model="form.reason" placeholder="请输入事由"/>
-        </el-form-item>
-        <el-form-item label="备注" prop="comments">
-          <el-input v-model="form.comments" placeholder="请输入备注"/>
-        </el-form-item>
+    <el-dialog title="新增资金借出信息" :visible.sync="open" width="50%" append-to-body>
+      <el-form ref="form" :model="form" :rules="rules" label-width="140px">
+        <el-row>
+          <el-col :span="12">
+            <!--        <el-form-item label="借出款编号" prop="futuresNO">-->
+            <!--          <el-input v-model="form.futuresNO" placeholder="请输入借出款编号"/>-->
+            <!--        </el-form-item>-->
+            <el-form-item label="期货保证金公司" prop="futuresMarginCompany">
+              <el-input v-model="form.futuresMarginCompany" placeholder="请输入期货保证金公司"/>
+            </el-form-item>
+            <el-form-item label="对象" prop="target">
+              <el-input v-model="form.target" placeholder="请输入对象(员工姓名、公司名称)"/>
+            </el-form-item>
+            <el-form-item label="对象类型" prop="targetType">
+              <!--          <el-input v-model="form.target" placeholder="请输入对象(员工姓名、公司名称)"/>-->
+              <!--          下拉框 员工 客户 供应商 其他-->
+              <el-select v-model="form.targetType" placeholder="请选择对象类型">
+                <el-option
+                  v-for="dict in dict.type.order_target_type"
+                  :key="dict.value"
+                  :label="dict.label"
+                  :value="dict.value"
+                ></el-option>
+              </el-select>
+            </el-form-item>
+            <el-form-item label="保证金金额" prop="moneyAmount">
+              <el-input v-model="form.moneyAmount" placeholder="请输入保证金金额"/>
+            </el-form-item>
+            <el-form-item label="对方账户" prop="targetAcountsName">
+              <el-row>
+                <el-col :span="10">
+                  <el-input v-model="form.targetAcountsName" placeholder="请输入对方账户"/>
+                </el-col>
+                <el-col :span="3">
+                  <SearchOption :get-data="listBankAccount" icon="el-icon-search" @commitBack="handleCommitBack"
+                                :limit-info="{}" query-label="户名查找" query-info="acountsName" :query-name="queryBank"
+                                @update:queryName="handleUpdateQueryName">
+                    <template #table-columns>
+                      <el-table-column label="公司名称" align="center" prop="acountsName"/>
+                      <el-table-column label="开户行" align="center" prop="bankName"/>
+                      <el-table-column label="开户名" align="center" prop="acountsName"/>
+                      <el-table-column label="账号" align="center" prop="bankNo"/>
+                    </template>
+                  </SearchOption>
+                </el-col>
+              </el-row>
+            </el-form-item>
+            <el-form-item label="对方账号" prop="targetBankNo">
+              <el-input v-model="form.targetBankNo" placeholder="请输入对方账号"/>
+            </el-form-item>
+            <el-form-item label="对方开户行" prop="targetBankName">
+              <el-input v-model="form.targetBankName" placeholder="请输入对方开户行"/>
+            </el-form-item>
+          </el-col>
+          <el-col :span="12">
+            <el-form-item label="我方支付账户" prop="selfAcountsName">
+              <el-row>
+                <el-col :span="10">
+                  <el-input v-model="form.selfAcountsName" placeholder="请输入我方支付账户"/>
+                </el-col>
+                <el-col :span="3">
+                  <SearchOption :get-data="listBankAccount" icon="el-icon-search" @commitBack="handleCommitBackSelf"
+                                :limit-info="{acountsType:'己方公司'}" query-label="户名查找" query-info="acountsName"
+                                :query-name="queryBank"
+                                @update:queryName="handleUpdateQueryName">
+                    <template #table-columns>
+                      <el-table-column label="账户类型" align="center" prop="acountsType"/>
+                      <el-table-column label="开户行" align="center" prop="bankName"/>
+                      <el-table-column label="开户名" align="center" prop="acountsName"/>
+                      <el-table-column label="账号" align="center" prop="bankNo"/>
+                    </template>
+                  </SearchOption>
+                </el-col>
+              </el-row>
+            </el-form-item>
+            <el-form-item label="我方账号" prop="selfBankNo">
+              <el-input v-model="form.selfBankNo" placeholder="请输入我方账号"/>
+            </el-form-item>
+            <el-form-item label="我方开户行" prop="selfBankName">
+              <el-input v-model="form.selfBankName" placeholder="请输入我方开户行"/>
+            </el-form-item>
+            <!--        时间选择-->
+            <el-form-item label="支付期货保证金时间" prop="futuresDate">
+              <!--          <el-input v-model="form.futuresDate" placeholder="请输入支付期货保证金时间"/>-->
+              <el-date-picker
+                v-model="form.futuresDate"
+                type="date"
+                placeholder="请选择支付期货保证金时间"
+                value-format="yyyy-MM-dd">
+              </el-date-picker>
+            </el-form-item>
+            <el-form-item label="事由" prop="reason">
+              <el-input v-model="form.reason" placeholder="请输入事由"/>
+            </el-form-item>
+            <el-form-item label="备注" prop="comments">
+              <el-input v-model="form.comments" placeholder="请输入备注"/>
+            </el-form-item>
+          </el-col>
+        </el-row>
+
       </el-form>
       <div slot="footer" class="dialog-footer">
         <el-button type="primary" @click="submitForm">确 定</el-button>
@@ -327,9 +334,9 @@
 
     <!--    付款申请-->
     <el-dialog
-      title="提示"
+      title="付款申请"
       :visible.sync="applyDialogVisible"
-      width="65%">
+      width="45%">
       <ApplyPayment :table-name="TableName.LEND_MONEY" :t-i-d="tid" :need-money="needMoney"
                     :need-info="{}"
                     @changeOpen="applyDialogVisible = false"/>
@@ -399,7 +406,50 @@ export default {
       // 表单参数
       form: {},
       // 表单校验
-      rules: {},
+      rules: {
+        // 添加校验
+        futuresNO: [
+          {required: true, message: "期货编号不能为空", trigger: "blur"}],
+
+        futuresMarginCompany: [
+          {required: true, message: "期货保证金公司不能为空", trigger: "blur"}],
+
+        targetType: [
+          {required: true, message: "对象类型不能为空", trigger: "blur"}],
+
+        target: [
+          {required: true, message: "对象不能为空", trigger: "blur"}],
+
+        moneyAmount: [
+          {required: true, message: "保证金金额不能为空", trigger: "blur"}],
+
+        targetAcountsName: [
+          {required: true, message: "对方账户不能为空", trigger: "blur"}],
+
+        targetBankNo: [
+          {required: true, message: "对方银行账号不能为空", trigger: "blur"}],
+
+        targetBankName: [
+          {required: true, message: "对方银行不能为空", trigger: "blur"}],
+
+        selfAcountsName: [
+          {required: true, message: "我方账户不能为空", trigger: "blur"}],
+
+        selfBankNo: [
+          {required: true, message: "我方银行账号不能为空", trigger: "blur"}],
+
+        selfBankName: [
+          {
+            required: true, message: "我方银行不能为空", trigger: "blur"
+          }],
+
+        futuresDate: [
+          {required: true, message: "支付期货保证金日期不能为空", trigger: "blur"}
+        ],
+        reason: [
+          {required: true, message: "请输入是由!", trigger: "blur"}
+        ]
+      },
       columns: [
         {key: 0, label: `借出款编号`, visible: true},
         {key: 1, label: `期货保证金公司`, visible: true},

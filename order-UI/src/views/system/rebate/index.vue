@@ -119,111 +119,116 @@
     />
 
     <!-- 添加或修改返利回扣对话框 -->
-    <el-dialog :title="title" :visible.sync="open" width="500px" append-to-body>
-      <el-form ref="form" :model="form" :rules="rules" label-width="80px">
+    <el-dialog :title="title" :visible.sync="open" width="50%" append-to-body>
+      <el-form ref="form" :model="form" :rules="rules" label-width="120px">
         <!--        多选 且树表 展示多个订单 每个订单里面有多个订单详情-->
-        <el-form-item label="订单编号" prop="ordersNo">
-          <el-input v-model="form.ordersNo" placeholder="请输入订单编号"/>
-          <el-button @click="orderDialogVisible = true">
-            {{ form.ordersNo === null ? '选择订单编号' : '已选择:' + form.ordersNo }}
-          </el-button>
-        </el-form-item>
-        <el-form-item label="日期" prop="rebateDate">
-          <el-date-picker
-            v-model="form.rebateDate"
-            type="date"
-            placeholder="日期"
-            value-format="yyyy-MM-dd">
-          </el-date-picker>
-        </el-form-item>
-        <el-form-item label="类型" prop="rebateType">
-          <el-select v-model="form.rebateType" placeholder="请选择">
-            <el-option
-              v-for="item in rebateTypes"
-              :key="item.value"
-              :label="item.label"
-              :value="item.value">
-            </el-option>
-          </el-select>
-        </el-form-item>
-        <el-form-item label="金额" prop="rebate">
-          <el-input v-model="form.rebate" placeholder="请输入金额"/>
-        </el-form-item>
-        <el-form-item label="收款户名" prop="inAcountsName">
-          <el-row>
-            <el-col :span="20">
-              <el-input v-model="form.inAcountsName" placeholder="请输入收款户名"/>
-            </el-col>
-            <el-col :span="4">
-              <SearchOption :limit-info="{}" :get-data="listBankAccount" @commitBack="handleCommitBackBankAcount"
-                            @update:queryName="handleUpdateQueryBankAcount" :query-name="queryBankAcount"
-                            query-label="户名查找" query-info="acountsName">
-                <template #table-columns>
-                  <el-table-column label="账户类型" align="center" prop="acountsType"/>
-                  <el-table-column label="开户名称(户名)" align="center" prop="acountsName"/>
-                  <el-table-column label="账号(银行账号)" align="center" prop="bankNo"/>
-                  <el-table-column label="开户行" align="center" prop="bankName"/>
-                  <el-table-column label="公司名称" align="center" prop="companyName"/>
-                </template>
-              </SearchOption>
-            </el-col>
-          </el-row>
-        </el-form-item>
-        <el-form-item label="收款账号" prop="inBankNo">
-          <el-input v-model="form.inBankNo" placeholder="请输入收款账号"/>
-        </el-form-item>
-        <!--        供应商直接选择 不要自己填-->
-        <el-form-item label="请选择供应商" prop="supplier">
-          <el-row>
-            <el-col :span="20">
-              <el-input disabled v-model="form.supplier" placeholder="请选择供应商"/>
-            </el-col>
-            <el-col :span="4">
-              <SearchOption :limit-info="{companyType:'供应商'}" :get-data="listCompany"
-                            @commitBack="handleCommitBackCompanyGive" @update:queryName="handleQueryCompanyGive"
-                            :query-name="queryCompanyGive" query-info="companyName" query-label="供应商查找">
-                <template #table-columns>
-                  <el-table-column label="供应商" align="center" prop="companyName"/>
-                  <el-table-column label="地址" align="center" prop="address"/>
-                </template>
-              </SearchOption>
-            </el-col>
-          </el-row>
-        </el-form-item>
-        <!--        <el-form-item label="供应商ID" prop="supplierID">-->
-        <!--          <el-input v-model="form.supplierID" placeholder="请输入供应商ID"/>-->
-        <!--        </el-form-item>-->
-        <el-form-item label="付款户名" prop="outAcountsName">
-          <el-row>
-            <el-col :span="20">
-              <el-input v-model="form.outAcountsName" placeholder="请输入付款户名"/>
-            </el-col>
-            <el-col :span="4">
-              <SearchOption :limit-info="{acountsType:'己方公司'}" :get-data="listBankAccount"
-                            @commitBack="handleCommitBackBankAcountSelf"
-                            @update:queryName="handleUpdateQueryBankAcountSelf"
-                            :query-name="bankAcountSelf"
-                            query-label="户名查找" query-info="acountsName">
-                <template #table-columns>
-                  <el-table-column label="账户类型" align="center" prop="acountsType"/>
-                  <el-table-column label="开户名称(户名)" align="center" prop="acountsName"/>
-                  <el-table-column label="账号(银行账号)" align="center" prop="bankNo"/>
-                  <el-table-column label="开户行" align="center" prop="bankName"/>
-                  <el-table-column label="公司名称" align="center" prop="companyName"/>
-                </template>
-              </SearchOption>
-            </el-col>
-          </el-row>
-        </el-form-item>
-        <el-form-item label="付款款账号" prop="outBankNo">
-          <el-input v-model="form.outBankNo" placeholder="请输入付款款账号"/>
-        </el-form-item>
-        <el-form-item label="返利原因" prop="rebateReason">
-          <el-input v-model="form.rebateReason" placeholder="请输入返利原因"/>
-        </el-form-item>
-        <el-form-item label="备注" prop="comments">
-          <el-input v-model="form.comments" placeholder="请输入备注"/>
-        </el-form-item>
+        <el-row>
+          <el-col :span="12">
+            <el-form-item label="订单编号" prop="ordersNo">
+              <el-button @click="orderDialogVisible = true">
+                {{ form.ordersNo === null || form.ordersNo === '' ? '选择订单编号' : '已选择:' + form.ordersNo }}
+              </el-button>
+            </el-form-item>
+            <el-form-item label="日期" prop="rebateDate">
+              <el-date-picker
+                v-model="form.rebateDate"
+                type="date"
+                placeholder="日期"
+                value-format="yyyy-MM-dd">
+              </el-date-picker>
+            </el-form-item>
+            <el-form-item label="类型" prop="rebateType">
+              <el-select v-model="form.rebateType" placeholder="请选择">
+                <el-option
+                  v-for="item in rebateTypes"
+                  :key="item.value"
+                  :label="item.label"
+                  :value="item.value">
+                </el-option>
+              </el-select>
+            </el-form-item>
+            <el-form-item label="金额" prop="rebate">
+              <el-input v-model="form.rebate" placeholder="请输入金额"/>
+            </el-form-item>
+            <el-form-item label="收款户名" prop="inAcountsName">
+              <el-row>
+                <el-col :span="20">
+                  <el-input v-model="form.inAcountsName" placeholder="请输入收款户名"/>
+                </el-col>
+                <el-col :span="4">
+                  <SearchOption :limit-info="{}" :get-data="listBankAccount" @commitBack="handleCommitBackBankAcount"
+                                @update:queryName="handleUpdateQueryBankAcount" :query-name="queryBankAcount"
+                                query-label="户名查找" query-info="acountsName">
+                    <template #table-columns>
+                      <el-table-column label="账户类型" align="center" prop="acountsType"/>
+                      <el-table-column label="开户名称(户名)" align="center" prop="acountsName"/>
+                      <el-table-column label="账号(银行账号)" align="center" prop="bankNo"/>
+                      <el-table-column label="开户行" align="center" prop="bankName"/>
+                      <el-table-column label="公司名称" align="center" prop="companyName"/>
+                    </template>
+                  </SearchOption>
+                </el-col>
+              </el-row>
+            </el-form-item>
+            <el-form-item label="收款账号" prop="inBankNo">
+              <el-input v-model="form.inBankNo" placeholder="请输入收款账号"/>
+            </el-form-item>
+          </el-col>
+          <el-col :span="12">
+            <!--        供应商直接选择 不要自己填-->
+            <el-form-item label="请选择供应商" prop="supplier">
+              <el-row>
+                <el-col :span="20">
+                  <el-input disabled v-model="form.supplier" placeholder="请选择供应商"/>
+                </el-col>
+                <el-col :span="4">
+                  <SearchOption :limit-info="{companyType:'供应商'}" :get-data="listCompany"
+                                @commitBack="handleCommitBackCompanyGive" @update:queryName="handleQueryCompanyGive"
+                                :query-name="queryCompanyGive" query-info="companyName" query-label="供应商查找">
+                    <template #table-columns>
+                      <el-table-column label="供应商" align="center" prop="companyName"/>
+                      <el-table-column label="地址" align="center" prop="address"/>
+                    </template>
+                  </SearchOption>
+                </el-col>
+              </el-row>
+            </el-form-item>
+            <!--        <el-form-item label="供应商ID" prop="supplierID">-->
+            <!--          <el-input v-model="form.supplierID" placeholder="请输入供应商ID"/>-->
+            <!--        </el-form-item>-->
+            <el-form-item label="付款户名" prop="outAcountsName">
+              <el-row>
+                <el-col :span="20">
+                  <el-input v-model="form.outAcountsName" placeholder="请输入付款户名"/>
+                </el-col>
+                <el-col :span="4">
+                  <SearchOption :limit-info="{acountsType:'己方公司'}" :get-data="listBankAccount"
+                                @commitBack="handleCommitBackBankAcountSelf"
+                                @update:queryName="handleUpdateQueryBankAcountSelf"
+                                :query-name="bankAcountSelf"
+                                query-label="户名查找" query-info="acountsName">
+                    <template #table-columns>
+                      <el-table-column label="账户类型" align="center" prop="acountsType"/>
+                      <el-table-column label="开户名称(户名)" align="center" prop="acountsName"/>
+                      <el-table-column label="账号(银行账号)" align="center" prop="bankNo"/>
+                      <el-table-column label="开户行" align="center" prop="bankName"/>
+                      <el-table-column label="公司名称" align="center" prop="companyName"/>
+                    </template>
+                  </SearchOption>
+                </el-col>
+              </el-row>
+            </el-form-item>
+            <el-form-item label="付款款账号" prop="outBankNo">
+              <el-input v-model="form.outBankNo" placeholder="请输入付款款账号"/>
+            </el-form-item>
+            <el-form-item label="返利原因" prop="rebateReason">
+              <el-input v-model="form.rebateReason" placeholder="请输入返利原因"/>
+            </el-form-item>
+            <el-form-item label="备注" prop="comments">
+              <el-input v-model="form.comments" placeholder="请输入备注"/>
+            </el-form-item>
+          </el-col>
+        </el-row>
       </el-form>
       <div slot="footer" class="dialog-footer">
         <el-button type="primary" @click="submitForm">确 定</el-button>
@@ -276,7 +281,7 @@
                   v-for="item in orderDetailList"
                   :key="item.ordersNo"
                   :label="item.ordersNo"
-                  :value="item.id">
+                  :value="item.ordersNo">
                 </el-option>
               </el-select>
             </el-col>
@@ -426,7 +431,29 @@ export default {
         label: '售后质量赔偿'
       }],
       // 表单校验
-      rules: {},
+      rules: {
+        ordersNo: [
+          {required: true, message: "订单号不能为空", trigger: "blur"}],
+        rebateDate: [
+          {required: true, message: "返利日期不能为空", trigger: "blur"}],
+        rebate: [
+          {required: true, message: "返利金额不能为空", trigger: "blur"}],
+        rebateType: [
+          {required: true, message: "返利类型不能为空", trigger: "change"}],
+        inAcountsName: [
+          {required: true, message: "收款户名不能为空", trigger: "blur"}],
+        inBankNo: [
+          {required: true, message: "收款账号不能为空", trigger: "blur"}],
+        supplier: [
+          {required: true, message: "供应商不能为空", trigger: "blur"}],
+        outAcountsName: [
+          {required: true, message: "付款户名不能为空", trigger: "blur"}],
+        outBankNo: [
+          {required: true, message: "付款账号不能为空", trigger: "blur"}],
+        rebateReason: [
+          {required: true, message: "请输入返利原因!", trigger: "blur"}
+        ]
+      },
       columns: [
         {key: 0, label: `日期`, visible: true},
         {key: 1, label: `金额`, visible: true},

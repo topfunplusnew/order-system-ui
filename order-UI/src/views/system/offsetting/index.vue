@@ -1,30 +1,33 @@
 <template>
   <div class="app-container">
     <el-form :model="queryParams" ref="queryForm" size="mini" :inline="true" v-show="showSearch" label-width="68px">
-      <el-form-item label="冲抵编号" prop="OffsetNO">
-        <el-input
-          v-model="queryParams.OffsetNO"
-          placeholder="请输入冲抵编号"
-          clearable
-          @keyup.enter.native="handleQuery"
-        />
-      </el-form-item>
+      <!--      <el-form-item label="冲抵编号" prop="OffsetNO">-->
+      <!--        <el-input-->
+      <!--          v-model="queryParams.OffsetNO"-->
+      <!--          placeholder="请输入冲抵编号"-->
+      <!--          clearable-->
+      <!--          @keyup.enter.native="handleQuery"-->
+      <!--        />-->
+      <!--      </el-form-item>-->
       <el-form-item label="操作时间" prop="operateDate">
-        <el-input
-          v-model="queryParams.operateDate"
-          placeholder="请输入操作时间"
-          clearable
-          @keyup.enter.native="handleQuery"
-        />
+        <el-date-picker
+          v-model="dateRange"
+          style="width: 240px"
+          value-format="yyyy-MM-dd"
+          type="daterange"
+          range-separator="-"
+          start-placeholder="开始日期"
+          end-placeholder="结束日期"
+        ></el-date-picker>
       </el-form-item>
-      <el-form-item label="金额" prop="moneyAmount">
-        <el-input
-          v-model="queryParams.moneyAmount"
-          placeholder="请输入金额"
-          clearable
-          @keyup.enter.native="handleQuery"
-        />
-      </el-form-item>
+      <!--      <el-form-item label="金额" prop="moneyAmount">-->
+      <!--        <el-input-->
+      <!--          v-model="queryParams.moneyAmount"-->
+      <!--          placeholder="请输入金额"-->
+      <!--          clearable-->
+      <!--          @keyup.enter.native="handleQuery"-->
+      <!--        />-->
+      <!--      </el-form-item>-->
       <el-form-item label="公司" prop="companyName">
         <el-input
           v-model="queryParams.companyName"
@@ -33,50 +36,18 @@
           @keyup.enter.native="handleQuery"
         />
       </el-form-item>
-      <el-form-item label="公司ID" prop="companyId">
-        <el-input
-          v-model="queryParams.companyId"
-          placeholder="请输入公司ID"
-          clearable
-          @keyup.enter.native="handleQuery"
-        />
-      </el-form-item>
+      <!--      <el-form-item label="公司ID" prop="companyId">-->
+      <!--        <el-input-->
+      <!--          v-model="queryParams.companyId"-->
+      <!--          placeholder="请输入公司ID"-->
+      <!--          clearable-->
+      <!--          @keyup.enter.native="handleQuery"-->
+      <!--        />-->
+      <!--      </el-form-item>-->
       <el-form-item label="备注" prop="comments">
         <el-input
           v-model="queryParams.comments"
           placeholder="请输入备注"
-          clearable
-          @keyup.enter.native="handleQuery"
-        />
-      </el-form-item>
-      <el-form-item label="添加时间" prop="addtime">
-        <el-input
-          v-model="queryParams.addtime"
-          placeholder="请输入添加时间"
-          clearable
-          @keyup.enter.native="handleQuery"
-        />
-      </el-form-item>
-      <el-form-item label="操作人员ID" prop="userId">
-        <el-input
-          v-model="queryParams.userId"
-          placeholder="请输入操作人员ID"
-          clearable
-          @keyup.enter.native="handleQuery"
-        />
-      </el-form-item>
-      <el-form-item label="操作人员姓名" prop="UserName">
-        <el-input
-          v-model="queryParams.UserName"
-          placeholder="请输入操作人员姓名"
-          clearable
-          @keyup.enter.native="handleQuery"
-        />
-      </el-form-item>
-      <el-form-item label="删除标记" prop="delFlag">
-        <el-input
-          v-model="queryParams.delFlag"
-          placeholder="请输入删除标记"
           clearable
           @keyup.enter.native="handleQuery"
         />
@@ -90,80 +61,82 @@
     <el-row :gutter="10" class="mb8">
       <el-col :span="1.5">
         <el-button
-          type="primary"
+          type="danger"
           plain
-          icon="el-icon-plus"
           size="mini"
           @click="handleAdd"
           v-hasPermi="['system:offsetting:add']"
-        >新增</el-button>
+        >新增
+        </el-button>
       </el-col>
-      <el-col :span="1.5">
-        <el-button
-          type="success"
-          plain
-          icon="el-icon-edit"
-          size="mini"
-          :disabled="single"
-          @click="handleUpdate"
-          v-hasPermi="['system:offsetting:edit']"
-        >修改</el-button>
-      </el-col>
-      <el-col :span="1.5">
-        <el-button
-          type="danger"
-          plain
-          icon="el-icon-delete"
-          size="mini"
-          :disabled="multiple"
-          @click="handleDelete"
-          v-hasPermi="['system:offsetting:remove']"
-        >删除</el-button>
-      </el-col>
-      <el-col :span="1.5">
-        <el-button
-          type="warning"
-          plain
-          icon="el-icon-download"
-          size="mini"
-          @click="handleExport"
-          v-hasPermi="['system:offsetting:export']"
-        >导出</el-button>
-      </el-col>
-      <right-toolbar :showSearch.sync="showSearch" @queryTable="getList"></right-toolbar>
+      <!--      <el-col :span="1.5">-->
+      <!--        <el-button-->
+      <!--          type="danger"-->
+      <!--          plain-->
+      <!--          icon="el-icon-delete"-->
+      <!--          size="mini"-->
+      <!--          :disabled="multiple"-->
+      <!--          @click="handleDelete"-->
+      <!--          v-hasPermi="['system:offsetting:remove']"-->
+      <!--        >删除-->
+      <!--        </el-button>-->
+      <!--      </el-col>-->
+      <right-toolbar :showSearch.sync="showSearch" @queryTable="getList" :columns="columns">
+        <template v-slot:print>
+          <el-col :span="1.5">
+            <el-button
+              plain
+              icon="el-icon-printer"
+              size="mini"
+              @click="printJSON"
+            >
+            </el-button>
+          </el-col>
+        </template>
+        <!--        导出-->
+        <template v-slot:export>
+          <el-col :span="1.5">
+            <el-button
+              plain
+              icon="el-icon-folder-opened"
+              size="mini"
+              @click="handleExport"
+              v-hasPermi="['system:socialinsurance:export']"
+            >
+            </el-button>
+          </el-col>
+        </template>
+      </right-toolbar>
     </el-row>
 
-    <el-table v-loading="loading" :data="OffsettingList" @selection-change="handleSelectionChange">
-      <el-table-column type="selection" width="55" align="center" />
-      <el-table-column label="id" align="center" prop="id" />
-      <el-table-column label="冲抵编号" align="center" prop="OffsetNO" />
-      <el-table-column label="操作时间" align="center" prop="operateDate" />
-      <el-table-column label="冲抵类型" align="center" prop="operateType" />
-      <el-table-column label="金额" align="center" prop="moneyAmount" />
-      <el-table-column label="公司" align="center" prop="companyName" />
-      <el-table-column label="公司ID" align="center" prop="companyId" />
-      <el-table-column label="公司类型" align="center" prop="companyType" />
-      <el-table-column label="备注" align="center" prop="comments" />
-      <el-table-column label="添加时间" align="center" prop="addtime" />
-      <el-table-column label="操作人员ID" align="center" prop="userId" />
-      <el-table-column label="操作人员姓名" align="center" prop="UserName" />
-      <el-table-column label="删除标记" align="center" prop="delFlag" />
+    <el-table v-loading="loading" :data="OffsettingList" @selection-change="handleSelectionChange" size="mini"
+              v-horizontal-scroll="'always'" :cell-style="()=>{return {padding:'.5px'}}" border>
+      <!--      <el-table-column type="selection" width="55" align="center"/>-->
+      <el-table-column label="id" align="center" prop="id"/>
+      <el-table-column label="冲抵编号" align="center" prop="pffsetNO" v-if="columns[0].visible"/>
+      <el-table-column label="操作时间" align="center" prop="operateDate" v-if="columns[1].visible"/>
+      <el-table-column label="冲抵类型" align="center" prop="operateType" v-if="columns[2].visible"/>
+      <el-table-column label="金额" align="center" prop="moneyAmount" v-if="columns[3].visible"/>
+      <el-table-column label="公司" align="center" prop="companyName" v-if="columns[4].visible"/>
+      <!--      <el-table-column label="公司ID" align="center" prop="companyId"/>-->
+      <el-table-column label="公司类型" align="center" prop="companyType" v-if="columns[5].visible"/>
+      <el-table-column label="备注" align="center" prop="comments" v-if="columns[6].visible"/>
       <el-table-column label="操作" align="center" class-name="small-padding fixed-width">
         <template slot-scope="scope">
           <el-button
             size="mini"
-            type="text"
-            icon="el-icon-edit"
+            type="primary"
             @click="handleUpdate(scope.row)"
             v-hasPermi="['system:offsetting:edit']"
-          >修改</el-button>
+          >修改
+          </el-button>
           <el-button
             size="mini"
-            type="text"
-            icon="el-icon-delete"
+            type="danger"
             @click="handleDelete(scope.row)"
             v-hasPermi="['system:offsetting:remove']"
-          >删除</el-button>
+          >删除
+          </el-button>
         </template>
       </el-table-column>
     </el-table>
@@ -179,35 +152,59 @@
     <!-- 添加或修改对冲账信息对话框 -->
     <el-dialog :title="title" :visible.sync="open" width="500px" append-to-body>
       <el-form ref="form" :model="form" :rules="rules" label-width="80px">
-        <el-form-item label="冲抵编号" prop="OffsetNO">
-          <el-input v-model="form.OffsetNO" placeholder="请输入冲抵编号" />
-        </el-form-item>
+        <!--        todo 暂时传递一个随机的uuid -->
+        <!--        <el-form-item label="冲抵编号" prop="OffsetNO">-->
+        <!--          <el-input v-model="form.OffsetNO" placeholder="请输入冲抵编号"/>-->
+        <!--        </el-form-item>-->
         <el-form-item label="操作时间" prop="operateDate">
-          <el-input v-model="form.operateDate" placeholder="请输入操作时间" />
+          <el-date-picker
+            v-model="form.operateDate"
+            type="date"
+            placeholder="选择日期"
+            value-format="yyyy-MM-dd"
+            style="width: 70%">
+          </el-date-picker>
+        </el-form-item>
+        <el-form-item label="冲抵类型" prop="operateType">
+          <el-radio v-model="form.operateType" label="收入">收入</el-radio>
+          <el-radio v-model="form.operateType" label="支出">支出</el-radio>
         </el-form-item>
         <el-form-item label="金额" prop="moneyAmount">
-          <el-input v-model="form.moneyAmount" placeholder="请输入金额" />
+          <el-input v-model="form.moneyAmount" placeholder="请输入金额"/>
+        </el-form-item>
+        <el-form-item label="公司类型" prop="companyType">
+          <el-radio v-model="form.companyType" label="1">客户</el-radio>
+          <el-radio v-model="form.companyType" label="2">供应商</el-radio>
         </el-form-item>
         <el-form-item label="公司" prop="companyName">
-          <el-input v-model="form.companyName" placeholder="请输入公司" />
+          <el-row>
+            <el-col :span="20">
+              <el-input v-model="form.companyName" placeholder="请输入公司"/>
+            </el-col>
+            <el-col :span="4">
+              <SearchOption :limit-info="form.companyType === '1'?{companyType:'客户'}:{companyType:'供应商'}"
+                            :get-data="listCompany"
+                            query-info="companyName"
+                            query-label="公司名称" :query-name="companyName"
+                            @update:queryName="handleUpdateCompanyName" @commitBack="handleCommitBackCompany">
+                <template #table-columns>
+                  <el-table-column :label="form.companyType === '1'?'客户':'供应商'" align="center"
+                                   prop="relationName"/>
+                  <el-table-column label="老板姓名" align="center" prop="leader"/>
+                  <el-table-column label="老板电话" align="center" prop="leaderTel"/>
+                  <el-table-column label="区域" align="center" prop="region"/>
+                  <el-table-column label="公司名称" align="center" prop="companyName"/>
+                  <el-table-column label="销售经理" align="center" prop="salesManager"/>
+                </template>
+              </SearchOption>
+            </el-col>
+          </el-row>
         </el-form-item>
-        <el-form-item label="公司ID" prop="companyId">
-          <el-input v-model="form.companyId" placeholder="请输入公司ID" />
-        </el-form-item>
+        <!--        <el-form-item label="公司ID" prop="companyId">-->
+        <!--          <el-input v-model="form.companyId" placeholder="请输入公司ID"/>-->
+        <!--        </el-form-item>-->
         <el-form-item label="备注" prop="comments">
-          <el-input v-model="form.comments" placeholder="请输入备注" />
-        </el-form-item>
-        <el-form-item label="添加时间" prop="addtime">
-          <el-input v-model="form.addtime" placeholder="请输入添加时间" />
-        </el-form-item>
-        <el-form-item label="操作人员ID" prop="userId">
-          <el-input v-model="form.userId" placeholder="请输入操作人员ID" />
-        </el-form-item>
-        <el-form-item label="操作人员姓名" prop="UserName">
-          <el-input v-model="form.UserName" placeholder="请输入操作人员姓名" />
-        </el-form-item>
-        <el-form-item label="删除标记" prop="delFlag">
-          <el-input v-model="form.delFlag" placeholder="请输入删除标记" />
+          <el-input v-model="form.comments" placeholder="请输入备注"/>
         </el-form-item>
       </el-form>
       <div slot="footer" class="dialog-footer">
@@ -219,10 +216,16 @@
 </template>
 
 <script>
-import { listOffsetting, getOffsetting, delOffsetting, addOffsetting, updateOffsetting } from "@/api/system/Offsetting";
+import {listOffsetting, getOffsetting, delOffsetting, addOffsetting, updateOffsetting} from "@/api/system/Offsetting";
+import SearchOption from "@/components/SearchOption.vue";
+import {listCompany} from "@/api/system/company";
+import {excludeParams} from "@/api/tool/exclude";
+import {getUuid} from "@/utils/trash/utils";
+import {addDateRange} from "@/utils/ruoyi";
 
 export default {
   name: "Offsetting",
+  components: {SearchOption},
   data() {
     return {
       // 遮罩层
@@ -243,6 +246,7 @@ export default {
       title: "",
       // 是否显示弹出层
       open: false,
+      dateRange: [],
       // 查询参数
       queryParams: {
         pageNum: 1,
@@ -264,17 +268,62 @@ export default {
       form: {},
       // 表单校验
       rules: {
-      }
+        OffsetNO: [
+          {required: true, message: "对冲账编号不能为空", trigger: "blur"}],
+        operateDate: [
+          {required: true, message: "对冲账日期不能为空", trigger: "blur"}],
+        operateType: [
+          {required: true, message: "对冲账类型不能为空", trigger: "blur"}],
+        moneyAmount: [
+          {required: true, message: "对冲账金额不能为空", trigger: "blur"}],
+        companyName: [
+          {required: true, message: "公司名称不能为空", trigger: "blur"}],
+        companyType: [
+          {required: true, message: "公司类型不能为空", trigger: "change"}],
+      },
+      columns: [
+        {key: 0, label: `对冲账编号`, visible: true},
+        {key: 1, label: `对冲账日期`, visible: true},
+        {key: 2, label: `对冲账类型`, visible: true},
+        {key: 3, label: `对冲账金额`, visible: true},
+        {key: 4, label: `公司名称`, visible: true},
+        {key: 5, label: `公司类型`, visible: true},
+        {key: 6, label: `备注`, visible: true}
+      ],
+      companyName: ''
     };
   },
   created() {
     this.getList();
+    if (localStorage.getItem('offseting-columns') === 'null'
+      || !localStorage.getItem('offseting-columns')) {
+      localStorage.setItem("offseting-columns", JSON.stringify(this.columns))
+    } else {
+      this.columns = JSON.parse(localStorage.getItem('offseting-columns'));
+    }
   },
   methods: {
+    listCompany,
+    handleCommitBackCompany(val) {
+      this.form.companyName = val.companyName;
+      this.form.companyId = val.id;
+    },
+    handleUpdateCompanyName(val) {
+      this.companyName = val;
+    },
+    printJSON() {
+      const exclude = ['userId', 'createBy', 'createTime', 'updateBy', 'updateTime', 'addtime', 'delFlag', 'userName', 'remark',]
+      this.$print({
+        maxWidth: 3000,
+        printable: this.OffsettingList,
+        properties: Object.keys(this.OffsettingList[0]).filter(item => !exclude.includes(item)),
+        type: 'json'
+      })
+    },
     /** 查询对冲账信息列表 */
     getList() {
       this.loading = true;
-      listOffsetting(this.queryParams).then(response => {
+      listOffsetting(addDateRange(this.queryParams, this.dateRange, 'operate')).then(response => {
         this.OffsettingList = response.rows;
         this.total = response.total;
         this.loading = false;
@@ -318,7 +367,7 @@ export default {
     // 多选框选中数据
     handleSelectionChange(selection) {
       this.ids = selection.map(item => item.id)
-      this.single = selection.length!==1
+      this.single = selection.length !== 1
       this.multiple = !selection.length
     },
     /** 新增按钮操作 */
@@ -342,12 +391,16 @@ export default {
       this.$refs["form"].validate(valid => {
         if (valid) {
           if (this.form.id != null) {
+            this.form = excludeParams(this.form, this.$exclude)
             updateOffsetting(this.form).then(response => {
               this.$modal.msgSuccess("修改成功");
               this.open = false;
               this.getList();
             });
           } else {
+            this.form = excludeParams(this.form, this.$exclude)
+            // todo 冲抵编号随机给
+            this.form.OffsetNO = getUuid()
             addOffsetting(this.form).then(response => {
               this.$modal.msgSuccess("新增成功");
               this.open = false;
@@ -360,12 +413,13 @@ export default {
     /** 删除按钮操作 */
     handleDelete(row) {
       const ids = row.id || this.ids;
-      this.$modal.confirm('是否确认删除对冲账信息编号为"' + ids + '"的数据项？').then(function() {
+      this.$modal.confirm('是否确认删除对冲账信息编号为"' + ids + '"的数据项？').then(function () {
         return delOffsetting(ids);
       }).then(() => {
         this.getList();
         this.$modal.msgSuccess("删除成功");
-      }).catch(() => {});
+      }).catch(() => {
+      });
     },
     /** 导出按钮操作 */
     handleExport() {

@@ -138,7 +138,7 @@
     </el-dialog>
 
 
-    <el-dialog title="付款申请" :visible.sync="PaymentApplyInfoVisible" width="500px" append-to-body>
+    <el-dialog title="付款申请" :visible.sync="PaymentApplyInfoVisible" width="45%" append-to-body>
       <ApplyPayment :table-name="TableName.REPAYMENT" @changeOpen="changePaymentApplyInfoVisible"
                     :t-i-d="tID" :need-money="needMoney" :need-info="{}"/>
     </el-dialog>

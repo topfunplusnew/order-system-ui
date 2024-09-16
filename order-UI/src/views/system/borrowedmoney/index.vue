@@ -309,6 +309,22 @@ export default {
         loanNO: [
           {validator: validateloanNO, trigger: 'blur'}
         ],
+        origin: [
+          {required: true, message: '贷款来源不能为空', trigger: 'blur'}],
+        moneyAmount: [
+          {required: true, message: '借入金额不能为空', trigger: 'blur'}],
+        ratio: [
+          {required: true, message: '贷款利率不能为空', trigger: 'blur'}],
+        loanDate: [
+          {required: true, message: '贷款发放日期不能为空', trigger: 'blur'}],
+        loanDuring: [
+          {required: true, message: '贷款期限不能为空', trigger: 'blur'}],
+        mortgageGuarantee: [
+          {required: true, message: '抵押担保不能为空', trigger: 'blur'}],
+        acountsName: [
+          {required: true, message: '打入账户不能为空', trigger: 'blur'}],
+        bankNo: [
+          {required: true, message: '打入账号不能为空', trigger: 'blur'}],
       },
       dateRange: [],
       //

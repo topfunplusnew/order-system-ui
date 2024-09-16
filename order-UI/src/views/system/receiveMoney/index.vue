@@ -131,7 +131,7 @@
 
     <!-- 添加或修改收款信息对话框 -->
     <el-dialog :title="title" :visible.sync="open" width="500px" append-to-body>
-      <el-form ref="form" :model="form" :rules="rules" label-width="80px">
+      <el-form ref="form" :model="form" :rules="rules" label-width="120px">
         <!--        <el-form-item label="收款编号" prop="receiveNO">-->
         <!--          <el-input v-model="form.receiveNO" placeholder="请输入收款编号"/>-->
         <!--        </el-form-item>-->
@@ -139,7 +139,8 @@
           <el-date-picker
             v-model="form.fundsDate"
             type="date"
-            value-format="yyyy-MM-dd">
+            value-format="yyyy-MM-dd"
+            placeholder="请选择日期">
           </el-date-picker>
         </el-form-item>
         <!--        <el-form-item label="对应的表名" prop="tableName">-->
@@ -321,7 +322,27 @@ export default {
       // 表单参数
       form: {},
       // 表单校验
-      rules: {},
+      rules: {
+        fundsDate: [
+          {required: true, message: "日期不能为空", trigger: "blur"}],
+        payType: [
+          {required: true, message: "支付类型不能为空", trigger: "blur"}
+        ],
+        moneyAmount:
+          [{required: true, message: "金额不能为空", trigger: "blur"}],
+        selfAcountsName: [
+          {required: true, message: "己方户名不能为空", trigger: "blur"}],
+        selfBankNo: [
+          {required: true, message: "己方账号不能为空", trigger: "blur"}],
+        selfBankName: [
+          {required: true, message: "己方开户行不能为空", trigger: "blur"}],
+        otherAcountsName: [
+          {required: true, message: "对方户名不能为空", trigger: "blur"}],
+        otherBankNo: [
+          {required: true, message: "对方账号不能为空", trigger: "blur"}],
+        otherBankName: [
+          {required: true, message: "对方开户行不能为空", trigger: "blur"}],
+      },
       columns: [
         {key: 0, label: `日期`, visible: true},
         {key: 1, label: `支付类型`, visible: true},
@@ -496,18 +517,18 @@ export default {
       this.title = "添加收款信息";
     },
     /** 修改按钮操作 */
-  /*  handleUpdate(row) {
-      this.reset();
-      const id = row.id || this.ids
-      getReceiveMoney(id).then(response => {
-        this.form = response.data;
-        //修改类型
-        this.currentSort.levelOne = this.form.receiveType.split('-')[0]
-        this.currentSort.levelTwo = this.form.receiveType.split('-')[1]
-        this.open = true;
-        this.title = "修改收款信息";
-      });
-    },*/
+    /*  handleUpdate(row) {
+        this.reset();
+        const id = row.id || this.ids
+        getReceiveMoney(id).then(response => {
+          this.form = response.data;
+          //修改类型
+          this.currentSort.levelOne = this.form.receiveType.split('-')[0]
+          this.currentSort.levelTwo = this.form.receiveType.split('-')[1]
+          this.open = true;
+          this.title = "修改收款信息";
+        });
+      },*/
     /** 修改按钮操作 */
     handleUpdate(row) {
       this.$prompt('请输入编辑原因', '提示', {
@@ -515,7 +536,7 @@ export default {
         cancelButtonText: '取消',
         type: 'warning'
       }).then(({value}) => {
-        addReason({reason: value, tableName: TableName. RECEIVE_MONEY, tid: row.id, modifyTime: this.modifyTime})
+        addReason({reason: value, tableName: TableName.RECEIVE_MONEY, tid: row.id, modifyTime: this.modifyTime})
           .then(res => {
             this.$message.success('提交成功')
             this.reset();

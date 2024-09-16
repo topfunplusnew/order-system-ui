@@ -96,58 +96,64 @@
     />
 
     <!-- 添加或修改固定资产对话框 -->
-    <el-dialog :title="title" :visible.sync="open" width="500px" append-to-body>
-      <el-form ref="form" :model="form" :rules="rules" label-width="80px">
-        <el-form-item label="购入日期" prop="buyDate">
-          <el-date-picker
-            v-model="form.buyDate"
-            type="date"
-            placeholder="购入日期"
-            value-format="yyyy-MM-dd">
-          </el-date-picker>
-        </el-form-item>
-        <el-form-item label="资产编号" prop="assetNo">
-          <el-input v-model="form.assetNo" placeholder="请输入资产编号"/>
-        </el-form-item>
-        <el-form-item label="资产名称" prop="assetName">
-          <el-input v-model="form.assetName" placeholder="请输入资产名称"/>
-        </el-form-item>
-        <el-form-item label="规格型号" prop=" specification">
-          <el-input v-model="form.specification" placeholder="请输入规格型号"/>
-        </el-form-item>
-        <el-form-item label="数量" prop="number">
-          <el-input v-model="form.number" placeholder="请输入数量"/>
-        </el-form-item>
-        <el-form-item label="计量单位" prop="measurementUnit">
-          <el-input v-model="form.measurementUnit" placeholder="请输入计量单位"/>
-        </el-form-item>
-        <el-form-item label="含税金额" prop="amountIncludeTax">
-          <el-input v-model="form.amountIncludeTax" placeholder="请输入含税金额"/>
-        </el-form-item>
-        <el-form-item label="不含税金额" prop="amountNoTax">
-          <el-input v-model="form.amountNoTax" placeholder="请输入不含税金额"/>
-        </el-form-item>
-        <el-form-item label="户名名称" prop="account">
-          <el-radio v-model="form.account" label="公户">公户</el-radio>
-          <el-radio v-model="form.account" label="个人">个人</el-radio>
-        </el-form-item>
-        <el-form-item label="使用部门" prop="department">
-          <el-input v-model="form.department" placeholder="请输入使用部门"/>
-        </el-form-item>
-        <el-form-item label="固定资产清理时间" prop="scrapDate">
-          <el-date-picker
-            v-model="form.scrapDate"
-            type="date"
-            placeholder="固定资产清理时间"
-            value-format="yyyy-MM-dd">
-          </el-date-picker>
-        </el-form-item>
-        <el-form-item label="清理/变卖价值" prop="saleAmount">
-          <el-input v-model="form.saleAmount" placeholder="请输入清理/变卖价值"/>
-        </el-form-item>
-        <el-form-item label="备注" prop="comments">
-          <el-input v-model="form.comments" placeholder="请输入备注"/>
-        </el-form-item>
+    <el-dialog :title="title" :visible.sync="open" width="50%" append-to-body>
+      <el-form ref="form" :model="form" :rules="rules" label-width="120px">
+        <el-row>
+          <el-col :span="12">
+            <el-form-item label="购入日期" prop="buyDate">
+              <el-date-picker
+                v-model="form.buyDate"
+                type="date"
+                placeholder="购入日期"
+                value-format="yyyy-MM-dd">
+              </el-date-picker>
+            </el-form-item>
+            <el-form-item label="资产编号" prop="assetNo">
+              <el-input v-model="form.assetNo" placeholder="请输入资产编号"/>
+            </el-form-item>
+            <el-form-item label="资产名称" prop="assetName">
+              <el-input v-model="form.assetName" placeholder="请输入资产名称"/>
+            </el-form-item>
+            <el-form-item label="规格型号" prop=" specification">
+              <el-input v-model="form.specification" placeholder="请输入规格型号"/>
+            </el-form-item>
+            <el-form-item label="数量" prop="number">
+              <el-input v-model="form.number" placeholder="请输入数量"/>
+            </el-form-item>
+            <el-form-item label="计量单位" prop="measurementUnit">
+              <el-input v-model="form.measurementUnit" placeholder="请输入计量单位"/>
+            </el-form-item>
+            <el-form-item label="含税金额" prop="amountIncludeTax">
+              <el-input v-model="form.amountIncludeTax" placeholder="请输入含税金额"/>
+            </el-form-item>
+          </el-col>
+          <el-col :span="12">
+            <el-form-item label="不含税金额" prop="amountNoTax">
+              <el-input v-model="form.amountNoTax" placeholder="请输入不含税金额"/>
+            </el-form-item>
+            <el-form-item label="户名名称" prop="account">
+              <el-radio v-model="form.account" label="公户">公户</el-radio>
+              <el-radio v-model="form.account" label="个人">个人</el-radio>
+            </el-form-item>
+            <el-form-item label="使用部门" prop="department">
+              <el-input v-model="form.department" placeholder="请输入使用部门"/>
+            </el-form-item>
+            <el-form-item label="固定资产清理时间" prop="scrapDate">
+              <el-date-picker
+                v-model="form.scrapDate"
+                type="date"
+                placeholder="固定资产清理时间"
+                value-format="yyyy-MM-dd">
+              </el-date-picker>
+            </el-form-item>
+            <el-form-item label="清理/变卖价值" prop="saleAmount">
+              <el-input v-model="form.saleAmount" placeholder="请输入清理/变卖价值"/>
+            </el-form-item>
+            <el-form-item label="备注" prop="comments">
+              <el-input v-model="form.comments" placeholder="请输入备注"/>
+            </el-form-item>
+          </el-col>
+        </el-row>
       </el-form>
       <div slot="footer" class="dialog-footer">
         <el-button type="primary" @click="submitForm">确 定</el-button>
@@ -217,7 +223,36 @@ export default {
       // 表单参数
       form: {},
       // 表单校验
-      rules: {},
+      rules: {
+        //添加校验
+        buyDate: [
+          {required: true, message: "购入日期不能为空", trigger: "blur"}],
+        assetNo: [
+          {required: true, message: "资产编号不能为空", trigger: "blur"}],
+        assetName: [
+          {required: true, message: "资产名称不能为空", trigger: "blur"}],
+        specification: [
+          {required: true, message: "规格型号不能为空", trigger: "blur"}],
+        number: [
+          {required: true, message: "数量不能为空", trigger: "blur"}],
+        measurementUnit: [
+          {required: true, message: "计量单位不能为空", trigger: "blur"}],
+        amountIncludeTax: [
+          {required: true, message: "含税金额不能为空", trigger: "blur"}],
+        amountNoTax: [
+          {required: true, message: "不含税金额不能为空", trigger: "blur"}],
+        account: [
+          {required: true, message: "户名名称不能为空", trigger: "blur"}],
+        department: [
+          {required: true, message: "使用部门不能为空", trigger: "blur"}],
+        scrapDate: [
+          {required: true, message: "固定资产清理时间不能为空", trigger: "blur"}],
+        saleDate: [
+          {required: true, message: "销售日期不能为空", trigger: "blur"}],
+        saleAmount: [
+          {required: true, message: "清理/变卖价值不能为空", trigger: "blur"}
+        ]
+      },
       columns: [
         {key: 0, label: `购入日期`, visible: true},
         {key: 1, label: `资产编号`, visible: true},

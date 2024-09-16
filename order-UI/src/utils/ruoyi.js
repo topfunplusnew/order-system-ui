@@ -80,6 +80,11 @@ export function addDateRange(params, dateRange, propName, otherParams) {
     //buyDateStartTime
     search.params['buyDateStartTime'] = dateRange[0];
     search.params['buyDateEndTime'] = dateRange[1];
+
+    // operate特殊
+  } else if (propName === 'operate') {
+    search.params['operateDateStartTime'] = dateRange[0];
+    search.params['operateDateEndTime'] = dateRange[1];
   } else {
     if (typeof (propName) === 'undefined') {
       search.params['beginTime'] = dateRange[0];
@@ -91,6 +96,7 @@ export function addDateRange(params, dateRange, propName, otherParams) {
   }
   return search;
 }
+
 // export function adDateRange(params, dateRange, propName) {
 //   let search = params;
 //   search.params = typeof (search.params) === 'object' && search.params !== null && !Array.isArray(search.params) ? search.params : {};

@@ -105,7 +105,7 @@
 
     <!-- 添加或修改平账信息对话框 -->
     <el-dialog :title="title" :visible.sync="open" width="500px" append-to-body>
-      <el-form ref="form" :model="form" :rules="rules" label-width="80px">
+      <el-form ref="form" :model="form" :rules="rules" label-width="120px">
         <el-form-item label="操作时间" prop="operateDate">
           <!--          <el-input v-model="form.operateDate" placeholder="请输入操作时间"/>-->
           <el-date-picker
@@ -129,7 +129,7 @@
           </el-row>
         </el-form-item>
         <el-form-item label="对方公司类型" prop="companyType">
-          <el-input v-model="form.companyType" type="text">供应商</el-input>
+          <el-input v-model="form.companyType" type="text" placeholder="请输入对方公司类型"></el-input>
         </el-form-item>
         <el-form-item label="备注" prop="comments">
           <el-input v-model="form.comments" placeholder="请输入备注"/>
@@ -246,7 +246,18 @@ export default {
         {key: 6, label: `操作人员ID`, visible: true},
       ],
       // 表单校验
-      rules: {},
+      rules: {
+        // 添加校验信息
+        operateDate: [
+          {required: true, message: "操作时间不能为空", trigger: "blur"}],
+
+        moneyAmount: [
+          {required: true, message: "金额不能为空", trigger: "blur"}],
+        companyName: [
+          {required: true, message: "对方公司不能为空", trigger: "blur"}],
+        companyType: [
+          {required: true, message: "对方公司类型不能为空", trigger: "blur"}],
+      },
       //点击公司的弹窗
       companyDialogVisible: false,
       //公司信息
