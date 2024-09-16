@@ -18,7 +18,7 @@
         </el-date-picker>
       </el-form-item>
       <el-form-item label="支付类型" prop="payType">
-        <!--          <el-i99999nput v-model="form.receiveType" placeholder="请输入支付类型"/>-->
+        <!--          <el-input v-model="form.receiveType" placeholder="请输入支付类型"/>-->
         <el-row :gutter="5">
           <!--            一级分类-->
           <el-col :span="8">
@@ -164,8 +164,6 @@ export default {
         fundsDate: [
           {required: true, message: "付款日期不能为空", trigger: "blur"},
         ],
-        payType: [
-          {required: true, message: "付款方式不能为空", trigger: "blur"}],
         moneyAmount: [
           {required: true, message: "付款金额不能为空", trigger: "blur"}],
         otherAcountsName: [

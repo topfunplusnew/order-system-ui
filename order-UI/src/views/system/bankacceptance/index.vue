@@ -68,23 +68,23 @@
 
     <el-table border v-loading="loading" :data="bankAcceptanceList"
               v-horizontal-scroll="'always'" @selection-change="handleSelectionChange"
-              show-summary :summary-method="getSummaries"
+              show-summary :summary-method="getSummaries" size="mini" :cell-style="()=>{return {padding:'2px'}}"
               height="480px" id="printBox">
-      <el-table-column label="操作日期" align="center" prop="operateDate" v-if="columns[0].visible"/>
-      <el-table-column label="票据号码" align="center" prop="billNo" v-if="columns[1].visible"/>
-      <el-table-column label="出票日期" align="center" prop="issueDate" v-if="columns[2].visible"/>
-      <el-table-column label="到期日期" align="center" prop="dueDate" v-if="columns[3].visible"/>
-      <el-table-column label="我方承兑账户" align="center" prop="billAccount" v-if="columns[4].visible"/>
-      <el-table-column label="票据日期" align="center" prop="billDate" v-if="columns[5].visible"/>
-      <el-table-column label="事由" align="center" prop="reason" v-if="columns[7].visible"/>
-      <el-table-column label="票据金额" align="center" prop="billAmount" v-if="columns[8].visible"/>
-      <el-table-column label="贴息点数" align="center" prop="inDiscountPoints" v-if="columns[9].visible"/>
-      <el-table-column label="贴息金额" align="center" prop="inDiscountAmount" v-if="columns[10].visible"/>
-      <el-table-column label="票据种类" align="center" prop="billCategory" v-if="columns[11].visible"/>
-      <el-table-column label="来源" align="center" prop="origin" v-if="columns[12].visible"/>
-      <el-table-column label="背书人" align="center" prop="endorser" v-if="columns[13].visible"/>
-      <el-table-column label="被背书人" align="center" prop="endorsee" v-if="columns[14].visible"/>
-      <el-table-column label="背书事由" align="center" prop="endorseReason" v-if="columns[15].visible"/>
+      <el-table-column label="操作日期" align="center" prop="operateDate" v-if="columns[0].visible" width="120"/>
+      <el-table-column label="票据号码" align="center" prop="billNo" v-if="columns[1].visible" width="120"/>
+      <el-table-column label="出票日期" align="center" prop="issueDate" v-if="columns[2].visible" width="120"/>
+      <el-table-column label="到期日期" align="center" prop="dueDate" v-if="columns[3].visible" width="120"/>
+      <el-table-column label="我方承兑账户" align="center" prop="billAccount" v-if="columns[4].visible" width="120"/>
+      <el-table-column label="票据日期" align="center" prop="billDate" v-if="columns[5].visible" width="120"/>
+      <el-table-column label="事由" align="center" prop="reason" v-if="columns[7].visible" width="120"/>
+      <el-table-column label="票据金额" align="center" prop="billAmount" v-if="columns[8].visible" width="120"/>
+      <el-table-column label="贴息点数" align="center" prop="inDiscountPoints" v-if="columns[9].visible" width="120"/>
+      <el-table-column label="贴息金额" align="center" prop="inDiscountAmount" v-if="columns[10].visible" width="120"/>
+      <el-table-column label="票据种类" align="center" prop="billCategory" v-if="columns[11].visible" width="120"/>
+      <el-table-column label="来源" align="center" prop="origin" v-if="columns[12].visible" width="120"/>
+      <el-table-column label="背书人" align="center" prop="endorser" v-if="columns[13].visible" width="120"/>
+      <el-table-column label="被背书人" align="center" prop="endorsee" v-if="columns[14].visible" width="120"/>
+      <el-table-column label="背书事由" align="center" prop="endorseReason" v-if="columns[15].visible" width="120"/>
       <el-table-column label="备注" align="center" prop="comments"/>
       <el-table-column label="操作" align="center" class-name="small-padding fixed-width" width="150px" fixed="right">
         <template slot-scope="scope">
@@ -115,7 +115,7 @@
     />
 
     <!-- 添加或修改商业票据、银行承兑对话框 -->
-    <el-dialog :title="title" :visible.sync="open" width="45%" append-to-body>
+    <el-dialog :title="title" :visible.sync="open" width="62%" append-to-body>
       <el-form ref="form" :model="form" :rules="rules" label-width="140px">
         <el-row>
           <el-col :span="12">

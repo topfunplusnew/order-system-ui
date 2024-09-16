@@ -71,14 +71,13 @@
       <el-table-column label="出差结束时间" align="center" prop="endtime" v-if="columns[3].visible"/>
       <el-table-column label="附件" align="center" prop="attachmentPath" v-if="columns[4].visible">
         <template #default="scope">
-          <img v-if="isPic(scope.row.attachmentPath)" :src="scope.row.attachmentPath" alt=""
-               style="width: 100%;height: 100%">
-          <span v-else-if="scope.row.attachmentPath === '' || scope.row.attachmentPath === null">无附件</span>
+          <span v-if="!scope.row.attachmentPath">无</span>
           <span v-else>
-            文件不支持预览，请手动下载:
-          <a style="color: red"
-             :href="scope.row.attachmentPath">{{ scope.row.attachmentPath }}</a>
-          </span>
+            <a style="color: red"
+               :href="scope.row.attachmentPath">
+            <el-button size="mini" type="success">下载</el-button>
+          </a>
+         </span>
         </template>
       </el-table-column>
       <el-table-column label="是否已报销" align="center" prop="isReimburse" v-if="columns[5].visible">
@@ -87,7 +86,7 @@
         </template>
       </el-table-column>
       <el-table-column label="备注" align="center" prop="comments" v-if="columns[6].visible"/>
-      <el-table-column label="操作" align="center" class-name="small-padding " width="260px" fixed="right">
+      <el-table-column label="操作" align="center" class-name="small-padding fixed-width" width="260px" fixed="right">
         <template slot-scope="scope">
           <el-button
             size="mini"
@@ -907,26 +906,30 @@ export default {
           this.form.tripReimbursementList = this.tripReimbursementList;
           // 拿取车辆信息
           let carApplyInfo = JSON.parse(sessionStorage.getItem('carApplyForm'))
-          //填充某些字段
-          carApplyInfo.applyUser = this.form.employee;
-          carApplyInfo.department = this.form.deptName;
-          //先提交申请信息 回调函数中添加车辆使用信息
-          addBusinessTrip({...this.form, UUID: this.UUID}).then(res => {
-            carApplyInfo.bTripId = res.data.id;
-            this.$message.success('提交成功')
-            //添加车辆信息
-            setTimeout(() => {
-              addCarApply(carApplyInfo).then(res => {
-                this.$message.success('车辆信息提交成功')
-                this.active++;
-                // 清除状态
-                this.carApplyForm = {}
-                this.oilCardConsumeInfo = {}
-                this.form = {}
-                this.getList()
-              })
-            }, 30)
-          })
+          if (carApplyInfo === null || carApplyInfo === '{}') {
+            this.$message.error('请先输入车辆信息')
+          } else {
+            //填充某些字段
+            carApplyInfo.applyUser = this.form.employee;
+            carApplyInfo.department = this.form.deptName;
+            //先提交申请信息 回调函数中添加车辆使用信息
+            addBusinessTrip({...this.form, UUID: this.UUID}).then(res => {
+              carApplyInfo.bTripId = res.data.id;
+              this.$message.success('提交成功')
+              //添加车辆信息
+              setTimeout(() => {
+                addCarApply(carApplyInfo).then(res => {
+                  this.$message.success('车辆信息提交成功')
+                  this.active++;
+                  // 清除状态
+                  this.carApplyForm = {}
+                  this.oilCardConsumeInfo = {}
+                  this.form = {}
+                  this.getList()
+                })
+              }, 30)
+            })
+          }
         }
       }
     },

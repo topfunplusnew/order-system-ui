@@ -2,7 +2,7 @@
 当前账号需要审核的流程 审核的过程调用修改接口-->
 <script>
 import {getPaymentApply, listPaymentApply} from "@/api/system/paymentApply";
-import { listAuditInfoGroup} from "@/api/system/auditInfo";
+import {listAuditInfoGroup} from "@/api/system/auditInfo";
 import StepInfo from "@/components/StepInfo.vue";
 import {mapGetters} from "vuex";
 import {findFileExtension} from "@/utils/trash/utils";
@@ -192,7 +192,7 @@ export default {
       <el-table
         :data="paymentList"
         border
-        style="width: 100%">
+        style="width: 100%" size="mini">
         <el-table-column
           fixed
           prop="fundsDate"

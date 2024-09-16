@@ -57,7 +57,7 @@
     </el-row>
 
     <el-table border v-horizontal-scroll="'always'" v-loading="loading" :data="inventoryList"
-              @selection-change="handleSelectionChange">
+              @selection-change="handleSelectionChange" :cell-style="()=>{return {padding:'2px'}}" size="mini">
       <el-table-column label="id" align="center" prop="id" v-if="columns[0].visible"/>
       <el-table-column label="仓库名称" align="center" prop="storeHouseName" v-if="columns[1].visible"/>
       <el-table-column label="入库日期" align="center" prop="storeDate" v-if="columns[2].visible"/>

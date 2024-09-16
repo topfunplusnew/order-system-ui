@@ -71,7 +71,8 @@
     </el-row>
 
     <el-table border v-horizontal-scroll="'always'" v-loading="loading" :data="exWarehouseList"
-              @selection-change="handleSelectionChange" id="printBox" size="mini">
+              @selection-change="handleSelectionChange" id="printBox" size="mini"
+              :cell-style="()=>{return {padding:'2px'}}">
       <!--      <el-table-column label="id" align="center" prop="id" v-if="columns[0].visible"/>-->
       <el-table-column label="订单编号" align="center" prop="ordersNo" v-if="columns[1].visible">
         <template slot-scope="scope">

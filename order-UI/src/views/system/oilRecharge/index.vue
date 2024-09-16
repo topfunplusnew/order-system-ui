@@ -68,7 +68,7 @@
     </el-row>
 
     <el-table border v-loading="loading" :data="oilRechargeList" @selection-change="handleSelectionChange"
-              v-horizontal-scroll="'always'" id="printBox">
+              v-horizontal-scroll="'always'" id="printBox" size="mini" :cell-style="()=>{return {padding:'2px'}}">
       <el-table-column label="id" align="center" prop="id" v-if="columns[0].visible"/>
       <el-table-column label="审核状态" align="center" prop="checkState">
         <!--        添加el-tag-->
@@ -88,14 +88,22 @@
       <el-table-column label="充值人员姓名" align="center" prop="rechargeName" v-if="columns[7].visible"/>
       <el-table-column label="充值附件" align="center" prop="attachment" v-if="columns[8].visible">
         <template #default="scope">
-          <img v-if="isPic(scope.row.attachment)" :src="scope.row.attachment" alt=""
-               style="width: 100%;height: 100%">
-          <span v-else-if="scope.row.attachment === '' || scope.row.attachment === null">无附件</span>
+          <!--          <img v-if="isPic(scope.row.attachment)" :src="scope.row.attachment" alt=""-->
+          <!--               style="width: 100%;height: 100%">-->
+          <!--          <span v-else-if="scope.row.attachment === '' || scope.row.attachment === null">无附件</span>-->
+          <!--          <span v-else>-->
+          <!--            文件不支持预览，请手动下载:-->
+          <!--          <a style="color: red"-->
+          <!--             :href="scope.row.attachment">{{ scope.row.attachment }}</a>-->
+          <!--          </span>-->
+
+          <span v-if="!scope.row.attachment">无</span>
           <span v-else>
-            文件不支持预览，请手动下载:
-          <a style="color: red"
-             :href="scope.row.attachment">{{ scope.row.attachment }}</a>
-          </span>
+            <a style="color: red"
+               :href="scope.row.attachment">
+            <el-button size="mini" type="success">下载</el-button>
+          </a>
+         </span>
         </template>
       </el-table-column>
       <el-table-column label="备注" align="center" prop="comments" v-if="columns[9].visible"/>
@@ -106,8 +114,25 @@
             size="mini"
             type="warning"
             @click="addPaymentApply(scope.row)"
+            v-if="scope.row.checkState === '未申请'"
           >申请付款
           </el-button>
+          <el-button
+            size="mini"
+            type="success"
+            disabled
+            v-if="scope.row.checkState === '已支付'"
+          >已支付
+          </el-button>
+          <el-button
+            size="mini"
+            type="danger"
+            disabled
+            v-if="scope.row.checkState === '未支付'"
+          >未支付
+          </el-button>
+
+
           <el-button
             size="mini"
             type="primary"

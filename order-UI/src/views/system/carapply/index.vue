@@ -71,7 +71,7 @@
     </el-row>
 
     <el-table border v-loading="loading" :data="carApplyList" @selection-change="handleSelectionChange" id="printBox"
-              v-horizontal-scroll="'always'">
+              v-horizontal-scroll="'always'" size="mini" :cell-style="()=>{return {padding:'2px'}}">
       <el-table-column label="申请时间" align="center" prop="applyDate" v-if="columns[0].visible"/>
       <el-table-column label="申请人" align="center" prop="applyUser" v-if="columns[1].visible"/>
       <el-table-column label="部门" align="center" prop="department" v-if="columns[2].visible"/>

@@ -57,7 +57,7 @@
       <el-table-column label="抵押担保" align="center" prop="mortgageGuarantee" v-if="columns[6].visible"/>
       <el-table-column label="打入账户" align="center" prop="acountsName" v-if="columns[7].visible"/>
       <el-table-column label="打入账号" align="center" prop="bankNo" v-if="columns[8].visible"/>
-      <el-table-column label="已还款标记" align="center" prop="isEnd" v-if="columns[9].visible"/>
+      <!--      <el-table-column label="已还款标记" align="center" prop="isEnd" v-if="columns[9].visible"/>-->
       <el-table-column label="备注" align="center" prop="comments"/>
       <el-table-column label="操作" align="center" class-name="small-padding fixed-width" width="160px" fixed="right">
         <template slot-scope="scope">
@@ -66,6 +66,12 @@
             type="warning"
             @click="handleGiveBackMoney(scope.row)"
             v-if="scope.row.isEnd ==='否'">还款
+          </el-button>
+          <el-button
+            size="mini"
+            type="success"
+            disabled
+            v-if="scope.row.isEnd ==='是'">已还款
           </el-button>
           <el-button
             size="mini"
@@ -446,10 +452,10 @@ export default {
     },
     //处理还款的事件函数  这里应该先填写还款信息 然后在还款信息页面申请付款
     handleGiveBackMoney(row) {
-      this.$prompt('请输入备注', '是否添加还款信息?', {
+      this.$prompt('请输入还款金额', '是否添加还款信息?', {
         confirmButtonText: '确定',
         cancelButtonText: '取消',
-        type: 'warning'
+        type: 'success'
       }).then(({value}) => {
         //直接添加还款信息
         addRepayment({

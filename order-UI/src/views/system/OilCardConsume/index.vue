@@ -59,33 +59,40 @@
       </right-toolbar>
     </el-row>
     <el-table border v-loading="loading" :data="OilCardConsumeList" @selection-change="handleSelectionChange"
-        v-horizontal-scroll="'always'" id="printBox">
+              v-horizontal-scroll="'always'" id="printBox" size="mini" :cell-style="()=>{return {padding:'2px'}}">
       <el-table-column label="id" align="center" prop="id" v-if="columns[0].visible"/>
-      <el-table-column label="加油卡卡号" align="center" prop="oilCardNo" v-if="columns[1].visible"/>
-      <el-table-column label="使用加油卡时间" align="center" prop="useDate" v-if="columns[2].visible"/>
-      <el-table-column label="使用加油卡车辆车牌号" align="center" prop="carNo" v-if="columns[3].visible"/>
-      <el-table-column label="期初余额" align="center" prop="startCardSurplus" v-if="columns[4].visible"/>
-      <el-table-column label="加油量" align="center" prop="refuelingNumber" v-if="columns[5].visible"/>
-      <el-table-column label="单价" align="center" prop="unitPrice" v-if="columns[6].visible"/>
-      <el-table-column label="加油金额(元）" align="center" prop="refuelingMoney" v-if="columns[7].visible"/>
-      <el-table-column label="充值金额(元）" align="center" prop="rechargeMoney" v-if="columns[8].visible"/>
-      <el-table-column label="加油卡余额" align="center" prop="endCardSurplus" v-if="columns[9].visible"/>
+      <el-table-column label="加油卡卡号" align="center" prop="oilCardNo" v-if="columns[1].visible" width="110"/>
+      <el-table-column label="使用加油卡时间" align="center" prop="useDate" v-if="columns[2].visible" width="110"/>
+      <el-table-column label="使用加油卡车辆车牌号" align="center" prop="carNo" v-if="columns[3].visible" width="110"/>
+      <el-table-column label="期初余额" align="center" prop="startCardSurplus" v-if="columns[4].visible" width="110"/>
+      <el-table-column label="加油量" align="center" prop="refuelingNumber" v-if="columns[5].visible" width="110"/>
+      <el-table-column label="单价" align="center" prop="unitPrice" v-if="columns[6].visible" width="110"/>
+      <el-table-column label="加油金额(元）" align="center" prop="refuelingMoney" v-if="columns[7].visible" width="110"/>
+      <el-table-column label="充值金额(元）" align="center" prop="rechargeMoney" v-if="columns[8].visible" width="110"/>
+      <el-table-column label="加油卡余额" align="center" prop="endCardSurplus" v-if="columns[9].visible" width="110"/>
       <!--      <el-table-column label="加油小票附件" align="center" prop="attachmentOiladd" v-if="columns[10].visible"-->
       <!--                       width="300px"/>-->
       <el-table-column label="加油小票附件" align="center" prop="attachmentOiladd" v-if="columns[10].visible">
         <template #default="scope">
-          <img v-if="isPic(scope.row.attachmentOiladd)" :src="scope.row.attachmentOiladd" alt=""
-               style="width: 100%;height: 100%">
-          <span v-else-if="scope.row.attachmentOiladd === '' || scope.row.attachmentOiladd === null">无附件</span>
+          <!--          <img v-if="isPic(scope.row.attachmentOiladd)" :src="scope.row.attachmentOiladd" alt=""-->
+          <!--               style="width: 100%;height: 100%">-->
+          <!--          <span v-else-if="scope.row.attachmentOiladd === '' || scope.row.attachmentOiladd === null">无附件</span>-->
+          <!--          <span v-else>-->
+          <!--            文件不支持预览，请手动下载:-->
+          <!--          <a style="color: red"-->
+          <!--             :href="scope.row.attachmentOiladd">{{ scope.row.attachmentOiladd }}</a>-->
+          <!--          </span>-->
+          <span v-if="!scope.row.attachmentOiladd">无</span>
           <span v-else>
-            文件不支持预览，请手动下载:
-          <a style="color: red"
-             :href="scope.row.attachmentOiladd">{{ scope.row.attachmentOiladd }}</a>
-          </span>
+            <a style="color: red"
+               :href="scope.row.attachmentOiladd">
+            <el-button size="mini" type="success">下载</el-button>
+          </a>
+         </span>
         </template>
       </el-table-column>
       <el-table-column label="备注" align="center" prop="comments" v-if="columns[11].visible"/>
-      <el-table-column label="操作" align="center" class-name="small-padding fixed-width">
+      <el-table-column label="操作" align="center" class-name="small-padding fixed-width" fixed="right">
         <template slot-scope="scope">
           <el-button
             size="mini"

@@ -68,7 +68,7 @@
     </el-row>
 
     <el-table border v-loading="loading" :data="BalanceAccountsList" @selection-change="handleSelectionChange"
-              id="printBox" v-horizontal-scroll="'always'">
+              id="printBox" v-horizontal-scroll="'always'" size="mini" :cell-style="()=>{return {padding:'2px'}}">
       <el-table-column label="操作时间" align="center" prop="operateDate" v-if="columns[0].visible"/>
       <el-table-column label="金额" align="center" prop="moneyAmount" v-if="columns[1].visible"/>
       <el-table-column label="对方公司" align="center" prop="companyName" v-if="columns[2].visible"/>

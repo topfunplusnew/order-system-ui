@@ -65,7 +65,7 @@
       </right-toolbar>
     </el-row>
 
-    <el-table border v-loading="loading" :data="bankAcceptanceList" v-horizontal-scroll="'always'"
+    <el-table border v-loading="loading" :data="bankAcceptanceList" v-horizontal-scroll="'always'" size="mini"
               @selection-change="handleSelectionChange" show-summary :summary-method="getSummaries"
               height="480px" id="printBox" :cell-style="()=>{return {padding:'.5px'}}">
       <el-table-column label="id" align="center" prop="id"/>
@@ -113,7 +113,7 @@
       @pagination="getList"/>
 
     <!-- 添加或修改商业票据、银行承兑对话框 -->
-    <el-dialog :title="title" :visible.sync="open" width="45%" append-to-body>
+    <el-dialog :title="title" :visible.sync="open" width="55%" append-to-body>
       <el-form ref="form" :model="form" :rules="rules" label-width="140px">
         <el-row>
           <el-col :span="12">

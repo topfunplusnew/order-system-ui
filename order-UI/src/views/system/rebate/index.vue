@@ -72,7 +72,7 @@
       </right-toolbar>
     </el-row>
 
-    <el-table border v-horizontal-scroll="'always'" v-loading="loading" :data="RebateList"
+    <el-table border v-horizontal-scroll="'always'" v-loading="loading" :data="RebateList" size="mini"
               @selection-change="handleSelectionChange" id="printBox">
       <el-table-column label="日期" align="center" prop="rebateDate" v-if="columns[0].visible"/>
       <el-table-column label="金额" align="center" prop="rebate" v-if="columns[1].visible"/>
@@ -84,7 +84,7 @@
       <el-table-column label="付款款账号" align="center" prop="outBankNo" v-if="columns[7].visible"/>
       <el-table-column label="返利原因" align="center" prop="rebateReason" v-if="columns[8].visible"/>
       <el-table-column label="备注" align="center" prop="comments" v-if="columns[9].visible"/>
-      <el-table-column label="操作" align="center" class-name="small-padding fixed-width">
+      <el-table-column label="操作" align="center" class-name="small-padding fixed-width" width="150px" fixed="right">
         <template slot-scope="scope">
           <el-button
             size="mini"

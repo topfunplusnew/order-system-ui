@@ -120,7 +120,7 @@
     </el-dialog>
 
 
-    <el-dialog title="库存信息" :visible.sync="inventoryInfoVisible" width="500px" append-to-body>
+    <el-dialog title="库存信息" :visible.sync="inventoryInfoVisible" width="70%" append-to-body>
       <el-descriptions title="库存详情" border>
         <el-descriptions-item label="陆地车号">
           {{ inventoryInfo.landCarNo }}

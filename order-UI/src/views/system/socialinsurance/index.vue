@@ -67,7 +67,7 @@
     </el-row>
 
     <el-table border v-loading="loading" :data="socialInsuranceList" @selection-change="handleSelectionChange"
-              id="printBox" v-horizontal-scroll="'always'" :cell-style="()=>{return {padding:'.5px'}}">
+              id="printBox" v-horizontal-scroll="'always'" size="mini" :cell-style="()=>{return {padding:'.5px'}}">
       <el-table-column label="id" align="center" prop="id"/>
       <el-table-column label="社保缴纳基数" align="center" prop="basicSocialInsurance" v-if="columns[0].visible"/>
       <el-table-column label="公积金基数" align="center" prop="basicHousingFund" v-if="columns[1].visible"/>
@@ -126,7 +126,7 @@
     />
 
     <!-- 添加或修改社保基金对话框 -->
-    <el-dialog title="社保基金" :visible.sync="open" append-to-body width="70%">
+    <el-dialog title="社保基金" :visible.sync="open" append-to-body width="80%">
       <el-form ref="form" :model="form" :rules="rules" label-width="140px">
         <el-col :span="6">
           <el-form-item label="社保缴纳基数" prop="basicSocialInsurance">

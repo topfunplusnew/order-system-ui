@@ -49,7 +49,7 @@
     </el-row>
 
     <el-table border v-loading="loading" :data="recoverMoneyList" @selection-change="handleSelectionChange"
-              id="printBox"
+              id="printBox" size="mini"
               v-horizontal-scroll="'always'">
       <el-table-column label="id" align="center" prop="id"/>
       <el-table-column label="借出款编号" align="center" prop="futuresNO" v-if="columns[0].visible"/>

@@ -72,7 +72,7 @@
     </el-row>
 
     <el-table border v-loading="loading" :data="oilCardFundTransferList" @selection-change="handleSelectionChange"
-              v-horizontal-scroll="'always'" id="printBox">
+              v-horizontal-scroll="'always'" id="printBox" size="mini" :cell-style="()=>{return {padding:'2px'}}">
       <el-table-column label="id" align="center" prop="id" v-if="columns[0].visible"/>
       <el-table-column label="主加油卡卡号" align="center" prop="oilMainCardNo" v-if="columns[1].visible"/>
       <el-table-column label="副加油卡卡号" align="center" prop="oilSecondCardNo" v-if="columns[2].visible"/>
@@ -110,7 +110,7 @@
 
     <!-- 添加或修改加油卡圈存对话框 -->
     <el-dialog :title="title" :visible.sync="open" width="500px" append-to-body>
-      <el-form ref="form" :model="form" :rules="rules" label-width="80px">
+      <el-form ref="form" :model="form" :rules="rules" label-width="120px">
         <el-form-item label="主加油卡卡号" prop="oilMainCardNo">
           <el-row>
             <el-col :span="10">

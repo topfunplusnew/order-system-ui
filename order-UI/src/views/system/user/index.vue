@@ -93,18 +93,18 @@
             >新增用户信息
             </el-button>
           </el-col>
-          <el-col :span="1.5">
-            <el-button
-              type="success"
-              plain
-              icon="el-icon-edit"
-              size="mini"
-              :disabled="single"
-              @click="handleUpdate"
-              v-hasPermi="['system:user:edit']"
-            >修改
-            </el-button>
-          </el-col>
+          <!--          <el-col :span="1.5">-->
+          <!--            <el-button-->
+          <!--              type="success"-->
+          <!--              plain-->
+          <!--              icon="el-icon-edit"-->
+          <!--              size="mini"-->
+          <!--              :disabled="single"-->
+          <!--              @click="handleUpdate"-->
+          <!--              v-hasPermi="['system:user:edit']"-->
+          <!--            >修改-->
+          <!--            </el-button>-->
+          <!--          </el-col>-->
           <el-col :span="1.5">
             <el-button
               type="danger"
@@ -142,7 +142,8 @@
           <right-toolbar :showSearch.sync="showSearch" @queryTable="getList" :columns="columns"></right-toolbar>
         </el-row>
 
-        <el-table border v-loading="loading" :data="userList" @selection-change="handleSelectionChange">
+        <el-table border v-loading="loading" :data="userList" @selection-change="handleSelectionChange" size="mini"
+                  :cell-style="()=>{return {padding:'2px'}}">
           <el-table-column type="selection" width="50" align="center"/>
           <el-table-column label="用户编号" align="center" key="userId" prop="userId" v-if="columns[0].visible"/>
           <el-table-column label="用户名称" align="center" key="userName" prop="userName"

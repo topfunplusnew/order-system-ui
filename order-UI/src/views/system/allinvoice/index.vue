@@ -36,9 +36,9 @@
       </el-form-item>
     </el-form>
     <el-row :gutter="10" class="mb8">
-<!--      <el-col :span="1.5">
-        <el-button icon="el-icon-refresh" size="mini" @click="resetQuery">重置</el-button>
-      </el-col>-->
+      <!--      <el-col :span="1.5">
+              <el-button icon="el-icon-refresh" size="mini" @click="resetQuery">重置</el-button>
+            </el-col>-->
       <!-- 刷新按钮-->
       <el-col :span="1.5">
         <el-button icon="el-icon-refresh" size="mini" @click="resetQuery">刷新</el-button>
@@ -72,7 +72,7 @@
     <el-row>
     </el-row>
     <el-table id="printBox" v-horizontal-scroll="'always'" border v-loading="loading" :data="invoiceInList"
-              @selection-change="handleSelectionChange">
+              @selection-change="handleSelectionChange" :cell-style="()=>{return {padding:'2px'}}" size="mini">
       <el-table-column label="id" align="center" prop="id" v-if="columns[0].visible"/>
       <el-table-column label="开票日期" align="center" prop="invoiceDate" v-if="columns[1].visible"/>
       <el-table-column label="发票金额" align="center" prop="invoiceAmount" v-if="columns[2].visible"/>
@@ -96,31 +96,31 @@
       <el-table-column label="票点收入（点数）" align="center" prop="ticketPointIncome" v-if="columns[14].visible"/>
       <el-table-column label="票点收入（金额）" align="center" prop="ticketPointIncomeAmount" v-if="columns[15].visible"/>
       <el-table-column label="票点差额" align="center" prop="ticketPointDifference" v-if="columns[16].visible"/>
-<!--      <el-table-column label="票点成本（点数）" align="center" prop="ticketPointCost" v-if="columns[17].visible"/>
-      <el-table-column label="票点成本（点数）" align="center" prop="ticketPointCost" v-if="columns[18].visible"/>-->
+      <!--      <el-table-column label="票点成本（点数）" align="center" prop="ticketPointCost" v-if="columns[17].visible"/>
+            <el-table-column label="票点成本（点数）" align="center" prop="ticketPointCost" v-if="columns[18].visible"/>-->
       <el-table-column label="总货款" align="center" prop="allPayments" v-if="columns[17].visible"/>
       <el-table-column label="实际开票日期" align="center" prop="orderDate" v-if="columns[18].visible"/>
       <el-table-column label="当月欠票" align="center" prop="oweamount" v-if="columns[19].visible">
       </el-table-column>
       <el-table-column label="备注" align="center" prop="comments" v-if="columns[20].visible"/>
-<!--      <el-table-column label="操作" align="center" class-name="small-padding fixed-width" fixed="right">-->
-<!--        <template slot-scope="scope">-->
-<!--          <el-button-->
-<!--            size="mini"-->
-<!--            type="primary"-->
-<!--            @click="handleUpdate(scope.row)"-->
-<!--            v-hasPermi="['system:allinvoice:edit']"-->
-<!--          >修改-->
-<!--          </el-button>-->
-<!--          <el-button-->
-<!--            size="mini"-->
-<!--            type="danger"-->
-<!--            @click="handleDelete(scope.row)"-->
-<!--            v-hasPermi="['system:allinvoice:remove']"-->
-<!--          >删除-->
-<!--          </el-button>-->
-<!--        </template>-->
-<!--      </el-table-column>-->
+      <!--      <el-table-column label="操作" align="center" class-name="small-padding fixed-width" fixed="right">-->
+      <!--        <template slot-scope="scope">-->
+      <!--          <el-button-->
+      <!--            size="mini"-->
+      <!--            type="primary"-->
+      <!--            @click="handleUpdate(scope.row)"-->
+      <!--            v-hasPermi="['system:allinvoice:edit']"-->
+      <!--          >修改-->
+      <!--          </el-button>-->
+      <!--          <el-button-->
+      <!--            size="mini"-->
+      <!--            type="danger"-->
+      <!--            @click="handleDelete(scope.row)"-->
+      <!--            v-hasPermi="['system:allinvoice:remove']"-->
+      <!--          >删除-->
+      <!--          </el-button>-->
+      <!--        </template>-->
+      <!--      </el-table-column>-->
     </el-table>
     <pagination
       v-show="total>0"

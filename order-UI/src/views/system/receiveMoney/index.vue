@@ -81,7 +81,7 @@
     </el-row>
 
     <el-table border v-horizontal-scroll="'always'" v-loading="loading" :data="receiveMoneyList"
-              @selection-change="handleSelectionChange" id="printBox">
+              @selection-change="handleSelectionChange" id="printBox" size="mini">
       <!--      <el-table-column label="收款编号" align="center" prop="receiveNO" v-if="columns[0].visible"/>-->
       <el-table-column label="日期" align="center" prop="fundsDate" v-if="columns[0].visible"/>
       <el-table-column label="支付类型" align="center" prop="receiveType" v-if="columns[1].visible"/>
@@ -101,7 +101,7 @@
       <!--      <el-table-column label="对方公司ID" align="center" prop="companyId" v-if="columns[12].visible"/>-->
       <el-table-column label="对方公司类型" align="center" prop="companyType" v-if="columns[10].visible"/>
       <el-table-column label="备注" align="center" prop="comments"/>
-      <el-table-column label="操作" align="center" fixed="right" width="150">
+      <el-table-column label="操作" align="center" class-name="small-padding fixed-width" fixed="right" width="150">
         <template slot-scope="scope">
           <el-button
             size="mini"

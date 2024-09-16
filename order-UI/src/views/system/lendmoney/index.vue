@@ -4,26 +4,26 @@
     <el-form :model="timesQuery" ref="queryForm" size="mini" :inline="true" v-show="showSearch" label-width="68px">
       <el-form-item label="开始时间" prop="beginTime">
         <el-date-picker
-          v-model="timesQuery.beginTime"
-          type="date"
-          placeholder="请选择开始时间"
-          value-format="yyyy-MM-dd">
+            v-model="timesQuery.beginTime"
+            type="date"
+            placeholder="请选择开始时间"
+            value-format="yyyy-MM-dd">
         </el-date-picker>
       </el-form-item>
       <el-form-item label="结束时间" prop="endTime">
         <el-date-picker
-          v-model="timesQuery.endTime"
-          type="date"
-          placeholder="请选择结束时间" value-format="yyyy-MM-dd">
+            v-model="timesQuery.endTime"
+            type="date"
+            placeholder="请选择结束时间" value-format="yyyy-MM-dd">
         </el-date-picker>
       </el-form-item>
       <el-form-item label="对象类型" prop="objectType">
         <el-select v-model="timesQuery.objectType" placeholder="请选择对象类型">
           <el-option
-            v-for="item in options"
-            :key="item.value"
-            :label="item.label"
-            :value="item.value">
+              v-for="item in options"
+              :key="item.value"
+              :label="item.label"
+              :value="item.value">
           </el-option>
         </el-select>
       </el-form-item>
@@ -44,10 +44,10 @@
         <template v-slot:print>
           <el-col :span="1.5">
             <el-button
-              plain
-              icon="el-icon-printer"
-              size="mini"
-              @click="printHTML"
+                plain
+                icon="el-icon-printer"
+                size="mini"
+                @click="printHTML"
             >
             </el-button>
           </el-col>
@@ -56,11 +56,11 @@
         <template v-slot:export>
           <el-col :span="1.5">
             <el-button
-              plain
-              icon="el-icon-folder-opened"
-              size="mini"
-              @click="handleExport"
-              v-hasPermi="['system:company:export']"
+                plain
+                icon="el-icon-folder-opened"
+                size="mini"
+                @click="handleExport"
+                v-hasPermi="['system:company:export']"
             >
             </el-button>
           </el-col>
@@ -72,7 +72,16 @@
               v-horizontal-scroll="'always'" id="printBox">
       <!--      <el-table-column label="id" align="center" prop="id"/>-->
       <!--      <el-table-column label="借出款编号" align="center" prop="futuresNO" v-if="columns[0].visible"/>-->
-      <el-table-column label="期货保证金公司" align="center" prop="futuresMarginCompany" v-if="columns[1].visible"/>
+      <el-table-column label="期货保证金公司" align="center" prop="futuresMarginCompany" v-if="columns[1].visible">
+        <template slot-scope="scope">
+          <span v-if="scope.row.futuresMarginCompany !== ''&& scope.row.futuresMarginCompany !== null">{{
+              scope.row.futuresMarginCompany
+            }}</span>
+          <span v-else>
+            无期货保证金公司
+          </span>
+        </template>
+      </el-table-column>
       <el-table-column label="对象类型" align="center" prop="targetType"
                        v-if="columns[2].visible"/>
       <el-table-column label="对象" align="center" prop="target" v-if="columns[3].visible"/>
@@ -90,56 +99,81 @@
       <el-table-column label="备注" align="center" prop="comments"/>
       <el-table-column label="操作" align="center" class-name="small-padding fixed-width" width="230px" fixed="right">
         <template slot-scope="scope">
-          <el-button
-            size="mini"
-            type="warning"
-            @click="applyForPayment(scope.row)"
-            v-hasPermi="['system:lendmoney:remove']"
-          >申请付款
-          </el-button>
-          <el-button
-            size="mini"
-            type="success"
-            @click="handleGetBackMoney(scope.row)"
-            v-hasPermi="['system:lendmoney:remove']"
-          >收回资金
-          </el-button>
-          <el-button
-            size="mini"
-            type="primary"
-            @click="handleUpdate(scope.row)"
-            v-hasPermi="['system:lendmoney:edit']"
-          >修改
-          </el-button>
-          <el-button
-            size="mini"
-            type="danger"
-            @click="handleDelete(scope.row)"
-            v-hasPermi="['system:lendmoney:remove']"
-          >删除
-          </el-button>
+          <el-row>
+            <el-button
+                size="mini"
+                type="warning"
+                @click="applyForPayment(scope.row)"
+                v-if="scope.row.checkState ==='未申请'"
+            >申请付款
+            </el-button>
+            <el-button
+                size="mini"
+                type="warning"
+                disabled
+                v-if="scope.row.checkState ==='审核中'"
+            >审核中
+            </el-button>
+            <el-button
+                size="mini"
+                type="success"
+                @click="handleGetBackMoney(scope.row)"
+                v-hasPermi="['system:lendmoney:remove']"
+            >收回资金
+            </el-button>
+            <el-button
+                size="mini"
+                type="primary"
+                @click="handleUpdate(scope.row)"
+                v-hasPermi="['system:lendmoney:edit']"
+            >修改
+            </el-button>
+            <el-button
+                size="mini"
+                type="danger"
+                @click="handleDelete(scope.row)"
+                v-hasPermi="['system:lendmoney:remove']"
+            >删除
+            </el-button>
+          </el-row>
         </template>
       </el-table-column>
     </el-table>
 
     <pagination
-      v-show="total>0"
-      :total="total"
-      :page.sync="queryParams.pageNum"
-      :limit.sync="queryParams.pageSize"
-      @pagination="getList"
+        v-show="total>0"
+        :total="total"
+        :page.sync="queryParams.pageNum"
+        :limit.sync="queryParams.pageSize"
+        @pagination="getList"
     />
 
     <!-- 添加或修改向外部借出款信息对话框 -->
     <el-dialog title="新增资金借出信息" :visible.sync="open" width="50%" append-to-body>
-      <el-form ref="form" :model="form" :rules="rules" label-width="140px">
+      <el-form ref="form" :model="form" :rules="rules" label-width="160px">
         <el-row>
           <el-col :span="12">
             <!--        <el-form-item label="借出款编号" prop="futuresNO">-->
             <!--          <el-input v-model="form.futuresNO" placeholder="请输入借出款编号"/>-->
             <!--        </el-form-item>-->
-            <el-form-item label="期货保证金公司" prop="futuresMarginCompany">
+            <el-form-item label="是否有期货保证金公司" prop="isDepletion">
+              <el-radio v-model="form.ishave" label="是">是</el-radio>
+              <el-radio v-model="form.ishave" label="否">否</el-radio>
+            </el-form-item>
+            <el-form-item label="期货保证金公司" prop="futuresMarginCompany" v-if="form.ishave==='是'">
               <el-input v-model="form.futuresMarginCompany" placeholder="请输入期货保证金公司"/>
+            </el-form-item>
+            <el-form-item label="支付期货保证金时间" prop="futuresDate">
+              <!--          <el-input v-model="form.futuresDate" placeholder="请输入支付期货保证金时间"/>-->
+              <el-date-picker
+                  v-model="form.futuresDate"
+                  type="date"
+                  placeholder="请选择支付期货保证金时间"
+                  value-format="yyyy-MM-dd">
+              </el-date-picker>
+            </el-form-item>
+            <el-form-item label="保证金金额" prop="moneyAmount">
+              <el-input v-model="form.moneyAmount" placeholder="请输入保证金金额"/>
             </el-form-item>
             <el-form-item label="对象" prop="target">
               <el-input v-model="form.target" placeholder="请输入对象(员工姓名、公司名称)"/>
@@ -149,15 +183,12 @@
               <!--          下拉框 员工 客户 供应商 其他-->
               <el-select v-model="form.targetType" placeholder="请选择对象类型">
                 <el-option
-                  v-for="dict in dict.type.order_target_type"
-                  :key="dict.value"
-                  :label="dict.label"
-                  :value="dict.value"
+                    v-for="dict in dict.type.order_target_type"
+                    :key="dict.value"
+                    :label="dict.label"
+                    :value="dict.value"
                 ></el-option>
               </el-select>
-            </el-form-item>
-            <el-form-item label="保证金金额" prop="moneyAmount">
-              <el-input v-model="form.moneyAmount" placeholder="请输入保证金金额"/>
             </el-form-item>
             <el-form-item label="对方账户" prop="targetAcountsName">
               <el-row>
@@ -213,15 +244,7 @@
               <el-input v-model="form.selfBankName" placeholder="请输入我方开户行"/>
             </el-form-item>
             <!--        时间选择-->
-            <el-form-item label="支付期货保证金时间" prop="futuresDate">
-              <!--          <el-input v-model="form.futuresDate" placeholder="请输入支付期货保证金时间"/>-->
-              <el-date-picker
-                v-model="form.futuresDate"
-                type="date"
-                placeholder="请选择支付期货保证金时间"
-                value-format="yyyy-MM-dd">
-              </el-date-picker>
-            </el-form-item>
+
             <el-form-item label="事由" prop="reason">
               <el-input v-model="form.reason" placeholder="请输入事由"/>
             </el-form-item>
@@ -250,8 +273,8 @@
             </el-button>
           </div>
           <el-table
-            :data="needGetBackMoneyList"
-            style="width: 100%" border v-loading="needMoneyLoading">
+              :data="needGetBackMoneyList"
+              style="width: 100%" border v-loading="needMoneyLoading">
             <!--            <el-table-column-->
             <!--              prop="id"-->
             <!--              label="ID"-->
@@ -263,28 +286,28 @@
             <!--              width="130">-->
             <!--            </el-table-column>-->
             <el-table-column
-              prop="moneyAmount"
-              label="收回金额">
+                prop="moneyAmount"
+                label="收回金额">
             </el-table-column>
             <el-table-column
-              prop="bankNo"
-              label="收回账号">
+                prop="bankNo"
+                label="收回账号">
             </el-table-column>
             <el-table-column
-              prop="acountsName"
-              label="收回账户">
+                prop="acountsName"
+                label="收回账户">
             </el-table-column>
             <el-table-column
-              prop="recoverDate"
-              label="还款日期">
+                prop="recoverDate"
+                label="还款日期">
             </el-table-column>
             <el-table-column
-              prop="bankNo"
-              label="还款账号">
+                prop="bankNo"
+                label="还款账号">
             </el-table-column>
             <el-table-column
-              prop="comments"
-              label="备注">
+                prop="comments"
+                label="备注">
             </el-table-column>
           </el-table>
         </el-card>
@@ -297,10 +320,10 @@
           </div>
           <!--内层-->
           <el-dialog
-            width="30%"
-            title="继续收款"
-            :visible.sync="innerVisible"
-            append-to-body>
+              width="30%"
+              title="继续收款"
+              :visible.sync="innerVisible"
+              append-to-body>
             <!-- 还款表单-->
             <el-form :model="currentRecoverMoneyInfo" class="demo-form-inline">
               <el-form-item label="收回账号" prop="bankNo">
@@ -315,9 +338,9 @@
               </el-form-item>
               <el-form-item label="收回日期" prop="payDate">
                 <el-date-picker
-                  v-model="currentRecoverMoneyInfo.recoverDate"
-                  type="date"
-                  placeholder="请选择收回日期" value-format="yyyy-MM-dd">
+                    v-model="currentRecoverMoneyInfo.recoverDate"
+                    type="date"
+                    placeholder="请选择收回日期" value-format="yyyy-MM-dd">
                 </el-date-picker>
               </el-form-item>
               <el-form-item label="备注信息" prop="comments">
@@ -334,9 +357,9 @@
 
     <!--    付款申请-->
     <el-dialog
-      title="付款申请"
-      :visible.sync="applyDialogVisible"
-      width="45%">
+        title="付款申请"
+        :visible.sync="applyDialogVisible"
+        width="45%">
       <ApplyPayment :table-name="TableName.LEND_MONEY" :t-i-d="tid" :need-money="needMoney"
                     :need-info="{}"
                     @changeOpen="applyDialogVisible = false"/>
@@ -404,16 +427,12 @@ export default {
         delFlag: null
       },
       // 表单参数
-      form: {},
+      form: {ishave: ''},
       // 表单校验
       rules: {
         // 添加校验
         futuresNO: [
           {required: true, message: "期货编号不能为空", trigger: "blur"}],
-
-        futuresMarginCompany: [
-          {required: true, message: "期货保证金公司不能为空", trigger: "blur"}],
-
         targetType: [
           {required: true, message: "对象类型不能为空", trigger: "blur"}],
 
@@ -565,11 +584,11 @@ export default {
         ...this.currentRecoverMoneyInfo, futuresNO: this.currentUUID
         , bankNo: this.currentBankNo, acountsName: this.currentAccountsName
       })
-        .then(res => {
-          this.$modal.msgSuccess("修改成功");
-          this.giveRecoverMoneyShow = false
-          this.innerVisible = false
-        }).catch(err => {
+          .then(res => {
+            this.$modal.msgSuccess("修改成功");
+            this.giveRecoverMoneyShow = false
+            this.innerVisible = false
+          }).catch(err => {
         this.$modal.msgError("修改失败:" + err.msg);
       })
 
@@ -631,7 +650,7 @@ export default {
         if (this.timesQuery.beginTime !== '' && this.timesQuery.endTime !== '') {
           if (this.timesQuery.objectType !== '') {
             return time_search >= time_start && time_search <=
-              time_end && item.targetType === this.timesQuery.objectType
+                time_end && item.targetType === this.timesQuery.objectType
           } else {
             return time_search >= time_start && time_search <= time_end
           }

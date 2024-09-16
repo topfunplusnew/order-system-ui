@@ -53,7 +53,7 @@
     </el-row>
 
     <el-table border v-loading="loading" :data="repaymentList" @selection-change="handleSelectionChange" id="printBox"
-              v-horizontal-scroll="'always'">
+              v-horizontal-scroll="'always'" size="mini" :cell-style="()=>{return {padding:'2px'}}">
       <!--      <el-table-column type="selection" width="55" align="center"/>-->
       <!--      <el-table-column label="id" align="center" prop="id"/>-->
       <!--      <el-table-column label="贷款编号" align="center" prop="loanNO" v-if="columns[0].visible"/>-->
@@ -64,18 +64,21 @@
       <el-table-column label="还款账户" align="center" prop="acountsName" v-if="columns[3].visible"/>
       <el-table-column label="还款账号" align="center" prop="bankNo" v-if="columns[4].visible"/>
       <el-table-column label="备注" align="center" prop="comments"/>
-      <!--      <el-table-column label="添加时间" align="center" prop="addtime"/>-->
-      <!--      <el-table-column label="操作人员ID" align="center" prop="userId"/>-->
-      <!--      <el-table-column label="操作人员姓名" align="center" prop="UserName"/>-->
-      <!--      <el-table-column label="删除标记" align="center" prop="delFlag"/>-->
       <el-table-column label="操作" align="center" class-name="small-padding fixed-width" fixed="right">
         <template slot-scope="scope">
           <el-button
             size="mini"
             type="warning"
             @click="applyForPayment(scope.row)"
-            v-hasPermi="['system:repayment:edit']"
+            v-if="scope.row.checkState ==='未申请'"
           >申请付款
+          </el-button>
+          <el-button
+            size="mini"
+            type="warning"
+            disabled
+            v-if="scope.row.checkState ==='审核中'"
+          >审核中
           </el-button>
           <!--          <el-button-->
           <!--            size="mini"-->

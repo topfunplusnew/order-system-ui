@@ -107,7 +107,7 @@
     </el-row>
 
     <el-table border v-loading="loading" :data="CustomerVisitList" @selection-change="handleSelectionChange"
-              id="printBox" v-horizontal-scroll="'always'">
+              id="printBox" v-horizontal-scroll="'always'" size="mini" :cell-style="()=>{return {padding:'2px'}}">
       <el-table-column label="id" align="center" prop="id" fixed="left"/>
       <el-table-column label="走访日期" align="center" prop="visitDate" fixed="left"/>
       <el-table-column label="是否审核" align="center" prop="isCheckState" v-if="columns[0].visible" fixed="left"
@@ -118,24 +118,22 @@
           </el-row>
           <el-row v-else>
             <el-row>
-              <el-tag type="danger">未审核</el-tag>
-            </el-row>
-            <br/>
-            <el-row>
               <el-button type="warning" @click="handleCheck(scope.row)" size="mini"
-                         v-hasPermi="['system:customervisit:audit']">去审核</el-button>
+                         v-hasPermi="['system:customervisit:audit']">去审核
+              </el-button>
             </el-row>
           </el-row>
         </template>
       </el-table-column>
       <el-table-column label="客户名称" align="center" prop="customer" v-if="columns[3].visible" fixed="left"
                        width="150px"/>
-      <el-table-column label="负责人姓名" align="center" prop="leaderName" v-if="columns[4].visible"/>
-      <el-table-column label="负责人电话" align="center" prop="LeaderTel" v-if="columns[5].visible"/>
-      <el-table-column label="厂房设备" align="center" prop="equipment" v-if="columns[6].visible"/>
-      <el-table-column label="竞争对手" align="center" prop="competitor" v-if="columns[7].visible"/>
-      <el-table-column label="当地经销商" align="center" prop="localDealer" v-if="columns[8].visible"/>
-      <el-table-column label="月用货量" align="center" prop="monthlyConsumption" v-if="columns[9].visible"/>
+      <el-table-column label="负责人姓名" align="center" prop="leaderName" v-if="columns[4].visible" width="150px"/>
+      <el-table-column label="负责人电话" align="center" prop="LeaderTel" v-if="columns[5].visible" width="150px"/>
+      <el-table-column label="厂房设备" align="center" prop="equipment" v-if="columns[6].visible" width="150px"/>
+      <el-table-column label="竞争对手" align="center" prop="competitor" v-if="columns[7].visible" width="150px"/>
+      <el-table-column label="当地经销商" align="center" prop="localDealer" v-if="columns[8].visible" width="150px"/>
+      <el-table-column label="月用货量" align="center" prop="monthlyConsumption" v-if="columns[9].visible"
+                       width="150px"/>
       <el-table-column label="白玻用货习惯及厂家" align="center" prop="whiteGlassFactory" v-if="columns[10].visible"
                        width="200px" show-overflow-tooltip/>
       <el-table-column label="lowe玻璃用货厂家及用量" align="center" prop="loweGlassConsumption"
@@ -464,7 +462,7 @@ export default {
     getList() {
       this.loading = true;
       //范围时间搜索方法
-      listCustomerVisit(this.addDateRange(this.queryParams, this.dateRange, 'visit',this.queryParams.region)).then(response => {
+      listCustomerVisit(this.addDateRange(this.queryParams, this.dateRange, 'visit', this.queryParams.region)).then(response => {
         this.CustomerVisitList = response.rows;
         this.total = response.total;
         this.loading = false;

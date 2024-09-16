@@ -142,7 +142,7 @@
     <!--    表格列-->
     <el-table fit border v-loading="loading" :data="goodsOrderList" @selection-change="handleSelectionChange"
               id="printBox" :row-class-name="tableRowClassName" v-horizontal-scroll="'always'"
-              max-height="750" size="mini" :cell-style="()=>{return {padding:'.5px'}}">
+              max-height="750" size="mini" :cell-style="()=>{return {padding:'2px'}}">
       <el-table-column show-overflow-tooltip label="行操作" align="center" class-name="small-padding fixed-width"
                        width="100px" fixed="left">
         <template slot-scope="scope">
@@ -267,16 +267,9 @@
             无操作
           </el-row>
           <el-row v-else>
-            <el-col :span="12">
-              <el-button size="mini" type="danger" @click="deletePath(scope.row.path)">
-                删除
-              </el-button>
-            </el-col>
-            <el-col :span="12">
-              <el-button size="mini" type="success" @click="checkAttachment(scope.row.path)">
-                查看
-              </el-button>
-            </el-col>
+            <el-button size="mini" type="success" @click="checkAttachment(scope.row.path)">
+              查看
+            </el-button>
           </el-row>
         </template>
       </el-table-column>
@@ -316,16 +309,9 @@
             无操作
           </el-row>
           <el-row v-else>
-            <el-col :span="12">
-              <el-button size="mini" type="danger" @click="deleteReceiveProof(scope.row.receiveProof)">
-                删除
-              </el-button>
-            </el-col>
-            <el-col :span="12">
-              <el-button size="mini" type="success" @click="checkAttachment(scope.row.receiveProof)">
-                查看
-              </el-button>
-            </el-col>
+            <el-button size="mini" type="success" @click="checkAttachment(scope.row.receiveProof)">
+              查看
+            </el-button>
           </el-row>
         </template>
       </el-table-column>
@@ -350,9 +336,6 @@
           </el-row>
           <el-row v-else>
             <el-row>
-              客户未开票
-            </el-row>
-            <el-row>
               <el-button type="success" size="mini" @click="openCustomerInvoice(scope.row)">去开票</el-button>
             </el-row>
           </el-row>
@@ -367,9 +350,6 @@
           </el-row>
           <el-row v-else>
             <el-row>
-              供应商未开票
-            </el-row>
-            <el-row>
               <el-button type="success" size="mini" @click="openSupplierInvoice(scope.row)">去开票</el-button>
             </el-row>
           </el-row>
@@ -378,7 +358,7 @@
       <el-table-column show-overflow-tooltip label="备注" align="center" prop="comments" v-if="columns[21].visible"/>
       <!--      右侧操作栏-->
       <el-table-column show-overflow-tooltip label="订单操作" align="center" class-name="small-padding fixed-width"
-                       width="230px"
+                       width="280px"
                        fixed="right">
         <template slot-scope="scope">
           <el-button
@@ -707,7 +687,7 @@
 
 
     <!--    订单打款申请-->
-    <el-dialog title="订单打款申请" :visible.sync="paymentApplyVisible" width="60%" append-to-body>
+    <el-dialog title="订单打款申请" :visible.sync="paymentApplyVisible" width="48%" append-to-body>
       <ApplyPayment :table-name="TableName.GOODS_ORDER" :t-i-d="tID" :need-money="needMoney"
                     :need-info="{}"
                     @changeOpen="paymentApplyVisible = false"/>

@@ -47,7 +47,7 @@ export default {
       addOrderFreight(this.form).then(res => {
         this.$message.success('运费信息添加成功~')
         setTimeout(() => {
-          this.$router.push('/order/orderFreight')
+          this.$router.push('/order/order/orderfreight')
         })
       })
       this.reset()
@@ -105,10 +105,10 @@ export default {
         </el-date-picker>
       </el-form-item>
       <el-form-item label="备注信息">
-        <el-input v-model="form.content"></el-input>
+        <el-input v-model="form.content" placeholder="请输入备注信息"></el-input>
       </el-form-item>
       <el-form-item label="附加备注">
-        <el-input v-model="form.comments"></el-input>
+        <el-input v-model="form.comments" placeholder="请输入附加备注"></el-input>
       </el-form-item>
       <el-form-item>
         <el-button type="primary" @click="onSubmit">添加运费信息</el-button>
