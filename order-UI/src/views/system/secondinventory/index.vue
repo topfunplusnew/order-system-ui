@@ -32,7 +32,6 @@
               size="mini"
               @click="printHTML"
             >
-
             </el-button>
           </el-col>
         </template>
@@ -62,13 +61,26 @@
             size="mini"
             type="warning"
             @click="secondInventory(scope.row)"
+            v-hasPermi="['system:secondinventory:add']"
           >二次入库
           </el-button>
           <el-button
             size="mini"
-            type="danger"
+            type="warning"
             @click="checkInvoInfo(scope.row)"
+            v-hasPermi="['system:secondinventory:list']"
           >查看库存信息
+          </el-button>
+          <el-button size="mini" type="primary" @click="handleUpdate(scope.row)"
+                     v-hasPermi="['system:secondinventory:edit']">
+            修改
+          </el-button>
+          <el-button
+            size="mini"
+            type="danger"
+            @click="handleDelete(scope.row)"
+            v-hasPermi="['system:secondinventory:remove']"
+          >删除
           </el-button>
         </template>
       </el-table-column>
@@ -85,17 +97,21 @@
     <!-- 添加或修改出库对话框 -->
     <el-dialog :title="title" :visible.sync="open" width="500px" append-to-body>
       <el-form ref="form" :model="form" :rules="rules" label-width="80px">
-        <el-form-item label="订单编号" prop="ordersNo">
-          <el-input v-model="form.ordersNo" placeholder="请输入订单编号"/>
-        </el-form-item>
+        <!--        <el-form-item label="订单编号" prop="ordersNo">-->
+        <!--          <el-input v-model="form.ordersNo" placeholder="请输入订单编号"/>-->
+        <!--        </el-form-item>-->
         <el-form-item label="仓库名称" prop="storeHouseName">
           <el-input v-model="form.storeHouseName" placeholder="请输入仓库名称"/>
         </el-form-item>
-        <el-form-item label="仓库存储的货物ID" prop="storeID">
-          <el-input v-model="form.storeID" placeholder="请输入仓库存储的货物ID"/>
-        </el-form-item>
+        <!--        <el-form-item label="仓库存储的货物ID" prop="storeID">-->
+        <!--          <el-input v-model="form.storeID" placeholder="请输入仓库存储的货物ID"/>-->
+        <!--        </el-form-item>-->
         <el-form-item label="出库日期" prop="outDate">
-          <el-input v-model="form.outDate" placeholder="请输入出库日期"/>
+          <el-date-picker
+            v-model="form.outDate"
+            type="date"
+            placeholder="选择日期" value-format="yyyy-MM-dd">
+          </el-date-picker>
         </el-form-item>
         <el-form-item label="出库量" prop="outAmount">
           <el-input v-model="form.outAmount" placeholder="请输入出库量"/>
@@ -110,7 +126,6 @@
 
     <!--    二次入库的弹窗-->
     <el-dialog title="二次入库" :visible.sync="secondInventoryVisible" append-to-body>
-      <!--      todo-->
       <InventoryForm :inventory-info="secondInventoryInfo" @changeInventoryInfo="handleCommitInventoryInfo"/>
       <div slot="footer" class="dialog-footer">
         <el-button type="primary" @click="handleChangeInventoryInfo">确 定</el-button>
@@ -413,12 +428,14 @@ export default {
       this.$refs["form"].validate(valid => {
         if (valid) {
           if (this.form.id != null) {
+            this.form = excludeParams(this.form, this.$exclude)
             updateExWarehouse(this.form).then(response => {
               this.$modal.msgSuccess("修改成功");
               this.open = false;
               this.getList();
             });
           } else {
+            this.form = excludeParams(this.form, this.$exclude)
             addExWarehouse(this.form).then(response => {
               this.$modal.msgSuccess("新增成功");
               this.open = false;

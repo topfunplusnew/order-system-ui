@@ -25,7 +25,7 @@
           icon="el-icon-plus"
           size="mini"
           @click="handleAdd"
-          v-hasPermi="['system:company:add']"
+          v-hasPermi="['system:supplier:add']"
         >新增供应商信息
         </el-button>
       </el-col>
@@ -36,6 +36,7 @@
           icon="el-icon-search"
           size="mini"
           @click="handleSearch"
+          v-hasPermi="['system:supplier:query']"
         >账号搜索
         </el-button>
       </el-col>
@@ -58,7 +59,7 @@
               icon="el-icon-folder-opened"
               size="mini"
               @click="handleExport"
-              v-hasPermi="['system:company:export']"
+              v-hasPermi="['system:supplier:export']"
             >
             </el-button>
           </el-col>
@@ -96,14 +97,14 @@
             size="mini"
             type="primary"
             @click="handleUpdate(scope.row)"
-            v-hasPermi="['system:company:edit']"
+            v-hasPermi="['system:supplier:edit']"
           >编辑
           </el-button>
           <el-button
             size="mini"
             type="danger"
             @click="handleDelete(scope.row)"
-            v-hasPermi="['system:company:remove']"
+            v-hasPermi="['system:supplier:remove']"
           >删除
           </el-button>
         </template>
@@ -237,13 +238,13 @@
               <el-button
                 size="mini"
                 @click="handleDeleteBankaccount(scope.row)"
-                v-hasPermi="['system:company:remove']"
+                v-hasPermi="['system:bankaccount:remove']"
               ><i class="el-icon-delete"></i>
               </el-button>
               <el-button
                 size="mini"
                 @click="addDefaultCard(scope.row)"
-                v-hasPermi="['system:company:edit']"
+                v-hasPermi="['system:bankaccount:edit']"
               >设置为默认
               </el-button>
             </template>
