@@ -197,7 +197,7 @@
       :visible.sync="addProductLevelOpen"
       width="30%">
       <!--      添加产品级别的表单-->
-      <el-form :model="addCategoryModel" ref="queryForm" size="small" label-width="68px">
+      <el-form :model="addCategoryModel" ref="queryForm" size="small" label-width="120px" :rules="rules">
         <!--        分类 也是字典数据-->
         <el-form-item label="分类" prop="categoryName">
           <el-select v-model="addCategoryModel.categoryName" placeholder="请选择分类名称">
@@ -331,7 +331,34 @@ export default {
       // 表单参数
       form: {},
       // 表单校验
-      rules: {},
+      rules: {
+        levelNo: [
+          {required: true, message: "级别编码不能为空", trigger: "blur"}
+        ],
+        levelName: [
+          {required: true, message: "级别名称不能为空", trigger: "blur"}
+        ],
+        categoryName: [
+          {
+            required: true, message: "分类名称不能为空", trigger: "blur"
+          }],
+        height: [
+          {
+            required: true, message: "厚度不能为空", trigger: "blur"
+          }],
+        length: [
+          {
+            required: true, message: "长度不能为空", trigger: "blur"
+          }],
+        width: [
+          {
+            required: true, message: "宽度不能为空", trigger: "blur"
+          }],
+        tonnage: [
+          {
+            required: true, message: "吨位不能为空", trigger: "blur"
+          }],
+      },
       test: [],
       columns: [
         {key: 0, label: `级别编码`, visible: true},

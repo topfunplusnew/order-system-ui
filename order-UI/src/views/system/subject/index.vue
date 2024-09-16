@@ -277,6 +277,8 @@ export default {
         type: [
           {required: true, message: "科目类别不能为空", trigger: "change"}
         ],
+        subjectNo: [
+          {required: true, message: "编号不能为空", trigger: "blur"}]
       },
       //测试数据
       test_data: [{
@@ -357,22 +359,26 @@ export default {
       data.children = this.handleTree(response.data, "id", "parentId");
       this.titleOptions.push(data);
     });
-  },
+  }
+  ,
 
   computed: {
     //利用computed做中间层
     formId() {
       return this.form.parentId
     }
-  },
+  }
+  ,
   watch: {
     //展示与隐藏
     columns: {
       handler: (newVal) => {
         localStorage.setItem("subject-columns", JSON.stringify(newVal))
       },
-      deep: true,
-    },
+      deep:
+        true,
+    }
+    ,
     formId: {
       //handler不该用箭头函数 会拿不到this
       handler: function (val) {
@@ -393,20 +399,24 @@ export default {
         }
       }
     }
-  },
+  }
+  ,
   methods: {
     //添加科目分类
     handleAddType() {
       this.openType = true;
-    },
+    }
+    ,
     // 级联选择器
     handleChange() {
 
-    },
+    }
+    ,
 
     //点击某个树的节点
     handleNodeClick(data) {
-    },
+    }
+    ,
     /** 查询科目列表 */
     getList() {
       this.loading = true;

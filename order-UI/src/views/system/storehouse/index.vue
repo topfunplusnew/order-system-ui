@@ -149,7 +149,14 @@ export default {
       // 表单参数
       form: {},
       // 表单校验
-      rules: {},
+      rules: {
+        storeHouseName: [
+          {required: true, message: "仓库名称不能为空", trigger: "blur"}
+        ],
+        address: [
+          {required: true, message: "地址不能为空", trigger: "blur"}
+        ]
+      },
       columns: [
         {key: 0, label: `仓库名称`, visible: true},
         {key: 1, label: `地址`, visible: true},

@@ -154,7 +154,7 @@
 
     <!-- 添加或修改加油卡信息对话框 -->
     <el-dialog :title="title" :visible.sync="open" width="500px" append-to-body>
-      <el-form ref="form" :model="form" :rules="rules" label-width="80px">
+      <el-form ref="form" :model="form" :rules="rules" label-width="120px">
         <el-form-item label="加油卡卡号" prop="oilCardNo">
           <el-input v-model="form.oilCardNo" placeholder="请输入加油卡卡号"/>
         </el-form-item>
@@ -307,7 +307,17 @@ export default {
         rechargeName: ''
       },
       // 表单校验
-      rules: {},
+      rules: {
+        oilCardNo: [
+          {required: true, message: "加油卡卡号不能为空", trigger: "blur"}
+        ],
+        oilType: [
+          {required: true, message: "加油卡类别不能为空", trigger: "blur"}
+        ],
+        moneyAmount: [
+          {required: true, message: "加油金额不能为空", trigger: "blur"}
+        ]
+      },
       columns: [
         {key: 0, label: `加油卡卡号`, visible: true},
         {key: 1, label: `当前金额`, visible: true},

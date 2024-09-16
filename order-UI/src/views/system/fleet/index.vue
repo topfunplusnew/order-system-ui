@@ -121,7 +121,7 @@
 
     <!-- 添加或修改车队对话框 -->
     <el-dialog :title="title" :visible.sync="open" width="500px" append-to-body>
-      <el-form ref="form" :model="form" :rules="rules" label-width="80px">
+      <el-form ref="form" :model="form" :rules="rules" label-width="120px">
         <el-form-item label="车队名称" prop="fName">
           <el-input v-model="form.fName" placeholder="请输入车队名称"/>
         </el-form-item>
@@ -134,15 +134,6 @@
         <el-form-item label="地址" prop="address">
           <el-input v-model="form.address" placeholder="请输入地址"/>
         </el-form-item>
-        <!--        <el-form-item label="添加时间" prop="addtime">
-                  <el-input v-model="form.addtime" placeholder="请输入添加时间" />
-                </el-form-item>
-                <el-form-item label="编辑时间" prop="editTime">
-                  <el-input v-model="form.editTime" placeholder="请输入编辑时间" />
-                </el-form-item>-->
-        <!--        <el-form-item label="删除标记" prop="delFlag">
-                  <el-input v-model="form.delFlag" placeholder="请输入删除标记" />
-                </el-form-item>-->
       </el-form>
       <div slot="footer" class="dialog-footer">
         <el-button type="primary" @click="submitForm">确 定</el-button>
@@ -192,7 +183,25 @@ export default {
       // 表单参数
       form: {},
       // 表单校验
-      rules: {},
+      rules: {
+        // 添加校验
+        fName: [
+          {required: true, message: '车队名称不能为空', trigger: 'blur'}
+
+        ],
+        fLeader: [
+          {required: true, message: '车队经理不能为空', trigger: 'blur'}
+
+        ],
+        tel: [
+          {required: true, message: '车队经理电话不能为空', trigger: 'blur'}
+
+        ],
+        address: [
+          {required: true, message: '地址不能为空', trigger: 'blur'}
+
+        ],
+      },
       columns: [
         {key: 0, label: `车队名称`, visible: true},
         {key: 1, label: `车队经理`, visible: true},

@@ -142,7 +142,10 @@ export default {
         delFlag: null
       },
       form: {},
-      rules: {}
+      rules: {
+        carNo: [
+          {required: true, message: "车牌号不能为空", trigger: "blur"}]
+      }
       ,
       options: [
         {

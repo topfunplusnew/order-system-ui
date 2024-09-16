@@ -104,7 +104,7 @@
 
     <!-- 添加或修改外部车辆信息对话框 -->
     <el-dialog :title="title" :visible.sync="open" width="500px" append-to-body>
-      <el-form ref="form" :model="form" :rules="rules" label-width="80px">
+      <el-form ref="form" :model="form" :rules="rules" label-width="120px">
         <el-form-item label="车牌" prop="carNo">
           <el-input v-model="form.carNo" placeholder="请输入车牌"/>
         </el-form-item>
@@ -177,7 +177,41 @@ export default {
         delFlag: null
       },
       form: {},
-      rules: {}
+      rules: {
+        carNo: [
+          {required: true, message: "车牌号不能为空", trigger: "blur"}
+        ],
+        driver: [
+          {required: true, message: "司机姓名不能为空", trigger: "blur"}
+        ],
+        tel: [
+          {required: true, message: "司机电话不能为空", trigger: "blur"}
+
+        ],
+        bankName: [
+          {required: true, message: "开户行不能为空", trigger: "blur"}
+
+        ],
+        carsName: [
+          {required: true, message: "车辆名称不能为空", trigger: "blur"}
+
+        ],
+        bankNo: [
+          {required: true, message: "银行卡号不能为空", trigger: "blur"}
+
+        ],
+        acountsName: [
+          {
+            required: true, message: "开户名不能为空", trigger: "blur"
+
+          }],
+        acountsType: [
+          {required: true, message: "账号类型不能为空", trigger: "blur"}
+        ],
+        carType: [
+          {required: true, message: "运输类型不能为空", trigger: "blur"}
+        ]
+      }
       ,
       options: [
         {

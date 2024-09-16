@@ -440,9 +440,41 @@ export default {
       },
       form: {},
       rules: {
-        surplusMoney: [
-          {required: true, message: "余额不能为空", trigger: "blur"}
+        companyName: [
+          {required: true, message: "公司名称不能为空", trigger: "blur"}
         ],
+        relationName: [
+          {required: true, message: "联系人姓名不能为空", trigger: "blur"}
+        ],
+        relationTel: [
+          {
+            required: true, message: "联系人电话不能为空", trigger: "blur"
+          }
+        ],
+        address: [
+          {required: true, message: "公司地址不能为空", trigger: "blur"}
+        ],
+        salesman: [
+          {required: true, message: "业务员不能为空", trigger: "blur"}
+        ],
+        leader: [
+          {required: true, message: "老板姓名不能为空", trigger: "blur"}
+        ],
+        leaderTel: [
+          {required: true, message: "老板电话不能为空", trigger: "blur"}
+        ],
+        salesManager: [
+          {required: true, message: "销售经理不能为空", trigger: "blur"}
+        ],
+        province: [
+          {required: true, message: "省份信息不能为空", trigger: "blur"}
+        ],
+        city: [
+          {required: true, message: "市县信息不能为空", trigger: "blur"}
+        ],
+        county: [
+          {required: true, message: "乡镇不能为空", trigger: "blur"}
+        ]
       },
       columns: [
         {key: 0, label: `客户`, visible: true},

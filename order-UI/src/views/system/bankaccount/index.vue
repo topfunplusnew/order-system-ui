@@ -134,7 +134,7 @@
 
     <!-- 添加或修改银行账号对话框 -->
     <el-dialog :title="title" :visible.sync="open" width="500px" append-to-body>
-      <el-form ref="form" :model="form" :rules="rules" label-width="80px">
+      <el-form ref="form" :model="form" :rules="rules" label-width="120px">
         <el-form-item label="账号类型" prop="acountsType">
           <el-select v-model="form.acountsType" placeholder="请选择账号类型">
             <el-option
@@ -347,7 +347,34 @@ export default {
         acountsType: ''
       },
       // 表单校验
-      rules: {},
+      rules: {
+        //
+
+        bankNo: [
+          {required: true, message: "银行账号不能为空", trigger: "blur"}
+
+        ],
+        bankName: [
+          {required: true, message: "开户行不能为空", trigger: "blur"}
+
+        ],
+        acountsName: [
+          {required: true, message: "账户名称不能为空", trigger: "blur"}
+
+        ],
+        acountsType: [
+          {required: true, message: "账户类型不能为空", trigger: "blur"}
+
+        ],
+        companyName: [
+          {required: true, message: "公司名称不能为空", trigger: "blur"}
+
+        ],
+        companyType: [
+          {required: true, message: "公司类型不能为空", trigger: "blur"}
+
+        ],
+      },
       options: [
         {
           value: '己方公司',

@@ -121,11 +121,11 @@
 
     <!-- 添加或修改供应商、供应商信息对话框 -->
     <el-dialog :title="title" :visible.sync="open" width="54%" append-to-body>
-      <el-form ref="form" :model="form" :rules="rules" label-width="80px">
+      <el-form ref="form" :model="form" :rules="rules" label-width="120px">
         <el-row :gutter="4">
           <el-col :span="12">
             <el-form-item label="供应商名称" prop="relationName">
-              <el-input v-model="form.companyName" placeholder="请输入供应商名称"/>
+              <el-input v-model="form.relationName" placeholder="请输入供应商名称"/>
             </el-form-item>
             <el-form-item label="公司名称" prop="companyName">
               <el-input v-model="form.companyName" placeholder="请输入公司名称"/>
@@ -451,9 +451,41 @@ export default {
       form: {},
       // 表单校验
       rules: {
-        surplusMoney: [
-          {required: true, message: "余额不能为空", trigger: "blur"}
+        companyName: [
+          {required: true, message: "公司名称不能为空", trigger: "blur"}
         ],
+        relationName: [
+          {required: true, message: "供应商名称不能为空", trigger: "blur"}
+        ],
+        relationTel: [
+          {
+            required: true, message: "联系人电话不能为空", trigger: "blur"
+          }
+        ],
+        address: [
+          {required: true, message: "公司地址不能为空", trigger: "blur"}
+        ],
+        salesman: [
+          {required: true, message: "业务员不能为空", trigger: "blur"}
+        ],
+        leader: [
+          {required: true, message: "老板姓名不能为空", trigger: "blur"}
+        ],
+        leaderTel: [
+          {required: true, message: "老板电话不能为空", trigger: "blur"}
+        ],
+        salesManager: [
+          {required: true, message: "销售经理不能为空", trigger: "blur"}
+        ],
+        province: [
+          {required: true, message: "省份信息不能为空", trigger: "blur"}
+        ],
+        city: [
+          {required: true, message: "市县信息不能为空", trigger: "blur"}
+        ],
+        county: [
+          {required: true, message: "乡镇不能为空", trigger: "blur"}
+        ]
       },
       columns: [
         {key: 0, label: `供应商`, visible: true},
