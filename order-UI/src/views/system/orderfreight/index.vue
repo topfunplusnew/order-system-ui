@@ -195,7 +195,7 @@
           <el-input v-model="form.otherBankName" placeholder="请输入对方开户行"/>
         </el-form-item>
         <el-form-item label="备注">
-          <editor v-model="form.content" :min-height="192"/>
+          <el-input v-model="form.content" placeholder="请输入备注"/>
         </el-form-item>
         <el-form-item label="司机姓名" prop="driverName">
           <el-input v-model="form.driverName" placeholder="请输入司机姓名"/>
@@ -220,21 +220,27 @@
           </el-row>
         </el-form-item>
         <el-form-item label="车队" prop="fleet">
-          <el-input v-model="form.fleet" placeholder="请输入车队"/>
+          <el-col :span="20">
+            <el-input v-model="form.fleet" placeholder="请输入车队"/>
+          </el-col>
+          <el-col :span="4">
+            <SearchOption :limit-info="{}"
+                          :get-data="listFleet" query-label="车队名称搜索"
+                          :query-name="queryFleet"
+                          query-info="fName"
+                          @update:queryName="updateQueryFleet"
+                          @commitBack="handleCommitBackFleet">
+              <template #table-columns>
+                <el-table-column label="车牌" prop="dictLabel"/>
+              </template>
+            </SearchOption>
+          </el-col>
         </el-form-item>
         <el-form-item label="申请日期" prop="applyDate">
           <el-date-picker
             v-model="form.applyDate"
             type="date"
             placeholder="请选择申请日期"
-            value-format="yyyy-MM-dd">
-          </el-date-picker>
-        </el-form-item>
-        <el-form-item label="付款日期" prop="payDate">
-          <el-date-picker
-            v-model="form.payDate"
-            type="date"
-            placeholder="请选择付款日期"
             value-format="yyyy-MM-dd">
           </el-date-picker>
         </el-form-item>
@@ -264,6 +270,7 @@ import ApplyPayment from "@/components/ApplyPayment.vue";
 import {TableName} from "@/api/tool/enums";
 import {addDateRange} from "@/utils/ruoyi";
 import {listData} from "@/api/system/dict/data";
+import {listFleet} from "@/api/system/fleet";
 
 export default {
   name: "OrderFreight",
@@ -357,7 +364,8 @@ export default {
       applyInfo: null,
       applyPaymentVisible: false,
       queryCompany: '',
-      queryCars: ''
+      queryCars: '',
+      queryFleet: '',
     };
   },
   created() {
@@ -380,6 +388,7 @@ export default {
     }
   },
   methods: {
+    listFleet,
     listData,
     listBankAccount,
     //己方公司点击确定的回调
@@ -421,6 +430,12 @@ export default {
       this.tID = null;
       this.freight = null;
       done();
+    },
+    handleCommitBackFleet(val) {
+      this.form.fleet = val.fName;
+    },
+    updateQueryFleet(val) {
+      this.queryFleet = val
     },
     //添加海运费或者陆运费
     applyForLand(row) {
