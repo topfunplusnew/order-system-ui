@@ -2,10 +2,10 @@
   <div class="sidebar-logo-container" :class="{'collapse':collapse}" :style="{ backgroundColor: variables.menuLightBackground }">
     <transition name="sidebarLogoFade">
       <router-link v-if="collapse" key="collapse" class="sidebar-logo-link" to="/">
-        <h1 class="sidebar-title" :style="{ color:  variables.logoLightTitleColor }">{{ title }} </h1>
+        <h1 class="sidebar-title" :style="{ color:  '#156fb2' }">{{ title }} </h1>
       </router-link>
       <router-link v-else key="expand" class="sidebar-logo-link" to="/">
-        <h1 class="sidebar-title" :style="{ color: variables.logoLightTitleColor }">{{ title }} </h1>
+        <h1 class="sidebar-title" :style="{ color: '#156fb2' }">{{ title }} </h1>
       </router-link>
     </transition>
   </div>
