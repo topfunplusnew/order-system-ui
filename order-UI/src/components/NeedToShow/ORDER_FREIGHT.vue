@@ -29,9 +29,9 @@ export default {
       <el-descriptions-item label="对方开户行">{{ needToShow.otherBankName }}</el-descriptions-item>
       <el-descriptions-item label="支付状态">{{ needToShow.paymentState }}</el-descriptions-item>
       <el-descriptions-item label="司机姓名">{{ needToShow.driverName }}</el-descriptions-item>
-      <el-descriptions-item label="车牌号">{{ needToShow.CarNo }}</el-descriptions-item>
+      <el-descriptions-item label="车牌号">{{ needToShow.carNo }}</el-descriptions-item>
       <el-descriptions-item label="车队">{{ needToShow.fleet }}</el-descriptions-item>
-      <el-descriptions-item label="付款人员姓名">{{ needToShow.payUserName }}</el-descriptions-item>
+      <!--      <el-descriptions-item label="付款人员姓名">{{ needToShow.payUserName }}</el-descriptions-item>-->
       <el-descriptions-item label="备注">{{ needToShow.comments }}</el-descriptions-item>
     </el-descriptions>
   </div>

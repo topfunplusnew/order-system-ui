@@ -82,7 +82,7 @@
       </el-table-column>
       <el-table-column label="司机姓名" align="center" prop="driverName" v-if="columns[8].visible" width="100"/>
       <!--      <el-table-column label="司机ID" align="center" prop="driverId"/>-->
-      <el-table-column label="车牌号" align="center" prop="CarNo" v-if="columns[9].visible" width="100"/>
+      <el-table-column label="车牌号" align="center" prop="carNo" v-if="columns[9].visible" width="100"/>
       <el-table-column label="车队" align="center" prop="fleet" v-if="columns[10].visible" width="100"/>
       <!--      <el-table-column label="申请人员ID" align="center" prop="applyUserId"/>-->
       <el-table-column label="申请人员姓名" align="center" prop="applyUserName" v-if="columns[11].visible" width="100"/>
@@ -120,6 +120,7 @@
           </el-button>
           <el-button
             size="mini"
+            type="primary"
             @click="handleUpdate(scope.row)"
             v-hasPermi="['system:orderfreight:edit']"
           >修改
@@ -200,10 +201,10 @@
         <el-form-item label="司机姓名" prop="driverName">
           <el-input v-model="form.driverName" placeholder="请输入司机姓名"/>
         </el-form-item>
-        <el-form-item label="车牌号" prop="CarNo">
+        <el-form-item label="车牌号" prop="carNo">
           <el-row>
             <el-col :span="20">
-              <el-input v-model="form.CarNo" placeholder="请输入车牌号"/>
+              <el-input v-model="form.carNo" placeholder="请输入车牌号"/>
             </el-col>
             <el-col :span="4">
               <SearchOption :limit-info="{dictType:'order_cars'}"
@@ -244,6 +245,14 @@
             value-format="yyyy-MM-dd">
           </el-date-picker>
         </el-form-item>
+        <el-form-item label="付款日期" prop="payDate">
+          <el-date-picker
+            v-model="form.payDate"
+            type="date"
+            placeholder="请选择付款日期"
+            value-format="yyyy-MM-dd">
+          </el-date-picker>
+        </el-form-item>
         <el-form-item label="备注" prop="comments">
           <el-input v-model="form.comments" placeholder="请输入备注"/>
         </el-form-item>
@@ -271,6 +280,7 @@ import {TableName} from "@/api/tool/enums";
 import {addDateRange} from "@/utils/ruoyi";
 import {listData} from "@/api/system/dict/data";
 import {listFleet} from "@/api/system/fleet";
+import {excludeParams} from "@/api/tool/exclude";
 
 export default {
   name: "OrderFreight",
@@ -415,7 +425,7 @@ export default {
       this.form.attachment = val;
     },
     handleCommitBackCars(val) {
-      this.form.CarNo = val.dictLabel
+      this.form.carNo = val.dictLabel
     },
     updateQueryCars(val) {
       this.queryCars = val;
@@ -547,12 +557,14 @@ export default {
       this.$refs["form"].validate(valid => {
         if (valid) {
           if (this.form.id != null) {
+            this.form = excludeParams(this.form, this.$exclude)
             updateOrderFreight(this.form).then(response => {
               this.$modal.msgSuccess("修改成功");
               this.open = false;
               this.getList();
             });
           } else {
+            this.form = excludeParams(this.form, this.$exclude)
             addOrderFreight(this.form).then(response => {
               this.$modal.msgSuccess("新增成功");
               this.open = false;

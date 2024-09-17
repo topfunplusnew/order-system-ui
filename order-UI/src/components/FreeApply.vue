@@ -6,6 +6,8 @@ import {listCompany} from "@/api/system/company";
 import {listBankAccount} from "@/api/system/bankAccount";
 import {reset} from "chalk";
 import {getCars} from "@/api/system/cars";
+import {parseTime} from "@/utils/ruoyi";
+import {mapGetters} from "vuex";
 
 export default {
   name: "FreeApply",
@@ -27,6 +29,7 @@ export default {
     }
   },
   created() {
+    console.log('运费信息', this.orderInfo)
     this.reset();
     getCars(this.orderInfo.driverId).then(res => {
       setTimeout(() => {
@@ -37,14 +40,17 @@ export default {
       }, 50)
     })
   },
+  computed: {
+    ...mapGetters(['trueName'])
+  },
   methods: {
     listBankAccount,
     listCompany,
     //提交运费信息
     onSubmit() {
       Object.assign(this.form, this.orderInfo)
-      //发送请求 添加运费信息
-      addOrderFreight(this.form).then(res => {
+      //发送请求 添加运费信息 applyDate为现在
+      addOrderFreight({...this.form, applyDate: parseTime(new Date()), applyUserName: this.trueName}).then(res => {
         this.$message.success('运费信息添加成功~')
         setTimeout(() => {
           this.$router.push('/order/order/orderfreight')
@@ -101,7 +107,7 @@ export default {
         <el-date-picker
           v-model="form.payDate"
           type="date"
-          placeholder="选择日期" value-format="timestamp">
+          placeholder="选择日期" value-format="yyyy-MM-dd">
         </el-date-picker>
       </el-form-item>
       <el-form-item label="备注信息">
