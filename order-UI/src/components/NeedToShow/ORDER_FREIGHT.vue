@@ -24,9 +24,6 @@ export default {
     <el-descriptions title="订单运费信息">
       <el-descriptions-item label="运费类型">{{ needToShow.freightType }}</el-descriptions-item>
       <el-descriptions-item label="金额">{{ needToShow.moneyAmount }}</el-descriptions-item>
-      <el-descriptions-item label="己方户名">{{ needToShow.selfAcountsName }}</el-descriptions-item>
-      <el-descriptions-item label="己方账号">{{ needToShow.selfBankNo }}</el-descriptions-item>
-      <el-descriptions-item label="己方开户行">{{ needToShow.selfBankName }}</el-descriptions-item>
       <el-descriptions-item label="对方户名">{{ needToShow.otherAcountsName }}</el-descriptions-item>
       <el-descriptions-item label="对方账号">{{ needToShow.otherBankNo }}</el-descriptions-item>
       <el-descriptions-item label="对方开户行">{{ needToShow.otherBankName }}</el-descriptions-item>

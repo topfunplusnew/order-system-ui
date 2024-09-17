@@ -53,8 +53,9 @@
             <el-input v-model="form.otherAcountsName" placeholder="请输入对方户名" :disabled="bankInputDisabled"/>
           </el-col>
           <el-col :span="3" v-if="bankInputDisabled === false">
-            <SearchOption :get-data="listCompany" icon="el-icon-search" @commitBack="handleCommitBack"
-                          :limit-info="{}" query-label="户名查找" query-info="acountsName" :query-name="queryCompany"
+            <SearchOption :get-data="listBankAccount" icon="el-icon-search" @commitBack="handleCommitBack"
+                          :limit-info="{}" query-label="户名查找" query-info="acountsName"
+                          :query-name="queryCompany"
                           @update:queryName="handleUpdateQueryName">
               <template #table-columns>
                 <el-table-column label="公司名称" align="center" prop="companyName"/>
@@ -209,6 +210,10 @@ export default {
     if (this.tableName === 'oilrecharge') {
       this.form.companyType = '其他'
     }
+    // 如果是运费申请公司类型为司机
+    if (this.tableName === 'orderfreight') {
+      this.form.companyType = '司机'
+    }
   },
   mounted() {
     console.log('传入信息', this.needInfo, this.needMoney)
@@ -309,6 +314,7 @@ export default {
     }
   },
   methods: {
+    listBankAccount,
     listCompany,
     //点击一级分类后的回调
     handleSelectOneLevel(value) {
