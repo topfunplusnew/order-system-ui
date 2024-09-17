@@ -143,10 +143,109 @@
       @pagination="getList"
     />
     <!--    created第一次传递的props，然后监听后来props的变化-->
-    <el-dialog title="运费付款申请" :visible.sync="open" width="500px"
+    <el-dialog title="运费付款申请" :visible.sync="applyPaymentVisible" width="500px"
                append-to-body :before-close="beforeCloseApply">
       <ApplyPayment :tableName="TableName.ORDER_FREIGHT" :t-i-d="tID"
-                    :need-info="{...applyInfo,isExit:true}" :need-money="freight" @changeOpen="open = false"/>
+                    :need-info="{...applyInfo,isExit:true}" :need-money="freight"
+                    @changeOpen="applyPaymentVisible = false"/>
+    </el-dialog>
+
+    <el-dialog :title="title" :visible.sync="open" width="500px" append-to-body>
+      <el-form ref="form" :model="form" :rules="rules" label-width="80px">
+        <!--        <el-form-item label="订单编号" prop="ordersNo">-->
+        <!--          <el-input v-model="form.ordersNo" placeholder="请输入订单编号"/>-->
+        <!--        </el-form-item>-->
+        <el-form-item label="金额" prop="moneyAmount">
+          <el-input v-model="form.moneyAmount" placeholder="请输入金额"/>
+        </el-form-item>
+        <!--        <el-form-item label="己方户名" prop="selfAcountsName">-->
+        <!--          <el-input v-model="form.selfAcountsName" placeholder="请输入己方户名"/>-->
+        <!--        </el-form-item>-->
+        <!--        <el-form-item label="己方账号" prop="selfBankNo">-->
+        <!--          <el-input v-model="form.selfBankNo" placeholder="请输入己方账号"/>-->
+        <!--        </el-form-item>-->
+        <!--        <el-form-item label="己方开户行" prop="selfBankName">-->
+        <!--          <el-input v-model="form.selfBankName" placeholder="请输入己方开户行"/>-->
+        <!--        </el-form-item>-->
+        <el-form-item label="对方户名" prop="otherAcountsName">
+          <el-row>
+            <el-col :span="10">
+              <el-input v-model="form.otherAcountsName" placeholder="请输入对方户名" :disabled="bankInputDisabled"/>
+            </el-col>
+            <el-col :span="3" v-if="bankInputDisabled === false">
+              <SearchOption :get-data="listBankAccount" icon="el-icon-search" @commitBack="handleCommitBack"
+                            :limit-info="{}" query-label="户名查找" query-info="acountsName"
+                            :query-name="queryCompany"
+                            @update:queryName="handleUpdateQueryName">
+                <template #table-columns>
+                  <el-table-column label="公司名称" align="center" prop="companyName"/>
+                  <el-table-column label="公司类型" align="center" prop="companyType"/>
+                  <el-table-column label="开户行" align="center" prop="bankName"/>
+                  <el-table-column label="开户名" align="center" prop="acountsName"/>
+                  <el-table-column label="账号" align="center" prop="bankNo"/>
+                </template>
+              </SearchOption>
+            </el-col>
+          </el-row>
+        </el-form-item>
+        <el-form-item label="对方账号" prop="otherBankNo">
+          <el-input v-model="form.otherBankNo" placeholder="请输入对方账号"/>
+        </el-form-item>
+        <el-form-item label="对方开户行" prop="otherBankName">
+          <el-input v-model="form.otherBankName" placeholder="请输入对方开户行"/>
+        </el-form-item>
+        <el-form-item label="备注">
+          <editor v-model="form.content" :min-height="192"/>
+        </el-form-item>
+        <el-form-item label="司机姓名" prop="driverName">
+          <el-input v-model="form.driverName" placeholder="请输入司机姓名"/>
+        </el-form-item>
+        <el-form-item label="车牌号" prop="CarNo">
+          <el-row>
+            <el-col :span="20">
+              <el-input v-model="form.CarNo" placeholder="请输入车牌号"/>
+            </el-col>
+            <el-col :span="4">
+              <SearchOption :limit-info="{dictType:'order_cars'}"
+                            :get-data="listData" query-label="车牌搜索"
+                            :query-name="queryCars"
+                            query-info="dictLabel"
+                            @update:queryName="updateQueryCars"
+                            @commitBack="handleCommitBackCars">
+                <template #table-columns>
+                  <el-table-column label="车牌" prop="dictLabel"/>
+                </template>
+              </SearchOption>
+            </el-col>
+          </el-row>
+        </el-form-item>
+        <el-form-item label="车队" prop="fleet">
+          <el-input v-model="form.fleet" placeholder="请输入车队"/>
+        </el-form-item>
+        <el-form-item label="申请日期" prop="applyDate">
+          <el-date-picker
+            v-model="form.applyDate"
+            type="date"
+            placeholder="请选择申请日期"
+            value-format="yyyy-MM-dd">
+          </el-date-picker>
+        </el-form-item>
+        <el-form-item label="付款日期" prop="payDate">
+          <el-date-picker
+            v-model="form.payDate"
+            type="date"
+            placeholder="请选择付款日期"
+            value-format="yyyy-MM-dd">
+          </el-date-picker>
+        </el-form-item>
+        <el-form-item label="备注" prop="comments">
+          <el-input v-model="form.comments" placeholder="请输入备注"/>
+        </el-form-item>
+      </el-form>
+      <div slot="footer" class="dialog-footer">
+        <el-button type="primary" @click="submitForm">确 定</el-button>
+        <el-button @click="cancel">取 消</el-button>
+      </div>
     </el-dialog>
   </div>
 </template>
@@ -164,6 +263,7 @@ import {listBankAccount} from "@/api/system/bankAccount";
 import ApplyPayment from "@/components/ApplyPayment.vue";
 import {TableName} from "@/api/tool/enums";
 import {addDateRange} from "@/utils/ruoyi";
+import {listData} from "@/api/system/dict/data";
 
 export default {
   name: "OrderFreight",
@@ -251,10 +351,13 @@ export default {
         {key: 16, label: `备注`, visible: true},
       ],
 
-
+      bankInputDisabled: false,
       tID: null,
       freight: null,
       applyInfo: null,
+      applyPaymentVisible: false,
+      queryCompany: '',
+      queryCars: ''
     };
   },
   created() {
@@ -277,6 +380,7 @@ export default {
     }
   },
   methods: {
+    listData,
     listBankAccount,
     //己方公司点击确定的回调
     handleCommitSelfBackBank(val) {
@@ -288,6 +392,28 @@ export default {
       this.form.otherAcountsName = val.acountsName;
       this.form.otherBankNo = val.bankNo;
       this.form.otherBankName = val.bankName
+    },
+    handleCommitBack(val) {
+      this.form.otherBankNo = val.bankNo;
+      this.form.otherBankName = val.bankName;
+      this.form.companyName = val.companyName;
+      this.form.companyId = val.id;
+      this.form.otherAcountsName = val.acountsName;
+      this.form.companyType = val.companyType
+    },
+    //上传的回调函数
+    handleCommitUpload(val) {
+      this.form.attachment = val;
+    },
+    handleCommitBackCars(val) {
+      this.form.CarNo = val.dictLabel
+    },
+    updateQueryCars(val) {
+      this.queryCars = val;
+    },
+    //update
+    handleUpdateQueryName(val) {
+      this.queryCompany = val;
     },
     //关闭之前的回调 关闭之前就给状态赋空 done()
     beforeCloseApply(done) {
@@ -302,14 +428,14 @@ export default {
       this.applyInfo = row;
       this.tID = row.id
       this.freight = Number(row.moneyAmount);
-      this.open = true;
+      this.applyPaymentVisible = true;
     },
     applyForSea(row) {
       console.log(row)
       this.applyInfo = row;
       this.tID = row.id
       this.freight = Number(row.moneyAmount);
-      this.open = true;
+      this.applyPaymentVisible = true;
     },
     /** 查询订单运费列表 */
     getList() {
