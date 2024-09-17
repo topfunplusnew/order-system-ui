@@ -127,6 +127,128 @@
 
     <!-- 添加或修改社保基金对话框 -->
     <el-dialog title="社保基金" :visible.sync="open" append-to-body width="80%">
+      <el-row>
+        <el-col :span="1.5">
+          <el-button type="primary" size="mini" @click="addSocialInsure">添加人员社保基金信息</el-button>
+        </el-col>
+      </el-row>
+      <br/>
+      <el-table
+        :data="socialInsuranceItemsList"
+        style="width: 100%" size="mini"
+        :span-method="objectSpanMethod">
+        <!--        本月缴纳基数-->
+        <el-table-column :label="'本月缴纳基数:'+ basicSocialInsurance">
+          <el-table-column
+            prop="employeeName"
+            label="姓名"
+            width="120">
+          </el-table-column>
+          <!--          缴纳社保和停止社保时间-->
+          <el-table-column label="缴纳社保和停止社保时间" prop="name" width="120">
+            <el-table-column
+              prop="isRecruiting"
+              label="是否增员"
+              width="120">
+            </el-table-column>
+            <!--            <el-table-column-->
+            <!--              prop="city"-->
+            <!--              label="减员时间"-->
+            <!--              width="120">-->
+            <!--            </el-table-column>-->
+          </el-table-column>
+          <el-table-column label="基本医疗保险">
+            <el-table-column
+              prop="healthySecurityCompany"
+              label="公司缴纳"
+              width="120">
+            </el-table-column>
+            <el-table-column
+              prop="healthySecuritySelf"
+              label="个人缴纳"
+              width="120">
+            </el-table-column>
+          </el-table-column>
+        </el-table-column>
+        <!--            工伤保险-->
+        <el-table-column label="工伤保险" prop="injuryInsurance"></el-table-column>
+        <!--        本月公积金缴纳基数-->
+        <el-table-column :label="'本月公积金缴纳基数:'+ basicHousingFund">
+          <!--          缴纳社保和停止社保时间-->
+          <el-table-column label="失业保险" prop="name" width="120">
+            <el-table-column
+              prop="unemploymentSecurityCompany"
+              label="公司缴纳"
+              width="120">
+            </el-table-column>
+            <el-table-column
+              prop="unemploymentSecuritySelf"
+              label="个人缴纳"
+              width="120">
+            </el-table-column>
+          </el-table-column>
+          <el-table-column label="基本养老保险">
+            <el-table-column
+              prop="retirementSecurityCompany"
+              label="公司缴纳"
+              width="120">
+            </el-table-column>
+            <el-table-column
+              prop="retirementSecuritySelf"
+              label="个人缴纳"
+              width="120">
+            </el-table-column>
+          </el-table-column>
+          <el-table-column label="大额医疗保险">
+            <el-table-column
+              prop="largeMedicalSecurityCompany"
+              label="公司缴纳"
+              width="120">
+            </el-table-column>
+            <el-table-column
+              prop="largeMedicalSecuritySelf"
+              label="个人缴纳"
+              width="120">
+            </el-table-column>
+          </el-table-column>
+          <el-table-column label="住房公积金">
+            <el-table-column
+              prop="housingFundCompany"
+              label="公司缴纳"
+              width="120">
+            </el-table-column>
+            <el-table-column
+              prop="housingFundSelf"
+              label="个人缴纳"
+              width="120">
+            </el-table-column>
+          </el-table-column>
+          <el-table-column label="个人缴纳总额" prop="sumSelf">
+          </el-table-column>
+          <el-table-column label="公司缴纳总额" prop="sumCompany">
+          </el-table-column>
+
+          <!--          这两列是合计 计算总额 后面设计-->
+          <el-table-column label="缴纳社保合计">
+          </el-table-column>
+          <el-table-column label="缴纳公积金合计">
+          </el-table-column>
+        </el-table-column>
+
+      </el-table>
+
+
+      <div slot="footer" class="dialog-footer">
+        <el-button type="primary" @click="submitForm">确 定</el-button>
+        <el-button @click="cancel">取 消</el-button>
+      </div>
+    </el-dialog>
+
+    <!--    添加社保基金人员个体信息-->
+    <el-dialog
+      title="添加社保基金人员个体信息"
+      :visible.sync="addSocialDialogVisible"
+      width="85%" append-to-body>
       <el-form ref="form" :model="form" :rules="rules" label-width="140px">
         <el-col :span="6">
           <el-form-item label="社保缴纳基数" prop="basicSocialInsurance">
@@ -145,7 +267,13 @@
             <el-input v-model="form.employeeID" placeholder="请输入人员编号"/>
           </el-form-item>
           <el-form-item label="缴费时间" prop="insuranceDate">
-            <el-input v-model="form.insuranceDate" placeholder="请输入缴费时间"/>
+            <el-date-picker
+              v-model="form.insuranceDate"
+              type="date"
+              placeholder="选择缴费时间"
+              value-format="yyyy-MM-dd"
+              style="width: 120px">
+            </el-date-picker>
           </el-form-item>
         </el-col>
         <el-col :span="6">
@@ -194,22 +322,23 @@
           <el-form-item label="公积金-公司" prop="housingFundCompany">
             <el-input v-model="form.housingFundCompany" placeholder="请输入公积金-公司"/>
           </el-form-item>
-          <el-form-item label="个人缴费总额" prop="sumSelf">
-            <el-input v-model="form.sumSelf" placeholder="请输入个人缴费总额"/>
-          </el-form-item>
-          <el-form-item label="公司缴费总额" prop="sumCompany">
-            <el-input v-model="form.sumCompany" placeholder="请输入公司缴费总额"/>
-          </el-form-item>
+          <!--          <el-form-item label="个人缴费总额" prop="sumSelf">-->
+          <!--            <el-input v-model="form.sumSelf" placeholder="请输入个人缴费总额"/>-->
+          <!--          </el-form-item>-->
+          <!--          <el-form-item label="公司缴费总额" prop="sumCompany">-->
+          <!--            <el-input v-model="form.sumCompany" placeholder="请输入公司缴费总额"/>-->
+          <!--          </el-form-item>-->
           <el-form-item label="备注" prop="comments">
             <el-input v-model="form.comments" placeholder="请输入备注"/>
           </el-form-item>
         </el-col>
       </el-form>
-      <div slot="footer" class="dialog-footer">
-        <el-button type="primary" @click="submitForm">确 定</el-button>
-        <el-button @click="cancel">取 消</el-button>
-      </div>
+      <span slot="footer" class="dialog-footer">
+    <el-button @click="addSocialDialogVisible = false">取 消</el-button>
+    <el-button type="primary" @click="addSocialInsureItemInfo">确 定</el-button>
+  </span>
     </el-dialog>
+
   </div>
 </template>
 
@@ -365,10 +494,23 @@ export default {
         ],
         sumCompany: [
           {required: true, message: '公司缴费总额不能为空', trigger: 'blur'}
-        ]
-      }
+        ],
+
+      },
+      // 添加社保基金的弹窗
+      addSocialDialogVisible: false,
+      // 添加社保基金个体列表
+      socialInsuranceItemsList: [],
+      // 社保缴纳基数
+      basicSocialInsurance: '0',
+      // 公积金基数
+      basicHousingFund: '0',
+
+      // 开关
+      transFlag: 1
     };
   },
+  computed: {},
   created() {
     this.getList();
     if (localStorage.getItem('socialinsurance-columns') === 'null'
@@ -389,9 +531,44 @@ export default {
     }
   },
   methods: {
+    addSocialInsure() {
+      this.addSocialDialogVisible = true
+    },
+    // 添加社保基金个体信息
+    addSocialInsureItemInfo() {
+      const {basicSocialInsurance, basicHousingFund} = this.form
+      // 添加时 自动赋值基金数
+      this.basicHousingFund = basicHousingFund;
+      this.basicSocialInsurance = basicSocialInsurance
+      // 计算合并列的综合
+      this.form.sumSelf = this.sumSummary(this.form, 'Self');
+      this.form.sumCompany = this.sumSummary(this.form, 'Company');
+      // 往列表中推入一个个体信息
+      this.socialInsuranceItemsList.push(this.form)
+      this.addSocialDialogVisible = false
+    },
+    // 根据类型计算综合
+    sumSummary(form, type) {
+      let sum = 0
+      for (const prop in form) {
+        if (prop.includes(type)) {
+          sum += Number(form[prop]);
+        }
+      }
+      return Number(sum).toFixed(2);
+    },
     addSocial() {
       this.open = true;
       this.reset()
+    },
+    objectSpanMethod({row, column, rowIndex, columnIndex}) {
+      // 合并最后两列 做合计
+      if (columnIndex === 16 || columnIndex === 17) {
+        return {
+          rowspan: this.socialInsuranceItemsList.length,
+          colspan: 1
+        };
+      }
     },
     printHTML() {
       this.$print({
@@ -489,35 +666,45 @@ export default {
         this.title = "修改社保基金";
       });
     },
+    // 休眠函数
+    sleep(ms) {
+      return new Promise(resolve => setTimeout(resolve, ms));
+    },
     /** 提交按钮 */
-    submitForm() {
-      this.$refs["form"].validate(valid => {
-        if (valid) {
-          if (this.form.id != null) {
-            this.form.delFlag = null;
-            this.form.addtime = null;
-            this.form.updateTime = null;
-            this.form.userId = null;
-            this.form = excludeParams(this.form, this.$exclude)
-            updateSocialInsurance(this.form).then(response => {
-              this.$modal.msgSuccess("修改成功");
-              this.open = false;
-              this.getList();
-            });
-          } else {
-            this.form.delFlag = null;
-            this.form.addtime = null;
-            this.form.updateTime = null;
-            this.form.userId = null;
-            this.form = excludeParams(this.form, this.$exclude)
-            addSocialInsurance(this.form).then(response => {
-              this.$modal.msgSuccess("新增成功");
-              this.open = false;
-              this.getList();
-            });
+    async submitForm() {
+      if (this.form.id != null) {
+        this.form = excludeParams(this.form, this.$exclude)
+        updateSocialInsurance(this.form).then(response => {
+          this.$modal.msgSuccess("修改成功");
+          this.open = false;
+          this.getList();
+        });
+        // 添加
+      } else {
+        // this.form = excludeParams(this.form, this.$exclude)
+        // addSocialInsurance(this.form).then(response => {
+        //   this.$modal.msgSuccess("新增成功");
+        //   this.open = false;
+        //   this.getList();
+        // });
+        // 批量添加
+        for (let i = 0; i < this.socialInsuranceItemsList.length; i++) {
+          const item = this.socialInsuranceItemsList[i];
+          try {
+            const response = await addSocialInsurance(item);
+            this.socialInsuranceItemsList.splice(i, 1);
+            i--;
+            this.$message.success(`添加成功,剩余${this.socialInsuranceItemsList.length}人员未添加`)
+            // 调用 sleep 函数增加间隔时间，例如 1000 毫秒（1 秒）
+            await this.sleep(1500);
+          } catch (error) {
+            console.error(`第${this.socialInsuranceItemsList.indexOf(item) + 1}条信息添加失败:`, error);
           }
         }
-      });
+        if (this.socialInsuranceItemsList.length === 0) {
+          this.$message.success('所有人员社保信息添加成功')
+        }
+      }
     },
     /** 删除按钮操作 */
     handleDelete(row) {

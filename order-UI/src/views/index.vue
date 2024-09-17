@@ -1,7 +1,7 @@
 <template>
   <div>
     <el-row style="margin:35px 0">
-      <el-col :span="11" offset="1">
+      <el-col :span="11" :offset="1">
         <el-row>
           <el-col :span="6">
             <span style="font-weight: bolder;font-size: 20px;color: #156fb2">
@@ -75,7 +75,7 @@
       </el-col>
     </el-row>
     <el-row :gutter="30">
-      <el-col :span="11" offset="1">
+      <el-col :span="11" :offset="1">
         <el-table
           :data="tableData"
           height="250"
