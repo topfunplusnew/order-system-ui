@@ -150,8 +150,16 @@
       <br/>
       <el-table
         :data="socialInsuranceItemsList"
-        style="width: 100%" size="mini"
-        :span-method="objectSpanMethod">
+        style="width: 100%" size="mini">
+        <el-table-column label="操作">
+          <template slot-scope="scope">
+            <el-button
+              size="mini"
+              type="danger"
+              @click="handleDeleteItem(scope.$index, scope.row)">删除
+            </el-button>
+          </template>
+        </el-table-column>
         <!--        本月缴纳基数-->
         <el-table-column :label="'本月缴纳基数:'+ basicSocialInsurance">
           <el-table-column
@@ -159,18 +167,12 @@
             label="姓名"
             width="120">
           </el-table-column>
-          <!--          缴纳社保和停止社保时间-->
-          <el-table-column label="缴纳社保和停止社保时间" prop="name" width="120">
+          <el-table-column label="社保增减人员情况" prop="name" width="120">
             <el-table-column
               prop="isRecruiting"
               label="是否增员"
               width="120">
             </el-table-column>
-            <!--            <el-table-column-->
-            <!--              prop="city"-->
-            <!--              label="减员时间"-->
-            <!--              width="120">-->
-            <!--            </el-table-column>-->
           </el-table-column>
           <el-table-column label="基本医疗保险">
             <el-table-column
@@ -545,9 +547,6 @@ export default {
       basicSocialInsurance: '0',
       // 公积金基数
       basicHousingFund: '0',
-
-      // 开关
-      transFlag: 1
     };
   },
   computed: {},
@@ -576,29 +575,35 @@ export default {
     },
     // 添加社保基金个体信息
     addSocialInsureItemInfo() {
-      // 修改
-      if (this.form.id !== null) {
-        this.form.sumSelf = this.sumSummary(this.form, 'Self');
-        this.form.sumCompany = this.sumSummary(this.form, 'Company');
-        this.form = excludeParams(this.form, this.$exclude)
-        updateSocialInsurance(this.form).then(response => {
-          this.$modal.msgSuccess("修改成功");
-          this.addSocialDialogVisible = false;
-          this.getList();
-        });
-        // 增加逻辑 批量发请求
-      } else {
-        const {basicSocialInsurance, basicHousingFund} = this.form
-        // 添加时 自动赋值基金数
-        this.basicHousingFund = basicHousingFund;
-        this.basicSocialInsurance = basicSocialInsurance
-        // 计算合并列的综合
-        this.form.sumSelf = this.sumSummary(this.form, 'Self');
-        this.form.sumCompany = this.sumSummary(this.form, 'Company');
-        // 往列表中推入一个个体信息
-        this.socialInsuranceItemsList.push(this.form)
-        this.addSocialDialogVisible = false
-      }
+      this.$refs["form"].validate(valid => {
+        if (valid) {
+          // 修改
+          if (this.form.id !== null && this.form.id !== undefined && this.form.id !== '') {
+            this.form.sumSelf = this.sumSummary(this.form, 'Self');
+            this.form.sumCompany = this.sumSummary(this.form, 'Company');
+            this.form = excludeParams(this.form, this.$exclude)
+            updateSocialInsurance(this.form).then(response => {
+              this.$modal.msgSuccess("修改成功");
+              this.addSocialDialogVisible = false;
+              this.getList();
+            });
+            // 增加逻辑 批量发请求
+          } else {
+            const {basicSocialInsurance, basicHousingFund} = this.form
+            // 添加时 自动赋值基金数
+            this.basicHousingFund = basicHousingFund;
+            this.basicSocialInsurance = basicSocialInsurance
+            // 计算合并列的综合
+            this.form.sumSelf = this.sumSummary(this.form, 'Self');
+            this.form.sumCompany = this.sumSummary(this.form, 'Company');
+            const item = JSON.parse(JSON.stringify(this.form));
+            // 往列表中推入一个个体信息
+            this.socialInsuranceItemsList.push(item)
+            this.reset()
+            this.addSocialDialogVisible = false
+          }
+        }
+      })
     },
     // 根据类型计算综合
     sumSummary(form, type) {
@@ -614,14 +619,9 @@ export default {
       this.open = true;
       this.reset()
     },
-    objectSpanMethod({row, column, rowIndex, columnIndex}) {
-      // 合并最后两列 做合计
-      if (columnIndex === 16 || columnIndex === 17) {
-        return {
-          rowspan: this.socialInsuranceItemsList.length,
-          colspan: 1
-        };
-      }
+    handleDeleteItem(index, row) {
+      this.socialInsuranceItemsList.splice(index, 1);
+      this.$message.success('删除成功')
     },
     printHTML() {
       this.$print({
@@ -651,6 +651,7 @@ export default {
     // 取消按钮
     cancel() {
       this.open = false;
+      this.socialInsuranceItemsList = []
       this.reset();
     },
     // 表单重置
