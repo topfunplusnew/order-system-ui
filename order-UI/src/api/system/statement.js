@@ -18,3 +18,20 @@ export function getSocialInsuranceSummary(query) {
     params: query
   })
 }
+
+// 员工或外面公司在我公司借款管理台账 / 期货保证金台账
+export function getLendMoneySummary(query) {
+  return request({
+    url: '/statistics/lendMoneysummary',
+    method: 'get',
+    params: query
+  })
+}
+
+export function getLendMoneySummary2(query) {
+  return request({
+    url: '/statistics/lendMoneysummary2',
+    method: 'get',
+    params: query
+  })
+}
