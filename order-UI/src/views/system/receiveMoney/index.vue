@@ -99,7 +99,13 @@
       <!--      以下字段根据对方的户名和账号自动查询填充-->
       <el-table-column label="对方公司" align="center" prop="companyName" v-if="columns[9].visible"/>
       <!--      <el-table-column label="对方公司ID" align="center" prop="companyId" v-if="columns[12].visible"/>-->
-      <el-table-column label="对方公司类型" align="center" prop="companyType" v-if="columns[10].visible"/>
+      <el-table-column label="对方公司类型" align="center" prop="companyType" v-if="columns[10].visible">
+        <!--        如果是1则为供应商 0为客户 -->
+        <template slot-scope="scope">
+          <span v-if="scope.row.companyType===1">供应商</span>
+          <span v-else-if="scope.row.companyType===0">客户</span>
+        </template>
+      </el-table-column>
       <el-table-column label="备注" align="center" prop="comments"/>
       <el-table-column label="操作" align="center" class-name="small-padding fixed-width" fixed="right" width="150">
         <template slot-scope="scope">

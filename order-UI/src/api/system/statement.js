@@ -9,3 +9,12 @@ export function getOrderFreight(query) {
     params: query
   })
 }
+
+// 社保和公积金缴纳金额
+export function getSocialInsuranceSummary(query) {
+  return request({
+    url: '/statistics/socialinsurancesummary',
+    method: 'get',
+    params: query
+  })
+}

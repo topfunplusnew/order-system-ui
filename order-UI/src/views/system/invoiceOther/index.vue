@@ -121,8 +121,8 @@
           </el-col>
           <el-col :span="4">
             <SearchOption :limit-info="{}"
-                          :get-data="listGoodsOrder" query-info="ordersNo"
-                          query-label="订单编号" :query-name="queryGoodsOrder"
+                          :get-data="listGoodsOrder" query-info="customer"
+                          query-label="客户名称" :query-name="queryGoodsOrder"
                           @update:queryName="handleUpdateGoodsOrder" @commitBack="handleCommitBackGoodsOrder">
               <template #table-columns>
                 <el-table-column show-overflow-tooltip label="ID" align="center" prop="id" fixed="left"/>

@@ -731,9 +731,11 @@ import {findFileExtension} from "@/utils/trash/utils";
 import {parseTime} from "../../../utils/ruoyi";
 import {downloadFile} from "@/api/download";
 import {addInvoiceIn} from "@/api/system/invoiceIn";
+import {mixin_printHTML} from "@/views/dashboard/mixins/print";
 
 export default {
   name: "GoodsOrder",
+  mixins: [mixin_printHTML],
   components: {
     FreeApply,
     OrderDetailInfo,
@@ -1388,14 +1390,6 @@ export default {
         }
       })
 
-    },
-    //打印
-    printHTML() {
-      this.$print({
-        printable: 'printBox',
-        type: 'html',
-        targetStyles: ['*'], // 打印内容使用所有HTML样式，没有设置这个属性/值，设置分页打印没有效果
-      })
     },
     /** 查询订单列表 */
     getList() {
