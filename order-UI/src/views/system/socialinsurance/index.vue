@@ -36,7 +36,7 @@
         <el-button icon="el-icon-refresh" size="mini" @click="resetQuery">刷新</el-button>
       </el-col>
       <el-col :span="1.5">
-        <el-button type="danger" icon="el-icon-refresh" size="mini" @click="addSocial">新增社保基金信息</el-button>
+        <el-button type="danger" size="mini" @click="addSocial">新增社保基金信息</el-button>
       </el-col>
       <right-toolbar :showSearch.sync="showSearch" @queryTable="getList" :columns="columns">
         <template v-slot:print>
@@ -69,33 +69,48 @@
     <el-table border v-loading="loading" :data="socialInsuranceList" @selection-change="handleSelectionChange"
               id="printBox" v-horizontal-scroll="'always'" size="mini" :cell-style="()=>{return {padding:'.5px'}}">
       <el-table-column label="id" align="center" prop="id"/>
-      <el-table-column label="社保缴纳基数" align="center" prop="basicSocialInsurance" v-if="columns[0].visible"/>
-      <el-table-column label="公积金基数" align="center" prop="basicHousingFund" v-if="columns[1].visible"/>
       <el-table-column label="部门" align="center" prop="depName" v-if="columns[2].visible"/>
       <el-table-column label="姓名" align="center" prop="employeeName" v-if="columns[3].visible"/>
       <el-table-column label="人员编号" align="center" prop="employeeID" v-if="columns[4].visible"/>
-      <el-table-column label="缴费时间" align="center" prop="insuranceDate" v-if="columns[5].visible"/>
-      <el-table-column label="是否增员" align="center" prop="isRecruiting" v-if="columns[6].visible"/>
-      <el-table-column label="是否减员" align="center" prop="isDepletion" v-if="columns[7].visible"/>
-      <el-table-column label="基本医疗保险-个人" align="center" prop="healthySecuritySelf" v-if="columns[8].visible"/>
-      <el-table-column label="基本医疗保险-公司" align="center" prop="healthySecurityCompany"
-                       v-if="columns[9].visible"/>
+      <el-table-column label="社保缴纳基数" align="center" prop="basicSocialInsurance" v-if="columns[0].visible"
+                       width="110"/>
+      <el-table-column label="公积金基数" align="center" prop="basicHousingFund" v-if="columns[1].visible" width="110"/>
+      <el-table-column label="缴费时间" align="center" prop="insuranceDate" v-if="columns[5].visible" width="120"/>
+      <el-table-column label="社保增减员情况" align="center">
+        <el-table-column label="是否增员" align="center" prop="isRecruiting" v-if="columns[6].visible"/>
+        <el-table-column label="是否减员" align="center" prop="isDepletion" v-if="columns[7].visible"/>
+      </el-table-column>
+      <el-table-column label="基本医疗保险" align="center">
+        <el-table-column label="个人缴纳" align="center" prop="healthySecuritySelf" v-if="columns[8].visible"/>
+        <el-table-column label="公司缴纳" align="center" prop="healthySecurityCompany"
+                         v-if="columns[9].visible"/>
+      </el-table-column>
       <el-table-column label="工伤保险" align="center" prop="injuryInsurance" v-if="columns[10].visible"/>
-      <el-table-column label="失业保险-个人" align="center" prop="unemploymentSecuritySelf"
-                       v-if="columns[11].visible"/>
-      <el-table-column label="失业保险-公司" align="center" prop="unemploymentSecurityCompany"
-                       v-if="columns[12].visible"/>
-      <el-table-column label="养老保险-个人" align="center" prop="retirementSecuritySelf" v-if="columns[13].visible"/>
-      <el-table-column label="养老保险-公司" align="center" prop="retirementSecurityCompany"
-                       v-if="columns[14].visible"/>
-      <el-table-column label="大额医保-个人" align="center" prop="largeMedicalSecuritySelf"
-                       v-if="columns[15].visible"/>
-      <el-table-column label="大额医保-公司" align="center" prop="largeMedicalSecurityCompany"
-                       v-if="columns[16].visible"/>
-      <el-table-column label="公积金-个人" align="center" prop="housingFundSelf" v-if="columns[17].visible"/>
-      <el-table-column label="公积金-公司" align="center" prop="housingFundCompany" v-if="columns[18].visible"/>
-      <el-table-column label="个人缴费总额" align="center" prop="sumSelf" v-if="columns[19].visible"/>
-      <el-table-column label="公司缴费总额" align="center" prop="sumCompany" v-if="columns[20].visible"/>
+
+      <el-table-column label="失业保险" align="center">
+        <el-table-column label="个人缴纳" align="center" prop="unemploymentSecuritySelf"
+                         v-if="columns[11].visible"/>
+        <el-table-column label="公司缴纳" align="center" prop="unemploymentSecurityCompany"
+                         v-if="columns[12].visible"/>
+      </el-table-column>
+      <el-table-column label="养老保险" align="center">
+        <el-table-column label="个人缴纳" align="center" prop="retirementSecuritySelf" v-if="columns[13].visible"/>
+        <el-table-column label="公司缴纳" align="center" prop="retirementSecurityCompany"
+                         v-if="columns[14].visible"/>
+      </el-table-column>
+      <el-table-column label="大额医保" align="center">
+        <el-table-column label="个人缴纳" align="center" prop="largeMedicalSecuritySelf"
+                         v-if="columns[15].visible"/>
+        <el-table-column label="公司缴纳" align="center" prop="largeMedicalSecurityCompany"
+                         v-if="columns[16].visible"/>
+      </el-table-column>
+      <el-table-column label="公积金缴纳" align="center">
+        <el-table-column label="个人缴纳" align="center" prop="housingFundSelf" v-if="columns[17].visible"/>
+        <el-table-column label="公司缴纳" align="center" prop="housingFundCompany" v-if="columns[18].visible"/>
+      </el-table-column>
+
+      <el-table-column label="个人缴费总额" align="center" prop="sumSelf" v-if="columns[19].visible" width="120"/>
+      <el-table-column label="公司缴费总额" align="center" prop="sumCompany" v-if="columns[20].visible" width="120"/>
       <el-table-column label="备注" align="center" prop="comments"/>
       <el-table-column label="操作" align="center" class-name="small-padding fixed-width" fixed="right">
         <template slot-scope="scope">
@@ -229,10 +244,10 @@
           </el-table-column>
 
           <!--          这两列是合计 计算总额 后面设计-->
-          <el-table-column label="缴纳社保合计">
-          </el-table-column>
-          <el-table-column label="缴纳公积金合计">
-          </el-table-column>
+          <!--          <el-table-column label="缴纳社保合计">-->
+          <!--          </el-table-column>-->
+          <!--          <el-table-column label="缴纳公积金合计">-->
+          <!--          </el-table-column>-->
         </el-table-column>
 
       </el-table>
@@ -246,93 +261,118 @@
 
     <!--    添加社保基金人员个体信息-->
     <el-dialog
-      title="添加社保基金人员个体信息"
+      title="社保基金人员个体信息"
       :visible.sync="addSocialDialogVisible"
       width="85%" append-to-body>
-      <el-form ref="form" :model="form" :rules="rules" label-width="140px">
-        <el-col :span="6">
-          <el-form-item label="社保缴纳基数" prop="basicSocialInsurance">
-            <el-input v-model="form.basicSocialInsurance" placeholder="请输入社保缴纳基数"/>
-          </el-form-item>
-          <el-form-item label="公积金基数" prop="basicHousingFund">
-            <el-input v-model="form.basicHousingFund" placeholder="请输入公积金基数"/>
-          </el-form-item>
-          <el-form-item label="部门" prop="depName">
-            <el-input v-model="form.depName" placeholder="请输入部门"/>
-          </el-form-item>
-          <el-form-item label="姓名" prop="employeeName">
-            <el-input v-model="form.employeeName" placeholder="请输入姓名"/>
-          </el-form-item>
-          <el-form-item label="人员编号" prop="employeeID">
-            <el-input v-model="form.employeeID" placeholder="请输入人员编号"/>
-          </el-form-item>
-          <el-form-item label="缴费时间" prop="insuranceDate">
-            <el-date-picker
-              v-model="form.insuranceDate"
-              type="date"
-              placeholder="选择缴费时间"
-              value-format="yyyy-MM-dd"
-              style="width: 120px">
-            </el-date-picker>
-          </el-form-item>
-        </el-col>
-        <el-col :span="6">
-          <el-form-item label="是否增员" prop="isRecruiting">
-            <el-radio v-model="form.isRecruiting" label="是">是</el-radio>
-            <el-radio v-model="form.isRecruiting" label="否">否</el-radio>
-          </el-form-item>
-          <el-form-item label="是否减员" prop="isDepletion">
-            <el-radio v-model="form.isDepletion" label="是">是</el-radio>
-            <el-radio v-model="form.isDepletion" label="否">否</el-radio>
-          </el-form-item>
-          <el-form-item label="基本医疗保险-个人" prop="healthySecuritySelf">
-            <el-input v-model="form.healthySecuritySelf" placeholder="请输入基本医疗保险-个人"/>
-          </el-form-item>
-          <el-form-item label="基本医疗保险-公司" prop="healthySecurityCompany">
-            <el-input v-model="form.healthySecurityCompany" placeholder="请输入基本医疗保险-公司"/>
-          </el-form-item>
-          <el-form-item label="工伤保险" prop="injuryInsurance">
-            <el-input v-model="form.injuryInsurance" placeholder="请输入工伤保险"/>
-          </el-form-item>
-          <el-form-item label="失业保险-个人" prop="unemploymentSecuritySelf">
-            <el-input v-model="form.unemploymentSecuritySelf" placeholder="请输入失业保险-个人"/>
-          </el-form-item>
-        </el-col>
-        <el-col :span="6">
-          <el-form-item label="失业保险-公司" prop="unemploymentSecurityCompany">
-            <el-input v-model="form.unemploymentSecurityCompany" placeholder="请输入失业保险-公司"/>
-          </el-form-item>
-          <el-form-item label="养老保险-个人" prop="retirementSecuritySelf">
-            <el-input v-model="form.retirementSecuritySelf" placeholder="请输入养老保险-个人"/>
-          </el-form-item>
-          <el-form-item label="养老保险-公司" prop="retirementSecurityCompany">
-            <el-input v-model="form.retirementSecurityCompany" placeholder="请输入养老保险-公司"/>
-          </el-form-item>
-          <el-form-item label="大额医保-个人" prop="largeMedicalSecuritySelf">
-            <el-input v-model="form.largeMedicalSecuritySelf" placeholder="请输入大额医保-个人"/>
-          </el-form-item>
-          <el-form-item label="大额医保-公司" prop="largeMedicalSecurityCompany">
-            <el-input v-model="form.largeMedicalSecurityCompany" placeholder="请输入大额医保-公司"/>
-          </el-form-item>
-        </el-col>
-        <el-col :span="6">
-          <el-form-item label="公积金-个人" prop="housingFundSelf">
-            <el-input v-model="form.housingFundSelf" placeholder="请输入公积金-个人"/>
-          </el-form-item>
-          <el-form-item label="公积金-公司" prop="housingFundCompany">
-            <el-input v-model="form.housingFundCompany" placeholder="请输入公积金-公司"/>
-          </el-form-item>
-          <!--          <el-form-item label="个人缴费总额" prop="sumSelf">-->
-          <!--            <el-input v-model="form.sumSelf" placeholder="请输入个人缴费总额"/>-->
-          <!--          </el-form-item>-->
-          <!--          <el-form-item label="公司缴费总额" prop="sumCompany">-->
-          <!--            <el-input v-model="form.sumCompany" placeholder="请输入公司缴费总额"/>-->
-          <!--          </el-form-item>-->
-          <el-form-item label="备注" prop="comments">
-            <el-input v-model="form.comments" placeholder="请输入备注"/>
-          </el-form-item>
-        </el-col>
-      </el-form>
+      <el-row>
+        <el-form ref="form" :model="form" :rules="rules" label-width="140px">
+          <el-col :span="8">
+            <el-form-item label="社保缴纳基数" prop="basicSocialInsurance">
+              <el-input v-model="form.basicSocialInsurance" placeholder="请输入社保缴纳基数"/>
+            </el-form-item>
+            <el-form-item label="公积金基数" prop="basicHousingFund">
+              <el-input v-model="form.basicHousingFund" placeholder="请输入公积金基数"/>
+            </el-form-item>
+            <el-form-item label="部门" prop="depName">
+              <el-input v-model="form.depName" placeholder="请输入部门"/>
+            </el-form-item>
+            <el-form-item label="姓名" prop="employeeName">
+              <el-input v-model="form.employeeName" placeholder="请输入姓名"/>
+            </el-form-item>
+            <el-form-item label="人员编号" prop="employeeID">
+              <el-input v-model="form.employeeID" placeholder="请输入人员编号"/>
+            </el-form-item>
+            <el-form-item label="缴费时间" prop="insuranceDate">
+              <el-date-picker
+                v-model="form.insuranceDate"
+                type="date"
+                placeholder="选择缴费时间"
+                value-format="yyyy-MM-dd"
+                style="width: 120px">
+              </el-date-picker>
+            </el-form-item>
+          </el-col>
+          <el-col :span="8">
+            <el-form-item label="是否增员" prop="isRecruiting">
+              <el-radio v-model="form.isRecruiting" label="是">是</el-radio>
+              <el-radio v-model="form.isRecruiting" label="否">否</el-radio>
+            </el-form-item>
+            <el-form-item label="是否减员" prop="isDepletion">
+              <el-radio v-model="form.isDepletion" label="是">是</el-radio>
+              <el-radio v-model="form.isDepletion" label="否">否</el-radio>
+            </el-form-item>
+            <el-form-item label="基本医疗保险" prop="healthySecuritySelf">
+              <el-col :span="11">
+                <el-input v-model="form.healthySecuritySelf" placeholder="个人缴纳金额" style="width: 100%"/>
+              </el-col>
+              <el-col :span="2" class="line">-</el-col>
+              <el-col :span="11">
+                <el-input v-model="form.healthySecurityCompany" placeholder="公司缴纳金额" style="width: 100%"/>
+              </el-col>
+            </el-form-item>
+            <!--            <el-form-item label="基本医疗保险-公司" prop="healthySecurityCompany">-->
+            <!--            </el-form-item>-->
+            <el-form-item label="工伤保险" prop="injuryInsurance">
+              <el-input v-model="form.injuryInsurance" placeholder="请输入工伤保险缴纳金额"/>
+            </el-form-item>
+            <el-form-item label="失业保险" prop="unemploymentSecuritySelf">
+              <el-col :span="11">
+                <el-input v-model="form.unemploymentSecuritySelf" placeholder="个人缴纳金额"/>
+              </el-col>
+              <el-col :span="2" class="line">-</el-col>
+              <el-col :span="11">
+                <el-input v-model="form.unemploymentSecurityCompany" placeholder="公司缴纳金额"/>
+              </el-col>
+            </el-form-item>
+            <!--            <el-form-item label="失业保险-公司" prop="unemploymentSecurityCompany">-->
+            <!--            </el-form-item>-->
+            <el-form-item label="养老保险" prop="retirementSecuritySelf">
+              <el-col :span="11">
+                <el-input v-model="form.retirementSecuritySelf" placeholder="个人缴纳金额"/>
+              </el-col>
+              <el-col :span="2" class="line">-</el-col>
+              <el-col :span="11">
+                <el-input v-model="form.retirementSecurityCompany" placeholder="公司缴纳金额"/>
+              </el-col>
+            </el-form-item>
+            <!--            <el-form-item label="养老保险-公司" prop="retirementSecurityCompany">-->
+            <!--            </el-form-item>-->
+          </el-col>
+          <el-col :span="8">
+            <el-form-item label="大额医保" prop="largeMedicalSecuritySelf">
+              <el-col :span="11">
+                <el-input v-model="form.largeMedicalSecuritySelf" placeholder="个人缴纳金额"/>
+              </el-col>
+              <el-col :span="2" class="line">-</el-col>
+              <el-col :span="11">
+                <el-input v-model="form.largeMedicalSecurityCompany" placeholder="公司缴纳"/>
+              </el-col>
+            </el-form-item>
+            <!--            <el-form-item label="大额医保-公司" prop="largeMedicalSecurityCompany">-->
+            <!--            </el-form-item>-->
+            <el-form-item label="公积金" prop="housingFundSelf">
+              <el-col :span="11">
+                <el-input v-model="form.housingFundSelf" placeholder="个人缴纳金额"/>
+              </el-col>
+              <el-col :span="2" class="line">-</el-col>
+              <el-col :span="11">
+                <el-input v-model="form.housingFundCompany" placeholder="公司缴纳金额"/>
+              </el-col>
+            </el-form-item>
+            <!--            <el-form-item label="公积金-公司" prop="housingFundCompany">-->
+            <!--            </el-form-item>-->
+            <!--          <el-form-item label="个人缴费总额" prop="sumSelf">-->
+            <!--            <el-input v-model="form.sumSelf" placeholder="请输入个人缴费总额"/>-->
+            <!--          </el-form-item>-->
+            <!--          <el-form-item label="公司缴费总额" prop="sumCompany">-->
+            <!--            <el-input v-model="form.sumCompany" placeholder="请输入公司缴费总额"/>-->
+            <!--          </el-form-item>-->
+            <el-form-item label="备注" prop="comments">
+              <el-input v-model="form.comments" placeholder="请输入备注"/>
+            </el-form-item>
+          </el-col>
+        </el-form>
+      </el-row>
       <span slot="footer" class="dialog-footer">
     <el-button @click="addSocialDialogVisible = false">取 消</el-button>
     <el-button type="primary" @click="addSocialInsureItemInfo">确 定</el-button>
@@ -458,7 +498,7 @@ export default {
 
 
         healthySecuritySelf: [
-          {required: true, message: '个人基本医疗保险不能为空', trigger: 'blur'}],
+          {required: true, message: '基本医疗保险不能为空', trigger: 'blur'}],
 
         healthySecurityCompany: [
           {required: true, message: '公司基本医疗保险不能为空', trigger: 'blur'}],
@@ -472,19 +512,19 @@ export default {
           {required: true, message: '公司失业保险不能为空', trigger: 'blur'}
         ],
         retirementSecuritySelf: [
-          {required: true, message: '养老保险-个人不能为空', trigger: 'blur'}
+          {required: true, message: '养老保险不能为空', trigger: 'blur'}
         ],
         retirementSecurityCompany: [
           {required: true, message: '养老保险-公司不能为空', trigger: 'blur'}
         ],
         largeMedicalSecuritySelf: [
-          {required: true, message: '大额医保-个人不能为空', trigger: 'blur'}
+          {required: true, message: '大额医保不能为空', trigger: 'blur'}
         ],
         largeMedicalSecurityCompany: [
           {required: true, message: '大额医保-公司不能为空', trigger: 'blur'}
         ],
         housingFundSelf: [
-          {required: true, message: '公积金-个人不能为空', trigger: 'blur'}
+          {required: true, message: '公积金不能为空', trigger: 'blur'}
         ],
         housingFundCompany: [
           {required: true, message: '公积金-公司不能为空', trigger: 'blur'}
@@ -536,16 +576,29 @@ export default {
     },
     // 添加社保基金个体信息
     addSocialInsureItemInfo() {
-      const {basicSocialInsurance, basicHousingFund} = this.form
-      // 添加时 自动赋值基金数
-      this.basicHousingFund = basicHousingFund;
-      this.basicSocialInsurance = basicSocialInsurance
-      // 计算合并列的综合
-      this.form.sumSelf = this.sumSummary(this.form, 'Self');
-      this.form.sumCompany = this.sumSummary(this.form, 'Company');
-      // 往列表中推入一个个体信息
-      this.socialInsuranceItemsList.push(this.form)
-      this.addSocialDialogVisible = false
+      // 修改
+      if (this.form.id !== null) {
+        this.form.sumSelf = this.sumSummary(this.form, 'Self');
+        this.form.sumCompany = this.sumSummary(this.form, 'Company');
+        this.form = excludeParams(this.form, this.$exclude)
+        updateSocialInsurance(this.form).then(response => {
+          this.$modal.msgSuccess("修改成功");
+          this.addSocialDialogVisible = false;
+          this.getList();
+        });
+        // 增加逻辑 批量发请求
+      } else {
+        const {basicSocialInsurance, basicHousingFund} = this.form
+        // 添加时 自动赋值基金数
+        this.basicHousingFund = basicHousingFund;
+        this.basicSocialInsurance = basicSocialInsurance
+        // 计算合并列的综合
+        this.form.sumSelf = this.sumSummary(this.form, 'Self');
+        this.form.sumCompany = this.sumSummary(this.form, 'Company');
+        // 往列表中推入一个个体信息
+        this.socialInsuranceItemsList.push(this.form)
+        this.addSocialDialogVisible = false
+      }
     },
     // 根据类型计算综合
     sumSummary(form, type) {
@@ -662,7 +715,7 @@ export default {
       const id = row.id || this.ids
       getSocialInsurance(id).then(response => {
         this.form = response.data;
-        this.open = true;
+        this.addSocialDialogVisible = true;
         this.title = "修改社保基金";
       });
     },
