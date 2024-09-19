@@ -254,14 +254,6 @@
                        width="150px">
         <template #default="scope">
           <el-row>
-            <!--            <img v-if="isPic(scope.row.path)" :src="scope.row.path" alt=""-->
-            <!--                 style="width: 100%;height: 100%">-->
-            <!--            <span v-else-if="scope.row.path === '' || scope.row.path === null">无附件</span>-->
-            <!--            <span>-->
-            <!--            文件不支持预览，请手动下载:-->
-            <!--          <a style="color: red"-->
-            <!--             :href="scope.row.path">{{ scope.row.path }}</a>-->
-            <!--          </span>-->
           </el-row>
           <el-row v-if="scope.row.path === '' || scope.row.path === null">
             无操作
@@ -295,16 +287,6 @@
                        v-if="columns[13].visible"
                        width="150px">
         <template #default="scope">
-          <!--          <el-row>-->
-          <!--            <img v-if="isPic(scope.row.receiveProof)" :src="scope.row.receiveProof" alt=""-->
-          <!--                 style="width: 100%;height: 100%">-->
-          <!--            <span v-else-if="scope.row.receiveProof === '' || scope.row.receiveProof === null">无附件</span>-->
-          <!--            <span v-else>-->
-          <!--            文件不支持预览，请手动下载:-->
-          <!--          <a style="color: red"-->
-          <!--             :href="scope.row.receiveProof">{{ scope.row.receiveProof }}</a>-->
-          <!--          </span>-->
-          <!--          </el-row>-->
           <el-row v-if="scope.row.receiveProof === '' || scope.row.receiveProof === null">
             无操作
           </el-row>
@@ -321,8 +303,7 @@
                        width="100px">
         <template slot-scope="scope">
           <el-tag
-            :type="scope.row.isedit === 0 ? 'danger' :'success'"
-            disable-transitions>{{ isOrNot(scope.row.isedit) }}
+            :type="scope.row.isedit === 0 ? 'danger' :'success'">{{ scope.row.isedit === 0 ? "否" : "是" }}
           </el-tag>
         </template>
       </el-table-column>
@@ -451,47 +432,7 @@
       <el-descriptions border>
         <el-descriptions-item label="备注">{{ orderInfo.comments }}</el-descriptions-item>
       </el-descriptions>
-      <!--      订单货物信息-->
-      <!--      <el-descriptions border :title="'货物信息'+ `${index+1}` " v-for="(item,index) in orderDetailInfo" :key="index">-->
-      <!--        <el-descriptions-item label="供应商" v-if="item.supplier !== null && item.supplier !== ''">{{-->
-      <!--            item.supplier-->
-      <!--          }}-->
-      <!--        </el-descriptions-item>-->
-      <!--        <el-descriptions-item label="仓库名称" v-if="item.storeHouseName !== null && item.storeHouseName !== ''">-->
-      <!--          {{ item.storeHouseName }}-->
-      <!--        </el-descriptions-item>-->
-      <!--        <el-descriptions-item label="级别编码">{{ item.levelID }}</el-descriptions-item>-->
-      <!--        <el-descriptions-item label="级别名称">{{ item.levelName }}</el-descriptions-item>-->
-      <!--        <el-descriptions-item label="计量单位">{{ item.countingUnit }}</el-descriptions-item>-->
-      <!--        <el-descriptions-item label="厚度">{{ item.height }}</el-descriptions-item>-->
-      <!--        <el-descriptions-item label="长度">{{ item.length }}</el-descriptions-item>-->
-      <!--        <el-descriptions-item label="宽度">{{ item.width }}</el-descriptions-item>-->
-      <!--        <el-descriptions-item label="出厂片数">{{ item.pieces }}</el-descriptions-item>-->
-      <!--        <el-descriptions-item label="每包片数">{{ item.piecesPerPack }}</el-descriptions-item>-->
-      <!--        <el-descriptions-item label="包数">{{ item.packs }}</el-descriptions-item>-->
-      <!--        <el-descriptions-item label="出厂单价">{{ item.price }}</el-descriptions-item>-->
-      <!--        <el-descriptions-item label="出厂是否含税">{{ item.isIncludeTaxFactory }}</el-descriptions-item>-->
-      <!--        <el-descriptions-item label="杂费">{{ item.sundryCost }}</el-descriptions-item>-->
-      <!--        <el-descriptions-item label="出厂货款">{{ item.paymentFactory }}</el-descriptions-item>-->
-      <!--        <el-descriptions-item label="卸货价">{{ item.paymentUnload }}</el-descriptions-item>-->
-      <!--        <el-descriptions-item label="销售是否含税">{{ item.isIncludeTaxSale }}</el-descriptions-item>-->
-      <!--        <el-descriptions-item label="总货款">{{ item.payments }}</el-descriptions-item>-->
-      <!--        <el-descriptions-item label="误差">{{ item.erro }}</el-descriptions-item>-->
-      <!--        <el-descriptions-item label="吨位">{{ item.tonnage }}</el-descriptions-item>-->
-      <!--        <el-descriptions-item label="陆运费单价">{{ item.landFreightPrice }}</el-descriptions-item>-->
-      <!--        <el-descriptions-item label="陆运费">{{ item.landFreight }}</el-descriptions-item>-->
-      <!--        <el-descriptions-item label="海运费">{{ item.seaFreight }}</el-descriptions-item>-->
-      <!--        <el-descriptions-item label="总运费">{{ item.freight }}</el-descriptions-item>-->
-      <!--        <el-descriptions-item label="其他费用">{{ item.otherCost }}</el-descriptions-item>-->
-      <!--        <el-descriptions-item label="利润">{{ item.profit }}</el-descriptions-item>-->
-      <!--        <el-descriptions-item label="不含税利润">{{ item.profitNoTax }}</el-descriptions-item>-->
-      <!--        <el-descriptions-item label="实际片数">{{ item.actualPieces }}</el-descriptions-item>-->
-      <!--        <el-descriptions-item label="总货款杂费">{{ item.paymentsWithSundry }}</el-descriptions-item>-->
-      <!--        <el-descriptions-item label="加费">{{ item.additionalFees }}</el-descriptions-item>-->
-      <!--        <el-descriptions-item label="物流利润">{{ item.logisticsProfit }}</el-descriptions-item>-->
-      <!--        <el-descriptions-item label="客户佣金">{{ item.customerCommission }}</el-descriptions-item>-->
-      <!--        <el-descriptions-item label="客户佣金">{{ item.customerCommission }}</el-descriptions-item>-->
-      <!--      </el-descriptions>-->
+
       <span slot="footer" class="dialog-footer">
         <el-button @click="checkOrderVisible = false">取 消</el-button>
         <el-button type="primary" @click="checkOrderVisible = false">确 定</el-button>
@@ -609,7 +550,8 @@
       :visible.sync="checkOrderDetailInfoVisible"
       width="70%" destroy-on-close>
       <!--      传递订单详情列表-->
-      <OrderDetailInfo :orderDetailInfoList="orderDetailInfoList"/>
+      <OrderDetailInfo :orderDetailInfoList="orderDetailInfoList"
+                       @updateOrderDetailList="handleUpdateOrderDetailInfoList"/>
     </el-dialog>
 
     <!-- 添加或修改订单对话框 -->
@@ -969,10 +911,10 @@ export default {
         return this.openTitleInfo.invoiceAmount * this.openTitleInfo.ticketPoint
       }
     },
-    //获取订单列表
+    // 获取订单列表
     ...mapGetters(['orderItemList']),
     ...mapGetters(['orderList']),
-    //拿到暂存里的订单信息
+    // 拿到暂存里的订单信息
     ...mapGetters(['currentOrderInfo'])
   },
   //监听开票表单的变化 如果有 就赋值
@@ -993,46 +935,20 @@ export default {
   },
   methods: {
     parseTime,
-    cancelSubmit() {
-      this.orderInfo = {};
-      this.addOrderItemVisible = false
-      //清空订单详情填写信息
-      this.$store.dispatch('order/clearOrderItemList');
-      //清空订单列表基础信息
-      this.orderInfo = {}
-    },
-    //时间查询
-    handleTimesQuery() {
-      //重新赋值
-      this.goodsOrderList = this.orderList;
-      if (Object.keys(JSON.parse(JSON.stringify(this.paramQuery))).length !== 0) {
-        this.goodsOrderList = this.goodsOrderList.filter(obj => {
-          let exclude = Object.entries(JSON.parse(JSON.stringify(this.paramQuery))) //填写的参数列表 判断item的某个属性
-          return exclude.every((item) => {
-            return obj.hasOwnProperty(item[0]) && obj[item[0]] === item[1];
-          })
-        })
-        if (this.timesQuery.beginTime && this.timesQuery.endTime) {
-          this.goodsOrderList =
-            this.$dateRange(this, 'goodsOrderList', 'orderDate', this.timesQuery.beginTime, this.timesQuery.endTime);
-        }
-      } else {
-        this.goodsOrderList =
-          this.$dateRange(this, 'goodsOrderList', 'orderDate', this.timesQuery.beginTime, this.timesQuery.endTime);
-      }
-    },
     listCompany,
     listBankAccount,
-    //子组件提醒父组件修改orderInfo信息
+    // 取消添加订单
+    cancelSubmit() {
+      this.$store.dispatch('order/clearOrderItemList'); // 清空订单详情填写信息
+      this.orderInfo = {} // 清空订单列表基础信息
+      this.addOrderItemVisible = false
+    },
+    // 订单表信息的回调函数 用于修改父组件传递过去的数据
     handleChangeOrderInfo(val) {
       this.orderInfo = val;
     },
 
-    //是或者否
-    isOrNot(val) {
-      return val === 1 ? "是" : "否";
-    },
-    //点击查看
+    // 行操作打开查看按钮 打开查看弹窗，获取当前行的id，获取订单信息
     checkOrderItemInfo(row) {
       this.checkOrderVisible = true;
       const id = row.id;
@@ -1046,6 +962,29 @@ export default {
       this.handleOrderVisible = true
       this.tempId = row.id;
     },
+    // 调整单
+    submitChangeOrder() {
+      const id = this.tempId  // 拿到上个方法赋值的状态
+      // 查询该id的订单详细信息
+      getGoodsOrder(id).then(res => {
+        // 调整单 调用调整订单接口 传入数据 将ordersNo赋值为空 后端自动填充
+        let orderInfo = res.data
+        // 将每个货物信息的ordersNo赋值为空 并且去除不必要的参数
+        orderInfo.orderDetailList.forEach(item => {
+          item.ordersNo = '';
+          item = excludeParams(item, this.$exclude)
+        })
+        // 去除字段
+        orderInfo = excludeParams(orderInfo, this.$exclude)
+        // 调整单
+        adjustGoodsOrder({...orderInfo, ordersNo: '', adjustDate: formatDate(new Date())}).then(res => {
+          this.$message.success('调整单提交成功')
+          this.getList();
+        })
+        this.handleOrderVisible = false
+      })
+    },
+
     //查看订单详情列表
     handleCheckOrderDetailInfo(row) {
       //赋值 以便于给子组件id
@@ -1056,14 +995,19 @@ export default {
       })
       this.checkOrderDetailInfoVisible = true;
     },
+    // 当订单详情组件删除个体后，这里要进行刷新列表操作
+    handleUpdateOrderDetailInfoList(order_id) {
+      getGoodsOrder(order_id).then(res => {
+        this.orderDetailInfoList = res.data.orderDetailList;
+      })
+    },
 
-    //订单发货单
+    // 订单发货单
     handleOrder1(row) {
       this.Order1Visible = true
     },
-    isPic(url) {
-      return this.$imgs.includes(findFileExtension(url))
-    },
+
+    // 上传附件
     handleUpload(row) {
       this.handleUploadVisible = true
       //保存当前订单信息 现根据当前订单列表信息查询详细订单信息
@@ -1077,32 +1021,6 @@ export default {
       getGoodsOrder(row.id).then(res => {
         this.tempOrderInfo = res.data;
       })
-    },
-    //调整单
-    submitChangeOrder() {
-      const id = this.tempId
-      //查询该id的订单详细信息
-      getGoodsOrder(id).then(res => {
-        //调整单 调用调整订单接口 传入数据
-        //todo 将ordersNo赋值为空
-        let orderInfo = res.data
-        for (let i = 0; i < orderInfo.orderDetailList.length; i++) {
-          orderInfo.orderDetailList[i].ordersNo = ''
-          orderInfo.orderDetailList[i] = excludeParams(orderInfo.orderDetailList[i], this.$exclude)
-        }
-        //去除字段
-        orderInfo = excludeParams(orderInfo, this.$exclude)
-        //调整单
-        adjustGoodsOrder({...orderInfo, ordersNo: '', adjustDate: formatDate(new Date())}).then(res => {
-          this.$message.success('调整单提交成功')
-          this.getList();
-        })
-        this.handleOrderVisible = false
-      })
-    },
-
-    //表格中的列自定义样式信息 渲染的时候每一个列都会执行这个函数
-    tableRowClassName({row, rowIndex}) {
     },
 
     //提交订单
@@ -1131,7 +1049,7 @@ export default {
     },
     //删除收到条
     deleteReceiveProof(row) {
-      this.$confirm('此操作将永久删除该文件, 是否继续?', '提示', {
+      this.$confirm('是否删除收到条?', '提示', {
         confirmButtonText: '确定',
         cancelButtonText: '取消',
         type: 'warning'
@@ -1183,7 +1101,6 @@ export default {
     },
     //订单审核
     handleCheck(row) {
-      console.log(row)
       //弹出确认和取消
       this.$confirm('是否审核该信息?', '提示', {
         confirmButtonText: '确定',
@@ -1216,42 +1133,7 @@ export default {
       }
       fileList.pop();
     },
-    //表格统计
-    //自定义列统计总函数
-    getSummaries(param) {
-      const {columns, data} = param;
-      const sums = [];
-      columns.forEach((column, index) => {
-        if (index === 0) {
-          sums[index] = '统计';
-          return;
-        }
-        const values = data.map(item => {
-          return Number(item[column.property])
-        });
-        if (!values.every(value => isNaN(value))) {
-          //对指定列进行计算
-          // if(index)
-          //需要进行统计的索引列
-          const out_list = [9, 10, 11]
-          //index !== 9 && index !== 1 && index !== 16 && index !== 2
-          if (out_list.includes(index)) {
-            sums[index] = values.reduce((prev, curr) => {
-              const value = Number(curr);
-              if (!isNaN(value)) {
-                return prev + curr;
-              } else {
-                return prev;
-              }
-            }, 0);
-            sums[index] += ' ';
-          }
-        } else {
-          sums[index] = '';
-        }
-      });
-      return sums;
-    },
+
 
     //客户供应商开票功能
     //添加开票 是否订单开票要给订单id
@@ -1297,11 +1179,9 @@ export default {
     },
     //开票信息弹窗
     handleUpdateCompanyName(val) {
-      console.log(val)
       this.queryCompanyName = val;
     },
     handleCommitBackCompany(val) {
-      console.log(val)
       this.openTitleInfo.companyName = val.companyName;
       this.openTitleInfo.companyID = val.id;
       this.openTitleInfo.companyType = val.companyType;
@@ -1474,13 +1354,11 @@ export default {
       this.addOrderItemVisible = true
     },
     //修改订单的操作
-    //todo
     handleUpdate(row) {
       this.reset();
       const id = row.id || this.ids
       getGoodsOrder(id).then(response => {
         this.orderInfo = response.data;
-        console.log('orderInfo', this.orderInfo)
         //将数据库拿到的订单列表装入vuex 因为订单添加的货物是从vuex获取的数据 对货物的操作也是操作vuex
         this.$store.commit("order/SET_ORDER_ITEM_LIST", response.data.orderDetailList)
         //填充供应商和客户id
@@ -1514,7 +1392,6 @@ export default {
           item.orderDate = parseTime(new Date(), '{y}-{m}-{d}')
         }
         this.orderInfo = excludeParams(this.orderInfo, this.$exclude)
-        console.log('订单:', this.orderInfo)
         updateGoodsOrder({...this.orderInfo, PaymentState: ''}).then(response => {
           this.$modal.msgSuccess("修改成功");
           this.open = false;
@@ -1547,9 +1424,83 @@ export default {
   }
 };
 </script>
-<style scoped>
-.el-table__cell {
-  padding: 1px; /* 上下内边距为10px，左右内边距为5px */
-}
-</style>
 
+<!--      订单货物信息-->
+<!--      <el-descriptions border :title="'货物信息'+ `${index+1}` " v-for="(item,index) in orderDetailInfo" :key="index">-->
+<!--        <el-descriptions-item label="供应商" v-if="item.supplier !== null && item.supplier !== ''">{{-->
+<!--            item.supplier-->
+<!--          }}-->
+<!--        </el-descriptions-item>-->
+<!--        <el-descriptions-item label="仓库名称" v-if="item.storeHouseName !== null && item.storeHouseName !== ''">-->
+<!--          {{ item.storeHouseName }}-->
+<!--        </el-descriptions-item>-->
+<!--        <el-descriptions-item label="级别编码">{{ item.levelID }}</el-descriptions-item>-->
+<!--        <el-descriptions-item label="级别名称">{{ item.levelName }}</el-descriptions-item>-->
+<!--        <el-descriptions-item label="计量单位">{{ item.countingUnit }}</el-descriptions-item>-->
+<!--        <el-descriptions-item label="厚度">{{ item.height }}</el-descriptions-item>-->
+<!--        <el-descriptions-item label="长度">{{ item.length }}</el-descriptions-item>-->
+<!--        <el-descriptions-item label="宽度">{{ item.width }}</el-descriptions-item>-->
+<!--        <el-descriptions-item label="出厂片数">{{ item.pieces }}</el-descriptions-item>-->
+<!--        <el-descriptions-item label="每包片数">{{ item.piecesPerPack }}</el-descriptions-item>-->
+<!--        <el-descriptions-item label="包数">{{ item.packs }}</el-descriptions-item>-->
+<!--        <el-descriptions-item label="出厂单价">{{ item.price }}</el-descriptions-item>-->
+<!--        <el-descriptions-item label="出厂是否含税">{{ item.isIncludeTaxFactory }}</el-descriptions-item>-->
+<!--        <el-descriptions-item label="杂费">{{ item.sundryCost }}</el-descriptions-item>-->
+<!--        <el-descriptions-item label="出厂货款">{{ item.paymentFactory }}</el-descriptions-item>-->
+<!--        <el-descriptions-item label="卸货价">{{ item.paymentUnload }}</el-descriptions-item>-->
+<!--        <el-descriptions-item label="销售是否含税">{{ item.isIncludeTaxSale }}</el-descriptions-item>-->
+<!--        <el-descriptions-item label="总货款">{{ item.payments }}</el-descriptions-item>-->
+<!--        <el-descriptions-item label="误差">{{ item.erro }}</el-descriptions-item>-->
+<!--        <el-descriptions-item label="吨位">{{ item.tonnage }}</el-descriptions-item>-->
+<!--        <el-descriptions-item label="陆运费单价">{{ item.landFreightPrice }}</el-descriptions-item>-->
+<!--        <el-descriptions-item label="陆运费">{{ item.landFreight }}</el-descriptions-item>-->
+<!--        <el-descriptions-item label="海运费">{{ item.seaFreight }}</el-descriptions-item>-->
+<!--        <el-descriptions-item label="总运费">{{ item.freight }}</el-descriptions-item>-->
+<!--        <el-descriptions-item label="其他费用">{{ item.otherCost }}</el-descriptions-item>-->
+<!--        <el-descriptions-item label="利润">{{ item.profit }}</el-descriptions-item>-->
+<!--        <el-descriptions-item label="不含税利润">{{ item.profitNoTax }}</el-descriptions-item>-->
+<!--        <el-descriptions-item label="实际片数">{{ item.actualPieces }}</el-descriptions-item>-->
+<!--        <el-descriptions-item label="总货款杂费">{{ item.paymentsWithSundry }}</el-descriptions-item>-->
+<!--        <el-descriptions-item label="加费">{{ item.additionalFees }}</el-descriptions-item>-->
+<!--        <el-descriptions-item label="物流利润">{{ item.logisticsProfit }}</el-descriptions-item>-->
+<!--        <el-descriptions-item label="客户佣金">{{ item.customerCommission }}</el-descriptions-item>-->
+<!--        <el-descriptions-item label="客户佣金">{{ item.customerCommission }}</el-descriptions-item>-->
+<!--      </el-descriptions>-->
+
+
+<!--//表格统计-->
+<!--//自定义列统计总函数-->
+<!--// getSummaries(param) {-->
+<!--//   const {columns, data} = param;-->
+<!--//   const sums = [];-->
+<!--//   columns.forEach((column, index) => {-->
+<!--//     if (index === 0) {-->
+<!--//       sums[index] = '统计';-->
+<!--//       return;-->
+<!--//     }-->
+<!--//     const values = data.map(item => {-->
+<!--//       return Number(item[column.property])-->
+<!--//     });-->
+<!--//     if (!values.every(value => isNaN(value))) {-->
+<!--//       //对指定列进行计算-->
+<!--//       // if(index)-->
+<!--//       //需要进行统计的索引列-->
+<!--//       const out_list = [9, 10, 11]-->
+<!--//       //index !== 9 && index !== 1 && index !== 16 && index !== 2-->
+<!--//       if (out_list.includes(index)) {-->
+<!--//         sums[index] = values.reduce((prev, curr) => {-->
+<!--//           const value = Number(curr);-->
+<!--//           if (!isNaN(value)) {-->
+<!--//             return prev + curr;-->
+<!--//           } else {-->
+<!--//             return prev;-->
+<!--//           }-->
+<!--//         }, 0);-->
+<!--//         sums[index] += ' ';-->
+<!--//       }-->
+<!--//     } else {-->
+<!--//       sums[index] = '';-->
+<!--//     }-->
+<!--//   });-->
+<!--//   return sums;-->
+<!--// },-->

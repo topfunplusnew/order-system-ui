@@ -167,12 +167,6 @@ export default {
         ],
         moneyAmount: [
           {required: true, message: "付款金额不能为空", trigger: "blur"}],
-        otherAcountsName: [
-          {required: true, message: "对方户名不能为空", trigger: "blur"}],
-        otherBankNo: [
-          {required: true, message: "对方账号不能为空", trigger: "blur"}],
-        otherBankName: [
-          {required: true, message: "对方开户行不能为空", trigger: "blur"}],
         companyName: [
           {required: true, message: "公司名称不能为空", trigger: "blur"}],
         reason: [
@@ -216,7 +210,6 @@ export default {
     }
   },
   mounted() {
-    console.log('传入信息', this.needInfo, this.needMoney)
     // 如果传入的必须自动填充的金额大于0 则自动填充 且无法修改
     if (this.needMoney > 0) {
       this.form.moneyAmount = this.needMoney;

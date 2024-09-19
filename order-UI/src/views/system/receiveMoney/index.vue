@@ -40,9 +40,7 @@
     <el-row :gutter="10" class="mb8">
       <el-col :span="1.5">
         <el-button
-          type="primary"
-          plain
-          icon="el-icon-plus"
+          type="danger"
           size="mini"
           @click="handleAdd"
           v-hasPermi="['system:receivemoney:add']"
@@ -81,32 +79,25 @@
     </el-row>
 
     <el-table border v-horizontal-scroll="'always'" v-loading="loading" :data="receiveMoneyList"
-              @selection-change="handleSelectionChange" id="printBox" size="mini">
-      <!--      <el-table-column label="收款编号" align="center" prop="receiveNO" v-if="columns[0].visible"/>-->
-      <el-table-column label="日期" align="center" prop="fundsDate" v-if="columns[0].visible"/>
-      <el-table-column label="支付类型" align="center" prop="receiveType" v-if="columns[1].visible"/>
-      <!--      <el-table-column label="对应的表名" align="center" prop="tableName"/>-->
-      <!--      <el-table-column label="对应的表主键" align="center" prop="tID"/>-->
-      <el-table-column label="金额" align="center" prop="moneyAmount" v-if="columns[2].visible"/>
-      <el-table-column label="己方户名" align="center" prop="selfAcountsName" v-if="columns[3].visible"/>
-      <el-table-column label="己方账号" align="center" prop="selfBankNo" v-if="columns[4].visible"/>
-      <el-table-column label="己方开户行" align="center" prop="selfBankName" v-if="columns[5].visible"/>
-      <!--      同理-->
-      <!--      <el-table-column label="己方账号ID" align="center" prop="selfBankID" v-if="columns[7].visible"/>-->
-      <el-table-column label="对方户名" align="center" prop="otherAcountsName" v-if="columns[6].visible"/>
-      <el-table-column label="对方账号" align="center" prop="otherBankNo" v-if="columns[7].visible"/>
-      <el-table-column label="对方开户行" align="center" prop="otherBankName" v-if="columns[8].visible"/>
-      <!--      以下字段根据对方的户名和账号自动查询填充-->
-      <el-table-column label="对方公司" align="center" prop="companyName" v-if="columns[9].visible"/>
-      <!--      <el-table-column label="对方公司ID" align="center" prop="companyId" v-if="columns[12].visible"/>-->
-      <el-table-column label="对方公司类型" align="center" prop="companyType" v-if="columns[10].visible">
-        <!--        如果是1则为供应商 0为客户 -->
+              @selection-change="handleSelectionChange" id="printBox" size="mini"
+              :cell-style="()=>{return {padding:'2px'}}">
+      <el-table-column label="日期" align="center" prop="fundsDate" v-if="columns[0].visible" width="140"/>
+      <el-table-column label="支付类型" align="center" prop="receiveType" v-if="columns[1].visible" width="165"/>
+      <el-table-column label="金额" align="center" prop="moneyAmount" v-if="columns[2].visible" width="165"/>
+      <el-table-column label="己方户名" align="center" prop="selfAcountsName" v-if="columns[3].visible" width="165"/>
+      <el-table-column label="己方账号" align="center" prop="selfBankNo" v-if="columns[4].visible" width="165"/>
+      <el-table-column label="己方开户行" align="center" prop="selfBankName" v-if="columns[5].visible" width="165"/>
+      <el-table-column label="对方户名" align="center" prop="otherAcountsName" v-if="columns[6].visible" width="165"/>
+      <el-table-column label="对方账号" align="center" prop="otherBankNo" v-if="columns[7].visible" width="165"/>
+      <el-table-column label="对方开户行" align="center" prop="otherBankName" v-if="columns[8].visible" width="165"/>
+      <el-table-column label="对方公司" align="center" prop="companyName" v-if="columns[9].visible" width="165"/>
+      <el-table-column label="对方公司类型" align="center" prop="companyType" v-if="columns[10].visible" width="165">
         <template slot-scope="scope">
           <span v-if="scope.row.companyType===1">供应商</span>
           <span v-else-if="scope.row.companyType===0">客户</span>
         </template>
       </el-table-column>
-      <el-table-column label="备注" align="center" prop="comments"/>
+      <el-table-column label="备注" align="center" prop="comments" width="165"/>
       <el-table-column label="操作" align="center" class-name="small-padding fixed-width" fixed="right" width="150">
         <template slot-scope="scope">
           <el-button

@@ -75,7 +75,8 @@
           </right-toolbar>
         </el-row>
         <el-table border v-horizontal-scroll="'always'" v-loading="loading" :data="productLevelList"
-                  @selection-change="handleSelectionChange" id="printBox" size="mini">
+                  @selection-change="handleSelectionChange" id="printBox" size="mini"
+                  :cell-style="()=>{return {padding:'.5px'}}">
           <el-table-column label="级别编码" align="center" prop="levelNo" v-if="columns[0].visible"/>
           <el-table-column label="级别名称" align="center" prop="levelName" v-if="columns[1].visible"/>
           <el-table-column label="分类编号" align="center" prop="categoryNo" v-if="columns[2].visible"/>

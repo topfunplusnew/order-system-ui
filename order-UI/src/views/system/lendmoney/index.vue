@@ -73,7 +73,7 @@
       <!--      <el-table-column label="id" align="center" prop="id"/>-->
       <!--      <el-table-column label="借出款编号" align="center" prop="futuresNO" v-if="columns[0].visible"/>-->
       <el-table-column label="期货保证金公司" align="center" prop="futuresMarginCompany" v-if="columns[1].visible"
-                       width="110">
+                       width="130">
         <template slot-scope="scope">
           <span v-if="scope.row.futuresMarginCompany !== ''&& scope.row.futuresMarginCompany !== null">{{
               scope.row.futuresMarginCompany
@@ -90,10 +90,10 @@
       <el-table-column label="对方账户" align="center" prop="targetAcountsName" v-if="columns[5].visible" width="110">
 
       </el-table-column>
-      <el-table-column label="对方账号" align="center" prop="targetBankNo" v-if="columns[6].visible" width="110"/>
+      <el-table-column label="对方账号" align="center" prop="targetBankNo" v-if="columns[6].visible" width="160"/>
       <el-table-column label="对方开户行" align="center" prop="targetBankName" v-if="columns[7].visible" width="110"/>
       <el-table-column label="我方支付账户" align="center" prop="selfAcountsName" v-if="columns[8].visible"
-                       width="110"/>
+                       width="160"/>
       <el-table-column label="我方账号" align="center" prop="selfBankNo" v-if="columns[9].visible" width="110"/>
       <el-table-column label="我方开户行" align="center" prop="selfBankName" v-if="columns[10].visible" width="110"/>
       <el-table-column label="支付期货保证金时间" align="center" prop="futuresDate" v-if="columns[11].visible"
@@ -266,125 +266,75 @@
 
 
     <!--    回收弹窗-->
-    <el-dialog title="收回资金操作" :visible.sync="giveRecoverMoneyShow">
-      <div id="back-money-info">
-        <el-card class="box-card">
-          <div slot="header" class="clearfix">
-            <span>历史收回记录</span>
-            <el-button style="float: right; padding: 3px 0" @click="handleRefreshNeedGetBackMoneyList">
-              刷新
-            </el-button>
-          </div>
-          <el-table
-            :data="needGetBackMoneyList"
-            style="width: 100%" border v-loading="needMoneyLoading">
-            <!--            <el-table-column-->
-            <!--              prop="id"-->
-            <!--              label="ID"-->
-            <!--              width="60">-->
-            <!--            </el-table-column>-->
-            <!--            <el-table-column-->
-            <!--              prop="futuresNO"-->
-            <!--              label="借出款编号"-->
-            <!--              width="130">-->
-            <!--            </el-table-column>-->
-            <el-table-column
-              prop="moneyAmount"
-              label="收回金额">
-            </el-table-column>
-            <el-table-column
-              prop="bankNo"
-              label="收回账号">
-            </el-table-column>
-            <el-table-column
-              prop="acountsName"
-              label="收回账户">
-            </el-table-column>
-            <el-table-column
-              prop="recoverDate"
-              label="还款日期">
-            </el-table-column>
-            <el-table-column
-              prop="bankNo"
-              label="还款账号">
-            </el-table-column>
-            <el-table-column
-              prop="comments"
-              label="备注">
-            </el-table-column>
-          </el-table>
-        </el-card>
-        <br/>
-        <el-card class="box-card">
-          <div slot="header" class="clearfix">
-            <h4 style="font-weight: bolder">借出款编号:{{ currentUUID }}
-              <el-button type="primary" @click="innerVisible = true">收款</el-button>
-            </h4>
-          </div>
-          <!--内层-->
-          <el-dialog
-            width="30%"
-            title="继续收款"
-            :visible.sync="innerVisible"
-            append-to-body>
-            <!-- 还款表单-->
-            <el-form :model="currentRecoverMoneyInfo" class="demo-form-inline">
-              <el-form-item label="收回账号" prop="bankNo">
-                <span>{{ currentRecoverMoneyInfo.selfBankNo }}</span>
-              </el-form-item>
-              <el-form-item label="收回账户" prop="acountsName">
-                <el-input v-model="currentAccountsName" placeholder="请输入收回账户"/>
-                <!--{{ currentAccountsName }}-->
-              </el-form-item>
-              <el-form-item label="收回金额" prop="moneyAmount">
-                <el-input v-model="currentRecoverMoneyInfo.moneyAmount" placeholder="请输入收回金额"/>
-              </el-form-item>
-              <el-form-item label="收回日期" prop="payDate">
-                <el-date-picker
-                  v-model="currentRecoverMoneyInfo.recoverDate"
-                  type="date"
-                  placeholder="请选择收回日期" value-format="yyyy-MM-dd">
-                </el-date-picker>
-              </el-form-item>
-              <el-form-item label="备注信息" prop="comments">
-                <el-input v-model="currentRecoverMoneyInfo.comments" placeholder="请输入备注信息"/>
-              </el-form-item>
-              <el-form-item>
-                <el-button type="primary" @click="RecoverMoney">收款</el-button>
-              </el-form-item>
-            </el-form>
-          </el-dialog>
-        </el-card>
-      </div>
-    </el-dialog>
-
-    <!--    付款申请-->
-    <el-dialog
-      title="付款申请"
-      :visible.sync="applyDialogVisible"
-      width="45%">
-      <ApplyPayment :table-name="TableName.LEND_MONEY" :t-i-d="tid" :need-money="needMoney"
-                    :need-info="{}"
-                    @changeOpen="applyDialogVisible = false"/>
+    <el-dialog title="收回资金操作" :visible.sync="giveRecoverMoneyShow" width="40%" append-to-body>
+      <el-row>
+        <el-form :model="recoverMoneyEntity">
+          <el-form-item label="收回账户" prop="acountsName">
+            <el-row>
+              <el-col :span="10">
+                <el-input v-model="recoverMoneyEntity.acountsName" placeholder="请输入收回账户"/>
+              </el-col>
+              <el-col :span="4">
+                <SearchOption :get-data="listBankAccount" icon="el-icon-search"
+                              @commitBack="handleCommitBackBankAcountForm"
+                              :limit-info="{acountsType:'己方公司'}" query-label="户名查找" query-info="acountsName"
+                              :query-name="queryBank"
+                              @update:queryName="handleUpdateQueryBankAcountForm">
+                  <template #table-columns>
+                    <el-table-column label="账户类型" align="center" prop="acountsType"/>
+                    <el-table-column label="开户行" align="center" prop="bankName"/>
+                    <el-table-column label="开户名" align="center" prop="acountsName"/>
+                    <el-table-column label="账号" align="center" prop="bankNo"/>
+                  </template>
+                </SearchOption>
+              </el-col>
+            </el-row>
+          </el-form-item>
+          <el-form-item label="收回账号" prop="bankNo">
+            <el-input v-model="recoverMoneyEntity.bankNo" placeholder="请输入收回账号"/>
+          </el-form-item>
+          <el-form-item label="收回金额" prop="moneyAmount">
+            <el-input v-model="recoverMoneyEntity.moneyAmount" placeholder="请输入收回金额"/>
+          </el-form-item>
+          <el-form-item label="收回日期" prop="payDate">
+            <el-date-picker
+              v-model="recoverMoneyEntity.recoverDate"
+              type="date"
+              placeholder="请选择收回日期" value-format="yyyy-MM-dd">
+            </el-date-picker>
+          </el-form-item>
+          <el-form-item label="备注信息" prop="comments">
+            <el-input v-model="recoverMoneyEntity.comments" placeholder="请输入备注信息"/>
+          </el-form-item>
+          <el-form-item>
+            <el-button type="primary" @click="RecoverMoney">收款</el-button>
+          </el-form-item>
+        </el-form>
+      </el-row>
     </el-dialog>
   </div>
 </template>
 
 <script>
-import {listLendMoney, getLendMoney, delLendMoney, addLendMoney, updateLendMoney} from "@/api/system/lendMoney";
+import {addLendMoney, delLendMoney, getLendMoney, listLendMoney, updateLendMoney} from "@/api/system/lendMoney";
 import {mapGetters} from "vuex";
-import {addRecoverMoney, getRecoverMoneyByUuid} from "@/api/system/recoverMoney";
-import {addReceiveMoney} from "@/api/system/receiveMoney";
+import {addRecoverMoney} from "@/api/system/recoverMoney";
 import SearchOption from "@/components/SearchOption.vue";
 import {listBankAccount} from "@/api/system/bankAccount";
 import {listCompany} from "@/api/system/company";
 import ApplyPayment from "@/components/ApplyPayment.vue";
 import {TableName} from "@/api/tool/enums";
 import {excludeParams} from "@/api/tool/exclude";
+import {addReceiveMoney} from "../../../api/system/receiveMoney";
+import {parseTime} from "../../../utils/ruoyi";
+import {mixin_reviveMoney} from "../../dashboard/mixins/receive";
+import {mixin_printHTML} from "../../dashboard/mixins/print";
+import {ReceiveType} from "../../../api/tool/enums";
 
 export default {
   name: "LendMoney",
   components: {ApplyPayment, SearchOption},
+  mixins: [mixin_reviveMoney, mixin_printHTML],
   dicts: ['order_target_type'],
   data() {
     return {
@@ -509,27 +459,15 @@ export default {
           value: '其他'
         }
       ],
-      //uuid
-      currentUUID: '',
       //收回资金弹窗
       giveRecoverMoneyShow: false,
-      //历史收回资金列表
-      needGetBackMoneyList: [],
-      //加载
-      needMoneyLoading: false,
-      //收款表单
-      currentRecoverMoneyInfo: {},
-      innerVisible: false,
-      //默认填充的账户和账号
-      currentBankNo: '',
-      currentBankName: '',
-      currentAccountsName: '',
-      currentCompanyName: '',
-      //对方公司或者客户名称
-      currentTargetAcountsName: '',
-
-
-      //
+      // 借出款收回信息实体
+      recoverMoneyEntity: {
+        acountsName: '',
+        bankNo: ''
+      },
+      // 收款信息实体
+      receiveMoneyEntity: {},
       queryBank: '',
 
       applyDialogVisible: false,
@@ -559,81 +497,38 @@ export default {
     },
     //点击收回资金按钮
     handleGetBackMoney(row) {
-      console.log(row)
+      // 初始化表的信息
+      this.initReviveMoneyTableInfo(row.id, ReceiveType.LEND_MONEY_GET_BACK, TableName.LEND_MONEY);
+      // 初始化对方账户信息
+      this.initReviveMoneyOtherAccountInfo(row.targetAcountsName, row.targetBankNo, row.targetBankName)
+      // 打开添加借出款收回的信息弹窗
       this.giveRecoverMoneyShow = true;
-      this.needMoneyLoading = true
-      this.currentUUID = row.futuresNO
-      //不需要填的字段自动填充
-      this.currentBankNo = row.selfBankNo
-      this.currentBankName = row.selfBankName;
-      this.currentAccountsName = row.selfAcountsName
-      this.currentTargetAcountsName = row.targetAcountsName
-      this.currentRecoverMoneyInfo.selfBankNo = row.selfBankNo
-      setTimeout(() => {
-        getRecoverMoneyByUuid(this.currentUUID).then(res => {
-          this.needGetBackMoneyList = res.data
-          this.needMoneyLoading = false
-        })
-      }, 200)
+      this.recoverMoneyEntity.futuresNO = row.futuresNO; // 初始化uuid
+      // 赋值收款信息
+      this.initComment('借出款收回');
     },
-    //刷新
-    handleRefreshNeedGetBackMoneyList() {
-      this.handleGetBackMoney({futuresNO: this.currentUUID})
-    },
-    //收回资金
+    // 收回资金 首先添加借出款收回信息
     RecoverMoney() {
-      //添加信息
-      addRecoverMoney({
-        ...this.currentRecoverMoneyInfo, futuresNO: this.currentUUID
-        , bankNo: this.currentBankNo, acountsName: this.currentAccountsName
-      })
+      this.initReceiveTime(this.recoverMoneyEntity.recoverDate)
+      addRecoverMoney(this.recoverMoneyEntity)
         .then(res => {
-          this.$modal.msgSuccess("修改成功");
-          this.giveRecoverMoneyShow = false
-          this.innerVisible = false
-        }).catch(err => {
-        this.$modal.msgError("修改失败:" + err.msg);
-      })
-
-      //同步修改到收款信息里
-      //fundsDate
-      const fundsDate = this.currentRecoverMoneyInfo.recoverDate;
-      //todo 支付类型 未知功能
-      const receiveType = '收回借出款';
-      const tableName = 'recoverMoney'; //操作表
-      const tID = 'id'; //对应表的主键
-      const moneyAmount = this.currentRecoverMoneyInfo.moneyAmount;//操作金额
-      const selfAcountsName = this.currentRecoverMoneyInfo.selfAcountsName;//收回账户
-      const selfBankNo = this.currentRecoverMoneyInfo.selfBankNo;//收回账号
-      const selfBankName = this.currentBankName;
-      const companyName = this.currentTargetAcountsName
-      //todo companyId 魔法值 需要查询公司的id 以及类型 如客户或者供应商
-      const companyId = '999';
-      const companyType = '1';
-      const comments = '备注:资金收回';
-      //构造
-      const item = {
-        fundsDate,
-        receiveType,
-        tableName,
-        tID,
-        moneyAmount,
-        selfAcountsName,
-        selfBankNo,
-        selfBankName,
-        companyName,
-        companyId,
-        companyType,
-        comments
-      }
-      this.addToReceiveMoney(item)
+          this.$modal.msgSuccess("添加借出款收回信息成功~");
+          // 同时也要添加到收款信息中
+          this.addReviveMoneyInfo()
+          this.giveRecoverMoneyShow = false;
+        })
     },
-    //同步修改到收款信息方法
-    addToReceiveMoney(item) {
-      addReceiveMoney(item).then(res => {
-        console.log(res)
-      })
+    // 收回资金的搜索按钮自动填充方法
+    handleUpdateQueryBankAcountForm(val) {
+      this.queryBank = val;
     },
+    handleCommitBackBankAcountForm(val) {
+      // 初始化我方账户信息
+      this.initReviveMoneySelfAccountInfo(val.acountsName, val.bankNo, val.bankName, val.id)
+      this.recoverMoneyEntity.acountsName = val.acountsName
+      this.recoverMoneyEntity.bankNo = val.bankNo
+    },
+    // 时间查询
     handleQueryTime() {
       //重置
       this.lendMoneyList = this.tempLendMoneyList
@@ -679,14 +574,6 @@ export default {
       this.form.selfBankNo = val.bankNo;
       this.form.selfBankName = val.bankName;
       this.form.selfAcountsName = val.acountsName;
-    },
-
-    printHTML() {
-      this.$print({
-        printable: 'printBox',
-        type: 'html',
-        targetStyles: ['*'], // 打印内容使用所有HTML样式，没有设置这个属性/值，设置分页打印没有效果
-      })
     },
     /** 查询向外部借出款信息列表 */
     getList() {

@@ -37,3 +37,8 @@ export const TableName = Object.freeze({
   BALANCEACCOUNT: "balanceaccounts",
   STOREHOUSE: "storehouse",
 });
+
+// 收款类型
+export const ReceiveType = {
+  LEND_MONEY_GET_BACK: '借出资金回收'
+}
