@@ -58,7 +58,7 @@
       </right-toolbar>
     </el-row>
 
-    <el-table border v-loading="loading" :data="lendMoneyList" @selection-change="handleSelectionChange"
+    <el-table border v-loading="loading" :data="lendMoneyList"
               v-horizontal-scroll="'always'" id="printBox" size="mini" :cell-style="()=>{return {padding:'2px'}}">
       <el-table-column label="期货保证金公司" align="center" prop="futuresMarginCompany" v-if="columns[1].visible"
                        width="110">

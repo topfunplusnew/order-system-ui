@@ -138,7 +138,7 @@
       </el-row>
       <!--      提交-->
       <el-row>
-        <el-button type="primary" @click="submitAddCategory">提交</el-button>
+        <el-button type="primary" @click="submitAddCategory">提 交</el-button>
       </el-row>
       <br/>
       <el-row>
@@ -229,7 +229,7 @@
         </el-form-item>
       </el-form>
       <span slot="footer" class="dialog-footer">
-       <el-button type="primary" @click="submitAddLevel">保存</el-button>
+       <el-button type="primary" @click="submitAddLevel">保 存</el-button>
        <el-button @click="addProductLevelOpen = false">取 消</el-button>
       </span>
     </el-dialog>
@@ -287,10 +287,13 @@ import {
   updateProductLevel
 } from "@/api/system/productLevel";
 import {addData, delData, getData, getDicts, listData} from "@/api/system/dict/data";
+import {updateData} from "../../../api/system/dict/data";
+import {mixin_printHTML} from "../../dashboard/mixins/print";
 
 export default {
   name: "ProductLevel",
   dicts: ['order_product_categories'],
+  mixins: [mixin_printHTML],
   data() {
     return {
       // 遮罩层
@@ -441,30 +444,7 @@ export default {
     }
   },
   methods: {
-    //添加产品分类信息
-    handleAddProductSort() {
-      this.addCategoryOpen = true;
-    },
-    //添加产品级别信息
-    handleAddProductLevel() {
-      this.addProductLevelOpen = true;
-    },
-    //点击提交 这里添加产品分类 添加到字典中
-    submitAddCategory() {
-      //添加到字典中
-      this.addDictInfo.dictLabel = this.tempCategoryInfo.categoryName;
-      this.addDictInfo.dictValue = this.tempCategoryInfo.levelNo;
-      addData(this.addDictInfo).then(res => {
-        this.$message.success("添加成功~")
-        location.reload()
-        this.addCategoryOpen = false
-      }).catch(err => {
-        this.$message.error("添加失败，请重试:" + err.msg)
-      })
-      //重新抓取信息
-      this.addCategoryOpen = false;
-    },
-    //点击分类
+    // 左侧的产品列表点击某个分类
     handleNodeClick(data) {
       //发请求  获取数据
       listProductLevel({categoryNo: data.value})
@@ -472,10 +452,44 @@ export default {
           this.productLevelList = res.rows;
         })
     },
+
+    // 点击添加产品分类信息
+    handleAddProductSort() {
+      this.addCategoryOpen = true;
+    },
+    // 点击添加产品级别信息
+    handleAddProductLevel() {
+      this.addProductLevelOpen = true;
+    },
+
+
     //点击编辑
     handleClickCategoryList(row) {
+      this.tempCategoryInfo.dictCode = row.dictCode
       this.tempCategoryInfo.levelNo = row.dictValue
       this.tempCategoryInfo.categoryName = row.dictLabel
+    },
+    //点击提交 这里修改产品分类 添加到字典中
+    submitAddCategory() {
+      // 两种情况 如果没有自动填充dictCode 说明是新增 需要添加到字典中 其他则是修改
+      if (this.tempCategoryInfo.dictCode !== '' && this.tempCategoryInfo.dictCode !== undefined && this.tempCategoryInfo.dictCode !== null) {
+        //添加到字典中
+        this.addDictInfo.dictLabel = this.tempCategoryInfo.categoryName;
+        this.addDictInfo.dictValue = this.tempCategoryInfo.levelNo;
+        this.addDictInfo.dictCode = this.tempCategoryInfo.dictCode;
+        updateData(this.addDictInfo).then(res => {
+          this.$message.success("修改成功~")
+          this.getDictsData();
+        })
+      } else {
+        //新增
+        this.addDictInfo.dictLabel = this.tempCategoryInfo.categoryName;
+        this.addDictInfo.dictValue = this.tempCategoryInfo.levelNo;
+        addData(this.addDictInfo).then(res => {
+          this.$message.success("添加成功~")
+          this.getDictsData();
+        })
+      }
     },
     //删除分类 row.dictCode
     handleDeteleLevel(row) {
@@ -493,6 +507,8 @@ export default {
         this.getList()
       })
     },
+
+
     //点击添加级别信息
     submitAddLevel() {
       const obj = JSON.parse(JSON.stringify(this.dictObj)) //Observer改JSON
@@ -511,21 +527,8 @@ export default {
         }).catch(err => {
         this.$message.error("添加失败，请重试:" + err.msg)
       })
-
       //刷新表格
       this.getList()
-    },
-    //初始化字典对象中的信息
-    onDictReady(dict) {
-      this.dictObj = dict.label.order_product_categories
-    },
-    //打印方法
-    printHTML() {
-      this.$print({
-        printable: 'printBox',
-        type: 'html',
-        targetStyles: ['*'], // 打印内容使用所有HTML样式，没有设置这个属性/值，设置分页打印没有效果
-      })
     },
     //查询产品级别列表
     getList() {
@@ -559,21 +562,6 @@ export default {
         this.tempCategoryList = res.rows;
         this.level_total = res.total;
       })
-    },
-    //去重方法
-    uniqueObjects(arr) {
-      const seen = new Set();
-      return arr.filter(obj => {
-        const obj_to = {...obj}
-        const objStr = JSON.stringify(obj_to);
-        if (seen.has(objStr)) {
-          return false;
-        }
-        seen.add(objStr);
-        return true;
-      }).map(str => {
-        return {...str}
-      });
     },
     // 取消按钮
     cancel() {
