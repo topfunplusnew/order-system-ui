@@ -35,3 +35,12 @@ export function getLendMoneySummary2(query) {
     params: query
   })
 }
+
+// 运费科目总台账
+export function getOrderFreightDetailSummary(query) {
+  return request({
+    url: '/statistics/orderfreightDetailsummary',
+    method: 'get',
+    params: query
+  })
+}

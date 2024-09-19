@@ -62,7 +62,6 @@
       <el-col :span="1.5">
         <el-button
           type="danger"
-          plain
           size="mini"
           @click="handleAdd"
           v-hasPermi="['system:offsetting:add']"

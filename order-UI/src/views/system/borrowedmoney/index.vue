@@ -47,7 +47,8 @@
     </el-row>
 
     <el-table border v-loading="loading" :data="borrowedMoneyList" @selection-change="handleSelectionChange"
-              v-horizontal-scroll="'always'" id="printBox" show-summary :summary-method="getSummaries">
+              v-horizontal-scroll="'always'" id="printBox" show-summary :summary-method="getSummaries" size="mini"
+              :cell-style="()=>{return {padding:'.5px'}}">
       <el-table-column label="id" align="center" prop="id" v-if="columns[0].visible"/>
       <el-table-column label="贷款来源" align="center" prop="origin" v-if="columns[1].visible"/>
       <el-table-column label="借入金额" align="center" prop="moneyAmount" v-if="columns[2].visible"/>
@@ -259,10 +260,12 @@ import ApplyPayment from "@/components/ApplyPayment.vue";
 import {TableName} from "@/api/tool/enums";
 import {addDateRange, parseTime} from "@/utils/ruoyi";
 import {excludeParams} from "@/api/tool/exclude";
+import {mixin_printHTML} from "../../dashboard/mixins/print";
 
 export default {
   name: "BorrowedMoney",
   components: {ApplyPayment, SearchOption},
+  mixins: [mixin_printHTML],
   data() {
     //todo rule校验
     var validateloanNO = (rule, value, callback) => {
@@ -489,14 +492,6 @@ export default {
     handleCommitBackBank(val) {
       this.form.acountsName = val.acountsName;
       this.form.bankNo = val.bankNo
-    },
-    printHTML() {
-      this.$print({
-        printable: 'printBox',
-        type: 'html',
-        maxWidth: 3000,
-        targetStyles: ['*'], // 打印内容使用所有HTML样式，没有设置这个属性/值，设置分页打印没有效果
-      })
     },
     getSummaries(param) {
       const {columns, data} = param;

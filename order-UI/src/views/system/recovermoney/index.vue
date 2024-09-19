@@ -52,8 +52,8 @@
               id="printBox" size="mini"
               v-horizontal-scroll="'always'">
       <el-table-column label="id" align="center" prop="id"/>
-      <el-table-column label="借出款编号" align="center" prop="futuresNO" v-if="columns[0].visible"/>
-      <el-table-column label="还款编号" align="center" prop="recoverNO" v-if="columns[1].visible"/>
+      <!--      <el-table-column label="借出款编号" align="center" prop="futuresNO" v-if="columns[0].visible"/>-->
+      <!--      <el-table-column label="还款编号" align="center" prop="recoverNO" v-if="columns[1].visible"/>-->
       <el-table-column label="收回金额" align="center" prop="moneyAmount" v-if="columns[2].visible"/>
       <el-table-column label="收回日期" align="center" prop="recoverDate" v-if="columns[3].visible"/>
       <el-table-column label="收回账户" align="center" prop="acountsName" v-if="columns[4].visible"/>
