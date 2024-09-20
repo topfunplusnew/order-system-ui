@@ -13,7 +13,7 @@ export default {
         beginTime: parseTime(new Date(new Date().getTime() - 30 * 24 * 60 * 60 * 1000)),
         endTime: parseTime(new Date()),
         pageNum: 1,
-        pageSize: 10
+        pageSize: 50
       },
       loading: '',
       columns: [

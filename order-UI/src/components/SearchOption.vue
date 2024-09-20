@@ -102,7 +102,6 @@ export default {
   watch: {
     queryInfo: {
       handler(val) {
-        console.log('传入的需要查找的字段为', val)
       }
     },
     query: {
@@ -120,7 +119,6 @@ export default {
     //监听数据
     tableData: {
       handler(val) {
-        console.log(val)
       },
       deep: true,
       immediate: true

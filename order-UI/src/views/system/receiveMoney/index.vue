@@ -399,7 +399,6 @@ export default {
     },
     //查询客户银行卡信息的回调
     handleCallBackCompany(val) {
-      console.log(val)
       this.form.otherAcountsName = val.acountsName;
       this.form.otherBankNo = val.bankNo;
       this.form.otherBankName = val.bankName;

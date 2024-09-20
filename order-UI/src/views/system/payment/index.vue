@@ -591,7 +591,6 @@ export default {
             this.$message.success('提交成功')
             this.reset();
             const id = row.id || this.ids
-            console.log(1)
             getPayment(id).then(response => {
               this.form = response.data;
               this.open = true;

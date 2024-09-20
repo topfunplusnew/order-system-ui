@@ -50,7 +50,6 @@
                           @update:queryName="handleUpdateQueryName">
               <template #table-columns>
                 <el-table-column label="公司名称" align="center" prop="companyName"/>
-                <el-table-column label="公司类型" align="center" prop="companyType"/>
                 <el-table-column label="开户行" align="center" prop="bankName"/>
                 <el-table-column label="开户名" align="center" prop="acountsName"/>
                 <el-table-column label="账号" align="center" prop="bankNo"/>
@@ -194,22 +193,6 @@ export default {
       this.form.companyType = '司机'
     }
 
-    // 如果有银行卡信息自动填充
-    listBankAccount({
-      bankNo: this.needInfo.bankNo,
-      bankName: this.needInfo.bankName,
-      acountsName: this.needInfo.acountsName
-    })
-      .then(res => {
-        if (res.rows.length === 0) {
-          this.$message.error('未查询到该银行卡信息')
-        } else {
-          this.form.otherAcountsName = res.rows[0].acountsName
-          this.form.otherBankNo = res.rows[0].bankNo
-          this.form.otherBankName = res.rows[0].bankName
-        }
-      })
-
     // 如果传入的必须自动填充的金额大于0 则自动填充 且无法修改
     if (this.needMoney > 0) {
       this.form.moneyAmount = this.needMoney;
@@ -217,8 +200,24 @@ export default {
     }
     // 如果没有传入的数据
     if (JSON.stringify(this.needInfo) === '{}') {
-      this.$message.success('无自动填充信息')
+
     } else {
+      // 如果有银行卡信息自动填充
+      listBankAccount({
+        bankNo: this.needInfo.bankNo,
+        bankName: this.needInfo.bankName,
+        acountsName: this.needInfo.acountsName
+      })
+        .then(res => {
+          if (res.rows.length === 0) {
+            this.$message.error('未查询到该银行卡信息')
+          } else {
+            this.form.otherAcountsName = res.rows[0].acountsName
+            this.form.otherBankNo = res.rows[0].bankNo
+            this.form.otherBankName = res.rows[0].bankName
+          }
+        })
+
       //需要司机信息
       if (this.needInfo.isExit !== undefined) {
         if (this.needInfo.isExit === true) {
@@ -401,7 +400,6 @@ export default {
             this.form.payType = this.fullLevel;
             //审核状态赋空
             this.form.checkState = ''
-            console.log('提交的付款表单', this.form)
             addPaymentApply(this.form).then(response => {
               this.$modal.msgSuccess("付款申请添加成功");
               this.$emit('changeOpen')

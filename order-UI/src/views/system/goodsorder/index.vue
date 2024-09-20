@@ -467,23 +467,29 @@
   </span>
     </el-dialog>
 
-    <!--    上传附件的弹窗-->
+    <!--    上传附件的弹窗 todo -->
     <el-dialog
       title="上传附件"
       :visible.sync="handleUploadVisible"
-      width="30%">
-      <!--      todo      <file-upload is-show-tip @input="handleBackUpload"/>-->
-      <el-upload
-        class="upload-demo"
-        drag
-        :action="uploadFileUrl"
-        multiple :on-success="handleUploadPathSuccess"
-        :limit="1"
-        :headers="headers">
-        <i class="el-icon-upload"></i>
-        <div class="el-upload__text">将文件拖到此处，或<em>点击上传</em></div>
-        <div class="el-upload__tip" slot="tip">只能上传jpg/png文件，且不超过500kb</div>
-      </el-upload>
+      width="450px">
+      <el-row>
+        <el-col :span="12" :offset="2">
+          <el-upload
+            class="upload-demo"
+            drag
+            :action="uploadFileUrl"
+            multiple :on-success="handleUploadPathSuccess"
+            show-file-list
+            :headers="headers"
+            :file-list="fileList"
+            :on-change="handleChange"
+            :before-upload="beforeUpload">
+            <i class="el-icon-upload"></i>
+            <div class="el-upload__text">将文件拖到此处，或<em>点击上传</em></div>
+            <div class="el-upload__tip" slot="tip">只能上传jpg/png文件，且不超过500kb</div>
+          </el-upload>
+        </el-col>
+      </el-row>
       <span slot="footer" class="dialog-footer">
     <el-button @click="handleUploadVisible = false">取 消</el-button>
     <el-button type="primary" @click="handleUploadVisible = false">确 定</el-button>
@@ -494,14 +500,13 @@
     <el-dialog
       title="提示"
       :visible.sync="handleCommitVisible"
-      width="30%">
-      <!--   todo    <file-upload @input="handleCommitGet"/>-->
+      width="450px">
       <el-upload
         class="upload-demo"
         drag
         :action="uploadFileUrl"
         multiple :on-success="handleUploadReceiveProofSuccess"
-        :limit="1"
+        show-file-list
         :headers="headers">
         <i class="el-icon-upload"></i>
         <div class="el-upload__text">将文件拖到此处，或<em>点击上传</em></div>
@@ -572,7 +577,7 @@
       :visible.sync="invoiceOpenVisible"
       width="50%">
       <el-row>
-        <el-form :model="openTitleInfo" label-width="110px">
+        <el-form :model="openTitleInfo" label-width="110px" :rules="CheckRules.openTitleRules">
           <el-form-item label="开票日期" prop="invoiceDate">
             <el-date-picker
               v-model="openTitleInfo.invoiceDate"
@@ -617,7 +622,7 @@
             <el-input v-model="openTitleInfo.ticketPoint" placeholder="请输入票点"/>
           </el-form-item>
           <el-form-item label="票点金额" prop="ticketPointAmount">
-            <el-input v-model="openTitleInfo.ticketPointAmount" placeholder="请输入票点金额"/>
+            <el-input v-model="openTitleInfo.ticketPointAmount" placeholder="请输入票点金额" disabled/>
           </el-form-item>
           <el-form-item label="备注" prop="comments">
             <el-input v-model="openTitleInfo.comments" placeholder="请输入备注"/>
@@ -636,7 +641,7 @@
       <keep-alive>
         <ApplyPayment :table-name="TableName.GOODS_ORDER" :t-i-d="tID" :need-money="needMoney"
                       :need-info="{}"
-                      @changeOpen="paymentApplyVisible = false"/>
+                      @changeOpen="handleCloseApply"/>
       </keep-alive>
     </el-dialog>
 
@@ -862,6 +867,33 @@ export default {
         updateTime: null,
         delFlag: null
       },
+      // 校验
+      CheckRules: {
+        openTitleRules: {
+          invoiceDate: [
+            {required: true, message: '请选择开票日期', trigger: 'blur'}
+          ],
+          invoiceObject: [
+            {required: true, message: '请输入开票实体', trigger: 'blur'}
+          ],
+          invoiceCompanyName: [
+            {required: true, message: '请输入票据单位名称', trigger: 'blur'}
+          ],
+          invoiceAmount: [
+            {required: true, message: '请输入开票金额', trigger: 'blur'},
+            {pattern: /^[0-9]*$/, message: '只能输入数字', trigger: 'blur'}],
+          companyName: [
+            {required: true, message: '请输入公司名称', trigger: 'blur'}],
+          // 只能是数字
+          ticketPoint: [
+            {required: true, message: '请输入开票点', trigger: 'blur'},
+            {pattern: /^[0-9]*$/, message: '只能输入数字', trigger: 'blur'}
+          ],
+          ticketPointAmount: [
+            {required: true, message: '请输入开票点金额', trigger: 'blur'},
+            {pattern: /^[0-9]*$/, message: '只能输入数字', trigger: 'blur'}],
+        }
+      },
       //当前订单id
       currentOrderId: null,
       queryCompanyName: '',
@@ -885,7 +917,9 @@ export default {
       // 订单申请打款
       tID: '',
       paymentApplyVisible: false,
-      needMoney: 0
+      needMoney: 0,
+      // 文件上传的列表
+      fileList: []
     };
   },
   created() {
@@ -903,15 +937,6 @@ export default {
     TableName() {
       return TableName
     },
-    //票点金额 开票金额*票点
-    invoiceAmount: {
-      set(val) {
-        this.openTitleInfo.ticketPointAmount = val;
-      },
-      get() {
-        return this.openTitleInfo.invoiceAmount * this.openTitleInfo.ticketPoint
-      }
-    },
     // 获取订单列表
     ...mapGetters(['orderItemList']),
     ...mapGetters(['orderList']),
@@ -926,12 +951,12 @@ export default {
       },
       deep: true,
     },
-    openTitleInfo: {
+    // 监听整个开票表单 如果有变化 自动监听计算票点金额
+    'openTitleInfo': {
       handler(val) {
-        this.invoiceAmount = this.openTitleInfo.invoiceAmount * this.openTitleInfo.ticketPoint;
+        this.openTitleInfo.ticketPointAmount = Number(this.openTitleInfo.invoiceAmount * this.openTitleInfo.ticketPoint).toFixed(2)
       },
       deep: true
-
     }
   },
   methods: {
@@ -1100,6 +1125,10 @@ export default {
       this.paymentApplyVisible = true;
       this.tID = row.id;
     },
+    handleCloseApply() {
+      this.paymentApplyVisible = false
+      this.getList()
+    },
     //订单审核
     handleCheck(row) {
       //弹出确认和取消
@@ -1119,6 +1148,7 @@ export default {
           })
       })
     },
+    // 上传附件成功的钩子函数
     handleUploadPathSuccess(response, file, fileList) {
       if (response.code === 200) {
         //去除不必要字段
@@ -1132,9 +1162,23 @@ export default {
       } else {
         this.$message.error('上传失败')
       }
-      fileList.pop();
     },
+    // 上传之前的钩子函数
+    beforeUpload(file) {
+      // 如果文件名超出20个字符那么就提示
+      if (file.name.length > 20) {
+        this.$message.error('文件名不能超过20个字符,请重命名后上传')
+        return false
+      }
+      file.name += '|';
 
+      return true
+    },
+    // 文件状态改变时的钩子，添加文件、上传成功和上传失败时都会被调用
+    handleChange(file, fileList) {
+      console.log('file', file);
+      console.log('fileList', fileList)
+    },
 
     //客户供应商开票功能
     //添加开票 是否订单开票要给订单id
@@ -1425,6 +1469,13 @@ export default {
   }
 };
 </script>
+<style>
+.upload-demo {
+  width: 100%; /* 或者你想要的任何宽度 */
+  /* 可能还需要添加一些其他的样式来确保布局如你所愿 */
+  margin: 0 auto; /* 如果需要让组件在容器中居中显示 */
+}
+</style>
 
 <!--      订单货物信息-->
 <!--      <el-descriptions border :title="'货物信息'+ `${index+1}` " v-for="(item,index) in orderDetailInfo" :key="index">-->

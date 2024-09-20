@@ -44,3 +44,12 @@ export function getOrderFreightDetailSummary(query) {
     params: query
   })
 }
+
+// 客户报表
+export function getCompanySummary(query) {
+  return request({
+    url: '/statistics/companysummary',
+    method: 'get',
+    params: query
+  })
+}

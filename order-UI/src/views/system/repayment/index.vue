@@ -262,7 +262,6 @@ export default {
     handleQueryTime() {
       //重置
       this.repaymentList = this.tempRepaymentList
-      console.log(this.tempRepaymentList)
       //筛选
       this.repaymentList = this.filterTime()
     },

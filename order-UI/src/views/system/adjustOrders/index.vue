@@ -129,10 +129,11 @@
       </right-toolbar>
     </el-row>
     <!--    表格列-->
-    <el-table border v-loading="loading" :data="goodsOrderList" @selection-change="handleSelectionChange"
-              id="printBox" :row-class-name="tableRowClassName" v-horizontal-scroll="'always'"
+    <el-table fit border v-loading="loading" :data="goodsOrderList" @selection-change="handleSelectionChange"
+              id="printBox" v-horizontal-scroll="'always'"
               max-height="750" size="mini" :cell-style="()=>{return {padding:'2px'}}">
-      <el-table-column label="行操作" align="center" class-name="small-padding fixed-width" width="100px" fixed="left">
+      <el-table-column show-overflow-tooltip label="行操作" align="center" class-name="small-padding fixed-width"
+                       width="100px" fixed="left">
         <template slot-scope="scope">
           <el-dropdown size="mini" split-button type="primary">
             操作
@@ -144,15 +145,15 @@
                 >查看
                 </el-button>
               </el-dropdown-item>
-              <el-dropdown-item>
-                <el-button
-                  size="mini"
-                  type="primary"
-                  @click="handleUpdate(scope.row)"
-                  v-hasPermi="['system:goodsorder:edit']"
-                >修改
-                </el-button>
-              </el-dropdown-item>
+              <!--              <el-dropdown-item>-->
+              <!--                <el-button-->
+              <!--                  size="mini"-->
+              <!--                  type="primary"-->
+              <!--                  @click="handleUpdate(scope.row)"-->
+              <!--                  v-hasPermi="['system:goodsorder:edit']"-->
+              <!--                >修改-->
+              <!--                </el-button>-->
+              <!--              </el-dropdown-item>-->
               <el-dropdown-item>
                 <el-button
                   size="mini"
@@ -174,31 +175,39 @@
           </el-dropdown>
         </template>
       </el-table-column>
-      <el-table-column label="ID" align="center" prop="id" fixed="left"/>
-      <el-table-column label="日期" align="center" prop="orderDate" fixed="left"/>
-      <el-table-column label="客户" align="center" prop="customer" fixed="left" width="110"/>
+      <el-table-column show-overflow-tooltip label="ID" align="center" prop="id" fixed="left"/>
+      <el-table-column show-overflow-tooltip label="日期" align="center" prop="orderDate" fixed="left"/>
+      <el-table-column show-overflow-tooltip label="客户" align="center" prop="customer" fixed="left"/>
+      <el-table-column show-overflow-tooltip label="供应商" align="center" prop="supplierNames" fixed="left"/>
       <!--      <el-table-column label="订单编号" align="center" prop="ordersNo" v-if="columns[0].visible"/>-->
-      <el-table-column label="陆运车牌" align="center" prop="landCarNo" v-if="columns[1].visible"/>
-      <el-table-column label="陆运司机电话" align="center" prop="landDriverTel" v-if="columns[2].visible" width="110"/>
-      <el-table-column label="陆地司机姓名" align="center" prop="landDriverName" v-if="columns[3].visible" width="110"/>
-      <el-table-column label="海运车牌" align="center" prop="seaCarNo" v-if="columns[4].visible" width="110">
+      <el-table-column show-overflow-tooltip label="陆运车牌" align="center" prop="landCarNo"
+                       v-if="columns[1].visible"/>
+      <el-table-column show-overflow-tooltip label="陆运司机电话" align="center" prop="landDriverTel"
+                       v-if="columns[2].visible" width="100px"/>
+      <el-table-column show-overflow-tooltip label="陆地司机姓名" align="center" prop="landDriverName"
+                       v-if="columns[3].visible" width="100px"/>
+      <el-table-column show-overflow-tooltip label="海运车牌" align="center" prop="seaCarNo" v-if="columns[4].visible">
         <template #default="scope">
           {{ scope.row.seaCarNo == null ? '无海运信息' : scope.row.seaCarNo }}
         </template>
       </el-table-column>
-      <el-table-column label="海运司机电话" align="center" prop="seaDriverTel" v-if="columns[5].visible" width="110">
+      <el-table-column show-overflow-tooltip label="海运司机电话" align="center" prop="seaDriverTel"
+                       v-if="columns[5].visible" width="100px">
         <template #default="scope">
           {{ scope.row.seaDriverTel == null ? '无海运信息' : scope.row.seaDriverTel }}
         </template>
       </el-table-column>
-      <el-table-column label="海运司机姓名" align="center" prop="seaDriverName" v-if="columns[6].visible" width="110">
+      <el-table-column show-overflow-tooltip label="海运司机姓名" align="center" prop="seaDriverName"
+                       v-if="columns[6].visible" width="100px">
         <template #default="scope">
           {{ scope.row.seaDriverName == null ? '无海运信息' : scope.row.seaDriverTel }}
         </template>
       </el-table-column>
-      <el-table-column label="销售经理" align="center" prop="saleManager" v-if="columns[7].visible" width="110"/>
-      <el-table-column label="车队" align="center" prop="fleet" v-if="columns[8].visible" width="110"/>
-      <el-table-column label="审核状态" align="center" prop="checkState" v-if="columns[9].visible" width="120">
+      <el-table-column show-overflow-tooltip label="销售经理" align="center" prop="saleManager"
+                       v-if="columns[7].visible"/>
+      <el-table-column show-overflow-tooltip label="车队" align="center" prop="fleet" v-if="columns[8].visible"/>
+      <el-table-column show-overflow-tooltip label="审核状态" align="center" prop="checkState" v-if="columns[9].visible"
+                       width="120">
         <template #default="scope">
           <el-row v-if="scope.row.checkState === '已审核'">
             <el-tag type="success">{{ scope.row.checkState }}</el-tag>
@@ -212,7 +221,8 @@
           </el-row>
         </template>
       </el-table-column>
-      <el-table-column label="开票状态" align="center" prop="invoiceState" v-if="columns[10].visible" width="120px">
+      <el-table-column show-overflow-tooltip label="开票状态" align="center" prop="invoiceState"
+                       v-if="columns[10].visible" width="120px">
         <template #default="scope">
           <el-row v-if="scope.row.customerIsInvoice === 1 && scope.row.isSupplierInvoice === 1">
             <el-tag type="success">已开票</el-tag>
@@ -229,8 +239,11 @@
           </el-row>
         </template>
       </el-table-column>
-      <el-table-column label="附件" align="center" prop="path" v-if="columns[11].visible" width="150px">
+      <el-table-column show-overflow-tooltip label="附件" align="center" prop="path" v-if="columns[11].visible"
+                       width="150px">
         <template #default="scope">
+          <el-row>
+          </el-row>
           <el-row v-if="scope.row.path === '' || scope.row.path === null">
             无操作
           </el-row>
@@ -241,15 +254,26 @@
           </el-row>
         </template>
       </el-table-column>
-      <el-table-column label="打款状态" align="center" prop="paymentState"
-                       v-if="columns[12].visible">
+      <el-table-column show-overflow-tooltip label="打款状态" align="center" prop="paymentState"
+                       v-if="columns[12].visible" width="120px">
         <template slot-scope="scope">
-          <el-tag
-            disable-transitions>{{ scope.row.paymentState }}
-          </el-tag>
+          <el-row v-if="scope.row.paymentState === '未申请'">
+            <el-button size="mini" type="primary" @click="applyForPayment(scope.row)">申请打款</el-button>
+          </el-row>
+          <el-row v-if="scope.row.paymentState === '审核中'">
+            <el-tag type="warning">审核中</el-tag>
+          </el-row>
+          <el-row v-if="scope.row.paymentState === '未打款'">
+            <el-tag type="warning">订单未打款</el-tag>
+            <el-button>前往打款</el-button>
+          </el-row>
+          <el-row v-if="scope.row.paymentState === '已打款'">
+            <el-tag type="success">订单已打款</el-tag>
+          </el-row>
         </template>
       </el-table-column>
-      <el-table-column label="收到条附件路径" align="center" prop="receiveProof" v-if="columns[13].visible"
+      <el-table-column show-overflow-tooltip label="收到条附件路径" align="center" prop="receiveProof"
+                       v-if="columns[13].visible"
                        width="150px">
         <template #default="scope">
           <el-row v-if="scope.row.receiveProof === '' || scope.row.receiveProof === null">
@@ -262,40 +286,19 @@
           </el-row>
         </template>
       </el-table-column>
-      <el-table-column label="是否被调整单" align="center" prop="isAdjusted" v-if="columns[14].visible">
+      <el-table-column show-overflow-tooltip label="原订单编号" align="center" prop="adjustOrderid"
+                       v-if="columns[17].visible" width="100px"/>
+      <el-table-column show-overflow-tooltip label="是否可编辑" align="center" prop="isedit" v-if="columns[18].visible"
+                       width="100px">
         <template slot-scope="scope">
           <el-tag
-            :type="scope.row.isAdjusted === '否' ? 'danger' :'success'"
-            disable-transitions>{{ scope.row.isAdjusted }}
-          </el-tag>
-        </template>
-      </el-table-column>
-      <el-table-column label="是否调整单" align="center" prop="isAdjust" v-if="columns[15].visible">
-        <template slot-scope="scope">
-          <el-tag
-            :type="scope.row.isAdjust === '否' ? 'danger' :'success'"
-            disable-transitions>{{ scope.row.isAdjust }}
-          </el-tag>
-        </template>
-      </el-table-column>
-      <el-table-column label="调整日期" align="center" prop="adjustDate" v-if="columns[16].visible">
-        <!--        如果没有日期 就显示未调整-->
-        <template slot-scope="scope">
-          <span v-if="scope.row.adjustDate === '' || scope.row.adjustDate === null">未调整</span>
-          <span v-else>{{ parseTime(scope.row.adjustDate, '{y}-{m}-{d}') }}</span>
-        </template>
-      </el-table-column>
-      <el-table-column label="原订单编号" align="center" prop="adjustOrderid" v-if="columns[17].visible"/>
-      <el-table-column label="是否可编辑" align="center" prop="isedit" v-if="columns[18].visible">
-        <template slot-scope="scope">
-          <el-tag
-            :type="scope.row.isedit === 0 ? 'danger' :'success'"
-            disable-transitions>{{ isOrNot(scope.row.isedit) }}
+            :type="scope.row.isedit === 0 ? 'danger' :'success'">{{ scope.row.isedit === 0 ? "否" : "是" }}
           </el-tag>
         </template>
       </el-table-column>
       <!--      客户供应商是否开票-->
-      <el-table-column label="客户是否开票" align="center" prop="customerIsInvoice" v-if="columns[19].visible"
+      <el-table-column show-overflow-tooltip label="客户是否开票" align="center" prop="customerIsInvoice"
+                       v-if="columns[19].visible"
                        width="150px">
         <template #default="scope">
           <el-row v-if="scope.row.customerIsInvoice === 1">
@@ -303,15 +306,13 @@
           </el-row>
           <el-row v-else>
             <el-row>
-              客户未开票
-            </el-row>
-            <el-row>
               <el-button type="success" size="mini" @click="openCustomerInvoice(scope.row)">去开票</el-button>
             </el-row>
           </el-row>
         </template>
       </el-table-column>
-      <el-table-column label="供应商是否开票" align="center" prop="isSupplierInvoice" v-if="columns[20].visible"
+      <el-table-column show-overflow-tooltip label="供应商是否开票" align="center" prop="isSupplierInvoice"
+                       v-if="columns[20].visible"
                        width="120px">
         <template #default="scope">
           <el-row v-if="scope.row.isSupplierInvoice === 1">
@@ -319,17 +320,15 @@
           </el-row>
           <el-row v-else>
             <el-row>
-              供应商未开票
-            </el-row>
-            <el-row>
               <el-button type="success" size="mini" @click="openSupplierInvoice(scope.row)">去开票</el-button>
             </el-row>
           </el-row>
         </template>
       </el-table-column>
-      <el-table-column label="备注" align="center" prop="comments" v-if="columns[21].visible"/>
+      <el-table-column show-overflow-tooltip label="备注" align="center" prop="comments" v-if="columns[21].visible"/>
       <!--      右侧操作栏-->
-      <el-table-column label="订单操作" align="center" class-name="small-padding fixed-width" width="280px"
+      <el-table-column show-overflow-tooltip label="订单操作" align="center" class-name="small-padding fixed-width"
+                       width="280px"
                        fixed="right">
         <template slot-scope="scope">
           <el-button
@@ -359,7 +358,8 @@
           </el-button>
         </template>
       </el-table-column>
-      <el-table-column label="运费申请" align="center" class-name="small-padding fixed-width" width="100px"
+      <el-table-column show-overflow-tooltip label="运费申请" align="center" class-name="small-padding fixed-width"
+                       width="100px"
                        fixed="right">
         <template slot-scope="scope">
           <el-dropdown size="mini" split-button type="primary">
@@ -393,6 +393,13 @@
         </template>
       </el-table-column>
     </el-table>
+    <pagination
+      v-show="total>0"
+      :total="total"
+      :page.sync="queryParams.pageNum"
+      :limit.sync="queryParams.pageSize"
+      @pagination="getList"
+    />
     <pagination
       v-show="total>0"
       :total="total"
@@ -508,19 +515,19 @@
   </span>
     </el-dialog>
 
-    <!--    上传收到条的弹窗-->
+    <!--    上传收到条的弹窗 todo 可以上传多个文件-->
     <el-dialog
       title="提示"
       :visible.sync="handleCommitVisible"
       width="30%">
-      <!--   todo    <file-upload @input="handleCommitGet"/>-->
       <el-upload
         class="upload-demo"
         drag
         :action="uploadFileUrl"
         multiple :on-success="handleUploadReceiveProofSuccess"
-        :limit="1"
-        :headers="headers">
+        :headers="headers"
+        :file-list="fileList"
+        :on-change="handleChange">
         <i class="el-icon-upload"></i>
         <div class="el-upload__text">将文件拖到此处，或<em>点击上传</em></div>
         <div class="el-upload__tip" slot="tip">只能上传jpg/png文件，且不超过500kb</div>
@@ -564,11 +571,12 @@
 
     <!--    订单详情-->
     <el-dialog
-      title="订单详情"
+      title="订单货物详情"
       :visible.sync="checkOrderDetailInfoVisible"
       width="70%" destroy-on-close>
       <!--      传递订单详情列表-->
-      <OrderDetailInfo :orderDetailInfoList="orderDetailInfoList"/>
+      <OrderDetailInfo :orderDetailInfoList="orderDetailInfoList"
+                       @updateOrderDetailList="handleUpdateOrderDetailInfoList"/>
     </el-dialog>
 
     <!-- 添加或修改订单对话框 -->
@@ -580,13 +588,21 @@
       </div>
     </el-dialog>
 
+    <el-dialog title="订单打款申请" :visible.sync="paymentApplyVisible" width="48%">
+      <keep-alive>
+        <ApplyPayment :table-name="TableName.GOODS_ORDER" :t-i-d="tID" :need-money="needMoney"
+                      :need-info="{}"
+                      @changeOpen="handleCloseApply"/>
+      </keep-alive>
+    </el-dialog>
+
     <!-- 开发票-->
     <el-dialog
       :title="openTitle"
       :visible.sync="invoiceOpenVisible"
       width="50%">
       <el-row>
-        <el-form :model="openTitleInfo" label-width="110px">
+        <el-form :model="openTitleInfo" label-width="110px" :rules="CheckRules.openTitleRules">
           <el-form-item label="开票日期" prop="invoiceDate">
             <el-date-picker
               v-model="openTitleInfo.invoiceDate"
@@ -631,7 +647,7 @@
             <el-input v-model="openTitleInfo.ticketPoint" placeholder="请输入票点"/>
           </el-form-item>
           <el-form-item label="票点金额" prop="ticketPointAmount">
-            <el-input v-model="openTitleInfo.ticketPointAmount" placeholder="请输入票点金额"/>
+            <el-input v-model="openTitleInfo.ticketPointAmount" placeholder="请输入票点金额" disabled/>
           </el-form-item>
           <el-form-item label="备注" prop="comments">
             <el-input v-model="openTitleInfo.comments" placeholder="请输入备注"/>
@@ -865,6 +881,32 @@ export default {
         updateTime: null,
         delFlag: null
       },
+      CheckRules: {
+        openTitleRules: {
+          invoiceDate: [
+            {required: true, message: '请选择开票日期', trigger: 'blur'}
+          ],
+          invoiceObject: [
+            {required: true, message: '请输入开票实体', trigger: 'blur'}
+          ],
+          invoiceCompanyName: [
+            {required: true, message: '请输入票据单位名称', trigger: 'blur'}
+          ],
+          invoiceAmount: [
+            {required: true, message: '请输入开票金额', trigger: 'blur'},
+            {pattern: /^[0-9]*$/, message: '只能输入数字', trigger: 'blur'}],
+          companyName: [
+            {required: true, message: '请输入公司名称', trigger: 'blur'}],
+          // 只能是数字
+          ticketPoint: [
+            {required: true, message: '请输入开票点', trigger: 'blur'},
+            {pattern: /^[0-9]*$/, message: '只能输入数字', trigger: 'blur'}
+          ],
+          ticketPointAmount: [
+            {required: true, message: '请输入开票点金额', trigger: 'blur'},
+            {pattern: /^[0-9]*$/, message: '只能输入数字', trigger: 'blur'}],
+        }
+      },
       //当前订单id
       currentOrderId: null,
       queryCompanyName: '',
@@ -884,6 +926,13 @@ export default {
       //供应商 && 客户开发票
       invoiceOpenVisible: false,
       openTitle: '',
+      // 订单申请打款
+      tID: '',
+      paymentApplyVisible: false,
+      needMoney: 0,
+
+      // 文件上传的列表
+      fileList: []
     };
   },
   created() {
@@ -901,15 +950,6 @@ export default {
     TableName() {
       return TableName
     },
-    //票点金额 开票金额*票点
-    invoiceAmount: {
-      set(val) {
-        this.openTitleInfo.ticketPointAmount = val;
-      },
-      get() {
-        return this.openTitleInfo.invoiceAmount * this.openTitleInfo.ticketPoint
-      }
-    },
     //获取订单列表
     ...mapGetters(['orderItemList']),
     ...mapGetters(['orderList']),
@@ -924,12 +964,12 @@ export default {
       },
       deep: true,
     },
-    openTitleInfo: {
+    // 监听整个开票表单 如果有变化 自动监听计算票点金额
+    'openTitleInfo': {
       handler(val) {
-        this.invoiceAmount = this.openTitleInfo.invoiceAmount * this.openTitleInfo.ticketPoint;
+        this.openTitleInfo.ticketPointAmount = Number(this.openTitleInfo.invoiceAmount * this.openTitleInfo.ticketPoint).toFixed(2)
       },
       deep: true
-
     }
   },
   methods: {
@@ -973,6 +1013,7 @@ export default {
     isOrNot(val) {
       return val === 1 ? "是" : "否";
     },
+
     //点击查看
     checkOrderItemInfo(row) {
       this.checkOrderVisible = true;
@@ -996,6 +1037,12 @@ export default {
       })
       this.checkOrderDetailInfoVisible = true;
     },
+    // 当订单详情组件删除个体后，这里要进行刷新列表操作
+    handleUpdateOrderDetailInfoList(order_id) {
+      getGoodsOrder(order_id).then(res => {
+        this.orderDetailInfoList = res.data.orderDetailList;
+      })
+    },
 
     //订单发货单
     handleOrder1(row) {
@@ -1017,6 +1064,14 @@ export default {
       getGoodsOrder(row.id).then(res => {
         this.tempOrderInfo = res.data;
       })
+    },
+    handleCloseApply() {
+      this.paymentApplyVisible = false
+      this.getList()
+    },
+    applyForPayment(row) {
+      this.paymentApplyVisible = true;
+      this.tID = row.id;
     },
     //调整单
     submitChangeOrder() {
@@ -1112,7 +1167,12 @@ export default {
       } else {
         this.$message.error('上传失败')
       }
-      fileList.pop();
+      // fileList.pop();
+    },
+    // 上传文件的文件列表
+    handleChange(file, fileList) {
+      console.log('file', file);
+      console.log('fileList', fileList)
     },
     //订单审核
     handleCheck(row) {
