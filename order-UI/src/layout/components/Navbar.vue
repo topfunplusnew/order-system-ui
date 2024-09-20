@@ -5,7 +5,9 @@
     <breadcrumb id="breadcrumb-container" class="breadcrumb-container" v-if="!topNav"/>
     <top-nav id="topmenu-container" class="topmenu-container" v-if="topNav"/>
     <div class="right-menu">
-      <template v-if="device!=='mobile'"></template>
+      <template v-if="device!=='mobile'">
+        <search id="header-search" class="right-menu-item" />
+      </template>
       <el-dropdown class="avatar-container right-menu-item hover-effect" trigger="click">
         <div class="avatar-wrapper">
           <i class="el-icon-user"/>
