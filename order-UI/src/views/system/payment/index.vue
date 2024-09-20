@@ -245,11 +245,10 @@
               <el-input v-model="form.selfAcountsName" placeholder="请输入己方户名"/>
             </el-col>
             <el-col :span="3">
-              <SearchOption :limit-info="{companyType:'己方公司'}" :get-data="listCompany" icon="el-icon-search"
+              <SearchOption :limit-info="{acountsType:'己方公司'}" :get-data="listBankAccount" icon="el-icon-search"
                             @commitBack="handleCommitBack">
                 <template #table-columns>
-                  <el-table-column label="公司名称" align="center" prop="companyName"/>
-                  <el-table-column label="公司类型" align="center" prop="companyType"/>
+                  <el-table-column label="账号类型" align="center" prop="acountsType"/>
                   <el-table-column label="开户行" align="center" prop="bankName"/>
                   <el-table-column label="开户名" align="center" prop="acountsName"/>
                   <el-table-column label="账号" align="center" prop="bankNo"/>
@@ -319,6 +318,7 @@ import {listCompany} from "@/api/system/company";
 import {addReason} from "@/api/system/user";
 import {excludeParams} from "@/api/tool/exclude";
 import {addDateRange} from "@/utils/ruoyi";
+import {listBankAccount} from "../../../api/system/bankAccount";
 
 export default {
   name: "Payment",
@@ -481,6 +481,7 @@ export default {
     }
   },
   methods: {
+    listBankAccount,
     listCompany,
     //自动填充己方信息
     handleCommitBack(val) {

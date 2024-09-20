@@ -503,7 +503,12 @@ export default {
       this.applyDialogVisible = true;
       this.tid = row.id;
       this.needMoney = row.moneyAmount
-      this.needInfo = row;
+      this.needInfo = {
+        bankNo: row.targetBankNo,
+        acountsName: row.targetAcountsName,
+        bankName: row.targetBankName
+      }
+      console.log('要传入的信息', this.needInfo)
     },
     //点击收回资金按钮
     handleGetBackMoney(row) {
@@ -524,7 +529,7 @@ export default {
         .then(res => {
           this.$modal.msgSuccess("添加借出款收回信息成功~");
           // 同时也要添加到收款信息中
-          this.addReviveMoneyInfo()
+          // this.addReviveMoneyInfo()
           this.giveRecoverMoneyShow = false;
         })
     },

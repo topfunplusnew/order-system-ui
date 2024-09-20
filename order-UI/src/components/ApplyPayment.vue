@@ -114,6 +114,7 @@ export default {
       type: Number
     },
     //需要自动填充的信息
+    // 包含 对方户名:acountsName 对方账号 bankNo 对方开户行 bankName 对方公司 companyName
     needInfo: {
       type: Object
     }
@@ -178,7 +179,6 @@ export default {
     };
   },
   created() {
-    console.log('created')
     // 查询科目信息
     listSubject().then(res => {
       this.subjectTree = this.handleTree(res.data, "id", "parentId");
@@ -194,7 +194,22 @@ export default {
       this.form.companyType = '司机'
     }
 
-    // 自动填充
+    // 如果有银行卡信息自动填充
+    listBankAccount({
+      bankNo: this.needInfo.bankNo,
+      bankName: this.needInfo.bankName,
+      acountsName: this.needInfo.acountsName
+    })
+      .then(res => {
+        if (res.rows.length === 0) {
+          this.$message.error('未查询到该银行卡信息')
+        } else {
+          this.form.otherAcountsName = res.rows[0].acountsName
+          this.form.otherBankNo = res.rows[0].bankNo
+          this.form.otherBankName = res.rows[0].bankName
+        }
+      })
+
     // 如果传入的必须自动填充的金额大于0 则自动填充 且无法修改
     if (this.needMoney > 0) {
       this.form.moneyAmount = this.needMoney;
@@ -203,7 +218,6 @@ export default {
     // 如果没有传入的数据
     if (JSON.stringify(this.needInfo) === '{}') {
       this.$message.success('无自动填充信息')
-      // 如果有
     } else {
       //需要司机信息
       if (this.needInfo.isExit !== undefined) {
@@ -218,22 +232,6 @@ export default {
               this.form.otherBankName = res.rows[0].bankName
             })
         }
-      } else {
-        //如果有银行卡信息
-        if (this.needInfo.bankNo === "") {
-          this.bankInputDisabled = true;
-        } else {
-          listBankAccount({bankNo: this.needInfo.bankNo})
-            .then(res => {
-              if (res.rows.length === 0) {
-                this.$message.error('未查询到该银行卡信息')
-              } else {
-                this.form.otherAcountsName = res.rows[0].acountsName
-                this.form.otherBankNo = res.rows[0].bankNo
-                this.form.otherBankName = res.rows[0].bankName
-              }
-            })
-        }
       }
     }
   },
@@ -246,9 +244,28 @@ export default {
     },
   },
   watch: {
+    // 监听银行卡的变化
+    'needInfo.bankNo': {
+      handler(val) {
+        listBankAccount({
+          bankNo: this.needInfo.bankNo,
+          bankName: this.needInfo.bankName,
+          acountsName: this.needInfo.acountsName
+        })
+          .then(res => {
+            if (res.rows.length === 0) {
+              this.$message.error('未查询到该银行卡信息')
+            } else {
+              this.form.otherAcountsName = res.rows[0].acountsName
+              this.form.otherBankNo = res.rows[0].bankNo
+              this.form.otherBankName = res.rows[0].bankName
+            }
+          })
+      },
+      deep: true
+    },
     needInfo: {
       handler(val) {
-        console.log('val', val)
         if (JSON.stringify(this.needInfo) === '{}') {
           this.$message.success('无自动填充信息')
         } else {
@@ -263,22 +280,6 @@ export default {
                 .then(res => {
                   this.form.otherBankNo = res.rows[0].bankNo
                   this.form.otherBankName = res.rows[0].bankName
-                })
-            }
-          } else {
-            //如果有银行卡信息
-            if (this.needInfo.bankNo === "") {
-              this.bankInputDisabled = true;
-            } else {
-              listBankAccount({bankNo: this.needInfo.bankNo})
-                .then(res => {
-                  if (res.rows.length === 0) {
-                    this.$message.error('未查询到该银行卡信息')
-                  } else {
-                    this.form.otherAcountsName = res.rows[0].acountsName
-                    this.form.otherBankNo = res.rows[0].bankNo
-                    this.form.otherBankName = res.rows[0].bankName
-                  }
                 })
             }
           }

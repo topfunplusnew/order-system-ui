@@ -93,8 +93,8 @@
       <el-table-column label="对方公司" align="center" prop="companyName" v-if="columns[9].visible" width="165"/>
       <el-table-column label="对方公司类型" align="center" prop="companyType" v-if="columns[10].visible" width="165">
         <template slot-scope="scope">
-          <span v-if="scope.row.companyType===1">供应商</span>
-          <span v-else-if="scope.row.companyType===0">客户</span>
+          <span v-if="scope.row.companyType===1">客户</span>
+          <span v-else-if="scope.row.companyType===2">供应商</span>
         </template>
       </el-table-column>
       <el-table-column label="备注" align="center" prop="comments" width="165"/>
@@ -129,9 +129,6 @@
     <!-- 添加或修改收款信息对话框 -->
     <el-dialog :title="title" :visible.sync="open" width="500px" append-to-body>
       <el-form ref="form" :model="form" :rules="rules" label-width="120px">
-        <!--        <el-form-item label="收款编号" prop="receiveNO">-->
-        <!--          <el-input v-model="form.receiveNO" placeholder="请输入收款编号"/>-->
-        <!--        </el-form-item>-->
         <el-form-item label="日期" prop="fundsDate">
           <el-date-picker
             v-model="form.fundsDate"
@@ -140,11 +137,7 @@
             placeholder="请选择日期">
           </el-date-picker>
         </el-form-item>
-        <!--        <el-form-item label="对应的表名" prop="tableName">-->
-        <!--          <el-input v-model="form.tableName" placeholder="请输入对应的表名"/>-->
-        <!--        </el-form-item>-->
         <el-form-item label="支付类型" prop="payType">
-          <!--          <el-input v-model="form.receiveType" placeholder="请输入支付类型"/>-->
           <el-row :gutter="5">
             <!--            一级分类-->
             <el-col :span="8">
