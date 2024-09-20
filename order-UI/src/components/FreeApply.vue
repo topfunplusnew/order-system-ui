@@ -28,8 +28,8 @@ export default {
       }
     }
   },
+  // 因为dialog的销毁机制 所以需要组件创建时发一次请求自动填充，还需要监听id的变化再次发请求改变
   created() {
-    console.log('运费信息', this.orderInfo)
     this.reset();
     getCars(this.orderInfo.driverId).then(res => {
       setTimeout(() => {
@@ -39,6 +39,21 @@ export default {
         this.form.otherBankName = res.data.bankName;
       }, 50)
     })
+  },
+  watch: {
+    'orderInfo.driverId': {
+      handler(val) {
+        getCars(val).then(res => {
+          setTimeout(() => {
+            //自动填充司机信息
+            this.form.otherAcountsName = res.data.acountsName;
+            this.form.otherBankNo = res.data.bankNo;
+            this.form.otherBankName = res.data.bankName;
+          }, 50)
+        })
+      },
+      deep: true
+    }
   },
   computed: {
     ...mapGetters(['trueName'])

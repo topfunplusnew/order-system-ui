@@ -1,15 +1,7 @@
 <!--付款申请弹窗-->
 <template>
   <div class="app-container">
-    <!-- 2.添加或修改付款信息对话框 -->
     <el-form ref="form" :model="form" :rules="rules" label-width="120px">
-      <!--        表名要自动填充 手动添加无需-->
-      <!--        <el-form-item label="对应的表名" prop="tableName">-->
-      <!--          <el-input v-model="form.tableName" placeholder="请输入对应的表名"/>-->
-      <!--        </el-form-item>-->
-      <!--        <el-form-item label="对应的表主键" prop="tID">-->
-      <!--          <el-input v-model="form.tID" placeholder="请输入对应的表主键"/>-->
-      <!--        </el-form-item>-->
       <el-form-item label="日期" prop="fundsDate">
         <el-date-picker
           v-model="form.fundsDate"
@@ -18,7 +10,6 @@
         </el-date-picker>
       </el-form-item>
       <el-form-item label="支付类型" prop="payType">
-        <!--          <el-input v-model="form.receiveType" placeholder="请输入支付类型"/>-->
         <el-row :gutter="5">
           <!--            一级分类-->
           <el-col :span="8">
@@ -114,11 +105,10 @@ export default {
   name: "ApplyPayment",
   components: {SearchOption},
   props: {
-    open: Boolean,
+    // 关联表名
     tableName: '',
+    // 关联表的主键ID
     tID: '',
-    addMoney: '',
-
     //需要自动填充的钱
     needMoney: {
       type: Number
@@ -132,14 +122,10 @@ export default {
     return {
       // 遮罩层
       loading: true,
-      // 显示搜索条件
-      showSearch: true,
       // 总条数
       total: 0,
       // 付款信息表格数据
       paymentApplyList: [],
-      // 弹出层标题
-      title: "",
       // 表单参数
       form: {
         tID: null,
@@ -183,9 +169,7 @@ export default {
       OneLevelOption: [],
       //二级分类
       TwoLevelOption: [],
-
-
-      //
+      // 对方户名
       queryCompany: '',
       //禁用输入框
       inputDisabled: false,
@@ -194,7 +178,8 @@ export default {
     };
   },
   created() {
-    //查询科目信息
+    console.log('created')
+    // 查询科目信息
     listSubject().then(res => {
       this.subjectTree = this.handleTree(res.data, "id", "parentId");
       this.OneLevelOption = this.subjectTree;
@@ -208,15 +193,17 @@ export default {
     if (this.tableName === 'orderfreight') {
       this.form.companyType = '司机'
     }
-  },
-  mounted() {
+
+    // 自动填充
     // 如果传入的必须自动填充的金额大于0 则自动填充 且无法修改
     if (this.needMoney > 0) {
       this.form.moneyAmount = this.needMoney;
       this.inputDisabled = true;
     }
+    // 如果没有传入的数据
     if (JSON.stringify(this.needInfo) === '{}') {
-      console.log('无任何信息')
+      this.$message.success('无自动填充信息')
+      // 如果有
     } else {
       //需要司机信息
       if (this.needInfo.isExit !== undefined) {
@@ -250,22 +237,20 @@ export default {
       }
     }
   },
+  mounted() {
+
+  },
   computed: {
     fullLevel() {
       return this.currentSort.levelOne + '-' + this.currentSort.levelTwo;
     },
   },
   watch: {
-    //可以监听到props的变化
     needInfo: {
       handler(val) {
-        // 如果传入的必须自动填充的金额大于0 则自动填充 且无法修改
-        if (this.needMoney > 0) {
-          this.form.moneyAmount = this.needMoney;
-          this.inputDisabled = true;
-        }
+        console.log('val', val)
         if (JSON.stringify(this.needInfo) === '{}') {
-          console.log('无任何信息')
+          this.$message.success('无自动填充信息')
         } else {
           //需要司机信息
           if (this.needInfo.isExit !== undefined) {
@@ -298,11 +283,16 @@ export default {
             }
           }
         }
-      }
+      },
+      deep: true // 因为父组件如果是解构赋值 那么就监听不到 需要深层监听
     },
     needMoney: {
-      handler(val) {
-        this.form.moneyAmount = val;
+      handler() {
+        // 如果传入的必须自动填充的金额大于0 则自动填充 且无法修改
+        if (this.needMoney > 0) {
+          this.form.moneyAmount = this.needMoney;
+          this.inputDisabled = true;
+        }
       }
     }
   },

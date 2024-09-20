@@ -141,7 +141,7 @@
     </el-row>
     <!--    表格列-->
     <el-table fit border v-loading="loading" :data="goodsOrderList" @selection-change="handleSelectionChange"
-              id="printBox" :row-class-name="tableRowClassName" v-horizontal-scroll="'always'"
+              id="printBox" v-horizontal-scroll="'always'"
               max-height="750" size="mini" :cell-style="()=>{return {padding:'2px'}}">
       <el-table-column show-overflow-tooltip label="行操作" align="center" class-name="small-padding fixed-width"
                        width="100px" fixed="left">
@@ -527,26 +527,29 @@
   </span>
     </el-dialog>
 
-    <!--    陆运费申请 指定destroy-on-close来销毁dialog的元素让其下次打开重新渲染 从而反复执行created-->
+
+    <!--    陆运费和海运费申请-->
     <el-dialog
       title="陆运费申请"
       :visible.sync="landFreeDialogVisible"
-      width="30%" destroy-on-close>
-      <FreeApply :order-info="landFreightInfo"/>
+      width="30%">
+      <keep-alive>
+        <FreeApply :order-info="landFreightInfo"/>
+      </keep-alive>
     </el-dialog>
-
-    <!--    海运费申请 :key="keyFlag"-->
     <el-dialog
       title="海运费申请"
       :visible.sync="seaFreeDialogVisible"
-      width="30%" destroy-on-close>
-      <FreeApply :order-info="seaFreightInfo"/>
+      width="30%">
+      <keep-alive>
+        <FreeApply :order-info="seaFreightInfo"/>
+      </keep-alive>
     </el-dialog>
 
 
-    <!--    订单详情-->
+    <!--    订单货物详情-->
     <el-dialog
-      title="订单详情"
+      title="订单货物详情"
       :visible.sync="checkOrderDetailInfoVisible"
       width="70%" destroy-on-close>
       <!--      传递订单详情列表-->
@@ -628,11 +631,13 @@
     </el-dialog>
 
 
-    <!--    订单打款申请-->
-    <el-dialog title="订单打款申请" :visible.sync="paymentApplyVisible" width="48%" append-to-body>
-      <ApplyPayment :table-name="TableName.GOODS_ORDER" :t-i-d="tID" :need-money="needMoney"
-                    :need-info="{}"
-                    @changeOpen="paymentApplyVisible = false"/>
+    <!--    订单打款申请 -->
+    <el-dialog title="订单打款申请" :visible.sync="paymentApplyVisible" width="48%">
+      <keep-alive>
+        <ApplyPayment :table-name="TableName.GOODS_ORDER" :t-i-d="tID" :need-money="needMoney"
+                      :need-info="{}"
+                      @changeOpen="paymentApplyVisible = false"/>
+      </keep-alive>
     </el-dialog>
 
   </div>
@@ -665,13 +670,9 @@ import ChatForm from "@/components/ChatForm.vue";
 import {addInvoiceOut} from "@/api/system/invoiceOut";
 import OrderDetail from "@/views/system/orderdetail/index.vue";
 import OrderDetailInfo from "@/components/OrderDetailInfo.vue";
-import {listPaymentApply} from "@/api/system/paymentApply";
-import Vue from "vue";
 import {TableName} from "@/api/tool/enums";
 import FreeApply from "@/components/FreeApply.vue";
-import {findFileExtension} from "@/utils/trash/utils";
 import {parseTime} from "../../../utils/ruoyi";
-import {downloadFile} from "@/api/download";
 import {addInvoiceIn} from "@/api/system/invoiceIn";
 import {mixin_printHTML} from "@/views/dashboard/mixins/print";
 

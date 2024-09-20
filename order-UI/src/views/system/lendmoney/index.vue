@@ -312,6 +312,14 @@
         </el-form>
       </el-row>
     </el-dialog>
+
+    <!--    付款申请-->
+    <el-dialog title="付款申请" :visible.sync="applyDialogVisible" width="45%">
+      <keep-alive>
+        <ApplyPayment :table-name="TableName.REBATE" :t-i-d="tid" :need-money="needMoney"
+                      @changeOpen="applyDialogVisible = false" :need-info="needInfo"/>
+      </keep-alive>
+    </el-dialog>
   </div>
 </template>
 
@@ -472,7 +480,8 @@ export default {
 
       applyDialogVisible: false,
       tid: '',
-      needMoney: 0
+      needMoney: 0,
+      needInfo: {}
     };
   },
   created() {
@@ -494,6 +503,7 @@ export default {
       this.applyDialogVisible = true;
       this.tid = row.id;
       this.needMoney = row.moneyAmount
+      this.needInfo = row;
     },
     //点击收回资金按钮
     handleGetBackMoney(row) {

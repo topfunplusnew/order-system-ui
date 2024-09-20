@@ -91,16 +91,8 @@
 </template>
 
 <script>
-import {listLendMoney, getLendMoney, delLendMoney, addLendMoney, updateLendMoney} from "@/api/system/lendMoney";
-import {mapGetters} from "vuex";
-import {addRecoverMoney, getRecoverMoneyByUuid} from "@/api/system/recoverMoney";
-import {addReceiveMoney} from "@/api/system/receiveMoney";
 import SearchOption from "@/components/SearchOption.vue";
-import {listBankAccount} from "@/api/system/bankAccount";
-import {listCompany} from "@/api/system/company";
 import ApplyPayment from "@/components/ApplyPayment.vue";
-import {TableName} from "@/api/tool/enums";
-import {excludeParams} from "@/api/tool/exclude";
 import {getLendMoneySummary} from "@/api/system/statement";
 import {mixin_printHTML} from "@/views/dashboard/mixins/print";
 

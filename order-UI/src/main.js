@@ -116,26 +116,26 @@ Vue.prototype.$refreshParams = function (object) {
 
 
 //todo #############
-let car = {
-  'brand': 'ABC',
-  'price': '3000'
-}
-console.log(car.price)
-
-let obj = {}
-let money = 3000
-Object.defineProperty(obj, 'price', {
-  enumerable: true,
-  configurable: true,
-  get() {
-    console.log('price被读取了')
-    return money;
-  },
-  set(value) {
-    console.log('price被修改了')
-    money = value;
-  }
-})
+// let car = {
+//   'brand': 'ABC',
+//   'price': '3000'
+// }
+// console.log(car.price)
+//
+// let obj = {}
+// let money = 3000
+// Object.defineProperty(obj, 'price', {
+//   enumerable: true,
+//   configurable: true,
+//   get() {
+//     console.log('price被读取了')
+//     return money;
+//   },
+//   set(value) {
+//     console.log('price被修改了')
+//     money = value;
+//   }
+// })
 //todo #############
 
 

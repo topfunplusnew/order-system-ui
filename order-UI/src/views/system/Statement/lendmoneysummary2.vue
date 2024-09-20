@@ -76,7 +76,6 @@
       <el-table-column label="对象" align="center" prop="target" v-if="columns[2].visible" width="110"/>
       <el-table-column label="保证金金额" align="center" prop="moneyAmount" v-if="columns[3].visible" width="110"/>
       <el-table-column label="对方账户" align="center" prop="targetAcountsName" v-if="columns[4].visible" width="160">
-
       </el-table-column>
       <el-table-column label="对方账号" align="center" prop="targetBankNo" v-if="columns[5].visible" width="160"/>
       <el-table-column label="对方开户行" align="center" prop="targetBankName" v-if="columns[6].visible" width="160"/>
@@ -102,17 +101,9 @@
 </template>
 
 <script>
-import {listLendMoney, getLendMoney, delLendMoney, addLendMoney, updateLendMoney} from "@/api/system/lendMoney";
-import {mapGetters} from "vuex";
-import {addRecoverMoney, getRecoverMoneyByUuid} from "@/api/system/recoverMoney";
-import {addReceiveMoney} from "@/api/system/receiveMoney";
 import SearchOption from "@/components/SearchOption.vue";
-import {listBankAccount} from "@/api/system/bankAccount";
-import {listCompany} from "@/api/system/company";
 import ApplyPayment from "@/components/ApplyPayment.vue";
-import {TableName} from "@/api/tool/enums";
-import {excludeParams} from "@/api/tool/exclude";
-import {getLendMoneySummary, getLendMoneySummary2} from "@/api/system/statement";
+import {getLendMoneySummary2} from "@/api/system/statement";
 import {mixin_printHTML} from "@/views/dashboard/mixins/print";
 
 export default {

@@ -265,11 +265,12 @@ import {listCompany} from "@/api/system/company";
 import {excludeParams} from "@/api/tool/exclude";
 import {addReason} from "@/api/system/user";
 import {TableName} from "@/api/tool/enums";
-import {getRecoverMoney} from "@/api/system/recoverMoney";
+import {mixin_printHTML} from "../../dashboard/mixins/print";
 
 export default {
   name: "ReceiveMoney",
   components: {SearchOption},
+  mixins: [mixin_printHTML],
   data() {
     return {
       // 遮罩层
@@ -322,13 +323,10 @@ export default {
       rules: {
         fundsDate: [
           {required: true, message: "日期不能为空", trigger: "blur"}],
-        payType: [
-          {required: true, message: "支付类型不能为空", trigger: "blur"}
-        ],
         moneyAmount:
           [{required: true, message: "金额不能为空", trigger: "blur"}],
         selfAcountsName: [
-          {required: true, message: "己方户名不能为空", trigger: "blur"}],
+          {required: true, message: "己方户名不能为空", trigger: "change"}],
         selfBankNo: [
           {required: true, message: "己方账号不能为空", trigger: "blur"}],
         selfBankName: [
@@ -440,14 +438,6 @@ export default {
     handleCommitBackBank(val) {
       this.bankQuery = val;
     },
-    printHTML() {
-      this.$print({
-        printable: 'printBox',
-        type: 'html',
-        targetStyles: ['*'], // 打印内容使用所有HTML样式，没有设置这个属性/值，设置分页打印没有效果
-      })
-    },
-
     /** 查询收款信息列表 */
     getList() {
       this.loading = true;
@@ -553,7 +543,6 @@ export default {
     },
     /** 提交按钮 */
     submitForm() {
-      this.$wait();//开始加载
       this.$refs["form"].validate(valid => {
         if (valid) {
           if (this.form.id != null) {
@@ -569,8 +558,6 @@ export default {
               this.$close();//结束加载
               this.open = false;
               this.getList();
-            }).catch(err => {
-              this.$close()
             })
           } else {
             this.form.delFlag = null;
@@ -585,8 +572,6 @@ export default {
               this.$close();//结束加载
               this.open = false;
               this.getList();
-            }).catch(err => {
-              this.$close()
             })
           }
         }
