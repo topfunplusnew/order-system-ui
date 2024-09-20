@@ -735,12 +735,6 @@ export default {
         });
         // 添加
       } else {
-        // this.form = excludeParams(this.form, this.$exclude)
-        // addSocialInsurance(this.form).then(response => {
-        //   this.$modal.msgSuccess("新增成功");
-        //   this.open = false;
-        //   this.getList();
-        // });
         // 批量添加
         for (let i = 0; i < this.socialInsuranceItemsList.length; i++) {
           const item = this.socialInsuranceItemsList[i];

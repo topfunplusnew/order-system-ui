@@ -6,51 +6,51 @@
         <el-col :span="4">
           <el-form-item label="开始时间" prop="beginTime">
             <el-date-picker
-              v-model="queryParams.orderDateStart"
-              type="date"
-              placeholder="选择时间"
-              value-format="yyyy-MM-dd"
-              size="mini"
-              style="width: 100px;">
+                v-model="queryParams.orderDateStart"
+                type="date"
+                placeholder="选择时间"
+                value-format="yyyy-MM-dd"
+                size="mini"
+                style="width: 100px;">
             </el-date-picker>
           </el-form-item>
         </el-col>
         <el-col :span="4">
           <el-form-item label="结束时间" prop="endTime">
             <el-date-picker
-              v-model="queryParams.orderDateEnd"
-              type="date"
-              placeholder="选择时间"
-              value-format="yyyy-MM-dd"
-              size="mini"
-              style="width: 100px;">
+                v-model="queryParams.orderDateEnd"
+                type="date"
+                placeholder="选择时间"
+                value-format="yyyy-MM-dd"
+                size="mini"
+                style="width: 100px;">
             </el-date-picker>
           </el-form-item>
         </el-col>
         <el-col :span="4">
           <el-form-item label="客户名称" prop="customer">
             <el-input
-              v-model="queryParams.customer"
-              placeholder="请输入客户名称"
-              clearable
-              @keyup.enter.native="handleQuery"
-              size="mini"
-              style="width: 100px;">
+                v-model="queryParams.customer"
+                placeholder="请输入客户名称"
+                clearable
+                @keyup.enter.native="handleQuery"
+                size="mini"
+                style="width: 100px;">
             </el-input>
           </el-form-item>
         </el-col>
         <el-col :span="4">
           <el-form-item label="审核状态" prop="checkState">
             <el-select
-              v-model="queryParams.checkState"
-              placeholder="请选择"
-              size="mini"
-              style="width: 100px;">
+                v-model="queryParams.checkState"
+                placeholder="请选择"
+                size="mini"
+                style="width: 100px;">
               <el-option
-                v-for="item in options"
-                :key="item.value"
-                :label="item.label"
-                :value="item.value">
+                  v-for="item in options"
+                  :key="item.value"
+                  :label="item.label"
+                  :value="item.value">
               </el-option>
             </el-select>
           </el-form-item>
@@ -58,15 +58,15 @@
         <el-col :span="4">
           <el-form-item label="开票状态" prop="invoiceState">
             <el-select
-              v-model="queryParams.invoiceState"
-              placeholder="请选择"
-              size="mini"
-              style="width: 100px;">
+                v-model="queryParams.invoiceState"
+                placeholder="请选择"
+                size="mini"
+                style="width: 100px;">
               <el-option
-                v-for="item in optionsInvoice"
-                :key="item.value"
-                :label="item.label"
-                :value="item.value">
+                  v-for="item in optionsInvoice"
+                  :key="item.value"
+                  :label="item.label"
+                  :value="item.value">
               </el-option>
             </el-select>
           </el-form-item>
@@ -74,10 +74,10 @@
         <el-col :span="4">
           <el-form-item>
             <el-button
-              type="primary"
-              icon="el-icon-search"
-              size="mini"
-              @click="handleQuery">
+                type="primary"
+                icon="el-icon-search"
+                size="mini"
+                @click="handleQuery">
               搜索
             </el-button>
           </el-form-item>
@@ -92,23 +92,23 @@
       </el-col>
       <el-col :span="1.5">
         <el-button
-          type="danger"
-          plain
-          icon="el-icon-plus"
-          size="mini"
-          @click="handleAdd"
-          v-hasPermi="['system:goodsorder:add']"
+            type="danger"
+            plain
+            icon="el-icon-plus"
+            size="mini"
+            @click="handleAdd"
+            v-hasPermi="['system:goodsorder:add']"
         >添加订单信息
         </el-button>
       </el-col>
       <el-col :span="1.5">
         <el-button
-          type="warning"
-          plain
-          icon="el-icon-download"
-          size="mini"
-          @click="handleExport"
-          v-hasPermi="['system:goodsorder:export']"
+            type="warning"
+            plain
+            icon="el-icon-download"
+            size="mini"
+            @click="handleExport"
+            v-hasPermi="['system:goodsorder:export']"
         >导出订单数据
         </el-button>
       </el-col>
@@ -117,10 +117,10 @@
         <template v-slot:print>
           <el-col :span="1.5">
             <el-button
-              plain
-              icon="el-icon-printer"
-              size="mini"
-              @click="printHTML"
+                plain
+                icon="el-icon-printer"
+                size="mini"
+                @click="printHTML"
             >
             </el-button>
           </el-col>
@@ -128,11 +128,11 @@
         <template v-slot:export>
           <el-col :span="1.5">
             <el-button
-              plain
-              icon="el-icon-folder-opened"
-              size="mini"
-              @click="handleExport"
-              v-hasPermi="['system:goodsorder:export']"
+                plain
+                icon="el-icon-folder-opened"
+                size="mini"
+                @click="handleExport"
+                v-hasPermi="['system:goodsorder:export']"
             >
             </el-button>
           </el-col>
@@ -151,34 +151,34 @@
             <el-dropdown-menu slot="dropdown">
               <el-dropdown-item>
                 <el-button
-                  size="mini"
-                  @click="checkOrderItemInfo(scope.row)"
+                    size="mini"
+                    @click="checkOrderItemInfo(scope.row)"
                 >查看
                 </el-button>
               </el-dropdown-item>
               <el-dropdown-item>
                 <el-button
-                  size="mini"
-                  type="primary"
-                  @click="handleUpdate(scope.row)"
-                  v-hasPermi="['system:goodsorder:edit']"
+                    size="mini"
+                    type="primary"
+                    @click="handleUpdate(scope.row)"
+                    v-hasPermi="['system:goodsorder:edit']"
                 >修改
                 </el-button>
               </el-dropdown-item>
               <el-dropdown-item>
                 <el-button
-                  size="mini"
-                  type="warning"
-                  @click="handleCheckOrderDetailInfo(scope.row)"
+                    size="mini"
+                    type="warning"
+                    @click="handleCheckOrderDetailInfo(scope.row)"
                 >详情
                 </el-button>
               </el-dropdown-item>
               <el-dropdown-item>
                 <el-button
-                  size="mini"
-                  type="danger"
-                  @click="handleDelete(scope.row)"
-                  v-hasPermi="['system:goodsorder:remove']"
+                    size="mini"
+                    type="danger"
+                    @click="handleDelete(scope.row)"
+                    v-hasPermi="['system:goodsorder:remove']"
                 >删除
                 </el-button>
               </el-dropdown-item>
@@ -259,7 +259,7 @@
             无操作
           </el-row>
           <el-row v-else>
-            <el-button size="mini" type="success" @click="checkAttachment(scope.row.path)">
+            <el-button size="mini" type="success" @click="checkAttachment(scope.row,'path')">
               查看
             </el-button>
           </el-row>
@@ -291,7 +291,7 @@
             无操作
           </el-row>
           <el-row v-else>
-            <el-button size="mini" type="success" @click="checkAttachment(scope.row.receiveProof)">
+            <el-button size="mini" type="success" @click="checkAttachment(scope.row,'receiveProof')">
               查看
             </el-button>
           </el-row>
@@ -303,7 +303,7 @@
                        width="100px">
         <template slot-scope="scope">
           <el-tag
-            :type="scope.row.isedit === 0 ? 'danger' :'success'">{{ scope.row.isedit === 0 ? "否" : "是" }}
+              :type="scope.row.isedit === 0 ? 'danger' :'success'">{{ scope.row.isedit === 0 ? "否" : "是" }}
           </el-tag>
         </template>
       </el-table-column>
@@ -343,28 +343,28 @@
                        fixed="right">
         <template slot-scope="scope">
           <el-button
-            size="mini"
-            @click="handleOrder1(scope.row)"
-            v-hasPermi="['system:goodsorder:edit']"
+              size="mini"
+              @click="handleOrder1(scope.row)"
+              v-hasPermi="['system:goodsorder:edit']"
           >发货单
           </el-button>
           <el-button
-            :disabled="scope.row.isAdjusted ==='是'"
-            size="mini"
-            type="primary"
-            @click="handleOrderItemInfo(scope.row)"
+              :disabled="scope.row.isAdjusted ==='是'"
+              size="mini"
+              type="primary"
+              @click="handleOrderItemInfo(scope.row)"
           >调整单
           </el-button>
           <el-button
-            size="mini"
-            type="primary"
-            @click="handleUpload(scope.row)"
+              size="mini"
+              type="primary"
+              @click="handleUpload(scope.row)"
           >上传附件
           </el-button>
           <el-button
-            size="mini"
-            @click="handleCommit(scope.row)"
-            v-hasPermi="['system:goodsorder:remove']"
+              size="mini"
+              @click="handleCommit(scope.row)"
+              v-hasPermi="['system:goodsorder:remove']"
           >上传收到条
           </el-button>
         </template>
@@ -379,19 +379,19 @@
               <el-dropdown-item>
                 <el-row v-if="scope.row.landFreight>0 ||scope.row.seaFreight>0  ">
                   <el-button
-                    size="mini"
-                    v-if="scope.row.landFreight>0"
-                    type="warning"
-                    @click="handleApplyLandFree(scope.row)"
-                    v-hasPermi="['system:goodsorder:remove']"
+                      size="mini"
+                      v-if="scope.row.landFreight>0"
+                      type="warning"
+                      @click="handleApplyLandFree(scope.row)"
+                      v-hasPermi="['system:goodsorder:remove']"
                   >陆运费申请
                   </el-button>
                   <el-button
-                    size="mini"
-                    v-if="scope.row.seaFreight>0"
-                    type="primary"
-                    @click="handleApplySeaFree(scope.row)"
-                    v-hasPermi="['system:goodsorder:remove']"
+                      size="mini"
+                      v-if="scope.row.seaFreight>0"
+                      type="primary"
+                      @click="handleApplySeaFree(scope.row)"
+                      v-hasPermi="['system:goodsorder:remove']"
                   >海运费申请
                   </el-button>
                 </el-row>
@@ -405,19 +405,19 @@
       </el-table-column>
     </el-table>
     <pagination
-      v-show="total>0"
-      :total="total"
-      :page.sync="queryParams.pageNum"
-      :limit.sync="queryParams.pageSize"
-      @pagination="getList"
+        v-show="total>0"
+        :total="total"
+        :page.sync="queryParams.pageNum"
+        :limit.sync="queryParams.pageSize"
+        @pagination="getList"
     />
 
 
     <!--        点击查看某个订单的弹窗   -->
     <el-dialog
-      title="货物信息详细"
-      :visible.sync="checkOrderVisible"
-      width="80%">
+        title="货物信息详细"
+        :visible.sync="checkOrderVisible"
+        width="80%">
       <!--      订单基本信息-->
       <el-descriptions border>
         <el-descriptions-item label="订单日期">{{ orderInfo.orderDate }}</el-descriptions-item>
@@ -442,9 +442,9 @@
 
     <!--    点击调整单的弹窗-->
     <el-dialog
-      title="提示"
-      :visible.sync="handleOrderVisible"
-      width="30%">
+        title="提示"
+        :visible.sync="handleOrderVisible"
+        width="30%">
       <span>是否将订单设置为调整单?</span>
       <span slot="footer" class="dialog-footer">
     <el-button @click="handleOrderVisible = false">取 消</el-button>
@@ -454,9 +454,9 @@
 
     <!--    点击发货单的弹窗-->
     <el-dialog
-      title="发货单"
-      :visible.sync="Order1Visible"
-      width="75%">
+        title="发货单"
+        :visible.sync="Order1Visible"
+        width="75%">
       <!--      发货单主体-->
       <el-row>
         <ChatForm/>
@@ -467,27 +467,27 @@
   </span>
     </el-dialog>
 
-    <!--    上传附件的弹窗 todo -->
+    <!--    上传附件的弹窗 -->
     <el-dialog
-      title="上传附件"
-      :visible.sync="handleUploadVisible"
-      width="450px">
+        title="上传附件"
+        :visible.sync="handleUploadVisible"
+        width="450px">
       <el-row>
         <el-col :span="12" :offset="2">
           <el-upload
-            class="upload-demo"
-            drag
-            :action="uploadFileUrl"
-            multiple :on-success="handleUploadPathSuccess"
-            show-file-list
-            :headers="headers"
-            :file-list="fileList"
-            :on-change="handleChange"
-            :before-upload="beforeUpload">
+              class="upload-demo"
+              drag
+              :action="uploadFileUrl"
+              multiple
+              show-file-list
+              :headers="headers"
+              :file-list="fileList"
+              :before-upload="beforeUpload">
             <i class="el-icon-upload"></i>
             <div class="el-upload__text">将文件拖到此处，或<em>点击上传</em></div>
             <div class="el-upload__tip" slot="tip">只能上传jpg/png文件，且不超过500kb</div>
           </el-upload>
+          <el-button type="success" @click="submitUploadAllFiles('path')">开始上传</el-button>
         </el-col>
       </el-row>
       <span slot="footer" class="dialog-footer">
@@ -498,20 +498,23 @@
 
     <!--    上传收到条的弹窗-->
     <el-dialog
-      title="提示"
-      :visible.sync="handleCommitVisible"
-      width="450px">
+        title="提示"
+        :visible.sync="handleCommitVisible"
+        width="450px">
       <el-upload
-        class="upload-demo"
-        drag
-        :action="uploadFileUrl"
-        multiple :on-success="handleUploadReceiveProofSuccess"
-        show-file-list
-        :headers="headers">
+          class="upload-demo"
+          drag
+          :action="uploadFileUrl"
+          multiple
+          show-file-list
+          :headers="headers"
+          :file-list="fileList"
+          :before-upload="beforeUpload">
         <i class="el-icon-upload"></i>
         <div class="el-upload__text">将文件拖到此处，或<em>点击上传</em></div>
         <div class="el-upload__tip" slot="tip">只能上传jpg/png文件，且不超过500kb</div>
       </el-upload>
+      <el-button type="success" @click="submitUploadAllFiles('receiveProof')">开始上传</el-button>
       <span slot="footer" class="dialog-footer">
     <el-button @click="handleCommitVisible = false">取 消</el-button>
     <el-button type="primary" @click="handleCommitVisible = false">确 定</el-button>
@@ -521,9 +524,9 @@
 
     <!--    添加订单的新弹窗 原有的新增不使用-->
     <el-dialog
-      title="订单信息"
-      :visible.sync="addOrderItemVisible"
-      width="80%">
+        title="订单信息"
+        :visible.sync="addOrderItemVisible"
+        width="80%">
       <!--      添加订单 传递本组件的orderInfo信息 -->
       <OrderForm :orderInfo="orderInfo" @updateOrderInfo="handleChangeOrderInfo"/>
       <span slot="footer" class="dialog-footer">
@@ -535,17 +538,17 @@
 
     <!--    陆运费和海运费申请-->
     <el-dialog
-      title="陆运费申请"
-      :visible.sync="landFreeDialogVisible"
-      width="30%">
+        title="陆运费申请"
+        :visible.sync="landFreeDialogVisible"
+        width="30%">
       <keep-alive>
         <FreeApply :order-info="landFreightInfo"/>
       </keep-alive>
     </el-dialog>
     <el-dialog
-      title="海运费申请"
-      :visible.sync="seaFreeDialogVisible"
-      width="30%">
+        title="海运费申请"
+        :visible.sync="seaFreeDialogVisible"
+        width="30%">
       <keep-alive>
         <FreeApply :order-info="seaFreightInfo"/>
       </keep-alive>
@@ -554,9 +557,9 @@
 
     <!--    订单货物详情-->
     <el-dialog
-      title="订单货物详情"
-      :visible.sync="checkOrderDetailInfoVisible"
-      width="70%" destroy-on-close>
+        title="订单货物详情"
+        :visible.sync="checkOrderDetailInfoVisible"
+        width="70%" destroy-on-close>
       <!--      传递订单详情列表-->
       <OrderDetailInfo :orderDetailInfoList="orderDetailInfoList"
                        @updateOrderDetailList="handleUpdateOrderDetailInfoList"/>
@@ -573,17 +576,17 @@
 
     <!-- 开发票-->
     <el-dialog
-      :title="openTitle"
-      :visible.sync="invoiceOpenVisible"
-      width="50%">
+        :title="openTitle"
+        :visible.sync="invoiceOpenVisible"
+        width="50%">
       <el-row>
         <el-form :model="openTitleInfo" label-width="110px" :rules="CheckRules.openTitleRules">
           <el-form-item label="开票日期" prop="invoiceDate">
             <el-date-picker
-              v-model="openTitleInfo.invoiceDate"
-              type="date"
-              placeholder="选择日期"
-              value-format="yyyy-MM-dd">
+                v-model="openTitleInfo.invoiceDate"
+                type="date"
+                placeholder="选择日期"
+                value-format="yyyy-MM-dd">
             </el-date-picker>
           </el-form-item>
           <el-form-item label="我方开票实体" prop="invoiceObject">
@@ -645,17 +648,24 @@
       </keep-alive>
     </el-dialog>
 
+    <!--    todo url其实就是返回了后端服务器的地址加端口 这里需要后期规定好后直接拼接就能查看了 -->
+    <el-dialog title="查看附件" :visible.sync="checkAttachmentVisible" width="48%">
+      <el-row v-for="(item, index) in checkFileList" :key="index">
+        <el-button type="text" icon="el-icon-document" @click="checkFileItem(item)">{{ item }}</el-button>
+      </el-row>
+    </el-dialog>
   </div>
 </template>
 
 <script>
 import {
-  listGoodsOrder,
-  getGoodsOrder,
-  delGoodsOrder,
   addGoodsOrder,
-  updateGoodsOrder,
-  adjustGoodsOrder, auditGoodsOrder
+  adjustGoodsOrder,
+  auditGoodsOrder,
+  delGoodsOrder,
+  getGoodsOrder,
+  listGoodsOrder,
+  updateGoodsOrder
 } from "@/api/system/goodsOrder";
 import TagsItem from "@/components/TagsItem/index.vue";
 import OrderForm from "@/components/OrderForm.vue";
@@ -665,9 +675,8 @@ import {excludeParams} from "@/api/tool/exclude";
 import SearchOption from "@/components/SearchOption.vue";
 import {listBankAccount} from "@/api/system/bankAccount";
 import {listCompany} from "@/api/system/company";
-import {addRebate} from "@/api/system/Rebate";
 import {formatDate} from "@/utils";
-import {addOrderFreight, listOrderFreight} from "@/api/system/orderFreight";
+import {listOrderFreight} from "@/api/system/orderFreight";
 import SwitchBarItem from "@/components/SwitchBarItem.vue";
 import SwitchBarForCheck from "@/components/SwitchBarForCheck.vue";
 import ApplyPayment from "@/components/ApplyPayment.vue";
@@ -680,6 +689,8 @@ import FreeApply from "@/components/FreeApply.vue";
 import {parseTime} from "../../../utils/ruoyi";
 import {addInvoiceIn} from "@/api/system/invoiceIn";
 import {mixin_printHTML} from "@/views/dashboard/mixins/print";
+import request from "../../../utils/request";
+import axios from "axios";
 
 export default {
   name: "GoodsOrder",
@@ -919,13 +930,18 @@ export default {
       paymentApplyVisible: false,
       needMoney: 0,
       // 文件上传的列表
-      fileList: []
+      fileList: [],
+      // 已上传后的文件名称列表
+      fileNamesList: [],
+      // 查看附件或者收到条的文件列表
+      checkFileList: [],
+      checkAttachmentVisible: false
     };
   },
   created() {
     this.getList();
     if (localStorage.getItem('goodsorder-columns') === 'null'
-      || !localStorage.getItem('goodsorder-columns')) {
+        || !localStorage.getItem('goodsorder-columns')) {
       //设置localStorage
       localStorage.setItem("goodsorder-columns", JSON.stringify(this.columns))
     } else {
@@ -1070,56 +1086,94 @@ export default {
       })
     },
     //查看附件信息
-    checkAttachment(path) {
-      window.open(path)
-    },
-    //删除收到条
-    deleteReceiveProof(row) {
-      this.$confirm('是否删除收到条?', '提示', {
-        confirmButtonText: '确定',
-        cancelButtonText: '取消',
-        type: 'warning'
-      }).then(() => {
-        getGoodsOrder(row.id)
-          .then(res => {
-            let order = res.data;
-            order.receiveProof = null;
-            updateGoodsOrder(excludeParams(order, this.$exclude))
-              .then(res => {
-                this.$message.success('删除成功')
-                this.getList()
-              });
-          })
-      }).catch(() => {
-        this.$message({
-          type: 'info',
-          message: '已取消删除'
-        });
-      });
-    },
-    //删除附件
-    deletePath(row) {
-      updateGoodsOrder(excludeParams({...row, path: ''}, this.$exclude))
-        .then(res => {
-          this.$message.success('删除成功')
+    checkAttachment(row, type) {
+      if (type === 'path') {
+        getGoodsOrder(row.id).then(res => {
+          this.checkFileList = res.data.path.split('|');
+          this.checkAttachmentVisible = true;
         })
-    },
-    //上传成功
-    handleUploadReceiveProofSuccess(response, file, fileList) {
-      if (response.code === 200) {
-        //去除不必要字段
-        this.tempOrderInfo = excludeParams(this.tempOrderInfo, this.$exclude)
-        //修改订单信息
-        updateGoodsOrder({...this.tempOrderInfo, receiveProof: response.url})
-          .then(res => {
-            this.$message.success('上传成功')
-            this.getList()
-          })
       } else {
-        this.$message.error('上传失败')
+        getGoodsOrder(row.id).then(res => {
+          this.checkFileList = res.data.receiveProof.split('|');
+          this.checkAttachmentVisible = true;
+        })
       }
-      fileList.pop();
     },
+    // 查看某一个文件
+    checkFileItem(item) {
+      window.open(item)
+    },
+
+    // 上传之前的钩子函数
+    beforeUpload(file) {
+      // 如果文件名超出20个字符那么就提示
+      if (file.name.length > 20) {
+        this.$message.error('文件名不能超过20个字符,请重命名后上传')
+        return false
+      }
+      // 推入数组中 后续点击开始上传的时候 ，对数组的每一个文件进行上传
+      this.fileList.push(file)
+      // 阻止默认上传行为
+      return false
+    },
+
+    // 点击开始上传 type是上传的类型
+    async submitUploadAllFiles(type) {
+      // 开始批量发请求 上传文件 上传完毕的文件会返回一个fileName 只要把上传后的fileName推入到已上传的列表
+      for (let i = 0; i < this.fileList.length; i++) {
+        const file = this.fileList[i];
+        // 点击上传的时候 要推入到上传数组中
+        const formData = new FormData();
+        formData.append('file', file)
+        try {
+          // 调用上传接口
+          const response = await axios.post(process.env.VUE_APP_BASE_API + '/common/upload', formData, {
+            headers: {
+              ...this.headers,
+              'Content-Type': 'multipart/form-data'
+            }
+          })
+          this.fileList.splice(i, 1);
+          i--;
+          // 等待
+          await this.sleep(1500);
+          if (response.data.code === 200) {
+            this.fileNamesList.push(response.data.fileName)
+            this.$message.success(`上传成功,剩余${this.fileList.length}个文件未上传`)
+          } else {
+            this.$message.error(response.data.msg)
+          }
+
+        } catch (e) {
+          console.error(`第${this.fileList.indexOf(file) + 1}个文件上传失败:`, e);
+        }
+      }
+
+      // 全部上传完事后 修改订单的附件
+      this.tempOrderInfo = excludeParams(this.tempOrderInfo, this.$exclude)
+      const path = this.fileNamesList.join('|')
+      if (type === 'path') {
+        //修改订单信息
+        updateGoodsOrder({...this.tempOrderInfo, path: path})
+            .then(res => {
+              this.$message.success('上传附件成功')
+              this.getList()
+            })
+        // 收到条
+      } else if (type === 'receiveProof') {
+        //修改订单信息
+        updateGoodsOrder({...this.tempOrderInfo, receiveProof: path})
+            .then(res => {
+              this.$message.success('上传收到条成功')
+              this.getList()
+            })
+      }
+    },
+    // 休眠函数
+    sleep(ms) {
+      return new Promise(resolve => setTimeout(resolve, ms));
+    },
+
     // 订单申请打款
     applyForPayment(row) {
       this.paymentApplyVisible = true;
@@ -1139,46 +1193,16 @@ export default {
       }).then(() => {
         //修改审核状态
         auditGoodsOrder({id: row.id, isaudit: true})
-          .then(res => {
-            this.$message({
-              type: 'success',
-              message: '操作成功~!'
-            });
-            this.getList()
-          })
+            .then(res => {
+              this.$message({
+                type: 'success',
+                message: '操作成功~!'
+              });
+              this.getList()
+            })
       })
     },
-    // 上传附件成功的钩子函数
-    handleUploadPathSuccess(response, file, fileList) {
-      if (response.code === 200) {
-        //去除不必要字段
-        this.tempOrderInfo = excludeParams(this.tempOrderInfo, this.$exclude)
-        //修改订单信息
-        updateGoodsOrder({...this.tempOrderInfo, path: response.url})
-          .then(res => {
-            this.$message.success('上传成功')
-            this.getList()
-          })
-      } else {
-        this.$message.error('上传失败')
-      }
-    },
-    // 上传之前的钩子函数
-    beforeUpload(file) {
-      // 如果文件名超出20个字符那么就提示
-      if (file.name.length > 20) {
-        this.$message.error('文件名不能超过20个字符,请重命名后上传')
-        return false
-      }
-      file.name += '|';
 
-      return true
-    },
-    // 文件状态改变时的钩子，添加文件、上传成功和上传失败时都会被调用
-    handleChange(file, fileList) {
-      console.log('file', file);
-      console.log('fileList', fileList)
-    },
 
     //客户供应商开票功能
     //添加开票 是否订单开票要给订单id
@@ -1190,36 +1214,36 @@ export default {
         //修改开票信息
         let info = {...this.openTitleInfo.orderInfo, customerIsInvoice: 1}
         updateGoodsOrder(excludeParams(info, this.$exclude))
-          .then(res => {
-            this.$message.success('开票状态设置成功~')
-            //删除订单信息
-            delete this.openTitleInfo.orderInfo
-            //客户开票 添加发票卖出信息
-            addInvoiceOut(this.openTitleInfo)
-              .then(res => {
-                this.$message.success('客户开票成功~')
-                this.openTitleInfo = {}
-                this.invoiceOpenVisible = false
-                this.getList()
-              })
-          })
+            .then(res => {
+              this.$message.success('开票状态设置成功~')
+              //删除订单信息
+              delete this.openTitleInfo.orderInfo
+              //客户开票 添加发票卖出信息
+              addInvoiceOut(this.openTitleInfo)
+                  .then(res => {
+                    this.$message.success('客户开票成功~')
+                    this.openTitleInfo = {}
+                    this.invoiceOpenVisible = false
+                    this.getList()
+                  })
+            })
         //添加发票买入
       } else {
         let info = {...this.openTitleInfo.orderInfo, isSupplierInvoice: 1}
         updateGoodsOrder(excludeParams(info, this.$exclude))
-          .then(res => {
-            this.$message.success('开票状态设置成功~')
-            //删除订单信息
-            delete this.openTitleInfo.orderInfo
-            //客户开票 添加发票卖出信息
-            addInvoiceIn(this.openTitleInfo)
-              .then(res => {
-                this.$message.success('供应商开票成功~')
-                this.openTitleInfo = {}
-                this.invoiceOpenVisible = false
-                this.getList()
-              })
-          })
+            .then(res => {
+              this.$message.success('开票状态设置成功~')
+              //删除订单信息
+              delete this.openTitleInfo.orderInfo
+              //客户开票 添加发票卖出信息
+              addInvoiceIn(this.openTitleInfo)
+                  .then(res => {
+                    this.$message.success('供应商开票成功~')
+                    this.openTitleInfo = {}
+                    this.invoiceOpenVisible = false
+                    this.getList()
+                  })
+            })
       }
     },
     //开票信息弹窗
@@ -1238,18 +1262,18 @@ export default {
       this.openTitleInfo.isOrderTax = row.id;
       //设置该订单信息 需要进行一次查询
       getGoodsOrder(row.id)
-        .then(res => {
-          this.openTitleInfo.orderInfo = res.data;
-        })
+          .then(res => {
+            this.openTitleInfo.orderInfo = res.data;
+          })
       this.invoiceOpenVisible = true;
     },
     openSupplierInvoice(row) {
       this.openTitleInfo.domain = 2
       this.openTitleInfo.isOrderTax = row.id;
       getGoodsOrder(row.id)
-        .then(res => {
-          this.openTitleInfo.orderInfo = res.data;
-        })
+          .then(res => {
+            this.openTitleInfo.orderInfo = res.data;
+          })
       this.invoiceOpenVisible = true;
     },
     //申请陆运费
