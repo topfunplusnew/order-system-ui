@@ -123,9 +123,24 @@
             <el-col :span="12">
               <el-input v-model="form.companyName" placeholder="请输入对方公司"/>
             </el-col>
-            <el-col :span="6">
-              <el-button icon="el-icon-search" @click="searchCompanyInfo"></el-button>
-            </el-col>
+            <!--            <el-col :span="6">-->
+            <!--              <el-button icon="el-icon-search" @click="searchCompanyInfo"></el-button>-->
+            <!--            </el-col>-->
+            <SearchOption :limit-info="{}"
+                          :get-data="listCompany" query-info="companyName"
+                          query-label="公司名称" :query-name="queryCompanyName"
+                          @update:queryName="handleUpdateCompanyName" @commitBack="handleCommitBackCompany">
+              <template #table-columns>
+                <el-table-column label="公司名称" align="center"
+                                 prop="companyName"/>
+                <el-table-column label="对方公司类型" align="center" prop="companyType"/>
+                <el-table-column label="老板姓名" align="center" prop="leader"/>
+                <el-table-column label="老板电话" align="center" prop="leaderTel"/>
+                <el-table-column label="区域" align="center" prop="region"/>
+                <el-table-column label="公司名称" align="center" prop="companyName"/>
+                <el-table-column label="销售经理" align="center" prop="salesManager"/>
+              </template>
+            </SearchOption>
           </el-row>
         </el-form-item>
         <el-form-item label="对方公司类型" prop="companyType">
@@ -181,12 +196,14 @@ import {
 } from "@/api/system/BalanceAccounts";
 import company from "@/views/system/company/index.vue";
 import {mapGetters} from "vuex";
-import {listCompany} from "@/api/system/company";
 import {addDateRange, parseTime} from "@/utils/ruoyi";
 import {excludeParams} from "@/api/tool/exclude";
+import SearchOption from "../../../components/SearchOption.vue";
+import {listCompany} from "../../../api/system/company";
 
 export default {
   name: "BalanceAccounts",
+  components: {SearchOption},
   computed: {
     company() {
       return company
@@ -262,6 +279,7 @@ export default {
       companyDialogVisible: false,
       //公司信息
       companyInfoList: [],
+      queryCompanyName: '',
     };
   },
   created() {
@@ -286,6 +304,16 @@ export default {
     }
   },
   methods: {
+    listCompany,
+    // 自动填充
+    handleUpdateCompanyName(val) {
+      this.queryCompanyName = val;
+    },
+    handleCommitBackCompany(val) {
+      this.form.companyType = val.companyType;
+      this.form.companyName = val.companyName;
+      this.form.companyID = val.id;
+    },
     //搜索公司信息
     searchCompanyInfo() {
       this.companyDialogVisible = true;
