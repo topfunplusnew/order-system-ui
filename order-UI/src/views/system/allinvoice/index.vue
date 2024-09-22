@@ -73,55 +73,44 @@
     </el-row>
     <el-table id="printBox" v-horizontal-scroll="'always'" border v-loading="loading" :data="invoiceInList"
               @selection-change="handleSelectionChange" :cell-style="()=>{return {padding:'2px'}}" size="mini">
-      <el-table-column label="id" align="center" prop="id" v-if="columns[0].visible"/>
-      <el-table-column label="开票日期" align="center" prop="invoiceDate" v-if="columns[1].visible"/>
-      <el-table-column label="发票金额" align="center" prop="invoiceAmount" v-if="columns[2].visible"/>
-      <el-table-column label="公司类型" align="center" prop="companyType" v-if="columns[3].visible"/>
-      <el-table-column label="公司名称" align="center" prop="companyName" v-if="columns[4].visible"/>
-      <el-table-column label="开票单位名称" align="center" prop="invoiceCompanyName" v-if="columns[5].visible"/>
-      <el-table-column label="票点" align="center" prop="ticketPoint" v-if="columns[6].visible"/>
-      <el-table-column label="票点金额" align="center" prop="ticketPointAmount" v-if="columns[7].visible"/>
-      <el-table-column label="是否为订单税" align="center" prop="isOrderTax" v-if="columns[8].visible">
+      <el-table-column label="id" align="center" prop="id" width="140" v-if="columns[0].visible"/>
+      <el-table-column label="开票日期" align="center" prop="invoiceDate" width="140" v-if="columns[1].visible"/>
+      <el-table-column label="发票金额" align="center" prop="invoiceAmount" width="140" v-if="columns[2].visible"/>
+      <el-table-column label="公司类型" align="center" prop="companyType" width="140" v-if="columns[3].visible"/>
+      <el-table-column label="公司名称" align="center" prop="companyName" width="140" v-if="columns[4].visible"/>
+      <el-table-column label="开票单位名称" align="center" prop="invoiceCompanyName" width="140"
+                       v-if="columns[5].visible"/>
+      <el-table-column label="票点" align="center" prop="ticketPoint" width="140" v-if="columns[6].visible"/>
+      <el-table-column label="票点金额" align="center" prop="ticketPointAmount" width="140" v-if="columns[7].visible"/>
+      <el-table-column label="是否为订单税" align="center" prop="isOrderTax" width="140" v-if="columns[8].visible">
         <template slot-scope="scope">
           <el-tag :type="scope.row.isOrderTax===0?'danger':'success'" disable-transitions>
             {{ scope.row.isOrderTax === 0 ? '否' : '是' }}
           </el-tag>
         </template>
       </el-table-column>
-      <el-table-column label="供应商名称" align="center" prop="supplier" v-if="columns[9].visible"/>
-      <el-table-column label="客户名称" align="center" prop="customer" v-if="columns[10].visible"/>
-      <el-table-column label="采购发票金额" align="center" prop="purchaseInvoiceAmount" v-if="columns[11].visible"/>
-      <el-table-column label="票点成本（点数）" align="center" prop="ticketPointCost" v-if="columns[12].visible"/>
-      <el-table-column label="票点成本（金额）" align="center" prop="ticketPointCostAmount" v-if="columns[13].visible"/>
-      <el-table-column label="票点收入（点数）" align="center" prop="ticketPointIncome" v-if="columns[14].visible"/>
-      <el-table-column label="票点收入（金额）" align="center" prop="ticketPointIncomeAmount" v-if="columns[15].visible"/>
-      <el-table-column label="票点差额" align="center" prop="ticketPointDifference" v-if="columns[16].visible"/>
+      <el-table-column label="供应商名称" align="center" prop="supplier" width="140" v-if="columns[9].visible"/>
+      <el-table-column label="客户名称" align="center" prop="customer" width="140" v-if="columns[10].visible"/>
+      <el-table-column label="采购发票金额" align="center" prop="purchaseInvoiceAmount" width="140"
+                       v-if="columns[11].visible"/>
+      <el-table-column label="票点成本（点数）" align="center" prop="ticketPointCost" width="140"
+                       v-if="columns[12].visible"/>
+      <el-table-column label="票点成本（金额）" align="center" prop="ticketPointCostAmount" width="140"
+                       v-if="columns[13].visible"/>
+      <el-table-column label="票点收入（点数）" align="center" prop="ticketPointIncome" width="140"
+                       v-if="columns[14].visible"/>
+      <el-table-column label="票点收入（金额）" align="center" prop="ticketPointIncomeAmount" width="140"
+                       v-if="columns[15].visible"/>
+      <el-table-column label="票点差额" align="center" prop="ticketPointDifference" width="140"
+                       v-if="columns[16].visible"/>
       <!--      <el-table-column label="票点成本（点数）" align="center" prop="ticketPointCost" v-if="columns[17].visible"/>
-            <el-table-column label="票点成本（点数）" align="center" prop="ticketPointCost" v-if="columns[18].visible"/>-->
-      <el-table-column label="总货款" align="center" prop="allPayments" v-if="columns[17].visible"/>
-      <el-table-column label="实际开票日期" align="center" prop="orderDate" v-if="columns[18].visible"/>
-      <el-table-column label="当月欠票" align="center" prop="oweamount" v-if="columns[19].visible">
-      </el-table-column>
-      <el-table-column label="备注" align="center" prop="comments" v-if="columns[20].visible"/>
-      <!--      <el-table-column label="操作" align="center" class-name="small-padding fixed-width" fixed="right">-->
-      <!--        <template slot-scope="scope">-->
-      <!--          <el-button-->
-      <!--            size="mini"-->
-      <!--            type="primary"-->
-      <!--            @click="handleUpdate(scope.row)"-->
-      <!--            v-hasPermi="['system:allinvoice:edit']"-->
-      <!--          >修改-->
-      <!--          </el-button>-->
-      <!--          <el-button-->
-      <!--            size="mini"-->
-      <!--            type="danger"-->
-      <!--            @click="handleDelete(scope.row)"-->
-      <!--            v-hasPermi="['system:allinvoice:remove']"-->
-      <!--          >删除-->
-      <!--          </el-button>-->
-      <!--        </template>-->
-      <!--      </el-table-column>-->
+                <el-table-column label="票点成本（点数）" align="center" prop="ticketPointCost" v-if="columns[18].visible"/>-->
+      <el-table-column label="总货款" align="center" prop="allPayments" width="140" v-if="columns[17].visible"/>
+      <el-table-column label="实际开票日期" align="center" prop="orderDate" width="140" v-if="columns[18].visible"/>
+      <el-table-column label="当月欠票" align="center" prop="oweamount" width="140" v-if="columns[19].visible"/>
+      <el-table-column label="备注" align="center" prop="comments" width="140" v-if="columns[20].visible"/>
     </el-table>
+
     <pagination
       v-show="total>0"
       :total="total"
