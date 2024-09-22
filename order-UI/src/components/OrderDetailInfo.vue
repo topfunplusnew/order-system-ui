@@ -13,6 +13,10 @@ export default {
     orderDetailInfoList: {
       type: Array
     },
+    ban: {
+      type: Boolean,
+      default: false
+    }
   },
   data() {
     return {
@@ -58,10 +62,10 @@ export default {
     //添加返利回扣信息
     addMoneyBackInfo() {
       addRebate(this.moneyBackInfo)
-        .then(res => {
-          this.$message.success('添加成功~')
-          this.addMoneyBackVisible = false
-        })
+          .then(res => {
+            this.$message.success('添加成功~')
+            this.addMoneyBackVisible = false
+          })
     },
     //删除订单详情个体
     deleteOrderDetail(row) {
@@ -106,18 +110,19 @@ export default {
     </el-row>
     <el-row>
       <el-table border :data="orderDetailInfoList" id="printBox" max-height="700">
-        <el-table-column label="操作" align="center" class-name="small-padding fixed-width" width="170px" fixed="left">
+        <el-table-column label="操作" align="center" class-name="small-padding fixed-width" width="170px" fixed="left"
+                         v-if="!ban">
           <template slot-scope="scope">
             <el-button
-              size="mini"
-              type="warning"
-              @click="handleMoneyBack(scope.row)"
+                size="mini"
+                type="warning"
+                @click="handleMoneyBack(scope.row)"
             >货物返利
             </el-button>
             <el-button
-              size="mini"
-              type="danger"
-              @click="deleteOrderDetail(scope.row)"
+                size="mini"
+                type="danger"
+                @click="deleteOrderDetail(scope.row)"
             >删除货物
             </el-button>
           </template>
@@ -147,7 +152,7 @@ export default {
         <el-table-column label="出厂是否含税" align="center" prop="isIncludeTaxFactory">
           <template slot-scope="scope">
             <el-tag
-              disable-transitions>{{ scope.row.isIncludeTaxFactory === 0 ? "否" : "是" }}
+                disable-transitions>{{ scope.row.isIncludeTaxFactory === 0 ? "否" : "是" }}
             </el-tag>
           </template>
         </el-table-column>
@@ -157,7 +162,7 @@ export default {
         <el-table-column label="销售是否含税" align="center" prop="isIncludeTaxSale">
           <template slot-scope="scope">
             <el-tag
-              disable-transitions>{{ scope.row.isIncludeTaxSale === 0 ? "否" : "是" }}
+                disable-transitions>{{ scope.row.isIncludeTaxSale === 0 ? "否" : "是" }}
             </el-tag>
           </template>
         </el-table-column>
@@ -181,15 +186,15 @@ export default {
 
     <!--    返利回扣-->
     <el-dialog
-      title="添加返利信息"
-      :visible.sync="addMoneyBackVisible"
-      width="40%" append-to-body>
+        title="添加返利信息"
+        :visible.sync="addMoneyBackVisible"
+        width="40%" append-to-body>
       <el-form :model="moneyBackInfo" label-width="80px">
         <el-form-item label="日期" prop="rebateDate">
           <el-date-picker
-            v-model="moneyBackInfo.rebateDate"
-            type="date"
-            placeholder="选择日期" value-format="timestamp">
+              v-model="moneyBackInfo.rebateDate"
+              type="date"
+              placeholder="选择日期" value-format="timestamp">
           </el-date-picker>
         </el-form-item>
         <el-form-item label="金额" prop="rebate">

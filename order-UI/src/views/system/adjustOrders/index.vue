@@ -648,7 +648,7 @@
         <OrderInfos :order-info="previousOrderInfo"/>
       </el-row>
       <el-row>
-        <OrderDetailInfo :orderDetailInfoList="previousOrderInfo.orderDetailList"/>
+        <OrderDetailInfo :orderDetailInfoList="previousOrderInfo.orderDetailList" :ban="true"/>
       </el-row>
     </el-dialog>
   </div>
