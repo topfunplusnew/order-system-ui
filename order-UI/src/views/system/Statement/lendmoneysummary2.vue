@@ -140,7 +140,8 @@ import SearchOption from "@/components/SearchOption.vue";
 import ApplyPayment from "@/components/ApplyPayment.vue";
 import {getLendMoneySummary2} from "@/api/system/statement";
 import {mixin_printHTML} from "@/views/dashboard/mixins/print";
-import {getRecoverMoneyNoPage} from "../../../api/system/recoverMoney";
+import {getRecoverMoneyNoPage, listRecoverMoney} from "../../../api/system/recoverMoney";
+import {getRepaymentMoneyNoPage} from "../../../api/system/repayment";
 
 export default {
   name: "LendMoney",
@@ -224,8 +225,9 @@ export default {
   methods: {
     // 查看历史还款信息
     checkDetail(row) {
+      console.log(row)
       // 查询
-      getRecoverMoneyNoPage({futuresNO: row.futuresNO})
+      listRecoverMoney({futuresNO: row.futuresNO})
         .then(res => {
           this.tableData = res.rows;
           if (res.rows.length === 0) {

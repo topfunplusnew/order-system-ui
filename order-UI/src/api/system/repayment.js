@@ -42,3 +42,12 @@ export function delRepayment(id) {
     method: 'delete'
   })
 }
+
+// 不分页查询
+export function getRepaymentMoneyNoPage(query) {
+  return request({
+    url: '/system/repayment/noPage/list',
+    method: 'get',
+    params: query
+  })
+}

@@ -76,6 +76,16 @@
                        width="160"/>
       <el-table-column label="事由" align="center" prop="reason" v-if="columns[10].visible" width="160"/>
       <el-table-column label="备注" align="center" prop="comments" v-if="columns[11].visible" width="160"/>
+      <el-table-column label="操作" align="center" class-name="small-padding fixed-width" width="120" fixed="right">
+        <template slot-scope="scope">
+          <el-button
+            size="mini"
+            type="warning"
+            @click="checkDetail(scope.row)">
+            查看历史还款
+          </el-button>
+        </template>
+      </el-table-column>
     </el-table>
 
 
@@ -87,6 +97,32 @@
       @pagination="getList"
     />
 
+    <el-table
+      v-if="tableData.length!==0"
+      :data="tableData"
+      size="mini"
+      :cell-style="()=>{return {padding:'2px'}}"
+      border
+      style="width: 40%" :span-method="mergeCells">
+      <el-table-column
+        prop=""
+        width="180">
+        <template v-slot="scope">
+          <span v-if="scope.$index === 0">借出资金收回</span>
+        </template>
+      </el-table-column>
+      <el-table-column
+        prop="recoverDate"
+        label="时间"
+        width="180">
+      </el-table-column>
+      <el-table-column
+        prop="moneyAmount"
+        label="收回金额"
+        width="180">
+      </el-table-column>
+    </el-table>
+
   </div>
 </template>
 
@@ -95,6 +131,8 @@ import SearchOption from "@/components/SearchOption.vue";
 import ApplyPayment from "@/components/ApplyPayment.vue";
 import {getLendMoneySummary} from "@/api/system/statement";
 import {mixin_printHTML} from "@/views/dashboard/mixins/print";
+import {getRepaymentMoneyNoPage} from "../../../api/system/repayment";
+import {listRecoverMoney} from "../../../api/system/recoverMoney";
 
 export default {
   name: "LendMoney",
@@ -165,12 +203,43 @@ export default {
         endTime: '',
         objectType: ''
       },
+      // 详细的还款记录
+      tableData: []
     };
   },
   created() {
     this.getList();
   },
   methods: {
+    // 查看历史还款信息
+    checkDetail(row) {
+      // 查询
+      listRecoverMoney({futuresNO: row.futuresNO})
+        .then(res => {
+          this.tableData = res.rows;
+          if (res.rows.length === 0) {
+            this.$message.error('暂无数据')
+          } else {
+            this.$message.success('查询成功')
+          }
+        })
+    },
+    mergeCells({row, column, rowIndex, columnIndex}) {
+      if (columnIndex === 0) {
+        // 合并第一列 "期货保证金收回"
+        if (rowIndex === 0) {
+          return {
+            rowspan: this.tableData.length,
+            colspan: 1
+          };
+        } else {
+          return {
+            rowspan: 0,
+            colspan: 0
+          };
+        }
+      }
+    },
     /** 查询向外部借出款信息列表 */
     getList() {
       this.loading = true;

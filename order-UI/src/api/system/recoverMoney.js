@@ -52,7 +52,7 @@ export function getRecoverMoneyByUuid(uuid) {
 }
 
 
-// 台账的查询还款记录
+// 借出款收回记录
 export function getRecoverMoneyNoPage(query) {
   return request({
     url: '/system/recoverMoney/noPage/list',
