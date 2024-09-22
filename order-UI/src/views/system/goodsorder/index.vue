@@ -144,7 +144,7 @@
               id="printBox" v-horizontal-scroll="'always'"
               max-height="750" size="mini" :cell-style="()=>{return {padding:'2px'}}">
       <el-table-column show-overflow-tooltip label="行操作" align="center" class-name="small-padding fixed-width"
-                       width="100px" fixed="left">
+                       width="142" fixed="left">
         <template slot-scope="scope">
           <el-dropdown size="mini" split-button type="primary">
             操作
@@ -184,6 +184,13 @@
               </el-dropdown-item>
             </el-dropdown-menu>
           </el-dropdown>
+          <el-button
+              style="margin-left: 5px"
+              size="mini"
+              type="success"
+              @click="checkOrderHistory(scope.row)"
+          >查看历史
+          </el-button>
         </template>
       </el-table-column>
       <el-table-column show-overflow-tooltip label="ID" align="center" prop="id" fixed="left"/>
@@ -192,10 +199,10 @@
       <el-table-column show-overflow-tooltip label="供应商" align="center" prop="supplierNames" fixed="left"
                        width="200">
         <template #default="scope">
-          <span v-for="(item,index) in getSupplierNames(scope.row.supplierNames)" :key="index">
+          <span v-for="(item,index) in getSupplierNames(scope.row)" :key="index">
              <el-badge is-dot class="item">
-            <span @click="openSupplierInvoice(scope.row)">
-              {{ item }}
+            <span @click="openSupplierInvoice(scope.row,item.supplierID)">
+              {{ item.supplier }}
             </span>
           </el-badge>
           </span>
@@ -668,6 +675,66 @@
         <el-button type="text" icon="el-icon-document" @click="checkFileItem(item)">{{ item }}</el-button>
       </el-row>
     </el-dialog>
+
+
+    <!--   todo  订单历史信息查看-->
+    <el-dialog title="订单历史信息" :visible.sync="checkHistoryOrderVisible" fullscreen>
+      <el-row>
+        <el-col :span="18" :offset="3">
+          <el-timeline>
+            <el-timeline-item timestamp="2018/4/12" placement="top">
+              <el-card>
+                <h3 style="font-weight: bold">admin 2018/4/12 修改 </h3>
+                <el-descriptions column="5" size="mini" border>
+                  <el-descriptions-item label="用户名" label-class-name="my-label" content-class-name="now-order">
+                    kooriookami12312
+                  </el-descriptions-item>
+                  <el-descriptions-item label="用户名">kooriookami</el-descriptions-item>
+                  <el-descriptions-item label="用户名">kooriookami</el-descriptions-item>
+                  <el-descriptions-item label="手机号">18100000000</el-descriptions-item>
+                  <el-descriptions-item label="手机号">18100000000</el-descriptions-item>
+                  <el-descriptions-item label="居住地">苏州市</el-descriptions-item>
+                  <el-descriptions-item label="居住地">苏州市</el-descriptions-item>
+                  <el-descriptions-item label="备注">
+                    <el-tag size="small">学校</el-tag>
+                  </el-descriptions-item>
+                  <el-descriptions-item label="联系地址">江苏省苏州市吴中区吴中大道 1188 号</el-descriptions-item>
+                </el-descriptions>
+              </el-card>
+              <hr color="#dfe4ed"/>
+              <el-card>
+                <el-descriptions column="5" size="mini" border>
+                  <el-descriptions-item label="用户名" content-class-name="before-order">kooriookami
+                  </el-descriptions-item>
+                  <el-descriptions-item label="用户名">kooriookami</el-descriptions-item>
+                  <el-descriptions-item label="用户名">kooriookami</el-descriptions-item>
+                  <el-descriptions-item label="手机号">18100000000</el-descriptions-item>
+                  <el-descriptions-item label="手机号">18100000000</el-descriptions-item>
+                  <el-descriptions-item label="居住地">苏州市</el-descriptions-item>
+                  <el-descriptions-item label="居住地">苏州市</el-descriptions-item>
+                  <el-descriptions-item label="备注">
+                    <el-tag size="small">学校</el-tag>
+                  </el-descriptions-item>
+                  <el-descriptions-item label="联系地址">江苏省苏州市吴中区吴中大道 1188 号</el-descriptions-item>
+                </el-descriptions>
+              </el-card>
+            </el-timeline-item>
+            <el-timeline-item timestamp="2018/4/3" placement="top">
+              <el-card>
+                <h4>更新 Github 模板</h4>
+                <p>王小虎 提交于 2018/4/3 20:46</p>
+              </el-card>
+            </el-timeline-item>
+            <el-timeline-item timestamp="2018/4/2" placement="top">
+              <el-card>
+                <h4>更新 Github 模板</h4>
+                <p>王小虎 提交于 2018/4/2 20:46</p>
+              </el-card>
+            </el-timeline-item>
+          </el-timeline>
+        </el-col>
+      </el-row>
+    </el-dialog>
   </div>
 </template>
 
@@ -704,6 +771,7 @@ import {parseTime} from "../../../utils/ruoyi";
 import {addInvoiceIn} from "@/api/system/invoiceIn";
 import {mixin_printHTML} from "@/views/dashboard/mixins/print";
 import axios from "axios";
+import {getCompany} from "../../../api/system/company";
 
 export default {
   name: "GoodsOrder",
@@ -879,7 +947,7 @@ export default {
         invoiceAmount: null,
         companyType: null,
         companyName: '',
-        companyID: null,
+        companyID: '',
         invoiceCompanyName: null,
         ticketPoint: null,
         ticketPointAmount: null,
@@ -950,7 +1018,67 @@ export default {
       fileNamesList: [],
       // 查看附件或者收到条的文件列表
       checkFileList: [],
-      checkAttachmentVisible: false
+      checkAttachmentVisible: false,
+      // 查看订单历史信息
+      checkHistoryOrderVisible: false,
+      // todo 魔法值
+      orderDetailList: [
+        {
+          createBy: {},
+          createTime: {},
+          updateBy: {},
+          updateTime: {},
+          remark: {},
+          id: "86",
+          ordersNo: "64ef3bfe-6655-45af-81ef-758f9a707239",
+          orderDate: "2024-09-13",
+          supplier: "北京市朝阳区",
+          supplierID: "31",
+          customer: "18767671111",
+          customerID: "31",
+          levelID: "27",
+          levelName: "A",
+          countingUnit: "片",
+          height: "20",
+          length: "30",
+          width: "10",
+          pieces: "123",
+          piecesPerPack: "123",
+          packs: "213",
+          price: "213",
+          isIncludeTaxFactory: "0",
+          sundryCost: "213",
+          paymentFactory: "220.86",
+          paymentUnload: "213",
+          isIncludeTaxSale: "0",
+          payments: "321",
+          erro: "0.8",
+          tonnage: "0",
+          landFreightPrice: "213",
+          landFreight: "213",
+          seaFreight: "0",
+          freight: "213",
+          otherCost: "213",
+          profit: "-112.86",
+          profitNoTax: "-325.86",
+          actualPieces: "213",
+          paymentsWithSundry: "321",
+          additionalFees: "213",
+          storeHouseID: {},
+          storeHouseName: {},
+          storeID: {},
+          logisticsProfit: "213",
+          customerCommission: "213",
+          isAdjusted: "否",
+          adjustDate: {},
+          cancelFlag: "0",
+          comments: "213",
+          addtime: "2024-09-16 23:24:43",
+          userId: "1",
+          exWarehouseDate: {},
+          userName: "maolei",
+        }
+      ],
     };
   },
   created() {
@@ -994,14 +1122,18 @@ export default {
     parseTime,
     listCompany,
     listBankAccount,
-    getSupplierNames(supplierNames) {
-      if (supplierNames === null || supplierNames === undefined) {
-        return []
-      }
-      if (supplierNames.indexOf('、') === -1) {
-        return [supplierNames]
-      }
-      return supplierNames.split('、').map(item => item.trim());
+    getSupplierNames(row) {
+      // todo 明天等后端 改的时候 入参为 scope.row.orderDetailList
+      return this.orderDetailList.map(item => {
+        return {
+          supplier: item.supplier,
+          supplierID: item.supplierID
+        }
+      })
+    },
+    // 查看订单历史信息
+    checkOrderHistory() {
+      this.checkHistoryOrderVisible = true;
     },
     // 取消添加订单
     cancelSubmit() {
@@ -1172,7 +1304,6 @@ export default {
           console.error(`第${this.fileList.indexOf(file) + 1}个文件上传失败:`, e);
         }
       }
-
       // 全部上传完事后 修改订单的附件
       this.tempOrderInfo = excludeParams(this.tempOrderInfo, this.$exclude)
       const path = this.fileNamesList.join('|')
@@ -1226,8 +1357,6 @@ export default {
             })
       })
     },
-
-
     //客户供应商开票功能
     //添加开票 是否订单开票要给订单id
     submitOpenTitle() {
@@ -1235,35 +1364,29 @@ export default {
       this.openTitleInfo = excludeParams(this.openTitleInfo, this.$exclude)
       //这里要判断一下 如果是客户开票 就添加发票卖出信息 如果是供应商开票 则添加发票买入信息
       if (this.openTitleInfo.domain === 1) {
-        //修改开票信息
-        let info = {...this.openTitleInfo.orderInfo, customerIsInvoice: 1}
-        updateGoodsOrder(excludeParams(info, this.$exclude))
+        //客户开票 添加发票卖出信息
+        addInvoiceOut(this.openTitleInfo)
             .then(res => {
-              this.$message.success('开票状态设置成功~')
-              //删除订单信息
-              delete this.openTitleInfo.orderInfo
-              //客户开票 添加发票卖出信息
-              addInvoiceOut(this.openTitleInfo)
+              this.$message.success('客户开票成功~')
+              //修改开票信息
+              let info = {...this.openTitleInfo.orderInfo, customerIsInvoice: 1}
+              updateGoodsOrder(excludeParams(info, this.$exclude))
                   .then(res => {
-                    this.$message.success('客户开票成功~')
-                    this.openTitleInfo = {}
+                    this.$message.success('开票状态设置成功~')
                     this.invoiceOpenVisible = false
                     this.getList()
                   })
             })
         //添加发票买入
       } else {
-        let info = {...this.openTitleInfo.orderInfo, isSupplierInvoice: 1}
-        updateGoodsOrder(excludeParams(info, this.$exclude))
+        //客户开票 添加发票卖出信息
+        addInvoiceIn(this.openTitleInfo)
             .then(res => {
-              this.$message.success('开票状态设置成功~')
-              //删除订单信息
-              delete this.openTitleInfo.orderInfo
-              //客户开票 添加发票卖出信息
-              addInvoiceIn(this.openTitleInfo)
+              this.$message.success('供应商开票成功~')
+              let info = {...this.openTitleInfo.orderInfo, isSupplierInvoice: 1}
+              updateGoodsOrder(excludeParams(info, this.$exclude))
                   .then(res => {
-                    this.$message.success('供应商开票成功~')
-                    this.openTitleInfo = {}
+                    this.$message.success('开票状态设置成功~')
                     this.invoiceOpenVisible = false
                     this.getList()
                   })
@@ -1279,7 +1402,7 @@ export default {
       this.openTitleInfo.companyID = val.id;
       this.openTitleInfo.companyType = val.companyType;
     },
-    //客户开票 && 供应商开票
+    // 客户开票
     openCustomerInvoice(row) {
       //客户开发票 即为发票卖出 添加发票卖出信息 1客户开票  2供应商开票
       this.openTitleInfo.domain = 1
@@ -1292,15 +1415,35 @@ export default {
           })
       this.invoiceOpenVisible = true;
     },
-    openSupplierInvoice(row) {
-      this.openTitleInfo.domain = 2
-      this.openTitleInfo.isOrderTax = row.id;
-      this.openTitle = '供应商开票'
-      getGoodsOrder(row.id)
-          .then(res => {
-            this.openTitleInfo.orderInfo = res.data;
-          })
-      this.invoiceOpenVisible = true;
+    // 供应商开票
+    openSupplierInvoice(row, supplierID) {
+      // 如果改行是点击供应商列表的开票
+      if (supplierID !== undefined && supplierID !== '' && supplierID !== null) {
+        this.openTitleInfo.domain = 2
+        this.openTitleInfo.companyID = supplierID;
+        this.openTitleInfo.isOrderTax = row.id;
+        // 先获取公司信息
+        getCompany(supplierID).then(res => {
+          this.openTitleInfo.companyName = res.data.companyName;
+          this.openTitle = '供应商开票'
+          // 获取订单信息
+          getGoodsOrder(row.id)
+              .then(res => {
+                this.openTitleInfo.orderInfo = res.data;
+                this.invoiceOpenVisible = true;
+              })
+        })
+        // 如果不是
+      } else {
+        this.openTitleInfo.domain = 2
+        this.openTitleInfo.isOrderTax = row.id;
+        this.openTitle = '供应商开票'
+        getGoodsOrder(row.id)
+            .then(res => {
+              this.openTitleInfo.orderInfo = res.data;
+              this.invoiceOpenVisible = true;
+            })
+      }
     },
     //申请陆运费
     handleApplyLandFree(row) {
@@ -1521,9 +1664,8 @@ export default {
 </script>
 <style lang="scss">
 .upload-demo {
-  width: 100%; /* 或者你想要的任何宽度 */
-  /* 可能还需要添加一些其他的样式来确保布局如你所愿 */
-  margin: 0 auto; /* 如果需要让组件在容器中居中显示 */
+  width: 100%;
+  margin: 0 auto;
 }
 
 .item {
@@ -1532,8 +1674,23 @@ export default {
   cursor: pointer;
 
   &:hover {
-    transform: scale(1.2);
+    transform: scale(1.1);
+    font-weight: bolder;
+    color: #1ab394;
   }
+}
+
+/*todo 订单差异的样式  跟上一个时间的订单相比(属性比较) 如果变化了 那么就加上红色的样式 过去订单加绿色 如果没变 就不加颜色*/
+.my-label {
+  background: #E1F3D8;
+}
+
+.now-order {
+  background: #FDE2E2;
+}
+
+.before-order {
+  background: #ccffdd;
 }
 </style>
 
