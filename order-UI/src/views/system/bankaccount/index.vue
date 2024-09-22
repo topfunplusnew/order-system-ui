@@ -262,6 +262,12 @@
             label="金额">
           </el-table-column>
         </el-table>
+        <pagination
+          v-show="bankAcountTotal>0"
+          :total="bankAcountTotal"
+          :page.sync="bankAcountTotalPageNum"
+          :limit.sync="bankAcountTotalPageSize"
+          @pagination="getBankAcountChangeList"/>
       </el-row>
       <div slot="footer" class="dialog-footer">
         <el-button type="primary" @click="submitBankChange">确 定</el-button>
@@ -417,10 +423,14 @@ export default {
       //银行卡流水
       bankChangeDialogVisible: false,
       bankChangeList: [],
-
+      currentBankNo: '',
+      bankAcountTotalPageNum: 10,
+      bankAcountTotalPageSize: 1,
+      bankAcountTotal: null,
       //供应商搜索组件
       queryCompanyGive: '',
-      queryCompany: ''
+      queryCompany: '',
+
     };
   },
   created() {
@@ -468,10 +478,24 @@ export default {
 
     //3.银行卡变动流水
     checkBankChangeFlow(row) {
+      this.currentBankNo = row.bankNo;
+      // 查询该银行账号的变动流水
       listBankAccountChange({selfBankNo: row.bankNo}).then(res => {
         this.bankChangeList = res.rows;
+        this.bankAcountTotal = res.total;
       })
       this.bankChangeDialogVisible = true;
+    },
+    // 分页的请求
+    getBankAcountChangeList() {
+      listBankAccountChange({
+        selfBankNo: this.currentBankNo,
+        pageNum: this.bankPageNum,
+        pageSize: this.bankPageSize
+      }).then(res => {
+        this.bankChangeList = res.rows;
+        this.bankAcountTotal = res.total;
+      })
     },
     submitBankChange() {
       this.bankChangeDialogVisible = false
