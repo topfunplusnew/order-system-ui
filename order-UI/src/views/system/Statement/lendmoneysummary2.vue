@@ -93,7 +93,7 @@
             size="mini"
             type="warning"
             @click="checkDetail(scope.row)">
-            查看历史还款
+            查看历史收回
           </el-button>
         </template>
       </el-table-column>

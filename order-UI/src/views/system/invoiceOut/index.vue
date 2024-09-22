@@ -87,7 +87,7 @@
       <el-table-column label="票点金额" align="center" prop="ticketPointAmount" v-if="columns[7].visible"/>
 
       <el-table-column label="备注" align="center" prop="comments" v-if="columns[9].visible"/>
-      <el-table-column label="是否订单对应票点" align="center" prop="isOrderTax" width="180" v-if="columns[8].visible">
+      <el-table-column label="订单信息" align="center" prop="isOrderTax" width="180" v-if="columns[8].visible">
         <template slot-scope="scope">
           <el-row v-if="scope.row.isOrderTax===0">
             <el-tag>否</el-tag>
@@ -340,8 +340,8 @@ export default {
       //发请求 查看订单信息
       getGoodsOrder(row.isOrderTax).then(res => {
         this.orderInfo = res.data;
+        this.checkOrderInfoVisible = true;
       });
-      this.checkOrderInfoVisible = true;
     },
     /** 查询发票卖出信息列表 */
     getList() {

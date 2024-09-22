@@ -82,7 +82,17 @@
       <el-table-column label="票据单位名称" align="center" prop="invoiceCompanyName" v-if="columns[6].visible"/>
       <el-table-column label="客户票点" align="center" prop="customerTicketPoint" v-if="columns[7].visible"/>
       <el-table-column label="票点金额" align="center" prop="customerPointAmount" v-if="columns[8].visible"/>
-      <el-table-column label="备注" align="center" prop="comments" v-if="columns[9].visible"/>
+      <el-table-column label="订单信息" align="center" prop="isOrderTax" width="180" v-if="columns[9].visible">
+        <template slot-scope="scope">
+          <el-row v-if="scope.row.isOrderTax===0">
+            <el-tag>否</el-tag>
+          </el-row>
+          <el-row v-else>
+            <el-button size="mini" type="warning" @click="checkOrderInfo(scope.row)">查看订单信息</el-button>
+          </el-row>
+        </template>
+      </el-table-column>
+      <el-table-column label="备注" align="center" prop="comments" v-if="columns[10].visible"/>
       <el-table-column label="操作" align="center" class-name="small-padding fixed-width">
         <template slot-scope="scope">
           <el-button
@@ -268,7 +278,9 @@
         <el-button @click="cancel">取 消</el-button>
       </div>
     </el-dialog>
-
+    <el-dialog title="查看订单信息" :visible.sync="checkOrderInfoVisible" width="70%" append-to-body>
+      <OrderInfos :order-info="orderInfo"/>
+    </el-dialog>
   </div>
 
 </template>
@@ -289,10 +301,12 @@ import SearchOption from "@/components/SearchOption.vue";
 import {listCompany} from "@/api/system/company";
 import {listGoodsOrder} from "@/api/system/goodsOrder";
 import {addDateRange} from "@/utils/ruoyi";
+import {getGoodsOrder} from "../../../api/system/goodsOrder";
+import OrderInfos from "../../../components/OrderInfos.vue";
 
 export default {
   name: "InvoiceOther",
-  components: {SearchOption},
+  components: {OrderInfos, SearchOption},
   mixins: [mixin_printHTML],
   data() {
     return {
@@ -354,8 +368,11 @@ export default {
         {key: 6, label: `票据单位名称`, visible: true},
         {key: 7, label: `客户票点`, visible: true},
         {key: 8, label: `票点金额`, visible: true},
-        {key: 9, label: `备注`, visible: true},
+        {key: 9, label: `是否订单对应`, visible: true},
+        {key: 10, label: `备注`, visible: true},
       ],
+      checkOrderInfoVisible: false,
+      orderInfo: {},
     };
   },
   created() {
@@ -407,6 +424,14 @@ export default {
     },
     handleCommitBackGoodsOrder(val) {
       this.form.ordersNo = val.ordersNo
+    },
+    //表格中查看订单信息
+    checkOrderInfo(row) {
+      //发请求 查看订单信息
+      listGoodsOrder({ordersNo: row.ordersNo}).then(res => {
+        this.orderInfo = res.rows[0];
+        this.checkOrderInfoVisible = true;
+      });
     },
     /** 查询商家直接给客户开发票列表 */
     getList() {
@@ -469,6 +494,7 @@ export default {
       this.open = true;
       this.title = "添加商家直接给客户开发票";
     },
+
     /** 修改按钮操作 */
     handleUpdate(row) {
       this.$prompt('请输入编辑原因', '提示', {

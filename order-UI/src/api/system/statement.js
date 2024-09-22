@@ -63,3 +63,12 @@ export function getSupplierSuymmary(query) {
   })
 }
 
+// 贷款管理台账
+export function getBorrowedMoneySummary(query) {
+  return request({
+    url: '/statistics/borrowedMoneySummary',
+    method: 'get',
+    params: query
+  })
+}
+

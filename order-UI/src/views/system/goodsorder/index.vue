@@ -189,8 +189,18 @@
       <el-table-column show-overflow-tooltip label="ID" align="center" prop="id" fixed="left"/>
       <el-table-column show-overflow-tooltip label="日期" align="center" prop="orderDate" fixed="left"/>
       <el-table-column show-overflow-tooltip label="客户" align="center" prop="customer" fixed="left"/>
-      <el-table-column show-overflow-tooltip label="供应商" align="center" prop="supplierNames" fixed="left"/>
-      <!--      <el-table-column label="订单编号" align="center" prop="ordersNo" v-if="columns[0].visible"/>-->
+      <el-table-column show-overflow-tooltip label="供应商" align="center" prop="supplierNames" fixed="left"
+                       width="200">
+        <template #default="scope">
+          <span v-for="(item,index) in getSupplierNames(scope.row.supplierNames)" :key="index">
+             <el-badge is-dot class="item">
+            <span @click="openSupplierInvoice(scope.row)">
+              {{ item }}
+            </span>
+          </el-badge>
+          </span>
+        </template>
+      </el-table-column>
       <el-table-column show-overflow-tooltip label="陆运车牌" align="center" prop="landCarNo"
                        v-if="columns[1].visible"/>
       <el-table-column show-overflow-tooltip label="陆运司机电话" align="center" prop="landDriverTel"
@@ -313,11 +323,13 @@
                        width="150px">
         <template #default="scope">
           <el-row v-if="scope.row.customerIsInvoice === 1">
-            <el-tag type="success">客户已开票</el-tag>
+            <el-row>
+              <el-button type="success" size="mini" @click="openCustomerInvoice(scope.row)">继续开票</el-button>
+            </el-row>
           </el-row>
           <el-row v-else>
             <el-row>
-              <el-button type="success" size="mini" @click="openCustomerInvoice(scope.row)">去开票</el-button>
+              <el-button type="warning" size="mini" @click="openCustomerInvoice(scope.row)">前去开票</el-button>
             </el-row>
           </el-row>
         </template>
@@ -327,11 +339,13 @@
                        width="120px">
         <template #default="scope">
           <el-row v-if="scope.row.isSupplierInvoice === 1">
-            <el-tag type="success"> 供应商已开票</el-tag>
+            <el-row>
+              <el-button type="success" size="mini" @click="openCustomerInvoice(scope.row)">继续开票</el-button>
+            </el-row>
           </el-row>
           <el-row v-else>
             <el-row>
-              <el-button type="success" size="mini" @click="openSupplierInvoice(scope.row)">去开票</el-button>
+              <el-button type="warning" size="mini" @click="openSupplierInvoice(scope.row)">前去开票</el-button>
             </el-row>
           </el-row>
         </template>
@@ -689,7 +703,6 @@ import FreeApply from "@/components/FreeApply.vue";
 import {parseTime} from "../../../utils/ruoyi";
 import {addInvoiceIn} from "@/api/system/invoiceIn";
 import {mixin_printHTML} from "@/views/dashboard/mixins/print";
-import request from "../../../utils/request";
 import axios from "axios";
 
 export default {
@@ -727,7 +740,7 @@ export default {
         orderDateStart: null,
         orderDateEnd: null,
         pageNum: 1,
-        pageSize: 10,
+        pageSize: 50,
         ordersNo: null,
         orderDate: null,
         customer: null,
@@ -892,17 +905,19 @@ export default {
           ],
           invoiceAmount: [
             {required: true, message: '请输入开票金额', trigger: 'blur'},
-            {pattern: /^[0-9]*$/, message: '只能输入数字', trigger: 'blur'}],
+            // 开票金额 可以是小数
+            {pattern: /^-?[0-9]+(\.[0-9]+)?$/, message: '只能输入数字和小数', trigger: 'blur'}
+          ],
           companyName: [
             {required: true, message: '请输入公司名称', trigger: 'blur'}],
           // 只能是数字
           ticketPoint: [
             {required: true, message: '请输入开票点', trigger: 'blur'},
-            {pattern: /^[0-9]*$/, message: '只能输入数字', trigger: 'blur'}
+            {pattern: /^-?[0-9]+(\.[0-9]+)?$/, message: '只能输入数字', trigger: 'blur'}
           ],
           ticketPointAmount: [
             {required: true, message: '请输入开票点金额', trigger: 'blur'},
-            {pattern: /^[0-9]*$/, message: '只能输入数字', trigger: 'blur'}],
+            {pattern: /^-?[0-9]+(\.[0-9]+)?$/, message: '只能输入数字', trigger: 'blur'}],
         }
       },
       //当前订单id
@@ -979,6 +994,15 @@ export default {
     parseTime,
     listCompany,
     listBankAccount,
+    getSupplierNames(supplierNames) {
+      if (supplierNames === null || supplierNames === undefined) {
+        return []
+      }
+      if (supplierNames.indexOf('、') === -1) {
+        return [supplierNames]
+      }
+      return supplierNames.split('、').map(item => item.trim());
+    },
     // 取消添加订单
     cancelSubmit() {
       this.$store.dispatch('order/clearOrderItemList'); // 清空订单详情填写信息
@@ -1260,6 +1284,7 @@ export default {
       //客户开发票 即为发票卖出 添加发票卖出信息 1客户开票  2供应商开票
       this.openTitleInfo.domain = 1
       this.openTitleInfo.isOrderTax = row.id;
+      this.openTitle = '客户开票'
       //设置该订单信息 需要进行一次查询
       getGoodsOrder(row.id)
           .then(res => {
@@ -1270,6 +1295,7 @@ export default {
     openSupplierInvoice(row) {
       this.openTitleInfo.domain = 2
       this.openTitleInfo.isOrderTax = row.id;
+      this.openTitle = '供应商开票'
       getGoodsOrder(row.id)
           .then(res => {
             this.openTitleInfo.orderInfo = res.data;
@@ -1493,11 +1519,21 @@ export default {
   }
 };
 </script>
-<style>
+<style lang="scss">
 .upload-demo {
   width: 100%; /* 或者你想要的任何宽度 */
   /* 可能还需要添加一些其他的样式来确保布局如你所愿 */
   margin: 0 auto; /* 如果需要让组件在容器中居中显示 */
+}
+
+.item {
+  margin-right: 5px; /* 添加一些间距 */
+  margin-top: 5px;
+  cursor: pointer;
+
+  &:hover {
+    transform: scale(1.2);
+  }
 }
 </style>
 

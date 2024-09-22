@@ -92,7 +92,7 @@
         </template>
       </el-table-column>
       <el-table-column label="备注" align="center" prop="comments" v-if="columns[10].visible"/>
-      <el-table-column label="是否订单对应票点" align="center" prop="isOrderTax" v-if="columns[8].visible"
+      <el-table-column label="订单信息" align="center" prop="isOrderTax" v-if="columns[8].visible"
                        width="140px">
         <template slot-scope="scope">
           <el-row v-if="scope.row.isOrderTax===0">
@@ -348,8 +348,8 @@ export default {
       //发请求 查看订单信息
       getGoodsOrder(row.isOrderTax).then(res => {
         this.orderInfo = res.data;
+        this.checkOrderInfoVisible = true;
       });
-      this.checkOrderInfoVisible = true;
     },
     //添加付款申请
     addPaymentApplyInfos(row) {

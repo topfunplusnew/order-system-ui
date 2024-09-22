@@ -4,9 +4,9 @@
     <el-form ref="form" :model="form" :rules="rules" label-width="120px">
       <el-form-item label="日期" prop="fundsDate">
         <el-date-picker
-          v-model="form.fundsDate"
-          type="date"
-          placeholder="选择日期">
+            v-model="form.fundsDate"
+            type="date"
+            placeholder="选择日期">
         </el-date-picker>
       </el-form-item>
       <el-form-item label="支付类型" prop="payType">
@@ -15,10 +15,10 @@
           <el-col :span="8">
             <el-select v-model="currentSort.levelOne" placeholder="请选择一级分类" @change="handleSelectOneLevel">
               <el-option
-                v-for="item in OneLevelOption"
-                :key="item.id"
-                :label="item.title"
-                :value="item.title">
+                  v-for="item in OneLevelOption"
+                  :key="item.id"
+                  :label="item.title"
+                  :value="item.title">
               </el-option>
             </el-select>
           </el-col>
@@ -26,10 +26,10 @@
           <el-col :span="8">
             <el-select v-model="currentSort.levelTwo" placeholder="请选择二级分类" @change="handleSelectTwoLevel">
               <el-option
-                v-for="item in TwoLevelOption"
-                :key="item.id"
-                :label="item.title"
-                :value="item.title">
+                  v-for="item in TwoLevelOption"
+                  :key="item.id"
+                  :label="item.title"
+                  :value="item.title">
               </el-option>
             </el-select>
           </el-col>
@@ -178,6 +178,7 @@ export default {
     };
   },
   created() {
+    console.log('created')
     // 查询科目信息
     listSubject().then(res => {
       this.subjectTree = this.handleTree(res.data, "id", "parentId");
@@ -208,15 +209,15 @@ export default {
         bankName: this.needInfo.bankName,
         acountsName: this.needInfo.acountsName
       })
-        .then(res => {
-          if (res.rows.length === 0) {
-            this.$message.error('未查询到该银行卡信息')
-          } else {
-            this.form.otherAcountsName = res.rows[0].acountsName
-            this.form.otherBankNo = res.rows[0].bankNo
-            this.form.otherBankName = res.rows[0].bankName
-          }
-        })
+          .then(res => {
+            if (res.rows.length === 0) {
+              this.$message.error('未查询到该银行卡信息')
+            } else {
+              this.form.otherAcountsName = res.rows[0].acountsName
+              this.form.otherBankNo = res.rows[0].bankNo
+              this.form.otherBankName = res.rows[0].bankName
+            }
+          })
 
       //需要司机信息
       if (this.needInfo.isExit !== undefined) {
@@ -226,10 +227,10 @@ export default {
           this.form.companyName = this.needInfo.companyName
           //查询司机的银行卡信息
           listBankAccount({acountsType: '司机', acountsName: this.needInfo.otherAcountsName})
-            .then(res => {
-              this.form.otherBankNo = res.rows[0].bankNo
-              this.form.otherBankName = res.rows[0].bankName
-            })
+              .then(res => {
+                this.form.otherBankNo = res.rows[0].bankNo
+                this.form.otherBankName = res.rows[0].bankName
+              })
         }
       }
     }
@@ -243,30 +244,36 @@ export default {
     },
   },
   watch: {
-    // 监听银行卡的变化
+    // 监听银行卡的变化 如果传入的银行卡信息有变化 就自动填充
     'needInfo.bankNo': {
       handler(val) {
+        if (val === undefined) {
+          return
+        }
         listBankAccount({
           bankNo: this.needInfo.bankNo,
           bankName: this.needInfo.bankName,
           acountsName: this.needInfo.acountsName
         })
-          .then(res => {
-            if (res.rows.length === 0) {
-              this.$message.error('未查询到该银行卡信息')
-            } else {
-              this.form.otherAcountsName = res.rows[0].acountsName
-              this.form.otherBankNo = res.rows[0].bankNo
-              this.form.otherBankName = res.rows[0].bankName
-            }
-          })
+            .then(res => {
+              if (res.rows.length === 0) {
+                this.$message.error('未查询到该银行卡信息')
+                this.form.otherAcountsName = ''
+                this.form.otherBankNo = ''
+                this.form.otherBankName = ''
+              } else {
+                this.form.otherAcountsName = res.rows[0].acountsName
+                this.form.otherBankNo = res.rows[0].bankNo
+                this.form.otherBankName = res.rows[0].bankName
+              }
+            })
       },
       deep: true
     },
+    // 检测整个对象
     needInfo: {
       handler(val) {
         if (JSON.stringify(this.needInfo) === '{}') {
-          this.$message.success('无自动填充信息')
         } else {
           //需要司机信息
           if (this.needInfo.isExit !== undefined) {
@@ -276,10 +283,10 @@ export default {
               this.form.companyName = this.needInfo.companyName
               //查询司机的银行卡信息
               listBankAccount({acountsType: '司机', acountsName: this.needInfo.otherAcountsName})
-                .then(res => {
-                  this.form.otherBankNo = res.rows[0].bankNo
-                  this.form.otherBankName = res.rows[0].bankName
-                })
+                  .then(res => {
+                    this.form.otherBankNo = res.rows[0].bankNo
+                    this.form.otherBankName = res.rows[0].bankName
+                  })
             }
           }
         }
@@ -292,6 +299,20 @@ export default {
         if (this.needMoney > 0) {
           this.form.moneyAmount = this.needMoney;
           this.inputDisabled = true;
+        }
+      }
+    },
+    // 监听表的变化
+    tableName: {
+      handler(val) {
+        if (val === 'oilrecharge') {
+          this.form.companyType = '其他'
+          console.log(this.form.companyType)
+        }
+        // 如果是运费申请公司类型为司机
+        if (val === 'orderfreight') {
+          this.form.companyType = '司机'
+          console.log(this.form.companyType)
         }
       }
     }
@@ -391,6 +412,7 @@ export default {
             this.form.tID = this.tID;
             updatePaymentApply(this.form).then(response => {
               this.$modal.msgSuccess("修改成功");
+              this.reset()
               this.getList();
             })
           } else {
@@ -402,6 +424,7 @@ export default {
             this.form.checkState = ''
             addPaymentApply(this.form).then(response => {
               this.$modal.msgSuccess("付款申请添加成功");
+              this.reset()
               this.$emit('changeOpen')
               this.getList();
             })
