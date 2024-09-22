@@ -490,8 +490,8 @@ export default {
     getBankAcountChangeList() {
       listBankAccountChange({
         selfBankNo: this.currentBankNo,
-        pageNum: this.bankPageNum,
-        pageSize: this.bankPageSize
+        pageNum: this.bankAcountTotalPageNum,
+        pageSize: this.bankAcountTotalPageSize
       }).then(res => {
         this.bankChangeList = res.rows;
         this.bankAcountTotal = res.total;
