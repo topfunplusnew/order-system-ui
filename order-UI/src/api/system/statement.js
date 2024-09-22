@@ -53,3 +53,13 @@ export function getCompanySummary(query) {
     params: query
   })
 }
+
+// 供应商报表
+export function getSupplierSuymmary(query) {
+  return request({
+    url: '/statistics/suppliersuymmary',
+    method: 'get',
+    params: query
+  })
+}
+
