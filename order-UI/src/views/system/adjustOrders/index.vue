@@ -399,13 +399,6 @@
         :limit.sync="queryParams.pageSize"
         @pagination="getList"
     />
-    <pagination
-        v-show="total>0"
-        :total="total"
-        :page.sync="queryParams.pageNum"
-        :limit.sync="queryParams.pageSize"
-        @pagination="getList"
-    />
 
 
     <!--        点击查看某个订单的弹窗   -->
