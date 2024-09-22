@@ -426,10 +426,13 @@ export default {
             this.form.addtime = null;
             this.form.updateTime = null;
             this.form.userId = null;
-            this.form.companyType = this.form.companyType === '供应商' ? 2 : 1
+            // this.form.companyType = this.form.companyType === '供应商' ? 2 : 1
             this.form.operateDate = parseTime(this.form.operateDate)
             this.form = excludeParams(this.form, this.$exclude)
-            updateBalanceAccounts(this.form).then(response => {
+            updateBalanceAccounts({
+              ...this.form,
+              companyType: this.form.companyType === '供应商' ? 2 : 1
+            }).then(response => {
               this.$modal.msgSuccess("修改成功");
               this.open = false;
               this.getList();
@@ -439,10 +442,13 @@ export default {
             this.form.addtime = null;
             this.form.updateTime = null;
             this.form.userId = null;
-            this.form.companyType = this.form.companyType === '供应商' ? 2 : 1
+            // this.form.companyType = this.form.companyType === '供应商' ? 2 : 1
             this.form.operateDate = parseTime(this.form.operateDate)
             this.form = excludeParams(this.form, this.$exclude)
-            addBalanceAccounts(this.form).then(response => {
+            addBalanceAccounts({
+              ...this.form,
+              companyType: this.form.companyType === '供应商' ? 2 : 1
+            }).then(response => {
               this.$modal.msgSuccess("新增成功");
               this.open = false;
               this.getList();
