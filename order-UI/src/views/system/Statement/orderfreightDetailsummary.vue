@@ -81,7 +81,7 @@
                        width="160"/>
       <el-table-column label="期末方向" align="center" prop="" v-if="columns[8].visible" width="160"/>
       <el-table-column label="期末余额" align="center" prop="" v-if="columns[9].visible" width="160"/>
-      <el-table-column label="操作" align="center" prop="driverName" width="150">
+      <el-table-column label="操作" align="center" prop="driverName" width="150" fixed="right">
         <template slot-scope="scope">
           <el-button
             size="mini"

@@ -131,7 +131,6 @@ import SearchOption from "@/components/SearchOption.vue";
 import ApplyPayment from "@/components/ApplyPayment.vue";
 import {getLendMoneySummary} from "@/api/system/statement";
 import {mixin_printHTML} from "@/views/dashboard/mixins/print";
-import {getRepaymentMoneyNoPage} from "../../../api/system/repayment";
 import {listRecoverMoney} from "../../../api/system/recoverMoney";
 
 export default {
