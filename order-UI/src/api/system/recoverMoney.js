@@ -50,3 +50,13 @@ export function getRecoverMoneyByUuid(uuid) {
     method: 'get'
   })
 }
+
+
+// 台账的查询还款记录
+export function getRecoverMoneyNoPage(query) {
+  return request({
+    url: '/system/recoverMoney/noPage/list',
+    method: 'get',
+    params: query
+  })
+}

@@ -107,6 +107,31 @@
       @pagination="getList"
     />
 
+    <el-table
+      v-if="tableData.length!==0"
+      :data="tableData"
+      size="mini"
+      :cell-style="()=>{return {padding:'2px'}}"
+      border
+      style="width: 40%" :span-method="mergeCells">
+      <el-table-column
+        prop=""
+        width="180">
+        <template v-slot="scope">
+          <span v-if="scope.$index === 0">期货保证金收回</span>
+        </template>
+      </el-table-column>
+      <el-table-column
+        prop="recoverDate"
+        label="时间"
+        width="180">
+      </el-table-column>
+      <el-table-column
+        prop="moneyAmount"
+        label="收回金额"
+        width="180">
+      </el-table-column>
+    </el-table>
   </div>
 </template>
 
@@ -115,6 +140,7 @@ import SearchOption from "@/components/SearchOption.vue";
 import ApplyPayment from "@/components/ApplyPayment.vue";
 import {getLendMoneySummary2} from "@/api/system/statement";
 import {mixin_printHTML} from "@/views/dashboard/mixins/print";
+import {getRecoverMoneyNoPage} from "../../../api/system/recoverMoney";
 
 export default {
   name: "LendMoney",
@@ -187,6 +213,9 @@ export default {
         endTime: '',
         objectType: ''
       },
+
+      // 详细的还款记录
+      tableData: []
     };
   },
   created() {
@@ -194,8 +223,33 @@ export default {
   },
   methods: {
     // 查看历史还款信息
-    checkDetail() {
-
+    checkDetail(row) {
+      // 查询
+      getRecoverMoneyNoPage({futuresNO: row.futuresNO})
+        .then(res => {
+          this.tableData = res.rows;
+          if (res.rows.length === 0) {
+            this.$message.error('暂无数据')
+          } else {
+            this.$message.success('查询成功')
+          }
+        })
+    },
+    mergeCells({row, column, rowIndex, columnIndex}) {
+      if (columnIndex === 0) {
+        // 合并第一列 "期货保证金收回"
+        if (rowIndex === 0) {
+          return {
+            rowspan: this.tableData.length,
+            colspan: 1
+          };
+        } else {
+          return {
+            rowspan: 0,
+            colspan: 0
+          };
+        }
+      }
     },
     /** 查询向外部借出款信息列表 */
     getList() {
@@ -205,25 +259,30 @@ export default {
         this.total = response.total;
         this.loading = false;
       });
-    },
+    }
+    ,
     // 取消按钮
     cancel() {
       this.open = false;
       this.reset();
-    },
+    }
+    ,
     /** 搜索按钮操作 */
     handleQuery() {
       this.queryParams.pageNum = 1;
       this.getList();
-    },
+    }
+    ,
     /** 重置按钮操作 */
     resetQuery() {
       this.resetForm("queryForm");
       this.handleQuery();
-    },
+    }
+    ,
     refresh() {
       this.getList()
-    },
+    }
+    ,
     /** 导出按钮操作 */
     handleExport() {
       alert('功能未开发')
