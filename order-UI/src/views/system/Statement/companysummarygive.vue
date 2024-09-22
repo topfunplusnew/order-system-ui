@@ -65,7 +65,13 @@
       <el-table-column show-overflow-tooltip label="公司名称" align="center" prop="companyName"
                        v-if="columns[1] && columns[1].visible" width="140"/>
       <el-table-column show-overflow-tooltip label="本日欠款" align="center" prop="amountOwedToday"
-                       v-if="columns[3] && columns[3].visible" width="140"/>
+                       v-if="columns[3] && columns[3].visible" width="140">
+        <template slot-scope="scope">
+          {{
+            Number(scope.row.previousDayCarryover) + Number(scope.row.dailyOrderPayments) + Number(scope.row.dailyInvoiceAmount) - Number(scope.row.dailyReceiveMoney)
+          }}
+        </template>
+      </el-table-column>
       <el-table-column show-overflow-tooltip label="上日欠款" align="center" prop="previousDayCarryover"
                        v-if="columns[4] && columns[4].visible" width="140"/>
       <el-table-column show-overflow-tooltip label="本日回款金额" align="center" prop="dailyReceiveMoney"
@@ -75,7 +81,13 @@
       <el-table-column show-overflow-tooltip label="本日发货金额" align="center" prop="dailyOrderPayments"
                        v-if="columns[7] && columns[7].visible" width="140"/>
       <el-table-column show-overflow-tooltip label="本月欠款" align="center" prop="amountOwedThisMonth"
-                       v-if="columns[9] && columns[9].visible" width="140"/>
+                       v-if="columns[9] && columns[9].visible" width="140">
+        <template slot-scope="scope">
+          {{
+            Number(scope.row.previousMonthCarryover) + Number(scope.row.monthlyReceiveMoney) + Number(scope.row.monthlyInvoiceAmount) - Number(scope.row.monthlyOrderPayments)
+          }}
+        </template>
+      </el-table-column>
       <el-table-column show-overflow-tooltip label="上月结转欠款金额" align="center" prop="previousMonthCarryover"
                        v-if="columns[10] && columns[10].visible" width="140"/>
       <el-table-column show-overflow-tooltip label="本月回款金额" align="center" prop="monthlyReceiveMoney"
@@ -85,7 +97,13 @@
       <el-table-column show-overflow-tooltip label="本月发货金额" align="center" prop="monthlyOrderPayments"
                        v-if="columns[13] && columns[13].visible" width="140"/>
       <el-table-column show-overflow-tooltip label="本年欠款" align="center" prop="arrearsThisYear"
-                       v-if="columns[15] && columns[15].visible" width="140"/>
+                       v-if="columns[15] && columns[15].visible" width="140">
+        <template slot-scope="scope">
+          {{
+            Number(scope.row.previousYearCarryover) + Number(scope.row.yearlyReceiveMoney) + Number(scope.row.yearlyInvoiceAmount) - Number(scope.row.yearlyOrderPayments)
+          }}
+        </template>
+      </el-table-column>
       <el-table-column show-overflow-tooltip label="上年结转欠款金额" align="center" prop="previousYearCarryover"
                        v-if="columns[16] && columns[16].visible" width="140"/>
       <el-table-column show-overflow-tooltip label="本年回款金额" align="center" prop="yearlyReceiveMoney"
