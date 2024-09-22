@@ -52,7 +52,7 @@
       <el-table-column label="id" align="center" prop="id" v-if="columns[0].visible"/>
       <el-table-column label="贷款来源" align="center" prop="origin" v-if="columns[1].visible"/>
       <el-table-column label="借入金额" align="center" prop="moneyAmount" v-if="columns[2].visible"/>
-      <el-table-column label="贷款利率" align="center" prop="ratio" v-if="columns[3].visible"/>
+      <el-table-column label="付息金额" align="center" prop="ratio" v-if="columns[3].visible"/>
       <el-table-column label="贷款发放日期" align="center" prop="loanDate" v-if="columns[4].visible"/>
       <el-table-column label="贷款年限" align="center" prop="loanDuring" v-if="columns[5].visible"/>
       <el-table-column label="抵押担保" align="center" prop="mortgageGuarantee" v-if="columns[6].visible"/>
@@ -167,11 +167,15 @@
     <!--    点击还款的弹框-->
     <el-dialog title="还款操作" :visible.sync="giveBackMoneyShow" width="30%">
       <el-row>
-        <el-form ref="form" :model="moneyBackInfo" label-width="80px">
-          <el-form-item label="还款金额" prop="moneyAmount">
+        <el-form ref="form" :model="moneyBackInfo" label-width="140px">
+          <el-form-item label="是否只偿还利息">
+            <el-radio v-model="isRatioOnly" label="是">是</el-radio>
+            <el-radio v-model="isRatioOnly" label="否">否</el-radio>
+          </el-form-item>
+          <el-form-item label="还款金额" prop="moneyAmount" v-if="isRatioOnly !== '是'">
             <el-input v-model="moneyBackInfo.moneyAmount" placeholder="请输入还款金额"/>
           </el-form-item>
-          <el-form-item label="贷款利率" prop="ratio">
+          <el-form-item label="付息金额" prop="ratio">
             <el-input v-model="moneyBackInfo.ratio" placeholder="请输入贷款利率"/>
           </el-form-item>
           <el-form-item label="支付日期" prop="payDate">
@@ -359,6 +363,9 @@ export default {
         bankNo: '',
         acountsName: ''
       },
+      // 是否只偿还利息
+      isRatioOnly: '否',
+      tempMoney: '',
       queryBankAcount: '',
       loanNO: '',
     };
@@ -390,6 +397,15 @@ export default {
         localStorage.setItem("borrowedmoney-columns", JSON.stringify(newVal))
       },
       deep: true,
+    },
+    isRatioOnly: {
+      handler(val) {
+        if (val === '是') {
+          this.moneyBackInfo.moneyAmount = ''
+        } else {
+          this.moneyBackInfo.moneyAmount = this.tempMoney
+        }
+      }
     }
   },
   methods: {
@@ -398,6 +414,7 @@ export default {
     //处理还款的事件函数  这里应该先填写还款信息 然后在还款信息页面申请付款
     handleGiveBackMoney(row) {
       this.moneyBackInfo.moneyAmount = row.moneyAmount
+      this.tempMoney = row.moneyAmount // 保存还款金额
       this.moneyBackInfo.ratio = row.ratio
       this.giveBackMoneyShow = true;
       // 补充关键字段
@@ -408,7 +425,6 @@ export default {
       addRepayment(this.moneyBackInfo).then(res => {
         this.$message.success('添加成功')
         this.giveBackMoneyShow = false
-        this.moneyBackInfo = {}
       })
     },
     // 还款的自动填充
