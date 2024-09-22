@@ -165,7 +165,7 @@
 
 
     <!--    点击还款的弹框-->
-    <el-dialog title="还款操作" :visible.sync="giveBackMoneyShow">
+    <el-dialog title="还款操作" :visible.sync="giveBackMoneyShow" width="30%">
       <el-row>
         <el-form ref="form" :model="moneyBackInfo" label-width="80px">
           <el-form-item label="还款金额" prop="moneyAmount">
@@ -193,7 +193,6 @@
                               :query-name="queryBank"
                               @update:queryName="handleUpdateQueryBankAcount">
                   <template #table-columns>
-                    <el-table-column label="公司名称" align="center" prop="companyName"/>
                     <el-table-column label="开户行" align="center" prop="bankName"/>
                     <el-table-column label="开户名" align="center" prop="acountsName"/>
                     <el-table-column label="账号" align="center" prop="bankNo"/>
@@ -212,7 +211,7 @@
       </el-row>
       <div slot="footer" class="dialog-footer">
         <el-button type="primary" @click="submitAddBorrowedMoney">确 定</el-button>
-        <el-button @click="innerVisible = false">取 消</el-button>
+        <el-button @click="giveBackMoneyShow = false">取 消</el-button>
       </div>
     </el-dialog>
   </div>
@@ -398,6 +397,8 @@ export default {
     listBankAccount,
     //处理还款的事件函数  这里应该先填写还款信息 然后在还款信息页面申请付款
     handleGiveBackMoney(row) {
+      this.moneyBackInfo.moneyAmount = row.moneyAmount
+      this.moneyBackInfo.ratio = row.ratio
       this.giveBackMoneyShow = true;
       // 补充关键字段
       this.moneyBackInfo.loanNO = row.loanNO
