@@ -61,7 +61,7 @@
     <el-table border v-loading="loading" :data="lendMoneyList"
               v-horizontal-scroll="'always'" id="printBox" size="mini" :cell-style="()=>{return {padding:'2px'}}">
       <el-table-column label="期货保证金公司" align="center" prop="futuresMarginCompany" v-if="columns[0].visible"
-                       width="110">
+                       width="130">
         <template slot-scope="scope">
           <span v-if="scope.row.futuresMarginCompany !== ''&& scope.row.futuresMarginCompany !== null">{{
               scope.row.futuresMarginCompany
@@ -87,6 +87,16 @@
                        width="160"/>
       <el-table-column label="事由" align="center" prop="reason" v-if="columns[11].visible" width="160"/>
       <el-table-column label="备注" align="center" prop="comments" v-if="columns[12].visible" width="160"/>
+      <el-table-column label="操作" align="center" class-name="small-padding fixed-width" width="120" fixed="right">
+        <template slot-scope="scope">
+          <el-button
+            size="mini"
+            type="warning"
+            @click="checkDetail(scope.row)">
+            查看历史还款
+          </el-button>
+        </template>
+      </el-table-column>
     </el-table>
 
     <pagination
@@ -183,6 +193,10 @@ export default {
     this.getList();
   },
   methods: {
+    // 查看历史还款信息
+    checkDetail() {
+
+    },
     /** 查询向外部借出款信息列表 */
     getList() {
       this.loading = true;
