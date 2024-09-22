@@ -10,14 +10,13 @@
       <el-input v-model="user.confirmPassword" placeholder="请确认新密码" type="password" show-password/>
     </el-form-item>
     <el-form-item>
-      <el-button type="primary" size="mini" @click="submit">保存</el-button>
-      <el-button type="danger" size="mini" @click="close">关闭</el-button>
+      <el-button type="primary" size="mini" @click="submit">修改密码</el-button>
     </el-form-item>
   </el-form>
 </template>
 
 <script>
-import { updateUserPwd } from "@/api/system/user";
+import {updateUserPwd} from "@/api/system/user";
 
 export default {
   data() {
@@ -37,16 +36,16 @@ export default {
       // 表单校验
       rules: {
         oldPassword: [
-          { required: true, message: "旧密码不能为空", trigger: "blur" }
+          {required: true, message: "旧密码不能为空", trigger: "blur"}
         ],
         newPassword: [
-          { required: true, message: "新密码不能为空", trigger: "blur" },
-          { min: 6, max: 20, message: "长度在 6 到 20 个字符", trigger: "blur" },
-          { pattern: /^[^<>"'|\\]+$/, message: "不能包含非法字符：< > \" ' \\\ |", trigger: "blur" }
+          {required: true, message: "新密码不能为空", trigger: "blur"},
+          {min: 6, max: 20, message: "长度在 6 到 20 个字符", trigger: "blur"},
+          {pattern: /^[^<>"'|\\]+$/, message: "不能包含非法字符：< > \" ' \\\ |", trigger: "blur"}
         ],
         confirmPassword: [
-          { required: true, message: "确认密码不能为空", trigger: "blur" },
-          { required: true, validator: equalToPassword, trigger: "blur" }
+          {required: true, message: "确认密码不能为空", trigger: "blur"},
+          {required: true, validator: equalToPassword, trigger: "blur"}
         ]
       }
     };
