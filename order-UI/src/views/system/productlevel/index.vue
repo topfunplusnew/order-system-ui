@@ -474,7 +474,6 @@ export default {
     // 点击添加产品级别信息
     handleAddProductLevel() {
       this.addProductLevelOpen = true;
-
     },
     //点击编辑
     handleClickCategoryList(row) {
