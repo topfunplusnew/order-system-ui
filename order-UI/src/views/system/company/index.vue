@@ -3,10 +3,10 @@
     <el-form :model="queryParams" ref="queryForm" size="mini" :inline="true" v-show="showSearch" label-width="68px">
       <el-form-item label="客户名称" prop="relationName">
         <el-input
-          v-model="queryParams.relationName"
-          placeholder="请输入客户名称"
-          clearable
-          @keyup.enter.native="handleQuery"
+            v-model="queryParams.relationName"
+            placeholder="请输入客户名称"
+            clearable
+            @keyup.enter.native="handleQuery"
         />
       </el-form-item>
       <el-form-item>
@@ -20,21 +20,19 @@
       </el-col>
       <el-col :span="1.5">
         <el-button
-          type="danger"
-          plain
-          size="mini"
-          @click="handleAdd"
-          v-hasPermi="['system:company:add']"
+            type="danger"
+            size="mini"
+            @click="handleAdd"
+            v-hasPermi="['system:company:add']"
         >新增客户信息
         </el-button>
       </el-col>
       <el-col :span="1.5">
         <el-button
-          type="warning"
-          plain
-          size="mini"
-          @click="handleSearch"
-          v-hasPermi="['system:company:query']"
+            type="warning"
+            size="mini"
+            @click="handleSearch"
+            v-hasPermi="['system:company:query']"
         >账号搜索
         </el-button>
       </el-col>
@@ -42,10 +40,10 @@
         <template v-slot:print>
           <el-col :span="1.5">
             <el-button
-              plain
-              icon="el-icon-printer"
-              size="mini"
-              @click="printHTML"
+                plain
+                icon="el-icon-printer"
+                size="mini"
+                @click="printHTML"
             >
             </el-button>
           </el-col>
@@ -54,11 +52,11 @@
         <template v-slot:export>
           <el-col :span="1.5">
             <el-button
-              plain
-              icon="el-icon-folder-opened"
-              size="mini"
-              @click="handleExport"
-              v-hasPermi="['system:company:export']"
+                plain
+                icon="el-icon-folder-opened"
+                size="mini"
+                @click="handleExport"
+                v-hasPermi="['system:company:export']"
             >
             </el-button>
           </el-col>
@@ -77,50 +75,38 @@
       <el-table-column label="销售经理" align="center" prop="salesManager" v-if="columns[7].visible" width="180"/>
       <el-table-column label="地址" align="center" prop="address" v-if="columns[5].visible" width="150"/>
       <el-table-column label="电话" align="center" prop="relationTel" v-if="columns[4].visible" width="180"/>
-      <el-table-column label="备注" align="center" prop="comments" v-if="columns[8].visible" width="180"/>
-      <!--      银行信息-->
-      <!--      <el-table-column label="开户行" align="center" prop="bankName"/>-->
-      <!--      <el-table-column label="开户名" align="center" prop="acountsName"/>-->
-      <!--      <el-table-column label="账号" align="center" prop="bankNo"/>-->
-      <!--      <el-table-column label="余额" align="center" prop="surplusMoney"/>-->
-      <!--      <el-table-column label="省" align="center" prop="province"/>-->
-      <!--      <el-table-column label="市县" align="center" prop="city"/>-->
-      <!--      <el-table-column label="乡镇" align="center" prop="county"/>-->
-      <!--      <el-table-column label="业务员" align="center" prop="salesman"/>-->
-      <!--      <el-table-column label="添加时间" align="center" prop="addtime"/>-->
-      <!--      <el-table-column label="操作人员ID" align="center" prop="userId"/>-->
-      <!--      <el-table-column label="操作人员姓名" align="center" prop="UserName"/>-->
-      <!--      <el-table-column label="删除标记" align="center" prop="delFlag"/>-->
+      <el-table-column label="备注" align="center" prop="comments" v-if="columns[8].visible" width="180"
+                       show-overflow-tooltip/>
       <el-table-column label="操作" align="center" class-name="small-padding fixed-width" fixed="right" width="180">
         <template slot-scope="scope">
           <el-button
-            size="mini"
-            @click="jumpBankNo(scope.row)"
+              size="mini"
+              @click="jumpBankNo(scope.row)"
           >银行卡号
           </el-button>
           <el-button
-            size="mini"
-            type="primary"
-            @click="handleUpdate(scope.row)"
-            v-hasPermi="['system:company:edit']"
+              size="mini"
+              type="primary"
+              @click="handleUpdate(scope.row)"
+              v-hasPermi="['system:company:edit']"
           >编辑
           </el-button>
           <el-button
-            size="mini"
-            type="danger"
-            @click="handleDelete(scope.row)"
-            v-hasPermi="['system:company:remove']"
+              size="mini"
+              type="danger"
+              @click="handleDelete(scope.row)"
+              v-hasPermi="['system:company:remove']"
           >删除
           </el-button>
         </template>
       </el-table-column>
     </el-table>
     <pagination
-      v-show="total>0"
-      :total="total"
-      :page.sync="queryParams.pageNum"
-      :limit.sync="queryParams.pageSize"
-      @pagination="getList"
+        v-show="total>0"
+        :total="total"
+        :page.sync="queryParams.pageNum"
+        :limit.sync="queryParams.pageSize"
+        @pagination="getList"
     />
 
 
@@ -156,10 +142,10 @@
               <!--          <el-input v-model="form.province" placeholder="请输入省"/>-->
               <el-select v-model="form.province" placeholder="请选择省" @change="changeProvince">
                 <el-option
-                  v-for="item in provinceList"
-                  :key="item.code"
-                  :label="item.name"
-                  :value="item.name">
+                    v-for="item in provinceList"
+                    :key="item.code"
+                    :label="item.name"
+                    :value="item.name">
                 </el-option>
               </el-select>
             </el-form-item>
@@ -167,10 +153,10 @@
               <!--          <el-input v-model="form.city" placeholder="请输入市县"/>-->
               <el-select v-model="form.city" placeholder="请选择市" @change="changeCity">
                 <el-option
-                  v-for="item in cityList"
-                  :key="item.code"
-                  :label="item.name"
-                  :value="item.name">
+                    v-for="item in cityList"
+                    :key="item.code"
+                    :label="item.name"
+                    :value="item.name">
                 </el-option>
               </el-select>
             </el-form-item>
@@ -216,9 +202,9 @@
         <el-table-column label="操作" align="center" class-name="small-padding fixed-width" fixed="left" width="180">
           <template slot-scope="scope">
             <el-button
-              type="danger"
-              size="mini"
-              @click="dialogFormSearchVisible = false"
+                type="danger"
+                size="mini"
+                @click="dialogFormSearchVisible = false"
             >确认
             </el-button>
           </template>
@@ -228,28 +214,28 @@
         <el-table-column label="户名" align="center" prop="acountsName"/>
       </el-table>
       <pagination
-        v-show="total>0"
-        :total="total"
-        :page.sync="queryParams.pageNum"
-        :limit.sync="queryParams.pageSize"
-        @pagination="getList"
+          v-show="total>0"
+          :total="total"
+          :page.sync="queryParams.pageNum"
+          :limit.sync="queryParams.pageSize"
+          @pagination="getList"
       />
     </el-dialog>
 
     <!--    搜索已绑定的银行卡信息-->
     <el-dialog title="银行卡号" :visible.sync="dialogFormVisible">
       <el-form :model="currentInfo">
-        <el-row :gutter="4">
-          <el-col :span="4">
-            <span style="font-weight: bolder">{{ currentInfo.companyName }}</span>
-          </el-col>
+        <el-row :gutter="4" style="text-align: center;">
+          <span style="font-weight: bolder;font-size: 18px;">{{ currentInfo.companyName }}</span>
         </el-row>
       </el-form>
-      <hr/>
+      <br/>
+      <el-divider>默认银行卡信息</el-divider>
       <el-row>
         <el-row>
           <el-row v-if="defaultBankCardInfo.not !== true">
-            <el-descriptions title="默认银行卡信息">
+            <br/>
+            <el-descriptions>
               <el-descriptions-item label="户名">{{ defaultBankCardInfo.acountsName }}</el-descriptions-item>
               <el-descriptions-item label="开户行">{{ defaultBankCardInfo.bankName }}</el-descriptions-item>
               <el-descriptions-item label="银行卡号">{{ defaultBankCardInfo.bankNo }}</el-descriptions-item>
@@ -259,8 +245,8 @@
             </el-descriptions>
           </el-row>
           <el-row v-else>
-            <el-descriptions title="默认银行卡信息">
-              <el-descriptions-item label="户名">暂无</el-descriptions-item>
+            <el-descriptions>
+              <el-descriptions-item label=" 户名">暂无</el-descriptions-item>
               <el-descriptions-item label="开户行">暂无</el-descriptions-item>
               <el-descriptions-item label="银行卡号">暂无</el-descriptions-item>
               <el-descriptions-item label="余额">
@@ -273,11 +259,8 @@
           </el-row>
         </el-row>
       </el-row>
-      <hr/>
+      <el-divider>已绑定银行卡</el-divider>
       <!--      客户的银行卡列表  应查询已经绑定的银行卡-->
-      <el-row>
-        <span style="font-weight: bolder">已绑定银行卡列表</span>
-      </el-row>
       <el-row>
         <el-table v-loading="loading" :data="singleInfo" @selection-change="handleSelectionChange">
           <el-table-column label="户名" align="center" prop="acountsName"/>
@@ -286,15 +269,15 @@
           <el-table-column label="操作" align="center" class-name="small-padding fixed-width" fixed="right" width="180">
             <template slot-scope="scope">
               <el-button
-                size="mini"
-                @click="handleDeleteBankaccount(scope.row)"
-                v-hasPermi="['system:company:remove']"
+                  size="mini"
+                  @click="handleDeleteBankaccount(scope.row)"
+                  v-hasPermi="['system:company:remove']"
               ><i class="el-icon-delete"></i>
               </el-button>
               <el-button
-                size="mini"
-                @click="addDefaultCard(scope.row)"
-                v-hasPermi="['system:company:edit']"
+                  size="mini"
+                  @click="addDefaultCard(scope.row)"
+                  v-hasPermi="['system:company:edit']"
               >设置为默认
               </el-button>
             </template>
@@ -306,11 +289,11 @@
         <el-button type="primary" @click="dialogFormVisible = false">确 定</el-button>
       </div>
       <pagination
-        v-show="total>0"
-        :total="total"
-        :page.sync="queryParams.pageNum"
-        :limit.sync="queryParams.pageSize"
-        @pagination="getList"/>
+          v-show="bankTotal>0"
+          :total="bankTotal"
+          :page.sync="bankPageNum"
+          :limit.sync="bankPageSize"
+          @pagination="getBankList"/>
 
 
       <!--    银行信息-->
@@ -321,10 +304,10 @@
               <el-form-item label="账号类型" :label-width="formLabelWidth">
                 <el-select v-model="queryBankInfo.acountsType" placeholder="请选择">
                   <el-option
-                    v-for="item in acountsTypeList"
-                    :key="item.value"
-                    :label="item.label"
-                    :value="item.value">
+                      v-for="item in acountsTypeList"
+                      :key="item.value"
+                      :label="item.label"
+                      :value="item.value">
                   </el-option>
                 </el-select>
               </el-form-item>
@@ -348,8 +331,8 @@
                              width="180">
               <template slot-scope="scope">
                 <el-button
-                  type="danger"
-                  @click="addThisBankInfo(scope.row)"
+                    type="danger"
+                    @click="addThisBankInfo(scope.row)"
                 >添加该银行卡
                 </el-button>
               </template>
@@ -361,11 +344,11 @@
           <el-button type="primary" @click="dialogBankInfoVisible = false">确 定</el-button>
         </div>
         <pagination
-          v-show="total>0"
-          :total="total"
-          :page.sync="queryParams.pageNum"
-          :limit.sync="queryParams.pageSize"
-          @pagination="getList"
+            v-show="total>0"
+            :total="total"
+            :page.sync="queryParams.pageNum"
+            :limit.sync="queryParams.pageSize"
+            @pagination="getList"
         />
       </el-dialog>
     </el-dialog>
@@ -382,9 +365,9 @@
         <el-table-column label="操作" align="center" class-name="small-padding fixed-width" fixed="right">
           <template slot-scope="scope">
             <el-button
-              size="mini"
-              type="primary"
-              @click="addDefaultCard(scope.row)">设置为默认
+                size="mini"
+                type="primary"
+                @click="addDefaultCard(scope.row)">设置为默认
             </el-button>
           </template>
         </el-table-column>
@@ -534,13 +517,19 @@ export default {
       district: '',
       //默认银行卡信息
       defaultBankCardInfo: {},
-      addDefaultCardVisible: false
+      addDefaultCardVisible: false,
+
+      //默认银行卡列表的id
+      currentID: '',
+      bankTotal: 0,
+      bankPageSize: 10,
+      bankPageNum: 1,
     };
   },
   created() {
     this.getList();
     if (localStorage.getItem('company-columns') === 'null'
-      || !localStorage.getItem('company-columns')) {
+        || !localStorage.getItem('company-columns')) {
       //设置localStorage
       localStorage.setItem("company-columns", JSON.stringify(this.columns))
     } else {
@@ -548,10 +537,10 @@ export default {
     }
     //获取城市信息
     fetch('/area.json')
-      .then(res => res.json())
-      .then(res => {
-        this.provinceList = res;
-      })
+        .then(res => res.json())
+        .then(res => {
+          this.provinceList = res;
+        })
   },
   //展示与隐藏
   watch: {
@@ -594,6 +583,8 @@ export default {
     },
     //点击银行卡后弹窗
     jumpBankNo(row) {
+      // 绑定ID 分页查询默认银行卡有用
+      this.currentID = row.id;
       this.currentInfo = Object.assign(this.currentInfo, {
         relationName: row.relationName,
         id: row.id,
@@ -613,23 +604,34 @@ export default {
       });
       //查询已绑定的银行卡信息
       listBankAccount({companyId: row.id, acountsType: '客户'})
-        .then(res => {
-          this.singleInfo = res.rows
-          // 查询客户的默认银行卡信息
-          listBankAccount({acountsType: '客户默认', companyId: row.id})
-            .then(res => {
-              if (res.rows.length > 0) {
-                this.defaultBankCardInfo = res.rows[0]
-              } else {
-                this.defaultBankCardInfo.not = true
-              }
-              setTimeout(() => {
-                this.dialogFormVisible = true
-              }, 20)
-            })
-        })
+          .then(res => {
+            this.singleInfo = res.rows
+            this.bankTotal = res.total;
+          })
+      // 查询客户的默认银行卡信息
+      listBankAccount({acountsType: '客户默认', companyId: row.id})
+          .then(res => {
+            if (res.rows.length > 0) {
+              this.defaultBankCardInfo = res.rows[0]
+            } else {
+              this.defaultBankCardInfo.not = true
+            }
+            this.dialogFormVisible = true
+          })
     },
-
+    // 查询已经绑定的银行卡信息
+    getBankList() {
+      listBankAccount({
+        companyId: this.currentID,
+        acountsType: '客户',
+        pageNum: this.bankPageNum,
+        pageSize: this.bankPageSize
+      })
+          .then(res => {
+            this.singleInfo = res.rows
+            this.bankTotal = res.total;
+          })
+    },
     //添加银行卡信息
     handleAddBankInfo() {
       this.dialogBankInfoVisible = true;
@@ -645,9 +647,9 @@ export default {
     //查询银行卡
     handleSearchBankInfo() {
       listBankAccount({acountsType: this.queryBankInfo.acountsType, acountsName: this.queryBankInfo.acountsName})
-        .then(res => {
-          this.bankInfo = res.rows;
-        })
+          .then(res => {
+            this.bankInfo = res.rows;
+          })
     },
     addThisBankInfo(row) {
       this.dialogBankInfoVisible = false;
@@ -694,31 +696,31 @@ export default {
       //如果是undefined 代表是个对象
       if (row.target === undefined) {
         setDefault({...excludeParams(row, this.$exclude), acountsType: '客户默认'})
-          .then(res => {
-            this.$message.success("设置成功~")
-            this.dialogFormVisible = false //关闭银行卡弹窗
-            this.addDefaultCardVisible = false
-            this.getList()
-          })
+            .then(res => {
+              this.$message.success("设置成功~")
+              this.dialogFormVisible = false //关闭银行卡弹窗
+              this.addDefaultCardVisible = false
+              this.getList()
+            })
       } else {
         //如果还没有添加过银行卡信息
         //先查询
         listBankAccount({companyId: this.currentInfo.id, acountsType: '客户'})
-          .then(res => {
-            if (res.rows.length === 0) {
-              this.$confirm('您还没有设置银行卡信息，是否前往设置?', '提示', {
-                confirmButtonText: '确定',
-                cancelButtonText: '取消',
-                type: 'warning'
-              }).then(() => {
-                this.dialogFormVisible = false
-                this.$router.push('/baseInfo/bankaccount')
-              }).catch(err => {
-              })
-            } else {
-              this.addDefaultCardVisible = true;
-            }
-          })
+            .then(res => {
+              if (res.rows.length === 0) {
+                this.$confirm('您还没有设置银行卡信息，是否前往设置?', '提示', {
+                  confirmButtonText: '确定',
+                  cancelButtonText: '取消',
+                  type: 'warning'
+                }).then(() => {
+                  this.dialogFormVisible = false
+                  this.$router.push('/baseInfo/bankaccount')
+                }).catch(err => {
+                })
+              } else {
+                this.addDefaultCardVisible = true;
+              }
+            })
       }
     },
     //删除用户已绑定的某张银行卡信息

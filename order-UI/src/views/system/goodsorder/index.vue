@@ -93,8 +93,6 @@
       <el-col :span="1.5">
         <el-button
             type="danger"
-            plain
-            icon="el-icon-plus"
             size="mini"
             @click="handleAdd"
             v-hasPermi="['system:goodsorder:add']"
@@ -104,8 +102,6 @@
       <el-col :span="1.5">
         <el-button
             type="warning"
-            plain
-            icon="el-icon-download"
             size="mini"
             @click="handleExport"
             v-hasPermi="['system:goodsorder:export']"

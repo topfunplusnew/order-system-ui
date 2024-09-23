@@ -4,27 +4,27 @@
       <el-form-item label="类型" prop="acountsType">
         <el-select v-model="queryParams.acountsType" placeholder="请选择">
           <el-option
-            v-for="item in options"
-            :key="item.value"
-            :label="item.label"
-            :value="item.value">
+              v-for="item in options"
+              :key="item.value"
+              :label="item.label"
+              :value="item.value">
           </el-option>
         </el-select>
       </el-form-item>
       <el-form-item label="户名" prop="acountsName">
         <el-input
-          v-model="queryParams.acountsName"
-          placeholder="请输入户名"
-          clearable
-          @keyup.enter.native="handleQuery"
+            v-model="queryParams.acountsName"
+            placeholder="请输入户名"
+            clearable
+            @keyup.enter.native="handleQuery"
         />
       </el-form-item>
       <el-form-item label="银行账号" prop="bankNo">
         <el-input
-          v-model="queryParams.bankNo"
-          placeholder="请输入银行账号"
-          clearable
-          @keyup.enter.native="handleQuery"
+            v-model="queryParams.bankNo"
+            placeholder="请输入银行账号"
+            clearable
+            @keyup.enter.native="handleQuery"
         />
       </el-form-item>
       <el-form-item>
@@ -38,41 +38,39 @@
       </el-col>
       <el-col :span="1.5">
         <el-button
-          type="danger"
-          plain
-          size="mini"
-          @click="handleAdd"
-          v-hasPermi="['system:bankaccount:add']">新增银行卡信息
+            type="danger"
+            size="mini"
+            @click="handleAdd"
+            v-hasPermi="['system:bankaccount:add']">新增银行卡信息
         </el-button>
       </el-col>
       <el-col :span="1.5">
         <el-button
-          type="warning"
-          plain
-          size="mini"
-          @click="handleTransformBank"
-          v-hasPermi="['system:bankaccount:add']">银行卡转账
+            type="warning"
+            size="mini"
+            @click="handleTransformBank"
+            v-hasPermi="['system:bankaccount:add']">银行卡转账
         </el-button>
       </el-col>
       <right-toolbar :showSearch.sync="showSearch" @queryTable="getList" :columns="columns">
         <template v-slot:print>
           <el-col :span="1.5">
             <el-button
-              plain
-              icon="el-icon-printer"
-              size="mini"
-              @click="printHTML">
+                plain
+                icon="el-icon-printer"
+                size="mini"
+                @click="printHTML">
             </el-button>
           </el-col>
         </template>
         <template v-slot:export>
           <el-col :span="1.5">
             <el-button
-              plain
-              icon="el-icon-folder-opened"
-              size="mini"
-              @click="handleExport"
-              v-hasPermi="['system:bankaccount:export']">
+                plain
+                icon="el-icon-folder-opened"
+                size="mini"
+                @click="handleExport"
+                v-hasPermi="['system:bankaccount:export']">
             </el-button>
           </el-col>
         </template>
@@ -94,15 +92,15 @@
         <template slot-scope="scope">
           <el-row>
             <el-button
-              size="mini"
-              type="primary"
-              @click="handleAdjust(scope.row)"
-              v-hasPermi="['system:balanceaccounts:adjust']">银行卡调整
+                size="mini"
+                type="primary"
+                @click="handleAdjust(scope.row)"
+                v-hasPermi="['system:balanceaccounts:adjust']">银行卡调整
             </el-button>
             <el-button
-              size="mini"
-              type="warning"
-              @click="checkBankChangeFlow(scope.row)">变动流水
+                size="mini"
+                type="warning"
+                @click="checkBankChangeFlow(scope.row)">变动流水
             </el-button>
           </el-row>
         </template>
@@ -111,27 +109,27 @@
         <template slot-scope="scope">
           <el-row>
             <el-button
-              size="mini"
-              type="primary"
-              @click="handleUpdate(scope.row)"
-              v-hasPermi="['system:bankaccount:edit']">编辑
+                size="mini"
+                type="primary"
+                @click="handleUpdate(scope.row)"
+                v-hasPermi="['system:bankaccount:edit']">编辑
             </el-button>
             <el-button
-              size="mini"
-              type="danger"
-              @click="handleDelete(scope.row)"
-              v-hasPermi="['system:bankaccount:remove']">删除
+                size="mini"
+                type="danger"
+                @click="handleDelete(scope.row)"
+                v-hasPermi="['system:bankaccount:remove']">删除
             </el-button>
           </el-row>
         </template>
       </el-table-column>
     </el-table>
     <pagination
-      v-show="total>0"
-      :total="total"
-      :page.sync="queryParams.pageNum"
-      :limit.sync="queryParams.pageSize"
-      @pagination="getList"/>
+        v-show="total>0"
+        :total="total"
+        :page.sync="queryParams.pageNum"
+        :limit.sync="queryParams.pageSize"
+        @pagination="getList"/>
 
     <!-- 添加或修改银行账号对话框 -->
     <el-dialog :title="title" :visible.sync="open" width="500px" append-to-body>
@@ -139,10 +137,10 @@
         <el-form-item label="账号类型" prop="acountsType">
           <el-select v-model="form.acountsType" placeholder="请选择账号类型">
             <el-option
-              v-for="item in options"
-              :key="item.value"
-              :label="item.label"
-              :value="item.value">
+                v-for="item in options"
+                :key="item.value"
+                :label="item.label"
+                :value="item.value">
             </el-option>
           </el-select>
         </el-form-item>
@@ -241,33 +239,33 @@
     <el-dialog title="银行卡流水" :visible.sync="bankChangeDialogVisible" width="55%" append-to-body>
       <el-row>
         <el-table
-          :data="bankChangeList"
-          style="width: 100%">
+            :data="bankChangeList"
+            style="width: 100%">
           <el-table-column
-            prop="selfBankNo"
-            label="己方账号"
-            width="180">
+              prop="selfBankNo"
+              label="己方账号"
+              width="180">
           </el-table-column>
           <el-table-column
-            prop="operateDate"
-            label="日期"
-            width="180">
+              prop="operateDate"
+              label="日期"
+              width="180">
           </el-table-column>
           <el-table-column
-            prop="changeType"
-            label="变动类型">
+              prop="changeType"
+              label="变动类型">
           </el-table-column>
           <el-table-column
-            prop="moneyAmount"
-            label="金额">
+              prop="moneyAmount"
+              label="金额">
           </el-table-column>
         </el-table>
         <pagination
-          v-show="bankAcountTotal>0"
-          :total="bankAcountTotal"
-          :page.sync="bankAcountTotalPageNum"
-          :limit.sync="bankAcountTotalPageSize"
-          @pagination="getBankAcountChangeList"/>
+            v-show="bankAcountTotal>0"
+            :total="bankAcountTotal"
+            :page.sync="bankAcountTotalPageNum"
+            :limit.sync="bankAcountTotalPageSize"
+            @pagination="getBankAcountChangeList"/>
       </el-row>
       <div slot="footer" class="dialog-footer">
         <el-button type="primary" @click="submitBankChange">确 定</el-button>
@@ -437,7 +435,7 @@ export default {
     this.getList();
     this.getCompanyInfo()
     if (localStorage.getItem('bankaccount-columns') === 'null'
-      || !localStorage.getItem('bankaccount-columns')) {
+        || !localStorage.getItem('bankaccount-columns')) {
       localStorage.setItem("bankaccount-columns", JSON.stringify(this.columns))
     } else {
       this.columns = JSON.parse(localStorage.getItem('bankaccount-columns'));
@@ -608,11 +606,11 @@ export default {
           tid: row.id,
           modifyTime: parseTime(new Date())
         })
-          .then(res => {
-            this.$message.success('提交成功')
-            this.Adjustment = true;
-            this.reset();
-          })
+            .then(res => {
+              this.$message.success('提交成功')
+              this.Adjustment = true;
+              this.reset();
+            })
       }).catch(() => {
         this.$message({
           type: 'warning',

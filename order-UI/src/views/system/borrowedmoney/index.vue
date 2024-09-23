@@ -252,12 +252,6 @@ export default {
       }
     };
     return {
-      //测试数据
-      formInline: {
-        user: '',
-        region: ''
-      },
-      //ruoyi
       loading: true,
       ids: [],
       single: true,
@@ -309,7 +303,6 @@ export default {
           {required: true, message: '打入账号不能为空', trigger: 'blur'}],
       },
       dateRange: [],
-      //
       columns: [
         {key: 0, label: `id`, visible: true},
         {key: 1, label: `贷款来源`, visible: true},
@@ -322,21 +315,8 @@ export default {
         {key: 8, label: `打入账号`, visible: true},
         {key: 9, label: `已还款标记`, visible: true},
       ],
-      timesQuery: {
-        beginTime: '',
-        endTime: '',
-      },
       //还款弹窗
       giveBackMoneyShow: false,
-      //还款记录列表
-      needGiveBackMoneyList: [],
-      needMoneyLoading: false,
-      //还款内层
-      innerVisible: false,
-      //当前选中的UUID和银行卡号
-      currentUUID: '',
-      currentBankNo: '',
-      currentGiveBackMoneyInfo: {},
       //是否偿还利息
       isNeedRatio: false,
       //点击银行卡 查询银行卡
@@ -348,19 +328,17 @@ export default {
         levelOne: '',
         levelTwo: ''
       },
-      //一级分类列表
+      //一级分类列表 二级分类
       OneLevelOption: [],
-      //二级分类
       TwoLevelOption: [],
-      //tid
-      tID: '',
+
+      // 还款信息
       moneyBackInfo: {
         bankNo: '',
         acountsName: ''
       },
-      // 是否只偿还利息
-      isRatioOnly: '否',
-      tempMoney: '',
+
+      // 查询变量
       queryBankAcount: '',
       loanNO: '',
     };
@@ -393,15 +371,6 @@ export default {
       },
       deep: true,
     },
-    isRatioOnly: {
-      handler(val) {
-        if (val === '是') {
-          this.moneyBackInfo.moneyAmount = ''
-        } else {
-          this.moneyBackInfo.moneyAmount = this.tempMoney
-        }
-      }
-    }
   },
   methods: {
     listCompany,
