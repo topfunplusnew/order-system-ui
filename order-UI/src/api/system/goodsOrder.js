@@ -43,7 +43,7 @@ export function delGoodsOrder(id) {
     })
 }
 
-//todo 根据uuid查询订单详细信息
+//根据uuid查询订单详细信息
 export function getGoodsByUUID(uuid) {
     return request({
         url: '/system/goodsOrder/' + uuid,

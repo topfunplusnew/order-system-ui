@@ -477,7 +477,6 @@
         title="上传附件"
         :visible.sync="handleUploadVisible"
         width="30%">
-      <!--      todo      <file-upload is-show-tip @input="handleBackUpload"/>-->
       <el-upload
           class="upload-demo"
           drag
@@ -495,7 +494,6 @@
   </span>
     </el-dialog>
 
-    <!--    上传收到条的弹窗 todo 可以上传多个文件-->
     <el-dialog
         title="提示"
         :visible.sync="handleCommitVisible"
@@ -1102,7 +1100,6 @@ export default {
       window.open(path)
     },
     //删除收到条
-    //todo 删除
     deleteReceiveProof(row) {
       this.$confirm('此操作将永久删除该文件, 是否继续?', '提示', {
         confirmButtonText: '确定',

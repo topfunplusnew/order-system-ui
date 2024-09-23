@@ -241,7 +241,6 @@ export default {
   components: {ApplyPayment, SearchOption},
   mixins: [mixin_printHTML],
   data() {
-    //todo rule校验
     var validateloanNO = (rule, value, callback) => {
       if (value === '') {
         callback(new Error('请输入loanNO'));

@@ -165,7 +165,6 @@
         <el-form-item label="库存量" prop="stockNumber">
           <el-input v-model="form.stockNumber" placeholder="请输入库存量"/>
         </el-form-item>
-        <!--        todo-->
         <el-form-item label="供应商" prop="supplier">
           <el-row>
             <el-col :span="10">
@@ -583,7 +582,7 @@ export default {
     },
     //选中级别编码的回调
     handleCommitBackProductLevel(val) {
-      this.form.levelID = val.id;//todo levelNo?
+      this.form.levelID = val.id;
       this.form.levelName = val.levelName
     },
     handleCommitBackCars(val) {

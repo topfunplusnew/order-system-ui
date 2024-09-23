@@ -677,7 +677,7 @@
     </el-dialog>
 
 
-    <!--   todo  订单历史信息查看-->
+    <!-- 订单历史信息查看-->
     <el-dialog title="订单历史信息" :visible.sync="checkHistoryOrderVisible" fullscreen>
       <el-row>
         <el-col :span="18" :offset="3">
@@ -1021,64 +1021,6 @@ export default {
       checkAttachmentVisible: false,
       // 查看订单历史信息
       checkHistoryOrderVisible: false,
-      // todo 魔法值
-      orderDetailList: [
-        {
-          createBy: {},
-          createTime: {},
-          updateBy: {},
-          updateTime: {},
-          remark: {},
-          id: "86",
-          ordersNo: "64ef3bfe-6655-45af-81ef-758f9a707239",
-          orderDate: "2024-09-13",
-          supplier: "北京市朝阳区",
-          supplierID: "31",
-          customer: "18767671111",
-          customerID: "31",
-          levelID: "27",
-          levelName: "A",
-          countingUnit: "片",
-          height: "20",
-          length: "30",
-          width: "10",
-          pieces: "123",
-          piecesPerPack: "123",
-          packs: "213",
-          price: "213",
-          isIncludeTaxFactory: "0",
-          sundryCost: "213",
-          paymentFactory: "220.86",
-          paymentUnload: "213",
-          isIncludeTaxSale: "0",
-          payments: "321",
-          erro: "0.8",
-          tonnage: "0",
-          landFreightPrice: "213",
-          landFreight: "213",
-          seaFreight: "0",
-          freight: "213",
-          otherCost: "213",
-          profit: "-112.86",
-          profitNoTax: "-325.86",
-          actualPieces: "213",
-          paymentsWithSundry: "321",
-          additionalFees: "213",
-          storeHouseID: {},
-          storeHouseName: {},
-          storeID: {},
-          logisticsProfit: "213",
-          customerCommission: "213",
-          isAdjusted: "否",
-          adjustDate: {},
-          cancelFlag: "0",
-          comments: "213",
-          addtime: "2024-09-16 23:24:43",
-          userId: "1",
-          exWarehouseDate: {},
-          userName: "maolei",
-        }
-      ],
     };
   },
   created() {

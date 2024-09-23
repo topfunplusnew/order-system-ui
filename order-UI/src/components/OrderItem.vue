@@ -369,7 +369,6 @@ export default {
       return fix(this.length * this.width * this.outPieces / 1000000 * this.paymentUnload + Number(this.paymentsWithSundry));
     },
     tonnage00() {
-      //todo 这里会有一个小bug，如果产品规格过小 会导致结果变为0
       return fix((Number(this.height) - Number(this.erro)) * this.length * this.pieces / 1000000 / 20 / 20);
     },
     landFreight00() {
@@ -571,19 +570,9 @@ export default {
         }
       }
     },
-    // seaFreight: {
-    //   handler(val) {
-    //     if (this.seaFreight !== '') {
-    //       return Number(this.orderItemInfo.freight) + Number(this.seaFreight);
-    //     } else {
-    //       return this.landFreight;
-    //     }
-    //   }
-    // }
   }
   ,
   methods: {
-    //todo 供应商和库存操作 选择供应商或者仓库后，还要选择级别编码 然后查询库存信息的基本信息
     //供应商信息
     searchCompanyGiveInfo() {
       this.companyGiveDialogVisible = true;
@@ -686,7 +675,6 @@ export default {
         } else {
           this.levelName = row.levelName;
           //数据库查询的筛选后的库存信息
-          //todo 如果有多个库存信息 应该如何做
           const info = res.rows[0];
           this.height = info.height;
           this.length = info.length;
@@ -711,9 +699,7 @@ export default {
           this.levelNo = row.levelNo;
         }
       })
-    }
-    ,
-    //todo 测试用 打印所有计算属性的值
+    },
     printAllComputers() {
       const computedProperties = this.$options.computed;
       Object.keys(computedProperties).forEach(key => {
@@ -766,7 +752,6 @@ export default {
       <div class="order-item">
         <span class="text-bold">厚度</span>
         <hr/>
-        <!--        todo  测试-->
         <el-input type="text" placeholder="请输入厚度" v-model="height"></el-input>
       </div>
       <div class="order-item">

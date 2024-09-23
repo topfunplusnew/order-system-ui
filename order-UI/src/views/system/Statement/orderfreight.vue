@@ -1,4 +1,4 @@
-<!-- todo 运费报表-->
+<!-- 运费报表-->
 <script>
 import {mixin_printHTML} from "@/views/dashboard/mixins/print";
 import {getOrderFreight} from "@/api/system/statement";

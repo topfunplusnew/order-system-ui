@@ -359,12 +359,6 @@
           <TagsItem :check-info="orderDetailInfo.isAdjusted " check-value="否"/>
         </el-descriptions-item>
         <el-descriptions-item label="调整日期">{{ orderDetailInfo.adjustDate }}</el-descriptions-item>
-        <!--        <el-descriptions-item label="作废标记">{{ orderDetailInfo.cancelFlag}}</el-descriptions-item>-->
-        <!--        <el-descriptions-item label="备注">{{ orderDetailInfo.comments }}</el-descriptions-item>-->
-        <!--        <el-descriptions-item label="添加时间">{{ orderDetailInfo.addtime }}</el-descriptions-item>-->
-        <!--        <el-descriptions-item label="操作人员ID">{{ orderDetailInfo.userId }}</el-descriptions-item>-->
-        <!--        <el-descriptions-item label="操作人员姓名">{{ orderDetailInfo.UserName }}</el-descriptions-item>-->
-        <!-- todo       附件-->
 
       </el-descriptions>
 

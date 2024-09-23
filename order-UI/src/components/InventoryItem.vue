@@ -379,7 +379,6 @@ export default {
       return fix(this.length * this.width * this.outPieces / 1000000 * this.paymentUnload + Number(this.paymentsWithSundry));
     },
     tonnage00() {
-      //todo 这里会有一个小bug，如果产品规格过小 会导致结果变为0
       return fix((Number(this.height) - Number(this.erro)) * this.length * this.pieces / 1000000 / 20 / 20);
     },
     landFreight00() {
@@ -651,7 +650,6 @@ export default {
       <div class="order-item">
         <span class="text-bold">厚度</span>
         <hr/>
-        <!--        todo  测试-->
         <el-input type="text" placeholder="请输入厚度" v-model="height"></el-input>
       </div>
       <div class="order-item">

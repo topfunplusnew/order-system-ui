@@ -248,7 +248,6 @@ export default {
       })
     },
 
-    //todo 确认中初始化所有的id 给出银行信息
     //客户信息中的搜索确认
     commitCustomerInfo(row) {
       this.orderInfo.customerID = row.id;  //orderInfo->客户ID
