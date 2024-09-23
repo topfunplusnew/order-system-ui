@@ -270,7 +270,7 @@ export default {
       });
     },
 
-    /** 删除按钮操作 */
+    // 删除公司车辆信息
     handleDelete(row) {
       this.$modal.confirm('是否删除该公司车辆信息?').then(function () {
         return delData(row.dictCode);

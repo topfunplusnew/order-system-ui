@@ -634,12 +634,6 @@ export default {
       this.single = selection.length !== 1
       this.multiple = !selection.length
     },
-    /** 新增按钮操作 */
-    handleAdd() {
-      this.reset();
-      this.open = true;
-      this.title = "添加产品级别";
-    },
     /** 修改按钮操作 */
     handleUpdate(row) {
       this.reset();

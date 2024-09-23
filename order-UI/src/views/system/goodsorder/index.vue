@@ -541,7 +541,7 @@
 
     <!--    添加订单的新弹窗 原有的新增不使用-->
     <el-dialog
-        title="订单信息"
+        title="添加订单信息"
         :visible.sync="addOrderItemVisible"
         width="80%">
       <!--      添加订单 传递本组件的orderInfo信息 -->

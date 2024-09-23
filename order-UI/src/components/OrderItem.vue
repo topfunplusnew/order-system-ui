@@ -368,11 +368,12 @@ export default {
     payments00() {
       return fix(this.length * this.width * this.outPieces / 1000000 * this.paymentUnload + Number(this.paymentsWithSundry));
     },
+    // todo  长度宽度高度过低 会计算吨位为0
     tonnage00() {
       return fix((Number(this.height) - Number(this.erro)) * this.length * this.pieces / 1000000 / 20 / 20);
     },
     landFreight00() {
-      return fix(this.tonnage * this.landFreightPrice + Number(this.additionalFees));
+      return fix(Number(this.tonnage) * Number(this.landFreightPrice) + Number(this.additionalFees));
     },
     profit00() {
       return fix(this.payments - this.paymentFactory - this.landFreight);
