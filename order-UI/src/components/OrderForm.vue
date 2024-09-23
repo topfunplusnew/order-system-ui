@@ -215,14 +215,6 @@ export default {
     //获取订单列表
     ...mapGetters(['orderItemList'])
   },
-  //监视属性 用来测试
-  watch: {
-    customer: {
-      handler(val) {
-      },
-    },
-  },
-
   methods: {
     listFleet,
     listCars,
@@ -255,7 +247,7 @@ export default {
       this.queryLandCar = val;
     },
     handleCommitBackCar(val) {
-      this.orderInfo.landCarID = val.id;   //orderInfo->陆运车ID
+      this.orderInfo.landCarID = val.id;
       //与上面填充客户信息同理
       this.landCarNo = val.carNo;
       this.landDriverName = val.driver;
@@ -316,12 +308,12 @@ export default {
             </el-col>
             <el-col :span="21">
               <el-date-picker
-                  v-model="orderDate"
-                  size="mini"
-                  type="date"
-                  placeholder="选择日期"
-                  value-format="yyyy-MM-dd"
-                  style="width: 80%">
+                v-model="orderDate"
+                size="mini"
+                type="date"
+                placeholder="选择日期"
+                value-format="yyyy-MM-dd"
+                style="width: 80%">
               </el-date-picker>
             </el-col>
           </el-row>
@@ -485,7 +477,7 @@ export default {
 
     <el-card class="box-card">
       <div slot="header" class="clearfix">
-        <span>货物信息</span>
+        <span>订单货物信息</span>
       </div>
       <!--      如果有-->
       <div v-if="orderItemList.length!==0">
@@ -517,32 +509,32 @@ export default {
 
     <!--    海运车牌信息弹窗-->
     <el-dialog
-        title="海运车辆信息"
-        :visible.sync="seaInfoDialogVisible"
-        width="35%" append-to-body>
+      title="海运车辆信息"
+      :visible.sync="seaInfoDialogVisible"
+      width="35%" append-to-body>
       <el-table
-          :data="seaInfo"
-          border>
+        :data="seaInfo"
+        border>
         <!--        操作-->
         <el-table-column
-            fixed="left"
-            label="操作">
+          fixed="left"
+          label="操作">
           <template slot-scope="scope">
             <el-button @click="commitSeaInfo(scope.row)" type="danger" size="small">确认</el-button>
           </template>
         </el-table-column>
         <el-table-column
-            fixed
-            prop="carNo"
-            label="车牌">
+          fixed
+          prop="carNo"
+          label="车牌">
         </el-table-column>
         <el-table-column
-            prop="driver"
-            label="司机姓名">
+          prop="driver"
+          label="司机姓名">
         </el-table-column>
         <el-table-column
-            prop="tel"
-            label="司机电话">
+          prop="tel"
+          label="司机电话">
         </el-table-column>
       </el-table>
       <span slot="footer" class="dialog-footer">

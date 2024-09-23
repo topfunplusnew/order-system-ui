@@ -1,14 +1,14 @@
 <!--订单详情个体-->
 
 <script>
-import {listCompany} from "@/api/system/company";
-import {listInventory} from "@/api/system/inventory";
-import {listStoreHouse} from "@/api/system/StoreHouse";
-import {listProductLevel} from "@/api/system/productLevel";
 import {fix} from "@/api/tool/format";
+import SearchOption from "./SearchOption.vue";
+import {listCompany} from "../api/system/company";
+import {listProductLevel} from "../api/system/productLevel";
 
 export default {
   name: "OrderItem",
+  components: {SearchOption},
 
   //父组件传递的订单详情个体
   props: {
@@ -559,64 +559,22 @@ export default {
     }
   },
   methods: {
+    listProductLevel,
+    listCompany,
     //供应商信息
-    searchCompanyGiveInfo() {
-      this.companyGiveDialogVisible = true;
-      //查询供应商信息
-      listCompany({companyType: '供应商', companyName: this.companyName}).then(res => {
-        this.companyGiveInfo = res.rows;
-      })
-    }
-    ,
-    //查询仓库信息
-    searchStoreInfo() {
-      this.storeInfoDialogVisible = true;
-      //搜索库存信息 只查询库存中仓库
-      listInventory().then(res => {
-        this.inventoryInfo = res.rows.filter(item => {
-          return item.stockNumber > 0;
-        })
-      })
-      //搜索仓库信息
-      listStoreHouse().then(res => {
-        this.storeInfo = res.rows;
-      })
-    }
-    ,
-    //查询产品级别信息
-    searchProductLevelInfo() {
-      this.productLevelDialogVisible = true;
-      //查询产品级别信息
-      listProductLevel({width: this.productLevel.width, levelName: this.productLevel.level}).then(res => {
-        this.productLevelInfo = res.rows;
-      })
-    }
-    ,
-
-    //供应商信息确认 选择供应商后还要选择产品级别
-    commitCompanyGiveInfo(row) {
-      this.orderItemInfo.supplierId = row.id;   //goodsOrderList->供应商ID
-      this.supplier = row.companyName
-      this.companyGiveDialogVisible = false;
-    }
-    ,
-    //产品级别确认
-    commitProductLevelInfo(row) {
-      //确定产品级别编码信息
-      this.levelID = row.id;
-      this.levelName = row.levelName;
-      this.height = row.height;
-      this.length = row.length;
-      this.width = row.width;
-      this.levelNo = row.levelNo;
-      this.productLevelDialogVisible = false;
+    handleCommitBackCompany(val) {
+      this.orderItemInfo.supplierId = val.id;   //goodsOrderList->供应商ID
+      this.supplier = val.companyName
     },
-
-    printAllComputers() {
-      const computedProperties = this.$options.computed;
-      Object.keys(computedProperties).forEach(key => {
-      })
-    }
+    //查询产品级别信息
+    handleCommitBackProductLevel(val) {
+      this.levelID = val.id;
+      this.levelName = val.levelName;
+      this.height = val.height;
+      this.length = val.length;
+      this.width = val.width;
+      this.levelNo = val.levelNo;
+    },
   }
 }
 </script>
@@ -630,16 +588,32 @@ export default {
         <el-input placeholder="请输入供应商"
                   v-model="supplier"
                   disabled></el-input>
-        <!--        供应商弹窗按钮-->
-        <el-button size="mini" type="primary" icon="el-icon-user" circle @click="searchCompanyGiveInfo">
-        </el-button>
+        <SearchOption :get-data="listCompany" icon="el-icon-user" @commitBack="handleCommitBackCompany"
+                      :limit-info="{companyType:'供应商'}">
+          <template #table-columns>
+            <el-table-column label="供应商名称" align="center" prop="companyName"/>
+            <el-table-column label="联系人" align="center" prop="relationName"/>
+            <el-table-column label="电话" align="center" prop="relationTel"/>
+          </template>
+        </SearchOption>
       </div>
       <div class="order-item">
         <span class="text-bold">产品名称</span>
         <hr/>
         <el-input type="text" placeholder="请输入产品名称" v-model="levelName"></el-input>
-        <el-button type="primary" size="mini" icon="el-icon-search" circle
-                   @click="searchProductLevelInfo"></el-button>
+        <SearchOption :get-data="listProductLevel" icon="el-icon-search" @commitBack="handleCommitBackProductLevel"
+                      :limit-info="{}">
+          <template #table-columns>
+            <el-table-column label="级别编码" align="center" prop="levelNo"/>
+            <el-table-column label="级别名称" align="center" prop="levelName"/>
+            <el-table-column label="分类编号" align="center" prop="categoryNo"/>
+            <el-table-column label="分类名称" align="center" prop="categoryName"/>
+            <el-table-column label="厚度" align="center" prop="height"/>
+            <el-table-column label="长度" align="center" prop="length"/>
+            <el-table-column label="宽度" align="center" prop="width"/>
+            <el-table-column label="吨位" align="center" prop="tonnage"/>
+          </template>
+        </SearchOption>
       </div>
       <div class="order-item">
         <span class="text-bold">计量单位</span>
@@ -798,9 +772,9 @@ export default {
 
     <!--    供应商信息弹窗-->
     <el-dialog
-      title="供应商信息"
-      :visible.sync="companyGiveDialogVisible"
-      width="35%" append-to-body>
+        title="供应商信息"
+        :visible.sync="companyGiveDialogVisible"
+        width="35%" append-to-body>
       <!--      供应商信息搜索-->
       <el-row :gutter="5">
         <el-col :span="4">
@@ -814,36 +788,36 @@ export default {
         </el-col>
       </el-row>
       <el-table
-        :data="companyGiveInfo"
-        border>
+          :data="companyGiveInfo"
+          border>
         <!--        操作-->
         <el-table-column
-          fixed="left"
-          label="操作">
+            fixed="left"
+            label="操作">
           <template slot-scope="scope">
             <el-button @click="commitCompanyGiveInfo(scope.row)" type="danger" size="small">确认</el-button>
           </template>
         </el-table-column>
         <el-table-column
-          fixed
-          prop="companyName"
-          label="供应商">
+            fixed
+            prop="companyName"
+            label="供应商">
         </el-table-column>
         <el-table-column
-          prop="address"
-          label="地址">
+            prop="address"
+            label="地址">
         </el-table-column>
         <el-table-column
-          prop="relationName"
-          label="联系人">
+            prop="relationName"
+            label="联系人">
         </el-table-column>
         <el-table-column
-          prop="bankNo"
-          label="银行账号">
+            prop="bankNo"
+            label="银行账号">
         </el-table-column>
         <el-table-column
-          prop="acountsName"
-          label="户名">
+            prop="acountsName"
+            label="户名">
         </el-table-column>
       </el-table>
       <span slot="footer" class="dialog-footer">
@@ -854,9 +828,9 @@ export default {
 
     <!--    产品级别信息弹窗-->
     <el-dialog
-      title="产品级别信息"
-      :visible.sync="productLevelDialogVisible"
-      width="35%" append-to-body>
+        title="产品级别信息"
+        :visible.sync="productLevelDialogVisible"
+        width="35%" append-to-body>
       <el-row style="margin-bottom: 20px">
         <!--      产品级别-->
         <el-col :span="3">
@@ -877,40 +851,40 @@ export default {
         </el-col>
       </el-row>
       <el-table
-        :data="productLevelInfo"
-        border>
+          :data="productLevelInfo"
+          border>
         <!--        操作-->
         <el-table-column
-          fixed="left"
-          label="操作">
+            fixed="left"
+            label="操作">
           <template slot-scope="scope">
             <el-button @click="commitProductLevelInfo(scope.row)" type="danger" size="small">确认</el-button>
           </template>
         </el-table-column>
         <el-table-column
-          fixed
-          prop="categoryName"
-          label="分类">
+            fixed
+            prop="categoryName"
+            label="分类">
         </el-table-column>
         <el-table-column
-          prop="levelNo"
-          label="产品级别编码">
+            prop="levelNo"
+            label="产品级别编码">
         </el-table-column>
         <el-table-column
-          prop="levelName"
-          label="标题">
+            prop="levelName"
+            label="标题">
         </el-table-column>
         <el-table-column
-          prop="height"
-          label="厚度">
+            prop="height"
+            label="厚度">
         </el-table-column>
         <el-table-column
-          prop="length"
-          label="长度">
+            prop="length"
+            label="长度">
         </el-table-column>
         <el-table-column
-          prop="width"
-          label="宽度">
+            prop="width"
+            label="宽度">
         </el-table-column>
       </el-table>
       <span slot="footer" class="dialog-footer">

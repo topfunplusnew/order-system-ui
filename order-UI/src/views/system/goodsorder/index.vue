@@ -1,7 +1,7 @@
 <!--订单页面-->
 <template>
   <div class="app-container">
-    <el-form :model="timesQuery" ref="queryForm" size="mini" :inline="true" v-show="showSearch" label-width="80px">
+    <el-form :model="queryParams" ref="queryForm" size="mini" :inline="true" v-show="showSearch" label-width="80px">
       <el-row>
         <el-col :span="4">
           <el-form-item label="开始时间" prop="beginTime">
@@ -99,15 +99,6 @@
         >添加订单信息
         </el-button>
       </el-col>
-      <el-col :span="1.5">
-        <el-button
-            type="warning"
-            size="mini"
-            @click="handleExport"
-            v-hasPermi="['system:goodsorder:export']"
-        >导出订单数据
-        </el-button>
-      </el-col>
       <!--      右侧表格的工具栏-->
       <right-toolbar :showSearch.sync="showSearch" @queryTable="getList" :columns="columns">
         <template v-slot:print>
@@ -195,13 +186,18 @@
       <el-table-column show-overflow-tooltip label="供应商" align="center" prop="supplierNames" fixed="left"
                        width="200">
         <template #default="scope">
-          <span v-for="(item,index) in getSupplierNames(scope.row.orderDetailList)" :key="index">
+          <el-row v-if="scope.row.supplierNames !== null">
+            <span v-for="(item,index) in getSupplierNames(scope.row.orderDetailList)" :key="index">
              <el-badge is-dot class="item">
             <span @click="openSupplierInvoice(scope.row,item.supplierID)">
               {{ item.supplier }}
             </span>
           </el-badge>
           </span>
+          </el-row>
+          <el-row>
+            <span v-if="scope.row.supplierNames === null">无</span>
+          </el-row>
         </template>
       </el-table-column>
       <el-table-column show-overflow-tooltip label="陆运车牌" align="center" prop="landCarNo"
@@ -869,7 +865,7 @@ export default {
       },],
       //隐藏列
       columns: [
-       /* {key: 0, label: `订单编号`, visible: true},*/
+        /* {key: 0, label: `订单编号`, visible: true},*/
         {key: 0, label: `陆运车牌`, visible: true},
         {key: 1, label: `陆运司机电话`, visible: true},
         {key: 2, label: `陆运司机姓名`, visible: true},
@@ -887,9 +883,9 @@ export default {
          {key: 15, label: `海运银行户名`, visible: true},
          {key: 16, label: `海运银行账号`, visible: true},*/
         {key: 12, label: `收到条附件路径`, visible: true},
-      /*  {key: 13, label: `是否被调整单`, visible: true},
-        {key: 14, label: `是否调整单`, visible: true},
-        {key: 15, label: `调整日期`, visible: true},*/
+        /*  {key: 13, label: `是否被调整单`, visible: true},
+          {key: 14, label: `是否调整单`, visible: true},
+          {key: 15, label: `调整日期`, visible: true},*/
         {key: 13, label: `原订单编号`, visible: true},
         {key: 14, label: `是否可编辑`, visible: true},
         {key: 15, label: `客户是否开票`, visible: true},
