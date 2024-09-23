@@ -32,7 +32,7 @@
             type="warning"
             size="mini"
             @click="handleSearch"
-            v-hasPermi="['system:supplier:query']"
+            v-hasPermi="['system:companygive:query']"
         >账号搜索
         </el-button>
       </el-col>
@@ -55,7 +55,7 @@
                 icon="el-icon-folder-opened"
                 size="mini"
                 @click="handleExport"
-                v-hasPermi="['system:supplier:export']"
+                v-hasPermi="['system:companygive:export']"
             >
             </el-button>
           </el-col>
@@ -70,8 +70,8 @@
       <el-table-column label="地址" align="center" prop="address" v-if="columns[1].visible" width="200"/>
       <el-table-column label="联系人" align="center" prop="relationName" v-if="columns[2].visible" width="200"/>
       <el-table-column label="老板电话" align="center" prop="leaderTel" v-if="columns[3].visible" width="200"/>
-      <el-table-column label="电话" align="center" prop="relationTel" v-if="columns[6].visible" width="200"/>
-      <el-table-column label="备注" align="center" prop="comments" v-if="columns[7].visible" width="200"
+      <el-table-column label="电话" align="center" prop="relationTel" v-if="columns[4].visible" width="200"/>
+      <el-table-column label="备注" align="center" prop="comments" v-if="columns[5].visible" width="200"
                        show-overflow-tooltip/>
       <el-table-column label="操作" align="center" class-name="small-padding fixed-width" fixed="right" width="180">
         <template slot-scope="scope">
@@ -84,14 +84,14 @@
               size="mini"
               type="primary"
               @click="handleUpdate(scope.row)"
-              v-hasPermi="['system:supplier:edit']"
+              v-hasPermi="['system:companygive:edit']"
           >编辑
           </el-button>
           <el-button
               size="mini"
               type="danger"
               @click="handleDelete(scope.row)"
-              v-hasPermi="['system:supplier:remove']"
+              v-hasPermi="['system:companygive:remove']"
           >删除
           </el-button>
         </template>
@@ -217,13 +217,13 @@
               <el-button
                   size="mini"
                   @click="handleDeleteBankaccount(scope.row)"
-                  v-hasPermi="['system:bankaccount:remove']"
+                  v-hasPermi="['system:companygive:remove']"
               ><i class="el-icon-delete"></i>
               </el-button>
               <el-button
                   size="mini"
                   @click="addDefaultCard(scope.row)"
-                  v-hasPermi="['system:bankaccount:edit']"
+                  v-hasPermi="['system:companygive:edit']"
               >设置为默认
               </el-button>
             </template>
@@ -470,10 +470,10 @@ export default {
         {key: 1, label: `地址`, visible: true},
         {key: 2, label: `联系人`, visible: true},
         {key: 3, label: `银行卡账号`, visible: true},
-        {key: 4, label: `开户名`, visible: true},
-        {key: 5, label: `开户行`, visible: true},
-        {key: 6, label: `电话`, visible: true},
-        {key: 7, label: `备注`, visible: true},
+       /* {key: 4, label: `开户名`, visible: true},
+        {key: 5, label: `开户行`, visible: true},*/
+        {key: 4, label: `电话`, visible: true},
+        {key: 5, label: `备注`, visible: true},
       ],
       dialogFormSearchVisible: false,
       dialogFormVisible: false,

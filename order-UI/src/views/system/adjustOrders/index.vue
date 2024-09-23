@@ -97,7 +97,7 @@
             icon="el-icon-download"
             size="mini"
             @click="handleExport"
-            v-hasPermi="['system:goodsorder:export']"
+            v-hasPermi="['system:adjustOrders:export']"
         >导出订单数据
         </el-button>
       </el-col>
@@ -121,7 +121,7 @@
                 icon="el-icon-folder-opened"
                 size="mini"
                 @click="handleExport"
-                v-hasPermi="['system:goodsorder:export']"
+                v-hasPermi="['system:adjustOrders:export']"
             >
             </el-button>
           </el-col>
@@ -167,7 +167,7 @@
                     size="mini"
                     type="danger"
                     @click="handleDelete(scope.row)"
-                    v-hasPermi="['system:goodsorder:remove']"
+                    v-hasPermi="['system:adjustOrders:remove']"
                 >删除
                 </el-button>
               </el-dropdown-item>
@@ -181,32 +181,32 @@
       <el-table-column show-overflow-tooltip label="供应商" align="center" prop="supplierNames" fixed="left"/>
       <!--      <el-table-column label="订单编号" align="center" prop="ordersNo" v-if="columns[0].visible"/>-->
       <el-table-column show-overflow-tooltip label="陆运车牌" align="center" prop="landCarNo"
-                       v-if="columns[1].visible"/>
+                       v-if="columns[0].visible"/>
       <el-table-column show-overflow-tooltip label="陆运司机电话" align="center" prop="landDriverTel"
-                       v-if="columns[2].visible" width="100px"/>
+                       v-if="columns[1].visible" width="100px"/>
       <el-table-column show-overflow-tooltip label="陆地司机姓名" align="center" prop="landDriverName"
-                       v-if="columns[3].visible" width="100px"/>
-      <el-table-column show-overflow-tooltip label="海运车牌" align="center" prop="seaCarNo" v-if="columns[4].visible">
+                       v-if="columns[2].visible" width="100px"/>
+      <el-table-column show-overflow-tooltip label="海运车牌" align="center" prop="seaCarNo" v-if="columns[3].visible">
         <template #default="scope">
           {{ scope.row.seaCarNo == null ? '无海运信息' : scope.row.seaCarNo }}
         </template>
       </el-table-column>
       <el-table-column show-overflow-tooltip label="海运司机电话" align="center" prop="seaDriverTel"
-                       v-if="columns[5].visible" width="100px">
+                       v-if="columns[4].visible" width="100px">
         <template #default="scope">
           {{ scope.row.seaDriverTel == null ? '无海运信息' : scope.row.seaDriverTel }}
         </template>
       </el-table-column>
       <el-table-column show-overflow-tooltip label="海运司机姓名" align="center" prop="seaDriverName"
-                       v-if="columns[6].visible" width="100px">
+                       v-if="columns[5].visible" width="100px">
         <template #default="scope">
           {{ scope.row.seaDriverName == null ? '无海运信息' : scope.row.seaDriverTel }}
         </template>
       </el-table-column>
       <el-table-column show-overflow-tooltip label="销售经理" align="center" prop="saleManager"
-                       v-if="columns[7].visible"/>
-      <el-table-column show-overflow-tooltip label="车队" align="center" prop="fleet" v-if="columns[8].visible"/>
-      <el-table-column show-overflow-tooltip label="审核状态" align="center" prop="checkState" v-if="columns[9].visible"
+                       v-if="columns[6].visible"/>
+      <el-table-column show-overflow-tooltip label="车队" align="center" prop="fleet" v-if="columns[7].visible"/>
+      <el-table-column show-overflow-tooltip label="审核状态" align="center" prop="checkState" v-if="columns[8].visible"
                        width="120">
         <template #default="scope">
           <el-row v-if="scope.row.checkState === '已审核'">
@@ -215,14 +215,14 @@
           <el-row v-else>
             <el-row>
               <el-button type="warning" @click="handleCheck(scope.row)" size="mini"
-                         v-hasPermi="['system:goodsorder:audit']">审核
+                         v-hasPermi="['system:adjustOrders:audit']">审核
               </el-button>
             </el-row>
           </el-row>
         </template>
       </el-table-column>
       <el-table-column show-overflow-tooltip label="开票状态" align="center" prop="invoiceState"
-                       v-if="columns[10].visible" width="120px">
+                       v-if="columns[9].visible" width="120px">
         <template #default="scope">
           <el-row v-if="scope.row.customerIsInvoice === 1 && scope.row.isSupplierInvoice === 1">
             <el-tag type="success">已开票</el-tag>
@@ -239,7 +239,7 @@
           </el-row>
         </template>
       </el-table-column>
-      <el-table-column show-overflow-tooltip label="附件" align="center" prop="path" v-if="columns[11].visible"
+      <el-table-column show-overflow-tooltip label="附件" align="center" prop="path" v-if="columns[10].visible"
                        width="150px">
         <template #default="scope">
           <el-row>
@@ -255,7 +255,7 @@
         </template>
       </el-table-column>
       <el-table-column show-overflow-tooltip label="打款状态" align="center" prop="paymentState"
-                       v-if="columns[12].visible" width="120px">
+                       v-if="columns[11].visible" width="120px">
         <template slot-scope="scope">
           <el-row v-if="scope.row.paymentState === '未申请'">
             <el-button size="mini" type="primary" @click="applyForPayment(scope.row)">申请打款</el-button>
@@ -273,7 +273,7 @@
         </template>
       </el-table-column>
       <el-table-column show-overflow-tooltip label="收到条附件路径" align="center" prop="receiveProof"
-                       v-if="columns[13].visible"
+                       v-if="columns[12].visible"
                        width="150px">
         <template #default="scope">
           <el-row v-if="scope.row.receiveProof === '' || scope.row.receiveProof === null">
@@ -288,7 +288,7 @@
       </el-table-column>
       <!--      <el-table-column show-overflow-tooltip label="原订单编号" align="center" prop="adjustOrderid"-->
       <!--                       v-if="columns[17].visible" width="100px"/>-->
-      <el-table-column show-overflow-tooltip label="是否可编辑" align="center" prop="isedit" v-if="columns[18].visible"
+      <el-table-column show-overflow-tooltip label="是否可编辑" align="center" prop="isedit" v-if="columns[13].visible"
                        width="100px">
         <template slot-scope="scope">
           <el-tag
@@ -298,7 +298,7 @@
       </el-table-column>
       <!--      客户供应商是否开票-->
       <el-table-column show-overflow-tooltip label="客户是否开票" align="center" prop="customerIsInvoice"
-                       v-if="columns[19].visible"
+                       v-if="columns[14].visible"
                        width="150px">
         <template #default="scope">
           <el-row v-if="scope.row.customerIsInvoice === 1">
@@ -312,7 +312,7 @@
         </template>
       </el-table-column>
       <el-table-column show-overflow-tooltip label="供应商是否开票" align="center" prop="isSupplierInvoice"
-                       v-if="columns[20].visible"
+                       v-if="columns[15].visible"
                        width="120px">
         <template #default="scope">
           <el-row v-if="scope.row.isSupplierInvoice === 1">
@@ -325,7 +325,7 @@
           </el-row>
         </template>
       </el-table-column>
-      <el-table-column show-overflow-tooltip label="备注" align="center" prop="comments" v-if="columns[21].visible"/>
+      <el-table-column show-overflow-tooltip label="备注" align="center" prop="comments" v-if="columns[16].visible"/>
       <!--      右侧操作栏-->
       <el-table-column show-overflow-tooltip label="订单操作" align="center" class-name="small-padding fixed-width"
                        width="280px"
@@ -334,7 +334,7 @@
           <el-button
               size="mini"
               @click="handleOrder1(scope.row)"
-              v-hasPermi="['system:goodsorder:edit']"
+              v-hasPermi="['system:adjustOrders:edit']"
           >发货单
           </el-button>
           <el-button
@@ -352,7 +352,7 @@
           <el-button
               size="mini"
               @click="handleCommit(scope.row)"
-              v-hasPermi="['system:goodsorder:remove']"
+              v-hasPermi="['system:adjustOrders:remove']"
           >上传收到条
           </el-button>
         </template>
@@ -371,7 +371,7 @@
                       v-if="scope.row.landFreight>0"
                       type="warning"
                       @click="handleApplyLandFree(scope.row)"
-                      v-hasPermi="['system:goodsorder:remove']"
+                      v-hasPermi="['system:adjustOrders:remove']"
                   >陆运费申请
                   </el-button>
                   <el-button
@@ -379,7 +379,7 @@
                       v-if="scope.row.seaFreight>0"
                       type="primary"
                       @click="handleApplySeaFree(scope.row)"
-                      v-hasPermi="['system:goodsorder:remove']"
+                      v-hasPermi="['system:adjustOrders:remove']"
                   >海运费申请
                   </el-button>
                 </el-row>
@@ -690,7 +690,7 @@ import {addInvoiceIn} from "@/api/system/invoiceIn";
 import OrderInfos from "../../../components/OrderInfos.vue";
 
 export default {
-  name: "GoodsOrder",
+  name: "AdjustOrders",
   components: {
     OrderInfos,
     FreeApply,
@@ -787,32 +787,32 @@ export default {
       },],
       //隐藏列
       columns: [
-        {key: 0, label: `订单编号`, visible: true},
-        {key: 1, label: `陆运车牌`, visible: true},
-        {key: 2, label: `陆运司机电话`, visible: true},
-        {key: 3, label: `陆运司机姓名`, visible: true},
-        {key: 4, label: `海运车牌`, visible: true},
-        {key: 5, label: `海运司机电话`, visible: true},
-        {key: 6, label: `海运司机姓名`, visible: true},
-        {key: 7, label: `销售经理`, visible: true},
-        {key: 8, label: `车队`, visible: true},
-        {key: 9, label: `审核状态`, visible: true},
-        {key: 10, label: `开票状态`, visible: true},
-        {key: 11, label: `附件路径`, visible: true},
-        {key: 12, label: `打款状态`, visible: true},
+      /*  {key: 0, label: `订单编号`, visible: true},*/
+        {key: 0, label: `陆运车牌`, visible: true},
+        {key: 1, label: `陆运司机电话`, visible: true},
+        {key: 2, label: `陆运司机姓名`, visible: true},
+        {key: 3, label: `海运车牌`, visible: true},
+        {key: 4, label: `海运司机电话`, visible: true},
+        {key: 5, label: `海运司机姓名`, visible: true},
+        {key: 6, label: `销售经理`, visible: true},
+        {key: 7, label: `车队`, visible: true},
+        {key: 8, label: `审核状态`, visible: true},
+        {key: 9, label: `开票状态`, visible: true},
+        {key: 10, label: `附件`, visible: true},
+        {key: 11, label: `打款状态`, visible: true},
         /* {key: 13, label: `陆运银行户名`, visible: true},
          {key: 14, label: `陆运银行账号`, visible: true},
          {key: 15, label: `海运银行户名`, visible: true},
          {key: 16, label: `海运银行账号`, visible: true},*/
-        {key: 13, label: `收到条附件路径`, visible: true},
-        {key: 14, label: `是否被调整单`, visible: true},
-        {key: 15, label: `是否调整单`, visible: true},
-        {key: 16, label: `调整日期`, visible: true},
-        {key: 17, label: `原订单编号`, visible: true},
-        {key: 18, label: `是否可编辑`, visible: true},
-        {key: 19, label: `客户是否开票`, visible: true},
-        {key: 20, label: `供应商是否开票`, visible: true},
-        {key: 21, label: `备注`, visible: true},
+        {key: 12, label: `收到条附件路径`, visible: true},
+       /* {key: 13, label: `是否被调整单`, visible: true},
+        {key: 14, label: `是否调整单`, visible: true},
+        {key: 15, label: `调整日期`, visible: true},
+        {key: 16, label: `原订单编号`, visible: true},*/
+        {key: 13, label: `是否可编辑`, visible: true},
+        {key: 14, label: `客户是否开票`, visible: true},
+        {key: 15, label: `供应商是否开票`, visible: true},
+        {key: 16, label: `备注`, visible: true},
       ],
       //顶部条件搜索
       queryOrderInfo: {},

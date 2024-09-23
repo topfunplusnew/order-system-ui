@@ -228,7 +228,7 @@ export default {
         {key: 3, label: `户名`, visible: true},
         {key: 4, label: `银行账号`, visible: true},
         {key: 5, label: `开户行`, visible: true},
-        {key: 6, label: `账号类型`, visible: true}
+        {key: 6, label: `运输类型`, visible: true}
 
       ],
       companyList: []
