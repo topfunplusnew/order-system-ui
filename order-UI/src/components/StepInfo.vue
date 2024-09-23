@@ -118,7 +118,7 @@ export default {
       this.tableNameToProp = tableName;
       console.log(tableName, tID)
       switch (tableName) {
-        //订单运费
+          //订单运费
         case TableName.ORDER_FREIGHT: {
           //发请求 获取订单运费信息
           getOrderFreight(tID).then(res => {
@@ -215,10 +215,10 @@ export default {
 
         <!-- 审核页面 checkPaymentApplyDialogVisible-->
         <el-dialog
-          title="流程审核"
-          :visible.sync="checkPaymentApplyDialogVisible"
-          width="65%"
-          append-to-body>
+            title="流程审核"
+            :visible.sync="checkPaymentApplyDialogVisible"
+            width="65%"
+            append-to-body>
           <!--   需要展示的对应的表信息-->
           <NeedToShowInfo :need-to-show-info="needToShowInfo" :table-name-to-prop="tableNameToProp"/>
           <hr/>

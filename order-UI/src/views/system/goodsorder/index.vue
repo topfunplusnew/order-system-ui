@@ -1124,7 +1124,7 @@ export default {
     listBankAccount,
     getSupplierNames(list) {
       if (list.length === 0) {
-        return []
+        return;
       }
       return list.map(item => {
         return {

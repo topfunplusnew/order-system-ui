@@ -6,6 +6,7 @@
         <el-date-picker
             v-model="form.fundsDate"
             type="date"
+            value-format="yyyy-MM-dd"
             placeholder="选择日期">
         </el-date-picker>
       </el-form-item>
@@ -70,7 +71,6 @@
       <el-form-item label="付款原因" prop="reason">
         <el-input v-model="form.reason" type="textarea" placeholder="请输入内容"/>
       </el-form-item>
-      <!--        文件-->
       <el-form-item label="附件" prop="attachment">
         <file-upload @input="handleCommitUpload"/>
       </el-form-item>
@@ -87,17 +87,13 @@
 <script>
 import {
   listPaymentApply,
-  getPaymentApply,
-  delPaymentApply,
   addPaymentApply,
-  updatePaymentApply
 } from "@/api/system/paymentApply";
 import {excludeParams} from "@/api/tool/exclude";
 import {listSubject} from "@/api/system/subject";
 import {formatDate} from "@/utils";
 import SearchOption from "@/components/SearchOption.vue";
 import {listCompany} from "@/api/system/company";
-import {mapGetters} from "vuex";
 import {listBankAccount} from "@/api/system/bankAccount";
 
 export default {
@@ -112,8 +108,7 @@ export default {
     needMoney: {
       type: Number
     },
-    //需要自动填充的信息
-    // 包含 对方户名:acountsName 对方账号 bankNo 对方开户行 bankName 对方公司 companyName
+    //需要自动填充的信息 包含 对方户名:acountsName 对方账号 bankNo 对方开户行 bankName 对方公司 companyName
     needInfo: {
       type: Object
     }
@@ -178,31 +173,43 @@ export default {
     };
   },
   created() {
-    console.log('created')
     // 查询科目信息
     listSubject().then(res => {
       this.subjectTree = this.handleTree(res.data, "id", "parentId");
       this.OneLevelOption = this.subjectTree;
     })
-
-    //如果是油卡充值 要自动填写公司类型为其他
+    // 根据传入的表名来赋值公司类型
     if (this.tableName === 'oilrecharge') {
+      this.form.companyType = '其他'
+    }
+    if (this.tableName === 'repayment') {
       this.form.companyType = '其他'
     }
     // 如果是运费申请公司类型为司机
     if (this.tableName === 'orderfreight') {
       this.form.companyType = '司机'
     }
-
     // 如果传入的必须自动填充的金额大于0 则自动填充 且无法修改
     if (this.needMoney > 0) {
       this.form.moneyAmount = this.needMoney;
       this.inputDisabled = true;
     }
-    // 如果没有传入的数据
-    if (JSON.stringify(this.needInfo) === '{}') {
-
-    } else {
+    // 如果传入的不是空数据
+    if (JSON.stringify(this.needInfo) !== '{}') {
+      //需要司机信息
+      if (this.needInfo.isExit !== undefined) {
+        if (this.needInfo.isExit === true) {
+          //自动填充
+          this.form.otherAcountsName = this.needInfo.otherAcountsName
+          this.form.companyName = this.needInfo.companyName
+          //查询司机的银行卡信息
+          listBankAccount({acountsType: '司机', acountsName: this.needInfo.otherAcountsName})
+              .then(res => {
+                this.form.otherBankNo = res.rows[0].bankNo
+                this.form.otherBankName = res.rows[0].bankName
+              })
+        }
+      }
       // 如果有银行卡信息自动填充
       listBankAccount({
         bankNo: this.needInfo.bankNo,
@@ -218,30 +225,7 @@ export default {
               this.form.otherBankName = res.rows[0].bankName
             }
           })
-
-      //需要司机信息
-      if (this.needInfo.isExit !== undefined) {
-        if (this.needInfo.isExit === true) {
-          //自动填充
-          this.form.otherAcountsName = this.needInfo.otherAcountsName
-          this.form.companyName = this.needInfo.companyName
-          //查询司机的银行卡信息
-          listBankAccount({acountsType: '司机', acountsName: this.needInfo.otherAcountsName})
-              .then(res => {
-                this.form.otherBankNo = res.rows[0].bankNo
-                this.form.otherBankName = res.rows[0].bankName
-              })
-        }
-      }
     }
-  },
-  mounted() {
-
-  },
-  computed: {
-    fullLevel() {
-      return this.currentSort.levelOne + '-' + this.currentSort.levelTwo;
-    },
   },
   watch: {
     // 监听银行卡的变化 如果传入的银行卡信息有变化 就自动填充
@@ -273,8 +257,7 @@ export default {
     // 检测整个对象
     needInfo: {
       handler(val) {
-        if (JSON.stringify(this.needInfo) === '{}') {
-        } else {
+        if (JSON.stringify(this.needInfo) !== '{}') {
           //需要司机信息
           if (this.needInfo.isExit !== undefined) {
             if (this.needInfo.isExit === true) {
@@ -291,8 +274,9 @@ export default {
           }
         }
       },
-      deep: true // 因为父组件如果是解构赋值 那么就监听不到 需要深层监听
+      deep: true
     },
+    // 监听传入的金额
     needMoney: {
       handler() {
         // 如果传入的必须自动填充的金额大于0 则自动填充 且无法修改
@@ -307,15 +291,20 @@ export default {
       handler(val) {
         if (val === 'oilrecharge') {
           this.form.companyType = '其他'
-          console.log(this.form.companyType)
         }
-        // 如果是运费申请公司类型为司机
+        if (val === 'repayment') {
+          this.form.companyType = '其他'
+        }
         if (val === 'orderfreight') {
           this.form.companyType = '司机'
-          console.log(this.form.companyType)
         }
       }
     }
+  },
+  computed: {
+    fullLevel() {
+      return this.currentSort.levelOne + '-' + this.currentSort.levelTwo;
+    },
   },
   methods: {
     listBankAccount,
@@ -344,20 +333,17 @@ export default {
     handleCommitBack(val) {
       this.form.otherBankNo = val.bankNo;
       this.form.otherBankName = val.bankName;
-      this.form.companyName = val.companyName;
-      this.form.companyId = val.id;
       this.form.otherAcountsName = val.acountsName;
-      this.form.companyType = val.companyType
     },
+    handleUpdateQueryName(val) {
+      this.queryCompany = val;
+    },
+
     //上传的回调函数
     handleCommitUpload(val) {
       this.form.attachment = val;
     },
 
-    //update
-    handleUpdateQueryName(val) {
-      this.queryCompany = val;
-    },
     getList() {
       this.loading = true;
       listPaymentApply(this.queryParams).then(response => {
@@ -365,10 +351,6 @@ export default {
         this.total = response.total;
         this.loading = false;
       });
-    },
-    // 取消按钮
-    cancel() {
-      this.reset();
     },
     // 表单重置
     reset() {
@@ -405,30 +387,17 @@ export default {
     submitForm() {
       this.$refs["form"].validate(valid => {
         if (valid) {
-          if (this.form.id != null) {
-            //排除不必要字段
-            excludeParams(this, this.$exclude)
-            this.form.tableName = this.tableName;
-            this.form.tID = this.tID;
-            updatePaymentApply(this.form).then(response => {
-              this.$modal.msgSuccess("修改成功");
-              this.reset()
-              this.getList();
-            })
-          } else {
-            excludeParams(this, this.$exclude)
-            this.form.tableName = this.tableName;
-            this.form.tID = this.tID;
-            this.form.payType = this.fullLevel;
-            //审核状态赋空
-            this.form.checkState = ''
-            addPaymentApply(this.form).then(response => {
-              this.$modal.msgSuccess("付款申请添加成功");
-              this.reset()
-              this.$emit('changeOpen')
-              this.getList();
-            })
-          }
+          excludeParams(this, this.$exclude)
+          this.form.tableName = this.tableName;
+          this.form.tID = this.tID;
+          this.form.payType = this.fullLevel;
+          this.form.checkState = '' //审核状态赋空
+          addPaymentApply(this.form).then(response => {
+            this.$modal.msgSuccess("付款申请添加成功");
+            this.reset()
+            this.$emit('changeOpen')
+            this.getList();
+          })
         }
       });
     },

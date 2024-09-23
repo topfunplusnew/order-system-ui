@@ -1,55 +1,31 @@
 <template>
   <div class="app-container">
     <el-form :model="queryParams" ref="queryForm" size="mini" :inline="true" v-show="showSearch" label-width="68px">
-      <!--      <el-form-item label="冲抵编号" prop="OffsetNO">-->
-      <!--        <el-input-->
-      <!--          v-model="queryParams.OffsetNO"-->
-      <!--          placeholder="请输入冲抵编号"-->
-      <!--          clearable-->
-      <!--          @keyup.enter.native="handleQuery"-->
-      <!--        />-->
-      <!--      </el-form-item>-->
       <el-form-item label="操作时间" prop="operateDate">
         <el-date-picker
-          v-model="dateRange"
-          style="width: 240px"
-          value-format="yyyy-MM-dd"
-          type="daterange"
-          range-separator="-"
-          start-placeholder="开始日期"
-          end-placeholder="结束日期"
+            v-model="dateRange"
+            style="width: 240px"
+            value-format="yyyy-MM-dd"
+            type="daterange"
+            range-separator="-"
+            start-placeholder="开始日期"
+            end-placeholder="结束日期"
         ></el-date-picker>
       </el-form-item>
-      <!--      <el-form-item label="金额" prop="moneyAmount">-->
-      <!--        <el-input-->
-      <!--          v-model="queryParams.moneyAmount"-->
-      <!--          placeholder="请输入金额"-->
-      <!--          clearable-->
-      <!--          @keyup.enter.native="handleQuery"-->
-      <!--        />-->
-      <!--      </el-form-item>-->
       <el-form-item label="公司" prop="companyName">
         <el-input
-          v-model="queryParams.companyName"
-          placeholder="请输入公司"
-          clearable
-          @keyup.enter.native="handleQuery"
+            v-model="queryParams.companyName"
+            placeholder="请输入公司"
+            clearable
+            @keyup.enter.native="handleQuery"
         />
       </el-form-item>
-      <!--      <el-form-item label="公司ID" prop="companyId">-->
-      <!--        <el-input-->
-      <!--          v-model="queryParams.companyId"-->
-      <!--          placeholder="请输入公司ID"-->
-      <!--          clearable-->
-      <!--          @keyup.enter.native="handleQuery"-->
-      <!--        />-->
-      <!--      </el-form-item>-->
       <el-form-item label="备注" prop="comments">
         <el-input
-          v-model="queryParams.comments"
-          placeholder="请输入备注"
-          clearable
-          @keyup.enter.native="handleQuery"
+            v-model="queryParams.comments"
+            placeholder="请输入备注"
+            clearable
+            @keyup.enter.native="handleQuery"
         />
       </el-form-item>
       <el-form-item>
@@ -61,33 +37,21 @@
     <el-row :gutter="10" class="mb8">
       <el-col :span="1.5">
         <el-button
-          type="danger"
-          size="mini"
-          @click="handleAdd"
-          v-hasPermi="['system:offsetting:add']"
-        >新增
+            type="danger"
+            size="mini"
+            @click="handleAdd"
+            v-hasPermi="['system:offsetting:add']"
+        >新增冲抵货款信息
         </el-button>
       </el-col>
-      <!--      <el-col :span="1.5">-->
-      <!--        <el-button-->
-      <!--          type="danger"-->
-      <!--          plain-->
-      <!--          icon="el-icon-delete"-->
-      <!--          size="mini"-->
-      <!--          :disabled="multiple"-->
-      <!--          @click="handleDelete"-->
-      <!--          v-hasPermi="['system:offsetting:remove']"-->
-      <!--        >删除-->
-      <!--        </el-button>-->
-      <!--      </el-col>-->
       <right-toolbar :showSearch.sync="showSearch" @queryTable="getList" :columns="columns">
         <template v-slot:print>
           <el-col :span="1.5">
             <el-button
-              plain
-              icon="el-icon-printer"
-              size="mini"
-              @click="printJSON"
+                plain
+                icon="el-icon-printer"
+                size="mini"
+                @click="printJSON"
             >
             </el-button>
           </el-col>
@@ -96,11 +60,11 @@
         <template v-slot:export>
           <el-col :span="1.5">
             <el-button
-              plain
-              icon="el-icon-folder-opened"
-              size="mini"
-              @click="handleExport"
-              v-hasPermi="['system:socialinsurance:export']"
+                plain
+                icon="el-icon-folder-opened"
+                size="mini"
+                @click="handleExport"
+                v-hasPermi="['system:socialinsurance:export']"
             >
             </el-button>
           </el-col>
@@ -123,17 +87,17 @@
       <el-table-column label="操作" align="center" class-name="small-padding fixed-width">
         <template slot-scope="scope">
           <el-button
-            size="mini"
-            type="primary"
-            @click="handleUpdate(scope.row)"
-            v-hasPermi="['system:offsetting:edit']"
+              size="mini"
+              type="primary"
+              @click="handleUpdate(scope.row)"
+              v-hasPermi="['system:offsetting:edit']"
           >修改
           </el-button>
           <el-button
-            size="mini"
-            type="danger"
-            @click="handleDelete(scope.row)"
-            v-hasPermi="['system:offsetting:remove']"
+              size="mini"
+              type="danger"
+              @click="handleDelete(scope.row)"
+              v-hasPermi="['system:offsetting:remove']"
           >删除
           </el-button>
         </template>
@@ -141,11 +105,11 @@
     </el-table>
 
     <pagination
-      v-show="total>0"
-      :total="total"
-      :page.sync="queryParams.pageNum"
-      :limit.sync="queryParams.pageSize"
-      @pagination="getList"
+        v-show="total>0"
+        :total="total"
+        :page.sync="queryParams.pageNum"
+        :limit.sync="queryParams.pageSize"
+        @pagination="getList"
     />
 
     <!-- 添加或修改对冲账信息对话框 -->
@@ -157,11 +121,11 @@
         <!--        </el-form-item>-->
         <el-form-item label="操作时间" prop="operateDate">
           <el-date-picker
-            v-model="form.operateDate"
-            type="date"
-            placeholder="选择日期"
-            value-format="yyyy-MM-dd"
-            style="width: 70%">
+              v-model="form.operateDate"
+              type="date"
+              placeholder="选择日期"
+              value-format="yyyy-MM-dd"
+              style="width: 70%">
           </el-date-picker>
         </el-form-item>
         <el-form-item label="冲抵类型" prop="operateType">
@@ -295,7 +259,7 @@ export default {
   created() {
     this.getList();
     if (localStorage.getItem('offseting-columns') === 'null'
-      || !localStorage.getItem('offseting-columns')) {
+        || !localStorage.getItem('offseting-columns')) {
       localStorage.setItem("offseting-columns", JSON.stringify(this.columns))
     } else {
       this.columns = JSON.parse(localStorage.getItem('offseting-columns'));

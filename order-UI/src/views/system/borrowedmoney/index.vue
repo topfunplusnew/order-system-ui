@@ -168,15 +168,11 @@
     <el-dialog title="还款操作" :visible.sync="giveBackMoneyShow" width="30%">
       <el-row>
         <el-form ref="form" :model="moneyBackInfo" label-width="140px">
-          <el-form-item label="是否只偿还利息">
-            <el-radio v-model="isRatioOnly" label="是">是</el-radio>
-            <el-radio v-model="isRatioOnly" label="否">否</el-radio>
-          </el-form-item>
-          <el-form-item label="还款金额" prop="moneyAmount" v-if="isRatioOnly !== '是'">
+          <el-form-item label="还款金额" prop="moneyAmount">
             <el-input v-model="moneyBackInfo.moneyAmount" placeholder="请输入还款金额"/>
           </el-form-item>
           <el-form-item label="付息金额" prop="ratio">
-            <el-input v-model="moneyBackInfo.ratio" placeholder="请输入贷款利率"/>
+            <el-input v-model="moneyBackInfo.ratio" placeholder="请输入付息金额"/>
           </el-form-item>
           <el-form-item label="支付日期" prop="payDate">
             <el-date-picker
@@ -413,9 +409,6 @@ export default {
     listBankAccount,
     //处理还款的事件函数  这里应该先填写还款信息 然后在还款信息页面申请付款
     handleGiveBackMoney(row) {
-      this.moneyBackInfo.moneyAmount = row.moneyAmount
-      this.tempMoney = row.moneyAmount // 保存还款金额
-      this.moneyBackInfo.ratio = row.ratio
       this.giveBackMoneyShow = true;
       // 补充关键字段
       this.moneyBackInfo.loanNO = row.loanNO
@@ -424,6 +417,7 @@ export default {
     submitAddBorrowedMoney() {
       addRepayment(this.moneyBackInfo).then(res => {
         this.$message.success('添加成功')
+        this.reset()
         this.giveBackMoneyShow = false
       })
     },
