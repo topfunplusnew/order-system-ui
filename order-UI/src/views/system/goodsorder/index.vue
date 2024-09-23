@@ -199,7 +199,7 @@
       <el-table-column show-overflow-tooltip label="供应商" align="center" prop="supplierNames" fixed="left"
                        width="200">
         <template #default="scope">
-          <span v-for="(item,index) in getSupplierNames(scope.row)" :key="index">
+          <span v-for="(item,index) in getSupplierNames(scope.row.orderDetailList)" :key="index">
              <el-badge is-dot class="item">
             <span @click="openSupplierInvoice(scope.row,item.supplierID)">
               {{ item.supplier }}
@@ -1122,9 +1122,11 @@ export default {
     parseTime,
     listCompany,
     listBankAccount,
-    getSupplierNames(row) {
-      // todo 明天等后端 改的时候 入参为 scope.row.orderDetailList
-      return this.orderDetailList.map(item => {
+    getSupplierNames(list) {
+      if (list.length === 0) {
+        return []
+      }
+      return list.map(item => {
         return {
           supplier: item.supplier,
           supplierID: item.supplierID
