@@ -43,18 +43,18 @@
           </el-col>
         </template>
         <!--        导出-->
-        <!--        <template v-slot:export>-->
-        <!--          <el-col :span="1.5">-->
-        <!--            <el-button-->
-        <!--              plain-->
-        <!--              icon="el-icon-folder-opened"-->
-        <!--              size="mini"-->
-        <!--              @click="handleExport"-->
-        <!--              v-hasPermi="['system:company:export']"-->
-        <!--            >-->
-        <!--            </el-button>-->
-        <!--          </el-col>-->
-        <!--        </template>-->
+        <template v-slot:export>
+          <el-col :span="1.5">
+            <el-button
+                plain
+                icon="el-icon-folder-opened"
+                size="mini"
+                @click="handleExport"
+                v-hasPermi="['system:company:export']"
+            >
+            </el-button>
+          </el-col>
+        </template>
       </right-toolbar>
     </el-row>
 
@@ -123,7 +123,35 @@
           width="180">
       </el-table-column>
     </el-table>
-
+    <el-dialog
+        title="请选择导出时间段"
+        :visible.sync="dialogVisible"
+        width="30%">
+      <el-form :model="queryParams" ref="queryForm" size="mini" label-width="68px">
+        <el-form-item label="开始时间" prop="beginTime">
+          <el-date-picker
+              v-model="queryParams.beginTime"
+              type="date"
+              placeholder="选择时间"
+              value-format="yyyy-MM-dd"
+              size="mini">
+          </el-date-picker>
+        </el-form-item>
+        <el-form-item label="结束时间" prop="endTime">
+          <el-date-picker
+              v-model="queryParams.endTime"
+              type="date"
+              placeholder="选择时间"
+              value-format="yyyy-MM-dd"
+              size="mini">
+          </el-date-picker>
+        </el-form-item>
+      </el-form>
+      <span slot="footer" class="dialog-footer">
+    <el-button @click="dialogVisible = false">取 消</el-button>
+    <el-button type="primary" @click="handleSubmitTime">导 出</el-button>
+  </span>
+    </el-dialog>
   </div>
 </template>
 
@@ -204,7 +232,8 @@ export default {
         objectType: ''
       },
       // 详细的还款记录
-      tableData: []
+      tableData: [],
+      dialogVisible: false,
     };
   },
   created() {
@@ -267,12 +296,16 @@ export default {
     refresh() {
       this.getList()
     },
+    handleSubmitTime() {
+      this.download('statistics/export/lendMoney', {
+        ...this.queryParams
+      }, `lendMoney${new Date().getTime()}.xlsx`)
+      this.dialogVisible = false
+    },
     /** 导出按钮操作 */
     handleExport() {
-      alert('功能未开发')
-      // this.download('statistics/lendMoneysummary', {
-      //   ...this.queryParams
-      // }, `lendMoney_${new Date().getTime()}.xlsx`)
+      this.dialogVisible = true;
+
     }
   }
 };
