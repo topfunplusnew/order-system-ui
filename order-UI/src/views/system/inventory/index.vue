@@ -3,10 +3,10 @@
     <el-form :model="queryParams" ref="queryForm" size="mini" :inline="true" v-show="showSearch" label-width="68px">
       <el-form-item label="级别名称" prop="levelName">
         <el-input
-          v-model="queryParams.levelName"
-          placeholder="请输入级别名称"
-          clearable
-          @keyup.enter.native="handleQuery"
+            v-model="queryParams.levelName"
+            placeholder="请输入级别名称"
+            clearable
+            @keyup.enter.native="handleQuery"
         />
       </el-form-item>
       <el-form-item>
@@ -20,11 +20,10 @@
       </el-col>
       <el-col :span="1.5">
         <el-button
-          type="danger"
-          plain
-          size="mini"
-          @click="addNewInventory"
-          v-hasPermi="['system:inventory:add']"
+            type="danger"
+            size="mini"
+            @click="addNewInventory"
+            v-hasPermi="['system:inventory:add']"
         >新增货物
         </el-button>
       </el-col>
@@ -32,10 +31,10 @@
         <template v-slot:print>
           <el-col :span="1.5">
             <el-button
-              plain
-              icon="el-icon-printer"
-              size="mini"
-              @click="printHTML"
+                plain
+                icon="el-icon-printer"
+                size="mini"
+                @click="printHTML"
             >
             </el-button>
           </el-col>
@@ -44,11 +43,11 @@
         <template v-slot:export>
           <el-col :span="1.5">
             <el-button
-              plain
-              icon="el-icon-folder-opened"
-              size="mini"
-              @click="handleExport"
-              v-hasPermi="['system:inventory:export']"
+                plain
+                icon="el-icon-folder-opened"
+                size="mini"
+                @click="handleExport"
+                v-hasPermi="['system:inventory:export']"
             >
             </el-button>
           </el-col>
@@ -58,69 +57,67 @@
 
     <el-table border v-horizontal-scroll="'always'" v-loading="loading" :data="inventoryList"
               @selection-change="handleSelectionChange" :cell-style="()=>{return {padding:'2px'}}" size="mini">
-      <el-table-column label="id" align="center" prop="id" v-if="columns[0].visible"/>
-      <el-table-column label="仓库名称" align="center" prop="storeHouseName" v-if="columns[1].visible"/>
-      <el-table-column label="入库日期" align="center" prop="storeDate" v-if="columns[2].visible"/>
-      <el-table-column label="库存量" align="center" prop="stockNumber" v-if="columns[3].visible"/>
-      <el-table-column label="供应商" align="center" prop="supplier" v-if="columns[4].visible"/>
-      <el-table-column label="级别编码" align="center" prop="levelID" v-if="columns[5].visible"/>
-      <el-table-column label="级别名称" align="center" prop="levelName" v-if="columns[6].visible"/>
-      <el-table-column label="计量单位" align="center" prop="countingUnit" v-if="columns[7].visible"/>
-      <el-table-column label="厚度" align="center" prop="height" v-if="columns[8].visible"/>
-      <el-table-column label="长度" align="center" prop="length" v-if="columns[9].visible"/>
-      <el-table-column label="宽度" align="center" prop="width" v-if="columns[10].visible"/>
-      <el-table-column label="出厂片数" align="center" prop="pieces" v-if="columns[11].visible"/>
-      <el-table-column label="每包片数" align="center" prop="piecesPerPack" v-if="columns[12].visible"/>
-      <el-table-column label="包数" align="center" prop="packs" v-if="columns[13].visible"/>
-      <el-table-column label="出厂单价" align="center" prop="price" v-if="columns[14].visible"/>
-      <el-table-column label="出厂是否含税" align="center" prop="isIncludeTaxFactory" v-if="columns[15].visible"/>
-      <el-table-column label="杂费" align="center" prop="sundryCost" v-if="columns[16].visible"/>
-      <el-table-column label="出厂货款" align="center" prop="paymentFactory" v-if="columns[17].visible"/>
-      <el-table-column label="卸货价" align="center" prop="paymentUnload" v-if="columns[18].visible"/>
-      <el-table-column label="销售是否含税" align="center" prop="isIncludeTaxSale" v-if="columns[19].visible"/>
-      <el-table-column label="总货款" align="center" prop="payments" v-if="columns[20].visible"/>
-      <el-table-column label="陆运车牌" align="center" prop="landCarNo" v-if="columns[21].visible"/>
-      <el-table-column label="陆运司机电话" align="center" prop="landDriverTel" v-if="columns[22].visible"/>
-      <el-table-column label="陆地司机姓名" align="center" prop="landDriverName" v-if="columns[23].visible"/>
-      <el-table-column label="误差" align="center" prop="erro" v-if="columns[24].visible"/>
-      <el-table-column label="吨位" align="center" prop="tonnage" v-if="columns[25].visible"/>
-      <el-table-column label="陆运费单价" align="center" prop="landFreightPrice" v-if="columns[26].visible"/>
-      <el-table-column label="陆运费" align="center" prop="landFreight" v-if="columns[27].visible"/>
-      <el-table-column label="其他费用" align="center" prop="otherCost" v-if="columns[28].visible"/>
-      <el-table-column label="利润" align="center" prop="profit" v-if="columns[29].visible"/>
-      <el-table-column label="不含税利润" align="center" prop="profitNoTax" v-if="columns[30].visible"/>
-      <el-table-column label="实际片数" align="center" prop="actualPieces" v-if="columns[31].visible"/>
-      <el-table-column label="总货款杂费" align="center" prop="paymentsWithSundry" v-if="columns[32].visible"/>
-      <el-table-column label="加费" align="center" prop="additionalFees" v-if="columns[33].visible"/>
-      <el-table-column label="返利金额" align="center" prop="rebate" v-if="columns[34].visible"/>
-      <el-table-column label="客户佣金" align="center" prop="customerCommission" v-if="columns[35].visible"/>
-      <el-table-column label="备注" align="center" prop="comments" v-if="columns[36].visible"/>
+      <el-table-column label="仓库名称" align="center" prop="storeHouseName" v-if="columns[1].visible" width="150"/>
+      <el-table-column label="入库日期" align="center" prop="storeDate" v-if="columns[2].visible" width="150"/>
+      <el-table-column label="库存量" align="center" prop="stockNumber" v-if="columns[3].visible" width="150"/>
+      <el-table-column label="供应商" align="center" prop="supplier" v-if="columns[4].visible" width="150"/>
+      <el-table-column label="级别编码" align="center" prop="levelID" v-if="columns[5].visible" width="150"/>
+      <el-table-column label="级别名称" align="center" prop="levelName" v-if="columns[6].visible" width="150"/>
+      <el-table-column label="计量单位" align="center" prop="countingUnit" v-if="columns[7].visible" width="150"/>
+      <el-table-column label="厚度" align="center" prop="height" v-if="columns[8].visible" width="150"/>
+      <el-table-column label="长度" align="center" prop="length" v-if="columns[9].visible" width="150"/>
+      <el-table-column label="宽度" align="center" prop="width" v-if="columns[10].visible" width="150"/>
+      <el-table-column label="出厂片数" align="center" prop="pieces" v-if="columns[11].visible" width="150"/>
+      <el-table-column label="每包片数" align="center" prop="piecesPerPack" v-if="columns[12].visible" width="150"/>
+      <el-table-column label="包数" align="center" prop="packs" v-if="columns[13].visible" width="150"/>
+      <el-table-column label="出厂单价" align="center" prop="price" v-if="columns[14].visible" width="150"/>
+      <el-table-column label="出厂是否含税" align="center" prop="isIncludeTaxFactory" v-if="columns[15].visible"
+                       width="150"/>
+      <el-table-column label="杂费" align="center" prop="sundryCost" v-if="columns[16].visible" width="150"/>
+      <el-table-column label="出厂货款" align="center" prop="paymentFactory" v-if="columns[17].visible" width="150"/>
+      <el-table-column label="卸货价" align="center" prop="paymentUnload" v-if="columns[18].visible" width="150"/>
+      <el-table-column label="销售是否含税" align="center" prop="isIncludeTaxSale" v-if="columns[19].visible"
+                       width="150"/>
+      <el-table-column label="总货款" align="center" prop="payments" v-if="columns[20].visible" width="150"/>
+      <el-table-column label="陆运车牌" align="center" prop="landCarNo" v-if="columns[21].visible" width="150"/>
+      <el-table-column label="陆运司机电话" align="center" prop="landDriverTel" v-if="columns[22].visible" width="150"/>
+      <el-table-column label="陆地司机姓名" align="center" prop="landDriverName" v-if="columns[23].visible"
+                       width="150"/>
+      <el-table-column label="误差" align="center" prop="erro" v-if="columns[24].visible" width="150"/>
+      <el-table-column label="吨位" align="center" prop="tonnage" v-if="columns[25].visible" width="150"/>
+      <el-table-column label="陆运费单价" align="center" prop="landFreightPrice" v-if="columns[26].visible"
+                       width="150"/>
+      <el-table-column label="陆运费" align="center" prop="landFreight" v-if="columns[27].visible" width="150"/>
+      <el-table-column label="其他费用" align="center" prop="otherCost" v-if="columns[28].visible" width="150"/>
+      <el-table-column label="利润" align="center" prop="profit" v-if="columns[29].visible" width="150"/>
+      <el-table-column label="不含税利润" align="center" prop="profitNoTax" v-if="columns[30].visible" width="150"/>
+      <el-table-column label="实际片数" align="center" prop="actualPieces" v-if="columns[31].visible" width="150"/>
+      <el-table-column label="总货款杂费" align="center" prop="paymentsWithSundry" v-if="columns[32].visible"
+                       width="150"/>
+      <el-table-column label="加费" align="center" prop="additionalFees" v-if="columns[33].visible" width="150"/>
+      <el-table-column label="返利金额" align="center" prop="rebate" v-if="columns[34].visible" width="150"/>
+      <el-table-column label="客户佣金" align="center" prop="customerCommission" v-if="columns[35].visible"
+                       width="150"/>
+      <el-table-column label="备注" align="center" prop="comments" v-if="columns[36].visible" width="150"/>
       <el-table-column label="操作" align="center" class-name="small-padding fixed-width" width="250px" fixed="right">
         <template slot-scope="scope">
           <el-button
-            size="mini"
-            type="warning"
-            @click="secondryInventoryOut(scope.row)"
+              size="mini"
+              type="warning"
+              @click="secondryInventoryOut(scope.row)"
           >加工后出库
           </el-button>
           <el-button
-            size="mini"
-            type="warning"
-            @click="afterbreakInventoryOut(scope.row)"
+              size="mini"
+              type="warning"
+              @click="afterbreakInventoryOut(scope.row)"
           >破损后出库
           </el-button>
-          <!--          <el-button-->
-          <!--            size="mini"-->
-          <!--            type="primary"-->
-          <!--            @click="handleUpdate(scope.row)"-->
-          <!--            v-hasPermi="['system:inventory:edit']"-->
-          <!--          >修改-->
-          <!--          </el-button>-->
           <el-button
-            size="mini"
-            type="danger"
-            @click="handleDelete(scope.row)"
-            v-hasPermi="['system:inventory:remove']"
+              size="mini"
+              type="danger"
+              @click="handleDelete(scope.row)"
+              v-hasPermi="['system:inventory:remove']"
           >删除
           </el-button>
         </template>
@@ -128,11 +125,11 @@
     </el-table>
 
     <pagination
-      v-show="total>0"
-      :total="total"
-      :page.sync="queryParams.pageNum"
-      :limit.sync="queryParams.pageSize"
-      @pagination="getList"
+        v-show="total>0"
+        :total="total"
+        :page.sync="queryParams.pageNum"
+        :limit.sync="queryParams.pageSize"
+        @pagination="getList"
     />
 
 
@@ -156,10 +153,10 @@
         </el-form-item>
         <el-form-item label="入库日期" prop="storeDate">
           <el-date-picker
-            v-model="form.storeDate"
-            type="date"
-            placeholder="入库日期"
-            value-format="yyyy-MM-dd">
+              v-model="form.storeDate"
+              type="date"
+              placeholder="入库日期"
+              value-format="yyyy-MM-dd">
           </el-date-picker>
         </el-form-item>
         <el-form-item label="库存量" prop="stockNumber">
@@ -247,10 +244,6 @@
           <el-input v-model="form.payments" placeholder="请输入总货款"/>
         </el-form-item>
 
-        <!--        车牌-->
-        <!--        <el-form-item label="陆运车辆ID" prop="landCarID">-->
-        <!--          <el-input v-model="form.landCarID" placeholder="请输入陆运车辆ID"/>-->
-        <!--        </el-form-item>-->
         <el-form-item label="陆运车牌" prop="landCarNo">
           <el-row>
             <el-col :span="10">
@@ -274,9 +267,7 @@
         <el-form-item label="陆地司机姓名" prop="landDriverName">
           <el-input v-model="form.landDriverName" placeholder="请输入陆地司机姓名"/>
         </el-form-item>
-        <!--        <el-form-item label="海运车辆ID" prop="seaCarID">-->
-        <!--          <el-input v-model="form.seaCarID" placeholder="请输入海运车辆ID"/>-->
-        <!--        </el-form-item>-->
+
         <el-form-item label="海运车牌" prop="seaCarNo">
           <el-row>
             <el-col :span="10">
@@ -549,7 +540,7 @@ export default {
   created() {
     this.getList();
     if (localStorage.getItem('inventory-columns') === 'null'
-      || !localStorage.getItem('inventory-columns')) {
+        || !localStorage.getItem('inventory-columns')) {
       //设置localStorage
       localStorage.setItem("inventory-columns", JSON.stringify(this.columns))
     } else {
@@ -776,16 +767,16 @@ export default {
         type: 'warning'
       }).then(({value}) => {
         addReason({reason: value, tableName: TableName.INVENTORY, tid: row.id, modifyTime: this.modifyTime})
-          .then(res => {
-            this.$message.success('提交成功')
-            this.reset();
-            const id = row.id || this.ids
-            getInventory(id).then(response => {
-              this.form = response.data;
-              this.open = true;
-              this.title = "修改库存";
-            });
-          })
+            .then(res => {
+              this.$message.success('提交成功')
+              this.reset();
+              const id = row.id || this.ids
+              getInventory(id).then(response => {
+                this.form = response.data;
+                this.open = true;
+                this.title = "修改库存";
+              });
+            })
       }).catch(() => {
         this.$message({
           type: 'warning',

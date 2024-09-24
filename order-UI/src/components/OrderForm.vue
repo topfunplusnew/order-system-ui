@@ -1,15 +1,17 @@
 <!--订单表组件-->
 
 <script>
-import {listCompany} from "@/api/system/company";
-import {listCars} from "@/api/system/cars";
-import {listFleet} from "@/api/system/fleet";
 import OrderItem from "@/components/OrderItem.vue";
 import {mapGetters} from "vuex";
+import SearchOption from "./SearchOption.vue";
+import {listCompany} from "../api/system/company";
+import {listBankAccount} from "../api/system/bankAccount";
+import {listCars} from "../api/system/cars";
+import {listFleet} from "../api/system/fleet";
 
 export default {
   name: "OrderForm",
-  components: {OrderItem},
+  components: {SearchOption, OrderItem},
   props: {
     //订单信息
     // orderInfo: {},
@@ -45,6 +47,14 @@ export default {
       customerName: '',
       //车队搜索
       fleetName: '',
+      // 客户搜索
+      queryCompanyName: '',
+      // 车牌银行卡
+      queryLandCar: '',
+      // 车队
+      queryFleet: '',
+      // 海运车牌
+      querySeaCars: ''
     }
   },
   //计算属性 目的是为了避免无法输入修改父组件
@@ -205,91 +215,65 @@ export default {
     //获取订单列表
     ...mapGetters(['orderItemList'])
   },
-  //监视属性 用来测试
-  watch: {
-    customer: {
-      handler(val) {
-      },
-    },
-  },
-
   methods: {
+    listFleet,
+    listCars,
+    listBankAccount,
+    listCompany,
     //这个方法用来修改父组件的某一个属性
     handleUpdateOrderInfo(newOrderValue) {
       this.$emit('updateOrderInfo', newOrderValue)
     },
-    //客户供应商信息
-    searchCustomerInfo() {
-      this.customerInfoDialogVisible = true
-      listCompany({relationName: this.customerName}).then(res => {
-        this.companyInfo = res.rows;
-      })
+    // 车队的自动填充
+    handleChangeFleet(val) {
+      this.queryFleet = val
     },
-    //陆运车牌信息
-    searchLandInfo() {
-      this.landInfoDialogVisible = true
-      listCars({carType: '陆运'}).then(res => {
-        this.landInfo = res.rows;
-      })
-    },
-    //车队信息
-    searchFleetInfo() {
-      this.fleetInfoDialogVisible = true
-      listFleet({fName: this.fleetName}).then(res => {
-        this.fleetInfo = res.rows;
-      })
-    },
-    //海运信息 查询carType为海运的车辆信息
-    searchSeaInfo() {
-      this.seaInfoDialogVisible = true
-      //查询海运车牌信息
-      listCars({carType: '海运'}).then(res => {
-        this.seaInfo = res.rows;
-      })
+    handleCommitBackFleet(val) {
+      this.fleet = val.fName
     },
 
-    //客户信息中的搜索确认
-    commitCustomerInfo(row) {
-      this.orderInfo.customerID = row.id;  //orderInfo->客户ID
-      //填充客户和销售经理信息 这里有改动 直接改计算属性 计算属性会更改父组件属性
-      this.customer = row.relationName;
-      this.saleManager = row.salesManager;
-      this.customerInfoDialogVisible = false
+    // 客户搜索的自动填充
+    handleCommitBackCompany(val) {
+      this.orderInfo.customerID = val.id;
+      this.customer = val.relationName;
+      this.saleManager = val.salesManager;
     },
-    //查询车牌信息的确认
-    commitCarsInfo(row) {
-      this.orderInfo.landCarID = row.id;   //orderInfo->陆运车ID
+    handleUpdateCompanyName(val) {
+      this.queryCompanyName = val;
+    },
+
+    //陆运车牌的自动填充
+    handleChangeCar(val) {
+      this.queryLandCar = val;
+    },
+    handleCommitBackCar(val) {
+      this.orderInfo.landCarID = val.id;
       //与上面填充客户信息同理
-      this.landCarNo = row.carNo;
-      this.landDriverName = row.driver;
-      this.landDriverTel = row.tel;
+      this.landCarNo = val.carNo;
+      this.landDriverName = val.driver;
+      this.landDriverTel = val.tel;
       //填充银行信息
-      this.orderInfo.landBankName = row.acountsName;
-      this.orderInfo.landBankNo = row.bankNo;
-      this.landBankName = row.bankName;
-      this.landBankNo = row.bankNo
-      this.landInfoDialogVisible = false;
+      this.orderInfo.landBankName = val.acountsName;
+      this.orderInfo.landBankNo = val.bankNo;
+      this.landBankName = val.bankName;
+      this.landBankNo = val.bankNo
     },
-    //车队信息的确认
-    commitFleetInfo(row) {
-      this.fleet = row.fName;
-      this.fleetInfoDialogVisible = false;
-    },
-    //海运信息的确认
-    commitSeaInfo(row) {
-      console.log(row)
-      this.orderInfo.seaCarID = row.id;   //orderInfo->陆运车ID
-      //与上面填充客户信息同理
-      this.seaCarNo = row.carNo;
-      this.seaDriverName = row.driver;
-      this.seaDriverTel = row.tel;
+    // 海运车牌的填充
+    handleChangeSeaCar(val) {
+      this.orderInfo.seaCarID = val.id;
+      this.seaCarNo = val.carNo;
+      this.seaDriverName = val.driver;
+      this.seaDriverTel = val.tel;
       //填充银行信息
-      this.orderInfo.seaBankName = row.acountsName;
-      this.orderInfo.seaBankNo = row.bankNo;
-      this.seaBankName = row.bankName;
-      this.seaBankNo = row.bankNo
-      this.seaInfoDialogVisible = false
+      this.orderInfo.seaBankName = val.acountsName;
+      this.orderInfo.seaBankNo = val.bankNo;
+      this.seaBankName = val.bankName;
+      this.seaBankNo = val.bankNo
     },
+    handleCommitBackSeaCar(val) {
+      this.querySeaCars = val;
+    },
+
     //添加订单vuex
     addOrderItem() {
       this.$store.dispatch('order/addOrderItemList', {})
@@ -311,279 +295,246 @@ export default {
 
 <template>
   <div>
-    <!--    订单上面-->
-    <div class="order-header">
-      <div class="header-item">
-        <span style="font-weight: bolder">日期:</span>
-        <el-date-picker
-          v-model="orderDate"
-          type="date"
-          placeholder="选择日期"
-          value-format="yyyy-MM-dd"
-          style="width: 70%">
-        </el-date-picker>
+    <!--    订单基本信息-->
+    <el-card class="box-card" shadow="hover">
+      <div slot="header" class="clearfix">
+        <span>订单基本信息</span>
       </div>
-      <div class="header-item">
-        <span style="font-weight: bolder">客户:</span>
-        <el-input type="text" v-model="customer" style="width: 50%"
-                  placeholder="请输入客户名称"></el-input>
-        <!--        查询客户列表-->
-        <el-button type="primary" size="mini" icon="el-icon-search" @click="searchCustomerInfo"></el-button>
-      </div>
-      <div class="header-item">
-        <span style="font-weight: bolder">销售经理:</span>
-        <el-input type="text" v-model="saleManager" style="width: 60%"
-                  placeholder="请输入销售经理名称"></el-input>
-      </div>
-      <div class="header-item">
-        <span style="font-weight: bolder">备注:</span>
-        <el-input type="text" v-model="comments" style="width: 60%"
-                  placeholder="请输入备注"></el-input>
-      </div>
+      <div class="order-header">
+        <div class="header-item">
+          <el-row>
+            <el-col :span="3">
+              <span style="font-weight: bolder">日期</span>
+            </el-col>
+            <el-col :span="21">
+              <el-date-picker
+                  v-model="orderDate"
+                  size="mini"
+                  type="date"
+                  placeholder="选择日期"
+                  value-format="yyyy-MM-dd"
+                  style="width: 80%">
+              </el-date-picker>
+            </el-col>
+          </el-row>
+        </div>
+        <div class="header-item">
+          <el-row>
+            <el-col style="font-weight: bolder;" :span="3">客户</el-col>
+            <el-col :span="10">
+              <el-input type="text" v-model="customer" size="mini"
+                        placeholder="请输入客户名称"></el-input>
+            </el-col>
+            <el-col :span="2">
+              <SearchOption :limit-info="{companyType:'客户'}"
+                            :get-data="listCompany" query-info="companyName"
+                            query-label="公司名称" :query-name="queryCompanyName"
+                            @update:queryName="handleUpdateCompanyName" @commitBack="handleCommitBackCompany">
+                <template #table-columns>
+                  <el-table-column label="客户" align="center"
+                                   prop="relationName"/>
+                  1
+                  <el-table-column label="老板姓名" align="center" prop="leader"/>
+                  <el-table-column label="老板电话" align="center" prop="leaderTel"/>
+                  <el-table-column label="区域" align="center" prop="region"/>
+                  <el-table-column label="公司名称" align="center" prop="companyName"/>
+                  <el-table-column label="销售经理" align="center" prop="salesManager"/>
+                </template>
+              </SearchOption>
+            </el-col>
+          </el-row>
+        </div>
+        <div class="header-item">
+          <span style="font-weight: bolder">销售经理</span>
+          <el-input type="text" v-model="saleManager" size="mini" style="width: 60%"
+                    placeholder="请输入销售经理名称"></el-input>
+        </div>
+        <div class="header-item">
+          <span style="font-weight: bolder">备注</span>
+          <el-input type="text" v-model="comments" size="mini" style="width: 60%"
+                    placeholder="请输入备注"></el-input>
+        </div>
 
-      <!--      多选框-->
-      <div class="header-item">
-        <span style="font-weight: bolder;">交通运输方式: </span>
-        <el-checkbox v-model="isLand">陆运</el-checkbox>
-        <el-checkbox v-model="isSea">海运</el-checkbox>
-      </div>
+        <!--      多选框-->
+        <div class="header-item">
+          <span style="font-weight: bolder;">交通运输方式: </span>
+          <el-checkbox v-model="isLand">陆运</el-checkbox>
+          <el-checkbox v-model="isSea">海运</el-checkbox>
+        </div>
 
-      <!--      陆运-->
-      <div style="margin:20px 0;" v-if="isLand || orderInfo.landFreight > 0">
-        <div style="font-weight: bolder;margin-bottom: 10px">陆运信息</div>
-        <div style="display: flex;">
-          <div>
-            <span class="text-bold">陆运车牌</span>
-            <el-input type="text" v-model="landCarNo" style="width: 50%"
-                      placeholder="请输入陆运车牌"></el-input>
-            <el-button type="primary" size="mini" icon="el-icon-search" @click="searchLandInfo"></el-button>
+        <!--      陆运-->
+        <div style="margin:20px 0;" v-if="isLand || orderInfo.landFreight > 0">
+          <div style="display: flex;">
+            <div>
+              <!--            <el-button type="primary" size="mini" icon="el-icon-search" @click="searchLandInfo"></el-button>-->
+              <el-row>
+                <el-col :span="5">
+                  <span style="font-weight: bold">陆运车牌</span>
+                </el-col>
+                <el-col :span="10">
+                  <el-input type="text" v-model="landCarNo" size="mini"
+                            placeholder="请输入陆运车牌"></el-input>
+                </el-col>
+                <el-col :span="4">
+                  <!--搜索银行卡信息-->
+                  <SearchOption :limit-info="{companyType:'司机'}"
+                                :get-data="listCars"
+                                query-label="车牌搜索" query-info="carNo" :query-name="queryLandCar"
+                                @commitBack="handleCommitBackCar" @update:queryName="handleChangeCar">
+                    <template #table-columns>
+                      <el-table-column label="车牌" align="center" prop="carNo"/>
+                      <el-table-column label="司机" align="center" prop="driver"/>
+                      <el-table-column label="司机电话" align="center" prop="tel"/>
+                      <el-table-column label="开户名" align="center" prop="acountsName"/>
+                      <el-table-column label="账号" align="center" prop="bankNo"/>
+                      <el-table-column label="余额" align="center" prop="surplusMoney"/>
+                    </template>
+                  </SearchOption>
+                </el-col>
+              </el-row>
+            </div>
+            <div>
+              <span style="font-weight: bold">陆运司机姓名</span>
+              <el-input type="text" v-model="landDriverName" size="mini" style="width: 60%"
+                        placeholder="请输入陆运司机姓名"></el-input>
+            </div>
+            <div>
+              <span style="font-weight: bold">陆运司机电话</span>
+              <el-input type="text" v-model="landDriverTel" size="mini" style="width: 60%"
+                        placeholder="请输入陆运司机电话"></el-input>
+            </div>
+            <div>
+              <!--              <el-button type="primary" size="mini" icon="el-icon-search" @click="searchFleetInfo"></el-button>-->
+              <el-row>
+                <el-col :span="5">
+                  <span style="font-weight: bold">车队</span>
+                </el-col>
+                <el-col :span="10">
+                  <el-input type="text" v-model="fleet" size="mini"
+                            placeholder="请输入车队"></el-input>
+                </el-col>
+                <el-col :span="4">
+                  <SearchOption :limit-info="{}"
+                                :get-data="listFleet"
+                                query-label="车队名称" query-info="fName" :query-name="queryFleet"
+                                @commitBack="handleCommitBackFleet" @update:queryName="handleChangeFleet">
+                    <template #table-columns>
+                      <el-table-column label="开户行" align="center" prop="bankName"/>
+                      <el-table-column label="开户名" align="center" prop="acountsName"/>
+                      <el-table-column label="账号" align="center" prop="bankNo"/>
+                      <el-table-column label="余额" align="center" prop="surplusMoney"/>
+                    </template>
+                  </SearchOption>
+                </el-col>
+              </el-row>
+            </div>
           </div>
-          <div>
-            <span class="text-bold">陆运司机姓名</span>
-            <el-input type="text" v-model="landDriverName" style="width: 60%"
-                      placeholder="请输入陆运司机姓名"></el-input>
-          </div>
-          <div>
-            <span class="text-bold">陆运司机电话</span>
-            <el-input type="text" v-model="landDriverTel" style="width: 60%"
-                      placeholder="请输入陆运司机电话"></el-input>
-          </div>
-          <div>
-            <span class="text-bold">车队</span>
-            <el-input type="text" v-model="fleet" style="width: 50%" placeholder="请输入车队"></el-input>
-            <el-button type="primary" size="mini" icon="el-icon-search" @click="searchFleetInfo"></el-button>
+        </div>
+
+        <!--      海运-->
+        <div style="margin:10px 0;" v-if="isSea || orderInfo.seaFreight > 0">
+          <div style="display: flex;">
+            <div>
+              <el-row>
+                <el-col :span="5">
+                  <span style="font-weight: bold">海运车牌</span>
+                </el-col>
+                <el-col :span="10">
+                  <el-input type="text" v-model="seaCarNo" size="mini"
+                            placeholder="请输入海运车牌"></el-input>
+                </el-col>
+                <el-col :span="4">
+                  <SearchOption :limit-info="{carType:'海运'}"
+                                :get-data="listCars"
+                                query-label="车牌" query-info="carNo" :query-name="querySeaCars"
+                                @commitBack="handleCommitBackSeaCar" @update:queryName="handleChangeSeaCar">
+                    <template #table-columns>
+                      <el-table-column label="开户行" align="center" prop="bankName"/>
+                      <el-table-column label="开户名" align="center" prop="acountsName"/>
+                      <el-table-column label="账号" align="center" prop="bankNo"/>
+                      <el-table-column label="余额" align="center" prop="surplusMoney"/>
+                    </template>
+                  </SearchOption>
+                </el-col>
+              </el-row>
+            </div>
+            <div>
+              <span style="font-weight: bold">海运司机姓名</span>
+              <el-input type="text" v-model="seaDriverName" size="mini" style="width: 60%"
+                        placeholder="请输入司机姓名"></el-input>
+            </div>
+            <div>
+              <span style="font-weight: bold">海运司机电话</span>
+              <el-input type="text" v-model="seaDriverTel" size="mini" style="width: 60%"
+                        placeholder="请输入司机电话"></el-input>
+            </div>
           </div>
         </div>
       </div>
-
-      <!--      海运-->
-      <div style="margin:10px 0;" v-if="isSea || orderInfo.seaFreight > 0">
-        <div style="font-weight: bolder;margin-bottom: 10px">海运信息</div>
-        <div style="display: flex;">
-          <div>
-            <span class="text-bold">海运车牌</span>
-            <el-input type="text" v-model="seaCarNo" style="width: 50%" placeholder="请输入车牌"></el-input>
-            <el-button type="primary" size="mini" icon="el-icon-search" @click="searchSeaInfo"></el-button>
-          </div>
-          <div>
-            <span class="text-bold">海运司机姓名</span>
-            <el-input type="text" v-model="seaDriverName" style="width: 60%"
-                      placeholder="请输入司机姓名"></el-input>
-          </div>
-          <div>
-            <span class="text-bold">海运司机电话</span>
-            <el-input type="text" v-model="seaDriverTel" style="width: 60%"
-                      placeholder="请输入司机电话"></el-input>
-          </div>
-        </div>
-      </div>
-    </div>
+      <br/>
+    </el-card>
     <br/>
-    <!--    订单主体-->
-    <div v-if="orderItemList.length!==0">
-      <!--      从vuex中拿到订单详细列表-->
-      <div v-for="(item,index) in orderItemList" :key="index">
-        <!--        订单个体 传递给子组件订单详情个体   -->
-        <OrderItem :order-item-info="item" :isLand="isLand" :isSea="isSea" :index="index"
-                   @changeOrderItemInfo="handleChangeOrderItemInfo(index,$event)"/>
-        <el-row>
-          <el-button type="danger" @click="handleDeleteOrderDetail(index,$event)">删除该订单详情信息</el-button>
-        </el-row>
+
+    <el-card class="box-card" shadow="hover">
+      <div slot="header" class="clearfix">
+        <span>订单货物信息</span>
       </div>
-      <div class="option">
+      <!--      如果有-->
+      <div v-if="orderItemList.length!==0">
+        <div v-for="(item,index) in orderItemList" :key="index">
+          <OrderItem :order-item-info="item" :isLand="isLand" :isSea="isSea" :index="index"
+                     @changeOrderItemInfo="handleChangeOrderItemInfo(index,$event)"/>
+          <el-row>
+            <el-button type="danger" @click="handleDeleteOrderDetail(index,$event)">删除该订单详情信息</el-button>
+          </el-row>
+        </div>
+        <div class="option">
+          <el-row>
+            <el-col style="text-align: center">
+              <el-button type="primary" @click="addOrderItem" icon="el-icon-plus">继续添加订单详情</el-button>
+            </el-col>
+          </el-row>
+        </div>
+      </div>
+      <!--      如果没有订单信息-->
+      <div v-else>
         <el-row>
-          <el-col style="text-align: center">
-            <el-button type="primary" @click="addOrderItem" icon="el-icon-plus">继续添加订单详情</el-button>
+          <el-col>
+            <el-button type="primary" @click="addOrderItem" icon="el-icon-plus">添加订单货物信息</el-button>
           </el-col>
         </el-row>
       </div>
-    </div>
-    <div v-else>
-      <el-row>
-        <el-col>
-          <el-button type="primary" @click="addOrderItem" icon="el-icon-plus">添加订单详情信息</el-button>
-        </el-col>
-      </el-row>
-    </div>
-
-    <!--    客户信息弹窗-->
-    <el-dialog
-      title="客户信息"
-      :visible.sync="customerInfoDialogVisible"
-      width="35%" append-to-body>
-      <el-row :gutter="5">
-        <el-col :span="4">
-          <span style="font-weight: bolder;line-height: 40px">客户名称</span>
-        </el-col>
-        <el-col :span="8">
-          <el-input v-model="customerName" placeholder="请输入客户名称"></el-input>
-        </el-col>
-        <el-col :span="8">
-          <el-button type="primary" @click="searchCustomerInfo">搜索</el-button>
-        </el-col>
-      </el-row>
-
-      <!--      客户信息-->
-      <el-table
-        :data="companyInfo"
-        border>
-        <!--        操作-->
-        <el-table-column
-          fixed="left"
-          label="操作">
-          <template slot-scope="scope">
-            <el-button @click="commitCustomerInfo(scope.row)" type="danger" size="small">确认</el-button>
-          </template>
-        </el-table-column>
-        <el-table-column
-          fixed
-          prop="relationName"
-          label="客户">
-        </el-table-column>
-        <el-table-column
-          prop="leader"
-          label="老板姓名">
-        </el-table-column>
-        <el-table-column
-          prop="leaderTel"
-          label="老板联系方式">
-        </el-table-column>
-      </el-table>
-      <span slot="footer" class="dialog-footer">
-    <el-button @click="customerInfoDialogVisible = false">取 消</el-button>
-    <el-button type="primary" @click="customerInfoDialogVisible = false">确 定</el-button>
-  </span>
-    </el-dialog>
-
-
-    <!--    陆运车牌信息弹窗-->
-    <el-dialog
-      title="车牌信息"
-      :visible.sync="landInfoDialogVisible"
-      width="35%" append-to-body>
-      <el-table
-        :data="landInfo"
-        border>
-        <!--        操作-->
-        <el-table-column
-          fixed="left"
-          label="操作">
-          <template slot-scope="scope">
-            <el-button @click="commitCarsInfo(scope.row)" type="danger" size="small">确认</el-button>
-          </template>
-        </el-table-column>
-        <el-table-column
-          fixed
-          prop="carNo"
-          label="车牌">
-        </el-table-column>
-        <el-table-column
-          prop="driver"
-          label="司机姓名">
-        </el-table-column>
-        <el-table-column
-          prop="tel"
-          label="司机电话">
-        </el-table-column>
-      </el-table>
-      <span slot="footer" class="dialog-footer">
-    <el-button @click="landInfoDialogVisible = false">取 消</el-button>
-    <el-button type="primary" @click="landInfoDialogVisible = false">确 定</el-button>
-  </span>
-    </el-dialog>
-
-
-    <!--    车队信息弹窗-->
-    <el-dialog
-      title="客户信息"
-      :visible.sync="fleetInfoDialogVisible"
-      width="35%" append-to-body>
-      <!--      车队搜索框-->
-      <el-row :gutter="5">
-        <el-col :span="4">
-          <span style="font-weight: bolder;line-height: 40px">车队</span>
-        </el-col>
-        <el-col :span="8">
-          <el-input v-model="fleetName" placeholder="请输入车队名称"></el-input>
-        </el-col>
-        <el-col :span="8">
-          <el-button type="primary" @click="searchFleetInfo">搜索</el-button>
-        </el-col>
-      </el-row>
-
-      <!--      车队信息列表-->
-      <el-table
-        :data="fleetInfo"
-        border>
-        <!--        操作-->
-        <el-table-column
-          fixed="left"
-          label="操作">
-          <template slot-scope="scope">
-            <el-button @click="commitFleetInfo(scope.row)" type="danger" size="small">确认</el-button>
-          </template>
-        </el-table-column>
-        <el-table-column
-          fixed
-          prop="fName"
-          label="车队名称">
-        </el-table-column>
-      </el-table>
-      <span slot="footer" class="dialog-footer">
-    <el-button @click="fleetInfoDialogVisible = false">取 消</el-button>
-    <el-button type="primary" @click="fleetInfoDialogVisible = false">确 定</el-button>
-  </span>
-    </el-dialog>
+    </el-card>
 
 
     <!--    海运车牌信息弹窗-->
     <el-dialog
-      title="海运车辆信息"
-      :visible.sync="seaInfoDialogVisible"
-      width="35%" append-to-body>
+        title="海运车辆信息"
+        :visible.sync="seaInfoDialogVisible"
+        width="35%" append-to-body>
       <el-table
-        :data="seaInfo"
-        border>
+          :data="seaInfo"
+          border>
         <!--        操作-->
         <el-table-column
-          fixed="left"
-          label="操作">
+            fixed="left"
+            label="操作">
           <template slot-scope="scope">
             <el-button @click="commitSeaInfo(scope.row)" type="danger" size="small">确认</el-button>
           </template>
         </el-table-column>
         <el-table-column
-          fixed
-          prop="carNo"
-          label="车牌">
+            fixed
+            prop="carNo"
+            label="车牌">
         </el-table-column>
         <el-table-column
-          prop="driver"
-          label="司机姓名">
+            prop="driver"
+            label="司机姓名">
         </el-table-column>
         <el-table-column
-          prop="tel"
-          label="司机电话">
+            prop="tel"
+            label="司机电话">
         </el-table-column>
       </el-table>
       <span slot="footer" class="dialog-footer">
@@ -609,8 +560,7 @@ export default {
 }
 
 .header-item {
-  width: 30%;
-  margin-top: 10px;
+  width: 20%;
 }
 
 

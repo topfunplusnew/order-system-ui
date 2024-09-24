@@ -5,6 +5,8 @@ import {listCompany} from "@/api/system/company";
 import {listBankAccount} from "@/api/system/bankAccount";
 import {getGoodsOrder, updateGoodsOrder} from "@/api/system/goodsOrder";
 import {excludeParams} from "@/api/tool/exclude";
+import {listRebate} from "../api/system/Rebate";
+import {getDicts, listData} from "../api/system/dict/data";
 
 export default {
   name: "OrderDetailInfo",
@@ -26,6 +28,7 @@ export default {
         orderDetailID: '',
         rebateDate: '',
         rebate: '',
+        rebateMethod: '',
         inAcountsName: '',
         inBankNo: '',
         supplier: '',
@@ -34,13 +37,24 @@ export default {
         rebateReason: '',
         comments: ''
       },
+      // 从字典中拿
+      rebateMethods: [],
+      loading: false,
     }
   },
   created() {
+    // 拿取返利方式
+    this.listRebateMethods();
   },
   methods: {
     listBankAccount,
     listCompany,
+    // 返利方式
+    listRebateMethods() {
+      getDicts('order_rebate_type').then(res => {
+        this.rebateMethods = res.data;
+      })
+    },
     //点击确认
     handleCommitBankAccount(val) {
       this.moneyBackInfo.inAcountsName = val.acountsName;
@@ -194,7 +208,7 @@ export default {
           <el-date-picker
               v-model="moneyBackInfo.rebateDate"
               type="date"
-              placeholder="选择日期" value-format="timestamp">
+              placeholder="选择日期" value-format="yyyy-MM-dd">
           </el-date-picker>
         </el-form-item>
         <el-form-item label="金额" prop="rebate">
@@ -256,6 +270,19 @@ export default {
         </el-form-item>
         <el-form-item label="付款款账号" prop="outBankNo">
           <el-input v-model="moneyBackInfo.outBankNo" placeholder="请输入付款款账号"/>
+        </el-form-item>
+        <el-form-item label="返利方式" prop="rebateMethod">
+          <el-select
+              v-model="moneyBackInfo.rebateMethod"
+              default-first-option
+              placeholder="请选择返利方式">
+            <el-option
+                v-for="item in rebateMethods"
+                :key="item.dictValue"
+                :label="item.dictLabel"
+                :value="item.dictLabel">
+            </el-option>
+          </el-select>
         </el-form-item>
         <el-form-item label="返利原因" prop="rebateReason">
           <el-input v-model="moneyBackInfo.rebateReason" placeholder="请输入返利原因"/>

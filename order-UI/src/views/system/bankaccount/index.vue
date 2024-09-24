@@ -86,7 +86,7 @@
       <el-table-column label="账号(银行账号)" align="center" prop="bankNo" v-if="columns[2].visible" width="200"/>
       <el-table-column label="开户行" align="center" prop="bankName" v-if="columns[3].visible" width="200"/>
       <el-table-column label="公司名称" align="center" prop="companyName" v-if="columns[4].visible" width="200"/>
-      <el-table-column label="余额" align="center" prop="amount"/>
+      <el-table-column label="余额" align="center" prop="amount" v-if="columns[5].visible" width="200"/>
       <el-table-column label="银行卡操作" align="center" class-name="small-padding fixed-width" width="200"
                        fixed="right">
         <template slot-scope="scope">
@@ -405,6 +405,7 @@ export default {
         {key: 2, label: `账号(银行卡号)`, visible: true},
         {key: 3, label: `开户行`, visible: true},
         {key: 4, label: `公司名称`, visible: true},
+        {key: 5, label: `余额`, visible: true}
       ],
       companyList: [],
       //调整银行卡

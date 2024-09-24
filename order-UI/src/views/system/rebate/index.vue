@@ -3,24 +3,24 @@
     <el-form :model="queryParams" ref="queryForm" size="mini" :inline="true" v-show="showSearch" label-width="68px">
       <el-form-item label="返利开始日期" prop="rebateStartTime">
         <el-date-picker
-          v-model="queryParams.rebateStartTime"
-          type="date"
-          placeholder="选择开始时间" value-format="yyyy-MM-dd">
+            v-model="queryParams.rebateStartTime"
+            type="date"
+            placeholder="选择开始时间" value-format="yyyy-MM-dd">
         </el-date-picker>
       </el-form-item>
       <el-form-item label="返利结束日期" prop="rebateEndTime">
         <el-date-picker
-          v-model="queryParams.rebateEndTime"
-          type="date"
-          placeholder="选择开始时间" value-format="yyyy-MM-dd">
+            v-model="queryParams.rebateEndTime"
+            type="date"
+            placeholder="选择开始时间" value-format="yyyy-MM-dd">
         </el-date-picker>
       </el-form-item>
       <el-form-item label="供应商" prop="supplier">
         <el-input
-          v-model="queryParams.supplier"
-          placeholder="请输入供应商"
-          clearable
-          @keyup.enter.native="handleQuery"
+            v-model="queryParams.supplier"
+            placeholder="请输入供应商"
+            clearable
+            @keyup.enter.native="handleQuery"
         />
       </el-form-item>
       <el-form-item>
@@ -35,10 +35,10 @@
       </el-col>
       <el-col :span="1.5">
         <el-button
-          type="danger"
-          size="mini"
-          @click="handleAdd"
-          v-hasPermi="['system:rebate:add']"
+            type="danger"
+            size="mini"
+            @click="handleAdd"
+            v-hasPermi="['system:rebate:add']"
         >新增供应商返利信息
         </el-button>
       </el-col>
@@ -46,10 +46,10 @@
         <template v-slot:print>
           <el-col :span="1.5">
             <el-button
-              plain
-              icon="el-icon-printer"
-              size="mini"
-              @click="printHTML"
+                plain
+                icon="el-icon-printer"
+                size="mini"
+                @click="printHTML"
             >
             </el-button>
           </el-col>
@@ -58,11 +58,24 @@
         <template v-slot:export>
           <el-col :span="1.5">
             <el-button
-              plain
-              icon="el-icon-folder-opened"
-              size="mini"
-              @click="handleExport"
-              v-hasPermi="['system:rebate:export']"
+                plain
+                icon="el-icon-folder-opened"
+                size="mini"
+                @click="handleExport"
+                v-hasPermi="['system:rebate:export']"
+            >
+            </el-button>
+          </el-col>
+        </template>
+        <!--        导出2-->
+        <template v-slot:export2>
+          <el-col :span="1.5">
+            <el-button
+                plain
+                icon="el-icon-folder-opened"
+                size="mini"
+                @click="handleExport2"
+                v-hasPermi="['system:rebate:export']"
             >
             </el-button>
           </el-col>
@@ -71,17 +84,23 @@
     </el-row>
 
     <el-table border v-horizontal-scroll="'always'" v-loading="loading" :data="RebateList" size="mini"
-              @selection-change="handleSelectionChange" id="printBox">
+              @selection-change="handleSelectionChange" id="printBox" :cell-style="()=>{return {padding:'.5px'}}">
       <el-table-column label="日期" align="center" prop="rebateDate" v-if="columns[0].visible"/>
       <el-table-column label="金额" align="center" prop="rebate" v-if="columns[1].visible"/>
       <el-table-column label="类型" align="center" prop="rebateType" v-if="columns[2].visible"/>
-      <el-table-column label="收款户名" align="center" prop="inAcountsName" v-if="columns[3].visible"/>
-      <el-table-column label="收款账号" align="center" prop="inBankNo" v-if="columns[4].visible"/>
+      <el-table-column label="收款户名" align="center" prop="inAcountsName" v-if="columns[3].visible"
+                       show-overflow-tooltip/>
+      <el-table-column label="收款账号" align="center" prop="inBankNo" v-if="columns[4].visible" width="160"
+                       show-overflow-tooltip/>
       <el-table-column label="供应商" align="center" prop="supplier" v-if="columns[5].visible"/>
-      <el-table-column label="付款户名" align="center" prop="outAcountsName" v-if="columns[6].visible"/>
-      <el-table-column label="付款款账号" align="center" prop="outBankNo" v-if="columns[7].visible"/>
-      <el-table-column label="返利原因" align="center" prop="rebateReason" v-if="columns[8].visible"/>
-      <el-table-column label="备注" align="center" prop="comments" v-if="columns[9].visible"/>
+      <el-table-column label="付款户名" align="center" prop="outAcountsName" v-if="columns[6].visible"
+                       show-overflow-tooltip/>
+      <el-table-column label="付款款账号" align="center" prop="outBankNo" v-if="columns[7].visible" width="160"/>
+      <el-table-column label="返利原因" align="center" prop="rebateReason" v-if="columns[8].visible"
+                       show-overflow-tooltip/>
+      <el-table-column label="返利方式" align="center" prop="rebateMethod" v-if="columns[8].visible"
+                       show-overflow-tooltip/>
+      <el-table-column label="备注" align="center" prop="comments" v-if="columns[9].visible" show-overflow-tooltip/>
       <el-table-column label="操作" align="center" class-name="small-padding fixed-width" width="150px" fixed="right">
         <template slot-scope="scope">
           <!--          <el-button
@@ -91,17 +110,17 @@
                     >付款返利
                     </el-button>-->
           <el-button
-            size="mini"
-            type="primary"
-            @click="handleUpdate(scope.row)"
-            v-hasPermi="['system:rebate:edit']"
+              size="mini"
+              type="primary"
+              @click="handleUpdate(scope.row)"
+              v-hasPermi="['system:rebate:edit']"
           >修改
           </el-button>
           <el-button
-            size="mini"
-            type="danger"
-            @click="handleDelete(scope.row)"
-            v-hasPermi="['system:rebate:remove']"
+              size="mini"
+              type="danger"
+              @click="handleDelete(scope.row)"
+              v-hasPermi="['system:rebate:remove']"
           >删除
           </el-button>
         </template>
@@ -109,11 +128,11 @@
     </el-table>
 
     <pagination
-      v-show="total>0"
-      :total="total"
-      :page.sync="queryParams.pageNum"
-      :limit.sync="queryParams.pageSize"
-      @pagination="getList"
+        v-show="total>0"
+        :total="total"
+        :page.sync="queryParams.pageNum"
+        :limit.sync="queryParams.pageSize"
+        @pagination="getList"
     />
 
     <!-- 添加或修改返利回扣对话框 -->
@@ -130,19 +149,19 @@
               </el-form-item>
               <el-form-item label="日期" prop="rebateDate">
                 <el-date-picker
-                  v-model="form.rebateDate"
-                  type="date"
-                  placeholder="日期"
-                  value-format="yyyy-MM-dd">
+                    v-model="form.rebateDate"
+                    type="date"
+                    placeholder="日期"
+                    value-format="yyyy-MM-dd">
                 </el-date-picker>
               </el-form-item>
               <el-form-item label="类型" prop="rebateType">
                 <el-select v-model="form.rebateType" placeholder="请选择">
                   <el-option
-                    v-for="item in rebateTypes"
-                    :key="item.value"
-                    :label="item.label"
-                    :value="item.value">
+                      v-for="item in rebateTypes"
+                      :key="item.value"
+                      :label="item.label"
+                      :value="item.value">
                   </el-option>
                 </el-select>
               </el-form-item>
@@ -248,9 +267,9 @@
 
     <!--    选择订单详情-->
     <el-dialog
-      title="订单选择"
-      :visible.sync="orderDialogVisible"
-      width="65%">
+        title="订单选择"
+        :visible.sync="orderDialogVisible"
+        width="65%">
       <el-row>
         <el-button type="primary" @click="selectOrderItem" size="mini">选择订单</el-button>
       </el-row>
@@ -290,7 +309,7 @@
               <el-table-column label="出厂是否含税" align="center" prop="isIncludeTaxFactory">
                 <template slot-scope="scope">
                   <el-tag
-                    disable-transitions>{{ scope.row.isIncludeTaxFactory === 0 ? "否" : "是" }}
+                      disable-transitions>{{ scope.row.isIncludeTaxFactory === 0 ? "否" : "是" }}
                   </el-tag>
                 </template>
               </el-table-column>
@@ -300,7 +319,7 @@
               <el-table-column label="销售是否含税" align="center" prop="isIncludeTaxSale">
                 <template slot-scope="scope">
                   <el-tag
-                    disable-transitions>{{ scope.row.isIncludeTaxSale === 0 ? "否" : "是" }}
+                      disable-transitions>{{ scope.row.isIncludeTaxSale === 0 ? "否" : "是" }}
                   </el-tag>
                 </template>
               </el-table-column>
@@ -429,7 +448,7 @@
                          width="100px">
           <template slot-scope="scope">
             <el-tag
-              :type="scope.row.isedit === 0 ? 'danger' :'success'">{{ scope.row.isedit === 0 ? "否" : "是" }}
+                :type="scope.row.isedit === 0 ? 'danger' :'success'">{{ scope.row.isedit === 0 ? "否" : "是" }}
             </el-tag>
           </template>
         </el-table-column>
@@ -464,11 +483,11 @@
         <el-table-column show-overflow-tooltip label="备注" align="center" prop="comments"/>
       </el-table>
       <pagination
-        v-show="orderTotal>0"
-        :total="orderTotal"
-        :page.sync="queryParams.pageNum"
-        :limit.sync="queryParams.pageSize"
-        @pagination="getOrderList"
+          v-show="orderTotal>0"
+          :total="orderTotal"
+          :page.sync="queryParams.pageNum"
+          :limit.sync="queryParams.pageSize"
+          @pagination="getOrderList"
       />
     </el-dialog>
 
@@ -618,7 +637,7 @@ export default {
       this.orderList = res.rows;
     })
     if (localStorage.getItem('rebate-columns') === 'null'
-      || !localStorage.getItem('rebate-columns')) {
+        || !localStorage.getItem('rebate-columns')) {
       //设置localStorage
       localStorage.setItem("rebate-columns", JSON.stringify(this.columns))
     } else {
@@ -796,7 +815,13 @@ export default {
       this.download('system/Rebate/export', {
         ...this.queryParams
       }, `Rebate_${new Date().getTime()}.xlsx`)
-    }
+    },
+    handleExport2() {
+      this.download('system/Rebate/export2', {
+        ...this.queryParams
+      }, `厂家(返利+降价+售后质量赔偿)_${new Date().getTime()}.xlsx`)
+    },
+
   }
 };
 </script>

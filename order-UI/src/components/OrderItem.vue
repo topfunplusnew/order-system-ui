@@ -1,14 +1,15 @@
 <!--订单详情个体-->
 
 <script>
-import {listCompany} from "@/api/system/company";
-import {listInventory} from "@/api/system/inventory";
-import {listStoreHouse} from "@/api/system/StoreHouse";
-import {listProductLevel} from "@/api/system/productLevel";
 import {fix} from "@/api/tool/format";
+import SearchOption from "./SearchOption.vue";
+import {listCompany} from "../api/system/company";
+import {listInventory} from "../api/system/inventory";
+import {listProductLevel} from "../api/system/productLevel";
 
 export default {
   name: "OrderItem",
+  components: {SearchOption},
 
   //父组件传递的订单详情个体
   props: {
@@ -368,11 +369,12 @@ export default {
     payments00() {
       return fix(this.length * this.width * this.outPieces / 1000000 * this.paymentUnload + Number(this.paymentsWithSundry));
     },
+    // todo  长度宽度高度过低 会计算吨位为0
     tonnage00() {
       return fix((Number(this.height) - Number(this.erro)) * this.length * this.pieces / 1000000 / 20 / 20);
     },
     landFreight00() {
-      return fix(this.tonnage * this.landFreightPrice + Number(this.additionalFees));
+      return fix(Number(this.tonnage) * Number(this.landFreightPrice) + Number(this.additionalFees));
     },
     profit00() {
       return fix(this.payments - this.paymentFactory - this.landFreight);
@@ -573,139 +575,47 @@ export default {
   }
   ,
   methods: {
-    //供应商信息
-    searchCompanyGiveInfo() {
-      this.companyGiveDialogVisible = true;
-      //查询供应商信息
-      listCompany({companyType: '供应商', companyName: this.companyName}).then(res => {
-        this.companyGiveInfo = res.rows;
-      })
-    }
-    ,
-    //查询仓库信息
-    searchStoreInfo() {
-      this.storeInfoDialogVisible = true;
-      //搜索库存信息 只查询库存中仓库
-      listInventory().then(res => {
-        this.inventoryInfo = res.rows.filter(item => {
-          return item.stockNumber > 0;
-        })
-      })
-      //搜索仓库信息
-      listStoreHouse().then(res => {
-        this.storeInfo = res.rows;
-      })
-    }
-    ,
-    //弹出的库存信息条件查询
-    searchStoreHouseInfo() {
-      //查询名称库存信息
-      listInventory({storeHouseName: this.searchStoreName}).then(res => {
-        this.inventoryInfo = res.rows;
-      })
-    },
-    //查询产品级别信息
-    searchProductLevelInfo() {
-      this.productLevelDialogVisible = true;
-      //查询产品级别信息
-      listProductLevel({width: this.productLevel.width, levelName: this.productLevel.level}).then(res => {
-        this.productLevelInfo = res.rows;
-      })
-    }
-    ,
+    listProductLevel,
+    listInventory,
+    listCompany,
 
-    //以下信息保存在goodsOrderList中
-    //供应商信息确认 选择供应商后还要选择产品级别
-    commitCompanyGiveInfo(row) {
-      this.orderItemInfo.supplierID = row.id;   //goodsOrderList->供应商ID
-      this.supplier = row.companyName
-      this.companyGiveDialogVisible = false;
-    }
-    ,
-    //仓库确认
-    commitStoreInfo(row) {
-      this.orderItemInfo.storeID = row.id;  //goodsOrderList ->仓库ID
-      this.orderItemInfo.storeHouseID = row.id //goodsOrderList ->库存ID
+    //供应商信息
+    handleCommitBackCompany(val) {
+      this.orderItemInfo.supplierID = val.id;   //goodsOrderList->供应商ID
+      this.supplier = val.companyName
+    },
+
+    // 仓库信息
+    handleCommitBackInventory(val) {
+      this.orderItemInfo.storeID = val.id;  //goodsOrderList ->仓库ID
+      this.orderItemInfo.storeHouseID = val.id //goodsOrderList ->库存ID
       //自动填充数据
       const computedProperties = this.$options.computed;
       Object.keys(computedProperties).forEach(key => {
-        this[key] = row[key];
+        this[key] = val[key];
       })
       if (this.supplier) {
         this.supplier = null;
       }
-      this.storeName = row.storeHouseName
-      this.length = row.length;
-      this.width = row.width;
-      this.levelID = row.levelID;
-
+      this.storeName = val.storeHouseName
+      this.length = val.length;
+      this.width = val.width;
+      this.levelID = val.levelID;
       //出厂片数让用户自己填
-      this.pieces = row.stockNumber;
-      this.currentStockNumber = row.stockNumber;//暂存
+      this.pieces = val.stockNumber;
+      this.currentStockNumber = val.stockNumber;//暂存
       this.storeInfoDialogVisible = false;
-    }
-    ,
-    //产品级别确认
-    commitProductLevelInfo(row) {
-      //确定产品级别编码信息
-      this.levelID = row.id;
-      //如果供应商此时没值
-      // if (this.supplier === '' || this.supplier === undefined || this.supplier === null) {
-      //   this.searchSupplierInventory(row)
-      // } else {
-      //   this.searchStoreInventory(row)
-      // }
-      //填充级别信息
-      this.levelName = row.levelName;
-      this.height = row.height;
-      this.length = row.length;
-      this.width = row.width;
-      this.levelNo = row.levelNo;
-      this.productLevelDialogVisible = false;
-    }
-    ,
-
-    //查询库存信息
-    searchSupplierInventory(row) {
-      //填充表格数据
-      listInventory({supplier: this.supplier, levelID: this.levelID}).then(res => {
-        if (res.rows.length === 0) {
-          this.$message.error("没有该库存信息!")
-          //自动填写某些字段
-        } else {
-          this.levelName = row.levelName;
-          //数据库查询的筛选后的库存信息
-          const info = res.rows[0];
-          this.height = info.height;
-          this.length = info.length;
-          this.width = info.width;
-          //添加产品级别编码
-          this.levelNo = row.levelNo;
-        }
-      })
-    }
-    ,
-    searchStoreInventory(row) {
-      //填充表格数据
-      listInventory({storeHouseName: this.supplier, levelID: this.levelID}).then(res => {
-        if (res.rows.length === 0) {
-          this.$message.error("没有该库存信息!")
-        } else {
-          this.levelName = row.levelName;
-          const info = res.rows[0];
-          this.height = info.height;
-          this.length = info.length;
-          this.width = info.width;
-          this.levelNo = row.levelNo;
-        }
-      })
     },
-    printAllComputers() {
-      const computedProperties = this.$options.computed;
-      Object.keys(computedProperties).forEach(key => {
-        console.log('计算属性+>', key, computedProperties[key])
-      })
-    }
+
+    // 产品级别自动填充
+    handleCommitBackProductLevel(val) {
+      this.levelID = val.id;
+      this.levelName = val.levelName;
+      this.height = val.height;
+      this.length = val.length;
+      this.width = val.width;
+      this.levelNo = val.levelNo;
+    },
   }
 }
 </script>
@@ -720,27 +630,63 @@ export default {
         <el-input placeholder="请输入供应商/仓库"
                   v-model="supplier===undefined||supplier===null?storeName:supplier"
                   disabled></el-input>
-        <!--        供应商弹窗按钮-->
-        <el-button size="mini" type="primary" icon="el-icon-user" circle @click="searchCompanyGiveInfo">
-        </el-button>
-        <el-button size="mini" icon="el-icon-s-home" circle @click="searchStoreInfo">
-        </el-button>
+        <el-row>
+          <el-col :span="12">
+            <SearchOption :get-data="listCompany" icon="el-icon-user" @commitBack="handleCommitBackCompany"
+                          :limit-info="{companyType:'供应商'}">
+              <template #table-columns>
+                <el-table-column label="供应商名称" align="center" prop="companyName"/>
+                <el-table-column label="联系人" align="center" prop="relationName"/>
+                <el-table-column label="电话" align="center" prop="relationTel"/>
+              </template>
+            </SearchOption>
+          </el-col>
+          <el-col :span="12">
+            <SearchOption :get-data="listInventory" icon="el-icon-s-home" @commitBack="handleCommitBackInventory"
+                          :limit-info="{}">
+              <template #table-columns>
+                <el-table-column label="仓库名称" align="center" prop="storeHouseName"/>
+                <el-table-column label="入库日期" align="center" prop="storeDate"/>
+                <el-table-column label="库存量" align="center" prop="stockNumber"/>
+                <el-table-column label="供应商" align="center" prop="supplier"/>
+                <el-table-column label="级别编码" align="center" prop="levelID"/>
+                <el-table-column label="级别名称" align="center" prop="levelName"/>
+              </template>
+            </SearchOption>
+          </el-col>
+        </el-row>
+        <!--        <el-button size="mini"  circle @click="searchStoreInfo">-->
+        <!--        </el-button>-->
       </div>
       <div class="order-item">
         <span class="text-bold">产品级别</span>
         <hr/>
         <el-input type="text" placeholder="请输入产品级别" v-model="levelName"></el-input>
-        <el-button type="primary" size="mini" icon="el-icon-search" circle
-                   @click="searchProductLevelInfo"></el-button>
+        <!--        <el-button type="primary" size="mini" icon="el-icon-search" circle-->
+        <!--                   @click="searchProductLevelInfo"></el-button>-->
+
+        <SearchOption :get-data="listProductLevel" icon="el-icon-search" @commitBack="handleCommitBackProductLevel"
+                      :limit-info="{}">
+          <template #table-columns>
+            <el-table-column label="级别编码" align="center" prop="levelNo"/>
+            <el-table-column label="级别名称" align="center" prop="levelName"/>
+            <el-table-column label="分类编号" align="center" prop="categoryNo"/>
+            <el-table-column label="分类名称" align="center" prop="categoryName"/>
+            <el-table-column label="厚度" align="center" prop="height"/>
+            <el-table-column label="长度" align="center" prop="length"/>
+            <el-table-column label="宽度" align="center" prop="width"/>
+            <el-table-column label="吨位" align="center" prop="tonnage"/>
+          </template>
+        </SearchOption>
       </div>
       <div class="order-item" v-if="storeName">
         <span class="text-bold">出库日期</span>
         <hr/>
         <el-date-picker
-          v-model="exWarehouseDate"
-          type="date"
-          placeholder="选择日期"
-          value-format="timestamp">
+            v-model="exWarehouseDate"
+            type="date"
+            placeholder="选择日期"
+            value-format="timestamp">
         </el-date-picker>
       </div>
       <div class="order-item">
@@ -904,330 +850,6 @@ export default {
       </div>
     </div>
 
-
-    <!--    供应商信息弹窗-->
-    <el-dialog
-      title="供应商信息"
-      :visible.sync="companyGiveDialogVisible"
-      width="35%" append-to-body>
-      <!--      供应商信息搜索-->
-      <el-row :gutter="5">
-        <el-col :span="4">
-          <span style="font-weight: bolder;line-height: 40px">公司名称</span>
-        </el-col>
-        <el-col :span="8">
-          <el-input v-model="companyName" placeholder="请输入公司名称"></el-input>
-        </el-col>
-        <el-col :span="8">
-          <el-button type="primary" @click="searchCompanyGiveInfo">搜索</el-button>
-        </el-col>
-      </el-row>
-      <el-table
-        :data="companyGiveInfo"
-        border>
-        <!--        操作-->
-        <el-table-column
-          fixed="left"
-          label="操作">
-          <template slot-scope="scope">
-            <el-button @click="commitCompanyGiveInfo(scope.row)" type="danger" size="small">确认</el-button>
-          </template>
-        </el-table-column>
-        <el-table-column
-          fixed
-          prop="companyName"
-          label="供应商">
-        </el-table-column>
-        <el-table-column
-          prop="address"
-          label="地址">
-        </el-table-column>
-        <el-table-column
-          prop="relationName"
-          label="联系人">
-        </el-table-column>
-        <el-table-column
-          prop="bankNo"
-          label="银行账号">
-        </el-table-column>
-        <el-table-column
-          prop="acountsName"
-          label="户名">
-        </el-table-column>
-      </el-table>
-      <span slot="footer" class="dialog-footer">
-    <el-button @click="companyGiveDialogVisible = false">取 消</el-button>
-    <el-button type="primary" @click="companyGiveDialogVisible = false">确 定</el-button>
-  </span>
-    </el-dialog>
-
-
-    <!--    仓库信息弹窗-->
-    <el-dialog
-      title="仓库信息"
-      :visible.sync="storeInfoDialogVisible"
-      width="60%" append-to-body>
-      <el-row>
-        <span style="font-weight: bolder">仓库名称</span>
-      </el-row>
-      <!--      搜索库存信息-->
-      <el-row>
-        <el-col :span="8">
-          <el-input type="text" v-model="searchStoreName"></el-input>
-        </el-col>
-        <el-col :span="5">
-          <el-button type="primary" @click="searchStoreHouseInfo">搜索</el-button>
-        </el-col>
-      </el-row>
-      <br/>
-      <!--      仓库信息列表-->
-      <el-row>
-        <el-table
-          :data="inventoryInfo"
-          border>
-          <!--         库存列表-->
-          <el-table-column
-            fixed="left"
-            label="操作">
-            <template slot-scope="scope">
-              <el-button @click="commitStoreInfo(scope.row)" type="danger" size="small">确认</el-button>
-            </template>
-          </el-table-column>
-          <el-table-column
-            prop="storeHouseName"
-            label="仓库名称">
-          </el-table-column>
-          <el-table-column
-            prop="storeDate"
-            label="入库日期">
-          </el-table-column>
-          <el-table-column
-            prop="stockNumber"
-            label="库存量">
-          </el-table-column>
-          <el-table-column
-            prop="supplier"
-            label="供应商">
-          </el-table-column>
-          <el-table-column
-            prop="levelName"
-            label="级别名称">
-          </el-table-column>
-          <el-table-column
-            prop="countingUnit"
-            label="计量单位">
-          </el-table-column>
-          <el-table-column
-            prop="height"
-            label="厚度">
-          </el-table-column>
-          <el-table-column
-            prop="length"
-            label="长度">
-          </el-table-column>
-          <el-table-column
-            prop="width"
-            label="宽度">
-          </el-table-column>
-          <el-table-column
-            prop="pieces"
-            label="出厂片数">
-          </el-table-column>
-          <el-table-column
-            prop="piecesPerPack"
-            label="每包片数">
-          </el-table-column>
-          <el-table-column
-            prop="packs"
-            label="包数">
-          </el-table-column>
-          <el-table-column
-            prop="price"
-            label="出厂单价">
-          </el-table-column>
-          <el-table-column
-            prop="isIncludeTaxFactory"
-            label="出厂是否含税">
-          </el-table-column>
-          <el-table-column
-            prop="sundryCost"
-            label="杂费">
-          </el-table-column>
-          <el-table-column
-            prop="paymentFactory"
-            label="出厂贷款">
-          </el-table-column>
-          <el-table-column
-            prop="paymentUnload"
-            label="卸货价">
-          </el-table-column>
-          <el-table-column
-            prop="isIncludeTaxSale"
-            label="销售是否含税">
-          </el-table-column>
-          <el-table-column
-            prop="payments"
-            label="总贷款">
-          </el-table-column>
-          <el-table-column
-            prop="landCarNo"
-            label="陆运车牌">
-          </el-table-column>
-          <el-table-column
-            prop="landDriverTel"
-            label="陆运司机电话">
-          </el-table-column>
-          <el-table-column
-            prop="landDriverName"
-            label="陆地司机姓名">
-          </el-table-column>
-          <el-table-column
-            prop="seaCarNo"
-            label="海运车牌">
-          </el-table-column>
-          <el-table-column
-            prop="seaDriverTel"
-            label="海运司机电话">
-          </el-table-column>
-          <el-table-column
-            prop="seaDriverName"
-            label="海运司机姓名">
-          </el-table-column>
-          <el-table-column
-            prop="erro"
-            label="误差">
-          </el-table-column>
-          <el-table-column
-            prop="tonnage"
-            label="吨位">
-          </el-table-column>
-          <el-table-column
-            prop="landFreightPrice"
-            label="陆运费单价">
-          </el-table-column>
-          <el-table-column
-            prop="landFreight"
-            label="陆运费">
-          </el-table-column>
-          <el-table-column
-            prop="seaFreight"
-            label="海运费">
-          </el-table-column>
-          <el-table-column
-            prop="freight"
-            label="运费（海运费+陆运费）">
-          </el-table-column>
-          <el-table-column
-            prop="otherCost"
-            label="其他费用">
-          </el-table-column>
-          <el-table-column
-            prop="profit"
-            label="利润">
-          </el-table-column>
-          <el-table-column
-            prop="profitNoTax"
-            label="不含税利润">
-          </el-table-column>
-          <el-table-column
-            prop="actualPieces"
-            label="实际片数">
-          </el-table-column>
-          <el-table-column
-            prop="paymentsWithSundry"
-            label="总货款杂费">
-          </el-table-column>
-          <el-table-column
-            prop="additionalFees"
-            label="加费">
-          </el-table-column>
-          <el-table-column
-            prop="rebate"
-            label="返利金额">
-          </el-table-column>
-          <el-table-column
-            prop="customerCommission"
-            label="客户佣金">
-          </el-table-column>
-          <el-table-column
-            prop="comments"
-            label="备注">
-          </el-table-column>
-        </el-table>
-      </el-row>
-      <span slot="footer" class="dialog-footer">
-    <el-button @click="storeInfoDialogVisible = false">取 消</el-button>
-    <el-button type="primary" @click="storeInfoDialogVisible = false">确 定</el-button>
-  </span>
-    </el-dialog>
-
-
-    <!--    产品级别信息弹窗-->
-    <el-dialog
-      title="产品级别信息"
-      :visible.sync="productLevelDialogVisible"
-      width="35%" append-to-body>
-      <el-row style="margin-bottom: 20px">
-        <!--      产品级别-->
-        <el-col :span="3">
-          <span style="font-weight: bolder;line-height: 40px">产品级别</span>
-        </el-col>
-        <el-col :span="8">
-          <el-input v-model="productLevel.level" placeholder="请输入产品级别"></el-input>
-        </el-col>
-        <!--        宽度-->
-        <el-col :span="2">
-          <span style="font-weight: bolder;line-height: 40px">宽度</span>
-        </el-col>
-        <el-col :span="8">
-          <el-input v-model="productLevel.width" placeholder="请输入产品级别"></el-input>
-        </el-col>
-        <el-col :span="2">
-          <el-button type="primary" @click="searchProductLevelInfo">搜索</el-button>
-        </el-col>
-      </el-row>
-      <el-table
-        :data="productLevelInfo"
-        border>
-        <!--        操作-->
-        <el-table-column
-          fixed="left"
-          label="操作">
-          <template slot-scope="scope">
-            <el-button @click="commitProductLevelInfo(scope.row)" type="danger" size="small">确认</el-button>
-          </template>
-        </el-table-column>
-        <el-table-column
-          fixed
-          prop="categoryName"
-          label="分类">
-        </el-table-column>
-        <el-table-column
-          prop="levelNo"
-          label="产品级别编码">
-        </el-table-column>
-        <el-table-column
-          prop="levelName"
-          label="标题">
-        </el-table-column>
-        <el-table-column
-          prop="height"
-          label="厚度">
-        </el-table-column>
-        <el-table-column
-          prop="length"
-          label="长度">
-        </el-table-column>
-        <el-table-column
-          prop="width"
-          label="宽度">
-        </el-table-column>
-      </el-table>
-      <span slot="footer" class="dialog-footer">
-    <el-button @click="productLevelDialogVisible = false">取 消</el-button>
-    <el-button type="primary" @click="productLevelDialogVisible = false">确 定</el-button>
-  </span>
-    </el-dialog>
   </div>
 </template>
 

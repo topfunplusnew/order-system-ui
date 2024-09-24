@@ -7,8 +7,11 @@
       </el-tooltip>
 
       <!--      导出-->
-      <el-tooltip class="item" effect="dark" content="导出" placement="top">
+      <el-tooltip class="item" effect="dark" content="导出1" placement="top">
         <slot name="export"></slot>
+      </el-tooltip>
+      <el-tooltip class="item" effect="dark" content="导出2" placement="top">
+        <slot name="export2"></slot>
       </el-tooltip>
       <!-- 隐藏列的控制   -->
       <el-tooltip class="item" style="margin-right: 10px" effect="dark" content="显隐列" placement="top" v-if="columns">
@@ -37,10 +40,10 @@
     </el-row>
     <el-dialog :title="title" :visible.sync="open" append-to-body>
       <el-transfer
-        :titles="['显示', '隐藏']"
-        v-model="value"
-        :data="columns"
-        @change="dataChange"
+          :titles="['显示', '隐藏']"
+          v-model="value"
+          :data="columns"
+          @change="dataChange"
       ></el-transfer>
     </el-dialog>
   </div>

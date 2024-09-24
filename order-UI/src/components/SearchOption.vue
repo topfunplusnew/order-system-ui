@@ -130,46 +130,46 @@ export default {
 <template>
   <div>
     <!--    按钮-->
-    <el-button :icon="icon" @click="handleCallBack" type="primary"></el-button>
+    <el-button size="mini" :icon="icon" @click="handleCallBack" type="primary"></el-button>
     <!--    弹窗-->
     <el-dialog
-      :title="title"
-      :visible.sync="dialogVisible"
-      width="50%" append-to-body>
+        :title="title"
+        :visible.sync="dialogVisible"
+        width="65%" append-to-body>
       <!--      弹出的表格内容-->
       <el-row>
         <div>
           <el-row :gutter="5">
-            <el-col :span="5">
+            <el-col :span="4">
               <span style="font-weight: bolder">{{ queryLabel }}</span>
             </el-col>
             <el-col :span="10">
-              <el-input type="text" placeholder="请输入" v-model="query"></el-input>
+              <el-input type="text" placeholder="请输入" size="mini" v-model="query"></el-input>
             </el-col>
             <el-col :span="3">
-              <el-button type="primary" @click="handleSearchInfo">搜索</el-button>
+              <el-button type="primary" @click="handleSearchInfo" size="mini">搜索</el-button>
             </el-col>
           </el-row>
         </div>
-        <el-table :data="tableData" v-loading="loading">
+        <el-table :data="tableData" v-loading="loading" size="mini">
           <!--   这里给表格的数据行-->
           <slot name="table-columns"></slot>
           <!--          点击确认的地方-->
           <el-table-column
-            fixed="right"
-            label="操作"
-            width="100">
+              fixed="right"
+              label="操作"
+              width="100">
             <template slot-scope="scope">
               <el-button @click="commitSomeThing(scope.row)" type="danger" size="small">确认</el-button>
             </template>
           </el-table-column>
         </el-table>
         <pagination
-          v-show="total>0"
-          :total="total"
-          :page.sync="pageNum"
-          :limit.sync="pageSize"
-          @pagination="getList"
+            v-show="total>0"
+            :total="total"
+            :page.sync="pageNum"
+            :limit.sync="pageSize"
+            @pagination="getList"
         />
       </el-row>
       <span slot="footer" class="dialog-footer">
