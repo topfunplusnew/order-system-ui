@@ -671,7 +671,6 @@
 
     <!-- 订单历史信息查看-->
     <el-dialog title="订单历史信息" :visible.sync="checkHistoryOrderVisible" width="85%">
-
       <el-row>
         <el-col :span="18" :offset="3">
           <el-timeline>
@@ -685,38 +684,187 @@
               <el-card>
                 <h3 style="font-weight: bold" v-if="item.userName !== null">修改人:{{ item.userName }}</h3>
                 <el-descriptions :column="5" size="mini" border>
-                  <el-descriptions-item label="用户名" label-class-name="my-label" content-class-name="now-order">
-                    kooriookami12312
+                  <el-descriptions-item label="日期"
+                                        :content-class-name="hasProperty(item.compare.different,'orderDate')?'before-order':''">
+                    {{ formatValue(item.orderDate) }}
                   </el-descriptions-item>
-                  <el-descriptions-item label="用户名">kooriookami</el-descriptions-item>
-                  <el-descriptions-item label="用户名">kooriookami</el-descriptions-item>
-                  <el-descriptions-item label="手机号">18100000000</el-descriptions-item>
-                  <el-descriptions-item label="手机号">18100000000</el-descriptions-item>
-                  <el-descriptions-item label="居住地">苏州市</el-descriptions-item>
-                  <el-descriptions-item label="居住地">苏州市</el-descriptions-item>
-                  <el-descriptions-item label="备注">
-                    <el-tag size="small">学校</el-tag>
+                  <el-descriptions-item label="客户"
+                                        :content-class-name="hasProperty(item.compare.different,'customer')?'before-order':''">
+                    {{ formatValue(item.customer) }}
                   </el-descriptions-item>
-                  <el-descriptions-item label="联系地址">江苏省苏州市吴中区吴中大道 1188 号</el-descriptions-item>
+                  <el-descriptions-item label="供应商名称"
+                                        :content-class-name="hasProperty(item.compare.different,'supplierNames')?'before-order':''">
+                    {{ formatValue(item.supplierNames) }}
+                  </el-descriptions-item>
+                  <el-descriptions-item label="审核状态"
+                                        :content-class-name="hasProperty(item.compare.different,'checkState')?'before-order':''">
+                    {{ formatValue(item.checkState) }}
+                  </el-descriptions-item>
+                  <el-descriptions-item label="打款状态"
+                                        :content-class-name="hasProperty(item.compare.different,'PaymentState')?'before-order':''">
+                    {{ formatValue(item.PaymentState) }}
+                  </el-descriptions-item>
+                  <el-descriptions-item label="开票状态"
+                                        :content-class-name="hasProperty(item.compare.different,'invoiceState')?'before-order':''">
+                    {{ formatValue(item.invoiceState) }}
+                  </el-descriptions-item>
+                  <el-descriptions-item label="调整日期" v-if="item.isAdjusted"
+                                        :content-class-name="hasProperty(item.compare.different,'adjustDate')?'before-order':''">
+                    {{ formatValue(item.adjustDate) }}
+                  </el-descriptions-item>
+                  <el-descriptions-item label="客户是否开票"
+                                        :content-class-name="hasProperty(item.compare.different,'customerIsInvoice')?'before-order':''"
+                                        v-if="item.customerIsInvoice !== null && item.customerIsInvoice!== undefined && item.customerIsInvoice !== '' ">
+                    {{ item.customerIsInvoice === 0 ? '未开票' : '开票' }}
+                  </el-descriptions-item>
+                  <el-descriptions-item label="供应商是否开票"
+                                        :content-class-name="hasProperty(item.compare.different,'isSupplierInvoice')?'before-order':''"
+                                        v-if="item.isSupplierInvoice !== null && item.isSupplierInvoice!== undefined && item.isSupplierInvoice!== ''">
+                    {{ item.isSupplierInvoice === 0 ? '未开票' : '开票' }}
+                  </el-descriptions-item>
+                  <el-descriptions-item label="销售经理"
+                                        :content-class-name="hasProperty(item.compare.different,'saleManager')?'before-order':''">
+                    {{ formatValue(item.saleManager) }}
+                  </el-descriptions-item>
+                  <el-descriptions-item label="车队"
+                                        :content-class-name="hasProperty(item.compare.different,'fleet')?'before-order':''">
+                    {{ formatValue(item.fleet) }}
+                  </el-descriptions-item>
+                  <el-descriptions-item label="陆运车牌"
+                                        :content-class-name="hasProperty(item.compare.different,'landCarNo')?'before-order':''">
+                    {{ formatValue(item.landCarNo) }}
+                  </el-descriptions-item>
+                  <el-descriptions-item label="陆运司机电话"
+                                        :content-class-name="hasProperty(item.compare.different,'landDriverTel')?'before-order':''">
+                    {{ formatValue(item.landDriverTel) }}
+                  </el-descriptions-item>
+                  <el-descriptions-item label="陆运司机姓名"
+                                        :content-class-name="hasProperty(item.compare.different,'landDriverName')?'before-order':''">
+                    {{ formatValue(item.landDriverName) }}
+                  </el-descriptions-item>
+                  <el-descriptions-item label="陆运银行户名"
+                                        :content-class-name="hasProperty(item.compare.different,'landBankName')?'before-order':''">
+                    {{ formatValue(item.landBankName) }}
+                  </el-descriptions-item>
+                  <el-descriptions-item label="陆运银行账号"
+                                        :content-class-name="hasProperty(item.compare.different,'landBankNo')?'before-order':''">
+                    {{ formatValue(item.landBankNo) }}
+                  </el-descriptions-item>
+                  <el-descriptions-item label="海运车牌"
+                                        :content-class-name="hasProperty(item.compare.different,'seaCarNo')?'before-order':''">
+                    {{ formatValue(item.seaCarNo) }}
+                  </el-descriptions-item>
+                  <el-descriptions-item label="海运司机电话"
+                                        :content-class-name="hasProperty(item.compare.different,'seaDriverTel')?'before-order':''">
+                    {{ formatValue(item.seaDriverTel) }}
+                  </el-descriptions-item>
+                  <el-descriptions-item label="海运司机姓名"
+                                        :content-class-name="hasProperty(item.compare.different,'seaDriverName')?'before-order':''">
+                    {{ formatValue(item.seaDriverName) }}
+                  </el-descriptions-item>
+                  <el-descriptions-item label="海运银行户名"
+                                        :content-class-name="hasProperty(item.compare.different,'seaBankName')?'before-order':''">
+                    {{ formatValue(item.seaBankName) }}
+                  </el-descriptions-item>
+                  <el-descriptions-item label="海运银行账号"
+                                        :content-class-name="hasProperty(item.compare.different,'seaBankNo')?'before-order':''">
+                    {{ formatValue(item.seaBankNo) }}
+                  </el-descriptions-item>
+                  <el-descriptions-item label="陆运费"
+                                        :content-class-name="hasProperty(item.compare.different,'landFreight')?'before-order':''">
+                    {{ formatValue(item.landFreight) }}
+                  </el-descriptions-item>
+                  <el-descriptions-item label="海运费"
+                                        :content-class-name="hasProperty(item.compare.different,'seaFreight')?'before-order':''">
+                    {{ formatValue(item.seaFreight) }}
+                  </el-descriptions-item>
+                  <el-descriptions-item label="总货款"
+                                        :content-class-name="hasProperty(item.compare.different,'allPayments')?'before-order':''">
+                    {{ formatValue(item.allPayments) }}
+                  </el-descriptions-item>
                 </el-descriptions>
               </el-card>
               <hr color="#dfe4ed"/>
-              <el-card>
-                <el-descriptions :column="5" size="mini" border>
-                  <el-descriptions-item label="用户名" content-class-name="before-order">kooriookami
-                  </el-descriptions-item>
-                  <el-descriptions-item label="用户名">kooriookami</el-descriptions-item>
-                  <el-descriptions-item label="用户名">kooriookami</el-descriptions-item>
-                  <el-descriptions-item label="手机号">18100000000</el-descriptions-item>
-                  <el-descriptions-item label="手机号">18100000000</el-descriptions-item>
-                  <el-descriptions-item label="居住地">苏州市</el-descriptions-item>
-                  <el-descriptions-item label="居住地">苏州市</el-descriptions-item>
-                  <el-descriptions-item label="备注">
-                    <el-tag size="small">学校</el-tag>
-                  </el-descriptions-item>
-                  <el-descriptions-item label="联系地址">江苏省苏州市吴中区吴中大道 1188 号</el-descriptions-item>
-                </el-descriptions>
-              </el-card>
+              <!--              todo 有点小bug-->
+              <!--   这里是上一次修改的订单信息-->
+              <!--              <el-card>-->
+              <!--                <el-descriptions :column="5" size="mini" border>-->
+              <!--                  <el-descriptions-item label="日期">-->
+              <!--                    {{ formatValue(item.status.orderDate) }}-->
+              <!--                  </el-descriptions-item>-->
+              <!--                  <el-descriptions-item label="客户">{{ formatValue(item.status.customer) }}</el-descriptions-item>-->
+              <!--                  <el-descriptions-item label="供应商名称">{{-->
+              <!--                      formatValue(item.status.supplierNames)-->
+              <!--                    }}-->
+              <!--                  </el-descriptions-item>-->
+              <!--                  <el-descriptions-item label="审核状态">{{-->
+              <!--                      formatValue(item.status.checkState)-->
+              <!--                    }}-->
+              <!--                  </el-descriptions-item>-->
+              <!--                  <el-descriptions-item label="打款状态">{{-->
+              <!--                      formatValue(item.status.PaymentState)-->
+              <!--                    }}-->
+              <!--                  </el-descriptions-item>-->
+              <!--                  <el-descriptions-item label="开票状态">{{-->
+              <!--                      formatValue(item.status.invoiceState)-->
+              <!--                    }}-->
+              <!--                  </el-descriptions-item>-->
+              <!--                  <el-descriptions-item label="调整日期" v-if="item.isAdjusted">{{-->
+              <!--                      formatValue(item.status.adjustDate)-->
+              <!--                    }}-->
+              <!--                  </el-descriptions-item>-->
+              <!--                  <el-descriptions-item label="客户是否开票"-->
+              <!--                                        v-if="item.status.customerIsInvoice !== null && item.status.customerIsInvoice!== undefined && item.status.customerIsInvoice !== '' ">-->
+              <!--                    {{ item.customerIsInvoice === 0 ? '未开票' : '开票' }}-->
+              <!--                  </el-descriptions-item>-->
+              <!--                  <el-descriptions-item label="供应商是否开票"-->
+              <!--                                        v-if="item.status.isSupplierInvoice !== null && item.status.isSupplierInvoice!== undefined && item.status.isSupplierInvoice!== ''">-->
+              <!--                    {{ item.isSupplierInvoice === 0 ? '未开票' : '开票' }}-->
+              <!--                  </el-descriptions-item>-->
+              <!--                  <el-descriptions-item label="销售经理">{{-->
+              <!--                      formatValue(item.status.saleManager)-->
+              <!--                    }}-->
+              <!--                  </el-descriptions-item>-->
+              <!--                  <el-descriptions-item label="车队">{{ formatValue(item.status.fleet) }}</el-descriptions-item>-->
+              <!--                  <el-descriptions-item label="陆运车牌">{{ formatValue(item.status.landCarNo) }}</el-descriptions-item>-->
+              <!--                  <el-descriptions-item label="陆运司机电话">{{-->
+              <!--                      formatValue(item.status.landDriverTel)-->
+              <!--                    }}-->
+              <!--                  </el-descriptions-item>-->
+              <!--                  <el-descriptions-item label="陆运司机姓名">{{-->
+              <!--                      formatValue(item.status.landDriverName)-->
+              <!--                    }}-->
+              <!--                  </el-descriptions-item>-->
+              <!--                  <el-descriptions-item label="陆运银行户名">{{-->
+              <!--                      formatValue(item.status.landBankName)-->
+              <!--                    }}-->
+              <!--                  </el-descriptions-item>-->
+              <!--                  <el-descriptions-item label="陆运银行账号">{{-->
+              <!--                      formatValue(item.status.landBankNo)-->
+              <!--                    }}-->
+              <!--                  </el-descriptions-item>-->
+              <!--                  <el-descriptions-item label="海运车牌">{{ formatValue(item.status.seaCarNo) }}</el-descriptions-item>-->
+              <!--                  <el-descriptions-item label="海运司机电话">{{-->
+              <!--                      formatValue(item.status.seaDriverTel)-->
+              <!--                    }}-->
+              <!--                  </el-descriptions-item>-->
+              <!--                  <el-descriptions-item label="海运司机姓名">{{-->
+              <!--                      formatValue(item.seaDriverName)-->
+              <!--                    }}-->
+              <!--                  </el-descriptions-item>-->
+              <!--                  <el-descriptions-item label="海运银行户名">{{-->
+              <!--                      formatValue(item.status.seaBankName)-->
+              <!--                    }}-->
+              <!--                  </el-descriptions-item>-->
+              <!--                  <el-descriptions-item label="海运银行账号">{{-->
+              <!--                      formatValue(item.status.seaBankNo)-->
+              <!--                    }}-->
+              <!--                  </el-descriptions-item>-->
+              <!--                  <el-descriptions-item label="陆运费">{{ formatValue(item.status.landFreight) }}</el-descriptions-item>-->
+              <!--                  <el-descriptions-item label="海运费">{{ formatValue(item.status.seaFreight) }}</el-descriptions-item>-->
+              <!--                  <el-descriptions-item label="总货款">{{ formatValue(item.status.allPayments) }}</el-descriptions-item>-->
+              <!--                </el-descriptions>-->
+              <!--              </el-card>-->
             </el-timeline-item>
           </el-timeline>
         </el-col>
@@ -784,6 +932,7 @@ import axios from "axios";
 import {getCompany} from "../../../api/system/company";
 import {getHistoryGoodsOrder} from "../../../api/system/goodsOrder";
 import OrderInfos from "../../../components/OrderInfos.vue";
+import {formatValue} from "../../../api/tool/cons";
 
 export default {
   name: "GoodsOrder",
@@ -1040,7 +1189,6 @@ export default {
       checkHistoryOrderVisible: false,
       // 订单历史信息列表
       orderHistoryInfoList: [],
-
     };
   },
   created() {
@@ -1081,6 +1229,7 @@ export default {
     }
   },
   methods: {
+    formatValue,
     parseTime,
     listCompany,
     listBankAccount,
@@ -1118,6 +1267,11 @@ export default {
         this.checkHistoryOrderVisible = true;
       })
     },
+    // 检查diff数组中是否有该属性
+    hasProperty(different, property) {
+      console.log('prop', different, property)
+      return different.some(item => item.key === property)
+    },
     // todo 比较方法
     compareHistoryOrder(orderHistoryInfoList) {
       console.log('compareHistoryOrder', orderHistoryInfoList.length)
@@ -1133,44 +1287,81 @@ export default {
           this.$message.error('有修改记录')
           // 如果不完全相等 那么要开始比较
           console.log('比较结果', this.compareOrderInfos(newOrderInfo, this.previousOrderInfo))
+          // 给他一个对象
+          this.orderHistoryInfoList[0].compare = this.compareOrderInfos(newOrderInfo, this.previousOrderInfo)
         }
+        // 如果是两个及以上 那么就是每两个之间进行比较 两个以上的话 需要把原订单信息推入数组第一位 然后两两比较
+      } else {
+        const len = this.orderHistoryInfoList.unshift(this.previousOrderInfo)
+        for (let i = 0; i < len - 1; i++) {
+          // 比较两个对象 前一个和后一个进行比较 并且记录前一个的compare属性中
+          this.orderHistoryInfoList[i].compare
+              = this.compareOrderInfos(this.orderHistoryInfoList[i], this.orderHistoryInfoList[i + 1])
+          // 保存上一个订单的状态
+          this.orderHistoryInfoList[i].status = this.orderHistoryInfoList[i + 1];
+        }
+        // 单独处理最后一个元素 因为索引的原因最后一个元素没有比较 并且最后一个元素是最早的修订记录
+        if (len > 1) {
+          this.orderHistoryInfoList[len - 1].compare = {same: [], different: []}
+          this.orderHistoryInfoList[len - 1].status = {}
+        }
+        console.log('比较数组', this.orderHistoryInfoList)
       }
     },
     // todo 订单属性比较方法
     compareOrderInfos(orderInfo1, orderInfo2) {
-      // 列表里面是所有修改的订单的数据，任意两个之间进行比较 比较两个对象的属性值是否一样
+      // 初始化结果数组来存储相同和不同的属性信息
+      const result = {same: [], different: []};
+
+      // 检查传入的对象是否合法
       if (typeof orderInfo1 !== "object" || typeof orderInfo2 !== "object") {
-        throw new Error('比较类型不合法')
+        throw new Error('比较类型不合法');
       }
-      if (orderInfo1 && orderInfo2) {
-        return true
+
+      // 空对象比较逻辑
+      if (orderInfo1 === null && orderInfo2 === null) {
+        return result;
       }
-      if (orderInfo1 || orderInfo2) {
-        return false
+      if (orderInfo1 === null || orderInfo2 === null) {
+        return result;
       }
-      console.log('比较的两个对象为', orderInfo1, orderInfo2)
+
+      // 获取对象的所有键
       const keys1 = Object.keys(orderInfo1);
       const keys2 = Object.keys(orderInfo2);
 
-      // 遍历第一个对象的属性
-      for (const key of keys1) {
-        // 检查第二个对象是否有相同的属性
-        if (!keys2.includes(key)) {
-          return false;
-        }
-        // 比较属性值是否相等
-        if (typeof orderInfo1[key] === 'object' && typeof orderInfo2[key] === 'object') {
-          // 如果属性值也是对象，则递归比较
-          if (!this.compareOrderInfos(orderInfo1[key], orderInfo2[key])) {
-            return false;
+      // 比较两个对象的键是否一致
+      const allKeys = new Set([...keys1, ...keys2]);
+
+      // 遍历所有键
+      for (const key of allKeys) {
+        // 记录不存在于另一对象中的键
+        if (!keys1.includes(key)) {
+          result.different.push({key, value1: undefined, value2: orderInfo2[key]});
+        } else if (!keys2.includes(key)) {
+          result.different.push({key, value1: orderInfo1[key], value2: undefined});
+        } else {
+          // 对于存在的键，比较其值
+          if (typeof orderInfo1[key] === 'object' && typeof orderInfo2[key] === 'object') {
+            // 递归比较对象
+            const subResult = this.compareOrderInfos(orderInfo1[key], orderInfo2[key]);
+            if (subResult.different.length > 0) {
+              result.different.push(...subResult.different.map(diff => ({...diff, key: `${key}.${diff.key}`})));
+            } else {
+              result.same.push({key, value1: orderInfo1[key], value2: orderInfo2[key]});
+            }
+          } else {
+            // 值比较
+            if (orderInfo1[key] === orderInfo2[key]) {
+              result.same.push({key, value1: orderInfo1[key], value2: orderInfo2[key]});
+            } else {
+              result.different.push({key, value1: orderInfo1[key], value2: orderInfo2[key]});
+            }
           }
-        } else if (orderInfo1[key] !== orderInfo2[key]) {
-          // 如果属性值不是对象，则直接比较
-          return false;
         }
       }
-      // 全部比较完 返回true
-      return true
+      // 返回结果
+      return result;
     },
     // 如果两个对象完全相等
     equals(orderInfo1, orderInfo2) {
