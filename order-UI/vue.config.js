@@ -35,9 +35,9 @@ module.exports = {
         proxy: {
             // detail: https://cli.vuejs.org/config/#devserver-proxy
             [process.env.VUE_APP_BASE_API]: {
-                // target: `https://bak.xuni.rocks`,
+                target: `https://bak.xuni.rocks`,
                 // target: `http://localhost:8080`
-                target: `http://172.20.193.200:38080`,
+                // target: `http://172.20.193.200:38080`,
                 changeOrigin: true,
                 pathRewrite: {
                     ['^' + process.env.VUE_APP_BASE_API]: ''
