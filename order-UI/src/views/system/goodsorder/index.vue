@@ -670,14 +670,20 @@
 
 
     <!-- 订单历史信息查看-->
-    <el-dialog title="订单历史信息" :visible.sync="checkHistoryOrderVisible" fullscreen>
+    <el-dialog title="订单历史信息" :visible.sync="checkHistoryOrderVisible" width="85%">
+
       <el-row>
         <el-col :span="18" :offset="3">
           <el-timeline>
-            <el-timeline-item v-for="(item,index) in orderHistoryInfoList" :timestamp="item.updateTime" placement="top"
+            <el-timeline-item :timestamp="'今天'+parseTime(new Date())" placement="top">
+              <el-button type="success" icon="el-icon-document" @click="checkPreviousOrderInfo">查看原订单信息
+              </el-button>
+            </el-timeline-item>
+            <el-timeline-item v-for="(item,index) in orderHistoryInfoList" :timestamp="item.updateTime"
+                              placement="top"
                               :key="index">
               <el-card>
-                <h3 style="font-weight: bold">admin 2018/4/12 修改 </h3>
+                <h3 style="font-weight: bold" v-if="item.userName !== null">修改人:{{ item.userName }}</h3>
                 <el-descriptions :column="5" size="mini" border>
                   <el-descriptions-item label="用户名" label-class-name="my-label" content-class-name="now-order">
                     kooriookami12312
@@ -716,6 +722,29 @@
         </el-col>
       </el-row>
     </el-dialog>
+
+
+    <!--      原订单信息-->
+
+    <el-dialog
+        title="原订单信息"
+        :visible.sync="previousOrderInfoVisible"
+        width="68%">
+      <el-row>
+        <el-card class="box-card" shadow="hover">
+          <OrderInfos :orderInfo="previousOrderInfo"/>
+        </el-card>
+
+        <el-card class="box-card" shadow="hover">
+          <OrderDetailInfo :orderInfo="previousOrderInfo.orderDetailList"/>
+        </el-card>
+      </el-row>
+      <span slot="footer" class="dialog-footer">
+    <el-button @click="previousOrderInfoVisible = false">取 消</el-button>
+    <el-button type="primary" @click="previousOrderInfoVisible = false">确 定</el-button>
+  </span>
+    </el-dialog>
+
   </div>
 </template>
 
@@ -754,11 +783,13 @@ import {mixin_printHTML} from "@/views/dashboard/mixins/print";
 import axios from "axios";
 import {getCompany} from "../../../api/system/company";
 import {getHistoryGoodsOrder} from "../../../api/system/goodsOrder";
+import OrderInfos from "../../../components/OrderInfos.vue";
 
 export default {
   name: "GoodsOrder",
   mixins: [mixin_printHTML],
   components: {
+    OrderInfos,
     FreeApply,
     OrderDetailInfo,
     OrderDetail, ChatForm, ApplyPayment, SwitchBarForCheck, SwitchBarItem, SearchOption, OrderForm, TagsItem
@@ -1001,9 +1032,15 @@ export default {
       // 查看附件或者收到条的文件列表
       checkFileList: [],
       checkAttachmentVisible: false,
+
+      // 原订单信息
+      previousOrderInfo: {},
+      previousOrderInfoVisible: false,
       // 查看订单历史信息
       checkHistoryOrderVisible: false,
+      // 订单历史信息列表
       orderHistoryInfoList: [],
+
     };
   },
   created() {
@@ -1058,8 +1095,15 @@ export default {
         }
       })
     },
+    // 查看原订单信息
+    checkPreviousOrderInfo() {
+      this.previousOrderInfoVisible = true;
+    },
     // 查看订单历史信息
     checkOrderHistory(row) {
+      // 保存原订单的信息
+      this.previousOrderInfo = row;
+
       // 查询订单历史信息
       getHistoryGoodsOrder({goodsOrderID: row.id}).then(res => {
         // 如果rows的长度为0那么就提示没有修改记录
@@ -1068,14 +1112,76 @@ export default {
           return;
         }
         this.orderHistoryInfoList = res.rows
-        // 对orderHistoryInfoList数组进行 操作比较 然后形成新的数组
-
+        // 比较对象
+        this.compareHistoryOrder(this.orderHistoryInfoList)
 
         this.checkHistoryOrderVisible = true;
       })
     },
-    compareOrderInfos() {
+    // todo 比较方法
+    compareHistoryOrder(orderHistoryInfoList) {
+      console.log('compareHistoryOrder', orderHistoryInfoList.length)
+      if (typeof orderHistoryInfoList !== "object") {
+        this.$message.error('比较类型不合法')
+      }
+      // 如果长度为1则和原订单进行比较
+      if (orderHistoryInfoList.length === 1) {
+        const newOrderInfo = orderHistoryInfoList[0];
+        if (this.equals(newOrderInfo, this.previousOrderInfo)) {
+          this.$message.success('没有修改记录')
+        } else {
+          this.$message.error('有修改记录')
+          // 如果不完全相等 那么要开始比较
+          console.log('比较结果', this.compareOrderInfos(newOrderInfo, this.previousOrderInfo))
+        }
+      }
+    },
+    // todo 订单属性比较方法
+    compareOrderInfos(orderInfo1, orderInfo2) {
+      // 列表里面是所有修改的订单的数据，任意两个之间进行比较 比较两个对象的属性值是否一样
+      if (typeof orderInfo1 !== "object" || typeof orderInfo2 !== "object") {
+        throw new Error('比较类型不合法')
+      }
+      if (orderInfo1 && orderInfo2) {
+        return true
+      }
+      if (orderInfo1 || orderInfo2) {
+        return false
+      }
+      console.log('比较的两个对象为', orderInfo1, orderInfo2)
+      const keys1 = Object.keys(orderInfo1);
+      const keys2 = Object.keys(orderInfo2);
 
+      // 遍历第一个对象的属性
+      for (const key of keys1) {
+        // 检查第二个对象是否有相同的属性
+        if (!keys2.includes(key)) {
+          return false;
+        }
+        // 比较属性值是否相等
+        if (typeof orderInfo1[key] === 'object' && typeof orderInfo2[key] === 'object') {
+          // 如果属性值也是对象，则递归比较
+          if (!this.compareOrderInfos(orderInfo1[key], orderInfo2[key])) {
+            return false;
+          }
+        } else if (orderInfo1[key] !== orderInfo2[key]) {
+          // 如果属性值不是对象，则直接比较
+          return false;
+        }
+      }
+      // 全部比较完 返回true
+      return true
+    },
+    // 如果两个对象完全相等
+    equals(orderInfo1, orderInfo2) {
+      try {
+        const str1 = JSON.stringify(orderInfo1);
+        const str2 = JSON.stringify(orderInfo2);
+        return str1 === str2;
+      } catch (error) {
+        // 如果对象中有循环引用或其他不可序列化的值，则抛出错误
+        return false;
+      }
     },
     // 取消添加订单
     cancelSubmit() {

@@ -63,7 +63,6 @@
 import {listAuditflow, updateAuditflow} from "@/api/system/auditflow";
 import {mixin_printHTML} from "@/views/dashboard/mixins/print";
 import {mapGetters} from "vuex";
-import {listUser} from "@/api/system/user";
 import AuditFlowInfo from "./auditFlowInfo.vue";
 
 export default {
