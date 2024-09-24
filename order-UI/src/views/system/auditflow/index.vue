@@ -3,13 +3,11 @@
     <el-row :gutter="10" class="mb8">
       <el-col :span="1.5">
         <el-button
-          type="primary"
-          plain
-          icon="el-icon-plus"
-          size="mini"
-          @click="handleAdd"
-          v-hasPermi="['system:auditflow:add']"
-        >修改审核流程
+            type="danger"
+            size="mini"
+            @click="handleAdd"
+            v-hasPermi="['system:auditflow:edit']"
+        >添加或修改审核流程
         </el-button>
       </el-col>
       <el-col :span="1.5">
@@ -32,10 +30,10 @@
             <el-select multiple v-model="stepInfo.auditauthority" placeholder="请选择" @change="handleAddAuditauthority"
                        @remove-tag="removeAuditauthority">
               <el-option
-                v-for="item in userList"
-                :key="item.userId"
-                :label="item.userName"
-                :value="item.userId">
+                  v-for="item in userList"
+                  :key="item.userId"
+                  :label="item.userName"
+                  :value="item.userId">
               </el-option>
             </el-select>
           </template>
@@ -54,10 +52,10 @@
               <el-select multiple v-model="item.auditauthority" placeholder="请选择"
                          @change="handleAddAuditauthorityList(item,$event)">
                 <el-option
-                  v-for="item in userList"
-                  :key="item.userId"
-                  :label="item.userName"
-                  :value="item.userId">
+                    v-for="item in userList"
+                    :key="item.userId"
+                    :label="item.userName"
+                    :value="item.userId">
                 </el-option>
               </el-select>
             </template>

@@ -1062,10 +1062,20 @@ export default {
     checkOrderHistory(row) {
       // 查询订单历史信息
       getHistoryGoodsOrder({goodsOrderID: row.id}).then(res => {
-        console.log(res)
+        // 如果rows的长度为0那么就提示没有修改记录
+        if (res.rows.length === 0) {
+          this.$message.warning('没有修改记录')
+          return;
+        }
         this.orderHistoryInfoList = res.rows
+        // 对orderHistoryInfoList数组进行 操作比较 然后形成新的数组
+
+
         this.checkHistoryOrderVisible = true;
       })
+    },
+    compareOrderInfos() {
+
     },
     // 取消添加订单
     cancelSubmit() {
