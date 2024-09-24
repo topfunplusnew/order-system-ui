@@ -84,18 +84,23 @@
     </el-row>
 
     <el-table border v-horizontal-scroll="'always'" v-loading="loading" :data="RebateList" size="mini"
-              @selection-change="handleSelectionChange" id="printBox">
+              @selection-change="handleSelectionChange" id="printBox" :cell-style="()=>{return {padding:'.5px'}}">
       <el-table-column label="日期" align="center" prop="rebateDate" v-if="columns[0].visible"/>
       <el-table-column label="金额" align="center" prop="rebate" v-if="columns[1].visible"/>
       <el-table-column label="类型" align="center" prop="rebateType" v-if="columns[2].visible"/>
-      <el-table-column label="收款户名" align="center" prop="inAcountsName" v-if="columns[3].visible"/>
-      <el-table-column label="收款账号" align="center" prop="inBankNo" v-if="columns[4].visible"/>
+      <el-table-column label="收款户名" align="center" prop="inAcountsName" v-if="columns[3].visible"
+                       show-overflow-tooltip/>
+      <el-table-column label="收款账号" align="center" prop="inBankNo" v-if="columns[4].visible" width="160"
+                       show-overflow-tooltip/>
       <el-table-column label="供应商" align="center" prop="supplier" v-if="columns[5].visible"/>
-      <el-table-column label="付款户名" align="center" prop="outAcountsName" v-if="columns[6].visible"/>
-      <el-table-column label="付款款账号" align="center" prop="outBankNo" v-if="columns[7].visible"/>
-      <el-table-column label="返利原因" align="center" prop="rebateReason" v-if="columns[8].visible"/>
-      <el-table-column label="返利方式" align="center" prop="rebateMethod" v-if="columns[8].visible"/>
-      <el-table-column label="备注" align="center" prop="comments" v-if="columns[9].visible"/>
+      <el-table-column label="付款户名" align="center" prop="outAcountsName" v-if="columns[6].visible"
+                       show-overflow-tooltip/>
+      <el-table-column label="付款款账号" align="center" prop="outBankNo" v-if="columns[7].visible" width="160"/>
+      <el-table-column label="返利原因" align="center" prop="rebateReason" v-if="columns[8].visible"
+                       show-overflow-tooltip/>
+      <el-table-column label="返利方式" align="center" prop="rebateMethod" v-if="columns[8].visible"
+                       show-overflow-tooltip/>
+      <el-table-column label="备注" align="center" prop="comments" v-if="columns[9].visible" show-overflow-tooltip/>
       <el-table-column label="操作" align="center" class-name="small-padding fixed-width" width="150px" fixed="right">
         <template slot-scope="scope">
           <!--          <el-button
