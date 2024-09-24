@@ -675,7 +675,7 @@
         <el-col :span="18" :offset="3">
           <el-timeline>
             <el-timeline-item timestamp="2018/4/12" placement="top">
-              <el-card >
+              <el-card>
                 <h3 style="font-weight: bold">admin 2018/4/12 修改 </h3>
                 <el-descriptions column="5" size="mini" border>
                   <el-descriptions-item label="用户名" label-class-name="my-label" content-class-name="now-order">
