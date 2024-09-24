@@ -674,10 +674,11 @@
       <el-row>
         <el-col :span="18" :offset="3">
           <el-timeline>
-            <el-timeline-item timestamp="2018/4/12" placement="top">
+            <el-timeline-item v-for="(item,index) in orderHistoryInfoList" :timestamp="item.updateTime" placement="top"
+                              :key="index">
               <el-card>
                 <h3 style="font-weight: bold">admin 2018/4/12 修改 </h3>
-                <el-descriptions column="5" size="mini" border>
+                <el-descriptions :column="5" size="mini" border>
                   <el-descriptions-item label="用户名" label-class-name="my-label" content-class-name="now-order">
                     kooriookami12312
                   </el-descriptions-item>
@@ -695,7 +696,7 @@
               </el-card>
               <hr color="#dfe4ed"/>
               <el-card>
-                <el-descriptions column="5" size="mini" border>
+                <el-descriptions :column="5" size="mini" border>
                   <el-descriptions-item label="用户名" content-class-name="before-order">kooriookami
                   </el-descriptions-item>
                   <el-descriptions-item label="用户名">kooriookami</el-descriptions-item>
@@ -709,18 +710,6 @@
                   </el-descriptions-item>
                   <el-descriptions-item label="联系地址">江苏省苏州市吴中区吴中大道 1188 号</el-descriptions-item>
                 </el-descriptions>
-              </el-card>
-            </el-timeline-item>
-            <el-timeline-item timestamp="2018/4/3" placement="top">
-              <el-card>
-                <h4>更新 Github 模板</h4>
-                <p>王小虎 提交于 2018/4/3 20:46</p>
-              </el-card>
-            </el-timeline-item>
-            <el-timeline-item timestamp="2018/4/2" placement="top">
-              <el-card>
-                <h4>更新 Github 模板</h4>
-                <p>王小虎 提交于 2018/4/2 20:46</p>
               </el-card>
             </el-timeline-item>
           </el-timeline>
@@ -764,6 +753,7 @@ import {addInvoiceIn} from "@/api/system/invoiceIn";
 import {mixin_printHTML} from "@/views/dashboard/mixins/print";
 import axios from "axios";
 import {getCompany} from "../../../api/system/company";
+import {getHistoryGoodsOrder} from "../../../api/system/goodsOrder";
 
 export default {
   name: "GoodsOrder",
@@ -1013,6 +1003,7 @@ export default {
       checkAttachmentVisible: false,
       // 查看订单历史信息
       checkHistoryOrderVisible: false,
+      orderHistoryInfoList: [],
     };
   },
   created() {
@@ -1068,8 +1059,13 @@ export default {
       })
     },
     // 查看订单历史信息
-    checkOrderHistory() {
-      this.checkHistoryOrderVisible = true;
+    checkOrderHistory(row) {
+      // 查询订单历史信息
+      getHistoryGoodsOrder({goodsOrderID: row.id}).then(res => {
+        console.log(res)
+        this.orderHistoryInfoList = res.rows
+        this.checkHistoryOrderVisible = true;
+      })
     },
     // 取消添加订单
     cancelSubmit() {

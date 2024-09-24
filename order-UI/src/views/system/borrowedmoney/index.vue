@@ -66,13 +66,13 @@
               size="mini"
               type="warning"
               @click="handleGiveBackMoney(scope.row)"
-              v-if="scope.row.isEnd ==='否'">还款
+              v-if="scope.row.isEnd === '0'">还款
           </el-button>
           <el-button
               size="mini"
               type="success"
-              disabled
-              v-if="scope.row.isEnd ==='是'">已还款
+              @click="handleGiveEnoughBackMoney(scope.row)"
+              v-if="scope.row.isEnd === '1'">已还款
           </el-button>
           <el-button
               size="mini"
@@ -189,7 +189,7 @@
               </el-col>
               <el-col :span="3">
                 <SearchOption :get-data="listBankAccount" icon="el-icon-search" @commitBack="handleCommitBackBankAcount"
-                              :limit-info="{}" query-label="户名查找" query-info="acountsName"
+                              :limit-info="{acountsType:'己方公司'}" query-label="户名查找" query-info="acountsName"
                               :query-name="queryBank"
                               @update:queryName="handleUpdateQueryBankAcount">
                   <template #table-columns>
@@ -380,6 +380,16 @@ export default {
       this.giveBackMoneyShow = true;
       // 补充关键字段
       this.moneyBackInfo.loanNO = row.loanNO
+    },
+    // 已经还够了 在点击提示已经还够
+    handleGiveEnoughBackMoney(row) {
+      this.$confirm('已经还够了金额,是否继续还款?', '提示', {
+        confirmButtonText: '确定',
+        cancelButtonText: '取消',
+        type: 'warning'
+      }).then(() => {
+        this.handleGiveBackMoney(row)
+      })
     },
     // 添加还款信息
     submitAddBorrowedMoney() {

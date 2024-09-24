@@ -50,7 +50,7 @@ const mutations = {
 }
 
 const actions = {
-  // 获取临时借款列表
+  // 获取款临时借列表
   getTempBorrowedMoneyList({commit}, payload) {
     return new Promise((resolve, reject) => {
       listBorrowedMoney().then(response => {
