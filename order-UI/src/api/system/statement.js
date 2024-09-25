@@ -72,3 +72,12 @@ export function getBorrowedMoneySummary(query) {
   })
 }
 
+
+// 费用科目汇总
+export function getSubjectSummary(query) {
+  return request({
+    url: '/statistics/subjectsummary',
+    method: 'get',
+    params: query
+  })
+}
