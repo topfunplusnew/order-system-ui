@@ -307,13 +307,13 @@ export default {
         {key: 0, label: `id`, visible: true},
         {key: 1, label: `贷款来源`, visible: true},
         {key: 2, label: `借入金额`, visible: true},
-        {key: 3, label: `贷款利率`, visible: true},
+        {key: 3, label: `付息金额`, visible: true},
         {key: 4, label: `贷款发放日期`, visible: true},
         {key: 5, label: `贷款年限`, visible: true},
         {key: 6, label: `抵押担保`, visible: true},
         {key: 7, label: `打入账户`, visible: true},
         {key: 8, label: `打入账号`, visible: true},
-        {key: 9, label: `已还款标记`, visible: true},
+       /* {key: 9, label: `已还款标记`, visible: true},*/
       ],
       //还款弹窗
       giveBackMoneyShow: false,

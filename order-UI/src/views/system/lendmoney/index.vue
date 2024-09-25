@@ -60,7 +60,7 @@
                 icon="el-icon-folder-opened"
                 size="mini"
                 @click="handleExport"
-                v-hasPermi="['system:company:export']"
+                v-hasPermi="['system:lendmoney:export']"
             >
             </el-button>
           </el-col>
@@ -72,32 +72,28 @@
               v-horizontal-scroll="'always'" id="printBox" size="mini" :cell-style="()=>{return {padding:'2px'}}">
       <!--      <el-table-column label="id" align="center" prop="id"/>-->
       <!--      <el-table-column label="借出款编号" align="center" prop="futuresNO" v-if="columns[0].visible"/>-->
-      <el-table-column label="期货保证金公司" align="center" prop="futuresMarginCompany" v-if="columns[1].visible"
-                       width="130">
+      <el-table-column label="期货保证金公司" align="center" prop="futuresMarginCompany" v-if="columns[0].visible" width="130">
         <template slot-scope="scope">
-          <span v-if="scope.row.futuresMarginCompany !== ''&& scope.row.futuresMarginCompany !== null">{{
-              scope.row.futuresMarginCompany
-            }}</span>
+    <span v-if="scope.row.futuresMarginCompany !== ''&& scope.row.futuresMarginCompany !== null">
+      {{ scope.row.futuresMarginCompany }}
+    </span>
           <span v-else>
-            无期货保证金公司
-          </span>
+      无期货保证金公司
+    </span>
         </template>
       </el-table-column>
-      <el-table-column label="对象" align="center" prop="target" v-if="columns[3].visible" width="110"/>
-      <el-table-column label="对象类型" align="center" prop="targetType"
-                       v-if="columns[2].visible" width="110"/>
-      <el-table-column label="保证金金额" align="center" prop="moneyAmount" v-if="columns[4].visible" width="110"/>
-      <el-table-column label="对方账户" align="center" prop="targetAcountsName" v-if="columns[5].visible" width="110">
+      <el-table-column label="对象" align="center" prop="target" v-if="columns[2].visible" width="110"/>
+      <el-table-column label="对象类型" align="center" prop="targetType" v-if="columns[1].visible" width="110"/>
+      <el-table-column label="保证金金额" align="center" prop="moneyAmount" v-if="columns[3].visible" width="110"/>
+      <el-table-column label="对方账户" align="center" prop="targetAcountsName" v-if="columns[4].visible" width="110">
       </el-table-column>
-      <el-table-column label="对方账号" align="center" prop="targetBankNo" v-if="columns[6].visible" width="160"/>
-      <el-table-column label="对方开户行" align="center" prop="targetBankName" v-if="columns[7].visible" width="110"/>
-      <el-table-column label="我方支付账户" align="center" prop="selfAcountsName" v-if="columns[8].visible"
-                       width="160"/>
-      <el-table-column label="我方账号" align="center" prop="selfBankNo" v-if="columns[9].visible" width="110"/>
-      <el-table-column label="我方开户行" align="center" prop="selfBankName" v-if="columns[10].visible" width="110"/>
-      <el-table-column label="支付期货保证金时间" align="center" prop="futuresDate" v-if="columns[11].visible"
-                       width="110"/>
-      <el-table-column label="事由" align="center" prop="reason" v-if="columns[12].visible" width="110"/>
+      <el-table-column label="对方账号" align="center" prop="targetBankNo" v-if="columns[5].visible" width="160"/>
+      <el-table-column label="对方开户行" align="center" prop="targetBankName" v-if="columns[6].visible" width="110"/>
+      <el-table-column label="我方支付账户" align="center" prop="selfAcountsName" v-if="columns[7].visible" width="160"/>
+      <el-table-column label="我方账号" align="center" prop="selfBankNo" v-if="columns[8].visible" width="110"/>
+      <el-table-column label="我方开户行" align="center" prop="selfBankName" v-if="columns[9].visible" width="110"/>
+      <el-table-column label="支付期货保证金时间" align="center" prop="futuresDate" v-if="columns[10].visible" width="110"/>
+      <el-table-column label="事由" align="center" prop="reason" v-if="columns[11].visible" width="110"/>
       <el-table-column label="备注" align="center" prop="comments" width="110"/>
       <el-table-column label="操作" align="center" class-name="small-padding fixed-width" width="230px" fixed="right">
         <template slot-scope="scope">
@@ -430,19 +426,19 @@ export default {
         ]
       },
       columns: [
-        {key: 0, label: `借出款编号`, visible: true},
-        {key: 1, label: `期货保证金公司`, visible: true},
-        {key: 2, label: `对象类型`, visible: true},
-        {key: 3, label: `对象`, visible: true},
-        {key: 4, label: `保证金金额`, visible: true},
-        {key: 5, label: `对方账户`, visible: true},
-        {key: 6, label: `对方账号`, visible: true},
-        {key: 7, label: `对方开户行`, visible: true},
-        {key: 8, label: `我方开户行`, visible: true},
-        {key: 9, label: `我方支付账户`, visible: true},
-        {key: 10, label: `我方账号`, visible: true},
-        {key: 11, label: `我方开户行`, visible: true},
-        {key: 12, label: `支付期货保证金时间`, visible: true},
+      /*  {key: 0, label: `借出款编号`, visible: true},*/
+        {key: 0, label: `期货保证金公司`, visible: true},
+        {key: 1, label: `对象类型`, visible: true},
+        {key: 2, label: `对象`, visible: true},
+        {key: 3, label: `保证金金额`, visible: true},
+        {key: 4, label: `对方账户`, visible: true},
+        {key: 5, label: `对方账号`, visible: true},
+        {key: 6, label: `对方开户行`, visible: true},
+        {key: 7, label: `我方开户行`, visible: true},
+        {key: 8, label: `我方支付账户`, visible: true},
+        {key: 9, label: `我方账号`, visible: true},
+        {key: 10, label: `我方开户行`, visible: true},
+        {key: 11, label: `支付期货保证金时间`, visible: true},
       ],
       //搜索参数
       timesQuery: {

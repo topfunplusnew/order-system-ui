@@ -261,7 +261,7 @@ export default {
         {key: 5, label: `票据单位名称`, visible: true},
         {key: 6, label: `票点`, visible: true},
         {key: 7, label: `票点金额`, visible: true},
-        {key: 8, label: `是否订单对应票点`, visible: true},
+        {key: 8, label: `订单信息`, visible: true},
         {key: 9, label: `备注`, visible: true},
       ],
       beginTime: '',
