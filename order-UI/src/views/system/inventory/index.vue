@@ -3,10 +3,10 @@
     <el-form :model="queryParams" ref="queryForm" size="mini" :inline="true" v-show="showSearch" label-width="68px">
       <el-form-item label="级别名称" prop="levelName">
         <el-input
-            v-model="queryParams.levelName"
-            placeholder="请输入级别名称"
-            clearable
-            @keyup.enter.native="handleQuery"
+          v-model="queryParams.levelName"
+          placeholder="请输入级别名称"
+          clearable
+          @keyup.enter.native="handleQuery"
         />
       </el-form-item>
       <el-form-item>
@@ -20,10 +20,10 @@
       </el-col>
       <el-col :span="1.5">
         <el-button
-            type="danger"
-            size="mini"
-            @click="addNewInventory"
-            v-hasPermi="['system:inventory:add']"
+          type="danger"
+          size="mini"
+          @click="addNewInventory"
+          v-hasPermi="['system:inventory:add']"
         >新增货物
         </el-button>
       </el-col>
@@ -31,10 +31,10 @@
         <template v-slot:print>
           <el-col :span="1.5">
             <el-button
-                plain
-                icon="el-icon-printer"
-                size="mini"
-                @click="printHTML"
+              plain
+              icon="el-icon-printer"
+              size="mini"
+              @click="printHTML"
             >
             </el-button>
           </el-col>
@@ -43,11 +43,11 @@
         <template v-slot:export>
           <el-col :span="1.5">
             <el-button
-                plain
-                icon="el-icon-folder-opened"
-                size="mini"
-                @click="handleExport"
-                v-hasPermi="['system:inventory:export']"
+              plain
+              icon="el-icon-folder-opened"
+              size="mini"
+              @click="handleExport"
+              v-hasPermi="['system:inventory:export']"
             >
             </el-button>
           </el-col>
@@ -110,22 +110,22 @@
                            fixed="right">
             <template slot-scope="scope">
               <el-button
-                  size="mini"
-                  type="warning"
-                  @click="secondryInventoryOut(scope.row)"
+                size="mini"
+                type="warning"
+                @click="secondryInventoryOut(scope.row)"
               >加工后出库
               </el-button>
               <el-button
-                  size="mini"
-                  type="warning"
-                  @click="afterbreakInventoryOut(scope.row)"
+                size="mini"
+                type="warning"
+                @click="afterbreakInventoryOut(scope.row)"
               >破损后出库
               </el-button>
               <el-button
-                  size="mini"
-                  type="danger"
-                  @click="handleDelete(scope.row)"
-                  v-hasPermi="['system:inventory:remove']"
+                size="mini"
+                type="danger"
+                @click="handleDelete(scope.row)"
+                v-hasPermi="['system:inventory:remove']"
               >删除
               </el-button>
             </template>
@@ -136,11 +136,11 @@
 
 
     <pagination
-        v-show="total>0"
-        :total="total"
-        :page.sync="queryParams.pageNum"
-        :limit.sync="queryParams.pageSize"
-        @pagination="getList"
+      v-show="total>0"
+      :total="total"
+      :page.sync="queryParams.pageNum"
+      :limit.sync="queryParams.pageSize"
+      @pagination="getList"
     />
 
 
@@ -164,10 +164,10 @@
         </el-form-item>
         <el-form-item label="入库日期" prop="storeDate">
           <el-date-picker
-              v-model="form.storeDate"
-              type="date"
-              placeholder="入库日期"
-              value-format="yyyy-MM-dd">
+            v-model="form.storeDate"
+            type="date"
+            placeholder="入库日期"
+            value-format="yyyy-MM-dd">
           </el-date-picker>
         </el-form-item>
         <el-form-item label="库存量" prop="stockNumber">
@@ -567,7 +567,7 @@ export default {
     })
     this.getList();
     if (localStorage.getItem('inventory-columns') === 'null'
-        || !localStorage.getItem('inventory-columns')) {
+      || !localStorage.getItem('inventory-columns')) {
       //设置localStorage
       localStorage.setItem("inventory-columns", JSON.stringify(this.columns))
     } else {
@@ -802,16 +802,16 @@ export default {
         type: 'warning'
       }).then(({value}) => {
         addReason({reason: value, tableName: TableName.INVENTORY, tid: row.id, modifyTime: this.modifyTime})
-            .then(res => {
-              this.$message.success('提交成功')
-              this.reset();
-              const id = row.id || this.ids
-              getInventory(id).then(response => {
-                this.form = response.data;
-                this.open = true;
-                this.title = "修改库存";
-              });
-            })
+          .then(res => {
+            this.$message.success('提交成功')
+            this.reset();
+            const id = row.id || this.ids
+            getInventory(id).then(response => {
+              this.form = response.data;
+              this.open = true;
+              this.title = "修改库存";
+            });
+          })
       }).catch(() => {
         this.$message({
           type: 'warning',

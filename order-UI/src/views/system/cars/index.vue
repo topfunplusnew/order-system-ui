@@ -73,8 +73,14 @@
       <el-table-column label="银行账号" align="center" prop="bankNo" v-if="columns[4].visible" width="200"/>
       <el-table-column label="开户行" align="center" prop="bankName" v-if="columns[5].visible" width="200"/>
       <el-table-column label="运输类型" align="center" prop="carType" v-if="columns[6].visible" width="200"/>
-      <el-table-column label="操作" align="center" class-name="small-padding fixed-width" fixed="right">
+      <el-table-column label="操作" align="center" class-name="small-padding fixed-width" fixed="right" width="180">
         <template slot-scope="scope">
+          <el-button
+            size="mini"
+            type="success"
+            @click="checkBankInfo(scope.row)"
+          >查看银行卡
+          </el-button>
           <el-button
             size="mini"
             type="primary"
@@ -154,6 +160,20 @@
         <el-button @click="cancel">取 消</el-button>
       </div>
     </el-dialog>
+
+    <!--    查看银行卡组件-->
+    <keep-alive>
+      <DialogListShow :title="'司机银行卡信息'" :get-data="listBankAccount" :query-object="queryObject"
+                      :visible.sync="driverBankAccout">
+        <template #column>
+          <el-table-column label="账号类型" align="center" prop="acountsType"/>
+          <el-table-column label="开户行" align="center" prop="bankName"/>
+          <el-table-column label="开户名" align="center" prop="acountsName"/>
+          <el-table-column label="账号" align="center" prop="bankNo"/>
+        </template>
+      </DialogListShow>
+    </keep-alive>
+
   </div>
 </template>
 
@@ -164,10 +184,11 @@ import {listCompany} from "@/api/system/company";
 import {excludeParams} from "@/api/tool/exclude";
 import SearchOption from "../../../components/SearchOption.vue";
 import {listBankAccount} from "../../../api/system/bankAccount";
+import DialogListShow from "../../../components/DialogListShow.vue";
 
 export default {
   name: "Cars",
-  components: {SearchOption},
+  components: {DialogListShow, SearchOption},
   data() {
     return {
       loading: true,
@@ -253,6 +274,10 @@ export default {
       ],
       companyList: [],
       queryCars: '',
+
+      // 查询对象
+      queryObject: {},
+      driverBankAccout: false,
     };
   },
   created() {
@@ -283,6 +308,15 @@ export default {
     },
     handleCommitQueryName(val) {
       this.queryCars = val;
+    },
+    // 查看银行卡信息
+    checkBankInfo(row) {
+      this.queryObject = {
+        companyId: row.id,
+        acountsType: '司机'
+      };
+      // 查询该银行卡
+      this.driverBankAccout = true;
     },
     /** 查询外部车辆信息列表 */
     getList() {
