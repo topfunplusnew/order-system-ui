@@ -61,33 +61,126 @@
       </right-toolbar>
     </el-row>
 
-    <el-table v-horizontal-scroll="'always'" border v-loading="loading" :data="orderFreightList"
-              @selection-change="handleSelectionChange" id="printBox" max-height="600px" size="mini">
-      <el-table-column label="订单编号" align="center" prop="ordersNo" v-if="columns[0].visible" width="100"/>
-      <el-table-column label="运费类型" align="center" prop="freightType" v-if="columns[1].visible" width="100"/>
-      <el-table-column label="金额" align="center" prop="moneyAmount" v-if="columns[2].visible" width="100"/>
-      <!--      <el-table-column label="己方户名" align="center" prop="selfAcountsName" v-if="columns[3].visible"/>-->
-      <!--      <el-table-column label="己方账号" align="center" prop="selfBankNo" v-if="columns[4].visible"/>-->
-      <!--      <el-table-column label="己方开户行" align="center" prop="selfBankName" v-if="columns[5].visible"/>-->
-      <el-table-column label="对方户名" align="center" prop="otherAcountsName" v-if="columns[3].visible" width="100"/>
-      <el-table-column label="对方账号" align="center" prop="otherBankNo" v-if="columns[4].visible" width="100"/>
-      <el-table-column label="对方开户行" align="center" prop="otherBankName" v-if="columns[5].visible" width="100"/>
-      <el-table-column label="备注" align="center" prop="content" v-if="columns[6].visible" width="100"/>
-      <el-table-column label="支付状态" align="center" prop="paymentState" v-if="columns[7].visible" width="100">
+    <el-table
+      v-horizontal-scroll="'always'"
+      border
+      v-loading="loading"
+      :data="orderFreightList"
+      id="printBox"
+      max-height="600px"
+      size="mini"
+      :cell-style="() => { return { padding: '.5px' } }"
+    >
+      <el-table-column
+        label="运费类型"
+        align="center"
+        prop="freightType"
+        v-if="columns[1].visible"
+        width="100"
+        show-overflow-tooltip
+      />
+      <el-table-column
+        label="金额"
+        align="center"
+        prop="moneyAmount"
+        v-if="columns[2].visible"
+        width="100"
+        show-overflow-tooltip
+      />
+      <el-table-column
+        label="对方户名"
+        align="center"
+        prop="otherAcountsName"
+        v-if="columns[3].visible"
+        width="100"
+        show-overflow-tooltip
+      />
+      <el-table-column
+        label="对方账号"
+        align="center"
+        prop="otherBankNo"
+        v-if="columns[4].visible"
+        width="100"
+        show-overflow-tooltip
+      />
+      <el-table-column
+        label="对方开户行"
+        align="center"
+        prop="otherBankName"
+        v-if="columns[5].visible"
+        width="100"
+        show-overflow-tooltip
+      />
+      <el-table-column
+        label="备注"
+        align="center"
+        prop="content"
+        v-if="columns[6].visible"
+        width="100"
+        show-overflow-tooltip
+      />
+      <el-table-column
+        label="支付状态"
+        align="center"
+        prop="paymentState"
+        v-if="columns[7].visible"
+        width="100"
+        show-overflow-tooltip
+      >
         <template slot-scope="scope">
           <el-tag :type="scope.row.paymentState === '未支付' ? 'danger' : 'success'">
             {{ scope.row.paymentState }}
           </el-tag>
         </template>
       </el-table-column>
-      <el-table-column label="司机姓名" align="center" prop="driverName" v-if="columns[8].visible" width="100"/>
-      <!--      <el-table-column label="司机ID" align="center" prop="driverId"/>-->
-      <el-table-column label="车牌号" align="center" prop="carNo" v-if="columns[9].visible" width="100"/>
-      <el-table-column label="车队" align="center" prop="fleet" v-if="columns[10].visible" width="100"/>
-      <!--      <el-table-column label="申请人员ID" align="center" prop="applyUserId"/>-->
-      <el-table-column label="申请人员姓名" align="center" prop="applyUserName" v-if="columns[11].visible" width="100"/>
-      <el-table-column label="申请日期" align="center" prop="applyDate" v-if="columns[12].visible" width="100"/>
-      <el-table-column label="是否可编辑" align="center" prop="isedit" v-if="columns[13].visible" width="100">
+      <el-table-column
+        label="司机姓名"
+        align="center"
+        prop="driverName"
+        v-if="columns[8].visible"
+        width="100"
+        show-overflow-tooltip
+      />
+      <el-table-column
+        label="车牌号"
+        align="center"
+        prop="carNo"
+        v-if="columns[9].visible"
+        width="100"
+        show-overflow-tooltip
+      />
+      <el-table-column
+        label="车队"
+        align="center"
+        prop="fleet"
+        v-if="columns[10].visible"
+        width="100"
+        show-overflow-tooltip
+      />
+      <el-table-column
+        label="申请人员姓名"
+        align="center"
+        prop="applyUserName"
+        v-if="columns[11].visible"
+        width="100"
+        show-overflow-tooltip
+      />
+      <el-table-column
+        label="申请日期"
+        align="center"
+        prop="applyDate"
+        v-if="columns[12].visible"
+        width="100"
+        show-overflow-tooltip
+      />
+      <el-table-column
+        label="是否可编辑"
+        align="center"
+        prop="isedit"
+        v-if="columns[13].visible"
+        width="100"
+        show-overflow-tooltip
+      >
         <template slot-scope="scope">
           <el-tag :type="scope.row.isedit === 0 ? 'danger' : 'success'" disable-transitions
                   v-if="scope.row.isedit === 0">不可编辑
@@ -97,25 +190,51 @@
           </el-tag>
         </template>
       </el-table-column>
-      <!--      <el-table-column label="付款人员ID" align="center" prop="payUserId"/>-->
-      <el-table-column label="付款人员姓名" align="center" prop="payUserName" v-if="columns[14].visible" width="100"/>
-      <el-table-column label="付款日期" align="center" prop="payDate" v-if="columns[15].visible" width="100"/>
-      <el-table-column label="备注" align="center" prop="comments" v-if="columns[16].visible" width="100"/>
-      <el-table-column label="操作" align="center" class-name="small-padding fixed-width" fixed="right" width="250">
+      <el-table-column
+        label="付款人员姓名"
+        align="center"
+        prop="payUserName"
+        v-if="columns[14].visible"
+        width="100"
+        show-overflow-tooltip
+      />
+      <el-table-column
+        label="付款日期"
+        align="center"
+        prop="payDate"
+        v-if="columns[15].visible"
+        width="100"
+        show-overflow-tooltip
+      />
+      <el-table-column
+        label="备注"
+        align="center"
+        prop="comments"
+        v-if="columns[16].visible"
+        width="100"
+        show-overflow-tooltip
+      />
+      <el-table-column
+        label="操作"
+        align="center"
+        class-name="small-padding fixed-width"
+        fixed="right"
+        width="250"
+      >
         <template slot-scope="scope">
           <el-button
             size="mini"
             type="warning"
             @click="applyForLand(scope.row)"
-            v-if="scope.row.freightType=== '陆运'"
+            v-if="scope.row.freightType === '陆运'"
           >申请陆运费
           </el-button>
-          <!--          只有海运费不为零才能申请海运费-->
+          <!-- 只有海运费不为零才能申请海运费 -->
           <el-button
             size="mini"
             type="primary"
             @click="applyForSea(scope.row)"
-            v-if="scope.row.freightType=== '海运'"
+            v-if="scope.row.freightType === '海运'"
           >申请海运费
           </el-button>
           <el-button
@@ -144,30 +263,19 @@
       @pagination="getList"
     />
     <!--    created第一次传递的props，然后监听后来props的变化-->
-    <el-dialog title="运费付款申请" :visible.sync="applyPaymentVisible" width="500px"
-               append-to-body :before-close="beforeCloseApply">
-      <ApplyPayment :tableName="TableName.ORDER_FREIGHT" :t-i-d="tID"
-                    :need-info="{...applyInfo,isExit:true}" :need-money="freight"
-                    @changeOpen="applyPaymentVisible = false"/>
+    <el-dialog title="运费付款申请" :visible.sync="applyPaymentVisible" width="500px">
+      <keep-alive>
+        <ApplyPayment :tableName="TableName.ORDER_FREIGHT" :t-i-d="tID"
+                      :need-info="needInfo" :need-money="freight"
+                      @changeOpen="applyPaymentVisible = false"/>
+      </keep-alive>
     </el-dialog>
 
     <el-dialog :title="title" :visible.sync="open" width="500px" append-to-body>
       <el-form ref="form" :model="form" :rules="rules" label-width="80px">
-        <!--        <el-form-item label="订单编号" prop="ordersNo">-->
-        <!--          <el-input v-model="form.ordersNo" placeholder="请输入订单编号"/>-->
-        <!--        </el-form-item>-->
         <el-form-item label="金额" prop="moneyAmount">
           <el-input v-model="form.moneyAmount" placeholder="请输入金额"/>
         </el-form-item>
-        <!--        <el-form-item label="己方户名" prop="selfAcountsName">-->
-        <!--          <el-input v-model="form.selfAcountsName" placeholder="请输入己方户名"/>-->
-        <!--        </el-form-item>-->
-        <!--        <el-form-item label="己方账号" prop="selfBankNo">-->
-        <!--          <el-input v-model="form.selfBankNo" placeholder="请输入己方账号"/>-->
-        <!--        </el-form-item>-->
-        <!--        <el-form-item label="己方开户行" prop="selfBankName">-->
-        <!--          <el-input v-model="form.selfBankName" placeholder="请输入己方开户行"/>-->
-        <!--        </el-form-item>-->
         <el-form-item label="对方户名" prop="otherAcountsName">
           <el-row>
             <el-col :span="10">
@@ -376,6 +484,7 @@ export default {
       queryCompany: '',
       queryCars: '',
       queryFleet: '',
+      needInfo: {},
     };
   },
   created() {
@@ -402,16 +511,6 @@ export default {
     listData,
     listBankAccount,
     //己方公司点击确定的回调
-    handleCommitSelfBackBank(val) {
-      this.form.selfAcountsName = val.acountsName;
-      this.form.selfBankNo = val.bankNo;
-      this.form.selfBankName = val.bankName
-    },
-    handleCommitOtherBackBank(val) {
-      this.form.otherAcountsName = val.acountsName;
-      this.form.otherBankNo = val.bankNo;
-      this.form.otherBankName = val.bankName
-    },
     handleCommitBack(val) {
       this.form.otherBankNo = val.bankNo;
       this.form.otherBankName = val.bankName;
@@ -434,13 +533,6 @@ export default {
     handleUpdateQueryName(val) {
       this.queryCompany = val;
     },
-    //关闭之前的回调 关闭之前就给状态赋空 done()
-    beforeCloseApply(done) {
-      this.applyInfo = {};
-      this.tID = null;
-      this.freight = null;
-      done();
-    },
     handleCommitBackFleet(val) {
       this.form.fleet = val.fName;
     },
@@ -449,15 +541,21 @@ export default {
     },
     //添加海运费或者陆运费
     applyForLand(row) {
-      console.log(row)
-      this.applyInfo = row;
+      this.needInfo = {
+        acountsName: row.otherAcountsName,
+        bankName: row.otherBankName,
+        bankNo: row.otherBankNo
+      }
       this.tID = row.id
       this.freight = Number(row.moneyAmount);
       this.applyPaymentVisible = true;
     },
     applyForSea(row) {
-      console.log(row)
-      this.applyInfo = row;
+      this.needInfo = {
+        acountsName: row.otherAcountsName,
+        bankName: row.otherBankName,
+        bankNo: row.otherBankNo
+      }
       this.tID = row.id
       this.freight = Number(row.moneyAmount);
       this.applyPaymentVisible = true;

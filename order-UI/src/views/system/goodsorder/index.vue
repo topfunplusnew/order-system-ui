@@ -187,13 +187,15 @@
                        width="200">
         <template #default="scope">
           <el-row v-if="scope.row.supplierNames !== null">
-            <span v-for="(item,index) in getSupplierNames(scope.row.orderDetailList)" :key="index">
+            <el-row>
+              <span v-for="(item,index) in getSupplierNames(scope.row.orderDetailList)" :key="index">
              <el-badge is-dot class="item">
             <span @click="openSupplierInvoice(scope.row,item.supplierID)">
               {{ item.supplier }}
             </span>
           </el-badge>
           </span>
+            </el-row>
           </el-row>
           <el-row>
             <span v-if="scope.row.supplierNames === null">无</span>
@@ -1730,6 +1732,7 @@ export default {
         // 先获取公司信息
         getCompany(supplierID).then(res => {
           this.openTitleInfo.companyName = res.data.companyName;
+          this.openTitleInfo.companyType = res.data.companyType;
           this.openTitle = '供应商开票'
           // 获取订单信息
           getGoodsOrder(row.id)

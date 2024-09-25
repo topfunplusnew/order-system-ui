@@ -6,7 +6,7 @@
     <top-nav id="topmenu-container" class="topmenu-container" v-if="topNav"/>
     <div class="right-menu">
       <template v-if="device!=='mobile'">
-        <search id="header-search" class="right-menu-item" />
+        <search id="header-search" class="right-menu-item"/>
       </template>
       <el-dropdown class="avatar-container right-menu-item hover-effect" trigger="click">
         <div class="avatar-wrapper">
@@ -103,6 +103,7 @@ export default {
 
 <style lang="scss" scoped>
 .navbar {
+  border-bottom: #156fb2 5px solid;
   height: 50px;
   overflow: hidden;
   position: relative;

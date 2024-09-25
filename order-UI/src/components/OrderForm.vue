@@ -308,12 +308,12 @@ export default {
             </el-col>
             <el-col :span="21">
               <el-date-picker
-                  v-model="orderDate"
-                  size="mini"
-                  type="date"
-                  placeholder="选择日期"
-                  value-format="yyyy-MM-dd"
-                  style="width: 80%">
+                v-model="orderDate"
+                size="mini"
+                type="date"
+                placeholder="选择日期"
+                value-format="yyyy-MM-dd"
+                style="width: 80%">
               </el-date-picker>
             </el-col>
           </el-row>
@@ -509,32 +509,32 @@ export default {
 
     <!--    海运车牌信息弹窗-->
     <el-dialog
-        title="海运车辆信息"
-        :visible.sync="seaInfoDialogVisible"
-        width="35%" append-to-body>
+      title="海运车辆信息"
+      :visible.sync="seaInfoDialogVisible"
+      width="35%" append-to-body>
       <el-table
-          :data="seaInfo"
-          border>
+        :data="seaInfo"
+        border>
         <!--        操作-->
         <el-table-column
-            fixed="left"
-            label="操作">
+          fixed="left"
+          label="操作">
           <template slot-scope="scope">
             <el-button @click="commitSeaInfo(scope.row)" type="danger" size="small">确认</el-button>
           </template>
         </el-table-column>
         <el-table-column
-            fixed
-            prop="carNo"
-            label="车牌">
+          fixed
+          prop="carNo"
+          label="车牌">
         </el-table-column>
         <el-table-column
-            prop="driver"
-            label="司机姓名">
+          prop="driver"
+          label="司机姓名">
         </el-table-column>
         <el-table-column
-            prop="tel"
-            label="司机电话">
+          prop="tel"
+          label="司机电话">
         </el-table-column>
       </el-table>
       <span slot="footer" class="dialog-footer">
