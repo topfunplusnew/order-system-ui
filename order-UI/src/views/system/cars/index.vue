@@ -114,7 +114,24 @@
           <el-input v-model="form.tel" placeholder="请输入司机电话"/>
         </el-form-item>
         <el-form-item label="开户行" prop="bankName">
-          <el-input v-model="form.bankName" placeholder="请输入开户行"/>
+          <el-row>
+            <el-col :span="10">
+              <el-input v-model="form.bankName" placeholder="请输入开户行"/>
+            </el-col>
+            <el-col :span="3">
+              <SearchOption :limit-info="{acountsType:'司机'}" :get-data="listBankAccount" icon="el-icon-search"
+                            @commitBack="handleCommitBack" query-info="acountsName" query-label="户名查找"
+                            @update:queryName="handleCommitQueryName"
+                            :query-name="queryCars">
+                <template #table-columns>
+                  <el-table-column label="账号类型" align="center" prop="acountsType"/>
+                  <el-table-column label="开户行" align="center" prop="bankName"/>
+                  <el-table-column label="开户名" align="center" prop="acountsName"/>
+                  <el-table-column label="账号" align="center" prop="bankNo"/>
+                </template>
+              </SearchOption>
+            </el-col>
+          </el-row>
         </el-form-item>
         <el-form-item label="开户名" prop="acountsName">
           <el-input v-model="form.acountsName" placeholder="请输入开户名"/>
@@ -145,9 +162,12 @@ import {listCars, getCars, delCars, addCars, updateCars} from "@/api/system/cars
 import {addFleet, updateFleet} from "@/api/system/fleet";
 import {listCompany} from "@/api/system/company";
 import {excludeParams} from "@/api/tool/exclude";
+import SearchOption from "../../../components/SearchOption.vue";
+import {listBankAccount} from "../../../api/system/bankAccount";
 
 export default {
   name: "Cars",
+  components: {SearchOption},
   data() {
     return {
       loading: true,
@@ -231,7 +251,8 @@ export default {
         {key: 6, label: `运输类型`, visible: true}
 
       ],
-      companyList: []
+      companyList: [],
+      queryCars: '',
     };
   },
   created() {
@@ -254,6 +275,15 @@ export default {
   },
 
   methods: {
+    listBankAccount,
+    handleCommitBack(val) {
+      this.form.bankName = val.bankName
+      this.form.bankNo = val.bankNo
+      this.form.acountsName = val.acountsName
+    },
+    handleCommitQueryName(val) {
+      this.queryCars = val;
+    },
     /** 查询外部车辆信息列表 */
     getList() {
       this.loading = true;
