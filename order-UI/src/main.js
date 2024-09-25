@@ -4,6 +4,7 @@ import Cookies from 'js-cookie'
 
 import Element, {Loading} from 'element-ui'
 import './assets/styles/element-variables.scss'
+import './element-variables.scss'
 
 import '@/assets/styles/index.scss' // global css
 import '@/assets/styles/ruoyi.scss' // ruoyi css
