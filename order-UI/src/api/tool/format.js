@@ -1,6 +1,19 @@
 export const formatTime = (date) => {
   return `${date.getFullYear()}-${date.getMonth() + 1}-${date.getDate()}`
 }
+// 将字符串日期转换为 Date 对象
+export function parseDate(dateString) {
+  const [year, month, day] = dateString.split('-').map(Number);
+  return new Date(year, month - 1, day); // 月份是从0开始的
+}
+
+// 排序函数
+export function sortByUpdateTime(a, b) {
+  const dateA = parseDate(a.updateTime);
+  const dateB = parseDate(b.updateTime);
+  return dateA - dateB; // 从小到大排序
+}
+
 
 export const fix = (value) => {
   return Number(value).toFixed(2)
