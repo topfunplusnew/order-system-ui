@@ -1,11 +1,9 @@
 $--color-primary: #1e9fff;
 $--font-path: '~element-ui/lib/theme-chalk/fonts';
+$--font-weight-primary: 500;
+
 $--color-success: #67c23a !default;
 $--color-warning: #e6a23c !default;
 $--color-danger: #f56c6c !default;
 $--color-info: #909399 !default;
-/*设置el-table表头的变量*/
-
-$--table-border-color: #f2f2f2 !default;
-$--table-header-background-color: #f2f2f2 !default;
 @import "~element-ui/packages/theme-chalk/src/index";
