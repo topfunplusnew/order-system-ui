@@ -245,11 +245,11 @@ export default {
           {required: true, message: "公司类型不能为空", trigger: "change"}],
       },
       columns: [
-        {key: 0, label: `对冲账编号`, visible: true},
-        {key: 1, label: `对冲账日期`, visible: true},
-        {key: 2, label: `对冲账类型`, visible: true},
-        {key: 3, label: `对冲账金额`, visible: true},
-        {key: 4, label: `公司名称`, visible: true},
+        {key: 0, label: `冲抵编号`, visible: true},
+        {key: 1, label: `操作时间`, visible: true},
+        {key: 2, label: `冲抵类型`, visible: true},
+        {key: 3, label: `金额`, visible: true},
+        {key: 4, label: `公司`, visible: true},
         {key: 5, label: `公司类型`, visible: true},
         {key: 6, label: `备注`, visible: true}
       ],
