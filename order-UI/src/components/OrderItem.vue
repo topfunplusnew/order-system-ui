@@ -66,7 +66,6 @@ export default {
       searchStoreName: ''
     }
   },
-  // 思路  先通过计算属性，拿到属性，渲染到页面 因为计算属性是响应式的 在给计算属性赋值时 提醒父组件改变传递的item对象
   computed: {
     //厚度信息
     height: {
@@ -622,234 +621,239 @@ export default {
 
 <template>
   <div>
-    <h4 style="font-weight: bolder">订单详细信息-{{ index + 1 }}</h4>
-    <div class="order font-size-12">
-      <div class="order-item">
-        <span class="text-bold">供应商/仓库</span>
-        <hr/>
-        <el-input placeholder="请输入供应商/仓库"
-                  v-model="supplier===undefined||supplier===null?storeName:supplier"
-                  disabled></el-input>
-        <el-row>
-          <el-col :span="12">
-            <SearchOption :get-data="listCompany" icon="el-icon-user" @commitBack="handleCommitBackCompany"
-                          :limit-info="{companyType:'供应商'}">
-              <template #table-columns>
-                <el-table-column label="供应商名称" align="center" prop="companyName"/>
-                <el-table-column label="联系人" align="center" prop="relationName"/>
-                <el-table-column label="电话" align="center" prop="relationTel"/>
-              </template>
-            </SearchOption>
-          </el-col>
-          <el-col :span="12">
-            <SearchOption :get-data="listInventory" icon="el-icon-s-home" @commitBack="handleCommitBackInventory"
-                          :limit-info="{}">
-              <template #table-columns>
-                <el-table-column label="仓库名称" align="center" prop="storeHouseName"/>
-                <el-table-column label="入库日期" align="center" prop="storeDate"/>
-                <el-table-column label="库存量" align="center" prop="stockNumber"/>
-                <el-table-column label="供应商" align="center" prop="supplier"/>
-                <el-table-column label="级别编码" align="center" prop="levelID"/>
-                <el-table-column label="级别名称" align="center" prop="levelName"/>
-              </template>
-            </SearchOption>
-          </el-col>
-        </el-row>
-        <!--        <el-button size="mini"  circle @click="searchStoreInfo">-->
-        <!--        </el-button>-->
+    <el-card class="box-card">
+      <div slot="header" class="clearfix">
+        <span style="font-weight: bold;color: #1ab394">货物信息({{ index + 1 }})</span>
+        <slot name="action"/>
       </div>
-      <div class="order-item">
-        <span class="text-bold">产品级别</span>
-        <hr/>
-        <el-input type="text" placeholder="请输入产品级别" v-model="levelName"></el-input>
-        <!--        <el-button type="primary" size="mini" icon="el-icon-search" circle-->
-        <!--                   @click="searchProductLevelInfo"></el-button>-->
+      <div class="order font-size-12">
+        <div class="order-item">
+          <span class="text-bold">供应商/仓库</span>
+          <hr/>
+          <el-input placeholder="请输入供应商/仓库"
+                    v-model="supplier===undefined||supplier===null?storeName:supplier"
+                    disabled></el-input>
+          <el-row>
+            <el-col :span="12">
+              <SearchOption :get-data="listCompany" icon="el-icon-user" @commitBack="handleCommitBackCompany"
+                            :limit-info="{companyType:'供应商'}">
+                <template #table-columns>
+                  <el-table-column label="供应商名称" align="center" prop="companyName"/>
+                  <el-table-column label="联系人" align="center" prop="relationName"/>
+                  <el-table-column label="电话" align="center" prop="relationTel"/>
+                </template>
+              </SearchOption>
+            </el-col>
+            <el-col :span="12">
+              <SearchOption :get-data="listInventory" icon="el-icon-s-home" @commitBack="handleCommitBackInventory"
+                            :limit-info="{}">
+                <template #table-columns>
+                  <el-table-column label="仓库名称" align="center" prop="storeHouseName"/>
+                  <el-table-column label="入库日期" align="center" prop="storeDate"/>
+                  <el-table-column label="库存量" align="center" prop="stockNumber"/>
+                  <el-table-column label="供应商" align="center" prop="supplier"/>
+                  <el-table-column label="级别编码" align="center" prop="levelID"/>
+                  <el-table-column label="级别名称" align="center" prop="levelName"/>
+                </template>
+              </SearchOption>
+            </el-col>
+          </el-row>
+          <!--        <el-button size="mini"  circle @click="searchStoreInfo">-->
+          <!--        </el-button>-->
+        </div>
+        <div class="order-item">
+          <span class="text-bold">产品级别</span>
+          <hr/>
+          <el-input type="text" placeholder="请输入产品级别" v-model="levelName"></el-input>
+          <!--        <el-button type="primary" size="mini" icon="el-icon-search" circle-->
+          <!--                   @click="searchProductLevelInfo"></el-button>-->
 
-        <SearchOption :get-data="listProductLevel" icon="el-icon-search" @commitBack="handleCommitBackProductLevel"
-                      :limit-info="{}">
-          <template #table-columns>
-            <el-table-column label="级别编码" align="center" prop="levelNo"/>
-            <el-table-column label="级别名称" align="center" prop="levelName"/>
-            <el-table-column label="分类编号" align="center" prop="categoryNo"/>
-            <el-table-column label="分类名称" align="center" prop="categoryName"/>
-            <el-table-column label="厚度" align="center" prop="height"/>
-            <el-table-column label="长度" align="center" prop="length"/>
-            <el-table-column label="宽度" align="center" prop="width"/>
-            <el-table-column label="吨位" align="center" prop="tonnage"/>
-          </template>
-        </SearchOption>
-      </div>
-      <div class="order-item" v-if="storeName">
-        <span class="text-bold">出库日期</span>
-        <hr/>
-        <el-date-picker
-            v-model="exWarehouseDate"
-            type="date"
-            placeholder="选择日期"
-            value-format="timestamp">
-        </el-date-picker>
-      </div>
-      <div class="order-item">
-        <span class="text-bold">计量单位</span>
-        <hr/>
-        <el-radio v-model="countingUnit" label="片">片数</el-radio>
-        <el-radio v-model="countingUnit" label="其他">其他</el-radio>
-      </div>
-      <div class="order-item">
-        <span class="text-bold">厚度</span>
-        <hr/>
-        <el-input type="text" placeholder="请输入厚度" v-model="height"></el-input>
-      </div>
-      <div class="order-item">
-        <span class="text-bold">长度</span>
-        <hr/>
-        <el-input type="text" placeholder="请输入长度" v-model="length"></el-input>
-      </div>
-      <div class="order-item">
-        <span class="text-bold">宽度</span>
-        <hr/>
-        <el-input type="text" placeholder="请输入宽度" v-model="width"></el-input>
-      </div>
-      <div class="order-item">
-        <span class="text-bold">每包片数</span>
-        <hr/>
-        <el-input type="text" placeholder="请输入每包片数"
-                  v-model="piecesPerPack"></el-input>
-      </div>
-      <div class="order-item">
-        <span class="text-bold">包数</span>
-        <hr/>
-        <el-input type="text" placeholder="请输入包数" v-model="packs"></el-input>
-      </div>
-      <div class="order-item">
-        <span class="text-bold">出厂片数</span>
-        <hr/>
-        <el-input type="text" placeholder="请输入出厂片数" v-model="pieces"></el-input>
-      </div>
-      <div class="order-item">
-        <span class="text-bold">出厂单价</span>
-        <hr/>
-        <el-input type="text" placeholder="请输入出厂单价" v-model="price"></el-input>
-      </div>
-      <div class="order-item">
-        <span class="text-bold">出厂是否含税</span>
-        <hr/>
-        <el-radio v-model="isIncludeTaxFactory" label="1">是</el-radio>
-        <el-radio v-model="isIncludeTaxFactory" label="0">否</el-radio>
-      </div>
-      <div class="order-item">
-        <span class="text-bold">杂费</span>
-        <hr/>
-        <el-input type="text" placeholder="请输入杂费" v-model="sundryCost"></el-input>
-      </div>
-      <div class="order-item">
-        <span class="text-bold">出厂货款</span>
-        <hr/>
-        <el-input type="text" placeholder="请输入出厂贷款"
-                  v-model="paymentFactory"></el-input>
-      </div>
-      <div class="order-item">
-        <span class="text-bold">卸货片数</span>
-        <hr/>
-        <el-input type="text" placeholder="请输入卸货片数" v-model="outPieces"></el-input>
-      </div>
-      <div class="order-item">
-        <span class="text-bold">卸货价</span>
-        <hr/>
-        <el-input type="text" placeholder="请输入卸货价" v-model="paymentUnload"></el-input>
-      </div>
-      <div class="order-item">
-        <span class="text-bold">销售是否含税</span>
-        <hr/>
-        <el-radio v-model="isIncludeTaxSale" label="1">是</el-radio>
-        <el-radio v-model="isIncludeTaxSale" label="0">否</el-radio>
-      </div>
-      <div class="order-item">
-        <span class="text-bold">总货款杂费</span>
-        <hr/>
-        <el-input type="text" placeholder="总货款杂费"
-                  v-model="paymentsWithSundry"></el-input>
-      </div>
-      <div class="order-item">
-        <span class="text-bold">总货款</span>
-        <hr/>
-        <el-input type="text" placeholder="请输入总货款" v-model="payments"></el-input>
-      </div>
+          <SearchOption :get-data="listProductLevel" icon="el-icon-search" @commitBack="handleCommitBackProductLevel"
+                        :limit-info="{}">
+            <template #table-columns>
+              <el-table-column label="级别编码" align="center" prop="levelNo"/>
+              <el-table-column label="级别名称" align="center" prop="levelName"/>
+              <el-table-column label="分类编号" align="center" prop="categoryNo"/>
+              <el-table-column label="分类名称" align="center" prop="categoryName"/>
+              <el-table-column label="厚度" align="center" prop="height"/>
+              <el-table-column label="长度" align="center" prop="length"/>
+              <el-table-column label="宽度" align="center" prop="width"/>
+              <el-table-column label="吨位" align="center" prop="tonnage"/>
+            </template>
+          </SearchOption>
+        </div>
+        <div class="order-item" v-if="storeName">
+          <span class="text-bold">出库日期</span>
+          <hr/>
+          <el-date-picker
+              v-model="exWarehouseDate"
+              type="date"
+              placeholder="选择日期"
+              value-format="timestamp">
+          </el-date-picker>
+        </div>
+        <div class="order-item">
+          <span class="text-bold">计量单位</span>
+          <hr/>
+          <el-radio v-model="countingUnit" label="片">片数</el-radio>
+          <el-radio v-model="countingUnit" label="其他">其他</el-radio>
+        </div>
+        <div class="order-item">
+          <span class="text-bold">厚度</span>
+          <hr/>
+          <el-input type="text" placeholder="请输入厚度" v-model="height"></el-input>
+        </div>
+        <div class="order-item">
+          <span class="text-bold">长度</span>
+          <hr/>
+          <el-input type="text" placeholder="请输入长度" v-model="length"></el-input>
+        </div>
+        <div class="order-item">
+          <span class="text-bold">宽度</span>
+          <hr/>
+          <el-input type="text" placeholder="请输入宽度" v-model="width"></el-input>
+        </div>
+        <div class="order-item">
+          <span class="text-bold">每包片数</span>
+          <hr/>
+          <el-input type="text" placeholder="请输入每包片数"
+                    v-model="piecesPerPack"></el-input>
+        </div>
+        <div class="order-item">
+          <span class="text-bold">包数</span>
+          <hr/>
+          <el-input type="text" placeholder="请输入包数" v-model="packs"></el-input>
+        </div>
+        <div class="order-item">
+          <span class="text-bold">出厂片数</span>
+          <hr/>
+          <el-input type="text" placeholder="请输入出厂片数" v-model="pieces"></el-input>
+        </div>
+        <div class="order-item">
+          <span class="text-bold">出厂单价</span>
+          <hr/>
+          <el-input type="text" placeholder="请输入出厂单价" v-model="price"></el-input>
+        </div>
+        <div class="order-item">
+          <span class="text-bold">出厂是否含税</span>
+          <hr/>
+          <el-radio v-model="isIncludeTaxFactory" label="1">是</el-radio>
+          <el-radio v-model="isIncludeTaxFactory" label="0">否</el-radio>
+        </div>
+        <div class="order-item">
+          <span class="text-bold">杂费</span>
+          <hr/>
+          <el-input type="text" placeholder="请输入杂费" v-model="sundryCost"></el-input>
+        </div>
+        <div class="order-item">
+          <span class="text-bold">出厂货款</span>
+          <hr/>
+          <el-input type="text" placeholder="请输入出厂贷款"
+                    v-model="paymentFactory"></el-input>
+        </div>
+        <div class="order-item">
+          <span class="text-bold">卸货片数</span>
+          <hr/>
+          <el-input type="text" placeholder="请输入卸货片数" v-model="outPieces"></el-input>
+        </div>
+        <div class="order-item">
+          <span class="text-bold">卸货价</span>
+          <hr/>
+          <el-input type="text" placeholder="请输入卸货价" v-model="paymentUnload"></el-input>
+        </div>
+        <div class="order-item">
+          <span class="text-bold">销售是否含税</span>
+          <hr/>
+          <el-radio v-model="isIncludeTaxSale" label="1">是</el-radio>
+          <el-radio v-model="isIncludeTaxSale" label="0">否</el-radio>
+        </div>
+        <div class="order-item">
+          <span class="text-bold">总货款杂费</span>
+          <hr/>
+          <el-input type="text" placeholder="总货款杂费"
+                    v-model="paymentsWithSundry"></el-input>
+        </div>
+        <div class="order-item">
+          <span class="text-bold">总货款</span>
+          <hr/>
+          <el-input type="text" placeholder="请输入总货款" v-model="payments"></el-input>
+        </div>
 
-      <div class="order-item">
-        <span class="text-bold">误差</span>
-        <hr/>
-        <el-input type="text" placeholder="请输入误差" v-model="erro" disabled></el-input>
+        <div class="order-item">
+          <span class="text-bold">误差</span>
+          <hr/>
+          <el-input type="text" placeholder="请输入误差" v-model="erro" disabled></el-input>
+        </div>
+        <div class="order-item">
+          <span class="text-bold">吨位</span>
+          <hr/>
+          <el-input type="text" placeholder="请输入吨位" v-model="tonnage"></el-input>
+        </div>
+        <div class="order-item">
+          <span class="text-bold">陆运费单价</span>
+          <hr/>
+          <el-input type="text" placeholder="请输入陆运费单价"
+                    v-model="landFreightPrice"></el-input>
+        </div>
+        <div class="order-item">
+          <span class="text-bold">加费</span>
+          <hr/>
+          <el-input type="text" placeholder="加费" v-model="additionalFees"></el-input>
+        </div>
+        <div class="order-item">
+          <span class="text-bold">陆运费</span>
+          <hr/>
+          <el-input type="text" placeholder="陆运费" v-model="landFreight"></el-input>
+        </div>
+        <div class="order-item" v-if="isSea">
+          <span class="text-bold">海运费</span>
+          <hr/>
+          <el-input type="text" placeholder="海运费" v-model="seaFreight"></el-input>
+        </div>
+        <div class="order-item">
+          <span class="text-bold">总运费</span>
+          <hr/>
+          <el-input type="text" placeholder="总运费" v-model="freight"></el-input>
+        </div>
+        <div class="order-item">
+          <span class="text-bold">其他费用</span>
+          <hr/>
+          <el-input type="text" placeholder="其他费用" v-model="otherCost"></el-input>
+        </div>
+        <div class="order-item">
+          <span class="text-bold">利润</span>
+          <hr/>
+          <el-input type="text" placeholder="利润" v-model="profit"></el-input>
+        </div>
+        <div class="order-item">
+          <span class="text-bold">不含税利润</span>
+          <hr/>
+          <el-input type="text" placeholder="不含税利润" v-model="profitNoTax"></el-input>
+        </div>
+        <div class="order-item">
+          <span class="text-bold">实际片数</span>
+          <hr/>
+          <el-input type="text" placeholder="实际片数" v-model="actualPieces"></el-input>
+        </div>
+        <div class="order-item">
+          <span class="text-bold">备注</span>
+          <hr/>
+          <el-input type="text" placeholder="备注" v-model="comments"></el-input>
+        </div>
+        <div class="order-item">
+          <span class="text-bold">物流利润</span>
+          <hr/>
+          <el-input type="text" placeholder="物流利润" v-model="orderItemInfo.logisticsProfit"></el-input>
+        </div>
+        <div class="order-item">
+          <span class="text-bold">客户佣金</span>
+          <hr/>
+          <el-input type="text" placeholder="客户佣金"
+                    v-model="customerCommission"></el-input>
+        </div>
       </div>
-      <div class="order-item">
-        <span class="text-bold">吨位</span>
-        <hr/>
-        <el-input type="text" placeholder="请输入吨位" v-model="tonnage"></el-input>
-      </div>
-      <div class="order-item">
-        <span class="text-bold">陆运费单价</span>
-        <hr/>
-        <el-input type="text" placeholder="请输入陆运费单价"
-                  v-model="landFreightPrice"></el-input>
-      </div>
-      <div class="order-item">
-        <span class="text-bold">加费</span>
-        <hr/>
-        <el-input type="text" placeholder="加费" v-model="additionalFees"></el-input>
-      </div>
-      <div class="order-item">
-        <span class="text-bold">陆运费</span>
-        <hr/>
-        <el-input type="text" placeholder="陆运费" v-model="landFreight"></el-input>
-      </div>
-      <div class="order-item" v-if="isSea">
-        <span class="text-bold">海运费</span>
-        <hr/>
-        <el-input type="text" placeholder="海运费" v-model="seaFreight"></el-input>
-      </div>
-      <div class="order-item">
-        <span class="text-bold">总运费</span>
-        <hr/>
-        <el-input type="text" placeholder="总运费" v-model="freight"></el-input>
-      </div>
-      <div class="order-item">
-        <span class="text-bold">其他费用</span>
-        <hr/>
-        <el-input type="text" placeholder="其他费用" v-model="otherCost"></el-input>
-      </div>
-      <div class="order-item">
-        <span class="text-bold">利润</span>
-        <hr/>
-        <el-input type="text" placeholder="利润" v-model="profit"></el-input>
-      </div>
-      <div class="order-item">
-        <span class="text-bold">不含税利润</span>
-        <hr/>
-        <el-input type="text" placeholder="不含税利润" v-model="profitNoTax"></el-input>
-      </div>
-      <div class="order-item">
-        <span class="text-bold">实际片数</span>
-        <hr/>
-        <el-input type="text" placeholder="实际片数" v-model="actualPieces"></el-input>
-      </div>
-      <div class="order-item">
-        <span class="text-bold">备注</span>
-        <hr/>
-        <el-input type="text" placeholder="备注" v-model="comments"></el-input>
-      </div>
-      <div class="order-item">
-        <span class="text-bold">物流利润</span>
-        <hr/>
-        <el-input type="text" placeholder="物流利润" v-model="orderItemInfo.logisticsProfit"></el-input>
-      </div>
-      <div class="order-item">
-        <span class="text-bold">客户佣金</span>
-        <hr/>
-        <el-input type="text" placeholder="客户佣金"
-                  v-model="customerCommission"></el-input>
-      </div>
-    </div>
-
+    </el-card>
+    <br/>
   </div>
 </template>
 

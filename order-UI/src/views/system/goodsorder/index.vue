@@ -537,25 +537,25 @@
     </el-dialog>
 
 
-    <!--    添加或者修改订单信息新弹窗-->
-    <el-dialog
-        title="添加订单信息"
-        :visible.sync="addOrderItemVisible"
-        width="80%">
-      <!--      添加订单 传递本组件的orderInfo信息 -->
-      <OrderForm :orderInfo="orderInfo" @updateOrderInfo="handleChangeOrderInfo"/>
-      <span slot="footer" class="dialog-footer">
-          <el-button @click="cancelSubmit">取 消</el-button>
-      <el-button type="primary" @click="submitOrder">添加订单</el-button>
-          </span>
-    </el-dialog>
+    <!--    todo 原 添加或者修改订单信息新弹窗-->
+    <!--    <el-dialog-->
+    <!--        title="添加订单信息"-->
+    <!--        :visible.sync="addOrderItemVisible"-->
+    <!--        width="80%">-->
+    <!--      &lt;!&ndash;      添加订单 传递本组件的orderInfo信息 &ndash;&gt;-->
+    <!--      <OrderForm :orderInfo="orderInfo" @updateOrderInfo="handleChangeOrderInfo"/>-->
+    <!--      <span slot="footer" class="dialog-footer">-->
+    <!--        <el-button @click="cancelSubmit">取 消</el-button>-->
+    <!--        <el-button type="primary" @click="submitOrder">添加订单</el-button>-->
+    <!--      </span>-->
+    <!--    </el-dialog>-->
 
-    <!--    todo 重构-->
-    <!--    <InfoDialog title="添加订单信息" :visible.sync="addOrderItemVisible">-->
-    <!--      <template #info>-->
-    <!--        <OrderForm :orderInfo="orderInfo" @updateOrderInfo="handleChangeOrderInfo"/>-->
-    <!--      </template>-->
-    <!--    </InfoDialog>-->
+
+    <InfoDialog title="添加订单信息" :visible.sync="addOrderItemVisible">
+      <template #info>
+        <OrderForm @close-dialog="addOrderItemVisible = false"/>
+      </template>
+    </InfoDialog>
 
 
     <!--    陆运费和海运费申请-->
@@ -587,7 +587,7 @@
                        @updateOrderDetailList="handleUpdateOrderDetailInfoList"/>
     </el-dialog>
 
-    <!-- 添加或修改订单对话框 -->
+    <!-- 修改订单对话框 -->
     <el-dialog title="修改订单" :visible.sync="open" append-to-body width="70%">
       <OrderForm :orderInfo="orderInfo" @updateOrderInfo="handleChangeOrderInfo"/>
       <div slot="footer" class="dialog-footer">
