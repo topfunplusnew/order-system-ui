@@ -1,9 +1,9 @@
 <!--订单页面-->
 <template>
   <div class="app-container">
-    <el-form :model="queryParams" ref="queryForm" size="mini" :inline="true" v-show="showSearch" label-width="80px">
+    <el-form :model="queryParams" ref="queryForm" size="mini" :inline="true" v-show="showSearch" label-width="70px">
       <el-row>
-        <el-col :span="4">
+        <el-col :span="6">
           <el-form-item label="开始时间" prop="beginTime">
             <el-date-picker
                 v-model="queryParams.orderDateStart"
@@ -11,11 +11,11 @@
                 placeholder="选择时间"
                 value-format="yyyy-MM-dd"
                 size="mini"
-                style="width: 100px;">
+            >
             </el-date-picker>
           </el-form-item>
         </el-col>
-        <el-col :span="4">
+        <el-col :span="6">
           <el-form-item label="结束时间" prop="endTime">
             <el-date-picker
                 v-model="queryParams.orderDateEnd"
@@ -23,11 +23,11 @@
                 placeholder="选择时间"
                 value-format="yyyy-MM-dd"
                 size="mini"
-                style="width: 100px;">
+            >
             </el-date-picker>
           </el-form-item>
         </el-col>
-        <el-col :span="4">
+        <el-col :span="6">
           <el-form-item label="客户名称" prop="customer">
             <el-input
                 v-model="queryParams.customer"
@@ -35,17 +35,17 @@
                 clearable
                 @keyup.enter.native="handleQuery"
                 size="mini"
-                style="width: 100px;">
+            >
             </el-input>
           </el-form-item>
         </el-col>
-        <el-col :span="4">
+        <el-col :span="6">
           <el-form-item label="审核状态" prop="checkState">
             <el-select
                 v-model="queryParams.checkState"
                 placeholder="请选择"
                 size="mini"
-                style="width: 100px;">
+            >
               <el-option
                   v-for="item in options"
                   :key="item.value"
@@ -55,13 +55,13 @@
             </el-select>
           </el-form-item>
         </el-col>
-        <el-col :span="4">
+        <el-col :span="6">
           <el-form-item label="开票状态" prop="invoiceState">
             <el-select
                 v-model="queryParams.invoiceState"
                 placeholder="请选择"
                 size="mini"
-                style="width: 100px;">
+            >
               <el-option
                   v-for="item in optionsInvoice"
                   :key="item.value"
@@ -672,7 +672,7 @@
 
 
     <!-- 订单历史信息查看-->
-    <el-dialog title="订单历史信息" :visible.sync="checkHistoryOrderVisible" width="85%">
+    <el-dialog title="订单历史信息" :visible.sync="checkHistoryOrderVisible" width="62%">
       <el-row>
         <el-col :span="18" :offset="3">
           <el-timeline>
@@ -691,6 +691,9 @@
                 <h3 style="font-weight: bold" v-if="item.currentObject.nextObject.userName !== null">修改人:{{
                     item.currentObject.nextObject.userName
                   }}</h3>
+                <template #header>
+                  <el-button type="warning" size="mini" @click="checkUpdateOrderInfo(item)">查看货物更改详情</el-button>
+                </template>
                 <el-descriptions :column="5" size="mini" border>
                   <el-descriptions-item label="日期"
                                         :content-class-name="hasProperty(item.currentObject.compare.different,'orderDate')?'before-order':''">
@@ -925,6 +928,14 @@
   </span>
     </el-dialog>
 
+    <!--    比较货物差异的弹窗-->
+    <keep-alive>
+      <CheckDiff :diff-object-a="diffOrderInfoA" :diff-object-b="diffOrderInfoB"
+                 :switch-on="compareSwitch" title="比较差异"
+                 :visible.sync="diffVisible"/>
+    </keep-alive>
+
+
   </div>
 </template>
 
@@ -966,11 +977,13 @@ import {getHistoryGoodsOrder} from "../../../api/system/goodsOrder";
 import OrderInfos from "../../../components/OrderInfos.vue";
 import {formatValue} from "../../../api/tool/cons";
 import {sortByUpdateTime} from "../../../api/tool/format";
+import CheckDiff from "../../../components/CheckDiff.vue";
 
 export default {
   name: "GoodsOrder",
   mixins: [mixin_printHTML],
   components: {
+    CheckDiff,
     OrderInfos,
     FreeApply,
     OrderDetailInfo,
@@ -978,6 +991,12 @@ export default {
   },
   data() {
     return {
+      // 比较差异的弹窗
+      diffVisible: false,
+      compareSwitch: false,
+      // 比较的两个订单货物列表的信息
+      diffOrderInfoA: {},
+      diffOrderInfoB: {},
       // 遮罩层
       loading: true,
       // 选中数组
@@ -1241,7 +1260,49 @@ export default {
        *  对于后端返回的数组 从开头开始遍历，如果只有一个，不比较
        *  如果长度大于1，那么就是拿第一个和第二个比较，然后将结果保存在 updateOrderInfoList 中 其中每一个对象都是上述类型
        */
-      updateOrderInfoList: []
+      updateOrderInfoList: [],
+
+
+      // 订单详情映射对象 然后每一个订单的详情列表都按照这个映射以后进行比较渲染
+      mapper: {
+        'orderDate': '订单日期',
+        'supplier': '供应商名称',
+        'customer': '客户名称',
+        'levelName': '级别名称',
+        'countingUnit': '计数单位',
+        'height': '高度',
+        'length': '长度',
+        'width': '宽度',
+        'pieces': '数量',
+        'piecesPerPack': '每包数量',
+        'packs': '包数',
+        'price': '单价',
+        'isIncludeTaxFactory': '是否含税（工厂）',
+        'sundryCost': '杂费',
+        'paymentFactory': '工厂付款',
+        'paymentUnload': '卸货费用',
+        'isIncludeTaxSale': '是否含税（销售）',
+        'payments': '销售付款',
+        'erro': '误差',
+        'tonnage': '吨位',
+        'landFreightPrice': '陆运价格',
+        'landFreight': '陆运费',
+        'seaFreight': '海运费',
+        'freight': '运费',
+        'otherCost': '其他费用',
+        'profit': '利润',
+        'profitNoTax': '无税利润',
+        'actualPieces': '实际数量',
+        'paymentsWithSundry': '含杂费付款',
+        'additionalFees': '额外费用',
+        'storeHouseName': '仓库名称',
+        'logisticsProfit': '物流利润',
+        'customerCommission': '客户佣金',
+        'isAdjusted': '是否调整',
+        'adjustDate': '调整日期',
+        'comments': '备注',
+      },
+
     };
   },
   created() {
@@ -1441,6 +1502,43 @@ export default {
         // 如果对象中有循环引用或其他不可序列化的值，则抛出错误
         return false;
       }
+    },
+    // 查看货物的差异信息
+    checkUpdateOrderInfo(item) {
+      this.diffVisible = true;
+      // 要把货物信息进行一个ORM转换
+      this.diffOrderInfoA = this.ormOrderInfo(item.beforeObject.orderDetailList)
+      console.log(this.diffOrderInfoA)
+      this.diffOrderInfoB = this.ormOrderInfo(item.currentObject.nextObject.orderDetailList)
+      console.log(this.diffOrderInfoB)
+      this.compareSwitch = true;
+    },
+    // 对象ORM转换
+    ormOrderInfo(targetList) {
+      if (targetList === null) {
+        return []
+      }
+      if (JSON.stringify(targetList) === '[]') {
+        return []
+      }
+      if (targetList.length === 0) {
+        return []
+      }
+      let output = {}
+      return targetList.map(target => {
+        // for in 遍历属性
+        for (let property in target) {
+          if (this.mapper[property] !== undefined) {
+            Object.defineProperty(output, `${[this.mapper[property]]}`, {
+              value: target[property],
+              writable: true,
+              enumerable: true,
+              configurable: true
+            })
+          }
+        }
+        return output
+      })
     },
     // 取消添加订单
     cancelSubmit() {
