@@ -537,7 +537,7 @@
     </el-dialog>
 
 
-    <!--    添加订单的新弹窗 原有的新增不使用-->
+    <!--    添加或者修改订单信息新弹窗-->
     <el-dialog
         title="添加订单信息"
         :visible.sync="addOrderItemVisible"
@@ -545,10 +545,17 @@
       <!--      添加订单 传递本组件的orderInfo信息 -->
       <OrderForm :orderInfo="orderInfo" @updateOrderInfo="handleChangeOrderInfo"/>
       <span slot="footer" class="dialog-footer">
-    <el-button @click="cancelSubmit">取 消</el-button>
-    <el-button type="primary" @click="submitOrder">添加订单</el-button>
-  </span>
+          <el-button @click="cancelSubmit">取 消</el-button>
+      <el-button type="primary" @click="submitOrder">添加订单</el-button>
+          </span>
     </el-dialog>
+
+    <!--    todo 重构-->
+    <!--    <InfoDialog title="添加订单信息" :visible.sync="addOrderItemVisible">-->
+    <!--      <template #info>-->
+    <!--        <OrderForm :orderInfo="orderInfo" @updateOrderInfo="handleChangeOrderInfo"/>-->
+    <!--      </template>-->
+    <!--    </InfoDialog>-->
 
 
     <!--    陆运费和海运费申请-->
@@ -680,7 +687,6 @@
               <el-button type="success" icon="el-icon-document" @click="checkPreviousOrderInfo">查看原订单信息
               </el-button>
             </el-timeline-item>
-
             <!--            修改的时间线-->
             <el-timeline-item v-for="(item,index) in updateOrderInfoList"
                               :timestamp="item.beforeObject.updateTime"
@@ -688,9 +694,10 @@
                               :key="index">
               <!--              每一个card展示的是所有的修改之前的信息 就是后端返回的数组  每一个都是和数组的后一个进行比较 -->
               <el-card>
-                <h3 style="font-weight: bold" v-if="item.currentObject.nextObject.userName !== null">修改人:{{
+                <h3 style="font-weight: bold" v-if="item.currentObject.nextObject.userName !== null">本次订单信息</h3>
+                <h4>修改人:{{
                     item.currentObject.nextObject.userName
-                  }}</h3>
+                  }} 修改原因{{ item.currentObject.nextObject.remark }}</h4>
                 <template #header>
                   <el-button type="warning" size="mini" @click="checkUpdateOrderInfo(item)">查看货物更改详情</el-button>
                 </template>
@@ -798,7 +805,7 @@
 
               <!--              修改订单-->
               <el-card>
-                <h3 style="font-weight: bold">原信息</h3>
+                <h3 style="font-weight: bold">上次订单信息</h3>
                 <el-descriptions :column="5" size="mini" border>
                   <el-descriptions-item label="日期"
                   >
@@ -908,7 +915,6 @@
 
 
     <!--      原订单信息-->
-
     <el-dialog
         title="原订单信息"
         :visible.sync="previousOrderInfoVisible"
@@ -917,7 +923,6 @@
         <el-card class="box-card" shadow="hover">
           <OrderInfos :orderInfo="previousOrderInfo"/>
         </el-card>
-
         <el-card class="box-card" shadow="hover">
           <OrderDetailInfo :orderDetailInfoList="previousOrderInfo.orderDetailList"/>
         </el-card>
@@ -978,11 +983,14 @@ import OrderInfos from "../../../components/OrderInfos.vue";
 import {formatValue} from "../../../api/tool/cons";
 import {sortByUpdateTime} from "../../../api/tool/format";
 import CheckDiff from "../../../components/CheckDiff.vue";
+import InfoDialog from "../../../components/InfoDialog.vue";
+import {addReason} from "../../../api/system/user";
 
 export default {
   name: "GoodsOrder",
   mixins: [mixin_printHTML],
   components: {
+    InfoDialog,
     CheckDiff,
     OrderInfos,
     FreeApply,
@@ -1245,7 +1253,7 @@ export default {
       /**
        * 前一个对象的信息
        * {
-       *    // 修改之后的信息 也就是后端返回的当前修改对象的后一个对象
+       *    // 修改之后的信息 也就是后端返回的当前对象的后一个对象
        *   currentObject:{
        *     // 保存当前订单信息与前一个的差异
        *     diff:[],
@@ -1540,12 +1548,7 @@ export default {
         return output
       })
     },
-    // 取消添加订单
-    cancelSubmit() {
-      this.$store.dispatch('order/clearOrderItemList'); // 清空订单详情填写信息
-      this.orderInfo = {} // 清空订单列表基础信息
-      this.addOrderItemVisible = false
-    },
+
     // 订单表信息的回调函数 用于修改父组件传递过去的数据
     handleChangeOrderInfo(val) {
       this.orderInfo = val;
@@ -1626,8 +1629,14 @@ export default {
       })
     },
 
-    //提交订单
-    //订单列表的对象封装一个，订单详情有两个一样的对象 对应供应商发货和仓库发货
+    // 取消添加订单
+    cancelSubmit() {
+      this.$store.dispatch('order/clearOrderItemList'); // 清空订单详情填写信息
+      this.orderInfo = {} // 清空订单列表基础信息
+      this.addOrderItemVisible = false
+    },
+    // 提交订单
+    // 订单列表的对象封装一个，订单详情有两个一样的对象 对应供应商发货和仓库发货
     submitOrder() {
       this.addOrderItemVisible = false
       this.orderInfo.orderDetailList = this.orderItemList; //从vuex拿到订单详细列表 加入到订单信息中
@@ -1999,25 +2008,42 @@ export default {
     },
     //修改订单的操作
     handleUpdate(row) {
-      this.reset();
-      const id = row.id || this.ids
-      getGoodsOrder(id).then(response => {
-        this.orderInfo = response.data;
-        //将数据库拿到的订单列表装入vuex 因为订单添加的货物是从vuex获取的数据 对货物的操作也是操作vuex
-        this.$store.commit("order/SET_ORDER_ITEM_LIST", response.data.orderDetailList)
-        //填充供应商和客户id
-        if (response.data.orderDetailList !== null && response.data.orderDetailList !== undefined) {
-          for (let i = 0; i < this.orderInfo.orderDetailList.length; i++) {
-            let item = this.orderInfo.orderDetailList[i];
-            item.customerID = this.orderInfo.customerID;
-            item.customer = this.orderInfo.customer;
-            //是否含税
-            item.isIncludeTaxFactory = item.isIncludeTaxFactory === '是' ? '1' : '0';
-            item.isIncludeTaxSale = item.isIncludeTaxSale === '是' ? '1' : '0';
-          }
-        }
-        this.open = true;
-        this.title = "修改订单";
+      this.$prompt('请输入编辑订单原因', '提示', {
+        confirmButtonText: '确定',
+        cancelButtonText: '取消',
+        type: 'warning'
+      }).then(({value}) => {
+        addReason({reason: value, tableName: TableName.GOODS_ORDER, tid: row.id, modifyTime: this.modifyTime})
+            .then(res => {
+              // 先暂存订单修改原因
+              sessionStorage.setItem('order-edit-reason', value)
+              this.$message.success('提交成功')
+              this.reset();
+              const id = row.id || this.ids
+              getGoodsOrder(id).then(response => {
+                this.orderInfo = response.data;
+                //将数据库拿到的订单列表装入vuex 因为订单添加的货物是从vuex获取的数据 对货物的操作也是操作vuex
+                this.$store.commit("order/SET_ORDER_ITEM_LIST", response.data.orderDetailList)
+                //填充供应商和客户id
+                if (response.data.orderDetailList !== null && response.data.orderDetailList !== undefined) {
+                  for (let i = 0; i < this.orderInfo.orderDetailList.length; i++) {
+                    let item = this.orderInfo.orderDetailList[i];
+                    item.customerID = this.orderInfo.customerID;
+                    item.customer = this.orderInfo.customer;
+                    //是否含税
+                    item.isIncludeTaxFactory = item.isIncludeTaxFactory === '是' ? '1' : '0';
+                    item.isIncludeTaxSale = item.isIncludeTaxSale === '是' ? '1' : '0';
+                  }
+                }
+                this.open = true;
+                this.title = "修改订单";
+              });
+            })
+      }).catch(() => {
+        this.$message({
+          type: 'warning',
+          message: '请先输入编辑原因!'
+        });
       });
     },
     //修改后提交订单信息
@@ -2029,25 +2055,22 @@ export default {
           let item = this.orderItemList[i];
           item.customerID = this.orderInfo.customerID;
           item.customer = this.orderInfo.customer;
-          //是否含税
           item.isIncludeTaxFactory = item.isIncludeTaxFactory === '是' ? '1' : '0';
           item.isIncludeTaxSale = item.isIncludeTaxSale === '是' ? '1' : '0';
-          //订单日期
           item.orderDate = parseTime(new Date(), '{y}-{m}-{d}')
         }
         this.orderInfo = excludeParams(this.orderInfo, this.$exclude)
-        updateGoodsOrder({...this.orderInfo, PaymentState: ''}).then(response => {
+        // 修改订单
+        updateGoodsOrder({
+          ...this.orderInfo,
+          PaymentState: '',
+          remark: sessionStorage.getItem('order-edit-reason')
+        }).then(response => {
           this.$modal.msgSuccess("修改成功");
           this.open = false;
           this.getList();
         });
       }
-      //校验 后期再加
-      /*this.$refs["form"].validate(valid => {
-        if (valid) {
-
-        }
-      });*/
     },
     /** 删除按钮操作 */
     handleDelete(row) {

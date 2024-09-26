@@ -8,6 +8,8 @@ import {listCompany} from "../api/system/company";
 import {listBankAccount} from "../api/system/bankAccount";
 import {listCars} from "../api/system/cars";
 import {listFleet} from "../api/system/fleet";
+import {parseTime} from "../utils/ruoyi";
+import {addGoodsOrder} from "../api/system/goodsOrder";
 
 export default {
   name: "OrderForm",
@@ -59,6 +61,14 @@ export default {
   },
   //计算属性 目的是为了避免无法输入修改父组件
   computed: {
+    computedOrderInfo: {
+      get() {
+
+      },
+      set() {
+
+      }
+    },
     // 日期
     orderDate: {
       get() {
@@ -286,6 +296,32 @@ export default {
     handleDeleteOrderDetail(index, event) {
       this.$store.dispatch('order/deleteOrderItem', index)
     },
+    // 取消添加订单
+    cancelSubmit() {
+      this.$store.dispatch('order/clearOrderItemList'); // 清空订单详情填写信息
+      this.orderInfo = {} // 清空订单列表基础信息
+      this.addOrderItemVisible = false
+    },
+    //提交订单
+    //订单列表的对象封装一个，订单详情有两个一样的对象 对应供应商发货和仓库发货
+    submitOrder() {
+      this.addOrderItemVisible = false
+      this.orderInfo.orderDetailList = this.orderItemList; //从vuex拿到订单详细列表 加入到订单信息中
+      //订单详情添加客户信息
+      for (let i = 0; i < this.orderItemList.length; i++) {
+        let item = this.orderItemList[i];
+        item.customerID = this.orderInfo.customerID;
+        item.customer = this.orderInfo.customer;
+        //是否含税
+        item.isIncludeTaxFactory = item.isIncludeTaxFactory === '是' ? '1' : '0';
+        item.isIncludeTaxSale = item.isIncludeTaxSale === '是' ? '1' : '0';
+        item.orderDate = parseTime(new Date(), '{y}-{m}-{d}')
+      }
+      addGoodsOrder({...this.orderInfo, PaymentState: ''}).then(res => {
+        this.$message.success('订单提交成功')
+        this.getList()
+      })
+    },
   },
   created() {
 
@@ -308,12 +344,12 @@ export default {
             </el-col>
             <el-col :span="21">
               <el-date-picker
-                v-model="orderDate"
-                size="mini"
-                type="date"
-                placeholder="选择日期"
-                value-format="yyyy-MM-dd"
-                style="width: 80%">
+                  v-model="orderDate"
+                  size="mini"
+                  type="date"
+                  placeholder="选择日期"
+                  value-format="yyyy-MM-dd"
+                  style="width: 80%">
               </el-date-picker>
             </el-col>
           </el-row>
@@ -475,6 +511,7 @@ export default {
     </el-card>
     <br/>
 
+    <!--    货物信息 可以添加多个货物信息-->
     <el-card class="box-card" shadow="hover">
       <div slot="header" class="clearfix">
         <span>订单货物信息</span>
@@ -506,35 +543,40 @@ export default {
       </div>
     </el-card>
 
+    <!--    todo 重构-->
+    <!--    <el-card class="box-card" shadow="hover">-->
+    <!--      <el-button @click="cancelSubmit">取 消</el-button>-->
+    <!--      <el-button type="primary" @click="submitOrder">添加订单</el-button>-->
+    <!--    </el-card>-->
 
     <!--    海运车牌信息弹窗-->
     <el-dialog
-      title="海运车辆信息"
-      :visible.sync="seaInfoDialogVisible"
-      width="35%" append-to-body>
+        title="海运车辆信息"
+        :visible.sync="seaInfoDialogVisible"
+        width="35%" append-to-body>
       <el-table
-        :data="seaInfo"
-        border>
+          :data="seaInfo"
+          border>
         <!--        操作-->
         <el-table-column
-          fixed="left"
-          label="操作">
+            fixed="left"
+            label="操作">
           <template slot-scope="scope">
             <el-button @click="commitSeaInfo(scope.row)" type="danger" size="small">确认</el-button>
           </template>
         </el-table-column>
         <el-table-column
-          fixed
-          prop="carNo"
-          label="车牌">
+            fixed
+            prop="carNo"
+            label="车牌">
         </el-table-column>
         <el-table-column
-          prop="driver"
-          label="司机姓名">
+            prop="driver"
+            label="司机姓名">
         </el-table-column>
         <el-table-column
-          prop="tel"
-          label="司机电话">
+            prop="tel"
+            label="司机电话">
         </el-table-column>
       </el-table>
       <span slot="footer" class="dialog-footer">
