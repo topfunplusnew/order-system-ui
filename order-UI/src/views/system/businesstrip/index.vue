@@ -66,10 +66,10 @@
       <!--      <el-table-column label="报销人ID" align="center" prop="employeeID"/>-->
       <el-table-column label="报销人" align="center" prop="employee" v-if="columns[0].visible"/>
       <el-table-column label="共同出差人员" align="center" prop="personnel" v-if="columns[1].visible"/>
-      <el-table-column label="部门" align="center" prop="deptName"/>
-      <el-table-column label="出差时间" align="center" prop="starttime" v-if="columns[2].visible"/>
-      <el-table-column label="出差结束时间" align="center" prop="endtime" v-if="columns[3].visible"/>
-      <el-table-column label="附件" align="center" prop="attachmentPath" v-if="columns[4].visible">
+      <el-table-column label="部门" align="center" prop="deptName" v-if="columns[2].visible"/>
+      <el-table-column label="出差时间" align="center" prop="starttime" v-if="columns[3].visible"/>
+      <el-table-column label="出差结束时间" align="center" prop="endtime" v-if="columns[4].visible"/>
+      <el-table-column label="附件" align="center" prop="attachmentPath" v-if="columns[5].visible">
         <template #default="scope">
           <span v-if="!scope.row.attachmentPath">无</span>
           <span v-else>
@@ -80,12 +80,12 @@
          </span>
         </template>
       </el-table-column>
-      <el-table-column label="是否已报销" align="center" prop="isReimburse" v-if="columns[5].visible">
+      <el-table-column label="是否已报销" align="center" prop="isReimburse" v-if="columns[6].visible">
         <template slot-scope="scope">
           {{ scope.row.isReimburse === 0 ? '否' : '是' }}
         </template>
       </el-table-column>
-      <el-table-column label="备注" align="center" prop="comments" v-if="columns[6].visible"/>
+      <el-table-column label="备注" align="center" prop="comments" v-if="columns[7].visible"/>
       <el-table-column label="操作" align="center" class-name="small-padding fixed-width" width="260px" fixed="right">
         <template slot-scope="scope">
           <el-button
@@ -653,11 +653,12 @@ export default {
       columns: [
         {key: 0, label: `报销人`, visible: true},
         {key: 1, label: `共同出差人员`, visible: true},
-        {key: 2, label: `出差时间`, visible: true},
-        {key: 3, label: `出差结束时间`, visible: true},
-        {key: 4, label: `附件地址`, visible: true},
-        {key: 5, label: `是否已报销`, visible: true},
-        {key: 6, label: `备注`, visible: true},
+        {key: 2, label: `部门`, visible: true},
+        {key: 3, label: `出差时间`, visible: true},
+        {key: 4, label: `出差结束时间`, visible: true},
+        {key: 5, label: `附件地址`, visible: true},
+        {key: 6, label: `是否已报销`, visible: true},
+        {key: 7, label: `备注`, visible: true},
       ],
       active: 0,
       //是否使用车辆 默认为否

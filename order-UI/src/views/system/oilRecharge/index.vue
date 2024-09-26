@@ -69,8 +69,8 @@
 
     <el-table border v-loading="loading" :data="oilRechargeList" @selection-change="handleSelectionChange"
               v-horizontal-scroll="'always'" id="printBox" size="mini" :cell-style="()=>{return {padding:'2px'}}">
-      <el-table-column label="id" align="center" prop="id" v-if="columns[0].visible"/>
-      <el-table-column label="审核状态" align="center" prop="checkState">
+      <el-table-column label="id" align="center" prop="id"/>
+      <el-table-column label="审核状态" align="center" prop="checkState" v-if="columns[0].visible">
         <!--        添加el-tag-->
         <template slot-scope="scope">
           <el-tag v-if="scope.row.checkState === '未申请'" type="warning">未申请</el-tag>
@@ -312,7 +312,7 @@ export default {
       // 表单校验
       rules: {},
       columns: [
-        {key: 0, label: `id`, visible: true},
+        {key: 0, label: `审核状态`, visible: true},
         {key: 1, label: `加油卡卡号`, visible: true},
         {key: 2, label: `充值类型`, visible: true},
         {key: 3, label: `充值金额`, visible: true},

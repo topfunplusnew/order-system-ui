@@ -98,9 +98,9 @@
       <el-table-column label="付款款账号" align="center" prop="outBankNo" v-if="columns[7].visible" width="160"/>
       <el-table-column label="返利原因" align="center" prop="rebateReason" v-if="columns[8].visible"
                        show-overflow-tooltip/>
-      <el-table-column label="返利方式" align="center" prop="rebateMethod" v-if="columns[8].visible"
+      <el-table-column label="返利方式" align="center" prop="rebateMethod" v-if="columns[9].visible"
                        show-overflow-tooltip/>
-      <el-table-column label="备注" align="center" prop="comments" v-if="columns[9].visible" show-overflow-tooltip/>
+      <el-table-column label="备注" align="center" prop="comments" v-if="columns[10].visible" show-overflow-tooltip/>
       <el-table-column label="操作" align="center" class-name="small-padding fixed-width" width="150px" fixed="right">
         <template slot-scope="scope">
           <!--          <el-button
@@ -606,7 +606,9 @@ export default {
         {key: 6, label: `付款户名`, visible: true},
         {key: 7, label: `付款款账号`, visible: true},
         {key: 8, label: `返利原因`, visible: true},
-        {key: 9, label: `备注`, visible: true},
+        {key: 9, label: `返利方式`, visible: true},
+        {key: 10, label: `备注`, visible: true},
+
       ],
       needInfo: '',
       paymentApplyVisible: false,
