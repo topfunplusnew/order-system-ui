@@ -69,12 +69,12 @@
     <el-table border v-loading="loading" :data="socialInsuranceList" @selection-change="handleSelectionChange"
               id="printBox" v-horizontal-scroll="'always'" size="mini" :cell-style="()=>{return {padding:'.5px'}}">
       <el-table-column label="id" align="center" prop="id"/>
-      <el-table-column label="部门" align="center" prop="depName" v-if="columns[2].visible"/>
-      <el-table-column label="姓名" align="center" prop="employeeName" v-if="columns[3].visible"/>
-      <el-table-column label="人员编号" align="center" prop="employeeID" v-if="columns[4].visible"/>
-      <el-table-column label="社保缴纳基数" align="center" prop="basicSocialInsurance" v-if="columns[0].visible"
+      <el-table-column label="部门" align="center" prop="depName" v-if="columns[0].visible"/>
+      <el-table-column label="姓名" align="center" prop="employeeName" v-if="columns[1].visible"/>
+      <el-table-column label="人员编号" align="center" prop="employeeID" v-if="columns[2].visible"/>
+      <el-table-column label="社保缴纳基数" align="center" prop="basicSocialInsurance" v-if="columns[3].visible"
                        width="110"/>
-      <el-table-column label="公积金基数" align="center" prop="basicHousingFund" v-if="columns[1].visible" width="110"/>
+      <el-table-column label="公积金基数" align="center" prop="basicHousingFund" v-if="columns[4].visible" width="110"/>
       <el-table-column label="缴费时间" align="center" prop="insuranceDate" v-if="columns[5].visible" width="120"/>
       <el-table-column label="社保增减员情况" align="center">
         <el-table-column label="是否增员" align="center" prop="isRecruiting" v-if="columns[6].visible"/>
@@ -82,36 +82,28 @@
       </el-table-column>
       <el-table-column label="基本医疗保险" align="center">
         <el-table-column label="个人缴纳" align="center" prop="healthySecuritySelf" v-if="columns[8].visible"/>
-        <el-table-column label="公司缴纳" align="center" prop="healthySecurityCompany"
-                         v-if="columns[9].visible"/>
+        <el-table-column label="公司缴纳" align="center" prop="healthySecurityCompany" v-if="columns[9].visible"/>
       </el-table-column>
       <el-table-column label="工伤保险" align="center" prop="injuryInsurance" v-if="columns[10].visible"/>
-
       <el-table-column label="失业保险" align="center">
-        <el-table-column label="个人缴纳" align="center" prop="unemploymentSecuritySelf"
-                         v-if="columns[11].visible"/>
-        <el-table-column label="公司缴纳" align="center" prop="unemploymentSecurityCompany"
-                         v-if="columns[12].visible"/>
+        <el-table-column label="个人缴纳" align="center" prop="unemploymentSecuritySelf" v-if="columns[11].visible"/>
+        <el-table-column label="公司缴纳" align="center" prop="unemploymentSecurityCompany" v-if="columns[12].visible"/>
       </el-table-column>
       <el-table-column label="养老保险" align="center">
         <el-table-column label="个人缴纳" align="center" prop="retirementSecuritySelf" v-if="columns[13].visible"/>
-        <el-table-column label="公司缴纳" align="center" prop="retirementSecurityCompany"
-                         v-if="columns[14].visible"/>
+        <el-table-column label="公司缴纳" align="center" prop="retirementSecurityCompany" v-if="columns[14].visible"/>
       </el-table-column>
       <el-table-column label="大额医保" align="center">
-        <el-table-column label="个人缴纳" align="center" prop="largeMedicalSecuritySelf"
-                         v-if="columns[15].visible"/>
-        <el-table-column label="公司缴纳" align="center" prop="largeMedicalSecurityCompany"
-                         v-if="columns[16].visible"/>
+        <el-table-column label="个人缴纳" align="center" prop="largeMedicalSecuritySelf" v-if="columns[15].visible"/>
+        <el-table-column label="公司缴纳" align="center" prop="largeMedicalSecurityCompany" v-if="columns[16].visible"/>
       </el-table-column>
       <el-table-column label="公积金缴纳" align="center">
         <el-table-column label="个人缴纳" align="center" prop="housingFundSelf" v-if="columns[17].visible"/>
         <el-table-column label="公司缴纳" align="center" prop="housingFundCompany" v-if="columns[18].visible"/>
       </el-table-column>
-
       <el-table-column label="个人缴费总额" align="center" prop="sumSelf" v-if="columns[19].visible" width="120"/>
       <el-table-column label="公司缴费总额" align="center" prop="sumCompany" v-if="columns[20].visible" width="120"/>
-      <el-table-column label="备注" align="center" prop="comments"/>
+      <el-table-column label="备注" align="center" prop="comments" v-if="columns[21].visible" width="120"/>
       <el-table-column label="操作" align="center" class-name="small-padding fixed-width" fixed="right">
         <template slot-scope="scope">
           <el-button
@@ -245,11 +237,6 @@
           <el-table-column label="公司缴纳总额" prop="sumCompany">
           </el-table-column>
 
-          <!--          这两列是合计 计算总额 后面设计-->
-          <!--          <el-table-column label="缴纳社保合计">-->
-          <!--          </el-table-column>-->
-          <!--          <el-table-column label="缴纳公积金合计">-->
-          <!--          </el-table-column>-->
         </el-table-column>
 
       </el-table>
@@ -448,11 +435,11 @@ export default {
         delFlag: null
       },
       columns: [
-        {key: 0, label: `社保缴纳基数`, visible: true},
-        {key: 1, label: `公积金基数`, visible: true},
-        {key: 2, label: `部门`, visible: true},
-        {key: 3, label: `姓名`, visible: true},
-        {key: 4, label: `人员编号`, visible: true},
+        {key: 0, label: `部门`, visible: true},
+        {key: 1, label: `姓名`, visible: true},
+        {key: 2, label: `人员编号`, visible: true},
+        {key: 3, label: `社保缴纳基数`, visible: true},
+        {key: 4, label: `公积金基数`, visible: true},
         {key: 5, label: `缴费时间`, visible: true},
         {key: 6, label: `是否增员`, visible: true},
         {key: 7, label: `是否减员`, visible: true},
@@ -469,7 +456,9 @@ export default {
         {key: 18, label: `公积金-公司`, visible: true},
         {key: 19, label: `个人缴费总额`, visible: true},
         {key: 20, label: `公司缴费总额`, visible: true},
+        {key: 21, label: `备注`, visible: true}
       ],
+
       // 表单参数
       form: {},
       // 表单校验
