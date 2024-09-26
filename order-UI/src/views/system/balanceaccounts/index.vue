@@ -255,10 +255,10 @@ export default {
         {key: 0, label: `操作时间`, visible: true},
         {key: 1, label: `金额`, visible: true},
         {key: 2, label: `对方公司`, visible: true},
-        {key: 3, label: `对方公司ID`, visible: true},
+        {key: 3, label: `对方公司类型`, visible: true},
         {key: 4, label: `备注`, visible: true},
         {key: 5, label: `添加时间`, visible: true},
-        {key: 6, label: `操作人员ID`, visible: true},
+       /* {key: 6, label: `操作人员ID`, visible: true},*/
       ],
       // 表单校验
       rules: {

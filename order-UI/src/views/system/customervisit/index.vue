@@ -125,31 +125,31 @@
           </el-row>
         </template>
       </el-table-column>
-      <el-table-column label="客户名称" align="center" prop="customer" v-if="columns[3].visible" fixed="left"
+      <el-table-column label="客户名称" align="center" prop="customer" v-if="columns[1].visible" fixed="left"
                        width="150px"/>
-      <el-table-column label="负责人姓名" align="center" prop="leaderName" v-if="columns[4].visible" width="150px"/>
-      <el-table-column label="负责人电话" align="center" prop="LeaderTel" v-if="columns[5].visible" width="150px"/>
-      <el-table-column label="厂房设备" align="center" prop="equipment" v-if="columns[6].visible" width="150px"/>
-      <el-table-column label="竞争对手" align="center" prop="competitor" v-if="columns[7].visible" width="150px"/>
-      <el-table-column label="当地经销商" align="center" prop="localDealer" v-if="columns[8].visible" width="150px"/>
-      <el-table-column label="月用货量" align="center" prop="monthlyConsumption" v-if="columns[9].visible"
+      <el-table-column label="负责人姓名" align="center" prop="leaderName" v-if="columns[2].visible" width="150px"/>
+      <el-table-column label="负责人电话" align="center" prop="LeaderTel" v-if="columns[3].visible" width="150px"/>
+      <el-table-column label="厂房设备" align="center" prop="equipment" v-if="columns[4].visible" width="150px"/>
+      <el-table-column label="竞争对手" align="center" prop="competitor" v-if="columns[5].visible" width="150px"/>
+      <el-table-column label="当地经销商" align="center" prop="localDealer" v-if="columns[6].visible" width="150px"/>
+      <el-table-column label="月用货量" align="center" prop="monthlyConsumption" v-if="columns[7].visible"
                        width="150px"/>
-      <el-table-column label="白玻用货习惯及厂家" align="center" prop="whiteGlassFactory" v-if="columns[10].visible"
+      <el-table-column label="白玻用货习惯及厂家" align="center" prop="whiteGlassFactory" v-if="columns[8].visible"
                        width="200px" show-overflow-tooltip/>
       <el-table-column label="lowe玻璃用货厂家及用量" align="center" prop="loweGlassConsumption"
-                       v-if="columns[11].visible" width="300px" show-overflow-tooltip/>
+                       v-if="columns[9].visible" width="300px" show-overflow-tooltip/>
       <el-table-column label="色玻、过度色玻璃用货厂家及用量" align="center" prop="colorGlassConsumption"
-                       v-if="columns[12].visible" width="300px" show-overflow-tooltip/>
+                       v-if="columns[10].visible" width="300px" show-overflow-tooltip/>
       <el-table-column label="特色厚度、特殊尺寸、协议品用货厂家及用量" align="center" prop="specialGlassConsumption"
-                       v-if="columns[13].visible" width="300px" show-overflow-tooltip/>
-      <el-table-column label="备注" align="center" prop="comments" v-if="columns[14].visible" show-overflow-tooltip
+                       v-if="columns[11].visible" width="300px" show-overflow-tooltip/>
+      <el-table-column label="备注" align="center" prop="comments" v-if="columns[12].visible" show-overflow-tooltip
                        width="180px"/>
 
-      <el-table-column label="省" align="center" prop="province" v-if="columns[15].visible" show-overflow-tooltip
+      <el-table-column label="省" align="center" prop="province" v-if="columns[13].visible" show-overflow-tooltip
                        width="180px"/>
-      <el-table-column label="市" align="center" prop="city" v-if="columns[16].visible" show-overflow-tooltip
+      <el-table-column label="市" align="center" prop="city" v-if="columns[14].visible" show-overflow-tooltip
                        width="180px"/>
-      <el-table-column label="乡镇" align="center" prop="county" v-if="columns[17].visible" show-overflow-tooltip
+      <el-table-column label="乡镇" align="center" prop="county" v-if="columns[15].visible" show-overflow-tooltip
                        width="180px"/>
       <el-table-column label="操作" align="center" class-name="small-padding fixed-width" fixed="right" width="130px">
         <template slot-scope="scope">
@@ -337,24 +337,24 @@ export default {
       rules: {},
       columns: [
         {key: 0, label: `是否审核`, visible: true},
-        {key: 1, label: `人员`, visible: true},
-        {key: 2, label: `区域`, visible: true},
-        {key: 3, label: `客户名称`, visible: true},
-        {key: 4, label: `负责人姓名`, visible: true},
-        {key: 5, label: `负责人电话`, visible: true},
-        {key: 6, label: `厂房设备`, visible: true},
-        {key: 7, label: `竞争对手`, visible: true},
-        {key: 8, label: `当地经销商`, visible: true},
-        {key: 9, label: `月用货量`, visible: true},
-        {key: 10, label: `白玻用货习惯及厂家`, visible: true},
-        {key: 11, label: `lowe玻璃用货厂家及用量`, visible: true},
-        {key: 12, label: `色玻、过度色玻璃用货厂家及用量`, visible: true},
-        {key: 13, label: `特色厚度、特殊尺寸、协议品用货厂家及用量`, visible: true},
-        {key: 14, label: `备注`, visible: true},
-        {key: 15, label: `提交时间`, visible: true},
-        {key: 16, label: `省`, visible: true},
-        {key: 17, label: `市`, visible: true},
-        {key: 18, label: `乡镇`, visible: true},
+       /* {key: 1, label: `人员`, visible: true},
+        {key: 2, label: `区域`, visible: true},*/
+        {key: 1, label: `客户名称`, visible: true},
+        {key: 2, label: `负责人姓名`, visible: true},
+        {key: 3, label: `负责人电话`, visible: true},
+        {key: 4, label: `厂房设备`, visible: true},
+        {key: 5, label: `竞争对手`, visible: true},
+        {key: 6, label: `当地经销商`, visible: true},
+        {key: 7, label: `月用货量`, visible: true},
+        {key: 8, label: `白玻用货习惯及厂家`, visible: true},
+        {key: 9, label: `lowe玻璃用货厂家及用量`, visible: true},
+        {key: 10, label: `色玻、过度色玻璃用货厂家及用量`, visible: true},
+        {key: 11, label: `特色厚度、特殊尺寸、协议品用货厂家及用量`, visible: true},
+        {key: 12, label: `备注`, visible: true},
+       /* {key: 15, label: `提交时间`, visible: true},*/
+        {key: 13, label: `省`, visible: true},
+        {key: 14, label: `市`, visible: true},
+        {key: 15, label: `乡镇`, visible: true},
       ],
       //省市县
       provinceList: [],
