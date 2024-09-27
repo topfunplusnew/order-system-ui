@@ -536,27 +536,12 @@
   </span>
     </el-dialog>
 
-
-    <!--    todo 原 添加或者修改订单信息新弹窗-->
-    <!--    <el-dialog-->
-    <!--        title="添加订单信息"-->
-    <!--        :visible.sync="addOrderItemVisible"-->
-    <!--        width="80%">-->
-    <!--      &lt;!&ndash;      添加订单 传递本组件的orderInfo信息 &ndash;&gt;-->
-    <!--      <OrderForm :orderInfo="orderInfo" @updateOrderInfo="handleChangeOrderInfo"/>-->
-    <!--      <span slot="footer" class="dialog-footer">-->
-    <!--        <el-button @click="cancelSubmit">取 消</el-button>-->
-    <!--        <el-button type="primary" @click="submitOrder">添加订单</el-button>-->
-    <!--      </span>-->
-    <!--    </el-dialog>-->
-
-
+    <!--    添加订单-->
     <InfoDialog title="添加订单信息" :visible.sync="addOrderItemVisible">
       <template #info>
         <OrderForm @close-dialog="addOrderItemVisible = false"/>
       </template>
     </InfoDialog>
-
 
     <!--    陆运费和海运费申请-->
     <el-dialog

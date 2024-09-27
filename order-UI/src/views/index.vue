@@ -10,24 +10,24 @@
           </el-col>
           <el-col :span="6">
             <el-date-picker
-              v-model="beginTime"
-              type="date"
-              size="mini"
-              value-format="yyyy-MM-dd"
-              placeholder="开始日期"
+                v-model="queryParams.beginTime"
+                type="date"
+                size="mini"
+                value-format="yyyy-MM-dd"
+                placeholder="开始日期"
             ></el-date-picker>
           </el-col>
           <el-col :span="6">
             <el-date-picker
-              v-model="endTime"
-              type="date"
-              size="mini"
-              value-format="yyyy-MM-dd"
-              placeholder="结束日期"
+                v-model="queryParams.endTime"
+                type="date"
+                size="mini"
+                value-format="yyyy-MM-dd"
+                placeholder="结束日期"
             ></el-date-picker>
           </el-col>
           <el-col :span="2">
-            <el-button type="primary" size="mini">搜索</el-button>
+            <el-button type="primary" size="mini" @click="handleSearch">搜索</el-button>
           </el-col>
         </el-row>
       </el-col>
@@ -40,20 +40,20 @@
           </el-col>
           <el-col :span="6">
             <el-date-picker
-              v-model="beginTime"
-              type="date"
-              size="mini"
-              value-format="yyyy-MM-dd"
-              placeholder="开始日期"
+                v-model="queryParams.beginTime"
+                type="date"
+                size="mini"
+                value-format="yyyy-MM-dd"
+                placeholder="开始日期"
             ></el-date-picker>
           </el-col>
           <el-col :span="6">
             <el-date-picker
-              v-model="endTime"
-              type="date"
-              size="mini"
-              value-format="yyyy-MM-dd"
-              placeholder="结束日期"
+                v-model="queryParams.endTime"
+                type="date"
+                size="mini"
+                value-format="yyyy-MM-dd"
+                placeholder="结束日期"
             ></el-date-picker>
           </el-col>
           <el-col :span="2">
@@ -64,53 +64,160 @@
     </el-row>
     <el-row :gutter="50">
       <el-col :xs="24" :sm="12" :md="11" :lg="11" :offset="xs ? 0 : 1">
+        <right-toolbar @queryTable="getList" :columns="columns">
+          <template v-slot:print>
+            <el-col :span="1.5">
+              <el-button
+                  plain
+                  icon="el-icon-printer"
+                  size="mini"
+                  @click="printHTML"
+              >
+              </el-button>
+            </el-col>
+          </template>
+          <!--        导出-->
+          <template v-slot:export>
+            <el-col :span="1.5">
+              <el-button
+                  plain
+                  icon="el-icon-folder-opened"
+                  size="mini"
+                  @click="handleExport"
+                  v-hasPermi="['system:bankaccount:export']"
+              >
+              </el-button>
+            </el-col>
+          </template>
+        </right-toolbar>
         <el-table
-          :data="tableData"
-          height="250"
-          border
-          style="width: 100%"
-          :header-cell-style="{ background: '#f0f0f0', color: '#333' }"
+            size="mini"
+            :data="tableData"
+            max-height="500"
+            show-summary
+            border
+            style="width: 100%"
+            :loading="loading"
+            :header-cell-style="{ background: '#f0f0f0', color: '#333' }"
+            :cell-style="()=>{return {padding:'2px'}}"
         >
           <el-table-column
-            prop="date"
-            label="日期"
-            width="180"
+              prop="orderDate"
+              label="日期"
+              show-overflow-tooltip
+              v-if="columns[0].visible"
           ></el-table-column>
           <el-table-column
-            prop="name"
-            label="姓名"
-            width="180"
+              prop="companyName"
+              label="客户"
+              show-overflow-tooltip
+              v-if="columns[1].visible"
           ></el-table-column>
           <el-table-column
-            prop="address"
-            label="地址"
+              prop="salesman"
+              label="业务员"
+              show-overflow-tooltip
+              v-if="columns[2].visible"
+          ></el-table-column>
+          <el-table-column
+              prop="profit"
+              label="含税利润"
+              show-overflow-tooltip
+              v-if="columns[3].visible"
+          ></el-table-column>
+          <el-table-column
+              prop="profitNoTax"
+              label="不含税利润"
+              width="110"
+              show-overflow-tooltip
+              v-if="columns[4].visible"
+          ></el-table-column>
+          <el-table-column
+              prop="payments"
+              label="总货款"
+              show-overflow-tooltip
+              v-if="columns[5].visible"
+          ></el-table-column>
+          <el-table-column
+              prop="paymentFactory"
+              label="出厂货款"
+              show-overflow-tooltip
+              v-if="columns[6].visible"
+          ></el-table-column>
+          <el-table-column
+              prop="tonnage"
+              label="吨位"
+              show-overflow-tooltip
+              v-if="columns[7].visible"
+          ></el-table-column>
+          <el-table-column
+              prop="address"
+              label="内勤"
+              show-overflow-tooltip
+              v-if="columns[8].visible"
+          ></el-table-column>
+          <el-table-column
+              prop="landCarNo"
+              label="陆运车牌"
+              show-overflow-tooltip
+          >
+            <template #default="scope">
+              <span v-if="scope.row.landCarNo !== null">{{ scope.row.landCarNo }}</span>
+              <span v-else>无</span>
+            </template>
+            <template v-if="columns[9].visible"></template>
+          </el-table-column>
+          <el-table-column
+              prop="seaCarNo"
+              label="海运车牌"
+              show-overflow-tooltip
+          >
+            <template #default="scope">
+              <span v-if="scope.row.seaCarNo !== null">{{ scope.row.seaCarNo }}</span>
+              <span v-else>无</span>
+            </template>
+            <template v-if="columns[10].visible"></template>
+          </el-table-column>
+          <el-table-column
+              prop="fleet"
+              label="车队"
+              show-overflow-tooltip
+              v-if="columns[11].visible"
+          ></el-table-column>
+          <el-table-column
+              prop="freight"
+              label="运费"
+              show-overflow-tooltip
+              v-if="columns[12].visible"
           ></el-table-column>
         </el-table>
       </el-col>
+
+      <!--      右侧利润-->
       <el-col :xs="24" :sm="12" :md="12" :lg="12">
         <el-table
-          height="130"
-          :empty-text="' '"
+            height="130"
+            :empty-text="' '"
         >
           <el-table-column
-            prop="date"
-            label="￥0"
-            align="center"
+              prop="date"
+              label="￥0"
+              align="center"
           >
             <el-table-column
-              prop="date"
-              label="利润总额"
+                prop="date"
+                label="利润总额"
             >
               <el-table-column
-                prop="date"
-                label="费用合计"
+                  prop="date"
+                  label="费用合计"
               ></el-table-column>
             </el-table-column>
             <el-table-column
-              label="￥0"
+                label="￥0"
             >
               <el-table-column
-                label="￥0"
+                  label="￥0"
               ></el-table-column>
             </el-table-column>
           </el-table-column>
@@ -121,50 +228,71 @@
 </template>
 
 <script>
+import {mixin_printHTML} from "./dashboard/mixins/print";
+import {getDeliveryList} from "../api/system/statement";
+
 export default {
   name: "Index",
+  mixins: [mixin_printHTML],
   data() {
     return {
-      beginTime: '',
-      endTime: '',
-      tableData: [
-        {
-          date: '2016-05-03',
-          name: '王小虎',
-          address: '上海市普陀区金沙江路 1518 弄'
-        }, {
-          date: '2016-05-02',
-          name: '王小虎',
-          address: '上海市普陀区金沙江路 1518 弄'
-        }, {
-          date: '2016-05-04',
-          name: '王小虎',
-          address: '上海市普陀区金沙江路 1518 弄'
-        }, {
-          date: '2016-05-01',
-          name: '王小虎',
-          address: '上海市普陀区金沙江路 1518 弄'
-        }, {
-          date: '2016-05-08',
-          name: '王小虎',
-          address: '上海市普陀区金沙江路 1518 弄'
-        }, {
-          date: '2016-05-06',
-          name: '王小虎',
-          address: '上海市普陀区金沙江路 1518 弄'
-        }, {
-          date: '2016-05-07',
-          name: '王小虎',
-          address: '上海市普陀区金沙江路 1518 弄'
-        }]
+      loading: false,
+      queryParams: {
+        beginTime: '',
+        endTime: '',
+      },
+      tableData: [],
+      columns: [
+        {key: 0, label: `日期`, visible: true},
+        {key: 1, label: `客户`, visible: true},
+        {key: 2, label: `业务员`, visible: true},
+        {key: 3, label: `含税利润`, visible: true},
+        {key: 4, label: `不含税利润`, visible: true},
+        {key: 5, label: `总货款`, visible: true},
+        {key: 6, label: `出厂货款`, visible: true},
+        {key: 7, label: `吨位`, visible: true},
+        {key: 8, label: `内勤`, visible: true},
+        {key: 9, label: `陆运车牌`, visible: true},
+        {key: 10, label: `海运车牌`, visible: true},
+        {key: 11, label: `车队`, visible: true},
+        {key: 12, label: `运费`, visible: true}
+      ]
     };
+
   },
   computed: {
     xs() {
       return this.$store.state.viewport === 'xs';
     }
   },
-  methods: {}
+  created() {
+    this.reset()
+    this.getList();
+  },
+  methods: {
+    reset() {
+      this.queryParams = {
+        beginTime: '',
+        endTime: '',
+      };
+    },
+    handleSearch() {
+      this.getList();
+    },
+    getList() {
+      this.loading = true
+      getDeliveryList(this.queryParams).then(res => {
+        this.tableData = res.rows;
+        this.loading = false
+      })
+    },
+    handleExport() {
+      this.download('statistics/export/todayOrderList', {
+        beginTime: this.queryParams.beginTime,
+        endTime: this.queryParams.endTime
+      }, `todayOrderList${new Date().getTime()}.xlsx`)
+    },
+  }
 };
 </script>
 
