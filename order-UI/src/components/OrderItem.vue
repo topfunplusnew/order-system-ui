@@ -24,46 +24,17 @@ export default {
       companyName: '',
       //仓库名称搜索
       storeName: '',
-      //产品级别搜索
-      productLevel: {
-        //级别
-        level: '',
-        //宽度
-        width: ''
-      },
-
-      //供应商信息弹窗
-      companyGiveDialogVisible: false,
-      //仓库信息弹窗
-      storeInfoDialogVisible: false,
-      //产品级别弹窗
-      productLevelDialogVisible: false,
-
-
-      //供应商信息
-      companyGiveInfo: [],
-      //仓库信息
-      storeInfo: [],
       //库存信息
       inventoryInfo: [],
       //产品级别信息
       productLevelInfo: [],
-
-      //id:  供应商ID:supplierID  客户ID:customerID 仓库ID:storeHouseID
-      // 仓库存储的货物ID:storeID 客户ID:customerID 货运车辆ID:landCarID 海运车辆ID:seaCarID
       supplierID: '',
       storeHouseID: '',
       storeID: '',
-
       //卸货片数
       outPieces: 0,
-      //出库日期
-      // exWarehouseDate: ''
-
       //库存
       currentStockNumber: '',
-      //搜索仓库名称
-      searchStoreName: ''
     }
   },
   computed: {
@@ -441,7 +412,7 @@ export default {
     },
   },
   watch: {
-    //如果不选海运
+    // 陆运费和海运费 如果传入的是false那么就是不要钱
     isSea: {
       handler(val) {
         if (val === false) {
@@ -449,23 +420,11 @@ export default {
         }
       }
     },
-    //出厂是否含税
-    isIncludeTaxFactory: {
+    isLand: {
       handler(val) {
-        console.log('isIncludeTaxFactory:', val)
-      },
-    },
-    //销售是否含税
-    isIncludeTaxSale: {
-      handler(val) {
-        console.log('isIncludeTaxSale:', val)
-      },
-    },
-    //组合
-    Tax: {
-      handler(val) {
-        console.log('both:', val)
-
+        if (val === false) {
+          this.landFreight = 0;
+        }
       }
     },
     //监听的是整个对象
@@ -526,7 +485,8 @@ export default {
           this.freight = Number(this.landFreight) + Number(this.seaFreight);
         }
       },
-      deep: true
+      deep: true,
+      immediate: true,
     },
     //出厂片数
     pieces: {
@@ -603,7 +563,6 @@ export default {
       //出厂片数让用户自己填
       this.pieces = val.stockNumber;
       this.currentStockNumber = val.stockNumber;//暂存
-      this.storeInfoDialogVisible = false;
     },
 
     // 产品级别自动填充

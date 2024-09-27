@@ -92,6 +92,7 @@
         </right-toolbar>
         <!--        发货列表-->
         <el-table
+            id="printBox"
             size="mini"
             :data="tableData"
             max-height="500"
