@@ -55,7 +55,8 @@ export default {
       handler(val) {
         this.$emit('changeInventoryInfo', val)
       },
-      deep: true
+      deep: true,
+      immediate: true,
     },
     goodsInfo: {
       handler(val) {
@@ -126,10 +127,10 @@ export default {
           </el-col>
           <el-col :span="20">
             <el-date-picker
-              v-model="currentInventoryInfo.storeDate"
-              type="date"
-              placeholder="选择日期" style="width: 70%"
-              value-format="yyyy-MM-dd">
+                v-model="currentInventoryInfo.storeDate"
+                type="date"
+                placeholder="选择日期" style="width: 70%"
+                value-format="yyyy-MM-dd">
             </el-date-picker>
           </el-col>
         </el-row>

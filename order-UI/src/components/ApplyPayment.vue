@@ -173,7 +173,6 @@ export default {
     };
   },
   created() {
-    console.log('created')
     // 查询科目信息
     listSubject().then(res => {
       this.subjectTree = this.handleTree(res.data, "id", "parentId");
@@ -191,7 +190,7 @@ export default {
       this.form.companyType = '司机'
     }
     // 如果传入的必须自动填充的金额大于0 则自动填充 且无法修改
-    if (this.needMoney > 0) {
+    if (this.needMoney >= 0) {
       this.form.moneyAmount = this.needMoney;
       this.inputDisabled = true;
     }
@@ -282,7 +281,7 @@ export default {
     needMoney: {
       handler() {
         // 如果传入的必须自动填充的金额大于0 则自动填充 且无法修改
-        if (this.needMoney > 0) {
+        if (this.needMoney >= 0) {
           this.form.moneyAmount = this.needMoney;
           this.inputDisabled = true;
         }
