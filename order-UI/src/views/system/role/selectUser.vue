@@ -37,7 +37,7 @@
         </el-table-column>
         <el-table-column label="创建时间" align="center" prop="createTime" width="180">
           <template slot-scope="scope">
-            <span>{{ parseTime(scope.row.createTime) }}</span>
+            <span>{{ parseTime(scope.row.createTime,'{y}-{m}-{d}') }}</span>
           </template>
         </el-table-column>
       </el-table>
@@ -58,6 +58,7 @@
 
 <script>
 import { unallocatedUserList, authUserSelectAll } from "@/api/system/role";
+import {parseTime} from "../../../utils/ruoyi";
 export default {
   dicts: ['sys_normal_disable'],
   props: {
@@ -87,6 +88,7 @@ export default {
     };
   },
   methods: {
+    parseTime,
     // 显示弹框
     show() {
       this.queryParams.roleId = this.roleId;

@@ -12,8 +12,8 @@ export default {
     return {
       queryParams: {
         subjectName: '',
-        beginTime: parseTime(new Date(new Date().getTime() - 30 * 24 * 60 * 60 * 1000)),
-        endTime: parseTime(new Date()),
+        beginTime: parseTime(new Date(new Date().getTime() - 30 * 24 * 60 * 60 * 1000),'{y}-{m}-{d}'),
+        endTime: parseTime(new Date(),'{y}-{m}-{d}'),
         // pageNum: 1,
         // pageSize: 50
       },

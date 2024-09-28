@@ -27,7 +27,7 @@
     </el-form>
     <hr color="#e6e6e6"/>
     <el-row style="font-weight: bold;font-size: 20px;margin: 0 30px">
-      区域统计
+      客户统计
     </el-row>
     <el-row :gutter="10" class="mb8">
       <right-toolbar @queryTable="getList" :columns="columns">
@@ -60,7 +60,9 @@
     <el-table border v-loading="loading" :data="totalList"
               v-horizontal-scroll="'always'" id="printBox" size="mini" :cell-style="()=>{return {padding:'2px'}}">
       <el-table-column label="日期" align="center" prop="time" v-if="columns[0].visible" show-overflow-tooltip/>
-      <el-table-column label="区域" align="center" prop="region" v-if="columns[1].visible" show-overflow-tooltip/>
+      <el-table-column label="客户名称" align="center" prop="companyName" v-if="columns[1].visible"
+                       show-overflow-tooltip/>
+
       <el-table-column label="发货车数" align="center" prop="uniqueOrderCount" v-if="columns[3].visible"
                        show-overflow-tooltip>
       </el-table-column>
@@ -112,10 +114,10 @@
 <script>
 import {mixin_printHTML} from "@/views/dashboard/mixins/print";
 import {parseTime} from "../../../utils/ruoyi";
-import {getRegionalSummary} from "../../../api/system/total";
+import {getCustomerTotal} from "../../../api/system/total";
 
 export default {
-  name: "areaTotal",
+  name: "customerTotal",
   mixins: [mixin_printHTML],
   data() {
     return {
@@ -157,7 +159,7 @@ export default {
     /** 查询向外部借出款信息列表 */
     getList() {
       this.loading = true;
-      getRegionalSummary(this.queryParams).then(response => {
+      getCustomerTotal(this.queryParams).then(response => {
         this.totalList = response.rows;
         this.total = response.total;
         this.loading = false;
@@ -172,10 +174,10 @@ export default {
       this.getList()
     },
     handleSubmitTime() {
-      this.download('statistics/export/regionSummary', {
+      this.download('statistics/export/customerSummary', {
         startTime: this.queryParams.beginTime,
         endTime: this.queryParams.endTime
-      }, `区域统计${new Date().getTime()}.xlsx`)
+      }, `客户统计${new Date().getTime()}.xlsx`)
       this.dialogVisible = false
 
 

@@ -65,7 +65,7 @@
       </el-table-column>
       <el-table-column label="创建时间" align="center" prop="createTime" width="200">
         <template slot-scope="scope">
-          <span>{{ parseTime(scope.row.createTime) }}</span>
+          <span>{{ parseTime(scope.row.createTime,'{y}-{m}-{d}') }}</span>
         </template>
       </el-table-column>
       <el-table-column label="操作" align="center" class-name="small-padding fixed-width">
@@ -161,6 +161,7 @@
 import { listDept, getDept, delDept, addDept, updateDept, listDeptExcludeChild } from "@/api/system/dept";
 import Treeselect from "@riophae/vue-treeselect";
 import "@riophae/vue-treeselect/dist/vue-treeselect.css";
+import {parseTime} from "../../../utils/ruoyi";
 
 export default {
   name: "Dept",
@@ -223,6 +224,7 @@ export default {
     this.getList();
   },
   methods: {
+    parseTime,
     /** 查询部门列表 */
     getList() {
       this.loading = true;

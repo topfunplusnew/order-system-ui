@@ -109,7 +109,7 @@
       <el-table-column label="备注" align="center" prop="remark" :show-overflow-tooltip="true" />
       <el-table-column label="创建时间" align="center" prop="createTime" width="180">
         <template slot-scope="scope">
-          <span>{{ parseTime(scope.row.createTime) }}</span>
+          <span>{{ parseTime(scope.row.createTime,'{y}-{m}-{d}') }}</span>
         </template>
       </el-table-column>
       <el-table-column label="操作" align="center" class-name="small-padding fixed-width">
@@ -192,6 +192,7 @@
 <script>
 import { listData, getData, delData, addData, updateData } from "@/api/system/dict/data";
 import { optionselect as getDictOptionselect, getType } from "@/api/system/dict/type";
+import {parseTime} from "../../../utils/ruoyi";
 
 export default {
   name: "Data",
@@ -277,6 +278,7 @@ export default {
     this.getTypeList();
   },
   methods: {
+    parseTime,
     /** 查询字典类型详细 */
     getType(dictId) {
       getType(dictId).then(response => {

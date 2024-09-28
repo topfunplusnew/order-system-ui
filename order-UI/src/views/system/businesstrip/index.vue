@@ -1131,7 +1131,7 @@ export default {
     // 重置车辆申请的状态
     resetCarApplyForm() {
       this.carApplyForm = {
-        applyDate: parseTime(new Date()),
+        applyDate: parseTime(new Date(),'{y}-{m}-{d}'),
         applyUser: this.trueName,
         department: this.deptName, // 从vuex中拿到
         carNo: '',
@@ -1162,7 +1162,7 @@ export default {
         oilCardNo: '',
         rechargeType: '',
         rechargeMoney: '',
-        rechargeDate: parseTime(new Date()),
+        rechargeDate: parseTime(new Date(),'{y}-{m}-{d}'),
         rechargeName: "",
         acountsName: "",
         bankNo: "",

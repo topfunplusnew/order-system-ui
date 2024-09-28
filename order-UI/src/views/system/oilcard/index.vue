@@ -331,7 +331,7 @@ export default {
         oilCardNo: '',
         rechargeType: '',
         rechargeMoney: '',
-        rechargeDate: parseTime(new Date()),
+        rechargeDate: parseTime(new Date(),'{y}-{m}-{d}'),
         rechargeName: "",
         acountsName: "",
         bankNo: "",

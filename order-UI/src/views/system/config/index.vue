@@ -121,7 +121,7 @@
       <el-table-column label="备注" align="center" prop="remark" :show-overflow-tooltip="true"/>
       <el-table-column label="创建时间" align="center" prop="createTime" width="180">
         <template slot-scope="scope">
-          <span>{{ parseTime(scope.row.createTime) }}</span>
+          <span>{{ parseTime(scope.row.createTime,'{y}-{m}-{d}') }}</span>
         </template>
       </el-table-column>
       <el-table-column label="操作" align="center" class-name="small-padding fixed-width">
@@ -190,6 +190,7 @@
 
 <script>
 import {listConfig, getConfig, delConfig, addConfig, updateConfig, refreshCache} from "@/api/system/config";
+import {parseTime} from "../../../utils/ruoyi";
 
 export default {
   name: "Config",
@@ -244,6 +245,7 @@ export default {
     this.getList();
   },
   methods: {
+    parseTime,
     /** 查询参数列表 */
     getList() {
       this.loading = true;

@@ -645,7 +645,7 @@ export default {
           reason: value,
           tableName: TableName.BANK_ACCOUNT_CHANGE,
           tid: row.id,
-          modifyTime: parseTime(new Date())
+          modifyTime: parseTime(new Date(),'{y}-{m}-{d}')
         })
           .then(res => {
             this.$message.success('提交成功')

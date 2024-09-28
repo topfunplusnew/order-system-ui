@@ -92,7 +92,7 @@
       </el-table-column>
       <el-table-column label="创建时间" align="center" prop="createTime" width="180">
         <template slot-scope="scope">
-          <span>{{ parseTime(scope.row.createTime) }}</span>
+          <span>{{ parseTime(scope.row.createTime,'{y}-{m}-{d}') }}</span>
         </template>
       </el-table-column>
 
@@ -159,6 +159,7 @@
 
 <script>
 import { listPost, getPost, delPost, addPost, updatePost } from "@/api/system/post";
+import {parseTime} from "../../../utils/ruoyi";
 
 export default {
   name: "Post",
@@ -211,6 +212,7 @@ export default {
     this.getList();
   },
   methods: {
+    parseTime,
     /** 查询岗位列表 */
     getList() {
       this.loading = true;

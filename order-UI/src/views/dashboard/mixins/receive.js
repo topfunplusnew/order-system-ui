@@ -1,6 +1,4 @@
 //混入
-import {parseTime} from "../../../utils/ruoyi";
-import tab from "../../../plugins/tab";
 import {addReceiveMoney} from "../../../api/system/receiveMoney";
 
 export var mixin_reviveMoney = {

@@ -30,7 +30,7 @@
       <el-table-column label="权限字符" align="center" prop="roleKey"/>
       <el-table-column label="创建时间" align="center" prop="createTime" width="180">
         <template slot-scope="scope">
-          <span>{{ parseTime(scope.row.createTime) }}</span>
+          <span>{{ parseTime(scope.row.createTime,'{y}-{m}-{d}') }}</span>
         </template>
       </el-table-column>
     </el-table>
@@ -48,6 +48,7 @@
 
 <script>
 import {getAuthRole, updateAuthRole} from "@/api/system/user";
+import {parseTime} from "../../../utils/ruoyi";
 
 export default {
   name: "AuthRole",
@@ -87,6 +88,7 @@ export default {
     }
   },
   methods: {
+    parseTime,
     /** 单击选中行数据 */
     clickRow(row) {
       this.$refs.table.toggleRowSelection(row);

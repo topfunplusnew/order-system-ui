@@ -668,7 +668,7 @@
       <el-row>
         <el-col :span="18" :offset="3">
           <el-timeline>
-            <el-timeline-item :timestamp="'今天'+parseTime(new Date())" placement="top">
+            <el-timeline-item :timestamp="'今天'+parseTime(new Date(),'{y}-{m}-{d}')" placement="top">
               <el-button type="success" icon="el-icon-document" @click="checkPreviousOrderInfo">查看原订单信息
               </el-button>
             </el-timeline-item>

@@ -206,7 +206,7 @@
           </el-table-column>
           <el-table-column label="创建时间" align="center" prop="createTime" width="160" v-if="columns[27].visible">
             <template slot-scope="scope">
-              <span>{{ parseTime(scope.row.createTime) }}</span>
+              <span>{{ parseTime(scope.row.createTime,'{y}-{m}-{d}') }}</span>
             </template>
           </el-table-column>
           <!-- 操作栏-->

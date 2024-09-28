@@ -293,6 +293,7 @@
 <script>
 import { listJob, getJob, delJob, addJob, updateJob, runJob, changeJobStatus } from "@/api/monitor/job";
 import Crontab from '@/components/Crontab'
+import {parseTime} from "../../../utils/ruoyi";
 
 export default {
   components: { Crontab },
@@ -352,6 +353,7 @@ export default {
     this.getList();
   },
   methods: {
+    parseTime,
     /** 查询定时任务列表 */
     getList() {
       this.loading = true;

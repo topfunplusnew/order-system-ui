@@ -75,7 +75,7 @@
       </el-table-column>
       <el-table-column label="创建时间" align="center" prop="createTime">
         <template slot-scope="scope">
-          <span>{{ parseTime(scope.row.createTime) }}</span>
+          <span>{{ parseTime(scope.row.createTime,'{y}-{m}-{d}') }}</span>
         </template>
       </el-table-column>
       <el-table-column label="操作" align="center" class-name="small-padding fixed-width">
@@ -287,6 +287,7 @@ import {listMenu, getMenu, delMenu, addMenu, updateMenu} from "@/api/system/menu
 import Treeselect from "@riophae/vue-treeselect";
 import "@riophae/vue-treeselect/dist/vue-treeselect.css";
 import IconSelect from "@/components/IconSelect";
+import {parseTime} from "../../../utils/ruoyi";
 
 export default {
   name: "Menu",
@@ -335,6 +336,7 @@ export default {
     this.getList();
   },
   methods: {
+    parseTime,
     // 选择图标
     selected(name) {
       this.form.icon = name;

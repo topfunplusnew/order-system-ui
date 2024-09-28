@@ -425,7 +425,7 @@ export default {
             this.form.updateTime = null;
             this.form.userId = null;
             // this.form.companyType = this.form.companyType === '供应商' ? 2 : 1
-            this.form.operateDate = parseTime(this.form.operateDate)
+            this.form.operateDate = parseTime(this.form.operateDate,'{y}-{m}-{d}')
             this.form = excludeParams(this.form, this.$exclude)
             updateBalanceAccounts({
               ...this.form,
@@ -441,7 +441,7 @@ export default {
             this.form.updateTime = null;
             this.form.userId = null;
             // this.form.companyType = this.form.companyType === '供应商' ? 2 : 1
-            this.form.operateDate = parseTime(this.form.operateDate)
+            this.form.operateDate = parseTime(this.form.operateDate,'{y}-{m}-{d}')
             this.form = excludeParams(this.form, this.$exclude)
             addBalanceAccounts({
               ...this.form,
