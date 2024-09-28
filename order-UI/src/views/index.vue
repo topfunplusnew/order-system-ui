@@ -90,7 +90,9 @@
             </el-col>
           </template>
         </right-toolbar>
+        <!--        发货列表-->
         <el-table
+            id="printBox"
             size="mini"
             :data="tableData"
             max-height="500"
@@ -191,6 +193,14 @@
               v-if="columns[12].visible"
           ></el-table-column>
         </el-table>
+        <pagination
+            v-show="total>0"
+            :total="total"
+            :page.sync="queryParams.pageNum"
+            :limit.sync="queryParams.pageSize"
+            @pagination="getList"
+        />
+        <!--        分页-->
       </el-col>
 
       <!--      右侧利润-->
@@ -240,8 +250,11 @@ export default {
       queryParams: {
         beginTime: '',
         endTime: '',
+        pageNum: 1,
+        pageSize: 10
       },
       tableData: [],
+      total: 0,
       columns: [
         {key: 0, label: `日期`, visible: true},
         {key: 1, label: `客户`, visible: true},
@@ -274,6 +287,8 @@ export default {
       this.queryParams = {
         beginTime: '',
         endTime: '',
+        pageNum: 1,
+        pageSize: 10
       };
     },
     handleSearch() {
@@ -283,6 +298,7 @@ export default {
       this.loading = true
       getDeliveryList(this.queryParams).then(res => {
         this.tableData = res.rows;
+        this.total = res.total;
         this.loading = false
       })
     },

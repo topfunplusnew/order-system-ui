@@ -716,13 +716,11 @@
                     {{ formatValue(item.currentObject.nextObject.adjustDate) }}
                   </el-descriptions-item>
                   <el-descriptions-item label="客户是否开票"
-                                        :content-class-name="hasProperty(item.currentObject.compare.different,'customerIsInvoice')?'before-order':''"
-                                        v-if="item.customerIsInvoice !== null && item.customerIsInvoice!== undefined && item.customerIsInvoice !== '' ">
+                                        :content-class-name="hasProperty(item.currentObject.compare.different,'customerIsInvoice')?'before-order':''">
                     {{ item.currentObject.nextObject.customerIsInvoice === 0 ? '未开票' : '开票' }}
                   </el-descriptions-item>
                   <el-descriptions-item label="供应商是否开票"
-                                        :content-class-name="hasProperty(item.currentObject.compare.different,'isSupplierInvoice')?'before-order':''"
-                                        v-if="item.isSupplierInvoice !== null && item.isSupplierInvoice!== undefined && item.isSupplierInvoice!== ''">
+                                        :content-class-name="hasProperty(item.currentObject.compare.different,'isSupplierInvoice')?'before-order':''">
                     {{ item.currentObject.nextObject.isSupplierInvoice === 0 ? '未开票' : '开票' }}
                   </el-descriptions-item>
                   <el-descriptions-item label="销售经理"
@@ -820,14 +818,10 @@
                   >
                     {{ formatValue(item.beforeObject.adjustDate) }}
                   </el-descriptions-item>
-                  <el-descriptions-item label="客户是否开票"
-
-                                        v-if="item.beforeObject.customerIsInvoice !== null && item.beforeObject.customerIsInvoice!== undefined && item.beforeObject.customerIsInvoice !== '' ">
+                  <el-descriptions-item label="客户是否开票">
                     {{ item.beforeObject.customerIsInvoice === 0 ? '未开票' : '开票' }}
                   </el-descriptions-item>
-                  <el-descriptions-item label="供应商是否开票"
-
-                                        v-if="item.beforeObject.isSupplierInvoice !== null && item.beforeObject.isSupplierInvoice!== undefined && item.beforeObject.isSupplierInvoice!== ''">
+                  <el-descriptions-item label="供应商是否开票">
                     {{ item.beforeObject.isSupplierInvoice === 0 ? '未开票' : '开票' }}
                   </el-descriptions-item>
                   <el-descriptions-item label="销售经理"
