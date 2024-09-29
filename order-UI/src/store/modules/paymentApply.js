@@ -15,6 +15,10 @@ const mutations = {
   //修改
   updateStepNum(state, stepNum) {
     state.checkStepList.forEach(item => item.stepnum = stepNum)
+  },
+  // 赋值
+  setCheckStepList(state, checkStepList) {
+    state.checkStepList = checkStepList
   }
 }
 
@@ -30,6 +34,9 @@ const actions = {
   //修改
   updateStepNum({commit}, stepNum) {
     commit('updateStepNum', stepNum)
+  },
+  setCheckStepList({commit}, checkStepList) {
+    commit('setCheckStepList', checkStepList)
   }
 }
 

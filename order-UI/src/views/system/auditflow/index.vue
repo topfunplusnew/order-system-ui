@@ -7,7 +7,7 @@
           size="mini"
           @click="handleAdd"
           v-hasPermi="['system:auditflow:edit']"
-        >添加或修改审核流程
+        >更改审核流程
         </el-button>
       </el-col>
       <el-col :span="1.5">
@@ -24,7 +24,7 @@
       </el-steps>
     </el-row>
     <!-- 添加或修改审核流程对话框 -->
-    <el-dialog :title="title" :visible.sync="open" width="500px" append-to-body>
+    <el-dialog :title="title" :visible.sync="open" width="700px" append-to-body>
       <el-row>
         <el-steps :active="stepLength" align-center direction="vertical">
           <el-step v-for="(item,index) in checkStepList" :key="index">
@@ -224,9 +224,29 @@ export default {
     /** 新增按钮操作 */
     handleAdd() {
       this.reset();
-      this.open = true;
       // 先查询一下是不是有审核信息
-      this.title = "添加审核流程";
+      // listAuditflow().then(res => {
+      //   if (res.rows !== 0) {
+      //     res.rows.forEach(item => {
+      //       this.stepInfo = {
+      //         flowname: item.flowname,
+      //         stepnum: item.stepnum,
+      //         step: item.step,
+      //       }
+      //       this.$set(this.stepInfo, 'auditauthority', item.auditauthority.split(','))
+      //       this.checkStepList.push(this.stepInfo)
+      //       // todo
+      //     })
+      //     console.log(this.checkStepList)
+      //     this.open = true;
+      //     this.title = "更改审核流程";
+      //   } else {
+      //     this.open = true;
+      //     this.title = "添加审核流程";
+      //   }
+      // })
+      this.title = "更改审核流程";
+      this.open = true;
     },
     //添加审核步骤
     submitForm() {
