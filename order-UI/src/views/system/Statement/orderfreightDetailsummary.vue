@@ -29,6 +29,16 @@
           @keyup.enter.native="handleQuery"
         />
       </el-form-item>
+      <el-form-item label="运输类型" prop="isSea">
+        <el-select v-model="queryParams.isSea" placeholder="请选择">
+          <el-option
+            v-for="item in options"
+            :key="item.value"
+            :label="item.label"
+            :value="item.value">
+          </el-option>
+        </el-select>
+      </el-form-item>
       <el-form-item>
         <el-button type="primary" icon="el-icon-search" size="mini" @click="handleQuery">搜索</el-button>
       </el-form-item>
@@ -171,6 +181,13 @@ export default {
         carNo: '',
         isSea: false
       },
+      options: [{
+        value: true,
+        label: '海运'
+      }, {
+        value: false,
+        label: '陆运'
+      }],
       // 表单校验
       columns: [
         {key: 0, label: `序号`, visible: true},
