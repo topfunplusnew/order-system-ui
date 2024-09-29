@@ -3,10 +3,10 @@
     <el-row :gutter="10" class="mb8">
       <el-col :span="1.5">
         <el-button
-            type="danger"
-            size="mini"
-            @click="handleAdd"
-            v-hasPermi="['system:auditflow:edit']"
+          type="danger"
+          size="mini"
+          @click="handleAdd"
+          v-hasPermi="['system:auditflow:edit']"
         >添加或修改审核流程
         </el-button>
       </el-col>
@@ -24,25 +24,27 @@
       </el-steps>
     </el-row>
     <!-- 添加或修改审核流程对话框 -->
-    <el-dialog :title="title" :visible.sync="open" width="40%" append-to-body>
-      <el-steps :active="stepLength" align-center direction="vertical">
-        <el-step v-for="(item,index) in checkStepList" :key="index">
-          <template #icon>
-            <span>{{ index + 1 }}</span>
-          </template>
-          <template #title>
-            <el-button icon="el-icon-circle-plus-outline" @click="selectAuditFlowPersons(index)" type="success"
-                       v-if="item.auditauthority.length === 0">选择审核人员
-            </el-button>
-            <el-button icon="el-icon-circle-plus-outline" @click="selectAuditFlowPersons(index)" type="success"
-                       v-else>已选择用户编号为{{ item.auditauthority }}的用户
-            </el-button>
-          </template>
-          <template #description>
-            <el-input type="text" placeholder="请输入审核名称" v-model="item.flowname"></el-input>
-          </template>
-        </el-step>
-      </el-steps>
+    <el-dialog :title="title" :visible.sync="open" width="500px" append-to-body>
+      <el-row>
+        <el-steps :active="stepLength" align-center direction="vertical">
+          <el-step v-for="(item,index) in checkStepList" :key="index">
+            <template #icon>
+              <span>{{ index + 1 }}</span>
+            </template>
+            <template #title>
+              <el-button icon="el-icon-circle-plus-outline" @click="selectAuditFlowPersons(index)" type="success"
+                         v-if="item.auditauthority.length === 0">选择审核人员
+              </el-button>
+              <el-button icon="el-icon-circle-plus-outline" @click="selectAuditFlowPersons(index)" type="success"
+                         v-else>已选择用户编号为{{ item.auditauthority }}的用户
+              </el-button>
+            </template>
+            <template #description>
+              <el-input type="text" placeholder="请输入审核名称" v-model="item.flowname"></el-input>
+            </template>
+          </el-step>
+        </el-steps>
+      </el-row>
       <div slot="footer" class="dialog-footer">
         <el-button icon="el-icon-circle-plus-outline" @click="addCheckStateStep" type="success">添加审核步骤</el-button>
         <el-button @click="deleteCheckStateStep" type="danger" v-if="checkStepList.length !== 0">删除审核步骤
@@ -54,7 +56,7 @@
 
     <!--    把我刚刚创建的那个文件用上-->
     <auditFlowInfo ref="auflowAddForm" :visible.sync="auditFlowPersonsVisible"
-                   @changeSelectedList="changeSelectListAudit"/>
+                   @changeSelectedList="changeSelectListAudit" @deleteSelectedList="deleteSelectList"/>
 
   </div>
 </template>
@@ -157,6 +159,21 @@ export default {
         this.checkStepList[this.currentId].step = this.currentId + 1
       }
     },
+    // 删除审核人员
+    deleteSelectList(id) {
+      if (typeof id === "object") {
+        this.checkStepList[this.currentId].auditauthority =
+          this.checkStepList[this.currentId].auditauthority.filter(item => {
+            return !id.includes(item)
+          })
+        this.checkStepList[this.currentId].auditauthority = [...new Set(this.checkStepList[this.currentId].auditauthority)]
+      } else {
+        this.checkStepList[this.currentId].auditauthority = this.checkStepList[this.currentId].auditauthority.filter(item => {
+          return item !== id
+        })
+        this.checkStepList[this.currentId].auditauthority = [...new Set(this.checkStepList[this.currentId].auditauthority)]
+      }
+    },
     /** 查询审核流程列表 */
     getList() {
       this.loading = true;
@@ -208,6 +225,7 @@ export default {
     handleAdd() {
       this.reset();
       this.open = true;
+      // 先查询一下是不是有审核信息
       this.title = "添加审核流程";
     },
     //添加审核步骤
@@ -218,7 +236,7 @@ export default {
       })
       updateAuditflow(this.checkStepList).then(res => {
         this.$message.success('添加审核流程成功')
-        this.checkStepList = []
+        this.$store.dispatch('paymentApply/clearCheckStepList')
         this.getList()
         this.open = false
       })

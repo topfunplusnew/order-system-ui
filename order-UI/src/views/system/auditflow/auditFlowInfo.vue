@@ -5,20 +5,22 @@
         <el-col :span="6">
           <Fonts content="请选择部门"/>
           <el-tree
-              :data="deptOptions"
-              :props="defaultProps"
-              :expand-on-click-node="false"
-              :filter-node-method="filterNode"
-              ref="tree"
-              node-key="id"
-              default-expand-all
-              highlight-current
-              @node-click="handleNodeClick"
+            :data="deptOptions"
+            :props="defaultProps"
+            :expand-on-click-node="false"
+            :filter-node-method="filterNode"
+            ref="tree"
+            node-key="id"
+            default-expand-all
+            highlight-current
+            @node-click="handleNodeClick"
           />
         </el-col>
         <el-col :span="18">
           <Fonts content="请选择部门人员"/>
           <el-button type="success" size="mini" @click="handleSelectAll" v-if="ids.length !== 0">确认已选择的
+          </el-button>
+          <el-button type="danger" size="mini" @click="handleDeleteAll" v-if="ids.length !== 0">删除已选择的
           </el-button>
           <el-table border v-loading="loading" :data="userList" size="mini" @selection-change="handleSelectionChange"
                     :cell-style="()=>{return {padding:'2px'}}">
@@ -45,11 +47,11 @@
             </el-table-column>
           </el-table>
           <pagination
-              v-show="total>0"
-              :total="total"
-              :page.sync="queryParams.pageNum"
-              :limit.sync="queryParams.pageSize"
-              @pagination="getList"
+            v-show="total>0"
+            :total="total"
+            :page.sync="queryParams.pageNum"
+            :limit.sync="queryParams.pageSize"
+            @pagination="getList"
           />
         </el-col>
       </el-row>
@@ -116,7 +118,6 @@ export default {
     },
     // 选择某个人员 选择以后 自动填充 然后关闭弹窗
     handleSelect(row) {
-      console.log(row)
       // 自动填充已经选择的
       this.$emit('changeSelectedList', row.userId)
       this.close()
@@ -126,16 +127,21 @@ export default {
       this.$emit('changeSelectedList', this.ids)
       this.close()
     },
+    // 多选删除
+    handleDeleteAll() {
+      this.$emit('deleteSelectedList', this.ids)
+      this.close()
+    },
     handleConfirm() {
       this.close()
     },
     getList() {
       this.loading = true;
       listUser(this.addDateRange(this.queryParams, this.dateRange)).then(response => {
-            this.userList = response.rows;
-            this.total = response.total;
-            this.loading = false
-          }
+          this.userList = response.rows;
+          this.total = response.total;
+          this.loading = false
+        }
       );
     },
     // 筛选节点
