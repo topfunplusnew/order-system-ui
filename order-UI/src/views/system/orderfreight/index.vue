@@ -18,17 +18,6 @@
     </el-form>
 
     <el-row :gutter="10" class="mb8">
-      <!--      <el-col :span="1.5">-->
-      <!--        <el-button-->
-      <!--          type="primary"-->
-      <!--          plain-->
-      <!--          icon="el-icon-plus"-->
-      <!--          size="mini"-->
-      <!--          @click="handleAdd"-->
-      <!--          v-hasPermi="['system:orderfreight:add']"-->
-      <!--        >新增订单运费申请-->
-      <!--        </el-button>-->
-      <!--      </el-col>-->
       <!-- 刷新按钮-->
       <el-col :span="1.5">
         <el-button icon="el-icon-refresh" size="mini" @click="resetQuery">刷新</el-button>
@@ -226,7 +215,7 @@
             size="mini"
             type="warning"
             @click="applyForLand(scope.row)"
-            v-if="scope.row.freightType === '陆运'"
+            v-if="scope.row.freightType === '陆运' && scope.row.checkState === '未申请'"
           >申请陆运费
           </el-button>
           <!-- 只有海运费不为零才能申请海运费 -->
@@ -234,8 +223,15 @@
             size="mini"
             type="primary"
             @click="applyForSea(scope.row)"
-            v-if="scope.row.freightType === '海运'"
+            v-if="scope.row.freightType === '海运' && scope.row.checkState === '未申请'"
           >申请海运费
+          </el-button>
+          <el-button
+            size="mini"
+            type="success"
+            disabled
+            v-if=" scope.row.checkState === '审核中'"
+          >运费已申请
           </el-button>
           <el-button
             size="mini"
@@ -267,7 +263,7 @@
       <keep-alive>
         <ApplyPayment :tableName="TableName.ORDER_FREIGHT" :t-i-d="tID"
                       :need-info="needInfo" :need-money="freight"
-                      @changeOpen="applyPaymentVisible = false"/>
+                      @changeOpen="changeOpen"/>
       </keep-alive>
     </el-dialog>
 
@@ -510,6 +506,10 @@ export default {
     listFleet,
     listData,
     listBankAccount,
+    changeOpen() {
+      this.applyPaymentVisible = false
+      this.getList()
+    },
     //己方公司点击确定的回调
     handleCommitBack(val) {
       this.form.otherBankNo = val.bankNo;

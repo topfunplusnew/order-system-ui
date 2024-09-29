@@ -126,6 +126,9 @@ export default {
     },
     // 海运车牌的填充
     handleChangeSeaCar(val) {
+      this.querySeaCars = val;
+    },
+    handleCommitBackSeaCar(val) {
       this.orderInfo.seaCarID = val.id;
       this.orderInfo.seaCarNo = val.carNo;
       this.orderInfo.seaDriverName = val.driver;
@@ -136,10 +139,6 @@ export default {
       this.orderInfo.seaBankName = val.bankName;
       this.orderInfo.seaBankNo = val.bankNo
     },
-    handleCommitBackSeaCar(val) {
-      this.querySeaCars = val;
-    },
-
 
     //添加订单vuex
     addOrderItem() {
@@ -201,11 +200,11 @@ export default {
         </div>
         <el-form-item label="订单日期" prop="orderDate">
           <el-date-picker
-              v-model="orderInfo.orderDate"
-              size="mini"
-              type="date"
-              placeholder="选择日期"
-              value-format="yyyy-MM-dd" style="width: 120px">
+            v-model="orderInfo.orderDate"
+            size="mini"
+            type="date"
+            placeholder="选择日期"
+            value-format="yyyy-MM-dd" style="width: 120px">
           </el-date-picker>
         </el-form-item>
         <el-form-item label="客户" prop="customer">
