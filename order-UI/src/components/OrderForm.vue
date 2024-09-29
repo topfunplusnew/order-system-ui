@@ -155,6 +155,8 @@ export default {
     },
     // 取消添加订单
     cancelSubmit() {
+      this.isSea = false
+      this.isLand = false
       this.$store.dispatch('order/clearOrderItemList'); // 清空订单详情填写信息
       this.resetOrderInfo() // 清空订单列表基础信息
       this.$emit('close-dialog'); // 关闭弹窗
@@ -177,6 +179,8 @@ export default {
         this.$message.success('订单提交成功')
         this.resetOrderInfo() // 清空订单列表基础信息
         this.$emit('close-dialog');
+        this.isSea = false
+        this.isLand = false
         this.getList()
       })
     },

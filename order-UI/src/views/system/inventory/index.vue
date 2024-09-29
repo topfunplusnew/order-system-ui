@@ -3,10 +3,10 @@
     <el-form :model="queryParams" ref="queryForm" size="mini" :inline="true" v-show="showSearch" label-width="68px">
       <el-form-item label="级别名称" prop="levelName">
         <el-input
-          v-model="queryParams.levelName"
-          placeholder="请输入级别名称"
-          clearable
-          @keyup.enter.native="handleQuery"
+            v-model="queryParams.levelName"
+            placeholder="请输入级别名称"
+            clearable
+            @keyup.enter.native="handleQuery"
         />
       </el-form-item>
       <el-form-item>
@@ -20,10 +20,10 @@
       </el-col>
       <el-col :span="1.5">
         <el-button
-          type="danger"
-          size="mini"
-          @click="addNewInventory"
-          v-hasPermi="['system:inventory:add']"
+            type="danger"
+            size="mini"
+            @click="addNewInventory"
+            v-hasPermi="['system:inventory:add']"
         >新增货物
         </el-button>
       </el-col>
@@ -31,10 +31,10 @@
         <template v-slot:print>
           <el-col :span="1.5">
             <el-button
-              plain
-              icon="el-icon-printer"
-              size="mini"
-              @click="printHTML"
+                plain
+                icon="el-icon-printer"
+                size="mini"
+                @click="printHTML"
             >
             </el-button>
           </el-col>
@@ -43,11 +43,11 @@
         <template v-slot:export>
           <el-col :span="1.5">
             <el-button
-              plain
-              icon="el-icon-folder-opened"
-              size="mini"
-              @click="handleExport"
-              v-hasPermi="['system:inventory:export']"
+                plain
+                icon="el-icon-folder-opened"
+                size="mini"
+                @click="handleExport"
+                v-hasPermi="['system:inventory:export']"
             >
             </el-button>
           </el-col>
@@ -77,13 +77,21 @@
           <el-table-column label="包数" align="center" prop="packs" v-if="columns[12].visible" width="150"/>
           <el-table-column label="出厂单价" align="center" prop="price" v-if="columns[13].visible" width="150"/>
           <el-table-column label="出厂是否含税" align="center" prop="isIncludeTaxFactory" v-if="columns[14].visible"
-                           width="150"/>
+                           width="150">
+            <template slot-scope="scope">
+              {{ scope.row.isIncludeTaxFactory === 0 ? '否' : '是' }}
+            </template>
+          </el-table-column>
           <el-table-column label="杂费" align="center" prop="sundryCost" v-if="columns[15].visible" width="150"/>
           <el-table-column label="出厂货款" align="center" prop="paymentFactory" v-if="columns[16].visible"
                            width="150"/>
           <el-table-column label="卸货价" align="center" prop="paymentUnload" v-if="columns[17].visible" width="150"/>
           <el-table-column label="销售是否含税" align="center" prop="isIncludeTaxSale" v-if="columns[18].visible"
-                           width="150"/>
+                           width="150">
+            <template slot-scope="scope">
+              {{ scope.row.isIncludeTaxSale === 0 ? '否' : '是' }}
+            </template>
+          </el-table-column>
           <el-table-column label="总货款" align="center" prop="payments" v-if="columns[19].visible" width="150"/>
           <el-table-column label="陆运车牌" align="center" prop="landCarNo" v-if="columns[20].visible" width="150"/>
           <el-table-column label="陆运司机电话" align="center" prop="landDriverTel" v-if="columns[21].visible"
@@ -110,22 +118,28 @@
                            fixed="right">
             <template slot-scope="scope">
               <el-button
-                size="mini"
-                type="warning"
-                @click="secondryInventoryOut(scope.row)"
+                  size="mini"
+                  type="primary"
+                  @click="handleUpdate(scope.row)"
+              >修改
+              </el-button>
+              <el-button
+                  size="mini"
+                  type="warning"
+                  @click="secondryInventoryOut(scope.row)"
               >加工后出库
               </el-button>
               <el-button
-                size="mini"
-                type="warning"
-                @click="afterbreakInventoryOut(scope.row)"
+                  size="mini"
+                  type="warning"
+                  @click="afterbreakInventoryOut(scope.row)"
               >破损后出库
               </el-button>
               <el-button
-                size="mini"
-                type="danger"
-                @click="handleDelete(scope.row)"
-                v-hasPermi="['system:inventory:remove']"
+                  size="mini"
+                  type="danger"
+                  @click="handleDelete(scope.row)"
+                  v-hasPermi="['system:inventory:remove']"
               >删除
               </el-button>
             </template>
@@ -136,217 +150,227 @@
 
 
     <pagination
-      v-show="total>0"
-      :total="total"
-      :page.sync="queryParams.pageNum"
-      :limit.sync="queryParams.pageSize"
-      @pagination="getList"
+        v-show="total>0"
+        :total="total"
+        :page.sync="queryParams.pageNum"
+        :limit.sync="queryParams.pageSize"
+        @pagination="getList"
     />
 
 
     <!-- 添加或修改库存对话框 -->
-    <el-dialog :title="title" :visible.sync="open" width="500px" append-to-body>
-      <el-form ref="form" :model="form" :rules="rules" label-width="80px">
-        <el-form-item label="仓库名称" prop="storeHouseName">
-          <el-row>
-            <el-col :span="10">
-              <el-input v-model="form.storeHouseName" placeholder="请输入仓库名称"/>
-            </el-col>
-            <el-col :span="3">
-              <SearchOption :get-data="listStoreHouse" @commitBack="handleCommitBackStoreHouse" :limit-info="{}">
-                <template #table-columns>
-                  <el-table-column label="仓库名称" align="center" prop="storeHouseName"/>
-                  <el-table-column label="地址" align="center" prop="address"/>
-                </template>
-              </SearchOption>
-            </el-col>
-          </el-row>
-        </el-form-item>
-        <el-form-item label="入库日期" prop="storeDate">
-          <el-date-picker
-            v-model="form.storeDate"
-            type="date"
-            placeholder="入库日期"
-            value-format="yyyy-MM-dd">
-          </el-date-picker>
-        </el-form-item>
-        <el-form-item label="库存量" prop="stockNumber">
-          <el-input v-model="form.stockNumber" placeholder="请输入库存量"/>
-        </el-form-item>
-        <el-form-item label="供应商" prop="supplier">
-          <el-row>
-            <el-col :span="10">
-              <el-input v-model="form.supplier" placeholder="请输入供应商"/>
-            </el-col>
-            <el-col :span="3">
-              <SearchOption :get-data="listCompany" @commitBack="handleCommitBackCompany"
-                            :limit-info="{companyType:'供应商'}">
-                <template #table-columns>
-                  <el-table-column label="供应商名称" align="center" prop="companyName"/>
-                  <el-table-column label="联系人" align="center" prop="relationName"/>
-                  <el-table-column label="电话" align="center" prop="relationTel"/>
-                </template>
-              </SearchOption>
-            </el-col>
-          </el-row>
+    <el-dialog :title="title" :visible.sync="open" width="1300px" append-to-body>
+      <el-form ref="form" :model="form" :rules="rules" label-width="120px">
+        <el-row>
+          <el-col :span="6">
+            <el-form-item label="仓库名称" prop="storeHouseName">
+              <el-row>
+                <el-col :span="10">
+                  <el-input v-model="form.storeHouseName" placeholder="请输入仓库名称"/>
+                </el-col>
+                <el-col :span="3">
+                  <SearchOption :get-data="listStoreHouse" @commitBack="handleCommitBackStoreHouse" :limit-info="{}">
+                    <template #table-columns>
+                      <el-table-column label="仓库名称" align="center" prop="storeHouseName"/>
+                      <el-table-column label="地址" align="center" prop="address"/>
+                    </template>
+                  </SearchOption>
+                </el-col>
+              </el-row>
+            </el-form-item>
+            <el-form-item label="入库日期" prop="storeDate">
+              <el-date-picker
+                  v-model="form.storeDate"
+                  type="date"
+                  placeholder="入库日期"
+                  value-format="yyyy-MM-dd">
+              </el-date-picker>
+            </el-form-item>
+            <el-form-item label="库存量" prop="stockNumber">
+              <el-input v-model="form.stockNumber" placeholder="请输入库存量"/>
+            </el-form-item>
+            <el-form-item label="供应商" prop="supplier">
+              <el-row>
+                <el-col :span="10">
+                  <el-input v-model="form.supplier" placeholder="请输入供应商"/>
+                </el-col>
+                <el-col :span="3">
+                  <SearchOption :get-data="listCompany" @commitBack="handleCommitBackCompany"
+                                :limit-info="{companyType:'供应商'}">
+                    <template #table-columns>
+                      <el-table-column label="供应商名称" align="center" prop="companyName"/>
+                      <el-table-column label="联系人" align="center" prop="relationName"/>
+                      <el-table-column label="电话" align="center" prop="relationTel"/>
+                    </template>
+                  </SearchOption>
+                </el-col>
+              </el-row>
+            </el-form-item>
+            <el-form-item label="级别编码" prop="levelID">
+              <el-row>
+                <el-col :span="10">
+                  <el-input v-model="form.levelID" placeholder="请输入级别编码"/>
+                </el-col>
+                <el-col :span="3">
+                  <SearchOption :limit-info="{}" :get-data="listProductLevel"
+                                @commitBack="handleCommitBackProductLevel">
+                    <template #table-columns>
+                      <el-table-column label="级别编码" align="center" prop="levelNo"/>
+                      <el-table-column label="级别名称" align="center" prop="levelName"/>
+                    </template>
+                  </SearchOption>
+                </el-col>
+              </el-row>
+            </el-form-item>
+            <el-form-item label="级别名称" prop="levelName">
+              <el-input v-model="form.levelName" placeholder="请输入级别名称"/>
+            </el-form-item>
+            <!--        基本信息-->
+            <el-form-item label="计量单位" prop="countingUnit">
+              <el-input v-model="form.countingUnit" placeholder="请输入计量单位"/>
+            </el-form-item>
+            <el-form-item label="厚度" prop="height">
+              <el-input v-model="form.height" placeholder="请输入厚度"/>
+            </el-form-item>
+            <el-form-item label="长度" prop="length">
+              <el-input v-model="form.length" placeholder="请输入长度"/>
+            </el-form-item>
+            <el-form-item label="宽度" prop="width">
+              <el-input v-model="form.width" placeholder="请输入宽度"/>
+            </el-form-item>
 
-        </el-form-item>
-        <el-form-item label="级别编码" prop="levelID">
-          <el-row>
-            <el-col :span="10">
-              <el-input v-model="form.levelID" placeholder="请输入级别编码"/>
-            </el-col>
-            <el-col :span="3">
-              <SearchOption :limit-info="{}" :get-data="listProductLevel" @commitBack="handleCommitBackProductLevel">
-                <template #table-columns>
-                  <el-table-column label="级别编码" align="center" prop="levelNo"/>
-                  <el-table-column label="级别名称" align="center" prop="levelName"/>
-                </template>
-              </SearchOption>
-            </el-col>
-          </el-row>
-        </el-form-item>
-        <el-form-item label="级别名称" prop="levelName">
-          <el-input v-model="form.levelName" placeholder="请输入级别名称"/>
-        </el-form-item>
-        <!--        基本信息-->
-        <el-form-item label="计量单位" prop="countingUnit">
-          <el-input v-model="form.countingUnit" placeholder="请输入计量单位"/>
-        </el-form-item>
-        <el-form-item label="厚度" prop="height">
-          <el-input v-model="form.height" placeholder="请输入厚度"/>
-        </el-form-item>
-        <el-form-item label="长度" prop="length">
-          <el-input v-model="form.length" placeholder="请输入长度"/>
-        </el-form-item>
-        <el-form-item label="宽度" prop="width">
-          <el-input v-model="form.width" placeholder="请输入宽度"/>
-        </el-form-item>
-        <el-form-item label="出厂片数" prop="pieces">
-          <el-input v-model="form.pieces" placeholder="请输入出厂片数"/>
-        </el-form-item>
-        <el-form-item label="每包片数" prop="piecesPerPack">
-          <el-input v-model="form.piecesPerPack" placeholder="请输入每包片数"/>
-        </el-form-item>
-        <el-form-item label="包数" prop="packs">
-          <el-input v-model="form.packs" placeholder="请输入包数"/>
-        </el-form-item>
-        <el-form-item label="出厂单价" prop="price">
-          <el-input v-model="form.price" placeholder="请输入出厂单价"/>
-        </el-form-item>
-        <el-form-item label="出厂是否含税" prop="isIncludeTaxFactory">
-          <el-radio v-model="form.isIncludeTaxFactory" label="1">是</el-radio>
-          <el-radio v-model="form.isIncludeTaxFactory" label="2">否</el-radio>
-        </el-form-item>
-        <el-form-item label="杂费" prop="sundryCost">
-          <el-input v-model="form.sundryCost" placeholder="请输入杂费"/>
-        </el-form-item>
-        <el-form-item label="出厂货款" prop="paymentFactory">
-          <el-input v-model="form.paymentFactory" placeholder="请输入出厂货款"/>
-        </el-form-item>
-        <el-form-item label="卸货价" prop="paymentUnload">
-          <el-input v-model="form.paymentUnload" placeholder="请输入卸货价"/>
-        </el-form-item>
-        <el-form-item label="销售是否含税" prop="isIncludeTaxSale">
-          <el-radio v-model="form.isIncludeTaxSale" label="1">是</el-radio>
-          <el-radio v-model="form.isIncludeTaxSale" label="2">否</el-radio>
-        </el-form-item>
-        <el-form-item label="总货款" prop="payments">
-          <el-input v-model="form.payments" placeholder="请输入总货款"/>
-        </el-form-item>
+          </el-col>
+          <el-col :span="6">
+            <el-form-item label="出厂片数" prop="pieces">
+              <el-input v-model="form.pieces" placeholder="请输入出厂片数"/>
+            </el-form-item>
+            <el-form-item label="每包片数" prop="piecesPerPack">
+              <el-input v-model="form.piecesPerPack" placeholder="请输入每包片数"/>
+            </el-form-item>
+            <el-form-item label="包数" prop="packs">
+              <el-input v-model="form.packs" placeholder="请输入包数"/>
+            </el-form-item>
+            <el-form-item label="出厂单价" prop="price">
+              <el-input v-model="form.price" placeholder="请输入出厂单价"/>
+            </el-form-item>
+            <el-form-item label="出厂是否含税" prop="isIncludeTaxFactory">
+              <el-radio v-model="form.isIncludeTaxFactory" :label="1">是</el-radio>
+              <el-radio v-model="form.isIncludeTaxFactory" :label="0">否</el-radio>
+            </el-form-item>
+            <el-form-item label="杂费" prop="sundryCost">
+              <el-input v-model="form.sundryCost" placeholder="请输入杂费"/>
+            </el-form-item>
+            <el-form-item label="出厂货款" prop="paymentFactory">
+              <el-input v-model="form.paymentFactory" placeholder="请输入出厂货款"/>
+            </el-form-item>
+            <el-form-item label="卸货价" prop="paymentUnload">
+              <el-input v-model="form.paymentUnload" placeholder="请输入卸货价"/>
+            </el-form-item>
+            <el-form-item label="销售是否含税" prop="isIncludeTaxSale">
+              <el-radio v-model="form.isIncludeTaxSale" :label="1">是</el-radio>
+              <el-radio v-model="form.isIncludeTaxSale" :label="0">否</el-radio>
+            </el-form-item>
+            <el-form-item label="总货款" prop="payments">
+              <el-input v-model="form.payments" placeholder="请输入总货款"/>
+            </el-form-item>
+            <el-form-item label="陆运车牌" prop="landCarNo">
+              <el-row>
+                <el-col :span="10">
+                  <el-input v-model="form.landCarNo" placeholder="请输入陆运车牌"/>
+                </el-col>
+                <el-col :span="3">
+                  <SearchOption :get-data="listCars" @commitBack="handleCommitBackCars"
+                                :limit-info="{carType:'陆运'}">
+                    <template #table-columns>
+                      <el-table-column label="车牌" align="center" prop="carNo"/>
+                      <el-table-column label="司机" align="center" prop="driver"/>
+                      <el-table-column label="司机电话" align="center" prop="tel"/>
+                    </template>
+                  </SearchOption>
+                </el-col>
+              </el-row>
+            </el-form-item>
 
-        <el-form-item label="陆运车牌" prop="landCarNo">
-          <el-row>
-            <el-col :span="10">
-              <el-input v-model="form.landCarNo" placeholder="请输入陆运车牌"/>
-            </el-col>
-            <el-col :span="3">
-              <SearchOption :get-data="listCars" @commitBack="handleCommitBackCars"
-                            :limit-info="{carType:'陆运'}">
-                <template #table-columns>
-                  <el-table-column label="车牌" align="center" prop="carNo"/>
-                  <el-table-column label="司机" align="center" prop="driver"/>
-                  <el-table-column label="司机电话" align="center" prop="tel"/>
-                </template>
-              </SearchOption>
-            </el-col>
-          </el-row>
-        </el-form-item>
-        <el-form-item label="陆运司机电话" prop="landDriverTel">
-          <el-input v-model="form.landDriverTel" placeholder="请输入陆运司机电话"/>
-        </el-form-item>
-        <el-form-item label="陆地司机姓名" prop="landDriverName">
-          <el-input v-model="form.landDriverName" placeholder="请输入陆地司机姓名"/>
-        </el-form-item>
-
-        <el-form-item label="海运车牌" prop="seaCarNo">
-          <el-row>
-            <el-col :span="10">
-              <el-input v-model="form.seaCarNo" placeholder="请输入陆运车牌"/>
-            </el-col>
-            <el-col :span="3">
-              <SearchOption :get-data="listCars" @commitBack="handleCommitBackSea"
-                            :limit-info="{carType:'海运'}">
-                <template #table-columns>
-                  <el-table-column label="车牌" align="center" prop="carNo"/>
-                  <el-table-column label="司机" align="center" prop="driver"/>
-                  <el-table-column label="司机电话" align="center" prop="tel"/>
-                </template>
-              </SearchOption>
-            </el-col>
-          </el-row>
-        </el-form-item>
-        <el-form-item label="海运司机电话" prop="seaDriverTel">
-          <el-input v-model="form.seaDriverTel" type="textarea" placeholder="请输入内容"/>
-        </el-form-item>
-        <el-form-item label="海运司机姓名" prop="seaDriverName">
-          <el-input v-model="form.seaDriverName" placeholder="请输入海运司机姓名"/>
-        </el-form-item>
-        <el-form-item label="误差" prop="erro">
-          <el-input v-model="form.erro" placeholder="请输入误差"/>
-        </el-form-item>
-        <el-form-item label="吨位" prop="tonnage">
-          <el-input v-model="form.tonnage" placeholder="请输入吨位"/>
-        </el-form-item>
-        <el-form-item label="陆运费单价" prop="landFreightPrice">
-          <el-input v-model="form.landFreightPrice" placeholder="请输入陆运费单价"/>
-        </el-form-item>
-        <el-form-item label="陆运费" prop="landFreight">
-          <el-input v-model="form.landFreight" placeholder="请输入陆运费"/>
-        </el-form-item>
-        <el-form-item label="海运费" prop="seaFreight">
-          <el-input v-model="form.seaFreight" placeholder="请输入海运费"/>
-        </el-form-item>
-        <el-form-item label="运费" prop="freight">
-          <el-input v-model="form.freight" placeholder="请输入运费"/>
-        </el-form-item>
-        <el-form-item label="其他费用" prop="otherCost">
-          <el-input v-model="form.otherCost" placeholder="请输入其他费用"/>
-        </el-form-item>
-        <el-form-item label="利润" prop="profit">
-          <el-input v-model="form.profit" placeholder="请输入利润"/>
-        </el-form-item>
-        <el-form-item label="不含税利润" prop="profitNoTax">
-          <el-input v-model="form.profitNoTax" placeholder="请输入不含税利润"/>
-        </el-form-item>
-        <el-form-item label="实际片数" prop="actualPieces">
-          <el-input v-model="form.actualPieces" placeholder="请输入实际片数"/>
-        </el-form-item>
-        <el-form-item label="总货款杂费" prop="paymentsWithSundry">
-          <el-input v-model="form.paymentsWithSundry" placeholder="请输入总货款杂费"/>
-        </el-form-item>
-        <el-form-item label="加费" prop="additionalFees">
-          <el-input v-model="form.additionalFees" placeholder="请输入加费"/>
-        </el-form-item>
-        <el-form-item label="返利金额" prop="rebate">
-          <el-input v-model="form.rebate" placeholder="请输入返利金额"/>
-        </el-form-item>
-        <el-form-item label="客户佣金" prop="customerCommission">
-          <el-input v-model="form.customerCommission" placeholder="请输入客户佣金"/>
-        </el-form-item>
-        <el-form-item label="备注" prop="comments">
-          <el-input v-model="form.comments" placeholder="请输入备注"/>
-        </el-form-item>
+          </el-col>
+          <el-col :span="6">
+            <el-form-item label="陆运司机电话" prop="landDriverTel">
+              <el-input v-model="form.landDriverTel" placeholder="请输入陆运司机电话"/>
+            </el-form-item>
+            <el-form-item label="陆地司机姓名" prop="landDriverName">
+              <el-input v-model="form.landDriverName" placeholder="请输入陆地司机姓名"/>
+            </el-form-item>
+            <el-form-item label="海运车牌" prop="seaCarNo">
+              <el-row>
+                <el-col :span="10">
+                  <el-input v-model="form.seaCarNo" placeholder="请输入陆运车牌"/>
+                </el-col>
+                <el-col :span="3">
+                  <SearchOption :get-data="listCars" @commitBack="handleCommitBackSea"
+                                :limit-info="{carType:'海运'}">
+                    <template #table-columns>
+                      <el-table-column label="车牌" align="center" prop="carNo"/>
+                      <el-table-column label="司机" align="center" prop="driver"/>
+                      <el-table-column label="司机电话" align="center" prop="tel"/>
+                    </template>
+                  </SearchOption>
+                </el-col>
+              </el-row>
+            </el-form-item>
+            <el-form-item label="海运司机电话" prop="seaDriverTel">
+              <el-input v-model="form.seaDriverTel" placeholder="请输入内容"/>
+            </el-form-item>
+            <el-form-item label="海运司机姓名" prop="seaDriverName">
+              <el-input v-model="form.seaDriverName" placeholder="请输入海运司机姓名"/>
+            </el-form-item>
+            <el-form-item label="误差" prop="erro">
+              <el-input v-model="form.erro" placeholder="请输入误差"/>
+            </el-form-item>
+            <el-form-item label="吨位" prop="tonnage">
+              <el-input v-model="form.tonnage" placeholder="请输入吨位"/>
+            </el-form-item>
+            <el-form-item label="陆运费单价" prop="landFreightPrice">
+              <el-input v-model="form.landFreightPrice" placeholder="请输入陆运费单价"/>
+            </el-form-item>
+            <el-form-item label="陆运费" prop="landFreight">
+              <el-input v-model="form.landFreight" placeholder="请输入陆运费"/>
+            </el-form-item>
+            <el-form-item label="海运费" prop="seaFreight">
+              <el-input v-model="form.seaFreight" placeholder="请输入海运费"/>
+            </el-form-item>
+            <el-form-item label="运费" prop="freight">
+              <el-input v-model="form.freight" placeholder="请输入运费"/>
+            </el-form-item>
+          </el-col>
+          <el-col :span="6">
+            <el-form-item label="其他费用" prop="otherCost">
+              <el-input v-model="form.otherCost" placeholder="请输入其他费用"/>
+            </el-form-item>
+            <el-form-item label="利润" prop="profit">
+              <el-input v-model="form.profit" placeholder="请输入利润"/>
+            </el-form-item>
+            <el-form-item label="不含税利润" prop="profitNoTax">
+              <el-input v-model="form.profitNoTax" placeholder="请输入不含税利润"/>
+            </el-form-item>
+            <el-form-item label="实际片数" prop="actualPieces">
+              <el-input v-model="form.actualPieces" placeholder="请输入实际片数"/>
+            </el-form-item>
+            <el-form-item label="总货款杂费" prop="paymentsWithSundry">
+              <el-input v-model="form.paymentsWithSundry" placeholder="请输入总货款杂费"/>
+            </el-form-item>
+            <el-form-item label="加费" prop="additionalFees">
+              <el-input v-model="form.additionalFees" placeholder="请输入加费"/>
+            </el-form-item>
+            <el-form-item label="返利金额" prop="rebate">
+              <el-input v-model="form.rebate" placeholder="请输入返利金额"/>
+            </el-form-item>
+            <el-form-item label="客户佣金" prop="customerCommission">
+              <el-input v-model="form.customerCommission" placeholder="请输入客户佣金"/>
+            </el-form-item>
+            <el-form-item label="备注" prop="comments">
+              <el-input v-model="form.comments" placeholder="请输入备注"/>
+            </el-form-item>
+          </el-col>
+        </el-row>
       </el-form>
       <div slot="footer" class="dialog-footer">
         <el-button type="primary" @click="submitForm">确 定</el-button>
@@ -567,7 +591,7 @@ export default {
     })
     this.getList();
     if (localStorage.getItem('inventory-columns') === 'null'
-      || !localStorage.getItem('inventory-columns')) {
+        || !localStorage.getItem('inventory-columns')) {
       //设置localStorage
       localStorage.setItem("inventory-columns", JSON.stringify(this.columns))
     } else {
@@ -802,16 +826,16 @@ export default {
         type: 'warning'
       }).then(({value}) => {
         addReason({reason: value, tableName: TableName.INVENTORY, tid: row.id, modifyTime: this.modifyTime})
-          .then(res => {
-            this.$message.success('提交成功')
-            this.reset();
-            const id = row.id || this.ids
-            getInventory(id).then(response => {
-              this.form = response.data;
-              this.open = true;
-              this.title = "修改库存";
-            });
-          })
+            .then(res => {
+              this.$message.success('提交成功')
+              this.reset();
+              const id = row.id || this.ids
+              getInventory(id).then(response => {
+                this.form = response.data;
+                this.open = true;
+                this.title = "修改库存";
+              });
+            })
       }).catch(() => {
         this.$message({
           type: 'warning',
