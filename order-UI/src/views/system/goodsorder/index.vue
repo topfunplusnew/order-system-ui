@@ -140,7 +140,7 @@
                 <el-button
                     size="mini"
                     @click="checkOrderItemInfo(scope.row)"
-                >查看
+                >查 看
                 </el-button>
               </el-dropdown-item>
               <el-dropdown-item>
@@ -149,7 +149,7 @@
                     type="primary"
                     @click="handleUpdate(scope.row)"
                     v-hasPermi="['system:goodsorder:edit']"
-                >修改
+                >修 改
                 </el-button>
               </el-dropdown-item>
               <el-dropdown-item>
@@ -157,7 +157,7 @@
                     size="mini"
                     type="warning"
                     @click="handleCheckOrderDetailInfo(scope.row)"
-                >详情
+                >货 物
                 </el-button>
               </el-dropdown-item>
               <el-dropdown-item>
@@ -166,7 +166,7 @@
                     type="danger"
                     @click="handleDelete(scope.row)"
                     v-hasPermi="['system:goodsorder:remove']"
-                >删除
+                >删 除
                 </el-button>
               </el-dropdown-item>
             </el-dropdown-menu>
@@ -441,17 +441,19 @@
       <el-descriptions border>
         <el-descriptions-item label="订单日期">{{ orderInfo.orderDate }}</el-descriptions-item>
         <el-descriptions-item label="客户">{{ orderInfo.customer }}</el-descriptions-item>
-        <el-descriptions-item label="销售经理">{{ orderInfo.salesManager }}</el-descriptions-item>
-        <el-descriptions-item label="车牌">{{ orderInfo.landCarNo }}</el-descriptions-item>
-        <el-descriptions-item label="司机姓名">{{ orderInfo.landDriverName }}</el-descriptions-item>
-        <el-descriptions-item label="司机电话">{{ orderInfo.landDriverTel }}</el-descriptions-item>
+        <el-descriptions-item label="销售经理">{{ orderInfo.saleManager }}</el-descriptions-item>
+        <el-descriptions-item label="陆运车牌">{{ orderInfo.landCarNo }}</el-descriptions-item>
+        <el-descriptions-item label="陆运司机姓名">{{ orderInfo.landDriverName }}</el-descriptions-item>
+        <el-descriptions-item label="陆运司机电话">{{ orderInfo.landDriverTel }}</el-descriptions-item>
+        <el-descriptions-item label="海运车牌">{{ orderInfo.seaCarNo }}</el-descriptions-item>
+        <el-descriptions-item label="海运司机姓名">{{ orderInfo.seaDriverName }}</el-descriptions-item>
+        <el-descriptions-item label="海运司机电话">{{ orderInfo.seaDriverTel }}</el-descriptions-item>
         <el-descriptions-item label="车队">{{ orderInfo.fleet }}</el-descriptions-item>
       </el-descriptions>
       <OrderDetailInfo :order-detail-info-list="orderInfo.orderDetailList"></OrderDetailInfo>
       <el-descriptions border>
         <el-descriptions-item label="备注">{{ orderInfo.comments }}</el-descriptions-item>
       </el-descriptions>
-
       <span slot="footer" class="dialog-footer">
         <el-button @click="checkOrderVisible = false">取 消</el-button>
         <el-button type="primary" @click="checkOrderVisible = false">确 定</el-button>
@@ -1069,13 +1071,11 @@ export default {
         'landCarNo': '陆运车牌号',
         'landDriverName': '陆运司机姓名',
         'landBankNo': '陆运司机银行卡号',
-        'landBankName': '陆运司机开户行',
         'landDriverTel': '陆运司机电话',
         'fleet': "车队",
         'seaCarNo': '海运车牌号',
         'seaDriverName': '海运司机姓名',
         'seaDriverTel': '海运司机电话',
-        'seaBankName': '海运司机开户行',
         'seaBankNo': '海运司机银行卡号',
         'companyName': '公司名称',
         'saleManager': '销售经理',

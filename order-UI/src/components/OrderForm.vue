@@ -207,8 +207,6 @@ export default {
       //填充银行信息
       this.orderInfo.landBankName = val.acountsName;
       this.orderInfo.landBankNo = val.bankNo;
-      this.orderInfo.landBankName = val.bankName;
-      this.orderInfo.landBankNo = val.bankNo
     },
     // 海运车牌的填充
     handleChangeSeaCar(val) {
@@ -222,8 +220,6 @@ export default {
       //填充银行信息
       this.orderInfo.seaBankName = val.acountsName;
       this.orderInfo.seaBankNo = val.bankNo;
-      this.orderInfo.seaBankName = val.bankName;
-      this.orderInfo.seaBankNo = val.bankNo
     },
 
     //添加订单vuex
