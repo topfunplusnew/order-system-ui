@@ -1063,8 +1063,6 @@ export default {
         'storeHouseName': '仓库名称',
         'logisticsProfit': '物流利润',
         'customerCommission': '客户佣金',
-        'isAdjusted': '是否调整',
-        'adjustDate': '调整日期',
         'comments': '备注',
         'updateTime': '订单修改时间',
         'remark': '修改记录',
@@ -1083,7 +1081,8 @@ export default {
         'saleManager': '销售经理',
         'userName': '修改人',
         'supplierNames': '供应商',
-        'allPayments': '总货款'
+        'allPayments': '总货款',
+        'orderDetailList': '货物列表(详见货物列表差异)'
       },
       diffPatcher: null
     };
@@ -1155,7 +1154,7 @@ export default {
         if (data.hasOwnProperty(key)) {
           const value = data[key];
           const mappedKey = this.mapper[key] || key;
-          formattedString += `${mappedKey}(${key}): ${value}\n`;
+          formattedString += `${mappedKey}: ${value}\n`;
         }
       }
       return formattedString.trim(); // 去掉最后一个换行符
