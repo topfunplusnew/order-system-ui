@@ -130,7 +130,7 @@
     <el-table fit border v-loading="loading" :data="goodsOrderList" @selection-change="handleSelectionChange"
               id="printBox" v-horizontal-scroll="'always'"
               max-height="750" size="mini" :cell-style="()=>{return {padding:'2px'}}">
-      <el-table-column show-overflow-tooltip label="行操作" align="center" class-name="small-padding fixed-width"
+      <el-table-column label="行操作" align="center" class-name="small-padding fixed-width"
                        width="142" fixed="left">
         <template slot-scope="scope">
           <el-dropdown size="mini" split-button type="primary">
@@ -1077,12 +1077,13 @@ export default {
         'seaDriverName': '海运司机姓名',
         'seaDriverTel': '海运司机电话',
         'seaBankNo': '海运司机银行卡号',
+        'seaBankName': '海运司机开户名',
+        'landBankName': '陆运司机开户名',
         'companyName': '公司名称',
         'saleManager': '销售经理',
         'userName': '修改人',
         'supplierNames': '供应商',
         'allPayments': '总货款',
-        'orderDetailList': '货物列表(详见货物列表差异)'
       },
       diffPatcher: null
     };
@@ -1148,7 +1149,6 @@ export default {
     },
     // 格式化对象
     formatData(data) {
-      console.log('da', data)
       let formattedString = '';
       for (const key in data) {
         if (data.hasOwnProperty(key)) {
@@ -1162,17 +1162,15 @@ export default {
     // 查看订单历史信息
     checkOrderHistory(row) {
       // 保存原订单的信息
-      this.currentOrderItemInfo = row;
+      this.currentOrderItemInfo = JSON.parse(JSON.stringify(row));
+      const id = row.id;
       // 查询订单历史信息
-      getHistoryGoodsOrder({goodsOrderID: row.id}).then(res => {
+      getHistoryGoodsOrder({goodsOrderID: id}).then(res => {
         // 如果rows的长度为0那么就提示没有修改记录
         if (res.rows.length === 0) {
           this.$message.warning('没有修改记录')
           return;
         }
-        /**
-         *   hello + '\n' + 'world'
-         */
         this.orderHistoryInfoList = res.rows;
         for (let i = 0; i < this.orderHistoryInfoList.length - 1; i++) {
           this.orderHistoryInfoList[i].diff = {
@@ -1186,7 +1184,6 @@ export default {
             new: this.formatData(excludeParams(this.currentOrderItemInfo, this.$excludeWithUpdate))
           }
         }
-        console.log(this.orderHistoryInfoList)
         this.checkHistoryOrderVisible = true;
       })
     },

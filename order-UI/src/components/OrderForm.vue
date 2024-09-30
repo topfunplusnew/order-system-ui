@@ -2,7 +2,6 @@
 
 <script>
 import OrderItem from "@/components/OrderItem.vue";
-import {mapGetters} from "vuex";
 import SearchOption from "./SearchOption.vue";
 import {listCompany} from "../api/system/company";
 import {listBankAccount} from "../api/system/bankAccount";
@@ -10,9 +9,8 @@ import {listCars} from "../api/system/cars";
 import {listFleet} from "../api/system/fleet";
 import {parseTime} from "../utils/ruoyi";
 import {addGoodsOrder, getGoodsOrder, updateGoodsOrder} from "../api/system/goodsOrder";
-import {addReason} from "../api/system/user";
-import {TableName} from "../api/tool/enums";
 import {excludeParams} from "../api/tool/exclude";
+import {mapGetters} from "vuex";
 
 export default {
   name: "OrderForm",
@@ -26,31 +24,9 @@ export default {
     return {
       // 订单信息
       orderInfo: {},
-      //订单信息中的items
-      goodsOrderList: [],
       //海运还是陆运
       isLand: false,
       isSea: false,
-      //客户信息弹窗
-      customerInfoDialogVisible: false,
-      //陆运车牌信息弹窗
-      landInfoDialogVisible: false,
-      //车队信息弹窗
-      fleetInfoDialogVisible: false,
-      //海运车牌信息弹窗
-      seaInfoDialogVisible: false,
-      //客户信息
-      companyInfo: [],
-      //陆运车牌信息
-      landInfo: [],
-      //车队信息
-      fleetInfo: [],
-      //海运车牌信息
-      seaInfo: [],
-      //客户信息弹窗的搜索客户名
-      customerName: '',
-      //车队搜索
-      fleetName: '',
       // 客户搜索
       queryCompanyName: '',
       // 车牌银行卡
@@ -58,13 +34,13 @@ export default {
       // 车队
       queryFleet: '',
       // 海运车牌
-      querySeaCars: ''
+      querySeaCars: '',
+      orderNums: 0,
     }
   },
 
   //计算属性 目的是为了避免无法输入修改父组件
   computed: {
-    //获取订单列表
     ...mapGetters(['orderItemList'])
   },
   watch: {
@@ -110,6 +86,7 @@ export default {
     listCars,
     listBankAccount,
     listCompany,
+    // todo 修改订单的货物列表状态
     // 获取订单信息的方法
     getGoodsOrderInfo(id) {
       getGoodsOrder(id).then(response => {
@@ -121,18 +98,25 @@ export default {
         if (response.data.seaFreight > 0) {
           this.isSea = true;
         }
-        //将数据库拿到的订单列表装入vuex 因为订单添加的货物是从vuex获取的数据 对货物的操作也是操作vuex
-        this.$store.commit("order/SET_ORDER_ITEM_LIST", response.data.orderDetailList)
-        //填充供应商和客户id
-        if (response.data.orderDetailList !== null && response.data.orderDetailList !== undefined) {
-          for (let i = 0; i < this.orderInfo.orderDetailList.length; i++) {
-            let item = this.orderInfo.orderDetailList[i];
-            item.customerID = this.orderInfo.customerID;
-            item.customer = this.orderInfo.customer;
-            //是否含税
-            item.isIncludeTaxFactory = item.isIncludeTaxFactory === '是' ? '1' : '0';
-            item.isIncludeTaxSale = item.isIncludeTaxSale === '是' ? '1' : '0';
+
+        //将数据库拿到的订单列表装入vuex 因为订单添加的货物是从vuex获取的数据 对货物的操作也是操作vuex orderIndex
+        let i = 0;
+        const list = response.data.orderDetailList.map(item => {
+          return {
+            ...item,
+            orderIndex: i++
           }
+        })
+        this.$store.dispatch("order/setOrderItemListAsync", list)
+        this.orderNums = response.data.orderDetailList.length;
+        //填充供应商和客户id
+        for (let i = 0; i < this.orderInfo.orderDetailList.length; i++) {
+          let item = this.orderInfo.orderDetailList[i];
+          item.customerID = this.orderInfo.customerID;
+          item.customer = this.orderInfo.customer;
+          //是否含税
+          item.isIncludeTaxFactory = item.isIncludeTaxFactory === '是' ? '1' : '0';
+          item.isIncludeTaxSale = item.isIncludeTaxSale === '是' ? '1' : '0';
         }
       });
     },
@@ -221,24 +205,28 @@ export default {
       this.orderInfo.seaBankName = val.acountsName;
       this.orderInfo.seaBankNo = val.bankNo;
     },
-
-    //添加订单vuex
+    // 添加货物
     addOrderItem() {
-      this.$store.dispatch('order/addOrderItemList', {})
-    },
-    handleChangeOrderItemInfo(index, val) {
-      //改变vuex中的数据 传递一个对象 这个对象是修改过的item
-      this.$store.dispatch('order/changeOrderItem', {...val, index: index})
+      this.$store.commit('order/addsOrderItem', {...this.orderItemInfo, orderIndex: this.orderNums})
+      this.orderNums++;
     },
     //删除订单详情
     handleDeleteOrderDetail(index, event) {
-      this.$store.dispatch('order/deleteOrderItem', index)
+      // 删除orderItemList中索引为index的元素
+      this.$store.commit('order/removeOrderItem', index)
+      this.orderNums--;
     },
+    // // 置空某个货物
+    // handleClearOrderDetail(index) {
+    //   console.log(index)
+    //   this.$store.commit('order/clearOrderItemStatus', index)
+    // },
     // 取消添加订单
     cancelSubmit() {
+      this.orderNums = 0
       this.isSea = false
       this.isLand = false
-      this.$store.dispatch('order/clearOrderItemList'); // 清空订单详情填写信息
+      this.$store.commit('order/clearOrderItemList'); // 清空订单详情填写信息
       this.resetOrderInfo() // 清空订单列表基础信息
       this.$emit('close-dialog'); // 关闭弹窗
     },
@@ -260,6 +248,7 @@ export default {
         addGoodsOrder({...this.orderInfo, PaymentState: ''}).then(res => {
           this.$message.success('订单提交成功')
           this.resetOrderInfo() // 清空订单列表基础信息
+          this.$store.commit('order/clearOrderItemList');
           this.$emit('close-dialog');
           this.isSea = false
           this.isLand = false
@@ -290,13 +279,15 @@ export default {
         }).then(response => {
           this.$modal.msgSuccess("修改成功");
           this.resetOrderInfo() // 清空订单列表基础信息
+          this.$store.commit('order/clearOrderItemList');
           this.isSea = false
           this.isLand = false
           this.$emit('close-dialog');
         });
       }
     },
-  },
+  }
+  ,
 
 }
 </script>
@@ -447,48 +438,45 @@ export default {
       </el-card>
     </el-form>
     <br/>
-
     <!--    货物信息 可以添加多个货物信息-->
     <el-card class="box-card" shadow="hover">
       <div slot="header" class="clearfix">
         <el-button type="text" style="color: #156fb2" icon="el-icon-shopping-cart-2">订单货物信息</el-button>
+        <el-button type="text" style="color: #156fb2;float: right">
+          货物个数:{{ orderNums }}
+        </el-button>
       </div>
       <!--      如果有-->
       <div v-if="orderItemList.length!==0">
         <div v-for="(item,index) in orderItemList" :key="index">
           <transition name="fade">
-            <OrderItem :order-item-info="item" :isLand="isLand" :isSea="isSea" :index="index"
-                       @changeOrderItemInfo="handleChangeOrderItemInfo(index,$event)">
+            <OrderItem :tempOrderInfo="item" :isLand="isLand" :isSea="isSea" :index="index">
               <template #action>
                 <el-button style="float: right; padding: 3px 0;color: red" type="text"
                            @click="handleDeleteOrderDetail(index,$event)">删除
                 </el-button>
+                <!--                <el-button style="float: right; padding: 3px 5px;color: rgb(128,128,128)" type="text"-->
+                <!--                           @click="handleClearOrderDetail(index,$event)">重置-->
+                <!--                </el-button>-->
               </template>
             </OrderItem>
           </transition>
         </div>
-        <div class="option">
-          <el-row>
-            <el-col :span="6" :offset="10">
-              <el-button type="primary" @click="addOrderItem" icon="el-icon-plus">继续添加订单详情</el-button>
-            </el-col>
-          </el-row>
-        </div>
       </div>
       <!--      如果没有订单信息-->
-      <div v-else>
-        <el-row>
-          <el-col>
-            <el-button type="primary" @click="addOrderItem" icon="el-icon-plus">添加订单货物信息</el-button>
-          </el-col>
-        </el-row>
-      </div>
+      <el-row>
+        <el-col>
+          <el-button type="primary" @click="addOrderItem" icon="el-icon-plus">添加订单货物信息</el-button>
+        </el-col>
+      </el-row>
     </el-card>
     <br/>
     <el-card class="box-card" shadow="hover">
       <el-row style="text-align: right">
         <el-button @click="cancelSubmit">取 消</el-button>
-        <el-button type="primary" @click="submitOrder">{{ submitInfo }}</el-button>
+        <el-tooltip class="item" effect="dark" content="添加或修改前请先点击添加货物!" placement="top-start">
+          <el-button type="primary" @click="submitOrder">{{ submitInfo }}</el-button>
+        </el-tooltip>
       </el-row>
     </el-card>
   </div>

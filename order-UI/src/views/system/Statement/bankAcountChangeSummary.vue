@@ -29,6 +29,33 @@ export default {
     }
   },
   methods: {
+    getSummaries(param) {
+      const {columns, data} = param;
+      const sums = [];
+      columns.forEach((column, index) => {
+        if (index === 0) {
+          sums[index] = '总价';
+          return;
+        }
+        const values = data.map(item => Number(item[column.property]));
+        const includes = [0, 3, 4, 5, 6]
+        if (includes.includes(index)) {
+          sums[index] = values.reduce((prev, curr) => {
+            const value = Number(curr);
+            if (!isNaN(value)) {
+              return prev + curr;
+            } else {
+              return prev;
+            }
+          }, 0);
+          if (index === 6) {
+            sums[index] = sums[3] + sums[4] - sums[5]
+          }
+        }
+      });
+
+      return sums;
+    },
     // 时间查询
     handleQuery() {
       getBankAcountChange(this.queryParams).then(res => {
@@ -112,8 +139,8 @@ export default {
               </el-col>
             </template>
           </right-toolbar>
-          <el-table border v-loading="loading" :data="statementList"
-                    height="450px" v-horizontal-scroll="'always'" size="mini" :cell-style="()=>{return {padding:'2px'}}"
+          <el-table border v-loading="loading" :data="statementList" show-summary :summary-method="getSummaries"
+                    v-horizontal-scroll="'always'" size="mini" :cell-style="()=>{return {padding:'2px'}}"
                     id="printBox" fit>
             <el-table-column label="日期" align="center" prop="time" v-if="columns[0].visible" width="200"
             />

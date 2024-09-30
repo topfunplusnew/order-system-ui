@@ -1,81 +1,113 @@
-import Vue from 'vue'
-import {listGoodsOrder} from "@/api/system/goodsOrder";
-//订单状态信息 由订单Item组件主动推入
+// 订单模块
 const state = {
-  //订单详情列表
-  orderItemList: [],
-  //订单列表
-  orderList: [],
+    orderItemList: [],
 }
 
 const mutations = {
-  //添加订单详情列表
-  ADD_ORDER_ITEM_LIST(state, orderItem) {
-    state.orderItemList.push(orderItem)
-  },
-  //直接赋值
-  SET_ORDER_ITEM_LIST(state, orderItemList) {
-    state.orderItemList = orderItemList
-  },
-  //删除订单详情
-  DELETE_ORDER_ITEM(state, index) {
-    state.orderItemList.splice(index, 1)
-  },
-  //清空填写缓存
-  CLEAR_ORDER_ITEM_LIST(state) {
-    state.orderItemList = []
-  },
-  //修改订单详情
-  CHANGE_ORDER_ITEM(state, orderItemInfo) {
-    //组装orderItem对象 剔除index属性
-    const {index, ...orderItem} = orderItemInfo;
-    //修改状态
-    //Vue.set(state.orderItemList[index], key, value);
-    // state.orderItemList[index] = orderItem;  这样会失去响应式
-    for (let property in orderItem) {
-      Vue.set(state.orderItemList[index], `${property}`, orderItem[property])
+    // 设置货物列表
+    setOrderItemList(state, data) {
+        state.orderItemList = data
+        console.log('setOrderItemList', state.orderItemList)
+    },
+    // 添加货物到货物列表中
+    addsOrderItem(state, data) {
+        state.orderItemList.push(data)
+    },
+    // 移除货物
+    removeOrderItem(state, index) {
+        state.orderItemList.splice(index, 1)
+    },
+    // 修改货物的状态
+    changeOrderItemStatus(state, payload) {
+        console.log(payload)
+        // 获取传入的状态
+        const {orderIndex, ...orderInfo} = payload
+        state.orderItemList = state.orderItemList.map(item => {
+            if (item.orderIndex === orderIndex) {
+                console.log('===item:', item)
+                return {...orderInfo};
+            }
+            console.log('!==item:', item)
+            return item;
+        });
+        console.log('orderItemList:', state.orderItemList);
+    },
+    // 清除索引为index的索引的所有状态
+    // clearOrderItemStatus(state, index) {
+    //   // 清除索引为index的元素
+    //   state.orderItemList = state.orderItemList.map(item => {
+    //     console.log(item, 'index=>', item.orderIndex)
+    //     if (item.orderIndex === index) {
+    //       return {
+    //         ...{
+    //           orderDate: null,
+    //           supplier: null,
+    //           supplierID: null,
+    //           customer: null,
+    //           customerID: null,
+    //           levelID: null,
+    //           levelName: null,
+    //           countingUnit: '片',
+    //           height: null,
+    //           length: null,
+    //           width: null,
+    //           pieces: null,
+    //           piecesPerPack: 0,
+    //           packs: 0,
+    //           price: 0,
+    //           isIncludeTaxFactory: '0',
+    //           sundryCost: 0,
+    //           paymentFactory: 0,
+    //           paymentUnload: 0,
+    //           isIncludeTaxSale: '0',
+    //           payments: 0,
+    //           erro: 0,
+    //           tonnage: 0,
+    //           landFreightPrice: 0,
+    //           landFreight: 0,
+    //           seaFreight: 0,
+    //           freight: 0,
+    //           otherCost: 0,
+    //           profit: 0,
+    //           profitNoTax: 0,
+    //           actualPieces: 0,
+    //           paymentsWithSundry: 0,
+    //           additionalFees: 0,
+    //           storeHouseID: null,
+    //           storeHouseName: null,
+    //           storeID: null,
+    //           logisticsProfit: 0,
+    //           customerCommission: null,
+    //           isAdjusted: null,
+    //           adjustDate: null,
+    //           comments: null,
+    //           addtime: null,
+    //           userId: null,
+    //           exWarehouseDate: null,
+    //           outPieces: 0
+    //         }
+    //       };
+    //     }
+    //     return item;
+    //   });
+    //   console.log(state.orderItemList)
+    // },
+    // 清除货物列表中所有元素
+    clearOrderItemList(state) {
+        state.orderItemList = []
     }
-  },
-
-
-  //修改订单列表
-  CHANGE_ORDER_LIST(state, orderList) {
-    state.orderList = orderList
-  }
-
 }
 
 const actions = {
-  //1.订单详情
-  //添加
-  addOrderItemList({commit}, orderItem) {
-    commit('ADD_ORDER_ITEM_LIST', orderItem)
-  },
-  //删除
-  deleteOrderItem({commit}, index) {
-    commit('DELETE_ORDER_ITEM', index)
-  },
-  //action只能传递一个参数
-  changeOrderItem({commit}, orderItemInfo) {
-    commit('CHANGE_ORDER_ITEM', orderItemInfo)
-  },
-  //清空填写缓存
-  clearOrderItemList({commit}) {
-    commit('CLEAR_ORDER_ITEM_LIST')
-  },
-
-  //2.订单列表
-  //查询订单列表 赋值
-  getOrderList({commit}) {
-    listGoodsOrder().then(res => {
-      commit('CHANGE_ORDER_LIST', res.rows)
-    })
-  },
+    // 设置订单货物信息
+    setOrderItemListAsync({commit}, data) {
+        commit('setOrderItemList', data)
+    },
 }
 
 export default {
-  namespaced: true,
-  state,
-  mutations,
-  actions
+    namespaced: true,
+    state,
+    mutations,
+    actions
 }

@@ -26,6 +26,7 @@ export default {
       type: String,
       default: 'el-icon-search'
     },
+    disable: false,
     //获取数据的函数
     getData: {
       type: Function,
@@ -160,7 +161,8 @@ export default {
               label="操作"
               width="100">
             <template slot-scope="scope">
-              <el-button @click="commitSomeThing(scope.row)" type="danger" size="small">确认</el-button>
+              <el-button @click="commitSomeThing(scope.row)" type="danger" size="small" :disabled="disable">确认
+              </el-button>
             </template>
           </el-table-column>
         </el-table>
