@@ -116,7 +116,7 @@
           <el-col :span="1.5">
             <el-button
                 plain
-                icon="el-icon-folder-opened"
+                icon="el-icon-folder-updateOrderItemVisibleed"
                 size="mini"
                 @click="handleExport"
                 v-hasPermi="['system:goodsorder:export']"
@@ -190,7 +190,7 @@
             <el-row>
               <span v-for="(item,index) in getSupplierNames(scope.row.orderDetailList)" :key="index">
              <el-badge is-dot class="item">
-            <span @click="openSupplierInvoice(scope.row,item.supplierID)">
+            <span @click="updateOrderItemVisibleSupplierInvoice(scope.row,item.supplierID)">
               {{ item.supplier }}
             </span>
           </el-badge>
@@ -325,12 +325,14 @@
         <template #default="scope">
           <el-row v-if="scope.row.customerIsInvoice === 1">
             <el-row>
-              <el-button type="success" size="mini" @click="openCustomerInvoice(scope.row)">继续开票</el-button>
+              <el-button type="success" size="mini" @click="updateOrderItemVisibleCustomerInvoice(scope.row)">继续开票
+              </el-button>
             </el-row>
           </el-row>
           <el-row v-else>
             <el-row>
-              <el-button type="warning" size="mini" @click="openCustomerInvoice(scope.row)">前去开票</el-button>
+              <el-button type="warning" size="mini" @click="updateOrderItemVisibleCustomerInvoice(scope.row)">前去开票
+              </el-button>
             </el-row>
           </el-row>
         </template>
@@ -341,12 +343,14 @@
         <template #default="scope">
           <el-row v-if="scope.row.isSupplierInvoice === 1">
             <el-row>
-              <el-button type="success" size="mini" @click="openCustomerInvoice(scope.row)">继续开票</el-button>
+              <el-button type="success" size="mini" @click="updateOrderItemVisibleCustomerInvoice(scope.row)">继续开票
+              </el-button>
             </el-row>
           </el-row>
           <el-row v-else>
             <el-row>
-              <el-button type="warning" size="mini" @click="openSupplierInvoice(scope.row)">前去开票</el-button>
+              <el-button type="warning" size="mini" @click="updateOrderItemVisibleSupplierInvoice(scope.row)">前去开票
+              </el-button>
             </el-row>
           </el-row>
         </template>
@@ -536,12 +540,15 @@
   </span>
     </el-dialog>
 
-    <!--    添加订单-->
-    <InfoDialog title="添加订单信息" :visible.sync="addOrderItemVisible">
+    <!--    添加订单 || 修改订单对话框-->
+    <InfoDialog :title="orderTitle" :visible.sync="orderItemVisible">
       <template #info>
-        <OrderForm @close-dialog="addOrderItemVisible = false"/>
+        <OrderForm @close-dialog="closeDialog"
+                   :submitInfo="submitInfo"
+                   :orderId="orderId"/>
       </template>
     </InfoDialog>
+
 
     <!--    陆运费和海运费申请-->
     <el-dialog
@@ -572,48 +579,43 @@
                        @updateOrderDetailList="handleUpdateOrderDetailInfoList"/>
     </el-dialog>
 
-    <!-- 修改订单对话框 -->
-    <el-dialog title="修改订单" :visible.sync="open" append-to-body width="70%">
-      <OrderForm :orderInfo="orderInfo" @updateOrderInfo="handleChangeOrderInfo"/>
-      <div slot="footer" class="dialog-footer">
-        <el-button type="primary" @click="submitForm">确 定</el-button>
-        <el-button @click="cancel">取 消</el-button>
-      </div>
-    </el-dialog>
 
     <!-- 开发票-->
     <el-dialog
-        :title="openTitle"
-        :visible.sync="invoiceOpenVisible"
+        :title="updateOrderItemVisibleTitle"
+        :visible.sync="invoiceupdateOrderItemVisibleVisible"
         width="50%">
       <el-row>
-        <el-form :model="openTitleInfo" label-width="110px" :rules="CheckRules.openTitleRules">
+        <el-form :model="updateOrderItemVisibleTitleInfo" label-width="110px"
+                 :rules="CheckRules.updateOrderItemVisibleTitleRules">
           <el-form-item label="开票日期" prop="invoiceDate">
             <el-date-picker
-                v-model="openTitleInfo.invoiceDate"
+                v-model="updateOrderItemVisibleTitleInfo.invoiceDate"
                 type="date"
                 placeholder="选择日期"
                 value-format="yyyy-MM-dd">
             </el-date-picker>
           </el-form-item>
           <el-form-item label="我方开票实体" prop="invoiceObject">
-            <el-input v-model="openTitleInfo.invoiceObject" placeholder="请输入我方开票实体"/>
+            <el-input v-model="updateOrderItemVisibleTitleInfo.invoiceObject" placeholder="请输入我方开票实体"/>
           </el-form-item>
           <el-form-item label="开票金额" prop="invoiceAmount">
-            <el-input v-model="openTitleInfo.invoiceAmount" placeholder="请输入开票金额"/>
+            <el-input v-model="updateOrderItemVisibleTitleInfo.invoiceAmount" placeholder="请输入开票金额"/>
           </el-form-item>
           <el-form-item label="公司名称" prop="companyName">
             <el-row>
               <el-col :span="10">
-                <el-input v-model="openTitleInfo.companyName" placeholder="请输入对方公司名称"/>
+                <el-input v-model="updateOrderItemVisibleTitleInfo.companyName" placeholder="请输入对方公司名称"/>
               </el-col>
               <el-col :span="2">
-                <SearchOption :limit-info="openTitleInfo.domain === 1? {companyType:'客户'}:{companyType:'供应商'}"
-                              :get-data="listCompany" query-info="companyName"
-                              query-label="公司名称" :query-name="queryCompanyName"
-                              @update:queryName="handleUpdateCompanyName" @commitBack="handleCommitBackCompany">
+                <SearchOption
+                    :limit-info="updateOrderItemVisibleTitleInfo.domain === 1? {companyType:'客户'}:{companyType:'供应商'}"
+                    :get-data="listCompany" query-info="companyName"
+                    query-label="公司名称" :query-name="queryCompanyName"
+                    @update:queryName="handleUpdateCompanyName" @commitBack="handleCommitBackCompany">
                   <template #table-columns>
-                    <el-table-column :label="openTitleInfo.domain === 1? '客户':'供应商'" align="center"
+                    <el-table-column :label="updateOrderItemVisibleTitleInfo.domain === 1? '客户':'供应商'"
+                                     align="center"
                                      prop="relationName"/>
                     <el-table-column label="老板姓名" align="center" prop="leader"/>
                     <el-table-column label="老板电话" align="center" prop="leaderTel"/>
@@ -626,22 +628,23 @@
             </el-row>
           </el-form-item>
           <el-form-item label="票据单位名称" prop="invoiceCompanyName">
-            <el-input v-model="openTitleInfo.invoiceCompanyName" placeholder="请输入票据单位名称"/>
+            <el-input v-model="updateOrderItemVisibleTitleInfo.invoiceCompanyName" placeholder="请输入票据单位名称"/>
           </el-form-item>
           <el-form-item label="票点" prop="ticketPoint">
-            <el-input v-model="openTitleInfo.ticketPoint" placeholder="请输入票点"/>
+            <el-input v-model="updateOrderItemVisibleTitleInfo.ticketPoint" placeholder="请输入票点"/>
           </el-form-item>
           <el-form-item label="票点金额" prop="ticketPointAmount">
-            <el-input v-model="openTitleInfo.ticketPointAmount" placeholder="请输入票点金额" disabled/>
+            <el-input v-model="updateOrderItemVisibleTitleInfo.ticketPointAmount" placeholder="请输入票点金额"
+                      disabled/>
           </el-form-item>
           <el-form-item label="备注" prop="comments">
-            <el-input v-model="openTitleInfo.comments" placeholder="请输入备注"/>
+            <el-input v-model="updateOrderItemVisibleTitleInfo.comments" placeholder="请输入备注"/>
           </el-form-item>
         </el-form>
       </el-row>
       <span slot="footer" class="dialog-footer">
-    <el-button @click="invoiceOpenVisible = false">取 消</el-button>
-    <el-button type="primary" @click="submitOpenTitle">确 定</el-button>
+    <el-button @click="invoiceupdateOrderItemVisibleVisible = false">取 消</el-button>
+    <el-button type="primary" @click="submitupdateOrderItemVisibleTitle">确 定</el-button>
   </span>
     </el-dialog>
 
@@ -651,7 +654,7 @@
       <keep-alive>
         <ApplyPayment :table-name="TableName.GOODS_ORDER" :t-i-d="tID" :need-money="needMoney"
                       :need-info="{}"
-                      @changeOpen="handleCloseApply"/>
+                      @changeupdateOrderItemVisible="handleCloseApply"/>
       </keep-alive>
     </el-dialog>
 
@@ -664,227 +667,24 @@
 
 
     <!-- 订单历史信息查看-->
-    <el-dialog title="订单历史信息" :visible.sync="checkHistoryOrderVisible" width="62%">
+    <el-dialog title="订单历史信息" :visible.sync="checkHistoryOrderVisible" width="800px">
       <el-row>
+
         <el-col :span="18" :offset="3">
           <el-timeline>
             <el-timeline-item :timestamp="'今天'+parseTime(new Date(),'{y}-{m}-{d}')" placement="top">
-              <el-button type="success" icon="el-icon-document" @click="checkPreviousOrderInfo">查看原订单信息
+              <el-button type="success" icon="el-icon-document" @click="checkcurrentOrderItemInfo">查看原订单信息
               </el-button>
             </el-timeline-item>
             <!--            修改的时间线-->
-            <el-timeline-item v-for="(item,index) in updateOrderInfoList"
-                              :timestamp="item.beforeObject.updateTime"
-                              placement="top"
-                              :key="index">
-              <!--              每一个card展示的是所有的修改之前的信息 就是后端返回的数组  每一个都是和数组的后一个进行比较 -->
+            <el-timeline-item v-for="(item,index) in orderHistoryInfoList" placement="top" :key="index">
               <el-card>
-                <h3 style="font-weight: bold" v-if="item.currentObject.nextObject.userName !== null">本次订单信息</h3>
-                <h4>修改人:{{
-                    item.currentObject.nextObject.userName
-                  }} 修改原因{{ item.currentObject.nextObject.remark }}</h4>
-                <template #header>
-                  <el-button type="warning" size="mini" @click="checkUpdateOrderInfo(item)">查看货物更改详情</el-button>
-                </template>
-                <el-descriptions :column="5" size="mini" border>
-                  <el-descriptions-item label="日期"
-                                        :content-class-name="hasProperty(item.currentObject.compare.different,'orderDate')?'before-order':''">
-                    {{ formatValue(item.currentObject.nextObject.orderDate) }}
-                  </el-descriptions-item>
-                  <el-descriptions-item label="客户"
-                                        :content-class-name="hasProperty(item.currentObject.compare.different,'customer')?'before-order':''">
-                    {{ formatValue(item.currentObject.nextObject.customer) }}
-                  </el-descriptions-item>
-                  <el-descriptions-item label="供应商名称"
-                                        :content-class-name="hasProperty(item.currentObject.compare.different,'supplierNames')?'before-order':''">
-                    {{ formatValue(item.currentObject.nextObject.supplierNames) }}
-                  </el-descriptions-item>
-                  <el-descriptions-item label="审核状态"
-                                        :content-class-name="hasProperty(item.currentObject.compare.different,'checkState')?'before-order':''">
-                    {{ formatValue(item.currentObject.nextObject.checkState) }}
-                  </el-descriptions-item>
-                  <el-descriptions-item label="打款状态"
-                                        :content-class-name="hasProperty(item.currentObject.compare.different,'PaymentState')?'before-order':''">
-                    {{ formatValue(item.currentObject.nextObject.PaymentState) }}
-                  </el-descriptions-item>
-                  <el-descriptions-item label="开票状态"
-                                        :content-class-name="hasProperty(item.currentObject.compare.different,'invoiceState')?'before-order':''">
-                    {{ formatValue(item.currentObject.nextObject.invoiceState) }}
-                  </el-descriptions-item>
-                  <el-descriptions-item label="调整日期" v-if="item.isAdjusted"
-                                        :content-class-name="hasProperty(item.currentObject.compare.different,'adjustDate')?'before-order':''">
-                    {{ formatValue(item.currentObject.nextObject.adjustDate) }}
-                  </el-descriptions-item>
-                  <el-descriptions-item label="客户是否开票"
-                                        :content-class-name="hasProperty(item.currentObject.compare.different,'customerIsInvoice')?'before-order':''">
-                    {{ item.currentObject.nextObject.customerIsInvoice === 0 ? '未开票' : '开票' }}
-                  </el-descriptions-item>
-                  <el-descriptions-item label="供应商是否开票"
-                                        :content-class-name="hasProperty(item.currentObject.compare.different,'isSupplierInvoice')?'before-order':''">
-                    {{ item.currentObject.nextObject.isSupplierInvoice === 0 ? '未开票' : '开票' }}
-                  </el-descriptions-item>
-                  <el-descriptions-item label="销售经理"
-                                        :content-class-name="hasProperty(item.currentObject.compare.different,'saleManager')?'before-order':''">
-                    {{ formatValue(item.currentObject.nextObject.saleManager) }}
-                  </el-descriptions-item>
-                  <el-descriptions-item label="车队"
-                                        :content-class-name="hasProperty(item.currentObject.compare.different,'fleet')?'before-order':''">
-                    {{ formatValue(item.currentObject.nextObject.fleet) }}
-                  </el-descriptions-item>
-                  <el-descriptions-item label="陆运车牌"
-                                        :content-class-name="hasProperty(item.currentObject.compare.different,'landCarNo')?'before-order':''">
-                    {{ formatValue(item.currentObject.nextObject.landCarNo) }}
-                  </el-descriptions-item>
-                  <el-descriptions-item label="陆运司机电话"
-                                        :content-class-name="hasProperty(item.currentObject.compare.different,'landDriverTel')?'before-order':''">
-                    {{ formatValue(item.currentObject.nextObject.landDriverTel) }}
-                  </el-descriptions-item>
-                  <el-descriptions-item label="陆运司机姓名"
-                                        :content-class-name="hasProperty(item.currentObject.compare.different,'landDriverName')?'before-order':''">
-                    {{ formatValue(item.currentObject.nextObject.landDriverName) }}
-                  </el-descriptions-item>
-                  <el-descriptions-item label="陆运银行户名"
-                                        :content-class-name="hasProperty(item.currentObject.compare.different,'landBankName')?'before-order':''">
-                    {{ formatValue(item.currentObject.nextObject.landBankName) }}
-                  </el-descriptions-item>
-                  <el-descriptions-item label="陆运银行账号"
-                                        :content-class-name="hasProperty(item.currentObject.compare.different,'landBankNo')?'before-order':''">
-                    {{ formatValue(item.currentObject.nextObject.landBankNo) }}
-                  </el-descriptions-item>
-                  <el-descriptions-item label="海运车牌"
-                                        :content-class-name="hasProperty(item.currentObject.compare.different,'seaCarNo')?'before-order':''">
-                    {{ formatValue(item.currentObject.nextObject.seaCarNo) }}
-                  </el-descriptions-item>
-                  <el-descriptions-item label="海运司机电话"
-                                        :content-class-name="hasProperty(item.currentObject.compare.different,'seaDriverTel')?'before-order':''">
-                    {{ formatValue(item.currentObject.nextObject.seaDriverTel) }}
-                  </el-descriptions-item>
-                  <el-descriptions-item label="海运司机姓名"
-                                        :content-class-name="hasProperty(item.currentObject.compare.different,'seaDriverName')?'before-order':''">
-                    {{ formatValue(item.currentObject.nextObject.seaDriverName) }}
-                  </el-descriptions-item>
-                  <el-descriptions-item label="海运银行户名"
-                                        :content-class-name="hasProperty(item.currentObject.compare.different,'seaBankName')?'before-order':''">
-                    {{ formatValue(item.currentObject.nextObject.seaBankName) }}
-                  </el-descriptions-item>
-                  <el-descriptions-item label="海运银行账号"
-                                        :content-class-name="hasProperty(item.currentObject.compare.different,'seaBankNo')?'before-order':''">
-                    {{ formatValue(item.currentObject.nextObject.seaBankNo) }}
-                  </el-descriptions-item>
-                  <el-descriptions-item label="陆运费"
-                                        :content-class-name="hasProperty(item.currentObject.compare.different,'landFreight')?'before-order':''">
-                    {{ formatValue(item.currentObject.nextObject.landFreight) }}
-                  </el-descriptions-item>
-                  <el-descriptions-item label="海运费"
-                                        :content-class-name="hasProperty(item.currentObject.compare.different,'seaFreight')?'before-order':''">
-                    {{ formatValue(item.currentObject.nextObject.seaFreight) }}
-                  </el-descriptions-item>
-                  <el-descriptions-item label="总货款"
-                                        :content-class-name="hasProperty(item.currentObject.compare.different,'allPayments')?'before-order':''">
-                    {{ formatValue(item.currentObject.nextObject.allPayments) }}
-                  </el-descriptions-item>
-                </el-descriptions>
-              </el-card>
-
-              <!--              修改订单-->
-              <el-card>
-                <h3 style="font-weight: bold">上次订单信息</h3>
-                <el-descriptions :column="5" size="mini" border>
-                  <el-descriptions-item label="日期"
-                  >
-                    {{ formatValue(item.beforeObject.orderDate) }}
-                  </el-descriptions-item>
-                  <el-descriptions-item label="客户"
-                  >
-                    {{ formatValue(item.beforeObject.customer) }}
-                  </el-descriptions-item>
-                  <el-descriptions-item label="供应商名称"
-                  >
-                    {{ formatValue(item.beforeObject.supplierNames) }}
-                  </el-descriptions-item>
-                  <el-descriptions-item label="审核状态"
-                  >
-                    {{ formatValue(item.beforeObject.checkState) }}
-                  </el-descriptions-item>
-                  <el-descriptions-item label="打款状态"
-                  >
-                    {{ formatValue(item.beforeObject.PaymentState) }}
-                  </el-descriptions-item>
-                  <el-descriptions-item label="开票状态"
-                  >
-                    {{ formatValue(item.beforeObject.invoiceState) }}
-                  </el-descriptions-item>
-                  <el-descriptions-item label="调整日期" v-if="item.beforeObject.isAdjusted"
-                  >
-                    {{ formatValue(item.beforeObject.adjustDate) }}
-                  </el-descriptions-item>
-                  <el-descriptions-item label="客户是否开票">
-                    {{ item.beforeObject.customerIsInvoice === 0 ? '未开票' : '开票' }}
-                  </el-descriptions-item>
-                  <el-descriptions-item label="供应商是否开票">
-                    {{ item.beforeObject.isSupplierInvoice === 0 ? '未开票' : '开票' }}
-                  </el-descriptions-item>
-                  <el-descriptions-item label="销售经理"
-                  >
-                    {{ formatValue(item.beforeObject.saleManager) }}
-                  </el-descriptions-item>
-                  <el-descriptions-item label="车队"
-                  >
-                    {{ formatValue(item.beforeObject.fleet) }}
-                  </el-descriptions-item>
-                  <el-descriptions-item label="陆运车牌"
-                  >
-                    {{ formatValue(item.beforeObject.landCarNo) }}
-                  </el-descriptions-item>
-                  <el-descriptions-item label="陆运司机电话"
-                  >
-                    {{ formatValue(item.beforeObject.landDriverTel) }}
-                  </el-descriptions-item>
-                  <el-descriptions-item label="陆运司机姓名"
-                  >
-                    {{ formatValue(item.beforeObject.landDriverName) }}
-                  </el-descriptions-item>
-                  <el-descriptions-item label="陆运银行户名"
-                  >
-                    {{ formatValue(item.beforeObject.landBankName) }}
-                  </el-descriptions-item>
-                  <el-descriptions-item label="陆运银行账号"
-                  >
-                    {{ formatValue(item.beforeObject.landBankNo) }}
-                  </el-descriptions-item>
-                  <el-descriptions-item label="海运车牌"
-                  >
-                    {{ formatValue(item.beforeObject.seaCarNo) }}
-                  </el-descriptions-item>
-                  <el-descriptions-item label="海运司机电话"
-                  >
-                    {{ formatValue(item.beforeObject.seaDriverTel) }}
-                  </el-descriptions-item>
-                  <el-descriptions-item label="海运司机姓名"
-                  >
-                    {{ formatValue(item.beforeObject.seaDriverName) }}
-                  </el-descriptions-item>
-                  <el-descriptions-item label="海运银行户名"
-                  >
-                    {{ formatValue(item.beforeObject.seaBankName) }}
-                  </el-descriptions-item>
-                  <el-descriptions-item label="海运银行账号"
-                  >
-                    {{ formatValue(item.beforeObject.seaBankNo) }}
-                  </el-descriptions-item>
-                  <el-descriptions-item label="陆运费"
-                  >
-                    {{ formatValue(item.beforeObject.landFreight) }}
-                  </el-descriptions-item>
-                  <el-descriptions-item label="海运费"
-                  >
-                    {{ formatValue(item.beforeObject.seaFreight) }}
-                  </el-descriptions-item>
-                  <el-descriptions-item label="总货款"
-                  >
-                    {{ formatValue(item.beforeObject.allPayments) }}
-                  </el-descriptions-item>
-                </el-descriptions>
+                <div>
+                  <CodeDiff
+                      :old-string="JSON.stringify(item.diff.old)"
+                      :new-string="JSON.stringify(item.diff.new)"
+                      output-format="side-by-side"/>
+                </div>
               </el-card>
             </el-timeline-item>
           </el-timeline>
@@ -896,19 +696,19 @@
     <!--      原订单信息-->
     <el-dialog
         title="原订单信息"
-        :visible.sync="previousOrderInfoVisible"
+        :visible.sync="currentOrderItemInfoVisible"
         width="68%">
       <el-row>
         <el-card class="box-card" shadow="hover">
-          <OrderInfos :orderInfo="previousOrderInfo"/>
+          <OrderInfos :orderInfo="currentOrderItemInfo"/>
         </el-card>
         <el-card class="box-card" shadow="hover">
-          <OrderDetailInfo :orderDetailInfoList="previousOrderInfo.orderDetailList"/>
+          <OrderDetailInfo :orderDetailInfoList="currentOrderItemInfo.orderDetailList"/>
         </el-card>
       </el-row>
       <span slot="footer" class="dialog-footer">
-    <el-button @click="previousOrderInfoVisible = false">取 消</el-button>
-    <el-button type="primary" @click="previousOrderInfoVisible = false">确 定</el-button>
+    <el-button @click="currentOrderItemInfoVisible = false">取 消</el-button>
+    <el-button type="primary" @click="currentOrderItemInfoVisible = false">确 定</el-button>
   </span>
     </el-dialog>
 
@@ -925,7 +725,6 @@
 
 <script>
 import {
-  addGoodsOrder,
   adjustGoodsOrder,
   auditGoodsOrder,
   delGoodsOrder,
@@ -960,10 +759,10 @@ import {getCompany} from "../../../api/system/company";
 import {getHistoryGoodsOrder} from "../../../api/system/goodsOrder";
 import OrderInfos from "../../../components/OrderInfos.vue";
 import {formatValue} from "../../../api/tool/cons";
-import {sortByUpdateTime} from "../../../api/tool/format";
 import CheckDiff from "../../../components/CheckDiff.vue";
 import InfoDialog from "../../../components/InfoDialog.vue";
 import {addReason} from "../../../api/system/user";
+import {CodeDiff} from 'v-code-diff'
 
 export default {
   name: "GoodsOrder",
@@ -974,7 +773,8 @@ export default {
     OrderInfos,
     FreeApply,
     OrderDetailInfo,
-    OrderDetail, ChatForm, ApplyPayment, SwitchBarForCheck, SwitchBarItem, SearchOption, OrderForm, TagsItem
+    OrderDetail, ChatForm, ApplyPayment, SwitchBarForCheck, SwitchBarItem, SearchOption, OrderForm, TagsItem,
+    CodeDiff
   },
   data() {
     return {
@@ -1003,7 +803,7 @@ export default {
       //key强制重新渲染组件
       keyFlag: 0,
       // 是否显示弹出层
-      open: false,
+      updateOrderItemVisible: false,
       // 查询参数
       queryParams: {
         orderDateStart: null,
@@ -1113,9 +913,11 @@ export default {
       handleUploadVisible: false,
       handleCommitVisible: false,
       //添加新订单的弹窗
-      addOrderItemVisible: false,
+      orderItemVisible: false,
+      orderTitle: '',
+      submitInfo: '',
       //开票
-      handleOpenTitleDialogVisible: false,
+      handleupdateOrderItemVisibleTitleDialogVisible: false,
       //查看订单中的列表
       orderDetailInfo: {},
 
@@ -1141,7 +943,7 @@ export default {
       //订单中的司机相关信息 自动填充响应的收款方账号信息
       driverInfo: {},
       //开票信息
-      openTitleInfo: {
+      updateOrderItemVisibleTitleInfo: {
         id: null,
         invoiceDate: null,
         invoiceObject: null,
@@ -1162,7 +964,7 @@ export default {
       },
       // 校验
       CheckRules: {
-        openTitleRules: {
+        updateOrderItemVisibleTitleRules: {
           invoiceDate: [
             {required: true, message: '请选择开票日期', trigger: 'blur'}
           ],
@@ -1190,7 +992,7 @@ export default {
         }
       },
       //当前订单id
-      currentOrderId: null,
+      orderId: null,
       queryCompanyName: '',
       //付款申请信息列表 用于判断海运费和陆运费按钮是否可用
       paymentApplyInfoList: [],
@@ -1206,8 +1008,8 @@ export default {
       },
 
       //供应商 && 客户开发票
-      invoiceOpenVisible: false,
-      openTitle: '',
+      invoiceupdateOrderItemVisibleVisible: false,
+      updateOrderItemVisibleTitle: '',
 
       // 订单申请打款
       tID: '',
@@ -1222,33 +1024,12 @@ export default {
       checkAttachmentVisible: false,
 
       // 原订单信息
-      previousOrderInfo: {},
-      previousOrderInfoVisible: false,
+      currentOrderItemInfo: {},
+      currentOrderItemInfoVisible: false,
       // 查看订单历史信息
       checkHistoryOrderVisible: false,
       // 订单历史信息列表
       orderHistoryInfoList: [],
-      // 渲染的订单对象信息 里面的对象结构:
-      /**
-       * 前一个对象的信息
-       * {
-       *    // 修改之后的信息 也就是后端返回的当前对象的后一个对象
-       *   currentObject:{
-       *     // 保存当前订单信息与前一个的差异
-       *     diff:[],
-       *     // 保存当前订单信息与前一个的相同信息
-       *     same:[]
-       *   },
-       *   // 修改之前的信息 也就是后端返回的信息
-       *   beforeObject:{}
-       * }
-       *
-       * 算法流程:
-       *  对于后端返回的数组 从开头开始遍历，如果只有一个，不比较
-       *  如果长度大于1，那么就是拿第一个和第二个比较，然后将结果保存在 updateOrderInfoList 中 其中每一个对象都是上述类型
-       */
-      updateOrderInfoList: [],
-
 
       // 订单详情映射对象 然后每一个订单的详情列表都按照这个映射以后进行比较渲染
       mapper: {
@@ -1289,10 +1070,10 @@ export default {
         'adjustDate': '调整日期',
         'comments': '备注',
       },
-
     };
   },
   created() {
+    console.log(CodeDiff)
     this.getList();
     if (localStorage.getItem('goodsorder-columns') === 'null'
         || !localStorage.getItem('goodsorder-columns')) {
@@ -1322,9 +1103,9 @@ export default {
       deep: true,
     },
     // 监听整个开票表单 如果有变化 自动监听计算票点金额
-    'openTitleInfo': {
+    'updateOrderItemVisibleTitleInfo': {
       handler(val) {
-        this.openTitleInfo.ticketPointAmount = Number(this.openTitleInfo.invoiceAmount * this.openTitleInfo.ticketPoint).toFixed(2)
+        this.updateOrderItemVisibleTitleInfo.ticketPointAmount = Number(this.updateOrderItemVisibleTitleInfo.invoiceAmount * this.updateOrderItemVisibleTitleInfo.ticketPoint).toFixed(2)
       },
       deep: true
     }
@@ -1346,14 +1127,13 @@ export default {
       })
     },
     // 查看原订单信息
-    checkPreviousOrderInfo() {
-      this.previousOrderInfoVisible = true;
+    checkcurrentOrderItemInfo() {
+      this.currentOrderItemInfoVisible = true;
     },
     // 查看订单历史信息
     checkOrderHistory(row) {
       // 保存原订单的信息
-      this.previousOrderInfo = row;
-
+      this.currentOrderItemInfo = row;
       // 查询订单历史信息
       getHistoryGoodsOrder({goodsOrderID: row.id}).then(res => {
         // 如果rows的长度为0那么就提示没有修改记录
@@ -1361,170 +1141,9 @@ export default {
           this.$message.warning('没有修改记录')
           return;
         }
-        this.orderHistoryInfoList = res.rows.reverse();
-        // 每次打开重置这个数组
-        this.updateOrderInfoList = []
-        // 比较对象 在这个里面会对updateOrderInfoList临时变量进行操作
-        this.compareHistoryOrder(this.orderHistoryInfoList)
-        this.updateOrderInfoList = this.updateOrderInfoList.reverse()
+        this.orderHistoryInfoList = res.rows;
+
         this.checkHistoryOrderVisible = true;
-      })
-    },
-    // 检查diff数组中是否有该属性
-    hasProperty(different, property) {
-      return different.some(item => item.key === property)
-    },
-    // 比较方法
-    compareHistoryOrder(orderHistoryInfoList) {
-      // 如果不是数组 类型不合法
-      if (typeof orderHistoryInfoList !== "object") {
-        this.$message.error('比较类型不合法')
-      }
-      // 如果长度为1则和现在状态订单进行比较
-      if (orderHistoryInfoList.length === 1) {
-        const updateOrderInfo = orderHistoryInfoList[0];
-        // 如果完全一样
-        if (this.equals(updateOrderInfo, this.previousOrderInfo)) {
-          this.$message.success('没有修改记录')
-          // 如果有区别
-        } else {
-          this.$message.error('有修改记录')
-          this.updateOrderInfoList.push({
-            currentObject: {
-              nextObject: this.previousOrderInfo,
-              // 比较结果 包含相同项和不同
-              compare: this.compareOrderInfos(updateOrderInfo, this.previousOrderInfo)
-            },
-            beforeObject: updateOrderInfo,
-          })
-        }
-      } else {
-        const len = this.orderHistoryInfoList.length;
-        for (let i = 0; i < len - 1; i++) {
-          // 比较两个对象 前一个和后一个进行比较 并且记录前一个的compare属性中
-          this.updateOrderInfoList.push({
-            currentObject: {
-              nextObject: this.orderHistoryInfoList[i + 1],
-              // 比较结果 包含相同项和不同
-              compare: this.compareOrderInfos(this.orderHistoryInfoList[i], this.orderHistoryInfoList[i + 1])
-            },
-            beforeObject: this.orderHistoryInfoList[i],
-          })
-        }
-        // 对最后一个对象，我们把最新的状态推入到nextObject 然后数组最后一个作为beforeObject
-        if (len > 0) {
-          this.updateOrderInfoList.push({
-            currentObject: {
-              nextObject: this.previousOrderInfo,
-              // 比较结果 包含相同项和不同
-              compare: this.compareOrderInfos(this.orderHistoryInfoList[len - 1], this.previousOrderInfo)
-            },
-            beforeObject: this.orderHistoryInfoList[len - 1],
-          })
-        }
-      }
-    },
-    // 订单属性比较方法
-    compareOrderInfos(orderInfo1, orderInfo2) {
-      // 初始化结果数组来存储相同和不同的属性信息
-      const result = {same: [], different: []};
-
-      // 检查传入的对象是否合法
-      if (typeof orderInfo1 !== "object" || typeof orderInfo2 !== "object") {
-        throw new Error('比较类型不合法');
-      }
-
-      // 空对象比较逻辑
-      if (orderInfo1 === null && orderInfo2 === null) {
-        return result;
-      }
-      if (orderInfo1 === null || orderInfo2 === null) {
-        return result;
-      }
-
-      // 获取对象的所有键
-      const keys1 = Object.keys(orderInfo1);
-      const keys2 = Object.keys(orderInfo2);
-
-      // 比较两个对象的键是否一致
-      const allKeys = new Set([...keys1, ...keys2]);
-
-      // 遍历所有键
-      for (const key of allKeys) {
-        // 记录不存在于另一对象中的键
-        if (!keys1.includes(key)) {
-          result.different.push({key, value1: undefined, value2: orderInfo2[key]});
-        } else if (!keys2.includes(key)) {
-          result.different.push({key, value1: orderInfo1[key], value2: undefined});
-        } else {
-          // 对于存在的键，比较其值
-          if (typeof orderInfo1[key] === 'object' && typeof orderInfo2[key] === 'object') {
-            // 递归比较对象
-            const subResult = this.compareOrderInfos(orderInfo1[key], orderInfo2[key]);
-            if (subResult.different.length > 0) {
-              result.different.push(...subResult.different.map(diff => ({...diff, key: `${key}.${diff.key}`})));
-            } else {
-              result.same.push({key, value1: orderInfo1[key], value2: orderInfo2[key]});
-            }
-          } else {
-            // 值比较
-            if (orderInfo1[key] === orderInfo2[key]) {
-              result.same.push({key, value1: orderInfo1[key], value2: orderInfo2[key]});
-            } else {
-              result.different.push({key, value1: orderInfo1[key], value2: orderInfo2[key]});
-            }
-          }
-        }
-      }
-      // 返回结果
-      return result;
-    },
-    // 如果两个对象完全相等
-    equals(orderInfo1, orderInfo2) {
-      try {
-        const str1 = JSON.stringify(orderInfo1);
-        const str2 = JSON.stringify(orderInfo2);
-        return str1 === str2;
-      } catch (error) {
-        // 如果对象中有循环引用或其他不可序列化的值，则抛出错误
-        return false;
-      }
-    },
-    // 查看货物的差异信息
-    checkUpdateOrderInfo(item) {
-      this.diffVisible = true;
-      // 要把货物信息进行一个ORM转换
-      this.diffOrderInfoA = this.ormOrderInfo(item.beforeObject.orderDetailList)
-      console.log(this.diffOrderInfoA)
-      this.diffOrderInfoB = this.ormOrderInfo(item.currentObject.nextObject.orderDetailList)
-      console.log(this.diffOrderInfoB)
-      this.compareSwitch = true;
-    },
-    // 对象ORM转换
-    ormOrderInfo(targetList) {
-      if (targetList === null) {
-        return []
-      }
-      if (JSON.stringify(targetList) === '[]') {
-        return []
-      }
-      if (targetList.length === 0) {
-        return []
-      }
-      let output = {}
-      return targetList.map(target => {
-        // for in 遍历属性
-        for (let property in target) {
-          if (this.mapper[property] !== undefined) {
-            Object.defineProperty(output, `${[this.mapper[property]]}`, {
-              value: target[property],
-              writable: true,
-              enumerable: true,
-              configurable: true
-            })
-          }
-        }
-        return output
       })
     },
 
@@ -1608,32 +1227,6 @@ export default {
       })
     },
 
-    // 取消添加订单
-    cancelSubmit() {
-      this.$store.dispatch('order/clearOrderItemList'); // 清空订单详情填写信息
-      this.orderInfo = {} // 清空订单列表基础信息
-      this.addOrderItemVisible = false
-    },
-    // 提交订单
-    // 订单列表的对象封装一个，订单详情有两个一样的对象 对应供应商发货和仓库发货
-    submitOrder() {
-      this.addOrderItemVisible = false
-      this.orderInfo.orderDetailList = this.orderItemList; //从vuex拿到订单详细列表 加入到订单信息中
-      //订单详情添加客户信息
-      for (let i = 0; i < this.orderItemList.length; i++) {
-        let item = this.orderItemList[i];
-        item.customerID = this.orderInfo.customerID;
-        item.customer = this.orderInfo.customer;
-        //是否含税
-        item.isIncludeTaxFactory = item.isIncludeTaxFactory === '是' ? '1' : '0';
-        item.isIncludeTaxSale = item.isIncludeTaxSale === '是' ? '1' : '0';
-        item.orderDate = parseTime(new Date(), '{y}-{m}-{d}')
-      }
-      addGoodsOrder({...this.orderInfo, PaymentState: ''}).then(res => {
-        this.$message.success('订单提交成功')
-        this.getList()
-      })
-    },
     //查看附件信息
     checkAttachment(row, type) {
       if (type === 'path') {
@@ -1650,7 +1243,7 @@ export default {
     },
     // 查看某一个文件
     checkFileItem(item) {
-      window.open(item)
+      window.updateOrderItemVisible(item)
     },
 
     // 上传之前的钩子函数
@@ -1752,35 +1345,35 @@ export default {
     },
     //客户供应商开票功能
     //添加开票 是否订单开票要给订单id
-    submitOpenTitle() {
+    submitupdateOrderItemVisibleTitle() {
       //排除不必要的字段
-      this.openTitleInfo = excludeParams(this.openTitleInfo, this.$exclude)
+      this.updateOrderItemVisibleTitleInfo = excludeParams(this.updateOrderItemVisibleTitleInfo, this.$exclude)
       //这里要判断一下 如果是客户开票 就添加发票卖出信息 如果是供应商开票 则添加发票买入信息
-      if (this.openTitleInfo.domain === 1) {
+      if (this.updateOrderItemVisibleTitleInfo.domain === 1) {
         //客户开票 添加发票卖出信息
-        addInvoiceOut(this.openTitleInfo)
+        addInvoiceOut(this.updateOrderItemVisibleTitleInfo)
             .then(res => {
               this.$message.success('客户开票成功~')
               //修改开票信息
-              let info = {...this.openTitleInfo.orderInfo, customerIsInvoice: 1}
+              let info = {...this.updateOrderItemVisibleTitleInfo.orderInfo, customerIsInvoice: 1}
               updateGoodsOrder(excludeParams(info, this.$exclude))
                   .then(res => {
                     this.$message.success('开票状态设置成功~')
-                    this.invoiceOpenVisible = false
+                    this.invoiceupdateOrderItemVisibleVisible = false
                     this.getList()
                   })
             })
         //添加发票买入
       } else {
         //客户开票 添加发票卖出信息
-        addInvoiceIn(this.openTitleInfo)
+        addInvoiceIn(this.updateOrderItemVisibleTitleInfo)
             .then(res => {
               this.$message.success('供应商开票成功~')
-              let info = {...this.openTitleInfo.orderInfo, isSupplierInvoice: 1}
+              let info = {...this.updateOrderItemVisibleTitleInfo.orderInfo, isSupplierInvoice: 1}
               updateGoodsOrder(excludeParams(info, this.$exclude))
                   .then(res => {
                     this.$message.success('开票状态设置成功~')
-                    this.invoiceOpenVisible = false
+                    this.invoiceupdateOrderItemVisibleVisible = false
                     this.getList()
                   })
             })
@@ -1791,51 +1384,51 @@ export default {
       this.queryCompanyName = val;
     },
     handleCommitBackCompany(val) {
-      this.openTitleInfo.companyName = val.companyName;
-      this.openTitleInfo.companyID = val.id;
-      this.openTitleInfo.companyType = val.companyType;
+      this.updateOrderItemVisibleTitleInfo.companyName = val.companyName;
+      this.updateOrderItemVisibleTitleInfo.companyID = val.id;
+      this.updateOrderItemVisibleTitleInfo.companyType = val.companyType;
     },
     // 客户开票
-    openCustomerInvoice(row) {
+    updateOrderItemVisibleCustomerInvoice(row) {
       //客户开发票 即为发票卖出 添加发票卖出信息 1客户开票  2供应商开票
-      this.openTitleInfo.domain = 1
-      this.openTitleInfo.isOrderTax = row.id;
-      this.openTitle = '客户开票'
+      this.updateOrderItemVisibleTitleInfo.domain = 1
+      this.updateOrderItemVisibleTitleInfo.isOrderTax = row.id;
+      this.updateOrderItemVisibleTitle = '客户开票'
       //设置该订单信息 需要进行一次查询
       getGoodsOrder(row.id)
           .then(res => {
-            this.openTitleInfo.orderInfo = res.data;
+            this.updateOrderItemVisibleTitleInfo.orderInfo = res.data;
           })
-      this.invoiceOpenVisible = true;
+      this.invoiceupdateOrderItemVisibleVisible = true;
     },
     // 供应商开票
-    openSupplierInvoice(row, supplierID) {
+    updateOrderItemVisibleSupplierInvoice(row, supplierID) {
       // 如果改行是点击供应商列表的开票
       if (supplierID !== undefined && supplierID !== '' && supplierID !== null) {
-        this.openTitleInfo.domain = 2
-        this.openTitleInfo.companyID = supplierID;
-        this.openTitleInfo.isOrderTax = row.id;
+        this.updateOrderItemVisibleTitleInfo.domain = 2
+        this.updateOrderItemVisibleTitleInfo.companyID = supplierID;
+        this.updateOrderItemVisibleTitleInfo.isOrderTax = row.id;
         // 先获取公司信息
         getCompany(supplierID).then(res => {
-          this.openTitleInfo.companyName = res.data.companyName;
-          this.openTitleInfo.companyType = res.data.companyType;
-          this.openTitle = '供应商开票'
+          this.updateOrderItemVisibleTitleInfo.companyName = res.data.companyName;
+          this.updateOrderItemVisibleTitleInfo.companyType = res.data.companyType;
+          this.updateOrderItemVisibleTitle = '供应商开票'
           // 获取订单信息
           getGoodsOrder(row.id)
               .then(res => {
-                this.openTitleInfo.orderInfo = res.data;
-                this.invoiceOpenVisible = true;
+                this.updateOrderItemVisibleTitleInfo.orderInfo = res.data;
+                this.invoiceupdateOrderItemVisibleVisible = true;
               })
         })
         // 如果不是
       } else {
-        this.openTitleInfo.domain = 2
-        this.openTitleInfo.isOrderTax = row.id;
-        this.openTitle = '供应商开票'
+        this.updateOrderItemVisibleTitleInfo.domain = 2
+        this.updateOrderItemVisibleTitleInfo.isOrderTax = row.id;
+        this.updateOrderItemVisibleTitle = '供应商开票'
         getGoodsOrder(row.id)
             .then(res => {
-              this.openTitleInfo.orderInfo = res.data;
-              this.invoiceOpenVisible = true;
+              this.updateOrderItemVisibleTitleInfo.orderInfo = res.data;
+              this.invoiceupdateOrderItemVisibleVisible = true;
             })
       }
     },
@@ -1912,11 +1505,6 @@ export default {
         this.loading = false;
       });
     },
-    // 取消按钮
-    cancel() {
-      this.open = false;
-      this.reset();
-    },
     // 表单重置
     reset() {
       this.orderInfo = {
@@ -1980,10 +1568,17 @@ export default {
       this.single = selection.length !== 1
       this.multiple = !selection.length
     },
-    /** 新增按钮操作 */
+    // 关闭弹窗
+    closeDialog() {
+      this.orderId = null
+      this.orderItemVisible = false
+    },
+    // 新增按钮操作
     handleAdd() {
       //打开新的新增框
-      this.addOrderItemVisible = true
+      this.orderItemVisible = true
+      this.orderTitle = '添加订单信息'
+      this.submitInfo = '添加订单'
     },
     //修改订单的操作
     handleUpdate(row) {
@@ -1998,25 +1593,10 @@ export default {
               sessionStorage.setItem('order-edit-reason', value)
               this.$message.success('提交成功')
               this.reset();
-              const id = row.id || this.ids
-              getGoodsOrder(id).then(response => {
-                this.orderInfo = response.data;
-                //将数据库拿到的订单列表装入vuex 因为订单添加的货物是从vuex获取的数据 对货物的操作也是操作vuex
-                this.$store.commit("order/SET_ORDER_ITEM_LIST", response.data.orderDetailList)
-                //填充供应商和客户id
-                if (response.data.orderDetailList !== null && response.data.orderDetailList !== undefined) {
-                  for (let i = 0; i < this.orderInfo.orderDetailList.length; i++) {
-                    let item = this.orderInfo.orderDetailList[i];
-                    item.customerID = this.orderInfo.customerID;
-                    item.customer = this.orderInfo.customer;
-                    //是否含税
-                    item.isIncludeTaxFactory = item.isIncludeTaxFactory === '是' ? '1' : '0';
-                    item.isIncludeTaxSale = item.isIncludeTaxSale === '是' ? '1' : '0';
-                  }
-                }
-                this.open = true;
-                this.title = "修改订单";
-              });
+              this.orderId = row.id
+              this.orderItemVisible = true;
+              this.orderTitle = '修改订单信息'
+              this.submitInfo = '修改订单'
             })
       }).catch(() => {
         this.$message({
@@ -2025,32 +1605,7 @@ export default {
         });
       });
     },
-    //修改后提交订单信息
-    submitForm() {
-      if (this.orderInfo.id != null) {
-        this.orderInfo.orderDetailList = this.orderItemList; //从vuex拿到订单详细列表 加入到订单信息中
-        //订单详情添加客户信息
-        for (let i = 0; i < this.orderItemList.length; i++) {
-          let item = this.orderItemList[i];
-          item.customerID = this.orderInfo.customerID;
-          item.customer = this.orderInfo.customer;
-          item.isIncludeTaxFactory = item.isIncludeTaxFactory === '是' ? '1' : '0';
-          item.isIncludeTaxSale = item.isIncludeTaxSale === '是' ? '1' : '0';
-          item.orderDate = parseTime(new Date(), '{y}-{m}-{d}')
-        }
-        this.orderInfo = excludeParams(this.orderInfo, this.$exclude)
-        // 修改订单
-        updateGoodsOrder({
-          ...this.orderInfo,
-          PaymentState: '',
-          remark: sessionStorage.getItem('order-edit-reason')
-        }).then(response => {
-          this.$modal.msgSuccess("修改成功");
-          this.open = false;
-          this.getList();
-        });
-      }
-    },
+
     /** 删除按钮操作 */
     handleDelete(row) {
       const ids = row.id || this.ids;
@@ -2088,13 +1643,37 @@ export default {
   }
 }
 
-/*todo 订单差异的样式  跟上一个时间的订单相比(属性比较) 如果变化了 那么就加上红色的样式 过去订单加绿色 如果没变 就不加颜色*/
-.my-label {
-  background: #E1F3D8;
-}
+.center {
+  // 解决vue-code-diff对不齐和显示下拉标志问题
+  max-height: 600px;
+  overflow-y: auto;
+  overflow-x: hidden;
+  /* 样式穿透-起始行左右对齐，*/
+  .d2h-code-side-line {
+    height: 15px;
+  }
 
-.before-order {
-  background: #FDE2E2;
+  code.hljs {
+    padding: 0;
+  }
+
+  // 删除行统计显示
+  .d2h-code-side-linenumber {
+    display: none;
+  }
+
+  .d2h-code-side-line {
+    padding: unset;
+  }
+
+  .d2h-code-line-ctn {
+    width: unset;
+  }
+
+  // 删除第一行的统计结果
+  .d2h-info {
+    display: none;
+  }
 }
 </style>
 

@@ -9,12 +9,19 @@ import {listBankAccount} from "../api/system/bankAccount";
 import {listCars} from "../api/system/cars";
 import {listFleet} from "../api/system/fleet";
 import {parseTime} from "../utils/ruoyi";
-import {addGoodsOrder} from "../api/system/goodsOrder";
+import {addGoodsOrder, getGoodsOrder, updateGoodsOrder} from "../api/system/goodsOrder";
+import {addReason} from "../api/system/user";
+import {TableName} from "../api/tool/enums";
+import {excludeParams} from "../api/tool/exclude";
 
 export default {
   name: "OrderForm",
   components: {SearchOption, OrderItem},
-  props: {},
+  props: {
+    orderId: '',
+    // 确认按钮字样
+    submitInfo: '',
+  },
   data() {
     return {
       // 订单信息
@@ -54,16 +61,81 @@ export default {
       querySeaCars: ''
     }
   },
+
   //计算属性 目的是为了避免无法输入修改父组件
   computed: {
     //获取订单列表
     ...mapGetters(['orderItemList'])
+  },
+  watch: {
+    'orderId': {
+      handler(val) {
+        console.log('watch:orderId:', val)
+        if (!this.orderId) {
+          console.log('orderId:传入有误', val)
+        } else {
+          this.getGoodsOrderInfo(val)
+        }
+      },
+      immediate: true
+    },
+    // 监听海运和陆运 如果不选 那么就要清空海运和陆运的相关信息 todo
+    isLand: {
+      handler(val) {
+        if (val === false) {
+          console.log('重置陆运费')
+          this.resetLandCarInfo()
+        }
+      }
+    },
+    isSea: {
+      handler(val) {
+        if (val === false) {
+          console.log('重置海运费')
+          this.resetSeaCarInfo()
+        }
+      }
+    }
+  },
+  created() {
+    this.resetOrderInfo()
+    if (!this.orderId) {
+      console.log('orderId:传入有误', this.orderId)
+    } else {
+      this.getGoodsOrderInfo(this.orderId)
+    }
   },
   methods: {
     listFleet,
     listCars,
     listBankAccount,
     listCompany,
+    // 获取订单信息的方法
+    getGoodsOrderInfo(id) {
+      getGoodsOrder(id).then(response => {
+        this.orderInfo = response.data;
+        // 如果海运费或者陆运费大于0
+        if (response.data.landFreight > 0) {
+          this.isLand = true;
+        }
+        if (response.data.seaFreight > 0) {
+          this.isSea = true;
+        }
+        //将数据库拿到的订单列表装入vuex 因为订单添加的货物是从vuex获取的数据 对货物的操作也是操作vuex
+        this.$store.commit("order/SET_ORDER_ITEM_LIST", response.data.orderDetailList)
+        //填充供应商和客户id
+        if (response.data.orderDetailList !== null && response.data.orderDetailList !== undefined) {
+          for (let i = 0; i < this.orderInfo.orderDetailList.length; i++) {
+            let item = this.orderInfo.orderDetailList[i];
+            item.customerID = this.orderInfo.customerID;
+            item.customer = this.orderInfo.customer;
+            //是否含税
+            item.isIncludeTaxFactory = item.isIncludeTaxFactory === '是' ? '1' : '0';
+            item.isIncludeTaxSale = item.isIncludeTaxSale === '是' ? '1' : '0';
+          }
+        }
+      });
+    },
     // 信息重置
     resetOrderInfo() {
       this.orderInfo = {
@@ -89,6 +161,20 @@ export default {
         isSea: '',
         isLand: '',
       }
+    },
+    // 重置陆运费
+    resetSeaCarInfo() {
+      this.orderInfo.seaCarID = ''
+      this.orderInfo.seaCarNo = ''
+      this.orderInfo.seaDriverName = ''
+      this.orderInfo.seaDriverTel = ''
+    },
+    // 重置海运费
+    resetLandCarInfo() {
+      this.orderInfo.landCarID = ''
+      this.orderInfo.landCarNo = ''
+      this.orderInfo.landDriverName = ''
+      this.orderInfo.landDriverTel = ''
     },
     // 车队的自动填充
     handleChangeFleet(val) {
@@ -163,30 +249,59 @@ export default {
     //提交订单
     //订单列表的对象封装一个，订单详情有两个一样的对象 对应供应商发货和仓库发货
     submitOrder() {
-      this.orderInfo.orderDetailList = this.orderItemList; //从vuex拿到订单详细列表 加入到订单信息中
-      //订单详情添加客户信息
-      for (let i = 0; i < this.orderItemList.length; i++) {
-        let item = this.orderItemList[i];
-        item.customerID = this.orderInfo.customerID;
-        item.customer = this.orderInfo.customer;
-        //是否含税
-        item.isIncludeTaxFactory = item.isIncludeTaxFactory === '是' ? '1' : '0';
-        item.isIncludeTaxSale = item.isIncludeTaxSale === '是' ? '1' : '0';
-        item.orderDate = parseTime(new Date(), '{y}-{m}-{d}')
+      if (!this.orderId) {
+        this.orderInfo.orderDetailList = this.orderItemList; //从vuex拿到订单详细列表 加入到订单信息中
+        //订单详情添加客户信息
+        for (let i = 0; i < this.orderItemList.length; i++) {
+          let item = this.orderItemList[i];
+          item.customerID = this.orderInfo.customerID;
+          item.customer = this.orderInfo.customer;
+          //是否含税
+          item.isIncludeTaxFactory = item.isIncludeTaxFactory === '是' ? '1' : '0';
+          item.isIncludeTaxSale = item.isIncludeTaxSale === '是' ? '1' : '0';
+          item.orderDate = parseTime(new Date(), '{y}-{m}-{d}')
+        }
+        addGoodsOrder({...this.orderInfo, PaymentState: ''}).then(res => {
+          this.$message.success('订单提交成功')
+          this.resetOrderInfo() // 清空订单列表基础信息
+          this.$emit('close-dialog');
+          this.isSea = false
+          this.isLand = false
+        })
+      } else {
+        this.handleUpdateGoodsOrder()
       }
-      addGoodsOrder({...this.orderInfo, PaymentState: ''}).then(res => {
-        this.$message.success('订单提交成功')
-        this.resetOrderInfo() // 清空订单列表基础信息
-        this.$emit('close-dialog');
-        this.isSea = false
-        this.isLand = false
-        this.getList()
-      })
+    },
+    //修改后提交订单信息
+    handleUpdateGoodsOrder() {
+      if (this.orderId != null) {
+        // 先拿到订单货物信息
+        this.orderInfo.orderDetailList = this.orderItemList; //从vuex拿到订单详细列表 加入到订单信息中
+        //订单详情添加客户信息
+        for (let i = 0; i < this.orderItemList.length; i++) {
+          let item = this.orderItemList[i];
+          item.customerID = this.orderInfo.customerID;
+          item.customer = this.orderInfo.customer;
+          item.isIncludeTaxFactory = item.isIncludeTaxFactory === '是' ? '1' : '0';
+          item.isIncludeTaxSale = item.isIncludeTaxSale === '是' ? '1' : '0';
+          item.orderDate = parseTime(new Date(), '{y}-{m}-{d}')
+        }
+        this.orderInfo = excludeParams(this.orderInfo, this.$exclude)
+        // 修改订单
+        updateGoodsOrder({
+          ...this.orderInfo,
+          PaymentState: '',
+        }).then(response => {
+          this.$modal.msgSuccess("修改成功");
+          this.resetOrderInfo() // 清空订单列表基础信息
+          this.isSea = false
+          this.isLand = false
+          this.$emit('close-dialog');
+        });
+      }
     },
   },
-  created() {
-    this.resetOrderInfo();
-  },
+
 }
 </script>
 
@@ -200,11 +315,11 @@ export default {
         </div>
         <el-form-item label="订单日期" prop="orderDate">
           <el-date-picker
-            v-model="orderInfo.orderDate"
-            size="mini"
-            type="date"
-            placeholder="选择日期"
-            value-format="yyyy-MM-dd" style="width: 120px">
+              v-model="orderInfo.orderDate"
+              size="mini"
+              type="date"
+              placeholder="选择日期"
+              value-format="yyyy-MM-dd" style="width: 120px">
           </el-date-picker>
         </el-form-item>
         <el-form-item label="客户" prop="customer">
@@ -245,7 +360,7 @@ export default {
         </el-form-item>
 
         <!--      陆运-->
-        <el-row style="margin:20px 0;" v-if="isLand || orderInfo.landFreight > 0">
+        <el-row style="margin:20px 0;" v-if="isLand">
           <el-form-item label="车牌">
             <el-row>
               <el-col :span="20">
@@ -254,7 +369,7 @@ export default {
               </el-col>
               <el-col :span="4">
                 <!--搜索银行卡信息-->
-                <SearchOption :limit-info="{companyType:'司机'}"
+                <SearchOption :limit-info="{carType:'陆运'}"
                               :get-data="listCars"
                               query-label="车牌搜索" query-info="carNo" :query-name="queryLandCar"
                               @commitBack="handleCommitBackCar" @update:queryName="handleChangeCar">
@@ -301,7 +416,7 @@ export default {
           </el-form-item>
         </el-row>
         <!--      海运-->
-        <el-row style="margin:10px 0;" v-if="isSea || orderInfo.seaFreight > 0">
+        <el-row style="margin:10px 0;" v-if="isSea">
           <el-form-item label="车牌">
             <el-row>
               <el-col :span="20">
@@ -377,7 +492,7 @@ export default {
     <el-card class="box-card" shadow="hover">
       <el-row style="text-align: right">
         <el-button @click="cancelSubmit">取 消</el-button>
-        <el-button type="primary" @click="submitOrder">添加订单</el-button>
+        <el-button type="primary" @click="submitOrder">{{ submitInfo }}</el-button>
       </el-row>
     </el-card>
   </div>
