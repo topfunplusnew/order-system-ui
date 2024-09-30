@@ -21,8 +21,6 @@
       <el-col :span="1.5">
         <el-button
             type="danger"
-            plain
-            icon="el-icon-plus"
             size="mini"
             @click="handleAdd"
             v-hasPermi="['system:companycar:add']"

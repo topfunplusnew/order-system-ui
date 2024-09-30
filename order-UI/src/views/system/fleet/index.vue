@@ -46,9 +46,7 @@
       <!-- 新增按钮 -->
       <el-col :span="1.5">
         <el-button
-          type="primary"
-          plain
-          icon="el-icon-plus"
+          type="danger"
           size="mini"
           @click="handleAdd"
           v-hasPermi="['system:fleet:add']"

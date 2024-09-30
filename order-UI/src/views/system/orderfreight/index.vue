@@ -215,23 +215,18 @@
             size="mini"
             type="warning"
             @click="applyForLand(scope.row)"
-            v-if="scope.row.freightType === '陆运' && scope.row.checkState === '未申请'"
+            :disabled="scope.row.checkState === '审核中'"
+            v-if="scope.row.freightType === '陆运'"
           >申请陆运费
           </el-button>
           <!-- 只有海运费不为零才能申请海运费 -->
           <el-button
             size="mini"
             type="primary"
+            :disabled="scope.row.checkState === '审核中'"
             @click="applyForSea(scope.row)"
-            v-if="scope.row.freightType === '海运' && scope.row.checkState === '未申请'"
+            v-if="scope.row.freightType === '海运'"
           >申请海运费
-          </el-button>
-          <el-button
-            size="mini"
-            type="success"
-            disabled
-            v-if=" scope.row.checkState === '审核中'"
-          >运费已申请
           </el-button>
           <el-button
             size="mini"

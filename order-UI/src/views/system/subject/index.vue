@@ -71,7 +71,6 @@
           <el-col :span="1.5">
             <el-button
               type="primary"
-              plain
               size="mini"
               @click="handleAddType"
             >1-添加科目类型
@@ -80,7 +79,6 @@
           <el-col :span="1.5">
             <el-button
               type="danger"
-              plain
               size="mini"
               @click="handleAdd"
               v-hasPermi="['system:subject:add']"
