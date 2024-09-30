@@ -667,9 +667,8 @@
 
 
     <!-- 订单历史信息查看-->
-    <el-dialog title="订单历史信息" :visible.sync="checkHistoryOrderVisible" width="800px">
+    <el-dialog title="订单历史信息" :visible.sync="checkHistoryOrderVisible" width="1100px">
       <el-row>
-
         <el-col :span="18" :offset="3">
           <el-timeline>
             <el-timeline-item :timestamp="'今天'+parseTime(new Date(),'{y}-{m}-{d}')" placement="top">
@@ -677,15 +676,24 @@
               </el-button>
             </el-timeline-item>
             <!--            修改的时间线-->
-            <el-timeline-item v-for="(item,index) in orderHistoryInfoList" placement="top" :key="index">
-              <el-card>
-                <div>
-                  <CodeDiff
-                      :old-string="JSON.stringify(item.diff.old)"
-                      :new-string="JSON.stringify(item.diff.new)"
-                      output-format="side-by-side"/>
-                </div>
-              </el-card>
+            <el-timeline-item v-for="(item,index) in orderHistoryInfoList" placement="top" :key="index"
+                              :timestamp="item.updateTime">
+              <el-collapse v-model="activeNames">
+                <el-collapse-item :title="item.userName+':'+item.remark" name="1">
+                  <el-card>
+                    <template #header>
+                      <span style="font-weight: bold">修改人:{{ item.userName }}-{{ item.remark }}</span>
+                    </template>
+                    <div>
+                      <CodeDiff
+                          :old-string="item.diff.old"
+                          :new-string="item.diff.new"
+                          :context="10"
+                          output-format="line-by-line"/>
+                    </div>
+                  </el-card>
+                </el-collapse-item>
+              </el-collapse>
             </el-timeline-item>
           </el-timeline>
         </el-col>
@@ -711,15 +719,6 @@
     <el-button type="primary" @click="currentOrderItemInfoVisible = false">确 定</el-button>
   </span>
     </el-dialog>
-
-    <!--    比较货物差异的弹窗-->
-    <keep-alive>
-      <CheckDiff :diff-object-a="diffOrderInfoA" :diff-object-b="diffOrderInfoB"
-                 :switch-on="compareSwitch" title="比较差异"
-                 :visible.sync="diffVisible"/>
-    </keep-alive>
-
-
   </div>
 </template>
 
@@ -763,6 +762,7 @@ import CheckDiff from "../../../components/CheckDiff.vue";
 import InfoDialog from "../../../components/InfoDialog.vue";
 import {addReason} from "../../../api/system/user";
 import {CodeDiff} from 'v-code-diff'
+import {create} from 'jsondiffpatch'
 
 export default {
   name: "GoodsOrder",
@@ -781,9 +781,6 @@ export default {
       // 比较差异的弹窗
       diffVisible: false,
       compareSwitch: false,
-      // 比较的两个订单货物列表的信息
-      diffOrderInfoA: {},
-      diffOrderInfoB: {},
       // 遮罩层
       loading: true,
       // 选中数组
@@ -1030,7 +1027,7 @@ export default {
       checkHistoryOrderVisible: false,
       // 订单历史信息列表
       orderHistoryInfoList: [],
-
+      activeNames: [],
       // 订单详情映射对象 然后每一个订单的详情列表都按照这个映射以后进行比较渲染
       mapper: {
         'orderDate': '订单日期',
@@ -1069,11 +1066,29 @@ export default {
         'isAdjusted': '是否调整',
         'adjustDate': '调整日期',
         'comments': '备注',
+        'updateTime': '订单修改时间',
+        'remark': '修改记录',
+        'landCarNo': '陆运车牌号',
+        'landDriverName': '陆运司机姓名',
+        'landBankNo': '陆运司机银行卡号',
+        'landBankName': '陆运司机开户行',
+        'landDriverTel': '陆运司机电话',
+        'fleet': "车队",
+        'seaCarNo': '海运车牌号',
+        'seaDriverName': '海运司机姓名',
+        'seaDriverTel': '海运司机电话',
+        'seaBankName': '海运司机开户行',
+        'seaBankNo': '海运司机银行卡号',
+        'companyName': '公司名称',
+        'saleManager': '销售经理',
+        'userName': '修改人',
+        'supplierNames': '供应商',
+        'allPayments': '总货款'
       },
+      diffPatcher: null
     };
   },
   created() {
-    console.log(CodeDiff)
     this.getList();
     if (localStorage.getItem('goodsorder-columns') === 'null'
         || !localStorage.getItem('goodsorder-columns')) {
@@ -1083,6 +1098,9 @@ export default {
       this.columns = JSON.parse(localStorage.getItem('goodsorder-columns'));
     }
     this.$store.dispatch('order/getOrderList')
+  },
+  mounted() {
+    this.diffPatcher = create()
   },
   computed: {
     TableName() {
@@ -1111,7 +1129,6 @@ export default {
     }
   },
   methods: {
-    formatValue,
     parseTime,
     listCompany,
     listBankAccount,
@@ -1130,6 +1147,19 @@ export default {
     checkcurrentOrderItemInfo() {
       this.currentOrderItemInfoVisible = true;
     },
+    // 格式化对象
+    formatData(data) {
+      console.log('da', data)
+      let formattedString = '';
+      for (const key in data) {
+        if (data.hasOwnProperty(key)) {
+          const value = data[key];
+          const mappedKey = this.mapper[key] || key;
+          formattedString += `${mappedKey}(${key}): ${value}\n`;
+        }
+      }
+      return formattedString.trim(); // 去掉最后一个换行符
+    },
     // 查看订单历史信息
     checkOrderHistory(row) {
       // 保存原订单的信息
@@ -1141,8 +1171,23 @@ export default {
           this.$message.warning('没有修改记录')
           return;
         }
+        /**
+         *   hello + '\n' + 'world'
+         */
         this.orderHistoryInfoList = res.rows;
-
+        for (let i = 0; i < this.orderHistoryInfoList.length - 1; i++) {
+          this.orderHistoryInfoList[i].diff = {
+            old: this.formatData(excludeParams(this.orderHistoryInfoList[i], this.$excludeWithUpdate)),
+            new: this.formatData(excludeParams(this.orderHistoryInfoList[i + 1], this.$excludeWithUpdate))
+          }
+        }
+        if (this.orderHistoryInfoList.length > 0) {
+          this.orderHistoryInfoList[this.orderHistoryInfoList.length - 1].diff = {
+            old: this.formatData(excludeParams(this.orderHistoryInfoList[this.orderHistoryInfoList.length - 1], this.$excludeWithUpdate)),
+            new: this.formatData(excludeParams(this.currentOrderItemInfo, this.$excludeWithUpdate))
+          }
+        }
+        console.log(this.orderHistoryInfoList)
         this.checkHistoryOrderVisible = true;
       })
     },
@@ -1176,10 +1221,10 @@ export default {
         // 将每个货物信息的ordersNo赋值为空 并且去除不必要的参数
         orderInfo.orderDetailList.forEach(item => {
           item.ordersNo = '';
-          item = excludeParams(item, this.$exclude)
+          item = excludeParams(item, this.$excludeWithUpdate)
         })
         // 去除字段
-        orderInfo = excludeParams(orderInfo, this.$exclude)
+        orderInfo = excludeParams(orderInfo, this.$excludeWithUpdate)
         // 调整单
         adjustGoodsOrder({...orderInfo, ordersNo: '', adjustDate: formatDate(new Date())}).then(res => {
           this.$message.success('调整单提交成功')
@@ -1291,7 +1336,7 @@ export default {
         }
       }
       // 全部上传完事后 修改订单的附件
-      this.tempOrderInfo = excludeParams(this.tempOrderInfo, this.$exclude)
+      this.tempOrderInfo = excludeParams(this.tempOrderInfo, this.$excludeWithUpdate)
       const path = this.fileNamesList.join('|')
       if (type === 'path') {
         //修改订单信息
@@ -1347,7 +1392,7 @@ export default {
     //添加开票 是否订单开票要给订单id
     submitupdateOrderItemVisibleTitle() {
       //排除不必要的字段
-      this.updateOrderItemVisibleTitleInfo = excludeParams(this.updateOrderItemVisibleTitleInfo, this.$exclude)
+      this.updateOrderItemVisibleTitleInfo = excludeParams(this.updateOrderItemVisibleTitleInfo, this.$excludeWithUpdate)
       //这里要判断一下 如果是客户开票 就添加发票卖出信息 如果是供应商开票 则添加发票买入信息
       if (this.updateOrderItemVisibleTitleInfo.domain === 1) {
         //客户开票 添加发票卖出信息
@@ -1356,7 +1401,7 @@ export default {
               this.$message.success('客户开票成功~')
               //修改开票信息
               let info = {...this.updateOrderItemVisibleTitleInfo.orderInfo, customerIsInvoice: 1}
-              updateGoodsOrder(excludeParams(info, this.$exclude))
+              updateGoodsOrder(excludeParams(info, this.$excludeWithUpdate))
                   .then(res => {
                     this.$message.success('开票状态设置成功~')
                     this.invoiceupdateOrderItemVisibleVisible = false
@@ -1370,7 +1415,7 @@ export default {
             .then(res => {
               this.$message.success('供应商开票成功~')
               let info = {...this.updateOrderItemVisibleTitleInfo.orderInfo, isSupplierInvoice: 1}
-              updateGoodsOrder(excludeParams(info, this.$exclude))
+              updateGoodsOrder(excludeParams(info, this.$excludeWithUpdate))
                   .then(res => {
                     this.$message.success('开票状态设置成功~')
                     this.invoiceupdateOrderItemVisibleVisible = false
