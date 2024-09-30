@@ -38,9 +38,7 @@
       </el-col>
       <el-col :span="1.5">
         <el-button
-          type="primary"
-          plain
-          icon="el-icon-plus"
+          type="danger"
           size="mini"
           @click="handleAdd"
           v-hasPermi="['system:invoiceout:add']"
@@ -76,17 +74,24 @@
     </el-row>
 
     <el-table v-horizontal-scroll="'always'" border v-loading="loading" :data="invoiceOutList"
-              @selection-change="handleSelectionChange" id="printBox" size="mini">
-      <el-table-column label="开票日期" align="center" prop="invoiceDate" v-if="columns[0].visible"/>
-      <el-table-column label="我方开票实体" align="center" prop="invoiceObject" v-if="columns[1].visible"/>
-      <el-table-column label="开票金额" align="center" prop="invoiceAmount" v-if="columns[2].visible"/>
-      <el-table-column label="公司类别" align="center" prop="companyType" v-if="columns[3].visible"/>
-      <el-table-column label="公司名称" align="center" prop="companyName" v-if="columns[4].visible"/>
-      <el-table-column label="票据单位名称" align="center" prop="invoiceCompanyName" v-if="columns[5].visible"/>
-      <el-table-column label="票点" align="center" prop="ticketPoint" v-if="columns[6].visible"/>
-      <el-table-column label="票点金额" align="center" prop="ticketPointAmount" v-if="columns[7].visible"/>
-
-      <el-table-column label="备注" align="center" prop="comments" v-if="columns[9].visible"/>
+              @selection-change="handleSelectionChange" id="printBox" size="mini"
+              :cell-style="()=>{return {padding:'.5px'}}">
+      <el-table-column label="开票日期" align="center" prop="invoiceDate" v-if="columns[0].visible"
+                       show-overflow-tooltip/>
+      <el-table-column label="我方开票实体" align="center" prop="invoiceObject" v-if="columns[1].visible"
+                       show-overflow-tooltip/>
+      <el-table-column label="开票金额" align="center" prop="invoiceAmount" v-if="columns[2].visible"
+                       show-overflow-tooltip/>
+      <el-table-column label="公司类别" align="center" prop="companyType" v-if="columns[3].visible"
+                       show-overflow-tooltip/>
+      <el-table-column label="公司名称" align="center" prop="companyName" v-if="columns[4].visible"
+                       show-overflow-tooltip/>
+      <el-table-column label="票据单位名称" align="center" prop="invoiceCompanyName" v-if="columns[5].visible"
+                       show-overflow-tooltip/>
+      <el-table-column label="票点" align="center" prop="ticketPoint" v-if="columns[6].visible" show-overflow-tooltip/>
+      <el-table-column label="票点金额" align="center" prop="ticketPointAmount" v-if="columns[7].visible"
+                       show-overflow-tooltip/>
+      <el-table-column label="备注" align="center" prop="comments" v-if="columns[9].visible" show-overflow-tooltip/>
       <el-table-column label="订单信息" align="center" prop="isOrderTax" width="180" v-if="columns[8].visible">
         <template slot-scope="scope">
           <el-row v-if="scope.row.isOrderTax===0">

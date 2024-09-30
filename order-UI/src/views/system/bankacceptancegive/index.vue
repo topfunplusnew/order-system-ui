@@ -3,23 +3,23 @@
     <el-form :model="queryParams" ref="queryForm" size="mini" :inline="true" v-show="showSearch" label-width="68px">
       <el-form-item label="开始时间" prop="issueDateStart">
         <el-date-picker
-            v-model="queryParams.issueDateStart"
-            type="date"
-            placeholder="选择日期" value-format="yyyy-MM-dd">
+          v-model="queryParams.issueDateStart"
+          type="date"
+          placeholder="选择日期" value-format="yyyy-MM-dd">
         </el-date-picker>
       </el-form-item>
       <el-form-item label="结束时间" prop="issueDateEnd">
         <el-date-picker
-            v-model="queryParams.issueDateEnd"
-            type="date"
-            placeholder="选择日期" value-format="yyyy-MM-dd">
+          v-model="queryParams.issueDateEnd"
+          type="date"
+          placeholder="选择日期" value-format="yyyy-MM-dd">
         </el-date-picker>
       </el-form-item>
       <el-form-item label="票据号码" prop="billNo">
         <el-input
-            v-model="queryParams.billNo"
-            placeholder="请输入票据号码"
-            @keyup.enter.native="handleQuery"/>
+          v-model="queryParams.billNo"
+          placeholder="请输入票据号码"
+          @keyup.enter.native="handleQuery"/>
       </el-form-item>
       <el-form-item>
         <el-button type="primary" icon="el-icon-search" size="mini" @click="handleQuery">搜索</el-button>
@@ -32,31 +32,31 @@
       </el-col>
       <el-col :span="1.5">
         <el-button
-            type="danger"
-            size="mini"
-            @click="handleAdd"
-            v-hasPermi="['system:bankacceptance:add']">添加支出商业票据
+          type="danger"
+          size="mini"
+          @click="handleAdd"
+          v-hasPermi="['system:bankacceptance:add']">添加支出商业票据
         </el-button>
       </el-col>
       <right-toolbar :showSearch.sync="showSearch" @queryTable="getList" :columns="columns">
         <template v-slot:print>
           <el-col :span="1.5">
             <el-button
-                plain
-                icon="el-icon-printer"
-                size="mini"
-                @click="printHTML">
+              plain
+              icon="el-icon-printer"
+              size="mini"
+              @click="printHTML">
             </el-button>
           </el-col>
         </template>
         <template v-slot:export>
           <el-col :span="1.5">
             <el-button
-                plain
-                icon="el-icon-folder-opened"
-                size="mini"
-                @click="handleExport"
-                v-hasPermi="['system:bankacceptance:export']">
+              plain
+              icon="el-icon-folder-opened"
+              size="mini"
+              @click="handleExport"
+              v-hasPermi="['system:bankacceptance:export']">
             </el-button>
           </el-col>
         </template>
@@ -67,46 +67,55 @@
               @selection-change="handleSelectionChange" show-summary :summary-method="getSummaries"
               height="480px" id="printBox" :cell-style="()=>{return {padding:'.5px'}}">
       <el-table-column label="id" align="center" prop="id"/>
-      <el-table-column label="操作日期" align="center" prop="operateDate" v-if="columns[0].visible"/>
-      <el-table-column label="票据号码" align="center" prop="billNo" v-if="columns[1].visible"/>
-      <el-table-column label="出票日期" align="center" prop="issueDate" v-if="columns[2].visible"/>
-      <el-table-column label="到期日期" align="center" prop="dueDate" v-if="columns[3].visible"/>
-      <el-table-column label="我方承兑账户" align="center" prop="billAccount" v-if="columns[4].visible"/>
-      <el-table-column label="票据日期" align="center" prop="billDate" v-if="columns[5].visible"/>
-      <el-table-column label="事由" align="center" prop="reason" v-if="columns[6].visible"/>
-      <el-table-column label="票据金额" align="center" prop="billAmount" v-if="columns[7].visible"/>
-      <el-table-column label="贴息点数" align="center" prop="inDiscountPoints" v-if="columns[8].visible"/>
-      <el-table-column label="贴息金额" align="center" prop="inDiscountAmount" v-if="columns[9].visible"/>
-      <el-table-column label="票据种类" align="center" prop="billCategory" v-if="columns[10].visible"/>
-      <el-table-column label="来源" align="center" prop="origin" v-if="columns[11].visible"/>
-      <el-table-column label="背书人" align="center" prop="endorser" v-if="columns[12].visible"/>
-      <el-table-column label="被背书人" align="center" prop="endorsee" v-if="columns[13].visible"/>
-      <el-table-column label="背书事由" align="center" prop="endorseReason" v-if="columns[14].visible"/>
-      <el-table-column label="备注" align="center" prop="comments"/>
+      <el-table-column label="操作日期" align="center" prop="operateDate" v-if="columns[0].visible"
+                       show-overflow-tooltip/>
+      <el-table-column label="票据号码" align="center" prop="billNo" v-if="columns[1].visible" show-overflow-tooltip/>
+      <el-table-column label="出票日期" align="center" prop="issueDate" v-if="columns[2].visible"
+                       show-overflow-tooltip/>
+      <el-table-column label="到期日期" align="center" prop="dueDate" v-if="columns[3].visible" show-overflow-tooltip/>
+      <el-table-column label="我方承兑账户" align="center" prop="billAccount" v-if="columns[4].visible"
+                       show-overflow-tooltip/>
+      <el-table-column label="票据日期" align="center" prop="billDate" v-if="columns[5].visible" show-overflow-tooltip/>
+      <el-table-column label="事由" align="center" prop="reason" v-if="columns[6].visible" show-overflow-tooltip/>
+      <el-table-column label="票据金额" align="center" prop="billAmount" v-if="columns[7].visible"
+                       show-overflow-tooltip/>
+      <el-table-column label="贴息点数" align="center" prop="inDiscountPoints" v-if="columns[8].visible"
+                       show-overflow-tooltip/>
+      <el-table-column label="贴息金额" align="center" prop="inDiscountAmount" v-if="columns[9].visible"
+                       show-overflow-tooltip/>
+      <el-table-column label="票据种类" align="center" prop="billCategory" v-if="columns[10].visible"
+                       show-overflow-tooltip/>
+      <el-table-column label="来源" align="center" prop="origin" v-if="columns[11].visible" show-overflow-tooltip/>
+      <el-table-column label="背书人" align="center" prop="endorser" v-if="columns[12].visible" show-overflow-tooltip/>
+      <el-table-column label="被背书人" align="center" prop="endorsee" v-if="columns[13].visible"
+                       show-overflow-tooltip/>
+      <el-table-column label="背书事由" align="center" prop="endorseReason" v-if="columns[14].visible"
+                       show-overflow-tooltip/>
+      <el-table-column label="备注" align="center" prop="comments" show-overflow-tooltip/>
       <el-table-column label="操作" align="center" class-name="small-padding fixed-width" width="150px" fixed="right">
         <template slot-scope="scope">
           <el-button
-              size="mini"
-              type="primary"
-              @click="handleUpdate(scope.row)"
-              v-hasPermi="['system:bankacceptance:edit']">修改
+            size="mini"
+            type="primary"
+            @click="handleUpdate(scope.row)"
+            v-hasPermi="['system:bankacceptance:edit']">修改
           </el-button>
           <el-button
-              size="mini"
-              type="danger"
-              @click="handleDelete(scope.row)"
-              v-hasPermi="['system:bankacceptance:remove']">删除
+            size="mini"
+            type="danger"
+            @click="handleDelete(scope.row)"
+            v-hasPermi="['system:bankacceptance:remove']">删除
           </el-button>
         </template>
       </el-table-column>
     </el-table>
 
     <pagination
-        v-show="total>0"
-        :total="total"
-        :page.sync="queryParams.pageNum"
-        :limit.sync="queryParams.pageSize"
-        @pagination="getList"/>
+      v-show="total>0"
+      :total="total"
+      :page.sync="queryParams.pageNum"
+      :limit.sync="queryParams.pageSize"
+      @pagination="getList"/>
 
     <!-- 添加或修改商业票据、银行承兑对话框 -->
     <el-dialog :title="title" :visible.sync="open" width="55%" append-to-body>
@@ -146,9 +155,9 @@
             </el-form-item>
             <el-form-item label="我方收票日期" prop="billDate">
               <el-date-picker
-                  v-model="form.billDate"
-                  type="date"
-                  placeholder="选择日期" format="yyyy 年 MM 月 dd 日" value-format="yyyy-MM-dd">
+                v-model="form.billDate"
+                type="date"
+                placeholder="选择日期" format="yyyy 年 MM 月 dd 日" value-format="yyyy-MM-dd">
               </el-date-picker>
             </el-form-item>
             <!--            选择分类 因为是支出默认-->
@@ -167,16 +176,16 @@
             </el-form-item>
             <el-form-item label="出票日期" prop="issueDate">
               <el-date-picker
-                  v-model="form.issueDate"
-                  type="date"
-                  placeholder="选择日期" format="yyyy 年 MM 月 dd 日" value-format="yyyy-MM-dd">
+                v-model="form.issueDate"
+                type="date"
+                placeholder="选择日期" format="yyyy 年 MM 月 dd 日" value-format="yyyy-MM-dd">
               </el-date-picker>
             </el-form-item>
             <el-form-item label="到期日期" prop="dueDate">
               <el-date-picker
-                  v-model="form.dueDate"
-                  type="date"
-                  placeholder="选择日期" format="yyyy 年 MM 月 dd 日" value-format="yyyy-MM-dd">
+                v-model="form.dueDate"
+                type="date"
+                placeholder="选择日期" format="yyyy 年 MM 月 dd 日" value-format="yyyy-MM-dd">
               </el-date-picker>
             </el-form-item>
             <!--        单选-->
@@ -279,7 +288,7 @@ export default {
         {key: 3, label: `到期日期`, visible: true},
         {key: 4, label: `我方承兑账户`, visible: true},
         {key: 5, label: `票据日期`, visible: true},
-      /*  {key: 6, label: `分类`, visible: true},*/
+        /*  {key: 6, label: `分类`, visible: true},*/
         {key: 6, label: `事由`, visible: true},
         {key: 7, label: `票据金额`, visible: true},
         {key: 8, label: `贴息点数`, visible: true},

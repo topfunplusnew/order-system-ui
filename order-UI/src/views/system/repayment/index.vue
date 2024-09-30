@@ -3,16 +3,16 @@
     <el-form :model="timesQuery" ref="queryForm" size="mini" :inline="true" v-show="showSearch" label-width="68px">
       <el-form-item label="开始时间" prop="beginTime">
         <el-date-picker
-            v-model="timesQuery.beginTime"
-            type="date"
-            placeholder="请选择开始时间" value-format="yyyy-MM-dd">
+          v-model="timesQuery.beginTime"
+          type="date"
+          placeholder="请选择开始时间" value-format="yyyy-MM-dd">
         </el-date-picker>
       </el-form-item>
       <el-form-item label="结束时间" prop="endTime">
         <el-date-picker
-            v-model="timesQuery.endTime"
-            type="date"
-            placeholder="请选择结束时间" value-format="yyyy-MM-dd">
+          v-model="timesQuery.endTime"
+          type="date"
+          placeholder="请选择结束时间" value-format="yyyy-MM-dd">
         </el-date-picker>
       </el-form-item>
       <el-form-item>
@@ -28,10 +28,10 @@
         <template v-slot:print>
           <el-col :span="1.5">
             <el-button
-                plain
-                icon="el-icon-printer"
-                size="mini"
-                @click="printHTML"
+              plain
+              icon="el-icon-printer"
+              size="mini"
+              @click="printHTML"
             >
             </el-button>
           </el-col>
@@ -40,11 +40,11 @@
         <template v-slot:export>
           <el-col :span="1.5">
             <el-button
-                plain
-                icon="el-icon-folder-opened"
-                size="mini"
-                @click="handleExport"
-                v-hasPermi="['system:repayment:export']"
+              plain
+              icon="el-icon-folder-opened"
+              size="mini"
+              @click="handleExport"
+              v-hasPermi="['system:repayment:export']"
             >
             </el-button>
           </el-col>
@@ -54,44 +54,35 @@
 
     <el-table border v-loading="loading" :data="repaymentList" @selection-change="handleSelectionChange" id="printBox"
               v-horizontal-scroll="'always'" size="mini" :cell-style="()=>{return {padding:'2px'}}">
-      <!--      <el-table-column type="selection" width="55" align="center"/>-->
-      <!--      <el-table-column label="id" align="center" prop="id"/>-->
-      <!--      <el-table-column label="贷款编号" align="center" prop="loanNO" v-if="columns[0].visible"/>-->
-      <!--      <el-table-column label="还款编号" align="center" prop="payNO" v-if="columns[1].visible"/>-->
-      <el-table-column label="还款金额" align="center" prop="moneyAmount" v-if="columns[0].visible"/>
-      <el-table-column label="付息" align="center" prop="ratio" v-if="columns[1].visible"/>
-      <el-table-column label="还款日期" align="center" prop="payDate" v-if="columns[2].visible"/>
-      <el-table-column label="还款账户" align="center" prop="acountsName" v-if="columns[3].visible"/>
-      <el-table-column label="还款账号" align="center" prop="bankNo" v-if="columns[4].visible"/>
-      <el-table-column label="备注" align="center" prop="comments"/>
+      <el-table-column label="还款金额" align="center" prop="moneyAmount" v-if="columns[0].visible"
+                       show-overflow-tooltip/>
+      <el-table-column label="付息" align="center" prop="ratio" v-if="columns[1].visible" show-overflow-tooltip/>
+      <el-table-column label="还款日期" align="center" prop="payDate" v-if="columns[2].visible" show-overflow-tooltip/>
+      <el-table-column label="还款账户" align="center" prop="acountsName" v-if="columns[3].visible"
+                       show-overflow-tooltip/>
+      <el-table-column label="还款账号" align="center" prop="bankNo" v-if="columns[4].visible" show-overflow-tooltip/>
+      <el-table-column label="备注" align="center" prop="comments" show-overflow-tooltip/>
       <el-table-column label="操作" align="center" class-name="small-padding fixed-width" fixed="right">
         <template slot-scope="scope">
           <el-button
-              size="mini"
-              type="warning"
-              @click="applyForPayment(scope.row)"
-              v-if="scope.row.checkState ==='未申请'"
+            size="mini"
+            type="warning"
+            @click="applyForPayment(scope.row)"
+            v-if="scope.row.checkState ==='未申请'"
           >申请付款
           </el-button>
           <el-button
-              size="mini"
-              type="warning"
-              disabled
-              v-if="scope.row.checkState ==='审核中'"
+            size="mini"
+            type="warning"
+            disabled
+            v-if="scope.row.checkState ==='审核中'"
           >审核中
           </el-button>
-          <!--          <el-button-->
-          <!--            size="mini"-->
-          <!--            type="primary"-->
-          <!--            @click="handleUpdate(scope.row)"-->
-          <!--            v-hasPermi="['system:repayment:edit']"-->
-          <!--          >修改-->
-          <!--          </el-button>-->
           <el-button
-              size="mini"
-              type="danger"
-              @click="handleDelete(scope.row)"
-              v-hasPermi="['system:repayment:remove']"
+            size="mini"
+            type="danger"
+            @click="handleDelete(scope.row)"
+            v-hasPermi="['system:repayment:remove']"
           >删除
           </el-button>
         </template>
@@ -99,11 +90,11 @@
     </el-table>
 
     <pagination
-        v-show="total>0"
-        :total="total"
-        :page.sync="queryParams.pageNum"
-        :limit.sync="queryParams.pageSize"
-        @pagination="getList"
+      v-show="total>0"
+      :total="total"
+      :page.sync="queryParams.pageNum"
+      :limit.sync="queryParams.pageSize"
+      @pagination="getList"
     />
 
     <!-- 添加或修改贷款还款信息对话框 -->
@@ -226,7 +217,7 @@ export default {
   created() {
     this.getList();
     if (localStorage.getItem('repayment-columns') === 'null'
-        || !localStorage.getItem('repayment-columns')) {
+      || !localStorage.getItem('repayment-columns')) {
       //设置localStorage
       localStorage.setItem("repayment-columns", JSON.stringify(this.columns))
     } else {

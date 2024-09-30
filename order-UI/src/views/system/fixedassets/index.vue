@@ -3,13 +3,13 @@
     <el-form :model="queryParams" ref="queryForm" size="mini" :inline="true" v-show="showSearch" label-width="68px">
       <el-form-item label="付款时间">
         <el-date-picker
-            v-model="dateRange"
-            style="width: 240px"
-            value-format="yyyy-MM-dd"
-            type="daterange"
-            range-separator="-"
-            start-placeholder="开始日期"
-            end-placeholder="结束日期"
+          v-model="dateRange"
+          style="width: 240px"
+          value-format="yyyy-MM-dd"
+          type="daterange"
+          range-separator="-"
+          start-placeholder="开始日期"
+          end-placeholder="结束日期"
         ></el-date-picker>
       </el-form-item>
       <el-form-item>
@@ -28,10 +28,10 @@
         <template v-slot:print>
           <el-col :span="1.5">
             <el-button
-                plain
-                icon="el-icon-printer"
-                size="mini"
-                @click="printHTML"
+              plain
+              icon="el-icon-printer"
+              size="mini"
+              @click="printHTML"
             >
             </el-button>
           </el-col>
@@ -40,11 +40,11 @@
         <template v-slot:export>
           <el-col :span="1.5">
             <el-button
-                plain
-                icon="el-icon-folder-opened"
-                size="mini"
-                @click="handleExport"
-                v-hasPermi="['system:company:export']"
+              plain
+              icon="el-icon-folder-opened"
+              size="mini"
+              @click="handleExport"
+              v-hasPermi="['system:company:export']"
             >
             </el-button>
           </el-col>
@@ -53,34 +53,44 @@
     </el-row>
 
     <el-table border v-horizontal-scroll="'always'" v-loading="loading" :data="fixedAssetsList"
-              @selection-change="handleSelectionChange" id="printBox" size="mini">
-      <el-table-column label="购入日期" align="center" prop="buyDate" v-if="columns[0].visible" width="120px"/>
-      <el-table-column label="资产编号" align="center" prop="assetNo" v-if="columns[1].visible"/>
-      <el-table-column label="资产名称" align="center" prop="assetName" v-if="columns[2].visible"/>
-      <el-table-column label="规格型号" align="center" prop="specification" v-if="columns[3].visible"/>
-      <el-table-column label="数量" align="center" prop="number" v-if="columns[4].visible"/>
-      <el-table-column label="计量单位" align="center" prop="measurementUnit" v-if="columns[5].visible"/>
-      <el-table-column label="含税金额" align="center" prop="amountIncludeTax" v-if="columns[6].visible"/>
-      <el-table-column label="不含税金额" align="center" prop="amountNoTax" v-if="columns[7].visible"/>
-      <el-table-column label="户名名称" align="center" prop="account" v-if="columns[8].visible"/>
-      <el-table-column label="使用部门" align="center" prop="department" v-if="columns[9].visible"/>
-      <el-table-column label="固定资产清理时间" align="center" prop="scrapDate" v-if="columns[10].visible"/>
-      <el-table-column label="清理/变卖价值" align="center" prop="saleAmount" v-if="columns[11].visible"/>
-      <el-table-column label="备注" align="center" prop="comments" v-if="columns[12].visible"/>
+              @selection-change="handleSelectionChange" id="printBox" size="mini"
+              :cell-style="()=>{return {padding:'.5px'}}">
+      <el-table-column label="购入日期" align="center" prop="buyDate" v-if="columns[0].visible" width="120px"
+                       show-overflow-tooltip/>
+      <el-table-column label="资产编号" align="center" prop="assetNo" v-if="columns[1].visible" show-overflow-tooltip/>
+      <el-table-column label="资产名称" align="center" prop="assetName" v-if="columns[2].visible"
+                       show-overflow-tooltip/>
+      <el-table-column label="规格型号" align="center" prop="specification" v-if="columns[3].visible"
+                       show-overflow-tooltip/>
+      <el-table-column label="数量" align="center" prop="number" v-if="columns[4].visible" show-overflow-tooltip/>
+      <el-table-column label="计量单位" align="center" prop="measurementUnit" v-if="columns[5].visible"
+                       show-overflow-tooltip/>
+      <el-table-column label="含税金额" align="center" prop="amountIncludeTax" v-if="columns[6].visible"
+                       show-overflow-tooltip/>
+      <el-table-column label="不含税金额" align="center" prop="amountNoTax" v-if="columns[7].visible"
+                       show-overflow-tooltip/>
+      <el-table-column label="户名名称" align="center" prop="account" v-if="columns[8].visible" show-overflow-tooltip/>
+      <el-table-column label="使用部门" align="center" prop="department" v-if="columns[9].visible"
+                       show-overflow-tooltip/>
+      <el-table-column label="固定资产清理时间" align="center" prop="scrapDate" v-if="columns[10].visible"
+                       show-overflow-tooltip/>
+      <el-table-column label="清理/变卖价值" align="center" prop="saleAmount" v-if="columns[11].visible"
+                       show-overflow-tooltip/>
+      <el-table-column label="备注" align="center" prop="comments" v-if="columns[12].visible" show-overflow-tooltip/>
       <el-table-column label="操作" align="center" class-name="small-padding fixed-width">
         <template slot-scope="scope">
           <el-button
-              size="mini"
-              type="primary"
-              @click="handleUpdate(scope.row)"
-              v-hasPermi="['system:fixedassets:edit']"
+            size="mini"
+            type="primary"
+            @click="handleUpdate(scope.row)"
+            v-hasPermi="['system:fixedassets:edit']"
           >修改
           </el-button>
           <el-button
-              size="mini"
-              type="danger"
-              @click="handleDelete(scope.row)"
-              v-hasPermi="['system:fixedassets:remove']"
+            size="mini"
+            type="danger"
+            @click="handleDelete(scope.row)"
+            v-hasPermi="['system:fixedassets:remove']"
           >删除
           </el-button>
         </template>
@@ -88,11 +98,11 @@
     </el-table>
 
     <pagination
-        v-show="total>0"
-        :total="total"
-        :page.sync="queryParams.pageNum"
-        :limit.sync="queryParams.pageSize"
-        @pagination="getList"
+      v-show="total>0"
+      :total="total"
+      :page.sync="queryParams.pageNum"
+      :limit.sync="queryParams.pageSize"
+      @pagination="getList"
     />
 
     <!-- 添加或修改固定资产对话框 -->
@@ -102,10 +112,10 @@
           <el-col :span="12">
             <el-form-item label="购入日期" prop="buyDate">
               <el-date-picker
-                  v-model="form.buyDate"
-                  type="date"
-                  placeholder="购入日期"
-                  value-format="yyyy-MM-dd">
+                v-model="form.buyDate"
+                type="date"
+                placeholder="购入日期"
+                value-format="yyyy-MM-dd">
               </el-date-picker>
             </el-form-item>
             <el-form-item label="资产编号" prop="assetNo">
@@ -140,10 +150,10 @@
             </el-form-item>
             <el-form-item label="固定资产清理时间" prop="scrapDate">
               <el-date-picker
-                  v-model="form.scrapDate"
-                  type="date"
-                  placeholder="固定资产清理时间"
-                  value-format="yyyy-MM-dd">
+                v-model="form.scrapDate"
+                type="date"
+                placeholder="固定资产清理时间"
+                value-format="yyyy-MM-dd">
               </el-date-picker>
             </el-form-item>
             <el-form-item label="清理/变卖价值" prop="saleAmount">
@@ -289,7 +299,7 @@ export default {
     this.$store.dispatch('fixedassets/getFixedassetsList')
     this.loading = false;
     if (localStorage.getItem('fixedassets-columns') === 'null'
-        || !localStorage.getItem('fixedassets-columns')) {
+      || !localStorage.getItem('fixedassets-columns')) {
       //设置localStorage
       localStorage.setItem("fixedassets-columns", JSON.stringify(this.columns))
     } else {
@@ -318,7 +328,7 @@ export default {
       this.fixedAssetsList = this.fixedassetsList;
       //筛选
       this.fixedAssetsList =
-          this.$dateRange(this, 'fixedAssetsList', 'buyDate', this.timesQuery.beginTime, this.timesQuery.endTime);
+        this.$dateRange(this, 'fixedAssetsList', 'buyDate', this.timesQuery.beginTime, this.timesQuery.endTime);
     },
     printHTML() {
       this.$print({

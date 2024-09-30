@@ -3,29 +3,29 @@
     <el-form :model="queryParams" ref="queryForm" size="mini" :inline="true" v-show="showSearch" label-width="68px">
       <el-form-item label="操作时间" prop="operateDate">
         <el-date-picker
-            v-model="dateRange"
-            style="width: 240px"
-            value-format="yyyy-MM-dd"
-            type="daterange"
-            range-separator="-"
-            start-placeholder="开始日期"
-            end-placeholder="结束日期"
+          v-model="dateRange"
+          style="width: 240px"
+          value-format="yyyy-MM-dd"
+          type="daterange"
+          range-separator="-"
+          start-placeholder="开始日期"
+          end-placeholder="结束日期"
         ></el-date-picker>
       </el-form-item>
       <el-form-item label="公司" prop="companyName">
         <el-input
-            v-model="queryParams.companyName"
-            placeholder="请输入公司"
-            clearable
-            @keyup.enter.native="handleQuery"
+          v-model="queryParams.companyName"
+          placeholder="请输入公司"
+          clearable
+          @keyup.enter.native="handleQuery"
         />
       </el-form-item>
       <el-form-item label="备注" prop="comments">
         <el-input
-            v-model="queryParams.comments"
-            placeholder="请输入备注"
-            clearable
-            @keyup.enter.native="handleQuery"
+          v-model="queryParams.comments"
+          placeholder="请输入备注"
+          clearable
+          @keyup.enter.native="handleQuery"
         />
       </el-form-item>
       <el-form-item>
@@ -37,10 +37,10 @@
     <el-row :gutter="10" class="mb8">
       <el-col :span="1.5">
         <el-button
-            type="danger"
-            size="mini"
-            @click="handleAdd"
-            v-hasPermi="['system:offsetting:add']"
+          type="danger"
+          size="mini"
+          @click="handleAdd"
+          v-hasPermi="['system:offsetting:add']"
         >新增冲抵货款信息
         </el-button>
       </el-col>
@@ -48,10 +48,10 @@
         <template v-slot:print>
           <el-col :span="1.5">
             <el-button
-                plain
-                icon="el-icon-printer"
-                size="mini"
-                @click="printJSON"
+              plain
+              icon="el-icon-printer"
+              size="mini"
+              @click="printJSON"
             >
             </el-button>
           </el-col>
@@ -60,11 +60,11 @@
         <template v-slot:export>
           <el-col :span="1.5">
             <el-button
-                plain
-                icon="el-icon-folder-opened"
-                size="mini"
-                @click="handleExport"
-                v-hasPermi="['system:socialinsurance:export']"
+              plain
+              icon="el-icon-folder-opened"
+              size="mini"
+              @click="handleExport"
+              v-hasPermi="['system:socialinsurance:export']"
             >
             </el-button>
           </el-col>
@@ -74,30 +74,36 @@
 
     <el-table v-loading="loading" :data="OffsettingList" @selection-change="handleSelectionChange" size="mini"
               v-horizontal-scroll="'always'" :cell-style="()=>{return {padding:'.5px'}}" border>
-      <!--      <el-table-column type="selection" width="55" align="center"/>-->
       <el-table-column label="id" align="center" prop="id"/>
-      <el-table-column label="冲抵编号" align="center" prop="pffsetNO" v-if="columns[0].visible"/>
-      <el-table-column label="操作时间" align="center" prop="operateDate" v-if="columns[1].visible"/>
-      <el-table-column label="冲抵类型" align="center" prop="operateType" v-if="columns[2].visible"/>
-      <el-table-column label="金额" align="center" prop="moneyAmount" v-if="columns[3].visible"/>
-      <el-table-column label="公司" align="center" prop="companyName" v-if="columns[4].visible"/>
-      <!--      <el-table-column label="公司ID" align="center" prop="companyId"/>-->
-      <el-table-column label="公司类型" align="center" prop="companyType" v-if="columns[5].visible"/>
-      <el-table-column label="备注" align="center" prop="comments" v-if="columns[6].visible"/>
+      <el-table-column label="冲抵编号" align="center" prop="pffsetNO" v-if="columns[0].visible" show-overflow-tooltip/>
+      <el-table-column label="操作时间" align="center" prop="operateDate" v-if="columns[1].visible"
+                       show-overflow-tooltip/>
+      <el-table-column label="冲抵类型" align="center" prop="operateType" v-if="columns[2].visible"
+                       show-overflow-tooltip/>
+      <el-table-column label="金额" align="center" prop="moneyAmount" v-if="columns[3].visible" show-overflow-tooltip/>
+      <el-table-column label="公司" align="center" prop="companyName" v-if="columns[4].visible" show-overflow-tooltip/>
+      <el-table-column label="公司类型" align="center" prop="companyType" v-if="columns[5].visible"
+                       show-overflow-tooltip>
+        <template #default="scope">
+          <el-tag v-if="scope.row.companyType==='1'">客户</el-tag>
+          <el-tag v-else>供应商</el-tag>
+        </template>
+      </el-table-column>
+      <el-table-column label="备注" align="center" prop="comments" v-if="columns[6].visible" show-overflow-tooltip/>
       <el-table-column label="操作" align="center" class-name="small-padding fixed-width">
         <template slot-scope="scope">
           <el-button
-              size="mini"
-              type="primary"
-              @click="handleUpdate(scope.row)"
-              v-hasPermi="['system:offsetting:edit']"
+            size="mini"
+            type="primary"
+            @click="handleUpdate(scope.row)"
+            v-hasPermi="['system:offsetting:edit']"
           >修改
           </el-button>
           <el-button
-              size="mini"
-              type="danger"
-              @click="handleDelete(scope.row)"
-              v-hasPermi="['system:offsetting:remove']"
+            size="mini"
+            type="danger"
+            @click="handleDelete(scope.row)"
+            v-hasPermi="['system:offsetting:remove']"
           >删除
           </el-button>
         </template>
@@ -105,11 +111,11 @@
     </el-table>
 
     <pagination
-        v-show="total>0"
-        :total="total"
-        :page.sync="queryParams.pageNum"
-        :limit.sync="queryParams.pageSize"
-        @pagination="getList"
+      v-show="total>0"
+      :total="total"
+      :page.sync="queryParams.pageNum"
+      :limit.sync="queryParams.pageSize"
+      @pagination="getList"
     />
 
     <!-- 添加或修改对冲账信息对话框 -->
@@ -121,11 +127,11 @@
         <!--        </el-form-item>-->
         <el-form-item label="操作时间" prop="operateDate">
           <el-date-picker
-              v-model="form.operateDate"
-              type="date"
-              placeholder="选择日期"
-              value-format="yyyy-MM-dd"
-              style="width: 70%">
+            v-model="form.operateDate"
+            type="date"
+            placeholder="选择日期"
+            value-format="yyyy-MM-dd"
+            style="width: 70%">
           </el-date-picker>
         </el-form-item>
         <el-form-item label="冲抵类型" prop="operateType">
@@ -259,7 +265,7 @@ export default {
   created() {
     this.getList();
     if (localStorage.getItem('offseting-columns') === 'null'
-        || !localStorage.getItem('offseting-columns')) {
+      || !localStorage.getItem('offseting-columns')) {
       localStorage.setItem("offseting-columns", JSON.stringify(this.columns))
     } else {
       this.columns = JSON.parse(localStorage.getItem('offseting-columns'));

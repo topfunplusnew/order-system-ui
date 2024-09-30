@@ -3,12 +3,12 @@
     <el-form :model="queryParams" ref="queryForm" size="mini" :inline="true" v-show="showSearch" label-width="68px">
       <el-form-item label="开始时间" prop="beginTime">
         <el-date-picker
-            v-model="dateRange"
-            style="width: 240px"
-            value-format="yyyy-MM-dd"
-            type="daterange"
-            start-placeholder="开始日期"
-            end-placeholder="结束日期"
+          v-model="dateRange"
+          style="width: 240px"
+          value-format="yyyy-MM-dd"
+          type="daterange"
+          start-placeholder="开始日期"
+          end-placeholder="结束日期"
         ></el-date-picker>
       </el-form-item>
       <el-form-item>
@@ -25,21 +25,21 @@
         <template v-slot:print>
           <el-col :span="1.5">
             <el-button
-                plain
-                icon="el-icon-printer"
-                size="mini"
-                @click="printHTML">
+              plain
+              icon="el-icon-printer"
+              size="mini"
+              @click="printHTML">
             </el-button>
           </el-col>
         </template>
         <template v-slot:export>
           <el-col :span="1.5">
             <el-button
-                plain
-                icon="el-icon-folder-opened"
-                size="mini"
-                @click="handleExport"
-                v-hasPermi="['system:borrowedmoney:export']">
+              plain
+              icon="el-icon-folder-opened"
+              size="mini"
+              @click="handleExport"
+              v-hasPermi="['system:borrowedmoney:export']">
             </el-button>
           </el-col>
         </template>
@@ -49,52 +49,56 @@
     <el-table border v-loading="loading" :data="borrowedMoneyList" @selection-change="handleSelectionChange"
               v-horizontal-scroll="'always'" id="printBox" show-summary :summary-method="getSummaries" size="mini"
               :cell-style="()=>{return {padding:'.5px'}}">
-      <el-table-column label="id" align="center" prop="id" v-if="columns[0].visible"/>
-      <el-table-column label="贷款来源" align="center" prop="origin" v-if="columns[1].visible"/>
-      <el-table-column label="借入金额" align="center" prop="moneyAmount" v-if="columns[2].visible"/>
-      <el-table-column label="付息金额" align="center" prop="ratio" v-if="columns[3].visible"/>
-      <el-table-column label="贷款发放日期" align="center" prop="loanDate" v-if="columns[4].visible"/>
-      <el-table-column label="贷款年限" align="center" prop="loanDuring" v-if="columns[5].visible"/>
-      <el-table-column label="抵押担保" align="center" prop="mortgageGuarantee" v-if="columns[6].visible"/>
-      <el-table-column label="打入账户" align="center" prop="acountsName" v-if="columns[7].visible"/>
-      <el-table-column label="打入账号" align="center" prop="bankNo" v-if="columns[8].visible"/>
-      <!--      <el-table-column label="已还款标记" align="center" prop="isEnd" v-if="columns[9].visible"/>-->
-      <el-table-column label="备注" align="center" prop="comments"/>
+      <el-table-column label="id" align="center" prop="id" v-if="columns[0].visible" show-overflow-tooltip/>
+      <el-table-column label="贷款来源" align="center" prop="origin" v-if="columns[1].visible" show-overflow-tooltip/>
+      <el-table-column label="借入金额" align="center" prop="moneyAmount" v-if="columns[2].visible"
+                       show-overflow-tooltip/>
+      <el-table-column label="付息金额" align="center" prop="ratio" v-if="columns[3].visible" show-overflow-tooltip/>
+      <el-table-column label="贷款发放日期" align="center" prop="loanDate" v-if="columns[4].visible"
+                       show-overflow-tooltip/>
+      <el-table-column label="贷款年限" align="center" prop="loanDuring" v-if="columns[5].visible"
+                       show-overflow-tooltip/>
+      <el-table-column label="抵押担保" align="center" prop="mortgageGuarantee" v-if="columns[6].visible"
+                       show-overflow-tooltip/>
+      <el-table-column label="打入账户" align="center" prop="acountsName" v-if="columns[7].visible"
+                       show-overflow-tooltip/>
+      <el-table-column label="打入账号" align="center" prop="bankNo" v-if="columns[8].visible" show-overflow-tooltip/>
+      <el-table-column label="备注" align="center" prop="comments" show-overflow-tooltip/>
       <el-table-column label="操作" align="center" class-name="small-padding fixed-width" width="160px" fixed="right">
         <template slot-scope="scope">
           <el-button
-              size="mini"
-              type="warning"
-              @click="handleGiveBackMoney(scope.row)"
-              v-if="scope.row.isEnd === '0'">还款
+            size="mini"
+            type="warning"
+            @click="handleGiveBackMoney(scope.row)"
+            v-if="scope.row.isEnd === '0'">还款
           </el-button>
           <el-button
-              size="mini"
-              type="success"
-              @click="handleGiveEnoughBackMoney(scope.row)"
-              v-if="scope.row.isEnd === '1'">已还款
+            size="mini"
+            type="success"
+            @click="handleGiveEnoughBackMoney(scope.row)"
+            v-if="scope.row.isEnd === '1'">已还款
           </el-button>
           <el-button
-              size="mini"
-              type="primary"
-              @click="handleUpdate(scope.row)"
-              v-hasPermi="['system:borrowedmoney:edit']">编辑
+            size="mini"
+            type="primary"
+            @click="handleUpdate(scope.row)"
+            v-hasPermi="['system:borrowedmoney:edit']">编辑
           </el-button>
           <el-button
-              size="mini"
-              type="danger"
-              @click="handleDelete(scope.row)"
-              v-hasPermi="['system:borrowedmoney:remove']">删除
+            size="mini"
+            type="danger"
+            @click="handleDelete(scope.row)"
+            v-hasPermi="['system:borrowedmoney:remove']">删除
           </el-button>
         </template>
       </el-table-column>
     </el-table>
     <pagination
-        v-show="total>0"
-        :total="total"
-        :page.sync="queryParams.pageNum"
-        :limit.sync="queryParams.pageSize"
-        @pagination="getList"/>
+      v-show="total>0"
+      :total="total"
+      :page.sync="queryParams.pageNum"
+      :limit.sync="queryParams.pageSize"
+      @pagination="getList"/>
 
     <!-- 添加或修改从外部借款信息对话框 -->
     <el-dialog :title="title" :visible.sync="open" width="60%" append-to-body>
@@ -112,10 +116,10 @@
             </el-form-item>
             <el-form-item label="贷款发放日期" prop="loanDate">
               <el-date-picker
-                  v-model="form.loanDate"
-                  type="date"
-                  placeholder="请选择贷款发放日期"
-                  value-format="yyyy-MM-dd">
+                v-model="form.loanDate"
+                type="date"
+                placeholder="请选择贷款发放日期"
+                value-format="yyyy-MM-dd">
               </el-date-picker>
             </el-form-item>
           </el-col>
@@ -176,10 +180,10 @@
           </el-form-item>
           <el-form-item label="支付日期" prop="payDate">
             <el-date-picker
-                v-model="moneyBackInfo.payDate"
-                type="date"
-                placeholder="选择支付日期"
-                value-format="yyyy-MM-dd">
+              v-model="moneyBackInfo.payDate"
+              type="date"
+              placeholder="选择支付日期"
+              value-format="yyyy-MM-dd">
             </el-date-picker>
           </el-form-item>
           <el-form-item label="银行户名" prop="acountsName">
@@ -313,7 +317,7 @@ export default {
         {key: 6, label: `抵押担保`, visible: true},
         {key: 7, label: `打入账户`, visible: true},
         {key: 8, label: `打入账号`, visible: true},
-       /* {key: 9, label: `已还款标记`, visible: true},*/
+        /* {key: 9, label: `已还款标记`, visible: true},*/
       ],
       //还款弹窗
       giveBackMoneyShow: false,
@@ -346,7 +350,7 @@ export default {
   created() {
     this.getList();
     if (localStorage.getItem('borrowedmoney-columns') === 'null'
-        || !localStorage.getItem('borrowedmoney-columns')) {
+      || !localStorage.getItem('borrowedmoney-columns')) {
       //设置localStorage
       localStorage.setItem("borrowedmoney-columns", JSON.stringify(this.columns))
     } else {

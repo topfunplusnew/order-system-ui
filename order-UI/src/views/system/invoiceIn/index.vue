@@ -25,9 +25,7 @@
     <el-row :gutter="10" class="mb8">
       <el-col :span="1.5">
         <el-button
-          type="primary"
-          plain
-          icon="el-icon-plus"
+          type="danger"
           size="mini"
           @click="handleAdd"
           v-hasPermi="['system:invoicein:add']"
@@ -63,17 +61,24 @@
     </el-row>
 
     <el-table id="printBox" v-horizontal-scroll="'always'" border v-loading="loading" :data="invoiceInList"
-              @selection-change="handleSelectionChange" fit size="mini">
-      <el-table-column label="开票日期" align="center" prop="invoiceDate" v-if="columns[0].visible"/>
+              @selection-change="handleSelectionChange" fit size="mini" :cell-style="()=>{return {padding:'.5px'}}">
+      <el-table-column label="开票日期" align="center" prop="invoiceDate" v-if="columns[0].visible"
+                       show-overflow-tooltip/>
       <el-table-column label="我方开票实体" align="center" prop="invoiceObject" v-if="columns[1 ].visible"
+                       show-overflow-tooltip
                        width="100px"/>
-      <el-table-column label="开票金额" align="center" prop="invoiceAmount" v-if="columns[2 ].visible"/>
-      <el-table-column label="对方公司类别" align="center" prop="companyType" v-if="columns[3].visible" width="100px"/>
-      <el-table-column label="对方公司名称" align="center" prop="companyName" v-if="columns[4].visible" width="100px"/>
+      <el-table-column label="开票金额" align="center" prop="invoiceAmount" v-if="columns[2 ].visible"
+                       show-overflow-tooltip/>
+      <el-table-column label="对方公司类别" align="center" prop="companyType" v-if="columns[3].visible" width="100px"
+                       show-overflow-tooltip/>
+      <el-table-column label="对方公司名称" align="center" prop="companyName" v-if="columns[4].visible" width="100px"
+                       show-overflow-tooltip/>
       <el-table-column label="票据单位名称" align="center" prop="invoiceCompanyName" v-if="columns[5].visible"
+                       show-overflow-tooltip
                        width="100px"/>
-      <el-table-column label="票点" align="center" prop="ticketPoint" v-if="columns[6].visible"/>
-      <el-table-column label="票点金额" align="center" prop="ticketPointAmount" v-if="columns[7].visible"/>
+      <el-table-column label="票点" align="center" prop="ticketPoint" v-if="columns[6].visible" show-overflow-tooltip/>
+      <el-table-column label="票点金额" align="center" prop="ticketPointAmount" v-if="columns[7].visible"
+                       show-overflow-tooltip/>
       <el-table-column label="审核状态" align="center" prop="checkState" width="240" v-if="columns[9].visible">
         <template #default="scope">
           <el-row>
@@ -319,7 +324,7 @@ export default {
     },
     form: {
       handler(val) {
-        this.invoiceAmount = this.form.invoiceAmount * this.form.ticketPoint;
+        this.invoiceAmount = Number(this.form.invoiceAmount * this.form.ticketPoint).toFixed(2);
       },
       deep: true
     }

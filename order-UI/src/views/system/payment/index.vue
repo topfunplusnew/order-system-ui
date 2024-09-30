@@ -130,15 +130,16 @@
       </right-toolbar>
     </el-row>
     <el-table v-loading="loading" :data="paymentList" @selection-change="handleSelectionChange" id="printBox"
-              v-horizontal-scroll="'always'" size="mini" border>
+              v-horizontal-scroll="'always'" size="mini" border :cell-style="()=>{return {padding:'2px'}}">
       <el-table-column label="id" align="center" prop="id" v-if="columns[0].visible"/>
-      <!--      <el-table-column label="付款编号" align="center" prop="payNO" v-if="columns[1].visible"/>-->
-      <el-table-column label="日期" align="center" prop="fundsDate" v-if="columns[1].visible" width="120"/>
-      <el-table-column label="支付类型" align="center" prop="payType" v-if="columns[2].visible" width="120"/>
-      <!--      <el-table-column label="对应的表名" align="center" prop="tableName" v-if="columns[3].visible"/>-->
-      <!--      <el-table-column label="对应的表主键" align="center" prop="tID" v-if="columns[4].visible"/>-->
-      <el-table-column label="金额" align="center" prop="moneyAmount" v-if="columns[3].visible" width="120"/>
-      <el-table-column label="己方户名" align="center" prop="selfAcountsName" v-if="columns[4].visible" width="120">
+      <el-table-column label="日期" align="center" prop="fundsDate" v-if="columns[1].visible" width="120"
+                       show-overflow-tooltip/>
+      <el-table-column label="支付类型" align="center" prop="payType" v-if="columns[2].visible" width="120"
+                       show-overflow-tooltip/>
+      <el-table-column label="金额" align="center" prop="moneyAmount" v-if="columns[3].visible" width="120"
+                       show-overflow-tooltip/>
+      <el-table-column label="己方户名" align="center" prop="selfAcountsName" v-if="columns[4].visible" width="120"
+                       show-overflow-tooltip>
         <template #default="scope">
           <span v-if="scope.row.selfAcountsName !== '' && scope.row.selfAcountsName !== null ">{{
               scope.row.selfAcountsName
@@ -148,7 +149,8 @@
           </span>
         </template>
       </el-table-column>
-      <el-table-column label="己方账号" align="center" prop="selfBankNo" v-if="columns[5].visible" width="120">
+      <el-table-column label="己方账号" align="center" prop="selfBankNo" v-if="columns[5].visible" width="120"
+                       show-overflow-tooltip>
         <template #default="scope">
           <span v-if="scope.row.selfBankNo !== '' && scope.row.selfBankNo !== null ">{{ scope.row.selfBankNo }}</span>
           <span v-else>
@@ -156,7 +158,8 @@
           </span>
         </template>
       </el-table-column>
-      <el-table-column label="己方开户行" align="center" prop="selfBankName" v-if="columns[6].visible" width="120">
+      <el-table-column label="己方开户行" align="center" prop="selfBankName" v-if="columns[6].visible" width="120"
+                       show-overflow-tooltip>
         <template #default="scope">
           <span v-if="scope.row.selfBankName !== '' && scope.row.selfBankName !== null ">{{
               scope.row.selfBankName
@@ -166,13 +169,19 @@
           </span>
         </template>
       </el-table-column>
-      <el-table-column label="对方户名" align="center" prop="otherAcountsName" v-if="columns[7].visible" width="120"/>
-      <el-table-column label="对方账号" align="center" prop="otherBankNo" v-if="columns[8].visible" width="120"/>
-      <el-table-column label="对方开户行" align="center" prop="otherBankName" v-if="columns[9].visible" width="120"/>
-      <el-table-column label="支付状态" align="center" prop="paymentState" v-if="columns[10].visible" width="120"/>
-      <el-table-column label="对方公司" align="center" prop="companyName" v-if="columns[11].visible" width="120"/>
-      <el-table-column label="对方公司类型" align="center" prop="companyType" v-if="columns[12].visible" width="120"/>
-      <el-table-column label="操作" align="center" class-name="small-padding fixed-width" width="100px" fixed="right">
+      <el-table-column label="对方户名" align="center" prop="otherAcountsName" v-if="columns[7].visible" width="120"
+                       show-overflow-tooltip/>
+      <el-table-column label="对方账号" align="center" prop="otherBankNo" v-if="columns[8].visible" width="120"
+                       show-overflow-tooltip/>
+      <el-table-column label="对方开户行" align="center" prop="otherBankName" v-if="columns[9].visible" width="120"
+                       show-overflow-tooltip/>
+      <el-table-column label="支付状态" align="center" prop="paymentState" v-if="columns[10].visible" width="120"
+                       show-overflow-tooltip/>
+      <el-table-column label="对方公司" align="center" prop="companyName" v-if="columns[11].visible" width="120"
+                       show-overflow-tooltip/>
+      <el-table-column label="对方公司类型" align="center" prop="companyType" v-if="columns[12].visible" width="120"
+                       show-overflow-tooltip/>
+      <el-table-column label="操作" align="center" class-name="small-padding fixed-width" width="150" fixed="right">
         <template slot-scope="scope">
           <el-button
             v-if="scope.row.paymentState === '未支付'"

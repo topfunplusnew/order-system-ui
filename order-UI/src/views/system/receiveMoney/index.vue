@@ -81,16 +81,26 @@
     <el-table border v-horizontal-scroll="'always'" v-loading="loading" :data="receiveMoneyList"
               @selection-change="handleSelectionChange" id="printBox" size="mini"
               :cell-style="()=>{return {padding:'2px'}}">
-      <el-table-column label="日期" align="center" prop="fundsDate" v-if="columns[0].visible" width="140"/>
-      <el-table-column label="支付类型" align="center" prop="receiveType" v-if="columns[1].visible" width="165"/>
-      <el-table-column label="金额" align="center" prop="moneyAmount" v-if="columns[2].visible" width="165"/>
-      <el-table-column label="己方户名" align="center" prop="selfAcountsName" v-if="columns[3].visible" width="165"/>
-      <el-table-column label="己方账号" align="center" prop="selfBankNo" v-if="columns[4].visible" width="165"/>
-      <el-table-column label="己方开户行" align="center" prop="selfBankName" v-if="columns[5].visible" width="165"/>
-      <el-table-column label="对方户名" align="center" prop="otherAcountsName" v-if="columns[6].visible" width="165"/>
-      <el-table-column label="对方账号" align="center" prop="otherBankNo" v-if="columns[7].visible" width="165"/>
-      <el-table-column label="对方开户行" align="center" prop="otherBankName" v-if="columns[8].visible" width="165"/>
-      <el-table-column label="对方公司" align="center" prop="companyName" v-if="columns[9].visible" width="165"/>
+      <el-table-column label="日期" align="center" prop="fundsDate" v-if="columns[0].visible" width="140"
+                       show-overflow-tooltip/>
+      <el-table-column label="支付类型" align="center" prop="receiveType" v-if="columns[1].visible" width="165"
+                       show-overflow-tooltip/>
+      <el-table-column label="金额" align="center" prop="moneyAmount" v-if="columns[2].visible" width="165"
+                       show-overflow-tooltip/>
+      <el-table-column label="己方户名" align="center" prop="selfAcountsName" v-if="columns[3].visible" width="165"
+                       show-overflow-tooltip/>
+      <el-table-column label="己方账号" align="center" prop="selfBankNo" v-if="columns[4].visible" width="165"
+                       show-overflow-tooltip/>
+      <el-table-column label="己方开户行" align="center" prop="selfBankName" v-if="columns[5].visible" width="165"
+                       show-overflow-tooltip/>
+      <el-table-column label="对方户名" align="center" prop="otherAcountsName" v-if="columns[6].visible" width="165"
+                       show-overflow-tooltip/>
+      <el-table-column label="对方账号" align="center" prop="otherBankNo" v-if="columns[7].visible" width="165"
+                       show-overflow-tooltip/>
+      <el-table-column label="对方开户行" align="center" prop="otherBankName" v-if="columns[8].visible" width="165"
+                       show-overflow-tooltip/>
+      <el-table-column label="对方公司" align="center" prop="companyName" v-if="columns[9].visible" width="165"
+                       show-overflow-tooltip/>
       <el-table-column label="对方公司类型" align="center" prop="companyType" v-if="columns[10].visible" width="165">
         <template slot-scope="scope">
           <span v-if="scope.row.companyType===1">客户</span>
@@ -403,7 +413,7 @@ export default {
       this.form.otherBankNo = val.bankNo;
       this.form.otherBankName = val.bankName;
       this.form.companyId = val.id;
-      this.form.companyName = val.companyID;
+      this.form.companyName = val.companyName;
       this.form.companyType = val.companyType === '供应商' ? 2 : 1;
     },
     //点击一级分类后的回调
