@@ -8,34 +8,34 @@
     <el-form :model="queryParams" ref="queryForm" size="mini" :inline="true" label-width="68px">
       <el-form-item label="开始时间" prop="beginTime">
         <el-date-picker
-          v-model="queryParams.beginTime"
-          type="date"
-          placeholder="请选择开始时间"
-          value-format="yyyy-MM-dd">
+            v-model="queryParams.beginTime"
+            type="date"
+            placeholder="请选择开始时间"
+            value-format="yyyy-MM-dd">
         </el-date-picker>
       </el-form-item>
       <el-form-item label="结束时间" prop="endTime">
         <el-date-picker
-          v-model="queryParams.endTime"
-          type="date"
-          placeholder="请选择结束时间" value-format="yyyy-MM-dd">
+            v-model="queryParams.endTime"
+            type="date"
+            placeholder="请选择结束时间" value-format="yyyy-MM-dd">
         </el-date-picker>
       </el-form-item>
       <el-form-item label="车牌号" prop="carNo">
         <el-input
-          v-model="queryParams.carNo"
-          placeholder="请输入车牌号"
-          clearable
-          @keyup.enter.native="handleQuery"
+            v-model="queryParams.carNo"
+            placeholder="请输入车牌号"
+            clearable
+            @keyup.enter.native="handleQuery"
         />
       </el-form-item>
       <el-form-item label="运输类型" prop="isSea">
         <el-select v-model="queryParams.isSea" placeholder="请选择">
           <el-option
-            v-for="item in options"
-            :key="item.value"
-            :label="item.label"
-            :value="item.value">
+              v-for="item in options"
+              :key="item.value"
+              :label="item.label"
+              :value="item.value">
           </el-option>
         </el-select>
       </el-form-item>
@@ -52,10 +52,10 @@
         <template v-slot:print>
           <el-col :span="1.5">
             <el-button
-              plain
-              icon="el-icon-printer"
-              size="mini"
-              @click="printHTML"
+                plain
+                icon="el-icon-printer"
+                size="mini"
+                @click="printHTML"
             >
             </el-button>
           </el-col>
@@ -63,11 +63,11 @@
         <template v-slot:export>
           <el-col :span="1.5">
             <el-button
-              plain
-              icon="el-icon-folder-opened"
-              size="mini"
-              @click="handleExport"
-              v-hasPermi="['system:company:export']"
+                plain
+                icon="el-icon-folder-opened"
+                size="mini"
+                @click="handleExport"
+                v-hasPermi="['system:company:export']"
             >
             </el-button>
           </el-col>
@@ -89,14 +89,16 @@
       <el-table-column label="司机姓名" align="center" prop="driverName" v-if="columns[6].visible" width="110"/>
       <el-table-column label="期末方向（贷方表示欠司机运费）" align="center" prop="" v-if="columns[7].visible"
                        width="160"/>
-      <el-table-column label="期末方向" align="center" prop="" v-if="columns[8].visible" width="160"/>
-      <el-table-column label="期末余额" align="center" prop="" v-if="columns[9].visible" width="160"/>
+      <el-table-column label="期末方向" align="center" prop="initialBalanceDirection" v-if="columns[8].visible"
+                       width="160"/>
+      <el-table-column label="期末余额" align="center" prop="endingBalanceDirection" v-if="columns[9].visible"
+                       width="160"/>
       <el-table-column label="操作" align="center" prop="driverName" width="150" fixed="right">
         <template slot-scope="scope">
           <el-button
-            size="mini"
-            type="success"
-            @click="handleCheckCarNoFreight(scope.row)"
+              size="mini"
+              type="success"
+              @click="handleCheckCarNoFreight(scope.row)"
           >查询该车牌详情
           </el-button>
         </template>
@@ -104,33 +106,33 @@
     </el-table>
 
     <pagination
-      v-show="total>0"
-      :total="total"
-      :page.sync="queryParams.pageNum"
-      :limit.sync="queryParams.pageSize"
-      @pagination="getList"
+        v-show="total>0"
+        :total="total"
+        :page.sync="queryParams.pageNum"
+        :limit.sync="queryParams.pageSize"
+        @pagination="getList"
     />
     <el-dialog
-      title="请选择导出时间段"
-      :visible.sync="dialogVisible"
-      width="30%">
+        title="请选择导出时间段"
+        :visible.sync="dialogVisible"
+        width="30%">
       <el-form :model="queryParams" ref="queryForm" size="mini" label-width="68px">
         <el-form-item label="开始时间" prop="beginTime">
           <el-date-picker
-            v-model="queryParams.beginTime"
-            type="date"
-            placeholder="选择时间"
-            value-format="yyyy-MM-dd"
-            size="mini">
+              v-model="queryParams.beginTime"
+              type="date"
+              placeholder="选择时间"
+              value-format="yyyy-MM-dd"
+              size="mini">
           </el-date-picker>
         </el-form-item>
         <el-form-item label="结束时间" prop="endTime">
           <el-date-picker
-            v-model="queryParams.endTime"
-            type="date"
-            placeholder="选择时间"
-            value-format="yyyy-MM-dd"
-            size="mini">
+              v-model="queryParams.endTime"
+              type="date"
+              placeholder="选择时间"
+              value-format="yyyy-MM-dd"
+              size="mini">
           </el-date-picker>
         </el-form-item>
       </el-form>

@@ -90,3 +90,12 @@ export function getDeliveryList(query) {
         params: query
     })
 }
+
+// 资金日报表
+export function getBankAcountChange(query) {
+    return request({
+        url: '/statistics/bankAcountChangeSummary',
+        method: 'get',
+        params: query
+    })
+}
