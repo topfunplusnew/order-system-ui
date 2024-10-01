@@ -679,9 +679,9 @@
             </el-timeline-item>
             <!--            修改的时间线-->
             <el-timeline-item v-for="(item,index) in orderHistoryInfoList" placement="top" :key="index"
-                              :timestamp="item.updateTime">
+                              :timestamp="item.diff.updateTime">
               <el-collapse v-model="activeNames">
-                <el-collapse-item :title="item.userName+':'+item.remark" name="1">
+                <el-collapse-item :title="item.userName+':'+item.remark" :name="index">
                   <el-card>
                     <template #header>
                       <span style="font-weight: bold">修改人:{{ item.userName }}-{{ item.remark }}</span>
@@ -1175,13 +1175,15 @@ export default {
         for (let i = 0; i < this.orderHistoryInfoList.length - 1; i++) {
           this.orderHistoryInfoList[i].diff = {
             old: this.formatData(excludeParams(this.orderHistoryInfoList[i], this.$excludeWithUpdate)),
-            new: this.formatData(excludeParams(this.orderHistoryInfoList[i + 1], this.$excludeWithUpdate))
+            new: this.formatData(excludeParams(this.orderHistoryInfoList[i + 1], this.$excludeWithUpdate)),
+            updateTime: this.parseTime(this.orderHistoryInfoList[i + 1].updateTime)
           }
         }
         if (this.orderHistoryInfoList.length > 0) {
           this.orderHistoryInfoList[this.orderHistoryInfoList.length - 1].diff = {
             old: this.formatData(excludeParams(this.orderHistoryInfoList[this.orderHistoryInfoList.length - 1], this.$excludeWithUpdate)),
-            new: this.formatData(excludeParams(this.currentOrderItemInfo, this.$excludeWithUpdate))
+            new: this.formatData(excludeParams(this.currentOrderItemInfo, this.$excludeWithUpdate)),
+            updateTime: this.parseTime(this.currentOrderItemInfo.updateTime)
           }
         }
         this.checkHistoryOrderVisible = true;

@@ -302,11 +302,11 @@ export default {
         </div>
         <el-form-item label="订单日期" prop="orderDate">
           <el-date-picker
-              v-model="orderInfo.orderDate"
-              size="mini"
-              type="date"
-              placeholder="选择日期"
-              value-format="yyyy-MM-dd" style="width: 120px">
+            v-model="orderInfo.orderDate"
+            size="mini"
+            type="date"
+            placeholder="选择日期"
+            value-format="yyyy-MM-dd" style="width: 120px">
           </el-date-picker>
         </el-form-item>
         <el-form-item label="客户" prop="customer">
