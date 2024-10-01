@@ -65,7 +65,7 @@ export default {
     onSubmit() {
       Object.assign(this.form, this.orderInfo)
       //发送请求 添加运费信息 applyDate为现在
-      addOrderFreight({...this.form, applyDate: parseTime(new Date(),'{y}-{m}-{d}'), applyUserName: this.trueName}).then(res => {
+      addOrderFreight({...this.form, applyDate: parseTime(new Date()), applyUserName: this.trueName}).then(res => {
         this.$message.success('运费信息添加成功~')
         setTimeout(() => {
           this.$router.push('/order/order/orderfreight')
@@ -120,9 +120,9 @@ export default {
       </el-form-item>
       <el-form-item label="支付日期">
         <el-date-picker
-          v-model="form.payDate"
-          type="date"
-          placeholder="选择日期" value-format="yyyy-MM-dd">
+            v-model="form.payDate"
+            type="date"
+            placeholder="选择日期" value-format="yyyy-MM-dd">
         </el-date-picker>
       </el-form-item>
       <el-form-item label="备注信息">
