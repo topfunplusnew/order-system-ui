@@ -767,10 +767,12 @@ import axios from "axios";
 import {getCompany} from "../../../api/system/company";
 import {getHistoryGoodsOrder} from "../../../api/system/goodsOrder";
 import OrderInfos from "../../../components/OrderInfos.vue";
+import {formatValue} from "../../../api/tool/cons";
 import CheckDiff from "../../../components/CheckDiff.vue";
 import InfoDialog from "../../../components/InfoDialog.vue";
 import {addReason} from "../../../api/system/user";
 import {CodeDiff} from 'v-code-diff'
+import {create} from 'jsondiffpatch'
 
 export default {
   name: "GoodsOrder",
