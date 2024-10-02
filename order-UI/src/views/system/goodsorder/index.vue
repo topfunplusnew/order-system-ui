@@ -116,7 +116,7 @@
           <el-col :span="1.5">
             <el-button
                 plain
-                icon="el-icon-folder-updateOrderItemVisibleed"
+                icon="el-icon-folder-opened"
                 size="mini"
                 @click="handleExport"
                 v-hasPermi="['system:goodsorder:export']"
@@ -767,12 +767,10 @@ import axios from "axios";
 import {getCompany} from "../../../api/system/company";
 import {getHistoryGoodsOrder} from "../../../api/system/goodsOrder";
 import OrderInfos from "../../../components/OrderInfos.vue";
-import {formatValue} from "../../../api/tool/cons";
 import CheckDiff from "../../../components/CheckDiff.vue";
 import InfoDialog from "../../../components/InfoDialog.vue";
 import {addReason} from "../../../api/system/user";
 import {CodeDiff} from 'v-code-diff'
-import {create} from 'jsondiffpatch'
 
 export default {
   name: "GoodsOrder",
@@ -1232,48 +1230,54 @@ export default {
         addInvoiceOut(this.updateOrderItemVisibleTitleInfo)
             .then(res => {
               this.$message.success('客户开票成功~')
-              this.updateGoodsOrderAfterOpen(invoiceNumber, this.updateOrderItemVisibleTitleInfo.domain)
+              this.invoiceupdateOrderItemVisibleVisible = false;
+              this.resetOpenTitleInfo();
+              this.getList();
+              // this.updateGoodsOrderAfterOpen(invoiceNumber, this.updateOrderItemVisibleTitleInfo.domain)
             })
       } else {
         // 客户开票
         addInvoiceIn(this.updateOrderItemVisibleTitleInfo)
             .then(res => {
               this.$message.success('供应商开票成功~')
-              this.updateGoodsOrderAfterOpen(invoiceNumber, this.updateOrderItemVisibleTitleInfo.domain)
+              this.invoiceupdateOrderItemVisibleVisible = false;
+              this.resetOpenTitleInfo();
+              this.getList();
+              // this.updateGoodsOrderAfterOpen(invoiceNumber, this.updateOrderItemVisibleTitleInfo.domain)
             })
       }
     },
     // 根据类型来更新订单的开票状态
-    updateGoodsOrderAfterOpen(invoiceNumber, type) {
-      const updateInvoiceState = (invoiceField, invoiceValue, state) => {
-        let info = {
-          ...this.updateOrderItemVisibleTitleInfo.orderInfo,
-          [invoiceField]: invoiceValue,
-          invoiceState: state
-        };
-        // 更新订单的开票状态
-        updateGoodsOrder(excludeParams(info, this.$exclude))
-            .then(res => {
-              this.$message.success('开票状态设置成功~');
-              this.invoiceupdateOrderItemVisibleVisible = false;
-              this.resetOpenTitleInfo();
-              this.getList();
-            });
-      };
-      if (type === 0) { // 供应商开票
-        if (invoiceNumber.customerInvoiceNumber === 0) {
-          updateInvoiceState('isSupplierInvoice', invoiceNumber.supplierInvoiceNumber + 1, '部分开票');
-        } else {
-          updateInvoiceState('isSupplierInvoice', invoiceNumber.supplierInvoiceNumber + 1, '已开票');
-        }
-      } else { // 客户开票
-        if (invoiceNumber.supplierInvoiceNumber === 0) {
-          updateInvoiceState('customerIsInvoice', invoiceNumber.customerInvoiceNumber + 1, '部分开票');
-        } else {
-          updateInvoiceState('customerIsInvoice', invoiceNumber.customerInvoiceNumber + 1, '已开票');
-        }
-      }
-    },
+    // updateGoodsOrderAfterOpen(invoiceNumber, type) {
+    //   const updateInvoiceState = (invoiceField, invoiceValue, state) => {
+    //     let info = {
+    //       ...this.updateOrderItemVisibleTitleInfo.orderInfo,
+    //       [invoiceField]: invoiceValue,
+    //       invoiceState: state
+    //     };
+    //     // 更新订单的开票状态
+    //     updateGoodsOrder(excludeParams(info, this.$exclude))
+    //         .then(res => {
+    //           this.$message.success('开票状态设置成功~');
+    //           this.invoiceupdateOrderItemVisibleVisible = false;
+    //           this.resetOpenTitleInfo();
+    //           this.getList();
+    //         });
+    //   };
+    //   if (type === 0) { // 供应商开票
+    //     if (invoiceNumber.customerInvoiceNumber === 0) {
+    //       updateInvoiceState('isSupplierInvoice', invoiceNumber.supplierInvoiceNumber + 1, '部分开票');
+    //     } else {
+    //       updateInvoiceState('isSupplierInvoice', invoiceNumber.supplierInvoiceNumber + 1, '已开票');
+    //     }
+    //   } else { // 客户开票
+    //     if (invoiceNumber.supplierInvoiceNumber === 0) {
+    //       updateInvoiceState('customerIsInvoice', invoiceNumber.customerInvoiceNumber + 1, '部分开票');
+    //     } else {
+    //       updateInvoiceState('customerIsInvoice', invoiceNumber.customerInvoiceNumber + 1, '已开票');
+    //     }
+    //   }
+    // },
     // 开票信息弹窗的搜索信息自动填充
     handleUpdateCompanyName(val) {
       this.queryCompanyName = val;

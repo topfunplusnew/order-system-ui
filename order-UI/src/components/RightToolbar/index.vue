@@ -7,7 +7,7 @@
       </el-tooltip>
 
       <!--      导出-->
-      <el-tooltip class="item" effect="dark" content="导出1" placement="top">
+      <el-tooltip class="item" effect="dark" content="导出" placement="top">
         <slot name="export"></slot>
       </el-tooltip>
       <el-tooltip class="item" effect="dark" content="导出2" placement="top">
