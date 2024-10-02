@@ -276,10 +276,12 @@ export default {
         updateGoodsOrder({
           ...this.orderInfo,
           PaymentState: '',
+          remark: sessionStorage.getItem('order-edit-reason')
         }).then(response => {
           this.$modal.msgSuccess("修改成功");
           this.resetOrderInfo() // 清空订单列表基础信息
           this.$store.commit('order/clearOrderItemList');
+          sessionStorage.removeItem('order-edit-reason')
           this.isSea = false
           this.isLand = false
           this.$emit('close-dialog');
@@ -302,11 +304,11 @@ export default {
         </div>
         <el-form-item label="订单日期" prop="orderDate">
           <el-date-picker
-            v-model="orderInfo.orderDate"
-            size="mini"
-            type="date"
-            placeholder="选择日期"
-            value-format="yyyy-MM-dd" style="width: 120px">
+              v-model="orderInfo.orderDate"
+              size="mini"
+              type="date"
+              placeholder="选择日期"
+              value-format="yyyy-MM-dd" style="width: 120px">
           </el-date-picker>
         </el-form-item>
         <el-form-item label="客户" prop="customer">

@@ -4,10 +4,10 @@
     <el-form ref="form" :model="form" :rules="rules" label-width="120px">
       <el-form-item label="日期" prop="fundsDate">
         <el-date-picker
-          v-model="form.fundsDate"
-          type="date"
-          value-format="yyyy-MM-dd"
-          placeholder="选择日期">
+            v-model="form.fundsDate"
+            type="date"
+            value-format="yyyy-MM-dd"
+            placeholder="选择日期">
         </el-date-picker>
       </el-form-item>
       <el-form-item label="支付类型" prop="payType">
@@ -16,10 +16,10 @@
           <el-col :span="8">
             <el-select v-model="currentSort.levelOne" placeholder="请选择一级分类" @change="handleSelectOneLevel">
               <el-option
-                v-for="item in OneLevelOption"
-                :key="item.id"
-                :label="item.title"
-                :value="item.title">
+                  v-for="item in OneLevelOption"
+                  :key="item.id"
+                  :label="item.title"
+                  :value="item.title">
               </el-option>
             </el-select>
           </el-col>
@@ -27,10 +27,10 @@
           <el-col :span="8">
             <el-select v-model="currentSort.levelTwo" placeholder="请选择二级分类" @change="handleSelectTwoLevel">
               <el-option
-                v-for="item in TwoLevelOption"
-                :key="item.id"
-                :label="item.title"
-                :value="item.title">
+                  v-for="item in TwoLevelOption"
+                  :key="item.id"
+                  :label="item.title"
+                  :value="item.title">
               </el-option>
             </el-select>
           </el-col>
@@ -191,8 +191,12 @@ export default {
     }
     // 如果传入的必须自动填充的金额大于0 则自动填充 且无法修改
     if (this.needMoney >= 0) {
-      this.form.moneyAmount = this.needMoney;
-      this.inputDisabled = true;
+      if (this.needMoney === 0) {
+        this.form.moneyAmount = this.needMoney;
+      } else {
+        this.form.moneyAmount = this.needMoney;
+        this.inputDisabled = true;
+      }
     }
     // 如果传入的不是空数据
     if (JSON.stringify(this.needInfo) !== '{}') {
@@ -204,10 +208,10 @@ export default {
           this.form.companyName = this.needInfo.companyName
           //查询司机的银行卡信息
           listBankAccount({acountsType: '司机', acountsName: this.needInfo.otherAcountsName})
-            .then(res => {
-              this.form.otherBankNo = res.rows[0].bankNo
-              this.form.otherBankName = res.rows[0].bankName
-            })
+              .then(res => {
+                this.form.otherBankNo = res.rows[0].bankNo
+                this.form.otherBankName = res.rows[0].bankName
+              })
         }
       }
       // 如果有银行卡信息自动填充
@@ -216,15 +220,15 @@ export default {
         bankName: this.needInfo.bankName,
         acountsName: this.needInfo.acountsName
       })
-        .then(res => {
-          if (res.rows.length === 0) {
-            this.$message.error('未查询到该银行卡信息')
-          } else {
-            this.form.otherAcountsName = res.rows[0].acountsName
-            this.form.otherBankNo = res.rows[0].bankNo
-            this.form.otherBankName = res.rows[0].bankName
-          }
-        })
+          .then(res => {
+            if (res.rows.length === 0) {
+              this.$message.error('未查询到该银行卡信息')
+            } else {
+              this.form.otherAcountsName = res.rows[0].acountsName
+              this.form.otherBankNo = res.rows[0].bankNo
+              this.form.otherBankName = res.rows[0].bankName
+            }
+          })
     }
   },
   watch: {
@@ -240,18 +244,18 @@ export default {
           bankName: this.needInfo.bankName,
           acountsName: this.needInfo.acountsName
         })
-          .then(res => {
-            if (res.rows.length === 0) {
-              this.$message.error('未查询到该银行卡信息')
-              this.form.otherAcountsName = ''
-              this.form.otherBankNo = ''
-              this.form.otherBankName = ''
-            } else {
-              this.form.otherAcountsName = res.rows[0].acountsName
-              this.form.otherBankNo = res.rows[0].bankNo
-              this.form.otherBankName = res.rows[0].bankName
-            }
-          })
+            .then(res => {
+              if (res.rows.length === 0) {
+                this.$message.error('未查询到该银行卡信息')
+                this.form.otherAcountsName = ''
+                this.form.otherBankNo = ''
+                this.form.otherBankName = ''
+              } else {
+                this.form.otherAcountsName = res.rows[0].acountsName
+                this.form.otherBankNo = res.rows[0].bankNo
+                this.form.otherBankName = res.rows[0].bankName
+              }
+            })
       },
       deep: true
     },
@@ -267,10 +271,10 @@ export default {
               this.form.companyName = this.needInfo.companyName
               //查询司机的银行卡信息
               listBankAccount({acountsType: '司机', acountsName: this.needInfo.otherAcountsName})
-                .then(res => {
-                  this.form.otherBankNo = res.rows[0].bankNo
-                  this.form.otherBankName = res.rows[0].bankName
-                })
+                  .then(res => {
+                    this.form.otherBankNo = res.rows[0].bankNo
+                    this.form.otherBankName = res.rows[0].bankName
+                  })
             }
           }
         }

@@ -24,10 +24,12 @@ export default {
       orderItemInfo: {},
       disabled: false,
       loading: false,
+      buttonText: null
     }
   },
   created() {
     console.log('orderItem created')
+    this.buttonText = '添加货物'
     // 重置orderItemInfo中的所有属性
     this.resetOrderItemInfo();
   },
@@ -261,6 +263,7 @@ export default {
       this.$store.commit('order/changeOrderItemStatus', {...this.orderItemInfo, orderIndex: this.index})
       this.$message.success('添加货物成功')
       this.disabled = true;
+      this.buttonText = '已添加该货物'
       this.loading = false
     },
     // 供应商信息 从供应商发货
@@ -588,7 +591,7 @@ export default {
       <el-row>
         <el-col :span="6" :offset="11">
           <el-button type="success" @click="addOrderItem" icon="el-icon-plus" size="mini" :disabled="disabled"
-                     :loading="loading">添加货物
+                     :loading="loading">{{ buttonText }}
           </el-button>
         </el-col>
       </el-row>
