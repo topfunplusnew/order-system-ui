@@ -8,17 +8,17 @@
     <el-form :model="queryParams" ref="queryForm" size="mini" :inline="true" label-width="68px">
       <el-form-item label="开始时间" prop="beginTime">
         <el-date-picker
-          v-model="queryParams.beginTime"
-          type="date"
-          placeholder="请选择开始时间"
-          value-format="yyyy-MM-dd">
+            v-model="queryParams.beginTime"
+            type="date"
+            placeholder="请选择开始时间"
+            value-format="yyyy-MM-dd">
         </el-date-picker>
       </el-form-item>
       <el-form-item label="结束时间" prop="endTime">
         <el-date-picker
-          v-model="queryParams.endTime"
-          type="date"
-          placeholder="请选择结束时间" value-format="yyyy-MM-dd">
+            v-model="queryParams.endTime"
+            type="date"
+            placeholder="请选择结束时间" value-format="yyyy-MM-dd">
         </el-date-picker>
       </el-form-item>
       <el-form-item>
@@ -34,10 +34,10 @@
         <template v-slot:print>
           <el-col :span="1.5">
             <el-button
-              plain
-              icon="el-icon-printer"
-              size="mini"
-              @click="printHTML"
+                plain
+                icon="el-icon-printer"
+                size="mini"
+                @click="printHTML"
             >
             </el-button>
           </el-col>
@@ -45,11 +45,11 @@
         <template v-slot:export>
           <el-col :span="1.5">
             <el-button
-              plain
-              icon="el-icon-folder-opened"
-              size="mini"
-              @click="handleExport"
-              v-hasPermi="['system:company:export']"
+                plain
+                icon="el-icon-folder-opened"
+                size="mini"
+                @click="handleExport"
+                v-hasPermi="['system:company:export']"
             >
             </el-button>
           </el-col>
@@ -59,12 +59,13 @@
 
     <el-table border v-loading="loading" :data="tableData"
               v-horizontal-scroll="'always'" id="printBox" size="mini" :cell-style="()=>{return {padding:'2px'}}">
-      <el-table-column show-overflow-tooltip label="索引" align="center" prop="index"
-                       v-if="columns[0] && columns[0].visible"
-                       width="140"/>
-      <el-table-column show-overflow-tooltip label="公司名称" align="center" prop="companyName"
+      <el-table-column show-overflow-tooltip label="序号" align="center" prop="index"
+                       v-if="columns[0] && columns[0].visible" width="140"/>
+      <el-table-column show-overflow-tooltip label="供应商名称" align="center" prop="companyName"
                        v-if="columns[1] && columns[1].visible" width="140"/>
-      <el-table-column show-overflow-tooltip label="本日欠款" align="center" prop="amountOwedToday"
+      <el-table-column show-overflow-tooltip label="上日欠款结转" align="center" prop="previousDayCarryover"
+                       v-if="columns[2] && columns[2].visible" width="140"/>
+      <el-table-column show-overflow-tooltip label="本日欠款余额" align="center" prop="amountOwedToday"
                        v-if="columns[3] && columns[3].visible" width="140">
         <template slot-scope="scope">
           {{
@@ -72,76 +73,75 @@
           }}
         </template>
       </el-table-column>
-      <el-table-column show-overflow-tooltip label="上日欠款" align="center" prop="previousDayCarryover"
-                       v-if="columns[4] && columns[4].visible" width="140"/>
-      <el-table-column show-overflow-tooltip label="本日回款金额" align="center" prop="dailyReceiveMoney"
-                       v-if="columns[5] && columns[5].visible" width="140"/>
-      <el-table-column show-overflow-tooltip label="本日票点金额" align="center" prop="dailyInvoiceAmount"
-                       v-if="columns[6] && columns[6].visible" width="140"/>
       <el-table-column show-overflow-tooltip label="本日发货金额" align="center" prop="dailyOrderPayments"
+                       v-if="columns[4] && columns[4].visible" width="140"/>
+      <el-table-column show-overflow-tooltip label="购入票点" align="center" prop="dailyInvoiceAmount"
+                       v-if="columns[5] && columns[5].visible" width="140"/>
+      <el-table-column show-overflow-tooltip label="本日付款金额" align="center" prop="dailyReceiveMoney"
+                       v-if="columns[6] && columns[6].visible" width="140"/>
+      <el-table-column show-overflow-tooltip label="上月结转欠款金额" align="center" prop="previousMonthCarryover"
                        v-if="columns[7] && columns[7].visible" width="140"/>
+      <el-table-column show-overflow-tooltip label="本月发货金额" align="center" prop="monthlyOrderPayments"
+                       v-if="columns[8] && columns[8].visible" width="140"/>
+      <el-table-column show-overflow-tooltip label="本月购入票点" align="center" prop="monthlyInvoiceAmount"
+                       v-if="columns[9] && columns[9].visible" width="140"/>
+      <el-table-column show-overflow-tooltip label="本月付款金额合计" align="center" prop="monthlyReceiveMoney"
+                       v-if="columns[10] && columns[10].visible" width="140"/>
       <el-table-column show-overflow-tooltip label="本月欠款" align="center" prop="amountOwedThisMonth"
-                       v-if="columns[9] && columns[9].visible" width="140">
+                       v-if="columns[11] && columns[11].visible" width="140">
         <template slot-scope="scope">
           {{
             Number(scope.row.previousMonthCarryover) + Number(scope.row.monthlyReceiveMoney) + Number(scope.row.monthlyInvoiceAmount) - Number(scope.row.monthlyOrderPayments)
           }}
         </template>
       </el-table-column>
-      <el-table-column show-overflow-tooltip label="上月结转欠款金额" align="center" prop="previousMonthCarryover"
-                       v-if="columns[10] && columns[10].visible" width="140"/>
-      <el-table-column show-overflow-tooltip label="本月回款金额" align="center" prop="monthlyReceiveMoney"
-                       v-if="columns[11] && columns[11].visible" width="140"/>
-      <el-table-column show-overflow-tooltip label="月票点金额" align="center" prop="monthlyInvoiceAmount"
+      <el-table-column show-overflow-tooltip label="上年结转" align="center" prop="previousYearCarryover"
                        v-if="columns[12] && columns[12].visible" width="140"/>
-      <el-table-column show-overflow-tooltip label="本月发货金额" align="center" prop="monthlyOrderPayments"
+      <el-table-column show-overflow-tooltip label="本年发货金额" align="center" prop="yearlyOrderPayments"
                        v-if="columns[13] && columns[13].visible" width="140"/>
-      <el-table-column show-overflow-tooltip label="本年欠款" align="center" prop="arrearsThisYear"
-                       v-if="columns[15] && columns[15].visible" width="140">
+      <el-table-column show-overflow-tooltip label="本年购入票点" align="center" prop="yearlyInvoiceAmount"
+                       v-if="columns[14] && columns[14].visible" width="140"/>
+      <el-table-column show-overflow-tooltip label="本年付款金额" align="center" prop="yearlyReceiveMoney"
+                       v-if="columns[15] && columns[15].visible" width="140"/>
+      <el-table-column show-overflow-tooltip label="欠款" align="center" prop="arrearsThisYear"
+                       v-if="columns[16] && columns[16].visible" width="140">
         <template slot-scope="scope">
           {{
             Number(scope.row.previousYearCarryover) + Number(scope.row.yearlyReceiveMoney) + Number(scope.row.yearlyInvoiceAmount) - Number(scope.row.yearlyOrderPayments)
           }}
         </template>
       </el-table-column>
-      <el-table-column show-overflow-tooltip label="上年结转欠款金额" align="center" prop="previousYearCarryover"
-                       v-if="columns[16] && columns[16].visible" width="140"/>
-      <el-table-column show-overflow-tooltip label="本年回款金额" align="center" prop="yearlyReceiveMoney"
-                       v-if="columns[17] && columns[17].visible" width="140"/>
-      <el-table-column show-overflow-tooltip label="年票点金额" align="center" prop="yearlyInvoiceAmount"
-                       v-if="columns[18] && columns[18].visible" width="140"/>
-      <el-table-column show-overflow-tooltip label="本年发货金额" align="center" prop="yearlyOrderPayments"
-                       v-if="columns[19] && columns[19].visible" width="140"/>
+
 
     </el-table>
     <pagination
-      v-show="total>0"
-      :total="total"
-      :page.sync="queryParams.pageNum"
-      :limit.sync="queryParams.pageSize"
-      @pagination="getList"
+        v-show="total>0"
+        :total="total"
+        :page.sync="queryParams.pageNum"
+        :limit.sync="queryParams.pageSize"
+        @pagination="getList"
     />
     <el-dialog
-      title="请选择导出时间段"
-      :visible.sync="dialogVisible"
-      width="30%">
+        title="请选择导出时间段"
+        :visible.sync="dialogVisible"
+        width="30%">
       <el-form :model="queryParams" ref="queryForm" size="mini" label-width="68px">
         <el-form-item label="开始时间" prop="beginTime">
           <el-date-picker
-            v-model="queryParams.beginTime"
-            type="date"
-            placeholder="选择时间"
-            value-format="yyyy-MM-dd"
-            size="mini">
+              v-model="queryParams.beginTime"
+              type="date"
+              placeholder="选择时间"
+              value-format="yyyy-MM-dd"
+              size="mini">
           </el-date-picker>
         </el-form-item>
         <el-form-item label="结束时间" prop="endTime">
           <el-date-picker
-            v-model="queryParams.endTime"
-            type="date"
-            placeholder="选择时间"
-            value-format="yyyy-MM-dd"
-            size="mini">
+              v-model="queryParams.endTime"
+              type="date"
+              placeholder="选择时间"
+              value-format="yyyy-MM-dd"
+              size="mini">
           </el-date-picker>
         </el-form-item>
       </el-form>
@@ -182,23 +182,24 @@ export default {
       // 表单校验
       columns: [
         {key: 0, label: '索引', visible: true},
-        {key: 1, label: '公司名称', visible: true},
-        {key: 3, label: '本日欠款', visible: true},
-        {key: 4, label: '上日欠款', visible: true},
-        {key: 5, label: '本日回款金额', visible: true},
-        {key: 6, label: '本日票点金额', visible: true},
-        {key: 7, label: '本日发货金额', visible: true},
-        {key: 9, label: '本月欠款', visible: true},
-        {key: 10, label: '上月结转欠款金额', visible: true},
-        {key: 11, label: '本月回款金额', visible: true},
-        {key: 12, label: '月票点金额', visible: true},
-        {key: 13, label: '本月发货金额', visible: true},
-        {key: 15, label: '本年欠款', visible: true},
-        {key: 16, label: '上年结转欠款金额', visible: true},
-        {key: 17, label: '本年回款金额', visible: true},
-        {key: 18, label: '年票点金额', visible: true},
-        {key: 19, label: '本年发货金额', visible: true}
+        {key: 1, label: '供应商名称', visible: true},
+        {key: 2, label: '上日欠款结转', visible: true},
+        {key: 3, label: '本日欠款余额', visible: true},
+        {key: 4, label: '本日发货金额', visible: true},
+        {key: 5, label: '购入票点', visible: true},
+        {key: 6, label: '本日付款金额', visible: true},
+        {key: 7, label: '上月结转欠款金额', visible: true},
+        {key: 8, label: '本月发货金额', visible: true},
+        {key: 9, label: '本月购入票点', visible: true},
+        {key: 10, label: '本月付款金额合计', visible: true},
+        {key: 11, label: '本月欠款', visible: true},
+        {key: 12, label: '上年结转', visible: true},
+        {key: 13, label: '本年发货金额', visible: true},
+        {key: 14, label: '年票点金额', visible: true},
+        {key: 15, label: '本年付款金额', visible: true},
+        {key: 16, label: '欠款', visible: true}
       ],
+
       dialogVisible: false
     };
   },

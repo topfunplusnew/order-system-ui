@@ -59,69 +59,68 @@
 
     <el-table border v-loading="loading" :data="tableData"
               v-horizontal-scroll="'always'" id="printBox" size="mini" :cell-style="()=>{return {padding:'2px'}}">
-      <el-table-column show-overflow-tooltip label="索引" align="center" prop="index" v-if="columns[0].visible"
+      <el-table-column show-overflow-tooltip label="序号" align="center" prop="index" v-if="columns[0].visible"
                        width="140"/>
-      <el-table-column show-overflow-tooltip label="公司名称" align="center" prop="companyName"
+      <el-table-column show-overflow-tooltip label="客户名称" align="center" prop="companyName"
                        v-if="columns[1].visible" width="140"/>
-      <el-table-column show-overflow-tooltip label="本日利润" align="center" prop="dailyProfit"
+      <el-table-column show-overflow-tooltip label="上日欠款结转" align="center" prop="previousDayCarryover"
                        v-if="columns[2].visible" width="140"/>
-      <el-table-column show-overflow-tooltip label="本日欠款" align="center" prop="amountOwedToday"
-                       v-if="columns[3].visible" width="140">
+      <el-table-column show-overflow-tooltip label="本日发货金额" align="center" prop="dailyOrderPayments"
+                       v-if="columns[3].visible" width="140"/>
+      <el-table-column show-overflow-tooltip label="本日票点金额" align="center" prop="dailyInvoiceAmount"
+                       v-if="columns[4].visible" width="140"/>
+      <el-table-column show-overflow-tooltip label="本日回款金额" align="center" prop="dailyReceiveMoney"
+                       v-if="columns[5].visible" width="140"/>
+      <el-table-column show-overflow-tooltip label="本日欠款金额" align="center" prop="amountOwedToday"
+                       v-if="columns[6].visible" width="140">
         <template slot-scope="scope">
           {{
             Number(scope.row.previousDayCarryover) + Number(scope.row.dailyOrderPayments) + Number(scope.row.dailyInvoiceAmount) - Number(scope.row.dailyReceiveMoney)
           }}
         </template>
       </el-table-column>
-      <el-table-column show-overflow-tooltip label="上日欠款" align="center" prop="previousDayCarryover"
-                       v-if="columns[4].visible" width="140"/>
-      <el-table-column show-overflow-tooltip label="本日回款金额" align="center" prop="dailyReceiveMoney"
-                       v-if="columns[5].visible" width="140"/>
-      <el-table-column show-overflow-tooltip label="本日票点金额" align="center" prop="dailyInvoiceAmount"
-                       v-if="columns[6].visible" width="140"/>
-      <el-table-column show-overflow-tooltip label="本日发货金额" align="center" prop="dailyOrderPayments"
+      <el-table-column show-overflow-tooltip label="本日客户利润" align="center" prop="dailyProfit"
                        v-if="columns[7].visible" width="140"/>
-      <el-table-column show-overflow-tooltip label="月利润" align="center" prop="monthlyProfit"
+      <el-table-column show-overflow-tooltip label="上月欠款金额结转" align="center" prop="previousMonthCarryover"
                        v-if="columns[8].visible" width="140"/>
+      <el-table-column show-overflow-tooltip label="本月发货金额合计" align="center" prop="monthlyOrderPayments"
+                       v-if="columns[9].visible" width="140"/>
+      <el-table-column show-overflow-tooltip label="本月购入票点" align="center" prop="monthlyInvoiceAmount"
+                       v-if="columns[10].visible" width="140"/>
+      <el-table-column show-overflow-tooltip label="本月回款金额" align="center" prop="monthlyReceiveMoney"
+                       v-if="columns[11].visible" width="140"/>
       <el-table-column show-overflow-tooltip label="本月欠款" align="center" prop="amountOwedThisMonth"
-                       v-if="columns[9].visible" width="140">
-        <!--        本月欠款 = 上月欠款 + 本月回款金额 + 本月票点金额 - 本月发货金额-->
+                       v-if="columns[12].visible" width="140">
         <template slot-scope="scope">
           {{
             Number(scope.row.previousMonthCarryover) + Number(scope.row.monthlyReceiveMoney) + Number(scope.row.monthlyInvoiceAmount) - Number(scope.row.monthlyOrderPayments)
           }}
         </template>
       </el-table-column>
-      <el-table-column show-overflow-tooltip label="上月结转欠款金额" align="center" prop="previousMonthCarryover"
-                       v-if="columns[10].visible" width="140"/>
-      <el-table-column show-overflow-tooltip label="本月回款金额" align="center" prop="monthlyReceiveMoney"
-                       v-if="columns[11].visible" width="140"/>
-      <el-table-column show-overflow-tooltip label="月票点金额" align="center" prop="monthlyInvoiceAmount"
-                       v-if="columns[12].visible" width="140"/>
-      <el-table-column show-overflow-tooltip label="本月发货金额" align="center" prop="monthlyOrderPayments"
+      <el-table-column show-overflow-tooltip label="本月客户利润" align="center" prop="monthlyProfit"
                        v-if="columns[13].visible" width="140"/>
-      <el-table-column show-overflow-tooltip label="年利润" align="center" prop="yearlyProfit"
+      <el-table-column show-overflow-tooltip label="上年结转" align="center" prop="previousYearCarryover"
                        v-if="columns[14].visible" width="140"/>
-      <el-table-column show-overflow-tooltip label="本年欠款" align="center" prop="arrearsThisYear"
-                       v-if="columns[15].visible" width="140">
-        <!--        本年欠款 = 上年欠款 + 本年回款金额 + 本年票点金额 - 本年发货金额-->
+      <el-table-column show-overflow-tooltip label="本年发货金额" align="center" prop="yearlyOrderPayments"
+                       v-if="columns[15].visible" width="140"/>
+      <el-table-column show-overflow-tooltip label="本年票点" align="center" prop="yearlyInvoiceAmount"
+                       v-if="columns[16].visible" width="140"/>
+      <el-table-column show-overflow-tooltip label="本年回款金额" align="center" prop="yearlyReceiveMoney"
+                       v-if="columns[17].visible" width="140"/>
+      <el-table-column show-overflow-tooltip label="本年利润" align="center" prop="yearlyProfit"
+                       v-if="columns[18].visible" width="140"/>
+      <el-table-column show-overflow-tooltip label="欠款" align="center" prop="arrearsThisYear"
+                       v-if="columns[19].visible" width="140">
         <template slot-scope="scope">
           {{
             Number(scope.row.previousYearCarryover) + Number(scope.row.yearlyReceiveMoney) + Number(scope.row.yearlyInvoiceAmount) - Number(scope.row.yearlyOrderPayments)
           }}
         </template>
       </el-table-column>
-      <el-table-column show-overflow-tooltip label="上年结转欠款金额" align="center" prop="previousYearCarryover"
-                       v-if="columns[16].visible" width="140"/>
-      <el-table-column show-overflow-tooltip label="本年回款金额" align="center" prop="yearlyReceiveMoney"
-                       v-if="columns[17].visible" width="140"/>
-      <el-table-column show-overflow-tooltip label="年票点金额" align="center" prop="yearlyInvoiceAmount"
-                       v-if="columns[18].visible" width="140"/>
-      <el-table-column show-overflow-tooltip label="本年发货金额" align="center" prop="yearlyOrderPayments"
-                       v-if="columns[19].visible" width="140"/>
-
 
     </el-table>
+
+
     <pagination
         v-show="total>0"
         :total="total"
@@ -189,26 +188,26 @@ export default {
       },
       // 表单校验
       columns: [
-        {key: 0, label: '索引', visible: true},
-        {key: 1, label: '公司名称', visible: true},
-        {key: 2, label: '本日利润', visible: true},
-        {key: 3, label: '本日欠款', visible: true},
-        {key: 4, label: '上日欠款', visible: true},
+        {key: 0, label: '序号', visible: true},
+        {key: 1, label: '客户名称', visible: true},
+        {key: 2, label: '上日欠款结转', visible: true},
+        {key: 3, label: '本日发货金额', visible: true},
+        {key: 4, label: '本日票点金额', visible: true},
         {key: 5, label: '本日回款金额', visible: true},
-        {key: 6, label: '本日票点金额', visible: true},
-        {key: 7, label: '本日发货金额', visible: true},
-        {key: 8, label: '月利润', visible: true},
-        {key: 9, label: '本月欠款', visible: true},
-        {key: 10, label: '上月结转欠款金额', visible: true},
+        {key: 6, label: '本日欠款金额', visible: true},
+        {key: 7, label: '本日客户利润', visible: true},
+        {key: 8, label: '上月欠款金额结转', visible: true},
+        {key: 9, label: '本月发货金额合计', visible: true},
+        {key: 10, label: '本月购入票点', visible: true},
         {key: 11, label: '本月回款金额', visible: true},
-        {key: 12, label: '月票点金额', visible: true},
-        {key: 13, label: '本月发货金额', visible: true},
-        {key: 14, label: '年利润', visible: true},
-        {key: 15, label: '本年欠款', visible: true},
-        {key: 16, label: '上年结转欠款金额', visible: true},
+        {key: 12, label: '本月欠款', visible: true},
+        {key: 13, label: '本月客户利润', visible: true},
+        {key: 14, label: '上年结转', visible: true},
+        {key: 15, label: '本年发货金额', visible: true},
+        {key: 16, label: '本年票点', visible: true},
         {key: 17, label: '本年回款金额', visible: true},
-        {key: 18, label: '年票点金额', visible: true},
-        {key: 19, label: '本年发货金额', visible: true},
+        {key: 18, label: '本年利润', visible: true},
+        {key: 19, label: '欠款', visible: true},
       ],
       dialogVisible: false
     };
