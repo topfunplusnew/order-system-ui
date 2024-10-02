@@ -1,9 +1,9 @@
 <!--订单页面-->
 <template>
   <div class="app-container">
-    <el-form :model="timesQuery" ref="queryForm" size="mini" :inline="true" v-show="showSearch" label-width="100px">
+    <el-form :model="queryParams" ref="queryForm" size="mini" :inline="true" v-show="showSearch" label-width="70px">
       <el-row>
-        <el-col :span="4">
+        <el-col :span="6">
           <el-form-item label="开始时间" prop="beginTime">
             <el-date-picker
                 v-model="queryParams.orderDateStart"
@@ -11,11 +11,11 @@
                 placeholder="选择时间"
                 value-format="yyyy-MM-dd"
                 size="mini"
-                style="width: 100px;">
+            >
             </el-date-picker>
           </el-form-item>
         </el-col>
-        <el-col :span="4">
+        <el-col :span="6">
           <el-form-item label="结束时间" prop="endTime">
             <el-date-picker
                 v-model="queryParams.orderDateEnd"
@@ -23,11 +23,11 @@
                 placeholder="选择时间"
                 value-format="yyyy-MM-dd"
                 size="mini"
-                style="width: 100px;">
+            >
             </el-date-picker>
           </el-form-item>
         </el-col>
-        <el-col :span="4">
+        <el-col :span="6">
           <el-form-item label="客户名称" prop="customer">
             <el-input
                 v-model="queryParams.customer"
@@ -35,17 +35,17 @@
                 clearable
                 @keyup.enter.native="handleQuery"
                 size="mini"
-                style="width: 100px;">
+            >
             </el-input>
           </el-form-item>
         </el-col>
-        <el-col :span="4">
+        <el-col :span="6">
           <el-form-item label="审核状态" prop="checkState">
             <el-select
                 v-model="queryParams.checkState"
                 placeholder="请选择"
                 size="mini"
-                style="width: 100px;">
+            >
               <el-option
                   v-for="item in options"
                   :key="item.value"
@@ -55,13 +55,13 @@
             </el-select>
           </el-form-item>
         </el-col>
-        <el-col :span="4">
+        <el-col :span="6">
           <el-form-item label="开票状态" prop="invoiceState">
             <el-select
                 v-model="queryParams.invoiceState"
                 placeholder="请选择"
                 size="mini"
-                style="width: 100px;">
+            >
               <el-option
                   v-for="item in optionsInvoice"
                   :key="item.value"
@@ -176,37 +176,64 @@
         </template>
       </el-table-column>
       <el-table-column show-overflow-tooltip label="ID" align="center" prop="id" fixed="left"/>
-      <el-table-column show-overflow-tooltip label="日期" align="center" prop="orderDate" fixed="left"/>
-      <el-table-column show-overflow-tooltip label="客户" align="center" prop="customer" fixed="left"/>
-      <el-table-column show-overflow-tooltip label="供应商" align="center" prop="supplierNames" fixed="left"/>
-      <!--      <el-table-column label="订单编号" align="center" prop="ordersNo" v-if="columns[0].visible"/>-->
-      <el-table-column show-overflow-tooltip label="陆运车牌" align="center" prop="landCarNo"
+      <el-table-column show-overflow-tooltip label="日期" align="center" prop="orderDate" fixed="left"
                        v-if="columns[0].visible"/>
-      <el-table-column show-overflow-tooltip label="陆运司机电话" align="center" prop="landDriverTel"
-                       v-if="columns[1].visible" width="100px"/>
-      <el-table-column show-overflow-tooltip label="陆地司机姓名" align="center" prop="landDriverName"
-                       v-if="columns[2].visible" width="100px"/>
-      <el-table-column show-overflow-tooltip label="海运车牌" align="center" prop="seaCarNo" v-if="columns[3].visible">
+      <el-table-column show-overflow-tooltip label="客户" align="center" prop="customer" fixed="left"
+                       v-if="columns[1].visible"/>
+      <el-table-column show-overflow-tooltip label="供应商" align="center" prop="supplierNames" fixed="left"
+                       v-if="columns[2].visible"
+                       width="200">
         <template #default="scope">
-          {{ scope.row.seaCarNo == null ? '无海运信息' : scope.row.seaCarNo }}
+          <el-row v-if="scope.row.supplierNames !== null">
+            <el-row>
+              <span v-for="(item,index) in getSupplierNames(scope.row.orderDetailList)" :key="index">
+             <el-badge is-dot class="item">
+            <span @click="updateOrderItemVisibleSupplierInvoice(scope.row,item.supplierID)">
+              {{ item.supplier }}
+            </span>
+          </el-badge>
+          </span>
+            </el-row>
+          </el-row>
+          <el-row>
+            <span v-if="scope.row.supplierNames === null">无</span>
+          </el-row>
+        </template>
+      </el-table-column>
+      <el-table-column show-overflow-tooltip label="陆运车牌" align="center" prop="landCarNo"
+                       v-if="columns[3].visible"/>
+      <el-table-column show-overflow-tooltip label="陆运司机电话" align="center" prop="landDriverTel"
+                       v-if="columns[4].visible" width="100px"/>
+      <el-table-column show-overflow-tooltip label="陆地司机姓名" align="center" prop="landDriverName"
+                       v-if="columns[5].visible" width="100px"/>
+
+      <el-table-column show-overflow-tooltip label="陆运费" align="center" prop="landFreight"
+                       v-if="columns[6].visible" width="100px"/>
+
+      <el-table-column show-overflow-tooltip label="海运车牌" align="center" prop="seaCarNo" v-if="columns[7].visible">
+        <template #default="scope">
+          {{ !scope.row.seaCarNo ? '无' : scope.row.seaCarNo }}
         </template>
       </el-table-column>
       <el-table-column show-overflow-tooltip label="海运司机电话" align="center" prop="seaDriverTel"
-                       v-if="columns[4].visible" width="100px">
+                       v-if="columns[8].visible" width="100px">
         <template #default="scope">
-          {{ scope.row.seaDriverTel == null ? '无海运信息' : scope.row.seaDriverTel }}
+          {{ !scope.row.seaDriverTel ? '无' : scope.row.seaDriverTel }}
         </template>
       </el-table-column>
       <el-table-column show-overflow-tooltip label="海运司机姓名" align="center" prop="seaDriverName"
-                       v-if="columns[5].visible" width="100px">
+                       v-if="columns[9].visible" width="100px">
         <template #default="scope">
-          {{ scope.row.seaDriverName == null ? '无海运信息' : scope.row.seaDriverTel }}
+          {{ !scope.row.seaDriverName ? '无' : scope.row.seaDriverTel }}
         </template>
       </el-table-column>
+      <el-table-column show-overflow-tooltip label="海运费" align="center" prop="seaFreight"
+                       v-if="columns[10].visible" width="100px"/>
       <el-table-column show-overflow-tooltip label="销售经理" align="center" prop="saleManager"
-                       v-if="columns[6].visible"/>
-      <el-table-column show-overflow-tooltip label="车队" align="center" prop="fleet" v-if="columns[7].visible"/>
-      <el-table-column show-overflow-tooltip label="审核状态" align="center" prop="checkState" v-if="columns[8].visible"
+                       v-if="columns[11].visible"/>
+      <el-table-column show-overflow-tooltip label="车队" align="center" prop="fleet" v-if="columns[12].visible"/>
+      <el-table-column show-overflow-tooltip label="审核状态" align="center" prop="checkState"
+                       v-if="columns[13].visible"
                        width="120">
         <template #default="scope">
           <el-row v-if="scope.row.checkState === '已审核'">
@@ -215,14 +242,14 @@
           <el-row v-else>
             <el-row>
               <el-button type="warning" @click="handleCheck(scope.row)" size="mini"
-                         v-hasPermi="['system:adjustOrders:audit']">审核
+                         v-hasPermi="['system:goodsorder:audit']">审核
               </el-button>
             </el-row>
           </el-row>
         </template>
       </el-table-column>
       <el-table-column show-overflow-tooltip label="开票状态" align="center" prop="invoiceState"
-                       v-if="columns[9].visible" width="120px">
+                       v-if="columns[14].visible" width="120px">
         <template #default="scope">
           <el-row v-if="scope.row.customerIsInvoice === 1 && scope.row.isSupplierInvoice === 1">
             <el-tag type="success">已开票</el-tag>
@@ -239,23 +266,23 @@
           </el-row>
         </template>
       </el-table-column>
-      <el-table-column show-overflow-tooltip label="附件" align="center" prop="path" v-if="columns[10].visible"
+      <el-table-column show-overflow-tooltip label="附件" align="center" prop="path" v-if="columns[15].visible"
                        width="150px">
         <template #default="scope">
           <el-row>
           </el-row>
           <el-row v-if="scope.row.path === '' || scope.row.path === null">
-            无操作
+            无
           </el-row>
           <el-row v-else>
-            <el-button size="mini" type="success" @click="checkAttachment(scope.row.path)">
+            <el-button size="mini" type="success" @click="checkAttachment(scope.row,'path')">
               查看
             </el-button>
           </el-row>
         </template>
       </el-table-column>
       <el-table-column show-overflow-tooltip label="打款状态" align="center" prop="paymentState"
-                       v-if="columns[11].visible" width="120px">
+                       v-if="columns[16].visible" width="120px">
         <template slot-scope="scope">
           <el-row v-if="scope.row.paymentState === '未申请'">
             <el-button size="mini" type="primary" @click="applyForPayment(scope.row)">申请打款</el-button>
@@ -273,22 +300,24 @@
         </template>
       </el-table-column>
       <el-table-column show-overflow-tooltip label="收到条附件路径" align="center" prop="receiveProof"
-                       v-if="columns[12].visible"
+                       v-if="columns[17].visible"
                        width="150px">
         <template #default="scope">
           <el-row v-if="scope.row.receiveProof === '' || scope.row.receiveProof === null">
-            无操作
+            无
           </el-row>
           <el-row v-else>
-            <el-button size="mini" type="success" @click="checkAttachment(scope.row.receiveProof)">
+            <el-button size="mini" type="success" @click="checkAttachment(scope.row,'receiveProof')">
               查看
             </el-button>
           </el-row>
         </template>
       </el-table-column>
-      <!--      <el-table-column show-overflow-tooltip label="原订单编号" align="center" prop="adjustOrderid"-->
-      <!--                       v-if="columns[17].visible" width="100px"/>-->
-      <el-table-column show-overflow-tooltip label="是否可编辑" align="center" prop="isedit" v-if="columns[13].visible"
+      <el-table-column show-overflow-tooltip label="原订单编号" align="center" prop="adjustOrderid"
+                       v-if="columns[18].visible" width="100px"/>
+      <el-table-column show-overflow-tooltip label="调整日期" align="center" prop="adjustDate"
+                       width="100px"/>
+      <el-table-column show-overflow-tooltip label="是否可编辑" align="center" prop="isedit" v-if="columns[19].visible"
                        width="100px">
         <template slot-scope="scope">
           <el-tag
@@ -298,34 +327,42 @@
       </el-table-column>
       <!--      客户供应商是否开票-->
       <el-table-column show-overflow-tooltip label="客户是否开票" align="center" prop="customerIsInvoice"
-                       v-if="columns[14].visible"
+                       v-if="columns[20].visible"
                        width="150px">
         <template #default="scope">
           <el-row v-if="scope.row.customerIsInvoice === 1">
-            <el-tag type="success">客户已开票</el-tag>
+            <el-row>
+              <el-button type="success" size="mini" @click="updateOrderItemVisibleCustomerInvoice(scope.row)">继续开票
+              </el-button>
+            </el-row>
           </el-row>
           <el-row v-else>
             <el-row>
-              <el-button type="success" size="mini" @click="openCustomerInvoice(scope.row)">去开票</el-button>
+              <el-button type="warning" size="mini" @click="updateOrderItemVisibleCustomerInvoice(scope.row)">前去开票
+              </el-button>
             </el-row>
           </el-row>
         </template>
       </el-table-column>
       <el-table-column show-overflow-tooltip label="供应商是否开票" align="center" prop="isSupplierInvoice"
-                       v-if="columns[15].visible"
+                       v-if="columns[21].visible"
                        width="120px">
         <template #default="scope">
           <el-row v-if="scope.row.isSupplierInvoice === 1">
-            <el-tag type="success"> 供应商已开票</el-tag>
+            <el-row>
+              <el-button type="success" size="mini" @click="updateOrderItemVisibleCustomerInvoice(scope.row)">继续开票
+              </el-button>
+            </el-row>
           </el-row>
           <el-row v-else>
             <el-row>
-              <el-button type="success" size="mini" @click="openSupplierInvoice(scope.row)">去开票</el-button>
+              <el-button type="warning" size="mini" @click="updateOrderItemVisibleSupplierInvoice(scope.row)">前去开票
+              </el-button>
             </el-row>
           </el-row>
         </template>
       </el-table-column>
-      <el-table-column show-overflow-tooltip label="备注" align="center" prop="comments" v-if="columns[16].visible"/>
+      <el-table-column show-overflow-tooltip label="备注" align="center" prop="comments" v-if="columns[22].visible"/>
       <!--      右侧操作栏-->
       <el-table-column show-overflow-tooltip label="订单操作" align="center" class-name="small-padding fixed-width"
                        width="280px"
@@ -403,52 +440,25 @@
 
     <!--        点击查看某个订单的弹窗   -->
     <el-dialog
-        title="查看订单信息"
+        title="货物信息详细"
         :visible.sync="checkOrderVisible"
-        width="60%">
-      <el-descriptions title="订单信息" :column="4" border size="medium">
-        <el-descriptions-item label="日期">{{ orderDetailInfo.orderDate }}</el-descriptions-item>
-        <el-descriptions-item label="客户">{{ orderDetailInfo.customer }}</el-descriptions-item>
-        <el-descriptions-item label="商家姓名">{{ orderDetailInfo.supplierNames }}</el-descriptions-item>
-        <el-descriptions-item label="车队">{{ orderDetailInfo.fleet }}</el-descriptions-item>
-        <el-descriptions-item label="审核状态">
-          <TagsItem :check-info="orderDetailInfo.checkState" checkValue="未审核"/>
-        </el-descriptions-item>
-        <el-descriptions-item label="开票状态">
-          <TagsItem :check-info="orderDetailInfo.invoiceState" checkValue="未开票"/>
-        </el-descriptions-item>
-        <el-descriptions-item label="附件">{{ orderDetailInfo.path }}</el-descriptions-item>
-        <el-descriptions-item label="陆运车牌">{{ orderDetailInfo.landCarNo }}</el-descriptions-item>
-        <el-descriptions-item label="陆运司机电话">{{ orderDetailInfo.landDriverTel }}</el-descriptions-item>
-        <el-descriptions-item label="陆运司机姓名">{{ orderDetailInfo.landDriverName }}</el-descriptions-item>
-        <el-descriptions-item label="海运车牌">{{ orderDetailInfo.seaCarNo }}</el-descriptions-item>
-        <el-descriptions-item label="海运司机电话">{{ orderDetailInfo.seaDriverTel }}</el-descriptions-item>
-        <el-descriptions-item label="海运司机姓名">{{ orderDetailInfo.seaDriverName }}</el-descriptions-item>
-        <el-descriptions-item label="打款状态">{{ orderDetailInfo.PaymentState }}</el-descriptions-item>
-        <el-descriptions-item label="陆运银行户名">{{ orderDetailInfo.landBankName }}</el-descriptions-item>
-        <el-descriptions-item label="陆运银行账号">{{ orderDetailInfo.landBankNo }}</el-descriptions-item>
-        <el-descriptions-item label="海运银行户名">{{ orderDetailInfo.seaBankName }}</el-descriptions-item>
-        <el-descriptions-item label="海运银行账号">{{ orderDetailInfo.seaBankNo }}</el-descriptions-item>
-        <el-descriptions-item label="收到条附件">{{ orderDetailInfo.receiveProof }}</el-descriptions-item>
-        <el-descriptions-item label="是否被调整单">
-          <TagsItem :check-info="orderDetailInfo.isAdjusted " check-value="否"/>
-        </el-descriptions-item>
-        <el-descriptions-item label="调整日期" v-if="orderDetailInfo.isAdjusted">{{
-            orderDetailInfo.adjustDate
-          }}
-        </el-descriptions-item>
-        <el-descriptions-item label="原订单编号">{{ orderDetailInfo.adjustOrderid }}</el-descriptions-item>
-        <el-descriptions-item label="是否可编辑">
-          <TagsItem :check-info="isOrNot(orderDetailInfo.isedit) " check-value="否"/>
-        </el-descriptions-item>
-        <el-descriptions-item label="客户是否开票">
-          <TagsItem :check-info="isOrNot(orderDetailInfo.customerIsInvoice)" check-value="否"/>
-        </el-descriptions-item>
-        <el-descriptions-item label="供应商是否开票">
-          <TagsItem :check-info="isOrNot(orderDetailInfo.customerIsInvoice)" check-value="否"/>
-        </el-descriptions-item>
-        <el-descriptions-item label="陆运费">{{ orderDetailInfo.landFreight }}</el-descriptions-item>
-        <el-descriptions-item label="海运费">{{ orderDetailInfo.seaFreight }}</el-descriptions-item>
+        width="80%">
+      <!--      订单基本信息-->
+      <el-descriptions border>
+        <el-descriptions-item label="订单日期">{{ orderInfo.orderDate }}</el-descriptions-item>
+        <el-descriptions-item label="客户">{{ orderInfo.customer }}</el-descriptions-item>
+        <el-descriptions-item label="销售经理">{{ orderInfo.saleManager }}</el-descriptions-item>
+        <el-descriptions-item label="陆运车牌">{{ orderInfo.landCarNo }}</el-descriptions-item>
+        <el-descriptions-item label="陆运司机姓名">{{ orderInfo.landDriverName }}</el-descriptions-item>
+        <el-descriptions-item label="陆运司机电话">{{ orderInfo.landDriverTel }}</el-descriptions-item>
+        <el-descriptions-item label="海运车牌">{{ orderInfo.seaCarNo }}</el-descriptions-item>
+        <el-descriptions-item label="海运司机姓名">{{ orderInfo.seaDriverName }}</el-descriptions-item>
+        <el-descriptions-item label="海运司机电话">{{ orderInfo.seaDriverTel }}</el-descriptions-item>
+        <el-descriptions-item label="车队">{{ orderInfo.fleet }}</el-descriptions-item>
+      </el-descriptions>
+      <OrderDetailInfo :order-detail-info-list="orderInfo.orderDetailList"></OrderDetailInfo>
+      <el-descriptions border>
+        <el-descriptions-item label="备注">{{ orderInfo.comments }}</el-descriptions-item>
       </el-descriptions>
       <span slot="footer" class="dialog-footer">
         <el-button @click="checkOrderVisible = false">取 消</el-button>
@@ -476,59 +486,56 @@
     <el-dialog
         title="上传附件"
         :visible.sync="handleUploadVisible"
-        width="30%">
-      <el-upload
-          class="upload-demo"
-          drag
-          :action="uploadFileUrl"
-          multiple :on-success="handleUploadPathSuccess"
-          :limit="1"
-          :headers="headers">
-        <i class="el-icon-upload"></i>
-        <div class="el-upload__text">将文件拖到此处，或<em>点击上传</em></div>
-        <div class="el-upload__tip" slot="tip">只能上传jpg/png文件，且不超过500kb</div>
-      </el-upload>
+        width="450px">
+      <el-row>
+        <el-col :span="12" :offset="2">
+          <el-upload
+              class="upload-demo"
+              drag
+              :action="uploadFileUrl"
+              multiple
+              show-file-list
+              :headers="headers"
+              :file-list="fileList"
+              :before-upload="beforeUpload">
+            <i class="el-icon-upload"></i>
+            <div class="el-upload__text">将文件拖到此处，或<em>点击上传</em></div>
+            <div class="el-upload__tip" slot="tip">只能上传jpg/png文件，且不超过500kb</div>
+          </el-upload>
+          <el-button type="success" @click="submitUploadAllFiles('path')">开始上传</el-button>
+        </el-col>
+      </el-row>
       <span slot="footer" class="dialog-footer">
     <el-button @click="handleUploadVisible = false">取 消</el-button>
     <el-button type="primary" @click="handleUploadVisible = false">确 定</el-button>
   </span>
     </el-dialog>
 
+    <!--    上传收到条的弹窗-->
     <el-dialog
         title="提示"
         :visible.sync="handleCommitVisible"
-        width="30%">
+        width="450px">
       <el-upload
           class="upload-demo"
           drag
           :action="uploadFileUrl"
-          multiple :on-success="handleUploadReceiveProofSuccess"
+          multiple
+          show-file-list
           :headers="headers"
           :file-list="fileList"
-          :on-change="handleChange">
+          :before-upload="beforeUpload">
         <i class="el-icon-upload"></i>
         <div class="el-upload__text">将文件拖到此处，或<em>点击上传</em></div>
         <div class="el-upload__tip" slot="tip">只能上传jpg/png文件，且不超过500kb</div>
       </el-upload>
+      <el-button type="success" @click="submitUploadAllFiles('receiveProof')">开始上传</el-button>
       <span slot="footer" class="dialog-footer">
     <el-button @click="handleCommitVisible = false">取 消</el-button>
     <el-button type="primary" @click="handleCommitVisible = false">确 定</el-button>
   </span>
     </el-dialog>
 
-
-    <!--    添加订单的新弹窗 原有的新增不使用-->
-    <el-dialog
-        title="订单信息"
-        :visible.sync="addOrderItemVisible"
-        width="80%">
-      <!--      添加订单 传递本组件的orderInfo信息 -->
-      <OrderForm :orderInfo="orderInfo" @updateOrderInfo="handleChangeOrderInfo"/>
-      <span slot="footer" class="dialog-footer">
-    <el-button @click="cancelSubmit">取 消</el-button>
-    <el-button type="primary" @click="submitOrder">添加订单</el-button>
-  </span>
-    </el-dialog>
 
     <!--    陆运费申请 指定destroy-on-close来销毁dialog的元素让其下次打开重新渲染 从而反复执行created-->
     <el-dialog
@@ -557,15 +564,6 @@
                        @updateOrderDetailList="handleUpdateOrderDetailInfoList"/>
     </el-dialog>
 
-    <!-- 添加或修改订单对话框 -->
-    <el-dialog title="修改订单" :visible.sync="open" append-to-body width="70%">
-      <OrderForm :orderInfo="orderInfo" @updateOrderInfo="handleChangeOrderInfo"/>
-      <div slot="footer" class="dialog-footer">
-        <el-button type="primary" @click="submitForm">确 定</el-button>
-        <el-button @click="cancel">取 消</el-button>
-      </div>
-    </el-dialog>
-
     <el-dialog title="订单打款申请" :visible.sync="paymentApplyVisible" width="48%">
       <keep-alive>
         <ApplyPayment :table-name="TableName.GOODS_ORDER" :t-i-d="tID" :need-money="needMoney"
@@ -576,37 +574,40 @@
 
     <!-- 开发票-->
     <el-dialog
-        :title="openTitle"
-        :visible.sync="invoiceOpenVisible"
+        :title="updateOrderItemVisibleTitle"
+        :visible.sync="invoiceupdateOrderItemVisibleVisible"
         width="50%">
       <el-row>
-        <el-form :model="openTitleInfo" label-width="110px" :rules="CheckRules.openTitleRules">
+        <el-form :model="updateOrderItemVisibleTitleInfo" label-width="110px"
+                 :rules="CheckRules.updateOrderItemVisibleTitleRules">
           <el-form-item label="开票日期" prop="invoiceDate">
             <el-date-picker
-                v-model="openTitleInfo.invoiceDate"
+                v-model="updateOrderItemVisibleTitleInfo.invoiceDate"
                 type="date"
                 placeholder="选择日期"
                 value-format="yyyy-MM-dd">
             </el-date-picker>
           </el-form-item>
           <el-form-item label="我方开票实体" prop="invoiceObject">
-            <el-input v-model="openTitleInfo.invoiceObject" placeholder="请输入我方开票实体"/>
+            <el-input v-model="updateOrderItemVisibleTitleInfo.invoiceObject" placeholder="请输入我方开票实体"/>
           </el-form-item>
           <el-form-item label="开票金额" prop="invoiceAmount">
-            <el-input v-model="openTitleInfo.invoiceAmount" placeholder="请输入开票金额"/>
+            <el-input v-model="updateOrderItemVisibleTitleInfo.invoiceAmount" placeholder="请输入开票金额"/>
           </el-form-item>
           <el-form-item label="公司名称" prop="companyName">
             <el-row>
               <el-col :span="10">
-                <el-input v-model="openTitleInfo.companyName" placeholder="请输入对方公司名称"/>
+                <el-input v-model="updateOrderItemVisibleTitleInfo.companyName" placeholder="请输入对方公司名称"/>
               </el-col>
               <el-col :span="2">
-                <SearchOption :limit-info="openTitleInfo.domain === 1? {companyType:'客户'}:{companyType:'供应商'}"
-                              :get-data="listCompany" query-info="companyName"
-                              query-label="公司名称" :query-name="queryCompanyName"
-                              @update:queryName="handleUpdateCompanyName" @commitBack="handleCommitBackCompany">
+                <SearchOption
+                    :limit-info="updateOrderItemVisibleTitleInfo.domain === 1? {companyType:'客户'}:{companyType:'供应商'}"
+                    :get-data="listCompany" query-info="companyName"
+                    query-label="公司名称" :query-name="queryCompanyName"
+                    @update:queryName="handleUpdateCompanyName" @commitBack="handleCommitBackCompany">
                   <template #table-columns>
-                    <el-table-column :label="openTitleInfo.domain === 1? '客户':'供应商'" align="center"
+                    <el-table-column :label="updateOrderItemVisibleTitleInfo.domain === 1? '客户':'供应商'"
+                                     align="center"
                                      prop="relationName"/>
                     <el-table-column label="老板姓名" align="center" prop="leader"/>
                     <el-table-column label="老板电话" align="center" prop="leaderTel"/>
@@ -619,24 +620,26 @@
             </el-row>
           </el-form-item>
           <el-form-item label="票据单位名称" prop="invoiceCompanyName">
-            <el-input v-model="openTitleInfo.invoiceCompanyName" placeholder="请输入票据单位名称"/>
+            <el-input v-model="updateOrderItemVisibleTitleInfo.invoiceCompanyName" placeholder="请输入票据单位名称"/>
           </el-form-item>
           <el-form-item label="票点" prop="ticketPoint">
-            <el-input v-model="openTitleInfo.ticketPoint" placeholder="请输入票点"/>
+            <el-input v-model="updateOrderItemVisibleTitleInfo.ticketPoint" placeholder="请输入票点"/>
           </el-form-item>
           <el-form-item label="票点金额" prop="ticketPointAmount">
-            <el-input v-model="openTitleInfo.ticketPointAmount" placeholder="请输入票点金额" disabled/>
+            <el-input v-model="updateOrderItemVisibleTitleInfo.ticketPointAmount" placeholder="请输入票点金额"
+                      disabled/>
           </el-form-item>
           <el-form-item label="备注" prop="comments">
-            <el-input v-model="openTitleInfo.comments" placeholder="请输入备注"/>
+            <el-input v-model="updateOrderItemVisibleTitleInfo.comments" placeholder="请输入备注"/>
           </el-form-item>
         </el-form>
       </el-row>
       <span slot="footer" class="dialog-footer">
-    <el-button @click="invoiceOpenVisible = false">取 消</el-button>
-    <el-button type="primary" @click="submitOpenTitle">确 定</el-button>
+    <el-button @click="invoiceupdateOrderItemVisibleVisible = false">取 消</el-button>
+    <el-button type="primary" @click="submitupdateOrderItemVisibleTitle">确 定</el-button>
   </span>
     </el-dialog>
+
 
     <el-dialog
         title="原订单信息"
@@ -688,6 +691,10 @@ import {parseTime} from "../../../utils/ruoyi";
 import {downloadFile} from "@/api/download";
 import {addInvoiceIn} from "@/api/system/invoiceIn";
 import OrderInfos from "../../../components/OrderInfos.vue";
+import {getCompany} from "../../../api/system/company";
+import {getHistoryGoodsOrder} from "../../../api/system/goodsOrder";
+import axios from "axios";
+import {mixin_printHTML} from "../../dashboard/mixins/print";
 
 export default {
   name: "AdjustOrders",
@@ -697,6 +704,7 @@ export default {
     OrderDetailInfo,
     OrderDetail, ChatForm, ApplyPayment, SwitchBarForCheck, SwitchBarItem, SearchOption, OrderForm, TagsItem
   },
+  mixins: [mixin_printHTML],
   data() {
     return {
       // 遮罩层
@@ -715,14 +723,14 @@ export default {
       goodsOrderList: [],
       // 弹出层标题
       title: "",
-      //key强制重新渲染组件
-      keyFlag: 0,
       // 是否显示弹出层
-      open: false,
+      updateOrderItemVisible: false,
       // 查询参数
       queryParams: {
+        orderDateStart: null,
+        orderDateEnd: null,
         pageNum: 1,
-        pageSize: 10,
+        pageSize: 50,
         ordersNo: null,
         orderDate: null,
         customer: null,
@@ -747,7 +755,7 @@ export default {
         receiveProof: null,
         saleManager: null,
         fleet: null,
-        isAdjusted: '是',
+        isAdjusted: null,
         adjustDate: null,
         isAdjust: '是',
         adjustOrderid: null,
@@ -764,8 +772,85 @@ export default {
       form: {},
       // 表单校验
       rules: {},
-      timesQuery: {},
-      paramQuery: {},
+      //隐藏列
+      columns: [
+        {key: 0, label: '日期', visible: true},
+        {key: 1, label: '客户', visible: true},
+        {key: 2, label: '供应商', visible: true},
+        {key: 3, label: '陆运车牌', visible: true},
+        {key: 4, label: '陆运司机电话', visible: true},
+        {key: 5, label: '陆地司机姓名', visible: true},
+        {key: 6, label: '陆运费', visible: true},
+        {key: 7, label: '海运车牌', visible: true},
+        {key: 8, label: '海运司机电话', visible: true},
+        {key: 9, label: '海运司机姓名', visible: true},
+        {key: 10, label: '海运费', visible: true},
+        {key: 11, label: '销售经理', visible: true},
+        {key: 12, label: '车队', visible: true},
+        {key: 13, label: '审核状态', visible: true},
+        {key: 14, label: '开票状态', visible: true},
+        {key: 15, label: '附件', visible: true},
+        {key: 16, label: '打款状态', visible: true},
+        {key: 17, label: '收到条附件路径', visible: true},
+        {key: 18, label: '原订单编号', visible: true},
+        {key: 19, label: '是否可编辑', visible: true},
+        {key: 20, label: '客户是否开票', visible: true},
+        {key: 21, label: '供应商是否开票', visible: true},
+        {key: 22, label: '备注', visible: true}
+      ],
+
+      //顶部条件搜索
+      queryOrderInfo: {},
+
+
+      /**
+       * 发货单功能
+       */
+      Order1Visible: false,
+
+
+      /**
+       * 添加订单的功能
+       */
+      //当前订单id
+      orderId: null,
+      //添加新订单的弹窗
+      orderItemVisible: false,
+      orderTitle: '',
+      submitInfo: '',
+
+
+      /**
+       * 调整单功能
+       */
+      //调整单的id`
+      tempId: '',
+      //调整单的弹窗
+      handleOrderVisible: false,
+      //订单信息
+      orderInfo: {},
+
+
+      /**
+       * 查看货物信息功能
+       */
+      //查看订单中的列表
+      orderDetailInfo: {},
+      checkOrderDetailInfoVisible: false,
+      orderDetailInfoList: [],
+
+
+      /**
+       * 行操作点击查看的功能
+       */
+      checkOrderVisible: false,
+
+      /**
+       * 订单开票功能
+       */
+      // 查询字段
+      queryCompanyName: '',
+      // 开票选择
       options: [
         {
           value: '已审核',
@@ -785,96 +870,11 @@ export default {
         value: '已开票',
         label: '已开票'
       },],
-      //隐藏列
-      columns: [
-      /*  {key: 0, label: `订单编号`, visible: true},*/
-        {key: 0, label: `陆运车牌`, visible: true},
-        {key: 1, label: `陆运司机电话`, visible: true},
-        {key: 2, label: `陆运司机姓名`, visible: true},
-        {key: 3, label: `海运车牌`, visible: true},
-        {key: 4, label: `海运司机电话`, visible: true},
-        {key: 5, label: `海运司机姓名`, visible: true},
-        {key: 6, label: `销售经理`, visible: true},
-        {key: 7, label: `车队`, visible: true},
-        {key: 8, label: `审核状态`, visible: true},
-        {key: 9, label: `开票状态`, visible: true},
-        {key: 10, label: `附件`, visible: true},
-        {key: 11, label: `打款状态`, visible: true},
-        /* {key: 13, label: `陆运银行户名`, visible: true},
-         {key: 14, label: `陆运银行账号`, visible: true},
-         {key: 15, label: `海运银行户名`, visible: true},
-         {key: 16, label: `海运银行账号`, visible: true},*/
-        {key: 12, label: `收到条附件路径`, visible: true},
-       /* {key: 13, label: `是否被调整单`, visible: true},
-        {key: 14, label: `是否调整单`, visible: true},
-        {key: 15, label: `调整日期`, visible: true},
-        {key: 16, label: `原订单编号`, visible: true},*/
-        {key: 13, label: `是否可编辑`, visible: true},
-        {key: 14, label: `客户是否开票`, visible: true},
-        {key: 15, label: `供应商是否开票`, visible: true},
-        {key: 16, label: `备注`, visible: true},
-      ],
-      //顶部条件搜索
-      queryOrderInfo: {},
-      //点击查看的弹窗
-      checkOrderVisible: false,
-      //调整单的弹窗
-      handleOrderVisible: false,
-      //订单弹窗
-      Order1Visible: false,
-      //上传和收到条
-      handleUploadVisible: false,
-      handleCommitVisible: false,
-      //添加新订单的弹窗
-      addOrderItemVisible: false,
-      //开票
-      handleOpenTitleDialogVisible: false,
-      //查看订单中的列表
-      orderDetailInfo: {},
-
-      //添加订单详情
-      addOrderItem: {},
-      //调整单的id
-      tempId: '',
-      //订单输入详情信息
-      orderInfo: {},
-      //上传附件临时保存当前点击订单信息
-      tempOrderInfo: {
-        receiveProof: ''
-      },
-      //运费的弹窗
-      landFreeDialogVisible: false,
-      seaFreeDialogVisible: false,
-      //订单详情的
-      checkOrderDetailInfoVisible: false,
-      orderDetailInfoList: [],
-      //运费
-      landFreightFree: 0,
-      seaFreightFree: 0,
-      //订单中的司机相关信息 自动填充响应的收款方账号信息
-      driverInfo: {},
       //开票信息
-      openTitleInfo: {
-        id: null,
-        invoiceDate: null,
-        invoiceObject: null,
-        invoiceAmount: null,
-        companyType: null,
-        companyName: '',
-        companyID: null,
-        invoiceCompanyName: null,
-        ticketPoint: null,
-        ticketPointAmount: null,
-        isOrderTax: 0,
-        comments: null,
-        addtime: null,
-        userId: null,
-        UserName: null,
-        updateTime: null,
-        delFlag: null
-      },
+      updateOrderItemVisibleTitleInfo: {},
+      // 开票信息校验
       CheckRules: {
-        openTitleRules: {
+        updateOrderItemVisibleTitleRules: {
           invoiceDate: [
             {required: true, message: '请选择开票日期', trigger: 'blur'}
           ],
@@ -886,45 +886,143 @@ export default {
           ],
           invoiceAmount: [
             {required: true, message: '请输入开票金额', trigger: 'blur'},
-            {pattern: /^[0-9]*$/, message: '只能输入数字', trigger: 'blur'}],
+            // 开票金额 可以是小数
+            {pattern: /^-?[0-9]+(\.[0-9]+)?$/, message: '只能输入数字和小数', trigger: 'blur'}
+          ],
           companyName: [
             {required: true, message: '请输入公司名称', trigger: 'blur'}],
           // 只能是数字
           ticketPoint: [
             {required: true, message: '请输入开票点', trigger: 'blur'},
-            {pattern: /^[0-9]*$/, message: '只能输入数字', trigger: 'blur'}
+            {pattern: /^-?[0-9]+(\.[0-9]+)?$/, message: '只能输入数字', trigger: 'blur'}
           ],
           ticketPointAmount: [
             {required: true, message: '请输入开票点金额', trigger: 'blur'},
-            {pattern: /^[0-9]*$/, message: '只能输入数字', trigger: 'blur'}],
+            {pattern: /^-?[0-9]+(\.[0-9]+)?$/, message: '只能输入数字', trigger: 'blur'}],
         }
       },
-      //当前订单id
-      currentOrderId: null,
-      queryCompanyName: '',
-      //付款申请信息列表 用于判断海运费和陆运费按钮是否可用
-      paymentApplyInfoList: [],
-      isFreight: '',
-      //陆运费信息
+
+
+      /**
+       * 海陆运费申请信息 海陆运费申请功能
+       */
+      //订单中的司机相关信息 自动填充响应的收款方账号信息
+      driverInfo: {},
+      //运费
+      landFreightFree: 0,
+      seaFreightFree: 0,
       landFreightInfo: {},
       seaFreightInfo: {},
+      //运费的弹窗
+      landFreeDialogVisible: false,
+      seaFreeDialogVisible: false,
 
+      /**
+       * 客户或者供应商发票功能
+       */
+      invoiceupdateOrderItemVisibleVisible: false,
+      updateOrderItemVisibleTitle: '',
+
+
+      /**
+       * 订单申请打款功能
+       */
+      tID: '',
+      paymentApplyVisible: false,
+      needMoney: 0,
+
+
+      /**
+       * 文件上传功能
+       */
+      //上传和收到条
+      handleUploadVisible: false,
+      handleCommitVisible: false,
+      //上传附件临时保存当前点击订单信息
+      tempOrderInfo: {
+        receiveProof: ''
+      },
+      fileList: [],
+      // 已上传后的文件名称列表
+      fileNamesList: [],
+      // 查看附件或者收到条的文件列表
+      checkFileList: [],
+      checkAttachmentVisible: false,
       //上传路径
       uploadFileUrl: process.env.VUE_APP_BASE_API + "/common/upload",
       headers: {
         Authorization: "Bearer " + getToken(),
       },
 
-      //供应商 && 客户开发票
-      invoiceOpenVisible: false,
-      openTitle: '',
-      // 订单申请打款
-      tID: '',
-      paymentApplyVisible: false,
-      needMoney: 0,
+      /**
+       * 查看原订单信息的功能
+       */
+      currentOrderItemInfo: {},
+      currentOrderItemInfoVisible: false,
 
-      // 文件上传的列表
-      fileList: [],
+
+      /**
+       * 查看订单历史信息
+       */
+      checkHistoryOrderVisible: false,
+      // 订单历史信息列表
+      orderHistoryInfoList: [],
+      activeNames: [],
+      // 订单详情映射对象 然后每一个订单的详情列表都按照这个映射以后进行比较渲染
+      mapper: {
+        'orderDate': '订单日期',
+        'supplier': '供应商名称',
+        'customer': '客户名称',
+        'levelName': '级别名称',
+        'countingUnit': '计数单位',
+        'height': '高度',
+        'length': '长度',
+        'width': '宽度',
+        'pieces': '数量',
+        'piecesPerPack': '每包数量',
+        'packs': '包数',
+        'price': '单价',
+        'isIncludeTaxFactory': '是否含税（工厂）',
+        'sundryCost': '杂费',
+        'paymentFactory': '工厂付款',
+        'paymentUnload': '卸货费用',
+        'isIncludeTaxSale': '是否含税（销售）',
+        'payments': '销售付款',
+        'erro': '误差',
+        'tonnage': '吨位',
+        'landFreightPrice': '陆运价格',
+        'landFreight': '陆运费',
+        'seaFreight': '海运费',
+        'freight': '运费',
+        'otherCost': '其他费用',
+        'profit': '利润',
+        'profitNoTax': '无税利润',
+        'actualPieces': '实际数量',
+        'paymentsWithSundry': '含杂费付款',
+        'additionalFees': '额外费用',
+        'storeHouseName': '仓库名称',
+        'logisticsProfit': '物流利润',
+        'customerCommission': '客户佣金',
+        'comments': '备注',
+        'updateTime': '订单修改时间',
+        'remark': '修改记录',
+        'landCarNo': '陆运车牌号',
+        'landDriverName': '陆运司机姓名',
+        'landBankNo': '陆运司机银行卡号',
+        'landDriverTel': '陆运司机电话',
+        'fleet': "车队",
+        'seaCarNo': '海运车牌号',
+        'seaDriverName': '海运司机姓名',
+        'seaDriverTel': '海运司机电话',
+        'seaBankNo': '海运司机银行卡号',
+        'seaBankName': '海运司机开户名',
+        'landBankName': '陆运司机开户名',
+        'companyName': '公司名称',
+        'saleManager': '销售经理',
+        'userName': '修改人',
+        'supplierNames': '供应商',
+        'allPayments': '总货款',
+      },
 
       // 查看原订单
       checkReviousOrderInfoVisible: false,
@@ -948,7 +1046,6 @@ export default {
     },
     //获取订单列表
     ...mapGetters(['orderItemList']),
-    ...mapGetters(['orderList']),
     //拿到暂存里的订单信息
     ...mapGetters(['currentOrderInfo'])
   },
@@ -961,11 +1058,12 @@ export default {
       deep: true,
     },
     // 监听整个开票表单 如果有变化 自动监听计算票点金额
-    'openTitleInfo': {
+    'updateOrderItemVisibleTitleInfo': {
       handler(val) {
-        this.openTitleInfo.ticketPointAmount = Number(this.openTitleInfo.invoiceAmount * this.openTitleInfo.ticketPoint).toFixed(2)
+        this.updateOrderItemVisibleTitleInfo.ticketPointAmount = Number(this.updateOrderItemVisibleTitleInfo.invoiceAmount * this.updateOrderItemVisibleTitleInfo.ticketPoint).toFixed(2)
       },
-      deep: true
+      deep: true,
+      immediate: true,
     }
   },
   methods: {
@@ -978,52 +1076,229 @@ export default {
       //清空订单列表基础信息
       this.orderInfo = {}
     },
-    //时间查询
-    handleTimesQuery() {
-      //重新赋值
-      this.goodsOrderList = this.orderList;
-      if (Object.keys(JSON.parse(JSON.stringify(this.paramQuery))).length !== 0) {
-        this.goodsOrderList = this.goodsOrderList.filter(obj => {
-          let exclude = Object.entries(JSON.parse(JSON.stringify(this.paramQuery))) //填写的参数列表 判断item的某个属性
-          return exclude.every((item) => {
-            return obj.hasOwnProperty(item[0]) && obj[item[0]] === item[1];
-          })
-        })
-        if (this.timesQuery.beginTime && this.timesQuery.endTime) {
-          this.goodsOrderList =
-              this.$dateRange(this, 'goodsOrderList', 'orderDate', this.timesQuery.beginTime, this.timesQuery.endTime);
-        }
-      } else {
-        this.goodsOrderList =
-            this.$dateRange(this, 'goodsOrderList', 'orderDate', this.timesQuery.beginTime, this.timesQuery.endTime);
-      }
-    },
     listCompany,
     listBankAccount,
-    //子组件提醒父组件修改orderInfo信息
-    handleChangeOrderInfo(val) {
-      this.orderInfo = val;
+    getSupplierNames(list) {
+      if (list.length === 0) {
+        return;
+      }
+      return list.map(item => {
+        return {
+          supplier: item.supplier,
+          supplierID: item.supplierID
+        }
+      })
+    },
+    //查看原订单
+    checkPreviousOrder(row) {
+      getGoodsOrder(row.adjustOrderid).then(res => {
+        this.previousOrderInfo = res.data;
+        this.checkReviousOrderInfoVisible = true;
+      })
     },
 
-    //是或者否
-    isOrNot(val) {
-      return val === 1 ? "是" : "否";
+
+    /**
+     * 1.开票功能
+     */
+    // 点击客户开票
+    updateOrderItemVisibleCustomerInvoice(row) {
+      this.resetOpenTitleInfo()
+      //客户开发票 即为发票卖出 添加发票卖出信息 1客户开票  2供应商开票
+      this.updateOrderItemVisibleTitleInfo.domain = 1
+      this.updateOrderItemVisibleTitleInfo.isOrderTax = row.id;
+      this.updateOrderItemVisibleTitle = '客户开票'
+      //设置该订单信息 需要进行一次查询
+      getGoodsOrder(row.id)
+          .then(res => {
+            this.updateOrderItemVisibleTitleInfo.orderInfo = res.data;
+          })
+      this.invoiceupdateOrderItemVisibleVisible = true;
+    },
+    // 点击供应商开票
+    updateOrderItemVisibleSupplierInvoice(row, supplierID) {
+      this.resetOpenTitleInfo()
+      if (supplierID !== undefined && supplierID !== '' && supplierID !== null) {
+        this.updateOrderItemVisibleTitleInfo.domain = 2
+        this.updateOrderItemVisibleTitleInfo.companyID = supplierID;
+        this.updateOrderItemVisibleTitleInfo.isOrderTax = row.id;
+        // 先获取公司信息
+        getCompany(supplierID).then(res => {
+          this.updateOrderItemVisibleTitleInfo.companyName = res.data.companyName;
+          this.updateOrderItemVisibleTitleInfo.companyType = res.data.companyType;
+          this.updateOrderItemVisibleTitle = '供应商开票'
+          // 获取订单信息
+          getGoodsOrder(row.id)
+              .then(res => {
+                this.updateOrderItemVisibleTitleInfo.orderInfo = res.data;
+                this.invoiceupdateOrderItemVisibleVisible = true;
+              })
+        })
+      } else {
+        this.updateOrderItemVisibleTitleInfo.domain = 2
+        this.updateOrderItemVisibleTitleInfo.isOrderTax = row.id;
+        this.updateOrderItemVisibleTitleInfo.isOrderTax = row.id;
+        this.updateOrderItemVisibleTitle = '供应商开票'
+        getGoodsOrder(row.id)
+            .then(res => {
+              this.updateOrderItemVisibleTitleInfo.orderInfo = res.data;
+              this.invoiceupdateOrderItemVisibleVisible = true;
+            })
+      }
+    },
+    // 客户供应商开票功能
+    submitupdateOrderItemVisibleTitle() {
+      //排除不必要的字段
+      this.updateOrderItemVisibleTitleInfo = excludeParams(this.updateOrderItemVisibleTitleInfo, this.$exclude)
+      // 拿到开票个数
+      const invoiceNumber = {
+        customerInvoiceNumber: this.updateOrderItemVisibleTitleInfo.customerInvoiceNumber,
+        supplierInvoiceNumber: this.updateOrderItemVisibleTitleInfo.supplierInvoiceNumber
+      }
+      //这里要判断一下 如果是客户开票 就添加发票卖出信息 如果是供应商开票 则添加发票买入信息
+      if (this.updateOrderItemVisibleTitleInfo.domain === 1) {
+        //客户开票 添加发票卖出信息
+        addInvoiceOut(this.updateOrderItemVisibleTitleInfo)
+            .then(res => {
+              this.$message.success('客户开票成功~')
+              this.updateGoodsOrderAfterOpen(invoiceNumber, this.updateOrderItemVisibleTitleInfo.domain)
+            })
+      } else {
+        // 客户开票
+        addInvoiceIn(this.updateOrderItemVisibleTitleInfo)
+            .then(res => {
+              this.$message.success('供应商开票成功~')
+              this.updateGoodsOrderAfterOpen(invoiceNumber, this.updateOrderItemVisibleTitleInfo.domain)
+            })
+      }
+    },
+    // 根据类型来更新订单的开票状态
+    updateGoodsOrderAfterOpen(invoiceNumber, type) {
+      const updateInvoiceState = (invoiceField, invoiceValue, state) => {
+        let info = {
+          ...this.updateOrderItemVisibleTitleInfo.orderInfo,
+          [invoiceField]: invoiceValue,
+          invoiceState: state
+        };
+        // 更新订单的开票状态
+        updateGoodsOrder(excludeParams(info, this.$exclude))
+            .then(res => {
+              this.$message.success('开票状态设置成功~');
+              this.invoiceupdateOrderItemVisibleVisible = false;
+              this.resetOpenTitleInfo();
+              this.getList();
+            });
+      };
+      if (type === 0) { // 供应商开票
+        if (invoiceNumber.customerInvoiceNumber === 0) {
+          updateInvoiceState('isSupplierInvoice', invoiceNumber.supplierInvoiceNumber + 1, '部分开票');
+        } else {
+          updateInvoiceState('isSupplierInvoice', invoiceNumber.supplierInvoiceNumber + 1, '已开票');
+        }
+      } else { // 客户开票
+        if (invoiceNumber.supplierInvoiceNumber === 0) {
+          updateInvoiceState('customerIsInvoice', invoiceNumber.customerInvoiceNumber + 1, '部分开票');
+        } else {
+          updateInvoiceState('customerIsInvoice', invoiceNumber.customerInvoiceNumber + 1, '已开票');
+        }
+      }
+    },
+    // 开票信息弹窗的搜索信息自动填充
+    handleUpdateCompanyName(val) {
+      this.queryCompanyName = val;
+    },
+    handleCommitBackCompany(val) {
+      this.updateOrderItemVisibleTitleInfo.companyName = val.companyName;
+      this.updateOrderItemVisibleTitleInfo.companyID = val.id;
+      this.updateOrderItemVisibleTitleInfo.companyType = val.companyType;
     },
 
-    //点击查看
+
+    /**
+     * 2.查看订单历史修改记录功能
+     */
+    // 查看原订单信息
+    checkcurrentOrderItemInfo() {
+      this.currentOrderItemInfoVisible = true;
+    },
+    // 查看订单历史信息
+    checkOrderHistory(row) {
+      // 保存原订单的信息
+      this.currentOrderItemInfo = JSON.parse(JSON.stringify(row));
+      const id = row.id;
+      // 查询订单历史信息
+      getHistoryGoodsOrder({goodsOrderID: id}).then(res => {
+        if (res.rows.length === 0) {
+          this.$message.warning('没有修改记录')
+          return;
+        }
+        this.orderHistoryInfoList = res.rows;
+        for (let i = 0; i < this.orderHistoryInfoList.length - 1; i++) {
+          this.orderHistoryInfoList[i].diff = {
+            old: this.formatData(excludeParams(this.orderHistoryInfoList[i], this.$excludeWithUpdate)),
+            new: this.formatData(excludeParams(this.orderHistoryInfoList[i + 1], this.$excludeWithUpdate)),
+            updateTime: this.parseTime(this.orderHistoryInfoList[i + 1].updateTime)
+          }
+        }
+        if (this.orderHistoryInfoList.length > 0) {
+          this.orderHistoryInfoList[this.orderHistoryInfoList.length - 1].diff = {
+            old: this.formatData(excludeParams(this.orderHistoryInfoList[this.orderHistoryInfoList.length - 1], this.$excludeWithUpdate)),
+            new: this.formatData(excludeParams(this.currentOrderItemInfo, this.$excludeWithUpdate)),
+            updateTime: this.parseTime(this.currentOrderItemInfo.updateTime)
+          }
+        }
+        this.checkHistoryOrderVisible = true;
+      })
+    },
+
+    /**
+     *  3.行操作中点击查看 查看当前行订单的信息
+     */
     checkOrderItemInfo(row) {
       this.checkOrderVisible = true;
       const id = row.id;
       getGoodsOrder(id).then(res => {
-        this.orderDetailInfo = res.data;
+        this.orderInfo = res.data
+        this.orderDetailInfo = res.data.orderDetailList;
       })
     },
+
+
+    /**
+     *  4.点击调整单按钮，调整订单
+     */
     //点击调整单的弹窗
     handleOrderItemInfo(row) {
       this.handleOrderVisible = true
       this.tempId = row.id;
     },
-    //查看订单详情列表
+    // 调整单
+    submitChangeOrder() {
+      const id = this.tempId  // 拿到上个方法赋值的状态
+      // 查询该id的订单详细信息
+      getGoodsOrder(id).then(res => {
+        // 调整单 调用调整订单接口 传入数据 将ordersNo赋值为空 后端自动填充
+        let orderInfo = res.data
+        // 将每个货物信息的ordersNo赋值为空 并且去除不必要的参数
+        orderInfo.orderDetailList.forEach(item => {
+          item.ordersNo = '';
+          item = excludeParams(item, this.$exclude)
+        })
+        // 去除字段
+        orderInfo = excludeParams(orderInfo, this.$exclude)
+        // 调整单
+        adjustGoodsOrder({...orderInfo, ordersNo: '', adjustDate: formatDate(new Date())}).then(res => {
+          this.$message.success('调整单提交成功')
+          this.getList();
+        })
+        this.handleOrderVisible = false
+      })
+    },
+
+
+    /**
+     *  5.行操作中点击货物按钮，查看该订单的货物信息
+     */
     handleCheckOrderDetailInfo(row) {
       //赋值 以便于给子组件id
       sessionStorage.setItem('order_id', row.id)
@@ -1040,13 +1315,19 @@ export default {
       })
     },
 
-    //订单发货单
+    /**
+     *  6.点击订单的发货单按钮 查看发货单
+     */
+    // 订单发货单
     handleOrder1(row) {
       this.Order1Visible = true
     },
-    isPic(url) {
-      return this.$imgs.includes(findFileExtension(url))
-    },
+
+
+    /**
+     *  7.点击上传附件 上传附件功能
+     */
+    // 上传附件
     handleUpload(row) {
       this.handleUploadVisible = true
       //保存当前订单信息 现根据当前订单列表信息查询详细订单信息
@@ -1061,91 +1342,109 @@ export default {
         this.tempOrderInfo = res.data;
       })
     },
-    handleCloseApply() {
-      this.paymentApplyVisible = false
-      this.getList()
+    // 上传之前的钩子函数
+    beforeUpload(file) {
+      // 如果文件名超出20个字符那么就提示
+      if (file.name.length > 20) {
+        this.$message.error('文件名不能超过20个字符,请重命名后上传')
+        return false
+      }
+      // 推入数组中 后续点击开始上传的时候 ，对数组的每一个文件进行上传
+      this.fileList.push(file)
+      // 阻止默认上传行为
+      return false
     },
+
+    // 点击开始上传 type是上传的类型
+    async submitUploadAllFiles(type) {
+      // 开始批量发请求 上传文件 上传完毕的文件会返回一个fileName 只要把上传后的fileName推入到已上传的列表
+      for (let i = 0; i < this.fileList.length; i++) {
+        const file = this.fileList[i];
+        // 点击上传的时候 要推入到上传数组中
+        const formData = new FormData();
+        formData.append('file', file)
+        try {
+          // 调用上传接口
+          const response = await axios.post(process.env.VUE_APP_BASE_API + '/common/upload', formData, {
+            headers: {
+              ...this.headers,
+              'Content-Type': 'multipart/form-data'
+            }
+          })
+          this.fileList.splice(i, 1);
+          i--;
+          // 等待
+          await this.sleep(1500);
+          if (response.data.code === 200) {
+            this.fileNamesList.push(response.data.fileName)
+            this.$message.success(`上传成功,剩余${this.fileList.length}个文件未上传`)
+          } else {
+            this.$message.error(response.data.msg)
+          }
+
+        } catch (e) {
+          console.error(`第${this.fileList.indexOf(file) + 1}个文件上传失败:`, e);
+        }
+      }
+      // 全部上传完事后 修改订单的附件
+      this.tempOrderInfo = excludeParams(this.tempOrderInfo, this.$exclude)
+      const path = this.fileNamesList.join('|')
+      if (type === 'path') {
+        //修改订单信息
+        updateGoodsOrder({...this.tempOrderInfo, path: path})
+            .then(res => {
+              this.$message.success('上传附件成功')
+              this.getList()
+            })
+        // 收到条
+      } else if (type === 'receiveProof') {
+        //修改订单信息
+        updateGoodsOrder({...this.tempOrderInfo, receiveProof: path})
+            .then(res => {
+              this.$message.success('上传收到条成功')
+              this.getList()
+            })
+      }
+    },
+
+
+    /**
+     * 查看附件功能
+     */
+    //查看附件信息
+    checkAttachment(row, type) {
+      if (type === 'path') {
+        getGoodsOrder(row.id).then(res => {
+          this.checkFileList = res.data.path.split('|');
+          this.checkAttachmentVisible = true;
+        })
+      } else {
+        getGoodsOrder(row.id).then(res => {
+          this.checkFileList = res.data.receiveProof.split('|');
+          this.checkAttachmentVisible = true;
+        })
+      }
+    },
+
+
+    /**
+     * 订单申请打款功能
+     */
+    // 订单申请打款
     applyForPayment(row) {
       this.paymentApplyVisible = true;
       this.tID = row.id;
     },
-    //查看原订单
-    checkPreviousOrder(row) {
-      getGoodsOrder(row.adjustOrderid).then(res => {
-        this.previousOrderInfo = res.data;
-        this.checkReviousOrderInfoVisible = true;
-      })
+    handleCloseApply() {
+      this.paymentApplyVisible = false
+      this.getList()
     },
 
-    //提交订单
-    //订单列表的对象封装一个，订单详情有两个一样的对象 对应供应商发货和仓库发货
-    submitOrder() {
-      this.addOrderItemVisible = false
-      this.orderInfo.orderDetailList = this.orderItemList; //从vuex拿到订单详细列表 加入到订单信息中
-      //订单详情添加客户信息
-      for (let i = 0; i < this.orderItemList.length; i++) {
-        let item = this.orderItemList[i];
-        item.customerID = this.orderInfo.customerID;
-        item.customer = this.orderInfo.customer;
-        //是否含税
-        item.isIncludeTaxFactory = item.isIncludeTaxFactory === '是' ? '1' : '0';
-        item.isIncludeTaxSale = item.isIncludeTaxSale === '是' ? '1' : '0';
-      }
-      addGoodsOrder({...this.orderInfo, PaymentState: ''}).then(res => {
-        this.$message.success('订单提交成功')
-      })
-    },
-    //查看附件信息
-    checkAttachment(path) {
-      window.open(path)
-    },
-    //删除收到条
-    deleteReceiveProof(row) {
-      this.$confirm('此操作将永久删除该文件, 是否继续?', '提示', {
-        confirmButtonText: '确定',
-        cancelButtonText: '取消',
-        type: 'warning'
-      }).then(() => {
-        getGoodsOrder(row.id)
-            .then(res => {
-              let order = res.data;
-              order.receiveProof = null;
-              updateGoodsOrder(excludeParams(order, this.$exclude))
-                  .then(res => {
-                    this.$message.success('删除成功')
-                    this.getList()
-                  });
-            })
-      }).catch(() => {
-        this.$message({
-          type: 'info',
-          message: '已取消删除'
-        });
-      });
-    },
-    //上传成功
-    handleUploadReceiveProofSuccess(response, file, fileList) {
-      if (response.code === 200) {
-        //去除不必要字段
-        this.tempOrderInfo = excludeParams(this.tempOrderInfo, this.$exclude)
-        //修改订单信息
-        updateGoodsOrder({...this.tempOrderInfo, receiveProof: response.url})
-            .then(res => {
-              this.$message.success('上传成功')
-            })
-      } else {
-        this.$message.error('上传失败')
-      }
-      // fileList.pop();
-    },
-    // 上传文件的文件列表
-    handleChange(file, fileList) {
-      console.log('file', file);
-      console.log('fileList', fileList)
-    },
-    //订单审核
+    /**
+     * 订单审核功能 点击后审核订单
+     */
+    // 订单审核
     handleCheck(row) {
-      console.log(row)
       //弹出确认和取消
       this.$confirm('是否审核该信息?', '提示', {
         confirmButtonText: '确定',
@@ -1163,131 +1462,11 @@ export default {
             })
       })
     },
-    handleUploadPathSuccess(response, file, fileList) {
-      if (response.code === 200) {
-        //去除不必要字段
-        this.tempOrderInfo = excludeParams(this.tempOrderInfo, this.$exclude)
-        //修改订单信息
-        updateGoodsOrder({...this.tempOrderInfo, path: response.url})
-            .then(res => {
-              this.$message.success('上传成功')
-            })
-      } else {
-        this.$message.error('上传失败')
-      }
-      fileList.pop();
-    },
-    //表格统计
-    //自定义列统计总函数
-    getSummaries(param) {
-      const {columns, data} = param;
-      const sums = [];
-      columns.forEach((column, index) => {
-        if (index === 0) {
-          sums[index] = '统计';
-          return;
-        }
-        const values = data.map(item => {
-          return Number(item[column.property])
-        });
-        if (!values.every(value => isNaN(value))) {
-          //对指定列进行计算
-          // if(index)
-          //需要进行统计的索引列
-          const out_list = [9, 10, 11]
-          //index !== 9 && index !== 1 && index !== 16 && index !== 2
-          if (out_list.includes(index)) {
-            sums[index] = values.reduce((prev, curr) => {
-              const value = Number(curr);
-              if (!isNaN(value)) {
-                return prev + curr;
-              } else {
-                return prev;
-              }
-            }, 0);
-            sums[index] += ' ';
-          }
-        } else {
-          sums[index] = '';
-        }
-      });
-      return sums;
-    },
 
-    //客户供应商开票功能
-    //添加开票 是否订单开票要给订单id
-    submitOpenTitle() {
-      //排除不必要的字段
-      this.openTitleInfo = excludeParams(this.openTitleInfo, this.$exclude)
-      //这里要判断一下 如果是客户开票 就添加发票卖出信息 如果是供应商开票 则添加发票买入信息
-      if (this.openTitleInfo.domain === 1) {
-        //修改开票信息
-        let info = {...this.openTitleInfo.orderInfo, customerIsInvoice: 1}
-        updateGoodsOrder(excludeParams(info, this.$exclude))
-            .then(res => {
-              this.$message.success('开票状态设置成功~')
-              //删除订单信息
-              delete this.openTitleInfo.orderInfo
-              //客户开票 添加发票卖出信息
-              addInvoiceOut(this.openTitleInfo)
-                  .then(res => {
-                    this.$message.success('客户开票成功~')
-                    this.openTitleInfo = {}
-                    this.invoiceOpenVisible = false
-                    this.getList()
-                  })
-            })
-        //添加发票买入
-      } else {
-        let info = {...this.openTitleInfo.orderInfo, isSupplierInvoice: 1}
-        updateGoodsOrder(excludeParams(info, this.$exclude))
-            .then(res => {
-              this.$message.success('开票状态设置成功~')
-              //删除订单信息
-              delete this.openTitleInfo.orderInfo
-              //客户开票 添加发票卖出信息
-              addInvoiceIn(this.openTitleInfo)
-                  .then(res => {
-                    this.$message.success('供应商开票成功~')
-                    this.openTitleInfo = {}
-                    this.invoiceOpenVisible = false
-                    this.getList()
-                  })
-            })
-      }
-    },
-    //开票信息弹窗
-    handleUpdateCompanyName(val) {
-      console.log(val)
-      this.queryCompanyName = val;
-    },
-    handleCommitBackCompany(val) {
-      console.log(val)
-      this.openTitleInfo.companyName = val.companyName;
-      this.openTitleInfo.companyID = val.id;
-      this.openTitleInfo.companyType = val.companyType;
-    },
-    //客户开票 && 供应商开票
-    openCustomerInvoice(row) {
-      //客户开发票 即为发票卖出 添加发票卖出信息 1客户开票  2供应商开票
-      this.openTitleInfo.domain = 1
-      this.openTitleInfo.isOrderTax = row.id;
-      //设置该订单信息 需要进行一次查询
-      getGoodsOrder(row.id)
-          .then(res => {
-            this.openTitleInfo.orderInfo = res.data;
-          })
-      this.invoiceOpenVisible = true;
-    },
-    openSupplierInvoice(row) {
-      this.openTitleInfo.domain = 2
-      this.openTitleInfo.isOrderTax = row.id;
-      getGoodsOrder(row.id)
-          .then(res => {
-            this.openTitleInfo.orderInfo = res.data;
-          })
-      this.invoiceOpenVisible = true;
-    },
+
+    /**
+     *  海陆运费申请功能
+     */
     //申请陆运费
     handleApplyLandFree(row) {
       //组装订单运费信息 己方银行卡信息弹窗自己选
@@ -1307,7 +1486,6 @@ export default {
       //首先去运费表查看是否有运费信息
       listOrderFreight({...this.landFreightInfo, paymentState: '未支付'}).then(res => {
         if (res.rows.length === 0) {
-          // this.keyFlag += 1 //让dialog组件重新渲染
           this.landFreightFree = row.landFreight
           //组装司机信息
           this.driverInfo = {
@@ -1352,14 +1530,7 @@ export default {
       })
 
     },
-    //打印
-    printHTML() {
-      this.$print({
-        printable: 'printBox',
-        type: 'html',
-        targetStyles: ['*'], // 打印内容使用所有HTML样式，没有设置这个属性/值，设置分页打印没有效果
-      })
-    },
+
     /** 查询订单列表 */
     getList() {
       this.loading = true;
@@ -1373,6 +1544,28 @@ export default {
     cancel() {
       this.open = false;
       this.reset();
+    },
+    // 开票信息重置
+    resetOpenTitleInfo() {
+      this.updateOrderItemVisibleTitleInfo = {
+        id: null,
+        invoiceDate: null,
+        invoiceObject: null,
+        invoiceAmount: null,
+        companyType: null,
+        companyName: '',
+        companyID: '',
+        invoiceCompanyName: null,
+        ticketPoint: null,
+        ticketPointAmount: null,
+        isOrderTax: 0,
+        comments: null,
+        addtime: null,
+        userId: null,
+        UserName: null,
+        updateTime: null,
+        delFlag: null
+      }
     },
     // 表单重置
     reset() {
@@ -1465,6 +1658,26 @@ export default {
         this.title = "修改订单";
       });
     },
+    // 休眠函数
+    sleep(ms) {
+      return new Promise(resolve => setTimeout(resolve, ms));
+    },
+    // 格式化对象
+    formatData(data) {
+      let formattedString = '';
+      for (const key in data) {
+        if (data.hasOwnProperty(key)) {
+          const value = data[key];
+          const mappedKey = this.mapper[key] || key;
+          formattedString += `${mappedKey}: ${value}\n`;
+        }
+      }
+      return formattedString.trim(); // 去掉最后一个换行符
+    },
+    // 查看某一个文件
+    checkFileItem(item) {
+      window.open(item)
+    },
     /** 提交按钮 */
     submitForm() {
       if (this.orderInfo.id != null) {
@@ -1501,5 +1714,55 @@ export default {
   }
 };
 </script>
+<style lang="scss">
+.upload-demo {
+  width: 100%;
+  margin: 0 auto;
+}
 
+.item {
+  margin-right: 5px; /* 添加一些间距 */
+  margin-top: 5px;
+  cursor: pointer;
+
+  &:hover {
+    transform: scale(1.1);
+    font-weight: bolder;
+    color: #1ab394;
+  }
+}
+
+.center {
+  // 解决vue-code-diff对不齐和显示下拉标志问题
+  max-height: 600px;
+  overflow-y: auto;
+  overflow-x: hidden;
+  /* 样式穿透-起始行左右对齐，*/
+  .d2h-code-side-line {
+    height: 15px;
+  }
+
+  code.hljs {
+    padding: 0;
+  }
+
+  // 删除行统计显示
+  .d2h-code-side-linenumber {
+    display: none;
+  }
+
+  .d2h-code-side-line {
+    padding: unset;
+  }
+
+  .d2h-code-line-ctn {
+    width: unset;
+  }
+
+  // 删除第一行的统计结果
+  .d2h-info {
+    display: none;
+  }
+}
+</style>
 

@@ -277,7 +277,7 @@
           <el-row>
           </el-row>
           <el-row v-if="scope.row.path === '' || scope.row.path === null">
-            无操作
+            无
           </el-row>
           <el-row v-else>
             <el-button size="mini" type="success" @click="checkAttachment(scope.row,'path')">
@@ -309,7 +309,7 @@
                        width="150px">
         <template #default="scope">
           <el-row v-if="scope.row.receiveProof === '' || scope.row.receiveProof === null">
-            无操作
+            无
           </el-row>
           <el-row v-else>
             <el-button size="mini" type="success" @click="checkAttachment(scope.row,'receiveProof')">
@@ -318,8 +318,6 @@
           </el-row>
         </template>
       </el-table-column>
-      <el-table-column show-overflow-tooltip label="原订单编号" align="center" prop="adjustOrderid"
-                       v-if="columns[18].visible" width="100px"/>
       <el-table-column show-overflow-tooltip label="是否可编辑" align="center" prop="isedit" v-if="columns[19].visible"
                        width="100px">
         <template slot-scope="scope">
@@ -333,7 +331,7 @@
                        v-if="columns[20].visible"
                        width="150px">
         <template #default="scope">
-          <el-row v-if="scope.row.customerIsInvoice === 1">
+          <el-row v-if="scope.row.customerIsInvoice > 0">
             <el-row>
               <el-button type="success" size="mini" @click="updateOrderItemVisibleCustomerInvoice(scope.row)">继续开票
               </el-button>
@@ -351,7 +349,7 @@
                        v-if="columns[21].visible"
                        width="120px">
         <template #default="scope">
-          <el-row v-if="scope.row.isSupplierInvoice === 1">
+          <el-row v-if="scope.row.isSupplierInvoice > 0">
             <el-row>
               <el-button type="success" size="mini" @click="updateOrderItemVisibleCustomerInvoice(scope.row)">继续开票
               </el-button>
@@ -1171,16 +1169,20 @@ export default {
       this.updateOrderItemVisibleTitleInfo.domain = 1
       this.updateOrderItemVisibleTitleInfo.isOrderTax = row.id;
       this.updateOrderItemVisibleTitle = '客户开票'
-      //设置该订单信息 需要进行一次查询
+      //设置该订单信息 需要进行一次查询 获取订单的开票个数
       getGoodsOrder(row.id)
           .then(res => {
             this.updateOrderItemVisibleTitleInfo.orderInfo = res.data;
+            // 保存客户和供应商开票个数
+            this.updateOrderItemVisibleTitleInfo.customerInvoiceNumber = res.data.customerIsInvoice
+            this.updateOrderItemVisibleTitleInfo.supplierInvoiceNumber = res.data.isSupplierInvoice
           })
       this.invoiceupdateOrderItemVisibleVisible = true;
     },
     // 点击供应商开票
     updateOrderItemVisibleSupplierInvoice(row, supplierID) {
       this.resetOpenTitleInfo()
+      // 如果供应商ID存在 那么就自动填充供应商的信息
       if (supplierID !== undefined && supplierID !== '' && supplierID !== null) {
         this.updateOrderItemVisibleTitleInfo.domain = 2
         this.updateOrderItemVisibleTitleInfo.companyID = supplierID;
@@ -1194,6 +1196,9 @@ export default {
           getGoodsOrder(row.id)
               .then(res => {
                 this.updateOrderItemVisibleTitleInfo.orderInfo = res.data;
+                // 保存客户和供应商开票个数
+                this.updateOrderItemVisibleTitleInfo.customerInvoiceNumber = res.data.customerIsInvoice
+                this.updateOrderItemVisibleTitleInfo.supplierInvoiceNumber = res.data.isSupplierInvoice
                 this.invoiceupdateOrderItemVisibleVisible = true;
               })
         })
@@ -1205,6 +1210,9 @@ export default {
         getGoodsOrder(row.id)
             .then(res => {
               this.updateOrderItemVisibleTitleInfo.orderInfo = res.data;
+              // 保存客户和供应商开票个数
+              this.updateOrderItemVisibleTitleInfo.customerInvoiceNumber = res.data.customerIsInvoice
+              this.updateOrderItemVisibleTitleInfo.supplierInvoiceNumber = res.data.isSupplierInvoice
               this.invoiceupdateOrderItemVisibleVisible = true;
             })
       }
@@ -1213,35 +1221,57 @@ export default {
     submitupdateOrderItemVisibleTitle() {
       //排除不必要的字段
       this.updateOrderItemVisibleTitleInfo = excludeParams(this.updateOrderItemVisibleTitleInfo, this.$exclude)
+      // 拿到开票个数
+      const invoiceNumber = {
+        customerInvoiceNumber: this.updateOrderItemVisibleTitleInfo.customerInvoiceNumber,
+        supplierInvoiceNumber: this.updateOrderItemVisibleTitleInfo.supplierInvoiceNumber
+      }
       //这里要判断一下 如果是客户开票 就添加发票卖出信息 如果是供应商开票 则添加发票买入信息
       if (this.updateOrderItemVisibleTitleInfo.domain === 1) {
         //客户开票 添加发票卖出信息
         addInvoiceOut(this.updateOrderItemVisibleTitleInfo)
             .then(res => {
               this.$message.success('客户开票成功~')
-              //修改开票信息
-              let info = {...this.updateOrderItemVisibleTitleInfo.orderInfo, customerIsInvoice: 1}
-              updateGoodsOrder(excludeParams(info, this.$exclude))
-                  .then(res => {
-                    this.$message.success('开票状态设置成功~')
-                    this.invoiceupdateOrderItemVisibleVisible = false
-                    this.resetOpenTitleInfo()
-                    this.getList()
-                  })
+              this.updateGoodsOrderAfterOpen(invoiceNumber, this.updateOrderItemVisibleTitleInfo.domain)
             })
       } else {
+        // 客户开票
         addInvoiceIn(this.updateOrderItemVisibleTitleInfo)
             .then(res => {
               this.$message.success('供应商开票成功~')
-              let info = {...this.updateOrderItemVisibleTitleInfo.orderInfo, isSupplierInvoice: 1}
-              updateGoodsOrder(excludeParams(info, this.$exclude))
-                  .then(res => {
-                    this.$message.success('开票状态设置成功~')
-                    this.invoiceupdateOrderItemVisibleVisible = false
-                    this.resetOpenTitleInfo()
-                    this.getList()
-                  })
+              this.updateGoodsOrderAfterOpen(invoiceNumber, this.updateOrderItemVisibleTitleInfo.domain)
             })
+      }
+    },
+    // 根据类型来更新订单的开票状态
+    updateGoodsOrderAfterOpen(invoiceNumber, type) {
+      const updateInvoiceState = (invoiceField, invoiceValue, state) => {
+        let info = {
+          ...this.updateOrderItemVisibleTitleInfo.orderInfo,
+          [invoiceField]: invoiceValue,
+          invoiceState: state
+        };
+        // 更新订单的开票状态
+        updateGoodsOrder(excludeParams(info, this.$exclude))
+            .then(res => {
+              this.$message.success('开票状态设置成功~');
+              this.invoiceupdateOrderItemVisibleVisible = false;
+              this.resetOpenTitleInfo();
+              this.getList();
+            });
+      };
+      if (type === 0) { // 供应商开票
+        if (invoiceNumber.customerInvoiceNumber === 0) {
+          updateInvoiceState('isSupplierInvoice', invoiceNumber.supplierInvoiceNumber + 1, '部分开票');
+        } else {
+          updateInvoiceState('isSupplierInvoice', invoiceNumber.supplierInvoiceNumber + 1, '已开票');
+        }
+      } else { // 客户开票
+        if (invoiceNumber.supplierInvoiceNumber === 0) {
+          updateInvoiceState('customerIsInvoice', invoiceNumber.customerInvoiceNumber + 1, '部分开票');
+        } else {
+          updateInvoiceState('customerIsInvoice', invoiceNumber.customerInvoiceNumber + 1, '已开票');
+        }
       }
     },
     // 开票信息弹窗的搜索信息自动填充
@@ -1328,7 +1358,7 @@ export default {
         // 去除字段
         orderInfo = excludeParams(orderInfo, this.$exclude)
         // 调整单
-        adjustGoodsOrder({...orderInfo, ordersNo: '', adjustDate: formatDate(new Date())}).then(res => {
+        adjustGoodsOrder({...orderInfo, ordersNo: '', adjustDate: parseTime(new Date())}).then(res => {
           this.$message.success('调整单提交成功')
           this.getList();
         })

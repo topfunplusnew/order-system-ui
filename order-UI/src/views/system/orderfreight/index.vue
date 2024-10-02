@@ -3,12 +3,12 @@
     <el-form :model="queryParams" ref="queryForm" size="mini" :inline="true" v-show="showSearch" label-width="120px">
       <el-form-item label="申请开始日期" prop="applyDate">
         <el-date-picker
-          v-model="dateRange"
-          style="width: 240px"
-          value-format="yyyy-MM-dd"
-          type="daterange"
-          start-placeholder="开始日期"
-          end-placeholder="结束日期"
+            v-model="dateRange"
+            style="width: 240px"
+            value-format="yyyy-MM-dd"
+            type="daterange"
+            start-placeholder="开始日期"
+            end-placeholder="结束日期"
         ></el-date-picker>
       </el-form-item>
       <el-form-item>
@@ -26,10 +26,10 @@
         <template v-slot:print>
           <el-col :span="1.5">
             <el-button
-              plain
-              icon="el-icon-printer"
-              size="mini"
-              @click="printHTML"
+                plain
+                icon="el-icon-printer"
+                size="mini"
+                @click="printHTML"
             >
             </el-button>
           </el-col>
@@ -38,11 +38,11 @@
         <template v-slot:export>
           <el-col :span="1.5">
             <el-button
-              plain
-              icon="el-icon-folder-opened"
-              size="mini"
-              @click="handleExport"
-              v-hasPermi="['system:orderfreight:export']"
+                plain
+                icon="el-icon-folder-opened"
+                size="mini"
+                @click="handleExport"
+                v-hasPermi="['system:orderfreight:export']"
             >
             </el-button>
           </el-col>
@@ -51,70 +51,62 @@
     </el-row>
 
     <el-table
-      v-horizontal-scroll="'always'"
-      border
-      v-loading="loading"
-      :data="orderFreightList"
-      id="printBox"
-      max-height="600px"
-      size="mini"
-      :cell-style="() => { return { padding: '.5px' } }"
+        v-horizontal-scroll="'always'"
+        border
+        v-loading="loading"
+        :data="orderFreightList"
+        id="printBox"
+        max-height="600px"
+        size="mini"
+        :cell-style="() => { return { padding: '.5px' } }"
     >
       <el-table-column
-        label="运费类型"
-        align="center"
-        prop="freightType"
-        v-if="columns[1].visible"
-        width="100"
-        show-overflow-tooltip
+          label="运费类型"
+          align="center"
+          prop="freightType"
+          v-if="columns[1].visible"
+          width="100"
+          show-overflow-tooltip
       />
       <el-table-column
-        label="金额"
-        align="center"
-        prop="moneyAmount"
-        v-if="columns[2].visible"
-        width="100"
-        show-overflow-tooltip
+          label="金额"
+          align="center"
+          prop="moneyAmount"
+          v-if="columns[2].visible"
+          width="100"
+          show-overflow-tooltip
       />
       <el-table-column
-        label="对方户名"
-        align="center"
-        prop="otherAcountsName"
-        v-if="columns[3].visible"
-        width="100"
-        show-overflow-tooltip
+          label="对方户名"
+          align="center"
+          prop="otherAcountsName"
+          v-if="columns[3].visible"
+          width="100"
+          show-overflow-tooltip
       />
       <el-table-column
-        label="对方账号"
-        align="center"
-        prop="otherBankNo"
-        v-if="columns[4].visible"
-        width="100"
-        show-overflow-tooltip
+          label="对方账号"
+          align="center"
+          prop="otherBankNo"
+          v-if="columns[4].visible"
+          width="100"
+          show-overflow-tooltip
       />
       <el-table-column
-        label="对方开户行"
-        align="center"
-        prop="otherBankName"
-        v-if="columns[5].visible"
-        width="100"
-        show-overflow-tooltip
+          label="对方开户行"
+          align="center"
+          prop="otherBankName"
+          v-if="columns[5].visible"
+          width="100"
+          show-overflow-tooltip
       />
       <el-table-column
-        label="备注"
-        align="center"
-        prop="content"
-        v-if="columns[6].visible"
-        width="100"
-        show-overflow-tooltip
-      />
-      <el-table-column
-        label="支付状态"
-        align="center"
-        prop="paymentState"
-        v-if="columns[7].visible"
-        width="100"
-        show-overflow-tooltip
+          label="支付状态"
+          align="center"
+          prop="paymentState"
+          v-if="columns[7].visible"
+          width="100"
+          show-overflow-tooltip
       >
         <template slot-scope="scope">
           <el-tag :type="scope.row.paymentState === '未支付' ? 'danger' : 'success'">
@@ -123,52 +115,52 @@
         </template>
       </el-table-column>
       <el-table-column
-        label="司机姓名"
-        align="center"
-        prop="driverName"
-        v-if="columns[8].visible"
-        width="100"
-        show-overflow-tooltip
+          label="司机姓名"
+          align="center"
+          prop="driverName"
+          v-if="columns[8].visible"
+          width="100"
+          show-overflow-tooltip
       />
       <el-table-column
-        label="车牌号"
-        align="center"
-        prop="carNo"
-        v-if="columns[9].visible"
-        width="100"
-        show-overflow-tooltip
+          label="车牌号"
+          align="center"
+          prop="carNo"
+          v-if="columns[9].visible"
+          width="100"
+          show-overflow-tooltip
       />
       <el-table-column
-        label="车队"
-        align="center"
-        prop="fleet"
-        v-if="columns[10].visible"
-        width="100"
-        show-overflow-tooltip
+          label="车队"
+          align="center"
+          prop="fleet"
+          v-if="columns[10].visible"
+          width="100"
+          show-overflow-tooltip
       />
       <el-table-column
-        label="申请人员姓名"
-        align="center"
-        prop="applyUserName"
-        v-if="columns[11].visible"
-        width="100"
-        show-overflow-tooltip
+          label="申请人员姓名"
+          align="center"
+          prop="applyUserName"
+          v-if="columns[11].visible"
+          width="100"
+          show-overflow-tooltip
       />
       <el-table-column
-        label="申请日期"
-        align="center"
-        prop="applyDate"
-        v-if="columns[12].visible"
-        width="100"
-        show-overflow-tooltip
+          label="申请日期"
+          align="center"
+          prop="applyDate"
+          v-if="columns[12].visible"
+          width="100"
+          show-overflow-tooltip
       />
       <el-table-column
-        label="是否可编辑"
-        align="center"
-        prop="isedit"
-        v-if="columns[13].visible"
-        width="100"
-        show-overflow-tooltip
+          label="是否可编辑"
+          align="center"
+          prop="isedit"
+          v-if="columns[13].visible"
+          width="100"
+          show-overflow-tooltip
       >
         <template slot-scope="scope">
           <el-tag :type="scope.row.isedit === 0 ? 'danger' : 'success'" disable-transitions
@@ -180,66 +172,66 @@
         </template>
       </el-table-column>
       <el-table-column
-        label="付款人员姓名"
-        align="center"
-        prop="payUserName"
-        v-if="columns[14].visible"
-        width="100"
-        show-overflow-tooltip
+          label="付款人员姓名"
+          align="center"
+          prop="payUserName"
+          v-if="columns[14].visible"
+          width="100"
+          show-overflow-tooltip
       />
       <el-table-column
-        label="付款日期"
-        align="center"
-        prop="payDate"
-        v-if="columns[15].visible"
-        width="100"
-        show-overflow-tooltip
+          label="付款日期"
+          align="center"
+          prop="payDate"
+          v-if="columns[15].visible"
+          width="100"
+          show-overflow-tooltip
       />
       <el-table-column
-        label="备注"
-        align="center"
-        prop="comments"
-        v-if="columns[16].visible"
-        width="100"
-        show-overflow-tooltip
+          label="备注"
+          align="center"
+          prop="comments"
+          v-if="columns[16].visible"
+          width="100"
+          show-overflow-tooltip
       />
       <el-table-column
-        label="操作"
-        align="center"
-        class-name="small-padding fixed-width"
-        fixed="right"
-        width="250"
+          label="操作"
+          align="center"
+          class-name="small-padding fixed-width"
+          fixed="right"
+          width="250"
       >
         <template slot-scope="scope">
           <el-button
-            size="mini"
-            type="warning"
-            @click="applyForLand(scope.row)"
-            :disabled="scope.row.checkState === '审核中'"
-            v-if="scope.row.freightType === '陆运'"
+              size="mini"
+              type="warning"
+              @click="applyForLand(scope.row)"
+              :disabled="scope.row.checkState === '审核中'"
+              v-if="scope.row.freightType === '陆运'"
           >申请陆运费
           </el-button>
           <!-- 只有海运费不为零才能申请海运费 -->
           <el-button
-            size="mini"
-            type="primary"
-            :disabled="scope.row.checkState === '审核中'"
-            @click="applyForSea(scope.row)"
-            v-if="scope.row.freightType === '海运'"
+              size="mini"
+              type="primary"
+              :disabled="scope.row.checkState === '审核中'"
+              @click="applyForSea(scope.row)"
+              v-if="scope.row.freightType === '海运'"
           >申请海运费
           </el-button>
           <el-button
-            size="mini"
-            type="primary"
-            @click="handleUpdate(scope.row)"
-            v-hasPermi="['system:orderfreight:edit']"
+              size="mini"
+              type="primary"
+              @click="handleUpdate(scope.row)"
+              v-hasPermi="['system:orderfreight:edit']"
           >修改
           </el-button>
           <el-button
-            size="mini"
-            type="danger"
-            @click="handleDelete(scope.row)"
-            v-hasPermi="['system:orderfreight:remove']"
+              size="mini"
+              type="danger"
+              @click="handleDelete(scope.row)"
+              v-hasPermi="['system:orderfreight:remove']"
           >删除
           </el-button>
         </template>
@@ -247,11 +239,11 @@
     </el-table>
 
     <pagination
-      v-show="total>0"
-      :total="total"
-      :page.sync="queryParams.pageNum"
-      :limit.sync="queryParams.pageSize"
-      @pagination="getList"
+        v-show="total>0"
+        :total="total"
+        :page.sync="queryParams.pageNum"
+        :limit.sync="queryParams.pageSize"
+        @pagination="getList"
     />
     <!--    created第一次传递的props，然后监听后来props的变化-->
     <el-dialog title="运费付款申请" :visible.sync="applyPaymentVisible" width="500px">
@@ -338,18 +330,18 @@
         </el-form-item>
         <el-form-item label="申请日期" prop="applyDate">
           <el-date-picker
-            v-model="form.applyDate"
-            type="date"
-            placeholder="请选择申请日期"
-            value-format="yyyy-MM-dd">
+              v-model="form.applyDate"
+              type="date"
+              placeholder="请选择申请日期"
+              value-format="yyyy-MM-dd">
           </el-date-picker>
         </el-form-item>
         <el-form-item label="付款日期" prop="payDate">
           <el-date-picker
-            v-model="form.payDate"
-            type="date"
-            placeholder="请选择付款日期"
-            value-format="yyyy-MM-dd">
+              v-model="form.payDate"
+              type="date"
+              placeholder="请选择付款日期"
+              value-format="yyyy-MM-dd">
           </el-date-picker>
         </el-form-item>
         <el-form-item label="备注" prop="comments">
@@ -481,7 +473,7 @@ export default {
   created() {
     this.getList();
     if (localStorage.getItem('orderfreight-columns') === 'null'
-      || !localStorage.getItem('orderfreight-columns')) {
+        || !localStorage.getItem('orderfreight-columns')) {
       //设置localStorage
       localStorage.setItem("orderfreight-columns", JSON.stringify(this.columns))
     } else {
@@ -560,11 +552,11 @@ export default {
       this.loading = true;
       //applyDateStartTime
       listOrderFreight(addDateRange(this.queryParams, this.dateRange, 'orderfreight'))
-        .then(response => {
-          this.orderFreightList = response.rows;
-          this.total = response.total;
-          this.loading = false;
-        });
+          .then(response => {
+            this.orderFreightList = response.rows;
+            this.total = response.total;
+            this.loading = false;
+          });
     },
     printHTML() {
       this.$print({
