@@ -830,7 +830,7 @@ export default {
         fleet: null,
         isAdjusted: null,
         adjustDate: null,
-        isAdjust: null,
+        isAdjust: '否',
         adjustOrderid: null,
         isedit: null,
         customerIsInvoice: null,
