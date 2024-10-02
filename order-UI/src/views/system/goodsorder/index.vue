@@ -890,11 +890,11 @@ export default {
       /**
        * 调整单功能
        */
-      //调整单的id
+      //调整单的id`
       tempId: '',
       //调整单的弹窗
       handleOrderVisible: false,
-      //订单输入详情信息
+      //订单信息
       orderInfo: {},
 
 
