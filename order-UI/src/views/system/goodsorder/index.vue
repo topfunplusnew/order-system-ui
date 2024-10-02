@@ -210,19 +210,19 @@
                        v-if="columns[2].visible" width="100px"/>
       <el-table-column show-overflow-tooltip label="海运车牌" align="center" prop="seaCarNo" v-if="columns[3].visible">
         <template #default="scope">
-          {{ scope.row.seaCarNo == null ? '无海运信息' : scope.row.seaCarNo }}
+          {{ !scope.row.seaCarNo ? '无' : scope.row.seaCarNo }}
         </template>
       </el-table-column>
       <el-table-column show-overflow-tooltip label="海运司机电话" align="center" prop="seaDriverTel"
                        v-if="columns[4].visible" width="100px">
         <template #default="scope">
-          {{ scope.row.seaDriverTel == null ? '无海运信息' : scope.row.seaDriverTel }}
+          {{ !scope.row.seaDriverTel ? '无' : scope.row.seaDriverTel }}
         </template>
       </el-table-column>
       <el-table-column show-overflow-tooltip label="海运司机姓名" align="center" prop="seaDriverName"
                        v-if="columns[5].visible" width="100px">
         <template #default="scope">
-          {{ scope.row.seaDriverName == null ? '无海运信息' : scope.row.seaDriverTel }}
+          {{ !scope.row.seaDriverName ? '无' : scope.row.seaDriverTel }}
         </template>
       </el-table-column>
       <el-table-column show-overflow-tooltip label="销售经理" align="center" prop="saleManager"
@@ -575,7 +575,7 @@
     <el-dialog
         title="订单货物详情"
         :visible.sync="checkOrderDetailInfoVisible"
-        width="70%" destroy-on-close>
+        width="1100px" destroy-on-close>
       <!--      传递订单详情列表-->
       <OrderDetailInfo :orderDetailInfoList="orderDetailInfoList"
                        @updateOrderDetailList="handleUpdateOrderDetailInfoList"/>
@@ -780,9 +780,6 @@ export default {
   },
   data() {
     return {
-      // 比较差异的弹窗
-      diffVisible: false,
-      compareSwitch: false,
       // 遮罩层
       loading: true,
       // 选中数组
@@ -799,8 +796,6 @@ export default {
       goodsOrderList: [],
       // 弹出层标题
       title: "",
-      //key强制重新渲染组件
-      keyFlag: 0,
       // 是否显示弹出层
       updateOrderItemVisible: false,
       // 查询参数
@@ -850,8 +845,79 @@ export default {
       form: {},
       // 表单校验
       rules: {},
-      timesQuery: {},
-      paramQuery: {},
+      //隐藏列
+      columns: [
+        {key: 0, label: `陆运车牌`, visible: true},
+        {key: 1, label: `陆运司机电话`, visible: true},
+        {key: 2, label: `陆运司机姓名`, visible: true},
+        {key: 3, label: `海运车牌`, visible: true},
+        {key: 4, label: `海运司机电话`, visible: true},
+        {key: 5, label: `海运司机姓名`, visible: true},
+        {key: 6, label: `销售经理`, visible: true},
+        {key: 7, label: `车队`, visible: true},
+        {key: 8, label: `审核状态`, visible: true},
+        {key: 9, label: `开票状态`, visible: true},
+        {key: 10, label: `附件`, visible: true},
+        {key: 11, label: `打款状态`, visible: true},
+        {key: 12, label: `收到条附件路径`, visible: true},
+        {key: 13, label: `原订单编号`, visible: true},
+        {key: 14, label: `是否可编辑`, visible: true},
+        {key: 15, label: `客户是否开票`, visible: true},
+        {key: 16, label: `供应商是否开票`, visible: true},
+        {key: 17, label: `备注`, visible: true},
+      ],
+      //顶部条件搜索
+      queryOrderInfo: {},
+
+
+      /**
+       * 发货单功能
+       */
+      Order1Visible: false,
+
+
+      /**
+       * 添加订单的功能
+       */
+      //当前订单id
+      orderId: null,
+      //添加新订单的弹窗
+      orderItemVisible: false,
+      orderTitle: '',
+      submitInfo: '',
+
+
+      /**
+       * 调整单功能
+       */
+      //调整单的id
+      tempId: '',
+      //调整单的弹窗
+      handleOrderVisible: false,
+      //订单输入详情信息
+      orderInfo: {},
+
+
+      /**
+       * 查看货物信息功能
+       */
+      //查看订单中的列表
+      orderDetailInfo: {},
+      checkOrderDetailInfoVisible: false,
+      orderDetailInfoList: [],
+
+
+      /**
+       * 行操作点击查看的功能
+       */
+      checkOrderVisible: false,
+
+      /**
+       * 订单开票功能
+       */
+      // 查询字段
+      queryCompanyName: '',
+      // 开票选择
       options: [
         {
           value: '已审核',
@@ -871,97 +937,9 @@ export default {
         value: '已开票',
         label: '已开票'
       },],
-      //隐藏列
-      columns: [
-        /* {key: 0, label: `订单编号`, visible: true},*/
-        {key: 0, label: `陆运车牌`, visible: true},
-        {key: 1, label: `陆运司机电话`, visible: true},
-        {key: 2, label: `陆运司机姓名`, visible: true},
-        {key: 3, label: `海运车牌`, visible: true},
-        {key: 4, label: `海运司机电话`, visible: true},
-        {key: 5, label: `海运司机姓名`, visible: true},
-        {key: 6, label: `销售经理`, visible: true},
-        {key: 7, label: `车队`, visible: true},
-        {key: 8, label: `审核状态`, visible: true},
-        {key: 9, label: `开票状态`, visible: true},
-        {key: 10, label: `附件`, visible: true},
-        {key: 11, label: `打款状态`, visible: true},
-        /* {key: 13, label: `陆运银行户名`, visible: true},
-         {key: 14, label: `陆运银行账号`, visible: true},
-         {key: 15, label: `海运银行户名`, visible: true},
-         {key: 16, label: `海运银行账号`, visible: true},*/
-        {key: 12, label: `收到条附件路径`, visible: true},
-        /*  {key: 13, label: `是否被调整单`, visible: true},
-          {key: 14, label: `是否调整单`, visible: true},
-          {key: 15, label: `调整日期`, visible: true},*/
-        {key: 13, label: `原订单编号`, visible: true},
-        {key: 14, label: `是否可编辑`, visible: true},
-        {key: 15, label: `客户是否开票`, visible: true},
-        {key: 16, label: `供应商是否开票`, visible: true},
-        {key: 17, label: `备注`, visible: true},
-      ],
-      //顶部条件搜索
-      queryOrderInfo: {},
-      //点击查看的弹窗
-      checkOrderVisible: false,
-      //调整单的弹窗
-      handleOrderVisible: false,
-      //订单弹窗
-      Order1Visible: false,
-      //上传和收到条
-      handleUploadVisible: false,
-      handleCommitVisible: false,
-      //添加新订单的弹窗
-      orderItemVisible: false,
-      orderTitle: '',
-      submitInfo: '',
-      //开票
-      handleupdateOrderItemVisibleTitleDialogVisible: false,
-      //查看订单中的列表
-      orderDetailInfo: {},
-
-      //添加订单详情
-      addOrderItem: {},
-      //调整单的id
-      tempId: '',
-      //订单输入详情信息
-      orderInfo: {},
-      //上传附件临时保存当前点击订单信息
-      tempOrderInfo: {
-        receiveProof: ''
-      },
-      //运费的弹窗
-      landFreeDialogVisible: false,
-      seaFreeDialogVisible: false,
-      //订单详情的
-      checkOrderDetailInfoVisible: false,
-      orderDetailInfoList: [],
-      //运费
-      landFreightFree: 0,
-      seaFreightFree: 0,
-      //订单中的司机相关信息 自动填充响应的收款方账号信息
-      driverInfo: {},
       //开票信息
-      updateOrderItemVisibleTitleInfo: {
-        id: null,
-        invoiceDate: null,
-        invoiceObject: null,
-        invoiceAmount: null,
-        companyType: null,
-        companyName: '',
-        companyID: '',
-        invoiceCompanyName: null,
-        ticketPoint: null,
-        ticketPointAmount: null,
-        isOrderTax: 0,
-        comments: null,
-        addtime: null,
-        userId: null,
-        UserName: null,
-        updateTime: null,
-        delFlag: null
-      },
-      // 校验
+      updateOrderItemVisibleTitleInfo: {},
+      // 开票信息校验
       CheckRules: {
         updateOrderItemVisibleTitleRules: {
           invoiceDate: [
@@ -990,42 +968,69 @@ export default {
             {pattern: /^-?[0-9]+(\.[0-9]+)?$/, message: '只能输入数字', trigger: 'blur'}],
         }
       },
-      //当前订单id
-      orderId: null,
-      queryCompanyName: '',
-      //付款申请信息列表 用于判断海运费和陆运费按钮是否可用
-      paymentApplyInfoList: [],
-      isFreight: '',
-      //陆运费信息
+
+
+      /**
+       * 海陆运费申请信息 海陆运费申请功能
+       */
+      //订单中的司机相关信息 自动填充响应的收款方账号信息
+      driverInfo: {},
+      //运费
+      landFreightFree: 0,
+      seaFreightFree: 0,
       landFreightInfo: {},
       seaFreightInfo: {},
+      //运费的弹窗
+      landFreeDialogVisible: false,
+      seaFreeDialogVisible: false,
 
-      //上传路径
-      uploadFileUrl: process.env.VUE_APP_BASE_API + "/common/upload",
-      headers: {
-        Authorization: "Bearer " + getToken(),
-      },
-
-      //供应商 && 客户开发票
+      /**
+       * 客户或者供应商发票功能
+       */
       invoiceupdateOrderItemVisibleVisible: false,
       updateOrderItemVisibleTitle: '',
 
-      // 订单申请打款
+
+      /**
+       * 订单申请打款功能
+       */
       tID: '',
       paymentApplyVisible: false,
       needMoney: 0,
-      // 文件上传的列表
+
+
+      /**
+       * 文件上传功能
+       */
+      //上传和收到条
+      handleUploadVisible: false,
+      handleCommitVisible: false,
+      //上传附件临时保存当前点击订单信息
+      tempOrderInfo: {
+        receiveProof: ''
+      },
       fileList: [],
       // 已上传后的文件名称列表
       fileNamesList: [],
       // 查看附件或者收到条的文件列表
       checkFileList: [],
       checkAttachmentVisible: false,
+      //上传路径
+      uploadFileUrl: process.env.VUE_APP_BASE_API + "/common/upload",
+      headers: {
+        Authorization: "Bearer " + getToken(),
+      },
 
-      // 原订单信息
+      /**
+       * 查看原订单信息的功能
+       */
       currentOrderItemInfo: {},
       currentOrderItemInfoVisible: false,
-      // 查看订单历史信息
+
+
+      /**
+       * 查看订单历史信息
+       */
       checkHistoryOrderVisible: false,
       // 订单历史信息列表
       orderHistoryInfoList: [],
@@ -1085,14 +1090,12 @@ export default {
         'supplierNames': '供应商',
         'allPayments': '总货款',
       },
-      diffPatcher: null
     };
   },
   created() {
     this.getList();
     if (localStorage.getItem('goodsorder-columns') === 'null'
         || !localStorage.getItem('goodsorder-columns')) {
-      //设置localStorage
       localStorage.setItem("goodsorder-columns", JSON.stringify(this.columns))
     } else {
       this.columns = JSON.parse(localStorage.getItem('goodsorder-columns'));
@@ -1100,19 +1103,14 @@ export default {
     this.$store.dispatch('order/getOrderList')
   },
   mounted() {
-    this.diffPatcher = create()
   },
   computed: {
     TableName() {
       return TableName
     },
-    // 获取订单列表
-    ...mapGetters(['orderItemList']),
-    ...mapGetters(['orderList']),
-    // 拿到暂存里的订单信息
-    ...mapGetters(['currentOrderInfo'])
+    ...mapGetters(['orderItemList']), // 获取订单列表
+    ...mapGetters(['currentOrderInfo']) // 拿到暂存里的订单信息
   },
-  //监听开票表单的变化 如果有 就赋值
   watch: {
     columns: {
       handler: (newVal) => {
@@ -1125,13 +1123,15 @@ export default {
       handler(val) {
         this.updateOrderItemVisibleTitleInfo.ticketPointAmount = Number(this.updateOrderItemVisibleTitleInfo.invoiceAmount * this.updateOrderItemVisibleTitleInfo.ticketPoint).toFixed(2)
       },
-      deep: true
+      deep: true,
+      immediate: true,
     }
   },
   methods: {
     parseTime,
     listCompany,
     listBankAccount,
+    // 获取供应商的名称列表
     getSupplierNames(list) {
       if (list.length === 0) {
         return;
@@ -1143,21 +1143,108 @@ export default {
         }
       })
     },
+
+
+    /**
+     * 1.开票功能
+     */
+    // 点击客户开票
+    updateOrderItemVisibleCustomerInvoice(row) {
+      this.resetOpenTitleInfo()
+      //客户开发票 即为发票卖出 添加发票卖出信息 1客户开票  2供应商开票
+      this.updateOrderItemVisibleTitleInfo.domain = 1
+      this.updateOrderItemVisibleTitleInfo.isOrderTax = row.id;
+      this.updateOrderItemVisibleTitle = '客户开票'
+      //设置该订单信息 需要进行一次查询
+      getGoodsOrder(row.id)
+          .then(res => {
+            this.updateOrderItemVisibleTitleInfo.orderInfo = res.data;
+          })
+      this.invoiceupdateOrderItemVisibleVisible = true;
+    },
+    // 点击供应商开票
+    updateOrderItemVisibleSupplierInvoice(row, supplierID) {
+      this.resetOpenTitleInfo()
+      if (supplierID !== undefined && supplierID !== '' && supplierID !== null) {
+        this.updateOrderItemVisibleTitleInfo.domain = 2
+        this.updateOrderItemVisibleTitleInfo.companyID = supplierID;
+        this.updateOrderItemVisibleTitleInfo.isOrderTax = row.id;
+        // 先获取公司信息
+        getCompany(supplierID).then(res => {
+          this.updateOrderItemVisibleTitleInfo.companyName = res.data.companyName;
+          this.updateOrderItemVisibleTitleInfo.companyType = res.data.companyType;
+          this.updateOrderItemVisibleTitle = '供应商开票'
+          // 获取订单信息
+          getGoodsOrder(row.id)
+              .then(res => {
+                this.updateOrderItemVisibleTitleInfo.orderInfo = res.data;
+                this.invoiceupdateOrderItemVisibleVisible = true;
+              })
+        })
+      } else {
+        this.updateOrderItemVisibleTitleInfo.domain = 2
+        this.updateOrderItemVisibleTitleInfo.isOrderTax = row.id;
+        this.updateOrderItemVisibleTitleInfo.isOrderTax = row.id;
+        this.updateOrderItemVisibleTitle = '供应商开票'
+        getGoodsOrder(row.id)
+            .then(res => {
+              this.updateOrderItemVisibleTitleInfo.orderInfo = res.data;
+              this.invoiceupdateOrderItemVisibleVisible = true;
+            })
+      }
+    },
+    // 客户供应商开票功能
+    submitupdateOrderItemVisibleTitle() {
+      //排除不必要的字段
+      this.updateOrderItemVisibleTitleInfo = excludeParams(this.updateOrderItemVisibleTitleInfo, this.$exclude)
+      //这里要判断一下 如果是客户开票 就添加发票卖出信息 如果是供应商开票 则添加发票买入信息
+      if (this.updateOrderItemVisibleTitleInfo.domain === 1) {
+        //客户开票 添加发票卖出信息
+        addInvoiceOut(this.updateOrderItemVisibleTitleInfo)
+            .then(res => {
+              this.$message.success('客户开票成功~')
+              //修改开票信息
+              let info = {...this.updateOrderItemVisibleTitleInfo.orderInfo, customerIsInvoice: 1}
+              updateGoodsOrder(excludeParams(info, this.$exclude))
+                  .then(res => {
+                    this.$message.success('开票状态设置成功~')
+                    this.invoiceupdateOrderItemVisibleVisible = false
+                    this.resetOpenTitleInfo()
+                    this.getList()
+                  })
+            })
+      } else {
+        addInvoiceIn(this.updateOrderItemVisibleTitleInfo)
+            .then(res => {
+              this.$message.success('供应商开票成功~')
+              let info = {...this.updateOrderItemVisibleTitleInfo.orderInfo, isSupplierInvoice: 1}
+              updateGoodsOrder(excludeParams(info, this.$exclude))
+                  .then(res => {
+                    this.$message.success('开票状态设置成功~')
+                    this.invoiceupdateOrderItemVisibleVisible = false
+                    this.resetOpenTitleInfo()
+                    this.getList()
+                  })
+            })
+      }
+    },
+    // 开票信息弹窗的搜索信息自动填充
+    handleUpdateCompanyName(val) {
+      this.queryCompanyName = val;
+    },
+    handleCommitBackCompany(val) {
+      this.updateOrderItemVisibleTitleInfo.companyName = val.companyName;
+      this.updateOrderItemVisibleTitleInfo.companyID = val.id;
+      this.updateOrderItemVisibleTitleInfo.companyType = val.companyType;
+    },
+
+
+    /**
+     * 2.查看订单历史修改记录功能
+     */
     // 查看原订单信息
     checkcurrentOrderItemInfo() {
       this.currentOrderItemInfoVisible = true;
-    },
-    // 格式化对象
-    formatData(data) {
-      let formattedString = '';
-      for (const key in data) {
-        if (data.hasOwnProperty(key)) {
-          const value = data[key];
-          const mappedKey = this.mapper[key] || key;
-          formattedString += `${mappedKey}: ${value}\n`;
-        }
-      }
-      return formattedString.trim(); // 去掉最后一个换行符
     },
     // 查看订单历史信息
     checkOrderHistory(row) {
@@ -1166,7 +1253,6 @@ export default {
       const id = row.id;
       // 查询订单历史信息
       getHistoryGoodsOrder({goodsOrderID: id}).then(res => {
-        // 如果rows的长度为0那么就提示没有修改记录
         if (res.rows.length === 0) {
           this.$message.warning('没有修改记录')
           return;
@@ -1190,12 +1276,9 @@ export default {
       })
     },
 
-    // 订单表信息的回调函数 用于修改父组件传递过去的数据
-    handleChangeOrderInfo(val) {
-      this.orderInfo = val;
-    },
-
-    // 行操作打开查看按钮 打开查看弹窗，获取当前行的id，获取订单信息
+    /**
+     *  3.行操作中点击查看 查看当前行订单的信息
+     */
     checkOrderItemInfo(row) {
       this.checkOrderVisible = true;
       const id = row.id;
@@ -1204,6 +1287,11 @@ export default {
         this.orderDetailInfo = res.data.orderDetailList;
       })
     },
+
+
+    /**
+     *  4.点击调整单按钮，调整订单
+     */
     //点击调整单的弹窗
     handleOrderItemInfo(row) {
       this.handleOrderVisible = true
@@ -1219,10 +1307,10 @@ export default {
         // 将每个货物信息的ordersNo赋值为空 并且去除不必要的参数
         orderInfo.orderDetailList.forEach(item => {
           item.ordersNo = '';
-          item = excludeParams(item, this.$excludeWithUpdate)
+          item = excludeParams(item, this.$exclude)
         })
         // 去除字段
-        orderInfo = excludeParams(orderInfo, this.$excludeWithUpdate)
+        orderInfo = excludeParams(orderInfo, this.$exclude)
         // 调整单
         adjustGoodsOrder({...orderInfo, ordersNo: '', adjustDate: formatDate(new Date())}).then(res => {
           this.$message.success('调整单提交成功')
@@ -1232,7 +1320,10 @@ export default {
       })
     },
 
-    //查看订单详情列表
+
+    /**
+     *  5.行操作中点击货物按钮，查看该订单的货物信息
+     */
     handleCheckOrderDetailInfo(row) {
       //赋值 以便于给子组件id
       sessionStorage.setItem('order_id', row.id)
@@ -1249,11 +1340,18 @@ export default {
       })
     },
 
+    /**
+     *  6.点击订单的发货单按钮 查看发货单
+     */
     // 订单发货单
     handleOrder1(row) {
       this.Order1Visible = true
     },
 
+
+    /**
+     *  7.点击上传附件 上传附件功能
+     */
     // 上传附件
     handleUpload(row) {
       this.handleUploadVisible = true
@@ -1269,26 +1367,6 @@ export default {
         this.tempOrderInfo = res.data;
       })
     },
-
-    //查看附件信息
-    checkAttachment(row, type) {
-      if (type === 'path') {
-        getGoodsOrder(row.id).then(res => {
-          this.checkFileList = res.data.path.split('|');
-          this.checkAttachmentVisible = true;
-        })
-      } else {
-        getGoodsOrder(row.id).then(res => {
-          this.checkFileList = res.data.receiveProof.split('|');
-          this.checkAttachmentVisible = true;
-        })
-      }
-    },
-    // 查看某一个文件
-    checkFileItem(item) {
-      window.updateOrderItemVisible(item)
-    },
-
     // 上传之前的钩子函数
     beforeUpload(file) {
       // 如果文件名超出20个字符那么就提示
@@ -1334,7 +1412,7 @@ export default {
         }
       }
       // 全部上传完事后 修改订单的附件
-      this.tempOrderInfo = excludeParams(this.tempOrderInfo, this.$excludeWithUpdate)
+      this.tempOrderInfo = excludeParams(this.tempOrderInfo, this.$exclude)
       const path = this.fileNamesList.join('|')
       if (type === 'path') {
         //修改订单信息
@@ -1353,11 +1431,30 @@ export default {
             })
       }
     },
-    // 休眠函数
-    sleep(ms) {
-      return new Promise(resolve => setTimeout(resolve, ms));
+
+
+    /**
+     * 查看附件功能
+     */
+    //查看附件信息
+    checkAttachment(row, type) {
+      if (type === 'path') {
+        getGoodsOrder(row.id).then(res => {
+          this.checkFileList = res.data.path.split('|');
+          this.checkAttachmentVisible = true;
+        })
+      } else {
+        getGoodsOrder(row.id).then(res => {
+          this.checkFileList = res.data.receiveProof.split('|');
+          this.checkAttachmentVisible = true;
+        })
+      }
     },
 
+
+    /**
+     * 订单申请打款功能
+     */
     // 订单申请打款
     applyForPayment(row) {
       this.paymentApplyVisible = true;
@@ -1367,7 +1464,11 @@ export default {
       this.paymentApplyVisible = false
       this.getList()
     },
-    //订单审核
+
+    /**
+     * 订单审核功能 点击后审核订单
+     */
+    // 订单审核
     handleCheck(row) {
       //弹出确认和取消
       this.$confirm('是否审核该信息?', '提示', {
@@ -1386,95 +1487,11 @@ export default {
             })
       })
     },
-    //客户供应商开票功能
-    //添加开票 是否订单开票要给订单id
-    submitupdateOrderItemVisibleTitle() {
-      //排除不必要的字段
-      this.updateOrderItemVisibleTitleInfo = excludeParams(this.updateOrderItemVisibleTitleInfo, this.$excludeWithUpdate)
-      //这里要判断一下 如果是客户开票 就添加发票卖出信息 如果是供应商开票 则添加发票买入信息
-      if (this.updateOrderItemVisibleTitleInfo.domain === 1) {
-        //客户开票 添加发票卖出信息
-        addInvoiceOut(this.updateOrderItemVisibleTitleInfo)
-            .then(res => {
-              this.$message.success('客户开票成功~')
-              //修改开票信息
-              let info = {...this.updateOrderItemVisibleTitleInfo.orderInfo, customerIsInvoice: 1}
-              updateGoodsOrder(excludeParams(info, this.$excludeWithUpdate))
-                  .then(res => {
-                    this.$message.success('开票状态设置成功~')
-                    this.invoiceupdateOrderItemVisibleVisible = false
-                    this.getList()
-                  })
-            })
-        //添加发票买入
-      } else {
-        //客户开票 添加发票卖出信息
-        addInvoiceIn(this.updateOrderItemVisibleTitleInfo)
-            .then(res => {
-              this.$message.success('供应商开票成功~')
-              let info = {...this.updateOrderItemVisibleTitleInfo.orderInfo, isSupplierInvoice: 1}
-              updateGoodsOrder(excludeParams(info, this.$excludeWithUpdate))
-                  .then(res => {
-                    this.$message.success('开票状态设置成功~')
-                    this.invoiceupdateOrderItemVisibleVisible = false
-                    this.getList()
-                  })
-            })
-      }
-    },
-    //开票信息弹窗
-    handleUpdateCompanyName(val) {
-      this.queryCompanyName = val;
-    },
-    handleCommitBackCompany(val) {
-      this.updateOrderItemVisibleTitleInfo.companyName = val.companyName;
-      this.updateOrderItemVisibleTitleInfo.companyID = val.id;
-      this.updateOrderItemVisibleTitleInfo.companyType = val.companyType;
-    },
-    // 客户开票
-    updateOrderItemVisibleCustomerInvoice(row) {
-      //客户开发票 即为发票卖出 添加发票卖出信息 1客户开票  2供应商开票
-      this.updateOrderItemVisibleTitleInfo.domain = 1
-      this.updateOrderItemVisibleTitleInfo.isOrderTax = row.id;
-      this.updateOrderItemVisibleTitle = '客户开票'
-      //设置该订单信息 需要进行一次查询
-      getGoodsOrder(row.id)
-          .then(res => {
-            this.updateOrderItemVisibleTitleInfo.orderInfo = res.data;
-          })
-      this.invoiceupdateOrderItemVisibleVisible = true;
-    },
-    // 供应商开票
-    updateOrderItemVisibleSupplierInvoice(row, supplierID) {
-      // 如果改行是点击供应商列表的开票
-      if (supplierID !== undefined && supplierID !== '' && supplierID !== null) {
-        this.updateOrderItemVisibleTitleInfo.domain = 2
-        this.updateOrderItemVisibleTitleInfo.companyID = supplierID;
-        this.updateOrderItemVisibleTitleInfo.isOrderTax = row.id;
-        // 先获取公司信息
-        getCompany(supplierID).then(res => {
-          this.updateOrderItemVisibleTitleInfo.companyName = res.data.companyName;
-          this.updateOrderItemVisibleTitleInfo.companyType = res.data.companyType;
-          this.updateOrderItemVisibleTitle = '供应商开票'
-          // 获取订单信息
-          getGoodsOrder(row.id)
-              .then(res => {
-                this.updateOrderItemVisibleTitleInfo.orderInfo = res.data;
-                this.invoiceupdateOrderItemVisibleVisible = true;
-              })
-        })
-        // 如果不是
-      } else {
-        this.updateOrderItemVisibleTitleInfo.domain = 2
-        this.updateOrderItemVisibleTitleInfo.isOrderTax = row.id;
-        this.updateOrderItemVisibleTitle = '供应商开票'
-        getGoodsOrder(row.id)
-            .then(res => {
-              this.updateOrderItemVisibleTitleInfo.orderInfo = res.data;
-              this.invoiceupdateOrderItemVisibleVisible = true;
-            })
-      }
-    },
+
+
+    /**
+     *  海陆运费申请功能
+     */
     //申请陆运费
     handleApplyLandFree(row) {
       //组装订单运费信息 己方银行卡信息弹窗自己选
@@ -1494,7 +1511,6 @@ export default {
       //首先去运费表查看是否有运费信息
       listOrderFreight({...this.landFreightInfo, paymentState: '未支付'}).then(res => {
         if (res.rows.length === 0) {
-          // this.keyFlag += 1 //让dialog组件重新渲染
           this.landFreightFree = row.landFreight
           //组装司机信息
           this.driverInfo = {
@@ -1539,6 +1555,8 @@ export default {
       })
 
     },
+
+
     /** 查询订单列表 */
     getList() {
       this.loading = true;
@@ -1547,6 +1565,28 @@ export default {
         this.total = response.total;
         this.loading = false;
       });
+    },
+    // 开票信息重置
+    resetOpenTitleInfo() {
+      this.updateOrderItemVisibleTitleInfo = {
+        id: null,
+        invoiceDate: null,
+        invoiceObject: null,
+        invoiceAmount: null,
+        companyType: null,
+        companyName: '',
+        companyID: '',
+        invoiceCompanyName: null,
+        ticketPoint: null,
+        ticketPointAmount: null,
+        isOrderTax: 0,
+        comments: null,
+        addtime: null,
+        userId: null,
+        UserName: null,
+        updateTime: null,
+        delFlag: null
+      }
     },
     // 表单重置
     reset() {
@@ -1664,7 +1704,27 @@ export default {
       this.download('system/goodsOrder/export', {
         ...this.queryParams
       }, `goodsOrder_${new Date().getTime()}.xlsx`)
-    }
+    },
+    // 休眠函数
+    sleep(ms) {
+      return new Promise(resolve => setTimeout(resolve, ms));
+    },
+    // 格式化对象
+    formatData(data) {
+      let formattedString = '';
+      for (const key in data) {
+        if (data.hasOwnProperty(key)) {
+          const value = data[key];
+          const mappedKey = this.mapper[key] || key;
+          formattedString += `${mappedKey}: ${value}\n`;
+        }
+      }
+      return formattedString.trim(); // 去掉最后一个换行符
+    },
+    // 查看某一个文件
+    checkFileItem(item) {
+      window.open(item)
+    },
   }
 };
 </script>

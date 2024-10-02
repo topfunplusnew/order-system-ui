@@ -145,10 +145,18 @@ export default {
         }
       }
     },
-
     //监听的是整个对象
     'orderItemInfo': {
       handler() {
+        //运费自动填充
+        if (this.isSea === false) {
+          console.log('海运费为空')
+          this.orderItemInfo.freight = Number(this.orderItemInfo.landFreight);
+        } else {
+          console.log('海运费不为空')
+          this.orderItemInfo.freight = Number(this.orderItemInfo.landFreight) + Number(this.orderItemInfo.seaFreight);
+        }
+
         //是否含税 厂家否 客户否
         if (this.Tax === '00') {
           //误差为0.8
@@ -194,12 +202,7 @@ export default {
           this.orderItemInfo.profit = this.profit11
           this.orderItemInfo.profitNoTax = this.profitNoTax11
         }
-        //运费自动填充
-        if (this.seaFreight === undefined) {
-          this.freight = Number(this.orderItemInfo.landFreight);
-        } else {
-          this.freight = Number(this.orderItemInfo.landFreight) + Number(this.orderItemInfo.seaFreight);
-        }
+
       },
       deep: true,
       immediate: true,
