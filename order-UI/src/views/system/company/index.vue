@@ -119,7 +119,7 @@
 
 
     <!-- 添加或修改客户、供应商信息对话框 -->
-    <el-dialog :title="title" :visible.sync="open" width="54%" append-to-body>
+    <el-dialog :show-close="false" :title="title" :visible.sync="open" width="54%" append-to-body>
       <el-form ref="form" :model="form" :rules="rules" label-width="110px">
         <el-row :gutter="4">
           <el-col :span="12">
@@ -188,7 +188,7 @@
 
 
     <!--    账号搜索-->
-    <el-dialog title="账号搜索" :visible.sync="dialogFormSearchVisible" width="60%">
+    <el-dialog :show-close="false" title="账号搜索" :visible.sync="dialogFormSearchVisible" width="60%">
       <el-form :model="queryParams">
         <el-row :gutter="4">
           <el-col :span="8">
@@ -231,7 +231,7 @@
     </el-dialog>
 
     <!--    搜索已绑定的银行卡信息-->
-    <el-dialog title="银行卡号" :visible.sync="dialogFormVisible">
+    <el-dialog :show-close="false" title="银行卡号" :visible.sync="dialogFormVisible">
       <el-form :model="currentInfo">
         <el-row :gutter="4" style="text-align: center;">
           <span style="font-weight: bolder;font-size: 18px;">{{ currentInfo.companyName }}</span>
@@ -305,7 +305,7 @@
 
 
       <!--    银行信息-->
-      <el-dialog title="操作银行卡" :visible.sync="dialogBankInfoVisible" width="60%">
+      <el-dialog :show-close="false" title="操作银行卡" :visible.sync="dialogBankInfoVisible" width="60%">
         <el-form :model="queryBankInfo">
           <el-row :gutter="4">
             <el-col :span="8">
@@ -362,7 +362,7 @@
     </el-dialog>
 
 
-    <el-dialog title="设置默认银行卡" :visible.sync="addDefaultCardVisible" width="500px" append-to-body>
+    <el-dialog :show-close="false" title="设置默认银行卡" :visible.sync="addDefaultCardVisible" width="500px" append-to-body>
       <el-table border v-loading="loading" :data="singleInfo" @selection-change="handleSelectionChange"
                 height="300px" v-horizontal-scroll="'always'">
         <el-table-column label="账户类型" align="center" prop="acountsType"/>

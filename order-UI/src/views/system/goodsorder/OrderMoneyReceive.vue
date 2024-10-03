@@ -1,5 +1,5 @@
 <template>
-  <el-dialog title="订单打款申请" :visible.sync="paymentApplyVisible" width="48%">
+  <el-dialog :show-close="false" title="订单打款申请" :visible.sync="paymentApplyVisible" width="48%">
     <keep-alive>
       <ApplyPayment :table-name="TableName.GOODS_ORDER" :t-i-d="tID" :need-money="needMoney"
                     :need-info="{}"
@@ -19,6 +19,8 @@ export default {
     needMoney: {},
     paymentApplyVisible: {},
     tID: {}
+  },
+  methods: {
   }
 }
 </script>

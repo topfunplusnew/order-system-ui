@@ -67,11 +67,13 @@ export default {
       //发送请求 添加运费信息 applyDate为现在
       addOrderFreight({...this.form, applyDate: parseTime(new Date()), applyUserName: this.trueName}).then(res => {
         this.$message.success('运费信息添加成功~')
+        this.$emit('close')
+        this.reset()
         setTimeout(() => {
           this.$router.push('/order/order/orderfreight')
-        })
+        }, 100)
       })
-      this.reset()
+
     },
     handleCommitBack(val) {
       this.form.otherAcountsName = val.acountsName;
@@ -83,6 +85,9 @@ export default {
     },
     reset() {
       this.form = this.$refreshParams(this.form)
+    },
+    close() {
+      this.$emit('close')
     }
   }
 }
@@ -133,6 +138,7 @@ export default {
       </el-form-item>
       <el-form-item>
         <el-button type="primary" @click="onSubmit">添加运费信息</el-button>
+        <el-button type="primary" @click="close">关 闭</el-button>
       </el-form-item>
     </el-form>
   </div>

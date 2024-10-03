@@ -109,7 +109,7 @@
     />
 
     <!-- 添加或修改加油卡圈存对话框 -->
-    <el-dialog :title="title" :visible.sync="open" width="500px" append-to-body>
+    <el-dialog :show-close="false" :title="title" :visible.sync="open" width="500px" append-to-body>
       <el-form ref="form" :model="form" :rules="rules" label-width="120px">
         <el-form-item label="主加油卡卡号" prop="oilMainCardNo">
           <el-row>

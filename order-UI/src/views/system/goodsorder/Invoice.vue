@@ -1,7 +1,7 @@
 <!--    开发票-->
 
 <template>
-  <el-dialog
+  <el-dialog :show-close="false"
       :title="updateOrderItemVisibleTitle"
       :visible.sync="invoiceupdateOrderItemVisibleVisible"
       width="500px">
@@ -63,7 +63,7 @@
       </el-form>
     </el-row>
     <span slot="footer" class="dialog-footer">
-        <el-button @click="invoiceupdateOrderItemVisibleVisible = false">取 消</el-button>
+        <el-button @click="close">取 消</el-button>
         <el-button type="primary" @click="submitupdateOrderItemVisibleTitle">确 定</el-button>
       </span>
   </el-dialog>
@@ -84,6 +84,11 @@ export default {
     submitupdateOrderItemVisibleTitle: {},
     updateOrderItemVisibleTitle: {},
     updateOrderItemVisibleTitleInfo: {}
+  },
+  methods: {
+    close() {
+      this.$emit('close')
+    }
   }
 }
 </script>

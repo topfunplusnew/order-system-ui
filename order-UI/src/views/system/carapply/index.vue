@@ -136,7 +136,7 @@
     />
 
     <!-- 添加或修改车辆使用申请对话框 -->
-    <el-dialog :title="title" :visible.sync="open" width="500px" append-to-body>
+    <el-dialog :show-close="false" :title="title" :visible.sync="open" width="500px" append-to-body>
       <el-form ref="form" :model="form" :rules="rules" label-width="80px">
         <!--        <el-form-item label="出差编号UUID" prop="bTripId">-->
         <!--          <el-input v-model="form.bTripId" placeholder="请输入出差编号UUID"/>-->

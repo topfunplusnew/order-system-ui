@@ -118,7 +118,7 @@
     />
 
     <!-- 添加或修改车队对话框 -->
-    <el-dialog :title="title" :visible.sync="open" width="500px" append-to-body>
+    <el-dialog :show-close="false" :title="title" :visible.sync="open" width="500px" append-to-body>
       <el-form ref="form" :model="form" :rules="rules" label-width="120px">
         <el-form-item label="车队名称" prop="fName">
           <el-input v-model="form.fName" placeholder="请输入车队名称"/>

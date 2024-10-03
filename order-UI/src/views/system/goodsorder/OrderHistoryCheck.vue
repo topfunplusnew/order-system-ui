@@ -1,5 +1,5 @@
 <template>
-  <el-dialog title="订单历史信息" :visible.sync="checkHistoryOrderVisible" width="1100px">
+  <el-dialog :show-close="false" title="订单历史信息" :visible.sync="checkHistoryOrderVisible" width="1100px">
     <el-row>
       <el-col :span="18" :offset="3">
         <el-timeline>
@@ -30,6 +30,9 @@
         </el-timeline>
       </el-col>
     </el-row>
+    <div slot="footer" class="dialog-footer">
+      <el-button @click="close">关 闭</el-button>
+    </div>
   </el-dialog>
 </template>
 <script>
@@ -41,6 +44,12 @@ export default {
     checkcurrentOrderItemInfo: {},
     orderHistoryInfoList: {},
     parseTime: {}
+  },
+  methods: {
+    close() {
+      this.$emit('close')
+    },
+
   }
 }
 </script>

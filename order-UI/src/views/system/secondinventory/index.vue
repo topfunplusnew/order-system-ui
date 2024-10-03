@@ -95,7 +95,7 @@
     />
 
     <!-- 添加或修改出库对话框 -->
-    <el-dialog :title="title" :visible.sync="open" width="500px" append-to-body>
+    <el-dialog :show-close="false" :title="title" :visible.sync="open" width="500px" append-to-body>
       <el-form ref="form" :model="form" :rules="rules" label-width="80px">
         <!--        <el-form-item label="订单编号" prop="ordersNo">-->
         <!--          <el-input v-model="form.ordersNo" placeholder="请输入订单编号"/>-->
@@ -125,7 +125,7 @@
 
 
     <!--    二次入库的弹窗-->
-    <el-dialog title="二次入库" :visible.sync="secondInventoryVisible" append-to-body width="70%">
+    <el-dialog :show-close="false" title="二次入库" :visible.sync="secondInventoryVisible" append-to-body width="70%">
       <InventoryForm :inventory-info="secondInventoryInfo" @changeInventoryInfo="handleCommitInventoryInfo"/>
       <div slot="footer" class="dialog-footer">
         <el-button type="primary" @click="handleChangeInventoryInfo">确 定</el-button>
@@ -134,7 +134,7 @@
     </el-dialog>
 
 
-    <el-dialog title="库存信息" :visible.sync="inventoryInfoVisible" width="70%" append-to-body>
+    <el-dialog :show-close="false" title="库存信息" :visible.sync="inventoryInfoVisible" width="70%" append-to-body>
       <el-descriptions title="库存详情" border>
         <el-descriptions-item label="陆地车号">
           {{ inventoryInfo.landCarNo }}

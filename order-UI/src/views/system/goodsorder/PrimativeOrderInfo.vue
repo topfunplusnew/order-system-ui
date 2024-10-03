@@ -1,8 +1,8 @@
 <template>
-  <el-dialog
-      title="原订单信息"
-      :visible.sync="currentOrderItemInfoVisible"
-      width="68%">
+  <el-dialog :show-close="false"
+             title="原订单信息"
+             :visible.sync="currentOrderItemInfoVisible"
+             width="68%">
     <el-row>
       <el-card class="box-card" shadow="hover">
         <OrderInfos :orderInfo="currentOrderItemInfo"/>
@@ -12,8 +12,8 @@
       </el-card>
     </el-row>
     <span slot="footer" class="dialog-footer">
-    <el-button @click="currentOrderItemInfoVisible = false">取 消</el-button>
-    <el-button type="primary" @click="currentOrderItemInfoVisible = false">确 定</el-button>
+    <el-button @click="close">取 消</el-button>
+    <el-button type="primary" @click="close">确 定</el-button>
   </span>
   </el-dialog>
 </template>
@@ -27,6 +27,11 @@ export default {
   props: {
     currentOrderItemInfo: {},
     currentOrderItemInfoVisible: {}
+  },
+  methods: {
+    close() {
+      this.$emit('close')
+    }
   }
 }
 </script>

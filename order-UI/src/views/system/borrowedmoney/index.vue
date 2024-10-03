@@ -101,7 +101,7 @@
       @pagination="getList"/>
 
     <!-- 添加或修改从外部借款信息对话框 -->
-    <el-dialog :title="title" :visible.sync="open" width="60%" append-to-body>
+    <el-dialog :show-close="false" :title="title" :visible.sync="open" width="60%" append-to-body>
       <el-form ref="form" :model="form" :rules="rules" label-width="120px">
         <el-row>
           <el-col :span="12">
@@ -169,7 +169,7 @@
 
 
     <!--    点击还款的弹框-->
-    <el-dialog title="还款操作" :visible.sync="giveBackMoneyShow" width="30%">
+    <el-dialog :show-close="false" title="还款操作" :visible.sync="giveBackMoneyShow" width="30%">
       <el-row>
         <el-form ref="form" :model="moneyBackInfo" label-width="140px">
           <el-form-item label="还款金额" prop="moneyAmount">

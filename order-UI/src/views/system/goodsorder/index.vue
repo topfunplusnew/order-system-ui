@@ -363,10 +363,10 @@
 
 
     <!--    点击调整单的弹窗-->
-    <el-dialog
-        title="提示"
-        :visible.sync="handleOrderVisible"
-        width="30%">
+    <el-dialog :show-close="false"
+               title="提示"
+               :visible.sync="handleOrderVisible"
+               width="30%">
       <span>是否将订单设置为调整单?</span>
       <span slot="footer" class="dialog-footer">
     <el-button @click="handleOrderVisible = false">取 消</el-button>
@@ -375,17 +375,18 @@
     </el-dialog>
 
     <!--    点击发货单的弹窗-->
-    <OrderGiven :order1-visible="Order1Visible"/>
+    <OrderGiven :order1-visible="Order1Visible" @close="closeOrderGivenDialog"/>
 
     <!--    上传附件的弹窗 -->
     <UploadPath :before-upload="beforeUpload" :file-list="fileList" :handle-upload-visible="handleUploadVisible"
                 :headers="headers" :submit-upload-all-files="()=>submitUploadAllFiles('path')"
-                :upload-file-url="uploadFileUrl"/>
+                :upload-file-url="uploadFileUrl" @close="closeUploadPathDialog"/>
+
 
     <!--    上传收到条的弹窗-->
     <UploadCommit :before-upload="beforeUpload" :file-list="fileList" :handle-commit-visible="handleCommitVisible"
                   :headers="headers" :submit-upload-all-files="()=>submitUploadAllFiles('receiveProof')"
-                  :upload-file-url="uploadFileUrl"/>
+                  :upload-file-url="uploadFileUrl" @close="closeUploadCommitDialog"/>
 
     <!--    添加订单 || 修改订单对话框-->
     <InfoDialog :title="orderTitle" :visible.sync="orderItemVisible">
@@ -398,34 +399,37 @@
 
 
     <!--    陆运费和海运费申请-->
-    <el-dialog
-        title="陆运费申请"
-        :visible.sync="landFreeDialogVisible"
-        width="30%">
+    <el-dialog :show-close="false"
+               title="陆运费申请"
+               :visible.sync="landFreeDialogVisible"
+               width="600px">
       <keep-alive>
-        <FreeApply :order-info="landFreightInfo"/>
+        <FreeApply :order-info="landFreightInfo" @close="landFreeDialogVisible = false"/>
       </keep-alive>
     </el-dialog>
 
 
-    <el-dialog
-        title="海运费申请"
-        :visible.sync="seaFreeDialogVisible"
-        width="30%">
+    <el-dialog :show-close="false"
+               title="海运费申请"
+               :visible.sync="seaFreeDialogVisible"
+               width="600px">
       <keep-alive>
-        <FreeApply :order-info="seaFreightInfo"/>
+        <FreeApply :order-info="seaFreightInfo" @close="seaFreeDialogVisible = false"/>
       </keep-alive>
     </el-dialog>
 
 
     <!--    订单货物详情-->
-    <el-dialog
-        title="订单货物详情"
-        :visible.sync="checkOrderDetailInfoVisible"
-        width="1100px" destroy-on-close>
+    <el-dialog :show-close="false"
+               title="订单货物详情"
+               :visible.sync="checkOrderDetailInfoVisible"
+               width="1100px" destroy-on-close>
       <!--      传递订单详情列表-->
       <OrderDetailInfo :orderDetailInfoList="orderDetailInfoList"
                        @updateOrderDetailList="handleUpdateOrderDetailInfoList"/>
+      <div slot="footer" class="dialog-footer">
+        <el-button @click="checkOrderDetailInfoVisible = false">关 闭</el-button>
+      </div>
     </el-dialog>
 
 
@@ -436,7 +440,7 @@
              :list-company="listCompany" :query-company-name="queryCompanyName"
              :submitupdate-order-item-visible-title="submitupdateOrderItemVisibleTitle"
              :update-order-item-visible-title="updateOrderItemVisibleTitle"
-             :update-order-item-visible-title-info="updateOrderItemVisibleTitleInfo"/>
+             :update-order-item-visible-title-info="updateOrderItemVisibleTitleInfo" @close="handleCloseInvoice"/>
 
 
     <!--    订单打款申请 -->
@@ -445,10 +449,11 @@
 
 
     <!--    todo url其实就是返回了后端服务器的地址加端口 这里需要后期规定好后直接拼接就能查看了 -->
-    <el-dialog title="查看附件" :visible.sync="checkAttachmentVisible" width="48%">
+    <el-dialog :show-close="false" title="查看附件" :visible.sync="checkAttachmentVisible" width="48%">
       <el-row v-for="(item, index) in checkFileList" :key="index">
         <el-button type="text" icon="el-icon-document" @click="checkFileItem(item)">{{ item }}</el-button>
       </el-row>
+      <el-button @click="checkAttachmentVisible = false">关 闭</el-button>
     </el-dialog>
 
 
@@ -456,11 +461,12 @@
     <OrderHistoryCheck :active-names="activeNames" :check-history-order-visible="checkHistoryOrderVisible"
                        :checkcurrent-order-item-info="checkcurrentOrderItemInfo"
                        :order-history-info-list="orderHistoryInfoList"
-                       :parse-time="parseTime(new Date(),'{y}-{m}-{d}')"/>
+                       :parse-time="parseTime(new Date(),'{y}-{m}-{d}')" @close="closeOrderHistoryCheck"/>
 
     <!--      原订单信息-->
     <PrimativeOrderInfo :current-order-item-info="currentOrderItemInfo"
-                        :current-order-item-info-visible="currentOrderItemInfoVisible"/>
+                        :current-order-item-info-visible="currentOrderItemInfoVisible"
+                        @close="closePrimativeOrderInfo"/>
   </div>
 </template>
 
@@ -1441,6 +1447,30 @@ export default {
     closeCheckOrderDialog() {
       this.checkOrderVisible = false
       this.reset()
+    },
+    // 关闭发货单的弹窗
+    closeOrderGivenDialog() {
+      this.Order1Visible = false;
+    },
+    // 关闭上传附件的弹窗
+    closeUploadPathDialog() {
+      this.handleUploadVisible = false
+    },
+    // 关闭上传收到条的弹窗
+    closeUploadCommitDialog() {
+      this.handleCommitVisible = false
+    },
+    // 关闭开票的弹窗
+    handleCloseInvoice() {
+      this.invoiceupdateOrderItemVisibleVisible = false
+    },
+    // 关闭历史订单的弹窗
+    closeOrderHistoryCheck() {
+      this.checkHistoryOrderVisible = false
+    },
+    // 关闭查看原始订单
+    closePrimativeOrderInfo() {
+      this.currentOrderItemInfoVisible = false
     },
     // 新增按钮操作
     handleAdd() {

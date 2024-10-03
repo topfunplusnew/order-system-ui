@@ -132,7 +132,7 @@
       @pagination="getList"/>
 
     <!-- 添加或修改银行账号对话框 -->
-    <el-dialog :title="title" :visible.sync="open" width="500px" append-to-body>
+    <el-dialog :show-close="false" :title="title" :visible.sync="open" width="500px" append-to-body>
       <el-form ref="form" :model="form" :rules="rules" label-width="120px">
         <el-form-item label="账号类型" prop="acountsType">
           <el-select v-model="form.acountsType" placeholder="请选择账号类型">
@@ -218,7 +218,7 @@
 
 
     <!-- 调整银行卡对话框 -->
-    <el-dialog title="调整银行卡信息" :visible.sync="Adjustment" width="500px" append-to-body>
+    <el-dialog :show-close="false" title="调整银行卡信息" :visible.sync="Adjustment" width="500px" append-to-body>
       <el-form ref="form" :model="adjustmentInfo" :rules="rules" label-width="80px">
         <el-form-item label="变动类型" prop="changeType">
           <!--          <el-input v-model="form.changeType" placeholder="请输入变动类型(收入、支出)"/>-->
@@ -240,7 +240,7 @@
 
 
     <!--    银行卡之间转账-->
-    <el-dialog title="银行卡转账" :visible.sync="transformDialogVisible" width="500px" append-to-body>
+    <el-dialog :show-close="false" title="银行卡转账" :visible.sync="transformDialogVisible" width="500px" append-to-body>
       <el-row>
         <el-form :model="transformInfo" label-width="100px">
           <el-form-item label="转账银行卡" prop="fromBankNo">
@@ -262,7 +262,7 @@
 
 
     <!--    银行卡流水-->
-    <el-dialog title="银行卡流水" :visible.sync="bankChangeDialogVisible" width="55%" append-to-body>
+    <el-dialog :show-close="false" title="银行卡流水" :visible.sync="bankChangeDialogVisible" width="55%" append-to-body>
       <el-row>
         <el-table
           :data="bankChangeList"

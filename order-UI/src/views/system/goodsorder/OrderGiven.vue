@@ -1,5 +1,5 @@
 <template>
-  <el-dialog
+  <el-dialog :show-close="false"
       title="发货单"
       :visible.sync="Order1Visible"
       width="75%">
@@ -8,8 +8,8 @@
       <ChatForm/>
     </el-row>
     <span slot="footer" class="dialog-footer">
-    <el-button @click="Order1Visible = false">取 消</el-button>
-    <el-button type="primary" @click="Order1Visible = false">确 定</el-button>
+    <el-button @click="close">取 消</el-button>
+    <el-button type="primary" @click="close">确 定</el-button>
   </span>
   </el-dialog>
 </template>
@@ -21,6 +21,11 @@ export default {
   components: {ChatForm},
   props: {
     Order1Visible: {}
+  },
+  methods: {
+    close() {
+      this.$emit('close')
+    }
   }
 }
 </script>

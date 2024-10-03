@@ -115,7 +115,7 @@
         @pagination="getList"
     />
     <!--    添加产品分类的弹窗-->
-    <el-dialog
+    <el-dialog :show-close="false"
         title="添加产品分类"
         :visible.sync="addCategoryOpen"
         width="40%">
@@ -193,7 +193,7 @@
 
 
     <!--    添加产品级别的弹窗-->
-    <el-dialog
+    <el-dialog :show-close="false"
         title="添加产品级别"
         :visible.sync="addProductLevelOpen"
         width="30%">
@@ -240,7 +240,7 @@
 
 
     <!-- 添加或修改收款信息对话框 -->
-    <el-dialog :title="title" :visible.sync="open" width="500px" append-to-body>
+    <el-dialog :show-close="false" :title="title" :visible.sync="open" width="500px" append-to-body>
       <el-form ref="form" :model="form" :rules="rules" label-width="80px">
         <el-form-item label="级别编码" prop="levelNo">
           <el-input v-model="form.levelNo" placeholder="请输入支付类型"/>

@@ -237,7 +237,7 @@
     />
 
     <!-- 2.添加或修改付款信息对话框 -->
-    <el-dialog title="付款申请" :visible.sync="open" width="500px" append-to-body>
+    <el-dialog :show-close="false" title="付款申请" :visible.sync="open" width="500px" append-to-body>
       <el-form ref="form" :model="form" :rules="rules" label-width="80px">
         <!--        表名要自动填充 手动添加无需-->
         <!--        <el-form-item label="对应的表名" prop="tableName">-->
@@ -346,7 +346,7 @@
     </el-dialog>
 
     <!--    查看-->
-    <el-dialog
+    <el-dialog :show-close="false"
         title="查看信息"
         :visible.sync="checkVisible"
         width="30%">

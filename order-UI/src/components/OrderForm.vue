@@ -229,6 +229,7 @@ export default {
       this.$store.commit('order/clearOrderItemList'); // 清空订单详情填写信息
       this.resetOrderInfo() // 清空订单列表基础信息
       this.$emit('close-dialog'); // 关闭弹窗
+
     },
     //提交订单
     //订单列表的对象封装一个，订单详情有两个一样的对象 对应供应商发货和仓库发货
@@ -287,6 +288,9 @@ export default {
           this.$emit('close-dialog');
         });
       }
+    },
+    close() {
+      this.$emit('close')
     },
   }
   ,

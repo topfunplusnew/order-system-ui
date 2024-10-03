@@ -149,7 +149,7 @@
 
 
     <!-- 添加或修改加油卡信息对话框 -->
-    <el-dialog :title="title" :visible.sync="open" width="500px" append-to-body>
+    <el-dialog :show-close="false" :title="title" :visible.sync="open" width="500px" append-to-body>
       <el-form ref="form" :model="form" :rules="rules" label-width="120px">
         <el-form-item label="加油卡卡号" prop="oilCardNo">
           <el-input v-model="form.oilCardNo" placeholder="请输入加油卡卡号"/>
@@ -172,7 +172,7 @@
     </el-dialog>
 
     <!--    加油卡充值弹窗-->
-    <el-dialog title="加油卡充值" :visible.sync="moneyDialogVisible" width="500px" append-to-body>
+    <el-dialog :show-close="false" title="加油卡充值" :visible.sync="moneyDialogVisible" width="500px" append-to-body>
       <el-form :model="moneyInfo" :rules="rules" label-width="120px">
         <el-form-item label="加油卡卡号" prop="oilCardNo">
           <el-row>

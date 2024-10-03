@@ -1,5 +1,5 @@
 <template>
-  <el-dialog
+  <el-dialog :show-close="false"
       title="提示"
       :visible.sync="handleCommitVisible"
       width="450px">
@@ -18,8 +18,7 @@
     </el-upload>
     <el-button type="success" @click="submitUploadAllFiles">开始上传</el-button>
     <span slot="footer" class="dialog-footer">
-    <el-button @click="handleCommitVisible = false">取 消</el-button>
-    <el-button type="primary" @click="handleCommitVisible = false">确 定</el-button>
+    <el-button @click="close">关 闭</el-button>
   </span>
   </el-dialog>
 </template>
@@ -33,6 +32,11 @@ export default {
     headers: {},
     submitUploadAllFiles: {},
     uploadFileUrl: {}
+  },
+  methods: {
+    close() {
+      this.$emit('close')
+    }
   }
 }
 </script>

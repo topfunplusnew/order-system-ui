@@ -80,6 +80,7 @@
     </el-form>
     <div slot="footer" class="dialog-footer" style="text-align: center">
       <el-button type="primary" @click="submitForm">提交申请</el-button>
+      <el-button @click="close">关闭</el-button>
     </div>
   </div>
 </template>
@@ -400,12 +401,15 @@ export default {
           addPaymentApply(this.form).then(response => {
             this.$modal.msgSuccess("付款申请添加成功");
             this.reset()
-            this.$emit('changeOpen')
+            this.$emit('changeupdateOrderItemVisible')
             this.getList();
           })
         }
       });
     },
+    close(){
+      this.$emit('changeupdateOrderItemVisible')
+    }
   }
 };
 </script>

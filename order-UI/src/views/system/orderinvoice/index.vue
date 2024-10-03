@@ -213,7 +213,7 @@
     />
 
     <!-- 添加或修改订单发票对话框 -->
-    <el-dialog :title="title" :visible.sync="open" width="500px" append-to-body>
+    <el-dialog :show-close="false" :title="title" :visible.sync="open" width="500px" append-to-body>
       <el-form ref="form" :model="form" :rules="rules" label-width="80px">
         <el-form-item label="订单编号" prop="ordersNo">
           <el-input v-model="form.ordersNo" placeholder="请输入订单编号" />

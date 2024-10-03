@@ -1,5 +1,5 @@
 <template>
-  <el-dialog
+  <el-dialog :show-close="false"
       title="上传附件"
       :visible.sync="handleUploadVisible"
       width="450px">
@@ -22,8 +22,7 @@
       </el-col>
     </el-row>
     <span slot="footer" class="dialog-footer">
-    <el-button @click="handleUploadVisible = false">取 消</el-button>
-    <el-button type="primary" @click="handleUploadVisible = false">确 定</el-button>
+    <el-button @click="close">关 闭</el-button>
   </span>
   </el-dialog>
 </template>
@@ -37,6 +36,11 @@ export default {
     headers: {},
     submitUploadAllFiles: {},
     uploadFileUrl: {}
+  },
+  methods: {
+    close() {
+      this.$emit('close')
+    }
   }
 }
 </script>

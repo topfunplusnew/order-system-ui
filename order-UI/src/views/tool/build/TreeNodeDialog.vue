@@ -1,6 +1,6 @@
 <template>
   <div>
-    <el-dialog
+    <el-dialog :show-close="false"
       v-bind="$attrs"
       :close-on-click-modal="false"
       :modal-append-to-body="false"

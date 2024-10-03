@@ -133,7 +133,7 @@
     />
 
     <!-- 添加或修改社保基金对话框 -->
-    <el-dialog title="社保基金" :visible.sync="open" append-to-body width="80%">
+    <el-dialog :show-close="false" title="社保基金" :visible.sync="open" append-to-body width="80%">
       <el-row>
         <el-col :span="1.5">
           <el-button type="primary" size="mini" @click="addSocialInsure">添加人员社保基金信息</el-button>
@@ -249,7 +249,7 @@
     </el-dialog>
 
     <!--    添加社保基金人员个体信息-->
-    <el-dialog
+    <el-dialog :show-close="false"
       title="社保基金人员个体信息"
       :visible.sync="addSocialDialogVisible"
       width="85%" append-to-body>

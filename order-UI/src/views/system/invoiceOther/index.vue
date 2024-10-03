@@ -130,7 +130,7 @@
     />
 
     <!-- 添加或修改商家直接给客户开发票对话框 -->
-    <el-dialog :title="title" :visible.sync="open" append-to-body>
+    <el-dialog :show-close="false" :title="title" :visible.sync="open" append-to-body>
       <el-form ref="form" :model="form" :rules="rules" label-width="120px">
         <!--        订单编号应该是选择某个订单 然后自动填充-->
         <el-form-item label="订单编号" prop="ordersNo">
@@ -286,7 +286,7 @@
         <el-button @click="cancel">取 消</el-button>
       </div>
     </el-dialog>
-    <el-dialog title="查看订单信息" :visible.sync="checkOrderInfoVisible" width="70%" append-to-body>
+    <el-dialog :show-close="false" title="查看订单信息" :visible.sync="checkOrderInfoVisible" width="70%" append-to-body>
       <OrderInfos :order-info="orderInfo"/>
     </el-dialog>
   </div>

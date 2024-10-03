@@ -1,6 +1,6 @@
 <template>
   <div class="icon-dialog">
-    <el-dialog
+    <el-dialog :show-close="false"
       v-bind="$attrs"
       width="980px"
       :modal-append-to-body="false"

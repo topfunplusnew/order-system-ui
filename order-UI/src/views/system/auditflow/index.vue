@@ -24,7 +24,7 @@
       </el-steps>
     </el-row>
     <!-- 添加或修改审核流程对话框 -->
-    <el-dialog :title="title" :visible.sync="open" width="700px" append-to-body>
+    <el-dialog :show-close="false" :title="title" :visible.sync="open" width="700px" append-to-body>
       <el-row>
         <el-steps :active="stepLength" align-center direction="vertical">
           <el-step v-for="(item,index) in checkStepList" :key="index">
