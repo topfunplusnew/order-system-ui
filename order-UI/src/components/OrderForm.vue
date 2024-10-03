@@ -371,7 +371,6 @@ export default {
                     <el-table-column label="司机电话" align="center" prop="tel"/>
                     <el-table-column label="开户名" align="center" prop="acountsName"/>
                     <el-table-column label="账号" align="center" prop="bankNo"/>
-                    <el-table-column label="余额" align="center" prop="surplusMoney"/>
                   </template>
                 </SearchOption>
               </el-col>
@@ -426,7 +425,6 @@ export default {
                     <el-table-column label="司机电话" align="center" prop="tel"/>
                     <el-table-column label="开户名" align="center" prop="acountsName"/>
                     <el-table-column label="账号" align="center" prop="bankNo"/>
-                    <el-table-column label="余额" align="center" prop="surplusMoney"/>
                   </template>
                 </SearchOption>
               </el-col>
@@ -462,9 +460,6 @@ export default {
                 <el-button style="float: right; padding: 3px 0;color: red" type="text"
                            @click="handleDeleteOrderDetail(index,$event)">删除
                 </el-button>
-                <!--                <el-button style="float: right; padding: 3px 5px;color: rgb(128,128,128)" type="text"-->
-                <!--                           @click="handleClearOrderDetail(index,$event)">重置-->
-                <!--                </el-button>-->
               </template>
             </OrderItem>
           </transition>
