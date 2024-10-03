@@ -162,7 +162,7 @@ export default {
         //是否含税 厂家否 客户否
         if (this.Tax === '00') {
           //误差为0.8
-          this.erro = 0.8;
+          this.orderItemInfo.erro = 0.8;
           //出厂贷款
           this.orderItemInfo.paymentFactory = this.paymentFactory00;
           //总贷款
@@ -422,10 +422,10 @@ export default {
           <span class="text-bold">出库日期</span>
           <hr/>
           <el-date-picker
-              v-model="orderItemInfo.exWarehouseDate"
-              type="date"
-              placeholder="选择日期"
-              value-format="timestamp">
+            v-model="orderItemInfo.exWarehouseDate"
+            type="date"
+            placeholder="选择日期"
+            value-format="timestamp">
           </el-date-picker>
         </div>
         <div class="order-item">
