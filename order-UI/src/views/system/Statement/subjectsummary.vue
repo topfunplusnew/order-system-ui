@@ -12,8 +12,8 @@ export default {
     return {
       queryParams: {
         subjectName: '',
-        beginTime: parseTime(new Date(new Date().getTime() - 30 * 24 * 60 * 60 * 1000),'{y}-{m}-{d}'),
-        endTime: parseTime(new Date(),'{y}-{m}-{d}'),
+        beginTime: parseTime(new Date(new Date().getTime() - 30 * 24 * 60 * 60 * 1000), '{y}-{m}-{d}'),
+        endTime: parseTime(new Date(), '{y}-{m}-{d}'),
         // pageNum: 1,
         // pageSize: 50
       },
@@ -83,7 +83,7 @@ export default {
       this.download('statistics/export/subjectsummary', {
         beginTime: this.queryParams.beginTime,
         endTime: this.queryParams.endTime
-      }, `subjectsummary${new Date().getTime()}.xlsx`)
+      }, `费用科目汇总_${parseTime(new Date().getTime())}.xlsx`)
       this.dialogVisible = false
     },
     handleExport() {
@@ -209,9 +209,9 @@ export default {
       </el-row>
     </div>
     <el-dialog :show-close="false"
-      title="请选择导出时间段"
-      :visible.sync="dialogVisible"
-      width="30%">
+               title="请选择导出时间段"
+               :visible.sync="dialogVisible"
+               width="30%">
       <el-form :model="queryParams" ref="queryForm" size="mini" label-width="68px">
         <el-form-item label="开始时间" prop="beginTime">
           <el-date-picker

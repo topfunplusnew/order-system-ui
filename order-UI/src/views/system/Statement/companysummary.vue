@@ -8,17 +8,17 @@
     <el-form :model="queryParams" ref="queryForm" size="mini" :inline="true" label-width="68px">
       <el-form-item label="开始时间" prop="beginTime">
         <el-date-picker
-            v-model="queryParams.beginTime"
-            type="date"
-            placeholder="请选择开始时间"
-            value-format="yyyy-MM-dd">
+          v-model="queryParams.beginTime"
+          type="date"
+          placeholder="请选择开始时间"
+          value-format="yyyy-MM-dd">
         </el-date-picker>
       </el-form-item>
       <el-form-item label="结束时间" prop="endTime">
         <el-date-picker
-            v-model="queryParams.endTime"
-            type="date"
-            placeholder="请选择结束时间" value-format="yyyy-MM-dd">
+          v-model="queryParams.endTime"
+          type="date"
+          placeholder="请选择结束时间" value-format="yyyy-MM-dd">
         </el-date-picker>
       </el-form-item>
       <el-form-item>
@@ -34,10 +34,10 @@
         <template v-slot:print>
           <el-col :span="1.5">
             <el-button
-                plain
-                icon="el-icon-printer"
-                size="mini"
-                @click="printHTML"
+              plain
+              icon="el-icon-printer"
+              size="mini"
+              @click="printHTML"
             >
             </el-button>
           </el-col>
@@ -45,11 +45,11 @@
         <template v-slot:export>
           <el-col :span="1.5">
             <el-button
-                plain
-                icon="el-icon-folder-opened"
-                size="mini"
-                @click="handleExport"
-                v-hasPermi="['system:company:export']"
+              plain
+              icon="el-icon-folder-opened"
+              size="mini"
+              @click="handleExport"
+              v-hasPermi="['system:company:export']"
             >
             </el-button>
           </el-col>
@@ -122,33 +122,33 @@
 
 
     <pagination
-        v-show="total>0"
-        :total="total"
-        :page.sync="queryParams.pageNum"
-        :limit.sync="queryParams.pageSize"
-        @pagination="getList"
+      v-show="total>0"
+      :total="total"
+      :page.sync="queryParams.pageNum"
+      :limit.sync="queryParams.pageSize"
+      @pagination="getList"
     />
     <el-dialog :show-close="false"
-        title="请选择导出时间段"
-        :visible.sync="dialogVisible"
-        width="30%">
+               title="请选择导出时间段"
+               :visible.sync="dialogVisible"
+               width="30%">
       <el-form :model="queryParams" ref="queryForm" size="mini" label-width="68px">
         <el-form-item label="开始时间" prop="beginTime">
           <el-date-picker
-              v-model="queryParams.beginTime"
-              type="date"
-              placeholder="选择时间"
-              value-format="yyyy-MM-dd"
-              size="mini">
+            v-model="queryParams.beginTime"
+            type="date"
+            placeholder="选择时间"
+            value-format="yyyy-MM-dd"
+            size="mini">
           </el-date-picker>
         </el-form-item>
         <el-form-item label="结束时间" prop="endTime">
           <el-date-picker
-              v-model="queryParams.endTime"
-              type="date"
-              placeholder="选择时间"
-              value-format="yyyy-MM-dd"
-              size="mini">
+            v-model="queryParams.endTime"
+            type="date"
+            placeholder="选择时间"
+            value-format="yyyy-MM-dd"
+            size="mini">
           </el-date-picker>
         </el-form-item>
       </el-form>
@@ -240,7 +240,7 @@ export default {
     handleSubmitTime() {
       this.download('statistics/export/companysummary', {
         ...this.queryParams
-      }, `companysummary${new Date().getTime()}.xlsx`)
+      }, `客户报表_${parseTime(new Date().getTime())}.xlsx`)
       this.dialogVisible = false
     },
     /** 导出按钮操作 */

@@ -8,17 +8,17 @@
     <el-form :model="queryParams" ref="queryForm" size="mini" :inline="true" v-show="showSearch" label-width="68px">
       <el-form-item label="开始时间" prop="beginTime">
         <el-date-picker
-            v-model="queryParams.beginTime"
-            type="date"
-            placeholder="请选择开始时间"
-            value-format="yyyy-MM-dd">
+          v-model="queryParams.beginTime"
+          type="date"
+          placeholder="请选择开始时间"
+          value-format="yyyy-MM-dd">
         </el-date-picker>
       </el-form-item>
       <el-form-item label="结束时间" prop="endTime">
         <el-date-picker
-            v-model="queryParams.endTime"
-            type="date"
-            placeholder="请选择结束时间" value-format="yyyy-MM-dd">
+          v-model="queryParams.endTime"
+          type="date"
+          placeholder="请选择结束时间" value-format="yyyy-MM-dd">
         </el-date-picker>
       </el-form-item>
       <el-form-item>
@@ -34,10 +34,10 @@
         <template v-slot:print>
           <el-col :span="1.5">
             <el-button
-                plain
-                icon="el-icon-printer"
-                size="mini"
-                @click="printHTML"
+              plain
+              icon="el-icon-printer"
+              size="mini"
+              @click="printHTML"
             >
             </el-button>
           </el-col>
@@ -46,11 +46,11 @@
         <template v-slot:export>
           <el-col :span="1.5">
             <el-button
-                plain
-                icon="el-icon-folder-opened"
-                size="mini"
-                @click="handleExport"
-                v-hasPermi="['system:company:export']"
+              plain
+              icon="el-icon-folder-opened"
+              size="mini"
+              @click="handleExport"
+              v-hasPermi="['system:company:export']"
             >
             </el-button>
           </el-col>
@@ -95,9 +95,9 @@
       <el-table-column label="操作" align="center" class-name="small-padding fixed-width" width="120" fixed="right">
         <template slot-scope="scope">
           <el-button
-              size="mini"
-              type="warning"
-              @click="checkDetail(scope.row)">
+            size="mini"
+            type="warning"
+            @click="checkDetail(scope.row)">
             查看历史收回
           </el-button>
         </template>
@@ -105,60 +105,60 @@
     </el-table>
 
     <pagination
-        v-show="total>0"
-        :total="total"
-        :page.sync="queryParams.pageNum"
-        :limit.sync="queryParams.pageSize"
-        @pagination="getList"
+      v-show="total>0"
+      :total="total"
+      :page.sync="queryParams.pageNum"
+      :limit.sync="queryParams.pageSize"
+      @pagination="getList"
     />
 
     <el-table
-        v-if="tableData.length!==0"
-        :data="tableData"
-        size="mini"
-        :cell-style="()=>{return {padding:'2px'}}"
-        border
-        style="width: 40%" :span-method="mergeCells">
+      v-if="tableData.length!==0"
+      :data="tableData"
+      size="mini"
+      :cell-style="()=>{return {padding:'2px'}}"
+      border
+      style="width: 40%" :span-method="mergeCells">
       <el-table-column
-          prop=""
-          width="180">
+        prop=""
+        width="180">
         <template v-slot="scope">
           <span v-if="scope.$index === 0">期货保证金收回</span>
         </template>
       </el-table-column>
       <el-table-column
-          prop="recoverDate"
-          label="时间"
-          width="180">
+        prop="recoverDate"
+        label="时间"
+        width="180">
       </el-table-column>
       <el-table-column
-          prop="moneyAmount"
-          label="收回金额"
-          width="180">
+        prop="moneyAmount"
+        label="收回金额"
+        width="180">
       </el-table-column>
     </el-table>
 
     <el-dialog :show-close="false"
-        title="请选择导出时间段"
-        :visible.sync="dialogVisible"
-        width="30%">
+               title="请选择导出时间段"
+               :visible.sync="dialogVisible"
+               width="30%">
       <el-form :model="queryParams" ref="queryForm" size="mini" label-width="68px">
         <el-form-item label="开始时间" prop="beginTime">
           <el-date-picker
-              v-model="queryParams.beginTime"
-              type="date"
-              placeholder="选择时间"
-              value-format="yyyy-MM-dd"
-              size="mini">
+            v-model="queryParams.beginTime"
+            type="date"
+            placeholder="选择时间"
+            value-format="yyyy-MM-dd"
+            size="mini">
           </el-date-picker>
         </el-form-item>
         <el-form-item label="结束时间" prop="endTime">
           <el-date-picker
-              v-model="queryParams.endTime"
-              type="date"
-              placeholder="选择时间"
-              value-format="yyyy-MM-dd"
-              size="mini">
+            v-model="queryParams.endTime"
+            type="date"
+            placeholder="选择时间"
+            value-format="yyyy-MM-dd"
+            size="mini">
           </el-date-picker>
         </el-form-item>
       </el-form>
@@ -177,6 +177,7 @@ import {getLendMoneySummary2} from "@/api/system/statement";
 import {mixin_printHTML} from "@/views/dashboard/mixins/print";
 import {getRecoverMoneyNoPage, listRecoverMoney} from "../../../api/system/recoverMoney";
 import {getRepaymentMoneyNoPage} from "../../../api/system/repayment";
+import {parseTime} from "../../../utils/ruoyi";
 
 export default {
   name: "LendMoney",
@@ -264,14 +265,14 @@ export default {
       console.log(row)
       // 查询
       listRecoverMoney({futuresNO: row.futuresNO})
-          .then(res => {
-            this.tableData = res.rows;
-            if (res.rows.length === 0) {
-              this.$message.error('暂无数据')
-            } else {
-              this.$message.success('查询成功')
-            }
-          })
+        .then(res => {
+          this.tableData = res.rows;
+          if (res.rows.length === 0) {
+            this.$message.error('暂无数据')
+          } else {
+            this.$message.success('查询成功')
+          }
+        })
     },
     mergeCells({row, column, rowIndex, columnIndex}) {
       if (columnIndex === 0) {
@@ -325,7 +326,7 @@ export default {
     handleSubmitTime() {
       this.download('statistics/export/lendMoney', {
         ...this.queryParams
-      }, `lendMoney${new Date().getTime()}.xlsx`)
+      }, `期货保证金_${parseTime(new Date().getTime())}.xlsx`)
       this.dialogVisible = false
     },
     /** 导出按钮操作 */

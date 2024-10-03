@@ -68,7 +68,7 @@ export default {
     handleSubmitTime() {
       this.download('statistics/export/orderfreightsummary', {
         endTime: this.queryParams.endTime
-      }, `bankAcountChange${new Date().getTime()}.xlsx`)
+      }, `资金日报表_${parseTime(new Date().getTime())}.xlsx`)
       this.dialogVisible = false
     },
     handleExport() {
@@ -96,11 +96,11 @@ export default {
         <el-form :model="queryParams" ref="queryForm" size="mini" :inline="true" label-width="100px">
           <el-form-item label="时间" prop="companyName">
             <el-date-picker
-                v-model="queryParams.endTime"
-                type="date"
-                size="mini"
-                value-format="yyyy-MM-dd"
-                placeholder="选择日期">
+              v-model="queryParams.endTime"
+              type="date"
+              size="mini"
+              value-format="yyyy-MM-dd"
+              placeholder="选择日期">
             </el-date-picker>
           </el-form-item>
           <el-form-item>
@@ -118,10 +118,10 @@ export default {
             <template v-slot:print>
               <el-col :span="1.5">
                 <el-button
-                    plain
-                    icon="el-icon-printer"
-                    size="mini"
-                    @click="printHTML"
+                  plain
+                  icon="el-icon-printer"
+                  size="mini"
+                  @click="printHTML"
                 >
                 </el-button>
               </el-col>
@@ -129,11 +129,11 @@ export default {
             <template v-slot:export>
               <el-col :span="1.5">
                 <el-button
-                    plain
-                    icon="el-icon-folder-opened"
-                    size="mini"
-                    @click="handleExport"
-                    v-hasPermi="['system:supplier:export']"
+                  plain
+                  icon="el-icon-folder-opened"
+                  size="mini"
+                  @click="handleExport"
+                  v-hasPermi="['system:supplier:export']"
                 >
                 </el-button>
               </el-col>
@@ -164,17 +164,17 @@ export default {
       </el-row>
     </div>
     <el-dialog :show-close="false"
-        title="请选择导出时间"
-        :visible.sync="dialogVisible"
-        width="400px">
+               title="请选择导出时间"
+               :visible.sync="dialogVisible"
+               width="400px">
       <el-form :model="queryParams" ref="queryForm" size="mini" label-width="68px">
         <el-form-item label="导出时间" prop="endTime">
           <el-date-picker
-              v-model="queryParams.endTime"
-              type="date"
-              placeholder="选择时间"
-              value-format="yyyy-MM-dd"
-              size="mini">
+            v-model="queryParams.endTime"
+            type="date"
+            placeholder="选择时间"
+            value-format="yyyy-MM-dd"
+            size="mini">
           </el-date-picker>
         </el-form-item>
       </el-form>

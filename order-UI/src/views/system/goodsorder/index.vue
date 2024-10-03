@@ -3,9 +3,7 @@
   <div class="app-container">
     <QuerySearchBar :handle-query="handleQuery" :options="options" :options-invoice="optionsInvoice"
                     :query-params="queryParams" :show-search="showSearch"/>
-    <!--    表格上方操作栏-->
     <el-row :gutter="10" class="mb8">
-      <!--      左侧操作栏-->
       <el-col :span="1.5">
         <el-button icon="el-icon-refresh" size="mini" @click="resetQuery">刷新</el-button>
       </el-col>
@@ -18,7 +16,6 @@
         >添加订单信息
         </el-button>
       </el-col>
-      <!--      右侧表格的工具栏-->
       <right-toolbar :showSearch.sync="showSearch" @queryTable="getList" :columns="columns">
         <template v-slot:print>
           <el-col :span="1.5">
@@ -508,12 +505,14 @@ import {mixin_order_base} from "../../dashboard/mixins/order/order_base";
 
 export default {
   name: "GoodsOrder",
+  // 混入 订单逻辑分布在混入文件中
   mixins: [mixin_printHTML, mixin_order_deliverGoods
     , mixin_order_checkOrder, mixin_order_adjustOrder
     , mixin_order_Invoice, mixin_order_uploadFiles
     , mixin_order_add, mixin_order_freeApply, mixin_order_orderHistory,
     mixin_order_goodsItemInfo, mixin_order_audit, mixin_order_applyPayment,
     mixin_order_base],
+  // 组件注册
   components: {
     QuerySearchBar,
     CheckOrder,
@@ -531,25 +530,15 @@ export default {
   },
   data() {
     return {
-      // 遮罩层
       loading: true,
-      // 选中数组
       ids: [],
-      // 非单个禁用
       single: true,
-      // 非多个禁用
       multiple: true,
-      // 显示搜索条件
       showSearch: true,
-      // 总条数
       total: 0,
-      // 订单表格数据
       goodsOrderList: [],
-      // 弹出层标题
       title: "",
-      // 是否显示弹出层
       updateOrderItemVisible: false,
-      // 查询参数
       queryParams: {
         orderDateStart: null,
         orderDateEnd: null,
@@ -596,7 +585,6 @@ export default {
       form: {},
       // 表单校验
       rules: {},
-
     };
   },
   created() {

@@ -51,7 +51,7 @@ export default {
       this.download('statistics/export/orderfreightsummary', {
         beginTime: this.queryParams.beginTime,
         endTime: this.queryParams.endTime
-      }, `orderfreightsummary${new Date().getTime()}.xlsx`)
+      }, `运费报表${parseTime(new Date().getTime())}.xlsx`)
       this.dialogVisible = false
     },
     handleExport() {
@@ -169,9 +169,9 @@ export default {
       </el-row>
     </div>
     <el-dialog :show-close="false"
-      title="请选择导出时间段"
-      :visible.sync="dialogVisible"
-      width="30%">
+               title="请选择导出时间段"
+               :visible.sync="dialogVisible"
+               width="30%">
       <el-form :model="queryParams" ref="queryForm" size="mini" label-width="68px">
         <el-form-item label="开始时间" prop="beginTime">
           <el-date-picker
