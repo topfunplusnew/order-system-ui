@@ -372,80 +372,87 @@ export default {
     },
     //公式计算相关的计算属性
     //是否含税 厂家否 客户否
+    Tax() {
+      return this.orderItemInfo.isIncludeTaxSale + this.orderItemInfo.isIncludeTaxFactory
+    },
+    //公式计算相关的计算属性
+    //是否含税 厂家否 客户否
     paymentFactory00() {
-      return fix((this.length * this.width * this.pieces) / 1000000 * Number(this.price) + Number(this.sundryCost))
+      return fix(this.orderItemInfo.length * this.orderItemInfo.width * this.orderItemInfo.pieces / 1000000 * this.orderItemInfo.price + Number(this.orderItemInfo.sundryCost))
     },
     payments00() {
-      return fix(this.length * this.width * this.outPieces / 1000000 * this.paymentUnload + Number(this.paymentsWithSundry));
+      return fix(this.orderItemInfo.length * this.orderItemInfo.width * this.orderItemInfo.outPieces / 1000000 * this.orderItemInfo.paymentUnload + Number(this.orderItemInfo.paymentsWithSundry));
     },
+    // todo  长度宽度高度过低 会计算吨位为0
     tonnage00() {
-      return fix((Number(this.height) - Number(this.erro)) * this.length * this.pieces / 1000000 / 20 / 20);
+      return fix((Number(this.orderItemInfo.height) - Number(this.orderItemInfo.erro)) * this.orderItemInfo.length * this.orderItemInfo.width * this.orderItemInfo.pieces / 1000000 / 20 / 20);
     },
     landFreight00() {
-      return fix(this.tonnage * this.landFreightPrice + Number(this.additionalFees));
+      return fix(Number(this.orderItemInfo.tonnage) * Number(this.orderItemInfo.landFreightPrice) + Number(this.orderItemInfo.additionalFees));
     },
     profit00() {
-      return fix(this.payments - this.paymentFactory - this.landFreight);
+      return fix(this.orderItemInfo.payments - this.orderItemInfo.paymentFactory - this.orderItemInfo.landFreight);
     },
     profitNoTax00() {
-      return fix(this.payments - this.paymentFactory - this.landFreight - this.otherCost);
+      return fix(this.orderItemInfo.payments - this.orderItemInfo.paymentFactory - this.orderItemInfo.landFreight - this.orderItemInfo.otherCost);
     },
     //是否含税10
     paymentFactory10() {
-      return fix(this.length * this.width * this.pieces * this.price / 1000000 + Number(this.sundryCost));
+      return fix(this.orderItemInfo.length * this.orderItemInfo.width * this.orderItemInfo.pieces * this.orderItemInfo.price / 1000000 + Number(this.orderItemInfo.sundryCost));
     },
     payments10() {
-      return fix(this.length * this.width * this.outPieces * this.paymentUnload / 1000000 + Number(this.paymentsWithSundry));
+      return fix(this.orderItemInfo.length * this.orderItemInfo.width * this.orderItemInfo.outPieces * this.orderItemInfo.paymentUnload / 1000000 + Number(this.orderItemInfo.paymentsWithSundry));
     },
     tonnage10() {
-      return fix((this.height - this.erro) * this.length * this.width * this.pieces / 1000000 / 20 / 20)
+      return fix((this.orderItemInfo.height - this.orderItemInfo.erro) * this.orderItemInfo.length * this.orderItemInfo.width * this.orderItemInfo.pieces / 1000000 / 20 / 20)
     },
     landFreight10() {
-      return fix(this.tonnage * this.landFreightPrice + Number(this.additionalFees))
+      return fix(this.orderItemInfo.tonnage * this.orderItemInfo.landFreightPrice + Number(this.orderItemInfo.additionalFees))
     },
     profit10() {
-      return fix(this.payments - this.paymentFactory - this.landFreight)
+      return fix(this.orderItemInfo.payments - this.orderItemInfo.paymentFactory - this.orderItemInfo.landFreight)
     },
     profitNoTax10() {
-      return fix(this.payments - this.paymentFactory / 1.075 - this.landFreight - this.otherCost)
+      return fix(this.orderItemInfo.payments - (this.orderItemInfo.paymentFactory / 1.075) - this.orderItemInfo.landFreight - this.orderItemInfo.otherCost)
     },
     //是否含税01
     paymentFactory01() {
-      return fix(this.length * this.width * this.pieces / 1000000 * this.price + Number(this.sundryCost));
+      return fix(this.orderItemInfo.length * this.orderItemInfo.width * this.orderItemInfo.pieces / 1000000 * this.orderItemInfo.price + Number(this.orderItemInfo.sundryCost));
     },
     payments01() {
-      return fix(this.length * this.width * this.outPieces * this.paymentUnload / 1000000 + Number(this.paymentsWithSundry));
+      return fix(this.orderItemInfo.length * this.orderItemInfo.width * this.orderItemInfo.outPieces * this.orderItemInfo.paymentUnload / 1000000 + Number(this.orderItemInfo.paymentsWithSundry));
     },
     tonnage01() {
-      return fix((this.height - this.erro) * this.length * this.width * this.pieces / 1000000 / 20 / 20)
+      return fix((this.orderItemInfo.height - this.orderItemInfo.erro) * this.orderItemInfo.length * this.orderItemInfo.width * this.orderItemInfo.pieces / 1000000 / 20 / 20)
     },
     landFreight01() {
-      return fix(Number(this.tonnage * this.landFreightPrice) + Number(this.additionalFees))
+      return fix(Number(this.orderItemInfo.tonnage * this.orderItemInfo.landFreightPrice) + Number(this.orderItemInfo.additionalFees))
     },
     profit01() {
-      return fix(this.payments - this.paymentFactory - this.landFreight)
+      return fix(this.orderItemInfo.payments - this.orderItemInfo.paymentFactory - this.orderItemInfo.landFreight)
     },
     profitNoTax01() {
-      return fix((this.payments / 1.075) - this.paymentFactory - this.landFreight - this.otherCost)
+      return fix((this.orderItemInfo.payments / 1.075) - this.orderItemInfo.paymentFactory - this.orderItemInfo.landFreight - this.orderItemInfo.otherCost)
     },
     //是否含税11
     paymentFactory11() {
-      return fix(this.length * this.width * this.pieces * this.price / 1000000 + Number(this.sundryCost));
+      return fix(this.orderItemInfo.length * this.orderItemInfo.width * this.orderItemInfo.pieces * this.orderItemInfo.price / 1000000 + Number(this.orderItemInfo.sundryCost));
     },
     payments11() {
-      return fix(this.length * this.width * this.outPieces * this.paymentUnload / 1000000 + Number(this.paymentsWithSundry));
+      return fix(this.orderItemInfo.length * this.orderItemInfo.width * this.orderItemInfo.outPieces * this.orderItemInfo.paymentUnload / 1000000 + Number(this.orderItemInfo.paymentsWithSundry));
     },
     tonnage11() {
-      return fix((this.height - this.erro) * this.length * this.width * this.pieces / 1000000 / 20 / 20)
+      return fix((this.orderItemInfo.height - this.orderItemInfo.erro) * this.orderItemInfo.length * this.orderItemInfo.width * this.orderItemInfo.pieces / 1000000 / 20 / 20)
     },
     landFreight11() {
-      return fix(this.tonnage * this.landFreightPrice + Number(this.additionalFees))
+      return fix(this.orderItemInfo.tonnage * this.orderItemInfo.landFreightPrice + Number(this.orderItemInfo.additionalFees))
     },
     profit11() {
-      return fix(this.payments - this.paymentFactory - this.landFreight)
+      return fix(this.orderItemInfo.payments - this.orderItemInfo.paymentFactory - this.orderItemInfo.landFreight)
     },
     profitNoTax11() {
-      return fix(this.payments - this.paymentFactory - (this.landFreight * 1.075) - (this.height * this.length * this.width * this.pieces / 1000000 / 20 * 0.5))
+      return fix(this.orderItemInfo.payments - this.orderItemInfo.paymentFactory - (this.orderItemInfo.landFreight * 1.075)
+        - (this.orderItemInfo.height * this.orderItemInfo.length * this.orderItemInfo.width * this.orderItemInfo.pieces / 1000000 / 20 * 0.5) - this.orderItemInfo.otherCost)
     },
   },
   watch: {
@@ -772,9 +779,9 @@ export default {
 
     <!--    供应商信息弹窗-->
     <el-dialog :close-on-click-modal="false"
-        title="供应商信息"
-        :visible.sync="companyGiveDialogVisible"
-        width="35%" append-to-body>
+               title="供应商信息"
+               :visible.sync="companyGiveDialogVisible"
+               width="35%" append-to-body>
       <!--      供应商信息搜索-->
       <el-row :gutter="5">
         <el-col :span="4">
@@ -788,36 +795,36 @@ export default {
         </el-col>
       </el-row>
       <el-table
-          :data="companyGiveInfo"
-          border>
+        :data="companyGiveInfo"
+        border>
         <!--        操作-->
         <el-table-column
-            fixed="left"
-            label="操作">
+          fixed="left"
+          label="操作">
           <template slot-scope="scope">
             <el-button @click="commitCompanyGiveInfo(scope.row)" type="danger" size="small">确认</el-button>
           </template>
         </el-table-column>
         <el-table-column
-            fixed
-            prop="companyName"
-            label="供应商">
+          fixed
+          prop="companyName"
+          label="供应商">
         </el-table-column>
         <el-table-column
-            prop="address"
-            label="地址">
+          prop="address"
+          label="地址">
         </el-table-column>
         <el-table-column
-            prop="relationName"
-            label="联系人">
+          prop="relationName"
+          label="联系人">
         </el-table-column>
         <el-table-column
-            prop="bankNo"
-            label="银行账号">
+          prop="bankNo"
+          label="银行账号">
         </el-table-column>
         <el-table-column
-            prop="acountsName"
-            label="户名">
+          prop="acountsName"
+          label="户名">
         </el-table-column>
       </el-table>
       <span slot="footer" class="dialog-footer">
@@ -828,9 +835,9 @@ export default {
 
     <!--    产品级别信息弹窗-->
     <el-dialog :close-on-click-modal="false"
-        title="产品级别信息"
-        :visible.sync="productLevelDialogVisible"
-        width="35%" append-to-body>
+               title="产品级别信息"
+               :visible.sync="productLevelDialogVisible"
+               width="35%" append-to-body>
       <el-row style="margin-bottom: 20px">
         <!--      产品级别-->
         <el-col :span="3">
@@ -851,40 +858,40 @@ export default {
         </el-col>
       </el-row>
       <el-table
-          :data="productLevelInfo"
-          border>
+        :data="productLevelInfo"
+        border>
         <!--        操作-->
         <el-table-column
-            fixed="left"
-            label="操作">
+          fixed="left"
+          label="操作">
           <template slot-scope="scope">
             <el-button @click="commitProductLevelInfo(scope.row)" type="danger" size="small">确认</el-button>
           </template>
         </el-table-column>
         <el-table-column
-            fixed
-            prop="categoryName"
-            label="分类">
+          fixed
+          prop="categoryName"
+          label="分类">
         </el-table-column>
         <el-table-column
-            prop="levelNo"
-            label="产品级别编码">
+          prop="levelNo"
+          label="产品级别编码">
         </el-table-column>
         <el-table-column
-            prop="levelName"
-            label="标题">
+          prop="levelName"
+          label="标题">
         </el-table-column>
         <el-table-column
-            prop="height"
-            label="厚度">
+          prop="height"
+          label="厚度">
         </el-table-column>
         <el-table-column
-            prop="length"
-            label="长度">
+          prop="length"
+          label="长度">
         </el-table-column>
         <el-table-column
-            prop="width"
-            label="宽度">
+          prop="width"
+          label="宽度">
         </el-table-column>
       </el-table>
       <span slot="footer" class="dialog-footer">
