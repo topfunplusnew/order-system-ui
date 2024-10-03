@@ -1,89 +1,8 @@
 <!--订单页面-->
 <template>
   <div class="app-container">
-    <el-form :model="queryParams" ref="queryForm" size="mini" :inline="true" v-show="showSearch" label-width="70px">
-      <el-row>
-        <el-col :span="6">
-          <el-form-item label="开始时间" prop="beginTime">
-            <el-date-picker
-                v-model="queryParams.orderDateStart"
-                type="date"
-                placeholder="选择时间"
-                value-format="yyyy-MM-dd"
-                size="mini"
-            >
-            </el-date-picker>
-          </el-form-item>
-        </el-col>
-        <el-col :span="6">
-          <el-form-item label="结束时间" prop="endTime">
-            <el-date-picker
-                v-model="queryParams.orderDateEnd"
-                type="date"
-                placeholder="选择时间"
-                value-format="yyyy-MM-dd"
-                size="mini"
-            >
-            </el-date-picker>
-          </el-form-item>
-        </el-col>
-        <el-col :span="6">
-          <el-form-item label="客户名称" prop="customer">
-            <el-input
-                v-model="queryParams.customer"
-                placeholder="请输入客户名称"
-                clearable
-                @keyup.enter.native="handleQuery"
-                size="mini"
-            >
-            </el-input>
-          </el-form-item>
-        </el-col>
-        <el-col :span="6">
-          <el-form-item label="审核状态" prop="checkState">
-            <el-select
-                v-model="queryParams.checkState"
-                placeholder="请选择"
-                size="mini"
-            >
-              <el-option
-                  v-for="item in options"
-                  :key="item.value"
-                  :label="item.label"
-                  :value="item.value">
-              </el-option>
-            </el-select>
-          </el-form-item>
-        </el-col>
-        <el-col :span="6">
-          <el-form-item label="开票状态" prop="invoiceState">
-            <el-select
-                v-model="queryParams.invoiceState"
-                placeholder="请选择"
-                size="mini"
-            >
-              <el-option
-                  v-for="item in optionsInvoice"
-                  :key="item.value"
-                  :label="item.label"
-                  :value="item.value">
-              </el-option>
-            </el-select>
-          </el-form-item>
-        </el-col>
-        <el-col :span="4">
-          <el-form-item>
-            <el-button
-                type="primary"
-                icon="el-icon-search"
-                size="mini"
-                @click="handleQuery">
-              搜索
-            </el-button>
-          </el-form-item>
-        </el-col>
-      </el-row>
-    </el-form>
+    <SearchBar :handle-query="handleQuery" :options="options" :options-invoice="optionsInvoice"
+                  :query-params="queryParams" :show-search="showSearch"/>
     <!--    表格上方操作栏-->
     <el-row :gutter="10" class="mb8">
       <!--      左侧操作栏-->
@@ -256,10 +175,10 @@
       <el-table-column show-overflow-tooltip label="开票状态" align="center" prop="invoiceState"
                        v-if="columns[14].visible" width="120px">
         <template #default="scope">
-          <el-row v-if="scope.row.customerIsInvoice === 1 && scope.row.isSupplierInvoice === 1">
+          <el-row v-if="scope.row.invoiceState === '已开票'">
             <el-tag type="success">已开票</el-tag>
           </el-row>
-          <el-row v-else-if="scope.row.customerIsInvoice === 0 && scope.row.isSupplierInvoice === 0">
+          <el-row v-else-if="scope.row.invoiceState === '未开票'">
             <el-row>
               <el-tag type="danger">未开票</el-tag>
             </el-row>
@@ -741,7 +660,6 @@ import {
   listGoodsOrder,
   updateGoodsOrder
 } from "@/api/system/goodsOrder";
-import TagsItem from "@/components/TagsItem/index.vue";
 import OrderForm from "@/components/OrderForm.vue";
 import {mapGetters} from "vuex";
 import {getToken} from "@/utils/auth";
@@ -749,14 +667,10 @@ import {excludeParams} from "@/api/tool/exclude";
 import SearchOption from "@/components/SearchOption.vue";
 import {listBankAccount} from "@/api/system/bankAccount";
 import {listCompany} from "@/api/system/company";
-import {formatDate} from "@/utils";
 import {listOrderFreight} from "@/api/system/orderFreight";
-import SwitchBarItem from "@/components/SwitchBarItem.vue";
-import SwitchBarForCheck from "@/components/SwitchBarForCheck.vue";
 import ApplyPayment from "@/components/ApplyPayment.vue";
 import ChatForm from "@/components/ChatForm.vue";
 import {addInvoiceOut} from "@/api/system/invoiceOut";
-import OrderDetail from "@/views/system/orderdetail/index.vue";
 import OrderDetailInfo from "@/components/OrderDetailInfo.vue";
 import {TableName} from "@/api/tool/enums";
 import FreeApply from "@/components/FreeApply.vue";
@@ -767,24 +681,21 @@ import axios from "axios";
 import {getCompany} from "../../../api/system/company";
 import {getHistoryGoodsOrder} from "../../../api/system/goodsOrder";
 import OrderInfos from "../../../components/OrderInfos.vue";
-import {formatValue} from "../../../api/tool/cons";
-import CheckDiff from "../../../components/CheckDiff.vue";
 import InfoDialog from "../../../components/InfoDialog.vue";
 import {addReason} from "../../../api/system/user";
 import {CodeDiff} from 'v-code-diff'
-import {create} from 'jsondiffpatch'
+import SearchBar from "./SearchBar.vue";
 
 export default {
   name: "GoodsOrder",
   mixins: [mixin_printHTML],
   components: {
+    SearchBar,
     InfoDialog,
-    CheckDiff,
     OrderInfos,
     FreeApply,
     OrderDetailInfo,
-    OrderDetail, ChatForm, ApplyPayment, SwitchBarForCheck, SwitchBarItem, SearchOption, OrderForm, TagsItem,
-    CodeDiff
+    ChatForm, ApplyPayment, SearchOption, OrderForm, CodeDiff
   },
   data() {
     return {
@@ -1114,7 +1025,6 @@ export default {
     } else {
       this.columns = JSON.parse(localStorage.getItem('goodsorder-columns'));
     }
-    this.$store.dispatch('order/getOrderList')
   },
   mounted() {
   },
@@ -1176,6 +1086,7 @@ export default {
             // 保存客户和供应商开票个数
             this.updateOrderItemVisibleTitleInfo.customerInvoiceNumber = res.data.customerIsInvoice
             this.updateOrderItemVisibleTitleInfo.supplierInvoiceNumber = res.data.isSupplierInvoice
+            this.invoiceupdateOrderItemVisibleVisible = true;
           })
       this.invoiceupdateOrderItemVisibleVisible = true;
     },
@@ -1623,21 +1534,16 @@ export default {
       this.updateOrderItemVisibleTitleInfo = {
         id: null,
         invoiceDate: null,
-        invoiceObject: null,
-        invoiceAmount: null,
-        companyType: null,
+        invoiceObject: '',
+        invoiceAmount: '',
+        companyType: '',
         companyName: '',
         companyID: '',
-        invoiceCompanyName: null,
+        invoiceCompanyName: '',
         ticketPoint: null,
         ticketPointAmount: null,
         isOrderTax: 0,
         comments: null,
-        addtime: null,
-        userId: null,
-        UserName: null,
-        updateTime: null,
-        delFlag: null
       }
     },
     // 表单重置
