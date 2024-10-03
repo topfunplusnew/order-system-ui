@@ -372,9 +372,7 @@ export default {
     },
     //公式计算相关的计算属性
     //是否含税 厂家否 客户否
-    Tax() {
-      return this.orderItemInfo.isIncludeTaxSale + this.orderItemInfo.isIncludeTaxFactory
-    },
+
     //公式计算相关的计算属性
     //是否含税 厂家否 客户否
     paymentFactory00() {
