@@ -308,11 +308,11 @@ export default {
         </div>
         <el-form-item label="订单日期" prop="orderDate">
           <el-date-picker
-              v-model="orderInfo.orderDate"
-              size="mini"
-              type="date"
-              placeholder="选择日期"
-              value-format="yyyy-MM-dd" style="width: 120px">
+            v-model="orderInfo.orderDate"
+            size="mini"
+            type="date"
+            placeholder="选择日期"
+            value-format="yyyy-MM-dd" style="width: 120px">
           </el-date-picker>
         </el-form-item>
         <el-form-item label="客户" prop="customer">
@@ -398,10 +398,10 @@ export default {
                               query-label="车队名称" query-info="fName" :query-name="queryFleet"
                               @commitBack="handleCommitBackFleet" @update:queryName="handleChangeFleet">
                   <template #table-columns>
-                    <el-table-column label="开户行" align="center" prop="bankName"/>
-                    <el-table-column label="开户名" align="center" prop="acountsName"/>
-                    <el-table-column label="账号" align="center" prop="bankNo"/>
-                    <el-table-column label="余额" align="center" prop="surplusMoney"/>
+                    <el-table-column label="车队名称" align="center" prop="fName"/>
+                    <el-table-column label="车队经理" align="center" prop="fLeader"/>
+                    <el-table-column label="车队经理电话" align="center" prop="tel"/>
+                    <el-table-column label="地址" align="center" prop="address"/>
                   </template>
                 </SearchOption>
               </el-col>
@@ -422,7 +422,9 @@ export default {
                               query-label="车牌" query-info="carNo" :query-name="querySeaCars"
                               @commitBack="handleCommitBackSeaCar" @update:queryName="handleChangeSeaCar">
                   <template #table-columns>
-                    <el-table-column label="开户行" align="center" prop="bankName"/>
+                    <el-table-column label="车牌" align="center" prop="carNo"/>
+                    <el-table-column label="司机" align="center" prop="driver"/>
+                    <el-table-column label="司机电话" align="center" prop="tel"/>
                     <el-table-column label="开户名" align="center" prop="acountsName"/>
                     <el-table-column label="账号" align="center" prop="bankNo"/>
                     <el-table-column label="余额" align="center" prop="surplusMoney"/>

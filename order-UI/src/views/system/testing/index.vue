@@ -1,109 +1,68 @@
 <script>
 
-import SearchOption from "@/components/SearchOption.vue";
-import SwitchBarItem from "@/components/SwitchBarItem.vue";
-import ChatForm from "@/components/ChatForm.vue";
-import AreaSelect from "@/components/AreaSelect.vue";
-import EditReason from "@/components/EditReason.vue";
-import {TableName} from "@/api/tool/enums";
-import ShowLabel from "@/components/ShowLabel.vue";
-
-// jsondiffpatch
-import {create} from 'jsondiffpatch'
-import {format} from "jsondiffpatch/lib/formatters/html";
-import 'jsondiffpatch/lib/formatters/styles/html.css'
+import Item from "./Item.vue";
 
 export default {
-  computed: {
-    TableName() {
-      return TableName
-    },
-    // 映射对象 要求传入一个属性，从this.mapper中获取映射属性，并且赋值到原有属性位置
-    mapProp() {
-
-    }
+  computed: {},
+  components: {Item},
+  //
+  beforeCreate() {
+    // console.log('before create =>', this)
   },
-  components: {ShowLabel, EditReason, AreaSelect, ChatForm, SwitchBarItem, SearchOption},
   data() {
+    // console.log('data this=>', this)
     return {
-      diffPatcher: null,
-      // 映射对象
-      mapper: {
-        'name': '姓名',
-        'age': '年龄',
-        'address': '地址',
-        'address.city': '城市',
-        'address.street': '街道'
-      },
-      testObj1: {
-        name: '张三',
-        age: 18,
-        address: {
-          city: '北京',
-          street: '黄埔'
-        }
-      },
-      testObj2: {
-        name: '李四',
-        age: 25,
-        address: {
-          city: '天津',
-          street: '狗不理'
-        }
-      }
+      name: 'zhangsan'
     }
   },
   created() {
+    // console.log('created this=>', this.$el)
+
+    /**
+     * 在 Vue 2 中，$children 不保证顺序，且在 created 钩子执行时可能尚未初始化完成。
+     * Item 组件在此例中作为直接子组件，但在 created 钩子时可能还未被添加到 $children 数组中。
+     * 因此，在 created 钩子中调用 this.$children.pop() 可能会得到 undefined。建议在 mounted 钩子中访问 $children。
+     */
+    // console.log('created this.children =>', this.$children.pop())
+    // this.checkState(this)
   },
+  beforeMount() {
+    // console.log('before mount this=>', this)
+  },
+  //Vue 会将组件(虚拟dom)渲染为实际的 HTML ，并将它插入到页面中 对应 的元素 (真实dom)里
   mounted() {
-    const order1 = {
-      [this.mapper.name]: '张三',
-      [this.mapper.age]: 18,
-      [this.mapper.address]: {
-        [this.mapper["address.city"]]: '北京',
-        [this.mapper["address.street"]]: '黄埔'
-      },
+    console.log('mounted this=>', this)
+    // console.log('mounted this.children =>', this.$children.pop().$el.innerHTML = 'hello')
+  },
+  beforeDestroy() {
+    // console.log('before destroy this=>', this)
+  },
+  destroyed() {
+    // console.log('destroy this=>', this)
+  },
+  methods: {
+    checkState: (_this) => {
+      console.log('checkState this=>', _this)
+    },
+    changeName() {
+      this.name = 'lisi'
     }
-    const order2 = {
-      [this.mapper.name]: '王五',
-      [this.mapper.age]: 28,
-      [this.mapper.address]: {
-        [this.mapper["address.city"]]: '山东',
-        [this.mapper["address.street"]]: '菏泽'
-      },
-    }
-    this.diffPatcher = create()
-    const diff = this.diffPatcher.diff(order1, order2)
-    console.log(diff)
-    document.getElementById('compare').innerHTML = format(diff, order2);
   }
-
-
 }
 </script>
 
 <template>
   <div>
-    <h1 style="font-weight: bolder;color: red">!测试请添加el-row!</h1>
-    <div>
-      <AreaSelect/>
+    <div class="contain">
+      <h1>Vue 2</h1>
+      <el-button @click="changeName" type="primary">点击变换名字</el-button>
+      <Item v-bind:title="name"/>
     </div>
-    <div>
-      <el-row>
-        <EditReason :table-name="TableName.PAYMENT" :tid="1"/>
-      </el-row>
-    </div>
-    <el-row>
-      <ShowLabel/>
-    </el-row>
-    <el-row>
-      <div id="compare" style="width: 500px;height: 500px;border:1px solid red">
-
-      </div>
-    </el-row>
   </div>
 </template>
 
 <style scoped lang="scss">
-
+.contain {
+  text-align: center;
+}
 </style>
