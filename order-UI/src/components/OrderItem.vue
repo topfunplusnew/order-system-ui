@@ -75,7 +75,7 @@ export default {
       return fix(this.orderItemInfo.payments - this.orderItemInfo.paymentFactory - this.orderItemInfo.landFreight)
     },
     profitNoTax10() {
-      return fix(this.orderItemInfo.payments - this.orderItemInfo.paymentFactory / 1.075 - this.orderItemInfo.landFreight - this.orderItemInfo.otherCost)
+      return fix(this.orderItemInfo.payments - (this.orderItemInfo.paymentFactory / 1.075) - this.orderItemInfo.landFreight - this.orderItemInfo.otherCost)
     },
     //是否含税01
     paymentFactory01() {
@@ -113,7 +113,8 @@ export default {
       return fix(this.orderItemInfo.payments - this.orderItemInfo.paymentFactory - this.orderItemInfo.landFreight)
     },
     profitNoTax11() {
-      return fix(this.orderItemInfo.payments - this.orderItemInfo.paymentFactory - (this.orderItemInfo.landFreight * 1.075) - (this.orderItemInfo.height * this.orderItemInfo.length * this.orderItemInfo.width * this.orderItemInfo.pieces / 1000000 / 20 * 0.5))
+      return fix(this.orderItemInfo.payments - this.orderItemInfo.paymentFactory - (this.orderItemInfo.landFreight * 1.075)
+        - (this.orderItemInfo.height * this.orderItemInfo.length * this.orderItemInfo.width * this.orderItemInfo.pieces / 1000000 / 20 * 0.5) - this.orderItemInfo.otherCost)
     },
   },
   beforeDestroy() {
