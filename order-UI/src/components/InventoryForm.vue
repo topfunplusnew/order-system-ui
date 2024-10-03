@@ -11,11 +11,6 @@ export default {
   name: "InventoryForm",
   components: {SearchOption, InventoryItem},
   props: {
-    //库存信息
-    inventoryInfo: {
-      type: Object,
-      required: true
-    },
     //是否为二次出库
     isSecond: {
       type: Boolean
@@ -23,92 +18,62 @@ export default {
   },
   data() {
     return {
-      isLand: false,
-      isSea: false,
+      inventoryInfo: {},
       //查询库房信息
       queryStoreHouseName: '',
       //查询司机信息
       queryCars: '',
       //查询车队信息
       queryFleet: '',
-
-      //货物信息
-      goodsInfo: {},
-
-
     }
   },
-  computed: {
-    //这个字段是用来该改变当前的库存信息
-    currentInventoryInfo: {
-      get() {
-        return this.inventoryInfo
-      },
-      set(value) {
-        this.$emit('changeInventoryInfo', value)
-      }
-    }
-  },
-  //订单也可以这么优化
-  watch: {
-    currentInventoryInfo: {
-      handler(val) {
-        this.$emit('changeInventoryInfo', val)
-      },
-      deep: true,
-      immediate: true,
-    },
-    goodsInfo: {
-      handler(val) {
-      }
-    }
-  },
+  computed: {},
   methods: {
     listFleet,
     listCars,
     listStoreHouse,
-
     //一堆的更新查找和确认 Query是更新查找值 Commit是更新当前库存对象的属性
     handleUpdateQueryStoreHouseName(val) {
       this.queryStoreHouseName = val
     },
     handleCommitBackStoreHouseName(val) {
-      this.currentInventoryInfo = {
-        ...this.currentInventoryInfo,
+      Object.assign(this.inventoryInfo, {
         storeHouseName: val.storeHouseName,
         storeHouseid: val.id
-      }
+      })
     },
     handleUpdateQueryCars(val) {
       this.queryCars = val
     },
     handleCommitBackCars(val) {
-      this.currentInventoryInfo = {
-        ...this.currentInventoryInfo,
+      Object.assign(this.inventoryInfo, {
         landDriverName: val.driver,
         landCarNo: val.carNo,
         landDriverTel: val.tel
-      }
+      })
     },
     handleUpdateQueryFleet(val) {
       this.queryFleet = val
     },
     handleCommitBackFleet(val) {
-      this.currentInventoryInfo = {...this.currentInventoryInfo, fleet: val.fName}
-      console.log(this.currentInventoryInfo)
+      this.inventoryInfo.fleet = val.fName
     },
-
-    //修改货物信息
-    handleChangeGoodsInfo(val) {
-      for (let property in val) {
-        Vue.set(this.goodsInfo, `${property}`, val[property])
+    // 关闭弹窗
+    closeInventoryInfo() {
+      this.$emit('close')
+    },
+    resetInventoryInfo() {
+      this.inventoryInfo = {
+        storeDate: '',
+        storeHouseName: '',
+        landCarNo: '',
+        landDriverTel: '',
+        fleet: '',
       }
-      this.$store.dispatch('inventory/setInventoryInfoAll', this.currentInventoryInfo)
-      this.$store.dispatch('inventory/setInventoryInfoAll', this.goodsInfo)
     }
   },
   created() {
-    this.goodsInfo = this.currentInventoryInfo
+    this.resetInventoryInfo();
   },
   mounted() {
 
@@ -127,10 +92,10 @@ export default {
           </el-col>
           <el-col :span="20">
             <el-date-picker
-                v-model="currentInventoryInfo.storeDate"
-                type="date"
-                placeholder="选择日期" style="width: 70%"
-                value-format="yyyy-MM-dd">
+              v-model="inventoryInfo.storeDate"
+              type="date"
+              placeholder="选择日期" style="width: 70%"
+              value-format="yyyy-MM-dd">
             </el-date-picker>
           </el-col>
         </el-row>
@@ -141,7 +106,7 @@ export default {
             <span style="font-weight: bolder">仓库:</span>
           </el-col>
           <el-col :span="12">
-            <el-input type="text" v-model="currentInventoryInfo.storeHouseName"
+            <el-input type="text" v-model="inventoryInfo.storeHouseName"
                       placeholder="请输入仓库名称"></el-input>
           </el-col>
           <el-col :span="2">
@@ -162,7 +127,7 @@ export default {
             <span style="font-weight: bolder">车牌:</span>
           </el-col>
           <el-col :span="12">
-            <el-input type="text" v-model="currentInventoryInfo.landCarNo"
+            <el-input type="text" v-model="inventoryInfo.landCarNo"
                       placeholder="请输入车牌"></el-input>
           </el-col>
           <el-col :span="2">
@@ -184,7 +149,7 @@ export default {
             <span style="font-weight: bolder">司机电话:</span>
           </el-col>
           <el-col :span="12">
-            <el-input type="text" v-model="currentInventoryInfo.landDriverTel"
+            <el-input type="text" v-model="inventoryInfo.landDriverTel"
                       placeholder="请输入司机电话"></el-input>
           </el-col>
         </el-row>
@@ -198,7 +163,7 @@ export default {
             <span style="font-weight: bolder">车队:</span>
           </el-col>
           <el-col :span="12">
-            <el-input type="text" v-model="currentInventoryInfo.fleet"
+            <el-input type="text" v-model="inventoryInfo.fleet"
                       placeholder="请输入车队"></el-input>
           </el-col>
           <el-col :span="2">
@@ -219,7 +184,7 @@ export default {
     <el-row>
       <p style="font-weight: bolder">货物信息</p>
       <!--      传入库存信息 因为只有一个货物入库 所以只需要更新一个信息-->
-      <InventoryItem :order-item-info="goodsInfo" @changeOrderItemInfo="handleChangeGoodsInfo"/>
+      <InventoryItem :inventoryInfo="inventoryInfo" @close="closeInventoryInfo"/>
     </el-row>
   </div>
 </template>

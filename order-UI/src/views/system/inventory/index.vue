@@ -3,10 +3,10 @@
     <el-form :model="queryParams" ref="queryForm" size="mini" :inline="true" v-show="showSearch" label-width="68px">
       <el-form-item label="级别名称" prop="levelName">
         <el-input
-            v-model="queryParams.levelName"
-            placeholder="请输入级别名称"
-            clearable
-            @keyup.enter.native="handleQuery"
+          v-model="queryParams.levelName"
+          placeholder="请输入级别名称"
+          clearable
+          @keyup.enter.native="handleQuery"
         />
       </el-form-item>
       <el-form-item>
@@ -20,10 +20,10 @@
       </el-col>
       <el-col :span="1.5">
         <el-button
-            type="danger"
-            size="mini"
-            @click="addNewInventory"
-            v-hasPermi="['system:inventory:add']"
+          type="danger"
+          size="mini"
+          @click="addNewInventory"
+          v-hasPermi="['system:inventory:add']"
         >新增货物
         </el-button>
       </el-col>
@@ -31,10 +31,10 @@
         <template v-slot:print>
           <el-col :span="1.5">
             <el-button
-                plain
-                icon="el-icon-printer"
-                size="mini"
-                @click="printHTML"
+              plain
+              icon="el-icon-printer"
+              size="mini"
+              @click="printHTML"
             >
             </el-button>
           </el-col>
@@ -43,11 +43,11 @@
         <template v-slot:export>
           <el-col :span="1.5">
             <el-button
-                plain
-                icon="el-icon-folder-opened"
-                size="mini"
-                @click="handleExport"
-                v-hasPermi="['system:inventory:export']"
+              plain
+              icon="el-icon-folder-opened"
+              size="mini"
+              @click="handleExport"
+              v-hasPermi="['system:inventory:export']"
             >
             </el-button>
           </el-col>
@@ -118,28 +118,28 @@
                            fixed="right">
             <template slot-scope="scope">
               <el-button
-                  size="mini"
-                  type="primary"
-                  @click="handleUpdate(scope.row)"
+                size="mini"
+                type="primary"
+                @click="handleUpdate(scope.row)"
               >修改
               </el-button>
               <el-button
-                  size="mini"
-                  type="warning"
-                  @click="secondryInventoryOut(scope.row)"
+                size="mini"
+                type="warning"
+                @click="secondryInventoryOut(scope.row)"
               >加工后出库
               </el-button>
               <el-button
-                  size="mini"
-                  type="warning"
-                  @click="afterbreakInventoryOut(scope.row)"
+                size="mini"
+                type="warning"
+                @click="afterbreakInventoryOut(scope.row)"
               >破损后出库
               </el-button>
               <el-button
-                  size="mini"
-                  type="danger"
-                  @click="handleDelete(scope.row)"
-                  v-hasPermi="['system:inventory:remove']"
+                size="mini"
+                type="danger"
+                @click="handleDelete(scope.row)"
+                v-hasPermi="['system:inventory:remove']"
               >删除
               </el-button>
             </template>
@@ -150,16 +150,17 @@
 
 
     <pagination
-        v-show="total>0"
-        :total="total"
-        :page.sync="queryParams.pageNum"
-        :limit.sync="queryParams.pageSize"
-        @pagination="getList"
+      v-show="total>0"
+      :total="total"
+      :page.sync="queryParams.pageNum"
+      :limit.sync="queryParams.pageSize"
+      @pagination="getList"
     />
 
 
     <!-- 添加或修改库存对话框 -->
-    <el-dialog :close-on-click-modal="false" :show-close="false" :title="title" :visible.sync="open" width="1300px" append-to-body>
+    <el-dialog :close-on-click-modal="false" :show-close="false" :title="title" :visible.sync="open" width="1300px"
+               append-to-body>
       <el-form ref="form" :model="form" :rules="rules" label-width="120px">
         <el-row>
           <el-col :span="6">
@@ -180,10 +181,10 @@
             </el-form-item>
             <el-form-item label="入库日期" prop="storeDate">
               <el-date-picker
-                  v-model="form.storeDate"
-                  type="date"
-                  placeholder="入库日期"
-                  value-format="yyyy-MM-dd">
+                v-model="form.storeDate"
+                type="date"
+                placeholder="入库日期"
+                value-format="yyyy-MM-dd">
               </el-date-picker>
             </el-form-item>
             <el-form-item label="库存量" prop="stockNumber">
@@ -380,17 +381,15 @@
 
 
     <!--    添加入库信息 与订单结构类似-->
-    <el-dialog :close-on-click-modal="false" :show-close="false" title="货物入库" :visible.sync="invoiceInVisible" width="80%" append-to-body>
-      <InventoryForm :inventory-info="inventoryInfo" @changeInventoryInfo="handleChangeInventoryInfo"/>
-      <div slot="footer" class="dialog-footer">
-        <el-button type="primary" @click="submitInvoiceIn">确 定</el-button>
-        <el-button @click="invoiceInVisible= false">取 消</el-button>
-      </div>
+    <el-dialog :close-on-click-modal="false" :show-close="false" title="货物入库" :visible.sync="invoiceInVisible"
+               width="80%" append-to-body>
+      <InventoryForm @close="invoiceInVisible = false"/>
     </el-dialog>
 
 
     <!--    二次出库-->
-    <el-dialog :close-on-click-modal="false" :show-close="false" title="二次出库" :visible.sync="secondInvoiceInVisible" width="50%" append-to-body>
+    <el-dialog :close-on-click-modal="false" :show-close="false" title="二次出库" :visible.sync="secondInvoiceInVisible"
+               width="50%" append-to-body>
       <div slot="footer" class="dialog-footer">
         <el-row :gutter="5">
           <el-col :span="4">
@@ -406,7 +405,8 @@
     </el-dialog>
 
     <!--    货物破损出库-->
-    <el-dialog :close-on-click-modal="false" :show-close="false" title="货物破损出库" :visible.sync="breakInvoiceInVisible" width="50%" append-to-body>
+    <el-dialog :close-on-click-modal="false" :show-close="false" title="货物破损出库"
+               :visible.sync="breakInvoiceInVisible" width="50%" append-to-body>
       <div slot="footer" class="dialog-footer">
         <el-row :gutter="5">
           <el-col :span="4">
@@ -591,7 +591,7 @@ export default {
     })
     this.getList();
     if (localStorage.getItem('inventory-columns') === 'null'
-        || !localStorage.getItem('inventory-columns')) {
+      || !localStorage.getItem('inventory-columns')) {
       //设置localStorage
       localStorage.setItem("inventory-columns", JSON.stringify(this.columns))
     } else {
@@ -661,21 +661,6 @@ export default {
         carNo: '',
         tel: ''
       }
-    },
-    //获取入库
-    submitInvoiceIn() {
-      console.log('仓库信息', this.inventoryInfoAll)
-      addInventory(this.inventoryInfoAll).then(res => {
-        this.$message.success('入库成功')
-      })
-      this.getList()
-      this.invoiceInVisible = false
-    },
-    //子组件改变库存状态
-    handleChangeInventoryInfo(val) {
-      console.log('11返回', val)
-      this.inventoryInfo.storeHouseName = val.storeHouseName
-      this.inventoryInfo = val;
     },
     //二次出库
     secondryInventoryOut(row) {
@@ -826,16 +811,16 @@ export default {
         type: 'warning'
       }).then(({value}) => {
         addReason({reason: value, tableName: TableName.INVENTORY, tid: row.id, modifyTime: this.modifyTime})
-            .then(res => {
-              this.$message.success('提交成功')
-              this.reset();
-              const id = row.id || this.ids
-              getInventory(id).then(response => {
-                this.form = response.data;
-                this.open = true;
-                this.title = "修改库存";
-              });
-            })
+          .then(res => {
+            this.$message.success('提交成功')
+            this.reset();
+            const id = row.id || this.ids
+            getInventory(id).then(response => {
+              this.form = response.data;
+              this.open = true;
+              this.title = "修改库存";
+            });
+          })
       }).catch(() => {
         this.$message({
           type: 'warning',

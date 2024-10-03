@@ -86,7 +86,6 @@ export default {
     listCars,
     listBankAccount,
     listCompany,
-    // todo 修改订单的货物列表状态
     // 获取订单信息的方法
     getGoodsOrderInfo(id) {
       getGoodsOrder(id).then(response => {

@@ -158,16 +158,6 @@ export default {
         console.log('Tax:', val)
       }
     },
-    'orderItemInfo.isIncludeTaxSale': {
-      handler(val) {
-        console.log('isIncludeTaxSale', val)
-      }
-    },
-    'orderItemInfo.isIncludeTaxSale': {
-      handler(val) {
-        console.log('isIncludeTaxSale', val)
-      }
-    },
     //监听的是整个对象
     'orderItemInfo': {
       handler() {
