@@ -1,7 +1,7 @@
 <!--    开发票-->
 
 <template>
-  <el-dialog :show-close="false"
+  <el-dialog :close-on-click-modal="false" :show-close="false"
       :title="updateOrderItemVisibleTitle"
       :visible.sync="invoiceupdateOrderItemVisibleVisible"
       width="500px">

@@ -28,7 +28,7 @@
       的文件
     </div>
 
-    <el-dialog
+    <el-dialog :close-on-click-modal="false"
       :visible.sync="dialogVisible"
       title="预览"
       width="800"

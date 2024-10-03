@@ -123,7 +123,7 @@
         width="180">
       </el-table-column>
     </el-table>
-    <el-dialog :show-close="false"
+    <el-dialog :close-on-click-modal="false" :show-close="false"
                title="请选择导出时间段"
                :visible.sync="dialogVisible"
                width="30%">

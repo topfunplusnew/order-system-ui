@@ -1,5 +1,5 @@
 <template>
-  <el-dialog
+  <el-dialog :close-on-click-modal="false"
       title="原订单信息"
       :visible.sync="checkReviousOrderInfoVisible"
       width="1100px">

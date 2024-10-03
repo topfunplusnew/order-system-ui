@@ -133,7 +133,7 @@ export default {
     <!--    按钮-->
     <el-button size="mini" :icon="icon" @click="handleCallBack" type="primary"></el-button>
     <!--    弹窗-->
-    <el-dialog
+    <el-dialog :close-on-click-modal="false"
         :title="title"
         :visible.sync="dialogVisible"
         width="65%" append-to-body>

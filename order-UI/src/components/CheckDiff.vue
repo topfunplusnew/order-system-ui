@@ -67,7 +67,7 @@ export default {
 
 <template>
   <div>
-    <el-dialog v-bind="$attrs" v-on="$listeners" @open="onOpen" :title="title" width="500px">
+    <el-dialog :close-on-click-modal="false" v-bind="$attrs" v-on="$listeners" @open="onOpen" :title="title" width="500px">
       <el-card class="box-card">
         <div ref="compare" style="width: 100%;height: 100%">
         </div>

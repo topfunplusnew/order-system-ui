@@ -238,7 +238,7 @@
     />
 
     <!-- 添加或修改基础信息-加油卡主卡登记对话框 -->
-    <el-dialog :show-close="false" :title="title" :visible.sync="open" width="500px" append-to-body>
+    <el-dialog :close-on-click-modal="false" :show-close="false" :title="title" :visible.sync="open" width="500px" append-to-body>
       <el-form ref="form" :model="form" :rules="rules" label-width="80px">
         <el-form-item label="加油卡卡号" prop="oilCardNo">
           <el-input v-model="form.oilCardNo" placeholder="请输入加油卡卡号" />

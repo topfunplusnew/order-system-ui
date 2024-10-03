@@ -1,6 +1,6 @@
 <template>
   <div>
-    <el-dialog v-bind="$attrs" v-on="$listeners" @open="onOpen" :title="title">
+    <el-dialog :close-on-click-modal="false" v-bind="$attrs" v-on="$listeners" @open="onOpen" :title="title">
       <el-row>
         <el-table :data="showInfoList" :loading="loading" height="450px" size="mini" :cell-style="cellStyle">
           <slot name="column"></slot>

@@ -121,7 +121,7 @@
     />
 
     <!-- 添加或修改出差对话框 -->
-    <el-dialog :show-close="false" :title="title" :visible.sync="open" width="800px" append-to-body>
+    <el-dialog :close-on-click-modal="false" :show-close="false" :title="title" :visible.sync="open" width="800px" append-to-body>
       <!--      头部流程信息-->
       <el-row>
         <div>
@@ -254,7 +254,7 @@
 
 
     <!--    车辆使用申请-->
-    <el-dialog :show-close="false" title="车辆使用申请" :visible.sync="carApplyVisible" append-to-body width="80%">
+    <el-dialog :close-on-click-modal="false" :show-close="false" title="车辆使用申请" :visible.sync="carApplyVisible" append-to-body width="80%">
       <el-row>
         <el-form ref="carApplyForm" :model="carApplyForm" :rules="rules" label-width="150px">
           <el-col :span="8">
@@ -385,7 +385,7 @@
 
 
     <!--    付款申请弹窗-->
-    <el-dialog :show-close="false"
+    <el-dialog :close-on-click-modal="false" :show-close="false"
       title="提示"
       :visible.sync="applyForPaymentDialogVisible"
       width="60%">
@@ -397,7 +397,7 @@
 
 
     <!--    新增油卡消费记录-->
-    <el-dialog :show-close="false" title="油卡消费记录" :visible.sync="oilCardConsumeVisible" width="75%" append-to-body>
+    <el-dialog :close-on-click-modal="false" :show-close="false" title="油卡消费记录" :visible.sync="oilCardConsumeVisible" width="75%" append-to-body>
       <el-form ref="form" :model="oilCardConsumeInfo" label-width="160px">
         <el-row>
           <el-col :span="12">
@@ -512,7 +512,7 @@
 
 
     <!--    油卡充值的页面-->
-    <el-dialog :show-close="false"
+    <el-dialog :close-on-click-modal="false" :show-close="false"
       title="提示"
       :visible.sync="oilCardDialogVisible"
       width="30%">

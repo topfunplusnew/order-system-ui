@@ -123,7 +123,7 @@
     />
 
     <!-- 添加或修改出库对话框 -->
-    <el-dialog :show-close="false" :title="title" :visible.sync="open" width="500px" append-to-body>
+    <el-dialog :close-on-click-modal="false" :show-close="false" :title="title" :visible.sync="open" width="500px" append-to-body>
       <el-form ref="form" :model="form" :rules="rules" label-width="80px">
         <!--        <el-form-item label="订单编号" prop="ordersNo">-->
         <!--          <el-input v-model="form.ordersNo" placeholder="请输入订单编号"/>-->
@@ -152,7 +152,7 @@
 
 
     <!--    查看订单详情信息-->
-    <el-dialog :show-close="false"
+    <el-dialog :close-on-click-modal="false" :show-close="false"
       title="查看订单信息"
       :visible.sync="checkOrderVisible"
       width="65%">
@@ -209,7 +209,7 @@
 
 
     <!--    库存信息-->
-    <el-dialog :show-close="false"
+    <el-dialog :close-on-click-modal="false" :show-close="false"
       title="查看库存信息"
       :visible.sync="checkInventoryVisible"
       width="65%">

@@ -188,7 +188,7 @@
     />
 
     <!-- 添加或修改审核流程对话框 -->
-    <el-dialog :show-close="false" :title="title" :visible.sync="open" width="500px" append-to-body>
+    <el-dialog :close-on-click-modal="false" :show-close="false" :title="title" :visible.sync="open" width="500px" append-to-body>
       <el-form ref="form" :model="form" :rules="rules" label-width="80px">
         <el-form-item label="流程名称" prop="flowname">
           <el-input v-model="form.flowname" placeholder="请输入流程名称" />

@@ -246,7 +246,7 @@
       @pagination="getList"
     />
     <!--    created第一次传递的props，然后监听后来props的变化-->
-    <el-dialog :show-close="false" title="运费付款申请" :visible.sync="applyPaymentVisible" width="500px">
+    <el-dialog :close-on-click-modal="false" :show-close="false" title="运费付款申请" :visible.sync="applyPaymentVisible" width="500px">
       <keep-alive>
         <ApplyPayment :tableName="TableName.ORDER_FREIGHT" :t-i-d="tID"
                       :need-info="needInfo" :need-money="freight"
@@ -254,7 +254,7 @@
       </keep-alive>
     </el-dialog>
 
-    <el-dialog :show-close="false" :title="title" :visible.sync="open" width="500px" append-to-body>
+    <el-dialog :close-on-click-modal="false" :show-close="false" :title="title" :visible.sync="open" width="500px" append-to-body>
       <el-form ref="form" :model="form" :rules="rules" label-width="80px">
         <el-form-item label="金额" prop="moneyAmount">
           <el-input v-model="form.moneyAmount" placeholder="请输入金额"/>

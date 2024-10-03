@@ -102,7 +102,7 @@
       @pagination="getList"/>
 
     <!-- 添加或修改平账信息对话框 -->
-    <el-dialog :show-close="false" :title="title" :visible.sync="open" width="500px" append-to-body>
+    <el-dialog :close-on-click-modal="false" :show-close="false" :title="title" :visible.sync="open" width="500px" append-to-body>
       <el-form ref="form" :model="form" :rules="rules" label-width="120px">
         <el-form-item label="操作时间" prop="operateDate">
           <!--          <el-input v-model="form.operateDate" placeholder="请输入操作时间"/>-->
@@ -155,7 +155,7 @@
     </el-dialog>
 
     <!--    点击公司查询的弹窗-->
-    <el-dialog :show-close="false"
+    <el-dialog :close-on-click-modal="false" :show-close="false"
       title="公司查询"
       :visible.sync="companyDialogVisible"
       width="40%">

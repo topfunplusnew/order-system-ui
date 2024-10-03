@@ -89,7 +89,7 @@
     />
 
     <!-- 添加或修改借出款收回信息对话框 -->
-    <el-dialog :show-close="false" :title="title" :visible.sync="open" width="500px" append-to-body>
+    <el-dialog :close-on-click-modal="false" :show-close="false" :title="title" :visible.sync="open" width="500px" append-to-body>
       <el-form ref="form" :model="form" :rules="rules" label-width="80px">
         <el-form-item label="借出款编号" prop="futuresNO">
           <el-input v-model="form.futuresNO" placeholder="请输入借出款编号"/>

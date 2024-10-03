@@ -266,7 +266,7 @@
     </el-row>
 
     <!-- 添加或修改用户配置对话框 -->
-    <el-dialog :show-close="false" :title="title" :visible.sync="open" width="80%" append-to-body>
+    <el-dialog :close-on-click-modal="false" :show-close="false" :title="title" :visible.sync="open" width="80%" append-to-body>
       <el-form ref="form" :model="form" :rules="rules" label-width="80px">
         <el-row :gutter="10">
           <el-col :span="6">
@@ -457,7 +457,7 @@
     </el-dialog>
 
     <!-- 用户导入对话框 -->
-    <el-dialog :show-close="false" :title="upload.title" :visible.sync="upload.open" width="400px" append-to-body>
+    <el-dialog :close-on-click-modal="false" :show-close="false" :title="upload.title" :visible.sync="upload.open" width="400px" append-to-body>
       <el-upload
           ref="upload"
           :limit="1"
@@ -491,7 +491,7 @@
 
 
     <!--    查看个人信息-->
-    <el-dialog :show-close="false"
+    <el-dialog :close-on-click-modal="false" :show-close="false"
         title="用户信息查看"
         :visible.sync="checkUserDialogVisible"
         width="30%">

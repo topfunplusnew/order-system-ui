@@ -152,7 +152,7 @@
     />
 
     <!-- 添加或修改定时任务对话框 -->
-    <el-dialog :show-close="false" :title="title" :visible.sync="open" width="800px" append-to-body>
+    <el-dialog :close-on-click-modal="false" :show-close="false" :title="title" :visible.sync="open" width="800px" append-to-body>
       <el-form ref="form" :model="form" :rules="rules" label-width="120px">
         <el-row>
           <el-col :span="12">
@@ -236,12 +236,12 @@
       </div>
     </el-dialog>
 
-    <el-dialog :show-close="false" title="Cron表达式生成器" :visible.sync="openCron" append-to-body destroy-on-close class="scrollbar">
+    <el-dialog :close-on-click-modal="false" :show-close="false" title="Cron表达式生成器" :visible.sync="openCron" append-to-body destroy-on-close class="scrollbar">
       <crontab @hide="openCron=false" @fill="crontabFill" :expression="expression"></crontab>
     </el-dialog>
 
     <!-- 任务日志详细 -->
-    <el-dialog :show-close="false" title="任务详细" :visible.sync="openView" width="700px" append-to-body>
+    <el-dialog :close-on-click-modal="false" :show-close="false" title="任务详细" :visible.sync="openView" width="700px" append-to-body>
       <el-form ref="form" :model="form" label-width="120px" size="mini">
         <el-row>
           <el-col :span="12">

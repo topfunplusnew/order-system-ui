@@ -12,7 +12,7 @@ export default {
 
 <template>
   <div>
-    <el-dialog
+    <el-dialog :close-on-click-modal="false"
       title="付款申请填写"
       :visible.sync="dialogVisible"
       width="30%">

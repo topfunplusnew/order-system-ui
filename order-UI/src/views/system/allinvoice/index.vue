@@ -120,7 +120,7 @@
     />
 
     <!-- 添加或修改发票购入信息对话框 -->
-    <el-dialog :show-close="false" :title="title" :visible.sync="open" width="500px" append-to-body>
+    <el-dialog :close-on-click-modal="false" :show-close="false" :title="title" :visible.sync="open" width="500px" append-to-body>
       <el-form ref="form" :model="form" :rules="rules" label-width="80px">
         <el-form-item label="开票日期" prop="invoiceDate">
           <el-input v-model="form.invoiceDate" placeholder="请输入开票日期"/>

@@ -1,5 +1,5 @@
 <template>
-  <el-dialog :show-close="false"
+  <el-dialog :close-on-click-modal="false" :show-close="false"
       title="发货单"
       :visible.sync="Order1Visible"
       width="75%">

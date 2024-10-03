@@ -158,7 +158,7 @@
       </el-col>
     </el-row>
     <!-- 添加或修改科目对话框 -->
-    <el-dialog :show-close="false" :title="title" :visible.sync="open" width="500px" append-to-body>
+    <el-dialog :close-on-click-modal="false" :show-close="false" :title="title" :visible.sync="open" width="500px" append-to-body>
       <el-form ref="form" :model="form" :rules="rules" label-width="80px">
         <el-form-item label="父级ID" prop="parentId">
           <treeselect v-model="form.parentId" :options="subjectOptions" :normalizer="normalizer"
@@ -192,7 +192,7 @@
     </el-dialog>
 
     <!--    添加科目分类的弹窗-->
-    <el-dialog :show-close="false" title="添加科目分类" :visible.sync="openType" width="500px" append-to-body>
+    <el-dialog :close-on-click-modal="false" :show-close="false" title="添加科目分类" :visible.sync="openType" width="500px" append-to-body>
       <el-form :model="formType" :rules="rules" label-width="80px">
         <el-form-item label="科目分类" prop="type">
           <el-select v-model="formType.type" placeholder="请选择">

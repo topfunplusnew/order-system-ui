@@ -289,7 +289,7 @@ export default {
 
 
     <!--    查看付款信息的详细信息-->
-    <el-dialog :show-close="false"
+    <el-dialog :close-on-click-modal="false" :show-close="false"
       title="付款信息详细"
       :visible.sync="checkInfoDialogVisible"
       width="50%">
@@ -327,7 +327,7 @@ export default {
 
 
     <!--      审核流程步骤图信息  -->
-    <el-dialog :show-close="false" :visible.sync="checkApplyInfoDialogVisible" title="审核流程多项信息" width="58%">
+    <el-dialog :close-on-click-modal="false" :show-close="false" :visible.sync="checkApplyInfoDialogVisible" title="审核流程多项信息" width="58%">
       <el-row v-for="(item,index) in auditInfoList" :key="index">
         <el-collapse v-model="activeNames" @change="handleChangeApplyItem">
           <el-collapse-item name="1">

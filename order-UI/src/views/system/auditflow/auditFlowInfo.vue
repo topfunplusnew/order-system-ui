@@ -1,6 +1,6 @@
 <template>
   <div>
-    <el-dialog :show-close="false" v-bind="$attrs" v-on="$listeners" @open="onOpen" title="选择审核人员">
+    <el-dialog :close-on-click-modal="false" :show-close="false" v-bind="$attrs" v-on="$listeners" @open="onOpen" title="选择审核人员">
       <el-row>
         <el-col :span="6">
           <Fonts content="请选择部门"/>

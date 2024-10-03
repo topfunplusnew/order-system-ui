@@ -159,7 +159,7 @@
 
 
     <!-- 添加或修改库存对话框 -->
-    <el-dialog :show-close="false" :title="title" :visible.sync="open" width="1300px" append-to-body>
+    <el-dialog :close-on-click-modal="false" :show-close="false" :title="title" :visible.sync="open" width="1300px" append-to-body>
       <el-form ref="form" :model="form" :rules="rules" label-width="120px">
         <el-row>
           <el-col :span="6">
@@ -380,7 +380,7 @@
 
 
     <!--    添加入库信息 与订单结构类似-->
-    <el-dialog :show-close="false" title="货物入库" :visible.sync="invoiceInVisible" width="80%" append-to-body>
+    <el-dialog :close-on-click-modal="false" :show-close="false" title="货物入库" :visible.sync="invoiceInVisible" width="80%" append-to-body>
       <InventoryForm :inventory-info="inventoryInfo" @changeInventoryInfo="handleChangeInventoryInfo"/>
       <div slot="footer" class="dialog-footer">
         <el-button type="primary" @click="submitInvoiceIn">确 定</el-button>
@@ -390,7 +390,7 @@
 
 
     <!--    二次出库-->
-    <el-dialog :show-close="false" title="二次出库" :visible.sync="secondInvoiceInVisible" width="50%" append-to-body>
+    <el-dialog :close-on-click-modal="false" :show-close="false" title="二次出库" :visible.sync="secondInvoiceInVisible" width="50%" append-to-body>
       <div slot="footer" class="dialog-footer">
         <el-row :gutter="5">
           <el-col :span="4">
@@ -406,7 +406,7 @@
     </el-dialog>
 
     <!--    货物破损出库-->
-    <el-dialog :show-close="false" title="货物破损出库" :visible.sync="breakInvoiceInVisible" width="50%" append-to-body>
+    <el-dialog :close-on-click-modal="false" :show-close="false" title="货物破损出库" :visible.sync="breakInvoiceInVisible" width="50%" append-to-body>
       <div slot="footer" class="dialog-footer">
         <el-row :gutter="5">
           <el-col :span="4">

@@ -94,7 +94,7 @@
     />
 
     <!-- 添加或修改库房对话框 -->
-    <el-dialog :show-close="false" :title="title" :visible.sync="open" width="500px" append-to-body>
+    <el-dialog :close-on-click-modal="false" :show-close="false" :title="title" :visible.sync="open" width="500px" append-to-body>
       <el-form ref="form" :model="form" :rules="rules" label-width="80px">
         <el-form-item label="仓库名称" prop="storeHouseName">
           <el-input v-model="form.storeHouseName" placeholder="请输入仓库名称"/>

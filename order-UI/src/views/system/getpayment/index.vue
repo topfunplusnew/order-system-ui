@@ -202,7 +202,7 @@
     />
 
     <!-- 添加或修改付款信息对话框 -->
-    <el-dialog :show-close="false" :title="title" :visible.sync="open" width="500px" append-to-body>
+    <el-dialog :close-on-click-modal="false" :show-close="false" :title="title" :visible.sync="open" width="500px" append-to-body>
       <el-form ref="form" :model="form" :rules="rules" label-width="80px">
         <el-form-item label="付款编号" prop="payNO">
           <el-input v-model="form.payNO" placeholder="请输入付款编号"/>

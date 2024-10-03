@@ -9,10 +9,10 @@
       </el-col>
       <el-col :span="1.5">
         <el-button
-            type="danger"
-            size="mini"
-            @click="handleAdd"
-            v-hasPermi="['system:goodsorder:add']"
+          type="danger"
+          size="mini"
+          @click="handleAdd"
+          v-hasPermi="['system:goodsorder:add']"
         >添加订单信息
         </el-button>
       </el-col>
@@ -20,10 +20,10 @@
         <template v-slot:print>
           <el-col :span="1.5">
             <el-button
-                plain
-                icon="el-icon-printer"
-                size="mini"
-                @click="printHTML"
+              plain
+              icon="el-icon-printer"
+              size="mini"
+              @click="printHTML"
             >
             </el-button>
           </el-col>
@@ -31,11 +31,11 @@
         <template v-slot:export>
           <el-col :span="1.5">
             <el-button
-                plain
-                icon="el-icon-folder-opened"
-                size="mini"
-                @click="handleExport"
-                v-hasPermi="['system:goodsorder:export']"
+              plain
+              icon="el-icon-folder-opened"
+              size="mini"
+              @click="handleExport"
+              v-hasPermi="['system:goodsorder:export']"
             >
             </el-button>
           </el-col>
@@ -54,44 +54,44 @@
             <el-dropdown-menu slot="dropdown">
               <el-dropdown-item>
                 <el-button
-                    size="mini"
-                    @click="checkOrderItemInfo(scope.row)"
+                  size="mini"
+                  @click="checkOrderItemInfo(scope.row)"
                 >查 看
                 </el-button>
               </el-dropdown-item>
               <el-dropdown-item>
                 <el-button
-                    size="mini"
-                    type="primary"
-                    @click="handleUpdate(scope.row)"
-                    v-hasPermi="['system:goodsorder:edit']"
+                  size="mini"
+                  type="primary"
+                  @click="handleUpdate(scope.row)"
+                  v-hasPermi="['system:goodsorder:edit']"
                 >修 改
                 </el-button>
               </el-dropdown-item>
               <el-dropdown-item>
                 <el-button
-                    size="mini"
-                    type="warning"
-                    @click="handleCheckOrderDetailInfo(scope.row)"
+                  size="mini"
+                  type="warning"
+                  @click="handleCheckOrderDetailInfo(scope.row)"
                 >货 物
                 </el-button>
               </el-dropdown-item>
               <el-dropdown-item>
                 <el-button
-                    size="mini"
-                    type="danger"
-                    @click="handleDelete(scope.row)"
-                    v-hasPermi="['system:goodsorder:remove']"
+                  size="mini"
+                  type="danger"
+                  @click="handleDelete(scope.row)"
+                  v-hasPermi="['system:goodsorder:remove']"
                 >删 除
                 </el-button>
               </el-dropdown-item>
             </el-dropdown-menu>
           </el-dropdown>
           <el-button
-              style="margin-left: 5px"
-              size="mini"
-              type="success"
-              @click="checkOrderHistory(scope.row)"
+            style="margin-left: 5px"
+            size="mini"
+            type="success"
+            @click="checkOrderHistory(scope.row)"
           >查看历史
           </el-button>
         </template>
@@ -238,7 +238,7 @@
                        width="100px">
         <template slot-scope="scope">
           <el-tag
-              :type="scope.row.isedit === 0 ? 'danger' :'success'">{{ scope.row.isedit === 0 ? "否" : "是" }}
+            :type="scope.row.isedit === 0 ? 'danger' :'success'">{{ scope.row.isedit === 0 ? "否" : "是" }}
           </el-tag>
         </template>
       </el-table-column>
@@ -286,28 +286,28 @@
                        fixed="right">
         <template slot-scope="scope">
           <el-button
-              size="mini"
-              @click="handleOrder1(scope.row)"
-              v-hasPermi="['system:goodsorder:edit']"
+            size="mini"
+            @click="handleOrder1(scope.row)"
+            v-hasPermi="['system:goodsorder:edit']"
           >发货单
           </el-button>
           <el-button
-              :disabled="scope.row.isAdjusted ==='是'"
-              size="mini"
-              type="primary"
-              @click="handleOrderItemInfo(scope.row)"
+            :disabled="scope.row.isAdjusted ==='是'"
+            size="mini"
+            type="primary"
+            @click="handleOrderItemInfo(scope.row)"
           >调整单
           </el-button>
           <el-button
-              size="mini"
-              type="primary"
-              @click="handleUpload(scope.row)"
+            size="mini"
+            type="primary"
+            @click="handleUpload(scope.row)"
           >上传附件
           </el-button>
           <el-button
-              size="mini"
-              @click="handleCommit(scope.row)"
-              v-hasPermi="['system:goodsorder:remove']"
+            size="mini"
+            @click="handleCommit(scope.row)"
+            v-hasPermi="['system:goodsorder:remove']"
           >上传收到条
           </el-button>
         </template>
@@ -322,19 +322,19 @@
               <el-dropdown-item>
                 <el-row v-if="scope.row.landFreight>0 ||scope.row.seaFreight>0  ">
                   <el-button
-                      size="mini"
-                      v-if="scope.row.landFreight>0"
-                      type="warning"
-                      @click="handleApplyLandFree(scope.row)"
-                      v-hasPermi="['system:goodsorder:remove']"
+                    size="mini"
+                    v-if="scope.row.landFreight>0"
+                    type="warning"
+                    @click="handleApplyLandFree(scope.row)"
+                    v-hasPermi="['system:goodsorder:remove']"
                   >陆运费申请
                   </el-button>
                   <el-button
-                      size="mini"
-                      v-if="scope.row.seaFreight>0"
-                      type="primary"
-                      @click="handleApplySeaFree(scope.row)"
-                      v-hasPermi="['system:goodsorder:remove']"
+                    size="mini"
+                    v-if="scope.row.seaFreight>0"
+                    type="primary"
+                    @click="handleApplySeaFree(scope.row)"
+                    v-hasPermi="['system:goodsorder:remove']"
                   >海运费申请
                   </el-button>
                 </el-row>
@@ -348,11 +348,11 @@
       </el-table-column>
     </el-table>
     <pagination
-        v-show="total>0"
-        :total="total"
-        :page.sync="queryParams.pageNum"
-        :limit.sync="queryParams.pageSize"
-        @pagination="getList"
+      v-show="total>0"
+      :total="total"
+      :page.sync="queryParams.pageNum"
+      :limit.sync="queryParams.pageSize"
+      @pagination="getList"
     />
 
     <!--        点击查看某个订单的弹窗   -->
@@ -360,7 +360,7 @@
 
 
     <!--    点击调整单的弹窗-->
-    <el-dialog :show-close="false"
+    <el-dialog :close-on-click-modal="false" :show-close="false"
                title="提示"
                :visible.sync="handleOrderVisible"
                width="30%">
@@ -395,7 +395,7 @@
 
 
     <!--    陆运费和海运费申请-->
-    <el-dialog :show-close="false"
+    <el-dialog :close-on-click-modal="false" :show-close="false"
                title="陆运费申请"
                :visible.sync="landFreeDialogVisible"
                width="600px">
@@ -405,7 +405,7 @@
     </el-dialog>
 
 
-    <el-dialog :show-close="false"
+    <el-dialog :close-on-click-modal="false" :show-close="false"
                title="海运费申请"
                :visible.sync="seaFreeDialogVisible"
                width="600px">
@@ -416,7 +416,7 @@
 
 
     <!--    订单货物详情-->
-    <el-dialog :show-close="false"
+    <el-dialog :close-on-click-modal="false" :show-close="false"
                title="订单货物详情"
                :visible.sync="checkOrderDetailInfoVisible"
                width="1100px" destroy-on-close>
@@ -445,7 +445,7 @@
 
 
     <!--    todo url其实就是返回了后端服务器的地址加端口 这里需要后期规定好后直接拼接就能查看了 -->
-    <el-dialog :show-close="false" title="查看附件" :visible.sync="checkAttachmentVisible" width="48%">
+    <el-dialog :close-on-click-modal="false" :show-close="false" title="查看附件" :visible.sync="checkAttachmentVisible" width="48%">
       <el-row v-for="(item, index) in checkFileList" :key="index">
         <el-button type="text" icon="el-icon-document" @click="checkFileItem(item)">{{ item }}</el-button>
       </el-row>
@@ -590,7 +590,7 @@ export default {
   created() {
     this.getList();
     if (localStorage.getItem('goodsorder-columns') === 'null'
-        || !localStorage.getItem('goodsorder-columns')) {
+      || !localStorage.getItem('goodsorder-columns')) {
       localStorage.setItem("goodsorder-columns", JSON.stringify(this.columns))
     } else {
       this.columns = JSON.parse(localStorage.getItem('goodsorder-columns'));

@@ -771,7 +771,7 @@ export default {
 
 
     <!--    供应商信息弹窗-->
-    <el-dialog
+    <el-dialog :close-on-click-modal="false"
         title="供应商信息"
         :visible.sync="companyGiveDialogVisible"
         width="35%" append-to-body>
@@ -827,7 +827,7 @@ export default {
     </el-dialog>
 
     <!--    产品级别信息弹窗-->
-    <el-dialog
+    <el-dialog :close-on-click-modal="false"
         title="产品级别信息"
         :visible.sync="productLevelDialogVisible"
         width="35%" append-to-body>

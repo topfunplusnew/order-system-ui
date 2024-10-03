@@ -97,7 +97,7 @@
     </el-table>
 
     <!-- 添加或修改部门对话框 -->
-    <el-dialog :show-close="false" :title="title" :visible.sync="open" width="600px" append-to-body>
+    <el-dialog :close-on-click-modal="false" :show-close="false" :title="title" :visible.sync="open" width="600px" append-to-body>
       <el-form ref="form" :model="form" :rules="rules" label-width="80px">
         <el-row>
           <el-col :span="24" v-if="form.parentId !== 0">

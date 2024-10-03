@@ -123,7 +123,7 @@
     />
 
     <!-- 添加或修改公告对话框 -->
-    <el-dialog :show-close="false" :title="title" :visible.sync="open" width="780px" append-to-body>
+    <el-dialog :close-on-click-modal="false" :show-close="false" :title="title" :visible.sync="open" width="780px" append-to-body>
       <el-form ref="form" :model="form" :rules="rules" label-width="80px">
         <el-row>
           <el-col :span="12">

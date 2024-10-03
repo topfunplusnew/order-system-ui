@@ -200,7 +200,7 @@ export default {
     </el-row>
 
     <!--    返利回扣-->
-    <el-dialog
+    <el-dialog :close-on-click-modal="false"
         title="添加返利信息"
         :visible.sync="addMoneyBackVisible"
         width="40%" append-to-body>

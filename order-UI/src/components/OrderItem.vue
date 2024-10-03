@@ -47,7 +47,7 @@ export default {
     },
     // todo  长度宽度高度过低 会计算吨位为0
     tonnage00() {
-      return fix((Number(this.orderItemInfo.height) - Number(this.orderItemInfo.erro)) * this.orderItemInfo.length * this.orderItemInfo.pieces / 1000000 / 20 / 20);
+      return fix((Number(this.orderItemInfo.height) - Number(this.orderItemInfo.erro)) * this.orderItemInfo.length * this.orderItemInfo.width * this.orderItemInfo.pieces / 1000000 / 20 / 20);
     },
     landFreight00() {
       return fix(Number(this.orderItemInfo.tonnage) * Number(this.orderItemInfo.landFreightPrice) + Number(this.orderItemInfo.additionalFees));

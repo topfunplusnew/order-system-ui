@@ -443,7 +443,7 @@
 
 
     <!--    点击调整单的弹窗-->
-    <el-dialog :show-close="false"
+    <el-dialog :close-on-click-modal="false" :show-close="false"
                title="提示"
                :visible.sync="handleOrderVisible"
                width="30%">
@@ -479,7 +479,7 @@
 
 
     <!--    陆运费和海运费申请-->
-    <el-dialog :show-close="false"
+    <el-dialog :close-on-click-modal="false" :show-close="false"
                title="陆运费申请"
                :visible.sync="landFreeDialogVisible"
                width="600px">
@@ -489,7 +489,7 @@
     </el-dialog>
 
 
-    <el-dialog :show-close="false"
+    <el-dialog :close-on-click-modal="false" :show-close="false"
                title="海运费申请"
                :visible.sync="seaFreeDialogVisible"
                width="600px">
@@ -500,7 +500,7 @@
 
 
     <!--    订单货物详情-->
-    <el-dialog :show-close="false"
+    <el-dialog :close-on-click-modal="false" :show-close="false"
                title="订单货物详情"
                :visible.sync="checkOrderDetailInfoVisible"
                width="1100px" destroy-on-close>
@@ -529,7 +529,7 @@
 
 
     <!--    todo url其实就是返回了后端服务器的地址加端口 这里需要后期规定好后直接拼接就能查看了 -->
-    <el-dialog :show-close="false" title="查看附件" :visible.sync="checkAttachmentVisible" width="48%">
+    <el-dialog :close-on-click-modal="false" :show-close="false" title="查看附件" :visible.sync="checkAttachmentVisible" width="48%">
       <el-row v-for="(item, index) in checkFileList" :key="index">
         <el-button type="text" icon="el-icon-document" @click="checkFileItem(item)">{{ item }}</el-button>
       </el-row>

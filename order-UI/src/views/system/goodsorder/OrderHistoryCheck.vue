@@ -1,5 +1,5 @@
 <template>
-  <el-dialog :show-close="false" title="订单历史信息" :visible.sync="checkHistoryOrderVisible" width="1100px">
+  <el-dialog :close-on-click-modal="false" :show-close="false" title="订单历史信息" :visible.sync="checkHistoryOrderVisible" width="1100px">
     <el-row>
       <el-col :span="18" :offset="3">
         <el-timeline>

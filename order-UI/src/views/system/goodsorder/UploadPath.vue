@@ -1,5 +1,5 @@
 <template>
-  <el-dialog :show-close="false"
+  <el-dialog :close-on-click-modal="false" :show-close="false"
       title="上传附件"
       :visible.sync="handleUploadVisible"
       width="450px">

@@ -167,7 +167,7 @@
     />
 
     <!-- 添加或修改银行账号变动流水对话框 -->
-    <el-dialog :show-close="false" :title="title" :visible.sync="open" width="500px" append-to-body>
+    <el-dialog :close-on-click-modal="false" :show-close="false" :title="title" :visible.sync="open" width="500px" append-to-body>
       <el-form ref="form" :model="form" :rules="rules" label-width="80px">
         <el-form-item label="己方账号" prop="selfBankNo">
           <el-input v-model="form.selfBankNo" placeholder="请输入己方账号" />

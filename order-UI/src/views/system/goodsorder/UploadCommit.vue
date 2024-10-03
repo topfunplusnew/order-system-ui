@@ -1,5 +1,5 @@
 <template>
-  <el-dialog :show-close="false"
+  <el-dialog :close-on-click-modal="false" :show-close="false"
       title="提示"
       :visible.sync="handleCommitVisible"
       width="450px">

@@ -214,7 +214,7 @@ export default {
         </el-timeline>
 
         <!-- 审核页面 checkPaymentApplyDialogVisible-->
-        <el-dialog
+        <el-dialog :close-on-click-modal="false"
             title="流程审核"
             :visible.sync="checkPaymentApplyDialogVisible"
             width="65%"
