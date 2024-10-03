@@ -74,7 +74,9 @@ export default {
     profit10() {
       return fix(this.orderItemInfo.payments - this.orderItemInfo.paymentFactory - this.orderItemInfo.landFreight)
     },
+    // todo
     profitNoTax10() {
+
       return fix(this.orderItemInfo.payments - (this.orderItemInfo.paymentFactory / 1.075) - this.orderItemInfo.landFreight - this.orderItemInfo.otherCost)
     },
     //是否含税01
@@ -151,6 +153,21 @@ export default {
         }
       }
     },
+    Tax: {
+      handler(val) {
+        console.log('Tax:', val)
+      }
+    },
+    'orderItemInfo.isIncludeTaxSale': {
+      handler(val) {
+        console.log('isIncludeTaxSale', val)
+      }
+    },
+    'orderItemInfo.isIncludeTaxSale': {
+      handler(val) {
+        console.log('isIncludeTaxSale', val)
+      }
+    },
     //监听的是整个对象
     'orderItemInfo': {
       handler() {
@@ -164,7 +181,7 @@ export default {
         }
 
         //是否含税 厂家否 客户否
-        if (this.Tax === '00') {
+        if (this.orderItemInfo.isIncludeTaxFactory === '0' && this.orderItemInfo.isIncludeTaxSale === '0') {
           //误差为0.8
           this.orderItemInfo.erro = 0.8;
           console.log(this.orderItemInfo.erro)
@@ -181,7 +198,7 @@ export default {
           //不含税利润
           this.orderItemInfo.profitNoTax = this.profitNoTax00
           //出厂含税客户不含税
-        } else if (this.Tax === '10') {
+        } else if (this.orderItemInfo.isIncludeTaxFactory === '1' && this.orderItemInfo.isIncludeTaxSale === '0') {
           //误差为0
           this.orderItemInfo.erro = 0;
           this.orderItemInfo.paymentFactory = this.paymentFactory10;
@@ -190,7 +207,8 @@ export default {
           this.orderItemInfo.landFreight = this.landFreight10
           this.orderItemInfo.profit = this.profit10
           this.orderItemInfo.profitNoTax = this.profitNoTax10
-        } else if (this.Tax === '01') {
+          console.log('10', this.orderItemInfo.profitNoTax10, this.orderItemInfo.profitNoTax)
+        } else if (this.orderItemInfo.isIncludeTaxFactory === '0' && this.orderItemInfo.isIncludeTaxSale === '1') {
           //误差为0
           this.orderItemInfo.erro = 0;
           this.orderItemInfo.paymentFactory = this.paymentFactory01;
@@ -224,21 +242,21 @@ export default {
             this.orderItemInfo.pieces = this.currentStockNumber;
           } else {
             //修改片数自动计算
-            if (this.Tax === '00') {
+            if (this.orderItemInfo.isIncludeTaxFactory === '0' && this.orderItemInfo.isIncludeTaxSale === '0') {
               this.orderItemInfo.paymentFactory = this.paymentFactory00;
               this.orderItemInfo.payments = this.payments00;
               this.orderItemInfo.tonnage = this.tonnage00
               this.orderItemInfo.landFreight = this.landFreight00
               this.orderItemInfo.profit = this.profit00
               this.orderItemInfo.profitNoTax = this.profitNoTax00
-            } else if (this.Tax === '10') {
+            } else if (this.orderItemInfo.isIncludeTaxFactory === '1' && this.orderItemInfo.isIncludeTaxSale === '0') {
               this.orderItemInfo.paymentFactory = this.paymentFactory10;
               this.orderItemInfo.payments = this.payments10
               this.orderItemInfo.tonnage = this.tonnage10
               this.orderItemInfo.landFreight = this.landFreight10
               this.orderItemInfo.profit = this.profit10
               this.orderItemInfo.profitNoTax = this.profitNoTax10
-            } else if (this.Tax === '01') {
+            } else if (this.orderItemInfo.isIncludeTaxFactory === '0' && this.orderItemInfo.isIncludeTaxSale === '1') {
               this.orderItemInfo.paymentFactory = this.paymentFactory01;
               this.orderItemInfo.payments = this.payments01
               this.orderItemInfo.tonnage = this.tonnage01
