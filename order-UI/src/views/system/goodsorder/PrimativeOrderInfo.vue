@@ -1,0 +1,32 @@
+<template>
+  <el-dialog
+      title="原订单信息"
+      :visible.sync="currentOrderItemInfoVisible"
+      width="68%">
+    <el-row>
+      <el-card class="box-card" shadow="hover">
+        <OrderInfos :orderInfo="currentOrderItemInfo"/>
+      </el-card>
+      <el-card class="box-card" shadow="hover">
+        <OrderDetailInfo :orderDetailInfoList="currentOrderItemInfo.orderDetailList"/>
+      </el-card>
+    </el-row>
+    <span slot="footer" class="dialog-footer">
+    <el-button @click="currentOrderItemInfoVisible = false">取 消</el-button>
+    <el-button type="primary" @click="currentOrderItemInfoVisible = false">确 定</el-button>
+  </span>
+  </el-dialog>
+</template>
+<script>
+import OrderDetailInfo from "@/components/OrderDetailInfo.vue"
+import OrderInfos from "../../../components/OrderInfos.vue"
+
+export default {
+  name: 'PrimativeOrderInfo',
+  components: {OrderDetailInfo, OrderInfos},
+  props: {
+    currentOrderItemInfo: {},
+    currentOrderItemInfoVisible: {}
+  }
+}
+</script>

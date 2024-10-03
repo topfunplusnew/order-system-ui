@@ -251,10 +251,10 @@
       <el-table-column show-overflow-tooltip label="开票状态" align="center" prop="invoiceState"
                        v-if="columns[14].visible" width="120px">
         <template #default="scope">
-          <el-row v-if="scope.row.customerIsInvoice === 1 && scope.row.isSupplierInvoice === 1">
+          <el-row v-if="scope.row.invoiceState === '已开票'">
             <el-tag type="success">已开票</el-tag>
           </el-row>
-          <el-row v-else-if="scope.row.customerIsInvoice === 0 && scope.row.isSupplierInvoice === 0">
+          <el-row v-else-if="scope.row.invoiceState === '未开票'">
             <el-row>
               <el-tag type="danger">未开票</el-tag>
             </el-row>
@@ -572,11 +572,11 @@
       </keep-alive>
     </el-dialog>
 
-    <!-- 开发票-->
+    <!-- 开发票 -->
     <el-dialog
         :title="updateOrderItemVisibleTitle"
         :visible.sync="invoiceupdateOrderItemVisibleVisible"
-        width="50%">
+        width="500px">
       <el-row>
         <el-form :model="updateOrderItemVisibleTitleInfo" label-width="110px"
                  :rules="CheckRules.updateOrderItemVisibleTitleRules">
@@ -1560,11 +1560,6 @@ export default {
         ticketPointAmount: null,
         isOrderTax: 0,
         comments: null,
-        addtime: null,
-        userId: null,
-        UserName: null,
-        updateTime: null,
-        delFlag: null
       }
     },
     // 表单重置

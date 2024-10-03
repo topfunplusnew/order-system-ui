@@ -1,8 +1,8 @@
 <!--订单页面-->
 <template>
   <div class="app-container">
-    <SearchBar :handle-query="handleQuery" :options="options" :options-invoice="optionsInvoice"
-                  :query-params="queryParams" :show-search="showSearch"/>
+    <QuerySearchBar :handle-query="handleQuery" :options="options" :options-invoice="optionsInvoice"
+                    :query-params="queryParams" :show-search="showSearch"/>
     <!--    表格上方操作栏-->
     <el-row :gutter="10" class="mb8">
       <!--      左侧操作栏-->
@@ -358,34 +358,8 @@
         @pagination="getList"
     />
 
-
     <!--        点击查看某个订单的弹窗   -->
-    <el-dialog
-        title="货物信息详细"
-        :visible.sync="checkOrderVisible"
-        width="80%">
-      <!--      订单基本信息-->
-      <el-descriptions border>
-        <el-descriptions-item label="订单日期">{{ orderInfo.orderDate }}</el-descriptions-item>
-        <el-descriptions-item label="客户">{{ orderInfo.customer }}</el-descriptions-item>
-        <el-descriptions-item label="销售经理">{{ orderInfo.saleManager }}</el-descriptions-item>
-        <el-descriptions-item label="陆运车牌">{{ orderInfo.landCarNo }}</el-descriptions-item>
-        <el-descriptions-item label="陆运司机姓名">{{ orderInfo.landDriverName }}</el-descriptions-item>
-        <el-descriptions-item label="陆运司机电话">{{ orderInfo.landDriverTel }}</el-descriptions-item>
-        <el-descriptions-item label="海运车牌">{{ orderInfo.seaCarNo }}</el-descriptions-item>
-        <el-descriptions-item label="海运司机姓名">{{ orderInfo.seaDriverName }}</el-descriptions-item>
-        <el-descriptions-item label="海运司机电话">{{ orderInfo.seaDriverTel }}</el-descriptions-item>
-        <el-descriptions-item label="车队">{{ orderInfo.fleet }}</el-descriptions-item>
-      </el-descriptions>
-      <OrderDetailInfo :order-detail-info-list="orderInfo.orderDetailList"></OrderDetailInfo>
-      <el-descriptions border>
-        <el-descriptions-item label="备注">{{ orderInfo.comments }}</el-descriptions-item>
-      </el-descriptions>
-      <span slot="footer" class="dialog-footer">
-        <el-button @click="checkOrderVisible = false">取 消</el-button>
-        <el-button type="primary" @click="checkOrderVisible = false">确 定</el-button>
-      </span>
-    </el-dialog>
+    <CheckOrder :check-order-visible="checkOrderVisible" :order-info="orderInfo" @close="closeCheckOrderDialog"/>
 
 
     <!--    点击调整单的弹窗-->
@@ -401,73 +375,17 @@
     </el-dialog>
 
     <!--    点击发货单的弹窗-->
-    <el-dialog
-        title="发货单"
-        :visible.sync="Order1Visible"
-        width="75%">
-      <!--      发货单主体-->
-      <el-row>
-        <ChatForm/>
-      </el-row>
-      <span slot="footer" class="dialog-footer">
-    <el-button @click="Order1Visible = false">取 消</el-button>
-    <el-button type="primary" @click="Order1Visible = false">确 定</el-button>
-  </span>
-    </el-dialog>
+    <OrderGiven :order1-visible="Order1Visible"/>
 
     <!--    上传附件的弹窗 -->
-    <el-dialog
-        title="上传附件"
-        :visible.sync="handleUploadVisible"
-        width="450px">
-      <el-row>
-        <el-col :span="12" :offset="2">
-          <el-upload
-              class="upload-demo"
-              drag
-              :action="uploadFileUrl"
-              multiple
-              show-file-list
-              :headers="headers"
-              :file-list="fileList"
-              :before-upload="beforeUpload">
-            <i class="el-icon-upload"></i>
-            <div class="el-upload__text">将文件拖到此处，或<em>点击上传</em></div>
-            <div class="el-upload__tip" slot="tip">只能上传jpg/png文件，且不超过500kb</div>
-          </el-upload>
-          <el-button type="success" @click="submitUploadAllFiles('path')">开始上传</el-button>
-        </el-col>
-      </el-row>
-      <span slot="footer" class="dialog-footer">
-    <el-button @click="handleUploadVisible = false">取 消</el-button>
-    <el-button type="primary" @click="handleUploadVisible = false">确 定</el-button>
-  </span>
-    </el-dialog>
+    <UploadPath :before-upload="beforeUpload" :file-list="fileList" :handle-upload-visible="handleUploadVisible"
+                :headers="headers" :submit-upload-all-files="()=>submitUploadAllFiles('path')"
+                :upload-file-url="uploadFileUrl"/>
 
     <!--    上传收到条的弹窗-->
-    <el-dialog
-        title="提示"
-        :visible.sync="handleCommitVisible"
-        width="450px">
-      <el-upload
-          class="upload-demo"
-          drag
-          :action="uploadFileUrl"
-          multiple
-          show-file-list
-          :headers="headers"
-          :file-list="fileList"
-          :before-upload="beforeUpload">
-        <i class="el-icon-upload"></i>
-        <div class="el-upload__text">将文件拖到此处，或<em>点击上传</em></div>
-        <div class="el-upload__tip" slot="tip">只能上传jpg/png文件，且不超过500kb</div>
-      </el-upload>
-      <el-button type="success" @click="submitUploadAllFiles('receiveProof')">开始上传</el-button>
-      <span slot="footer" class="dialog-footer">
-    <el-button @click="handleCommitVisible = false">取 消</el-button>
-    <el-button type="primary" @click="handleCommitVisible = false">确 定</el-button>
-  </span>
-    </el-dialog>
+    <UploadCommit :before-upload="beforeUpload" :file-list="fileList" :handle-commit-visible="handleCommitVisible"
+                  :headers="headers" :submit-upload-all-files="()=>submitUploadAllFiles('receiveProof')"
+                  :upload-file-url="uploadFileUrl"/>
 
     <!--    添加订单 || 修改订单对话框-->
     <InfoDialog :title="orderTitle" :visible.sync="orderItemVisible">
@@ -488,6 +406,8 @@
         <FreeApply :order-info="landFreightInfo"/>
       </keep-alive>
     </el-dialog>
+
+
     <el-dialog
         title="海运费申请"
         :visible.sync="seaFreeDialogVisible"
@@ -509,83 +429,20 @@
     </el-dialog>
 
 
-    <!-- 开发票-->
-    <el-dialog
-        :title="updateOrderItemVisibleTitle"
-        :visible.sync="invoiceupdateOrderItemVisibleVisible"
-        width="50%">
-      <el-row>
-        <el-form :model="updateOrderItemVisibleTitleInfo" label-width="110px"
-                 :rules="CheckRules.updateOrderItemVisibleTitleRules">
-          <el-form-item label="开票日期" prop="invoiceDate">
-            <el-date-picker
-                v-model="updateOrderItemVisibleTitleInfo.invoiceDate"
-                type="date"
-                placeholder="选择日期"
-                value-format="yyyy-MM-dd">
-            </el-date-picker>
-          </el-form-item>
-          <el-form-item label="我方开票实体" prop="invoiceObject">
-            <el-input v-model="updateOrderItemVisibleTitleInfo.invoiceObject" placeholder="请输入我方开票实体"/>
-          </el-form-item>
-          <el-form-item label="开票金额" prop="invoiceAmount">
-            <el-input v-model="updateOrderItemVisibleTitleInfo.invoiceAmount" placeholder="请输入开票金额"/>
-          </el-form-item>
-          <el-form-item label="公司名称" prop="companyName">
-            <el-row>
-              <el-col :span="10">
-                <el-input v-model="updateOrderItemVisibleTitleInfo.companyName" placeholder="请输入对方公司名称"/>
-              </el-col>
-              <el-col :span="2">
-                <SearchOption
-                    :limit-info="updateOrderItemVisibleTitleInfo.domain === 1? {companyType:'客户'}:{companyType:'供应商'}"
-                    :get-data="listCompany" query-info="companyName"
-                    query-label="公司名称" :query-name="queryCompanyName"
-                    @update:queryName="handleUpdateCompanyName" @commitBack="handleCommitBackCompany">
-                  <template #table-columns>
-                    <el-table-column :label="updateOrderItemVisibleTitleInfo.domain === 1? '客户':'供应商'"
-                                     align="center"
-                                     prop="relationName"/>
-                    <el-table-column label="老板姓名" align="center" prop="leader"/>
-                    <el-table-column label="老板电话" align="center" prop="leaderTel"/>
-                    <el-table-column label="区域" align="center" prop="region"/>
-                    <el-table-column label="公司名称" align="center" prop="companyName"/>
-                    <el-table-column label="销售经理" align="center" prop="salesManager"/>
-                  </template>
-                </SearchOption>
-              </el-col>
-            </el-row>
-          </el-form-item>
-          <el-form-item label="票据单位名称" prop="invoiceCompanyName">
-            <el-input v-model="updateOrderItemVisibleTitleInfo.invoiceCompanyName" placeholder="请输入票据单位名称"/>
-          </el-form-item>
-          <el-form-item label="票点" prop="ticketPoint">
-            <el-input v-model="updateOrderItemVisibleTitleInfo.ticketPoint" placeholder="请输入票点"/>
-          </el-form-item>
-          <el-form-item label="票点金额" prop="ticketPointAmount">
-            <el-input v-model="updateOrderItemVisibleTitleInfo.ticketPointAmount" placeholder="请输入票点金额"
-                      disabled/>
-          </el-form-item>
-          <el-form-item label="备注" prop="comments">
-            <el-input v-model="updateOrderItemVisibleTitleInfo.comments" placeholder="请输入备注"/>
-          </el-form-item>
-        </el-form>
-      </el-row>
-      <span slot="footer" class="dialog-footer">
-    <el-button @click="invoiceupdateOrderItemVisibleVisible = false">取 消</el-button>
-    <el-button type="primary" @click="submitupdateOrderItemVisibleTitle">确 定</el-button>
-  </span>
-    </el-dialog>
+    <!--    开发票-->
+    <Invoice :check-rules="CheckRules" :handle-commit-back-company="handleCommitBackCompany"
+             :handle-update-company-name="handleUpdateCompanyName"
+             :invoiceupdate-order-item-visible-visible="invoiceupdateOrderItemVisibleVisible"
+             :list-company="listCompany" :query-company-name="queryCompanyName"
+             :submitupdate-order-item-visible-title="submitupdateOrderItemVisibleTitle"
+             :update-order-item-visible-title="updateOrderItemVisibleTitle"
+             :update-order-item-visible-title-info="updateOrderItemVisibleTitleInfo"/>
 
 
     <!--    订单打款申请 -->
-    <el-dialog title="订单打款申请" :visible.sync="paymentApplyVisible" width="48%">
-      <keep-alive>
-        <ApplyPayment :table-name="TableName.GOODS_ORDER" :t-i-d="tID" :need-money="needMoney"
-                      :need-info="{}"
-                      @changeupdateOrderItemVisible="handleCloseApply"/>
-      </keep-alive>
-    </el-dialog>
+    <OrderMoneyReceive :table-name="TableName" :handle-close-apply="handleCloseApply" :need-money="needMoney"
+                       :payment-apply-visible="paymentApplyVisible" :t-i-d="tID"/>
+
 
     <!--    todo url其实就是返回了后端服务器的地址加端口 这里需要后期规定好后直接拼接就能查看了 -->
     <el-dialog title="查看附件" :visible.sync="checkAttachmentVisible" width="48%">
@@ -596,58 +453,14 @@
 
 
     <!-- 订单历史信息查看-->
-    <el-dialog title="订单历史信息" :visible.sync="checkHistoryOrderVisible" width="1100px">
-      <el-row>
-        <el-col :span="18" :offset="3">
-          <el-timeline>
-            <el-timeline-item :timestamp="'今天'+parseTime(new Date(),'{y}-{m}-{d}')" placement="top">
-              <el-button type="success" icon="el-icon-document" @click="checkcurrentOrderItemInfo">查看原订单信息
-              </el-button>
-            </el-timeline-item>
-            <!--            修改的时间线-->
-            <el-timeline-item v-for="(item,index) in orderHistoryInfoList" placement="top" :key="index"
-                              :timestamp="item.diff.updateTime">
-              <el-collapse v-model="activeNames">
-                <el-collapse-item :title="item.userName+':'+item.remark" :name="index">
-                  <el-card>
-                    <template #header>
-                      <span style="font-weight: bold">修改人:{{ item.userName }}-{{ item.remark }}</span>
-                    </template>
-                    <div>
-                      <CodeDiff
-                          :old-string="item.diff.old"
-                          :new-string="item.diff.new"
-                          :context="10"
-                          output-format="line-by-line"/>
-                    </div>
-                  </el-card>
-                </el-collapse-item>
-              </el-collapse>
-            </el-timeline-item>
-          </el-timeline>
-        </el-col>
-      </el-row>
-    </el-dialog>
-
+    <OrderHistoryCheck :active-names="activeNames" :check-history-order-visible="checkHistoryOrderVisible"
+                       :checkcurrent-order-item-info="checkcurrentOrderItemInfo"
+                       :order-history-info-list="orderHistoryInfoList"
+                       :parse-time="parseTime(new Date(),'{y}-{m}-{d}')"/>
 
     <!--      原订单信息-->
-    <el-dialog
-        title="原订单信息"
-        :visible.sync="currentOrderItemInfoVisible"
-        width="68%">
-      <el-row>
-        <el-card class="box-card" shadow="hover">
-          <OrderInfos :orderInfo="currentOrderItemInfo"/>
-        </el-card>
-        <el-card class="box-card" shadow="hover">
-          <OrderDetailInfo :orderDetailInfoList="currentOrderItemInfo.orderDetailList"/>
-        </el-card>
-      </el-row>
-      <span slot="footer" class="dialog-footer">
-    <el-button @click="currentOrderItemInfoVisible = false">取 消</el-button>
-    <el-button type="primary" @click="currentOrderItemInfoVisible = false">确 定</el-button>
-  </span>
-    </el-dialog>
+    <PrimativeOrderInfo :current-order-item-info="currentOrderItemInfo"
+                        :current-order-item-info-visible="currentOrderItemInfoVisible"/>
   </div>
 </template>
 
@@ -664,12 +477,9 @@ import OrderForm from "@/components/OrderForm.vue";
 import {mapGetters} from "vuex";
 import {getToken} from "@/utils/auth";
 import {excludeParams} from "@/api/tool/exclude";
-import SearchOption from "@/components/SearchOption.vue";
 import {listBankAccount} from "@/api/system/bankAccount";
 import {listCompany} from "@/api/system/company";
 import {listOrderFreight} from "@/api/system/orderFreight";
-import ApplyPayment from "@/components/ApplyPayment.vue";
-import ChatForm from "@/components/ChatForm.vue";
 import {addInvoiceOut} from "@/api/system/invoiceOut";
 import OrderDetailInfo from "@/components/OrderDetailInfo.vue";
 import {TableName} from "@/api/tool/enums";
@@ -680,22 +490,35 @@ import {mixin_printHTML} from "@/views/dashboard/mixins/print";
 import axios from "axios";
 import {getCompany} from "../../../api/system/company";
 import {getHistoryGoodsOrder} from "../../../api/system/goodsOrder";
-import OrderInfos from "../../../components/OrderInfos.vue";
 import InfoDialog from "../../../components/InfoDialog.vue";
 import {addReason} from "../../../api/system/user";
-import {CodeDiff} from 'v-code-diff'
-import SearchBar from "./SearchBar.vue";
+import Invoice from "./Invoice.vue";
+import OrderMoneyReceive from "./OrderMoneyReceive.vue";
+import OrderHistoryCheck from "./OrderHistoryCheck.vue";
+import PrimativeOrderInfo from "./PrimativeOrderInfo.vue";
+import UploadCommit from "./UploadCommit.vue";
+import UploadPath from "./UploadPath.vue";
+import OrderGiven from "./OrderGiven.vue";
+import CheckOrder from "./CheckOrder.vue";
+import QuerySearchBar from "./QuerySearchBar.vue";
 
 export default {
   name: "GoodsOrder",
   mixins: [mixin_printHTML],
   components: {
-    SearchBar,
+    QuerySearchBar,
+    CheckOrder,
+    OrderGiven,
+    UploadPath,
+    UploadCommit,
+    PrimativeOrderInfo,
+    OrderHistoryCheck,
+    OrderMoneyReceive,
+    Invoice,
     InfoDialog,
-    OrderInfos,
     FreeApply,
     OrderDetailInfo,
-    ChatForm, ApplyPayment, SearchOption, OrderForm, CodeDiff
+    OrderForm
   },
   data() {
     return {
@@ -1088,7 +911,6 @@ export default {
             this.updateOrderItemVisibleTitleInfo.supplierInvoiceNumber = res.data.isSupplierInvoice
             this.invoiceupdateOrderItemVisibleVisible = true;
           })
-      this.invoiceupdateOrderItemVisibleVisible = true;
     },
     // 点击供应商开票
     updateOrderItemVisibleSupplierInvoice(row, supplierID) {
@@ -1243,11 +1065,11 @@ export default {
      *  3.行操作中点击查看 查看当前行订单的信息
      */
     checkOrderItemInfo(row) {
-      this.checkOrderVisible = true;
       const id = row.id;
       getGoodsOrder(id).then(res => {
         this.orderInfo = res.data
         this.orderDetailInfo = res.data.orderDetailList;
+        this.checkOrderVisible = true;
       })
     },
 
@@ -1543,7 +1365,7 @@ export default {
         ticketPoint: null,
         ticketPointAmount: null,
         isOrderTax: 0,
-        comments: null,
+        comments: '',
       }
     },
     // 表单重置
@@ -1614,6 +1436,11 @@ export default {
       this.orderId = null
       this.orderItemVisible = false
       this.getList()
+    },
+    // 关闭查看订单的弹窗
+    closeCheckOrderDialog() {
+      this.checkOrderVisible = false
+      this.reset()
     },
     // 新增按钮操作
     handleAdd() {
@@ -1688,10 +1515,6 @@ export default {
 };
 </script>
 <style lang="scss">
-.upload-demo {
-  width: 100%;
-  margin: 0 auto;
-}
 
 .item {
   margin-right: 5px; /* 添加一些间距 */

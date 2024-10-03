@@ -85,7 +85,7 @@
 </template>
 <script>
 export default {
-  name: 'SearchBar',
+  name: 'QuerySearchBar',
   props: {
     handleQuery: {},
     options: {},
