@@ -34,6 +34,9 @@ export default {
     this.resetOrderItemInfo();
   },
   computed: {
+    Tax() {
+      return this.orderItemInfo.isIncludeTaxSale + this.orderItemInfo.isIncludeTaxFactory
+    },
     //公式计算相关的计算属性
     //是否含税 厂家否 客户否
     paymentFactory00() {
@@ -163,6 +166,7 @@ export default {
         if (this.Tax === '00') {
           //误差为0.8
           this.orderItemInfo.erro = 0.8;
+          console.log(this.orderItemInfo.erro)
           //出厂贷款
           this.orderItemInfo.paymentFactory = this.paymentFactory00;
           //总贷款
