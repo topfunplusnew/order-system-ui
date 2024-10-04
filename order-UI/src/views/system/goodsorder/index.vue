@@ -436,7 +436,8 @@
              :list-company="listCompany" :query-company-name="queryCompanyName"
              :submitupdate-order-item-visible-title="submitupdateOrderItemVisibleTitle"
              :update-order-item-visible-title="updateOrderItemVisibleTitle"
-             :update-order-item-visible-title-info="updateOrderItemVisibleTitleInfo" @close="handleCloseInvoice"/>
+             :update-order-item-visible-title-info="updateOrderItemVisibleTitleInfo" @close="handleCloseInvoice"
+             :maxInvent="maxInvent" @resetAmount="resetAmount"/>
 
 
     <!--    订单打款申请 -->

@@ -2,18 +2,18 @@
 
 <template>
   <el-dialog :close-on-click-modal="false" :show-close="false"
-      :title="updateOrderItemVisibleTitle"
-      :visible.sync="invoiceupdateOrderItemVisibleVisible"
-      width="500px">
+             :title="updateOrderItemVisibleTitle"
+             :visible.sync="invoiceupdateOrderItemVisibleVisible"
+             width="500px">
     <el-row>
       <el-form :model="updateOrderItemVisibleTitleInfo" label-width="110px"
                :rules="CheckRules.updateOrderItemVisibleTitleRules">
         <el-form-item label="开票日期" prop="invoiceDate">
           <el-date-picker
-              v-model="updateOrderItemVisibleTitleInfo.invoiceDate"
-              type="date"
-              placeholder="选择日期"
-              value-format="yyyy-MM-dd">
+            v-model="updateOrderItemVisibleTitleInfo.invoiceDate"
+            type="date"
+            placeholder="选择日期"
+            value-format="yyyy-MM-dd">
           </el-date-picker>
         </el-form-item>
         <el-form-item label="我方开票实体" prop="invoiceObject">
@@ -29,10 +29,10 @@
             </el-col>
             <el-col :span="2">
               <SearchOption
-                  :limit-info="updateOrderItemVisibleTitleInfo.domain === 1? {companyType:'客户'}:{companyType:'供应商'}"
-                  :get-data="listCompany" query-info="companyName"
-                  query-label="公司名称" :query-name="queryCompanyName"
-                  @update:queryName="handleUpdateCompanyName" @commitBack="handleCommitBackCompany">
+                :limit-info="updateOrderItemVisibleTitleInfo.domain === 1? {companyType:'客户'}:{companyType:'供应商'}"
+                :get-data="listCompany" query-info="companyName"
+                query-label="公司名称" :query-name="queryCompanyName"
+                @update:queryName="handleUpdateCompanyName" @commitBack="handleCommitBackCompany">
                 <template #table-columns>
                   <el-table-column :label="updateOrderItemVisibleTitleInfo.domain === 1? '客户':'供应商'"
                                    align="center"
@@ -83,11 +83,24 @@ export default {
     queryCompanyName: {},
     submitupdateOrderItemVisibleTitle: {},
     updateOrderItemVisibleTitle: {},
-    updateOrderItemVisibleTitleInfo: {}
+    updateOrderItemVisibleTitleInfo: {},
+    maxInvent: {}
   },
   methods: {
     close() {
       this.$emit('close')
+    },
+
+  },
+  watch: {
+    // 监听开票金额不能超过总货款
+    'updateOrderItemVisibleTitleInfo.ticketPointAmount': {
+      handler(val) {
+        if (this.updateOrderItemVisibleTitleInfo.ticketPointAmount > this.maxInvent) {
+          this.$modal.msgError('客户开票金额不能超过订单总货款,总货款为:', this.maxInvent)
+          this.$emit('resetAmount')
+        }
+      }
     }
   }
 }

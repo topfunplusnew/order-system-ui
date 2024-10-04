@@ -160,19 +160,19 @@
                   <el-table-column show-overflow-tooltip label="海运车牌" align="center" prop="seaCarNo"
                   >
                     <template #default="scope">
-                      {{ scope.row.seaCarNo == null ? '无海运信息' : scope.row.seaCarNo }}
+                      {{ !scope.row.seaCarNo ? '无' : scope.row.seaCarNo }}
                     </template>
                   </el-table-column>
                   <el-table-column show-overflow-tooltip label="海运司机电话" align="center" prop="seaDriverTel"
                                    width="100px">
                     <template #default="scope">
-                      {{ scope.row.seaDriverTel == null ? '无海运信息' : scope.row.seaDriverTel }}
+                      {{ !scope.row.seaDriverTel ? '无' : scope.row.seaDriverTel }}
                     </template>
                   </el-table-column>
                   <el-table-column show-overflow-tooltip label="海运司机姓名" align="center" prop="seaDriverName"
                                    width="100px">
                     <template #default="scope">
-                      {{ scope.row.seaDriverName == null ? '无海运信息' : scope.row.seaDriverTel }}
+                      {{ !scope.row.seaDriverName ? '无' : scope.row.seaDriverTel }}
                     </template>
                   </el-table-column>
                   <el-table-column show-overflow-tooltip label="销售经理" align="center" prop="saleManager"
