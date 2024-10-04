@@ -50,7 +50,7 @@ export default {
     additionalLimitInfo: {
       type: Function,
       default: (data) => {
-        return Promise.resolve()
+        return Promise.resolve(data)
       }
     }
   },
@@ -88,6 +88,7 @@ export default {
       this.getData({...this.limitInfo, pageNum: this.pageNum, pageSize: this.pageSize})
         .then(res => {
           if (res && res.rows) {
+            console.log('方法:', this.additionalLimitInfo)
             return this.additionalLimitInfo(res.rows)
               .then(data => {
                 this.tableData = data;

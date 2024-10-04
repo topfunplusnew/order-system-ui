@@ -22,7 +22,6 @@ export var mixin_order_freeApply = {
         }
     },
     methods: {
-
         /**
          *  海陆运费申请功能
          */

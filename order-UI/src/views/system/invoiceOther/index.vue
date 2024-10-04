@@ -130,163 +130,162 @@
     />
 
     <!-- 添加或修改商家直接给客户开发票对话框 -->
-    <el-dialog :close-on-click-modal="false" :show-close="false" :title="title" :visible.sync="open" append-to-body>
-      <el-form ref="form" :model="form" :rules="rules" label-width="120px">
-        <!--        订单编号应该是选择某个订单 然后自动填充-->
-        <el-form-item label="订单编号" prop="ordersNo">
-          <el-col :span="20">
-            <el-input v-model="form.ordersNo" placeholder="请输入订单编号"/>
-          </el-col>
-          <el-col :span="4">
-            <SearchOption :limit-info="{}"
-                          :get-data="listGoodsOrder" query-info="customer"
-                          query-label="客户名称" :query-name="queryGoodsOrder"
-                          @update:queryName="handleUpdateGoodsOrder" @commitBack="handleCommitBackGoodsOrder">
-              <template #table-columns>
-                <el-table-column show-overflow-tooltip label="ID" align="center" prop="id" fixed="left"/>
-                <el-table-column show-overflow-tooltip label="日期" align="center" prop="orderDate" fixed="left"/>
-                <el-table-column show-overflow-tooltip label="客户" align="center" prop="customer" fixed="left"/>
-                <el-table-column show-overflow-tooltip label="供应商" align="center" prop="supplierNames" fixed="left"/>
-                <el-table-column label="订单编号" align="center" prop="ordersNo" width="200px"/>
-                <el-table-column show-overflow-tooltip label="陆运车牌" align="center" prop="landCarNo"
-                />
-                <el-table-column show-overflow-tooltip label="陆运司机电话" align="center" prop="landDriverTel"
-                                 width="100px"/>
-                <el-table-column show-overflow-tooltip label="陆地司机姓名" align="center" prop="landDriverName"
-                                 width="100px"/>
-                <el-table-column show-overflow-tooltip label="海运车牌" align="center" prop="seaCarNo"
-                >
-                  <template #default="scope">
-                    {{ scope.row.seaCarNo == null ? '无海运信息' : scope.row.seaCarNo }}
-                  </template>
-                </el-table-column>
-                <el-table-column show-overflow-tooltip label="海运司机电话" align="center" prop="seaDriverTel"
-                                 width="100px">
-                  <template #default="scope">
-                    {{ scope.row.seaDriverTel == null ? '无海运信息' : scope.row.seaDriverTel }}
-                  </template>
-                </el-table-column>
-                <el-table-column show-overflow-tooltip label="海运司机姓名" align="center" prop="seaDriverName"
-                                 width="100px">
-                  <template #default="scope">
-                    {{ scope.row.seaDriverName == null ? '无海运信息' : scope.row.seaDriverTel }}
-                  </template>
-                </el-table-column>
-                <el-table-column show-overflow-tooltip label="销售经理" align="center" prop="saleManager"
-                />
-                <el-table-column show-overflow-tooltip label="车队" align="center" prop="fleet"
-                />
-                <el-table-column show-overflow-tooltip label="审核状态" align="center" prop="checkState"
-
-                                 width="120">
-                </el-table-column>
-                <el-table-column show-overflow-tooltip label="开票状态" align="center" prop="invoiceState"
-                                 width="120px">
-                </el-table-column>
-                <el-table-column show-overflow-tooltip label="打款状态" align="center" prop="paymentState"
-                >
-                  <template slot-scope="scope">
-                    <el-tag
-                      disable-transitions>{{ scope.row.paymentState }}
-                    </el-tag>
-                  </template>
-                </el-table-column>
-                <el-table-column show-overflow-tooltip label="备注" align="center" prop="comments"
-                />
-              </template>
-            </SearchOption>
-          </el-col>
-        </el-form-item>
-        <el-col :span="12">
-          <el-form-item label="开票金额" prop="invoiceAmount">
-            <el-input v-model="form.invoiceAmount" placeholder="请输入开票金额"/>
-          </el-form-item>
-          <el-form-item label="供应商票点" prop="supplierTicketPoint">
-            <el-input v-model="form.supplierTicketPoint" placeholder="请输入供应商票点"/>
-          </el-form-item>
-          <el-form-item label="供应商票点金额" prop="supplierPointAmount">
-            <el-input v-model="form.supplierPointAmount" placeholder="请输入供应商票点金额"/>
-          </el-form-item>
-          <el-form-item label="客户票点" prop="customerTicketPoint">
-            <el-input v-model="form.customerTicketPoint" placeholder="请输入客户票点"/>
-          </el-form-item>
-          <el-form-item label="客户票点金额" prop="customerPointAmount">
-            <el-input v-model="form.customerPointAmount" placeholder="请输入票点金额"/>
-          </el-form-item>
-          <!--        <el-form-item label="供应商ID" prop="SupplierID">-->
-          <!--          <el-input v-model="form.SupplierID" placeholder="请输入供应商ID"/>-->
-          <!--        </el-form-item>-->
-        </el-col>
-        <el-col :span="12">
-          <el-form-item label="开票日期" prop="invoiceDate">
-            <el-date-picker
-              v-model="form.invoiceDate"
-              type="date"
-              placeholder="选择日期"
-              value-format="yyyy-MM-dd">
-            </el-date-picker>
-          </el-form-item>
-          <el-form-item label="供应商公司名称" prop="Supplier">
+    <el-dialog :close-on-click-modal="false" :show-close="false" :title="title" :visible.sync="open" append-to-body
+               width="800px">
+      <el-row>
+        <el-form ref="form" :model="form" :rules="rules" label-width="120px">
+          <!--        订单编号应该是选择某个订单 然后自动填充-->
+          <el-form-item label="订单ID" prop="ordersNo">
             <el-col :span="20">
-              <el-input v-model="form.Supplier" placeholder="请输入供应商公司名称"/>
+              <el-input v-model="form.ordersNo" placeholder="请选择关联订单"/>
             </el-col>
             <el-col :span="4">
-              <SearchOption :limit-info="{companyType:'供应商'}"
-                            :get-data="listCompany" query-info="companyName"
-                            query-label="公司名称" :query-name="queryCompanyName"
-                            @update:queryName="handleUpdateCompanyName" @commitBack="handleCommitBackCompany">
+              <SearchOption :limit-info="{}"
+                            :get-data="listGoodsOrder" query-info="customer"
+                            query-label="客户名称" :query-name="queryGoodsOrder"
+                            @update:queryName="handleUpdateGoodsOrder" @commitBack="handleCommitBackGoodsOrder">
                 <template #table-columns>
-                  <el-table-column label="供应商" align="center"
-                                   prop="relationName"/>
-                  <el-table-column label="老板姓名" align="center" prop="leader"/>
-                  <el-table-column label="老板电话" align="center" prop="leaderTel"/>
-                  <el-table-column label="区域" align="center" prop="region"/>
-                  <el-table-column label="公司名称" align="center" prop="companyName"/>
-                  <el-table-column label="销售经理" align="center" prop="salesManager"/>
+                  <el-table-column show-overflow-tooltip label="ID" align="center" prop="id" fixed="left"/>
+                  <el-table-column show-overflow-tooltip label="日期" align="center" prop="orderDate" fixed="left"/>
+                  <el-table-column show-overflow-tooltip label="客户" align="center" prop="customer" fixed="left"/>
+                  <el-table-column show-overflow-tooltip label="供应商" align="center" prop="supplierNames"
+                                   fixed="left"/>
+                  <el-table-column label="订单编号" align="center" prop="ordersNo" width="200px"/>
+                  <el-table-column show-overflow-tooltip label="陆运车牌" align="center" prop="landCarNo"
+                  />
+                  <el-table-column show-overflow-tooltip label="陆运司机电话" align="center" prop="landDriverTel"
+                                   width="100px"/>
+                  <el-table-column show-overflow-tooltip label="陆地司机姓名" align="center" prop="landDriverName"
+                                   width="100px"/>
+                  <el-table-column show-overflow-tooltip label="海运车牌" align="center" prop="seaCarNo"
+                  >
+                    <template #default="scope">
+                      {{ scope.row.seaCarNo == null ? '无海运信息' : scope.row.seaCarNo }}
+                    </template>
+                  </el-table-column>
+                  <el-table-column show-overflow-tooltip label="海运司机电话" align="center" prop="seaDriverTel"
+                                   width="100px">
+                    <template #default="scope">
+                      {{ scope.row.seaDriverTel == null ? '无海运信息' : scope.row.seaDriverTel }}
+                    </template>
+                  </el-table-column>
+                  <el-table-column show-overflow-tooltip label="海运司机姓名" align="center" prop="seaDriverName"
+                                   width="100px">
+                    <template #default="scope">
+                      {{ scope.row.seaDriverName == null ? '无海运信息' : scope.row.seaDriverTel }}
+                    </template>
+                  </el-table-column>
+                  <el-table-column show-overflow-tooltip label="销售经理" align="center" prop="saleManager"
+                  />
+                  <el-table-column show-overflow-tooltip label="车队" align="center" prop="fleet"
+                  />
+                  <el-table-column show-overflow-tooltip label="审核状态" align="center" prop="checkState"
+
+                                   width="120">
+                  </el-table-column>
+                  <el-table-column show-overflow-tooltip label="开票状态" align="center" prop="invoiceState"
+                                   width="120px">
+                  </el-table-column>
+                  <el-table-column show-overflow-tooltip label="打款状态" align="center" prop="paymentState"
+                  >
+                    <template slot-scope="scope">
+                      <el-tag
+                        disable-transitions>{{ scope.row.paymentState }}
+                      </el-tag>
+                    </template>
+                  </el-table-column>
+                  <el-table-column show-overflow-tooltip label="备注" align="center" prop="comments"
+                  />
                 </template>
               </SearchOption>
             </el-col>
           </el-form-item>
-          <el-form-item label="客户公司名称" prop="customer">
-            <el-col :span="20">
-              <el-input v-model="form.customer" placeholder="请输入客户公司名称"/>
-            </el-col>
-            <el-col :span="4">
-              <SearchOption :limit-info="{companyType:'客户'}"
-                            :get-data="listCompany" query-info="companyName"
-                            query-label="公司名称" :query-name="queryCompanyCustomerName"
-                            @update:queryName="handleUpdateCompanyCustomerName"
-                            @commitBack="handleCommitBackCompanyCustomer">
-                <template #table-columns>
-                  <el-table-column label="客户" align="center"
-                                   prop="relationName"/>
-                  <el-table-column label="老板姓名" align="center" prop="leader"/>
-                  <el-table-column label="老板电话" align="center" prop="leaderTel"/>
-                  <el-table-column label="区域" align="center" prop="region"/>
-                  <el-table-column label="公司名称" align="center" prop="companyName"/>
-                  <el-table-column label="销售经理" align="center" prop="salesManager"/>
-                </template>
-              </SearchOption>
-            </el-col>
-          </el-form-item>
-          <!--        <el-form-item label="客户ID" prop="CustomerID">-->
-          <!--          <el-input v-model="form.CustomerID" placeholder="请输入客户ID"/>-->
-          <!--        </el-form-item>-->
-          <el-form-item label="票据单位名称" prop="invoiceCompanyName">
-            <el-input v-model="form.invoiceCompanyName" placeholder="请输入票据单位名称"/>
-          </el-form-item>
+          <el-col :span="12">
+            <el-form-item label="开票金额" prop="invoiceAmount">
+              <el-input v-model="form.invoiceAmount" placeholder="请输入开票金额"/>
+            </el-form-item>
+            <el-form-item label="供应商票点" prop="supplierTicketPoint">
+              <el-input v-model="form.supplierTicketPoint" placeholder="请输入供应商票点"/>
+            </el-form-item>
+            <el-form-item label="供应商票点金额" prop="supplierPointAmount">
+              <el-input v-model="form.supplierPointAmount" placeholder="请输入供应商票点金额"/>
+            </el-form-item>
+            <el-form-item label="客户票点" prop="customerTicketPoint">
+              <el-input v-model="form.customerTicketPoint" placeholder="请输入客户票点"/>
+            </el-form-item>
+            <el-form-item label="客户票点金额" prop="customerPointAmount">
+              <el-input v-model="form.customerPointAmount" placeholder="请输入票点金额"/>
+            </el-form-item>
+          </el-col>
+          <el-col :span="12">
+            <el-form-item label="开票日期" prop="invoiceDate">
+              <el-date-picker
+                v-model="form.invoiceDate"
+                type="date"
+                placeholder="选择日期"
+                value-format="yyyy-MM-dd">
+              </el-date-picker>
+            </el-form-item>
+            <el-form-item label="供应商公司名称" prop="Supplier">
+              <el-col :span="20">
+                <el-input v-model="form.Supplier" placeholder="请输入供应商公司名称"/>
+              </el-col>
+              <el-col :span="4">
+                <SearchOption :limit-info="{companyType:'供应商'}"
+                              :get-data="listCompany" query-info="companyName"
+                              query-label="公司名称" :query-name="queryCompanyName"
+                              @update:queryName="handleUpdateCompanyName" @commitBack="handleCommitBackCompany">
+                  <template #table-columns>
+                    <el-table-column label="供应商" align="center"
+                                     prop="relationName"/>
+                    <el-table-column label="老板姓名" align="center" prop="leader"/>
+                    <el-table-column label="老板电话" align="center" prop="leaderTel"/>
+                    <el-table-column label="区域" align="center" prop="region"/>
+                    <el-table-column label="公司名称" align="center" prop="companyName"/>
+                    <el-table-column label="销售经理" align="center" prop="salesManager"/>
+                  </template>
+                </SearchOption>
+              </el-col>
+            </el-form-item>
+            <el-form-item label="客户公司名称" prop="customer">
+              <el-col :span="20">
+                <el-input v-model="form.customer" placeholder="请输入客户公司名称"/>
+              </el-col>
+              <el-col :span="4">
+                <SearchOption :limit-info="{companyType:'客户'}"
+                              :get-data="listCompany" query-info="companyName"
+                              query-label="公司名称" :query-name="queryCompanyCustomerName"
+                              @update:queryName="handleUpdateCompanyCustomerName"
+                              @commitBack="handleCommitBackCompanyCustomer">
+                  <template #table-columns>
+                    <el-table-column label="客户" align="center"
+                                     prop="relationName"/>
+                    <el-table-column label="老板姓名" align="center" prop="leader"/>
+                    <el-table-column label="老板电话" align="center" prop="leaderTel"/>
+                    <el-table-column label="区域" align="center" prop="region"/>
+                    <el-table-column label="公司名称" align="center" prop="companyName"/>
+                    <el-table-column label="销售经理" align="center" prop="salesManager"/>
+                  </template>
+                </SearchOption>
+              </el-col>
+            </el-form-item>
+            <el-form-item label="票据单位名称" prop="invoiceCompanyName">
+              <el-input v-model="form.invoiceCompanyName" placeholder="请输入票据单位名称"/>
+            </el-form-item>
 
-          <el-form-item label="备注" prop="comments">
-            <el-input v-model="form.comments" placeholder="请输入备注"/>
-          </el-form-item>
-        </el-col>
-      </el-form>
+            <el-form-item label="备注" prop="comments">
+              <el-input v-model="form.comments" placeholder="请输入备注"/>
+            </el-form-item>
+          </el-col>
+        </el-form>
+      </el-row>
       <div slot="footer" class="dialog-footer">
         <el-button type="primary" @click="submitForm">确 定</el-button>
         <el-button @click="cancel">取 消</el-button>
       </div>
     </el-dialog>
-    <el-dialog :close-on-click-modal="false" :show-close="false" title="查看订单信息" :visible.sync="checkOrderInfoVisible" width="70%" append-to-body>
+    <el-dialog :close-on-click-modal="false" :show-close="false" title="查看订单信息"
+               :visible.sync="checkOrderInfoVisible" width="70%" append-to-body>
       <OrderInfos :order-info="orderInfo"/>
     </el-dialog>
   </div>
@@ -413,6 +412,7 @@ export default {
   methods: {
     listGoodsOrder,
     listCompany,
+    // 自动填充的方法
     handleUpdateCompanyName(val) {
       this.queryCompanyName = val
     },
