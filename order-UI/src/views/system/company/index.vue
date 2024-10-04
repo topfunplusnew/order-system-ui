@@ -394,6 +394,15 @@ import {TableName} from "@/api/tool/enums";
 export default {
   name: "Company",
   data() {
+    // 自定义校验规则
+    const validateRegion = (rule, value, callback) => {
+      if (this.form.province && this.form.city) {
+        callback()
+      } else {
+        callback(new Error('请选择省市'))
+      }
+    }
+
     return {
       loading: true,
       ids: [],
@@ -459,14 +468,12 @@ export default {
           {required: true, message: "销售经理不能为空", trigger: "blur"}
         ],
         province: [
-          {required: true, message: "省份信息不能为空", trigger: "blur"}
+          {required: true, validator: validateRegion, trigger: 'change'}
         ],
         city: [
-          {required: true, message: "市县信息不能为空", trigger: "blur"}
+          {required: true, validator: validateRegion, trigger: 'change'}
         ],
-        county: [
-          {required: true, message: "乡镇不能为空", trigger: "blur"}
-        ]
+        // 移除county的单独校验规则，因为不是必选项
       },
       columns: [
         {key: 0, label: `客户`, visible: true},
@@ -860,8 +867,28 @@ export default {
       this.download('system/company/export', {
         ...this.queryParams
       }, `company_${new Date().getTime()}.xlsx`)
+    },
+    // 省份选择框变化时触发
+    provinceChange(province) {
+      this.form.province = province
+      this.form.city = undefined
+      this.form.county = undefined
+      this.$refs.form.validateField('province')
+    },
+    // 城市选择框变化时触发
+    cityChange(city) {
+      this.form.city = city
+      this.form.county = undefined
+      this.$refs.form.validateField('city')
+    },
+    // 县区选择框变化时触发
+    countyChange(county) {
+      this.form.county = county
     }
   }
 };
 </script>
 
+<style scoped>
+/* 样式保持不变 */
+</style>
