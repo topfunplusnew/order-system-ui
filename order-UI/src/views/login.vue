@@ -2,7 +2,7 @@
   <div class="login">
     <h1 class="title">订单管理系统</h1>
     <el-form ref="loginForm" :model="loginForm" :rules="loginRules" class="login-form">
-      <h5 style="font-weight: bolder"><i class="el-icon-user-solid"></i>用户登录</h5>
+      <h5 style="font-weight: bolder"><i class="el-icon-user-solid" />用户登录</h5>
       <el-form-item prop="username">
         <el-input
           v-model="loginForm.username"
@@ -10,7 +10,7 @@
           auto-complete="off"
           placeholder="账号"
         >
-          <svg-icon slot="prefix" icon-class="user" class="el-input__icon input-icon"/>
+          <svg-icon slot="prefix" icon-class="user" class="el-input__icon input-icon" />
         </el-input>
       </el-form-item>
       <el-form-item prop="password">
@@ -21,7 +21,7 @@
           placeholder="密码"
           @keyup.enter.native="handleLogin"
         >
-          <svg-icon slot="prefix" icon-class="password" class="el-input__icon input-icon"/>
+          <svg-icon slot="prefix" icon-class="password" class="el-input__icon input-icon" />
         </el-input>
       </el-form-item>
 
@@ -37,7 +37,7 @@
           <span v-if="!loading">登 录</span>
           <span v-else>登 录 中...</span>
         </el-button>
-        <div style="float: right;" v-if="register">
+        <div v-if="register" style="float: right;">
           <router-link class="link-type" :to="'/register'">立即注册</router-link>
         </div>
       </el-form-item>
@@ -50,28 +50,27 @@
 </template>
 
 <script>
-import {getCodeImg} from "@/api/login";
-import Cookies from "js-cookie";
-import {encrypt, decrypt} from '@/utils/jsencrypt'
+import Cookies from 'js-cookie'
+import { encrypt, decrypt } from '@/utils/jsencrypt'
 
 export default {
-  name: "Login",
+  name: 'Login',
   data() {
     return {
-      codeUrl: "",
+      codeUrl: '',
       loginForm: {
-        username: "caiwu",
-        password: "caiwu",
+        username: 'admin',
+        password: 'admin123',
         rememberMe: false,
-        code: "",
-        uuid: ""
+        code: '',
+        uuid: ''
       },
       loginRules: {
         username: [
-          {required: true, trigger: "blur", message: "请输入您的账号"}
+          {required: true, trigger: 'blur', message: '请输入您的账号' }
         ],
         password: [
-          {required: true, trigger: "blur", message: "请输入您的密码"}
+          {required: true, trigger: 'blur', message: '请输入您的密码' }
         ],
         code: [{required: true, trigger: "change", message: "请输入验证码"}]
       },
