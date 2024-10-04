@@ -119,7 +119,8 @@
 
 
     <!-- 添加或修改客户、供应商信息对话框 -->
-    <el-dialog :close-on-click-modal="false" :show-close="false" :title="title" :visible.sync="open" width="54%" append-to-body>
+    <el-dialog :close-on-click-modal="false" :show-close="false" :title="title" :visible.sync="open" width="54%"
+               append-to-body>
       <el-form ref="form" :model="form" :rules="rules" label-width="110px">
         <el-row :gutter="4">
           <el-col :span="12">
@@ -188,7 +189,8 @@
 
 
     <!--    账号搜索-->
-    <el-dialog :close-on-click-modal="false" :show-close="false" title="账号搜索" :visible.sync="dialogFormSearchVisible" width="60%">
+    <el-dialog :close-on-click-modal="false" :show-close="false" title="账号搜索"
+               :visible.sync="dialogFormSearchVisible" width="60%">
       <el-form :model="queryParams">
         <el-row :gutter="4">
           <el-col :span="8">
@@ -305,7 +307,8 @@
 
 
       <!--    银行信息-->
-      <el-dialog :close-on-click-modal="false" :show-close="false" title="操作银行卡" :visible.sync="dialogBankInfoVisible" width="60%">
+      <el-dialog :close-on-click-modal="false" :show-close="false" title="操作银行卡"
+                 :visible.sync="dialogBankInfoVisible" width="60%">
         <el-form :model="queryBankInfo">
           <el-row :gutter="4">
             <el-col :span="8">
@@ -362,7 +365,8 @@
     </el-dialog>
 
 
-    <el-dialog :close-on-click-modal="false" :show-close="false" title="设置默认银行卡" :visible.sync="addDefaultCardVisible" width="500px" append-to-body>
+    <el-dialog :close-on-click-modal="false" :show-close="false" title="设置默认银行卡"
+               :visible.sync="addDefaultCardVisible" width="500px" append-to-body>
       <el-table border v-loading="loading" :data="singleInfo" @selection-change="handleSelectionChange"
                 height="300px" v-horizontal-scroll="'always'">
         <el-table-column label="账户类型" align="center" prop="acountsType"/>
@@ -710,6 +714,7 @@ export default {
     addDefaultCard(row) {
       //如果是undefined 代表是个对象
       if (row.target === undefined) {
+        // 设置默认银行卡
         setDefault({...excludeParams(row, this.$exclude), acountsType: '客户默认'})
           .then(res => {
             this.$message.success("设置成功~")

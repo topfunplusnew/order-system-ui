@@ -445,7 +445,8 @@
 
 
     <!--    todo url其实就是返回了后端服务器的地址加端口 这里需要后期规定好后直接拼接就能查看了 -->
-    <el-dialog :close-on-click-modal="false" :show-close="false" title="查看附件" :visible.sync="checkAttachmentVisible" width="48%">
+    <el-dialog :close-on-click-modal="false" :show-close="false" title="查看附件" :visible.sync="checkAttachmentVisible"
+               width="48%">
       <el-row v-for="(item, index) in checkFileList" :key="index">
         <el-button type="text" icon="el-icon-document" @click="checkFileItem(item)">{{ item }}</el-button>
       </el-row>

@@ -15,6 +15,8 @@
 <!--@update:queryName:修改父组件传入的queryName的值 放置输入框无法输入值保证响应式-->
 <!--@commitBack(val):点击确认后的回调，val中是需要自动填充的对象-->
 
+
+<!--特别注意 针对某些特殊情况 可以补充字段-->
 <script>
 export default {
   name: "SearchOption",
@@ -33,6 +35,7 @@ export default {
       required: true,
     },
     //约束条件 必须传入 这个字段为查找data的筛选属性，如果不需要传{}空对象
+    // 具体用法  父组件中=>  :additional-limit-info="(tableData)=>filterNoStockNumber(tableData)"  并在父组件中指定函数
     limitInfo: {
       type: Object,
       required: true
@@ -41,7 +44,15 @@ export default {
     queryInfo: '',
     queryName: '',
     //查询标签
-    queryLabel: ''
+    queryLabel: '',
+
+    // 额外的限制信息
+    additionalLimitInfo: {
+      type: Function,
+      default: (data) => {
+        return Promise.resolve()
+      }
+    }
   },
   data() {
     return {
@@ -71,11 +82,24 @@ export default {
   },
   methods: {
     getList() {
-      this.getData({...this.limitInfo, pageNum: this.pageNum, pageSize: this.pageSize}).then(res => {
-        this.total = res.total;
-        this.tableData = res.rows;
-        this.loading = false;
-      })
+      // 启动加载效果
+      this.loading = true;
+      // 调用获取数据的函数，并传入分页参数
+      this.getData({...this.limitInfo, pageNum: this.pageNum, pageSize: this.pageSize})
+        .then(res => {
+          if (res && res.rows) {
+            return this.additionalLimitInfo(res.rows)
+              .then(data => {
+                this.tableData = data;
+                this.total = res.total;
+              });
+          } else {
+            return Promise.reject("无有效数据");
+          }
+        })
+        .finally(() => {
+          this.loading = false;
+        });
     },
     //点击弹窗
     handleCallBack() {
@@ -134,9 +158,9 @@ export default {
     <el-button size="mini" :icon="icon" @click="handleCallBack" type="primary"></el-button>
     <!--    弹窗-->
     <el-dialog :close-on-click-modal="false"
-        :title="title"
-        :visible.sync="dialogVisible"
-        width="65%" append-to-body>
+               :title="title"
+               :visible.sync="dialogVisible"
+               width="65%" append-to-body>
       <!--      弹出的表格内容-->
       <el-row>
         <div>
@@ -154,12 +178,12 @@ export default {
         </div>
         <el-table :data="tableData" v-loading="loading" size="mini">
           <!--   这里给表格的数据行-->
-          <slot name="table-columns"></slot>
+          <slot name="table-columns" :tableData="tableData"></slot>
           <!--          点击确认的地方-->
           <el-table-column
-              fixed="right"
-              label="操作"
-              width="100">
+            fixed="right"
+            label="操作"
+            width="100">
             <template slot-scope="scope">
               <el-button @click="commitSomeThing(scope.row)" type="danger" size="small" :disabled="disable">确认
               </el-button>
@@ -167,11 +191,11 @@ export default {
           </el-table-column>
         </el-table>
         <pagination
-            v-show="total>0"
-            :total="total"
-            :page.sync="pageNum"
-            :limit.sync="pageSize"
-            @pagination="getList"
+          v-show="total>0"
+          :total="total"
+          :page.sync="pageNum"
+          :limit.sync="pageSize"
+          @pagination="getList"
         />
       </el-row>
       <span slot="footer" class="dialog-footer">
