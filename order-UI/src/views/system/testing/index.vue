@@ -1,51 +1,39 @@
 <script>
 
-import Item from "./Item.vue";
+import {getGoodsOrder} from "../../../api/system/goodsOrder";
 
 export default {
   computed: {},
-  components: {Item},
-  //
-  beforeCreate() {
-    // console.log('before create =>', this)
-  },
   data() {
     // console.log('data this=>', this)
     return {
-      name: 'zhangsan'
+      order: {}
     }
   },
   created() {
-    // console.log('created this=>', this.$el)
-
     /**
      * 在 Vue 2 中，$children 不保证顺序，且在 created 钩子执行时可能尚未初始化完成。
      * Item 组件在此例中作为直接子组件，但在 created 钩子时可能还未被添加到 $children 数组中。
      * 因此，在 created 钩子中调用 this.$children.pop() 可能会得到 undefined。建议在 mounted 钩子中访问 $children。
      */
-    // console.log('created this.children =>', this.$children.pop())
-    // this.checkState(this)
-  },
-  beforeMount() {
-    // console.log('before mount this=>', this)
-  },
-  //Vue 会将组件(虚拟dom)渲染为实际的 HTML ，并将它插入到页面中 对应 的元素 (真实dom)里
-  mounted() {
-    console.log('mounted this=>', this)
-    // console.log('mounted this.children =>', this.$children.pop().$el.innerHTML = 'hello')
-  },
-  beforeDestroy() {
-    // console.log('before destroy this=>', this)
-  },
-  destroyed() {
-    // console.log('destroy this=>', this)
+    getGoodsOrder(50).then(res => {
+      this.order = res.data;
+    })
   },
   methods: {
-    checkState: (_this) => {
-      console.log('checkState this=>', _this)
+    reset(obj) {
+      Object.keys(obj).forEach(item => {
+        Object.assign(obj, {
+          [item]: null
+        })
+      })
+      return obj
     },
-    changeName() {
-      this.name = 'lisi'
+    handleReset() {
+      this.order = this.reset(this.order)
+    },
+    print() {
+      console.log('order的值为', this.order)
     }
   }
 }
@@ -55,8 +43,9 @@ export default {
   <div>
     <div class="contain">
       <h1>Vue 2</h1>
-      <el-button @click="changeName" type="primary">点击变换名字</el-button>
-      <Item v-bind:title="name"/>
+      {{ order.customer }}
+      <el-button @click="handleReset">点击重置对象</el-button>
+      <el-button @click="print">输出对象的值</el-button>
     </div>
   </div>
 </template>

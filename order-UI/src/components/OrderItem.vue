@@ -28,7 +28,6 @@ export default {
     }
   },
   created() {
-    console.log('orderItem created')
     this.buttonText = '添加货物'
     // 重置orderItemInfo中的所有属性
     this.resetOrderItemInfo();
@@ -153,23 +152,15 @@ export default {
         }
       }
     },
-    Tax: {
-      handler(val) {
-        console.log('Tax:', val)
-      }
-    },
     //监听的是整个对象
     'orderItemInfo': {
       handler() {
         //运费自动填充
         if (this.isSea === false) {
-          console.log('海运费为空')
           this.orderItemInfo.freight = Number(this.orderItemInfo.landFreight);
         } else {
-          console.log('海运费不为空')
           this.orderItemInfo.freight = Number(this.orderItemInfo.landFreight) + Number(this.orderItemInfo.seaFreight);
         }
-
         //是否含税 厂家否 客户否
         if (this.orderItemInfo.isIncludeTaxFactory === '0' && this.orderItemInfo.isIncludeTaxSale === '0') {
           //误差为0.8

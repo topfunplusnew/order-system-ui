@@ -23,7 +23,6 @@ export default {
     onSubmit() {
       addReason({...this.formInline, tableName: this.tableName, tid: this.tid, modifyTime: this.modifyTime})
         .then(res => {
-          console.log(res)
           this.$message.success('提交成功')
         })
     }

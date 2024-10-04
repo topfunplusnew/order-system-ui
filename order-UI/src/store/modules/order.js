@@ -7,7 +7,6 @@ const mutations = {
     // 设置货物列表
     setOrderItemList(state, data) {
         state.orderItemList = data
-        console.log('setOrderItemList', state.orderItemList)
     },
     // 添加货物到货物列表中
     addsOrderItem(state, data) {
@@ -19,18 +18,14 @@ const mutations = {
     },
     // 修改货物的状态
     changeOrderItemStatus(state, payload) {
-        console.log(payload)
         // 获取传入的状态
         const {orderIndex, ...orderInfo} = payload
         state.orderItemList = state.orderItemList.map(item => {
             if (item.orderIndex === orderIndex) {
-                console.log('===item:', item)
                 return {...orderInfo};
             }
-            console.log('!==item:', item)
             return item;
         });
-        console.log('orderItemList:', state.orderItemList);
     },
     // 清除索引为index的索引的所有状态
     // clearOrderItemStatus(state, index) {

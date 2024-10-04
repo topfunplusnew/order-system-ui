@@ -41,8 +41,6 @@ export default {
     this.diffPatcher = create()
   },
   mounted() {
-    console.log(this.diffPatcher)
-    console.log(this.diffObjectA)
   },
   watch: {
     'switchOn': {

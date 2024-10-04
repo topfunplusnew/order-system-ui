@@ -28,7 +28,6 @@ export function addCompany(data) {
 
 // 修改客户、供应商信息
 export function updateCompany(data) {
-  console.log('data=>', data)
   return request({
     url: '/system/company',
     method: 'put',

@@ -46,9 +46,7 @@ export default {
   watch: {
     'orderId': {
       handler(val) {
-        console.log('watch:orderId:', val)
         if (!this.orderId) {
-          console.log('orderId:传入有误', val)
         } else {
           this.getGoodsOrderInfo(val)
         }
@@ -59,7 +57,6 @@ export default {
     isLand: {
       handler(val) {
         if (val === false) {
-          console.log('重置陆运费')
           this.resetLandCarInfo()
         }
       }
@@ -67,7 +64,6 @@ export default {
     isSea: {
       handler(val) {
         if (val === false) {
-          console.log('重置海运费')
           this.resetSeaCarInfo()
         }
       }

@@ -86,9 +86,7 @@ export default {
 
     //审核
     handleCheckState(item) {
-      // console.log(item.tID, item.tableName) 根据这俩 给needToShowInfo
       //根据tableName来决定给哪个发请求
-      console.log('item', item)
       this.checkWithTableName(item.paymentApply.tableName, item.paymentApply.tID)
 
       //赋值 先拿到付款申请对象
@@ -116,20 +114,17 @@ export default {
     checkWithTableName(tableName, tID) {
       //展示对应表信息
       this.tableNameToProp = tableName;
-      console.log(tableName, tID)
       switch (tableName) {
           //订单运费
         case TableName.ORDER_FREIGHT: {
           //发请求 获取订单运费信息
           getOrderFreight(tID).then(res => {
-            console.log('运费信息', res)
             this.needToShowInfo = res.data
           })
           break;
         }
         case TableName.BORROWED_MONEY:
           getBorrowedMoney(tID).then(res => {
-            console.log('借款信息', res)
             this.needToShowInfo = res.data
           })
           break;
