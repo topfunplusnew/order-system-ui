@@ -78,11 +78,26 @@ export var mixin_order_Invoice = {
       updateOrderItemVisibleTitle:
         '',
       // 开票最大金额
-      maxInvent:
-        0,
+      maxInvent: 0,
     }
   },
   methods: {
+    // 判断货物列表中是否开票
+    hasOpen(row, type) {
+      if (row.orderDetailList === null) {
+        return false
+      }
+      if (row.orderDetailList.length <= 0) {
+        return false
+      }
+      // 客户开票
+      if (type === 1) {
+        return row.orderDetailList.some(item => item.isIncludeTaxFactory === 1)
+        // 供应商开票
+      } else {
+        return row.orderDetailList.some(item => item.isIncludeTaxSale === 1)
+      }
+    },
     // 点击客户开票 客户开票 最大开票金额为总货款
     updateOrderItemVisibleCustomerInvoice(row) {
       this.resetOpenTitleInfo()

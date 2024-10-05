@@ -247,17 +247,22 @@
                        v-if="columns[20].visible"
                        width="150px">
         <template #default="scope">
-          <el-row v-if="scope.row.customerIsInvoice > 0">
-            <el-row>
-              <el-button type="success" size="mini" @click="updateOrderItemVisibleCustomerInvoice(scope.row)">继续开票
-              </el-button>
+          <el-row v-if="hasOpen(scope.row,1)">
+            <el-row v-if="scope.row.customerIsInvoice > 0">
+              <el-row>
+                <el-button type="success" size="mini" @click="updateOrderItemVisibleCustomerInvoice(scope.row)">继续开票
+                </el-button>
+              </el-row>
+            </el-row>
+            <el-row v-else>
+              <el-row>
+                <el-button type="warning" size="mini" @click="updateOrderItemVisibleCustomerInvoice(scope.row)">前去开票
+                </el-button>
+              </el-row>
             </el-row>
           </el-row>
           <el-row v-else>
-            <el-row>
-              <el-button type="warning" size="mini" @click="updateOrderItemVisibleCustomerInvoice(scope.row)">前去开票
-              </el-button>
-            </el-row>
+            无开票
           </el-row>
         </template>
       </el-table-column>
@@ -265,17 +270,22 @@
                        v-if="columns[21].visible"
                        width="120px">
         <template #default="scope">
-          <el-row v-if="scope.row.isSupplierInvoice > 0">
-            <el-row>
-              <el-button type="success" size="mini" @click="updateOrderItemVisibleCustomerInvoice(scope.row)">继续开票
-              </el-button>
+          <el-row v-if="hasOpen(scope.row,0)">
+            <el-row v-if="scope.row.isSupplierInvoice > 0">
+              <el-row>
+                <el-button type="success" size="mini" @click="updateOrderItemVisibleCustomerInvoice(scope.row)">继续开票
+                </el-button>
+              </el-row>
+            </el-row>
+            <el-row v-else>
+              <el-row>
+                <el-button type="warning" size="mini" @click="updateOrderItemVisibleSupplierInvoice(scope.row)">前去开票
+                </el-button>
+              </el-row>
             </el-row>
           </el-row>
           <el-row v-else>
-            <el-row>
-              <el-button type="warning" size="mini" @click="updateOrderItemVisibleSupplierInvoice(scope.row)">前去开票
-              </el-button>
-            </el-row>
+            无开票
           </el-row>
         </template>
       </el-table-column>

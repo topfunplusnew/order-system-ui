@@ -237,8 +237,6 @@ export default {
           item.customerID = this.orderInfo.customerID;
           item.customer = this.orderInfo.customer;
           //是否含税
-          item.isIncludeTaxFactory = item.isIncludeTaxFactory === '是' ? '1' : '0';
-          item.isIncludeTaxSale = item.isIncludeTaxSale === '是' ? '1' : '0';
           item.orderDate = parseTime(new Date(), '{y}-{m}-{d}')
         }
         addGoodsOrder({...this.orderInfo, PaymentState: ''}).then(res => {
