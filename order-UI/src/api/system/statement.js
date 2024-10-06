@@ -99,3 +99,12 @@ export function getBankAcountChange(query) {
         params: query
     })
 }
+
+// 获取客户每日发货次数
+export function getDailyOrderCount(query) {
+    return request({
+        url: 'statistics/dailyOrderCount',
+        method: 'get',
+        params: query
+    })
+}
