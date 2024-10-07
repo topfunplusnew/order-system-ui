@@ -28,24 +28,33 @@ export default {
   },
   methods: {
     // 处理年份数据l
-    handleData(list) {
+    handleData(list, type) {
       if (typeof list !== 'object') {
         return list;
       }
-      const yearList = new Set();
-      const handleItemList = (itemList) => {
-        itemList.forEach(item => {
-          yearList.add(item.orderDateButMonth.split('-')[0]);
+      if (type === 0) {
+        // 存放年份数据
+        const ist = new Set();
+        const handleItemList = (itemList) => {
+          itemList.forEach(item => {
+            ist.add(item.orderDateButMonth.split('-')[type]);
+          })
+        }
+        list.forEach(item => {
+          handleItemList(item.orderStatisticsList)
         })
+        return Array.from(ist);
+        // 处理月份数据
+      } else {
+        // 筛选函数
+        const handler = (orderStatisticsList) => {
+          const year = orderStatisticsList[0].orderDateButMonth.split('-')[0];
+          return orderStatisticsList.filter(item => item.orderDateButMonth.split('-')[0] === type)
+        }
+        console.log('测试', list[0].orderStatisticsList)
+        return handler(list[0].orderStatisticsList)
       }
-      list.forEach(item => {
-        handleItemList(item.orderStatisticsList)
-      })
-      return Array.from(yearList);
-    },
-    // 只拿取月份而不拿年份
-    handleMonth(item) {
-      return item.split('-')[1];
+
     },
     // 时间查询
     handleQuery() {
@@ -158,11 +167,12 @@ export default {
             </el-table-column>
             <!--            年份信息 遍历年份数组-->
             <el-table-column align="center" v-if="statementList.length !==0"
-                             v-for="(item,index) in handleData(statementList)" :label="item+`年`">
+                             v-for="(item,index) in handleData(statementList,0)" :label="item+`年`" :key="index">
+              <!--              遍历月份 先拿到该年份下的月份数据 然后在下面进行遍历-->
               <el-table-column label="发货量" align="center" width="100"
-                               v-for="(item,index) in statementList[0].orderStatisticsList">
+                               v-for="(element,cols) in handleData(statementList,item)" :key="cols">
                 <template #header>
-                  {{ handleMonth(item.orderDateButMonth) + `月份` }}
+                  {{ element.orderDateButMonth.split('-')[1] + `月份` }}
                 </template>
                 <template #default="scope">
                   <div v-if="scope.row.orderStatisticsList.length !== 0">
