@@ -66,7 +66,7 @@ export default {
       this.handleQuery();
     },
     handleSubmitTime() {
-      this.download('statistics/export/orderfreightsummary', {
+      this.download('statistics/export/dailyOrderCount', {
         beginTime: this.queryParams.beginTime,
         endTime: this.queryParams.endTime
       }, `客户每日发货次数_${parseTime(new Date().getTime())}.xlsx`)
