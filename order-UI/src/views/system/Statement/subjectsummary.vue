@@ -178,6 +178,7 @@ export default {
             </template>
           </right-toolbar>
           <el-table
+            fit
             border
             v-loading="loading"
             :data="statementList"
@@ -189,19 +190,19 @@ export default {
             id="printBox">
             <el-table-column label="费用科目汇总和费用占比" align="center">
               <el-table-column align="center">
-                <el-table-column label="费用科目名称" align="center" prop="payType" width="200"/>
+                <el-table-column label="费用科目名称" align="center" prop="payType" width="300"/>
               </el-table-column>
               <el-table-column label="费用日报" align="center" prop="carNo">
-                <el-table-column label="付款金额" align="center" prop="daySum" width="200"/>
-                <el-table-column label="占比" align="center" prop="dayPercentage" width="200"/>
+                <el-table-column label="付款金额" align="center" prop="daySum" width="300"/>
+                <el-table-column label="占比" align="center" prop="dayPercentage" width="300"/>
               </el-table-column>
               <el-table-column label="费用月报" align="center" prop="carNo">
-                <el-table-column label="付款金额" align="center" prop="monthSum" width="200"/>
-                <el-table-column label="占比" align="center" prop="monthPercentage" width="200"/>
+                <el-table-column label="付款金额" align="center" prop="monthSum" width="300"/>
+                <el-table-column label="占比" align="center" prop="monthPercentage" width="300"/>
               </el-table-column>
               <el-table-column label="费用年报" align="center" prop="carNo">
-                <el-table-column label="付款金额" align="center" prop="yearSum" width="200"/>
-                <el-table-column label="占比" align="center" prop="yearPercentage" width="200"/>
+                <el-table-column label="付款金额" align="center" prop="yearSum" width="300"/>
+                <el-table-column label="占比" align="center" prop="yearPercentage" width="300"/>
               </el-table-column>
             </el-table-column>
           </el-table>
