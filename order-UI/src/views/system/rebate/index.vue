@@ -136,7 +136,8 @@
     />
 
     <!-- 添加或修改返利回扣对话框 -->
-    <el-dialog :close-on-click-modal="false" :show-close="false" :title="title" :visible.sync="open" width="50%" append-to-body>
+    <el-dialog :close-on-click-modal="false" :show-close="false" :title="title" :visible.sync="open" width="50%"
+               append-to-body>
       <el-row>
         <el-form ref="form" :model="form" :rules="rules" label-width="120px">
           <!--        多选 且树表 展示多个订单 每个订单里面有多个订单详情-->
@@ -266,10 +267,10 @@
 
 
     <!--    选择订单详情-->
-    <el-dialog :close-on-click-modal="false" :show-close="false"
-      title="订单选择"
-      :visible.sync="orderDialogVisible"
-      width="65%">
+    <el-dialog :close-on-click-modal="false" :show-close="true"
+               title="订单选择"
+               :visible.sync="orderDialogVisible"
+               width="65%">
       <el-row>
         <el-button type="primary" @click="selectOrderItem" size="mini">选择订单</el-button>
       </el-row>
@@ -345,7 +346,8 @@
       </el-row>
     </el-dialog>
 
-    <el-dialog :close-on-click-modal="false" :show-close="false" title="选择订单" :visible.sync="orderSelectVisible" width="70%">
+    <el-dialog :close-on-click-modal="false" :show-close="false" title="选择订单" :visible.sync="orderSelectVisible"
+               width="70%">
       <el-table fit border v-loading="loading" :data="orderList"
                 max-height="750" size="mini" :cell-style="()=>{return {padding:'2px'}}">
         <el-table-column show-overflow-tooltip label="行操作" align="center" class-name="small-padding fixed-width"

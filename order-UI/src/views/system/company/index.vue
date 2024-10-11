@@ -189,7 +189,7 @@
 
 
     <!--    账号搜索-->
-    <el-dialog :close-on-click-modal="false" :show-close="false" title="账号搜索"
+    <el-dialog :close-on-click-modal="false" :show-close="true" title="账号搜索"
                :visible.sync="dialogFormSearchVisible" width="60%">
       <el-form :model="queryParams">
         <el-row :gutter="4">

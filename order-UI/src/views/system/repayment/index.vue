@@ -98,7 +98,8 @@
     />
 
     <!-- 添加或修改贷款还款信息对话框 -->
-    <el-dialog :close-on-click-modal="false" :show-close="false" :title="title" :visible.sync="open" width="500px" append-to-body>
+    <el-dialog :close-on-click-modal="false" :show-close="false" :title="title" :visible.sync="open" width="500px"
+               append-to-body>
       <el-form ref="form" :model="form" :rules="rules" label-width="80px">
         <el-form-item label="贷款编号" prop="loanNO">
           <el-input v-model="form.loanNO" placeholder="请输入贷款编号"/>
@@ -132,9 +133,10 @@
     </el-dialog>
 
 
-    <el-dialog :close-on-click-modal="false" :show-close="false" title="付款申请" :visible.sync="PaymentApplyInfoVisible" width="45%">
+    <el-dialog :close-on-click-modal="false" :show-close="false" title="付款申请"
+               :visible.sync="PaymentApplyInfoVisible" width="45%">
       <keep-alive>
-        <ApplyPayment :table-name="TableName.REPAYMENT" @changeOpen="changePaymentApplyInfoVisible"
+        <ApplyPayment :table-name="TableName.REPAYMENT" @changeupdateOrderItemVisible="changePaymentApplyInfoVisible"
                       :t-i-d="tID" :need-money="needMoney" :need-info="{}"/>
       </keep-alive>
     </el-dialog>

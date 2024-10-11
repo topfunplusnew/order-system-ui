@@ -250,7 +250,7 @@
       <keep-alive>
         <ApplyPayment :tableName="TableName.ORDER_FREIGHT" :t-i-d="tID"
                       :need-info="needInfo" :need-money="freight"
-                      @changeOpen="changeOpen"/>
+                      @changeupdateOrderItemVisible="changeOpen"/>
       </keep-alive>
     </el-dialog>
 

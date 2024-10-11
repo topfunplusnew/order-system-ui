@@ -306,7 +306,7 @@
 
 
     <!--    账号搜索-->
-    <el-dialog :close-on-click-modal="false" :show-close="false" title="账号搜索" :visible.sync="dialogFormSearchVisible">
+    <el-dialog :close-on-click-modal="false" :show-close="true" title="账号搜索" :visible.sync="dialogFormSearchVisible">
       <el-form :model="queryParams">
         <el-row :gutter="4">
           <el-col :span="8">

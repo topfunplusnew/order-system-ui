@@ -137,7 +137,8 @@
     />
 
     <!-- 添加或修改发票购入信息对话框 -->
-    <el-dialog :close-on-click-modal="false" :show-close="false" :title="title" :visible.sync="open" width="500px" append-to-body>
+    <el-dialog :close-on-click-modal="false" :show-close="false" :title="title" :visible.sync="open" width="500px"
+               append-to-body>
       <el-form ref="form" :model="form" :rules="rules" label-width="80px">
         <el-form-item label="开票日期" prop="invoiceDate">
           <el-date-picker
@@ -194,12 +195,14 @@
     </el-dialog>
 
     <!--    添加付款申请-->
-    <el-dialog :close-on-click-modal="false" :show-close="false" title="付款申请" :visible.sync="PaymentApplyInfoVisible" width="500px" append-to-body>
-      <ApplyPayment :table-name="TableName.INVOICE_IN" @changeOpen="changePaymentApplyInfoVisible"
+    <el-dialog :close-on-click-modal="false" :show-close="false" title="付款申请"
+               :visible.sync="PaymentApplyInfoVisible" width="500px" append-to-body>
+      <ApplyPayment :table-name="TableName.INVOICE_IN" @changeupdateOrderItemVisible="changePaymentApplyInfoVisible"
                     :t-i-d="tID" :need-money="needMoney" :need-info="{}"/>
     </el-dialog>
 
-    <el-dialog :close-on-click-modal="false" :show-close="false" title="查看订单信息" :visible.sync="checkOrderInfoVisible" width="70%" append-to-body>
+    <el-dialog :close-on-click-modal="false" :show-close="true" title="查看订单信息"
+               :visible.sync="checkOrderInfoVisible" width="70%" append-to-body>
       <OrderInfos :order-info="orderInfo"/>
     </el-dialog>
   </div>

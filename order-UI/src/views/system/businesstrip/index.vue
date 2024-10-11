@@ -390,7 +390,7 @@
       :visible.sync="applyForPaymentDialogVisible"
       width="60%">
       <keep-alive>
-        <ApplyPayment :table-name="TableName.BUSINESS_TRIP" @changeOpen="changePaymentApplyInfoVisible"
+        <ApplyPayment :table-name="TableName.BUSINESS_TRIP" @changeupdateOrderItemVisible="changePaymentApplyInfoVisible"
                       :t-i-d="tID" :need-info="{}" :need-money="needMoney"/>
       </keep-alive>
     </el-dialog>

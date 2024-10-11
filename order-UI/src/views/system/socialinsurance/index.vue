@@ -69,16 +69,22 @@
     <el-table border v-loading="loading" :data="socialInsuranceList" @selection-change="handleSelectionChange"
               id="printBox" v-horizontal-scroll="'always'" size="mini" :cell-style="()=>{return {padding:'.5px'}}">
       <el-table-column label="id" align="center" prop="id"/>
-      <el-table-column label="部门" align="center" prop="depName" v-if="columns[0].visible"/>
-      <el-table-column label="姓名" align="center" prop="employeeName" v-if="columns[1].visible"/>
-      <el-table-column label="人员编号" align="center" prop="employeeID" v-if="columns[2].visible"/>
+      <el-table-column label="部门" align="center" prop="depName" v-if="columns[0].visible" show-overflow-tooltip/>
+      <el-table-column label="姓名" align="center" prop="employeeName" v-if="columns[1].visible" show-overflow-tooltip/>
+      <el-table-column label="人员编号" align="center" prop="employeeID" v-if="columns[2].visible"
+                       show-overflow-tooltip/>
       <el-table-column label="社保缴纳基数" align="center" prop="basicSocialInsurance" v-if="columns[3].visible"
+                       show-overflow-tooltip
                        width="110"/>
-      <el-table-column label="公积金基数" align="center" prop="basicHousingFund" v-if="columns[4].visible" width="110"/>
-      <el-table-column label="缴费时间" align="center" prop="insuranceDate" v-if="columns[5].visible" width="120"/>
+      <el-table-column label="公积金基数" align="center" prop="basicHousingFund" v-if="columns[4].visible" width="110"
+                       show-overflow-tooltip/>
+      <el-table-column label="缴费时间" align="center" prop="insuranceDate" v-if="columns[5].visible" width="120"
+                       show-overflow-tooltip/>
       <el-table-column label="社保增减员情况" align="center">
-        <el-table-column label="是否增员" align="center" prop="isRecruiting" v-if="columns[6].visible"/>
-        <el-table-column label="是否减员" align="center" prop="isDepletion" v-if="columns[7].visible"/>
+        <el-table-column label="是否增员" align="center" prop="isRecruiting" v-if="columns[6].visible"
+                         show-overflow-tooltip/>
+        <el-table-column label="是否减员" align="center" prop="isDepletion" v-if="columns[7].visible"
+                         show-overflow-tooltip/>
       </el-table-column>
       <el-table-column label="基本医疗保险" align="center">
         <el-table-column label="个人缴纳" align="center" prop="healthySecuritySelf" v-if="columns[8].visible"/>
@@ -133,7 +139,8 @@
     />
 
     <!-- 添加或修改社保基金对话框 -->
-    <el-dialog :close-on-click-modal="false" :show-close="false" title="社保基金" :visible.sync="open" append-to-body width="80%">
+    <el-dialog :close-on-click-modal="false" :show-close="false" title="社保基金" :visible.sync="open" append-to-body
+               width="80%">
       <el-row>
         <el-col :span="1.5">
           <el-button type="primary" size="mini" @click="addSocialInsure">添加人员社保基金信息</el-button>
@@ -250,9 +257,9 @@
 
     <!--    添加社保基金人员个体信息-->
     <el-dialog :close-on-click-modal="false" :show-close="false"
-      title="社保基金人员个体信息"
-      :visible.sync="addSocialDialogVisible"
-      width="85%" append-to-body>
+               title="社保基金人员个体信息"
+               :visible.sync="addSocialDialogVisible"
+               width="85%" append-to-body>
       <el-row>
         <el-form ref="form" :model="form" :rules="rules" label-width="140px">
           <el-col :span="8">
@@ -740,6 +747,8 @@ export default {
         }
         if (this.socialInsuranceItemsList.length === 0) {
           this.$message.success('所有人员社保信息添加成功')
+          this.open = false;
+          this.getList();
         }
       }
     },

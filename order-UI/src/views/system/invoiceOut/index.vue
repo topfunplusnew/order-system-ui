@@ -130,7 +130,8 @@
     />
 
     <!-- 添加或修改发票卖出信息对话框 -->
-    <el-dialog :close-on-click-modal="false" :show-close="false" :title="title" :visible.sync="open" width="500px" append-to-body>
+    <el-dialog :close-on-click-modal="false" :show-close="false" :title="title" :visible.sync="open" width="500px"
+               append-to-body>
       <el-form ref="form" :model="form" :rules="rules" label-width="80px">
         <el-form-item label="开票日期" prop="invoiceDate">
           <el-date-picker
@@ -187,7 +188,8 @@
     </el-dialog>
 
     <!--    查看订单信息的表格-->
-    <el-dialog :close-on-click-modal="false" :show-close="false" title="查看订单信息" :visible.sync="checkOrderInfoVisible" width="70%" append-to-body>
+    <el-dialog :close-on-click-modal="false" :show-close="true" title="查看订单信息"
+               :visible.sync="checkOrderInfoVisible" width="70%" append-to-body>
       <OrderInfos :order-info="orderInfo"/>
     </el-dialog>
   </div>

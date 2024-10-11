@@ -284,7 +284,7 @@
         <el-button @click="cancel">取 消</el-button>
       </div>
     </el-dialog>
-    <el-dialog :close-on-click-modal="false" :show-close="false" title="查看订单信息"
+    <el-dialog :close-on-click-modal="false" :show-close="true" title="查看订单信息"
                :visible.sync="checkOrderInfoVisible" width="70%" append-to-body>
       <OrderInfos :order-info="orderInfo"/>
     </el-dialog>
