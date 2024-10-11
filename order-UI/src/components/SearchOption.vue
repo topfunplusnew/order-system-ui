@@ -18,8 +18,11 @@
 
 <!--特别注意 针对某些特殊情况 可以补充字段-->
 <script>
+import {mixin_search_option} from "../views/dashboard/mixins/search_option/serch_option";
+
 export default {
   name: "SearchOption",
+  mixins: [mixin_search_option],
   props: {
     //弹出框的标题
     title: '',
@@ -29,30 +32,11 @@ export default {
       default: 'el-icon-search'
     },
     disable: false,
-    //获取数据的函数
-    getData: {
-      type: Function,
-      required: true,
-    },
-    //约束条件 必须传入 这个字段为查找data的筛选属性，如果不需要传{}空对象
-    // 具体用法  父组件中=>  :additional-limit-info="(tableData)=>filterNoStockNumber(tableData)"  并在父组件中指定函数
-    limitInfo: {
-      type: Object,
-      required: true
-    },
     //查询条件
     queryInfo: '',
     queryName: '',
     //查询标签
     queryLabel: '',
-
-    // 额外的限制信息
-    additionalLimitInfo: {
-      type: Function,
-      default: (data) => {
-        return Promise.resolve(data)
-      }
-    }
   },
   data() {
     return {
@@ -61,15 +45,12 @@ export default {
       pageNum: 0,
       pageSize: 10,
       dialogVisible: false,
-      //数据集 通过父组件传入函数来获取
-      tableData: [],
       //加载效果
       loading: false,
       queryParams: {}
     }
   },
-  created() {
-  },
+
   computed: {
     query: {
       set(val) {
@@ -84,28 +65,12 @@ export default {
     getList() {
       // 启动加载效果
       this.loading = true;
-      // 调用获取数据的函数，并传入分页参数
-      this.getData({...this.limitInfo, pageNum: this.pageNum, pageSize: this.pageSize})
-        .then(res => {
-          if (res && res.rows) {
-            console.log('方法:', this.additionalLimitInfo)
-            return this.additionalLimitInfo(res.rows)
-              .then(data => {
-                this.tableData = data;
-                this.total = res.total;
-              });
-          } else {
-            return Promise.reject("无有效数据");
-          }
-        })
-        .finally(() => {
-          this.loading = false;
-        });
+      // 获取表格数据
+      this.getTableData()
     },
     //点击弹窗
     handleCallBack() {
       this.dialogVisible = true
-      this.loading = true;
       //获取数据 渲染表格
       this.getList()
     },
@@ -126,10 +91,6 @@ export default {
     }
   },
   watch: {
-    queryInfo: {
-      handler(val) {
-      }
-    },
     query: {
       handler(val) {
         var queryParams = Object.create({}); //创建一个代理对象
@@ -142,13 +103,6 @@ export default {
         Object.assign(this.limitInfo, queryParams)
       }
     },
-    //监听数据
-    tableData: {
-      handler(val) {
-      },
-      deep: true,
-      immediate: true
-    }
   }
 }
 </script>

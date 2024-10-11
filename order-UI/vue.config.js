@@ -22,8 +22,9 @@ module.exports = {
     open: true,
     proxy: {
       [process.env.VUE_APP_BASE_API]: {
-        target: `https://bak.xuni.rocks`,
+        // target: `https://bak.xuni.rocks`,
         // target: 'http://24.233.1.45:8080',
+        target: 'http://localhost:8080',
         changeOrigin: true,
         pathRewrite: {
           ["^" + process.env.VUE_APP_BASE_API]: "",
@@ -35,7 +36,7 @@ module.exports = {
   css: {
     loaderOptions: {
       sass: {
-        sassOptions: { outputStyle: "expanded" },
+        sassOptions: {outputStyle: "expanded"},
       },
     },
   },

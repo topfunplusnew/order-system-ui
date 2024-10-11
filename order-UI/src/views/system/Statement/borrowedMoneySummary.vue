@@ -53,10 +53,12 @@
       <el-table-column label="贷款利率" align="center" prop="ratio" v-if="columns[3].visible"/>
       <el-table-column label="贷款发放日期" align="center" prop="loanDate" v-if="columns[4].visible"/>
       <el-table-column label="贷款年限" align="center" prop="loanDuring" v-if="columns[5].visible"/>
-      <el-table-column label="抵押担保" align="center" prop="mortgageGuarantee" v-if="columns[6].visible"/>
-      <el-table-column label="打入账户" align="center" prop="acountsName" v-if="columns[7].visible"/>
-      <el-table-column label="打入账号" align="center" prop="bankNo" v-if="columns[8].visible"/>
-      <el-table-column label="备注" align="center" prop="comments"/>
+      <el-table-column label="抵押担保" align="center" prop="mortgageGuarantee" v-if="columns[6].visible"
+                       show-overflow-tooltip/>
+      <el-table-column label="打入账户" align="center" prop="acountsName" v-if="columns[7].visible"
+                       show-overflow-tooltip/>
+      <el-table-column label="打入账号" align="center" prop="bankNo" v-if="columns[8].visible" show-overflow-tooltip/>
+      <el-table-column label="备注" align="center" prop="comments" show-overflow-tooltip/>
       <el-table-column label="操作" align="center" class-name="small-padding fixed-width" width="120" fixed="right">
         <template slot-scope="scope">
           <el-button
