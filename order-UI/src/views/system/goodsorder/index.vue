@@ -16,6 +16,7 @@
         >添加订单信息
         </el-button>
       </el-col>
+
       <right-toolbar :showSearch.sync="showSearch" @queryTable="getList" :columns="columns">
         <template v-slot:print>
           <el-col :span="1.5">
@@ -46,6 +47,7 @@
     <el-table fit border v-loading="loading" :data="goodsOrderList" @selection-change="handleSelectionChange"
               id="printBox" v-horizontal-scroll="'always'"
               max-height="750" size="mini" :cell-style="()=>{return {padding:'2px'}}">
+
       <el-table-column label="行操作" align="center" class-name="small-padding fixed-width"
                        width="142" fixed="left">
         <template slot-scope="scope">
@@ -127,7 +129,8 @@
                        v-if="columns[4].visible" width="100px"/>
       <el-table-column show-overflow-tooltip label="陆地司机姓名" align="center" prop="landDriverName"
                        v-if="columns[5].visible" width="100px"/>
-
+      <el-table-column show-overflow-tooltip label="总货款" align="center" prop="allPayments"
+                       width="100px"/>
       <el-table-column show-overflow-tooltip label="陆运费" align="center" prop="landFreight"
                        v-if="columns[6].visible" width="100px"/>
 
@@ -523,7 +526,7 @@ export default {
     , mixin_order_Invoice, mixin_order_uploadFiles
     , mixin_order_add, mixin_order_freeApply, mixin_order_orderHistory,
     mixin_order_goodsItemInfo, mixin_order_audit, mixin_order_applyPayment,
-    mixin_order_base],
+    mixin_order_base,],
   // 组件注册
   components: {
     QuerySearchBar,
@@ -649,6 +652,7 @@ export default {
     },
     // 多选框选中数据
     handleSelectionChange(selection) {
+      console.log('selection', selection)
       this.ids = selection.map(item => item.id)
       this.single = selection.length !== 1
       this.multiple = !selection.length

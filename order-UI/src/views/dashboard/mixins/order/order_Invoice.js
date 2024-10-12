@@ -4,7 +4,7 @@ import {excludeParams} from "../../../../api/tool/exclude";
 import {addInvoiceOut} from "../../../../api/system/invoiceOut";
 import {getGoodsOrder} from "../../../../api/system/goodsOrder";
 // 状态
-const Options = [
+export const Options = [
   {
     value: '已审核',
     label: '已审核'
@@ -14,7 +14,7 @@ const Options = [
   },
 ]
 
-const OptionInvent = [{
+export const OptionInvent = [{
   value: '未开票',
   label: '未开票'
 }, {

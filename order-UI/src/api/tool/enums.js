@@ -42,3 +42,8 @@ export const TableName = Object.freeze({
 export const ReceiveType = {
   LEND_MONEY_GET_BACK: '借出资金回收'
 }
+
+// 单据生成类型
+export const DocumentNumber = {
+  GOODS_ORDER: '订单列表'
+}

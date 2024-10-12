@@ -22,6 +22,15 @@
       <el-col :span="1.5">
         <el-button icon="el-icon-refresh" size="mini" @click="resetQuery">刷新</el-button>
       </el-col>
+      <el-col :span="1.5">
+        <el-button
+          type="success"
+          size="mini"
+          :disabled="freightPaymentOnceDisabled"
+          @click="handleFreightPaymentOnce"
+        >一键付运费
+        </el-button>
+      </el-col>
       <right-toolbar :showSearch.sync="showSearch" @queryTable="getList" :columns="columns">
         <template v-slot:print>
           <el-col :span="1.5">
@@ -57,9 +66,14 @@
       :data="orderFreightList"
       id="printBox"
       max-height="600px"
-      size="mini"
+      size="mini" @selection-change="handleSelectionChange"
       :cell-style="() => { return { padding: '.5px' } }"
     >
+      <!--      多选 一键申请运费-->
+      <el-table-column
+        type="selection"
+        width="55" fixed="left">
+      </el-table-column>
       <el-table-column
         label="运费类型"
         align="center"
@@ -246,7 +260,8 @@
       @pagination="getList"
     />
     <!--    created第一次传递的props，然后监听后来props的变化-->
-    <el-dialog :close-on-click-modal="false" :show-close="false" title="运费付款申请" :visible.sync="applyPaymentVisible" width="500px">
+    <el-dialog :close-on-click-modal="false" :show-close="false" title="运费付款申请"
+               :visible.sync="applyPaymentVisible" width="500px">
       <keep-alive>
         <ApplyPayment :tableName="TableName.ORDER_FREIGHT" :t-i-d="tID"
                       :need-info="needInfo" :need-money="freight"
@@ -254,7 +269,8 @@
       </keep-alive>
     </el-dialog>
 
-    <el-dialog :close-on-click-modal="false" :show-close="false" :title="title" :visible.sync="open" width="500px" append-to-body>
+    <el-dialog :close-on-click-modal="false" :show-close="false" :title="title" :visible.sync="open" width="500px"
+               append-to-body>
       <el-form ref="form" :model="form" :rules="rules" label-width="80px">
         <el-form-item label="金额" prop="moneyAmount">
           <el-input v-model="form.moneyAmount" placeholder="请输入金额"/>
@@ -372,6 +388,8 @@ import {addDateRange} from "@/utils/ruoyi";
 import {listData} from "@/api/system/dict/data";
 import {listFleet} from "@/api/system/fleet";
 import {excludeParams} from "@/api/tool/exclude";
+import {mixin_order_base} from "../../dashboard/mixins/order/order_base";
+import {mixin_order_freight_payment} from "../../dashboard/mixins/order/order_freight_payment";
 
 export default {
   name: "OrderFreight",
@@ -381,6 +399,7 @@ export default {
     }
   },
   components: {ApplyPayment, SearchOption},
+  mixins: [mixin_order_base, mixin_order_freight_payment],
   data() {
     return {
       // 遮罩层

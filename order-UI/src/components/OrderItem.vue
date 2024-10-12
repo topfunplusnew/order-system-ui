@@ -28,7 +28,7 @@ export default {
     }
   },
   created() {
-    this.buttonText = '添加货物'
+    this.buttonText = '提交货物'
     this.resetOrderItemInfo();
   },
   watch: {
@@ -112,7 +112,7 @@ export default {
                   <el-table-column label="入库日期" align="center" prop="storeDate"/>
                   <el-table-column label="库存量" align="center" prop="stockNumber">
                     <template #default="scope">
-                      {{ scope.row.stockNumber}}
+                      {{ scope.row.stockNumber }}
                     </template>
                   </el-table-column>
                   <el-table-column label="供应商" align="center" prop="supplier"/>
