@@ -7,7 +7,7 @@ export function paymentAudit(params) {
     params: {
       id: params.id,
       auditStatus: params.auditStatus
-    }
+    },
   })
 }
 
@@ -17,20 +17,24 @@ export var mixin_payment_audit = {
   },
 
   methods: {
-    handlePaymentAudit(row) {
-      this.$confirm('是否复核该付款信息?', '提示', {
-        confirmButtonText: '是',
-        cancelButtonText: '否',
-        type: 'warning'
-      }).then(() => {
+    handlePaymentAudit(row, e) {
+      if (e === true) {
         paymentAudit({...row, auditStatus: '1'}).then(res => {
           this.$message({
             type: 'success',
-            message: '审核成功!'
+            message: '复核成功!'
           });
           location.reload()
         })
-      })
+      } else {
+        paymentAudit({...row, auditStatus: '0'}).then(res => {
+          this.$message({
+            type: 'success',
+            message: '取消复核!'
+          });
+          location.reload()
+        })
+      }
     }
   },
 }

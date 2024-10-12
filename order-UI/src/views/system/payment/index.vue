@@ -81,6 +81,17 @@
           @keyup.enter.native="handleQuery" class="w-85px"
         />
       </el-form-item>
+      <!--      todo-->
+      <el-form-item label="复核状态" prop="auditState">
+        <el-select v-model="queryParams.auditState" placeholder="请选择复核状态" clearable>
+          <el-option
+            v-for="item in auditState_options"
+            :key="item.value"
+            :label="item.label"
+            :value="item.value">
+          </el-option>
+        </el-select>
+      </el-form-item>
       <el-form-item>
         <el-button type="primary" icon="el-icon-search" size="mini" @click="handleQuery">搜索</el-button>
       </el-form-item>
@@ -180,15 +191,28 @@
                        show-overflow-tooltip/>
       <el-table-column label="对方公司类型" align="center" prop="companyType" v-if="columns[12].visible" width="120"
                        show-overflow-tooltip/>
+      <el-table-column label="复核状态" align="center" class-name="small-padding fixed-width" width="80"
+                       fixed="right">
+        <template slot-scope="scope">
+          <el-switch
+            v-model="scope.row.auditState== 1?true:false"
+            @change="(value)=>handlePaymentAudit(scope.row,value)"
+            active-color="#13ce66"
+            inactive-color="#ff4949"
+            v-hasPermi="['system:payment:audit']">
+          </el-switch>
+        </template>
+      </el-table-column>
       <el-table-column label="操作" align="center" class-name="small-padding fixed-width" width="150" fixed="right">
         <template slot-scope="scope">
-          <el-button
-            size="mini"
-            type="warning"
-            :disabled="scope.row.auditState === '1'"
-            @click="handlePaymentAudit(scope.row)"
-          >复核
-          </el-button>
+          <!--          <el-button-->
+          <!--            size="mini"-->
+          <!--            type="warning"-->
+          <!--            :disabled="scope.row.auditState === '1'"-->
+          <!--            v-hasPermi="['system:payment:audit']"-->
+          <!--            @click="handlePaymentAudit(scope.row)"-->
+          <!--          >复核-->
+          <!--          </el-button>-->
           <el-button
             v-if="scope.row.paymentState === '未支付'"
             size="mini"
@@ -388,6 +412,10 @@ export default {
         UserName: null,
         delFlag: null
       },
+      auditState_options: [
+        {label: '未复核', value: '0'},
+        {label: '已复核', value: '1'},
+      ],
       // 表单参数
       form: {},
       // 表单校验

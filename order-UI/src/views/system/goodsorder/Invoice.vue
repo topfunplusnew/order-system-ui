@@ -93,11 +93,13 @@ export default {
 
   },
   watch: {
+
+
     // 监听开票金额不能超过总货款
     'updateOrderItemVisibleTitleInfo.ticketPointAmount': {
       handler(val) {
         if (this.updateOrderItemVisibleTitleInfo.ticketPointAmount > this.maxInvent) {
-          this.$modal.msgError('客户开票金额不能超过订单总货款,总货款为:', this.maxInvent)
+          this.$modal.msgError('客户开票金额不能超过订单总货款')
           this.$emit('resetAmount')
         }
       }

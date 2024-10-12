@@ -613,6 +613,7 @@ export default {
   },
   mounted() {
   },
+
   computed: {
     TableName() {
       return TableName
@@ -634,7 +635,8 @@ export default {
       },
       deep: true,
       immediate: true,
-    }
+    },
+
   },
   methods: {
     parseTime,
