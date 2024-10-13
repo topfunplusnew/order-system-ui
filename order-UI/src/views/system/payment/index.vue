@@ -219,7 +219,7 @@
             type="warning"
             @click="handleUpdate(scope.row)"
             v-hasPermi="['system:payment:edit']"
-          >付款处理
+          >付款
           </el-button>
           <el-button
             v-else-if="scope.row.paymentState==='已支付'"
@@ -264,9 +264,9 @@
     />
 
     <!--     添加或修改付款信息对话框 -->
-    <el-dialog :close-on-click-modal="false" :show-close="false" title="付款处理" :visible.sync="open" width="500px"
+    <el-dialog :close-on-click-modal="false" :show-close="false" title="付款处理" :visible.sync="open" width="650px"
                append-to-body>
-      <el-form ref="form" :model="form" :rules="rules" label-width="80px">
+      <el-form ref="form" :model="form" :rules="rules" label-width="120px">
         <el-form-item label="日期" prop="fundsDate">
           <el-date-picker
             v-model="form.fundsDate"
@@ -274,6 +274,13 @@
             placeholder="选择日期"
             value-format="yyyy-MM-dd">
           </el-date-picker>
+        </el-form-item>
+        <!--        付款类型-->
+        <el-form-item label="付款类型" prop="payType">
+          <el-cascader
+            v-model="form.payType"
+            :options="paymentTypeTree" :props="props"
+            @change="handleChange"></el-cascader>
         </el-form-item>
         <el-form-item label="金额" prop="moneyAmount">
           <el-input v-model="form.moneyAmount" placeholder="请输入金额"/>
@@ -303,40 +310,138 @@
         <el-form-item label="己方开户行" prop="selfBankName">
           <el-input v-model="form.selfBankName" placeholder="请输入己方开户行"/>
         </el-form-item>
-        <!--        <el-form-item label="对方户名" prop="otherAcountsName">-->
-        <!--          <el-row>-->
-        <!--            <el-col :span="10">-->
-        <!--              <el-input v-model="form.otherAcountsName" placeholder="请输入对方户名"/>-->
-        <!--            </el-col>-->
-        <!--            <el-col :span="3">-->
-        <!--              <SearchOption :limit-info="{}" :get-data="listCompany" icon="el-icon-search"-->
-        <!--                            @commitBack="handleCommitBackOther">-->
-        <!--                <template #table-columns>-->
-        <!--                  <el-table-column label="公司名称" align="center" prop="companyName"/>-->
-        <!--                  <el-table-column label="公司类型" align="center" prop="companyType"/>-->
-        <!--                  <el-table-column label="开户行" align="center" prop="bankName"/>-->
-        <!--                  <el-table-column label="开户名" align="center" prop="acountsName"/>-->
-        <!--                  <el-table-column label="账号" align="center" prop="bankNo"/>-->
-        <!--                </template>-->
-        <!--              </SearchOption>-->
-        <!--            </el-col>-->
-        <!--          </el-row>-->
-        <!--        </el-form-item>-->
-        <!--        <el-form-item label="对方账号" prop="otherBankNo">-->
-        <!--          <el-input v-model="form.otherBankNo" placeholder="请输入对方账号"/>-->
-        <!--        </el-form-item>-->
-        <!--        <el-form-item label="对方开户行" prop="otherBankName">-->
-        <!--          <el-input v-model="form.otherBankName" placeholder="请输入对方开户行"/>-->
-        <!--        </el-form-item>-->
-        <!--        <el-form-item label="支付状态" prop="paymentState">-->
-        <!--          <el-input v-model="form.paymentState" placeholder="请输入支付状态"/>-->
-        <!--        </el-form-item>-->
-        <el-form-item label="对方公司" prop="companyName">
-          <el-input v-model="form.companyName" placeholder="请输入对方公司"/>
+        <el-form-item label="对方类型">
+          <el-select v-model="value" placeholder="请选择">
+            <el-option
+              v-for="item in options"
+              :key="item.value"
+              :label="item.label"
+              :value="item.value">
+            </el-option>
+          </el-select>
         </el-form-item>
-        <!--        <el-form-item label="对方公司ID" prop="companyId">-->
-        <!--          <el-input v-model="form.companyId" placeholder="请输入对方公司ID"/>-->
-        <!--        </el-form-item>-->
+        <!--      选择供应商-->
+        <el-row v-if="value ===PAYMENT_TYPES.SUPPLIER">
+          <el-form-item label="对方户名" prop="otherAcountsName">
+            <el-row>
+              <el-col :span="10">
+                <el-input v-model="form.otherAcountsName" placeholder="请输入对方户名"/>
+              </el-col>
+              <el-col :span="3">
+                <SearchOption :limit-info="{companyType:PAYMENT_TYPES.SUPPLIER}" :get-data="listCompany"
+                              icon="el-icon-search"
+                              @commitBack="handleCommitBackOtherSupplier">
+                  <template #table-columns>
+                    <el-table-column label="公司名称" align="center" prop="companyName"/>
+                    <el-table-column label="公司类型" align="center" prop="companyType"/>
+                    <el-table-column label="开户行" align="center" prop="bankName">
+                      <template slot-scope="scope">
+                        {{ isNull(scope.row.bankName) }}
+                      </template>
+                    </el-table-column>
+                    <el-table-column label="开户名" align="center" prop="acountsName">
+                      <template slot-scope="scope">
+                        {{ isNull(scope.row.acountsName) }}
+                      </template>
+                    </el-table-column>
+                    <el-table-column label="账号" align="center" prop="bankNo">
+                      <template slot-scope="scope">
+                        {{ isNull(scope.row.bankNo) }}
+                      </template>
+                    </el-table-column>
+                  </template>
+                </SearchOption>
+              </el-col>
+            </el-row>
+          </el-form-item>
+          <el-form-item label="供应商名称" prop="companyName">
+            <el-input v-model="form.companyName" placeholder="请输入供应商名称"/>
+          </el-form-item>
+        </el-row>
+        <!--      选择客户-->
+        <el-row v-if="value ===PAYMENT_TYPES.CUSTOMER">
+          <el-form-item label="对方户名" prop="otherAcountsName">
+            <el-row>
+              <el-col :span="10">
+                <el-input v-model="form.otherAcountsName" placeholder="请输入对方户名"/>
+              </el-col>
+              <el-col :span="3">
+                <SearchOption :limit-info="{companyType:PAYMENT_TYPES.CUSTOMER}" :get-data="listCompany"
+                              icon="el-icon-search"
+                              @commitBack="handleCommitBackOther">
+                  <template #table-columns>
+                    <el-table-column label="公司名称" align="center" prop="companyName"/>
+                    <el-table-column label="公司类型" align="center" prop="companyType"/>
+                    <el-table-column label="开户行" align="center" prop="bankName">
+                      <template slot-scope="scope">
+                        {{ isNull(scope.row.bankName) }}
+                      </template>
+                    </el-table-column>
+                    <el-table-column label="开户名" align="center" prop="acountsName">
+                      <template slot-scope="scope">
+                        {{ isNull(scope.row.acountsName) }}
+                      </template>
+                    </el-table-column>
+                    <el-table-column label="账号" align="center" prop="bankNo">
+                      <template slot-scope="scope">
+                        {{ isNull(scope.row.bankNo) }}
+                      </template>
+                    </el-table-column>
+                  </template>
+                </SearchOption>
+              </el-col>
+            </el-row>
+          </el-form-item>
+          <el-form-item label="对方公司" prop="companyName">
+            <el-input v-model="form.companyName" placeholder="请输入对方公司"/>
+          </el-form-item>
+        </el-row>
+        <!--      选择司机-->
+        <el-row v-if="value ===PAYMENT_TYPES.DRIVER">
+          <el-form-item label="对方户名" prop="otherAcountsName">
+            <el-row>
+              <el-col :span="10">
+                <el-input v-model="form.otherAcountsName" placeholder="请输入对方户名"/>
+              </el-col>
+              <el-col :span="3">
+                <SearchOption :limit-info="{}" :get-data="listCars"
+                              icon="el-icon-search"
+                              @commitBack="handleCommitBackOtherCars">
+                  <template #table-columns>
+                    <el-table-column label="车牌" align="center" prop="carNo" width="200"/>
+                    <el-table-column label="司机姓名" align="center" prop="driver" width="200"/>
+                    <el-table-column label="司机电话" align="center" prop="tel" width="200"/>
+                    <el-table-column label="户名" align="center" prop="acountsName" width="200">
+                      <template slot-scope="scope">
+                        {{ isNull(scope.row.acountsName) }}
+                      </template>
+                    </el-table-column>
+                    <el-table-column label="银行账号" align="center" prop="bankNo" width="200">
+                      <template slot-scope="scope">
+                        {{ isNull(scope.row.bankNo) }}
+                      </template>
+                    </el-table-column>
+                    <el-table-column label="开户行" align="center" prop="bankName" width="200">
+                      <template slot-scope="scope">
+                        {{ isNull(scope.row.bankName) }}
+                      </template>
+                    </el-table-column>
+                    <el-table-column label="运输类型" align="center" prop="carType" width="200"/>
+                  </template>
+                </SearchOption>
+              </el-col>
+            </el-row>
+          </el-form-item>
+          <el-form-item label="司机名称" prop="companyName">
+            <el-input v-model="form.companyName" placeholder="请输入对方公司"/>
+          </el-form-item>
+        </el-row>
+        <el-form-item label="对方账号" prop="otherBankNo">
+          <el-input v-model="form.otherBankNo" placeholder="请输入对方账号"/>
+        </el-form-item>
+        <el-form-item label="对方开户行" prop="otherBankName">
+          <el-input v-model="form.otherBankName" placeholder="请输入对方开户行"/>
+        </el-form-item>
         <el-form-item label="备注" prop="comments">
           <el-input v-model="form.comments" placeholder="请输入备注"/>
         </el-form-item>
@@ -360,11 +465,20 @@ import {excludeParams} from "@/api/tool/exclude";
 import {addDateRange} from "@/utils/ruoyi";
 import {listBankAccount} from "../../../api/system/bankAccount";
 import {mixin_payment_audit} from "../../dashboard/mixins/payment/payment_audit";
+import {mixin_payment_select, PAYMENT_TYPES} from "../../dashboard/mixins/payment/payment_select";
+import {listCars} from "../../../api/system/cars";
+import {isNull} from "../../../main";
+import {mixin_payment_subject} from "../../dashboard/mixins/payment/payment_subject";
 
 export default {
   name: "Payment",
+  computed: {
+    PAYMENT_TYPES() {
+      return PAYMENT_TYPES
+    }
+  },
   components: {SearchOption},
-  mixins: [mixin_payment_audit],
+  mixins: [mixin_payment_audit, mixin_payment_select, mixin_payment_subject],
   data() {
     return {
       // 遮罩层
@@ -527,6 +641,8 @@ export default {
     }
   },
   methods: {
+    isNull,
+    listCars,
     listBankAccount,
     listCompany,
     //自动填充己方信息
@@ -535,12 +651,26 @@ export default {
       this.form.selfAcountsName = val.acountsName
       this.form.selfBankNo = val.bankNo
     },
-    //自动填充对方信息
+    // 填充供应商信息
+    handleCommitBackOtherSupplier(val) {
+      this.form.otherBankName = val.bankName;
+      this.form.otherAcountsName = val.acountsName;
+      this.form.otherBankNo = val.bankNo;
+      this.form.companyName = val.companyName;
+    },
+    //自动填充客户信息
     handleCommitBackOther(val) {
       this.form.otherBankName = val.bankName;
       this.form.otherAcountsName = val.acountsName;
       this.form.otherBankNo = val.bankNo;
       this.form.companyName = val.companyName;
+    },
+    // 补充司机信息
+    handleCommitBackOtherCars(val) {
+      this.form.otherBankName = val.bankName;
+      this.form.otherAcountsName = val.acountsName;
+      this.form.otherBankNo = val.bankNo;
+      this.form.companyName = val.driver;
     },
     printHTML() {
       this.$print({
@@ -627,28 +757,15 @@ export default {
      },*/
     /** 修改按钮操作 */
     handleUpdate(row) {
-      this.$prompt('请输入编辑原因', '提示', {
-        confirmButtonText: '确定',
-        cancelButtonText: '取消',
-        type: 'warning'
-      }).then(({value}) => {
-        addReason({reason: value, tableName: TableName.PAYMENT, tid: row.id, modifyTime: this.modifyTime})
-          .then(res => {
-            this.$message.success('提交成功')
-            this.reset();
-            const id = row.id || this.ids
-            getPayment(id).then(response => {
-              this.form = response.data;
-              this.open = true;
-              this.title = "修改付款信息";
-            });
-          })
-      }).catch(() => {
-        this.$message({
-          type: 'warning',
-          message: '请先输入编辑原因!'
-        });
-      });
+      this.$confirm('是否付款?', '提示', {
+        confirmButtonText: '是',
+        cancelButtonText: '否',
+        type: 'success'
+      }).then(() => {
+        updatePayment({...row, paymentState: '已支付'}).then(res => {
+          this.$modal.msgSuccess(res.msg)
+        })
+      })
     },
     /** 提交按钮 */
     submitForm() {
@@ -664,6 +781,9 @@ export default {
             });
           } else {
             this.form = excludeParams(this.form, this.$exclude)
+            // 补充支付类型
+            this.form.payType = this.form.payType.join('-')
+            this.form.companyType = this.value
             addPayment(this.form).then(response => {
               this.$modal.msgSuccess("新增成功");
               this.open = false;

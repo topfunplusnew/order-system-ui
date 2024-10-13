@@ -7,10 +7,12 @@ import StepInfo from "@/components/StepInfo.vue";
 import {mapGetters} from "vuex";
 import {findFileExtension} from "@/utils/trash/utils";
 import {listAuditInfo} from "../../../api/system/auditInfo";
+import {mixin_printHTML} from "../../dashboard/mixins/print";
 
 export default {
   name: "index",
   components: {StepInfo},
+  mixins: [mixin_printHTML],
   data() {
     return {
       columns: [
@@ -176,19 +178,6 @@ export default {
             </el-button>
           </el-col>
         </template>
-        <!--        导出-->
-        <template v-slot:export>
-          <el-col :span="1.5">
-            <el-button
-              plain
-              icon="el-icon-folder-opened"
-              size="mini"
-              @click="handleExport"
-              v-hasPermi="['system:applyprocess:export']"
-            >
-            </el-button>
-          </el-col>
-        </template>
       </right-toolbar>
     </el-row>
     <!--    放置付款信息列表-->
@@ -290,9 +279,9 @@ export default {
 
     <!--    查看付款信息的详细信息-->
     <el-dialog :close-on-click-modal="false" :show-close="false"
-      title="付款信息详细"
-      :visible.sync="checkInfoDialogVisible"
-      width="50%">
+               title="付款信息详细"
+               :visible.sync="checkInfoDialogVisible"
+               width="50%">
       <el-descriptions title="付款信息明细">
         <el-descriptions-item label="申请人">{{ checkPaymentInfo.applyPerson }}</el-descriptions-item>
         <el-descriptions-item label="申请金额">{{ checkPaymentInfo.moneyAmount }}</el-descriptions-item>
@@ -327,7 +316,8 @@ export default {
 
 
     <!--      审核流程步骤图信息  -->
-    <el-dialog :close-on-click-modal="false" :show-close="false" :visible.sync="checkApplyInfoDialogVisible" title="审核流程多项信息" width="58%">
+    <el-dialog :close-on-click-modal="false" :show-close="false" :visible.sync="checkApplyInfoDialogVisible"
+               title="审核流程多项信息" width="58%">
       <el-row v-for="(item,index) in auditInfoList" :key="index">
         <el-collapse v-model="activeNames" @change="handleChangeApplyItem">
           <el-collapse-item name="1">

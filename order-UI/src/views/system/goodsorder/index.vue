@@ -276,7 +276,7 @@
           <el-row v-if="hasOpen(scope.row,0)">
             <el-row v-if="scope.row.isSupplierInvoice > 0">
               <el-row>
-                <el-button type="success" size="mini" @click="updateOrderItemVisibleCustomerInvoice(scope.row)">继续开票
+                <el-button type="success" size="mini" @click="updateOrderItemVisibleSupplierInvoice(scope.row)">继续开票
                 </el-button>
               </el-row>
             </el-row>

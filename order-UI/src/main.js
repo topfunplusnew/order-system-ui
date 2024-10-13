@@ -71,14 +71,14 @@ Vue.prototype.$imgs = ['png', 'jpg', 'jpeg', 'bmp', 'gif', 'webp']
 //2.挂载加载中动态效果
 //使用: 数据加载前:this.$wait()  数据加载后:this.$close()
 Vue.prototype.$wait = () => {
-    Loading.service({
-        fullscreen: true,
-        text: '正在加载中，请稍后...',
-    })
+  Loading.service({
+    fullscreen: true,
+    text: '正在加载中，请稍后...',
+  })
 }
 //结束加载
 Vue.prototype.$close = () => {
-    Loading.service({}).close()
+  Loading.service({}).close()
 }
 
 //3.时间范围查询方法
@@ -87,37 +87,41 @@ Vue.prototype.$close = () => {
 //return 筛选后的数组
 //使用: this.$dateRange(this, this.bankList, 'createTime', this.timesQuery.startTime,this.timesQuery.endTime)
 Vue.prototype.$dateRange = function (_this, targetList, targetProperty, startTime, endTime) {
-    //开始时间 结束时间的时间戳
-    const start = new Date(startTime).getTime()
-    const end_date = new Date(endTime)
-    end_date.setDate(end_date.getDate() + 1)
-    const end = end_date.getTime();
+  //开始时间 结束时间的时间戳
+  const start = new Date(startTime).getTime()
+  const end_date = new Date(endTime)
+  end_date.setDate(end_date.getDate() + 1)
+  const end = end_date.getTime();
 
-    //校验
-    if (startTime === '' || endTime === '') {
-        this.$message.error("开始时间或结束时间不能为空!");
-        return _this[targetList]
-    } else if (start > end) {
-        this.$message.error("开始时间不能大于结束时间!");
-        return _this[targetList]
-    } else {
-        //筛选
-        return _this[targetList].filter(item => {
-            const target = new Date(Number(item[targetProperty])).getTime();
-            return target >= start && target <= end;
-        })
-    }
+  //校验
+  if (startTime === '' || endTime === '') {
+    this.$message.error("开始时间或结束时间不能为空!");
+    return _this[targetList]
+  } else if (start > end) {
+    this.$message.error("开始时间不能大于结束时间!");
+    return _this[targetList]
+  } else {
+    //筛选
+    return _this[targetList].filter(item => {
+      const target = new Date(Number(item[targetProperty])).getTime();
+      return target >= start && target <= end;
+    })
+  }
 }
 //4.参数置空
 Vue.prototype.$refreshParams = function (object) {
-    let newObject = object;
-    if (object === null || object === undefined) {
-        throw new Error("对象不合法")
-    }
-    for (let property of Object.keys(newObject)) {
-        Vue.set(newObject, property, '')
-    }
-    return newObject
+  let newObject = object;
+  if (object === null || object === undefined) {
+    throw new Error("对象不合法")
+  }
+  for (let property of Object.keys(newObject)) {
+    Vue.set(newObject, property, '')
+  }
+  return newObject
+}
+
+export const isNull = val => {
+  return !val ? '暂无' : val
 }
 
 // 全局组件挂载
@@ -135,7 +139,7 @@ Vue.use(VueMeta)
 Vue.use(horizontalScroll)
 DictData.install()
 Vue.use(Element, {
-    size: Cookies.get('size') || 'medium' // set element-ui default size
+  size: Cookies.get('size') || 'medium' // set element-ui default size
 })
 // 表单生成器
 Vue.use(VForm)
@@ -143,8 +147,8 @@ Vue.use(VForm)
 Vue.config.productionTip = false
 
 new Vue({
-    el: '#app',
-    router,
-    store,
-    render: h => h(App)
+  el: '#app',
+  router,
+  store,
+  render: h => h(App)
 })

@@ -39,6 +39,9 @@
 
     <el-row :gutter="10" class="mb8">
       <el-col :span="1.5">
+        <el-button icon="el-icon-refresh" size="mini" @click="resetQuery">刷新</el-button>
+      </el-col>
+      <el-col :span="1.5">
         <el-button
           type="danger"
           size="mini"
@@ -46,9 +49,6 @@
           v-hasPermi="['system:receivemoney:add']"
         >新增收款信息
         </el-button>
-      </el-col>
-      <el-col :span="1.5">
-        <el-button icon="el-icon-refresh" size="mini" @click="resetQuery">刷新</el-button>
       </el-col>
       <right-toolbar :showSearch.sync="showSearch" @queryTable="getList" :columns="columns">
         <template v-slot:print>
@@ -137,7 +137,8 @@
     />
 
     <!-- 添加或修改收款信息对话框 -->
-    <el-dialog :close-on-click-modal="false" :show-close="false" :title="title" :visible.sync="open" width="500px" append-to-body>
+    <el-dialog :close-on-click-modal="false" :show-close="false" :title="title" :visible.sync="open" width="500px"
+               append-to-body>
       <el-form ref="form" :model="form" :rules="rules" label-width="120px">
         <el-form-item label="日期" prop="fundsDate">
           <el-date-picker
@@ -269,6 +270,7 @@ import {excludeParams} from "@/api/tool/exclude";
 import {addReason} from "@/api/system/user";
 import {TableName} from "@/api/tool/enums";
 import {mixin_printHTML} from "../../dashboard/mixins/print";
+import {mixin_receive_money_select} from "../../dashboard/mixins/payment/payment_select";
 
 export default {
   name: "ReceiveMoney",
