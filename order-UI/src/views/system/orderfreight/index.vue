@@ -269,6 +269,7 @@
       </keep-alive>
     </el-dialog>
 
+
     <el-dialog :close-on-click-modal="false" :show-close="false" :title="title" :visible.sync="open" width="500px"
                append-to-body>
       <el-form ref="form" :model="form" :rules="rules" label-width="80px">
@@ -369,6 +370,91 @@
         <el-button @click="cancel">取 消</el-button>
       </div>
     </el-dialog>
+
+
+    <!--    一键付运费的弹窗-->
+    <InfoDialog :visible="freightOnceVisible" title="一键申请运费" @close="freightOnceVisible = false">
+      <template #info>
+        <!--        输入己方信息-->
+        <div class="order-freight-body">
+          <!--          运费信息-->
+          <div class="order-freight-info">
+            <el-collapse v-model="activeNames">
+              <el-collapse-item :title="'运费信息('+(index+1)+')'" :name="index+''"
+                                v-for="(item,index) in selectedList"
+                                :key="index">
+                <el-card class="box-card">
+                  <div>
+                    <el-descriptions :title="'运费信息('+(index+1)+')'">
+                      <el-descriptions-item label="司机">{{ item.driverName }}</el-descriptions-item>
+                      <el-descriptions-item label="车牌号">{{ item.carNo }}</el-descriptions-item>
+                      <el-descriptions-item label="车队">{{ item.fleet }}</el-descriptions-item>
+                      <el-descriptions-item label="运费">{{ item.moneyAmount }}</el-descriptions-item>
+                      <el-descriptions-item label="运输类型">
+                        <el-tag size="small">{{ item.freightType }}</el-tag>
+                      </el-descriptions-item>
+                      <el-descriptions-item label="开户名">{{ item.otherAcountsName }}</el-descriptions-item>
+                      <el-descriptions-item label="开户行">{{ item.otherBankName }}</el-descriptions-item>
+                      <el-descriptions-item label="银行账号">{{ item.otherBankNo }}</el-descriptions-item>
+                    </el-descriptions>
+                  </div>
+                </el-card>
+              </el-collapse-item>
+            </el-collapse>
+          </div>
+          <!--          我方付款信息-->
+          <div class="order-freight-self-info">
+            <el-form :model="freightSelfOnceInfo" label-width="120px">
+              <el-form-item label="支付类型" prop="payType">
+                <el-cascader
+                  v-model="freightSelfOnceInfo.payType"
+                  :options="paymentTypeTree" :props="props"
+                ></el-cascader>
+              </el-form-item>
+              <el-form-item label="己方户名" prop="selfAcountsName">
+                <el-row>
+                  <el-col :span="10">
+                    <el-input v-model="freightSelfOnceInfo.selfAcountsName" placeholder="请输入己方户名"/>
+                  </el-col>
+                  <!--   自定义组件查找-->
+                  <el-col :span="3">
+                    <SearchOption :get-data="listBankAccount" title="银行卡信息" icon="el-icon-search"
+                                  @commitBack="handleCallBack" :limit-info="{acountsType:'己方公司'}"
+                                  @update:queryName="handleCommitBackBank" :query-name="bankQuery"
+                                  query-info="acountsName"
+                                  query-label="户名查询">
+                      <template #table-columns>
+                        <el-table-column label="账户类型" align="center" prop="acountsType"/>
+                        <el-table-column label="开户名称(户名)" align="center" prop="acountsName"/>
+                        <el-table-column label="账号(银行账号)" align="center" prop="bankNo"/>
+                        <el-table-column label="开户行" align="center" prop="bankName"/>
+                        <el-table-column label="公司名称" align="center" prop="companyName"/>
+                      </template>
+                    </SearchOption>
+                  </el-col>
+                </el-row>
+              </el-form-item>
+              <el-form-item label="己方账号" prop="selfBankNo">
+                <el-input v-model="freightSelfOnceInfo.selfBankNo" placeholder="请输入己方账号"/>
+              </el-form-item>
+              <el-form-item label="己方开户行" prop="selfBankName">
+                <el-input v-model="freightSelfOnceInfo.selfBankName" placeholder="请输入己方开户行"/>
+              </el-form-item>
+
+              <el-form-item label="运费总和">
+                <el-button type="text" disabled style="color:orangered">
+                  {{ total_freight }}
+                </el-button>
+              </el-form-item>
+            </el-form>
+          </div>
+        </div>
+        <!--        然后是一个按钮 表示一键付运费-->
+        <el-row class="order-freight-submit">
+          <el-button type="success" @click="submitFreightOnce">一键付运费</el-button>
+        </el-row>
+      </template>
+    </InfoDialog>
   </div>
 </template>
 
@@ -390,6 +476,8 @@ import {listFleet} from "@/api/system/fleet";
 import {excludeParams} from "@/api/tool/exclude";
 import {mixin_order_base} from "../../dashboard/mixins/order/order_base";
 import {mixin_order_freight_payment} from "../../dashboard/mixins/order/order_freight_payment";
+import InfoDialog from "../../../components/InfoDialog.vue";
+import {mixin_payment_subject} from "../../dashboard/mixins/payment/payment_subject";
 
 export default {
   name: "OrderFreight",
@@ -398,8 +486,8 @@ export default {
       return TableName
     }
   },
-  components: {ApplyPayment, SearchOption},
-  mixins: [mixin_order_base, mixin_order_freight_payment],
+  components: {InfoDialog, ApplyPayment, SearchOption},
+  mixins: [mixin_order_base, mixin_order_freight_payment,/*引入支付类型的混入*/mixin_payment_subject],
   data() {
     return {
       // 遮罩层
@@ -636,6 +724,7 @@ export default {
     },
     // 多选框选中数据
     handleSelectionChange(selection) {
+      this.selectedList = selection
       this.ids = selection.map(item => item.id)
       this.single = selection.length !== 1
       this.multiple = !selection.length
@@ -698,3 +787,23 @@ export default {
   }
 };
 </script>
+<style scoped>
+.order-freight-body {
+  display: flex;
+  justify-content: flex-end;
+}
+
+.order-freight-info {
+  width: 50%;
+}
+
+.order-freight-self-info {
+  width: 50%;
+}
+
+.order-freight-submit {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+</style>

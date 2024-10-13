@@ -42,3 +42,12 @@ export function delPayment(id) {
     method: 'delete'
   })
 }
+
+// 一键付款
+export function batchPayment(data) {
+  return request({
+    url: '/system/payment/batch',
+    method: 'post',
+    data: data
+  })
+}
