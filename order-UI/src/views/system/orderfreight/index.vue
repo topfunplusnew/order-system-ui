@@ -26,7 +26,7 @@
         <el-button
           type="success"
           size="mini"
-          @click="selectUnPayment"
+          @click="selectUnPayment(orderFreightList)"
         >勾选未支付
         </el-button>
       </el-col>
@@ -68,6 +68,7 @@
     </el-row>
 
     <el-table
+      ref="multipleTable"
       v-horizontal-scroll="'always'"
       border
       v-loading="loading"

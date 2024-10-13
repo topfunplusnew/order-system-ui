@@ -24,8 +24,21 @@ export var mixin_order_freight_payment = {
   },
   methods: {
     // 勾选未支付 todo
-    selectUnPayment() {
-
+    selectUnPayment(rows) {
+      let flag = false;
+      if (rows) {
+        rows.forEach(row => {
+          if (row.paymentState === '未支付') {
+            this.$refs.multipleTable.toggleRowSelection(row);
+            flag = true
+          }
+        })
+        if (!flag) {
+          this.$message.warning('当前没有未支付付款信息')
+        }
+      } else {
+        this.$refs.multipleTable.clearSelection();
+      }
     },
     // 一键申请运费
     handleFreightPaymentOnce(row) {
