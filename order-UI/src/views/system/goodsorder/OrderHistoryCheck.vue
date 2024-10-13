@@ -1,5 +1,6 @@
 <template>
-  <el-dialog :close-on-click-modal="false" :show-close="false" title="订单历史信息" :visible.sync="checkHistoryOrderVisible" width="1100px">
+  <el-dialog :close-on-click-modal="false" :show-close="false" title="订单历史信息"
+             :visible.sync="checkHistoryOrderVisible" width="1100px">
     <el-row>
       <el-col :span="18" :offset="3">
         <el-timeline>
@@ -18,10 +19,10 @@
                   </template>
                   <div>
                     <CodeDiff
-                        :old-string="item.diff.old"
-                        :new-string="item.diff.new"
-                        :context="10"
-                        output-format="line-by-line"/>
+                      :old-string="item.diff.old"
+                      :new-string="item.diff.new"
+                      :context="10"
+                      output-format="line-by-line"/>
                   </div>
                 </el-card>
               </el-collapse-item>
@@ -36,6 +37,8 @@
   </el-dialog>
 </template>
 <script>
+import CodeDiff from 'vue-code-diff'
+
 export default {
   name: 'OrderHistoryCheck',
   props: {
@@ -45,6 +48,7 @@ export default {
     orderHistoryInfoList: {},
     parseTime: {}
   },
+  components: {CodeDiff},
   methods: {
     close() {
       this.$emit('close')

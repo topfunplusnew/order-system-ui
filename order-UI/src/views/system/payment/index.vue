@@ -81,6 +81,17 @@
           @keyup.enter.native="handleQuery" class="w-85px"
         />
       </el-form-item>
+      <!--      todo-->
+      <el-form-item label="复核状态" prop="auditState">
+        <el-select v-model="queryParams.auditState" placeholder="请选择复核状态" clearable>
+          <el-option
+            v-for="item in auditState_options"
+            :key="item.value"
+            :label="item.label"
+            :value="item.value">
+          </el-option>
+        </el-select>
+      </el-form-item>
       <el-form-item>
         <el-button type="primary" icon="el-icon-search" size="mini" @click="handleQuery">搜索</el-button>
       </el-form-item>
@@ -91,17 +102,16 @@
       <el-col :span="1.5">
         <el-button icon="el-icon-refresh" size="mini" @click="resetQuery">刷新</el-button>
       </el-col>
-      <!--      <el-col :span="1.5">-->
-      <!--        <el-button-->
-      <!--          type="primary"-->
-      <!--          plain-->
-      <!--          icon="el-icon-plus"-->
-      <!--          size="mini"-->
-      <!--          @click="handleAdd"-->
-      <!--          v-hasPermi="['system:payment:add']"-->
-      <!--        >新增付款信息-->
-      <!--        </el-button>-->
-      <!--      </el-col>-->
+      <!--      解开了新增付款信息-->
+      <el-col :span="1.5">
+        <el-button
+          type="danger"
+          size="mini"
+          @click="handleAdd"
+          v-hasPermi="['system:payment:add']"
+        >新增付款信息
+        </el-button>
+      </el-col>
       <right-toolbar :showSearch.sync="showSearch" @queryTable="getList" :columns="columns">
         <template v-slot:print>
           <el-col :span="1.5">
@@ -181,8 +191,28 @@
                        show-overflow-tooltip/>
       <el-table-column label="对方公司类型" align="center" prop="companyType" v-if="columns[12].visible" width="120"
                        show-overflow-tooltip/>
+      <el-table-column label="复核状态" align="center" class-name="small-padding fixed-width" width="80"
+                       fixed="right">
+        <template slot-scope="scope">
+          <el-switch
+            v-model="scope.row.auditState== 1?true:false"
+            @change="(value)=>handlePaymentAudit(scope.row,value)"
+            active-color="#13ce66"
+            inactive-color="#ff4949"
+            v-hasPermi="['system:payment:audit']">
+          </el-switch>
+        </template>
+      </el-table-column>
       <el-table-column label="操作" align="center" class-name="small-padding fixed-width" width="150" fixed="right">
         <template slot-scope="scope">
+          <!--          <el-button-->
+          <!--            size="mini"-->
+          <!--            type="warning"-->
+          <!--            :disabled="scope.row.auditState === '1'"-->
+          <!--            v-hasPermi="['system:payment:audit']"-->
+          <!--            @click="handlePaymentAudit(scope.row)"-->
+          <!--          >复核-->
+          <!--          </el-button>-->
           <el-button
             v-if="scope.row.paymentState === '未支付'"
             size="mini"
@@ -234,7 +264,8 @@
     />
 
     <!--     添加或修改付款信息对话框 -->
-    <el-dialog :close-on-click-modal="false" :show-close="false" title="付款处理" :visible.sync="open" width="500px" append-to-body>
+    <el-dialog :close-on-click-modal="false" :show-close="false" title="付款处理" :visible.sync="open" width="500px"
+               append-to-body>
       <el-form ref="form" :model="form" :rules="rules" label-width="80px">
         <el-form-item label="日期" prop="fundsDate">
           <el-date-picker
@@ -245,7 +276,7 @@
           </el-date-picker>
         </el-form-item>
         <el-form-item label="金额" prop="moneyAmount">
-          <el-input disabled v-model="form.moneyAmount" placeholder="请输入金额"/>
+          <el-input v-model="form.moneyAmount" placeholder="请输入金额"/>
         </el-form-item>
         <!--        对方信息-->
         <el-form-item label="己方户名" prop="selfAcountsName">
@@ -301,7 +332,7 @@
         <!--          <el-input v-model="form.paymentState" placeholder="请输入支付状态"/>-->
         <!--        </el-form-item>-->
         <el-form-item label="对方公司" prop="companyName">
-          <el-input disabled v-model="form.companyName" placeholder="请输入对方公司"/>
+          <el-input v-model="form.companyName" placeholder="请输入对方公司"/>
         </el-form-item>
         <!--        <el-form-item label="对方公司ID" prop="companyId">-->
         <!--          <el-input v-model="form.companyId" placeholder="请输入对方公司ID"/>-->
@@ -328,10 +359,12 @@ import {addReason} from "@/api/system/user";
 import {excludeParams} from "@/api/tool/exclude";
 import {addDateRange} from "@/utils/ruoyi";
 import {listBankAccount} from "../../../api/system/bankAccount";
+import {mixin_payment_audit} from "../../dashboard/mixins/payment/payment_audit";
 
 export default {
   name: "Payment",
   components: {SearchOption},
+  mixins: [mixin_payment_audit],
   data() {
     return {
       // 遮罩层
@@ -379,6 +412,10 @@ export default {
         UserName: null,
         delFlag: null
       },
+      auditState_options: [
+        {label: '未复核', value: '0'},
+        {label: '已复核', value: '1'},
+      ],
       // 表单参数
       form: {},
       // 表单校验

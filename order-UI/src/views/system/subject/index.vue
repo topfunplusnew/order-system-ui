@@ -98,19 +98,6 @@
                 </el-button>
               </el-col>
             </template>
-            <!--        导出-->
-            <template v-slot:export>
-              <el-col :span="1.5">
-                <el-button
-                  plain
-                  icon="el-icon-folder-opened"
-                  size="mini"
-                  @click="handleExport"
-                  v-hasPermi="['system:subject:export']"
-                >
-                </el-button>
-              </el-col>
-            </template>
           </right-toolbar>
         </el-row>
 
@@ -158,7 +145,8 @@
       </el-col>
     </el-row>
     <!-- 添加或修改科目对话框 -->
-    <el-dialog :close-on-click-modal="false" :show-close="false" :title="title" :visible.sync="open" width="500px" append-to-body>
+    <el-dialog :close-on-click-modal="false" :show-close="false" :title="title" :visible.sync="open" width="500px"
+               append-to-body>
       <el-form ref="form" :model="form" :rules="rules" label-width="80px">
         <el-form-item label="父级ID" prop="parentId">
           <treeselect v-model="form.parentId" :options="subjectOptions" :normalizer="normalizer"
@@ -192,7 +180,8 @@
     </el-dialog>
 
     <!--    添加科目分类的弹窗-->
-    <el-dialog :close-on-click-modal="false" :show-close="false" title="添加科目分类" :visible.sync="openType" width="500px" append-to-body>
+    <el-dialog :close-on-click-modal="false" :show-close="false" title="添加科目分类" :visible.sync="openType"
+               width="500px" append-to-body>
       <el-form :model="formType" :rules="rules" label-width="80px">
         <el-form-item label="科目分类" prop="type">
           <el-select v-model="formType.type" placeholder="请选择">
@@ -223,6 +212,7 @@
 import {listSubject, getSubject, delSubject, addSubject, updateSubject} from "@/api/system/subject";
 import Treeselect from "@riophae/vue-treeselect";
 import "@riophae/vue-treeselect/dist/vue-treeselect.css";
+import {mixin_printHTML} from "../../dashboard/mixins/print";
 
 export default {
   name: "Subject",
@@ -230,6 +220,7 @@ export default {
     Treeselect
   },
   dicts: ['order_product_categories'],
+  mixins: [mixin_printHTML],
   data() {
     return {
       // 遮罩层

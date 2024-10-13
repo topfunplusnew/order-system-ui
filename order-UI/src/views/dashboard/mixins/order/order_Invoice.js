@@ -2,9 +2,9 @@ import {getCompany} from "../../../../api/system/company";
 import {addInvoiceIn} from "../../../../api/system/invoiceIn";
 import {excludeParams} from "../../../../api/tool/exclude";
 import {addInvoiceOut} from "../../../../api/system/invoiceOut";
-import {getGoodsOrder} from "../../../../api/system/goodsOrder";
+import {checkOrderAllinvoice, getGoodsOrder} from "../../../../api/system/goodsOrder";
 // 状态
-const Options = [
+export const Options = [
   {
     value: '已审核',
     label: '已审核'
@@ -14,7 +14,7 @@ const Options = [
   },
 ]
 
-const OptionInvent = [{
+export const OptionInvent = [{
   value: '未开票',
   label: '未开票'
 }, {
@@ -163,15 +163,26 @@ export var mixin_order_Invoice = {
       }
       //这里要判断一下 如果是客户开票 就添加发票卖出信息 如果是供应商开票 则添加发票买入信息
       if (this.updateOrderItemVisibleTitleInfo.domain === 1) {
-        //客户开票 添加发票卖出信息
-        addInvoiceOut(this.updateOrderItemVisibleTitleInfo)
-          .then(res => {
-            this.$message.success('客户开票成功~')
-            this.invoiceupdateOrderItemVisibleVisible = false;
-            this.resetOpenTitleInfo();
-            this.getList();
-            // this.updateGoodsOrderAfterOpen(invoiceNumber, this.updateOrderItemVisibleTitleInfo.domain)
-          })
+        // 这里要判断一下 客户开票的开票金额大于总货款 todo
+        checkOrderAllinvoice(this.updateOrderItemVisibleTitleInfo.isOrderTax).then(res => {
+          // 开票金额 + 查出的  > 总货款
+          if (this.updateOrderItemVisibleTitleInfo.invoiceAmount + res.data.total_out > this.maxInvent) {
+            console.log(this.updateOrderItemVisibleTitleInfo.invoiceAmount)
+            console.log(res.data.total_out)
+            console.log(this.maxInvent)
+            //客户开票 添加发票卖出信息
+            addInvoiceOut(this.updateOrderItemVisibleTitleInfo)
+              .then(res => {
+                this.$message.success('客户开票成功~')
+                this.invoiceupdateOrderItemVisibleVisible = false;
+                this.resetOpenTitleInfo();
+                this.getList();
+                // this.updateGoodsOrderAfterOpen(invoiceNumber, this.updateOrderItemVisibleTitleInfo.domain)
+              })
+          } else {
+            this.$message.error(`累计开票金额超过总货款`)
+          }
+        })
       } else {
         // 客户开票
         addInvoiceIn(this.updateOrderItemVisibleTitleInfo)

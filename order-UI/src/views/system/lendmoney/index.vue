@@ -38,7 +38,7 @@
         <el-button icon="el-icon-refresh" size="mini" @click="resetQuery">刷新</el-button>
       </el-col>
       <el-col :span="1.5">
-        <el-button size="mini" @click="handleAdd" type="danger">添加负债信息</el-button>
+        <el-button size="mini" @click="handleAdd" type="danger">添加借出款信息</el-button>
       </el-col>
       <right-toolbar :showSearch.sync="showSearch" @queryTable="getList" :columns="columns">
         <template v-slot:print>

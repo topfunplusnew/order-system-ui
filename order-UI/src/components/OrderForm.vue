@@ -461,7 +461,7 @@ export default {
       </div>
       <!--      如果没有订单信息-->
       <el-row>
-        <el-col>
+        <el-col style="text-align: center">
           <el-button type="primary" @click="addOrderItem" icon="el-icon-plus">添加订单货物信息</el-button>
         </el-col>
       </el-row>
