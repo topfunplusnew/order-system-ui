@@ -23,7 +23,6 @@
       <el-col :span="1.5">
         <el-button
           type="danger"
-          plain
           size="mini"
           @click="handleAdd"
           v-hasPermi="['system:businesstrip:add']"
@@ -912,12 +911,13 @@ export default {
 
     //完成提交
     nextAndSubmit() {
-      // 修改 修改的时候
+      // 修改
       if (this.form.id !== null && this.form.id !== '' && this.form.id !== undefined) {
         //保存报销信息
         this.form.tripReimbursementList = this.tripReimbursementList;
+        // 修改 出差信息
         updateBusinessTrip(excludeParams(this.form, this.$exclude)).then(res => {
-          // 如果不使用车辆信息
+          // 修改 - 如果不使用车辆信息
           if (this.useCar !== '是') {
             this.$message.success('修改成功')
             // 清除状态
@@ -928,9 +928,10 @@ export default {
             this.reset()
             this.open = false
             this.getList()
+            // 修改 - 使用车辆信息
           } else {
             this.$message.success('修改成功')
-            //添加车辆信息
+            //修改该出差的车辆信息
             updateCarApply(excludeParams(this.carApplyForm, this.$exclude)).then(res => {
               this.$message.success('车辆信息修改成功')
               this.active++;
@@ -947,7 +948,7 @@ export default {
         })
         // 添加
       } else {
-        // 如果不使用车辆
+        //  添加 - 如果不使用车辆
         if (this.useCar !== '是') {
           //保存报销信息
           this.form.tripReimbursementList = this.tripReimbursementList;
@@ -960,7 +961,7 @@ export default {
             this.resetOilCardRechargeInfo();
             this.getList()
           })
-          // 如果使用车辆
+          // 添加 - 如果使用车辆
         } else {
           //保存报销信息
           this.form.tripReimbursementList = this.tripReimbursementList;
@@ -971,11 +972,25 @@ export default {
           } else {
             //先提交申请信息 回调函数中添加车辆使用信息
             addBusinessTrip({...this.form, UUID: this.UUID}).then(res => {
-              carApplyInfo.bTripId = res.data.id;
               this.$message.success('提交成功')
-              //添加车辆信息
-              setTimeout(() => {
-                addCarApply(carApplyInfo).then(res => {
+              // 如果不是索引车辆信息
+              if (!this.isIndexCarInfo) {
+                carApplyInfo.bTripId = res.data.id; // 添加出差id
+                //添加车辆信息
+                setTimeout(() => {
+                  addCarApply(carApplyInfo).then(res => {
+                    this.$message.success('车辆信息提交成功')
+                    this.active++;
+                    // 清除状态
+                    this.reset()
+                    this.resetCarApplyForm()
+                    this.resetOilCardRechargeInfo();
+                    this.getList()
+                  })
+                }, 30)
+              } else {
+                // 如果是索引的用车信息，那么就修改用车信息的bTripId即可
+                updateCarApply({...carApplyInfo, bTripId: res.data.id}).then(res => {
                   this.$message.success('车辆信息提交成功')
                   this.active++;
                   // 清除状态
@@ -984,7 +999,7 @@ export default {
                   this.resetOilCardRechargeInfo();
                   this.getList()
                 })
-              }, 30)
+              }
             })
           }
         }
@@ -1161,6 +1176,8 @@ export default {
       this.reset();
       // 清除session中保存的出差信息
       window.sessionStorage.removeItem('BusinessTrip-form')
+      // 设置索引为false
+      this.isIndexCarInfo = false
     },
     // 出差信息表单重置
     reset() {
@@ -1285,6 +1302,7 @@ export default {
       // 拿到该行id对应的出差信息
       getBusinessTrip(id).then(response => {
           this.form = response.data;
+          // 查询该出差id下的用车信息
           listCarApply({bTripId: id}).then(res => {
             if (res.rows.length === 0) {
               this.useCar = '否'
