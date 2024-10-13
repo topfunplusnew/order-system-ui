@@ -23,6 +23,10 @@ export var mixin_order_freight_payment = {
     }
   },
   methods: {
+    // 勾选未支付 todo
+    selectUnPayment() {
+
+    },
     // 一键申请运费
     handleFreightPaymentOnce(row) {
       this.selectedList.forEach(item => {
@@ -76,6 +80,7 @@ export var mixin_order_freight_payment = {
         this.$message.success('一键运费付款成功')
         this.resetFreightSelfOnceInfo();
         this.freightOnceVisible = false;
+        this.getList()
       })
     },
     // 填充查询信息

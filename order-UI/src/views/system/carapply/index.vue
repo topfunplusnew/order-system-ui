@@ -40,6 +40,9 @@
 
     <el-row :gutter="10" class="mb8">
       <el-col :span="1.5">
+        <el-button type="danger" size="mini" @click="handleAdd">添加车辆派出信息</el-button>
+      </el-col>
+      <el-col :span="1.5">
         <el-button icon="el-icon-refresh" size="mini" @click="resetQuery">刷新</el-button>
       </el-col>
       <right-toolbar :showSearch.sync="showSearch" @queryTable="getList" :columns="columns">
@@ -72,29 +75,50 @@
 
     <el-table border v-loading="loading" :data="carApplyList" @selection-change="handleSelectionChange" id="printBox"
               v-horizontal-scroll="'always'" size="mini" :cell-style="()=>{return {padding:'2px'}}">
-      <el-table-column label="申请时间" align="center" prop="applyDate" v-if="columns[0].visible"/>
-      <el-table-column label="申请人" align="center" prop="applyUser" v-if="columns[1].visible"/>
-      <el-table-column label="部门" align="center" prop="department" v-if="columns[2].visible"/>
-      <el-table-column label="车牌" align="center" prop="carNo" v-if="columns[3].visible"/>
-      <el-table-column label="是否携带油卡" align="center" prop="isUseOilCard" v-if="columns[4].visible"/>
-      <el-table-column label="随同乘车人员" align="center" prop="peers" v-if="columns[5].visible"/>
-      <el-table-column label="用车时间" align="center" prop="startTime" v-if="columns[6].visible"/>
-      <el-table-column label="还车时间" align="center" prop="endTime" v-if="columns[7].visible"/>
-      <el-table-column label="用车事由" align="center" prop="ApplyPurpose" v-if="columns[8].visible"/>
-      <el-table-column label="出车前里程" align="center" prop="startMile" v-if="columns[9].visible"/>
-      <el-table-column label="出车前车况" align="center" prop="startCarState" v-if="columns[10].visible"/>
-      <el-table-column label="回来后里程" align="center" prop="endMile" v-if="columns[11].visible"/>
-      <el-table-column label="回来后车况" align="center" prop="endCarState" v-if="columns[12].visible"/>
-      <el-table-column label="用车里程数" align="center" prop="miles" v-if="columns[13].visible"/>
-      <el-table-column label="回程停靠位置" align="center" prop="backStopPlace" v-if="columns[14].visible"/>
-      <el-table-column label="行程中违法次数" align="center" prop="violationsCount" v-if="columns[15].visible"/>
-      <el-table-column label="违章罚款金额" align="center" prop="fine" v-if="columns[16].visible"/>
-      <el-table-column label="行程中是否维修/保养" align="center" prop="isMaintenance" v-if="columns[17].visible"/>
-      <el-table-column label="保养金额" align="center" prop="maintenanceMoney" v-if="columns[18].visible"/>
+      <el-table-column label="申请时间" align="center" prop="applyDate"
+                       v-if="columns[0].visible" show-overflow-tooltip/>
+      <el-table-column label="申请人" align="center" prop="applyUser"
+                       v-if="columns[1].visible" show-overflow-tooltip/>
+      <el-table-column label="部门" align="center" prop="department"
+                       v-if="columns[2].visible" show-overflow-tooltip/>
+      <el-table-column label="车牌" align="center" prop="carNo"
+                       v-if="columns[3].visible" show-overflow-tooltip/>
+      <el-table-column label="是否携带油卡" align="center" prop="isUseOilCard"
+                       v-if="columns[4].visible" show-overflow-tooltip/>
+      <el-table-column label="随同乘车人员" align="center" prop="peers"
+                       v-if="columns[5].visible" show-overflow-tooltip/>
+      <el-table-column label="用车时间" align="center" prop="startTime"
+                       v-if="columns[6].visible" show-overflow-tooltip/>
+      <el-table-column label="还车时间" align="center" prop="endTime"
+                       v-if="columns[7].visible" show-overflow-tooltip/>
+      <el-table-column label="用车事由" align="center" prop="applyPurpose"
+                       v-if="columns[8].visible" show-overflow-tooltip/>
+      <el-table-column label="出车前里程" align="center" prop="startMile"
+                       v-if="columns[9].visible" show-overflow-tooltip/>
+      <el-table-column label="出车前车况" align="center" prop="startCarState"
+                       v-if="columns[10].visible" show-overflow-tooltip/>
+      <el-table-column label="回来后里程" align="center" prop="endMile"
+                       v-if="columns[11].visible" show-overflow-tooltip/>
+      <el-table-column label="回来后车况" align="center" prop="endCarState"
+                       v-if="columns[12].visible" show-overflow-tooltip/>
+      <el-table-column label="用车里程数" align="center" prop="miles"
+                       v-if="columns[13].visible" show-overflow-tooltip/>
+      <el-table-column label="回程停靠位置" align="center" prop="backStopPlace"
+                       v-if="columns[14].visible" show-overflow-tooltip/>
+      <el-table-column label="行程中违法次数" align="center" prop="violationsCount"
+                       v-if="columns[15].visible" show-overflow-tooltip/>
+      <el-table-column label="违章罚款金额" align="center" prop="fine"
+                       v-if="columns[16].visible" show-overflow-tooltip/>
+      <el-table-column label="行程中是否维修/保养" align="center" prop="isMaintenance"
+                       v-if="columns[17].visible" show-overflow-tooltip/>
+      <el-table-column label="保养金额" align="center" prop="maintenanceMoney"
+                       v-if="columns[18].visible" show-overflow-tooltip/>
       <el-table-column label="行程中使用加油卡加油次数" align="center" prop="refuelingFrequency"
-                       v-if="columns[19].visible"/>
-      <el-table-column label="派车人" align="center" prop="dispatchPerson" v-if="columns[20].visible"/>
-      <el-table-column label="备注" align="center" prop="comments" v-if="columns[21].visible"/>
+                       v-if="columns[19].visible" show-overflow-tooltip/>
+      <el-table-column label="派车人" align="center" prop="dispatchPerson"
+                       v-if="columns[20].visible" show-overflow-tooltip/>
+      <el-table-column label="备注" align="center" prop="comments"
+                       v-if="columns[21].visible" show-overflow-tooltip/>
       <el-table-column label="附件路径" align="center" prop="path" v-if="columns[22].visible">
         <template #default="scope">
           <img v-if="isPic(scope.row.path)" :src="scope.row.path" alt=""
@@ -107,7 +131,7 @@
           </span>
         </template>
       </el-table-column>
-      <el-table-column label="操作" align="center" class-name="small-padding fixed-width">
+      <el-table-column label="操作" align="center" class-name="small-padding fixed-width" fixed="right">
         <template slot-scope="scope">
           <el-button
             size="mini"
@@ -136,86 +160,252 @@
     />
 
     <!-- 添加或修改车辆使用申请对话框 -->
-    <el-dialog :close-on-click-modal="false" :show-close="false" :title="title" :visible.sync="open" width="500px" append-to-body>
-      <el-form ref="form" :model="form" :rules="rules" label-width="80px">
-        <!--        <el-form-item label="出差编号UUID" prop="bTripId">-->
-        <!--          <el-input v-model="form.bTripId" placeholder="请输入出差编号UUID"/>-->
-        <!--        </el-form-item>-->
-        <el-form-item label="申请时间" prop="applyDate">
-          <el-input v-model="form.applyDate" placeholder="请输入申请时间"/>
-        </el-form-item>
-        <el-form-item label="申请人" prop="applyUser">
-          <el-input v-model="form.applyUser" placeholder="请输入申请人"/>
-        </el-form-item>
-        <el-form-item label="部门" prop="department">
-          <el-input v-model="form.department" placeholder="请输入部门"/>
-        </el-form-item>
-        <el-form-item label="车牌" prop="carNo">
-          <el-input v-model="form.carNo" placeholder="请输入车牌"/>
-        </el-form-item>
-        <el-form-item label="是否携带油卡" prop="isUseOilCard">
-          <el-input v-model="form.isUseOilCard" placeholder="请输入是否携带油卡"/>
-        </el-form-item>
-        <el-form-item label="随同乘车人员" prop="peers">
-          <el-input v-model="form.peers" placeholder="请输入随同乘车人员"/>
-        </el-form-item>
-        <el-form-item label="用车时间" prop="startTime">
-          <el-input v-model="form.startTime" placeholder="请输入用车时间"/>
-        </el-form-item>
-        <el-form-item label="还车时间" prop="endTime">
-          <el-input v-model="form.endTime" placeholder="请输入还车时间"/>
-        </el-form-item>
-        <el-form-item label="用车事由" prop="ApplyPurpose">
-          <el-input v-model="form.ApplyPurpose" placeholder="请输入用车事由"/>
-        </el-form-item>
-        <el-form-item label="出车前里程" prop="startMile">
-          <el-input v-model="form.startMile" placeholder="请输入出车前里程"/>
-        </el-form-item>
-        <el-form-item label="出车前车况" prop="startCarState">
-          <el-input v-model="form.startCarState" placeholder="请输入出车前车况"/>
-        </el-form-item>
-        <el-form-item label="回来后里程" prop="endMile">
-          <el-input v-model="form.endMile" placeholder="请输入回来后里程"/>
-        </el-form-item>
-        <el-form-item label="回来后车况" prop="endCarState">
-          <el-input v-model="form.endCarState" placeholder="请输入回来后车况"/>
-        </el-form-item>
-        <el-form-item label="用车里程数" prop="miles">
-          <el-input v-model="form.miles" placeholder="请输入用车里程数"/>
-        </el-form-item>
-        <el-form-item label="回程停靠位置" prop="backStopPlace">
-          <el-input v-model="form.backStopPlace" placeholder="请输入回程停靠位置"/>
-        </el-form-item>
-        <el-form-item label="行程中违法次数" prop="violationsCount">
-          <el-input v-model="form.violationsCount" placeholder="请输入行程中违法次数"/>
-        </el-form-item>
-        <el-form-item label="违章罚款金额金额" prop="fine">
-          <el-input v-model="form.fine" placeholder="请输入违章罚款金额金额"/>
-        </el-form-item>
-        <el-form-item label="行程中是否维修/保养" prop="isMaintenance">
-          <el-input v-model="form.isMaintenance" placeholder="请输入行程中是否维修/保养"/>
-        </el-form-item>
-        <el-form-item label="保养金额" prop="maintenanceMoney">
-          <el-input v-model="form.maintenanceMoney" placeholder="请输入保养金额"/>
-        </el-form-item>
-        <el-form-item label="行程中使用加油卡加油次数" prop="refuelingFrequency">
-          <el-input v-model="form.refuelingFrequency" placeholder="请输入行程中使用加油卡加油次数"/>
-        </el-form-item>
-        <el-form-item label="派车人" prop="dispatchPerson">
-          <el-input v-model="form.dispatchPerson" placeholder="请输入派车人"/>
-        </el-form-item>
-        <el-form-item label="备注" prop="comments">
-          <el-input v-model="form.comments" placeholder="请输入备注"/>
-        </el-form-item>
-        <el-form-item label="附件路径" prop="path">
-          <el-input v-model="form.path" placeholder="请输入附件路径"/>
-        </el-form-item>
-      </el-form>
+    <el-dialog :close-on-click-modal="false" :show-close="false" :title="title" :visible.sync="open" width="1100px"
+               append-to-body>
+      <div>
+        <el-form ref="form" :model="form" :rules="rules" label-width="160px">
+          <!--        <el-form-item label="出差编号UUID" prop="bTripId">-->
+          <!--          <el-input v-model="form.bTripId" placeholder="请输入出差编号UUID"/>-->
+          <!--        </el-form-item>-->
+          <el-row>
+            <el-col :span="8">
+              <el-form-item label="申请时间" prop="applyDate">
+                <el-date-picker
+                  v-model="form.applyDate"
+                  type="date"
+                  placeholder="选择申请时间"
+                  value-format="yyyy-MM-dd">
+                </el-date-picker>
+              </el-form-item>
+              <el-form-item label="申请人" prop="applyUser">
+                <el-input v-model="form.applyUser" placeholder="请输入申请人"/>
+              </el-form-item>
+              <el-form-item label="部门" prop="department">
+                <el-input v-model="form.department" placeholder="请输入部门"/>
+              </el-form-item>
+              <el-form-item label="车牌" prop="carNo">
+                <el-row>
+                  <el-col :span="20">
+                    <el-input v-model="form.carNo" placeholder="请输入车牌"/>
+                  </el-col>
+                  <el-col :span="4">
+                    <SearchOption :limit-info="{dictType:'order_cars'}"
+                                  :get-data="listData" query-label="车牌搜索"
+                                  :query-name="queryCars"
+                                  query-info="dictLabel"
+                                  @update:queryName="updateQueryCars"
+                                  @commitBack="handleCommitBackCars">
+                      <template #table-columns>
+                        <el-table-column label="车牌" prop="dictLabel"/>
+                      </template>
+                    </SearchOption>
+                  </el-col>
+                </el-row>
+              </el-form-item>
+              <el-form-item label="是否携带油卡" prop="isUseOilCard">
+                <el-row>
+                  <el-radio v-model="form.isUseOilCard" label="1" @change="openOilCardOpen">是
+                  </el-radio>
+                  <el-radio v-model="form.isUseOilCard" label="0">否</el-radio>
+                </el-row>
+                <el-button v-if="form.isUseOilCard === '1'" type="warning" size="mini"
+                           @click="oilCardConsumeVisible=true">重新填写油卡信息
+                </el-button>
+              </el-form-item>
+              <el-form-item label="随同乘车人员" prop="peers">
+                <el-input v-model="form.peers" placeholder="请输入随同乘车人员"/>
+              </el-form-item>
+              <el-form-item label="用车时间" prop="startTime">
+                <el-date-picker
+                  v-model="form.startTime"
+                  type="date"
+                  placeholder="选择用车时间"
+                  value-format="yyyy-MM-dd">
+                </el-date-picker>
+              </el-form-item>
+              <el-form-item label="还车时间" prop="endTime">
+                <el-date-picker
+                  v-model="form.endTime"
+                  type="date"
+                  placeholder="选择还车时间"
+                  value-format="yyyy-MM-dd">
+                </el-date-picker>
+              </el-form-item>
+            </el-col>
+            <el-col :span="8">
+              <el-form-item label="用车事由" prop="applyPurpose">
+                <el-input v-model="form.applyPurpose" placeholder="请输入用车事由"/>
+              </el-form-item>
+              <el-form-item label="出车前里程" prop="startMile">
+                <el-input v-model="form.startMile" placeholder="请输入出车前里程"/>
+              </el-form-item>
+              <el-form-item label="出车前车况" prop="startCarState">
+                <el-input v-model="form.startCarState" placeholder="请输入出车前车况"/>
+              </el-form-item>
+              <el-form-item label="回来后里程" prop="endMile">
+                <el-input v-model="form.endMile" placeholder="请输入回来后里程"/>
+              </el-form-item>
+              <el-form-item label="回来后车况" prop="endCarState">
+                <el-input v-model="form.endCarState" placeholder="请输入回来后车况"/>
+              </el-form-item>
+              <el-form-item label="用车里程数" prop="miles">
+                <el-input v-model="form.miles" placeholder="请输入用车里程数"/>
+              </el-form-item>
+              <el-form-item label="回程停靠位置" prop="backStopPlace">
+                <el-input v-model="form.backStopPlace" placeholder="请输入回程停靠位置"/>
+              </el-form-item>
+              <el-form-item label="行程中违法次数" prop="violationsCount">
+                <el-input v-model="form.violationsCount" placeholder="请输入行程中违法次数"/>
+              </el-form-item>
+            </el-col>
+            <el-col :span="8">
+              <el-form-item label="违章罚款金额金额" prop="fine">
+                <el-input v-model="form.fine" placeholder="请输入违章罚款金额金额"/>
+              </el-form-item>
+              <el-form-item label="行程中是否维修/保养" prop="isMaintenance">
+                <el-radio v-model="form.isMaintenance" label="是">是</el-radio>
+                <el-radio v-model="form.isMaintenance" label="否">否</el-radio>
+              </el-form-item>
+              <el-form-item label="保养金额" prop="maintenanceMoney" v-if="form.isMaintenance === '是'">
+                <el-input v-model="form.maintenanceMoney" placeholder="请输入保养金额"/>
+              </el-form-item>
+              <el-form-item label="行程中使用加油卡加油次数" prop="refuelingFrequency">
+                <el-input v-model="form.refuelingFrequency" placeholder="请输入行程中使用加油卡加油次数"/>
+              </el-form-item>
+              <el-form-item label="派车人" prop="dispatchPerson">
+                <el-input v-model="form.dispatchPerson" placeholder="请输入派车人"/>
+              </el-form-item>
+              <el-form-item label="备注" prop="comments">
+                <el-input v-model="form.comments" placeholder="请输入备注"/>
+              </el-form-item>
+              <el-form-item label="附件路径" prop="path">
+                <file-upload @input="handleFileUploadCarApply"/>
+              </el-form-item>
+            </el-col>
+          </el-row>
+        </el-form>
+      </div>
       <div slot="footer" class="dialog-footer">
         <el-button type="primary" @click="submitForm">确 定</el-button>
         <el-button @click="cancel">取 消</el-button>
       </div>
     </el-dialog>
+
+    <!--    油卡消费记录的弹窗-->
+    <el-dialog :close-on-click-modal="false" :show-close="false" title="油卡消费记录"
+               :visible.sync="oilCardConsumeVisible" width="75%" append-to-body>
+      <el-form ref="form" :model="oilCardConsumeInfo" label-width="160px">
+        <el-row>
+          <el-col :span="12">
+            <el-form-item label="加油卡卡号" prop="oilCardNo">
+              <el-row>
+                <el-col :span="20">
+                  <el-input v-model="oilCardConsumeInfo.oilCardNo" placeholder="请输入加油卡卡号"/>
+                </el-col>
+                <el-col :span="4">
+                  <SearchOption :get-data="listOilCard" @commitBack="handleCommitBackOilCard" query-info="oilCardNo"
+                                :query-name="queryOilCard" query-label="油卡账号查询"
+                                @update:queryName="handleCommitBackQueryOilCard" :limit-info="{oilType:'主卡'}">
+                    <template #table-columns>
+                      <el-table-column label="加油卡卡号" align="center" prop="oilCardNo"/>
+                      <el-table-column label="当前金额" align="center" prop="moneyAmount"/>
+                    </template>
+                  </SearchOption>
+                </el-col>
+              </el-row>
+            </el-form-item>
+            <el-form-item label="使用加油卡时间" prop="useDate">
+              <el-date-picker
+                v-model="oilCardConsumeInfo.useDate"
+                type="date"
+                placeholder="选择日期"
+                value-format="yyyy-MM-dd">
+              </el-date-picker>
+            </el-form-item>
+            <el-form-item label="使用加油卡车辆车牌号" prop="carNo">
+              <el-row>
+                <el-col :span="20">
+                  <el-input v-model="oilCardConsumeInfo.carNo" placeholder="请输入使用加油卡车辆车牌号"/>
+                </el-col>
+                <el-col :span="4">
+                  <SearchOption :get-data="listData" @commitBack="handleCommitCarNumber" query-info="dictLabel"
+                                :query-name="queryCarNumber" query-label="车牌号查询"
+                                @update:queryName="handleCommitBackQueryCarNumber"
+                                :limit-info="{dictType: 'order_cars'}">
+                    <template #table-columns>
+                      <el-table-column label="车牌号" align="center" prop="dictLabel"/>
+                    </template>
+                  </SearchOption>
+                </el-col>
+              </el-row>
+            </el-form-item>
+            <el-form-item label="期初余额" prop="startCardSurplus">
+              <el-input v-model="oilCardConsumeInfo.startCardSurplus" placeholder="请输入期初余额"/>
+            </el-form-item>
+            <!--            途中是否自己充钱 如果自己充了 那么下面的保存填写后要加上这个充值金额，如果没充，默认是0-->
+            <el-form-item label="途中是否充值">
+              <el-radio v-model="isRecharge" label="1">是</el-radio>
+              <el-radio v-model="isRecharge" label="2">否</el-radio>
+            </el-form-item>
+            <el-form-item label="充值金额" prop="rechargeMoney" v-if="isRecharge === '1'">
+              <el-input v-model="oilCardConsumeInfo.rechargeMoney"
+                        placeholder="请输入充值金额,此金额为过程中使用现金充值金额"/>
+            </el-form-item>
+            <el-form-item label="加油量" prop="refuelingNumber">
+              <el-input v-model="oilCardConsumeInfo.refuelingNumber" placeholder="请输入加油量"/>
+            </el-form-item>
+            <el-form-item label="单价" prop="unitPrice">
+              <el-input v-model="oilCardConsumeInfo.unitPrice" placeholder="请输入单价"/>
+            </el-form-item>
+          </el-col>
+          <el-col :span="12">
+            <el-row>
+              <el-form-item label="加油金额(元）" prop="refuelingMoney">
+                <el-input v-model="oilCardConsumeInfo.refuelingMoney" placeholder="请输入加油金额(元）"/>
+              </el-form-item>
+            </el-row>
+            <el-row>
+              <el-form-item label="加油小票附件" prop="attachmentOiladd">
+                <el-row>
+                  <el-col :span="20">
+                    <el-input v-model="oilCardConsumeInfo.attachmentOiladd" placeholder="加油小票附件路径" disabled/>
+                  </el-col>
+                  <el-col :span="4"
+                          v-if="oilCardConsumeInfo.attachmentOiladd !== null && oilCardConsumeInfo.attachmentOiladd !== ''">
+                    <el-button size="mini" @click="checkPath(oilCardConsumeInfo.attachmentOiladd)">查看附件
+                    </el-button>
+                  </el-col>
+                </el-row>
+                <el-row justify="center">
+                  <el-col :span="20">
+                    <el-upload
+                      class="upload-demo"
+                      drag
+                      :action="uploadFileUrl"
+                      :headers="headers"
+                      :limit="1"
+                      multiple :on-success="handleFileSuccess">
+                      <i class="el-icon-upload"></i>
+                      <div class="el-upload__text">将文件拖到此处，或<em>点击上传</em></div>
+                    </el-upload>
+                  </el-col>
+                </el-row>
+              </el-form-item>
+            </el-row>
+            <el-row>
+              <el-form-item label="备注" prop="comments">
+                <el-input v-model="oilCardConsumeInfo.comments" placeholder="请输入备注"/>
+              </el-form-item>
+            </el-row>
+          </el-col>
+        </el-row>
+      </el-form>
+      <div slot="footer" class="dialog-footer">
+        <el-button type="primary" @click="submitOilCard">保存填写</el-button>
+        <el-button type="primary" @click="clearOilCard">清除填写</el-button>
+      </div>
+    </el-dialog>
+
   </div>
 </template>
 
@@ -223,10 +413,15 @@
 import {listCarApply, getCarApply, delCarApply, addCarApply, updateCarApply} from "@/api/system/carApply";
 import {mixin_printHTML} from "@/views/dashboard/mixins/print";
 import {findFileExtension} from "@/utils/trash/utils";
+import {mixin_businesstrip_car_apply} from "../../dashboard/mixins/bussiness/businesstrip_car_apply";
+import {listData} from "../../../api/system/dict/data";
+import SearchOption from "../../../components/SearchOption.vue";
+import {listOilCard} from "../../../api/system/oilCard";
 
 export default {
   name: "CarApply",
-  mixins: [mixin_printHTML],
+  components: {SearchOption},
+  mixins: [mixin_printHTML, mixin_businesstrip_car_apply],
   data() {
     return {
       // 遮罩层
@@ -332,6 +527,8 @@ export default {
     }
   },
   methods: {
+    listOilCard,
+    listData,
     /** 查询车辆使用申请列表 */
     getList() {
       this.loading = true;
@@ -355,11 +552,11 @@ export default {
         applyUser: null,
         department: null,
         carNo: null,
-        isUseOilCard: null,
+        isUseOilCard: '0',
         peers: null,
         startTime: null,
         endTime: null,
-        ApplyPurpose: null,
+        applyPurpose: null,
         startMile: null,
         startCarState: null,
         endMile: null,
@@ -368,7 +565,7 @@ export default {
         backStopPlace: null,
         violationsCount: null,
         fine: null,
-        isMaintenance: null,
+        isMaintenance: '否',
         maintenanceMoney: null,
         refuelingFrequency: null,
         dispatchPerson: null,
@@ -408,6 +605,7 @@ export default {
       this.reset();
       this.open = true;
       this.title = "添加车辆使用申请";
+      this.form.applyUser = this.trueName
     },
     /** 修改按钮操作 */
     handleUpdate(row) {

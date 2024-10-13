@@ -121,7 +121,8 @@
     />
 
     <!-- 添加或修改出差对话框 -->
-    <el-dialog :close-on-click-modal="false" :show-close="false" :title="title" :visible.sync="open" width="800px" append-to-body>
+    <el-dialog :close-on-click-modal="false" :show-close="false" :title="title" :visible.sync="open" width="800px"
+               append-to-body>
       <!--      头部流程信息-->
       <el-row>
         <div>
@@ -189,6 +190,7 @@
               </el-row>
             </el-col>
           </el-row>
+          <!--          车辆使用申请-->
           <el-row v-if="active === 1">
             <el-row>
               <el-col :span="5">
@@ -199,6 +201,10 @@
               <el-col :span="5">
                 <el-radio v-model="useCar" label="是">是</el-radio>
                 <el-radio v-model="useCar" label="否">否</el-radio>
+              </el-col>
+              <el-col :span="5">
+                <el-button size="mini" type="success" @click="indexCarApplyInfo" v-if="useCar ==='是'">引用车辆使用信息
+                </el-button>
               </el-col>
               <el-button size="mini" type="warning" @click="handleWriteCarsInfo" v-if="useCar ==='是'">填写车辆使用信息
               </el-button>
@@ -253,8 +259,53 @@
     </el-dialog>
 
 
+    <!--    车辆索引-->
+    <InfoDialog :visible="indexCarApplyVisible" title="引用车辆使用信息" @close="indexCarApplyVisible = false">
+      <template #info>
+        <el-row>
+          <el-table border v-loading="loading" :data="carApplyList" @selection-change="handleSelectionChange"
+                    id="printBox"
+                    v-horizontal-scroll="'always'" size="mini" :cell-style="()=>{return {padding:'2px'}}">
+            <el-table-column label="申请时间" align="center" prop="applyDate" show-overflow-tooltip/>
+            <el-table-column label="申请人" align="center" prop="applyUser" show-overflow-tooltip/>
+            <el-table-column label="部门" align="center" prop="department" show-overflow-tooltip/>
+            <el-table-column label="车牌" align="center" prop="carNo" show-overflow-tooltip/>
+            <el-table-column label="是否携带油卡" align="center" prop="isUseOilCard" show-overflow-tooltip/>
+            <el-table-column label="随同乘车人员" align="center" prop="peers" show-overflow-tooltip/>
+            <el-table-column label="用车时间" align="center" prop="startTime" show-overflow-tooltip/>
+            <el-table-column label="还车时间" align="center" prop="endTime" show-overflow-tooltip/>
+            <el-table-column label="用车事由" align="center" prop="applyPurpose" show-overflow-tooltip/>
+            <el-table-column label="出车前里程" align="center" prop="startMile" show-overflow-tooltip/>
+            <el-table-column label="出车前车况" align="center" prop="startCarState" show-overflow-tooltip/>
+            <el-table-column label="回来后里程" align="center" prop="endMile" show-overflow-tooltip/>
+            <el-table-column label="回来后车况" align="center" prop="endCarState" show-overflow-tooltip/>
+            <el-table-column label="用车里程数" align="center" prop="miles" show-overflow-tooltip/>
+            <el-table-column label="回程停靠位置" align="center" prop="backStopPlace" show-overflow-tooltip/>
+            <el-table-column label="行程中违法次数" align="center" prop="violationsCount" show-overflow-tooltip/>
+            <el-table-column label="违章罚款金额" align="center" prop="fine" show-overflow-tooltip/>
+            <el-table-column label="行程中是否维修/保养" align="center" prop="isMaintenance" show-overflow-tooltip/>
+            <el-table-column label="保养金额" align="center" prop="maintenanceMoney" show-overflow-tooltip/>
+            <el-table-column label="行程中使用加油卡加油次数" align="center" prop="refuelingFrequency"
+                             show-overflow-tooltip/>
+            <el-table-column label="派车人" align="center" prop="dispatchPerson" show-overflow-tooltip/>
+            <el-table-column label="操作" align="center" class-name="small-padding fixed-width" fixed="right">
+              <template slot-scope="scope">
+                <el-button
+                  size="mini"
+                  type="success"
+                  @click="indexThisCarApplyInfo(scope.row)"
+                >引用
+                </el-button>
+              </template>
+            </el-table-column>
+          </el-table>
+        </el-row>
+      </template>
+    </InfoDialog>
+
     <!--    车辆使用申请-->
-    <el-dialog :close-on-click-modal="false" :show-close="false" title="车辆使用申请" :visible.sync="carApplyVisible" append-to-body width="80%">
+    <el-dialog :close-on-click-modal="false" :show-close="false" title="车辆使用申请" :visible.sync="carApplyVisible"
+               append-to-body width="80%">
       <el-row>
         <el-form ref="carApplyForm" :model="carApplyForm" :rules="rules" label-width="150px">
           <el-col :span="8">
@@ -386,18 +437,20 @@
 
     <!--    付款申请弹窗-->
     <el-dialog :close-on-click-modal="false" :show-close="false"
-      title="提示"
-      :visible.sync="applyForPaymentDialogVisible"
-      width="60%">
+               title="提示"
+               :visible.sync="applyForPaymentDialogVisible"
+               width="60%">
       <keep-alive>
-        <ApplyPayment :table-name="TableName.BUSINESS_TRIP" @changeupdateOrderItemVisible="changePaymentApplyInfoVisible"
+        <ApplyPayment :table-name="TableName.BUSINESS_TRIP"
+                      @changeupdateOrderItemVisible="changePaymentApplyInfoVisible"
                       :t-i-d="tID" :need-info="{}" :need-money="needMoney"/>
       </keep-alive>
     </el-dialog>
 
 
     <!--    新增油卡消费记录-->
-    <el-dialog :close-on-click-modal="false" :show-close="false" title="油卡消费记录" :visible.sync="oilCardConsumeVisible" width="75%" append-to-body>
+    <el-dialog :close-on-click-modal="false" :show-close="false" title="油卡消费记录"
+               :visible.sync="oilCardConsumeVisible" width="75%" append-to-body>
       <el-form ref="form" :model="oilCardConsumeInfo" label-width="160px">
         <el-row>
           <el-col :span="12">
@@ -513,9 +566,9 @@
 
     <!--    油卡充值的页面-->
     <el-dialog :close-on-click-modal="false" :show-close="false"
-      title="提示"
-      :visible.sync="oilCardDialogVisible"
-      width="30%">
+               title="提示"
+               :visible.sync="oilCardDialogVisible"
+               width="30%">
       <el-form :model="moneyInfo" :rules="rules" label-width="120px">
         <el-form-item label="加油卡卡号" prop="oilCardNo">
           <el-row>
@@ -610,11 +663,13 @@ import {addOilRecharge} from "@/api/system/oilRecharge";
 import {parseTime} from "@/utils/ruoyi";
 import {addOilCardConsume} from "@/api/system/OilCardConsume";
 import {parseDate} from "../../../api/tool/format";
+import {mixin_car_apply} from "../../dashboard/mixins/bussiness/car_apply";
+import InfoDialog from "../../../components/InfoDialog.vue";
 
 export default {
   name: "BusinessTrip",
-  components: {ApplyPayment, PaymentApply, SearchOption},
-  mixins: [mixin_printHTML, mixin_upload],
+  components: {InfoDialog, ApplyPayment, PaymentApply, SearchOption},
+  mixins: [mixin_printHTML, mixin_upload, mixin_car_apply],
   data() {
     return {
       loading: true,
@@ -1131,13 +1186,13 @@ export default {
     // 重置车辆申请的状态
     resetCarApplyForm() {
       this.carApplyForm = {
-        applyDate: parseTime(new Date(),'{y}-{m}-{d}'),
+        applyDate: parseTime(new Date(), '{y}-{m}-{d}'),
         applyUser: this.trueName,
         department: this.deptName, // 从vuex中拿到
         carNo: '',
-        isUseOilCard: '',
+        isUseOilCard: '0',
         refuelingFrequency: '',
-        ApplyPurpose: '',
+        applyPurpose: '',
         startTime: '',
         endTime: '',
         miles: '',
@@ -1148,7 +1203,7 @@ export default {
         backStopPlace: '',
         violationsCount: '',
         fine: '',
-        isMaintenance: '',
+        isMaintenance: '否',
         maintenanceMoney: '',
         dispatchPerson: '',
         peers: '',
@@ -1162,7 +1217,7 @@ export default {
         oilCardNo: '',
         rechargeType: '',
         rechargeMoney: '',
-        rechargeDate: parseTime(new Date(),'{y}-{m}-{d}'),
+        rechargeDate: parseTime(new Date(), '{y}-{m}-{d}'),
         rechargeName: "",
         acountsName: "",
         bankNo: "",

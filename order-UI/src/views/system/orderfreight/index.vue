@@ -26,6 +26,14 @@
         <el-button
           type="success"
           size="mini"
+          @click="selectUnPayment"
+        >勾选未支付
+        </el-button>
+      </el-col>
+      <el-col :span="1.5">
+        <el-button
+          type="success"
+          size="mini"
           :disabled="freightPaymentOnceDisabled"
           @click="handleFreightPaymentOnce"
         >一键付运费
