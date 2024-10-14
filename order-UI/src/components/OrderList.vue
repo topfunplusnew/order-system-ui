@@ -7,6 +7,9 @@ import {OptionInvent, Options} from "../views/dashboard/mixins/order/order_Invoi
 export default {
   name: "OrderList",
   components: {QuerySearchBar},
+  props: {
+    selectedGoodsOrderList: []
+  },
   data() {
     return {
       goodsOrderList: [],
@@ -48,7 +51,7 @@ export default {
         isedit: null,
         customerIsInvoice: null,
         isSupplierInvoice: null,
-      }
+      },
     }
   },
   created() {
@@ -65,8 +68,8 @@ export default {
       this.queryParams.pageNum = 1;
       this.getList();
     },
-    handleSelectionChange() {
-
+    handleSelectionChange(selection) {
+      this.$emit('update:selectedGoodsOrderList', selection)
     },
     // 获取供应商的名称列表
     getSupplierNames(list) {

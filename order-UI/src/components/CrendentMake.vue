@@ -28,15 +28,15 @@
           <td width="50%">
             <table style="height: 50px;">
               <tr style="border-bottom: 1px solid #bab9b9;">
-                <td width="50%" style="border-right: 1px solid #bab9b9;">借方金额</td>
-                <td width="50%">贷方金额</td>
+                <td width="50%" style="border-right: 1px solid #bab9b9;">借方</td>
+                <td width="50%">贷方</td>
               </tr>
             </table>
           </td>
         </tr>
 
         <!-- 销项列表-->
-        <tr v-for="(item,index) in list">
+        <tr v-for="(item,index) in needToMakeList">
           <!--          序号-->
           <td>
             {{ index }}
@@ -50,7 +50,14 @@
           <!--          科目-->
           <td>
             <div class="main-subject">
-              <el-input type="text"></el-input>
+              <el-row>
+                <el-col :span="20">
+                  <el-input type="text" v-model="type"></el-input>
+                </el-col>
+                <el-col :span="4">
+                  <SubjectOption @update:type="handleUpdateType"/>
+                </el-col>
+              </el-row>
             </div>
           </td>
           <!--          辅助项-->
@@ -102,88 +109,26 @@
 
 <script>
 
+import SubjectOption from "./SubjectOption.vue";
+
 export default {
   name: "CrendentMake",
-  props: ['id'],
+  components: {SubjectOption},
+  props: {
+    needToMakeList: {
+      type: Array,
+      default() {
+        return []
+      }
+    }
+  },
   data() {
     return {
       voucher: {
-        word: '记', no: '1001', date: new Date(), maker: '', bill: 0
+        no: '1001', date: new Date(), maker: '', bill: 0
       },
-      list: [
-        {
-          main: '',
-          isShowMainInput: false,
-          subject: {
-            number: '',
-            name: '',
-            detailJson: ''
-          },
-          isShowSubjectInput: false,
-          debtor: '',
-          debtorList: ['', '', '', '', '', '', '', '', 0, 0, 0],
-          isShowDebtorInput: false,
-          lender: '',
-          lenderList: ['', '', '', '', '', '', '', '', 0, 0, 0],
-          isShowLenderInput: false,
-          isAuxiliary: false,
-          auxiliary: ''
-        },
-        {
-          main: '',
-          isShowMainInput: false,
-          subject: {
-            number: '',
-            name: '',
-            detailJson: ''
-          },
-          isShowSubjectInput: false,
-          debtor: '',
-          debtorList: ['', '', '', '', '', '', '', '', 0, 0, 0],
-          isShowDebtorInput: false,
-          lender: '',
-          lenderList: ['', '', '', '', '', '', '', '', 0, 0, 0],
-          isShowLenderInput: false,
-          isAuxiliary: false,
-          auxiliary: ''
-        },
-        {
-          main: '',
-          isShowMainInput: false,
-          subject: {
-            number: '',
-            name: '',
-            detailJson: ''
-          },
-          isShowSubjectInput: false,
-          debtor: '',
-          debtorList: ['', '', '', '', '', '', '', '', 0, 0, 0],
-          isShowDebtorInput: false,
-          lender: '',
-          lenderList: ['', '', '', '', '', '', '', '', 0, 0, 0],
-          isShowLenderInput: false,
-          isAuxiliary: false,
-          auxiliary: ''
-        },
-        {
-          main: '',
-          isShowMainInput: false,
-          subject: {
-            number: '',
-            name: '',
-            detailJson: ''
-          },
-          isShowSubjectInput: false,
-          debtor: '',
-          debtorList: ['', '', '', '', '', '', '', '', 0, 0, 0],
-          isShowDebtorInput: false,
-          lender: '',
-          lenderList: ['', '', '', '', '', '', '', '', 0, 0, 0],
-          isShowLenderInput: false,
-          isAuxiliary: false,
-          auxiliary: ''
-        }
-      ],
+      list: [{}],
+      type: ''
     }
   },
   mounted() {
@@ -191,7 +136,12 @@ export default {
   updated() {
 
   },
-  methods: {}
+  methods: {
+    // 拿到科目类型
+    handleUpdateType(value) {
+      this.type = value
+    }
+  }
 }
 </script>
 
