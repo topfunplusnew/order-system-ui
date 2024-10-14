@@ -114,8 +114,9 @@
         >
           <el-table-column label="科目名称" prop="title" v-if="columns[0].visible"/>
           <el-table-column label="科目编码" align="center" prop="subjectNo" v-if="columns[1].visible"/>
+          <el-table-column label="排序" prop="orderNum" width="120"></el-table-column>
           <el-table-column label="科目类别" align="center" prop="type" v-if="columns[2].visible"/>
-          <el-table-column label="父级ID" align="center" prop="parentId" v-if="columns[3].visible"/>
+          <!--          <el-table-column label="父级ID" align="center" prop="parentId" v-if="columns[3].visible"/>-->
           <el-table-column label="备注" align="center" prop="remark" v-if="columns[4].visible"/>
           <el-table-column label="操作" align="center" class-name="small-padding fixed-width">
             <template slot-scope="scope">
@@ -165,6 +166,9 @@
         </el-form-item>
         <el-form-item label="科目名称" prop="title">
           <el-input v-model="form.title" placeholder="请输入科目名称"/>
+        </el-form-item>
+        <el-form-item label="排序" prop="orderNum">
+          <el-input v-model="form.orderNum" placeholder="请输入排序"/>
         </el-form-item>
         <el-form-item label="编号" prop="subjectNo">
           <el-input v-model="form.subjectNo" placeholder="请输入编号"/>
@@ -313,10 +317,10 @@ export default {
       const data = {id: 0, title: '科目根信息', children: []};
       data.children = this.handleTree(response.data, "id", "parentId");
       this.titleOptions.push(data);
-    });
+      this.orderNumSort(this.titleOptions)
+    })
   }
   ,
-
   computed: {
     //利用computed做中间层
     formId() {
@@ -357,19 +361,17 @@ export default {
   }
   ,
   methods: {
+    orderNumSort(list) {
+      list.sort((a, b) => a.orderNum - b.orderNum)
+      list.forEach(item => {
+        if (item.children !== undefined) {
+          this.orderNumSort(item.children)
+        }
+      })
+    },
     //添加科目分类
     handleAddType() {
       this.openType = true;
-    }
-    ,
-    // 级联选择器
-    handleChange() {
-
-    }
-    ,
-
-    //点击某个树的节点
-    handleNodeClick(data) {
     }
     ,
     /** 查询科目列表 */
@@ -377,7 +379,8 @@ export default {
       this.loading = true;
       listSubject(this.queryParams).then(response => {
         //children:[]
-        this.subjectList = this.handleTree(response.data, "id", "parentId").sort((a, b) => a.orderNum - b.orderNum); //转成树
+        this.subjectList = this.handleTree(response.data, "id", "parentId")
+        this.orderNumSort(this.subjectList)
         this.loading = false;
       });
     }
@@ -402,8 +405,8 @@ export default {
         data.children = this.handleTree(response.data, "id", "parentId");
         this.subjectOptions.push(data);
       });
-    }
-    ,
+    },
+
     // 取消按钮
     cancel() {
       this.open = false;
