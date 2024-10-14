@@ -1,8 +1,12 @@
 import {listCarApply} from "../../../../api/system/carApply";
-
+// 出差车辆索引列表模块 车辆申请信息
 export var mixin_car_apply = {
   data: function () {
     return {
+      // 车辆申请信息
+      carApplyInformation: {},
+      // 是否有车辆信息
+      hasCarApplyInfo: false,
       indexCarApplyVisible: false,
       carApplyList: [],
 
@@ -20,7 +24,6 @@ export var mixin_car_apply = {
     },
     // 引用该车辆使用信息
     indexThisCarApplyInfo(row) {
-      console.log(row)
       //要判断 如果保养了 那么就推入 没有保养不推入
       if (row.isMaintenance === '是') {
         // 将保养金额填充到列表里
@@ -31,7 +34,9 @@ export var mixin_car_apply = {
           isDisabled: true // 不可更改
         })
       }
-      sessionStorage.setItem('carApplyForm', JSON.stringify(row)) // 设置session中的车辆填写信息
+      // 保存车辆使用信息
+      this.carApplyInformation = row
+      this.hasCarApplyInfo = true
       this.$message.success('车辆信息引用成功~')
       // 是索引车辆信息
       this.isIndexCarInfo = true;
