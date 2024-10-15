@@ -82,6 +82,8 @@ export function addDateRange(params, dateRange, propName, otherParams) {
     search.params['buyDateEndTime'] = dateRange[1];
 
     // operate特殊
+  } else if (propName === 'voucher') {
+    search.params['BvoucherNoPrefix'] = otherParams
   } else if (propName === 'operate') {
     search.params['operateDateStartTime'] = dateRange[0];
     search.params['operateDateEndTime'] = dateRange[1];

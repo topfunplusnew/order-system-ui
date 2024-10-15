@@ -14,7 +14,7 @@ export var mixin_vouncher_options = {
     },
     // 查看订单列表信息
     handleGoodsOrder(row) {
-      getGoodsOrder(row.id).then(res => {
+      getGoodsOrder(row.pid).then(res => {
         this.orderInfo = res.data
         this.goodsOrderVisible = true
       })

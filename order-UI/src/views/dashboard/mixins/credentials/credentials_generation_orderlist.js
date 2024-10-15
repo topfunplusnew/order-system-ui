@@ -55,7 +55,6 @@ export var mixin_credentials_generation_orderlist = {
           this.makeCredentialsSecond(invoiceOut, 'voiceOt')
           break;
         case DocumentNumber.INVOICE_OTHER:
-          // todo
           // 第三方特殊处理
           this.makeCredentialsSecond(invoiceOther, 'voiceTr')
           break;

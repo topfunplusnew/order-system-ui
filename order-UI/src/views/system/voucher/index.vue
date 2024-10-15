@@ -9,6 +9,16 @@
           @keyup.enter.native="handleQuery"
         />
       </el-form-item>
+      <el-form-item label="分类" prop="voucherNo">
+        <el-select v-model="queryParams.BvoucherNoPrefix" placeholder="单据类型" clearable>
+          <el-option
+            v-for="item in options"
+            :key="item.value"
+            :label="item.label"
+            :value="item.value">
+          </el-option>
+        </el-select>
+      </el-form-item>
       <el-form-item>
         <el-button type="primary" size="mini" @click="handleQuery">搜索</el-button>
       </el-form-item>
@@ -146,6 +156,8 @@ import {mixin_vouncher_options} from "../../dashboard/mixins/vouncher/vouncher_o
 import InfoDialog from "../../../components/InfoDialog.vue";
 import OrderInfos from "../../../components/OrderInfos.vue";
 import OrderDetailInfo from "../../../components/OrderDetailInfo.vue";
+import {DocumentNumber} from "../../../api/tool/enums";
+import {addDateRange} from "../../../utils/ruoyi";
 
 export default {
   name: "Voucher",
@@ -173,6 +185,7 @@ export default {
       open: false,
       // 查询参数
       queryParams: {
+        BvoucherNoPrefix: '',
         pageNum: 1,
         pageSize: 10,
         voucherNo: null,
@@ -194,7 +207,20 @@ export default {
       form: {},
       // 表单校验
       rules: {},
-      columns: []
+      columns: [],
+      options: [{
+        value: 'orderId_',
+        label: '订单'
+      }, {
+        value: 'voiceIn_',
+        label: '发票买入'
+      }, {
+        value: 'voiceOt_',
+        label: '发票卖出'
+      }, {
+        value: 'voiceTr_',
+        label: '第三方开票'
+      }],
     };
   },
   created() {
@@ -204,7 +230,7 @@ export default {
     /** 查询凭证列表 */
     getList() {
       this.loading = true;
-      listVoucher(this.queryParams).then(response => {
+      listVoucher(addDateRange(this.queryParams, [], 'voucher', this.queryParams.BvoucherNoPrefix)).then(response => {
         this.voucherList = response.rows;
         this.total = response.total;
         this.loading = false;
