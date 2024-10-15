@@ -28,7 +28,7 @@ export default {
       <el-descriptions-item label="客户">{{ formatValue(orderInfo.customer) }}</el-descriptions-item>
       <el-descriptions-item label="供应商名称">{{ formatValue(orderInfo.supplierNames) }}</el-descriptions-item>
       <el-descriptions-item label="审核状态">{{ formatValue(orderInfo.checkState) }}</el-descriptions-item>
-      <el-descriptions-item label="打款状态">{{ formatValue(orderInfo.PaymentState) }}</el-descriptions-item>
+      <el-descriptions-item label="打款状态">{{ formatValue(orderInfo.paymentState) }}</el-descriptions-item>
       <el-descriptions-item label="开票状态">{{ formatValue(orderInfo.invoiceState) }}</el-descriptions-item>
       <el-descriptions-item label="调整日期" v-if="orderInfo.isAdjusted">{{ formatValue(orderInfo.adjustDate) }}
       </el-descriptions-item>
