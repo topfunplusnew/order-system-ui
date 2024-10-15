@@ -16,13 +16,14 @@ export default {
       type: '',
     }
   },
-  created() {
-    listSubject().then(res => {
-      this.paymentTypeOptions = res.data;
-      this.makeTree();
-    });
-  },
   methods: {
+    getDataList() {
+      listSubject().then(res => {
+        this.paymentTypeOptions = res.data;
+        this.makeTree();
+      });
+      this.dialogVisible = true
+    },
     makeTree() {
       // 找到根节点 通过筛选出parentId为0的元素
       this.paymentTypeTree = this.paymentTypeOptions.filter(item => item.parentId === 0);
@@ -67,7 +68,7 @@ export default {
 
 <template>
   <div>
-    <el-button type="primary" size="mini" icon="el-icon-search" @click="dialogVisible = true"></el-button>
+    <el-button type="primary" size="mini" icon="el-icon-search" @click="getDataList"></el-button>
     <el-dialog
       title="选择科目类型"
       :visible.sync="dialogVisible"
