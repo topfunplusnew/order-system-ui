@@ -107,29 +107,29 @@
       </template>
     </InfoDialog>
     <!-- 添加或修改凭证对话框 -->
-    <el-dialog :title="title" :visible.sync="open" width="800px" append-to-body>
-      <el-form ref="form" :model="form" :rules="rules" label-width="120px">
-        <el-form-item label="制单人" prop="makeUser">
-          <el-input v-model="form.makeUser" placeholder="请输入制单人"/>
-        </el-form-item>
-        <el-form-item label="合计" prop="amount">
-          <el-input v-model="form.amount" placeholder="请输入合计"/>
-        </el-form-item>
-        <el-form-item label="借方" prop="borrower">
-          <el-input v-model="form.borrower" placeholder="请输入借方"/>
-        </el-form-item>
-        <el-form-item label="贷方" prop="lender">
-          <el-input v-model="form.lender" placeholder="请输入贷方"/>
-        </el-form-item>
-        <el-form-item label="备注" prop="comments">
-          <el-input v-model="form.comments" placeholder="请输入备注"/>
-        </el-form-item>
-      </el-form>
-      <div slot="footer" class="dialog-footer">
-        <el-button type="primary" @click="submitForm">确 定</el-button>
-        <el-button @click="cancel">取 消</el-button>
-      </div>
-    </el-dialog>
+    <!--    <el-dialog :title="title" :visible.sync="open" width="800px" append-to-body>-->
+    <!--      <el-form ref="form" :model="form" :rules="rules" label-width="120px">-->
+    <!--        <el-form-item label="制单人" prop="makeUser">-->
+    <!--          <el-input v-model="form.makeUser" placeholder="请输入制单人"/>-->
+    <!--        </el-form-item>-->
+    <!--        <el-form-item label="合计" prop="amount">-->
+    <!--          <el-input v-model="form.amount" placeholder="请输入合计"/>-->
+    <!--        </el-form-item>-->
+    <!--        <el-form-item label="借方" prop="borrower">-->
+    <!--          <el-input v-model="form.borrower" placeholder="请输入借方"/>-->
+    <!--        </el-form-item>-->
+    <!--        <el-form-item label="贷方" prop="lender">-->
+    <!--          <el-input v-model="form.lender" placeholder="请输入贷方"/>-->
+    <!--        </el-form-item>-->
+    <!--        <el-form-item label="备注" prop="comments">-->
+    <!--          <el-input v-model="form.comments" placeholder="请输入备注"/>-->
+    <!--        </el-form-item>-->
+    <!--      </el-form>-->
+    <!--      <div slot="footer" class="dialog-footer">-->
+    <!--        <el-button type="primary" @click="submitForm">确 定</el-button>-->
+    <!--        <el-button @click="cancel">取 消</el-button>-->
+    <!--      </div>-->
+    <!--    </el-dialog>-->
   </div>
 </template>
 

@@ -43,23 +43,28 @@ export var mixin_credentials_generation_orderlist = {
       // 根据类型生成
       switch (this.DOC_TYPE) {
         case DocumentNumber.GOODS_ORDER:
-          this.makeCredentialsFirst() // 如果是第一类凭证
+          // 如果是第一类凭证
+          this.makeCredentialsFirst('orderId')
           break;
         case DocumentNumber.INVOICE_IN:
-          this.makeCredentialsSecond(invoiceIn) // 如果是第二类凭证 即发票 如果是买入
+          // 如果是第二类凭证 即发票 如果是买入
+          this.makeCredentialsSecond(invoiceIn, 'voiceIn')
           break;
         case DocumentNumber.INVOICE_OUT:
-          this.makeCredentialsSecond(invoiceOut) // 如果是第二类凭证 即发票 如果是卖出
+          // 如果是第二类凭证 即发票 如果是卖出
+          this.makeCredentialsSecond(invoiceOut, 'voiceOt')
           break;
         case DocumentNumber.INVOICE_OTHER:
-          this.makeCredentialsSecond(invoiceOther) // 第三方特殊处理
+          // todo
+          // 第三方特殊处理
+          this.makeCredentialsSecond(invoiceOther, 'voiceTr')
           break;
       }
       this.CheckDialogVisible = false
       this.orderDialogVisible = false
 
       // 发票买入生成凭证函数
-      function invoiceIn(item) {
+      function invoiceIn(item, strings) {
         // 买入的逻辑 借 主营业务成本-票点成本  票点金额成本(金额)
         this.needToMakeList.push({
           quote: parseTime(new Date()),
@@ -67,7 +72,12 @@ export var mixin_credentials_generation_orderlist = {
           lender: item.invoiceAmount,
           borrower: '',
           comments: '无',
-          amount: item.invoiceAmount
+          amount: item.invoiceAmount,
+          // 基本信息
+          voucherNo: `${strings}_` + this.selectedNeedOrderList.map(item => item.id).join('_') + '_',
+          pid: item.isOrderTax,
+          vDate: parseTime(new Date()),
+          makeUser: this.trueName
         })
         //贷 应付账款 - 供应商往来 - 供应商name   票点金额成本(金额)
         this.needToMakeList.push({
@@ -76,12 +86,16 @@ export var mixin_credentials_generation_orderlist = {
           lender: '',
           borrower: item.invoiceAmount,
           comments: '无',
-          amount: item.invoiceAmount
+          amount: item.invoiceAmount,
+          voucherNo: `${strings}_` + this.selectedNeedOrderList.map(item => item.id).join('_') + '_',
+          pid: item.isOrderTax,
+          vDate: parseTime(new Date()),
+          makeUser: this.trueName
         })
       }
 
       // 发票卖出生成凭证函数
-      function invoiceOut(item) {
+      function invoiceOut(item, strings) {
         // 卖出的逻辑 借 应收账款-客户往来-客户名字 票点收入金额
         this.needToMakeList.push({
           quote: parseTime(new Date()),
@@ -89,7 +103,11 @@ export var mixin_credentials_generation_orderlist = {
           lender: item.invoiceAmount,
           borrower: '',
           comments: '无',
-          amount: item.invoiceAmount
+          amount: item.invoiceAmount,
+          voucherNo: `${strings}_` + this.selectedNeedOrderList.map(item => item.id).join('_') + '_',
+          pid: item.isOrderTax,
+          vDate: parseTime(new Date()),
+          makeUser: this.trueName
         })
         //贷 主营业务收入-票点收入 票点收入金额
         this.needToMakeList.push({
@@ -98,12 +116,20 @@ export var mixin_credentials_generation_orderlist = {
           lender: '',
           borrower: item.invoiceAmount,
           comments: '无',
-          amount: item.invoiceAmount
+          amount: item.invoiceAmount,
+          voucherNo: `${strings}_` + this.selectedNeedOrderList.map(item => item.id).join('_') + '_',
+          pid: item.isOrderTax,
+          vDate: parseTime(new Date()),
+          makeUser: this.trueName
         })
       }
 
-      // 第三方
-      function invoiceOther(item) {
+      // 第三方 要查询一下订单的id
+      async function invoiceOther(item, strings) {
+        // 查询订单id
+        const res = await listGoodsOrder({ordersNo: item.ordersNo})
+        // 拿到订单id
+        const orderId = res.rows[0].id;
         // 同时有买入和卖出 客户是卖出 供应商是买入
         this.needToMakeList.push({
           quote: parseTime(new Date()),
@@ -111,7 +137,11 @@ export var mixin_credentials_generation_orderlist = {
           lender: item.invoiceAmount,
           borrower: '',
           comments: '无',
-          amount: item.invoiceAmount
+          amount: item.invoiceAmount,
+          voucherNo: `${strings}_` + this.selectedNeedOrderList.map(item => item.id).join('_') + '_',
+          pid: orderId,
+          vDate: parseTime(new Date()),
+          makeUser: this.trueName
         })
         this.needToMakeList.push({
           quote: parseTime(new Date()),
@@ -119,7 +149,11 @@ export var mixin_credentials_generation_orderlist = {
           lender: '',
           borrower: item.invoiceAmount,
           comments: '无',
-          amount: item.invoiceAmount
+          amount: item.invoiceAmount,
+          voucherNo: `${strings}_` + this.selectedNeedOrderList.map(item => item.id).join('_') + '_',
+          pid: orderId,
+          vDate: parseTime(new Date()),
+          makeUser: this.trueName
         })
         this.needToMakeList.push({
           quote: parseTime(new Date()),
@@ -127,7 +161,11 @@ export var mixin_credentials_generation_orderlist = {
           lender: item.invoiceAmount,
           borrower: '',
           comments: '无',
-          amount: item.invoiceAmount
+          amount: item.invoiceAmount,
+          voucherNo: `${strings}_` + this.selectedNeedOrderList.map(item => item.id).join('_') + '_',
+          pid: orderId,
+          vDate: parseTime(new Date()),
+          makeUser: this.trueName
         })
         this.needToMakeList.push({
           quote: parseTime(new Date()),
@@ -135,14 +173,18 @@ export var mixin_credentials_generation_orderlist = {
           lender: '',
           borrower: item.invoiceAmount,
           comments: '无',
-          amount: item.invoiceAmount
+          amount: item.invoiceAmount,
+          voucherNo: `${strings}_` + this.selectedNeedOrderList.map(item => item.id).join('_') + '_',
+          pid: orderId,
+          vDate: parseTime(new Date()),
+          makeUser: this.trueName
         })
       }
     },
     // 生成第一类凭证 订单的运费 总货款 出厂贷款的凭证生成
-    makeCredentialsFirst() {
+    makeCredentialsFirst(strings) {
       // 1. 如果出厂货款大于0 贷 应付账款 - 供应商往来 - 宁夏xxxxx 供应商名字 金额 2271.46  **注意一个订单多个供应商  group by 供应商分组 *
-      function makeSupplierVoucher(item) {
+      function makeSupplierVoucher(item, strings) {
         if (item.supplierNames) {
           // 获取供应商列表 分组添加
           item.orderDetailList.forEach(element => {
@@ -153,7 +195,12 @@ export var mixin_credentials_generation_orderlist = {
               lender: '',
               borrower: element.paymentFactory,
               comments: element.supplier,
-              amount: element.paymentFactory
+              amount: element.paymentFactory,
+              // 基本信息
+              voucherNo: `${strings}_` + this.selectedNeedOrderList.map(item => item.id).join('_') + '_',
+              pid: item.id,
+              vDate: parseTime(new Date()),
+              makeUser: this.trueName
             })
             // 借方
             this.needToMakeList.push({
@@ -162,14 +209,19 @@ export var mixin_credentials_generation_orderlist = {
               lender: element.paymentFactory,
               borrower: '',
               comments: '无',
-              amount: element.paymentFactory
+              amount: element.paymentFactory,
+              // 基本信息
+              voucherNo: `${strings}_` + this.selectedNeedOrderList.map(item => item.id).join('_') + '_',
+              pid: item.id,
+              vDate: parseTime(new Date()),
+              makeUser: this.trueName
             })
           })
         }
       }
 
       // 2. 总货款 借  应收账款 - 客户往来 - - 客户名称    总货款  2271.46 // 贷 主营业务收入 - 玻璃收入 - 金额 总货款  2271.46
-      function makeCustomerVoucher(item) {
+      function makeCustomerVoucher(item, strings) {
         if (item.allPayments > 0) {
           // 贷方
           this.needToMakeList.push({
@@ -178,7 +230,12 @@ export var mixin_credentials_generation_orderlist = {
             lender: item.allPayments,
             borrower: '',
             comments: item.customer,
-            amount: item.allPayments
+            amount: item.allPayments,
+            // 基本信息
+            voucherNo: `${strings}_` + this.selectedNeedOrderList.map(item => item.id).join('_') + '_',
+            pid: item.id,
+            vDate: parseTime(new Date()),
+            makeUser: this.trueName
           })
           // 借方
           this.needToMakeList.push({
@@ -187,13 +244,18 @@ export var mixin_credentials_generation_orderlist = {
             lender: '',
             borrower: item.allPayments,
             comments: '无',
-            amount: item.allPayments
+            amount: item.allPayments,
+            // 基本信息
+            voucherNo: `${strings}_` + this.selectedNeedOrderList.map(item => item.id).join('_') + '_',
+            pid: item.id,
+            vDate: parseTime(new Date()),
+            makeUser: this.trueName
           })
         }
       }
 
       // 3. 运费  借  主营业务成本-运费成本 - 68.25  运费 海运陆运之和  贷  应付运费 - 陆运   应付运费 - 海运  分开写填运费
-      function makeFreightVoucher(item) {
+      function makeFreightVoucher(item, strings) {
         if (item.landFreight || item.seaFreight) {
           // 贷方
           this.needToMakeList.push({
@@ -202,7 +264,12 @@ export var mixin_credentials_generation_orderlist = {
             lender: '',
             borrower: item.landFreight,
             comments: item.landCarNo,
-            amount: item.landFreight
+            amount: item.landFreight,
+            // 基本信息
+            voucherNo: `${strings}_` + this.selectedNeedOrderList.map(item => item.id).join('_') + '_',
+            pid: item.id,
+            vDate: parseTime(new Date()),
+            makeUser: this.trueName
           })
           if (item.seaFreight) {
             this.needToMakeList.push({
@@ -211,7 +278,12 @@ export var mixin_credentials_generation_orderlist = {
               lender: '',
               borrower: item.seaFreight,
               comments: item.seaCarNo,
-              amount: item.seaFreight
+              amount: item.seaFreight,
+              // 基本信息
+              voucherNo: `${strings}_` + this.selectedNeedOrderList.map(item => item.id).join('_') + '_',
+              pid: item.id,
+              vDate: parseTime(new Date()),
+              makeUser: this.trueName
             })
           }
           // 借方
@@ -221,41 +293,29 @@ export var mixin_credentials_generation_orderlist = {
             lender: item.landFreight + item.seaFreight,
             borrower: '',
             comments: item.landCarNo,
-            amount: item.landFreight + item.seaFreight
+            amount: item.landFreight + item.seaFreight,
+            // 基本信息
+            voucherNo: `${strings}_` + this.selectedNeedOrderList.map(item => item.id).join('_') + '_',
+            pid: item.id,
+            vDate: parseTime(new Date()),
+            makeUser: this.trueName
           })
         }
       }
 
       // 生成
       this.selectedNeedOrderList.forEach(item => {
-        makeSupplierVoucher.call(this, item);
-        makeCustomerVoucher.call(this, item);
-        makeFreightVoucher.call(this, item);
-      })
-      // 填充基本信息
-      this.needToMakeList.forEach(item => {
-        item.voucherNo = 'orderId_' + this.selectedNeedOrderList[0].id
-        item.pid = this.selectedNeedOrderList[0].id
-        item.vDate = parseTime(new Date())
-        item.makeUser = this.trueName;
+        makeSupplierVoucher.call(this, item, strings);
+        makeCustomerVoucher.call(this, item, strings);
+        makeFreightVoucher.call(this, item, strings);
       })
     },
     // 生成第二类凭证  分为买入 和 卖出 需要查询订单信息
-    makeCredentialsSecond(callback) {
+    makeCredentialsSecond(callback, strings) {
       this.$message.success('制作票点凭证')
       // 生成
       this.selectedNeedOrderList.forEach(item => {
-        callback.call(this, item)
-      })
-      // 填充基本信息 如果是第三方开票 需要根据ordersNo查询原订单id 拼接
-      listGoodsOrder({ordersNo: item.ordersNo})
-      this.needToMakeList.forEach((item, index) => {
-        item.voucherNo = 'invoice_' + this.selectedNeedOrderList[0].id
-        // 这个地方会绑定多个id
-        // todo
-        item.pid = this.selectedNeedOrderList[0].id
-        item.vDate = parseTime(new Date())
-        item.makeUser = this.trueName;
+        callback.call(this, item, strings)
       })
     },
     // 获取出厂货款
