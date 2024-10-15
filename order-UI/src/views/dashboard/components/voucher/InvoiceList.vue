@@ -51,7 +51,6 @@ export default {
     'invoiceType': {
       handler(val) {
         this.getList(val)
-        this.$message.success(val)
       }
     }
   },
@@ -162,13 +161,6 @@ export default {
                          show-overflow-tooltip/>
         <el-table-column label="票点" align="center" prop="ticketPoint" show-overflow-tooltip/>
         <el-table-column label="票点金额" align="center" prop="ticketPointAmount" show-overflow-tooltip/>
-        <el-table-column label="审核状态" align="center" prop="checkState" width="240">
-          <template #default="scope">
-            <el-row>
-              {{ scope.row.checkState }}
-            </el-row>
-          </template>
-        </el-table-column>
         <el-table-column label="备注" align="center" prop="comments"/>
       </el-table>
     </el-row>

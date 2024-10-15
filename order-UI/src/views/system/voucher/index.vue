@@ -10,7 +10,7 @@
         />
       </el-form-item>
       <el-form-item label="分类" prop="voucherNo">
-        <el-select v-model="queryParams.BvoucherNoPrefix" placeholder="单据类型" clearable>
+        <el-select v-model="queryParams.voucherNoPrefix" placeholder="单据类型" clearable>
           <el-option
             v-for="item in options"
             :key="item.value"
@@ -185,7 +185,7 @@ export default {
       open: false,
       // 查询参数
       queryParams: {
-        BvoucherNoPrefix: '',
+        voucherNoPrefix: '',
         pageNum: 1,
         pageSize: 10,
         voucherNo: null,
@@ -230,7 +230,7 @@ export default {
     /** 查询凭证列表 */
     getList() {
       this.loading = true;
-      listVoucher(addDateRange(this.queryParams, [], 'voucher', this.queryParams.BvoucherNoPrefix)).then(response => {
+      listVoucher(addDateRange(this.queryParams, [], 'voucher', this.queryParams.voucherNoPrefix)).then(response => {
         this.voucherList = response.rows;
         this.total = response.total;
         this.loading = false;
