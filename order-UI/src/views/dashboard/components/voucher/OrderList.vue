@@ -1,8 +1,8 @@
 <!--订单列表单独组件-->
 <script>
-import {listGoodsOrder} from "../api/system/goodsOrder";
-import QuerySearchBar from "../views/system/goodsorder/QuerySearchBar.vue";
-import {OptionInvent, Options} from "../views/dashboard/mixins/order/order_Invoice";
+import {listGoodsOrder} from "../../../../api/system/goodsOrder";
+import QuerySearchBar from "../../../system/goodsorder/QuerySearchBar.vue";
+import {OptionInvent, Options} from "../../mixins/order/order_Invoice";
 
 export default {
   name: "OrderList",
@@ -120,7 +120,6 @@ export default {
           </span>
             </el-row>
           </el-row>
-          <el-row><span v-if="scope.row.supplierNames === null">无</span></el-row>
         </template>
       </el-table-column>
       <el-table-column show-overflow-tooltip label="陆运车牌" align="center" prop="landCarNo"/>

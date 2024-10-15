@@ -4,47 +4,54 @@
     <div class="charge">
       <!--      上面三个基本信息-->
       <div class="charge-header">
-        <div>
-          日期
-          <el-date-picker type="date" style="width: 145px;" v-model="voucher.date"></el-date-picker>
+        <div class="item">
+          <div style="width: 80px">日期</div>
+          <div>
+            <el-date-picker style="width: 200px;" type="date" v-model="voucher.vDate"></el-date-picker>
+          </div>
         </div>
-        <div>
-          凭证编号
-          <el-input type="text" style="width: 80px;" v-model="voucher.no"></el-input>
+        <div class="item" v-if="computedToMakeList.length !== 0">
+          <div style="width: 80px">凭证编号</div>
+          <div>
+            <el-input type="text" style="width: 200px"
+                      v-model="computedToMakeList[0].voucherNo"></el-input>
+          </div>
         </div>
-        <div>
-          制单人
-          <el-input type="text" style="width: 80px;" v-model="voucher.maker"></el-input>
+        <div class="item">
+          <div style="width: 80px">制单人</div>
+          <div>
+            <el-input type="text" style="width: 200px;" v-model="voucher.makeUser"></el-input>
+          </div>
         </div>
       </div>
-      <table class="charge-table" border="1">
+      <table class="charge-table" border="2">
         <!-- 表头-->
         <tr>
-          <td width="6%">序号</td>
-          <td :width="'22%'">摘要</td>
-          <td :width="'22%'">科目名称</td>
-          <td :width="'22%'">辅助项</td>
+          <td width="6%" style="font-weight: bold">序号</td>
+          <td :width="'22%'" style="font-weight: bold">摘要</td>
+          <td :width="'22%'" style="font-weight: bold">科目名称</td>
+          <td :width="'22%'" style="font-weight: bold">辅助项</td>
           <!--  右侧金额-->
           <td width="50%">
             <table style="height: 50px;">
               <tr style="border-bottom: 1px solid #bab9b9;">
-                <td width="50%" style="border-right: 1px solid #bab9b9;">借方</td>
-                <td width="50%">贷方</td>
+                <td width="50%" style="border-right: 1px solid #bab9b9;font-weight: bold">借方</td>
+                <td width="50%" style="font-weight: bold">贷方</td>
               </tr>
             </table>
           </td>
         </tr>
 
         <!-- 销项列表-->
-        <tr v-for="(item,index) in needToMakeList">
+        <tr v-for="(item,index) in computedToMakeList">
           <!--          序号-->
           <td>
-            {{ index }}
+            {{ index + 1 }}
           </td>
           <!--          摘要-->
           <td>
             <div class="main-subject">
-              <el-input type="text"></el-input>
+              <el-input type="text" v-model="item.quote"></el-input>
             </div>
           </td>
           <!--          科目-->
@@ -52,10 +59,11 @@
             <div class="main-subject">
               <el-row>
                 <el-col :span="20">
-                  <el-input type="text" v-model="type"></el-input>
+                  <el-input type="text" v-model="item.voucherType"></el-input>
                 </el-col>
                 <el-col :span="4">
-                  <SubjectOption @update:type="handleUpdateType"/>
+                  <!-- value是函数默认参数 箭头函数的默认参数是Update默认自带的value 传递给另一个函数执行-->
+                  <SubjectOption @update:type="(value) => handleUpdateType(value, index)"/>
                 </el-col>
               </el-row>
             </div>
@@ -63,7 +71,7 @@
           <!--          辅助项-->
           <td>
             <div class="main-subject">
-              <el-input type="text"></el-input>
+              <el-input type="text" v-model="item.comments"></el-input>
             </div>
           </td>
 
@@ -72,10 +80,10 @@
             <table>
               <tr>
                 <td width="50%" style="border-right: 1px solid #bab9b9;">
-                  <el-input type="text"></el-input>
+                  <el-input type="text" v-model="item.lender"></el-input>
                 </td>
                 <td width="50%">
-                  <el-input type="text"></el-input>
+                  <el-input type="text" v-model="item.borrower"></el-input>
                 </td>
               </tr>
             </table>
@@ -83,25 +91,35 @@
         </tr>
         <tr>
           <td :colspan="3" style="text-align: left;padding-left: 10px;height:50px">合计：</td>
-          <td style="text-align: left;padding-left: 10px;height:50px">大写合计:</td>
+          <td style="text-align: left;padding-left: 10px;height:50px">
+            大写合计:{{ numToChineseUppercase(totalBorrower + totalLender) }}
+          </td>
           <td>
             <table>
               <tr>
+                <!--                借方合计-->
                 <td width="50%" style="border-right: 1px solid #bab9b9;">
-                  5000
+                  {{ totalLender }}
                 </td>
+                <!--                贷方合计-->
                 <td width="50%">
-                  6000
+                  {{ totalBorrower }}
                 </td>
               </tr>
             </table>
           </td>
         </tr>
+        <tr>
+          <td :colspan="5" style="height: 51px">
+            <el-button type="success" @click="handleAddVoucher">
+              +
+            </el-button>
+          </td>
+        </tr>
       </table>
-      <div style="height: 50px;line-height: 50px;">制单人：</div>
       <div style="text-align: right;">
-        <el-button>暂存</el-button>
-        <el-button type="primary">保存</el-button>
+        <el-button type="primary" @click="submitVouchersList">保存</el-button>
+        <el-button @click="reset">重置</el-button>
       </div>
     </div>
   </div>
@@ -109,7 +127,10 @@
 
 <script>
 
-import SubjectOption from "./SubjectOption.vue";
+import SubjectOption from "../../../../components/SubjectOption.vue";
+import {mapGetters} from "vuex";
+import {fix, numToChineseUppercase} from "../../../../api/tool/format";
+import {addVoucherBatch} from "../../../../api/system/voucher";
 
 export default {
   name: "CrendentMake",
@@ -125,21 +146,67 @@ export default {
   data() {
     return {
       voucher: {
-        no: '1001', date: new Date(), maker: '', bill: 0
+        voucherNo: '1001', vDate: new Date(), makeUser: '',
       },
       list: [{}],
-      type: ''
+      voucherType: ''
     }
   },
+  computed: {
+    // 凭证列表
+    computedToMakeList: {
+      get() {
+        return this.needToMakeList
+      },
+      set(val) {
+        this.$emit('update:needToMakeList', val)
+      }
+    },
+    totalLender() {
+      return fix(this.needToMakeList.reduce((sum, item) => sum + Number(item.lender || 0), 0))
+    },
+    totalBorrower() {
+      return fix(this.needToMakeList.reduce((sum, item) => sum + Number(item.borrower || 0), 0))
+    },
+    ...mapGetters(['trueName'])
+  },
   mounted() {
+    this.voucher.makeUser = this.trueName
   },
   updated() {
 
   },
   methods: {
+    fix,
+    numToChineseUppercase,
+    // 单条添加凭证
+    handleAddVoucher() {
+      let obj = {
+        voucherType: '',
+        borrower: '',
+        lender: '',
+        quote: '',
+        comments: ''
+      }
+      this.computedToMakeList.push(obj)
+    },
     // 拿到科目类型
-    handleUpdateType(value) {
-      this.type = value
+    handleUpdateType(value, index) {
+      this.computedToMakeList[index].voucherType = value
+    },
+    // 保存凭证 (批量保存)
+    submitVouchersList() {
+      addVoucherBatch(this.computedToMakeList).then(res => {
+        if (res.code === 200) {
+          this.$message.success('凭证保存成功')
+          location.reload()
+        } else {
+          this.$message.error(res.msg)
+        }
+      })
+    },
+    reset() {
+      location.reload()
     }
   }
 }
@@ -176,30 +243,24 @@ table td {
 }
 
 .charge {
-  width: 1124px;
+  width: 1200px;
   margin: auto;
 }
 
 .charge-header {
+  display: flex;
+  flex-direction: row;
   margin-bottom: 10px;
 }
 
-.charge-header > div {
-  display: inline-block;
-  margin-right: 15px;
+.item {
+  width: 300px;
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
+  align-items: center;
 }
 
-.tip-box {
-  width: 330px;
-  padding: 10px;
-  position: absolute;
-  top: 27px;
-  right: -15px;
-  z-index: 1005;
-  background-color: #fff;
-  box-shadow: 0 0 6px rgba(170, 170, 170, .73);
-  display: none;
-}
 
 .tip-box-table tr {
   height: 25px;
@@ -215,39 +276,6 @@ table td {
   display: inline-block;
 }
 
-.el-icon-more {
-  position: absolute;
-  top: 22px;
-  right: 10px;
-  z-index: 2;
-  color: #666;
-  cursor: pointer;
-  font-size: 16px;
-}
-
-.dropdown-menu {
-  position: absolute;
-  top: 100%;
-  left: 0px;
-  float: left;
-  padding: 5px 0;
-  margin: 2px 0 0;
-  text-align: left;
-  list-style: none;
-  background-color: #fff;
-  background-clip: padding-box;
-}
-
-.suggest-list {
-  width: 100%;
-  height: auto;
-  z-index: 1015;
-  min-width: inherit;
-  display: block;
-  overflow: hidden;
-  border: none;
-  box-shadow: 0 1px 6px rgba(0, 0, 0, .2);
-}
 
 .suggest-list .item-list {
   max-height: 375px;

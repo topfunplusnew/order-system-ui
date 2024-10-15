@@ -1,6 +1,7 @@
 export const formatTime = (date) => {
   return `${date.getFullYear()}-${date.getMonth() + 1}-${date.getDate()}`
 }
+
 // 将字符串日期转换为 Date 对象
 export function parseDate(dateString) {
   const [year, month, day] = dateString.split('-').map(Number);
@@ -19,58 +20,66 @@ export const fix = (value) => {
   return Number(value).toFixed(2)
 }
 
-//金钱转大写
+// 金钱转大写
 export function numToChineseUppercase(n) {
-  //零元特殊处理
-  if (n === 0) {
-    return '零元整';
-  }
-  const units = ['', '拾', '佰', '仟'];
-  const sections = ['', '万', '亿', '万亿'];
-  const numbers = '零壹贰叁肆伍陆柒捌玖';
+  if (n === 0) return '零元整'; // 特殊处理 0 元
 
-  let numStr = String(n);
-  let numLen = numStr.length;
-  let result = [];
+  const units = ['', '拾', '佰', '仟']; // 每4位内的单位
+  const sections = ['', '万', '亿', '万亿']; // 每节对应的单位
+  const numbers = '零壹贰叁肆伍陆柒捌玖'; // 数字对应的中文
 
+  let [integerPart, decimalPart] = String(n).split('.'); // 拆分整数和小数部分
+  let result = []; // 最终结果
+
+  // 将每个四位一组的数字转换为中文
   function sectionToChinese(sectionNum) {
     let sectionResult = '';
-    let zero = false;
-    let unitPos = 0;
+    let zero = false; // 标记上一次是否出现 0
+    let unitPos = 0; // 对应单位的位置
 
     for (let i = sectionNum.length - 1; i >= 0; i--) {
-      let num = parseInt(sectionNum[i]);
+      let num = parseInt(sectionNum[i], 10);
       if (num === 0) {
         if (!zero) {
-          zero = true;
+          zero = true; // 标记出现零
           sectionResult = numbers[0] + sectionResult;
         }
       } else {
-        zero = false;
+        zero = false; // 重置零标记
         sectionResult = numbers[num] + units[unitPos] + sectionResult;
       }
       unitPos++;
     }
-    return sectionResult.replace(/零+$/, '');
+    return sectionResult.replace(/零+$/, ''); // 移除结尾的多余零
   }
 
+  // 处理整数部分，按4位一组转换
   let secIndex = 0;
-  while (numLen > 0) {
-    let start = Math.max(0, numLen - 4);
-    let sectionNum = numStr.substring(start, numLen);
+  while (integerPart.length > 0) {
+    let start = Math.max(0, integerPart.length - 4);
+    let sectionNum = integerPart.substring(start, integerPart.length);
     let sectionResult = sectionToChinese(sectionNum);
     if (sectionResult) {
-      result.unshift(sections[secIndex]);
+      result.unshift(sections[secIndex]); // 插入节单位
       result.unshift(sectionResult);
     }
-    numLen -= 4;
+    integerPart = integerPart.substring(0, start);
     secIndex++;
   }
 
-  let chineseNumber = result.join('').replace(/零(万|亿|$)/g, '$1').replace(/亿万/, '亿零');
-  if (chineseNumber.endsWith('零')) {
-    chineseNumber = chineseNumber.slice(0, -1);
+  // 处理结果中的冗余"零"
+  let chineseNumber = result.join('').replace(/零(万|亿|$)/g, '$1').replace(/亿万/, '亿');
+
+  // 处理小数部分（角、分）
+  let decimalResult = '';
+  if (decimalPart) {
+    const jiao = parseInt(decimalPart[0] || '0', 10);
+    const fen = parseInt(decimalPart[1] || '0', 10);
+    if (jiao > 0) decimalResult += numbers[jiao] + '角';
+    if (fen > 0) decimalResult += numbers[fen] + '分';
   }
 
-  return chineseNumber + '元整';
+  // 如果没有小数部分，则补上“整”
+  return chineseNumber + '元' + (decimalResult || '整');
 }
+

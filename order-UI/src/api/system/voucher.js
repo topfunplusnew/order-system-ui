@@ -42,3 +42,12 @@ export function delVoucher(id) {
     method: 'delete'
   })
 }
+
+// 批量新增凭证
+export function addVoucherBatch(data) {
+  return request({
+    url: '/system/voucher/batch',
+    method: 'post',
+    data: data
+  })
+}

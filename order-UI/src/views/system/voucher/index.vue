@@ -50,24 +50,24 @@
     <el-table v-loading="loading" :data="voucherList" size="mini"
               :cell-style="() => { return { padding: '.5px' } }" id="printBox" v-horizontal-scroll="'always'"
               border>
-      <el-table-column label="凭证编号" align="center" prop="voucherNo"/>
-      <el-table-column label="制单日期" align="center" prop="vDate"/>
-      <el-table-column label="制单人" align="center" prop="makeUser"/>
-      <el-table-column label="合计" align="center" prop="amount"/>
-      <el-table-column label="借方" align="center" prop="borrower"/>
-      <el-table-column label="贷方" align="center" prop="lender"/>
+      <el-table-column label="凭证编号" align="center" prop="voucherNo" width="300"/>
+      <el-table-column label="制单日期" align="center" prop="vDate" show-overflow-tooltip/>
+      <el-table-column label="制单人" align="center" prop="makeUser" show-overflow-tooltip/>
+      <el-table-column label="合计" align="center" prop="amount" show-overflow-tooltip/>
+      <el-table-column label="借方" align="center" prop="borrower" show-overflow-tooltip/>
+      <el-table-column label="贷方" align="center" prop="lender" show-overflow-tooltip/>
       <!--      <el-table-column label="订单" align="center" prop="pid"/>-->
-      <el-table-column label="凭证类型" align="center" prop="voucherType"/>
-      <el-table-column label="备注" align="center" prop="comments"/>
+      <el-table-column label="凭证类型" align="center" prop="voucherType" show-overflow-tooltip/>
+      <el-table-column label="备注" align="center" prop="comments" show-overflow-tooltip/>
       <el-table-column label="操作" align="center" class-name="small-padding fixed-width">
         <template slot-scope="scope">
-          <!--          <el-button-->
-          <!--            size="mini"-->
-          <!--            type="text"-->
-          <!--            @click="handleUpdate(scope.row)"-->
-          <!--            v-hasPermi="['system:voucher:edit']"-->
-          <!--          >修改-->
-          <!--          </el-button>-->
+          <el-button
+            size="mini"
+            type="text"
+            @click="handleUpdate(scope.row)"
+            v-hasPermi="['system:voucher:edit']"
+          >修改
+          </el-button>
           <!--          <el-button-->
           <!--            size="mini"-->
           <!--            type="text"-->
@@ -99,7 +99,6 @@
       @pagination="getList"
     />
 
-
     <!--    查看订单的弹窗-->
     <InfoDialog :visible="goodsOrderVisible" title="订单列表" @close="goodsOrderVisible = false">
       <template #info>
@@ -107,54 +106,30 @@
         <OrderDetailInfo :order-detail-info-list="orderInfo.orderDetailList"/>
       </template>
     </InfoDialog>
-    <!--    &lt;!&ndash; 添加或修改凭证对话框 &ndash;&gt;-->
-    <!--    <el-dialog :title="title" :visible.sync="open" width="800px" append-to-body>-->
-    <!--      <el-form ref="form" :model="form" :rules="rules" label-width="120px">-->
-    <!--        <el-form-item label="凭证编号" prop="voucherNo">-->
-    <!--          <el-input v-model="form.voucherNo" placeholder="请输入凭证编号"/>-->
-    <!--        </el-form-item>-->
-    <!--        <el-form-item label="制单日期" prop="vDate">-->
-    <!--          <el-input v-model="form.vDate" placeholder="请输入制单日期"/>-->
-    <!--        </el-form-item>-->
-    <!--        <el-form-item label="制单人" prop="makeUser">-->
-    <!--          <el-input v-model="form.makeUser" placeholder="请输入制单人"/>-->
-    <!--        </el-form-item>-->
-    <!--        <el-form-item label="合计" prop="amount">-->
-    <!--          <el-input v-model="form.amount" placeholder="请输入合计"/>-->
-    <!--        </el-form-item>-->
-    <!--        <el-form-item label="借方" prop="borrower">-->
-    <!--          <el-input v-model="form.borrower" placeholder="请输入借方"/>-->
-    <!--        </el-form-item>-->
-    <!--        <el-form-item label="贷方" prop="lender">-->
-    <!--          <el-input v-model="form.lender" placeholder="请输入贷方"/>-->
-    <!--        </el-form-item>-->
-    <!--        <el-form-item label="订单" prop="pid">-->
-    <!--          <el-input v-model="form.pid" placeholder="请输入订单"/>-->
-    <!--        </el-form-item>-->
-    <!--        <el-form-item label="编辑人员ID" prop="editUserid">-->
-    <!--          <el-input v-model="form.editUserid" placeholder="请输入编辑人员ID"/>-->
-    <!--        </el-form-item>-->
-    <!--        <el-form-item label="备注" prop="comments">-->
-    <!--          <el-input v-model="form.comments" placeholder="请输入备注"/>-->
-    <!--        </el-form-item>-->
-    <!--        <el-form-item label="添加时间" prop="addtime">-->
-    <!--          <el-input v-model="form.addtime" placeholder="请输入添加时间"/>-->
-    <!--        </el-form-item>-->
-    <!--        <el-form-item label="操作人员ID" prop="userId">-->
-    <!--          <el-input v-model="form.userId" placeholder="请输入操作人员ID"/>-->
-    <!--        </el-form-item>-->
-    <!--        <el-form-item label="操作人员姓名" prop="UserName">-->
-    <!--          <el-input v-model="form.UserName" placeholder="请输入操作人员姓名"/>-->
-    <!--        </el-form-item>-->
-    <!--        <el-form-item label="删除标记" prop="delFlag">-->
-    <!--          <el-input v-model="form.delFlag" placeholder="请输入删除标记"/>-->
-    <!--        </el-form-item>-->
-    <!--      </el-form>-->
-    <!--      <div slot="footer" class="dialog-footer">-->
-    <!--        <el-button type="primary" @click="submitForm">确 定</el-button>-->
-    <!--        <el-button @click="cancel">取 消</el-button>-->
-    <!--      </div>-->
-    <!--    </el-dialog>-->
+    <!-- 添加或修改凭证对话框 -->
+    <el-dialog :title="title" :visible.sync="open" width="800px" append-to-body>
+      <el-form ref="form" :model="form" :rules="rules" label-width="120px">
+        <el-form-item label="制单人" prop="makeUser">
+          <el-input v-model="form.makeUser" placeholder="请输入制单人"/>
+        </el-form-item>
+        <el-form-item label="合计" prop="amount">
+          <el-input v-model="form.amount" placeholder="请输入合计"/>
+        </el-form-item>
+        <el-form-item label="借方" prop="borrower">
+          <el-input v-model="form.borrower" placeholder="请输入借方"/>
+        </el-form-item>
+        <el-form-item label="贷方" prop="lender">
+          <el-input v-model="form.lender" placeholder="请输入贷方"/>
+        </el-form-item>
+        <el-form-item label="备注" prop="comments">
+          <el-input v-model="form.comments" placeholder="请输入备注"/>
+        </el-form-item>
+      </el-form>
+      <div slot="footer" class="dialog-footer">
+        <el-button type="primary" @click="submitForm">确 定</el-button>
+        <el-button @click="cancel">取 消</el-button>
+      </div>
+    </el-dialog>
   </div>
 </template>
 
