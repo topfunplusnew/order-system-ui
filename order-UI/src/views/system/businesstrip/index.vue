@@ -226,16 +226,24 @@
           </el-row>
           <el-table :data="tripReimbursementList" :row-class-name="rowTripReimbursementIndex"
                     @selection-change="handleTripReimbursementSelectionChange" ref="tripReimbursement">
-            <el-table-column type="selection" width="50" align="center"/>
-            <el-table-column label="序号" align="center" prop="index" width="50"/>
-            <el-table-column label="报销项" prop="item" width="150">
+            <el-table-column type="selection" width="100" align="center"/>
+            <el-table-column label="序号" align="center" prop="index" width="150px"/>
+            <el-table-column label="报销项" prop="item" width="350px">
               <template slot-scope="scope">
-                <el-input v-model="scope.row.item" placeholder="请输入报销项" :disabled="scope.row.isDisabled"/>
+                <el-row>
+                  <el-col :span="20">
+                    <el-input v-model="scope.row.item" placeholder="请输入报销项" :disabled="scope.row.isDisabled"/>
+                  </el-col>
+                  <el-col :span="4">
+                    <SubjectOption @update:type="(value)=>handleType(value,scope)"/>
+                  </el-col>
+                </el-row>
               </template>
             </el-table-column>
             <el-table-column label="费用" prop="itemCost">
               <template slot-scope="scope">
-                <el-input v-model="scope.row.itemCost" placeholder="请输入费用" :disabled="scope.row.isDisabled"/>
+                <el-input v-model="scope.row.itemCost" type="number" placeholder="请输入费用"
+                          :disabled="scope.row.isDisabled"/>
               </template>
             </el-table-column>
           </el-table>
@@ -345,10 +353,11 @@ import {mixin_common_upload} from "../../dashboard/mixins/common/common_upload";
 import {mixin_business_trip_update} from "../../dashboard/mixins/bussiness/business_trip_update";
 import {mixin_business_trip_car_apply} from "../../dashboard/mixins/bussiness/bussiness_trip_car_apply";
 import {mixin_business_trip_oil_card} from "../../dashboard/mixins/bussiness/bussiness_trip_oil_card";
+import SubjectOption from "../../../components/SubjectOption.vue";
 
 export default {
   name: "BusinessTrip",
-  components: {StepsForm, InfoDialog, ApplyPayment, PaymentApply, SearchOption},
+  components: {SubjectOption, StepsForm, InfoDialog, ApplyPayment, PaymentApply, SearchOption},
   mixins: [mixin_printHTML, mixin_common_upload, mixin_car_apply, mixin_business_trip_add,
     mixin_business_trip_update, mixin_business_trip_car_apply, mixin_business_trip_oil_card
   ],
@@ -384,7 +393,12 @@ export default {
       form: {
         employee: ''
       },
-      rules: {},
+      rules: {
+        employee: [{required: true, message: "请输入出差人员", trigger: "blur"}],
+        personnel: [{required: true, message: "请输入出差人员", trigger: "blur"}],
+        starttime: [{required: true, message: "请输入出差开始时间", trigger: "blur"}],
+        endtime: [{required: true, message: "请输入出差结束时间", trigger: "blur"}],
+      },
       columns: [
         {key: 0, label: `报销人`, visible: true},
         {key: 1, label: `共同出差人员`, visible: true},
@@ -488,15 +502,9 @@ export default {
         this.applyForPaymentDialogVisible = true
       })
     },
-
-
-    // 公司车辆
-    handleCommitCarNumber(val) {
-      this.oilCardConsumeInfo.carNo = val.dictLabel
-    }
-    ,
-    handleCommitBackQueryCarNumber(val) {
-      this.queryCarNumber = val;
+    // 自动填写报销项
+    handleType(value, scope) {
+      scope.row.item = value;
     },
 
     // 文件上传

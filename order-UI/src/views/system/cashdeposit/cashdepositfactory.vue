@@ -38,7 +38,7 @@
         <el-button icon="el-icon-refresh" size="mini" @click="resetQuery">刷新</el-button>
       </el-col>
       <el-col :span="1.5">
-        <el-button size="mini" @click="handleAdd" type="danger">添加期货保证金</el-button>
+        <el-button size="mini" @click="handleAdd" type="danger">添加厂家保证金</el-button>
       </el-col>
       <right-toolbar :showSearch.sync="showSearch" @queryTable="getList" :columns="columns">
         <template v-slot:print>
@@ -72,14 +72,14 @@
               v-horizontal-scroll="'always'" id="printBox" size="mini" :cell-style="()=>{return {padding:'1px'}}">
       <!--      <el-table-column label="id" align="center" prop="id"/>-->
       <!--      <el-table-column label="借出款编号" align="center" prop="futuresNO" v-if="columns[0].visible"/>-->
-      <el-table-column label="期货保证金公司" align="center" prop="futuresMarginCompany" v-if="columns[0].visible"
+      <el-table-column label="厂家保证金公司" align="center" prop="futuresMarginCompany" v-if="columns[0].visible"
                        width="130" show-overflow-tooltip>
         <template slot-scope="scope">
           <span v-if="scope.row.futuresMarginCompany !== ''&& scope.row.futuresMarginCompany !== null">
             {{ scope.row.futuresMarginCompany }}
           </span>
           <span v-else>
-            无期货保证金公司
+            无厂家保证金公司
           </span>
         </template>
       </el-table-column>
@@ -103,7 +103,7 @@
                        show-overflow-tooltip/>
       <el-table-column label="我方开户行" align="center" prop="selfBankName" v-if="columns[9].visible" width="110"
                        show-overflow-tooltip/>
-      <el-table-column label="支付期货保证金时间" align="center" prop="futuresDate" v-if="columns[10].visible"
+      <el-table-column label="支付厂家保证金时间" align="center" prop="futuresDate" v-if="columns[10].visible"
                        show-overflow-tooltip
                        width="110"/>
       <el-table-column label="事由" align="center" prop="reason" v-if="columns[11].visible" width="110"
@@ -161,19 +161,19 @@
     />
 
     <!-- 添加或修改向外部借出款信息对话框 -->
-    <el-dialog :close-on-click-modal="false" :show-close="false" title="添加期货保证金" :visible.sync="open"
+    <el-dialog :close-on-click-modal="false" :show-close="false" title="添加厂家保证金" :visible.sync="open"
                width="50%" append-to-body>
       <el-form ref="form" :model="form" :rules="rules" label-width="160px">
         <el-row>
           <el-col :span="12">
-            <el-form-item label="期货保证金公司" prop="futuresMarginCompany">
-              <el-input v-model="form.futuresMarginCompany" placeholder="请输入期货保证金公司"/>
+            <el-form-item label="厂家保证金公司" prop="futuresMarginCompany">
+              <el-input v-model="form.futuresMarginCompany" placeholder="请输入厂家保证金公司"/>
             </el-form-item>
-            <el-form-item label="支付期货保证金时间" prop="futuresDate">
+            <el-form-item label="支付厂家保证金时间" prop="futuresDate">
               <el-date-picker
                 v-model="form.futuresDate"
                 type="date"
-                placeholder="请选择支付期货保证金时间"
+                placeholder="请选择支付厂家保证金时间"
                 value-format="yyyy-MM-dd">
               </el-date-picker>
             </el-form-item>
@@ -371,7 +371,7 @@ export default {
         futuresMarginCompany: null,
         targetType: null,
         target: null,
-        type: '期货保证金',
+        type: '厂家保证金',
         moneyAmount: null,
         targetAcountsName: null,
         targetBankNo: null,
@@ -424,7 +424,7 @@ export default {
           }],
 
         futuresDate: [
-          {required: true, message: "支付期货保证金日期不能为空", trigger: "blur"}
+          {required: true, message: "支付厂家保证金日期不能为空", trigger: "blur"}
         ],
         reason: [
           {required: true, message: "请输入是由!", trigger: "blur"}
@@ -432,7 +432,7 @@ export default {
       },
       columns: [
         /*  {key: 0, label: `借出款编号`, visible: true},*/
-        {key: 0, label: `期货保证金公司`, visible: true},
+        {key: 0, label: `厂家保证金公司`, visible: true},
         {key: 1, label: `对象类型`, visible: true},
         {key: 2, label: `对象`, visible: true},
         {key: 3, label: `保证金金额`, visible: true},
@@ -443,7 +443,7 @@ export default {
         {key: 8, label: `我方支付账户`, visible: true},
         {key: 9, label: `我方账号`, visible: true},
         {key: 10, label: `我方开户行`, visible: true},
-        {key: 11, label: `支付期货保证金时间`, visible: true},
+        {key: 11, label: `支付厂家保证金时间`, visible: true},
       ],
       //搜索参数
       timesQuery: {
@@ -705,8 +705,8 @@ export default {
             this.form.updateTime = null;
             this.form.userId = null;
             this.form = excludeParams(this.form, this.$exclude)
-            // 添加的时候 要注明type为 期货保证金
-            addLendMoney({...this.form, type: '期货保证金'}).then(response => {
+            // 添加的时候 要注明type为 厂家保证金
+            addLendMoney({...this.form, type: '厂家保证金'}).then(response => {
               this.$modal.msgSuccess("新增成功");
               this.open = false;
               this.getList();

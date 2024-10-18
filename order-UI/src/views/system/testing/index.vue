@@ -7,7 +7,22 @@ export default {
   data() {
     // console.log('data this=>', this)
     return {
-      order: {}
+      order: {},
+      tableData: [
+        {name: '张三', age: 28},
+        {name: '李四', age: 32},
+        {name: '王五', age: 24},
+      ],
+      nameFilters: [
+        {text: '张三', value: '张三'},
+        {text: '李四', value: '李四'},
+        {text: '王五', value: '王五'},
+      ],
+      ageFilters: [
+        {text: '28', value: 28},
+        {text: '32', value: 32},
+        {text: '24', value: 24},
+      ],
     }
   },
   created() {
@@ -34,7 +49,15 @@ export default {
     },
     print() {
       console.log('order的值为', this.order)
-    }
+    },
+
+    // 筛选方法
+    filterName(value, row) {
+      return row.name === value;
+    },
+    filterAge(value, row) {
+      return row.age === value;
+    },
   }
 }
 </script>
@@ -46,6 +69,28 @@ export default {
       {{ order.customer }}
       <el-button @click="handleReset">点击重置对象</el-button>
       <el-button @click="print">输出对象的值</el-button>
+    </div>
+    <div>
+      <el-table :data="tableData">
+        <el-table-column
+          prop="name"
+          label="姓名"
+          :filters="nameFilters"
+          :filter-method="filterName"
+          filter-placement="bottom"
+          filterable
+        >
+        </el-table-column>
+        <el-table-column
+          prop="age"
+          label="年龄"
+          :filters="ageFilters"
+          :filter-method="filterAge"
+          filter-placement="bottom"
+          filterable
+        >
+        </el-table-column>
+      </el-table>
     </div>
   </div>
 </template>

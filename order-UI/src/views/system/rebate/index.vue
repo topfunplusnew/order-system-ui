@@ -143,9 +143,12 @@
           <!--        多选 且树表 展示多个订单 每个订单里面有多个订单详情-->
           <el-row>
             <el-col :span="12">
-              <el-form-item label="订单编号" prop="ordersNo">
-                <el-button @click="orderDialogVisible = true">
-                  {{ form.ordersNo === null || form.ordersNo === '' ? '选择订单' : '已选择:' + form.ordersNo }}
+              <el-form-item label="订单编号">
+                <el-button v-if="goods.length===0" @click="orderDialogVisible = true" size="mini">
+                  选择订单
+                </el-button>
+                <el-button v-else size="mini" type="success" @click="checkSelectedGoods">
+                  查看已选择货物
                 </el-button>
               </el-form-item>
               <el-form-item label="日期" prop="rebateDate">
@@ -285,19 +288,28 @@
             <span style="font-weight: bolder">货物详情列表</span>
           </el-row>
           <el-row>
+            <el-button @click="submitSelectOrderDetail" :disabled="goods.length === 0" type="success" size="mini">
+              选择所选货物
+            </el-button>
             <el-table border :data="orderDetailList" max-height="700" size="mini"
-                      :cell-style="()=>{return {padding:'.5px'}}">
-              <el-table-column show-overflow-tooltip label="操作" align="center"
-                               class-name="small-padding fixed-width"
-                               width="100px" fixed="left">
-                <template slot-scope="scope">
-                  <el-button size="mini" type="success" @click="handleSelectOrderDetail(scope.row)">选择该货物
-                  </el-button>
-                </template>
-              </el-table-column>
+                      :cell-style="()=>{return {padding:'.5px'}}" @selection-change="handleSelectionChangeOrderDetail">
+              <el-table-column type="selection" width="55" align="center" fixed="left"/>
+              <!--              <el-table-column show-overflow-tooltip label="操作" align="center"-->
+              <!--                               class-name="small-padding fixed-width"-->
+              <!--                               width="100px" fixed="left">-->
+              <!--                <template slot-scope="scope">-->
+              <!--                  <el-button size="mini" type="success" @click="handleSelectOrderDetail(scope.row)">选择该货物-->
+              <!--                  </el-button>-->
+              <!--                </template>-->
+              <!--              </el-table-column>-->
+              <!--        添加多选选择-->
               <el-table-column label="订单日期" align="center" prop="orderDate" fixed="left"/>
               <el-table-column label="客户" align="center" prop="customer"/>
-              <el-table-column label="供应商" align="center" prop="supplier"/>
+              <el-table-column label="供应商" align="center" prop="supplier"
+                               :filters="nameFilters"
+                               :filter-method="filterName"
+                               filter-placement="bottom"
+                               filterable/>
               <el-table-column label="级别名称" align="center" prop="levelName"/>
               <el-table-column label="计量单位" align="center" prop="countingUnit"/>
               <el-table-column label="厚度" align="center" prop="height"/>
@@ -346,21 +358,22 @@
       </el-row>
     </el-dialog>
 
-    <el-dialog :close-on-click-modal="false" :show-close="false" title="选择订单" :visible.sync="orderSelectVisible"
+    <el-dialog :close-on-click-modal="false" :show-close="true" title="选择订单" :visible.sync="orderSelectVisible"
                width="70%">
       <el-table fit border v-loading="loading" :data="orderList"
                 max-height="750" size="mini" :cell-style="()=>{return {padding:'2px'}}">
+
         <el-table-column show-overflow-tooltip label="行操作" align="center" class-name="small-padding fixed-width"
                          width="100px" fixed="left">
           <template slot-scope="scope">
-            <el-button size="mini" type="success" @click="handleSelectOrderItem(scope.row)
-            ">选择
+            <el-button size="mini" type="success" @click="handleSelectOrderItem(scope.row)">选择
             </el-button>
           </template>
         </el-table-column>
         <el-table-column show-overflow-tooltip label="ID" align="center" prop="id" fixed="left"/>
         <el-table-column show-overflow-tooltip label="日期" align="center" prop="orderDate" fixed="left"/>
         <el-table-column show-overflow-tooltip label="客户" align="center" prop="customer" fixed="left"/>
+        <!--        供应商可筛选 多选-->
         <el-table-column show-overflow-tooltip label="供应商" align="center" prop="supplierNames" fixed="left"/>
         <el-table-column show-overflow-tooltip label="陆运车牌" align="center" prop="landCarNo"
         />
@@ -493,6 +506,12 @@
       />
     </el-dialog>
 
+
+    <InfoDialog title="已选择货物" :visible.sync="orderGoodsVisible" @update:visible="orderGoodsVisible = false">
+      <template #info>
+        <OrderDetailInfo :orderDetailInfoList="goods" :ban="true"/>
+      </template>
+    </InfoDialog>
   </div>
 </template>
 
@@ -507,6 +526,7 @@ import OrderDetailInfo from "@/components/OrderDetailInfo.vue";
 import {listBankAccount} from "@/api/system/bankAccount";
 import {listCompany} from "@/api/system/company";
 import SearchOption from "@/components/SearchOption.vue";
+import InfoDialog from "../../../components/InfoDialog.vue";
 
 export default {
   name: "Rebate",
@@ -515,7 +535,7 @@ export default {
       return TableName
     }
   },
-  components: {SearchOption, OrderDetailInfo, OrderInfos, ApplyPayment},
+  components: {InfoDialog, SearchOption, OrderDetailInfo, OrderInfos, ApplyPayment},
   mixins: [mixin_printHTML],
   data() {
     return {
@@ -523,6 +543,8 @@ export default {
       loading: true,
       // 选中数组
       ids: [],
+      // 选中货物
+      goods: [],
       // 非单个禁用
       single: true,
       // 非多个禁用
@@ -576,8 +598,6 @@ export default {
       }],
       // 表单校验
       rules: {
-        ordersNo: [
-          {required: true, message: "订单号不能为空", trigger: "blur"}],
         rebateDate: [
           {required: true, message: "返利日期不能为空", trigger: "blur"}],
         rebate: [
@@ -631,7 +651,15 @@ export default {
       bankAcountSelf: '',
 
       // 选择订单的显示
-      orderSelectVisible: false
+      orderSelectVisible: false,
+
+      // 供应商筛选  供应商列表名称 可以通过list拿
+      nameFilters: [],
+
+      // 已经选择的订单货物弹窗
+      orderGoodsVisible: false,
+      // 已选择的货物
+      orderDetailInfoList: [],
     };
   },
   created() {
@@ -685,19 +713,40 @@ export default {
     selectOrderItem() {
       this.orderSelectVisible = true;
     },
+    // 查看已选择的货物
+    checkSelectedGoods() {
+      this.orderGoodsVisible = true
+    },
     // 点击选择订单弹出的订单列表页选择某个订单 需要自动填充信息
     handleSelectOrderItem(row) {
+      this.goods = []
       getGoodsOrder(row.id).then(res => {
         this.orderInfo = res.data;
         this.orderDetailList = res.data.orderDetailList;
+        // 补充供应商信息
+        this.nameFilters = this.orderDetailList.map(item => {
+          return {
+            text: item.supplier,
+            value: item.supplier
+          }
+        })
       })
       this.orderSelectVisible = false
     },
-    // 选择某一个货物
-    handleSelectOrderDetail(row) {
-      this.form.ordersNo = row.ordersNo;
-      this.form.orderDetailID = row.id;
+    // 多选某个货物
+    handleSelectionChangeOrderDetail(selection) {
+      this.goods = selection;
+    },
+    // 确认选择
+    submitSelectOrderDetail() {
+      this.goods.forEach(item => {
+        this.form.orderDetailIds.push(item.id)
+      })
       this.orderDialogVisible = false
+    },
+    // 筛选方法
+    filterName(value, row) {
+      return row.supplier === value;
     },
     //查看附件信息
     checkAttachment(path) {
@@ -730,7 +779,7 @@ export default {
     reset() {
       this.form = {
         id: null,
-        ordersNo: null,
+        orderDetailIds: [],
         rebateDate: null,
         rebate: null,
         rebateType: null,
@@ -748,6 +797,7 @@ export default {
         updateTime: null,
         delFlag: null
       };
+      this.goods = []
       this.resetForm("form");
     },
     /** 搜索按钮操作 */
@@ -778,7 +828,6 @@ export default {
       const id = row.id || this.ids
       getRebate(id).then(response => {
         this.form = response.data;
-        this.form.ordersNo = response.data.orderDetails[0].ordersNo
         this.open = true;
         this.title = "修改返利回扣";
       });
@@ -791,12 +840,14 @@ export default {
             updateRebate(this.form).then(response => {
               this.$modal.msgSuccess("修改成功");
               this.open = false;
+              this.goods = []
               this.getList();
             });
           } else {
             addRebate(this.form).then(response => {
               this.$modal.msgSuccess("新增成功");
               this.open = false;
+              this.goods = []
               this.getList();
             });
           }

@@ -108,6 +108,12 @@
         </template>
       </el-table-column>
       <el-table-column label="备注" align="center" prop="comments" width="165"/>
+      <el-table-column label="银行卡流水编号" align="center" prop="transactionHistory" width="165"/>
+      <el-table-column label="银行卡流水附件" align="center" prop="transactionHistoryAttachment" width="165">
+        <template slot-scope="scope">
+          <CheckFiles :path="scope.row.transactionHistoryAttachment"/>
+        </template>
+      </el-table-column>
       <el-table-column label="操作" align="center" class-name="small-padding fixed-width" fixed="right" width="150">
         <template slot-scope="scope">
           <el-button
@@ -137,9 +143,9 @@
     />
 
     <!-- 添加或修改收款信息对话框 -->
-    <el-dialog :close-on-click-modal="false" :show-close="false" :title="title" :visible.sync="open" width="500px"
+    <el-dialog :close-on-click-modal="false" :show-close="false" :title="title" :visible.sync="open" width="700px"
                append-to-body>
-      <el-form ref="form" :model="form" :rules="rules" label-width="120px">
+      <el-form ref="form" :model="form" :rules="rules" label-width="150px">
         <el-form-item label="日期" prop="fundsDate">
           <el-date-picker
             v-model="form.fundsDate"
@@ -231,6 +237,13 @@
             </SearchOption>
           </el-col>
         </el-form-item>
+        <el-form-item label="银行卡流水编号" prop="transactionHistory">
+          <el-input v-model="form.transactionHistory" placeholder="请输入银行卡流水编号"/>
+        </el-form-item>
+        <el-form-item label="银行卡流水编号附件" prop="transactionHistoryAttachment">
+          <!--          todo 附件上传-->
+          <file-upload @input="handleCommitUpload"/>
+        </el-form-item>
         <!--        同理 要查询公司类型为客户的-->
         <!--        <el-form-item label="对方开户行" prop="otherBankName">-->
         <!--          <el-input v-model="form.otherBankName" placeholder="请输入对方开户行"/>-->
@@ -271,10 +284,12 @@ import {addReason} from "@/api/system/user";
 import {TableName} from "@/api/tool/enums";
 import {mixin_printHTML} from "../../dashboard/mixins/print";
 import {mixin_receive_money_select} from "../../dashboard/mixins/payment/payment_select";
+import {mixin_upload} from "../../dashboard/mixins/upload";
+import CheckFiles from "../../../components/CheckFiles.vue";
 
 export default {
   name: "ReceiveMoney",
-  components: {SearchOption},
+  components: {CheckFiles, SearchOption},
   mixins: [mixin_printHTML],
   data() {
     return {
@@ -442,6 +457,14 @@ export default {
     handleCommitBackBank(val) {
       this.bankQuery = val;
     },
+
+    //银行卡附件上传
+    handleCommitUpload(val) {
+      this.form.transactionHistoryAttachment = val;
+    },
+    checkFiles(path) {
+      window.open(path)
+    },
     /** 查询收款信息列表 */
     getList() {
       this.loading = true;
@@ -545,6 +568,7 @@ export default {
         });
       });
     },
+
     /** 提交按钮 */
     submitForm() {
       this.$refs["form"].validate(valid => {

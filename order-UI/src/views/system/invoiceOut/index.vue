@@ -92,6 +92,16 @@
       <el-table-column label="票点金额" align="center" prop="ticketPointAmount" v-if="columns[7].visible"
                        show-overflow-tooltip/>
       <el-table-column label="备注" align="center" prop="comments" v-if="columns[9].visible" show-overflow-tooltip/>
+      <el-table-column label="银行回执单" align="center" prop="paymentReceipts">
+        <template #default="scope">
+          <CheckFiles :path="scope.row.paymentReceipts"/>
+        </template>
+      </el-table-column>
+      <el-table-column label="发票单" align="center" prop="invoiceAttachments">
+        <template #default="scope">
+          <CheckFiles :path="scope.row.invoiceAttachments"/>
+        </template>
+      </el-table-column>
       <el-table-column label="订单信息" align="center" prop="isOrderTax" width="180" v-if="columns[8].visible">
         <template slot-scope="scope">
           <el-row v-if="scope.row.isOrderTax===0">
@@ -130,9 +140,9 @@
     />
 
     <!-- 添加或修改发票卖出信息对话框 -->
-    <el-dialog :close-on-click-modal="false" :show-close="false" :title="title" :visible.sync="open" width="500px"
+    <el-dialog :close-on-click-modal="false" :show-close="false" :title="title" :visible.sync="open" width="700px"
                append-to-body>
-      <el-form ref="form" :model="form" :rules="rules" label-width="80px">
+      <el-form ref="form" :model="form" :rules="rules" label-width="150px">
         <el-form-item label="开票日期" prop="invoiceDate">
           <el-date-picker
             v-model="form.invoiceDate"
@@ -177,6 +187,12 @@
         <el-form-item label="票点金额" prop="ticketPointAmount">
           <el-input v-model="invoiceAmount" placeholder="请输入票点金额"/>
         </el-form-item>
+        <el-form-item label="银行回执附件">
+          <file-upload @input="handleCommitUpload"/>
+        </el-form-item>
+        <el-form-item label="发票单">
+          <file-upload @input="handleCommitUploadInvoiceAttachments"/>
+        </el-form-item>
         <el-form-item label="备注" prop="comments">
           <el-input v-model="form.comments" placeholder="请输入备注"/>
         </el-form-item>
@@ -207,10 +223,11 @@ import {addReason} from "@/api/system/user";
 import {TableName} from "@/api/tool/enums";
 import {getInvoiceIn} from "@/api/system/invoiceIn";
 import {addDateRange, parseTime} from "@/utils/ruoyi";
+import CheckFiles from "../../../components/CheckFiles.vue";
 
 export default {
   name: "InvoiceOut",
-  components: {OrderInfos, SearchOption},
+  components: {CheckFiles, OrderInfos, SearchOption},
   mixins: [mixin_printHTML],
   data() {
     return {
@@ -434,6 +451,14 @@ export default {
           message: '请先输入编辑原因!'
         });
       });
+    },
+    // 银行回执
+    handleCommitUpload(val) {
+      this.form.paymentReceipts = val
+    },
+    // 发票单
+    handleCommitUploadInvoiceAttachments(val) {
+      this.form.invoiceAttachments = val
     },
     /** 提交按钮 */
     submitForm() {

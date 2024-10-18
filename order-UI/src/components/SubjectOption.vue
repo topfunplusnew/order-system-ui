@@ -72,7 +72,7 @@ export default {
     <el-dialog
       title="选择科目类型"
       :visible.sync="dialogVisible"
-      width="300px">
+      width="300px" append-to-body>
       <el-tree :data="paymentTypeTree" :props="props" @node-click="handleNodeClick"></el-tree>
       <span slot="footer" class="dialog-footer">
     <el-button @click="dialogVisible = false">取 消</el-button>

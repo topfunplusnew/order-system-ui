@@ -71,13 +71,13 @@
       <el-table-column label="备注" align="center" prop="comments" show-overflow-tooltip/>
       <el-table-column label="操作" align="center" class-name="small-padding fixed-width">
         <template slot-scope="scope">
-          <el-button
-            size="mini"
-            type="text"
-            @click="handleUpdate(scope.row)"
-            v-hasPermi="['system:voucher:edit']"
-          >修改
-          </el-button>
+          <!--          <el-button-->
+          <!--            size="mini"-->
+          <!--            type="text"-->
+          <!--            @click="handleUpdate(scope.row)"-->
+          <!--            v-hasPermi="['system:voucher:edit']"-->
+          <!--          >修改-->
+          <!--          </el-button>-->
           <!--          <el-button-->
           <!--            size="mini"-->
           <!--            type="text"-->

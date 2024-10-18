@@ -97,6 +97,16 @@
         </template>
       </el-table-column>
       <el-table-column label="备注" align="center" prop="comments" v-if="columns[10].visible"/>
+      <el-table-column label="银行回执单" align="center" prop="paymentReceipts">
+        <template #default="scope">
+          <CheckFiles :path="scope.row.paymentReceipts"/>
+        </template>
+      </el-table-column>
+      <el-table-column label="发票单" align="center" prop="invoiceAttachments">
+        <template #default="scope">
+          <CheckFiles :path="scope.row.invoiceAttachments"/>
+        </template>
+      </el-table-column>
       <el-table-column label="订单信息" align="center" prop="isOrderTax" v-if="columns[8].visible"
                        width="140px">
         <template slot-scope="scope">
@@ -137,9 +147,9 @@
     />
 
     <!-- 添加或修改发票购入信息对话框 -->
-    <el-dialog :close-on-click-modal="false" :show-close="false" :title="title" :visible.sync="open" width="500px"
+    <el-dialog :close-on-click-modal="false" :show-close="false" :title="title" :visible.sync="open" width="700px"
                append-to-body>
-      <el-form ref="form" :model="form" :rules="rules" label-width="80px">
+      <el-form ref="form" :model="form" :rules="rules" label-width="150px">
         <el-form-item label="开票日期" prop="invoiceDate">
           <el-date-picker
             v-model="form.invoiceDate"
@@ -184,6 +194,12 @@
         <el-form-item label="票点金额" prop="ticketPointAmount">
           <el-input v-model="invoiceAmount" placeholder="请输入票点金额"/>
         </el-form-item>
+        <el-form-item label="银行回执附件">
+          <file-upload @input="handleCommitUpload"/>
+        </el-form-item>
+        <el-form-item label="发票单">
+          <file-upload @input="handleCommitUploadInvoiceAttachments"/>
+        </el-form-item>
         <el-form-item label="备注" prop="comments">
           <el-input v-model="form.comments" placeholder="请输入备注"/>
         </el-form-item>
@@ -220,10 +236,11 @@ import {addReason} from "@/api/system/user";
 import {getRecoverMoney} from "@/api/system/recoverMoney";
 import {getGoodsOrder} from "@/api/system/goodsOrder";
 import OrderInfos from "@/components/OrderInfos.vue";
+import CheckFiles from "../../../components/CheckFiles.vue";
 
 export default {
   name: "InvoiceIn",
-  components: {OrderInfos, ApplyPayment, SearchOption},
+  components: {CheckFiles, OrderInfos, ApplyPayment, SearchOption},
   mixins: [mixin_printHTML],
   data() {
     return {
@@ -453,7 +470,15 @@ export default {
           message: '请先输入编辑原因!'
         });
       });
+    },// 银行回执
+    handleCommitUpload(val) {
+      this.form.paymentReceipts = val
     },
+    // 发票单
+    handleCommitUploadInvoiceAttachments(val) {
+      this.form.invoiceAttachments = val
+    },
+
     /** 提交按钮 */
     submitForm() {
       this.$refs["form"].validate(valid => {

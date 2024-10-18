@@ -79,17 +79,15 @@
                        show-overflow-tooltip/>
       <el-table-column label="供应商公司名称" align="center" prop="Supplier" v-if="columns[4].visible"
                        show-overflow-tooltip/>
-      <!--      <el-table-column label="供应商ID" align="center" prop="SupplierID"/>-->
-      <el-table-column label="客户公司名称" align="center" prop="customer" v-if="columns[5].visible"
-                       show-overflow-tooltip/>
-      <!--      <el-table-column label="客户ID" align="center" prop="CustomerID"/>-->
-      <el-table-column label="票据单位名称" align="center" prop="invoiceCompanyName" v-if="columns[6].visible"
-                       show-overflow-tooltip/>
-      <el-table-column label="客户票点" align="center" prop="customerTicketPoint" v-if="columns[7].visible"
-                       show-overflow-tooltip/>
-      <el-table-column label="票点金额" align="center" prop="customerPointAmount" v-if="columns[8].visible"
-                       show-overflow-tooltip/>
-      <el-table-column label="订单信息" align="center" prop="isOrderTax" width="180" v-if="columns[9].visible"
+      <!--      <el-table-column label="客户公司名称" align="center" prop="customer" v-if="columns[5].visible"-->
+      <!--                       show-overflow-tooltip/>-->
+      <!--      <el-table-column label="票据单位名称" align="center" prop="invoiceCompanyName" v-if="columns[6].visible"-->
+      <!--                       show-overflow-tooltip/>-->
+      <!--      <el-table-column label="客户票点" align="center" prop="customerTicketPoint" v-if="columns[7].visible"-->
+      <!--                       show-overflow-tooltip/>-->
+      <!--      <el-table-column label="票点金额" align="center" prop="customerPointAmount" v-if="columns[8].visible"-->
+      <!--                       show-overflow-tooltip/>-->
+      <el-table-column label="订单信息" align="center" prop="isOrderTax" width="180" v-if="columns[5].visible"
                        show-overflow-tooltip>
         <template slot-scope="scope">
           <el-row v-if="scope.row.isOrderTax===0">
@@ -100,17 +98,7 @@
           </el-row>
         </template>
       </el-table-column>
-      <el-table-column label="银行回执单" align="center" prop="paymentReceipts">
-        <template #default="scope">
-          <CheckFiles :path="scope.row.paymentReceipts"/>
-        </template>
-      </el-table-column>
-      <el-table-column label="发票单" align="center" prop="invoiceAttachments">
-        <template #default="scope">
-          <CheckFiles :path="scope.row.invoiceAttachments"/>
-        </template>
-      </el-table-column>
-      <el-table-column label="备注" align="center" prop="comments" v-if="columns[10].visible"/>
+      <el-table-column label="备注" align="center" prop="comments" v-if="columns[6].visible"/>
       <el-table-column label="操作" align="center" class-name="small-padding fixed-width">
         <template slot-scope="scope">
           <el-button
@@ -220,12 +208,15 @@
             <el-form-item label="供应商票点金额" prop="supplierPointAmount">
               <el-input v-model="form.supplierPointAmount" placeholder="请输入供应商票点金额"/>
             </el-form-item>
-            <el-form-item label="客户票点" prop="customerTicketPoint">
-              <el-input v-model="form.customerTicketPoint" placeholder="请输入客户票点"/>
-            </el-form-item>
-            <el-form-item label="客户票点金额" prop="customerPointAmount">
-              <el-input v-model="form.customerPointAmount" placeholder="请输入票点金额"/>
-            </el-form-item>
+            <!--            客户票点隐藏-->
+            <!--            <el-form-item label="客户票点" prop="customerTicketPoint">-->
+            <!--              <el-input v-model="form.customerTicketPoint" placeholder="请输入客户票点"/>-->
+            <!--            </el-form-item>-->
+            <!--            <el-form-item label="客户票点金额" prop="customerPointAmount">-->
+            <!--              <el-input v-model="form.customerPointAmount" placeholder="请输入票点金额"/>-->
+            <!--            </el-form-item>-->
+          </el-col>
+          <el-col :span="12">
             <el-form-item label="开票日期" prop="invoiceDate">
               <el-date-picker
                 v-model="form.invoiceDate"
@@ -234,8 +225,6 @@
                 value-format="yyyy-MM-dd">
               </el-date-picker>
             </el-form-item>
-          </el-col>
-          <el-col :span="12">
             <el-form-item label="供应商公司名称" prop="Supplier">
               <el-col :span="20">
                 <el-input v-model="form.Supplier" placeholder="请输入供应商公司名称"/>
@@ -282,13 +271,7 @@
             <el-form-item label="票据单位名称" prop="invoiceCompanyName">
               <el-input v-model="form.invoiceCompanyName" placeholder="请输入票据单位名称"/>
             </el-form-item>
-            <!-- 银行回执单附件-->
-            <el-form-item label="银行回执附件">
-              <file-upload @input="handleCommitUpload"/>
-            </el-form-item>
-            <el-form-item label="发票单">
-              <file-upload @input="handleCommitUploadInvoiceAttachments"/>
-            </el-form-item>
+
             <el-form-item label="备注" prop="comments">
               <el-input v-model="form.comments" placeholder="请输入备注"/>
             </el-form-item>
@@ -326,11 +309,10 @@ import {listGoodsOrder} from "@/api/system/goodsOrder";
 import {addDateRange} from "@/utils/ruoyi";
 import {getGoodsOrder} from "../../../api/system/goodsOrder";
 import OrderInfos from "../../../components/OrderInfos.vue";
-import CheckFiles from "../../../components/CheckFiles.vue";
 
 export default {
   name: "InvoiceOther",
-  components: {CheckFiles, OrderInfos, SearchOption},
+  components: {OrderInfos, SearchOption},
   mixins: [mixin_printHTML],
   data() {
     return {
@@ -367,8 +349,9 @@ export default {
         customer: null,
         CustomerID: null,
         invoiceCompanyName: null,
-        customerTicketPoint: null,
-        customerPointAmount: null,
+        // 客户不含税
+        customerTicketPoint: 0,
+        customerPointAmount: 0,
         comments: null,
         addtime: null,
         userId: null,
@@ -388,12 +371,11 @@ export default {
         {key: 2, label: `供应商票点`, visible: true},
         {key: 3, label: `供应商票点金额`, visible: true},
         {key: 4, label: `供应商公司名称`, visible: true},
-        {key: 5, label: `客户公司名称`, visible: true},
-        {key: 6, label: `票据单位名称`, visible: true},
-        {key: 7, label: `客户票点`, visible: true},
-        {key: 8, label: `票点金额`, visible: true},
-        {key: 9, label: `是否订单对应`, visible: true},
-        {key: 10, label: `备注`, visible: true},
+        // {key: 5, label: `客户公司名称`, visible: true},
+        {key: 5, label: `票据单位名称`, visible: true},
+        // {key: 7, label: `客户票点`, visible: true},
+        // {key: 8, label: `票点金额`, visible: true},
+        {key: 6, label: `备注`, visible: true},
       ],
       checkOrderInfoVisible: false,
       orderInfo: {},
@@ -401,19 +383,19 @@ export default {
   },
   created() {
     this.getList();
-    if (localStorage.getItem('invoiceother-columns') === 'null'
-      || !localStorage.getItem('invoiceother-columns')) {
+    if (localStorage.getItem('invoiceother-have-columns') === 'null'
+      || !localStorage.getItem('invoiceother-have-columns')) {
       //设置localStorage
-      localStorage.setItem("invoiceother-columns", JSON.stringify(this.columns))
+      localStorage.setItem("invoiceother-have-columns", JSON.stringify(this.columns))
     } else {
-      this.columns = JSON.parse(localStorage.getItem('invoiceother-columns'));
+      this.columns = JSON.parse(localStorage.getItem('invoiceother-have-columns'));
     }
   },
   //展示与隐藏
   watch: {
     columns: {
       handler: (newVal) => {
-        localStorage.setItem("invoiceother-columns", JSON.stringify(newVal))
+        localStorage.setItem("invoiceother-have-columns", JSON.stringify(newVal))
       },
       deep: true,
     },
@@ -457,14 +439,6 @@ export default {
         this.orderInfo = res.rows[0];
         this.checkOrderInfoVisible = true;
       });
-    },
-    // 银行回执
-    handleCommitUpload(val) {
-      this.form.paymentReceipts = val
-    },
-    // 发票单
-    handleCommitUploadInvoiceAttachments(val) {
-      this.form.invoiceAttachments = val
     },
     /** 查询商家直接给客户开发票列表 */
     getList() {
