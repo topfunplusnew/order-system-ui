@@ -6,7 +6,9 @@ import {getGoodsOrder} from "../../../../api/system/goodsOrder";
 export var mixin_choose_order = {
   data() {
     return {
-      // 选择订单的显示
+      // 选中货物 这个是最终要传递给后端的id数组
+      goods: [],
+      // 点击选择订单后 选择订单的显示
       orderSelectVisible: false,
       // 选择供应商出来的搜索
       queryParamsSupplier: {
@@ -35,7 +37,6 @@ export var mixin_choose_order = {
     selectOrderItem() {
       this.orderSelectVisible = true;
     },
-
     // 两种方式 一种是直接选订单 另一种是先选供应商 再选订单
     // 1.根据供应商选择
     selectBySupplier() {

@@ -616,8 +616,7 @@ export default {
       loading: true,
       // 选中数组
       ids: [],
-      // 选中货物
-      goods: [],
+
       // 非单个禁用
       single: true,
       // 非多个禁用
