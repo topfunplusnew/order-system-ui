@@ -246,6 +246,9 @@
               <el-form-item label="返利原因" prop="rebateReason">
                 <el-input v-model="form.rebateReason" placeholder="请输入返利原因"/>
               </el-form-item>
+              <el-form-item label="返利方式" prop="rebateMethod">
+                <el-input v-model="form.rebateMethod" placeholder="请输入返利方式"/>
+              </el-form-item>
               <el-form-item label="备注" prop="comments">
                 <el-input v-model="form.comments" placeholder="请输入备注"/>
               </el-form-item>
