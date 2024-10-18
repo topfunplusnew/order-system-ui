@@ -96,6 +96,10 @@ export var mixin_choose_order = {
     checkSelectedGoods() {
       this.orderGoodsVisible = true
     },
+    // 清空已选择的货物
+    refreshSelectedGoods() {
+      this.goods = []
+    },
     // 确认选择
     submitSelectOrderDetail() {
       this.goods.forEach(item => {

@@ -143,13 +143,18 @@
           <!--        多选 且树表 展示多个订单 每个订单里面有多个订单详情-->
           <el-row>
             <el-col :span="12">
-              <el-form-item label="订单编号">
+              <el-form-item label="返利货物">
                 <el-button v-if="goods.length===0" @click="orderDialogVisible = true" size="mini">
                   选择订单
                 </el-button>
-                <el-button v-else size="mini" type="success" @click="checkSelectedGoods">
-                  查看已选择货物
-                </el-button>
+                <el-row v-else>
+                  <el-button size="mini" type="success" @click="checkSelectedGoods">
+                    查看已选择货物
+                  </el-button>
+                  <el-button size="mini" type="danger" @click="refreshSelectedGoods">
+                    重新选择货物
+                  </el-button>
+                </el-row>
               </el-form-item>
               <el-form-item label="日期" prop="rebateDate">
                 <el-date-picker
@@ -525,7 +530,7 @@
                 @update:visible="orderBySupplierVisible = false">
       <template #info>
         <div>
-          <el-row>
+          <el-row style="text-align: center">
             <el-form :model="queryParamsSupplier" size="mini" :inline="true"
                      label-width="68px">
               <el-form-item label="供应商">
