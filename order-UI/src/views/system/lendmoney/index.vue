@@ -166,14 +166,14 @@
       <el-form ref="form" :model="form" :rules="rules" label-width="160px">
         <el-row>
           <el-col :span="12">
-            <el-form-item label="是否有期货保证金公司" prop="isDepletion">
-              <el-radio v-model="form.ishave" label="是">是</el-radio>
-              <el-radio v-model="form.ishave" label="否">否</el-radio>
-            </el-form-item>
-            <el-form-item label="期货保证金公司" prop="futuresMarginCompany" v-if="form.ishave==='是'">
-              <el-input v-model="form.futuresMarginCompany" placeholder="请输入期货保证金公司"/>
-            </el-form-item>
-            <el-form-item label="支付期货保证金时间" prop="futuresDate">
+            <!--            <el-form-item label="是否有期货保证金公司" prop="isDepletion">-->
+            <!--              <el-radio v-model="form.ishave" label="是">是</el-radio>-->
+            <!--              <el-radio v-model="form.ishave" label="否">否</el-radio>-->
+            <!--            </el-form-item>-->
+            <!--            <el-form-item label="期货保证金公司" prop="futuresMarginCompany" v-if="form.ishave==='是'">-->
+            <!--              <el-input v-model="form.futuresMarginCompany" placeholder="请输入期货保证金公司"/>-->
+            <!--            </el-form-item>-->
+            <el-form-item label="支付时间" prop="futuresDate">
               <el-date-picker
                 v-model="form.futuresDate"
                 type="date"
@@ -181,7 +181,7 @@
                 value-format="yyyy-MM-dd">
               </el-date-picker>
             </el-form-item>
-            <el-form-item label="保证金金额" prop="moneyAmount">
+            <el-form-item label="金额" prop="moneyAmount">
               <el-input v-model="form.moneyAmount" placeholder="请输入保证金金额"/>
             </el-form-item>
             <el-form-item label="对象" prop="target">

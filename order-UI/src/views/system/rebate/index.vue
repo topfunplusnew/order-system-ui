@@ -278,6 +278,7 @@
                :visible.sync="orderDialogVisible"
                width="65%">
       <el-row>
+        <el-button type="primary" @click="selectBySupplier" size="mini">根据供应商选择</el-button>
         <el-button type="primary" @click="selectOrderItem" size="mini">选择订单</el-button>
       </el-row>
       <hr/>
@@ -297,15 +298,6 @@
             <el-table border :data="orderDetailList" max-height="700" size="mini"
                       :cell-style="()=>{return {padding:'.5px'}}" @selection-change="handleSelectionChangeOrderDetail">
               <el-table-column type="selection" width="55" align="center" fixed="left"/>
-              <!--              <el-table-column show-overflow-tooltip label="操作" align="center"-->
-              <!--                               class-name="small-padding fixed-width"-->
-              <!--                               width="100px" fixed="left">-->
-              <!--                <template slot-scope="scope">-->
-              <!--                  <el-button size="mini" type="success" @click="handleSelectOrderDetail(scope.row)">选择该货物-->
-              <!--                  </el-button>-->
-              <!--                </template>-->
-              <!--              </el-table-column>-->
-              <!--        添加多选选择-->
               <el-table-column label="订单日期" align="center" prop="orderDate" fixed="left"/>
               <el-table-column label="客户" align="center" prop="customer"/>
               <el-table-column label="供应商" align="center" prop="supplier"
@@ -361,15 +353,18 @@
       </el-row>
     </el-dialog>
 
+    <!--    选择订单-->
     <el-dialog :close-on-click-modal="false" :show-close="true" title="选择订单" :visible.sync="orderSelectVisible"
                width="70%">
-      <el-table fit border v-loading="loading" :data="orderList"
+      <el-table fit border v-loading="loading" :data="orderList" @selection-change="handleSelectionChangeOrders"
                 max-height="750" size="mini" :cell-style="()=>{return {padding:'2px'}}">
-
+        <el-table-column type="selection" width="55" align="center" fixed="left"/>
         <el-table-column show-overflow-tooltip label="行操作" align="center" class-name="small-padding fixed-width"
-                         width="100px" fixed="left">
+                         width="200px" fixed="left">
           <template slot-scope="scope">
-            <el-button size="mini" type="success" @click="handleSelectOrderItem(scope.row)">选择
+            <el-button size="mini" type="text" @click="handleSelectOrderItem(scope.row)">选择
+            </el-button>
+            <el-button size="mini" type="text" @click="checkOrderInfo(scope.row)">查看订单
             </el-button>
           </template>
         </el-table-column>
@@ -509,12 +504,80 @@
       />
     </el-dialog>
 
-
+    <!--    查看已经选择的货物-->
     <InfoDialog title="已选择货物" :visible.sync="orderGoodsVisible" @update:visible="orderGoodsVisible = false">
       <template #info>
         <OrderDetailInfo :orderDetailInfoList="goods" :ban="true"/>
       </template>
     </InfoDialog>
+
+    <!--    查看订单信息-->
+    <InfoDialog title="查看订单信息" :visible.sync="orderVisible" @update:visible="orderVisible = false">
+      <template #info>
+        <OrderInfos :orderInfo="checkOrderInformation"/>
+        <OrderDetailInfo :orderDetailInfoList="checkOrderInformation.orderDetailList" :ban="true"/>
+      </template>
+    </InfoDialog>
+
+
+    <!--    根据供应商选择订单-->
+    <InfoDialog title="根据供应商选择订单" :visible.sync="orderBySupplierVisible"
+                @update:visible="orderBySupplierVisible = false">
+      <template #info>
+        <div>
+          <el-row>
+            <el-form :model="queryParamsSupplier" size="mini" :inline="true"
+                     label-width="68px">
+              <el-form-item label="供应商">
+                <el-row>
+                  <el-col :span="20">
+                    <el-input v-model="queryParamsSupplier.supplier" placeholder="请输入供应商"/>
+                  </el-col>
+                  <el-col :span="4">
+                    <SearchOption :get-data="listCompany" @commitBack="handleCommitCompany"
+                                  :limit-info="{companyType:'供应商'}">
+                      <template #table-columns>
+                        <el-table-column label="公司名称" align="center" prop="companyName"/>
+                        <el-table-column label="老板姓名" align="center" prop="leader"/>
+                        <el-table-column label="老板电话" align="center" prop="leaderTel"/>
+                        <el-table-column label="开户行" align="center" prop="bankName"/>
+                        <el-table-column label="开户名" align="center" prop="acountsName"/>
+                      </template>
+                    </SearchOption>
+                  </el-col>
+                </el-row>
+              </el-form-item>
+              <el-form-item label="时间段">
+                <el-date-picker
+                  v-model="queryParamsSupplier.dateRange"
+                  style="width: 240px"
+                  value-format="yyyy-MM-dd"
+                  type="daterange"
+                  range-separator="-"
+                  start-placeholder="开始日期"
+                  end-placeholder="结束日期"
+                ></el-date-picker>
+              </el-form-item>
+            </el-form>
+          </el-row>
+          <el-row style="text-align: center;margin-top:15px;">
+            <el-button type="primary" @click="handleCommitSupplier">确定</el-button>
+          </el-row>
+        </div>
+      </template>
+    </InfoDialog>
+
+
+    <!--    订单货物列表-->
+    <InfoDialog title="根据供应商所选货物列表" :visible.sync="orderGoodsListVisible"
+                @update:visible="orderGoodsListVisible = false">
+      <template #info>
+        <OrderDetailList @handleSelect="handleSelectOrderDetailChange"
+                         :order-detail-list="needToSelectOrderDetailList"/>
+      </template>
+    </InfoDialog>
+
+
   </div>
 </template>
 
@@ -523,13 +586,15 @@ import {listRebate, getRebate, delRebate, addRebate, updateRebate} from "@/api/s
 import {mixin_printHTML} from "@/views/dashboard/mixins/print";
 import ApplyPayment from "@/components/ApplyPayment.vue";
 import {TableName} from "@/api/tool/enums";
-import {getGoodsOrder, listGoodsOrder} from "@/api/system/goodsOrder";
+import {listGoodsOrder} from "@/api/system/goodsOrder";
 import OrderInfos from "@/components/OrderInfos.vue";
 import OrderDetailInfo from "@/components/OrderDetailInfo.vue";
 import {listBankAccount} from "@/api/system/bankAccount";
 import {listCompany} from "@/api/system/company";
 import SearchOption from "@/components/SearchOption.vue";
 import InfoDialog from "../../../components/InfoDialog.vue";
+import OrderDetailList from "../../dashboard/components/rebate/OrderDetailList.vue";
+import {mixin_choose_order} from "../../dashboard/mixins/rebate/choose_order";
 
 export default {
   name: "Rebate",
@@ -538,8 +603,8 @@ export default {
       return TableName
     }
   },
-  components: {InfoDialog, SearchOption, OrderDetailInfo, OrderInfos, ApplyPayment},
-  mixins: [mixin_printHTML],
+  components: {OrderDetailList, InfoDialog, SearchOption, OrderDetailInfo, OrderInfos, ApplyPayment},
+  mixins: [mixin_printHTML, mixin_choose_order],
   data() {
     return {
       // 遮罩层
@@ -552,6 +617,8 @@ export default {
       single: true,
       // 非多个禁用
       multiple: true,
+      // 供应商选择的时间段
+      dateRange: [],
       // 显示搜索条件
       showSearch: true,
       // 总条数
@@ -560,6 +627,7 @@ export default {
       orderTotal: 0,
       // 返利回扣表格数据
       RebateList: [],
+
       // 弹出层标题
       title: "",
       // 是否显示弹出层
@@ -653,16 +721,6 @@ export default {
       queryCompanyGive: '',
       bankAcountSelf: '',
 
-      // 选择订单的显示
-      orderSelectVisible: false,
-
-      // 供应商筛选  供应商列表名称 可以通过list拿
-      nameFilters: [],
-
-      // 已经选择的订单货物弹窗
-      orderGoodsVisible: false,
-      // 已选择的货物
-      orderDetailInfoList: [],
     };
   },
   created() {
@@ -712,41 +770,7 @@ export default {
     handleUpdateQueryBankAcountSelf(val) {
       this.bankAcountSelf = val;
     },
-    // 点击选择订单
-    selectOrderItem() {
-      this.orderSelectVisible = true;
-    },
-    // 查看已选择的货物
-    checkSelectedGoods() {
-      this.orderGoodsVisible = true
-    },
-    // 点击选择订单弹出的订单列表页选择某个订单 需要自动填充信息
-    handleSelectOrderItem(row) {
-      this.goods = []
-      getGoodsOrder(row.id).then(res => {
-        this.orderInfo = res.data;
-        this.orderDetailList = res.data.orderDetailList;
-        // 补充供应商信息
-        this.nameFilters = this.orderDetailList.map(item => {
-          return {
-            text: item.supplier,
-            value: item.supplier
-          }
-        })
-      })
-      this.orderSelectVisible = false
-    },
-    // 多选某个货物
-    handleSelectionChangeOrderDetail(selection) {
-      this.goods = selection;
-    },
-    // 确认选择
-    submitSelectOrderDetail() {
-      this.goods.forEach(item => {
-        this.form.orderDetailIds.push(item.id)
-      })
-      this.orderDialogVisible = false
-    },
+
     // 筛选方法
     filterName(value, row) {
       return row.supplier === value;
@@ -764,6 +788,8 @@ export default {
         this.loading = false;
       });
     },
+    // todo 订单返利货物列表
+    // noPageListRebate
     // 弹出的列表页分页
     getOrderList() {
       listGoodsOrder(this.queryParams).then(response => {

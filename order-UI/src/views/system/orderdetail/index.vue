@@ -632,12 +632,6 @@ export default {
     handleOrder1(row) {
       this.Order1Visible = true
     },
-    handleOrder2(row) {
-      this.Order2Visible = true
-    },
-    handleOrder3(row) {
-      this.Order3Visible = true
-    },
     //上传和收到条
     handleUpload(row) {
       this.handleUploadVisible = true

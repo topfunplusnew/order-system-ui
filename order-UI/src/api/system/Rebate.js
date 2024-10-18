@@ -42,3 +42,12 @@ export function delRebate(id) {
     method: 'delete'
   })
 }
+
+// 不分页查询返利列表
+export function noPageListRebate(query) {
+  return request({
+    url: '/system/orderDetail/nopage/list',
+    method: 'get',
+    params: query
+  })
+}
