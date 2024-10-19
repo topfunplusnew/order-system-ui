@@ -184,7 +184,7 @@ export default {
       this.orderInfo.landDriverName = val.driver;
       this.orderInfo.landDriverTel = val.tel;
       //填充银行信息
-      this.orderInfo.landBankName = val.acountsName;
+      this.orderInfo.landBankName = val.bankName;
       this.orderInfo.landBankNo = val.bankNo;
     },
     // 海运车牌的填充
@@ -197,7 +197,7 @@ export default {
       this.orderInfo.seaDriverName = val.driver;
       this.orderInfo.seaDriverTel = val.tel;
       //填充银行信息
-      this.orderInfo.seaBankName = val.acountsName;
+      this.orderInfo.seaBankName = val.bankName;
       this.orderInfo.seaBankNo = val.bankNo;
     },
     // 添加货物
@@ -365,6 +365,7 @@ export default {
                     <el-table-column label="司机电话" align="center" prop="tel"/>
                     <el-table-column label="开户名" align="center" prop="acountsName"/>
                     <el-table-column label="账号" align="center" prop="bankNo"/>
+                    <el-table-column label="开户行" align="center" prop="bankName"/>
                   </template>
                 </SearchOption>
               </el-col>

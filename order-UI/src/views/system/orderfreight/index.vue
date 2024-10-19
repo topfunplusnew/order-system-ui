@@ -609,6 +609,29 @@ export default {
     listFleet,
     listData,
     listBankAccount,
+    //添加海运费或者陆运费
+    applyForLand(row) {
+      console.log('陆运费信息',row)
+      this.needInfo = {
+        acountsName: row.otherAcountsName,
+        bankName: row.otherBankName,
+        bankNo: row.otherBankNo
+      }
+      this.tID = row.id
+      this.freight = Number(row.moneyAmount);
+      this.applyPaymentVisible = true;
+    },
+    applyForSea(row) {
+      console.log('海运费信息',row)
+      this.needInfo = {
+        acountsName: row.otherAcountsName,
+        bankName: row.otherBankName,
+        bankNo: row.otherBankNo
+      }
+      this.tID = row.id
+      this.freight = Number(row.moneyAmount);
+      this.applyPaymentVisible = true;
+    },
     changeOpen() {
       this.applyPaymentVisible = false
       this.getList()
@@ -621,10 +644,6 @@ export default {
       this.form.companyId = val.id;
       this.form.otherAcountsName = val.acountsName;
       this.form.companyType = val.companyType
-    },
-    //上传的回调函数
-    handleCommitUpload(val) {
-      this.form.attachment = val;
     },
     handleCommitBackCars(val) {
       this.form.carNo = val.dictLabel
@@ -642,27 +661,7 @@ export default {
     updateQueryFleet(val) {
       this.queryFleet = val
     },
-    //添加海运费或者陆运费
-    applyForLand(row) {
-      this.needInfo = {
-        acountsName: row.otherAcountsName,
-        bankName: row.otherBankName,
-        bankNo: row.otherBankNo
-      }
-      this.tID = row.id
-      this.freight = Number(row.moneyAmount);
-      this.applyPaymentVisible = true;
-    },
-    applyForSea(row) {
-      this.needInfo = {
-        acountsName: row.otherAcountsName,
-        bankName: row.otherBankName,
-        bankNo: row.otherBankNo
-      }
-      this.tID = row.id
-      this.freight = Number(row.moneyAmount);
-      this.applyPaymentVisible = true;
-    },
+
     /** 查询订单运费列表 */
     getList() {
       this.loading = true;
