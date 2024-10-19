@@ -27,15 +27,15 @@
         >新增客户信息
         </el-button>
       </el-col>
-      <el-col :span="1.5">
-        <el-button
-          type="warning"
-          size="mini"
-          @click="handleSearch"
-          v-hasPermi="['system:company:query']"
-        >账号搜索
-        </el-button>
-      </el-col>
+      <!--      <el-col :span="1.5">-->
+      <!--        <el-button-->
+      <!--          type="warning"-->
+      <!--          size="mini"-->
+      <!--          @click="handleSearch"-->
+      <!--          v-hasPermi="['system:company:query']"-->
+      <!--        >账号搜索-->
+      <!--        </el-button>-->
+      <!--      </el-col>-->
       <right-toolbar :showSearch.sync="showSearch" @queryTable="getList" :columns="columns">
         <template v-slot:print>
           <el-col :span="1.5">

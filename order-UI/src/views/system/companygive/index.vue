@@ -27,15 +27,15 @@
         >新增供应商信息
         </el-button>
       </el-col>
-      <el-col :span="1.5">
-        <el-button
-          type="warning"
-          size="mini"
-          @click="handleSearch"
-          v-hasPermi="['system:companygive:query']"
-        >账号搜索
-        </el-button>
-      </el-col>
+      <!--      <el-col :span="1.5">-->
+      <!--        <el-button-->
+      <!--          type="warning"-->
+      <!--          size="mini"-->
+      <!--          @click="handleSearch"-->
+      <!--          v-hasPermi="['system:companygive:query']"-->
+      <!--        >账号搜索-->
+      <!--        </el-button>-->
+      <!--      </el-col>-->
       <right-toolbar :showSearch.sync="showSearch" @queryTable="getList" :columns="columns">
         <template v-slot:print>
           <el-col :span="1.5">
@@ -112,7 +112,8 @@
     />
 
     <!-- 添加或修改供应商、供应商信息对话框 -->
-    <el-dialog :close-on-click-modal="false" :show-close="false" :title="title" :visible.sync="open" width="54%" append-to-body>
+    <el-dialog :close-on-click-modal="false" :show-close="false" :title="title" :visible.sync="open" width="54%"
+               append-to-body>
       <el-form ref="form" :model="form" :rules="rules" label-width="120px">
         <el-row :gutter="4">
           <el-col :span="12">
@@ -247,7 +248,8 @@
         @pagination="getBankList"/>
 
 
-      <el-dialog :close-on-click-modal="false" :show-close="false" title="操作银行卡" :visible.sync="dialogBankInfoVisible" append-to-body>
+      <el-dialog :close-on-click-modal="false" :show-close="false" title="操作银行卡"
+                 :visible.sync="dialogBankInfoVisible" append-to-body>
         <el-form :model="queryBankInfo">
           <el-row :gutter="4">
             <el-col :span="8">
@@ -306,7 +308,8 @@
 
 
     <!--    账号搜索-->
-    <el-dialog :close-on-click-modal="false" :show-close="true" title="账号搜索" :visible.sync="dialogFormSearchVisible">
+    <el-dialog :close-on-click-modal="false" :show-close="true" title="账号搜索"
+               :visible.sync="dialogFormSearchVisible">
       <el-form :model="queryParams">
         <el-row :gutter="4">
           <el-col :span="8">
@@ -354,7 +357,8 @@
     </el-dialog>
 
 
-    <el-dialog :close-on-click-modal="false" :show-close="false" title="设置默认银行卡" :visible.sync="addDefaultCardVisible" width="500px" append-to-body>
+    <el-dialog :close-on-click-modal="false" :show-close="false" title="设置默认银行卡"
+               :visible.sync="addDefaultCardVisible" width="500px" append-to-body>
       <el-table border v-loading="loading" :data="singleInfo" @selection-change="handleSelectionChange"
                 height="300px" v-horizontal-scroll="'always'">
         <el-table-column label="账户类型" align="center" prop="acountsType"/>

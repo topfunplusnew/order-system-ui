@@ -42,14 +42,15 @@ export var mixin_order_freight_payment = {
     },
     // 一键申请运费
     handleFreightPaymentOnce(row) {
+      // 初始化为0
+      this.total_freight = 0;
+      // 遍历选择的数组
       this.selectedList.forEach(item => {
         item = this.convertOrderFreightToPayment(item)
         this.batchPaymentList.push(item)
+        // 累加
+        this.total_freight += Number(item.moneyAmount)
       })
-      // 计算总和
-      for (let i = 0; i < this.batchPaymentList.length; i++) {
-        this.total_freight += Number(this.batchPaymentList[i].moneyAmount)
-      }
       this.resetFreightSelfOnceInfo();
       this.freightOnceVisible = true;
     },
