@@ -6,11 +6,11 @@
         <el-col :span="6">
           <el-form-item label="开始时间" prop="beginTime">
             <el-date-picker
-                v-model="queryParams.orderDateStart"
-                type="date"
-                placeholder="选择时间"
-                value-format="yyyy-MM-dd"
-                size="mini"
+              v-model="queryParams.orderDateStart"
+              type="date"
+              placeholder="选择时间"
+              value-format="yyyy-MM-dd"
+              size="mini"
             >
             </el-date-picker>
           </el-form-item>
@@ -18,11 +18,11 @@
         <el-col :span="6">
           <el-form-item label="结束时间" prop="endTime">
             <el-date-picker
-                v-model="queryParams.orderDateEnd"
-                type="date"
-                placeholder="选择时间"
-                value-format="yyyy-MM-dd"
-                size="mini"
+              v-model="queryParams.orderDateEnd"
+              type="date"
+              placeholder="选择时间"
+              value-format="yyyy-MM-dd"
+              size="mini"
             >
             </el-date-picker>
           </el-form-item>
@@ -30,11 +30,11 @@
         <el-col :span="6">
           <el-form-item label="客户名称" prop="customer">
             <el-input
-                v-model="queryParams.customer"
-                placeholder="请输入客户名称"
-                clearable
-                @keyup.enter.native="handleQuery"
-                size="mini"
+              v-model="queryParams.customer"
+              placeholder="请输入客户名称"
+              clearable
+              @keyup.enter.native="handleQuery"
+              size="mini"
             >
             </el-input>
           </el-form-item>
@@ -42,15 +42,15 @@
         <el-col :span="6">
           <el-form-item label="审核状态" prop="checkState">
             <el-select
-                v-model="queryParams.checkState"
-                placeholder="请选择"
-                size="mini"
+              v-model="queryParams.checkState"
+              placeholder="请选择"
+              size="mini"
             >
               <el-option
-                  v-for="item in options"
-                  :key="item.value"
-                  :label="item.label"
-                  :value="item.value">
+                v-for="item in options"
+                :key="item.value"
+                :label="item.label"
+                :value="item.value">
               </el-option>
             </el-select>
           </el-form-item>
@@ -58,15 +58,15 @@
         <el-col :span="6">
           <el-form-item label="开票状态" prop="invoiceState">
             <el-select
-                v-model="queryParams.invoiceState"
-                placeholder="请选择"
-                size="mini"
+              v-model="queryParams.invoiceState"
+              placeholder="请选择"
+              size="mini"
             >
               <el-option
-                  v-for="item in optionsInvoice"
-                  :key="item.value"
-                  :label="item.label"
-                  :value="item.value">
+                v-for="item in optionsInvoice"
+                :key="item.value"
+                :label="item.label"
+                :value="item.value">
               </el-option>
             </el-select>
           </el-form-item>
@@ -74,10 +74,10 @@
         <el-col :span="4">
           <el-form-item>
             <el-button
-                type="primary"
-                icon="el-icon-search"
-                size="mini"
-                @click="handleQuery">
+              type="primary"
+              icon="el-icon-search"
+              size="mini"
+              @click="handleQuery">
               搜索
             </el-button>
           </el-form-item>
@@ -92,12 +92,12 @@
       </el-col>
       <el-col :span="1.5">
         <el-button
-            type="warning"
-            plain
-            icon="el-icon-download"
-            size="mini"
-            @click="handleExport"
-            v-hasPermi="['system:adjustOrders:export']"
+          type="warning"
+          plain
+          icon="el-icon-download"
+          size="mini"
+          @click="handleExport"
+          v-hasPermi="['system:adjustOrders:export']"
         >导出订单数据
         </el-button>
       </el-col>
@@ -106,10 +106,10 @@
         <template v-slot:print>
           <el-col :span="1.5">
             <el-button
-                plain
-                icon="el-icon-printer"
-                size="mini"
-                @click="printHTML"
+              plain
+              icon="el-icon-printer"
+              size="mini"
+              @click="printHTML"
             >
             </el-button>
           </el-col>
@@ -117,11 +117,11 @@
         <template v-slot:export>
           <el-col :span="1.5">
             <el-button
-                plain
-                icon="el-icon-folder-opened"
-                size="mini"
-                @click="handleExport"
-                v-hasPermi="['system:adjustOrders:export']"
+              plain
+              icon="el-icon-folder-opened"
+              size="mini"
+              @click="handleExport"
+              v-hasPermi="['system:adjustOrders:export']"
             >
             </el-button>
           </el-col>
@@ -140,8 +140,8 @@
             <el-dropdown-menu slot="dropdown">
               <el-dropdown-item>
                 <el-button
-                    size="mini"
-                    @click="checkOrderItemInfo(scope.row)"
+                  size="mini"
+                  @click="checkOrderItemInfo(scope.row)"
                 >查看
                 </el-button>
               </el-dropdown-item>
@@ -156,18 +156,18 @@
               <!--              </el-dropdown-item>-->
               <el-dropdown-item>
                 <el-button
-                    size="mini"
-                    type="warning"
-                    @click="handleCheckOrderDetailInfo(scope.row)"
+                  size="mini"
+                  type="warning"
+                  @click="handleCheckOrderDetailInfo(scope.row)"
                 >详情
                 </el-button>
               </el-dropdown-item>
               <el-dropdown-item>
                 <el-button
-                    size="mini"
-                    type="danger"
-                    @click="handleDelete(scope.row)"
-                    v-hasPermi="['system:adjustOrders:remove']"
+                  size="mini"
+                  type="danger"
+                  @click="handleDelete(scope.row)"
+                  v-hasPermi="['system:adjustOrders:remove']"
                 >删除
                 </el-button>
               </el-dropdown-item>
@@ -321,7 +321,7 @@
                        width="100px">
         <template slot-scope="scope">
           <el-tag
-              :type="scope.row.isedit === 0 ? 'danger' :'success'">{{ scope.row.isedit === 0 ? "否" : "是" }}
+            :type="scope.row.isedit === 0 ? 'danger' :'success'">{{ scope.row.isedit === 0 ? "否" : "是" }}
           </el-tag>
         </template>
       </el-table-column>
@@ -369,27 +369,27 @@
                        fixed="right">
         <template slot-scope="scope">
           <el-button
-              size="mini"
-              @click="handleOrder1(scope.row)"
-              v-hasPermi="['system:adjustOrders:edit']"
+            size="mini"
+            @click="handleOrder1(scope.row)"
+            v-hasPermi="['system:adjustOrders:edit']"
           >发货单
           </el-button>
           <el-button
-              size="mini"
-              type="primary"
-              @click="checkPreviousOrder(scope.row)"
+            size="mini"
+            type="primary"
+            @click="checkPreviousOrder(scope.row)"
           >查看原订单
           </el-button>
           <el-button
-              size="mini"
-              type="primary"
-              @click="handleUpload(scope.row)"
+            size="mini"
+            type="primary"
+            @click="handleUpload(scope.row)"
           >上传附件
           </el-button>
           <el-button
-              size="mini"
-              @click="handleCommit(scope.row)"
-              v-hasPermi="['system:adjustOrders:remove']"
+            size="mini"
+            @click="handleCommit(scope.row)"
+            v-hasPermi="['system:adjustOrders:remove']"
           >上传收到条
           </el-button>
         </template>
@@ -404,19 +404,19 @@
               <el-dropdown-item>
                 <el-row v-if="scope.row.landFreight>0 ||scope.row.seaFreight>0  ">
                   <el-button
-                      size="mini"
-                      v-if="scope.row.landFreight>0"
-                      type="warning"
-                      @click="handleApplyLandFree(scope.row)"
-                      v-hasPermi="['system:adjustOrders:remove']"
+                    size="mini"
+                    v-if="scope.row.landFreight>0"
+                    type="warning"
+                    @click="handleApplyLandFree(scope.row)"
+                    v-hasPermi="['system:adjustOrders:remove']"
                   >陆运费申请
                   </el-button>
                   <el-button
-                      size="mini"
-                      v-if="scope.row.seaFreight>0"
-                      type="primary"
-                      @click="handleApplySeaFree(scope.row)"
-                      v-hasPermi="['system:adjustOrders:remove']"
+                    size="mini"
+                    v-if="scope.row.seaFreight>0"
+                    type="primary"
+                    @click="handleApplySeaFree(scope.row)"
+                    v-hasPermi="['system:adjustOrders:remove']"
                   >海运费申请
                   </el-button>
                 </el-row>
@@ -430,11 +430,11 @@
       </el-table-column>
     </el-table>
     <pagination
-        v-show="total>0"
-        :total="total"
-        :page.sync="queryParams.pageNum"
-        :limit.sync="queryParams.pageSize"
-        @pagination="getList"
+      v-show="total>0"
+      :total="total"
+      :page.sync="queryParams.pageNum"
+      :limit.sync="queryParams.pageSize"
+      @pagination="getList"
     />
 
 
@@ -529,7 +529,8 @@
 
 
     <!--    todo url其实就是返回了后端服务器的地址加端口 这里需要后期规定好后直接拼接就能查看了 -->
-    <el-dialog :close-on-click-modal="false" :show-close="false" title="查看附件" :visible.sync="checkAttachmentVisible" width="48%">
+    <el-dialog :close-on-click-modal="false" :show-close="false" title="查看附件" :visible.sync="checkAttachmentVisible"
+               width="48%">
       <el-row v-for="(item, index) in checkFileList" :key="index">
         <el-button type="text" icon="el-icon-document" @click="checkFileItem(item)">{{ item }}</el-button>
       </el-row>
@@ -563,7 +564,7 @@ import {
   listGoodsOrder,
   updateGoodsOrder
 } from "@/api/system/goodsOrder";
-import OrderForm from "@/components/OrderForm.vue";
+import OrderForm from "@/views/dashboard/components/goodsOrder/OrderForm.vue";
 import {mapGetters} from "vuex";
 import {getToken} from "@/utils/auth";
 import {excludeParams} from "@/api/tool/exclude";
@@ -572,7 +573,7 @@ import {listCompany} from "@/api/system/company";
 import {formatDate} from "@/utils";
 import {listOrderFreight} from "@/api/system/orderFreight";
 import {addInvoiceOut} from "@/api/system/invoiceOut";
-import OrderDetailInfo from "@/components/OrderDetailInfo.vue";
+import OrderDetailInfo from "@/views/dashboard/components/goodsOrder/OrderDetailInfo.vue";
 import {TableName} from "@/api/tool/enums";
 import FreeApply from "@/components/FreeApply.vue";
 import {parseTime} from "../../../utils/ruoyi";
@@ -581,15 +582,15 @@ import {getCompany} from "../../../api/system/company";
 import {getHistoryGoodsOrder} from "../../../api/system/goodsOrder";
 import axios from "axios";
 import {mixin_printHTML} from "../../dashboard/mixins/print";
-import Invoice from "../goodsorder/Invoice.vue";
-import UploadPath from "../goodsorder/UploadPath.vue";
-import UploadCommit from "../goodsorder/UploadCommit.vue";
-import CheckOrder from "../goodsorder/CheckOrder.vue";
-import OrderMoneyReceive from "../goodsorder/OrderMoneyReceive.vue";
-import OrderGiven from "../goodsorder/OrderGiven.vue";
+import Invoice from "../../dashboard/components/goodsOrder/Invoice.vue";
+import UploadPath from "../../dashboard/components/goodsOrder/UploadPath.vue";
+import UploadCommit from "../../dashboard/components/goodsOrder/UploadCommit.vue";
+import CheckOrder from "../../dashboard/components/goodsOrder/CheckOrder.vue";
+import OrderMoneyReceive from "../../dashboard/components/goodsOrder/OrderMoneyReceive.vue";
+import OrderGiven from "../../dashboard/components/goodsOrder/OrderGiven.vue";
 import InfoDialog from "../../../components/InfoDialog.vue";
-import OrderHistoryCheck from "../goodsorder/OrderHistoryCheck.vue";
-import PrimativeOrderInfo from "../goodsorder/PrimativeOrderInfo.vue";
+import OrderHistoryCheck from "../../dashboard/components/goodsOrder/OrderHistoryCheck.vue";
+import PrimativeOrderInfo from "../../dashboard/components/goodsOrder/PrimativeOrderInfo.vue";
 import PreviousOrderInfo from "./PreviousOrderInfo.vue";
 
 export default {
@@ -937,7 +938,7 @@ export default {
   created() {
     this.getList();
     if (localStorage.getItem('goodsorder-columns') === 'null'
-        || !localStorage.getItem('goodsorder-columns')) {
+      || !localStorage.getItem('goodsorder-columns')) {
       //设置localStorage
       localStorage.setItem("goodsorder-columns", JSON.stringify(this.columns))
     } else {
@@ -1015,9 +1016,9 @@ export default {
       this.updateOrderItemVisibleTitle = '客户开票'
       //设置该订单信息 需要进行一次查询
       getGoodsOrder(row.id)
-          .then(res => {
-            this.updateOrderItemVisibleTitleInfo.orderInfo = res.data;
-          })
+        .then(res => {
+          this.updateOrderItemVisibleTitleInfo.orderInfo = res.data;
+        })
       this.invoiceupdateOrderItemVisibleVisible = true;
     },
     // 点击供应商开票
@@ -1034,10 +1035,10 @@ export default {
           this.updateOrderItemVisibleTitle = '供应商开票'
           // 获取订单信息
           getGoodsOrder(row.id)
-              .then(res => {
-                this.updateOrderItemVisibleTitleInfo.orderInfo = res.data;
-                this.invoiceupdateOrderItemVisibleVisible = true;
-              })
+            .then(res => {
+              this.updateOrderItemVisibleTitleInfo.orderInfo = res.data;
+              this.invoiceupdateOrderItemVisibleVisible = true;
+            })
         })
       } else {
         this.updateOrderItemVisibleTitleInfo.domain = 2
@@ -1045,10 +1046,10 @@ export default {
         this.updateOrderItemVisibleTitleInfo.isOrderTax = row.id;
         this.updateOrderItemVisibleTitle = '供应商开票'
         getGoodsOrder(row.id)
-            .then(res => {
-              this.updateOrderItemVisibleTitleInfo.orderInfo = res.data;
-              this.invoiceupdateOrderItemVisibleVisible = true;
-            })
+          .then(res => {
+            this.updateOrderItemVisibleTitleInfo.orderInfo = res.data;
+            this.invoiceupdateOrderItemVisibleVisible = true;
+          })
       }
     },
     // 客户供应商开票功能
@@ -1064,17 +1065,17 @@ export default {
       if (this.updateOrderItemVisibleTitleInfo.domain === 1) {
         //客户开票 添加发票卖出信息
         addInvoiceOut(this.updateOrderItemVisibleTitleInfo)
-            .then(res => {
-              this.$message.success('客户开票成功~')
-              this.updateGoodsOrderAfterOpen(invoiceNumber, this.updateOrderItemVisibleTitleInfo.domain)
-            })
+          .then(res => {
+            this.$message.success('客户开票成功~')
+            this.updateGoodsOrderAfterOpen(invoiceNumber, this.updateOrderItemVisibleTitleInfo.domain)
+          })
       } else {
         // 客户开票
         addInvoiceIn(this.updateOrderItemVisibleTitleInfo)
-            .then(res => {
-              this.$message.success('供应商开票成功~')
-              this.updateGoodsOrderAfterOpen(invoiceNumber, this.updateOrderItemVisibleTitleInfo.domain)
-            })
+          .then(res => {
+            this.$message.success('供应商开票成功~')
+            this.updateGoodsOrderAfterOpen(invoiceNumber, this.updateOrderItemVisibleTitleInfo.domain)
+          })
       }
     },
     // 根据类型来更新订单的开票状态
@@ -1087,12 +1088,12 @@ export default {
         };
         // 更新订单的开票状态
         updateGoodsOrder(excludeParams(info, this.$exclude))
-            .then(res => {
-              this.$message.success('开票状态设置成功~');
-              this.invoiceupdateOrderItemVisibleVisible = false;
-              this.resetOpenTitleInfo();
-              this.getList();
-            });
+          .then(res => {
+            this.$message.success('开票状态设置成功~');
+            this.invoiceupdateOrderItemVisibleVisible = false;
+            this.resetOpenTitleInfo();
+            this.getList();
+          });
       };
       if (type === 0) { // 供应商开票
         if (invoiceNumber.customerInvoiceNumber === 0) {
@@ -1297,18 +1298,18 @@ export default {
       if (type === 'path') {
         //修改订单信息
         updateGoodsOrder({...this.tempOrderInfo, path: path})
-            .then(res => {
-              this.$message.success('上传附件成功')
-              this.getList()
-            })
+          .then(res => {
+            this.$message.success('上传附件成功')
+            this.getList()
+          })
         // 收到条
       } else if (type === 'receiveProof') {
         //修改订单信息
         updateGoodsOrder({...this.tempOrderInfo, receiveProof: path})
-            .then(res => {
-              this.$message.success('上传收到条成功')
-              this.getList()
-            })
+          .then(res => {
+            this.$message.success('上传收到条成功')
+            this.getList()
+          })
       }
     },
 
@@ -1358,13 +1359,13 @@ export default {
       }).then(() => {
         //修改审核状态
         auditGoodsOrder({id: row.id, isaudit: true})
-            .then(res => {
-              this.$message({
-                type: 'success',
-                message: '操作成功~!'
-              });
-              this.getList()
-            })
+          .then(res => {
+            this.$message({
+              type: 'success',
+              message: '操作成功~!'
+            });
+            this.getList()
+          })
       })
     },
 

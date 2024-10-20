@@ -157,7 +157,7 @@
 
 <script>
 import SearchOption from "@/components/SearchOption.vue";
-import ApplyPayment from "@/components/ApplyPayment.vue";
+import ApplyPayment from "@/views/dashboard/components/common/ApplyPayment.vue";
 import {getLendMoneySummary} from "@/api/system/statement";
 import {mixin_printHTML} from "@/views/dashboard/mixins/print";
 import {listRecoverMoney} from "../../../api/system/recoverMoney";

@@ -154,9 +154,8 @@ import {
 import {mixin_printHTML} from "../../dashboard/mixins/print";
 import {mixin_vouncher_options} from "../../dashboard/mixins/vouncher/vouncher_options";
 import InfoDialog from "../../../components/InfoDialog.vue";
-import OrderInfos from "../../../components/OrderInfos.vue";
-import OrderDetailInfo from "../../../components/OrderDetailInfo.vue";
-import {DocumentNumber} from "../../../api/tool/enums";
+import OrderInfos from "../../dashboard/components/goodsOrder/OrderInfos.vue";
+import OrderDetailInfo from "../../dashboard/components/goodsOrder/OrderDetailInfo.vue";
 import {addDateRange} from "../../../utils/ruoyi";
 
 export default {

@@ -1,7 +1,7 @@
 <!--查看订单-->
 <script>
 import TagsItem from "@/components/TagsItem/index.vue";
-import {formatValue} from "../api/tool/cons";
+import {formatValue} from "../../../../api/tool/cons";
 
 export default {
   name: "OrderInfos",

@@ -15,8 +15,8 @@
   </el-dialog>
 </template>
 <script>
-import OrderDetailInfo from "@/components/OrderDetailInfo.vue"
-import OrderInfos from "../../../components/OrderInfos.vue"
+import OrderDetailInfo from "@/views/dashboard/components/goodsOrder/OrderDetailInfo.vue"
+import OrderInfos from "../../dashboard/components/goodsOrder/OrderInfos.vue"
 
 export default {
   name: 'PreviousOrderInfo',

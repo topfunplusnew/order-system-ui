@@ -218,7 +218,7 @@ import {excludeParams} from "@/api/tool/exclude";
 import SearchOption from "@/components/SearchOption.vue";
 import {listCompany} from "@/api/system/company";
 import {getGoodsOrder} from "@/api/system/goodsOrder";
-import OrderInfos from "@/components/OrderInfos.vue";
+import OrderInfos from "@/views/dashboard/components/goodsOrder/OrderInfos.vue";
 import {addReason} from "@/api/system/user";
 import {TableName} from "@/api/tool/enums";
 import {getInvoiceIn} from "@/api/system/invoiceIn";
@@ -290,10 +290,8 @@ export default {
       ],
       beginTime: '',
       endTime: '',
-
       //公司名称
       companyName: '',
-
       //查看订单信息
       checkOrderInfoVisible: false,
       orderInfo: {}
@@ -337,18 +335,7 @@ export default {
   },
   methods: {
     listCompany,
-    // handleTimesQuery() {
-    //   this.$wait()
-    //   listInvoiceOut({
-    //     ...this.queryParams, beginTime: parseTime(this.beginTime),
-    //     endTime: parseTime(this.endTime)
-    //   }).then(res => {
-    //     this.invoiceOutList = res.rows;
-    //     this.$close();
-    //   }).catch(err => {
-    //     this.$close();
-    //   })
-    // },
+    // 自动填充函数
     handleUpdateCompanyName(val) {
       this.companyName = val;
     },
@@ -358,7 +345,6 @@ export default {
       this.form.companyID = val.id;
       this.form.companyType = val.companyType;
     },
-
     //表格中查看订单信息
     checkOrderInfo(row) {
       //发请求 查看订单信息

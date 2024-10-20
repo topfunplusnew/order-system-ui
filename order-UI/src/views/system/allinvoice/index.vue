@@ -178,7 +178,6 @@
 import {listInvoiceIn, getInvoiceIn, delInvoiceIn, addInvoiceIn, updateInvoiceIn} from "@/api/system/invoiceIn";
 import {mixin_printHTML} from "@/views/dashboard/mixins/print";
 import {listInvoiceAll} from "@/api/system/allInvoice";
-import EditReason from "@/components/EditReason.vue";
 import {TableName} from "@/api/tool/enums";
 import {addReason} from "@/api/system/user";
 
@@ -189,7 +188,7 @@ export default {
       return TableName
     }
   },
-  components: {EditReason},
+  components: {},
   mixins: [mixin_printHTML],
   data() {
     return {

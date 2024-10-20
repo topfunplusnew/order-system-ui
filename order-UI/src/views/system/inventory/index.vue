@@ -432,17 +432,18 @@ import {listCompany} from "@/api/system/company";
 import {listProductLevel} from "@/api/system/productLevel";
 import {listCars} from "@/api/system/cars";
 import {excludeParams} from "@/api/tool/exclude";
-import InventoryForm from "@/components/InventoryForm.vue";
 import {mapGetters} from "vuex";
-import {addExWarehouse} from "@/api/system/exWarehouse";
 import {addReason} from "@/api/system/user";
 import {TableName} from "@/api/tool/enums";
-import {getInvoiceOther} from "@/api/system/invoiceOther";
-import {formatDate} from "@/utils";
+import {mixin_inventory_second} from "../../dashboard/mixins/inventory/inventory_second";
+import {mixin_inventory_broken} from "../../dashboard/mixins/inventory/inventory_broken";
+import {mixin_inventory_add} from "../../dashboard/mixins/inventory/inventory_add";
+import InventoryForm from "../../dashboard/components/inventory/InventoryForm.vue";
 
 export default {
   name: "Inventory",
   components: {InventoryForm, SearchOption},
+  mixins: [mixin_inventory_second, mixin_inventory_broken, mixin_inventory_add],
   data() {
     return {
       loading: true,
@@ -549,27 +550,8 @@ export default {
         {key: 34, label: `客户佣金`, visible: true},
         {key: 35, label: `备注`, visible: true},
       ],
-      //货物入库
-      invoiceInVisible: false,
-      //库存信息
-      inventoryInfo: {
-        storeDate: '',
-        storeHouseName: '',
-        carNo: '',
-        tel: ''
-      },
-      //二次出库
-      secondNumber: 0,
-      secondInvoiceInVisible: false,
-      secondInfo: {},
-      //货物破损
-      breakNumber: 0,
-      breakInvoiceInVisible: false,
-      breakInfo: {},
 
-      // 仓库信息
-      storeList: [],
-
+      // 树表的数据结构
       defaultProps: {
         label: 'label'
       },
@@ -648,59 +630,6 @@ export default {
       this.form.seaCarID = val.id;
     },
 
-    //添加货物
-    addNewInventory() {
-      this.resetInventoryInfo()
-      this.invoiceInVisible = true
-    },
-    //充值仓库信息
-    resetInventoryInfo() {
-      this.inventoryInfo = {
-        storeDate: '',
-        storeHouseName: '',
-        carNo: '',
-        tel: ''
-      }
-    },
-    //二次出库
-    secondryInventoryOut(row) {
-      //组装二次出库需要的信息
-      this.secondInfo = {
-        ordersNo: '二次加工',
-        storeHouseid: row.storeHouseid,
-        storeHouseName: row.storeHouseName,
-        storeID: row.id,
-        outDate: formatDate(new Date())
-      };
-      this.secondInvoiceInVisible = true
-    },
-    //提交二次出库信息
-    submitSecondInvoiceIn() {
-      this.secondInfo.outAmount = this.secondNumber
-      addExWarehouse(this.secondInfo).then(res => {
-        this.$message.success('加工后出库成功~')
-      })
-      this.secondInvoiceInVisible = false
-    },
-    //货物破损出库
-    afterbreakInventoryOut(row) {
-      this.breakInfo = {
-        ordersNo: '货物破损',
-        storeHouseid: row.storeHouseid,
-        storeHouseName: row.storeHouseName,
-        storeID: row.id,
-        outDate: formatDate(new Date())
-      };
-      this.breakInvoiceInVisible = true
-    },
-    //提交货物破损出库
-    submitBreakInvoiceIn() {
-      this.breakInfo.outAmount = this.breakNumber
-      addExWarehouse(this.breakInfo).then(res => {
-        this.$message.success('货物破损出库成功~')
-      })
-      this.breakInvoiceInVisible = false
-    },
     /** 查询库存列表 */
     getList() {
       this.loading = true;
@@ -797,12 +726,7 @@ export default {
         targetStyles: ['*'], // 打印内容使用所有HTML样式，没有设置这个属性/值，设置分页打印没有效果
       })
     },
-    /** 新增按钮操作 */
-    handleAdd() {
-      this.reset();
-      this.open = true;
-      this.title = "添加库存";
-    },
+
     /** 修改按钮操作 */
     handleUpdate(row) {
       this.$prompt('请输入编辑原因', '提示', {

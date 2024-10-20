@@ -229,13 +229,12 @@ import {listInvoiceIn, getInvoiceIn, delInvoiceIn, addInvoiceIn, updateInvoiceIn
 import {mixin_printHTML} from "@/views/dashboard/mixins/print";
 import SearchOption from "@/components/SearchOption.vue";
 import {listCompany} from "@/api/system/company";
-import ApplyPayment from "@/components/ApplyPayment.vue";
+import ApplyPayment from "@/views/dashboard/components/common/ApplyPayment.vue";
 import {TableName} from "@/api/tool/enums";
 import {excludeParams} from "@/api/tool/exclude";
 import {addReason} from "@/api/system/user";
-import {getRecoverMoney} from "@/api/system/recoverMoney";
 import {getGoodsOrder} from "@/api/system/goodsOrder";
-import OrderInfos from "@/components/OrderInfos.vue";
+import OrderInfos from "@/views/dashboard/components/goodsOrder/OrderInfos.vue";
 import CheckFiles from "../../../components/CheckFiles.vue";
 
 export default {

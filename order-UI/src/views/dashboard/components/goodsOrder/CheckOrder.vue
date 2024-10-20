@@ -27,7 +27,7 @@
   </el-dialog>
 </template>
 <script>
-import OrderDetailInfo from "@/components/OrderDetailInfo.vue"
+import OrderDetailInfo from "@/views/dashboard/components/goodsOrder/OrderDetailInfo.vue"
 
 export default {
   name: 'CheckOrder',

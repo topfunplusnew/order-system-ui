@@ -302,7 +302,7 @@ import {listCompany} from "@/api/system/company";
 import {listGoodsOrder} from "@/api/system/goodsOrder";
 import {addDateRange} from "@/utils/ruoyi";
 import {getGoodsOrder} from "../../../api/system/goodsOrder";
-import OrderInfos from "../../../components/OrderInfos.vue";
+import OrderInfos from "../../dashboard/components/goodsOrder/OrderInfos.vue";
 import {fix} from "../../../api/tool/format";
 
 export default {

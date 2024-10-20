@@ -152,7 +152,7 @@ import {addReceiveMoney} from "@/api/system/receiveMoney";
 import SearchOption from "@/components/SearchOption.vue";
 import {listBankAccount} from "@/api/system/bankAccount";
 import {listCompany} from "@/api/system/company";
-import ApplyPayment from "@/components/ApplyPayment.vue";
+import ApplyPayment from "@/views/dashboard/components/common/ApplyPayment.vue";
 import {TableName} from "@/api/tool/enums";
 import {excludeParams} from "@/api/tool/exclude";
 import {getLendMoneySummary, getLendMoneySummary2} from "@/api/system/statement";

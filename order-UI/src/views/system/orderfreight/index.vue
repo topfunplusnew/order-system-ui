@@ -477,7 +477,7 @@ import {
 } from "@/api/system/orderFreight";
 import SearchOption from "@/components/SearchOption.vue";
 import {listBankAccount} from "@/api/system/bankAccount";
-import ApplyPayment from "@/components/ApplyPayment.vue";
+import ApplyPayment from "@/views/dashboard/components/common/ApplyPayment.vue";
 import {TableName} from "@/api/tool/enums";
 import {addDateRange} from "@/utils/ruoyi";
 import {listData} from "@/api/system/dict/data";

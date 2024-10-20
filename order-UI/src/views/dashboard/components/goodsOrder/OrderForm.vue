@@ -1,15 +1,15 @@
 <!--订单表组件-->
 
 <script>
-import OrderItem from "@/components/OrderItem.vue";
-import SearchOption from "./SearchOption.vue";
-import {listCompany} from "../api/system/company";
-import {listBankAccount} from "../api/system/bankAccount";
-import {listCars} from "../api/system/cars";
-import {listFleet} from "../api/system/fleet";
-import {parseTime} from "../utils/ruoyi";
-import {addGoodsOrder, getGoodsOrder, updateGoodsOrder} from "../api/system/goodsOrder";
-import {excludeParams} from "../api/tool/exclude";
+import OrderItem from "@/views/dashboard/components/goodsOrder/OrderItem.vue";
+import SearchOption from "../../../../components/SearchOption.vue";
+import {listCompany} from "../../../../api/system/company";
+import {listBankAccount} from "../../../../api/system/bankAccount";
+import {listCars} from "../../../../api/system/cars";
+import {listFleet} from "../../../../api/system/fleet";
+import {parseTime} from "../../../../utils/ruoyi";
+import {addGoodsOrder, getGoodsOrder, updateGoodsOrder} from "../../../../api/system/goodsOrder";
+import {excludeParams} from "../../../../api/tool/exclude";
 import {mapGetters} from "vuex";
 
 export default {

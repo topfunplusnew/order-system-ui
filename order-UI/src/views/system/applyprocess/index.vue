@@ -3,7 +3,7 @@
 <script>
 import {getPaymentApply, listPaymentApply} from "@/api/system/paymentApply";
 import {listAuditInfoGroup} from "@/api/system/auditInfo";
-import StepInfo from "@/components/StepInfo.vue";
+import StepInfo from "@/views/dashboard/components/applyProcess/StepInfo.vue";
 import {mapGetters} from "vuex";
 import {findFileExtension} from "@/utils/trash/utils";
 import {listAuditInfo} from "../../../api/system/auditInfo";

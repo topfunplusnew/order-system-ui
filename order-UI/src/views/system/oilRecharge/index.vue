@@ -243,7 +243,7 @@ import {
   updateOilRecharge
 } from "@/api/system/oilRecharge";
 import {mixin_printHTML} from "@/views/dashboard/mixins/print";
-import ApplyPayment from "@/components/ApplyPayment.vue";
+import ApplyPayment from "@/views/dashboard/components/common/ApplyPayment.vue";
 import {TableName} from "@/api/tool/enums";
 import SearchOption from "@/components/SearchOption.vue";
 import {listOilCard} from "@/api/system/oilCard";

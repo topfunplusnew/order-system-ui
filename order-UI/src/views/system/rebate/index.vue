@@ -589,11 +589,11 @@
 <script>
 import {listRebate, getRebate, delRebate, addRebate, updateRebate} from "@/api/system/Rebate";
 import {mixin_printHTML} from "@/views/dashboard/mixins/print";
-import ApplyPayment from "@/components/ApplyPayment.vue";
+import ApplyPayment from "@/views/dashboard/components/common/ApplyPayment.vue";
 import {TableName} from "@/api/tool/enums";
 import {listGoodsOrder} from "@/api/system/goodsOrder";
-import OrderInfos from "@/components/OrderInfos.vue";
-import OrderDetailInfo from "@/components/OrderDetailInfo.vue";
+import OrderInfos from "@/views/dashboard/components/goodsOrder/OrderInfos.vue";
+import OrderDetailInfo from "@/views/dashboard/components/goodsOrder/OrderDetailInfo.vue";
 import {listBankAccount} from "@/api/system/bankAccount";
 import {listCompany} from "@/api/system/company";
 import SearchOption from "@/components/SearchOption.vue";

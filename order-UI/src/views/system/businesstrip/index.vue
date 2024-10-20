@@ -338,7 +338,7 @@ import SearchOption from "@/components/SearchOption.vue";
 import {listData} from "@/api/system/dict/data";
 import {mapGetters} from "vuex";
 import PaymentApply from "@/views/system/paymentApply/index.vue";
-import ApplyPayment from "@/components/ApplyPayment.vue";
+import ApplyPayment from "@/views/dashboard/components/common/ApplyPayment.vue";
 import {TableName} from "@/api/tool/enums";
 import {checkOilCard, listOilCard} from "@/api/system/oilCard";
 import {listBankAccount} from "@/api/system/bankAccount";

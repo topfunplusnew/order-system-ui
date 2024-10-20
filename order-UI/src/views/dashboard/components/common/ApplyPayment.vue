@@ -172,9 +172,9 @@ import {excludeParams} from "@/api/tool/exclude";
 import SearchOption from "@/components/SearchOption.vue";
 import {listCompany} from "@/api/system/company";
 import {listBankAccount} from "@/api/system/bankAccount";
-import {mixin_payment_apply} from "../views/dashboard/mixins/apply_payment/payment_apply";
-import {mixin_payment_level} from "../views/dashboard/mixins/apply_payment/payment_level";
-import {mixin_payment_watcher} from "../views/dashboard/mixins/apply_payment/payment_watcher";
+import {mixin_payment_apply} from "../../mixins/apply_payment/payment_apply";
+import {mixin_payment_level} from "../../mixins/apply_payment/payment_level";
+import {mixin_payment_watcher} from "../../mixins/apply_payment/payment_watcher";
 
 export default {
   name: "ApplyPayment",

@@ -486,25 +486,25 @@ import {
   delGoodsOrder,
   listGoodsOrder,
 } from "@/api/system/goodsOrder";
-import OrderForm from "@/components/OrderForm.vue";
+import OrderForm from "@/views/dashboard/components/goodsOrder/OrderForm.vue";
 import {mapGetters} from "vuex";
 import {listBankAccount} from "@/api/system/bankAccount";
 import {listCompany} from "@/api/system/company";
-import OrderDetailInfo from "@/components/OrderDetailInfo.vue";
+import OrderDetailInfo from "@/views/dashboard/components/goodsOrder/OrderDetailInfo.vue";
 import {TableName} from "@/api/tool/enums";
 import FreeApply from "@/components/FreeApply.vue";
 import {parseTime} from "../../../utils/ruoyi";
 import {mixin_printHTML} from "@/views/dashboard/mixins/print";
 import InfoDialog from "../../../components/InfoDialog.vue";
-import Invoice from "./Invoice.vue";
-import OrderMoneyReceive from "./OrderMoneyReceive.vue";
-import OrderHistoryCheck from "./OrderHistoryCheck.vue";
-import PrimativeOrderInfo from "./PrimativeOrderInfo.vue";
-import UploadCommit from "./UploadCommit.vue";
-import UploadPath from "./UploadPath.vue";
-import OrderGiven from "./OrderGiven.vue";
-import CheckOrder from "./CheckOrder.vue";
-import QuerySearchBar from "./QuerySearchBar.vue";
+import Invoice from "../../dashboard/components/goodsOrder/Invoice.vue";
+import OrderMoneyReceive from "../../dashboard/components/goodsOrder/OrderMoneyReceive.vue";
+import OrderHistoryCheck from "../../dashboard/components/goodsOrder/OrderHistoryCheck.vue";
+import PrimativeOrderInfo from "../../dashboard/components/goodsOrder/PrimativeOrderInfo.vue";
+import UploadCommit from "../../dashboard/components/goodsOrder/UploadCommit.vue";
+import UploadPath from "../../dashboard/components/goodsOrder/UploadPath.vue";
+import OrderGiven from "../../dashboard/components/goodsOrder/OrderGiven.vue";
+import CheckOrder from "../../dashboard/components/goodsOrder/CheckOrder.vue";
+import QuerySearchBar from "../../dashboard/components/goodsOrder/QuerySearchBar.vue";
 import {mixin_order_deliverGoods} from "../../dashboard/mixins/order/order_deliverGoods";
 import {mixin_order_checkOrder} from "../../dashboard/mixins/order/order_checkOrder";
 import {mixin_order_adjustOrder} from "../../dashboard/mixins/order/order_adjustOrder";

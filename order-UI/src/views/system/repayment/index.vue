@@ -146,7 +146,7 @@
 <script>
 import {listRepayment, getRepayment, delRepayment, addRepayment, updateRepayment} from "@/api/system/repayment";
 import {mapGetters} from "vuex";
-import ApplyPayment from "@/components/ApplyPayment.vue";
+import ApplyPayment from "@/views/dashboard/components/common/ApplyPayment.vue";
 import {TableName} from "@/api/tool/enums";
 
 export default {

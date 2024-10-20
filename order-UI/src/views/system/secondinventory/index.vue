@@ -95,7 +95,8 @@
     />
 
     <!-- 添加或修改出库对话框 -->
-    <el-dialog :close-on-click-modal="false" :show-close="false" :title="title" :visible.sync="open" width="500px" append-to-body>
+    <el-dialog :close-on-click-modal="false" :show-close="false" :title="title" :visible.sync="open" width="500px"
+               append-to-body>
       <el-form ref="form" :model="form" :rules="rules" label-width="80px">
         <!--        <el-form-item label="订单编号" prop="ordersNo">-->
         <!--          <el-input v-model="form.ordersNo" placeholder="请输入订单编号"/>-->
@@ -125,7 +126,8 @@
 
 
     <!--    二次入库的弹窗-->
-    <el-dialog :close-on-click-modal="false" :show-close="false" title="二次入库" :visible.sync="secondInventoryVisible" append-to-body width="70%">
+    <el-dialog :close-on-click-modal="false" :show-close="false" title="二次入库" :visible.sync="secondInventoryVisible"
+               append-to-body width="70%">
       <InventoryForm :inventory-info="secondInventoryInfo" @changeInventoryInfo="handleCommitInventoryInfo"/>
       <div slot="footer" class="dialog-footer">
         <el-button type="primary" @click="handleChangeInventoryInfo">确 定</el-button>
@@ -134,7 +136,8 @@
     </el-dialog>
 
 
-    <el-dialog :close-on-click-modal="false" :show-close="false" title="库存信息" :visible.sync="inventoryInfoVisible" width="70%" append-to-body>
+    <el-dialog :close-on-click-modal="false" :show-close="false" title="库存信息" :visible.sync="inventoryInfoVisible"
+               width="70%" append-to-body>
       <el-descriptions title="库存详情" border>
         <el-descriptions-item label="陆地车号">
           {{ inventoryInfo.landCarNo }}
@@ -232,7 +235,7 @@ import {listGoodsOrder} from "@/api/system/goodsOrder";
 import TagsItem from "@/components/TagsItem/index.vue";
 import {addInventory, getInventory, listInventory} from "@/api/system/inventory";
 import {excludeParams} from "@/api/tool/exclude";
-import InventoryForm from "@/components/InventoryForm.vue";
+import InventoryForm from "../../dashboard/components/inventory/InventoryForm.vue";
 
 export default {
   name: "ExWarehouse",

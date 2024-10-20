@@ -1,6 +1,6 @@
 <script>
 import {getUserProfile} from "@/api/system/user";
-import CheckApply from "@/components/CheckApply.vue";
+import CheckApply from "@/views/dashboard/components/applyProcess/CheckApply.vue";
 import {listAuditflow, updateAuditflow} from "@/api/system/auditflow";
 import {updateAuditInfo} from "@/api/system/auditInfo";
 import {TableName} from "@/api/tool/enums";
@@ -115,7 +115,7 @@ export default {
       //展示对应表信息
       this.tableNameToProp = tableName;
       switch (tableName) {
-          //订单运费
+        //订单运费
         case TableName.ORDER_FREIGHT: {
           //发请求 获取订单运费信息
           getOrderFreight(tID).then(res => {
@@ -210,10 +210,10 @@ export default {
 
         <!-- 审核页面 checkPaymentApplyDialogVisible-->
         <el-dialog :close-on-click-modal="false"
-            title="流程审核"
-            :visible.sync="checkPaymentApplyDialogVisible"
-            width="65%"
-            append-to-body>
+                   title="流程审核"
+                   :visible.sync="checkPaymentApplyDialogVisible"
+                   width="65%"
+                   append-to-body>
           <!--   需要展示的对应的表信息-->
           <NeedToShowInfo :need-to-show-info="needToShowInfo" :table-name-to-prop="tableNameToProp"/>
           <hr/>

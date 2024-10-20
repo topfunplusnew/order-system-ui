@@ -5,8 +5,8 @@ import {listCompany} from "@/api/system/company";
 import {listBankAccount} from "@/api/system/bankAccount";
 import {getGoodsOrder, updateGoodsOrder} from "@/api/system/goodsOrder";
 import {excludeParams} from "@/api/tool/exclude";
-import {listRebate} from "../api/system/Rebate";
-import {getDicts, listData} from "../api/system/dict/data";
+import {listRebate} from "../../../../api/system/Rebate";
+import {getDicts, listData} from "../../../../api/system/dict/data";
 
 export default {
   name: "OrderDetailInfo",

@@ -2,10 +2,10 @@
 
 <script>
 import {fix} from "@/api/tool/format";
-import SearchOption from "./SearchOption.vue";
-import {listCompany} from "../api/system/company";
-import {listProductLevel} from "../api/system/productLevel";
-import {addInventory} from "../api/system/inventory";
+import SearchOption from "../../../../components/SearchOption.vue";
+import {listCompany} from "../../../../api/system/company";
+import {listProductLevel} from "../../../../api/system/productLevel";
+import {addInventory} from "../../../../api/system/inventory";
 
 export default {
   name: "OrderItem",

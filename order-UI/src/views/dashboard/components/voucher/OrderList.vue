@@ -1,7 +1,7 @@
 <!--订单列表单独组件-->
 <script>
 import {listGoodsOrder} from "../../../../api/system/goodsOrder";
-import QuerySearchBar from "../../../system/goodsorder/QuerySearchBar.vue";
+import QuerySearchBar from "../goodsOrder/QuerySearchBar.vue";
 import {OptionInvent, Options} from "../../mixins/order/order_Invoice";
 
 export default {

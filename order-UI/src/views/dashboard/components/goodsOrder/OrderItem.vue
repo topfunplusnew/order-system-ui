@@ -1,12 +1,12 @@
 <!--订单详情个体-->
 
 <script>
-import SearchOption from "./SearchOption.vue";
-import {listCompany} from "../api/system/company";
-import {listInventory} from "../api/system/inventory";
-import {listProductLevel} from "../api/system/productLevel";
-import {mixin_item_addItem} from "../views/dashboard/mixins/order/items/item_addItem";
-import {mixin_item_compute} from "../views/dashboard/mixins/order/items/item_compute";
+import SearchOption from "../../../../components/SearchOption.vue";
+import {listCompany} from "../../../../api/system/company";
+import {listInventory} from "../../../../api/system/inventory";
+import {listProductLevel} from "../../../../api/system/productLevel";
+import {mixin_item_addItem} from "../../mixins/order/items/item_addItem";
+import {mixin_item_compute} from "../../mixins/order/items/item_compute";
 
 export default {
   name: "OrderItem",

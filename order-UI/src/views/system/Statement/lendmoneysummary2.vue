@@ -172,7 +172,7 @@
 
 <script>
 import SearchOption from "@/components/SearchOption.vue";
-import ApplyPayment from "@/components/ApplyPayment.vue";
+import ApplyPayment from "@/views/dashboard/components/common/ApplyPayment.vue";
 import {getLendMoneySummary2} from "@/api/system/statement";
 import {mixin_printHTML} from "@/views/dashboard/mixins/print";
 import {getRecoverMoneyNoPage, listRecoverMoney} from "../../../api/system/recoverMoney";

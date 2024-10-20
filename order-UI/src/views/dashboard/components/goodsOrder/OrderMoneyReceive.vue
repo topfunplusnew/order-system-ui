@@ -8,7 +8,7 @@
   </el-dialog>
 </template>
 <script>
-import ApplyPayment from "@/components/ApplyPayment.vue"
+import ApplyPayment from "@/views/dashboard/components/common/ApplyPayment.vue"
 
 export default {
   name: 'OrderMoneyReceive',
