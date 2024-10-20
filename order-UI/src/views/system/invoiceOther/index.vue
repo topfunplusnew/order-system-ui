@@ -154,9 +154,9 @@
       <el-row>
         <el-form ref="form" :model="form" :rules="rules" label-width="120px">
           <!--        订单编号应该是选择某个订单 然后自动填充-->
-          <el-form-item label="订单ID" prop="ordersNo">
+          <el-form-item label="关联订单ID" prop="ordersNo">
             <el-col :span="20">
-              <el-input v-model="form.ordersNo" placeholder="请选择关联订单"/>
+              <el-input disabled v-model="form.orderIDS" placeholder="请选择关联订单"/>
             </el-col>
             <el-col :span="4">
               <SearchOption :limit-info="{}"
@@ -169,7 +169,7 @@
                   <el-table-column show-overflow-tooltip label="客户" align="center" prop="customer" fixed="left"/>
                   <el-table-column show-overflow-tooltip label="供应商" align="center" prop="supplierNames"
                                    fixed="left"/>
-                  <el-table-column label="订单编号" align="center" prop="ordersNo" width="200px"/>
+                  <!--   <el-table-column label="订单编号" align="center" prop="ordersNo" width="200px"/>-->
                   <el-table-column show-overflow-tooltip label="陆运车牌" align="center" prop="landCarNo"
                   />
                   <el-table-column show-overflow-tooltip label="陆运司机电话" align="center" prop="landDriverTel"
@@ -460,6 +460,7 @@ export default {
     },
     handleCommitBackGoodsOrder(val) {
       this.form.ordersNo = val.ordersNo
+      this.form.orderIDS = val.id;
     },
     //表格中查看订单信息
     checkOrderInfo(row) {
@@ -496,6 +497,8 @@ export default {
       this.form = {
         id: null,
         ordersNo: null,
+        // 关联订单id 无业务用处
+        orderIDS: null,
         invoiceDate: null,
         invoiceAmount: null,
         supplierTicketPoint: null,

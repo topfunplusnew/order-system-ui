@@ -140,7 +140,8 @@
           <!--        订单编号应该是选择某个订单 然后自动填充-->
           <el-form-item label="订单ID" prop="ordersNo">
             <el-col :span="20">
-              <el-input v-model="form.ordersNo" placeholder="请选择关联订单"/>
+              <!--              <el-input v-model="form.ordersNo" placeholder="请选择关联订单"/>-->
+              <el-input disabled v-model="form.orderIDS" placeholder="请选择关联订单"/>
             </el-col>
             <el-col :span="4">
               <SearchOption :limit-info="{}"
@@ -460,6 +461,7 @@ export default {
       this.form = {
         id: null,
         ordersNo: null,
+        orderIDS: null,
         invoiceDate: null,
         invoiceAmount: null,
         supplierTicketPoint: null,
