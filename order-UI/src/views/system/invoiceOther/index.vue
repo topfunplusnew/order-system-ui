@@ -68,6 +68,7 @@
     </el-row>
 
     <el-table border v-horizontal-scroll="'always'" v-loading="loading" :data="invoiceOtherList"
+              @header-dragend="changeColWidth"
               @selection-change="handleSelectionChange" size="mini" :cell-style="()=>{return {padding:'.5px'}}">
       <el-table-column label="开票日期" align="center" prop="invoiceDate" v-if="columns[0].visible"
                        show-overflow-tooltip/>
@@ -76,7 +77,11 @@
       <el-table-column label="供应商票点" align="center" prop="supplierTicketPoint" v-if="columns[2].visible"
                        show-overflow-tooltip/>
       <el-table-column label="供应商票点金额" align="center" prop="supplierPointAmount" v-if="columns[3].visible"
-                       show-overflow-tooltip/>
+                       show-overflow-tooltip>
+        <template #default="scope">
+          {{ scope.row.supplierPointAmount | changeNumber(changeLength) }}
+        </template>
+      </el-table-column>
       <el-table-column label="供应商公司名称" align="center" prop="Supplier" v-if="columns[4].visible"
                        show-overflow-tooltip/>
       <!--      <el-table-column label="供应商ID" align="center" prop="SupplierID"/>-->
@@ -87,8 +92,12 @@
                        show-overflow-tooltip/>
       <el-table-column label="客户票点" align="center" prop="customerTicketPoint" v-if="columns[7].visible"
                        show-overflow-tooltip/>
-      <el-table-column label="票点金额" align="center" prop="customerPointAmount" v-if="columns[8].visible"
-                       show-overflow-tooltip/>
+      <el-table-column label="客户票点金额" align="center" prop="customerPointAmount" v-if="columns[8].visible"
+                       show-overflow-tooltip>
+        <template #default="scope">
+          {{ scope.row.customerPointAmount | changeNumber(changeLength) }}
+        </template>
+      </el-table-column>
       <el-table-column label="订单信息" align="center" prop="isOrderTax" width="180" v-if="columns[9].visible"
                        show-overflow-tooltip>
         <template slot-scope="scope">
@@ -328,11 +337,12 @@ import {getGoodsOrder} from "../../../api/system/goodsOrder";
 import OrderInfos from "../../dashboard/components/goodsOrder/OrderInfos.vue";
 import CheckFiles from "../../../components/CheckFiles.vue";
 import {fix} from "../../../api/tool/format";
+import reLength from "../../dashboard/mixins/reLength";
 
 export default {
   name: "InvoiceOther",
   components: {CheckFiles, OrderInfos, SearchOption},
-  mixins: [mixin_printHTML],
+  mixins: [mixin_printHTML, reLength],
   data() {
     return {
       // 遮罩层
@@ -392,7 +402,7 @@ export default {
         {key: 5, label: `客户公司名称`, visible: true},
         {key: 6, label: `票据单位名称`, visible: true},
         {key: 7, label: `客户票点`, visible: true},
-        {key: 8, label: `票点金额`, visible: true},
+        {key: 8, label: `客户票点金额`, visible: true},
         {key: 9, label: `是否订单对应`, visible: true},
         {key: 10, label: `备注`, visible: true},
       ],

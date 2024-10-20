@@ -93,8 +93,6 @@ export default {
 
   },
   watch: {
-
-
     // 监听开票金额不能超过总货款
     'updateOrderItemVisibleTitleInfo.ticketPointAmount': {
       handler(val) {

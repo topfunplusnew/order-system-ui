@@ -60,14 +60,14 @@
       </right-toolbar>
     </el-row>
 
-    <el-table id="printBox" v-horizontal-scroll="'always'" border v-loading="loading" :data="invoiceInList"
+    <el-table id="printBox" v-horizontal-scroll="'always'" border v-loading="loading" :data="invoiceInList" @header-dragend="changeColWidth"
               @selection-change="handleSelectionChange" fit size="mini" :cell-style="()=>{return {padding:'.5px'}}">
       <el-table-column label="开票日期" align="center" prop="invoiceDate" v-if="columns[0].visible"
                        show-overflow-tooltip/>
-      <el-table-column label="我方开票实体" align="center" prop="invoiceObject" v-if="columns[1 ].visible"
+      <el-table-column label="我方开票实体" align="center" prop="invoiceObject" v-if="columns[1].visible"
                        show-overflow-tooltip
                        width="100px"/>
-      <el-table-column label="开票金额" align="center" prop="invoiceAmount" v-if="columns[2 ].visible"
+      <el-table-column label="开票金额" align="center" prop="invoiceAmount" v-if="columns[2].visible"
                        show-overflow-tooltip/>
       <el-table-column label="对方公司类别" align="center" prop="companyType" v-if="columns[3].visible" width="100px"
                        show-overflow-tooltip/>
@@ -78,7 +78,11 @@
                        width="100px"/>
       <el-table-column label="票点" align="center" prop="ticketPoint" v-if="columns[6].visible" show-overflow-tooltip/>
       <el-table-column label="票点金额" align="center" prop="ticketPointAmount" v-if="columns[7].visible"
-                       show-overflow-tooltip/>
+                       show-overflow-tooltip>
+        <template #default="scope">
+          {{ scope.row.ticketPointAmount | changeNumber(changeLength) }}
+        </template>
+      </el-table-column>
       <el-table-column label="审核状态" align="center" prop="checkState" width="240" v-if="columns[9].visible">
         <template #default="scope">
           <el-row>
@@ -236,11 +240,12 @@ import {addReason} from "@/api/system/user";
 import {getGoodsOrder} from "@/api/system/goodsOrder";
 import OrderInfos from "@/views/dashboard/components/goodsOrder/OrderInfos.vue";
 import CheckFiles from "../../../components/CheckFiles.vue";
+import reLength from "../../dashboard/mixins/reLength";
 
 export default {
   name: "InvoiceIn",
   components: {CheckFiles, OrderInfos, ApplyPayment, SearchOption},
-  mixins: [mixin_printHTML],
+  mixins: [mixin_printHTML, reLength],
   data() {
     return {
       // 遮罩层

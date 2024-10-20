@@ -74,7 +74,7 @@
     </el-row>
 
     <el-table v-horizontal-scroll="'always'" border v-loading="loading" :data="invoiceOutList"
-              @selection-change="handleSelectionChange" id="printBox" size="mini"
+              @selection-change="handleSelectionChange" id="printBox" size="mini" @header-dragend="changeColWidth"
               :cell-style="()=>{return {padding:'.5px'}}">
       <el-table-column label="开票日期" align="center" prop="invoiceDate" v-if="columns[0].visible"
                        show-overflow-tooltip/>
@@ -90,7 +90,11 @@
                        show-overflow-tooltip/>
       <el-table-column label="票点" align="center" prop="ticketPoint" v-if="columns[6].visible" show-overflow-tooltip/>
       <el-table-column label="票点金额" align="center" prop="ticketPointAmount" v-if="columns[7].visible"
-                       show-overflow-tooltip/>
+                       show-overflow-tooltip>
+        <template #default="scope">
+          {{ scope.row.ticketPointAmount | changeNumber(changeLength) }}
+        </template>
+      </el-table-column>
       <el-table-column label="备注" align="center" prop="comments" v-if="columns[9].visible" show-overflow-tooltip/>
       <el-table-column label="银行回执单" align="center" prop="paymentReceipts">
         <template #default="scope">
@@ -224,11 +228,12 @@ import {TableName} from "@/api/tool/enums";
 import {getInvoiceIn} from "@/api/system/invoiceIn";
 import {addDateRange, parseTime} from "@/utils/ruoyi";
 import CheckFiles from "../../../components/CheckFiles.vue";
+import reLength from "../../dashboard/mixins/reLength";
 
 export default {
   name: "InvoiceOut",
   components: {CheckFiles, OrderInfos, SearchOption},
-  mixins: [mixin_printHTML],
+  mixins: [mixin_printHTML,reLength],
   data() {
     return {
       // 遮罩层

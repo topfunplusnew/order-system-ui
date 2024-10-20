@@ -45,7 +45,7 @@
     </el-row>
     <!--    表格列-->
     <el-table fit border v-loading="loading" :data="goodsOrderList" @selection-change="handleSelectionChange"
-              id="printBox" v-horizontal-scroll="'always'"
+              id="printBox" v-horizontal-scroll="'always'" @header-dragend="changeColWidth"
               max-height="750" size="mini" :cell-style="()=>{return {padding:'2px'}}">
 
       <el-table-column label="行操作" align="center" class-name="small-padding fixed-width"
@@ -130,7 +130,11 @@
       <el-table-column show-overflow-tooltip label="陆地司机姓名" align="center" prop="landDriverName"
                        v-if="columns[5].visible" width="100px"/>
       <el-table-column show-overflow-tooltip label="总货款" align="center" prop="allPayments"
-                       width="100px"/>
+                       width="100px">
+        <template #default="scope">
+          {{ scope.row.allPayments | changeNumber(changeLength) }}
+        </template>
+      </el-table-column>
       <el-table-column show-overflow-tooltip label="陆运费" align="center" prop="landFreight"
                        v-if="columns[6].visible" width="100px"/>
 
@@ -517,6 +521,8 @@ import {mixin_order_goodsItemInfo} from "../../dashboard/mixins/order/order_good
 import {mixin_order_audit} from "../../dashboard/mixins/order/order_audit";
 import {mixin_order_applyPayment} from "../../dashboard/mixins/order/order_applyPayment";
 import {mixin_order_base} from "../../dashboard/mixins/order/order_base";
+import {changeColWidth} from "../../../utils/order";
+import reLength from "../../dashboard/mixins/reLength";
 
 export default {
   name: "GoodsOrder",
@@ -526,7 +532,7 @@ export default {
     , mixin_order_Invoice, mixin_order_uploadFiles
     , mixin_order_add, mixin_order_freeApply, mixin_order_orderHistory,
     mixin_order_goodsItemInfo, mixin_order_audit, mixin_order_applyPayment,
-    mixin_order_base,],
+    mixin_order_base, reLength],
   // 组件注册
   components: {
     QuerySearchBar,
@@ -600,6 +606,8 @@ export default {
       form: {},
       // 表单校验
       rules: {},
+
+
     };
   },
   created() {
@@ -631,17 +639,19 @@ export default {
     // 监听整个开票表单 如果有变化 自动监听计算票点金额
     'updateOrderItemVisibleTitleInfo': {
       handler(val) {
-        this.updateOrderItemVisibleTitleInfo.ticketPointAmount = Number(this.updateOrderItemVisibleTitleInfo.invoiceAmount * this.updateOrderItemVisibleTitleInfo.ticketPoint).toFixed(2)
+        this.updateOrderItemVisibleTitleInfo.ticketPointAmount = Number(this.updateOrderItemVisibleTitleInfo.invoiceAmount * this.updateOrderItemVisibleTitleInfo.ticketPoint).toFixed(3)
       },
       deep: true,
       immediate: true,
     },
 
   },
+
   methods: {
     parseTime,
     listCompany,
     listBankAccount,
+    // 拖拽改变列宽
     /** 搜索按钮操作 */
     handleQuery() {
       this.queryParams.pageNum = 1;

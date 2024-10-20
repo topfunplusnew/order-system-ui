@@ -67,7 +67,7 @@
       </right-toolbar>
     </el-row>
 
-    <el-table border v-horizontal-scroll="'always'" v-loading="loading" :data="invoiceOtherList"
+    <el-table border v-horizontal-scroll="'always'" v-loading="loading" :data="invoiceOtherList" @header-dragend="changeColWidth"
               @selection-change="handleSelectionChange" size="mini" :cell-style="()=>{return {padding:'.5px'}}">
       <el-table-column label="开票日期" align="center" prop="invoiceDate" v-if="columns[0].visible"
                        show-overflow-tooltip/>
@@ -76,7 +76,11 @@
       <el-table-column label="供应商票点" align="center" prop="supplierTicketPoint" v-if="columns[2].visible"
                        show-overflow-tooltip/>
       <el-table-column label="供应商票点金额" align="center" prop="supplierPointAmount" v-if="columns[3].visible"
-                       show-overflow-tooltip/>
+                       show-overflow-tooltip>
+        <template #default="scope">
+          {{ scope.row.supplierPointAmount | changeNumber(changeLength) }}
+        </template>
+      </el-table-column>
       <el-table-column label="供应商公司名称" align="center" prop="Supplier" v-if="columns[4].visible"
                        show-overflow-tooltip/>
       <!--      <el-table-column label="客户公司名称" align="center" prop="customer" v-if="columns[5].visible"-->
@@ -304,11 +308,12 @@ import {addDateRange} from "@/utils/ruoyi";
 import {getGoodsOrder} from "../../../api/system/goodsOrder";
 import OrderInfos from "../../dashboard/components/goodsOrder/OrderInfos.vue";
 import {fix} from "../../../api/tool/format";
+import reLength from "../../dashboard/mixins/reLength";
 
 export default {
   name: "InvoiceOther",
   components: {OrderInfos, SearchOption},
-  mixins: [mixin_printHTML],
+  mixins: [mixin_printHTML, reLength],
   data() {
     return {
       // 遮罩层
