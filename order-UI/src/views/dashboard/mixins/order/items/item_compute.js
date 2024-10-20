@@ -25,10 +25,10 @@ export var mixin_item_compute = {
       return fix(Number(this.orderItemInfo.tonnage) * Number(this.orderItemInfo.landFreightPrice) + Number(this.orderItemInfo.additionalFees));
     },
     profit00() {
-      return fix(this.orderItemInfo.payments - this.orderItemInfo.paymentFactory - this.orderItemInfo.landFreight);
+      return fix(this.orderItemInfo.payments - this.orderItemInfo.paymentFactory - this.orderItemInfo.landFreight - this.orderItemInfo.seaFreight);
     },
     profitNoTax00() {
-      return fix(this.orderItemInfo.payments - this.orderItemInfo.paymentFactory - this.orderItemInfo.landFreight - this.orderItemInfo.otherCost);
+      return fix(this.orderItemInfo.payments - this.orderItemInfo.paymentFactory - this.orderItemInfo.landFreight - this.orderItemInfo.seaFreight - this.orderItemInfo.otherCost);
     },
     //是否含税10
     paymentFactory10() {
@@ -44,12 +44,11 @@ export var mixin_item_compute = {
       return fix(this.orderItemInfo.tonnage * this.orderItemInfo.landFreightPrice + Number(this.orderItemInfo.additionalFees))
     },
     profit10() {
-      return fix(this.orderItemInfo.payments - this.orderItemInfo.paymentFactory - this.orderItemInfo.landFreight)
+      return fix(this.orderItemInfo.payments - this.orderItemInfo.paymentFactory - this.orderItemInfo.landFreight - this.orderItemInfo.seaFreight)
     },
     // todo
     profitNoTax10() {
-
-      return fix(this.orderItemInfo.payments - (this.orderItemInfo.paymentFactory / 1.075) - this.orderItemInfo.landFreight - this.orderItemInfo.otherCost)
+      return fix(this.orderItemInfo.payments - (this.orderItemInfo.paymentFactory / 1.075) - this.orderItemInfo.landFreight - this.orderItemInfo.seaFreight - this.orderItemInfo.otherCost)
     },
     //是否含税01
     paymentFactory01() {
@@ -65,10 +64,11 @@ export var mixin_item_compute = {
       return fix(Number(this.orderItemInfo.tonnage * this.orderItemInfo.landFreightPrice) + Number(this.orderItemInfo.additionalFees))
     },
     profit01() {
-      return fix(this.orderItemInfo.payments - this.orderItemInfo.paymentFactory - this.orderItemInfo.landFreight)
+      return fix(this.orderItemInfo.payments - this.orderItemInfo.paymentFactory - this.orderItemInfo.landFreight - this.orderItemInfo.seaFreight)
     },
+    // 否 是 运费
     profitNoTax01() {
-      return fix((this.orderItemInfo.payments / 1.075) - this.orderItemInfo.paymentFactory - this.orderItemInfo.landFreight - this.orderItemInfo.otherCost)
+      return fix((this.orderItemInfo.payments / 1.075) - this.orderItemInfo.paymentFactory - this.orderItemInfo.landFreight - this.orderItemInfo.seaFreight - this.orderItemInfo.otherCost)
     },
     //是否含税11
     paymentFactory11() {
@@ -84,10 +84,10 @@ export var mixin_item_compute = {
       return fix(this.orderItemInfo.tonnage * this.orderItemInfo.landFreightPrice + Number(this.orderItemInfo.additionalFees))
     },
     profit11() {
-      return fix(this.orderItemInfo.payments - this.orderItemInfo.paymentFactory - this.orderItemInfo.landFreight)
+      return fix(this.orderItemInfo.payments - this.orderItemInfo.paymentFactory - this.orderItemInfo.landFreight - this.orderItemInfo.seaFreight)
     },
     profitNoTax11() {
-      return fix(this.orderItemInfo.payments - this.orderItemInfo.paymentFactory - (this.orderItemInfo.landFreight * 1.075)
+      return fix(this.orderItemInfo.payments - this.orderItemInfo.paymentFactory - (this.orderItemInfo.landFreight * 1.075) - this.orderItemInfo.seaFreight
         - (this.orderItemInfo.height * this.orderItemInfo.length * this.orderItemInfo.width * this.orderItemInfo.pieces / 1000000 / 20 * 0.5) - this.orderItemInfo.otherCost)
     },
   },

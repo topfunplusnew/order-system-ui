@@ -3,8 +3,6 @@ import SearchOption from "@/components/SearchOption.vue";
 import {listStoreHouse} from "@/api/system/StoreHouse";
 import {listCars} from "@/api/system/cars";
 import {listFleet} from "@/api/system/fleet";
-import Vue from "vue";
-import {getInventory} from "@/api/system/inventory";
 import InventoryItem from "./InventoryItem.vue";
 
 export default {

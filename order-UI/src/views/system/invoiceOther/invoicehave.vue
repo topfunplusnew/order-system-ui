@@ -67,7 +67,8 @@
       </right-toolbar>
     </el-row>
 
-    <el-table border v-horizontal-scroll="'always'" v-loading="loading" :data="invoiceOtherList" @header-dragend="changeColWidth"
+    <el-table border v-horizontal-scroll="'always'" v-loading="loading" :data="invoiceOtherList"
+              @header-dragend="changeColWidth"
               @selection-change="handleSelectionChange" size="mini" :cell-style="()=>{return {padding:'.5px'}}">
       <el-table-column label="开票日期" align="center" prop="invoiceDate" v-if="columns[0].visible"
                        show-overflow-tooltip/>
@@ -538,6 +539,7 @@ export default {
               this.getList();
             });
           } else {
+            this.form.customerTicketPoint = 0;
             addInvoiceOther(this.form).then(response => {
               this.$modal.msgSuccess("新增成功");
               this.open = false;

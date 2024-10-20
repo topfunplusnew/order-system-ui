@@ -223,26 +223,26 @@
         align="center"
         class-name="small-padding fixed-width"
         fixed="right"
-        width="250"
+        width="100"
       >
         <template slot-scope="scope">
-          <el-button
-            size="mini"
-            type="warning"
-            @click="applyForLand(scope.row)"
-            :disabled="scope.row.checkState === '审核中'"
-            v-if="scope.row.freightType === '陆运'"
-          >申请陆运费
-          </el-button>
-          <!-- 只有海运费不为零才能申请海运费 -->
-          <el-button
-            size="mini"
-            type="primary"
-            :disabled="scope.row.checkState === '审核中'"
-            @click="applyForSea(scope.row)"
-            v-if="scope.row.freightType === '海运'"
-          >申请海运费
-          </el-button>
+          <!--          <el-button-->
+          <!--            size="mini"-->
+          <!--            type="warning"-->
+          <!--            @click="applyForLand(scope.row)"-->
+          <!--            :disabled="scope.row.checkState === '审核中'"-->
+          <!--            v-if="scope.row.freightType === '陆运'"-->
+          <!--          >申请陆运费-->
+          <!--          </el-button>-->
+          <!--          &lt;!&ndash; 只有海运费不为零才能申请海运费 &ndash;&gt;-->
+          <!--          <el-button-->
+          <!--            size="mini"-->
+          <!--            type="primary"-->
+          <!--            :disabled="scope.row.checkState === '审核中'"-->
+          <!--            @click="applyForSea(scope.row)"-->
+          <!--            v-if="scope.row.freightType === '海运'"-->
+          <!--          >申请海运费-->
+          <!--          </el-button>-->
           <el-button
             size="mini"
             type="primary"
@@ -611,7 +611,7 @@ export default {
     listBankAccount,
     //添加海运费或者陆运费
     applyForLand(row) {
-      console.log('陆运费信息',row)
+      console.log('陆运费信息', row)
       this.needInfo = {
         acountsName: row.otherAcountsName,
         bankName: row.otherBankName,
@@ -622,7 +622,7 @@ export default {
       this.applyPaymentVisible = true;
     },
     applyForSea(row) {
-      console.log('海运费信息',row)
+      console.log('海运费信息', row)
       this.needInfo = {
         acountsName: row.otherAcountsName,
         bankName: row.otherBankName,
