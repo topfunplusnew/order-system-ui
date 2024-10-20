@@ -19,7 +19,6 @@ export var mixin_item_addItem = {
         //是否含税 厂家否 客户否
         if (this.orderItemInfo.isIncludeTaxFactory === '0' && this.orderItemInfo.isIncludeTaxSale === '0') {
           //误差为0.8
-          this.orderItemInfo.erro = 0.8;
           console.log(this.orderItemInfo.erro)
           //出厂贷款
           this.orderItemInfo.paymentFactory = this.paymentFactory00;
@@ -36,7 +35,6 @@ export var mixin_item_addItem = {
           //出厂含税客户不含税
         } else if (this.orderItemInfo.isIncludeTaxFactory === '1' && this.orderItemInfo.isIncludeTaxSale === '0') {
           //误差为0
-          this.orderItemInfo.erro = 0;
           this.orderItemInfo.paymentFactory = this.paymentFactory10;
           this.orderItemInfo.payments = this.payments10
           this.orderItemInfo.tonnage = this.tonnage10
@@ -46,7 +44,6 @@ export var mixin_item_addItem = {
           console.log('10', this.orderItemInfo.profitNoTax10, this.orderItemInfo.profitNoTax)
         } else if (this.orderItemInfo.isIncludeTaxFactory === '0' && this.orderItemInfo.isIncludeTaxSale === '1') {
           //误差为0
-          this.orderItemInfo.erro = 0;
           this.orderItemInfo.paymentFactory = this.paymentFactory01;
           this.orderItemInfo.payments = this.payments01
           this.orderItemInfo.tonnage = this.tonnage01
@@ -55,7 +52,6 @@ export var mixin_item_addItem = {
           this.orderItemInfo.profitNoTax = this.profitNoTax01
         } else {
           //误差为0
-          this.orderItemInfo.erro = 0;
           this.orderItemInfo.paymentFactory = this.paymentFactory11;
           this.orderItemInfo.payments = this.payments11
           this.orderItemInfo.tonnage = this.tonnage11
@@ -105,7 +101,7 @@ export var mixin_item_addItem = {
     },
     // 产品级别自动填充
     handleCommitBackProductLevel(val) {
-      console.log('产品级别信息', val)
+      this.orderItemInfo.erro = val.tonnage
       this.orderItemInfo.levelID = val.id;
       this.orderItemInfo.levelName = val.levelName;
       this.orderItemInfo.height = val.height;
