@@ -331,7 +331,7 @@ export default {
       },
       get() {
         // 保留两位小数
-        return Number(this.form.invoiceAmount * this.form.ticketPoint).toFixed(2)
+        return Number(this.form.invoiceAmount * this.form.ticketPoint).toFixed(3)
       }
     },
   },
@@ -344,7 +344,7 @@ export default {
     },
     form: {
       handler(val) {
-        this.invoiceAmount = Number(this.form.invoiceAmount * this.form.ticketPoint).toFixed(2);
+        this.invoiceAmount = Number(this.form.invoiceAmount * this.form.ticketPoint).toFixed(3);
       },
       deep: true
     }

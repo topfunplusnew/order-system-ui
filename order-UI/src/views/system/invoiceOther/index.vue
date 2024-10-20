@@ -327,6 +327,7 @@ import {addDateRange} from "@/utils/ruoyi";
 import {getGoodsOrder} from "../../../api/system/goodsOrder";
 import OrderInfos from "../../../components/OrderInfos.vue";
 import CheckFiles from "../../../components/CheckFiles.vue";
+import {fix} from "../../../api/tool/format";
 
 export default {
   name: "InvoiceOther",
@@ -419,8 +420,8 @@ export default {
     },
     form: {
       handler() {
-        this.form.supplierPointAmount = Number(this.form.supplierTicketPoint * this.form.invoiceAmount).toFixed(2)
-        this.form.customerPointAmount = Number(this.form.customerTicketPoint * this.form.invoiceAmount).toFixed(2)
+        this.form.supplierPointAmount = fix(this.form.supplierTicketPoint * this.form.invoiceAmount)
+        this.form.customerPointAmount = fix(this.form.customerTicketPoint * this.form.invoiceAmount)
       },
       deep: true,
       immediate: true,

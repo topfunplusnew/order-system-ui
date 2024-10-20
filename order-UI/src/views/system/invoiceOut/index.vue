@@ -316,7 +316,7 @@ export default {
         this.form.ticketPointAmount = val;
       },
       get() {
-        return Number(this.form.invoiceAmount * this.form.ticketPoint).toFixed(2)
+        return Number(this.form.invoiceAmount * this.form.ticketPoint).toFixed(3)
       }
     },
   },
