@@ -208,15 +208,6 @@
             <el-form-item label="供应商票点金额" prop="supplierPointAmount">
               <el-input v-model="form.supplierPointAmount" placeholder="请输入供应商票点金额"/>
             </el-form-item>
-            <!--            客户票点隐藏-->
-            <!--            <el-form-item label="客户票点" prop="customerTicketPoint">-->
-            <!--              <el-input v-model="form.customerTicketPoint" placeholder="请输入客户票点"/>-->
-            <!--            </el-form-item>-->
-            <!--            <el-form-item label="客户票点金额" prop="customerPointAmount">-->
-            <!--              <el-input v-model="form.customerPointAmount" placeholder="请输入票点金额"/>-->
-            <!--            </el-form-item>-->
-          </el-col>
-          <el-col :span="12">
             <el-form-item label="开票日期" prop="invoiceDate">
               <el-date-picker
                 v-model="form.invoiceDate"
@@ -225,6 +216,9 @@
                 value-format="yyyy-MM-dd">
               </el-date-picker>
             </el-form-item>
+          </el-col>
+          <el-col :span="12">
+
             <el-form-item label="供应商公司名称" prop="Supplier">
               <el-col :span="20">
                 <el-input v-model="form.Supplier" placeholder="请输入供应商公司名称"/>
