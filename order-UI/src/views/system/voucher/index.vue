@@ -87,6 +87,7 @@
           <el-button
             size="mini"
             type="text"
+            v-if="isOrderOrNot(scope.row)"
             @click="handleGoodsOrder(scope.row)"
           >查看订单信息
           </el-button>
@@ -148,8 +149,6 @@ import {
   listVoucher,
   getVoucher,
   delVoucher,
-  addVoucher,
-  updateVoucher
 } from "@/api/system/voucher";
 import {mixin_printHTML} from "../../dashboard/mixins/print";
 import {mixin_vouncher_options} from "../../dashboard/mixins/vouncher/vouncher_options";
@@ -226,6 +225,12 @@ export default {
     this.getList();
   },
   methods: {
+    // 这个函数用于日后判断是不是与订单相关 例如库存还没有与订单产生联系
+    isOrderOrNot(row) {
+      // todo 日后如果有新的凭证类型 就放入这个数组中
+      const excludeList = ['inventory_']
+      return !excludeList.some(item => row.voucherNo.startsWith(item))
+    },
     /** 查询凭证列表 */
     getList() {
       this.loading = true;
