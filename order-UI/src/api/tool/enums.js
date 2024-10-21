@@ -44,10 +44,11 @@ export const ReceiveType = {
 }
 
 // 单据生成类型
-export const DocumentNumber = {
+export const DocumentNumber = Object.freeze({
   GOODS_ORDER: '订单列表',
+  INVENTORY: '库存列表',
   INVOICE_IN: '买入票点',
   INVOICE_OUT: '卖出票点',
   INVOICE_OTHER: '第三方开票',
   // PAYMENT: '收付款'
-}
+})

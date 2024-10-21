@@ -58,6 +58,9 @@ export var mixin_credentials_generation_orderlist = {
           // 第三方特殊处理
           this.makeCredentialsSecond(invoiceOther, 'voiceTr')
           break;
+        case DocumentNumber.INVENTORY:
+          this.makeCredentialsInventory('inventory')
+          break;
       }
       this.CheckDialogVisible = false
       this.orderDialogVisible = false
@@ -180,6 +183,7 @@ export var mixin_credentials_generation_orderlist = {
         })
       }
     },
+    // strings 是凭证编号前面的代码 用于区分凭证信息
     // 生成第一类凭证 订单的运费 总货款 出厂贷款的凭证生成
     makeCredentialsFirst(strings) {
       // 1. 如果出厂货款大于0 贷 应付账款 - 供应商往来 - 宁夏xxxxx 供应商名字 金额 2271.46  **注意一个订单多个供应商  group by 供应商分组 *
@@ -316,6 +320,92 @@ export var mixin_credentials_generation_orderlist = {
       this.selectedNeedOrderList.forEach(item => {
         callback.call(this, item, strings)
       })
+    },
+    // 生成库存凭证
+    makeCredentialsInventory(strings) {
+      // 生成凭证逻辑函数
+      function makeInventoryVoucher(item, strings) {
+        // 贷方
+        this.needToMakeList.push({
+          quote: parseTime(new Date()) + item.supplier + '进货',
+          voucherType: '应付账款-供应商往来-' + item.supplier,
+          lender: '',
+          borrower: item.paymentFactory,
+          comments: item.supplier,
+          amount: item.paymentFactory,
+          // 基本信息
+          voucherNo: `${strings}_` + this.selectedNeedOrderList.map(item => item.id).join('_') + '_',
+          pid: item.id,
+          vDate: parseTime(new Date()),
+          makeUser: this.trueName
+        })
+        // 借方
+        this.needToMakeList.push({
+          quote: parseTime(new Date()) + item.supplier + '进货',
+          voucherType: '主营业务成本-玻璃成本',
+          lender: item.paymentFactory,
+          borrower: '',
+          comments: '无',
+          amount: item.paymentFactory,
+          // 基本信息
+          voucherNo: `${strings}_` + this.selectedNeedOrderList.map(item => item.id).join('_') + '_',
+          pid: item.id,
+          vDate: parseTime(new Date()),
+          makeUser: this.trueName
+        })
+        // 生成运费凭证
+        if (item.landFreight || item.seaFreight) {
+          // 贷方
+          this.needToMakeList.push({
+            quote: parseTime(new Date()) + '运费',
+            voucherType: '应付运费-陆运',
+            lender: '',
+            borrower: item.landFreight,
+            comments: item.landCarNo,
+            amount: item.landFreight,
+            // 基本信息
+            voucherNo: `${strings}_` + this.selectedNeedOrderList.map(item => item.id).join('_') + '_',
+            pid: item.id,
+            vDate: parseTime(new Date()),
+            makeUser: this.trueName
+          })
+          if (item.seaFreight) {
+            this.needToMakeList.push({
+              quote: parseTime(new Date()) + '运费',
+              voucherType: '应付运费-海运',
+              lender: '',
+              borrower: item.seaFreight,
+              comments: item.seaCarNo,
+              amount: item.seaFreight,
+              // 基本信息
+              voucherNo: `${strings}_` + this.selectedNeedOrderList.map(item => item.id).join('_') + '_',
+              pid: item.id,
+              vDate: parseTime(new Date()),
+              makeUser: this.trueName
+            })
+          }
+          // 借方
+          this.needToMakeList.push({
+            quote: parseTime(new Date()) + '运费',
+            voucherType: '主营业务成本-运费成本',
+            lender: item.landFreight + item.seaFreight,
+            borrower: '',
+            comments: item.landCarNo,
+            amount: item.landFreight + item.seaFreight,
+            // 基本信息
+            voucherNo: `${strings}_` + this.selectedNeedOrderList.map(item => item.id).join('_') + '_',
+            pid: item.id,
+            vDate: parseTime(new Date()),
+            makeUser: this.trueName
+          })
+        }
+      }
+
+      // 首先对选择的每一条库存数据进行处理
+      this.selectedNeedOrderList.forEach(item => {
+        makeInventoryVoucher.call(this, item, strings)
+      })
+      this.$message.success('制作库存凭证')
     },
     // 获取出厂货款
     getPaymentFactory(row) {
