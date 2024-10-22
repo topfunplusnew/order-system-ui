@@ -138,7 +138,8 @@
       <el-table-column show-overflow-tooltip label="陆运费" align="center" prop="landFreight"
                        v-if="columns[6].visible" width="100px"/>
 
-      <el-table-column show-overflow-tooltip label="海运车牌" align="center" prop="seaCarNo" v-if="columns[7].visible">
+      <!--      原为海运车牌号-->
+      <el-table-column show-overflow-tooltip label="海运柜号" align="center" prop="seaCarNo" v-if="columns[7].visible">
         <template #default="scope">
           {{ !scope.row.seaCarNo ? '无' : scope.row.seaCarNo }}
         </template>
@@ -149,7 +150,8 @@
           {{ !scope.row.seaDriverTel ? '无' : scope.row.seaDriverTel }}
         </template>
       </el-table-column>
-      <el-table-column show-overflow-tooltip label="海运司机姓名" align="center" prop="seaDriverName"
+      <!--      原为海运司机姓名-->
+      <el-table-column show-overflow-tooltip label="海运公司" align="center" prop="seaDriverName"
                        v-if="columns[9].visible" width="100px">
         <template #default="scope">
           {{ !scope.row.seaDriverName ? '无' : scope.row.seaDriverTel }}
