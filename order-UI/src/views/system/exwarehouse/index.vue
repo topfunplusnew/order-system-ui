@@ -172,9 +172,9 @@
         <el-descriptions-item label="陆运车牌">{{ orderDetailInfo.landCarNo || '-' }}</el-descriptions-item>
         <el-descriptions-item label="陆运司机电话">{{ orderDetailInfo.landDriverTel || '-' }}</el-descriptions-item>
         <el-descriptions-item label="陆运司机姓名">{{ orderDetailInfo.landDriverName || '-' }}</el-descriptions-item>
-        <el-descriptions-item label="海运车牌">{{ orderDetailInfo.seaCarNo || '-' }}</el-descriptions-item>
+        <el-descriptions-item label="柜号">{{ orderDetailInfo.seaCarNo || '-' }}</el-descriptions-item>
         <el-descriptions-item label="海运司机电话">{{ orderDetailInfo.seaDriverTel || '-' }}</el-descriptions-item>
-        <el-descriptions-item label="海运司机姓名">{{ orderDetailInfo.seaDriverName || '-' }}</el-descriptions-item>
+        <el-descriptions-item label="海运公司">{{ orderDetailInfo.seaDriverName || '-' }}</el-descriptions-item>
         <el-descriptions-item label="打款状态">{{ orderDetailInfo.PaymentState || '-' }}</el-descriptions-item>
         <el-descriptions-item label="陆运银行户名">{{ orderDetailInfo.landBankName || '-' }}</el-descriptions-item>
         <el-descriptions-item label="陆运银行账号">{{ orderDetailInfo.landBankNo || '-' }}</el-descriptions-item>

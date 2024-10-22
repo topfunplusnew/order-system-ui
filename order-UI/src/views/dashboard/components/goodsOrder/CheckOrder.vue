@@ -11,8 +11,8 @@
       <el-descriptions-item label="陆运车牌">{{ orderInfo.landCarNo }}</el-descriptions-item>
       <el-descriptions-item label="陆运司机姓名">{{ orderInfo.landDriverName }}</el-descriptions-item>
       <el-descriptions-item label="陆运司机电话">{{ orderInfo.landDriverTel }}</el-descriptions-item>
-      <el-descriptions-item label="海运车牌">{{ orderInfo.seaCarNo }}</el-descriptions-item>
-      <el-descriptions-item label="海运司机姓名">{{ orderInfo.seaDriverName }}</el-descriptions-item>
+      <el-descriptions-item label="柜号">{{ orderInfo.seaCarNo }}</el-descriptions-item>
+      <el-descriptions-item label="海运公司">{{ orderInfo.seaDriverName }}</el-descriptions-item>
       <el-descriptions-item label="海运司机电话">{{ orderInfo.seaDriverTel }}</el-descriptions-item>
       <el-descriptions-item label="车队">{{ orderInfo.fleet }}</el-descriptions-item>
     </el-descriptions>

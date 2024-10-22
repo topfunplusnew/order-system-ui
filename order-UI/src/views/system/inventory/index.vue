@@ -300,7 +300,7 @@
             <el-form-item label="陆地司机姓名" prop="landDriverName">
               <el-input v-model="form.landDriverName" placeholder="请输入陆地司机姓名"/>
             </el-form-item>
-            <el-form-item label="海运车牌" prop="seaCarNo">
+            <el-form-item label="柜号" prop="seaCarNo">
               <el-row>
                 <el-col :span="10">
                   <el-input v-model="form.seaCarNo" placeholder="请输入陆运车牌"/>

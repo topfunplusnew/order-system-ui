@@ -176,7 +176,7 @@
                                    width="100px"/>
                   <el-table-column show-overflow-tooltip label="陆地司机姓名" align="center" prop="landDriverName"
                                    width="100px"/>
-                  <el-table-column show-overflow-tooltip label="海运车牌" align="center" prop="seaCarNo"
+                  <el-table-column show-overflow-tooltip label="柜号" align="center" prop="seaCarNo"
                   >
                     <template #default="scope">
                       {{ !scope.row.seaCarNo ? '无' : scope.row.seaCarNo }}

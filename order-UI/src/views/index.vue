@@ -171,7 +171,7 @@
           </el-table-column>
           <el-table-column
               prop="seaCarNo"
-              label="海运车牌"
+              label="柜号"
               show-overflow-tooltip
           >
             <template #default="scope">
@@ -266,7 +266,7 @@ export default {
         {key: 7, label: `吨位`, visible: true},
         {key: 8, label: `内勤`, visible: true},
         {key: 9, label: `陆运车牌`, visible: true},
-        {key: 10, label: `海运车牌`, visible: true},
+        {key: 10, label: `柜号`, visible: true},
         {key: 11, label: `车队`, visible: true},
         {key: 12, label: `运费`, visible: true}
       ]

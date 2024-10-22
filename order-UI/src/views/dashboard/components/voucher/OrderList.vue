@@ -126,13 +126,13 @@ export default {
       <el-table-column show-overflow-tooltip label="陆运司机电话" align="center" prop="landDriverTel" width="100px"/>
       <el-table-column show-overflow-tooltip label="陆地司机姓名" align="center" prop="landDriverName" width="100px"/>
       <el-table-column show-overflow-tooltip label="陆运费" align="center" prop="landFreight" width="100px"/>
-      <el-table-column show-overflow-tooltip label="海运车牌" align="center" prop="seaCarNo">
+      <el-table-column show-overflow-tooltip label="柜号" align="center" prop="seaCarNo">
         <template #default="scope">{{ !scope.row.seaCarNo ? '无' : scope.row.seaCarNo }}</template>
       </el-table-column>
       <el-table-column show-overflow-tooltip label="海运司机电话" align="center" prop="seaDriverTel" width="100px">
         <template #default="scope">{{ !scope.row.seaDriverTel ? '无' : scope.row.seaDriverTel }}</template>
       </el-table-column>
-      <el-table-column show-overflow-tooltip label="海运司机姓名" align="center" prop="seaDriverName" width="100px">
+      <el-table-column show-overflow-tooltip label="海运公司" align="center" prop="seaDriverName" width="100px">
         <template #default="scope">{{ !scope.row.seaDriverName ? '无' : scope.row.seaDriverName }}</template>
       </el-table-column>
       <el-table-column show-overflow-tooltip label="海运费" align="center" prop="seaFreight" width="100px"/>

@@ -47,9 +47,9 @@ export default {
       <el-descriptions-item label="陆运司机姓名">{{ formatValue(orderInfo.landDriverName) }}</el-descriptions-item>
       <el-descriptions-item label="陆运银行户名">{{ formatValue(orderInfo.landBankName) }}</el-descriptions-item>
       <el-descriptions-item label="陆运银行账号">{{ formatValue(orderInfo.landBankNo) }}</el-descriptions-item>
-      <el-descriptions-item label="海运车牌">{{ formatValue(orderInfo.seaCarNo) }}</el-descriptions-item>
+      <el-descriptions-item label="柜号">{{ formatValue(orderInfo.seaCarNo) }}</el-descriptions-item>
       <el-descriptions-item label="海运司机电话">{{ formatValue(orderInfo.seaDriverTel) }}</el-descriptions-item>
-      <el-descriptions-item label="海运司机姓名">{{ formatValue(orderInfo.seaDriverName) }}</el-descriptions-item>
+      <el-descriptions-item label="海运公司">{{ formatValue(orderInfo.seaDriverName) }}</el-descriptions-item>
       <el-descriptions-item label="海运银行户名">{{ formatValue(orderInfo.seaBankName) }}</el-descriptions-item>
       <el-descriptions-item label="海运银行账号">{{ formatValue(orderInfo.seaBankNo) }}</el-descriptions-item>
       <el-descriptions-item label="陆运费">{{ formatValue(orderInfo.landFreight) }}</el-descriptions-item>

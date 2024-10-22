@@ -210,7 +210,7 @@
       <el-table-column show-overflow-tooltip label="陆运费" align="center" prop="landFreight"
                        v-if="columns[6].visible" width="100px"/>
 
-      <el-table-column show-overflow-tooltip label="海运车牌" align="center" prop="seaCarNo" v-if="columns[7].visible">
+      <el-table-column show-overflow-tooltip label="柜号" align="center" prop="seaCarNo" v-if="columns[7].visible">
         <template #default="scope">
           {{ !scope.row.seaCarNo ? '无' : scope.row.seaCarNo }}
         </template>
@@ -687,9 +687,9 @@ export default {
         {key: 4, label: '陆运司机电话', visible: true},
         {key: 5, label: '陆地司机姓名', visible: true},
         {key: 6, label: '陆运费', visible: true},
-        {key: 7, label: '海运车牌', visible: true},
+        {key: 7, label: '柜号', visible: true},
         {key: 8, label: '海运司机电话', visible: true},
-        {key: 9, label: '海运司机姓名', visible: true},
+        {key: 9, label: '海运公司', visible: true},
         {key: 10, label: '海运费', visible: true},
         {key: 11, label: '销售经理', visible: true},
         {key: 12, label: '车队', visible: true},
@@ -917,7 +917,7 @@ export default {
         'landBankNo': '陆运司机银行卡号',
         'landDriverTel': '陆运司机电话',
         'fleet': "车队",
-        'seaCarNo': '海运车牌号',
+        'seaCarNo': '柜号',
         'seaDriverName': '海运司机姓名',
         'seaDriverTel': '海运司机电话',
         'seaBankNo': '海运司机银行卡号',

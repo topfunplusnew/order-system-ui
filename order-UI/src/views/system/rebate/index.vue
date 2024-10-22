@@ -384,7 +384,7 @@
                          width="100px"/>
         <el-table-column show-overflow-tooltip label="陆地司机姓名" align="center" prop="landDriverName"
                          width="100px"/>
-        <el-table-column show-overflow-tooltip label="海运车牌" align="center" prop="seaCarNo"
+        <el-table-column show-overflow-tooltip label="柜号" align="center" prop="seaCarNo"
         >
           <template #default="scope">
             {{ scope.row.seaCarNo == null ? '无海运信息' : scope.row.seaCarNo }}
@@ -396,7 +396,7 @@
             {{ scope.row.seaDriverTel == null ? '无海运信息' : scope.row.seaDriverTel }}
           </template>
         </el-table-column>
-        <el-table-column show-overflow-tooltip label="海运司机姓名" align="center" prop="seaDriverName"
+        <el-table-column show-overflow-tooltip label="海运公司" align="center" prop="seaDriverName"
                          width="100px">
           <template #default="scope">
             {{ scope.row.seaDriverName == null ? '无海运信息' : scope.row.seaDriverTel }}
