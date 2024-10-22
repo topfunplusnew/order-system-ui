@@ -221,7 +221,7 @@
           {{ !scope.row.seaDriverTel ? '无' : scope.row.seaDriverTel }}
         </template>
       </el-table-column>
-      <el-table-column show-overflow-tooltip label="海运司机姓名" align="center" prop="seaDriverName"
+      <el-table-column show-overflow-tooltip label="海运公司" align="center" prop="seaDriverName"
                        v-if="columns[9].visible" width="100px">
         <template #default="scope">
           {{ !scope.row.seaDriverName ? '无' : scope.row.seaDriverTel }}
@@ -918,7 +918,7 @@ export default {
         'landDriverTel': '陆运司机电话',
         'fleet': "车队",
         'seaCarNo': '柜号',
-        'seaDriverName': '海运司机姓名',
+        'seaDriverName': '海运公司',
         'seaDriverTel': '海运司机电话',
         'seaBankNo': '海运司机银行卡号',
         'seaBankName': '海运司机开户名',

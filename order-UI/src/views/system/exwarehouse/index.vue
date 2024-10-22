@@ -292,7 +292,7 @@
         <el-descriptions-item label="海运司机电话">
           {{ inventoryInfo.seaDriverTel || '-' }}
         </el-descriptions-item>
-        <el-descriptions-item label="海运司机姓名">
+        <el-descriptions-item label="海运公司">
           {{ inventoryInfo.seaDriverName || '-' }}
         </el-descriptions-item>
         <el-descriptions-item label="误差率">

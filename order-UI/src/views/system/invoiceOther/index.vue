@@ -188,7 +188,7 @@
                       {{ !scope.row.seaDriverTel ? '无' : scope.row.seaDriverTel }}
                     </template>
                   </el-table-column>
-                  <el-table-column show-overflow-tooltip label="海运司机姓名" align="center" prop="seaDriverName"
+                  <el-table-column show-overflow-tooltip label="海运公司" align="center" prop="seaDriverName"
                                    width="100px">
                     <template #default="scope">
                       {{ !scope.row.seaDriverName ? '无' : scope.row.seaDriverTel }}

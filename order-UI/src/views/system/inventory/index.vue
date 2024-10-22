@@ -320,8 +320,8 @@
             <el-form-item label="海运司机电话" prop="seaDriverTel">
               <el-input v-model="form.seaDriverTel" placeholder="请输入内容"/>
             </el-form-item>
-            <el-form-item label="海运司机姓名" prop="seaDriverName">
-              <el-input v-model="form.seaDriverName" placeholder="请输入海运司机姓名"/>
+            <el-form-item label="海运公司" prop="seaDriverName">
+              <el-input v-model="form.seaDriverName" placeholder="请输入海运公司"/>
             </el-form-item>
             <el-form-item label="误差" prop="erro">
               <el-input v-model="form.erro" placeholder="请输入误差"/>
