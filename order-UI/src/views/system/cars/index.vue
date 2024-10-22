@@ -66,8 +66,8 @@
 
     <el-table border v-loading="loading" :data="carsList" @selection-change="handleSelectionChange" id="printBox"
               height="450px" v-horizontal-scroll="'always'" size="mini" :cell-style="()=>{return {padding:'.5px'}}">
-      <el-table-column label="车牌" align="center" prop="carNo" v-if="columns[0].visible" width="200"/>
-      <el-table-column label="司机姓名" align="center" prop="driver" v-if="columns[1].visible" width="200"/>
+      <el-table-column label="车牌/柜号" align="center" prop="carNo" v-if="columns[0].visible" width="220"/>
+      <el-table-column label="司机姓名/海运公司" align="center" prop="driver" v-if="columns[1].visible" width="220"/>
       <el-table-column label="司机电话" align="center" prop="tel" v-if="columns[2].visible" width="200"/>
       <el-table-column label="户名" align="center" prop="acountsName" v-if="columns[3].visible" width="200"/>
       <el-table-column label="银行账号" align="center" prop="bankNo" v-if="columns[4].visible" width="200"/>
@@ -108,7 +108,8 @@
     />
 
     <!-- 添加或修改外部车辆信息对话框 -->
-    <el-dialog :close-on-click-modal="false" :show-close="false" :title="title" :visible.sync="open" width="500px" append-to-body>
+    <el-dialog :close-on-click-modal="false" :show-close="false" :title="title" :visible.sync="open" width="500px"
+               append-to-body>
       <el-form ref="form" :model="form" :rules="rules" label-width="120px">
         <el-form-item label="车牌" prop="carNo">
           <el-input v-model="form.carNo" placeholder="请输入车牌"/>

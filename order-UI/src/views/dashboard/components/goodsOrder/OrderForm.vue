@@ -193,7 +193,7 @@ export default {
     },
     handleCommitBackSeaCar(val) {
       this.orderInfo.seaCarID = val.id;
-      this.orderInfo.seaCarNo = val.carNo;
+      // this.orderInfo.seaCarNo = val.carNo;  // 原为海运车牌号 现改为柜号 且不提供自动填充
       this.orderInfo.seaDriverName = val.driver;
       this.orderInfo.seaDriverTel = val.tel;
       //填充银行信息
@@ -403,11 +403,12 @@ export default {
         </el-row>
         <!--      海运-->
         <el-row style="margin:10px 0;" v-if="isSea">
-          <el-form-item label="车牌">
+          <!--          todo 车牌修改为柜号 且自己输入 不提供自动填充 -->
+          <el-form-item label="柜号">
             <el-row>
               <el-col :span="20">
                 <el-input type="text" v-model="orderInfo.seaCarNo" size="mini"
-                          placeholder="请输入海运车牌" style="width: 120px"></el-input>
+                          placeholder="请输入柜号" style="width: 120px"></el-input>
               </el-col>
               <el-col :span="4">
                 <SearchOption :limit-info="{carType:'海运'}"
@@ -425,13 +426,14 @@ export default {
               </el-col>
             </el-row>
           </el-form-item>
-          <el-form-item label="司机">
+          <!--          todo 原为海运司机 现改为海运公司-->
+          <el-form-item label="海运公司">
             <el-input type="text" v-model="orderInfo.seaDriverName" size="mini"
-                      placeholder="请输入海运司机姓名" style="width: 130px"></el-input>
+                      placeholder="请输入海运公司" style="width: 130px"></el-input>
           </el-form-item>
           <el-form-item label="电话">
             <el-input type="text" v-model="orderInfo.seaDriverTel" size="mini"
-                      placeholder="请输入海运司机电话" style="width: 120px"></el-input>
+                      placeholder="请输入电话" style="width: 120px"></el-input>
           </el-form-item>
         </el-row>
         <br/>
