@@ -318,7 +318,7 @@
         <el-form-item label="司机姓名" prop="driverName">
           <el-input v-model="form.driverName" placeholder="请输入司机姓名"/>
         </el-form-item>
-        <el-form-item label="车牌号" prop="carNo">
+        <el-form-item label="车牌号/柜号" prop="carNo">
           <el-row>
             <el-col :span="20">
               <el-input v-model="form.carNo" placeholder="请输入车牌号"/>
