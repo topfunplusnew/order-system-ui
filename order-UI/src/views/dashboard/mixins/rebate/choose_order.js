@@ -100,6 +100,7 @@ export var mixin_choose_order = {
     // 清空已选择的货物
     refreshSelectedGoods() {
       this.goods = []
+      this.form.orderDetailIds = []
     },
     // 确认选择
     submitSelectOrderDetail() {
