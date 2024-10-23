@@ -98,6 +98,8 @@
       </el-table-column>
       <el-table-column label="金额" align="center" prop="amount"/>
       <!--   todo    客户 供应商 选择-->
+         <el-table-column label="客户" align="center" prop="customer"/>
+         <el-table-column label="供应商" align="center" prop="supplier"/>
       <!--      附件上传-->
       <el-table-column label="附件" align="center" prop="attachment">
         <template #default="scope">
