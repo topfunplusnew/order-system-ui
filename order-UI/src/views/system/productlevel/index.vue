@@ -228,8 +228,8 @@
         <el-form-item label="宽度" prop="width">
           <el-input v-model="addCategoryModel.width" placeholder="请输入宽度"></el-input>
         </el-form-item>
-        <el-form-item label="吨位" prop="tonnage">
-          <el-input v-model="addCategoryModel.tonnage" placeholder="请输入吨位"></el-input>
+        <el-form-item label="吨位差" prop="tonnage">
+          <el-input v-model="addCategoryModel.tonnage" placeholder="请输入吨位差"></el-input>
         </el-form-item>
       </el-form>
       <span slot="footer" class="dialog-footer">
@@ -271,8 +271,8 @@
         <el-form-item label="长度" prop="length">
           <el-input v-model="form.length" placeholder="请输入长度"/>
         </el-form-item>
-        <el-form-item label="吨位" prop="tonnage">
-          <el-input v-model="form.tonnage" placeholder="请输入吨位"/>
+        <el-form-item label="吨位差" prop="tonnage">
+          <el-input v-model="form.tonnage" placeholder="请输入吨位差"/>
         </el-form-item>
       </el-form>
       <div slot="footer" class="dialog-footer">
@@ -365,7 +365,7 @@ export default {
           }],
         tonnage: [
           {
-            required: true, message: "吨位不能为空", trigger: "blur"
+            required: true, message: "吨位差不能为空", trigger: "blur"
           }],
       },
       test: [],
@@ -377,7 +377,7 @@ export default {
         {key: 4, label: `厚度`, visible: true},
         {key: 5, label: `长度`, visible: true},
         {key: 6, label: `宽度`, visible: true},
-        {key: 7, label: `吨位`, visible: true},
+        {key: 7, label: `吨位差`, visible: true},
       ],
       //产品分类信息
       categoryList: [],
