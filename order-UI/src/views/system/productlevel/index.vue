@@ -16,7 +16,7 @@
     <el-row>
       <el-col :span="5">
         <el-tree :data="dict.type.order_product_categories" :props="defaultProps"
-                 @node-click="handleNodeClick">
+                 @node-click="handleNodeClick" :load="getDictsData">
            <span class="custom-tree-node" slot-scope="{ node, data }">
              <span><i class="el-icon-document-remove"></i>
                {{ data.value }} {{ data.label }}

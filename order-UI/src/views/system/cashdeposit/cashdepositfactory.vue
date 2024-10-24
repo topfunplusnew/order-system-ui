@@ -333,8 +333,6 @@ import {listCompany} from "@/api/system/company";
 import ApplyPayment from "@/views/dashboard/components/common/ApplyPayment.vue";
 import {TableName} from "@/api/tool/enums";
 import {excludeParams} from "@/api/tool/exclude";
-import {addReceiveMoney} from "../../../api/system/receiveMoney";
-import {parseTime} from "../../../utils/ruoyi";
 import {mixin_reviveMoney} from "../../dashboard/mixins/receive";
 import {mixin_printHTML} from "../../dashboard/mixins/print";
 import {ReceiveType} from "../../../api/tool/enums";

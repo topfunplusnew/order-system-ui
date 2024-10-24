@@ -123,7 +123,8 @@
     />
 
     <!-- 添加或修改出库对话框 -->
-    <el-dialog :close-on-click-modal="false" :show-close="false" :title="title" :visible.sync="open" width="500px" append-to-body>
+    <el-dialog :close-on-click-modal="false" :show-close="false" :title="title" :visible.sync="open" width="500px"
+               append-to-body>
       <el-form ref="form" :model="form" :rules="rules" label-width="80px">
         <!--        <el-form-item label="订单编号" prop="ordersNo">-->
         <!--          <el-input v-model="form.ordersNo" placeholder="请输入订单编号"/>-->
@@ -153,9 +154,9 @@
 
     <!--    查看订单详情信息-->
     <el-dialog :close-on-click-modal="false" :show-close="false"
-      title="查看订单信息"
-      :visible.sync="checkOrderVisible"
-      width="65%">
+               title="查看订单信息"
+               :visible.sync="checkOrderVisible"
+               width="65%">
       <el-descriptions title="订单信息" :column="3" border>
         <el-descriptions-item label="id">{{ orderDetailInfo.id || '-' }}</el-descriptions-item>
         <el-descriptions-item label="日期">{{ orderDetailInfo.orderDate || '-' }}</el-descriptions-item>
@@ -210,9 +211,9 @@
 
     <!--    库存信息-->
     <el-dialog :close-on-click-modal="false" :show-close="false"
-      title="查看库存信息"
-      :visible.sync="checkInventoryVisible"
-      width="65%">
+               title="查看库存信息"
+               :visible.sync="checkInventoryVisible"
+               width="65%">
       <el-descriptions title="库存详情" border>
         <el-descriptions-item label="创建者">
           {{ inventoryInfo.createBy || '-' }}

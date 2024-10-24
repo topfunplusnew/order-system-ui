@@ -610,28 +610,28 @@ export default {
     listData,
     listBankAccount,
     //添加海运费或者陆运费
-    applyForLand(row) {
-      console.log('陆运费信息', row)
-      this.needInfo = {
-        acountsName: row.otherAcountsName,
-        bankName: row.otherBankName,
-        bankNo: row.otherBankNo
-      }
-      this.tID = row.id
-      this.freight = Number(row.moneyAmount);
-      this.applyPaymentVisible = true;
-    },
-    applyForSea(row) {
-      console.log('海运费信息', row)
-      this.needInfo = {
-        acountsName: row.otherAcountsName,
-        bankName: row.otherBankName,
-        bankNo: row.otherBankNo
-      }
-      this.tID = row.id
-      this.freight = Number(row.moneyAmount);
-      this.applyPaymentVisible = true;
-    },
+    // applyForLand(row) {
+    //   console.log('陆运费信息', row)
+    //   this.needInfo = {
+    //     acountsName: row.otherAcountsName,
+    //     bankName: row.otherBankName,
+    //     bankNo: row.otherBankNo
+    //   }
+    //   this.tID = row.id
+    //   this.freight = Number(row.moneyAmount);
+    //   this.applyPaymentVisible = true;
+    // },
+    // applyForSea(row) {
+    //   console.log('海运费信息', row)
+    //   this.needInfo = {
+    //     acountsName: row.otherAcountsName,
+    //     bankName: row.otherBankName,
+    //     bankNo: row.otherBankNo
+    //   }
+    //   this.tID = row.id
+    //   this.freight = Number(row.moneyAmount);
+    //   this.applyPaymentVisible = true;
+    // },
     changeOpen() {
       this.applyPaymentVisible = false
       this.getList()

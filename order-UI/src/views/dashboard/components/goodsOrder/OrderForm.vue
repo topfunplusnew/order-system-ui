@@ -124,6 +124,7 @@ export default {
         customer: '',
         saleManager: '',
         orderDetailList: [],
+        fleet:'',
         orderState: '',
         orderDate: '',
         orderType: '',
@@ -159,7 +160,7 @@ export default {
     handleChangeFleet(val) {
       this.queryFleet = val
     },
-    handleCommitBackFleet(val) {
+    handleCommitBackFleet (val) {
       this.orderInfo.fleet = val.fName
     },
 
