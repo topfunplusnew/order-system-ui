@@ -183,7 +183,7 @@
                     <el-input v-model="form.inAcountsName" placeholder="请输入收款户名"/>
                   </el-col>
                   <el-col :span="4">
-                    <SearchOption :limit-info="{}" :get-data="listBankAccount" @commitBack="handleCommitBackBankAcount"
+                    <SearchOption :limit-info="{acountsType:'己方公司'}" :get-data="listBankAccount" @commitBack="handleCommitBackBankAcount"
                                   @update:queryName="handleUpdateQueryBankAcount" :query-name="queryBankAcount"
                                   query-label="户名查找" query-info="acountsName">
                       <template #table-columns>
@@ -229,7 +229,7 @@
                     <el-input v-model="form.outAcountsName" placeholder="请输入付款户名"/>
                   </el-col>
                   <el-col :span="4">
-                    <SearchOption :limit-info="{acountsType:'己方公司'}" :get-data="listBankAccount"
+                    <SearchOption :limit-info="{acountsType:'供应商'}" :get-data="listBankAccount"
                                   @commitBack="handleCommitBackBankAcountSelf"
                                   @update:queryName="handleUpdateQueryBankAcountSelf"
                                   :query-name="bankAcountSelf"
@@ -245,7 +245,7 @@
                   </el-col>
                 </el-row>
               </el-form-item>
-              <el-form-item label="付款款账号" prop="outBankNo">
+              <el-form-item label="付款账号" prop="outBankNo">
                 <el-input v-model="form.outBankNo" placeholder="请输入付款款账号"/>
               </el-form-item>
               <el-form-item label="返利原因" prop="rebateReason">
