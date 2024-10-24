@@ -396,12 +396,12 @@
     <!--    上传附件的弹窗 -->
     <UploadPath :before-upload="beforeUpload" :file-list="fileList" :handle-upload-visible="handleUploadVisible"
                 :headers="headers" :submit-upload-all-files="()=>submitUploadAllFiles('path')"
-                :upload-file-url="uploadFileUrl" @close="closeUploadPathDialog"/>
+                :upload-file-url="uploadFileUrl" @close="closeUploadPathDialog" />
 
     <!--    上传收到条的弹窗-->
     <UploadCommit :before-upload="beforeUpload" :file-list="fileList" :handle-commit-visible="handleCommitVisible"
                   :headers="headers" :submit-upload-all-files="()=>submitUploadAllFiles('receiveProof')"
-                  :upload-file-url="uploadFileUrl" @close="closeUploadCommitDialog"/>
+                  :upload-file-url="uploadFileUrl" @close="closeUploadCommitDialog" />
 
     <!--    添加订单 || 修改订单对话框-->
     <InfoDialog :title="orderTitle" :visible.sync="orderItemVisible">
@@ -523,7 +523,6 @@ import {mixin_order_goodsItemInfo} from "../../dashboard/mixins/order/order_good
 import {mixin_order_audit} from "../../dashboard/mixins/order/order_audit";
 import {mixin_order_applyPayment} from "../../dashboard/mixins/order/order_applyPayment";
 import {mixin_order_base} from "../../dashboard/mixins/order/order_base";
-import {changeColWidth} from "../../../utils/order";
 import reLength from "../../dashboard/mixins/reLength";
 
 export default {

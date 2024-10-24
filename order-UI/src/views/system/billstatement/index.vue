@@ -264,7 +264,7 @@ export default {
         dueDate: null,
         billAccount: null,
         billDate: null,
-        billType: '收入',
+        billType: null,
         reason: null,
         billAmount: null,
         inDiscountPoints: null,

@@ -67,12 +67,12 @@ export default {
         </tr>
         <tr>
           <td>安强lowe1405*3660*2440</td>
-          <td>40</td>
-          <td>2</td>
-          <td>200</td>
+          <td>测试数据</td>
+          <td>测试数据</td>
+          <td>测试数据</td>
           <td>否</td>
-          <td>22</td>
-          <td class="amount">71465</td>
+          <td>测试数据</td>
+          <td class="amount">测试数据</td>
         </tr>
       </table>
 
@@ -80,17 +80,17 @@ export default {
         <tr>
           <td>本次欠款</td>
           <td>大写：{{ numToChineseUppercase(71465) }}</td>
-          <td class="amount">71465</td>
+          <td class="amount">测试数据</td>
         </tr>
         <tr>
           <td>欠款</td>
           <td>大写：{{ numToChineseUppercase(22) }}</td>
-          <td class="amount">0</td>
+          <td class="amount">测试数据</td>
         </tr>
         <tr>
           <td>合计欠款</td>
           <td>大写：柒万壹仟肆佰陆拾伍元整</td>
-          <td class="amount">71465</td>
+          <td class="amount">测试数据</td>
         </tr>
       </table>
 

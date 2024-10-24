@@ -1,3 +1,5 @@
+import { parseTime } from '../../../../utils/ruoyi'
+
 export var mixin_inventory_second = {
   data: function () {
     return {
@@ -16,7 +18,7 @@ export var mixin_inventory_second = {
         storeHouseid: row.storeHouseid,
         storeHouseName: row.storeHouseName,
         storeID: row.id,
-        outDate: formatDate(new Date())
+        outDate: parseTime(new Date())
       };
       this.secondInvoiceInVisible = true
     },

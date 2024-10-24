@@ -1,3 +1,5 @@
+import { parseTime } from "../../../../utils/ruoyi";
+
 export var mixin_inventory_broken = {
   data: function () {
     return {
@@ -15,7 +17,7 @@ export var mixin_inventory_broken = {
         storeHouseid: row.storeHouseid,
         storeHouseName: row.storeHouseName,
         storeID: row.id,
-        outDate: formatDate(new Date())
+        outDate: parseTime(new Date())
       };
       this.breakInvoiceInVisible = true
     },

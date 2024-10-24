@@ -349,7 +349,7 @@
                           @update:queryName="updateQueryFleet"
                           @commitBack="handleCommitBackFleet">
               <template #table-columns>
-                <el-table-column label="车牌" prop="dictLabel"/>
+                <el-table-column label="车队名称" prop="fName"/>
               </template>
             </SearchOption>
           </el-col>
