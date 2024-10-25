@@ -484,11 +484,9 @@
 </template>
 
 <script>
-import {listPayment, getPayment, delPayment, addPayment, updatePayment} from "@/api/system/payment";
+import {listPayment, delPayment, addPayment, updatePayment} from "@/api/system/payment";
 import SearchOption from "@/components/SearchOption.vue";
-import {TableName} from "@/api/tool/enums";
 import {listCompany} from "@/api/system/company";
-import {addReason} from "@/api/system/user";
 import {excludeParams} from "@/api/tool/exclude";
 import {addDateRange} from "@/utils/ruoyi";
 import {listBankAccount} from "../../../api/system/bankAccount";
@@ -497,16 +495,13 @@ import {mixin_payment_select, PAYMENT_TYPES} from "../../dashboard/mixins/paymen
 import {listCars} from "../../../api/system/cars";
 import {isNull} from "../../../main";
 import {mixin_payment_subject} from "../../dashboard/mixins/payment/payment_subject";
+import {mixin_payment_fill} from "@/views/system/payment/paymentFill";
+import {mixin_printHTML} from "@/views/dashboard/mixins/print";
 
 export default {
   name: "Payment",
-  computed: {
-    PAYMENT_TYPES() {
-      return PAYMENT_TYPES
-    }
-  },
   components: {SearchOption},
-  mixins: [mixin_payment_audit, mixin_payment_select, mixin_payment_subject],
+  mixins: [mixin_printHTML, mixin_payment_audit, mixin_payment_select, mixin_payment_subject, mixin_payment_fill],
   data() {
     return {
       // 遮罩层
@@ -563,19 +558,13 @@ export default {
       // 表单校验
       rules: {},
       columns: [
-        // {key: 50, label: ` 供应商ID`, visible: true},
-
         {key: 0, label: ` id`, visible: true},
-        /* {key: 1, label: `付款编号`, visible: true},*/
         {key: 1, label: `日期`, visible: true},
         {key: 2, label: `支付类型`, visible: true},
-        /*{key: 3, label: `对应的表名`, visible: true},
-        {key: 4, label: `对应的表主键`, visible: true},*/
         {key: 3, label: `金额`, visible: true},
         {key: 4, label: `己方户名`, visible: true},
         {key: 5, label: `己方账号`, visible: true},
         {key: 6, label: `己方开户行`, visible: true},
-        /* {key: 9, label: `己方账号ID`, visible: false},*/
         {key: 7, label: `对方户名`, visible: true},
         {key: 8, label: `对方账号`, visible: true},
         {key: 9, label: `对方开户行`, visible: true},
@@ -583,21 +572,9 @@ export default {
         {key: 11, label: `对方公司`, visible: true},
         {key: 12, label: `对方公司类型`, visible: true},
         {key: 13, label: `备注`, visible: true},
-        /*  {key: 16, label: `对方公司ID`, visible: false},*/
-        /*{key: 15, label: `对方公司类型`, visible: true},*/
-
-
       ],
       //顶部筛选框
       queryPayment: {},
-      // bank搜索
-      queryBank: '',
-      // 供应商搜索
-      queryOtherSupplier: '',
-      // 客户搜索
-      queryOtherCustomer: '',
-      // 司机搜索
-      queryOtherDriver: '',
       dateRange: [],
       options_companyType: [
         {
@@ -617,50 +594,15 @@ export default {
           label: '其他'
         },
       ],
-      options_payType: [
-        {
-          value: '票点',
-          label: '票点'
-        }, {
-          value: '工资和社保和公积金',
-          label: '工资和社保和公积金'
-        }, {
-          value: '委托在加工出库',
-          label: '委托在加工出库'
-        }, {
-          value: '(供应商暂存)平账',
-          label: '(供应商暂存)平账'
-        }, {
-          value: '日常费用报销',
-          label: '日常费用报销'
-        }, {
-          value: '销售玻璃贷款',
-          label: '销售玻璃贷款'
-        }, {
-          value: '承兑贴现',
-          label: '承兑贴现'
-        }, {
-          value: '公司贷款',
-          label: '公司贷款'
-        }, {
-          value: '内部往来转账收入',
-          label: '内部往来转账收入'
-        }, {
-          value: '委托再加工入库',
-          label: '委托再加工入库'
-        }, {
-          value: '(客户暂存)平账',
-          label: '(客户暂存)平账'
-        }, {
-          value: '其他收入',
-          label: '其他收入'
-        }
-      ],
       // 银行卡选择的弹窗
       chooseBankDialogVisible: false,
       chooseInfo: {},
-      queryChoose: '',
     };
+  },
+  computed: {
+    PAYMENT_TYPES() {
+      return PAYMENT_TYPES
+    }
   },
   created() {
     this.getList();
@@ -686,62 +628,6 @@ export default {
     listCars,
     listBankAccount,
     listCompany,
-    //自动填充己方信息
-    handleCommitBack(val) {
-      this.form.selfBankName = val.bankName;
-      this.form.selfAcountsName = val.acountsName
-      this.form.selfBankNo = val.bankNo
-    },
-    // 填充供应商信息
-    handleCommitBackOtherSupplier(val) {
-      this.form.otherBankName = val.bankName;
-      this.form.otherAcountsName = val.acountsName;
-      this.form.otherBankNo = val.bankNo;
-      this.form.companyName = val.companyName;
-    },
-    //自动填充客户信息
-    handleCommitBackOther(val) {
-      this.form.otherBankName = val.bankName;
-      this.form.otherAcountsName = val.acountsName;
-      this.form.otherBankNo = val.bankNo;
-      this.form.companyName = val.companyName;
-    },
-    // 补充司机信息
-    handleCommitBackOtherCars(val) {
-      this.form.otherBankName = val.bankName;
-      this.form.otherAcountsName = val.acountsName;
-      this.form.otherBankNo = val.bankNo;
-      this.form.companyName = val.driver;
-    },
-    // 选择己方银行卡
-    handleCommitBackChoose(val) {
-      this.chooseInfo.selfBankName = val.bankName;
-      this.chooseInfo.selfAcountsName = val.acountsName
-      this.chooseInfo.selfBankNo = val.bankNo
-    },
-    // 这些方法是组件中的检索字段填充方法
-    handleUpdateQueryChoose(val) {
-      this.queryChoose = val;
-    },
-    handleUpdateQueryName(val) {
-      this.queryBank = val;
-    },
-    handleUpdateQueryNameOtherSupplier(val) {
-      this.queryOtherSupplier = val;
-    },
-    handleUpdateQueryNameOtherCustomer(val) {
-      this.queryOtherCustomer = val;
-    },
-    handleUpdateQueryNameOtherDriver(val) {
-      this.queryOtherDriver = val;
-    },
-    printHTML() {
-      this.$print({
-        printable: 'printBox',
-        type: 'html',
-        targetStyles: ['*'], // 打印内容使用所有HTML样式，没有设置这个属性/值，设置分页打印没有效果
-      })
-    },
     /** 查询付款信息列表 */
     getList() {
       this.loading = true;
