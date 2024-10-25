@@ -20,8 +20,9 @@ export var mixin_business_trip_oil_card = {
       this.oilCardConsumeVisible = true
     }
     ,
-    changePaymentApplyInfoVisible(val) {
-      this.applyForPaymentDialogVisible = val;
+    changePaymentApplyInfoVisible() {
+      this.needMoney = 0
+      this.applyForPaymentDialogVisible = false;
       this.getList()
     },
     // 添加油卡消费信息

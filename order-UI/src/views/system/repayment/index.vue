@@ -136,7 +136,7 @@
     <el-dialog :close-on-click-modal="false" :show-close="false" title="付款申请"
                :visible.sync="PaymentApplyInfoVisible" width="45%">
       <keep-alive>
-        <ApplyPayment :table-name="TableName.REPAYMENT" @changeupdateOrderItemVisible="changePaymentApplyInfoVisible"
+        <ApplyPayment :table-name="TableName.REPAYMENT" @changeOpen="changePaymentApplyInfoVisible"
                       :t-i-d="tID" :need-money="needMoney" :need-info="{}"/>
       </keep-alive>
     </el-dialog>
@@ -249,7 +249,9 @@ export default {
       this.needMoney = row.moneyAmount
     },
     changePaymentApplyInfoVisible() {
+      this.needMoney = 0
       this.PaymentApplyInfoVisible = false
+      this.getList()
     },
     //时间查询
     handleQueryTime() {

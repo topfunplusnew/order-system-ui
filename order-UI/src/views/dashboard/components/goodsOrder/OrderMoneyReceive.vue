@@ -3,7 +3,7 @@
     <keep-alive>
       <ApplyPayment :table-name="TableName.GOODS_ORDER" :t-i-d="tID" :need-money="needMoney"
                     :need-info="{}"
-                    @changeupdateOrderItemVisible="handleCloseApply"/>
+                    @changeOpen="handleCloseApply"/>
     </keep-alive>
   </el-dialog>
 </template>

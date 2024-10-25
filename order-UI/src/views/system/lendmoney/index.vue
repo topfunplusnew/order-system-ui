@@ -69,44 +69,80 @@
 
     <el-table border v-loading="loading" :data="lendMoneyList" @selection-change="handleSelectionChange"
               v-horizontal-scroll="'always'" id="printBox" size="mini" :cell-style="()=>{return {padding:'1px'}}">
-      <!--      <el-table-column label="id" align="center" prop="id"/>-->
-      <!--      <el-table-column label="借出款编号" align="center" prop="futuresNO" v-if="columns[0].visible"/>-->
       <el-table-column label="期货保证金公司" align="center" prop="futuresMarginCompany" v-if="columns[0].visible"
                        width="130" show-overflow-tooltip>
-        <template slot-scope="scope">
-          <span v-if="scope.row.futuresMarginCompany !== ''&& scope.row.futuresMarginCompany !== null">
-            {{ scope.row.futuresMarginCompany }}
-          </span>
-          <span v-else>
-            无期货保证金公司
-          </span>
+        <template #default="scope">
+          <DynamicField :row="scope.row" field="futuresMarginCompany"/>
         </template>
       </el-table-column>
       <el-table-column label="对象" align="center" prop="target" v-if="columns[2].visible" width="110"
-                       show-overflow-tooltip/>
+                       show-overflow-tooltip>
+        <template #default="scope">
+          <DynamicField :row="scope.row" field="target"/>
+        </template>
+      </el-table-column>
       <el-table-column label="对象类型" align="center" prop="targetType" v-if="columns[1].visible" width="110"
-                       show-overflow-tooltip/>
+                       show-overflow-tooltip>
+        <template #default="scope">
+          <DynamicField :row="scope.row" field="targetType"/>
+        </template>
+      </el-table-column>
       <el-table-column label="保证金金额" align="center" prop="moneyAmount" v-if="columns[3].visible" width="110"
-                       show-overflow-tooltip/>
+                       show-overflow-tooltip>
+        <template #default="scope">
+          <DynamicField :row="scope.row" field="moneyAmount"/>
+        </template>
+      </el-table-column>
       <el-table-column label="对方账户" align="center" prop="targetAcountsName" v-if="columns[4].visible" width="110"
                        show-overflow-tooltip>
+        <template #default="scope">
+          <DynamicField :row="scope.row" field="targetAcountsName"/>
+        </template>
       </el-table-column>
       <el-table-column label="对方账号" align="center" prop="targetBankNo" v-if="columns[5].visible" width="160"
-                       show-overflow-tooltip/>
+                       show-overflow-tooltip>
+        <template #default="scope">
+          <DynamicField :row="scope.row" field="targetBankNo"/>
+        </template>
+      </el-table-column>
       <el-table-column label="对方开户行" align="center" prop="targetBankName" v-if="columns[6].visible" width="110"
-                       show-overflow-tooltip/>
+                       show-overflow-tooltip>
+        <template #default="scope">
+          <DynamicField :row="scope.row" field="targetBankName"/>
+        </template>
+      </el-table-column>
       <el-table-column label="我方支付账户" align="center" prop="selfAcountsName" v-if="columns[7].visible"
                        show-overflow-tooltip
-                       width="160"/>
+                       width="160">
+        <template #default="scope">
+          <DynamicField :row="scope.row" field="selfAcountsName"/>
+        </template>
+      </el-table-column>
       <el-table-column label="我方账号" align="center" prop="selfBankNo" v-if="columns[8].visible" width="110"
-                       show-overflow-tooltip/>
+                       show-overflow-tooltip>
+        <template #default="scope">
+          <DynamicField :row="scope.row" field="selfBankNo"/>
+        </template>
+      </el-table-column>
       <el-table-column label="我方开户行" align="center" prop="selfBankName" v-if="columns[9].visible" width="110"
-                       show-overflow-tooltip/>
+                       show-overflow-tooltip>
+        <template #default="scope">
+          <DynamicField :row="scope.row" field="selfBankName"/>
+        </template>
+      </el-table-column>
       <el-table-column label="支付期货保证金时间" align="center" prop="futuresDate" v-if="columns[10].visible"
                        show-overflow-tooltip
-                       width="110"/>
+                       width="110">
+        <template #default="scope">
+          <DynamicField :row="scope.row" field="futuresDate"/>
+        </template>
+      </el-table-column>
       <el-table-column label="事由" align="center" prop="reason" v-if="columns[11].visible" width="110"
-                       show-overflow-tooltip/>
+                       show-overflow-tooltip>
+        <template #default="scope">
+          <DynamicField :row="scope.row" field="reason"/>
+        </template>
+      </el-table-column>
       <el-table-column label="备注" align="center" prop="comments" width="110" show-overflow-tooltip/>
       <el-table-column label="操作" align="center" class-name="small-padding fixed-width" width="230px" fixed="right">
         <template slot-scope="scope">
@@ -332,7 +368,6 @@ import {mapGetters} from "vuex";
 import {addRecoverMoney} from "@/api/system/recoverMoney";
 import SearchOption from "@/components/SearchOption.vue";
 import {listBankAccount} from "@/api/system/bankAccount";
-import {listCompany} from "@/api/system/company";
 import ApplyPayment from "@/views/dashboard/components/common/ApplyPayment.vue";
 import {TableName} from "@/api/tool/enums";
 import {excludeParams} from "@/api/tool/exclude";
@@ -340,10 +375,11 @@ import {mixin_reviveMoney} from "../../dashboard/mixins/receive";
 import {mixin_printHTML} from "../../dashboard/mixins/print";
 import {ReceiveType} from "../../../api/tool/enums";
 import {mixin_lend_money_fill} from "@/views/system/lendmoney/lendMoneyFill";
+import DynamicField from "@/components/DynamicField.vue";
 
 export default {
   name: "LendMoney",
-  components: {ApplyPayment, SearchOption},
+  components: {DynamicField, ApplyPayment, SearchOption},
   mixins: [mixin_reviveMoney, mixin_printHTML, mixin_lend_money_fill],
   dicts: ['order_target_type'],
   data() {
@@ -509,6 +545,7 @@ export default {
       this.applyDialogVisible = true;
     },
     changeOpen() {
+      this.needMoney = 0
       this.applyDialogVisible = false
       this.getList()
     },

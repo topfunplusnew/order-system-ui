@@ -60,7 +60,8 @@
       </right-toolbar>
     </el-row>
 
-    <el-table id="printBox" v-horizontal-scroll="'always'" border v-loading="loading" :data="invoiceInList" @header-dragend="changeColWidth"
+    <el-table id="printBox" v-horizontal-scroll="'always'" border v-loading="loading" :data="invoiceInList"
+              @header-dragend="changeColWidth"
               @selection-change="handleSelectionChange" fit size="mini" :cell-style="()=>{return {padding:'.5px'}}">
       <el-table-column label="开票日期" align="center" prop="invoiceDate" v-if="columns[0].visible"
                        show-overflow-tooltip/>
@@ -217,7 +218,7 @@
     <!--    添加付款申请-->
     <el-dialog :close-on-click-modal="false" :show-close="false" title="付款申请"
                :visible.sync="PaymentApplyInfoVisible" width="500px" append-to-body>
-      <ApplyPayment :table-name="TableName.INVOICE_IN" @changeupdateOrderItemVisible="changePaymentApplyInfoVisible"
+      <ApplyPayment :table-name="TableName.INVOICE_IN" @changeOpen="changePaymentApplyInfoVisible"
                     :t-i-d="tID" :need-money="needMoney" :need-info="{}"/>
     </el-dialog>
 
@@ -386,8 +387,9 @@ export default {
       this.needMoney = row.ticketPointAmount;
       this.PaymentApplyInfoVisible = true
     },
-    changePaymentApplyInfoVisible(val) {
-      this.PaymentApplyInfoVisible = val;
+    changePaymentApplyInfoVisible() {
+      this.needMoney = 0
+      this.PaymentApplyInfoVisible = false;
       this.getList()
     },
     // 取消按钮

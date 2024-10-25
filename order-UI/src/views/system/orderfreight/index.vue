@@ -268,15 +268,6 @@
       :limit.sync="queryParams.pageSize"
       @pagination="getList"
     />
-    <!--    created第一次传递的props，然后监听后来props的变化-->
-    <el-dialog :close-on-click-modal="false" :show-close="false" title="运费付款申请"
-               :visible.sync="applyPaymentVisible" width="500px">
-      <keep-alive>
-        <ApplyPayment :tableName="TableName.ORDER_FREIGHT" :t-i-d="tID"
-                      :need-info="needInfo" :need-money="freight"
-                      @changeOpen="changeOpen"/>
-      </keep-alive>
-    </el-dialog>
 
 
     <el-dialog :close-on-click-modal="false" :show-close="false" :title="title" :visible.sync="open" width="500px"
@@ -382,7 +373,7 @@
 
 
     <!--    一键付运费的弹窗-->
-    <InfoDialog :visible="freightOnceVisible" title="一键申请运费" @close="freightOnceVisible = false">
+    <InfoDialog :visible="freightOnceVisible" title="一键付运费" @close="freightOnceVisible = false">
       <template #info>
         <!--        输入己方信息-->
         <div class="order-freight-body">
@@ -464,6 +455,17 @@
         </el-row>
       </template>
     </InfoDialog>
+
+
+    <!--    created第一次传递的props，然后监听后来props的变化-->
+    <el-dialog :close-on-click-modal="false" :show-close="false" title="运费付款申请"
+               :visible.sync="applyPaymentVisible" width="500px">
+      <keep-alive>
+        <ApplyPayment :tableName="TableName.ORDER_FREIGHT" :t-i-d="tID"
+                      :need-info="needInfo" :need-money="freight"
+                      @changeOpen="changeOpen"/>
+      </keep-alive>
+    </el-dialog>
   </div>
 </template>
 
@@ -632,6 +634,7 @@ export default {
     //   this.applyPaymentVisible = true;
     // },
     changeOpen() {
+      this.needMoney = 0
       this.applyPaymentVisible = false
       this.getList()
     },

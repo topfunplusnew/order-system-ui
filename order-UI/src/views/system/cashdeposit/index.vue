@@ -317,7 +317,7 @@
                width="45%">
       <keep-alive>
         <ApplyPayment :table-name="TableName.LEND_MONEY" :t-i-d="tid" :need-money="needMoney"
-                      @changeupdateOrderItemVisible="applyDialogVisible = false" :need-info="needInfo"/>
+                      @changeOpen="changeOpen" :need-info="needInfo"/>
       </keep-alive>
     </el-dialog>
   </div>
@@ -520,6 +520,11 @@ export default {
       this.recoverMoneyEntity.futuresNO = row.futuresNO; // 初始化uuid
       // 赋值收款信息
       this.initComment('借出款收回');
+    },
+    changeOpen() {
+      this.needMoney = 0
+      this.applyDialogVisible = false
+      this.getList()
     },
     // 收回资金 首先添加借出款收回信息
     RecoverMoney() {

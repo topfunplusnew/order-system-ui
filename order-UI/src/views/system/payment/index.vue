@@ -122,54 +122,77 @@
               v-horizontal-scroll="'always'" size="mini" border :cell-style="()=>{return {padding:'2px'}}">
       <el-table-column label="id" align="center" prop="id" v-if="columns[0].visible"/>
       <el-table-column label="日期" align="center" prop="fundsDate" v-if="columns[1].visible" width="120"
-                       show-overflow-tooltip/>
+                       show-overflow-tooltip>
+        <template #default="scope">
+          <DynamicField :row="scope.row" field="fundsDate"/>
+        </template>
+      </el-table-column>
       <el-table-column label="支付类型" align="center" prop="payType" v-if="columns[2].visible" width="120"
-                       show-overflow-tooltip/>
+                       show-overflow-tooltip>
+        <template #default="scope">
+          <DynamicField :row="scope.row" field="payType"/>
+        </template>
+      </el-table-column>
       <el-table-column label="金额" align="center" prop="moneyAmount" v-if="columns[3].visible" width="120"
-                       show-overflow-tooltip/>
+                       show-overflow-tooltip>
+        <template #default="scope">
+          <DynamicField :row="scope.row" field="moneyAmount"/>
+        </template>
+      </el-table-column>
       <el-table-column label="己方户名" align="center" prop="selfAcountsName" v-if="columns[4].visible" width="120"
                        show-overflow-tooltip>
         <template #default="scope">
-          <span v-if="scope.row.selfAcountsName !== '' && scope.row.selfAcountsName !== null ">{{
-              scope.row.selfAcountsName
-            }}</span>
-          <span v-else>
-            -
-          </span>
+          <DynamicField :row="scope.row" field="selfAcountsName"/>
         </template>
       </el-table-column>
       <el-table-column label="己方账号" align="center" prop="selfBankNo" v-if="columns[5].visible" width="120"
                        show-overflow-tooltip>
         <template #default="scope">
-          <span v-if="scope.row.selfBankNo !== '' && scope.row.selfBankNo !== null ">{{ scope.row.selfBankNo }}</span>
-          <span v-else>
-            -
-          </span>
+          <DynamicField :row="scope.row" field="selfBankNo"/>
         </template>
       </el-table-column>
       <el-table-column label="己方开户行" align="center" prop="selfBankName" v-if="columns[6].visible" width="120"
                        show-overflow-tooltip>
         <template #default="scope">
-          <span v-if="scope.row.selfBankName !== '' && scope.row.selfBankName !== null ">{{
-              scope.row.selfBankName
-            }}</span>
-          <span v-else>
-            -
-          </span>
+          <DynamicField :row="scope.row" field="selfBankName"/>
         </template>
       </el-table-column>
       <el-table-column label="对方户名" align="center" prop="otherAcountsName" v-if="columns[7].visible" width="120"
-                       show-overflow-tooltip/>
+                       show-overflow-tooltip>
+        <template #default="scope">
+          <DynamicField :row="scope.row" field="otherAcountsName"/>
+        </template>
+      </el-table-column>
       <el-table-column label="对方账号" align="center" prop="otherBankNo" v-if="columns[8].visible" width="120"
-                       show-overflow-tooltip/>
+                       show-overflow-tooltip>
+        <template #default="scope">
+          <DynamicField :row="scope.row" field="otherBankNo"/>
+        </template>
+      </el-table-column>
       <el-table-column label="对方开户行" align="center" prop="otherBankName" v-if="columns[9].visible" width="120"
-                       show-overflow-tooltip/>
+                       show-overflow-tooltip>
+        <template #default="scope">
+          <DynamicField :row="scope.row" field="otherBankName"/>
+        </template>
+      </el-table-column>
       <el-table-column label="支付状态" align="center" prop="paymentState" v-if="columns[10].visible" width="120"
-                       show-overflow-tooltip/>
+                       show-overflow-tooltip>
+        <template #default="scope">
+          <DynamicField :row="scope.row" field="paymentState"/>
+        </template>
+      </el-table-column>
       <el-table-column label="对方公司" align="center" prop="companyName" v-if="columns[11].visible" width="120"
-                       show-overflow-tooltip/>
+                       show-overflow-tooltip>
+        <template #default="scope">
+          <DynamicField :row="scope.row" field="companyName"/>
+        </template>
+      </el-table-column>
       <el-table-column label="对方公司类型" align="center" prop="companyType" v-if="columns[12].visible" width="120"
-                       show-overflow-tooltip/>
+                       show-overflow-tooltip>
+        <template #default="scope">
+          <DynamicField :row="scope.row" field="companyType"/>
+        </template>
+      </el-table-column>
       <el-table-column label="备注" align="center" prop="comments" v-if="columns[13].visible" width="120"
                        show-overflow-tooltip/>
       <el-table-column label="复核状态" align="center" class-name="small-padding fixed-width" width="80"
@@ -497,10 +520,11 @@ import {isNull} from "../../../main";
 import {mixin_payment_subject} from "../../dashboard/mixins/payment/payment_subject";
 import {mixin_payment_fill} from "@/views/system/payment/paymentFill";
 import {mixin_printHTML} from "@/views/dashboard/mixins/print";
+import DynamicField from "@/components/DynamicField.vue";
 
 export default {
   name: "Payment",
-  components: {SearchOption},
+  components: {DynamicField, SearchOption},
   mixins: [mixin_printHTML, mixin_payment_audit, mixin_payment_select, mixin_payment_subject, mixin_payment_fill],
   data() {
     return {
