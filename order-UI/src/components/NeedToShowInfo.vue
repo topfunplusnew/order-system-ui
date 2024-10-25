@@ -6,6 +6,7 @@ import {TableName} from "@/api/tool/enums";
 import CARS from "@/components/NeedToShow/CARS.vue";
 import BORROWMONEY from "@/components/NeedToShow/BORROWMONEY.vue";
 import ORDER_FREIGHT from "@/components/NeedToShow/ORDER_FREIGHT.vue";
+import OIL_RECHARGE from "@/components/NeedToShow/OIL_RECHARGE.vue";
 
 export default {
   name: "needToShowInfo",
@@ -24,17 +25,22 @@ export default {
     },
     tableNameToProp(val) {
       switch (val) {
-          //如果是车辆信息
+        //如果是车辆信息
         case TableName.CARS: {
           return CARS
         }
-          //如果是借钱信息
+        //如果是借钱信息
         case TableName.BORROWED_MONEY: {
           return BORROWMONEY
         }
-          //如果是订单运费
+        //如果是订单运费
         case TableName.ORDER_FREIGHT: {
           return ORDER_FREIGHT
+        }
+
+        // 如果是油卡充值
+        case TableName.OIL_RECHARGE: {
+          return OIL_RECHARGE
         }
       }
     }
@@ -42,17 +48,21 @@ export default {
   computed: {
     show() {
       switch (this.tableNameToProp) {
-          //如果是车辆信息
+        //如果是车辆信息
         case TableName.CARS: {
           return CARS
         }
-          //如果是借钱信息
+        //如果是借钱信息
         case TableName.BORROWED_MONEY: {
           return BORROWMONEY
         }
-          //如果是订单运费
+        //如果是订单运费
         case TableName.ORDER_FREIGHT: {
           return ORDER_FREIGHT
+        }
+        // 如果是油卡充值
+        case TableName.OIL_RECHARGE: {
+          return OIL_RECHARGE
         }
       }
     },

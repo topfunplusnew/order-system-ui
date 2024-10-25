@@ -252,7 +252,7 @@ export default {
         </el-table-column>
         <el-table-column
           label="审核状态"
-          width="80">
+          width="80" fixed="right">
           <template slot-scope="scope">
             <el-tag :type="scope.row.checkState === '通过'?'success':'primary'">
               {{ scope.row.checkState }}

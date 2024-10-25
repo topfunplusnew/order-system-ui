@@ -243,9 +243,9 @@ import {TableName} from "@/api/tool/enums";
 import SearchOption from "@/components/SearchOption.vue";
 import {listOilCard} from "@/api/system/oilCard";
 import {listBankAccount} from "@/api/system/bankAccount";
-import {findFileExtension} from "@/utils/trash/utils";
 import {mapGetters} from "vuex";
 import {addDateRange} from "@/utils/ruoyi";
+import {parseTime} from "../../../utils/ruoyi";
 import {excludeParams} from "@/api/tool/exclude";
 import OilApply from "@/views/dashboard/components/oilCard/OilApply.vue";
 import {mixin_oil_recharge_fill} from "@/views/system/oilRecharge/oilRechargeFill";
@@ -303,7 +303,7 @@ export default {
       // 表单参数
       form: {
         rechargeName: '',
-        rechargeDate: new Date().getTime(),
+        rechargeDate: parseTime(new Date()),
         rechargeType: '银行卡'
       },
       // 表单校验
@@ -389,7 +389,7 @@ export default {
         oilCardNo: null,
         rechargeType: '银行卡',
         rechargeMoney: null,
-        rechargeDate: new Date().getTime(),
+        rechargeDate: parseTime(new Date()),
         acountsName: null,
         bankNo: null,
         rechargeName: null,

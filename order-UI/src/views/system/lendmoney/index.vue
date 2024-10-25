@@ -176,7 +176,7 @@
               <el-date-picker
                 v-model="form.futuresDate"
                 type="date"
-                placeholder="请选择支付期货保证金时间"
+                placeholder="请选择支付时间"
                 value-format="yyyy-MM-dd">
               </el-date-picker>
             </el-form-item>
@@ -320,7 +320,7 @@
                width="45%">
       <keep-alive>
         <ApplyPayment :table-name="TableName.LEND_MONEY" :t-i-d="tid" :need-money="needMoney"
-                      @changeOpen="applyDialogVisible = false" :need-info="needInfo"/>
+                      @changeOpen="changeOpen" :need-info="needInfo"/>
       </keep-alive>
     </el-dialog>
   </div>
@@ -496,7 +496,6 @@ export default {
     ...mapGetters(['tempLendMoneyList'])
   },
   methods: {
-    listCompany,
     listBankAccount,
     // 付款申请
     applyForPayment(row) {
@@ -508,6 +507,10 @@ export default {
         bankName: row.targetBankName
       }
       this.applyDialogVisible = true;
+    },
+    changeOpen() {
+      this.applyDialogVisible = false
+      this.getList()
     },
     //点击收回资金按钮
     handleGetBackMoney(row) {

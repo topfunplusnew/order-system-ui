@@ -7,6 +7,7 @@ import {TableName} from "@/api/tool/enums";
 import {getOrderFreight} from "@/api/system/orderFreight";
 import {getBorrowedMoney} from "@/api/system/borrowedMoney";
 import NeedToShowInfo from "@/components/NeedToShowInfo.vue";
+import {getOilRecharge} from "@/api/system/oilRecharge";
 
 export default {
   name: "StepInfo",
@@ -23,8 +24,6 @@ export default {
       checkApplyInfo: {},
       //需要的applyID 给父组件用来更新
       useApplyID: '',
-
-
       needToShowInfo: {},
       //表名
       tableNameToProp: ''
@@ -123,6 +122,7 @@ export default {
           })
           break;
         }
+        // 借钱
         case TableName.BORROWED_MONEY:
           getBorrowedMoney(tID).then(res => {
             this.needToShowInfo = res.data
@@ -130,6 +130,13 @@ export default {
           break;
         case 'paymentApplyDetailItem':
           this.needToShowInfo = item.paymentApplyDetailItem
+          break;
+
+        // 油卡充值
+        case TableName.OIL_RECHARGE:
+          getOilRecharge(tID).then(res => {
+            this.needToShowInfo = res.data
+          })
           break;
         default:
           break;
