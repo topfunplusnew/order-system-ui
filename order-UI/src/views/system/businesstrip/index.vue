@@ -129,8 +129,13 @@
               <el-form-item label="报销人" prop="employee">
                 <el-input v-model="form.employee" disabled placeholder="请输入报销人"/>
               </el-form-item>
-              <el-form-item label="部门" prop="deptName">
+              <!-- <el-form-item label="部门" prop="deptName">
                 <el-input v-model="form.deptName" placeholder="请输入部门"/>
+              </el-form-item>
+              <el-row> -->
+              <el-form-item label="部门" prop="deptName">
+                <treeselect v-model="form.deptName" :options="deptOptions" :normalizer="normalizer"
+                            placeholder="请选择部门"/>
               </el-form-item>
               <el-form-item label="共同出差人员" prop="personnel">
                 <el-input v-model="form.personnel" placeholder="请输入共同出差人员"/>
@@ -340,11 +345,9 @@ import {mapGetters} from "vuex";
 import PaymentApply from "@/views/system/paymentApply/index.vue";
 import ApplyPayment from "@/views/dashboard/components/common/ApplyPayment.vue";
 import {TableName} from "@/api/tool/enums";
-import {checkOilCard, listOilCard} from "@/api/system/oilCard";
+import {listOilCard} from "@/api/system/oilCard";
 import {listBankAccount} from "@/api/system/bankAccount";
-import {addOilRecharge} from "@/api/system/oilRecharge";
 import {parseTime} from "@/utils/ruoyi";
-import {addOilCardConsume} from "@/api/system/OilCardConsume";
 import {mixin_car_apply} from "../../dashboard/mixins/bussiness/index_car_apply";
 import InfoDialog from "../../../components/InfoDialog.vue";
 import {mixin_business_trip_add} from "../../dashboard/mixins/bussiness/business_trip_add";
@@ -354,10 +357,13 @@ import {mixin_business_trip_update} from "../../dashboard/mixins/bussiness/busin
 import {mixin_business_trip_car_apply} from "../../dashboard/mixins/bussiness/bussiness_trip_car_apply";
 import {mixin_business_trip_oil_card} from "../../dashboard/mixins/bussiness/bussiness_trip_oil_card";
 import SubjectOption from "../../../components/SubjectOption.vue";
+import {listDept} from "@/api/system/dept";
+import "@riophae/vue-treeselect/dist/vue-treeselect.css";
+import Treeselect from "@riophae/vue-treeselect";
 
 export default {
   name: "BusinessTrip",
-  components: {SubjectOption, StepsForm, InfoDialog, ApplyPayment, PaymentApply, SearchOption},
+  components: {SubjectOption, StepsForm, InfoDialog, ApplyPayment, PaymentApply, SearchOption, Treeselect},
   mixins: [mixin_printHTML, mixin_common_upload, mixin_car_apply, mixin_business_trip_add,
     mixin_business_trip_update, mixin_business_trip_car_apply, mixin_business_trip_oil_card
   ],
@@ -390,6 +396,7 @@ export default {
         UserName: null,
         delFlag: null
       },
+      deptOptions: [],
       form: {
         employee: ''
       },
@@ -444,6 +451,10 @@ export default {
   ,
   created() {
     this.getList();
+    // 获取部门信息
+    listDept().then(response => {
+      this.deptOptions = this.handleTree(response.data, "deptId");
+    });
     this.resetCarApplyForm()
     if (localStorage.getItem('BusinessTrip-columns') === 'null'
       || !localStorage.getItem('BusinessTrip-columns')) {
@@ -483,6 +494,17 @@ export default {
     listBankAccount,
     listOilCard,
     listData,
+    // 转换部门树形结构
+    normalizer(node) {
+      if (node.children && !node.children.length) {
+        delete node.children;
+      }
+      return {
+        id: node.deptName,
+        label: node.deptName,
+        children: node.children
+      };
+    },
     //发起付款申请
     applyForPayment(row) {
       getBusinessTrip(row.id).then(res => {

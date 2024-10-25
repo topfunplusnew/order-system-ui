@@ -180,8 +180,12 @@
               <el-form-item label="申请人" prop="applyUser">
                 <el-input v-model="form.applyUser" placeholder="请输入申请人"/>
               </el-form-item>
+              <!--              <el-form-item label="部门" prop="department">-->
+              <!--                <el-input v-model="form.department" placeholder="请输入部门"/>-->
+              <!--              </el-form-item>-->
               <el-form-item label="部门" prop="department">
-                <el-input v-model="form.department" placeholder="请输入部门"/>
+                <treeselect v-model="form.department" :options="deptOptions" :normalizer="normalizer"
+                            placeholder="请选择部门"/>
               </el-form-item>
               <el-form-item label="车牌" prop="carNo">
                 <el-row>
@@ -417,10 +421,12 @@ import {mixin_businesstrip_car_apply} from "../../dashboard/mixins/bussiness/bus
 import {listData} from "../../../api/system/dict/data";
 import SearchOption from "../../../components/SearchOption.vue";
 import {listOilCard} from "../../../api/system/oilCard";
+import Treeselect from "@riophae/vue-treeselect";
+import {listDept} from "@/api/system/dept";
 
 export default {
   name: "CarApply",
-  components: {SearchOption},
+  components: {Treeselect, SearchOption},
   mixins: [mixin_printHTML, mixin_businesstrip_car_apply],
   data() {
     return {
@@ -438,6 +444,7 @@ export default {
       total: 0,
       // 车辆使用申请表格数据
       carApplyList: [],
+      deptOptions: [],
       // 弹出层标题
       title: "",
       // 是否显示弹出层
@@ -509,6 +516,9 @@ export default {
   },
   created() {
     this.getList();
+    listDept().then(response => {
+      this.deptOptions = this.handleTree(response.data, "deptId");
+    });
     if (localStorage.getItem('carapply-columns') === 'null'
       || !localStorage.getItem('carapply-columns')) {
       //设置localStorage
@@ -529,6 +539,16 @@ export default {
   methods: {
     listOilCard,
     listData,
+    normalizer(node) {
+      if (node.children && !node.children.length) {
+        delete node.children;
+      }
+      return {
+        id: node.deptName,
+        label: node.deptName,
+        children: node.children
+      };
+    },
     /** 查询车辆使用申请列表 */
     getList() {
       this.loading = true;
