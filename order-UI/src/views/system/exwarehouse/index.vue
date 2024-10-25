@@ -74,18 +74,18 @@
               @selection-change="handleSelectionChange" id="printBox" size="mini"
               :cell-style="()=>{return {padding:'2px'}}">
       <!--      <el-table-column label="id" align="center" prop="id" v-if="columns[0].visible"/>-->
-      <el-table-column label="订单编号" align="center" prop="ordersNo" v-if="columns[1].visible">
-        <template slot-scope="scope">
-          <el-tag type="success" v-if="scope.row.ordersNo ==='二次加工' || scope.row.ordersNo === '货物破损'">
-            <span>
-              {{ scope.row.ordersNo }}货物
-            </span>
-          </el-tag>
-          <span v-else>
-            {{ scope.row.ordersNo }}
-          </span>
-        </template>
-      </el-table-column>
+      <!--      <el-table-column label="订单编号" align="center" prop="ordersNo" v-if="columns[1].visible">-->
+      <!--        <template slot-scope="scope">-->
+      <!--          <el-tag type="success" v-if="scope.row.ordersNo ==='二次加工' || scope.row.ordersNo === '货物破损'">-->
+      <!--            <span>-->
+      <!--              {{ scope.row.ordersNo }}货物-->
+      <!--            </span>-->
+      <!--          </el-tag>-->
+      <!--          <span v-else>-->
+      <!--            {{ scope.row.ordersNo }}-->
+      <!--          </span>-->
+      <!--        </template>-->
+      <!--      </el-table-column>-->
       <!--      <el-table-column label="仓库ID" align="center" prop="storeHouseid"/>-->
       <el-table-column label="仓库名称" align="center" prop="storeHouseName" v-if="columns[2].visible"/>
       <!--      <el-table-column label="仓库存储的货物ID" align="center" prop="storeID"/>-->

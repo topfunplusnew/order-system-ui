@@ -432,6 +432,7 @@ export default {
       this.queryGoodsOrder = val;
     },
     handleCommitBackGoodsOrder(val) {
+      this.form.orderIDS = val.id;
       this.form.ordersNo = val.ordersNo
     },
     //表格中查看订单信息
