@@ -29,7 +29,6 @@
       </el-form-item>
       <el-form-item>
         <el-button type="primary" icon="el-icon-search" size="mini" @click="handleQueryTime">搜索</el-button>
-        <!--        <el-button icon="el-icon-refresh" size="mini" @click="resetQuery">重置</el-button>-->
       </el-form-item>
     </el-form>
 
@@ -321,7 +320,7 @@
                width="45%">
       <keep-alive>
         <ApplyPayment :table-name="TableName.LEND_MONEY" :t-i-d="tid" :need-money="needMoney"
-                      @changeupdateOrderItemVisible="applyDialogVisible = false" :need-info="needInfo"/>
+                      @changeOpen="applyDialogVisible = false" :need-info="needInfo"/>
       </keep-alive>
     </el-dialog>
   </div>
@@ -337,16 +336,15 @@ import {listCompany} from "@/api/system/company";
 import ApplyPayment from "@/views/dashboard/components/common/ApplyPayment.vue";
 import {TableName} from "@/api/tool/enums";
 import {excludeParams} from "@/api/tool/exclude";
-import {addReceiveMoney} from "../../../api/system/receiveMoney";
-import {parseTime} from "../../../utils/ruoyi";
 import {mixin_reviveMoney} from "../../dashboard/mixins/receive";
 import {mixin_printHTML} from "../../dashboard/mixins/print";
 import {ReceiveType} from "../../../api/tool/enums";
+import {mixin_lend_money_fill} from "@/views/system/lendmoney/lendMoneyFill";
 
 export default {
   name: "LendMoney",
   components: {ApplyPayment, SearchOption},
-  mixins: [mixin_reviveMoney, mixin_printHTML],
+  mixins: [mixin_reviveMoney, mixin_printHTML, mixin_lend_money_fill],
   dicts: ['order_target_type'],
   data() {
     return {
@@ -480,8 +478,6 @@ export default {
       },
       // 收款信息实体
       receiveMoneyEntity: {},
-      queryBank: '',
-
       applyDialogVisible: false,
       tid: '',
       needMoney: 0,
@@ -559,10 +555,6 @@ export default {
       }
       this.giveRecoverMoneyShow = false;
     },
-    // 收回资金的搜索按钮自动填充方法
-    handleUpdateQueryBankAcountForm(val) {
-      this.queryBank = val;
-    },
     handleCommitBackBankAcountForm(val) {
       // 初始化我方账户信息
       this.initReviveMoneySelfAccountInfo(val.acountsName, val.bankNo, val.bankName, val.id)
@@ -599,23 +591,6 @@ export default {
       })
     },
 
-
-    //
-    handleCommitBack(val) {
-      this.form.targetBankNo = val.bankNo;
-      this.form.targetBankName = val.bankName;
-      this.form.targetAcountsName = val.acountsName;
-    },
-    //
-    handleUpdateQueryName(val) {
-      this.queryCompany = val;
-    },
-    //
-    handleCommitBackSelf(val) {
-      this.form.selfBankNo = val.bankNo;
-      this.form.selfBankName = val.bankName;
-      this.form.selfAcountsName = val.acountsName;
-    },
     /** 查询向外部借出款信息列表 */
     getList() {
       this.loading = true;
@@ -630,7 +605,7 @@ export default {
       this.open = false;
       this.reset();
     },
-    // 表单重置
+    // 表单重置F
     reset() {
       this.form = {
         id: null,

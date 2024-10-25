@@ -274,7 +274,7 @@
       <keep-alive>
         <ApplyPayment :tableName="TableName.ORDER_FREIGHT" :t-i-d="tID"
                       :need-info="needInfo" :need-money="freight"
-                      @changeupdateOrderItemVisible="changeOpen"/>
+                      @changeOpen="changeOpen"/>
       </keep-alive>
     </el-dialog>
 
@@ -487,6 +487,7 @@ import {mixin_order_base} from "../../dashboard/mixins/order/order_base";
 import {mixin_order_freight_payment} from "../../dashboard/mixins/order/order_freight_payment";
 import InfoDialog from "../../../components/InfoDialog.vue";
 import {mixin_payment_subject} from "../../dashboard/mixins/payment/payment_subject";
+import {mixin_order_freight_fill} from "@/views/system/orderfreight/orderFreightFill";
 
 export default {
   name: "OrderFreight",
@@ -496,7 +497,8 @@ export default {
     }
   },
   components: {InfoDialog, ApplyPayment, SearchOption},
-  mixins: [mixin_order_base, mixin_order_freight_payment,/*引入支付类型的混入*/mixin_payment_subject],
+  mixins: [mixin_order_freight_fill, mixin_order_base, mixin_order_freight_payment,/*引入支付类型的混入*/mixin_payment_subject
+  ],
   data() {
     return {
       // 遮罩层
@@ -574,18 +576,15 @@ export default {
         {key: 15, label: `付款日期`, visible: true},
         {key: 16, label: `备注`, visible: true},
       ],
-
       bankInputDisabled: false,
       tID: null,
       freight: null,
       applyInfo: null,
       applyPaymentVisible: false,
-      queryCompany: '',
-      queryCars: '',
-      queryFleet: '',
       needInfo: {},
     };
-  },
+  }
+  ,
   created() {
     this.getList();
     if (localStorage.getItem('orderfreight-columns') === 'null'
@@ -596,13 +595,13 @@ export default {
       this.columns = JSON.parse(localStorage.getItem('orderfreight-columns'));
     }
   },
-  //展示与隐藏
   watch: {
     columns: {
       handler: (newVal) => {
         localStorage.setItem("orderfreight-columns", JSON.stringify(newVal))
       },
-      deep: true,
+      deep:
+        true,
     }
   },
   methods: {
@@ -636,32 +635,6 @@ export default {
       this.applyPaymentVisible = false
       this.getList()
     },
-    //己方公司点击确定的回调
-    handleCommitBack(val) {
-      this.form.otherBankNo = val.bankNo;
-      this.form.otherBankName = val.bankName;
-      this.form.companyName = val.companyName;
-      this.form.companyId = val.id;
-      this.form.otherAcountsName = val.acountsName;
-      this.form.companyType = val.companyType
-    },
-    handleCommitBackCars(val) {
-      this.form.carNo = val.dictLabel
-    },
-    updateQueryCars(val) {
-      this.queryCars = val;
-    },
-    //update
-    handleUpdateQueryName(val) {
-      this.queryCompany = val;
-    },
-    handleCommitBackFleet(val) {
-      this.form.fleet = val.fName;
-    },
-    updateQueryFleet(val) {
-      this.queryFleet = val
-    },
-
     /** 查询订单运费列表 */
     getList() {
       this.loading = true;
@@ -719,30 +692,35 @@ export default {
         delFlag: null
       };
       this.resetForm("form");
-    },
+    }
+    ,
     /** 搜索按钮操作 */
     handleQuery() {
       this.queryParams.pageNum = 1;
       this.getList();
-    },
+    }
+    ,
     /** 重置按钮操作 */
     resetQuery() {
       this.resetForm("queryForm");
       this.handleQuery();
-    },
+    }
+    ,
     // 多选框选中数据
     handleSelectionChange(selection) {
       this.selectedList = selection
       this.ids = selection.map(item => item.id)
       this.single = selection.length !== 1
       this.multiple = !selection.length
-    },
+    }
+    ,
     /** 新增按钮操作 */
     handleAdd() {
       this.reset();
       this.open = true;
       this.title = "添加订单运费申请";
-    },
+    }
+    ,
     /** 修改按钮操作 */
     handleUpdate(row) {
       this.reset();
@@ -752,7 +730,8 @@ export default {
         this.open = true;
         this.title = "修改订单运费";
       });
-    },
+    }
+    ,
     /** 提交按钮 */
     submitForm() {
       this.$refs["form"].validate(valid => {
@@ -774,7 +753,8 @@ export default {
           }
         }
       });
-    },
+    }
+    ,
     /** 删除按钮操作 */
     handleDelete(row) {
       const ids = row.id || this.ids;
@@ -785,7 +765,8 @@ export default {
         this.$modal.msgSuccess("删除成功");
       }).catch(() => {
       });
-    },
+    }
+    ,
     /** 导出按钮操作 */
     handleExport() {
       this.download('system/orderFreight/export', {
@@ -793,7 +774,8 @@ export default {
       }, `orderFreight_${new Date().getTime()}.xlsx`)
     }
   }
-};
+}
+;
 </script>
 <style scoped>
 .order-freight-body {

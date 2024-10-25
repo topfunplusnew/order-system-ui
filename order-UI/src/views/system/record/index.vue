@@ -97,8 +97,8 @@
         </template>
       </el-table-column>
       <el-table-column label="金额" align="center" prop="amount"/>
-         <el-table-column label="客户" align="center" prop="customerName" show-overflow-tooltip/>
-         <el-table-column label="供应商" align="center" prop="supplierName" show-overflow-tooltip/>
+      <el-table-column label="客户" align="center" prop="customerName" show-overflow-tooltip/>
+      <el-table-column label="供应商" align="center" prop="supplierName" show-overflow-tooltip/>
       <!--      附件上传-->
       <el-table-column label="附件" align="center" prop="attachment">
         <template #default="scope">
@@ -279,11 +279,12 @@ import SearchOption from "../../../components/SearchOption.vue";
 import {excludeParams} from "../../../api/tool/exclude";
 import {TableName} from "../../../api/tool/enums";
 import {listInvoiceOther} from "../../../api/system/invoiceOther";
+import {mixin_record_fill} from "@/views/system/record/recordFill";
 
 export default {
   name: "Record",
   components: {SearchOption},
-  mixins: [mixin_printHTML, mixin_record_uploadFiles],
+  mixins: [mixin_printHTML, mixin_record_fill, mixin_record_uploadFiles],
   data() {
     return {
       // 遮罩层
@@ -348,10 +349,6 @@ export default {
       },
       columns: [],
 
-      // 查询字段
-      querySupplier: '',
-      queryCustomer: '',
-      queryInvoice: '',
       // 表单中用于展示的字段
       supplierName: '',
       customerName: '',
@@ -364,29 +361,6 @@ export default {
     listInvoiceOther,
     listCompany,
     parseTime,
-    // 客户供应商的搜索
-    updateQuerySupplier(val) {
-      this.querySupplier = val;
-    },
-    updateQueryCustomer(val) {
-      this.queryCustomer = val;
-    },
-    updateQueryInvoice(val) {
-      this.queryInvoice = val;
-    },
-    // 供应商的自动填充 填充id即可
-    handleCommitCompanySupplier(val) {
-      this.form.supplierId = val.id;
-      this.supplierName = val.companyName;
-    },
-    handleCommitCompanyCustomer(val) {
-      this.form.customerId = val.id;
-      this.customerName = val.companyName;
-    },
-    // 开票号码绑定
-    handleCommitInvoiceOther(val) {
-      this.form.referenceTableId = val.id;
-    },
     /** 查询现金记账列表 */
     getList() {
       this.loading = true;

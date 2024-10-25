@@ -324,7 +324,7 @@
                width="60%">
       <keep-alive>
         <ApplyPayment :table-name="TableName.BUSINESS_TRIP"
-                      @changeupdateOrderItemVisible="changePaymentApplyInfoVisible"
+                      @changeOpen="changePaymentApplyInfoVisible"
                       :t-i-d="tID" :need-info="{}" :need-money="needMoney"/>
       </keep-alive>
     </el-dialog>

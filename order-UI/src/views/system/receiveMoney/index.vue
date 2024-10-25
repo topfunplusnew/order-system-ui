@@ -227,6 +227,8 @@
           </el-col>
           <el-col :span="3">
             <SearchOption :get-data="listBankAccount" title="客户银行卡信息" icon="el-icon-search"
+                          query-label="户名查找" query-info="acountsName" :query-name="queryCustomerBank"
+                          @update:queryName="handleUpdateQueryNameCustomer"
                           @commitBack="handleCallBackCompany" :limit-info="{acountsType:'客户'}">
               <template #table-columns>
                 <el-table-column label="账户类型" align="center" prop="acountsType"/>
@@ -276,21 +278,18 @@ import {
 } from "@/api/system/receiveMoney";
 import SearchOption from "@/components/SearchOption.vue";
 import {listBankAccount} from "@/api/system/bankAccount";
-import {Loading} from "element-ui";
 import {listSubject} from "@/api/system/subject";
-import {listCompany} from "@/api/system/company";
 import {excludeParams} from "@/api/tool/exclude";
 import {addReason} from "@/api/system/user";
 import {TableName} from "@/api/tool/enums";
 import {mixin_printHTML} from "../../dashboard/mixins/print";
-import {mixin_receive_money_select} from "../../dashboard/mixins/payment/payment_select";
-import {mixin_upload} from "../../dashboard/mixins/upload";
 import CheckFiles from "../../../components/CheckFiles.vue";
+import {mixin_receive_money_fill} from "@/views/system/receiveMoney/receiveMoneyFill";
 
 export default {
   name: "ReceiveMoney",
   components: {CheckFiles, SearchOption},
-  mixins: [mixin_printHTML],
+  mixins: [mixin_printHTML, mixin_receive_money_fill],
   data() {
     return {
       // 遮罩层
@@ -415,7 +414,6 @@ export default {
     }
   },
   methods: {
-    listCompany,
     listBankAccount,
     //点击确认的回调函数 点击后自动补充相关字段
     handleCallBack(val) {

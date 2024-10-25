@@ -89,7 +89,8 @@
     />
 
     <!-- 添加或修改借出款收回信息对话框 -->
-    <el-dialog :close-on-click-modal="false" :show-close="false" :title="title" :visible.sync="open" width="500px" append-to-body>
+    <el-dialog :close-on-click-modal="false" :show-close="false" :title="title" :visible.sync="open" width="500px"
+               append-to-body>
       <el-form ref="form" :model="form" :rules="rules" label-width="80px">
         <el-form-item label="借出款编号" prop="futuresNO">
           <el-input v-model="form.futuresNO" placeholder="请输入借出款编号"/>
@@ -187,18 +188,6 @@ export default {
       ],
       // 表单校验
       rules: {},
-      //搜索
-      timesQuery: {
-        beginTime: '',
-        endTime: '',
-        objectType: ''
-      },
-      options: [
-        {
-          label: 'test',
-          value: 'test'
-        }
-      ]
     };
   },
   created() {
@@ -225,25 +214,6 @@ export default {
     }
   },
   methods: {
-    //时间查询
-    handleQueryTime() {
-      //重置
-      this.recoverMoneyList = this.tempRecoverMoneyList
-      //筛选
-      this.recoverMoneyList = this.filterTime()
-    },
-    //筛选方法
-    filterTime() {
-      return this.recoverMoneyList.filter(item => {
-        //时间转换
-        const time_search = new Date(item.recoverDate).getTime()
-        const time_start = new Date(this.timesQuery.beginTime).getTime()
-        const date = new Date(this.timesQuery.endTime)
-        date.setDate(date.getDate() + 1)
-        const time_end = date.getTime()
-        return time_search >= time_start && time_search <= time_end
-      })
-    },
     printHTML() {
       this.$print({
         printable: 'printBox',

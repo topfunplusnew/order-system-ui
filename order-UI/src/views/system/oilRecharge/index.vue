@@ -248,6 +248,7 @@ import {mapGetters} from "vuex";
 import {addDateRange} from "@/utils/ruoyi";
 import {excludeParams} from "@/api/tool/exclude";
 import OilApply from "@/views/dashboard/components/oilCard/OilApply.vue";
+import {mixin_oil_recharge_fill} from "@/views/system/oilRecharge/oilRechargeFill";
 
 export default {
   name: "OilRecharge",
@@ -258,7 +259,7 @@ export default {
     ...mapGetters(['trueName'])
   },
   components: {OilApply, SearchOption, ApplyPayment},
-  mixins: [mixin_printHTML],
+  mixins: [mixin_printHTML, mixin_oil_recharge_fill],
   data() {
     return {
       // 遮罩层
@@ -323,8 +324,6 @@ export default {
       paymentApplyVisible: false,
       needMoney: 0,
       needInfo: {},
-      queryOilCard: '',
-      queryBank: ''
     };
   },
   created() {
@@ -350,25 +349,6 @@ export default {
   methods: {
     listBankAccount,
     listOilCard,
-    //附件
-    isPic(url) {
-      return this.$imgs.includes(findFileExtension(url))
-    },
-    //主卡
-    handleCommitBackOilCard(val) {
-      this.form.oilCardNo = val.oilCardNo;
-    },
-    handleCommitBackQueryOilCard(val) {
-      this.queryOilCard = val;
-    },
-    //银行卡
-    handleCommitBackBank(val) {
-      this.form.acountsName = val.acountsName;
-      this.form.bankNo = val.bankNo;
-    },
-    handleCommitBackQueryBank(val) {
-      this.queryBank = val
-    },
     //加油卡付款申请
     addPaymentApply(row) {
       this.tid = row.id;

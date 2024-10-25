@@ -317,7 +317,7 @@
                width="45%">
       <keep-alive>
         <ApplyPayment :table-name="TableName.LEND_MONEY" :t-i-d="tid" :need-money="needMoney"
-                      @changeupdateOrderItemVisible="applyDialogVisible = false" :need-info="needInfo"/>
+                      @changeOpen="applyDialogVisible = false" :need-info="needInfo"/>
       </keep-alive>
     </el-dialog>
   </div>
