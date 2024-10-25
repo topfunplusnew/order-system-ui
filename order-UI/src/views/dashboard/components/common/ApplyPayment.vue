@@ -170,7 +170,6 @@ import {
 } from "@/api/system/paymentApply";
 import {excludeParams} from "@/api/tool/exclude";
 import SearchOption from "@/components/SearchOption.vue";
-import {listCompany} from "@/api/system/company";
 import {listBankAccount} from "@/api/system/bankAccount";
 import {mixin_payment_apply} from "../../mixins/apply_payment/payment_apply";
 import {mixin_payment_level} from "../../mixins/apply_payment/payment_level";
@@ -229,7 +228,6 @@ export default {
 
   methods: {
     listBankAccount,
-    listCompany,
     //对方信息 - 点击确认后自动填充
     handleCommitBack(val) {
       this.form.otherBankNo = val.bankNo;
@@ -279,6 +277,10 @@ export default {
         delFlag: null,
         submitflag: null
       };
+      this.currentSort = {
+        levelOne: '',
+        levelTwo: ''
+      }
       this.resetForm("form");
     },
 
@@ -294,14 +296,13 @@ export default {
           addPaymentApply(this.form).then(response => {
             this.$modal.msgSuccess("付款申请添加成功");
             this.reset()
-            this.$emit('changeupdateOrderItemVisible')
-            this.getList();
+            this.$emit('changeOpen')
           })
         }
       });
     },
     close() {
-      this.$emit('changeupdateOrderItemVisible')
+      this.$emit('changeOpen')
       this.reset()
     }
   }

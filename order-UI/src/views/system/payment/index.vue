@@ -745,17 +745,6 @@ export default {
       this.open = true;
       this.title = "添加付款信息";
     },
-    /** 修改按钮操作 */
-    /* handleUpdate(row) {
-       this.reset();
-       const id = row.id || this.ids
-       getPayment(id).then(response => {
-         this.form = response.data;
-         this.open = true;
-         this.title = "修改付款信息";
-       });
-     },*/
-    /** 修改按钮操作 */
     handleUpdate(row) {
       this.$confirm('是否付款?', '提示', {
         confirmButtonText: '是',

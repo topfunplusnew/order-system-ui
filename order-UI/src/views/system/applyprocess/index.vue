@@ -15,6 +15,7 @@ export default {
   mixins: [mixin_printHTML],
   data() {
     return {
+      loading: false,
       columns: [
         {key: 0, label: `日期`, visible: true},
         {key: 1, label: `支付类型`, visible: true},
@@ -101,15 +102,12 @@ export default {
   },
   methods: {
     refresh() {
+      this.loading = true
       listPaymentApply({pageNum: this.pageNum, pageSize: this.pageSize}).then(res => {
         this.paymentList = res.rows;
         this.total = res.total;
+        this.loading = false
       })
-    },
-    //附件
-    isPic(url) {
-      console.log(url)
-      return this.$imgs.includes(findFileExtension(url))
     },
     //重新刷新审核树
     refreshApplyCheckInfo(applyID) {
@@ -150,6 +148,11 @@ export default {
         this.auditInfoList = res.rows
       })
     },
+    // 审核完毕后点击确定
+    onSubmitApply() {
+      this.checkApplyInfoDialogVisible = false
+      this.refresh()
+    },
     //折叠面板打开某一个的回调
     handleChangeApplyItem(e) {
       console.log(e)
@@ -185,7 +188,7 @@ export default {
       <el-table
         :data="paymentList"
         border :cell-style="()=>{return {padding:'.5px'}}"
-        style="width: 100%" size="mini" align="center">
+        style="width: 100%" size="mini" align="center" v-loading="loading">
         <el-table-column
           fixed
           prop="fundsDate"
@@ -336,7 +339,7 @@ export default {
       </el-row>
       <span slot="footer" class="dialog-footer">
         <el-button @click="checkApplyInfoDialogVisible = false">取 消</el-button>
-        <el-button type="primary" @click="checkApplyInfoDialogVisible = false">确 定</el-button>
+        <el-button type="primary" @click="onSubmitApply">确 定</el-button>
        </span>
     </el-dialog>
   </div>

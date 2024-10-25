@@ -93,6 +93,7 @@ export var mixin_payment_apply = {
     },
     // 填充金额
     fillMoney() {
+      console.log('填充金额', this.needMoney)
       // 如果传入的必须自动填充的金额大于0 则自动填充 且无法修改
       if (this.needMoney >= 0) {
         this.form.moneyAmount = this.needMoney;

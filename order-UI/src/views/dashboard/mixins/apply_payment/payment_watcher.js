@@ -57,13 +57,15 @@ export var mixin_payment_watcher = {
     },
     // 监听传入的金额
     needMoney: {
-      handler() {
+      handler(val) {
         // 如果传入的必须自动填充的金额大于0 则自动填充 且无法修改
         if (this.needMoney >= 0) {
           this.form.moneyAmount = this.needMoney;
           this.inputDisabled = true;
         }
-      }
+      },
+      deep: true,
+      immediate: true
     },
     // 监听表的变化
     tableName: {

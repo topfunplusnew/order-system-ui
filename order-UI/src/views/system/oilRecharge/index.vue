@@ -71,12 +71,6 @@
               v-horizontal-scroll="'always'" id="printBox" size="mini" :cell-style="()=>{return {padding:'2px'}}">
       <el-table-column label="id" align="center" prop="id"/>
       <el-table-column label="审核状态" align="center" prop="checkState" v-if="columns[0].visible">
-        <!--        添加el-tag-->
-        <template slot-scope="scope">
-          <el-tag v-if="scope.row.checkState === '未申请'" type="warning">未申请</el-tag>
-          <el-tag v-if="scope.row.checkState === '已支付'" type="success">已支付</el-tag>
-          <el-tag v-if="scope.row.checkState === '未支付'" type="danger">未支付</el-tag>
-        </template>
       </el-table-column>
       <!--      <el-table-column label="出差编号UUID" align="center" prop="bTripId"/>-->
       <el-table-column label="加油卡卡号" align="center" prop="oilCardNo" v-if="columns[1].visible"/>
@@ -160,11 +154,9 @@
     />
 
     <!-- 添加或修改加油卡充值信息对话框 -->
-    <el-dialog :close-on-click-modal="false" :show-close="false" :title="title" :visible.sync="open" width="500px" append-to-body>
+    <el-dialog :close-on-click-modal="false" :show-close="false" :title="title" :visible.sync="open" width="500px"
+               append-to-body>
       <el-form ref="form" :model="form" :rules="rules" label-width="80px">
-        <!--        <el-form-item label="出差编号UUID" prop="bTripId">-->
-        <!--          <el-input v-model="form.bTripId" placeholder="请输入出差编号UUID"/>-->
-        <!--        </el-form-item>-->
         <el-form-item label="加油卡卡号" prop="oilCardNo">
           <el-row>
             <el-col :span="10">
@@ -185,28 +177,28 @@
         <el-form-item label="充值金额" prop="rechargeMoney">
           <el-input v-model="form.rechargeMoney" placeholder="请输入充值金额"/>
         </el-form-item>
-        <el-form-item label="银行开户名" prop="acountsName">
-          <el-row>
-            <el-col :span="10">
-              <el-input v-model="form.acountsName" placeholder="请输入银行开户名"/>
-            </el-col>
-            <el-col :span="4">
-              <SearchOption :get-data="listBankAccount" @commitBack="handleCommitBackBank" query-info="acountsName"
-                            :query-name="queryBank" query-label="户名查询"
-                            @update:queryName="handleCommitBackQueryBank" :limit-info="{}">
-                <template #table-columns>
-                  <el-table-column label="账户类型" align="center" prop="acountsType"/>
-                  <el-table-column label="开户名称(户名)" align="center" prop="acountsName"/>
-                  <el-table-column label="账号(银行账号)" align="center" prop="bankNo"/>
-                  <el-table-column label="开户行" align="center" prop="bankName"/>
-                </template>
-              </SearchOption>
-            </el-col>
-          </el-row>
-        </el-form-item>
-        <el-form-item label="银行账号" prop="bankNo">
-          <el-input v-model="form.bankNo" placeholder="请输入银行账号"/>
-        </el-form-item>
+        <!--        <el-form-item label="银行开户名" prop="acountsName">-->
+        <!--          <el-row>-->
+        <!--            <el-col :span="10">-->
+        <!--              <el-input v-model="form.acountsName" placeholder="请输入银行开户名"/>-->
+        <!--            </el-col>-->
+        <!--            <el-col :span="4">-->
+        <!--              <SearchOption :get-data="listBankAccount" @commitBack="handleCommitBackBank" query-info="acountsName"-->
+        <!--                            :query-name="queryBank" query-label="户名查询"-->
+        <!--                            @update:queryName="handleCommitBackQueryBank" :limit-info="{acountsType:'己方公司'}">-->
+        <!--                <template #table-columns>-->
+        <!--                  <el-table-column label="账户类型" align="center" prop="acountsType"/>-->
+        <!--                  <el-table-column label="开户名称(户名)" align="center" prop="acountsName"/>-->
+        <!--                  <el-table-column label="账号(银行账号)" align="center" prop="bankNo"/>-->
+        <!--                  <el-table-column label="开户行" align="center" prop="bankName"/>-->
+        <!--                </template>-->
+        <!--              </SearchOption>-->
+        <!--            </el-col>-->
+        <!--          </el-row>-->
+        <!--        </el-form-item>-->
+        <!--        <el-form-item label="银行账号" prop="bankNo">-->
+        <!--          <el-input v-model="form.bankNo" placeholder="请输入银行账号"/>-->
+        <!--        </el-form-item>-->
         <el-form-item label="充值人员姓名" prop="rechargeName">
           <el-input disabled v-model="form.rechargeName" placeholder="请输入充值人员姓名"/>
         </el-form-item>
@@ -226,10 +218,13 @@
 
 
     <!--    加油卡付款申请-->
-    <el-dialog :close-on-click-modal="false" :show-close="false" title="加油卡付款申请" :visible.sync="paymentApplyVisible" width="500px" append-to-body>
-      <ApplyPayment :table-name="TableName.OIL_RECHARGE" :t-i-d="tid" :need-money="needMoney"
-                    :need-info="{...needInfo,otherAcountsName:needInfo.acountsName}"
-                    @changeOpen="paymentApplyVisible = false"/>
+    <el-dialog :close-on-click-modal="false" :show-close="false" title="加油卡付款申请"
+               :visible.sync="paymentApplyVisible" width="500px">
+      <!--      <ApplyPayment :table-name="TableName.OIL_RECHARGE" :t-i-d="tid" :need-money="needMoney"-->
+      <!--                    :need-info="{...needInfo,otherAcountsName:needInfo.acountsName}"-->
+      <!--                    @changeOpen="resetApplyPaymentInfo"/>-->
+      <OilApply :need-money="needMoney" @changeOpen="resetApplyPaymentInfo" :table-name="TableName.OIL_RECHARGE"
+                :t-i-d="tid"/>
     </el-dialog>
   </div>
 </template>
@@ -252,6 +247,7 @@ import {findFileExtension} from "@/utils/trash/utils";
 import {mapGetters} from "vuex";
 import {addDateRange} from "@/utils/ruoyi";
 import {excludeParams} from "@/api/tool/exclude";
+import OilApply from "@/views/dashboard/components/oilCard/OilApply.vue";
 
 export default {
   name: "OilRecharge",
@@ -261,7 +257,7 @@ export default {
     },
     ...mapGetters(['trueName'])
   },
-  components: {SearchOption, ApplyPayment},
+  components: {OilApply, SearchOption, ApplyPayment},
   mixins: [mixin_printHTML],
   data() {
     return {
@@ -382,6 +378,14 @@ export default {
     },
     handleUpload(val) {
       this.form.attachment = val;
+    },
+    // 重置传递给子组件的状态
+    resetApplyPaymentInfo() {
+      // 把needMoney重置一下 避免子组件无法监听
+      this.needMoney = 0;
+      // 先关闭弹窗
+      this.paymentApplyVisible = false
+      this.getList()
     },
     /** 查询加油卡充值信息列表 */
     getList() {
