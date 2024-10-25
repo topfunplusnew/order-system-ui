@@ -423,6 +423,7 @@ import SearchOption from "../../../components/SearchOption.vue";
 import {listOilCard} from "../../../api/system/oilCard";
 import Treeselect from "@riophae/vue-treeselect";
 import {listDept} from "@/api/system/dept";
+import "@riophae/vue-treeselect/dist/vue-treeselect.css";
 
 export default {
   name: "CarApply",
@@ -617,7 +618,6 @@ export default {
     },
     //附件
     isPic(url) {
-      console.log(url)
       return this.$imgs.includes(findFileExtension(url))
     },
     /** 新增按钮操作 */

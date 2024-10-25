@@ -72,7 +72,7 @@ export default {
   created() {
     this.resetOrderInfo()
     if (!this.orderId) {
-      console.log('orderId:传入有误', this.orderId)
+      // console.log('orderId:传入有误', this.orderId)
     } else {
       this.getGoodsOrderInfo(this.orderId)
     }

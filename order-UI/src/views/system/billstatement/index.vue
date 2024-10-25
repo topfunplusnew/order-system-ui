@@ -366,7 +366,6 @@ export default {
   methods: {
     listBankAccount,
     handleCommitBack(val) {
-      console.log(val)
       this.form.billAccount = val.acountsName;
     },
     //自定义列统计总函数

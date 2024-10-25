@@ -453,7 +453,6 @@ export default {
   methods: {
     formatDate,
     checkOrderInfo(row) {
-      console.log('订单信息', row)
       this.checkOrderVisible = true;
       //查询订单详情
       listGoodsOrder({ordersNo: row.ordersNo}).then(res => {

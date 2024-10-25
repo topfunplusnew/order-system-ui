@@ -478,7 +478,7 @@ export default {
     'carApplyForm.isUseOilCard':
       {
         handler: (newVal) => {
-          console.log(newVal)
+          // console.log(newVal)
         }
       }
   }
