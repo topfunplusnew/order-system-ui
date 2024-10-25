@@ -61,7 +61,6 @@
           @keyup.enter.native="handleQuery" class="w-85px"
         />
       </el-form-item>
-      <!--      todo-->
       <el-form-item label="复核状态" prop="auditState">
         <el-select v-model="queryParams.auditState" placeholder="请选择复核状态" clearable>
           <el-option
@@ -434,6 +433,47 @@
       </div>
 
     </el-dialog>
+
+
+    <!--    选择银行卡的页面-->
+    <el-dialog
+      title="请选择付款银行卡"
+      :visible.sync="chooseBankDialogVisible"
+      width="30%">
+      <div>
+        <el-form :model="chooseInfo" label-width="100px">
+          <el-form-item label="己方户名" prop="selfAcountsName">
+            <el-row>
+              <el-col :span="10">
+                <el-input v-model="chooseInfo.selfAcountsName" placeholder="请输入己方户名"/>
+              </el-col>
+              <el-col :span="3">
+                <SearchOption :limit-info="{acountsType:'己方公司'}" :get-data="listBankAccount" icon="el-icon-search"
+                              @commitBack="handleCommitBackChoose" query-label="户名查找" query-info="acountsName"
+                              :query-name="queryChoose" @update:queryName="handleUpdateQueryChoose">
+                  <template #table-columns>
+                    <el-table-column label="账号类型" align="center" prop="acountsType"/>
+                    <el-table-column label="开户行" align="center" prop="bankName"/>
+                    <el-table-column label="开户名" align="center" prop="acountsName"/>
+                    <el-table-column label="账号" align="center" prop="bankNo"/>
+                  </template>
+                </SearchOption>
+              </el-col>
+            </el-row>
+          </el-form-item>
+          <el-form-item label="己方账号" prop="selfBankNo">
+            <el-input v-model="chooseInfo.selfBankNo" placeholder="请输入己方账号"/>
+          </el-form-item>
+          <el-form-item label="己方开户行" prop="selfBankName">
+            <el-input v-model="chooseInfo.selfBankName" placeholder="请输入己方开户行"/>
+          </el-form-item>
+        </el-form>
+      </div>
+      <span slot="footer" class="dialog-footer">
+    <el-button @click="chooseBankDialogVisible = false">取 消</el-button>
+    <el-button type="primary" @click="handlePayment">确 定</el-button>
+  </span>
+    </el-dialog>
   </div>
 </template>
 
@@ -601,7 +641,11 @@ export default {
           value: '其他收入',
           label: '其他收入'
         }
-      ]
+      ],
+      // 银行卡选择的弹窗
+      chooseBankDialogVisible: false,
+      chooseInfo: {},
+      queryChoose: '',
     };
   },
   created() {
@@ -654,6 +698,15 @@ export default {
       this.form.otherAcountsName = val.acountsName;
       this.form.otherBankNo = val.bankNo;
       this.form.companyName = val.driver;
+    },
+    // 选择己方银行卡
+    handleCommitBackChoose(val) {
+      this.chooseInfo.selfBankName = val.bankName;
+      this.chooseInfo.selfAcountsName = val.acountsName
+      this.chooseInfo.selfBankNo = val.bankNo
+    },
+    handleUpdateQueryChoose(val) {
+      this.queryChoose = val;
     },
     printHTML() {
       this.$print({
@@ -709,6 +762,34 @@ export default {
       };
       this.resetForm("form");
     },
+    resetChooseInfo() {
+      this.chooseInfo = {
+        id: null,
+        payNO: null,
+        fundsDate: null,
+        payType: null,
+        tableName: null,
+        tID: null,
+        moneyAmount: null,
+        selfAcountsName: null,
+        selfBankNo: null,
+        selfBankName: null,
+        selfBankID: null,
+        otherAcountsName: null,
+        otherBankNo: null,
+        otherBankName: null,
+        paymentState: null,
+        companyName: null,
+        companyId: null,
+        companyType: null,
+        comments: null,
+        addtime: null,
+        userId: null,
+        UserName: null,
+        updateTime: null,
+        delFlag: null
+      }
+    },
     /** 搜索按钮操作 */
     handleQuery() {
       this.queryParams.pageNum = 1;
@@ -731,15 +812,33 @@ export default {
       this.open = true;
       this.title = "添加付款信息";
     },
+    // 付款的操作
     handleUpdate(row) {
-      this.$confirm('是否付款?', '提示', {
-        confirmButtonText: '是',
-        cancelButtonText: '否',
-        type: 'success'
-      }).then(() => {
-        updatePayment({...row, paymentState: '已支付'}).then(res => {
-          this.$modal.msgSuccess(res.msg)
+      // 如果没有己方银行卡信息 需要跳出选择银行卡信息
+      if (!row.selfBankID) {
+        this.chooseBankDialogVisible = true
+        this.resetChooseInfo()
+        this.chooseInfo = row
+      } else {
+        this.$confirm('是否付款?', '提示', {
+          confirmButtonText: '是',
+          cancelButtonText: '否',
+          type: 'success'
+        }).then(() => {
+          updatePayment({...row, paymentState: '已支付'}).then(res => {
+            this.$modal.msgSuccess(res.msg)
+          })
         })
+      }
+    },
+    // 付款处理
+    handlePayment() {
+      this.chooseInfo = excludeParams(this.chooseInfo, this.$exclude)
+      updatePayment({...this.chooseInfo, paymentState: '已支付'}).then(res => {
+        this.$modal.msgSuccess(res.msg)
+        this.resetChooseInfo()
+        this.chooseBankDialogVisible = false
+        this.getList()
       })
     },
     /** 提交按钮 */
