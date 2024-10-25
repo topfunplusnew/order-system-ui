@@ -14,7 +14,7 @@
       </el-form-item>
       <!--      客户还是供应商-->
       <el-form-item label="对象类型" prop="companyType">
-        <el-select v-model="queryParams.companyType" placeholder="请选择对象类型" class="w-85px">
+        <el-select v-model="queryParams.companyType" placeholder="请选择对象类型" class="w-85px" clearable>
           <el-option
             v-for="item in options_companyType"
             :key="item.value"
@@ -23,44 +23,24 @@
           </el-option>
         </el-select>
       </el-form-item>
-      <el-form-item label="支付类型" prop="payType">
-        <el-select v-model="queryParams.payType" placeholder="请选择支付类型" class="w-85px">
-          <el-option
-            v-for="item in options_payType"
-            :key="item.value"
-            :label="item.label"
-            :value="item.value">
-          </el-option>
-        </el-select>
-      </el-form-item>
-      <el-form-item label="日常费用类目" prop="selfAcountsName">
-        <el-input
-          v-model="queryParams.selfAcountsName"
-          placeholder="请输入己方户名"
-          clearable
-          @keyup.enter.native="handleQuery" class="w-85px"
-        />
-      </el-form-item>
-      <el-form-item label="供应商/客户/车牌" prop="selfBankNo">
-        <el-input
-          v-model="queryParams.selfBankNo"
-          placeholder="请输入己方账号"
-          clearable
-          @keyup.enter.native="handleQuery" class="w-85px"
-        />
+      <el-form-item label="付款类型" prop="payType">
+        <el-cascader
+          v-model="queryParams.payType"
+          :options="paymentTypeTree" :props="props"
+          @change="handleChange"></el-cascader>
       </el-form-item>
       <el-form-item label="户名" prop="selfBankName">
         <el-input
           v-model="queryParams.selfBankName"
-          placeholder="请输入己方开户行"
+          placeholder="请输入己方户名"
           clearable
           @keyup.enter.native="handleQuery" class="w-85px"
         />
       </el-form-item>
       <el-form-item label="对方银行卡号" prop="selfBankID">
         <el-input
-          v-model="queryParams.selfBankID"
-          placeholder="请输入己方账号ID"
+          v-model="queryParams.otherBankNo"
+          placeholder="请输入对方银行卡号"
           clearable
           @keyup.enter.native="handleQuery" class="w-85px"
         />
@@ -75,8 +55,8 @@
       </el-form-item>
       <el-form-item label="备注" prop="otherBankNo">
         <el-input
-          v-model="queryParams.otherBankNo"
-          placeholder="请输入对方账号"
+          v-model="queryParams.comments"
+          placeholder="请输入备注"
           clearable
           @keyup.enter.native="handleQuery" class="w-85px"
         />
@@ -190,6 +170,8 @@
       <el-table-column label="对方公司" align="center" prop="companyName" v-if="columns[11].visible" width="120"
                        show-overflow-tooltip/>
       <el-table-column label="对方公司类型" align="center" prop="companyType" v-if="columns[12].visible" width="120"
+                       show-overflow-tooltip/>
+      <el-table-column label="备注" align="center" prop="comments" v-if="columns[13].visible" width="120"
                        show-overflow-tooltip/>
       <el-table-column label="复核状态" align="center" class-name="small-padding fixed-width" width="80"
                        fixed="right">
@@ -554,6 +536,7 @@ export default {
         {key: 10, label: `支付状态`, visible: true},
         {key: 11, label: `对方公司`, visible: true},
         {key: 12, label: `对方公司类型`, visible: true},
+        {key: 13, label: `备注`, visible: true},
         /*  {key: 16, label: `对方公司ID`, visible: false},*/
         /*{key: 15, label: `对方公司类型`, visible: true},*/
 
@@ -682,6 +665,9 @@ export default {
     /** 查询付款信息列表 */
     getList() {
       this.loading = true;
+      if (this.queryParams.payType) {
+        this.queryParams.payType = this.queryParams.payType.join('-')
+      }
       listPayment(addDateRange(this.queryParams, this.dateRange, 'payment')).then(response => {
         this.paymentList = response.rows;
         this.total = response.total;
