@@ -274,7 +274,8 @@
             </el-col>
             <el-col :span="3">
               <SearchOption :limit-info="{acountsType:'己方公司'}" :get-data="listBankAccount" icon="el-icon-search"
-                            @commitBack="handleCommitBack">
+                            @commitBack="handleCommitBack" query-label="户名查找" query-info="acountsName"
+                            :query-name="queryBank" @update:queryName="handleUpdateQueryName">
                 <template #table-columns>
                   <el-table-column label="账号类型" align="center" prop="acountsType"/>
                   <el-table-column label="开户行" align="center" prop="bankName"/>
@@ -310,7 +311,8 @@
               </el-col>
               <el-col :span="3">
                 <SearchOption :limit-info="{companyType:PAYMENT_TYPES.SUPPLIER}" :get-data="listCompany"
-                              icon="el-icon-search"
+                              icon="el-icon-search" @update:queryName="handleUpdateQueryNameOtherSupplier"
+                              :query-label="'供应商'" query-info="companyName" :query-name="queryOtherSupplier"
                               @commitBack="handleCommitBackOtherSupplier">
                   <template #table-columns>
                     <el-table-column label="公司名称" align="center" prop="companyName"/>
@@ -347,7 +349,10 @@
                 <el-input v-model="form.otherAcountsName" placeholder="请输入对方户名"/>
               </el-col>
               <el-col :span="3">
-                <SearchOption :limit-info="{companyType:PAYMENT_TYPES.CUSTOMER}" :get-data="listCompany"
+                <SearchOption :limit-info="{companyType:PAYMENT_TYPES.CUSTOMER}"
+                              :get-data="listCompany"
+                              @update:queryName="handleUpdateQueryNameOtherCustomer"
+                              :query-label="'客户'" query-info="companyName" :query-name="queryOtherCustomer"
                               icon="el-icon-search"
                               @commitBack="handleCommitBackOther">
                   <template #table-columns>
@@ -386,7 +391,8 @@
               </el-col>
               <el-col :span="3">
                 <SearchOption :limit-info="{}" :get-data="listCars"
-                              icon="el-icon-search"
+                              icon="el-icon-search" @update:queryName="handleUpdateQueryNameOtherDriver"
+                              :query-label="'司机'" query-info="driver" :query-name="queryOtherDriver"
                               @commitBack="handleCommitBackOtherCars">
                   <template #table-columns>
                     <el-table-column label="车牌" align="center" prop="carNo" width="200"/>
@@ -584,6 +590,14 @@ export default {
       ],
       //顶部筛选框
       queryPayment: {},
+      // bank搜索
+      queryBank: '',
+      // 供应商搜索
+      queryOtherSupplier: '',
+      // 客户搜索
+      queryOtherCustomer: '',
+      // 司机搜索
+      queryOtherDriver: '',
       dateRange: [],
       options_companyType: [
         {
@@ -705,8 +719,21 @@ export default {
       this.chooseInfo.selfAcountsName = val.acountsName
       this.chooseInfo.selfBankNo = val.bankNo
     },
+    // 这些方法是组件中的检索字段填充方法
     handleUpdateQueryChoose(val) {
       this.queryChoose = val;
+    },
+    handleUpdateQueryName(val) {
+      this.queryBank = val;
+    },
+    handleUpdateQueryNameOtherSupplier(val) {
+      this.queryOtherSupplier = val;
+    },
+    handleUpdateQueryNameOtherCustomer(val) {
+      this.queryOtherCustomer = val;
+    },
+    handleUpdateQueryNameOtherDriver(val) {
+      this.queryOtherDriver = val;
     },
     printHTML() {
       this.$print({

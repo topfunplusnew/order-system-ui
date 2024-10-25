@@ -220,7 +220,8 @@ export default {
               <el-input v-model="moneyBackInfo.inAcountsName" placeholder="请输入收款户名"/>
             </el-col>
             <el-col :span="3">
-              <SearchOption :limit-info="{}" :get-data="listBankAccount" @commitBack="handleCommitBankAccount">
+              <SearchOption :limit-info="{}" :get-data="listBankAccount"
+                            @commitBack="handleCommitBankAccount">
                 <template #table-columns>
                   <el-table-column label="开户行" align="center" prop="bankName"/>
                   <el-table-column label="开户名" align="center" prop="acountsName"/>
