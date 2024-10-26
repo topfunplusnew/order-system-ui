@@ -1,89 +1,8 @@
 <!--订单页面-->
 <template>
   <div class="app-container">
-    <el-form :model="queryParams" ref="queryForm" size="mini" :inline="true" v-show="showSearch" label-width="70px">
-      <el-row>
-        <el-col :span="6">
-          <el-form-item label="开始时间" prop="beginTime">
-            <el-date-picker
-              v-model="queryParams.orderDateStart"
-              type="date"
-              placeholder="选择时间"
-              value-format="yyyy-MM-dd"
-              size="mini"
-            >
-            </el-date-picker>
-          </el-form-item>
-        </el-col>
-        <el-col :span="6">
-          <el-form-item label="结束时间" prop="endTime">
-            <el-date-picker
-              v-model="queryParams.orderDateEnd"
-              type="date"
-              placeholder="选择时间"
-              value-format="yyyy-MM-dd"
-              size="mini"
-            >
-            </el-date-picker>
-          </el-form-item>
-        </el-col>
-        <el-col :span="6">
-          <el-form-item label="客户名称" prop="customer">
-            <el-input
-              v-model="queryParams.customer"
-              placeholder="请输入客户名称"
-              clearable
-              @keyup.enter.native="handleQuery"
-              size="mini"
-            >
-            </el-input>
-          </el-form-item>
-        </el-col>
-        <el-col :span="6">
-          <el-form-item label="审核状态" prop="checkState">
-            <el-select
-              v-model="queryParams.checkState"
-              placeholder="请选择"
-              size="mini"
-            >
-              <el-option
-                v-for="item in options"
-                :key="item.value"
-                :label="item.label"
-                :value="item.value">
-              </el-option>
-            </el-select>
-          </el-form-item>
-        </el-col>
-        <el-col :span="6">
-          <el-form-item label="开票状态" prop="invoiceState">
-            <el-select
-              v-model="queryParams.invoiceState"
-              placeholder="请选择"
-              size="mini"
-            >
-              <el-option
-                v-for="item in optionsInvoice"
-                :key="item.value"
-                :label="item.label"
-                :value="item.value">
-              </el-option>
-            </el-select>
-          </el-form-item>
-        </el-col>
-        <el-col :span="4">
-          <el-form-item>
-            <el-button
-              type="primary"
-              icon="el-icon-search"
-              size="mini"
-              @click="handleQuery">
-              搜索
-            </el-button>
-          </el-form-item>
-        </el-col>
-      </el-row>
-    </el-form>
+    <QueryStatment :handle-query="handleQuery" :options="options" :options-invoice="optionsInvoice"
+                   :query-params="queryParams" :show-search="showSearch"/>
     <!--    表格上方操作栏-->
     <el-row :gutter="10" class="mb8">
       <!--      左侧操作栏-->
@@ -592,10 +511,12 @@ import InfoDialog from "../../../components/InfoDialog.vue";
 import OrderHistoryCheck from "../../dashboard/components/goodsOrder/OrderHistoryCheck.vue";
 import PrimativeOrderInfo from "../../dashboard/components/goodsOrder/PrimativeOrderInfo.vue";
 import PreviousOrderInfo from "./PreviousOrderInfo.vue";
+import QueryStatment from "@/views/system/adjustOrders/QueryStatment.vue";
 
 export default {
   name: "AdjustOrders",
   components: {
+    QueryStatment,
     PreviousOrderInfo,
     PrimativeOrderInfo,
     OrderHistoryCheck,
@@ -1332,16 +1253,17 @@ export default {
       }
     },
 
-
     /**
      * 订单申请打款功能
      */
     // 订单申请打款
     applyForPayment(row) {
+      this.needMoney = row.allPayments;
       this.paymentApplyVisible = true;
       this.tID = row.id;
     },
     handleCloseApply() {
+      this.needMoney = 0;
       this.paymentApplyVisible = false
       this.getList()
     },
