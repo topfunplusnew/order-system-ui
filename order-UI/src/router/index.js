@@ -155,20 +155,6 @@ export const dynamicRoutes = [
       }
     ]
   },
-  {
-    path: '/tool/gen-edit',
-    component: Layout,
-    hidden: true,
-    permissions: ['tool:gen:edit'],
-    children: [
-      {
-        path: 'index/:tableId(\\d+)',
-        component: () => import('@/views/tool/gen/editTable'),
-        name: 'GenEdit',
-        meta: {title: '修改生成配置', activeMenu: '/tool/gen'}
-      }
-    ]
-  }
 ]
 
 // 防止连续点击多次路由报错

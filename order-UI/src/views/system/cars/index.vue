@@ -126,7 +126,8 @@
               <el-input v-model="form.bankName" placeholder="请输入开户行"/>
             </el-col>
             <el-col :span="3">
-              <SearchOption :limit-info="{acountsType:'司机'}" :get-data="listBankAccount" icon="el-icon-search"
+              <SearchOption :limit-info="{acountsType:'司机',companyId:0}" :get-data="listBankAccount"
+                            icon="el-icon-search"
                             @commitBack="handleCommitBack" query-info="acountsName" query-label="户名查找"
                             @update:queryName="handleCommitQueryName"
                             :query-name="queryCars">

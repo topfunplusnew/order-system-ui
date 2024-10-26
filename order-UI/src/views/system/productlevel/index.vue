@@ -164,11 +164,11 @@
             width="200">
             <template slot-scope="scope">
               <el-row>
-                <el-col :span="12">
-                  <el-button @click="handleClickCategoryList(scope.row)" type="primary" size="mini">编辑</el-button>
+                <el-col :span="5">
+                  <el-button @click="handleClickCategoryList(scope.row)" type="text" size="mini">编辑</el-button>
                 </el-col>
-                <el-col :span="12">
-                  <el-button @click="handleDeteleLevel(scope.row)" type="primary" size="mini">删除分类</el-button>
+                <el-col :span="5">
+                  <el-button @click="handleDeteleLevel(scope.row)" type="text" size="mini">删除分类</el-button>
                 </el-col>
               </el-row>
             </template>
