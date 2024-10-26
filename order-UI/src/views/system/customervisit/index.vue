@@ -158,6 +158,7 @@
             type="primary"
             @click="handleUpdate(scope.row)"
             v-hasPermi="['system:customervisit:edit']"
+            :disabled="scope.row.checkState === 1"
           >编辑
           </el-button>
           <el-button
@@ -165,6 +166,7 @@
             type="danger"
             @click="handleDelete(scope.row)"
             v-hasPermi="['system:customervisit:remove']"
+            :disabled="scope.row.checkState === 1"
           >删除
           </el-button>
         </template>
