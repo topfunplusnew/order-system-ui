@@ -44,14 +44,14 @@
           v-hasPermi="['system:bankaccount:add']">新增银行卡信息
         </el-button>
       </el-col>
-      <el-col :span="1.5">
-        <el-button
-          type="warning"
-          size="mini"
-          @click="handleTransformBank"
-          v-hasPermi="['system:bankaccount:add']">银行卡转账
-        </el-button>
-      </el-col>
+      <!--      <el-col :span="1.5">-->
+      <!--        <el-button-->
+      <!--          type="warning"-->
+      <!--          size="mini"-->
+      <!--          @click="handleTransformBank"-->
+      <!--          v-hasPermi="['system:bankaccount:add']">银行卡转账-->
+      <!--        </el-button>-->
+      <!--      </el-col>-->
       <right-toolbar :showSearch.sync="showSearch" @queryTable="getList" :columns="columns">
         <template v-slot:print>
           <el-col :span="1.5">
@@ -81,20 +81,24 @@
     <el-table border v-loading="loading" :data="bankAccountList" @selection-change="handleSelectionChange"
               id="printBox" height="450px" v-horizontal-scroll="'always'" size="mini"
               :cell-style="()=>{return {padding:'.5px'}}">
-      <el-table-column label="账户类型" align="center" prop="acountsType" v-if="columns[0].visible" width="200"/>
-      <el-table-column label="开户名称" align="center" prop="acountsName" v-if="columns[1].visible" width="200"/>
-      <el-table-column label="银行账号" align="center" prop="bankNo" v-if="columns[2].visible" width="200"/>
-      <!--      todo-->
       <el-table-column label="绑定状态" align="center" width="200">
         <template slot-scope="scope">
-          <span v-if="scope.row.companyId === 0" style="color:#ff5722">
-            该卡未被绑定
+          <span v-if="scope.row.companyId === 0" style="color:#138fe1">
+            <span v-if="scope.row.acountsType ==='己方公司'">
+              己方公司银行卡
+            </span>
+            <span v-else style="color:#ff5722">
+              该卡未被绑定
+            </span>
           </span>
           <span v-else>
             已绑定
           </span>
         </template>
       </el-table-column>
+      <el-table-column label="账户类型" align="center" prop="acountsType" v-if="columns[0].visible" width="200"/>
+      <el-table-column label="开户名称" align="center" prop="acountsName" v-if="columns[1].visible" width="200"/>
+      <el-table-column label="银行账号" align="center" prop="bankNo" v-if="columns[2].visible" width="200"/>
       <el-table-column label="开户行" align="center" prop="bankName" v-if="columns[3].visible" width="200"/>
       <el-table-column label="公司名称" align="center" prop="companyName" v-if="columns[4].visible" width="200"/>
       <el-table-column label="余额" align="center" prop="amount" v-if="columns[5].visible" width="200"/>
@@ -102,12 +106,12 @@
                        fixed="right">
         <template slot-scope="scope">
           <el-row>
-            <el-button
-              size="mini"
-              type="text"
-              @click="handleAdjust(scope.row)"
-              v-hasPermi="['system:balanceaccounts:adjust']">银行卡调整
-            </el-button>
+            <!--            <el-button-->
+            <!--              size="mini"-->
+            <!--              type="text"-->
+            <!--              @click="handleAdjust(scope.row)"-->
+            <!--              v-hasPermi="['system:balanceaccounts:adjust']">银行卡调整-->
+            <!--            </el-button>-->
             <el-button
               size="mini"
               type="text"

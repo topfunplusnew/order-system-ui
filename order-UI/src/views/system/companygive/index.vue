@@ -82,6 +82,7 @@
         <template slot-scope="scope">
           <el-button
             size="mini"
+            type="text"
             @click="jumpBankNo(scope.row)"
           >银行卡号
           </el-button>

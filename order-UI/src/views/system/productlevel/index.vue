@@ -32,7 +32,6 @@
           <el-col :span="1.5">
             <el-button
               type="primary"
-              plain
               size="mini"
               @click="handleAddProductSort"
             >添加产品分类
@@ -41,7 +40,6 @@
           <el-col :span="1.5">
             <el-button
               type="danger"
-              plain
               size="mini"
               @click="handleAddProductLevel"
             >新增产品级别信息
@@ -530,13 +528,9 @@ export default {
       addProductLevel(excludeParams(this.addCategoryModel, this.$exclude))
         .then(res => {
           this.$message.success("添加成功~")
-          this.addProductLevelOpen = false
+          this.cancelAddProductCategory()
           this.getList()
-        }).catch(err => {
-        this.$message.error("添加失败，请重试:" + err.msg)
-      })
-      //刷新表格
-      this.getList()
+        })
     },
     //查询产品级别列表
     getList() {
