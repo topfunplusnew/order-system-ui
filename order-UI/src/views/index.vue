@@ -10,20 +10,20 @@
           </el-col>
           <el-col :span="6">
             <el-date-picker
-                v-model="queryParams.beginTime"
-                type="date"
-                size="mini"
-                value-format="yyyy-MM-dd"
-                placeholder="开始日期"
+              v-model="queryParams.beginTime"
+              type="date"
+              size="mini"
+              value-format="yyyy-MM-dd"
+              placeholder="开始日期"
             ></el-date-picker>
           </el-col>
           <el-col :span="6">
             <el-date-picker
-                v-model="queryParams.endTime"
-                type="date"
-                size="mini"
-                value-format="yyyy-MM-dd"
-                placeholder="结束日期"
+              v-model="queryParams.endTime"
+              type="date"
+              size="mini"
+              value-format="yyyy-MM-dd"
+              placeholder="结束日期"
             ></el-date-picker>
           </el-col>
           <el-col :span="2">
@@ -40,20 +40,20 @@
           </el-col>
           <el-col :span="6">
             <el-date-picker
-                v-model="queryParams.beginTime"
-                type="date"
-                size="mini"
-                value-format="yyyy-MM-dd"
-                placeholder="开始日期"
+              v-model="queryParams.beginTime"
+              type="date"
+              size="mini"
+              value-format="yyyy-MM-dd"
+              placeholder="开始日期"
             ></el-date-picker>
           </el-col>
           <el-col :span="6">
             <el-date-picker
-                v-model="queryParams.endTime"
-                type="date"
-                size="mini"
-                value-format="yyyy-MM-dd"
-                placeholder="结束日期"
+              v-model="queryParams.endTime"
+              type="date"
+              size="mini"
+              value-format="yyyy-MM-dd"
+              placeholder="结束日期"
             ></el-date-picker>
           </el-col>
           <el-col :span="2">
@@ -68,10 +68,10 @@
           <template v-slot:print>
             <el-col :span="1.5">
               <el-button
-                  plain
-                  icon="el-icon-printer"
-                  size="mini"
-                  @click="printHTML"
+                plain
+                icon="el-icon-printer"
+                size="mini"
+                @click="printHTML"
               >
               </el-button>
             </el-col>
@@ -80,11 +80,11 @@
           <template v-slot:export>
             <el-col :span="1.5">
               <el-button
-                  plain
-                  icon="el-icon-folder-opened"
-                  size="mini"
-                  @click="handleExport"
-                  v-hasPermi="['system:bankaccount:export']"
+                plain
+                icon="el-icon-folder-opened"
+                size="mini"
+                @click="handleExport"
+                v-hasPermi="['system:bankaccount:export']"
               >
               </el-button>
             </el-col>
@@ -92,76 +92,76 @@
         </right-toolbar>
         <!--        发货列表-->
         <el-table
-            id="printBox"
-            size="mini"
-            :data="tableData"
-            max-height="500"
-            show-summary
-            border
-            style="width: 100%"
-            :loading="loading"
-            :header-cell-style="{ background: '#f0f0f0', color: '#333' }"
-            :cell-style="()=>{return {padding:'2px'}}"
+          id="printBox"
+          size="mini"
+          :data="tableData"
+          max-height="500"
+          show-summary
+          border
+          style="width: 100%"
+          :loading="loading"
+          :header-cell-style="{ background: '#f0f0f0', color: '#333' }"
+          :cell-style="()=>{return {padding:'2px'}}"
         >
           <el-table-column
-              prop="orderDate"
-              label="日期"
-              show-overflow-tooltip
-              v-if="columns[0].visible"
+            prop="orderDate"
+            label="日期"
+            show-overflow-tooltip
+            v-if="columns[0].visible"
           ></el-table-column>
           <el-table-column
-              prop="companyName"
-              label="客户"
-              show-overflow-tooltip
-              v-if="columns[1].visible"
+            prop="companyName"
+            label="客户"
+            show-overflow-tooltip
+            v-if="columns[1].visible"
           ></el-table-column>
           <el-table-column
-              prop="salesman"
-              label="业务员"
-              show-overflow-tooltip
-              v-if="columns[2].visible"
+            prop="salesman"
+            label="业务员"
+            show-overflow-tooltip
+            v-if="columns[2].visible"
           ></el-table-column>
           <el-table-column
-              prop="profit"
-              label="含税利润"
-              show-overflow-tooltip
-              v-if="columns[3].visible"
+            prop="profit"
+            label="含税利润"
+            show-overflow-tooltip
+            v-if="columns[3].visible"
           ></el-table-column>
           <el-table-column
-              prop="profitNoTax"
-              label="不含税利润"
-              width="110"
-              show-overflow-tooltip
-              v-if="columns[4].visible"
+            prop="profitNoTax"
+            label="不含税利润"
+            width="110"
+            show-overflow-tooltip
+            v-if="columns[4].visible"
           ></el-table-column>
           <el-table-column
-              prop="payments"
-              label="总货款"
-              show-overflow-tooltip
-              v-if="columns[5].visible"
+            prop="payments"
+            label="总货款"
+            show-overflow-tooltip
+            v-if="columns[5].visible"
           ></el-table-column>
           <el-table-column
-              prop="paymentFactory"
-              label="出厂货款"
-              show-overflow-tooltip
-              v-if="columns[6].visible"
+            prop="paymentFactory"
+            label="出厂货款"
+            show-overflow-tooltip
+            v-if="columns[6].visible"
           ></el-table-column>
           <el-table-column
-              prop="tonnage"
-              label="吨位"
-              show-overflow-tooltip
-              v-if="columns[7].visible"
+            prop="tonnage"
+            label="吨位"
+            show-overflow-tooltip
+            v-if="columns[7].visible"
           ></el-table-column>
           <el-table-column
-              prop="address"
-              label="内勤"
-              show-overflow-tooltip
-              v-if="columns[8].visible"
+            prop="clerk"
+            label="内勤"
+            show-overflow-tooltip
+            v-if="columns[8].visible"
           ></el-table-column>
           <el-table-column
-              prop="landCarNo"
-              label="陆运车牌"
-              show-overflow-tooltip
+            prop="landCarNo"
+            label="陆运车牌"
+            show-overflow-tooltip
           >
             <template #default="scope">
               <span v-if="scope.row.landCarNo !== null">{{ scope.row.landCarNo }}</span>
@@ -170,9 +170,9 @@
             <template v-if="columns[9].visible"></template>
           </el-table-column>
           <el-table-column
-              prop="seaCarNo"
-              label="柜号"
-              show-overflow-tooltip
+            prop="seaCarNo"
+            label="柜号"
+            show-overflow-tooltip
           >
             <template #default="scope">
               <span v-if="scope.row.seaCarNo !== null">{{ scope.row.seaCarNo }}</span>
@@ -181,24 +181,24 @@
             <template v-if="columns[10].visible"></template>
           </el-table-column>
           <el-table-column
-              prop="fleet"
-              label="车队"
-              show-overflow-tooltip
-              v-if="columns[11].visible"
+            prop="fleet"
+            label="车队"
+            show-overflow-tooltip
+            v-if="columns[11].visible"
           ></el-table-column>
           <el-table-column
-              prop="freight"
-              label="运费"
-              show-overflow-tooltip
-              v-if="columns[12].visible"
+            prop="freight"
+            label="运费"
+            show-overflow-tooltip
+            v-if="columns[12].visible"
           ></el-table-column>
         </el-table>
         <pagination
-            v-show="total>0"
-            :total="total"
-            :page.sync="queryParams.pageNum"
-            :limit.sync="queryParams.pageSize"
-            @pagination="getList"
+          v-show="total>0"
+          :total="total"
+          :page.sync="queryParams.pageNum"
+          :limit.sync="queryParams.pageSize"
+          @pagination="getList"
         />
         <!--        分页-->
       </el-col>
@@ -206,28 +206,28 @@
       <!--      右侧利润-->
       <el-col :xs="24" :sm="12" :md="12" :lg="12">
         <el-table
-            height="130"
-            :empty-text="' '"
+          height="130"
+          :empty-text="' '"
         >
           <el-table-column
-              prop="date"
-              label="￥0"
-              align="center"
+            prop="date"
+            label="￥0"
+            align="center"
           >
             <el-table-column
-                prop="date"
-                label="利润总额"
+              prop="date"
+              label="利润总额"
             >
               <el-table-column
-                  prop="date"
-                  label="费用合计"
+                prop="date"
+                label="费用合计"
               ></el-table-column>
             </el-table-column>
             <el-table-column
-                label="￥0"
+              label="￥0"
             >
               <el-table-column
-                  label="￥0"
+                label="￥0"
               ></el-table-column>
             </el-table-column>
           </el-table-column>
@@ -240,6 +240,7 @@
 <script>
 import {mixin_printHTML} from "./dashboard/mixins/print";
 import {getDeliveryList} from "../api/system/statement";
+import {parseTime} from "@/utils/ruoyi";
 
 export default {
   name: "Index",
@@ -248,8 +249,8 @@ export default {
     return {
       loading: false,
       queryParams: {
-        beginTime: '',
-        endTime: '',
+        startTime: parseTime(new Date(), '{y}-{m}-{d}'),
+        endTime: parseTime(new Date(), '{y}-{m}-{d}'),
         pageNum: 1,
         pageSize: 10
       },
@@ -279,18 +280,9 @@ export default {
     }
   },
   created() {
-    this.reset()
     this.getList();
   },
   methods: {
-    reset() {
-      this.queryParams = {
-        beginTime: '',
-        endTime: '',
-        pageNum: 1,
-        pageSize: 10
-      };
-    },
     handleSearch() {
       this.getList();
     },
@@ -299,12 +291,21 @@ export default {
       getDeliveryList(this.queryParams).then(res => {
         this.tableData = res.rows;
         this.total = res.total;
+        this.reset()
         this.loading = false
       })
     },
+    reset() {
+      this.queryParams = {
+        startTime: '',
+        endTime: '',
+        pageNum: 1,
+        pageSize: 10
+      };
+    },
     handleExport() {
       this.download('statistics/export/todayOrderList', {
-        beginTime: this.queryParams.beginTime,
+        startTime: this.queryParams.beginTime,
         endTime: this.queryParams.endTime
       }, `todayOrderList${new Date().getTime()}.xlsx`)
     },
