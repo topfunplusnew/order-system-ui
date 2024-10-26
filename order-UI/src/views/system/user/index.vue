@@ -5,25 +5,25 @@
       <el-col :span="4" :xs="24">
         <div class="head-container">
           <el-input
-              v-model="deptName"
-              placeholder="请输入部门名称"
-              clearable
-              size="small"
-              prefix-icon="el-icon-search"
-              style="margin-bottom: 20px"
+            v-model="deptName"
+            placeholder="请输入部门名称"
+            clearable
+            size="small"
+            prefix-icon="el-icon-search"
+            style="margin-bottom: 20px"
           />
         </div>
         <div class="head-container">
           <el-tree
-              :data="deptOptions"
-              :props="defaultProps"
-              :expand-on-click-node="false"
-              :filter-node-method="filterNode"
-              ref="tree"
-              node-key="id"
-              default-expand-all
-              highlight-current
-              @node-click="handleNodeClick"
+            :data="deptOptions"
+            :props="defaultProps"
+            :expand-on-click-node="false"
+            :filter-node-method="filterNode"
+            ref="tree"
+            node-key="id"
+            default-expand-all
+            highlight-current
+            @node-click="handleNodeClick"
           />
         </div>
       </el-col>
@@ -33,46 +33,46 @@
                  label-width="68px">
           <el-form-item label="用户名称" prop="userName">
             <el-input
-                v-model="queryParams.userName"
-                placeholder="请输入用户名称"
-                clearable
-                style="width: 240px"
-                @keyup.enter.native="handleQuery"
+              v-model="queryParams.userName"
+              placeholder="请输入用户名称"
+              clearable
+              style="width: 240px"
+              @keyup.enter.native="handleQuery"
             />
           </el-form-item>
           <el-form-item label="手机号码" prop="phonenumber">
             <el-input
-                v-model="queryParams.phonenumber"
-                placeholder="请输入手机号码"
-                clearable
-                style="width: 240px"
-                @keyup.enter.native="handleQuery"
+              v-model="queryParams.phonenumber"
+              placeholder="请输入手机号码"
+              clearable
+              style="width: 240px"
+              @keyup.enter.native="handleQuery"
             />
           </el-form-item>
           <el-form-item label="状态" prop="status">
             <el-select
-                v-model="queryParams.status"
-                placeholder="用户状态"
-                clearable
-                style="width: 240px"
+              v-model="queryParams.status"
+              placeholder="用户状态"
+              clearable
+              style="width: 240px"
             >
               <el-option
-                  v-for="dict in dict.type.sys_normal_disable"
-                  :key="dict.value"
-                  :label="dict.label"
-                  :value="dict.value"
+                v-for="dict in dict.type.sys_normal_disable"
+                :key="dict.value"
+                :label="dict.label"
+                :value="dict.value"
               />
             </el-select>
           </el-form-item>
           <el-form-item label="创建时间">
             <el-date-picker
-                v-model="dateRange"
-                style="width: 240px"
-                value-format="yyyy-MM-dd"
-                type="daterange"
-                range-separator="-"
-                start-placeholder="开始日期"
-                end-placeholder="结束日期"
+              v-model="dateRange"
+              style="width: 240px"
+              value-format="yyyy-MM-dd"
+              type="daterange"
+              range-separator="-"
+              start-placeholder="开始日期"
+              end-placeholder="结束日期"
             ></el-date-picker>
           </el-form-item>
           <el-form-item>
@@ -84,12 +84,12 @@
         <el-row :gutter="10" class="mb8">
           <el-col :span="1.5">
             <el-button
-                type="primary"
-                plain
-                icon="el-icon-plus"
-                size="mini"
-                @click="handleAdd"
-                v-hasPermi="['system:user:add']"
+              type="primary"
+              plain
+              icon="el-icon-plus"
+              size="mini"
+              @click="handleAdd"
+              v-hasPermi="['system:user:add']"
             >新增用户信息
             </el-button>
           </el-col>
@@ -107,35 +107,35 @@
           <!--          </el-col>-->
           <el-col :span="1.5">
             <el-button
-                type="danger"
-                plain
-                icon="el-icon-delete"
-                size="mini"
-                :disabled="multiple"
-                @click="handleDelete"
-                v-hasPermi="['system:user:remove']"
+              type="danger"
+              plain
+              icon="el-icon-delete"
+              size="mini"
+              :disabled="multiple"
+              @click="handleDelete"
+              v-hasPermi="['system:user:remove']"
             >删除
             </el-button>
           </el-col>
           <el-col :span="1.5">
             <el-button
-                type="info"
-                plain
-                icon="el-icon-upload2"
-                size="mini"
-                @click="handleImport"
-                v-hasPermi="['system:user:import']"
+              type="info"
+              plain
+              icon="el-icon-upload2"
+              size="mini"
+              @click="handleImport"
+              v-hasPermi="['system:user:import']"
             >导入
             </el-button>
           </el-col>
           <el-col :span="1.5">
             <el-button
-                type="warning"
-                plain
-                icon="el-icon-download"
-                size="mini"
-                @click="handleExport"
-                v-hasPermi="['system:user:export']"
+              type="warning"
+              plain
+              icon="el-icon-download"
+              size="mini"
+              @click="handleExport"
+              v-hasPermi="['system:user:export']"
             >导出
             </el-button>
           </el-col>
@@ -197,51 +197,51 @@
           <el-table-column label="状态" align="center" key="status" v-if="columns[26].visible">
             <template slot-scope="scope">
               <el-switch
-                  v-model="scope.row.status"
-                  active-value="0"
-                  inactive-value="1"
-                  @change="handleStatusChange(scope.row)"
+                v-model="scope.row.status"
+                active-value="0"
+                inactive-value="1"
+                @change="handleStatusChange(scope.row)"
               ></el-switch>
             </template>
           </el-table-column>
           <el-table-column label="创建时间" align="center" prop="createTime" width="160" v-if="columns[27].visible">
             <template slot-scope="scope">
-              <span>{{ parseTime(scope.row.createTime,'{y}-{m}-{d}') }}</span>
+              <span>{{ parseTime(scope.row.createTime, '{y}-{m}-{d}') }}</span>
             </template>
           </el-table-column>
           <!-- 操作栏-->
           <el-table-column
-              label="操作"
-              align="center"
-              width="200"
-              class-name="small-padding fixed-width"
-              fixed="right"
+            label="操作"
+            align="center"
+            width="200"
+            class-name="small-padding fixed-width"
+            fixed="right"
           >
             <template slot-scope="scope" v-if="scope.row.userId !== 1">
               <el-button
-                  size="mini"
-                  type="warning"
-                  @click="checkRowInfo(scope.row)"
-                  v-hasPermi="['system:user:edit']"
+                size="mini"
+                type="text"
+                @click="checkRowInfo(scope.row)"
+                v-hasPermi="['system:user:edit']"
               >查看用户信息
               </el-button>
               <el-button
-                  size="mini"
-                  type="primary"
-                  @click="handleUpdate(scope.row)"
-                  v-hasPermi="['system:user:edit']"
+                size="mini"
+                type="text"
+                @click="handleUpdate(scope.row)"
+                v-hasPermi="['system:user:edit']"
               >修改
               </el-button>
               <el-button
-                  size="mini"
-                  type="danger"
-                  @click="handleDelete(scope.row)"
-                  v-hasPermi="['system:user:remove']"
+                size="mini"
+                type="text"
+                @click="handleDelete(scope.row)"
+                v-hasPermi="['system:user:remove']"
               >删除
               </el-button>
               <el-dropdown size="mini" @command="(command) => handleCommand(command, scope.row)"
                            v-hasPermi="['system:user:resetpwd', 'system:user:edit']">
-                <el-button size="mini" type="warning">更多</el-button>
+                <el-button size="mini" type="text">更多&gt;</el-button>
                 <el-dropdown-menu slot="dropdown">
                   <el-dropdown-item command="handleResetPwd" icon="el-icon-key"
                                     v-hasPermi="['system:user:resetpwd']">重置密码
@@ -256,17 +256,18 @@
         </el-table>
 
         <pagination
-            v-show="total>0"
-            :total="total"
-            :page.sync="queryParams.pageNum"
-            :limit.sync="queryParams.pageSize"
-            @pagination="getList"
+          v-show="total>0"
+          :total="total"
+          :page.sync="queryParams.pageNum"
+          :limit.sync="queryParams.pageSize"
+          @pagination="getList"
         />
       </el-col>
     </el-row>
 
     <!-- 添加或修改用户配置对话框 -->
-    <el-dialog :close-on-click-modal="false" :show-close="false" :title="title" :visible.sync="open" width="80%" append-to-body>
+    <el-dialog :close-on-click-modal="false" :show-close="false" :title="title" :visible.sync="open" width="80%"
+               append-to-body>
       <el-form ref="form" :model="form" :rules="rules" label-width="80px">
         <el-row :gutter="10">
           <el-col :span="6">
@@ -292,21 +293,21 @@
               <el-form-item label="用户性别">
                 <el-select v-model="form.sex" placeholder="请选择性别">
                   <el-option
-                      v-for="dict in dict.type.sys_user_sex"
-                      :key="dict.value"
-                      :label="dict.label"
-                      :value="dict.value"
+                    v-for="dict in dict.type.sys_user_sex"
+                    :key="dict.value"
+                    :label="dict.label"
+                    :value="dict.value"
                   ></el-option>
                 </el-select>
               </el-form-item>
               <el-form-item label="角色">
                 <el-select v-model="form.roleIds" multiple placeholder="请选择角色">
                   <el-option
-                      v-for="item in roleOptions"
-                      :key="item.roleId"
-                      :label="item.roleName"
-                      :value="item.roleId"
-                      :disabled="item.status == 1"
+                    v-for="item in roleOptions"
+                    :key="item.roleId"
+                    :label="item.roleName"
+                    :value="item.roleId"
+                    :disabled="item.status == 1"
                   ></el-option>
                 </el-select>
               </el-form-item>
@@ -320,9 +321,9 @@
               <el-form-item label="状态">
                 <el-radio-group v-model="form.status">
                   <el-radio
-                      v-for="dict in dict.type.sys_normal_disable"
-                      :key="dict.value"
-                      :label="dict.value"
+                    v-for="dict in dict.type.sys_normal_disable"
+                    :key="dict.value"
+                    :label="dict.value"
                   >{{ dict.label }}
                   </el-radio>
                 </el-radio-group>
@@ -357,10 +358,10 @@
               </el-form-item>
               <el-form-item label="出生日期">
                 <el-date-picker
-                    v-model="form.birthday"
-                    type="date"
-                    placeholder="选择出生日期"
-                    value-format="yyyy-MM-dd">
+                  v-model="form.birthday"
+                  type="date"
+                  placeholder="选择出生日期"
+                  value-format="yyyy-MM-dd">
                 </el-date-picker>
               </el-form-item>
               <el-form-item label="民族">
@@ -389,10 +390,10 @@
               </el-form-item>
               <el-form-item label="毕业时间">
                 <el-date-picker
-                    v-model="form.gradualDate"
-                    type="date"
-                    placeholder="选择毕业时间"
-                    value-format="yyyy-MM-dd">
+                  v-model="form.gradualDate"
+                  type="date"
+                  placeholder="选择毕业时间"
+                  value-format="yyyy-MM-dd">
                 </el-date-picker>
               </el-form-item>
               <el-form-item label="岗位">
@@ -404,10 +405,10 @@
               </el-form-item>
               <el-form-item label="入职时间">
                 <el-date-picker
-                    v-model="form.startDate"
-                    type="date"
-                    placeholder="选择入职时间"
-                    value-format="yyyy-MM-dd">
+                  v-model="form.startDate"
+                  type="date"
+                  placeholder="选择入职时间"
+                  value-format="yyyy-MM-dd">
                 </el-date-picker>
               </el-form-item>
               <el-form-item label="备注">
@@ -457,18 +458,19 @@
     </el-dialog>
 
     <!-- 用户导入对话框 -->
-    <el-dialog :close-on-click-modal="false" :show-close="false" :title="upload.title" :visible.sync="upload.open" width="400px" append-to-body>
+    <el-dialog :close-on-click-modal="false" :show-close="false" :title="upload.title" :visible.sync="upload.open"
+               width="400px" append-to-body>
       <el-upload
-          ref="upload"
-          :limit="1"
-          accept=".xlsx, .xls"
-          :headers="upload.headers"
-          :action="upload.url + '?updateSupport=' + upload.updateSupport"
-          :disabled="upload.isUploading"
-          :on-progress="handleFileUploadProgress"
-          :on-success="handleFileSuccess"
-          :auto-upload="false"
-          drag
+        ref="upload"
+        :limit="1"
+        accept=".xlsx, .xls"
+        :headers="upload.headers"
+        :action="upload.url + '?updateSupport=' + upload.updateSupport"
+        :disabled="upload.isUploading"
+        :on-progress="handleFileUploadProgress"
+        :on-success="handleFileSuccess"
+        :auto-upload="false"
+        drag
       >
         <i class="el-icon-upload"></i>
         <div class="el-upload__text">将文件拖到此处，或<em>点击上传</em></div>
@@ -492,9 +494,9 @@
 
     <!--    查看个人信息-->
     <el-dialog :close-on-click-modal="false" :show-close="false"
-        title="用户信息查看"
-        :visible.sync="checkUserDialogVisible"
-        width="30%">
+               title="用户信息查看"
+               :visible.sync="checkUserDialogVisible"
+               width="30%">
       <el-descriptions class="margin-top" title="用户信息查看" :column="3" border>
         <el-descriptions-item>
           <template slot="label">
@@ -793,7 +795,7 @@ export default {
   created() {
     this.getList();
     if (localStorage.getItem('user-columns') === 'null'
-        || !localStorage.getItem('user-columns')) {
+      || !localStorage.getItem('user-columns')) {
       //设置localStorage
       localStorage.setItem("user-columns", JSON.stringify(this.columns))
     } else {
@@ -815,10 +817,10 @@ export default {
     getList() {
       this.loading = true;
       listUser(this.addDateRange(this.queryParams, this.dateRange)).then(response => {
-            this.userList = response.rows;
-            this.total = response.total;
-            this.loading = false;
-          }
+          this.userList = response.rows;
+          this.total = response.total;
+          this.loading = false;
+        }
       );
     },
     /** 查询部门下拉树结构 */
