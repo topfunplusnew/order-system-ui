@@ -54,7 +54,7 @@
       <el-table-column show-overflow-tooltip label="行操作" align="center" class-name="small-padding fixed-width"
                        width="100px" fixed="left">
         <template slot-scope="scope">
-          <el-dropdown size="mini" split-button type="primary">
+          <el-dropdown size="mini" split-button type="text">
             操作
             <el-dropdown-menu slot="dropdown">
               <el-dropdown-item>
@@ -160,7 +160,7 @@
           </el-row>
           <el-row v-else>
             <el-row>
-              <el-button type="warning" @click="handleCheck(scope.row)" size="mini"
+              <el-button type="text" @click="handleCheck(scope.row)" size="mini"
                          v-hasPermi="['system:goodsorder:audit']">审核
               </el-button>
             </el-row>
@@ -168,23 +168,8 @@
         </template>
       </el-table-column>
       <el-table-column show-overflow-tooltip label="开票状态" align="center" prop="invoiceState"
-                       v-if="columns[14].visible" width="120px">
-        <template #default="scope">
-          <el-row v-if="scope.row.invoiceState === '已开票'">
-            <el-tag type="success">已开票</el-tag>
-          </el-row>
-          <el-row v-else-if="scope.row.invoiceState === '未开票'">
-            <el-row>
-              <el-tag type="danger">未开票</el-tag>
-            </el-row>
-          </el-row>
-          <el-row v-else>
-            <el-row>
-              <el-tag type="warning">部分开票</el-tag>
-            </el-row>
-          </el-row>
-        </template>
-      </el-table-column>
+                       v-if="columns[14].visible" width="120px"/>
+
       <el-table-column show-overflow-tooltip label="附件" align="center" prop="path" v-if="columns[15].visible"
                        width="150px">
         <template #default="scope">
@@ -194,7 +179,7 @@
             无
           </el-row>
           <el-row v-else>
-            <el-button size="mini" type="success" @click="checkAttachment(scope.row,'path')">
+            <el-button size="mini" type="text" @click="checkAttachment(scope.row,'path')">
               查看
             </el-button>
           </el-row>
@@ -204,17 +189,16 @@
                        v-if="columns[16].visible" width="120px">
         <template slot-scope="scope">
           <el-row v-if="scope.row.paymentState === '未申请'">
-            <el-button size="mini" type="primary" @click="applyForPayment(scope.row)">申请打款</el-button>
+            <el-button size="mini" type="text" @click="applyForPayment(scope.row)">申请打款</el-button>
           </el-row>
           <el-row v-if="scope.row.paymentState === '审核中'">
-            <el-tag type="warning">审核中</el-tag>
+            审核中
           </el-row>
           <el-row v-if="scope.row.paymentState === '未打款'">
-            <el-tag type="warning">订单未打款</el-tag>
             <el-button>前往打款</el-button>
           </el-row>
           <el-row v-if="scope.row.paymentState === '已打款'">
-            <el-tag type="success">订单已打款</el-tag>
+            订单已打款
           </el-row>
         </template>
       </el-table-column>
@@ -226,7 +210,7 @@
             无
           </el-row>
           <el-row v-else>
-            <el-button size="mini" type="success" @click="checkAttachment(scope.row,'receiveProof')">
+            <el-button size="mini" type="text" @click="checkAttachment(scope.row,'receiveProof')">
               查看
             </el-button>
           </el-row>
@@ -236,12 +220,11 @@
                        v-if="columns[18].visible" width="100px"/>
       <el-table-column show-overflow-tooltip label="调整日期" align="center" prop="adjustDate"
                        width="100px"/>
-      <el-table-column show-overflow-tooltip label="是否可编辑" align="center" prop="isedit" v-if="columns[19].visible"
+      <el-table-column show-overflow-tooltip label="是否可编辑" align="center" prop="isedit"
+                       v-if="columns[19].visible"
                        width="100px">
         <template slot-scope="scope">
-          <el-tag
-            :type="scope.row.isedit === 0 ? 'danger' :'success'">{{ scope.row.isedit === 0 ? "否" : "是" }}
-          </el-tag>
+          {{ scope.row.isedit === 0 ? "否" : "是" }}
         </template>
       </el-table-column>
       <!--      客户供应商是否开票-->
@@ -251,13 +234,13 @@
         <template #default="scope">
           <el-row v-if="scope.row.customerIsInvoice === 1">
             <el-row>
-              <el-button type="success" size="mini" @click="updateOrderItemVisibleCustomerInvoice(scope.row)">继续开票
+              <el-button type="text" size="mini" @click="updateOrderItemVisibleCustomerInvoice(scope.row)">继续开票
               </el-button>
             </el-row>
           </el-row>
           <el-row v-else>
             <el-row>
-              <el-button type="warning" size="mini" @click="updateOrderItemVisibleCustomerInvoice(scope.row)">前去开票
+              <el-button type="text" size="mini" @click="updateOrderItemVisibleCustomerInvoice(scope.row)">前去开票
               </el-button>
             </el-row>
           </el-row>
@@ -269,13 +252,13 @@
         <template #default="scope">
           <el-row v-if="scope.row.isSupplierInvoice === 1">
             <el-row>
-              <el-button type="success" size="mini" @click="updateOrderItemVisibleCustomerInvoice(scope.row)">继续开票
+              <el-button type="text" size="mini" @click="updateOrderItemVisibleCustomerInvoice(scope.row)">继续开票
               </el-button>
             </el-row>
           </el-row>
           <el-row v-else>
             <el-row>
-              <el-button type="warning" size="mini" @click="updateOrderItemVisibleSupplierInvoice(scope.row)">前去开票
+              <el-button type="text" size="mini" @click="updateOrderItemVisibleSupplierInvoice(scope.row)">前去开票
               </el-button>
             </el-row>
           </el-row>
@@ -289,24 +272,26 @@
         <template slot-scope="scope">
           <el-button
             size="mini"
+            type="text"
             @click="handleOrder1(scope.row)"
             v-hasPermi="['system:adjustOrders:edit']"
           >发货单
           </el-button>
           <el-button
             size="mini"
-            type="primary"
+            type="text"
             @click="checkPreviousOrder(scope.row)"
           >查看原订单
           </el-button>
           <el-button
             size="mini"
-            type="primary"
+            type="text"
             @click="handleUpload(scope.row)"
           >上传附件
           </el-button>
           <el-button
             size="mini"
+            type="text"
             @click="handleCommit(scope.row)"
             v-hasPermi="['system:adjustOrders:remove']"
           >上传收到条
@@ -317,7 +302,7 @@
                        width="100px"
                        fixed="right">
         <template slot-scope="scope">
-          <el-dropdown size="mini" split-button type="primary">
+          <el-dropdown size="mini" split-button type="text">
             操作
             <el-dropdown-menu slot="dropdown">
               <el-dropdown-item>

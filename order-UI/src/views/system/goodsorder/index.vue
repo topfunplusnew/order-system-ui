@@ -288,6 +288,7 @@
         <template slot-scope="scope">
           <el-button
             size="mini"
+            type="text"
             @click="handleOrder1(scope.row)"
             v-hasPermi="['system:goodsorder:edit']"
           >发货单
@@ -295,18 +296,19 @@
           <el-button
             :disabled="scope.row.isAdjusted ==='是'"
             size="mini"
-            type="primary"
+            type="text"
             @click="handleOrderItemInfo(scope.row)"
           >调整单
           </el-button>
           <el-button
             size="mini"
-            type="primary"
+            type="text"
             @click="handleUpload(scope.row)"
           >上传附件
           </el-button>
           <el-button
             size="mini"
+            type="text"
             @click="handleCommit(scope.row)"
             v-hasPermi="['system:goodsorder:remove']"
           >上传收到条
@@ -317,7 +319,7 @@
                        width="100px"
                        fixed="right">
         <template slot-scope="scope">
-          <el-dropdown size="mini" split-button type="primary">
+          <el-dropdown size="mini" split-button type="text">
             操作
             <el-dropdown-menu slot="dropdown">
               <el-dropdown-item>
