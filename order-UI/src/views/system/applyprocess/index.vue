@@ -111,13 +111,9 @@ export default {
     },
     //重新刷新审核树
     refreshApplyCheckInfo(applyID) {
-      this.$wait()
       //获取所有的审核流程
       listAuditInfoGroup({applyID: applyID}).then(res => {
         this.auditInfoList = res.rows;
-        this.$close()
-      }).catch(err => {
-        this.$close()
       })
     },
     //分页获取列表

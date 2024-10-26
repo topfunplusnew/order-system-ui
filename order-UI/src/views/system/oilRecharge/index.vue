@@ -351,6 +351,7 @@ export default {
     listOilCard,
     //加油卡付款申请
     addPaymentApply(row) {
+      console.log(row)
       this.tid = row.id;
       this.needMoney = row.rechargeMoney;
       this.needInfo = row;

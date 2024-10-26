@@ -85,8 +85,10 @@ export default {
 
     //审核
     handleCheckState(item) {
+      console.log('审核个体信息', item)
       //根据tableName来决定给哪个发请求
-      this.checkWithTableName(item.paymentApply.tableName, item.paymentApply.tID)
+      // todo tid? tID?
+      this.checkWithTableName(item.paymentApply.tableName, item.paymentApply.tid)
 
       //赋值 先拿到付款申请对象
       this.currentCheckPaymentApply = item.paymentApply
