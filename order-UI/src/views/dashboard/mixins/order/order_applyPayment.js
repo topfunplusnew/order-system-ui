@@ -13,7 +13,7 @@ export var mixin_order_applyPayment = {
   methods: {
     // 订单申请打款
     applyForPayment(row) {
-      this.needMoney = row.allPayments;
+      this.needMoney = row.allPayments || 0
       this.paymentApplyVisible = true;
       this.tID = row.id;
     },

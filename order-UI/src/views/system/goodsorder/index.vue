@@ -1,8 +1,11 @@
 <!--订单页面-->
 <template>
   <div class="app-container">
+    <!--    这是框架自带的搜索模组，封装成了组件并且放在与index.vue同级目录下-->
     <QuerySearchBar :handle-query="handleQuery" :options="options" :options-invoice="optionsInvoice"
                     :query-params="queryParams" :show-search="showSearch"/>
+
+    <!--    搜索区域-->
     <el-row :gutter="10" class="mb8">
       <el-col :span="1.5">
         <el-button icon="el-icon-refresh" size="mini" @click="resetQuery">刷新</el-button>
@@ -17,6 +20,7 @@
         </el-button>
       </el-col>
 
+      <!--      右侧的工具栏-->
       <right-toolbar :showSearch.sync="showSearch" @queryTable="getList" :columns="columns">
         <template v-slot:print>
           <el-col :span="1.5">
@@ -43,7 +47,9 @@
         </template>
       </right-toolbar>
     </el-row>
-    <!--    表格列-->
+
+
+    <!--    表格列 数据大量展示-->
     <el-table fit border v-loading="loading" :data="goodsOrderList" @selection-change="handleSelectionChange"
               id="printBox" v-horizontal-scroll="'always'" @header-dragend="changeColWidth"
               max-height="750" size="mini" :cell-style="()=>{return {padding:'2px'}}">
@@ -350,6 +356,8 @@
         </template>
       </el-table-column>
     </el-table>
+
+    <!--    分页组件-->
     <pagination
       v-show="total>0"
       :total="total"
@@ -358,46 +366,44 @@
       @pagination="getList"
     />
 
-    <!--        点击查看某个订单的弹窗   -->
+
+    <!--    因为一个组件渲染太多组件会导致卡顿，所以将组件封装后，并将逻辑放入对应的混入文件中 混入对应文件在views/dashboard/mixins/order-->
+    <!--        点击查看某个订单的弹窗  mixin_order_checkOrder  -->
     <CheckOrder :check-order-visible="checkOrderVisible" :order-info="orderInfo" @close="closeCheckOrderDialog"/>
 
 
-    <!--    点击调整单的弹窗-->
-    <el-dialog :close-on-click-modal="false" :show-close="false"
-               title="提示"
-               :visible.sync="handleOrderVisible"
+    <!--    点击调整单的弹窗  mixin_order_adjustOrder-->
+    <el-dialog :close-on-click-modal="false" :show-close="false" title="提示" :visible.sync="handleOrderVisible"
                width="30%">
       <span>是否将订单设置为调整单?</span>
       <span slot="footer" class="dialog-footer">
-    <el-button @click="handleOrderVisible = false">取 消</el-button>
-    <el-button type="primary" @click="submitChangeOrder">确 定</el-button>
-  </span>
+        <el-button @click="handleOrderVisible = false">取 消</el-button>
+        <el-button type="primary" @click="submitChangeOrder">确 定</el-button>
+      </span>
     </el-dialog>
 
-    <!--    点击发货单的弹窗 -->
+    <!--    点击发货单的弹窗  mixin_order_deliverGoods -->
     <OrderGiven :order1-visible="Order1Visible" @close="closeOrderGivenDialog"/>
 
-    <!--    上传附件的弹窗 -->
+    <!--    上传附件的弹窗  mixin_order_uploadFiles -->
     <UploadPath :before-upload="beforeUpload" :file-list="fileList" :handle-upload-visible="handleUploadVisible"
                 :headers="headers" :submit-upload-all-files="()=>submitUploadAllFiles('path')"
                 :upload-file-url="uploadFileUrl" @close="closeUploadPathDialog"/>
 
-    <!--    上传收到条的弹窗-->
+    <!--    上传收到条的弹窗 mixin_order_uploadFiles -->
     <UploadCommit :before-upload="beforeUpload" :file-list="fileList" :handle-commit-visible="handleCommitVisible"
                   :headers="headers" :submit-upload-all-files="()=>submitUploadAllFiles('receiveProof')"
                   :upload-file-url="uploadFileUrl" @close="closeUploadCommitDialog"/>
 
-    <!--    添加订单 || 修改订单对话框-->
+    <!--    添加订单 || 修改订单对话框  mixin_order_add -->
     <InfoDialog :title="orderTitle" :visible.sync="orderItemVisible">
       <template #info>
-        <OrderForm @close-dialog="closeDialog"
-                   :submitInfo="submitInfo"
-                   :orderId="orderId"/>
+        <OrderForm @close-dialog="closeDialog" :submitInfo="submitInfo" :orderId="orderId"/>
       </template>
     </InfoDialog>
 
 
-    <!--    陆运费和海运费申请-->
+    <!--    陆运费和海运费申请  mixin_order_freeApply -->
     <el-dialog :close-on-click-modal="false" :show-close="false"
                title="陆运费申请"
                :visible.sync="landFreeDialogVisible"
@@ -407,7 +413,7 @@
       </keep-alive>
     </el-dialog>
 
-    <!--    海运费申请-->
+    <!--    海运费申请  mixin_order_freeApply -->
     <el-dialog :close-on-click-modal="false" :show-close="false"
                title="海运费申请"
                :visible.sync="seaFreeDialogVisible"
@@ -418,7 +424,7 @@
     </el-dialog>
 
 
-    <!--    订单货物详情-->
+    <!--    订单货物详情  mixin_order_goodsItemInfo -->
     <el-dialog :close-on-click-modal="false" :show-close="false"
                title="订单货物详情"
                :visible.sync="checkOrderDetailInfoVisible"
@@ -432,7 +438,7 @@
     </el-dialog>
 
 
-    <!--    开发票-->
+    <!--    开发票  mixin_order_Invoice -->
     <Invoice :check-rules="CheckRules" :handle-commit-back-company="handleCommitBackCompany"
              :handle-update-company-name="handleUpdateCompanyName"
              :invoiceupdate-order-item-visible-visible="invoiceupdateOrderItemVisibleVisible"
@@ -443,7 +449,7 @@
              :maxInvent="maxInvent" @resetAmount="resetAmount"/>
 
 
-    <!--    订单打款申请 -->
+    <!--    订单打款申请  mixin_order_applyPayment -->
     <OrderMoneyReceive :table-name="TableName" :handle-close-apply="handleCloseApply" :need-money="needMoney"
                        :payment-apply-visible="paymentApplyVisible" :t-i-d="tID"/>
 
@@ -458,7 +464,7 @@
     </el-dialog>
 
 
-    <!-- 订单历史信息查看-->
+    <!-- 订单历史信息查看  mixin_order_orderHistory -->
     <OrderHistoryCheck :active-names="activeNames" :check-history-order-visible="checkHistoryOrderVisible"
                        :checkcurrent-order-item-info="checkcurrentOrderItemInfo"
                        :order-history-info-list="orderHistoryInfoList"
@@ -474,7 +480,6 @@
 <script>
 import {
   delGoodsOrder,
-  listGoodsOrder,
 } from "@/api/system/goodsOrder";
 import OrderForm from "@/views/dashboard/components/goodsOrder/OrderForm.vue";
 import {mapGetters} from "vuex";
@@ -591,12 +596,11 @@ export default {
       form: {},
       // 表单校验
       rules: {},
-
-
     };
   },
   created() {
     this.getList();
+    // 设置显示隐藏列的本地存储
     if (localStorage.getItem('goodsorder-columns') === 'null'
       || !localStorage.getItem('goodsorder-columns')) {
       localStorage.setItem("goodsorder-columns", JSON.stringify(this.columns))
@@ -604,10 +608,8 @@ export default {
       this.columns = JSON.parse(localStorage.getItem('goodsorder-columns'));
     }
   },
-  mounted() {
-  },
-
   computed: {
+    // TableName中对应付款中的表名 是一个枚举类
     TableName() {
       return TableName
     },
@@ -615,6 +617,7 @@ export default {
     ...mapGetters(['currentOrderInfo']) // 拿到暂存里的订单信息
   },
   watch: {
+    // 监听显示隐藏列的改变
     columns: {
       handler: (newVal) => {
         localStorage.setItem("goodsorder-columns", JSON.stringify(newVal))
@@ -624,7 +627,9 @@ export default {
     // 监听整个开票表单 如果有变化 自动监听计算票点金额
     'updateOrderItemVisibleTitleInfo': {
       handler(val) {
-        this.updateOrderItemVisibleTitleInfo.ticketPointAmount = Number(this.updateOrderItemVisibleTitleInfo.invoiceAmount * this.updateOrderItemVisibleTitleInfo.ticketPoint).toFixed(3)
+        const res = this.updateOrderItemVisibleTitleInfo.invoiceAmount * this.updateOrderItemVisibleTitleInfo.ticketPoint
+        this.updateOrderItemVisibleTitleInfo.ticketPointAmount = Number(res)
+          .toFixed(3)
       },
       deep: true,
       immediate: true,
@@ -674,6 +679,7 @@ export default {
 </script>
 <style lang="scss">
 
+//对于订单表格中的供应商的样式设计
 .item {
   margin-right: 5px; /* 添加一些间距 */
   margin-top: 5px;
