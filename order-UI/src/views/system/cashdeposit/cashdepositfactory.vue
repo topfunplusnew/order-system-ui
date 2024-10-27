@@ -114,7 +114,7 @@
           <el-row>
             <el-button
               size="mini"
-              type="warning"
+              type="text"
               @click="applyForPayment(scope.row)"
               v-if="scope.row.checkState ==='未申请'"
             >申请付款
@@ -128,7 +128,7 @@
             </el-button>
             <el-button
               size="mini"
-              type="success"
+              type="text"
               @click="handleGetBackMoney(scope.row)"
               v-hasPermi="['system:lendmoney:remove']"
             >收回资金
