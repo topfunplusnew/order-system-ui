@@ -108,8 +108,7 @@ export var mixin_payment_apply = {
       // 如果传入的必须自动填充的金额大于等于0 则自动填充 且无法修改
       if (this.needMoney >= 0) {
         this.form.moneyAmount = this.needMoney;
-        // 如果传入的金额大于0 那么就无法修改
-        this.inputDisabled = (this.needMoney != 0)
+        this.inputDisabled = true;
       }
     },
   },

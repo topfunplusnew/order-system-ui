@@ -77,7 +77,7 @@
         <template slot-scope="scope">
           <el-button
             size="mini"
-            type="success"
+            type="text"
             @click="checkBankInfo(scope.row)"
           >查看银行卡
           </el-button>
