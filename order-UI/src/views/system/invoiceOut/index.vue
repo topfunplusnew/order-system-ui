@@ -192,10 +192,10 @@
           <el-input v-model="invoiceAmount" placeholder="请输入票点金额"/>
         </el-form-item>
         <el-form-item label="银行回执附件">
-          <file-upload @input="handleCommitUpload"/>
+          <file-upload @input="handleCommitUpload" ref="fileUploader1"/>
         </el-form-item>
         <el-form-item label="发票单">
-          <file-upload @input="handleCommitUploadInvoiceAttachments"/>
+          <file-upload @input="handleCommitUploadInvoiceAttachments" ref="fileUploader2"/>
         </el-form-item>
         <el-form-item label="备注" prop="comments">
           <el-input v-model="form.comments" placeholder="请输入备注"/>
@@ -233,7 +233,7 @@ import reLength from "../../dashboard/mixins/reLength";
 export default {
   name: "InvoiceOut",
   components: {CheckFiles, OrderInfos, SearchOption},
-  mixins: [mixin_printHTML,reLength],
+  mixins: [mixin_printHTML, reLength],
   data() {
     return {
       // 遮罩层
@@ -371,6 +371,9 @@ export default {
     // 取消按钮
     cancel() {
       this.open = false;
+      // 清空两个上传附件显示的文件列表
+      this.$refs.fileUploader1.clearFileList();
+      this.$refs.fileUploader2.clearFileList();
       this.reset();
     },
     // 表单重置
@@ -460,6 +463,9 @@ export default {
             updateInvoiceOut(this.form).then(response => {
               this.$modal.msgSuccess("修改成功");
               this.open = false;
+              // 清空两个上传附件显示的文件列表
+              this.$refs.fileUploader1.clearFileList();
+              this.$refs.fileUploader2.clearFileList();
               this.getList();
             });
           } else {
@@ -467,6 +473,9 @@ export default {
             addInvoiceOut(this.form).then(response => {
               this.$modal.msgSuccess("新增成功");
               this.open = false;
+              // 清空两个上传附件显示的文件列表
+              this.$refs.fileUploader1.clearFileList();
+              this.$refs.fileUploader2.clearFileList();
               this.getList();
             });
           }

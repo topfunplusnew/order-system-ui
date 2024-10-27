@@ -195,7 +195,15 @@ export default {
         strs += list[i].url + separator;
       }
       return strs != '' ? strs.substr(0, strs.length - 1) : '';
-    }
+    },
+    // // 清空文件列表 主要用于表单提交后清除上传组件参与的文件列表
+    clearFileList() {
+      this.fileList = [];
+      this.emitFileList();
+    },
+    emitFileList() {
+      this.$emit("input", this.listToString(this.fileList));
+    },
   }
 };
 </script>
