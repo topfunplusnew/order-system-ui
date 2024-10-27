@@ -176,7 +176,6 @@
       </div>
     </el-dialog>
 
-
     <!--    加油卡付款申请-->
     <el-dialog :close-on-click-modal="false" :show-close="false" title="加油卡付款申请"
                :visible.sync="paymentApplyVisible" width="500px">

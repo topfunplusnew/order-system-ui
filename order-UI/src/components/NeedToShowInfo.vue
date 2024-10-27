@@ -8,6 +8,7 @@ import BORROWMONEY from "@/components/NeedToShow/BORROWMONEY.vue";
 import ORDER_FREIGHT from "@/components/NeedToShow/ORDER_FREIGHT.vue";
 import OIL_RECHARGE from "@/components/NeedToShow/OIL_RECHARGE.vue";
 import INVOICE_IN from "@/components/NeedToShow/INVOICE_IN.vue";
+import GOODS_ORDER from "./NeedToShow/GOODS_ORDER.vue";
 
 export default {
   name: "needToShowInfo",
@@ -48,6 +49,10 @@ export default {
         case TableName.INVOICE_IN: {
           return INVOICE_IN
         }
+        // 如果是订单打款
+        case TableName.GOODS_ORDER: {
+          return GOODS_ORDER
+        }
       }
     }
   },
@@ -73,6 +78,10 @@ export default {
         // 如果是发票购入
         case TableName.INVOICE_IN: {
           return INVOICE_IN
+        }
+        // 如果是订单打款
+        case TableName.GOODS_ORDER: {
+          return GOODS_ORDER
         }
       }
     },

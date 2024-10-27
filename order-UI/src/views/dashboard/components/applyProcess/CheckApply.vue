@@ -1,8 +1,10 @@
 <!--审核弹窗-->
 <script>
 import {updateAuditInfo} from "@/api/system/auditInfo";
+import CheckFiles from "../../../../components/CheckFiles.vue";
 
 export default {
+  components: {CheckFiles},
   props: {
     //付款信息
     paymentApplyInfo: {},
@@ -94,7 +96,7 @@ export default {
           {{ paymentApplyInfo.reason }}
         </el-descriptions-item>
         <el-descriptions-item label="附件">
-          {{ paymentApplyInfo.attachment }}
+          <CheckFiles :path="paymentApplyInfo.attachment"/>
         </el-descriptions-item>
       </el-descriptions>
     </el-row>

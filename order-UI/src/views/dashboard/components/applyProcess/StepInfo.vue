@@ -9,6 +9,7 @@ import {getBorrowedMoney} from "@/api/system/borrowedMoney";
 import NeedToShowInfo from "@/components/NeedToShowInfo.vue";
 import {getOilRecharge} from "@/api/system/oilRecharge";
 import {getInvoiceIn} from "@/api/system/invoiceIn";
+import {getGoodsOrder} from "../../../../api/system/goodsOrder";
 
 export default {
   name: "StepInfo",
@@ -141,9 +142,14 @@ export default {
             this.needToShowInfo = res.data
           })
           break;
-
+        // 发票买入
         case TableName.INVOICE_IN:
           getInvoiceIn(tID).then(res => {
+            this.needToShowInfo = res.data
+          })
+          break;
+        case TableName.GOODS_ORDER:
+          getGoodsOrder(tID).then(res => {
             this.needToShowInfo = res.data
           })
           break;

@@ -223,7 +223,7 @@ export default {
           <template #default="scope">
             <span v-if="scope.row.attachment === '' || scope.row.attachment=== null">无附件</span>
             <span v-else>
-          <el-button size="mini" type="success" @click="checkFile(scope.row)">
+          <el-button size="mini" type="text" @click="checkFile(scope.row)">
              查看附件
           </el-button>
           </span>
@@ -243,7 +243,7 @@ export default {
           label="操作"
           width="80">
           <template slot-scope="scope">
-            <el-button @click="handleCheckInfo(scope.row)" type="primary" size="mini">查看</el-button>
+            <el-button @click="handleCheckInfo(scope.row)" type="text" size="mini">查看</el-button>
           </template>
         </el-table-column>
         <el-table-column

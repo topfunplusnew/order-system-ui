@@ -1,8 +1,8 @@
 {
-  "name": "ruoyi",
+  "name": "order0434",
   "version": "3.8.8",
-  "description": "若依管理系统",
-  "author": "若依",
+  "description": "订单管理系统",
+  "author": "0434实验室",
   "license": "MIT",
   "scripts": {
     "dev": "vue-cli-service serve",
