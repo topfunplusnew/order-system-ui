@@ -11,7 +11,7 @@ const port = process.env.port || process.env.npm_config_port || 40080; // 端口
 
 module.exports = {
   publicPath: process.env.NODE_ENV === "production" ? "/" : "/",
-  outputDir: "dist",
+  outputDir: "ordersdist",
   assetsDir: "static",
   lintOnSave: process.env.NODE_ENV === "development",
   productionSourceMap: false,
@@ -22,8 +22,8 @@ module.exports = {
     open: true,
     proxy: {
       [process.env.VUE_APP_BASE_API]: {
-        // target: `https://bak.xuni.rocks`,
-        target: 'http://24.233.1.45:8080',
+        target: `https://bak.xuni.rocks`,
+        // target: 'http://24.233.1.45:8080',
         // target: 'http://localhost:8080',
         changeOrigin: true,
         pathRewrite: {

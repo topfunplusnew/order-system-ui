@@ -25,7 +25,7 @@ export default {
   mixins: [mixin_form_fillInfo],
   data() {
     return {
-      // 订单基本信息 由此组件维护 而订单中的货物的信息 由vuex中的订单货物列表orderItemList维护
+      // 单个订单基本信息 由此组件维护 而订单中的货物的信息 由vuex中的订单货物列表orderItemList维护
       orderInfo: {},
       //海运还是陆运
       isLand: false,
@@ -107,7 +107,12 @@ export default {
     },
     // 点击添加货物
     addOrderItem() {
-      this.$store.commit('order/addsOrderItem', {...this.orderItemInfo, orderIndex: this.orderNums})
+      // 需要添加的货物的信息 后续可能会加入更多
+      const temp = {
+        orderIndex: this.orderNums
+      }
+      console.log('每个订单货物都会添加如下信息>', temp)
+      this.$store.commit('order/addsOrderItem', temp)
       this.orderNums++;
     },
     //删除订单详情
@@ -120,18 +125,22 @@ export default {
     //订单列表的对象封装一个，订单详情有两个一样的对象 对应供应商发货和仓库发货
     submitOrder() {
       if (!this.orderId) {
-        this.orderInfo.orderDetailList = this.orderItemList; //从vuex拿到订单详细列表 加入到订单信息中
-        //订单详情添加客户信息
-        for (let i = 0; i < this.orderItemList.length; i++) {
-          let item = this.orderItemList[i];
+        //从vuex拿到订单详细列表 加入到订单信息中
+        this.orderInfo.orderDetailList = this.orderItemList;
+        // 对每一个订单添加客户信息和时间
+        const updateOrderItem = (item) => {
           item.customerID = this.orderInfo.customerID;
           item.customer = this.orderInfo.customer;
-          //是否含税
-          item.orderDate = parseTime(new Date(), '{y}-{m}-{d}')
+          item.orderDate = parseTime(new Date(), '{y}-{m}-{d}');
         }
+        // 对订单货物列表的每一个货物都执行这个操作
+        this.orderItemList.forEach(item => updateOrderItem(item));
+        // 添加订单信息
         addGoodsOrder({...this.orderInfo, PaymentState: ''}).then(res => {
           this.$message.success('订单提交成功')
-          this.resetOrderInfo() // 清空订单列表基础信息
+          // 清空订单列表基础信息
+          this.resetOrderInfo()
+          // 清除状态
           this.$store.commit('order/clearOrderItemList');
           this.$emit('close-dialog');
           this.isSea = false
@@ -147,14 +156,15 @@ export default {
         // 先拿到订单货物信息
         this.orderInfo.orderDetailList = this.orderItemList; //从vuex拿到订单详细列表 加入到订单信息中
         //订单详情添加客户信息
-        for (let i = 0; i < this.orderItemList.length; i++) {
-          let item = this.orderItemList[i];
-          item.customerID = this.orderInfo.customerID;
-          item.customer = this.orderInfo.customer;
-          item.isIncludeTaxFactory = item.isIncludeTaxFactory === '是' ? '1' : '0';
-          item.isIncludeTaxSale = item.isIncludeTaxSale === '是' ? '1' : '0';
-          item.orderDate = parseTime(new Date(), '{y}-{m}-{d}')
-        }
+        const formatOrderItem = item => ({
+          customerID: this.orderInfo.customerID,
+          customer: this.orderInfo.customer,
+          isIncludeTaxFactory: item.isIncludeTaxFactory === '是' ? '1' : '0',
+          isIncludeTaxSale: item.isIncludeTaxSale === '是' ? '1' : '0',
+          orderDate: parseTime(new Date(), '{y}-{m}-{d}')
+        });
+        // 对每一个货物都添加
+        this.orderItemList.forEach(item => Object.assign(item, formatOrderItem(item)));
         this.orderInfo = excludeParams(this.orderInfo, this.$exclude)
         // 修改订单
         updateGoodsOrder({
@@ -389,7 +399,7 @@ export default {
           货物个数:{{ orderNums }}
         </el-button>
       </div>
-      <!--      如果有-->
+      <!--      如果有订单信息  orderItemList是存储的货物列表 -->
       <div v-if="orderItemList.length!==0">
         <div v-for="(item,index) in orderItemList" :key="index">
           <transition name="fade">
