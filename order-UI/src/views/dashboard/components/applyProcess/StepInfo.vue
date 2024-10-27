@@ -8,6 +8,7 @@ import {getOrderFreight} from "@/api/system/orderFreight";
 import {getBorrowedMoney} from "@/api/system/borrowedMoney";
 import NeedToShowInfo from "@/components/NeedToShowInfo.vue";
 import {getOilRecharge} from "@/api/system/oilRecharge";
+import {getInvoiceIn} from "@/api/system/invoiceIn";
 
 export default {
   name: "StepInfo",
@@ -137,6 +138,12 @@ export default {
         // 油卡充值
         case TableName.OIL_RECHARGE:
           getOilRecharge(tID).then(res => {
+            this.needToShowInfo = res.data
+          })
+          break;
+
+        case TableName.INVOICE_IN:
+          getInvoiceIn(tID).then(res => {
             this.needToShowInfo = res.data
           })
           break;

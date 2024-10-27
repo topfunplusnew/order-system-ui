@@ -22,16 +22,20 @@ export var mixin_payment_watcher = {
     // 监听银行卡的变化 如果传入的银行卡信息有变化 就自动填充
     'needInfo.bankNo': {
       handler(val) {
+        // 如果传入的银行卡是空的就直接返回
         if (val === undefined) {
-          console.log('val为undefined')
+          this.$message.warning('无银行卡相关信息')
           return
         }
-        listBankAccount({
+        // 否则去查询银行卡数据
+        const search = {
           bankNo: this.needInfo.bankNo,
           bankName: this.needInfo.bankName,
           acountsName: this.needInfo.acountsName
-        })
+        }
+        listBankAccount(search)
           .then(res => {
+            // 如果没有查到 那么就提示 并且清空数据
             if (res.rows.length === 0) {
               this.$message.error('未查询到该银行卡信息')
               this.form.otherAcountsName = ''
@@ -78,6 +82,9 @@ export var mixin_payment_watcher = {
         }
         if (val === 'orderfreight') {
           this.form.companyType = '司机'
+        }
+        if (val === 'invoicein') {
+          this.form.companyType = '供应商'
         }
       }
     }

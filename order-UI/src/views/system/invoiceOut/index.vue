@@ -109,10 +109,10 @@
       <el-table-column label="订单信息" align="center" prop="isOrderTax" width="180" v-if="columns[8].visible">
         <template slot-scope="scope">
           <el-row v-if="scope.row.isOrderTax===0">
-            <el-tag>否</el-tag>
+            无关联订单
           </el-row>
           <el-row v-else>
-            <el-button size="mini" type="warning" @click="checkOrderInfo(scope.row)">查看订单信息</el-button>
+            <el-button size="mini" type="text" @click="checkOrderInfo(scope.row)">查看订单信息</el-button>
           </el-row>
         </template>
       </el-table-column>
@@ -167,7 +167,7 @@
               <el-input v-model="form.companyName" placeholder="请输入对方公司名称"/>
             </el-col>
             <el-col :span="2">
-              <SearchOption :limit-info="{}" :get-data="listCompany" query-info="companyName"
+              <SearchOption :limit-info="{companyType:'客户'}" :get-data="listCompany" query-info="companyName"
                             query-label="公司名称" :query-name="companyName"
                             @update:queryName="handleUpdateCompanyName" @commitBack="handleCommitBackCompany">
                 <template #table-columns>

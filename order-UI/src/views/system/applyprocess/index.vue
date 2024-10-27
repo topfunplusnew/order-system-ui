@@ -161,7 +161,7 @@ export default {
   <div class="app-container">
     <el-row :gutter="10" class="mb8">
       <el-col :span="1.5">
-        <el-button @click="refresh">刷新</el-button>
+        <el-button @click="refresh" size="mini">刷新</el-button>
       </el-col>
 
       <right-toolbar :columns="columns">

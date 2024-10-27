@@ -18,7 +18,7 @@
       </el-form-item>
       <el-form-item>
         <el-button type="primary" icon="el-icon-search" size="mini" @click="handleQuery">搜索</el-button>
-        <!--        <el-button icon="el-icon-refresh" size="mini" @click="resetQuery">重置</el-button>-->
+
       </el-form-item>
     </el-form>
 
@@ -31,6 +31,9 @@
           v-hasPermi="['system:invoicein:add']"
         >新增
         </el-button>
+      </el-col>
+      <el-col :span="1.5">
+        <el-button size="mini" @click="resetQuery">刷新</el-button>
       </el-col>
       <right-toolbar :showSearch.sync="showSearch" @queryTable="getList" :columns="columns">
         <template v-slot:print>
@@ -93,7 +96,7 @@
               </el-tag>
             </el-col>
             <el-col :span="12">
-              <el-button size="mini" type="warning" :disabled="scope.row.checkState!=='未申请'"
+              <el-button size="mini" type="text" :disabled="scope.row.checkState!=='未申请'"
                          @click="addPaymentApplyInfos(scope.row)">
                 添加付款申请
               </el-button>
@@ -116,10 +119,10 @@
                        width="140px">
         <template slot-scope="scope">
           <el-row v-if="scope.row.isOrderTax===0">
-            <el-tag>否</el-tag>
+            无关联订单
           </el-row>
           <el-row v-else>
-            <el-button size="mini" type="warning" @click="checkOrderInfo(scope.row)">查看订单信息</el-button>
+            <el-button size="mini" type="text" @click="checkOrderInfo(scope.row)">查看订单信息</el-button>
           </el-row>
         </template>
       </el-table-column>
@@ -175,11 +178,11 @@
               <el-input v-model="form.companyName" placeholder="请输入对方公司名称"/>
             </el-col>
             <el-col :span="2">
-              <SearchOption :limit-info="{}" :get-data="listCompany" query-info="companyName"
+              <SearchOption :limit-info="{companyType:'供应商'}" :get-data="listCompany" query-info="companyName"
                             query-label="公司名称" :query-name="companyName"
                             @update:queryName="handleUpdateCompanyName" @commitBack="handleCommitBackCompany">
                 <template #table-columns>
-                  <el-table-column label="客户" align="center" prop="relationName"/>
+                  <el-table-column label="供应商" align="center" prop="relationName"/>
                   <el-table-column label="老板姓名" align="center" prop="leader"/>
                   <el-table-column label="老板电话" align="center" prop="leaderTel"/>
                   <el-table-column label="区域" align="center" prop="region"/>

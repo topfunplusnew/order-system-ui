@@ -102,10 +102,10 @@
                        show-overflow-tooltip>
         <template slot-scope="scope">
           <el-row v-if="scope.row.isOrderTax===0">
-            <el-tag>否</el-tag>
+            无关联订单
           </el-row>
           <el-row v-else>
-            <el-button size="mini" type="warning" @click="checkOrderInfo(scope.row)">查看订单信息</el-button>
+            <el-button size="mini" type="text" @click="checkOrderInfo(scope.row)">查看订单信息</el-button>
           </el-row>
         </template>
       </el-table-column>

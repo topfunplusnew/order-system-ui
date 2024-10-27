@@ -7,6 +7,7 @@ import CARS from "@/components/NeedToShow/CARS.vue";
 import BORROWMONEY from "@/components/NeedToShow/BORROWMONEY.vue";
 import ORDER_FREIGHT from "@/components/NeedToShow/ORDER_FREIGHT.vue";
 import OIL_RECHARGE from "@/components/NeedToShow/OIL_RECHARGE.vue";
+import INVOICE_IN from "@/components/NeedToShow/INVOICE_IN.vue";
 
 export default {
   name: "needToShowInfo",
@@ -42,6 +43,11 @@ export default {
         case TableName.OIL_RECHARGE: {
           return OIL_RECHARGE
         }
+
+        // 如果是发票购入
+        case TableName.INVOICE_IN: {
+          return INVOICE_IN
+        }
       }
     }
   },
@@ -63,6 +69,10 @@ export default {
         // 如果是油卡充值
         case TableName.OIL_RECHARGE: {
           return OIL_RECHARGE
+        }
+        // 如果是发票购入
+        case TableName.INVOICE_IN: {
+          return INVOICE_IN
         }
       }
     },

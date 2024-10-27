@@ -174,11 +174,12 @@ import {listBankAccount} from "@/api/system/bankAccount";
 import {mixin_payment_apply} from "../../mixins/apply_payment/payment_apply";
 import {mixin_payment_level} from "../../mixins/apply_payment/payment_level";
 import {mixin_payment_watcher} from "../../mixins/apply_payment/payment_watcher";
+import {mixin_payment_fill} from "@/views/dashboard/mixins/apply_payment/payment_fill";
 
 export default {
   name: "ApplyPayment",
   components: {SearchOption},
-  mixins: [mixin_payment_apply, mixin_payment_level, mixin_payment_watcher],
+  mixins: [mixin_payment_apply, mixin_payment_level, mixin_payment_watcher, mixin_payment_fill],
   data() {
     return {
       // 遮罩层
@@ -217,8 +218,6 @@ export default {
         reason: [
           {required: true, message: "付款事由不能为空", trigger: "blur"}],
       },
-      // 对方户名
-      queryCompany: '',
       //禁用输入框
       inputDisabled: false,
       //禁用银行卡输入 因为现金支付不需要银行卡信息
@@ -228,15 +227,6 @@ export default {
 
   methods: {
     listBankAccount,
-    //对方信息 - 点击确认后自动填充
-    handleCommitBack(val) {
-      this.form.otherBankNo = val.bankNo;
-      this.form.otherBankName = val.bankName;
-      this.form.otherAcountsName = val.acountsName;
-    },
-    handleUpdateQueryName(val) {
-      this.queryCompany = val;
-    },
     //上传的回调函数
     handleCommitUpload(val) {
       this.form.attachment = val;
