@@ -82,22 +82,7 @@
       <el-table-column label="充值人员姓名" align="center" prop="rechargeName" v-if="columns[7].visible"/>
       <el-table-column label="充值附件" align="center" prop="attachment" v-if="columns[8].visible">
         <template #default="scope">
-          <!--          <img v-if="isPic(scope.row.attachment)" :src="scope.row.attachment" alt=""-->
-          <!--               style="width: 100%;height: 100%">-->
-          <!--          <span v-else-if="scope.row.attachment === '' || scope.row.attachment === null">无附件</span>-->
-          <!--          <span v-else>-->
-          <!--            文件不支持预览，请手动下载:-->
-          <!--          <a style="color: red"-->
-          <!--             :href="scope.row.attachment">{{ scope.row.attachment }}</a>-->
-          <!--          </span>-->
-
-          <span v-if="!scope.row.attachment">无</span>
-          <span v-else>
-            <a style="color: red"
-               :href="scope.row.attachment">
-            <el-button size="mini" type="success">下载</el-button>
-          </a>
-         </span>
+          <CheckFiles :path="scope.row.attachment"/>
         </template>
       </el-table-column>
       <el-table-column label="备注" align="center" prop="comments" v-if="columns[9].visible"/>
@@ -106,7 +91,7 @@
         <template slot-scope="scope">
           <el-button
             size="mini"
-            type="warning"
+            type="text"
             @click="addPaymentApply(scope.row)"
             v-if="scope.row.checkState === '未申请'"
           >申请付款
@@ -125,8 +110,6 @@
             v-if="scope.row.checkState === '未支付'"
           >未支付
           </el-button>
-
-
           <el-button
             size="mini"
             type="primary"
@@ -177,34 +160,11 @@
         <el-form-item label="充值金额" prop="rechargeMoney">
           <el-input v-model="form.rechargeMoney" placeholder="请输入充值金额"/>
         </el-form-item>
-        <!--        <el-form-item label="银行开户名" prop="acountsName">-->
-        <!--          <el-row>-->
-        <!--            <el-col :span="10">-->
-        <!--              <el-input v-model="form.acountsName" placeholder="请输入银行开户名"/>-->
-        <!--            </el-col>-->
-        <!--            <el-col :span="4">-->
-        <!--              <SearchOption :get-data="listBankAccount" @commitBack="handleCommitBackBank" query-info="acountsName"-->
-        <!--                            :query-name="queryBank" query-label="户名查询"-->
-        <!--                            @update:queryName="handleCommitBackQueryBank" :limit-info="{acountsType:'己方公司'}">-->
-        <!--                <template #table-columns>-->
-        <!--                  <el-table-column label="账户类型" align="center" prop="acountsType"/>-->
-        <!--                  <el-table-column label="开户名称(户名)" align="center" prop="acountsName"/>-->
-        <!--                  <el-table-column label="账号(银行账号)" align="center" prop="bankNo"/>-->
-        <!--                  <el-table-column label="开户行" align="center" prop="bankName"/>-->
-        <!--                </template>-->
-        <!--              </SearchOption>-->
-        <!--            </el-col>-->
-        <!--          </el-row>-->
-        <!--        </el-form-item>-->
-        <!--        <el-form-item label="银行账号" prop="bankNo">-->
-        <!--          <el-input v-model="form.bankNo" placeholder="请输入银行账号"/>-->
-        <!--        </el-form-item>-->
         <el-form-item label="充值人员姓名" prop="rechargeName">
           <el-input disabled v-model="form.rechargeName" placeholder="请输入充值人员姓名"/>
         </el-form-item>
         <el-form-item label="充值附件" prop="attachment">
-          <!--          <el-input v-model="form.attachment" placeholder="请输入充值附件"/>-->
-          <file-upload @input="handleUpload"/>
+          <file-upload @input="handleUpload" ref="uploadFile"/>
         </el-form-item>
         <el-form-item label="备注" prop="comments">
           <el-input v-model="form.comments" placeholder="请输入备注"/>
@@ -220,9 +180,6 @@
     <!--    加油卡付款申请-->
     <el-dialog :close-on-click-modal="false" :show-close="false" title="加油卡付款申请"
                :visible.sync="paymentApplyVisible" width="500px">
-      <!--      <ApplyPayment :table-name="TableName.OIL_RECHARGE" :t-i-d="tid" :need-money="needMoney"-->
-      <!--                    :need-info="{...needInfo,otherAcountsName:needInfo.acountsName}"-->
-      <!--                    @changeOpen="resetApplyPaymentInfo"/>-->
       <OilApply :need-money="needMoney" @changeOpen="resetApplyPaymentInfo" :table-name="TableName.OIL_RECHARGE"
                 :t-i-d="tid"/>
     </el-dialog>
@@ -249,6 +206,7 @@ import {parseTime} from "../../../utils/ruoyi";
 import {excludeParams} from "@/api/tool/exclude";
 import OilApply from "@/views/dashboard/components/oilCard/OilApply.vue";
 import {mixin_oil_recharge_fill} from "@/views/system/oilRecharge/oilRechargeFill";
+import CheckFiles from "@/components/CheckFiles.vue";
 
 export default {
   name: "OilRecharge",
@@ -258,7 +216,7 @@ export default {
     },
     ...mapGetters(['trueName'])
   },
-  components: {OilApply, SearchOption, ApplyPayment},
+  components: {CheckFiles, OilApply, SearchOption, ApplyPayment},
   mixins: [mixin_printHTML, mixin_oil_recharge_fill],
   data() {
     return {
@@ -380,6 +338,7 @@ export default {
     // 取消按钮
     cancel() {
       this.open = false;
+      this.$refs.uploadFile.clearFileList()
       this.reset();
     },
     // 表单重置
@@ -447,6 +406,7 @@ export default {
             updateOilRecharge(this.form).then(response => {
               this.$modal.msgSuccess("修改成功");
               this.open = false;
+              this.$refs.uploadFile.clearFileList()
               this.getList();
             });
           } else {
@@ -454,6 +414,7 @@ export default {
             addOilRecharge(this.form).then(response => {
               this.$modal.msgSuccess("新增成功");
               this.open = false;
+              this.$refs.uploadFile.clearFileList()
               this.getList();
             });
           }

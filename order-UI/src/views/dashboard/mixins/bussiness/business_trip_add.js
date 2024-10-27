@@ -54,6 +54,7 @@ export var mixin_business_trip_add = {
             updateCarApply(excludeParams(this.carApplyInformation, this.$exclude)).then(res => {
               this.$message.success('车辆信息修改成功')
               this.active++;
+              this.$refs.uploadFile.clearFileList()
               this.resetCarApplyInformation()
               this.resetCarApplyForm()
               this.resetOilCardRechargeInfo()
@@ -72,6 +73,7 @@ export var mixin_business_trip_add = {
           addBusinessTrip({...this.form, UUID: this.UUID}).then(res => {
             this.$message.success('提交成功,本次无车辆使用信息')
             this.active++;
+            this.$refs.uploadFile.clearFileList()
             // 清除状态
             this.reset()
             this.resetCarApplyForm()
@@ -92,6 +94,7 @@ export var mixin_business_trip_add = {
             updateCarApply(this.carApplyInformation).then(res => {
               this.$message.success('车辆信息提交成功')
               this.active++;
+              this.$refs.uploadFile.clearFileList()
               // 清除状态
               this.reset()
               this.resetCarApplyForm()

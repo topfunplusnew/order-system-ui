@@ -70,13 +70,7 @@
       <el-table-column label="出差结束时间" align="center" prop="endtime" v-if="columns[4].visible"/>
       <el-table-column label="附件" align="center" prop="attachmentPath" v-if="columns[5].visible">
         <template #default="scope">
-          <span v-if="!scope.row.attachmentPath">无</span>
-          <span v-else>
-            <a style="color: red"
-               :href="scope.row.attachmentPath">
-            <el-button size="mini" type="success">下载</el-button>
-          </a>
-         </span>
+          <CheckFiles :path="scope.row.attachmentPath"/>
         </template>
       </el-table-column>
       <el-table-column label="是否已报销" align="center" prop="isReimburse" v-if="columns[6].visible">
@@ -89,7 +83,7 @@
         <template slot-scope="scope">
           <el-button
             size="mini"
-            type="warning"
+            type="text"
             @click="applyForPayment(scope.row)"
           >发起付款申请
           </el-button>
@@ -159,7 +153,7 @@
             </el-col>
             <el-col :span="12">
               <el-form-item label="附件地址" prop="attachmentPath">
-                <file-upload @input="handleCommitUpload"/>
+                <file-upload @input="handleCommitUpload" ref="uploadFile"/>
               </el-form-item>
               <el-form-item label="备注" prop="comments">
                 <el-input v-model="form.comments" type="textarea" placeholder="请输入内容"/>
@@ -360,10 +354,11 @@ import SubjectOption from "../../../components/SubjectOption.vue";
 import {listDept} from "@/api/system/dept";
 import "@riophae/vue-treeselect/dist/vue-treeselect.css";
 import Treeselect from "@riophae/vue-treeselect";
+import CheckFiles from "@/components/CheckFiles.vue";
 
 export default {
   name: "BusinessTrip",
-  components: {SubjectOption, StepsForm, InfoDialog, ApplyPayment, PaymentApply, SearchOption, Treeselect},
+  components: {CheckFiles, SubjectOption, StepsForm, InfoDialog, ApplyPayment, PaymentApply, SearchOption, Treeselect},
   mixins: [mixin_printHTML, mixin_common_upload, mixin_car_apply, mixin_business_trip_add,
     mixin_business_trip_update, mixin_business_trip_car_apply, mixin_business_trip_oil_card
   ],
@@ -559,6 +554,7 @@ export default {
       this.open = false;
       this.active = 0;
       this.reset();
+      this.$refs.uploadFile.clearFileList()
       this.resetCarApplyInformation()
       // 设置索引为false
       this.isIndexCarInfo = false
