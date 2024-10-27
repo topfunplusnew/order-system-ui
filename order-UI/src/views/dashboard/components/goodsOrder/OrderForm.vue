@@ -11,49 +11,43 @@ import {parseTime} from "../../../../utils/ruoyi";
 import {addGoodsOrder, getGoodsOrder, updateGoodsOrder} from "../../../../api/system/goodsOrder";
 import {excludeParams} from "../../../../api/tool/exclude";
 import {mapGetters} from "vuex";
+import {mixin_form_fillInfo} from "@/views/dashboard/mixins/order/form/form_fillInfo";
 
 export default {
   name: "OrderForm",
   components: {SearchOption, OrderItem},
   props: {
+    // 父组件传递的订单id，主要用于当修改订单信息时 抓取服务器数据 然后自动填充到表单中
     orderId: '',
     // 确认按钮字样
     submitInfo: '',
   },
+  mixins: [mixin_form_fillInfo],
   data() {
     return {
-      // 订单信息
+      // 订单基本信息 由此组件维护 而订单中的货物的信息 由vuex中的订单货物列表orderItemList维护
       orderInfo: {},
       //海运还是陆运
       isLand: false,
       isSea: false,
-      // 客户搜索
-      queryCompanyName: '',
-      // 车牌银行卡
-      queryLandCar: '',
-      // 车队
-      queryFleet: '',
-      // 海运车牌
-      querySeaCars: '',
       orderNums: 0,
     }
   },
-
-  //计算属性 目的是为了避免无法输入修改父组件
   computed: {
+    // 拿到vuex中维护的订单列表
     ...mapGetters(['orderItemList'])
   },
   watch: {
+    // 监听父组件传递过来的订单id的变化
     'orderId': {
       handler(val) {
-        if (!this.orderId) {
-        } else {
-          this.getGoodsOrderInfo(val)
-        }
+        // 刷新订单表单的数据是无论如何都要执行的 所以先执行
+        this.resetOrderInfo();
+        this.orderId && this.getGoodsOrderInfo(val);
       },
       immediate: true
     },
-    // 监听海运和陆运 如果不选 那么就要清空海运和陆运的相关信息 todo
+    // 监听海运和陆运 如果不选 那么就要清空海运和陆运的相关信息
     isLand: {
       handler(val) {
         if (val === false) {
@@ -70,138 +64,48 @@ export default {
     }
   },
   created() {
+    // 组件初始化的时候清空状态
     this.resetOrderInfo()
-    if (!this.orderId) {
-      // console.log('orderId:传入有误', this.orderId)
-    } else {
-      this.getGoodsOrderInfo(this.orderId)
-    }
+    // 只有传递的订单id合法才会去抓取数据 当主动添加订单的时候订单id是空 不会执行
+    this.orderId && this.getGoodsOrderInfo(this.orderId);
   },
   methods: {
     listFleet,
     listCars,
     listBankAccount,
     listCompany,
-    // 获取订单信息的方法
+    // 获取订单信息的方法 这个方法会根据父组件传递过来的id (props.orderId)的变化 来查询对应的订单信息
     getGoodsOrderInfo(id) {
       getGoodsOrder(id).then(response => {
+        // 拿到服务器给的订单数据
         this.orderInfo = response.data;
         // 如果海运费或者陆运费大于0
-        if (response.data.landFreight > 0) {
-          this.isLand = true;
-        }
-        if (response.data.seaFreight > 0) {
-          this.isSea = true;
-        }
-
-        //将数据库拿到的订单列表装入vuex 因为订单添加的货物是从vuex获取的数据 对货物的操作也是操作vuex orderIndex
-        let i = 0;
-        const list = response.data.orderDetailList.map(item => {
-          return {
-            ...item,
-            orderIndex: i++
-          }
-        })
+        this.isLand = response.data.landFreight > 0;
+        this.isSea = response.data.seaFreight > 0;
+        //将数据库拿到的订单列表装入vuex 这里维护的主要是索引，因为索引可以确定某个货物的状态
+        const list = response.data.orderDetailList.map((item, index) => ({
+          ...item,
+          orderIndex: index
+        }));
+        // 将数据装入vuex维护的订单列表中
         this.$store.dispatch("order/setOrderItemListAsync", list)
+        // orderNums 是当前已经装填到vuex中的货物数量
         this.orderNums = response.data.orderDetailList.length;
-        //填充供应商和客户id
-        for (let i = 0; i < this.orderInfo.orderDetailList.length; i++) {
-          let item = this.orderInfo.orderDetailList[i];
-          item.customerID = this.orderInfo.customerID;
-          item.customer = this.orderInfo.customer;
-          //是否含税
-          item.isIncludeTaxFactory = item.isIncludeTaxFactory === '是' ? '1' : '0';
-          item.isIncludeTaxSale = item.isIncludeTaxSale === '是' ? '1' : '0';
-        }
+        // 填充订单货物列表中的信息
+        const formatTax = value => (value === '是' ? '1' : '0'); // 可以将1和0转换为是和否
+        // 遍历 填充属性
+        this.orderInfo.orderDetailList.forEach(item => {
+          Object.assign(item, {
+            customerID: this.orderInfo.customerID,
+            customer: this.orderInfo.customer,
+            isIncludeTaxFactory: formatTax(item.isIncludeTaxFactory),
+            isIncludeTaxSale: formatTax(item.isIncludeTaxSale)
+          });
+        });
+
       });
     },
-    // 信息重置
-    resetOrderInfo() {
-      this.orderInfo = {
-        orderID: '',
-        orderNo: '',
-        customerID: '',
-        customer: '',
-        saleManager: '',
-        orderDetailList: [],
-        fleet:'',
-        orderState: '',
-        orderDate: '',
-        orderType: '',
-        landCarID: '',
-        landCarNo: '',
-        landDriverName: '',
-        landDriverTel: '',
-        landBankName: '',
-        landBankNo: '',
-        seaCarID: '',
-        seaCarNo: '',
-        seaDriverName: '',
-        seaDriverTel: '',
-        isSea: '',
-        isLand: '',
-      }
-    },
-    // 重置陆运费
-    resetSeaCarInfo() {
-      this.orderInfo.seaCarID = ''
-      this.orderInfo.seaCarNo = ''
-      this.orderInfo.seaDriverName = ''
-      this.orderInfo.seaDriverTel = ''
-    },
-    // 重置海运费
-    resetLandCarInfo() {
-      this.orderInfo.landCarID = ''
-      this.orderInfo.landCarNo = ''
-      this.orderInfo.landDriverName = ''
-      this.orderInfo.landDriverTel = ''
-    },
-    // 车队的自动填充
-    handleChangeFleet(val) {
-      this.queryFleet = val
-    },
-    handleCommitBackFleet (val) {
-      this.orderInfo.fleet = val.fName
-    },
-
-    // 客户搜索的自动填充
-    handleCommitBackCompany(val) {
-      this.orderInfo.customerID = val.id;
-      this.orderInfo.customer = val.relationName;
-      this.orderInfo.saleManager = val.salesManager;
-    },
-    handleUpdateCompanyName(val) {
-      this.queryCompanyName = val;
-    },
-
-    //陆运车牌的自动填充
-    handleChangeCar(val) {
-      this.queryLandCar = val;
-    },
-    handleCommitBackCar(val) {
-      this.orderInfo.landCarID = val.id;
-      //与上面填充客户信息同理
-      this.orderInfo.landCarNo = val.carNo;
-      this.orderInfo.landDriverName = val.driver;
-      this.orderInfo.landDriverTel = val.tel;
-      //填充银行信息
-      this.orderInfo.landBankName = val.bankName;
-      this.orderInfo.landBankNo = val.bankNo;
-    },
-    // 海运车牌的填充
-    handleChangeSeaCar(val) {
-      this.querySeaCars = val;
-    },
-    handleCommitBackSeaCar(val) {
-      this.orderInfo.seaCarID = val.id;
-      // this.orderInfo.seaCarNo = val.carNo;  // 原为海运车牌号 现改为柜号 且不提供自动填充
-      this.orderInfo.seaDriverName = val.driver;
-      this.orderInfo.seaDriverTel = val.tel;
-      //填充银行信息
-      this.orderInfo.seaBankName = val.bankName;
-      this.orderInfo.seaBankNo = val.bankNo;
-    },
-    // 添加货物
+    // 点击添加货物
     addOrderItem() {
       this.$store.commit('order/addsOrderItem', {...this.orderItemInfo, orderIndex: this.orderNums})
       this.orderNums++;
@@ -211,21 +115,6 @@ export default {
       // 删除orderItemList中索引为index的元素
       this.$store.commit('order/removeOrderItem', index)
       this.orderNums--;
-    },
-    // // 置空某个货物
-    // handleClearOrderDetail(index) {
-    //   console.log(index)
-    //   this.$store.commit('order/clearOrderItemStatus', index)
-    // },
-    // 取消添加订单
-    cancelSubmit() {
-      this.orderNums = 0
-      this.isSea = false
-      this.isLand = false
-      this.$store.commit('order/clearOrderItemList'); // 清空订单详情填写信息
-      this.resetOrderInfo() // 清空订单列表基础信息
-      this.$emit('close-dialog'); // 关闭弹窗
-
     },
     //提交订单
     //订单列表的对象封装一个，订单详情有两个一样的对象 对应供应商发货和仓库发货
@@ -282,6 +171,57 @@ export default {
           this.$emit('close-dialog');
         });
       }
+    },
+    // 取消添加订单
+    cancelSubmit() {
+      this.orderNums = 0
+      this.isSea = false
+      this.isLand = false
+      this.$store.commit('order/clearOrderItemList'); // 清空订单详情填写信息
+      this.resetOrderInfo() // 清空订单列表基础信息
+      this.$emit('close-dialog'); // 关闭弹窗
+
+    },
+    // 信息重置
+    resetOrderInfo() {
+      this.orderInfo = {
+        orderID: '',
+        orderNo: '',
+        customerID: '',
+        customer: '',
+        saleManager: '',
+        orderDetailList: [],
+        fleet: '',
+        orderState: '',
+        orderDate: '',
+        orderType: '',
+        landCarID: '',
+        landCarNo: '',
+        landDriverName: '',
+        landDriverTel: '',
+        landBankName: '',
+        landBankNo: '',
+        seaCarID: '',
+        seaCarNo: '',
+        seaDriverName: '',
+        seaDriverTel: '',
+        isSea: '',
+        isLand: '',
+      }
+    },
+    // 重置陆运费
+    resetSeaCarInfo() {
+      this.orderInfo.seaCarID = ''
+      this.orderInfo.seaCarNo = ''
+      this.orderInfo.seaDriverName = ''
+      this.orderInfo.seaDriverTel = ''
+    },
+    // 重置海运费
+    resetLandCarInfo() {
+      this.orderInfo.landCarID = ''
+      this.orderInfo.landCarNo = ''
+      this.orderInfo.landDriverName = ''
+      this.orderInfo.landDriverTel = ''
     },
     close() {
       this.$emit('close')
