@@ -641,7 +641,6 @@ export default {
     parseTime,
     listCompany,
     listBankAccount,
-    // 拖拽改变列宽
     /** 搜索按钮操作 */
     handleQuery() {
       this.queryParams.pageNum = 1;

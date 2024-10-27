@@ -109,8 +109,10 @@
       </el-table-column>
       <el-table-column label="备注" align="center" prop="comments" width="165"/>
       <el-table-column label="银行卡流水编号" align="center" prop="transactionHistory" width="165"/>
-      <el-table-column label="银行卡流水附件" align="center" prop="transactionHistoryAttachment" width="165">
+      <el-table-column label="银行卡流水附件" align="center" prop="transactionHistoryAttachment" width="165"
+                       fixed="right">
         <template slot-scope="scope">
+          <!-- 这是封装的一个通用组件 可以直接传入url 组件效果为一个按钮 点击后可以查看附件-->
           <CheckFiles :path="scope.row.transactionHistoryAttachment"/>
         </template>
       </el-table-column>
