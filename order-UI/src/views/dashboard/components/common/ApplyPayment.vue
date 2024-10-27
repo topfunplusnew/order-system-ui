@@ -39,7 +39,7 @@
       <el-form-item label="金额" prop="moneyAmount">
         <el-input v-model="form.moneyAmount" placeholder="请输入金额" :disabled="inputDisabled"/>
       </el-form-item>
-      <el-form-item label="对方类型">
+      <el-form-item label="对方类型(请确认)">
         <el-select v-model="value" placeholder="请选择">
           <el-option
             v-for="item in options"
@@ -48,6 +48,7 @@
             :value="item.value">
           </el-option>
         </el-select>
+        <span style="color: #1c84c6;font-size: 12px">请注意选择正确的对方公司类型!</span>
       </el-form-item>
       <!--      客户-->
       <el-row v-if="value === '客户'">

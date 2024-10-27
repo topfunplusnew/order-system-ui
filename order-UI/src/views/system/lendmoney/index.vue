@@ -149,7 +149,7 @@
           <el-row>
             <el-button
               size="mini"
-              type="warning"
+              type="text"
               @click="applyForPayment(scope.row)"
               v-if="scope.row.checkState ==='未申请'"
             >申请付款
@@ -163,7 +163,7 @@
             </el-button>
             <el-button
               size="mini"
-              type="success"
+              type="text"
               @click="handleGetBackMoney(scope.row)"
               v-hasPermi="['system:lendmoney:remove']"
             >收回资金
@@ -222,6 +222,7 @@
             <el-form-item label="对象" prop="target">
               <el-input v-model="form.target" placeholder="请输入对象(员工姓名、公司名称)"/>
             </el-form-item>
+            <!--            这里应该根据对象类型 决定后面的选择器的公司类型是什么样的-->
             <el-form-item label="对象类型" prop="targetType">
               <el-select v-model="form.targetType" placeholder="请选择对象类型">
                 <el-option
@@ -239,10 +240,14 @@
                 </el-col>
                 <el-col :span="3">
                   <SearchOption :get-data="listBankAccount" icon="el-icon-search" @commitBack="handleCommitBack"
-                                :limit-info="{}" query-label="户名查找" query-info="acountsName" :query-name="queryBank"
+                                :limit-info="{acountsType:form.targetType==='其他'||form.targetType==='员工'?'':form.targetType}"
+                                query-label="户名查找"
+                                query-info="acountsName" :query-name="queryBank"
                                 @update:queryName="handleUpdateQueryName">
                     <template #table-columns>
-                      <el-table-column label="公司名称" align="center" prop="acountsName"/>
+                      <el-table-column
+                        :label="form.targetType==='其他'||form.targetType==='员工'?'名称':form.targetType"
+                        align="center" prop="acountsName"/>
                       <el-table-column label="开户行" align="center" prop="bankName"/>
                       <el-table-column label="开户名" align="center" prop="acountsName"/>
                       <el-table-column label="账号" align="center" prop="bankNo"/>

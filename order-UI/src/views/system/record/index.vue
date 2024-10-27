@@ -106,8 +106,8 @@
             无
           </el-row>
           <el-row v-else>
-            <el-button size="mini" type="success" @click="checkAttachment(scope.row,'attachment')">
-              查看
+            <el-button size="mini" type="text" @click="checkAttachment(scope.row,'attachment')">
+              查看附件
             </el-button>
           </el-row>
         </template>
