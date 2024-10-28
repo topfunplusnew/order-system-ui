@@ -237,7 +237,7 @@
     </el-dialog>
 
 
-    <!-- 添加或修改收款信息对话框 -->
+    <!-- 添加或修改产品级别对话框 -->
     <el-dialog :close-on-click-modal="false" :show-close="false" :title="title" :visible.sync="open" width="500px"
                append-to-body>
       <el-form ref="form" :model="form" :rules="rules" label-width="80px">
@@ -247,7 +247,8 @@
         <el-form-item label="级别名称" prop="levelName">
           <el-input v-model="form.levelName" placeholder="请输入级别名称"/>
         </el-form-item>
-        <el-form-item label="分类编号" prop="tableName">
+        <el-form-item label="分类编号" prop="tableName" v-if="form.id==null">
+<!--        根据id判断,如果有id,说明修改,不用展示编号-->
           <el-input v-model="form.categoryNo" placeholder="请输入分类编号"/>
         </el-form-item>
         <el-form-item label="分类名称" prop="categoryName">

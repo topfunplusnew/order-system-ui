@@ -33,7 +33,6 @@ export var mixin_order_orderHistory = {
       // 先获取原订单的信息
       getGoodsOrder(id).then(res => {
         this.currentOrderItemInfo = res.data
-        this.$message.success('已获取原订单信息')
       })
       // 查询订单历史信息
       getHistoryGoodsOrder({goodsOrderID: id}).then(res => {
