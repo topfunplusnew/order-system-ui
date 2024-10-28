@@ -168,17 +168,8 @@
                        v-if="columns[14].visible" width="120px"/>
       <el-table-column show-overflow-tooltip label="附件" align="center" prop="path" v-if="columns[15].visible"
                        width="150px">
-        <template #default="scope">
-          <el-row>
-          </el-row>
-          <el-row v-if="scope.row.path === '' || scope.row.path === null">
-            无
-          </el-row>
-          <el-row v-else>
-            <el-button size="mini" type="text" @click="checkAttachment(scope.row,'path')">
-              查看
-            </el-button>
-          </el-row>
+        <template slot-scope="scope">
+          <CheckFiles :path="scope.row.path"/>
         </template>
       </el-table-column>
       <el-table-column show-overflow-tooltip label="打款状态" align="center" prop="paymentState"
@@ -202,15 +193,8 @@
       <el-table-column show-overflow-tooltip label="收到条附件路径" align="center" prop="receiveProof"
                        v-if="columns[17].visible"
                        width="150px">
-        <template #default="scope">
-          <el-row v-if="scope.row.receiveProof === '' || scope.row.receiveProof === null">
-            无
-          </el-row>
-          <el-row v-else>
-            <el-button size="mini" type="text" @click="checkAttachment(scope.row,'receiveProof')">
-              查看
-            </el-button>
-          </el-row>
+        <template slot-scope="scope">
+          <CheckFiles :path="scope.row.path"/>
         </template>
       </el-table-column>
       <el-table-column show-overflow-tooltip label="是否可编辑" align="center" prop="isedit" v-if="columns[19].visible"
@@ -494,6 +478,7 @@ import {mixin_order_audit} from "../../dashboard/mixins/order/order_audit";
 import {mixin_order_applyPayment} from "../../dashboard/mixins/order/order_applyPayment";
 import {mixin_order_base} from "../../dashboard/mixins/order/order_base";
 import reLength from "../../dashboard/mixins/reLength";
+import CheckFiles from "../../../components/CheckFiles.vue";
 
 export default {
   name: "GoodsOrder",
@@ -506,6 +491,7 @@ export default {
     mixin_order_base, reLength],
   // 组件注册
   components: {
+    CheckFiles,
     QuerySearchBar,
     CheckOrder,
     OrderGiven,

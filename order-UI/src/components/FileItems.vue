@@ -22,7 +22,7 @@ export default {
       </el-icon>
     </div>
     <div class="file-name">
-      {{ _fileName }}
+      {{ _fileName }}...
     </div>
   </div>
 </template>
@@ -38,7 +38,7 @@ export default {
   justify-content: center;
   flex-direction: column;
   box-shadow: 0px 0px 5px 0px rgba(0, 0, 0, 0.25);
-
+  text-align: center;
 
   &:hover {
     cursor: pointer;

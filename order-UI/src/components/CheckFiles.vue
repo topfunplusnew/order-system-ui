@@ -47,7 +47,7 @@ export default {
     <el-dialog
       title="文件列表"
       :visible.sync="dialogVisible"
-      width="30%">
+      width="30%" append-to-body>
       <div class="file-list">
         <FileItems v-for="(item,index) in checkFileList" :key="index" :file-name="item"
                    @click.native="handleCheckFile(item)"/>
