@@ -57,44 +57,24 @@
       <el-table-column label="行操作" align="center" class-name="small-padding fixed-width"
                        width="142" fixed="left">
         <template slot-scope="scope">
-          <el-dropdown size="mini" split-button type="text">
-            操作
+          <el-dropdown size="mini" @command="(command) => handleCommand(command, scope.row)">
+            <el-button size="mini" type="text">操作</el-button>
             <el-dropdown-menu slot="dropdown">
-              <el-dropdown-item>
-                <el-button
-                  size="mini"
-                  @click="checkOrderItemInfo(scope.row)"
-                >查 看
-                </el-button>
+              <el-dropdown-item command="checkOrderItemInfo">
+                <el-button size="mini">查 看</el-button>
               </el-dropdown-item>
-              <el-dropdown-item>
-                <el-button
-                  size="mini"
-                  type="primary"
-                  @click="handleUpdate(scope.row)"
-                  v-hasPermi="['system:goodsorder:edit']"
-                >修 改
-                </el-button>
+              <el-dropdown-item command="handleUpdate" v-hasPermi="['system:goodsorder:edit']">
+                <el-button size="mini" type="primary">修 改</el-button>
               </el-dropdown-item>
-              <el-dropdown-item>
-                <el-button
-                  size="mini"
-                  type="warning"
-                  @click="handleCheckOrderDetailInfo(scope.row)"
-                >货 物
-                </el-button>
+              <el-dropdown-item command="handleCheckOrderDetailInfo">
+                <el-button size="mini" type="warning">货 物</el-button>
               </el-dropdown-item>
-              <el-dropdown-item>
-                <el-button
-                  size="mini"
-                  type="danger"
-                  @click="handleDelete(scope.row)"
-                  v-hasPermi="['system:goodsorder:remove']"
-                >删 除
-                </el-button>
+              <el-dropdown-item command="handleDelete" v-hasPermi="['system:goodsorder:remove']">
+                <el-button size="mini" type="danger">删 除</el-button>
               </el-dropdown-item>
             </el-dropdown-menu>
           </el-dropdown>
+
           <el-button
             style="margin-left: 5px"
             size="mini"
@@ -325,14 +305,14 @@
                        width="100px"
                        fixed="right">
         <template slot-scope="scope">
-          <el-dropdown size="mini" split-button type="text">
-            操作
+          <el-dropdown size="mini" type="text">
+            <el-button type="text" :disabled="!(scope.row.landFreight > 0 || scope.row.seaFreight > 0)">操作</el-button>
             <el-dropdown-menu slot="dropdown">
               <el-dropdown-item>
-                <el-row v-if="scope.row.landFreight>0 ||scope.row.seaFreight>0  ">
+                <el-row v-if="scope.row.landFreight > 0 || scope.row.seaFreight > 0">
                   <el-button
                     size="mini"
-                    v-if="scope.row.landFreight>0"
+                    v-if="scope.row.landFreight > 0"
                     type="warning"
                     @click="handleApplyLandFree(scope.row)"
                     v-hasPermi="['system:goodsorder:remove']"
@@ -340,7 +320,7 @@
                   </el-button>
                   <el-button
                     size="mini"
-                    v-if="scope.row.seaFreight>0"
+                    v-if="scope.row.seaFreight > 0"
                     type="primary"
                     @click="handleApplySeaFree(scope.row)"
                     v-hasPermi="['system:goodsorder:remove']"
@@ -353,6 +333,7 @@
               </el-dropdown-item>
             </el-dropdown-menu>
           </el-dropdown>
+
         </template>
       </el-table-column>
     </el-table>
@@ -641,6 +622,25 @@ export default {
     parseTime,
     listCompany,
     listBankAccount,
+    /** 处理下拉菜单 */
+    handleCommand(command, row) {
+      switch (command) {
+        case "checkOrderItemInfo":
+          this.checkOrderItemInfo(row);
+          break;
+        case "handleUpdate":
+          this.handleUpdate(row);
+          break;
+        case "handleCheckOrderDetailInfo":
+          this.handleCheckOrderDetailInfo(row);
+          break;
+        case "handleDelete":
+          this.handleDelete(row);
+          break;
+        default:
+          break;
+      }
+    },
     /** 搜索按钮操作 */
     handleQuery() {
       this.queryParams.pageNum = 1;
