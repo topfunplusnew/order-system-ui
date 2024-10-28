@@ -51,7 +51,7 @@ export default {
     // 数量限制 只能上传一个
     limit: {
       type: Number,
-      default: 1,
+      default: 5,
     },
     // 大小限制(MB)
     fileSize: {
@@ -174,7 +174,7 @@ export default {
         this.fileList = this.fileList.concat(this.uploadList);
         this.uploadList = [];
         this.number = 0;
-        this.$emit("input", this.listToString(this.fileList));
+        this.$emit("input", this.listToString(this.fileList, '|'));
         this.$modal.closeLoading();
       }
     },

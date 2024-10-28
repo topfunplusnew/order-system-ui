@@ -71,6 +71,11 @@ export var mixin_order_uploadFiles = {
         this.$message.error('文件名不能包含"|"字符')
         return false
       }
+      // 列表中最多五个文件
+      if (this.fileList.length >= 5) {
+        this.$message.error('最多只能上传5个文件')
+        return false
+      }
       // 推入数组中 后续点击开始上传的时候 ，对数组的每一个文件进行上传
       this.fileList.push(file)
       // 阻止默认上传行为

@@ -84,14 +84,6 @@
       </el-table-column>
       <el-table-column label="供应商公司名称" align="center" prop="Supplier" v-if="columns[4].visible"
                        show-overflow-tooltip/>
-      <!--      <el-table-column label="客户公司名称" align="center" prop="customer" v-if="columns[5].visible"-->
-      <!--                       show-overflow-tooltip/>-->
-      <!--      <el-table-column label="票据单位名称" align="center" prop="invoiceCompanyName" v-if="columns[6].visible"-->
-      <!--                       show-overflow-tooltip/>-->
-      <!--      <el-table-column label="客户票点" align="center" prop="customerTicketPoint" v-if="columns[7].visible"-->
-      <!--                       show-overflow-tooltip/>-->
-      <!--      <el-table-column label="票点金额" align="center" prop="customerPointAmount" v-if="columns[8].visible"-->
-      <!--                       show-overflow-tooltip/>-->
       <el-table-column label="订单信息" align="center" prop="isOrderTax" width="180" v-if="columns[5].visible"
                        show-overflow-tooltip>
         <template slot-scope="scope">
@@ -101,6 +93,16 @@
           <el-row v-else>
             <el-button size="mini" type="text" @click="checkOrderInfo(scope.row)">查看订单信息</el-button>
           </el-row>
+        </template>
+      </el-table-column>
+      <el-table-column label="银行回执单" align="center" prop="paymentReceipts">
+        <template #default="scope">
+          <CheckFiles :path="scope.row.paymentReceipts"/>
+        </template>
+      </el-table-column>
+      <el-table-column label="发票单" align="center" prop="invoiceAttachments">
+        <template #default="scope">
+          <CheckFiles :path="scope.row.invoiceAttachments"/>
         </template>
       </el-table-column>
       <el-table-column label="备注" align="center" prop="comments" v-if="columns[6].visible"/>
@@ -222,9 +224,6 @@
                 value-format="yyyy-MM-dd">
               </el-date-picker>
             </el-form-item>
-          </el-col>
-          <el-col :span="12">
-
             <el-form-item label="供应商公司名称" prop="Supplier">
               <el-col :span="20">
                 <el-input v-model="form.Supplier" placeholder="请输入供应商公司名称"/>
@@ -246,6 +245,8 @@
                 </SearchOption>
               </el-col>
             </el-form-item>
+          </el-col>
+          <el-col :span="12">
             <el-form-item label="客户公司名称" prop="customer">
               <el-col :span="20">
                 <el-input v-model="form.customer" placeholder="请输入客户公司名称"/>
@@ -271,7 +272,13 @@
             <el-form-item label="票据单位名称" prop="invoiceCompanyName">
               <el-input v-model="form.invoiceCompanyName" placeholder="请输入票据单位名称"/>
             </el-form-item>
-
+            <!-- 银行回执单附件-->
+            <el-form-item label="银行回执附件">
+              <file-upload @input="handleCommitUpload" ref="fileUploader1"/>
+            </el-form-item>
+            <el-form-item label="发票单">
+              <file-upload @input="handleCommitUploadInvoiceAttachments" ref="fileUploader2"/>
+            </el-form-item>
             <el-form-item label="备注" prop="comments">
               <el-input v-model="form.comments" placeholder="请输入备注"/>
             </el-form-item>
@@ -311,10 +318,11 @@ import {getGoodsOrder} from "../../../api/system/goodsOrder";
 import OrderInfos from "../../dashboard/components/goodsOrder/OrderInfos.vue";
 import {fix} from "../../../api/tool/format";
 import reLength from "../../dashboard/mixins/reLength";
+import CheckFiles from "../../../components/CheckFiles.vue";
 
 export default {
   name: "InvoiceOther",
-  components: {OrderInfos, SearchOption},
+  components: {CheckFiles, OrderInfos, SearchOption},
   mixins: [mixin_printHTML, reLength],
   data() {
     return {
@@ -413,6 +421,14 @@ export default {
   methods: {
     listGoodsOrder,
     listCompany,
+    // 银行回执
+    handleCommitUpload(val) {
+      this.form.paymentReceipts = val
+    },
+    // 发票单
+    handleCommitUploadInvoiceAttachments(val) {
+      this.form.invoiceAttachments = val
+    },
     // 自动填充的方法
     handleUpdateCompanyName(val) {
       this.queryCompanyName = val
