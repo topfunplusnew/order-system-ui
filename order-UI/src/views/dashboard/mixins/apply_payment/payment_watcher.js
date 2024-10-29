@@ -86,6 +86,10 @@ export var mixin_payment_watcher = {
         if (val === 'invoicein') {
           this.form.companyType = '供应商'
         }
+        // 打款是给供应商打款
+        if (val === 'goodsorder') {
+          this.form.companyType = '供应商'
+        }
       }
     }
   },

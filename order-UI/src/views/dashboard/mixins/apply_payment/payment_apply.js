@@ -55,6 +55,10 @@ export var mixin_payment_apply = {
       if (this.tableName === TableName.INVOICE_IN) {
         this.form.companyType = '供应商'
       }
+      // 订单打款
+      if (this.tableName === TableName.GOODS_ORDER) {
+        this.form.companyType = '供应商'
+      }
     },
     // 填充运费信息 这里是根据父组件传递过来的信息对象needInfo
     fillFreightInfo() {

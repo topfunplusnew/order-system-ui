@@ -185,8 +185,8 @@
           <el-row v-if="scope.row.paymentState === '审核中'">
             审核中
           </el-row>
-          <el-row v-if="scope.row.paymentState === '未打款'">
-            <el-button>前往打款</el-button>
+          <el-row v-if="scope.row.paymentState === '未支付'">
+            订单未支付
           </el-row>
           <el-row v-if="scope.row.paymentState === '已打款'">
             订单已打款

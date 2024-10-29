@@ -181,9 +181,8 @@
           <el-row v-if="scope.row.paymentState === '审核中'">
             审核中
           </el-row>
-          <el-row v-if="scope.row.paymentState === '未打款'">
-            订单未打款
-            <el-button>前往打款</el-button>
+          <el-row v-if="scope.row.paymentState === '未支付'">
+            订单未支付
           </el-row>
           <el-row v-if="scope.row.paymentState === '已打款'">
             订单已打款
@@ -194,7 +193,7 @@
                        v-if="columns[17].visible"
                        width="150px">
         <template slot-scope="scope">
-          <CheckFiles :path="scope.row.path"/>
+          <CheckFiles :path="scope.row.receiveProof"/>
         </template>
       </el-table-column>
       <el-table-column show-overflow-tooltip label="是否可编辑" align="center" prop="isedit" v-if="columns[19].visible"
@@ -415,7 +414,8 @@
 
 
     <!--    订单打款申请  mixin_order_applyPayment -->
-    <OrderMoneyReceive :table-name="TableName" :handle-close-apply="handleCloseApply" :need-money="needMoney"
+    <OrderMoneyReceive :table-name="TableName.GOODS_ORDER" :handle-close-apply="handleCloseApply"
+                       :need-money="needMoney"
                        :payment-apply-visible="paymentApplyVisible" :t-i-d="tID"/>
 
 
