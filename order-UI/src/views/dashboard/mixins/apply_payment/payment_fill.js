@@ -1,3 +1,5 @@
+// 付款申请的付款逻辑文件
+
 export var mixin_payment_fill = {
   data: function () {
     return {
@@ -11,6 +13,8 @@ export var mixin_payment_fill = {
       this.form.otherBankNo = val.bankNo;
       this.form.otherBankName = val.bankName;
       this.form.otherAcountsName = val.acountsName;
+      this.form.companyName = val.companyName;
+      this.form.companyId = val.companyId
     },
     handleUpdateQueryName(val) {
       this.queryCompany = val;

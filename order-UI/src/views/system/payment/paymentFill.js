@@ -1,4 +1,6 @@
-export var mixin_payment_fill = {
+// payment/index.vue所需的付款
+
+export var mixin_paymentindex_fill = {
   data: function () {
     return {
       // bank搜索
