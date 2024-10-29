@@ -19,6 +19,7 @@ export var mixin_payment_apply = {
     }
   },
   created() {
+    console.log(this.tableName)
     // 查询科目信息
     listSubject().then(res => {
       this.subjectTree = this.handleTree(res.data, "id", "parentId");

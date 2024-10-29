@@ -74,6 +74,7 @@ export var mixin_payment_watcher = {
     // 监听表的变化
     tableName: {
       handler(val) {
+        console.log("支付类型", val)
         if (val === 'oilrecharge') {
           this.form.companyType = '其他'
         }

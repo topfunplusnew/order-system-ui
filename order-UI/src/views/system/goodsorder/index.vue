@@ -414,7 +414,7 @@
 
 
     <!--    订单打款申请  mixin_order_applyPayment -->
-    <OrderMoneyReceive :table-name="TableName.GOODS_ORDER" :handle-close-apply="handleCloseApply"
+    <OrderMoneyReceive :table-name="TableName" :handle-close-apply="handleCloseApply"
                        :need-money="needMoney"
                        :payment-apply-visible="paymentApplyVisible" :t-i-d="tID"/>
 

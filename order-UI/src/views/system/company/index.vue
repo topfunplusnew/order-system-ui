@@ -265,6 +265,10 @@
       <!--      客户的银行卡列表  应查询已经绑定的银行卡-->
       <el-row>
         <el-table v-loading="loading" :data="singleInfo" @selection-change="handleSelectionChange">
+          <!--          为本公司绑定银行卡-->
+          <template #append>
+            <AddBank :company-info="currentInfo" @changeBankOpen="handleChangeBank"/>
+          </template>
           <el-table-column label="户名" align="center" prop="acountsName"/>
           <el-table-column label="银行卡号" align="center" prop="bankNo"/>
           <el-table-column label="银行卡余额" align="center" prop="amount"/>
@@ -386,9 +390,11 @@ import {listCompany, getCompany, delCompany, addCompany, updateCompany} from "@/
 import {excludeParams} from "@/api/tool/exclude";
 import {addBankAccount, delBankAccount, listBankAccount, setDefault} from "@/api/system/bankAccount";
 import {TableName} from "@/api/tool/enums";
+import AddBank from "../../dashboard/components/company/AddBank.vue";
 
 export default {
   name: "Company",
+  components: {AddBank},
   data() {
     // 自定义校验规则
     const validateRegion = (rule, value, callback) => {
@@ -585,13 +591,6 @@ export default {
     changeCity(e) {
       this.city = e;
     },
-    changeDis(e) {
-      this.district = e;
-    },
-    //账号搜索
-    handleSearch() {
-      this.dialogFormSearchVisible = true;
-    },
     //点击银行卡后弹窗
     jumpBankNo(row) {
       // 绑定ID 分页查询默认银行卡有用
@@ -643,14 +642,6 @@ export default {
           this.bankTotal = res.total;
         })
     },
-    //添加银行卡信息
-    handleAddBankInfo() {
-      this.dialogBankInfoVisible = true;
-      //查询所有银行卡信息
-      listBankAccount().then(res => {
-        this.bankInfo = res.rows;
-      })
-    },
     //银行卡搜索按钮
     handleSearchCompanyGive() {
       this.getList();
@@ -677,30 +668,6 @@ export default {
           this.$message.success("添加成功")
         })
       }
-    },
-    //弹出的银行卡信息点击提交
-    handleCommitCompanyGive() {
-      this.loading = true;
-      updateCompany(this.currentInfo).then(res => {
-        this.$modal.msgSuccess("修改成功");
-        this.loading = false
-      }).catch(err => {
-        this.$modal.msgError("修改失败!" + err.msg);
-      })
-      //重新查询
-      listCompany({
-        relationName: this.currentInfo.relationName,
-        relationTel: this.currentInfo.relationTel
-      }).then(res => {
-        this.singleInfo = res.rows
-      }).catch(err => {
-        this.$message.error(err.msg)
-      })
-    },
-    //打开的银行卡弹窗点击编辑
-    handleUpdateBankPop(row) {
-      this.currentInfo.bankNo = row.bankNo;
-      this.currentInfo.acountsName = row.acountsName;
     },
     //添加默认银行卡
     addDefaultCard(row) {
@@ -742,6 +709,11 @@ export default {
         this.dialogFormVisible = false
         this.getList()
       })
+    },
+    // 主动绑定银行卡后的回调函数
+    handleChangeBank() {
+      this.dialogFormVisible = false
+      this.getList()
     },
     printHTML() {
       this.$print({
@@ -865,23 +837,6 @@ export default {
         ...this.queryParams
       }, `company_${new Date().getTime()}.xlsx`)
     },
-    // 省份选择框变化时触发
-    provinceChange(province) {
-      this.form.province = province
-      this.form.city = undefined
-      this.form.county = undefined
-      this.$refs.form.validateField('province')
-    },
-    // 城市选择框变化时触发
-    cityChange(city) {
-      this.form.city = city
-      this.form.county = undefined
-      this.$refs.form.validateField('city')
-    },
-    // 县区选择框变化时触发
-    countyChange(county) {
-      this.form.county = county
-    }
   }
 };
 </script>
