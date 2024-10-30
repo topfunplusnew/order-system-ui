@@ -310,6 +310,30 @@ export default {
         this.loading = false;
       });
     },
+    /** 提交按钮 */
+    submitForm() {
+      this.$refs["form"].validate(valid => {
+        if (valid) {
+          excludeParams(this, this.$exclude)
+          // 填充对应表名和主键
+          this.form.tableName = this.tableName;
+          this.form.tID = this.tID;
+          this.form.payType = this.fullLevel;
+          this.form.checkState = '' //审核状态赋空
+          // 填充公司类型
+          this.form.companyType = this.value;
+          addPaymentApply(this.form).then(response => {
+            this.$modal.msgSuccess("付款申请添加成功");
+            this.reset()
+            this.$emit('changeOpen')
+          })
+        }
+      });
+    },
+    close() {
+      this.$emit('changeOpen')
+      this.reset()
+    },
     // 表单重置
     reset() {
       this.form = {
@@ -345,27 +369,7 @@ export default {
       this.resetForm("form");
     },
 
-    /** 提交按钮 */
-    submitForm() {
-      this.$refs["form"].validate(valid => {
-        if (valid) {
-          excludeParams(this, this.$exclude)
-          this.form.tableName = this.tableName;
-          this.form.tID = this.tID;
-          this.form.payType = this.fullLevel;
-          this.form.checkState = '' //审核状态赋空
-          addPaymentApply(this.form).then(response => {
-            this.$modal.msgSuccess("付款申请添加成功");
-            this.reset()
-            this.$emit('changeOpen')
-          })
-        }
-      });
-    },
-    close() {
-      this.$emit('changeOpen')
-      this.reset()
-    }
+
   }
 };
 </script>
