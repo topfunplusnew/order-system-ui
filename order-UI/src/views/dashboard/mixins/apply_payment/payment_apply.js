@@ -19,6 +19,7 @@ export var mixin_payment_apply = {
     }
   },
   created() {
+    console.log(this.tableName)
     // 查询科目信息
     listSubject().then(res => {
       this.subjectTree = this.handleTree(res.data, "id", "parentId");
@@ -53,6 +54,10 @@ export var mixin_payment_apply = {
       }
       // 如果是发票购入 对方公司类型那么就是供应商
       if (this.tableName === TableName.INVOICE_IN) {
+        this.form.companyType = '供应商'
+      }
+      // 订单打款
+      if (this.tableName === TableName.GOODS_ORDER) {
         this.form.companyType = '供应商'
       }
     },

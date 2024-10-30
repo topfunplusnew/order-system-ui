@@ -85,8 +85,9 @@
 
     <el-table border v-horizontal-scroll="'always'" v-loading="loading" :data="fleetList"
               @selection-change="handleSelectionChange" id="printBox" size="mini">
-      <el-table-column label="车队名称" align="center" prop="fName" v-if="columns[0].visible"/>
-      <el-table-column label="车队经理" align="center" prop="fLeader" v-if="columns[1].visible"/>
+      <!--   fixme 大小写错误 -->
+      <el-table-column label="车队名称" align="center" prop="fname" v-if="columns[0].visible"/>
+      <el-table-column label="车队经理" align="center" prop="fleader" v-if="columns[1].visible"/>
       <el-table-column label="车队经理电话" align="center" prop="tel" v-if="columns[2].visible"/>
       <el-table-column label="地址" align="center" prop="address" v-if="columns[3].visible"/>
       <el-table-column label="操作" align="center" class-name="small-padding fixed-width">
@@ -118,7 +119,8 @@
     />
 
     <!-- 添加或修改车队对话框 -->
-    <el-dialog :close-on-click-modal="false" :show-close="false" :title="title" :visible.sync="open" width="500px" append-to-body>
+    <el-dialog :close-on-click-modal="false" :show-close="false" :title="title" :visible.sync="open" width="500px"
+               append-to-body>
       <el-form ref="form" :model="form" :rules="rules" label-width="120px">
         <el-form-item label="车队名称" prop="fName">
           <el-input v-model="form.fName" placeholder="请输入车队名称"/>

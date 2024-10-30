@@ -120,15 +120,8 @@
       <el-table-column label="备注" align="center" prop="comments"
                        v-if="columns[21].visible" show-overflow-tooltip/>
       <el-table-column label="附件路径" align="center" prop="path" v-if="columns[22].visible">
-        <template #default="scope">
-          <img v-if="isPic(scope.row.path)" :src="scope.row.path" alt=""
-               style="width: 100%;height: 100%">
-          <span v-else-if="scope.row.path === '' || scope.row.path === null">无附件</span>
-          <span v-else>
-            文件不支持预览，请手动下载:
-          <a style="color: red"
-             :href="scope.row.path">{{ scope.row.path }}</a>
-          </span>
+        <template slot-scope="scope">
+          <CheckFiles :path="scope.row.path"/>
         </template>
       </el-table-column>
       <el-table-column label="操作" align="center" class-name="small-padding fixed-width" fixed="right" width="100px">
@@ -424,10 +417,11 @@ import {listOilCard} from "../../../api/system/oilCard";
 import Treeselect from "@riophae/vue-treeselect";
 import {listDept} from "@/api/system/dept";
 import "@riophae/vue-treeselect/dist/vue-treeselect.css";
+import CheckFiles from "../../../components/CheckFiles.vue";
 
 export default {
   name: "CarApply",
-  components: {Treeselect, SearchOption},
+  components: {CheckFiles, Treeselect, SearchOption},
   mixins: [mixin_printHTML, mixin_businesstrip_car_apply],
   data() {
     return {

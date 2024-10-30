@@ -60,16 +60,25 @@
     </el-row>
     <el-table border v-loading="loading" :data="OilCardConsumeList" @selection-change="handleSelectionChange"
               v-horizontal-scroll="'always'" id="printBox" size="mini" :cell-style="()=>{return {padding:'2px'}}">
-      <el-table-column label="id" align="center" prop="id" v-if="columns[0].visible"/>
-      <el-table-column label="加油卡卡号" align="center" prop="oilCardNo" v-if="columns[1].visible" width="110"/>
-      <el-table-column label="使用加油卡时间" align="center" prop="useDate" v-if="columns[2].visible" width="110"/>
-      <el-table-column label="使用加油卡车辆车牌号" align="center" prop="carNo" v-if="columns[3].visible" width="110"/>
-      <el-table-column label="期初余额" align="center" prop="startCardSurplus" v-if="columns[4].visible" width="110"/>
-      <el-table-column label="加油量" align="center" prop="refuelingNumber" v-if="columns[5].visible" width="110"/>
-      <el-table-column label="单价" align="center" prop="unitPrice" v-if="columns[6].visible" width="110"/>
-      <el-table-column label="加油金额(元）" align="center" prop="refuelingMoney" v-if="columns[7].visible" width="110"/>
-      <el-table-column label="充值金额(元）" align="center" prop="rechargeMoney" v-if="columns[8].visible" width="110"/>
-      <el-table-column label="加油卡余额" align="center" prop="endCardSurplus" v-if="columns[9].visible" width="110"/>
+      <el-table-column label="id" align="center" prop="id" v-if="columns[0].visible" show-overflow-tooltip/>
+      <el-table-column label="加油卡卡号" align="center" prop="oilCardNo" v-if="columns[1].visible" width="110"
+                       show-overflow-tooltip/>
+      <el-table-column label="使用加油卡时间" align="center" prop="useDate" v-if="columns[2].visible" width="110"
+                       show-overflow-tooltip/>
+      <el-table-column label="使用加油卡车辆车牌号" align="center" prop="carNo" v-if="columns[3].visible" width="110"
+                       show-overflow-tooltip/>
+      <el-table-column label="期初余额" align="center" prop="startCardSurplus" v-if="columns[4].visible" width="110"
+                       show-overflow-tooltip/>
+      <el-table-column label="加油量" align="center" prop="refuelingNumber" v-if="columns[5].visible" width="110"
+                       show-overflow-tooltip/>
+      <el-table-column label="单价" align="center" prop="unitPrice" v-if="columns[6].visible" width="110"
+                       show-overflow-tooltip/>
+      <el-table-column label="加油金额(元）" align="center" prop="refuelingMoney" v-if="columns[7].visible" width="110"
+                       show-overflow-tooltip/>
+      <el-table-column label="充值金额(元）" align="center" prop="rechargeMoney" v-if="columns[8].visible" width="110"
+                       show-overflow-tooltip/>
+      <el-table-column label="加油卡余额" align="center" prop="endCardSurplus" v-if="columns[9].visible" width="110"
+                       show-overflow-tooltip/>
       <!--      <el-table-column label="加油小票附件" align="center" prop="attachmentOiladd" v-if="columns[10].visible"-->
       <!--                       width="300px"/>-->
       <el-table-column label="加油小票附件" align="center" prop="attachmentOiladd" v-if="columns[10].visible">
@@ -114,7 +123,8 @@
     />
 
     <!-- 添加或修改加油卡消费信息对话框 -->
-    <el-dialog :close-on-click-modal="false" :show-close="false" :title="title" :visible.sync="open" width="500px" append-to-body>
+    <el-dialog :close-on-click-modal="false" :show-close="false" :title="title" :visible.sync="open" width="500px"
+               append-to-body>
       <el-form ref="form" :model="form" :rules="rules" label-width="80px">
         <el-form-item label="加油卡卡号" prop="oilCardNo">
           <el-input v-model="form.oilCardNo" placeholder="请输入加油卡卡号"/>

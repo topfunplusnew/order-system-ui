@@ -170,17 +170,8 @@
 
       <el-table-column show-overflow-tooltip label="附件" align="center" prop="path" v-if="columns[15].visible"
                        width="150px">
-        <template #default="scope">
-          <el-row>
-          </el-row>
-          <el-row v-if="scope.row.path === '' || scope.row.path === null">
-            无
-          </el-row>
-          <el-row v-else>
-            <el-button size="mini" type="text" @click="checkAttachment(scope.row,'path')">
-              查看
-            </el-button>
-          </el-row>
+        <template slot-scope="scope">
+          <CheckFiles :path="scope.row.path"/>
         </template>
       </el-table-column>
       <el-table-column show-overflow-tooltip label="打款状态" align="center" prop="paymentState"
@@ -192,8 +183,8 @@
           <el-row v-if="scope.row.paymentState === '审核中'">
             审核中
           </el-row>
-          <el-row v-if="scope.row.paymentState === '未打款'">
-            <el-button>前往打款</el-button>
+          <el-row v-if="scope.row.paymentState === '未支付'">
+            订单未支付
           </el-row>
           <el-row v-if="scope.row.paymentState === '已打款'">
             订单已打款
@@ -203,15 +194,8 @@
       <el-table-column show-overflow-tooltip label="收到条附件路径" align="center" prop="receiveProof"
                        v-if="columns[17].visible"
                        width="150px">
-        <template #default="scope">
-          <el-row v-if="scope.row.receiveProof === '' || scope.row.receiveProof === null">
-            无
-          </el-row>
-          <el-row v-else>
-            <el-button size="mini" type="text" @click="checkAttachment(scope.row,'receiveProof')">
-              查看
-            </el-button>
-          </el-row>
+        <template slot-scope="scope">
+          <CheckFiles :path="scope.row.receiveProof"/>
         </template>
       </el-table-column>
       <el-table-column show-overflow-tooltip label="原订单编号" align="center" prop="adjustOrderid"
@@ -495,10 +479,12 @@ import OrderHistoryCheck from "../../dashboard/components/goodsOrder/OrderHistor
 import PrimativeOrderInfo from "../../dashboard/components/goodsOrder/PrimativeOrderInfo.vue";
 import PreviousOrderInfo from "./PreviousOrderInfo.vue";
 import QueryStatment from "@/views/system/adjustOrders/QueryStatment.vue";
+import CheckFiles from "../../../components/CheckFiles.vue";
 
 export default {
   name: "AdjustOrders",
   components: {
+    CheckFiles,
     QueryStatment,
     PreviousOrderInfo,
     PrimativeOrderInfo,

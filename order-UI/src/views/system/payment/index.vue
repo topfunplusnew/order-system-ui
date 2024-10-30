@@ -518,14 +518,14 @@ import {mixin_payment_select, PAYMENT_TYPES} from "../../dashboard/mixins/paymen
 import {listCars} from "../../../api/system/cars";
 import {isNull} from "../../../main";
 import {mixin_payment_subject} from "../../dashboard/mixins/payment/payment_subject";
-import {mixin_payment_fill} from "@/views/system/payment/paymentFill";
 import {mixin_printHTML} from "@/views/dashboard/mixins/print";
 import DynamicField from "@/components/DynamicField.vue";
+import {mixin_paymentindex_fill} from "./paymentFill";
 
 export default {
   name: "Payment",
   components: {DynamicField, SearchOption},
-  mixins: [mixin_printHTML, mixin_payment_audit, mixin_payment_select, mixin_payment_subject, mixin_payment_fill],
+  mixins: [mixin_printHTML, mixin_payment_audit, mixin_payment_select, mixin_payment_subject, mixin_paymentindex_fill],
   data() {
     return {
       // 遮罩层

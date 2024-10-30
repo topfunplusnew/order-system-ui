@@ -104,11 +104,10 @@ export var mixin_order_base = {
     },
     /** 查询订单列表 */
     getList() {
-      this.loading = true;
       listGoodsOrder(this.queryParams).then(response => {
         this.goodsOrderList = response.rows;
         this.total = response.total;
-        this.loading = false;
+        this.loading = false
       });
     },
     // 休眠函数

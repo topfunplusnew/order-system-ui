@@ -27,15 +27,6 @@
         >新增供应商信息
         </el-button>
       </el-col>
-      <!--      <el-col :span="1.5">-->
-      <!--        <el-button-->
-      <!--          type="warning"-->
-      <!--          size="mini"-->
-      <!--          @click="handleSearch"-->
-      <!--          v-hasPermi="['system:companygive:query']"-->
-      <!--        >账号搜索-->
-      <!--        </el-button>-->
-      <!--      </el-col>-->
       <right-toolbar :showSearch.sync="showSearch" @queryTable="getList" :columns="columns">
         <template v-slot:print>
           <el-col :span="1.5">
@@ -215,6 +206,9 @@
       <el-divider>已绑定银行卡</el-divider>
       <el-row>
         <el-table v-loading="loading" :data="singleInfo" @selection-change="handleSelectionChange">
+          <template #append>
+            <AddBank :company-info="currentInfo" @changeBankOpen="handleChangeBank"/>
+          </template>
           <el-table-column label="序号" align="center" prop="id"/>
           <el-table-column label="户名" align="center" prop="acountsName"/>
           <el-table-column label="银行卡号" align="center" prop="bankNo"/>
@@ -385,9 +379,11 @@
 import {listCompany, getCompany, delCompany, addCompany, updateCompany} from "@/api/system/company";
 import {delBankAccount, listBankAccount, setDefault} from "@/api/system/bankAccount";
 import {excludeParams} from "@/api/tool/exclude";
+import AddBank from "../../dashboard/components/company/AddBank.vue";
 
 export default {
   name: "Company",
+  components: {AddBank},
   data() {
     return {
       // 遮罩层
@@ -740,6 +736,11 @@ export default {
         this.dialogFormVisible = false
         this.getList()
       })
+    },
+    // 主动绑定银行卡后的回调函数
+    handleChangeBank() {
+      this.dialogFormVisible = false
+      this.getList()
     },
     printHTML() {
       this.$print({

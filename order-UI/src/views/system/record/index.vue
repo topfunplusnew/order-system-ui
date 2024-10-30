@@ -102,14 +102,7 @@
       <!--      附件上传-->
       <el-table-column label="附件" align="center" prop="attachment">
         <template #default="scope">
-          <el-row v-if="scope.row.attachment === '' || scope.row.attachment === null">
-            无
-          </el-row>
-          <el-row v-else>
-            <el-button size="mini" type="text" @click="checkAttachment(scope.row,'attachment')">
-              查看附件
-            </el-button>
-          </el-row>
+          <CheckFiles :path="scope.row.attachment"/>
         </template>
       </el-table-column>
       <el-table-column label="备注" align="center" prop="remarks"/>
@@ -280,10 +273,11 @@ import {excludeParams} from "../../../api/tool/exclude";
 import {TableName} from "../../../api/tool/enums";
 import {listInvoiceOther} from "../../../api/system/invoiceOther";
 import {mixin_record_fill} from "@/views/system/record/recordFill";
+import CheckFiles from "../../../components/CheckFiles.vue";
 
 export default {
   name: "Record",
-  components: {SearchOption},
+  components: {CheckFiles, SearchOption},
   mixins: [mixin_printHTML, mixin_record_fill, mixin_record_uploadFiles],
   data() {
     return {

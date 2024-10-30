@@ -136,7 +136,7 @@
     </el-dialog>
 
 
-    <el-dialog :close-on-click-modal="false" :show-close="false" title="库存信息" :visible.sync="inventoryInfoVisible"
+    <el-dialog :close-on-click-modal="false" :show-close="true" title="库存信息" :visible.sync="inventoryInfoVisible"
                width="70%" append-to-body>
       <el-descriptions title="库存详情" border>
         <el-descriptions-item label="陆地车号">

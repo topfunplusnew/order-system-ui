@@ -109,8 +109,9 @@
     <el-table border v-loading="loading" :data="CustomerVisitList" @selection-change="handleSelectionChange"
               id="printBox" v-horizontal-scroll="'always'" size="mini" :cell-style="()=>{return {padding:'2px'}}">
       <el-table-column label="id" align="center" prop="id" fixed="left"/>
-      <el-table-column label="走访日期" align="center" prop="visitDate" fixed="left"/>
+      <el-table-column label="走访日期" align="center" prop="visitDate" fixed="left" show-overflow-tooltip/>
       <el-table-column label="是否审核" align="center" prop="isCheckState" v-if="columns[0].visible" fixed="left"
+                       show-overflow-tooltip
                        width="120px">
         <template #default="scope">
           <el-row v-if="scope.row.checkState === 1">
@@ -118,21 +119,33 @@
           </el-row>
           <el-row v-else>
             <el-row>
-              <el-button type="warning" @click="handleCheck(scope.row)" size="mini"
-                         v-hasPermi="['system:customervisit:audit']">去审核
+              <el-button type="text" @click="handleCheck(scope.row)" size="mini"
+                         v-hasPermi="['system:customervisit:audit']">审核
               </el-button>
             </el-row>
           </el-row>
         </template>
       </el-table-column>
       <el-table-column label="客户名称" align="center" prop="customer" v-if="columns[1].visible" fixed="left"
+                       show-overflow-tooltip
                        width="150px"/>
+      <el-table-column label="客户名称" align="center" prop="customer" v-if="columns[1].visible" fixed="left"
+                       show-overflow-tooltip/>
       <el-table-column label="负责人姓名" align="center" prop="leaderName" v-if="columns[2].visible" width="150px"/>
-      <el-table-column label="负责人电话" align="center" prop="LeaderTel" v-if="columns[3].visible" width="150px"/>
-      <el-table-column label="厂房设备" align="center" prop="equipment" v-if="columns[4].visible" width="150px"/>
-      <el-table-column label="竞争对手" align="center" prop="competitor" v-if="columns[5].visible" width="150px"/>
-      <el-table-column label="当地经销商" align="center" prop="localDealer" v-if="columns[6].visible" width="150px"/>
+      <el-table-column label="客户名称" align="center" prop="customer" v-if="columns[1].visible" fixed="left"
+                       show-overflow-tooltip/>
+      <el-table-column label="负责人电话" align="center" prop="LeaderTel" v-if="columns[3].visible" width="150px"
+                       show-overflow-tooltip/>
+      <el-table-column label="客户名称" align="center" prop="customer" v-if="columns[1].visible" fixed="left"
+                       show-overflow-tooltip/>
+      <el-table-column label="厂房设备" align="center" prop="equipment" v-if="columns[4].visible" width="150px"
+                       show-overflow-tooltip/>
+      <el-table-column label="竞争对手" align="center" prop="competitor" v-if="columns[5].visible" width="150px"
+                       show-overflow-tooltip/>
+      <el-table-column label="当地经销商" align="center" prop="localDealer" v-if="columns[6].visible" width="150px"
+                       show-overflow-tooltip/>
       <el-table-column label="月用货量" align="center" prop="monthlyConsumption" v-if="columns[7].visible"
+                       show-overflow-tooltip
                        width="150px"/>
       <el-table-column label="白玻用货习惯及厂家" align="center" prop="whiteGlassFactory" v-if="columns[8].visible"
                        width="200px" show-overflow-tooltip/>
@@ -182,7 +195,8 @@
     />
 
     <!-- 添加或修改走访记录对话框 -->
-    <el-dialog :close-on-click-modal="false" :show-close="false" :title="title" :visible.sync="open" width="70%" append-to-body fullscreen>
+    <el-dialog :close-on-click-modal="false" :show-close="false" :title="title" :visible.sync="open" width="70%"
+               append-to-body fullscreen>
       <el-form ref="form" :model="form" :rules="rules" label-width="80px">
         <el-col :span="8">
           <el-form-item label="走访日期" prop="visitDate">
@@ -339,8 +353,8 @@ export default {
       rules: {},
       columns: [
         {key: 0, label: `是否审核`, visible: true},
-       /* {key: 1, label: `人员`, visible: true},
-        {key: 2, label: `区域`, visible: true},*/
+        /* {key: 1, label: `人员`, visible: true},
+         {key: 2, label: `区域`, visible: true},*/
         {key: 1, label: `客户名称`, visible: true},
         {key: 2, label: `负责人姓名`, visible: true},
         {key: 3, label: `负责人电话`, visible: true},
@@ -353,7 +367,7 @@ export default {
         {key: 10, label: `色玻、过度色玻璃用货厂家及用量`, visible: true},
         {key: 11, label: `特色厚度、特殊尺寸、协议品用货厂家及用量`, visible: true},
         {key: 12, label: `备注`, visible: true},
-       /* {key: 15, label: `提交时间`, visible: true},*/
+        /* {key: 15, label: `提交时间`, visible: true},*/
         {key: 13, label: `省`, visible: true},
         {key: 14, label: `市`, visible: true},
         {key: 15, label: `乡镇`, visible: true},

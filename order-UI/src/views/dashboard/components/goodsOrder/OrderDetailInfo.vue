@@ -5,7 +5,7 @@ import {listCompany} from "@/api/system/company";
 import {listBankAccount} from "@/api/system/bankAccount";
 import {getGoodsOrder, updateGoodsOrder} from "@/api/system/goodsOrder";
 import {excludeParams} from "@/api/tool/exclude";
-import {getDicts, } from "../../../../api/system/dict/data";
+import {getDicts,} from "../../../../api/system/dict/data";
 
 export default {
   name: "OrderDetailInfo",
@@ -75,10 +75,10 @@ export default {
     //添加返利回扣信息
     addMoneyBackInfo() {
       addRebate(this.moneyBackInfo)
-          .then(res => {
-            this.$message.success('添加成功~')
-            this.addMoneyBackVisible = false
-          })
+        .then(res => {
+          this.$message.success('添加成功~')
+          this.addMoneyBackVisible = false
+        })
     },
     //删除订单详情个体
     deleteOrderDetail(row) {
@@ -128,15 +128,15 @@ export default {
                          v-if="!ban">
           <template slot-scope="scope">
             <el-button
-                size="mini"
-                type="warning"
-                @click="handleMoneyBack(scope.row)"
+              size="mini"
+              type="warning"
+              @click="handleMoneyBack(scope.row)"
             >货物返利
             </el-button>
             <el-button
-                size="mini"
-                type="danger"
-                @click="deleteOrderDetail(scope.row)"
+              size="mini"
+              type="danger"
+              @click="deleteOrderDetail(scope.row)"
             >删除货物
             </el-button>
           </template>
@@ -166,7 +166,7 @@ export default {
         <el-table-column label="出厂是否含税" align="center" prop="isIncludeTaxFactory" show-overflow-tooltip>
           <template slot-scope="scope">
             <el-tag
-                disable-transitions>{{ scope.row.isIncludeTaxFactory === 0 ? "否" : "是" }}
+              disable-transitions>{{ scope.row.isIncludeTaxFactory === 0 ? "否" : "是" }}
             </el-tag>
           </template>
         </el-table-column>
@@ -176,7 +176,7 @@ export default {
         <el-table-column label="销售是否含税" align="center" prop="isIncludeTaxSale" show-overflow-tooltip>
           <template slot-scope="scope">
             <el-tag
-                disable-transitions>{{ scope.row.isIncludeTaxSale === 0 ? "否" : "是" }}
+              disable-transitions>{{ scope.row.isIncludeTaxSale === 0 ? "否" : "是" }}
             </el-tag>
           </template>
         </el-table-column>
@@ -200,15 +200,15 @@ export default {
 
     <!--    返利回扣-->
     <el-dialog :close-on-click-modal="false"
-        title="添加返利信息"
-        :visible.sync="addMoneyBackVisible"
-        width="40%" append-to-body>
+               title="添加返利信息"
+               :visible.sync="addMoneyBackVisible"
+               width="40%" append-to-body>
       <el-form :model="moneyBackInfo" label-width="80px">
         <el-form-item label="日期" prop="rebateDate">
           <el-date-picker
-              v-model="moneyBackInfo.rebateDate"
-              type="date"
-              placeholder="选择日期" value-format="yyyy-MM-dd">
+            v-model="moneyBackInfo.rebateDate"
+            type="date"
+            placeholder="选择日期" value-format="yyyy-MM-dd">
           </el-date-picker>
         </el-form-item>
         <el-form-item label="金额" prop="rebate">
@@ -274,14 +274,14 @@ export default {
         </el-form-item>
         <el-form-item label="返利方式" prop="rebateMethod">
           <el-select
-              v-model="moneyBackInfo.rebateMethod"
-              default-first-option
-              placeholder="请选择返利方式">
+            v-model="moneyBackInfo.rebateMethod"
+            default-first-option
+            placeholder="请选择返利方式">
             <el-option
-                v-for="item in rebateMethods"
-                :key="item.dictValue"
-                :label="item.dictLabel"
-                :value="item.dictLabel">
+              v-for="item in rebateMethods"
+              :key="item.dictValue"
+              :label="item.dictLabel"
+              :value="item.dictLabel">
             </el-option>
           </el-select>
         </el-form-item>

@@ -3,10 +3,10 @@
     <el-form :model="queryParams" ref="queryForm" size="mini" :inline="true" v-show="showSearch" label-width="68px">
       <el-form-item label="车牌" prop="carNo">
         <el-input
-            v-model="queryParams.carNo"
-            placeholder="请输入车牌"
-            clearable
-            @keyup.enter.native="handleQuery"
+          v-model="queryParams.carNo"
+          placeholder="请输入车牌"
+          clearable
+          @keyup.enter.native="handleQuery"
         />
       </el-form-item>
       <el-form-item>
@@ -20,10 +20,10 @@
       </el-col>
       <el-col :span="1.5">
         <el-button
-            type="danger"
-            size="mini"
-            @click="handleAdd"
-            v-hasPermi="['system:companycar:add']"
+          type="danger"
+          size="mini"
+          @click="handleAdd"
+          v-hasPermi="['system:companycar:add']"
         >添加公司车辆信息
         </el-button>
       </el-col>
@@ -31,10 +31,10 @@
         <template v-slot:print>
           <el-col :span="1.5">
             <el-button
-                plain
-                icon="el-icon-printer"
-                size="mini"
-                @click="printHTML"
+              plain
+              icon="el-icon-printer"
+              size="mini"
+              @click="printHTML"
             >
             </el-button>
           </el-col>
@@ -43,11 +43,11 @@
         <template v-slot:export>
           <el-col :span="1.5">
             <el-button
-                plain
-                icon="el-icon-folder-opened"
-                size="mini"
-                @click="handleExport"
-                v-hasPermi="['system:companycar:export']"
+              plain
+              icon="el-icon-folder-opened"
+              size="mini"
+              @click="handleExport"
+              v-hasPermi="['system:companycar:export']"
             >
             </el-button>
           </el-col>
@@ -62,17 +62,17 @@
       <el-table-column label="操作" align="center" class-name="small-padding fixed-width" fixed="right" min-width="30%">
         <template slot-scope="scope">
           <el-button
-              size="mini"
-              type="primary"
-              @click="handleUpdate(scope.row)"
-              v-hasPermi="['system:companycar:edit']"
+            size="mini"
+            type="primary"
+            @click="handleUpdate(scope.row)"
+            v-hasPermi="['system:companycar:edit']"
           >编辑
           </el-button>
           <el-button
-              size="mini"
-              type="danger"
-              @click="handleDelete(scope.row)"
-              v-hasPermi="['system:companycar:remove']"
+            size="mini"
+            type="danger"
+            @click="handleDelete(scope.row)"
+            v-hasPermi="['system:companycar:remove']"
           >删除
           </el-button>
         </template>
@@ -80,16 +80,17 @@
     </el-table>
 
     <pagination
-        v-show="total>0"
-        :total="total"
-        :page.sync="queryParams.pageNum"
-        :limit.sync="queryParams.pageSize"
-        @pagination="getList"
+      v-show="total>0"
+      :total="total"
+      :page.sync="queryParams.pageNum"
+      :limit.sync="queryParams.pageSize"
+      @pagination="getList"
     />
 
     <!-- 添加或修改外部车辆信息对话框 -->
-    <el-dialog :close-on-click-modal="false" :show-close="false" :title="title" :visible.sync="open" width="500px" append-to-body>
-      <el-form ref="form" :model="form" :rules="rules" label-width="80px">
+    <el-dialog :close-on-click-modal="false" :show-close="false" :title="title" :visible.sync="open" width="500px"
+               append-to-body>
+      <el-form ref="form" :model="form" label-width="80px">
         <el-form-item label="车牌" prop="carNo">
           <el-input v-model="form.dictLabel" placeholder="请输入车牌"/>
         </el-form-item>
@@ -103,9 +104,6 @@
 </template>
 
 <script>
-import {listCars, getCars, delCars, addCars, updateCars} from "@/api/system/cars";
-import {addFleet, updateFleet} from "@/api/system/fleet";
-import {listCompany} from "@/api/system/company";
 import {excludeParams} from "@/api/tool/exclude";
 import {addData, getData, listData} from "@/api/system/dict/data";
 import {getUuid} from "@/utils/trash/utils";
@@ -141,11 +139,6 @@ export default {
         delFlag: null
       },
       form: {},
-      rules: {
-        carNo: [
-          {required: true, message: "车牌号不能为空", trigger: "blur"}]
-      }
-      ,
       options: [
         {
           value: '收款',
@@ -164,7 +157,7 @@ export default {
   created() {
     this.getList();
     if (localStorage.getItem('companycar-columns') === 'null'
-        || !localStorage.getItem('companycar-columns')) {
+      || !localStorage.getItem('companycar-columns')) {
       localStorage.setItem("companycar-columns", JSON.stringify(this.columns))
     } else {
       this.columns = JSON.parse(localStorage.getItem('companycar-columns'));
@@ -185,7 +178,12 @@ export default {
     getList() {
       this.loading = true;
       //查询公司车辆信息  使用字典查询
-      listData({dictType: 'order_cars'}).then(res => {
+      const query = {
+        dictType: 'order_cars',
+        pageNum: this.queryParams.pageNum,
+        pageSize: this.queryParams.pageSize
+      }
+      listData(query).then(res => {
         this.carsList = res.rows;
         this.total = res.total;
         this.loading = false;

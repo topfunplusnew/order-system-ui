@@ -113,12 +113,10 @@ export default {
       <el-table-column show-overflow-tooltip label="供应商" align="center" prop="supplierNames" fixed="left"
                        width="200">
         <template #default="scope">
-          <el-row v-if="scope.row.supplierNames !== null">
-            <el-row>
+          <el-row>
           <span v-for="(item, index) in getSupplierNames(scope.row.orderDetailList)" :key="index">
                 {{ item.supplier }}
           </span>
-            </el-row>
           </el-row>
         </template>
       </el-table-column>

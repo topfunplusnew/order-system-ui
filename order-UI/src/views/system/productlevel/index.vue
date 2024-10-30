@@ -247,8 +247,7 @@
         <el-form-item label="级别名称" prop="levelName">
           <el-input v-model="form.levelName" placeholder="请输入级别名称"/>
         </el-form-item>
-        <el-form-item label="分类编号" prop="tableName" v-if="form.id==null">
-<!--        根据id判断,如果有id,说明修改,不用展示编号-->
+        <el-form-item label="分类编号" prop="tableName">
           <el-input v-model="form.categoryNo" placeholder="请输入分类编号"/>
         </el-form-item>
         <el-form-item label="分类名称" prop="categoryName">
@@ -425,6 +424,7 @@ export default {
     //获取产品字典信息
     getDicts('order_product_categories').then(res => {
       this.dictList = res.data;
+      console.log(this.dictList)
     })
     if (localStorage.getItem('productlevel-columns') === 'null'
       || !localStorage.getItem('productlevel-columns')) {
@@ -444,8 +444,10 @@ export default {
     },
     //监听产品级别变化 自动填充级别编码
     'addCategoryModel.categoryName': function (newVal) {
-      //查询该级别名称对应的级别编码
-      this.addCategoryModel.categoryNo = this.dictList.find(item => item.dictLabel === newVal).dictValue
+      if (newVal !== null) {
+        //查询该级别名称对应的级别编码
+        this.addCategoryModel.categoryNo = this.dictList.find(item => item.dictLabel === newVal).dictValue
+      }
     },
     'tempCategoryInfo.levelNo': {
       handler(val) {
@@ -457,6 +459,11 @@ export default {
       },
       deep: true
     },
+    'form.categoryName': function (newVal) {
+      if (newVal !== null) {
+        this.form.categoryNo = this.dictList.find(item => item.dictLabel === newVal).dictValue
+      }
+    }
   },
   methods: {
     // 左侧的产品列表点击某个分类
