@@ -118,7 +118,8 @@
       @pagination="getList"/>
 
     <!-- 添加或修改商业票据、银行承兑对话框 -->
-    <el-dialog :close-on-click-modal="false" :show-close="false" :title="title" :visible.sync="open" width="55%" append-to-body>
+    <el-dialog :close-on-click-modal="false" :show-close="false" :title="title" :visible.sync="open" width="55%"
+               append-to-body>
       <el-form ref="form" :model="form" :rules="rules" label-width="140px">
         <el-row>
           <el-col :span="12">
@@ -142,12 +143,12 @@
                 </el-col>
                 <el-col :span="3">
                   <SearchOption :get-data="listBankAccount" :limit-info="{accountType:'己方公司'}"
-                                @commitBack="handleCommitBack">
+                                @commitBack="handleCommitBack" query-label="户名查找" query-info="acountsName"
+                                :query-name="queryBank" @update:queryName="handleUpdateQueryName">
                     <template #table-columns>
                       <el-table-column label="开户名称(户名)" align="center" prop="acountsName"/>
                       <el-table-column label="账号(银行账号)" align="center" prop="bankNo"/>
                       <el-table-column label="开户行" align="center" prop="bankName"/>
-                      <el-table-column label="公司名称" align="center" prop="companyName"/>
                     </template>
                   </SearchOption>
                 </el-col>
@@ -160,11 +161,6 @@
                 placeholder="选择日期" format="yyyy 年 MM 月 dd 日" value-format="yyyy-MM-dd">
               </el-date-picker>
             </el-form-item>
-            <!--            选择分类 因为是支出默认-->
-            <!--            <el-form-item label="分类" prop="billType">-->
-            <!--              <el-radio v-model="form.billType" label="收入">收入</el-radio>-->
-            <!--              <el-radio v-model="form.billType" label="支出">支出</el-radio>-->
-            <!--            </el-form-item>-->
             <el-form-item label="票据种类" prop="billCategory">
               <el-radio v-model="form.billCategory" label="电子">购买</el-radio>
               <el-radio v-model="form.billCategory" label="纸质">客户付款</el-radio>
@@ -229,10 +225,13 @@ import {formatTime} from "@/api/tool/format";
 import SearchOption from "@/components/SearchOption.vue";
 import {listBankAccount} from "@/api/system/bankAccount";
 import {excludeParams} from "@/api/tool/exclude";
+import {mixin_bank_acception_fill} from "../../dashboard/mixins/bankacceptancegive/mixin_bankacception_fill";
+import {mixin_printHTML} from "../../dashboard/mixins/print";
 
 export default {
   name: "BankAcceptance",
   components: {SearchOption},
+  mixins: [mixin_bank_acception_fill, mixin_printHTML],
   data() {
     return {
       // 遮罩层
@@ -350,9 +349,7 @@ export default {
   },
   methods: {
     listBankAccount,
-    handleCommitBack(val) {
-      this.form.billAccount = val.acountsName;
-    },
+
     //自定义列统计总函数
     getSummaries(param) {
       const {columns, data} = param;

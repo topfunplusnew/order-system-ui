@@ -126,7 +126,8 @@
     />
 
     <!-- 添加或修改商业票据、银行承兑对话框 -->
-    <el-dialog :close-on-click-modal="false" :show-close="false" :title="title" :visible.sync="open" width="62%" append-to-body>
+    <el-dialog :close-on-click-modal="false" :show-close="false" :title="title" :visible.sync="open" width="62%"
+               append-to-body>
       <el-form ref="form" :model="form" :rules="rules" label-width="140px">
         <el-row>
           <el-col :span="12">
@@ -150,12 +151,12 @@
                 </el-col>
                 <el-col :span="3">
                   <SearchOption :get-data="listBankAccount" :limit-info="{accountType:'己方公司'}" title="我方承兑账户"
-                                @commitBack="handleCommitBack">
+                                @commitBack="handleCommitBack" query-label="户名查找" query-info="acountsName"
+                                :query-name="queryBank" @update:queryName="handleUpdateQueryName">
                     <template #table-columns>
                       <el-table-column label="开户名称(户名)" align="center" prop="acountsName"/>
                       <el-table-column label="账号(银行账号)" align="center" prop="bankNo"/>
                       <el-table-column label="开户行" align="center" prop="bankName"/>
-                      <el-table-column label="公司名称" align="center" prop="companyName"/>
                     </template>
                   </SearchOption>
                 </el-col>
@@ -232,11 +233,12 @@ import SearchOption from "@/components/SearchOption.vue";
 import {listBankAccount} from "@/api/system/bankAccount";
 import {mixin_printHTML} from "@/views/dashboard/mixins/print";
 import {excludeParams} from "@/api/tool/exclude";
+import {mixin_bankacception_fill} from "../../dashboard/mixins/bankacceptance/bankacception_fill";
 
 export default {
   name: "BankAcceptance",
   components: {SearchOption},
-  mixins: [mixin_printHTML],
+  mixins: [mixin_printHTML, mixin_bankacception_fill],
   data() {
     return {
       // 遮罩层

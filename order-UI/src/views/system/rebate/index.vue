@@ -183,7 +183,8 @@
                     <el-input v-model="form.inAcountsName" placeholder="请输入收款户名"/>
                   </el-col>
                   <el-col :span="4">
-                    <SearchOption :limit-info="{acountsType:'己方公司'}" :get-data="listBankAccount" @commitBack="handleCommitBackBankAcount"
+                    <SearchOption :limit-info="{acountsType:'己方公司'}" :get-data="listBankAccount"
+                                  @commitBack="handleCommitBackBankAcount"
                                   @update:queryName="handleUpdateQueryBankAcount" :query-name="queryBankAcount"
                                   query-label="户名查找" query-info="acountsName">
                       <template #table-columns>
@@ -600,6 +601,7 @@ import SearchOption from "@/components/SearchOption.vue";
 import InfoDialog from "../../../components/InfoDialog.vue";
 import OrderDetailList from "../../dashboard/components/rebate/OrderDetailList.vue";
 import {mixin_choose_order} from "../../dashboard/mixins/rebate/choose_order";
+import {mixin_rebate_fill} from "../../dashboard/mixins/rebate/rebate_fill";
 
 export default {
   name: "Rebate",
@@ -609,7 +611,7 @@ export default {
     }
   },
   components: {OrderDetailList, InfoDialog, SearchOption, OrderDetailInfo, OrderInfos, ApplyPayment},
-  mixins: [mixin_printHTML, mixin_choose_order],
+  mixins: [mixin_printHTML, mixin_choose_order, mixin_rebate_fill],
   data() {
     return {
       // 遮罩层
@@ -792,8 +794,6 @@ export default {
         this.loading = false;
       });
     },
-    // todo 订单返利货物列表
-    // noPageListRebate
     // 弹出的列表页分页
     getOrderList() {
       listGoodsOrder(this.queryParams).then(response => {

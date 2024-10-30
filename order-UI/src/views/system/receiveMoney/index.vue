@@ -213,9 +213,6 @@
         <el-form-item label="己方开户行" prop="selfBankName">
           <el-input v-model="form.selfBankName" placeholder="请输入己方开户行"/>
         </el-form-item>
-
-
-        <!--          todo-->
         <el-form-item label="对方公司" prop="companyName">
           <el-row>
             <el-col :span="14">
@@ -265,7 +262,6 @@
           <el-input v-model="form.transactionHistory" placeholder="请输入银行卡流水编号"/>
         </el-form-item>
         <el-form-item label="银行卡流水编号附件" prop="transactionHistoryAttachment">
-          <!--          todo 附件上传-->
           <file-upload @input="handleCommitUpload"/>
         </el-form-item>
         <el-form-item label="备注" prop="comments">
