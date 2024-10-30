@@ -106,12 +106,6 @@
                        fixed="right">
         <template slot-scope="scope">
           <el-row>
-            <!--            <el-button-->
-            <!--              size="mini"-->
-            <!--              type="text"-->
-            <!--              @click="handleAdjust(scope.row)"-->
-            <!--              v-hasPermi="['system:balanceaccounts:adjust']">银行卡调整-->
-            <!--            </el-button>-->
             <el-button
               size="mini"
               type="text"
@@ -161,6 +155,7 @@
           </el-select>
         </el-form-item>
         <el-form-item label="户名" prop="acountsName">
+          <!--          如果是司机 那么就选择-->
           <el-row v-if="form.acountsType ==='司机'">
             <el-col :span="20">
               <el-input v-model="form.acountsName" placeholder="请输入户名"/>
@@ -238,7 +233,6 @@
                width="500px" append-to-body>
       <el-form ref="form" :model="adjustmentInfo" :rules="rules" label-width="80px">
         <el-form-item label="变动类型" prop="changeType">
-          <!--          <el-input v-model="form.changeType" placeholder="请输入变动类型(收入、支出)"/>-->
           <el-radio v-model="adjustmentInfo.changeType" label="收入">收入</el-radio>
           <el-radio v-model="adjustmentInfo.changeType" label="支出">支出</el-radio>
         </el-form-item>
@@ -283,6 +277,28 @@
     <el-dialog :close-on-click-modal="false" :show-close="false" title="银行卡流水"
                :visible.sync="bankChangeDialogVisible" width="55%" append-to-body>
       <el-row>
+        <div>
+          <el-form :model="bankAcountQuery" label-width="80px">
+            <el-col :span="4">
+              <el-form-item label="日期" prop="operateDate">
+                <el-date-picker
+                  v-model="bankAcountQuery.operateDate"
+                  type="date"
+                  value-format="yyyy-MM-dd"
+                  placeholder="日期"
+                  style="width: 140px"
+                />
+              </el-form-item>
+            </el-col>
+            <el-col :span="6">
+              <el-form-item>
+                <el-button type="primary" @click="getBankAcountChangeList" size="mini">
+                  搜索
+                </el-button>
+              </el-form-item>
+            </el-col>
+          </el-form>
+        </div>
         <el-table
           :data="bankChangeList"
           style="width: 100%">
@@ -308,8 +324,8 @@
         <pagination
           v-show="bankAcountTotal>0"
           :total="bankAcountTotal"
-          :page.sync="bankAcountTotalPageNum"
-          :limit.sync="bankAcountTotalPageSize"
+          :page.sync="bankAcountQuery.bankAcountTotalPageNum"
+          :limit.sync="bankAcountQuery.bankAcountTotalPageSize"
           @pagination="getBankAcountChangeList"/>
       </el-row>
       <div slot="footer" class="dialog-footer">
@@ -468,9 +484,12 @@ export default {
       bankChangeDialogVisible: false,
       bankChangeList: [],
       currentBankNo: '',
-      bankAcountTotalPageNum: 10,
-      bankAcountTotalPageSize: 1,
-      bankAcountTotal: null,
+      bankAcountQuery: {
+        bankAcountTotalPageNum: 10,
+        bankAcountTotalPageSize: 1,
+        operateDate: null,
+      },
+      bankAcountTotal: 0,
       //供应商搜索组件
       queryCompanyGive: '',
       queryCompany: '',
@@ -523,7 +542,7 @@ export default {
       })
     },
 
-    //3.银行卡变动流水
+    //3. todo 银行卡变动流水
     checkBankChangeFlow(row) {
       this.currentBankNo = row.bankNo;
       // 查询该银行账号的变动流水
@@ -537,8 +556,9 @@ export default {
     getBankAcountChangeList() {
       listBankAccountChange({
         selfBankNo: this.currentBankNo,
-        pageNum: this.bankAcountTotalPageNum,
-        pageSize: this.bankAcountTotalPageSize
+        pageNum: this.bankAcountQuery.bankAcountTotalPageNum,
+        pageSize: this.bankAcountQuery.bankAcountTotalPageSize,
+        ...this.bankAcountQuery
       }).then(res => {
         this.bankChangeList = res.rows;
         this.bankAcountTotal = res.total;
@@ -587,14 +607,9 @@ export default {
     getList() {
       this.loading = true;
       listBankAccount(this.queryParams).then(response => {
-        // const accountsTypeToSelect = ['己方公司', '其它'];
-        // this.bankAccountList = response.rows.filter(item => {
-        //   // return item.acountsType === '己方公司' || item.acountsType === '其它'
-        //   return accountsTypeToSelect.includes(item.acountsType)
-        // })
         this.bankAccountList = response.rows;
+        console.log(response)
         this.total = response.total;
-        // this.total = this.bankAccountList.length;
         this.loading = false;
       });
     },

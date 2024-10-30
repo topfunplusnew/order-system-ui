@@ -11,28 +11,20 @@ REM 设置本地文件路径
 set LOCAL_FILE=C:\Users\大帅比的电脑\OneDrive\桌面\订单管理系统前端\order-system\order-UI\bash\test.txt
 
 REM 连接到FTP服务器并上传文件
-echo open %FTP_SERVER% | ftp -n -s:nul > nul
+(
+    echo open !FTP_SERVER!
+    echo !FTP_USER!
+    echo !FTP_PASSWORD!
+    echo binary
+    echo cd !REMOTE_PATH!
+    echo put !LOCAL_FILE!
+    echo bye
+) | ftp -n
+
 if errorlevel 1 (
-    echo Failed to connect to the server.
+    echo FTP command failed.
     exit /b
 )
-
-echo %FTP_USER% | ftp -n -s:nul > nul
-if errorlevel 1 (
-    echo Failed to login.
-    exit /b
-)
-
-echo %FTP_PASSWORD% | ftp -n -s:nul > nul
-if errorlevel 1 (
-    echo Failed to login.
-    exit /b
-)
-
-echo binary | ftp -n -s:nul > nul
-echo cd %REMOTE_PATH% | ftp -n -s:nul > nul
-echo put %LOCAL_FILE% | ftp -n -s:nul > nul
-echo bye | ftp -n -s:nul > nul
 
 echo Upload complete.
 endlocal
