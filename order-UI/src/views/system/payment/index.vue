@@ -120,80 +120,80 @@
     </el-row>
     <el-table v-loading="loading" :data="paymentList" @selection-change="handleSelectionChange" id="printBox"
               v-horizontal-scroll="'always'" size="mini" border :cell-style="()=>{return {padding:'2px'}}">
-      <el-table-column label="id" align="center" prop="id" v-if="columns[0].visible"/>
-      <el-table-column label="日期" align="center" prop="fundsDate" v-if="columns[1].visible" width="120"
+      <el-table-column label="id" align="center" prop="id"/>
+      <el-table-column label="日期" align="center" prop="fundsDate" width="120"
                        show-overflow-tooltip>
         <template #default="scope">
           <DynamicField :row="scope.row" field="fundsDate"/>
         </template>
       </el-table-column>
-      <el-table-column label="支付类型" align="center" prop="payType" v-if="columns[2].visible" width="120"
+      <el-table-column label="支付类型" align="center" prop="payType" width="120"
                        show-overflow-tooltip>
         <template #default="scope">
           <DynamicField :row="scope.row" field="payType"/>
         </template>
       </el-table-column>
-      <el-table-column label="金额" align="center" prop="moneyAmount" v-if="columns[3].visible" width="120"
+      <el-table-column label="金额" align="center" prop="moneyAmount" width="120"
                        show-overflow-tooltip>
         <template #default="scope">
           <DynamicField :row="scope.row" field="moneyAmount"/>
         </template>
       </el-table-column>
-      <el-table-column label="己方户名" align="center" prop="selfAcountsName" v-if="columns[4].visible" width="120"
+      <el-table-column label="己方户名" align="center" prop="selfAcountsName" width="120"
                        show-overflow-tooltip>
         <template #default="scope">
           <DynamicField :row="scope.row" field="selfAcountsName"/>
         </template>
       </el-table-column>
-      <el-table-column label="己方账号" align="center" prop="selfBankNo" v-if="columns[5].visible" width="120"
+      <el-table-column label="己方账号" align="center" prop="selfBankNo" width="120"
                        show-overflow-tooltip>
         <template #default="scope">
           <DynamicField :row="scope.row" field="selfBankNo"/>
         </template>
       </el-table-column>
-      <el-table-column label="己方开户行" align="center" prop="selfBankName" v-if="columns[6].visible" width="120"
+      <el-table-column label="己方开户行" align="center" prop="selfBankName" width="120"
                        show-overflow-tooltip>
         <template #default="scope">
           <DynamicField :row="scope.row" field="selfBankName"/>
         </template>
       </el-table-column>
-      <el-table-column label="对方户名" align="center" prop="otherAcountsName" v-if="columns[7].visible" width="120"
+      <el-table-column label="对方户名" align="center" prop="otherAcountsName" width="120"
                        show-overflow-tooltip>
         <template #default="scope">
           <DynamicField :row="scope.row" field="otherAcountsName"/>
         </template>
       </el-table-column>
-      <el-table-column label="对方账号" align="center" prop="otherBankNo" v-if="columns[8].visible" width="120"
+      <el-table-column label="对方账号" align="center" prop="otherBankNo" width="120"
                        show-overflow-tooltip>
         <template #default="scope">
           <DynamicField :row="scope.row" field="otherBankNo"/>
         </template>
       </el-table-column>
-      <el-table-column label="对方开户行" align="center" prop="otherBankName" v-if="columns[9].visible" width="120"
+      <el-table-column label="对方开户行" align="center" prop="otherBankName" width="120"
                        show-overflow-tooltip>
         <template #default="scope">
           <DynamicField :row="scope.row" field="otherBankName"/>
         </template>
       </el-table-column>
-      <el-table-column label="支付状态" align="center" prop="paymentState" v-if="columns[10].visible" width="120"
+      <el-table-column label="支付状态" align="center" prop="paymentState" width="120"
                        show-overflow-tooltip>
         <template #default="scope">
           <DynamicField :row="scope.row" field="paymentState"/>
         </template>
       </el-table-column>
-      <el-table-column label="对方公司" align="center" prop="companyName" v-if="columns[11].visible" width="120"
+      <el-table-column label="对方公司" align="center" prop="companyName" width="120"
                        show-overflow-tooltip>
         <template #default="scope">
           <DynamicField :row="scope.row" field="companyName"/>
         </template>
       </el-table-column>
-      <el-table-column label="对方公司类型" align="center" prop="companyType" v-if="columns[12].visible" width="120"
+      <el-table-column label="对方公司类型" align="center" prop="companyType" width="120"
                        show-overflow-tooltip>
         <template #default="scope">
           <DynamicField :row="scope.row" field="companyType"/>
         </template>
       </el-table-column>
-      <el-table-column label="备注" align="center" prop="comments" v-if="columns[13].visible" width="120"
+      <el-table-column label="备注" align="center" prop="comments" width="120"
                        show-overflow-tooltip/>
       <el-table-column label="复核状态" align="center" class-name="small-padding fixed-width" width="80"
                        fixed="right">
@@ -325,12 +325,15 @@
             </el-option>
           </el-select>
         </el-form-item>
+
+        <!--        下面的操作是 客户id  配合 银行卡信息进行付款.-->
         <!--      选择供应商-->
         <el-row v-if="value ===PAYMENT_TYPES.SUPPLIER">
-          <el-form-item label="对方户名" prop="otherAcountsName">
+          <el-form-item label="供应商名称" prop="otherAcountsName">
             <el-row>
               <el-col :span="10">
-                <el-input v-model="form.otherAcountsName" placeholder="请输入对方户名"/>
+                <!--                <el-input v-model="form.otherAcountsName" placeholder="请输入对方户名"/>-->
+                <el-input v-model="form.companyName" placeholder="请输入供应商名称"/>
               </el-col>
               <el-col :span="3">
                 <SearchOption :limit-info="{companyType:PAYMENT_TYPES.SUPPLIER}" :get-data="listCompany"
@@ -338,38 +341,37 @@
                               :query-label="'供应商'" query-info="companyName" :query-name="queryOtherSupplier"
                               @commitBack="handleCommitBackOtherSupplier">
                   <template #table-columns>
-                    <el-table-column label="公司名称" align="center" prop="companyName"/>
-                    <el-table-column label="公司类型" align="center" prop="companyType"/>
-                    <el-table-column label="开户行" align="center" prop="bankName">
-                      <template slot-scope="scope">
-                        {{ isNull(scope.row.bankName) }}
-                      </template>
-                    </el-table-column>
-                    <el-table-column label="开户名" align="center" prop="acountsName">
-                      <template slot-scope="scope">
-                        {{ isNull(scope.row.acountsName) }}
-                      </template>
-                    </el-table-column>
-                    <el-table-column label="账号" align="center" prop="bankNo">
-                      <template slot-scope="scope">
-                        {{ isNull(scope.row.bankNo) }}
-                      </template>
-                    </el-table-column>
+                    <el-table-column label="供应商" align="center" prop="companyName" width="180"
+                                     show-overflow-tooltip/>
+                    <el-table-column label="老板姓名" align="center" prop="leader" width="180"
+                                     show-overflow-tooltip/>
+                    <el-table-column label="老板电话" align="center" prop="leaderTel" width="180"
+                                     show-overflow-tooltip/>
+                    <el-table-column label="区域" align="center" prop="region" width="180"
+                                     show-overflow-tooltip/>
+                    <el-table-column label="联系人" align="center" prop="relationName" width="180"
+                                     show-overflow-tooltip/>
+                    <el-table-column label="销售经理" align="center" prop="salesManager" width="180"
+                                     show-overflow-tooltip/>
+                    <el-table-column label="地址" align="center" prop="address" width="150"
+                                     show-overflow-tooltip/>
+                    <el-table-column label="电话" align="center" prop="relationTel" width="180"
+                                     show-overflow-tooltip/>
+                    <el-table-column label="备注" align="center" prop="comments" width="180"
+                                     show-overflow-tooltip/>
                   </template>
                 </SearchOption>
               </el-col>
             </el-row>
           </el-form-item>
-          <el-form-item label="供应商名称" prop="companyName">
-            <el-input v-model="form.companyName" placeholder="请输入供应商名称"/>
-          </el-form-item>
         </el-row>
         <!--      选择客户-->
         <el-row v-if="value ===PAYMENT_TYPES.CUSTOMER">
-          <el-form-item label="对方户名" prop="otherAcountsName">
+          <el-form-item label="对方公司" prop="companyName">
             <el-row>
               <el-col :span="10">
-                <el-input v-model="form.otherAcountsName" placeholder="请输入对方户名"/>
+                <!--                <el-input v-model="form.otherAcountsName" placeholder="请输入对方户名"/>-->
+                <el-input v-model="form.companyName" placeholder="请输入对方公司"/>
               </el-col>
               <el-col :span="3">
                 <SearchOption :limit-info="{companyType:PAYMENT_TYPES.CUSTOMER}"
@@ -379,38 +381,37 @@
                               icon="el-icon-search"
                               @commitBack="handleCommitBackOther">
                   <template #table-columns>
-                    <el-table-column label="公司名称" align="center" prop="companyName"/>
-                    <el-table-column label="公司类型" align="center" prop="companyType"/>
-                    <el-table-column label="开户行" align="center" prop="bankName">
-                      <template slot-scope="scope">
-                        {{ isNull(scope.row.bankName) }}
-                      </template>
-                    </el-table-column>
-                    <el-table-column label="开户名" align="center" prop="acountsName">
-                      <template slot-scope="scope">
-                        {{ isNull(scope.row.acountsName) }}
-                      </template>
-                    </el-table-column>
-                    <el-table-column label="账号" align="center" prop="bankNo">
-                      <template slot-scope="scope">
-                        {{ isNull(scope.row.bankNo) }}
-                      </template>
-                    </el-table-column>
+                    <el-table-column label="客户" align="center" prop="companyName" width="180"
+                                     show-overflow-tooltip/>
+                    <el-table-column label="老板姓名" align="center" prop="leader" width="180"
+                                     show-overflow-tooltip/>
+                    <el-table-column label="老板电话" align="center" prop="leaderTel" width="180"
+                                     show-overflow-tooltip/>
+                    <el-table-column label="区域" align="center" prop="region" width="180"
+                                     show-overflow-tooltip/>
+                    <el-table-column label="联系人" align="center" prop="relationName" width="180"
+                                     show-overflow-tooltip/>
+                    <el-table-column label="销售经理" align="center" prop="salesManager" width="180"
+                                     show-overflow-tooltip/>
+                    <el-table-column label="地址" align="center" prop="address" width="150"
+                                     show-overflow-tooltip/>
+                    <el-table-column label="电话" align="center" prop="relationTel" width="180"
+                                     show-overflow-tooltip/>
+                    <el-table-column label="备注" align="center" prop="comments" width="180"
+                                     show-overflow-tooltip/>
                   </template>
                 </SearchOption>
               </el-col>
             </el-row>
           </el-form-item>
-          <el-form-item label="对方公司" prop="companyName">
-            <el-input v-model="form.companyName" placeholder="请输入对方公司"/>
-          </el-form-item>
         </el-row>
         <!--      选择司机-->
         <el-row v-if="value ===PAYMENT_TYPES.DRIVER">
-          <el-form-item label="对方户名" prop="otherAcountsName">
+          <el-form-item label="司机名称" prop="companyName">
             <el-row>
               <el-col :span="10">
-                <el-input v-model="form.otherAcountsName" placeholder="请输入对方户名"/>
+                <!--                <el-input v-model="form.otherAcountsName" placeholder="请输入对方户名"/>-->
+                <el-input v-model="form.companyName" placeholder="请输入对方公司"/>
               </el-col>
               <el-col :span="3">
                 <SearchOption :limit-info="{}" :get-data="listCars"
@@ -442,12 +443,26 @@
               </el-col>
             </el-row>
           </el-form-item>
-          <el-form-item label="司机名称" prop="companyName">
-            <el-input v-model="form.companyName" placeholder="请输入对方公司"/>
-          </el-form-item>
         </el-row>
         <el-form-item label="对方账号" prop="otherBankNo">
-          <el-input v-model="form.otherBankNo" placeholder="请输入对方账号"/>
+          <el-row>
+            <el-col :span="14">
+              <el-input v-model="form.otherBankNo" placeholder="请输入对方账号"/>
+            </el-col>
+            <el-col :span="4">
+              <SearchOption :limit-info="{acountsType:value}" :get-data="listBankAccount"
+                            @commitBack="handleCommitBackBankAcount"
+                            @update:queryName="handleUpdateQueryBankAcount" :query-name="queryBankAcount"
+                            query-label="户名查找" query-info="acountsName">
+                <template #table-columns>
+                  <el-table-column label="账户类型" align="center" prop="acountsType"/>
+                  <el-table-column label="账号(银行账号)" align="center" prop="bankNo"/>
+                  <el-table-column label="开户行" align="center" prop="bankName"/>
+                  <el-table-column label="公司名称" align="center" prop="companyName"/>
+                </template>
+              </SearchOption>
+            </el-col>
+          </el-row>
         </el-form-item>
         <el-form-item label="对方开户行" prop="otherBankName">
           <el-input v-model="form.otherBankName" placeholder="请输入对方开户行"/>
@@ -460,9 +475,7 @@
         <el-button type="primary" @click="submitForm">确认付款</el-button>
         <el-button @click="cancel">取 消</el-button>
       </div>
-
     </el-dialog>
-
 
     <!--    选择银行卡的页面-->
     <el-dialog

@@ -220,7 +220,7 @@
 
     <!--    添加付款申请-->
     <el-dialog :close-on-click-modal="false" :show-close="false" title="付款申请"
-               :visible.sync="PaymentApplyInfoVisible" width="500px" append-to-body>
+               :visible.sync="PaymentApplyInfoVisible" append-to-body>
       <ApplyPayment :table-name="TableName.INVOICE_IN" @changeOpen="changePaymentApplyInfoVisible"
                     :t-i-d="tID" :need-money="needMoney" :need-info="{}"/>
     </el-dialog>
