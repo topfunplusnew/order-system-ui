@@ -182,9 +182,6 @@
             </el-col>
           </el-row>
         </el-form-item>
-        <!--        <el-form-item label="对应的表主键" prop="tID">-->
-        <!--          <el-input v-model="form.tID" placeholder="请输入对应的表主键"/>-->
-        <!--        </el-form-item>-->
         <el-form-item label="金额" prop="moneyAmount">
           <el-input v-model="form.moneyAmount" placeholder="请输入金额"/>
         </el-form-item>
@@ -216,12 +213,29 @@
         <el-form-item label="己方开户行" prop="selfBankName">
           <el-input v-model="form.selfBankName" placeholder="请输入己方开户行"/>
         </el-form-item>
-        <!--        根据己方账号查询后自动填充-->
-        <!--        <el-form-item label="己方账号ID" prop="selfBankID">-->
-        <!--          <el-input v-model="form.selfBankID" placeholder="请输入己方账号ID"/>-->
-        <!--        </el-form-item>-->
-        <el-form-item label="对方户名" prop="otherAcountsName">
-          <el-input v-model="form.otherAcountsName" placeholder="请输入对方户名"/>
+
+
+        <!--          todo-->
+        <el-form-item label="对方公司" prop="companyName">
+          <el-row>
+            <el-col :span="14">
+              <el-input v-model="form.companyName" placeholder="请输入对方公司"/>
+            </el-col>
+            <el-col :span="4">
+              <SearchOption :limit-info="{}" :get-data="listCompany" query-info="companyName"
+                            query-label="公司名称" :query-name="companyName"
+                            @update:queryName="handleUpdateCompanyName" @commitBack="handleCommitBackCompany">
+                <template #table-columns>
+                  <el-table-column label="供应商" align="center" prop="relationName"/>
+                  <el-table-column label="老板姓名" align="center" prop="leader"/>
+                  <el-table-column label="老板电话" align="center" prop="leaderTel"/>
+                  <el-table-column label="区域" align="center" prop="region"/>
+                  <el-table-column label="公司名称" align="center" prop="companyName"/>
+                  <el-table-column label="销售经理" align="center" prop="salesManager"/>
+                </template>
+              </SearchOption>
+            </el-col>
+          </el-row>
         </el-form-item>
         <el-form-item label="对方账号" prop="otherBankNo">
           <el-col :span="10">
@@ -241,6 +255,12 @@
             </SearchOption>
           </el-col>
         </el-form-item>
+        <el-form-item label="对方开户行" prop="selfBankName">
+          <el-input v-model="form.otherBankName" placeholder="请输入己方开户行"/>
+        </el-form-item>
+        <el-form-item label="对方开户名" prop="selfBankName">
+          <el-input v-model="form.otherAcountsName" placeholder="请输入己方开户行"/>
+        </el-form-item>
         <el-form-item label="银行卡流水编号" prop="transactionHistory">
           <el-input v-model="form.transactionHistory" placeholder="请输入银行卡流水编号"/>
         </el-form-item>
@@ -248,16 +268,6 @@
           <!--          todo 附件上传-->
           <file-upload @input="handleCommitUpload"/>
         </el-form-item>
-        <!--        同理 要查询公司类型为客户的-->
-        <!--        <el-form-item label="对方开户行" prop="otherBankName">-->
-        <!--          <el-input v-model="form.otherBankName" placeholder="请输入对方开户行"/>-->
-        <!--        </el-form-item>-->
-        <!--        <el-form-item label="对方公司" prop="companyName">-->
-        <!--          <el-input v-model="form.companyName" placeholder="请输入对方公司"/>-->
-        <!--        </el-form-item>-->
-        <!--        <el-form-item label="对方公司ID" prop="companyId">-->
-        <!--          <el-input v-model="form.companyId" placeholder="请输入对方公司ID"/>-->
-        <!--        </el-form-item>-->
         <el-form-item label="备注" prop="comments">
           <el-input v-model="form.comments" placeholder="请输入备注"/>
         </el-form-item>
@@ -286,7 +296,9 @@ import {addReason} from "@/api/system/user";
 import {TableName} from "@/api/tool/enums";
 import {mixin_printHTML} from "../../dashboard/mixins/print";
 import CheckFiles from "../../../components/CheckFiles.vue";
-import {mixin_receive_money_fill} from "@/views/system/receiveMoney/receiveMoneyFill";
+
+import {listCompany} from "../../../api/system/company";
+import {mixin_receive_money_fill} from "./receiveMoneyFill";
 
 export default {
   name: "ReceiveMoney",
@@ -416,23 +428,8 @@ export default {
     }
   },
   methods: {
+    listCompany,
     listBankAccount,
-    //点击确认的回调函数 点击后自动补充相关字段
-    handleCallBack(val) {
-      this.form.selfAcountsName = val.acountsName
-      this.form.selfBankNo = val.bankNo;
-      this.form.selfBankName = val.bankName
-      this.form.selfBankID = val.id;
-    },
-    //查询客户银行卡信息的回调
-    handleCallBackCompany(val) {
-      this.form.otherAcountsName = val.acountsName;
-      this.form.otherBankNo = val.bankNo;
-      this.form.otherBankName = val.bankName;
-      this.form.companyId = val.id;
-      this.form.companyName = val.companyName;
-      this.form.companyType = val.companyType === '供应商' ? 2 : 1;
-    },
     //点击一级分类后的回调
     handleSelectOneLevel(value) {
       this.currentSort.levelOne = value;
@@ -453,17 +450,9 @@ export default {
       this.currentSort.levelTwo = value;
     },
 
-    //银行卡输入搜索信息
-    handleCommitBackBank(val) {
-      this.bankQuery = val;
-    },
-
     //银行卡附件上传
     handleCommitUpload(val) {
       this.form.transactionHistoryAttachment = val;
-    },
-    checkFiles(path) {
-      window.open(path)
     },
     /** 查询收款信息列表 */
     getList() {
