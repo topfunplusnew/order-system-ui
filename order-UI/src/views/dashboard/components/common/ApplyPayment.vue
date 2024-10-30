@@ -50,103 +50,168 @@
         </el-select>
         <span style="color: #1c84c6;font-size: 12px">请注意选择正确的对方公司类型!</span>
       </el-form-item>
+
+      <!--      公司的填充 这里主要是为了companyId-->
+      <el-form-item label="对方公司" prop="companyName">
+        <el-row>
+          <el-col :span="14">
+            <el-input v-model="form.companyName" placeholder="请输入对方公司"/>
+          </el-col>
+          <el-col :span="4">
+            <SearchOption :limit-info="{companyType:value}" :get-data="listCompany"
+                          icon="el-icon-search" @update:queryName="handleUpdateQueryNameOther"
+                          :query-label="value" query-info="companyName" :query-name="queryOther"
+                          @commitBack="handleCommitBackOther">
+              <template #table-columns>
+                <el-table-column :label="`${value}名称`" align="center" prop="companyName" width="180"
+                                 show-overflow-tooltip/>
+                <el-table-column label="老板姓名" align="center" prop="leader" width="180"
+                                 show-overflow-tooltip/>
+                <el-table-column label="老板电话" align="center" prop="leaderTel" width="180"
+                                 show-overflow-tooltip/>
+                <el-table-column label="区域" align="center" prop="region" width="180"
+                                 show-overflow-tooltip/>
+                <el-table-column label="联系人" align="center" prop="relationName" width="180"
+                                 show-overflow-tooltip/>
+                <el-table-column label="销售经理" align="center" prop="salesManager" width="180"
+                                 show-overflow-tooltip/>
+                <el-table-column label="地址" align="center" prop="address" width="150"
+                                 show-overflow-tooltip/>
+                <el-table-column label="电话" align="center" prop="relationTel" width="180"
+                                 show-overflow-tooltip/>
+              </template>
+            </SearchOption>
+          </el-col>
+        </el-row>
+      </el-form-item>
+
       <!--      客户-->
       <el-row v-if="value === '客户'">
-        <el-form-item label="对方户名(客户)" prop="otherAcountsName">
+        <el-form-item label="对方账号(客户)" prop="otherBankNo">
           <el-row>
-            <el-col :span="10">
-              <el-input v-model="form.otherAcountsName" placeholder="请输入对方户名" :disabled="bankInputDisabled"/>
+            <el-col :span="14">
+              <el-input v-model="form.otherBankNo" placeholder="请输入对方账号" :disabled="bankInputDisabled"/>
             </el-col>
             <el-col :span="3" v-if="bankInputDisabled === false">
               <SearchOption :get-data="listBankAccount" icon="el-icon-search" @commitBack="handleCommitBack"
-                            :limit-info="{acountsType:'客户'}" query-label="户名查找" query-info="acountsName"
+                            :limit-info="{acountsType:'客户'}" query-label="银行卡查找" query-info="bankNo"
                             :query-name="queryCompany"
                             @update:queryName="handleUpdateQueryName">
                 <template #table-columns>
-                  <el-table-column label="客户名称" align="center" prop="companyName"/>
-                  <el-table-column label="开户行" align="center" prop="bankName"/>
-                  <el-table-column label="开户名" align="center" prop="acountsName"/>
-                  <el-table-column label="账号" align="center" prop="bankNo"/>
+                  <el-table-column label="公司名称" align="center" prop="companyName">
+                    <template #default="scope">
+                      {{ isNull(scope.row.companyName) }}
+                    </template>
+                  </el-table-column>
+                  <el-table-column label="开户行" align="center" prop="bankName">
+                    <template #default="scope">
+                      {{ isNull(scope.row.bankName) }}
+                    </template>
+                  </el-table-column>
+                  <el-table-column label="开户名" align="center" prop="acountsName">
+                    <template #default="scope">
+                      {{ isNull(scope.row.acountsName) }}
+                    </template>
+                  </el-table-column>
+                  <el-table-column label="账号" align="center" prop="bankNo">
+                    <template #default="scope">
+                      {{ isNull(scope.row.bankNo) }}
+                    </template>
+                  </el-table-column>
                 </template>
               </SearchOption>
             </el-col>
           </el-row>
         </el-form-item>
-        <el-form-item label="对方账号" prop="otherBankNo">
-          <el-input v-model="form.otherBankNo" placeholder="请输入对方账号" :disabled="bankInputDisabled"/>
-        </el-form-item>
         <el-form-item label="对方开户行" prop="otherBankName">
           <el-input v-model="form.otherBankName" placeholder="请输入对方开户行" :disabled="bankInputDisabled"/>
-        </el-form-item>
-        <el-form-item label="对方公司" prop="companyName">
-          <el-input v-model="form.companyName" placeholder="请输入对方公司"/>
         </el-form-item>
       </el-row>
       <!--      供应商-->
       <el-row v-if="value==='供应商'">
-        <el-form-item label="对方户名(供应商)" prop="otherAcountsName">
+        <el-form-item label="对方账号(供应商)" prop="otherBankNo">
           <el-row>
-            <el-col :span="10">
-              <el-input v-model="form.otherAcountsName" placeholder="请输入对方户名" :disabled="bankInputDisabled"/>
+            <el-col :span="14">
+              <el-input v-model="form.otherBankNo" placeholder="请输入对方账号" :disabled="bankInputDisabled"/>
             </el-col>
             <el-col :span="3" v-if="bankInputDisabled === false">
               <SearchOption :get-data="listBankAccount" icon="el-icon-search" @commitBack="handleCommitBack"
-                            :limit-info="{acountsType:'供应商'}" query-label="户名查找" query-info="acountsName"
+                            :limit-info="{acountsType:'供应商'}" query-label="银行卡查找" query-info="bankNo"
                             :query-name="queryCompany"
                             @update:queryName="handleUpdateQueryName">
                 <template #table-columns>
-                  <el-table-column label="公司名称" align="center" prop="companyName"/>
-                  <el-table-column label="开户行" align="center" prop="bankName"/>
-                  <el-table-column label="开户名" align="center" prop="acountsName"/>
-                  <el-table-column label="账号" align="center" prop="bankNo"/>
+                  <el-table-column label="公司名称" align="center" prop="companyName">
+                    <template #default="scope">
+                      {{ isNull(scope.row.companyName) }}
+                    </template>
+                  </el-table-column>
+                  <el-table-column label="开户行" align="center" prop="bankName">
+                    <template #default="scope">
+                      {{ isNull(scope.row.bankName) }}
+                    </template>
+                  </el-table-column>
+                  <el-table-column label="开户名" align="center" prop="acountsName">
+                    <template #default="scope">
+                      {{ isNull(scope.row.acountsName) }}
+                    </template>
+                  </el-table-column>
+                  <el-table-column label="账号" align="center" prop="bankNo">
+                    <template #default="scope">
+                      {{ isNull(scope.row.bankNo) }}
+                    </template>
+                  </el-table-column>
                 </template>
               </SearchOption>
             </el-col>
           </el-row>
         </el-form-item>
-        <el-form-item label="对方账号" prop="otherBankNo">
-          <el-input v-model="form.otherBankNo" placeholder="请输入对方账号" :disabled="bankInputDisabled"/>
-        </el-form-item>
+
         <el-form-item label="对方开户行" prop="otherBankName">
           <el-input v-model="form.otherBankName" placeholder="请输入对方开户行" :disabled="bankInputDisabled"/>
-        </el-form-item>
-        <el-form-item label="对方公司" prop="companyName">
-          <el-input v-model="form.companyName" placeholder="请输入对方公司"/>
         </el-form-item>
       </el-row>
       <!--    司机-->
       <el-row v-if="value==='司机'">
-        <el-form-item label="对方户名(司机)" prop="otherAcountsName">
+        <el-form-item label="对方账号(司机)" prop="otherBankNo">
           <el-row>
-            <el-col :span="10">
-              <el-input v-model="form.otherAcountsName" placeholder="请输入对方户名" :disabled="bankInputDisabled"/>
+            <el-col :span="14">
+              <el-input v-model="form.otherBankNo" placeholder="请输入对方账号" :disabled="bankInputDisabled"/>
             </el-col>
             <el-col :span="3" v-if="bankInputDisabled === false">
               <SearchOption :get-data="listBankAccount" icon="el-icon-search" @commitBack="handleCommitBack"
-                            :limit-info="{acountsType:'司机'}" query-label="户名查找" query-info="acountsName"
+                            :limit-info="{acountsType:'司机'}" query-label="银行卡查找" query-info="bankNo"
                             :query-name="queryCompany"
                             @update:queryName="handleUpdateQueryName">
                 <template #table-columns>
-                  <el-table-column label="司机名称" align="center" prop="companyName"/>
-                  <el-table-column label="开户行" align="center" prop="bankName"/>
-                  <el-table-column label="开户名" align="center" prop="acountsName"/>
-                  <el-table-column label="账号" align="center" prop="bankNo"/>
+                  <el-table-column label="司机名称" align="center" prop="companyName">
+                    <template #default="scope">
+                      {{ isNull(scope.row.companyName) }}
+                    </template>
+                  </el-table-column>
+                  <el-table-column label="开户行" align="center" prop="bankName">
+                    <template #default="scope">
+                      {{ isNull(scope.row.bankName) }}
+                    </template>
+                  </el-table-column>
+                  <el-table-column label="开户名" align="center" prop="acountsName">
+                    <template #default="scope">
+                      {{ isNull(scope.row.acountsName) }}
+                    </template>
+                  </el-table-column>
+                  <el-table-column label="账号" align="center" prop="bankNo">
+                    <template #default="scope">
+                      {{ isNull(scope.row.bankNo) }}
+                    </template>
+                  </el-table-column>
                 </template>
               </SearchOption>
             </el-col>
           </el-row>
         </el-form-item>
-        <el-form-item label="对方账号" prop="otherBankNo">
-          <el-input v-model="form.otherBankNo" placeholder="请输入对方账号" :disabled="bankInputDisabled"/>
-        </el-form-item>
         <el-form-item label="对方开户行" prop="otherBankName">
           <el-input v-model="form.otherBankName" placeholder="请输入对方开户行" :disabled="bankInputDisabled"/>
         </el-form-item>
-        <el-form-item label="司机名称" prop="companyName">
-          <el-input v-model="form.companyName" placeholder="请输入司机名称"/>
-        </el-form-item>
       </el-row>
-
       <el-form-item label="付款原因" prop="reason">
         <el-input v-model="form.reason" type="textarea" placeholder="请输入内容"/>
       </el-form-item>
@@ -175,7 +240,10 @@ import {listBankAccount} from "@/api/system/bankAccount";
 import {mixin_payment_apply} from "../../mixins/apply_payment/payment_apply";
 import {mixin_payment_level} from "../../mixins/apply_payment/payment_level";
 import {mixin_payment_watcher} from "../../mixins/apply_payment/payment_watcher";
-import {mixin_payment_fill} from "@/views/dashboard/mixins/apply_payment/payment_fill";
+
+import {listCompany} from "../../../../api/system/company";
+import {mixin_payment_fill} from "../../mixins/apply_payment/payment_fill";
+import {isNull} from "../../../../main";
 
 export default {
   name: "ApplyPayment",
@@ -227,6 +295,8 @@ export default {
   },
 
   methods: {
+    isNull,
+    listCompany,
     listBankAccount,
     //上传的回调函数
     handleCommitUpload(val) {

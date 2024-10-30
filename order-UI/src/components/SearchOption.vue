@@ -88,7 +88,7 @@ export default {
         this.tableData = res.rows;
         this.loading = false;
       })
-    }
+    },
   },
   watch: {
     query: {
@@ -124,9 +124,9 @@ export default {
               <span style="font-weight: bolder">{{ queryLabel }}</span>
             </el-col>
             <el-col :span="10">
-              <el-input type="text" placeholder="请输入" size="mini" v-model="query"></el-input>
+              <el-input type="text" placeholder="请输入" size="mini" v-model="query" clearable></el-input>
             </el-col>
-            <el-col :span="3">
+            <el-col :span="4">
               <el-button type="primary" @click="handleSearchInfo" size="mini">搜索</el-button>
             </el-col>
           </el-row>
