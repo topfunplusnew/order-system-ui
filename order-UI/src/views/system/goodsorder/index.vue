@@ -171,23 +171,23 @@
           <CheckFiles :path="scope.row.path"/>
         </template>
       </el-table-column>
-      <el-table-column show-overflow-tooltip label="打款状态" align="center" prop="paymentState"
-                       v-show="columns[16].visible" width="120px">
-        <template slot-scope="scope">
-          <el-row v-if="scope.row.paymentState === '未申请'">
-            <el-button size="mini" type="text" @click="applyForPayment(scope.row)">申请打款</el-button>
-          </el-row>
-          <el-row v-if="scope.row.paymentState === '审核中'">
-            审核中
-          </el-row>
-          <el-row v-if="scope.row.paymentState === '未支付'">
-            订单未支付
-          </el-row>
-          <el-row v-if="scope.row.paymentState === '已打款'">
-            订单已打款
-          </el-row>
-        </template>
-      </el-table-column>
+      <!--      <el-table-column show-overflow-tooltip label="打款状态" align="center" prop="paymentState"-->
+      <!--                       v-show="columns[16].visible" width="120px">-->
+      <!--        <template slot-scope="scope">-->
+      <!--          <el-row v-if="scope.row.paymentState === '未申请'">-->
+      <!--            <el-button size="mini" type="text" @click="applyForPayment(scope.row)">申请打款</el-button>-->
+      <!--          </el-row>-->
+      <!--          <el-row v-if="scope.row.paymentState === '审核中'">-->
+      <!--            审核中-->
+      <!--          </el-row>-->
+      <!--          <el-row v-if="scope.row.paymentState === '未支付'">-->
+      <!--            订单未支付-->
+      <!--          </el-row>-->
+      <!--          <el-row v-if="scope.row.paymentState === '已打款'">-->
+      <!--            订单已打款-->
+      <!--          </el-row>-->
+      <!--        </template>-->
+      <!--      </el-table-column>-->
       <el-table-column show-overflow-tooltip label="收到条附件路径" align="center" prop="receiveProof"
                        v-show="columns[17].visible"
                        width="150px">

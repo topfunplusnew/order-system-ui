@@ -21,14 +21,17 @@ export default {
       // 选择银行卡的弹窗
       dialogFormVisible: false,
       // 银行卡列表
-      tableData: []
+      tableData: [],
+      queryParams: {
+        pageNum: 1,
+        pageSize: 10,
+        acountsName: null
+      },
+      total: 0,
     }
   },
   created() {
-    listBankAccount({companyId: 0}).then(res => {
-      console.log(res)
-      this.tableData = res.rows
-    })
+    this.getList()
   },
   computed: {
     customCompanyInfo() {
@@ -39,6 +42,16 @@ export default {
     }
   },
   methods: {
+    getList() {
+      listBankAccount({companyId: 0, ...this.queryParams}).then(res => {
+        this.tableData = res.rows
+        this.total = res.total;
+      })
+    },
+    handleQuery() {
+      this.queryParams.pageNum = 1;
+      this.getList();
+    },
     handleAdd() {
       this.dialogFormVisible = true
     },
@@ -85,8 +98,28 @@ export default {
       :visible.sync="dialogFormVisible"
       append-to-body
       width="58%">
+      <div slot="title">
+        <div style="display: flex;justify-content: space-between">
+          <div>
+            <el-input
+              v-model="queryParams.acountsName"
+              placeholder="请输入账户名称"
+              clearable
+              size="small"
+              prefix-icon="el-icon-search"
+              style="width: 200px;margin-right: 10px"
+              @keyup.enter.native="handleQuery"
+            />
+            <el-button @click="handleQuery" type="primary" size="mini">
+              <i class="el-icon-search"/>
+              搜索
+            </el-button>
+          </div>
+        </div>
+      </div>
       <el-table
         :data="tableData"
+        size="mini"
         stripe
         style="width: 100%">
         <el-table-column label="账户类型" align="center" prop="acountsType"/>
@@ -105,6 +138,13 @@ export default {
           </template>
         </el-table-column>
       </el-table>
+      <pagination
+        v-show="total>0"
+        :total="total"
+        :page.sync="queryParams.pageNum"
+        :limit.sync="queryParams.pageSize"
+        @pagination="getList"
+      />
       <span slot="footer" class="dialog-footer">
     <el-button @click="dialogFormVisible = false">取 消</el-button>
   </span>
