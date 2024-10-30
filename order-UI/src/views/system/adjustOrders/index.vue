@@ -103,7 +103,6 @@
                        v-if="columns[2].visible"
                        width="200">
         <template #default="scope">
-          <el-row v-if="scope.row.supplierNames !== null">
             <el-row>
               <span v-for="(item,index) in getSupplierNames(scope.row.orderDetailList)" :key="index">
              <el-badge is-dot class="item">
@@ -113,7 +112,6 @@
           </el-badge>
           </span>
             </el-row>
-          </el-row>
           <el-row>
             <span v-if="scope.row.supplierNames === null">无</span>
           </el-row>
