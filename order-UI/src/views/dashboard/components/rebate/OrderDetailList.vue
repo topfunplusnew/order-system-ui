@@ -1,5 +1,6 @@
+<!--选择订单后的已选择货物列表-->
+
 <script>
-import {getGoodsOrder} from "../../../../api/system/goodsOrder";
 
 export default {
   name: "OrderDetailList",
@@ -29,7 +30,7 @@ export default {
 
 <template>
   <div>
-    <el-button @click="submitSelectOrderDetail" :disabled="orderDetailList.length === 0" type="success" size="mini">
+    <el-button @click="submitSelectOrderDetail" :disabled="selectedList.length === 0" type="success" size="mini">
       选择所选货物
     </el-button>
     <el-table border
@@ -65,7 +66,6 @@ export default {
       <!-- 其他列保持类似 -->
       <el-table-column label="客户佣金" align="center" prop="customerCommission" min-width="90"/>
     </el-table>
-
   </div>
 </template>
 

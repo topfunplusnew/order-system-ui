@@ -103,12 +103,6 @@
       <el-table-column label="备注" align="center" prop="comments" v-if="columns[10].visible" show-overflow-tooltip/>
       <el-table-column label="操作" align="center" class-name="small-padding fixed-width" width="150px" fixed="right">
         <template slot-scope="scope">
-          <!--          <el-button
-                      size="mini"
-                      type="warning"
-                      @click="addPaymentApply(scope.row)"
-                    >付款返利
-                    </el-button>-->
           <el-button
             size="mini"
             type="primary"
@@ -221,9 +215,6 @@
                   </el-col>
                 </el-row>
               </el-form-item>
-              <!--        <el-form-item label="供应商ID" prop="supplierID">-->
-              <!--          <el-input v-model="form.supplierID" placeholder="请输入供应商ID"/>-->
-              <!--        </el-form-item>-->
               <el-form-item label="付款户名" prop="outAcountsName">
                 <el-row>
                   <el-col :span="15">
@@ -268,16 +259,6 @@
       </div>
     </el-dialog>
 
-    <!--    付款申请-->
-    <!--    <el-dialog :close-on-click-modal="false" :show-close="false" title="返利付款申请" :visible.sync="paymentApplyVisible" width="500px">-->
-    <!--      <keep-alive>-->
-    <!--        <ApplyPayment :table-name="TableName.REBATE" :t-i-d="tid" :need-money="needMoney"-->
-    <!--                      :need-info="{...needInfo,otherAcountsName:needInfo.acountsName}"-->
-    <!--                      @changeOpen="paymentApplyVisible = false"/>-->
-    <!--      </keep-alive>-->
-    <!--    </el-dialog>-->
-
-
     <!--    选择订单详情-->
     <el-dialog :close-on-click-modal="false" :show-close="true"
                title="订单选择"
@@ -291,17 +272,21 @@
       <!--      展示-->
       <el-row>
         <el-row>
+          <!--  展示订单信息的组件-->
           <OrderInfos :orderInfo="orderInfo"/>
         </el-row>
         <el-row>
           <el-row>
             <span style="font-weight: bolder">货物详情列表</span>
           </el-row>
+
+          <!-- 展示要选择进行返利的货物列表-->
           <el-row>
-            <el-button @click="submitSelectOrderDetail" :disabled="goods.length === 0" type="success" size="mini">
+            <el-button @click="submitSelectOrderDetail" :disabled="goods.length === 0" type="success"
+                       size="mini">
               选择所选货物
             </el-button>
-            <el-table border :data="orderDetailList" max-height="700" size="mini"
+            <el-table border :data="orderDetailList" max-height="700" size="mini" ref="multipleTable"
                       :cell-style="()=>{return {padding:'.5px'}}" @selection-change="handleSelectionChangeOrderDetail">
               <el-table-column type="selection" width="55" align="center" fixed="left"/>
               <el-table-column label="订单日期" align="center" prop="orderDate" fixed="left"/>
@@ -359,12 +344,12 @@
       </el-row>
     </el-dialog>
 
-    <!--    选择订单-->
+
+    <!--    两种方式中点击第二种直接选择订单进行返利-->
     <el-dialog :close-on-click-modal="false" :show-close="true" title="选择订单" :visible.sync="orderSelectVisible"
                width="70%">
       <el-table fit border v-loading="loading" :data="orderList" @selection-change="handleSelectionChangeOrders"
                 max-height="750" size="mini" :cell-style="()=>{return {padding:'2px'}}">
-        <el-table-column type="selection" width="55" align="center" fixed="left"/>
         <el-table-column show-overflow-tooltip label="行操作" align="center" class-name="small-padding fixed-width"
                          width="200px" fixed="left">
           <template slot-scope="scope">
@@ -379,125 +364,37 @@
         <el-table-column show-overflow-tooltip label="客户" align="center" prop="customer" fixed="left"/>
         <!--        供应商可筛选 多选-->
         <el-table-column show-overflow-tooltip label="供应商" align="center" prop="supplierNames" fixed="left"/>
-        <el-table-column show-overflow-tooltip label="陆运车牌" align="center" prop="landCarNo"
-        />
+        <el-table-column show-overflow-tooltip label="陆运车牌" align="center" prop="landCarNo"/>
         <el-table-column show-overflow-tooltip label="陆运司机电话" align="center" prop="landDriverTel"
                          width="100px"/>
         <el-table-column show-overflow-tooltip label="陆地司机姓名" align="center" prop="landDriverName"
                          width="100px"/>
-        <el-table-column show-overflow-tooltip label="柜号" align="center" prop="seaCarNo"
-        >
+        <el-table-column show-overflow-tooltip label="柜号" align="center" prop="seaCarNo">
           <template #default="scope">
-            {{ scope.row.seaCarNo == null ? '无海运信息' : scope.row.seaCarNo }}
+            {{ isNull(scope.row.seaCarNo) }}
           </template>
         </el-table-column>
-        <el-table-column show-overflow-tooltip label="海运司机电话" align="center" prop="seaDriverTel"
-        >
+        <el-table-column show-overflow-tooltip label="海运司机电话" align="center" prop="seaDriverTel">
           <template #default="scope">
-            {{ scope.row.seaDriverTel == null ? '无海运信息' : scope.row.seaDriverTel }}
+            {{ isNull(scope.row.seaDriverTel) }}
           </template>
         </el-table-column>
         <el-table-column show-overflow-tooltip label="海运公司" align="center" prop="seaDriverName"
                          width="100px">
           <template #default="scope">
-            {{ scope.row.seaDriverName == null ? '无海运信息' : scope.row.seaDriverTel }}
+            {{ isNull(scope.row.seaDriverTel) }}
           </template>
         </el-table-column>
-        <el-table-column show-overflow-tooltip label="销售经理" align="center" prop="saleManager"
-        />
+        <el-table-column show-overflow-tooltip label="销售经理" align="center" prop="saleManager"/>
         <el-table-column show-overflow-tooltip label="车队" align="center" prop="fleet"/>
         <el-table-column show-overflow-tooltip label="审核状态" align="center" prop="checkState"
-
                          width="120">
         </el-table-column>
         <el-table-column show-overflow-tooltip label="开票状态" align="center" prop="invoiceState"
                          width="120px">
-          <template #default="scope">
-            <el-row v-if="scope.row.customerIsInvoice === 1 && scope.row.isSupplierInvoice === 1">
-              <el-tag type="success">已开票</el-tag>
-            </el-row>
-            <el-row v-else-if="scope.row.customerIsInvoice === 0 && scope.row.isSupplierInvoice === 0">
-              <el-row>
-                <el-tag type="danger">未开票</el-tag>
-              </el-row>
-            </el-row>
-            <el-row v-else>
-              <el-row>
-                <el-tag type="warning">部分开票</el-tag>
-              </el-row>
-            </el-row>
-          </template>
-        </el-table-column>
-        <el-table-column show-overflow-tooltip label="附件" align="center" prop="path"
-                         width="150px">
-          <template #default="scope">
-            <el-row>
-            </el-row>
-            <el-row v-if="scope.row.path === '' || scope.row.path === null">
-              无操作
-            </el-row>
-            <el-row v-else>
-              <el-button size="mini" type="success" @click="checkAttachment(scope.row.path)">
-                查看
-              </el-button>
-            </el-row>
-          </template>
         </el-table-column>
         <el-table-column show-overflow-tooltip label="打款状态" align="center" prop="paymentState"
                          width="120px">
-        </el-table-column>
-        <el-table-column show-overflow-tooltip label="收到条附件路径" align="center" prop="receiveProof"
-
-                         width="150px">
-          <template #default="scope">
-            <el-row v-if="scope.row.receiveProof === '' || scope.row.receiveProof === null">
-              无操作
-            </el-row>
-            <el-row v-else>
-              <el-button size="mini" type="success" @click="checkAttachment(scope.row.receiveProof)">
-                查看
-              </el-button>
-            </el-row>
-          </template>
-        </el-table-column>
-        <el-table-column show-overflow-tooltip label="原订单编号" align="center" prop="adjustOrderid"
-                         width="100px"/>
-        <el-table-column show-overflow-tooltip label="是否可编辑" align="center" prop="isedit"
-
-                         width="100px">
-          <template slot-scope="scope">
-            <el-tag
-              :type="scope.row.isedit === 0 ? 'danger' :'success'">{{ scope.row.isedit === 0 ? "否" : "是" }}
-            </el-tag>
-          </template>
-        </el-table-column>
-        <!--      客户供应商是否开票-->
-        <el-table-column show-overflow-tooltip label="客户是否开票" align="center" prop="customerIsInvoice"
-
-                         width="150px">
-          <template #default="scope">
-            <el-row v-if="scope.row.customerIsInvoice === 1">
-              <el-tag type="success">客户已开票</el-tag>
-            </el-row>
-            <el-row v-else>
-              <el-row>
-                <el-tag type="danger">未开票</el-tag>
-              </el-row>
-            </el-row>
-          </template>
-        </el-table-column>
-        <el-table-column show-overflow-tooltip label="供应商是否开票" align="center" prop="isSupplierInvoice"
-                         width="120px">
-          <template #default="scope">
-            <el-row v-if="scope.row.isSupplierInvoice === 1">
-              <el-tag type="success"> 供应商已开票</el-tag>
-            </el-row>
-            <el-row v-else>
-              <el-row>
-                <el-tag type="danger">未开票</el-tag>
-              </el-row>
-            </el-row>
-          </template>
         </el-table-column>
         <el-table-column show-overflow-tooltip label="备注" align="center" prop="comments"/>
       </el-table>
@@ -602,6 +499,7 @@ import InfoDialog from "../../../components/InfoDialog.vue";
 import OrderDetailList from "../../dashboard/components/rebate/OrderDetailList.vue";
 import {mixin_choose_order} from "../../dashboard/mixins/rebate/choose_order";
 import {mixin_rebate_fill} from "../../dashboard/mixins/rebate/rebate_fill";
+import {isNull} from "../../../main";
 
 export default {
   name: "Rebate",
@@ -618,7 +516,6 @@ export default {
       loading: true,
       // 选中数组
       ids: [],
-
       // 非单个禁用
       single: true,
       // 非多个禁用
@@ -633,7 +530,6 @@ export default {
       orderTotal: 0,
       // 返利回扣表格数据
       RebateList: [],
-
       // 弹出层标题
       title: "",
       // 是否显示弹出层
@@ -707,13 +603,7 @@ export default {
         {key: 8, label: `返利原因`, visible: true},
         {key: 9, label: `返利方式`, visible: true},
         {key: 10, label: `备注`, visible: true},
-
       ],
-      needInfo: '',
-      paymentApplyVisible: false,
-      tid: '',
-      needMoney: 0,
-
       //订单列表 级联
       orderList: [],
       //订单详情列表 级联
@@ -722,11 +612,9 @@ export default {
       //订单个人信息和订单详情信息
       orderInfo: {},
       queryBankAcount: '',
-
       //搜索供应商
       queryCompanyGive: '',
       bankAcountSelf: '',
-
     };
   },
   created() {
@@ -745,15 +633,9 @@ export default {
   },
   watch: {},
   methods: {
+    isNull,
     listCompany,
     listBankAccount,
-    // 付款申请
-    addPaymentApply(row) {
-      this.tid = row.id;
-      this.paymentApplyVisible = true;
-      this.needMoney = row.rebate;
-      this.needInfo = row;
-    },
     // 自动填充的信息
     handleCommitBackBankAcount(val) {
       this.form.inAcountsName = val.acountsName
@@ -777,13 +659,9 @@ export default {
       this.bankAcountSelf = val;
     },
 
-    // 筛选方法
+    // 表格中的表头 筛选方法 主要是为了筛选供应商
     filterName(value, row) {
       return row.supplier === value;
-    },
-    //查看附件信息
-    checkAttachment(path) {
-      window.open(path)
     },
     /** 查询返利回扣列表 */
     getList() {

@@ -74,7 +74,6 @@
               </el-dropdown-item>
             </el-dropdown-menu>
           </el-dropdown>
-
           <el-button
             style="margin-left: 5px"
             size="mini"
@@ -121,7 +120,6 @@
       </el-table-column>
       <el-table-column show-overflow-tooltip label="陆运费" align="center" prop="landFreight"
                        v-show="columns[6].visible" width="100px"/>
-
       <!--      原为海运车牌号-->
       <el-table-column show-overflow-tooltip label="海运柜号" align="center" prop="seaCarNo"
                        v-show="columns[7].visible">
@@ -171,23 +169,6 @@
           <CheckFiles :path="scope.row.path"/>
         </template>
       </el-table-column>
-      <!--      <el-table-column show-overflow-tooltip label="打款状态" align="center" prop="paymentState"-->
-      <!--                       v-show="columns[16].visible" width="120px">-->
-      <!--        <template slot-scope="scope">-->
-      <!--          <el-row v-if="scope.row.paymentState === '未申请'">-->
-      <!--            <el-button size="mini" type="text" @click="applyForPayment(scope.row)">申请打款</el-button>-->
-      <!--          </el-row>-->
-      <!--          <el-row v-if="scope.row.paymentState === '审核中'">-->
-      <!--            审核中-->
-      <!--          </el-row>-->
-      <!--          <el-row v-if="scope.row.paymentState === '未支付'">-->
-      <!--            订单未支付-->
-      <!--          </el-row>-->
-      <!--          <el-row v-if="scope.row.paymentState === '已打款'">-->
-      <!--            订单已打款-->
-      <!--          </el-row>-->
-      <!--        </template>-->
-      <!--      </el-table-column>-->
       <el-table-column show-overflow-tooltip label="收到条附件路径" align="center" prop="receiveProof"
                        v-show="columns[17].visible"
                        width="150px">
@@ -316,7 +297,6 @@
               </el-dropdown-item>
             </el-dropdown-menu>
           </el-dropdown>
-
         </template>
       </el-table-column>
     </el-table>
@@ -413,12 +393,6 @@
              :maxInvent="maxInvent" @resetAmount="resetAmount"/>
 
 
-    <!--    订单打款申请  mixin_order_applyPayment -->
-    <OrderMoneyReceive :table-name="TableName" :handle-close-apply="handleCloseApply"
-                       :need-money="needMoney"
-                       :payment-apply-visible="paymentApplyVisible" :t-i-d="tID"/>
-
-
     <!--    todo url其实就是返回了后端服务器的地址加端口 这里需要后期规定好后直接拼接就能查看了 -->
     <el-dialog :close-on-click-modal="false" :show-close="false" title="查看附件" :visible.sync="checkAttachmentVisible"
                width="48%">
@@ -475,7 +449,6 @@ import {mixin_order_freeApply} from "../../dashboard/mixins/order/order_freeAppl
 import {mixin_order_orderHistory} from "../../dashboard/mixins/order/order_history";
 import {mixin_order_goodsItemInfo} from "../../dashboard/mixins/order/order_goodsItemInfo";
 import {mixin_order_audit} from "../../dashboard/mixins/order/order_audit";
-import {mixin_order_applyPayment} from "../../dashboard/mixins/order/order_applyPayment";
 import {mixin_order_base} from "../../dashboard/mixins/order/order_base";
 import reLength from "../../dashboard/mixins/reLength";
 import CheckFiles from "../../../components/CheckFiles.vue";
@@ -487,7 +460,7 @@ export default {
     , mixin_order_checkOrder, mixin_order_adjustOrder
     , mixin_order_Invoice, mixin_order_uploadFiles
     , mixin_order_add, mixin_order_freeApply, mixin_order_orderHistory,
-    mixin_order_goodsItemInfo, mixin_order_audit, mixin_order_applyPayment,
+    mixin_order_goodsItemInfo, mixin_order_audit,
     mixin_order_base, reLength],
   // 组件注册
   components: {

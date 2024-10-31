@@ -68,8 +68,9 @@ export var mixin_choose_order = {
             value: item.supplier
           }
         })
+        // 关闭弹窗
+        this.orderSelectVisible = false
       })
-      this.orderSelectVisible = false
     },
     // 查看订单信息
     checkOrderInfo(row) {
@@ -84,7 +85,7 @@ export var mixin_choose_order = {
     },
     // 多选某个货物
     handleSelectionChangeOrderDetail(selection) {
-      // this.goods = selection;
+      this.goods = selection;
     },
     // 选择需要返利的订单进行返利
     handleSelectOrderDetailChange(selection) {
@@ -101,6 +102,7 @@ export var mixin_choose_order = {
     refreshSelectedGoods() {
       this.goods = []
       this.form.orderDetailIds = []
+      this.toggleSelection()
     },
     // 确认选择
     submitSelectOrderDetail() {
@@ -108,6 +110,17 @@ export var mixin_choose_order = {
         this.form.orderDetailIds.push(item.id)
       })
       this.orderDialogVisible = false
+    },
+
+    // 清除选择
+    toggleSelection(rows) {
+      if (rows) {
+        rows.forEach(row => {
+          this.$refs.multipleTable.toggleRowSelection(row);
+        });
+      } else {
+        this.$refs.multipleTable.clearSelection();
+      }
     },
   }
 }

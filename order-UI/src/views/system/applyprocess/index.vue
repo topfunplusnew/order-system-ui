@@ -139,9 +139,9 @@ export default {
     },
     //查看某一行的审核流程信息
     handleCheckApplyInfo(row) {
-      this.checkApplyInfoDialogVisible = true
       listAuditInfoGroup({applyID: row.id}).then(res => {
         this.auditInfoList = res.rows
+        this.checkApplyInfoDialogVisible = true
       })
     },
     // 审核完毕后点击确定

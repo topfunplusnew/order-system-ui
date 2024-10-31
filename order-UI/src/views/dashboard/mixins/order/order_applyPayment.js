@@ -1,5 +1,6 @@
 /**
  * 订单申请打款功能
+ *  已经弃用
  */
 
 export var mixin_order_applyPayment = {
@@ -24,3 +25,9 @@ export var mixin_order_applyPayment = {
     },
   },
 }
+
+
+// <!--    订单打款申请  mixin_order_applyPayment -->
+// <OrderMoneyReceive :table-name="TableName" :handle-close-apply="handleCloseApply"
+// :need-money="needMoney"
+// :payment-apply-visible="paymentApplyVisible" :t-i-d="tID"/>

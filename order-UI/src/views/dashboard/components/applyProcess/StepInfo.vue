@@ -259,6 +259,6 @@ export default {
 
 /*卡片遮罩*/
 .shadow {
-  opacity: 30%;
+  opacity: 50%;
 }
 </style>
