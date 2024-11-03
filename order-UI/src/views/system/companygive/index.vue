@@ -819,7 +819,7 @@ export default {
     handleUpdate(row) {
       this.reset();
       const id = row.id || this.ids
-      getCompany(id).then(response => {
+      getCompany(id, '供应商').then(response => {
         this.form = response.data;
         this.open = true;
         this.title = "修改供应商信息";

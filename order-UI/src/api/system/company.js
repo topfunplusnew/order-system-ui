@@ -10,10 +10,13 @@ export function listCompany(query) {
 }
 
 // 查询客户、供应商信息详细
-export function getCompany(id) {
+export function getCompany(id, params) {
   return request({
     url: '/system/company/' + id,
-    method: 'get'
+    method: 'get',
+    params: {
+      companyType: params
+    }
   })
 }
 

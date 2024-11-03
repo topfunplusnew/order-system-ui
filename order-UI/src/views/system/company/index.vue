@@ -792,7 +792,7 @@ export default {
     handleUpdate(row) {
       this.reset();
       const id = row.id || this.ids
-      getCompany(id).then(response => {
+      getCompany(id, '客户').then(response => {
         this.form = response.data;
         this.open = true;
         this.title = "修改客户信息";
