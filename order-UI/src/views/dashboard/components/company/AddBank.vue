@@ -33,17 +33,11 @@ export default {
   created() {
     this.getList()
   },
-  computed: {
-    customCompanyInfo() {
-      return {
-        companyId: this.companyInfo.id,
-        companyName: this.companyInfo.companyName
-      }
-    }
-  },
+  computed: {},
   methods: {
     getList() {
-      listBankAccount({companyId: 0, ...this.queryParams}).then(res => {
+      // 未被绑定的卡为-1 己方公司为0
+      listBankAccount({companyId: -1, ...this.queryParams}).then(res => {
         this.tableData = res.rows
         this.total = res.total;
       })
@@ -57,6 +51,7 @@ export default {
     },
     // 选择某张银行卡
     chooseThisBankAccount(row) {
+      console.log('银行卡信息', row)
       this.$confirm('确定要绑定这张银行卡吗?', '提示', {
         confirmButtonText: '确定',
         cancelButtonText: '取消',
@@ -69,7 +64,8 @@ export default {
     updateBankAccount(info) {
       const body = {
         ...info,
-        ...this.customCompanyInfo
+        companyId: this.companyInfo.id,
+        companyName: this.companyInfo.companyName
       }
       updateBankAccount(body).then(res => {
         this.$message.success('绑定成功')

@@ -84,12 +84,10 @@
       <el-table-column label="绑定状态" align="center" width="200">
         <template slot-scope="scope">
           <span v-if="scope.row.companyId === 0" style="color:#138fe1">
-            <span v-if="scope.row.acountsType ==='己方公司'">
-              己方公司银行卡
-            </span>
-            <span v-else style="color:#ff5722">
-              该卡未被绑定
-            </span>
+            己方公司银行卡
+          </span>
+          <span v-else-if="scope.row.companyId === -1" style="color:#ff5722">
+            该卡未被绑定
           </span>
           <span v-else>
             已绑定
