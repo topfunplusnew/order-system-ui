@@ -857,7 +857,7 @@ export default {
     handleDelete(row) {
       const ids = row.id || this.ids;
       this.$modal.confirm('是否确认删除供应商编号为"' + ids + '"的数据项？').then(function () {
-        return delCompany(ids);
+        return delCompany(ids, '供应商');
       }).then(() => {
         this.getList();
         this.$modal.msgSuccess("删除成功");

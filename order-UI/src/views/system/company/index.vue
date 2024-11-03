@@ -824,7 +824,7 @@ export default {
     handleDelete(row) {
       const ids = row.id || this.ids;
       this.$modal.confirm('是否确认删除客户信息编号为"' + ids + '"的数据项？').then(function () {
-        return delCompany(ids);
+        return delCompany(ids, '客户');
       }).then(() => {
         this.getList();
         this.$modal.msgSuccess("删除成功");

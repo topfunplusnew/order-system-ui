@@ -39,9 +39,12 @@ export function updateCompany(data) {
 }
 
 // 删除客户、供应商信息
-export function delCompany(id) {
+export function delCompany(id, params) {
   return request({
     url: '/system/company/' + id,
-    method: 'delete'
+    method: 'delete',
+    params: {
+      companyType: params
+    }
   })
 }
