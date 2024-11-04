@@ -188,6 +188,7 @@ import SearchOption from "../../../components/SearchOption.vue";
 import {listBankAccount} from "../../../api/system/bankAccount";
 import DialogListShow from "../../../components/DialogListShow.vue";
 import AddBankAccounts from "../../dashboard/components/company/AddBankAccounts.vue";
+import {INFO_TYPE, isUsed} from "../../../api/system/isUsed";
 
 export default {
   name: "Cars",
@@ -425,13 +426,26 @@ export default {
     /** 删除按钮操作 */
     handleDelete(row) {
       const ids = row.id || this.ids;
-      this.$modal.confirm('是否确认删除外部车辆信息编号为"' + ids + '"的数据项？').then(function () {
-        return delCars(ids);
-      }).then(() => {
-        this.getList();
-        this.$modal.msgSuccess("删除成功");
-      }).catch(() => {
-      });
+      const query = {
+        id: ids,
+        type: INFO_TYPE.DRIVER
+      }
+      isUsed(query).then(res => {
+        if (res.data.isUsed) {
+          this.$modal.confirm('系统检测该车辆信息:"' + ids + '"的车辆信息数据在系统中被使用，是否要继续删除?').then(function () {
+            return delCars(ids,);
+          }).then(() => {
+            this.getList();
+            this.$modal.msgSuccess("删除成功");
+          }).catch(() => {
+          });
+        } else {
+          delCars(ids).then(() => {
+            this.getList();
+            this.$modal.msgSuccess("删除成功");
+          })
+        }
+      })
     },
     /** 导出按钮操作 */
     handleExport() {

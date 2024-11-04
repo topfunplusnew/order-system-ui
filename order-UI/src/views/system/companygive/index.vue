@@ -382,6 +382,7 @@ import {delBankAccount, listBankAccount, setDefault} from "@/api/system/bankAcco
 import {excludeParams} from "@/api/tool/exclude";
 import AddBank from "../../dashboard/components/company/AddBank.vue";
 import AddBankAccounts from "../../dashboard/components/company/AddBankAccounts.vue";
+import {INFO_TYPE, isUsed} from "../../../api/system/isUsed";
 
 export default {
   name: "Company",
@@ -821,13 +822,26 @@ export default {
     /** 删除按钮操作 */
     handleDelete(row) {
       const ids = row.id || this.ids;
-      this.$modal.confirm('是否确认删除供应商编号为"' + ids + '"的数据项？').then(function () {
-        return delCompany(ids, '供应商');
-      }).then(() => {
-        this.getList();
-        this.$modal.msgSuccess("删除成功");
-      }).catch(() => {
-      });
+      const query = {
+        id: ids,
+        type: INFO_TYPE.SUPPLIER
+      }
+      isUsed(query).then(res => {
+        if (res.data.isUsed) {
+          this.$modal.confirm('系统检测该信息:"' + ids + '"的供应商数据在系统中被使用，是否要继续删除?').then(function () {
+            return delCompany(ids, '供应商');
+          }).then(() => {
+            this.getList();
+            this.$modal.msgSuccess("删除成功");
+          }).catch(() => {
+          });
+        } else {
+          delCompany(ids, '客户').then(() => {
+            this.getList();
+            this.$modal.msgSuccess("删除成功");
+          })
+        }
+      })
     },
     /** 导出按钮操作 */
     handleExport() {
