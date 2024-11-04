@@ -102,7 +102,8 @@
       @pagination="getList"/>
 
     <!-- 添加或修改平账信息对话框 -->
-    <el-dialog :close-on-click-modal="false" :show-close="false" :title="title" :visible.sync="open" width="500px" append-to-body>
+    <el-dialog :close-on-click-modal="false" :show-close="false" :title="title" :visible.sync="open" width="700px"
+               append-to-body>
       <el-form ref="form" :model="form" :rules="rules" label-width="120px">
         <el-form-item label="操作时间" prop="operateDate">
           <!--          <el-input v-model="form.operateDate" placeholder="请输入操作时间"/>-->
@@ -116,15 +117,23 @@
         <el-form-item label="金额" prop="moneyAmount">
           <el-input v-model="form.moneyAmount" placeholder="请输入金额"/>
         </el-form-item>
+        <el-form-item label="对方类型(请确认)">
+          <el-select v-model="value" placeholder="请选择">
+            <el-option
+              v-for="item in options"
+              :key="item.value"
+              :label="item.label"
+              :value="item.value">
+            </el-option>
+          </el-select>
+          <span style="color: #1c84c6;font-size: 12px">请注意选择正确的对方公司类型!</span>
+        </el-form-item>
         <el-form-item label="对方公司" prop="companyName">
           <el-row>
             <el-col :span="12">
               <el-input v-model="form.companyName" placeholder="请输入对方公司"/>
             </el-col>
-            <!--            <el-col :span="6">-->
-            <!--              <el-button icon="el-icon-search" @click="searchCompanyInfo"></el-button>-->
-            <!--            </el-col>-->
-            <SearchOption :limit-info="{}"
+            <SearchOption :limit-info="{companyType:value}"
                           :get-data="listCompany" query-info="companyName"
                           query-label="公司名称" :query-name="queryCompanyName"
                           @update:queryName="handleUpdateCompanyName" @commitBack="handleCommitBackCompany">
@@ -156,9 +165,9 @@
 
     <!--    点击公司查询的弹窗-->
     <el-dialog :close-on-click-modal="false" :show-close="false"
-      title="公司查询"
-      :visible.sync="companyDialogVisible"
-      width="40%">
+               title="公司查询"
+               :visible.sync="companyDialogVisible"
+               width="40%">
       <el-row>
         <el-table
           :data="companyInfoList"
@@ -258,7 +267,7 @@ export default {
         {key: 3, label: `对方公司类型`, visible: true},
         {key: 4, label: `备注`, visible: true},
         {key: 5, label: `添加时间`, visible: true},
-       /* {key: 6, label: `操作人员ID`, visible: true},*/
+        /* {key: 6, label: `操作人员ID`, visible: true},*/
       ],
       // 表单校验
       rules: {
@@ -278,6 +287,16 @@ export default {
       //公司信息
       companyInfoList: [],
       queryCompanyName: '',
+
+      // 对方公司类型
+      options: [{
+        value: '客户',
+        label: '客户'
+      }, {
+        value: '供应商',
+        label: '供应商'
+      },],
+      value: '客户'
     };
   },
   created() {
@@ -425,7 +444,7 @@ export default {
             this.form.updateTime = null;
             this.form.userId = null;
             // this.form.companyType = this.form.companyType === '供应商' ? 2 : 1
-            this.form.operateDate = parseTime(this.form.operateDate,'{y}-{m}-{d}')
+            this.form.operateDate = parseTime(this.form.operateDate, '{y}-{m}-{d}')
             this.form = excludeParams(this.form, this.$exclude)
             updateBalanceAccounts({
               ...this.form,
@@ -441,7 +460,7 @@ export default {
             this.form.updateTime = null;
             this.form.userId = null;
             // this.form.companyType = this.form.companyType === '供应商' ? 2 : 1
-            this.form.operateDate = parseTime(this.form.operateDate,'{y}-{m}-{d}')
+            this.form.operateDate = parseTime(this.form.operateDate, '{y}-{m}-{d}')
             this.form = excludeParams(this.form, this.$exclude)
             addBalanceAccounts({
               ...this.form,
