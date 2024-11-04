@@ -613,7 +613,7 @@ export default {
         companyName: row.companyName
       });
       //查询已绑定的银行卡信息
-      listBankAccount({companyId: row.id, acountsType: '客户'})
+      listBankAccount({companyId: row.id})
         .then(res => {
           this.singleInfo = res.rows
           this.bankTotal = res.total;

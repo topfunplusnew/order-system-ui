@@ -616,7 +616,7 @@ export default {
         companyName: row.companyName
       });
       //查询某供应商信息 账户名称应该是公司名称
-      listBankAccount({companyId: row.id, acountsType: '供应商'}).then(res => {
+      listBankAccount({companyId: row.id}).then(res => {
         this.singleInfo = res.rows;
         this.bankTotal = res.total;
       })
