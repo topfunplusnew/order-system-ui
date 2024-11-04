@@ -412,31 +412,23 @@ export default {
       },
       // 表单校验
       rules: {
-        //
-
         bankNo: [
           {required: true, message: "银行账号不能为空", trigger: "blur"}
-
         ],
         bankName: [
           {required: true, message: "开户行不能为空", trigger: "blur"}
-
         ],
         acountsName: [
           {required: true, message: "账户名称不能为空", trigger: "blur"}
-
         ],
         acountsType: [
           {required: true, message: "账户类型不能为空", trigger: "blur"}
-
         ],
         companyName: [
           {required: true, message: "公司名称不能为空", trigger: "blur"}
-
         ],
         companyType: [
           {required: true, message: "公司类型不能为空", trigger: "blur"}
-
         ],
       },
       options: [

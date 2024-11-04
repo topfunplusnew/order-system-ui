@@ -27,6 +27,10 @@
         >新增客户信息
         </el-button>
       </el-col>
+      <!--      新增银行卡信息-->
+      <!--      <AddBankAccounts :company-type="'客户'"/>-->
+
+      <!--      右侧工具栏-->
       <right-toolbar :showSearch.sync="showSearch" @queryTable="getList" :columns="columns">
         <template v-slot:print>
           <el-col :span="1.5">
@@ -265,9 +269,10 @@
       <!--      客户的银行卡列表  应查询已经绑定的银行卡-->
       <el-row>
         <el-table v-loading="loading" :data="singleInfo" @selection-change="handleSelectionChange">
-          <!--          为本公司绑定银行卡-->
+          <!--          为本公司绑定银行卡 拿到该客户的信息 然后进行添加银行卡的操作  通过companyId把银行卡和客户供应商绑定-->
           <template #append>
-            <AddBank :company-info="currentInfo" @changeBankOpen="handleChangeBank"/>
+            <!--            <AddBank :company-info="currentInfo" @changeBankOpen="handleChangeBank"/>-->
+            <AddBankAccounts :company-info="currentInfo"/>
           </template>
           <el-table-column label="户名" align="center" prop="acountsName"/>
           <el-table-column label="银行卡号" align="center" prop="bankNo"/>
@@ -391,10 +396,11 @@ import {excludeParams} from "@/api/tool/exclude";
 import {addBankAccount, delBankAccount, listBankAccount, setDefault} from "@/api/system/bankAccount";
 import {TableName} from "@/api/tool/enums";
 import AddBank from "../../dashboard/components/company/AddBank.vue";
+import AddBankAccounts from "../../dashboard/components/company/AddBankAccounts.vue";
 
 export default {
   name: "Company",
-  components: {AddBank},
+  components: {AddBankAccounts, AddBank},
   data() {
     // 自定义校验规则
     const validateRegion = (rule, value, callback) => {
