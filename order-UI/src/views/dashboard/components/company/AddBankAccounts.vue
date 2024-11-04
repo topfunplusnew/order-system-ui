@@ -93,18 +93,19 @@ export default {
     listCompany,
     // 添加银行卡信息 这里需要选择客户或者供应商进行绑定
     handleAddBankAccount() {
-      // 填充公司信息 公司类型和id
       this.reset()
+      // 填充公司信息 公司类型和id
       this.form.acountsType = this.computedCompanyInfo.companyType;
       this.form.companyId = this.computedCompanyInfo.id;
+      // 打开弹窗
       this.dialogVisible = true
     },
-    //搜索供应商信息的回调
+    //搜索供应商信息的回调 用于填充表单中关于供应商的某些信息
     handleCommitBackCompanyGive(val) {
       this.form.companyName = val.companyName;
       this.form.companyId = val.id;
     },
-    // 客户
+    // 搜索客户信息的回调 用于填充表单中关于客户的某些信息
     handleCommitBackCompany(val) {
       this.form.companyName = val.companyName;
       this.form.companyId = val.id;
@@ -116,13 +117,10 @@ export default {
     handleQueryCompany(value) {
       this.queryCompany = value;
     },
-    // 搜索银行卡信息
+    // 搜索司机信息的回调 用于填充表单中关于司机的某些信息
     handleCommitBackBankAccount(val) {
       this.form.acountsName = val.acountsName;
       this.form.companyId = val.id;
-      this.form.companyType = '司机';
-      // 司机信息公司默认给的是司机
-      this.form.companyName = '司机'
     },
     handleUpdateBankAccount(val) {
       this.queryBankAccount = val;
