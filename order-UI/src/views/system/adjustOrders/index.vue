@@ -64,15 +64,6 @@
                 >查看
                 </el-button>
               </el-dropdown-item>
-              <!--              <el-dropdown-item>-->
-              <!--                <el-button-->
-              <!--                  size="mini"-->
-              <!--                  type="primary"-->
-              <!--                  @click="handleUpdate(scope.row)"-->
-              <!--                  v-hasPermi="['system:goodsorder:edit']"-->
-              <!--                >修改-->
-              <!--                </el-button>-->
-              <!--              </el-dropdown-item>-->
               <el-dropdown-item>
                 <el-button
                   size="mini"
@@ -864,14 +855,6 @@ export default {
   },
   methods: {
     parseTime,
-    cancelSubmit() {
-      this.orderInfo = {};
-      this.addOrderItemVisible = false
-      //清空订单详情填写信息
-      this.$store.dispatch('order/clearOrderItemList');
-      //清空订单列表基础信息
-      this.orderInfo = {}
-    },
     listCompany,
     listBankAccount,
     getSupplierNames(list) {
@@ -892,7 +875,6 @@ export default {
         this.checkReviousOrderInfoVisible = true;
       })
     },
-
 
     /**
      * 1.开票功能
@@ -1017,35 +999,6 @@ export default {
     checkcurrentOrderItemInfo() {
       this.currentOrderItemInfoVisible = true;
     },
-    // 查看订单历史信息
-    checkOrderHistory(row) {
-      // 保存原订单的信息
-      this.currentOrderItemInfo = JSON.parse(JSON.stringify(row));
-      const id = row.id;
-      // 查询订单历史信息
-      getHistoryGoodsOrder({goodsOrderID: id}).then(res => {
-        if (res.rows.length === 0) {
-          this.$message.warning('没有修改记录')
-          return;
-        }
-        this.orderHistoryInfoList = res.rows;
-        for (let i = 0; i < this.orderHistoryInfoList.length - 1; i++) {
-          this.orderHistoryInfoList[i].diff = {
-            old: this.formatData(excludeParams(this.orderHistoryInfoList[i], this.$excludeWithUpdate)),
-            new: this.formatData(excludeParams(this.orderHistoryInfoList[i + 1], this.$excludeWithUpdate)),
-            updateTime: this.parseTime(this.orderHistoryInfoList[i + 1].updateTime)
-          }
-        }
-        if (this.orderHistoryInfoList.length > 0) {
-          this.orderHistoryInfoList[this.orderHistoryInfoList.length - 1].diff = {
-            old: this.formatData(excludeParams(this.orderHistoryInfoList[this.orderHistoryInfoList.length - 1], this.$excludeWithUpdate)),
-            new: this.formatData(excludeParams(this.currentOrderItemInfo, this.$excludeWithUpdate)),
-            updateTime: this.parseTime(this.currentOrderItemInfo.updateTime)
-          }
-        }
-        this.checkHistoryOrderVisible = true;
-      })
-    },
 
     /**
      *  3.行操作中点击查看 查看当前行订单的信息
@@ -1063,11 +1016,6 @@ export default {
     /**
      *  4.点击调整单按钮，调整订单
      */
-    //点击调整单的弹窗
-    handleOrderItemInfo(row) {
-      this.handleOrderVisible = true
-      this.tempId = row.id;
-    },
     // 调整单
     submitChangeOrder() {
       const id = this.tempId  // 拿到上个方法赋值的状态
@@ -1203,24 +1151,6 @@ export default {
       }
     },
 
-
-    /**
-     * 查看附件功能
-     */
-    //查看附件信息
-    checkAttachment(row, type) {
-      if (type === 'path') {
-        getGoodsOrder(row.id).then(res => {
-          this.checkFileList = res.data.path.split('|');
-          this.checkAttachmentVisible = true;
-        })
-      } else {
-        getGoodsOrder(row.id).then(res => {
-          this.checkFileList = res.data.receiveProof.split('|');
-          this.checkAttachmentVisible = true;
-        })
-      }
-    },
 
     /**
      * 订单申请打款功能

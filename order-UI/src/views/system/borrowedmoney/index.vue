@@ -362,9 +362,6 @@ export default {
     TableName() {
       return TableName
     },
-    fullLevel() {
-      return this.currentSort.levelOne + '-' + this.currentSort.levelTwo;
-    },
     ...mapGetters(['tempBorrowedMoneyList'])
   },
   //展示与隐藏

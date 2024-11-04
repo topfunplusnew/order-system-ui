@@ -282,13 +282,6 @@ export default {
     }
   },
   methods: {
-    checkOrderInfo(row) {
-      this.checkOrderVisible = true;
-      //查询订单详情
-      listGoodsOrder({ordersNo: row.ordersNo}).then(res => {
-        this.orderDetailInfo = res.rows[0]
-      })
-    },
     //查看库存信息 查询当前行的库存信息
     checkInvoInfo(row) {
       getInventory(row.storeID).then(res => {
@@ -296,10 +289,6 @@ export default {
         this.inventoryInfoVisible = true;
       })
     },
-    isOrNot(val) {
-      return val === 1 ? "是" : "否";
-    },
-
     /** 查询出库列表 */
     getList() {
       this.loading = true;

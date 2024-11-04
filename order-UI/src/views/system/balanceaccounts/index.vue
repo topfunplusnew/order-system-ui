@@ -331,36 +331,12 @@ export default {
       this.form.companyName = val.companyName;
       this.form.companyID = val.id;
     },
-    //搜索公司信息
-    searchCompanyInfo() {
-      this.companyDialogVisible = true;
-      //获取公司信息 渲染到表格
-      listCompany({companyType: '供应商'}).then(res => {
-        console.log(res)
-        this.companyInfoList = res.rows;
-      })
-    },
     //点击确认公司
     commitCompanyInfo(row) {
       this.form.companyName = row.companyName;
       this.form.companyID = row.id
       this.form.companyType = row.companyType;
       this.companyDialogVisible = false;
-    },
-    handleTimesQuery() {
-      this.BalanceAccountsList = this.tempbalanceaccountsList;
-      console.log(this.timesQuery)
-      const begin = this.timesQuery.beginTime.getTime();
-      const end = this.timesQuery.beginTime.getTime();
-      this.BalanceAccountsList.filter(item => {
-        if (this.timesQuery.companyName === '') {
-          const date = new Date(item.operateDate).getTime();
-          return date >= begin && date <= end;
-        } else {
-          const date = new Date(item.operateDate).getTime();
-          return date >= begin && date <= end && item.companyName === this.timesQuery.companyName;
-        }
-      })
     },
     /*打印信息*/
     printHTML() {

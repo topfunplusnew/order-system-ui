@@ -584,16 +584,9 @@ export default {
     changeCity(e) {
       this.city = e;
     },
-    changeDis(e) {
-      this.district = e;
-    },
     //银行卡搜索按钮
     handleSearchCompanyGive() {
       this.getList();
-    },
-    //账号搜索
-    handleSearch() {
-      this.dialogFormSearchVisible = true;
     },
     //点击银行卡后弹窗
     jumpBankNo(row) {
@@ -643,14 +636,6 @@ export default {
           this.bankTotal = res.total;
         })
     },
-    //添加银行卡信息
-    handleAddBankInfo() {
-      this.dialogBankInfoVisible = true;
-      //查询所有银行卡信息
-      listBankAccount().then(res => {
-        this.bankInfo = res.rows;
-      })
-    },
     //查询银行卡
     handleSearchBankInfo() {
       listBankAccount({acountsType: this.queryBankInfo.acountsType, acountsName: this.queryBankInfo.acountsName})
@@ -659,7 +644,6 @@ export default {
         })
     },
     addThisBankInfo(row) {
-      console.log(row)
       this.dialogBankInfoVisible = false;
       this.dialogFormVisible = false;
       //添加银行卡信息
@@ -676,27 +660,7 @@ export default {
         })
       }
     },
-    //弹出的银行卡信息点击提交
-    handleCommitCompanyGive() {
-      this.loading = true;
-      updateCompany(this.currentInfo).then(res => {
-        this.$modal.msgSuccess("修改成功");
-        this.loading = false
-      }).catch(err => {
-        this.$modal.msgError("修改失败!" + err.msg);
-      })
-      listCompany({
-        relationName: this.currentInfo.relationName,
-        relationTel: this.currentInfo.relationTel
-      }).then(res => {
-        this.singleInfo = res.rows
-      })
-    },
-    //打开的银行卡弹窗点击编辑
-    handleUpdateBankPop(row) {
-      this.currentInfo.bankNo = row.bankNo;
-      this.currentInfo.acountsName = row.acountsName;
-    },
+
     addDefaultCard(row) {
       //如果是undefined 代表是个对象
       if (row.target === undefined) {

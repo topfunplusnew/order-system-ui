@@ -524,22 +524,6 @@ export default {
       scope.row.item = value;
     },
 
-    // 文件上传
-    handleFileSuccess(response, file, fileList) {
-      if (response.code === 200) {
-        this.oilCardConsumeInfo.attachmentOiladd = response.url
-        this.$message.success('上传成功')
-      } else {
-        this.$message.error('上传失败')
-      }
-      fileList.pop();
-    }
-    ,
-    // 查看附件
-    checkPath(path) {
-      window.open(path)
-    },
-
     /** 查询出差列表 */
     getList() {
       this.loading = true;

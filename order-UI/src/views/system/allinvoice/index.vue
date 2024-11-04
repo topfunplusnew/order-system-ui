@@ -36,10 +36,6 @@
       </el-form-item>
     </el-form>
     <el-row :gutter="10" class="mb8">
-      <!--      <el-col :span="1.5">
-              <el-button icon="el-icon-refresh" size="mini" @click="resetQuery">重置</el-button>
-            </el-col>-->
-      <!-- 刷新按钮-->
       <el-col :span="1.5">
         <el-button icon="el-icon-refresh" size="mini" @click="resetQuery">刷新</el-button>
       </el-col>
@@ -103,8 +99,6 @@
                        v-if="columns[15].visible"/>
       <el-table-column label="票点差额" align="center" prop="ticketPointDifference" width="140"
                        v-if="columns[16].visible"/>
-      <!--      <el-table-column label="票点成本（点数）" align="center" prop="ticketPointCost" v-if="columns[17].visible"/>
-                <el-table-column label="票点成本（点数）" align="center" prop="ticketPointCost" v-if="columns[18].visible"/>-->
       <el-table-column label="总货款" align="center" prop="allPayments" width="140" v-if="columns[17].visible"/>
       <el-table-column label="实际开票日期" align="center" prop="orderDate" width="140" v-if="columns[18].visible"/>
       <el-table-column label="当月欠票" align="center" prop="oweamount" width="140" v-if="columns[19].visible"/>

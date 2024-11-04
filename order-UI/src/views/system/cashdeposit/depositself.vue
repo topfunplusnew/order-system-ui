@@ -70,8 +70,6 @@
 
     <el-table border v-loading="loading" :data="lendMoneyList" @selection-change="handleSelectionChange"
               v-horizontal-scroll="'always'" id="printBox" size="mini" :cell-style="()=>{return {padding:'1px'}}">
-      <!--      <el-table-column label="id" align="center" prop="id"/>-->
-      <!--      <el-table-column label="借出款编号" align="center" prop="futuresNO" v-if="columns[0].visible"/>-->
       <el-table-column label="押金公司" align="center" prop="futuresMarginCompany" v-if="columns[0].visible"
                        width="130" show-overflow-tooltip>
         <template slot-scope="scope">

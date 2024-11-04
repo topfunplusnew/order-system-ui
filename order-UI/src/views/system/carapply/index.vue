@@ -157,9 +157,6 @@
                append-to-body>
       <div>
         <el-form ref="form" :model="form" :rules="rules" label-width="160px">
-          <!--        <el-form-item label="出差编号UUID" prop="bTripId">-->
-          <!--          <el-input v-model="form.bTripId" placeholder="请输入出差编号UUID"/>-->
-          <!--        </el-form-item>-->
           <el-row>
             <el-col :span="8">
               <el-form-item label="申请时间" prop="applyDate">
@@ -173,9 +170,6 @@
               <el-form-item label="申请人" prop="applyUser">
                 <el-input v-model="form.applyUser" placeholder="请输入申请人"/>
               </el-form-item>
-              <!--              <el-form-item label="部门" prop="department">-->
-              <!--                <el-input v-model="form.department" placeholder="请输入部门"/>-->
-              <!--              </el-form-item>-->
               <el-form-item label="部门" prop="department">
                 <treeselect v-model="form.department" :options="deptOptions" :normalizer="normalizer"
                             placeholder="请选择部门"/>
@@ -609,10 +603,6 @@ export default {
       this.ids = selection.map(item => item.id)
       this.single = selection.length !== 1
       this.multiple = !selection.length
-    },
-    //附件
-    isPic(url) {
-      return this.$imgs.includes(findFileExtension(url))
     },
     /** 新增按钮操作 */
     handleAdd() {

@@ -224,27 +224,6 @@ export default {
     /** 新增按钮操作 */
     handleAdd() {
       this.reset();
-      // 先查询一下是不是有审核信息
-      // listAuditflow().then(res => {
-      //   if (res.rows !== 0) {
-      //     res.rows.forEach(item => {
-      //       this.stepInfo = {
-      //         flowname: item.flowname,
-      //         stepnum: item.stepnum,
-      //         step: item.step,
-      //       }
-      //       this.$set(this.stepInfo, 'auditauthority', item.auditauthority.split(','))
-      //       this.checkStepList.push(this.stepInfo)
-      //       // todo
-      //     })
-      //     console.log(this.checkStepList)
-      //     this.open = true;
-      //     this.title = "更改审核流程";
-      //   } else {
-      //     this.open = true;
-      //     this.title = "添加审核流程";
-      //   }
-      // })
       this.title = "更改审核流程";
       this.open = true;
     },

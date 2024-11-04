@@ -665,32 +665,6 @@ export default {
       });
     },
 
-    /*调整按钮操作*/
-    handleAdjust(row) {
-      this.AdjustInfo = row;
-      this.$prompt('请输入编辑原因', '提示', {
-        confirmButtonText: '确定',
-        cancelButtonText: '取消',
-        type: 'warning'
-      }).then(({value}) => {
-        addReason({
-          reason: value,
-          tableName: TableName.BANK_ACCOUNT_CHANGE,
-          tid: row.id,
-          modifyTime: parseTime(new Date(), '{y}-{m}-{d}')
-        })
-          .then(res => {
-            this.$message.success('提交成功')
-            this.Adjustment = true;
-            this.reset();
-          })
-      }).catch(() => {
-        this.$message({
-          type: 'warning',
-          message: '请先输入编辑原因!'
-        });
-      });
-    },
     /** 提交按钮 */
     submitForm() {
       this.$refs["form"].validate(valid => {
