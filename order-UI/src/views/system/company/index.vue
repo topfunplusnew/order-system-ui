@@ -835,22 +835,28 @@ export default {
         id: ids,
         type: INFO_TYPE.CUSTOMER
       }
-      isUsed(query).then(res => {
-        if (res.data.isUsed) {
-          this.$modal.confirm('系统检测该信息:"' + ids + '"的客户数据在系统中被使用，是否要继续删除?').then(function () {
-            return delCompany(ids, '客户');
-          }).then(() => {
-            this.getList();
-            this.$modal.msgSuccess("删除成功");
-          }).catch(() => {
-          });
-        } else {
-          delCompany(ids, '客户').then(() => {
-            this.getList();
-            this.$modal.msgSuccess("删除成功");
-          })
-        }
-      })
+      // 弹窗删除
+      this.$modal.confirm('是否确认删除编号为"' + ids + '"的数据项？').then(() => {
+        // 查询该数据是否被使用
+        isUsed(query).then(res => {
+          if (res.data.isUsed) {
+            this.$modal.confirm('系统检测该信息:"' + ids + '"的客户数据在系统中被使用，是否要继续删除?').then(function () {
+              return delCompany(ids, '客户');
+            }).then(() => {
+              this.getList();
+              this.$modal.msgSuccess("删除成功");
+            }).catch(() => {
+            });
+          } else {
+            delCompany(ids, '客户').then(() => {
+              this.getList();
+              this.$modal.msgSuccess("删除成功");
+            })
+          }
+        })
+      }).catch(() => {
+      });
+
     },
     /** 导出按钮操作 */
     handleExport() {

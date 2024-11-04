@@ -430,22 +430,26 @@ export default {
         id: ids,
         type: INFO_TYPE.DRIVER
       }
-      isUsed(query).then(res => {
-        if (res.data.isUsed) {
-          this.$modal.confirm('系统检测该车辆信息:"' + ids + '"的车辆信息数据在系统中被使用，是否要继续删除?').then(function () {
-            return delCars(ids,);
-          }).then(() => {
-            this.getList();
-            this.$modal.msgSuccess("删除成功");
-          }).catch(() => {
-          });
-        } else {
-          delCars(ids).then(() => {
-            this.getList();
-            this.$modal.msgSuccess("删除成功");
-          })
-        }
-      })
+      // 弹窗删除
+      this.$modal.confirm('是否确认删除编号为"' + ids + '"的数据项？').then(() => {
+        isUsed(query).then(res => {
+          if (res.data.isUsed) {
+            this.$modal.confirm('系统检测该车辆信息:"' + ids + '"的车辆信息数据在系统中被使用，是否要继续删除?').then(function () {
+              return delCars(ids,);
+            }).then(() => {
+              this.getList();
+              this.$modal.msgSuccess("删除成功");
+            }).catch(() => {
+            });
+          } else {
+            delCars(ids).then(() => {
+              this.getList();
+              this.$modal.msgSuccess("删除成功");
+            })
+          }
+        })
+      }).catch(() => {
+      });
     },
     /** 导出按钮操作 */
     handleExport() {
