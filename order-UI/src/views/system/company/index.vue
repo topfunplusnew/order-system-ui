@@ -272,7 +272,7 @@
           <!--          为本公司绑定银行卡 拿到该客户的信息 然后进行添加银行卡的操作  通过companyId把银行卡和客户供应商绑定-->
           <template #append>
             <!--            <AddBank :company-info="currentInfo" @changeBankOpen="handleChangeBank"/>-->
-            <AddBankAccounts :company-info="currentInfo"/>
+            <AddBankAccounts :company-info="currentInfo" @callGetList="handleChangeBank"/>
           </template>
           <el-table-column label="户名" align="center" prop="acountsName"/>
           <el-table-column label="银行卡号" align="center" prop="bankNo"/>

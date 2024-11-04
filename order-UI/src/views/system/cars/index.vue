@@ -167,6 +167,7 @@
     <keep-alive>
       <DialogListShow :title="'司机银行卡信息'" :get-data="listBankAccount" :query-object="queryObject"
                       :visible.sync="driverBankAccout">
+
         <template #column>
           <el-table-column label="账号类型" align="center" prop="acountsType"/>
           <el-table-column label="开户行" align="center" prop="bankName"/>

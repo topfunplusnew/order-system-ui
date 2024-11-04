@@ -208,7 +208,7 @@
         <el-table v-loading="loading" :data="singleInfo" @selection-change="handleSelectionChange">
           <template #append>
             <!--            <AddBank :company-info="currentInfo" @changeBankOpen="handleChangeBank"/>-->
-            <AddBankAccounts :company-info="currentInfo"/>
+            <AddBankAccounts :company-info="currentInfo" @callGetList="handleChangeBank"/>
           </template>
           <el-table-column label="序号" align="center" prop="id"/>
           <el-table-column label="户名" align="center" prop="acountsName"/>

@@ -249,26 +249,26 @@
 
 
     <!--    银行卡之间转账-->
-    <el-dialog :close-on-click-modal="false" :show-close="false" title="银行卡转账"
-               :visible.sync="transformDialogVisible" width="500px" append-to-body>
-      <el-row>
-        <el-form :model="transformInfo" label-width="100px">
-          <el-form-item label="转账银行卡" prop="fromBankNo">
-            <el-input v-model="transformInfo.fromBankNo" placeholder="请输入转账银行卡"/>
-          </el-form-item>
-          <el-form-item label="目标银行卡" prop="toBankNo">
-            <el-input v-model="transformInfo.toBankNo" placeholder="请输入目标银行卡"/>
-          </el-form-item>
-          <el-form-item label="转账金额" prop="money">
-            <el-input v-model="transformInfo.money" placeholder="请输入转账金额"/>
-          </el-form-item>
-        </el-form>
-      </el-row>
-      <div slot="footer" class="dialog-footer">
-        <el-button type="primary" @click="submitTransformBank">确 定</el-button>
-        <el-button @click="transformDialogVisible = false">取 消</el-button>
-      </div>
-    </el-dialog>
+    <!--    <el-dialog :close-on-click-modal="false" :show-close="false" title="银行卡转账"-->
+    <!--               :visible.sync="transformDialogVisible" width="500px" append-to-body>-->
+    <!--      <el-row>-->
+    <!--        <el-form :model="transformInfo" label-width="100px">-->
+    <!--          <el-form-item label="转账银行卡" prop="fromBankNo">-->
+    <!--            <el-input v-model="transformInfo.fromBankNo" placeholder="请输入转账银行卡"/>-->
+    <!--          </el-form-item>-->
+    <!--          <el-form-item label="目标银行卡" prop="toBankNo">-->
+    <!--            <el-input v-model="transformInfo.toBankNo" placeholder="请输入目标银行卡"/>-->
+    <!--          </el-form-item>-->
+    <!--          <el-form-item label="转账金额" prop="money">-->
+    <!--            <el-input v-model="transformInfo.money" placeholder="请输入转账金额"/>-->
+    <!--          </el-form-item>-->
+    <!--        </el-form>-->
+    <!--      </el-row>-->
+    <!--      <div slot="footer" class="dialog-footer">-->
+    <!--        <el-button type="primary" @click="submitTransformBank">确 定</el-button>-->
+    <!--        <el-button @click="transformDialogVisible = false">取 消</el-button>-->
+    <!--      </div>-->
+    <!--    </el-dialog>-->
 
 
     <!--    银行卡流水-->
@@ -670,6 +670,12 @@ export default {
             });
           } else {
             this.form = excludeParams(this.form, this.$exclude)
+            // 如果是其他类型，那么就设置companyId为-1
+            if (this.form.acountsType === '己方公司') {
+              this.form.companyId = 0
+            } else {
+              this.form.companyId = -1
+            }
             addBankAccount(this.form).then(response => {
               this.$modal.msgSuccess("新增成功");
               this.open = false;
