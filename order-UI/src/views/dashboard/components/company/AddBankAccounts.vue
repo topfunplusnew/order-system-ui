@@ -27,17 +27,16 @@ export default {
       return this.companyInfo
     }
   },
-  // watch: {
-  //   // 监听传入的公司信息 自动将账户类型和id赋值
-  //   'companyInfo': {
-  //     handler(val) {
-  //       this.form.acountsType = val.companyType;
-  //       this.form.companyID = val.id;
-  //     },
-  //     deep: true,
-  //     immediate: true
-  //   }
-  // },
+  watch: {
+    // 监听传入的公司信息 自动将账户类型和id赋值
+    'computedCompanyInfo': {
+      handler(val) {
+        console.log(val)
+      },
+      deep: true,
+      immediate: true
+    }
+  },
   data() {
     return {
       dialogVisible: false,
@@ -89,43 +88,17 @@ export default {
     }
   },
   methods: {
-    listCars,
     listCompany,
     // 添加银行卡信息 这里需要选择客户或者供应商进行绑定
     handleAddBankAccount() {
       this.reset()
       // 填充公司信息 公司类型和id
-      this.form.acountsType = this.computedCompanyInfo.companyType;
-      this.form.companyId = this.computedCompanyInfo.id;
+      this.form.acountsType = this.computedCompanyInfo.companyType || this.computedCompanyInfo.acountsType;
+      this.form.companyId = this.computedCompanyInfo.id || this.computedCompanyInfo.companyId;
       this.form.companyName = this.computedCompanyInfo.companyName;
       // 打开弹窗
       this.dialogVisible = true
     },
-    // //搜索供应商信息的回调 用于填充表单中关于供应商的某些信息
-    // handleCommitBackCompanyGive(val) {
-    //   this.form.companyName = val.companyName;
-    //   this.form.companyId = val.id;
-    // },
-    // 搜索客户信息的回调 用于填充表单中关于客户的某些信息
-    // handleCommitBackCompany(val) {
-    //   this.form.companyName = val.companyName;
-    //   this.form.companyId = val.id;
-    // },
-    // // 搜索字段的自动填充
-    // handleQueryCompanyGive(value) {
-    //   this.queryCompanyGive = value;
-    // },
-    // handleQueryCompany(value) {
-    //   this.queryCompany = value;
-    // },
-    // // 搜索司机信息的回调 用于填充表单中关于司机的某些信息
-    // handleCommitBackBankAccount(val) {
-    //   this.form.acountsName = val.acountsName;
-    //   this.form.companyId = val.id;
-    // },
-    // handleUpdateBankAccount(val) {
-    //   this.queryBankAccount = val;
-    // },
     // 取消按钮
     cancel() {
       this.dialogVisible = false;
@@ -169,13 +142,12 @@ export default {
       <el-button
         type="text"
         size="mini"
+        icon="el-icon-plus"
         @click="handleAddBankAccount"
         v-hasPermi="['system:company:add']"
       >新增银行卡信息
       </el-button>
     </div>
-
-
     <el-dialog
       title="提示"
       :visible.sync="dialogVisible"
@@ -198,25 +170,6 @@ export default {
               <el-col :span="20">
                 <el-input v-model="form.acountsName" placeholder="请输入户名"/>
               </el-col>
-              <!--              <el-col :span="4">-->
-              <!--                <el-tooltip content="选择已经添加过的账户" placement="top">-->
-              <!--                  <SearchOption :limit-info="{}"-->
-              <!--                                :get-data="listCars" query-info="carNo"-->
-              <!--                                query-label="车牌查找" :query-name="queryCarsBank"-->
-              <!--                                @update:queryName="handleUpdateBankAccount" @commitBack="handleCommitBackBankAccount">-->
-              <!--                    <template #table-columns>-->
-              <!--                      <el-table-column label="司机" align="center"-->
-              <!--                                       prop="driver"/>-->
-              <!--                      <el-table-column label="车牌号" align="center" prop="carNo"/>-->
-              <!--                      <el-table-column label="司机电话" align="center" prop="tel"/>-->
-              <!--                      <el-table-column label="开户名" align="center" prop="acountsName"/>-->
-              <!--                      <el-table-column label="账号" align="center" prop="bankNo"/>-->
-              <!--                      <el-table-column label="开户行" align="center" prop="bankName"/>-->
-              <!--                      <el-table-column label="运输方式" align="center" prop="carType"/>-->
-              <!--                    </template>-->
-              <!--                  </SearchOption>-->
-              <!--                </el-tooltip>-->
-              <!--              </el-col>-->
             </el-row>
             <el-row v-else>
               <el-input v-model="form.acountsName" placeholder="请输入户名"/>
@@ -227,31 +180,6 @@ export default {
               <el-col :span="10">
                 <el-input v-model="form.companyName" placeholder="请输入公司名称"/>
               </el-col>
-              <!--              &lt;!&ndash; 供应商信息搜索&ndash;&gt;-->
-              <!--              <el-col :span="2" v-if="form.acountsType === '供应商'">-->
-              <!--                <SearchOption :limit-info="{companyType:'供应商'}" :get-data="listCompany" query-label="名称查找"-->
-              <!--                              :query-name="queryCompanyGive" query-info="companyName"-->
-              <!--                              @commitBack="handleCommitBackCompanyGive" @update:queryName="handleQueryCompanyGive">-->
-              <!--                  <template #table-columns>-->
-              <!--                    <el-table-column label="供应商" align="center" prop="companyName"/>-->
-              <!--                    <el-table-column label="地址" align="center" prop="address"/>-->
-              <!--                  </template>-->
-              <!--                </SearchOption>-->
-              <!--              </el-col>-->
-              <!--              &lt;!&ndash; 客户信息搜索&ndash;&gt;-->
-              <!--              <el-col :span="2" v-if="form.acountsType === '客户'">-->
-              <!--                <SearchOption :limit-info="{companyType:'客户'}" :get-data="listCompany"-->
-              <!--                              :query-name="queryCompany" query-info="companyName" query-label="名称查找"-->
-              <!--                              @commitBack="handleCommitBackCompany" @update:queryName="handleQueryCompany">-->
-              <!--                  <template #table-columns>-->
-              <!--                    <el-table-column label="客户" align="center" prop="relationName"/>-->
-              <!--                    <el-table-column label="老板姓名" align="center" prop="leader"/>-->
-              <!--                    <el-table-column label="老板电话" align="center" prop="leaderTel"/>-->
-              <!--                    <el-table-column label="公司名称" align="center" prop="companyName"/>-->
-              <!--                    <el-table-column label="销售经理" align="center" prop="salesManager"/>-->
-              <!--                  </template>-->
-              <!--                </SearchOption>-->
-              <!--              </el-col>-->
             </el-row>
           </el-form-item>
           <el-form-item label="银行账号" prop="bankNo">

@@ -167,7 +167,6 @@
     <keep-alive>
       <DialogListShow :title="'司机银行卡信息'" :get-data="listBankAccount" :query-object="queryObject"
                       :visible.sync="driverBankAccout">
-
         <template #column>
           <el-table-column label="账号类型" align="center" prop="acountsType"/>
           <el-table-column label="开户行" align="center" prop="bankName"/>
@@ -188,10 +187,11 @@ import {excludeParams} from "@/api/tool/exclude";
 import SearchOption from "../../../components/SearchOption.vue";
 import {listBankAccount} from "../../../api/system/bankAccount";
 import DialogListShow from "../../../components/DialogListShow.vue";
+import AddBankAccounts from "../../dashboard/components/company/AddBankAccounts.vue";
 
 export default {
   name: "Cars",
-  components: {DialogListShow, SearchOption},
+  components: {AddBankAccounts, DialogListShow, SearchOption},
   data() {
     return {
       loading: true,
@@ -304,6 +304,7 @@ export default {
 
   methods: {
     listBankAccount,
+
     handleCommitBack(val) {
       this.form.bankName = val.bankName
       this.form.bankNo = val.bankNo
