@@ -207,7 +207,8 @@
       <el-row>
         <el-table v-loading="loading" :data="singleInfo" @selection-change="handleSelectionChange">
           <template #append>
-            <AddBank :company-info="currentInfo" @changeBankOpen="handleChangeBank"/>
+            <!--            <AddBank :company-info="currentInfo" @changeBankOpen="handleChangeBank"/>-->
+            <AddBankAccounts :company-info="currentInfo"/>
           </template>
           <el-table-column label="序号" align="center" prop="id"/>
           <el-table-column label="户名" align="center" prop="acountsName"/>
@@ -380,10 +381,11 @@ import {listCompany, getCompany, delCompany, addCompany, updateCompany} from "@/
 import {delBankAccount, listBankAccount, setDefault} from "@/api/system/bankAccount";
 import {excludeParams} from "@/api/tool/exclude";
 import AddBank from "../../dashboard/components/company/AddBank.vue";
+import AddBankAccounts from "../../dashboard/components/company/AddBankAccounts.vue";
 
 export default {
   name: "Company",
-  components: {AddBank},
+  components: {AddBankAccounts, AddBank},
   data() {
     return {
       // 遮罩层
@@ -674,7 +676,6 @@ export default {
       } else {
         //如果还没有添加过银行卡信息
         //先查询
-        console.log(this.currentInfo)
         listBankAccount({companyId: this.currentInfo.id, acountsType: '供应商'})
           .then(res => {
             if (res.rows.length === 0) {
