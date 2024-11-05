@@ -53,16 +53,9 @@ export const DocumentNumber = Object.freeze({
   // PAYMENT: '收付款'
 })
 
-
+// 支付状态
 export const PaymentState = [
-  {
-    value: '未申请',
-    label: '未申请'
-  },
-  {
-    value: '审核中',
-    label: '审核中'
-  },
+
   {
     value: '未支付',
     label: '未支付'
@@ -72,4 +65,16 @@ export const PaymentState = [
     label: '已支付'
   },
 
+]
+
+// 审核状态
+export const CheckState = [
+  {
+    value: '未申请',
+    label: '未申请'
+  },
+  {
+    value: '审核中',
+    label: '审核中'
+  },
 ]

@@ -9,9 +9,10 @@
           type="daterange"
           start-placeholder="开始日期"
           end-placeholder="结束日期"
+          clearable
         ></el-date-picker>
       </el-form-item>
-      <el-form-item label="司机名称" prop="driverName">
+      <el-form-item label="司机名称/海运公司" prop="driverName">
         <el-input
           v-model="queryParams.driverName"
           placeholder="请输入司机名称"
@@ -36,6 +37,7 @@
           v-model="queryParams.paymentState"
           placeholder="请选择"
           size="mini"
+          clearable
         >
           <el-option
             v-for="item in PaymentState()"
@@ -165,11 +167,6 @@
         width="100"
         show-overflow-tooltip
       >
-        <template slot-scope="scope">
-          <el-tag :type="scope.row.paymentState === '未支付' ? 'danger' : 'success'">
-            {{ scope.row.paymentState }}
-          </el-tag>
-        </template>
       </el-table-column>
       <el-table-column
         label="司机姓名"

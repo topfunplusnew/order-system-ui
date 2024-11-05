@@ -50,6 +50,18 @@
         </el-form-item>
       </el-col>
       <el-col :span="6">
+        <el-form-item label="海运公司" prop="seaDriverName">
+          <el-input
+            v-model="queryParams.seaDriverName"
+            placeholder="请输入海运公司"
+            clearable
+            @keyup.enter.native="handleQuery"
+            size="mini"
+          >
+          </el-input>
+        </el-form-item>
+      </el-col>
+      <el-col :span="6">
         <el-form-item label="车队名称" prop="fleet">
           <el-input
             v-model="queryParams.fleet"
@@ -67,6 +79,7 @@
             v-model="queryParams.checkState"
             placeholder="请选择"
             size="mini"
+            clearable
           >
             <el-option
               v-for="item in options"
