@@ -48,6 +48,12 @@ import VForm from 'vform-builds'  //引入VForm库
 import 'vform-builds/dist/VFormDesigner.css'  //引入VForm样式
 import service from "./utils/request";
 
+// 虚拟滚动
+import VueVirtualScroller from 'vue-virtual-scroller'
+import 'vue-virtual-scroller/dist/vue-virtual-scroller.css'
+Vue.use(VueVirtualScroller)
+
+
 window.axios = service
 Vue.prototype.getDicts = getDicts
 Vue.prototype.getConfigKey = getConfigKey

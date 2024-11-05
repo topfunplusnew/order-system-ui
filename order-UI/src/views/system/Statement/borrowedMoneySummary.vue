@@ -79,31 +79,44 @@
       @pagination="getList"
     />
 
-    <el-table
-      v-if="tableData.length!==0"
-      :data="tableData"
-      size="mini"
-      :cell-style="()=>{return {padding:'2px'}}"
-      border
-      style="width: 40%" :span-method="mergeCells">
-      <el-table-column
-        prop=""
-        width="180">
-        <template v-slot="scope">
-          <span v-if="scope.$index === 0">贷款还款</span>
-        </template>
-      </el-table-column>
-      <el-table-column
-        prop="payDate"
-        label="时间"
-        width="180">
-      </el-table-column>
-      <el-table-column
-        prop="moneyAmount"
-        label="还款金额"
-        width="180">
-      </el-table-column>
-    </el-table>
+
+    <!--    历史还款记录弹窗-->
+    <InfoDialog title="历史还款记录" :visible.sync="dialogHistoryVisible" :width="'620px'">
+      <template #info>
+        <el-table
+          v-if="tableData.length!==0"
+          :data="tableData"
+          size="mini"
+          :cell-style="()=>{return {padding:'2px'}}"
+          border
+          :span-method="mergeCells">
+          <el-table-column
+            prop=""
+            width="180">
+            <template v-slot="scope">
+              <span v-if="scope.$index === 0">贷款还款</span>
+            </template>
+          </el-table-column>
+          <el-table-column
+            prop="payDate"
+            label="时间"
+            width="180">
+          </el-table-column>
+          <el-table-column
+            prop="moneyAmount"
+            label="还款金额">
+          </el-table-column>
+        </el-table>
+        <pagination
+          v-show="detailTotal>0"
+          :total="detailTotal"
+          :page.sync="queryRepaymentParams.pageNum"
+          :limit.sync="queryRepaymentParams.pageSize"
+          @pagination="getRepaymentMoneyList"
+        />
+      </template>
+    </InfoDialog>
+
 
     <el-dialog :close-on-click-modal="false" :show-close="false"
                title="请选择导出时间段"
@@ -144,10 +157,11 @@ import {mixin_printHTML} from "@/views/dashboard/mixins/print";
 import {getBorrowedMoneySummary} from "../../../api/system/statement";
 import {getRepaymentMoneyNoPage} from "../../../api/system/repayment";
 import {parseTime} from "../../../utils/ruoyi";
+import InfoDialog from "../../../components/InfoDialog.vue";
 
 export default {
   name: "borrowedMoneySummary",
-  components: {ApplyPayment, SearchOption},
+  components: {InfoDialog, ApplyPayment, SearchOption},
   dicts: ['order_target_type'],
   mixins: [mixin_printHTML],
   data() {
@@ -164,12 +178,16 @@ export default {
       showSearch: true,
       // 总条数
       total: 0,
+      // 历史记录相关
+      detailTotal: 0,
+      dialogHistoryVisible: false,
       // 向外部借出款信息表格数据
       lendMoneyList: [],
       // 弹出层标题
       title: "",
       // 是否显示弹出层
       open: false,
+
       // 查询参数
       queryParams: {
         pageNum: 1,
@@ -192,6 +210,11 @@ export default {
         userId: null,
         UserName: null,
         delFlag: null
+      },
+      // 点击查看历史还款
+      queryRepaymentParams: {
+        pageNum: 1,
+        pageSize: 10,
       },
       // 表单校验
       columns: [
@@ -224,15 +247,19 @@ export default {
   methods: {
     // 查看历史还款信息
     checkDetail(row) {
-      console.log(row)
+      this.getRepaymentMoneyList(row)
+    },
+    getRepaymentMoneyList(row) {
       // 查询
-      getRepaymentMoneyNoPage({loanNO: row.loanNO})
+      getRepaymentMoneyNoPage({loanNO: row.loanNO, ...this.queryRepaymentParams})
         .then(res => {
           this.tableData = res.rows;
+          this.detailTotal = res.total;
           if (res.rows.length === 0) {
             this.$message.error('暂无数据')
           } else {
             this.$message.success('查询成功')
+            this.dialogHistoryVisible = true;
           }
         })
     },

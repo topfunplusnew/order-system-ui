@@ -29,29 +29,35 @@ export default {
   methods: {
     // 处理年份数据l
     handleData(list, type) {
+      // 如果传入的不是数组
       if (typeof list !== 'object') {
-        return list;
+        return
       }
+      // flag 判断一下 如果是年份
       if (type === 0) {
         // 存放年份数据
         const ist = new Set();
+        // 从传入的数组中填入年份
         const handleItemList = (itemList) => {
           itemList.forEach(item => {
-            ist.add(item.orderDateButMonth.split('-')[type]);
+            const element = item.orderDateButMonth.split('-')[type]
+            // 如果已经存放过年份数据 就不存
+            if (!ist.has(element)) {
+              ist.add(element);
+            }
           })
         }
-        list.forEach(item => {
-          handleItemList(item.orderStatisticsList)
-        })
+
+        if (list.length > 0) {
+          handleItemList(list[0].orderStatisticsList);
+        }
         return Array.from(ist);
         // 处理月份数据
       } else {
         // 筛选函数
         const handler = (orderStatisticsList) => {
-          const year = orderStatisticsList[0].orderDateButMonth.split('-')[0];
           return orderStatisticsList.filter(item => item.orderDateButMonth.split('-')[0] === type)
         }
-        console.log('测试', list[0].orderStatisticsList)
         return handler(list[0].orderStatisticsList)
       }
 
@@ -84,6 +90,7 @@ export default {
   },
 }
 </script>
+
 
 <template>
   <div>
@@ -150,8 +157,11 @@ export default {
               </el-col>
             </template>
           </right-toolbar>
-          <el-table border v-loading="loading" :data="statementList"
-                    height="450px" v-horizontal-scroll="'always'" size="mini" :cell-style="()=>{return {padding:'2px'}}"
+
+          <!-- todo表格 大数据 -->
+          <el-table border v-loading="loading" :data="statementList" lazy
+                    height="570px" v-horizontal-scroll="'always'" size="mini"
+                    :cell-style="()=>{return {padding:'2px'}}"
                     id="printBox">
             <el-table-column align="center">
               <el-table-column label="客户" align="center" prop="companyName" v-if="columns[0].visible" width="200"
@@ -220,6 +230,10 @@ export default {
   </div>
 </template>
 
+
 <style scoped lang="scss">
+.el-table-column {
+  content-visibility: auto
+}
 
 </style>

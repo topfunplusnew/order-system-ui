@@ -98,31 +98,44 @@
       @pagination="getList"
     />
 
-    <el-table
-      v-if="tableData.length!==0"
-      :data="tableData"
-      size="mini"
-      :cell-style="()=>{return {padding:'2px'}}"
-      border
-      style="width: 40%" :span-method="mergeCells">
-      <el-table-column
-        prop=""
-        width="180">
-        <template v-slot="scope">
-          <span v-if="scope.$index === 0">借出资金收回</span>
-        </template>
-      </el-table-column>
-      <el-table-column
-        prop="recoverDate"
-        label="时间"
-        width="180">
-      </el-table-column>
-      <el-table-column
-        prop="moneyAmount"
-        label="收回金额"
-        width="180">
-      </el-table-column>
-    </el-table>
+
+    <InfoDialog title="历史还款记录" :visible.sync="dialogHistoryVisible" :width="'620px'">
+      <template #info>
+        <el-table
+          v-if="tableData.length!==0"
+          :data="tableData"
+          size="mini"
+          :cell-style="()=>{return {padding:'2px'}}"
+          border
+          :span-method="mergeCells">
+          <el-table-column
+            prop=""
+            width="180">
+            <template v-slot="scope">
+              <span v-if="scope.$index === 0">借出资金收回</span>
+            </template>
+          </el-table-column>
+          <el-table-column
+            prop="recoverDate"
+            label="时间"
+            width="180">
+          </el-table-column>
+          <el-table-column
+            prop="moneyAmount"
+            label="收回金额">
+          </el-table-column>
+        </el-table>
+        <pagination
+          v-show="detailTotal>0"
+          :total="detailTotal"
+          :page.sync="queryRepaymentParams.pageNum"
+          :limit.sync="queryRepaymentParams.pageSize"
+          @pagination="getRepaymentMoneyList"
+        />
+      </template>
+    </InfoDialog>
+
+
     <el-dialog :close-on-click-modal="false" :show-close="false"
                title="请选择导出时间段"
                :visible.sync="dialogVisible"
@@ -162,10 +175,11 @@ import {getLendMoneySummary} from "@/api/system/statement";
 import {mixin_printHTML} from "@/views/dashboard/mixins/print";
 import {listRecoverMoney} from "../../../api/system/recoverMoney";
 import {parseTime} from "../../../utils/ruoyi";
+import InfoDialog from "../../../components/InfoDialog.vue";
 
 export default {
   name: "LendMoney",
-  components: {ApplyPayment, SearchOption},
+  components: {InfoDialog, ApplyPayment, SearchOption},
   dicts: ['order_target_type'],
   mixins: [mixin_printHTML],
   data() {
@@ -235,6 +249,14 @@ export default {
       // 详细的还款记录
       tableData: [],
       dialogVisible: false,
+      // 查看信息的分页
+      detailTotal: 0,
+      queryRepaymentParams: {
+        pageNum: 1,
+        pageSize: 10,
+      },
+      dialogHistoryVisible: false,
+
     };
   },
   created() {
@@ -243,14 +265,19 @@ export default {
   methods: {
     // 查看历史还款信息
     checkDetail(row) {
+      this.getRepaymentMoneyList(row)
+    },
+    getRepaymentMoneyList(row) {
       // 查询
-      listRecoverMoney({futuresNO: row.futuresNO})
+      listRecoverMoney({futuresNO: row.futuresNO, ...this.queryRepaymentParams})
         .then(res => {
           this.tableData = res.rows;
+          this.detailTotal = res.total;
           if (res.rows.length === 0) {
             this.$message.error('暂无数据')
           } else {
             this.$message.success('查询成功')
+            this.dialogHistoryVisible = true
           }
         })
     },

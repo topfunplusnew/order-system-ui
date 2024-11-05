@@ -7,6 +7,10 @@ export default {
   inheritAttrs: false,
   props: {
     title: String,
+    width: {
+      type: String,
+      default: '1350px'
+    }
   },
   data() {
     return {}
@@ -34,7 +38,7 @@ export default {
   <div>
     <keep-alive>
       <el-dialog :close-on-click-modal="false" v-bind="$attrs" v-on="$listeners" @open="onOpen" :title="title"
-                 width="1350px">
+                 :width="width">
         <!--      slot只是一个占位符 实际上还是在index.vue中作为子组件 所以可以直接在slot代表的组件中定义回调-->
         <slot name="info"></slot>
       </el-dialog>
