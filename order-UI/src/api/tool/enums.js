@@ -52,3 +52,24 @@ export const DocumentNumber = Object.freeze({
   INVOICE_OTHER: '第三方开票',
   // PAYMENT: '收付款'
 })
+
+
+export const PaymentState = [
+  {
+    value: '未申请',
+    label: '未申请'
+  },
+  {
+    value: '审核中',
+    label: '审核中'
+  },
+  {
+    value: '未支付',
+    label: '未支付'
+  },
+  {
+    value: '已支付',
+    label: '已支付'
+  },
+
+]

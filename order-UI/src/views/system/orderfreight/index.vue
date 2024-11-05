@@ -31,6 +31,20 @@
         >
         </el-input>
       </el-form-item>
+      <el-form-item label="审核状态" prop="paymentState">
+        <el-select
+          v-model="queryParams.paymentState"
+          placeholder="请选择"
+          size="mini"
+        >
+          <el-option
+            v-for="item in PaymentState()"
+            :key="item.value"
+            :label="item.label"
+            :value="item.value">
+          </el-option>
+        </el-select>
+      </el-form-item>
       <el-form-item>
         <el-button type="primary" icon="el-icon-search" size="mini" @click="handleQuery">搜索</el-button>
         <!--        <el-button icon="el-icon-refresh" size="mini" @click="resetQuery">重置</el-button>-->
@@ -510,6 +524,7 @@ import {mixin_order_freight_payment} from "../../dashboard/mixins/order/order_fr
 import InfoDialog from "../../../components/InfoDialog.vue";
 import {mixin_payment_subject} from "../../dashboard/mixins/payment/payment_subject";
 import {mixin_order_freight_fill} from "@/views/system/orderfreight/orderFreightFill";
+import {PaymentState} from "../../../api/tool/enums";
 
 export default {
   name: "OrderFreight",
@@ -604,6 +619,7 @@ export default {
       applyInfo: null,
       applyPaymentVisible: false,
       needInfo: {},
+
     };
   }
   ,
@@ -627,6 +643,9 @@ export default {
     }
   },
   methods: {
+    PaymentState() {
+      return PaymentState
+    },
     listFleet,
     listData,
     listBankAccount,
