@@ -11,6 +11,26 @@
           end-placeholder="结束日期"
         ></el-date-picker>
       </el-form-item>
+      <el-form-item label="司机名称" prop="driverName">
+        <el-input
+          v-model="queryParams.driverName"
+          placeholder="请输入司机名称"
+          clearable
+          @keyup.enter.native="handleQuery"
+          size="mini"
+        >
+        </el-input>
+      </el-form-item>
+      <el-form-item label="车队名称" prop="fleet">
+        <el-input
+          v-model="queryParams.fleet"
+          placeholder="请输入车队名称"
+          clearable
+          @keyup.enter.native="handleQuery"
+          size="mini"
+        >
+        </el-input>
+      </el-form-item>
       <el-form-item>
         <el-button type="primary" icon="el-icon-search" size="mini" @click="handleQuery">搜索</el-button>
         <!--        <el-button icon="el-icon-refresh" size="mini" @click="resetQuery">重置</el-button>-->
