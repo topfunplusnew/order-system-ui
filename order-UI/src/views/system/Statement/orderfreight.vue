@@ -146,22 +146,22 @@ export default {
                              width="200"/>
             <el-table-column label="日应付总额" align="center" prop="dailyTotalAmount" v-if="columns[5].visible"
                              width="200"/>
+            <el-table-column label="上一天未支付总额" align="center" prop="previousDayUnpaidAmount"
+            v-if="columns[12].visible" width="200"/>
             <el-table-column label="月支付总额" align="center" prop="monthlyPaidAmount" v-if="columns[6].visible"
                              width="200"/>
             <el-table-column label="月未支付总额" align="center" prop="monthlyUnpaidAmount" v-if="columns[7].visible"
                              width="200"/>
             <el-table-column label="月应付总额" align="center" prop="monthlyTotalAmount" v-if="columns[8].visible"
                              width="200"/>
+            <el-table-column label="上一个月未支付总额" align="center" prop="previousMonthUnpaidAmount"
+            v-if="columns[13].visible" width="200"/>
             <el-table-column label="年支付总额" align="center" prop="monthlyUnpaidAmount" v-if="columns[9].visible"
                              width="200"/>
             <el-table-column label="年未支付总额" align="center" prop="yearlyUnpaidAmount" v-if="columns[10].visible"
                              width="200"/>
             <el-table-column label="年应付总额" align="center" prop="yearlyTotalAmount" v-if="columns[11].visible"
                              width="200"/>
-            <el-table-column label="上一天未支付总额" align="center" prop="previousDayUnpaidAmount"
-                             v-if="columns[12].visible" width="200"/>
-            <el-table-column label="上一个月未支付总额" align="center" prop="previousMonthUnpaidAmount"
-                             v-if="columns[13].visible" width="200"/>
             <el-table-column label="上一年未支付总额" align="center" prop="previousYearUnpaidAmount"
                              v-if="columns[14].visible" width="200"/>
           </el-table>

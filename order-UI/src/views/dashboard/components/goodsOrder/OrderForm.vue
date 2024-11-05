@@ -111,7 +111,6 @@ export default {
       const temp = {
         orderIndex: this.orderNums
       }
-      console.log('每个订单货物都会添加如下信息>', temp)
       this.$store.commit('order/addsOrderItem', temp)
       this.orderNums++;
     },
@@ -424,7 +423,8 @@ export default {
     <el-card class="box-card" shadow="hover">
       <el-row style="text-align: right">
         <el-button @click="cancelSubmit">取 消</el-button>
-        <el-tooltip class="item" effect="dark" content="添加或修改前请先点击添加货物!" placement="top-start">
+        <el-tooltip class="item" effect="dark" content="添加或修改前请先点击货物信息中的 提交货物 按钮!"
+                    placement="top-start">
           <el-button type="primary" @click="submitOrder">{{ submitInfo }}</el-button>
         </el-tooltip>
       </el-row>
@@ -437,23 +437,4 @@ export default {
   box-sizing: border-box;
 }
 
-/*订单头部搜索信息*/
-.order-header {
-  display: flex;
-  align-items: center;
-  width: 100%;
-  flex-wrap: wrap;
-}
-
-.header-item {
-  width: 20%;
-}
-
-.fade-enter-active, .fade-leave-active {
-  transition: opacity 2.2s;
-}
-
-.fade-enter, .fade-leave-to {
-  opacity: 0;
-}
 </style>

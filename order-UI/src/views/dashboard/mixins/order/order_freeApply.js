@@ -43,7 +43,7 @@ export var mixin_order_freeApply = {
         carNo: row.landCarNo,
         fleet: row.fleet,
       }
-      //首先去运费表查看是否有运费信息
+      //首先去运费表查看是否有运费信息 查找list接口中 未支付的运费信息 如果运费信息存在 那么就提示已经有运费信息
       listOrderFreight({...this.landFreightInfo, paymentState: '未支付'}).then(res => {
         if (res.rows.length === 0) {
           this.landFreightFree = row.landFreight
