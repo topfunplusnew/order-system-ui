@@ -620,17 +620,6 @@ export default {
       needInfo: {},
 
     };
-  }
-  ,
-  created() {
-    this.getList();
-    if (localStorage.getItem('orderfreight-columns') === 'null'
-      || !localStorage.getItem('orderfreight-columns')) {
-      //设置localStorage
-      localStorage.setItem("orderfreight-columns", JSON.stringify(this.columns))
-    } else {
-      this.columns = JSON.parse(localStorage.getItem('orderfreight-columns'));
-    }
   },
   watch: {
     columns: {
@@ -641,13 +630,57 @@ export default {
         true,
     }
   },
+  created() {
+    // 拿到地址栏中的参数
+    const {fundsDate, driver} = this.$route.query;
+    // 如果存在
+    if (fundsDate && driver) {
+      // 拿取地址中的参数 查询list
+      this.getQueryParams(fundsDate, driver)
+    } else {
+
+      // 如果没有 正常查询
+      this.getList();
+    }
+
+    // 设置本地存储
+    if (localStorage.getItem('orderfreight-columns') === 'null'
+      || !localStorage.getItem('orderfreight-columns')) {
+      //设置localStorage
+      localStorage.setItem("orderfreight-columns", JSON.stringify(this.columns))
+    } else {
+      this.columns = JSON.parse(localStorage.getItem('orderfreight-columns'));
+    }
+  },
+  mounted() {
+    if (Object.keys(this.$route.query).length) {
+      this.$router.replace({path: this.$route.path});
+    }
+  },
   methods: {
-    PaymentState() {
-      return PaymentState
-    },
     listFleet,
     listData,
     listBankAccount,
+    // 拿到付款状态
+    PaymentState() {
+      return PaymentState
+    },
+    // 拿取地址中的参数 查询list展示
+    getQueryParams(fundsDate, driver) {
+      // 当都存在的时候 表名是跳转过来的 要查询一次list
+      listOrderFreight({payDate: fundsDate, driverName: driver})
+        .then(response => {
+          this.orderFreightList = response.rows;
+          this.total = response.total;
+          this.loading = false;
+          // 如果查询到了
+          if (this.total > 0) {
+            this.$message.success('已查询付款时间为' + fundsDate + '司机名称为' + driver + '的' + this.total + '条数据')
+          } else {
+            this.$message.warning('未查询到付款时间为' + fundsDate + '司机名称为' + driver + '的运费信息')
+          }
+        });
+    },
     //添加海运费或者陆运费
     // applyForLand(row) {
     //   console.log('陆运费信息', row)

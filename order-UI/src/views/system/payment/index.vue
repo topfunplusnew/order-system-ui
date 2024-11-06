@@ -218,6 +218,7 @@
           <!--          >复核-->
           <!--          </el-button>-->
           <!--          <CheckPrevious :row="scope.row"/>-->
+
           <el-button
             v-if="scope.row.paymentState === '未支付'"
             size="mini"
@@ -256,6 +257,12 @@
             v-hasPermi="['system:payment:remove']"
           >删除
           </el-button>
+        </template>
+      </el-table-column>
+
+      <el-table-column label="运费信息" align="center" class-name="small-padding fixed-width" width="150" fixed="right">
+        <template slot-scope="scope">
+          <CheckDetail :row="scope.row"/>
         </template>
       </el-table-column>
     </el-table>
@@ -536,10 +543,11 @@ import {mixin_printHTML} from "@/views/dashboard/mixins/print";
 import DynamicField from "@/components/DynamicField.vue";
 import {mixin_paymentindex_fill} from "./paymentFill";
 import CheckPrevious from "../../dashboard/components/payment/CheckPrevious.vue";
+import CheckDetail from "../../dashboard/components/payment/CheckDetail.vue";
 
 export default {
   name: "Payment",
-  components: {CheckPrevious, DynamicField, SearchOption},
+  components: {CheckDetail, CheckPrevious, DynamicField, SearchOption},
   mixins: [mixin_printHTML, mixin_payment_audit, mixin_payment_select, mixin_payment_subject, mixin_paymentindex_fill],
   data() {
     return {

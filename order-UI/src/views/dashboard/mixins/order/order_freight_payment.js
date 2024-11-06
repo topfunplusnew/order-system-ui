@@ -65,7 +65,7 @@ export var mixin_order_freight_payment = {
         otherAcountsName: orderFreight.otherAcountsName,
         otherBankNo: orderFreight.otherBankNo,
         otherBankName: orderFreight.otherBankName,
-        companyName: '司机',
+        companyName: orderFreight.driverName,
         companyId: orderFreight.driverId,
         companyType: "司机",
         comments: orderFreight.content,
