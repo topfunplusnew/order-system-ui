@@ -75,6 +75,10 @@
         >一键付运费
         </el-button>
       </el-col>
+
+      <!--       修正运费-->
+      <FillFreight/>
+
       <right-toolbar :showSearch.sync="showSearch" @queryTable="getList" :columns="columns">
         <template v-slot:print>
           <el-col :span="1.5">
@@ -521,9 +525,10 @@ import {mixin_order_base} from "../../dashboard/mixins/order/order_base";
 import {mixin_order_freight_payment} from "../../dashboard/mixins/order/order_freight_payment";
 import InfoDialog from "../../../components/InfoDialog.vue";
 import {mixin_payment_subject} from "../../dashboard/mixins/payment/payment_subject";
-import {mixin_order_freight_fill} from "@/views/system/orderfreight/orderFreightFill";
 import {PaymentState} from "../../../api/tool/enums";
 import CheckOrderInfo from "../../dashboard/components/orderfreight/CheckOrderInfo.vue";
+import FillFreight from "../../dashboard/components/orderfreight/FillFreight.vue";
+import {mixin_order_freight_fill} from "./orderFreightFill";
 
 export default {
   name: "OrderFreight",
@@ -532,7 +537,7 @@ export default {
       return TableName
     }
   },
-  components: {CheckOrderInfo, InfoDialog, ApplyPayment, SearchOption},
+  components: {FillFreight, CheckOrderInfo, InfoDialog, ApplyPayment, SearchOption},
   mixins: [mixin_order_freight_fill, mixin_order_base, mixin_order_freight_payment,/*引入支付类型的混入*/mixin_payment_subject
   ],
   data() {
@@ -642,7 +647,6 @@ export default {
       // 如果没有 正常查询
       this.getList();
     }
-
     // 设置本地存储
     if (localStorage.getItem('orderfreight-columns') === 'null'
       || !localStorage.getItem('orderfreight-columns')) {
