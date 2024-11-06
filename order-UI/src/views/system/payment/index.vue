@@ -217,10 +217,11 @@
           <!--            @click="handlePaymentAudit(scope.row)"-->
           <!--          >复核-->
           <!--          </el-button>-->
+          <!--          <CheckPrevious :row="scope.row"/>-->
           <el-button
             v-if="scope.row.paymentState === '未支付'"
             size="mini"
-            type="warning"
+            type="text"
             @click="handleUpdate(scope.row)"
             v-hasPermi="['system:payment:edit']"
           >付款
@@ -534,10 +535,11 @@ import {mixin_payment_subject} from "../../dashboard/mixins/payment/payment_subj
 import {mixin_printHTML} from "@/views/dashboard/mixins/print";
 import DynamicField from "@/components/DynamicField.vue";
 import {mixin_paymentindex_fill} from "./paymentFill";
+import CheckPrevious from "../../dashboard/components/payment/CheckPrevious.vue";
 
 export default {
   name: "Payment",
-  components: {DynamicField, SearchOption},
+  components: {CheckPrevious, DynamicField, SearchOption},
   mixins: [mixin_printHTML, mixin_payment_audit, mixin_payment_select, mixin_payment_subject, mixin_paymentindex_fill],
   data() {
     return {

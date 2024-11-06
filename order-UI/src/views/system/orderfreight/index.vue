@@ -274,6 +274,7 @@
           <!--            v-if="scope.row.freightType === '海运'"-->
           <!--          >申请海运费-->
           <!--          </el-button>-->
+          <CheckOrderInfo :row="scope.row"/>
           <el-button
             size="mini"
             type="primary"
@@ -522,6 +523,7 @@ import InfoDialog from "../../../components/InfoDialog.vue";
 import {mixin_payment_subject} from "../../dashboard/mixins/payment/payment_subject";
 import {mixin_order_freight_fill} from "@/views/system/orderfreight/orderFreightFill";
 import {PaymentState} from "../../../api/tool/enums";
+import CheckOrderInfo from "../../dashboard/components/orderfreight/CheckOrderInfo.vue";
 
 export default {
   name: "OrderFreight",
@@ -530,7 +532,7 @@ export default {
       return TableName
     }
   },
-  components: {InfoDialog, ApplyPayment, SearchOption},
+  components: {CheckOrderInfo, InfoDialog, ApplyPayment, SearchOption},
   mixins: [mixin_order_freight_fill, mixin_order_base, mixin_order_freight_payment,/*引入支付类型的混入*/mixin_payment_subject
   ],
   data() {
