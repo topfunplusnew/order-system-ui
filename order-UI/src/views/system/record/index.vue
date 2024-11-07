@@ -150,8 +150,8 @@
         <!--        目前支持两种类型 一种是冲抵货款 一种是冲抵第三方开票-->
         <el-form-item label="冲抵类型">
           <el-row>
-            <el-radio v-model="cashType" label="冲抵货款">冲抵货款</el-radio>
-            <el-radio v-model="cashType" label="冲抵第三方开票">冲抵第三方开票</el-radio>
+            <el-radio v-model="cashType" label="offsetting">冲抵货款</el-radio>
+            <el-radio v-model="cashType" label="invoiceother">冲抵第三方开票</el-radio>
           </el-row>
         </el-form-item>
         <!--   如果是第三方开票 还需要选择对应关联的票点 -->
@@ -591,7 +591,32 @@ export default {
       this.reset();
       const id = row.id || this.ids
       getRecord(id).then(response => {
+        console.log(response)
         this.form = response.data;
+        // 填充冲抵类型
+        this.cashType = response.data.referenceTableName;
+
+
+        // 根据冲抵类型 分别赋值
+        if (this.cashType === CASH_TYPE.OFF_SETTING) {
+          // 填充支付方类型
+          this.form.targetCompanyType = response.data.targetCompanyType
+          // 填充收方类型
+          this.form.sourceCompanyType = response.data.sourceCompanyType
+          // 填充原和去的公司名称
+          this.sourceName = response.data.sourceCompanyName;
+          this.targetName = response.data.targetCompanyName;
+
+        } else {
+          // 填充原和去的公司名称
+          this.sourceName = response.data.sourceCompanyName;
+          this.targetName = response.data.targetCompanyName;
+
+          // 填充id
+          this.form.referenceTableId = response.data.referenceTableId;
+        }
+
+
         this.open = true;
         this.title = "修改冲抵款";
       });
