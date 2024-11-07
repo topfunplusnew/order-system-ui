@@ -11,7 +11,7 @@ import {parseTime} from "../../../../utils/ruoyi";
 import {addGoodsOrder, getGoodsOrder, updateGoodsOrder} from "../../../../api/system/goodsOrder";
 import {excludeParams} from "../../../../api/tool/exclude";
 import {mapGetters} from "vuex";
-import {mixin_form_fillInfo} from "@/views/dashboard/mixins/order/form/form_fillInfo";
+import {mixin_form_fillInfo} from "../../mixins/order/form/form_fillInfo";
 
 export default {
   name: "OrderForm",

@@ -12,10 +12,18 @@
           end-placeholder="结束日期"
         ></el-date-picker>
       </el-form-item>
-      <el-form-item label="金额" prop="amount">
+      <el-form-item label="收入方" prop="sourceCompanyName">
         <el-input
-          v-model="queryParams.amount"
-          placeholder="请输入金额"
+          v-model="queryParams.sourceCompanyName"
+          placeholder="请输入收入方公司名称"
+          clearable
+          @keyup.enter.native="handleQuery"
+        />
+      </el-form-item>
+      <el-form-item label="支出方" prop="targetCompanyName">
+        <el-input
+          v-model="queryParams.targetCompanyName"
+          placeholder="请输入收入方公司名称"
           clearable
           @keyup.enter.native="handleQuery"
         />
@@ -97,8 +105,10 @@
         </template>
       </el-table-column>
       <el-table-column label="金额" align="center" prop="amount"/>
-      <el-table-column label="客户" align="center" prop="customerName" show-overflow-tooltip/>
-      <el-table-column label="供应商" align="center" prop="supplierName" show-overflow-tooltip/>
+      <el-table-column label="收入方" align="center" prop="sourceCompanyName" show-overflow-tooltip/>
+      <el-table-column label="收入方公司类型" align="center" prop="sourceCompanyType" show-overflow-tooltip/>
+      <el-table-column label="支出方" align="center" prop="targetCompanyName" show-overflow-tooltip/>
+      <el-table-column label="支出方公司类型" align="center" prop="targetCompanyType" show-overflow-tooltip/>
       <!--      附件上传-->
       <el-table-column label="附件" align="center" prop="attachment">
         <template #default="scope">
@@ -134,42 +144,214 @@
       @pagination="getList"
     />
 
-    <!-- 添加或修改现金记账对话框 -->
-    <el-dialog :title="title" :visible.sync="open" width="500px" append-to-body>
-      <el-form ref="form" :model="form" :rules="rules" label-width="80px">
-        <el-form-item label="发票号码">
+    <!-- 添加或修改现金记账对话框  cashType 用于分别管理冲抵类型 : 冲抵货款 或者 冲抵第三方开票-->
+    <el-dialog :title="title" :visible.sync="open" width="700px" append-to-body>
+      <el-form ref="form" :model="form" :rules="rules" label-width="150px">
+        <!--        目前支持两种类型 一种是冲抵货款 一种是冲抵第三方开票-->
+        <el-form-item label="冲抵类型">
+          <el-row>
+            <el-radio v-model="cashType" label="冲抵货款">冲抵货款</el-radio>
+            <el-radio v-model="cashType" label="冲抵第三方开票">冲抵第三方开票</el-radio>
+          </el-row>
+        </el-form-item>
+        <!--   如果是第三方开票 还需要选择对应关联的票点 -->
+        <el-row v-if="cashType === CASH_TYPE.INVOICE_OTHER">
+          <el-form-item label="发票号码">
+            <el-row>
+              <el-col :span="20">
+                <el-input disabled v-model="form.referenceTableId" placeholder="请选择发票号码"/>
+              </el-col>
+              <el-col :span="3">
+                <SearchOption :get-data="listInvoiceOther" @commitBack="handleCommitInvoiceOther"
+                              :limit-info="{}" query-label="供应商公司名称" :query-name="queryInvoice"
+                              query-info="Supplier" @update:queryName="updateQueryInvoice">
+                  <template #table-columns>
+                    <el-table-column label="开票日期" align="center" prop="invoiceDate"
+                                     show-overflow-tooltip/>
+                    <el-table-column label="开票金额" align="center" prop="invoiceAmount"
+                                     show-overflow-tooltip/>
+                    <el-table-column label="供应商票点" align="center" prop="supplierTicketPoint"
+                                     show-overflow-tooltip/>
+                    <el-table-column label="供应商票点金额" align="center" prop="supplierPointAmount"
+                                     show-overflow-tooltip/>
+                    <el-table-column label="供应商公司名称" align="center" prop="Supplier"
+                                     show-overflow-tooltip/>
+                    <el-table-column label="客户公司名称" align="center" prop="customer"
+                                     show-overflow-tooltip/>
+                    <el-table-column label="票据单位名称" align="center" prop="invoiceCompanyName"
+                                     show-overflow-tooltip/>
+                    <el-table-column label="客户票点" align="center" prop="customerTicketPoint"
+                                     show-overflow-tooltip/>
+                    <el-table-column label="票点金额" align="center" prop="customerPointAmount"
+                                     show-overflow-tooltip/>
+                  </template>
+                </SearchOption>
+              </el-col>
+            </el-row>
+          </el-form-item>
+        </el-row>
+
+        <el-divider>
+          <el-icon class="el-icon-circle-plus"></el-icon>
+          收入方信息
+        </el-divider>
+        <!--        1.选择原-->
+        <el-form-item :label="source" v-if="cashType !== CASH_TYPE.OFF_SETTING">
           <el-row>
             <el-col :span="20">
-              <el-input disabled v-model="form.referenceTableId" placeholder="请选择发票号码"/>
+              <!--              如果是冲抵货款直接输入金额 如果是其他 才会有选择-->
+              <el-input placeholder="请选择"
+                        v-model="sourceName"/>
             </el-col>
+            <!--            如果不是冲抵货款 才会有选择客户的按钮-->
             <el-col :span="3">
-              <SearchOption :get-data="listInvoiceOther" @commitBack="handleCommitInvoiceOther"
-                            :limit-info="{}" query-label="供应商公司名称" :query-name="queryInvoice"
-                            query-info="Supplier" @update:queryName="updateQueryInvoice">
+              <SearchOption :get-data="listCompany" @commitBack="handleCommitCompanySupplier"
+                            :limit-info="{companyType:'供应商'}" query-info="companyName" :query-name="querySupplier"
+                            query-label="供应商名称" @update:queryName="updateQuerySupplier">
                 <template #table-columns>
-                  <el-table-column label="开票日期" align="center" prop="invoiceDate"
+                  <el-table-column label="供应商" align="center" prop="companyName" width="180"
                                    show-overflow-tooltip/>
-                  <el-table-column label="开票金额" align="center" prop="invoiceAmount"
+                  <el-table-column label="老板姓名" align="center" prop="leader" width="180" show-overflow-tooltip/>
+                  <el-table-column label="老板电话" align="center" prop="leaderTel" width="180" show-overflow-tooltip/>
+                  <el-table-column label="区域" align="center" prop="region" width="180" show-overflow-tooltip/>
+                  <el-table-column label="联系人" align="center" prop="relationName" width="180" show-overflow-tooltip/>
+                  <el-table-column label="销售经理" align="center" prop="salesManager" width="180"
                                    show-overflow-tooltip/>
-                  <el-table-column label="供应商票点" align="center" prop="supplierTicketPoint"
-                                   show-overflow-tooltip/>
-                  <el-table-column label="供应商票点金额" align="center" prop="supplierPointAmount"
-                                   show-overflow-tooltip/>
-                  <el-table-column label="供应商公司名称" align="center" prop="Supplier"
-                                   show-overflow-tooltip/>
-                  <el-table-column label="客户公司名称" align="center" prop="customer"
-                                   show-overflow-tooltip/>
-                  <el-table-column label="票据单位名称" align="center" prop="invoiceCompanyName"
-                                   show-overflow-tooltip/>
-                  <el-table-column label="客户票点" align="center" prop="customerTicketPoint"
-                                   show-overflow-tooltip/>
-                  <el-table-column label="票点金额" align="center" prop="customerPointAmount"
-                                   show-overflow-tooltip/>
+                  <el-table-column label="地址" align="center" prop="address" width="150" show-overflow-tooltip/>
+                  <el-table-column label="电话" align="center" prop="relationTel" width="180" show-overflow-tooltip/>
                 </template>
               </SearchOption>
             </el-col>
           </el-row>
         </el-form-item>
+        <!--        如果是冲抵货款 还需要选择一个公司 -->
+        <el-row v-if="cashType === CASH_TYPE.OFF_SETTING">
+          <el-form-item label="收入方类型">
+            <el-radio v-model="form.sourceCompanyType" label="客户">客户</el-radio>
+            <el-radio v-model="form.sourceCompanyType" label="供应商">供应商</el-radio>
+          </el-form-item>
+          <el-form-item label="收入方">
+            <el-row>
+              <el-col :span="14">
+                <el-input type="text" v-model="sourceName"
+                          placeholder="请输入收入方"></el-input>
+              </el-col>
+              <el-col :span="4">
+                <SearchOption :limit-info="{companyType:form.sourceCompanyType}"
+                              :get-data="listCompany" query-info="companyName"
+                              query-label="公司名称" :query-name="queryCompanyName"
+                              @update:queryName="handleUpdateCompanyNameGet" @commitBack="handleCommitBackCompanyGet">
+                  <template #table-columns>
+                    <el-table-column label="公司名称" align="center" prop="companyName"/>
+                    <el-table-column label="公司类型" align="center" prop="companyType"/>
+                    <el-table-column label="老板姓名" align="center" prop="leader"/>
+                    <el-table-column label="老板电话" align="center" prop="leaderTel"/>
+                    <el-table-column label="区域" align="center" prop="region"/>
+                    <el-table-column label="销售经理" align="center" prop="salesManager"/>
+                  </template>
+                </SearchOption>
+              </el-col>
+            </el-row>
+          </el-form-item>
+        </el-row>
+
+        <el-divider>
+          <el-icon class="el-icon-remove"></el-icon>
+          支付方信息
+        </el-divider>
+        <!--        2.选择去-->
+        <el-form-item :label="target" v-if="cashType !== CASH_TYPE.OFF_SETTING">
+          <el-row>
+            <el-col :span="20">
+              <el-input placeholder="请选择"
+                        v-model="targetName"/>
+            </el-col>
+            <el-col :span="3">
+              <SearchOption :get-data="listCompany" @commitBack="handleCommitCompanyCustomer"
+                            :limit-info="{companyType:'客户'}" query-info="companyName"
+                            :query-name="queryCustomer"
+                            query-label="客户名称" @update:queryName="updateQueryCustomer">
+                <template #table-columns>
+                  <el-table-column label="客户" align="center" prop="companyName" width="180"
+                                   show-overflow-tooltip/>
+                  <el-table-column label="老板姓名" align="center" prop="leader" width="180" show-overflow-tooltip/>
+                  <el-table-column label="老板电话" align="center" prop="leaderTel" width="180" show-overflow-tooltip/>
+                  <el-table-column label="区域" align="center" prop="region" width="180" show-overflow-tooltip/>
+                  <el-table-column label="联系人" align="center" prop="relationName" width="180" show-overflow-tooltip/>
+                  <el-table-column label="销售经理" align="center" prop="salesManager" width="180"
+                                   show-overflow-tooltip/>
+                  <el-table-column label="地址" align="center" prop="address" width="150" show-overflow-tooltip/>
+                  <el-table-column label="电话" align="center" prop="relationTel" width="180" show-overflow-tooltip/>
+                </template>
+              </SearchOption>
+            </el-col>
+          </el-row>
+        </el-form-item>
+
+        <!--        如果是冲抵货款 才要选择对方的公司类型 而如果是其他类型 不需要选择 直接填充-->
+        <el-row v-if="cashType === CASH_TYPE.OFF_SETTING">
+          <el-form-item label="支出方类型">
+            <el-radio v-model="form.targetCompanyType" label="客户">客户</el-radio>
+            <el-radio v-model="form.targetCompanyType" label="供应商">供应商</el-radio>
+          </el-form-item>
+          <el-form-item label="支出方">
+            <el-row>
+              <el-col :span="14">
+                <el-input type="text" v-model="targetName"
+                          placeholder="请输入支出方"></el-input>
+              </el-col>
+              <el-col :span="4">
+                <SearchOption :limit-info="{companyType:form.targetCompanyType}"
+                              :get-data="listCompany" query-info="companyName"
+                              query-label="公司名称" :query-name="queryCompanyName"
+                              @update:queryName="handleUpdateCompanyNamePay" @commitBack="handleCommitBackCompanyPay">
+                  <template #table-columns>
+                    <el-table-column label="公司名称" align="center" prop="companyName"/>
+                    <el-table-column label="公司类型" align="center" prop="companyType"/>
+                    <el-table-column label="老板姓名" align="center" prop="leader"/>
+                    <el-table-column label="老板电话" align="center" prop="leaderTel"/>
+                    <el-table-column label="区域" align="center" prop="region"/>
+                    <el-table-column label="销售经理" align="center" prop="salesManager"/>
+                  </template>
+                </SearchOption>
+              </el-col>
+            </el-row>
+          </el-form-item>
+        </el-row>
+
+        <el-divider>
+          <el-icon class="el-icon-edit"></el-icon>
+          基本信息
+        </el-divider>
+        <!--        金额只有在不是冲抵货款的其他类型中才会展示 冲抵货款在前面就已经输入了金额-->
+        <el-form-item label="冲抵金额" prop="amount">
+          <el-row>
+            <el-col :span="14">
+              <el-input v-model="form.amount" placeholder="请输入冲抵金额" type="number"/>
+            </el-col>
+          </el-row>
+        </el-form-item>
+
+        <!--        甲方需要上传附件-->
+        <el-form-item label="附件" prop="attachment">
+          <!--          <el-upload-->
+          <!--            class="upload-demo"-->
+          <!--            drag-->
+          <!--            :action="uploadFileUrl"-->
+          <!--            multiple-->
+          <!--            show-file-list-->
+          <!--            :headers="headers"-->
+          <!--            :file-list="fileList"-->
+          <!--            :before-upload="beforeUpload">-->
+          <!--            <i class="el-icon-upload"></i>-->
+          <!--            <div class="el-upload__text">将文件拖到此处，或<em>点击上传</em></div>-->
+          <!--            <div class="el-upload__tip" slot="tip">上传文件名长度不得超过20</div>-->
+          <!--          </el-upload>-->
+          <!--          <el-button type="success" @click="submitUploadAllFiles">开始上传</el-button>-->
+          <file-upload @input="handleCommitUpload" ref="uploadFile"/>
+        </el-form-item>
+
+        <!--        交易时间-->
         <el-form-item label="交易时间" prop="transactionTime">
           <el-date-picker clearable
                           v-model="form.transactionTime"
@@ -178,68 +360,8 @@
                           placeholder="请选择交易时间">
           </el-date-picker>
         </el-form-item>
-        <!--        选择供应商-->
-        <el-form-item label="供应商" prop="supplier">
-          <el-row>
-            <el-col :span="20">
-              <el-input disabled placeholder="请选择供应商" v-model="supplierName"/>
-            </el-col>
-            <el-col :span="3">
-              <SearchOption :get-data="listCompany" @commitBack="handleCommitCompanySupplier"
-                            :limit-info="{companyType:'供应商'}" query-info="companyName" :query-name="querySupplier"
-                            query-label="供应商名称" @update:queryName="updateQuerySupplier">
-                <template #table-columns>
-                  <el-table-column label="公司名称" align="center" prop="companyName"/>
-                  <el-table-column label="老板姓名" align="center" prop="leader"/>
-                  <el-table-column label="老板电话" align="center" prop="leaderTel"/>
-                  <el-table-column label="开户行" align="center" prop="bankName"/>
-                  <el-table-column label="开户名" align="center" prop="acountsName"/>
-                </template>
-              </SearchOption>
-            </el-col>
-          </el-row>
-        </el-form-item>
-        <!--        选择客户-->
-        <el-form-item label="客户" prop="customer">
-          <el-row>
-            <el-col :span="20">
-              <el-input disabled placeholder="请选择客户" v-model="customerName"/>
-            </el-col>
-            <el-col :span="3">
-              <SearchOption :get-data="listCompany" @commitBack="handleCommitCompanyCustomer"
-                            :limit-info="{companyType:'客户'}" query-info="companyName" :query-name="queryCustomer"
-                            query-label="客户名称" @update:queryName="updateQueryCustomer">
-                <template #table-columns>
-                  <el-table-column label="公司名称" align="center" prop="companyName"/>
-                  <el-table-column label="老板姓名" align="center" prop="leader"/>
-                  <el-table-column label="老板电话" align="center" prop="leaderTel"/>
-                  <el-table-column label="开户行" align="center" prop="bankName"/>
-                  <el-table-column label="开户名" align="center" prop="acountsName"/>
-                </template>
-              </SearchOption>
-            </el-col>
-          </el-row>
-        </el-form-item>
-        <el-form-item label="金额" prop="amount">
-          <el-input v-model="form.amount" placeholder="请输入金额"/>
-        </el-form-item>
-        <el-form-item label="附件" prop="attachment">
-          <!--          <el-input v-model="form.attachment" type="textarea" placeholder="请输入内容"/>-->
-          <el-upload
-            class="upload-demo"
-            drag
-            :action="uploadFileUrl"
-            multiple
-            show-file-list
-            :headers="headers"
-            :file-list="fileList"
-            :before-upload="beforeUpload">
-            <i class="el-icon-upload"></i>
-            <div class="el-upload__text">将文件拖到此处，或<em>点击上传</em></div>
-            <div class="el-upload__tip" slot="tip">上传文件名长度不得超过20</div>
-          </el-upload>
-          <el-button type="success" @click="submitUploadAllFiles">开始上传</el-button>
-        </el-form-item>
+
+        <!--        备注-->
         <el-form-item label="备注" prop="remarks">
           <el-input v-model="form.remarks" placeholder="请输入备注"/>
         </el-form-item>
@@ -272,11 +394,40 @@ import SearchOption from "../../../components/SearchOption.vue";
 import {excludeParams} from "../../../api/tool/exclude";
 import {TableName} from "../../../api/tool/enums";
 import {listInvoiceOther} from "../../../api/system/invoiceOther";
-import {mixin_record_fill} from "@/views/system/record/recordFill";
 import CheckFiles from "../../../components/CheckFiles.vue";
+import {mixin_record_fill} from "./recordFill";
+import {CASH_TYPE} from "./constrant";
 
 export default {
   name: "Record",
+  // 计算属性
+  computed: {
+    CASH_TYPE() {
+      return CASH_TYPE
+    },
+    // 交易双方的计算属性 这是来源
+    source() {
+      // 如果是冲抵货款 那么就是用货款来去冲抵金额
+      if (this.cashType === CASH_TYPE.OFF_SETTING) {
+        return '收入方金额'
+      }
+
+      // 如果是冲抵第三方开票
+      if (this.cashType === CASH_TYPE.INVOICE_OTHER) {
+        return '供应商'
+      }
+    },
+    // 这是目标原
+    target() {
+      if (this.cashType === CASH_TYPE.OFF_SETTING) {
+        return '支出方金额'
+      }
+
+      if (this.cashType === CASH_TYPE.INVOICE_OTHER) {
+        return '客户'
+      }
+    }
+  },
   components: {CheckFiles, SearchOption},
   mixins: [mixin_printHTML, mixin_record_fill, mixin_record_uploadFiles],
   data() {
@@ -316,7 +467,9 @@ export default {
         addtime: null,
         userId: null,
         UserName: null,
-        delFlag: null
+        delFlag: null,
+        sourceCompanyName: null,
+        targetCompanyName: null,
       },
       // 表单参数
       form: {},
@@ -343,10 +496,18 @@ export default {
       },
       columns: [],
 
-      // 表单中用于展示的字段
-      supplierName: '',
-      customerName: '',
+      // 冲抵类型 默认为冲抵货款
+      cashType: CASH_TYPE.OFF_SETTING
     };
+  },
+  watch: {
+    'cashType': {
+      handler(val) {
+        // 只要冲抵类型改变那么就是要重新赋值表单
+        this.reset()
+      },
+      immediate: true
+    }
   },
   created() {
     this.getList();
@@ -373,14 +534,15 @@ export default {
     cancel() {
       this.open = false;
       this.reset();
+      this.$refs.uploadFile.clearFileList()
     },
     // 表单重置
     reset() {
       this.form = {
         id: null,
         transactionTime: null,
-        supplierId: null,
-        customerId: null,
+        sourceId: null,
+        targetId: null,
         amount: null,
         referenceTableId: null,
         referenceTableName: null,
@@ -390,8 +552,14 @@ export default {
         userId: null,
         UserName: null,
         updateTime: null,
-        delFlag: null
+        delFlag: null,
+        // 收入方与支付方的公司类型
+        sourceCompanyType: '客户',
+        targetCompanyType: '客户',
       };
+      // 把展示字段给赋值为null
+      this.sourceName = null
+      this.targetName = null
       this.resetForm("form");
     },
     /** 搜索按钮操作 */
@@ -415,38 +583,54 @@ export default {
     handleAdd() {
       this.reset();
       this.open = true;
-      this.title = "添加现金记账";
+      this.title = "添加冲抵款";
     },
     /** 修改按钮操作 */
     handleUpdate(row) {
+      // todo 根据类型赋值
       this.reset();
       const id = row.id || this.ids
       getRecord(id).then(response => {
         this.form = response.data;
         this.open = true;
-        this.title = "修改现金记账";
+        this.title = "修改冲抵款";
       });
     },
     /** 提交按钮 */
     submitForm() {
       this.$refs["form"].validate(valid => {
         if (valid) {
+          // 如果id不为空 那么就是修改操作
           if (this.form.id != null) {
             this.form = excludeParams(this.form, this.$exclude)
             updateRecord(this.form).then(response => {
               this.$modal.msgSuccess("修改成功");
               this.open = false;
               this.getList();
+              // 清除上传的文件列表
+              this.$refs.uploadFile.clearFileList()
             });
+
+            // 如果id为空 那么就是新增操作
           } else {
+            // 如果是冲抵货款 那么就是填充一个非法的tableName和tID
+            if (this.cashType === CASH_TYPE.OFF_SETTING) {
+              this.form.referenceTableName = TableName.OFFSETTING;
+              this.form.referenceTableId = -1;
+
+              // 如果是第三方开票 那么就填充参数
+            } else {
+              this.form.referenceTableName = TableName.INVOICE_OTHER
+            }
+            // 清理一下不必要的参数
             this.form = excludeParams(this.form, this.$exclude)
-            addRecord({
-              ...this.form,
-              referenceTableName: TableName.INVOICE_OTHER,
-            }).then(response => {
+            // 发送请求 添加一条冲抵款(原为现金记账)信息
+            addRecord(this.form).then(response => {
               this.$modal.msgSuccess("新增成功");
               this.open = false;
               this.getList();
+              // 清除上传的文件列表
+              this.$refs.uploadFile.clearFileList()
             });
           }
         }

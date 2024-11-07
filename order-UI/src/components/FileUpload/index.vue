@@ -1,4 +1,6 @@
 <template>
+
+  <!--  自定义了上传组件的逻辑 可以清除上传中的文件-->
   <div class="upload-file">
     <el-upload
       multiple
