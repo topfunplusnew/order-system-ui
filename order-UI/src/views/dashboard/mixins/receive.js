@@ -1,4 +1,4 @@
-//混入
+//混入 收款的相关自动填充逻辑
 import {addReceiveMoney} from "../../../api/system/receiveMoney";
 
 export var mixin_reviveMoney = {

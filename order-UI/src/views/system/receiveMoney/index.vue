@@ -213,21 +213,48 @@
         <el-form-item label="己方开户行" prop="selfBankName">
           <el-input v-model="form.selfBankName" placeholder="请输入己方开户行"/>
         </el-form-item>
-        <el-form-item label="对方公司" prop="companyName">
+        <!--        todo-->
+        <el-form-item label="对方类型(请确认)">
+          <el-select v-model="value" placeholder="请选择">
+            <el-option
+              v-for="item in options"
+              :key="item.value"
+              :label="item.label"
+              :value="item.value">
+            </el-option>
+          </el-select>
+          <span style="color: #1c84c6;font-size: 12px">请注意选择正确的对方公司类型!</span>
+        </el-form-item>
+        <el-form-item :label="value === '司机'?'司机':'对方公司'" prop="companyName">
           <el-row>
             <el-col :span="14">
-              <el-input v-model="form.companyName" placeholder="请输入对方公司"/>
+              <el-input v-model="form.companyName" :placeholder="value === '司机'? '请输入司机':'请输入对方公司'"/>
             </el-col>
-            <el-col :span="4">
-              <SearchOption :limit-info="{}" :get-data="listCompany" query-info="companyName"
+            <el-col :span="4" v-if="value === '司机'">
+              <SearchOption :limit-info="{}" :get-data="listCars" query-info="carNo"
+                            query-label="车牌/柜号" :query-name="carName"
+                            @update:queryName="handleUpdateCarName" @commitBack="handleCommitBackCar">
+                <template #table-columns>
+                  <el-table-column label="车牌/柜号" align="center" prop="carNo" width="220"/>
+                  <el-table-column label="司机姓名/海运公司" align="center" prop="driver" width="220"/>
+                  <el-table-column label="司机电话" align="center" prop="tel" width="200"/>
+                  <el-table-column label="户名" align="center" prop="acountsName" width="200"/>
+                  <el-table-column label="银行账号" align="center" prop="bankNo" width="200"/>
+                  <el-table-column label="开户行" align="center" prop="bankName" width="200"/>
+                  <el-table-column label="运输类型" align="center" prop="carType" width="200"/>
+                </template>
+              </SearchOption>
+            </el-col>
+            <el-col :span="4" v-else>
+              <SearchOption :limit-info="{companyType:value}" :get-data="listCompany" query-info="companyName"
                             query-label="公司名称" :query-name="companyName"
                             @update:queryName="handleUpdateCompanyName" @commitBack="handleCommitBackCompany">
                 <template #table-columns>
-                  <el-table-column label="供应商" align="center" prop="relationName"/>
+                  <el-table-column :label="value" align="center" prop="companyName"/>
+                  <el-table-column label="公司类型" align="center" prop="companyType"/>
                   <el-table-column label="老板姓名" align="center" prop="leader"/>
                   <el-table-column label="老板电话" align="center" prop="leaderTel"/>
                   <el-table-column label="区域" align="center" prop="region"/>
-                  <el-table-column label="公司名称" align="center" prop="companyName"/>
                   <el-table-column label="销售经理" align="center" prop="salesManager"/>
                 </template>
               </SearchOption>
@@ -242,7 +269,7 @@
             <SearchOption :get-data="listBankAccount" title="客户银行卡信息" icon="el-icon-search"
                           query-label="户名查找" query-info="acountsName" :query-name="queryCustomerBank"
                           @update:queryName="handleUpdateQueryNameCustomer"
-                          @commitBack="handleCallBackCompany" :limit-info="{acountsType:'客户'}">
+                          @commitBack="handleCallBackCompany" :limit-info="{acountsType:value}">
               <template #table-columns>
                 <el-table-column label="账户类型" align="center" prop="acountsType"/>
                 <el-table-column label="开户名称(户名)" align="center" prop="acountsName"/>
@@ -258,6 +285,7 @@
         <el-form-item label="对方开户名" prop="selfBankName">
           <el-input v-model="form.otherAcountsName" placeholder="请输入己方开户行"/>
         </el-form-item>
+
         <el-form-item label="银行卡流水编号" prop="transactionHistory">
           <el-input v-model="form.transactionHistory" placeholder="请输入银行卡流水编号"/>
         </el-form-item>
@@ -295,6 +323,7 @@ import CheckFiles from "../../../components/CheckFiles.vue";
 
 import {listCompany} from "../../../api/system/company";
 import {mixin_receive_money_fill} from "./receiveMoneyFill";
+import {listCars} from "../../../api/system/cars";
 
 export default {
   name: "ReceiveMoney",
@@ -424,6 +453,7 @@ export default {
     }
   },
   methods: {
+    listCars,
     listCompany,
     listBankAccount,
     //点击一级分类后的回调

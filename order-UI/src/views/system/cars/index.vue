@@ -66,13 +66,13 @@
 
     <el-table border v-loading="loading" :data="carsList" @selection-change="handleSelectionChange" id="printBox"
               height="450px" v-horizontal-scroll="'always'" size="mini" :cell-style="()=>{return {padding:'.5px'}}">
-      <el-table-column label="车牌/柜号" align="center" prop="carNo" v-if="columns[0].visible" width="220"/>
-      <el-table-column label="司机姓名/海运公司" align="center" prop="driver" v-if="columns[1].visible" width="220"/>
-      <el-table-column label="司机电话" align="center" prop="tel" v-if="columns[2].visible" width="200"/>
-      <el-table-column label="户名" align="center" prop="acountsName" v-if="columns[3].visible" width="200"/>
-      <el-table-column label="银行账号" align="center" prop="bankNo" v-if="columns[4].visible" width="200"/>
-      <el-table-column label="开户行" align="center" prop="bankName" v-if="columns[5].visible" width="200"/>
-      <el-table-column label="运输类型" align="center" prop="carType" v-if="columns[6].visible" width="200"/>
+      <el-table-column label="车牌/柜号" align="center" prop="carNo" width="220"/>
+      <el-table-column label="司机姓名/海运公司" align="center" prop="driver" width="220"/>
+      <el-table-column label="司机电话" align="center" prop="tel" width="200"/>
+      <el-table-column label="户名" align="center" prop="acountsName" width="200"/>
+      <el-table-column label="银行账号" align="center" prop="bankNo" width="200"/>
+      <el-table-column label="开户行" align="center" prop="bankName" width="200"/>
+      <el-table-column label="运输类型" align="center" prop="carType" width="200"/>
       <el-table-column label="操作" align="center" class-name="small-padding fixed-width" fixed="right" width="180">
         <template slot-scope="scope">
           <el-button

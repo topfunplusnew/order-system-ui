@@ -44,14 +44,14 @@
           v-hasPermi="['system:bankaccount:add']">新增银行卡信息
         </el-button>
       </el-col>
-      <!--      <el-col :span="1.5">-->
-      <!--        <el-button-->
-      <!--          type="warning"-->
-      <!--          size="mini"-->
-      <!--          @click="handleTransformBank"-->
-      <!--          v-hasPermi="['system:bankaccount:add']">银行卡转账-->
-      <!--        </el-button>-->
-      <!--      </el-col>-->
+      <el-col :span="1.5">
+        <el-button
+          type="warning"
+          size="mini"
+          @click="handleTransformBank"
+        >内部转账
+        </el-button>
+      </el-col>
       <right-toolbar :showSearch.sync="showSearch" @queryTable="getList" :columns="columns">
         <template v-slot:print>
           <el-col :span="1.5">
@@ -249,26 +249,26 @@
 
 
     <!--    银行卡之间转账-->
-    <!--    <el-dialog :close-on-click-modal="false" :show-close="false" title="银行卡转账"-->
-    <!--               :visible.sync="transformDialogVisible" width="500px" append-to-body>-->
-    <!--      <el-row>-->
-    <!--        <el-form :model="transformInfo" label-width="100px">-->
-    <!--          <el-form-item label="转账银行卡" prop="fromBankNo">-->
-    <!--            <el-input v-model="transformInfo.fromBankNo" placeholder="请输入转账银行卡"/>-->
-    <!--          </el-form-item>-->
-    <!--          <el-form-item label="目标银行卡" prop="toBankNo">-->
-    <!--            <el-input v-model="transformInfo.toBankNo" placeholder="请输入目标银行卡"/>-->
-    <!--          </el-form-item>-->
-    <!--          <el-form-item label="转账金额" prop="money">-->
-    <!--            <el-input v-model="transformInfo.money" placeholder="请输入转账金额"/>-->
-    <!--          </el-form-item>-->
-    <!--        </el-form>-->
-    <!--      </el-row>-->
-    <!--      <div slot="footer" class="dialog-footer">-->
-    <!--        <el-button type="primary" @click="submitTransformBank">确 定</el-button>-->
-    <!--        <el-button @click="transformDialogVisible = false">取 消</el-button>-->
-    <!--      </div>-->
-    <!--    </el-dialog>-->
+    <el-dialog :close-on-click-modal="false" :show-close="false" title="银行卡转账"
+               :visible.sync="transformDialogVisible" width="500px" append-to-body>
+      <el-row>
+        <el-form :model="transformInfo" label-width="100px">
+          <el-form-item label="转账银行卡" prop="fromBankNo">
+            <el-input v-model="transformInfo.fromBankNo" placeholder="请输入转账银行卡"/>
+          </el-form-item>
+          <el-form-item label="目标银行卡" prop="toBankNo">
+            <el-input v-model="transformInfo.toBankNo" placeholder="请输入目标银行卡"/>
+          </el-form-item>
+          <el-form-item label="转账金额" prop="money">
+            <el-input v-model="transformInfo.money" placeholder="请输入转账金额"/>
+          </el-form-item>
+        </el-form>
+      </el-row>
+      <div slot="footer" class="dialog-footer">
+        <el-button type="primary" @click="submitTransformBank">确 定</el-button>
+        <el-button @click="transformDialogVisible = false">取 消</el-button>
+      </div>
+    </el-dialog>
 
 
     <!--    银行卡流水-->

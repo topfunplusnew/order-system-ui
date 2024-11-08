@@ -200,8 +200,9 @@
                       </el-tag>
                     </template>
                   </el-table-column>
-                  <el-table-column show-overflow-tooltip label="备注" align="center" prop="comments"
-                  />
+
+
+                  <el-table-column show-overflow-tooltip label="备注" align="center" prop="comments"/>
                 </template>
               </SearchOption>
             </el-col>

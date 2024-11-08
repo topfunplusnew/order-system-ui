@@ -148,12 +148,13 @@
     <el-dialog :title="title" :visible.sync="open" width="700px" append-to-body>
       <el-form ref="form" :model="form" :rules="rules" label-width="150px">
         <!--        目前支持两种类型 一种是冲抵货款 一种是冲抵第三方开票-->
-        <el-form-item label="冲抵类型">
-          <el-row>
-            <el-radio v-model="cashType" label="offsetting">冲抵货款</el-radio>
-            <el-radio v-model="cashType" label="invoiceother">冲抵第三方开票</el-radio>
-          </el-row>
-        </el-form-item>
+        <!--        <el-form-item label="冲抵类型">-->
+        <!--          <el-row>-->
+        <!--            <el-radio v-model="cashType" label="offsetting">冲抵货款</el-radio>-->
+        <!--            &lt;!&ndash;            删除冲抵第三方开票&ndash;&gt;-->
+        <!--            <el-radio v-model="cashType" label="invoiceother">冲抵第三方开票</el-radio>-->
+        <!--          </el-row>-->
+        <!--        </el-form-item>-->
         <!--   如果是第三方开票 还需要选择对应关联的票点 -->
         <el-row v-if="cashType === CASH_TYPE.INVOICE_OTHER">
           <el-form-item label="发票号码">
