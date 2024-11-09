@@ -113,7 +113,8 @@
                        fixed="right">
         <template slot-scope="scope">
           <!-- 这是封装的一个通用组件 可以直接传入url 组件效果为一个按钮 点击后可以查看附件-->
-          <CheckFiles :path="scope.row.transactionHistoryAttachment"/>
+          <CheckFiles :path="scope.row.transactionHistoryAttachment"
+                      @needToUpdate="(value)=>handleUpdateFilePath(value,scope.row,'transactionHistoryAttachment',getReceiveMoney(),updateReceiveMoney())"/>
         </template>
       </el-table-column>
       <el-table-column label="操作" align="center" class-name="small-padding fixed-width" fixed="right" width="150">
@@ -305,13 +306,7 @@
 </template>
 
 <script>
-import {
-  listReceiveMoney,
-  getReceiveMoney,
-  delReceiveMoney,
-  addReceiveMoney,
-  updateReceiveMoney
-} from "@/api/system/receiveMoney";
+import {addReceiveMoney, delReceiveMoney, listReceiveMoney} from "@/api/system/receiveMoney";
 import SearchOption from "@/components/SearchOption.vue";
 import {listBankAccount} from "@/api/system/bankAccount";
 import {listSubject} from "@/api/system/subject";
@@ -324,11 +319,13 @@ import CheckFiles from "../../../components/CheckFiles.vue";
 import {listCompany} from "../../../api/system/company";
 import {mixin_receive_money_fill} from "./receiveMoneyFill";
 import {listCars} from "../../../api/system/cars";
+import {getReceiveMoney, updateReceiveMoney} from "../../../api/system/receiveMoney";
+import {mixin_checkfile} from "../../dashboard/mixins/checkfiles/mixin_checkfile";
 
 export default {
   name: "ReceiveMoney",
   components: {CheckFiles, SearchOption},
-  mixins: [mixin_printHTML, mixin_receive_money_fill],
+  mixins: [mixin_printHTML, mixin_receive_money_fill, mixin_checkfile],
   data() {
     return {
       // 遮罩层
@@ -453,6 +450,12 @@ export default {
     }
   },
   methods: {
+    updateReceiveMoney() {
+      return updateReceiveMoney
+    },
+    getReceiveMoney() {
+      return getReceiveMoney
+    },
     listCars,
     listCompany,
     listBankAccount,

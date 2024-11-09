@@ -70,7 +70,8 @@
       <el-table-column label="出差结束时间" align="center" prop="endtime" v-if="columns[4].visible"/>
       <el-table-column label="附件" align="center" prop="attachmentPath" v-if="columns[5].visible">
         <template #default="scope">
-          <CheckFiles :path="scope.row.attachmentPath"/>
+          <CheckFiles :path="scope.row.attachmentPath"
+                      @needToUpdate="(value)=>handleUpdateFilePath(value,scope.row,'attachmentPath',getBusinessTrip,updateBusinessTrip)"/>
         </template>
       </el-table-column>
       <el-table-column label="是否已报销" align="center" prop="isReimburse" v-if="columns[6].visible">
@@ -330,6 +331,7 @@
 import {
   delBusinessTrip,
   getBusinessTrip,
+  updateBusinessTrip,
   listBusinessTrip,
 } from "@/api/system/BusinessTrip";
 import {mixin_printHTML} from "@/views/dashboard/mixins/print";
@@ -355,12 +357,13 @@ import {listDept} from "@/api/system/dept";
 import "@riophae/vue-treeselect/dist/vue-treeselect.css";
 import Treeselect from "@riophae/vue-treeselect";
 import CheckFiles from "@/components/CheckFiles.vue";
+import {mixin_checkfile} from "../../dashboard/mixins/checkfiles/mixin_checkfile";
 
 export default {
   name: "BusinessTrip",
   components: {CheckFiles, SubjectOption, StepsForm, InfoDialog, ApplyPayment, PaymentApply, SearchOption, Treeselect},
   mixins: [mixin_printHTML, mixin_common_upload, mixin_car_apply, mixin_business_trip_add,
-    mixin_business_trip_update, mixin_business_trip_car_apply, mixin_business_trip_oil_card
+    mixin_business_trip_update, mixin_business_trip_car_apply, mixin_business_trip_oil_card, mixin_checkfile
   ],
   data() {
     return {
@@ -486,6 +489,8 @@ export default {
     ...mapGetters(['deptName'])
   },
   methods: {
+    updateBusinessTrip,
+    getBusinessTrip,
     listBankAccount,
     listOilCard,
     listData,

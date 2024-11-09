@@ -82,7 +82,8 @@
       <el-table-column label="充值人员姓名" align="center" prop="rechargeName" v-if="columns[7].visible"/>
       <el-table-column label="充值附件" align="center" prop="attachment" v-if="columns[8].visible">
         <template #default="scope">
-          <CheckFiles :path="scope.row.attachment"/>
+          <CheckFiles :path="scope.row.attachment"
+                      @needToUpdate="(value)=>handleUpdateFilePath(value,scope.row,'attachment',getOilRecharge(),updateOilRecharge())"/>
         </template>
       </el-table-column>
       <el-table-column label="备注" align="center" prop="comments" v-if="columns[9].visible"/>
@@ -189,9 +190,7 @@
 import {
   addOilRecharge,
   delOilRecharge,
-  getOilRecharge,
   listOilRecharge,
-  updateOilRecharge
 } from "@/api/system/oilRecharge";
 import {mixin_printHTML} from "@/views/dashboard/mixins/print";
 import ApplyPayment from "@/views/dashboard/components/common/ApplyPayment.vue";
@@ -204,8 +203,10 @@ import {addDateRange} from "@/utils/ruoyi";
 import {parseTime} from "../../../utils/ruoyi";
 import {excludeParams} from "@/api/tool/exclude";
 import OilApply from "@/views/dashboard/components/oilCard/OilApply.vue";
-import {mixin_oil_recharge_fill} from "@/views/system/oilRecharge/oilRechargeFill";
 import CheckFiles from "@/components/CheckFiles.vue";
+import {getOilRecharge, updateOilRecharge} from "../../../api/system/oilRecharge";
+import {mixin_checkfile} from "../../dashboard/mixins/checkfiles/mixin_checkfile";
+import {mixin_oil_recharge_fill} from "./oilRechargeFill";
 
 export default {
   name: "OilRecharge",
@@ -216,7 +217,7 @@ export default {
     ...mapGetters(['trueName'])
   },
   components: {CheckFiles, OilApply, SearchOption, ApplyPayment},
-  mixins: [mixin_printHTML, mixin_oil_recharge_fill],
+  mixins: [mixin_printHTML, mixin_oil_recharge_fill, mixin_checkfile],
   data() {
     return {
       // 遮罩层
@@ -304,6 +305,12 @@ export default {
     }
   },
   methods: {
+    updateOilRecharge() {
+      return updateOilRecharge
+    },
+    getOilRecharge() {
+      return getOilRecharge
+    },
     listBankAccount,
     listOilCard,
     //加油卡付款申请

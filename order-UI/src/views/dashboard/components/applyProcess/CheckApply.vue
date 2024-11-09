@@ -96,6 +96,7 @@ export default {
           {{ paymentApplyInfo.reason }}
         </el-descriptions-item>
         <el-descriptions-item label="附件">
+          <!--          这里不需要上传-->
           <CheckFiles :path="paymentApplyInfo.attachment"/>
         </el-descriptions-item>
       </el-descriptions>

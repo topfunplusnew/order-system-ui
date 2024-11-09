@@ -34,7 +34,7 @@ export default {
 <template>
   <div>
 
-    <div class="file-container" @mouseover="show = true" @mouseleave="show = false" >
+    <div class="file-container" @mouseover="show = true" @mouseleave="show = false">
 
       <div class="file-icon">
         <el-icon class="el-icon-document">
@@ -56,7 +56,7 @@ export default {
 
 <style scoped lang="scss">
 .file-container {
-  margin: 0 4px;
+  margin: 4px 4px;
   width: 98px;
   height: 98px;
   background-color: #f7f2f8;

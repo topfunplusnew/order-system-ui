@@ -112,7 +112,8 @@
       <!--      附件上传-->
       <el-table-column label="附件" align="center" prop="attachment">
         <template #default="scope">
-          <CheckFiles :path="scope.row.attachment"/>
+          <CheckFiles :path="scope.row.attachment"
+                      @needToUpdate="(value)=>handleUpdateFilePath(value,scope.row,'attachment',getRecord(),updateRecord())"/>
         </template>
       </el-table-column>
       <el-table-column label="备注" align="center" prop="remarks"/>
@@ -386,7 +387,7 @@
 </template>
 
 <script>
-import {listRecord, getRecord, delRecord, addRecord, updateRecord} from "@/api/system/record";
+import {listRecord, delRecord, addRecord,} from "@/api/system/record";
 import {parseTime} from "../../../utils/ruoyi";
 import {mixin_printHTML} from "../../dashboard/mixins/print";
 import {mixin_record_uploadFiles} from "../../dashboard/mixins/record/record_upload";
@@ -398,6 +399,8 @@ import {listInvoiceOther} from "../../../api/system/invoiceOther";
 import CheckFiles from "../../../components/CheckFiles.vue";
 import {mixin_record_fill} from "./recordFill";
 import {CASH_TYPE} from "./constrant";
+import {getRecord, updateRecord} from "../../../api/system/record";
+import {mixin_checkfile} from "../../dashboard/mixins/checkfiles/mixin_checkfile";
 
 export default {
   name: "Record",
@@ -430,7 +433,7 @@ export default {
     }
   },
   components: {CheckFiles, SearchOption},
-  mixins: [mixin_printHTML, mixin_record_fill, mixin_record_uploadFiles],
+  mixins: [mixin_printHTML, mixin_record_fill, mixin_record_uploadFiles, mixin_checkfile],
   data() {
     return {
       // 遮罩层
@@ -514,6 +517,12 @@ export default {
     this.getList();
   },
   methods: {
+    updateRecord() {
+      return updateRecord
+    },
+    getRecord() {
+      return getRecord
+    },
     listInvoiceOther,
     listCompany,
     parseTime,

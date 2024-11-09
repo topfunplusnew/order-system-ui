@@ -93,20 +93,20 @@
       <el-table-column show-overflow-tooltip label="供应商" align="center" prop="supplierNames" fixed="left"
                        v-if="columns[2].visible"
                        width="200">
-        <template #default="scope">
-            <el-row>
-              <span v-for="(item,index) in getSupplierNames(scope.row.orderDetailList)" :key="index">
-             <el-badge is-dot class="item">
-            <span @click="updateOrderItemVisibleSupplierInvoice(scope.row,item.supplierID)">
-              {{ item.supplier }}
-            </span>
-          </el-badge>
-          </span>
-            </el-row>
-          <el-row>
-            <span v-if="scope.row.supplierNames === null">无</span>
-          </el-row>
-        </template>
+        <!--        <template #default="scope">-->
+        <!--          <el-row>-->
+        <!--              <span v-for="(item,index) in getSupplierNames(scope.row.orderDetailList)" :key="index">-->
+        <!--             <el-badge is-dot class="item">-->
+        <!--            <span @click="updateOrderItemVisibleSupplierInvoice(scope.row,item.supplierID)">-->
+        <!--              {{ item.supplier }}-->
+        <!--            </span>-->
+        <!--          </el-badge>-->
+        <!--          </span>-->
+        <!--          </el-row>-->
+        <!--          <el-row>-->
+        <!--            <span v-if="scope.row.supplierNames === null">无</span>-->
+        <!--          </el-row>-->
+        <!--        </template>-->
       </el-table-column>
       <el-table-column show-overflow-tooltip label="陆运车牌" align="center" prop="landCarNo"
                        v-if="columns[3].visible"/>
@@ -162,7 +162,8 @@
       <el-table-column show-overflow-tooltip label="附件" align="center" prop="path" v-if="columns[15].visible"
                        width="150px">
         <template slot-scope="scope">
-          <CheckFiles :path="scope.row.path"/>
+          <CheckFiles :path="scope.row.path"
+                      @needToUpdate="(value)=>handleUpdateFilePath(value,scope.row,'path',getGoodsOrder(),updateGoodsOrder())"/>
         </template>
       </el-table-column>
       <el-table-column show-overflow-tooltip label="打款状态" align="center" prop="paymentState"
@@ -186,7 +187,8 @@
                        v-if="columns[17].visible"
                        width="150px">
         <template slot-scope="scope">
-          <CheckFiles :path="scope.row.receiveProof"/>
+          <CheckFiles :path="scope.row.receiveProof"
+                      @needToUpdate="(value)=>handleUpdateFilePath(value,scope.row,'receiveProof',getGoodsOrder(),updateGoodsOrder())"/>
         </template>
       </el-table-column>
       <el-table-column show-overflow-tooltip label="原订单编号" align="center" prop="adjustOrderid"
@@ -437,9 +439,7 @@ import {
   adjustGoodsOrder,
   auditGoodsOrder,
   delGoodsOrder,
-  getGoodsOrder,
   listGoodsOrder,
-  updateGoodsOrder
 } from "@/api/system/goodsOrder";
 import OrderForm from "@/views/dashboard/components/goodsOrder/OrderForm.vue";
 import {mapGetters} from "vuex";
@@ -456,7 +456,7 @@ import FreeApply from "@/components/FreeApply.vue";
 import {parseTime} from "../../../utils/ruoyi";
 import {addInvoiceIn} from "@/api/system/invoiceIn";
 import {getCompany} from "../../../api/system/company";
-import {getHistoryGoodsOrder} from "../../../api/system/goodsOrder";
+import {getGoodsOrder, updateGoodsOrder} from "../../../api/system/goodsOrder";
 import axios from "axios";
 import {mixin_printHTML} from "../../dashboard/mixins/print";
 import Invoice from "../../dashboard/components/goodsOrder/Invoice.vue";
@@ -471,6 +471,7 @@ import PrimativeOrderInfo from "../../dashboard/components/goodsOrder/PrimativeO
 import PreviousOrderInfo from "./PreviousOrderInfo.vue";
 import QueryStatment from "@/views/system/adjustOrders/QueryStatment.vue";
 import CheckFiles from "../../../components/CheckFiles.vue";
+import {mixin_checkfile} from "../../dashboard/mixins/checkfiles/mixin_checkfile";
 
 export default {
   name: "AdjustOrders",
@@ -491,7 +492,7 @@ export default {
     OrderDetailInfo,
     OrderForm
   },
-  mixins: [mixin_printHTML],
+  mixins: [mixin_printHTML, mixin_checkfile],
   data() {
     return {
       // 遮罩层
@@ -854,20 +855,26 @@ export default {
     }
   },
   methods: {
+    updateGoodsOrder() {
+      return updateGoodsOrder
+    },
+    getGoodsOrder() {
+      return getGoodsOrder
+    },
     parseTime,
     listCompany,
     listBankAccount,
-    getSupplierNames(list) {
-      if (list.length === 0) {
-        return;
-      }
-      return list.map(item => {
-        return {
-          supplier: item.supplier,
-          supplierID: item.supplierID
-        }
-      })
-    },
+    // getSupplierNames(list) {
+    //   if (list.length === 0) {
+    //     return;
+    //   }
+    //   return list.map(item => {
+    //     return {
+    //       supplier: item.supplier,
+    //       supplierID: item.supplierID
+    //     }
+    //   })
+    // },
     //查看原订单
     checkPreviousOrder(row) {
       getGoodsOrder(row.adjustOrderid).then(res => {
@@ -1255,9 +1262,7 @@ export default {
           this.$message.error('该订单已有运费信息!!!')
         }
       })
-
     },
-
     /** 查询订单列表 */
     getList() {
       this.loading = true;

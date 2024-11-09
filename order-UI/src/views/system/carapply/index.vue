@@ -121,7 +121,8 @@
                        v-if="columns[21].visible" show-overflow-tooltip/>
       <el-table-column label="附件路径" align="center" prop="path" v-if="columns[22].visible">
         <template slot-scope="scope">
-          <CheckFiles :path="scope.row.path"/>
+          <CheckFiles :path="scope.row.path"
+                      @needToUpdate="(value)=>handleUpdateFilePath(value,scope.row,'path',getCarApply(),updateCarApply())"/>
         </template>
       </el-table-column>
       <el-table-column label="操作" align="center" class-name="small-padding fixed-width" fixed="right" width="100px">
@@ -401,9 +402,8 @@
 </template>
 
 <script>
-import {listCarApply, getCarApply, delCarApply, addCarApply, updateCarApply} from "@/api/system/carApply";
+import {listCarApply, delCarApply, addCarApply,} from "@/api/system/carApply";
 import {mixin_printHTML} from "@/views/dashboard/mixins/print";
-import {findFileExtension} from "@/utils/trash/utils";
 import {mixin_businesstrip_car_apply} from "../../dashboard/mixins/bussiness/businesstrip_car_apply";
 import {listData} from "../../../api/system/dict/data";
 import SearchOption from "../../../components/SearchOption.vue";
@@ -412,11 +412,13 @@ import Treeselect from "@riophae/vue-treeselect";
 import {listDept} from "@/api/system/dept";
 import "@riophae/vue-treeselect/dist/vue-treeselect.css";
 import CheckFiles from "../../../components/CheckFiles.vue";
+import {getCarApply, updateCarApply} from "../../../api/system/carApply";
+import {mixin_checkfile} from "../../dashboard/mixins/checkfiles/mixin_checkfile";
 
 export default {
   name: "CarApply",
   components: {CheckFiles, Treeselect, SearchOption},
-  mixins: [mixin_printHTML, mixin_businesstrip_car_apply],
+  mixins: [mixin_printHTML, mixin_businesstrip_car_apply, mixin_checkfile],
   data() {
     return {
       // 遮罩层
@@ -526,6 +528,12 @@ export default {
     }
   },
   methods: {
+    updateCarApply() {
+      return updateCarApply
+    },
+    getCarApply() {
+      return getCarApply
+    },
     listOilCard,
     listData,
     normalizer(node) {

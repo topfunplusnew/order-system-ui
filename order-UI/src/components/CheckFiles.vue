@@ -22,6 +22,9 @@ export default {
       // 检查的文件列表
       checkFileList: [],
       dialogVisible: false,
+
+      // 最大文件个数限制
+      maxFileNum: 5
     }
   },
 
@@ -43,6 +46,7 @@ export default {
     },
     // 上传附件
     uploadFile(path) {
+      // fileList即为已经上传的文件列表
       this.checkFileList = []
       if (path) {
         this.checkFileList = path.split('|').filter(item => item !== '')
@@ -51,18 +55,27 @@ export default {
     },
     // 添加某个文件
     handleAddFile(value) {
+      console.log('value', value)
       let newPath = null;
-      // 如果push进去后 列表长度为0 那么就拼接一个|
-      if (this.checkFileList.length === 0) {
-        const item = value + '|'
-        // 调用传入的业务接口 修改数据
-        this.$emit('needToUpdate', item)
-        // 如果不是 那么就直接推入 然后 join
+      // 如果长度大于等于5 不得上传
+      if (this.checkFileList.length >= this.maxFileNum) {
+        console.log('文件超出长度')
+        this.$message.error("最多只能上传" + this.maxFileNum + "个文件")
       } else {
-        this.checkFileList.push(value)
-        newPath = this.checkFileList.join('|');
-        // 调用传入的业务接口 修改数据
-        this.$emit('needToUpdate', newPath)
+        // 如果push进去后 列表长度为0 那么就拼接一个|
+        if (this.checkFileList.length === 0) {
+          const item = value + '|'
+
+          // 调用传入的业务接口 修改数据
+          this.$emit('needToUpdate', item)
+          // 如果不是 那么就直接推入 然后 join
+        } else {
+          this.checkFileList.push(value)
+          newPath = this.checkFileList.join('|');
+
+          // 调用传入的业务接口 修改数据
+          this.$emit('needToUpdate', newPath)
+        }
       }
     },
     // 删除某个文件
@@ -109,9 +122,9 @@ export default {
 
     <!--    文件列表-->
     <el-dialog
-      title="文件列表"
+      title="文件列表(最多上传五个文件)"
       :visible.sync="dialogVisible"
-      width="30%" append-to-body>
+      width="620px" append-to-body>
       <div class="file-list">
         <!--        上传过的文件列表-->
         <FileItems v-if="path" v-for="(item,index) in checkFileList" :key="index" :file-name="item"
@@ -129,7 +142,6 @@ export default {
 
 <style scoped lang="scss">
 .file-list {
-
   display: flex;
   flex-wrap: wrap;
   justify-content: flex-start;

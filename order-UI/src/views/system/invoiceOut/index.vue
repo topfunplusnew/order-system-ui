@@ -98,12 +98,14 @@
       <el-table-column label="备注" align="center" prop="comments" v-if="columns[9].visible" show-overflow-tooltip/>
       <el-table-column label="银行回执单" align="center" prop="paymentReceipts">
         <template #default="scope">
-          <CheckFiles :path="scope.row.paymentReceipts"/>
+          <CheckFiles :path="scope.row.paymentReceipts"
+                      @needToUpdate="(value)=>handleUpdateFilePath(value,scope.row,'paymentReceipts',getInvoiceOut,updateInvoiceOut)"/>
         </template>
       </el-table-column>
       <el-table-column label="发票单" align="center" prop="invoiceAttachments">
         <template #default="scope">
-          <CheckFiles :path="scope.row.invoiceAttachments"/>
+          <CheckFiles :path="scope.row.invoiceAttachments"
+                      @needToUpdate="(value)=>handleUpdateFilePath(value,scope.row,'invoiceAttachments',getInvoiceOut,updateInvoiceOut)"/>
         </template>
       </el-table-column>
       <el-table-column label="订单信息" align="center" prop="isOrderTax" width="180" v-if="columns[8].visible">
@@ -216,7 +218,8 @@
 </template>
 
 <script>
-import {listInvoiceOut, getInvoiceOut, delInvoiceOut, addInvoiceOut, updateInvoiceOut} from "@/api/system/invoiceOut";
+import {listInvoiceOut, delInvoiceOut, addInvoiceOut} from "@/api/system/invoiceOut";
+import {updateInvoiceOut, getInvoiceOut} from "../../../api/system/invoiceOut";
 import {mixin_printHTML} from "@/views/dashboard/mixins/print";
 import {excludeParams} from "@/api/tool/exclude";
 import SearchOption from "@/components/SearchOption.vue";
@@ -225,15 +228,15 @@ import {getGoodsOrder} from "@/api/system/goodsOrder";
 import OrderInfos from "@/views/dashboard/components/goodsOrder/OrderInfos.vue";
 import {addReason} from "@/api/system/user";
 import {TableName} from "@/api/tool/enums";
-import {getInvoiceIn} from "@/api/system/invoiceIn";
-import {addDateRange, parseTime} from "@/utils/ruoyi";
+import {addDateRange} from "@/utils/ruoyi";
 import CheckFiles from "../../../components/CheckFiles.vue";
 import reLength from "../../dashboard/mixins/reLength";
+import {mixin_checkfile} from "../../dashboard/mixins/checkfiles/mixin_checkfile";
 
 export default {
   name: "InvoiceOut",
   components: {CheckFiles, OrderInfos, SearchOption},
-  mixins: [mixin_printHTML, reLength],
+  mixins: [mixin_printHTML, reLength, mixin_checkfile],
   data() {
     return {
       // 遮罩层
@@ -339,6 +342,8 @@ export default {
     }
   },
   methods: {
+    updateInvoiceOut,
+    getInvoiceOut,
     listCompany,
     // 自动填充函数
     handleUpdateCompanyName(val) {

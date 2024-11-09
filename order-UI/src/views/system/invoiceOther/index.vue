@@ -111,12 +111,14 @@
       </el-table-column>
       <el-table-column label="银行回执单" align="center" prop="paymentReceipts">
         <template #default="scope">
-          <CheckFiles :path="scope.row.paymentReceipts"/>
+          <CheckFiles :path="scope.row.paymentReceipts"
+                      @needToUpdate="(value)=>handleUpdateFilePath(value,scope.row,'paymentReceipts',getInvoiceOther,updateInvoiceOther)"/>
         </template>
       </el-table-column>
       <el-table-column label="发票单" align="center" prop="invoiceAttachments">
         <template #default="scope">
-          <CheckFiles :path="scope.row.invoiceAttachments"/>
+          <CheckFiles :path="scope.row.invoiceAttachments"
+                      @needToUpdate="(value)=>handleUpdateFilePath(value,scope.row,'invoiceAttachments',getInvoiceOther,updateInvoiceOther)"/>
         </template>
       </el-table-column>
       <el-table-column label="备注" align="center" prop="comments" v-if="columns[10].visible"/>
@@ -320,29 +322,27 @@
 <script>
 import {
   listInvoiceOther,
-  getInvoiceOther,
   delInvoiceOther,
   addInvoiceOther,
-  updateInvoiceOther
 } from "@/api/system/invoiceOther";
 import {mixin_printHTML} from "@/views/dashboard/mixins/print";
 import {addReason} from "@/api/system/user";
 import {TableName} from "@/api/tool/enums";
-import {getInvoiceOut} from "@/api/system/invoiceOut";
 import SearchOption from "@/components/SearchOption.vue";
 import {listCompany} from "@/api/system/company";
 import {listGoodsOrder} from "@/api/system/goodsOrder";
 import {addDateRange} from "@/utils/ruoyi";
-import {getGoodsOrder} from "../../../api/system/goodsOrder";
 import OrderInfos from "../../dashboard/components/goodsOrder/OrderInfos.vue";
 import CheckFiles from "../../../components/CheckFiles.vue";
 import {fix} from "../../../api/tool/format";
 import reLength from "../../dashboard/mixins/reLength";
+import {mixin_checkfile} from "../../dashboard/mixins/checkfiles/mixin_checkfile";
+import {getInvoiceOther, updateInvoiceOther} from "../../../api/system/invoiceOther";
 
 export default {
   name: "InvoiceOther",
   components: {CheckFiles, OrderInfos, SearchOption},
-  mixins: [mixin_printHTML, reLength],
+  mixins: [mixin_printHTML, reLength, mixin_checkfile],
   data() {
     return {
       // 遮罩层
@@ -438,6 +438,8 @@ export default {
     }
   },
   methods: {
+    updateInvoiceOther,
+    getInvoiceOther,
     listGoodsOrder,
     listCompany,
     // 自动填充的方法

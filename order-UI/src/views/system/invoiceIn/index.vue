@@ -107,12 +107,14 @@
       <el-table-column label="备注" align="center" prop="comments" v-if="columns[10].visible"/>
       <el-table-column label="银行回执单" align="center" prop="paymentReceipts">
         <template #default="scope">
-          <CheckFiles :path="scope.row.paymentReceipts"/>
+          <CheckFiles :path="scope.row.paymentReceipts"
+                      @needToUpdate="(value)=>handleUpdateFilePath(value,scope.row,'paymentReceipts',getInvoiceIn(),updateInvoiceIn())"/>
         </template>
       </el-table-column>
       <el-table-column label="发票单" align="center" prop="invoiceAttachments">
         <template #default="scope">
-          <CheckFiles :path="scope.row.invoiceAttachments"/>
+          <CheckFiles :path="scope.row.invoiceAttachments"
+                      @needToUpdate="(value)=>handleUpdateFilePath(value,scope.row,'invoiceAttachments',getInvoiceIn(),updateInvoiceIn())"/>
         </template>
       </el-table-column>
       <el-table-column label="订单信息" align="center" prop="isOrderTax" v-if="columns[8].visible"
@@ -233,7 +235,7 @@
 </template>
 
 <script>
-import {listInvoiceIn, getInvoiceIn, delInvoiceIn, addInvoiceIn, updateInvoiceIn} from "@/api/system/invoiceIn";
+import {listInvoiceIn, delInvoiceIn, addInvoiceIn} from "@/api/system/invoiceIn";
 import {mixin_printHTML} from "@/views/dashboard/mixins/print";
 import SearchOption from "@/components/SearchOption.vue";
 import {listCompany} from "@/api/system/company";
@@ -245,11 +247,13 @@ import {getGoodsOrder} from "@/api/system/goodsOrder";
 import OrderInfos from "@/views/dashboard/components/goodsOrder/OrderInfos.vue";
 import CheckFiles from "../../../components/CheckFiles.vue";
 import reLength from "../../dashboard/mixins/reLength";
+import {getInvoiceIn, updateInvoiceIn} from "../../../api/system/invoiceIn";
+import {mixin_checkfile} from "../../dashboard/mixins/checkfiles/mixin_checkfile";
 
 export default {
   name: "InvoiceIn",
   components: {CheckFiles, OrderInfos, ApplyPayment, SearchOption},
-  mixins: [mixin_printHTML, reLength],
+  mixins: [mixin_printHTML, reLength, mixin_checkfile],
   data() {
     return {
       // 遮罩层
@@ -358,6 +362,12 @@ export default {
     }
   },
   methods: {
+    updateInvoiceIn() {
+      return updateInvoiceIn
+    },
+    getInvoiceIn() {
+      return getInvoiceIn
+    },
     listCompany,
     /** 查询发票购入信息列表 */
     getList() {
