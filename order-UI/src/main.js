@@ -51,6 +51,7 @@ import service from "./utils/request";
 // 虚拟滚动
 import VueVirtualScroller from 'vue-virtual-scroller'
 import 'vue-virtual-scroller/dist/vue-virtual-scroller.css'
+
 Vue.use(VueVirtualScroller)
 
 
@@ -152,9 +153,14 @@ Vue.use(VForm)
 
 Vue.config.productionTip = false
 
+
+// 创建vm 挂载全局事件总线
 new Vue({
   el: '#app',
   router,
   store,
-  render: h => h(App)
+  render: h => h(App),
+  beforeCreate() {
+    Vue.prototype.$bus = this
+  }
 })

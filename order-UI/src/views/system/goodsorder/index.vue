@@ -166,13 +166,13 @@
       <el-table-column show-overflow-tooltip label="附件" align="center" prop="path" v-show="columns[15].visible"
                        width="150px">
         <template slot-scope="scope">
-          <CheckFiles :path="scope.row.path"/>
+          <CheckFiles :path="scope.row.path" @needToUpdate="(value)=>handleUpdateFilePath(value,scope.row)"/>
         </template>
       </el-table-column>
       <el-table-column show-overflow-tooltip label="收到条附件路径" align="center" prop="receiveProof"
                        v-show="columns[17].visible"
                        width="150px">
-        <template slot-scope="scope">
+        <template #default="scope">
           <CheckFiles :path="scope.row.receiveProof"/>
         </template>
       </el-table-column>
@@ -455,6 +455,8 @@ import {mixin_order_audit} from "../../dashboard/mixins/order/order_audit";
 import {mixin_order_base} from "../../dashboard/mixins/order/order_base";
 import reLength from "../../dashboard/mixins/reLength";
 import CheckFiles from "../../../components/CheckFiles.vue";
+import {getGoodsOrder, updateGoodsOrder} from "../../../api/system/goodsOrder";
+import {excludeParams} from "../../../api/tool/exclude";
 
 export default {
   name: "GoodsOrder",
@@ -584,6 +586,26 @@ export default {
     parseTime,
     listCompany,
     listBankAccount,
+    // 处理修改上传的回调
+    handleUpdateFilePath(value, row) {
+      console.log(value)
+      // 需要先getId查询一下
+      getGoodsOrder(row.id).then(res => {
+        // 封装组件对象
+        const data = {
+          ...res.data,
+          path: value
+        }
+        // 更新订单的附件字段
+        updateGoodsOrder(excludeParams(data, this.$exclude)).then(res => {
+          this.$message.success("操作成功!")
+          // 通知事件总线 让CheckFile的visible关闭
+          this.$bus.$emit('changeFileVisible', false)
+          this.getList()
+        })
+
+      })
+    },
     /** 处理下拉菜单 */
     handleCommand(command, row) {
       switch (command) {

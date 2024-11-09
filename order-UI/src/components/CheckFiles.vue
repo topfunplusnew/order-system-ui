@@ -3,54 +3,119 @@
 <script>
 import {check_file} from "../views/dashboard/mixins/utils/check_file";
 import FileItems from "./FileItems.vue";
+import FileShowItem from "./FileShowItem.vue";
 
 export default {
   name: "CheckFiles",
-  components: {FileItems},
+  components: {FileShowItem, FileItems},
   mixins: [check_file],
   props: {
     // 文件的地址url字段
     path: {
       type: String,
       default: ''
-    }
+    },
+
   },
   data() {
     return {
+      // 检查的文件列表
       checkFileList: [],
       dialogVisible: false,
     }
   },
+
+  mounted() {
+    // 事件总线 接受dialogVisible的变化 设置一个全局监听器 当监听到某个事件发生的时候 那么就要执行相关逻辑
+    this.$bus.$on('changeFileVisible', (value) => {
+      this.dialogVisible = value
+    })
+  },
   methods: {
     // 查看文件列表
     checkFiles(path) {
-      this.checkFileList = path.split('|')
-      this.dialogVisible = true;
+      // 如果path有值 才能分隔 没有值就是本身
+      if (path) {
+        this.checkFileList = path.split('|')
+      }
+      this.dialogVisible = true
     },
-    // 点击某一个文件
-    handleCheckFile(item) {
-      window.open(item)
-    }
+    // 上传附件
+    uploadFile(path) {
+      if (path) {
+        this.checkFileList = path.split('|')
+      }
+      this.dialogVisible = true
+    },
+    // 添加某个文件
+    handleAddFile(value) {
+      let newPath = null;
+      // 如果push进去后 列表长度为0 那么就拼接一个| 再推入数组
+      if (this.checkFileList.length === 0) {
+        const item = value + '|'
+        this.checkFileList.push(item)
+
+        // 如果不是 那么就直接推入 然后 join
+      } else {
+        this.checkFileList.push(value)
+        newPath = this.checkFileList.join('|');
+      }
+      // 调用传入的业务接口 修改数据
+      this.$emit('needToUpdate', newPath)
+    },
+    // 删除某个文件
+    handleDeleteFile(value) {
+      // 弹出确认框 先确认是否要删除
+      this.$confirm('是否要删除该文件?', '系统提示', {
+        confirmButtonText: '确定',
+        cancelButtonText: '取消',
+        type: 'warning'
+      }).then(() => {
+        // 筛选掉方法
+        const files = this.checkFileList.filter(item => item !== value)
+        let newPath = files.length === 0 ? null : files.join('|');
+
+        // 调用传入的业务接口 修改数据
+        this.$emit('needToUpdate', newPath)
+      })
+    },
   }
 }
 </script>
 
 <template>
   <div>
-    <div v-if="!path">
-      无附件
-    </div>
-    <div v-else>
-      <el-button size="mini" type="text" @click="checkFiles(path)">查看附件</el-button>
+
+    <div>
+      <el-dropdown>
+        <span class="el-dropdown-link" style="color: orangered">
+          附件<i class="el-icon-arrow-down el-icon--right"></i>
+        </span>
+        <el-dropdown-menu slot="dropdown">
+          <el-dropdown-item>
+            <el-button size="mini" type="text" @click="uploadFile(path)">上传附件</el-button>
+          </el-dropdown-item>
+          <el-dropdown-item>
+            <div v-if="path">
+              <el-button size="mini" type="text" @click="checkFiles(path)">查看附件</el-button>
+            </div>
+          </el-dropdown-item>
+        </el-dropdown-menu>
+      </el-dropdown>
     </div>
 
+
+    <!--    文件列表-->
     <el-dialog
       title="文件列表"
       :visible.sync="dialogVisible"
       width="30%" append-to-body>
       <div class="file-list">
-        <FileItems v-for="(item,index) in checkFileList" :key="index" :file-name="item"
-                   @click.native="handleCheckFile(item)"/>
+        <!--        上传过的文件列表-->
+        <FileItems v-if="path" v-for="(item,index) in checkFileList" :key="index" :file-name="item"
+                   @handleFile="handleDeleteFile"/>
+        <!--        支持上传-->
+        <FileShowItem @handleFile="handleAddFile"/>
       </div>
       <span slot="footer" class="dialog-footer">
     <el-button @click="dialogVisible = false">取 消</el-button>
@@ -62,12 +127,13 @@ export default {
 
 <style scoped lang="scss">
 .file-list {
+
   display: flex;
   flex-wrap: wrap;
   justify-content: flex-start;
   align-items: flex-start;
   align-content: flex-start;
-  padding: 10px;
+  padding: 15px;
   border: 1px solid #ccc;
   border-radius: 15px;
   background: #fafafa;
