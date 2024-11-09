@@ -145,6 +145,7 @@
       <el-table-column show-overflow-tooltip label="销售经理" align="center" prop="saleManager"
                        v-show="columns[11].visible"/>
       <el-table-column show-overflow-tooltip label="车队" align="center" prop="fleet" v-show="columns[12].visible"/>
+      <el-table-column show-overflow-tooltip label="业务员" align="center" prop="userName" width="120px"/>
       <el-table-column show-overflow-tooltip label="审核状态" align="center" prop="checkState"
                        v-show="columns[13].visible"
                        width="120">
