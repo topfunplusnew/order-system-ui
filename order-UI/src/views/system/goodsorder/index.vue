@@ -588,7 +588,6 @@ export default {
     listBankAccount,
     // 处理修改上传的回调
     handleUpdateFilePath(value, row) {
-      console.log(value)
       // 需要先getId查询一下
       getGoodsOrder(row.id).then(res => {
         // 封装组件对象

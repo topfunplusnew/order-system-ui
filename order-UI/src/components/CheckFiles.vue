@@ -34,34 +34,36 @@ export default {
   methods: {
     // 查看文件列表
     checkFiles(path) {
+      this.checkFileList = []
       // 如果path有值 才能分隔 没有值就是本身
       if (path) {
-        this.checkFileList = path.split('|')
+        this.checkFileList = path.split('|').filter(item => item !== '')
       }
       this.dialogVisible = true
     },
     // 上传附件
     uploadFile(path) {
+      this.checkFileList = []
       if (path) {
-        this.checkFileList = path.split('|')
+        this.checkFileList = path.split('|').filter(item => item !== '')
       }
       this.dialogVisible = true
     },
     // 添加某个文件
     handleAddFile(value) {
       let newPath = null;
-      // 如果push进去后 列表长度为0 那么就拼接一个| 再推入数组
+      // 如果push进去后 列表长度为0 那么就拼接一个|
       if (this.checkFileList.length === 0) {
         const item = value + '|'
-        this.checkFileList.push(item)
-
+        // 调用传入的业务接口 修改数据
+        this.$emit('needToUpdate', item)
         // 如果不是 那么就直接推入 然后 join
       } else {
         this.checkFileList.push(value)
         newPath = this.checkFileList.join('|');
+        // 调用传入的业务接口 修改数据
+        this.$emit('needToUpdate', newPath)
       }
-      // 调用传入的业务接口 修改数据
-      this.$emit('needToUpdate', newPath)
     },
     // 删除某个文件
     handleDeleteFile(value) {
@@ -73,7 +75,7 @@ export default {
       }).then(() => {
         // 筛选掉方法
         const files = this.checkFileList.filter(item => item !== value)
-        let newPath = files.length === 0 ? null : files.join('|');
+        let newPath = files.length === 0 ? "" : files.join('|');
 
         // 调用传入的业务接口 修改数据
         this.$emit('needToUpdate', newPath)
