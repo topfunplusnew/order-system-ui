@@ -162,21 +162,20 @@
       </el-table-column>
 
       <el-table-column label="公司名称" align="center" prop="companyName" v-if="columns[4].visible"/>
-      <el-table-column label="对方客户类型" align="center" prop="recipientType" v-if="columns[5].visible"/>
 
-      <el-table-column label="对方收礼人员" align="center" prop="recipientReceiver" v-if="columns[6].visible"/>
+      <el-table-column label="对方收礼人员" align="center" prop="recipientReceiver" v-if="columns[5].visible"/>
 
-      <el-table-column label="物品名称" align="center" prop="itemName" v-if="columns[7].visible"/>
+      <el-table-column label="物品名称" align="center" prop="itemName" v-if="columns[6].visible"/>
 
-      <el-table-column label="数量" align="center" prop="quantity" v-if="columns[8].visible"/>
+      <el-table-column label="数量" align="center" prop="quantity" v-if="columns[7].visible"/>
 
-      <el-table-column label="预估价值/购买金额" align="center" prop="estimatedValue" v-if="columns[9].visible"/>
+      <el-table-column label="预估价值/购买金额" align="center" prop="estimatedValue" v-if="columns[8].visible"/>
 
-      <el-table-column label="经办人" align="center" prop="handler" v-if="columns[10].visible"/>
+      <el-table-column label="经办人" align="center" prop="handler" v-if="columns[9].visible"/>
 
-      <el-table-column label="备注" align="center" prop="remark" v-if="columns[11].visible"/>
+      <el-table-column label="备注" align="center" prop="remark" v-if="columns[10].visible"/>
 
-      <el-table-column label="操作" align="center" class-name="small-padding fixed-width" v-if="columns[12].visible">
+      <el-table-column label="操作" align="center" class-name="small-padding fixed-width" v-if="columns[11].visible">
         <template #default="scope">
           <el-button
             size="mini"
@@ -345,14 +344,13 @@ export default {
         {key: 2, label: `礼品来源`, visible: true},
         {key: 3, label: `出库方式`, visible: true},
         {key: 4, label: `公司名称`, visible: true},
-        {key: 5, label: `对方客户类型`, visible: true},
-        {key: 6, label: `对方收礼人员`, visible: true},
-        {key: 7, label: `物品名称`, visible: true},
-        {key: 8, label: `数量`, visible: true},
-        {key: 9, label: `预估价值/购买金额`, visible: true},
-        {key: 10, label: `经办人`, visible: true},
-        {key: 11, label: `备注`, visible: true},
-        {key: 12, label: `操作`, visible: true}
+        {key: 5, label: `对方收礼人员`, visible: true},
+        {key: 6, label: `物品名称`, visible: true},
+        {key: 7, label: `数量`, visible: true},
+        {key: 8, label: `预估价值/购买金额`, visible: true},
+        {key: 9, label: `经办人`, visible: true},
+        {key: 10, label: `备注`, visible: true},
+        {key: 11, label: `操作`, visible: true}
       ]
     };
   },

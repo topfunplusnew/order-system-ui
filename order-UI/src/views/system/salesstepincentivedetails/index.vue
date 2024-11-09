@@ -20,10 +20,10 @@
           end-placeholder="结束日期"
         ></el-date-picker>
       </el-form-item>
-      <el-form-item label="业务员" prop="salesPerson">
+      <el-form-item label="接受奖励人员" prop="salesPerson">
         <el-input
           v-model="queryParams.salesPerson"
-          placeholder="请输入业务员"
+          placeholder="请输入接受奖励人员"
           clearable
           @keyup.enter.native="handleQuery"
         />
@@ -54,7 +54,8 @@
           size="mini"
           @click="handleAdd"
           v-hasPermi="['system:salesstepincentivedetails:add']"
-        >新增</el-button>
+        >新增
+        </el-button>
       </el-col>
       <el-col :span="1.5">
         <el-button
@@ -65,7 +66,8 @@
           :disabled="single"
           @click="handleUpdate"
           v-hasPermi="['system:salesstepincentivedetails:edit']"
-        >修改</el-button>
+        >修改
+        </el-button>
       </el-col>
       <el-col :span="1.5">
         <el-button
@@ -76,7 +78,8 @@
           :disabled="multiple"
           @click="handleDelete"
           v-hasPermi="['system:salesstepincentivedetails:remove']"
-        >删除</el-button>
+        >删除
+        </el-button>
       </el-col>
       <el-col :span="1.5">
         <el-button
@@ -86,57 +89,98 @@
           size="mini"
           @click="handleExport"
           v-hasPermi="['system:salesstepincentivedetails:export']"
-        >导出</el-button>
+        >导出
+        </el-button>
       </el-col>
-      <right-toolbar :showSearch.sync="showSearch" @queryTable="getList"></right-toolbar>
+      <right-toolbar :showSearch.sync="showSearch" @queryTable="getList" :columns="columns">
+        <template v-slot:print>
+          <el-col :span="1.5">
+            <el-button
+              plain
+              icon="el-icon-printer"
+              size="mini"
+              @click="printHTML"
+            >
+            </el-button>
+          </el-col>
+        </template>
+        <template v-slot:export>
+          <el-col :span="1.5">
+            <el-button
+              plain
+              icon="el-icon-folder-opened"
+              size="mini"
+              @click="handleExport"
+              v-hasPermi="['system:adjustOrders:export']"
+            >
+            </el-button>
+          </el-col>
+        </template>
+      </right-toolbar>
     </el-row>
 
-    <el-table v-loading="loading" :data="salesstepincentivedetailsList" @selection-change="handleSelectionChange">
-      <el-table-column type="selection" width="55" align="center" />
-      <el-table-column label="id" align="center" prop="id" />
-      <el-table-column label="订单编号" align="center" prop="orderNo" />
-      <el-table-column label="订单日期" align="center" prop="orderDate" width="180">
-        <template slot-scope="scope">
+    <el-table v-loading="loading" :data="salesstepincentivedetailsList" @selection-change="handleSelectionChange"
+              border v-horizontal-scroll="'always'" size="mini" :cell-style="()=>{return {padding:'1px'}}">
+      <el-table-column type="selection" width="55" align="center"/>
+
+      <el-table-column label="id" align="center" prop="id" v-if="columns[0].visible"/>
+
+      <el-table-column label="订单编号" align="center" prop="orderNo" v-if="columns[1].visible"/>
+
+      <el-table-column label="订单日期" align="center" prop="orderDate" width="180" v-if="columns[2].visible">
+        <template #default="scope">
           <span>{{ parseTime(scope.row.orderDate, '{y}-{m}-{d}') }}</span>
         </template>
       </el-table-column>
-      <el-table-column label="业务员" align="center" prop="salesPerson" />
-      <el-table-column label="客户ID" align="center" prop="customerId" />
-      <el-table-column label="客户类型" align="center" prop="customerType" />
-      <el-table-column label="奖励原因" align="center" prop="incentiveReason" />
-      <el-table-column label="订单系统不含税利润" align="center" prop="orderProfit" />
-      <el-table-column label="厂家返利/承兑贴点利润" align="center" prop="manufacturerRebateProfit" />
-      <el-table-column label="客户佣金" align="center" prop="customerCommission" />
-      <el-table-column label="综合单车利润" align="center" prop="comprehensiveProfit" />
-      <el-table-column label="利润是否达标" align="center" prop="profitStandardMet" />
-      <el-table-column label="奖励金额" align="center" prop="rewardAmount" />
-      <el-table-column label="奖励日期" align="center" prop="rewardDate" width="180">
-        <template slot-scope="scope">
+
+      <el-table-column label="接受奖励人员" align="center" prop="salesPerson" v-if="columns[3].visible"/>
+
+      <el-table-column label="奖励原因" align="center" prop="incentiveReason" v-if="columns[4].visible"/>
+
+      <el-table-column label="不含税利润" align="center" prop="orderProfit" v-if="columns[5].visible"/>
+
+      <el-table-column label="厂家返利/承兑贴点利润" align="center" prop="manufacturerRebateProfit"
+                       v-if="columns[6].visible"/>
+
+      <el-table-column label="客户佣金" align="center" prop="customerCommission" v-if="columns[7].visible"/>
+
+      <el-table-column label="综合单车利润" align="center" prop="comprehensiveProfit" v-if="columns[8].visible"/>
+
+      <el-table-column label="利润是否达标" align="center" prop="profitStandardMet" v-if="columns[9].visible"/>
+
+      <el-table-column label="奖励金额" align="center" prop="rewardAmount" v-if="columns[10].visible"/>
+
+      <el-table-column label="奖励日期" align="center" prop="rewardDate" width="180" v-if="columns[11].visible">
+        <template #default="scope">
           <span>{{ parseTime(scope.row.rewardDate, '{y}-{m}-{d}') }}</span>
         </template>
       </el-table-column>
-      <el-table-column label="逻辑删除标记" align="center" prop="delFlag" />
-      <el-table-column label="备注" align="center" prop="remark" />
-      <el-table-column label="操作" align="center" class-name="small-padding fixed-width">
-        <template slot-scope="scope">
+
+      <el-table-column label="备注" align="center" prop="remark" v-if="columns[12].visible"/>
+
+      <el-table-column label="操作" align="center" class-name="small-padding fixed-width" v-if="columns[13].visible">
+        <template #default="scope">
           <el-button
             size="mini"
             type="text"
             icon="el-icon-edit"
             @click="handleUpdate(scope.row)"
             v-hasPermi="['system:salesstepincentivedetails:edit']"
-          >修改</el-button>
+          >修改
+          </el-button>
           <el-button
             size="mini"
             type="text"
             icon="el-icon-delete"
             @click="handleDelete(scope.row)"
             v-hasPermi="['system:salesstepincentivedetails:remove']"
-          >删除</el-button>
+          >删除
+          </el-button>
         </template>
       </el-table-column>
     </el-table>
-    
+
+
     <pagination
       v-show="total>0"
       :total="total"
@@ -146,60 +190,65 @@
     />
 
     <!-- 添加或修改台阶制对话框 -->
-    <el-dialog :title="title" :visible.sync="open" width="500px" append-to-body>
-      <el-form ref="form" :model="form" :rules="rules" label-width="80px">
-        <el-form-item label="订单编号" prop="orderNo">
-          <el-input v-model="form.orderNo" placeholder="请输入订单编号" />
-        </el-form-item>
-        <el-form-item label="订单日期" prop="orderDate">
-          <el-date-picker clearable
-            v-model="form.orderDate"
-            type="date"
-            value-format="yyyy-MM-dd"
-            placeholder="请选择订单日期">
-          </el-date-picker>
-        </el-form-item>
-        <el-form-item label="业务员" prop="salesPerson">
-          <el-input v-model="form.salesPerson" placeholder="请输入业务员" />
-        </el-form-item>
-        <el-form-item label="客户ID" prop="customerId">
-          <el-input v-model="form.customerId" placeholder="请输入客户ID" />
-        </el-form-item>
-        <el-form-item label="奖励原因" prop="incentiveReason">
-          <el-input v-model="form.incentiveReason" placeholder="请输入奖励原因" />
-        </el-form-item>
-        <el-form-item label="订单系统不含税利润" prop="orderProfit">
-          <el-input v-model="form.orderProfit" placeholder="请输入订单系统不含税利润" />
-        </el-form-item>
-        <el-form-item label="厂家返利/承兑贴点利润" prop="manufacturerRebateProfit">
-          <el-input v-model="form.manufacturerRebateProfit" placeholder="请输入厂家返利/承兑贴点利润" />
-        </el-form-item>
-        <el-form-item label="客户佣金" prop="customerCommission">
-          <el-input v-model="form.customerCommission" placeholder="请输入客户佣金" />
-        </el-form-item>
-        <el-form-item label="综合单车利润" prop="comprehensiveProfit">
-          <el-input v-model="form.comprehensiveProfit" placeholder="请输入综合单车利润" />
-        </el-form-item>
-        <el-form-item label="利润是否达标" prop="profitStandardMet">
-          <el-input v-model="form.profitStandardMet" placeholder="请输入利润是否达标" />
-        </el-form-item>
-        <el-form-item label="奖励金额" prop="rewardAmount">
-          <el-input v-model="form.rewardAmount" placeholder="请输入奖励金额" />
-        </el-form-item>
-        <el-form-item label="奖励日期" prop="rewardDate">
-          <el-date-picker clearable
-            v-model="form.rewardDate"
-            type="date"
-            value-format="yyyy-MM-dd"
-            placeholder="请选择奖励日期">
-          </el-date-picker>
-        </el-form-item>
-        <el-form-item label="逻辑删除标记" prop="delFlag">
-          <el-input v-model="form.delFlag" placeholder="请输入逻辑删除标记" />
-        </el-form-item>
-        <el-form-item label="备注" prop="remark">
-          <el-input v-model="form.remark" type="textarea" placeholder="请输入内容" />
-        </el-form-item>
+    <el-dialog :title="title" :visible.sync="open" width="800px" append-to-body>
+      <el-form ref="form" :model="form" :rules="rules" label-width="150px">
+        <el-row>
+          <el-col :span="12">
+            <el-form-item label="订单">
+              <!--        子组件 填充订单信息 包含日期 业务员(UserName) 客户名称 不含税利润 -->
+              <Incent @update:orderInfo="handleFillOrderInfo"/>
+            </el-form-item>
+            <el-form-item label="订单日期" prop="orderDate">
+              <el-date-picker clearable
+                              v-model="form.orderDate"
+                              type="date"
+                              value-format="yyyy-MM-dd"
+                              placeholder="请选择订单日期">
+              </el-date-picker>
+            </el-form-item>
+            <el-form-item label="客户名称" prop="salesPerson">
+              <el-input v-model="form.companyName" placeholder="请输入接受奖励人员"/>
+            </el-form-item>
+            <el-form-item label="接受奖励人员" prop="salesPerson">
+              <el-input v-model="form.salesPerson" placeholder="请输入接受奖励人员"/>
+            </el-form-item>
+            <el-form-item label="奖励原因" prop="incentiveReason">
+              <el-input v-model="form.incentiveReason" placeholder="请输入奖励原因"/>
+            </el-form-item>
+            <el-form-item label="订单不含税利润" prop="orderProfit">
+              <el-input v-model="form.orderProfit" placeholder="请输入订单不含税利润"/>
+            </el-form-item>
+            <el-form-item label="厂家返利/承兑贴点利润" prop="manufacturerRebateProfit">
+              <el-input v-model="form.manufacturerRebateProfit" placeholder="请输入厂家返利/承兑贴点利润"/>
+            </el-form-item>
+          </el-col>
+          <el-col :span="12">
+            <el-form-item label="客户佣金" prop="customerCommission">
+              <el-input v-model="form.customerCommission" placeholder="请输入客户佣金"/>
+            </el-form-item>
+            <el-form-item label="综合单车利润" prop="comprehensiveProfit">
+              <el-input v-model="form.comprehensiveProfit" placeholder="请输入综合单车利润"/>
+            </el-form-item>
+            <el-form-item label="利润是否达标" prop="profitStandardMet">
+              <el-radio v-model="form.profitStandardMet" label="0">未达标</el-radio>
+              <el-radio v-model="form.profitStandardMet" label="1">达标</el-radio>
+            </el-form-item>
+            <el-form-item label="奖励金额" prop="rewardAmount">
+              <el-input v-model="form.rewardAmount" placeholder="请输入奖励金额"/>
+            </el-form-item>
+            <el-form-item label="奖励日期" prop="rewardDate">
+              <el-date-picker clearable
+                              v-model="form.rewardDate"
+                              type="date"
+                              value-format="yyyy-MM-dd"
+                              placeholder="请选择奖励日期">
+              </el-date-picker>
+            </el-form-item>
+            <el-form-item label="备注" prop="remark">
+              <el-input v-model="form.remark" type="textarea" placeholder="请输入内容"/>
+            </el-form-item>
+          </el-col>
+        </el-row>
       </el-form>
       <div slot="footer" class="dialog-footer">
         <el-button type="primary" @click="submitForm">确 定</el-button>
@@ -210,10 +259,22 @@
 </template>
 
 <script>
-import { listSalesstepincentivedetails, getSalesstepincentivedetails, delSalesstepincentivedetails, addSalesstepincentivedetails, updateSalesstepincentivedetails } from "@/api/system/salesstepincentivedetails";
+import {
+  listSalesstepincentivedetails,
+  getSalesstepincentivedetails,
+  delSalesstepincentivedetails,
+  addSalesstepincentivedetails,
+  updateSalesstepincentivedetails
+} from "@/api/system/salesstepincentivedetails";
+import {parseTime} from "../../../utils/ruoyi";
+import {mixin_printHTML} from "../../dashboard/mixins/print";
+import Incent from "../../dashboard/components/incent/Incent.vue";
+import {mixin_step_order_fill} from "./salespincent_fill";
 
 export default {
   name: "Salesstepincentivedetails",
+  components: {Incent},
+  mixins: [mixin_printHTML, mixin_step_order_fill],
   data() {
     return {
       // 遮罩层
@@ -252,15 +313,33 @@ export default {
       // 表单校验
       rules: {
         orderNo: [
-          { required: true, message: "订单编号不能为空", trigger: "blur" }
+          {required: true, message: "订单编号不能为空", trigger: "blur"}
         ],
-      }
+      },
+      columns: [
+        {key: 0, label: `id`, visible: true},
+        {key: 1, label: `订单编号`, visible: true},
+        {key: 2, label: `订单日期`, visible: true},
+        {key: 3, label: `接受奖励人员`, visible: true},
+        {key: 4, label: `奖励原因`, visible: true},
+        {key: 5, label: `不含税利润`, visible: true},
+        {key: 6, label: `厂家返利/承兑贴点利润`, visible: true},
+        {key: 7, label: `客户佣金`, visible: true},
+        {key: 8, label: `综合单车利润`, visible: true},
+        {key: 9, label: `利润是否达标`, visible: true},
+        {key: 10, label: `奖励金额`, visible: true},
+        {key: 11, label: `奖励日期`, visible: true},
+        {key: 12, label: `备注`, visible: true},
+        {key: 13, label: `操作`, visible: true}
+      ]
+
     };
   },
   created() {
     this.getList();
   },
   methods: {
+    parseTime,
     /** 查询台阶制列表 */
     getList() {
       this.loading = true;
@@ -325,7 +404,7 @@ export default {
     // 多选框选中数据
     handleSelectionChange(selection) {
       this.ids = selection.map(item => item.id)
-      this.single = selection.length!==1
+      this.single = selection.length !== 1
       this.multiple = !selection.length
     },
     /** 新增按钮操作 */
@@ -367,12 +446,13 @@ export default {
     /** 删除按钮操作 */
     handleDelete(row) {
       const ids = row.id || this.ids;
-      this.$modal.confirm('是否确认删除台阶制编号为"' + ids + '"的数据项？').then(function() {
+      this.$modal.confirm('是否确认删除台阶制编号为"' + ids + '"的数据项？').then(function () {
         return delSalesstepincentivedetails(ids);
       }).then(() => {
         this.getList();
         this.$modal.msgSuccess("删除成功");
-      }).catch(() => {});
+      }).catch(() => {
+      });
     },
     /** 导出按钮操作 */
     handleExport() {

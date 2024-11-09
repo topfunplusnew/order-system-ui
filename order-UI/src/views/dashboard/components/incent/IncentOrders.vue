@@ -5,11 +5,8 @@ import QuerySearchBar from "../goodsOrder/QuerySearchBar.vue";
 import {OptionInvent, Options} from "../../mixins/order/order_Invoice";
 
 export default {
-  name: "OrderList",
+  name: "IncentOrders",
   components: {QuerySearchBar},
-  props: {
-    selectedGoodsOrderList: []
-  },
   data() {
     return {
       goodsOrderList: [],
@@ -71,18 +68,6 @@ export default {
     handleSelectionChange(selection) {
       this.$emit('update:selectedGoodsOrderList', selection)
     },
-    // 获取供应商的名称列表
-    // getSupplierNames(list) {
-    //   if (list.length === 0) {
-    //     return;
-    //   }
-    //   return list.map(item => {
-    //     return {
-    //       supplier: item.supplier,
-    //       supplierID: item.supplierID
-    //     }
-    //   })
-    // },
     getList() {
       this.loading = true;
       listGoodsOrder(this.queryParams).then(response => {
@@ -91,6 +76,12 @@ export default {
         this.loading = false;
       });
     },
+
+    // 引用
+    handleIndex(row) {
+      this.$emit('indexOrder', row)
+      this.$emit('close')
+    }
   }
 }
 </script>
@@ -112,13 +103,6 @@ export default {
       <el-table-column show-overflow-tooltip label="客户" align="center" prop="customer" fixed="left"/>
       <el-table-column show-overflow-tooltip label="供应商" align="center" prop="supplierNames" fixed="left"
                        width="200">
-        <!--        <template #default="scope">-->
-        <!--          <el-row>-->
-        <!--          <span v-for="(item, index) in getSupplierNames(scope.row.orderDetailList)" :key="index">-->
-        <!--                {{ item.supplier }}-->
-        <!--          </span>-->
-        <!--          </el-row>-->
-        <!--        </template>-->
       </el-table-column>
       <el-table-column show-overflow-tooltip label="陆运车牌" align="center" prop="landCarNo"/>
       <el-table-column show-overflow-tooltip label="陆运司机电话" align="center" prop="landDriverTel" width="100px"/>
@@ -139,14 +123,12 @@ export default {
       <el-table-column show-overflow-tooltip label="审核状态" align="center" prop="checkState" width="120"/>
       <el-table-column show-overflow-tooltip label="开票状态" align="center" prop="invoiceState" width="120px"/>
       <el-table-column show-overflow-tooltip label="打款状态" align="center" prop="paymentState" width="120px"/>
-      <el-table-column show-overflow-tooltip label="是否可编辑" align="center" prop="isedit" width="100px">
-        <template slot-scope="scope">
-          <el-tag :type="scope.row.isedit === 0 ? 'danger' : 'success'">
-            {{ scope.row.isedit === 0 ? '否' : '是' }}
-          </el-tag>
+      <el-table-column show-overflow-tooltip label="备注" align="center" prop="comments"/>
+      <el-table-column show-overflow-tooltip label="操作" align="center" width="120px" fixed="right">
+        <template #default="scope">
+          <el-button type="text" size="mini" @click="handleIndex(scope.row)">引用</el-button>
         </template>
       </el-table-column>
-      <el-table-column show-overflow-tooltip label="备注" align="center" prop="comments"/>
     </el-table>
 
     <pagination
