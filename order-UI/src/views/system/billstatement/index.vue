@@ -21,6 +21,16 @@
           placeholder="请输入票据号码"
           @keyup.enter.native="handleQuery"/>
       </el-form-item>
+      <el-form-item label="排序方式">
+        <el-select v-model="queryParams.isOrderBybillNo" placeholder="请选择排序方式" size="mini" clearable>
+          <el-option
+            v-for="item in options"
+            :key="item.value"
+            :label="item.label"
+            :value="item.value">
+          </el-option>
+        </el-select>
+      </el-form-item>
       <el-form-item>
         <el-button type="primary" icon="el-icon-search" size="mini" @click="handleQuery">查询流水</el-button>
       </el-form-item>
@@ -278,6 +288,7 @@ import {mixin_printHTML} from "@/views/dashboard/mixins/print";
 import {excludeParams} from "@/api/tool/exclude";
 import InfoDialog from "../../../components/InfoDialog.vue";
 import {listBankAcceptanceBalanceMoney} from "../../../api/system/bankAcceptance";
+import {tansParams} from "../../../utils/ruoyi";
 
 export default {
   name: "BankAcceptance",
@@ -305,6 +316,7 @@ export default {
       open: false,
       // 查询参数
       queryParams: {
+        isOrderBybillNo: null,
         issueDateStart: null,
         issueDateEnd: null,
         pageNum: 1,
@@ -393,6 +405,13 @@ export default {
           {required: true, message: '请输入贴息金额', trigger: 'blur'}
         ]
       },
+      options: [{
+        value: '操作日期',
+        label: '操作日期'
+      }, {
+        value: '票据单号',
+        label: '票据单号'
+      },],
       // 查看票据余额
       totalVisible: false,
       bankAcceptanceMoneyList: [],
@@ -512,6 +531,13 @@ export default {
     /** 搜索按钮操作 */
     handleQuery() {
       this.queryParams.pageNum = 1;
+      if (!this.queryParams.params) {
+        this.queryParams.params = {};
+      }
+      // 添加searchParams 如果这个存在
+      if (this.queryParams.isOrderBybillNo) {
+        this.queryParams.params['isOrderBybillNo'] = "true";
+      }
       this.getList();
     },
     /** 重置按钮操作 */
