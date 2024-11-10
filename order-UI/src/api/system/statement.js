@@ -118,3 +118,12 @@ export function getFleetFreightSummary(query) {
     params: query
   })
 }
+
+// 获取运费报表明细表
+export function getFreightSubjectDetailSummary(query) {
+  return request({
+    url: '/statistics/orderfreightDetail',
+    method: 'get',
+    params: query
+  })
+}

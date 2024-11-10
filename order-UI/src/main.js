@@ -127,6 +127,29 @@ Vue.prototype.$refreshParams = function (object) {
   return newObject
 }
 
+
+import DatePickerDialog from "./views/dashboard/components/common/DatePickerDialog.vue";
+
+Vue.prototype.$datePicker = function () {
+  return new Promise((resolve, reject) => {
+    const DatePickerConstructor = Vue.extend(DatePickerDialog);
+    const datePickerInstance = new DatePickerConstructor({
+      propsData: {resolve},
+    });
+
+    // 手动挂载到 DOM 上
+    datePickerInstance.$mount();
+    document.body.appendChild(datePickerInstance.$el);
+
+    // 显示弹框
+    datePickerInstance.show();
+
+    // 捕获关闭事件
+    datePickerInstance.$on('resolve', (data) => {
+      resolve(data);  // 处理日期选择
+    });
+  });
+};
 export const isNull = val => {
   return !val ? '暂无' : val
 }
