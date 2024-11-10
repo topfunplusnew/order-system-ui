@@ -16,6 +16,10 @@ export var mixin_step_order_fill = {
       this.form.orderProfit = value.orderDetailList.reduce((pre, cur) => {
         return pre + (cur.profitNoTax || 0)
       }, 0)
+
+      // 填充id和type
+      this.form.customerId = value.customerID
+      this.form.customerType = '客户'
     }
   }
 }

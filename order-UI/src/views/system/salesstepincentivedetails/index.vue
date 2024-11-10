@@ -122,42 +122,28 @@
     <el-table v-loading="loading" :data="salesstepincentivedetailsList" @selection-change="handleSelectionChange"
               border v-horizontal-scroll="'always'" size="mini" :cell-style="()=>{return {padding:'1px'}}">
       <el-table-column type="selection" width="55" align="center"/>
-
       <el-table-column label="id" align="center" prop="id" v-if="columns[0].visible"/>
-
-      <el-table-column label="订单编号" align="center" prop="orderNo" v-if="columns[1].visible"/>
-
-      <el-table-column label="订单日期" align="center" prop="orderDate" width="180" v-if="columns[2].visible">
+      <el-table-column label="订单编号" align="center" prop="orderNo" v-if="columns[1].visible" show-overflow-tooltip/>
+      <el-table-column label="订单日期" align="center" prop="orderDate" width="180" v-if="columns[2].visible" show-overflow-tooltip>
         <template #default="scope">
           <span>{{ parseTime(scope.row.orderDate, '{y}-{m}-{d}') }}</span>
         </template>
       </el-table-column>
-
-      <el-table-column label="接受奖励人员" align="center" prop="salesPerson" v-if="columns[3].visible"/>
-
-      <el-table-column label="奖励原因" align="center" prop="incentiveReason" v-if="columns[4].visible"/>
-
-      <el-table-column label="不含税利润" align="center" prop="orderProfit" v-if="columns[5].visible"/>
-
+      <el-table-column label="接受奖励人员" align="center" prop="salesPerson" v-if="columns[3].visible" show-overflow-tooltip/>
+      <el-table-column label="奖励原因" align="center" prop="incentiveReason" v-if="columns[4].visible" show-overflow-tooltip/>
+      <el-table-column label="不含税利润" align="center" prop="orderProfit" v-if="columns[5].visible" show-overflow-tooltip/>
       <el-table-column label="厂家返利/承兑贴点利润" align="center" prop="manufacturerRebateProfit"
-                       v-if="columns[6].visible"/>
-
-      <el-table-column label="客户佣金" align="center" prop="customerCommission" v-if="columns[7].visible"/>
-
-      <el-table-column label="综合单车利润" align="center" prop="comprehensiveProfit" v-if="columns[8].visible"/>
-
-      <el-table-column label="利润是否达标" align="center" prop="profitStandardMet" v-if="columns[9].visible"/>
-
-      <el-table-column label="奖励金额" align="center" prop="rewardAmount" v-if="columns[10].visible"/>
-
-      <el-table-column label="奖励日期" align="center" prop="rewardDate" width="180" v-if="columns[11].visible">
+                       v-if="columns[6].visible" show-overflow-tooltip/>
+      <el-table-column label="客户佣金" align="center" prop="customerCommission" v-if="columns[7].visible" show-overflow-tooltip/>
+      <el-table-column label="综合单车利润" align="center" prop="comprehensiveProfit" v-if="columns[8].visible" show-overflow-tooltip/>
+      <el-table-column label="利润是否达标" align="center" prop="profitStandardMet" v-if="columns[9].visible" show-overflow-tooltip/>
+      <el-table-column label="奖励金额" align="center" prop="rewardAmount" v-if="columns[10].visible" show-overflow-tooltip/>
+      <el-table-column label="奖励日期" align="center" prop="rewardDate" width="180" v-if="columns[11].visible" show-overflow-tooltip>
         <template #default="scope">
           <span>{{ parseTime(scope.row.rewardDate, '{y}-{m}-{d}') }}</span>
         </template>
       </el-table-column>
-
-      <el-table-column label="备注" align="center" prop="remark" v-if="columns[12].visible"/>
-
+      <el-table-column label="备注" align="center" prop="remark" v-if="columns[12].visible" show-overflow-tooltip/>
       <el-table-column label="操作" align="center" class-name="small-padding fixed-width" v-if="columns[13].visible">
         <template #default="scope">
           <el-button
@@ -207,7 +193,7 @@
               </el-date-picker>
             </el-form-item>
             <el-form-item label="客户名称" prop="salesPerson">
-              <el-input v-model="form.companyName" placeholder="请输入接受奖励人员"/>
+              <el-input v-model="form.companyName" placeholder="请输入客户名称"/>
             </el-form-item>
             <el-form-item label="接受奖励人员" prop="salesPerson">
               <el-input v-model="form.salesPerson" placeholder="请输入接受奖励人员"/>
@@ -419,6 +405,7 @@ export default {
       const id = row.id || this.ids
       getSalesstepincentivedetails(id).then(response => {
         this.form = response.data;
+        this.form.profitStandardMet = response.data.profitStandardMet + ''
         this.open = true;
         this.title = "修改台阶制";
       });
