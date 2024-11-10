@@ -28,10 +28,7 @@ export var mixin_record_fill = {
     updateQueryCustomer(val) {
       this.queryCustomer = val;
     },
-    updateQueryInvoice(val) {
-      this.queryInvoice = val;
-    },
-    // 收入方的自动填充 填充id即可 fixme
+    // 收入方的自动填充 填充id即可
     handleCommitCompanySupplier(val) {
       this.form.sourceId = val.id;
       // 修改 应该填充的是银行账户名称
@@ -39,23 +36,9 @@ export var mixin_record_fill = {
     },
     // 支出方的自动填充
     handleCommitCompanyCustomer(val) {
-      this.form.targetId = val.id;
       this.targetName = val.acountsName;
+      this.form.targetId = val.id;
     },
-    // 开票号码绑定
-    handleCommitInvoiceOther(val) {
-      this.form.referenceTableId = val.id;
-      // 填充客户和供应商的信息
-      // 来源方
-      this.sourceName = val.customer;
-      this.form.sourceId = val.customerID;
-      this.form.sourceCompanyType = '客户';
-      // 去方
-      this.targetName = val.supplier;
-      this.form.targetId = val.supplierID;
-      this.form.targetCompanyType = '供应商';
-    },
-
     // 以下是新增 填充方法 2024/11/7 现金记账改为冲抵款 合并冲抵货款
     // 选择客户或者供应商的回调
     handleUpdateCompanyNameGet(val) {

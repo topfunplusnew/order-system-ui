@@ -152,61 +152,20 @@
         <el-form-item label="冲抵类型">
           <el-row>
             <el-radio v-model="cashType" label="offsetting">冲抵货款</el-radio>
-            <!--            删除冲抵第三方开票-->
-            <!--            <el-radio v-model="cashType" label="invoiceother">冲抵第三方开票</el-radio>-->
             <el-radio v-model="cashType" label="transfer">内部转账</el-radio>
           </el-row>
         </el-form-item>
-        <!--   如果是第三方开票 还需要选择对应关联的票点 -->
-        <el-row v-if="cashType === CASH_TYPE.INVOICE_OTHER">
-          <el-form-item label="发票号码">
-            <el-row>
-              <el-col :span="20">
-                <el-input disabled v-model="form.referenceTableId" placeholder="请选择发票号码"/>
-              </el-col>
-              <el-col :span="3">
-                <SearchOption :get-data="listInvoiceOther" @commitBack="handleCommitInvoiceOther"
-                              :limit-info="{}" query-label="供应商公司名称" :query-name="queryInvoice"
-                              query-info="Supplier" @update:queryName="updateQueryInvoice">
-                  <template #table-columns>
-                    <el-table-column label="开票日期" align="center" prop="invoiceDate"
-                                     show-overflow-tooltip/>
-                    <el-table-column label="开票金额" align="center" prop="invoiceAmount"
-                                     show-overflow-tooltip/>
-                    <el-table-column label="供应商票点" align="center" prop="supplierTicketPoint"
-                                     show-overflow-tooltip/>
-                    <el-table-column label="供应商票点金额" align="center" prop="supplierPointAmount"
-                                     show-overflow-tooltip/>
-                    <el-table-column label="供应商公司名称" align="center" prop="Supplier"
-                                     show-overflow-tooltip/>
-                    <el-table-column label="客户公司名称" align="center" prop="customer"
-                                     show-overflow-tooltip/>
-                    <el-table-column label="票据单位名称" align="center" prop="invoiceCompanyName"
-                                     show-overflow-tooltip/>
-                    <el-table-column label="客户票点" align="center" prop="customerTicketPoint"
-                                     show-overflow-tooltip/>
-                    <el-table-column label="票点金额" align="center" prop="customerPointAmount"
-                                     show-overflow-tooltip/>
-                  </template>
-                </SearchOption>
-              </el-col>
-            </el-row>
-          </el-form-item>
-        </el-row>
-
         <el-divider>
           <el-icon class="el-icon-circle-plus"></el-icon>
           收入方信息
         </el-divider>
         <!--        1.选择原-->
-        <el-form-item :label="source" v-if="cashType !== CASH_TYPE.OFF_SETTING">
+        <el-form-item :label="source">
           <el-row>
             <el-col :span="20">
-              <!--              如果是冲抵货款直接输入金额 如果是其他 才会有选择-->
               <el-input placeholder="请选择"
                         v-model="sourceName"/>
             </el-col>
-            <!--            如果不是冲抵货款 才会有选择客户的按钮-->
             <el-col :span="3">
               <SearchOption :get-data="listBankAccount" @commitBack="handleCommitCompanySupplier"
                             :limit-info="{acountsType:'己方公司'}" query-info="acountsName" :query-name="querySupplier"
@@ -260,7 +219,7 @@
           支付方信息
         </el-divider>
         <!--        2.选择去-->
-        <el-form-item :label="target" v-if="cashType !== CASH_TYPE.OFF_SETTING">
+        <el-form-item :label="target">
           <el-row>
             <el-col :span="20">
               <el-input placeholder="请选择"
@@ -329,27 +288,9 @@
             </el-col>
           </el-row>
         </el-form-item>
-
-        <!--        甲方需要上传附件-->
         <el-form-item label="附件" prop="attachment">
-          <!--          <el-upload-->
-          <!--            class="upload-demo"-->
-          <!--            drag-->
-          <!--            :action="uploadFileUrl"-->
-          <!--            multiple-->
-          <!--            show-file-list-->
-          <!--            :headers="headers"-->
-          <!--            :file-list="fileList"-->
-          <!--            :before-upload="beforeUpload">-->
-          <!--            <i class="el-icon-upload"></i>-->
-          <!--            <div class="el-upload__text">将文件拖到此处，或<em>点击上传</em></div>-->
-          <!--            <div class="el-upload__tip" slot="tip">上传文件名长度不得超过20</div>-->
-          <!--          </el-upload>-->
-          <!--          <el-button type="success" @click="submitUploadAllFiles">开始上传</el-button>-->
           <file-upload @input="handleCommitUpload" ref="uploadFile"/>
         </el-form-item>
-
-        <!--        交易时间-->
         <el-form-item label="交易时间" prop="transactionTime">
           <el-date-picker clearable
                           v-model="form.transactionTime"
@@ -358,8 +299,6 @@
                           placeholder="请选择交易时间">
           </el-date-picker>
         </el-form-item>
-
-        <!--        备注-->
         <el-form-item label="备注" prop="remarks">
           <el-input v-model="form.remarks" placeholder="请输入备注"/>
         </el-form-item>
@@ -412,12 +351,6 @@ export default {
       if (this.cashType === CASH_TYPE.OFF_SETTING) {
         return '收入方金额'
       }
-
-      // 如果是冲抵第三方开票
-      if (this.cashType === CASH_TYPE.INVOICE_OTHER) {
-        return '供应商'
-      }
-
       if (this.cashType === 'transfer') {
         return '收入方'
       }
@@ -426,10 +359,6 @@ export default {
     target() {
       if (this.cashType === CASH_TYPE.OFF_SETTING) {
         return '支出方金额'
-      }
-
-      if (this.cashType === CASH_TYPE.INVOICE_OTHER) {
-        return '客户'
       }
       if (this.cashType === 'transfer') {
         return '支出方'
@@ -528,7 +457,6 @@ export default {
     getRecord() {
       return getRecord
     },
-    listInvoiceOther,
     listCompany,
     parseTime,
     /** 查询现金记账列表 */
@@ -609,36 +537,59 @@ export default {
         this.form = response.data;
         // 填充冲抵类型
         this.cashType = response.data.referenceTableName;
-
-
         // 根据冲抵类型 分别赋值
         if (this.cashType === CASH_TYPE.OFF_SETTING) {
-          // 填充支付方类型
-          this.form.targetCompanyType = response.data.targetCompanyType
-          // 填充收方类型
-          this.form.sourceCompanyType = response.data.sourceCompanyType
-          // 填充原和去的公司名称
-          this.sourceName = response.data.sourceCompanyName;
-          this.targetName = response.data.targetCompanyName;
-
+          this.$nextTick(() => {
+            // 冲抵货款 填充对方类型
+            this.form.targetCompanyType = response.data.targetCompanyType
+            this.form.sourceCompanyType = response.data.sourceCompanyType
+            // 填充原和去的公司名称
+            this.sourceName = response.data.sourceCompanyName;
+            this.targetName = response.data.targetCompanyName;
+            // 填充id
+            this.form.sourceId = response.data.sourceId
+            this.form.targetId = response.data.targetId
+            // 填充类型
+            this.form.referenceTableName = response.data.referenceTableName
+            // 填充id
+            this.form.referenceTableId = response.data.referenceTableId
+            // 填充金额
+            this.form.amount = response.data.amount
+            // 填充时间
+            this.form.transactionTime = response.data.transactionTime
+            // 填充备注
+            this.form.remarks = response.data.remarks
+          })
+          // 如果是内部转账
         } else {
-          // 填充原和去的公司名称
-          this.sourceName = response.data.sourceCompanyName;
-          this.targetName = response.data.targetCompanyName;
-
-          // 填充id
-          this.form.referenceTableId = response.data.referenceTableId;
+          this.$nextTick(() => {
+            // 内部转账 为己方公司全部
+            this.form.sourceCompanyType = '己方公司'
+            this.form.targetCompanyType = '己方公司'
+            // 填充原和去的公司名称 这两个字段仅做展示使用
+            this.sourceName = response.data.sourceCompanyName;
+            this.targetName = response.data.targetCompanyName;
+            // 填充id
+            this.form.sourceId = response.data.sourceId
+            this.form.targetId = response.data.targetId
+            // 填充类型
+            this.form.referenceTableName = response.data.referenceTableName
+            // 填充id
+            this.form.referenceTableId = response.data.referenceTableId
+            // 填充金额
+            this.form.amount = response.data.amount
+            // 填充时间
+            this.form.transactionTime = response.data.transactionTime
+            // 填充备注
+            this.form.remarks = response.data.remarks
+          })
         }
-
-
         this.open = true;
         this.title = "修改冲抵款";
       });
     },
     /** 提交按钮 */
     submitForm() {
-
-      // fixme
       this.$refs["form"].validate(valid => {
         if (valid) {
           // 如果id不为空 那么就是修改操作
@@ -651,16 +602,17 @@ export default {
               // 清除上传的文件列表
               this.$refs.uploadFile.clearFileList()
             });
-
             // 如果id为空 那么就是新增操作
           } else {
             // 如果是冲抵货款 那么就是填充一个非法的tableName和tID
             if (this.cashType === CASH_TYPE.OFF_SETTING) {
               this.form.referenceTableName = TableName.OFFSETTING;
               this.form.referenceTableId = -1;
-
               // 如果是内部转账 那么就填充参数
             } else {
+              // 填充公司类型 为己方公司 因为是内部转账
+              this.form.sourceCompanyType = '己方公司'
+              this.form.targetCompanyType = '己方公司'
               this.form.referenceTableName = CASH_TYPE.TRANSFER;
               this.form.referenceTableId = -1;
             }
