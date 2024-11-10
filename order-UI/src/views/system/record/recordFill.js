@@ -31,14 +31,16 @@ export var mixin_record_fill = {
     updateQueryInvoice(val) {
       this.queryInvoice = val;
     },
-    // 供应商的自动填充 填充id即可
+    // 收入方的自动填充 填充id即可 fixme
     handleCommitCompanySupplier(val) {
       this.form.sourceId = val.id;
-      this.sourceName = val.companyName;
+      // 修改 应该填充的是银行账户名称
+      this.sourceName = val.acountsName;
     },
+    // 支出方的自动填充
     handleCommitCompanyCustomer(val) {
       this.form.targetId = val.id;
-      this.targetName = val.companyName;
+      this.targetName = val.acountsName;
     },
     // 开票号码绑定
     handleCommitInvoiceOther(val) {

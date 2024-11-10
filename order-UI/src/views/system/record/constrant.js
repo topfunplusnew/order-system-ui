@@ -3,5 +3,6 @@ import {TableName} from "../../../api/tool/enums";
 
 export var CASH_TYPE = {
   OFF_SETTING: TableName.OFFSETTING,
-  INVOICE_OTHER: TableName.INVOICE_OTHER
+  INVOICE_OTHER: TableName.INVOICE_OTHER,
+  TRANSFER: 'transfer'
 }

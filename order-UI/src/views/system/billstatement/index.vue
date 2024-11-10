@@ -60,47 +60,45 @@
               v-horizontal-scroll="'always'" @selection-change="handleSelectionChange"
               show-summary :summary-method="getSummaries" size="mini" :cell-style="()=>{return {padding:'2px'}}"
               height="480px" id="printBox">
-      <el-table-column label="操作日期" align="center" prop="operateDate" v-if="columns[0].visible" width="120"
+      <el-table-column label="ID" align="center" prop="id" width="120" show-overflow-tooltip/>
+      <!--      <el-table-column label="操作日期" align="center" prop="operateDate" width="120" show-overflow-tooltip/>-->
+      <el-table-column label="票据号码" align="center" prop="billNo" width="120" show-overflow-tooltip/>
+      <el-table-column label="出票日期" align="center" prop="issueDate" width="120" show-overflow-tooltip/>
+      <el-table-column label="到期日期" align="center" prop="dueDate" width="120" show-overflow-tooltip/>
+      <el-table-column label="我方承兑账户" align="center" prop="billAccount" width="120" show-overflow-tooltip/>
+      <el-table-column label="票据交易日期" align="center" prop="billDate" width="120" show-overflow-tooltip/>
+      <!--      <el-table-column label="分类（收入/支出）" align="center" prop="billType" width="120" show-overflow-tooltip/>-->
+      <el-table-column label="收票事由" align="center" prop="reason" width="120" show-overflow-tooltip/>
+      <!--      <el-table-column label="票据金额" align="center" prop="billAmount" width="120" show-overflow-tooltip/>-->
+      <!--      <el-table-column label="贴息点数" align="center" prop="inDiscountPoints" width="120" show-overflow-tooltip/>-->
+      <!--      <el-table-column label="贴息金额" align="center" prop="inDiscountAmount" width="120" show-overflow-tooltip/>-->
+      <el-table-column label="票据种类（电子/纸质）" align="center" prop="billCategory" width="120"
                        show-overflow-tooltip/>
-      <el-table-column label="票据号码" align="center" prop="billNo" v-if="columns[1].visible" width="120"
+      <el-table-column label="背书人(来源)" align="center" prop="incomeEndorser" width="120" show-overflow-tooltip/>
+      <el-table-column label="收入票据来源" align="center" prop="incomeOrigin" width="120" show-overflow-tooltip/>
+      <el-table-column label="收入票据金额" align="center" prop="incomeBillAmount" width="120" show-overflow-tooltip/>
+      <el-table-column label="收入贴息点数" align="center" prop="incomeInDiscountPoints" width="120"
                        show-overflow-tooltip/>
-      <el-table-column label="业务类型" align="center" prop="billType" width="120"
+      <el-table-column label="收入贴息金额" align="center" prop="incomeInDiscountAmount" width="120"
                        show-overflow-tooltip/>
-      <el-table-column label="出票日期" align="center" prop="issueDate" v-if="columns[2].visible" width="120"
+      <el-table-column label="背书是由" align="center" prop="incomeReason" width="120" show-overflow-tooltip/>
+      <el-table-column label="被背书人" align="center" prop="expenseEndorser" width="120" show-overflow-tooltip/>
+      <el-table-column label="支出票据来源" align="center" prop="expenseOrigin" width="120" show-overflow-tooltip/>
+      <el-table-column label="支出票据金额" align="center" prop="expenseBillAmount" width="120"
                        show-overflow-tooltip/>
-      <el-table-column label="到期日期" align="center" prop="dueDate" v-if="columns[3].visible" width="120"
+      <el-table-column label="支出贴息点数" align="center" prop="expenseInDiscountPoints" width="120"
                        show-overflow-tooltip/>
-      <el-table-column label="我方承兑账户" align="center" prop="billAccount" v-if="columns[4].visible" width="120"
+      <el-table-column label="支出贴息金额" align="center" prop="expenseInDiscountAmount" width="120"
                        show-overflow-tooltip/>
-      <el-table-column label="票据日期" align="center" prop="billDate" v-if="columns[5].visible" width="120"
-                       show-overflow-tooltip/>
-      <el-table-column label="事由" align="center" prop="reason" v-if="columns[6].visible" width="120"
-                       show-overflow-tooltip/>
-      <el-table-column label="票据金额" align="center" prop="billAmount" v-if="columns[7].visible" width="120"
-                       show-overflow-tooltip/>
-      <el-table-column label="贴息点数" align="center" prop="inDiscountPoints" v-if="columns[8].visible" width="120"
-                       show-overflow-tooltip/>
-      <el-table-column label="贴息金额" align="center" prop="inDiscountAmount" v-if="columns[9].visible" width="120"
-                       show-overflow-tooltip/>
-      <el-table-column label="票据种类" align="center" prop="billCategory" v-if="columns[10].visible" width="120"
-                       show-overflow-tooltip/>
-      <el-table-column label="来源" align="center" prop="origin" v-if="columns[11].visible" width="120"
-                       show-overflow-tooltip/>
-      <el-table-column label="背书人" align="center" prop="endorser" v-if="columns[12].visible" width="120"
-                       show-overflow-tooltip/>
-      <el-table-column label="被背书人" align="center" prop="endorsee" v-if="columns[13].visible" width="120"
-                       show-overflow-tooltip/>
-      <el-table-column label="背书事由" align="center" prop="endorseReason" v-if="columns[14].visible" width="120"
-                       show-overflow-tooltip/>
-      <el-table-column label="备注" align="center" prop="comments" show-overflow-tooltip/>
+      <el-table-column label="备注" align="center" prop="comments" width="120" show-overflow-tooltip/>
       <el-table-column label="操作" align="center" class-name="small-padding fixed-width" width="150px" fixed="right">
         <template slot-scope="scope">
-          <el-button
-            size="mini"
-            type="primary"
-            @click="handleUpdate(scope.row)"
-            v-hasPermi="['system:bankacceptance:edit']">修改
-          </el-button>
+          <!--          <el-button-->
+          <!--            size="mini"-->
+          <!--            type="primary"-->
+          <!--            @click="handleUpdate(scope.row)"-->
+          <!--            v-hasPermi="['system:bankacceptance:edit']">修改-->
+          <!--          </el-button>-->
           <el-button
             size="mini"
             type="danger"
@@ -110,6 +108,7 @@
         </template>
       </el-table-column>
     </el-table>
+
 
     <pagination
       v-show="total>0"

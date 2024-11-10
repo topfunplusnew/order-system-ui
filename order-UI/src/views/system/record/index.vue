@@ -149,13 +149,14 @@
     <el-dialog :title="title" :visible.sync="open" width="700px" append-to-body>
       <el-form ref="form" :model="form" :rules="rules" label-width="150px">
         <!--        目前支持两种类型 一种是冲抵货款 一种是冲抵第三方开票-->
-        <!--        <el-form-item label="冲抵类型">-->
-        <!--          <el-row>-->
-        <!--            <el-radio v-model="cashType" label="offsetting">冲抵货款</el-radio>-->
-        <!--            &lt;!&ndash;            删除冲抵第三方开票&ndash;&gt;-->
-        <!--            <el-radio v-model="cashType" label="invoiceother">冲抵第三方开票</el-radio>-->
-        <!--          </el-row>-->
-        <!--        </el-form-item>-->
+        <el-form-item label="冲抵类型">
+          <el-row>
+            <el-radio v-model="cashType" label="offsetting">冲抵货款</el-radio>
+            <!--            删除冲抵第三方开票-->
+            <!--            <el-radio v-model="cashType" label="invoiceother">冲抵第三方开票</el-radio>-->
+            <el-radio v-model="cashType" label="transfer">内部转账</el-radio>
+          </el-row>
+        </el-form-item>
         <!--   如果是第三方开票 还需要选择对应关联的票点 -->
         <el-row v-if="cashType === CASH_TYPE.INVOICE_OTHER">
           <el-form-item label="发票号码">
@@ -207,20 +208,17 @@
             </el-col>
             <!--            如果不是冲抵货款 才会有选择客户的按钮-->
             <el-col :span="3">
-              <SearchOption :get-data="listCompany" @commitBack="handleCommitCompanySupplier"
-                            :limit-info="{companyType:'供应商'}" query-info="companyName" :query-name="querySupplier"
-                            query-label="供应商名称" @update:queryName="updateQuerySupplier">
+              <SearchOption :get-data="listBankAccount" @commitBack="handleCommitCompanySupplier"
+                            :limit-info="{acountsType:'己方公司'}" query-info="acountsName" :query-name="querySupplier"
+                            query-label="户名" @update:queryName="updateQuerySupplier">
                 <template #table-columns>
-                  <el-table-column label="供应商" align="center" prop="companyName" width="180"
-                                   show-overflow-tooltip/>
-                  <el-table-column label="老板姓名" align="center" prop="leader" width="180" show-overflow-tooltip/>
-                  <el-table-column label="老板电话" align="center" prop="leaderTel" width="180" show-overflow-tooltip/>
-                  <el-table-column label="区域" align="center" prop="region" width="180" show-overflow-tooltip/>
-                  <el-table-column label="联系人" align="center" prop="relationName" width="180" show-overflow-tooltip/>
-                  <el-table-column label="销售经理" align="center" prop="salesManager" width="180"
-                                   show-overflow-tooltip/>
-                  <el-table-column label="地址" align="center" prop="address" width="150" show-overflow-tooltip/>
-                  <el-table-column label="电话" align="center" prop="relationTel" width="180" show-overflow-tooltip/>
+                  <el-table-column label="账户类型" align="center" prop="acountsType" width="200"/>
+                  <el-table-column label="开户名称" align="center" prop="acountsName" width="200"/>
+                  <el-table-column label="银行账号" align="center" prop="bankNo" width="200"/>
+                  <el-table-column label="开户行" align="center" prop="bankName" width="200"/>
+                  <el-table-column label="公司名称" align="center" prop="companyName"
+                                   width="200"/>
+                  <el-table-column label="余额" align="center" prop="amount" width="200"/>
                 </template>
               </SearchOption>
             </el-col>
@@ -269,21 +267,18 @@
                         v-model="targetName"/>
             </el-col>
             <el-col :span="3">
-              <SearchOption :get-data="listCompany" @commitBack="handleCommitCompanyCustomer"
-                            :limit-info="{companyType:'客户'}" query-info="companyName"
+              <SearchOption :get-data="listBankAccount" @commitBack="handleCommitCompanyCustomer"
+                            :limit-info="{acountsType:'己方公司'}" query-info="acountsName"
                             :query-name="queryCustomer"
-                            query-label="客户名称" @update:queryName="updateQueryCustomer">
+                            query-label="户名" @update:queryName="updateQueryCustomer">
                 <template #table-columns>
-                  <el-table-column label="客户" align="center" prop="companyName" width="180"
-                                   show-overflow-tooltip/>
-                  <el-table-column label="老板姓名" align="center" prop="leader" width="180" show-overflow-tooltip/>
-                  <el-table-column label="老板电话" align="center" prop="leaderTel" width="180" show-overflow-tooltip/>
-                  <el-table-column label="区域" align="center" prop="region" width="180" show-overflow-tooltip/>
-                  <el-table-column label="联系人" align="center" prop="relationName" width="180" show-overflow-tooltip/>
-                  <el-table-column label="销售经理" align="center" prop="salesManager" width="180"
-                                   show-overflow-tooltip/>
-                  <el-table-column label="地址" align="center" prop="address" width="150" show-overflow-tooltip/>
-                  <el-table-column label="电话" align="center" prop="relationTel" width="180" show-overflow-tooltip/>
+                  <el-table-column label="账户类型" align="center" prop="acountsType" width="200"/>
+                  <el-table-column label="开户名称" align="center" prop="acountsName" width="200"/>
+                  <el-table-column label="银行账号" align="center" prop="bankNo" width="200"/>
+                  <el-table-column label="开户行" align="center" prop="bankName" width="200"/>
+                  <el-table-column label="公司名称" align="center" prop="companyName"
+                                   width="200"/>
+                  <el-table-column label="余额" align="center" prop="amount" width="200"/>
                 </template>
               </SearchOption>
             </el-col>
@@ -326,10 +321,11 @@
           基本信息
         </el-divider>
         <!--        金额只有在不是冲抵货款的其他类型中才会展示 冲抵货款在前面就已经输入了金额-->
-        <el-form-item label="冲抵金额" prop="amount">
+        <el-form-item :label="cashType === CASH_TYPE.TRANSFER ?'转账金额':'冲抵金额'" prop="amount">
           <el-row>
             <el-col :span="14">
-              <el-input v-model="form.amount" placeholder="请输入冲抵金额" type="number"/>
+              <el-input v-model="form.amount" :placeholder="cashType === CASH_TYPE.TRANSFER ?'转账金额':'冲抵金额'"
+                        type="number"/>
             </el-col>
           </el-row>
         </el-form-item>
@@ -401,6 +397,7 @@ import {mixin_record_fill} from "./recordFill";
 import {CASH_TYPE} from "./constrant";
 import {getRecord, updateRecord} from "../../../api/system/record";
 import {mixin_checkfile} from "../../dashboard/mixins/checkfiles/mixin_checkfile";
+import {listBankAccount} from "../../../api/system/bankAccount";
 
 export default {
   name: "Record",
@@ -420,6 +417,10 @@ export default {
       if (this.cashType === CASH_TYPE.INVOICE_OTHER) {
         return '供应商'
       }
+
+      if (this.cashType === 'transfer') {
+        return '收入方'
+      }
     },
     // 这是目标原
     target() {
@@ -429,6 +430,9 @@ export default {
 
       if (this.cashType === CASH_TYPE.INVOICE_OTHER) {
         return '客户'
+      }
+      if (this.cashType === 'transfer') {
+        return '支出方'
       }
     }
   },
@@ -517,6 +521,7 @@ export default {
     this.getList();
   },
   methods: {
+    listBankAccount,
     updateRecord() {
       return updateRecord
     },
@@ -597,11 +602,10 @@ export default {
     },
     /** 修改按钮操作 */
     handleUpdate(row) {
-      // todo 根据类型赋值
+      //根据类型赋值
       this.reset();
       const id = row.id || this.ids
       getRecord(id).then(response => {
-        console.log(response)
         this.form = response.data;
         // 填充冲抵类型
         this.cashType = response.data.referenceTableName;
@@ -633,6 +637,8 @@ export default {
     },
     /** 提交按钮 */
     submitForm() {
+
+      // fixme
       this.$refs["form"].validate(valid => {
         if (valid) {
           // 如果id不为空 那么就是修改操作
@@ -653,9 +659,10 @@ export default {
               this.form.referenceTableName = TableName.OFFSETTING;
               this.form.referenceTableId = -1;
 
-              // 如果是第三方开票 那么就填充参数
+              // 如果是内部转账 那么就填充参数
             } else {
-              this.form.referenceTableName = TableName.INVOICE_OTHER
+              this.form.referenceTableName = CASH_TYPE.TRANSFER;
+              this.form.referenceTableId = -1;
             }
             // 清理一下不必要的参数
             this.form = excludeParams(this.form, this.$exclude)

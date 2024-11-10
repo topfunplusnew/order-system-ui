@@ -3,7 +3,8 @@ import request from '@/utils/request'
 // 查询商业票据、银行承兑列表
 export function listBankAcceptance(query) {
   return request({
-    url: '/system/bankAcceptance/list',
+    // url: '/system/bankAcceptance/list',
+    url: '/system/bankAcceptance/listAll',
     method: 'get',
     params: query
   })
