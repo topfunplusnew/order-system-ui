@@ -73,7 +73,12 @@
       <el-table-column label="票据种类" align="center" prop="billCategory" v-if="columns[1].visible" width="120"
                        show-overflow-tooltip/>
       <el-table-column label="票据号码" align="center" prop="billNo" v-if="columns[2].visible" width="120"
-                       show-overflow-tooltip/>
+                       show-overflow-tooltip>
+        <!--        点击后出来一个台账-->
+        <template #default="scope">
+          <CheckTotal :row="scope.row"/>
+        </template>
+      </el-table-column>
       <el-table-column label="出票日期" align="center" prop="issueDate" v-if="columns[3].visible" width="120"
                        show-overflow-tooltip/>
       <el-table-column label="到期日期" align="center" prop="dueDate" v-if="columns[4].visible" width="120"
@@ -228,10 +233,11 @@ import {listBankAccount} from "@/api/system/bankAccount";
 import {mixin_printHTML} from "@/views/dashboard/mixins/print";
 import {excludeParams} from "@/api/tool/exclude";
 import {mixin_bankacception_fill} from "../../dashboard/mixins/bankacceptance/bankacception_fill";
+import CheckTotal from "../../dashboard/components/bankacceptance/CheckTotal.vue";
 
 export default {
   name: "BankAcceptance",
-  components: {SearchOption},
+  components: {CheckTotal, SearchOption},
   mixins: [mixin_printHTML, mixin_bankacception_fill],
   data() {
     return {
