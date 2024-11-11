@@ -171,7 +171,7 @@
           <el-table-column label="订单时间" align="center" prop="orderDate" width="160"/>
           <el-table-column label="订单编号" align="center" prop="orderNo" width="160">
             <template #default="scope">
-              <CheckOrderInfo :row="scope.row"/>
+              <CheckOrderInfo v-if="scope.row.orderNo" :row="scope.row"/>
             </template>
           </el-table-column>
           <el-table-column label="司机" align="center" prop="driver" width="110"/>
@@ -179,17 +179,7 @@
           <el-table-column label="运输类型" align="center" prop="carType" width="110"/>
           <el-table-column label="付运费(对方真实收付款名称)" align="center" prop="otherAccountsName" width="110"/>
           <el-table-column label="运费银行卡号" align="center" prop="otherBankNo" width="110"/>
-          <el-table-column label="摘要" align="center" width="110">
-            <template #defaul="scope">
-              <div>
-                <div v-if="scope.row.comments">{{ scope.row.commments }}</div>
-                <div v-else>
-                  <div v-if="scope.row.freightPaid">付运费</div>
-                  <div v-if="scope.row.freightUnPaid">司机运费</div>
-                </div>
-              </div>
-            </template>
-          </el-table-column>
+          <el-table-column label="摘要" align="center" prop="comments" width="110"/>
           <el-table-column label="借方发生额(我方支付运费)" align="center" prop="freightPaid" width="160"/>
           <el-table-column label="贷方发生额(应付司机运费)" align="center" prop="freightUnPaid" width="110"/>
           <el-table-column label="方向" align="center" width="110">
@@ -307,11 +297,20 @@ export default {
           getFreightSubjectDetailSummary(query).then(res => {
             this.detailTitle = `车牌号为${query.carNo}的运费明细`
             this.detailList = res.rows
+            // 对数据进行处理 如果借方发生额不为空 摘要为付运费 如果贷方发生额不为空 为司机运费
+            this.detailList.forEach(item => {
+              if (item.freightPaid) {
+                this.$set(item, 'comments', '付运费')
+              } else if (item.freightUnPaid) {
+                this.$set(item, 'comments', '司机运费')
+              }
+            })
             if (item) {
-              item.commments = '上年结转'
+              this.$set(item, 'comments', '上年结转')
               // 如果能查出来 那么就推入到头部
               this.detailList.unshift(item)
             }
+            console.log(this.detailList)
             this.$message.success('查询成功')
             this.detailVisible = true
           })
