@@ -237,13 +237,23 @@
             ></el-option>
           </el-select>
         </el-form-item>
+        <el-form-item label="对方类型">
+          <el-select v-model="companyType" placeholder="请选择">
+            <el-option
+              v-for="item in OTHER_TYPE()"
+              :key="item.value"
+              :label="item.label"
+              :value="item.value">
+            </el-option>
+          </el-select>
+        </el-form-item>
         <el-form-item label="对方信息" prop="recipientInfo">
           <el-row>
             <el-col :span="10">
               <el-input v-model="form.companyName" placeholder="请输入对方信息"/>
             </el-col>
             <el-col :span="2">
-              <SearchOption :limit-info="{}" :get-data="listCompany" query-info="companyName"
+              <SearchOption :limit-info="{companyType:companyType}" :get-data="listCompany" query-info="companyName"
                             query-label="公司名称" :query-name="companyName"
                             @update:queryName="handleUpdateCompanyName" @commitBack="handleCommitBackCompany">
                 <template #table-columns>
@@ -291,6 +301,7 @@ import {mixin_printHTML} from "../../dashboard/mixins/print";
 import SearchOption from "../../../components/SearchOption.vue";
 import {listCompany} from "../../../api/system/company";
 import {mixin_gift_out_fill} from "./giftOut_fill";
+import {OTHER_TYPE} from "../../../utils/order";
 
 export default {
   name: "GiftOut",
@@ -351,13 +362,17 @@ export default {
         {key: 9, label: `经办人`, visible: true},
         {key: 10, label: `备注`, visible: true},
         {key: 11, label: `操作`, visible: true}
-      ]
+      ],
+      companyType: '',
     };
   },
   created() {
     this.getList();
   },
   methods: {
+    OTHER_TYPE() {
+      return OTHER_TYPE
+    },
     listCompany,
     parseTime,
     /** 查询礼品出库信息列表 */

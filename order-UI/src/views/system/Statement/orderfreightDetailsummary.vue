@@ -206,6 +206,7 @@ import {getFreightSubjectDetailSummary, getOrderFreightDetailSummary} from "../.
 import {parseTime} from "../../../utils/ruoyi";
 import InfoDialog from "../../../components/InfoDialog.vue";
 import CheckOrderInfo from "../../dashboard/components/orderfreight/CheckOrderInfo.vue";
+import {debounce} from "../../../utils";
 
 export default {
   name: "LendMoney",
@@ -284,12 +285,19 @@ export default {
           beginTime: res.beginTime,
           endTime: res.endTime
         }
-        // 查询明细
-        getFreightSubjectDetailSummary(query).then(res => {
-          this.detailTitle = `车牌号为${query.carNo}的运费明细`
-          this.detailList = res.rows
-          this.$message.success('查询成功')
-          this.detailVisible = true
+        getOrderFreightDetailSummary(query).then(res => {
+          let item = res?.data
+          // 查询明细
+          getFreightSubjectDetailSummary(query).then(res => {
+            this.detailTitle = `车牌号为${query.carNo}的运费明细`
+            this.detailList = res.rows
+            if (item) {
+              // 如果能查出来 那么就推入到头部
+              this.detailList.unshift(item)
+            }
+            this.$message.success('查询成功')
+            this.detailVisible = true
+          })
         })
       })
     },
