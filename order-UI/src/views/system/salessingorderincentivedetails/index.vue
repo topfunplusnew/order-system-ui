@@ -125,25 +125,33 @@
 
       <el-table-column label="id" align="center" prop="id" v-if="columns[0].visible"/>
 
-      <el-table-column label="订单日期" align="center" prop="orderDate" width="180" v-if="columns[1].visible" show-overflow-tooltip>
+      <el-table-column label="订单日期" align="center" prop="orderDate" width="180" v-if="columns[1].visible"
+                       show-overflow-tooltip>
         <template #default="scope">
           <span>{{ parseTime(scope.row.orderDate, '{y}-{m}-{d}') }}</span>
         </template>
       </el-table-column>
 
-      <el-table-column label="接受奖励人员" align="center" prop="rewardReceiver" v-if="columns[2].visible" show-overflow-tooltip/>
+      <el-table-column label="接受奖励人员" align="center" prop="rewardReceiver" v-if="columns[2].visible"
+                       show-overflow-tooltip/>
 
-      <el-table-column label="订单不含税利润" align="center" prop="orderProfit" v-if="columns[3].visible" show-overflow-tooltip/>
+      <el-table-column label="订单不含税利润" align="center" prop="orderProfit" v-if="columns[3].visible"
+                       show-overflow-tooltip/>
 
-      <el-table-column label="厂家返利" align="center" prop="manufacturerRebate" v-if="columns[4].visible" show-overflow-tooltip/>
+      <el-table-column label="厂家返利" align="center" prop="manufacturerRebate" v-if="columns[4].visible"
+                       show-overflow-tooltip/>
 
-      <el-table-column label="客户佣金" align="center" prop="customerCommission" v-if="columns[5].visible" show-overflow-tooltip/>
+      <el-table-column label="客户佣金" align="center" prop="customerCommission" v-if="columns[5].visible"
+                       show-overflow-tooltip/>
 
-      <el-table-column label="综合单车利润" align="center" prop="comprehensiveProfit" v-if="columns[6].visible" show-overflow-tooltip/>
+      <el-table-column label="综合单车利润" align="center" prop="comprehensiveProfit" v-if="columns[6].visible"
+                       show-overflow-tooltip/>
 
-      <el-table-column label="奖励金额" align="center" prop="rewardAmount" v-if="columns[7].visible" show-overflow-tooltip/>
+      <el-table-column label="奖励金额" align="center" prop="rewardAmount" v-if="columns[7].visible"
+                       show-overflow-tooltip/>
 
-      <el-table-column label="奖励日期" align="center" prop="rewardDate" width="180" v-if="columns[8].visible" show-overflow-tooltip>
+      <el-table-column label="奖励日期" align="center" prop="rewardDate" width="180" v-if="columns[8].visible"
+                       show-overflow-tooltip>
         <template #default="scope">
           <span>{{ parseTime(scope.row.rewardDate, '{y}-{m}-{d}') }}</span>
         </template>
@@ -217,7 +225,7 @@
               <el-input v-model="form.customerCommission" placeholder="请输入客户佣金"/>
             </el-form-item>
             <el-form-item label="综合单车利润" prop="comprehensiveProfit">
-              <el-input v-model="form.comprehensiveProfit" placeholder="请输入综合单车利润"/>
+              <el-input v-model="form.comprehensiveProfit" placeholder="请输入综合单车利润" disabled/>
             </el-form-item>
             <el-form-item label="奖励金额" prop="rewardAmount">
               <el-input v-model="form.rewardAmount" placeholder="请输入奖励金额"/>
@@ -318,6 +326,14 @@ export default {
   },
   created() {
     this.getList();
+  },
+  watch: {
+    'form': {
+      handler(newName, oldName) {
+        this.form.comprehensiveProfit = Number(this.form.orderProfit) + Number(this.form.manufacturerRebate) - Number(this.form.customerCommission)
+      },
+      deep: true
+    }
   },
   methods: {
     parseTime,
