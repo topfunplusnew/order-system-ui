@@ -163,46 +163,53 @@
     </el-dialog>
 
     <!--    运费科目报表明细表-->
-    <InfoDialog :visible="detailVisible" :title="detailTitle" width="900px" @close="close">
+    <InfoDialog :visible="detailVisible" :title="detailTitle" width="1200px" @close="close">
       <template #info>
         <el-table border v-loading="detailLoading" :data="detailList"
                   v-horizontal-scroll="'always'" size="mini" :cell-style="()=>{return {padding:'1px'}}">
           <el-table-column label="序号" align="center" type="index" width="160"/>
-          <el-table-column label="初期方向" align="center" width="160"/>
-          <el-table-column label="初期余额" align="center" prop="initialBalanceDirection" width="160"/>
-          <el-table-column label="车牌号" align="center" prop="CarNo" width="110"/>
-          <el-table-column label="应付运费" align="center" prop="willPaid" width="110"/>
-          <el-table-column label="已付运费" align="center" prop="paid" width="110"/>
-          <el-table-column label="司机姓名" align="center" prop="driverName" width="110"/>
-          <el-table-column label="期末方向" align="center" prop="initialBalanceDirection" width="160"/>
-          <el-table-column label="期末余额" align="center" prop="endingBalanceDirection" width="160"/>
+          <el-table-column label="订单时间" align="center" prop="orderDate" width="160"/>
+          <el-table-column label="订单编号" align="center" prop="orderNo" width="160">
+            <template #default="scope">
+              <CheckOrderInfo :title="scope.row.orderNo" :row="scope.row"/>
+            </template>
+          </el-table-column>
+          <el-table-column label="司机" align="center" prop="driver" width="110"/>
+          <el-table-column label="车牌/柜号" align="center" prop="carNo" width="110"/>
+          <el-table-column label="运输类型" align="center" prop="carType" width="110"/>
+          <el-table-column label="付运费(对方真实收付款名称)" align="center" prop="otherAccountsName" width="110"/>
+          <el-table-column label="运费银行卡号" align="center" prop="otherBankNo" width="110"/>
+          <el-table-column label="借方发生额(我方支付运费)" align="center" prop="freightPaid" width="160"/>
+          <el-table-column label="贷方发生额(应付司机运费)" align="center" prop="freightUnPaid" width="110"/>
+          <el-table-column label="方向" align="center" width="110">
+            <template slot-scope="scope">
+              <div>
+                <div v-if="scope.row.balanceInLocalCurrency > 0 ">贷</div>
+                <div v-else-if="scope.row.balanceInLocalCurrency < 0">借</div>
+                <div v-else>平</div>
+              </div>
+            </template>
+          </el-table-column>
+          <el-table-column label="余额本币" align="center" prop="balanceInLocalCurrency" width="160"/>
+          <el-table-column label="我方付款户名" align="center" prop="selfAccountsName" width="160"/>
+          <el-table-column label="我方银行账号" align="center" prop="selfBankNo" width="160"/>
+          <el-table-column label="我方开户行地址" align="center" prop="selfBankName" width="160"/>
         </el-table>
-
       </template>
     </InfoDialog>
   </div>
 </template>
 
 <script>
-import {listLendMoney, getLendMoney, delLendMoney, addLendMoney, updateLendMoney} from "@/api/system/lendMoney";
-import {mapGetters} from "vuex";
-import {addRecoverMoney, getRecoverMoneyByUuid} from "@/api/system/recoverMoney";
-import {addReceiveMoney} from "@/api/system/receiveMoney";
-import SearchOption from "@/components/SearchOption.vue";
-import {listBankAccount} from "@/api/system/bankAccount";
-import {listCompany} from "@/api/system/company";
-import ApplyPayment from "@/views/dashboard/components/common/ApplyPayment.vue";
-import {TableName} from "@/api/tool/enums";
-import {excludeParams} from "@/api/tool/exclude";
-import {getLendMoneySummary, getLendMoneySummary2} from "@/api/system/statement";
 import {mixin_printHTML} from "@/views/dashboard/mixins/print";
-import {__message, getFreightSubjectDetailSummary, getOrderFreightDetailSummary} from "../../../api/system/statement";
+import {getFreightSubjectDetailSummary, getOrderFreightDetailSummary} from "../../../api/system/statement";
 import {parseTime} from "../../../utils/ruoyi";
 import InfoDialog from "../../../components/InfoDialog.vue";
+import CheckOrderInfo from "../../dashboard/components/orderfreight/CheckOrderInfo.vue";
 
 export default {
   name: "LendMoney",
-  components: {InfoDialog},
+  components: {CheckOrderInfo, InfoDialog},
   dicts: ['order_target_type'],
   mixins: [mixin_printHTML],
   data() {
@@ -288,7 +295,7 @@ export default {
     },
     // 关闭
     close() {
-
+      this.detailVisible = false
     },
     /** 搜索按钮操作 */
     handleQuery() {

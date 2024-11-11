@@ -11,6 +11,10 @@ export default {
     row: {
       type: Object,
       default: {}
+    },
+    title: {
+      type: String,
+      default: '查看订单单据'
     }
   },
   data() {
@@ -22,8 +26,9 @@ export default {
   methods: {
     // 查看运费对应的订单单据信息
     handleCheck(row) {
+      let orderNo = row.ordersNo || row.orderNo
       // 拿到ordersNo 去查询订单信息
-      getGoodsOrder(row.ordersNo).then(res => {
+      getGoodsOrder(orderNo).then(res => {
         this.orderInfo = res?.data
         this.visible = true;
       })
@@ -39,7 +44,7 @@ export default {
       type="text"
       @click="handleCheck(row)"
       v-hasPermi="['system:orderfreight:edit']"
-    >查看订单单据
+    >{{ title }}
     </el-button>
 
 

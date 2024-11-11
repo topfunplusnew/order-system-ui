@@ -131,6 +131,7 @@ Vue.prototype.$refreshParams = function (object) {
 import DatePickerDialog from "./views/dashboard/components/common/DatePickerDialog.vue";
 
 Vue.prototype.$datePicker = function () {
+  console.log(DatePickerDialog)
   return new Promise((resolve, reject) => {
     const DatePickerConstructor = Vue.extend(DatePickerDialog);
     const datePickerInstance = new DatePickerConstructor({
