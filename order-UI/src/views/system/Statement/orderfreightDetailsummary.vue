@@ -80,7 +80,7 @@
       <el-table-column label="序号" align="center" type="index" v-if="columns[0].visible" width="160"/>
       <el-table-column label="初期方向" align="center" v-if="columns[1].visible" width="160">
         <template slot-scope="scope">
-          <div>
+          <div v-if="scope">
             <!--  现在总的需要前端自己计算方向,计算公式为 期初/期末余额>0 则为贷,反之为借,相等为平-->
             <span v-if="scope.row.initialBalanceDirection > 0 ">贷</span>
             <span v-else-if="scope.row.initialBalanceDirection < 0">借</span>
@@ -101,7 +101,7 @@
       <el-table-column label="期末方向" align="center" prop="initialBalanceDirection" v-if="columns[7].visible"
                        width="160">
         <template slot-scope="scope">
-          <div>
+          <div v-if="scope">
             <!--  现在总的需要前端自己计算方向,计算公式为 期初/期末余额>0 则为贷,反之为借,相等为平-->
             <span v-if="scope.row.endingBalanceDirection > 0 ">贷</span>
             <span v-else-if="scope.row.endingBalanceDirection < 0">借</span>
@@ -171,7 +171,7 @@
           <el-table-column label="订单时间" align="center" prop="orderDate" width="160"/>
           <el-table-column label="订单编号" align="center" prop="orderNo" width="160">
             <template #default="scope">
-              <CheckOrderInfo :title="scope.row.orderNo" :row="scope.row"/>
+              <CheckOrderInfo :row="scope.row"/>
             </template>
           </el-table-column>
           <el-table-column label="司机" align="center" prop="driver" width="110"/>
@@ -179,6 +179,17 @@
           <el-table-column label="运输类型" align="center" prop="carType" width="110"/>
           <el-table-column label="付运费(对方真实收付款名称)" align="center" prop="otherAccountsName" width="110"/>
           <el-table-column label="运费银行卡号" align="center" prop="otherBankNo" width="110"/>
+          <el-table-column label="摘要" align="center" width="110">
+            <template #defaul="scope">
+              <div>
+                <div v-if="scope.row.comments">{{ scope.row.commments }}</div>
+                <div v-else>
+                  <div v-if="scope.row.freightPaid">付运费</div>
+                  <div v-if="scope.row.freightUnPaid">司机运费</div>
+                </div>
+              </div>
+            </template>
+          </el-table-column>
           <el-table-column label="借方发生额(我方支付运费)" align="center" prop="freightPaid" width="160"/>
           <el-table-column label="贷方发生额(应付司机运费)" align="center" prop="freightUnPaid" width="110"/>
           <el-table-column label="方向" align="center" width="110">
@@ -202,7 +213,11 @@
 
 <script>
 import {mixin_printHTML} from "@/views/dashboard/mixins/print";
-import {getFreightSubjectDetailSummary, getOrderFreightDetailSummary} from "../../../api/system/statement";
+import {
+  getFreightSubjectDetailSummary,
+  getFreightSubjectDetailSummaryDebounce,
+  getOrderFreightDetailSummary
+} from "../../../api/system/statement";
 import {parseTime} from "../../../utils/ruoyi";
 import InfoDialog from "../../../components/InfoDialog.vue";
 import CheckOrderInfo from "../../dashboard/components/orderfreight/CheckOrderInfo.vue";
@@ -285,13 +300,15 @@ export default {
           beginTime: res.beginTime,
           endTime: res.endTime
         }
-        getOrderFreightDetailSummary(query).then(res => {
+        // 先查询上年结转
+        getFreightSubjectDetailSummaryDebounce(query).then(res => {
           let item = res?.data
           // 查询明细
           getFreightSubjectDetailSummary(query).then(res => {
             this.detailTitle = `车牌号为${query.carNo}的运费明细`
             this.detailList = res.rows
             if (item) {
+              item.commments = '上年结转'
               // 如果能查出来 那么就推入到头部
               this.detailList.unshift(item)
             }
