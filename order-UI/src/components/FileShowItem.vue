@@ -6,7 +6,7 @@ export default {
   data() {
     return {
       fileList: [],
-      baseUrl: process.env.VUE_APP_BASE_API + '/common/upload',
+      baseUrl: '/common/upload',
       headers: {
         Authorization: "Bearer " + getToken(),
       },
