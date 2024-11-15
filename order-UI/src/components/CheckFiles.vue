@@ -55,17 +55,14 @@ export default {
     },
     // 添加某个文件
     handleAddFile(value) {
-      console.log('value', value)
       let newPath = null;
       // 如果长度大于等于5 不得上传
       if (this.checkFileList.length >= this.maxFileNum) {
-        console.log('文件超出长度')
         this.$message.error("最多只能上传" + this.maxFileNum + "个文件")
       } else {
         // 如果push进去后 列表长度为0 那么就拼接一个|
         if (this.checkFileList.length === 0) {
           const item = value + '|'
-
           // 调用传入的业务接口 修改数据
           this.$emit('needToUpdate', item)
           // 如果不是 那么就直接推入 然后 join
