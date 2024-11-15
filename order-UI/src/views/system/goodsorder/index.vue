@@ -595,7 +595,7 @@ export default {
     listCompany,
     listBankAccount,
 
-    /** 处理下拉菜单 */
+    /** 处理下拉菜单  使用的是事件委托 */
     handleCommand(command, row) {
       switch (command) {
         case "checkOrderItemInfo":

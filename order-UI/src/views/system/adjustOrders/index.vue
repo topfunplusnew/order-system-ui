@@ -67,6 +67,13 @@
               <el-dropdown-item>
                 <el-button
                   size="mini"
+                  @click="handleUpdate(scope.row)"
+                >修改
+                </el-button>
+              </el-dropdown-item>
+              <el-dropdown-item>
+                <el-button
+                  size="mini"
                   type="warning"
                   @click="handleCheckOrderDetailInfo(scope.row)"
                 >详情
@@ -826,7 +833,6 @@ export default {
     } else {
       this.columns = JSON.parse(localStorage.getItem('goodsorder-columns'));
     }
-    this.$store.dispatch('order/getOrderList')
   },
   computed: {
     TableName() {
@@ -864,17 +870,18 @@ export default {
     parseTime,
     listCompany,
     listBankAccount,
-    // getSupplierNames(list) {
-    //   if (list.length === 0) {
-    //     return;
-    //   }
-    //   return list.map(item => {
-    //     return {
-    //       supplier: item.supplier,
-    //       supplierID: item.supplierID
-    //     }
-    //   })
-    // },
+    // 获取供应商的名称
+    getSupplierNames(list) {
+      if (list.length === 0) {
+        return;
+      }
+      return list.map(item => {
+        return {
+          supplier: item.supplier,
+          supplierID: item.supplierID
+        }
+      })
+    },
     //查看原订单
     checkPreviousOrder(row) {
       getGoodsOrder(row.adjustOrderid).then(res => {
@@ -1338,7 +1345,7 @@ export default {
       };
       this.resetForm("form");
       //清除vuex的状态
-      this.$store.commit('order/CLEAR_ORDER_ITEM_LIST')
+      this.$store.commit('order/clearOrderItemList')
       sessionStorage.removeItem('order_id')
     },
 
@@ -1403,13 +1410,16 @@ export default {
     },
     //修改订单的操作
     handleUpdate(row) {
+      // 表单重置
       this.reset();
       const id = row.id || this.ids
+      // 先获取订单的信息
       getGoodsOrder(id).then(response => {
+        // 拿到服务器给的订单数据
         this.orderInfo = response.data;
-        //将数据库拿到的订单列表装入vuex 因为订单添加的货物是从vuex获取的数据 对货物的操作也是操作vuex
-        this.$store.commit("order/SET_ORDER_ITEM_LIST", response.data.orderDetailList)
-        //填充供应商和客户id
+        // 将数据库拿到的订单列表装入vuex 因为订单添加的货物是从vuex获取的数据 对货物的操作也是操作vuex
+        this.$store.commit("order/setOrderItemList", response.data.orderDetailList)
+        // 填充供应商和客户id
         if (response.data.orderDetailList !== null && response.data.orderDetailList !== undefined) {
           for (let i = 0; i < this.orderInfo.orderDetailList.length; i++) {
             let item = this.orderInfo.orderDetailList[i];
@@ -1420,8 +1430,8 @@ export default {
             item.isIncludeTaxSale = item.isIncludeTaxSale === '是' ? '1' : '0';
           }
         }
-        this.open = true;
-        this.title = "修改订单";
+        this.orderItemVisible = true;
+        this.orderTitle = "修改调整单";
       });
     },
     // 休眠函数
