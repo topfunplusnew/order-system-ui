@@ -94,8 +94,8 @@
                        v-show="columns[2].visible"
                        width="200">
         <template #default="scope">
-          <el-row v-if="scope.row.orderDetailList">
-              <span v-for="(item,index) in getSupplierNames(scope.row.orderDetailList)" :key="index">
+          <el-row v-if="scope.row.smailOrderDetails">
+              <span v-for="(item,index) in getSupplierNames(scope.row.smailOrderDetails)" :key="index">
                  <el-badge is-dot class="item">
                     <span @click="updateOrderItemVisibleSupplierInvoice(scope.row,item.supplierID)">
                       {{ item.supplier }}
