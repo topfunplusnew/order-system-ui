@@ -4,6 +4,7 @@ import {mixin_printHTML} from "@/views/dashboard/mixins/print";
 import {getOrderFreight} from "@/api/system/statement";
 import {parseTime} from "@/utils/ruoyi";
 import {getSubjectSummary} from "../../../api/system/statement";
+import {fix} from "../../../api/tool/format";
 
 export default {
   name: "subjectsummary",
@@ -53,11 +54,11 @@ export default {
       return columns.map(column => {
         switch (column.property) {
           case 'daySum':
-            return `总计: ${sums.daySum}`;
+            return `总计: ${fix(sums.daySum)}`;
           case 'monthSum':
-            return `总计: ${sums.monthSum}`;
+            return `总计: ${fix(sums.monthSum)}`;
           case 'yearSum':
-            return `总计: ${sums.yearSum}`;
+            return `总计: ${fix(sums.yearSum)}`;
           default:
             return '';
         }

@@ -182,10 +182,45 @@
             <el-input v-model="form.acountsName" placeholder="请输入户名"/>
           </el-row>
         </el-form-item>
-        <el-form-item label="公司名称" prop="companyName" v-if="isNeed">
+        <el-form-item :label="showLabel" prop="companyName" v-if="isNeed">
           <el-row>
             <el-col :span="10">
-              <el-input v-model="form.companyName" placeholder="请输入公司名称"/>
+              <el-input v-model="form.companyName" placeholder="请输入名称"/>
+            </el-col>
+            <!-- 己方员工信息搜索-->
+            <el-col :span="2" v-if="form.acountsType === '员工'">
+              <el-tooltip class="item" effect="dark" content="若未找到员工可能是您权限不够,请设置权限后再做选择"
+                          placement="top-start">
+                <SearchOption :limit-info="{}" :get-data="listUser"
+                              query-label="姓名" :query-name="queryUser" query-info="trueName"
+                              @commitBack="handleCommitBackUser" @update:queryName="handleQueryUser">
+                  <template #table-columns>
+                    <el-table-column label="员工" align="center" key="nickName" prop="trueName"
+                                     :show-overflow-tooltip="true"/>
+                    <el-table-column label="岗位" align="center" key="deptName" prop="postName"
+                                     :show-overflow-tooltip="true"/>
+                    <el-table-column label="手机号码" align="center" key="phonenumber" prop="phonenumber" width="120"/>
+                    <el-table-column label="就职状态" align="center" key="phonenumber" prop="state" width="120"/>
+                    <el-table-column label="入职时间" align="center" key="phonenumber" prop="startDate" width="120"/>
+                    <el-table-column label="身份证号码" align="center" key="phonenumber" prop="iDCard" width="120"/>
+                    <el-table-column label="性别" align="center" key="phonenumber" prop="sex" width="120"/>
+                    <el-table-column label="出生日期" align="center" key="phonenumber" prop="birthday" width="120"/>
+                    <el-table-column label="民族" align="center" key="phonenumber" prop="nation" width="120"/>
+                    <el-table-column label="政治面貌" align="center" key="phonenumber" prop="politicalStatus"
+                                     width="120"/>
+                    <el-table-column label="婚姻状况" align="center" key="phonenumber" prop="maritalStatus"
+                                     width="120"/>
+                    <el-table-column label="户籍地址" align="center" key="phonenumber" prop="domicileAddress"
+                                     width="120"/>
+                    <el-table-column label="居住地址" align="center" key="phonenumber" prop="residentialAddress"
+                                     width="120"/>
+                    <el-table-column label="紧急联系人" align="center" key="phonenumber" prop="relationPerson"
+                                     width="120"/>
+                    <el-table-column label="紧急联系人电话" align="center" key="phonenumber" prop="relationPersonTel"
+                                     width="120"/>
+                  </template>
+                </SearchOption>
+              </el-tooltip>
             </el-col>
             <!-- 供应商信息搜索-->
             <el-col :span="2" v-if="form.acountsType === '供应商'">
@@ -246,29 +281,6 @@
         <el-button @click="Adjustment = false">取 消</el-button>
       </div>
     </el-dialog>
-
-
-    <!--    银行卡之间转账-->
-    <!--    <el-dialog :close-on-click-modal="false" :show-close="false" title="银行卡转账"-->
-    <!--               :visible.sync="transformDialogVisible" width="500px" append-to-body>-->
-    <!--      <el-row>-->
-    <!--        <el-form :model="transformInfo" label-width="100px">-->
-    <!--          <el-form-item label="转账银行卡" prop="fromBankNo">-->
-    <!--            <el-input v-model="transformInfo.fromBankNo" placeholder="请输入转账银行卡"/>-->
-    <!--          </el-form-item>-->
-    <!--          <el-form-item label="目标银行卡" prop="toBankNo">-->
-    <!--            <el-input v-model="transformInfo.toBankNo" placeholder="请输入目标银行卡"/>-->
-    <!--          </el-form-item>-->
-    <!--          <el-form-item label="转账金额" prop="money">-->
-    <!--            <el-input v-model="transformInfo.money" placeholder="请输入转账金额"/>-->
-    <!--          </el-form-item>-->
-    <!--        </el-form>-->
-    <!--      </el-row>-->
-    <!--      <div slot="footer" class="dialog-footer">-->
-    <!--        <el-button type="primary" @click="submitTransformBank">确 定</el-button>-->
-    <!--        <el-button @click="transformDialogVisible = false">取 消</el-button>-->
-    <!--      </div>-->
-    <!--    </el-dialog>-->
 
 
     <!--    银行卡流水-->
@@ -345,12 +357,10 @@ import {listCompany} from "@/api/system/company";
 import SearchOption from "@/components/SearchOption.vue";
 import {mixin_printHTML} from "@/views/dashboard/mixins/print";
 import {addBankAccountChange, listBankAccountChange} from "@/api/system/bankAccountChange";
-import {addReason} from "@/api/system/user";
-import {TableName} from "@/api/tool/enums";
-import {parseTime} from "@/utils/ruoyi";
 import {listBankAccount} from "../../../api/system/bankAccount";
 import {listCars} from "../../../api/system/cars";
 import {excludeParams} from "../../../api/tool/exclude";
+import {listUser} from "../../../api/system/user";
 
 export default {
   name: "BankAccount",
@@ -431,6 +441,7 @@ export default {
           {required: true, message: "公司类型不能为空", trigger: "blur"}
         ],
       },
+      // 对方类型
       options: [
         {
           value: '己方公司',
@@ -447,6 +458,9 @@ export default {
         }, {
           value: '其它',
           label: '其它'
+        }, {
+          value: '员工',
+          label: '员工'
         }
       ],
       //隐藏列信息
@@ -480,6 +494,8 @@ export default {
         operateDate: null,
       },
       bankAcountTotal: 0,
+      // 用户搜索字段
+      queryUser: '',
       //供应商搜索组件
       queryCompanyGive: '',
       queryCompany: '',
@@ -509,30 +525,30 @@ export default {
     //是否是己方公司
     isNeed() {
       return this.form.acountsType !== '己方公司' && this.form.acountsType !== '司机'
+    },
+    showLabel() {
+      if (this.form.acountsType) {
+        return this.options.find(item => item.value === this.form.acountsType).value + '名称'
+      } else {
+        return '公司名称'
+      }
     }
-  },
+  }
+  ,
   methods: {
+    listUser,
     listCars,
     listBankAccount,
     listCompany,
-    // //1.银行卡之间转账
-    // handleTransformBank() {
-    //   this.transformDialogVisible = true
-    // },
-    // submitTransformBank() {
-    //   transfer(this.transformInfo).then(res => {
-    //     this.$message.success('转账成功~')
-    //     this.transformDialogVisible = false
-    //   })
-    // },
     //2.查询客户 供应商信息
     getCompanyInfo() {
       listCompany(this.queryParamsCompany).then(res => {
         this.companyList = res.rows;
       })
-    },
+    }
+    ,
 
-    //3. todo 银行卡变动流水
+    //3.银行卡变动流水
     checkBankChangeFlow(row) {
       this.currentBankNo = row.bankNo;
       // 查询该银行账号的变动流水
@@ -541,7 +557,8 @@ export default {
         this.bankAcountTotal = res.total;
       })
       this.bankChangeDialogVisible = true;
-    },
+    }
+    ,
     // 分页的请求
     getBankAcountChangeList() {
       listBankAccountChange({
@@ -553,38 +570,56 @@ export default {
         this.bankChangeList = res.rows;
         this.bankAcountTotal = res.total;
       })
-    },
+    }
+    ,
     submitBankChange() {
       this.bankChangeDialogVisible = false
-    },
-
+    }
+    ,
+    // 搜索员工信息的回调
+    handleQueryUser(val) {
+      this.queryUser = val;
+    }
+    ,
+    handleCommitBackUser(val) {
+      this.form.companyName = val.trueName
+      this.form.companyId = val.id;
+    }
+    ,
     //搜索供应商信息的回调
     handleCommitBackCompanyGive(val) {
       this.form.companyName = val.companyName;
-      this.form.companyId = val.id;
-    },
+      this.form.companyId = val.userId;
+    }
+    ,
+    // 客户信息的回调
     handleCommitBackCompany(val) {
       this.form.companyName = val.companyName;
       this.form.companyId = val.id;
-    },
+    }
+    ,
     handleQueryCompanyGive(value) {
       this.queryCompanyGive = value;
-    },
+    }
+    ,
     handleQueryCompany(value) {
       this.queryCompany = value;
-    },
-    // 搜索银行卡信息
+    }
+    ,
+// 搜索银行卡信息
     handleCommitBackBankAccount(val) {
       this.form.acountsName = val.acountsName;
       this.form.companyId = val.id;
       this.form.companyType = '司机';
       // 司机信息公司默认给的是司机
       this.form.companyName = '司机'
-    },
+    }
+    ,
     handleUpdateBankAccount(val) {
       this.queryBankAccount = val;
-    },
-    //调整银行卡
+    }
+    ,
+//调整银行卡
     submitAdjustmentInfo() {
       const {bankNo} = this.AdjustInfo;
       addBankAccountChange({selfBankNo: bankNo, payNO: '手动调整', ...this.adjustmentInfo}).then(res => {
@@ -592,7 +627,8 @@ export default {
         this.Adjustment = false;
         this.getList()
       })
-    },
+    }
+    ,
     /** 查询银行账号列表 */
     getList() {
       this.loading = true;
@@ -602,13 +638,15 @@ export default {
         this.total = response.total;
         this.loading = false;
       });
-    },
-    // 取消按钮
+    }
+    ,
+// 取消按钮
     cancel() {
       this.open = false;
       this.reset();
-    },
-    // 表单重置
+    }
+    ,
+// 表单重置
     reset() {
       this.form = {
         id: null,
@@ -623,29 +661,34 @@ export default {
         delFlag: null
       };
       this.resetForm("form");
-    },
+    }
+    ,
     /** 搜索按钮操作 */
     handleQuery() {
       this.queryParams.pageNum = 1;
       this.getList();
-    },
+    }
+    ,
     /** 重置按钮操作 */
     resetQuery() {
       this.resetForm("queryForm");
       this.handleQuery();
-    },
-    // 多选框选中数据
+    }
+    ,
+// 多选框选中数据
     handleSelectionChange(selection) {
       this.ids = selection.map(item => item.id)
       this.single = selection.length !== 1
       this.multiple = !selection.length
-    },
+    }
+    ,
     /** 新增按钮操作 */
     handleAdd() {
       this.reset();
       this.open = true;
       this.title = "新增银行卡信息";
-    },
+    }
+    ,
     /** 修改按钮操作 */
     handleUpdate(row) {
       this.reset();
@@ -655,7 +698,8 @@ export default {
         this.open = true;
         this.title = "修改银行卡信息";
       });
-    },
+    }
+    ,
 
     /** 提交按钮 */
     submitForm() {
@@ -684,7 +728,8 @@ export default {
           }
         }
       });
-    },
+    }
+    ,
     /** 删除按钮操作 */
     handleDelete(row) {
       const ids = row.id || this.ids;
@@ -695,7 +740,8 @@ export default {
         this.$modal.msgSuccess("删除成功");
       }).catch(() => {
       });
-    },
+    }
+    ,
     /** 导出按钮操作 */
     handleExport() {
       this.download('system/bankAccount/export', {
@@ -703,5 +749,6 @@ export default {
       }, `bankAccount_${new Date().getTime()}.xlsx`)
     }
   }
-};
+}
+;
 </script>

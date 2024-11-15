@@ -51,8 +51,8 @@
         <span style="color: #1c84c6;font-size: 12px">请注意选择正确的对方公司类型!</span>
       </el-form-item>
 
-      <!--      公司的填充 这里主要是为了companyId-->
-      <el-form-item label="对方公司" prop="companyName">
+      <!--      公司的填充 这里主要是为了companyId 如果选择的是己方公司 那么就不显示这个选择公司-->
+      <el-form-item label="对方公司" prop="companyName" v-if="value !== '员工'">
         <el-row>
           <el-col :span="14">
             <el-input v-model="form.companyName" placeholder="请输入对方公司"/>
@@ -85,7 +85,7 @@
         </el-row>
       </el-form-item>
 
-      <!--      客户-->
+      <!--      如果value选择的是客户-->
       <el-row v-if="value === '客户'">
         <el-form-item label="对方账号(客户)" prop="otherBankNo">
           <el-row>
@@ -127,7 +127,7 @@
           <el-input v-model="form.otherBankName" placeholder="请输入对方开户行" :disabled="bankInputDisabled"/>
         </el-form-item>
       </el-row>
-      <!--      供应商-->
+      <!--      如果是供应商-->
       <el-row v-if="value==='供应商'">
         <el-form-item label="对方账号(供应商)" prop="otherBankNo">
           <el-row>
@@ -170,7 +170,7 @@
           <el-input v-model="form.otherBankName" placeholder="请输入对方开户行" :disabled="bankInputDisabled"/>
         </el-form-item>
       </el-row>
-      <!--    司机-->
+      <!--    如果是司机-->
       <el-row v-if="value==='司机'">
         <el-form-item label="对方账号(司机)" prop="otherBankNo">
           <el-row>
@@ -212,6 +212,51 @@
           <el-input v-model="form.otherBankName" placeholder="请输入对方开户行" :disabled="bankInputDisabled"/>
         </el-form-item>
       </el-row>
+
+      <!--     如果选择的是 员工 -->
+      <el-row v-if="value==='员工'">
+        <el-form-item label="对方账号(员工)" prop="otherBankNo">
+          <el-row>
+            <el-col :span="14">
+              <el-input v-model="form.otherBankNo" placeholder="请输入对方账号" :disabled="bankInputDisabled"/>
+            </el-col>
+            <el-col :span="3" v-if="bankInputDisabled === false">
+              <SearchOption :get-data="listBankAccount" icon="el-icon-search" @commitBack="handleCommitBack"
+                            :limit-info="{acountsType:'员工'}" query-label="银行卡查找" query-info="bankNo"
+                            :query-name="queryCompany"
+                            @update:queryName="handleUpdateQueryName">
+                <template #table-columns>
+                  <el-table-column label="员工名称" align="center" prop="companyName">
+                    <template #default="scope">
+                      {{ isNull(scope.row.companyName) }}
+                    </template>
+                  </el-table-column>
+                  <el-table-column label="开户行" align="center" prop="bankName">
+                    <template #default="scope">
+                      {{ isNull(scope.row.bankName) }}
+                    </template>
+                  </el-table-column>
+                  <el-table-column label="开户名" align="center" prop="acountsName">
+                    <template #default="scope">
+                      {{ isNull(scope.row.acountsName) }}
+                    </template>
+                  </el-table-column>
+                  <el-table-column label="账号" align="center" prop="bankNo">
+                    <template #default="scope">
+                      {{ isNull(scope.row.bankNo) }}
+                    </template>
+                  </el-table-column>
+                </template>
+              </SearchOption>
+            </el-col>
+          </el-row>
+        </el-form-item>
+        <el-form-item label="对方开户行" prop="otherBankName">
+          <el-input v-model="form.otherBankName" placeholder="请输入对方开户行" :disabled="bankInputDisabled"/>
+        </el-form-item>
+      </el-row>
+
+
       <el-form-item label="付款原因" prop="reason">
         <el-input v-model="form.reason" type="textarea" placeholder="请输入内容"/>
       </el-form-item>

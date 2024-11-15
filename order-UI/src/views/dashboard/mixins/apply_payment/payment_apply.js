@@ -14,6 +14,9 @@ export var mixin_payment_apply = {
       }, {
         value: '司机',
         label: '司机'
+      }, {
+        value: '员工',
+        label: '员工'
       }],
       value: '客户'
     }

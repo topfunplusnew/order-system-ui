@@ -20,6 +20,10 @@ export var mixin_payment_fill = {
     },
     //对方信息(银行卡信息) - 点击确认后自动填充
     handleCommitBack(val) {
+      // 如果选择的是员工 银行卡中的companyId即可填充
+      if (this.value === '员工') {
+        this.form.companyId = val.companyId
+      }
       this.form.otherBankNo = val.bankNo;
       this.form.otherBankName = val.bankName;
       this.form.otherAcountsName = val.acountsName;
