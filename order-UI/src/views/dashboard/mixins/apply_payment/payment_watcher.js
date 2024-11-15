@@ -24,7 +24,6 @@ export var mixin_payment_watcher = {
       handler(val) {
         // 如果传入的银行卡是空的就直接返回
         if (val === undefined) {
-          this.$message.warning('无银行卡相关信息')
           return
         }
         // 否则去查询银行卡数据

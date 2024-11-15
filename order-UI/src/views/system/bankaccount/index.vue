@@ -199,24 +199,24 @@
                                      :show-overflow-tooltip="true"/>
                     <el-table-column label="岗位" align="center" key="deptName" prop="postName"
                                      :show-overflow-tooltip="true"/>
-                    <el-table-column label="手机号码" align="center" key="phonenumber" prop="phonenumber" width="120"/>
-                    <el-table-column label="就职状态" align="center" key="phonenumber" prop="state" width="120"/>
-                    <el-table-column label="入职时间" align="center" key="phonenumber" prop="startDate" width="120"/>
-                    <el-table-column label="身份证号码" align="center" key="phonenumber" prop="iDCard" width="120"/>
-                    <el-table-column label="性别" align="center" key="phonenumber" prop="sex" width="120"/>
-                    <el-table-column label="出生日期" align="center" key="phonenumber" prop="birthday" width="120"/>
-                    <el-table-column label="民族" align="center" key="phonenumber" prop="nation" width="120"/>
-                    <el-table-column label="政治面貌" align="center" key="phonenumber" prop="politicalStatus"
+                    <el-table-column label="手机号码" align="center" prop="phonenumber" width="120"/>
+                    <el-table-column label="就职状态" align="center" prop="state" width="120"/>
+                    <el-table-column label="入职时间" align="center" prop="startDate" width="120"/>
+                    <el-table-column label="身份证号码" align="center" prop="iDCard" width="120"/>
+                    <el-table-column label="性别" align="center" prop="sex" width="120"/>
+                    <el-table-column label="出生日期" align="center" prop="birthday" width="120"/>
+                    <el-table-column label="民族" align="center" prop="nation" width="120"/>
+                    <el-table-column label="政治面貌" align="center" prop="politicalStatus"
                                      width="120"/>
-                    <el-table-column label="婚姻状况" align="center" key="phonenumber" prop="maritalStatus"
+                    <el-table-column label="婚姻状况" align="center" prop="maritalStatus"
                                      width="120"/>
-                    <el-table-column label="户籍地址" align="center" key="phonenumber" prop="domicileAddress"
+                    <el-table-column label="户籍地址" align="center" prop="domicileAddress"
                                      width="120"/>
-                    <el-table-column label="居住地址" align="center" key="phonenumber" prop="residentialAddress"
+                    <el-table-column label="居住地址" align="center" prop="residentialAddress"
                                      width="120"/>
-                    <el-table-column label="紧急联系人" align="center" key="phonenumber" prop="relationPerson"
+                    <el-table-column label="紧急联系人" align="center" prop="relationPerson"
                                      width="120"/>
-                    <el-table-column label="紧急联系人电话" align="center" key="phonenumber" prop="relationPersonTel"
+                    <el-table-column label="紧急联系人电话" align="center" prop="relationPersonTel"
                                      width="120"/>
                   </template>
                 </SearchOption>
@@ -582,14 +582,16 @@ export default {
     }
     ,
     handleCommitBackUser(val) {
+      console.log(val)
       this.form.companyName = val.trueName
-      this.form.companyId = val.id;
+      this.form.companyId = val.userId;
+      console.log(this.form)
     }
     ,
     //搜索供应商信息的回调
     handleCommitBackCompanyGive(val) {
       this.form.companyName = val.companyName;
-      this.form.companyId = val.userId;
+      this.form.companyId = val.id;
     }
     ,
     // 客户信息的回调
@@ -714,11 +716,13 @@ export default {
             });
           } else {
             this.form = excludeParams(this.form, this.$exclude)
-            // 如果是其他类型，那么就设置companyId为-1
-            if (this.form.acountsType === '己方公司') {
-              this.form.companyId = 0
-            } else {
-              this.form.companyId = -1
+            // 如果不填公司id
+            if (!this.form.companyId) {
+              if (this.form.acountsType === '己方公司') {
+                this.form.companyId = 0
+              } else {
+                this.form.companyId = -1
+              }
             }
             addBankAccount(this.form).then(response => {
               this.$modal.msgSuccess("新增成功");
