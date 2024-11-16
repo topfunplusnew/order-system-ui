@@ -29,7 +29,7 @@
           size="mini"
           @click="handleAdd"
           v-hasPermi="['system:invoicein:add']"
-        >新增
+        >新增发票购入信息
         </el-button>
       </el-col>
       <el-col :span="1.5">
@@ -174,17 +174,27 @@
         <el-form-item label="开票金额" prop="invoiceAmount">
           <el-input v-model="form.invoiceAmount" placeholder="请输入开票金额"/>
         </el-form-item>
+        <el-form-item label="对方公司类型">
+          <el-select v-model="type" placeholder="请选择">
+            <el-option
+              v-for="item in options"
+              :key="item.value"
+              :label="item.label"
+              :value="item.value">
+            </el-option>
+          </el-select>
+        </el-form-item>
         <el-form-item label="对方公司名称" prop="companyName">
           <el-row>
             <el-col :span="10">
               <el-input v-model="form.companyName" placeholder="请输入对方公司名称"/>
             </el-col>
             <el-col :span="2">
-              <SearchOption :limit-info="{companyType:'供应商'}" :get-data="listCompany" query-info="companyName"
+              <SearchOption :limit-info="{companyType:type}" :get-data="listCompany" query-info="companyName"
                             query-label="公司名称" :query-name="companyName"
                             @update:queryName="handleUpdateCompanyName" @commitBack="handleCommitBackCompany">
                 <template #table-columns>
-                  <el-table-column label="供应商" align="center" prop="relationName"/>
+                  <el-table-column :label="type" align="center" prop="relationName"/>
                   <el-table-column label="老板姓名" align="center" prop="leader"/>
                   <el-table-column label="老板电话" align="center" prop="leaderTel"/>
                   <el-table-column label="区域" align="center" prop="region"/>
@@ -249,6 +259,7 @@ import CheckFiles from "../../../components/CheckFiles.vue";
 import reLength from "../../dashboard/mixins/reLength";
 import {getInvoiceIn, updateInvoiceIn} from "../../../api/system/invoiceIn";
 import {mixin_checkfile} from "../../dashboard/mixins/checkfiles/mixin_checkfile";
+import {PUBLIC_DICT_TYPE} from "@/utils/order";
 
 export default {
   name: "InvoiceIn",
@@ -314,12 +325,23 @@ export default {
         {key: 10, label: `备注`, visible: true},
       ],
 
+      // 公司类型
+      type: '',
       //公司名称
       companyName: '',
+      // 选项
+      options: [{
+        value: PUBLIC_DICT_TYPE.SUPPLIER,
+        label: PUBLIC_DICT_TYPE.SUPPLIER
+      }, {
+        value: PUBLIC_DICT_TYPE.CUSTOMER,
+        label: PUBLIC_DICT_TYPE.CUSTOMER
+      }],
       //付款申请
       PaymentApplyInfoVisible: false,
       tID: '',
-      needMoney: 0
+      needMoney: 0,
+
     };
   },
   created() {

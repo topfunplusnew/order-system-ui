@@ -95,10 +95,24 @@
         </template>
       </el-table-column>
       <el-table-column label="账户类型" align="center" prop="acountsType" v-if="columns[0].visible" width="200"/>
+      <el-table-column label="公私户类型" align="center" prop="isPublicAccount" width="200">
+        <template slot-scope="scope">
+          <span v-if="scope.row.isPublicAccount === 0" style="color:#138fe1">
+            私户
+          </span>
+          <span v-else-if="scope.row.isPublicAccount === 1" style="color:#ff5722">
+            公户
+          </span>
+          <span v-else>
+            未区分
+          </span>
+        </template>
+      </el-table-column>
+      <el-table-column label="显示名称" align="center" prop="displayName" width="200"/>
+      <el-table-column label="公司名称" align="center" prop="companyName" v-if="columns[4].visible" width="200"/>
       <el-table-column label="开户名称" align="center" prop="acountsName" v-if="columns[1].visible" width="200"/>
       <el-table-column label="银行账号" align="center" prop="bankNo" v-if="columns[2].visible" width="200"/>
       <el-table-column label="开户行" align="center" prop="bankName" v-if="columns[3].visible" width="200"/>
-      <el-table-column label="公司名称" align="center" prop="companyName" v-if="columns[4].visible" width="200"/>
       <el-table-column label="余额" align="center" prop="amount" v-if="columns[5].visible" width="200"/>
       <el-table-column label="银行卡操作" align="center" class-name="small-padding fixed-width" width="200"
                        fixed="right">
