@@ -261,23 +261,6 @@
         width="100"
       >
         <template slot-scope="scope">
-          <!--          <el-button-->
-          <!--            size="mini"-->
-          <!--            type="warning"-->
-          <!--            @click="applyForLand(scope.row)"-->
-          <!--            :disabled="scope.row.checkState === '审核中'"-->
-          <!--            v-if="scope.row.freightType === '陆运'"-->
-          <!--          >申请陆运费-->
-          <!--          </el-button>-->
-          <!--          &lt;!&ndash; 只有海运费不为零才能申请海运费 &ndash;&gt;-->
-          <!--          <el-button-->
-          <!--            size="mini"-->
-          <!--            type="primary"-->
-          <!--            :disabled="scope.row.checkState === '审核中'"-->
-          <!--            @click="applyForSea(scope.row)"-->
-          <!--            v-if="scope.row.freightType === '海运'"-->
-          <!--          >申请海运费-->
-          <!--          </el-button>-->
           <CheckOrderInfo :row="scope.row"/>
           <el-button
             size="mini"
