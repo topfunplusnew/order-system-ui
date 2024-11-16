@@ -51,11 +51,21 @@ export function transfer(data) {
     data: data
   })
 }
+
 //将某张卡设置为默认卡
 export function setDefault(data) {
   return request({
     url: '/system/bankAccount/toDefault',
     method: 'post',
     data: data
+  })
+}
+
+// 只查询己方的银行卡
+export function listBankAccountSelf(query) {
+  return request({
+    url: '/system/bankAccount/selfMoney',
+    method: 'get',
+    params: query
   })
 }
