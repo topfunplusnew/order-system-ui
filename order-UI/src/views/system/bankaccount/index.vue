@@ -44,14 +44,6 @@
           v-hasPermi="['system:bankaccount:add']">新增银行卡信息
         </el-button>
       </el-col>
-      <!--      <el-col :span="1.5">-->
-      <!--        <el-button-->
-      <!--          type="warning"-->
-      <!--          size="mini"-->
-      <!--          @click="handleTransformBank"-->
-      <!--        >内部转账-->
-      <!--        </el-button>-->
-      <!--      </el-col>-->
       <right-toolbar :showSearch.sync="showSearch" @queryTable="getList" :columns="columns">
         <template v-slot:print>
           <el-col :span="1.5">
@@ -375,10 +367,11 @@ import {listBankAccount} from "../../../api/system/bankAccount";
 import {listCars} from "../../../api/system/cars";
 import {excludeParams} from "../../../api/tool/exclude";
 import {listUser} from "../../../api/system/user";
+import CheckBankMoney from "@/views/dashboard/components/common/CheckBankMoney.vue";
 
 export default {
   name: "BankAccount",
-  components: {SearchOption},
+  components: {CheckBankMoney, SearchOption},
   mixins: [mixin_printHTML],
   data() {
     return {

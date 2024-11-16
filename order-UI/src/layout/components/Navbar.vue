@@ -37,9 +37,11 @@ import SizeSelect from '@/components/SizeSelect'
 import Search from '@/components/HeaderSearch'
 import RuoYiGit from '@/components/RuoYi/Git'
 import RuoYiDoc from '@/components/RuoYi/Doc'
+import CheckBankMoney from "@/views/dashboard/components/common/CheckBankMoney.vue";
 
 export default {
   components: {
+    CheckBankMoney,
     Breadcrumb,
     TopNav,
     Hamburger,
