@@ -244,7 +244,7 @@ export default {
 <template>
   <div>
     <!--    订单基本信息-->
-    <el-form :inline="true" :model="orderInfo" label-width="68px">
+    <el-form :inline="true" :model="orderInfo" label-width="80px">
       <el-card class="box-card" shadow="hover">
         <div slot="header" class="clearfix">
           <el-button type="text" style="color: #156fb2" icon="el-icon-notebook-2">订单基本信息</el-button>
