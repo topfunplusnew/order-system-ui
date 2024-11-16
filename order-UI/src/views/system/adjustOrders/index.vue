@@ -445,7 +445,7 @@
 <script>
 import {
   adjustGoodsOrder,
-  auditGoodsOrder,
+  auditGoodsOrder, checkOrderByOrderNo,
   delGoodsOrder,
   listGoodsOrder,
 } from "@/api/system/goodsOrder";
@@ -886,9 +886,15 @@ export default {
     },
     //查看原订单
     checkPreviousOrder(row) {
-      getGoodsOrder(row.adjustOrderid).then(res => {
+      // 通过ordersNo获取订单信息
+      checkOrderByOrderNo(row.ordersNo).then(res => {
         this.previousOrderInfo = res.data;
-        this.checkReviousOrderInfoVisible = true;
+        const id = res.data.id
+        // 根据获取到的订单id获取订单详情
+        getGoodsOrder(id).then(res => {
+          this.previousOrderInfo.orderDetailList = res.data.orderDetailList;
+          this.checkReviousOrderInfoVisible = true;
+        })
       })
     },
 

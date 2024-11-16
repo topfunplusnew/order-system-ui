@@ -89,3 +89,11 @@ export function checkOrderAllinvoice(id) {
     method: 'get'
   })
 }
+
+// 根据orderNo获取订单详细信息
+export function checkOrderByOrderNo(orderNo) {
+  return request({
+    url: '/system/goodsOrder/orderNo/' + orderNo,
+    method: 'get'
+  })
+}
