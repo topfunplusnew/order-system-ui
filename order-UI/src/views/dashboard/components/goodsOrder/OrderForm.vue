@@ -341,8 +341,8 @@ export default {
                               query-label="车队名称" query-info="fName" :query-name="queryFleet"
                               @commitBack="handleCommitBackFleet" @update:queryName="handleChangeFleet">
                   <template #table-columns>
-                    <el-table-column label="车队名称" align="center" prop="fName"/>
-                    <el-table-column label="车队经理" align="center" prop="fLeader"/>
+                    <el-table-column label="车队名称" align="center" prop="fname"/>
+                    <el-table-column label="车队经理" align="center" prop="fleader"/>
                     <el-table-column label="车队经理电话" align="center" prop="tel"/>
                     <el-table-column label="地址" align="center" prop="address"/>
                   </template>

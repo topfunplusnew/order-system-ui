@@ -1,9 +1,8 @@
 <template>
   <el-dialog :close-on-click-modal="false" :show-close="false"
-      title="货物信息详细"
-      :visible.sync="checkOrderVisible"
-      width="80%">
-    <!--      订单基本信息-->
+             title="订单信息详细"
+             :visible.sync="checkOrderVisible"
+             width="80%">
     <el-descriptions border>
       <el-descriptions-item label="订单日期">{{ orderInfo.orderDate }}</el-descriptions-item>
       <el-descriptions-item label="客户">{{ orderInfo.customer }}</el-descriptions-item>
@@ -20,6 +19,7 @@
     <el-descriptions border>
       <el-descriptions-item label="备注">{{ orderInfo.comments }}</el-descriptions-item>
     </el-descriptions>
+    <!--      订单基本信息-->
     <span slot="footer" class="dialog-footer">
         <el-button @click="close">取 消</el-button>
         <el-button type="primary" @click="close">确 定</el-button>
@@ -34,12 +34,18 @@ export default {
   components: {OrderDetailInfo},
   props: {
     checkOrderVisible: {},
+    // 传递过来的订单信息 要检查一下是否是调整单 如果是 那么就有第二个tab 如果不是那么就 没有
     orderInfo: {}
   },
+  data() {
+    return {};
+  },
+  computed: {},
   methods: {
     close() {
       this.$emit('close')
     },
+
   }
 }
 </script>

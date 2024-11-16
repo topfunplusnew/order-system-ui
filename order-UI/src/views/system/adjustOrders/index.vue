@@ -67,6 +67,7 @@
               <el-dropdown-item>
                 <el-button
                   size="mini"
+                  type="primary"
                   @click="handleUpdate(scope.row)"
                 >修改
                 </el-button>
@@ -335,9 +336,9 @@
                width="30%">
       <span>是否将订单设置为调整单?</span>
       <span slot="footer" class="dialog-footer">
-    <el-button @click="handleOrderVisible = false">取 消</el-button>
-    <el-button type="primary" @click="submitChangeOrder">确 定</el-button>
-  </span>
+        <el-button @click="handleOrderVisible = false">取 消</el-button>
+        <el-button type="primary" @click="submitChangeOrder">确 定</el-button>
+      </span>
     </el-dialog>
 
     <!--    点击发货单的弹窗-->
@@ -1019,12 +1020,12 @@ export default {
      *  3.行操作中点击查看 查看当前行订单的信息
      */
     checkOrderItemInfo(row) {
-      this.checkOrderVisible = true;
       const id = row.id;
       getGoodsOrder(id).then(res => {
         this.orderInfo = res.data
         this.orderDetailInfo = res.data.orderDetailList;
       })
+      this.checkOrderVisible = true;
     },
 
 
