@@ -3,6 +3,7 @@ import {addInvoiceIn} from "../../../../api/system/invoiceIn";
 import {excludeParams} from "../../../../api/tool/exclude";
 import {addInvoiceOut} from "../../../../api/system/invoiceOut";
 import {checkOrderAllinvoice, getGoodsOrder} from "../../../../api/system/goodsOrder";
+import {PUBLIC_DICT_TYPE} from "@/utils/order";
 // 状态
 export const Options = [
   {
@@ -119,29 +120,16 @@ export var mixin_order_Invoice = {
     },
     // 点击供应商开票按钮 如果是供应商开票 则是订单详情中该供应商对应的订单货物的出厂货款
     updateOrderItemVisibleSupplierInvoice(row, supplierID) {
-      const updateGoodsOrder = (row) => {
-        getGoodsOrder(row.id)
-          .then(res => {
-            this.updateOrderItemVisibleTitleInfo.orderInfo = res.data;
-            // 保存客户和供应商开票个数
-            this.updateOrderItemVisibleTitleInfo.customerInvoiceNumber = res.data.customerIsInvoice
-            this.updateOrderItemVisibleTitleInfo.supplierInvoiceNumber = res.data.isSupplierInvoice
-            // 补充最大金额 最大金额为出厂货款
-            res.data.orderDetailList.forEach(item => {
-              this.maxInvent += item.paymentFactory
-            })
-            this.invoiceupdateOrderItemVisibleVisible = true;
-          })
-      }
       // 重置开票信息
       this.resetOpenTitleInfo()
       // 如果供应商ID存在 那么就自动填充供应商的信息
       if (supplierID !== undefined && supplierID !== '' && supplierID !== null) {
+        // domain用来区分是供应商开票还是客户开票
         this.updateOrderItemVisibleTitleInfo.domain = 2
         this.updateOrderItemVisibleTitleInfo.companyID = supplierID;
         this.updateOrderItemVisibleTitleInfo.isOrderTax = row.id;
         // 先获取公司信息
-        getCompany(supplierID).then(res => {
+        getCompany(supplierID, PUBLIC_DICT_TYPE.SUPPLIER).then(res => {
           this.updateOrderItemVisibleTitleInfo.companyName = res.data.companyName;
           this.updateOrderItemVisibleTitleInfo.companyType = res.data.companyType;
           this.updateOrderItemVisibleTitle = '供应商开票'
@@ -155,6 +143,21 @@ export var mixin_order_Invoice = {
         this.updateOrderItemVisibleTitleInfo.isOrderTax = row.id;
         this.updateOrderItemVisibleTitle = '供应商开票'
         updateGoodsOrder(row)
+      }
+      // 更新订单信息的函数
+      const updateGoodsOrder = (row) => {
+        getGoodsOrder(row.id)
+          .then(res => {
+            this.updateOrderItemVisibleTitleInfo.orderInfo = res.data;
+            // 保存客户和供应商开票个数
+            this.updateOrderItemVisibleTitleInfo.customerInvoiceNumber = res.data.customerIsInvoice
+            this.updateOrderItemVisibleTitleInfo.supplierInvoiceNumber = res.data.isSupplierInvoice
+            // 补充最大金额 最大金额为出厂货款
+            res.data.orderDetailList.forEach(item => {
+              this.maxInvent += item.paymentFactory
+            })
+            this.invoiceupdateOrderItemVisibleVisible = true;
+          })
       }
     },
     // 客户供应商开票功能

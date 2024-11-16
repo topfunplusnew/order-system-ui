@@ -17,11 +17,6 @@ export const debounce = (fn, delay = 500) => {
   }
 }
 
-// 使用防抖
-// const debounceFn = debounce(() => {
-//   console.log('防抖')
-// }, 1000)
-
 
 export const OTHER_TYPE = [
   {
@@ -33,3 +28,20 @@ export const OTHER_TYPE = [
     label: '供应商'
   },
 ]
+
+
+// 客户 供应商 司机 员工 其他 己方公司 公共字典
+export const PUBLIC_DICT_TYPE = {
+  // 客户
+  CUSTOMER: '客户',
+  // 供应商
+  SUPPLIER: '供应商',
+  // 司机
+  DRIVER: '司机',
+  // 员工
+  EMPLOYEE: '员工',
+  // 其他
+  OTHER: '其他',
+  // 己方公司
+  SELF_COMPANY: '己方公司',
+}

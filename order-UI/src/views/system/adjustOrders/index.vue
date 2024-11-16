@@ -479,6 +479,7 @@ import PreviousOrderInfo from "./PreviousOrderInfo.vue";
 import QueryStatment from "@/views/system/adjustOrders/QueryStatment.vue";
 import CheckFiles from "../../../components/CheckFiles.vue";
 import {mixin_checkfile} from "../../dashboard/mixins/checkfiles/mixin_checkfile";
+import {addReason} from "@/api/system/user";
 
 export default {
   name: "AdjustOrders",
@@ -1410,28 +1411,27 @@ export default {
     },
     //修改订单的操作
     handleUpdate(row) {
-      // 表单重置
-      this.reset();
-      const id = row.id || this.ids
-      // 先获取订单的信息
-      getGoodsOrder(id).then(response => {
-        // 拿到服务器给的订单数据
-        this.orderInfo = response.data;
-        // 将数据库拿到的订单列表装入vuex 因为订单添加的货物是从vuex获取的数据 对货物的操作也是操作vuex
-        this.$store.commit("order/setOrderItemList", response.data.orderDetailList)
-        // 填充供应商和客户id
-        if (response.data.orderDetailList !== null && response.data.orderDetailList !== undefined) {
-          for (let i = 0; i < this.orderInfo.orderDetailList.length; i++) {
-            let item = this.orderInfo.orderDetailList[i];
-            item.customerID = this.orderInfo.customerID;
-            item.customer = this.orderInfo.customer;
-            //是否含税
-            item.isIncludeTaxFactory = item.isIncludeTaxFactory === '是' ? '1' : '0';
-            item.isIncludeTaxSale = item.isIncludeTaxSale === '是' ? '1' : '0';
-          }
-        }
-        this.orderItemVisible = true;
-        this.orderTitle = "修改调整单";
+      this.$prompt('请输入编辑订单原因', '提示', {
+        confirmButtonText: '确定',
+        cancelButtonText: '取消',
+        type: 'warning'
+      }).then(({value}) => {
+        addReason({reason: value, tableName: TableName.GOODS_ORDER, tid: row.id, modifyTime: this.modifyTime})
+          .then(res => {
+            // 先暂存订单修改原因
+            sessionStorage.setItem('order-edit-reason', value)
+            this.$message.success('提交成功')
+            this.reset();
+            this.orderId = row.id
+            this.orderItemVisible = true;
+            this.orderTitle = '修改调整单信息'
+            this.submitInfo = '修改调整单信息'
+          })
+      }).catch(() => {
+        this.$message({
+          type: 'warning',
+          message: '请先输入编辑原因!'
+        });
       });
     },
     // 休眠函数
