@@ -44,7 +44,7 @@
         <el-tooltip class="item" effect="dark" content="出库方式可在字典中进行修改" placement="top">
           <el-select v-model="queryParams.outMethod" placeholder="请选择出库方式" clearable>
             <el-option
-              v-for="dict in dict.type.gift_out_method"
+              v-for="dict in dict.type.order_gift_out_method"
               :key="dict.value"
               :label="dict.label"
               :value="dict.value"
@@ -157,7 +157,7 @@
 
       <el-table-column label="出库方式" align="center" prop="outMethod" v-if="columns[3].visible">
         <template #default="scope">
-          <dict-tag :options="dict.type.gift_out_method" :value="scope.row.outMethod"/>
+          <dict-tag :options="dict.type.order_gift_out_method" :value="scope.row.outMethod"/>
         </template>
       </el-table-column>
 
@@ -230,7 +230,7 @@
         <el-form-item label="出库方式" prop="outMethod">
           <el-select v-model="form.outMethod" placeholder="请选择出库方式">
             <el-option
-              v-for="dict in dict.type.gift_out_method"
+              v-for="dict in dict.type.order_gift_out_method"
               :key="dict.value"
               :label="dict.label"
               :value="dict.value"
@@ -306,7 +306,7 @@ import {OTHER_TYPE} from "../../../utils/order";
 export default {
   name: "GiftOut",
   components: {SearchOption},
-  dicts: ['gift_out_method', 'order_gift_source'],
+  dicts: ['orderorder_gift_out_method', 'order_gift_source'],
   mixins: [mixin_printHTML, mixin_gift_out_fill],
   data() {
     return {
