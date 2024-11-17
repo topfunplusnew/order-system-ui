@@ -55,7 +55,7 @@ export function listOrderDetailNoPage(query) {
 // 批量查询订单详情
 export function listOrderDetailByIds(query) {
   return request({
-    url: '/system/orderDetail/batchList',
+    url: '/system/orderDetail/listByBatchlds',
     method: 'get',
     params: query
   })
