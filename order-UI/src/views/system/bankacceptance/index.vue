@@ -169,6 +169,7 @@
                                 @commitBack="handleCommitBack" query-label="户名查找" query-info="acountsName"
                                 :query-name="queryBank" @update:queryName="handleUpdateQueryName">
                     <template #table-columns>
+                      <el-table-column label="显示名称" align="center" prop="displayName"/>
                       <el-table-column label="开户名称(户名)" align="center" prop="acountsName"/>
                       <el-table-column label="账号(银行账号)" align="center" prop="bankNo"/>
                       <el-table-column label="开户行" align="center" prop="bankName"/>
