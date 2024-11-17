@@ -309,6 +309,7 @@
                             :query-name="queryBank" @update:queryName="handleUpdateQueryName">
                 <template #table-columns>
                   <el-table-column label="账号类型" align="center" prop="acountsType"/>
+                  <el-table-column label="显示名称" align="center" prop="displayName"/>
                   <el-table-column label="开户行" align="center" prop="bankName"/>
                   <el-table-column label="开户名" align="center" prop="acountsName"/>
                   <el-table-column label="账号" align="center" prop="bankNo"/>
@@ -464,6 +465,7 @@
                             query-label="户名查找" query-info="acountsName">
                 <template #table-columns>
                   <el-table-column label="账户类型" align="center" prop="acountsType"/>
+                  <el-table-column label="显示名称" align="center" prop="displayName"/>
                   <el-table-column label="账号(银行账号)" align="center" prop="bankNo"/>
                   <el-table-column label="开户行" align="center" prop="bankName"/>
                   <el-table-column label="公司名称" align="center" prop="companyName"/>
@@ -503,6 +505,7 @@
                               :query-name="queryChoose" @update:queryName="handleUpdateQueryChoose">
                   <template #table-columns>
                     <el-table-column label="账号类型" align="center" prop="acountsType"/>
+                    <el-table-column label="显示名称" align="center" prop="displayName"/>
                     <el-table-column label="开户行" align="center" prop="bankName"/>
                     <el-table-column label="开户名" align="center" prop="acountsName"/>
                     <el-table-column label="账号" align="center" prop="bankNo"/>

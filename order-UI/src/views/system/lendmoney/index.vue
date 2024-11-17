@@ -241,6 +241,7 @@
                       <el-table-column
                         :label="form.targetType==='其他'||form.targetType==='员工'?'名称':form.targetType"
                         align="center" prop="acountsName"/>
+                      <el-table-column label="显示名称" align="center" prop="displayName"/>
                       <el-table-column label="开户行" align="center" prop="bankName"/>
                       <el-table-column label="开户名" align="center" prop="acountsName"/>
                       <el-table-column label="账号" align="center" prop="bankNo"/>
@@ -269,6 +270,7 @@
                                 @update:queryName="handleUpdateQueryName">
                     <template #table-columns>
                       <el-table-column label="账户类型" align="center" prop="acountsType"/>
+                      <el-table-column label="显示名称" align="center" prop="displayName"/>
                       <el-table-column label="开户行" align="center" prop="bankName"/>
                       <el-table-column label="开户名" align="center" prop="acountsName"/>
                       <el-table-column label="账号" align="center" prop="bankNo"/>
@@ -317,6 +319,7 @@
                               @update:queryName="handleUpdateQueryBankAcountForm">
                   <template #table-columns>
                     <el-table-column label="账户类型" align="center" prop="acountsType"/>
+                    <el-table-column label="显示名称" align="center" prop="displayName"/>
                     <el-table-column label="开户行" align="center" prop="bankName"/>
                     <el-table-column label="开户名" align="center" prop="acountsName"/>
                     <el-table-column label="账号" align="center" prop="bankNo"/>

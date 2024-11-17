@@ -149,7 +149,8 @@
 
 
     <!-- 添加或修改加油卡信息对话框 -->
-    <el-dialog :close-on-click-modal="false" :show-close="false" :title="title" :visible.sync="open" width="500px" append-to-body>
+    <el-dialog :close-on-click-modal="false" :show-close="false" :title="title" :visible.sync="open" width="500px"
+               append-to-body>
       <el-form ref="form" :model="form" :rules="rules" label-width="120px">
         <el-form-item label="加油卡卡号" prop="oilCardNo">
           <el-input v-model="form.oilCardNo" placeholder="请输入加油卡卡号"/>
@@ -172,7 +173,8 @@
     </el-dialog>
 
     <!--    加油卡充值弹窗-->
-    <el-dialog :close-on-click-modal="false" :show-close="false" title="加油卡充值" :visible.sync="moneyDialogVisible" width="500px" append-to-body>
+    <el-dialog :close-on-click-modal="false" :show-close="false" title="加油卡充值" :visible.sync="moneyDialogVisible"
+               width="500px" append-to-body>
       <el-form :model="moneyInfo" :rules="rules" label-width="120px">
         <el-form-item label="加油卡卡号" prop="oilCardNo">
           <el-row>
@@ -217,6 +219,7 @@
                           query-label="户名查找" query-info="acountsName">
               <template #table-columns>
                 <el-table-column label="账户类型" align="center" prop="acountsType"/>
+                <el-table-column label="显示名称" align="center" prop="displayName"/>
                 <el-table-column label="开户名称(户名)" align="center" prop="acountsName"/>
                 <el-table-column label="账号(银行账号)" align="center" prop="bankNo"/>
                 <el-table-column label="开户行" align="center" prop="bankName"/>
@@ -327,7 +330,7 @@ export default {
         oilCardNo: '',
         rechargeType: '',
         rechargeMoney: '',
-        rechargeDate: parseTime(new Date(),'{y}-{m}-{d}'),
+        rechargeDate: parseTime(new Date(), '{y}-{m}-{d}'),
         rechargeName: "",
         acountsName: "",
         bankNo: "",
