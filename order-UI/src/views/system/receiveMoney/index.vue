@@ -186,6 +186,10 @@
         <el-form-item label="金额" prop="moneyAmount">
           <el-input v-model="form.moneyAmount" placeholder="请输入金额"/>
         </el-form-item>
+        <!--  对方银行卡的消费类型 (承兑户或者现金户)-->
+        <el-form-item label="己方银行账户类型">
+          <BankType @updateSelectedType="changeSelfBankType"/>
+        </el-form-item>
         <el-form-item label="己方户名" prop="selfAcountsName">
           <el-row>
             <el-col :span="10">
@@ -263,6 +267,9 @@
             </el-col>
           </el-row>
         </el-form-item>
+         <el-form-item label="对方银行账户类型">
+          <BankType @updateSelectedType="changeOtherBankType"/>
+        </el-form-item>
         <el-form-item label="对方账号" prop="otherBankNo">
           <el-col :span="10">
             <el-input v-model="form.otherBankNo" placeholder="请输入对方账号"/>
@@ -287,7 +294,6 @@
         <el-form-item label="对方开户名" prop="selfBankName">
           <el-input v-model="form.otherAcountsName" placeholder="请输入己方开户行"/>
         </el-form-item>
-
         <el-form-item label="银行卡流水编号" prop="transactionHistory">
           <el-input v-model="form.transactionHistory" placeholder="请输入银行卡流水编号"/>
         </el-form-item>
@@ -322,11 +328,13 @@ import {mixin_receive_money_fill} from "./receiveMoneyFill";
 import {listCars} from "../../../api/system/cars";
 import {getReceiveMoney, updateReceiveMoney} from "../../../api/system/receiveMoney";
 import {mixin_checkfile} from "../../dashboard/mixins/checkfiles/mixin_checkfile";
+import BankType from "@/views/dashboard/components/common/BankType.vue";
+import {mixin_bankType} from "@/views/dashboard/mixins/common/common_bankType";
 
 export default {
   name: "ReceiveMoney",
-  components: {CheckFiles, SearchOption},
-  mixins: [mixin_printHTML, mixin_receive_money_fill, mixin_checkfile],
+  components: {BankType, CheckFiles, SearchOption},
+  mixins: [mixin_printHTML, mixin_receive_money_fill, mixin_checkfile, mixin_bankType],
   data() {
     return {
       // 遮罩层
@@ -423,7 +431,9 @@ export default {
     };
   },
   created() {
-    this.getList();
+    // 查询列表
+    this.getList()
+    // 获取本地显示隐藏列的存储 以便于下一次用户打开的时候读取喜好
     if (localStorage.getItem('receivemoney-columns') === 'null'
       || !localStorage.getItem('receivemoney-columns')) {
       //设置localStorage
@@ -431,12 +441,14 @@ export default {
     } else {
       this.columns = JSON.parse(localStorage.getItem('receivemoney-columns'));
     }
+    // 查询科目列表
     listSubject().then(res => {
       this.subjectTree = this.handleTree(res.data, "id", "parentId");
       this.OneLevelOption = this.subjectTree;
     })
   },
   computed: {
+    // 拼接类型
     fullLevel() {
       return this.currentSort.levelOne + '-' + this.currentSort.levelTwo;
     }
@@ -451,15 +463,15 @@ export default {
     }
   },
   methods: {
+    listCars,
+    listCompany,
+    listBankAccount,
     updateReceiveMoney() {
       return updateReceiveMoney
     },
     getReceiveMoney() {
       return getReceiveMoney
     },
-    listCars,
-    listCompany,
-    listBankAccount,
     //点击一级分类后的回调
     handleSelectOneLevel(value) {
       this.currentSort.levelOne = value;
@@ -508,10 +520,14 @@ export default {
         tableName: null,
         tID: null,
         moneyAmount: null,
+        // 己方银行卡的账户类型
+        selfBankCardType: null,
         selfAcountsName: null,
         selfBankNo: null,
         selfBankName: null,
         selfBankID: null,
+        // 对方银行卡账户的类型
+        otherBankCardType: null,
         otherAcountsName: null,
         otherBankNo: null,
         otherBankName: null,
