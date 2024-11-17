@@ -278,7 +278,7 @@
     <!--     添加或修改付款信息对话框 -->
     <el-dialog :close-on-click-modal="false" :show-close="false" title="付款处理" :visible.sync="open" width="650px"
                append-to-body>
-      <el-form ref="form" :model="form" :rules="rules" label-width="120px">
+      <el-form ref="form" :model="form" :rules="rules" label-width="140px">
         <el-form-item label="日期" prop="fundsDate">
           <el-date-picker
             v-model="form.fundsDate"
@@ -296,6 +296,9 @@
         </el-form-item>
         <el-form-item label="金额" prop="moneyAmount">
           <el-input v-model="form.moneyAmount" placeholder="请输入金额"/>
+        </el-form-item>
+        <el-form-item label="我方银行账户类型">
+          <BankType @updateSelectedType="changeSelfBankType"/>
         </el-form-item>
         <!--        对方信息-->
         <el-form-item label="己方户名" prop="selfAcountsName">
@@ -453,6 +456,9 @@
             </el-row>
           </el-form-item>
         </el-row>
+        <el-form-item label="对方银行账户类型">
+          <BankType @updateSelectedType="changeOtherBankType"/>
+        </el-form-item>
         <el-form-item label="对方账号" prop="otherBankNo">
           <el-row>
             <el-col :span="14">
@@ -547,11 +553,13 @@ import DynamicField from "@/components/DynamicField.vue";
 import {mixin_paymentindex_fill} from "./paymentFill";
 import CheckPrevious from "../../dashboard/components/payment/CheckPrevious.vue";
 import CheckDetail from "../../dashboard/components/payment/CheckDetail.vue";
+import {mixin_bankType} from "@/views/dashboard/mixins/common/common_bankType";
+import BankType from "@/views/dashboard/components/common/BankType.vue";
 
 export default {
   name: "Payment",
-  components: {CheckDetail, CheckPrevious, DynamicField, SearchOption},
-  mixins: [mixin_printHTML, mixin_payment_audit, mixin_payment_select, mixin_payment_subject, mixin_paymentindex_fill],
+  components: {BankType, CheckDetail, CheckPrevious, DynamicField, SearchOption},
+  mixins: [mixin_printHTML, mixin_payment_audit, mixin_payment_select, mixin_payment_subject, mixin_paymentindex_fill, mixin_bankType],
   data() {
     return {
       // 遮罩层
@@ -820,7 +828,13 @@ export default {
             // 去除参数
             this.form = excludeParams(this.form, this.$exclude)
             // 需要拼凑支付类型  但是不能修改响应式的payType 这是一个数组
-            const paymentType = this.form.payType.join('-')
+            let paymentType = null
+            if (this.form.payType) {
+              paymentType = this.form.payType.join('-')
+            } else {
+              this.$message.warning('请选择付款类型')
+              return
+            }
             // 填充公司类型
             this.form.companyType = this.value
             // 拼凑body

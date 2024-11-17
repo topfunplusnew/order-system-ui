@@ -31,7 +31,6 @@
         <el-button type="primary" icon="el-icon-search" size="mini" @click="handleQueryTime">搜索</el-button>
       </el-form-item>
     </el-form>
-
     <el-row :gutter="10" class="mb8">
       <el-col :span="1.5">
         <el-button icon="el-icon-refresh" size="mini" @click="resetQuery">刷新</el-button>
@@ -196,7 +195,7 @@
     />
 
     <!-- 添加或修改向外部借出款信息对话框 -->
-    <el-dialog :close-on-click-modal="false" :show-close="false" title="新增资金借出信息" :visible.sync="open"
+    <el-dialog :close-on-click-modal="false" :show-close="false" :title="title" :visible.sync="open"
                width="50%" append-to-body>
       <el-form ref="form" :model="form" :rules="rules" label-width="160px">
         <el-row>
@@ -327,6 +326,9 @@
               </el-col>
             </el-row>
           </el-form-item>
+          <el-form-item label="我方银行账户类型">
+            <BankType @updateSelectedType="changeCustomSelfBankType"/>
+          </el-form-item>
           <el-form-item label="收回账号" prop="bankNo">
             <el-input v-model="recoverMoneyEntity.bankNo" placeholder="请输入收回账号"/>
           </el-form-item>
@@ -376,11 +378,13 @@ import {mixin_printHTML} from "../../dashboard/mixins/print";
 import {ReceiveType} from "../../../api/tool/enums";
 import {mixin_lend_money_fill} from "@/views/system/lendmoney/lendMoneyFill";
 import DynamicField from "@/components/DynamicField.vue";
+import BankType from "@/views/dashboard/components/common/BankType.vue";
+import {mixin_bankType} from "@/views/dashboard/mixins/common/common_bankType";
 
 export default {
   name: "LendMoney",
-  components: {DynamicField, ApplyPayment, SearchOption},
-  mixins: [mixin_reviveMoney, mixin_printHTML, mixin_lend_money_fill],
+  components: {BankType, DynamicField, ApplyPayment, SearchOption},
+  mixins: [mixin_reviveMoney, mixin_printHTML, mixin_lend_money_fill, mixin_bankType],
   dicts: ['order_target_type'],
   data() {
     return {
@@ -544,6 +548,9 @@ export default {
       }
       this.applyDialogVisible = true;
     },
+    changeCustomSelfBankType(value) {
+      this.recoverMoneyEntity.selfBankCardType = value
+    },
     changeOpen() {
       this.needMoney = 0
       this.applyDialogVisible = false
@@ -556,10 +563,10 @@ export default {
       // 初始化对方账户信息
       this.initReviveMoneyOtherAccountInfo(row.targetAcountsName, row.targetBankNo, row.targetBankName)
       // 打开添加借出款收回的信息弹窗
-      this.giveRecoverMoneyShow = true;
       this.recoverMoneyEntity.futuresNO = row.futuresNO; // 初始化uuid
       // 赋值收款信息
       this.initComment('借出款收回');
+      this.giveRecoverMoneyShow = true;
     },
     // 收回资金 首先添加借出款收回信息
     RecoverMoney() {
@@ -583,6 +590,7 @@ export default {
         targetBankNo: null,
         targetBankName: null,
         selfAcountsName: null,
+        selfBankCardType: null,
         selfBankNo: null,
         selfBankName: null,
         recoverDate: null,

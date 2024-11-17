@@ -101,8 +101,9 @@
       @pagination="getList"/>
 
     <!-- 添加或修改从外部借款信息对话框 -->
-    <el-dialog :close-on-click-modal="false" :show-close="false" :title="title" :visible.sync="open" width="60%" append-to-body>
-      <el-form ref="form" :model="form" :rules="rules" label-width="120px">
+    <el-dialog :close-on-click-modal="false" :show-close="false" :title="title" :visible.sync="open" width="60%"
+               append-to-body>
+      <el-form ref="form" :model="form" :rules="rules" label-width="150px">
         <el-row>
           <el-col :span="12">
             <el-form-item label="贷款来源" prop="origin">
@@ -122,13 +123,16 @@
                 value-format="yyyy-MM-dd">
               </el-date-picker>
             </el-form-item>
-          </el-col>
-          <el-col :span="12">
             <el-form-item label="贷款年限" prop="loanDuring">
               <el-input v-model="form.loanDuring" placeholder="请输入贷款年限"/>
             </el-form-item>
+          </el-col>
+          <el-col :span="12">
             <el-form-item label="抵押担保" prop="mortgageGuarantee">
               <el-input v-model="form.mortgageGuarantee" placeholder="请输入抵押担保"/>
+            </el-form-item>
+            <el-form-item label="我方银行账户类型">
+              <BankType @updateSelectedType="changeSelfBankType"/>
             </el-form-item>
             <el-form-item label="打入账户" prop="acountsName">
               <el-row>
@@ -170,7 +174,8 @@
 
 
     <!--    点击还款的弹框-->
-    <el-dialog :close-on-click-modal="false" :show-close="false" title="还款操作" :visible.sync="giveBackMoneyShow" width="30%">
+    <el-dialog :close-on-click-modal="false" :show-close="false" title="还款操作" :visible.sync="giveBackMoneyShow"
+               width="30%">
       <el-row>
         <el-form ref="form" :model="moneyBackInfo" label-width="140px">
           <el-form-item label="还款金额" prop="moneyAmount">
@@ -241,11 +246,13 @@ import {TableName} from "@/api/tool/enums";
 import {addDateRange, parseTime} from "@/utils/ruoyi";
 import {excludeParams} from "@/api/tool/exclude";
 import {mixin_printHTML} from "../../dashboard/mixins/print";
+import BankType from "@/views/dashboard/components/common/BankType.vue";
+import {mixin_bankType} from "@/views/dashboard/mixins/common/common_bankType";
 
 export default {
   name: "BorrowedMoney",
-  components: {ApplyPayment, SearchOption},
-  mixins: [mixin_printHTML],
+  components: {BankType, ApplyPayment, SearchOption},
+  mixins: [mixin_printHTML, mixin_bankType],
   data() {
     var validateloanNO = (rule, value, callback) => {
       if (value === '') {
@@ -476,6 +483,7 @@ export default {
         loanDate: null,
         loanDuring: null,
         mortgageGuarantee: null,
+        selfBankCardType: null,
         acountsName: null,
         bankNo: null,
         isEnd: null,

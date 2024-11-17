@@ -57,9 +57,13 @@ export var mixin_choose_order = {
     // 2. 直接选择订单
     // 点击选择订单弹出的订单列表页选择某个订单 需要自动填充信息
     handleSelectOrderItem(row) {
+      // 先重新重置选中的货物信息
       this.goods = []
+      // 获取订单信息 拿到货物的信息
       getGoodsOrder(row.id).then(res => {
+        // 拿到订单的信息
         this.orderInfo = res.data;
+        // 拿到订单的货物信息
         this.orderDetailList = res.data.orderDetailList;
         // 补充供应商信息
         this.nameFilters = this.orderDetailList.map(item => {
@@ -98,20 +102,22 @@ export var mixin_choose_order = {
     checkSelectedGoods() {
       this.orderGoodsVisible = true
     },
+    // 确认选择 货物的列表 点击后 会把goods数组中的id 放到form中
+    submitSelectOrderDetail() {
+      // 主要是通过货物的id来实现订单的关联
+      this.goods.forEach(item => {
+        // 放入form的数组中 传递给后端 后端要返回orderDetailIds数组 通过这个数组 再拿回关联的订单信息
+        this.form.orderDetailIds.push(item.id)
+      })
+      // 关闭弹窗
+      this.orderDialogVisible = false
+    },
     // 清空已选择的货物
     refreshSelectedGoods() {
       this.goods = []
       this.form.orderDetailIds = []
       this.toggleSelection()
     },
-    // 确认选择
-    submitSelectOrderDetail() {
-      this.goods.forEach(item => {
-        this.form.orderDetailIds.push(item.id)
-      })
-      this.orderDialogVisible = false
-    },
-
     // 清除选择
     toggleSelection(rows) {
       if (rows) {

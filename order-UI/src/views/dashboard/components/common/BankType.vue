@@ -4,19 +4,20 @@
 
 export default {
   name: "BankType",
+  dicts: ['order_bank_card_type_nodel'],
   data() {
     return {
       // 账户类型
-      types: [
-        {
-          value: '现金户',
-          label: '现金户'
-        },
-        {
-          value: '承兑户',
-          label: '承兑户'
-        }
-      ],
+      // types: [
+      //   {
+      //     value: '现金户',
+      //     label: '现金户'
+      //   },
+      //   {
+      //     value: '承兑户',
+      //     label: '承兑户'
+      //   }
+      // ],
       // 选择的类型
       selectedType: null,
     }
@@ -34,7 +35,7 @@ export default {
   <div>
     <el-select v-model="selectedType" placeholder="请选择账户类型" @change="handleEmitType">
       <el-option
-        v-for="item in types"
+        v-for="item in dict.type.order_bank_card_type_nodel"
         :key="item.value"
         :label="item.label"
         :value="item.value">

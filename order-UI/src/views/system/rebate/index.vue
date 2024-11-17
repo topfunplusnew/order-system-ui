@@ -138,7 +138,8 @@
           <el-row>
             <el-col :span="12">
               <el-form-item label="返利货物">
-                <el-button v-if="goods.length===0" @click="orderDialogVisible = true" size="mini">
+                <!--                如果订单详情里面没有货物，请先选择订单，再选择订单详情-->
+                <el-button v-if="goods.length === 0" @click="orderDialogVisible = true" size="mini">
                   选择订单
                 </el-button>
                 <el-row v-else>
@@ -168,8 +169,26 @@
                   </el-option>
                 </el-select>
               </el-form-item>
-              <el-form-item label="金额" prop="rebate">
-                <el-input v-model="form.rebate" placeholder="请输入金额"/>
+              <!--        供应商直接选择 不要自己填-->
+              <el-form-item label="请选择供应商" prop="supplier">
+                <el-row>
+                  <el-col :span="15">
+                    <el-input disabled v-model="form.supplier" placeholder="请选择供应商"/>
+                  </el-col>
+                  <el-col :span="4">
+                    <SearchOption :limit-info="{companyType:'供应商'}" :get-data="listCompany"
+                                  @commitBack="handleCommitBackCompanyGive" @update:queryName="handleQueryCompanyGive"
+                                  :query-name="queryCompanyGive" query-info="companyName" query-label="供应商查找">
+                      <template #table-columns>
+                        <el-table-column label="供应商" align="center" prop="companyName"/>
+                        <el-table-column label="地址" align="center" prop="address"/>
+                      </template>
+                    </SearchOption>
+                  </el-col>
+                </el-row>
+              </el-form-item>
+              <el-form-item label="收款方账户类型">
+                <BankType @updateSelectedType="changeSelfBankType"/>
               </el-form-item>
               <el-form-item label="收款户名" prop="inAcountsName">
                 <el-row>
@@ -198,23 +217,8 @@
               </el-form-item>
             </el-col>
             <el-col :span="12">
-              <!--        供应商直接选择 不要自己填-->
-              <el-form-item label="请选择供应商" prop="supplier">
-                <el-row>
-                  <el-col :span="15">
-                    <el-input disabled v-model="form.supplier" placeholder="请选择供应商"/>
-                  </el-col>
-                  <el-col :span="4">
-                    <SearchOption :limit-info="{companyType:'供应商'}" :get-data="listCompany"
-                                  @commitBack="handleCommitBackCompanyGive" @update:queryName="handleQueryCompanyGive"
-                                  :query-name="queryCompanyGive" query-info="companyName" query-label="供应商查找">
-                      <template #table-columns>
-                        <el-table-column label="供应商" align="center" prop="companyName"/>
-                        <el-table-column label="地址" align="center" prop="address"/>
-                      </template>
-                    </SearchOption>
-                  </el-col>
-                </el-row>
+              <el-form-item label="付款方账户类型">
+                <BankType @updateSelectedType="changeOtherBankType"/>
               </el-form-item>
               <el-form-item label="付款户名" prop="outAcountsName">
                 <el-row>
@@ -241,6 +245,9 @@
               <el-form-item label="付款账号" prop="outBankNo">
                 <el-input v-model="form.outBankNo" placeholder="请输入付款款账号"/>
               </el-form-item>
+              <el-form-item label="金额" prop="rebate">
+                <el-input v-model="form.rebate" placeholder="请输入金额"/>
+              </el-form-item>
               <el-form-item label="返利原因" prop="rebateReason">
                 <el-input v-model="form.rebateReason" placeholder="请输入返利原因"/>
               </el-form-item>
@@ -260,32 +267,27 @@
       </div>
     </el-dialog>
 
-    <!--    选择订单详情-->
-    <el-dialog :close-on-click-modal="false" :show-close="true"
-               title="订单选择"
-               :visible.sync="orderDialogVisible"
+    <!--    选择订单详情 点击返利货物后面的选择订单打开的弹窗 -->
+    <el-dialog :close-on-click-modal="false" :show-close="true" title="订单选择" :visible.sync="orderDialogVisible"
                width="65%">
       <el-row>
         <el-button type="primary" @click="selectBySupplier" size="mini">根据供应商选择</el-button>
         <el-button type="primary" @click="selectOrderItem" size="mini">选择订单</el-button>
       </el-row>
       <hr/>
-      <!--      展示-->
       <el-row>
         <el-row>
-          <!--  展示订单信息的组件-->
+          <!--  展示订单信息的组件  orderInfo-->
           <OrderInfos :orderInfo="orderInfo"/>
         </el-row>
         <el-row>
           <el-row>
             <span style="font-weight: bolder">货物详情列表</span>
           </el-row>
-
-          <!-- 展示要选择进行返利的货物列表-->
+          <!-- 订单选择的货物-->
           <el-row>
             <el-button @click="submitSelectOrderDetail" :disabled="goods.length === 0" type="success"
-                       size="mini">
-              选择所选货物
+                       size="mini">选择所选货物
             </el-button>
             <el-table border :data="orderDetailList" max-height="700" size="mini" ref="multipleTable"
                       :cell-style="()=>{return {padding:'.5px'}}" @selection-change="handleSelectionChangeOrderDetail">
@@ -411,6 +413,7 @@
     <!--    查看已经选择的货物-->
     <InfoDialog title="已选择货物" :visible.sync="orderGoodsVisible" @update:visible="orderGoodsVisible = false">
       <template #info>
+        <!--        订单货物详情的展示组件-->
         <OrderDetailInfo :orderDetailInfoList="goods" :ban="true"/>
       </template>
     </InfoDialog>
@@ -501,6 +504,9 @@ import OrderDetailList from "../../dashboard/components/rebate/OrderDetailList.v
 import {mixin_choose_order} from "../../dashboard/mixins/rebate/choose_order";
 import {mixin_rebate_fill} from "../../dashboard/mixins/rebate/rebate_fill";
 import {isNull} from "../../../main";
+import {mixin_bankType} from "@/views/dashboard/mixins/common/common_bankType";
+import BankType from "@/views/dashboard/components/common/BankType.vue";
+import {listOrderDetail} from "@/api/system/orderDetail";
 
 export default {
   name: "Rebate",
@@ -509,8 +515,8 @@ export default {
       return TableName
     }
   },
-  components: {OrderDetailList, InfoDialog, SearchOption, OrderDetailInfo, OrderInfos, ApplyPayment},
-  mixins: [mixin_printHTML, mixin_choose_order, mixin_rebate_fill],
+  components: {BankType, OrderDetailList, InfoDialog, SearchOption, OrderDetailInfo, OrderInfos, ApplyPayment},
+  mixins: [mixin_printHTML, mixin_choose_order, mixin_rebate_fill, mixin_bankType],
   data() {
     return {
       // 遮罩层
@@ -695,10 +701,14 @@ export default {
         rebateDate: null,
         rebate: null,
         rebateType: null,
+        // 己方银行卡账户类型
+        selfBankCardType: null,
         inAcountsName: null,
         inBankNo: null,
         supplier: null,
         supplierID: null,
+        // 对方银行卡账户的类型
+        otherBankCardType: null,
         outAcountsName: null,
         outBankNo: null,
         rebateReason: null,
@@ -738,8 +748,18 @@ export default {
     handleUpdate(row) {
       this.reset();
       const id = row.id || this.ids
+      // 获取订单返利信息
       getRebate(id).then(response => {
         this.form = response.data;
+        // 这里打开的时候要判断后端返回的数据 如果orderDetailIds有数据 那么要自动选择相关订单
+        if (this.form.orderDetailIds?.length > 0) {
+          // goods 要填充这个数组 这个是货物的id 查询货物list 筛选需要的货物
+          listOrderDetail().then(res => {
+            // 筛选
+            this.goods = res.rows.filter(item => this.form.orderDetailIds.includes(item.id))
+          })
+        }
+        // 打开修改弹窗
         this.open = true;
         this.title = "修改返利回扣";
       });

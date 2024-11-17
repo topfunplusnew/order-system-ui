@@ -62,13 +62,13 @@
       <el-table-column label="备注" align="center" prop="comments" v-if="columns[4].visible" show-overflow-tooltip/>
       <el-table-column label="操作" align="center" class-name="small-padding fixed-width" fixed="right">
         <template slot-scope="scope">
-          <el-button
-            size="mini"
-            type="primary"
-            @click="handleUpdate(scope.row)"
-            v-hasPermi="['system:recovermoney:edit']"
-          >修改
-          </el-button>
+          <!--          <el-button-->
+          <!--            size="mini"-->
+          <!--            type="primary"-->
+          <!--            @click="handleUpdate(scope.row)"-->
+          <!--            v-hasPermi="['system:recovermoney:edit']"-->
+          <!--          >修改-->
+          <!--          </el-button>-->
           <el-button
             size="mini"
             type="danger"
@@ -135,9 +135,14 @@ import {addDateRange} from "@/utils/ruoyi";
 import {addReason} from "@/api/system/user";
 import {TableName} from "@/api/tool/enums";
 import {excludeParams} from "@/api/tool/exclude";
+import BankType from "@/views/dashboard/components/common/BankType.vue";
+import {mixin_bankType} from "@/views/dashboard/mixins/common/common_bankType";
+import {mixin_printHTML} from "@/views/dashboard/mixins/print";
 
 export default {
   name: "RecoverMoney",
+  components: {BankType},
+  mixins: [mixin_printHTML],
   data() {
     return {
       // 遮罩层
@@ -214,13 +219,6 @@ export default {
     }
   },
   methods: {
-    printHTML() {
-      this.$print({
-        printable: 'printBox',
-        type: 'html',
-        targetStyles: ['*'], // 打印内容使用所有HTML样式，没有设置这个属性/值，设置分页打印没有效果
-      })
-    },
     /** 查询借出款收回信息列表 */
     getList() {
       this.loading = true;

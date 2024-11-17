@@ -21,9 +21,10 @@ export var mixin_paymentindex_fill = {
   methods: {
     //自动填充己方信息
     handleCommitBack(val) {
-      this.form.selfBankName = val.bankName;
+      this.form.selfBankName = val.bankName
       this.form.selfAcountsName = val.acountsName
       this.form.selfBankNo = val.bankNo
+      this.form.selfBankID = val.id
     },
     // 选择己方银行卡
     handleCommitBackChoose(val) {
