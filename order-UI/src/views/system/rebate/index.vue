@@ -506,7 +506,7 @@ import {mixin_rebate_fill} from "../../dashboard/mixins/rebate/rebate_fill";
 import {isNull} from "../../../main";
 import {mixin_bankType} from "@/views/dashboard/mixins/common/common_bankType";
 import BankType from "@/views/dashboard/components/common/BankType.vue";
-import {listOrderDetail} from "@/api/system/orderDetail";
+import {listOrderDetail, listOrderDetailByIds, listOrderDetailNoPage} from "@/api/system/orderDetail";
 
 export default {
   name: "Rebate",
@@ -754,9 +754,8 @@ export default {
         // 这里打开的时候要判断后端返回的数据 如果orderDetailIds有数据 那么要自动选择相关订单
         if (this.form.orderDetailIds?.length > 0) {
           // goods 要填充这个数组 这个是货物的id 查询货物list 筛选需要的货物
-          listOrderDetail().then(res => {
-            // 筛选
-            this.goods = res.rows.filter(item => this.form.orderDetailIds.includes(item.id))
+          listOrderDetailByIds(this.form.orderDetailIds).then(res => {
+            this.goods = res.rows
           })
         }
         // 打开修改弹窗

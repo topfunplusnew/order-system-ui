@@ -42,3 +42,21 @@ export function delOrderDetail(id) {
     method: 'delete'
   })
 }
+
+// 不分页查询订单详情列表
+export function listOrderDetailNoPage(query) {
+  return request({
+    url: '/system/orderDetail/nopage/list',
+    method: 'get',
+    params: query
+  })
+}
+
+// 批量查询订单详情
+export function listOrderDetailByIds(query) {
+  return request({
+    url: '/system/orderDetail/batchList',
+    method: 'get',
+    params: query
+  })
+}
