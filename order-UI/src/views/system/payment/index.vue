@@ -814,11 +814,16 @@ export default {
               this.getList();
             });
           } else {
+            // 去除参数
             this.form = excludeParams(this.form, this.$exclude)
-            // 补充支付类型
-            this.form.payType = this.form.payType.join('-')
+            // 需要拼凑支付类型  但是不能修改响应式的payType 这是一个数组
+            const paymentType = this.form.payType.join('-')
+            // 填充公司类型
             this.form.companyType = this.value
-            addPayment(this.form).then(response => {
+            // 拼凑body
+            const body = {...this.form, payType: paymentType}
+            // 添加付款信息
+            addPayment(body).then(response => {
               this.$modal.msgSuccess("新增成功");
               this.open = false;
               this.getList();

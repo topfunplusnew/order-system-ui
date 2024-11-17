@@ -57,19 +57,7 @@
               id="printBox" height="450px" v-horizontal-scroll="'always'" size="mini"
               :cell-style="()=>{return {padding:'.5px'}}">
       <el-table-column label="余额" align="center" prop="sumMoney" show-overflow-tooltip/>
-      <el-table-column label="银行卡类型" align="center" prop="bankCardType" show-overflow-tooltip>
-        <template slot-scope="scope">
-          <span v-if="scope.row.isPublicAccount === 0" style="color:#138fe1">
-            私户
-          </span>
-          <span v-else-if="scope.row.isPublicAccount === 1" style="color:#ff5722">
-            公户
-          </span>
-          <span v-else>
-            未区分
-          </span>
-        </template>
-      </el-table-column>
+      <el-table-column label="银行卡类型" align="center" prop="bankCardType" show-overflow-tooltip/>
       <el-table-column label="显示名称" align="center" prop="displayName" show-overflow-tooltip/>
       <el-table-column label="开户名称" align="center" prop="acountsName" show-overflow-tooltip/>
       <el-table-column label="银行账号" align="center" prop="bankNo" show-overflow-tooltip/>
