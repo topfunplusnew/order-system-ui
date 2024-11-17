@@ -207,8 +207,8 @@ export default {
         <el-form-item label="日期" prop="rebateDate">
           <el-date-picker
             v-model="moneyBackInfo.rebateDate"
-            type="date"
-            placeholder="选择日期" value-format="yyyy-MM-dd">
+            type="datetime"
+            placeholder="选择日期" value-format="yyyy-MM-dd HH:mm:ss">
           </el-date-picker>
         </el-form-item>
         <el-form-item label="金额" prop="rebate">

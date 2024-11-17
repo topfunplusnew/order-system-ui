@@ -20,8 +20,8 @@
       <el-form-item label="充值时间" prop="rechargeDate">
         <el-date-picker
           v-model="queryParams.rechargeDate"
-          type="date"
-          placeholder="选择充值时间" value-format="yyyy-MM-dd">
+          type="datetime"
+          placeholder="选择充值时间" value-format="yyyy-MM-dd HH:mm:ss">
         </el-date-picker>
       </el-form-item>
       <el-form-item>

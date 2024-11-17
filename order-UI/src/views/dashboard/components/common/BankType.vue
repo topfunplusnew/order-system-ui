@@ -5,20 +5,22 @@
 export default {
   name: "BankType",
   dicts: ['order_bank_card_type_nodel'],
+  props:{
+    // 已经选择的
+    selectType: {
+      type: String,
+      default: null
+    }
+  },
+  mounted() {
+    // 如果父组件给值 那么就挂载默认值
+    if(this.selectType){
+      // 初始化默认值
+      this.selectedType = this.selectType
+    }
+  },
   data() {
     return {
-      // 账户类型
-      // types: [
-      //   {
-      //     value: '现金户',
-      //     label: '现金户'
-      //   },
-      //   {
-      //     value: '承兑户',
-      //     label: '承兑户'
-      //   }
-      // ],
-      // 选择的类型
       selectedType: null,
     }
   },

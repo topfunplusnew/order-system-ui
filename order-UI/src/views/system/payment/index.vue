@@ -5,7 +5,7 @@
         <el-date-picker
           v-model="dateRange"
           style="width: 240px"
-          value-format="yyyy-MM-dd"
+          value-format="yyyy-MM-dd HH:mm:ss"
           type="daterange"
           range-separator="-"
           start-placeholder="开始日期"
@@ -282,9 +282,9 @@
         <el-form-item label="日期" prop="fundsDate">
           <el-date-picker
             v-model="form.fundsDate"
-            type="date"
+            type="datetime"
             placeholder="选择日期"
-            value-format="yyyy-MM-dd">
+            value-format="yyyy-MM-dd HH:mm:ss">
           </el-date-picker>
         </el-form-item>
         <!--        付款类型-->
@@ -298,7 +298,7 @@
           <el-input v-model="form.moneyAmount" placeholder="请输入金额"/>
         </el-form-item>
         <el-form-item label="我方银行账户类型">
-          <BankType @updateSelectedType="changeSelfBankType"/>
+          <BankType @updateSelectedType="changeSelfBankType" :select-type="form.selfBankCardType"/>
         </el-form-item>
         <!--        对方信息-->
         <el-form-item label="己方户名" prop="selfAcountsName">
@@ -457,7 +457,7 @@
           </el-form-item>
         </el-row>
         <el-form-item label="对方银行账户类型">
-          <BankType @updateSelectedType="changeOtherBankType"/>
+          <BankType @updateSelectedType="changeOtherBankType" :select-type="form.otherBankCardType"/>
         </el-form-item>
         <el-form-item label="对方账号" prop="otherBankNo">
           <el-row>
@@ -553,8 +553,8 @@ import DynamicField from "@/components/DynamicField.vue";
 import {mixin_paymentindex_fill} from "./paymentFill";
 import CheckPrevious from "../../dashboard/components/payment/CheckPrevious.vue";
 import CheckDetail from "../../dashboard/components/payment/CheckDetail.vue";
-import {mixin_bankType} from "@/views/dashboard/mixins/common/common_bankType";
 import BankType from "@/views/dashboard/components/common/BankType.vue";
+import {mixin_bankType} from "../../dashboard/mixins/common/common_bankType";
 
 export default {
   name: "Payment",

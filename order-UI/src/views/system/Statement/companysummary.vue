@@ -9,16 +9,16 @@
       <el-form-item label="开始时间" prop="beginTime">
         <el-date-picker
           v-model="queryParams.beginTime"
-          type="date"
+          type="datetime"
           placeholder="请选择开始时间"
-          value-format="yyyy-MM-dd">
+          value-format="yyyy-MM-dd HH:mm:ss">
         </el-date-picker>
       </el-form-item>
       <el-form-item label="结束时间" prop="endTime">
         <el-date-picker
           v-model="queryParams.endTime"
-          type="date"
-          placeholder="请选择结束时间" value-format="yyyy-MM-dd">
+          type="datetime"
+          placeholder="请选择结束时间" value-format="yyyy-MM-dd HH:mm:ss">
         </el-date-picker>
       </el-form-item>
       <el-form-item>
@@ -136,18 +136,18 @@
         <el-form-item label="开始时间" prop="beginTime">
           <el-date-picker
             v-model="queryParams.beginTime"
-            type="date"
+            type="datetime"
             placeholder="选择时间"
-            value-format="yyyy-MM-dd"
+            value-format="yyyy-MM-dd HH:mm:ss"
             size="mini">
           </el-date-picker>
         </el-form-item>
         <el-form-item label="结束时间" prop="endTime">
           <el-date-picker
             v-model="queryParams.endTime"
-            type="date"
+            type="datetime"
             placeholder="选择时间"
-            value-format="yyyy-MM-dd"
+            value-format="yyyy-MM-dd HH:mm:ss"
             size="mini">
           </el-date-picker>
         </el-form-item>
@@ -184,7 +184,7 @@ export default {
         pageNum: 1,
         pageSize: 50,
         beginTime: '',
-        endTime: parseTime(new Date(), '{y}-{m}-{d}'),
+        endTime: parseTime(new Date(), '{y}-{m}-{d} {h}:{i}:{s}'),
       },
       // 表单校验
       columns: [

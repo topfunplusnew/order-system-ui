@@ -281,9 +281,9 @@
             <el-form-item label="缴费时间" prop="insuranceDate">
               <el-date-picker
                 v-model="form.insuranceDate"
-                type="date"
+                type="datetime"
                 placeholder="选择缴费时间"
-                value-format="yyyy-MM-dd"
+                value-format="yyyy-MM-dd HH:mm:ss"
                 style="width: 120px">
               </el-date-picker>
             </el-form-item>

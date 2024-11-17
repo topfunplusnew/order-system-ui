@@ -5,7 +5,7 @@
         <el-date-picker
           v-model="daterangeTransactionTime"
           style="width: 240px"
-          value-format="yyyy-MM-dd"
+          value-format="yyyy-MM-dd HH:mm:ss"
           type="daterange"
           range-separator="-"
           start-placeholder="开始日期"
@@ -101,7 +101,7 @@
       <el-table-column label="id" align="center" prop="id"/>
       <el-table-column label="交易时间" align="center" prop="transactionTime" width="180">
         <template slot-scope="scope">
-          <span>{{ parseTime(scope.row.transactionTime, '{y}-{m}-{d}') }}</span>
+          <span>{{ parseTime(scope.row.transactionTime, '{y}-{m}-{d} {h}:{i}:{s}') }}</span>
         </template>
       </el-table-column>
       <el-table-column label="金额" align="center" prop="amount"/>
@@ -296,8 +296,8 @@
         <el-form-item label="交易时间" prop="transactionTime">
           <el-date-picker clearable
                           v-model="form.transactionTime"
-                          type="date"
-                          value-format="yyyy-MM-dd"
+                          type="datetime"
+                          value-format="yyyy-MM-dd HH:mm:ss"
                           placeholder="请选择交易时间">
           </el-date-picker>
         </el-form-item>

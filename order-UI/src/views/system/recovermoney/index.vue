@@ -5,7 +5,7 @@
         <el-date-picker
           v-model="dateRange"
           style="width: 240px"
-          value-format="yyyy-MM-dd"
+          value-format="yyyy-MM-dd HH:mm:ss"
           type="daterange"
           start-placeholder="开始日期"
           end-placeholder="结束日期"
@@ -136,7 +136,6 @@ import {addReason} from "@/api/system/user";
 import {TableName} from "@/api/tool/enums";
 import {excludeParams} from "@/api/tool/exclude";
 import BankType from "@/views/dashboard/components/common/BankType.vue";
-import {mixin_bankType} from "@/views/dashboard/mixins/common/common_bankType";
 import {mixin_printHTML} from "@/views/dashboard/mixins/print";
 
 export default {

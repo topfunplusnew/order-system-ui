@@ -5,7 +5,7 @@
         <el-date-picker
           v-model="daterangeOutDate"
           style="width: 240px"
-          value-format="yyyy-MM-dd"
+          value-format="yyyy-MM-dd HH:mm:ss"
           type="daterange"
           range-separator="-"
           start-placeholder="开始日期"
@@ -145,7 +145,7 @@
 
       <el-table-column label="出库日期" align="center" prop="outDate" width="180" v-if="columns[1].visible">
         <template #default="scope">
-          <span>{{ parseTime(scope.row.outDate, '{y}-{m}-{d}') }}</span>
+          <span>{{ parseTime(scope.row.outDate, '{y}-{m}-{d} {h}:{i}:{s}') }}</span>
         </template>
       </el-table-column>
 
@@ -212,8 +212,8 @@
         <el-form-item label="出库日期" prop="outDate">
           <el-date-picker clearable
                           v-model="form.outDate"
-                          type="date"
-                          value-format="yyyy-MM-dd"
+                          type="datetime"
+                          value-format="yyyy-MM-dd HH:mm:ss"
                           placeholder="请选择出库日期">
           </el-date-picker>
         </el-form-item>

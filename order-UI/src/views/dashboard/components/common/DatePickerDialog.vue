@@ -33,17 +33,17 @@ export default {
       <el-row style="text-align: center">
         <el-date-picker
           v-model="beginTime"
-          type="date"
+          type="datetime"
           placeholder="开始日期"
-          value-format="yyyy-MM-dd"
+          value-format="yyyy-MM-dd HH:mm:ss"
           style="margin-bottom: 10px"
         />
       </el-row>
       <el-row style="text-align: center">
         <el-date-picker
           v-model="endTime"
-          type="date"
-          value-format="yyyy-MM-dd"
+          type="datetime"
+          value-format="yyyy-MM-dd HH:mm:ss"
           placeholder="结束日期"
         />
       </el-row>

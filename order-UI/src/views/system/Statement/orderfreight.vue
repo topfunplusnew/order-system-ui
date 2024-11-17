@@ -10,8 +10,8 @@ export default {
   data() {
     return {
       queryParams: {
-        beginTime: parseTime(new Date(new Date().getTime() - 30 * 24 * 60 * 60 * 1000), '{y}-{m}-{d}'),
-        endTime: parseTime(new Date(), '{y}-{m}-{d}'),
+        beginTime: parseTime(new Date(new Date().getTime() - 30 * 24 * 60 * 60 * 1000), '{y}-{m}-{d} {h}:{i}:{s}'),
+        endTime: parseTime(new Date(), '{y}-{m}-{d} {h}:{i}:{s}'),
         pageNum: 1,
         pageSize: 50
       },
@@ -80,18 +80,18 @@ export default {
           <el-form-item label="时间" prop="companyName">
             <el-date-picker
               v-model="queryParams.beginTime"
-              type="date"
+              type="datetime"
               size="mini"
-              value-format="yyyy-MM-dd"
+              value-format="yyyy-MM-dd HH:mm:ss"
               placeholder="选择日期">
             </el-date-picker>
           </el-form-item>
           <el-form-item>
             <el-date-picker
               v-model="queryParams.endTime"
-              type="date"
+              type="datetime"
               size="mini"
-              value-format="yyyy-MM-dd"
+              value-format="yyyy-MM-dd HH:mm:ss"
               placeholder="选择日期">
             </el-date-picker>
           </el-form-item>
@@ -176,18 +176,18 @@ export default {
         <el-form-item label="开始时间" prop="beginTime">
           <el-date-picker
             v-model="queryParams.beginTime"
-            type="date"
+            type="datetime"
             placeholder="选择时间"
-            value-format="yyyy-MM-dd"
+            value-format="yyyy-MM-dd HH:mm:ss"
             size="mini">
           </el-date-picker>
         </el-form-item>
         <el-form-item label="结束时间" prop="endTime">
           <el-date-picker
             v-model="queryParams.endTime"
-            type="date"
+            type="datetime"
             placeholder="选择时间"
-            value-format="yyyy-MM-dd"
+            value-format="yyyy-MM-dd HH:mm:ss"
             size="mini">
           </el-date-picker>
         </el-form-item>

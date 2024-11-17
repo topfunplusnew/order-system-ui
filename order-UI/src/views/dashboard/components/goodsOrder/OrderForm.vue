@@ -130,7 +130,7 @@ export default {
         const updateOrderItem = (item) => {
           item.customerID = this.orderInfo.customerID;
           item.customer = this.orderInfo.customer;
-          item.orderDate = parseTime(new Date(), '{y}-{m}-{d}');
+          item.orderDate = parseTime(new Date(), '{y}-{m}-{d} {h}:{i}:{s}');
         }
         // 对订单货物列表的每一个货物都执行这个操作
         this.orderItemList.forEach(item => updateOrderItem(item));
@@ -160,7 +160,7 @@ export default {
           customer: this.orderInfo.customer,
           isIncludeTaxFactory: item.isIncludeTaxFactory === '是' ? '1' : '0',
           isIncludeTaxSale: item.isIncludeTaxSale === '是' ? '1' : '0',
-          orderDate: parseTime(new Date(), '{y}-{m}-{d}')
+          orderDate: parseTime(new Date(), '{y}-{m}-{d} {h}:{i}:{s}')
         });
         // 对每一个货物都添加
         this.orderItemList.forEach(item => Object.assign(item, formatOrderItem(item)));
@@ -253,9 +253,9 @@ export default {
           <el-date-picker
             v-model="orderInfo.orderDate"
             size="mini"
-            type="date"
+            type="datetime"
             placeholder="选择日期"
-            value-format="yyyy-MM-dd" style="width: 120px">
+            value-format="yyyy-MM-dd HH:mm:ss" style="width: 120px">
           </el-date-picker>
         </el-form-item>
         <el-form-item label="客户" prop="customer">

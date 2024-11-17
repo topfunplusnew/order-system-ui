@@ -5,16 +5,16 @@
       <el-form-item label="开始时间" prop="beginTime">
         <el-date-picker
           v-model="timesQuery.beginTime"
-          type="date"
+          type="datetime"
           placeholder="请选择开始时间"
-          value-format="yyyy-MM-dd">
+          value-format="yyyy-MM-dd HH:mm:ss">
         </el-date-picker>
       </el-form-item>
       <el-form-item label="结束时间" prop="endTime">
         <el-date-picker
           v-model="timesQuery.endTime"
-          type="date"
-          placeholder="请选择结束时间" value-format="yyyy-MM-dd">
+          type="datetime"
+          placeholder="请选择结束时间" value-format="yyyy-MM-dd HH:mm:ss">
         </el-date-picker>
       </el-form-item>
       <el-form-item label="对象类型" prop="objectType">
@@ -203,9 +203,9 @@
             <el-form-item label="支付时间" prop="futuresDate">
               <el-date-picker
                 v-model="form.futuresDate"
-                type="date"
+                type="datetime"
                 placeholder="请选择支付时间"
-                value-format="yyyy-MM-dd">
+                value-format="yyyy-MM-dd HH:mm:ss">
               </el-date-picker>
             </el-form-item>
             <el-form-item label="金额" prop="moneyAmount">
@@ -327,7 +327,7 @@
             </el-row>
           </el-form-item>
           <el-form-item label="我方银行账户类型">
-            <BankType @updateSelectedType="changeCustomSelfBankType"/>
+            <BankType @updateSelectedType="changeCustomSelfBankType" :select-type="recoverMoneyEntity.selfBankCardType"/>
           </el-form-item>
           <el-form-item label="收回账号" prop="bankNo">
             <el-input v-model="recoverMoneyEntity.bankNo" placeholder="请输入收回账号"/>
@@ -338,8 +338,8 @@
           <el-form-item label="收回日期" prop="payDate">
             <el-date-picker
               v-model="recoverMoneyEntity.recoverDate"
-              type="date"
-              placeholder="请选择收回日期" value-format="yyyy-MM-dd">
+              type="datetime"
+              placeholder="请选择收回日期" value-format="yyyy-MM-dd HH:mm:ss">
             </el-date-picker>
           </el-form-item>
           <el-form-item label="备注信息" prop="comments">
@@ -376,10 +376,10 @@ import {excludeParams} from "@/api/tool/exclude";
 import {mixin_reviveMoney} from "../../dashboard/mixins/receive";
 import {mixin_printHTML} from "../../dashboard/mixins/print";
 import {ReceiveType} from "../../../api/tool/enums";
-import {mixin_lend_money_fill} from "@/views/system/lendmoney/lendMoneyFill";
 import DynamicField from "@/components/DynamicField.vue";
 import BankType from "@/views/dashboard/components/common/BankType.vue";
-import {mixin_bankType} from "@/views/dashboard/mixins/common/common_bankType";
+import {mixin_bankType} from "../../dashboard/mixins/common/common_bankType";
+import {mixin_lend_money_fill} from "./lendMoneyFill";
 
 export default {
   name: "LendMoney",
@@ -548,6 +548,7 @@ export default {
       }
       this.applyDialogVisible = true;
     },
+    // 修改对方账户类型
     changeCustomSelfBankType(value) {
       this.recoverMoneyEntity.selfBankCardType = value
     },

@@ -5,7 +5,7 @@
         <el-date-picker
           v-model="dateRange"
           style="width: 240px"
-          value-format="yyyy-MM-dd"
+          value-format="yyyy-MM-dd HH:mm:ss"
           type="daterange"
           start-placeholder="开始日期"
           end-placeholder="结束日期"
@@ -118,9 +118,9 @@
             <el-form-item label="贷款发放日期" prop="loanDate">
               <el-date-picker
                 v-model="form.loanDate"
-                type="date"
+                type="datetime"
                 placeholder="请选择贷款发放日期"
-                value-format="yyyy-MM-dd">
+                value-format="yyyy-MM-dd HH:mm:ss">
               </el-date-picker>
             </el-form-item>
             <el-form-item label="贷款年限" prop="loanDuring">
@@ -132,7 +132,7 @@
               <el-input v-model="form.mortgageGuarantee" placeholder="请输入抵押担保"/>
             </el-form-item>
             <el-form-item label="我方银行账户类型">
-              <BankType @updateSelectedType="changeSelfBankType"/>
+              <BankType @updateSelectedType="changeSelfBankType" :select-type="form.selfBankCardType"/>
             </el-form-item>
             <el-form-item label="打入账户" prop="acountsName">
               <el-row>
@@ -187,9 +187,9 @@
           <el-form-item label="支付日期" prop="payDate">
             <el-date-picker
               v-model="moneyBackInfo.payDate"
-              type="date"
+              type="datetime"
               placeholder="选择支付日期"
-              value-format="yyyy-MM-dd">
+              value-format="yyyy-MM-dd HH:mm:ss">
             </el-date-picker>
           </el-form-item>
           <el-form-item label="银行户名" prop="acountsName">
@@ -247,7 +247,7 @@ import {addDateRange, parseTime} from "@/utils/ruoyi";
 import {excludeParams} from "@/api/tool/exclude";
 import {mixin_printHTML} from "../../dashboard/mixins/print";
 import BankType from "@/views/dashboard/components/common/BankType.vue";
-import {mixin_bankType} from "@/views/dashboard/mixins/common/common_bankType";
+import {mixin_bankType} from "../../dashboard/mixins/common/common_bankType";
 
 export default {
   name: "BorrowedMoney",

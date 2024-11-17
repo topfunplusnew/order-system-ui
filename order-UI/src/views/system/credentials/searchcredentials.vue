@@ -51,9 +51,9 @@ export default {
             <el-form-item label="开始时间" prop="beginTime">
               <el-date-picker
                 v-model="queryParams.orderDateStart"
-                type="date"
+                type="datetime"
                 placeholder="选择时间"
-                value-format="yyyy-MM-dd"
+                value-format="yyyy-MM-dd HH:mm:ss"
                 size="mini"
               >
               </el-date-picker>
@@ -63,9 +63,9 @@ export default {
             <el-form-item label="结束时间" prop="endTime">
               <el-date-picker
                 v-model="queryParams.orderDateEnd"
-                type="date"
+                type="datetime"
                 placeholder="选择时间"
-                value-format="yyyy-MM-dd"
+                value-format="yyyy-MM-dd HH:mm:ss"
                 size="mini"
               >
               </el-date-picker>

@@ -44,8 +44,8 @@
       <el-form-item label="审核时间" prop="auditdate">
         <el-date-picker clearable
           v-model="queryParams.auditdate"
-          type="date"
-          value-format="yyyy-MM-dd"
+          type="datetime"
+          value-format="yyyy-MM-dd HH:mm:ss"
           placeholder="请选择审核时间">
         </el-date-picker>
       </el-form-item>
@@ -151,7 +151,7 @@
       <el-table-column label="允许的审核人员ID" align="center" prop="auditauthority" />
       <el-table-column label="审核时间" align="center" prop="auditdate" width="180">
         <template slot-scope="scope">
-          <span>{{ parseTime(scope.row.auditdate, '{y}-{m}-{d}') }}</span>
+          <span>{{ parseTime(scope.row.auditdate, '{y}-{m}-{d} {h}:{i}:{s}') }}</span>
         </template>
       </el-table-column>
       <el-table-column label="审核人员ID" align="center" prop="userId" />
@@ -208,8 +208,8 @@
         <el-form-item label="审核时间" prop="auditdate">
           <el-date-picker clearable
             v-model="form.auditdate"
-            type="date"
-            value-format="yyyy-MM-dd"
+            type="datetime"
+            value-format="yyyy-MM-dd HH:mm:ss"
             placeholder="请选择审核时间">
           </el-date-picker>
         </el-form-item>

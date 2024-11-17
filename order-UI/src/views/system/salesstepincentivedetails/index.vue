@@ -13,7 +13,7 @@
         <el-date-picker
           v-model="daterangeOrderDate"
           style="width: 240px"
-          value-format="yyyy-MM-dd"
+          value-format="yyyy-MM-dd HH:mm:ss"
           type="daterange"
           range-separator="-"
           start-placeholder="开始日期"
@@ -32,7 +32,7 @@
         <el-date-picker
           v-model="daterangeRewardDate"
           style="width: 240px"
-          value-format="yyyy-MM-dd"
+          value-format="yyyy-MM-dd HH:mm:ss"
           type="daterange"
           range-separator="-"
           start-placeholder="开始日期"
@@ -127,7 +127,7 @@
       <el-table-column label="订单日期" align="center" prop="orderDate" width="180" v-if="columns[2].visible"
                        show-overflow-tooltip>
         <template #default="scope">
-          <span>{{ parseTime(scope.row.orderDate, '{y}-{m}-{d}') }}</span>
+          <span>{{ parseTime(scope.row.orderDate, '{y}-{m}-{d} {h}:{i}:{s}') }}</span>
         </template>
       </el-table-column>
       <el-table-column label="接受奖励人员" align="center" prop="salesPerson" v-if="columns[3].visible"
@@ -149,7 +149,7 @@
       <el-table-column label="奖励日期" align="center" prop="rewardDate" width="180" v-if="columns[11].visible"
                        show-overflow-tooltip>
         <template #default="scope">
-          <span>{{ parseTime(scope.row.rewardDate, '{y}-{m}-{d}') }}</span>
+          <span>{{ parseTime(scope.row.rewardDate, '{y}-{m}-{d} {h}:{i}:{s}') }}</span>
         </template>
       </el-table-column>
       <el-table-column label="备注" align="center" prop="remark" v-if="columns[12].visible" show-overflow-tooltip/>
@@ -196,8 +196,8 @@
             <el-form-item label="订单日期" prop="orderDate">
               <el-date-picker clearable
                               v-model="form.orderDate"
-                              type="date"
-                              value-format="yyyy-MM-dd"
+                              type="datetime"
+                              value-format="yyyy-MM-dd HH:mm:ss"
                               placeholder="请选择订单日期">
               </el-date-picker>
             </el-form-item>
@@ -234,8 +234,8 @@
             <el-form-item label="奖励日期" prop="rewardDate">
               <el-date-picker clearable
                               v-model="form.rewardDate"
-                              type="date"
-                              value-format="yyyy-MM-dd"
+                              type="datetime"
+                              value-format="yyyy-MM-dd HH:mm:ss"
                               placeholder="请选择奖励日期">
               </el-date-picker>
             </el-form-item>

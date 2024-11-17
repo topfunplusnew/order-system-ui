@@ -11,9 +11,9 @@
         <el-form-item label="开票日期" prop="invoiceDate">
           <el-date-picker
             v-model="updateOrderItemVisibleTitleInfo.invoiceDate"
-            type="date"
+            type="datetime"
             placeholder="选择日期"
-            value-format="yyyy-MM-dd">
+            value-format="yyyy-MM-dd HH:mm:ss">
           </el-date-picker>
         </el-form-item>
         <el-form-item label="我方开票实体" prop="invoiceObject">

@@ -4,15 +4,15 @@
       <el-form-item label="开始日期" prop="startDate">
         <el-date-picker
           v-model="queryParams.startDate"
-          type="date"
-          placeholder="选择日期" value-format="yyyy-MM-dd">
+          type="datetime"
+          placeholder="选择日期" value-format="yyyy-MM-dd HH:mm:ss">
         </el-date-picker>
       </el-form-item>
       <el-form-item label="结束日期" prop="endDate">
         <el-date-picker
           v-model="queryParams.endDate"
-          type="date"
-          placeholder="选择日期" value-format="yyyy-MM-dd">
+          type="datetime"
+          placeholder="选择日期" value-format="yyyy-MM-dd HH:mm:ss">
         </el-date-picker>
       </el-form-item>
       <el-form-item label="供应商/客户" prop="searchCompamyName">

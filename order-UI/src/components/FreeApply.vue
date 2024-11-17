@@ -126,8 +126,8 @@ export default {
       <el-form-item label="支付日期">
         <el-date-picker
             v-model="form.payDate"
-            type="date"
-            placeholder="选择日期" value-format="yyyy-MM-dd">
+            type="datetime"
+            placeholder="选择日期" value-format="yyyy-MM-dd HH:mm:ss">
         </el-date-picker>
       </el-form-item>
       <el-form-item label="备注信息">

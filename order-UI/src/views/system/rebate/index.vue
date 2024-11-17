@@ -4,15 +4,15 @@
       <el-form-item label="返利开始日期" prop="rebateStartTime">
         <el-date-picker
           v-model="queryParams.rebateStartTime"
-          type="date"
-          placeholder="选择开始时间" value-format="yyyy-MM-dd">
+          type="datetime"
+          placeholder="选择开始时间" value-format="yyyy-MM-dd HH:mm:ss">
         </el-date-picker>
       </el-form-item>
       <el-form-item label="返利结束日期" prop="rebateEndTime">
         <el-date-picker
           v-model="queryParams.rebateEndTime"
-          type="date"
-          placeholder="选择开始时间" value-format="yyyy-MM-dd">
+          type="datetime"
+          placeholder="选择开始时间" value-format="yyyy-MM-dd HH:mm:ss">
         </el-date-picker>
       </el-form-item>
       <el-form-item label="供应商" prop="supplier">
@@ -154,9 +154,9 @@
               <el-form-item label="日期" prop="rebateDate">
                 <el-date-picker
                   v-model="form.rebateDate"
-                  type="date"
+                  type="datetime"
                   placeholder="日期"
-                  value-format="yyyy-MM-dd">
+                  value-format="yyyy-MM-dd HH:mm:ss">
                 </el-date-picker>
               </el-form-item>
               <el-form-item label="类型" prop="rebateType">
@@ -188,7 +188,7 @@
                 </el-row>
               </el-form-item>
               <el-form-item label="收款方账户类型">
-                <BankType @updateSelectedType="changeSelfBankType"/>
+                <BankType @updateSelectedType="changeSelfBankType" :select-type="form.selfBankCardType"/>
               </el-form-item>
               <el-form-item label="收款户名" prop="inAcountsName">
                 <el-row>
@@ -218,7 +218,7 @@
             </el-col>
             <el-col :span="12">
               <el-form-item label="付款方账户类型">
-                <BankType @updateSelectedType="changeOtherBankType"/>
+                <BankType @updateSelectedType="changeOtherBankType" :select-type="form.otherBankCardType"/>
               </el-form-item>
               <el-form-item label="付款户名" prop="outAcountsName">
                 <el-row>
@@ -458,7 +458,7 @@
                 <el-date-picker
                   v-model="queryParamsSupplier.dateRange"
                   style="width: 240px"
-                  value-format="yyyy-MM-dd"
+                  value-format="yyyy-MM-dd HH:mm:ss"
                   type="daterange"
                   range-separator="-"
                   start-placeholder="开始日期"
@@ -504,9 +504,9 @@ import OrderDetailList from "../../dashboard/components/rebate/OrderDetailList.v
 import {mixin_choose_order} from "../../dashboard/mixins/rebate/choose_order";
 import {mixin_rebate_fill} from "../../dashboard/mixins/rebate/rebate_fill";
 import {isNull} from "../../../main";
-import {mixin_bankType} from "@/views/dashboard/mixins/common/common_bankType";
 import BankType from "@/views/dashboard/components/common/BankType.vue";
-import {listOrderDetail, listOrderDetailByIds, listOrderDetailNoPage} from "@/api/system/orderDetail";
+import {listOrderDetailByIds} from "@/api/system/orderDetail";
+import {mixin_bankType} from "../../dashboard/mixins/common/common_bankType";
 
 export default {
   name: "Rebate",
@@ -754,7 +754,8 @@ export default {
         // 这里打开的时候要判断后端返回的数据 如果orderDetailIds有数据 那么要自动选择相关订单
         if (this.form.orderDetailIds?.length > 0) {
           // goods 要填充这个数组 这个是货物的id 查询货物list 筛选需要的货物
-          listOrderDetailByIds(this.form.orderDetailIds).then(res => {
+          const ids = JSON.parse(JSON.stringify(this.form.orderDetailIds))
+          listOrderDetailByIds(ids).then(res => {
             this.goods = res.rows
           })
         }

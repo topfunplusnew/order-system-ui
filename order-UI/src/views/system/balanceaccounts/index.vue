@@ -6,7 +6,7 @@
         <el-date-picker
           v-model="dateRange"
           style="width: 240px"
-          value-format="yyyy-MM-dd"
+          value-format="yyyy-MM-dd HH:mm:ss"
           type="daterange"
           start-placeholder="开始日期"
           end-placeholder="结束日期"
@@ -109,9 +109,9 @@
           <!--          <el-input v-model="form.operateDate" placeholder="请输入操作时间"/>-->
           <el-date-picker
             v-model="form.operateDate"
-            type="date"
+            type="datetime"
             placeholder="选择操作时间"
-            value-format="yyyy-MM-dd">
+            value-format="yyyy-MM-dd HH:mm:ss">
           </el-date-picker>
         </el-form-item>
         <el-form-item label="金额" prop="moneyAmount">
@@ -420,7 +420,7 @@ export default {
             this.form.updateTime = null;
             this.form.userId = null;
             // this.form.companyType = this.form.companyType === '供应商' ? 2 : 1
-            this.form.operateDate = parseTime(this.form.operateDate, '{y}-{m}-{d}')
+            this.form.operateDate = parseTime(this.form.operateDate, '{y}-{m}-{d} {h}:{i}:{s}')
             this.form = excludeParams(this.form, this.$exclude)
             updateBalanceAccounts({
               ...this.form,
@@ -436,7 +436,7 @@ export default {
             this.form.updateTime = null;
             this.form.userId = null;
             // this.form.companyType = this.form.companyType === '供应商' ? 2 : 1
-            this.form.operateDate = parseTime(this.form.operateDate, '{y}-{m}-{d}')
+            this.form.operateDate = parseTime(this.form.operateDate, '{y}-{m}-{d} {h}:{i}:{s}')
             this.form = excludeParams(this.form, this.$exclude)
             addBalanceAccounts({
               ...this.form,

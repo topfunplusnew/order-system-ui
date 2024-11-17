@@ -5,7 +5,7 @@
         <el-date-picker
           v-model="dateRange"
           style="width: 240px"
-          value-format="yyyy-MM-dd"
+          value-format="yyyy-MM-dd HH:mm:ss"
           type="daterange"
           range-separator="-"
           start-placeholder="开始日期"
@@ -113,9 +113,9 @@
             <el-form-item label="购入日期" prop="buyDate">
               <el-date-picker
                 v-model="form.buyDate"
-                type="date"
+                type="datetime"
                 placeholder="购入日期"
-                value-format="yyyy-MM-dd">
+                value-format="yyyy-MM-dd HH:mm:ss">
               </el-date-picker>
             </el-form-item>
             <el-form-item label="资产编号" prop="assetNo">
@@ -151,9 +151,9 @@
             <el-form-item label="固定资产清理时间" prop="scrapDate">
               <el-date-picker
                 v-model="form.scrapDate"
-                type="date"
+                type="datetime"
                 placeholder="固定资产清理时间"
-                value-format="yyyy-MM-dd">
+                value-format="yyyy-MM-dd HH:mm:ss">
               </el-date-picker>
             </el-form-item>
             <el-form-item label="清理/变卖价值" prop="saleAmount">

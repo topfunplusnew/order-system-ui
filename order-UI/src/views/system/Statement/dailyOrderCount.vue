@@ -11,9 +11,9 @@ export default {
     return {
       queryParams: {
         // 上个月的第一天
-        beginTime: parseTime(new Date(new Date().getFullYear(), new Date().getMonth() - 1, 1), '{y}-{m}-{d}'),
+        beginTime: parseTime(new Date(new Date().getFullYear(), new Date().getMonth() - 1, 1), '{y}-{m}-{d} {h}:{i}:{s}'),
         // 本月最后一天
-        endTime: parseTime(new Date(new Date().getFullYear(), new Date().getMonth() + 1, 0), '{y}-{m}-{d}'),
+        endTime: parseTime(new Date(new Date().getFullYear(), new Date().getMonth() + 1, 0), '{y}-{m}-{d} {h}:{i}:{s}'),
       },
       loading: '',
       columns: [
@@ -106,18 +106,18 @@ export default {
           <el-form-item label="时间" prop="companyName">
             <el-date-picker
               v-model="queryParams.beginTime"
-              type="date"
+              type="datetime"
               size="mini"
-              value-format="yyyy-MM-dd"
+              value-format="yyyy-MM-dd HH:mm:ss"
               placeholder="选择日期">
             </el-date-picker>
           </el-form-item>
           <el-form-item>
             <el-date-picker
               v-model="queryParams.endTime"
-              type="date"
+              type="datetime"
               size="mini"
-              value-format="yyyy-MM-dd"
+              value-format="yyyy-MM-dd HH:mm:ss"
               placeholder="选择日期">
             </el-date-picker>
           </el-form-item>
@@ -206,18 +206,18 @@ export default {
         <el-form-item label="开始时间" prop="beginTime">
           <el-date-picker
             v-model="queryParams.beginTime"
-            type="date"
+            type="datetime"
             placeholder="选择时间"
-            value-format="yyyy-MM-dd"
+            value-format="yyyy-MM-dd HH:mm:ss"
             size="mini">
           </el-date-picker>
         </el-form-item>
         <el-form-item label="结束时间" prop="endTime">
           <el-date-picker
             v-model="queryParams.endTime"
-            type="date"
+            type="datetime"
             placeholder="选择时间"
-            value-format="yyyy-MM-dd"
+            value-format="yyyy-MM-dd HH:mm:ss"
             size="mini">
           </el-date-picker>
         </el-form-item>

@@ -98,15 +98,15 @@ export default {
       <el-form-item label="开票开始日期" prop="beginTime">
         <el-date-picker
           v-model="queryParams.beginTime"
-          type="date"
-          placeholder="选择日期" value-format="yyyy-MM-dd">
+          type="datetime"
+          placeholder="选择日期" value-format="yyyy-MM-dd HH:mm:ss">
         </el-date-picker>
       </el-form-item>
       <el-form-item label="开票结束日期" prop="endTime">
         <el-date-picker
           v-model="queryParams.endTime"
-          type="date"
-          placeholder="选择日期" value-format="yyyy-MM-dd">
+          type="datetime"
+          placeholder="选择日期" value-format="yyyy-MM-dd HH:mm:ss">
         </el-date-picker>
       </el-form-item>
       <el-form-item>

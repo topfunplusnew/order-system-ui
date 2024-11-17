@@ -429,7 +429,7 @@
     <OrderHistoryCheck :active-names="activeNames" :check-history-order-visible="checkHistoryOrderVisible"
                        :checkcurrent-order-item-info="checkcurrentOrderItemInfo"
                        :order-history-info-list="orderHistoryInfoList"
-                       :parse-time="parseTime(new Date(),'{y}-{m}-{d}')" @close="closeOrderHistoryCheck"/>
+                       :parse-time="parseTime(new Date(),'{y}-{m}-{d} {h}:{i}:{s}')" @close="closeOrderHistoryCheck"/>
 
     <!--      历史记录中点击原订单信息-->
     <PrimativeOrderInfo :current-order-item-info="currentOrderItemInfo"

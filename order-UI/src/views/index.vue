@@ -11,18 +11,18 @@
           <el-col :span="6">
             <el-date-picker
               v-model="queryParams.beginTime"
-              type="date"
+              type="datetime"
               size="mini"
-              value-format="yyyy-MM-dd"
+              value-format="yyyy-MM-dd HH:mm:ss"
               placeholder="开始日期"
             ></el-date-picker>
           </el-col>
           <el-col :span="6">
             <el-date-picker
               v-model="queryParams.endTime"
-              type="date"
+              type="datetime"
               size="mini"
-              value-format="yyyy-MM-dd"
+              value-format="yyyy-MM-dd HH:mm:ss"
               placeholder="结束日期"
             ></el-date-picker>
           </el-col>
@@ -41,18 +41,18 @@
           <el-col :span="6">
             <el-date-picker
               v-model="queryParams.beginTime"
-              type="date"
+              type="datetime"
               size="mini"
-              value-format="yyyy-MM-dd"
+              value-format="yyyy-MM-dd HH:mm:ss"
               placeholder="开始日期"
             ></el-date-picker>
           </el-col>
           <el-col :span="6">
             <el-date-picker
               v-model="queryParams.endTime"
-              type="date"
+              type="datetime"
               size="mini"
-              value-format="yyyy-MM-dd"
+              value-format="yyyy-MM-dd HH:mm:ss"
               placeholder="结束日期"
             ></el-date-picker>
           </el-col>
@@ -249,8 +249,8 @@ export default {
     return {
       loading: false,
       queryParams: {
-        startTime: parseTime(new Date(), '{y}-{m}-{d}'),
-        endTime: parseTime(new Date(), '{y}-{m}-{d}'),
+        startTime: parseTime(new Date(), '{y}-{m}-{d} {h}:{i}:{s}'),
+        endTime: parseTime(new Date(), '{y}-{m}-{d} {h}:{i}:{s}'),
         pageNum: 1,
         pageSize: 10
       },

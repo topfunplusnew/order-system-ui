@@ -4,15 +4,15 @@
       <el-form-item label="开始时间" prop="issueDateStart">
         <el-date-picker
           v-model="queryParams.issueDateStart"
-          type="date"
-          placeholder="选择日期" value-format="yyyy-MM-dd">
+          type="datetime"
+          placeholder="选择日期" value-format="yyyy-MM-dd HH:mm:ss">
         </el-date-picker>
       </el-form-item>
       <el-form-item label="结束时间" prop="issueDateEnd">
         <el-date-picker
           v-model="queryParams.issueDateEnd"
-          type="date"
-          placeholder="选择日期" value-format="yyyy-MM-dd">
+          type="datetime"
+          placeholder="选择日期" value-format="yyyy-MM-dd HH:mm:ss">
         </el-date-picker>
       </el-form-item>
       <el-form-item label="票据号码" prop="billNo">
@@ -218,8 +218,8 @@
     <!--            <el-form-item label="我方收票日期" prop="billDate">-->
     <!--              <el-date-picker-->
     <!--                v-model="form.billDate"-->
-    <!--                type="date"-->
-    <!--                placeholder="选择日期" format="yyyy 年 MM 月 dd 日" value-format="yyyy-MM-dd">-->
+    <!--                type="datetime"-->
+    <!--                placeholder="选择日期" format="yyyy 年 MM 月 dd 日" value-format="yyyy-MM-dd HH:mm:ss">-->
     <!--              </el-date-picker>-->
     <!--            </el-form-item>-->
     <!--            <el-form-item label="票据种类" prop="billCategory">-->
@@ -234,15 +234,15 @@
     <!--            <el-form-item label="出票日期" prop="issueDate">-->
     <!--              <el-date-picker-->
     <!--                v-model="form.issueDate"-->
-    <!--                type="date"-->
-    <!--                placeholder="选择日期" format="yyyy 年 MM 月 dd 日" value-format="yyyy-MM-dd">-->
+    <!--                type="datetime"-->
+    <!--                placeholder="选择日期" format="yyyy 年 MM 月 dd 日" value-format="yyyy-MM-dd HH:mm:ss">-->
     <!--              </el-date-picker>-->
     <!--            </el-form-item>-->
     <!--            <el-form-item label="到期日期" prop="dueDate">-->
     <!--              <el-date-picker-->
     <!--                v-model="form.dueDate"-->
-    <!--                type="date"-->
-    <!--                placeholder="选择日期" format="yyyy 年 MM 月 dd 日" value-format="yyyy-MM-dd">-->
+    <!--                type="datetime"-->
+    <!--                placeholder="选择日期" format="yyyy 年 MM 月 dd 日" value-format="yyyy-MM-dd HH:mm:ss">-->
     <!--              </el-date-picker>-->
     <!--            </el-form-item>-->
     <!--            <el-form-item label="背书事由" prop="endorseReason">-->

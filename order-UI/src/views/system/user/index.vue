@@ -68,7 +68,7 @@
             <el-date-picker
               v-model="dateRange"
               style="width: 240px"
-              value-format="yyyy-MM-dd"
+              value-format="yyyy-MM-dd HH:mm:ss"
               type="daterange"
               range-separator="-"
               start-placeholder="开始日期"
@@ -206,7 +206,7 @@
           </el-table-column>
           <el-table-column label="创建时间" align="center" prop="createTime" width="160" v-if="columns[27].visible">
             <template slot-scope="scope">
-              <span>{{ parseTime(scope.row.createTime, '{y}-{m}-{d}') }}</span>
+              <span>{{ parseTime(scope.row.createTime, '{y}-{m}-{d} {h}:{i}:{s}') }}</span>
             </template>
           </el-table-column>
           <!-- 操作栏-->
@@ -359,9 +359,9 @@
               <el-form-item label="出生日期">
                 <el-date-picker
                   v-model="form.birthday"
-                  type="date"
+                  type="datetime"
                   placeholder="选择出生日期"
-                  value-format="yyyy-MM-dd">
+                  value-format="yyyy-MM-dd HH:mm:ss">
                 </el-date-picker>
               </el-form-item>
               <el-form-item label="民族">
@@ -391,9 +391,9 @@
               <el-form-item label="毕业时间">
                 <el-date-picker
                   v-model="form.gradualDate"
-                  type="date"
+                  type="datetime"
                   placeholder="选择毕业时间"
-                  value-format="yyyy-MM-dd">
+                  value-format="yyyy-MM-dd HH:mm:ss">
                 </el-date-picker>
               </el-form-item>
               <el-form-item label="岗位">
@@ -406,9 +406,9 @@
               <el-form-item label="入职时间">
                 <el-date-picker
                   v-model="form.startDate"
-                  type="date"
+                  type="datetime"
                   placeholder="选择入职时间"
-                  value-format="yyyy-MM-dd">
+                  value-format="yyyy-MM-dd HH:mm:ss">
                 </el-date-picker>
               </el-form-item>
               <el-form-item label="备注">

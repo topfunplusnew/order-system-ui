@@ -91,9 +91,9 @@ export default {
           <el-col :span="20">
             <el-date-picker
               v-model="inventoryInfo.storeDate"
-              type="date"
+              type="datetime"
               placeholder="选择日期" style="width: 70%"
-              value-format="yyyy-MM-dd">
+              value-format="yyyy-MM-dd HH:mm:ss">
             </el-date-picker>
           </el-col>
         </el-row>

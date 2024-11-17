@@ -12,15 +12,15 @@
       <el-form-item label="使用加油卡开始时间" prop="useDateStart">
         <el-date-picker
           v-model="queryParams.useDateStart"
-          type="date"
-          placeholder="选择使用加油卡时间" value-format="yyyy-MM-dd">
+          type="datetime"
+          placeholder="选择使用加油卡时间" value-format="yyyy-MM-dd HH:mm:ss">
         </el-date-picker>
       </el-form-item>
       <el-form-item label="使用加油卡结束时间" prop="useDateEnd">
         <el-date-picker
           v-model="queryParams.useDateEnd"
-          type="date"
-          placeholder="选择使用加油卡时间" value-format="yyyy-MM-dd">
+          type="datetime"
+          placeholder="选择使用加油卡时间" value-format="yyyy-MM-dd HH:mm:ss">
         </el-date-picker>
       </el-form-item>
       <el-form-item>

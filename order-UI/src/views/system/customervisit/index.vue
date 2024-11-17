@@ -46,7 +46,7 @@
         <el-date-picker
           v-model="dateRange"
           style="width: 240px"
-          value-format="yyyy-MM-dd"
+          value-format="yyyy-MM-dd HH:mm:ss"
           type="daterange"
           range-separator="-"
           start-placeholder="开始日期"
@@ -202,9 +202,9 @@
           <el-form-item label="走访日期" prop="visitDate">
             <el-date-picker
               v-model="form.visitDate"
-              type="date"
+              type="datetime"
               placeholder="选择走访日期"
-              value-format="yyyy-MM-dd">
+              value-format="yyyy-MM-dd HH:mm:ss">
             </el-date-picker>
           </el-form-item>
           <el-form-item label="省" prop="province">

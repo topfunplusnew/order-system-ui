@@ -4,15 +4,15 @@
       <el-form-item label="开始日期" prop="fundsDate">
         <el-date-picker
           v-model="queryParams.startTime"
-          type="date"
-          placeholder="请选择日期" value-format="yyyy-MM-dd" class="w-85px">
+          type="datetime"
+          placeholder="请选择日期" value-format="yyyy-MM-dd HH:mm:ss" class="w-85px">
         </el-date-picker>
       </el-form-item>
       <el-form-item label="结束日期" prop="fundsDate">
         <el-date-picker
           v-model="queryParams.endTime"
-          type="date"
-          placeholder="请选择日期" value-format="yyyy-MM-dd" class="w-85px">
+          type="datetime"
+          placeholder="请选择日期" value-format="yyyy-MM-dd HH:mm:ss" class="w-85px">
         </el-date-picker>
       </el-form-item>
       <el-form-item label="己方户名" prop="selfAcountsName">
@@ -155,8 +155,8 @@
           <el-form-item label="日期" prop="fundsDate">
             <el-date-picker
               v-model="form.fundsDate"
-              type="date"
-              value-format="yyyy-MM-dd"
+              type="datetime"
+              value-format="yyyy-MM-dd HH:mm:ss"
               placeholder="请选择日期">
             </el-date-picker>
           </el-form-item>
@@ -193,7 +193,7 @@
           </el-form-item>
           <!--  对方银行卡的消费类型 (承兑户或者现金户)-->
           <el-form-item label="己方银行账户类型">
-            <BankType @updateSelectedType="changeSelfBankType"/>
+            <BankType @updateSelectedType="changeSelfBankType" :select-type="form.selfBankCardType"/>
           </el-form-item>
           <el-form-item label="己方户名" prop="selfAcountsName">
             <el-row>
@@ -276,7 +276,7 @@
             </el-row>
           </el-form-item>
           <el-form-item label="对方银行账户类型">
-            <BankType @updateSelectedType="changeOtherBankType"/>
+            <BankType @updateSelectedType="changeOtherBankType" :select-type="form.otherBankCardType"/>
           </el-form-item>
           <el-form-item label="对方账号" prop="otherBankNo">
             <el-col :span="10">
@@ -338,7 +338,7 @@ import {listCars} from "../../../api/system/cars";
 import {getReceiveMoney, updateReceiveMoney} from "../../../api/system/receiveMoney";
 import {mixin_checkfile} from "../../dashboard/mixins/checkfiles/mixin_checkfile";
 import BankType from "@/views/dashboard/components/common/BankType.vue";
-import {mixin_bankType} from "@/views/dashboard/mixins/common/common_bankType";
+import {mixin_bankType} from "../../dashboard/mixins/common/common_bankType";
 
 export default {
   name: "ReceiveMoney",

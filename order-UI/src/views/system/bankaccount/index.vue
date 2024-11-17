@@ -299,8 +299,8 @@
               <el-form-item label="日期" prop="operateDate">
                 <el-date-picker
                   v-model="bankAcountQuery.operateDate"
-                  type="date"
-                  value-format="yyyy-MM-dd"
+                  type="datetime"
+                  value-format="yyyy-MM-dd HH:mm:ss"
                   placeholder="日期"
                   style="width: 140px"
                 />

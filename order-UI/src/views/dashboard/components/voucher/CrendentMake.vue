@@ -7,7 +7,7 @@
         <div class="item">
           <div style="width: 80px">日期</div>
           <div>
-            <el-date-picker style="width: 200px;" type="date" v-model="voucher.vDate"></el-date-picker>
+            <el-date-picker style="width: 200px;" type="datetime" v-model="voucher.vDate"></el-date-picker>
           </div>
         </div>
         <div class="item" v-if="computedToMakeList.length !== 0">

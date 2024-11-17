@@ -127,3 +127,23 @@ export function getFreightSubjectDetailSummary(query) {
     params: query
   })
 }
+
+// 客户科目余额汇总表
+export function getCustomerSubjectSummary(query) {
+  return request({
+    // todo
+    url: '',
+    method: 'get',
+    params: query
+  })
+}
+
+//客户科目余额汇总表 明细表
+export function getCustomerSubjectDetailSummary(query) {
+  return request({
+    // todo
+    url: '',
+    method: 'get',
+    params: query
+  })
+}

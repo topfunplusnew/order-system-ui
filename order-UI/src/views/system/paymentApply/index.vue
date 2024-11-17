@@ -249,7 +249,7 @@
         <el-form-item label="日期" prop="fundsDate">
           <el-date-picker
               v-model="form.fundsDate"
-              type="date"
+              type="datetime"
               placeholder="选择日期">
           </el-date-picker>
         </el-form-item>

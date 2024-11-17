@@ -146,7 +146,7 @@ export default {
           <hr/>
           <el-date-picker
             v-model="orderItemInfo.exWarehouseDate"
-            type="date"
+            type="datetime"
             placeholder="选择日期"
             value-format="timestamp">
           </el-date-picker>

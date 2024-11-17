@@ -5,16 +5,16 @@
       <el-form-item label="开始时间" prop="beginTime">
         <el-date-picker
           v-model="timesQuery.beginTime"
-          type="date"
+          type="datetime"
           placeholder="请选择开始时间"
-          value-format="yyyy-MM-dd">
+          value-format="yyyy-MM-dd HH:mm:ss">
         </el-date-picker>
       </el-form-item>
       <el-form-item label="结束时间" prop="endTime">
         <el-date-picker
           v-model="timesQuery.endTime"
-          type="date"
-          placeholder="请选择结束时间" value-format="yyyy-MM-dd">
+          type="datetime"
+          placeholder="请选择结束时间" value-format="yyyy-MM-dd HH:mm:ss">
         </el-date-picker>
       </el-form-item>
       <el-form-item label="对象类型" prop="objectType">
@@ -170,9 +170,9 @@
             <el-form-item label="支付押金时间" prop="futuresDate">
               <el-date-picker
                 v-model="form.futuresDate"
-                type="date"
+                type="datetime"
                 placeholder="请选择支付押金时间"
-                value-format="yyyy-MM-dd">
+                value-format="yyyy-MM-dd HH:mm:ss">
               </el-date-picker>
             </el-form-item>
             <el-form-item label="押金金额" prop="moneyAmount">
@@ -300,8 +300,8 @@
           <el-form-item label="收回日期" prop="payDate">
             <el-date-picker
               v-model="recoverMoneyEntity.recoverDate"
-              type="date"
-              placeholder="请选择收回日期" value-format="yyyy-MM-dd">
+              type="datetime"
+              placeholder="请选择收回日期" value-format="yyyy-MM-dd HH:mm:ss">
             </el-date-picker>
           </el-form-item>
           <el-form-item label="备注信息" prop="comments">

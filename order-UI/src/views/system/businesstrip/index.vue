@@ -4,15 +4,15 @@
       <el-form-item label="出差时间" prop="starttime">
         <el-date-picker
           v-model="queryParams.starttime"
-          type="date"
-          placeholder="选择日期" value-format="yyyy-MM-dd">
+          type="datetime"
+          placeholder="选择日期" value-format="yyyy-MM-dd HH:mm:ss">
         </el-date-picker>
       </el-form-item>
       <el-form-item label="返回时间" prop="endtime">
         <el-date-picker
           v-model="queryParams.endtime"
-          type="date"
-          placeholder="选择日期" value-format="yyyy-MM-dd">
+          type="datetime"
+          placeholder="选择日期" value-format="yyyy-MM-dd HH:mm:ss">
         </el-date-picker>
       </el-form-item>
       <el-form-item>
@@ -138,17 +138,17 @@
               <el-form-item label="出差时间" prop="starttime">
                 <el-date-picker
                   v-model="form.starttime"
-                  type="date"
+                  type="datetime"
                   placeholder="选择出差时间"
-                  value-format="yyyy-MM-dd">
+                  value-format="yyyy-MM-dd HH:mm:ss">
                 </el-date-picker>
               </el-form-item>
               <el-form-item label="出差结束时间" prop="endtime">
                 <el-date-picker
                   v-model="form.endtime"
-                  type="date"
+                  type="datetime"
                   placeholder="选择出差结束时间"
-                  value-format="yyyy-MM-dd">
+                  value-format="yyyy-MM-dd HH:mm:ss">
                 </el-date-picker>
               </el-form-item>
             </el-col>
@@ -574,7 +574,7 @@ export default {
     // 重置车辆申请的状态
     resetCarApplyForm() {
       this.carApplyForm = {
-        applyDate: parseTime(new Date(), '{y}-{m}-{d}'),
+        applyDate: parseTime(new Date(), '{y}-{m}-{d} {h}:{i}:{s}'),
         applyUser: this.trueName,
         department: this.deptName, // 从vuex中拿到
         carNo: '',
@@ -603,7 +603,7 @@ export default {
     resetCarApplyInformation() {
       this.hasCarApplyInfo = false
       this.carApplyInformation = {
-        applyDate: parseTime(new Date(), '{y}-{m}-{d}'),
+        applyDate: parseTime(new Date(), '{y}-{m}-{d} {h}:{i}:{s}'),
         applyUser: this.trueName,
         department: this.deptName, // 从vuex中拿到
         carNo: '',
@@ -635,7 +635,7 @@ export default {
         oilCardNo: '',
         rechargeType: '',
         rechargeMoney: '',
-        rechargeDate: parseTime(new Date(), '{y}-{m}-{d}'),
+        rechargeDate: parseTime(new Date(), '{y}-{m}-{d} {h}:{i}:{s}'),
         rechargeName: "",
         acountsName: "",
         bankNo: "",

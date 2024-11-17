@@ -13,15 +13,15 @@
       <el-form-item label="用车时间" prop="startTime">
         <el-date-picker
           v-model="queryParams.startTime"
-          type="date"
-          placeholder="选择用车时间" value-format="yyyy-MM-dd">
+          type="datetime"
+          placeholder="选择用车时间" value-format="yyyy-MM-dd HH:mm:ss">
         </el-date-picker>
       </el-form-item>
       <el-form-item label="还车时间" prop="endTime">
         <el-date-picker
           v-model="queryParams.endTime"
-          type="date"
-          placeholder="选择还车时间" value-format="yyyy-MM-dd">
+          type="datetime"
+          placeholder="选择还车时间" value-format="yyyy-MM-dd HH:mm:ss">
         </el-date-picker>
       </el-form-item>
 
@@ -163,9 +163,9 @@
               <el-form-item label="申请时间" prop="applyDate">
                 <el-date-picker
                   v-model="form.applyDate"
-                  type="date"
+                  type="datetime"
                   placeholder="选择申请时间"
-                  value-format="yyyy-MM-dd">
+                  value-format="yyyy-MM-dd HH:mm:ss">
                 </el-date-picker>
               </el-form-item>
               <el-form-item label="申请人" prop="applyUser">
@@ -210,17 +210,17 @@
               <el-form-item label="用车时间" prop="startTime">
                 <el-date-picker
                   v-model="form.startTime"
-                  type="date"
+                  type="datetime"
                   placeholder="选择用车时间"
-                  value-format="yyyy-MM-dd">
+                  value-format="yyyy-MM-dd HH:mm:ss">
                 </el-date-picker>
               </el-form-item>
               <el-form-item label="还车时间" prop="endTime">
                 <el-date-picker
                   v-model="form.endTime"
-                  type="date"
+                  type="datetime"
                   placeholder="选择还车时间"
-                  value-format="yyyy-MM-dd">
+                  value-format="yyyy-MM-dd HH:mm:ss">
                 </el-date-picker>
               </el-form-item>
             </el-col>
@@ -309,9 +309,9 @@
             <el-form-item label="使用加油卡时间" prop="useDate">
               <el-date-picker
                 v-model="oilCardConsumeInfo.useDate"
-                type="date"
+                type="datetime"
                 placeholder="选择日期"
-                value-format="yyyy-MM-dd">
+                value-format="yyyy-MM-dd HH:mm:ss">
               </el-date-picker>
             </el-form-item>
             <el-form-item label="使用加油卡车辆车牌号" prop="carNo">

@@ -285,17 +285,17 @@ export default {
           <el-form-item label="申请日期" prop="applyDate">
             <el-date-picker
               v-model="form.applyDate"
-              type="date"
+              type="datetime"
               placeholder="请选择申请日期"
-              value-format="yyyy-MM-dd">
+              value-format="yyyy-MM-dd HH:mm:ss">
             </el-date-picker>
           </el-form-item>
           <el-form-item label="付款日期" prop="payDate">
             <el-date-picker
               v-model="form.payDate"
-              type="date"
+              type="datetime"
               placeholder="请选择付款日期"
-              value-format="yyyy-MM-dd">
+              value-format="yyyy-MM-dd HH:mm:ss">
             </el-date-picker>
           </el-form-item>
           <el-form-item label="备注" prop="comments">

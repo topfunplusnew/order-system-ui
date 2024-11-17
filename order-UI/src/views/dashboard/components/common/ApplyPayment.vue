@@ -5,8 +5,8 @@
       <el-form-item label="日期" prop="fundsDate">
         <el-date-picker
           v-model="form.fundsDate"
-          type="date"
-          value-format="yyyy-MM-dd"
+          type="datetime"
+          value-format="yyyy-MM-dd HH:mm:ss"
           placeholder="选择日期">
         </el-date-picker>
       </el-form-item>

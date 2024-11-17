@@ -11,9 +11,9 @@
       <el-form-item label="出库日期" prop="outDate">
         <el-date-picker
           v-model="queryParams.outDate"
-          type="date"
+          type="datetime"
           placeholder="选择时间"
-          value-format="yyyy-MM-dd">
+          value-format="yyyy-MM-dd HH:mm:ss">
         </el-date-picker>
       </el-form-item>
       <el-form-item>
@@ -110,8 +110,8 @@
         <el-form-item label="出库日期" prop="outDate">
           <el-date-picker
             v-model="form.outDate"
-            type="date"
-            placeholder="选择日期" value-format="yyyy-MM-dd">
+            type="datetime"
+            placeholder="选择日期" value-format="yyyy-MM-dd HH:mm:ss">
           </el-date-picker>
         </el-form-item>
         <el-form-item label="出库量" prop="outAmount">

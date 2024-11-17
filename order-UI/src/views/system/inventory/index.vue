@@ -182,9 +182,9 @@
             <el-form-item label="入库日期" prop="storeDate">
               <el-date-picker
                 v-model="form.storeDate"
-                type="date"
+                type="datetime"
                 placeholder="入库日期"
-                value-format="yyyy-MM-dd">
+                value-format="yyyy-MM-dd HH:mm:ss">
               </el-date-picker>
             </el-form-item>
             <el-form-item label="库存量" prop="stockNumber">
