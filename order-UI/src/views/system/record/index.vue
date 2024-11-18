@@ -2,39 +2,20 @@
   <div class="app-container">
     <el-form :model="queryParams" ref="queryForm" size="small" :inline="true" v-show="showSearch" label-width="68px">
       <el-form-item label="交易时间">
-        <el-date-picker
-          v-model="daterangeTransactionTime"
-          style="width: 240px"
-          value-format="yyyy-MM-dd HH:mm:ss"
-          type="daterange"
-          range-separator="-"
-          start-placeholder="开始日期"
-          end-placeholder="结束日期"
-        ></el-date-picker>
+        <el-date-picker v-model="daterangeTransactionTime" style="width: 240px" value-format="yyyy-MM-dd HH:mm:ss"
+                        type="daterange" range-separator="-" start-placeholder="开始日期"
+                        end-placeholder="结束日期"></el-date-picker>
       </el-form-item>
       <el-form-item label="收入方" prop="sourceCompanyName">
-        <el-input
-          v-model="queryParams.sourceCompanyName"
-          placeholder="请输入收入方公司名称"
-          clearable
-          @keyup.enter.native="handleQuery"
-        />
+        <el-input v-model="queryParams.sourceCompanyName" placeholder="请输入收入方公司名称" clearable
+                  @keyup.enter.native="handleQuery"/>
       </el-form-item>
       <el-form-item label="支出方" prop="targetCompanyName">
-        <el-input
-          v-model="queryParams.targetCompanyName"
-          placeholder="请输入收入方公司名称"
-          clearable
-          @keyup.enter.native="handleQuery"
-        />
+        <el-input v-model="queryParams.targetCompanyName" placeholder="请输入收入方公司名称" clearable
+                  @keyup.enter.native="handleQuery"/>
       </el-form-item>
       <el-form-item label="备注" prop="remarks">
-        <el-input
-          v-model="queryParams.remarks"
-          placeholder="请输入备注"
-          clearable
-          @keyup.enter.native="handleQuery"
-        />
+        <el-input v-model="queryParams.remarks" placeholder="请输入备注" clearable @keyup.enter.native="handleQuery"/>
       </el-form-item>
       <el-form-item>
         <el-button type="primary" icon="el-icon-search" size="mini" @click="handleQuery">搜索</el-button>
@@ -44,51 +25,28 @@
 
     <el-row :gutter="10" class="mb8">
       <el-col :span="1.5">
-        <el-button
-          type="primary"
-          plain
-          icon="el-icon-plus"
-          size="mini"
-          @click="handleAdd"
-          v-hasPermi="['system:record:add']"
-        >新增
+        <el-button type="primary" plain icon="el-icon-plus" size="mini" @click="handleAdd"
+                   v-hasPermi="['system:record:add']">新增
         </el-button>
       </el-col>
       <el-col :span="1.5">
-        <el-button
-          type="danger"
-          plain
-          icon="el-icon-delete"
-          size="mini"
-          :disabled="multiple"
-          @click="handleDelete"
-          v-hasPermi="['system:record:remove']"
-        >删除
+        <el-button type="danger" plain icon="el-icon-delete" size="mini" :disabled="multiple" @click="handleDelete"
+                   v-hasPermi="['system:record:remove']">删除
         </el-button>
       </el-col>
 
       <right-toolbar :showSearch.sync="showSearch" @queryTable="getList" :columns="columns">
         <template v-slot:print>
           <el-col :span="1.5">
-            <el-button
-              plain
-              icon="el-icon-printer"
-              size="mini"
-              @click="printHTML"
-            >
+            <el-button plain icon="el-icon-printer" size="mini" @click="printHTML">
             </el-button>
           </el-col>
         </template>
         <!--        导出-->
         <template v-slot:export>
           <el-col :span="1.5">
-            <el-button
-              plain
-              icon="el-icon-folder-opened"
-              size="mini"
-              @click="handleExport"
-              v-hasPermi="['system:payment:export']"
-            >
+            <el-button plain icon="el-icon-folder-opened" size="mini" @click="handleExport"
+                       v-hasPermi="['system:payment:export']">
             </el-button>
           </el-col>
         </template>
@@ -96,7 +54,7 @@
     </el-row>
 
     <el-table v-loading="loading" :data="recordList" @selection-change="handleSelectionChange" id="printBox"
-              v-horizontal-scroll="'always'" size="mini" border :cell-style="()=>{return {padding:'2px'}}">
+              v-horizontal-scroll="'always'" size="mini" border :cell-style="() => { return { padding: '2px' } }">
       <el-table-column type="selection" width="55" align="center"/>
       <el-table-column label="id" align="center" prop="id"/>
       <el-table-column label="交易时间" align="center" prop="transactionTime" width="180">
@@ -113,37 +71,22 @@
       <el-table-column label="附件" align="center" prop="attachment">
         <template #default="scope">
           <CheckFiles :path="scope.row.attachment"
-                      @needToUpdate="(value)=>handleUpdateFilePath(value,scope.row,'attachment',getRecord(),updateRecord())"/>
+                      @needToUpdate="(value) => handleUpdateFilePath(value, scope.row, 'attachment', getRecord(), updateRecord())"/>
         </template>
       </el-table-column>
       <el-table-column label="备注" align="center" prop="remarks"/>
       <el-table-column label="操作" align="center" class-name="small-padding fixed-width">
         <template slot-scope="scope">
-          <el-button
-            size="mini"
-            type="primary"
-            @click="handleUpdate(scope.row)"
-            v-hasPermi="['system:record:edit']"
-          >修改
+          <el-button size="mini" type="primary" @click="handleUpdate(scope.row)" v-hasPermi="['system:record:edit']">修改
           </el-button>
-          <el-button
-            size="mini"
-            type="danger"
-            @click="handleDelete(scope.row)"
-            v-hasPermi="['system:record:remove']"
-          >删除
+          <el-button size="mini" type="danger" @click="handleDelete(scope.row)" v-hasPermi="['system:record:remove']">删除
           </el-button>
         </template>
       </el-table-column>
     </el-table>
 
-    <pagination
-      v-show="total>0"
-      :total="total"
-      :page.sync="queryParams.pageNum"
-      :limit.sync="queryParams.pageSize"
-      @pagination="getList"
-    />
+    <pagination v-show="total > 0" :total="total" :page.sync="queryParams.pageNum" :limit.sync="queryParams.pageSize"
+                @pagination="getList"/>
 
     <!-- 添加或修改现金记账对话框  cashType 用于分别管理冲抵类型 : 冲抵货款 或者 冲抵第三方开票-->
     <el-dialog :title="title" :visible.sync="open" width="700px" append-to-body>
@@ -163,12 +106,12 @@
         <el-form-item :label="source">
           <el-row>
             <el-col :span="20">
-              <el-input placeholder="请选择"
-                        v-model="sourceName"/>
+              <el-input placeholder="请选择" v-model="sourceName"/>
             </el-col>
             <el-col :span="3">
               <SearchOption :get-data="listBankAccount" @commitBack="handleCommitCompanySupplier"
-                            :limit-info="{acountsType:'己方公司'}" query-info="acountsName" :query-name="querySupplier"
+                            :limit-info="{ acountsType: '己方公司' }" query-info="acountsName"
+                            :query-name="querySupplier"
                             query-label="户名" @update:queryName="updateQuerySupplier">
                 <template #table-columns>
                   <el-table-column label="账户类型" align="center" prop="acountsType" width="200"/>
@@ -176,8 +119,7 @@
                   <el-table-column label="开户名称" align="center" prop="acountsName" width="200"/>
                   <el-table-column label="银行账号" align="center" prop="bankNo" width="200"/>
                   <el-table-column label="开户行" align="center" prop="bankName" width="200"/>
-                  <el-table-column label="公司名称" align="center" prop="companyName"
-                                   width="200"/>
+                  <el-table-column label="公司名称" align="center" prop="companyName" width="200"/>
                   <el-table-column label="余额" align="center" prop="amount" width="200"/>
                 </template>
               </SearchOption>
@@ -193,13 +135,11 @@
           <el-form-item label="收入方">
             <el-row>
               <el-col :span="14">
-                <el-input type="text" v-model="sourceName"
-                          placeholder="请输入收入方"></el-input>
+                <el-input type="text" v-model="sourceName" placeholder="请输入收入方"></el-input>
               </el-col>
               <el-col :span="4">
-                <SearchOption :limit-info="{companyType:form.sourceCompanyType}"
-                              :get-data="listCompany" query-info="companyName"
-                              query-label="公司名称" :query-name="queryCompanyName"
+                <SearchOption :limit-info="{ companyType: form.sourceCompanyType }" :get-data="listCompany"
+                              query-info="companyName" query-label="公司名称" :query-name="queryCompanyName"
                               @update:queryName="handleUpdateCompanyNameGet" @commitBack="handleCommitBackCompanyGet">
                   <template #table-columns>
                     <el-table-column label="公司名称" align="center" prop="companyName"/>
@@ -223,12 +163,11 @@
         <el-form-item :label="target">
           <el-row>
             <el-col :span="20">
-              <el-input placeholder="请选择"
-                        v-model="targetName"/>
+              <el-input placeholder="请选择" v-model="targetName"/>
             </el-col>
             <el-col :span="3">
               <SearchOption :get-data="listBankAccount" @commitBack="handleCommitCompanyCustomer"
-                            :limit-info="{acountsType:'己方公司'}" query-info="acountsName"
+                            :limit-info="{ acountsType: '己方公司' }" query-info="acountsName"
                             :query-name="queryCustomer"
                             query-label="户名" @update:queryName="updateQueryCustomer">
                 <template #table-columns>
@@ -237,8 +176,7 @@
                   <el-table-column label="开户名称" align="center" prop="acountsName" width="200"/>
                   <el-table-column label="银行账号" align="center" prop="bankNo" width="200"/>
                   <el-table-column label="开户行" align="center" prop="bankName" width="200"/>
-                  <el-table-column label="公司名称" align="center" prop="companyName"
-                                   width="200"/>
+                  <el-table-column label="公司名称" align="center" prop="companyName" width="200"/>
                   <el-table-column label="余额" align="center" prop="amount" width="200"/>
                 </template>
               </SearchOption>
@@ -255,13 +193,11 @@
           <el-form-item label="支出方">
             <el-row>
               <el-col :span="14">
-                <el-input type="text" v-model="targetName"
-                          placeholder="请输入支出方"></el-input>
+                <el-input type="text" v-model="targetName" placeholder="请输入支出方"></el-input>
               </el-col>
               <el-col :span="4">
-                <SearchOption :limit-info="{companyType:form.targetCompanyType}"
-                              :get-data="listCompany" query-info="companyName"
-                              query-label="公司名称" :query-name="queryCompanyName"
+                <SearchOption :limit-info="{ companyType: form.targetCompanyType }" :get-data="listCompany"
+                              query-info="companyName" query-label="公司名称" :query-name="queryCompanyName"
                               @update:queryName="handleUpdateCompanyNamePay" @commitBack="handleCommitBackCompanyPay">
                   <template #table-columns>
                     <el-table-column label="公司名称" align="center" prop="companyName"/>
@@ -282,10 +218,10 @@
           基本信息
         </el-divider>
         <!--        金额只有在不是冲抵货款的其他类型中才会展示 冲抵货款在前面就已经输入了金额-->
-        <el-form-item :label="cashType === CASH_TYPE.TRANSFER ?'转账金额':'冲抵金额'" prop="amount">
+        <el-form-item :label="cashType === CASH_TYPE.TRANSFER ? '转账金额' : '冲抵金额'" prop="amount">
           <el-row>
             <el-col :span="14">
-              <el-input v-model="form.amount" :placeholder="cashType === CASH_TYPE.TRANSFER ?'转账金额':'冲抵金额'"
+              <el-input v-model="form.amount" :placeholder="cashType === CASH_TYPE.TRANSFER ? '转账金额' : '冲抵金额'"
                         type="number"/>
             </el-col>
           </el-row>
@@ -294,10 +230,7 @@
           <file-upload @input="handleCommitUpload" ref="uploadFile"/>
         </el-form-item>
         <el-form-item label="交易时间" prop="transactionTime">
-          <el-date-picker clearable
-                          v-model="form.transactionTime"
-                          type="datetime"
-                          value-format="yyyy-MM-dd HH:mm:ss"
+          <el-date-picker clearable v-model="form.transactionTime" type="datetime" value-format="yyyy-MM-dd HH:mm:ss"
                           placeholder="请选择交易时间">
           </el-date-picker>
         </el-form-item>
@@ -332,13 +265,12 @@ import {listCompany} from "../../../api/system/company";
 import SearchOption from "../../../components/SearchOption.vue";
 import {excludeParams} from "../../../api/tool/exclude";
 import {TableName} from "../../../api/tool/enums";
-import {listInvoiceOther} from "../../../api/system/invoiceOther";
 import CheckFiles from "../../../components/CheckFiles.vue";
 import {mixin_record_fill} from "./recordFill";
 import {CASH_TYPE} from "./constrant";
 import {getRecord, updateRecord} from "../../../api/system/record";
 import {mixin_checkfile} from "../../dashboard/mixins/checkfiles/mixin_checkfile";
-import {listBankAccount} from "../../../api/system/bankAccount";
+import {listBankAccount, transfer} from "../../../api/system/bankAccount";
 
 export default {
   name: "Record",
@@ -606,28 +538,44 @@ export default {
             });
             // 如果id为空 那么就是新增操作
           } else {
+            // 清理一下不必要的参数
+            this.form = excludeParams(this.form, this.$exclude)
             // 如果是冲抵货款 那么就是填充一个非法的tableName和tID
             if (this.cashType === CASH_TYPE.OFF_SETTING) {
+              // 填充表的信息
               this.form.referenceTableName = TableName.OFFSETTING;
               this.form.referenceTableId = -1;
+              // 添加现金记账信息
+              addRecord(this.form).then(response => {
+                this.$modal.msgSuccess("新增成功");
+                this.open = false;
+                this.getList();
+                // 清除上传的文件列表
+                this.$refs.uploadFile.clearFileList()
+                this.reset()
+              });
               // 如果是内部转账 那么就填充参数
             } else {
               // 填充公司类型 为己方公司 因为是内部转账
               this.form.sourceCompanyType = '己方公司'
               this.form.targetCompanyType = '己方公司'
+              // 填充表的信息
               this.form.referenceTableName = CASH_TYPE.TRANSFER;
               this.form.referenceTableId = -1;
+              // 发送请求 添加一条冲抵款(原为现金记账)信息
+              transfer({...this.eachInfo, money: this.form.amount}).then(res => {
+                // 添加现金记账信息
+                addRecord(this.form).then(response => {
+                  this.$modal.msgSuccess("新增成功");
+                  this.open = false;
+                  this.getList();
+                  // 清除上传的文件列表
+                  this.$refs.uploadFile.clearFileList()
+                  this.reset()
+                  this.resetEachInfo()
+                });
+              })
             }
-            // 清理一下不必要的参数
-            this.form = excludeParams(this.form, this.$exclude)
-            // 发送请求 添加一条冲抵款(原为现金记账)信息
-            addRecord(this.form).then(response => {
-              this.$modal.msgSuccess("新增成功");
-              this.open = false;
-              this.getList();
-              // 清除上传的文件列表
-              this.$refs.uploadFile.clearFileList()
-            });
           }
         }
       });

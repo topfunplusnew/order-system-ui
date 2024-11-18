@@ -12,6 +12,12 @@ export var mixin_record_fill = {
 
       // 选择客户或者供应商的相关信息
       queryCompanyName: '',
+
+      // 转账双方的信息
+      eachInfo: {
+        source: null,
+        target: null
+      }
     }
   },
   methods: {
@@ -33,11 +39,15 @@ export var mixin_record_fill = {
       this.form.sourceId = val.id;
       // 修改 应该填充的是银行账户名称
       this.sourceName = val.acountsName;
+      // 填充内部转账需要的source
+      this.eachInfo.source = val.bankNo;
     },
     // 支出方的自动填充
     handleCommitCompanyCustomer(val) {
       this.targetName = val.acountsName;
       this.form.targetId = val.id;
+      // 填充内部转账需要的target
+      this.eachInfo.target = val.bankNo;
     },
     // 以下是新增 填充方法 2024/11/7 现金记账改为冲抵款 合并冲抵货款
     // 选择客户或者供应商的回调
@@ -59,5 +69,10 @@ export var mixin_record_fill = {
       // 填充业务字段
       this.form.targetId = val.id;
     },
+    // 重置eachInfo
+    resetEachInfo() {
+      this.eachInfo.source = null;
+      this.eachInfo.target = null;
+    }
   }
 }
