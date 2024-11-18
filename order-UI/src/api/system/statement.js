@@ -131,7 +131,7 @@ export function getFreightSubjectDetailSummary(query) {
 // 客户科目余额汇总表
 export function getCustomerSubjectSummary(query) {
   return request({
-    // todo
+    // todo 完善接口地址
     url: '',
     method: 'get',
     params: query
@@ -141,7 +141,7 @@ export function getCustomerSubjectSummary(query) {
 //客户科目余额汇总表 明细表
 export function getCustomerSubjectDetailSummary(query) {
   return request({
-    // todo
+    // todo 完善接口地址
     url: '',
     method: 'get',
     params: query

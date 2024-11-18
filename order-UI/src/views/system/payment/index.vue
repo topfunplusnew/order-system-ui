@@ -836,6 +836,7 @@ export default {
           if (this.form.id != null) {
             this.form = excludeParams(this.form, this.$exclude)
             this.form.paymentState = '已支付'
+            // 修改支付状态
             updatePayment(this.form).then(response => {
               this.$modal.msgSuccess("支付成功~");
               this.open = false;

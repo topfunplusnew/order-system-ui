@@ -1,4 +1,5 @@
-<!--向外借钱-->
+<!--订单列表+调整单列表 总货款是否含税 含税的商品金额 客户开始时间 结束时间 &ndash;&gt;客户收付款信息表(新页面)-->
+
 <template>
   <div class="app-container">
     <el-row style="background-color:#e6e6e6;">
@@ -59,6 +60,8 @@
         </template>
       </right-toolbar>
     </el-row>
+
+    <!--    todo 更换table对应的prop-->
     <el-table border v-loading="loading" :data="tableData"
               v-horizontal-scroll="'always'" id="printBox" size="mini" :cell-style="()=>{return {padding:'2px'}}">
       <el-table-column show-overflow-tooltip label="科目编码" align="center" prop="index"
@@ -140,7 +143,7 @@ export default {
   methods: {
     /** 查询向外部借出款信息列表 */
     getList() {
-      // todo
+      // todo 1. 获取客户科目余额汇总表数据 填充到表格中
       // this.loading = true;
       // getCustomerSubjectSummary(this.queryParams).then(response => {
       //   this.tableData = response.rows;
@@ -164,6 +167,7 @@ export default {
     // 导出
     handleExport() {
       this.$datePicker().then(res => {
+        // todo 2. 导出
         console.log(res)
       })
     }
