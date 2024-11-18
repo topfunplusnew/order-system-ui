@@ -497,9 +497,12 @@
     <el-dialog
       title="请选择付款银行卡"
       :visible.sync="chooseBankDialogVisible"
-      width="30%">
+      width="600px">
       <div>
-        <el-form :model="chooseInfo" label-width="100px">
+        <el-form :model="chooseInfo" label-width="150px">
+          <el-form-item label="己方银行账户类型" prop="selfBankNo">
+            <BankType @updateSelectedType="changeCustomSelfBankType" :select-type="chooseInfo.selfBankCardType"/>
+          </el-form-item>
           <el-form-item label="己方户名" prop="selfAcountsName">
             <el-row>
               <el-col :span="10">
@@ -686,6 +689,10 @@ export default {
     listCars,
     listBankAccount,
     listCompany,
+    // 选择己方银行账户类型
+    changeCustomSelfBankType(value) {
+      this.chooseInfo.selfBankCardType = value
+    },
     /** 查询付款信息列表 */
     getList() {
       this.loading = true;
@@ -742,6 +749,8 @@ export default {
         tableName: null,
         tID: null,
         moneyAmount: null,
+        // 己方银行账户类型
+        selfBankCardType: null,
         selfAcountsName: null,
         selfBankNo: null,
         selfBankName: null,
@@ -787,27 +796,35 @@ export default {
     handleUpdate(row) {
       // 如果没有己方银行卡信息 需要跳出选择银行卡信息
       if (!row.selfBankID) {
-        this.chooseBankDialogVisible = true
         this.resetChooseInfo()
         this.chooseInfo = row
+        this.chooseBankDialogVisible = true
+        // 如果有己方银行卡的信息了 那么就直接蹦出确定
       } else {
         this.$confirm('是否付款?', '提示', {
           confirmButtonText: '是',
           cancelButtonText: '否',
           type: 'success'
         }).then(() => {
+          // 只需要更新状态
           updatePayment({...row, paymentState: '已支付'}).then(res => {
             this.$modal.msgSuccess(res.msg)
+            this.reset()
+            this.getList()
           })
         })
       }
     },
-    // 付款处理
+    // 付款处理 用户在弹出的弹窗点击确定
     handlePayment() {
+      // 先去除无用参数
       this.chooseInfo = excludeParams(this.chooseInfo, this.$exclude)
+      // 更新付款状态
       updatePayment({...this.chooseInfo, paymentState: '已支付'}).then(res => {
         this.$modal.msgSuccess(res.msg)
+        // 重置弹出窗的付款信息 主要包含己方银行卡的信息
         this.resetChooseInfo()
+        this.reset()
         this.chooseBankDialogVisible = false
         this.getList()
       })
