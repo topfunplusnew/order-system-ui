@@ -12,18 +12,18 @@
           v-model="queryParams.beginTime"
           type="datetime"
           placeholder="请选择开始时间"
-          value-format="yyyy-MM-dd HH:mm:ss">
+          value-format="yyyy-MM-dd HH:mm:ss" clearable>
         </el-date-picker>
       </el-form-item>
       <el-form-item label="结束时间" prop="endTime">
         <el-date-picker
           v-model="queryParams.endTime"
           type="datetime"
-          placeholder="请选择结束时间" value-format="yyyy-MM-dd HH:mm:ss">
+          placeholder="请选择结束时间" value-format="yyyy-MM-dd HH:mm:ss" clearable>
         </el-date-picker>
       </el-form-item>
-      <el-form-item label="客户名称" prop="customer">
-        <el-input v-model="queryParams.customer" placeholder="请输入客户名称"></el-input>
+      <el-form-item label="客户名称" prop="companyName">
+        <el-input v-model="queryParams.companyName" placeholder="请输入客户名称" clearable></el-input>
       </el-form-item>
       <el-form-item>
         <el-button type="primary" icon="el-icon-search" size="mini" @click="handleQuery">搜索</el-button>
@@ -64,27 +64,36 @@
     <!--    todo 更换table对应的prop-->
     <el-table border v-loading="loading" :data="tableData"
               v-horizontal-scroll="'always'" id="printBox" size="mini" :cell-style="()=>{return {padding:'2px'}}">
-      <el-table-column show-overflow-tooltip label="科目编码" align="center" prop="index"
+      <el-table-column show-overflow-tooltip label="科目编码" align="center" prop="subjectNo"
                        width="140"/>
-      <el-table-column show-overflow-tooltip label="科目名称" align="center" prop="companyName"
+      <el-table-column show-overflow-tooltip label="科目名称" align="center" prop="subjectName"
                        width="140"/>
-      <el-table-column show-overflow-tooltip label="客户编号" align="center" prop="previousDayCarryover"
+      <!--      todo 客户编号 未知-->
+      <el-table-column show-overflow-tooltip label="客户编号" align="center" prop="companyId"
                        width="140"/>
-      <el-table-column show-overflow-tooltip label="客户名称" align="center" prop="dailyOrderPayments"
+      <el-table-column show-overflow-tooltip label="客户名称" align="center" prop="companyName"
                        width="140"/>
       <el-table-column show-overflow-tooltip label="期初方向" align="center" prop="dailyInvoiceAmount"
+                       width="140">
+        <template slot-scope="scope">
+          {{ scope.row.beginningBalance !== 0 ? scope.row.beginningBalance > 0 ? '借方' : '贷方' : '平' }}
+        </template>
+      </el-table-column>
+      <el-table-column show-overflow-tooltip label="期初余额" align="center" prop="beginningBalance"
                        width="140"/>
-      <el-table-column show-overflow-tooltip label="期初余额" align="center" prop="dailyReceiveMoney"
+      <el-table-column show-overflow-tooltip label="借方(客户提货)" align="center" prop="positiveSum"
                        width="140"/>
-      <el-table-column show-overflow-tooltip label="借方(客户提货)" align="center" prop="dailyReceiveMoney"
+      <el-table-column show-overflow-tooltip label="贷方(收客户款)" align="center" prop="negativeSum"
                        width="140"/>
-      <el-table-column show-overflow-tooltip label="贷方(收客户款)" align="center" prop="dailyReceiveMoney"
-                       width="140"/>
-      <el-table-column show-overflow-tooltip label="平账余额" align="center" prop="dailyReceiveMoney"
+      <el-table-column show-overflow-tooltip label="平账金额" align="center" prop="balanceaccountsAmount"
                        width="140"/>
       <el-table-column show-overflow-tooltip label="期末方向" align="center" prop="dailyReceiveMoney"
-                       width="140"/>
-      <el-table-column show-overflow-tooltip label="期末余额" align="center" prop="dailyReceiveMoney"
+                       width="140">
+        <template slot-scope="scope">
+          {{ scope.row.beginningBalance !== 0 ? scope.row.beginningBalance > 0 ? '借方' : '贷方' : '平' }}
+        </template>
+      </el-table-column>
+      <el-table-column show-overflow-tooltip label="期末余额" align="center" prop="endingBalance"
                        width="140"/>
       <el-table-column show-overflow-tooltip label="业务经理" align="center" prop="dailyReceiveMoney"
                        width="140"/>
@@ -109,6 +118,10 @@
 import {mixin_printHTML} from "@/views/dashboard/mixins/print";
 import {parseTime} from "../../../utils/ruoyi";
 import CustomerDetail from "@/views/system/Statement/components/CustomerDetail.vue";
+import {getCustomerSubjectSummary} from "@/api/system/statement";
+import {getTimeOffset} from "@/utils/order";
+import {getConfigKey, listConfig} from "@/api/system/config";
+import {getSubjectLevel} from "@/api/system/subject";
 
 export default {
   name: "customerSummary",
@@ -129,8 +142,10 @@ export default {
       queryParams: {
         pageNum: 1,
         pageSize: 50,
-        beginTime: '',
+        // 日期往前推迟一年 工具函数
+        beginTime: getTimeOffset('{y}-{m}-{d} {h}:{i}:{s}', 1),
         endTime: parseTime(new Date(), '{y}-{m}-{d} {h}:{i}:{s}'),
+        companyName: null,
       },
       // 表单校验
       columns: [],
@@ -143,13 +158,31 @@ export default {
   methods: {
     /** 查询向外部借出款信息列表 */
     getList() {
-      // todo 1. 获取客户科目余额汇总表数据 填充到表格中
-      // this.loading = true;
-      // getCustomerSubjectSummary(this.queryParams).then(response => {
-      //   this.tableData = response.rows;
-      //   this.total = response.total;
-      //   this.loading = false;
-      // });
+      // 获取客户科目余额汇总表数据 填充到表格中
+      this.loading = true;
+      // 获取参数设置中的编码 然后根据编码去换取科目名称 填充到tableData中
+      // 根据config_key order.customerDetailSummary.subjectNo 拿到键值
+      listConfig({configKey: 'order.customerDetailSummary.subjectNo'}).then(res => {
+        const configValue = res.rows[0]?.configValue
+        // 根据configValue去拿取科目名称
+        getSubjectLevel(configValue).then(res => {
+          // 拿到科目名称
+          const subjectName = res.data.title
+          // 拿取客户科目余额汇总表数据 然后给tableData每一条数据赋值科目编码和名称
+          getCustomerSubjectSummary(this.queryParams).then(response => {
+            // 组装tableData
+            this.tableData = response.rows.map(item => {
+              return {
+                ...item,
+                subjectNo: configValue,
+                subjectName: subjectName
+              }
+            });
+            this.total = response.total;
+            this.loading = false;
+          });
+        })
+      })
     },
     /** 搜索按钮操作 */
     handleQuery() {

@@ -37,7 +37,8 @@ import DictTag from '@/components/DictTag'
 import VueMeta from 'vue-meta'
 // 字典数据组件
 import DictData from '@/components/DictData'
-
+// excel 处理组件
+import {read, utils} from "xlsx"; // 注意处理方法引入方式
 // 引入表格横向滚动插件
 import horizontalScroll from 'el-table-horizontal-scroll'
 //打印

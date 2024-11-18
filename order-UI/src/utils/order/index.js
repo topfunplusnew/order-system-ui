@@ -17,6 +17,33 @@ export const debounce = (fn, delay = 500) => {
   }
 }
 
+// 日期往前推一年
+export function getTimeOffset(format = '{y}-{m}-{d} {h}:{i}:{s}', yearsOffset = 0) {
+  // 格式化时间
+  function parseTime(date, format) {
+    const formatObj = {
+      y: date.getFullYear(),
+      m: date.getMonth() + 1, // 月份从 0 开始，需要加 1
+      d: date.getDate(),
+      h: date.getHours(),
+      i: date.getMinutes(),
+      s: date.getSeconds(),
+    };
+
+    return format.replace(/{(y|m|d|h|i|s)+}/g, (match, key) => {
+      const value = formatObj[key];
+      return value.toString().padStart(2, '0');
+    });
+  }
+
+  // 获取当前时间并进行偏移
+  const now = new Date();
+  now.setFullYear(now.getFullYear() + yearsOffset);
+
+  // 格式化返回结果
+  return parseTime(now, format);
+}
+
 
 export const OTHER_TYPE = [
   {

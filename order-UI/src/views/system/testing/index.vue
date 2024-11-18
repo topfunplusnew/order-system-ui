@@ -1,102 +1,188 @@
-<script>
-
-import {getGoodsOrder} from "../../../api/system/goodsOrder";
-
-export default {
-  computed: {},
-  data() {
-    // console.log('data this=>', this)
-    return {
-      order: {},
-      tableData: [
-        {name: '张三', age: 28},
-        {name: '李四', age: 32},
-        {name: '王五', age: 24},
-      ],
-      nameFilters: [
-        {text: '张三', value: '张三'},
-        {text: '李四', value: '李四'},
-        {text: '王五', value: '王五'},
-      ],
-      ageFilters: [
-        {text: '28', value: 28},
-        {text: '32', value: 32},
-        {text: '24', value: 24},
-      ],
-    }
-  },
-  created() {
-    /**
-     * 在 Vue 2 中，$children 不保证顺序，且在 created 钩子执行时可能尚未初始化完成。
-     * Item 组件在此例中作为直接子组件，但在 created 钩子时可能还未被添加到 $children 数组中。
-     * 因此，在 created 钩子中调用 this.$children.pop() 可能会得到 undefined。建议在 mounted 钩子中访问 $children。
-     */
-    getGoodsOrder(50).then(res => {
-      this.order = res.data;
-    })
-  },
-  methods: {
-    reset(obj) {
-      Object.keys(obj).forEach(item => {
-        Object.assign(obj, {
-          [item]: null
-        })
-      })
-      return obj
-    },
-    handleReset() {
-      this.order = this.reset(this.order)
-    },
-    print() {
-      console.log('order的值为', this.order)
-    },
-
-    // 筛选方法
-    filterName(value, row) {
-      return row.name === value;
-    },
-    filterAge(value, row) {
-      return row.age === value;
-    },
-  }
-}
-</script>
-
 <template>
   <div>
-    <div class="contain">
-      <h1>Vue 2</h1>
-      {{ order.customer }}
-      <el-button @click="handleReset">点击重置对象</el-button>
-      <el-button @click="print">输出对象的值</el-button>
+    <div class="flex-display">
+      <div class="left-box">文件上传(input)：</div>
+      <!--      上传文件标签-->
+      <input type="file" v-on:change="onChange" class="file-ipt" multiple/>
     </div>
-    <div>
-      <el-table :data="tableData">
-        <el-table-column
-          prop="name"
-          label="姓名"
-          :filters="nameFilters"
-          :filter-method="filterName"
-          filter-placement="bottom"
-          filterable
-        >
-        </el-table-column>
-        <el-table-column
-          prop="age"
-          label="年龄"
-          :filters="ageFilters"
-          :filter-method="filterAge"
-          filter-placement="bottom"
-          filterable
-        >
-        </el-table-column>
-      </el-table>
-    </div>
+    <hr/>
+    <el-table v-if="tableHead.length" :data="tableData[1]" style="width: 100%">
+      <el-table-column
+        v-for="(data, key) in tableHead"
+        :prop="data"
+        :label="data"
+        :key="key"
+        width="180"
+      >
+      </el-table-column>
+    </el-table>
   </div>
 </template>
+<script>
+import Vue from "vue";
+import ElementUI from "element-ui";
+import "element-ui/lib/theme-chalk/index.css";
+import {read, utils} from "xlsx";
 
-<style scoped lang="scss">
-.contain {
-  text-align: center;
+Vue.use(ElementUI);
+export default {
+  data() {
+    return {
+      fileList: [], //上传文件列表
+      tableHead: [], //表头
+      tableData: [] // 表数据
+    };
+  },
+  methods: {
+    // 处理excel的参数映射，主要是把某一列(如数电票号码列) 转为 字母 A B C..
+    // C1 列 D1列等等..
+    handleParamsMapper() {
+
+    },
+    // 上传方法
+    onChange(e) {
+      console.log(e)
+      // 获取上传的第一个文件
+      const file = e.target.files[0];
+      // fileReader读取文件
+      const fileReader = new FileReader();
+
+      // FileReader 接口的 load 事件在成功读取文件时触发。
+      fileReader.onload = ev => {
+        try {
+          const data = ev.target.result;
+          // read是xlsx库提供的一个方法 返回一个workbook工作铺对象 里面包含sheets对象，sheet对象中包含表名，表数据等
+          // export function read(data: any, opts?: ParsingOptions): WorkBook;
+          const workbook = read(data, {type: "binary"});
+
+          // 参数数组
+          const params = [];
+          // 取对应表生成json表格内容  SheetNames 是所有的 Sheet item就是每一个Sheet
+          workbook.SheetNames.forEach(item => {
+            // 添加到params这个map中
+            params.push({
+              name: item,
+              // 将workbook中的某个sheet转为js数组
+              // sheet_to_json<T>(worksheet: WorkSheet, opts?: Sheet2JSONOpts): T[];
+              dataList: utils.sheet_to_json(workbook.Sheets[item])
+            });
+            // 放入tableData中 el-table中tableData的数据结构为 [{},{},{}] 对象中每一个属性对应一个column 的prop
+            this.tableData.push(utils.sheet_to_json(workbook.Sheets[item]));
+          });
+          // tableData是所有Sheet的数据 tableData[0]是第一个Sheet
+          console.log('tableData:', this.tableData)
+          // 该算法仅针对表头无合并的情况
+          if (this.tableData.length > 0) {
+            // 获取excel中第一个表格数据tableData[0][0]，并且将表头提取出来
+            for (const key in this.tableData[1][0]) {
+              this.tableHead.push(key);
+            }
+          }
+          // todo 获取某一个sheet下的某一行数据的某一个属性
+          console.log(this.tableData[1][0]['价税合计'])
+          return params;
+          // 重写数据
+        } catch (e) {
+          console.log("error:" + e);
+          return false;
+        }
+      };
+      fileReader.readAsBinaryString(file);
+    },
+    handleChange(res, file, fileList) {
+      // 将文件放入
+      for (let i = 0; i < fileList.length; i++) {
+        if (file.name != fileList[i].name) {
+          this.fileList.push({
+            name: file.name,
+            url: "",
+            uid: file.uid
+          });
+        }
+      }
+
+      // this.fileList = fileList.slice(-3);
+      const files = {0: file};
+      this.readExcel(files);
+    },
+    readExcel(file) {
+      const fileReader = new FileReader();
+
+      fileReader.onload = ev => {
+        try {
+          const data = ev.target.result;
+          const workbook = read(data, {type: "binary"});
+          const params = [];
+          // 取对应表生成json表格内容
+          workbook.SheetNames.forEach(item => {
+            params.push({
+              name: item,
+              dataList: utils.sheet_to_json(workbook.Sheets[item])
+            });
+            this.tableData.push(utils.sheet_to_json(workbook.Sheets[item]));
+          });
+          // 该算法仅针对表头无合并的情况
+          if (this.tableData.length > 0) {
+            // 获取excel中第一个表格数据tableData[0][0]，并且将表头提取出来
+            for (const key in this.tableData[0][0]) {
+              this.tableHead.push(key);
+            }
+          }
+          return params;
+          // 重写数据
+        } catch (e) {
+          console.log("error:" + e);
+          return false;
+        }
+      };
+      fileReader.readAsBinaryString(file[0].raw);
+    }
+  }
+};
+</script>
+<style lang="scss" scoped>
+.upload-demo {
+  width: 100%;
+}
+
+.flex-display {
+  margin: 50px 30px;
+  width: 100%;
+  display: flex;
+  justify-content: flex-start;
+
+  .left-box {
+    margin: 20 30;
+    height: 36px;
+    line-height: 36px;
+  }
+}
+
+.el-upload {
+  margin-left: 40px;
+
+  .el-btn {
+    font-size: 16px;
+  }
+
+  .el-upload-tip {
+    display: inline;
+    font-size: 12px;
+  }
+}
+
+.file-ipt {
+  width: 200px;
+  height: 36px;
+  line-height: 36px;
+
+  button {
+    background-color: #409eff;
+  }
+}
+
+input #file-upload-button {
+  background-color: #409eff;
 }
 </style>
+

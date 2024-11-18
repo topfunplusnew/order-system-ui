@@ -42,3 +42,11 @@ export function delSubject(id) {
     method: 'delete'
   })
 }
+
+// 根据级别编码 获取产品级别
+export function getSubjectLevel(no) {
+  return request({
+    url: '/system/subject/subjectno/' + no,
+    method: 'get'
+  })
+}
