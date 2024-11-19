@@ -34,9 +34,6 @@
 
     <el-row :gutter="10" class="mb8">
       <el-col :span="1.5">
-        <el-button icon="el-icon-refresh" size="mini" @click="resetQuery">刷新</el-button>
-      </el-col>
-      <el-col :span="1.5">
         <el-button
           type="danger"
           size="mini"
@@ -44,6 +41,9 @@
           v-hasPermi="['system:invoiceout:add']"
         >新增发票卖出信息
         </el-button>
+      </el-col>
+      <el-col :span="1.5">
+        <el-button icon="el-icon-refresh" size="mini" @click="resetQuery">刷新</el-button>
       </el-col>
       <right-toolbar :showSearch.sync="showSearch" @queryTable="getList" :columns="columns">
         <template v-slot:print>

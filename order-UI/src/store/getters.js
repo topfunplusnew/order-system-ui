@@ -43,6 +43,9 @@ const getters = {
   //运费
   freightInfo: state => state.trash.freightInfo,
   // 出差信息中的部门信息
-  deptName: state => state.trash.deptName
+  deptName: state => state.trash.deptName,
+  // excel数据
+  excelData: state => state.excel.excelData,
+
 }
 export default getters

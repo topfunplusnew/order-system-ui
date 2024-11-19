@@ -15,6 +15,7 @@ import apply from "@/store/modules/apply";
 import inventory from "@/store/modules/inventory";
 import paymentApply from "@/store/modules/paymentApply";
 import trash from "@/store/modules/trash";
+import excel from "@/store/modules/excel";
 
 
 Vue.use(Vuex)
@@ -37,7 +38,9 @@ const store = new Vuex.Store({
     inventory,
     paymentApply,
     //垃圾桶
-    trash
+    trash,
+    // excel
+    excel
   },
   getters
 })

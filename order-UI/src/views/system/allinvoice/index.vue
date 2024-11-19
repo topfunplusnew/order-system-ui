@@ -39,6 +39,9 @@
       <el-col :span="1.5">
         <el-button icon="el-icon-refresh" size="mini" @click="resetQuery">刷新</el-button>
       </el-col>
+      <el-col :span="1.5">
+        <ExcelImport/>
+      </el-col>
       <right-toolbar :showSearch.sync="showSearch" @queryTable="getList" :columns="columns">
         <template v-slot:print>
           <el-col :span="1.5">
@@ -114,7 +117,8 @@
     />
 
     <!-- 添加或修改发票购入信息对话框 -->
-    <el-dialog :close-on-click-modal="false" :show-close="false" :title="title" :visible.sync="open" width="500px" append-to-body>
+    <el-dialog :close-on-click-modal="false" :show-close="false" :title="title" :visible.sync="open" width="500px"
+               append-to-body>
       <el-form ref="form" :model="form" :rules="rules" label-width="80px">
         <el-form-item label="开票日期" prop="invoiceDate">
           <el-input v-model="form.invoiceDate" placeholder="请输入开票日期"/>
@@ -174,6 +178,7 @@ import {mixin_printHTML} from "@/views/dashboard/mixins/print";
 import {listInvoiceAll} from "@/api/system/allInvoice";
 import {TableName} from "@/api/tool/enums";
 import {addReason} from "@/api/system/user";
+import ExcelImport from "@/views/dashboard/components/common/ExcelImport.vue";
 
 export default {
   name: "InvoiceIn",
@@ -182,7 +187,7 @@ export default {
       return TableName
     }
   },
-  components: {},
+  components: {ExcelImport},
   mixins: [mixin_printHTML],
   data() {
     return {

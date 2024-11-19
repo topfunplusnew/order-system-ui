@@ -34,14 +34,8 @@ export default {
     };
   },
   methods: {
-    // 处理excel的参数映射，主要是把某一列(如数电票号码列) 转为 字母 A B C..
-    // C1 列 D1列等等..
-    handleParamsMapper() {
-
-    },
     // 上传方法
     onChange(e) {
-      console.log(e)
       // 获取上传的第一个文件
       const file = e.target.files[0];
       // fileReader读取文件
@@ -50,6 +44,7 @@ export default {
       // FileReader 接口的 load 事件在成功读取文件时触发。
       fileReader.onload = ev => {
         try {
+          // data是文件读取的二进制数据
           const data = ev.target.result;
           // read是xlsx库提供的一个方法 返回一个workbook工作铺对象 里面包含sheets对象，sheet对象中包含表名，表数据等
           // export function read(data: any, opts?: ParsingOptions): WorkBook;
@@ -89,54 +84,6 @@ export default {
       };
       fileReader.readAsBinaryString(file);
     },
-    handleChange(res, file, fileList) {
-      // 将文件放入
-      for (let i = 0; i < fileList.length; i++) {
-        if (file.name != fileList[i].name) {
-          this.fileList.push({
-            name: file.name,
-            url: "",
-            uid: file.uid
-          });
-        }
-      }
-
-      // this.fileList = fileList.slice(-3);
-      const files = {0: file};
-      this.readExcel(files);
-    },
-    readExcel(file) {
-      const fileReader = new FileReader();
-
-      fileReader.onload = ev => {
-        try {
-          const data = ev.target.result;
-          const workbook = read(data, {type: "binary"});
-          const params = [];
-          // 取对应表生成json表格内容
-          workbook.SheetNames.forEach(item => {
-            params.push({
-              name: item,
-              dataList: utils.sheet_to_json(workbook.Sheets[item])
-            });
-            this.tableData.push(utils.sheet_to_json(workbook.Sheets[item]));
-          });
-          // 该算法仅针对表头无合并的情况
-          if (this.tableData.length > 0) {
-            // 获取excel中第一个表格数据tableData[0][0]，并且将表头提取出来
-            for (const key in this.tableData[0][0]) {
-              this.tableHead.push(key);
-            }
-          }
-          return params;
-          // 重写数据
-        } catch (e) {
-          console.log("error:" + e);
-          return false;
-        }
-      };
-      fileReader.readAsBinaryString(file[0].raw);
-    }
   }
 };
 </script>
