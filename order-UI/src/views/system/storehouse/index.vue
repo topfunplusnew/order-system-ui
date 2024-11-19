@@ -3,18 +3,18 @@
     <el-form :model="queryParams" ref="queryForm" size="mini" :inline="true" v-show="showSearch" label-width="68px">
       <el-form-item label="仓库名称" prop="storeHouseName">
         <el-input
-            v-model="queryParams.storeHouseName"
-            placeholder="请输入仓库名称"
-            clearable
-            @keyup.enter.native="handleQuery"
+          v-model="queryParams.storeHouseName"
+          placeholder="请输入仓库名称"
+          clearable
+          @keyup.enter.native="handleQuery"
         />
       </el-form-item>
       <el-form-item label="地址" prop="address">
         <el-input
-            v-model="queryParams.address"
-            placeholder="请输入地址"
-            clearable
-            @keyup.enter.native="handleQuery"
+          v-model="queryParams.address"
+          placeholder="请输入地址"
+          clearable
+          @keyup.enter.native="handleQuery"
         />
       </el-form-item>
       <el-form-item>
@@ -27,10 +27,10 @@
       </el-col>
       <el-col :span="1.5">
         <el-button
-            type="danger"
-            size="mini"
-            @click="handleAdd"
-            v-hasPermi="['system:storehouse:add']"
+          type="danger"
+          size="mini"
+          @click="handleAdd"
+          v-hasPermi="['system:storehouse:add']"
         >添加仓库商信息
         </el-button>
       </el-col>
@@ -38,10 +38,10 @@
         <template v-slot:print>
           <el-col :span="1.5">
             <el-button
-                plain
-                icon="el-icon-printer"
-                size="mini"
-                @click="printHTML"
+              plain
+              icon="el-icon-printer"
+              size="mini"
+              @click="printHTML"
             >
             </el-button>
           </el-col>
@@ -49,11 +49,11 @@
         <template v-slot:export>
           <el-col :span="1.5">
             <el-button
-                plain
-                icon="el-icon-folder-opened"
-                size="mini"
-                @click="handleExport"
-                v-hasPermi="['system:storehouse:export']"
+              plain
+              icon="el-icon-folder-opened"
+              size="mini"
+              @click="handleExport"
+              v-hasPermi="['system:storehouse:export']"
             >
             </el-button>
           </el-col>
@@ -68,17 +68,17 @@
       <el-table-column label="操作" align="center" class-name="small-padding fixed-width" fixed="right" width="180">
         <template slot-scope="scope">
           <el-button
-              size="mini"
-              type="primary"
-              @click="handleUpdate(scope.row)"
-              v-hasPermi="['system:storehouse:edit']"
+            size="mini"
+            type="primary"
+            @click="handleUpdate(scope.row)"
+            v-hasPermi="['system:storehouse:edit']"
           >编辑
           </el-button>
           <el-button
-              size="mini"
-              type="danger"
-              @click="handleDelete(scope.row)"
-              v-hasPermi="['system:storehouse:remove']"
+            size="mini"
+            type="danger"
+            @click="handleDelete(scope.row)"
+            v-hasPermi="['system:storehouse:remove']"
           >删除
           </el-button>
         </template>
@@ -86,15 +86,16 @@
     </el-table>
 
     <pagination
-        v-show="total>0"
-        :total="total"
-        :page.sync="queryParams.pageNum"
-        :limit.sync="queryParams.pageSize"
-        @pagination="getList"
+      v-show="total>0"
+      :total="total"
+      :page.sync="queryParams.pageNum"
+      :limit.sync="queryParams.pageSize"
+      @pagination="getList"
     />
 
     <!-- 添加或修改库房对话框 -->
-    <el-dialog :close-on-click-modal="false" :show-close="false" :title="title" :visible.sync="open" width="500px" append-to-body>
+    <el-dialog :close-on-click-modal="false" :show-close="false" :title="title" :visible.sync="open" width="500px"
+               append-to-body>
       <el-form ref="form" :model="form" :rules="rules" label-width="80px">
         <el-form-item label="仓库名称" prop="storeHouseName">
           <el-input v-model="form.storeHouseName" placeholder="请输入仓库名称"/>
@@ -113,6 +114,7 @@
 
 <script>
 import {listStoreHouse, getStoreHouse, delStoreHouse, addStoreHouse, updateStoreHouse} from "@/api/system/StoreHouse";
+import {excludeParams} from "@/api/tool/exclude";
 
 export default {
   name: "StoreHouse",
@@ -164,7 +166,7 @@ export default {
   created() {
     this.getList();
     if (localStorage.getItem('storehouse-columns') === 'null'
-        || !localStorage.getItem('storehouse-columns')) {
+      || !localStorage.getItem('storehouse-columns')) {
       //设置localStorage
       localStorage.setItem("storehouse-columns", JSON.stringify(this.columns))
     } else {
@@ -250,20 +252,14 @@ export default {
       this.$refs["form"].validate(valid => {
         if (valid) {
           if (this.form.id != null) {
-            this.form.delFlag = null;
-            this.form.addtime = null;
-            this.form.updateTime = null;
-            this.form.userId = null;
+            this.form = excludeParams(this.form, this.$exclude)
             updateStoreHouse(this.form).then(response => {
               this.$modal.msgSuccess("修改成功");
               this.open = false;
               this.getList();
             });
           } else {
-            this.form.delFlag = null;
-            this.form.addtime = null;
-            this.form.updateTime = null;
-            this.form.userId = null;
+            this.form = excludeParams(this.form, this.$exclude)
             addStoreHouse(this.form).then(response => {
               this.$modal.msgSuccess("新增成功");
               this.open = false;
