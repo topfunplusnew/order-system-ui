@@ -529,6 +529,10 @@
           <el-form-item label="己方开户行" prop="selfBankName">
             <el-input v-model="chooseInfo.selfBankName" placeholder="请输入己方开户行"/>
           </el-form-item>
+          <!--          选择对方银行账户类型-->
+          <el-form-item label="对方银行账户类型">
+            <BankType @updateSelectedType="changeCustomOtherBankType" :select-type="chooseInfo.otherBankCardType"/>
+          </el-form-item>
         </el-form>
       </div>
       <span slot="footer" class="dialog-footer">
@@ -693,12 +697,18 @@ export default {
     changeCustomSelfBankType(value) {
       this.chooseInfo.selfBankCardType = value
     },
+    // 选择对方银行账户类型
+    changeCustomOtherBankType(value) {
+      this.chooseInfo.otherBankCardType = value
+    },
     /** 查询付款信息列表 */
     getList() {
       this.loading = true;
+      // 把查询条件中的payType转成字符串
       if (this.queryParams.payType) {
         this.queryParams.payType = this.queryParams.payType.join('-')
       }
+      // 查询
       listPayment(addDateRange(this.queryParams, this.dateRange, 'payment')).then(response => {
         this.paymentList = response.rows;
         this.total = response.total;
@@ -751,6 +761,8 @@ export default {
         moneyAmount: null,
         // 己方银行账户类型
         selfBankCardType: null,
+        // 对方银行账户类型
+        otherBankCardType: null,
         selfAcountsName: null,
         selfBankNo: null,
         selfBankName: null,
@@ -842,6 +854,8 @@ export default {
               this.open = false;
               this.getList();
             });
+
+            // 新增操作
           } else {
             // 去除参数
             this.form = excludeParams(this.form, this.$exclude)

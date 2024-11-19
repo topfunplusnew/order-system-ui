@@ -160,33 +160,10 @@
               placeholder="请选择日期">
             </el-date-picker>
           </el-form-item>
-          <el-form-item label="支付类型" prop="payType">
-            <el-row :gutter="5">
-              <!--            一级分类-->
-              <el-col :span="8">
-                <el-select v-model="currentSort.levelOne" placeholder="请选择一级支付类型"
-                           @change="handleSelectOneLevel">
-                  <el-option
-                    v-for="item in OneLevelOption"
-                    :key="item.id"
-                    :label="item.title"
-                    :value="item.title">
-                  </el-option>
-                </el-select>
-              </el-col>
-              <!--            二级分类-->
-              <el-col :span="8">
-                <el-select v-model="currentSort.levelTwo" placeholder="请选择二级支付类型"
-                           @change="handleSelectTwoLevel">
-                  <el-option
-                    v-for="item in TwoLevelOption"
-                    :key="item.id"
-                    :label="item.title"
-                    :value="item.title">
-                  </el-option>
-                </el-select>
-              </el-col>
-            </el-row>
+          <el-form-item label="收款类型" prop="payType">
+            <el-cascader
+              v-model="form.receiveType"
+              :options="paymentTypeTree" :props="props"></el-cascader>
           </el-form-item>
           <el-form-item label="金额" prop="moneyAmount">
             <el-input v-model="form.moneyAmount" placeholder="请输入金额"/>
@@ -339,11 +316,12 @@ import {getReceiveMoney, updateReceiveMoney} from "../../../api/system/receiveMo
 import {mixin_checkfile} from "../../dashboard/mixins/checkfiles/mixin_checkfile";
 import BankType from "@/views/dashboard/components/common/BankType.vue";
 import {mixin_bankType} from "../../dashboard/mixins/common/common_bankType";
+import {mixin_receive_money_subject} from "@/views/dashboard/mixins/receivemoney/receive_money_subject";
 
 export default {
   name: "ReceiveMoney",
   components: {BankType, CheckFiles, SearchOption},
-  mixins: [mixin_printHTML, mixin_receive_money_fill, mixin_checkfile, mixin_bankType],
+  mixins: [mixin_printHTML, mixin_receive_money_fill, mixin_checkfile, mixin_bankType, mixin_receive_money_subject],
   data() {
     return {
       // 遮罩层
@@ -424,17 +402,6 @@ export default {
         {key: 9, label: `对方公司`, visible: true},
         {key: 10, label: `对方公司类型`, visible: true},
       ],
-      subjectTree: [],
-      //分类信息
-      currentSort: {
-        levelOne: '',
-        levelTwo: ''
-      },
-      //一级分类列表
-      OneLevelOption: [],
-      //二级分类
-      TwoLevelOption: [],
-
       //银行卡查询
       bankQuery: ''
     };
@@ -449,17 +416,6 @@ export default {
       localStorage.setItem("receivemoney-columns", JSON.stringify(this.columns))
     } else {
       this.columns = JSON.parse(localStorage.getItem('receivemoney-columns'));
-    }
-    // 查询科目列表
-    listSubject().then(res => {
-      this.subjectTree = this.handleTree(res.data, "id", "parentId");
-      this.OneLevelOption = this.subjectTree;
-    })
-  },
-  computed: {
-    // 拼接类型
-    fullLevel() {
-      return this.currentSort.levelOne + '-' + this.currentSort.levelTwo;
     }
   },
   //展示与隐藏
@@ -481,26 +437,6 @@ export default {
     getReceiveMoney() {
       return getReceiveMoney
     },
-    //点击一级分类后的回调
-    handleSelectOneLevel(value) {
-      this.currentSort.levelOne = value;
-      for (var i = 0; i < this.OneLevelOption.length; i++) {
-        //每个一级分类
-        var oneSubject = this.OneLevelOption[i]
-        //判断：所有一级分类id和点击一级分类id是否一样
-        if (value === oneSubject.title) {  //===即比较值 还要比较类型
-          //从一级分类中获取所有的二级分类
-          this.TwoLevelOption = oneSubject.children
-          //把二级分类Id值清空
-          this.currentSort.levelTwo = ''
-        }
-      }
-    },
-    //点击二级
-    handleSelectTwoLevel(value) {
-      this.currentSort.levelTwo = value;
-    },
-
     //银行卡附件上传
     handleCommitUpload(val) {
       this.form.transactionHistoryAttachment = val;
@@ -575,19 +511,6 @@ export default {
       this.title = "添加收款信息";
     },
     /** 修改按钮操作 */
-    /*  handleUpdate(row) {
-        this.reset();
-        const id = row.id || this.ids
-        getReceiveMoney(id).then(response => {
-          this.form = response.data;
-          //修改类型
-          this.currentSort.levelOne = this.form.receiveType.split('-')[0]
-          this.currentSort.levelTwo = this.form.receiveType.split('-')[1]
-          this.open = true;
-          this.title = "修改收款信息";
-        });
-      },*/
-    /** 修改按钮操作 */
     handleUpdate(row) {
       this.$prompt('请输入编辑原因', '提示', {
         confirmButtonText: '确定',
@@ -601,6 +524,7 @@ export default {
             const id = row.id || this.ids
             getReceiveMoney(id).then(response => {
               this.form = response.data;
+              this.form.receiveType = response.data.receiveType.split('-')
               this.open = true;
               this.title = "修改收款信息";
             });
@@ -618,28 +542,45 @@ export default {
       this.$refs["form"].validate(valid => {
         if (valid) {
           if (this.form.id != null) {
-            this.form.delFlag = null;
-            this.form.addtime = null;
-            this.form.updateTime = null;
-            this.form.userId = null;
-            //支付类型
-            this.form.receiveType = this.fullLevel;
+            // 去除参数
             this.form = excludeParams(this.form, this.$exclude)
-            updateReceiveMoney(this.form).then(response => {
+            // 需要拼凑收款类型  但是不能修改响应式的payType 这是一个数组
+            let receiveType = null
+            if (this.form.receiveType) {
+              receiveType = this.form.receiveType.join('-')
+            } else {
+              this.$message.warning('请选择收款类型')
+              return
+            }
+            // 组装收款对象
+            const body = {
+              ...this.form,
+              receiveType: receiveType
+            }
+            updateReceiveMoney(body).then(response => {
               this.$modal.msgSuccess("修改成功");
               this.$close();//结束加载
               this.open = false;
               this.getList();
             })
           } else {
-            this.form.delFlag = null;
-            this.form.addtime = null;
-            this.form.updateTime = null;
-            this.form.userId = null;
-            this.form.receiveType = this.fullLevel;
+            // 去除参数
             this.form = excludeParams(this.form, this.$exclude)
-            // form.tableName form.tID
-            addReceiveMoney(this.form).then(response => {
+            // 需要拼凑收款类型  但是不能修改响应式的payType 这是一个数组
+            let receiveType = null
+            if (this.form.receiveType) {
+              receiveType = this.form.receiveType.join('-')
+            } else {
+              this.$message.warning('请选择收款类型')
+              return
+            }
+            // 组装收款对象
+            const body = {
+              ...this.form,
+              receiveType: receiveType
+            }
+            // 添加收款信息
+            addReceiveMoney(body).then(response => {
               this.$modal.msgSuccess("新增成功");
               this.$close();//结束加载
               this.open = false;
