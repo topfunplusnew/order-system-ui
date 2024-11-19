@@ -154,3 +154,11 @@ export function getCustomerSubjectDetailSomeDay(query) {
     params: query
   })
 }
+
+// 查询客户五个字段名称
+export function getCustomerFiveParams(companyId) {
+  return request({
+    url: '/statistics/companydetailfinancialsummary/' + companyId,
+    method: 'get',
+  })
+}

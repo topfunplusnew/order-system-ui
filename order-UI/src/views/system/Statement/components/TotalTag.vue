@@ -1,13 +1,32 @@
 <script>
 export default {
   props: {
-    value: {
-      type: Number,
-      default: 0
+    tags: {
+      type: Object,
+      default: () => {
+      }
+    }
+  },
+  computed: {
+    // 含税货款
+    totalIncludingTax() {
+      return this.tags?.totalIncludingTax || 0
     },
-    title: {
-      type: String,
-      default: '标题'
+    // 不含税货款
+    totalExcludingTax() {
+      return this.tags?.totalExcludingTax || 0
+    },
+    // 公户收款
+    publicAccountInCome() {
+      return this.tags?.publicAccountInCome || 0
+    },
+    // 私户收款
+    noPublicAccountInCome() {
+      return this.tags?.noPublicAccountInCome || 0
+    },
+    // 票点收入
+    totalTicketPoints() {
+      return this.tags?.totalTicketPoints || 0
     }
   },
   data() {
@@ -19,13 +38,53 @@ export default {
 <template>
   <div>
     <el-row :gutter="20">
-      <el-col :span="6">
+      <el-col :span="4">
         <div>
           <el-statistic
             group-separator=","
             :precision="2"
-            :value="value"
-            :title="title"
+            :value="totalIncludingTax"
+            title="含税货款"
+          ></el-statistic>
+        </div>
+      </el-col>
+      <el-col :span="4">
+        <div>
+          <el-statistic
+            group-separator=","
+            :precision="2"
+            :value="totalExcludingTax"
+            title="不含税货款"
+          ></el-statistic>
+        </div>
+      </el-col>
+      <el-col :span="4">
+        <div>
+          <el-statistic
+            group-separator=","
+            :precision="2"
+            :value="publicAccountInCome"
+            title="公户收款"
+          ></el-statistic>
+        </div>
+      </el-col>
+      <el-col :span="4">
+        <div>
+          <el-statistic
+            group-separator=","
+            :precision="2"
+            :value="noPublicAccountInCome"
+            title="私户收款"
+          ></el-statistic>
+        </div>
+      </el-col>
+      <el-col :span="4">
+        <div>
+          <el-statistic
+            group-separator=","
+            :precision="2"
+            :value="totalTicketPoints"
+            title="票点收入"
           ></el-statistic>
         </div>
       </el-col>
