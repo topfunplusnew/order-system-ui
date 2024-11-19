@@ -162,3 +162,30 @@ export function getCustomerFiveParams(companyId) {
     method: 'get',
   })
 }
+
+// 供应商科目余额汇总表
+export function getSupplierSubjectSummary(query) {
+  return request({
+    url: '', // todo
+    method: 'get',
+    params: query
+  })
+}
+
+//  供应商科目余额汇总表 明细表
+export function getSupplierSubjectDetailSummary(query) {
+  return request({
+    url: '', // todo
+    method: 'get',
+    params: query
+  })
+}
+
+// 供应商供应商科目明细账指定时间结转
+export function getSupplierSubjectDetailSomeDay(query) {
+  return request({
+    url: '', // todo
+    method: 'get',
+    params: query
+  })
+}
