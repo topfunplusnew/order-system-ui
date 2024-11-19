@@ -140,8 +140,16 @@ export function getCustomerSubjectSummary(query) {
 //客户科目余额汇总表 明细表
 export function getCustomerSubjectDetailSummary(query) {
   return request({
-    // todo 完善接口地址
-    url: '',
+    url: '/statistics/companydetail',
+    method: 'get',
+    params: query
+  })
+}
+
+// 查询客户科目明细账指定时间结转
+export function getCustomerSubjectDetailSomeDay(query) {
+  return request({
+    url: '/statistics/companydetailBalanceInLocalCurrencyAtDate',
     method: 'get',
     params: query
   })

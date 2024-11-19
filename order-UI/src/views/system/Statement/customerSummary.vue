@@ -171,7 +171,7 @@ export default {
           // 拿取客户科目余额汇总表数据 然后给tableData每一条数据赋值科目编码和名称
           getCustomerSubjectSummary(this.queryParams).then(response => {
             // 组装tableData
-            this.tableData = response.rows.map(item => {
+            this.tableData = response?.rows.map(item => {
               return {
                 ...item,
                 subjectNo: configValue,
