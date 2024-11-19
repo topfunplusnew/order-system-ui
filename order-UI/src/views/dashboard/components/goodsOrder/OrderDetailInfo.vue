@@ -80,36 +80,36 @@ export default {
           this.addMoneyBackVisible = false
         })
     },
-    //删除订单详情个体
-    deleteOrderDetail(row) {
-      //拿到订单个体 修改这个订单的信息
-      let order_id = sessionStorage.getItem('order_id')
-      let delete_order_detail = {}
-      // 提醒用户第二次确认 避免误删
-      this.$confirm('是否要删除该货物?', '删除货物', {
-        confirmButtonText: '确定',
-        cancelButtonText: '取消',
-        type: 'error'
-      }).then(() => {
-        //获取订单的信息
-        getGoodsOrder(order_id).then(res => {
-          delete_order_detail = res.data
-          //过滤参数
-          delete_order_detail = excludeParams(delete_order_detail, this.$exclude)
-          //删除row.id对应的订单详情
-          delete_order_detail.orderDetailList = delete_order_detail.orderDetailList.filter(item => item.id !== row.id)
-          //修改订单信息
-          updateGoodsOrder(delete_order_detail).then(res => {
-            this.$message({
-              type: 'success',
-              message: '删除成功!'
-            });
-            // 提醒父组件要修改状态 刷新列表
-            this.$emit('updateOrderDetailList', order_id)
-          })
-        })
-      })
-    }
+    // //删除订单详情个体
+    // deleteOrderDetail(row) {
+    //   //拿到订单个体 修改这个订单的信息
+    //   let order_id = sessionStorage.getItem('order_id')
+    //   let delete_order_detail = {}
+    //   // 提醒用户第二次确认 避免误删
+    //   this.$confirm('是否要删除该货物?', '删除货物', {
+    //     confirmButtonText: '确定',
+    //     cancelButtonText: '取消',
+    //     type: 'error'
+    //   }).then(() => {
+    //     //获取订单的信息
+    //     getGoodsOrder(order_id).then(res => {
+    //       delete_order_detail = res.data
+    //       //过滤参数
+    //       delete_order_detail = excludeParams(delete_order_detail, this.$exclude)
+    //       //删除row.id对应的订单详情
+    //       delete_order_detail.orderDetailList = delete_order_detail.orderDetailList.filter(item => item.id !== row.id)
+    //       //修改订单信息
+    //       updateGoodsOrder(delete_order_detail).then(res => {
+    //         this.$message({
+    //           type: 'success',
+    //           message: '删除成功!'
+    //         });
+    //         // 提醒父组件要修改状态 刷新列表
+    //         this.$emit('updateOrderDetailList', order_id)
+    //       })
+    //     })
+    //   })
+    // }
   }
 }
 </script>
@@ -133,12 +133,12 @@ export default {
               @click="handleMoneyBack(scope.row)"
             >货物返利
             </el-button>
-            <el-button
-              size="mini"
-              type="danger"
-              @click="deleteOrderDetail(scope.row)"
-            >删除货物
-            </el-button>
+            <!--            <el-button-->
+            <!--              size="mini"-->
+            <!--              type="danger"-->
+            <!--              @click="deleteOrderDetail(scope.row)"-->
+            <!--            >删除货物-->
+            <!--            </el-button>-->
           </template>
         </el-table-column>
         <el-table-column label="订单日期" align="center" prop="orderDate" fixed="left" show-overflow-tooltip/>
