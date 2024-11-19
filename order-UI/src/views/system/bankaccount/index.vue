@@ -106,7 +106,7 @@
       <el-table-column label="银行账号" align="center" prop="bankNo" v-if="columns[2].visible" width="200"/>
       <el-table-column label="开户行" align="center" prop="bankName" v-if="columns[3].visible" width="200"/>
       <el-table-column label="余额" align="center" prop="amount" v-if="columns[5].visible" width="200"/>
-      <el-table-column label="银行卡操作" align="center" class-name="small-padding fixed-width" width="200"
+      <el-table-column label="银行卡操作" align="center" class-name="small-padding fixed-width" width="140"
                        fixed="right">
         <template slot-scope="scope">
           <el-row>
@@ -118,7 +118,7 @@
           </el-row>
         </template>
       </el-table-column>
-      <el-table-column label="行操作" align="center" class-name="small-padding fixed-width" fixed="right">
+      <el-table-column label="行操作" align="center" class-name="small-padding fixed-width" fixed="right" width="160px">
         <template slot-scope="scope">
           <el-row>
             <el-button
@@ -148,6 +148,7 @@
     <el-dialog :close-on-click-modal="false" :show-close="false" :title="title" :visible.sync="open" width="500px"
                append-to-body>
       <el-form ref="form" :model="form" :rules="rules" label-width="120px">
+        <!--        选择账号类型 分为：司机、公司、己方公司等等-->
         <el-form-item label="账号类型" prop="acountsType">
           <el-select v-model="form.acountsType" placeholder="请选择账号类型">
             <el-option
@@ -158,9 +159,17 @@
             </el-option>
           </el-select>
         </el-form-item>
+        <!--        如果选择了己方公司 还要选择一个公私户类型-->
+        <el-row v-if="form.acountsType === PUBLIC_DICT_TYPE.SELF_COMPANY">
+          <el-form-item label="公私户类型" prop="isPublicAccount">
+            <el-radio v-model="form.isPublicAccount" label="1">公户</el-radio>
+            <el-radio v-model="form.isPublicAccount" label="0">私户</el-radio>
+          </el-form-item>
+        </el-row>
+        <!--        填写户名-->
         <el-form-item label="户名" prop="acountsName">
           <!--          如果是司机 那么就选择-->
-          <el-row v-if="form.acountsType ==='司机'">
+          <el-row v-if="form.acountsType ===PUBLIC_DICT_TYPE.DRIVER">
             <el-col :span="20">
               <el-input v-model="form.acountsName" placeholder="请输入户名"/>
             </el-col>
@@ -184,6 +193,7 @@
               </el-tooltip>
             </el-col>
           </el-row>
+          <!--          如果不是司机 直接填写户名-->
           <el-row v-else>
             <el-input v-model="form.acountsName" placeholder="请输入户名"/>
           </el-row>
@@ -229,7 +239,7 @@
               </el-tooltip>
             </el-col>
             <!-- 供应商信息搜索-->
-            <el-col :span="2" v-if="form.acountsType === '供应商'">
+            <el-col :span="2" v-if="form.acountsType === PUBLIC_DICT_TYPE.SUPPLIER">
               <SearchOption :limit-info="{companyType:'供应商'}" :get-data="listCompany"
                             @commitBack="handleCommitBackCompanyGive" @update:queryName="handleQueryCompanyGive">
                 <template #table-columns>
@@ -239,7 +249,7 @@
               </SearchOption>
             </el-col>
             <!-- 客户信息搜索-->
-            <el-col :span="2" v-if="form.acountsType === '客户'">
+            <el-col :span="2" v-if="form.acountsType === PUBLIC_DICT_TYPE.CUSTOMER">
               <SearchOption :limit-info="{companyType:'客户'}" :get-data="listCompany"
                             @commitBack="handleCommitBackCompany" @update:queryName="handleQueryCompany">
                 <template #table-columns>
@@ -259,6 +269,11 @@
         <el-form-item label="开户行" prop="bankName">
           <el-input v-model="form.bankName" placeholder="请输入开户行"/>
         </el-form-item>
+
+        <!--        显示名称 只有己方公司才会区分-->
+        <el-form-item label="显示名称" prop="displayName" v-if="form.acountsType === PUBLIC_DICT_TYPE.SELF_COMPANY">
+          <el-input v-model="form.displayName" placeholder="请输入显示名称"/>
+        </el-form-item>
       </el-form>
       <div slot="footer" class="dialog-footer">
         <el-button type="primary" @click="submitForm">确 定</el-button>
@@ -266,42 +281,20 @@
       </div>
     </el-dialog>
 
-
-    <!-- 调整银行卡对话框 -->
-    <el-dialog :close-on-click-modal="false" :show-close="false" title="调整银行卡信息" :visible.sync="Adjustment"
-               width="500px" append-to-body>
-      <el-form ref="form" :model="adjustmentInfo" :rules="rules" label-width="80px">
-        <el-form-item label="变动类型" prop="changeType">
-          <el-radio v-model="adjustmentInfo.changeType" label="收入">收入</el-radio>
-          <el-radio v-model="adjustmentInfo.changeType" label="支出">支出</el-radio>
-        </el-form-item>
-        <el-form-item label="金额" prop="moneyAmount">
-          <el-input v-model="adjustmentInfo.moneyAmount" placeholder="请输入金额"/>
-        </el-form-item>
-        <el-form-item label="备注" prop="comments">
-          <el-input v-model="adjustmentInfo.comments" placeholder="请输入备注"/>
-        </el-form-item>
-      </el-form>
-      <div slot="footer" class="dialog-footer">
-        <el-button type="primary" @click="submitAdjustmentInfo">确 定</el-button>
-        <el-button @click="Adjustment = false">取 消</el-button>
-      </div>
-    </el-dialog>
-
-
     <!--    银行卡流水-->
     <el-dialog :close-on-click-modal="false" :show-close="false" title="银行卡流水"
-               :visible.sync="bankChangeDialogVisible" width="55%" append-to-body>
+               :visible.sync="bankChangeDialogVisible" width="600px" append-to-body>
       <el-row>
         <div>
           <el-form :model="bankAcountQuery" label-width="80px">
-            <el-col :span="4">
+            <el-col :span="6">
               <el-form-item label="日期" prop="operateDate">
                 <el-date-picker
                   v-model="bankAcountQuery.operateDate"
                   type="datetime"
                   value-format="yyyy-MM-dd HH:mm:ss"
                   placeholder="日期"
+                  size="mini"
                   style="width: 140px"
                 />
               </el-form-item>
@@ -368,6 +361,7 @@ import {listCars} from "../../../api/system/cars";
 import {excludeParams} from "../../../api/tool/exclude";
 import {listUser} from "../../../api/system/user";
 import CheckBankMoney from "@/views/dashboard/components/common/CheckBankMoney.vue";
+import {PUBLIC_DICT_TYPE} from "@/utils/order";
 
 export default {
   name: "BankAccount",
@@ -529,6 +523,10 @@ export default {
     }
   },
   computed: {
+    // 公共字典
+    PUBLIC_DICT_TYPE() {
+      return PUBLIC_DICT_TYPE
+    },
     //是否是己方公司
     isNeed() {
       return this.form.acountsType !== '己方公司' && this.form.acountsType !== '司机'
@@ -540,8 +538,7 @@ export default {
         return '公司名称'
       }
     }
-  }
-  ,
+  },
   methods: {
     listUser,
     listCars,
@@ -552,9 +549,7 @@ export default {
       listCompany(this.queryParamsCompany).then(res => {
         this.companyList = res.rows;
       })
-    }
-    ,
-
+    },
     //3.银行卡变动流水
     checkBankChangeFlow(row) {
       this.currentBankNo = row.bankNo;
@@ -564,8 +559,7 @@ export default {
         this.bankAcountTotal = res.total;
       })
       this.bankChangeDialogVisible = true;
-    }
-    ,
+    },
     // 分页的请求
     getBankAcountChangeList() {
       listBankAccountChange({
@@ -577,58 +571,48 @@ export default {
         this.bankChangeList = res.rows;
         this.bankAcountTotal = res.total;
       })
-    }
-    ,
+    },
     submitBankChange() {
       this.bankChangeDialogVisible = false
-    }
-    ,
+    },
     // 搜索员工信息的回调
     handleQueryUser(val) {
       this.queryUser = val;
-    }
-    ,
+    },
     handleCommitBackUser(val) {
       console.log(val)
       this.form.companyName = val.trueName
       this.form.companyId = val.userId;
       console.log(this.form)
-    }
-    ,
+    },
     //搜索供应商信息的回调
     handleCommitBackCompanyGive(val) {
       this.form.companyName = val.companyName;
       this.form.companyId = val.id;
-    }
-    ,
+    },
     // 客户信息的回调
     handleCommitBackCompany(val) {
       this.form.companyName = val.companyName;
       this.form.companyId = val.id;
-    }
-    ,
+    },
     handleQueryCompanyGive(value) {
       this.queryCompanyGive = value;
-    }
-    ,
+    },
     handleQueryCompany(value) {
       this.queryCompany = value;
-    }
-    ,
-// 搜索银行卡信息
+    },
+    // 搜索银行卡信息
     handleCommitBackBankAccount(val) {
       this.form.acountsName = val.acountsName;
       this.form.companyId = val.id;
       this.form.companyType = '司机';
       // 司机信息公司默认给的是司机
       this.form.companyName = '司机'
-    }
-    ,
+    },
     handleUpdateBankAccount(val) {
       this.queryBankAccount = val;
-    }
-    ,
-//调整银行卡
+    },
+    //调整银行卡
     submitAdjustmentInfo() {
       const {bankNo} = this.AdjustInfo;
       addBankAccountChange({selfBankNo: bankNo, payNO: '手动调整', ...this.adjustmentInfo}).then(res => {
@@ -636,8 +620,7 @@ export default {
         this.Adjustment = false;
         this.getList()
       })
-    }
-    ,
+    },
     /** 查询银行账号列表 */
     getList() {
       this.loading = true;
@@ -647,21 +630,20 @@ export default {
         this.total = response.total;
         this.loading = false;
       });
-    }
-    ,
-// 取消按钮
+    },
+    // 取消按钮
     cancel() {
       this.open = false;
       this.reset();
-    }
-    ,
-// 表单重置
+    },
+    // 表单重置
     reset() {
       this.form = {
         id: null,
         companyName: null,
         companyId: null,
         bankName: null,
+        isPublicAccount: null, // 公私户
         acountsName: null,
         bankNo: null,
         acountsType: null,
@@ -670,34 +652,29 @@ export default {
         delFlag: null
       };
       this.resetForm("form");
-    }
-    ,
+    },
     /** 搜索按钮操作 */
     handleQuery() {
       this.queryParams.pageNum = 1;
       this.getList();
-    }
-    ,
+    },
     /** 重置按钮操作 */
     resetQuery() {
       this.resetForm("queryForm");
       this.handleQuery();
-    }
-    ,
-// 多选框选中数据
+    },
+    // 多选框选中数据
     handleSelectionChange(selection) {
       this.ids = selection.map(item => item.id)
       this.single = selection.length !== 1
       this.multiple = !selection.length
-    }
-    ,
+    },
     /** 新增按钮操作 */
     handleAdd() {
       this.reset();
       this.open = true;
       this.title = "新增银行卡信息";
-    }
-    ,
+    },
     /** 修改按钮操作 */
     handleUpdate(row) {
       this.reset();
@@ -707,13 +684,12 @@ export default {
         this.open = true;
         this.title = "修改银行卡信息";
       });
-    }
-    ,
-
+    },
     /** 提交按钮 */
     submitForm() {
       this.$refs["form"].validate(valid => {
         if (valid) {
+          // 如果id不为空 那么就是修改操作
           if (this.form.id != null) {
             this.form = excludeParams(this.form, this.$exclude)
             updateBankAccount(this.form).then(response => {
@@ -721,16 +697,23 @@ export default {
               this.open = false;
               this.getList();
             });
+            // 否则就是添加操作
           } else {
+            // 去除参数
             this.form = excludeParams(this.form, this.$exclude)
             // 如果不填公司id
             if (!this.form.companyId) {
-              if (this.form.acountsType === '己方公司') {
+              // 如果是己方公司
+              if (this.form.acountsType === PUBLIC_DICT_TYPE.SELF_COMPANY) {
                 this.form.companyId = 0
+                // 填充公司名称为己方公司
+                this.form.companyName = PUBLIC_DICT_TYPE.SELF_COMPANY
               } else {
+                // 其他银行卡填充-1 表示还没绑定
                 this.form.companyId = -1
               }
             }
+            // 添加银行卡信息
             addBankAccount(this.form).then(response => {
               this.$modal.msgSuccess("新增成功");
               this.open = false;
