@@ -27,6 +27,8 @@ export default {
   methods: {
     // 点击后上传 通过主动调用ref
     handleUpload() {
+      // 清空状态
+      this.clearState()
       // 清空上次上传的文件
       this.$refs.fileInput.value = "";
       // 触发input的点击事件
@@ -74,7 +76,11 @@ export default {
       };
       fileReader.readAsBinaryString(file);
     },
-
+    // 清除状态
+    clearState() {
+      this.sheetList = []
+      this.tableData = []
+    }
   }
 }
 </script>

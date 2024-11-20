@@ -162,16 +162,17 @@ export default {
                        width="120px"/>
       <el-table-column show-overflow-tooltip label="客户是否开票" align="center" prop="customerIsInvoice"
                        width="150px">
+        <template #default="scope">
+          {{ scope.row.customerIsInvoice === 1 ? '是' : '否' }}
+        </template>
       </el-table-column>
       <el-table-column show-overflow-tooltip label="供应商是否开票" align="center" prop="isSupplierInvoice"
                        width="120px">
-      </el-table-column>
-      <el-table-column show-overflow-tooltip label="备注" align="center" prop="comments"/>
-      <el-table-column show-overflow-tooltip label="操作" align="center" prop="comments">
         <template #default="scope">
-          <slot name="option"/>
+          {{ scope.row.isSupplierInvoice >= 1 ? '是' : '否' }}
         </template>
       </el-table-column>
+      <el-table-column show-overflow-tooltip label="备注" align="center" prop="comments"/>
     </el-table>
     <!--    分页组件-->
     <pagination v-show="total > 0" :total="total" :page.sync="queryParams.pageNum"

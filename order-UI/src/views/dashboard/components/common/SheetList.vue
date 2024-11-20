@@ -97,10 +97,6 @@ export default {
       console.log('之前选择的订单列表', this.$store.getters.selectedOrder)
       this.$bus.$emit('select-goods:update')
     },
-    // 重置已经选中的准备开票的订单
-    handleReselectOrder() {
-      this.$store.dispatch('excel/clearSelectedOrders')
-    }
   }
 }
 </script>
@@ -128,7 +124,7 @@ export default {
             <el-card class="box-card">
               <div slot="header" class="clearfix">
                 <span class="bold-text">供应商分配剩余金额</span>
-                <el-button style="float: right; padding: 3px 0" type="text" @click="handleReset">重置</el-button>
+                <el-button style="float: right; padding: 3px 0" type="text" @click="handleReset">重置筛选</el-button>
               </div>
               <!--              供应商搜索区域-->
               <el-form :inline="true" class="demo-form-inline">
@@ -170,9 +166,6 @@ export default {
                 <span class="bold-text">订单列表(可分配)</span>
                 <el-button style="float: right; padding: 3px 0" type="text" @click="handleResetOrderList">重置筛选
                 </el-button>
-                <el-button style="float: right; padding: 3px 10px;color: red" type="text" @click="handleReselectOrder">
-                  重选
-                </el-button>
               </div>
               <!--          订单选择模块-->
               <SelectGoods/>
@@ -191,6 +184,8 @@ export default {
 <style scoped lang="scss">
 .sheet-container {
   display: flex;
+  flex-direction: row;
+  flex-wrap: wrap;
 }
 
 .bold-text {
