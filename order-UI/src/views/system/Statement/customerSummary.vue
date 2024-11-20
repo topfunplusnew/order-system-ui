@@ -73,10 +73,12 @@
                        width="140"/>
       <el-table-column show-overflow-tooltip label="客户名称" align="center" prop="companyName"
                        width="140"/>
-      <el-table-column show-overflow-tooltip label="期初方向" align="center" prop="dailyInvoiceAmount"
+      <el-table-column show-overflow-tooltip label="期初方向" align="center" prop="beginningBalance"
                        width="140">
         <template slot-scope="scope">
-          {{ scope.row.beginningBalance !== 0 ? scope.row.beginningBalance > 0 ? '借方' : '贷方' : '平' }}
+          {{
+            Number(scope.row.beginningBalance) !== 0 ? Number(scope.row.beginningBalance) > 0 ? '借方' : '贷方' : '平'
+          }}
         </template>
       </el-table-column>
       <el-table-column show-overflow-tooltip label="期初余额" align="center" prop="beginningBalance"
@@ -87,10 +89,10 @@
                        width="140"/>
       <el-table-column show-overflow-tooltip label="平账金额" align="center" prop="balanceaccountsAmount"
                        width="140"/>
-      <el-table-column show-overflow-tooltip label="期末方向" align="center" prop="dailyReceiveMoney"
+      <el-table-column show-overflow-tooltip label="期末方向" align="center" prop="endingBalance"
                        width="140">
         <template slot-scope="scope">
-          {{ scope.row.beginningBalance !== 0 ? scope.row.beginningBalance > 0 ? '借方' : '贷方' : '平' }}
+          {{ Number(scope.row.endingBalance) !== 0 ? Number(scope.row.endingBalance) > 0 ? '借方' : '贷方' : '平' }}
         </template>
       </el-table-column>
       <el-table-column show-overflow-tooltip label="期末余额" align="center" prop="endingBalance"

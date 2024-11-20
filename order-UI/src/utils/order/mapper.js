@@ -8,6 +8,7 @@ import {getInvoiceOther} from "@/api/system/invoiceOther";
 import {getOffsetting} from "@/api/system/Offsetting";
 import {getRebate} from "@/api/system/Rebate";
 import {getInventory} from "@/api/system/inventory";
+import {getOrderDetail} from "@/api/system/orderDetail";
 
 export function getFunction(tableName) {
 
@@ -28,5 +29,7 @@ export function getFunction(tableName) {
       return getRebate;
     case TableName.INVENTORY:
       return getInventory;
+    case TableName.ORDER_DETAIL:
+      return getOrderDetail
   }
 }

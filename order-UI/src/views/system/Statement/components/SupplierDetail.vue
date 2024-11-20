@@ -4,8 +4,7 @@
 import TotalTag from "@/views/system/Statement/components/TotalTag.vue";
 import {
   getCustomerFiveParams,
-  getCustomerSubjectDetailSomeDay,
-  getCustomerSubjectDetailSummary, getSupplierSubjectDetailSomeDay, getSupplierSubjectDetailSummary
+  getSupplierSubjectDetailSomeDay, getSupplierSubjectDetailSummary
 } from "@/api/system/statement";
 import {getSubjectLevel} from "@/api/system/subject";
 import {listConfig} from "@/api/system/config";
@@ -78,7 +77,6 @@ export default {
             // 拿到科目名称
             const subjectName = res.data.title
             // 查询明细账之前 要先查询上年结转的余额本币填充
-            // todo BUG
             getSupplierSubjectDetailSomeDay({beginTime: times.beginTime, companyId: this.supplierId}).then(res => {
               // 拿到上年的数据
               const lastYearDetail = res.data;
@@ -119,6 +117,7 @@ export default {
       getFunction(tableName)(payNo).then(res => {
         // 填充数据
         this.needToShowInfo = res.data
+        console.log(this.needToShowInfo)
         // 根据对应表名渲染对应的展示组件
         this.Components = this.getComponents(tableName)
         if (this.Components !== null) {
@@ -170,7 +169,8 @@ export default {
       <!--      供应商明细表五个字段的显示组件 跟现在的供应商明细表在一个查询框下
                 含税货款、不含税货款、公户收款、私户收款、票点收入
                 这五个数据-->
-      <TotalTag :tags="tags"/>
+      <!--      供应商无-->
+      <!--      <TotalTag :tags="tags"/>-->
       <br/>
       <br/>
       <!--      供应商的结转数据-->
@@ -207,13 +207,13 @@ export default {
           </el-table-column>
 
           <!--        这两列应该是根据moneyAmount字段的正负进行判断-->
-          <el-table-column show-overflow-tooltip label="借方发生额(付供应商货款)" align="center" prop="positiveSum"
+          <el-table-column show-overflow-tooltip label="借方发生额(付供应商货款)" align="center"
                            width="140">
             <template slot-scope="scope">
               {{ scope.row.moneyAmount > 0 ? scope.row.moneyAmount : '-' }}
             </template>
           </el-table-column>
-          <el-table-column show-overflow-tooltip label="贷方(在供应商那里提货)" align="center" prop="negativeSum"
+          <el-table-column show-overflow-tooltip label="贷方(在供应商那里提货)" align="center"
                            width="140">
             <template slot-scope="scope">
               {{ scope.row.moneyAmount < 0 ? Math.abs(scope.row.moneyAmount) : '-' }}
