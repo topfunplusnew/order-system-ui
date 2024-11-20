@@ -24,6 +24,14 @@ export default {
     this.resetParams()
     this.getList()
   },
+  mounted() {
+    // 接受事件总线传递来的该组件的更新操作 并且传入回调函数
+    this.$bus.$on('select-goods:update', () => this.refresh())
+  },
+  beforeDestroy() {
+    // 清除事件监听 防止内存泄漏
+    this.$bus.$off('select-goods:update', () => this.refresh()); // 清理事件监听
+  },
   methods: {
     // 获取订单列表
     getList() {
@@ -34,14 +42,23 @@ export default {
         this.loading = false
       })
     },
-    // 多选
+    // 多选 这边需要通过vuex进行管理状态 因为跨越组件了
     handleSelectionChange(selection) {
+      // 本地也维护一份数据
       this.selectedGoodsOrderList = selection
+      // 由vuex维护选中的订单列表 以便于其他组件使用
+      this.$store.dispatch('excel/setSelectedOrders', selection)
     },
     handleQuery() {
       this.queryParams.pageNum = 1;
       this.getList();
     },
+    // 重新拉取数据
+    refresh() {
+      this.resetParams()
+      this.getList()
+    },
+    // 重置搜索条件
     resetParams() {
       this.queryParams = {
         orderDateStart: null,

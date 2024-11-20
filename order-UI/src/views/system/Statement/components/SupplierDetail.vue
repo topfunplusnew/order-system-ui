@@ -1,11 +1,11 @@
-<!--客户科目明细表-->
+<!--供应商科目明细表-->
 
 <script>
 import TotalTag from "@/views/system/Statement/components/TotalTag.vue";
 import {
   getCustomerFiveParams,
   getCustomerSubjectDetailSomeDay,
-  getCustomerSubjectDetailSummary
+  getCustomerSubjectDetailSummary, getSupplierSubjectDetailSomeDay, getSupplierSubjectDetailSummary
 } from "@/api/system/statement";
 import {getSubjectLevel} from "@/api/system/subject";
 import {listConfig} from "@/api/system/config";
@@ -19,12 +19,13 @@ import INVOICE_ORTHER from "@/components/NeedToShow/INVOICE_ORTHER.vue";
 import OFFSETTING from "@/components/NeedToShow/OFFSETTING.vue";
 import INVENTORY from "@/components/NeedToShow/INVENTORY.vue";
 import REBATE from "@/components/NeedToShow/REBATE.vue";
+import ORDER_DETAIL from "@/components/NeedToShow/ORDER_DETAIL.vue";
 
 export default {
   name: "SupplierDetail",
   components: {TotalTag},
   props: {
-    // 需要查看的那一行客户的信息
+    // 需要查看的那一行供应商的信息
     detail: {
       type: Object,
       default: () => {
@@ -56,13 +57,13 @@ export default {
   },
 
   methods: {
-    // 查看明细 点击的时候 先让用户输入时间 然后拿该行数据的companyId查询该客户的明细账
+    // 查看明细 点击的时候 先让用户输入时间 然后拿该行数据的companyId查询该供应商的明细账
     handleCheck() {
       // 打开时间选择框
       this.$datePicker().then(res => {
-        // 组装查询条件 分别为开始时间 结束时间 客户id
+        // 组装查询条件 分别为开始时间 结束时间 供应商id
         const query = {
-          companyId: this.customerId,
+          companyId: this.supplierId,
           beginTime: res.beginTime,
           endTime: res.endTime
         }
@@ -76,12 +77,13 @@ export default {
           getSubjectLevel(configValue).then(res => {
             // 拿到科目名称
             const subjectName = res.data.title
-            // todo 查询明细账之前 要先查询上年结转的余额本币填充
-            getCustomerSubjectDetailSomeDay({beginTime: times.beginTime, companyId: this.customerId}).then(res => {
+            // 查询明细账之前 要先查询上年结转的余额本币填充
+            // todo BUG
+            getSupplierSubjectDetailSomeDay({beginTime: times.beginTime, companyId: this.supplierId}).then(res => {
               // 拿到上年的数据
               const lastYearDetail = res.data;
-              // todo 查询客户明细账
-              getCustomerSubjectDetailSummary(query).then(res => {
+              // 查询供应商明细账
+              getSupplierSubjectDetailSummary(query).then(res => {
                 // 填充数据 因为需要有余额本币字段
                 this.tableData = res.data.map(item => {
                   return {
@@ -99,7 +101,7 @@ export default {
                   subjectNo: configValue,
                   subjectName: subjectName
                 })
-                // 查询该客户的五个tag的值
+                // todo 查询该供应商的五个tag的值
                 this.getCustomerTags(companyId)
                 // 打开弹窗
                 this.dialogVisible = true
@@ -137,11 +139,12 @@ export default {
         [TableName.INVOICE_OTHER]: INVOICE_ORTHER,
         [TableName.OFFSETTING]: OFFSETTING,
         [TableName.REBATE]: REBATE,
-        [TableName.INVENTORY]: INVENTORY
+        [TableName.INVENTORY]: INVENTORY,
+        [TableName.ORDER_DETAIL]: ORDER_DETAIL,
       };
       return components[tableName] || null; // 默认返回 null，如果没有匹配的 tableName
     },
-    // todo 查询某个客户的五个字段
+    // todo 查询某个供应商的五个字段
     getCustomerTags(companyId) {
       // 发送请求查询五个字段
       getCustomerFiveParams(companyId).then(res => {
@@ -154,23 +157,23 @@ export default {
 
 <template>
   <div>
-    <!--    客户明细表的按钮-->
+    <!--    供应商明细表的按钮-->
     <el-button type="primary" size="mini" @click="handleCheck">查看明细</el-button>
 
-    <!--    客户明细表的弹窗-->
+    <!--    供应商明细表的弹窗-->
     <el-dialog
       title="提示"
       :visible.sync="dialogVisible"
       width="900px"
       fullscreen
       append-to-body>
-      <!--      客户明细表五个字段的显示组件 跟现在的客户明细表在一个查询框下
+      <!--      供应商明细表五个字段的显示组件 跟现在的供应商明细表在一个查询框下
                 含税货款、不含税货款、公户收款、私户收款、票点收入
                 这五个数据-->
       <TotalTag :tags="tags"/>
       <br/>
       <br/>
-      <!--      客户的结转数据-->
+      <!--      供应商的结转数据-->
       <el-card class="box-card">
         <el-table border v-loading="loading" :data="tableData" max-height="600px"
                   v-horizontal-scroll="'always'" id="printBox" size="mini" :cell-style="()=>{return {padding:'2px'}}">
@@ -189,14 +192,14 @@ export default {
                            width="140"/>
           <el-table-column show-overflow-tooltip label="科目名称" align="center" prop="subjectName"
                            width="140"/>
-          <el-table-column show-overflow-tooltip label="客户编号" align="center" prop="companyId"
+          <el-table-column show-overflow-tooltip label="供应商编号" align="center" prop="companyId"
                            width="140"/>
-          <el-table-column show-overflow-tooltip label="客户名称" align="center" prop="companyName"
+          <el-table-column show-overflow-tooltip label="供应商名称" align="center" prop="companyName"
                            width="140"/>
-          <el-table-column show-overflow-tooltip label="客户银行户名（对方真实收付款名称）" align="center"
+          <el-table-column show-overflow-tooltip label="供应商银行户名（对方真实收付款名称）" align="center"
                            prop="otherAccountsName"
                            width="140"/>
-          <el-table-column show-overflow-tooltip label="客户银行卡号" align="center" prop="otherBankNo"
+          <el-table-column show-overflow-tooltip label="供应商银行卡号" align="center" prop="otherBankNo"
                            width="140"/>
 
           <el-table-column show-overflow-tooltip label="摘要" align="center" prop="summary"
@@ -204,13 +207,13 @@ export default {
           </el-table-column>
 
           <!--        这两列应该是根据moneyAmount字段的正负进行判断-->
-          <el-table-column show-overflow-tooltip label="借方(客户提货+买票点)" align="center" prop="positiveSum"
+          <el-table-column show-overflow-tooltip label="借方发生额(付供应商货款)" align="center" prop="positiveSum"
                            width="140">
             <template slot-scope="scope">
               {{ scope.row.moneyAmount > 0 ? scope.row.moneyAmount : '-' }}
             </template>
           </el-table-column>
-          <el-table-column show-overflow-tooltip label="贷方(收客户款)" align="center" prop="negativeSum"
+          <el-table-column show-overflow-tooltip label="贷方(在供应商那里提货)" align="center" prop="negativeSum"
                            width="140">
             <template slot-scope="scope">
               {{ scope.row.moneyAmount < 0 ? Math.abs(scope.row.moneyAmount) : '-' }}

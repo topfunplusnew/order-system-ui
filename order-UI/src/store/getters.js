@@ -46,6 +46,9 @@ const getters = {
   deptName: state => state.trash.deptName,
   // excel数据
   excelData: state => state.excel.excelData,
-
+  // 暂存的excel数据
+  tempData: state => state.excel.tempData,
+  // 选中的订单的数据
+  selectedOrder: state => state.excel.selectedOrders,
 }
 export default getters

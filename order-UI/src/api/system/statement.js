@@ -166,7 +166,7 @@ export function getCustomerFiveParams(companyId) {
 // 供应商科目余额汇总表
 export function getSupplierSubjectSummary(query) {
   return request({
-    url: '', // todo
+    url: '/statistics/supplierdetailsummary',
     method: 'get',
     params: query
   })
@@ -175,7 +175,7 @@ export function getSupplierSubjectSummary(query) {
 //  供应商科目余额汇总表 明细表
 export function getSupplierSubjectDetailSummary(query) {
   return request({
-    url: '', // todo
+    url: '/statistics/supplierdetail',
     method: 'get',
     params: query
   })
@@ -184,7 +184,7 @@ export function getSupplierSubjectDetailSummary(query) {
 // 供应商供应商科目明细账指定时间结转
 export function getSupplierSubjectDetailSomeDay(query) {
   return request({
-    url: '', // todo
+    url: '/statistics/supplierdetailBalanceInLocalCurrencyAtDate',
     method: 'get',
     params: query
   })

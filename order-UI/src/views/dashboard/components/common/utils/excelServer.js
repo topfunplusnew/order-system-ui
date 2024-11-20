@@ -12,6 +12,15 @@ export var mixin_excel_server = {
     // 读取excel存储的数据
     handleReadExcel() {
       return this.$store.getters.excelData
-    }
+    },
+
+    // 对暂存数据进行维护
+    handleStoreTempData(value) {
+      this.$store.dispatch('excel/setTempData', value)
+    },
+    // 清除暂存数据
+    handleClearTempData() {
+      this.$store.dispatch('excel/clearTempData')
+    },
   }
 }

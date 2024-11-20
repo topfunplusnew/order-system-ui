@@ -38,7 +38,7 @@ export function getTimeOffset(format = '{y}-{m}-{d} {h}:{i}:{s}', yearsOffset = 
 
   // 获取当前时间并进行偏移
   const now = new Date();
-  now.setFullYear(now.getFullYear() + yearsOffset);
+  now.setFullYear(now.getFullYear() - yearsOffset);
 
   // 格式化返回结果
   return parseTime(now, format);

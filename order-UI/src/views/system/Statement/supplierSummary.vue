@@ -68,7 +68,6 @@
                        width="140"/>
       <el-table-column show-overflow-tooltip label="科目名称" align="center" prop="subjectName"
                        width="140"/>
-      <!--      todo 供应商编号 未知-->
       <el-table-column show-overflow-tooltip label="供应商编号" align="center" prop="companyId"
                        width="140"/>
       <el-table-column show-overflow-tooltip label="供应商名称" align="center" prop="companyName"
@@ -115,7 +114,7 @@
 <script>
 import {mixin_printHTML} from "@/views/dashboard/mixins/print";
 import {parseTime} from "../../../utils/ruoyi";
-import {getCustomerSubjectSummary} from "@/api/system/statement";
+import {getSupplierSubjectSummary,} from "@/api/system/statement";
 import {getTimeOffset} from "@/utils/order";
 import {listConfig} from "@/api/system/config";
 import {getSubjectLevel} from "@/api/system/subject";
@@ -165,9 +164,9 @@ export default {
         // 根据configValue去拿取科目名称
         getSubjectLevel(configValue).then(res => {
           // 拿到科目名称
-          const subjectName = res.data.title
-          // todo 拿取供应商科目余额汇总表数据 然后给tableData每一条数据赋值科目编码和名称
-          getCustomerSubjectSummary(this.queryParams).then(response => {
+          const subjectName = res?.data.title || null
+          // 拿取供应商科目余额汇总表数据 然后给tableData每一条数据赋值科目编码和名称
+          getSupplierSubjectSummary(this.queryParams).then(response => {
             // 组装tableData
             this.tableData = response?.rows.map(item => {
               return {
