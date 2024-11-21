@@ -47,11 +47,16 @@ export var mixin_order_freight_payment = {
       // 遍历选择的数组
       this.selectedList.forEach(item => {
         item = this.convertOrderFreightToPayment(item)
+        // 填充对方的银行类型
+        item.otherBankCardType = this.freightSelfOnceInfo.otherBankCardType
+        // 推入到需要计算的数组
         this.batchPaymentList.push(item)
         // 累加
         this.total_freight += Number(item.moneyAmount)
       })
+      // 重置运费信息
       this.resetFreightSelfOnceInfo();
+      // 打开运费付款页面
       this.freightOnceVisible = true;
     },
     // 将orderFreight对象转换为Payment对象
@@ -105,6 +110,8 @@ export var mixin_order_freight_payment = {
         selfBankNo: null,
         selfBankName: null,
         selfBankCardType: null,
+        // 对方银行账户类型
+        otherBankCardType: null,
       }
     }
   },

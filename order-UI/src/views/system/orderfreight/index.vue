@@ -445,8 +445,11 @@
                   :options="paymentTypeTree" :props="props"
                 ></el-cascader>
               </el-form-item>
+              <el-form-item label="对方账号类型" prop="otherBankCardType">
+                <BankType @updateSelectedType="handleBankTypeOther"/>
+              </el-form-item>
               <el-form-item label="己方账号类型" prop="selfBankCardType">
-                <BankType @updateSelectedType="handleBankType"/>
+                <BankType @updateSelectedType="handleBankTypeSelf"/>
               </el-form-item>
               <el-form-item label="己方户名" prop="selfAcountsName">
                 <el-row>
@@ -632,7 +635,6 @@ export default {
       applyInfo: null,
       applyPaymentVisible: false,
       needInfo: {},
-
     };
   },
   watch: {
@@ -652,7 +654,6 @@ export default {
       // 拿取地址中的参数 查询list
       this.getQueryParams(fundsDate, driver)
     } else {
-
       // 如果没有 正常查询
       this.getList();
     }
@@ -696,32 +697,13 @@ export default {
         });
     },
     // 填充己方银行卡账户类型
-    handleBankType(value) {
+    handleBankTypeSelf(value) {
       this.freightSelfOnceInfo.selfBankCardType = value
     },
-    //添加海运费或者陆运费
-    // applyForLand(row) {
-    //   console.log('陆运费信息', row)
-    //   this.needInfo = {
-    //     acountsName: row.otherAcountsName,
-    //     bankName: row.otherBankName,
-    //     bankNo: row.otherBankNo
-    //   }
-    //   this.tID = row.id
-    //   this.freight = Number(row.moneyAmount);
-    //   this.applyPaymentVisible = true;
-    // },
-    // applyForSea(row) {
-    //   console.log('海运费信息', row)
-    //   this.needInfo = {
-    //     acountsName: row.otherAcountsName,
-    //     bankName: row.otherBankName,
-    //     bankNo: row.otherBankNo
-    //   }
-    //   this.tID = row.id
-    //   this.freight = Number(row.moneyAmount);
-    //   this.applyPaymentVisible = true;
-    // },
+    // 对方银行账户类型
+    handleBankTypeOther(value) {
+      this.freightSelfOnceInfo.otherBankCardType = value
+    },
     changeOpen() {
       this.needMoney = 0
       this.applyPaymentVisible = false
