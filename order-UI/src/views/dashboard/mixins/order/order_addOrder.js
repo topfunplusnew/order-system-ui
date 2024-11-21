@@ -1,5 +1,6 @@
 import {addReason} from "../../../../api/system/user";
 import {TableName} from "../../../../api/tool/enums";
+import OrderForm from "@/views/dashboard/components/goodsOrder/OrderForm.vue";
 
 /**
  * 添加或者修改订单的功能
@@ -18,10 +19,12 @@ export var mixin_order_add = {
   methods: {
     // 新增按钮操作
     handleAdd() {
-      //打开新的新增框
-      this.orderItemVisible = true
-      this.orderTitle = '添加订单信息'
-      this.submitInfo = '添加订单'
+      this.reset()
+      // 打开弹窗
+      this.openDialog(OrderForm, '添加订单', '1300px', {
+        orderId: null,
+        submitInfo: '添加订单'
+      })
     },
     //修改订单的操作
     handleUpdate(row) {
@@ -36,10 +39,11 @@ export var mixin_order_add = {
             sessionStorage.setItem('order-edit-reason', value)
             this.$message.success('提交成功')
             this.reset();
-            this.orderId = row.id
-            this.orderItemVisible = true;
-            this.orderTitle = '修改订单信息'
-            this.submitInfo = '修改订单'
+            // 打开弹窗
+            this.openDialog(OrderForm, '修改订单', '1300px', {
+              orderId: row.id,
+              submitInfo: '修改订单'
+            })
           })
       }).catch(() => {
         this.$message({
@@ -47,14 +51,6 @@ export var mixin_order_add = {
           message: '请先输入编辑原因!'
         });
       });
-    },
-    // 关闭弹窗
-    closeDialog() {
-      this.orderId = null
-      this.orderItemVisible = false
-      setTimeout(() => {
-        this.getList()
-      }, 500)
     },
     // 表单重置
     reset() {

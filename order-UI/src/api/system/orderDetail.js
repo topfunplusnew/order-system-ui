@@ -63,3 +63,16 @@ export function listOrderDetailByIds(query) {
     }
   })
 }
+
+// 根据ordersNo批量查询订单详情
+
+export function listOrderDetailByOrderNos(query) {
+  return request({
+    url: '/system/orderDetail/listByBatchOrderNo',
+    method: 'get',
+    // 这里有个坑 如果后端用get 并且接受一个数组 那么我们需要手动在url拼接一下字符串
+    params: {
+      orderNos: query.join(',')
+    }
+  })
+}

@@ -1,3 +1,5 @@
+<!--订单详情列表-->
+
 <script>
 import {addRebate} from "@/api/system/Rebate";
 import SearchOption from "@/components/SearchOption.vue";
@@ -54,6 +56,13 @@ export default {
         this.rebateMethods = res.data;
       })
     },
+    // 每一个组件必须要实现的方法
+    handleProcess() {
+      console.log('order-detail-commit')
+    },
+    handleReject() {
+      console.log('order-detail-reject')
+    },
     //点击确认
     handleCommitBankAccount(val) {
       this.moneyBackInfo.inAcountsName = val.acountsName;
@@ -69,7 +78,8 @@ export default {
     },
     //返利回扣
     handleMoneyBack(row) {
-      this.moneyBackInfo.orderDetailID = row.id;
+      this.reset()
+      this.moneyBackInfo.orderDetailIds.push(row.id);
       this.addMoneyBackVisible = true;
     },
     //添加返利回扣信息
@@ -80,36 +90,22 @@ export default {
           this.addMoneyBackVisible = false
         })
     },
-    // //删除订单详情个体
-    // deleteOrderDetail(row) {
-    //   //拿到订单个体 修改这个订单的信息
-    //   let order_id = sessionStorage.getItem('order_id')
-    //   let delete_order_detail = {}
-    //   // 提醒用户第二次确认 避免误删
-    //   this.$confirm('是否要删除该货物?', '删除货物', {
-    //     confirmButtonText: '确定',
-    //     cancelButtonText: '取消',
-    //     type: 'error'
-    //   }).then(() => {
-    //     //获取订单的信息
-    //     getGoodsOrder(order_id).then(res => {
-    //       delete_order_detail = res.data
-    //       //过滤参数
-    //       delete_order_detail = excludeParams(delete_order_detail, this.$exclude)
-    //       //删除row.id对应的订单详情
-    //       delete_order_detail.orderDetailList = delete_order_detail.orderDetailList.filter(item => item.id !== row.id)
-    //       //修改订单信息
-    //       updateGoodsOrder(delete_order_detail).then(res => {
-    //         this.$message({
-    //           type: 'success',
-    //           message: '删除成功!'
-    //         });
-    //         // 提醒父组件要修改状态 刷新列表
-    //         this.$emit('updateOrderDetailList', order_id)
-    //       })
-    //     })
-    //   })
-    // }
+    // 重置moneyBackInfo
+    reset() {
+      this.moneyBackInfo = {
+        orderDetailIds: [],
+        rebateDate: '',
+        rebate: '',
+        rebateMethod: '',
+        inAcountsName: '',
+        inBankNo: '',
+        supplier: '',
+        outAcountsName: '',
+        outBankNo: '',
+        rebateReason: '',
+        comments: ''
+      }
+    },
   }
 }
 </script>

@@ -18,38 +18,32 @@ export default {
   data() {
     return {
       queryAcountsName: '',
-      form: {
-        otherAcountsName: null,
-        otherBankNo: null,
-        otherBankName: null,
-        payDate: null,
-        comments: null,
-        content: null,
-      }
+      form: {}
     }
   },
   // 因为dialog的销毁机制 所以需要组件创建时发一次请求自动填充，还需要监听id的变化再次发请求改变
   created() {
     this.reset();
+    // 获取车辆信息 填充司机相关信息
     getCars(this.orderInfo.driverId).then(res => {
-      setTimeout(() => {
+      this.$nextTick(() => {
         //自动填充司机信息
         this.form.otherAcountsName = res.data.acountsName;
         this.form.otherBankNo = res.data.bankNo;
         this.form.otherBankName = res.data.bankName;
-      }, 50)
+      })
     })
   },
   watch: {
     'orderInfo.driverId': {
       handler(val) {
         getCars(val).then(res => {
-          setTimeout(() => {
-            //自动填充司机信息
+          //自动填充司机信息
+          this.$nextTick(() => {
             this.form.otherAcountsName = res.data.acountsName;
             this.form.otherBankNo = res.data.bankNo;
             this.form.otherBankName = res.data.bankName;
-          }, 50)
+          })
         })
       },
       deep: true
@@ -62,32 +56,38 @@ export default {
     listBankAccount,
     listCompany,
     //提交运费信息
-    onSubmit() {
+    handleProcess() {
+      // this.orderInfo就是父组件传递过来的组装的运费信息
       Object.assign(this.form, this.orderInfo)
+      console.log(this.form)
       //发送请求 添加运费信息 applyDate为现在
-      addOrderFreight({...this.form, applyDate: parseTime(new Date()), applyUserName: this.trueName}).then(res => {
-        this.$message.success('运费信息添加成功~')
-        this.$emit('close')
+      const query = {...this.form, applyDate: parseTime(new Date()), applyUserName: this.trueName}
+      // 添加运费信息
+      addOrderFreight(query).then(res => {
         this.reset()
-        setTimeout(() => {
-          this.$router.push('/order/order/orderfreight')
-        }, 100)
       })
-
     },
+    // 选择银行卡 自动填充相关信息
     handleCommitBack(val) {
       this.form.otherAcountsName = val.acountsName;
       this.form.otherBankName = val.bankName;
       this.form.otherBankNo = val.bankNo
     },
+    // 搜索字段的自动填充
     handleChange(val) {
       this.queryAcountsName = val;
     },
     reset() {
-      this.form = this.$refreshParams(this.form)
+      this.form = {
+        otherAcountsName: null,
+        otherBankNo: null,
+        otherBankName: null,
+        payDate: null,
+        comments: null,
+        content: null,
+      }
     },
-    close() {
-      this.$emit('close')
+    handleReject() {
     }
   }
 }
@@ -125,9 +125,9 @@ export default {
       </el-form-item>
       <el-form-item label="支付日期">
         <el-date-picker
-            v-model="form.payDate"
-            type="datetime"
-            placeholder="选择日期" value-format="yyyy-MM-dd HH:mm:ss">
+          v-model="form.payDate"
+          type="datetime"
+          placeholder="选择日期" value-format="yyyy-MM-dd HH:mm:ss">
         </el-date-picker>
       </el-form-item>
       <el-form-item label="备注信息">
@@ -135,10 +135,6 @@ export default {
       </el-form-item>
       <el-form-item label="附加备注">
         <el-input v-model="form.comments" placeholder="请输入附加备注"></el-input>
-      </el-form-item>
-      <el-form-item>
-        <el-button type="primary" @click="onSubmit">添加运费信息</el-button>
-        <el-button type="primary" @click="close">关 闭</el-button>
       </el-form-item>
     </el-form>
   </div>

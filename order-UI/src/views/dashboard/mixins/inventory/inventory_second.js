@@ -1,4 +1,5 @@
-import { parseTime } from '../../../../utils/ruoyi'
+import {parseTime} from '../../../../utils/ruoyi'
+import {addExWarehouse} from "@/api/system/exWarehouse";
 
 export var mixin_inventory_second = {
   data: function () {

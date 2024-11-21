@@ -1,3 +1,5 @@
+<!--文件列表组件-->
+
 <script>
 export default {
   name: "FileItems",

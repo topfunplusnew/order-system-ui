@@ -114,26 +114,33 @@
           <el-table-column label="客户佣金" align="center" prop="customerCommission" v-if="columns[34].visible"
                            width="150"/>
           <el-table-column label="备注" align="center" prop="comments" v-if="columns[35].visible" width="150"/>
-          <el-table-column label="操作" align="center" class-name="small-padding fixed-width" width="250px"
+          <el-table-column label="操作" align="center" class-name="small-padding fixed-width" width="280"
                            fixed="right">
             <template slot-scope="scope">
+              <!--  付运费 要指定类型 为 goodsorder inventory-->
               <el-button
                 size="mini"
-                type="primary"
-                @click="handleUpdate(scope.row)"
-              >修改
+                type="text"
+                @click="handlePayment(scope.row)"
+              >付款
               </el-button>
               <el-button
                 size="mini"
-                type="warning"
+                type="text"
                 @click="secondryInventoryOut(scope.row)"
               >加工后出库
               </el-button>
               <el-button
                 size="mini"
-                type="warning"
+                type="text"
                 @click="afterbreakInventoryOut(scope.row)"
               >破损后出库
+              </el-button>
+              <el-button
+                size="mini"
+                type="primary"
+                @click="handleUpdate(scope.row)"
+              >修改
               </el-button>
               <el-button
                 size="mini"
@@ -379,12 +386,19 @@
       </div>
     </el-dialog>
 
-
-    <!--    添加入库信息 与订单结构类似-->
-    <el-dialog :close-on-click-modal="false" :show-close="false" title="货物入库" :visible.sync="invoiceInVisible"
-               width="80%" append-to-body>
-      <InventoryForm @close="invoiceInVisible = false"/>
-    </el-dialog>
+    <!--    通用的弹窗-->
+    <div v-if="currentComponent">
+      <!--    通用弹窗-->
+      <DialogWrapper :current-component="currentComponent"
+                     :dialog-visible="dialogVisible"
+                     :dialog-props="dialogProps"
+                     :dialog-title="dialogTitle"
+                     :dialog-width="dialogWidth"
+                     @update:dialogVisible="args => dialogVisible = false"
+                     @close="handleCloseDialog"
+                     @confirm="handleDialogConfirm"
+      />
+    </div>
 
 
     <!--    二次出库-->
@@ -439,11 +453,23 @@ import {mixin_inventory_second} from "../../dashboard/mixins/inventory/inventory
 import {mixin_inventory_broken} from "../../dashboard/mixins/inventory/inventory_broken";
 import {mixin_inventory_add} from "../../dashboard/mixins/inventory/inventory_add";
 import InventoryForm from "../../dashboard/components/inventory/InventoryForm.vue";
+import {mixin_freight_payment} from "@/views/dashboard/mixins/freight/freight_payment";
+import DialogWrapper from "@/views/dashboard/components/common/DialogWrapper.vue";
+import {common_dialog} from "@/views/dashboard/mixins/common/common_dialog";
+import {mixin_printHTML} from "@/views/dashboard/mixins/print";
 
 export default {
   name: "Inventory",
-  components: {InventoryForm, SearchOption},
-  mixins: [mixin_inventory_second, mixin_inventory_broken, mixin_inventory_add],
+  components: {DialogWrapper, InventoryForm, SearchOption},
+  mixins: [
+    // 通用的弹窗组件混入
+    common_dialog,
+    mixin_printHTML,
+    mixin_inventory_second,
+    mixin_inventory_broken,
+    mixin_inventory_add,
+    mixin_freight_payment
+  ],
   data() {
     return {
       loading: true,
@@ -718,15 +744,6 @@ export default {
       this.single = selection.length !== 1
       this.multiple = !selection.length
     },
-    //打印
-    printHTML() {
-      this.$print({
-        printable: 'printBox',
-        type: 'html',
-        targetStyles: ['*'], // 打印内容使用所有HTML样式，没有设置这个属性/值，设置分页打印没有效果
-      })
-    },
-
     /** 修改按钮操作 */
     handleUpdate(row) {
       this.$prompt('请输入编辑原因', '提示', {

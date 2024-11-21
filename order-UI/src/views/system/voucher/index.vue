@@ -49,7 +49,7 @@
               icon="el-icon-folder-opened"
               size="mini"
               @click="handleExport"
-              v-hasPermi="['system:orderfreight:export']"
+              v-hasPermi="['system:freight:export']"
             >
             </el-button>
           </el-col>

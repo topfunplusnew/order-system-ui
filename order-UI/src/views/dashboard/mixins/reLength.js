@@ -1,3 +1,4 @@
+// 表格头部的拖动引起变化的混入效果
 export default {
   data() {
     return {

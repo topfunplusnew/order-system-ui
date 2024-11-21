@@ -32,7 +32,7 @@ export default {
           }}
         </el-descriptions-item>
         <el-descriptions-item label="杂费">{{ needToShowInfo.sundryCost }} 元</el-descriptions-item>
-        <el-descriptions-item label="工厂付款">{{ needToShowInfo.paymentFactory }} 元</el-descriptions-item>
+        <el-descriptions-item label="出厂货款">{{ needToShowInfo.paymentFactory }} 元</el-descriptions-item>
         <el-descriptions-item label="卸货费">{{ needToShowInfo.paymentUnload }} 元</el-descriptions-item>
         <el-descriptions-item label="销售含税">{{
             needToShowInfo.isIncludeTaxSale ? '是' : '否'

@@ -1,9 +1,9 @@
 <template>
   <div class="app-container">
     <el-form :model="queryParams" ref="queryForm" size="mini" :inline="true" v-show="showSearch" label-width="80px">
-      <el-form-item label="车队名称" prop="fName">
+      <el-form-item label="车队名称" prop="fname">
         <el-input
-          v-model="queryParams.fName"
+          v-model="queryParams.fname"
           placeholder="请输入车队名称"
           clearable
           @keyup.enter.native="handleQuery"
@@ -122,8 +122,8 @@
     <el-dialog :close-on-click-modal="false" :show-close="false" :title="title" :visible.sync="open" width="500px"
                append-to-body>
       <el-form ref="form" :model="form" :rules="rules" label-width="120px">
-        <el-form-item label="车队名称" prop="fName">
-          <el-input v-model="form.fName" placeholder="请输入车队名称"/>
+        <el-form-item label="车队名称" prop="fname">
+          <el-input v-model="form.fname" placeholder="请输入车队名称"/>
         </el-form-item>
         <el-form-item label="车队经理" prop="fLeader">
           <el-input v-model="form.fLeader" placeholder="请输入车队经理"/>
@@ -172,7 +172,7 @@ export default {
       queryParams: {
         pageNum: 1,
         pageSize: 10,
-        fName: null,
+        fname: null,
         fLeader: null,
         tel: null,
         address: null,
@@ -185,7 +185,7 @@ export default {
       // 表单校验
       rules: {
         // 添加校验
-        fName: [
+        fname: [
           {required: true, message: '车队名称不能为空', trigger: 'blur'}
 
         ],
@@ -257,7 +257,7 @@ export default {
     reset() {
       this.form = {
         id: null,
-        fName: null,
+        fname: null,
         fLeader: null,
         tel: null,
         address: null,

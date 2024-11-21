@@ -781,7 +781,7 @@ export default {
         'price': '单价',
         'isIncludeTaxFactory': '是否含税（工厂）',
         'sundryCost': '杂费',
-        'paymentFactory': '工厂付款',
+        'paymentFactory': '出厂货款',
         'paymentUnload': '卸货费用',
         'isIncludeTaxSale': '是否含税（销售）',
         'payments': '销售付款',

@@ -19,9 +19,8 @@ export var mixin_form_fillInfo = {
       this.queryFleet = val
     },
     handleCommitBackFleet(val) {
-      this.orderInfo.fleet = val.fName
+      this.orderInfo.fleet = val.fname
     },
-
     // 客户搜索的自动填充
     handleCommitBackCompany(val) {
       this.orderInfo.customerID = val.id;

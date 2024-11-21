@@ -4,7 +4,7 @@ import {getToken} from "../../../../utils/auth";
 import {excludeParams} from "../../../../api/tool/exclude";
 
 /**
- *  7.点击上传附件 上传附件功能 查看附件功能
+ *  点击上传附件 上传附件功能 查看附件功能
  */
 export var mixin_order_uploadFiles = {
   data: function () {

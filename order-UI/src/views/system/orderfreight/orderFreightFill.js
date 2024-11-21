@@ -1,3 +1,11 @@
+// 创建运费 来源
+export const FREIGHT_PAYMENT = {
+  GOODS_ORDER: 'goodsorder',
+  INVENTORY: 'inventory'
+}
+
+
+// 运费的相关填充信息
 export var mixin_order_freight_fill = {
   data: function () {
     return {
@@ -27,7 +35,7 @@ export var mixin_order_freight_fill = {
       this.queryCompany = val;
     },
     handleCommitBackFleet(val) {
-      this.form.fleet = val.fName;
+      this.form.fleet = val.fname;
     },
     updateQueryFleet(val) {
       this.queryFleet = val

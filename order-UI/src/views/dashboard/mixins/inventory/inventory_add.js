@@ -1,3 +1,5 @@
+import InventoryForm from "@/views/dashboard/components/inventory/InventoryForm.vue";
+
 export var mixin_inventory_add = {
   data: function () {
     return {
@@ -18,7 +20,7 @@ export var mixin_inventory_add = {
     //添加货物
     addNewInventory() {
       this.resetInventoryInfo()
-      this.invoiceInVisible = true
+      this.openDialog(InventoryForm, '添加货物', '1300px', {})
     },
     //重置仓库信息
     resetInventoryInfo() {

@@ -11,7 +11,8 @@ export default {
   props: {
     //是否为二次出库
     isSecond: {
-      type: Boolean
+      type: Boolean,
+      default: false
     }
   },
   data() {
@@ -30,6 +31,12 @@ export default {
     listFleet,
     listCars,
     listStoreHouse,
+    handleProcess() {
+      this.$refs.inventoryItem.handleProcess()
+    },
+    handleReject() {
+      this.$refs.inventoryItem.handleReject()
+    },
     //一堆的更新查找和确认 Query是更新查找值 Commit是更新当前库存对象的属性
     handleUpdateQueryStoreHouseName(val) {
       this.queryStoreHouseName = val
@@ -43,30 +50,29 @@ export default {
     handleUpdateQueryCars(val) {
       this.queryCars = val
     },
+    // 填充司机信息的回调
     handleCommitBackCars(val) {
       Object.assign(this.inventoryInfo, {
         landDriverName: val.driver,
         landCarNo: val.carNo,
-        landDriverTel: val.tel
+        landDriverTel: val.tel,
+        landCarID: val.id
       })
     },
     handleUpdateQueryFleet(val) {
       this.queryFleet = val
     },
     handleCommitBackFleet(val) {
-      this.inventoryInfo.fleet = val.fName
-    },
-    // 关闭弹窗
-    closeInventoryInfo() {
-      this.$emit('close')
+      this.inventoryInfo.fleet = val.fname
     },
     resetInventoryInfo() {
       this.inventoryInfo = {
-        storeDate: '',
-        storeHouseName: '',
-        landCarNo: '',
-        landDriverTel: '',
-        fleet: '',
+        storeDate: null,
+        storeHouseName: null,
+        landCarNo: null,
+        landDriverTel: null,
+        fleet: null,
+        landCarID: null
       }
     }
   },
@@ -166,10 +172,10 @@ export default {
           </el-col>
           <el-col :span="2">
             <SearchOption :get-data="listFleet" :query-name="queryFleet" query-label="车队名称"
-                          query-info="fName" @update:queryName="handleUpdateQueryFleet"
+                          query-info="fname" @update:queryName="handleUpdateQueryFleet"
                           @commitBack="handleCommitBackFleet" :limit-info="{}">
               <template #table-columns>
-                <el-table-column label="车队名称" align="center" prop="fName"/>
+                <el-table-column label="车队名称" align="center" prop="fname"/>
                 <el-table-column label="车队经理" align="center" prop="fLeader"/>
                 <el-table-column label="车队经理电话" align="center" prop="tel"/>
               </template>
@@ -182,7 +188,7 @@ export default {
     <el-row>
       <p style="font-weight: bolder">货物信息</p>
       <!--      传入库存信息 因为只有一个货物入库 所以只需要更新一个信息-->
-      <InventoryItem :inventoryInfo="inventoryInfo" @close="closeInventoryInfo"/>
+      <InventoryItem :inventoryInfo="inventoryInfo" ref="inventoryItem"/>
     </el-row>
   </div>
 </template>

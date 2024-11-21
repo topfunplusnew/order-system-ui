@@ -99,7 +99,7 @@
               icon="el-icon-folder-opened"
               size="mini"
               @click="handleExport"
-              v-hasPermi="['system:orderfreight:export']"
+              v-hasPermi="['system:freight:export']"
             >
             </el-button>
           </el-col>
@@ -163,6 +163,20 @@
         width="100"
         show-overflow-tooltip
       />
+      <el-table-column
+        label="运费来源"
+        align="center"
+        prop="source"
+        width="100"
+        show-overflow-tooltip
+      >
+        <template slot-scope="scope">
+          <el-tag v-if="scope.row.source === FREIGHT_TYPE.GOODS_ORDER">订单
+          </el-tag>
+          <el-tag v-if="scope.row.source === FREIGHT_TYPE.INVENTORY">库存
+          </el-tag>
+        </template>
+      </el-table-column>
       <el-table-column
         label="支付状态"
         align="center"
@@ -258,22 +272,23 @@
         align="center"
         class-name="small-padding fixed-width"
         fixed="right"
-        width="100"
+        width="150"
       >
         <template slot-scope="scope">
           <CheckOrderInfo :row="scope.row"/>
+
           <el-button
             size="mini"
             type="primary"
             @click="handleUpdate(scope.row)"
-            v-hasPermi="['system:orderfreight:edit']"
+            v-hasPermi="['system:freight:edit']"
           >修改
           </el-button>
           <el-button
             size="mini"
             type="danger"
             @click="handleDelete(scope.row)"
-            v-hasPermi="['system:orderfreight:remove']"
+            v-hasPermi="['system:freight:remove']"
           >删除
           </el-button>
         </template>
@@ -355,11 +370,11 @@
             <SearchOption :limit-info="{}"
                           :get-data="listFleet" query-label="车队名称搜索"
                           :query-name="queryFleet"
-                          query-info="fName"
+                          query-info="fname"
                           @update:queryName="updateQueryFleet"
                           @commitBack="handleCommitBackFleet">
               <template #table-columns>
-                <el-table-column label="车队名称" prop="fName"/>
+                <el-table-column label="车队名称" prop="fname"/>
               </template>
             </SearchOption>
           </el-col>
@@ -463,7 +478,7 @@
 
               <el-form-item label="运费总和">
                 <el-button type="text" disabled style="color:orangered">
-                  {{ total_freight }}
+                  {{ fix(total_freight) }}
                 </el-button>
               </el-form-item>
             </el-form>
@@ -513,16 +528,22 @@ import {PaymentState} from "../../../api/tool/enums";
 import CheckOrderInfo from "../../dashboard/components/orderfreight/CheckOrderInfo.vue";
 import FillFreight from "../../dashboard/components/orderfreight/FillFreight.vue";
 import {mixin_order_freight_fill} from "./orderFreightFill";
+import {FREIGHT_TYPE, mixin_freight_payment} from "@/views/dashboard/mixins/freight/freight_payment";
+import {fix} from "../../../api/tool/format";
 
 export default {
   name: "OrderFreight",
   computed: {
+    FREIGHT_TYPE() {
+      return FREIGHT_TYPE
+    },
     TableName() {
       return TableName
-    }
+    },
   },
   components: {FillFreight, CheckOrderInfo, InfoDialog, ApplyPayment, SearchOption},
   mixins: [mixin_order_freight_fill, mixin_order_base, mixin_order_freight_payment,/*引入支付类型的混入*/mixin_payment_subject
+    /*引入支付类型的混入*/, mixin_freight_payment
   ],
   data() {
     return {
@@ -613,7 +634,7 @@ export default {
   watch: {
     columns: {
       handler: (newVal) => {
-        localStorage.setItem("orderfreight-columns", JSON.stringify(newVal))
+        localStorage.setItem("freight-columns", JSON.stringify(newVal))
       },
       deep:
         true,
@@ -632,12 +653,12 @@ export default {
       this.getList();
     }
     // 设置本地存储
-    if (localStorage.getItem('orderfreight-columns') === 'null'
-      || !localStorage.getItem('orderfreight-columns')) {
+    if (localStorage.getItem('freight-columns') === 'null'
+      || !localStorage.getItem('freight-columns')) {
       //设置localStorage
-      localStorage.setItem("orderfreight-columns", JSON.stringify(this.columns))
+      localStorage.setItem("freight-columns", JSON.stringify(this.columns))
     } else {
-      this.columns = JSON.parse(localStorage.getItem('orderfreight-columns'));
+      this.columns = JSON.parse(localStorage.getItem('freight-columns'));
     }
   },
   mounted() {
@@ -646,6 +667,7 @@ export default {
     }
   },
   methods: {
+    fix,
     listFleet,
     listData,
     listBankAccount,

@@ -163,7 +163,7 @@ export default {
             <!-- 展示读取的excel基本信息-->
             <el-card class="box-card">
               <div slot="header" class="clearfix">
-                <span class="bold-text">订单列表(可分配)</span>
+                <span class="bold-text">订单列表(未开票)</span>
                 <el-button style="float: right; padding: 3px 0" type="text" @click="handleResetOrderList">重置筛选
                 </el-button>
               </div>

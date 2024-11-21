@@ -1,3 +1,4 @@
+<!-- 统一文本组件 -->
 <script>
 export default {
   name: "Fonts",

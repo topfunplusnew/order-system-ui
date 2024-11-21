@@ -6,7 +6,6 @@ import errorCode from '@/utils/errorCode'
 import {tansParams, blobValidate} from "@/utils/ruoyi";
 import cache from '@/plugins/cache'
 import {saveAs} from 'file-saver'
-import LoadingWarning from "@/components/LoadingWarning.vue";
 
 
 let downloadLoadingInstance;

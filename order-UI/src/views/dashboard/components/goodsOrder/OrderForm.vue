@@ -27,7 +27,7 @@ export default {
     return {
       // 单个订单基本信息 由此组件维护 而订单中的货物的信息 由vuex中的订单货物列表orderItemList维护
       orderInfo: {},
-      //海运还是陆运
+      // 海运还是陆运
       isLand: false,
       isSea: false,
       orderNums: 0,
@@ -122,7 +122,8 @@ export default {
     },
     //提交订单
     //订单列表的对象封装一个，订单详情有两个一样的对象 对应供应商发货和仓库发货
-    submitOrder() {
+    handleProcess() {
+      // 如果没有orderId 那么是添加操作
       if (!this.orderId) {
         //从vuex拿到订单详细列表 加入到订单信息中
         this.orderInfo.orderDetailList = this.orderItemList;
@@ -136,15 +137,14 @@ export default {
         this.orderItemList.forEach(item => updateOrderItem(item));
         // 添加订单信息
         addGoodsOrder({...this.orderInfo, PaymentState: ''}).then(res => {
-          this.$message.success('订单提交成功')
           // 清空订单列表基础信息
           this.resetOrderInfo()
           // 清除状态
           this.$store.commit('order/clearOrderItemList');
-          this.$emit('close-dialog');
           this.isSea = false
           this.isLand = false
         })
+        // 反之 则是修改操作
       } else {
         this.handleUpdateGoodsOrder()
       }
@@ -171,25 +171,21 @@ export default {
           PaymentState: '',
           remark: sessionStorage.getItem('order-edit-reason')
         }).then(response => {
-          this.$modal.msgSuccess("修改成功");
           this.resetOrderInfo() // 清空订单列表基础信息
           this.$store.commit('order/clearOrderItemList');
           sessionStorage.removeItem('order-edit-reason')
           this.isSea = false
           this.isLand = false
-          this.$emit('close-dialog');
         });
       }
     },
     // 取消添加订单
-    cancelSubmit() {
+    handleReject() {
       this.orderNums = 0
       this.isSea = false
       this.isLand = false
       this.$store.commit('order/clearOrderItemList'); // 清空订单详情填写信息
       this.resetOrderInfo() // 清空订单列表基础信息
-      this.$emit('close-dialog'); // 关闭弹窗
-
     },
     // 信息重置
     resetOrderInfo() {
@@ -338,7 +334,7 @@ export default {
               <el-col :span="4">
                 <SearchOption :limit-info="{}"
                               :get-data="listFleet"
-                              query-label="车队名称" query-info="fName" :query-name="queryFleet"
+                              query-label="车队名称" query-info="fname" :query-name="queryFleet"
                               @commitBack="handleCommitBackFleet" @update:queryName="handleChangeFleet">
                   <template #table-columns>
                     <el-table-column label="车队名称" align="center" prop="fname"/>
@@ -417,16 +413,6 @@ export default {
         <el-col style="text-align: center">
           <el-button type="primary" @click="addOrderItem" icon="el-icon-plus">添加订单货物信息</el-button>
         </el-col>
-      </el-row>
-    </el-card>
-    <br/>
-    <el-card class="box-card" shadow="hover">
-      <el-row style="text-align: right">
-        <el-button @click="cancelSubmit">取 消</el-button>
-        <el-tooltip class="item" effect="dark" content="添加或修改前请先点击货物信息中的 提交货物 按钮!"
-                    placement="top-start">
-          <el-button type="primary" @click="submitOrder">{{ submitInfo }}</el-button>
-        </el-tooltip>
       </el-row>
     </el-card>
   </div>

@@ -17,7 +17,6 @@ export default {
       type: Object,
       required: true,
     },
-    index: Number
   },
   data() {
     return {
@@ -241,15 +240,14 @@ export default {
       this.queryStore = val;
     },
     //添加入库
-    submitInvoiceIn() {
+    handleProcess() {
       addInventory({...this.orderItemInfo, ...this.inventoryInfo}).then(res => {
         this.$message.success('入库成功')
-        this.getList()
-        this.$emit('close')
+        this.resetInventory()
       })
     },
-    close() {
-      this.$emit('close')
+    handleReject() {
+
     },
     resetInventory() {
       this.orderItemInfo = {
@@ -495,10 +493,6 @@ export default {
         <el-input type="text" placeholder="备注" v-model="orderItemInfo.comments"></el-input>
       </div>
     </div>
-    <el-row style="text-align: center">
-      <el-button type="primary" @click="submitInvoiceIn">添 加</el-button>
-      <el-button @click="close">取 消</el-button>
-    </el-row>
   </div>
 </template>
 

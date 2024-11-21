@@ -4,6 +4,7 @@ import {excludeParams} from "../../../../api/tool/exclude";
 import {addInvoiceOut} from "../../../../api/system/invoiceOut";
 import {checkOrderAllinvoice, getGoodsOrder} from "../../../../api/system/goodsOrder";
 import {PUBLIC_DICT_TYPE} from "@/utils/order";
+import Invoice from "@/views/dashboard/components/goodsOrder/Invoice.vue";
 // 状态
 export const Options = [
   {
@@ -36,48 +37,6 @@ export var mixin_order_Invoice = {
       // 开票选择
       options: Options,
       optionsInvoice: OptionInvent,
-      //开票信息
-      updateOrderItemVisibleTitleInfo: {},
-      // 开票信息校验
-      CheckRules: {
-        updateOrderItemVisibleTitleRules: {
-          invoiceDate: [
-            {required: true, message: '请选择开票日期', trigger: 'blur'}
-          ],
-          invoiceObject:
-            [
-              {required: true, message: '请输入开票实体', trigger: 'blur'}
-            ],
-          invoiceCompanyName:
-            [
-              {required: true, message: '请输入票据单位名称', trigger: 'blur'}
-            ],
-          invoiceAmount:
-            [
-              {required: true, message: '请输入开票金额', trigger: 'blur'},
-              // 开票金额 可以是小数
-              {pattern: /^-?[0-9]+(\.[0-9]+)?$/, message: '只能输入数字和小数', trigger: 'blur'}
-            ],
-          companyName:
-            [
-              {required: true, message: '请输入公司名称', trigger: 'blur'}],
-          // 只能是数字
-          ticketPoint:
-            [
-              {required: true, message: '请输入开票点', trigger: 'blur'},
-              {pattern: /^-?[0-9]+(\.[0-9]+)?$/, message: '只能输入数字', trigger: 'blur'}
-            ],
-          ticketPointAmount:
-            [
-              {required: true, message: '请输入开票点金额', trigger: 'blur'},
-              {pattern: /^-?[0-9]+(\.[0-9]+)?$/, message: '只能输入数字', trigger: 'blur'}],
-        }
-      }
-      ,
-      // 开票的弹窗
-      invoiceupdateOrderItemVisibleVisible: false,
-      updateOrderItemVisibleTitle:
-        '',
       // 开票最大金额
       maxInvent: 0,
     }
@@ -95,190 +54,72 @@ export var mixin_order_Invoice = {
       if (type === 1) {
         return row.orderDetailList.some(item => item.isIncludeTaxFactory === 1)
         // 供应商开票
-      } else {
-        return row.orderDetailList.some(item => item.isIncludeTaxSale === 1)
       }
+      return row.orderDetailList.some(item => item.isIncludeTaxSale === 1)
     },
     // 点击客户开票按钮 客户开票 最大开票金额为总货款
     updateOrderItemVisibleCustomerInvoice(row) {
-      this.resetOpenTitleInfo()
-      //客户开发票 即为发票卖出 添加发票卖出信息 1客户开票  2供应商开票
-      this.updateOrderItemVisibleTitleInfo.domain = 1
-      this.updateOrderItemVisibleTitleInfo.isOrderTax = row.id;
-      this.updateOrderItemVisibleTitle = '客户开票'
+      // 开票实体对象
+      let invoiceInfo = {
+        domain: 1,
+        isOrderTax: row.id
+      }
       //设置该订单信息 需要进行一次查询 获取订单的开票个数
       getGoodsOrder(row.id)
         .then(res => {
-          this.updateOrderItemVisibleTitleInfo.orderInfo = res.data;
+          invoiceInfo.orderInfo = res.data;
           // 保存客户和供应商开票个数
-          this.updateOrderItemVisibleTitleInfo.customerInvoiceNumber = res.data.customerIsInvoice
-          this.updateOrderItemVisibleTitleInfo.supplierInvoiceNumber = res.data.isSupplierInvoice
+          invoiceInfo.customerInvoiceNumber = res.data.customerIsInvoice
+          invoiceInfo.supplierInvoiceNumber = res.data.isSupplierInvoice
           // 补充最大金额 最大金额为总货款
           this.maxInvent = res.data.allPayments;
-          this.invoiceupdateOrderItemVisibleVisible = true;
+          // 打开弹窗
+          this.openDialog(Invoice, '客户开票', undefined, {
+            invoiceInfo: invoiceInfo,
+            maxInvent: this.maxInvent
+          })
         })
     },
     // 点击供应商开票按钮 如果是供应商开票 则是订单详情中该供应商对应的订单货物的出厂货款
     updateOrderItemVisibleSupplierInvoice(row, supplierID) {
-      // 重置开票信息
-      this.resetOpenTitleInfo()
-      // 如果供应商ID存在 那么就自动填充供应商的信息
-      if (supplierID !== undefined && supplierID !== '' && supplierID !== null) {
-        // domain用来区分是供应商开票还是客户开票
-        this.updateOrderItemVisibleTitleInfo.domain = 2
-        this.updateOrderItemVisibleTitleInfo.companyID = supplierID;
-        this.updateOrderItemVisibleTitleInfo.isOrderTax = row.id;
-        // 先获取公司信息
-        getCompany(supplierID, PUBLIC_DICT_TYPE.SUPPLIER).then(res => {
-          this.updateOrderItemVisibleTitleInfo.companyName = res.data.companyName;
-          this.updateOrderItemVisibleTitleInfo.companyType = res.data.companyType;
-          this.updateOrderItemVisibleTitle = '供应商开票'
-          // 然后查询订单详情，拿到开票的个数 这个个数是拿来展示视图
-          updateGoodsOrder(row)
-        })
-        // 如果供应商ID不存在，说明是点击供应商开票下的按钮而不是点供应商列表的开票
-      } else {
-        this.updateOrderItemVisibleTitleInfo.domain = 2
-        this.updateOrderItemVisibleTitleInfo.isOrderTax = row.id;
-        this.updateOrderItemVisibleTitleInfo.isOrderTax = row.id;
-        this.updateOrderItemVisibleTitle = '供应商开票'
-        updateGoodsOrder(row)
+      // 开票实体对象
+      let invoiceInfo = {
+        domain: 2,
+        isOrderTax: row.id
       }
+      // 如果供应商ID不存在 直接更新
+      if (!supplierID) {
+        updateGoodsOrder(row)
+        return
+      }
+      invoiceInfo.companyID = supplierID;
+      // 获取公司信息 然后更新订单信息
+      getCompany(supplierID, PUBLIC_DICT_TYPE.SUPPLIER).then(res => {
+        invoiceInfo.companyName = res.data.companyName;
+        invoiceInfo.companyType = res.data.companyType;
+        // 然后查询订单详情，拿到开票的个数 这个个数是拿来展示视图
+        updateGoodsOrder(row)
+      })
       // 更新订单信息的函数
       const updateGoodsOrder = (row) => {
+        // 更新订单信息
         getGoodsOrder(row.id)
           .then(res => {
-            this.updateOrderItemVisibleTitleInfo.orderInfo = res.data;
+            invoiceInfo.orderInfo = res.data;
             // 保存客户和供应商开票个数
-            this.updateOrderItemVisibleTitleInfo.customerInvoiceNumber = res.data.customerIsInvoice
-            this.updateOrderItemVisibleTitleInfo.supplierInvoiceNumber = res.data.isSupplierInvoice
+            invoiceInfo.customerInvoiceNumber = res.data.customerIsInvoice
+            invoiceInfo.supplierInvoiceNumber = res.data.isSupplierInvoice
             // 补充最大金额 最大金额为出厂货款
             res.data.orderDetailList.forEach(item => {
               this.maxInvent += item.paymentFactory
             })
-            this.invoiceupdateOrderItemVisibleVisible = true;
+            // 打开弹窗
+            this.openDialog(Invoice, '供应商开票', undefined, {
+              invoiceInfo: invoiceInfo,
+              maxInvent: this.maxInvent
+            })
           })
       }
     },
-    // 客户供应商开票功能
-    submitupdateOrderItemVisibleTitle() {
-      //排除不必要的字段
-      this.updateOrderItemVisibleTitleInfo = excludeParams(this.updateOrderItemVisibleTitleInfo, this.$exclude)
-      // 拿到开票个数
-      const invoiceNumber = {
-        customerInvoiceNumber: this.updateOrderItemVisibleTitleInfo.customerInvoiceNumber,
-        supplierInvoiceNumber: this.updateOrderItemVisibleTitleInfo.supplierInvoiceNumber
-      }
-      // 金额
-      let total_out = 0
-      let total_in = 0
-      //这里要判断一下 如果是客户开票 就添加发票卖出信息 如果是供应商开票 则添加发票买入信息
-      if (this.updateOrderItemVisibleTitleInfo.domain === 1) {
-        // 这里要判断一下 客户开票的开票金额大于总货款 todo
-        checkOrderAllinvoice(this.updateOrderItemVisibleTitleInfo.isOrderTax).then(res => {
-          total_out = res.hasOwnProperty('data') ? res.data.total_out : 0
-          // 开票金额 + 查出的  < 总货款
-          if (Number(this.updateOrderItemVisibleTitleInfo.invoiceAmount) + total_out < this.maxInvent) {
-            //客户开票 添加发票卖出信息
-            addInvoiceOut(this.updateOrderItemVisibleTitleInfo)
-              .then(res => {
-                this.$message.success('客户开票成功~')
-                this.invoiceupdateOrderItemVisibleVisible = false;
-                this.resetOpenTitleInfo();
-                this.getList();
-                // this.updateGoodsOrderAfterOpen(invoiceNumber, this.updateOrderItemVisibleTitleInfo.domain)
-              })
-          } else {
-            this.$message.error(`累计开票金额超过总货款`)
-          }
-        })
-      } else {
-        checkOrderAllinvoice(this.updateOrderItemVisibleTitleInfo.isOrderTax).then(res => {
-          total_in = res.hasOwnProperty('data') ? res.data.total_in : 0
-          // 开票金额 + 查出的  < 出厂货款
-          if (Number(this.updateOrderItemVisibleTitleInfo.invoiceAmount) + total_in < this.maxInvent) {
-            // 供应商开票
-            addInvoiceIn(this.updateOrderItemVisibleTitleInfo)
-              .then(res => {
-                this.$message.success('供应商开票成功~')
-                this.invoiceupdateOrderItemVisibleVisible = false;
-                this.resetOpenTitleInfo();
-                this.getList();
-                // this.updateGoodsOrderAfterOpen(invoiceNumber, this.updateOrderItemVisibleTitleInfo.domain)
-              })
-          } else {
-            this.$message.error(`累计开票金额超过出厂货款`)
-          }
-        })
-      }
-    },
-
-    // 开票信息弹窗的搜索信息自动填充
-    handleUpdateCompanyName(val) {
-      this.queryCompanyName = val;
-    },
-    handleCommitBackCompany(val) {
-      this.updateOrderItemVisibleTitleInfo.companyName = val.companyName;
-      this.updateOrderItemVisibleTitleInfo.companyID = val.id;
-      this.updateOrderItemVisibleTitleInfo.companyType = val.companyType;
-    },
-    // 关闭开票的弹窗
-    handleCloseInvoice() {
-      this.invoiceupdateOrderItemVisibleVisible = false
-    },
-    // 重置输入的票点与金额
-    resetAmount() {
-      this.updateOrderItemVisibleTitleInfo.invoiceAmount = 0
-      this.updateOrderItemVisibleTitleInfo.ticketPoint = 0
-      this.updateOrderItemVisibleTitleInfo.ticketPointAmount = 0;
-    },
-    // 开票信息重置
-    resetOpenTitleInfo() {
-      this.updateOrderItemVisibleTitleInfo = {
-        id: null,
-        invoiceDate: null,
-        invoiceObject: '',
-        invoiceAmount: '',
-        companyType: '',
-        companyName: '',
-        companyID: '',
-        invoiceCompanyName: '',
-        ticketPoint: null,
-        ticketPointAmount: null,
-        isOrderTax: 0,
-        comments: '',
-      }
-    },
-    // 根据类型来更新订单的开票状态
-    // updateGoodsOrderAfterOpen(invoiceNumber, type) {
-    //   const updateInvoiceState = (invoiceField, invoiceValue, state) => {
-    //     let info = {
-    //       ...this.updateOrderItemVisibleTitleInfo.orderInfo,
-    //       [invoiceField]: invoiceValue,
-    //       invoiceState: state
-    //     };
-    //     // 更新订单的开票状态
-    //     updateGoodsOrder(excludeParams(info, this.$exclude))
-    //         .then(res => {
-    //           this.$message.success('开票状态设置成功~');
-    //           this.invoiceupdateOrderItemVisibleVisible = false;
-    //           this.resetOpenTitleInfo();
-    //           this.getList();
-    //         });
-    //   };
-    //   if (type === 0) { // 供应商开票
-    //     if (invoiceNumber.customerInvoiceNumber === 0) {
-    //       updateInvoiceState('isSupplierInvoice', invoiceNumber.supplierInvoiceNumber + 1, '部分开票');
-    //     } else {
-    //       updateInvoiceState('isSupplierInvoice', invoiceNumber.supplierInvoiceNumber + 1, '已开票');
-    //     }
-    //   } else { // 客户开票
-    //     if (invoiceNumber.supplierInvoiceNumber === 0) {
-    //       updateInvoiceState('customerIsInvoice', invoiceNumber.customerInvoiceNumber + 1, '部分开票');
-    //     } else {
-    //       updateInvoiceState('customerIsInvoice', invoiceNumber.customerInvoiceNumber + 1, '已开票');
-    //     }
-    //   }
-    // },
   },
 }

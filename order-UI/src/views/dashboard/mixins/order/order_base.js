@@ -6,6 +6,7 @@ import {listGoodsOrder} from "../../../../api/system/goodsOrder";
 export var mixin_order_base = {
   data: function () {
     return {
+      // 订单的显示隐藏列
       columns: [
         {key: 0, label: '日期', visible: true},
         {key: 1, label: '客户', visible: true},
@@ -33,6 +34,50 @@ export var mixin_order_base = {
       ],
       //顶部条件搜索
       queryOrderInfo: {},
+      // 查询参数
+      queryParams: {
+        orderDateStart: null,
+        orderDateEnd: null,
+        pageNum: 1,
+        pageSize: 50,
+        ordersNo: null,
+        orderDate: null,
+        customer: null,
+        customerID: null,
+        landCarID: null,
+        landCarNo: null,
+        landDriverTel: null,
+        landDriverName: null,
+        seaCarID: null,
+        seaCarNo: null,
+        seaDriverTel: null,
+        seaDriverName: null,
+        checkUserId: null,
+        checkState: null,
+        invoiceState: null,
+        path: null,
+        PaymentState: null,
+        landBankName: null,
+        landBankNo: null,
+        seaBankName: null,
+        seaBankNo: null,
+        receiveProof: null,
+        saleManager: null,
+        fleet: null,
+        isAdjusted: null,
+        adjustDate: null,
+        isAdjust: '否',
+        adjustOrderid: null,
+        isedit: null,
+        customerIsInvoice: null,
+        isSupplierInvoice: null,
+        cancelFlag: null,
+        comments: null,
+        addtime: null,
+        userId: null,
+        UserName: null,
+      },
+      // 用于字段与中文名称映射
       mapper: {
         'orderDate': '订单日期',
         'supplier': '供应商名称',
@@ -48,7 +93,7 @@ export var mixin_order_base = {
         'price': '单价',
         'isIncludeTaxFactory': '是否含税（工厂）',
         'sundryCost': '杂费',
-        'paymentFactory': '工厂付款',
+        'paymentFactory': '出厂货款',
         'paymentUnload': '卸货费用',
         'isIncludeTaxSale': '是否含税（销售）',
         'payments': '销售付款',
@@ -90,7 +135,15 @@ export var mixin_order_base = {
     }
   },
   methods: {
-    // 获取供应商的名称列表
+    // 查询订单的列表
+    getList() {
+      listGoodsOrder(this.queryParams).then(response => {
+        this.goodsOrderList = response.rows;
+        this.total = response.total;
+        this.loading = false
+      });
+    },
+    // 获取供应商的名称列表 主要用于表格的供应商列表的展示
     getSupplierNames(list) {
       if (list.length === 0) {
         return;
@@ -101,14 +154,6 @@ export var mixin_order_base = {
           supplierID: item.supplierID
         }
       })
-    },
-    /** 查询订单列表 */
-    getList() {
-      listGoodsOrder(this.queryParams).then(response => {
-        this.goodsOrderList = response.rows;
-        this.total = response.total;
-        this.loading = false
-      });
     },
     // 休眠函数
     sleep(ms) {

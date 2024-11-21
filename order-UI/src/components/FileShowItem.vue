@@ -1,3 +1,5 @@
+<!--文件弹窗组件-->
+
 <script>
 import {getToken} from "../utils/auth";
 

@@ -62,7 +62,7 @@ export default {
       size="mini"
       type="text"
       @click="handleCheck(row)"
-      v-hasPermi="['system:orderfreight:edit']"
+      v-hasPermi="['system:freight:edit']"
     >{{ title }}
     </el-button>
 

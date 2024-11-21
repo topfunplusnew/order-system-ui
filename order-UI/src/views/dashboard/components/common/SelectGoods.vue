@@ -60,6 +60,7 @@ export default {
     },
     // 重置搜索条件
     resetParams() {
+      // 只选择未开票的订单
       this.queryParams = {
         orderDateStart: null,
         orderDateEnd: null,
@@ -79,7 +80,7 @@ export default {
         seaDriverName: null,
         checkUserId: null,
         checkState: null,
-        invoiceState: null,
+        invoiceState: '未开票',
         path: null,
         PaymentState: null,
         landBankName: null,

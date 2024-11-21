@@ -77,7 +77,7 @@ export default {
       this.queryCompany = val;
     },
     handleCommitBackFleet(val) {
-      this.form.fleet = val.fName;
+      this.form.fleet = val.fname;
     },
     updateQueryFleet(val) {
       this.queryFleet = val
@@ -273,11 +273,11 @@ export default {
               <SearchOption :limit-info="{}"
                             :get-data="listFleet" query-label="车队名称搜索"
                             :query-name="queryFleet"
-                            query-info="fName"
+                            query-info="fname"
                             @update:queryName="updateQueryFleet"
                             @commitBack="handleCommitBackFleet">
                 <template #table-columns>
-                  <el-table-column label="车队名称" prop="fName"/>
+                  <el-table-column label="车队名称" prop="fname"/>
                 </template>
               </SearchOption>
             </el-col>
