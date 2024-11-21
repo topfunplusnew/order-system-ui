@@ -445,6 +445,9 @@
                   :options="paymentTypeTree" :props="props"
                 ></el-cascader>
               </el-form-item>
+              <el-form-item label="己方账号类型" prop="selfBankCardType">
+                <BankType @updateSelectedType="handleBankType"/>
+              </el-form-item>
               <el-form-item label="己方户名" prop="selfAcountsName">
                 <el-row>
                   <el-col :span="10">
@@ -530,6 +533,7 @@ import FillFreight from "../../dashboard/components/orderfreight/FillFreight.vue
 import {mixin_order_freight_fill} from "./orderFreightFill";
 import {FREIGHT_TYPE, mixin_freight_payment} from "@/views/dashboard/mixins/freight/freight_payment";
 import {fix} from "../../../api/tool/format";
+import BankType from "@/views/dashboard/components/common/BankType.vue";
 
 export default {
   name: "OrderFreight",
@@ -541,7 +545,7 @@ export default {
       return TableName
     },
   },
-  components: {FillFreight, CheckOrderInfo, InfoDialog, ApplyPayment, SearchOption},
+  components: {BankType, FillFreight, CheckOrderInfo, InfoDialog, ApplyPayment, SearchOption},
   mixins: [mixin_order_freight_fill, mixin_order_base, mixin_order_freight_payment,/*引入支付类型的混入*/mixin_payment_subject
     /*引入支付类型的混入*/, mixin_freight_payment
   ],
@@ -690,6 +694,10 @@ export default {
             this.$message.warning('未查询到付款时间为' + fundsDate + '司机名称为' + driver + '的运费信息')
           }
         });
+    },
+    // 填充己方银行卡账户类型
+    handleBankType(value) {
+      this.freightSelfOnceInfo.selfBankCardType = value
     },
     //添加海运费或者陆运费
     // applyForLand(row) {

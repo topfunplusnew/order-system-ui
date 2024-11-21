@@ -101,9 +101,10 @@ export var mixin_order_freight_payment = {
     // 重置
     resetFreightSelfOnceInfo() {
       this.freightSelfOnceInfo = {
-        selfAcountsName: '',
-        selfBankNo: '',
-        selfBankName: ''
+        selfAcountsName: null,
+        selfBankNo: null,
+        selfBankName: null,
+        selfBankCardType: null,
       }
     }
   },
