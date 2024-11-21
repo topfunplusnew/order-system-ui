@@ -108,30 +108,36 @@
           收入方信息
         </el-divider>
         <!--        1.选择原-->
-        <el-form-item :label="source" v-if="cashType === CASH_TYPE.TRANSFER">
-          <el-row>
-            <el-col :span="20">
-              <el-input placeholder="请选择" v-model="sourceName"/>
-            </el-col>
-            <!--            只有内部转账 才会选择-->
-            <el-col :span="3">
-              <SearchOption :get-data="listBankAccount" @commitBack="handleCommitCompanySupplier"
-                            :limit-info="{ acountsType: '己方公司' }" query-info="acountsName"
-                            :query-name="querySupplier"
-                            query-label="户名" @update:queryName="updateQuerySupplier">
-                <template #table-columns>
-                  <el-table-column label="账户类型" align="center" prop="acountsType" width="200"/>
-                  <el-table-column label="显示名称" align="center" prop="displayName"/>
-                  <el-table-column label="开户名称" align="center" prop="acountsName" width="200"/>
-                  <el-table-column label="银行账号" align="center" prop="bankNo" width="200"/>
-                  <el-table-column label="开户行" align="center" prop="bankName" width="200"/>
-                  <el-table-column label="公司名称" align="center" prop="companyName" width="200"/>
-                  <el-table-column label="余额" align="center" prop="amount" width="200"/>
-                </template>
-              </SearchOption>
-            </el-col>
-          </el-row>
-        </el-form-item>
+        <div v-if="cashType === CASH_TYPE.TRANSFER">
+          <!--          选择收入账户类型-->
+          <el-form-item label="收入账户类型" v-if="cashType === CASH_TYPE.TRANSFER">
+            <BankType @updateSelectedType="changeSelfBankType"/>
+          </el-form-item>
+          <el-form-item :label="source">
+            <el-row>
+              <el-col :span="20">
+                <el-input placeholder="请选择" v-model="sourceName"/>
+              </el-col>
+              <!--            只有内部转账 才会选择-->
+              <el-col :span="3">
+                <SearchOption :get-data="listBankAccount" @commitBack="handleCommitCompanySupplier"
+                              :limit-info="{ acountsType: '己方公司' }" query-info="acountsName"
+                              :query-name="querySupplier"
+                              query-label="户名" @update:queryName="updateQuerySupplier">
+                  <template #table-columns>
+                    <el-table-column label="账户类型" align="center" prop="acountsType" width="200"/>
+                    <el-table-column label="显示名称" align="center" prop="displayName"/>
+                    <el-table-column label="开户名称" align="center" prop="acountsName" width="200"/>
+                    <el-table-column label="银行账号" align="center" prop="bankNo" width="200"/>
+                    <el-table-column label="开户行" align="center" prop="bankName" width="200"/>
+                    <el-table-column label="公司名称" align="center" prop="companyName" width="200"/>
+                    <el-table-column label="余额" align="center" prop="amount" width="200"/>
+                  </template>
+                </SearchOption>
+              </el-col>
+            </el-row>
+          </el-form-item>
+        </div>
         <!--        如果是冲抵货款 还需要选择一个公司 -->
         <el-row v-if="cashType === CASH_TYPE.OFF_SETTING">
           <el-form-item label="收入方类型">
@@ -196,31 +202,36 @@
           <el-icon class="el-icon-remove"></el-icon>
           支付方信息
         </el-divider>
-        <!--        2.选择去-->
-        <el-form-item :label="target" v-if="cashType === CASH_TYPE.TRANSFER">
-          <el-row>
-            <el-col :span="20">
-              <el-input placeholder="请选择" v-model="targetName"/>
-            </el-col>
-            <el-col :span="3">
-              <SearchOption :get-data="listBankAccount" @commitBack="handleCommitCompanyCustomer"
-                            :limit-info="{ acountsType: '己方公司' }" query-info="acountsName"
-                            :query-name="queryCustomer"
-                            query-label="户名" @update:queryName="updateQueryCustomer">
-                <template #table-columns>
-                  <el-table-column label="账户类型" align="center" prop="acountsType" width="200"/>
-                  <el-table-column label="显示名称" align="center" prop="displayName"/>
-                  <el-table-column label="开户名称" align="center" prop="acountsName" width="200"/>
-                  <el-table-column label="银行账号" align="center" prop="bankNo" width="200"/>
-                  <el-table-column label="开户行" align="center" prop="bankName" width="200"/>
-                  <el-table-column label="公司名称" align="center" prop="companyName" width="200"/>
-                  <el-table-column label="余额" align="center" prop="amount" width="200"/>
-                </template>
-              </SearchOption>
-            </el-col>
-          </el-row>
-        </el-form-item>
-
+        <div v-if="cashType === CASH_TYPE.TRANSFER">
+          <!--          选择支出账户类型-->
+          <el-form-item label="支出账户类型">
+            <BankType @updateSelectedType="changeOtherBankType"/>
+          </el-form-item>
+          <!--        2.选择去-->
+          <el-form-item :label="target">
+            <el-row>
+              <el-col :span="20">
+                <el-input placeholder="请选择" v-model="targetName"/>
+              </el-col>
+              <el-col :span="3">
+                <SearchOption :get-data="listBankAccount" @commitBack="handleCommitCompanyCustomer"
+                              :limit-info="{ acountsType: '己方公司' }" query-info="acountsName"
+                              :query-name="queryCustomer"
+                              query-label="户名" @update:queryName="updateQueryCustomer">
+                  <template #table-columns>
+                    <el-table-column label="账户类型" align="center" prop="acountsType" width="200"/>
+                    <el-table-column label="显示名称" align="center" prop="displayName"/>
+                    <el-table-column label="开户名称" align="center" prop="acountsName" width="200"/>
+                    <el-table-column label="银行账号" align="center" prop="bankNo" width="200"/>
+                    <el-table-column label="开户行" align="center" prop="bankName" width="200"/>
+                    <el-table-column label="公司名称" align="center" prop="companyName" width="200"/>
+                    <el-table-column label="余额" align="center" prop="amount" width="200"/>
+                  </template>
+                </SearchOption>
+              </el-col>
+            </el-row>
+          </el-form-item>
+        </div>
         <!--        如果是冲抵货款 才要选择对方的公司类型 而如果是其他类型 不需要选择 直接填充-->
         <el-row v-if="cashType === CASH_TYPE.OFF_SETTING">
           <el-form-item label="支出方类型">
@@ -341,6 +352,8 @@ import {getRecord, updateRecord} from "../../../api/system/record";
 import {mixin_checkfile} from "../../dashboard/mixins/checkfiles/mixin_checkfile";
 import {listBankAccount, transfer} from "../../../api/system/bankAccount";
 import {listCars} from "@/api/system/cars";
+import BankType from "@/views/dashboard/components/common/BankType.vue";
+import {mixin_bankType} from "@/views/dashboard/mixins/common/common_bankType";
 
 export default {
   name: "Record",
@@ -369,8 +382,14 @@ export default {
       }
     }
   },
-  components: {CheckFiles, SearchOption},
-  mixins: [mixin_printHTML, mixin_record_fill, mixin_record_uploadFiles, mixin_checkfile],
+  components: {BankType, CheckFiles, SearchOption},
+  mixins: [
+    mixin_printHTML,
+    mixin_record_fill,
+    mixin_record_uploadFiles,
+    mixin_checkfile,
+    mixin_bankType
+  ],
   data() {
     return {
       // 遮罩层
@@ -633,8 +652,16 @@ export default {
               // 填充表的信息
               this.form.referenceTableName = CASH_TYPE.TRANSFER;
               this.form.referenceTableId = -1;
+              // fixme 这里需要修改
               // 发送请求 添加一条冲抵款(原为现金记账)信息
-              transfer({...this.eachInfo, money: this.form.amount}).then(res => {
+              const body = {
+                ...this.eachInfo,
+                money: this.form.amount,
+                // 传递银行卡类型
+                selfBankType: this.form.selfBankType,
+                otherBankType: this.form.otherBankType
+              }
+              transfer(body).then(res => {
                 // 添加现金记账信息
                 addRecord(this.form).then(response => {
                   this.$modal.msgSuccess("新增成功");

@@ -16,9 +16,17 @@ export default {
       })
     },
   },
+  computed: {
+    // 合计欠款
+    totalPayments() {
+      return Number(this.orderInfo.allPayments) + Number(this.moneyAmount)
+    }
+  },
   data() {
     return {
       currentOrderInfo: this.orderInfo,
+      itemList: [],
+      moneyAmount: null,
     }
   },
   mounted() {
@@ -36,10 +44,10 @@ export default {
       <div class="invoice-title">发货单</div>
 
       <div class="invoice-header">
-        <div>客户：张柳芳**存</div>
-        <div>日期：2024-07-10</div>
-        <div>车号：0144</div>
-        <div>单据编号：20241121024420</div>
+        <div>客户：{{ orderInfo.customer }}</div>
+        <div>日期：{{ orderInfo.orderDate }}</div>
+        <div>车号：{{ orderInfo.landCarNo }}</div>
+        <div>单据编号：{{ orderInfo.ordersNo }}</div>
       </div>
 
       <table>
@@ -55,29 +63,29 @@ export default {
         </tr>
         </thead>
         <tbody>
-        <tr>
-          <td>安强lowe1405*3660*2440</td>
-          <td>40</td>
-          <td>2</td>
-          <td>200</td>
-          <td>否</td>
-          <td>22</td>
-          <td>71465</td>
+        <tr v-if="orderInfo.smailOrderDetails.length > 0" v-for="item in itemList" :key="item.ordersNo">
+          <td>{{ item.levelName }}</td>
+          <td>{{ item.pieces }}</td>
+          <td>{{ item.packs }}</td>
+          <td>{{ item.price }}</td>
+          <td>{{ item.isIncludeTaxFactory === 0 ? '否' : '是' }}</td>
+          <td>{{ item.otherCost }}</td>
+          <td>{{ item.payments }}</td>
         </tr>
         <tr>
           <td style="text-align: left;">本次货款</td>
-          <td colspan="5" style="text-align: left;">大写:{{ numToChineseUppercase(123) }}</td>
-          <td>71465</td>
+          <td colspan="5" style="text-align: left;">大写:{{ numToChineseUppercase(orderInfo.allPayments) }}</td>
+          <td>{{ orderInfo.allPayments }}</td>
         </tr>
         <tr>
           <td style="text-align: left;">欠款</td>
-          <td colspan="5" style="text-align: left;">大写:{{ numToChineseUppercase(123) }}</td>
-          <td>-0</td>
+          <td colspan="5" style="text-align: left;">大写:{{ numToChineseUppercase(moneyAmount) }}</td>
+          <td>{{ moneyAmount }}</td>
         </tr>
         <tr>
           <td style="text-align: left;">合计欠款</td>
-          <td colspan="5" style="text-align: left;">大写:{{ numToChineseUppercase(123) }}</td>
-          <td>71465</td>
+          <td colspan="5" style="text-align: left;">大写:{{ numToChineseUppercase(totalPayments) }}</td>
+          <td>{{ totalPayments }}</td>
         </tr>
         <tr>
           <td colspan="7" style="text-align: left">
