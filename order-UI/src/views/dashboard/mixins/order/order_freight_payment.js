@@ -69,9 +69,6 @@ export var mixin_order_freight_payment = {
         companyId: orderFreight.driverId,
         companyType: "司机",
         comments: orderFreight.content,
-        // 这两个是附件
-        transactionHistory: "TH001",
-        transactionHistoryAttachment: "attachment001.pdf",
       }
     },
     // 自动填充己方信息
