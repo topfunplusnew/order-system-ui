@@ -75,17 +75,17 @@ export default {
         <tr>
           <td style="text-align: left;">本次货款</td>
           <td colspan="5" style="text-align: left;">大写:{{ numToChineseUppercase(orderInfo.allPayments) }}</td>
-          <td>{{ orderInfo.allPayments }}</td>
+          <td>{{ orderInfo.allPayments || 0 }}</td>
         </tr>
         <tr>
           <td style="text-align: left;">欠款</td>
-          <td colspan="5" style="text-align: left;">大写:{{ numToChineseUppercase(moneyAmount) }}</td>
-          <td>{{ moneyAmount }}</td>
+          <td colspan="5" style="text-align: left;">大写:{{ numToChineseUppercase(moneyAmount || 0) }}</td>
+          <td>{{ moneyAmount || 0}}</td>
         </tr>
         <tr>
           <td style="text-align: left;">合计欠款</td>
           <td colspan="5" style="text-align: left;">大写:{{ numToChineseUppercase(totalPayments) }}</td>
-          <td>{{ totalPayments }}</td>
+          <td>{{ totalPayments || 0 }}</td>
         </tr>
         <tr>
           <td colspan="7" style="text-align: left">

@@ -5,7 +5,7 @@
 export default {
   name: "BankType",
   dicts: ['order_bank_card_type_nodel'],
-  props:{
+  props: {
     // 已经选择的
     selectType: {
       type: String,
@@ -14,7 +14,7 @@ export default {
   },
   mounted() {
     // 如果父组件给值 那么就挂载默认值
-    if(this.selectType){
+    if (this.selectType) {
       // 初始化默认值
       this.selectedType = this.selectType
     }
