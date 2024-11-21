@@ -66,6 +66,11 @@
       <el-table-column label="收入方" align="center" prop="sourceCompanyName" show-overflow-tooltip/>
       <el-table-column label="收入方公司类型" align="center" prop="sourceCompanyType" show-overflow-tooltip/>
       <el-table-column label="支出方" align="center" prop="targetCompanyName" show-overflow-tooltip/>
+      <el-table-column label="冲抵类型" align="center" show-overflow-tooltip>
+        <template slot-scope="scope">
+          <span>{{ scope.row.referenceTableName === 'offsetting' ? '冲抵货款' : '内部转账' }}</span>
+        </template>
+      </el-table-column>
       <el-table-column label="支出方公司类型" align="center" prop="targetCompanyType" show-overflow-tooltip/>
       <!--      附件上传-->
       <el-table-column label="附件" align="center" prop="attachment">
@@ -103,11 +108,12 @@
           收入方信息
         </el-divider>
         <!--        1.选择原-->
-        <el-form-item :label="source">
+        <el-form-item :label="source" v-if="cashType === CASH_TYPE.TRANSFER">
           <el-row>
             <el-col :span="20">
               <el-input placeholder="请选择" v-model="sourceName"/>
             </el-col>
+            <!--            只有内部转账 才会选择-->
             <el-col :span="3">
               <SearchOption :get-data="listBankAccount" @commitBack="handleCommitCompanySupplier"
                             :limit-info="{ acountsType: '己方公司' }" query-info="acountsName"
@@ -131,13 +137,44 @@
           <el-form-item label="收入方类型">
             <el-radio v-model="form.sourceCompanyType" label="客户">客户</el-radio>
             <el-radio v-model="form.sourceCompanyType" label="供应商">供应商</el-radio>
+            <el-radio v-model="form.sourceCompanyType" label="司机">司机</el-radio>
+            <el-radio v-model="form.sourceCompanyType" label="己方公司">己方公司</el-radio>
           </el-form-item>
           <el-form-item label="收入方">
             <el-row>
               <el-col :span="14">
                 <el-input type="text" v-model="sourceName" placeholder="请输入收入方"></el-input>
               </el-col>
-              <el-col :span="4">
+              <!--              如果是司机-->
+              <el-col :span="4" v-if="form.sourceCompanyType === '司机'">
+                <SearchOption :limit-info="{ }" :get-data="listCars"
+                              query-info="driver" query-label="司机姓名" :query-name="queryDriver"
+                              @update:queryName="handleUpdateDriver" @commitBack="handleCommitBackDriver">
+                  <template #table-columns>
+                    <el-table-column label="司机姓名" align="center" prop="driver"/>
+                    <el-table-column label="司机电话" align="center" prop="tel"/>
+                    <el-table-column label="账号类型" align="center" prop="acountsType"/>
+                    <el-table-column label="运输类型" align="center" prop="carType"/>
+                  </template>
+                </SearchOption>
+              </el-col>
+              <!--              如果是己方公司 -->
+              <el-col :span="4" v-else-if="form.sourceCompanyType === '己方公司'">
+                <SearchOption :limit-info="{ acountsType: form.sourceCompanyType }" :get-data="listBankAccount"
+                              query-info="acountsName" query-label="户名查找" :query-name="querySelfAccount"
+                              @update:queryName="handleUpdateSelfAccount" @commitBack="handleCommitBackSelfAccount">
+                  <template #table-columns>
+                    <el-table-column label="账户类型" align="center" prop="acountsType"/>
+                    <el-table-column label="显示名称" align="center" prop="displayName"/>
+                    <el-table-column label="开户名称(户名)" align="center" prop="acountsName"/>
+                    <el-table-column label="账号(银行账号)" align="center" prop="bankNo"/>
+                    <el-table-column label="开户行" align="center" prop="bankName"/>
+                    <el-table-column label="公司名称" align="center" prop="companyName"/>
+                  </template>
+                </SearchOption>
+              </el-col>
+              <!--              如果是其他-->
+              <el-col :span="4" v-else>
                 <SearchOption :limit-info="{ companyType: form.sourceCompanyType }" :get-data="listCompany"
                               query-info="companyName" query-label="公司名称" :query-name="queryCompanyName"
                               @update:queryName="handleUpdateCompanyNameGet" @commitBack="handleCommitBackCompanyGet">
@@ -160,7 +197,7 @@
           支付方信息
         </el-divider>
         <!--        2.选择去-->
-        <el-form-item :label="target">
+        <el-form-item :label="target" v-if="cashType === CASH_TYPE.TRANSFER">
           <el-row>
             <el-col :span="20">
               <el-input placeholder="请选择" v-model="targetName"/>
@@ -189,13 +226,44 @@
           <el-form-item label="支出方类型">
             <el-radio v-model="form.targetCompanyType" label="客户">客户</el-radio>
             <el-radio v-model="form.targetCompanyType" label="供应商">供应商</el-radio>
+            <el-radio v-model="form.targetCompanyType" label="司机">司机</el-radio>
+            <el-radio v-model="form.targetCompanyType" label="己方公司">己方公司</el-radio>
           </el-form-item>
           <el-form-item label="支出方">
             <el-row>
               <el-col :span="14">
                 <el-input type="text" v-model="targetName" placeholder="请输入支出方"></el-input>
               </el-col>
-              <el-col :span="4">
+              <!--              如果是司机-->
+              <el-col :span="4" v-if="form.targetCompanyType ==='司机'">
+                <SearchOption :limit-info="{}" :get-data="listCars"
+                              query-info="driver" query-label="司机姓名" :query-name="queryDriver"
+                              @update:queryName="handleUpdateDriver" @commitBack="handleCommitBackDriver">
+                  <template #table-columns>
+                    <el-table-column label="司机姓名" align="center" prop="driver"/>
+                    <el-table-column label="司机电话" align="center" prop="tel"/>
+                    <el-table-column label="账号类型" align="center" prop="acountsType"/>
+                    <el-table-column label="运输类型" align="center" prop="carType"/>
+                  </template>
+                </SearchOption>
+              </el-col>
+              <!--              如果是己方公司-->
+              <el-col :span="4" v-else-if="form.targetCompanyType === '己方公司'">
+                <SearchOption :limit-info="{ acountsType: form.targetCompanyType }" :get-data="listBankAccount"
+                              query-info="acountsName" query-label="户名查找" :query-name="querySelfAccount"
+                              @update:queryName="handleUpdateSelfAccount" @commitBack="handleCommitBackSelfAccount">
+                  <template #table-columns>
+                    <el-table-column label="账户类型" align="center" prop="acountsType"/>
+                    <el-table-column label="显示名称" align="center" prop="displayName"/>
+                    <el-table-column label="开户名称(户名)" align="center" prop="acountsName"/>
+                    <el-table-column label="账号(银行账号)" align="center" prop="bankNo"/>
+                    <el-table-column label="开户行" align="center" prop="bankName"/>
+                    <el-table-column label="公司名称" align="center" prop="companyName"/>
+                  </template>
+                </SearchOption>
+              </el-col>
+              <!--            其他-->
+              <el-col :span="4" v-else>
                 <SearchOption :limit-info="{ companyType: form.targetCompanyType }" :get-data="listCompany"
                               query-info="companyName" query-label="公司名称" :query-name="queryCompanyName"
                               @update:queryName="handleUpdateCompanyNamePay" @commitBack="handleCommitBackCompanyPay">
@@ -209,6 +277,7 @@
                   </template>
                 </SearchOption>
               </el-col>
+
             </el-row>
           </el-form-item>
         </el-row>
@@ -271,6 +340,7 @@ import {CASH_TYPE} from "./constrant";
 import {getRecord, updateRecord} from "../../../api/system/record";
 import {mixin_checkfile} from "../../dashboard/mixins/checkfiles/mixin_checkfile";
 import {listBankAccount, transfer} from "../../../api/system/bankAccount";
+import {listCars} from "@/api/system/cars";
 
 export default {
   name: "Record",
@@ -384,6 +454,7 @@ export default {
     this.getList();
   },
   methods: {
+    listCars,
     listBankAccount,
     updateRecord() {
       return updateRecord
