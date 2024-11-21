@@ -7,21 +7,21 @@ export var mixin_order_deliverGoods = {
   methods: {
     // 订单发货单1
     handleOrder1(row) {
-      this.openDialog(OrderGiven, '销货发货单', '950px', {
+      this.openDialog(OrderGiven, '销货发货单', '1050px', {
         type: 1,
         orderGivenInfo: row,
       })
     },
     // 发货单2
     handleOrder2(row) {
-      this.openDialog(OrderGiven, '发货单2', '950px', {
+      this.openDialog(OrderGiven, '发货单2', '1050px', {
         type: 2,
         orderGivenInfo: row,
       })
     },
     // 发货单3
     handleOrder3(row) {
-      this.openDialog(OrderGiven, '发货单3', '950px', {
+      this.openDialog(OrderGiven, '发货单3', '1050px', {
         type: 3,
         orderGivenInfo: row,
       })

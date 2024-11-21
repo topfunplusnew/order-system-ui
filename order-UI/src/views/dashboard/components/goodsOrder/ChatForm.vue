@@ -153,7 +153,7 @@ export default {
 
 <style scoped lang="scss">
 .invoice-container {
-  width: 800px;
+  width: 950px;
   margin: 0 auto;
   padding: 20px;
   background: #fff;

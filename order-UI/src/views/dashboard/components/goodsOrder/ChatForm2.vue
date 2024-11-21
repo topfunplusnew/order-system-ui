@@ -64,7 +64,7 @@ export default {
         </thead>
         <tbody>
         <tr v-if="orderInfo.smailOrderDetails.length > 0" v-for="item in itemList" :key="item.ordersNo">
-          <td>{{ item.levelName }}</td>
+          <td>{{ item.levelName }} - {{ item.height }} x {{ item.length }} x {{ item.width }}</td>
           <td>{{ item.pieces }}</td>
           <td>{{ item.packs }}</td>
           <td>{{ item.price }}</td>
@@ -80,7 +80,7 @@ export default {
         <tr>
           <td style="text-align: left;">欠款</td>
           <td colspan="5" style="text-align: left;">大写:{{ numToChineseUppercase(moneyAmount || 0) }}</td>
-          <td>{{ moneyAmount || 0}}</td>
+          <td>{{ moneyAmount || 0 }}</td>
         </tr>
         <tr>
           <td style="text-align: left;">合计欠款</td>
@@ -103,7 +103,7 @@ export default {
 
 <style scoped lang="scss">
 .invoice-container {
-  width: 800px;
+  width: 950px;
   margin: 0 auto;
   padding: 20px;
   background: #fff;
