@@ -1109,8 +1109,8 @@ export default {
                 toBankNo: this.eachInfo.target,
                 money: this.form.amount,
                 // 传递银行卡类型
-                selfBankType: this.form.selfBankType,
-                otherBankType: this.form.otherBankType,
+                selfBankCardType: this.form.selfBankType,
+                otherBankCardType: this.form.otherBankType,
               };
               console.log(body);
 

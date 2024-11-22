@@ -14,7 +14,10 @@ export default {
     },
     handleConfirm() {
       if (this.beginTime && this.endTime) {
-        this.$emit('resolve', {beginTime: this.beginTime, endTime: this.endTime});
+        this.$emit("resolve", {
+          beginTime: this.beginTime,
+          endTime: this.endTime,
+        });
         this.handleClose();
       } else {
         this.$message.error("请选择有效的日期");
@@ -29,7 +32,12 @@ export default {
 
 <template>
   <div>
-    <el-dialog :visible.sync="visible" title="选择日期" @close="handleClose" width="350px">
+    <el-dialog
+      :visible.sync="visible"
+      title="选择日期"
+      @close="handleClose"
+      width="350px"
+    >
       <el-row style="text-align: center">
         <el-date-picker
           v-model="beginTime"
@@ -48,13 +56,11 @@ export default {
         />
       </el-row>
       <span slot="footer" class="dialog-footer">
-      <el-button @click="handleClose">取消</el-button>
-      <el-button type="primary" @click="handleConfirm">确认</el-button>
-    </span>
+        <el-button @click="handleClose">取消</el-button>
+        <el-button type="primary" @click="handleConfirm">确认</el-button>
+      </span>
     </el-dialog>
   </div>
 </template>
 
-<style scoped lang="scss">
-
-</style>
+<style scoped lang="scss"></style>

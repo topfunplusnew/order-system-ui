@@ -2,9 +2,9 @@
 
 <script>
 // 导入jsondiffpatch
-import {create} from 'jsondiffpatch'
-import {format} from "jsondiffpatch/lib/formatters/html";
-import 'jsondiffpatch/lib/formatters/styles/html.css'
+import { create } from "jsondiffpatch";
+import { format } from "jsondiffpatch/lib/formatters/html";
+import "jsondiffpatch/lib/formatters/styles/html.css";
 
 export default {
   name: "CheckDiff",
@@ -23,14 +23,14 @@ export default {
   data() {
     return {
       diffPatcher: {},
-    }
+    };
   },
   methods: {
     onOpen() {
       // 可以在这里添加打开弹窗时的初始化操作
     },
     close() {
-      this.$emit('update:visible', false);
+      this.$emit("update:visible", false);
     },
     confirm() {
       // 可以在这里添加确认操作
@@ -38,42 +38,45 @@ export default {
   },
   created() {
     // 初始化比较对象
-    this.diffPatcher = create()
+    this.diffPatcher = create();
   },
-  mounted() {
-  },
+  mounted() {},
   watch: {
-    'switchOn': {
+    switchOn: {
       handler(newValue, oldValue) {
-        const diff = this.diffPatcher.diff(this.diffObjectA, this.diffObjectB)
+        const diff = this.diffPatcher.diff(this.diffObjectA, this.diffObjectB);
         this.$nextTick(() => {
           this.$refs.compare.innerHTML = format(diff, this.diffObjectB);
-        })
+        });
       },
     },
-    'diffObjectA': {
+    diffObjectA: {
       handler(newValue, oldValue) {
-        const diff = this.diffPatcher.diff(this.diffObjectA, this.diffObjectB)
+        const diff = this.diffPatcher.diff(this.diffObjectA, this.diffObjectB);
         this.$nextTick(() => {
           this.$refs.compare.innerHTML = format(diff, this.diffObjectB);
-        })
+        });
       },
-    }
-  }
-}
+    },
+  },
+};
 </script>
 
 <template>
   <div>
-    <el-dialog :close-on-click-modal="false" v-bind="$attrs" v-on="$listeners" @open="onOpen" :title="title" width="500px">
+    <el-dialog
+      :close-on-click-modal="false"
+      v-bind="$attrs"
+      v-on="$listeners"
+      @open="onOpen"
+      :title="title"
+      width="500px"
+    >
       <el-card class="box-card">
-        <div ref="compare" style="width: 100%;height: 100%">
-        </div>
+        <div ref="compare" style="width: 100%; height: 100%"></div>
       </el-card>
     </el-dialog>
   </div>
 </template>
 
-<style scoped lang="scss">
-
-</style>
+<style scoped lang="scss"></style>

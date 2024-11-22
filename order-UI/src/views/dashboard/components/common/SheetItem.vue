@@ -3,21 +3,21 @@ import ExcelIcon from "@/views/dashboard/components/common/ExcelIcon.vue";
 
 export default {
   name: "SheetItem",
-  components: {ExcelIcon},
+  components: { ExcelIcon },
   props: {
     title: {
       type: String,
-      default: '无'
-    }
-  }
-}
+      default: "无",
+    },
+  },
+};
 </script>
 
 <template>
   <div>
     <div class="sheet-item">
       <div class="sheet-item-icon">
-        <ExcelIcon/>
+        <ExcelIcon />
       </div>
       <div class="sheet-item-desc">
         {{ title }}
@@ -30,7 +30,7 @@ export default {
 .sheet-item {
   width: 90px;
   height: 90px;
-  background: #FFFFFF;
+  background: #ffffff;
   margin: 15px;
   border-radius: 10px;
   padding: 5px;
@@ -49,6 +49,5 @@ export default {
 .sheet-item-desc {
   text-align: center;
   font-weight: bold;
-
 }
 </style>
