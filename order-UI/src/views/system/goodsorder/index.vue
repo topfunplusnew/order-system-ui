@@ -3,25 +3,24 @@
   <div class="app-container">
     <!--    这是框架自带的搜索模组，封装成了组件并且放在与index.vue同级目录下-->
     <QuerySearchBar :handle-query="handleQuery" :options="options" :options-invoice="optionsInvoice"
-                    :query-params="queryParams" :show-search="showSearch"/>
+      :query-params="queryParams" :show-search="showSearch" />
 
     <!--    表格列 数据大量展示-->
-    <ElTableOrder/>
+    <ElTableOrder />
 
     <!-- 订单历史信息查看  mixin_order_orderHistory -->
     <OrderHistoryCheck :active-names="activeNames" :check-history-order-visible="checkHistoryOrderVisible"
-                       :checkcurrent-order-item-info="checkcurrentOrderItemInfo"
-                       :order-history-info-list="orderHistoryInfoList"
-                       :parse-time="parseTime(new Date(), '{y}-{m}-{d} {h}:{i}:{s}')" @close="closeOrderHistoryCheck"/>
+      :checkcurrent-order-item-info="checkcurrentOrderItemInfo" :order-history-info-list="orderHistoryInfoList"
+      :parse-time="parseTime(new Date(), '{y}-{m}-{d} {h}:{i}:{s}')" @close="closeOrderHistoryCheck" />
   </div>
 </template>
 
 <script>
-import {mapGetters} from "vuex";
-import {parseTime} from "../../../utils/ruoyi";
-import {mixin_order_Invoice} from "../../dashboard/mixins/order/order_Invoice";
-import {mixin_order_orderHistory} from "../../dashboard/mixins/order/order_history";
-import {mixin_order_base} from "../../dashboard/mixins/order/order_base";
+import { mapGetters } from "vuex";
+import { parseTime } from "../../../utils/ruoyi";
+import { mixin_order_Invoice } from "../../dashboard/mixins/order/order_Invoice";
+import { mixin_order_orderHistory } from "../../dashboard/mixins/order/order_history";
+import { mixin_order_base } from "../../dashboard/mixins/order/order_base";
 import ElTableOrder from "@/views/dashboard/components/goodsOrder/ElTableOrder.vue";
 import QuerySearchBar from "@/views/dashboard/components/goodsOrder/QuerySearchBar.vue";
 import OrderHistoryCheck from "@/views/dashboard/components/goodsOrder/OrderHistoryCheck.vue";
@@ -40,7 +39,7 @@ export default {
     QuerySearchBar,
     ElTableOrder
   },
-  data() {
+  data () {
     return {
       showSearch: true,
     };
@@ -52,12 +51,12 @@ export default {
   methods: {
     parseTime,
     /** 搜索按钮操作 */
-    handleQuery() {
+    handleQuery () {
       this.queryParams.pageNum = 1;
       this.getList();
     },
     /** 重置按钮操作 */
-    resetQuery() {
+    resetQuery () {
       this.resetForm("queryForm");
       this.handleQuery();
     },

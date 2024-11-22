@@ -18,7 +18,7 @@
 
 <!--特别注意 针对某些特殊情况 可以补充字段-->
 <script>
-import {mixin_search_option} from "../views/dashboard/mixins/search_option/serch_option";
+import { mixin_search_option } from "../views/dashboard/mixins/search_option/serch_option";
 
 export default {
   name: "SearchOption",
@@ -38,7 +38,7 @@ export default {
     //查询标签
     queryLabel: '',
   },
-  data() {
+  data () {
     return {
       //显示总行数
       total: 0,
@@ -53,34 +53,34 @@ export default {
 
   computed: {
     query: {
-      set(val) {
+      set (val) {
         this.$emit('update:queryName', val)
       },
-      get() {
+      get () {
         return this.queryName
       }
     }
   },
   methods: {
-    getList() {
+    getList () {
       // 启动加载效果
       this.loading = true;
       // 获取表格数据
       this.getTableData()
     },
     //点击弹窗
-    handleCallBack() {
+    handleCallBack () {
       this.dialogVisible = true
       //获取数据 渲染表格
       this.getList()
     },
     //点击确认
-    commitSomeThing(row) {
+    commitSomeThing (row) {
       this.$emit('commitBack', row)
       this.dialogVisible = false
     },
     //条件查询
-    handleSearchInfo() {
+    handleSearchInfo () {
       this.getData({
         ...this.limitInfo
       }).then(res => {
@@ -92,7 +92,7 @@ export default {
   },
   watch: {
     query: {
-      handler(val) {
+      handler (val) {
         var queryParams = Object.create({}); //创建一个代理对象
         //传入的queryInfo是需要查询的字段名 queryName绑定的是需要查找的变量
         Object.defineProperty(queryParams, this.queryInfo, {
@@ -112,10 +112,7 @@ export default {
     <!--    按钮-->
     <el-button size="mini" :icon="icon" @click="handleCallBack" type="primary"></el-button>
     <!--    弹窗-->
-    <el-dialog :close-on-click-modal="false"
-               :title="title"
-               :visible.sync="dialogVisible"
-               width="65%" append-to-body>
+    <el-dialog :close-on-click-modal="false" :title="title" :visible.sync="dialogVisible" width="65%" append-to-body>
       <!--      弹出的表格内容-->
       <el-row>
         <div>
@@ -135,32 +132,22 @@ export default {
           <!--   这里给表格的数据行-->
           <slot name="table-columns" :tableData="tableData"></slot>
           <!--          点击确认的地方-->
-          <el-table-column
-            fixed="right"
-            label="操作"
-            width="100">
+          <el-table-column fixed="right" label="操作" width="100">
             <template slot-scope="scope">
               <el-button @click="commitSomeThing(scope.row)" type="danger" size="small" :disabled="disable">确认
               </el-button>
             </template>
           </el-table-column>
         </el-table>
-        <pagination
-          v-show="total>0"
-          :total="total"
-          :page.sync="pageNum"
-          :limit.sync="pageSize"
-          @pagination="getList"
-        />
+        <pagination v-show="total > 0" :total="total" :page.sync="pageNum" :limit.sync="pageSize"
+          @pagination="getList" />
       </el-row>
       <span slot="footer" class="dialog-footer">
-    <el-button @click="dialogVisible = false">取 消</el-button>
-    <el-button type="primary" @click="dialogVisible = false">确 定</el-button>
-  </span>
+        <el-button @click="dialogVisible = false">取 消</el-button>
+        <el-button type="primary" @click="dialogVisible = false">确 定</el-button>
+      </span>
     </el-dialog>
   </div>
 </template>
 
-<style scoped lang="scss">
-
-</style>
+<style scoped lang="scss"></style>

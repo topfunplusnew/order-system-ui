@@ -3,7 +3,7 @@ export var mixin_search_option = {
     return {
       //数据集 通过父组件传入函数来获取
       tableData: [],
-    }
+    };
   },
   props: {
     //获取数据的函数
@@ -15,27 +15,30 @@ export var mixin_search_option = {
     // 具体用法  父组件中=>  :additional-limit-info="(tableData)=>filterNoStockNumber(tableData)"  并在父组件中指定函数
     limitInfo: {
       type: Object,
-      required: true
+      required: true,
     },
     // 额外的限制信息
     additionalLimitInfo: {
       type: Function,
       default: (data) => {
-        return Promise.resolve(data)
-      }
-    }
+        return Promise.resolve(data);
+      },
+    },
   },
   methods: {
     getTableData() {
       // 调用获取数据的函数，并传入分页参数
-      this.getData({...this.limitInfo, pageNum: this.pageNum, pageSize: this.pageSize})
-        .then(res => {
+      this.getData({
+        ...this.limitInfo,
+        pageNum: this.pageNum,
+        pageSize: this.pageSize,
+      })
+        .then((res) => {
           if (res && res.rows) {
-            return this.additionalLimitInfo(res.rows)
-              .then(data => {
-                this.tableData = data;
-                this.total = res.total;
-              });
+            return this.additionalLimitInfo(res.rows).then((data) => {
+              this.tableData = data;
+              this.total = res.total;
+            });
           } else {
             return Promise.reject("无有效数据");
           }
@@ -45,4 +48,4 @@ export var mixin_search_option = {
         });
     },
   },
-}
+};

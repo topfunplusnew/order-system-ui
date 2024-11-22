@@ -2,16 +2,16 @@
 
 export var mixin_bankType = {
   data() {
-    return {}
+    return {};
   },
   methods: {
     // 填充己方的银行卡账户类型
     changeSelfBankType(value) {
-      this.form.selfBankCardType = value
+      this.form.selfBankCardType = value;
     },
     // 填充对方的银行卡账户类型
     changeOtherBankType(value) {
-      this.form.otherBankCardType = value
-    }
-  }
-}
+      this.form.otherBankCardType = value;
+    },
+  },
+};

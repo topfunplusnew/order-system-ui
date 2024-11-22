@@ -1,0 +1,15 @@
+{
+  "compilerOptions": {
+    "target": "es6", // JavaScript 版本，常用 es6
+    "module": "ES6", // 模块系统
+    "baseUrl": ".", // 路径的基准目录
+    "paths": {
+      "@/*": ["src/*"] // 路径别名，常用于 src
+    },
+    "strict": true // 严格类型检查
+  },
+  "exclude": [
+    "node_modules", // 排除目录
+    "**/dist" // 排除构建目录
+  ]
+}

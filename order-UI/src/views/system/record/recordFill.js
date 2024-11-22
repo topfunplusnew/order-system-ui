@@ -2,26 +2,26 @@ export var mixin_record_fill = {
   data() {
     return {
       // 收入方与支付方 只做展示
-      sourceName: '',
-      targetName: '',
+      sourceName: "",
+      targetName: "",
 
       // 查询字段
-      querySupplier: '',
-      queryCustomer: '',
-      queryInvoice: '',
+      querySupplier: "",
+      queryCustomer: "",
+      queryInvoice: "",
 
       // 选择客户或者供应商的相关信息
-      queryCompanyName: '',
+      queryCompanyName: "",
       // 司机的搜索信息
-      queryDriver: '',
+      queryDriver: "",
       // 己方公司的搜索信息
-      querySelfAccount: '',
+      querySelfAccount: "",
       // 转账双方的信息
       eachInfo: {
         source: null,
-        target: null
-      }
-    }
+        target: null,
+      },
+    };
   },
   methods: {
     // 上传的回调函数
@@ -74,19 +74,25 @@ export var mixin_record_fill = {
     },
     // 填充查询字段的信息
     handleUpdateDriver(val) {
-      this.queryDriver = val
+      this.queryDriver = val;
     },
     // 填充司机的信息
     handleCommitBackDriver(val) {
       // 如果sourceType选了 并且选的是司机
-      if (this.form.sourceCompanyType && this.form.sourceCompanyType === '司机') {
+      if (
+        this.form.sourceCompanyType &&
+        this.form.sourceCompanyType === "司机"
+      ) {
         // 填充展示字段
         this.sourceName = val.driver;
         // 填充业务字段
         this.form.sourceId = val.id;
       }
       // 如果targetType选了 并且选的是司机
-      if (this.form.targetCompanyType && this.form.targetCompanyType === '司机') {
+      if (
+        this.form.targetCompanyType &&
+        this.form.targetCompanyType === "司机"
+      ) {
         // 填充展示字段
         this.targetName = val.driver;
         // 填充业务字段
@@ -95,16 +101,22 @@ export var mixin_record_fill = {
     },
     // 填充己方公司的银行卡信息
     handleUpdateSelfAccount(val) {
-      this.querySelfAccount = val
+      this.querySelfAccount = val;
     },
     handleCommitBackSelfAccount(val) {
       // 如果sourceType选了 并且选的是司机
-      if (this.form.sourceCompanyType && this.form.sourceCompanyType === '己方公司') {
+      if (
+        this.form.sourceCompanyType &&
+        this.form.sourceCompanyType === "己方公司"
+      ) {
         // 填充展示字段
         this.sourceName = val.acountsName;
       }
       // 如果targetType选了 并且选的是司机
-      if (this.form.targetCompanyType && this.form.targetCompanyType === '己方公司') {
+      if (
+        this.form.targetCompanyType &&
+        this.form.targetCompanyType === "己方公司"
+      ) {
         // 填充展示字段
         this.targetName = val.acountsName;
       }
@@ -116,6 +128,6 @@ export var mixin_record_fill = {
     resetEachInfo() {
       this.eachInfo.source = null;
       this.eachInfo.target = null;
-    }
-  }
-}
+    },
+  },
+};
