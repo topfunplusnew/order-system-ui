@@ -165,10 +165,11 @@ export default {
     
     // 监听开票金额不能超过总货款
     form: {
-      handler() {
+      handler () {
+        // 不能超越货款
         if (this.form.ticketPointAmount > this.maxInvent) {
           this.$modal.msgError("客户开票金额不能超过订单总货款");
-          this.$emit("resetAmount");
+          this.resetMoney()
         }
         // 填充票点金额
         this.form.ticketPointAmount = fix(
@@ -208,6 +209,7 @@ export default {
           total_out = res.data?.total_out || 0;
           if (Number(this.form.invoiceAmount) + total_out > this.maxInvent) {
             this.$message.error("累计开票金额超过总货款");
+            this.resetMoney()
             return;
           } 
           // 组装开票实体
@@ -227,7 +229,8 @@ export default {
         checkOrderAllinvoice(this.invoiceInfo.isOrderTax).then((res) => {
           total_in = res.data?.total_in || 0;
           if (Number(this.form.invoiceAmount) + total_in > this.maxInvent) {
-             this.$message.error("累计开票金额超过出厂货款");
+            this.$message.error("累计开票金额超过出厂货款");
+            this.resetMoney()
           } 
           const body = {
               ...this.form,
@@ -244,6 +247,11 @@ export default {
     // 重写关闭逻辑
     handleReject () {
       
+    },
+    resetMoney () {
+       this.form.invoiceAmount =  0
+       this.form.ticketPoint =  0
+       this.form.ticketPointAmount =  0
     },
     resetOpenTitleInfo() {
       this.form = {
