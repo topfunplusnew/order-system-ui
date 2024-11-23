@@ -2,8 +2,8 @@
   <!--  自定义了上传组件的逻辑 可以清除上传中的文件-->
   <div class="upload-file">
     <el-upload
-      multiple
       ref="fileUpload"
+      multiple
       :action="uploadFileUrl"
       :before-upload="handleBeforeUpload"
       :file-list="fileList"
@@ -149,7 +149,7 @@ export default {
       this.$modal.msgError(`上传文件数量不能超过 ${this.limit} 个!`);
     },
     // 上传失败
-    handleUploadError(err) {
+    handleUploadError() {
       this.$modal.msgError("上传文件失败，请重试");
       this.$modal.closeLoading();
     },

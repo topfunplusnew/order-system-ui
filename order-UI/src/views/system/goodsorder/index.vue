@@ -2,16 +2,26 @@
 <template>
   <div class="app-container">
     <!--    这是框架自带的搜索模组，封装成了组件并且放在与index.vue同级目录下-->
-    <QuerySearchBar :handle-query="handleQuery" :options="options" :options-invoice="optionsInvoice"
-      :query-params="queryParams" :show-search="showSearch" />
+    <QuerySearchBar
+      :handle-query="handleQuery"
+      :options="options"
+      :options-invoice="optionsInvoice"
+      :query-params="queryParams"
+      :show-search="showSearch"
+    />
 
     <!--    表格列 数据大量展示-->
     <ElTableOrder />
 
     <!-- 订单历史信息查看  mixin_order_orderHistory -->
-    <OrderHistoryCheck :active-names="activeNames" :check-history-order-visible="checkHistoryOrderVisible"
-      :checkcurrent-order-item-info="checkcurrentOrderItemInfo" :order-history-info-list="orderHistoryInfoList"
-      :parse-time="parseTime(new Date(), '{y}-{m}-{d} {h}:{i}:{s}')" @close="closeOrderHistoryCheck" />
+    <OrderHistoryCheck
+      :active-names="activeNames"
+      :check-history-order-visible="checkHistoryOrderVisible"
+      :checkcurrent-order-item-info="checkcurrentOrderItemInfo"
+      :order-history-info-list="orderHistoryInfoList"
+      :parse-time="parseTime(new Date(), '{y}-{m}-{d} {h}:{i}:{s}')"
+      @close="closeOrderHistoryCheck"
+    />
   </div>
 </template>
 
@@ -27,18 +37,18 @@ import OrderHistoryCheck from "@/views/dashboard/components/goodsOrder/OrderHist
 
 export default {
   name: "GoodsOrder",
-  // 混入 订单逻辑分布在混入文件中
-  mixins: [
-    mixin_order_Invoice,
-    mixin_order_orderHistory,
-    mixin_order_base,
-  ],
   // 组件注册
   components: {
     OrderHistoryCheck,
     QuerySearchBar,
     ElTableOrder
   },
+  // 混入 订单逻辑分布在混入文件中
+  mixins: [
+    mixin_order_Invoice,
+    mixin_order_orderHistory,
+    mixin_order_base,
+  ],
   data () {
     return {
       showSearch: true,

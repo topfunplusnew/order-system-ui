@@ -16,13 +16,19 @@ import {mixin_form_fillInfo} from "../../mixins/order/form/form_fillInfo";
 export default {
   name: "OrderForm",
   components: {SearchOption, OrderItem},
+  mixins: [mixin_form_fillInfo],
   props: {
     // 父组件传递的订单id，主要用于当修改订单信息时 抓取服务器数据 然后自动填充到表单中
-    orderId: '',
+    orderId: {
+      type: String,
+      default: ''
+    },
     // 确认按钮字样
-    submitInfo: '',
+    submitInfo: {
+      type: String,
+      default: '提交'
+    },
   },
-  mixins: [mixin_form_fillInfo],
   data() {
     return {
       // 单个订单基本信息 由此组件维护 而订单中的货物的信息 由vuex中的订单货物列表orderItemList维护
@@ -115,7 +121,7 @@ export default {
       this.orderNums++;
     },
     //删除订单详情
-    handleDeleteOrderDetail(index, event) {
+    handleDeleteOrderDetail(index) {
       // 删除orderItemList中索引为index的元素
       this.$store.commit('order/removeOrderItem', index)
       this.orderNums--;
@@ -136,7 +142,7 @@ export default {
         // 对订单货物列表的每一个货物都执行这个操作
         this.orderItemList.forEach(item => updateOrderItem(item));
         // 添加订单信息
-        addGoodsOrder({...this.orderInfo, PaymentState: ''}).then(res => {
+        addGoodsOrder({...this.orderInfo, PaymentState: ''}).then(() => {
           // 清空订单列表基础信息
           this.resetOrderInfo()
           // 清除状态
@@ -170,7 +176,7 @@ export default {
           ...this.orderInfo,
           PaymentState: '',
           remark: sessionStorage.getItem('order-edit-reason')
-        }).then(response => {
+        }).then(() => {
           this.resetOrderInfo() // 清空订单列表基础信息
           this.$store.commit('order/clearOrderItemList');
           sessionStorage.removeItem('order-edit-reason')
@@ -243,7 +249,9 @@ export default {
     <el-form :inline="true" :model="orderInfo" label-width="80px">
       <el-card class="box-card" shadow="hover">
         <div slot="header" class="clearfix">
-          <el-button type="text" style="color: #156fb2" icon="el-icon-notebook-2">订单基本信息</el-button>
+          <el-button type="text" style="color: #156fb2" icon="el-icon-notebook-2">
+            订单基本信息
+          </el-button>
         </div>
         <el-form-item label="订单日期" prop="orderDate">
           <el-date-picker
@@ -251,96 +259,151 @@ export default {
             size="mini"
             type="datetime"
             placeholder="选择日期"
-            value-format="yyyy-MM-dd HH:mm:ss" style="width: 120px">
-          </el-date-picker>
+            value-format="yyyy-MM-dd HH:mm:ss"
+            style="width: 120px"
+          />
         </el-form-item>
         <el-form-item label="客户" prop="customer">
           <el-row>
             <el-col :span="14">
-              <el-input type="text" v-model="orderInfo.customer" size="mini"
-                        placeholder="请输入客户名称"></el-input>
+              <el-input
+                v-model="orderInfo.customer"
+                type="text"
+                size="mini"
+                placeholder="请输入客户名称"
+              />
             </el-col>
             <el-col :span="4">
-              <SearchOption :limit-info="{companyType:'客户'}"
-                            :get-data="listCompany" query-info="companyName"
-                            query-label="公司名称" :query-name="queryCompanyName"
-                            @update:queryName="handleUpdateCompanyName" @commitBack="handleCommitBackCompany">
+              <SearchOption
+                :limit-info="{companyType:'客户'}"
+                :get-data="listCompany"
+                query-info="companyName"
+                query-label="公司名称"
+                :query-name="queryCompanyName"
+                @update:queryName="handleUpdateCompanyName"
+                @commitBack="handleCommitBackCompany"
+              >
                 <template #table-columns>
-                  <el-table-column label="客户" align="center"
-                                   prop="relationName"/>
-                  <el-table-column label="老板姓名" align="center" prop="leader"/>
-                  <el-table-column label="老板电话" align="center" prop="leaderTel"/>
-                  <el-table-column label="区域" align="center" prop="region"/>
-                  <el-table-column label="公司名称" align="center" prop="companyName"/>
-                  <el-table-column label="销售经理" align="center" prop="salesManager"/>
+                  <el-table-column
+                    label="客户"
+                    align="center"
+                    prop="relationName"
+                  />
+                  <el-table-column label="老板姓名" align="center" prop="leader" />
+                  <el-table-column label="老板电话" align="center" prop="leaderTel" />
+                  <el-table-column label="区域" align="center" prop="region" />
+                  <el-table-column label="公司名称" align="center" prop="companyName" />
+                  <el-table-column label="销售经理" align="center" prop="salesManager" />
                 </template>
               </SearchOption>
             </el-col>
           </el-row>
         </el-form-item>
         <el-form-item label="销售经理" prop="saleManager">
-          <el-input type="text" v-model="orderInfo.saleManager" size="mini"
-                    placeholder="请输入销售经理名称" style="width: 110px"></el-input>
+          <el-input
+            v-model="orderInfo.saleManager"
+            type="text"
+            size="mini"
+            placeholder="请输入销售经理名称"
+            style="width: 110px"
+          />
         </el-form-item>
         <el-form-item label="备注" prop="comments">
-          <el-input type="text" v-model="orderInfo.comments" size="mini"
-                    placeholder="请输入备注"></el-input>
+          <el-input
+            v-model="orderInfo.comments"
+            type="text"
+            size="mini"
+            placeholder="请输入备注"
+          />
         </el-form-item>
         <el-form-item label="运输方式">
-          <el-checkbox v-model="isLand">陆运</el-checkbox>
-          <el-checkbox v-model="isSea">海运</el-checkbox>
+          <el-checkbox v-model="isLand">
+            陆运
+          </el-checkbox>
+          <el-checkbox v-model="isSea">
+            海运
+          </el-checkbox>
         </el-form-item>
 
         <!--      陆运-->
-        <el-row style="margin:20px 0;" v-if="isLand">
+        <el-row v-if="isLand" style="margin:20px 0;">
           <el-form-item label="车牌">
             <el-row>
               <el-col :span="20">
-                <el-input type="text" v-model="orderInfo.landCarNo" size="mini"
-                          placeholder="请输入陆运车牌" style="width: 120px"></el-input>
+                <el-input
+                  v-model="orderInfo.landCarNo"
+                  type="text"
+                  size="mini"
+                  placeholder="请输入陆运车牌"
+                  style="width: 120px"
+                />
               </el-col>
               <el-col :span="4">
                 <!--搜索银行卡信息-->
-                <SearchOption :limit-info="{carType:'陆运'}"
-                              :get-data="listCars"
-                              query-label="车牌搜索" query-info="carNo" :query-name="queryLandCar"
-                              @commitBack="handleCommitBackCar" @update:queryName="handleChangeCar">
+                <SearchOption
+                  :limit-info="{carType:'陆运'}"
+                  :get-data="listCars"
+                  query-label="车牌搜索"
+                  query-info="carNo"
+                  :query-name="queryLandCar"
+                  @commitBack="handleCommitBackCar"
+                  @update:queryName="handleChangeCar"
+                >
                   <template #table-columns>
-                    <el-table-column label="车牌" align="center" prop="carNo"/>
-                    <el-table-column label="司机" align="center" prop="driver"/>
-                    <el-table-column label="司机电话" align="center" prop="tel"/>
-                    <el-table-column label="开户名" align="center" prop="acountsName"/>
-                    <el-table-column label="账号" align="center" prop="bankNo"/>
-                    <el-table-column label="开户行" align="center" prop="bankName"/>
+                    <el-table-column label="车牌" align="center" prop="carNo" />
+                    <el-table-column label="司机" align="center" prop="driver" />
+                    <el-table-column label="司机电话" align="center" prop="tel" />
+                    <el-table-column label="开户名" align="center" prop="acountsName" />
+                    <el-table-column label="账号" align="center" prop="bankNo" />
+                    <el-table-column label="开户行" align="center" prop="bankName" />
                   </template>
                 </SearchOption>
               </el-col>
             </el-row>
           </el-form-item>
           <el-form-item label="司机">
-            <el-input type="text" v-model="orderInfo.landDriverName" size="mini"
-                      placeholder="请输入陆运司机姓名" style="width: 130px"></el-input>
+            <el-input
+              v-model="orderInfo.landDriverName"
+              type="text"
+              size="mini"
+              placeholder="请输入陆运司机姓名"
+              style="width: 130px"
+            />
           </el-form-item>
           <el-form-item label="电话">
-            <el-input type="text" v-model="orderInfo.landDriverTel" size="mini"
-                      placeholder="请输入陆运司机电话" style="width: 120px"></el-input>
+            <el-input
+              v-model="orderInfo.landDriverTel"
+              type="text"
+              size="mini"
+              placeholder="请输入陆运司机电话"
+              style="width: 120px"
+            />
           </el-form-item>
           <el-form-item label="车队">
             <el-row>
               <el-col :span="12">
-                <el-input type="text" v-model="orderInfo.fleet" size="mini"
-                          placeholder="请输入车队"></el-input>
+                <el-input
+                  v-model="orderInfo.fleet"
+                  type="text"
+                  size="mini"
+                  placeholder="请输入车队"
+                />
               </el-col>
               <el-col :span="4">
-                <SearchOption :limit-info="{}"
-                              :get-data="listFleet"
-                              query-label="车队名称" query-info="fname" :query-name="queryFleet"
-                              @commitBack="handleCommitBackFleet" @update:queryName="handleChangeFleet">
+                <SearchOption
+                  :limit-info="{}"
+                  :get-data="listFleet"
+                  query-label="车队名称"
+                  query-info="fname"
+                  :query-name="queryFleet"
+                  @commitBack="handleCommitBackFleet"
+                  @update:queryName="handleChangeFleet"
+                >
                   <template #table-columns>
-                    <el-table-column label="车队名称" align="center" prop="fname"/>
-                    <el-table-column label="车队经理" align="center" prop="fleader"/>
-                    <el-table-column label="车队经理电话" align="center" prop="tel"/>
-                    <el-table-column label="地址" align="center" prop="address"/>
+                    <el-table-column label="车队名称" align="center" prop="fname" />
+                    <el-table-column label="车队经理" align="center" prop="fleader" />
+                    <el-table-column label="车队经理电话" align="center" prop="tel" />
+                    <el-table-column label="地址" align="center" prop="address" />
                   </template>
                 </SearchOption>
               </el-col>
@@ -348,25 +411,35 @@ export default {
           </el-form-item>
         </el-row>
         <!--      海运-->
-        <el-row style="margin:10px 0;" v-if="isSea">
+        <el-row v-if="isSea" style="margin:10px 0;">
           <!--          todo 车牌修改为柜号 且自己输入 不提供自动填充 -->
           <el-form-item label="柜号">
             <el-row>
               <el-col :span="20">
-                <el-input type="text" v-model="orderInfo.seaCarNo" size="mini"
-                          placeholder="请输入柜号" style="width: 120px"></el-input>
+                <el-input
+                  v-model="orderInfo.seaCarNo"
+                  type="text"
+                  size="mini"
+                  placeholder="请输入柜号"
+                  style="width: 120px"
+                />
               </el-col>
               <el-col :span="4">
-                <SearchOption :limit-info="{carType:'海运'}"
-                              :get-data="listCars"
-                              query-label="车牌" query-info="carNo" :query-name="querySeaCars"
-                              @commitBack="handleCommitBackSeaCar" @update:queryName="handleChangeSeaCar">
+                <SearchOption
+                  :limit-info="{carType:'海运'}"
+                  :get-data="listCars"
+                  query-label="车牌"
+                  query-info="carNo"
+                  :query-name="querySeaCars"
+                  @commitBack="handleCommitBackSeaCar"
+                  @update:queryName="handleChangeSeaCar"
+                >
                   <template #table-columns>
-                    <el-table-column label="车牌" align="center" prop="carNo"/>
-                    <el-table-column label="司机" align="center" prop="driver"/>
-                    <el-table-column label="司机电话" align="center" prop="tel"/>
-                    <el-table-column label="开户名" align="center" prop="acountsName"/>
-                    <el-table-column label="账号" align="center" prop="bankNo"/>
+                    <el-table-column label="车牌" align="center" prop="carNo" />
+                    <el-table-column label="司机" align="center" prop="driver" />
+                    <el-table-column label="司机电话" align="center" prop="tel" />
+                    <el-table-column label="开户名" align="center" prop="acountsName" />
+                    <el-table-column label="账号" align="center" prop="bankNo" />
                   </template>
                 </SearchOption>
               </el-col>
@@ -374,22 +447,34 @@ export default {
           </el-form-item>
           <!--          todo 原为海运司机 现改为海运公司-->
           <el-form-item label="海运公司">
-            <el-input type="text" v-model="orderInfo.seaDriverName" size="mini"
-                      placeholder="请输入海运公司" style="width: 130px"></el-input>
+            <el-input
+              v-model="orderInfo.seaDriverName"
+              type="text"
+              size="mini"
+              placeholder="请输入海运公司"
+              style="width: 130px"
+            />
           </el-form-item>
           <el-form-item label="电话">
-            <el-input type="text" v-model="orderInfo.seaDriverTel" size="mini"
-                      placeholder="请输入电话" style="width: 120px"></el-input>
+            <el-input
+              v-model="orderInfo.seaDriverTel"
+              type="text"
+              size="mini"
+              placeholder="请输入电话"
+              style="width: 120px"
+            />
           </el-form-item>
         </el-row>
-        <br/>
+        <br>
       </el-card>
     </el-form>
-    <br/>
+    <br>
     <!--    货物信息 可以添加多个货物信息-->
     <el-card class="box-card" shadow="hover">
       <div slot="header" class="clearfix">
-        <el-button type="text" style="color: #156fb2" icon="el-icon-shopping-cart-2">订单货物信息</el-button>
+        <el-button type="text" style="color: #156fb2" icon="el-icon-shopping-cart-2">
+          订单货物信息
+        </el-button>
         <el-button type="text" style="color: #156fb2;float: right">
           货物个数:{{ orderNums }}
         </el-button>
@@ -398,10 +483,14 @@ export default {
       <div v-if="orderItemList.length!==0">
         <div v-for="(item,index) in orderItemList" :key="index">
           <transition name="fade">
-            <OrderItem :tempOrderInfo="item" :isLand="isLand" :isSea="isSea" :index="index">
+            <OrderItem :temp-order-info="item" :is-land="isLand" :is-sea="isSea" :index="index">
               <template #action>
-                <el-button style="float: right; padding: 3px 0;color: red" type="text"
-                           @click="handleDeleteOrderDetail(index,$event)">删除
+                <el-button
+                  style="float: right; padding: 3px 0;color: red"
+                  type="text"
+                  @click="handleDeleteOrderDetail(index,$event)"
+                >
+                  删除
                 </el-button>
               </template>
             </OrderItem>
@@ -411,7 +500,9 @@ export default {
       <!--      如果没有订单信息-->
       <el-row>
         <el-col style="text-align: center">
-          <el-button type="primary" @click="addOrderItem" icon="el-icon-plus">添加订单货物信息</el-button>
+          <el-button type="primary" icon="el-icon-plus" @click="addOrderItem">
+            添加订单货物信息
+          </el-button>
         </el-col>
       </el-row>
     </el-card>
