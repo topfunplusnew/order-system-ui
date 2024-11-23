@@ -11,7 +11,7 @@
     />
 
     <!--    表格列 数据大量展示-->
-    <ElTableOrder />
+    <ElTableOrder :is-adjust-order="false" />
 
     <!-- 订单历史信息查看  mixin_order_orderHistory -->
     <OrderHistoryCheck

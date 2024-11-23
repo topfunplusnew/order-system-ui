@@ -16,6 +16,7 @@ import { mixin_order_checkOrder } from "@/views/dashboard/mixins/order/order_che
 import { mixin_order_add } from "@/views/dashboard/mixins/order/order_addOrder";
 import { mixin_order_goodsItemInfo } from "@/views/dashboard/mixins/order/order_goodsItemInfo";
 import { common_dialog } from "@/views/dashboard/mixins/common/common_dialog";
+import GOODS_ORDER from "../../../../components/NeedToShow/GOODS_ORDER.vue";
 
 export default {
   name: "ElTableOrder",
@@ -51,6 +52,13 @@ export default {
     // 运费申请
     mixin_order_freeApply,
   ],
+  props: {
+    // 是否为调整单
+    isAdjustOrder: {
+      type: Boolean,
+      default: false
+    }
+  },
   data () {
     return {
       // 订单表格中的数据
@@ -69,6 +77,10 @@ export default {
       },
       deep: true,
     },
+  },
+  mounted () {
+    console.log(this.isAdjustOrder);
+    
   },
   created () {
     // 获取订单列表
@@ -123,6 +135,16 @@ export default {
       this.queryParams.pageNum = 1;
       this.getList();
     },
+    // 查看原订单的信息
+    handleCheckPrevious (row) {
+      const { id } = row;
+      getGoodsOrder(id).then(res => {
+        // todo
+        this.openDialog(GOODS_ORDER, "查看原订单信息", "50%", {
+          needToShowInfo: res.data
+        })
+      })
+    },
     /** 重置按钮操作 */
     resetQuery () {
       this.resetForm("queryForm");
@@ -162,7 +184,7 @@ export default {
             刷新
           </el-button>
         </el-col>
-        <el-col :span="1.5">
+        <el-col v-if="!isAdjustOrder" :span="1.5">
           <el-button v-hasPermi="['system:goodsorder:add']" type="danger" size="mini" @click="handleAdd">
             添加订单信息
           </el-button>
@@ -518,12 +540,21 @@ export default {
           <template slot-scope="scope">
             <!--          调整单-->
             <el-button
+              v-if="!isAdjustOrder"
               :disabled="scope.row.isAdjusted === '是'"
               size="mini"
               type="text"
               @click="handleOrderItemInfo(scope.row)"
             >
               调整单
+            </el-button>
+            <el-button
+              v-if="isAdjustOrder"
+              size="mini"
+              type="text"
+              @click="handleCheckPrevious(scope.row)"
+            >
+              查看原单据
             </el-button>
             <!--          发货单-->
             <el-dropdown size="mini" type="text">

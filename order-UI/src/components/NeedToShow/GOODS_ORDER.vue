@@ -3,11 +3,14 @@ import OrderInfos from "../../views/dashboard/components/goodsOrder/OrderInfos.v
 import OrderDetailInfo from "../../views/dashboard/components/goodsOrder/OrderDetailInfo.vue";
 
 export default {
-  name: "GOODS_ORDER",
+  name: "GOODSORDER",
   components: {OrderDetailInfo, OrderInfos},
   props: {
     needToShowInfo: {
-      type: Object
+      type: Object,
+      default() {
+        return {}
+      }
     }
   }
 }
@@ -15,8 +18,8 @@ export default {
 
 <template>
   <div>
-    <OrderInfos :orderInfo="needToShowInfo"/>
-    <OrderDetailInfo :orderDetailInfoList="needToShowInfo.orderDetailList" :ban="true"/>
+    <OrderInfos :order-info="needToShowInfo" />
+    <OrderDetailInfo :order-detail-info-list="needToShowInfo.orderDetailList" :ban="true" />
   </div>
 </template>
 
