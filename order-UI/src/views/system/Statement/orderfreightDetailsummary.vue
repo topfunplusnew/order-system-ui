@@ -1,25 +1,28 @@
-<!--向外借钱-->
+<!--运费科目汇总账-->
 <template>
   <div class="app-container">
     <el-row style="background-color:#e6e6e6;">
-      <el-button type="primary" icon="el-icon-refresh" @click="refresh">刷新</el-button>
+      <el-button type="primary" icon="el-icon-refresh" @click="refresh">
+        刷新
+      </el-button>
     </el-row>
-    <hr color="#e6e6e6"/>
-    <el-form :model="queryParams" ref="queryForm" size="mini" :inline="true" label-width="68px">
+    <hr color="#e6e6e6">
+    <el-form ref="queryForm" :model="queryParams" size="mini" :inline="true" label-width="68px">
       <el-form-item label="开始时间" prop="beginTime">
         <el-date-picker
           v-model="queryParams.beginTime"
           type="datetime"
           placeholder="请选择开始时间"
-          value-format="yyyy-MM-dd HH:mm:ss">
-        </el-date-picker>
+          value-format="yyyy-MM-dd HH:mm:ss"
+        />
       </el-form-item>
       <el-form-item label="结束时间" prop="endTime">
         <el-date-picker
           v-model="queryParams.endTime"
           type="datetime"
-          placeholder="请选择结束时间" value-format="yyyy-MM-dd HH:mm:ss">
-        </el-date-picker>
+          placeholder="请选择结束时间"
+          value-format="yyyy-MM-dd HH:mm:ss"
+        />
       </el-form-item>
       <el-form-item label="车牌号" prop="carNo">
         <el-input
@@ -35,90 +38,138 @@
             v-for="item in options"
             :key="item.value"
             :label="item.label"
-            :value="item.value">
-          </el-option>
+            :value="item.value"
+          />
         </el-select>
       </el-form-item>
       <el-form-item>
-        <el-button type="primary" icon="el-icon-search" size="mini" @click="handleQuery">搜索</el-button>
+        <el-button type="primary" icon="el-icon-search" size="mini" @click="handleQuery">
+          搜索
+        </el-button>
       </el-form-item>
     </el-form>
-    <hr color="#e6e6e6"/>
+    <hr color="#e6e6e6">
     <el-row style="font-weight: bold;font-size: 20px;margin: 0 30px">
       运费科目汇总账
     </el-row>
     <el-row :gutter="10" class="mb8">
-      <right-toolbar @queryTable="getList" :columns="columns">
-        <template v-slot:print>
+      <right-toolbar :columns="columns" @queryTable="getList">
+        <template #print>
           <el-col :span="1.5">
             <el-button
               plain
               icon="el-icon-printer"
               size="mini"
               @click="printHTML"
-            >
-            </el-button>
+            />
           </el-col>
         </template>
-        <template v-slot:export>
+        <template #export>
           <el-col :span="1.5">
             <el-button
+              v-hasPermi="['system:company:export']"
               plain
               icon="el-icon-folder-opened"
               size="mini"
               @click="handleExport"
-              v-hasPermi="['system:company:export']"
-            >
-            </el-button>
+            />
           </el-col>
         </template>
       </right-toolbar>
     </el-row>
 
-    <el-table border v-loading="loading" :data="lendMoneyList"
-              v-horizontal-scroll="'always'" id="printBox" size="mini" :cell-style="()=>{return {padding:'2px'}}">
-      <el-table-column label="序号" align="center" type="index" v-if="columns[0].visible" width="160"/>
-      <el-table-column label="初期方向" align="center" v-if="columns[1].visible" width="160">
-        <template slot-scope="scope">
-          <div v-if="scope">
-            <!--  现在总的需要前端自己计算方向,计算公式为 期初/期末余额>0 则为贷,反之为借,相等为平-->
-            <span v-if="scope.row.initialBalanceDirection > 0 ">贷</span>
-            <span v-else-if="scope.row.initialBalanceDirection < 0">借</span>
-            <span v-else-if="scope.row.initialBalanceDirection === scope.row.endingBalanceDirection">平</span>
-          </div>
-        </template>
-      </el-table-column>
-      <el-table-column label="初期余额" align="center" prop="initialBalanceDirection" v-if="columns[2].visible"
-                       width="160"/>
-      <el-table-column label="车牌号" align="center" prop="CarNo" v-if="columns[3].visible"
-                       width="110">
-      </el-table-column>
-      <el-table-column label="应付运费" align="center" prop="willPaid"
-                       v-if="columns[4].visible" width="110"/>
-      <el-table-column label="已付运费" align="center" prop="paid" v-if="columns[5].visible" width="110"/>
-      <el-table-column label="司机姓名" align="center" prop="driverName" v-if="columns[6].visible" width="110"/>
 
-      <el-table-column label="期末方向" align="center" prop="initialBalanceDirection" v-if="columns[7].visible"
-                       width="160">
+    <!-- 运费报表表格 -->
+    <el-table
+      id="printBox"
+      v-loading="loading"
+      v-horizontal-scroll="'always'"
+      border
+      :data="lendMoneyList"
+      size="mini"
+      :cell-style="() => { return { padding: '2px' } }"
+    >
+      <el-table-column
+        v-if="columns[0].visible"
+        label="序号"
+        align="center"
+        type="index"
+        width="160"
+      />
+      <el-table-column 
+        label="司机姓名"
+        align="center"
+        prop="companyName"
+        width="110"
+      />
+      <el-table-column 
+        label="初期方向"
+        align="center"
+        width="160"
+      >
         <template slot-scope="scope">
           <div v-if="scope">
             <!--  现在总的需要前端自己计算方向,计算公式为 期初/期末余额>0 则为贷,反之为借,相等为平-->
-            <span v-if="scope.row.endingBalanceDirection > 0 ">贷</span>
-            <span v-else-if="scope.row.endingBalanceDirection < 0">借</span>
-            <span v-else-if="scope.row.initialBalanceDirection === scope.row.endingBalanceDirection">平</span>
+            <span v-if="scope.row.beginningBalance > 0 ">贷</span>
+            <span v-else-if="scope.row.beginningBalance < 0">借</span>
+            <span v-else>平</span>
           </div>
         </template>
       </el-table-column>
-      <el-table-column label="期末余额" align="center" prop="endingBalanceDirection" v-if="columns[8].visible"
-                       width="160"/>
+      <el-table-column
+        label="初期余额"
+        align="center"
+        prop="beginningBalance"
+        width="160"
+      />
+      <el-table-column
+        label="借方"
+        align="center"
+        prop="positiveSum"
+        width="160"
+      />
+      <el-table-column
+        label="贷方"
+        align="center"
+        prop="negativeSum"
+        width="160"
+      />
+      <el-table-column
+        label="平账金额"
+        align="center"
+        prop="balanceaccountsAmount"
+        width="160"
+      />
+      <el-table-column
+        label="车牌号"
+        align="center"
+        prop="carNo"
+        width="110"
+      />
+      <el-table-column
+        label="期末方向"
+        align="center"
+        prop="initialBalanceDirection"
+        width="160"
+      >
+        <template slot-scope="scope">
+          <div v-if="scope">
+            <!--  现在总的需要前端自己计算方向,计算公式为 期初/期末余额>0 则为贷,反之为借,相等为平-->
+            <span v-if="scope.row.endingBalance > 0 ">贷</span>
+            <span v-else-if="scope.row.endingBalance < 0">借</span>
+            <span v-else>平</span>
+          </div>
+        </template>
+      </el-table-column>
+      <el-table-column
+        label="期末余额"
+        align="center"
+        prop="endingBalance"
+        width="160"
+      />
       <el-table-column label="操作" align="center" prop="driverName" width="150" fixed="right">
         <template slot-scope="scope">
-          <el-button
-            size="mini"
-            type="success"
-            @click="handleCheckCarNoFreight(scope.row)"
-          >查询该车牌详情
-          </el-button>
+          <FreightDetail :detail="scope.row" />
         </template>
       </el-table-column>
     </el-table>
@@ -132,19 +183,22 @@
     />
 
 
-    <el-dialog :close-on-click-modal="false" :show-close="false"
-               title="请选择导出时间段"
-               :visible.sync="dialogVisible"
-               width="30%">
-      <el-form :model="queryParams" ref="queryForm" size="mini" label-width="68px">
+    <el-dialog
+      :close-on-click-modal="false"
+      :show-close="false"
+      title="请选择导出时间段"
+      :visible.sync="dialogVisible"
+      width="30%"
+    >
+      <el-form ref="queryForm" :model="queryParams" size="mini" label-width="68px">
         <el-form-item label="开始时间" prop="beginTime">
           <el-date-picker
             v-model="queryParams.beginTime"
             type="datetime"
             placeholder="选择时间"
             value-format="yyyy-MM-dd HH:mm:ss"
-            size="mini">
-          </el-date-picker>
+            size="mini"
+          />
         </el-form-item>
         <el-form-item label="结束时间" prop="endTime">
           <el-date-picker
@@ -152,52 +206,15 @@
             type="datetime"
             placeholder="选择时间"
             value-format="yyyy-MM-dd HH:mm:ss"
-            size="mini">
-          </el-date-picker>
+            size="mini"
+          />
         </el-form-item>
       </el-form>
       <span slot="footer" class="dialog-footer">
-    <el-button @click="dialogVisible = false">取 消</el-button>
-    <el-button type="primary" @click="handleSubmitTime">导 出</el-button>
-  </span>
+        <el-button @click="dialogVisible = false">取 消</el-button>
+        <el-button type="primary" @click="handleSubmitTime">导 出</el-button>
+      </span>
     </el-dialog>
-
-    <!--    运费科目报表明细表-->
-    <InfoDialog :visible="detailVisible" :title="detailTitle" width="1200px" @close="close">
-      <template #info>
-        <el-table border v-loading="detailLoading" :data="detailList"
-                  v-horizontal-scroll="'always'" size="mini" :cell-style="()=>{return {padding:'1px'}}">
-          <el-table-column label="序号" align="center" type="index" width="160"/>
-          <el-table-column label="订单时间" align="center" prop="orderDate" width="160"/>
-          <el-table-column label="订单编号" align="center" prop="orderNo" width="160">
-            <template #default="scope">
-              <CheckOrderInfo v-if="scope.row.orderNo" :row="scope.row"/>
-            </template>
-          </el-table-column>
-          <el-table-column label="司机" align="center" prop="driver" width="110"/>
-          <el-table-column label="车牌/柜号" align="center" prop="carNo" width="110"/>
-          <el-table-column label="运输类型" align="center" prop="carType" width="110"/>
-          <el-table-column label="付运费(对方真实收付款名称)" align="center" prop="otherAccountsName" width="110"/>
-          <el-table-column label="运费银行卡号" align="center" prop="otherBankNo" width="110"/>
-          <el-table-column label="摘要" align="center" prop="comments" width="110"/>
-          <el-table-column label="借方发生额(我方支付运费)" align="center" prop="freightPaid" width="160"/>
-          <el-table-column label="贷方发生额(应付司机运费)" align="center" prop="freightUnPaid" width="110"/>
-          <el-table-column label="方向" align="center" width="110">
-            <template slot-scope="scope">
-              <div>
-                <div v-if="scope.row.balanceInLocalCurrency > 0 ">贷</div>
-                <div v-else-if="scope.row.balanceInLocalCurrency < 0">借</div>
-                <div v-else>平</div>
-              </div>
-            </template>
-          </el-table-column>
-          <el-table-column label="余额本币" align="center" prop="balanceInLocalCurrency" width="160"/>
-          <el-table-column label="我方付款户名" align="center" prop="selfAccountsName" width="160"/>
-          <el-table-column label="我方银行账号" align="center" prop="selfBankNo" width="160"/>
-          <el-table-column label="我方开户行地址" align="center" prop="selfBankName" width="160"/>
-        </el-table>
-      </template>
-    </InfoDialog>
   </div>
 </template>
 
@@ -205,17 +222,15 @@
 import {mixin_printHTML} from "@/views/dashboard/mixins/print";
 import {
   getFreightSubjectDetailSummary,
-  getFreightSubjectDetailSummaryDebounce,
+  getFreightSubjectDetailSummarySomeDay,
   getOrderFreightDetailSummary
 } from "../../../api/system/statement";
 import {parseTime} from "../../../utils/ruoyi";
-import InfoDialog from "../../../components/InfoDialog.vue";
-import CheckOrderInfo from "../../dashboard/components/orderfreight/CheckOrderInfo.vue";
-import {debounce} from "../../../utils";
+import FreightDetail from "./components/FreightDetail.vue";
 
 export default {
   name: "LendMoney",
-  components: {CheckOrderInfo, InfoDialog},
+  components: {FreightDetail},
   dicts: ['order_target_type'],
   mixins: [mixin_printHTML],
   data() {
@@ -235,6 +250,7 @@ export default {
         beginTime: parseTime(new Date(new Date().getTime() - 30 * 24 * 60 * 60 * 1000), '{y}-{m}-{d} {h}:{i}:{s}'),
         endTime: parseTime(new Date()),
         carNo: '',
+        // 是否为海运 默认为false
         isSea: false
       },
       options: [{
@@ -282,20 +298,22 @@ export default {
       });
     },
     // 运费明细获取
-    handleCheckCarNoFreight(row) {
+    handleCheckCarNoFreight (row) {
+      const carNo = row.carNo
       // 选择时间
       this.$datePicker().then(res => {
+        // 封装查询对象
         const query = {
-          carNo: row.CarNo,
+          carId: row.companyId,
           beginTime: res.beginTime,
           endTime: res.endTime
         }
         // 先查询上年结转
-        getFreightSubjectDetailSummaryDebounce(query).then(res => {
+        getFreightSubjectDetailSummarySomeDay(query).then(res => {
           let item = res?.data
-          // 查询明细
+          // 某个车牌的查询明细
           getFreightSubjectDetailSummary(query).then(res => {
-            this.detailTitle = `车牌号为${query.carNo}的运费明细`
+            this.detailTitle = `车牌号为${carNo}的运费明细`
             this.detailList = res.rows
             // 对数据进行处理 如果借方发生额不为空 摘要为付运费 如果贷方发生额不为空 为司机运费
             this.detailList.forEach(item => {

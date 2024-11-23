@@ -1,11 +1,10 @@
-<!--客户科目明细表-->
+<!--司机科目明细表-->
 
 <script>
 import TotalTag from "@/views/system/Statement/components/TotalTag.vue";
 import {
-  getCustomerFiveParams,
-  getCustomerSubjectDetailSomeDay,
-  getCustomerSubjectDetailSummary
+  getFreightSubjectDetailSummary,
+  getFreightSubjectDetailSummarySomeDay
 } from "@/api/system/statement";
 import {getSubjectLevel} from "@/api/system/subject";
 import {listConfig} from "@/api/system/config";
@@ -19,12 +18,13 @@ import INVOICE_ORTHER from "@/components/NeedToShow/INVOICE_ORTHER.vue";
 import OFFSETTING from "@/components/NeedToShow/OFFSETTING.vue";
 import INVENTORY from "@/components/NeedToShow/INVENTORY.vue";
 import REBATE from "@/components/NeedToShow/REBATE.vue";
+import ORDER_DETAIL from "@/components/NeedToShow/ORDER_DETAIL.vue";
 
 export default {
-  name: "CustomerDetail",
+  name: "FreightDetail",
   components: {TotalTag},
   props: {
-    // 需要查看的那一行客户的信息
+    // 需要查看的那一行司机的信息
     detail: {
       type: Object,
       default: () => {
@@ -50,41 +50,39 @@ export default {
     }
   },
   computed: {
-    // 客户的id
-    customerId() {
+    driverId() {
       return this.detail.companyId
     }
   },
 
   methods: {
-    // 查看明细 点击的时候 先让用户输入时间 然后拿该行数据的companyId查询该客户的明细账
+    // 查看明细 点击的时候 先让用户输入时间 然后拿该行数据的companyId查询该司机的明细账
     handleCheck() {
       // 打开时间选择框
       this.$datePicker().then(res => {
-        // 组装查询条件 分别为开始时间 结束时间 客户id
+        // 组装查询条件 分别为开始时间 结束时间 司机id
         const query = {
-          companyId: this.customerId,
+          companyId: this.driverId,
           beginTime: res.beginTime,
           endTime: res.endTime
         }
         // 拿到时间 为了查询上年结转
-        const {companyId, ...times} = query
         // 查询科目 填充
-        listConfig({configKey: 'order.customerDetailSummary.subjectNo'}).then(res => {
+        listConfig({configKey: 'order.freightDetailSummary.subjectNo'}).then(res => {
           // 科目编码
           const configValue = res.rows[0]?.configValue
           // 根据configValue去拿取科目名称
           getSubjectLevel(configValue).then(res => {
             // 拿到科目名称
-            const subjectName = res.data.title
+            const subjectName = res.data?.title
             // 查询明细账之前 要先查询上年结转的余额本币填充
-            getCustomerSubjectDetailSomeDay({beginTime: times.beginTime, companyId: this.customerId}).then(res => {
+            getFreightSubjectDetailSummarySomeDay({beginTime: query.beginTime, companyId: this.driverId}).then(res => {
               // 拿到上年的数据
-              const lastYearDetail = res.data;
-              // 查询客户明细账
-              getCustomerSubjectDetailSummary(query).then(res => {
+              const lastYearDetail = res?.data;
+              // 查询司机明细账
+              getFreightSubjectDetailSummary(query).then(res => {
                 // 填充数据 因为需要有余额本币字段
-                this.tableData = res.data.map(item => {
+                this.tableData = res?.rows.map(item => {
                   return {
                     ...item,
                     moneyAmountLocal: lastYearDetail.moneyAmount,
@@ -100,8 +98,6 @@ export default {
                   subjectNo: configValue,
                   subjectName: subjectName
                 })
-                // 查询该客户的五个tag的值
-                this.getCustomerTags(companyId)
                 // 打开弹窗
                 this.dialogVisible = true
               })
@@ -115,7 +111,8 @@ export default {
       // 拿到表名和id
       const {tableName, payNo} = row
       // 根据tableName动态获取某个JS模块
-      getFunction(tableName)(payNo).then(res => {
+      if (tableName && payNo) {
+        getFunction(tableName)(payNo).then(res => {
         // 填充数据
         this.needToShowInfo = res.data
         // 根据对应表名渲染对应的展示组件
@@ -127,6 +124,7 @@ export default {
           this.$message.warning('组件渲染有误')
         }
       })
+      }
     },
     // 根据对应的表名渲染对应的组件
     getComponents(tableName) {
@@ -138,29 +136,23 @@ export default {
         [TableName.INVOICE_OTHER]: INVOICE_ORTHER,
         [TableName.OFFSETTING]: OFFSETTING,
         [TableName.REBATE]: REBATE,
-        [TableName.INVENTORY]: INVENTORY
+        [TableName.INVENTORY]: INVENTORY,
+        [TableName.ORDER_DETAIL]: ORDER_DETAIL,
       };
       return components[tableName] || null; // 默认返回 null，如果没有匹配的 tableName
     },
-    // 查询某个客户的五个字段
-    getCustomerTags(companyId) {
-      // 发送请求查询五个字段
-      getCustomerFiveParams(companyId).then(res => {
-        this.tags = res.data || null
-      })
-    }
   },
 }
 </script>
 
 <template>
   <div>
-    <!--    客户明细表的按钮-->
+    <!--    司机明细表的按钮-->
     <el-button type="primary" size="mini" @click="handleCheck">
       查看明细
     </el-button>
 
-    <!--    客户明细表的弹窗-->
+    <!--    司机明细表的弹窗-->
     <el-dialog
       title="提示"
       :visible.sync="dialogVisible"
@@ -168,13 +160,9 @@ export default {
       fullscreen
       append-to-body
     >
-      <!--      客户明细表五个字段的显示组件 跟现在的客户明细表在一个查询框下
-                含税货款、不含税货款、公户收款、私户收款、票点收入
-                这五个数据-->
-      <TotalTag :tags="tags" />
       <br>
       <br>
-      <!--      客户的结转数据-->
+      <!--      司机的结转数据-->
       <el-card class="box-card">
         <el-table
           id="printBox"
@@ -223,28 +211,28 @@ export default {
           />
           <el-table-column
             show-overflow-tooltip
-            label="客户编号"
+            label="司机编号"
             align="center"
             prop="companyId"
             width="140"
           />
           <el-table-column
             show-overflow-tooltip
-            label="客户名称"
+            label="司机名称"
             align="center"
             prop="companyName"
             width="140"
           />
           <el-table-column
             show-overflow-tooltip
-            label="客户银行户名（对方真实收付款名称）"
+            label="司机银行户名（对方真实收付款名称）"
             align="center"
             prop="otherAccountsName"
             width="140"
           />
           <el-table-column
             show-overflow-tooltip
-            label="客户银行卡号"
+            label="司机银行卡号"
             align="center"
             prop="otherBankNo"
             width="140"
@@ -261,24 +249,22 @@ export default {
           <!--        这两列应该是根据moneyAmount字段的正负进行判断-->
           <el-table-column
             show-overflow-tooltip
-            label="借方(客户提货+买票点)"
+            label="借方发生额"
             align="center"
-            prop="positiveSum"
             width="140"
           >
             <template slot-scope="scope">
-              {{ scope.row.moneyAmount > 0 ? scope.row.moneyAmount : '-' }}
+              {{ scope.row.moneyAmount > 0 ? '-': Math.abs(scope.row.moneyAmount) }}
             </template>
           </el-table-column>
           <el-table-column
             show-overflow-tooltip
-            label="贷方(收客户款)"
+            label="贷方发生额"
             align="center"
-            prop="negativeSum"
             width="140"
           >
             <template slot-scope="scope">
-              {{ scope.row.moneyAmount > 0 ? '-' : Math.abs(scope.row.moneyAmount) }}
+              {{ scope.row.moneyAmount > 0 ? scope.row.moneyAmount : '-' }}
             </template>
           </el-table-column>
 
@@ -290,7 +276,7 @@ export default {
             width="140"
           >
             <template slot-scope="scope">
-              {{ scope.row.moneyAmountLocal > 0 ? '借方' : '贷方' }}
+              {{ scope.row.moneyAmountLocal > 0 ? '贷方' : '借方' }}
             </template>
           </el-table-column>
 
