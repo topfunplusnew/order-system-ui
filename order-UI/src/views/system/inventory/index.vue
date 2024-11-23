@@ -77,6 +77,7 @@
           <el-table-column v-if="columns[0].visible" label="仓库名称" align="center" prop="storeHouseName" width="150" />
           <el-table-column v-if="columns[1].visible" label="入库日期" align="center" prop="storeDate" width="150" />
           <el-table-column v-if="columns[2].visible" label="库存量" align="center" prop="stockNumber" width="150" />
+          <el-table-column label="剩余量" align="center" prop="actualPieces" width="150" />
           <el-table-column v-if="columns[3].visible" label="供应商" align="center" prop="supplier" width="150" />
           <el-table-column v-if="columns[4].visible" label="级别编码" align="center" prop="levelID" width="150" />
           <el-table-column v-if="columns[5].visible" label="级别名称" align="center" prop="levelName" width="150" />

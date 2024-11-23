@@ -205,7 +205,7 @@ export default {
             v-model="orderItemInfo.exWarehouseDate"
             type="datetime"
             placeholder="选择日期"
-            value-format="timestamp"
+            value-format="yyyy-MM-dd HH:mm:ss"
           />
         </div>
         <div class="order-item">
