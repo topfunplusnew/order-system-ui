@@ -1,9 +1,9 @@
 <template>
-
   <!--  自定义了上传组件的逻辑 可以清除上传中的文件-->
   <div class="upload-file">
     <el-upload
       multiple
+      ref="fileUpload"
       :action="uploadFileUrl"
       :before-upload="handleBeforeUpload"
       :file-list="fileList"
@@ -14,10 +14,11 @@
       :show-file-list="false"
       :headers="headers"
       class="upload-file-uploader"
-      ref="fileUpload"
     >
       <!-- 上传按钮 -->
-      <el-button size="mini" type="primary">上传文件</el-button>
+      <el-button size="mini" type="primary">
+        上传文件
+      </el-button>
       <!-- 上传提示 -->
       <!--      <div class="el-upload__tip" slot="tip" v-if="showTip">-->
       <!--        请上传-->
@@ -29,13 +30,15 @@
 
     <!-- 文件列表 -->
     <transition-group class="upload-file-list el-upload-list el-upload-list--text" name="el-fade-in-linear" tag="ul">
-      <li :key="file.url" class="el-upload-list__item ele-upload-list__item-content" v-for="(file, index) in fileList">
+      <li v-for="(file, index) in fileList" :key="file.url" class="el-upload-list__item ele-upload-list__item-content">
         <el-link :href="`${baseUrl}${file.url}`" :underline="false" target="_blank">
           <span class="el-icon-document"> {{ getFileName(file.name) }} </span>
         </el-link>
         <div class="ele-upload-list__item-content-action">
           <!--          删除上传过的文件-->
-          <el-link :underline="false" @click="handleDelete(index)" type="danger">删除</el-link>
+          <el-link :underline="false" type="danger" @click="handleDelete(index)">
+            删除
+          </el-link>
         </div>
       </li>
     </transition-group>
@@ -84,6 +87,12 @@ export default {
       fileList: [],
     };
   },
+  computed: {
+    // 是否显示提示
+    showTip() {
+      return this.isShowTip && (this.fileType || this.fileSize);
+    },
+  },
   watch: {
     //监听value的变化
     value: {
@@ -109,12 +118,6 @@ export default {
       deep: true,
       immediate: true
     }
-  },
-  computed: {
-    // 是否显示提示
-    showTip() {
-      return this.isShowTip && (this.fileType || this.fileSize);
-    },
   },
   methods: {
     // 上传前校检格式和大小

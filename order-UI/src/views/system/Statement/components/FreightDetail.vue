@@ -19,6 +19,7 @@ import OFFSETTING from "@/components/NeedToShow/OFFSETTING.vue";
 import INVENTORY from "@/components/NeedToShow/INVENTORY.vue";
 import REBATE from "@/components/NeedToShow/REBATE.vue";
 import ORDER_DETAIL from "@/components/NeedToShow/ORDER_DETAIL.vue";
+import { fix } from "../../../../api/tool/format";
 
 export default {
   name: "FreightDetail",
@@ -77,27 +78,38 @@ export default {
             const subjectName = res.data?.title
             // 查询明细账之前 要先查询上年结转的余额本币填充
             getFreightSubjectDetailSummarySomeDay({beginTime: query.beginTime, companyId: this.driverId}).then(res => {
-              // 拿到上年的数据
-              const lastYearDetail = res?.data;
-              // 查询司机明细账
-              getFreightSubjectDetailSummary(query).then(res => {
-                // 填充数据 因为需要有余额本币字段
-                this.tableData = res?.rows.map(item => {
-                  return {
-                    ...item,
-                    moneyAmountLocal: lastYearDetail.moneyAmount,
-                    subjectNo: configValue,
-                    subjectName: subjectName
-                  }
-                })
+               // 拿到上年的数据
+                const lastYearDetail = res.data;
                 // 把上年结转的数据放在最前面 并且摘要为上年结转
-                this.tableData.unshift({
+                this.tableData.push({
                   ...lastYearDetail,
                   summary: '上年结转',
                   moneyAmountLocal: lastYearDetail.moneyAmount,
                   subjectNo: configValue,
                   subjectName: subjectName
                 })
+              // 查询司机明细账
+              getFreightSubjectDetailSummary(query).then(res => {
+                // 上年结转的余额
+                let lastMoney = Number(lastYearDetail.moneyAmount)
+                // 累计金额 
+                let nowMoney = Number(0)
+                // 拿到汇总账
+                // TODO 对于res.data不存在的情况进行校验
+                const append = res.data.map(item => {
+                  // 金额累计计算
+                  nowMoney = lastMoney + Number(item.moneyAmount)
+                  // 更新
+                  lastMoney = nowMoney;
+                  return {
+                    ...item,
+                    moneyAmountLocal: fix(nowMoney),
+                    subjectNo: configValue,
+                    subjectName: subjectName
+                  }
+                })
+                // 添加到上年结转数据的后面
+                this.tableData = this.tableData.concat(append) 
                 // 打开弹窗
                 this.dialogVisible = true
               })

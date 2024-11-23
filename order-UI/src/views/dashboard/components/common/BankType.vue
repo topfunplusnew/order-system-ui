@@ -11,18 +11,16 @@ export default {
       default: null,
     },
   },
-  mounted() {
-    // 如果父组件给值 那么就挂载默认值
-    if (this.selectType) {
-      // 初始化默认值
-      this.selectedType = this.selectType;
-    }
-  },
   data() {
     return {
-      selectedType: null,
     };
   },
+  computed: {
+    selectedType() {
+      return this.selectType;
+    },
+  },
+ 
   methods: {
     // 传递给父组件 然后更新父组件的selectedType值
     handleEmitType(value) {
@@ -44,8 +42,7 @@ export default {
         :key="item.value"
         :label="item.label"
         :value="item.value"
-      >
-      </el-option>
+      />
     </el-select>
   </div>
 </template>
