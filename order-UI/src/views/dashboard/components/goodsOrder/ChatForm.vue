@@ -1,23 +1,18 @@
 <!--发货单组件-->
 <script>
 import {numToChineseUppercase} from "@/api/tool/format";
-import {getCustomerSubjectDetailSomeDay, getCustomerSubjectSummary} from "@/api/system/statement";
+import {getCustomerSubjectDetailSomeDay} from "@/api/system/statement";
 import {parseTime} from "@/utils/ruoyi";
 import {listOrderDetailByOrderNos} from "@/api/system/orderDetail";
 
 export default {
-  name: "chatForm",
+  name: "ChatForm",
   props: {
-    orderInfo: {},
-  },
-  methods: {
-    numToChineseUppercase,
-    printHTML() {
-      this.$print({
-        printable: 'printBoxs',
-        type: 'html',
-        targetStyles: ['*'], // 打印内容使用所有HTML样式，没有设置这个属性/值，设置分页打印没有效果
-      })
+    orderInfo: {
+      type: Object,
+      default: function () {
+        
+      }
     },
   },
   data() {
@@ -54,6 +49,16 @@ export default {
   },
   mounted() {
     console.log(this.currentOrderInfo)
+  },
+  methods: {
+    numToChineseUppercase,
+    printHTML() {
+      this.$print({
+        printable: 'printBoxs',
+        type: 'html',
+        targetStyles: ['*'], // 打印内容使用所有HTML样式，没有设置这个属性/值，设置分页打印没有效果
+      })
+    },
   }
 }
 </script>
@@ -61,10 +66,14 @@ export default {
 <template>
   <div>
     <el-row>
-      <el-button @click="printHTML">打印</el-button>
+      <el-button @click="printHTML">
+        打印
+      </el-button>
     </el-row>
-    <div class="invoice-container" id="printBoxs">
-      <div class="invoice-title">销货发货单</div>
+    <div id="printBoxs" class="invoice-container">
+      <div class="invoice-title">
+        销货发货单
+      </div>
 
       <div class="invoice-header">
         <div>客户：{{ orderInfo.customer }}</div>
@@ -73,73 +82,85 @@ export default {
 
       <table>
         <thead>
-        <tr>
-          <th>日期</th>
-          <th>等级</th>
-          <th>厚度(mm)</th>
-          <th>规格</th>
-          <th>片数</th>
-          <th>数量</th>
-          <th>单价</th>
-          <th>是否含税价</th>
-          <th>其他费用</th>
-          <th>金额</th>
-          <th>车号</th>
-        </tr>
-        </thead>
+          <tr>
+            <th>日期</th>
+            <th>等级</th>
+            <th>厚度(mm)</th>
+            <th>规格</th>
+            <th>片数</th>
+            <th>数量</th>
+            <th>单价</th>
+            <th>是否含税价</th>
+            <th>其他费用</th>
+            <th>金额</th>
+            <th>车号</th>
+          </tr>
+        </thead>    
         <tbody>
-
-        <!--  这里是货物的列表 要根据订单货物的列表来渲染-->
-        <tr v-if="orderInfo.smailOrderDetails.length > 0" v-for="item in itemList" :key="item.ordersNo">
-          <td>{{ item.orderDate }}</td>
-          <td>{{ item.levelName }}</td>
-          <td>{{ item.height }}</td>
-          <td>{{ item.length }} x {{ item.width }}</td>
-          <td>{{ item.pieces }}</td>
-          <td>{{ item.packs }}</td>
-          <td>{{ item.price }}</td>
-          <td>{{ item.isIncludeTaxFactory === 0 ? '否' : '是' }}</td>
-          <td>{{ item.otherCost }}</td>
-          <td>{{ item.payments }}</td>
-          <td>{{ orderInfo.landCarNo }}</td>
-        </tr>
-        <tr>
-          <td></td>
-          <td style="text-align: left;">货款</td>
-          <td colspan="7"></td>
-          <td>{{ orderInfo.allPayments }}</td>
-          <td></td>
-        </tr>
-        <tr>
-          <td></td>
-          <td style="text-align: left;">余额</td>
-          <td colspan="7"></td>
-          <td>{{ moneyAmount }}</td>
-          <td></td>
-        </tr>
-        <tr>
-          <td></td>
-          <!-- 货款 + 余额-->
-          <td style="text-align: left;">货款合计</td>
-          <td colspan="7"></td>
-          <td>{{ totalPayments }}</td>
-          <td></td>
-        </tr>
-        <tr>
-          <td></td>
-          <!--          合计只有一个大写-->
-          <td style="text-align: left;">合计</td>
-          <td colspan="7">大写：{{ numToChineseUppercase(totalPayments) }}</td>
-          <td></td>
-          <td></td>
-        </tr>
+          <template v-if="orderInfo.smailOrderDetails.length > 0">
+            <tr v-for="item in itemList" :key="item.ordersNo">
+              <td>{{ item.orderDate }}</td>
+              <td>{{ item.levelName }}</td>
+              <td>{{ item.height }}</td>
+              <td>{{ item.length }} x {{ item.width }}</td>
+              <td>{{ item.pieces }}</td>
+              <td>{{ item.packs }}</td>
+              <td>{{ item.price }}</td>
+              <td>{{ item.isIncludeTaxFactory === 0 ? '否' : '是' }}</td>
+              <td>{{ item.otherCost }}</td>
+              <td>{{ item.payments }}</td>
+              <td>{{ orderInfo.landCarNo }}</td>
+            </tr>
+          </template>
+          <!--  这里是货物的列表 要根据订单货物的列表来渲染-->
+          <tr>
+            <td />
+            <td style="text-align: left;">
+              货款
+            </td>
+            <td colspan="7" />
+            <td>{{ orderInfo.allPayments }}</td>
+            <td />
+          </tr>
+          <tr>
+            <td />
+            <td style="text-align: left;">
+              余额
+            </td>
+            <td colspan="7" />
+            <td>{{ moneyAmount }}</td>
+            <td />
+          </tr>
+          <tr>
+            <td />
+            <!-- 货款 + 余额-->
+            <td style="text-align: left;">
+              货款合计
+            </td>
+            <td colspan="7" />
+            <td>{{ totalPayments }}</td>
+            <td />
+          </tr>
+          <tr>
+            <td />
+            <!--          合计只有一个大写-->
+            <td style="text-align: left;">
+              合计
+            </td>
+            <td colspan="7">
+              大写：{{ numToChineseUppercase(totalPayments) }}
+            </td>
+            <td />
+            <td />
+          </tr>
         </tbody>
       </table>
 
       <div class="footer-note">
         <p>注：</p>
         <p>
-          1.玻璃为易碎品，请当面验货（若遇破损、淋雨、气泡、结石等一切质量问题均由司当面解决，收货后出现问题由客户自负，我公司概不负责）。</p>
+          1.玻璃为易碎品，请当面验货（若遇破损、淋雨、气泡、结石等一切质量问题均由司当面解决，收货后出现问题由客户自负，我公司概不负责）。
+        </p>
         <p>
           2.此单据等同合同，收货方签字认可后具有法律效力。
         </p>

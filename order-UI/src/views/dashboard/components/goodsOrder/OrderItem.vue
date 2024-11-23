@@ -365,11 +365,11 @@ export default {
           <hr>
           <el-input v-model="orderItemInfo.profitNoTax" type="text" placeholder="不含税利润" />
         </div>
-        <div class="order-item">
+        <!-- <div class="order-item">
           <span class="text-bold">实际片数</span>
           <hr>
           <el-input v-model="orderItemInfo.actualPieces" type="text" placeholder="实际片数" />
-        </div>
+        </div> -->
         <div class="order-item">
           <span class="text-bold">备注</span>
           <hr>
