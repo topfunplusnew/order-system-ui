@@ -1,58 +1,79 @@
 <!--订单页面-->
 <template>
   <div class="app-container">
-    <QueryStatment :handle-query="handleQuery" :options="options" :options-invoice="optionsInvoice"
-                   :query-params="queryParams" :show-search="showSearch"/>
+    <QueryStatment
+      :handle-query="handleQuery"
+      :options="options"
+      :options-invoice="optionsInvoice"
+      :query-params="queryParams"
+      :show-search="showSearch"
+    />
     <!--    表格上方操作栏-->
     <el-row :gutter="10" class="mb8">
       <!--      左侧操作栏-->
       <el-col :span="1.5">
-        <el-button icon="el-icon-refresh" size="mini" @click="resetQuery">刷新</el-button>
+        <el-button icon="el-icon-refresh" size="mini" @click="resetQuery">
+          刷新
+        </el-button>
       </el-col>
       <el-col :span="1.5">
         <el-button
+          v-hasPermi="['system:adjustOrders:export']"
           type="warning"
           plain
           icon="el-icon-download"
           size="mini"
           @click="handleExport"
-          v-hasPermi="['system:adjustOrders:export']"
-        >导出订单数据
+        >
+          导出订单数据
         </el-button>
       </el-col>
       <!--      右侧表格的工具栏-->
-      <right-toolbar :showSearch.sync="showSearch" @queryTable="getList" :columns="columns">
-        <template v-slot:print>
+      <right-toolbar :show-search.sync="showSearch" :columns="columns" @queryTable="getList">
+        <template #print>
           <el-col :span="1.5">
             <el-button
               plain
               icon="el-icon-printer"
               size="mini"
               @click="printHTML"
-            >
-            </el-button>
+            />
           </el-col>
         </template>
-        <template v-slot:export>
+        <template #export>
           <el-col :span="1.5">
             <el-button
+              v-hasPermi="['system:adjustOrders:export']"
               plain
               icon="el-icon-folder-opened"
               size="mini"
               @click="handleExport"
-              v-hasPermi="['system:adjustOrders:export']"
-            >
-            </el-button>
+            />
           </el-col>
         </template>
       </right-toolbar>
     </el-row>
     <!--    表格列-->
-    <el-table fit border v-loading="loading" :data="goodsOrderList" @selection-change="handleSelectionChange"
-              id="printBox" v-horizontal-scroll="'always'"
-              max-height="750" size="mini" :cell-style="()=>{return {padding:'2px'}}">
-      <el-table-column show-overflow-tooltip label="行操作" align="center" class-name="small-padding fixed-width"
-                       width="100px" fixed="left">
+    <el-table
+      id="printBox"
+      v-loading="loading"
+      v-horizontal-scroll="'always'"
+      fit
+      border
+      :data="goodsOrderList"
+      max-height="750"
+      size="mini"
+      :cell-style="()=>{return {padding:'2px'}}"
+      @selection-change="handleSelectionChange"
+    >
+      <el-table-column
+        show-overflow-tooltip
+        label="行操作"
+        align="center"
+        class-name="small-padding fixed-width"
+        width="100px"
+        fixed="left"
+      >
         <template slot-scope="scope">
           <el-dropdown size="mini" split-button type="text">
             操作
@@ -61,7 +82,8 @@
                 <el-button
                   size="mini"
                   @click="checkOrderItemInfo(scope.row)"
-                >查看
+                >
+                  查看
                 </el-button>
               </el-dropdown-item>
               <el-dropdown-item>
@@ -69,7 +91,8 @@
                   size="mini"
                   type="primary"
                   @click="handleUpdate(scope.row)"
-                >修改
+                >
+                  修改
                 </el-button>
               </el-dropdown-item>
               <el-dropdown-item>
@@ -77,108 +100,208 @@
                   size="mini"
                   type="warning"
                   @click="handleCheckOrderDetailInfo(scope.row)"
-                >详情
+                >
+                  详情
                 </el-button>
               </el-dropdown-item>
               <el-dropdown-item>
                 <el-button
+                  v-hasPermi="['system:adjustOrders:remove']"
                   size="mini"
                   type="danger"
                   @click="handleDelete(scope.row)"
-                  v-hasPermi="['system:adjustOrders:remove']"
-                >删除
+                >
+                  删除
                 </el-button>
               </el-dropdown-item>
             </el-dropdown-menu>
           </el-dropdown>
         </template>
       </el-table-column>
-      <el-table-column show-overflow-tooltip label="ID" align="center" prop="id" fixed="left"/>
-      <el-table-column show-overflow-tooltip label="日期" align="center" prop="orderDate" fixed="left"
-                       v-if="columns[0].visible"/>
-      <el-table-column show-overflow-tooltip label="客户" align="center" prop="customer" fixed="left"
-                       v-if="columns[1].visible"/>
-      <el-table-column show-overflow-tooltip label="供应商" align="center" prop="supplierNames" fixed="left"
-                       v-if="columns[2].visible"
-                       width="200">
+      <el-table-column show-overflow-tooltip label="ID" align="center" prop="id" fixed="left" />
+      <el-table-column
+        v-if="columns[0].visible"
+        show-overflow-tooltip
+        label="日期"
+        align="center"
+        prop="orderDate"
+        fixed="left"
+      />
+      <el-table-column
+        v-if="columns[1].visible"
+        show-overflow-tooltip
+        label="客户"
+        align="center"
+        prop="customer"
+        fixed="left"
+      />
+      <el-table-column
+        v-if="columns[2].visible"
+        show-overflow-tooltip
+        label="供应商"
+        align="center"
+        prop="supplierNames"
+        fixed="left"
+        width="200"
+      >
         <template #default="scope">
           <el-row>
-              <span v-for="(item,index) in getSupplierNames(scope.row.smailOrderDetails)" :key="index">
-             <el-badge is-dot class="item">
-            <span @click="updateOrderItemVisibleSupplierInvoice(scope.row,item.supplierID)">
-              {{ item.supplier }}
+            <span v-for="(item,index) in getSupplierNames(scope.row.smailOrderDetails)" :key="index">
+              <el-badge is-dot class="item">
+                <span @click="updateOrderItemVisibleSupplierInvoice(scope.row,item.supplierID)">
+                  {{ item.supplier }}
+                </span>
+              </el-badge>
             </span>
-          </el-badge>
-          </span>
           </el-row>
           <el-row>
             <span v-if="scope.row.smailOrderDetails === null">无</span>
           </el-row>
         </template>
       </el-table-column>
-      <el-table-column show-overflow-tooltip label="陆运车牌" align="center" prop="landCarNo"
-                       v-if="columns[3].visible"/>
-      <el-table-column show-overflow-tooltip label="陆运司机电话" align="center" prop="landDriverTel"
-                       v-if="columns[4].visible" width="100px"/>
-      <el-table-column show-overflow-tooltip label="陆地司机姓名" align="center" prop="landDriverName"
-                       v-if="columns[5].visible" width="100px"/>
+      <el-table-column
+        v-if="columns[3].visible"
+        show-overflow-tooltip
+        label="陆运车牌"
+        align="center"
+        prop="landCarNo"
+      />
+      <el-table-column
+        v-if="columns[4].visible"
+        show-overflow-tooltip
+        label="陆运司机电话"
+        align="center"
+        prop="landDriverTel"
+        width="100px"
+      />
+      <el-table-column
+        v-if="columns[5].visible"
+        show-overflow-tooltip
+        label="陆地司机姓名"
+        align="center"
+        prop="landDriverName"
+        width="100px"
+      />
 
-      <el-table-column show-overflow-tooltip label="陆运费" align="center" prop="landFreight"
-                       v-if="columns[6].visible" width="100px"/>
+      <el-table-column
+        v-if="columns[6].visible"
+        show-overflow-tooltip
+        label="陆运费"
+        align="center"
+        prop="landFreight"
+        width="100px"
+      />
 
-      <el-table-column show-overflow-tooltip label="柜号" align="center" prop="seaCarNo" v-if="columns[7].visible">
+      <el-table-column v-if="columns[7].visible" show-overflow-tooltip label="柜号" align="center" prop="seaCarNo">
         <template #default="scope">
           {{ !scope.row.seaCarNo ? '无' : scope.row.seaCarNo }}
         </template>
       </el-table-column>
-      <el-table-column show-overflow-tooltip label="海运司机电话" align="center" prop="seaDriverTel"
-                       v-if="columns[8].visible" width="100px">
+      <el-table-column
+        v-if="columns[8].visible"
+        show-overflow-tooltip
+        label="海运司机电话"
+        align="center"
+        prop="seaDriverTel"
+        width="100px"
+      >
         <template #default="scope">
           {{ !scope.row.seaDriverTel ? '无' : scope.row.seaDriverTel }}
         </template>
       </el-table-column>
-      <el-table-column show-overflow-tooltip label="海运公司" align="center" prop="seaDriverName"
-                       v-if="columns[9].visible" width="100px">
+      <el-table-column
+        v-if="columns[9].visible"
+        show-overflow-tooltip
+        label="海运公司"
+        align="center"
+        prop="seaDriverName"
+        width="100px"
+      >
         <template #default="scope">
           {{ !scope.row.seaDriverName ? '无' : scope.row.seaDriverTel }}
         </template>
       </el-table-column>
-      <el-table-column show-overflow-tooltip label="海运费" align="center" prop="seaFreight"
-                       v-if="columns[10].visible" width="100px"/>
-      <el-table-column show-overflow-tooltip label="销售经理" align="center" prop="saleManager"
-                       v-if="columns[11].visible"/>
-      <el-table-column show-overflow-tooltip label="车队" align="center" prop="fleet" v-if="columns[12].visible"/>
-      <el-table-column show-overflow-tooltip label="审核状态" align="center" prop="checkState"
-                       v-if="columns[13].visible"
-                       width="120">
+      <el-table-column
+        v-if="columns[10].visible"
+        show-overflow-tooltip
+        label="海运费"
+        align="center"
+        prop="seaFreight"
+        width="100px"
+      />
+      <el-table-column
+        v-if="columns[11].visible"
+        show-overflow-tooltip
+        label="销售经理"
+        align="center"
+        prop="saleManager"
+      />
+      <el-table-column v-if="columns[12].visible" show-overflow-tooltip label="车队" align="center" prop="fleet" />
+      <el-table-column
+        v-if="columns[13].visible"
+        show-overflow-tooltip
+        label="审核状态"
+        align="center"
+        prop="checkState"
+        width="120"
+      >
         <template #default="scope">
           <el-row v-if="scope.row.checkState === '已审核'">
-            <el-tag type="success">{{ scope.row.checkState }}</el-tag>
+            <el-tag type="success">
+              {{ scope.row.checkState }}
+            </el-tag>
           </el-row>
           <el-row v-else>
             <el-row>
-              <el-button type="text" @click="handleCheck(scope.row)" size="mini"
-                         v-hasPermi="['system:goodsorder:audit']">审核
+              <el-button
+                v-hasPermi="['system:goodsorder:audit']"
+                type="text"
+                size="mini"
+                @click="handleCheck(scope.row)"
+              >
+                审核
               </el-button>
             </el-row>
           </el-row>
         </template>
       </el-table-column>
-      <el-table-column show-overflow-tooltip label="开票状态" align="center" prop="invoiceState"
-                       v-if="columns[14].visible" width="120px"/>
+      <el-table-column
+        v-if="columns[14].visible"
+        show-overflow-tooltip
+        label="开票状态"
+        align="center"
+        prop="invoiceState"
+        width="120px"
+      />
 
-      <el-table-column show-overflow-tooltip label="附件" align="center" prop="path" v-if="columns[15].visible"
-                       width="150px">
+      <el-table-column
+        v-if="columns[15].visible"
+        show-overflow-tooltip
+        label="附件"
+        align="center"
+        prop="path"
+        width="150px"
+      >
         <template slot-scope="scope">
-          <CheckFiles :path="scope.row.path"
-                      @needToUpdate="(value)=>handleUpdateFilePath(value,scope.row,'path',getGoodsOrder(),updateGoodsOrder())"/>
+          <CheckFiles
+            :path="scope.row.path"
+            @needToUpdate="(value)=>handleUpdateFilePath(value,scope.row,'path',getGoodsOrder(),updateGoodsOrder())"
+          />
         </template>
       </el-table-column>
-      <el-table-column show-overflow-tooltip label="打款状态" align="center" prop="paymentState"
-                       v-if="columns[16].visible" width="120px">
+      <el-table-column
+        v-if="columns[16].visible"
+        show-overflow-tooltip
+        label="打款状态"
+        align="center"
+        prop="paymentState"
+        width="120px"
+      >
         <template slot-scope="scope">
           <el-row v-if="scope.row.paymentState === '未申请'">
-            <el-button size="mini" type="text" @click="applyForPayment(scope.row)">申请打款</el-button>
+            <el-button size="mini" type="text" @click="applyForPayment(scope.row)">
+              申请打款
+            </el-button>
           </el-row>
           <el-row v-if="scope.row.paymentState === '审核中'">
             审核中
@@ -191,120 +314,173 @@
           </el-row>
         </template>
       </el-table-column>
-      <el-table-column show-overflow-tooltip label="收到条附件路径" align="center" prop="receiveProof"
-                       v-if="columns[17].visible"
-                       width="150px">
+      <el-table-column
+        v-if="columns[17].visible"
+        show-overflow-tooltip
+        label="收到条附件路径"
+        align="center"
+        prop="receiveProof"
+        width="150px"
+      >
         <template slot-scope="scope">
-          <CheckFiles :path="scope.row.receiveProof"
-                      @needToUpdate="(value)=>handleUpdateFilePath(value,scope.row,'receiveProof',getGoodsOrder(),updateGoodsOrder())"/>
+          <CheckFiles
+            :path="scope.row.receiveProof"
+            @needToUpdate="(value)=>handleUpdateFilePath(value,scope.row,'receiveProof',getGoodsOrder(),updateGoodsOrder())"
+          />
         </template>
       </el-table-column>
-      <el-table-column show-overflow-tooltip label="原订单编号" align="center" prop="adjustOrderid"
-                       v-if="columns[18].visible" width="100px"/>
-      <el-table-column show-overflow-tooltip label="调整日期" align="center" prop="adjustDate"
-                       width="100px"/>
-      <el-table-column show-overflow-tooltip label="是否可编辑" align="center" prop="isedit"
-                       v-if="columns[19].visible"
-                       width="100px">
+      <el-table-column
+        v-if="columns[18].visible"
+        show-overflow-tooltip
+        label="原订单编号"
+        align="center"
+        prop="adjustOrderid"
+        width="100px"
+      />
+      <el-table-column
+        show-overflow-tooltip
+        label="调整日期"
+        align="center"
+        prop="adjustDate"
+        width="100px"
+      />
+      <el-table-column
+        v-if="columns[19].visible"
+        show-overflow-tooltip
+        label="是否可编辑"
+        align="center"
+        prop="isedit"
+        width="100px"
+      >
         <template slot-scope="scope">
           {{ scope.row.isedit === 0 ? "否" : "是" }}
         </template>
       </el-table-column>
       <!--      客户供应商是否开票-->
-      <el-table-column show-overflow-tooltip label="客户是否开票" align="center" prop="customerIsInvoice"
-                       v-if="columns[20].visible"
-                       width="150px">
+      <el-table-column
+        v-if="columns[20].visible"
+        show-overflow-tooltip
+        label="客户是否开票"
+        align="center"
+        prop="customerIsInvoice"
+        width="150px"
+      >
         <template #default="scope">
           <el-row v-if="scope.row.customerIsInvoice === 1">
             <el-row>
-              <el-button type="text" size="mini" @click="updateOrderItemVisibleCustomerInvoice(scope.row)">继续开票
+              <el-button type="text" size="mini" @click="updateOrderItemVisibleCustomerInvoice(scope.row)">
+                继续开票
               </el-button>
             </el-row>
           </el-row>
           <el-row v-else>
             <el-row>
-              <el-button type="text" size="mini" @click="updateOrderItemVisibleCustomerInvoice(scope.row)">前去开票
+              <el-button type="text" size="mini" @click="updateOrderItemVisibleCustomerInvoice(scope.row)">
+                前去开票
               </el-button>
             </el-row>
           </el-row>
         </template>
       </el-table-column>
-      <el-table-column show-overflow-tooltip label="供应商是否开票" align="center" prop="isSupplierInvoice"
-                       v-if="columns[21].visible"
-                       width="120px">
+      <el-table-column
+        v-if="columns[21].visible"
+        show-overflow-tooltip
+        label="供应商是否开票"
+        align="center"
+        prop="isSupplierInvoice"
+        width="120px"
+      >
         <template #default="scope">
           <el-row v-if="scope.row.isSupplierInvoice === 1">
             <el-row>
-              <el-button type="text" size="mini" @click="updateOrderItemVisibleCustomerInvoice(scope.row)">继续开票
+              <el-button type="text" size="mini" @click="updateOrderItemVisibleCustomerInvoice(scope.row)">
+                继续开票
               </el-button>
             </el-row>
           </el-row>
           <el-row v-else>
             <el-row>
-              <el-button type="text" size="mini" @click="updateOrderItemVisibleSupplierInvoice(scope.row)">前去开票
+              <el-button type="text" size="mini" @click="updateOrderItemVisibleSupplierInvoice(scope.row)">
+                前去开票
               </el-button>
             </el-row>
           </el-row>
         </template>
       </el-table-column>
-      <el-table-column show-overflow-tooltip label="备注" align="center" prop="comments" v-if="columns[22].visible"/>
+      <el-table-column v-if="columns[22].visible" show-overflow-tooltip label="备注" align="center" prop="comments" />
       <!--      右侧操作栏-->
-      <el-table-column show-overflow-tooltip label="订单操作" align="center" class-name="small-padding fixed-width"
-                       width="280px"
-                       fixed="right">
+      <el-table-column
+        show-overflow-tooltip
+        label="订单操作"
+        align="center"
+        class-name="small-padding fixed-width"
+        width="280px"
+        fixed="right"
+      >
         <template slot-scope="scope">
           <el-button
+            v-hasPermi="['system:adjustOrders:edit']"
             size="mini"
             type="text"
             @click="handleOrder1(scope.row)"
-            v-hasPermi="['system:adjustOrders:edit']"
-          >发货单
+          >
+            发货单
           </el-button>
           <el-button
             size="mini"
             type="text"
             @click="checkPreviousOrder(scope.row)"
-          >查看原订单
+          >
+            查看原订单
           </el-button>
           <el-button
             size="mini"
             type="text"
             @click="handleUpload(scope.row)"
-          >上传附件
+          >
+            上传附件
           </el-button>
           <el-button
+            v-hasPermi="['system:adjustOrders:remove']"
             size="mini"
             type="text"
             @click="handleCommit(scope.row)"
-            v-hasPermi="['system:adjustOrders:remove']"
-          >上传收到条
+          >
+            上传收到条
           </el-button>
         </template>
       </el-table-column>
-      <el-table-column show-overflow-tooltip label="运费申请" align="center" class-name="small-padding fixed-width"
-                       width="100px"
-                       fixed="right">
+      <el-table-column
+        show-overflow-tooltip
+        label="运费申请"
+        align="center"
+        class-name="small-padding fixed-width"
+        width="100px"
+        fixed="right"
+      >
         <template slot-scope="scope">
           <el-dropdown size="mini" split-button type="text">
             操作
             <el-dropdown-menu slot="dropdown">
               <el-dropdown-item>
-                <el-row v-if="scope.row.landFreight>0 ||scope.row.seaFreight>0  ">
+                <el-row v-if="scope.row.landFreight>0 ||scope.row.seaFreight>0 ">
                   <el-button
-                    size="mini"
                     v-if="scope.row.landFreight>0"
+                    v-hasPermi="['system:adjustOrders:remove']"
+                    size="mini"
                     type="warning"
                     @click="handleApplyLandFree(scope.row)"
-                    v-hasPermi="['system:adjustOrders:remove']"
-                  >陆运费申请
+                  >
+                    陆运费申请
                   </el-button>
                   <el-button
-                    size="mini"
                     v-if="scope.row.seaFreight>0"
+                    v-hasPermi="['system:adjustOrders:remove']"
+                    size="mini"
                     type="primary"
                     @click="handleApplySeaFree(scope.row)"
-                    v-hasPermi="['system:adjustOrders:remove']"
-                  >海运费申请
+                  >
+                    海运费申请
                   </el-button>
                 </el-row>
                 <el-row v-else>
@@ -326,14 +502,17 @@
 
 
     <!--        点击查看某个订单的弹窗   -->
-    <CheckOrder :check-order-visible="checkOrderVisible" :order-info="orderInfo" @close="closeCheckOrderDialog"/>
+    <CheckOrder :check-order-visible="checkOrderVisible" :order-info="orderInfo" @close="closeCheckOrderDialog" />
 
 
     <!--    点击调整单的弹窗-->
-    <el-dialog :close-on-click-modal="false" :show-close="false"
-               title="提示"
-               :visible.sync="handleOrderVisible"
-               width="30%">
+    <el-dialog
+      :close-on-click-modal="false"
+      :show-close="false"
+      title="提示"
+      :visible.sync="handleOrderVisible"
+      width="30%"
+    >
       <span>是否将订单设置为调整单?</span>
       <span slot="footer" class="dialog-footer">
         <el-button @click="handleOrderVisible = false">取 消</el-button>
@@ -342,103 +521,159 @@
     </el-dialog>
 
     <!--    点击发货单的弹窗-->
-    <OrderGiven :order1-visible="Order1Visible" @close="closeOrderGivenDialog"/>
+    <OrderGiven :order1-visible="Order1Visible" @close="closeOrderGivenDialog" />
 
     <!--    上传附件的弹窗 -->
-    <UploadPath :before-upload="beforeUpload" :file-list="fileList" :handle-upload-visible="handleUploadVisible"
-                :headers="headers" :submit-upload-all-files="()=>submitUploadAllFiles('path')"
-                :upload-file-url="uploadFileUrl" @close="closeUploadPathDialog"/>
+    <UploadPath
+      :before-upload="beforeUpload"
+      :file-list="fileList"
+      :handle-upload-visible="handleUploadVisible"
+      :headers="headers"
+      :submit-upload-all-files="()=>submitUploadAllFiles('path')"
+      :upload-file-url="uploadFileUrl"
+      @close="closeUploadPathDialog"
+    />
 
 
     <!--    上传收到条的弹窗-->
-    <UploadCommit :before-upload="beforeUpload" :file-list="fileList" :handle-commit-visible="handleCommitVisible"
-                  :headers="headers" :submit-upload-all-files="()=>submitUploadAllFiles('receiveProof')"
-                  :upload-file-url="uploadFileUrl" @close="closeUploadCommitDialog"/>
+    <UploadCommit
+      :before-upload="beforeUpload"
+      :file-list="fileList"
+      :handle-commit-visible="handleCommitVisible"
+      :headers="headers"
+      :submit-upload-all-files="()=>submitUploadAllFiles('receiveProof')"
+      :upload-file-url="uploadFileUrl"
+      @close="closeUploadCommitDialog"
+    />
 
     <!--    添加订单 || 修改订单对话框-->
     <InfoDialog :title="orderTitle" :visible.sync="orderItemVisible">
       <template #info>
-        <OrderForm @close-dialog="closeDialog"
-                   :submitInfo="submitInfo"
-                   :orderId="orderId"/>
+        <OrderForm
+          :submit-info="submitInfo"
+          :order-id="orderId"
+          @close-dialog="closeDialog"
+        />
       </template>
     </InfoDialog>
 
 
     <!--    陆运费和海运费申请-->
-    <el-dialog :close-on-click-modal="false" :show-close="false"
-               title="陆运费申请"
-               :visible.sync="landFreeDialogVisible"
-               width="600px">
+    <el-dialog
+      :close-on-click-modal="false"
+      :show-close="false"
+      title="陆运费申请"
+      :visible.sync="landFreeDialogVisible"
+      width="600px"
+    >
       <keep-alive>
-        <FreeApply :order-info="landFreightInfo" @close="landFreeDialogVisible = false"/>
+        <FreeApply :order-info="landFreightInfo" @close="landFreeDialogVisible = false" />
       </keep-alive>
     </el-dialog>
 
 
-    <el-dialog :close-on-click-modal="false" :show-close="false"
-               title="海运费申请"
-               :visible.sync="seaFreeDialogVisible"
-               width="600px">
+    <el-dialog
+      :close-on-click-modal="false"
+      :show-close="false"
+      title="海运费申请"
+      :visible.sync="seaFreeDialogVisible"
+      width="600px"
+    >
       <keep-alive>
-        <FreeApply :order-info="seaFreightInfo" @close="seaFreeDialogVisible = false"/>
+        <FreeApply :order-info="seaFreightInfo" @close="seaFreeDialogVisible = false" />
       </keep-alive>
     </el-dialog>
 
 
     <!--    订单货物详情-->
-    <el-dialog :close-on-click-modal="false" :show-close="false"
-               title="订单货物详情"
-               :visible.sync="checkOrderDetailInfoVisible"
-               width="1100px" destroy-on-close>
+    <el-dialog
+      :close-on-click-modal="false"
+      :show-close="false"
+      title="订单货物详情"
+      :visible.sync="checkOrderDetailInfoVisible"
+      width="1100px"
+      destroy-on-close
+    >
       <!--      传递订单详情列表-->
-      <OrderDetailInfo :orderDetailInfoList="orderDetailInfoList"
-                       @updateOrderDetailList="handleUpdateOrderDetailInfoList"/>
+      <OrderDetailInfo
+        :order-detail-info-list="orderDetailInfoList"
+        @updateOrderDetailList="handleUpdateOrderDetailInfoList"
+      />
       <div slot="footer" class="dialog-footer">
-        <el-button @click="checkOrderDetailInfoVisible = false">关 闭</el-button>
+        <el-button @click="checkOrderDetailInfoVisible = false">
+          关 闭
+        </el-button>
       </div>
     </el-dialog>
 
 
     <!--    开发票-->
-    <Invoice :check-rules="CheckRules" :handle-commit-back-company="handleCommitBackCompany"
-             :handle-update-company-name="handleUpdateCompanyName"
-             :invoiceupdate-order-item-visible-visible="invoiceupdateOrderItemVisibleVisible"
-             :list-company="listCompany" :query-company-name="queryCompanyName"
-             :submitupdate-order-item-visible-title="submitupdateOrderItemVisibleTitle"
-             :update-order-item-visible-title="updateOrderItemVisibleTitle"
-             :update-order-item-visible-title-info="updateOrderItemVisibleTitleInfo" @close="handleCloseInvoice"/>
+    <Invoice
+      :check-rules="CheckRules"
+      :handle-commit-back-company="handleCommitBackCompany"
+      :handle-update-company-name="handleUpdateCompanyName"
+      :invoiceupdate-order-item-visible-visible="invoiceupdateOrderItemVisibleVisible"
+      :list-company="listCompany"
+      :query-company-name="queryCompanyName"
+      :submitupdate-order-item-visible-title="submitupdateOrderItemVisibleTitle"
+      :update-order-item-visible-title="updateOrderItemVisibleTitle"
+      :update-order-item-visible-title-info="updateOrderItemVisibleTitleInfo"
+      @close="handleCloseInvoice"
+    />
 
 
     <!--    订单打款申请 -->
-    <OrderMoneyReceive :table-name="TableName" :handle-close-apply="handleCloseApply" :need-money="needMoney"
-                       :payment-apply-visible="paymentApplyVisible" :t-i-d="tID"/>
+    <OrderMoneyReceive
+      :table-name="TableName"
+      :handle-close-apply="handleCloseApply"
+      :need-money="needMoney"
+      :payment-apply-visible="paymentApplyVisible"
+      :t-i-d="tID"
+    />
 
 
     <!--    todo url其实就是返回了后端服务器的地址加端口 这里需要后期规定好后直接拼接就能查看了 -->
-    <el-dialog :close-on-click-modal="false" :show-close="false" title="查看附件" :visible.sync="checkAttachmentVisible"
-               width="48%">
+    <el-dialog
+      :close-on-click-modal="false"
+      :show-close="false"
+      title="查看附件"
+      :visible.sync="checkAttachmentVisible"
+      width="48%"
+    >
       <el-row v-for="(item, index) in checkFileList" :key="index">
-        <el-button type="text" icon="el-icon-document" @click="checkFileItem(item)">{{ item }}</el-button>
+        <el-button type="text" icon="el-icon-document" @click="checkFileItem(item)">
+          {{ item }}
+        </el-button>
       </el-row>
-      <el-button @click="checkAttachmentVisible = false">关 闭</el-button>
+      <el-button @click="checkAttachmentVisible = false">
+        关 闭
+      </el-button>
     </el-dialog>
 
 
     <!-- 订单历史信息查看-->
-    <OrderHistoryCheck :active-names="activeNames" :check-history-order-visible="checkHistoryOrderVisible"
-                       :checkcurrent-order-item-info="checkcurrentOrderItemInfo"
-                       :order-history-info-list="orderHistoryInfoList"
-                       :parse-time="parseTime(new Date(),'{y}-{m}-{d} {h}:{i}:{s}')" @close="closeOrderHistoryCheck"/>
+    <OrderHistoryCheck
+      :active-names="activeNames"
+      :check-history-order-visible="checkHistoryOrderVisible"
+      :checkcurrent-order-item-info="checkcurrentOrderItemInfo"
+      :order-history-info-list="orderHistoryInfoList"
+      :parse-time="parseTime(new Date(),'{y}-{m}-{d} {h}:{i}:{s}')"
+      @close="closeOrderHistoryCheck"
+    />
 
     <!--      历史记录中点击原订单信息-->
-    <PrimativeOrderInfo :current-order-item-info="currentOrderItemInfo"
-                        :current-order-item-info-visible="currentOrderItemInfoVisible"
-                        @close="closePrimativeOrderInfo"/>
+    <PrimativeOrderInfo
+      :current-order-item-info="currentOrderItemInfo"
+      :current-order-item-info-visible="currentOrderItemInfoVisible"
+      @close="closePrimativeOrderInfo"
+    />
 
     <!--    点击查看原订单信息-->
-    <PreviousOrderInfo :check-revious-order-info-visible="checkReviousOrderInfoVisible"
-                       :previous-order-info="previousOrderInfo" @close="closePreviousOrderInfo"/>
+    <PreviousOrderInfo
+      :check-revious-order-info-visible="checkReviousOrderInfoVisible"
+      :previous-order-info="previousOrderInfo"
+      @close="closePreviousOrderInfo"
+    />
   </div>
 </template>
 

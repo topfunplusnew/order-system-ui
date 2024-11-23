@@ -274,11 +274,9 @@ export default {
           <template #default="scope">
             <el-row v-if="scope.row.smailOrderDetails">
               <span v-for="(item, index) in getSupplierNames(scope.row.smailOrderDetails)" :key="index">
-                <el-badge is-dot class="item">
-                  <span @click="updateOrderItemVisibleSupplierInvoice(scope.row, item.supplierID)">
-                    {{ item.supplier }}
-                  </span>
-                </el-badge>
+                <span @click="updateOrderItemVisibleSupplierInvoice(scope.row, item.supplierID)">
+                  {{ item.supplier }}
+                </span>
               </span>
             </el-row>
             <template v-else>

@@ -41,6 +41,11 @@ export default {
       queryLevel:null,
     }
   },
+  computed: {
+    computedValue () {
+      return this.orderItemInfo.supplier===undefined|| this.orderItemInfo.supplier===null?this.orderItemInfo.storeName:this.orderItemInfo.supplier
+    }
+  },
   watch: {
     'tempOrderInfo': {
       handler(val) {
@@ -114,7 +119,7 @@ export default {
           <span class="text-bold">供应商/仓库</span>
           <hr>
           <el-input
-            v-model="orderItemInfo.supplier===undefined||orderItemInfo.supplier===null?orderItemInfo.storeName:orderItemInfo.supplier"
+            v-model="computedValue"
             placeholder="请输入供应商/仓库"
             disabled
           />
