@@ -56,11 +56,33 @@ export default {
   name: 'OrderHistoryCheck',
   components: { CodeDiff },
   props: {
-    activeNames: {},
-    checkHistoryOrderVisible: {},
-    checkcurrentOrderItemInfo: {},
-    orderHistoryInfoList: {},
-    parseTime: {}
+    activeNames: {
+      type: Array,
+      default() {
+        return []
+      }
+    },
+    checkHistoryOrderVisible: {
+      type: Boolean
+    },
+    checkcurrentOrderItemInfo: {
+      type: Function,
+      default() {
+        return () => {}
+      }
+    },
+    orderHistoryInfoList: {
+      type: Array,
+      default() {
+        return []
+      }
+    },
+    parseTime: {
+      type: String,
+      default() {
+        return ''
+      }
+    }
   },
   methods: {
     close () {

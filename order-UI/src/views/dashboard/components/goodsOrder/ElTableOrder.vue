@@ -274,7 +274,7 @@ export default {
           <template #default="scope">
             <el-row v-if="scope.row.smailOrderDetails">
               <span v-for="(item, index) in getSupplierNames(scope.row.smailOrderDetails)" :key="index">
-                <span @click="updateOrderItemVisibleSupplierInvoice(scope.row, item.supplierID)">
+                <span class="invoice" @click="updateOrderItemVisibleSupplierInvoice(scope.row, item.supplierID)">
                   {{ item.supplier }}
                 </span>
               </span>
@@ -607,4 +607,14 @@ export default {
   </div>
 </template>
 
-<style scoped lang="scss"></style>
+<style scoped lang="scss">
+.invoice{
+  width: 100%;
+  height: 100%;
+  &:hover{
+    cursor: pointer;
+    color: #df6565;
+    font-weight: bold;
+  }
+}
+</style>

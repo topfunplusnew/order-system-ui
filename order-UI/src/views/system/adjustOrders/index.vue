@@ -1061,17 +1061,7 @@ export default {
       previousOrderInfo: {},
     };
   },
-  created() {
-    this.getList();
-    if (localStorage.getItem('goodsorder-columns') === 'null'
-      || !localStorage.getItem('goodsorder-columns')) {
-      //设置localStorage
-      localStorage.setItem("goodsorder-columns", JSON.stringify(this.columns))
-    } else {
-      this.columns = JSON.parse(localStorage.getItem('goodsorder-columns'));
-    }
-  },
-  computed: {
+   computed: {
     TableName() {
       return TableName
     },
@@ -1080,21 +1070,32 @@ export default {
     //拿到暂存里的订单信息
     ...mapGetters(['currentOrderInfo'])
   },
+ 
   //监听开票表单的变化 如果有 就赋值
   watch: {
     columns: {
-      handler: (newVal) => {
+      handler: function(newVal)  {
         localStorage.setItem("goodsorder-columns", JSON.stringify(newVal))
       },
       deep: true,
     },
     // 监听整个开票表单 如果有变化 自动监听计算票点金额
     'updateOrderItemVisibleTitleInfo': {
-      handler(val) {
+      handler() {
         this.updateOrderItemVisibleTitleInfo.ticketPointAmount = Number(this.updateOrderItemVisibleTitleInfo.invoiceAmount * this.updateOrderItemVisibleTitleInfo.ticketPoint).toFixed(2)
       },
       deep: true,
       immediate: true,
+    }
+  },
+  created() {
+    this.getList();
+    if (localStorage.getItem('goodsorder-columns') === 'null'
+      || !localStorage.getItem('goodsorder-columns')) {
+      //设置localStorage
+      localStorage.setItem("goodsorder-columns", JSON.stringify(this.columns))
+    } else {
+      this.columns = JSON.parse(localStorage.getItem('goodsorder-columns'));
     }
   },
   methods: {
@@ -1188,14 +1189,14 @@ export default {
       if (this.updateOrderItemVisibleTitleInfo.domain === 1) {
         //客户开票 添加发票卖出信息
         addInvoiceOut(this.updateOrderItemVisibleTitleInfo)
-          .then(res => {
+          .then(() => {
             this.$message.success('客户开票成功~')
             this.updateGoodsOrderAfterOpen(invoiceNumber, this.updateOrderItemVisibleTitleInfo.domain)
           })
       } else {
         // 客户开票
         addInvoiceIn(this.updateOrderItemVisibleTitleInfo)
-          .then(res => {
+          .then(() => {
             this.$message.success('供应商开票成功~')
             this.updateGoodsOrderAfterOpen(invoiceNumber, this.updateOrderItemVisibleTitleInfo.domain)
           })
@@ -1211,7 +1212,7 @@ export default {
         };
         // 更新订单的开票状态
         updateGoodsOrder(excludeParams(info, this.$exclude))
-          .then(res => {
+          .then(() => {
             this.$message.success('开票状态设置成功~');
             this.invoiceupdateOrderItemVisibleVisible = false;
             this.resetOpenTitleInfo();
@@ -1282,7 +1283,7 @@ export default {
         // 去除字段
         orderInfo = excludeParams(orderInfo, this.$exclude)
         // 调整单
-        adjustGoodsOrder({...orderInfo, ordersNo: '', adjustDate: formatDate(new Date())}).then(res => {
+        adjustGoodsOrder({...orderInfo, ordersNo: '', adjustDate: formatDate(new Date())}).then(() => {
           this.$message.success('调整单提交成功')
           this.getList();
         })
@@ -1314,7 +1315,7 @@ export default {
      *  6.点击订单的发货单按钮 查看发货单
      */
     // 订单发货单
-    handleOrder1(row) {
+    handleOrder1() {
       this.Order1Visible = true
     },
 
@@ -1387,7 +1388,7 @@ export default {
       if (type === 'path') {
         //修改订单信息
         updateGoodsOrder({...this.tempOrderInfo, path: path})
-          .then(res => {
+          .then(() => {
             this.$message.success('上传附件成功')
             this.getList()
           })
@@ -1395,7 +1396,7 @@ export default {
       } else if (type === 'receiveProof') {
         //修改订单信息
         updateGoodsOrder({...this.tempOrderInfo, receiveProof: path})
-          .then(res => {
+          .then(() => {
             this.$message.success('上传收到条成功')
             this.getList()
           })
@@ -1431,7 +1432,7 @@ export default {
       }).then(() => {
         //修改审核状态
         auditGoodsOrder({id: row.id, isaudit: true})
-          .then(res => {
+          .then(() => {
             this.$message({
               type: 'success',
               message: '操作成功~!'
@@ -1653,7 +1654,7 @@ export default {
         type: 'warning'
       }).then(({value}) => {
         addReason({reason: value, tableName: TableName.GOODS_ORDER, tid: row.id, modifyTime: this.modifyTime})
-          .then(res => {
+          .then(() => {
             // 先暂存订单修改原因
             sessionStorage.setItem('order-edit-reason', value)
             this.$message.success('提交成功')
@@ -1674,18 +1675,7 @@ export default {
     sleep(ms) {
       return new Promise(resolve => setTimeout(resolve, ms));
     },
-    // 格式化对象
-    formatData(data) {
-      let formattedString = '';
-      for (const key in data) {
-        if (data.hasOwnProperty(key)) {
-          const value = data[key];
-          const mappedKey = this.mapper[key] || key;
-          formattedString += `${mappedKey}: ${value}\n`;
-        }
-      }
-      return formattedString.trim(); // 去掉最后一个换行符
-    },
+    
     // 查看某一个文件
     checkFileItem(item) {
       window.open(item)
@@ -1694,18 +1684,12 @@ export default {
     submitForm() {
       if (this.orderInfo.id != null) {
         this.orderInfo = excludeParams(this.orderInfo, this.$exclude)
-        updateGoodsOrder(this.orderInfo).then(response => {
+        updateGoodsOrder(this.orderInfo).then(() => {
           this.$modal.msgSuccess("修改成功");
           this.open = false;
           this.getList();
         });
       }
-      //校验 后期再加
-      /*this.$refs["form"].validate(valid => {
-        if (valid) {
-
-        }
-      });*/
     },
     /** 删除按钮操作 */
     handleDelete(row) {

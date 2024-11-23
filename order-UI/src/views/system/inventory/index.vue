@@ -60,7 +60,9 @@
 
     <el-row>
       <el-col :span="4">
-        <el-tree :data="storeList" :props="defaultProps" @node-click="handleNodeClick" />
+        <div class="tree-container">
+          <el-tree :data="storeList" :props="defaultProps" @node-click="handleNodeClick" />
+        </div>
       </el-col>
       <el-col :span="20">
         <el-table
@@ -560,7 +562,6 @@ import {TableName} from "@/api/tool/enums";
 import {mixin_inventory_second} from "../../dashboard/mixins/inventory/inventory_second";
 import {mixin_inventory_broken} from "../../dashboard/mixins/inventory/inventory_broken";
 import {mixin_inventory_add} from "../../dashboard/mixins/inventory/inventory_add";
-import InventoryForm from "../../dashboard/components/inventory/InventoryForm.vue";
 import {mixin_freight_payment} from "@/views/dashboard/mixins/freight/freight_payment";
 import DialogWrapper from "@/views/dashboard/components/common/DialogWrapper.vue";
 import {common_dialog} from "@/views/dashboard/mixins/common/common_dialog";
@@ -568,7 +569,7 @@ import {mixin_printHTML} from "@/views/dashboard/mixins/print";
 
 export default {
   name: "Inventory",
-  components: {DialogWrapper, InventoryForm, SearchOption},
+  components: {DialogWrapper, SearchOption},
   mixins: [
     // 通用的弹窗组件混入
     common_dialog,
@@ -698,7 +699,7 @@ export default {
   //展示与隐藏
   watch: {
     columns: {
-      handler: (newVal) => {
+      handler: function (newVal) {
         localStorage.setItem("inventory-columns", JSON.stringify(newVal))
       },
       deep: true,
@@ -860,7 +861,7 @@ export default {
         type: 'warning'
       }).then(({value}) => {
         addReason({reason: value, tableName: TableName.INVENTORY, tid: row.id, modifyTime: this.modifyTime})
-          .then(res => {
+          .then(() => {
             this.$message.success('提交成功')
             this.reset();
             const id = row.id || this.ids
@@ -923,3 +924,12 @@ export default {
   }
 };
 </script>
+
+<style scoped>
+.tree-container {
+  max-height: 400px; /* 设置容器的最大高度 */
+  overflow-y: auto; /* 超出高度时显示垂直滚动条 */
+  border: 1px solid #ebeef5; /* 添加边框便于视觉分隔 */
+  padding: 10px; /* 可选，增加内容边距 */
+}
+</style>

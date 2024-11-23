@@ -3,19 +3,23 @@
     :title="dialogTitle"
     :visible.sync="dialogVisible"
     :width="dialogWidth"
-    @close="handleClose"
     append-to-body
     :close-on-click-modal="false"
     :close-on-press-escape="false"
     :destroy-on-close="true"
+    @close="handleClose"
   >
     <!-- 动态渲染内容 -->
-    <component :is="currentComponent" v-bind="dialogProps" @close="dialogVisible = false" ref="dynamicComponent"/>
+    <component :is="currentComponent" ref="dynamicComponent" v-bind="dialogProps" />
 
     <!-- 底部操作按钮 -->
     <template #footer>
-      <el-button @click="handleClose">关闭</el-button>
-      <el-button type="primary" @click="handleConfirm">确认</el-button>
+      <el-button @click="handleClose">
+        关闭
+      </el-button>
+      <el-button type="primary" @click="handleConfirm">
+        确认
+      </el-button>
     </template>
   </el-dialog>
 </template>
