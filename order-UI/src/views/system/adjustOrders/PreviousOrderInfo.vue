@@ -24,8 +24,15 @@ export default {
   name: 'PreviousOrderInfo',
   components: {OrderDetailInfo, OrderInfos},
   props: {
-    checkReviousOrderInfoVisible: {},
-    previousOrderInfo: {}
+    checkReviousOrderInfoVisible: {
+      type: Boolean,
+    },
+    previousOrderInfo: {
+      type: Object,
+      default () {
+        return {}
+      }
+    }
   },
   methods: {
     close() {

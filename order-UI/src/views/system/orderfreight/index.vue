@@ -1,6 +1,6 @@
 <template>
   <div class="app-container">
-    <el-form :model="queryParams" ref="queryForm" size="mini" :inline="true" v-show="showSearch" label-width="120px">
+    <el-form v-show="showSearch" ref="queryForm" :model="queryParams" size="mini" :inline="true" label-width="120px">
       <el-form-item label="申请开始日期" prop="applyDate">
         <el-date-picker
           v-model="dateRange"
@@ -10,27 +10,25 @@
           start-placeholder="开始日期"
           end-placeholder="结束日期"
           clearable
-        ></el-date-picker>
+        />
       </el-form-item>
       <el-form-item label="司机名称/海运公司" prop="driverName">
         <el-input
           v-model="queryParams.driverName"
           placeholder="请输入司机名称"
           clearable
-          @keyup.enter.native="handleQuery"
           size="mini"
-        >
-        </el-input>
+          @keyup.enter.native="handleQuery"
+        />
       </el-form-item>
       <el-form-item label="车队名称" prop="fleet">
         <el-input
           v-model="queryParams.fleet"
           placeholder="请输入车队名称"
           clearable
-          @keyup.enter.native="handleQuery"
           size="mini"
-        >
-        </el-input>
+          @keyup.enter.native="handleQuery"
+        />
       </el-form-item>
       <el-form-item label="审核状态" prop="paymentState">
         <el-select
@@ -43,12 +41,14 @@
             v-for="item in PaymentState()"
             :key="item.value"
             :label="item.label"
-            :value="item.value">
-          </el-option>
+            :value="item.value"
+          />
         </el-select>
       </el-form-item>
       <el-form-item>
-        <el-button type="primary" icon="el-icon-search" size="mini" @click="handleQuery">搜索</el-button>
+        <el-button type="primary" icon="el-icon-search" size="mini" @click="handleQuery">
+          搜索
+        </el-button>
         <!--        <el-button icon="el-icon-refresh" size="mini" @click="resetQuery">重置</el-button>-->
       </el-form-item>
     </el-form>
@@ -56,14 +56,17 @@
     <el-row :gutter="10" class="mb8">
       <!-- 刷新按钮-->
       <el-col :span="1.5">
-        <el-button icon="el-icon-refresh" size="mini" @click="resetQuery">刷新</el-button>
+        <el-button icon="el-icon-refresh" size="mini" @click="resetQuery">
+          刷新
+        </el-button>
       </el-col>
       <el-col :span="1.5">
         <el-button
           type="success"
           size="mini"
           @click="selectUnPayment(orderFreightList)"
-        >勾选未支付
+        >
+          勾选未支付
         </el-button>
       </el-col>
       <el-col :span="1.5">
@@ -72,94 +75,95 @@
           size="mini"
           :disabled="freightPaymentOnceDisabled"
           @click="handleFreightPaymentOnce"
-        >一键付运费
+        >
+          一键付运费
         </el-button>
       </el-col>
 
       <!--       修正运费-->
-      <FillFreight/>
+      <FillFreight />
 
-      <right-toolbar :showSearch.sync="showSearch" @queryTable="getList" :columns="columns">
-        <template v-slot:print>
+      <right-toolbar :show-search.sync="showSearch" :columns="columns" @queryTable="getList">
+        <template #print>
           <el-col :span="1.5">
             <el-button
               plain
               icon="el-icon-printer"
               size="mini"
               @click="printHTML"
-            >
-            </el-button>
+            />
           </el-col>
         </template>
         <!--        导出-->
-        <template v-slot:export>
+        <template #export>
           <el-col :span="1.5">
             <el-button
+              v-hasPermi="['system:freight:export']"
               plain
               icon="el-icon-folder-opened"
               size="mini"
               @click="handleExport"
-              v-hasPermi="['system:freight:export']"
-            >
-            </el-button>
+            />
           </el-col>
         </template>
       </right-toolbar>
     </el-row>
 
     <el-table
+      id="printBox"
       ref="multipleTable"
       v-horizontal-scroll="'always'"
-      border
       v-loading="loading"
+      border
       :data="orderFreightList"
-      id="printBox"
       max-height="600px"
-      size="mini" @selection-change="handleSelectionChange"
+      size="mini"
       :cell-style="() => { return { padding: '.5px' } }"
+      @selection-change="handleSelectionChange"
     >
       <!--      多选 一键申请运费-->
       <el-table-column
         type="selection"
-        width="55" fixed="left">
-      </el-table-column>
+        width="55"
+        fixed="left"
+      />
       <el-table-column
+        v-if="columns[1].visible"
         label="运费类型"
         align="center"
         prop="freightType"
-        v-if="columns[1].visible"
         width="100"
         show-overflow-tooltip
       />
       <el-table-column
+        v-if="columns[2].visible"
         label="金额"
         align="center"
         prop="moneyAmount"
-        v-if="columns[2].visible"
         width="100"
         show-overflow-tooltip
       />
       <el-table-column
+        v-if="columns[3].visible"
         label="对方户名"
         align="center"
         prop="otherAcountsName"
-        v-if="columns[3].visible"
         width="100"
         show-overflow-tooltip
       />
       <el-table-column
+        v-if="columns[4].visible"
         label="对方账号"
         align="center"
         prop="otherBankNo"
-        v-if="columns[4].visible"
         width="100"
         show-overflow-tooltip
       />
       <el-table-column
+        v-if="columns[5].visible"
         label="对方开户行"
         align="center"
         prop="otherBankName"
-        v-if="columns[5].visible"
         width="100"
         show-overflow-tooltip
       />
@@ -171,99 +175,108 @@
         show-overflow-tooltip
       >
         <template slot-scope="scope">
-          <el-tag v-if="scope.row.source === FREIGHT_TYPE.GOODS_ORDER">订单
+          <el-tag v-if="scope.row.source === FREIGHT_TYPE.GOODS_ORDER">
+            订单
           </el-tag>
-          <el-tag v-if="scope.row.source === FREIGHT_TYPE.INVENTORY">库存
+          <el-tag v-if="scope.row.source === FREIGHT_TYPE.INVENTORY">
+            库存
           </el-tag>
         </template>
       </el-table-column>
       <el-table-column
+        v-if="columns[7].visible"
         label="支付状态"
         align="center"
         prop="paymentState"
-        v-if="columns[7].visible"
         width="100"
         show-overflow-tooltip
-      >
-      </el-table-column>
+      />
       <el-table-column
+        v-if="columns[8].visible"
         label="司机姓名"
         align="center"
         prop="driverName"
-        v-if="columns[8].visible"
         width="100"
         show-overflow-tooltip
       />
       <el-table-column
+        v-if="columns[9].visible"
         label="车牌号"
         align="center"
         prop="carNo"
-        v-if="columns[9].visible"
         width="100"
         show-overflow-tooltip
       />
       <el-table-column
+        v-if="columns[10].visible"
         label="车队"
         align="center"
         prop="fleet"
-        v-if="columns[10].visible"
         width="100"
         show-overflow-tooltip
       />
       <el-table-column
+        v-if="columns[11].visible"
         label="申请人员姓名"
         align="center"
         prop="applyUserName"
-        v-if="columns[11].visible"
         width="100"
         show-overflow-tooltip
       />
       <el-table-column
+        v-if="columns[12].visible"
         label="申请日期"
         align="center"
         prop="applyDate"
-        v-if="columns[12].visible"
         width="100"
         show-overflow-tooltip
       />
       <el-table-column
+        v-if="columns[13].visible"
         label="是否可编辑"
         align="center"
         prop="isedit"
-        v-if="columns[13].visible"
         width="100"
         show-overflow-tooltip
       >
         <template slot-scope="scope">
-          <el-tag :type="scope.row.isedit === 0 ? 'danger' : 'success'" disable-transitions
-                  v-if="scope.row.isedit === 0">不可编辑
+          <el-tag
+            v-if="scope.row.isedit === 0"
+            :type="scope.row.isedit === 0 ? 'danger' : 'success'"
+            disable-transitions
+          >
+            不可编辑
           </el-tag>
-          <el-tag :type="scope.row.isedit === 1 ? 'success' : 'danger'" disable-transitions
-                  v-if="scope.row.isedit === 1">可编辑
+          <el-tag
+            v-if="scope.row.isedit === 1"
+            :type="scope.row.isedit === 1 ? 'success' : 'danger'"
+            disable-transitions
+          >
+            可编辑
           </el-tag>
         </template>
       </el-table-column>
       <el-table-column
+        v-if="columns[14].visible"
         label="付款人员姓名"
         align="center"
         prop="payUserName"
-        v-if="columns[14].visible"
         width="100"
         show-overflow-tooltip
       />
       <el-table-column
+        v-if="columns[15].visible"
         label="付款日期"
         align="center"
         prop="payDate"
-        v-if="columns[15].visible"
         width="100"
         show-overflow-tooltip
       />
       <el-table-column
+        v-if="columns[16].visible"
         label="备注"
         align="center"
         prop="comments"
-        v-if="columns[16].visible"
         width="100"
         show-overflow-tooltip
       />
@@ -275,21 +288,23 @@
         width="150"
       >
         <template slot-scope="scope">
-          <CheckOrderInfo :row="scope.row"/>
+          <CheckOrderInfo :row="scope.row" />
 
           <el-button
+            v-hasPermi="['system:freight:edit']"
             size="mini"
             type="primary"
             @click="handleUpdate(scope.row)"
-            v-hasPermi="['system:freight:edit']"
-          >修改
+          >
+            修改
           </el-button>
           <el-button
+            v-hasPermi="['system:freight:remove']"
             size="mini"
             type="danger"
             @click="handleDelete(scope.row)"
-            v-hasPermi="['system:freight:remove']"
-          >删除
+          >
+            删除
           </el-button>
         </template>
       </el-table-column>
@@ -304,59 +319,74 @@
     />
 
 
-    <el-dialog :close-on-click-modal="false" :show-close="false" :title="title" :visible.sync="open" width="500px"
-               append-to-body>
+    <el-dialog
+      :close-on-click-modal="false"
+      :show-close="false"
+      :title="title"
+      :visible.sync="open"
+      width="500px"
+      append-to-body
+    >
       <el-form ref="form" :model="form" :rules="rules" label-width="80px">
         <el-form-item label="金额" prop="moneyAmount">
-          <el-input v-model="form.moneyAmount" placeholder="请输入金额"/>
+          <el-input v-model="form.moneyAmount" placeholder="请输入金额" />
         </el-form-item>
         <el-form-item label="对方户名" prop="otherAcountsName">
           <el-row>
             <el-col :span="10">
-              <el-input v-model="form.otherAcountsName" placeholder="请输入对方户名" :disabled="bankInputDisabled"/>
+              <el-input v-model="form.otherAcountsName" placeholder="请输入对方户名" :disabled="bankInputDisabled" />
             </el-col>
-            <el-col :span="3" v-if="bankInputDisabled === false">
-              <SearchOption :get-data="listBankAccount" icon="el-icon-search" @commitBack="handleCommitBack"
-                            :limit-info="{}" query-label="户名查找" query-info="acountsName"
-                            :query-name="queryCompany"
-                            @update:queryName="handleUpdateQueryName">
+            <el-col v-if="bankInputDisabled === false" :span="3">
+              <SearchOption
+                :get-data="listBankAccount"
+                icon="el-icon-search"
+                :limit-info="{}"
+                query-label="户名查找"
+                query-info="acountsName"
+                :query-name="queryCompany"
+                @commitBack="handleCommitBack"
+                @update:queryName="handleUpdateQueryName"
+              >
                 <template #table-columns>
-                  <el-table-column label="公司名称" align="center" prop="companyName"/>
-                  <el-table-column label="公司类型" align="center" prop="companyType"/>
-                  <el-table-column label="开户行" align="center" prop="bankName"/>
-                  <el-table-column label="开户名" align="center" prop="acountsName"/>
-                  <el-table-column label="账号" align="center" prop="bankNo"/>
+                  <el-table-column label="公司名称" align="center" prop="companyName" />
+                  <el-table-column label="公司类型" align="center" prop="companyType" />
+                  <el-table-column label="开户行" align="center" prop="bankName" />
+                  <el-table-column label="开户名" align="center" prop="acountsName" />
+                  <el-table-column label="账号" align="center" prop="bankNo" />
                 </template>
               </SearchOption>
             </el-col>
           </el-row>
         </el-form-item>
         <el-form-item label="对方账号" prop="otherBankNo">
-          <el-input v-model="form.otherBankNo" placeholder="请输入对方账号"/>
+          <el-input v-model="form.otherBankNo" placeholder="请输入对方账号" />
         </el-form-item>
         <el-form-item label="对方开户行" prop="otherBankName">
-          <el-input v-model="form.otherBankName" placeholder="请输入对方开户行"/>
+          <el-input v-model="form.otherBankName" placeholder="请输入对方开户行" />
         </el-form-item>
         <el-form-item label="备注">
-          <el-input v-model="form.content" placeholder="请输入备注"/>
+          <el-input v-model="form.content" placeholder="请输入备注" />
         </el-form-item>
         <el-form-item label="司机姓名" prop="driverName">
-          <el-input v-model="form.driverName" placeholder="请输入司机姓名"/>
+          <el-input v-model="form.driverName" placeholder="请输入司机姓名" />
         </el-form-item>
         <el-form-item label="车牌号/柜号" prop="carNo">
           <el-row>
             <el-col :span="20">
-              <el-input v-model="form.carNo" placeholder="请输入车牌号"/>
+              <el-input v-model="form.carNo" placeholder="请输入车牌号" />
             </el-col>
             <el-col :span="4">
-              <SearchOption :limit-info="{dictType:'order_cars'}"
-                            :get-data="listData" query-label="车牌搜索"
-                            :query-name="queryCars"
-                            query-info="dictLabel"
-                            @update:queryName="updateQueryCars"
-                            @commitBack="handleCommitBackCars">
+              <SearchOption
+                :limit-info="{dictType:'order_cars'}"
+                :get-data="listData"
+                query-label="车牌搜索"
+                :query-name="queryCars"
+                query-info="dictLabel"
+                @update:queryName="updateQueryCars"
+                @commitBack="handleCommitBackCars"
+              >
                 <template #table-columns>
-                  <el-table-column label="车牌" prop="dictLabel"/>
+                  <el-table-column label="车牌" prop="dictLabel" />
                 </template>
               </SearchOption>
             </el-col>
@@ -364,17 +394,20 @@
         </el-form-item>
         <el-form-item label="车队" prop="fleet">
           <el-col :span="20">
-            <el-input v-model="form.fleet" placeholder="请输入车队"/>
+            <el-input v-model="form.fleet" placeholder="请输入车队" />
           </el-col>
           <el-col :span="4">
-            <SearchOption :limit-info="{}"
-                          :get-data="listFleet" query-label="车队名称搜索"
-                          :query-name="queryFleet"
-                          query-info="fname"
-                          @update:queryName="updateQueryFleet"
-                          @commitBack="handleCommitBackFleet">
+            <SearchOption
+              :limit-info="{}"
+              :get-data="listFleet"
+              query-label="车队名称搜索"
+              :query-name="queryFleet"
+              query-info="fname"
+              @update:queryName="updateQueryFleet"
+              @commitBack="handleCommitBackFleet"
+            >
               <template #table-columns>
-                <el-table-column label="车队名称" prop="fname"/>
+                <el-table-column label="车队名称" prop="fname" />
               </template>
             </SearchOption>
           </el-col>
@@ -384,24 +417,28 @@
             v-model="form.applyDate"
             type="datetime"
             placeholder="请选择申请日期"
-            value-format="yyyy-MM-dd HH:mm:ss">
-          </el-date-picker>
+            value-format="yyyy-MM-dd HH:mm:ss"
+          />
         </el-form-item>
         <el-form-item label="付款日期" prop="payDate">
           <el-date-picker
             v-model="form.payDate"
             type="datetime"
             placeholder="请选择付款日期"
-            value-format="yyyy-MM-dd HH:mm:ss">
-          </el-date-picker>
+            value-format="yyyy-MM-dd HH:mm:ss"
+          />
         </el-form-item>
         <el-form-item label="备注" prop="comments">
-          <el-input v-model="form.comments" placeholder="请输入备注"/>
+          <el-input v-model="form.comments" placeholder="请输入备注" />
         </el-form-item>
       </el-form>
       <div slot="footer" class="dialog-footer">
-        <el-button type="primary" @click="submitForm">确 定</el-button>
-        <el-button @click="cancel">取 消</el-button>
+        <el-button type="primary" @click="submitForm">
+          确 定
+        </el-button>
+        <el-button @click="cancel">
+          取 消
+        </el-button>
       </div>
     </el-dialog>
 
@@ -414,22 +451,41 @@
           <!--          运费信息-->
           <div class="order-freight-info">
             <el-collapse v-model="activeNames">
-              <el-collapse-item :title="'运费信息('+(index+1)+')'" :name="index+''"
-                                v-for="(item,index) in selectedList"
-                                :key="index">
+              <el-collapse-item
+                v-for="(item,index) in selectedList"
+                :key="index"
+                :title="'运费信息('+(index+1)+')'"
+                :name="index+''"
+              >
                 <el-card class="box-card">
                   <div>
                     <el-descriptions :title="'运费信息('+(index+1)+')'">
-                      <el-descriptions-item label="司机">{{ item.driverName }}</el-descriptions-item>
-                      <el-descriptions-item label="车牌号">{{ item.carNo }}</el-descriptions-item>
-                      <el-descriptions-item label="车队">{{ item.fleet }}</el-descriptions-item>
-                      <el-descriptions-item label="运费">{{ item.moneyAmount }}</el-descriptions-item>
-                      <el-descriptions-item label="运输类型">
-                        <el-tag size="small">{{ item.freightType }}</el-tag>
+                      <el-descriptions-item label="司机">
+                        {{ item.driverName }}
                       </el-descriptions-item>
-                      <el-descriptions-item label="开户名">{{ item.otherAcountsName }}</el-descriptions-item>
-                      <el-descriptions-item label="开户行">{{ item.otherBankName }}</el-descriptions-item>
-                      <el-descriptions-item label="银行账号">{{ item.otherBankNo }}</el-descriptions-item>
+                      <el-descriptions-item label="车牌号">
+                        {{ item.carNo }}
+                      </el-descriptions-item>
+                      <el-descriptions-item label="车队">
+                        {{ item.fleet }}
+                      </el-descriptions-item>
+                      <el-descriptions-item label="运费">
+                        {{ item.moneyAmount }}
+                      </el-descriptions-item>
+                      <el-descriptions-item label="运输类型">
+                        <el-tag size="small">
+                          {{ item.freightType }}
+                        </el-tag>
+                      </el-descriptions-item>
+                      <el-descriptions-item label="开户名">
+                        {{ item.otherAcountsName }}
+                      </el-descriptions-item>
+                      <el-descriptions-item label="开户行">
+                        {{ item.otherBankName }}
+                      </el-descriptions-item>
+                      <el-descriptions-item label="银行账号">
+                        {{ item.otherBankNo }}
+                      </el-descriptions-item>
                     </el-descriptions>
                   </div>
                 </el-card>
@@ -442,44 +498,51 @@
               <el-form-item label="支付类型" prop="payType">
                 <el-cascader
                   v-model="freightSelfOnceInfo.payType"
-                  :options="paymentTypeTree" :props="props"
-                ></el-cascader>
+                  :options="paymentTypeTree"
+                  :props="props"
+                />
               </el-form-item>
               <el-form-item label="对方账号类型" prop="otherBankCardType">
-                <BankType @updateSelectedType="handleBankTypeOther"/>
+                <BankType @updateSelectedType="handleBankTypeOther" />
               </el-form-item>
               <el-form-item label="己方账号类型" prop="selfBankCardType">
-                <BankType @updateSelectedType="handleBankTypeSelf"/>
+                <BankType @updateSelectedType="handleBankTypeSelf" />
               </el-form-item>
               <el-form-item label="己方户名" prop="selfAcountsName">
                 <el-row>
                   <el-col :span="10">
-                    <el-input v-model="freightSelfOnceInfo.selfAcountsName" placeholder="请输入己方户名"/>
+                    <el-input v-model="freightSelfOnceInfo.selfAcountsName" placeholder="请输入己方户名" />
                   </el-col>
                   <!--   自定义组件查找-->
                   <el-col :span="3">
-                    <SearchOption :get-data="listBankAccount" title="银行卡信息" icon="el-icon-search"
-                                  @commitBack="handleCallBack" :limit-info="{acountsType:'己方公司'}"
-                                  @update:queryName="handleCommitBackBank" :query-name="bankQuery"
-                                  query-info="acountsName"
-                                  query-label="户名查询">
+                    <SearchOption
+                      :get-data="listBankAccount"
+                      title="银行卡信息"
+                      icon="el-icon-search"
+                      :limit-info="{acountsType:'己方公司'}"
+                      :query-name="bankQuery"
+                      query-info="acountsName"
+                      query-label="户名查询"
+                      @commitBack="handleCallBack"
+                      @update:queryName="handleCommitBackBank"
+                    >
                       <template #table-columns>
-                        <el-table-column label="账户类型" align="center" prop="acountsType"/>
-                        <el-table-column label="显示名称" align="center" prop="displayName"/>
-                        <el-table-column label="开户名称(户名)" align="center" prop="acountsName"/>
-                        <el-table-column label="账号(银行账号)" align="center" prop="bankNo"/>
-                        <el-table-column label="开户行" align="center" prop="bankName"/>
-                        <el-table-column label="公司名称" align="center" prop="companyName"/>
+                        <el-table-column label="账户类型" align="center" prop="acountsType" />
+                        <el-table-column label="显示名称" align="center" prop="displayName" />
+                        <el-table-column label="开户名称(户名)" align="center" prop="acountsName" />
+                        <el-table-column label="账号(银行账号)" align="center" prop="bankNo" />
+                        <el-table-column label="开户行" align="center" prop="bankName" />
+                        <el-table-column label="公司名称" align="center" prop="companyName" />
                       </template>
                     </SearchOption>
                   </el-col>
                 </el-row>
               </el-form-item>
               <el-form-item label="己方账号" prop="selfBankNo">
-                <el-input v-model="freightSelfOnceInfo.selfBankNo" placeholder="请输入己方账号"/>
+                <el-input v-model="freightSelfOnceInfo.selfBankNo" placeholder="请输入己方账号" />
               </el-form-item>
               <el-form-item label="己方开户行" prop="selfBankName">
-                <el-input v-model="freightSelfOnceInfo.selfBankName" placeholder="请输入己方开户行"/>
+                <el-input v-model="freightSelfOnceInfo.selfBankName" placeholder="请输入己方开户行" />
               </el-form-item>
 
               <el-form-item label="运费总和">
@@ -492,19 +555,30 @@
         </div>
         <!--        然后是一个按钮 表示一键付运费-->
         <el-row class="order-freight-submit">
-          <el-button type="success" @click="submitFreightOnce">一键付运费</el-button>
+          <el-button type="success" @click="submitFreightOnce">
+            一键付运费
+          </el-button>
         </el-row>
       </template>
     </InfoDialog>
 
 
     <!--    created第一次传递的props，然后监听后来props的变化-->
-    <el-dialog :close-on-click-modal="false" :show-close="false" title="运费付款申请"
-               :visible.sync="applyPaymentVisible" width="500px">
+    <el-dialog
+      :close-on-click-modal="false"
+      :show-close="false"
+      title="运费付款申请"
+      :visible.sync="applyPaymentVisible"
+      width="500px"
+    >
       <keep-alive>
-        <ApplyPayment :tableName="TableName.ORDER_FREIGHT" :t-i-d="tID"
-                      :need-info="needInfo" :need-money="freight"
-                      @changeOpen="changeOpen"/>
+        <ApplyPayment
+          :table-name="TableName.ORDER_FREIGHT"
+          :t-i-d="tID"
+          :need-info="needInfo"
+          :need-money="freight"
+          @changeOpen="changeOpen"
+        />
       </keep-alive>
     </el-dialog>
   </div>
@@ -540,14 +614,6 @@ import BankType from "@/views/dashboard/components/common/BankType.vue";
 
 export default {
   name: "OrderFreight",
-  computed: {
-    FREIGHT_TYPE() {
-      return FREIGHT_TYPE
-    },
-    TableName() {
-      return TableName
-    },
-  },
   components: {BankType, FillFreight, CheckOrderInfo, InfoDialog, ApplyPayment, SearchOption},
   mixins: [mixin_order_freight_fill, mixin_order_base, mixin_order_freight_payment,/*引入支付类型的混入*/mixin_payment_subject
     /*引入支付类型的混入*/, mixin_freight_payment
@@ -637,9 +703,17 @@ export default {
       needInfo: {},
     };
   },
+  computed: {
+    FREIGHT_TYPE() {
+      return FREIGHT_TYPE
+    },
+    TableName() {
+      return TableName
+    },
+  },
   watch: {
     columns: {
-      handler: (newVal) => {
+      handler: function(newVal) {
         localStorage.setItem("freight-columns", JSON.stringify(newVal))
       },
       deep:
@@ -812,14 +886,14 @@ export default {
         if (valid) {
           if (this.form.id != null) {
             this.form = excludeParams(this.form, this.$exclude)
-            updateOrderFreight(this.form).then(response => {
+            updateOrderFreight(this.form).then(() => {
               this.$modal.msgSuccess("修改成功");
               this.open = false;
               this.getList();
             });
           } else {
             this.form = excludeParams(this.form, this.$exclude)
-            addOrderFreight(this.form).then(response => {
+            addOrderFreight(this.form).then(() => {
               this.$modal.msgSuccess("新增成功");
               this.open = false;
               this.getList();

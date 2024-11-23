@@ -1,93 +1,143 @@
 <template>
   <div class="app-container">
-    <el-form :model="queryParams" ref="queryForm" size="mini" :inline="true" v-show="showSearch" label-width="150px">
+    <el-form v-show="showSearch" ref="queryForm" :model="queryParams" size="mini" :inline="true" label-width="150px">
       <!--      时间查询-->
       <el-form-item label="开票开始日期" prop="beginTime">
         <el-date-picker
           v-model="queryParams.beginTime"
           type="datetime"
-          placeholder="选择日期" value-format="yyyy-MM-dd HH:mm:ss">
-        </el-date-picker>
+          placeholder="选择日期"
+          value-format="yyyy-MM-dd HH:mm:ss"
+        />
       </el-form-item>
       <el-form-item label="开票结束日期" prop="endTime">
         <el-date-picker
           v-model="queryParams.endTime"
           type="datetime"
-          placeholder="选择日期" value-format="yyyy-MM-dd HH:mm:ss">
-        </el-date-picker>
+          placeholder="选择日期"
+          value-format="yyyy-MM-dd HH:mm:ss"
+        />
       </el-form-item>
       <el-form-item>
-        <el-button type="primary" icon="el-icon-search" size="mini" @click="handleQuery">搜索</el-button>
-
+        <el-button type="primary" icon="el-icon-search" size="mini" @click="handleQuery">
+          搜索
+        </el-button>
       </el-form-item>
     </el-form>
 
     <el-row :gutter="10" class="mb8">
       <el-col :span="1.5">
         <el-button
+          v-hasPermi="['system:invoicein:add']"
           type="danger"
           size="mini"
           @click="handleAdd"
-          v-hasPermi="['system:invoicein:add']"
-        >新增发票购入信息
+        >
+          新增发票购入信息
         </el-button>
       </el-col>
       <el-col :span="1.5">
-        <el-button size="mini" @click="resetQuery">刷新</el-button>
+        <el-button size="mini" @click="resetQuery">
+          刷新
+        </el-button>
       </el-col>
-      <right-toolbar :showSearch.sync="showSearch" @queryTable="getList" :columns="columns">
-        <template v-slot:print>
+      <right-toolbar :show-search.sync="showSearch" :columns="columns" @queryTable="getList">
+        <template #print>
           <el-col :span="1.5">
             <el-button
               plain
               icon="el-icon-printer"
               size="mini"
               @click="printHTML"
-            >
-            </el-button>
+            />
           </el-col>
         </template>
         <!--        导出-->
-        <template v-slot:export>
+        <template #export>
           <el-col :span="1.5">
             <el-button
+              v-hasPermi="['system:orderdetail:export']"
               plain
               icon="el-icon-folder-opened"
               size="mini"
               @click="handleExport"
-              v-hasPermi="['system:orderdetail:export']"
-            >
-            </el-button>
+            />
           </el-col>
         </template>
       </right-toolbar>
     </el-row>
 
-    <el-table id="printBox" v-horizontal-scroll="'always'" border v-loading="loading" :data="invoiceInList"
-              @header-dragend="changeColWidth"
-              @selection-change="handleSelectionChange" fit size="mini" :cell-style="()=>{return {padding:'.5px'}}">
-      <el-table-column label="开票日期" align="center" prop="invoiceDate" v-if="columns[0].visible"
-                       show-overflow-tooltip/>
-      <el-table-column label="我方开票实体" align="center" prop="invoiceObject" v-if="columns[1].visible"
-                       show-overflow-tooltip
-                       width="100px"/>
-      <el-table-column label="开票金额" align="center" prop="invoiceAmount" v-if="columns[2].visible"
-                       show-overflow-tooltip/>
-      <el-table-column label="对方公司类别" align="center" prop="companyType" v-if="columns[3].visible" width="100px"
-                       show-overflow-tooltip/>
-      <el-table-column label="对方公司名称" align="center" prop="companyName" v-if="columns[4].visible" width="100px"
-                       show-overflow-tooltip/>
-      <el-table-column label="票据单位名称" align="center" prop="invoiceCompanyName" v-if="columns[5].visible"
-                       show-overflow-tooltip
-                       width="100px"/>
-      <el-table-column label="票点" align="center" prop="ticketPoint" v-if="columns[6].visible" show-overflow-tooltip/>
-      <el-table-column label="票点金额" align="center" prop="ticketPointAmount" v-if="columns[7].visible"
-                       show-overflow-tooltip>
+    <el-table
+      id="printBox"
+      v-horizontal-scroll="'always'"
+      v-loading="loading"
+      border
+      :data="invoiceInList"
+      fit
+      size="mini"
+      :cell-style="()=>{return {padding:'.5px'}}"
+      @header-dragend="changeColWidth"
+      @selection-change="handleSelectionChange"
+    >
+      <el-table-column
+        v-if="columns[0].visible"
+        label="开票日期"
+        align="center"
+        prop="invoiceDate"
+        show-overflow-tooltip
+      />
+      <el-table-column
+        v-if="columns[1].visible"
+        label="我方开票实体"
+        align="center"
+        prop="invoiceObject"
+        show-overflow-tooltip
+        width="100px"
+      />
+      <el-table-column
+        v-if="columns[2].visible"
+        label="开票金额"
+        align="center"
+        prop="invoiceAmount"
+        show-overflow-tooltip
+      />
+      <el-table-column
+        v-if="columns[3].visible"
+        label="对方公司类别"
+        align="center"
+        prop="companyType"
+        width="100px"
+        show-overflow-tooltip
+      />
+      <el-table-column
+        v-if="columns[4].visible"
+        label="对方公司名称"
+        align="center"
+        prop="companyName"
+        width="100px"
+        show-overflow-tooltip
+      />
+      <el-table-column
+        v-if="columns[5].visible"
+        label="票据单位名称"
+        align="center"
+        prop="invoiceCompanyName"
+        show-overflow-tooltip
+        width="100px"
+      />
+      <el-table-column v-if="columns[6].visible" label="票点" align="center" prop="ticketPoint" show-overflow-tooltip />
+      <el-table-column
+        v-if="columns[7].visible"
+        label="票点金额"
+        align="center"
+        prop="ticketPointAmount"
+        show-overflow-tooltip
+      >
         <template #default="scope">
           {{ scope.row.ticketPointAmount | changeNumber(changeLength) }}
         </template>
       </el-table-column>
-      <el-table-column label="审核状态" align="center" prop="checkState" width="240" v-if="columns[9].visible">
+      <el-table-column v-if="columns[9].visible" label="审核状态" align="center" prop="checkState" width="240">
         <template #default="scope">
           <el-row>
             <el-col :span="12">
@@ -96,53 +146,70 @@
               </el-tag>
             </el-col>
             <el-col :span="12">
-              <el-button size="mini" type="text" :disabled="scope.row.checkState!=='未申请'"
-                         @click="addPaymentApplyInfos(scope.row)">
+              <el-button
+                size="mini"
+                type="text"
+                :disabled="scope.row.checkState!=='未申请'"
+                @click="addPaymentApplyInfos(scope.row)"
+              >
                 添加付款申请
               </el-button>
             </el-col>
           </el-row>
         </template>
       </el-table-column>
-      <el-table-column label="备注" align="center" prop="comments" v-if="columns[10].visible"/>
+      <el-table-column v-if="columns[10].visible" label="备注" align="center" prop="comments" />
       <el-table-column label="银行回执单" align="center" prop="paymentReceipts">
         <template #default="scope">
-          <CheckFiles :path="scope.row.paymentReceipts"
-                      @needToUpdate="(value)=>handleUpdateFilePath(value,scope.row,'paymentReceipts',getInvoiceIn(),updateInvoiceIn())"/>
+          <CheckFiles
+            :path="scope.row.paymentReceipts"
+            @needToUpdate="(value)=>handleUpdateFilePath(value,scope.row,'paymentReceipts',getInvoiceIn(),updateInvoiceIn())"
+          />
         </template>
       </el-table-column>
       <el-table-column label="发票单" align="center" prop="invoiceAttachments">
         <template #default="scope">
-          <CheckFiles :path="scope.row.invoiceAttachments"
-                      @needToUpdate="(value)=>handleUpdateFilePath(value,scope.row,'invoiceAttachments',getInvoiceIn(),updateInvoiceIn())"/>
+          <CheckFiles
+            :path="scope.row.invoiceAttachments"
+            @needToUpdate="(value)=>handleUpdateFilePath(value,scope.row,'invoiceAttachments',getInvoiceIn(),updateInvoiceIn())"
+          />
         </template>
       </el-table-column>
-      <el-table-column label="订单信息" align="center" prop="isOrderTax" v-if="columns[8].visible"
-                       width="140px">
+      <el-table-column
+        v-if="columns[8].visible"
+        label="订单信息"
+        align="center"
+        prop="isOrderTax"
+        width="140px"
+      >
         <template slot-scope="scope">
           <el-row v-if="scope.row.isOrderTax===0">
             无关联订单
           </el-row>
           <el-row v-else>
-            <el-button size="mini" type="text" @click="checkOrderInfo(scope.row)">查看订单信息</el-button>
+            <el-button size="mini" type="text" @click="checkOrderInfo(scope.row)">
+              查看订单信息
+            </el-button>
           </el-row>
         </template>
       </el-table-column>
       <el-table-column label="操作" align="center" class-name="small-padding fixed-width" fixed="right">
         <template slot-scope="scope">
           <el-button
+            v-hasPermi="['system:invoicein:edit']"
             size="mini"
             type="primary"
             @click="handleUpdate(scope.row)"
-            v-hasPermi="['system:invoicein:edit']"
-          >修改
+          >
+            修改
           </el-button>
           <el-button
+            v-hasPermi="['system:invoicein:remove']"
             size="mini"
             type="danger"
             @click="handleDelete(scope.row)"
-            v-hasPermi="['system:invoicein:remove']"
-          >删除
+          >
+            删除
           </el-button>
         </template>
       </el-table-column>
@@ -157,22 +224,28 @@
     />
 
     <!-- 添加或修改发票购入信息对话框 -->
-    <el-dialog :close-on-click-modal="false" :show-close="false" :title="title" :visible.sync="open" width="700px"
-               append-to-body>
+    <el-dialog
+      :close-on-click-modal="false"
+      :show-close="false"
+      :title="title"
+      :visible.sync="open"
+      width="700px"
+      append-to-body
+    >
       <el-form ref="form" :model="form" :rules="rules" label-width="150px">
         <el-form-item label="开票日期" prop="invoiceDate">
           <el-date-picker
             v-model="form.invoiceDate"
             type="datetime"
             placeholder="选择日期"
-            value-format="yyyy-MM-dd HH:mm:ss">
-          </el-date-picker>
+            value-format="yyyy-MM-dd HH:mm:ss"
+          />
         </el-form-item>
         <el-form-item label="我方开票实体" prop="invoiceObject">
-          <el-input v-model="form.invoiceObject" placeholder="请输入我方开票实体"/>
+          <el-input v-model="form.invoiceObject" placeholder="请输入我方开票实体" />
         </el-form-item>
         <el-form-item label="开票金额" prop="invoiceAmount">
-          <el-input v-model="form.invoiceAmount" placeholder="请输入开票金额"/>
+          <el-input v-model="form.invoiceAmount" placeholder="请输入开票金额" />
         </el-form-item>
         <el-form-item label="对方公司类型">
           <el-select v-model="type" placeholder="请选择">
@@ -180,66 +253,92 @@
               v-for="item in options"
               :key="item.value"
               :label="item.label"
-              :value="item.value">
-            </el-option>
+              :value="item.value"
+            />
           </el-select>
         </el-form-item>
         <el-form-item label="对方公司名称" prop="companyName">
           <el-row>
             <el-col :span="10">
-              <el-input v-model="form.companyName" placeholder="请输入对方公司名称"/>
+              <el-input v-model="form.companyName" placeholder="请输入对方公司名称" />
             </el-col>
             <el-col :span="2">
-              <SearchOption :limit-info="{companyType:type}" :get-data="listCompany" query-info="companyName"
-                            query-label="公司名称" :query-name="companyName"
-                            @update:queryName="handleUpdateCompanyName" @commitBack="handleCommitBackCompany">
+              <SearchOption
+                :limit-info="{companyType:type}"
+                :get-data="listCompany"
+                query-info="companyName"
+                query-label="公司名称"
+                :query-name="companyName"
+                @update:queryName="handleUpdateCompanyName"
+                @commitBack="handleCommitBackCompany"
+              >
                 <template #table-columns>
-                  <el-table-column :label="type" align="center" prop="relationName"/>
-                  <el-table-column label="老板姓名" align="center" prop="leader"/>
-                  <el-table-column label="老板电话" align="center" prop="leaderTel"/>
-                  <el-table-column label="区域" align="center" prop="region"/>
-                  <el-table-column label="公司名称" align="center" prop="companyName"/>
-                  <el-table-column label="销售经理" align="center" prop="salesManager"/>
+                  <el-table-column :label="type" align="center" prop="relationName" />
+                  <el-table-column label="老板姓名" align="center" prop="leader" />
+                  <el-table-column label="老板电话" align="center" prop="leaderTel" />
+                  <el-table-column label="区域" align="center" prop="region" />
+                  <el-table-column label="公司名称" align="center" prop="companyName" />
+                  <el-table-column label="销售经理" align="center" prop="salesManager" />
                 </template>
               </SearchOption>
             </el-col>
           </el-row>
         </el-form-item>
         <el-form-item label="票据单位名称" prop="invoiceCompanyName">
-          <el-input v-model="form.invoiceCompanyName" placeholder="请输入票据单位名称"/>
+          <el-input v-model="form.invoiceCompanyName" placeholder="请输入票据单位名称" />
         </el-form-item>
         <el-form-item label="票点" prop="ticketPoint">
-          <el-input v-model="form.ticketPoint" placeholder="请输入票点"/>
+          <el-input v-model="form.ticketPoint" placeholder="请输入票点" />
         </el-form-item>
         <el-form-item label="票点金额" prop="ticketPointAmount">
-          <el-input v-model="invoiceAmount" placeholder="请输入票点金额"/>
+          <el-input v-model="invoiceAmount" placeholder="请输入票点金额" />
         </el-form-item>
         <el-form-item label="银行回执附件">
-          <file-upload @input="handleCommitUpload" ref="fileUploader1"/>
+          <file-upload ref="fileUploader1" @input="handleCommitUpload" />
         </el-form-item>
         <el-form-item label="发票单">
-          <file-upload @input="handleCommitUploadInvoiceAttachments" ref="fileUploader2"/>
+          <file-upload ref="fileUploader2" @input="handleCommitUploadInvoiceAttachments" />
         </el-form-item>
         <el-form-item label="备注" prop="comments">
-          <el-input v-model="form.comments" placeholder="请输入备注"/>
+          <el-input v-model="form.comments" placeholder="请输入备注" />
         </el-form-item>
       </el-form>
       <div slot="footer" class="dialog-footer">
-        <el-button type="primary" @click="submitForm">确 定</el-button>
-        <el-button @click="cancel">取 消</el-button>
+        <el-button type="primary" @click="submitForm">
+          确 定
+        </el-button>
+        <el-button @click="cancel">
+          取 消
+        </el-button>
       </div>
     </el-dialog>
 
     <!--    添加付款申请-->
-    <el-dialog :close-on-click-modal="false" :show-close="false" title="付款申请"
-               :visible.sync="PaymentApplyInfoVisible" append-to-body>
-      <ApplyPayment :table-name="TableName.INVOICE_IN" @changeOpen="changePaymentApplyInfoVisible"
-                    :t-i-d="tID" :need-money="needMoney" :need-info="{}"/>
+    <el-dialog
+      :close-on-click-modal="false"
+      :show-close="false"
+      title="付款申请"
+      :visible.sync="PaymentApplyInfoVisible"
+      append-to-body
+    >
+      <ApplyPayment
+        :table-name="TableName.INVOICE_IN"
+        :t-i-d="tID"
+        :need-money="needMoney"
+        :need-info="{}"
+        @changeOpen="changePaymentApplyInfoVisible"
+      />
     </el-dialog>
 
-    <el-dialog :close-on-click-modal="false" :show-close="true" title="查看订单信息"
-               :visible.sync="checkOrderInfoVisible" width="70%" append-to-body>
-      <OrderInfos :order-info="orderInfo"/>
+    <el-dialog
+      :close-on-click-modal="false"
+      :show-close="true"
+      title="查看订单信息"
+      :visible.sync="checkOrderInfoVisible"
+      width="70%"
+      append-to-body
+    >
+      <OrderInfos :order-info="orderInfo" />
     </el-dialog>
   </div>
 </template>
@@ -344,16 +443,6 @@ export default {
 
     };
   },
-  created() {
-    this.getList();
-    if (localStorage.getItem('invoicein-columns') === 'null'
-      || !localStorage.getItem('invoicein-columns')) {
-      //设置localStorage
-      localStorage.setItem("invoicein-columns", JSON.stringify(this.columns))
-    } else {
-      this.columns = JSON.parse(localStorage.getItem('invoicein-columns'));
-    }
-  },
   computed: {
     TableName() {
       return TableName
@@ -371,16 +460,26 @@ export default {
   },
   watch: {
     columns: {
-      handler: (newVal) => {
+      handler:function (newVal){
         localStorage.setItem("invoicein-columns", JSON.stringify(newVal))
       },
       deep: true,
     },
     form: {
-      handler(val) {
+      handler() {
         this.invoiceAmount = Number(this.form.invoiceAmount * this.form.ticketPoint).toFixed(3);
       },
       deep: true
+    }
+  },
+  created() {
+    this.getList();
+    if (localStorage.getItem('invoicein-columns') === 'null'
+      || !localStorage.getItem('invoicein-columns')) {
+      //设置localStorage
+      localStorage.setItem("invoicein-columns", JSON.stringify(this.columns))
+    } else {
+      this.columns = JSON.parse(localStorage.getItem('invoicein-columns'));
     }
   },
   methods: {
@@ -488,7 +587,7 @@ export default {
         type: 'warning'
       }).then(({value}) => {
         addReason({reason: value, tableName: TableName.INVOICE_IN, tid: row.id, modifyTime: this.modifyTime})
-          .then(res => {
+          .then(() => {
             this.$message.success('提交成功')
             this.reset();
             const id = row.id || this.ids
@@ -519,7 +618,7 @@ export default {
         if (valid) {
           if (this.form.id != null) {
             this.form = excludeParams(this.form, this.$exclude)
-            updateInvoiceIn(this.form).then(response => {
+            updateInvoiceIn(this.form).then(() => {
               this.$modal.msgSuccess("修改成功");
               this.open = false;
               // 清空两个上传附件显示的文件列表
@@ -529,7 +628,7 @@ export default {
             });
           } else {
             this.form = excludeParams(this.form, this.$exclude)
-            addInvoiceIn(this.form).then(response => {
+            addInvoiceIn(this.form).then(() => {
               this.$modal.msgSuccess("新增成功");
               this.open = false;
               // 清空两个上传附件显示的文件列表

@@ -8,13 +8,16 @@
           type="datetime"
           value-format="yyyy-MM-dd HH:mm:ss"
           placeholder="选择日期"
-        >
-        </el-date-picker>
+        />
       </el-form-item>
       <el-form-item label="支付类型" prop="payType">
         <el-row :gutter="5">
-          <!--            一级分类-->
-          <el-col :span="8">
+          <el-cascader
+            v-model="form.payType"
+            :options="paymentTypeTree"
+            :props="props"
+          />
+          <!-- <el-col :span="8">
             <el-select
               v-model="currentSort.levelOne"
               placeholder="请选择一级分类"
@@ -25,11 +28,9 @@
                 :key="item.id"
                 :label="item.title"
                 :value="item.title"
-              >
-              </el-option>
+              />
             </el-select>
           </el-col>
-          <!--            二级分类-->
           <el-col :span="8">
             <el-select
               v-model="currentSort.levelTwo"
@@ -41,10 +42,9 @@
                 :key="item.id"
                 :label="item.title"
                 :value="item.title"
-              >
-              </el-option>
+              />
             </el-select>
-          </el-col>
+          </el-col> -->
         </el-row>
       </el-form-item>
       <el-form-item label="金额" prop="moneyAmount">
@@ -61,16 +61,15 @@
             :key="item.value"
             :label="item.label"
             :value="item.value"
-          >
-          </el-option>
+          />
         </el-select>
-        <span style="color: #1c84c6; font-size: 12px"
-          >请注意选择正确的对方公司类型!</span
-        >
+        <span
+          style="color: #1c84c6; font-size: 12px"
+        >请注意选择正确的对方公司类型!</span>
       </el-form-item>
 
       <!--      公司的填充 这里主要是为了companyId 如果选择的是己方公司 那么就不显示这个选择公司-->
-      <el-form-item label="对方公司" prop="companyName" v-if="value !== '员工'">
+      <el-form-item v-if="value !== '员工'" label="对方公司" prop="companyName">
         <el-row>
           <el-col :span="14">
             <el-input v-model="form.companyName" placeholder="请输入对方公司" />
@@ -80,10 +79,10 @@
               :limit-info="{ companyType: value }"
               :get-data="listCompany"
               icon="el-icon-search"
-              @update:queryName="handleUpdateQueryNameOther"
               :query-label="value"
               query-info="companyName"
               :query-name="queryOther"
+              @update:queryName="handleUpdateQueryNameOther"
               @commitBack="handleCommitBackOther"
             >
               <template #table-columns>
@@ -160,15 +159,15 @@
                 :disabled="bankInputDisabled"
               />
             </el-col>
-            <el-col :span="3" v-if="bankInputDisabled === false">
+            <el-col v-if="bankInputDisabled === false" :span="3">
               <SearchOption
                 :get-data="listBankAccount"
                 icon="el-icon-search"
-                @commitBack="handleCommitBack"
                 :limit-info="{ acountsType: '客户' }"
                 query-label="银行卡查找"
                 query-info="bankNo"
                 :query-name="queryCompany"
+                @commitBack="handleCommitBack"
                 @update:queryName="handleUpdateQueryName"
               >
                 <template #table-columns>
@@ -228,15 +227,15 @@
                 :disabled="bankInputDisabled"
               />
             </el-col>
-            <el-col :span="3" v-if="bankInputDisabled === false">
+            <el-col v-if="bankInputDisabled === false" :span="3">
               <SearchOption
                 :get-data="listBankAccount"
                 icon="el-icon-search"
-                @commitBack="handleCommitBack"
                 :limit-info="{ acountsType: '供应商' }"
                 query-label="银行卡查找"
                 query-info="bankNo"
                 :query-name="queryCompany"
+                @commitBack="handleCommitBack"
                 @update:queryName="handleUpdateQueryName"
               >
                 <template #table-columns>
@@ -297,15 +296,15 @@
                 :disabled="bankInputDisabled"
               />
             </el-col>
-            <el-col :span="3" v-if="bankInputDisabled === false">
+            <el-col v-if="bankInputDisabled === false" :span="3">
               <SearchOption
                 :get-data="listBankAccount"
                 icon="el-icon-search"
-                @commitBack="handleCommitBack"
                 :limit-info="{ acountsType: '司机' }"
                 query-label="银行卡查找"
                 query-info="bankNo"
                 :query-name="queryCompany"
+                @commitBack="handleCommitBack"
                 @update:queryName="handleUpdateQueryName"
               >
                 <template #table-columns>
@@ -366,15 +365,15 @@
                 :disabled="bankInputDisabled"
               />
             </el-col>
-            <el-col :span="3" v-if="bankInputDisabled === false">
+            <el-col v-if="bankInputDisabled === false" :span="3">
               <SearchOption
                 :get-data="listBankAccount"
                 icon="el-icon-search"
-                @commitBack="handleCommitBack"
                 :limit-info="{ acountsType: '员工' }"
                 query-label="银行卡查找"
                 query-info="bankNo"
                 :query-name="queryCompany"
+                @commitBack="handleCommitBack"
                 @update:queryName="handleUpdateQueryName"
               >
                 <template #table-columns>
@@ -439,8 +438,12 @@
       </el-form-item>
     </el-form>
     <div slot="footer" class="dialog-footer" style="text-align: center">
-      <el-button type="primary" @click="submitForm">提交申请</el-button>
-      <el-button @click="close">关闭</el-button>
+      <el-button type="primary" @click="submitForm">
+        提交申请
+      </el-button>
+      <el-button @click="close">
+        关闭
+      </el-button>
     </div>
   </div>
 </template>
@@ -457,6 +460,7 @@ import { mixin_payment_watcher } from "../../mixins/apply_payment/payment_watche
 import { listCompany } from "../../../../api/system/company";
 import { mixin_payment_fill } from "../../mixins/apply_payment/payment_fill";
 import { isNull } from "../../../../main";
+import { mixin_receive_money_subject } from "../../mixins/receivemoney/receive_money_subject";
 
 export default {
   name: "ApplyPayment",
@@ -466,6 +470,7 @@ export default {
     mixin_payment_level,
     mixin_payment_watcher,
     mixin_payment_fill,
+    mixin_receive_money_subject
   ],
   data() {
     return {
@@ -538,11 +543,16 @@ export default {
           // 填充对应表名和主键
           this.form.tableName = this.tableName;
           this.form.tID = this.tID;
-          this.form.payType = this.fullLevel;
           this.form.checkState = ""; //审核状态赋空
           // 填充公司类型
           this.form.companyType = this.value;
-          addPaymentApply(this.form).then((response) => {
+          // 添加付款类型
+          let payType = this.form.payType.join('-')
+          const body = {
+            ...this.form,
+            payType: payType
+          }
+          addPaymentApply(body).then(() => {
             this.$modal.msgSuccess("付款申请添加成功");
             this.reset();
             this.$emit("changeOpen");
