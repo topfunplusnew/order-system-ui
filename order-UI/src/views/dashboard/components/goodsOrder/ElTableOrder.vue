@@ -560,7 +560,7 @@ export default {
         >
           <template slot-scope="scope">
             <!--          如果有订单运费 那么就禁用按钮-->
-            <el-dropdown size="mini" type="text" :disabled="(scope.row.params.isHaveOrderfreight === 'true')">
+            <el-dropdown size="mini" type="text">
               <el-button type="text" :disabled="!(scope.row.landFreight > 0 || scope.row.seaFreight > 0)">
                 操作
               </el-button>
@@ -572,6 +572,7 @@ export default {
                       v-hasPermi="['system:goodsorder:remove']"
                       size="mini"
                       type="warning"
+                      :disabled="(scope.row.params.isHaveOrderLandfreight === 'true')"
                       @click="handleApplyLandFree(scope.row)"
                     >
                       陆运费申请
@@ -579,6 +580,7 @@ export default {
                     <el-button
                       v-if="scope.row.seaFreight > 0"
                       v-hasPermi="['system:goodsorder:remove']"
+                      :disabled="(scope.row.params.isHaveOrderSeafreight === 'true')"
                       size="mini"
                       type="primary"
                       @click="handleApplySeaFree(scope.row)"
