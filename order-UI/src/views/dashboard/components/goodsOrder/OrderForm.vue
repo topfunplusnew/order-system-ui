@@ -51,7 +51,6 @@ export default {
         this.resetOrderInfo();
         this.orderId && this.getGoodsOrderInfo(val);
       },
-      immediate: true
     },
     // 监听海运和陆运 如果不选 那么就要清空海运和陆运的相关信息
     isLand: {
@@ -98,14 +97,14 @@ export default {
         // orderNums 是当前已经装填到vuex中的货物数量
         this.orderNums = response.data.orderDetailList.length;
         // 填充订单货物列表中的信息
-        const formatTax = value => (value === '是' ? '1' : '0'); // 可以将1和0转换为是和否
         // 遍历 填充属性
         this.orderInfo.orderDetailList.forEach(item => {
+          
           Object.assign(item, {
             customerID: this.orderInfo.customerID,
             customer: this.orderInfo.customer,
-            isIncludeTaxFactory: formatTax(item.isIncludeTaxFactory),
-            isIncludeTaxSale: formatTax(item.isIncludeTaxSale)
+            isIncludeTaxFactory: item.isIncludeTaxFactory,
+            isIncludeTaxSale: item.isIncludeTaxSale
           });
         });
 

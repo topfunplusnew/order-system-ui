@@ -260,10 +260,10 @@ export default {
         <div class="order-item">
           <span class="text-bold">出厂是否含税</span>
           <hr>
-          <el-radio v-model="orderItemInfo.isIncludeTaxFactory" label="1">
+          <el-radio v-model="orderItemInfo.isIncludeTaxFactory" :label="1">
             是
           </el-radio>
-          <el-radio v-model="orderItemInfo.isIncludeTaxFactory" label="0">
+          <el-radio v-model="orderItemInfo.isIncludeTaxFactory" :label="0">
             否
           </el-radio>
         </div>
@@ -294,10 +294,10 @@ export default {
         <div class="order-item">
           <span class="text-bold">销售是否含税</span>
           <hr>
-          <el-radio v-model="orderItemInfo.isIncludeTaxSale" label="1">
+          <el-radio v-model="orderItemInfo.isIncludeTaxSale" :label="1">
             是
           </el-radio>
-          <el-radio v-model="orderItemInfo.isIncludeTaxSale" label="0">
+          <el-radio v-model="orderItemInfo.isIncludeTaxSale" :label="0">
             否
           </el-radio>
         </div>
