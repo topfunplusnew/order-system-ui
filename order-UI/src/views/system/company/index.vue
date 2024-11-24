@@ -349,7 +349,7 @@
           fixed="left"
           width="180"
         >
-          <template slot-scope="scope">
+          <template slot-scope="">
             <el-button
               type="danger"
               size="mini"
