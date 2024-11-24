@@ -19,7 +19,7 @@ export var mixin_paymentindex_fill = {
     }
   },
   methods: {
-    //自动填充己方信息
+    // 自动填充己方信息
     handleCommitBack(val) {
       this.form.selfBankName = val.bankName
       this.form.selfAcountsName = val.acountsName
@@ -37,7 +37,7 @@ export var mixin_paymentindex_fill = {
       this.form.companyName = val.companyName;
       this.form.companyId = val.id
     },
-    //自动填充客户信息
+    // 自动填充客户信息
     handleCommitBackOther(val) {
       this.form.companyName = val.companyName;
       this.form.companyId = val.id

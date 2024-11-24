@@ -1,11 +1,11 @@
 <script>
-export default {
-  name: "index.vue",
-  props: {
-    value1: Boolean,
-    value2: Boolean
+  export default {
+    name: 'index.vue',
+    props: {
+      value1: Boolean,
+      value2: Boolean
+    }
   }
-}
 </script>
 
 <template>

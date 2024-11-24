@@ -20,10 +20,10 @@ const mutations = {
   // 修改货物的状态
   changeOrderItemStatus(state, payload) {
     // 获取传入的状态
-    const {orderIndex, ...orderInfo} = payload
+    const { orderIndex, ...orderInfo } = payload
     state.orderItemList = state.orderItemList.map(item => {
       if (item.orderIndex === orderIndex) {
-        return {...orderInfo};
+        return { ...orderInfo };
       }
       return item;
     });
@@ -36,7 +36,7 @@ const mutations = {
 
 const actions = {
   // 设置订单货物信息
-  setOrderItemListAsync({commit}, data) {
+  setOrderItemListAsync({ commit }, data) {
     commit('setOrderItemList', data)
   },
 }

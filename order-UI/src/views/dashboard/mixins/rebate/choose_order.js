@@ -1,7 +1,7 @@
 // 添加返利回扣时选择订单的逻辑
-import {addDateRange} from "../../../../utils/ruoyi";
-import {noPageListRebate} from "../../../../api/system/Rebate";
-import {getGoodsOrder} from "../../../../api/system/goodsOrder";
+import { addDateRange } from '../../../../utils/ruoyi';
+import { noPageListRebate } from '../../../../api/system/Rebate';
+import { getGoodsOrder } from '../../../../api/system/goodsOrder';
 
 export var mixin_choose_order = {
   data() {
@@ -48,7 +48,7 @@ export var mixin_choose_order = {
     },
     // 确认选择供应商
     handleCommitSupplier() {
-      //点击选择供应商和时间段后 查询列表 然后弹出选择货物详情
+      // 点击选择供应商和时间段后 查询列表 然后弹出选择货物详情
       noPageListRebate(addDateRange(this.queryParamsSupplier, this.queryParamsSupplier.dateRange)).then(res => {
         this.needToSelectOrderDetailList = res.rows;
         this.orderGoodsListVisible = true;

@@ -1,4 +1,4 @@
-import { listSubject } from "../../../../api/system/subject";
+import { listSubject } from '../../../../api/system/subject';
 
 // 通用的构造树形节点的混入
 export var mixin_receive_money_subject = {
@@ -7,9 +7,9 @@ export var mixin_receive_money_subject = {
       paymentTypeOptions: [],
       paymentTypeTree: [],
       props: {
-        label: "title",
-        value: "title",
-        children: "children",
+        label: 'title',
+        value: 'title',
+        children: 'children',
       },
     };
   },

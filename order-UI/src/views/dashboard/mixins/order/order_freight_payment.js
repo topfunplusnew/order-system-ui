@@ -1,7 +1,7 @@
 // 运费一键申请
-import {parseTime} from "../../../../utils/ruoyi";
-import {TableName} from "../../../../api/tool/enums";
-import {batchPayment} from "../../../../api/system/payment";
+import { parseTime } from '../../../../utils/ruoyi';
+import { TableName } from '../../../../api/tool/enums';
+import { batchPayment } from '../../../../api/system/payment';
 
 export var mixin_order_freight_payment = {
   data: function () {
@@ -14,46 +14,46 @@ export var mixin_order_freight_payment = {
       // 折叠面板的list
       activeNames: ['0'],
       batchPaymentList: [],
-      total_freight: 0
-    }
+      total_freight: 0,
+    };
   },
   computed: {
     freightPaymentOnceDisabled() {
       return this.ids.length <= 0;
-    }
+    },
   },
   methods: {
     // 勾选未支付 todo
     selectUnPayment(rows) {
       let flag = false;
       if (rows) {
-        rows.forEach(row => {
+        rows.forEach((row) => {
           if (row.paymentState === '未支付') {
             this.$refs.multipleTable.toggleRowSelection(row);
-            flag = true
+            flag = true;
           }
-        })
+        });
         if (!flag) {
-          this.$message.warning('当前没有未支付付款信息')
+          this.$message.warning('当前没有未支付付款信息');
         }
       } else {
         this.$refs.multipleTable.clearSelection();
       }
     },
     // 一键申请运费
-    handleFreightPaymentOnce(row) {
+    handleFreightPaymentOnce() {
       // 初始化为0
       this.total_freight = 0;
       // 遍历选择的数组
-      this.selectedList.forEach(item => {
-        item = this.convertOrderFreightToPayment(item)
+      this.selectedList.forEach((item) => {
+        item = this.convertOrderFreightToPayment(item);
         // 填充对方的银行类型
-        item.otherBankCardType = this.freightSelfOnceInfo.otherBankCardType
+        item.otherBankCardType = this.freightSelfOnceInfo.otherBankCardType;
         // 推入到需要计算的数组
-        this.batchPaymentList.push(item)
+        this.batchPaymentList.push(item);
         // 累加
-        this.total_freight += Number(item.moneyAmount)
-      })
+        this.total_freight += Number(item.moneyAmount);
+      });
       // 重置运费信息
       this.resetFreightSelfOnceInfo();
       // 打开运费付款页面
@@ -72,32 +72,32 @@ export var mixin_order_freight_payment = {
         otherBankName: orderFreight.otherBankName,
         companyName: orderFreight.driverName,
         companyId: orderFreight.driverId,
-        companyType: "司机",
+        companyType: '司机',
         comments: orderFreight.content,
-      }
+      };
     },
     // 自动填充己方信息
     handleCallBack(val) {
-      this.freightSelfOnceInfo.selfAcountsName = val.acountsName
-      this.freightSelfOnceInfo.selfBankNo = val.bankNo
-      this.freightSelfOnceInfo.selfBankName = val.bankName
+      this.freightSelfOnceInfo.selfAcountsName = val.acountsName;
+      this.freightSelfOnceInfo.selfBankNo = val.bankNo;
+      this.freightSelfOnceInfo.selfBankName = val.bankName;
     },
     // 一键付运费
     submitFreightOnce() {
       // 填充己方信息
-      this.batchPaymentList.forEach(item => {
+      this.batchPaymentList.forEach((item) => {
         Object.assign(item, {
           ...this.freightSelfOnceInfo,
-          payType: this.freightSelfOnceInfo.payType.join('-')
-        })
-      })
+          payType: this.freightSelfOnceInfo.payType.join('-'),
+        });
+      });
       // 批量添加付款信息
-      batchPayment(this.batchPaymentList).then(res => {
-        this.$message.success('一键运费付款成功')
+      batchPayment(this.batchPaymentList).then(() => {
+        this.$message.success('一键运费付款成功');
         this.resetFreightSelfOnceInfo();
         this.freightOnceVisible = false;
-        this.getList()
-      })
+        this.getList();
+      });
     },
     // 填充查询信息
     handleCommitBackBank(val) {
@@ -109,10 +109,11 @@ export var mixin_order_freight_payment = {
         selfAcountsName: null,
         selfBankNo: null,
         selfBankName: null,
+        // 己方银行账户类型
         selfBankCardType: null,
         // 对方银行账户类型
         otherBankCardType: null,
-      }
-    }
+      };
+    },
   },
-}
+};

@@ -1,11 +1,11 @@
-import InventoryForm from "@/views/dashboard/components/inventory/InventoryForm.vue";
+import InventoryForm from '@/views/dashboard/components/inventory/InventoryForm.vue';
 
 export var mixin_inventory_add = {
   data: function () {
     return {
-      //货物入库
+      // 货物入库
       invoiceInVisible: false,
-      //库存信息
+      // 库存信息
       inventoryInfo: {
         storeDate: '',
         storeHouseName: '',
@@ -17,12 +17,12 @@ export var mixin_inventory_add = {
     }
   },
   methods: {
-    //添加货物
+    // 添加货物
     addNewInventory() {
       this.resetInventoryInfo()
       this.openDialog(InventoryForm, '添加货物', '1300px', {})
     },
-    //重置仓库信息
+    // 重置仓库信息
     resetInventoryInfo() {
       this.inventoryInfo = {
         storeDate: '',
@@ -35,7 +35,7 @@ export var mixin_inventory_add = {
     handleAdd() {
       this.reset();
       this.open = true;
-      this.title = "添加库存";
+      this.title = '添加库存';
     },
   }
 }

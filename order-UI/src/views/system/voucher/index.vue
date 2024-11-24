@@ -1,6 +1,6 @@
 <template>
   <div class="app-container">
-    <el-form :model="queryParams" ref="queryForm" size="small" :inline="true" v-show="showSearch" label-width="68px">
+    <el-form v-show="showSearch" ref="queryForm" :model="queryParams" size="small" :inline="true" label-width="68px">
       <el-form-item label="凭证编号" prop="voucherNo">
         <el-input
           v-model="queryParams.voucherNo"
@@ -29,8 +29,8 @@
       </el-col>
     </el-row>
     <el-row :gutter="10" class="mb8">
-      <right-toolbar :showSearch.sync="showSearch" @queryTable="getList" :columns="columns">
-        <template v-slot:print>
+      <right-toolbar :showSearch.sync="showSearch" :columns="columns" @queryTable="getList">
+        <template #print>
           <el-col :span="1.5">
             <el-button
               plain
@@ -42,14 +42,14 @@
           </el-col>
         </template>
         <!--        导出-->
-        <template v-slot:export>
+        <template #export>
           <el-col :span="1.5">
             <el-button
+              v-hasPermi="['system:freight:export']"
               plain
               icon="el-icon-folder-opened"
               size="mini"
               @click="handleExport"
-              v-hasPermi="['system:freight:export']"
             >
             </el-button>
           </el-col>
@@ -57,18 +57,18 @@
       </right-toolbar>
     </el-row>
 
-    <el-table v-loading="loading" :data="voucherList" size="mini"
-              :cell-style="() => { return { padding: '.5px' } }" id="printBox" v-horizontal-scroll="'always'"
+    <el-table id="printBox" v-loading="loading" v-horizontal-scroll="'always'"
+              :data="voucherList" size="mini" :cell-style="() => { return { padding: '.5px' } }"
               border>
-      <el-table-column label="凭证编号" align="center" prop="voucherNo" width="300"/>
-      <el-table-column label="制单日期" align="center" prop="vDate" show-overflow-tooltip/>
-      <el-table-column label="制单人" align="center" prop="makeUser" show-overflow-tooltip/>
-      <el-table-column label="合计" align="center" prop="amount" show-overflow-tooltip/>
-      <el-table-column label="借方" align="center" prop="borrower" show-overflow-tooltip/>
-      <el-table-column label="贷方" align="center" prop="lender" show-overflow-tooltip/>
+      <el-table-column label="凭证编号" align="center" prop="voucherNo" width="300" />
+      <el-table-column label="制单日期" align="center" prop="vDate" show-overflow-tooltip />
+      <el-table-column label="制单人" align="center" prop="makeUser" show-overflow-tooltip />
+      <el-table-column label="合计" align="center" prop="amount" show-overflow-tooltip />
+      <el-table-column label="借方" align="center" prop="borrower" show-overflow-tooltip />
+      <el-table-column label="贷方" align="center" prop="lender" show-overflow-tooltip />
       <!--      <el-table-column label="订单" align="center" prop="pid"/>-->
-      <el-table-column label="凭证类型" align="center" prop="voucherType" show-overflow-tooltip/>
-      <el-table-column label="备注" align="center" prop="comments" show-overflow-tooltip/>
+      <el-table-column label="凭证类型" align="center" prop="voucherType" show-overflow-tooltip />
+      <el-table-column label="备注" align="center" prop="comments" show-overflow-tooltip />
       <el-table-column label="操作" align="center" class-name="small-padding fixed-width">
         <template slot-scope="scope">
           <!--          <el-button-->
@@ -85,17 +85,17 @@
           <!--          >查看-->
           <!--          </el-button>-->
           <el-button
+            v-if="isOrderOrNot(scope.row)"
             size="mini"
             type="text"
-            v-if="isOrderOrNot(scope.row)"
             @click="handleGoodsOrder(scope.row)"
           >查看订单信息
           </el-button>
           <el-button
+            v-hasPermi="['system:voucher:remove']"
             size="mini"
             type="text"
             @click="handleDelete(scope.row)"
-            v-hasPermi="['system:voucher:remove']"
           >删除
           </el-button>
         </template>
@@ -113,8 +113,8 @@
     <!--    查看订单的弹窗-->
     <InfoDialog :visible="goodsOrderVisible" title="订单列表" @close="goodsOrderVisible = false">
       <template #info>
-        <OrderInfos :order-info="orderInfo"/>
-        <OrderDetailInfo :order-detail-info-list="orderInfo.orderDetailList"/>
+        <OrderInfos :order-info="orderInfo" />
+        <OrderDetailInfo :order-detail-info-list="orderInfo.orderDetailList" />
       </template>
     </InfoDialog>
     <!-- 添加或修改凭证对话框 -->
@@ -145,177 +145,177 @@
 </template>
 
 <script>
-import {
-  listVoucher,
-  getVoucher,
-  delVoucher,
-} from "@/api/system/voucher";
-import {mixin_printHTML} from "../../dashboard/mixins/print";
-import {mixin_vouncher_options} from "../../dashboard/mixins/vouncher/vouncher_options";
-import InfoDialog from "../../../components/InfoDialog.vue";
-import OrderInfos from "../../dashboard/components/goodsOrder/OrderInfos.vue";
-import OrderDetailInfo from "../../dashboard/components/goodsOrder/OrderDetailInfo.vue";
-import {addDateRange} from "../../../utils/ruoyi";
+  import {
+    listVoucher,
+    getVoucher,
+    delVoucher,
+  } from '@/api/system/voucher';
+  import { mixin_printHTML } from '../../dashboard/mixins/print';
+  import { mixin_vouncher_options } from '../../dashboard/mixins/vouncher/vouncher_options';
+  import InfoDialog from '../../../components/InfoDialog.vue';
+  import OrderInfos from '../../dashboard/components/goodsOrder/OrderInfos.vue';
+  import OrderDetailInfo from '../../dashboard/components/goodsOrder/OrderDetailInfo.vue';
+  import { addDateRange } from '../../../utils/ruoyi';
 
-export default {
-  name: "Voucher",
-  components: {OrderDetailInfo, OrderInfos, InfoDialog},
-  mixins: [mixin_printHTML, mixin_vouncher_options],
-  data() {
-    return {
-      // 遮罩层
-      loading: true,
-      // 选中数组
-      ids: [],
-      // 非单个禁用
-      single: true,
-      // 非多个禁用
-      multiple: true,
-      // 显示搜索条件
-      showSearch: true,
-      // 总条数
-      total: 0,
-      // 凭证表格数据
-      voucherList: [],
-      // 弹出层标题
-      title: "",
-      // 是否显示弹出层
-      open: false,
-      // 查询参数
-      queryParams: {
-        voucherNoPrefix: '',
-        pageNum: 1,
-        pageSize: 10,
-        voucherNo: null,
-        vDate: null,
-        makeUser: null,
-        amount: null,
-        borrower: null,
-        lender: null,
-        pid: null,
-        voucherType: null,
-        editUserid: null,
-        comments: null,
-        addtime: null,
-        userId: null,
-        UserName: null,
-        delFlag: null
-      },
-      // 表单参数
-      form: {},
-      // 表单校验
-      rules: {},
-      columns: [],
-      options: [{
-        value: 'orderId_',
-        label: '订单'
-      }, {
-        value: 'voiceIn_',
-        label: '发票买入'
-      }, {
-        value: 'voiceOt_',
-        label: '发票卖出'
-      }, {
-        value: 'voiceTr_',
-        label: '第三方开票'
-      }],
-    };
-  },
-  created() {
-    this.getList();
-  },
-  methods: {
-    // 这个函数用于日后判断是不是与订单相关 例如库存还没有与订单产生联系
-    isOrderOrNot(row) {
-      // todo 日后如果有新的凭证类型 就放入这个数组中
-      const excludeList = ['inventory_']
-      return !excludeList.some(item => row.voucherNo.startsWith(item))
-    },
-    /** 查询凭证列表 */
-    getList() {
-      this.loading = true;
-      listVoucher(addDateRange(this.queryParams, [], 'voucher', this.queryParams.voucherNoPrefix)).then(response => {
-        this.voucherList = response.rows;
-        this.total = response.total;
-        this.loading = false;
-      });
-    },
-    // 取消按钮
-    cancel() {
-      this.open = false;
-      this.reset();
-    },
-    // 表单重置
-    reset() {
-      this.form = {
-        id: null,
-        voucherNo: null,
-        vDate: null,
-        makeUser: null,
-        amount: null,
-        borrower: null,
-        lender: null,
-        pid: null,
-        voucherType: null,
-        editUserid: null,
-        comments: null,
-        addtime: null,
-        userId: null,
-        UserName: null,
-        updateTime: null,
-        delFlag: null
+  export default {
+    name: 'Voucher',
+    components: { OrderDetailInfo, OrderInfos, InfoDialog },
+    mixins: [mixin_printHTML, mixin_vouncher_options],
+    data() {
+      return {
+        // 遮罩层
+        loading: true,
+        // 选中数组
+        ids: [],
+        // 非单个禁用
+        single: true,
+        // 非多个禁用
+        multiple: true,
+        // 显示搜索条件
+        showSearch: true,
+        // 总条数
+        total: 0,
+        // 凭证表格数据
+        voucherList: [],
+        // 弹出层标题
+        title: '',
+        // 是否显示弹出层
+        open: false,
+        // 查询参数
+        queryParams: {
+          voucherNoPrefix: '',
+          pageNum: 1,
+          pageSize: 10,
+          voucherNo: null,
+          vDate: null,
+          makeUser: null,
+          amount: null,
+          borrower: null,
+          lender: null,
+          pid: null,
+          voucherType: null,
+          editUserid: null,
+          comments: null,
+          addtime: null,
+          userId: null,
+          UserName: null,
+          delFlag: null
+        },
+        // 表单参数
+        form: {},
+        // 表单校验
+        rules: {},
+        columns: [],
+        options: [{
+          value: 'orderId_',
+          label: '订单'
+        }, {
+          value: 'voiceIn_',
+          label: '发票买入'
+        }, {
+          value: 'voiceOt_',
+          label: '发票卖出'
+        }, {
+          value: 'voiceTr_',
+          label: '第三方开票'
+        }],
       };
-      this.resetForm("form");
     },
-    /** 搜索按钮操作 */
-    handleQuery() {
-      this.queryParams.pageNum = 1;
+    created() {
       this.getList();
     },
-    /** 重置按钮操作 */
-    resetQuery() {
-      this.resetForm("queryForm");
-      this.handleQuery();
-    },
-    // 多选框选中数据
-    handleSelectionChange(selection) {
-      this.ids = selection.map(item => item.id)
-      this.single = selection.length !== 1
-      this.multiple = !selection.length
-    },
-    /** 新增按钮操作 */
-    handleAdd() {
-      this.reset();
-      this.open = true;
-      this.title = "添加凭证";
-    },
-    /** 修改按钮操作 */
-    handleUpdate(row) {
-      this.reset();
-      const id = row.id || this.ids
-      getVoucher(id).then(response => {
-        this.form = response.data;
-        this.open = true;
-        this.title = "修改凭证";
-      });
-    },
-    handleDelete(row) {
-      const ids = row.id || this.ids;
-      this.$modal.confirm('是否确认删除凭证编号为"' + ids + '"的数据项？').then(function () {
-        return delVoucher(ids);
-      }).then(() => {
+    methods: {
+      // 这个函数用于日后判断是不是与订单相关 例如库存还没有与订单产生联系
+      isOrderOrNot(row) {
+        // todo 日后如果有新的凭证类型 就放入这个数组中
+        const excludeList = ['inventory_']
+        return !excludeList.some(item => row.voucherNo.startsWith(item))
+      },
+      /** 查询凭证列表 */
+      getList() {
+        this.loading = true;
+        listVoucher(addDateRange(this.queryParams, [], 'voucher', this.queryParams.voucherNoPrefix)).then(response => {
+          this.voucherList = response.rows;
+          this.total = response.total;
+          this.loading = false;
+        });
+      },
+      // 取消按钮
+      cancel() {
+        this.open = false;
+        this.reset();
+      },
+      // 表单重置
+      reset() {
+        this.form = {
+          id: null,
+          voucherNo: null,
+          vDate: null,
+          makeUser: null,
+          amount: null,
+          borrower: null,
+          lender: null,
+          pid: null,
+          voucherType: null,
+          editUserid: null,
+          comments: null,
+          addtime: null,
+          userId: null,
+          UserName: null,
+          updateTime: null,
+          delFlag: null
+        };
+        this.resetForm('form');
+      },
+      /** 搜索按钮操作 */
+      handleQuery() {
+        this.queryParams.pageNum = 1;
         this.getList();
-        this.$modal.msgSuccess("删除成功");
-      }).catch(() => {
-      });
-    },
-    /** 导出按钮操作 */
-    handleExport() {
-      this.download('system/voucher/export', {
-        ...this.queryParams
-      }, `voucher_${new Date().getTime()}.xlsx`)
+      },
+      /** 重置按钮操作 */
+      resetQuery() {
+        this.resetForm('queryForm');
+        this.handleQuery();
+      },
+      // 多选框选中数据
+      handleSelectionChange(selection) {
+        this.ids = selection.map(item => item.id)
+        this.single = selection.length !== 1
+        this.multiple = !selection.length
+      },
+      /** 新增按钮操作 */
+      handleAdd() {
+        this.reset();
+        this.open = true;
+        this.title = '添加凭证';
+      },
+      /** 修改按钮操作 */
+      handleUpdate(row) {
+        this.reset();
+        const id = row.id || this.ids
+        getVoucher(id).then(response => {
+          this.form = response.data;
+          this.open = true;
+          this.title = '修改凭证';
+        });
+      },
+      handleDelete(row) {
+        const ids = row.id || this.ids;
+        this.$modal.confirm('是否确认删除凭证编号为"' + ids + '"的数据项？').then(function () {
+          return delVoucher(ids);
+        }).then(() => {
+          this.getList();
+          this.$modal.msgSuccess('删除成功');
+        }).catch(() => {
+        });
+      },
+      /** 导出按钮操作 */
+      handleExport() {
+        this.download('system/voucher/export', {
+          ...this.queryParams
+        }, `voucher_${new Date().getTime()}.xlsx`)
+      }
     }
   }
-}
-;
+  ;
 </script>

@@ -1,4 +1,4 @@
-//混入
+// 混入
 export var mixin_printHTML = {
   data: function () {
     return {}

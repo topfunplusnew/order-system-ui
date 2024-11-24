@@ -6,9 +6,9 @@
     </el-input>
     <div class="icon-list">
       <div class="list-container">
-        <div v-for="(item, index) in iconList" class="icon-item-wrapper" :key="index" @click="selectedIcon(item)">
+        <div v-for="(item, index) in iconList" :key="index" class="icon-item-wrapper" @click="selectedIcon(item)">
           <div :class="['icon-item', { active: activeIcon === item }]">
-            <svg-icon :icon-class="item" class-name="icon" style="height: 25px;width: 16px;"/>
+            <svg-icon :icon-class="item" class-name="icon" style="height: 25px;width: 16px;" />
             <span>{{ item }}</span>
           </div>
         </div>
@@ -18,37 +18,37 @@
 </template>
 
 <script>
-import icons from './requireIcons'
-export default {
-  name: 'IconSelect',
-  props: {
-    activeIcon: {
-      type: String
-    }
-  },
-  data() {
-    return {
-      name: '',
-      iconList: icons
-    }
-  },
-  methods: {
-    filterIcons() {
-      this.iconList = icons
-      if (this.name) {
-        this.iconList = this.iconList.filter(item => item.includes(this.name))
+  import icons from './requireIcons'
+  export default {
+    name: 'IconSelect',
+    props: {
+      activeIcon: {
+        type: String
       }
     },
-    selectedIcon(name) {
-      this.$emit('selected', name)
-      document.body.click()
+    data() {
+      return {
+        name: '',
+        iconList: icons
+      }
     },
-    reset() {
-      this.name = ''
-      this.iconList = icons
+    methods: {
+      filterIcons() {
+        this.iconList = icons
+        if (this.name) {
+          this.iconList = this.iconList.filter(item => item.includes(this.name))
+        }
+      },
+      selectedIcon(name) {
+        this.$emit('selected', name)
+        document.body.click()
+      },
+      reset() {
+        this.name = ''
+        this.iconList = icons
+      }
     }
   }
-}
 </script>
 
 <style rel="stylesheet/scss" lang="scss" scoped>

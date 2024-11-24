@@ -21,24 +21,24 @@
   </div>
 </template>
 <script>
-import OrderDetailInfo from "@/views/dashboard/components/goodsOrder/OrderDetailInfo.vue"
+  import OrderDetailInfo from '@/views/dashboard/components/goodsOrder/OrderDetailInfo.vue'
 
-export default {
-  name: 'CheckOrder',
-  components: {OrderDetailInfo},
-  props: {
-    // 传递过来的订单信息 要检查一下是否是调整单 如果是 那么就有第二个tab 如果不是那么就 没有
-    orderInfo: {}
-  },
-  data() {
-    return {};
-  },
-  computed: {},
-  methods: {
-    // 每一个组件都要实现这么一个函数 这个函数用来执行相关的业务操作
-    handleProcess() {
+  export default {
+    name: 'CheckOrder',
+    components: { OrderDetailInfo },
+    props: {
+      // 传递过来的订单信息 要检查一下是否是调整单 如果是 那么就有第二个tab 如果不是那么就 没有
+      orderInfo: {}
+    },
+    data() {
+      return {};
+    },
+    computed: {},
+    methods: {
+      // 每一个组件都要实现这么一个函数 这个函数用来执行相关的业务操作
+      handleProcess() {
 
+      }
     }
   }
-}
 </script>

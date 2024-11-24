@@ -56,11 +56,11 @@ export function resetForm(refName) {
 // 添加日期范围
 // propName 可以添加一个字符串
 export function addDateRange(params, dateRange, propName, otherParams) {
-  //如果是走访记录的时间查询
-  let search = params;
+  // 如果是走访记录的时间查询
+  const search = params;
   search.params = typeof (search.params) === 'object' && search.params !== null && !Array.isArray(search.params) ? search.params : {};
   dateRange = Array.isArray(dateRange) ? dateRange : [];
-  //需要格式化什么 加if就行了
+  // 需要格式化什么 加if就行了
   if (propName === 'visit') {
     search.params['visitDateStartTime'] = dateRange[0];
     search.params['visitDateEndTime'] = dateRange[1];
@@ -69,15 +69,15 @@ export function addDateRange(params, dateRange, propName, otherParams) {
     search.params['fundsDateStartTime'] = dateRange[0];
     search.params['fundsDateEndTime'] = dateRange[1];
   } else if (propName === 'invoiceout') {
-    //invoiceDateStartTime
+    // invoiceDateStartTime
     search.params['invoiceDateStartTime'] = dateRange[0];
     search.params['invoiceDateEndTime'] = dateRange[1];
   } else if (propName === 'orderfreight') {
-    //applyDateStartTime
+    // applyDateStartTime
     search.params['applyDateStartTime'] = dateRange[0];
     search.params['applyDateEndTime'] = dateRange[1];
   } else if (propName === 'fixedassets') {
-    //buyDateStartTime
+    // buyDateStartTime
     search.params['buyDateStartTime'] = dateRange[0];
     search.params['buyDateEndTime'] = dateRange[1];
 
@@ -115,7 +115,7 @@ export function addDateRange(params, dateRange, propName, otherParams) {
 // 回显数据字典
 export function selectDictLabel(datas, value) {
   if (value === undefined) {
-    return "";
+    return '';
   }
   var actions = [];
   Object.keys(datas).some((key) => {
@@ -133,13 +133,13 @@ export function selectDictLabel(datas, value) {
 // 回显数据字典（字符串、数组）
 export function selectDictLabels(datas, value, separator) {
   if (value === undefined || value.length === 0) {
-    return "";
+    return '';
   }
   if (Array.isArray(value)) {
-    value = value.join(",");
+    value = value.join(',');
   }
   var actions = [];
-  var currentSeparator = undefined === separator ? "," : separator;
+  var currentSeparator = undefined === separator ? ',' : separator;
   var temp = value.split(currentSeparator);
   Object.keys(value.split(currentSeparator)).some((val) => {
     var match = false;
@@ -172,8 +172,8 @@ export function sprintf(str) {
 
 // 转换字符串，undefined,null等转化为""
 export function parseStrEmpty(str) {
-  if (!str || str == "undefined" || str == "null") {
-    return "";
+  if (!str || str == 'undefined' || str == 'null') {
+    return '';
   }
   return str;
 }
@@ -202,8 +202,8 @@ export function mergeRecursive(source, target) {
  * @param {*} children 孩子节点字段 默认 'children'
  */
 export function handleTree(data, id, parentId, children) {
-  //预处理
-  let config = {
+  // 预处理
+  const config = {
     id: id || 'id',
     parentId: parentId || 'parentId',
     childrenList: children || 'children'
@@ -213,38 +213,38 @@ export function handleTree(data, id, parentId, children) {
   var nodeIds = {};
   var tree = [];
 
-  //遍历传来的数组的每一个对象 d是每一个item
-  for (let d of data) {
-    let parentId = d[config.parentId]; //拿到每一个item的父节点id
+  // 遍历传来的数组的每一个对象 d是每一个item
+  for (const d of data) {
+    const parentId = d[config.parentId]; // 拿到每一个item的父节点id
 
-    //父节点=null
+    // 父节点=null
     if (childrenListMap[parentId] == null) {
       childrenListMap[parentId] = [];
     }
 
-    //d[config.id] => d.id
+    // d[config.id] => d.id
     nodeIds[d[config.id]] = d;
     childrenListMap[parentId].push(d);
   }
 
-  for (let d of data) {
-    let parentId = d[config.parentId]; //拿到父id
+  for (const d of data) {
+    const parentId = d[config.parentId]; // 拿到父id
     if (nodeIds[parentId] == null) {
       tree.push(d);
     }
   }
 
-  for (let t of tree) {
+  for (const t of tree) {
     adaptToChildrenList(t);
   }
 
-  //递归
+  // 递归
   function adaptToChildrenList(o) {
     if (childrenListMap[o[config.id]] !== null) {
       o[config.childrenList] = childrenListMap[o[config.id]];
     }
     if (o[config.childrenList]) {
-      for (let c of o[config.childrenList]) {
+      for (const c of o[config.childrenList]) {
         adaptToChildrenList(c);
       }
     }
@@ -261,18 +261,18 @@ export function tansParams(params) {
   let result = ''
   for (const propName of Object.keys(params)) {
     const value = params[propName];
-    var part = encodeURIComponent(propName) + "=";
-    if (value !== null && value !== "" && typeof (value) !== "undefined") {
+    var part = encodeURIComponent(propName) + '=';
+    if (value !== null && value !== '' && typeof (value) !== 'undefined') {
       if (typeof value === 'object') {
         for (const key of Object.keys(value)) {
-          if (value[key] !== null && value[key] !== "" && typeof (value[key]) !== 'undefined') {
-            let params = propName + '[' + key + ']';
-            var subPart = encodeURIComponent(params) + "=";
-            result += subPart + encodeURIComponent(value[key]) + "&";
+          if (value[key] !== null && value[key] !== '' && typeof (value[key]) !== 'undefined') {
+            const params = propName + '[' + key + ']';
+            var subPart = encodeURIComponent(params) + '=';
+            result += subPart + encodeURIComponent(value[key]) + '&';
           }
         }
       } else {
-        result += part + encodeURIComponent(value) + "&";
+        result += part + encodeURIComponent(value) + '&';
       }
     }
   }

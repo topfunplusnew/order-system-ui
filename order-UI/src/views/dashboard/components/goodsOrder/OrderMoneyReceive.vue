@@ -4,23 +4,23 @@
     <keep-alive>
       <ApplyPayment :table-name="TableName.GOODS_ORDER" :t-i-d="tID" :need-money="needMoney"
                     :need-info="{}"
-                    @changeOpen="handleCloseApply"/>
+                    @changeOpen="handleCloseApply" />
     </keep-alive>
   </el-dialog>
 </template>
 <script>
-import ApplyPayment from "@/views/dashboard/components/common/ApplyPayment.vue"
+  import ApplyPayment from '@/views/dashboard/components/common/ApplyPayment.vue'
 
-export default {
-  name: 'OrderMoneyReceive',
-  components: {ApplyPayment},
-  props: {
-    TableName: {},
-    handleCloseApply: {},
-    needMoney: {},
-    paymentApplyVisible: {},
-    tID: {}
-  },
-  methods: {}
-}
+  export default {
+    name: 'OrderMoneyReceive',
+    components: { ApplyPayment },
+    props: {
+      TableName: {},
+      handleCloseApply: {},
+      needMoney: {},
+      paymentApplyVisible: {},
+      tID: {}
+    },
+    methods: {}
+  }
 </script>

@@ -1,33 +1,33 @@
 <script>
-export default {
-  name: "Item",
-  data() {
-    return {
-      name: ''
-    }
-  },
-  props: {
-    title: {
-      type: String,
-    }
-  },
-  created() {
-    console.log('Item::attrs', this.$attrs.name);
-    console.log('created::Item::props', this.$props);
-  },
-  mounted() {
-    console.log('mounted::Item::props', this.$props);
-  },
-  methods: {},
-  watch: {
+  export default {
+    name: 'Item',
+    filters: {},
+    provide() {
+      return {}
+    },
+    props: {
+      title: {
+        type: String,
+      }
+    },
+    data() {
+      return {
+        name: ''
+      }
+    },
+    computed: {},
+    watch: {
 
-  },
-  computed: {},
-  filters: {},
-  provide() {
-    return {}
-  },
-}
+    },
+    created() {
+      console.log('Item::attrs', this.$attrs.name);
+      console.log('created::Item::props', this.$props);
+    },
+    mounted() {
+      console.log('mounted::Item::props', this.$props);
+    },
+    methods: {},
+  }
 </script>
 
 <template>

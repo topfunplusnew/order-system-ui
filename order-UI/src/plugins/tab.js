@@ -24,7 +24,7 @@ export default {
   },
   // 关闭当前tab页签，打开新页签
   closeOpenPage(obj) {
-    store.dispatch("tagsView/delView", router.currentRoute);
+    store.dispatch('tagsView/delView', router.currentRoute);
     if (obj !== undefined) {
       return router.push(obj);
     }

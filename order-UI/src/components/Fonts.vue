@@ -1,14 +1,14 @@
 <!-- 统一文本组件 -->
 <script>
-export default {
-  name: "Fonts",
-  props: {
-    content: {
-      type: String,
-      default: '请输入文本'
+  export default {
+    name: 'Fonts',
+    props: {
+      content: {
+        type: String,
+        default: '请输入文本'
+      }
     }
   }
-}
 </script>
 
 <template>

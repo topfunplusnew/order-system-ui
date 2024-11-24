@@ -1,157 +1,157 @@
 <script>
-import InfoDialog from "../../../../components/InfoDialog.vue";
-import SearchOption from "../../../../components/SearchOption.vue";
-import {listBankAccount} from "../../../../api/system/bankAccount";
-import {addOrderFreight} from "../../../../api/system/orderFreight";
-import {excludeParams} from "../../../../api/tool/exclude";
-import {listFleet} from "../../../../api/system/fleet";
-import {listData} from "../../../../api/system/dict/data";
-import {listGoodsOrder} from "../../../../api/system/goodsOrder";
-import {isNull} from "../../../../main";
+  import InfoDialog from '../../../../components/InfoDialog.vue'
+  import SearchOption from '../../../../components/SearchOption.vue'
+  import { listBankAccount } from '../../../../api/system/bankAccount'
+  import { addOrderFreight } from '../../../../api/system/orderFreight'
+  import { excludeParams } from '../../../../api/tool/exclude'
+  import { listFleet } from '../../../../api/system/fleet'
+  import { listData } from '../../../../api/system/dict/data'
+  import { listGoodsOrder } from '../../../../api/system/goodsOrder'
+  import { isNull } from '../../../../main'
 
-export default {
-  name: "FillFreight",
-  components: {SearchOption, InfoDialog},
-  props: {},
-  data() {
-    return {
-      visible: false,
-      form: {},
-      rules: {},
+  export default {
+    name: 'FillFreight',
+    components: { SearchOption, InfoDialog },
+    props: {},
+    data() {
+      return {
+        visible: false,
+        form: {},
+        rules: {},
 
-      // 搜索字段
-      queryCompany: '',
-      queryFleet: '',
-      queryCars: '',
-      queryOrder: ''
-    }
-  },
-  methods: {
-    isNull,
-    listGoodsOrder,
-    listData,
-    listFleet,
-    listBankAccount,
-    // 修正运费 因为有差值需要填补
-    handleFill() {
-      this.reset()
-      this.visible = true
+        // 搜索字段
+        queryCompany: '',
+        queryFleet: '',
+        queryCars: '',
+        queryOrder: ''
+      }
     },
-    // 订单的填充
-    updateQueryOrder(val) {
-      this.queryOrder = val
-    },
-    // 订单的填充 主要是 填充车牌 司机 车队
-    // 陆运 填充 val.landCarNo 陆运车牌 val.landDriverName 司机姓名 fleet 车队
-    // 海运 填充 val.seaCarNo 海运车牌 seaDriverName 海运公司 fleet 为 无
-    handleCommitBackOrder(val) {
+    methods: {
+      isNull,
+      listGoodsOrder,
+      listData,
+      listFleet,
+      listBankAccount,
+      // 修正运费 因为有差值需要填补
+      handleFill() {
+        this.reset()
+        this.visible = true
+      },
+      // 订单的填充
+      updateQueryOrder(val) {
+        this.queryOrder = val
+      },
+      // 订单的填充 主要是 填充车牌 司机 车队
+      // 陆运 填充 val.landCarNo 陆运车牌 val.landDriverName 司机姓名 fleet 车队
+      // 海运 填充 val.seaCarNo 海运车牌 seaDriverName 海运公司 fleet 为 无
+      handleCommitBackOrder(val) {
+        // 填充银行卡信息 todo 这里的银行卡户名 填写的是司机的名称 后续是否需要修改?
+        this.form.otherAcountsName = val.landDriverName || val.seaDriverName
+        this.form.otherBankNo = val.landBankNo || val.seaBankNo
+        this.form.otherBankName = val.landBankName || val.seaBankName
 
-      // 填充银行卡信息 todo 这里的银行卡户名 填写的是司机的名称 后续是否需要修改?
-      this.form.otherAcountsName = val.landDriverName || val.seaDriverName
-      this.form.otherBankNo = val.landBankNo || val.seaBankNo
-      this.form.otherBankName = val.landBankName || val.seaBankName
+        // 填充司机信息
+        this.form.driverName = val.landDriverName || val.seaDriverName
+        this.form.carNo = val.landCarNo || val.seaCarNo
+        this.form.fleet = val.fleet || '无'
+      },
 
-      // 填充司机信息
-      this.form.driverName = val.landDriverName || val.seaDriverName
-      this.form.carNo = val.landCarNo || val.seaCarNo
-      this.form.fleet = val.fleet || '无'
-    },
-    // 填充方法
-    //己方公司点击确定的回调
-    handleCommitBack(val) {
-      this.form.otherBankNo = val.bankNo;
-      this.form.otherBankName = val.bankName;
-      this.form.companyName = val.companyName;
-      this.form.companyId = val.id;
-      this.form.otherAcountsName = val.acountsName;
-      this.form.companyType = val.companyType
-    },
-    handleCommitBackCars(val) {
-      this.form.carNo = val.dictLabel
-    },
-    updateQueryCars(val) {
-      this.queryCars = val;
-    },
-    //update
-    handleUpdateQueryName(val) {
-      this.queryCompany = val;
-    },
-    handleCommitBackFleet(val) {
-      this.form.fleet = val.fname;
-    },
-    updateQueryFleet(val) {
-      this.queryFleet = val
-    },
-    // 提交表单信息
-    submitForm() {
-      this.$refs["form"].validate(valid => {
-        if (valid) {
-          this.form = excludeParams(this.form, this.$exclude)
-          addOrderFreight(this.form).then(() => {
-            this.$modal.msgSuccess("新增成功");
-            this.visible = false;
-            this.getList();
-          });
+      // 己方公司点击确定的回调
+      handleCommitBack(val) {
+        this.form.otherBankNo = val.bankNo
+        this.form.otherBankName = val.bankName
+        this.form.companyName = val.companyName
+        this.form.companyId = val.id
+        this.form.otherAcountsName = val.acountsName
+        this.form.companyType = val.companyType
+      },
+      handleCommitBackCars(val) {
+        this.form.carNo = val.dictLabel
+      },
+      updateQueryCars(val) {
+        this.queryCars = val
+      },
+      // update
+      handleUpdateQueryName(val) {
+        this.queryCompany = val
+      },
+      handleCommitBackFleet(val) {
+        this.form.fleet = val.fname
+      },
+      updateQueryFleet(val) {
+        this.queryFleet = val
+      },
+      // 提交表单信息
+      submitForm() {
+        this.$refs['form'].validate((valid) => {
+          if (valid) {
+            this.form = excludeParams(this.form, this.$exclude)
+            addOrderFreight(this.form).then(() => {
+              this.$modal.msgSuccess('新增成功')
+              this.visible = false
+              this.getList()
+            })
+          }
+        })
+      },
+      cancel() {
+        this.visible = false
+        this.reset()
+      },
+      // 表单重置
+      reset() {
+        this.form = {
+          id: null,
+          ordersNo: null,
+          freightType: null,
+          moneyAmount: null,
+          selfAcountsName: null,
+          selfBankNo: null,
+          selfBankName: null,
+          otherAcountsName: null,
+          otherBankNo: null,
+          otherBankName: null,
+          content: null,
+          paymentState: null,
+          driverName: null,
+          driverId: null,
+          CarNo: null,
+          fleet: null,
+          applyUserId: null,
+          applyUserName: null,
+          applyDate: null,
+          isedit: null,
+          payUserId: null,
+          payUserName: null,
+          payDate: null,
+          cancelFlag: null,
+          comments: null,
+          addtime: null,
+          userId: null,
+          UserName: null,
+          delFlag: null
         }
-      });
-    },
-    cancel() {
-      this.visible = false;
-      this.reset();
-    },
-    // 表单重置
-    reset() {
-      this.form = {
-        id: null,
-        ordersNo: null,
-        freightType: null,
-        moneyAmount: null,
-        selfAcountsName: null,
-        selfBankNo: null,
-        selfBankName: null,
-        otherAcountsName: null,
-        otherBankNo: null,
-        otherBankName: null,
-        content: null,
-        paymentState: null,
-        driverName: null,
-        driverId: null,
-        CarNo: null,
-        fleet: null,
-        applyUserId: null,
-        applyUserName: null,
-        applyDate: null,
-        isedit: null,
-        payUserId: null,
-        payUserName: null,
-        payDate: null,
-        cancelFlag: null,
-        comments: null,
-        addtime: null,
-        userId: null,
-        UserName: null,
-        delFlag: null
-      };
-      this.resetForm("form");
+        this.resetForm('form')
+      }
     }
   }
-}
 </script>
 
 <template>
   <div>
     <el-col :span="1.5">
-      <el-button
-        type="success"
-        size="mini"
-        @click="handleFill"
-      >
+      <el-button type="success" size="mini" @click="handleFill">
         运费修正
       </el-button>
     </el-col>
 
     <!--     修正弹窗-->
-    <InfoDialog :visible.sync="visible" title="运费修正" :width="'750px'" @close="visible = false">
+    <InfoDialog
+      :visible.sync="visible"
+      title="运费修正"
+      :width="'750px'"
+      @close="visible = false"
+    >
       <template #info>
         <el-form ref="form" :model="form" :rules="rules" label-width="80px">
           <!--           选择订单 主要是为了根据ordersNo 查询对应的司机和车队以及车牌信息 然后自动填充-->
@@ -173,9 +173,27 @@ export default {
                   @commitBack="handleCommitBackOrder"
                 >
                   <template #table-columns>
-                    <el-table-column show-overflow-tooltip label="ID" align="center" prop="id" fixed="left" />
-                    <el-table-column show-overflow-tooltip label="日期" align="center" prop="orderDate" fixed="left" />
-                    <el-table-column show-overflow-tooltip label="客户" align="center" prop="customer" fixed="left" />
+                    <el-table-column
+                      show-overflow-tooltip
+                      label="ID"
+                      align="center"
+                      prop="id"
+                      fixed="left"
+                    />
+                    <el-table-column
+                      show-overflow-tooltip
+                      label="日期"
+                      align="center"
+                      prop="orderDate"
+                      fixed="left"
+                    />
+                    <el-table-column
+                      show-overflow-tooltip
+                      label="客户"
+                      align="center"
+                      prop="customer"
+                      fixed="left"
+                    />
                     <el-table-column
                       show-overflow-tooltip
                       label="供应商"
@@ -189,7 +207,12 @@ export default {
                       align="center"
                       prop="isAdjusted"
                     />
-                    <el-table-column show-overflow-tooltip label="陆运车牌" align="center" prop="landCarNo" />
+                    <el-table-column
+                      show-overflow-tooltip
+                      label="陆运车牌"
+                      align="center"
+                      prop="landCarNo"
+                    />
                     <el-table-column
                       show-overflow-tooltip
                       label="陆运司机电话"
@@ -204,12 +227,22 @@ export default {
                       prop="landDriverName"
                       width="100px"
                     />
-                    <el-table-column show-overflow-tooltip label="柜号" align="center" prop="seaCarNo">
+                    <el-table-column
+                      show-overflow-tooltip
+                      label="柜号"
+                      align="center"
+                      prop="seaCarNo"
+                    >
                       <template #default="scope">
                         {{ isNull(scope.row.seaCarNo) }}
                       </template>
                     </el-table-column>
-                    <el-table-column show-overflow-tooltip label="海运司机电话" align="center" prop="seaDriverTel">
+                    <el-table-column
+                      show-overflow-tooltip
+                      label="海运司机电话"
+                      align="center"
+                      prop="seaDriverTel"
+                    >
                       <template #default="scope">
                         {{ isNull(scope.row.seaDriverTel) }}
                       </template>
@@ -225,8 +258,18 @@ export default {
                         {{ isNull(scope.row.seaDriverTel) }}
                       </template>
                     </el-table-column>
-                    <el-table-column show-overflow-tooltip label="销售经理" align="center" prop="saleManager" />
-                    <el-table-column show-overflow-tooltip label="车队" align="center" prop="fleet" />
+                    <el-table-column
+                      show-overflow-tooltip
+                      label="销售经理"
+                      align="center"
+                      prop="saleManager"
+                    />
+                    <el-table-column
+                      show-overflow-tooltip
+                      label="车队"
+                      align="center"
+                      prop="fleet"
+                    />
                     <el-table-column
                       show-overflow-tooltip
                       label="审核状态"
@@ -248,7 +291,12 @@ export default {
                       prop="paymentState"
                       width="120px"
                     />
-                    <el-table-column show-overflow-tooltip label="备注" align="center" prop="comments" />
+                    <el-table-column
+                      show-overflow-tooltip
+                      label="备注"
+                      align="center"
+                      prop="comments"
+                    />
                   </template>
                 </SearchOption>
               </el-col>
@@ -260,7 +308,10 @@ export default {
           <el-form-item label="对方户名" prop="otherAcountsName">
             <el-row>
               <el-col :span="10">
-                <el-input v-model="form.otherAcountsName" placeholder="请输入对方户名" />
+                <el-input
+                  v-model="form.otherAcountsName"
+                  placeholder="请输入对方户名"
+                />
               </el-col>
               <el-col :span="3">
                 <SearchOption
@@ -274,11 +325,31 @@ export default {
                   @update:queryName="handleUpdateQueryName"
                 >
                   <template #table-columns>
-                    <el-table-column label="公司名称" align="center" prop="companyName" />
-                    <el-table-column label="公司类型" align="center" prop="companyType" />
-                    <el-table-column label="开户行" align="center" prop="bankName" />
-                    <el-table-column label="开户名" align="center" prop="acountsName" />
-                    <el-table-column label="账号" align="center" prop="bankNo" />
+                    <el-table-column
+                      label="公司名称"
+                      align="center"
+                      prop="companyName"
+                    />
+                    <el-table-column
+                      label="公司类型"
+                      align="center"
+                      prop="companyType"
+                    />
+                    <el-table-column
+                      label="开户行"
+                      align="center"
+                      prop="bankName"
+                    />
+                    <el-table-column
+                      label="开户名"
+                      align="center"
+                      prop="acountsName"
+                    />
+                    <el-table-column
+                      label="账号"
+                      align="center"
+                      prop="bankNo"
+                    />
                   </template>
                 </SearchOption>
               </el-col>
@@ -288,7 +359,10 @@ export default {
             <el-input v-model="form.otherBankNo" placeholder="请输入对方账号" />
           </el-form-item>
           <el-form-item label="对方开户行" prop="otherBankName">
-            <el-input v-model="form.otherBankName" placeholder="请输入对方开户行" />
+            <el-input
+              v-model="form.otherBankName"
+              placeholder="请输入对方开户行"
+            />
           </el-form-item>
           <!--          下面这些可以通过选择订单 然后自动补齐-->
           <el-form-item label="司机姓名" prop="driverName">
@@ -301,7 +375,7 @@ export default {
               </el-col>
               <el-col :span="4">
                 <SearchOption
-                  :limit-info="{dictType:'order_cars'}"
+                  :limit-info="{ dictType: 'order_cars' }"
                   :get-data="listData"
                   query-label="车牌搜索"
                   :query-name="queryCars"
@@ -357,18 +431,12 @@ export default {
           </el-form-item>
         </el-form>
         <div slot="footer" class="dialog-footer" style="text-align: center">
-          <el-button type="primary" @click="submitForm">
-            确 定
-          </el-button>
-          <el-button @click="cancel">
-            取 消
-          </el-button>
+          <el-button type="primary" @click="submitForm">确 定</el-button>
+          <el-button @click="cancel">取 消</el-button>
         </div>
       </template>
     </InfoDialog>
   </div>
 </template>
 
-<style scoped lang="scss">
-
-</style>
+<style scoped lang="scss"></style>

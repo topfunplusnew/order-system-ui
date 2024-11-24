@@ -1,19 +1,19 @@
 <script>
-import OrderInfos from "../../views/dashboard/components/goodsOrder/OrderInfos.vue";
-import OrderDetailInfo from "../../views/dashboard/components/goodsOrder/OrderDetailInfo.vue";
+  import OrderInfos from '../../views/dashboard/components/goodsOrder/OrderInfos.vue';
+  import OrderDetailInfo from '../../views/dashboard/components/goodsOrder/OrderDetailInfo.vue';
 
-export default {
-  name: "GOODSORDER",
-  components: {OrderDetailInfo, OrderInfos},
-  props: {
-    needToShowInfo: {
-      type: Object,
-      default() {
-        return {}
+  export default {
+    name: 'GOODSORDER',
+    components: { OrderDetailInfo, OrderInfos },
+    props: {
+      needToShowInfo: {
+        type: Object,
+        default() {
+          return {}
+        }
       }
     }
   }
-}
 </script>
 
 <template>

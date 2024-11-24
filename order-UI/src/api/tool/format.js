@@ -29,7 +29,7 @@ export function numToChineseUppercase(n) {
   const numbers = '零壹贰叁肆伍陆柒捌玖'; // 数字对应的中文
 
   let [integerPart, decimalPart] = String(n).split('.'); // 拆分整数和小数部分
-  let result = []; // 最终结果
+  const result = []; // 最终结果
 
   // 将每个四位一组的数字转换为中文
   function sectionToChinese(sectionNum) {
@@ -38,7 +38,7 @@ export function numToChineseUppercase(n) {
     let unitPos = 0; // 对应单位的位置
 
     for (let i = sectionNum.length - 1; i >= 0; i--) {
-      let num = parseInt(sectionNum[i], 10);
+      const num = parseInt(sectionNum[i], 10);
       if (num === 0) {
         if (!zero) {
           zero = true; // 标记出现零
@@ -56,9 +56,9 @@ export function numToChineseUppercase(n) {
   // 处理整数部分，按4位一组转换
   let secIndex = 0;
   while (integerPart.length > 0) {
-    let start = Math.max(0, integerPart.length - 4);
-    let sectionNum = integerPart.substring(start, integerPart.length);
-    let sectionResult = sectionToChinese(sectionNum);
+    const start = Math.max(0, integerPart.length - 4);
+    const sectionNum = integerPart.substring(start, integerPart.length);
+    const sectionResult = sectionToChinese(sectionNum);
     if (sectionResult) {
       result.unshift(sections[secIndex]); // 插入节单位
       result.unshift(sectionResult);
@@ -68,7 +68,7 @@ export function numToChineseUppercase(n) {
   }
 
   // 处理结果中的冗余"零"
-  let chineseNumber = result.join('').replace(/零(万|亿|$)/g, '$1').replace(/亿万/, '亿');
+  const chineseNumber = result.join('').replace(/零(万|亿|$)/g, '$1').replace(/亿万/, '亿');
 
   // 处理小数部分（角、分）
   let decimalResult = '';

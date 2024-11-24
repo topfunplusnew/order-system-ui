@@ -6,7 +6,7 @@ export var common_dialog = {
   data() {
     return {
       // 弹窗的标题 默认为无标题
-      dialogTitle: "无标题",
+      dialogTitle: '无标题',
       // 弹窗的宽度
       dialogWidth: null,
       // 弹窗的显示与隐藏
@@ -19,7 +19,7 @@ export var common_dialog = {
   },
   methods: {
     // 打开弹窗的函数 嵌入到别的混入中使用
-    openDialog(component, title, width = "50%", props) {
+    openDialog(component, title, width = '50%', props) {
       this.currentComponent = component;
       this.dialogTitle = title;
       this.dialogWidth = width;
@@ -35,7 +35,7 @@ export var common_dialog = {
       this.clearStatus();
     },
     // 弹窗点击确认 todo 这个方法可以整合到对应混入中
-    handleDialogConfirm(callback, message = "操作成功") {
+    handleDialogConfirm(callback, message = '操作成功') {
       this.checkDialog(callback);
       callback();
       this.$message.success(message);
@@ -44,7 +44,7 @@ export var common_dialog = {
     // 弹窗相关校验
     checkDialog(callback) {
       if (!(callback instanceof Function)) {
-        throw new Error("回调函数未定义");
+        throw new Error('回调函数未定义');
       }
       // todo 其他逻辑
     },

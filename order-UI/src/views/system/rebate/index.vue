@@ -1,6 +1,6 @@
 <template>
   <div class="app-container">
-    <el-form :model="queryParams" ref="queryForm" size="mini" :inline="true" v-show="showSearch" label-width="68px">
+    <el-form v-show="showSearch" ref="queryForm" :model="queryParams" size="mini" :inline="true" label-width="68px">
       <el-form-item label="返利开始日期" prop="rebateStartTime">
         <el-date-picker
           v-model="queryParams.rebateStartTime"
@@ -35,15 +35,15 @@
       </el-col>
       <el-col :span="1.5">
         <el-button
+          v-hasPermi="['system:rebate:add']"
           type="danger"
           size="mini"
           @click="handleAdd"
-          v-hasPermi="['system:rebate:add']"
         >新增供应商返利信息
         </el-button>
       </el-col>
-      <right-toolbar :showSearch.sync="showSearch" @queryTable="getList" :columns="columns">
-        <template v-slot:print>
+      <right-toolbar :showSearch.sync="showSearch" :columns="columns" @queryTable="getList">
+        <template #print>
           <el-col :span="1.5">
             <el-button
               plain
@@ -55,27 +55,27 @@
           </el-col>
         </template>
         <!--        导出-->
-        <template v-slot:export>
+        <template #export>
           <el-col :span="1.5">
             <el-button
+              v-hasPermi="['system:rebate:export']"
               plain
               icon="el-icon-folder-opened"
               size="mini"
               @click="handleExport"
-              v-hasPermi="['system:rebate:export']"
             >
             </el-button>
           </el-col>
         </template>
         <!--        导出2-->
-        <template v-slot:export2>
+        <template #export2>
           <el-col :span="1.5">
             <el-button
+              v-hasPermi="['system:rebate:export']"
               plain
               icon="el-icon-folder-opened"
               size="mini"
               @click="handleExport2"
-              v-hasPermi="['system:rebate:export']"
             >
             </el-button>
           </el-col>
@@ -83,38 +83,38 @@
       </right-toolbar>
     </el-row>
 
-    <el-table border v-horizontal-scroll="'always'" v-loading="loading" :data="RebateList" size="mini"
-              @selection-change="handleSelectionChange" id="printBox" :cell-style="()=>{return {padding:'.5px'}}">
-      <el-table-column label="日期" align="center" prop="rebateDate" v-if="columns[0].visible" show-overflow-tooltip/>
-      <el-table-column label="金额" align="center" prop="rebate" v-if="columns[1].visible" show-overflow-tooltip/>
-      <el-table-column label="类型" align="center" prop="rebateType" v-if="columns[2].visible" show-overflow-tooltip/>
-      <el-table-column label="收款户名" align="center" prop="inAcountsName" v-if="columns[3].visible"
-                       show-overflow-tooltip/>
-      <el-table-column label="收款账号" align="center" prop="inBankNo" v-if="columns[4].visible" width="160"
-                       show-overflow-tooltip/>
-      <el-table-column label="供应商" align="center" prop="supplier" v-if="columns[5].visible"/>
-      <el-table-column label="付款户名" align="center" prop="outAcountsName" v-if="columns[6].visible"
-                       show-overflow-tooltip/>
-      <el-table-column label="付款款账号" align="center" prop="outBankNo" v-if="columns[7].visible" width="160"/>
-      <el-table-column label="返利原因" align="center" prop="rebateReason" v-if="columns[8].visible"
-                       show-overflow-tooltip/>
-      <el-table-column label="返利方式" align="center" prop="rebateMethod" v-if="columns[9].visible"
-                       show-overflow-tooltip/>
-      <el-table-column label="备注" align="center" prop="comments" v-if="columns[10].visible" show-overflow-tooltip/>
+    <el-table id="printBox" v-horizontal-scroll="'always'" v-loading="loading" border :data="RebateList"
+              size="mini" :cell-style="()=>{return {padding:'.5px'}}" @selection-change="handleSelectionChange">
+      <el-table-column v-if="columns[0].visible" label="日期" align="center" prop="rebateDate" show-overflow-tooltip />
+      <el-table-column v-if="columns[1].visible" label="金额" align="center" prop="rebate" show-overflow-tooltip />
+      <el-table-column v-if="columns[2].visible" label="类型" align="center" prop="rebateType" show-overflow-tooltip />
+      <el-table-column v-if="columns[3].visible" label="收款户名" align="center" prop="inAcountsName"
+                       show-overflow-tooltip />
+      <el-table-column v-if="columns[4].visible" label="收款账号" align="center" prop="inBankNo" width="160"
+                       show-overflow-tooltip />
+      <el-table-column v-if="columns[5].visible" label="供应商" align="center" prop="supplier" />
+      <el-table-column v-if="columns[6].visible" label="付款户名" align="center" prop="outAcountsName"
+                       show-overflow-tooltip />
+      <el-table-column v-if="columns[7].visible" label="付款款账号" align="center" prop="outBankNo" width="160" />
+      <el-table-column v-if="columns[8].visible" label="返利原因" align="center" prop="rebateReason"
+                       show-overflow-tooltip />
+      <el-table-column v-if="columns[9].visible" label="返利方式" align="center" prop="rebateMethod"
+                       show-overflow-tooltip />
+      <el-table-column v-if="columns[10].visible" label="备注" align="center" prop="comments" show-overflow-tooltip />
       <el-table-column label="操作" align="center" class-name="small-padding fixed-width" width="150px" fixed="right">
         <template slot-scope="scope">
           <el-button
+            v-hasPermi="['system:rebate:edit']"
             size="mini"
             type="primary"
             @click="handleUpdate(scope.row)"
-            v-hasPermi="['system:rebate:edit']"
           >修改
           </el-button>
           <el-button
+            v-hasPermi="['system:rebate:remove']"
             size="mini"
             type="danger"
             @click="handleDelete(scope.row)"
-            v-hasPermi="['system:rebate:remove']"
           >删除
           </el-button>
         </template>
@@ -139,7 +139,7 @@
             <el-col :span="12">
               <el-form-item label="返利货物">
                 <!--                如果订单详情里面没有货物，请先选择订单，再选择订单详情-->
-                <el-button v-if="goods.length === 0" @click="orderDialogVisible = true" size="mini">
+                <el-button v-if="goods.length === 0" size="mini" @click="orderDialogVisible = true">
                   选择订单
                 </el-button>
                 <el-row v-else>
@@ -173,89 +173,89 @@
               <el-form-item label="请选择供应商" prop="supplier">
                 <el-row>
                   <el-col :span="15">
-                    <el-input disabled v-model="form.supplier" placeholder="请选择供应商"/>
+                    <el-input v-model="form.supplier" disabled placeholder="请选择供应商" />
                   </el-col>
                   <el-col :span="4">
                     <SearchOption :limit-info="{companyType:'供应商'}" :get-data="listCompany"
-                                  @commitBack="handleCommitBackCompanyGive" @update:queryName="handleQueryCompanyGive"
-                                  :query-name="queryCompanyGive" query-info="companyName" query-label="供应商查找">
+                                  :query-name="queryCompanyGive" query-info="companyName"
+                                  query-label="供应商查找" @commitBack="handleCommitBackCompanyGive" @update:queryName="handleQueryCompanyGive">
                       <template #table-columns>
-                        <el-table-column label="供应商" align="center" prop="companyName"/>
-                        <el-table-column label="地址" align="center" prop="address"/>
+                        <el-table-column label="供应商" align="center" prop="companyName" />
+                        <el-table-column label="地址" align="center" prop="address" />
                       </template>
                     </SearchOption>
                   </el-col>
                 </el-row>
               </el-form-item>
               <el-form-item label="收款方账户类型">
-                <BankType @updateSelectedType="changeSelfBankType" :select-type="form.selfBankCardType"/>
+                <BankType :select-type="form.selfBankCardType" @updateSelectedType="changeSelfBankType" />
               </el-form-item>
               <el-form-item label="收款户名" prop="inAcountsName">
                 <el-row>
                   <el-col :span="15">
-                    <el-input v-model="form.inAcountsName" placeholder="请输入收款户名"/>
+                    <el-input v-model="form.inAcountsName" placeholder="请输入收款户名" />
                   </el-col>
                   <el-col :span="4">
                     <SearchOption :limit-info="{acountsType:'己方公司'}" :get-data="listBankAccount"
-                                  @commitBack="handleCommitBackBankAcount"
-                                  @update:queryName="handleUpdateQueryBankAcount" :query-name="queryBankAcount"
-                                  query-label="户名查找" query-info="acountsName">
+                                  :query-name="queryBankAcount"
+                                  query-label="户名查找" query-info="acountsName"
+                                  @commitBack="handleCommitBackBankAcount" @update:queryName="handleUpdateQueryBankAcount">
                       <template #table-columns>
-                        <el-table-column label="账户类型" align="center" prop="acountsType"/>
-                        <el-table-column label="显示名称" align="center" prop="displayName"/>
-                        <el-table-column label="开户名称(户名)" align="center" prop="acountsName"/>
-                        <el-table-column label="账号(银行账号)" align="center" prop="bankNo"/>
-                        <el-table-column label="开户行" align="center" prop="bankName"/>
-                        <el-table-column label="公司名称" align="center" prop="companyName"/>
+                        <el-table-column label="账户类型" align="center" prop="acountsType" />
+                        <el-table-column label="显示名称" align="center" prop="displayName" />
+                        <el-table-column label="开户名称(户名)" align="center" prop="acountsName" />
+                        <el-table-column label="账号(银行账号)" align="center" prop="bankNo" />
+                        <el-table-column label="开户行" align="center" prop="bankName" />
+                        <el-table-column label="公司名称" align="center" prop="companyName" />
                       </template>
                     </SearchOption>
                   </el-col>
                 </el-row>
               </el-form-item>
               <el-form-item label="收款账号" prop="inBankNo">
-                <el-input v-model="form.inBankNo" placeholder="请输入收款账号"/>
+                <el-input v-model="form.inBankNo" placeholder="请输入收款账号" />
               </el-form-item>
             </el-col>
             <el-col :span="12">
               <el-form-item label="付款方账户类型">
-                <BankType @updateSelectedType="changeOtherBankType" :select-type="form.otherBankCardType"/>
+                <BankType :select-type="form.otherBankCardType" @updateSelectedType="changeOtherBankType" />
               </el-form-item>
               <el-form-item label="付款户名" prop="outAcountsName">
                 <el-row>
                   <el-col :span="15">
-                    <el-input v-model="form.outAcountsName" placeholder="请输入付款户名"/>
+                    <el-input v-model="form.outAcountsName" placeholder="请输入付款户名" />
                   </el-col>
                   <el-col :span="4">
                     <SearchOption :limit-info="{acountsType:'供应商'}" :get-data="listBankAccount"
-                                  @commitBack="handleCommitBackBankAcountSelf"
-                                  @update:queryName="handleUpdateQueryBankAcountSelf"
                                   :query-name="bankAcountSelf"
-                                  query-label="户名查找" query-info="acountsName">
+                                  query-label="户名查找"
+                                  query-info="acountsName"
+                                  @commitBack="handleCommitBackBankAcountSelf" @update:queryName="handleUpdateQueryBankAcountSelf">
                       <template #table-columns>
-                        <el-table-column label="账户类型" align="center" prop="acountsType"/>
-                        <el-table-column label="开户名称(户名)" align="center" prop="acountsName"/>
-                        <el-table-column label="账号(银行账号)" align="center" prop="bankNo"/>
-                        <el-table-column label="开户行" align="center" prop="bankName"/>
-                        <el-table-column label="公司名称" align="center" prop="companyName"/>
+                        <el-table-column label="账户类型" align="center" prop="acountsType" />
+                        <el-table-column label="开户名称(户名)" align="center" prop="acountsName" />
+                        <el-table-column label="账号(银行账号)" align="center" prop="bankNo" />
+                        <el-table-column label="开户行" align="center" prop="bankName" />
+                        <el-table-column label="公司名称" align="center" prop="companyName" />
                       </template>
                     </SearchOption>
                   </el-col>
                 </el-row>
               </el-form-item>
               <el-form-item label="付款账号" prop="outBankNo">
-                <el-input v-model="form.outBankNo" placeholder="请输入付款款账号"/>
+                <el-input v-model="form.outBankNo" placeholder="请输入付款款账号" />
               </el-form-item>
               <el-form-item label="金额" prop="rebate">
-                <el-input v-model="form.rebate" placeholder="请输入金额"/>
+                <el-input v-model="form.rebate" placeholder="请输入金额" />
               </el-form-item>
               <el-form-item label="返利原因" prop="rebateReason">
-                <el-input v-model="form.rebateReason" placeholder="请输入返利原因"/>
+                <el-input v-model="form.rebateReason" placeholder="请输入返利原因" />
               </el-form-item>
               <el-form-item label="返利方式" prop="rebateMethod">
-                <el-input v-model="form.rebateMethod" placeholder="请输入返利方式"/>
+                <el-input v-model="form.rebateMethod" placeholder="请输入返利方式" />
               </el-form-item>
               <el-form-item label="备注" prop="comments">
-                <el-input v-model="form.comments" placeholder="请输入备注"/>
+                <el-input v-model="form.comments" placeholder="请输入备注" />
               </el-form-item>
             </el-col>
           </el-row>
@@ -271,14 +271,14 @@
     <el-dialog :close-on-click-modal="false" :show-close="true" title="订单选择" :visible.sync="orderDialogVisible"
                width="65%">
       <el-row>
-        <el-button type="primary" @click="selectBySupplier" size="mini">根据供应商选择</el-button>
-        <el-button type="primary" @click="selectOrderItem" size="mini">选择订单</el-button>
+        <el-button type="primary" size="mini" @click="selectBySupplier">根据供应商选择</el-button>
+        <el-button type="primary" size="mini" @click="selectOrderItem">选择订单</el-button>
       </el-row>
-      <hr/>
+      <hr />
       <el-row>
         <el-row>
           <!--  展示订单信息的组件  orderInfo-->
-          <OrderInfos :orderInfo="orderInfo"/>
+          <OrderInfos :orderInfo="orderInfo" />
         </el-row>
         <el-row>
           <el-row>
@@ -286,28 +286,28 @@
           </el-row>
           <!-- 订单选择的货物-->
           <el-row>
-            <el-button @click="submitSelectOrderDetail" :disabled="goods.length === 0" type="success"
-                       size="mini">选择所选货物
+            <el-button :disabled="goods.length === 0" type="success" size="mini"
+                       @click="submitSelectOrderDetail">选择所选货物
             </el-button>
-            <el-table border :data="orderDetailList" max-height="700" size="mini" ref="multipleTable"
+            <el-table ref="multipleTable" border :data="orderDetailList" max-height="700" size="mini"
                       :cell-style="()=>{return {padding:'.5px'}}" @selection-change="handleSelectionChangeOrderDetail">
-              <el-table-column type="selection" width="55" align="center" fixed="left"/>
-              <el-table-column label="订单日期" align="center" prop="orderDate" fixed="left"/>
-              <el-table-column label="客户" align="center" prop="customer"/>
+              <el-table-column type="selection" width="55" align="center" fixed="left" />
+              <el-table-column label="订单日期" align="center" prop="orderDate" fixed="left" />
+              <el-table-column label="客户" align="center" prop="customer" />
               <el-table-column label="供应商" align="center" prop="supplier"
                                :filters="nameFilters"
                                :filter-method="filterName"
                                filter-placement="bottom"
-                               filterable/>
-              <el-table-column label="级别名称" align="center" prop="levelName"/>
-              <el-table-column label="计量单位" align="center" prop="countingUnit"/>
-              <el-table-column label="厚度" align="center" prop="height"/>
-              <el-table-column label="长度" align="center" prop="length"/>
-              <el-table-column label="宽度" align="center" prop="width"/>
-              <el-table-column label="出厂片数" align="center" prop="pieces"/>
-              <el-table-column label="每包片数" align="center" prop="piecesPerPack"/>
-              <el-table-column label="包数" align="center" prop="packs"/>
-              <el-table-column label="出厂单价" align="center" prop="price"/>
+                               filterable />
+              <el-table-column label="级别名称" align="center" prop="levelName" />
+              <el-table-column label="计量单位" align="center" prop="countingUnit" />
+              <el-table-column label="厚度" align="center" prop="height" />
+              <el-table-column label="长度" align="center" prop="length" />
+              <el-table-column label="宽度" align="center" prop="width" />
+              <el-table-column label="出厂片数" align="center" prop="pieces" />
+              <el-table-column label="每包片数" align="center" prop="piecesPerPack" />
+              <el-table-column label="包数" align="center" prop="packs" />
+              <el-table-column label="出厂单价" align="center" prop="price" />
               <el-table-column label="出厂是否含税" align="center" prop="isIncludeTaxFactory">
                 <template slot-scope="scope">
                   <el-tag
@@ -315,9 +315,9 @@
                   </el-tag>
                 </template>
               </el-table-column>
-              <el-table-column label="杂费" align="center" prop="sundryCost"/>
-              <el-table-column label="出厂货款" align="center" prop="paymentFactory"/>
-              <el-table-column label="卸货价" align="center" prop="paymentUnload"/>
+              <el-table-column label="杂费" align="center" prop="sundryCost" />
+              <el-table-column label="出厂货款" align="center" prop="paymentFactory" />
+              <el-table-column label="卸货价" align="center" prop="paymentUnload" />
               <el-table-column label="销售是否含税" align="center" prop="isIncludeTaxSale">
                 <template slot-scope="scope">
                   <el-tag
@@ -325,22 +325,22 @@
                   </el-tag>
                 </template>
               </el-table-column>
-              <el-table-column label="总货款" align="center" prop="payments"/>
-              <el-table-column label="误差" align="center" prop="erro"/>
-              <el-table-column label="吨位" align="center" prop="tonnage"/>
-              <el-table-column label="陆运费单价" align="center" prop="landFreightPrice"/>
-              <el-table-column label="陆运费" align="center" prop="landFreight"/>
-              <el-table-column label="海运费" align="center" prop="seaFreight"/>
-              <el-table-column label="总运费" align="center" prop="freight"/>
-              <el-table-column label="其他费用" align="center" prop="otherCost"/>
-              <el-table-column label="利润" align="center" prop="profit"/>
-              <el-table-column label="不含税利润" align="center" prop="profitNoTax"/>
-              <el-table-column label="实际片数" align="center" prop="actualPieces"/>
-              <el-table-column label="总货款杂费" align="center" prop="paymentsWithSundry"/>
-              <el-table-column label="加费" align="center" prop="additionalFees"/>
-              <el-table-column label="仓库名称" align="center" prop="storeHouseName"/>
-              <el-table-column label="物流利润" align="center" prop="logisticsProfit"/>
-              <el-table-column label="客户佣金" align="center" prop="customerCommission"/>
+              <el-table-column label="总货款" align="center" prop="payments" />
+              <el-table-column label="误差" align="center" prop="erro" />
+              <el-table-column label="吨位" align="center" prop="tonnage" />
+              <el-table-column label="陆运费单价" align="center" prop="landFreightPrice" />
+              <el-table-column label="陆运费" align="center" prop="landFreight" />
+              <el-table-column label="海运费" align="center" prop="seaFreight" />
+              <el-table-column label="总运费" align="center" prop="freight" />
+              <el-table-column label="其他费用" align="center" prop="otherCost" />
+              <el-table-column label="利润" align="center" prop="profit" />
+              <el-table-column label="不含税利润" align="center" prop="profitNoTax" />
+              <el-table-column label="实际片数" align="center" prop="actualPieces" />
+              <el-table-column label="总货款杂费" align="center" prop="paymentsWithSundry" />
+              <el-table-column label="加费" align="center" prop="additionalFees" />
+              <el-table-column label="仓库名称" align="center" prop="storeHouseName" />
+              <el-table-column label="物流利润" align="center" prop="logisticsProfit" />
+              <el-table-column label="客户佣金" align="center" prop="customerCommission" />
             </el-table>
           </el-row>
         </el-row>
@@ -351,8 +351,8 @@
     <!--    两种方式中点击第二种直接选择订单进行返利-->
     <el-dialog :close-on-click-modal="false" :show-close="true" title="选择订单" :visible.sync="orderSelectVisible"
                width="70%">
-      <el-table fit border v-loading="loading" :data="orderList" @selection-change="handleSelectionChangeOrders"
-                max-height="750" size="mini" :cell-style="()=>{return {padding:'2px'}}">
+      <el-table v-loading="loading" fit border :data="orderList" max-height="750"
+                size="mini" :cell-style="()=>{return {padding:'2px'}}" @selection-change="handleSelectionChangeOrders">
         <el-table-column show-overflow-tooltip label="行操作" align="center" class-name="small-padding fixed-width"
                          width="200px" fixed="left">
           <template slot-scope="scope">
@@ -362,16 +362,16 @@
             </el-button>
           </template>
         </el-table-column>
-        <el-table-column show-overflow-tooltip label="ID" align="center" prop="id" fixed="left"/>
-        <el-table-column show-overflow-tooltip label="日期" align="center" prop="orderDate" fixed="left"/>
-        <el-table-column show-overflow-tooltip label="客户" align="center" prop="customer" fixed="left"/>
+        <el-table-column show-overflow-tooltip label="ID" align="center" prop="id" fixed="left" />
+        <el-table-column show-overflow-tooltip label="日期" align="center" prop="orderDate" fixed="left" />
+        <el-table-column show-overflow-tooltip label="客户" align="center" prop="customer" fixed="left" />
         <!--        供应商可筛选 多选-->
-        <el-table-column show-overflow-tooltip label="供应商" align="center" prop="supplierNames" fixed="left"/>
-        <el-table-column show-overflow-tooltip label="陆运车牌" align="center" prop="landCarNo"/>
+        <el-table-column show-overflow-tooltip label="供应商" align="center" prop="supplierNames" fixed="left" />
+        <el-table-column show-overflow-tooltip label="陆运车牌" align="center" prop="landCarNo" />
         <el-table-column show-overflow-tooltip label="陆运司机电话" align="center" prop="landDriverTel"
-                         width="100px"/>
+                         width="100px" />
         <el-table-column show-overflow-tooltip label="陆地司机姓名" align="center" prop="landDriverName"
-                         width="100px"/>
+                         width="100px" />
         <el-table-column show-overflow-tooltip label="柜号" align="center" prop="seaCarNo">
           <template #default="scope">
             {{ isNull(scope.row.seaCarNo) }}
@@ -388,8 +388,8 @@
             {{ isNull(scope.row.seaDriverTel) }}
           </template>
         </el-table-column>
-        <el-table-column show-overflow-tooltip label="销售经理" align="center" prop="saleManager"/>
-        <el-table-column show-overflow-tooltip label="车队" align="center" prop="fleet"/>
+        <el-table-column show-overflow-tooltip label="销售经理" align="center" prop="saleManager" />
+        <el-table-column show-overflow-tooltip label="车队" align="center" prop="fleet" />
         <el-table-column show-overflow-tooltip label="审核状态" align="center" prop="checkState"
                          width="120">
         </el-table-column>
@@ -399,7 +399,7 @@
         <el-table-column show-overflow-tooltip label="打款状态" align="center" prop="paymentState"
                          width="120px">
         </el-table-column>
-        <el-table-column show-overflow-tooltip label="备注" align="center" prop="comments"/>
+        <el-table-column show-overflow-tooltip label="备注" align="center" prop="comments" />
       </el-table>
       <pagination
         v-show="orderTotal>0"
@@ -414,15 +414,15 @@
     <InfoDialog title="已选择货物" :visible.sync="orderGoodsVisible" @update:visible="orderGoodsVisible = false">
       <template #info>
         <!--        订单货物详情的展示组件-->
-        <OrderDetailInfo :orderDetailInfoList="goods" :ban="true"/>
+        <OrderDetailInfo :orderDetailInfoList="goods" :ban="true" />
       </template>
     </InfoDialog>
 
     <!--    查看订单信息-->
     <InfoDialog title="查看订单信息" :visible.sync="orderVisible" @update:visible="orderVisible = false">
       <template #info>
-        <OrderInfos :orderInfo="checkOrderInformation"/>
-        <OrderDetailInfo :orderDetailInfoList="checkOrderInformation.orderDetailList" :ban="true"/>
+        <OrderInfos :orderInfo="checkOrderInformation" />
+        <OrderDetailInfo :orderDetailInfoList="checkOrderInformation.orderDetailList" :ban="true" />
       </template>
     </InfoDialog>
 
@@ -438,17 +438,17 @@
               <el-form-item label="供应商">
                 <el-row>
                   <el-col :span="20">
-                    <el-input v-model="queryParamsSupplier.supplier" placeholder="请输入供应商"/>
+                    <el-input v-model="queryParamsSupplier.supplier" placeholder="请输入供应商" />
                   </el-col>
                   <el-col :span="4">
-                    <SearchOption :get-data="listCompany" @commitBack="handleCommitCompany"
-                                  :limit-info="{companyType:'供应商'}">
+                    <SearchOption :get-data="listCompany" :limit-info="{companyType:'供应商'}"
+                                  @commitBack="handleCommitCompany">
                       <template #table-columns>
-                        <el-table-column label="公司名称" align="center" prop="companyName"/>
-                        <el-table-column label="老板姓名" align="center" prop="leader"/>
-                        <el-table-column label="老板电话" align="center" prop="leaderTel"/>
-                        <el-table-column label="开户行" align="center" prop="bankName"/>
-                        <el-table-column label="开户名" align="center" prop="acountsName"/>
+                        <el-table-column label="公司名称" align="center" prop="companyName" />
+                        <el-table-column label="老板姓名" align="center" prop="leader" />
+                        <el-table-column label="老板电话" align="center" prop="leaderTel" />
+                        <el-table-column label="开户行" align="center" prop="bankName" />
+                        <el-table-column label="开户名" align="center" prop="acountsName" />
                       </template>
                     </SearchOption>
                   </el-col>
@@ -479,8 +479,8 @@
     <InfoDialog title="根据供应商所选货物列表" :visible.sync="orderGoodsListVisible"
                 @update:visible="orderGoodsListVisible = false">
       <template #info>
-        <OrderDetailList @handleSelect="handleSelectOrderDetailChange"
-                         :order-detail-list="needToSelectOrderDetailList"/>
+        <OrderDetailList :order-detail-list="needToSelectOrderDetailList"
+                         @handleSelect="handleSelectOrderDetailChange" />
       </template>
     </InfoDialog>
 
@@ -489,326 +489,326 @@
 </template>
 
 <script>
-import {listRebate, getRebate, delRebate, addRebate, updateRebate} from "@/api/system/Rebate";
-import {mixin_printHTML} from "@/views/dashboard/mixins/print";
-import ApplyPayment from "@/views/dashboard/components/common/ApplyPayment.vue";
-import {TableName} from "@/api/tool/enums";
-import {listGoodsOrder} from "@/api/system/goodsOrder";
-import OrderInfos from "@/views/dashboard/components/goodsOrder/OrderInfos.vue";
-import OrderDetailInfo from "@/views/dashboard/components/goodsOrder/OrderDetailInfo.vue";
-import {listBankAccount} from "@/api/system/bankAccount";
-import {listCompany} from "@/api/system/company";
-import SearchOption from "@/components/SearchOption.vue";
-import InfoDialog from "../../../components/InfoDialog.vue";
-import OrderDetailList from "../../dashboard/components/rebate/OrderDetailList.vue";
-import {mixin_choose_order} from "../../dashboard/mixins/rebate/choose_order";
-import {mixin_rebate_fill} from "../../dashboard/mixins/rebate/rebate_fill";
-import {isNull} from "../../../main";
-import BankType from "@/views/dashboard/components/common/BankType.vue";
-import {listOrderDetailByIds} from "@/api/system/orderDetail";
-import {mixin_bankType} from "../../dashboard/mixins/common/common_bankType";
+  import { listRebate, getRebate, delRebate, addRebate, updateRebate } from '@/api/system/Rebate';
+  import { mixin_printHTML } from '@/views/dashboard/mixins/print';
+  import ApplyPayment from '@/views/dashboard/components/common/ApplyPayment.vue';
+  import { TableName } from '@/api/tool/enums';
+  import { listGoodsOrder } from '@/api/system/goodsOrder';
+  import OrderInfos from '@/views/dashboard/components/goodsOrder/OrderInfos.vue';
+  import OrderDetailInfo from '@/views/dashboard/components/goodsOrder/OrderDetailInfo.vue';
+  import { listBankAccount } from '@/api/system/bankAccount';
+  import { listCompany } from '@/api/system/company';
+  import SearchOption from '@/components/SearchOption.vue';
+  import InfoDialog from '../../../components/InfoDialog.vue';
+  import OrderDetailList from '../../dashboard/components/rebate/OrderDetailList.vue';
+  import { mixin_choose_order } from '../../dashboard/mixins/rebate/choose_order';
+  import { mixin_rebate_fill } from '../../dashboard/mixins/rebate/rebate_fill';
+  import { isNull } from '../../../main';
+  import BankType from '@/views/dashboard/components/common/BankType.vue';
+  import { listOrderDetailByIds } from '@/api/system/orderDetail';
+  import { mixin_bankType } from '../../dashboard/mixins/common/common_bankType';
 
-export default {
-  name: "Rebate",
-  computed: {
-    TableName() {
-      return TableName
-    }
-  },
-  components: {BankType, OrderDetailList, InfoDialog, SearchOption, OrderDetailInfo, OrderInfos, ApplyPayment},
-  mixins: [mixin_printHTML, mixin_choose_order, mixin_rebate_fill, mixin_bankType],
-  data() {
-    return {
-      // 遮罩层
-      loading: true,
-      // 选中数组
-      ids: [],
-      // 非单个禁用
-      single: true,
-      // 非多个禁用
-      multiple: true,
-      // 供应商选择的时间段
-      dateRange: [],
-      // 显示搜索条件
-      showSearch: true,
-      // 总条数
-      total: 0,
-      // 弹出的订单列表页的总条数
-      orderTotal: 0,
-      // 返利回扣表格数据
-      RebateList: [],
-      // 弹出层标题
-      title: "",
-      // 是否显示弹出层
-      open: false,
-      // 查询参数
-      queryParams: {
-        rebateEndTime: null,
-        rebateStartTime: null,
-        pageNum: 1,
-        pageSize: 10,
-        ordersNo: null,
-        rebateDate: null,
-        rebate: null,
-        rebateType: null,
-        inAcountsName: null,
-        inBankNo: null,
-        supplier: null,
-        supplierID: null,
-        outAcountsName: null,
-        outBankNo: null,
-        rebateReason: null,
-        comments: null,
-        addtime: null,
-        userId: null,
-        UserName: null,
-        delFlag: null
-      },
-      // 表单参数
-      form: {},
-      rebateTypes: [{
-        value: '返利',
-        label: '返利'
-      }, {
-        value: '降价',
-        label: '降价'
-      }, {
-        value: '售后质量赔偿',
-        label: '售后质量赔偿'
-      }],
-      // 表单校验
-      rules: {
-        rebateDate: [
-          {required: true, message: "返利日期不能为空", trigger: "blur"}],
-        rebate: [
-          {required: true, message: "返利金额不能为空", trigger: "blur"}],
-        rebateType: [
-          {required: true, message: "返利类型不能为空", trigger: "change"}],
-        inAcountsName: [
-          {required: true, message: "收款户名不能为空", trigger: "blur"}],
-        inBankNo: [
-          {required: true, message: "收款账号不能为空", trigger: "blur"}],
-        supplier: [
-          {required: true, message: "供应商不能为空", trigger: "blur"}],
-        outAcountsName: [
-          {required: true, message: "付款户名不能为空", trigger: "blur"}],
-        outBankNo: [
-          {required: true, message: "付款账号不能为空", trigger: "blur"}],
-        rebateReason: [
-          {required: true, message: "请输入返利原因!", trigger: "blur"}
-        ]
-      },
-      columns: [
-        {key: 0, label: `日期`, visible: true},
-        {key: 1, label: `金额`, visible: true},
-        {key: 2, label: `类型`, visible: true},
-        {key: 3, label: `收款户名`, visible: true},
-        {key: 4, label: `收款账号`, visible: true},
-        {key: 5, label: `供应商`, visible: true},
-        {key: 6, label: `付款户名`, visible: true},
-        {key: 7, label: `付款款账号`, visible: true},
-        {key: 8, label: `返利原因`, visible: true},
-        {key: 9, label: `返利方式`, visible: true},
-        {key: 10, label: `备注`, visible: true},
-      ],
-      //订单列表 级联
-      orderList: [],
-      //订单详情列表 级联
-      orderDetailList: [],
-      orderDialogVisible: false,
-      //订单个人信息和订单详情信息
-      orderInfo: {},
-      queryBankAcount: '',
-      //搜索供应商
-      queryCompanyGive: '',
-      bankAcountSelf: '',
-    };
-  },
-  created() {
-    this.getList();
-    //获取订单列表 级联选择
-    listGoodsOrder().then(res => {
-      this.orderList = res.rows;
-    })
-    if (localStorage.getItem('rebate-columns') === 'null'
-      || !localStorage.getItem('rebate-columns')) {
-      //设置localStorage
-      localStorage.setItem("rebate-columns", JSON.stringify(this.columns))
-    } else {
-      this.columns = JSON.parse(localStorage.getItem('rebate-columns'));
-    }
-  },
-  watch: {},
-  methods: {
-    isNull,
-    listCompany,
-    listBankAccount,
-    // 自动填充的信息
-    handleCommitBackBankAcount(val) {
-      this.form.inAcountsName = val.acountsName
-      this.form.inBankNo = val.bankNo
-    },
-    handleUpdateQueryBankAcount(val) {
-      this.queryBankAcount = val;
-    },
-    handleCommitBackCompanyGive(val) {
-      this.form.supplier = val.companyName
-      this.form.supplierID = val.id;
-    },
-    handleQueryCompanyGive(val) {
-      this.queryCompanyGive = val;
-    },
-    handleCommitBackBankAcountSelf(val) {
-      this.form.outAcountsName = val.acountsName;
-      this.form.outBankNo = val.bankNo;
-    },
-    handleUpdateQueryBankAcountSelf(val) {
-      this.bankAcountSelf = val;
-    },
-
-    // 表格中的表头 筛选方法 主要是为了筛选供应商
-    filterName(value, row) {
-      return row.supplier === value;
-    },
-    /** 查询返利回扣列表 */
-    getList() {
-      this.loading = true;
-      listRebate(this.queryParams).then(response => {
-        this.RebateList = response.rows;
-        this.total = response.total;
-        this.loading = false;
-      });
-    },
-    // 弹出的列表页分页
-    getOrderList() {
-      listGoodsOrder(this.queryParams).then(response => {
-        this.orderList = response.rows;
-        this.orderTotal = response.orderTotal;
-        this.loading = false;
-      });
-    },
-
-    // 取消按钮
-    cancel() {
-      this.open = false;
-      this.reset();
-    },
-    // 表单重置
-    reset() {
-      this.form = {
-        id: null,
-        orderDetailIds: [],
-        rebateDate: null,
-        rebate: null,
-        rebateType: null,
-        // 己方银行卡账户类型
-        selfBankCardType: null,
-        inAcountsName: null,
-        inBankNo: null,
-        supplier: null,
-        supplierID: null,
-        // 对方银行卡账户的类型
-        otherBankCardType: null,
-        outAcountsName: null,
-        outBankNo: null,
-        rebateReason: null,
-        comments: null,
-        addtime: null,
-        userId: null,
-        UserName: null,
-        updateTime: null,
-        delFlag: null
+  export default {
+    name: 'Rebate',
+    components: { BankType, OrderDetailList, InfoDialog, SearchOption, OrderDetailInfo, OrderInfos, ApplyPayment },
+    mixins: [mixin_printHTML, mixin_choose_order, mixin_rebate_fill, mixin_bankType],
+    data() {
+      return {
+        // 遮罩层
+        loading: true,
+        // 选中数组
+        ids: [],
+        // 非单个禁用
+        single: true,
+        // 非多个禁用
+        multiple: true,
+        // 供应商选择的时间段
+        dateRange: [],
+        // 显示搜索条件
+        showSearch: true,
+        // 总条数
+        total: 0,
+        // 弹出的订单列表页的总条数
+        orderTotal: 0,
+        // 返利回扣表格数据
+        RebateList: [],
+        // 弹出层标题
+        title: '',
+        // 是否显示弹出层
+        open: false,
+        // 查询参数
+        queryParams: {
+          rebateEndTime: null,
+          rebateStartTime: null,
+          pageNum: 1,
+          pageSize: 10,
+          ordersNo: null,
+          rebateDate: null,
+          rebate: null,
+          rebateType: null,
+          inAcountsName: null,
+          inBankNo: null,
+          supplier: null,
+          supplierID: null,
+          outAcountsName: null,
+          outBankNo: null,
+          rebateReason: null,
+          comments: null,
+          addtime: null,
+          userId: null,
+          UserName: null,
+          delFlag: null
+        },
+        // 表单参数
+        form: {},
+        rebateTypes: [{
+          value: '返利',
+          label: '返利'
+        }, {
+          value: '降价',
+          label: '降价'
+        }, {
+          value: '售后质量赔偿',
+          label: '售后质量赔偿'
+        }],
+        // 表单校验
+        rules: {
+          rebateDate: [
+            { required: true, message: '返利日期不能为空', trigger: 'blur' }],
+          rebate: [
+            { required: true, message: '返利金额不能为空', trigger: 'blur' }],
+          rebateType: [
+            { required: true, message: '返利类型不能为空', trigger: 'change' }],
+          inAcountsName: [
+            { required: true, message: '收款户名不能为空', trigger: 'blur' }],
+          inBankNo: [
+            { required: true, message: '收款账号不能为空', trigger: 'blur' }],
+          supplier: [
+            { required: true, message: '供应商不能为空', trigger: 'blur' }],
+          outAcountsName: [
+            { required: true, message: '付款户名不能为空', trigger: 'blur' }],
+          outBankNo: [
+            { required: true, message: '付款账号不能为空', trigger: 'blur' }],
+          rebateReason: [
+            { required: true, message: '请输入返利原因!', trigger: 'blur' }
+          ]
+        },
+        columns: [
+          { key: 0, label: `日期`, visible: true },
+          { key: 1, label: `金额`, visible: true },
+          { key: 2, label: `类型`, visible: true },
+          { key: 3, label: `收款户名`, visible: true },
+          { key: 4, label: `收款账号`, visible: true },
+          { key: 5, label: `供应商`, visible: true },
+          { key: 6, label: `付款户名`, visible: true },
+          { key: 7, label: `付款款账号`, visible: true },
+          { key: 8, label: `返利原因`, visible: true },
+          { key: 9, label: `返利方式`, visible: true },
+          { key: 10, label: `备注`, visible: true },
+        ],
+        // 订单列表 级联
+        orderList: [],
+        // 订单详情列表 级联
+        orderDetailList: [],
+        orderDialogVisible: false,
+        // 订单个人信息和订单详情信息
+        orderInfo: {},
+        queryBankAcount: '',
+        // 搜索供应商
+        queryCompanyGive: '',
+        bankAcountSelf: '',
       };
-      this.goods = []
-      this.resetForm("form");
     },
-    /** 搜索按钮操作 */
-    handleQuery() {
-      this.queryParams.pageNum = 1;
+    computed: {
+      TableName() {
+        return TableName
+      }
+    },
+    watch: {},
+    created() {
       this.getList();
+      // 获取订单列表 级联选择
+      listGoodsOrder().then(res => {
+        this.orderList = res.rows;
+      })
+      if (localStorage.getItem('rebate-columns') === 'null' ||
+        !localStorage.getItem('rebate-columns')) {
+        // 设置localStorage
+        localStorage.setItem('rebate-columns', JSON.stringify(this.columns))
+      } else {
+        this.columns = JSON.parse(localStorage.getItem('rebate-columns'));
+      }
     },
-    /** 重置按钮操作 */
-    resetQuery() {
-      this.resetForm("queryForm");
-      this.handleQuery();
-    },
-    // 多选框选中数据
-    handleSelectionChange(selection) {
-      this.ids = selection.map(item => item.id)
-      this.single = selection.length !== 1
-      this.multiple = !selection.length
-    },
-    /** 新增按钮操作 */
-    handleAdd() {
-      this.reset();
-      this.open = true;
-      this.title = "添加返利回扣";
-    },
-    /** 修改按钮操作 */
-    handleUpdate(row) {
-      this.reset();
-      const id = row.id || this.ids
-      // 获取订单返利信息
-      getRebate(id).then(response => {
-        this.form = response.data;
-        // 这里打开的时候要判断后端返回的数据 如果orderDetailIds有数据 那么要自动选择相关订单
-        if (this.form.orderDetailIds?.length > 0) {
-          // goods 要填充这个数组 这个是货物的id 查询货物list 筛选需要的货物
-          const ids = JSON.parse(JSON.stringify(this.form.orderDetailIds))
-          listOrderDetailByIds(ids).then(res => {
-            this.goods = res.rows
-          })
-        }
-        // 打开修改弹窗
-        this.open = true;
-        this.title = "修改返利回扣";
-      });
-    },
-    /** 提交按钮 */
-    submitForm() {
-      this.$refs["form"].validate(valid => {
-        if (valid) {
-          if (this.form.id != null) {
-            updateRebate(this.form).then(response => {
-              this.$modal.msgSuccess("修改成功");
-              this.open = false;
-              this.goods = []
-              this.getList();
-            });
-          } else {
-            addRebate(this.form).then(response => {
-              this.$modal.msgSuccess("新增成功");
-              this.open = false;
-              this.goods = []
-              this.getList();
-            });
-          }
-        }
-      });
-    },
-    /** 删除按钮操作 */
-    handleDelete(row) {
-      const ids = row.id || this.ids;
-      this.$modal.confirm('是否确认删除返利回扣编号为"' + ids + '"的数据项？').then(function () {
-        return delRebate(ids);
-      }).then(() => {
-        this.getList();
-        this.$modal.msgSuccess("删除成功");
-      }).catch(() => {
-      });
-    },
-    /** 导出按钮操作 */
-    handleExport() {
-      this.download('system/Rebate/export', {
-        ...this.queryParams
-      }, `Rebate_${new Date().getTime()}.xlsx`)
-    },
-    handleExport2() {
-      this.download('system/Rebate/export2', {
-        ...this.queryParams
-      }, `厂家(返利+降价+售后质量赔偿)_${new Date().getTime()}.xlsx`)
-    },
+    methods: {
+      isNull,
+      listCompany,
+      listBankAccount,
+      // 自动填充的信息
+      handleCommitBackBankAcount(val) {
+        this.form.inAcountsName = val.acountsName
+        this.form.inBankNo = val.bankNo
+      },
+      handleUpdateQueryBankAcount(val) {
+        this.queryBankAcount = val;
+      },
+      handleCommitBackCompanyGive(val) {
+        this.form.supplier = val.companyName
+        this.form.supplierID = val.id;
+      },
+      handleQueryCompanyGive(val) {
+        this.queryCompanyGive = val;
+      },
+      handleCommitBackBankAcountSelf(val) {
+        this.form.outAcountsName = val.acountsName;
+        this.form.outBankNo = val.bankNo;
+      },
+      handleUpdateQueryBankAcountSelf(val) {
+        this.bankAcountSelf = val;
+      },
 
-  }
-};
+      // 表格中的表头 筛选方法 主要是为了筛选供应商
+      filterName(value, row) {
+        return row.supplier === value;
+      },
+      /** 查询返利回扣列表 */
+      getList() {
+        this.loading = true;
+        listRebate(this.queryParams).then(response => {
+          this.RebateList = response.rows;
+          this.total = response.total;
+          this.loading = false;
+        });
+      },
+      // 弹出的列表页分页
+      getOrderList() {
+        listGoodsOrder(this.queryParams).then(response => {
+          this.orderList = response.rows;
+          this.orderTotal = response.orderTotal;
+          this.loading = false;
+        });
+      },
+
+      // 取消按钮
+      cancel() {
+        this.open = false;
+        this.reset();
+      },
+      // 表单重置
+      reset() {
+        this.form = {
+          id: null,
+          orderDetailIds: [],
+          rebateDate: null,
+          rebate: null,
+          rebateType: null,
+          // 己方银行卡账户类型
+          selfBankCardType: null,
+          inAcountsName: null,
+          inBankNo: null,
+          supplier: null,
+          supplierID: null,
+          // 对方银行卡账户的类型
+          otherBankCardType: null,
+          outAcountsName: null,
+          outBankNo: null,
+          rebateReason: null,
+          comments: null,
+          addtime: null,
+          userId: null,
+          UserName: null,
+          updateTime: null,
+          delFlag: null
+        };
+        this.goods = []
+        this.resetForm('form');
+      },
+      /** 搜索按钮操作 */
+      handleQuery() {
+        this.queryParams.pageNum = 1;
+        this.getList();
+      },
+      /** 重置按钮操作 */
+      resetQuery() {
+        this.resetForm('queryForm');
+        this.handleQuery();
+      },
+      // 多选框选中数据
+      handleSelectionChange(selection) {
+        this.ids = selection.map(item => item.id)
+        this.single = selection.length !== 1
+        this.multiple = !selection.length
+      },
+      /** 新增按钮操作 */
+      handleAdd() {
+        this.reset();
+        this.open = true;
+        this.title = '添加返利回扣';
+      },
+      /** 修改按钮操作 */
+      handleUpdate(row) {
+        this.reset();
+        const id = row.id || this.ids
+        // 获取订单返利信息
+        getRebate(id).then(response => {
+          this.form = response.data;
+          // 这里打开的时候要判断后端返回的数据 如果orderDetailIds有数据 那么要自动选择相关订单
+          if (this.form.orderDetailIds?.length > 0) {
+            // goods 要填充这个数组 这个是货物的id 查询货物list 筛选需要的货物
+            const ids = JSON.parse(JSON.stringify(this.form.orderDetailIds))
+            listOrderDetailByIds(ids).then(res => {
+              this.goods = res.rows
+            })
+          }
+          // 打开修改弹窗
+          this.open = true;
+          this.title = '修改返利回扣';
+        });
+      },
+      /** 提交按钮 */
+      submitForm() {
+        this.$refs['form'].validate(valid => {
+          if (valid) {
+            if (this.form.id != null) {
+              updateRebate(this.form).then(response => {
+                this.$modal.msgSuccess('修改成功');
+                this.open = false;
+                this.goods = []
+                this.getList();
+              });
+            } else {
+              addRebate(this.form).then(response => {
+                this.$modal.msgSuccess('新增成功');
+                this.open = false;
+                this.goods = []
+                this.getList();
+              });
+            }
+          }
+        });
+      },
+      /** 删除按钮操作 */
+      handleDelete(row) {
+        const ids = row.id || this.ids;
+        this.$modal.confirm('是否确认删除返利回扣编号为"' + ids + '"的数据项？').then(function () {
+          return delRebate(ids);
+        }).then(() => {
+          this.getList();
+          this.$modal.msgSuccess('删除成功');
+        }).catch(() => {
+        });
+      },
+      /** 导出按钮操作 */
+      handleExport() {
+        this.download('system/Rebate/export', {
+          ...this.queryParams
+        }, `Rebate_${new Date().getTime()}.xlsx`)
+      },
+      handleExport2() {
+        this.download('system/Rebate/export2', {
+          ...this.queryParams
+        }, `厂家(返利+降价+售后质量赔偿)_${new Date().getTime()}.xlsx`)
+      },
+
+    }
+  };
 </script>

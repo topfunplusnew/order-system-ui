@@ -1,7 +1,7 @@
-import {listBalanceAccounts} from "@/api/system/BalanceAccounts";
+import { listBalanceAccounts } from '@/api/system/BalanceAccounts';
 
 const state = {
-  //平账信息
+  // 平账信息
   balanceaccountsList: []
 }
 
@@ -11,9 +11,9 @@ const mutations = {
   }
 }
 
-//获取平账信息
+// 获取平账信息
 const actions = {
-  getbalanceaccountsList({commit}) {
+  getbalanceaccountsList({ commit }) {
     listBalanceAccounts().then(res => {
       commit('GET_BALANCEACCOUNTS_LIST', res.data)
     })

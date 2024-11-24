@@ -1,31 +1,31 @@
 <script>
-import InfoDialog from "../../../../components/InfoDialog.vue";
-import OrderList from "../voucher/OrderList.vue";
-import IncentOrders from "./IncentOrders.vue";
-import {getGoodsOrder} from "../../../../api/system/goodsOrder";
+  import InfoDialog from '../../../../components/InfoDialog.vue';
+  import OrderList from '../voucher/OrderList.vue';
+  import IncentOrders from './IncentOrders.vue';
+  import { getGoodsOrder } from '../../../../api/system/goodsOrder';
 
-export default {
-  name: "Incent",
-  components: {IncentOrders, OrderList, InfoDialog},
-  data() {
-    return {
-      orderItemVisible: false,
-      orderTitle: '引用订单',
-    }
-  },
-  methods: {
-    // 查看订单 选择后自动填充相关信息
-    handleCheck() {
-      this.orderItemVisible = true
+  export default {
+    name: 'Incent',
+    components: { IncentOrders, OrderList, InfoDialog },
+    data() {
+      return {
+        orderItemVisible: false,
+        orderTitle: '引用订单',
+      }
     },
-    handleIndexOrder(value) {
-      console.log(value)
-      getGoodsOrder(value.id).then(res => {
-        this.$emit('update:orderInfo', res.data)
-      })
+    methods: {
+      // 查看订单 选择后自动填充相关信息
+      handleCheck() {
+        this.orderItemVisible = true
+      },
+      handleIndexOrder(value) {
+        console.log(value)
+        getGoodsOrder(value.id).then(res => {
+          this.$emit('update:orderInfo', res.data)
+        })
+      }
     }
   }
-}
 </script>
 
 <template>
@@ -34,7 +34,7 @@ export default {
 
     <InfoDialog :title="orderTitle" :visible.sync="orderItemVisible">
       <template #info>
-        <IncentOrders @indexOrder="handleIndexOrder" @close="orderItemVisible = false"/>
+        <IncentOrders @indexOrder="handleIndexOrder" @close="orderItemVisible = false" />
       </template>
     </InfoDialog>
   </div>

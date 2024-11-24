@@ -1,5 +1,5 @@
-//固定资产Vuex
-import {listFixedAssets} from "@/api/system/fixedAssets";
+// 固定资产Vuex
+import { listFixedAssets } from '@/api/system/fixedAssets';
 
 const state = {
   fixedassetsList: []
@@ -12,7 +12,7 @@ const mutations = {
 }
 
 const actions = {
-  getFixedassetsList({commit}) {
+  getFixedassetsList({ commit }) {
     listFixedAssets().then(res => {
       commit('setFixedassetsList', res.rows)
     })

@@ -1,10 +1,10 @@
-import request from "@/utils/request";
+import request from '@/utils/request';
 
 // 查询银行账号列表
 export function listBankAccount(query) {
   return request({
-    url: "/system/bankAccount/list",
-    method: "get",
+    url: '/system/bankAccount/list',
+    method: 'get',
     params: query,
   });
 }
@@ -12,16 +12,16 @@ export function listBankAccount(query) {
 // 查询银行账号详细
 export function getBankAccount(id) {
   return request({
-    url: "/system/bankAccount/" + id,
-    method: "get",
+    url: '/system/bankAccount/' + id,
+    method: 'get',
   });
 }
 
 // 新增银行账号
 export function addBankAccount(data) {
   return request({
-    url: "/system/bankAccount",
-    method: "post",
+    url: '/system/bankAccount',
+    method: 'post',
     data: data,
   });
 }
@@ -29,8 +29,8 @@ export function addBankAccount(data) {
 // 修改银行账号
 export function updateBankAccount(data) {
   return request({
-    url: "/system/bankAccount",
-    method: "put",
+    url: '/system/bankAccount',
+    method: 'put',
     data: data,
   });
 }
@@ -38,12 +38,12 @@ export function updateBankAccount(data) {
 // 删除银行账号
 export function delBankAccount(id) {
   return request({
-    url: "/system/bankAccount/" + id,
-    method: "delete",
+    url: '/system/bankAccount/' + id,
+    method: 'delete',
   });
 }
 
-//银行卡转账
+// 银行卡转账
 /**
  *
  * @param {{
@@ -55,17 +55,17 @@ export function delBankAccount(id) {
  */
 export function transfer(data) {
   return request({
-    url: "/system/bankAccount/transfer",
-    method: "post",
+    url: '/system/bankAccount/transfer',
+    method: 'post',
     data: data,
   });
 }
 
-//将某张卡设置为默认卡
+// 将某张卡设置为默认卡
 export function setDefault(data) {
   return request({
-    url: "/system/bankAccount/toDefault",
-    method: "post",
+    url: '/system/bankAccount/toDefault',
+    method: 'post',
     data: data,
   });
 }
@@ -73,8 +73,8 @@ export function setDefault(data) {
 // 只查询己方的银行卡
 export function listBankAccountSelf(query) {
   return request({
-    url: "/system/bankAccount/selfMoney",
-    method: "get",
+    url: '/system/bankAccount/selfMoney',
+    method: 'get',
     params: query,
   });
 }

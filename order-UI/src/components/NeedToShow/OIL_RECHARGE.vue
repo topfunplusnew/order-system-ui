@@ -1,12 +1,12 @@
 <script>
-export default {
-  name: "OIL_RECHARGE",
-  props: {
-    needToShowInfo: {
-      type: Object
+  export default {
+    name: 'OILRECHARGE',
+    props: {
+      needToShowInfo: {
+        type: Object
+      }
     }
   }
-}
 </script>
 
 <template>

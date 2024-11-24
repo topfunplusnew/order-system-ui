@@ -1,12 +1,12 @@
 <script>
-export default {
-  name: "PAYMENT",
-  props: {
-    needToShowInfo: {
-      type: Object
+  export default {
+    name: 'PAYMENT',
+    props: {
+      needToShowInfo: {
+        type: Object
+      }
     }
   }
-}
 </script>
 
 <template>

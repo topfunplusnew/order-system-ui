@@ -1,26 +1,26 @@
 <!--凭证生成组件-->
 <template>
-  <div class="charge-container" id="chargeContainer">
+  <div id="chargeContainer" class="charge-container">
     <div class="charge">
       <!--      上面三个基本信息-->
       <div class="charge-header">
         <div class="item">
           <div style="width: 80px">日期</div>
           <div>
-            <el-date-picker style="width: 200px;" type="datetime" v-model="voucher.vDate"></el-date-picker>
+            <el-date-picker v-model="voucher.vDate" style="width: 200px;" type="datetime"></el-date-picker>
           </div>
         </div>
-        <div class="item" v-if="computedToMakeList.length !== 0">
+        <div v-if="computedToMakeList.length !== 0" class="item">
           <div style="width: 80px">凭证编号</div>
           <div>
-            <el-input type="text" style="width: 200px"
-                      v-model="computedToMakeList[0].voucherNo"></el-input>
+            <el-input v-model="computedToMakeList[0].voucherNo" type="text"
+                      style="width: 200px"></el-input>
           </div>
         </div>
         <div class="item">
           <div style="width: 80px">制单人</div>
           <div>
-            <el-input type="text" style="width: 200px;" v-model="voucher.makeUser"></el-input>
+            <el-input v-model="voucher.makeUser" type="text" style="width: 200px;"></el-input>
           </div>
         </div>
       </div>
@@ -51,7 +51,7 @@
           <!--          摘要-->
           <td>
             <div class="main-subject">
-              <el-input type="text" v-model="item.quote"></el-input>
+              <el-input v-model="item.quote" type="text"></el-input>
             </div>
           </td>
           <!--          科目-->
@@ -59,11 +59,11 @@
             <div class="main-subject">
               <el-row>
                 <el-col :span="20">
-                  <el-input type="text" v-model="item.voucherType"></el-input>
+                  <el-input v-model="item.voucherType" type="text"></el-input>
                 </el-col>
                 <el-col :span="4">
                   <!-- value是函数默认参数 箭头函数的默认参数是Update默认自带的value 传递给另一个函数执行-->
-                  <SubjectOption @update:type="(value) => handleUpdateType(value, index)"/>
+                  <SubjectOption @update:type="(value) => handleUpdateType(value, index)" />
                 </el-col>
               </el-row>
             </div>
@@ -71,7 +71,7 @@
           <!--          辅助项-->
           <td>
             <div class="main-subject">
-              <el-input type="text" v-model="item.comments"></el-input>
+              <el-input v-model="item.comments" type="text"></el-input>
             </div>
           </td>
 
@@ -80,10 +80,10 @@
             <table>
               <tr>
                 <td width="50%" style="border-right: 1px solid #bab9b9;">
-                  <el-input type="text" v-model="item.lender"></el-input>
+                  <el-input v-model="item.lender" type="text"></el-input>
                 </td>
                 <td width="50%">
-                  <el-input type="text" v-model="item.borrower"></el-input>
+                  <el-input v-model="item.borrower" type="text"></el-input>
                 </td>
               </tr>
             </table>
@@ -127,89 +127,89 @@
 
 <script>
 
-import SubjectOption from "../../../../components/SubjectOption.vue";
-import {mapGetters} from "vuex";
-import {fix, numToChineseUppercase} from "../../../../api/tool/format";
-import {addVoucherBatch} from "../../../../api/system/voucher";
+  import SubjectOption from '../../../../components/SubjectOption.vue';
+  import { mapGetters } from 'vuex';
+  import { fix, numToChineseUppercase } from '../../../../api/tool/format';
+  import { addVoucherBatch } from '../../../../api/system/voucher';
 
-export default {
-  name: "CrendentMake",
-  components: {SubjectOption},
-  props: {
-    needToMakeList: {
-      type: Array,
-      default() {
-        return []
-      }
-    }
-  },
-  data() {
-    return {
-      voucher: {
-        voucherNo: '1001', vDate: new Date(), makeUser: '',
-      },
-      list: [{}],
-      voucherType: ''
-    }
-  },
-  computed: {
-    // 凭证列表
-    computedToMakeList: {
-      get() {
-        return this.needToMakeList
-      },
-      set(val) {
-        this.$emit('update:needToMakeList', val)
-      }
-    },
-    totalLender() {
-      return fix(this.needToMakeList.reduce((sum, item) => sum + Number(item.lender || 0), 0))
-    },
-    totalBorrower() {
-      return fix(this.needToMakeList.reduce((sum, item) => sum + Number(item.borrower || 0), 0))
-    },
-    ...mapGetters(['trueName'])
-  },
-  mounted() {
-    this.voucher.makeUser = this.trueName
-  },
-  updated() {
-
-  },
-  methods: {
-    fix,
-    numToChineseUppercase,
-    // 单条添加凭证
-    handleAddVoucher() {
-      let obj = {
-        voucherType: '',
-        borrower: '',
-        lender: '',
-        quote: '',
-        comments: ''
-      }
-      this.computedToMakeList.push(obj)
-    },
-    // 拿到科目类型
-    handleUpdateType(value, index) {
-      this.computedToMakeList[index].voucherType = value
-    },
-    // 保存凭证 (批量保存)
-    submitVouchersList() {
-      addVoucherBatch(this.computedToMakeList).then(res => {
-        if (res.code === 200) {
-          this.$message.success('凭证保存成功')
-          location.reload()
-        } else {
-          this.$message.error(res.msg)
+  export default {
+    name: 'CrendentMake',
+    components: { SubjectOption },
+    props: {
+      needToMakeList: {
+        type: Array,
+        default() {
+          return []
         }
-      })
+      }
     },
-    reset() {
-      location.reload()
+    data() {
+      return {
+        voucher: {
+          voucherNo: '1001', vDate: new Date(), makeUser: '',
+        },
+        list: [{}],
+        voucherType: ''
+      }
+    },
+    computed: {
+      // 凭证列表
+      computedToMakeList: {
+        get() {
+          return this.needToMakeList
+        },
+        set(val) {
+          this.$emit('update:needToMakeList', val)
+        }
+      },
+      totalLender() {
+        return fix(this.needToMakeList.reduce((sum, item) => sum + Number(item.lender || 0), 0))
+      },
+      totalBorrower() {
+        return fix(this.needToMakeList.reduce((sum, item) => sum + Number(item.borrower || 0), 0))
+      },
+      ...mapGetters(['trueName'])
+    },
+    mounted() {
+      this.voucher.makeUser = this.trueName
+    },
+    updated() {
+
+    },
+    methods: {
+      fix,
+      numToChineseUppercase,
+      // 单条添加凭证
+      handleAddVoucher() {
+        const obj = {
+          voucherType: '',
+          borrower: '',
+          lender: '',
+          quote: '',
+          comments: ''
+        }
+        this.computedToMakeList.push(obj)
+      },
+      // 拿到科目类型
+      handleUpdateType(value, index) {
+        this.computedToMakeList[index].voucherType = value
+      },
+      // 保存凭证 (批量保存)
+      submitVouchersList() {
+        addVoucherBatch(this.computedToMakeList).then(res => {
+          if (res.code === 200) {
+            this.$message.success('凭证保存成功')
+            location.reload()
+          } else {
+            this.$message.error(res.msg)
+          }
+        })
+      },
+      reset() {
+        location.reload()
+      }
     }
   }
-}
 </script>
 
 <style scoped>

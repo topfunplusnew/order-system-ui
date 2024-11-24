@@ -25,50 +25,50 @@
 </template>
 
 <script>
-export default {
-  props: {
-    // 弹窗是否可见
-    dialogVisible: {
-      type: Boolean,
-      required: true,
+  export default {
+    props: {
+      // 弹窗是否可见
+      dialogVisible: {
+        type: Boolean,
+        required: true,
+      },
+      // 弹窗标题
+      dialogTitle: {
+        type: String,
+        default: '',
+      },
+      // 动态内容组件名称或对象
+      currentComponent: {
+        type: [String, Object], // 动态内容组件名称或对象
+        required: true,
+      },
+      // 传递给内容组件的属性
+      dialogProps: {
+        type: Object, // 传递给内容组件的属性
+        default: () => ({}),
+      },
+      // 弹窗的宽度
+      dialogWidth: {
+        type: String,
+        default: '50%',
+      },
     },
-    // 弹窗标题
-    dialogTitle: {
-      type: String,
-      default: '',
+    // 监听事件
+    emits: ['update:dialogVisible', 'confirm', 'close'],
+    methods: {
+      // 关闭弹窗
+      handleClose() {
+        // 执行函数 这个函数 要求每一个业务组件都要实现
+        const callback = this.$refs.dynamicComponent.handleReject
+        this.$emit('update:dialogVisible', false);
+        this.$emit('close', callback);
+      },
+      // 确认按钮 提醒父组件执行相关的逻辑
+      handleConfirm() {
+        // 执行函数 这个函数 要求每一个业务组件都要实现
+        const callback = this.$refs.dynamicComponent.handleProcess
+        this.$emit('confirm', callback, '操作成功~');
+      },
     },
-    // 动态内容组件名称或对象
-    currentComponent: {
-      type: [String, Object], // 动态内容组件名称或对象
-      required: true,
-    },
-    // 传递给内容组件的属性
-    dialogProps: {
-      type: Object, // 传递给内容组件的属性
-      default: () => ({}),
-    },
-    // 弹窗的宽度
-    dialogWidth: {
-      type: String,
-      default: '50%',
-    },
-  },
-  // 监听事件
-  emits: ['update:dialogVisible', 'confirm', 'close'],
-  methods: {
-    // 关闭弹窗
-    handleClose() {
-      // 执行函数 这个函数 要求每一个业务组件都要实现
-      const callback = this.$refs.dynamicComponent.handleReject
-      this.$emit('update:dialogVisible', false);
-      this.$emit('close', callback);
-    },
-    // 确认按钮 提醒父组件执行相关的逻辑
-    handleConfirm() {
-      // 执行函数 这个函数 要求每一个业务组件都要实现
-      const callback = this.$refs.dynamicComponent.handleProcess
-      this.$emit('confirm', callback, '操作成功~');
-    },
-  },
-};
+  };
 </script>

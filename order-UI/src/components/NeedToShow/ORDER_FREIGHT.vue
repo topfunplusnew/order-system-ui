@@ -1,22 +1,22 @@
 <script>
-export default {
-  name: "ORDER_FREIGHT",
-  props: {
-    needToShowInfo: {
-      type: Object
-    }
-  },
-  data() {
-    return {
-      needToShow: {}
-    }
-  },
-  watch: {
-    needToShowInfo(val) {
-      this.needToShow = val
+  export default {
+    name: 'ORDERFREIGHT',
+    props: {
+      needToShowInfo: {
+        type: Object
+      }
+    },
+    data() {
+      return {
+        needToShow: {}
+      }
+    },
+    watch: {
+      needToShowInfo(val) {
+        this.needToShow = val
+      }
     }
   }
-}
 </script>
 
 <template>

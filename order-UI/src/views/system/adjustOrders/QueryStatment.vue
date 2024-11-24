@@ -1,5 +1,5 @@
 <template>
-  <el-form :model="queryParams" ref="queryForm" size="mini" :inline="true" v-show="showSearch" label-width="70px">
+  <el-form v-show="showSearch" ref="queryForm" :model="queryParams" size="mini" :inline="true" label-width="70px">
     <el-row>
       <el-col :span="6">
         <el-form-item label="开始时间" prop="beginTime">
@@ -31,8 +31,8 @@
             v-model="queryParams.customer"
             placeholder="请输入客户名称"
             clearable
-            @keyup.enter.native="handleQuery"
             size="mini"
+            @keyup.enter.native="handleQuery"
           >
           </el-input>
         </el-form-item>
@@ -43,8 +43,8 @@
             v-model="queryParams.landDriverName"
             placeholder="请输入司机名称"
             clearable
-            @keyup.enter.native="handleQuery"
             size="mini"
+            @keyup.enter.native="handleQuery"
           >
           </el-input>
         </el-form-item>
@@ -55,8 +55,8 @@
             v-model="queryParams.seaDriverName"
             placeholder="请输入海运公司"
             clearable
-            @keyup.enter.native="handleQuery"
             size="mini"
+            @keyup.enter.native="handleQuery"
           >
           </el-input>
         </el-form-item>
@@ -67,8 +67,8 @@
             v-model="queryParams.fleet"
             placeholder="请输入车队名称"
             clearable
-            @keyup.enter.native="handleQuery"
             size="mini"
+            @keyup.enter.native="handleQuery"
           >
           </el-input>
         </el-form-item>
@@ -121,14 +121,14 @@
   </el-form>
 </template>
 <script>
-export default {
-  name: 'QueryStatment',
-  props: {
-    handleQuery: {},
-    options: {},
-    optionsInvoice: {},
-    queryParams: {},
-    showSearch: {}
+  export default {
+    name: 'QueryStatment',
+    props: {
+      handleQuery: {},
+      options: {},
+      optionsInvoice: {},
+      queryParams: {},
+      showSearch: {}
+    }
   }
-}
 </script>

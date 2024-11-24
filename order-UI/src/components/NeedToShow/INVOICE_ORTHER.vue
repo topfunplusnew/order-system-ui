@@ -1,12 +1,12 @@
 <script>
-export default {
-  name: "INVOICE_ORTHER",
-  props: {
-    needToShowInfo: {
-      type: Object
+  export default {
+    name: 'INVOICEORTHER',
+    props: {
+      needToShowInfo: {
+        type: Object
+      }
     }
   }
-}
 </script>
 
 <template>

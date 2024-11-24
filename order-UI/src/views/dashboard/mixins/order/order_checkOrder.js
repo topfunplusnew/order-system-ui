@@ -1,5 +1,5 @@
-import {getGoodsOrder} from "../../../../api/system/goodsOrder";
-import CheckOrder from "@/views/dashboard/components/goodsOrder/CheckOrder.vue";
+import { getGoodsOrder } from '../../../../api/system/goodsOrder';
+import CheckOrder from '@/views/dashboard/components/goodsOrder/CheckOrder.vue';
 
 /**
  * 行操作点击查看的功能
@@ -9,7 +9,7 @@ export var mixin_order_checkOrder = {
     return {}
   },
   methods: {
-    //行操作中点击查看 查看当前行订单的信息
+    // 行操作中点击查看 查看当前行订单的信息
     checkOrderItemInfo(row) {
       const id = row.id;
       // 读取订单信息

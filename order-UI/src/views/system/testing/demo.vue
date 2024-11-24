@@ -1,21 +1,14 @@
 <script>
-export default {
-  name: "demo",
-  data() {
-    return {}
-  },
-  render(createElement, context) {
-
-  },
-}
+  export default {
+    name: 'Demo',
+    data() {
+      return {}
+    }
+  }
 </script>
 
 <template>
-  <div>
-
-  </div>
+  <div></div>
 </template>
 
-<style scoped lang="scss">
-
-</style>
+<style scoped lang="scss"></style>

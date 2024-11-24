@@ -1,8 +1,8 @@
 // 运费一键申请
-import {DocumentNumber} from "../../../../api/tool/enums";
-import {parseTime} from "../../../../utils/ruoyi";
-import {mapGetters} from "vuex";
-import {listGoodsOrder} from "../../../../api/system/goodsOrder";
+import { DocumentNumber } from '../../../../api/tool/enums';
+import { parseTime } from '../../../../utils/ruoyi';
+import { mapGetters } from 'vuex';
+import { listGoodsOrder } from '../../../../api/system/goodsOrder';
 
 export var mixin_credentials_generation_orderlist = {
   data: function () {
@@ -81,7 +81,7 @@ export var mixin_credentials_generation_orderlist = {
           vDate: parseTime(new Date()),
           makeUser: this.trueName
         })
-        //贷 应付账款 - 供应商往来 - 供应商name   票点金额成本(金额)
+        // 贷 应付账款 - 供应商往来 - 供应商name   票点金额成本(金额)
         this.needToMakeList.push({
           quote: parseTime(new Date()),
           voucherType: '应付账款-供应商往来-' + item.companyName,
@@ -111,7 +111,7 @@ export var mixin_credentials_generation_orderlist = {
           vDate: parseTime(new Date()),
           makeUser: this.trueName
         })
-        //贷 主营业务收入-票点收入 票点收入金额
+        // 贷 主营业务收入-票点收入 票点收入金额
         this.needToMakeList.push({
           quote: parseTime(new Date()),
           voucherType: '主营业务收入-票点收入',
@@ -129,7 +129,7 @@ export var mixin_credentials_generation_orderlist = {
       // 第三方 要查询一下订单的id
       async function invoiceOther(item, strings) {
         // 查询订单id
-        const res = await listGoodsOrder({ordersNo: item.ordersNo})
+        const res = await listGoodsOrder({ ordersNo: item.ordersNo })
         // 拿到订单id
         const orderId = res.rows[0].id;
         // 同时有买入和卖出 客户是卖出 供应商是买入

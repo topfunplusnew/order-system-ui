@@ -43,7 +43,7 @@ export function delGoodsOrder(id) {
   })
 }
 
-//根据uuid查询订单详细信息
+// 根据uuid查询订单详细信息
 export function getGoodsByUUID(uuid) {
   return request({
     url: '/system/goodsOrder/' + uuid,
@@ -51,7 +51,7 @@ export function getGoodsByUUID(uuid) {
   })
 }
 
-//调整单
+// 调整单
 export function adjustGoodsOrder(data) {
   return request({
     url: '/system/goodsOrder/adjust',
@@ -60,7 +60,7 @@ export function adjustGoodsOrder(data) {
   })
 }
 
-//审核订单
+// 审核订单
 export function auditGoodsOrder(data) {
   return request({
     url: '/system/goodsOrder/audit',
@@ -72,7 +72,7 @@ export function auditGoodsOrder(data) {
   })
 }
 
-//查询订单历史信息
+// 查询订单历史信息
 export function getHistoryGoodsOrder(query) {
   return request({
     url: '/system/goodsOrderBack/list',

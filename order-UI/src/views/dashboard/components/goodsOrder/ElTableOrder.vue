@@ -1,173 +1,185 @@
 <script>
-import { mixin_printHTML } from "@/views/dashboard/mixins/print";
-import { mixin_order_base } from "@/views/dashboard/mixins/order/order_base";
-import reLength from "@/views/dashboard/mixins/reLength";
-import CheckFiles from "@/components/CheckFiles.vue";
-import { mixin_order_audit } from "@/views/dashboard/mixins/order/order_audit";
-import { mixin_checkfile } from "@/views/dashboard/mixins/checkfiles/mixin_checkfile";
-import { delGoodsOrder, getGoodsOrder, updateGoodsOrder } from "@/api/system/goodsOrder";
-import { mixin_order_Invoice } from "@/views/dashboard/mixins/order/order_Invoice";
-import { mixin_order_adjustOrder } from "@/views/dashboard/mixins/order/order_adjustOrder";
-import { mixin_order_uploadFiles } from "@/views/dashboard/mixins/order/order_UploadFiles";
-import { mixin_order_deliverGoods } from "@/views/dashboard/mixins/order/order_deliverGoods";
-import { mixin_order_freeApply } from "@/views/dashboard/mixins/order/order_freeApply";
-import DialogWrapper from "@/views/dashboard/components/common/DialogWrapper.vue";
-import { mixin_order_checkOrder } from "@/views/dashboard/mixins/order/order_checkOrder";
-import { mixin_order_add } from "@/views/dashboard/mixins/order/order_addOrder";
-import { mixin_order_goodsItemInfo } from "@/views/dashboard/mixins/order/order_goodsItemInfo";
-import { common_dialog } from "@/views/dashboard/mixins/common/common_dialog";
-import GOODS_ORDER from "../../../../components/NeedToShow/GOODS_ORDER.vue";
-
-export default {
-  name: "ElTableOrder",
-  components: { DialogWrapper, CheckFiles },
-  // 引入打印的混入、拖动表头宽度引起的变化、订单的基本信息的混入
-  mixins: [
-    // 打印功能
-    mixin_printHTML,
-    // 通用的弹窗组件配套的混入
-    common_dialog,
-    // 表头拖动功能
-    reLength,
-    // 订单基本功能
-    mixin_order_base,
-    // 订单审核功能
-    mixin_order_audit,
-    // 文件查看功能
-    mixin_checkfile,
-    // 订单开票的功能
-    mixin_order_Invoice,
-    // 订单查看的功能
-    mixin_order_checkOrder,
-    // 查看订单的货物
-    mixin_order_goodsItemInfo,
-    // 订单的添加或者修改
-    mixin_order_add,
-    // 调整单功能
-    mixin_order_adjustOrder,
-    // 上传附件
-    mixin_order_uploadFiles,
-    // 发货单
-    mixin_order_deliverGoods,
-    // 运费申请
-    mixin_order_freeApply,
-  ],
-  props: {
-    // 是否为调整单
-    isAdjustOrder: {
-      type: Boolean,
-      default: false
-    }
-  },
-  data () {
-    return {
-      // 订单表格中的数据
-      goodsOrderList: [],
-      // 加载中的效果
-      loading: true,
-      // 订单总数 用于分页
-      total: 0,
-    }
-  },
-  watch: {
-    // 监听显示隐藏列的改变
-    columns: {
-      handler: function(newVal) {
-        localStorage.setItem("goodsorder-columns", JSON.stringify(newVal))
-      },
-      deep: true,
-    },
-  },
-  mounted () {
-    console.log(this.isAdjustOrder);
-    
-  },
-  created () {
-    // 获取订单列表
-    this.getList();
-    // 设置显示隐藏列的本地存储
-    if (localStorage.getItem('goodsorder-columns') === 'null'
-      || !localStorage.getItem('goodsorder-columns')) {
-      localStorage.setItem("goodsorder-columns", JSON.stringify(this.columns))
-    } else {
-      this.columns = JSON.parse(localStorage.getItem('goodsorder-columns'));
-    }
-  },
-  methods: {
-    updateGoodsOrder,
+  import { mixin_printHTML } from '@/views/dashboard/mixins/print';
+  import { mixin_order_base } from '@/views/dashboard/mixins/order/order_base';
+  import reLength from '@/views/dashboard/mixins/reLength';
+  import CheckFiles from '@/components/CheckFiles.vue';
+  import { mixin_order_audit } from '@/views/dashboard/mixins/order/order_audit';
+  import { mixin_checkfile } from '@/views/dashboard/mixins/checkfiles/mixin_checkfile';
+  import {
+    delGoodsOrder,
     getGoodsOrder,
-    // 给特定的某些行高亮颜色
-    tableRowClassName ({ row,  }) {
-      // 如果row.isAdjusted 的值为是，并且 isAdjust 的值也为是，那么就显示背景颜色为红色
-      if (row.isAdjusted === '是' && this.isAdjustOrder) {
-        return {
-          background: '#c6ffe6 !important',
-        }
-      }
-      return ''
+    updateGoodsOrder,
+  } from '@/api/system/goodsOrder';
+  import { mixin_order_Invoice } from '@/views/dashboard/mixins/order/order_Invoice';
+  import { mixin_order_adjustOrder } from '@/views/dashboard/mixins/order/order_adjustOrder';
+  import { mixin_order_uploadFiles } from '@/views/dashboard/mixins/order/order_UploadFiles';
+  import { mixin_order_deliverGoods } from '@/views/dashboard/mixins/order/order_deliverGoods';
+  import { mixin_order_freeApply } from '@/views/dashboard/mixins/order/order_freeApply';
+  import DialogWrapper from '@/views/dashboard/components/common/DialogWrapper.vue';
+  import { mixin_order_checkOrder } from '@/views/dashboard/mixins/order/order_checkOrder';
+  import { mixin_order_add } from '@/views/dashboard/mixins/order/order_addOrder';
+  import { mixin_order_goodsItemInfo } from '@/views/dashboard/mixins/order/order_goodsItemInfo';
+  import { common_dialog } from '@/views/dashboard/mixins/common/common_dialog';
+  import GOODS_ORDER from '../../../../components/NeedToShow/GOODS_ORDER.vue';
+
+  export default {
+    name: 'ElTableOrder',
+    components: { DialogWrapper, CheckFiles },
+    // 引入打印的混入、拖动表头宽度引起的变化、订单的基本信息的混入
+    mixins: [
+      // 打印功能
+      mixin_printHTML,
+      // 通用的弹窗组件配套的混入
+      common_dialog,
+      // 表头拖动功能
+      reLength,
+      // 订单基本功能
+      mixin_order_base,
+      // 订单审核功能
+      mixin_order_audit,
+      // 文件查看功能
+      mixin_checkfile,
+      // 订单开票的功能
+      mixin_order_Invoice,
+      // 订单查看的功能
+      mixin_order_checkOrder,
+      // 查看订单的货物
+      mixin_order_goodsItemInfo,
+      // 订单的添加或者修改
+      mixin_order_add,
+      // 调整单功能
+      mixin_order_adjustOrder,
+      // 上传附件
+      mixin_order_uploadFiles,
+      // 发货单
+      mixin_order_deliverGoods,
+      // 运费申请
+      mixin_order_freeApply,
+    ],
+    props: {
+      // 是否为调整单
+      isAdjustOrder: {
+        type: Boolean,
+        default: false,
+      },
     },
-    // 处理下拉菜单  使用的是事件委托
-    handleCommand (command, row) {
-      // 根据不同操作委派不同的方法
-      switch (command) {
-        // 查看订单详情
-        case "checkOrderItemInfo":
-          this.checkOrderItemInfo(row);
-          break;
-        // 修改订单
-        case "handleUpdate":
-          this.handleUpdate(row);
-          break;
-        // 查看货物
-        case "handleCheckOrderDetailInfo":
-          this.handleCheckOrderDetailInfo(row);
-          break;
-        //删除订单
-        case "handleDelete":
-          this.handleDelete(row);
-          break;
-        default:
-          break;
-      }
+    data() {
+      return {
+        // 订单表格中的数据
+        goodsOrderList: [],
+        // 加载中的效果
+        loading: true,
+        // 订单总数 用于分页
+        total: 0,
+      };
     },
-    // 删除某一个订单
-    handleDelete (row) {
-      const ids = row.id || this.ids;
-      this.$modal.confirm('是否确认删除订单ID为"' + ids + '"的订单？').then(function () {
-        return delGoodsOrder(ids);
-      }).then(() => {
-        this.getList();
-        this.$modal.msgSuccess("删除成功");
-      })
+    watch: {
+      // 监听显示隐藏列的改变
+      columns: {
+        handler: function (newVal) {
+          localStorage.setItem('goodsorder-columns', JSON.stringify(newVal));
+        },
+        deep: true,
+      },
     },
-    /** 搜索按钮操作 */
-    handleQuery () {
-      this.queryParams.pageNum = 1;
+    mounted() {
+      console.log(this.isAdjustOrder);
+    },
+    created() {
+      // 获取订单列表
       this.getList();
+      // 设置显示隐藏列的本地存储
+      if (
+        localStorage.getItem('goodsorder-columns') === 'null' ||
+        !localStorage.getItem('goodsorder-columns')
+      ) {
+        localStorage.setItem('goodsorder-columns', JSON.stringify(this.columns));
+      } else {
+        this.columns = JSON.parse(localStorage.getItem('goodsorder-columns'));
+      }
     },
-    // 查看原订单的信息
-    handleCheckPrevious (row) {
-      const { id } = row;
-      getGoodsOrder(id).then(res => {
-        // todo
-        this.openDialog(GOODS_ORDER, "查看原订单信息", "50%", {
-          needToShowInfo: res.data
-        })
-      })
+    methods: {
+      updateGoodsOrder,
+      getGoodsOrder,
+      // 给特定的某些行高亮颜色
+      tableRowClassName({ row }) {
+        // 如果row.isAdjusted 的值为是，并且 isAdjust 的值也为是，那么就显示背景颜色为红色
+        if (row.isAdjusted === '是' && this.isAdjustOrder) {
+          return {
+            background: '#c6ffe6 !important',
+          };
+        }
+        return '';
+      },
+      // 处理下拉菜单  使用的是事件委托
+      handleCommand(command, row) {
+        // 根据不同操作委派不同的方法
+        switch (command) {
+          // 查看订单详情
+          case 'checkOrderItemInfo':
+            this.checkOrderItemInfo(row);
+            break;
+          // 修改订单
+          case 'handleUpdate':
+            this.handleUpdate(row);
+            break;
+          // 查看货物
+          case 'handleCheckOrderDetailInfo':
+            this.handleCheckOrderDetailInfo(row);
+            break;
+          // 删除订单
+          case 'handleDelete':
+            this.handleDelete(row);
+            break;
+          default:
+            break;
+        }
+      },
+      // 删除某一个订单
+      handleDelete(row) {
+        const ids = row.id || this.ids;
+        this.$modal
+          .confirm('是否确认删除订单ID为"' + ids + '"的订单？')
+          .then(function () {
+            return delGoodsOrder(ids);
+          })
+          .then(() => {
+            this.getList();
+            this.$modal.msgSuccess('删除成功');
+          });
+      },
+      /** 搜索按钮操作 */
+      handleQuery() {
+        this.queryParams.pageNum = 1;
+        this.getList();
+      },
+      // 查看原订单的信息
+      handleCheckPrevious(row) {
+        const { id } = row;
+        getGoodsOrder(id).then((res) => {
+          // todo
+          this.openDialog(GOODS_ORDER, '查看原订单信息', '50%', {
+            needToShowInfo: res.data,
+          });
+        });
+      },
+      /** 重置按钮操作 */
+      resetQuery() {
+        this.resetForm('queryForm');
+        this.handleQuery();
+      },
+      // 表格的导出
+      handleExport() {
+        this.download(
+          'system/goodsOrder/export',
+          {
+            ...this.queryParams,
+          },
+          `goodsOrder_${new Date().getTime()}.xlsx`
+        );
+      },
     },
-    /** 重置按钮操作 */
-    resetQuery () {
-      this.resetForm("queryForm");
-      this.handleQuery();
-    },
-    // 表格的导出
-    handleExport () {
-      this.download('system/goodsOrder/export', {
-        ...this.queryParams
-      }, `goodsOrder_${new Date().getTime()}.xlsx`)
-    },
-  },
-}
+  };
 </script>
 
 <template>
@@ -180,7 +192,7 @@ export default {
         :dialog-props="dialogProps"
         :dialog-title="dialogTitle"
         :dialog-width="dialogWidth"
-        @update:dialogVisible="args => dialogVisible = false"
+        @update:dialogVisible="(args) => (dialogVisible = false)"
         @close="handleCloseDialog"
         @confirm="handleDialogConfirm"
       />
@@ -195,7 +207,12 @@ export default {
           </el-button>
         </el-col>
         <el-col v-if="!isAdjustOrder" :span="1.5">
-          <el-button v-hasPermi="['system:goodsorder:add']" type="danger" size="mini" @click="handleAdd">
+          <el-button
+            v-hasPermi="['system:goodsorder:add']"
+            type="danger"
+            size="mini"
+            @click="handleAdd"
+          >
             添加订单信息
           </el-button>
         </el-col>
@@ -206,7 +223,12 @@ export default {
       <right-toolbar :columns="columns" @queryTable="getList">
         <template #print>
           <el-col :span="1.5">
-            <el-button plain icon="el-icon-printer" size="mini" @click="printHTML" />
+            <el-button
+              plain
+              icon="el-icon-printer"
+              size="mini"
+              @click="printHTML"
+            />
           </el-col>
         </template>
         <template #export>
@@ -235,36 +257,45 @@ export default {
         size="mini"
         virtual-scroll
         max-height="750"
-        :cell-style="() => { return { padding: '.7px' } }"
+        :cell-style="
+          () => {
+            return { padding: '.7px' };
+          }
+        "
         :data="goodsOrderList"
         @header-dragend="changeColWidth"
       >
-        <el-table-column label="行操作" align="center" class-name="small-padding fixed-width" width="142" fixed="left">
+        <el-table-column
+          label="行操作"
+          align="center"
+          class-name="small-padding fixed-width"
+          width="142"
+          fixed="left"
+        >
           <template slot-scope="scope">
-            <el-dropdown size="mini" @command="(command) => handleCommand(command, scope.row)">
-              <el-button size="mini" type="text">
-                操作
-              </el-button>
+            <el-dropdown
+              size="mini"
+              @command="(command) => handleCommand(command, scope.row)"
+            >
+              <el-button size="mini" type="text"> 操作 </el-button>
               <el-dropdown-menu slot="dropdown">
                 <el-dropdown-item command="checkOrderItemInfo">
-                  <el-button size="mini">
-                    查 看
-                  </el-button>
+                  <el-button size="mini"> 查 看 </el-button>
                 </el-dropdown-item>
-                <el-dropdown-item v-hasPermi="['system:goodsorder:edit']" command="handleUpdate">
-                  <el-button size="mini" type="primary">
-                    修 改
-                  </el-button>
+                <el-dropdown-item
+                  v-hasPermi="['system:goodsorder:edit']"
+                  command="handleUpdate"
+                >
+                  <el-button size="mini" type="primary"> 修 改 </el-button>
                 </el-dropdown-item>
                 <el-dropdown-item command="handleCheckOrderDetailInfo">
-                  <el-button size="mini" type="warning">
-                    货 物
-                  </el-button>
+                  <el-button size="mini" type="warning"> 货 物 </el-button>
                 </el-dropdown-item>
-                <el-dropdown-item v-hasPermi="['system:goodsorder:remove']" command="handleDelete">
-                  <el-button size="mini" type="danger">
-                    删 除
-                  </el-button>
+                <el-dropdown-item
+                  v-hasPermi="['system:goodsorder:remove']"
+                  command="handleDelete"
+                >
+                  <el-button size="mini" type="danger"> 删 除 </el-button>
                 </el-dropdown-item>
               </el-dropdown-menu>
             </el-dropdown>
@@ -278,7 +309,13 @@ export default {
             <!--          </el-button>-->
           </template>
         </el-table-column>
-        <el-table-column show-overflow-tooltip label="ID" align="center" prop="id" fixed="left" />
+        <el-table-column
+          show-overflow-tooltip
+          label="ID"
+          align="center"
+          prop="id"
+          fixed="left"
+        />
         <el-table-column
           v-show="columns[0].visible"
           show-overflow-tooltip
@@ -306,15 +343,26 @@ export default {
         >
           <template #default="scope">
             <el-row v-if="scope.row.smailOrderDetails">
-              <span v-for="(item, index) in getSupplierNames(scope.row.smailOrderDetails)" :key="index">
-                <span class="invoice" @click="updateOrderItemVisibleSupplierInvoice(scope.row, item.supplierID)">
+              <span
+                v-for="(item, index) in getSupplierNames(
+                  scope.row.smailOrderDetails
+                )"
+                :key="index"
+              >
+                <span
+                  class="invoice"
+                  @click="
+                    updateOrderItemVisibleSupplierInvoice(
+                      scope.row,
+                      item.supplierID
+                    )
+                  "
+                >
                   {{ item.supplier }}
                 </span>
               </span>
             </el-row>
-            <template v-else>
-              无
-            </template>
+            <template v-else> 无 </template>
           </template>
         </el-table-column>
         <el-table-column
@@ -340,7 +388,13 @@ export default {
           prop="landDriverName"
           width="100px"
         />
-        <el-table-column show-overflow-tooltip label="总货款" align="center" prop="allPayments" width="100px">
+        <el-table-column
+          show-overflow-tooltip
+          label="总货款"
+          align="center"
+          prop="allPayments"
+          width="100px"
+        >
           <template #default="scope">
             {{ scope.row.allPayments | changeNumber(changeLength) }}
           </template>
@@ -354,7 +408,13 @@ export default {
           width="100px"
         />
         <!--      原为海运车牌号-->
-        <el-table-column v-show="columns[7].visible" show-overflow-tooltip label="海运柜号" align="center" prop="seaCarNo">
+        <el-table-column
+          v-show="columns[7].visible"
+          show-overflow-tooltip
+          label="海运柜号"
+          align="center"
+          prop="seaCarNo"
+        >
           <template #default="scope">
             {{ !scope.row.seaCarNo ? '无' : scope.row.seaCarNo }}
           </template>
@@ -399,8 +459,20 @@ export default {
           align="center"
           prop="saleManager"
         />
-        <el-table-column v-show="columns[12].visible" show-overflow-tooltip label="车队" align="center" prop="fleet" />
-        <el-table-column show-overflow-tooltip label="业务员" align="center" prop="userName" width="120px" />
+        <el-table-column
+          v-show="columns[12].visible"
+          show-overflow-tooltip
+          label="车队"
+          align="center"
+          prop="fleet"
+        />
+        <el-table-column
+          show-overflow-tooltip
+          label="业务员"
+          align="center"
+          prop="userName"
+          width="120px"
+        />
         <el-table-column
           v-show="columns[13].visible"
           show-overflow-tooltip
@@ -446,7 +518,16 @@ export default {
           <template slot-scope="scope">
             <CheckFiles
               :path="scope.row.path"
-              @needToUpdate="(value) => handleUpdateFilePath(value, scope.row, 'path', getGoodsOrder, updateGoodsOrder)"
+              @needToUpdate="
+                (value) =>
+                  handleUpdateFilePath(
+                    value,
+                    scope.row,
+                    'path',
+                    getGoodsOrder,
+                    updateGoodsOrder
+                  )
+              "
             />
           </template>
         </el-table-column>
@@ -461,7 +542,16 @@ export default {
           <template #default="scope">
             <CheckFiles
               :path="scope.row.receiveProof"
-              @needToUpdate="(value) => handleUpdateFilePath(value, scope.row, 'receiveProof', getGoodsOrder, updateGoodsOrder)"
+              @needToUpdate="
+                (value) =>
+                  handleUpdateFilePath(
+                    value,
+                    scope.row,
+                    'receiveProof',
+                    getGoodsOrder,
+                    updateGoodsOrder
+                  )
+              "
             />
           </template>
         </el-table-column>
@@ -474,7 +564,7 @@ export default {
           width="100px"
         >
           <template slot-scope="scope">
-            {{ scope.row.isedit === 0 ? "否" : "是" }}
+            {{ scope.row.isedit === 0 ? '否' : '是' }}
           </template>
         </el-table-column>
         <!--      客户供应商是否开票-->
@@ -490,22 +580,28 @@ export default {
             <el-row v-if="hasOpen(scope.row, 1)">
               <el-row v-if="scope.row.customerIsInvoice > 0">
                 <el-row>
-                  <el-button type="text" size="mini" @click="updateOrderItemVisibleCustomerInvoice(scope.row)">
+                  <el-button
+                    type="text"
+                    size="mini"
+                    @click="updateOrderItemVisibleCustomerInvoice(scope.row)"
+                  >
                     继续开票
                   </el-button>
                 </el-row>
               </el-row>
               <el-row v-else>
                 <el-row>
-                  <el-button type="text" size="mini" @click="updateOrderItemVisibleCustomerInvoice(scope.row)">
+                  <el-button
+                    type="text"
+                    size="mini"
+                    @click="updateOrderItemVisibleCustomerInvoice(scope.row)"
+                  >
                     前去开票
                   </el-button>
                 </el-row>
               </el-row>
             </el-row>
-            <el-row v-else>
-              无开票
-            </el-row>
+            <el-row v-else> 无开票 </el-row>
           </template>
         </el-table-column>
         <el-table-column
@@ -520,25 +616,37 @@ export default {
             <el-row v-if="hasOpen(scope.row, 0)">
               <el-row v-if="scope.row.isSupplierInvoice > 0">
                 <el-row>
-                  <el-button type="text" size="mini" @click="updateOrderItemVisibleSupplierInvoice(scope.row)">
+                  <el-button
+                    type="text"
+                    size="mini"
+                    @click="updateOrderItemVisibleSupplierInvoice(scope.row)"
+                  >
                     继续开票
                   </el-button>
                 </el-row>
               </el-row>
               <el-row v-else>
                 <el-row>
-                  <el-button type="text" size="mini" @click="updateOrderItemVisibleSupplierInvoice(scope.row)">
+                  <el-button
+                    type="text"
+                    size="mini"
+                    @click="updateOrderItemVisibleSupplierInvoice(scope.row)"
+                  >
                     前去开票
                   </el-button>
                 </el-row>
               </el-row>
             </el-row>
-            <el-row v-else>
-              无开票
-            </el-row>
+            <el-row v-else> 无开票 </el-row>
           </template>
         </el-table-column>
-        <el-table-column v-show="columns[22].visible" show-overflow-tooltip label="备注" align="center" prop="comments" />
+        <el-table-column
+          v-show="columns[22].visible"
+          show-overflow-tooltip
+          label="备注"
+          align="center"
+          prop="comments"
+        />
         <!--      右侧操作栏-->
         <el-table-column
           show-overflow-tooltip
@@ -573,17 +681,29 @@ export default {
               </el-button>
               <el-dropdown-menu slot="dropdown">
                 <el-dropdown-item>
-                  <el-button size="mini" type="text" @click="handleOrder1(scope.row)">
+                  <el-button
+                    size="mini"
+                    type="text"
+                    @click="handleOrder1(scope.row)"
+                  >
                     发货单1
                   </el-button>
                 </el-dropdown-item>
                 <el-dropdown-item>
-                  <el-button size="mini" type="text" @click="handleOrder2(scope.row)">
+                  <el-button
+                    size="mini"
+                    type="text"
+                    @click="handleOrder2(scope.row)"
+                  >
                     发货单2
                   </el-button>
                 </el-dropdown-item>
                 <el-dropdown-item>
-                  <el-button size="mini" type="text" @click="handleOrder3(scope.row)">
+                  <el-button
+                    size="mini"
+                    type="text"
+                    @click="handleOrder3(scope.row)"
+                  >
                     发货单3
                   </el-button>
                 </el-dropdown-item>
@@ -602,18 +722,27 @@ export default {
           <template slot-scope="scope">
             <!--          如果有订单运费 那么就禁用按钮-->
             <el-dropdown size="mini" type="text">
-              <el-button type="text" :disabled="!(scope.row.landFreight > 0 || scope.row.seaFreight > 0)">
+              <el-button
+                type="text"
+                :disabled="
+                  !(scope.row.landFreight > 0 || scope.row.seaFreight > 0)
+                "
+              >
                 操作
               </el-button>
               <el-dropdown-menu slot="dropdown">
                 <el-dropdown-item>
-                  <el-row v-if="scope.row.landFreight > 0 || scope.row.seaFreight > 0">
+                  <el-row
+                    v-if="scope.row.landFreight > 0 || scope.row.seaFreight > 0"
+                  >
                     <el-button
                       v-if="scope.row.landFreight > 0"
                       v-hasPermi="['system:goodsorder:remove']"
                       size="mini"
                       type="warning"
-                      :disabled="(scope.row.params.isHaveOrderLandfreight === 'true')"
+                      :disabled="
+                        scope.row.params.isHaveOrderLandfreight === 'true'
+                      "
                       @click="handleApplyLandFree(scope.row)"
                     >
                       陆运费申请
@@ -621,7 +750,9 @@ export default {
                     <el-button
                       v-if="scope.row.seaFreight > 0"
                       v-hasPermi="['system:goodsorder:remove']"
-                      :disabled="(scope.row.params.isHaveOrderSeafreight === 'true')"
+                      :disabled="
+                        scope.row.params.isHaveOrderSeafreight === 'true'
+                      "
                       size="mini"
                       type="primary"
                       @click="handleApplySeaFree(scope.row)"
@@ -629,9 +760,7 @@ export default {
                       海运费申请
                     </el-button>
                   </el-row>
-                  <el-row v-else>
-                    无运费信息
-                  </el-row>
+                  <el-row v-else> 无运费信息 </el-row>
                 </el-dropdown-item>
               </el-dropdown-menu>
             </el-dropdown>
@@ -651,10 +780,10 @@ export default {
 </template>
 
 <style scoped lang="scss">
-.invoice{
+.invoice {
   width: 100%;
   height: 100%;
-  &:hover{
+  &:hover {
     cursor: pointer;
     color: #df6565;
     font-weight: bold;

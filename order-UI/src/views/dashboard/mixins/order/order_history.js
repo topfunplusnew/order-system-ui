@@ -1,8 +1,8 @@
 import {
   getGoodsOrder,
   getHistoryGoodsOrder,
-} from "../../../../api/system/goodsOrder";
-import { excludeParams } from "../../../../api/tool/exclude";
+} from '../../../../api/system/goodsOrder';
+import { excludeParams } from '../../../../api/tool/exclude';
 
 /**
  * 2.查看订单历史修改记录功能
@@ -41,7 +41,7 @@ export var mixin_order_orderHistory = {
       getHistoryGoodsOrder({ goodsOrderID: id }).then((res) => {
         // 如果拿到的列表为空 说明没有人修改过
         if (res.rows.length === 0) {
-          this.$message.warning("没有修改记录");
+          this.$message.warning('没有修改记录');
           return;
         }
         // 拿到列表

@@ -1,6 +1,6 @@
 const state = {
   currentOrderInfo: {},
-  //订单运费
+  // 订单运费
   freightInfo: {},
 
   // 部门
@@ -12,11 +12,11 @@ const mutations = {
     state.currentOrderInfo = currentOrderInfo
   },
 
-  //运费
+  // 运费
   SET_FREIGHT_INFO(state, freightInfo) {
     state.freightInfo = freightInfo
   },
-  //清空
+  // 清空
   CLEAR_CURRENT_ORDER_INFO(state) {
     state.currentOrderInfo = {}
   },
@@ -30,19 +30,19 @@ const mutations = {
 }
 
 const actions = {
-  setCurrentOrderInfo({commit}, currentOrderInfo) {
+  setCurrentOrderInfo({ commit }, currentOrderInfo) {
     commit('SET_CURRENT_ORDER_INFO', currentOrderInfo)
   },
-  setFreightInfo({commit}, freightInfo) {
+  setFreightInfo({ commit }, freightInfo) {
     commit('SET_FREIGHT_INFO', freightInfo)
   },
-  //清空
-  clearCurrentOrderInfo({commit}) {
+  // 清空
+  clearCurrentOrderInfo({ commit }) {
     commit('CLEAR_CURRENT_ORDER_INFO')
   },
 
   // 设置部门信息
-  setDeptName({commit}, deptName) {
+  setDeptName({ commit }, deptName) {
     commit('SET_DEPT_NAME', deptName)
   }
 }

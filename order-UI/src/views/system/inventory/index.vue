@@ -550,380 +550,380 @@
 </template>
 
 <script>
-import {listInventory, getInventory, delInventory, addInventory, updateInventory} from "@/api/system/inventory";
-import SearchOption from "@/components/SearchOption.vue";
-import {listStoreHouse} from "@/api/system/StoreHouse";
-import {listCompany} from "@/api/system/company";
-import {listProductLevel} from "@/api/system/productLevel";
-import {listCars} from "@/api/system/cars";
-import {excludeParams} from "@/api/tool/exclude";
-import {mapGetters} from "vuex";
-import {addReason} from "@/api/system/user";
-import {TableName} from "@/api/tool/enums";
-import {mixin_inventory_second} from "../../dashboard/mixins/inventory/inventory_second";
-import {mixin_inventory_broken} from "../../dashboard/mixins/inventory/inventory_broken";
-import {mixin_inventory_add} from "../../dashboard/mixins/inventory/inventory_add";
-import {mixin_freight_payment} from "@/views/dashboard/mixins/freight/freight_payment";
-import DialogWrapper from "@/views/dashboard/components/common/DialogWrapper.vue";
-import {common_dialog} from "@/views/dashboard/mixins/common/common_dialog";
-import {mixin_printHTML} from "@/views/dashboard/mixins/print";
+  import { listInventory, getInventory, delInventory, addInventory, updateInventory } from '@/api/system/inventory';
+  import SearchOption from '@/components/SearchOption.vue';
+  import { listStoreHouse } from '@/api/system/StoreHouse';
+  import { listCompany } from '@/api/system/company';
+  import { listProductLevel } from '@/api/system/productLevel';
+  import { listCars } from '@/api/system/cars';
+  import { excludeParams } from '@/api/tool/exclude';
+  import { mapGetters } from 'vuex';
+  import { addReason } from '@/api/system/user';
+  import { TableName } from '@/api/tool/enums';
+  import { mixin_inventory_second } from '../../dashboard/mixins/inventory/inventory_second';
+  import { mixin_inventory_broken } from '../../dashboard/mixins/inventory/inventory_broken';
+  import { mixin_inventory_add } from '../../dashboard/mixins/inventory/inventory_add';
+  import { mixin_freight_payment } from '@/views/dashboard/mixins/freight/freight_payment';
+  import DialogWrapper from '@/views/dashboard/components/common/DialogWrapper.vue';
+  import { common_dialog } from '@/views/dashboard/mixins/common/common_dialog';
+  import { mixin_printHTML } from '@/views/dashboard/mixins/print';
 
-export default {
-  name: "Inventory",
-  components: {DialogWrapper, SearchOption},
-  mixins: [
-    // 通用的弹窗组件混入
-    common_dialog,
-    mixin_printHTML,
-    mixin_inventory_second,
-    mixin_inventory_broken,
-    mixin_inventory_add,
-    mixin_freight_payment
-  ],
-  data() {
-    return {
-      loading: true,
-      ids: [],
-      single: true,
-      multiple: true,
-      showSearch: true,
-      total: 0,
-      inventoryList: [],
-      title: "",
-      open: false,
-      queryParams: {
-        pageNum: 1,
-        pageSize: 10,
-        storeHouseid: null,
-        storeHouseName: null,
-        storeDate: null,
-        stockNumber: null,
-        supplier: null,
-        supplierId: null,
-        levelID: null,
-        levelName: null,
-        countingUnit: null,
-        height: null,
-        length: null,
-        width: null,
-        pieces: null,
-        piecesPerPack: null,
-        packs: null,
-        price: null,
-        isIncludeTaxFactory: null,
-        sundryCost: null,
-        paymentFactory: null,
-        paymentUnload: null,
-        isIncludeTaxSale: null,
-        payments: null,
-        landCarID: null,
-        landCarNo: null,
-        landDriverTel: null,
-        landDriverName: null,
-        seaCarID: null,
-        seaCarNo: null,
-        seaDriverTel: null,
-        seaDriverName: null,
-        erro: null,
-        tonnage: null,
-        landFreightPrice: null,
-        landFreight: null,
-        seaFreight: null,
-        freight: null,
-        otherCost: null,
-        profit: null,
-        profitNoTax: null,
-        actualPieces: null,
-        paymentsWithSundry: null,
-        additionalFees: null,
-        rebate: null,
-        customerCommission: null,
-        comments: null,
-        addtime: null,
-        userId: null,
-        UserName: null,
-        delFlag: null,
-        showFlag: null
-      },
-      form: {},
-      rules: {},
-      columns: [
-        /*  {key: 0, label: `id`, visible: true},*/
-        {key: 0, label: `仓库名称`, visible: true},
-        {key: 1, label: `入库日期`, visible: true},
-        {key: 2, label: `库存量`, visible: true},
-        {key: 3, label: `供应商`, visible: true},
-        {key: 4, label: `级别编码`, visible: true},
-        {key: 5, label: `级别名称`, visible: true},
-        {key: 6, label: `计量单位`, visible: true},
-        {key: 7, label: `厚度`, visible: true},
-        {key: 8, label: `长度`, visible: true},
-        {key: 9, label: `宽度`, visible: true},
-        {key: 10, label: `出厂片数`, visible: true},
-        {key: 11, label: `每包片数`, visible: true},
-        {key: 12, label: `包数`, visible: true},
-        {key: 13, label: `出厂单价`, visible: true},
-        {key: 14, label: `出厂是否含税`, visible: true},
-        {key: 15, label: `杂费`, visible: true},
-        {key: 16, label: `出厂贷款`, visible: true},
-        {key: 17, label: `卸货价`, visible: true},
-        {key: 18, label: `销售是否含税`, visible: true},
-        {key: 19, label: `总货款`, visible: true},
-        {key: 20, label: `陆运车牌`, visible: true},
-        {key: 21, label: `陆运司机电话`, visible: true},
-        {key: 22, label: `陆运司机姓名`, visible: true},
-        {key: 23, label: `误差`, visible: true},
-        {key: 24, label: `吨位`, visible: true},
-        {key: 25, label: `陆运费单价`, visible: true},
-        {key: 26, label: `陆运费`, visible: true},
-        {key: 27, label: `其他费用`, visible: true},
-        {key: 28, label: `利润`, visible: true},
-        {key: 29, label: `不含利润率`, visible: true},
-        {key: 30, label: `实际片数`, visible: true},
-        {key: 31, label: `总贷款杂费`, visible: true},
-        {key: 32, label: `加费`, visible: true},
-        {key: 33, label: `返利金额`, visible: true},
-        {key: 34, label: `客户佣金`, visible: true},
-        {key: 35, label: `备注`, visible: true},
-      ],
+  export default {
+    name: 'Inventory',
+    components: { DialogWrapper, SearchOption },
+    mixins: [
+      // 通用的弹窗组件混入
+      common_dialog,
+      mixin_printHTML,
+      mixin_inventory_second,
+      mixin_inventory_broken,
+      mixin_inventory_add,
+      mixin_freight_payment
+    ],
+    data() {
+      return {
+        loading: true,
+        ids: [],
+        single: true,
+        multiple: true,
+        showSearch: true,
+        total: 0,
+        inventoryList: [],
+        title: '',
+        open: false,
+        queryParams: {
+          pageNum: 1,
+          pageSize: 10,
+          storeHouseid: null,
+          storeHouseName: null,
+          storeDate: null,
+          stockNumber: null,
+          supplier: null,
+          supplierId: null,
+          levelID: null,
+          levelName: null,
+          countingUnit: null,
+          height: null,
+          length: null,
+          width: null,
+          pieces: null,
+          piecesPerPack: null,
+          packs: null,
+          price: null,
+          isIncludeTaxFactory: null,
+          sundryCost: null,
+          paymentFactory: null,
+          paymentUnload: null,
+          isIncludeTaxSale: null,
+          payments: null,
+          landCarID: null,
+          landCarNo: null,
+          landDriverTel: null,
+          landDriverName: null,
+          seaCarID: null,
+          seaCarNo: null,
+          seaDriverTel: null,
+          seaDriverName: null,
+          erro: null,
+          tonnage: null,
+          landFreightPrice: null,
+          landFreight: null,
+          seaFreight: null,
+          freight: null,
+          otherCost: null,
+          profit: null,
+          profitNoTax: null,
+          actualPieces: null,
+          paymentsWithSundry: null,
+          additionalFees: null,
+          rebate: null,
+          customerCommission: null,
+          comments: null,
+          addtime: null,
+          userId: null,
+          UserName: null,
+          delFlag: null,
+          showFlag: null
+        },
+        form: {},
+        rules: {},
+        columns: [
+          /*  {key: 0, label: `id`, visible: true},*/
+          { key: 0, label: `仓库名称`, visible: true },
+          { key: 1, label: `入库日期`, visible: true },
+          { key: 2, label: `库存量`, visible: true },
+          { key: 3, label: `供应商`, visible: true },
+          { key: 4, label: `级别编码`, visible: true },
+          { key: 5, label: `级别名称`, visible: true },
+          { key: 6, label: `计量单位`, visible: true },
+          { key: 7, label: `厚度`, visible: true },
+          { key: 8, label: `长度`, visible: true },
+          { key: 9, label: `宽度`, visible: true },
+          { key: 10, label: `出厂片数`, visible: true },
+          { key: 11, label: `每包片数`, visible: true },
+          { key: 12, label: `包数`, visible: true },
+          { key: 13, label: `出厂单价`, visible: true },
+          { key: 14, label: `出厂是否含税`, visible: true },
+          { key: 15, label: `杂费`, visible: true },
+          { key: 16, label: `出厂贷款`, visible: true },
+          { key: 17, label: `卸货价`, visible: true },
+          { key: 18, label: `销售是否含税`, visible: true },
+          { key: 19, label: `总货款`, visible: true },
+          { key: 20, label: `陆运车牌`, visible: true },
+          { key: 21, label: `陆运司机电话`, visible: true },
+          { key: 22, label: `陆运司机姓名`, visible: true },
+          { key: 23, label: `误差`, visible: true },
+          { key: 24, label: `吨位`, visible: true },
+          { key: 25, label: `陆运费单价`, visible: true },
+          { key: 26, label: `陆运费`, visible: true },
+          { key: 27, label: `其他费用`, visible: true },
+          { key: 28, label: `利润`, visible: true },
+          { key: 29, label: `不含利润率`, visible: true },
+          { key: 30, label: `实际片数`, visible: true },
+          { key: 31, label: `总贷款杂费`, visible: true },
+          { key: 32, label: `加费`, visible: true },
+          { key: 33, label: `返利金额`, visible: true },
+          { key: 34, label: `客户佣金`, visible: true },
+          { key: 35, label: `备注`, visible: true },
+        ],
 
-      // 树表的数据结构
-      defaultProps: {
-        label: 'label'
-      },
-    };
-  },
-  computed: {
-    //拿到完整的货物信息
-    ...mapGetters(['inventoryInfoAll'])
-  },
-  //展示与隐藏
-  watch: {
-    columns: {
-      handler: function (newVal) {
-        localStorage.setItem("inventory-columns", JSON.stringify(newVal))
-      },
-      deep: true,
-    }
-  },
-  created() {
-    // 获取仓库信息
-    listStoreHouse().then(res => {
-      this.storeList = res.rows.map(item => {
-        return {
-          label: item.storeHouseName,
-          children: []
-        }
-      });
-    })
-    this.getList();
-    if (localStorage.getItem('inventory-columns') === 'null'
-      || !localStorage.getItem('inventory-columns')) {
-      //设置localStorage
-      localStorage.setItem("inventory-columns", JSON.stringify(this.columns))
-    } else {
-      this.columns = JSON.parse(localStorage.getItem('inventory-columns'));
-    }
-  },
-  methods: {
-    listCars,
-    listProductLevel,
-    listCompany,
-    listStoreHouse,
-    // 左侧树点击
-    handleNodeClick(data) {
-      this.loading = true
-      listInventory({storeHouseName: data.label}).then(res => {
-        this.inventoryList = res.rows
-        this.loading = false
-      })
-    },
-    //选中仓库点击确定的回调
-    handleCommitBackStoreHouse(val) {
-      this.form.storeHouseName = val.storeHouseName;
-      this.form.storeHouseid = val.id;
-    },
-    //选中供应商确定
-    handleCommitBackCompany(val) {
-      this.form.supplier = val.companyName;
-      this.form.supplierId = val.id;
-    },
-    //选中级别编码的回调
-    handleCommitBackProductLevel(val) {
-      this.form.levelID = val.id;
-      this.form.levelName = val.levelName
-    },
-    handleCommitBackCars(val) {
-      this.form.landCarNo = val.carNo;
-      this.form.landDriverTel = val.tel;
-      this.form.landDriverName = val.driver;
-      this.form.landCarID = val.id;
-    },
-    handleCommitBackSea(val) {
-      this.form.seaCarNo = val.carNo;
-      this.form.seaDriverTel = val.tel;
-      this.form.seaDriverName = val.driver;
-      this.form.seaCarID = val.id;
-    },
-
-    /** 查询库存列表 */
-    getList() {
-      this.loading = true;
-      listInventory(this.queryParams).then(response => {
-        this.inventoryList = response.rows;
-        this.total = response.total;
-        this.loading = false;
-      });
-    },
-    // 取消按钮
-    cancel() {
-      this.open = false;
-      this.reset();
-    },
-    // 表单重置
-    reset() {
-      this.form = {
-        id: null,
-        storeHouseid: null,
-        storeHouseName: null,
-        storeDate: null,
-        stockNumber: null,
-        supplier: null,
-        supplierId: null,
-        levelID: null,
-        levelName: null,
-        countingUnit: null,
-        height: null,
-        length: null,
-        width: null,
-        pieces: null,
-        piecesPerPack: null,
-        packs: null,
-        price: null,
-        isIncludeTaxFactory: null,
-        sundryCost: null,
-        paymentFactory: null,
-        paymentUnload: null,
-        isIncludeTaxSale: null,
-        payments: null,
-        landCarID: null,
-        landCarNo: null,
-        landDriverTel: null,
-        landDriverName: null,
-        seaCarID: null,
-        seaCarNo: null,
-        seaDriverTel: null,
-        seaDriverName: null,
-        erro: null,
-        tonnage: null,
-        landFreightPrice: null,
-        landFreight: null,
-        seaFreight: null,
-        freight: null,
-        otherCost: null,
-        profit: null,
-        profitNoTax: null,
-        actualPieces: null,
-        paymentsWithSundry: null,
-        additionalFees: null,
-        rebate: null,
-        customerCommission: null,
-        comments: null,
-        addtime: null,
-        userId: null,
-        UserName: null,
-        updateTime: null,
-        delFlag: null,
-        showFlag: null
+        // 树表的数据结构
+        defaultProps: {
+          label: 'label'
+        },
       };
-      this.resetForm("form");
     },
-    /** 搜索按钮操作 */
-    handleQuery() {
-      this.queryParams.pageNum = 1;
-      this.getList();
+    computed: {
+      // 拿到完整的货物信息
+      ...mapGetters(['inventoryInfoAll'])
     },
-    /** 重置按钮操作 */
-    resetQuery() {
-      this.resetForm("queryForm");
-      this.handleQuery();
+    // 展示与隐藏
+    watch: {
+      columns: {
+        handler: function (newVal) {
+          localStorage.setItem('inventory-columns', JSON.stringify(newVal))
+        },
+        deep: true,
+      }
     },
-    // 多选框选中数据
-    handleSelectionChange(selection) {
-      this.ids = selection.map(item => item.id)
-      this.single = selection.length !== 1
-      this.multiple = !selection.length
-    },
-    /** 修改按钮操作 */
-    handleUpdate(row) {
-      this.$prompt('请输入编辑原因', '提示', {
-        confirmButtonText: '确定',
-        cancelButtonText: '取消',
-        type: 'warning'
-      }).then(({value}) => {
-        addReason({reason: value, tableName: TableName.INVENTORY, tid: row.id, modifyTime: this.modifyTime})
-          .then(() => {
-            this.$message.success('提交成功')
-            this.reset();
-            const id = row.id || this.ids
-            getInventory(id).then(response => {
-              this.form = response.data;
-              this.open = true;
-              this.title = "修改库存";
-            });
-          })
-      }).catch(() => {
-        this.$message({
-          type: 'warning',
-          message: '请先输入编辑原因!'
-        });
-      });
-    },
-    /** 提交按钮 */
-    submitForm() {
-      this.$refs["form"].validate(valid => {
-        if (valid) {
-          if (this.form.id != null) {
-            this.form = excludeParams(this.form, this.$exclude)
-            this.form.isIncludeTaxFactory = this.form.isIncludeTaxFactory === '是' ? '1' : '0'
-            this.form.isIncludeTaxSale = this.form.isIncludeTaxSale === '是' ? '1' : '0'
-            updateInventory(this.form).then(() => {
-              this.$modal.msgSuccess("修改成功");
-              this.open = false;
-              this.getList();
-            });
-          } else {
-            this.form = excludeParams(this.form, this.$exclude)
-            this.form.isIncludeTaxFactory = this.form.isIncludeTaxFactory === '是' ? '1' : '0'
-            this.form.isIncludeTaxSale = this.form.isIncludeTaxSale === '是' ? '1' : '0'
-            addInventory(this.form).then(() => {
-              this.$modal.msgSuccess("新增成功");
-              this.open = false;
-              this.getList();
-            });
+    created() {
+      // 获取仓库信息
+      listStoreHouse().then(res => {
+        this.storeList = res.rows.map(item => {
+          return {
+            label: item.storeHouseName,
+            children: []
           }
-        }
-      });
+        });
+      })
+      this.getList();
+      if (localStorage.getItem('inventory-columns') === 'null' ||
+        !localStorage.getItem('inventory-columns')) {
+        // 设置localStorage
+        localStorage.setItem('inventory-columns', JSON.stringify(this.columns))
+      } else {
+        this.columns = JSON.parse(localStorage.getItem('inventory-columns'));
+      }
     },
-    /** 删除按钮操作 */
-    handleDelete(row) {
-      const ids = row.id || this.ids;
-      this.$modal.confirm('是否确认删除库存编号为"' + ids + '"的数据项？').then(function () {
-        return delInventory(ids);
-      }).then(() => {
+    methods: {
+      listCars,
+      listProductLevel,
+      listCompany,
+      listStoreHouse,
+      // 左侧树点击
+      handleNodeClick(data) {
+        this.loading = true
+        listInventory({ storeHouseName: data.label }).then(res => {
+          this.inventoryList = res.rows
+          this.loading = false
+        })
+      },
+      // 选中仓库点击确定的回调
+      handleCommitBackStoreHouse(val) {
+        this.form.storeHouseName = val.storeHouseName;
+        this.form.storeHouseid = val.id;
+      },
+      // 选中供应商确定
+      handleCommitBackCompany(val) {
+        this.form.supplier = val.companyName;
+        this.form.supplierId = val.id;
+      },
+      // 选中级别编码的回调
+      handleCommitBackProductLevel(val) {
+        this.form.levelID = val.id;
+        this.form.levelName = val.levelName
+      },
+      handleCommitBackCars(val) {
+        this.form.landCarNo = val.carNo;
+        this.form.landDriverTel = val.tel;
+        this.form.landDriverName = val.driver;
+        this.form.landCarID = val.id;
+      },
+      handleCommitBackSea(val) {
+        this.form.seaCarNo = val.carNo;
+        this.form.seaDriverTel = val.tel;
+        this.form.seaDriverName = val.driver;
+        this.form.seaCarID = val.id;
+      },
+
+      /** 查询库存列表 */
+      getList() {
+        this.loading = true;
+        listInventory(this.queryParams).then(response => {
+          this.inventoryList = response.rows;
+          this.total = response.total;
+          this.loading = false;
+        });
+      },
+      // 取消按钮
+      cancel() {
+        this.open = false;
+        this.reset();
+      },
+      // 表单重置
+      reset() {
+        this.form = {
+          id: null,
+          storeHouseid: null,
+          storeHouseName: null,
+          storeDate: null,
+          stockNumber: null,
+          supplier: null,
+          supplierId: null,
+          levelID: null,
+          levelName: null,
+          countingUnit: null,
+          height: null,
+          length: null,
+          width: null,
+          pieces: null,
+          piecesPerPack: null,
+          packs: null,
+          price: null,
+          isIncludeTaxFactory: null,
+          sundryCost: null,
+          paymentFactory: null,
+          paymentUnload: null,
+          isIncludeTaxSale: null,
+          payments: null,
+          landCarID: null,
+          landCarNo: null,
+          landDriverTel: null,
+          landDriverName: null,
+          seaCarID: null,
+          seaCarNo: null,
+          seaDriverTel: null,
+          seaDriverName: null,
+          erro: null,
+          tonnage: null,
+          landFreightPrice: null,
+          landFreight: null,
+          seaFreight: null,
+          freight: null,
+          otherCost: null,
+          profit: null,
+          profitNoTax: null,
+          actualPieces: null,
+          paymentsWithSundry: null,
+          additionalFees: null,
+          rebate: null,
+          customerCommission: null,
+          comments: null,
+          addtime: null,
+          userId: null,
+          UserName: null,
+          updateTime: null,
+          delFlag: null,
+          showFlag: null
+        };
+        this.resetForm('form');
+      },
+      /** 搜索按钮操作 */
+      handleQuery() {
+        this.queryParams.pageNum = 1;
         this.getList();
-        this.$modal.msgSuccess("删除成功");
-      }).catch(() => {
-      });
-    },
-    /** 导出按钮操作 */
-    handleExport() {
-      this.download('system/inventory/export', {
-        ...this.queryParams
-      }, `inventory_${new Date().getTime()}.xlsx`)
+      },
+      /** 重置按钮操作 */
+      resetQuery() {
+        this.resetForm('queryForm');
+        this.handleQuery();
+      },
+      // 多选框选中数据
+      handleSelectionChange(selection) {
+        this.ids = selection.map(item => item.id)
+        this.single = selection.length !== 1
+        this.multiple = !selection.length
+      },
+      /** 修改按钮操作 */
+      handleUpdate(row) {
+        this.$prompt('请输入编辑原因', '提示', {
+          confirmButtonText: '确定',
+          cancelButtonText: '取消',
+          type: 'warning'
+        }).then(({ value }) => {
+          addReason({ reason: value, tableName: TableName.INVENTORY, tid: row.id, modifyTime: this.modifyTime })
+            .then(() => {
+              this.$message.success('提交成功')
+              this.reset();
+              const id = row.id || this.ids
+              getInventory(id).then(response => {
+                this.form = response.data;
+                this.open = true;
+                this.title = '修改库存';
+              });
+            })
+        }).catch(() => {
+          this.$message({
+            type: 'warning',
+            message: '请先输入编辑原因!'
+          });
+        });
+      },
+      /** 提交按钮 */
+      submitForm() {
+        this.$refs['form'].validate(valid => {
+          if (valid) {
+            if (this.form.id != null) {
+              this.form = excludeParams(this.form, this.$exclude)
+              this.form.isIncludeTaxFactory = this.form.isIncludeTaxFactory === '是' ? '1' : '0'
+              this.form.isIncludeTaxSale = this.form.isIncludeTaxSale === '是' ? '1' : '0'
+              updateInventory(this.form).then(() => {
+                this.$modal.msgSuccess('修改成功');
+                this.open = false;
+                this.getList();
+              });
+            } else {
+              this.form = excludeParams(this.form, this.$exclude)
+              this.form.isIncludeTaxFactory = this.form.isIncludeTaxFactory === '是' ? '1' : '0'
+              this.form.isIncludeTaxSale = this.form.isIncludeTaxSale === '是' ? '1' : '0'
+              addInventory(this.form).then(() => {
+                this.$modal.msgSuccess('新增成功');
+                this.open = false;
+                this.getList();
+              });
+            }
+          }
+        });
+      },
+      /** 删除按钮操作 */
+      handleDelete(row) {
+        const ids = row.id || this.ids;
+        this.$modal.confirm('是否确认删除库存编号为"' + ids + '"的数据项？').then(function () {
+          return delInventory(ids);
+        }).then(() => {
+          this.getList();
+          this.$modal.msgSuccess('删除成功');
+        }).catch(() => {
+        });
+      },
+      /** 导出按钮操作 */
+      handleExport() {
+        this.download('system/inventory/export', {
+          ...this.queryParams
+        }, `inventory_${new Date().getTime()}.xlsx`)
+      }
     }
-  }
-};
+  };
 </script>
 
 <style scoped>

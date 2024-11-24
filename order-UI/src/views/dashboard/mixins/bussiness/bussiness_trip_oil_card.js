@@ -1,10 +1,10 @@
-import {addOilRecharge} from "../../../../api/system/oilRecharge";
-import {checkOilCard} from "../../../../api/system/oilCard";
+import { addOilRecharge } from '../../../../api/system/oilRecharge';
+import { checkOilCard } from '../../../../api/system/oilCard';
 
 export var mixin_business_trip_oil_card = {
   data: function () {
     return {
-      //油卡充值
+      // 油卡充值
       oilCardDialogVisible: false,
       moneyInfo: {},
       // 油卡消费
@@ -18,8 +18,7 @@ export var mixin_business_trip_oil_card = {
     openOilCardOpen(e) {
       this.resetOilCardConsumeInfo();
       this.oilCardConsumeVisible = true
-    }
-    ,
+    },    
     changePaymentApplyInfoVisible() {
       this.needMoney = 0
       this.applyForPaymentDialogVisible = false;
@@ -56,7 +55,7 @@ export var mixin_business_trip_oil_card = {
                 // 纠正money
                 this.oilCardConsumeInfo.rechargeMoney = this.isRecharge === '2' ? '0' : this.oilCardConsumeInfo.rechargeMoney
                 // 添加油卡消费信息
-                addOilCardConsume({...this.oilCardConsumeInfo, bTripId: businessTripID,}).then(res => {
+                addOilCardConsume({ ...this.oilCardConsumeInfo, bTripId: businessTripID, }).then(res => {
                   this.$message.success('保存成功~')
                   setTimeout(() => {
                     // 回写充值账户信息到报销项中
@@ -112,9 +111,9 @@ export var mixin_business_trip_oil_card = {
       } else {
       }
     },
-    //确认银行卡充值
+    // 确认银行卡充值
     submitMoney() {
-      //添加
+      // 添加
       addOilRecharge(this.moneyInfo).then(res => {
         this.$message.success('充值成功')
       })
@@ -122,7 +121,7 @@ export var mixin_business_trip_oil_card = {
     },
     handleCommitBack(val) {
       console.log(val)
-      //自动填充加油卡信息
+      // 自动填充加油卡信息
       this.moneyInfo.oilCardNo = val.oilCardNo
     },
   }

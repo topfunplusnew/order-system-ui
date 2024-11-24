@@ -1,305 +1,305 @@
 <!--订单详情个体-->
 
 <script>
-import {fix} from "@/api/tool/format";
-import SearchOption from "../../../../components/SearchOption.vue";
-import {listCompany} from "../../../../api/system/company";
-import {listProductLevel} from "../../../../api/system/productLevel";
-import {addInventory} from "../../../../api/system/inventory";
+  import { fix } from '@/api/tool/format';
+  import SearchOption from '../../../../components/SearchOption.vue';
+  import { listCompany } from '../../../../api/system/company';
+  import { listProductLevel } from '../../../../api/system/productLevel';
+  import { addInventory } from '../../../../api/system/inventory';
 
-export default {
-  name: "OrderItem",
-  components: {SearchOption},
+  export default {
+    name: 'OrderItem',
+    components: { SearchOption },
 
-  //父组件传递的订单详情个体
-  props: {
-    inventoryInfo: {
-      type: Object,
-      required: true,
+    // 父组件传递的订单详情个体
+    props: {
+      inventoryInfo: {
+        type: Object,
+        required: true,
+      },
     },
-  },
-  data() {
-    return {
-      orderItemInfo: {},
-      //公司(供应商)名称搜索
-      querySupplier: '',
-      //仓库名称搜索
-      queryStore: '',
-      //产品级别搜索
-      productLevel: {
-        //级别
-        level: '',
-        //宽度
-        width: ''
-      },
-    }
-  },
-  // 思路  先通过计算属性，拿到属性，渲染到页面 因为计算属性是响应式的 在给计算属性赋值时 提醒父组件改变传递的item对象
-  computed: {
-    //销售是否含税和出厂是否含税的组合
-    Tax: {
-      set() {
-
-      },
-      get() {
-        return this.isIncludeTaxFactory + this.isIncludeTaxSale;
+    data() {
+      return {
+        orderItemInfo: {},
+        // 公司(供应商)名称搜索
+        querySupplier: '',
+        // 仓库名称搜索
+        queryStore: '',
+        // 产品级别搜索
+        productLevel: {
+          // 级别
+          level: '',
+          // 宽度
+          width: ''
+        },
       }
     },
-    //公式计算相关的计算属性
-    //是否含税 厂家否 客户否
-    paymentFactory00() {
-      return fix(this.orderItemInfo.length * this.orderItemInfo.width * this.orderItemInfo.pieces / 1000000 * this.orderItemInfo.price + Number(this.orderItemInfo.sundryCost))
-    },
-    payments00() {
-      return fix(this.orderItemInfo.length * this.orderItemInfo.width * this.orderItemInfo.outPieces / 1000000 * this.orderItemInfo.paymentUnload + Number(this.orderItemInfo.paymentsWithSundry));
-    },
-    // todo  长度宽度高度过低 会计算吨位为0
-    tonnage00() {
-      return fix((Number(this.orderItemInfo.height) - Number(this.orderItemInfo.erro)) * this.orderItemInfo.length * this.orderItemInfo.width * this.orderItemInfo.pieces / 1000000 / 20 / 20);
-    },
-    landFreight00() {
-      return fix(Number(this.orderItemInfo.tonnage) * Number(this.orderItemInfo.landFreightPrice) + Number(this.orderItemInfo.additionalFees));
-    },
-    profit00() {
-      return fix(this.orderItemInfo.payments - this.orderItemInfo.paymentFactory - this.orderItemInfo.landFreight - this.orderItemInfo.seaFreight);
-    },
-    profitNoTax00() {
-      return fix(this.orderItemInfo.payments - this.orderItemInfo.paymentFactory - this.orderItemInfo.landFreight - this.orderItemInfo.seaFreight - this.orderItemInfo.otherCost);
-    },
-    //是否含税10
-    paymentFactory10() {
-      return fix(this.orderItemInfo.length * this.orderItemInfo.width * this.orderItemInfo.pieces * this.orderItemInfo.price / 1000000 + Number(this.orderItemInfo.sundryCost));
-    },
-    payments10() {
-      return fix(this.orderItemInfo.length * this.orderItemInfo.width * this.orderItemInfo.outPieces * this.orderItemInfo.paymentUnload / 1000000 + Number(this.orderItemInfo.paymentsWithSundry));
-    },
-    tonnage10() {
-      return fix((this.orderItemInfo.height - this.orderItemInfo.erro) * this.orderItemInfo.length * this.orderItemInfo.width * this.orderItemInfo.pieces / 1000000 / 20 / 20)
-    },
-    landFreight10() {
-      return fix(this.orderItemInfo.tonnage * this.orderItemInfo.landFreightPrice + Number(this.orderItemInfo.additionalFees))
-    },
-    profit10() {
-      return fix(this.orderItemInfo.payments - this.orderItemInfo.paymentFactory - this.orderItemInfo.landFreight - this.orderItemInfo.seaFreight)
-    },
-    profitNoTax10() {
-      return fix(this.orderItemInfo.payments - (this.orderItemInfo.paymentFactory / 1.075) - this.orderItemInfo.landFreight - this.orderItemInfo.seaFreight - this.orderItemInfo.otherCost)
-    },
-    //是否含税01
-    paymentFactory01() {
-      return fix(this.orderItemInfo.length * this.orderItemInfo.width * this.orderItemInfo.pieces / 1000000 * this.orderItemInfo.price + Number(this.orderItemInfo.sundryCost));
-    },
-    payments01() {
-      return fix(this.orderItemInfo.length * this.orderItemInfo.width * this.orderItemInfo.outPieces * this.orderItemInfo.paymentUnload / 1000000 + Number(this.orderItemInfo.paymentsWithSundry));
-    },
-    tonnage01() {
-      return fix((this.orderItemInfo.height - this.orderItemInfo.erro) * this.orderItemInfo.length * this.orderItemInfo.width * this.orderItemInfo.pieces / 1000000 / 20 / 20)
-    },
-    landFreight01() {
-      return fix(Number(this.orderItemInfo.tonnage * this.orderItemInfo.landFreightPrice) + Number(this.orderItemInfo.additionalFees))
-    },
-    profit01() {
-      return fix(this.orderItemInfo.payments - this.orderItemInfo.paymentFactory - this.orderItemInfo.landFreight - this.orderItemInfo.seaFreight)
-    },
-    profitNoTax01() {
-      return fix((this.orderItemInfo.payments / 1.075) - this.orderItemInfo.paymentFactory - this.orderItemInfo.landFreight - this.orderItemInfo.seaFreight - this.orderItemInfo.otherCost)
-    },
-    //是否含税11
-    paymentFactory11() {
-      return fix(this.orderItemInfo.length * this.orderItemInfo.width * this.orderItemInfo.pieces * this.orderItemInfo.price / 1000000 + Number(this.orderItemInfo.sundryCost));
-    },
-    payments11() {
-      return fix(this.orderItemInfo.length * this.orderItemInfo.width * this.orderItemInfo.outPieces * this.orderItemInfo.paymentUnload / 1000000 + Number(this.orderItemInfo.paymentsWithSundry));
-    },
-    tonnage11() {
-      return fix((this.orderItemInfo.height - this.orderItemInfo.erro) * this.orderItemInfo.length * this.orderItemInfo.width * this.orderItemInfo.pieces / 1000000 / 20 / 20)
-    },
-    landFreight11() {
-      return fix(this.orderItemInfo.tonnage * this.orderItemInfo.landFreightPrice + Number(this.orderItemInfo.additionalFees))
-    },
-    profit11() {
-      return fix(this.orderItemInfo.payments - this.orderItemInfo.paymentFactory - this.orderItemInfo.landFreight - this.orderItemInfo.seaFreight)
-    },
-    profitNoTax11() {
-      return fix(this.orderItemInfo.payments - this.orderItemInfo.paymentFactory - (this.orderItemInfo.landFreight - this.orderItemInfo.seaFreight * 1.075)
-        - (this.orderItemInfo.height * this.orderItemInfo.length * this.orderItemInfo.width * this.orderItemInfo.pieces / 1000000 / 20 * 0.5) - this.orderItemInfo.otherCost)
-    },
-  },
-  watch: {
-    orderItemInfo: {
-      handler() {
-        //如果不是仓库发货
-        //是否含税 厂家否 客户否
-        if (this.Tax === '00') {
-          this.orderItemInfo.erro = 0.8;
-          this.orderItemInfo.paymentFactory = this.paymentFactory00;
-          this.orderItemInfo.payments = this.payments00;
-          this.orderItemInfo.tonnage = this.tonnage00
-          this.orderItemInfo.landFreight = this.landFreight00
-          this.orderItemInfo.profit = this.profit00
-          this.orderItemInfo.profitNoTax = this.profitNoTax00
-        } else if (this.Tax === '10') {
-          //误差为0
-          this.orderItemInfo.erro = 0;
-          this.orderItemInfo.paymentFactory = this.paymentFactory10;
-          this.orderItemInfo.payments = this.payments10
-          this.orderItemInfo.tonnage = this.tonnage10
-          this.orderItemInfo.landFreight = this.landFreight10
-          this.orderItemInfo.profit = this.profit10
-          this.orderItemInfo.profitNoTax = this.profitNoTax10
-        } else if (this.Tax === '01') {
-          //误差为0
-          this.orderItemInfo.erro = 0;
-          this.orderItemInfo.paymentFactory = this.paymentFactory01;
-          this.orderItemInfo.payments = this.payments01
-          this.orderItemInfo.tonnage = this.tonnage01
-          this.orderItemInfo.landFreight = this.landFreight01
-          this.orderItemInfo.profit = this.profit01
-          this.orderItemInfo.profitNoTax = this.profitNoTax01
-        } else {
-          //误差为0
-          this.orderItemInfo.erro = 0;
-          this.orderItemInfo.paymentFactory = this.paymentFactory11;
-          this.orderItemInfo.payments = this.payments11
-          this.orderItemInfo.tonnage = this.tonnage11
-          this.orderItemInfo.landFreight = this.landFreight11
-          this.orderItemInfo.profit = this.profit11
-          this.orderItemInfo.profitNoTax = this.profitNoTax11
-        }
-        //运费自动填充
-        if (this.seaFreight === undefined) {
-          this.orderItemInfo.freight = Number(this.orderItemInfo.landFreight);
-        } else {
-          this.orderItemInfo.freight = Number(this.orderItemInfo.landFreight) + Number(this.orderItemInfo.seaFreight);
+    // 思路  先通过计算属性，拿到属性，渲染到页面 因为计算属性是响应式的 在给计算属性赋值时 提醒父组件改变传递的item对象
+    computed: {
+      // 销售是否含税和出厂是否含税的组合
+      Tax: {
+        set() {
+
+        },
+        get() {
+          return this.isIncludeTaxFactory + this.isIncludeTaxSale;
         }
       },
-      deep: true,
-      immediate: true,
+      // 公式计算相关的计算属性
+      // 是否含税 厂家否 客户否
+      paymentFactory00() {
+        return fix(this.orderItemInfo.length * this.orderItemInfo.width * this.orderItemInfo.pieces / 1000000 * this.orderItemInfo.price + Number(this.orderItemInfo.sundryCost))
+      },
+      payments00() {
+        return fix(this.orderItemInfo.length * this.orderItemInfo.width * this.orderItemInfo.outPieces / 1000000 * this.orderItemInfo.paymentUnload + Number(this.orderItemInfo.paymentsWithSundry));
+      },
+      // todo  长度宽度高度过低 会计算吨位为0
+      tonnage00() {
+        return fix((Number(this.orderItemInfo.height) - Number(this.orderItemInfo.erro)) * this.orderItemInfo.length * this.orderItemInfo.width * this.orderItemInfo.pieces / 1000000 / 20 / 20);
+      },
+      landFreight00() {
+        return fix(Number(this.orderItemInfo.tonnage) * Number(this.orderItemInfo.landFreightPrice) + Number(this.orderItemInfo.additionalFees));
+      },
+      profit00() {
+        return fix(this.orderItemInfo.payments - this.orderItemInfo.paymentFactory - this.orderItemInfo.landFreight - this.orderItemInfo.seaFreight);
+      },
+      profitNoTax00() {
+        return fix(this.orderItemInfo.payments - this.orderItemInfo.paymentFactory - this.orderItemInfo.landFreight - this.orderItemInfo.seaFreight - this.orderItemInfo.otherCost);
+      },
+      // 是否含税10
+      paymentFactory10() {
+        return fix(this.orderItemInfo.length * this.orderItemInfo.width * this.orderItemInfo.pieces * this.orderItemInfo.price / 1000000 + Number(this.orderItemInfo.sundryCost));
+      },
+      payments10() {
+        return fix(this.orderItemInfo.length * this.orderItemInfo.width * this.orderItemInfo.outPieces * this.orderItemInfo.paymentUnload / 1000000 + Number(this.orderItemInfo.paymentsWithSundry));
+      },
+      tonnage10() {
+        return fix((this.orderItemInfo.height - this.orderItemInfo.erro) * this.orderItemInfo.length * this.orderItemInfo.width * this.orderItemInfo.pieces / 1000000 / 20 / 20)
+      },
+      landFreight10() {
+        return fix(this.orderItemInfo.tonnage * this.orderItemInfo.landFreightPrice + Number(this.orderItemInfo.additionalFees))
+      },
+      profit10() {
+        return fix(this.orderItemInfo.payments - this.orderItemInfo.paymentFactory - this.orderItemInfo.landFreight - this.orderItemInfo.seaFreight)
+      },
+      profitNoTax10() {
+        return fix(this.orderItemInfo.payments - (this.orderItemInfo.paymentFactory / 1.075) - this.orderItemInfo.landFreight - this.orderItemInfo.seaFreight - this.orderItemInfo.otherCost)
+      },
+      // 是否含税01
+      paymentFactory01() {
+        return fix(this.orderItemInfo.length * this.orderItemInfo.width * this.orderItemInfo.pieces / 1000000 * this.orderItemInfo.price + Number(this.orderItemInfo.sundryCost));
+      },
+      payments01() {
+        return fix(this.orderItemInfo.length * this.orderItemInfo.width * this.orderItemInfo.outPieces * this.orderItemInfo.paymentUnload / 1000000 + Number(this.orderItemInfo.paymentsWithSundry));
+      },
+      tonnage01() {
+        return fix((this.orderItemInfo.height - this.orderItemInfo.erro) * this.orderItemInfo.length * this.orderItemInfo.width * this.orderItemInfo.pieces / 1000000 / 20 / 20)
+      },
+      landFreight01() {
+        return fix(Number(this.orderItemInfo.tonnage * this.orderItemInfo.landFreightPrice) + Number(this.orderItemInfo.additionalFees))
+      },
+      profit01() {
+        return fix(this.orderItemInfo.payments - this.orderItemInfo.paymentFactory - this.orderItemInfo.landFreight - this.orderItemInfo.seaFreight)
+      },
+      profitNoTax01() {
+        return fix((this.orderItemInfo.payments / 1.075) - this.orderItemInfo.paymentFactory - this.orderItemInfo.landFreight - this.orderItemInfo.seaFreight - this.orderItemInfo.otherCost)
+      },
+      // 是否含税11
+      paymentFactory11() {
+        return fix(this.orderItemInfo.length * this.orderItemInfo.width * this.orderItemInfo.pieces * this.orderItemInfo.price / 1000000 + Number(this.orderItemInfo.sundryCost));
+      },
+      payments11() {
+        return fix(this.orderItemInfo.length * this.orderItemInfo.width * this.orderItemInfo.outPieces * this.orderItemInfo.paymentUnload / 1000000 + Number(this.orderItemInfo.paymentsWithSundry));
+      },
+      tonnage11() {
+        return fix((this.orderItemInfo.height - this.orderItemInfo.erro) * this.orderItemInfo.length * this.orderItemInfo.width * this.orderItemInfo.pieces / 1000000 / 20 / 20)
+      },
+      landFreight11() {
+        return fix(this.orderItemInfo.tonnage * this.orderItemInfo.landFreightPrice + Number(this.orderItemInfo.additionalFees))
+      },
+      profit11() {
+        return fix(this.orderItemInfo.payments - this.orderItemInfo.paymentFactory - this.orderItemInfo.landFreight - this.orderItemInfo.seaFreight)
+      },
+      profitNoTax11() {
+        return fix(this.orderItemInfo.payments - this.orderItemInfo.paymentFactory - (this.orderItemInfo.landFreight - this.orderItemInfo.seaFreight * 1.075) -
+          (this.orderItemInfo.height * this.orderItemInfo.length * this.orderItemInfo.width * this.orderItemInfo.pieces / 1000000 / 20 * 0.5) - this.orderItemInfo.otherCost)
+      },
     },
-    //出厂片数
-    pieces: {
-      handler() {
-        //修改片数自动计算
-        if (this.Tax === '00') {
-          this.orderItemInfo.paymentFactory = this.paymentFactory00;
-          this.orderItemInfo.payments = this.payments00;
-          this.orderItemInfo.tonnage = this.tonnage00
-          this.orderItemInfo.landFreight = this.landFreight00
-          this.orderItemInfo.profit = this.profit00
-          this.orderItemInfo.profitNoTax = this.profitNoTax00
-        } else if (this.Tax === '10') {
-          this.orderItemInfo.paymentFactory = this.paymentFactory10;
-          this.orderItemInfo.payments = this.payments10
-          this.orderItemInfo.tonnage = this.tonnage10
-          this.orderItemInfo.landFreight = this.landFreight10
-          this.orderItemInfo.profit = this.profit10
-          this.orderItemInfo.profitNoTax = this.profitNoTax10
-        } else if (this.Tax === '01') {
-          this.orderItemInfo.paymentFactory = this.paymentFactory01;
-          this.orderItemInfo.payments = this.payments01
-          this.orderItemInfo.tonnage = this.tonnage01
-          this.orderItemInfo.landFreight = this.landFreight01
-          this.orderItemInfo.profit = this.profit01
-          this.orderItemInfo.profitNoTax = this.profitNoTax01
-        } else {
-          this.orderItemInfo.paymentFactory = this.paymentFactory11;
-          this.orderItemInfo.payments = this.payments11
-          this.orderItemInfo.tonnage = this.tonnage11
-          this.orderItemInfo.landFreight = this.landFreight11
-          this.orderItemInfo.profit = this.profit11
-          this.orderItemInfo.profitNoTax = this.profitNoTax11
+    watch: {
+      orderItemInfo: {
+        handler() {
+          // 如果不是仓库发货
+          // 是否含税 厂家否 客户否
+          if (this.Tax === '00') {
+            this.orderItemInfo.erro = 0.8;
+            this.orderItemInfo.paymentFactory = this.paymentFactory00;
+            this.orderItemInfo.payments = this.payments00;
+            this.orderItemInfo.tonnage = this.tonnage00
+            this.orderItemInfo.landFreight = this.landFreight00
+            this.orderItemInfo.profit = this.profit00
+            this.orderItemInfo.profitNoTax = this.profitNoTax00
+          } else if (this.Tax === '10') {
+            // 误差为0
+            this.orderItemInfo.erro = 0;
+            this.orderItemInfo.paymentFactory = this.paymentFactory10;
+            this.orderItemInfo.payments = this.payments10
+            this.orderItemInfo.tonnage = this.tonnage10
+            this.orderItemInfo.landFreight = this.landFreight10
+            this.orderItemInfo.profit = this.profit10
+            this.orderItemInfo.profitNoTax = this.profitNoTax10
+          } else if (this.Tax === '01') {
+            // 误差为0
+            this.orderItemInfo.erro = 0;
+            this.orderItemInfo.paymentFactory = this.paymentFactory01;
+            this.orderItemInfo.payments = this.payments01
+            this.orderItemInfo.tonnage = this.tonnage01
+            this.orderItemInfo.landFreight = this.landFreight01
+            this.orderItemInfo.profit = this.profit01
+            this.orderItemInfo.profitNoTax = this.profitNoTax01
+          } else {
+            // 误差为0
+            this.orderItemInfo.erro = 0;
+            this.orderItemInfo.paymentFactory = this.paymentFactory11;
+            this.orderItemInfo.payments = this.payments11
+            this.orderItemInfo.tonnage = this.tonnage11
+            this.orderItemInfo.landFreight = this.landFreight11
+            this.orderItemInfo.profit = this.profit11
+            this.orderItemInfo.profitNoTax = this.profitNoTax11
+          }
+          // 运费自动填充
+          if (this.seaFreight === undefined) {
+            this.orderItemInfo.freight = Number(this.orderItemInfo.landFreight);
+          } else {
+            this.orderItemInfo.freight = Number(this.orderItemInfo.landFreight) + Number(this.orderItemInfo.seaFreight);
+          }
+        },
+        deep: true,
+        immediate: true,
+      },
+      // 出厂片数
+      pieces: {
+        handler() {
+          // 修改片数自动计算
+          if (this.Tax === '00') {
+            this.orderItemInfo.paymentFactory = this.paymentFactory00;
+            this.orderItemInfo.payments = this.payments00;
+            this.orderItemInfo.tonnage = this.tonnage00
+            this.orderItemInfo.landFreight = this.landFreight00
+            this.orderItemInfo.profit = this.profit00
+            this.orderItemInfo.profitNoTax = this.profitNoTax00
+          } else if (this.Tax === '10') {
+            this.orderItemInfo.paymentFactory = this.paymentFactory10;
+            this.orderItemInfo.payments = this.payments10
+            this.orderItemInfo.tonnage = this.tonnage10
+            this.orderItemInfo.landFreight = this.landFreight10
+            this.orderItemInfo.profit = this.profit10
+            this.orderItemInfo.profitNoTax = this.profitNoTax10
+          } else if (this.Tax === '01') {
+            this.orderItemInfo.paymentFactory = this.paymentFactory01;
+            this.orderItemInfo.payments = this.payments01
+            this.orderItemInfo.tonnage = this.tonnage01
+            this.orderItemInfo.landFreight = this.landFreight01
+            this.orderItemInfo.profit = this.profit01
+            this.orderItemInfo.profitNoTax = this.profitNoTax01
+          } else {
+            this.orderItemInfo.paymentFactory = this.paymentFactory11;
+            this.orderItemInfo.payments = this.payments11
+            this.orderItemInfo.tonnage = this.tonnage11
+            this.orderItemInfo.landFreight = this.landFreight11
+            this.orderItemInfo.profit = this.profit11
+            this.orderItemInfo.profitNoTax = this.profitNoTax11
+          }
         }
       }
-    }
-  },
-  created() {
-    this.resetInventory();
-  },
-  methods: {
-    listProductLevel,
-    listCompany,
-    //供应商信息
-    handleCommitBackCompany(val) {
-      console.log(val)
-      this.orderItemInfo.supplierId = val.id;   //goodsOrderList->供应商ID
-      this.orderItemInfo.supplier = val.companyName
     },
-    handleUpdateQueryName(val) {
-      this.querySupplier = val;
+    created() {
+      this.resetInventory();
     },
-    //查询产品级别信息
-    handleCommitBackProductLevel(val) {
-      this.orderItemInfo.levelID = val.id;
-      this.orderItemInfo.levelName = val.levelName;
-      this.orderItemInfo.height = val.height;
-      this.orderItemInfo.length = val.length;
-      this.orderItemInfo.width = val.width;
-      this.orderItemInfo.levelNo = val.levelNo;
-    },
-    handleUpdateQueryNameStore(val) {
-      this.queryStore = val;
-    },
-    //添加入库
-    handleProcess() {
-      addInventory({...this.orderItemInfo, ...this.inventoryInfo}).then(() => {
-        this.$message.success('入库成功')
-        this.resetInventory()
-      })
-    },
-    handleReject() {
+    methods: {
+      listProductLevel,
+      listCompany,
+      // 供应商信息
+      handleCommitBackCompany(val) {
+        console.log(val)
+        this.orderItemInfo.supplierId = val.id; // goodsOrderList->供应商ID
+        this.orderItemInfo.supplier = val.companyName
+      },
+      handleUpdateQueryName(val) {
+        this.querySupplier = val;
+      },
+      // 查询产品级别信息
+      handleCommitBackProductLevel(val) {
+        this.orderItemInfo.levelID = val.id;
+        this.orderItemInfo.levelName = val.levelName;
+        this.orderItemInfo.height = val.height;
+        this.orderItemInfo.length = val.length;
+        this.orderItemInfo.width = val.width;
+        this.orderItemInfo.levelNo = val.levelNo;
+      },
+      handleUpdateQueryNameStore(val) {
+        this.queryStore = val;
+      },
+      // 添加入库
+      handleProcess() {
+        addInventory({ ...this.orderItemInfo, ...this.inventoryInfo }).then(() => {
+          this.$message.success('入库成功')
+          this.resetInventory()
+        })
+      },
+      handleReject() {
 
-    },
-    resetInventory() {
-      this.orderItemInfo = {
-        orderDate: null,
-        supplier: null,
-        supplierID: null,
-        customer: null,
-        customerID: null,
-        levelID: null,
-        levelName: null,
-        countingUnit: '片',
-        height: null,
-        length: null,
-        width: null,
-        pieces: null,
-        piecesPerPack: 0,
-        packs: 0,
-        price: 0,
-        isIncludeTaxFactory: '0',
-        sundryCost: 0,
-        paymentFactory: 0,
-        paymentUnload: 0,
-        isIncludeTaxSale: '0',
-        payments: 0,
-        erro: 0,
-        tonnage: 0,
-        landFreightPrice: 0,
-        landFreight: 0,
-        seaFreight: 0,
-        freight: 0,
-        otherCost: 0,
-        profit: 0,
-        profitNoTax: 0,
-        actualPieces: 0,
-        paymentsWithSundry: 0,
-        additionalFees: 0,
-        storeHouseID: null,
-        storeHouseName: null,
-        storeID: null,
-        logisticsProfit: 0,
-        customerCommission: null,
-        isAdjusted: null,
-        adjustDate: null,
-        comments: null,
-        addtime: null,
-        userId: null,
-        exWarehouseDate: null,
-        outPieces: 0
+      },
+      resetInventory() {
+        this.orderItemInfo = {
+          orderDate: null,
+          supplier: null,
+          supplierID: null,
+          customer: null,
+          customerID: null,
+          levelID: null,
+          levelName: null,
+          countingUnit: '片',
+          height: null,
+          length: null,
+          width: null,
+          pieces: null,
+          piecesPerPack: 0,
+          packs: 0,
+          price: 0,
+          isIncludeTaxFactory: '0',
+          sundryCost: 0,
+          paymentFactory: 0,
+          paymentUnload: 0,
+          isIncludeTaxSale: '0',
+          payments: 0,
+          erro: 0,
+          tonnage: 0,
+          landFreightPrice: 0,
+          landFreight: 0,
+          seaFreight: 0,
+          freight: 0,
+          otherCost: 0,
+          profit: 0,
+          profitNoTax: 0,
+          actualPieces: 0,
+          paymentsWithSundry: 0,
+          additionalFees: 0,
+          storeHouseID: null,
+          storeHouseName: null,
+          storeID: null,
+          logisticsProfit: 0,
+          customerCommission: null,
+          isAdjusted: null,
+          adjustDate: null,
+          comments: null,
+          addtime: null,
+          userId: null,
+          exWarehouseDate: null,
+          outPieces: 0
+        }
       }
     }
   }
-}
 </script>
 
 <template>

@@ -1,4 +1,4 @@
-//获取UUID
+// 获取UUID
 export function getUuid() {
   return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function (c) {
     var r = (Math.random() * 16) | 0,
@@ -9,7 +9,7 @@ export function getUuid() {
 
 
 export function findFileExtension(filename) {
-  //如果filename为空 直接返回
+  // 如果filename为空 直接返回
   if (!filename) {
     return '';
   }

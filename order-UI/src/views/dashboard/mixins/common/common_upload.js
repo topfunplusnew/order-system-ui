@@ -1,4 +1,4 @@
-import {getToken} from "../../../../utils/auth";
+import { getToken } from '../../../../utils/auth';
 
 export var mixin_common_upload = {
   data: function () {
@@ -7,7 +7,7 @@ export var mixin_common_upload = {
       // 上传文件路径
       uploadPath: process.env.VUE_APP_BASE_API + '/common/upload',
       headers: {
-        Authorization: "Bearer " + getToken(),
+        Authorization: 'Bearer ' + getToken(),
       },
     }
   },

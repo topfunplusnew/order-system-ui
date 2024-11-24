@@ -31,25 +31,25 @@ const mutations = {
 }
 
 const actions = {
-  setExcelData({commit}, data) {
+  setExcelData({ commit }, data) {
     commit('SET_EXCEL_DATA', data)
   },
-  clearExcelData({commit}) {
+  clearExcelData({ commit }) {
     commit('CLEAR_EXCEL_DATA')
   },
 
   // 暂存数据的操作
-  setTempData({commit}, data) {
+  setTempData({ commit }, data) {
     commit('SET_TEMP_DATA', data)
   },
-  clearTempData({commit}) {
+  clearTempData({ commit }) {
     commit('CLEAR_TEMP_DATA')
   },
 
-  setSelectedOrders({commit}, data) {
+  setSelectedOrders({ commit }, data) {
     commit('SET_SELECTED_ORDERS', data)
   },
-  clearSelectedOrders({commit}) {
+  clearSelectedOrders({ commit }) {
     commit('CLEAR_SELECTED_ORDERS')
   }
 }

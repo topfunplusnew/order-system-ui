@@ -4,7 +4,7 @@ import DataDict from '@/utils/dict'
 import { getDicts as getDicts } from '@/api/system/dict/data'
 
 function searchDictByKey(dict, key) {
-  if (key == null && key == "") {
+  if (key == null && key == '') {
     return null
   }
   try {

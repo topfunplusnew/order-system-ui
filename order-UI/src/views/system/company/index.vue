@@ -1,6 +1,6 @@
 <template>
   <div class="app-container">
-    <el-form :model="queryParams" ref="queryForm" size="mini" :inline="true" v-show="showSearch" label-width="68px">
+    <el-form v-show="showSearch" ref="queryForm" :model="queryParams" size="mini" :inline="true" label-width="68px">
       <el-form-item label="客户名称" prop="relationName">
         <el-input
           v-model="queryParams.relationName"
@@ -20,10 +20,10 @@
       </el-col>
       <el-col :span="1.5">
         <el-button
+          v-hasPermi="['system:company:add']"
           type="danger"
           size="mini"
           @click="handleAdd"
-          v-hasPermi="['system:company:add']"
         >新增客户信息
         </el-button>
       </el-col>
@@ -31,8 +31,8 @@
       <!--      <AddBankAccounts :company-type="'客户'"/>-->
 
       <!--      右侧工具栏-->
-      <right-toolbar :showSearch.sync="showSearch" @queryTable="getList" :columns="columns">
-        <template v-slot:print>
+      <right-toolbar :showSearch.sync="showSearch" :columns="columns" @queryTable="getList">
+        <template #print>
           <el-col :span="1.5">
             <el-button
               plain
@@ -44,14 +44,14 @@
           </el-col>
         </template>
         <!--        导出-->
-        <template v-slot:export>
+        <template #export>
           <el-col :span="1.5">
             <el-button
+              v-hasPermi="['system:company:export']"
               plain
               icon="el-icon-folder-opened"
               size="mini"
               @click="handleExport"
-              v-hasPermi="['system:company:export']"
             >
             </el-button>
           </el-col>
@@ -59,27 +59,27 @@
       </right-toolbar>
     </el-row>
 
-    <el-table border v-loading="loading" :data="companyList" @selection-change="handleSelectionChange" id="printBox"
-              v-horizontal-scroll="'always'" size="mini" :cell-style="()=>{return {padding:'.5px'}}">
-      <el-table-column label="id" align="center" prop="id" width="70"/>
-      <el-table-column label="客户名称" align="center" prop="companyName" v-if="columns[0].visible" width="180"
-                       show-overflow-tooltip/>
-      <el-table-column label="老板姓名" align="center" prop="leader" v-if="columns[1].visible" width="180"
-                       show-overflow-tooltip/>
-      <el-table-column label="老板电话" align="center" prop="leaderTel" v-if="columns[3].visible" width="180"
-                       show-overflow-tooltip/>
-      <el-table-column label="区域" align="center" prop="region" v-if="columns[6].visible" width="180"
-                       show-overflow-tooltip/>
-      <el-table-column label="联系人" align="center" prop="relationName" v-if="columns[2].visible" width="180"
-                       show-overflow-tooltip/>
-      <el-table-column label="销售经理" align="center" prop="salesManager" v-if="columns[7].visible" width="180"
-                       show-overflow-tooltip/>
-      <el-table-column label="地址" align="center" prop="address" v-if="columns[5].visible" width="150"
-                       show-overflow-tooltip/>
-      <el-table-column label="电话" align="center" prop="relationTel" v-if="columns[4].visible" width="180"
-                       show-overflow-tooltip/>
-      <el-table-column label="备注" align="center" prop="comments" v-if="columns[8].visible" width="180"
-                       show-overflow-tooltip/>
+    <el-table id="printBox" v-loading="loading" v-horizontal-scroll="'always'" border :data="companyList"
+              size="mini" :cell-style="()=>{return {padding:'.5px'}}" @selection-change="handleSelectionChange">
+      <el-table-column label="id" align="center" prop="id" width="70" />
+      <el-table-column v-if="columns[0].visible" label="客户名称" align="center" prop="companyName" width="180"
+                       show-overflow-tooltip />
+      <el-table-column v-if="columns[1].visible" label="老板姓名" align="center" prop="leader" width="180"
+                       show-overflow-tooltip />
+      <el-table-column v-if="columns[3].visible" label="老板电话" align="center" prop="leaderTel" width="180"
+                       show-overflow-tooltip />
+      <el-table-column v-if="columns[6].visible" label="区域" align="center" prop="region" width="180"
+                       show-overflow-tooltip />
+      <el-table-column v-if="columns[2].visible" label="联系人" align="center" prop="relationName" width="180"
+                       show-overflow-tooltip />
+      <el-table-column v-if="columns[7].visible" label="销售经理" align="center" prop="salesManager" width="180"
+                       show-overflow-tooltip />
+      <el-table-column v-if="columns[5].visible" label="地址" align="center" prop="address" width="150"
+                       show-overflow-tooltip />
+      <el-table-column v-if="columns[4].visible" label="电话" align="center" prop="relationTel" width="180"
+                       show-overflow-tooltip />
+      <el-table-column v-if="columns[8].visible" label="备注" align="center" prop="comments" width="180"
+                       show-overflow-tooltip />
       <el-table-column label="操作" align="center" class-name="small-padding fixed-width" fixed="right" width="180">
         <template slot-scope="scope">
           <el-button
@@ -89,17 +89,17 @@
           >银行卡号
           </el-button>
           <el-button
+            v-hasPermi="['system:company:edit']"
             size="mini"
             type="primary"
             @click="handleUpdate(scope.row)"
-            v-hasPermi="['system:company:edit']"
           >编辑
           </el-button>
           <el-button
+            v-hasPermi="['system:company:remove']"
             size="mini"
             type="danger"
             @click="handleDelete(scope.row)"
-            v-hasPermi="['system:company:remove']"
           >删除
           </el-button>
         </template>
@@ -121,27 +121,27 @@
         <el-row :gutter="4">
           <el-col :span="12">
             <el-form-item label="客户名称" prop="companyName">
-              <el-input v-model="form.companyName" placeholder="请输入客户名称"/>
+              <el-input v-model="form.companyName" placeholder="请输入客户名称" />
             </el-form-item>
             <el-form-item label="联系人" prop="relationName">
-              <el-input v-model="form.relationName" placeholder="请输入联系人名称"/>
+              <el-input v-model="form.relationName" placeholder="请输入联系人名称" />
             </el-form-item>
             <el-form-item label="联系人电话" prop="relationTel">
-              <el-input v-model="form.relationTel" placeholder="请输入联系人电话"/>
+              <el-input v-model="form.relationTel" placeholder="请输入联系人电话" />
             </el-form-item>
             <el-form-item label="老板姓名" prop="leader">
-              <el-input v-model="form.leader" placeholder="请输入老板姓名"/>
+              <el-input v-model="form.leader" placeholder="请输入老板姓名" />
             </el-form-item>
             <el-form-item label="老板联系方式" prop="leaderTel">
-              <el-input v-model="form.leaderTel" placeholder="请输入老板联系方式"/>
+              <el-input v-model="form.leaderTel" placeholder="请输入老板联系方式" />
             </el-form-item>
             <el-form-item label="业务员" prop="salesman">
-              <el-input v-model="form.salesman" placeholder="请输入业务员名称"/>
+              <el-input v-model="form.salesman" placeholder="请输入业务员名称" />
             </el-form-item>
           </el-col>
           <el-col :span="12">
             <el-form-item label="销售经理" prop="salesManager">
-              <el-input v-model="form.salesManager" placeholder="请输入销售经理"/>
+              <el-input v-model="form.salesManager" placeholder="请输入销售经理" />
             </el-form-item>
             <el-form-item label="省" prop="province">
               <!--          <el-input v-model="form.province" placeholder="请输入省"/>-->
@@ -166,13 +166,13 @@
               </el-select>
             </el-form-item>
             <el-form-item label="乡镇" prop="county">
-              <el-input v-model="form.county" placeholder="请输入乡镇"/>
+              <el-input v-model="form.county" placeholder="请输入乡镇" />
             </el-form-item>
             <el-form-item label="地址" prop="address">
-              <el-input v-model="form.address" placeholder="请输入地址"/>
+              <el-input v-model="form.address" placeholder="请输入地址" />
             </el-form-item>
             <el-form-item label="备注" prop="comments">
-              <el-input v-model="form.comments" placeholder="请输入备注"/>
+              <el-input v-model="form.comments" placeholder="请输入备注" />
             </el-form-item>
           </el-col>
         </el-row>
@@ -215,9 +215,9 @@
             </el-button>
           </template>
         </el-table-column>
-        <el-table-column label="客户名称" align="center" prop="relationName"/>
-        <el-table-column label="银行卡号" align="center" prop="bankNo"/>
-        <el-table-column label="户名" align="center" prop="acountsName"/>
+        <el-table-column label="客户名称" align="center" prop="relationName" />
+        <el-table-column label="银行卡号" align="center" prop="bankNo" />
+        <el-table-column label="户名" align="center" prop="acountsName" />
       </el-table>
       <pagination
         v-show="total>0"
@@ -235,12 +235,12 @@
           <span style="font-weight: bolder;font-size: 18px;">{{ currentInfo.companyName }}</span>
         </el-row>
       </el-form>
-      <br/>
+      <br />
       <el-divider>默认银行卡信息</el-divider>
       <el-row>
         <el-row>
           <el-row v-if="defaultBankCardInfo.not !== true">
-            <br/>
+            <br />
             <el-descriptions>
               <el-descriptions-item label="户名">{{ defaultBankCardInfo.acountsName }}</el-descriptions-item>
               <el-descriptions-item label="开户行">{{ defaultBankCardInfo.bankName }}</el-descriptions-item>
@@ -272,23 +272,23 @@
           <!--          为本公司绑定银行卡 拿到该客户的信息 然后进行添加银行卡的操作  通过companyId把银行卡和客户供应商绑定-->
           <template #append>
             <!--            <AddBank :company-info="currentInfo" @changeBankOpen="handleChangeBank"/>-->
-            <AddBankAccounts :company-info="currentInfo" @callGetList="handleChangeBank"/>
+            <AddBankAccounts :company-info="currentInfo" @callGetList="handleChangeBank" />
           </template>
-          <el-table-column label="户名" align="center" prop="acountsName"/>
-          <el-table-column label="银行卡号" align="center" prop="bankNo"/>
-          <el-table-column label="银行卡余额" align="center" prop="amount"/>
+          <el-table-column label="户名" align="center" prop="acountsName" />
+          <el-table-column label="银行卡号" align="center" prop="bankNo" />
+          <el-table-column label="银行卡余额" align="center" prop="amount" />
           <el-table-column label="操作" align="center" class-name="small-padding fixed-width" fixed="right" width="180">
             <template slot-scope="scope">
               <el-button
+                v-hasPermi="['system:company:remove']"
                 size="mini"
                 @click="handleDeleteBankaccount(scope.row)"
-                v-hasPermi="['system:company:remove']"
               ><i class="el-icon-delete"></i>
               </el-button>
               <el-button
+                v-hasPermi="['system:company:edit']"
                 size="mini"
                 @click="addDefaultCard(scope.row)"
-                v-hasPermi="['system:company:edit']"
               >设置为默认
               </el-button>
             </template>
@@ -304,7 +304,7 @@
         :total="bankTotal"
         :page.sync="bankPageNum"
         :limit.sync="bankPageSize"
-        @pagination="getBankList"/>
+        @pagination="getBankList" />
 
 
       <!--    银行信息-->
@@ -336,9 +336,9 @@
         </el-form>
         <el-row>
           <el-table v-loading="loading" :data="bankInfo">
-            <el-table-column label="银行卡号" align="center" prop="bankNo"/>
-            <el-table-column label="账户类型" align="center" prop="acountsType"/>
-            <el-table-column label="账户名" align="center" prop="acountsName"/>
+            <el-table-column label="银行卡号" align="center" prop="bankNo" />
+            <el-table-column label="账户类型" align="center" prop="acountsType" />
+            <el-table-column label="账户名" align="center" prop="acountsName" />
             <el-table-column label="操作" align="center" class-name="small-padding fixed-width" fixed="right"
                              width="180">
               <template slot-scope="scope">
@@ -368,13 +368,13 @@
 
     <el-dialog :close-on-click-modal="false" :show-close="false" title="设置默认银行卡"
                :visible.sync="addDefaultCardVisible" width="500px" append-to-body>
-      <el-table border v-loading="loading" :data="singleInfo" @selection-change="handleSelectionChange"
-                height="300px" v-horizontal-scroll="'always'">
-        <el-table-column label="账户类型" align="center" prop="acountsType"/>
-        <el-table-column label="开户名称(户名)" align="center" prop="acountsName"/>
-        <el-table-column label="账号(银行账号)" align="center" prop="bankNo"/>
-        <el-table-column label="开户行" align="center" prop="bankName"/>
-        <el-table-column label="公司名称" align="center" prop="companyName"/>
+      <el-table v-loading="loading" v-horizontal-scroll="'always'" border :data="singleInfo"
+                height="300px" @selection-change="handleSelectionChange">
+        <el-table-column label="账户类型" align="center" prop="acountsType" />
+        <el-table-column label="开户名称(户名)" align="center" prop="acountsName" />
+        <el-table-column label="账号(银行账号)" align="center" prop="bankNo" />
+        <el-table-column label="开户行" align="center" prop="bankName" />
+        <el-table-column label="公司名称" align="center" prop="companyName" />
         <el-table-column label="操作" align="center" class-name="small-padding fixed-width" fixed="right">
           <template slot-scope="scope">
             <el-button
@@ -391,481 +391,481 @@
 </template>
 
 <script>
-import {listCompany, getCompany, delCompany, addCompany, updateCompany} from "@/api/system/company";
-import {excludeParams} from "@/api/tool/exclude";
-import {addBankAccount, delBankAccount, listBankAccount, setDefault} from "@/api/system/bankAccount";
-import {TableName} from "@/api/tool/enums";
-import AddBank from "../../dashboard/components/company/AddBank.vue";
-import AddBankAccounts from "../../dashboard/components/company/AddBankAccounts.vue";
-import {INFO_TYPE, isUsed} from "../../../api/system/isUsed";
+  import { listCompany, getCompany, delCompany, addCompany, updateCompany } from '@/api/system/company';
+  import { excludeParams } from '@/api/tool/exclude';
+  import { addBankAccount, delBankAccount, listBankAccount, setDefault } from '@/api/system/bankAccount';
+  import { TableName } from '@/api/tool/enums';
+  import AddBank from '../../dashboard/components/company/AddBank.vue';
+  import AddBankAccounts from '../../dashboard/components/company/AddBankAccounts.vue';
+  import { INFO_TYPE, isUsed } from '../../../api/system/isUsed';
 
-export default {
-  name: "Company",
-  components: {AddBankAccounts, AddBank},
-  data() {
-    // 自定义校验规则
-    const validateRegion = (rule, value, callback) => {
-      if (this.form.province && this.form.city) {
-        callback()
-      } else {
-        callback(new Error('请选择省市'))
-      }
-    }
-
-    return {
-      loading: true,
-      ids: [],
-      single: true,
-      multiple: true,
-      showSearch: true,
-      total: 0,
-      companyList: [],
-      title: "",
-      open: false,
-      queryParams: {
-        pageNum: 1,
-        pageSize: 10,
-        companyName: null,
-        relationName: null,
-        relationTel: null,
-        address: null,
-        bankName: null,
-        acountsName: null,
-        bankNo: null,
-        surplusMoney: null,
-        companyType: '客户',
-        salesman: null,
-        leader: null,
-        leaderTel: null,
-        region: null,
-        salesManager: null,
-        province: null,
-        city: null,
-        county: null,
-        comments: null,
-        addtime: null,
-        userId: null,
-        UserName: null,
-        delFlag: null
-      },
-      form: {},
-      rules: {
-        companyName: [
-          {required: true, message: "公司名称不能为空", trigger: "blur"}
-        ],
-        relationName: [
-          {required: true, message: "联系人姓名不能为空", trigger: "blur"}
-        ],
-        relationTel: [
-          {
-            required: true, message: "联系人电话不能为空", trigger: "blur"
-          }
-        ],
-        address: [
-          {required: true, message: "公司地址不能为空", trigger: "blur"}
-        ],
-        salesman: [
-          {required: true, message: "业务员不能为空", trigger: "blur"}
-        ],
-        leader: [
-          {required: true, message: "老板姓名不能为空", trigger: "blur"}
-        ],
-        leaderTel: [
-          {required: true, message: "老板电话不能为空", trigger: "blur"}
-        ],
-        salesManager: [
-          {required: true, message: "销售经理不能为空", trigger: "blur"}
-        ],
-        province: [
-          {required: true, validator: validateRegion, trigger: 'change'}
-        ],
-        city: [
-          {required: true, validator: validateRegion, trigger: 'change'}
-        ],
-        // 移除county的单独校验规则，因为不是必选项
-      },
-      columns: [
-        {key: 0, label: `客户`, visible: true},
-        {key: 1, label: `老板姓名`, visible: true},
-        {key: 2, label: `公司名称`, visible: true},
-        {key: 3, label: `老板电话`, visible: true},
-        {key: 4, label: `电话`, visible: true},
-        {key: 5, label: `地址`, visible: true},
-        {key: 6, label: `区域`, visible: true},
-        {key: 7, label: `销售经理`, visible: true},
-        {key: 8, label: `备注`, visible: true},
-      ],
-      dialogFormVisible: false,//搜索已绑定的银行卡信息
-      dialogFormSearchVisible: false,
-      formLabelWidth: '140px',
-      //点击弹窗出来的搜索信息
-      currentInfo: {
-        companyType: '客户',
-        relationName: '',
-        bankNo: '',
-        bankName: '',
-        acountsName: ''
-      },
-      //指定用户的信息
-      singleInfo: [],
-      bankInfo: [],
-      dialogBankInfoVisible: false,
-      queryBankInfo: {
-        acountsType: '',
-        acountsName: ''
-      },
-      bankAccountList: [],
-      //账户类型
-      acountsTypeList: [{
-        value: '己方公司',
-        label: '己方公司'
-      }, {
-        value: '客户',
-        label: '客户'
-      }, {
-        value: '供应商',
-        label: '供应商'
-      }, {
-        value: '司机',
-        label: '司机'
-      }, {
-        value: '其他',
-        label: '其他'
-      }],
-      //省市县
-      provinceList: [],
-      cityList: [],
-      districtList: [],
-      province: '',
-      city: '',
-      district: '',
-      //默认银行卡信息
-      defaultBankCardInfo: {},
-      addDefaultCardVisible: false,
-
-      //默认银行卡列表的id
-      currentID: '',
-      bankTotal: 0,
-      bankPageSize: 10,
-      bankPageNum: 1,
-    };
-  },
-  created() {
-    this.getList();
-    if (localStorage.getItem('company-columns') === 'null'
-      || !localStorage.getItem('company-columns')) {
-      //设置localStorage
-      localStorage.setItem("company-columns", JSON.stringify(this.columns))
-    } else {
-      this.columns = JSON.parse(localStorage.getItem('company-columns'));
-    }
-    //获取城市信息
-    fetch('/area.json')
-      .then(res => res.json())
-      .then(res => {
-        this.provinceList = res;
-      })
-  },
-  //展示与隐藏
-  watch: {
-    columns: {
-      handler: (newVal) => {
-        localStorage.setItem("company-columns", JSON.stringify(newVal))
-      },
-      deep: true,
-    },
-    //城市变化
-    'form.province': function (val) {
-      this.provinceList.forEach(item => {
-        if (item.name === val) {
-          this.cityList = item.areaList;
+  export default {
+    name: 'Company',
+    components: { AddBankAccounts, AddBank },
+    data() {
+      // 自定义校验规则
+      const validateRegion = (rule, value, callback) => {
+        if (this.form.province && this.form.city) {
+          callback()
+        } else {
+          callback(new Error('请选择省市'))
         }
-      })
-    },
-    'form.city': function (val) {
-      this.cityList.forEach(item => {
-        if (item.name === val) {
-          this.districtList = item.areaList;
-        }
-      })
-    }
-  },
-  methods: {
-    //城市变化
-    changeProvince(e) {
-      this.province = e;
-    },
-    changeCity(e) {
-      this.city = e;
-    },
-    //点击银行卡后弹窗
-    jumpBankNo(row) {
-      // 绑定ID 分页查询默认银行卡有用
-      this.currentID = row.id;
-      this.currentInfo = Object.assign(this.currentInfo, {
-        relationName: row.relationName,
-        id: row.id,
-        relationTel: row.relationTel,
-        address: row.address,
-        surplusMoney: row.surplusMoney,
-        salesman: row.salesman,
-        leader: row.leader,
-        leaderTel: row.leaderTel,
-        region: row.region,
-        salesManager: row.salesManager,
-        province: row.province,
-        city: row.city,
-        county: row.county,
-        comments: row.comments,
-        companyName: row.companyName
-      });
-      //查询已绑定的银行卡信息
-      listBankAccount({companyId: row.id})
-        .then(res => {
-          this.singleInfo = res.rows
-          this.bankTotal = res.total;
-        })
-      // 查询客户的默认银行卡信息
-      listBankAccount({acountsType: '客户默认', companyId: row.id})
-        .then(res => {
-          if (res.rows.length > 0) {
-            this.defaultBankCardInfo = res.rows[0]
-          } else {
-            this.defaultBankCardInfo.not = true
-          }
-          this.dialogFormVisible = true
-        })
-    },
-    // 查询已经绑定的银行卡信息
-    getBankList() {
-      listBankAccount({
-        companyId: this.currentID,
-        acountsType: '客户',
-        pageNum: this.bankPageNum,
-        pageSize: this.bankPageSize
-      })
-        .then(res => {
-          this.singleInfo = res.rows
-          this.bankTotal = res.total;
-        })
-    },
-    //银行卡搜索按钮
-    handleSearchCompanyGive() {
-      this.getList();
-    },
-    //查询银行卡
-    handleSearchBankInfo() {
-      listBankAccount({acountsType: this.queryBankInfo.acountsType, acountsName: this.queryBankInfo.acountsName})
-        .then(res => {
-          this.bankInfo = res.rows;
-        })
-    },
-    addThisBankInfo(row) {
-      this.dialogBankInfoVisible = false;
-      this.dialogFormVisible = false;
-      //如果账户名不一样不允许添加银行卡
-      if (this.currentInfo.relationName !== row.acountsName) {
-        this.$message.error("不允许添加非己银行卡!");
-      } else {
-        this.currentInfo.bankNo = row.bankNo;
-        this.currentInfo.bankName = row.bankName;
-        this.currentInfo.acountsName = row.acountsName
-        //如果该用户没有银行卡，那么就修改客户信息里面的银行卡信息，如果有银行卡 添加
-        updateCompany(this.currentInfo).then(res => {
-          this.$message.success("添加成功")
-        })
       }
-    },
-    //添加默认银行卡
-    addDefaultCard(row) {
-      //如果是undefined 代表是个对象
-      if (row.target === undefined) {
-        // 设置默认银行卡
-        setDefault({...excludeParams(row, this.$exclude), acountsType: '客户默认'})
-          .then(res => {
-            this.$message.success("设置成功~")
-            this.dialogFormVisible = false //关闭银行卡弹窗
-            this.addDefaultCardVisible = false
-            this.getList()
-          })
-      } else {
-        //如果还没有添加过银行卡信息
-        //先查询
-        listBankAccount({companyId: this.currentInfo.id, acountsType: '客户'})
-          .then(res => {
-            if (res.rows.length === 0) {
-              this.$confirm('您还没有设置银行卡信息，是否前往设置?', '提示', {
-                confirmButtonText: '确定',
-                cancelButtonText: '取消',
-                type: 'warning'
-              }).then(() => {
-                this.dialogFormVisible = false
-                this.$router.push('/baseInfo/bankaccount')
-              }).catch(err => {
-              })
-            } else {
-              this.addDefaultCardVisible = true;
+
+      return {
+        loading: true,
+        ids: [],
+        single: true,
+        multiple: true,
+        showSearch: true,
+        total: 0,
+        companyList: [],
+        title: '',
+        open: false,
+        queryParams: {
+          pageNum: 1,
+          pageSize: 10,
+          companyName: null,
+          relationName: null,
+          relationTel: null,
+          address: null,
+          bankName: null,
+          acountsName: null,
+          bankNo: null,
+          surplusMoney: null,
+          companyType: '客户',
+          salesman: null,
+          leader: null,
+          leaderTel: null,
+          region: null,
+          salesManager: null,
+          province: null,
+          city: null,
+          county: null,
+          comments: null,
+          addtime: null,
+          userId: null,
+          UserName: null,
+          delFlag: null
+        },
+        form: {},
+        rules: {
+          companyName: [
+            { required: true, message: '公司名称不能为空', trigger: 'blur' }
+          ],
+          relationName: [
+            { required: true, message: '联系人姓名不能为空', trigger: 'blur' }
+          ],
+          relationTel: [
+            {
+              required: true, message: '联系人电话不能为空', trigger: 'blur'
             }
-          })
+          ],
+          address: [
+            { required: true, message: '公司地址不能为空', trigger: 'blur' }
+          ],
+          salesman: [
+            { required: true, message: '业务员不能为空', trigger: 'blur' }
+          ],
+          leader: [
+            { required: true, message: '老板姓名不能为空', trigger: 'blur' }
+          ],
+          leaderTel: [
+            { required: true, message: '老板电话不能为空', trigger: 'blur' }
+          ],
+          salesManager: [
+            { required: true, message: '销售经理不能为空', trigger: 'blur' }
+          ],
+          province: [
+            { required: true, validator: validateRegion, trigger: 'change' }
+          ],
+          city: [
+            { required: true, validator: validateRegion, trigger: 'change' }
+          ],
+        // 移除county的单独校验规则，因为不是必选项
+        },
+        columns: [
+          { key: 0, label: `客户`, visible: true },
+          { key: 1, label: `老板姓名`, visible: true },
+          { key: 2, label: `公司名称`, visible: true },
+          { key: 3, label: `老板电话`, visible: true },
+          { key: 4, label: `电话`, visible: true },
+          { key: 5, label: `地址`, visible: true },
+          { key: 6, label: `区域`, visible: true },
+          { key: 7, label: `销售经理`, visible: true },
+          { key: 8, label: `备注`, visible: true },
+        ],
+        dialogFormVisible: false, // 搜索已绑定的银行卡信息
+        dialogFormSearchVisible: false,
+        formLabelWidth: '140px',
+        // 点击弹窗出来的搜索信息
+        currentInfo: {
+          companyType: '客户',
+          relationName: '',
+          bankNo: '',
+          bankName: '',
+          acountsName: ''
+        },
+        // 指定用户的信息
+        singleInfo: [],
+        bankInfo: [],
+        dialogBankInfoVisible: false,
+        queryBankInfo: {
+          acountsType: '',
+          acountsName: ''
+        },
+        bankAccountList: [],
+        // 账户类型
+        acountsTypeList: [{
+          value: '己方公司',
+          label: '己方公司'
+        }, {
+          value: '客户',
+          label: '客户'
+        }, {
+          value: '供应商',
+          label: '供应商'
+        }, {
+          value: '司机',
+          label: '司机'
+        }, {
+          value: '其他',
+          label: '其他'
+        }],
+        // 省市县
+        provinceList: [],
+        cityList: [],
+        districtList: [],
+        province: '',
+        city: '',
+        district: '',
+        // 默认银行卡信息
+        defaultBankCardInfo: {},
+        addDefaultCardVisible: false,
+
+        // 默认银行卡列表的id
+        currentID: '',
+        bankTotal: 0,
+        bankPageSize: 10,
+        bankPageNum: 1,
+      };
+    },
+    // 展示与隐藏
+    watch: {
+      columns: {
+        handler: (newVal) => {
+          localStorage.setItem('company-columns', JSON.stringify(newVal))
+        },
+        deep: true,
+      },
+      // 城市变化
+      'form.province': function (val) {
+        this.provinceList.forEach(item => {
+          if (item.name === val) {
+            this.cityList = item.areaList;
+          }
+        })
+      },
+      'form.city': function (val) {
+        this.cityList.forEach(item => {
+          if (item.name === val) {
+            this.districtList = item.areaList;
+          }
+        })
       }
     },
-    //删除用户已绑定的某张银行卡信息
-    handleDeleteBankaccount(row) {
-      delBankAccount(row.id).then(res => {
-        this.$message.success("删除成功~")
+    created() {
+      this.getList();
+      if (localStorage.getItem('company-columns') === 'null' ||
+        !localStorage.getItem('company-columns')) {
+        // 设置localStorage
+        localStorage.setItem('company-columns', JSON.stringify(this.columns))
+      } else {
+        this.columns = JSON.parse(localStorage.getItem('company-columns'));
+      }
+      // 获取城市信息
+      fetch('/area.json')
+        .then(res => res.json())
+        .then(res => {
+          this.provinceList = res;
+        })
+    },
+    methods: {
+      // 城市变化
+      changeProvince(e) {
+        this.province = e;
+      },
+      changeCity(e) {
+        this.city = e;
+      },
+      // 点击银行卡后弹窗
+      jumpBankNo(row) {
+        // 绑定ID 分页查询默认银行卡有用
+        this.currentID = row.id;
+        this.currentInfo = Object.assign(this.currentInfo, {
+          relationName: row.relationName,
+          id: row.id,
+          relationTel: row.relationTel,
+          address: row.address,
+          surplusMoney: row.surplusMoney,
+          salesman: row.salesman,
+          leader: row.leader,
+          leaderTel: row.leaderTel,
+          region: row.region,
+          salesManager: row.salesManager,
+          province: row.province,
+          city: row.city,
+          county: row.county,
+          comments: row.comments,
+          companyName: row.companyName
+        });
+        // 查询已绑定的银行卡信息
+        listBankAccount({ companyId: row.id })
+          .then(res => {
+            this.singleInfo = res.rows
+            this.bankTotal = res.total;
+          })
+        // 查询客户的默认银行卡信息
+        listBankAccount({ acountsType: '客户默认', companyId: row.id })
+          .then(res => {
+            if (res.rows.length > 0) {
+              this.defaultBankCardInfo = res.rows[0]
+            } else {
+              this.defaultBankCardInfo.not = true
+            }
+            this.dialogFormVisible = true
+          })
+      },
+      // 查询已经绑定的银行卡信息
+      getBankList() {
+        listBankAccount({
+          companyId: this.currentID,
+          acountsType: '客户',
+          pageNum: this.bankPageNum,
+          pageSize: this.bankPageSize
+        })
+          .then(res => {
+            this.singleInfo = res.rows
+            this.bankTotal = res.total;
+          })
+      },
+      // 银行卡搜索按钮
+      handleSearchCompanyGive() {
+        this.getList();
+      },
+      // 查询银行卡
+      handleSearchBankInfo() {
+        listBankAccount({ acountsType: this.queryBankInfo.acountsType, acountsName: this.queryBankInfo.acountsName })
+          .then(res => {
+            this.bankInfo = res.rows;
+          })
+      },
+      addThisBankInfo(row) {
+        this.dialogBankInfoVisible = false;
+        this.dialogFormVisible = false;
+        // 如果账户名不一样不允许添加银行卡
+        if (this.currentInfo.relationName !== row.acountsName) {
+          this.$message.error('不允许添加非己银行卡!');
+        } else {
+          this.currentInfo.bankNo = row.bankNo;
+          this.currentInfo.bankName = row.bankName;
+          this.currentInfo.acountsName = row.acountsName
+          // 如果该用户没有银行卡，那么就修改客户信息里面的银行卡信息，如果有银行卡 添加
+          updateCompany(this.currentInfo).then(res => {
+            this.$message.success('添加成功')
+          })
+        }
+      },
+      // 添加默认银行卡
+      addDefaultCard(row) {
+        // 如果是undefined 代表是个对象
+        if (row.target === undefined) {
+          // 设置默认银行卡
+          setDefault({ ...excludeParams(row, this.$exclude), acountsType: '客户默认' })
+            .then(res => {
+              this.$message.success('设置成功~')
+              this.dialogFormVisible = false // 关闭银行卡弹窗
+              this.addDefaultCardVisible = false
+              this.getList()
+            })
+        } else {
+          // 如果还没有添加过银行卡信息
+          // 先查询
+          listBankAccount({ companyId: this.currentInfo.id, acountsType: '客户' })
+            .then(res => {
+              if (res.rows.length === 0) {
+                this.$confirm('您还没有设置银行卡信息，是否前往设置?', '提示', {
+                  confirmButtonText: '确定',
+                  cancelButtonText: '取消',
+                  type: 'warning'
+                }).then(() => {
+                  this.dialogFormVisible = false
+                  this.$router.push('/baseInfo/bankaccount')
+                }).catch(err => {
+                })
+              } else {
+                this.addDefaultCardVisible = true;
+              }
+            })
+        }
+      },
+      // 删除用户已绑定的某张银行卡信息
+      handleDeleteBankaccount(row) {
+        delBankAccount(row.id).then(res => {
+          this.$message.success('删除成功~')
+          this.dialogFormVisible = false
+          this.getList()
+        })
+      },
+      // 主动绑定银行卡后的回调函数
+      handleChangeBank() {
         this.dialogFormVisible = false
         this.getList()
-      })
-    },
-    // 主动绑定银行卡后的回调函数
-    handleChangeBank() {
-      this.dialogFormVisible = false
-      this.getList()
-    },
-    printHTML() {
-      this.$print({
-        printable: 'printBox',
-        type: 'html',
-        targetStyles: ['*'], // 打印内容使用所有HTML样式，没有设置这个属性/值，设置分页打印没有效果
-      })
-    },
-    /** 查询客户、供应商信息列表 */
-    getList() {
-      this.loading = true;
-      listCompany(this.queryParams).then(response => {
-        this.companyList = response.rows;
-        this.total = response.total;
-        this.loading = false;
-      });
-    },
-    // 取消按钮
-    cancel() {
-      this.open = false;
-      this.reset();
-    },
-    // 表单重置
-    reset() {
-      this.form = {
-        id: null,
-        companyName: null,
-        relationName: null,
-        relationTel: null,
-        address: null,
-        bankName: null,
-        acountsName: null,
-        bankNo: null,
-        surplusMoney: null,
-        companyType: '客户',
-        salesman: null,
-        leader: null,
-        leaderTel: null,
-        region: null,
-        salesManager: null,
-        province: null,
-        city: null,
-        county: null,
-        comments: null,
-        addtime: null,
-        userId: null,
-        UserName: null,
-        updateTime: null,
-        delFlag: null
-      };
-      this.resetForm("form");
-    },
-    /** 搜索按钮操作 */
-    handleQuery() {
-      this.queryParams.pageNum = 1;
-      this.getList();
-    },
-    /** 重置按钮操作 */
-    resetQuery() {
-      this.resetForm("queryForm");
-      this.handleQuery();
-    },
-    // 多选框选中数据
-    handleSelectionChange(selection) {
-      this.ids = selection.map(item => item.id)
-      this.single = selection.length !== 1
-      this.multiple = !selection.length
-    },
-    /** 新增按钮操作 */
-    handleAdd() {
-      this.reset();
-      this.open = true;
-      this.title = "添加客户信息";
-    },
-    /** 修改按钮操作 */
-    handleUpdate(row) {
-      this.reset();
-      const id = row.id || this.ids
-      getCompany(id, '客户').then(response => {
-        this.form = response.data;
-        this.open = true;
-        this.title = "修改客户信息";
-      });
-    },
-    /** 提交按钮 */
-    submitForm() {
-      this.$refs["form"].validate(valid => {
-        if (valid) {
-          if (this.form.id != null) {
-            this.form = excludeParams(this.form, this.$exclude)
-            updateCompany(this.form).then(response => {
-              this.$modal.msgSuccess("修改成功");
-              this.open = false;
-              this.getList();
-            });
-          } else {
-            this.form = excludeParams(this.form, this.$exclude)
-            addCompany(this.form).then(response => {
-              this.$modal.msgSuccess("新增成功");
-              this.open = false;
-              this.getList();
-            });
-          }
-        }
-      });
-    },
-    /** 删除按钮操作 */
-    handleDelete(row) {
-      const ids = row.id || this.ids;
-      // 删除前要去检索一下是否有用到该数据 要给用户提示
-      const query = {
-        id: ids,
-        type: INFO_TYPE.CUSTOMER
-      }
-      // 弹窗删除
-      this.$modal.confirm('是否确认删除编号为"' + ids + '"的数据项？').then(() => {
-        // 查询该数据是否被使用
-        isUsed(query).then(res => {
-          if (res.data.isUsed) {
-            this.$modal.confirm('系统检测该信息:"' + ids + '"的客户数据在系统中被使用，是否要继续删除?').then(function () {
-              return delCompany(ids, '客户');
-            }).then(() => {
-              this.getList();
-              this.$modal.msgSuccess("删除成功");
-            }).catch(() => {
-            });
-          } else {
-            delCompany(ids, '客户').then(() => {
-              this.getList();
-              this.$modal.msgSuccess("删除成功");
-            })
-          }
+      },
+      printHTML() {
+        this.$print({
+          printable: 'printBox',
+          type: 'html',
+          targetStyles: ['*'], // 打印内容使用所有HTML样式，没有设置这个属性/值，设置分页打印没有效果
         })
-      }).catch(() => {
-      });
+      },
+      /** 查询客户、供应商信息列表 */
+      getList() {
+        this.loading = true;
+        listCompany(this.queryParams).then(response => {
+          this.companyList = response.rows;
+          this.total = response.total;
+          this.loading = false;
+        });
+      },
+      // 取消按钮
+      cancel() {
+        this.open = false;
+        this.reset();
+      },
+      // 表单重置
+      reset() {
+        this.form = {
+          id: null,
+          companyName: null,
+          relationName: null,
+          relationTel: null,
+          address: null,
+          bankName: null,
+          acountsName: null,
+          bankNo: null,
+          surplusMoney: null,
+          companyType: '客户',
+          salesman: null,
+          leader: null,
+          leaderTel: null,
+          region: null,
+          salesManager: null,
+          province: null,
+          city: null,
+          county: null,
+          comments: null,
+          addtime: null,
+          userId: null,
+          UserName: null,
+          updateTime: null,
+          delFlag: null
+        };
+        this.resetForm('form');
+      },
+      /** 搜索按钮操作 */
+      handleQuery() {
+        this.queryParams.pageNum = 1;
+        this.getList();
+      },
+      /** 重置按钮操作 */
+      resetQuery() {
+        this.resetForm('queryForm');
+        this.handleQuery();
+      },
+      // 多选框选中数据
+      handleSelectionChange(selection) {
+        this.ids = selection.map(item => item.id)
+        this.single = selection.length !== 1
+        this.multiple = !selection.length
+      },
+      /** 新增按钮操作 */
+      handleAdd() {
+        this.reset();
+        this.open = true;
+        this.title = '添加客户信息';
+      },
+      /** 修改按钮操作 */
+      handleUpdate(row) {
+        this.reset();
+        const id = row.id || this.ids
+        getCompany(id, '客户').then(response => {
+          this.form = response.data;
+          this.open = true;
+          this.title = '修改客户信息';
+        });
+      },
+      /** 提交按钮 */
+      submitForm() {
+        this.$refs['form'].validate(valid => {
+          if (valid) {
+            if (this.form.id != null) {
+              this.form = excludeParams(this.form, this.$exclude)
+              updateCompany(this.form).then(response => {
+                this.$modal.msgSuccess('修改成功');
+                this.open = false;
+                this.getList();
+              });
+            } else {
+              this.form = excludeParams(this.form, this.$exclude)
+              addCompany(this.form).then(response => {
+                this.$modal.msgSuccess('新增成功');
+                this.open = false;
+                this.getList();
+              });
+            }
+          }
+        });
+      },
+      /** 删除按钮操作 */
+      handleDelete(row) {
+        const ids = row.id || this.ids;
+        // 删除前要去检索一下是否有用到该数据 要给用户提示
+        const query = {
+          id: ids,
+          type: INFO_TYPE.CUSTOMER
+        }
+        // 弹窗删除
+        this.$modal.confirm('是否确认删除编号为"' + ids + '"的数据项？').then(() => {
+          // 查询该数据是否被使用
+          isUsed(query).then(res => {
+            if (res.data.isUsed) {
+              this.$modal.confirm('系统检测该信息:"' + ids + '"的客户数据在系统中被使用，是否要继续删除?').then(function () {
+                return delCompany(ids, '客户');
+              }).then(() => {
+                this.getList();
+                this.$modal.msgSuccess('删除成功');
+              }).catch(() => {
+              });
+            } else {
+              delCompany(ids, '客户').then(() => {
+                this.getList();
+                this.$modal.msgSuccess('删除成功');
+              })
+            }
+          })
+        }).catch(() => {
+        });
 
-    },
-    /** 导出按钮操作 */
-    handleExport() {
-      this.download('system/company/export', {
-        ...this.queryParams
-      }, `company_${new Date().getTime()}.xlsx`)
-    },
-  }
-};
+      },
+      /** 导出按钮操作 */
+      handleExport() {
+        this.download('system/company/export', {
+          ...this.queryParams
+        }, `company_${new Date().getTime()}.xlsx`)
+      },
+    }
+  };
 </script>
 
 <style scoped>

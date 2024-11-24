@@ -1,6 +1,6 @@
-import { getToken } from "../../../../utils/auth";
-import axios from "axios";
-import { getRecord } from "../../../../api/system/record";
+import { getToken } from '../../../../utils/auth';
+import axios from 'axios';
+import { getRecord } from '../../../../api/system/record';
 // 现金记账的上传功能
 export var mixin_record_uploadFiles = {
   data: function () {
@@ -8,18 +8,18 @@ export var mixin_record_uploadFiles = {
       fileList: [],
       fileNamesList: [],
       checkFileList: [],
-      uploadFileUrl: process.env.VUE_APP_BASE_API + "/common/upload",
+      uploadFileUrl: process.env.VUE_APP_BASE_API + '/common/upload',
       headers: {
-        Authorization: "Bearer " + getToken(),
+        Authorization: 'Bearer ' + getToken(),
       },
       checkAttachmentVisible: false,
     };
   },
   methods: {
-    //查看附件信息
+    // 查看附件信息
     checkAttachment(row) {
       getRecord(row.id).then((res) => {
-        this.checkFileList = res.data.attachment.split("|");
+        this.checkFileList = res.data.attachment.split('|');
         this.checkAttachmentVisible = true;
       });
     },
@@ -27,17 +27,17 @@ export var mixin_record_uploadFiles = {
     beforeUpload(file) {
       // 如果文件名超出20个字符那么就提示
       if (file.name.length > 20) {
-        this.$message.error("文件名不能超过20个字符,请重命名后上传");
+        this.$message.error('文件名不能超过20个字符,请重命名后上传');
         return false;
       }
       // 文件中不能包含 "|" 字符
-      if (file.name.indexOf("|") !== -1) {
+      if (file.name.indexOf('|') !== -1) {
         this.$message.error('文件名不能包含"|"字符');
         return false;
       }
       // 列表中最多五个文件
       if (this.fileList.length >= 5) {
-        this.$message.error("最多只能上传5个文件");
+        this.$message.error('最多只能上传5个文件');
         return false;
       }
       // 推入数组中 后续点击开始上传的时候 ，对数组的每一个文件进行上传
@@ -47,8 +47,8 @@ export var mixin_record_uploadFiles = {
     },
     async submitUploadAllFiles() {
       await this.uploadAllFilesAsync();
-      this.$message.success("保存成功");
-      this.form.attachment = this.fileNamesList.join("|");
+      this.$message.success('保存成功');
+      this.form.attachment = this.fileNamesList.join('|');
     },
     async uploadAllFilesAsync() {
       // 开始批量发请求 上传文件 上传完毕的文件会返回一个fileName 只要把上传后的fileName推入到已上传的列表
@@ -56,16 +56,16 @@ export var mixin_record_uploadFiles = {
         const file = this.fileList[i];
         // 点击上传的时候 要推入到上传数组中
         const formData = new FormData();
-        formData.append("file", file);
+        formData.append('file', file);
         try {
           // 调用上传接口
           const response = await axios.post(
-            process.env.VUE_APP_BASE_API + "/common/upload",
+            process.env.VUE_APP_BASE_API + '/common/upload',
             formData,
             {
               headers: {
                 ...this.headers,
-                "Content-Type": "multipart/form-data",
+                'Content-Type': 'multipart/form-data',
               },
             }
           );

@@ -2,7 +2,7 @@
 export var mixin_business_trip_car_apply = {
   data: function () {
     return {
-      //是否使用车辆 默认为否
+      // 是否使用车辆 默认为否
       useCar: '否',
       carApplyForm: {
         carNo: '',
@@ -11,7 +11,7 @@ export var mixin_business_trip_car_apply = {
         isReimburse:
           '',
       },
-      //车辆查询
+      // 车辆查询
       queryCars: '',
       carApplyVisible: false,
     }

@@ -4,11 +4,19 @@ export var mixin_bankType = {
   methods: {
     // 填充己方的银行卡账户类型
     changeSelfBankType(value) {
-      this.form.selfBankCardType = value;
+      if (this.form && typeof this.form === 'object') {
+        this.$set(this.form, 'selfBankCardType', value);
+      } else {
+        console.log('form unexpected');
+      }
     },
     // 填充对方的银行卡账户类型
     changeOtherBankType(value) {
-      this.form.otherBankCardType = value;
+      if (this.form && typeof this.form === 'object') {
+        this.$set(this.form, 'otherBankCardType', value);
+      } else {
+        console.log('form unexpected');
+      }
     },
   },
 };

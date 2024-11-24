@@ -1,8 +1,8 @@
-import {getToken} from "../../../../utils/auth";
-import {getBusinessTrip} from "../../../../api/system/BusinessTrip";
-import {addOilCardConsume} from "../../../../api/system/OilCardConsume";
-import {checkOilCard} from "../../../../api/system/oilCard";
-import {mapGetters} from "vuex";
+import { getToken } from '../../../../utils/auth';
+import { getBusinessTrip } from '../../../../api/system/BusinessTrip';
+import { addOilCardConsume } from '../../../../api/system/OilCardConsume';
+import { checkOilCard } from '../../../../api/system/oilCard';
+import { mapGetters } from 'vuex';
 
 export var mixin_businesstrip_car_apply = {
   data: function () {
@@ -13,17 +13,17 @@ export var mixin_businesstrip_car_apply = {
       oilCardConsumeInfo: {
         oilCardNo: '',
         carNo: '',
-        //附件路径
+        // 附件路径
         attachmentOiladd: '',
-        //充值金额 默认为0
+        // 充值金额 默认为0
         rechargeMoney: '0'
       },
       queryOilCard: '',
       // 文件上传
       baseUrl: process.env.VUE_APP_BASE_API,
-      uploadFileUrl: process.env.VUE_APP_BASE_API + "/common/upload", // 上传文件服务器地址
+      uploadFileUrl: process.env.VUE_APP_BASE_API + '/common/upload', // 上传文件服务器地址
       headers: {
-        Authorization: "Bearer " + getToken(),
+        Authorization: 'Bearer ' + getToken(),
       },
       isRecharge: '',
     }
@@ -105,7 +105,7 @@ export var mixin_businesstrip_car_apply = {
                 // 纠正money
                 this.oilCardConsumeInfo.rechargeMoney = this.isRecharge === '2' ? '0' : this.oilCardConsumeInfo.rechargeMoney
                 // 添加油卡消费信息
-                addOilCardConsume({...this.oilCardConsumeInfo, bTripId: businessTripID,}).then(res => {
+                addOilCardConsume({ ...this.oilCardConsumeInfo, bTripId: businessTripID, }).then(res => {
                   this.$message.success('保存成功~')
                   setTimeout(() => {
                     // 回写充值账户信息到报销项中
@@ -140,16 +140,16 @@ export var mixin_businesstrip_car_apply = {
     },
     resetOilCardConsumeInfo() {
       this.oilCardConsumeInfo = {
-        oilCardNo: '',           // 加油卡卡号
-        useDate: '',             // 使用加油卡时间
-        carNo: '',               // 车辆车牌号
-        startCardSurplus: '',    // 期初余额
-        rechargeMoney: '',       // 充值金额
-        refuelingNumber: '',     // 加油量
-        unitPrice: '',           // 单价
-        refuelingMoney: '',      // 加油金额
-        attachmentOiladd: '',    // 加油小票附件路径
-        comments: '',            // 备注
+        oilCardNo: '', // 加油卡卡号
+        useDate: '', // 使用加油卡时间
+        carNo: '', // 车辆车牌号
+        startCardSurplus: '', // 期初余额
+        rechargeMoney: '', // 充值金额
+        refuelingNumber: '', // 加油量
+        unitPrice: '', // 单价
+        refuelingMoney: '', // 加油金额
+        attachmentOiladd: '', // 加油小票附件路径
+        comments: '', // 备注
       };
     },
   },

@@ -1,16 +1,16 @@
 <script>
-import ExcelIcon from "@/views/dashboard/components/common/ExcelIcon.vue";
+  import ExcelIcon from '@/views/dashboard/components/common/ExcelIcon.vue';
 
-export default {
-  name: "SheetItem",
-  components: { ExcelIcon },
-  props: {
-    title: {
-      type: String,
-      default: "无",
+  export default {
+    name: 'SheetItem',
+    components: { ExcelIcon },
+    props: {
+      title: {
+        type: String,
+        default: '无',
+      },
     },
-  },
-};
+  };
 </script>
 
 <template>

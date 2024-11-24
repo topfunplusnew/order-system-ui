@@ -46,171 +46,171 @@
 </template>
 
 <script>
-import {getToken} from "@/utils/auth";
+  import { getToken } from '@/utils/auth';
 
-export default {
-  name: "FileUpload",
-  props: {
-    // 值
-    value: [String, Object, Array],
-    // 数量限制 只能上传一个
-    limit: {
-      type: Number,
-      default: 5,
-    },
-    // 大小限制(MB)
-    fileSize: {
-      type: Number,
-      default: 5,
-    },
-    // 文件类型, 例如['png', 'jpg', 'jpeg']
-    fileType: {
-      type: Array,
-      default: () => ["doc", "xls", "ppt", "txt", "pdf", 'png', 'jpg', 'jpeg'],
-    },
-    // 是否显示提示
-    isShowTip: {
-      type: Boolean,
-      default: true
-    }
-  },
-  data() {
-    return {
-      number: 0,
-      uploadList: [],
-      baseUrl: process.env.VUE_APP_BASE_API,
-      uploadFileUrl: process.env.VUE_APP_BASE_API + "/common/upload", // 上传文件服务器地址
-      headers: {
-        Authorization: "Bearer " + getToken(),
+  export default {
+    name: 'FileUpload',
+    props: {
+      // 值
+      value: [String, Object, Array],
+      // 数量限制 只能上传一个
+      limit: {
+        type: Number,
+        default: 5,
       },
-      //文件列表
-      fileList: [],
-    };
-  },
-  computed: {
-    // 是否显示提示
-    showTip() {
-      return this.isShowTip && (this.fileType || this.fileSize);
+      // 大小限制(MB)
+      fileSize: {
+        type: Number,
+        default: 5,
+      },
+      // 文件类型, 例如['png', 'jpg', 'jpeg']
+      fileType: {
+        type: Array,
+        default: () => ['doc', 'xls', 'ppt', 'txt', 'pdf', 'png', 'jpg', 'jpeg'],
+      },
+      // 是否显示提示
+      isShowTip: {
+        type: Boolean,
+        default: true
+      }
     },
-  },
-  watch: {
-    //监听value的变化
-    value: {
-      handler(val) {
-        //如果变化了
-        if (val) {
-          let temp = 1;
-          // 首先将值转为数组
-          const list = Array.isArray(val) ? val : this.value.split(',');
-          // 然后将数组转为对象数组
-          this.fileList = list.map(item => {
-            if (typeof item === "string") {
-              item = {name: item, url: item};
-            }
-            item.uid = item.uid || new Date().getTime() + temp++;
-            return item;
-          });
+    data() {
+      return {
+        number: 0,
+        uploadList: [],
+        baseUrl: process.env.VUE_APP_BASE_API,
+        uploadFileUrl: process.env.VUE_APP_BASE_API + '/common/upload', // 上传文件服务器地址
+        headers: {
+          Authorization: 'Bearer ' + getToken(),
+        },
+        // 文件列表
+        fileList: [],
+      };
+    },
+    computed: {
+      // 是否显示提示
+      showTip() {
+        return this.isShowTip && (this.fileType || this.fileSize);
+      },
+    },
+    watch: {
+      // 监听value的变化
+      value: {
+        handler(val) {
+          // 如果变化了
+          if (val) {
+            let temp = 1;
+            // 首先将值转为数组
+            const list = Array.isArray(val) ? val : this.value.split(',');
+            // 然后将数组转为对象数组
+            this.fileList = list.map(item => {
+              if (typeof item === 'string') {
+                item = { name: item, url: item };
+              }
+              item.uid = item.uid || new Date().getTime() + temp++;
+              return item;
+            });
+          } else {
+            this.fileList = [];
+            return [];
+          }
+        },
+        deep: true,
+        immediate: true
+      }
+    },
+    methods: {
+      // 上传前校检格式和大小
+      handleBeforeUpload(file) {
+        // 校检文件类型
+        if (this.fileType) {
+          const fileName = file.name.split('.');
+          const fileExt = fileName[fileName.length - 1];
+          const isTypeOk = this.fileType.indexOf(fileExt) >= 0;
+          if (!isTypeOk) {
+            this.$modal.msgError(`文件格式不正确, 请上传${this.fileType.join('/')}格式文件!`);
+            return false;
+          }
+        }
+        // 校检文件大小
+        if (this.fileSize) {
+          const isLt = file.size / 1024 / 1024 < this.fileSize;
+          if (!isLt) {
+            this.$modal.msgError(`上传文件大小不能超过 ${this.fileSize} MB!`);
+            return false;
+          }
+        }
+        this.$modal.loading('正在上传文件，请稍候...');
+        this.number++;
+        return true;
+      },
+      // 文件个数超出
+      handleExceed() {
+        this.$modal.msgError(`上传文件数量不能超过 ${this.limit} 个!`);
+      },
+      // 上传失败
+      handleUploadError() {
+        this.$modal.msgError('上传文件失败，请重试');
+        this.$modal.closeLoading();
+      },
+      // 上传成功回调
+      handleUploadSuccess(res, file) {
+        if (res.code === 200) {
+          this.uploadList.push({ name: res.fileName, url: res.url });
+          this.uploadedSuccessfully();
         } else {
-          this.fileList = [];
-          return [];
+          this.number--;
+          this.$modal.closeLoading();
+          this.$modal.msgError(res.msg);
+          this.$refs.fileUpload.handleRemove(file);
+          this.uploadedSuccessfully();
         }
       },
-      deep: true,
-      immediate: true
+      // 删除文件
+      handleDelete(index) {
+        this.fileList.splice(index, 1);
+        this.$emit('input', this.listToString(this.fileList));
+      },
+      // 上传结束处理
+      uploadedSuccessfully() {
+        this.$message.success('上传成功')
+        // 清空上传过的文件列表
+        if (this.number > 0 && this.uploadList.length === this.number) {
+          this.fileList = this.fileList.concat(this.uploadList);
+          this.uploadList = [];
+          this.number = 0;
+          this.$emit('input', this.listToString(this.fileList, '|'));
+          this.$modal.closeLoading();
+        }
+      },
+      // 获取文件名称
+      getFileName(name) {
+        // 如果是url那么取最后的名字 如果不是直接返回
+        if (name.lastIndexOf('/') > -1) {
+          return name.slice(name.lastIndexOf('/') + 1);
+        } else {
+          return name;
+        }
+      },
+      // 对象转成指定字符串分隔
+      listToString(list, separator) {
+        let strs = '';
+        separator = separator || ',';
+        for (const i in list) {
+          strs += list[i].url + separator;
+        }
+        return strs != '' ? strs.substr(0, strs.length - 1) : '';
+      },
+      // // 清空文件列表 主要用于表单提交后清除上传组件参与的文件列表
+      clearFileList() {
+        this.fileList = [];
+        this.emitFileList();
+      },
+      emitFileList() {
+        this.$emit('input', this.listToString(this.fileList));
+      },
     }
-  },
-  methods: {
-    // 上传前校检格式和大小
-    handleBeforeUpload(file) {
-      // 校检文件类型
-      if (this.fileType) {
-        const fileName = file.name.split('.');
-        const fileExt = fileName[fileName.length - 1];
-        const isTypeOk = this.fileType.indexOf(fileExt) >= 0;
-        if (!isTypeOk) {
-          this.$modal.msgError(`文件格式不正确, 请上传${this.fileType.join("/")}格式文件!`);
-          return false;
-        }
-      }
-      // 校检文件大小
-      if (this.fileSize) {
-        const isLt = file.size / 1024 / 1024 < this.fileSize;
-        if (!isLt) {
-          this.$modal.msgError(`上传文件大小不能超过 ${this.fileSize} MB!`);
-          return false;
-        }
-      }
-      this.$modal.loading("正在上传文件，请稍候...");
-      this.number++;
-      return true;
-    },
-    // 文件个数超出
-    handleExceed() {
-      this.$modal.msgError(`上传文件数量不能超过 ${this.limit} 个!`);
-    },
-    // 上传失败
-    handleUploadError() {
-      this.$modal.msgError("上传文件失败，请重试");
-      this.$modal.closeLoading();
-    },
-    // 上传成功回调
-    handleUploadSuccess(res, file) {
-      if (res.code === 200) {
-        this.uploadList.push({name: res.fileName, url: res.url});
-        this.uploadedSuccessfully();
-      } else {
-        this.number--;
-        this.$modal.closeLoading();
-        this.$modal.msgError(res.msg);
-        this.$refs.fileUpload.handleRemove(file);
-        this.uploadedSuccessfully();
-      }
-    },
-    // 删除文件
-    handleDelete(index) {
-      this.fileList.splice(index, 1);
-      this.$emit("input", this.listToString(this.fileList));
-    },
-    // 上传结束处理
-    uploadedSuccessfully() {
-      this.$message.success("上传成功")
-      //清空上传过的文件列表
-      if (this.number > 0 && this.uploadList.length === this.number) {
-        this.fileList = this.fileList.concat(this.uploadList);
-        this.uploadList = [];
-        this.number = 0;
-        this.$emit("input", this.listToString(this.fileList, '|'));
-        this.$modal.closeLoading();
-      }
-    },
-    // 获取文件名称
-    getFileName(name) {
-      // 如果是url那么取最后的名字 如果不是直接返回
-      if (name.lastIndexOf("/") > -1) {
-        return name.slice(name.lastIndexOf("/") + 1);
-      } else {
-        return name;
-      }
-    },
-    // 对象转成指定字符串分隔
-    listToString(list, separator) {
-      let strs = "";
-      separator = separator || ",";
-      for (let i in list) {
-        strs += list[i].url + separator;
-      }
-      return strs != '' ? strs.substr(0, strs.length - 1) : '';
-    },
-    // // 清空文件列表 主要用于表单提交后清除上传组件参与的文件列表
-    clearFileList() {
-      this.fileList = [];
-      this.emitFileList();
-    },
-    emitFileList() {
-      this.$emit("input", this.listToString(this.fileList));
-    },
-  }
-};
+  };
 </script>
 
 <style scoped lang="scss">

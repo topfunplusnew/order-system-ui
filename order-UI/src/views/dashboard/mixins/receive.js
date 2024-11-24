@@ -1,5 +1,5 @@
-//混入 收款的相关自动填充逻辑
-import {addReceiveMoney} from "../../../api/system/receiveMoney";
+// 混入 收款的相关自动填充逻辑
+import { addReceiveMoney } from '../../../api/system/receiveMoney';
 
 export var mixin_reviveMoney = {
   data: function () {
@@ -17,14 +17,14 @@ export var mixin_reviveMoney = {
       selfBankName: '',
       selfBankID: '',
       // 对方银行信息
-      otherAcountsName: "",
-      otherBankNo: "",
-      otherBankName: "",
+      otherAcountsName: '',
+      otherBankNo: '',
+      otherBankName: '',
       // 公司名称 公司id 公司类型
-      companyName: "",
-      companyId: "",
-      companyType: "",
-      comments: "",
+      companyName: '',
+      companyId: '',
+      companyType: '',
+      comments: '',
     }
   },
   methods: {
@@ -65,7 +65,7 @@ export var mixin_reviveMoney = {
     // 添加收款信息
     addReviveMoneyInfo() {
       // 组装实体对象
-      let reviveMoneyInfo = {
+      const reviveMoneyInfo = {
         tID: this.tID,
         fundsDate: this.fundsDate,
         receiveType: this.receiveType,
@@ -98,10 +98,10 @@ export var mixin_reviveMoney = {
       this.selfBankNo = ''
       this.selfBankName = ''
       this.selfBankID = ''
-      this.otherAcountsName = ""
-      this.otherBankNo = ""
-      this.otherBankName = ""
-      this.companyName = ""
+      this.otherAcountsName = ''
+      this.otherBankNo = ''
+      this.otherBankName = ''
+      this.companyName = ''
     }
   }
 

@@ -1,7 +1,7 @@
-import axios from "axios";
-import {getGoodsOrder, updateGoodsOrder} from "../../../../api/system/goodsOrder";
-import {getToken} from "../../../../utils/auth";
-import {excludeParams} from "../../../../api/tool/exclude";
+import axios from 'axios';
+import { getGoodsOrder, updateGoodsOrder } from '../../../../api/system/goodsOrder';
+import { getToken } from '../../../../utils/auth';
+import { excludeParams } from '../../../../api/tool/exclude';
 
 /**
  *  点击上传附件 上传附件功能 查看附件功能
@@ -9,10 +9,10 @@ import {excludeParams} from "../../../../api/tool/exclude";
 export var mixin_order_uploadFiles = {
   data: function () {
     return {
-      //上传和收到条
+      // 上传和收到条
       handleUploadVisible: false,
       handleCommitVisible: false,
-      //上传附件临时保存当前点击订单信息
+      // 上传附件临时保存当前点击订单信息
       tempOrderInfo: {
         receiveProof: ''
       },
@@ -22,15 +22,15 @@ export var mixin_order_uploadFiles = {
       // 查看附件或者收到条的文件列表
       checkFileList: [],
       checkAttachmentVisible: false,
-      //上传路径
-      uploadFileUrl: process.env.VUE_APP_BASE_API + "/common/upload",
+      // 上传路径
+      uploadFileUrl: process.env.VUE_APP_BASE_API + '/common/upload',
       headers: {
-        Authorization: "Bearer " + getToken(),
+        Authorization: 'Bearer ' + getToken(),
       },
     }
   },
   methods: {
-    //查看附件信息
+    // 查看附件信息
     checkAttachment(row, type) {
       if (type === 'path') {
         getGoodsOrder(row.id).then(res => {
@@ -47,14 +47,14 @@ export var mixin_order_uploadFiles = {
     // 上传附件
     handleUpload(row) {
       this.handleUploadVisible = true
-      //保存当前订单信息 现根据当前订单列表信息查询详细订单信息
+      // 保存当前订单信息 现根据当前订单列表信息查询详细订单信息
       getGoodsOrder(row.id).then(res => {
         this.tempOrderInfo = res.data;
       })
     },
     handleCommit(row) {
       this.handleCommitVisible = true
-      //点击收到条的时候查询当前订单详细信息
+      // 点击收到条的时候查询当前订单详细信息
       getGoodsOrder(row.id).then(res => {
         this.tempOrderInfo = res.data;
       })
@@ -116,16 +116,16 @@ export var mixin_order_uploadFiles = {
       this.tempOrderInfo = excludeParams(this.tempOrderInfo, this.$exclude)
       const path = this.fileNamesList.join('|')
       if (type === 'path') {
-        //修改订单信息
-        updateGoodsOrder({...this.tempOrderInfo, path: path})
+        // 修改订单信息
+        updateGoodsOrder({ ...this.tempOrderInfo, path: path })
           .then(res => {
             this.$message.success('保存成功')
             this.getList()
           })
         // 收到条
       } else if (type === 'receiveProof') {
-        //修改订单信息
-        updateGoodsOrder({...this.tempOrderInfo, receiveProof: path})
+        // 修改订单信息
+        updateGoodsOrder({ ...this.tempOrderInfo, receiveProof: path })
           .then(res => {
             this.$message.success('保存成功')
             this.getList()

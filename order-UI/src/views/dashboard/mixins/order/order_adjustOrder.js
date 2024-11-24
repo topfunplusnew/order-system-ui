@@ -1,6 +1,6 @@
-import {adjustGoodsOrder, getGoodsOrder} from "../../../../api/system/goodsOrder";
-import {excludeParams} from "../../../../api/tool/exclude";
-import {parseTime} from "../../../../utils/ruoyi";
+import { adjustGoodsOrder, getGoodsOrder } from '../../../../api/system/goodsOrder';
+import { excludeParams } from '../../../../api/tool/exclude';
+import { parseTime } from '../../../../utils/ruoyi';
 
 /**
  * 调整单功能
@@ -8,12 +8,12 @@ import {parseTime} from "../../../../utils/ruoyi";
 export var mixin_order_adjustOrder = {
   data: function () {
     return {
-      //订单信息
+      // 订单信息
       orderInfo: {},
     }
   },
   methods: {
-    //点击调整单的弹窗
+    // 点击调整单的弹窗
     handleOrderItemInfo(row) {
       this.$confirm('是否将该订单设置为调整单', '提示', {
         confirmButtonText: '确定',
@@ -34,7 +34,7 @@ export var mixin_order_adjustOrder = {
           // 去除字段
           orderInfo = excludeParams(orderInfo, this.$exclude)
           // 调整单
-          adjustGoodsOrder({...orderInfo, ordersNo: '', adjustDate: parseTime(new Date())}).then(res => {
+          adjustGoodsOrder({ ...orderInfo, ordersNo: '', adjustDate: parseTime(new Date()) }).then(res => {
             this.$message.success('调整单提交成功')
             this.getList();
           })

@@ -1,4 +1,4 @@
-import {listBankAccount} from "../../../../api/system/bankAccount";
+import { listBankAccount } from '../../../../api/system/bankAccount';
 
 export var mixin_payment_watcher = {
   data: function () {
@@ -9,11 +9,11 @@ export var mixin_payment_watcher = {
     tableName: '',
     // 关联表的主键ID
     tID: '',
-    //需要自动填充的钱
+    // 需要自动填充的钱
     needMoney: {
       type: Number
     },
-    //需要自动填充的信息 包含 对方户名:acountsName 对方账号 bankNo 对方开户行 bankName 对方公司 companyName
+    // 需要自动填充的信息 包含 对方户名:acountsName 对方账号 bankNo 对方开户行 bankName 对方公司 companyName
     needInfo: {
       type: Object
     }
@@ -73,7 +73,7 @@ export var mixin_payment_watcher = {
     // 监听表的变化
     tableName: {
       handler(val) {
-        console.log("支付类型", val)
+        console.log('支付类型', val)
         if (val === 'oilrecharge') {
           this.form.companyType = '其他'
         }

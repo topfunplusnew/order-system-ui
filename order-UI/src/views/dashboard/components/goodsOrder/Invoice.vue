@@ -86,189 +86,189 @@
 </template>
 
 <script>
-import SearchOption from "@/components/SearchOption.vue";
-import { addInvoiceIn } from "@/api/system/invoiceIn";
-import { checkOrderAllinvoice } from "@/api/system/goodsOrder";
-import { addInvoiceOut } from "@/api/system/invoiceOut";
-import { excludeParams } from "@/api/tool/exclude";
-import { listCompany } from "@/api/system/company";
-import { fix } from "@/api/tool/format";
+  import SearchOption from '@/components/SearchOption.vue';
+  import { addInvoiceIn } from '@/api/system/invoiceIn';
+  import { checkOrderAllinvoice } from '@/api/system/goodsOrder';
+  import { addInvoiceOut } from '@/api/system/invoiceOut';
+  import { excludeParams } from '@/api/tool/exclude';
+  import { listCompany } from '@/api/system/company';
+  import { fix } from '@/api/tool/format';
 
-export default {
-  name: "Invoice",
-  components: { SearchOption },
-  props: {
-    // 最大开票金额
-    maxInvent: {
-      type: Number,
-      default: 0,
-    },
-    invoiceInfo: {
-      type: Object,
-      default() {
-        return {};
-      }
-    }
-  },
-  data() {
-    return {
-      form: {
-        
+  export default {
+    name: 'Invoice',
+    components: { SearchOption },
+    props: {
+      // 最大开票金额
+      maxInvent: {
+        type: Number,
+        default: 0,
       },
-      CheckRules: {
-        // 开票信息校验
-        updateOrderItemVisibleTitleRules: {
-          invoiceDate: [
-            { required: true, message: "请选择开票日期", trigger: "blur" },
-          ],
-          invoiceObject: [
-            { required: true, message: "请输入开票实体", trigger: "blur" },
-          ],
-          invoiceCompanyName: [
-            { required: true, message: "请输入票据单位名称", trigger: "blur" },
-          ],
-          invoiceAmount: [
-            { required: true, message: "请输入开票金额", trigger: "blur" },
-            { pattern: /^-?[0-9]+(\.[0-9]+)?$/, message: "只能输入数字和小数", trigger: "blur" },
-          ],
-          companyName: [
-            { required: true, message: "请输入公司名称", trigger: "blur" },
-          ],
-          ticketPoint: [
-            { required: true, message: "请输入开票点", trigger: "blur" },
-            { pattern: /^-?[0-9]+(\.[0-9]+)?$/, message: "只能输入数字", trigger: "blur" },
-          ],
-          ticketPointAmount: [
-            { required: true, message: "请输入票点金额", trigger: "blur" },
-            { pattern: /^-?[0-9]+(\.[0-9]+)?$/, message: "只能输入数字", trigger: "blur" },
-          ],
-        },
-      },
-      queryCompanyName: "",
-    };
-  },
-  computed: {
-    companyName () {
-      return this.invoiceInfo.companyName;
-    },
-    companyType () {
-      return this.invoiceInfo.companyType;
-    },
-    companyID () {
-      return this.invoiceInfo.companyID;
-    },
-    invoiceAmount () {
-      return this.invoiceInfo.invoiceAmount;
-    }
-  },
-  watch: {
-    
-    // 监听开票金额不能超过总货款
-    form: {
-      handler () {
-        // 不能超越货款
-        if (this.form.ticketPointAmount > this.maxInvent) {
-          this.$modal.msgError("客户开票金额不能超过订单总货款");
-          this.resetMoney()
+      invoiceInfo: {
+        type: Object,
+        default() {
+          return {};
         }
-        // 填充票点金额
-        this.form.ticketPointAmount = fix(
-          Number(this.form.ticketPoint) * Number(this.form.invoiceAmount)
-        );
+      }
+    },
+    data() {
+      return {
+        form: {
+        
+        },
+        CheckRules: {
+          // 开票信息校验
+          updateOrderItemVisibleTitleRules: {
+            invoiceDate: [
+              { required: true, message: '请选择开票日期', trigger: 'blur' },
+            ],
+            invoiceObject: [
+              { required: true, message: '请输入开票实体', trigger: 'blur' },
+            ],
+            invoiceCompanyName: [
+              { required: true, message: '请输入票据单位名称', trigger: 'blur' },
+            ],
+            invoiceAmount: [
+              { required: true, message: '请输入开票金额', trigger: 'blur' },
+              { pattern: /^-?[0-9]+(\.[0-9]+)?$/, message: '只能输入数字和小数', trigger: 'blur' },
+            ],
+            companyName: [
+              { required: true, message: '请输入公司名称', trigger: 'blur' },
+            ],
+            ticketPoint: [
+              { required: true, message: '请输入开票点', trigger: 'blur' },
+              { pattern: /^-?[0-9]+(\.[0-9]+)?$/, message: '只能输入数字', trigger: 'blur' },
+            ],
+            ticketPointAmount: [
+              { required: true, message: '请输入票点金额', trigger: 'blur' },
+              { pattern: /^-?[0-9]+(\.[0-9]+)?$/, message: '只能输入数字', trigger: 'blur' },
+            ],
+          },
+        },
+        queryCompanyName: '',
+      };
+    },
+    computed: {
+      companyName () {
+        return this.invoiceInfo.companyName;
       },
-      deep: true,
+      companyType () {
+        return this.invoiceInfo.companyType;
+      },
+      companyID () {
+        return this.invoiceInfo.companyID;
+      },
+      invoiceAmount () {
+        return this.invoiceInfo.invoiceAmount;
+      }
     },
-  },
-  created() {
-    this.resetOpenTitleInfo();
-  },
-  mounted () {
-    // 填充表单的公司信息
-    this.form.companyName = this.companyName
-  },
-  methods: {
-    listCompany,
-    handleUpdateCompanyName(val) {
-      this.queryCompanyName = val;
-    },
-    handleCommitBackCompany(val) {
-      this.form.companyName = val.companyName;
-      this.form.companyID = val.id;
-      this.form.companyType = val.companyType;
-    },
-    // 作为表单的子元素必须要重写该方法
-    handleProcess () {
-      // 去除参数
-      this.form = excludeParams(this.form, this.$exclude);
-      let total_out = 0, total_in = 0;
-
-      // 客户开票 domain = 1
-      if (this.invoiceInfo.domain === 1) {
-        // 先检查一下可不可以开票 即检查是否超过钱
-        checkOrderAllinvoice(this.invoiceInfo.isOrderTax).then((res) => {
-          total_out = res.data?.total_out || 0;
-          if (Number(this.form.invoiceAmount) + total_out > this.maxInvent) {
-            this.$message.error("累计开票金额超过总货款");
+    watch: {
+    
+      // 监听开票金额不能超过总货款
+      form: {
+        handler () {
+          // 不能超越货款
+          if (this.form.ticketPointAmount > this.maxInvent) {
+            this.$modal.msgError('客户开票金额不能超过订单总货款');
             this.resetMoney()
-            return;
-          } 
-          // 组装开票实体
-          const body = {
+          }
+          // 填充票点金额
+          this.form.ticketPointAmount = fix(
+            Number(this.form.ticketPoint) * Number(this.form.invoiceAmount)
+          );
+        },
+        deep: true,
+      },
+    },
+    created() {
+      this.resetOpenTitleInfo();
+    },
+    mounted () {
+      // 填充表单的公司信息
+      this.form.companyName = this.companyName
+    },
+    methods: {
+      listCompany,
+      handleUpdateCompanyName(val) {
+        this.queryCompanyName = val;
+      },
+      handleCommitBackCompany(val) {
+        this.form.companyName = val.companyName;
+        this.form.companyID = val.id;
+        this.form.companyType = val.companyType;
+      },
+      // 作为表单的子元素必须要重写该方法
+      handleProcess () {
+        // 去除参数
+        this.form = excludeParams(this.form, this.$exclude);
+        let total_out = 0, total_in = 0;
+
+        // 客户开票 domain = 1
+        if (this.invoiceInfo.domain === 1) {
+          // 先检查一下可不可以开票 即检查是否超过钱
+          checkOrderAllinvoice(this.invoiceInfo.isOrderTax).then((res) => {
+            total_out = res.data?.total_out || 0;
+            if (Number(this.form.invoiceAmount) + total_out > this.maxInvent) {
+              this.$message.error('累计开票金额超过总货款');
+              this.resetMoney()
+              return;
+            } 
+            // 组装开票实体
+            const body = {
               ...this.form,
               ...this.invoiceInfo
-          }
-          // 添加开票信息
-          addInvoiceOut(body).then(() => {
-            this.$message.success("客户开票成功~");
-            this.resetOpenTitleInfo();
-            this.getList();
-        });
-        });
+            }
+            // 添加开票信息
+            addInvoiceOut(body).then(() => {
+              this.$message.success('客户开票成功~');
+              this.resetOpenTitleInfo();
+              this.getList();
+            });
+          });
         // 供应商开票 domain = 2
-      } else {
-        checkOrderAllinvoice(this.invoiceInfo.isOrderTax).then((res) => {
-          total_in = res.data?.total_in || 0;
-          if (Number(this.form.invoiceAmount) + total_in > this.maxInvent) {
-            this.$message.error("累计开票金额超过出厂货款");
-            this.resetMoney()
-          } 
-          const body = {
+        } else {
+          checkOrderAllinvoice(this.invoiceInfo.isOrderTax).then((res) => {
+            total_in = res.data?.total_in || 0;
+            if (Number(this.form.invoiceAmount) + total_in > this.maxInvent) {
+              this.$message.error('累计开票金额超过出厂货款');
+              this.resetMoney()
+            } 
+            const body = {
               ...this.form,
               ...this.invoiceInfo
             }
             addInvoiceIn(body).then(() => {
-              this.$message.success("供应商开票成功~");
+              this.$message.success('供应商开票成功~');
               this.resetOpenTitleInfo();
               this.getList();
             });
-        });
-      }
-    },
-    // 重写关闭逻辑
-    handleReject () {
+          });
+        }
+      },
+      // 重写关闭逻辑
+      handleReject () {
       
+      },
+      resetMoney () {
+        this.form.invoiceAmount = 0
+        this.form.ticketPoint = 0
+        this.form.ticketPointAmount = 0
+      },
+      resetOpenTitleInfo() {
+        this.form = {
+          id: null,
+          invoiceDate: null,
+          invoiceObject: null,
+          invoiceAmount: 0,
+          companyType: null,
+          companyName: null,
+          companyID: null,
+          invoiceCompanyName: null,
+          ticketPoint: 0,
+          ticketPointAmount: 0,
+          isOrderTax: 0,
+          comments: null
+        };
+      },
     },
-    resetMoney () {
-       this.form.invoiceAmount =  0
-       this.form.ticketPoint =  0
-       this.form.ticketPointAmount =  0
-    },
-    resetOpenTitleInfo() {
-      this.form = {
-        id: null,
-        invoiceDate: null,
-        invoiceObject: null,
-        invoiceAmount: 0,
-        companyType: null,
-        companyName: null,
-        companyID: null,
-        invoiceCompanyName: null,
-        ticketPoint: 0,
-        ticketPointAmount: 0,
-        isOrderTax: 0,
-        comments: null
-      };
-    },
-  },
-};
+  };
 </script>

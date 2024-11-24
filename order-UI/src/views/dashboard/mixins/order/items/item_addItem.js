@@ -10,12 +10,12 @@ export var mixin_item_addItem = {
   watch: {
     orderItemInfo: {
       handler() {
-        //运费自动填充
+        // 运费自动填充
         this.orderItemInfo.freight =
           Number(this.orderItemInfo.landFreight) +
           (this.isSea ? Number(this.orderItemInfo.seaFreight) : 0);
         const taxMapping = {
-          "00": {
+          '00': {
             paymentFactory: this.paymentFactory00,
             payments: this.payments00,
             tonnage: this.tonnage00,
@@ -31,7 +31,7 @@ export var mixin_item_addItem = {
             profit: this.profit10,
             profitNoTax: this.profitNoTax10,
           },
-          "01": {
+          '01': {
             paymentFactory: this.paymentFactory01,
             payments: this.payments01,
             tonnage: this.tonnage01,
@@ -58,29 +58,29 @@ export var mixin_item_addItem = {
     },
   },
   methods: {
-    //添加订单vuex
+    // 添加订单vuex
     addOrderItem() {
       this.loading = true;
-      this.$store.commit("order/changeOrderItemStatus", {
+      this.$store.commit('order/changeOrderItemStatus', {
         ...this.orderItemInfo,
         orderIndex: this.index,
       });
-      this.$message.success("添加货物成功");
+      this.$message.success('添加货物成功');
       this.disabled = true;
-      this.buttonText = "已添加该货物";
+      this.buttonText = '已添加该货物';
       this.loading = false;
     },
     // 供应商信息 从供应商发货
     handleCommitBackCompany(val) {
       this.resetOrderItemInfo();
-      this.orderItemInfo.supplierID = val.id; //goodsOrderList->供应商ID
+      this.orderItemInfo.supplierID = val.id; // goodsOrderList->供应商ID
       this.orderItemInfo.supplier = val.companyName;
     },
     // 仓库信息 从仓库发货
     handleCommitBackInventory(val) {
       this.resetOrderItemInfo();
-      this.orderItemInfo.storeID = val.id; //goodsOrderList ->库存ID
-      this.orderItemInfo.storeHouseID = val.storeHouseid; //goodsOrderList ->库存ID
+      this.orderItemInfo.storeID = val.id; // goodsOrderList ->库存ID
+      this.orderItemInfo.storeHouseID = val.storeHouseid; // goodsOrderList ->库存ID
       if (this.orderItemInfo.supplier) {
         this.orderItemInfo.supplier = null;
       }
@@ -90,9 +90,9 @@ export var mixin_item_addItem = {
       this.orderItemInfo.width = val.width;
       this.orderItemInfo.levelID = val.levelID;
       this.orderItemInfo.levelName = val.levelName;
-      //出厂片数让用户自己填
+      // 出厂片数让用户自己填
       this.orderItemInfo.pieces = val.stockNumber;
-      this.currentStockNumber = val.stockNumber; //暂存
+      this.currentStockNumber = val.stockNumber; // 暂存
     },
     // 产品级别自动填充
     handleCommitBackProductLevel(val) {
@@ -115,7 +115,7 @@ export var mixin_item_addItem = {
         customerID: null,
         levelID: null,
         levelName: null,
-        countingUnit: "片",
+        countingUnit: '片',
         height: null,
         length: null,
         width: null,
@@ -123,11 +123,11 @@ export var mixin_item_addItem = {
         piecesPerPack: 0,
         packs: 0,
         price: 0,
-        isIncludeTaxFactory: "0",
+        isIncludeTaxFactory: '0',
         sundryCost: 0,
         paymentFactory: 0,
         paymentUnload: 0,
-        isIncludeTaxSale: "0",
+        isIncludeTaxSale: '0',
         payments: 0,
         erro: 0,
         tonnage: 0,

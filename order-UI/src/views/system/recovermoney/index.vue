@@ -1,6 +1,6 @@
 <template>
   <div class="app-container">
-    <el-form :model="queryParams" ref="queryForm" size="mini" :inline="true" v-show="showSearch" label-width="68px">
+    <el-form v-show="showSearch" ref="queryForm" :model="queryParams" size="mini" :inline="true" label-width="68px">
       <el-form-item label="开始时间" prop="beginTime">
         <el-date-picker
           v-model="dateRange"
@@ -20,8 +20,8 @@
       <el-col :span="1.5">
         <el-button icon="el-icon-refresh" size="mini" @click="resetQuery">刷新</el-button>
       </el-col>
-      <right-toolbar :showSearch.sync="showSearch" @queryTable="getList" :columns="columns">
-        <template v-slot:print>
+      <right-toolbar :showSearch.sync="showSearch" :columns="columns" @queryTable="getList">
+        <template #print>
           <el-col :span="1.5">
             <el-button
               plain
@@ -33,14 +33,14 @@
           </el-col>
         </template>
         <!--        导出-->
-        <template v-slot:export>
+        <template #export>
           <el-col :span="1.5">
             <el-button
+              v-hasPermi="['system:recovermoney:export']"
               plain
               icon="el-icon-folder-opened"
               size="mini"
               @click="handleExport"
-              v-hasPermi="['system:recovermoney:export']"
             >
             </el-button>
           </el-col>
@@ -48,18 +48,18 @@
       </right-toolbar>
     </el-row>
 
-    <el-table border v-loading="loading" :data="recoverMoneyList" @selection-change="handleSelectionChange"
-              id="printBox" size="mini" :cell-style="()=>{return {padding:'.5px'}}"
-              v-horizontal-scroll="'always'">
-      <el-table-column label="id" align="center" prop="id"/>
-      <el-table-column label="收回金额" align="center" prop="moneyAmount" v-if="columns[0].visible"
-                       show-overflow-tooltip/>
-      <el-table-column label="收回日期" align="center" prop="recoverDate" v-if="columns[1].visible"
-                       show-overflow-tooltip/>
-      <el-table-column label="收回账户" align="center" prop="acountsName" v-if="columns[2].visible"
-                       show-overflow-tooltip/>
-      <el-table-column label="收回账号" align="center" prop="bankNo" v-if="columns[3].visible" show-overflow-tooltip/>
-      <el-table-column label="备注" align="center" prop="comments" v-if="columns[4].visible" show-overflow-tooltip/>
+    <el-table id="printBox" v-loading="loading" v-horizontal-scroll="'always'" border
+              :data="recoverMoneyList" size="mini" :cell-style="()=>{return {padding:'.5px'}}"
+              @selection-change="handleSelectionChange">
+      <el-table-column label="id" align="center" prop="id" />
+      <el-table-column v-if="columns[0].visible" label="收回金额" align="center" prop="moneyAmount"
+                       show-overflow-tooltip />
+      <el-table-column v-if="columns[1].visible" label="收回日期" align="center" prop="recoverDate"
+                       show-overflow-tooltip />
+      <el-table-column v-if="columns[2].visible" label="收回账户" align="center" prop="acountsName"
+                       show-overflow-tooltip />
+      <el-table-column v-if="columns[3].visible" label="收回账号" align="center" prop="bankNo" show-overflow-tooltip />
+      <el-table-column v-if="columns[4].visible" label="备注" align="center" prop="comments" show-overflow-tooltip />
       <el-table-column label="操作" align="center" class-name="small-padding fixed-width" fixed="right">
         <template slot-scope="scope">
           <!--          <el-button-->
@@ -70,10 +70,10 @@
           <!--          >修改-->
           <!--          </el-button>-->
           <el-button
+            v-hasPermi="['system:recovermoney:remove']"
             size="mini"
             type="danger"
             @click="handleDelete(scope.row)"
-            v-hasPermi="['system:recovermoney:remove']"
           >删除
           </el-button>
         </template>
@@ -93,25 +93,25 @@
                append-to-body>
       <el-form ref="form" :model="form" :rules="rules" label-width="80px">
         <el-form-item label="借出款编号" prop="futuresNO">
-          <el-input v-model="form.futuresNO" placeholder="请输入借出款编号"/>
+          <el-input v-model="form.futuresNO" placeholder="请输入借出款编号" />
         </el-form-item>
         <el-form-item label="还款编号" prop="recoverNO">
-          <el-input v-model="form.recoverNO" placeholder="请输入还款编号"/>
+          <el-input v-model="form.recoverNO" placeholder="请输入还款编号" />
         </el-form-item>
         <el-form-item label="收回金额" prop="moneyAmount">
-          <el-input v-model="form.moneyAmount" placeholder="请输入收回金额"/>
+          <el-input v-model="form.moneyAmount" placeholder="请输入收回金额" />
         </el-form-item>
         <el-form-item label="收回日期" prop="recoverDate">
-          <el-input v-model="form.recoverDate" placeholder="请输入收回日期"/>
+          <el-input v-model="form.recoverDate" placeholder="请输入收回日期" />
         </el-form-item>
         <el-form-item label="收回账户" prop="acountsName">
-          <el-input v-model="form.acountsName" placeholder="请输入收回账户"/>
+          <el-input v-model="form.acountsName" placeholder="请输入收回账户" />
         </el-form-item>
         <el-form-item label="收回账号" prop="bankNo">
-          <el-input v-model="form.bankNo" placeholder="请输入收回账号"/>
+          <el-input v-model="form.bankNo" placeholder="请输入收回账号" />
         </el-form-item>
         <el-form-item label="备注" prop="comments">
-          <el-input v-model="form.comments" placeholder="请输入备注"/>
+          <el-input v-model="form.comments" placeholder="请输入备注" />
         </el-form-item>
       </el-form>
       <div slot="footer" class="dialog-footer">
@@ -123,157 +123,157 @@
 </template>
 
 <script>
-import {
-  listRecoverMoney,
-  getRecoverMoney,
-  delRecoverMoney,
-  addRecoverMoney,
-  updateRecoverMoney
-} from "@/api/system/recoverMoney";
-import {mapGetters} from "vuex";
-import {addDateRange} from "@/utils/ruoyi";
-import {addReason} from "@/api/system/user";
-import {TableName} from "@/api/tool/enums";
-import {excludeParams} from "@/api/tool/exclude";
-import BankType from "@/views/dashboard/components/common/BankType.vue";
-import {mixin_printHTML} from "@/views/dashboard/mixins/print";
+  import {
+    listRecoverMoney,
+    getRecoverMoney,
+    delRecoverMoney,
+    addRecoverMoney,
+    updateRecoverMoney
+  } from '@/api/system/recoverMoney';
+  import { mapGetters } from 'vuex';
+  import { addDateRange } from '@/utils/ruoyi';
+  import { addReason } from '@/api/system/user';
+  import { TableName } from '@/api/tool/enums';
+  import { excludeParams } from '@/api/tool/exclude';
+  import BankType from '@/views/dashboard/components/common/BankType.vue';
+  import { mixin_printHTML } from '@/views/dashboard/mixins/print';
 
-export default {
-  name: "RecoverMoney",
-  components: {BankType},
-  mixins: [mixin_printHTML],
-  data() {
-    return {
-      // 遮罩层
-      loading: true,
-      // 选中数组
-      ids: [],
-      // 非单个禁用
-      single: true,
-      // 非多个禁用
-      multiple: true,
-      // 显示搜索条件
-      showSearch: true,
-      // 总条数
-      total: 0,
-      // 借出款收回信息表格数据
-      recoverMoneyList: [],
-      // 弹出层标题
-      title: "",
-      // 是否显示弹出层
-      open: false,
-      dateRange: [],
-      // 查询参数
-      queryParams: {
-        pageNum: 1,
-        pageSize: 10,
-        futuresNO: null,
-        recoverNO: null,
-        moneyAmount: null,
-        recoverDate: null,
-        acountsName: null,
-        bankNo: null,
-        comments: null,
-        addtime: null,
-        userId: null,
-        UserName: null,
-        delFlag: null
-      },
-      // 表单参数
-      form: {},
-      columns: [
-        /* {key: 0, label: `借出款编号`, visible: true},
+  export default {
+    name: 'RecoverMoney',
+    components: { BankType },
+    mixins: [mixin_printHTML],
+    data() {
+      return {
+        // 遮罩层
+        loading: true,
+        // 选中数组
+        ids: [],
+        // 非单个禁用
+        single: true,
+        // 非多个禁用
+        multiple: true,
+        // 显示搜索条件
+        showSearch: true,
+        // 总条数
+        total: 0,
+        // 借出款收回信息表格数据
+        recoverMoneyList: [],
+        // 弹出层标题
+        title: '',
+        // 是否显示弹出层
+        open: false,
+        dateRange: [],
+        // 查询参数
+        queryParams: {
+          pageNum: 1,
+          pageSize: 10,
+          futuresNO: null,
+          recoverNO: null,
+          moneyAmount: null,
+          recoverDate: null,
+          acountsName: null,
+          bankNo: null,
+          comments: null,
+          addtime: null,
+          userId: null,
+          UserName: null,
+          delFlag: null
+        },
+        // 表单参数
+        form: {},
+        columns: [
+          /* {key: 0, label: `借出款编号`, visible: true},
          {key: 1, label: `还款编号`, visible: true},*/
-        {key: 0, label: `收回金额`, visible: true},
-        {key: 1, label: `收回日期`, visible: true},
-        {key: 2, label: `收回账户`, visible: true},
-        {key: 3, label: `收回账号`, visible: true},
-        {key: 4, label: `备注`, visible: true},
-      ],
-      // 表单校验
-      rules: {},
-    };
-  },
-  created() {
-    this.getList();
-    if (localStorage.getItem('recovermoney-columns') === 'null'
-      || !localStorage.getItem('recovermoney-columns')) {
-      //设置localStorage
-      localStorage.setItem("recovermoney-columns", JSON.stringify(this.columns))
-    } else {
-      this.columns = JSON.parse(localStorage.getItem('recovermoney-columns'));
-    }
-    this.$store.dispatch('money/getTempRecoverMoneyList')
-  },
-  computed: {
-    ...mapGetters(['tempRecoverMoneyList'])
-  },
-  //展示与隐藏
-  watch: {
-    columns: {
-      handler: (newVal) => {
-        localStorage.setItem("recovermoney-columns", JSON.stringify(newVal))
-      },
-      deep: true,
-    }
-  },
-  methods: {
-    /** 查询借出款收回信息列表 */
-    getList() {
-      this.loading = true;
-      listRecoverMoney(addDateRange(this.queryParams, this.dateRange)).then(response => {
-        this.recoverMoneyList = response.rows;
-        this.total = response.total;
-        this.loading = false;
-      });
-    },
-    // 取消按钮
-    cancel() {
-      this.open = false;
-      this.reset();
-    },
-    // 表单重置
-    reset() {
-      this.form = {
-        id: null,
-        futuresNO: null,
-        recoverNO: null,
-        moneyAmount: null,
-        recoverDate: null,
-        acountsName: null,
-        bankNo: null,
-        comments: null,
-        addtime: null,
-        userId: null,
-        UserName: null,
-        updateTime: null,
-        delFlag: null
+          { key: 0, label: `收回金额`, visible: true },
+          { key: 1, label: `收回日期`, visible: true },
+          { key: 2, label: `收回账户`, visible: true },
+          { key: 3, label: `收回账号`, visible: true },
+          { key: 4, label: `备注`, visible: true },
+        ],
+        // 表单校验
+        rules: {},
       };
-      this.resetForm("form");
     },
-    /** 搜索按钮操作 */
-    handleQuery() {
-      this.queryParams.pageNum = 1;
+    created() {
       this.getList();
+      if (localStorage.getItem('recovermoney-columns') === 'null' ||
+        !localStorage.getItem('recovermoney-columns')) {
+        // 设置localStorage
+        localStorage.setItem('recovermoney-columns', JSON.stringify(this.columns))
+      } else {
+        this.columns = JSON.parse(localStorage.getItem('recovermoney-columns'));
+      }
+      this.$store.dispatch('money/getTempRecoverMoneyList')
     },
-    /** 重置按钮操作 */
-    resetQuery() {
-      this.resetForm("queryForm");
-      this.handleQuery();
+    computed: {
+      ...mapGetters(['tempRecoverMoneyList'])
     },
-    // 多选框选中数据
-    handleSelectionChange(selection) {
-      this.ids = selection.map(item => item.id)
-      this.single = selection.length !== 1
-      this.multiple = !selection.length
+    // 展示与隐藏
+    watch: {
+      columns: {
+        handler: (newVal) => {
+          localStorage.setItem('recovermoney-columns', JSON.stringify(newVal))
+        },
+        deep: true,
+      }
     },
-    /** 新增按钮操作 */
-    handleAdd() {
-      this.reset();
-      this.open = true;
-      this.title = "添加借出款收回信息";
-    },
-    /*/!** 修改按钮操作 *!/
+    methods: {
+      /** 查询借出款收回信息列表 */
+      getList() {
+        this.loading = true;
+        listRecoverMoney(addDateRange(this.queryParams, this.dateRange)).then(response => {
+          this.recoverMoneyList = response.rows;
+          this.total = response.total;
+          this.loading = false;
+        });
+      },
+      // 取消按钮
+      cancel() {
+        this.open = false;
+        this.reset();
+      },
+      // 表单重置
+      reset() {
+        this.form = {
+          id: null,
+          futuresNO: null,
+          recoverNO: null,
+          moneyAmount: null,
+          recoverDate: null,
+          acountsName: null,
+          bankNo: null,
+          comments: null,
+          addtime: null,
+          userId: null,
+          UserName: null,
+          updateTime: null,
+          delFlag: null
+        };
+        this.resetForm('form');
+      },
+      /** 搜索按钮操作 */
+      handleQuery() {
+        this.queryParams.pageNum = 1;
+        this.getList();
+      },
+      /** 重置按钮操作 */
+      resetQuery() {
+        this.resetForm('queryForm');
+        this.handleQuery();
+      },
+      // 多选框选中数据
+      handleSelectionChange(selection) {
+        this.ids = selection.map(item => item.id)
+        this.single = selection.length !== 1
+        this.multiple = !selection.length
+      },
+      /** 新增按钮操作 */
+      handleAdd() {
+        this.reset();
+        this.open = true;
+        this.title = '添加借出款收回信息';
+      },
+      /* /!** 修改按钮操作 *!/
     handleUpdate(row) {
       this.reset();
       const id = row.id || this.ids
@@ -283,70 +283,70 @@ export default {
         this.title = "修改借出款收回信息";
       });
     },*/
-    /** 修改按钮操作 */
-    handleUpdate(row) {
-      this.$prompt('请输入编辑原因', '提示', {
-        confirmButtonText: '确定',
-        cancelButtonText: '取消',
-        type: 'warning'
-      }).then(({value}) => {
-        addReason({reason: value, tableName: TableName.RECOVER_MONEY, tid: row.id, modifyTime: this.modifyTime})
-          .then(res => {
-            this.$message.success('提交成功')
-            this.reset();
-            const id = row.id || this.ids
-            getRecoverMoney(id).then(response => {
-              this.form = response.data;
-              this.open = true;
-              this.title = "修改借出款收回信息";
-            });
-          })
-      }).catch(() => {
-        this.$message({
-          type: 'warning',
-          message: '请先输入编辑原因!'
+      /** 修改按钮操作 */
+      handleUpdate(row) {
+        this.$prompt('请输入编辑原因', '提示', {
+          confirmButtonText: '确定',
+          cancelButtonText: '取消',
+          type: 'warning'
+        }).then(({ value }) => {
+          addReason({ reason: value, tableName: TableName.RECOVER_MONEY, tid: row.id, modifyTime: this.modifyTime })
+            .then(res => {
+              this.$message.success('提交成功')
+              this.reset();
+              const id = row.id || this.ids
+              getRecoverMoney(id).then(response => {
+                this.form = response.data;
+                this.open = true;
+                this.title = '修改借出款收回信息';
+              });
+            })
+        }).catch(() => {
+          this.$message({
+            type: 'warning',
+            message: '请先输入编辑原因!'
+          });
         });
-      });
-    },
-    /** 提交按钮 */
-    submitForm() {
-      this.$refs["form"].validate(valid => {
-        if (valid) {
-          if (this.form.id != null) {
-            this.form = excludeParams(this.form, this.$exclude)
-            updateRecoverMoney(this.form).then(response => {
-              this.$modal.msgSuccess("修改成功");
-              this.open = false;
-              this.getList();
-            });
-          } else {
-            this.form = excludeParams(this.form, this.$exclude)
-            addRecoverMoney(this.form).then(response => {
-              this.$modal.msgSuccess("新增成功");
-              this.open = false;
-              this.getList();
-            });
+      },
+      /** 提交按钮 */
+      submitForm() {
+        this.$refs['form'].validate(valid => {
+          if (valid) {
+            if (this.form.id != null) {
+              this.form = excludeParams(this.form, this.$exclude)
+              updateRecoverMoney(this.form).then(response => {
+                this.$modal.msgSuccess('修改成功');
+                this.open = false;
+                this.getList();
+              });
+            } else {
+              this.form = excludeParams(this.form, this.$exclude)
+              addRecoverMoney(this.form).then(response => {
+                this.$modal.msgSuccess('新增成功');
+                this.open = false;
+                this.getList();
+              });
+            }
           }
-        }
-      });
-    },
-    /** 删除按钮操作 */
-    handleDelete(row) {
-      const ids = row.id || this.ids;
-      this.$modal.confirm('是否确认删除借出款收回信息编号为"' + ids + '"的数据项？').then(function () {
-        return delRecoverMoney(ids);
-      }).then(() => {
-        this.getList();
-        this.$modal.msgSuccess("删除成功");
-      }).catch(() => {
-      });
-    },
-    /** 导出按钮操作 */
-    handleExport() {
-      this.download('system/recoverMoney/export', {
-        ...this.queryParams
-      }, `recoverMoney_${new Date().getTime()}.xlsx`)
+        });
+      },
+      /** 删除按钮操作 */
+      handleDelete(row) {
+        const ids = row.id || this.ids;
+        this.$modal.confirm('是否确认删除借出款收回信息编号为"' + ids + '"的数据项？').then(function () {
+          return delRecoverMoney(ids);
+        }).then(() => {
+          this.getList();
+          this.$modal.msgSuccess('删除成功');
+        }).catch(() => {
+        });
+      },
+      /** 导出按钮操作 */
+      handleExport() {
+        this.download('system/recoverMoney/export', {
+          ...this.queryParams
+        }, `recoverMoney_${new Date().getTime()}.xlsx`)
+      }
     }
-  }
-};
+  };
 </script>

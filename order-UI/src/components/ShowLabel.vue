@@ -1,18 +1,18 @@
 <script>
-export default {
-  name: "ShowLabel",
-  props: {
-    title: ''
+  export default {
+    name: 'ShowLabel',
+    props: {
+      title: ''
+    }
   }
-}
 </script>
 
 <template>
   <div>
     <div class="tooltip-container">
       <span class="text">
-   <slot name="icon"/>
-    {{ title }}</span
+        <slot name="icon" />
+        {{ title }}</span
       >
     </div>
 

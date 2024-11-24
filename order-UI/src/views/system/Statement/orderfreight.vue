@@ -1,84 +1,97 @@
 <!-- 运费报表-->
 <script>
-import {mixin_printHTML} from "@/views/dashboard/mixins/print";
-import {getOrderFreight} from "@/api/system/statement";
-import {parseTime} from "@/utils/ruoyi";
+  import { mixin_printHTML } from '@/views/dashboard/mixins/print';
+  import { getOrderFreight } from '@/api/system/statement';
+  import { parseTime } from '@/utils/ruoyi';
 
-export default {
-  name: "Orderfreight",
-  mixins: [mixin_printHTML],
-  data() {
-    return {
-      queryParams: {
-        beginTime: parseTime(new Date(new Date().getTime() - 30 * 24 * 60 * 60 * 1000), '{y}-{m}-{d} {h}:{i}:{s}'),
-        endTime: parseTime(new Date(), '{y}-{m}-{d} {h}:{i}:{s}'),
-        pageNum: 1,
-        pageSize: 50
-      },
-      loading: '',
-      columns: [
-        {key: 0, label: `车牌号`, visible: true},
-        {key: 1, label: `司机姓名`, visible: true},
-        {key: 2, label: `司机银行账号`, visible: true},
-        {key: 3, label: `日支付总额`, visible: true},
-        {key: 4, label: `日未支付总额`, visible: true},
-        {key: 5, label: `日应付总额`, visible: true},
-        {key: 6, label: `月支付总额`, visible: true},
-        {key: 7, label: `月未支付总额`, visible: true},
-        {key: 8, label: `月应付总额`, visible: true},
-        {key: 9, label: `年支付总额`, visible: true},
-        {key: 10, label: `年未支付总额`, visible: true},
-        {key: 11, label: `年应付总额`, visible: true},
-        {key: 12, label: `上一天未支付总额`, visible: true},
-        {key: 13, label: `上一个月未支付总额`, visible: true},
-        {key: 14, label: `上一年未支付总额`, visible: true},
-      ],
-      statementList: [],
-      dialogVisible: false
-    }
-  },
-  created() {
-    getOrderFreight(this.queryParams).then(res => {
-      this.statementList = res.rows;
-    })
-  },
-  methods: {
-    // 时间查询
-    handleQuery() {
-      getOrderFreight(this.queryParams).then(res => {
+  export default {
+    name: 'Orderfreight',
+    mixins: [mixin_printHTML],
+    data() {
+      return {
+        queryParams: {
+          beginTime: parseTime(
+            new Date(new Date().getTime() - 30 * 24 * 60 * 60 * 1000),
+            '{y}-{m}-{d} {h}:{i}:{s}'
+          ),
+          endTime: parseTime(new Date(), '{y}-{m}-{d} {h}:{i}:{s}'),
+          pageNum: 1,
+          pageSize: 50,
+        },
+        loading: '',
+        columns: [
+          { key: 0, label: `车牌号`, visible: true },
+          { key: 1, label: `司机姓名`, visible: true },
+          { key: 2, label: `司机银行账号`, visible: true },
+          { key: 3, label: `日支付总额`, visible: true },
+          { key: 4, label: `日未支付总额`, visible: true },
+          { key: 5, label: `日应付总额`, visible: true },
+          { key: 6, label: `月支付总额`, visible: true },
+          { key: 7, label: `月未支付总额`, visible: true },
+          { key: 8, label: `月应付总额`, visible: true },
+          { key: 9, label: `年支付总额`, visible: true },
+          { key: 10, label: `年未支付总额`, visible: true },
+          { key: 11, label: `年应付总额`, visible: true },
+          { key: 12, label: `上一天未支付总额`, visible: true },
+          { key: 13, label: `上一个月未支付总额`, visible: true },
+          { key: 14, label: `上一年未支付总额`, visible: true },
+        ],
+        statementList: [],
+        dialogVisible: false,
+      };
+    },
+    created() {
+      getOrderFreight(this.queryParams).then((res) => {
         this.statementList = res.rows;
-      })
+      });
     },
-    refresh() {
-      this.handleQuery();
+    methods: {
+      // 时间查询
+      handleQuery() {
+        getOrderFreight(this.queryParams).then((res) => {
+          this.statementList = res.rows;
+        });
+      },
+      refresh() {
+        this.handleQuery();
+      },
+      handleSubmitTime() {
+        this.download(
+          'statistics/export/orderfreightDetailsummary',
+          {
+            beginTime: this.queryParams.beginTime,
+            endTime: this.queryParams.endTime,
+          },
+          `运费报表${parseTime(new Date().getTime())}.xlsx`
+        );
+        this.dialogVisible = false;
+      },
+      handleExport() {
+        this.dialogVisible = true;
+      },
     },
-    handleSubmitTime() {
-      this.download('statistics/export/orderfreightDetailsummary', {
-        beginTime: this.queryParams.beginTime,
-        endTime: this.queryParams.endTime
-      }, `运费报表${parseTime(new Date().getTime())}.xlsx`)
-      this.dialogVisible = false
-    },
-    handleExport() {
-      this.dialogVisible = true;
-    }
-  },
-}
+  };
 </script>
 
 <template>
   <div>
     <div class="app-container">
       <!--    刷新行-->
-      <el-row style="background-color:#e6e6e6;">
+      <el-row style="background-color: #e6e6e6">
         <el-button type="primary" icon="el-icon-refresh" @click="refresh">
           刷新
         </el-button>
       </el-row>
-      <hr color="#e6e6e6">
+      <hr color="#e6e6e6" />
       <!--    时间范围搜索行-->
       <el-row>
-        <el-form ref="queryForm" :model="queryParams" size="mini" :inline="true" label-width="100px">
+        <el-form
+          ref="queryForm"
+          :model="queryParams"
+          size="mini"
+          :inline="true"
+          label-width="100px"
+        >
           <el-form-item label="时间" prop="companyName">
             <el-date-picker
               v-model="queryParams.beginTime"
@@ -98,15 +111,20 @@ export default {
             />
           </el-form-item>
           <el-form-item>
-            <el-button type="primary" icon="el-icon-search" size="mini" @click="handleQuery">
+            <el-button
+              type="primary"
+              icon="el-icon-search"
+              size="mini"
+              @click="handleQuery"
+            >
               搜索
             </el-button>
           </el-form-item>
         </el-form>
       </el-row>
-      <hr color="#e6e6e6">
+      <hr color="#e6e6e6" />
       <el-row>
-        <el-row style="font-weight: bold;font-size: 20px;margin: 0 30px">
+        <el-row style="font-weight: bold; font-size: 20px; margin: 0 30px">
           运费报表
         </el-row>
         <el-row>
@@ -141,7 +159,11 @@ export default {
             :data="statementList"
             height="450px"
             size="mini"
-            :cell-style="()=>{return {padding:'2px'}}"
+            :cell-style="
+              () => {
+                return { padding: '2px' };
+              }
+            "
           >
             <el-table-column
               v-if="columns[0].visible"
@@ -259,7 +281,12 @@ export default {
       :visible.sync="dialogVisible"
       width="30%"
     >
-      <el-form ref="queryForm" :model="queryParams" size="mini" label-width="68px">
+      <el-form
+        ref="queryForm"
+        :model="queryParams"
+        size="mini"
+        label-width="68px"
+      >
         <el-form-item label="开始时间" prop="beginTime">
           <el-date-picker
             v-model="queryParams.beginTime"
@@ -287,6 +314,4 @@ export default {
   </div>
 </template>
 
-<style scoped lang="scss">
-
-</style>
+<style scoped lang="scss"></style>

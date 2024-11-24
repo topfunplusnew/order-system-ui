@@ -1,6 +1,6 @@
 <template>
   <div class="app-container">
-    <el-form :model="queryParams" ref="queryForm" size="mini" :inline="true" v-show="showSearch" label-width="68px">
+    <el-form v-show="showSearch" ref="queryForm" :model="queryParams" size="mini" :inline="true" label-width="68px">
       <el-form-item label="仓库名称" prop="storeHouseName">
         <el-input
           v-model="queryParams.storeHouseName"
@@ -42,8 +42,8 @@
       <el-col :span="1.5">
         <el-button icon="el-icon-refresh" size="mini" @click="resetQuery">刷新</el-button>
       </el-col>
-      <right-toolbar :showSearch.sync="showSearch" @queryTable="getList" :columns="columns">
-        <template v-slot:print>
+      <right-toolbar :showSearch.sync="showSearch" :columns="columns" @queryTable="getList">
+        <template #print>
           <el-col :span="1.5">
             <el-button
               plain
@@ -55,14 +55,14 @@
           </el-col>
         </template>
         <!--        导出-->
-        <template v-slot:export>
+        <template #export>
           <el-col :span="1.5">
             <el-button
+              v-hasPermi="['system:exwarehouse:export']"
               plain
               icon="el-icon-folder-opened"
               size="mini"
               @click="handleExport"
-              v-hasPermi="['system:exwarehouse:export']"
             >
             </el-button>
           </el-col>
@@ -70,9 +70,9 @@
       </right-toolbar>
     </el-row>
 
-    <el-table border v-horizontal-scroll="'always'" v-loading="loading" :data="exWarehouseList"
-              @selection-change="handleSelectionChange" id="printBox" size="mini"
-              :cell-style="()=>{return {padding:'2px'}}">
+    <el-table id="printBox" v-horizontal-scroll="'always'" v-loading="loading" border
+              :data="exWarehouseList" size="mini" :cell-style="()=>{return {padding:'2px'}}"
+              @selection-change="handleSelectionChange">
       <!--      <el-table-column label="id" align="center" prop="id" v-if="columns[0].visible"/>-->
       <!--      <el-table-column label="订单编号" align="center" prop="ordersNo" v-if="columns[1].visible">-->
       <!--        <template slot-scope="scope">-->
@@ -87,10 +87,10 @@
       <!--        </template>-->
       <!--      </el-table-column>-->
       <!--      <el-table-column label="仓库ID" align="center" prop="storeHouseid"/>-->
-      <el-table-column label="仓库名称" align="center" prop="storeHouseName" v-if="columns[2].visible"/>
+      <el-table-column v-if="columns[2].visible" label="仓库名称" align="center" prop="storeHouseName" />
       <!--      <el-table-column label="仓库存储的货物ID" align="center" prop="storeID"/>-->
-      <el-table-column label="出库日期" align="center" prop="outDate" v-if="columns[3].visible"/>
-      <el-table-column label="出库量" align="center" prop="outAmount" v-if="columns[4].visible"/>
+      <el-table-column v-if="columns[3].visible" label="出库日期" align="center" prop="outDate" />
+      <el-table-column v-if="columns[4].visible" label="出库量" align="center" prop="outAmount" />
       <el-table-column label="操作" align="center" class-name="small-padding fixed-width">
         <template slot-scope="scope">
           <el-tooltip class="item" effect="dark"
@@ -99,8 +99,8 @@
             <el-button
               size="mini"
               type="primary"
-              @click="checkOrderInfo(scope.row)"
               :disabled="scope.row.ordersNo ==='二次加工' ||scope.row.ordersNo === '货物破损'"
+              @click="checkOrderInfo(scope.row)"
             >查看订单信息
             </el-button>
           </el-tooltip>
@@ -133,16 +133,16 @@
         <!--          <el-input v-model="form.storeHouseid" placeholder="请输入仓库ID"/>-->
         <!--        </el-form-item>-->
         <el-form-item label="仓库名称" prop="storeHouseName">
-          <el-input v-model="form.storeHouseName" placeholder="请输入仓库名称"/>
+          <el-input v-model="form.storeHouseName" placeholder="请输入仓库名称" />
         </el-form-item>
         <el-form-item label="仓库存储的货物ID" prop="storeID">
-          <el-input v-model="form.storeID" placeholder="请输入仓库存储的货物ID"/>
+          <el-input v-model="form.storeID" placeholder="请输入仓库存储的货物ID" />
         </el-form-item>
         <el-form-item label="出库日期" prop="outDate">
-          <el-input v-model="form.outDate" placeholder="请输入出库日期"/>
+          <el-input v-model="form.outDate" placeholder="请输入出库日期" />
         </el-form-item>
         <el-form-item label="出库量" prop="outAmount">
-          <el-input v-model="form.outAmount" placeholder="请输入出库量"/>
+          <el-input v-model="form.outAmount" placeholder="请输入出库量" />
         </el-form-item>
       </el-form>
       <div slot="footer" class="dialog-footer">
@@ -164,10 +164,10 @@
         <el-descriptions-item label="商家姓名">{{ orderDetailInfo.supplierNames || '-' }}</el-descriptions-item>
         <el-descriptions-item label="车队">{{ orderDetailInfo.fleet || '-' }}</el-descriptions-item>
         <el-descriptions-item label="审核状态">
-          <TagsItem :check-info="orderDetailInfo.checkState" checkValue="未审核"/>
+          <TagsItem :check-info="orderDetailInfo.checkState" checkValue="未审核" />
         </el-descriptions-item>
         <el-descriptions-item label="开票状态">
-          <TagsItem :check-info="orderDetailInfo.invoiceState" checkValue="未开票"/>
+          <TagsItem :check-info="orderDetailInfo.invoiceState" checkValue="未开票" />
         </el-descriptions-item>
         <el-descriptions-item label="附件">{{ orderDetailInfo.path || '-' }}</el-descriptions-item>
         <el-descriptions-item label="陆运车牌">{{ orderDetailInfo.landCarNo || '-' }}</el-descriptions-item>
@@ -183,21 +183,21 @@
         <el-descriptions-item label="海运银行账号">{{ orderDetailInfo.seaBankNo || '-' }}</el-descriptions-item>
         <el-descriptions-item label="收到条附件">{{ orderDetailInfo.receiveProof || '-' }}</el-descriptions-item>
         <el-descriptions-item label="是否被调整单">
-          <TagsItem :check-info="orderDetailInfo.isAdjusted " check-value="否"/>
+          <TagsItem :check-info="orderDetailInfo.isAdjusted " check-value="否" />
         </el-descriptions-item>
-        <el-descriptions-item label="调整日期" v-if="orderDetailInfo.isAdjusted">{{
-            orderDetailInfo.adjustDate
-          }}
+        <el-descriptions-item v-if="orderDetailInfo.isAdjusted" label="调整日期">{{
+          orderDetailInfo.adjustDate
+        }}
         </el-descriptions-item>
         <el-descriptions-item label="原订单编号">{{ orderDetailInfo.adjustOrderid }}</el-descriptions-item>
         <el-descriptions-item label="是否可编辑">
-          <TagsItem :check-info="isOrNot(orderDetailInfo.isedit) " check-value="否"/>
+          <TagsItem :check-info="isOrNot(orderDetailInfo.isedit) " check-value="否" />
         </el-descriptions-item>
         <el-descriptions-item label="客户是否开票">
-          <TagsItem :check-info="isOrNot(orderDetailInfo.customerIsInvoice)" check-value="否"/>
+          <TagsItem :check-info="isOrNot(orderDetailInfo.customerIsInvoice)" check-value="否" />
         </el-descriptions-item>
         <el-descriptions-item label="供应商是否开票">
-          <TagsItem :check-info="isOrNot(orderDetailInfo.customerIsInvoice)" check-value="否"/>
+          <TagsItem :check-info="isOrNot(orderDetailInfo.customerIsInvoice)" check-value="否" />
         </el-descriptions-item>
         <el-descriptions-item label="陆运费">{{ orderDetailInfo.landFreight }}</el-descriptions-item>
         <el-descriptions-item label="海运费">{{ orderDetailInfo.seaFreight }}</el-descriptions-item>
@@ -354,236 +354,236 @@
 </template>
 
 <script>
-import {
-  listExWarehouse,
-  getExWarehouse,
-  delExWarehouse,
-  addExWarehouse,
-  updateExWarehouse
-} from "@/api/system/exWarehouse";
-import {listGoodsOrder} from "@/api/system/goodsOrder";
-import TagsItem from "@/components/TagsItem/index.vue";
-import {getInventory, listInventory} from "@/api/system/inventory";
-import {listConfig} from "@/api/system/config";
-import {formatDate} from "../../../utils";
-import {addDateRange} from "@/utils/ruoyi";
+  import {
+    listExWarehouse,
+    getExWarehouse,
+    delExWarehouse,
+    addExWarehouse,
+    updateExWarehouse
+  } from '@/api/system/exWarehouse';
+  import { listGoodsOrder } from '@/api/system/goodsOrder';
+  import TagsItem from '@/components/TagsItem/index.vue';
+  import { getInventory, listInventory } from '@/api/system/inventory';
+  import { listConfig } from '@/api/system/config';
+  import { formatDate } from '../../../utils';
+  import { addDateRange } from '@/utils/ruoyi';
 
-export default {
-  name: "ExWarehouse",
-  components: {TagsItem},
-  data() {
-    return {
-      // 遮罩层
-      loading: true,
-      // 选中数组
-      ids: [],
-      // 非单个禁用
-      single: true,
-      // 非多个禁用
-      multiple: true,
-      // 显示搜索条件
-      showSearch: true,
-      // 总条数
-      total: 0,
-      // 出库表格数据
-      exWarehouseList: [],
-      // 弹出层标题
-      title: "",
-      // 日期范围
-      dateRange: [],
-      // 是否显示弹出层
-      open: false,
-      // 查询参数
-      queryParams: {
-        pageNum: 1,
-        pageSize: 10,
-        ordersNo: null,
-        storeHouseid: null,
-        storeHouseName: null,
-        storeID: null,
-        outDate: null,
-        outAmount: null,
-        delFlag: null,
-        addtime: null,
-        userId: null,
-        UserName: null,
-        isOrder: true
-      },
-      // 表单参数
-      form: {},
-      // 表单校验
-      rules: {},
-      columns: [
-        {key: 0, label: `id`, visible: true},
-        {key: 1, label: `订单编号`, visible: true},
-        {key: 2, label: `仓库名称`, visible: true},
-        {key: 3, label: `出库日期`, visible: true},
-        {key: 4, label: `出库量`, visible: true}
-      ],
-      checkOrderVisible: false,
-      orderDetailInfo: {},
-      inventoryInfo: {},
-      checkInventoryVisible: false,
-    };
-  },
-  created() {
-    this.getList();
-    if (localStorage.getItem('exwarehouse-columns') === 'null'
-      || !localStorage.getItem('exwarehouse-columns')) {
-      //设置localStorage
-      localStorage.setItem("exwarehouse-columns", JSON.stringify(this.columns))
-    } else {
-      this.columns = JSON.parse(localStorage.getItem('exwarehouse-columns'));
-    }
-  },
-  //展示与隐藏
-  watch: {
-    columns: {
-      handler: (newVal) => {
-        localStorage.setItem("exwarehouse-columns", JSON.stringify(newVal))
-      },
-      deep: true,
-    }
-  },
-  // 取消按钮
-  cancel() {
-    this.open = false;
-    this.reset();
-  },
-  methods: {
-    formatDate,
-    checkOrderInfo(row) {
-      this.checkOrderVisible = true;
-      //查询订单详情
-      listGoodsOrder({ordersNo: row.ordersNo}).then(res => {
-        this.orderDetailInfo = res.rows[0]
-      })
+  export default {
+    name: 'ExWarehouse',
+    components: { TagsItem },
+    data() {
+      return {
+        // 遮罩层
+        loading: true,
+        // 选中数组
+        ids: [],
+        // 非单个禁用
+        single: true,
+        // 非多个禁用
+        multiple: true,
+        // 显示搜索条件
+        showSearch: true,
+        // 总条数
+        total: 0,
+        // 出库表格数据
+        exWarehouseList: [],
+        // 弹出层标题
+        title: '',
+        // 日期范围
+        dateRange: [],
+        // 是否显示弹出层
+        open: false,
+        // 查询参数
+        queryParams: {
+          pageNum: 1,
+          pageSize: 10,
+          ordersNo: null,
+          storeHouseid: null,
+          storeHouseName: null,
+          storeID: null,
+          outDate: null,
+          outAmount: null,
+          delFlag: null,
+          addtime: null,
+          userId: null,
+          UserName: null,
+          isOrder: true
+        },
+        // 表单参数
+        form: {},
+        // 表单校验
+        rules: {},
+        columns: [
+          { key: 0, label: `id`, visible: true },
+          { key: 1, label: `订单编号`, visible: true },
+          { key: 2, label: `仓库名称`, visible: true },
+          { key: 3, label: `出库日期`, visible: true },
+          { key: 4, label: `出库量`, visible: true }
+        ],
+        checkOrderVisible: false,
+        orderDetailInfo: {},
+        inventoryInfo: {},
+        checkInventoryVisible: false,
+      };
     },
-
-    //查看库存信息 查询当前行的库存信息
-    checkInvoInfo(row) {
-      getInventory(row.storeID).then(res => {
-        this.inventoryInfo = res.data
-        this.checkInventoryVisible = true;
-      })
+    // 展示与隐藏
+    watch: {
+      columns: {
+        handler: (newVal) => {
+          localStorage.setItem('exwarehouse-columns', JSON.stringify(newVal))
+        },
+        deep: true,
+      }
     },
-    isOrNot(val) {
-      return val === 1 ? "是" : "否";
+    created() {
+      this.getList();
+      if (localStorage.getItem('exwarehouse-columns') === 'null' ||
+        !localStorage.getItem('exwarehouse-columns')) {
+        // 设置localStorage
+        localStorage.setItem('exwarehouse-columns', JSON.stringify(this.columns))
+      } else {
+        this.columns = JSON.parse(localStorage.getItem('exwarehouse-columns'));
+      }
     },
-
-    /** 查询出库列表 */
-    getList() {
-      this.loading = true;
-      //this.dateRange
-      listExWarehouse(addDateRange(this.queryParams, this.dateRange)).then(response => {
-        this.exWarehouseList = response.rows;
-        this.total = response.total;
-        this.loading = false;
-      });
-
-    },
-    /** 查询参数列表 */
-
     // 取消按钮
     cancel() {
       this.open = false;
       this.reset();
     },
-    // 表单重置
-    reset() {
-      this.form = {
-        id: null,
-        ordersNo: null,
-        storeHouseid: null,
-        storeHouseName: null,
-        storeID: null,
-        outDate: null,
-        outAmount: null,
-        delFlag: null,
-        updateTime: null,
-        addtime: null,
-        userId: null,
-        UserName: null
-      };
-      this.resetForm("form");
-    },
-    /** 搜索按钮操作 */
-    handleQuery() {
-      this.queryParams.pageNum = 1;
-      this.getList();
-    },
-    /** 重置按钮操作 */
-    resetQuery() {
-      this.dateRange = [];
-      this.resetForm("queryForm");
-      this.handleQuery();
-    },
-    // 多选框选中数据
-    handleSelectionChange(selection) {
-      this.ids = selection.map(item => item.id)
-      this.single = selection.length !== 1
-      this.multiple = !selection.length
-    },
-    printHTML() {
-      this.$print({
-        printable: 'printBox',
-        type: 'html',
-        targetStyles: ['*'], // 打印内容使用所有HTML样式，没有设置这个属性/值，设置分页打印没有效果
-      })
-    },
-    /** 新增按钮操作 */
-    handleAdd() {
-      this.reset();
-      this.open = true;
-      this.title = "添加出库";
-    },
-    /** 修改按钮操作 */
-    handleUpdate(row) {
-      this.reset();
-      const id = row.id || this.ids
-      getExWarehouse(id).then(response => {
-        this.form = response.data;
-        this.open = true;
-        this.title = "修改出库";
-      });
-    },
-    /** 提交按钮 */
-    submitForm() {
-      this.$refs["form"].validate(valid => {
-        if (valid) {
-          if (this.form.id != null) {
-            updateExWarehouse(this.form).then(response => {
-              this.$modal.msgSuccess("修改成功");
-              this.open = false;
-              this.getList();
-            });
-          } else {
-            addExWarehouse(this.form).then(response => {
-              this.$modal.msgSuccess("新增成功");
-              this.open = false;
-              this.getList();
-            });
-          }
-        }
-      });
-    },
-    /** 删除按钮操作 */
-    handleDelete(row) {
-      const ids = row.id || this.ids;
-      this.$modal.confirm('是否确认删除出库编号为"' + ids + '"的数据项？').then(function () {
-        return delExWarehouse(ids);
-      }).then(() => {
+    methods: {
+      formatDate,
+      checkOrderInfo(row) {
+        this.checkOrderVisible = true;
+        // 查询订单详情
+        listGoodsOrder({ ordersNo: row.ordersNo }).then(res => {
+          this.orderDetailInfo = res.rows[0]
+        })
+      },
+
+      // 查看库存信息 查询当前行的库存信息
+      checkInvoInfo(row) {
+        getInventory(row.storeID).then(res => {
+          this.inventoryInfo = res.data
+          this.checkInventoryVisible = true;
+        })
+      },
+      isOrNot(val) {
+        return val === 1 ? '是' : '否';
+      },
+
+      /** 查询出库列表 */
+      getList() {
+        this.loading = true;
+        // this.dateRange
+        listExWarehouse(addDateRange(this.queryParams, this.dateRange)).then(response => {
+          this.exWarehouseList = response.rows;
+          this.total = response.total;
+          this.loading = false;
+        });
+
+      },
+      /** 查询参数列表 */
+
+      // 取消按钮
+      cancel() {
+        this.open = false;
+        this.reset();
+      },
+      // 表单重置
+      reset() {
+        this.form = {
+          id: null,
+          ordersNo: null,
+          storeHouseid: null,
+          storeHouseName: null,
+          storeID: null,
+          outDate: null,
+          outAmount: null,
+          delFlag: null,
+          updateTime: null,
+          addtime: null,
+          userId: null,
+          UserName: null
+        };
+        this.resetForm('form');
+      },
+      /** 搜索按钮操作 */
+      handleQuery() {
+        this.queryParams.pageNum = 1;
         this.getList();
-        this.$modal.msgSuccess("删除成功");
-      }).catch(() => {
-      });
-    },
-    /** 导出按钮操作 */
-    handleExport() {
-      this.download('system/exWarehouse/export', {
-        ...this.queryParams
-      }, `exWarehouse_${new Date().getTime()}.xlsx`)
+      },
+      /** 重置按钮操作 */
+      resetQuery() {
+        this.dateRange = [];
+        this.resetForm('queryForm');
+        this.handleQuery();
+      },
+      // 多选框选中数据
+      handleSelectionChange(selection) {
+        this.ids = selection.map(item => item.id)
+        this.single = selection.length !== 1
+        this.multiple = !selection.length
+      },
+      printHTML() {
+        this.$print({
+          printable: 'printBox',
+          type: 'html',
+          targetStyles: ['*'], // 打印内容使用所有HTML样式，没有设置这个属性/值，设置分页打印没有效果
+        })
+      },
+      /** 新增按钮操作 */
+      handleAdd() {
+        this.reset();
+        this.open = true;
+        this.title = '添加出库';
+      },
+      /** 修改按钮操作 */
+      handleUpdate(row) {
+        this.reset();
+        const id = row.id || this.ids
+        getExWarehouse(id).then(response => {
+          this.form = response.data;
+          this.open = true;
+          this.title = '修改出库';
+        });
+      },
+      /** 提交按钮 */
+      submitForm() {
+        this.$refs['form'].validate(valid => {
+          if (valid) {
+            if (this.form.id != null) {
+              updateExWarehouse(this.form).then(response => {
+                this.$modal.msgSuccess('修改成功');
+                this.open = false;
+                this.getList();
+              });
+            } else {
+              addExWarehouse(this.form).then(response => {
+                this.$modal.msgSuccess('新增成功');
+                this.open = false;
+                this.getList();
+              });
+            }
+          }
+        });
+      },
+      /** 删除按钮操作 */
+      handleDelete(row) {
+        const ids = row.id || this.ids;
+        this.$modal.confirm('是否确认删除出库编号为"' + ids + '"的数据项？').then(function () {
+          return delExWarehouse(ids);
+        }).then(() => {
+          this.getList();
+          this.$modal.msgSuccess('删除成功');
+        }).catch(() => {
+        });
+      },
+      /** 导出按钮操作 */
+      handleExport() {
+        this.download('system/exWarehouse/export', {
+          ...this.queryParams
+        }, `exWarehouse_${new Date().getTime()}.xlsx`)
+      }
     }
-  }
-};
+  };
 </script>

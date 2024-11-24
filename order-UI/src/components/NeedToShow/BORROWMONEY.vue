@@ -1,12 +1,12 @@
 <script>
-export default {
-  name: "BORROWMONEY",
-  props: {
-    needToShowInfo: {
-      type: Object
+  export default {
+    name: 'BORROWMONEY',
+    props: {
+      needToShowInfo: {
+        type: Object
+      }
     }
   }
-}
 </script>
 
 <template>

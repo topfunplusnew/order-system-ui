@@ -1,31 +1,31 @@
-import { getCompany } from "../../../../api/system/company";
-import { getGoodsOrder } from "../../../../api/system/goodsOrder";
-import { PUBLIC_DICT_TYPE } from "@/utils/order";
-import Invoice from "@/views/dashboard/components/goodsOrder/Invoice.vue";
+import { getCompany } from '../../../../api/system/company';
+import { getGoodsOrder } from '../../../../api/system/goodsOrder';
+import { PUBLIC_DICT_TYPE } from '@/utils/order';
+import Invoice from '@/views/dashboard/components/goodsOrder/Invoice.vue';
 // 状态
 export const Options = [
   {
-    value: "已审核",
-    label: "已审核",
+    value: '已审核',
+    label: '已审核',
   },
   {
-    value: "未审核",
-    label: "未审核",
+    value: '未审核',
+    label: '未审核',
   },
 ];
 
 export const OptionInvent = [
   {
-    value: "未开票",
-    label: "未开票",
+    value: '未开票',
+    label: '未开票',
   },
   {
-    value: "部分开票",
-    label: "部分开票",
+    value: '部分开票',
+    label: '部分开票',
   },
   {
-    value: "已开票",
-    label: "已开票",
+    value: '已开票',
+    label: '已开票',
   },
 ];
 /**
@@ -35,7 +35,7 @@ export var mixin_order_Invoice = {
   data: function () {
     return {
       // 查询字段
-      queryCompanyName: "",
+      queryCompanyName: '',
       // 开票选择
       options: Options,
       optionsInvoice: OptionInvent,
@@ -64,11 +64,11 @@ export var mixin_order_Invoice = {
     // 点击客户开票按钮 客户开票 最大开票金额为总货款
     updateOrderItemVisibleCustomerInvoice(row) {
       // 开票实体对象
-      let invoiceInfo = {
+      const invoiceInfo = {
         domain: 1,
         isOrderTax: row.id,
       };
-      //设置该订单信息 需要进行一次查询 获取订单的开票个数
+      // 设置该订单信息 需要进行一次查询 获取订单的开票个数
       getGoodsOrder(row.id).then((res) => {
         invoiceInfo.orderInfo = res.data;
         // 保存客户和供应商开票个数
@@ -77,7 +77,7 @@ export var mixin_order_Invoice = {
         // 补充最大金额 最大金额为总货款
         this.maxInvent = res.data.allPayments;
         // 打开弹窗
-        this.openDialog(Invoice, "客户开票", undefined, {
+        this.openDialog(Invoice, '客户开票', undefined, {
           invoiceInfo: invoiceInfo,
           maxInvent: this.maxInvent,
         });
@@ -86,7 +86,7 @@ export var mixin_order_Invoice = {
     // 点击供应商开票按钮 如果是供应商开票 则是订单详情中该供应商对应的订单货物的出厂货款
     updateOrderItemVisibleSupplierInvoice(row, supplierID) {
       // 开票实体对象
-      let invoiceInfo = {
+      const invoiceInfo = {
         domain: 2,
         isOrderTax: row.id,
       };
@@ -116,7 +116,7 @@ export var mixin_order_Invoice = {
             this.maxInvent += item.paymentFactory;
           });
           // 打开弹窗
-          this.openDialog(Invoice, "供应商开票", undefined, {
+          this.openDialog(Invoice, '供应商开票', undefined, {
             invoiceInfo: invoiceInfo,
             maxInvent: this.maxInvent,
           });

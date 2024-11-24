@@ -1,4 +1,4 @@
-import OrderGiven from "@/views/dashboard/components/goodsOrder/OrderGiven.vue";
+import OrderGiven from '@/views/dashboard/components/goodsOrder/OrderGiven.vue';
 
 /**
  *  点击订单的发货单按钮 查看发货单

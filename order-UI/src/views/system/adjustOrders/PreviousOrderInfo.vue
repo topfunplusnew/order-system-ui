@@ -17,27 +17,27 @@
   </el-dialog>
 </template>
 <script>
-import OrderDetailInfo from "@/views/dashboard/components/goodsOrder/OrderDetailInfo.vue"
-import OrderInfos from "../../dashboard/components/goodsOrder/OrderInfos.vue"
+  import OrderDetailInfo from '@/views/dashboard/components/goodsOrder/OrderDetailInfo.vue'
+  import OrderInfos from '../../dashboard/components/goodsOrder/OrderInfos.vue'
 
-export default {
-  name: 'PreviousOrderInfo',
-  components: {OrderDetailInfo, OrderInfos},
-  props: {
-    checkReviousOrderInfoVisible: {
-      type: Boolean,
+  export default {
+    name: 'PreviousOrderInfo',
+    components: { OrderDetailInfo, OrderInfos },
+    props: {
+      checkReviousOrderInfoVisible: {
+        type: Boolean,
+      },
+      previousOrderInfo: {
+        type: Object,
+        default () {
+          return {}
+        }
+      }
     },
-    previousOrderInfo: {
-      type: Object,
-      default () {
-        return {}
+    methods: {
+      close() {
+        this.$emit('close')
       }
     }
-  },
-  methods: {
-    close() {
-      this.$emit('close')
-    }
   }
-}
 </script>

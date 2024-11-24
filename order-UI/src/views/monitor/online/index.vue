@@ -1,6 +1,6 @@
 <template>
   <div class="app-container">
-    <el-form :model="queryParams" ref="queryForm" size="mini" :inline="true" label-width="68px">
+    <el-form ref="queryForm" :model="queryParams" size="mini" :inline="true" label-width="68px">
       <el-form-item label="登录地址" prop="ipaddr">
         <el-input
           v-model="queryParams.ipaddr"
@@ -30,7 +30,7 @@
     >
       <el-table-column label="序号" type="index" align="center">
         <template slot-scope="scope">
-          <span>{{(pageNum - 1) * pageSize + scope.$index + 1}}</span>
+          <span>{{ (pageNum - 1) * pageSize + scope.$index + 1 }}</span>
         </template>
       </el-table-column>
       <el-table-column label="会话编号" align="center" prop="tokenId" :show-overflow-tooltip="true" />
@@ -48,11 +48,11 @@
       <el-table-column label="操作" align="center" class-name="small-padding fixed-width">
         <template slot-scope="scope">
           <el-button
+            v-hasPermi="['monitor:online:forceLogout']"
             size="mini"
             type="text"
             icon="el-icon-delete"
             @click="handleForceLogout(scope.row)"
-            v-hasPermi="['monitor:online:forceLogout']"
           >强退</el-button>
         </template>
       </el-table-column>
@@ -63,60 +63,60 @@
 </template>
 
 <script>
-import { list, forceLogout } from "@/api/monitor/online";
+  import { list, forceLogout } from '@/api/monitor/online';
 
-export default {
-  name: "Online",
-  data() {
-    return {
-      // 遮罩层
-      loading: true,
-      // 总条数
-      total: 0,
-      // 表格数据
-      list: [],
-      pageNum: 1,
-      pageSize: 10,
-      // 查询参数
-      queryParams: {
-        ipaddr: undefined,
-        userName: undefined
-      }
-    };
-  },
-  created() {
-    this.getList();
-  },
-  methods: {
-    /** 查询登录日志列表 */
-    getList() {
-      this.loading = true;
-      list(this.queryParams).then(response => {
-        this.list = response.rows;
-        this.total = response.total;
-        this.loading = false;
-      });
+  export default {
+    name: 'Online',
+    data() {
+      return {
+        // 遮罩层
+        loading: true,
+        // 总条数
+        total: 0,
+        // 表格数据
+        list: [],
+        pageNum: 1,
+        pageSize: 10,
+        // 查询参数
+        queryParams: {
+          ipaddr: undefined,
+          userName: undefined
+        }
+      };
     },
-    /** 搜索按钮操作 */
-    handleQuery() {
-      this.pageNum = 1;
+    created() {
       this.getList();
     },
-    /** 重置按钮操作 */
-    resetQuery() {
-      this.resetForm("queryForm");
-      this.handleQuery();
-    },
-    /** 强退按钮操作 */
-    handleForceLogout(row) {
-      this.$modal.confirm('是否确认强退名称为"' + row.userName + '"的用户？').then(function() {
-        return forceLogout(row.tokenId);
-      }).then(() => {
+    methods: {
+      /** 查询登录日志列表 */
+      getList() {
+        this.loading = true;
+        list(this.queryParams).then(response => {
+          this.list = response.rows;
+          this.total = response.total;
+          this.loading = false;
+        });
+      },
+      /** 搜索按钮操作 */
+      handleQuery() {
+        this.pageNum = 1;
         this.getList();
-        this.$modal.msgSuccess("强退成功");
-      }).catch(() => {});
+      },
+      /** 重置按钮操作 */
+      resetQuery() {
+        this.resetForm('queryForm');
+        this.handleQuery();
+      },
+      /** 强退按钮操作 */
+      handleForceLogout(row) {
+        this.$modal.confirm('是否确认强退名称为"' + row.userName + '"的用户？').then(function() {
+          return forceLogout(row.tokenId);
+        }).then(() => {
+          this.getList();
+          this.$modal.msgSuccess('强退成功');
+        }).catch(() => {});
+      }
     }
-  }
-};
+  };
 </script>
 

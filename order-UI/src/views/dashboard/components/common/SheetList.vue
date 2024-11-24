@@ -1,104 +1,104 @@
 <script>
-import SheetItem from "@/views/dashboard/components/common/SheetItem.vue";
-import SelectGoods from "@/views/dashboard/components/common/SelectGoods.vue";
-import { mixin_excel_server } from "@/views/dashboard/components/common/utils/excelServer";
+  import SheetItem from '@/views/dashboard/components/common/SheetItem.vue';
+  import SelectGoods from '@/views/dashboard/components/common/SelectGoods.vue';
+  import { mixin_excel_server } from '@/views/dashboard/components/common/utils/excelServer';
 
-export default {
-  name: "SheetList",
-  components: { SelectGoods, SheetItem },
-  mixins: [mixin_excel_server],
-  // 接收文件读取到的sheetList 渲染出来给用户看 并且可以选择看哪一个
-  props: {
-    // sheet列表
-    sheetList: {
-      type: Array,
-      default: [],
+  export default {
+    name: 'SheetList',
+    components: { SelectGoods, SheetItem },
+    mixins: [mixin_excel_server],
+    // 接收文件读取到的sheetList 渲染出来给用户看 并且可以选择看哪一个
+    props: {
+      // sheet列表
+      sheetList: {
+        type: Array,
+        default: [],
+      },
     },
-  },
-  data() {
-    return {
-      // 订单选择弹窗
-      invoiceAllVisible: false,
-      // 供应商价税合计表
-      invoiceSupplierList: [],
-      // 供应商统计
-      supplierTotalInfo: [],
-      // 供应商搜索字段
-      querySupplier: null,
-      // 减去的金额
-      minusValue: 0,
-    };
-  },
-  methods: {
-    // 点击某一个 打开订单的列表 todo 对excel中开票的金额分类统计 这里需要审计一下
-    handleInvoiceAll(item, index) {
-      const excelInfo = this.handleReadExcel();
-      // 购买方统计
-      const purchaseMap = new Map();
-      // 对供应商进行统计的函数
-      const purchaseHandler = (item, purchaseMap) => {
-        // 如果没有这个供应商 那么就返回
-        if (!item.purchaseId) {
-          return;
-        }
-        // 对供应商进行分类统计
-        if (purchaseMap.has(item.purchaseId)) {
+    data() {
+      return {
+        // 订单选择弹窗
+        invoiceAllVisible: false,
+        // 供应商价税合计表
+        invoiceSupplierList: [],
+        // 供应商统计
+        supplierTotalInfo: [],
+        // 供应商搜索字段
+        querySupplier: null,
+        // 减去的金额
+        minusValue: 0,
+      };
+    },
+    methods: {
+      // 点击某一个 打开订单的列表 todo 对excel中开票的金额分类统计 这里需要审计一下
+      handleInvoiceAll(item, index) {
+        const excelInfo = this.handleReadExcel();
+        // 购买方统计
+        const purchaseMap = new Map();
+        // 对供应商进行统计的函数
+        const purchaseHandler = (item, purchaseMap) => {
+          // 如果没有这个供应商 那么就返回
+          if (!item.purchaseId) {
+            return;
+          }
+          // 对供应商进行分类统计
+          if (purchaseMap.has(item.purchaseId)) {
+            purchaseMap.set(item.purchaseId, {
+              id: item.purchaseId,
+              name: item.purchaseName,
+              // 主要统计的逻辑
+              money: item.total + purchaseMap.get(item.purchaseId),
+            });
+          }
+          // 添加到MAP中
           purchaseMap.set(item.purchaseId, {
             id: item.purchaseId,
             name: item.purchaseName,
-            // 主要统计的逻辑
-            money: item.total + purchaseMap.get(item.purchaseId),
+            money: item.total,
           });
-        }
-        // 添加到MAP中
-        purchaseMap.set(item.purchaseId, {
-          id: item.purchaseId,
-          name: item.purchaseName,
-          money: item.total,
+        };
+        // 先把需要的列拿出来
+        excelInfo[index]
+          .map((item) => {
+            return {
+              sellerId: item['销方ID'],
+              sellerName: item['销方名称'],
+              purchaseId: item['购买方ID'],
+              purchaseType: item['购买方类型'],
+              purchaseName: item['购买方名称'],
+              total: item['价税合计'],
+            };
+          })
+          .forEach((item) => purchaseHandler(item, purchaseMap));
+        // 存储响应式变量
+        this.supplierTotalInfo = Array.from(purchaseMap.values());
+        // 存储到暂存 方便后面使用
+        this.$store.dispatch('excel/setTempData', this.supplierTotalInfo);
+        // 打开弹窗
+        this.invoiceAllVisible = true;
+      },
+      // 弹窗左侧供应商列表的筛选
+      handleFilter() {
+        // 每次操作之前都要重置 重置的逻辑就是从暂存拿出新的进行复制
+        this.supplierTotalInfo = this.$store.getters.tempData;
+        // 筛选
+        this.supplierTotalInfo = this.supplierTotalInfo.filter((item) => {
+          return item.name.indexOf(this.querySupplier) !== -1;
         });
-      };
-      // 先把需要的列拿出来
-      excelInfo[index]
-        .map((item) => {
-          return {
-            sellerId: item["销方ID"],
-            sellerName: item["销方名称"],
-            purchaseId: item["购买方ID"],
-            purchaseType: item["购买方类型"],
-            purchaseName: item["购买方名称"],
-            total: item["价税合计"],
-          };
-        })
-        .forEach((item) => purchaseHandler(item, purchaseMap));
-      // 存储响应式变量
-      this.supplierTotalInfo = Array.from(purchaseMap.values());
-      // 存储到暂存 方便后面使用
-      this.$store.dispatch("excel/setTempData", this.supplierTotalInfo);
-      // 打开弹窗
-      this.invoiceAllVisible = true;
+      },
+      // todo 查看某个供应商分配情况
+      handleCheck() {},
+      // 重置筛选结果
+      handleReset() {
+        this.supplierTotalInfo = this.$store.getters.tempData;
+      },
+      // 重置订单列表的数据 通过事件总线实现
+      handleResetOrderList() {
+        console.log('之前选择的订单列表', this.$store.getters.selectedOrder);
+        this.$bus.$emit('select-goods:update');
+      },
     },
-    // 弹窗左侧供应商列表的筛选
-    handleFilter() {
-      // 每次操作之前都要重置 重置的逻辑就是从暂存拿出新的进行复制
-      this.supplierTotalInfo = this.$store.getters.tempData;
-      // 筛选
-      this.supplierTotalInfo = this.supplierTotalInfo.filter((item) => {
-        return item.name.indexOf(this.querySupplier) !== -1;
-      });
-    },
-    // todo 查看某个供应商分配情况
-    handleCheck() {},
-    // 重置筛选结果
-    handleReset() {
-      this.supplierTotalInfo = this.$store.getters.tempData;
-    },
-    // 重置订单列表的数据 通过事件总线实现
-    handleResetOrderList() {
-      console.log("之前选择的订单列表", this.$store.getters.selectedOrder);
-      this.$bus.$emit("select-goods:update");
-    },
-  },
-};
+  };
 </script>
 
 <template>
@@ -132,7 +132,7 @@ export default {
                   style="float: right; padding: 3px 0"
                   type="text"
                   @click="handleReset"
-                  >重置筛选</el-button
+                >重置筛选</el-button
                 >
               </div>
               <!--              供应商搜索区域-->
@@ -146,8 +146,8 @@ export default {
                   ></el-input>
                 </el-form-item>
                 <el-form-item>
-                  <el-button type="primary" @click="handleFilter" size="mini"
-                    >查询</el-button
+                  <el-button type="primary" size="mini" @click="handleFilter"
+                  >查询</el-button
                   >
                 </el-form-item>
               </el-form>
@@ -176,7 +176,7 @@ export default {
                 <el-table-column label="已分配订单">
                   <template slot-scope="scope">
                     <el-button size="mini" type="text" @click="handleCheck"
-                      >查看</el-button
+                    >查看</el-button
                     >
                   </template>
                 </el-table-column>
@@ -193,7 +193,7 @@ export default {
                   style="float: right; padding: 3px 0"
                   type="text"
                   @click="handleResetOrderList"
-                  >重置筛选
+                >重置筛选
                 </el-button>
               </div>
               <!--          订单选择模块-->
@@ -204,7 +204,7 @@ export default {
         <span slot="footer" class="dialog-footer">
           <el-button @click="invoiceAllVisible = false">取 消</el-button>
           <el-button type="primary" @click="invoiceAllVisible = false"
-            >确 定</el-button
+          >确 定</el-button
           >
         </span>
       </el-dialog>

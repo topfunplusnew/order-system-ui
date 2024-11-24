@@ -3,7 +3,7 @@ const state = {
 }
 const mutations = {
   SET_DICT: (state, { key, value }) => {
-    if (key !== null && key !== "") {
+    if (key !== null && key !== '') {
       state.dict.push({
         key: key,
         value: value

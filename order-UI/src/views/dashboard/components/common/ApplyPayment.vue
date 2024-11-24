@@ -449,155 +449,155 @@
 </template>
 
 <script>
-import { listPaymentApply, addPaymentApply } from "@/api/system/paymentApply";
-import { excludeParams } from "@/api/tool/exclude";
-import SearchOption from "@/components/SearchOption.vue";
-import { listBankAccount } from "@/api/system/bankAccount";
-import { mixin_payment_apply } from "../../mixins/apply_payment/payment_apply";
-import { mixin_payment_level } from "../../mixins/apply_payment/payment_level";
-import { mixin_payment_watcher } from "../../mixins/apply_payment/payment_watcher";
+  import { listPaymentApply, addPaymentApply } from '@/api/system/paymentApply';
+  import { excludeParams } from '@/api/tool/exclude';
+  import SearchOption from '@/components/SearchOption.vue';
+  import { listBankAccount } from '@/api/system/bankAccount';
+  import { mixin_payment_apply } from '../../mixins/apply_payment/payment_apply';
+  import { mixin_payment_level } from '../../mixins/apply_payment/payment_level';
+  import { mixin_payment_watcher } from '../../mixins/apply_payment/payment_watcher';
 
-import { listCompany } from "../../../../api/system/company";
-import { mixin_payment_fill } from "../../mixins/apply_payment/payment_fill";
-import { isNull } from "../../../../main";
-import { mixin_receive_money_subject } from "../../mixins/receivemoney/receive_money_subject";
+  import { listCompany } from '../../../../api/system/company';
+  import { mixin_payment_fill } from '../../mixins/apply_payment/payment_fill';
+  import { isNull } from '../../../../main';
+  import { mixin_receive_money_subject } from '../../mixins/receivemoney/receive_money_subject';
 
-export default {
-  name: "ApplyPayment",
-  components: { SearchOption },
-  mixins: [
-    mixin_payment_apply,
-    mixin_payment_level,
-    mixin_payment_watcher,
-    mixin_payment_fill,
-    mixin_receive_money_subject
-  ],
-  data() {
-    return {
-      // 遮罩层
-      loading: true,
-      // 总条数
-      total: 0,
-      // 付款信息表格数据
-      paymentApplyList: [],
-      // 表单参数
-      form: {
-        tID: null,
-        tableName: null,
-        fundsDate: null,
-        payType: null,
-        moneyAmount: null,
-        otherAcountsName: null,
-        otherBankNo: null,
-        otherBankName: null,
-        companyName: null,
-        companyId: null,
-        companyType: null,
-        reason: null,
-        attachment: null,
-        applyPerson: null,
-        applyPersonID: null,
-        checkState: null,
-        comments: null,
-      },
-      // 表单校验
-      rules: {
-        fundsDate: [
-          { required: true, message: "付款日期不能为空", trigger: "blur" },
-        ],
-        moneyAmount: [
-          { required: true, message: "付款金额不能为空", trigger: "blur" },
-        ],
-        reason: [
-          { required: true, message: "付款事由不能为空", trigger: "blur" },
-        ],
-      },
-      //禁用输入框
-      inputDisabled: false,
-      //禁用银行卡输入 因为现金支付不需要银行卡信息
-      bankInputDisabled: false,
-    };
-  },
-
-  methods: {
-    isNull,
-    listCompany,
-    listBankAccount,
-    //上传的回调函数
-    handleCommitUpload(val) {
-      this.form.attachment = val;
+  export default {
+    name: 'ApplyPayment',
+    components: { SearchOption },
+    mixins: [
+      mixin_payment_apply,
+      mixin_payment_level,
+      mixin_payment_watcher,
+      mixin_payment_fill,
+      mixin_receive_money_subject
+    ],
+    data() {
+      return {
+        // 遮罩层
+        loading: true,
+        // 总条数
+        total: 0,
+        // 付款信息表格数据
+        paymentApplyList: [],
+        // 表单参数
+        form: {
+          tID: null,
+          tableName: null,
+          fundsDate: null,
+          payType: null,
+          moneyAmount: null,
+          otherAcountsName: null,
+          otherBankNo: null,
+          otherBankName: null,
+          companyName: null,
+          companyId: null,
+          companyType: null,
+          reason: null,
+          attachment: null,
+          applyPerson: null,
+          applyPersonID: null,
+          checkState: null,
+          comments: null,
+        },
+        // 表单校验
+        rules: {
+          fundsDate: [
+            { required: true, message: '付款日期不能为空', trigger: 'blur' },
+          ],
+          moneyAmount: [
+            { required: true, message: '付款金额不能为空', trigger: 'blur' },
+          ],
+          reason: [
+            { required: true, message: '付款事由不能为空', trigger: 'blur' },
+          ],
+        },
+        // 禁用输入框
+        inputDisabled: false,
+        // 禁用银行卡输入 因为现金支付不需要银行卡信息
+        bankInputDisabled: false,
+      };
     },
-    getList() {
-      this.loading = true;
-      listPaymentApply(this.queryParams).then((response) => {
-        this.paymentApplyList = response.rows;
-        this.total = response.total;
-        this.loading = false;
-      });
-    },
-    /** 提交按钮 */
-    submitForm() {
-      this.$refs["form"].validate((valid) => {
-        if (valid) {
-          excludeParams(this, this.$exclude);
-          // 填充对应表名和主键
-          this.form.tableName = this.tableName;
-          this.form.tID = this.tID;
-          this.form.checkState = ""; //审核状态赋空
-          // 填充公司类型
-          this.form.companyType = this.value;
-          // 添加付款类型
-          let payType = this.form.payType.join('-')
-          const body = {
-            ...this.form,
-            payType: payType
+
+    methods: {
+      isNull,
+      listCompany,
+      listBankAccount,
+      // 上传的回调函数
+      handleCommitUpload(val) {
+        this.form.attachment = val;
+      },
+      getList() {
+        this.loading = true;
+        listPaymentApply(this.queryParams).then((response) => {
+          this.paymentApplyList = response.rows;
+          this.total = response.total;
+          this.loading = false;
+        });
+      },
+      /** 提交按钮 */
+      submitForm() {
+        this.$refs['form'].validate((valid) => {
+          if (valid) {
+            excludeParams(this, this.$exclude);
+            // 填充对应表名和主键
+            this.form.tableName = this.tableName;
+            this.form.tID = this.tID;
+            this.form.checkState = ''; // 审核状态赋空
+            // 填充公司类型
+            this.form.companyType = this.value;
+            // 添加付款类型
+            const payType = this.form.payType.join('-')
+            const body = {
+              ...this.form,
+              payType: payType
+            }
+            addPaymentApply(body).then(() => {
+              this.$modal.msgSuccess('付款申请添加成功');
+              this.reset();
+              this.$emit('changeOpen');
+            });
           }
-          addPaymentApply(body).then(() => {
-            this.$modal.msgSuccess("付款申请添加成功");
-            this.reset();
-            this.$emit("changeOpen");
-          });
-        }
-      });
+        });
+      },
+      close() {
+        this.$emit('changeOpen');
+        this.reset();
+      },
+      // 表单重置
+      reset() {
+        this.form = {
+          id: null,
+          tableName: null,
+          tID: null,
+          fundsDate: null,
+          payType: null,
+          moneyAmount: null,
+          otherAcountsName: null,
+          otherBankNo: null,
+          otherBankName: null,
+          companyName: null,
+          companyId: null,
+          companyType: null,
+          reason: null,
+          attachment: null,
+          applyPerson: null,
+          applyPersonID: null,
+          checkState: null,
+          comments: null,
+          addtime: null,
+          userId: null,
+          UserName: null,
+          updateTime: null,
+          delFlag: null,
+          submitflag: null,
+        };
+        this.currentSort = {
+          levelOne: '',
+          levelTwo: '',
+        };
+        this.resetForm('form');
+      },
     },
-    close() {
-      this.$emit("changeOpen");
-      this.reset();
-    },
-    // 表单重置
-    reset() {
-      this.form = {
-        id: null,
-        tableName: null,
-        tID: null,
-        fundsDate: null,
-        payType: null,
-        moneyAmount: null,
-        otherAcountsName: null,
-        otherBankNo: null,
-        otherBankName: null,
-        companyName: null,
-        companyId: null,
-        companyType: null,
-        reason: null,
-        attachment: null,
-        applyPerson: null,
-        applyPersonID: null,
-        checkState: null,
-        comments: null,
-        addtime: null,
-        userId: null,
-        UserName: null,
-        updateTime: null,
-        delFlag: null,
-        submitflag: null,
-      };
-      this.currentSort = {
-        levelOne: "",
-        levelTwo: "",
-      };
-      this.resetForm("form");
-    },
-  },
-};
+  };
 </script>

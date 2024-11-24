@@ -1,10 +1,10 @@
-import request from "@/utils/request";
+import request from '@/utils/request';
 
 // 查询现金记账列表
 export function listRecord(query) {
   return request({
-    url: "/system/record/list",
-    method: "get",
+    url: '/system/record/list',
+    method: 'get',
     params: query,
   });
 }
@@ -12,16 +12,16 @@ export function listRecord(query) {
 // 查询现金记账详细
 export function getRecord(id) {
   return request({
-    url: "/system/record/" + id,
-    method: "get",
+    url: '/system/record/' + id,
+    method: 'get',
   });
 }
 
 // 新增现金记账
 export function addRecord(data) {
   return request({
-    url: "/system/record",
-    method: "post",
+    url: '/system/record',
+    method: 'post',
     data: data,
   });
 }
@@ -29,8 +29,8 @@ export function addRecord(data) {
 // 修改现金记账
 export function updateRecord(data) {
   return request({
-    url: "/system/record",
-    method: "put",
+    url: '/system/record',
+    method: 'put',
     data: data,
   });
 }
@@ -38,7 +38,7 @@ export function updateRecord(data) {
 // 删除现金记账
 export function delRecord(id) {
   return request({
-    url: "/system/record/" + id,
-    method: "delete",
+    url: '/system/record/' + id,
+    method: 'delete',
   });
 }

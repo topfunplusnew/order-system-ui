@@ -1,7 +1,7 @@
 <script>
-export default {
-  name: "generationCustomer"
-}
+  export default {
+    name: 'GenerationCustomer'
+  }
 </script>
 
 <template>

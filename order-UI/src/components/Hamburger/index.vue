@@ -14,20 +14,20 @@
 </template>
 
 <script>
-export default {
-  name: 'Hamburger',
-  props: {
-    isActive: {
-      type: Boolean,
-      default: false
-    }
-  },
-  methods: {
-    toggleClick() {
-      this.$emit('toggleClick')
+  export default {
+    name: 'Hamburger',
+    props: {
+      isActive: {
+        type: Boolean,
+        default: false
+      }
+    },
+    methods: {
+      toggleClick() {
+        this.$emit('toggleClick')
+      }
     }
   }
-}
 </script>
 
 <style scoped>

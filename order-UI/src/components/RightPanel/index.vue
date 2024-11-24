@@ -10,54 +10,54 @@
 </template>
 
 <script>
-export default {
-  name: 'RightPanel',
-  props: {
-    clickNotClose: {
-      default: false,
-      type: Boolean
-    }
-  },
-  computed: {
-    show: {
-      get() {
-        return this.$store.state.settings.showSettings
-      },
-      set(val) {
-        this.$store.dispatch('settings/changeSetting', {
-          key: 'showSettings',
-          value: val
-        })
+  export default {
+    name: 'RightPanel',
+    props: {
+      clickNotClose: {
+        default: false,
+        type: Boolean
       }
-    }
-  },
-  watch: {
-    show(value) {
-      if (value && !this.clickNotClose) {
-        this.addEventClick()
-      }
-    }
-  },
-  mounted() {
-    this.addEventClick()
-  },
-  beforeDestroy() {
-    const elx = this.$refs.rightPanel
-    elx.remove()
-  },
-  methods: {
-    addEventClick() {
-      window.addEventListener('click', this.closeSidebar)
     },
-    closeSidebar(evt) {
-      const parent = evt.target.closest('.el-drawer__body')
-      if (!parent) {
-        this.show = false
-        window.removeEventListener('click', this.closeSidebar)
+    computed: {
+      show: {
+        get() {
+          return this.$store.state.settings.showSettings
+        },
+        set(val) {
+          this.$store.dispatch('settings/changeSetting', {
+            key: 'showSettings',
+            value: val
+          })
+        }
+      }
+    },
+    watch: {
+      show(value) {
+        if (value && !this.clickNotClose) {
+          this.addEventClick()
+        }
+      }
+    },
+    mounted() {
+      this.addEventClick()
+    },
+    beforeDestroy() {
+      const elx = this.$refs.rightPanel
+      elx.remove()
+    },
+    methods: {
+      addEventClick() {
+        window.addEventListener('click', this.closeSidebar)
+      },
+      closeSidebar(evt) {
+        const parent = evt.target.closest('.el-drawer__body')
+        if (!parent) {
+          this.show = false
+          window.removeEventListener('click', this.closeSidebar)
+        }
       }
     }
   }
-}
 </script>
 
 <style lang="scss" scoped>

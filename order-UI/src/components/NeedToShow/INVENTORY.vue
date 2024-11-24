@@ -1,14 +1,14 @@
 <script>
-export default {
-  name: "INVENTORY",
-  props: {
-    needToShowInfo: {
-      type: Object,
-      default: () => {
+  export default {
+    name: 'INVENTORY',
+    props: {
+      needToShowInfo: {
+        type: Object,
+        default: () => {
+        }
       }
     }
   }
-}
 </script>
 
 <template>

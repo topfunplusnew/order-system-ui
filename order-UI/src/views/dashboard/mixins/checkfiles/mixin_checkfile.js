@@ -1,4 +1,4 @@
-import { excludeParams } from "../../../../api/tool/exclude"; // 导入 excludeParams 方法
+import { excludeParams } from '../../../../api/tool/exclude'; // 导入 excludeParams 方法
 
 /**
  * 用法示例：
@@ -39,8 +39,8 @@ export var mixin_checkfile = {
      */
     handleUpdateFilePath(value, row, prop, onGet, onUpdate) {
       // 检查 onGet 和 onUpdate 是否为函数
-      if (typeof onGet !== "function" || typeof onUpdate !== "function") {
-        this.$message.error("组件内部错误！请检查传入的参数类型。");
+      if (typeof onGet !== 'function' || typeof onUpdate !== 'function') {
+        this.$message.error('组件内部错误！请检查传入的参数类型。');
         return;
       }
 
@@ -55,9 +55,9 @@ export var mixin_checkfile = {
         data = excludeParams(data, this.$exclude);
         // 调用 onUpdate 方法更新文件记录
         onUpdate(data).then(() => {
-          this.$message.success("操作成功！");
+          this.$message.success('操作成功！');
           // 通知事件总线，关闭文件选择弹窗
-          this.$bus.$emit("changeFileVisible", false);
+          this.$bus.$emit('changeFileVisible', false);
           // 刷新数据列表
           this.getList();
         });

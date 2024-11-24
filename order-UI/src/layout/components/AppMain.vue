@@ -10,20 +10,20 @@
 </template>
 
 <script>
-import iframeToggle from "./IframeToggle/index"
+  import iframeToggle from './IframeToggle/index'
 
-export default {
-  name: 'AppMain',
-  components: { iframeToggle },
-  computed: {
-    cachedViews() {
-      return this.$store.state.tagsView.cachedViews
-    },
-    key() {
-      return this.$route.path
+  export default {
+    name: 'AppMain',
+    components: { iframeToggle },
+    computed: {
+      cachedViews() {
+        return this.$store.state.tagsView.cachedViews
+      },
+      key() {
+        return this.$route.path
+      }
     }
   }
-}
 </script>
 
 <style lang="scss" scoped>

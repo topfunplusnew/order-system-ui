@@ -31,17 +31,17 @@ export var mixin_form_fillInfo = {
       this.queryCompanyName = val;
     },
 
-    //陆运车牌的自动填充
+    // 陆运车牌的自动填充
     handleChangeCar(val) {
       this.queryLandCar = val;
     },
     handleCommitBackCar(val) {
       this.orderInfo.landCarID = val.id;
-      //与上面填充客户信息同理
+      // 与上面填充客户信息同理
       this.orderInfo.landCarNo = val.carNo;
       this.orderInfo.landDriverName = val.driver;
       this.orderInfo.landDriverTel = val.tel;
-      //填充银行信息
+      // 填充银行信息
       this.orderInfo.landBankName = val.bankName;
       this.orderInfo.landBankNo = val.bankNo;
     },
@@ -54,7 +54,7 @@ export var mixin_form_fillInfo = {
       // this.orderInfo.seaCarNo = val.carNo;  // 原为海运车牌号 现改为柜号 且不提供自动填充
       this.orderInfo.seaDriverName = val.driver;
       this.orderInfo.seaDriverTel = val.tel;
-      //填充银行信息
+      // 填充银行信息
       this.orderInfo.seaBankName = val.bankName;
       this.orderInfo.seaBankNo = val.bankNo;
     },

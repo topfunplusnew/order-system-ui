@@ -1,5 +1,5 @@
 // 用于区分是否是订单开的运费还是库存开的运费
-import FreeApply from "@/components/FreeApply.vue";
+import FreeApply from '@/components/FreeApply.vue';
 
 export const FREIGHT_TYPE = {
   GOODS_ORDER: 'goodsorder',

@@ -1,52 +1,52 @@
 <script>
 // 查询凭证
-import {mixin_printHTML} from "../../dashboard/mixins/print";
+  import { mixin_printHTML } from '../../dashboard/mixins/print';
 
-export default {
-  name: "searchcredentials",
-  mixins: [mixin_printHTML],
-  data() {
-    return {
-      queryParams: {
-        orderDateStart: '',
-        orderDateEnd: ''
-      },
-      tableData: [{
-        date: '2016-05-02',
-        name: '王小虎',
-        address: '上海市普陀区金沙江路 1518 弄'
-      }, {
-        date: '2016-05-04',
-        name: '王小虎',
-        address: '上海市普陀区金沙江路 1517 弄'
-      }, {
-        date: '2016-05-01',
-        name: '王小虎',
-        address: '上海市普陀区金沙江路 1519 弄'
-      }, {
-        date: '2016-05-03',
-        name: '王小虎',
-        address: '上海市普陀区金沙江路 1516 弄'
-      }],
-      columns: []
-    }
-  },
-  methods: {
-    getList() {
-
+  export default {
+    name: 'Searchcredentials',
+    mixins: [mixin_printHTML],
+    data() {
+      return {
+        queryParams: {
+          orderDateStart: '',
+          orderDateEnd: ''
+        },
+        tableData: [{
+          date: '2016-05-02',
+          name: '王小虎',
+          address: '上海市普陀区金沙江路 1518 弄'
+        }, {
+          date: '2016-05-04',
+          name: '王小虎',
+          address: '上海市普陀区金沙江路 1517 弄'
+        }, {
+          date: '2016-05-01',
+          name: '王小虎',
+          address: '上海市普陀区金沙江路 1519 弄'
+        }, {
+          date: '2016-05-03',
+          name: '王小虎',
+          address: '上海市普陀区金沙江路 1516 弄'
+        }],
+        columns: []
+      }
     },
-    handleExport() {
+    methods: {
+      getList() {
 
+      },
+      handleExport() {
+
+      }
     }
   }
-}
 </script>
 
 <template>
   <div>
     <div class="body">
       <el-row>
-        <el-form :model="queryParams" ref="queryForm" size="mini" :inline="true" label-width="70px">
+        <el-form ref="queryForm" :model="queryParams" size="mini" :inline="true" label-width="70px">
           <el-col :span="6">
             <el-form-item label="开始时间" prop="beginTime">
               <el-date-picker
@@ -74,8 +74,8 @@ export default {
         </el-form>
       </el-row>
       <el-row>
-        <right-toolbar @queryTable="getList" :columns="columns">
-          <template v-slot:print>
+        <right-toolbar :columns="columns" @queryTable="getList">
+          <template #print>
             <el-col :span="1.5">
               <el-button
                 plain
@@ -86,23 +86,23 @@ export default {
               </el-button>
             </el-col>
           </template>
-          <template v-slot:export>
+          <template #export>
             <el-col :span="1.5">
               <el-button
+                v-hasPermi="['system:goodsorder:export']"
                 plain
                 icon="el-icon-folder-opened"
                 size="mini"
                 @click="handleExport"
-                v-hasPermi="['system:goodsorder:export']"
               >
               </el-button>
             </el-col>
           </template>
         </right-toolbar>
         <el-table
-          :data="tableData"
-          style="width: 100%" border :cell-style="()=>{return {padding:'2px'}}" max-height="750" size="mini"
-          id="printBox" v-horizontal-scroll="'always'">
+          id="printBox"
+          v-horizontal-scroll="'always'" :data="tableData" style="width: 100%" border :cell-style="()=>{return {padding:'2px'}}"
+          max-height="750" size="mini">
           <el-table-column
             prop="date"
             label="ID"
@@ -133,9 +133,9 @@ export default {
                            fixed="right">
             <template slot-scope="scope">
               <el-button
+                v-hasPermi="['system:goodsorder:remove']"
                 size="mini"
                 type="primary"
-                v-hasPermi="['system:goodsorder:remove']"
               >操作
               </el-button>
             </template>

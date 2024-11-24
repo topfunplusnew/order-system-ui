@@ -1,4 +1,4 @@
-import {listCarApply} from "../../../../api/system/carApply";
+import { listCarApply } from '../../../../api/system/carApply';
 // 出差车辆索引列表模块 车辆申请信息
 export var mixin_car_apply = {
   data: function () {
@@ -24,7 +24,7 @@ export var mixin_car_apply = {
     },
     // 引用该车辆使用信息
     indexThisCarApplyInfo(row) {
-      //要判断 如果保养了 那么就推入 没有保养不推入
+      // 要判断 如果保养了 那么就推入 没有保养不推入
       if (row.isMaintenance === '是') {
         // 将保养金额填充到列表里
         this.tripReimbursementList.push({

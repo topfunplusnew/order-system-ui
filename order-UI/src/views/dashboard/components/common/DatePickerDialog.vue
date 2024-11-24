@@ -1,33 +1,33 @@
 <script>
-export default {
-  name: "DatePickerDialog",
-  data() {
-    return {
-      visible: false,
-      beginTime: null,
-      endTime: null,
-    };
-  },
-  methods: {
-    handleClose() {
-      this.visible = false;
+  export default {
+    name: 'DatePickerDialog',
+    data() {
+      return {
+        visible: false,
+        beginTime: null,
+        endTime: null,
+      };
     },
-    handleConfirm() {
-      if (this.beginTime && this.endTime) {
-        this.$emit("resolve", {
-          beginTime: this.beginTime,
-          endTime: this.endTime,
-        });
-        this.handleClose();
-      } else {
-        this.$message.error("请选择有效的日期");
-      }
+    methods: {
+      handleClose() {
+        this.visible = false;
+      },
+      handleConfirm() {
+        if (this.beginTime && this.endTime) {
+          this.$emit('resolve', {
+            beginTime: this.beginTime,
+            endTime: this.endTime,
+          });
+          this.handleClose();
+        } else {
+          this.$message.error('请选择有效的日期');
+        }
+      },
+      show() {
+        this.visible = true;
+      },
     },
-    show() {
-      this.visible = true;
-    },
-  },
-};
+  };
 </script>
 
 <template>
@@ -35,8 +35,8 @@ export default {
     <el-dialog
       :visible.sync="visible"
       title="选择日期"
-      @close="handleClose"
       width="350px"
+      @close="handleClose"
     >
       <el-row style="text-align: center">
         <el-date-picker

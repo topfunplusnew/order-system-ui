@@ -26,52 +26,52 @@
 </template>
 
 <script>
-import { mapGetters } from "vuex";
-import { parseTime } from "../../../utils/ruoyi";
-import { mixin_order_Invoice } from "../../dashboard/mixins/order/order_Invoice";
-import { mixin_order_orderHistory } from "../../dashboard/mixins/order/order_history";
-import { mixin_order_base } from "../../dashboard/mixins/order/order_base";
-import ElTableOrder from "@/views/dashboard/components/goodsOrder/ElTableOrder.vue";
-import QuerySearchBar from "@/views/dashboard/components/goodsOrder/QuerySearchBar.vue";
-import OrderHistoryCheck from "@/views/dashboard/components/goodsOrder/OrderHistoryCheck.vue";
+  import { mapGetters } from 'vuex';
+  import { parseTime } from '../../../utils/ruoyi';
+  import { mixin_order_Invoice } from '../../dashboard/mixins/order/order_Invoice';
+  import { mixin_order_orderHistory } from '../../dashboard/mixins/order/order_history';
+  import { mixin_order_base } from '../../dashboard/mixins/order/order_base';
+  import ElTableOrder from '@/views/dashboard/components/goodsOrder/ElTableOrder.vue';
+  import QuerySearchBar from '@/views/dashboard/components/goodsOrder/QuerySearchBar.vue';
+  import OrderHistoryCheck from '@/views/dashboard/components/goodsOrder/OrderHistoryCheck.vue';
 
-export default {
-  name: "AdjustOrders",
-  // 组件注册
-  components: {
-    OrderHistoryCheck,
-    QuerySearchBar,
-    ElTableOrder
-  },
-  // 混入 订单逻辑分布在混入文件中
-  mixins: [
-    mixin_order_Invoice,
-    mixin_order_orderHistory,
-    mixin_order_base,
-  ],
-  data () {
-    return {
-      showSearch: true,
-    };
-  },
-  computed: {
-    ...mapGetters(['orderItemList']), // 获取订单列表
-    ...mapGetters(['currentOrderInfo']) // 拿到暂存里的订单信息
-  },
-  methods: {
-    parseTime,
-    /** 搜索按钮操作 */
-    handleQuery () {
-      this.queryParams.pageNum = 1;
-      this.getList();
+  export default {
+    name: 'AdjustOrders',
+    // 组件注册
+    components: {
+      OrderHistoryCheck,
+      QuerySearchBar,
+      ElTableOrder
     },
-    /** 重置按钮操作 */
-    resetQuery () {
-      this.resetForm("queryForm");
-      this.handleQuery();
+    // 混入 订单逻辑分布在混入文件中
+    mixins: [
+      mixin_order_Invoice,
+      mixin_order_orderHistory,
+      mixin_order_base,
+    ],
+    data () {
+      return {
+        showSearch: true,
+      };
     },
-  }
-};
+    computed: {
+      ...mapGetters(['orderItemList']), // 获取订单列表
+      ...mapGetters(['currentOrderInfo']) // 拿到暂存里的订单信息
+    },
+    methods: {
+      parseTime,
+      /** 搜索按钮操作 */
+      handleQuery () {
+        this.queryParams.pageNum = 1;
+        this.getList();
+      },
+      /** 重置按钮操作 */
+      resetQuery () {
+        this.resetForm('queryForm');
+        this.handleQuery();
+      },
+    }
+  };
 </script>
 <style lang="scss">
 //对于订单表格中的供应商的样式设计

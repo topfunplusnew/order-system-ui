@@ -1,4 +1,4 @@
-import instance from "../../../../utils/request";
+import instance from '../../../../utils/request';
 
 export function paymentAudit(params) {
   return instance.request({
@@ -19,7 +19,7 @@ export var mixin_payment_audit = {
   methods: {
     handlePaymentAudit(row, e) {
       if (e === true) {
-        paymentAudit({...row, auditStatus: '1'}).then(res => {
+        paymentAudit({ ...row, auditStatus: '1' }).then(res => {
           this.$message({
             type: 'success',
             message: '复核成功!'
@@ -27,7 +27,7 @@ export var mixin_payment_audit = {
           location.reload()
         })
       } else {
-        paymentAudit({...row, auditStatus: '0'}).then(res => {
+        paymentAudit({ ...row, auditStatus: '0' }).then(res => {
           this.$message({
             type: 'success',
             message: '取消复核!'

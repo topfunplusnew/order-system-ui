@@ -1,12 +1,12 @@
 <script>
-export default {
-  name: "INVOICE_OUT",
-  props: {
-    needToShowInfo: {
-      type: Object
+  export default {
+    name: 'INVOICEOUT',
+    props: {
+      needToShowInfo: {
+        type: Object
+      }
     }
   }
-}
 </script>
 
 <template>
@@ -22,8 +22,8 @@ export default {
         <el-descriptions-item label="票点">{{ needToShowInfo.ticketPoint }}</el-descriptions-item>
         <el-descriptions-item label="票点金额">{{ needToShowInfo.ticketPointAmount }} 元</el-descriptions-item>
         <el-descriptions-item label="是否订单税">{{
-            needToShowInfo.isOrderTax === 1 ? '是' : '否'
-          }}
+          needToShowInfo.isOrderTax === 1 ? '是' : '否'
+        }}
         </el-descriptions-item>
         <el-descriptions-item label="欠款金额">{{ needToShowInfo.oweAmount }} 元</el-descriptions-item>
         <el-descriptions-item label="备注">

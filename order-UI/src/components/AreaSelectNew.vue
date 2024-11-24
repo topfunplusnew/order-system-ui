@@ -1,54 +1,54 @@
 <script>
-export default {
-  name: "AreaSelectNew",
-  data() {
-    return {
-      //省市县
-      provinceList: [],
-      cityList: [],
-      districtList: [],
-      province: '',
-      city: '',
-      district: '',
-    }
-  },
-  created() {
-    fetch('/area.json')
-      .then(res => res.json())
-      .then(res => {
-        this.provinceList = res;
-        console.log(res)
-      })
-  },
-  watch: {
-    province(val) {
-      this.provinceList.forEach(item => {
-        if (item.name === val) {
-          this.cityList = item.areaList;
-        }
-      })
+  export default {
+    name: 'AreaSelectNew',
+    data() {
+      return {
+        // 省市县
+        provinceList: [],
+        cityList: [],
+        districtList: [],
+        province: '',
+        city: '',
+        district: '',
+      }
     },
-    city(val) {
-      this.cityList.forEach(item => {
-        if (item.name === val) {
-          this.districtList = item.areaList;
-        }
-      })
-    }
-  },
-  methods: {
-    //省改变了 要赋值市
-    changeProvince(e) {
-      this.province = e;
+    watch: {
+      province(val) {
+        this.provinceList.forEach(item => {
+          if (item.name === val) {
+            this.cityList = item.areaList;
+          }
+        })
+      },
+      city(val) {
+        this.cityList.forEach(item => {
+          if (item.name === val) {
+            this.districtList = item.areaList;
+          }
+        })
+      }
     },
-    changeCity(e) {
-      this.city = e;
+    created() {
+      fetch('/area.json')
+        .then(res => res.json())
+        .then(res => {
+          this.provinceList = res;
+          console.log(res)
+        })
     },
-    changeDis(e) {
-      this.district = e;
+    methods: {
+      // 省改变了 要赋值市
+      changeProvince(e) {
+        this.province = e;
+      },
+      changeCity(e) {
+        this.city = e;
+      },
+      changeDis(e) {
+        this.district = e;
+      }
     }
   }
-}
 </script>
 
 <template>

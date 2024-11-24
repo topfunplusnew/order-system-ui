@@ -1,12 +1,12 @@
 <script>
-export default {
-  name: "REBATE",
-  props: {
-    needToShowInfo: {
-      type: Object
+  export default {
+    name: 'REBATE',
+    props: {
+      needToShowInfo: {
+        type: Object
+      }
     }
   }
-}
 </script>
 
 <template>
@@ -15,8 +15,8 @@ export default {
       <el-descriptions title="返利信息">
         <el-descriptions-item label="返利金额">{{ needToShowInfo.rebate }} 元</el-descriptions-item>
         <el-descriptions-item label="返利日期">{{
-            new Date(needToShowInfo.rebateDate).toLocaleString()
-          }}
+          new Date(needToShowInfo.rebateDate).toLocaleString()
+        }}
         </el-descriptions-item>
         <el-descriptions-item label="返利类型">{{ needToShowInfo.rebateType }}</el-descriptions-item>
         <el-descriptions-item label="返利原因">{{ needToShowInfo.rebateReason }}</el-descriptions-item>

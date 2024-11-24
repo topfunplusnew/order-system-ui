@@ -64,8 +64,8 @@
     </el-row>
     <el-row :gutter="50">
       <el-col :xs="24" :sm="12" :md="11" :lg="11" :offset="xs ? 0 : 1">
-        <right-toolbar @queryTable="getList" :columns="columns">
-          <template v-slot:print>
+        <right-toolbar :columns="columns" @queryTable="getList">
+          <template #print>
             <el-col :span="1.5">
               <el-button
                 plain
@@ -77,14 +77,14 @@
             </el-col>
           </template>
           <!--        导出-->
-          <template v-slot:export>
+          <template #export>
             <el-col :span="1.5">
               <el-button
+                v-hasPermi="['system:bankaccount:export']"
                 plain
                 icon="el-icon-folder-opened"
                 size="mini"
                 @click="handleExport"
-                v-hasPermi="['system:bankaccount:export']"
               >
               </el-button>
             </el-col>
@@ -104,59 +104,59 @@
           :cell-style="()=>{return {padding:'2px'}}"
         >
           <el-table-column
+            v-if="columns[0].visible"
             prop="orderDate"
             label="日期"
             show-overflow-tooltip
-            v-if="columns[0].visible"
           ></el-table-column>
           <el-table-column
+            v-if="columns[1].visible"
             prop="companyName"
             label="客户"
             show-overflow-tooltip
-            v-if="columns[1].visible"
           ></el-table-column>
           <el-table-column
+            v-if="columns[2].visible"
             prop="salesman"
             label="业务员"
             show-overflow-tooltip
-            v-if="columns[2].visible"
           ></el-table-column>
           <el-table-column
+            v-if="columns[3].visible"
             prop="profit"
             label="含税利润"
             show-overflow-tooltip
-            v-if="columns[3].visible"
           ></el-table-column>
           <el-table-column
+            v-if="columns[4].visible"
             prop="profitNoTax"
             label="不含税利润"
             width="110"
             show-overflow-tooltip
-            v-if="columns[4].visible"
           ></el-table-column>
           <el-table-column
+            v-if="columns[5].visible"
             prop="payments"
             label="总货款"
             show-overflow-tooltip
-            v-if="columns[5].visible"
           ></el-table-column>
           <el-table-column
+            v-if="columns[6].visible"
             prop="paymentFactory"
             label="出厂货款"
             show-overflow-tooltip
-            v-if="columns[6].visible"
           ></el-table-column>
           <el-table-column
+            v-if="columns[7].visible"
             prop="tonnage"
             label="吨位"
             show-overflow-tooltip
-            v-if="columns[7].visible"
           ></el-table-column>
           <el-table-column
+            v-if="columns[8].visible"
             prop="clerk"
             label="内勤"
             show-overflow-tooltip
-            v-if="columns[8].visible"
           ></el-table-column>
           <el-table-column
             prop="landCarNo"
@@ -181,16 +181,16 @@
             <template v-if="columns[10].visible"></template>
           </el-table-column>
           <el-table-column
+            v-if="columns[11].visible"
             prop="fleet"
             label="车队"
             show-overflow-tooltip
-            v-if="columns[11].visible"
           ></el-table-column>
           <el-table-column
+            v-if="columns[12].visible"
             prop="freight"
             label="运费"
             show-overflow-tooltip
-            v-if="columns[12].visible"
           ></el-table-column>
         </el-table>
         <pagination
@@ -238,79 +238,79 @@
 </template>
 
 <script>
-import {mixin_printHTML} from "./dashboard/mixins/print";
-import {getDeliveryList} from "../api/system/statement";
-import {parseTime} from "@/utils/ruoyi";
+  import { mixin_printHTML } from './dashboard/mixins/print';
+  import { getDeliveryList } from '../api/system/statement';
+  import { parseTime } from '@/utils/ruoyi';
 
-export default {
-  name: "Index",
-  mixins: [mixin_printHTML],
-  data() {
-    return {
-      loading: false,
-      queryParams: {
-        startTime: parseTime(new Date(), '{y}-{m}-{d} {h}:{i}:{s}'),
-        endTime: parseTime(new Date(), '{y}-{m}-{d} {h}:{i}:{s}'),
-        pageNum: 1,
-        pageSize: 10
-      },
-      tableData: [],
-      total: 0,
-      columns: [
-        {key: 0, label: `日期`, visible: true},
-        {key: 1, label: `客户`, visible: true},
-        {key: 2, label: `业务员`, visible: true},
-        {key: 3, label: `含税利润`, visible: true},
-        {key: 4, label: `不含税利润`, visible: true},
-        {key: 5, label: `总货款`, visible: true},
-        {key: 6, label: `出厂货款`, visible: true},
-        {key: 7, label: `吨位`, visible: true},
-        {key: 8, label: `内勤`, visible: true},
-        {key: 9, label: `陆运车牌`, visible: true},
-        {key: 10, label: `柜号`, visible: true},
-        {key: 11, label: `车队`, visible: true},
-        {key: 12, label: `运费`, visible: true}
-      ]
-    };
+  export default {
+    name: 'Index',
+    mixins: [mixin_printHTML],
+    data() {
+      return {
+        loading: false,
+        queryParams: {
+          startTime: parseTime(new Date(), '{y}-{m}-{d} {h}:{i}:{s}'),
+          endTime: parseTime(new Date(), '{y}-{m}-{d} {h}:{i}:{s}'),
+          pageNum: 1,
+          pageSize: 10
+        },
+        tableData: [],
+        total: 0,
+        columns: [
+          { key: 0, label: `日期`, visible: true },
+          { key: 1, label: `客户`, visible: true },
+          { key: 2, label: `业务员`, visible: true },
+          { key: 3, label: `含税利润`, visible: true },
+          { key: 4, label: `不含税利润`, visible: true },
+          { key: 5, label: `总货款`, visible: true },
+          { key: 6, label: `出厂货款`, visible: true },
+          { key: 7, label: `吨位`, visible: true },
+          { key: 8, label: `内勤`, visible: true },
+          { key: 9, label: `陆运车牌`, visible: true },
+          { key: 10, label: `柜号`, visible: true },
+          { key: 11, label: `车队`, visible: true },
+          { key: 12, label: `运费`, visible: true }
+        ]
+      };
 
-  },
-  computed: {
-    xs() {
-      return this.$store.state.viewport === 'xs';
-    }
-  },
-  created() {
-    this.getList();
-  },
-  methods: {
-    handleSearch() {
+    },
+    computed: {
+      xs() {
+        return this.$store.state.viewport === 'xs';
+      }
+    },
+    created() {
       this.getList();
     },
-    getList() {
-      this.loading = true
-      getDeliveryList(this.queryParams).then(res => {
-        this.tableData = res.rows;
-        this.total = res.total;
-        this.reset()
-        this.loading = false
-      })
-    },
-    reset() {
-      this.queryParams = {
-        startTime: '',
-        endTime: '',
-        pageNum: 1,
-        pageSize: 10
-      };
-    },
-    handleExport() {
-      this.download('statistics/export/todayOrderList', {
-        startTime: this.queryParams.beginTime,
-        endTime: this.queryParams.endTime
-      }, `todayOrderList${new Date().getTime()}.xlsx`)
-    },
-  }
-};
+    methods: {
+      handleSearch() {
+        this.getList();
+      },
+      getList() {
+        this.loading = true
+        getDeliveryList(this.queryParams).then(res => {
+          this.tableData = res.rows;
+          this.total = res.total;
+          this.reset()
+          this.loading = false
+        })
+      },
+      reset() {
+        this.queryParams = {
+          startTime: '',
+          endTime: '',
+          pageNum: 1,
+          pageSize: 10
+        };
+      },
+      handleExport() {
+        this.download('statistics/export/todayOrderList', {
+          startTime: this.queryParams.beginTime,
+          endTime: this.queryParams.endTime
+        }, `todayOrderList${new Date().getTime()}.xlsx`)
+      },
+    }
+  };
 </script>
 
 <style scoped lang="scss">

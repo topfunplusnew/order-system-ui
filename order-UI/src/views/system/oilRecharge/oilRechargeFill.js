@@ -6,14 +6,14 @@ export var mixin_oil_recharge_fill = {
     }
   },
   methods: {
-    //主卡
+    // 主卡
     handleCommitBackOilCard(val) {
       this.form.oilCardNo = val.oilCardNo;
     },
     handleCommitBackQueryOilCard(val) {
       this.queryOilCard = val;
     },
-    //银行卡
+    // 银行卡
     handleCommitBackBank(val) {
       this.form.acountsName = val.acountsName;
       this.form.bankNo = val.bankNo;

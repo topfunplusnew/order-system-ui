@@ -1,4 +1,4 @@
-//货物入库状态管理
+// 货物入库状态管理
 const state = {
   inventoryInfoAll: {}
 }
@@ -10,7 +10,7 @@ const mutations = {
 }
 
 const actions = {
-  setInventoryInfoAll({commit}, inventoryInfoAll) {
+  setInventoryInfoAll({ commit }, inventoryInfoAll) {
     commit('SET_INVENTORY_INFO_ALL', inventoryInfoAll)
   }
 }

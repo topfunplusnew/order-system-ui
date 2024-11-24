@@ -1,13 +1,13 @@
 <script>
 
-export default {
-  name: "ORDER_DETAIL",
-  props: {
-    needToShowInfo: {
-      type: Object
+  export default {
+    name: 'ORDERDETAIL',
+    props: {
+      needToShowInfo: {
+        type: Object
+      }
     }
   }
-}
 </script>
 
 <template>
@@ -28,15 +28,15 @@ export default {
         <el-descriptions-item label="总包数">{{ needToShowInfo.packs }}</el-descriptions-item>
         <el-descriptions-item label="单价">{{ needToShowInfo.price }} 元</el-descriptions-item>
         <el-descriptions-item label="工厂含税">{{
-            needToShowInfo.isIncludeTaxFactory ? '是' : '否'
-          }}
+          needToShowInfo.isIncludeTaxFactory ? '是' : '否'
+        }}
         </el-descriptions-item>
         <el-descriptions-item label="杂费">{{ needToShowInfo.sundryCost }} 元</el-descriptions-item>
         <el-descriptions-item label="出厂货款">{{ needToShowInfo.paymentFactory }} 元</el-descriptions-item>
         <el-descriptions-item label="卸货费">{{ needToShowInfo.paymentUnload }} 元</el-descriptions-item>
         <el-descriptions-item label="销售含税">{{
-            needToShowInfo.isIncludeTaxSale ? '是' : '否'
-          }}
+          needToShowInfo.isIncludeTaxSale ? '是' : '否'
+        }}
         </el-descriptions-item>
         <el-descriptions-item label="总付款">{{ needToShowInfo.payments }} 元</el-descriptions-item>
         <el-descriptions-item label="误差">{{ needToShowInfo.erro }}</el-descriptions-item>

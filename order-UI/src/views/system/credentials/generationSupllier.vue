@@ -1,7 +1,7 @@
 <script>
-export default {
-  name: "generationSupllier"
-}
+  export default {
+    name: 'GenerationSupllier'
+  }
 </script>
 
 <template>

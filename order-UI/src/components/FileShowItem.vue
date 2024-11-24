@@ -1,62 +1,62 @@
 <!--文件弹窗组件-->
 
 <script>
-import {getToken} from "../utils/auth";
+  import { getToken } from '../utils/auth';
 
-export default {
-  name: "FileShowItem",
-  data() {
-    return {
-      fileList: [],
-      baseUrl: process.env.VUE_APP_BASE_API + '/common/upload',
-      headers: {
-        Authorization: "Bearer " + getToken(),
-      },
-      progress: null,
-      text: '点击上传',
-    }
-  },
-  watch: {
-    'progress': {
-      handler(val) {
-        console.log(val)
+  export default {
+    name: 'FileShowItem',
+    data() {
+      return {
+        fileList: [],
+        baseUrl: process.env.VUE_APP_BASE_API + '/common/upload',
+        headers: {
+          Authorization: 'Bearer ' + getToken(),
+        },
+        progress: null,
+        text: '点击上传',
       }
-    }
-  },
-  methods: {
-    handleUpload({file, onSuccess, onError, onProgress}) {
-      this.progress = null;
-      const formData = new FormData();
-      formData.append('file', file);
-
-      // 使用 axios 发起上传请求
-      axios.post(this.baseUrl, formData, {
-        headers: this.headers,
-        onUploadProgress: (progressEvent) => {
-          if (progressEvent.lengthComputable) {
-            // 计算上传进度并传递给 onProgress 回调
-            const progress = Math.round((progressEvent.loaded / progressEvent.total) * 100);
-            onProgress({percent: progress});
-          }
+    },
+    watch: {
+      'progress': {
+        handler(val) {
+          console.log(val)
         }
-        // 文件上传成功
-      }).then((response) => {
-        this.text = '继续上传'
-        this.$refs.upload.clearFiles()
-        // 上传成功 通知父组件修改状态
-        this.$emit('handleFile', response.data.fileName)
-        // 文件上传失败
-      }).catch(err => {
-        onError(err);
-      })
+      }
     },
-    // 处理上传进度
-    handleProgress(event) {
-      this.progress = event.percent;  // 更新进度
-    },
+    methods: {
+      handleUpload({ file, onSuccess, onError, onProgress }) {
+        this.progress = null;
+        const formData = new FormData();
+        formData.append('file', file);
 
-  },
-};
+        // 使用 axios 发起上传请求
+        axios.post(this.baseUrl, formData, {
+          headers: this.headers,
+          onUploadProgress: (progressEvent) => {
+            if (progressEvent.lengthComputable) {
+              // 计算上传进度并传递给 onProgress 回调
+              const progress = Math.round((progressEvent.loaded / progressEvent.total) * 100);
+              onProgress({ percent: progress });
+            }
+          }
+        // 文件上传成功
+        }).then((response) => {
+          this.text = '继续上传'
+          this.$refs.upload.clearFiles()
+          // 上传成功 通知父组件修改状态
+          this.$emit('handleFile', response.data.fileName)
+        // 文件上传失败
+        }).catch(err => {
+          onError(err);
+        })
+      },
+      // 处理上传进度
+      handleProgress(event) {
+        this.progress = event.percent; // 更新进度
+      },
+
+    },
+  };
 </script>
 
 <template>

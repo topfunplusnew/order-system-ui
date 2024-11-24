@@ -1,69 +1,69 @@
 <!--审核弹窗-->
 <script>
-import {updateAuditInfo} from "@/api/system/auditInfo";
-import CheckFiles from "../../../../components/CheckFiles.vue";
+  import { updateAuditInfo } from '@/api/system/auditInfo';
+  import CheckFiles from '../../../../components/CheckFiles.vue';
 
-export default {
-  components: {CheckFiles},
-  props: {
-    //付款信息
-    paymentApplyInfo: {},
-    //审核步骤信息
-    checkApplyInfo: {},
-    //是否通过
-    isCheckState: {
-      type: Boolean
-    }
-  },
-  computed: {
-    checkState: {
-      get() {
-        return this.isCheckState
-      },
-      set(val) {
-        this.$emit('update:isCheckState', val)
+  export default {
+    components: { CheckFiles },
+    props: {
+      // 付款信息
+      paymentApplyInfo: {},
+      // 审核步骤信息
+      checkApplyInfo: {},
+      // 是否通过
+      isCheckState: {
+        type: Boolean
       }
-    }
-  },
-  data() {
-    return {
-      //审核意见
-      auditcommentYES: '',
-      auditcommentNO: ''
-    };
-  },
-  methods: {
-
-    //审核通过
-    handleCheckSuccess() {
-      //调用接口 修改审核状态
-      updateAuditInfo({checkState: '通过', auditcomment: this.auditcommentYES, ...this.checkApplyInfo})
-        .then(res => {
-          this.$message.success('操作完毕~')
-          //修改刷新标记vuex
-          this.$store.dispatch('apply/setChecked', this.checkApplyInfo.applyID)
-          this.auditcommentYES = ''
-        })
-      //关闭弹窗
-      this.checkState = true
     },
-    //审核不通过
-    handleCheckError() {
-      //调用接口 修改审核状态
-      updateAuditInfo({checkState: '未通过', auditcomment: this.auditcommentNO, ...this.checkApplyInfo})
-        .then(res => {
-          this.$message.success('操作完毕~')
-          //修改刷新标记vuex
-          this.$store.dispatch('apply/setChecked', this.checkApplyInfo.applyID)
-          this.auditcommentNO = ''
-        })
-      //关闭弹窗
-      this.checkState = false
-    }
-  },
-  created() {
-  },
-};
+    data() {
+      return {
+        // 审核意见
+        auditcommentYES: '',
+        auditcommentNO: ''
+      };
+    },
+    computed: {
+      checkState: {
+        get() {
+          return this.isCheckState
+        },
+        set(val) {
+          this.$emit('update:isCheckState', val)
+        }
+      }
+    },
+    created() {
+    },
+    methods: {
+
+      // 审核通过
+      handleCheckSuccess() {
+        // 调用接口 修改审核状态
+        updateAuditInfo({ checkState: '通过', auditcomment: this.auditcommentYES, ...this.checkApplyInfo })
+          .then(res => {
+            this.$message.success('操作完毕~')
+            // 修改刷新标记vuex
+            this.$store.dispatch('apply/setChecked', this.checkApplyInfo.applyID)
+            this.auditcommentYES = ''
+          })
+        // 关闭弹窗
+        this.checkState = true
+      },
+      // 审核不通过
+      handleCheckError() {
+        // 调用接口 修改审核状态
+        updateAuditInfo({ checkState: '未通过', auditcomment: this.auditcommentNO, ...this.checkApplyInfo })
+          .then(res => {
+            this.$message.success('操作完毕~')
+            // 修改刷新标记vuex
+            this.$store.dispatch('apply/setChecked', this.checkApplyInfo.applyID)
+            this.auditcommentNO = ''
+          })
+        // 关闭弹窗
+        this.checkState = false
+      }
+    },
+  };
 </script>
 
 <template>
@@ -97,12 +97,12 @@ export default {
         </el-descriptions-item>
         <el-descriptions-item label="附件">
           <!--          这里不需要上传-->
-          <CheckFiles :path="paymentApplyInfo.attachment"/>
+          <CheckFiles :path="paymentApplyInfo.attachment" />
         </el-descriptions-item>
       </el-descriptions>
     </el-row>
-    <br/>
-    <hr/>
+    <br />
+    <hr />
     <el-row>
       <el-col :span="4">
         <span style="font-weight: bolder;line-height: 35px">操作</span>
@@ -113,7 +113,7 @@ export default {
           <el-col :span="12">
             <el-row :gutter="4">
               <el-col :span="12">
-                <el-input placeholder="请输入审核意见" type="text" v-model="auditcommentYES"></el-input>
+                <el-input v-model="auditcommentYES" placeholder="请输入审核意见" type="text"></el-input>
               </el-col>
               <el-col :span="12">
                 <el-button type="success" @click="handleCheckSuccess">审核通过</el-button>
@@ -124,7 +124,7 @@ export default {
           <el-col :span="12">
             <el-row :gutter="4">
               <el-col :span="12">
-                <el-input placeholder="请输入不通过原因" type="text" v-model="auditcommentNO"></el-input>
+                <el-input v-model="auditcommentNO" placeholder="请输入不通过原因" type="text"></el-input>
               </el-col>
               <el-col :span="12">
                 <el-button type="danger" @click="handleCheckError">审核不通过</el-button>

@@ -1,36 +1,36 @@
 <!--查看订单-->
 <script>
-import {formatValue} from "../../../../api/tool/cons";
+  import { formatValue } from '../../../../api/tool/cons';
 
-export default {
-  name: "OrderInfos",
-  components: {},
-  props: {
-    orderInfo: {
-      type: Object,
-      default() {
-        return {}
+  export default {
+    name: 'OrderInfos',
+    components: {},
+    props: {
+      orderInfo: {
+        type: Object,
+        default() {
+          return {}
+        }
+      }
+    },
+    data() {
+      return {}
+    },
+    created() {
+
+    },
+    mounted() {
+    },
+    methods: {
+      formatValue,
+      handleProcess () {
+      
+      },
+      handleReject () {
+      
       }
     }
-  },
-  data() {
-    return {}
-  },
-  created() {
-
-  },
-  mounted() {
-  },
-  methods: {
-    formatValue,
-    handleProcess () {
-      
-    },
-    handleReject () {
-      
-    }
   }
-}
 </script>
 
 <template>

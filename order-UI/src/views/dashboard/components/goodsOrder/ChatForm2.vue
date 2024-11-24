@@ -1,65 +1,65 @@
 <script>
-import {numToChineseUppercase} from "../../../../api/tool/format";
-import {listOrderDetailByOrderNos} from "@/api/system/orderDetail";
-import { parseTime } from "../../../../utils/ruoyi";
-import {getCustomerSubjectDetailSomeDay} from "@/api/system/statement";
+  import { numToChineseUppercase } from '../../../../api/tool/format';
+  import { listOrderDetailByOrderNos } from '@/api/system/orderDetail';
+  import { parseTime } from '../../../../utils/ruoyi';
+  import { getCustomerSubjectDetailSomeDay } from '@/api/system/statement';
 
-export default {
-  name: "ChatForm2",
-  props: {
-    orderInfo: {
-      type: Object,
-      default: function () {
+  export default {
+    name: 'ChatForm2',
+    props: {
+      orderInfo: {
+        type: Object,
+        default: function () {
         
+        }
+      },
+    },
+    data() {
+      return {
+        currentOrderInfo: this.orderInfo,
+        itemList: [],
+        moneyAmount: null,
       }
     },
-  },
-  data() {
-    return {
-      currentOrderInfo: this.orderInfo,
-      itemList: [],
-      moneyAmount: null,
-    }
-  },
-  computed: {
-    // 合计欠款
-    totalPayments() {
-      return Number(this.orderInfo.allPayments) + Number(this.moneyAmount)
-    }
-  },
-  created() {
-    // 查询该订单的货物
-    let orderNos = this.currentOrderInfo?.smailOrderDetails.map(item => {
-      return item.ordersNo
-    })
-    // 根据ordersNo 批量查询订单货物
-    listOrderDetailByOrderNos(orderNos).then(res => {
-      this.itemList = res.rows
-    })
-    // 查询客户余额 指定时间结转 日期为当前时间
-    const query = {
-      beginTime: parseTime(new Date()),
-      companyId: this.currentOrderInfo.customerID
-    }
-    // 查询客户余额
-    getCustomerSubjectDetailSomeDay(query).then(res => {
-      this.moneyAmount = res.data.moneyAmount
-    })
-  },
-  mounted() {
-    console.log(this.currentOrderInfo)
-  },
-  methods: {
-    numToChineseUppercase,
-    printHTML() {
-      this.$print({
-        printable: 'printBoxs',
-        type: 'html',
-        targetStyles: ['*'], // 打印内容使用所有HTML样式，没有设置这个属性/值，设置分页打印没有效果
+    computed: {
+      // 合计欠款
+      totalPayments() {
+        return Number(this.orderInfo.allPayments) + Number(this.moneyAmount)
+      }
+    },
+    created() {
+      // 查询该订单的货物
+      const orderNos = this.currentOrderInfo?.smailOrderDetails.map(item => {
+        return item.ordersNo
+      })
+      // 根据ordersNo 批量查询订单货物
+      listOrderDetailByOrderNos(orderNos).then(res => {
+        this.itemList = res.rows
+      })
+      // 查询客户余额 指定时间结转 日期为当前时间
+      const query = {
+        beginTime: parseTime(new Date()),
+        companyId: this.currentOrderInfo.customerID
+      }
+      // 查询客户余额
+      getCustomerSubjectDetailSomeDay(query).then(res => {
+        this.moneyAmount = res.data.moneyAmount
       })
     },
+    mounted() {
+      console.log(this.currentOrderInfo)
+    },
+    methods: {
+      numToChineseUppercase,
+      printHTML() {
+        this.$print({
+          printable: 'printBoxs',
+          type: 'html',
+          targetStyles: ['*'], // 打印内容使用所有HTML样式，没有设置这个属性/值，设置分页打印没有效果
+        })
+      },
+    }
   }
-}
 </script>
 
 <template>

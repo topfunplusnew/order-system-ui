@@ -50,45 +50,45 @@
   </el-dialog>
 </template>
 <script>
-import CodeDiff from 'vue-code-diff'
+  import CodeDiff from 'vue-code-diff'
 
-export default {
-  name: 'OrderHistoryCheck',
-  components: { CodeDiff },
-  props: {
-    activeNames: {
-      type: Array,
-      default() {
-        return []
+  export default {
+    name: 'OrderHistoryCheck',
+    components: { CodeDiff },
+    props: {
+      activeNames: {
+        type: Array,
+        default() {
+          return []
+        }
+      },
+      checkHistoryOrderVisible: {
+        type: Boolean
+      },
+      checkcurrentOrderItemInfo: {
+        type: Function,
+        default() {
+          return () => {}
+        }
+      },
+      orderHistoryInfoList: {
+        type: Array,
+        default() {
+          return []
+        }
+      },
+      parseTime: {
+        type: String,
+        default() {
+          return ''
+        }
       }
     },
-    checkHistoryOrderVisible: {
-      type: Boolean
-    },
-    checkcurrentOrderItemInfo: {
-      type: Function,
-      default() {
-        return () => {}
-      }
-    },
-    orderHistoryInfoList: {
-      type: Array,
-      default() {
-        return []
-      }
-    },
-    parseTime: {
-      type: String,
-      default() {
-        return ''
-      }
+    methods: {
+      close () {
+        this.$emit('close')
+      },
+
     }
-  },
-  methods: {
-    close () {
-      this.$emit('close')
-    },
-
   }
-}
 </script>

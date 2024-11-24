@@ -2,7 +2,7 @@
   <div class="sidebar-logo-container" :class="{'collapse':collapse}" :style="{ backgroundColor: variables.menuLightBackground }">
     <transition name="sidebarLogoFade">
       <router-link v-if="collapse" key="collapse" class="sidebar-logo-link" to="/">
-        <h1 class="sidebar-title" :style="{ color:  '#156fb2' }">{{ title }} </h1>
+        <h1 class="sidebar-title" :style="{ color: '#156fb2' }">{{ title }} </h1>
       </router-link>
       <router-link v-else key="expand" class="sidebar-logo-link" to="/">
         <h1 class="sidebar-title" :style="{ color: '#156fb2' }">{{ title }} </h1>
@@ -12,31 +12,31 @@
 </template>
 
 <script>
-import logoImg from '@/assets/logo/logo.png'
-import variables from '@/assets/styles/variables.scss'
+  import logoImg from '@/assets/logo/logo.png'
+  import variables from '@/assets/styles/variables.scss'
 
-export default {
-  name: 'SidebarLogo',
-  props: {
-    collapse: {
-      type: Boolean,
-      required: true
-    }
-  },
-  computed: {
-    variables() {
-      return variables;
+  export default {
+    name: 'SidebarLogo',
+    props: {
+      collapse: {
+        type: Boolean,
+        required: true
+      }
     },
-    sideTheme() {
-      return this.$store.state.settings.sideTheme
-    }
-  },
-  data() {
-    return {
-      title: process.env.VUE_APP_TITLE,
+    data() {
+      return {
+        title: process.env.VUE_APP_TITLE,
+      }
+    },
+    computed: {
+      variables() {
+        return variables;
+      },
+      sideTheme() {
+        return this.$store.state.settings.sideTheme
+      }
     }
   }
-}
 </script>
 
 <style lang="scss" scoped>

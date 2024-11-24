@@ -1,20 +1,20 @@
 <script>
-export default {
-  name: "CheckBankMoney",
-  props: {},
-  data() {
-    return {
-      drawer: false,
-      dialogVisible: false
-    };
-  },
-  methods: {
-    // 查看银行卡余额
-    handleCheckBankAccountMoney() {
-      this.dialogVisible = true
+  export default {
+    name: 'CheckBankMoney',
+    props: {},
+    data() {
+      return {
+        drawer: false,
+        dialogVisible: false
+      };
+    },
+    methods: {
+      // 查看银行卡余额
+      handleCheckBankAccountMoney() {
+        this.dialogVisible = true
+      }
     }
   }
-}
 </script>
 
 <template>
@@ -32,9 +32,9 @@ export default {
       width="880px">
       <span>这是一段信息</span>
       <span slot="footer" class="dialog-footer">
-    <el-button @click="dialogVisible = false">取 消</el-button>
-    <el-button type="primary" @click="dialogVisible = false">确 定</el-button>
-  </span>
+        <el-button @click="dialogVisible = false">取 消</el-button>
+        <el-button type="primary" @click="dialogVisible = false">确 定</el-button>
+      </span>
     </el-dialog>
   </div>
 </template>

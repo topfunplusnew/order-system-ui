@@ -1,7 +1,7 @@
 import store from '@/store'
 
 function authPermission(permission) {
-  const all_permission = "*:*:*";
+  const all_permission = '*:*:*';
   const permissions = store.getters && store.getters.permissions
   if (permission && permission.length > 0) {
     return permissions.some(v => {
@@ -13,7 +13,7 @@ function authPermission(permission) {
 }
 
 function authRole(role) {
-  const super_admin = "admin";
+  const super_admin = 'admin';
   const roles = store.getters && store.getters.roles
   if (role && role.length > 0) {
     return roles.some(v => {

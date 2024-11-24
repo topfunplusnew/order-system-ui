@@ -1,17 +1,17 @@
 <template>
   <div class="navbar">
     <hamburger id="hamburger-container" :is-active="sidebar.opened" class="hamburger-container"
-               @toggleClick="toggleSideBar"/>
-    <breadcrumb id="breadcrumb-container" class="breadcrumb-container" v-if="!topNav"/>
-    <top-nav id="topmenu-container" class="topmenu-container" v-if="topNav"/>
+               @toggleClick="toggleSideBar" />
+    <breadcrumb v-if="!topNav" id="breadcrumb-container" class="breadcrumb-container" />
+    <top-nav v-if="topNav" id="topmenu-container" class="topmenu-container" />
     <div class="right-menu">
       <template v-if="device!=='mobile'">
-        <search id="header-search" class="right-menu-item"/>
+        <search id="header-search" class="right-menu-item" />
       </template>
       <el-dropdown class="avatar-container right-menu-item hover-effect" trigger="click">
         <div class="avatar-wrapper">
-          <i class="el-icon-user"/>
-          <i class="el-icon-caret-bottom"/>
+          <i class="el-icon-user" />
+          <i class="el-icon-caret-bottom" />
           <span>{{ name }},欢迎您</span>
         </div>
         <el-dropdown-menu slot="dropdown">
@@ -28,79 +28,79 @@
 </template>
 
 <script>
-import {mapGetters} from 'vuex'
-import Breadcrumb from '@/components/Breadcrumb'
-import TopNav from '@/components/TopNav'
-import Hamburger from '@/components/Hamburger'
-import Screenfull from '@/components/Screenfull'
-import SizeSelect from '@/components/SizeSelect'
-import Search from '@/components/HeaderSearch'
-import RuoYiGit from '@/components/RuoYi/Git'
-import RuoYiDoc from '@/components/RuoYi/Doc'
-import CheckBankMoney from "@/views/dashboard/components/common/CheckBankMoney.vue";
+  import { mapGetters } from 'vuex'
+  import Breadcrumb from '@/components/Breadcrumb'
+  import TopNav from '@/components/TopNav'
+  import Hamburger from '@/components/Hamburger'
+  import Screenfull from '@/components/Screenfull'
+  import SizeSelect from '@/components/SizeSelect'
+  import Search from '@/components/HeaderSearch'
+  import RuoYiGit from '@/components/RuoYi/Git'
+  import RuoYiDoc from '@/components/RuoYi/Doc'
+  import CheckBankMoney from '@/views/dashboard/components/common/CheckBankMoney.vue';
 
-export default {
-  components: {
-    CheckBankMoney,
-    Breadcrumb,
-    TopNav,
-    Hamburger,
-    Screenfull,
-    SizeSelect,
-    Search,
-    RuoYiGit,
-    RuoYiDoc
-  },
-  data() {
-    return {
-      user: {
-        name: ''
+  export default {
+    components: {
+      CheckBankMoney,
+      Breadcrumb,
+      TopNav,
+      Hamburger,
+      Screenfull,
+      SizeSelect,
+      Search,
+      RuoYiGit,
+      RuoYiDoc
+    },
+    data() {
+      return {
+        user: {
+          name: ''
+        }
       }
-    }
-  },
-  //获取用户个人信息
-  computed: {
-    ...mapGetters([
-      'sidebar',
-      'avatar',
-      'device',
-      'name'
-    ]),
-    setting: {
-      get() {
-        return this.$store.state.settings.showSettings
+    },
+    // 获取用户个人信息
+    computed: {
+      ...mapGetters([
+        'sidebar',
+        'avatar',
+        'device',
+        'name'
+      ]),
+      setting: {
+        get() {
+          return this.$store.state.settings.showSettings
+        },
+        set(val) {
+          this.$store.dispatch('settings/changeSetting', {
+            key: 'showSettings',
+            value: val
+          })
+        }
       },
-      set(val) {
-        this.$store.dispatch('settings/changeSetting', {
-          key: 'showSettings',
-          value: val
-        })
+      topNav: {
+        get() {
+          return this.$store.state.settings.topNav
+        }
       }
     },
-    topNav: {
-      get() {
-        return this.$store.state.settings.topNav
+    methods: {
+      toggleSideBar() {
+        this.$store.dispatch('app/toggleSideBar')
+      },
+      async logout() {
+        this.$confirm('确定注销并退出系统吗？', '提示', {
+          confirmButtonText: '确定',
+          cancelButtonText: '取消',
+          type: 'warning'
+        }).then(() => {
+          this.$store.dispatch('LogOut').then(() => {
+            location.href = '/index';
+          })
+        }).catch(() => {
+        });
       }
-    }
-  },
-  methods: {
-    toggleSideBar() {
-      this.$store.dispatch('app/toggleSideBar')
-    },
-    async logout() {
-      this.$confirm('确定注销并退出系统吗？', '提示', {
-        confirmButtonText: '确定',
-        cancelButtonText: '取消',
-        type: 'warning'
-      }).then(() => {
-        this.$store.dispatch('LogOut').then(() => {
-          location.href = '/index';
-        })
-      }).catch(() => {
-      });
     }
   }
-}
 </script>
 
 <style lang="scss" scoped>

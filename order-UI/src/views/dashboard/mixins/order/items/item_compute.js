@@ -1,4 +1,4 @@
-import {fix} from "../../../../../api/tool/format";
+import { fix } from '../../../../../api/tool/format';
 
 /**
  * 订单的计算公式 分为四种情况
@@ -9,8 +9,8 @@ export var mixin_item_compute = {
     return {}
   },
   computed: {
-    //公式计算相关的计算属性
-    //是否含税 厂家否 客户否
+    // 公式计算相关的计算属性
+    // 是否含税 厂家否 客户否
     paymentFactory00() {
       return fix(this.orderItemInfo.length * this.orderItemInfo.width * this.orderItemInfo.pieces / 1000000 * this.orderItemInfo.price + Number(this.orderItemInfo.sundryCost))
     },
@@ -30,7 +30,7 @@ export var mixin_item_compute = {
     profitNoTax00() {
       return fix(this.orderItemInfo.payments - this.orderItemInfo.paymentFactory - this.orderItemInfo.landFreight - this.orderItemInfo.seaFreight - this.orderItemInfo.otherCost);
     },
-    //是否含税10
+    // 是否含税10
     paymentFactory10() {
       return fix(this.orderItemInfo.length * this.orderItemInfo.width * this.orderItemInfo.pieces * this.orderItemInfo.price / 1000000 + Number(this.orderItemInfo.sundryCost));
     },
@@ -50,7 +50,7 @@ export var mixin_item_compute = {
     profitNoTax10() {
       return fix(this.orderItemInfo.payments - (this.orderItemInfo.paymentFactory / 1.075) - this.orderItemInfo.landFreight - this.orderItemInfo.seaFreight - this.orderItemInfo.otherCost)
     },
-    //是否含税01
+    // 是否含税01
     paymentFactory01() {
       return fix(this.orderItemInfo.length * this.orderItemInfo.width * this.orderItemInfo.pieces / 1000000 * this.orderItemInfo.price + Number(this.orderItemInfo.sundryCost));
     },
@@ -70,7 +70,7 @@ export var mixin_item_compute = {
     profitNoTax01() {
       return fix((this.orderItemInfo.payments / 1.075) - this.orderItemInfo.paymentFactory - this.orderItemInfo.landFreight - this.orderItemInfo.seaFreight - this.orderItemInfo.otherCost)
     },
-    //是否含税11
+    // 是否含税11
     paymentFactory11() {
       return fix(this.orderItemInfo.length * this.orderItemInfo.width * this.orderItemInfo.pieces * this.orderItemInfo.price / 1000000 + Number(this.orderItemInfo.sundryCost));
     },
@@ -87,21 +87,21 @@ export var mixin_item_compute = {
       return fix(this.orderItemInfo.payments - this.orderItemInfo.paymentFactory - this.orderItemInfo.landFreight - this.orderItemInfo.seaFreight)
     },
     profitNoTax11() {
-      return fix(this.orderItemInfo.payments - this.orderItemInfo.paymentFactory - (this.orderItemInfo.landFreight * 1.075) - this.orderItemInfo.seaFreight
-        - (this.orderItemInfo.height * this.orderItemInfo.length * this.orderItemInfo.width * this.orderItemInfo.pieces / 1000000 / 20 * 0.5) - this.orderItemInfo.otherCost)
+      return fix(this.orderItemInfo.payments - this.orderItemInfo.paymentFactory - (this.orderItemInfo.landFreight * 1.075) - this.orderItemInfo.seaFreight -
+        (this.orderItemInfo.height * this.orderItemInfo.length * this.orderItemInfo.width * this.orderItemInfo.pieces / 1000000 / 20 * 0.5) - this.orderItemInfo.otherCost)
     },
   },
   watch: {
-    //根据出厂片数自动计算
+    // 根据出厂片数自动计算
     pieces: {
       handler(val) {
-        //如果选择的是仓库发货
+        // 如果选择的是仓库发货
         if (this.orderItemInfo.supplierID === null) {
           if (val > this.currentStockNumber) {
-            this.$message.error("出厂片数不能大于库存量!");
+            this.$message.error('出厂片数不能大于库存量!');
             this.orderItemInfo.pieces = this.currentStockNumber;
           } else {
-            //修改片数自动计算
+            // 修改片数自动计算
             if (this.orderItemInfo.isIncludeTaxFactory === '0' && this.orderItemInfo.isIncludeTaxSale === '0') {
               this.orderItemInfo.paymentFactory = this.paymentFactory00;
               this.orderItemInfo.payments = this.payments00;

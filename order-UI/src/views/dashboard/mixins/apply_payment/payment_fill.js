@@ -5,7 +5,7 @@ export var mixin_payment_fill = {
     return {
       // 对方户名
       queryCompany: '',
-      //查询
+      // 查询
       queryOther: ''
     }
   },
@@ -18,7 +18,7 @@ export var mixin_payment_fill = {
       this.form.companyName = val.companyName;
       this.form.companyId = val.id
     },
-    //对方信息(银行卡信息) - 点击确认后自动填充
+    // 对方信息(银行卡信息) - 点击确认后自动填充
     handleCommitBack(val) {
       // 如果选择的是员工 银行卡中的companyId即可填充
       if (this.value === '员工') {
@@ -27,8 +27,7 @@ export var mixin_payment_fill = {
       this.form.otherBankNo = val.bankNo;
       this.form.otherBankName = val.bankName;
       this.form.otherAcountsName = val.acountsName;
-    }
-    ,
+    },    
     handleUpdateQueryName(val) {
       this.queryCompany = val;
     },

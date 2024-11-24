@@ -1,24 +1,24 @@
 <!-- 分步表单-->
 <script>
-export default {
-  name: "StepsForm",
-  props: {
-    active: {
-      type: Number,
-      default: 0
+  export default {
+    name: 'StepsForm',
+    props: {
+      active: {
+        type: Number,
+        default: 0
+      },
+      // 第一步骤标题
+      titleOne: '',
+      // 第二步骤标题
+      titleTwo: '',
+      // 头部的提示
+      titleInfo: ''
     },
-    // 第一步骤标题
-    titleOne: '',
-    // 第二步骤标题
-    titleTwo: '',
-    // 头部的提示
-    titleInfo: ''
-  },
-  data() {
-    return {}
-  },
-  methods: {}
-}
+    data() {
+      return {}
+    },
+    methods: {}
+  }
 </script>
 
 <template>
@@ -35,27 +35,27 @@ export default {
       </div>
     </el-row>
     <!--      提示信息-->
-    <br/>
+    <br />
     <el-row>
       <el-alert
         :title="titleInfo"
         type="info">
       </el-alert>
     </el-row>
-    <br/>
+    <br />
     <el-row justify="center">
       <el-col :span="24">
         <!--        第一步骤-->
         <el-row v-if="active === 0">
-          <slot name="step-one"/>
+          <slot name="step-one" />
         </el-row>
         <!--        第二步骤-->
         <el-row v-if="active === 1">
-          <slot name="step-two"/>
+          <slot name="step-two" />
         </el-row>
         <!--        第三步骤  完成提交的页面-->
         <el-row v-if="active === 2">
-          <slot name="step-three"/>
+          <slot name="step-three" />
         </el-row>
       </el-col>
     </el-row>

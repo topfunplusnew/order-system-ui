@@ -1,110 +1,110 @@
 <!--订单详情个体-->
 
 <script>
-import SearchOption from "../../../../components/SearchOption.vue";
-import {listCompany} from "../../../../api/system/company";
-import {listInventory} from "../../../../api/system/inventory";
-import {listProductLevel} from "../../../../api/system/productLevel";
-import {mixin_item_addItem} from "../../mixins/order/items/item_addItem";
-import {mixin_item_compute} from "../../mixins/order/items/item_compute";
+  import SearchOption from '../../../../components/SearchOption.vue';
+  import { listCompany } from '../../../../api/system/company';
+  import { listInventory } from '../../../../api/system/inventory';
+  import { listProductLevel } from '../../../../api/system/productLevel';
+  import { mixin_item_addItem } from '../../mixins/order/items/item_addItem';
+  import { mixin_item_compute } from '../../mixins/order/items/item_compute';
 
-export default {
-  name: "OrderItem",
-  components: {SearchOption},
-  mixins: [mixin_item_addItem, mixin_item_compute],
-  //父组件传递的订单详情个体
-  props: {
-    tempOrderInfo: {
-      type: Object,
-      default() {
-        return {
+  export default {
+    name: 'OrderItem',
+    components: { SearchOption },
+    mixins: [mixin_item_addItem, mixin_item_compute],
+    // 父组件传递的订单详情个体
+    props: {
+      tempOrderInfo: {
+        type: Object,
+        default() {
+          return {
           
+          }
         }
+      },
+      isSea: Boolean,
+      isLand: Boolean,
+      index: {
+        type: Number,
+        default: 0
+      },
+    },
+    data() {
+      return {
+        disabled: false,
+        loading: false,
+        buttonText: null,
+        // 仓库的查询
+        queryStore: null,
+        // 供应商的查询
+        querySupplier: null,
+        queryLevel: null,
       }
     },
-    isSea: Boolean,
-    isLand: Boolean,
-    index: {
-      type: Number,
-      default: 0
+    computed: {
+      computedValue () {
+        return this.orderItemInfo.supplier === undefined || this.orderItemInfo.supplier === null ? this.orderItemInfo.storeName : this.orderItemInfo.supplier
+      }
     },
-  },
-  data() {
-    return {
-      disabled: false,
-      loading: false,
-      buttonText: null,
-      // 仓库的查询
-      queryStore: null,
-      // 供应商的查询
-      querySupplier: null,
-      queryLevel:null,
-    }
-  },
-  computed: {
-    computedValue () {
-      return this.orderItemInfo.supplier===undefined|| this.orderItemInfo.supplier===null?this.orderItemInfo.storeName:this.orderItemInfo.supplier
-    }
-  },
-  watch: {
-    'tempOrderInfo': {
-      handler(val) {
-        console.log('watch:tempOrderInfo:', val)
-        this.$nextTick(() => {
-          Object.assign(this.orderItemInfo, val)
+    watch: {
+      'tempOrderInfo': {
+        handler(val) {
+          console.log('watch:tempOrderInfo:', val)
+          this.$nextTick(() => {
+            Object.assign(this.orderItemInfo, val)
+          })
+        },
+        deep: true,
+        immediate: true // 立即执行一次
+      },
+      'index': {
+        handler(val) {
+          console.log('watch:index:', val)
+        }
+      },
+      // 陆运费和海运费 如果传入的是false那么就是不要钱
+      isSea: {
+        handler(val) {
+          if (val === false) {
+            this.orderItemInfo.seaFreight = 0;
+          }
+        }
+      },
+      isLand: {
+        handler(val) {
+          if (val === false) {
+            this.orderItemInfo.landFreight = 0;
+          }
+        }
+      },
+    },
+    created() {
+      this.buttonText = '提交货物'
+      this.resetOrderItemInfo();
+    },
+    methods: {
+      listProductLevel,
+      listInventory,
+      listCompany,
+      // 更新仓库的查询字段
+      handleUpdateQueryNameStore (value) {
+        this.queryStore = value
+      },
+      // 更新供应商的查询字段
+      handleUpdateQuerySupplier (value) {
+        this.querySupplier = value
+      },
+      handleUpdateQueryNameLevel (value) {
+        this.queryLevel = value
+      },
+      // 筛选无剩余片数的库存
+      filterNoStockNumber(data) {
+        return new Promise((resolve) => {
+          resolve(data.filter(item => item.stockNumber > 0))
         })
       },
-      deep: true,
-      immediate: true // 立即执行一次
-    },
-    'index': {
-      handler(val) {
-        console.log('watch:index:', val)
-      }
-    },
-    // 陆运费和海运费 如果传入的是false那么就是不要钱
-    isSea: {
-      handler(val) {
-        if (val === false) {
-          this.orderItemInfo.seaFreight = 0;
-        }
-      }
-    },
-    isLand: {
-      handler(val) {
-        if (val === false) {
-          this.orderItemInfo.landFreight = 0;
-        }
-      }
-    },
-  },
-  created() {
-    this.buttonText = '提交货物'
-    this.resetOrderItemInfo();
-  },
-  methods: {
-    listProductLevel,
-    listInventory,
-    listCompany,
-    // 更新仓库的查询字段
-    handleUpdateQueryNameStore (value) {
-      this.queryStore = value
-    },
-    // 更新供应商的查询字段
-    handleUpdateQuerySupplier (value) {
-      this.querySupplier = value
-    },
-    handleUpdateQueryNameLevel (value) {
-      this.queryLevel = value
-    },
-    // 筛选无剩余片数的库存
-    filterNoStockNumber(data) {
-      return new Promise((resolve) => {
-        resolve(data.filter(item => item.stockNumber > 0))
-      })
-    },
+    }
   }
-}
 </script>
 
 <template>

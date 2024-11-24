@@ -1,107 +1,107 @@
 <script>
-import SearchOption from "@/components/SearchOption.vue";
-import {listStoreHouse} from "@/api/system/StoreHouse";
-import {listCars} from "@/api/system/cars";
-import {listFleet} from "@/api/system/fleet";
-import InventoryItem from "./InventoryItem.vue";
+  import SearchOption from '@/components/SearchOption.vue';
+  import { listStoreHouse } from '@/api/system/StoreHouse';
+  import { listCars } from '@/api/system/cars';
+  import { listFleet } from '@/api/system/fleet';
+  import InventoryItem from './InventoryItem.vue';
 
-export default {
-  name: "InventoryForm",
-  components: {SearchOption, InventoryItem},
-  props: {
-    //是否为二次出库
-    isSecond: {
-      type: Boolean,
-      default: false
-    }
-  },
-  data() {
-    return {
-      inventoryInfo: {},
-      //查询库房信息
-      queryStoreHouseName: '',
-      //查询司机信息
-      queryCars: '',
-      //查询车队信息
-      queryFleet: '',
-      // 查询海运司机
-      querySeaCars:'',
-      // 海运和陆运
-      isLand: false,
-      isSea:false,
-    }
-  },
-  computed: {},
-  created() {
-    this.resetInventoryInfo();
-  },
-  mounted() {
-
-  },
-  methods: {
-    listFleet,
-    listCars,
-    listStoreHouse,
-    handleProcess() {
-      this.$refs.inventoryItem.handleProcess()
-    },
-    handleReject() {
-      this.$refs.inventoryItem.handleReject()
-    },
-    //一堆的更新查找和确认 Query是更新查找值 Commit是更新当前库存对象的属性
-    handleUpdateQueryStoreHouseName(val) {
-      this.queryStoreHouseName = val
-    },
-    handleCommitBackStoreHouseName(val) {
-      Object.assign(this.inventoryInfo, {
-        storeHouseName: val.storeHouseName,
-        storeHouseid: val.id
-      })
-    },
-    handleUpdateQueryCars(val) {
-      this.queryCars = val
-    },
-    // 填充司机信息的回调
-    handleCommitBackCars(val) {
-      Object.assign(this.inventoryInfo, {
-        landDriverName: val.driver,
-        landCarNo: val.carNo,
-        landDriverTel: val.tel,
-        landCarID: val.id
-      })
-    },
-    handleUpdateQueryFleet(val) {
-      this.queryFleet = val
-    },
-    handleCommitBackFleet(val) {
-      this.inventoryInfo.fleet = val.fname
-    },
-
-    // 更新海运司机
-    handleCommitBackSeaCar (value) {
-      this.inventoryInfo.seaCarNo = value.carNo
-      this.inventoryInfo.seaDriverName = value.driver
-      this.inventoryInfo.seaDriverTel = value.tel
-    },
-    handleChangeSeaCar (value) {
-      this.querySeaCars = value
-    },
-    resetInventoryInfo() {
-      this.inventoryInfo = {
-        storeDate: null,
-        storeHouseName: null,
-        landCarNo: null,
-        landDriverTel: null,
-        fleet: null,
-        landCarID: null,
-        seaDriverName: null,
-        seaCarNo: null,
-        seaDriverTel:null
+  export default {
+    name: 'InventoryForm',
+    components: { SearchOption, InventoryItem },
+    props: {
+      // 是否为二次出库
+      isSecond: {
+        type: Boolean,
+        default: false
       }
-    }
-  },
+    },
+    data() {
+      return {
+        inventoryInfo: {},
+        // 查询库房信息
+        queryStoreHouseName: '',
+        // 查询司机信息
+        queryCars: '',
+        // 查询车队信息
+        queryFleet: '',
+        // 查询海运司机
+        querySeaCars: '',
+        // 海运和陆运
+        isLand: false,
+        isSea: false,
+      }
+    },
+    computed: {},
+    created() {
+      this.resetInventoryInfo();
+    },
+    mounted() {
 
-}
+    },
+    methods: {
+      listFleet,
+      listCars,
+      listStoreHouse,
+      handleProcess() {
+        this.$refs.inventoryItem.handleProcess()
+      },
+      handleReject() {
+        this.$refs.inventoryItem.handleReject()
+      },
+      // 一堆的更新查找和确认 Query是更新查找值 Commit是更新当前库存对象的属性
+      handleUpdateQueryStoreHouseName(val) {
+        this.queryStoreHouseName = val
+      },
+      handleCommitBackStoreHouseName(val) {
+        Object.assign(this.inventoryInfo, {
+          storeHouseName: val.storeHouseName,
+          storeHouseid: val.id
+        })
+      },
+      handleUpdateQueryCars(val) {
+        this.queryCars = val
+      },
+      // 填充司机信息的回调
+      handleCommitBackCars(val) {
+        Object.assign(this.inventoryInfo, {
+          landDriverName: val.driver,
+          landCarNo: val.carNo,
+          landDriverTel: val.tel,
+          landCarID: val.id
+        })
+      },
+      handleUpdateQueryFleet(val) {
+        this.queryFleet = val
+      },
+      handleCommitBackFleet(val) {
+        this.inventoryInfo.fleet = val.fname
+      },
+
+      // 更新海运司机
+      handleCommitBackSeaCar (value) {
+        this.inventoryInfo.seaCarNo = value.carNo
+        this.inventoryInfo.seaDriverName = value.driver
+        this.inventoryInfo.seaDriverTel = value.tel
+      },
+      handleChangeSeaCar (value) {
+        this.querySeaCars = value
+      },
+      resetInventoryInfo() {
+        this.inventoryInfo = {
+          storeDate: null,
+          storeHouseName: null,
+          landCarNo: null,
+          landDriverTel: null,
+          fleet: null,
+          landCarID: null,
+          seaDriverName: null,
+          seaCarNo: null,
+          seaDriverTel: null
+        }
+      }
+    },
+
+  }
 </script>
 
 <template>

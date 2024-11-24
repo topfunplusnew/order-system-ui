@@ -1,164 +1,171 @@
 <!--供应商科目明细表-->
 
 <script>
-import TotalTag from "@/views/system/Statement/components/TotalTag.vue";
-import {
-  getCustomerFiveParams,
-  getSupplierSubjectDetailSomeDay, getSupplierSubjectDetailSummary
-} from "@/api/system/statement";
-import {getSubjectLevel} from "@/api/system/subject";
-import {listConfig} from "@/api/system/config";
-import {getFunction} from "@/utils/order/mapper";
-import PAYMENT from "@/components/NeedToShow/PAYMENT.vue";
-import {TableName} from "@/api/tool/enums";
-import GOODS_ORDER from "@/components/NeedToShow/GOODS_ORDER.vue";
-import INVOICE_IN from "@/components/NeedToShow/INVOICE_IN.vue";
-import INVOICE_OUT from "@/components/NeedToShow/INVOICE_OUT.vue";
-import INVOICE_ORTHER from "@/components/NeedToShow/INVOICE_ORTHER.vue";
-import OFFSETTING from "@/components/NeedToShow/OFFSETTING.vue";
-import INVENTORY from "@/components/NeedToShow/INVENTORY.vue";
-import REBATE from "@/components/NeedToShow/REBATE.vue";
-import ORDER_DETAIL from "@/components/NeedToShow/ORDER_DETAIL.vue";
-import { fix } from "../../../../api/tool/format";
+  import TotalTag from '@/views/system/Statement/components/TotalTag.vue';
+  import {
+    getCustomerFiveParams,
+    getSupplierSubjectDetailSomeDay,
+    getSupplierSubjectDetailSummary,
+  } from '@/api/system/statement';
+  import { getSubjectLevel } from '@/api/system/subject';
+  import { listConfig } from '@/api/system/config';
+  import { getFunction } from '@/utils/order/mapper';
+  import PAYMENT from '@/components/NeedToShow/PAYMENT.vue';
+  import { TableName } from '@/api/tool/enums';
+  import GOODS_ORDER from '@/components/NeedToShow/GOODS_ORDER.vue';
+  import INVOICE_IN from '@/components/NeedToShow/INVOICE_IN.vue';
+  import INVOICE_OUT from '@/components/NeedToShow/INVOICE_OUT.vue';
+  import INVOICE_ORTHER from '@/components/NeedToShow/INVOICE_ORTHER.vue';
+  import OFFSETTING from '@/components/NeedToShow/OFFSETTING.vue';
+  import INVENTORY from '@/components/NeedToShow/INVENTORY.vue';
+  import REBATE from '@/components/NeedToShow/REBATE.vue';
+  import ORDER_DETAIL from '@/components/NeedToShow/ORDER_DETAIL.vue';
+  import { fix } from '../../../../api/tool/format';
 
-export default {
-  name: "SupplierDetail",
-  components: {TotalTag},
-  props: {
-    // 需要查看的那一行供应商的信息
-    detail: {
-      type: Object,
-      default: () => {
-      }
-    }
-  },
-  data() {
-    return {
-      loading: false,
-      // 弹窗
-      dialogVisible: false,
-      tableData: [],
-
-      // 查询对应信息的弹窗
-      infoVisible: false,
-
-      // 对应渲染的组件和信息
-      Components: null,
-      needToShowInfo: null,
-
-      // 五个字段 tags
-      tags: null,
-    }
-  },
-  computed: {
-    supplierId() {
-      return this.detail.companyId
-    }
-  },
-
-  methods: {
-    // 查看明细 点击的时候 先让用户输入时间 然后拿该行数据的companyId查询该供应商的明细账
-    handleCheck() {
-      // 打开时间选择框
-      this.$datePicker().then(res => {
-        // 组装查询条件 分别为开始时间 结束时间 供应商id
-        const query = {
-          companyId: this.supplierId,
-          beginTime: res.beginTime,
-          endTime: res.endTime
-        }
-        // 查询科目 填充
-        listConfig({configKey: 'order.customerDetailSummary.subjectNo'}).then(res => {
-          // 科目编码
-          const configValue = res.rows[0]?.configValue
-          // 根据configValue去拿取科目名称
-          getSubjectLevel(configValue).then(res => {
-            // 拿到科目名称
-            const subjectName = res.data.title
-            // 查询明细账之前 要先查询上年结转的余额本币填充
-            getSupplierSubjectDetailSomeDay({beginTime: query.beginTime, companyId: this.supplierId}).then(res => {
-              // 拿到上年的数据
-                const lastYearDetail = res.data;
-                // 把上年结转的数据放在最前面 并且摘要为上年结转
-                this.tableData.push({
-                  ...lastYearDetail,
-                  summary: '上年结转',
-                  moneyAmountLocal: lastYearDetail.moneyAmount,
-                  subjectNo: configValue,
-                  subjectName: subjectName
-                })
-              // 查询供应商明细账
-              getSupplierSubjectDetailSummary(query).then(res => {
-                // 上年结转的余额
-                let lastMoney = Number(lastYearDetail.moneyAmount)
-                // 累计金额 
-                let nowMoney = Number(0)
-                // 拿到汇总账
-                const append = res.data.map(item => {
-                  // 金额累计计算
-                  nowMoney = lastMoney + Number(item.moneyAmount)
-                  // 更新
-                  lastMoney = nowMoney;
-                  return {
-                    ...item,
-                    moneyAmountLocal: fix(nowMoney),
-                    subjectNo: configValue,
-                    subjectName: subjectName
-                  }
-                })
-                // 添加到上年结转数据的后面
-                this.tableData = this.tableData.concat(append) 
-                // 打开弹窗
-                this.dialogVisible = true
-              })
-            })
-          })
-        })
-      })
+  export default {
+    name: 'SupplierDetail',
+    components: { TotalTag },
+    props: {
+      // 需要查看的那一行供应商的信息
+      detail: {
+        type: Object,
+        default: () => {},
+      },
     },
-    // 查询对应的信息 通过拿表名和id  对应两个字段为tableName payNo
-    handleSearch(row) {
-      // 拿到表名和id
-      const {tableName, payNo} = row
-      // 根据tableName动态获取某个JS模块
-      getFunction(tableName)(payNo).then(res => {
-        // 填充数据
-        this.needToShowInfo = res.data
-        console.log(this.needToShowInfo)
-        // 根据对应表名渲染对应的展示组件
-        this.Components = this.getComponents(tableName)
-        if (this.Components !== null) {
-          // 打开弹窗
-          this.infoVisible = true
-        } else {
-          this.$message.warning('组件渲染有误')
-        }
-      })
-    },
-    // 根据对应的表名渲染对应的组件
-    getComponents(tableName) {
-      const components = {
-        [TableName.GOODS_ORDER]: GOODS_ORDER,
-        [TableName.PAYMENT]: PAYMENT,
-        [TableName.INVOICE_IN]: INVOICE_IN,
-        [TableName.INVOICE_OUT]: INVOICE_OUT,
-        [TableName.INVOICE_OTHER]: INVOICE_ORTHER,
-        [TableName.OFFSETTING]: OFFSETTING,
-        [TableName.REBATE]: REBATE,
-        [TableName.INVENTORY]: INVENTORY,
-        [TableName.ORDER_DETAIL]: ORDER_DETAIL,
+    data() {
+      return {
+        loading: false,
+        // 弹窗
+        dialogVisible: false,
+        tableData: [],
+
+        // 查询对应信息的弹窗
+        infoVisible: false,
+
+        // 对应渲染的组件和信息
+        Components: null,
+        needToShowInfo: null,
+
+        // 五个字段 tags
+        tags: null,
       };
-      return components[tableName] || null; // 默认返回 null，如果没有匹配的 tableName
     },
-    // todo 查询某个供应商的五个字段
-    getCustomerTags(companyId) {
-      // 发送请求查询五个字段
-      getCustomerFiveParams(companyId).then(res => {
-        this.tags = res.data || null
-      })
-    }
-  },
-}
+    computed: {
+      supplierId() {
+        return this.detail.companyId;
+      },
+    },
+
+    methods: {
+      // 查看明细 点击的时候 先让用户输入时间 然后拿该行数据的companyId查询该供应商的明细账
+      handleCheck() {
+        // 清除一下状态
+        this.tableData = [];
+        // 打开时间选择框
+        this.$datePicker().then((res) => {
+          // 组装查询条件 分别为开始时间 结束时间 供应商id
+          const query = {
+            companyId: this.supplierId,
+            beginTime: res.beginTime,
+            endTime: res.endTime,
+          };
+          // 查询科目 填充
+          listConfig({ configKey: 'order.customerDetailSummary.subjectNo' }).then(
+            (res) => {
+              // 科目编码
+              const configValue = res.rows[0]?.configValue;
+              // 根据configValue去拿取科目名称
+              getSubjectLevel(configValue).then((res) => {
+                // 拿到科目名称
+                const subjectName = res.data.title;
+                // 查询明细账之前 要先查询上年结转的余额本币填充
+                getSupplierSubjectDetailSomeDay({
+                  beginTime: query.beginTime,
+                  companyId: this.supplierId,
+                }).then((res) => {
+                  // 拿到上年的数据
+                  const lastYearDetail = res.data;
+                  // 把上年结转的数据放在最前面 并且摘要为上年结转
+                  this.tableData.push({
+                    ...lastYearDetail,
+                    summary: '上年结转',
+                    moneyAmountLocal: lastYearDetail.moneyAmount,
+                    subjectNo: configValue,
+                    subjectName: subjectName,
+                  });
+                  // 查询供应商明细账
+                  getSupplierSubjectDetailSummary(query).then((res) => {
+                    // 上年结转的余额
+                    let lastMoney = Number(lastYearDetail.moneyAmount);
+                    // 累计金额
+                    let nowMoney = Number(0);
+                    // 拿到汇总账
+                    const append = res.data.map((item) => {
+                      // 金额累计计算
+                      nowMoney = lastMoney + Number(item.moneyAmount);
+                      // 更新
+                      lastMoney = nowMoney;
+                      return {
+                        ...item,
+                        moneyAmountLocal: fix(nowMoney),
+                        subjectNo: configValue,
+                        subjectName: subjectName,
+                      };
+                    });
+                    // 添加到上年结转数据的后面
+                    this.tableData = this.tableData.concat(append);
+                    // 打开弹窗
+                    this.dialogVisible = true;
+                  });
+                });
+              });
+            }
+          );
+        });
+      },
+      // 查询对应的信息 通过拿表名和id  对应两个字段为tableName payNo
+      handleSearch(row) {
+        // 拿到表名和id
+        const { tableName, payNo } = row;
+        // 根据tableName动态获取某个JS模块
+        getFunction(tableName)(payNo).then((res) => {
+          // 填充数据
+          this.needToShowInfo = res.data;
+          console.log(this.needToShowInfo);
+          // 根据对应表名渲染对应的展示组件
+          this.Components = this.getComponents(tableName);
+          if (this.Components !== null) {
+            // 打开弹窗
+            this.infoVisible = true;
+          } else {
+            this.$message.warning('组件渲染有误');
+          }
+        });
+      },
+      // 根据对应的表名渲染对应的组件
+      getComponents(tableName) {
+        const components = {
+          [TableName.GOODS_ORDER]: GOODS_ORDER,
+          [TableName.PAYMENT]: PAYMENT,
+          [TableName.INVOICE_IN]: INVOICE_IN,
+          [TableName.INVOICE_OUT]: INVOICE_OUT,
+          [TableName.INVOICE_OTHER]: INVOICE_ORTHER,
+          [TableName.OFFSETTING]: OFFSETTING,
+          [TableName.REBATE]: REBATE,
+          [TableName.INVENTORY]: INVENTORY,
+          [TableName.ORDER_DETAIL]: ORDER_DETAIL,
+        };
+        return components[tableName] || null; // 默认返回 null，如果没有匹配的 tableName
+      },
+      // todo 查询某个供应商的五个字段
+      getCustomerTags(companyId) {
+        // 发送请求查询五个字段
+        getCustomerFiveParams(companyId).then((res) => {
+          this.tags = res.data || null;
+        });
+      },
+    },
+  };
 </script>
 
 <template>
@@ -181,8 +188,8 @@ export default {
                 这五个数据-->
       <!--      供应商无-->
       <!--      <TotalTag :tags="tags"/>-->
-      <br>
-      <br>
+      <br />
+      <br />
       <!--      供应商的结转数据-->
       <el-card class="box-card">
         <el-table
@@ -193,7 +200,11 @@ export default {
           :data="tableData"
           max-height="600px"
           size="mini"
-          :cell-style="()=>{return {padding:'2px'}}"
+          :cell-style="
+            () => {
+              return { padding: '2px' };
+            }
+          "
         >
           <el-table-column
             show-overflow-tooltip
@@ -211,7 +222,12 @@ export default {
             prop="payNo"
           >
             <template slot-scope="scope">
-              <el-button v-if="scope.row.payNo" type="text" size="mini" @click="handleSearch(scope.row)">
+              <el-button
+                v-if="scope.row.payNo"
+                type="text"
+                size="mini"
+                @click="handleSearch(scope.row)"
+              >
                 点击查询对应信息
               </el-button>
             </template>
@@ -285,7 +301,11 @@ export default {
             width="140"
           >
             <template slot-scope="scope">
-              {{ scope.row.moneyAmount > 0 ? '-': Math.abs(scope.row.moneyAmount) }}
+              {{
+                scope.row.moneyAmount > 0
+                  ? '-'
+                  : Math.abs(scope.row.moneyAmount)
+              }}
             </template>
           </el-table-column>
 
@@ -333,7 +353,9 @@ export default {
       </el-card>
       <span slot="footer" class="dialog-footer">
         <el-button @click="dialogVisible = false">取 消</el-button>
-        <el-button type="primary" @click="dialogVisible = false">确 定</el-button>
+        <el-button type="primary" @click="dialogVisible = false"
+        >确 定</el-button
+        >
       </span>
     </el-dialog>
 
@@ -349,6 +371,4 @@ export default {
   </div>
 </template>
 
-<style scoped lang="scss">
-
-</style>
+<style scoped lang="scss"></style>

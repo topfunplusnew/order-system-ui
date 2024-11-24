@@ -1,4 +1,4 @@
-import {listSubject} from "../../../../api/system/subject";
+import { listSubject } from '../../../../api/system/subject';
 
 export var mixin_payment_subject = {
   data: function () {
@@ -33,7 +33,7 @@ export var mixin_payment_subject = {
       // 对传入根节点的子数组进行操作
       parent.children = this.paymentTypeOptions.filter(item => item.parentId === parent.id);
       parent.children.forEach(child => {
-        this.findChildren(child);  // 递归处理子节点
+        this.findChildren(child); // 递归处理子节点
       });
 
       // 如果子节点为空，则删除 children 属性

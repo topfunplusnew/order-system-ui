@@ -1,14 +1,14 @@
 // 根据对应表名返回特定方法
-import {TableName} from "@/api/tool/enums";
-import {getGoodsOrder} from "@/api/system/goodsOrder";
-import {getPayment} from "@/api/system/payment";
-import {getInvoiceIn} from "@/api/system/invoiceIn";
-import {getInvoiceOut} from "@/api/system/invoiceOut";
-import {getInvoiceOther} from "@/api/system/invoiceOther";
-import {getOffsetting} from "@/api/system/Offsetting";
-import {getRebate} from "@/api/system/Rebate";
-import {getInventory} from "@/api/system/inventory";
-import {getOrderDetail} from "@/api/system/orderDetail";
+import { TableName } from '@/api/tool/enums';
+import { getGoodsOrder } from '@/api/system/goodsOrder';
+import { getPayment } from '@/api/system/payment';
+import { getInvoiceIn } from '@/api/system/invoiceIn';
+import { getInvoiceOut } from '@/api/system/invoiceOut';
+import { getInvoiceOther } from '@/api/system/invoiceOther';
+import { getOffsetting } from '@/api/system/Offsetting';
+import { getRebate } from '@/api/system/Rebate';
+import { getInventory } from '@/api/system/inventory';
+import { getOrderDetail } from '@/api/system/orderDetail';
 
 export function getFunction(tableName) {
 
@@ -19,7 +19,7 @@ export function getFunction(tableName) {
       return getPayment;
     case TableName.INVOICE_IN:
       return getInvoiceIn;
-    case  TableName.INVOICE_OUT:
+    case TableName.INVOICE_OUT:
       return getInvoiceOut;
     case TableName.INVOICE_OTHER:
       return getInvoiceOther;

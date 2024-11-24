@@ -1,6 +1,6 @@
-import {listSubject} from "../../../../api/system/subject";
-import {listBankAccount} from "../../../../api/system/bankAccount";
-import {TableName} from "../../../../api/tool/enums";
+import { listSubject } from '../../../../api/system/subject';
+import { listBankAccount } from '../../../../api/system/bankAccount';
+import { TableName } from '../../../../api/tool/enums';
 
 export var mixin_payment_apply = {
   data: function () {
@@ -24,7 +24,7 @@ export var mixin_payment_apply = {
   created() {
     // 查询科目信息
     listSubject().then(res => {
-      this.subjectTree = this.handleTree(res.data, "id", "parentId");
+      this.subjectTree = this.handleTree(res.data, 'id', 'parentId');
       this.OneLevelOption = this.subjectTree;
     })
     // 检查
@@ -65,14 +65,14 @@ export var mixin_payment_apply = {
     },
     // 填充运费信息 这里是根据父组件传递过来的信息对象needInfo
     fillFreightInfo() {
-      //需要司机信息
+      // 需要司机信息
       if (this.needInfo.isExit !== undefined) {
         // 如果信息对象中需要司机信息
         if (this.needInfo.isExit === true) {
-          //自动填充 拿到父组件传递过来的需要的信息对象 needInfo
+          // 自动填充 拿到父组件传递过来的需要的信息对象 needInfo
           this.form.otherAcountsName = this.needInfo.otherAcountsName
           this.form.companyName = this.needInfo.companyName
-          //查询司机的银行卡信息 通过账户类型 和 账户名称 来绑定查询
+          // 查询司机的银行卡信息 通过账户类型 和 账户名称 来绑定查询
           const search = {
             acountsType: '司机',
             acountsName: this.needInfo.otherAcountsName

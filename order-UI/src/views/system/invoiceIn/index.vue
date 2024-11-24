@@ -344,319 +344,319 @@
 </template>
 
 <script>
-import {listInvoiceIn, delInvoiceIn, addInvoiceIn} from "@/api/system/invoiceIn";
-import {mixin_printHTML} from "@/views/dashboard/mixins/print";
-import SearchOption from "@/components/SearchOption.vue";
-import {listCompany} from "@/api/system/company";
-import ApplyPayment from "@/views/dashboard/components/common/ApplyPayment.vue";
-import {TableName} from "@/api/tool/enums";
-import {excludeParams} from "@/api/tool/exclude";
-import {addReason} from "@/api/system/user";
-import {getGoodsOrder} from "@/api/system/goodsOrder";
-import OrderInfos from "@/views/dashboard/components/goodsOrder/OrderInfos.vue";
-import CheckFiles from "../../../components/CheckFiles.vue";
-import reLength from "../../dashboard/mixins/reLength";
-import {getInvoiceIn, updateInvoiceIn} from "../../../api/system/invoiceIn";
-import {mixin_checkfile} from "../../dashboard/mixins/checkfiles/mixin_checkfile";
-import {PUBLIC_DICT_TYPE} from "@/utils/order";
+  import { listInvoiceIn, delInvoiceIn, addInvoiceIn } from '@/api/system/invoiceIn';
+  import { mixin_printHTML } from '@/views/dashboard/mixins/print';
+  import SearchOption from '@/components/SearchOption.vue';
+  import { listCompany } from '@/api/system/company';
+  import ApplyPayment from '@/views/dashboard/components/common/ApplyPayment.vue';
+  import { TableName } from '@/api/tool/enums';
+  import { excludeParams } from '@/api/tool/exclude';
+  import { addReason } from '@/api/system/user';
+  import { getGoodsOrder } from '@/api/system/goodsOrder';
+  import OrderInfos from '@/views/dashboard/components/goodsOrder/OrderInfos.vue';
+  import CheckFiles from '../../../components/CheckFiles.vue';
+  import reLength from '../../dashboard/mixins/reLength';
+  import { getInvoiceIn, updateInvoiceIn } from '../../../api/system/invoiceIn';
+  import { mixin_checkfile } from '../../dashboard/mixins/checkfiles/mixin_checkfile';
+  import { PUBLIC_DICT_TYPE } from '@/utils/order';
 
-export default {
-  name: "InvoiceIn",
-  components: {CheckFiles, OrderInfos, ApplyPayment, SearchOption},
-  mixins: [mixin_printHTML, reLength, mixin_checkfile],
-  data() {
-    return {
-      // 遮罩层
-      loading: true,
-      // 选中数组
-      ids: [],
-      // 非单个禁用
-      single: true,
-      // 非多个禁用
-      multiple: true,
-      // 显示搜索条件
-      showSearch: true,
-      // 总条数
-      total: 0,
-      // 发票购入信息表格数据
-      invoiceInList: [],
-      // 弹出层标题
-      title: "",
-      // 是否显示弹出层
-      open: false,
-      // 查询参数
-      queryParams: {
-        pageNum: 1,
-        pageSize: 10,
-        invoiceDate: null,
-        invoiceObject: null,
-        invoiceAmount: null,
-        companyType: null,
-        companyName: null,
-        companyID: null,
-        invoiceCompanyName: null,
-        ticketPoint: null,
-        ticketPointAmount: null,
-        isOrderTax: null,
-        comments: null,
-        addtime: null,
-        userId: null,
-        UserName: null,
-        delFlag: null
-      },
-      // 表单参数
-      form: {},
-      orderInfo: {},
-      checkOrderInfoVisible: false,
-      // 表单校验
-      rules: {},
-      columns: [
-        {key: 0, label: `开票日期`, visible: true},
-        {key: 1, label: `我方开票实体`, visible: true},
-        {key: 2, label: `开票金额`, visible: true},
-        {key: 3, label: `对方公司类别`, visible: true},
-        {key: 4, label: `对方公司名称`, visible: true},
-        {key: 5, label: `票据单位名称`, visible: true},
-        {key: 6, label: `票点`, visible: true},
-        {key: 7, label: `票点金额`, visible: true},
-        {key: 8, label: `订单信息`, visible: true},
-        {key: 9, label: `审核状态`, visible: true},
-        {key: 10, label: `备注`, visible: true},
-      ],
+  export default {
+    name: 'InvoiceIn',
+    components: { CheckFiles, OrderInfos, ApplyPayment, SearchOption },
+    mixins: [mixin_printHTML, reLength, mixin_checkfile],
+    data() {
+      return {
+        // 遮罩层
+        loading: true,
+        // 选中数组
+        ids: [],
+        // 非单个禁用
+        single: true,
+        // 非多个禁用
+        multiple: true,
+        // 显示搜索条件
+        showSearch: true,
+        // 总条数
+        total: 0,
+        // 发票购入信息表格数据
+        invoiceInList: [],
+        // 弹出层标题
+        title: '',
+        // 是否显示弹出层
+        open: false,
+        // 查询参数
+        queryParams: {
+          pageNum: 1,
+          pageSize: 10,
+          invoiceDate: null,
+          invoiceObject: null,
+          invoiceAmount: null,
+          companyType: null,
+          companyName: null,
+          companyID: null,
+          invoiceCompanyName: null,
+          ticketPoint: null,
+          ticketPointAmount: null,
+          isOrderTax: null,
+          comments: null,
+          addtime: null,
+          userId: null,
+          UserName: null,
+          delFlag: null
+        },
+        // 表单参数
+        form: {},
+        orderInfo: {},
+        checkOrderInfoVisible: false,
+        // 表单校验
+        rules: {},
+        columns: [
+          { key: 0, label: `开票日期`, visible: true },
+          { key: 1, label: `我方开票实体`, visible: true },
+          { key: 2, label: `开票金额`, visible: true },
+          { key: 3, label: `对方公司类别`, visible: true },
+          { key: 4, label: `对方公司名称`, visible: true },
+          { key: 5, label: `票据单位名称`, visible: true },
+          { key: 6, label: `票点`, visible: true },
+          { key: 7, label: `票点金额`, visible: true },
+          { key: 8, label: `订单信息`, visible: true },
+          { key: 9, label: `审核状态`, visible: true },
+          { key: 10, label: `备注`, visible: true },
+        ],
 
-      // 公司类型
-      type: '',
-      //公司名称
-      companyName: '',
-      // 选项
-      options: [{
-        value: PUBLIC_DICT_TYPE.SUPPLIER,
-        label: PUBLIC_DICT_TYPE.SUPPLIER
-      }, {
-        value: PUBLIC_DICT_TYPE.CUSTOMER,
-        label: PUBLIC_DICT_TYPE.CUSTOMER
-      }],
-      //付款申请
-      PaymentApplyInfoVisible: false,
-      tID: '',
-      needMoney: 0,
+        // 公司类型
+        type: '',
+        // 公司名称
+        companyName: '',
+        // 选项
+        options: [{
+          value: PUBLIC_DICT_TYPE.SUPPLIER,
+          label: PUBLIC_DICT_TYPE.SUPPLIER
+        }, {
+          value: PUBLIC_DICT_TYPE.CUSTOMER,
+          label: PUBLIC_DICT_TYPE.CUSTOMER
+        }],
+        // 付款申请
+        PaymentApplyInfoVisible: false,
+        tID: '',
+        needMoney: 0,
 
-    };
-  },
-  computed: {
-    TableName() {
-      return TableName
+      };
     },
-    //票点金额 开票金额*票点
-    invoiceAmount: {
-      set(val) {
-        this.form.ticketPointAmount = val;
+    computed: {
+      TableName() {
+        return TableName
       },
-      get() {
-        // 保留两位小数
-        return Number(this.form.invoiceAmount * this.form.ticketPoint).toFixed(3)
+      // 票点金额 开票金额*票点
+      invoiceAmount: {
+        set(val) {
+          this.form.ticketPointAmount = val;
+        },
+        get() {
+          // 保留两位小数
+          return Number(this.form.invoiceAmount * this.form.ticketPoint).toFixed(3)
+        }
+      },
+    },
+    watch: {
+      columns: {
+        handler: function (newVal) {
+          localStorage.setItem('invoicein-columns', JSON.stringify(newVal))
+        },
+        deep: true,
+      },
+      form: {
+        handler() {
+          this.invoiceAmount = Number(this.form.invoiceAmount * this.form.ticketPoint).toFixed(3);
+        },
+        deep: true
       }
     },
-  },
-  watch: {
-    columns: {
-      handler:function (newVal){
-        localStorage.setItem("invoicein-columns", JSON.stringify(newVal))
-      },
-      deep: true,
-    },
-    form: {
-      handler() {
-        this.invoiceAmount = Number(this.form.invoiceAmount * this.form.ticketPoint).toFixed(3);
-      },
-      deep: true
-    }
-  },
-  created() {
-    this.getList();
-    if (localStorage.getItem('invoicein-columns') === 'null'
-      || !localStorage.getItem('invoicein-columns')) {
-      //设置localStorage
-      localStorage.setItem("invoicein-columns", JSON.stringify(this.columns))
-    } else {
-      this.columns = JSON.parse(localStorage.getItem('invoicein-columns'));
-    }
-  },
-  methods: {
-    updateInvoiceIn() {
-      return updateInvoiceIn
-    },
-    getInvoiceIn() {
-      return getInvoiceIn
-    },
-    listCompany,
-    /** 查询发票购入信息列表 */
-    getList() {
-      this.loading = true;
-      listInvoiceIn(this.queryParams).then(response => {
-        this.invoiceInList = response.rows;
-        this.total = response.total;
-        this.loading = false;
-      });
-    },
-    handleUpdateCompanyName(val) {
-      this.companyName = val;
-    },
-    handleCommitBackCompany(val) {
-      console.log(val)
-      this.form.companyName = val.companyName;
-      this.form.companyID = val.id;
-      this.form.companyType = val.companyType;
-    },
-    checkOrderInfo(row) {
-      //发请求 查看订单信息
-      getGoodsOrder(row.isOrderTax).then(res => {
-        this.orderInfo = res.data;
-        this.checkOrderInfoVisible = true;
-      });
-    },
-    //添加付款申请
-    addPaymentApplyInfos(row) {
-      this.tID = row.id;
-      this.needMoney = row.ticketPointAmount;
-      this.PaymentApplyInfoVisible = true
-    },
-    changePaymentApplyInfoVisible() {
-      this.needMoney = 0
-      this.PaymentApplyInfoVisible = false;
-      this.getList()
-    },
-    // 取消按钮
-    cancel() {
-      this.open = false;
-      // 清空两个上传附件显示的文件列表
-      this.$refs.fileUploader1.clearFileList();
-      this.$refs.fileUploader2.clearFileList();
-      this.reset();
-    },
-    // 表单重置
-    reset() {
-      this.form = {
-        id: null,
-        invoiceDate: null,
-        invoiceObject: null,
-        invoiceAmount: null,
-        companyType: null,
-        companyName: null,
-        companyID: null,
-        invoiceCompanyName: null,
-        ticketPoint: null,
-        ticketPointAmount: null,
-        isOrderTax: 0,
-        comments: null,
-        addtime: null,
-        userId: null,
-        UserName: null,
-        updateTime: null,
-        delFlag: null
-      };
-      this.resetForm("form");
-    },
-    /** 搜索按钮操作 */
-    handleQuery() {
-      this.queryParams.pageNum = 1;
+    created() {
       this.getList();
+      if (localStorage.getItem('invoicein-columns') === 'null' ||
+        !localStorage.getItem('invoicein-columns')) {
+        // 设置localStorage
+        localStorage.setItem('invoicein-columns', JSON.stringify(this.columns))
+      } else {
+        this.columns = JSON.parse(localStorage.getItem('invoicein-columns'));
+      }
     },
-    /** 重置按钮操作 */
-    resetQuery() {
-      this.resetForm("queryForm");
-      this.handleQuery();
-    },
-    // 多选框选中数据
-    handleSelectionChange(selection) {
-      this.ids = selection.map(item => item.id)
-      this.single = selection.length !== 1
-      this.multiple = !selection.length
-    },
-    /** 新增按钮操作 */
-    handleAdd() {
-      this.reset();
-      this.open = true;
-      this.title = "添加发票购入信息";
-    },
-
-    handleUpdate(row) {
-      this.$prompt('请输入编辑原因', '提示', {
-        confirmButtonText: '确定',
-        cancelButtonText: '取消',
-        type: 'warning'
-      }).then(({value}) => {
-        addReason({reason: value, tableName: TableName.INVOICE_IN, tid: row.id, modifyTime: this.modifyTime})
-          .then(() => {
-            this.$message.success('提交成功')
-            this.reset();
-            const id = row.id || this.ids
-            getInvoiceIn(id).then(response => {
-              this.form = response.data;
-              this.open = true;
-              this.title = "修改发票购入信息";
-            });
-          })
-      }).catch(() => {
-        this.$message({
-          type: 'warning',
-          message: '请先输入编辑原因!'
+    methods: {
+      updateInvoiceIn() {
+        return updateInvoiceIn
+      },
+      getInvoiceIn() {
+        return getInvoiceIn
+      },
+      listCompany,
+      /** 查询发票购入信息列表 */
+      getList() {
+        this.loading = true;
+        listInvoiceIn(this.queryParams).then(response => {
+          this.invoiceInList = response.rows;
+          this.total = response.total;
+          this.loading = false;
         });
-      });
-    },// 银行回执
-    handleCommitUpload(val) {
-      this.form.paymentReceipts = val
-    },
-    // 发票单
-    handleCommitUploadInvoiceAttachments(val) {
-      this.form.invoiceAttachments = val
-    },
-
-    /** 提交按钮 */
-    submitForm() {
-      this.$refs["form"].validate(valid => {
-        if (valid) {
-          if (this.form.id != null) {
-            this.form = excludeParams(this.form, this.$exclude)
-            updateInvoiceIn(this.form).then(() => {
-              this.$modal.msgSuccess("修改成功");
-              this.open = false;
-              // 清空两个上传附件显示的文件列表
-              this.$refs.fileUploader1.clearFileList();
-              this.$refs.fileUploader2.clearFileList();
-              this.getList();
-            });
-          } else {
-            this.form = excludeParams(this.form, this.$exclude)
-            addInvoiceIn(this.form).then(() => {
-              this.$modal.msgSuccess("新增成功");
-              this.open = false;
-              // 清空两个上传附件显示的文件列表
-              this.$refs.fileUploader1.clearFileList();
-              this.$refs.fileUploader2.clearFileList();
-              this.getList();
-            });
-          }
-        }
-      });
-    },
-    /** 删除按钮操作 */
-    handleDelete(row) {
-      const ids = row.id || this.ids;
-      this.$modal.confirm('是否确认删除发票购入信息编号为"' + ids + '"的数据项？').then(function () {
-        return delInvoiceIn(ids);
-      }).then(() => {
+      },
+      handleUpdateCompanyName(val) {
+        this.companyName = val;
+      },
+      handleCommitBackCompany(val) {
+        console.log(val)
+        this.form.companyName = val.companyName;
+        this.form.companyID = val.id;
+        this.form.companyType = val.companyType;
+      },
+      checkOrderInfo(row) {
+        // 发请求 查看订单信息
+        getGoodsOrder(row.isOrderTax).then(res => {
+          this.orderInfo = res.data;
+          this.checkOrderInfoVisible = true;
+        });
+      },
+      // 添加付款申请
+      addPaymentApplyInfos(row) {
+        this.tID = row.id;
+        this.needMoney = row.ticketPointAmount;
+        this.PaymentApplyInfoVisible = true
+      },
+      changePaymentApplyInfoVisible() {
+        this.needMoney = 0
+        this.PaymentApplyInfoVisible = false;
+        this.getList()
+      },
+      // 取消按钮
+      cancel() {
+        this.open = false;
+        // 清空两个上传附件显示的文件列表
+        this.$refs.fileUploader1.clearFileList();
+        this.$refs.fileUploader2.clearFileList();
+        this.reset();
+      },
+      // 表单重置
+      reset() {
+        this.form = {
+          id: null,
+          invoiceDate: null,
+          invoiceObject: null,
+          invoiceAmount: null,
+          companyType: null,
+          companyName: null,
+          companyID: null,
+          invoiceCompanyName: null,
+          ticketPoint: null,
+          ticketPointAmount: null,
+          isOrderTax: 0,
+          comments: null,
+          addtime: null,
+          userId: null,
+          UserName: null,
+          updateTime: null,
+          delFlag: null
+        };
+        this.resetForm('form');
+      },
+      /** 搜索按钮操作 */
+      handleQuery() {
+        this.queryParams.pageNum = 1;
         this.getList();
-        this.$modal.msgSuccess("删除成功");
-      }).catch(() => {
-      });
-    },
-    /** 导出按钮操作 */
-    handleExport() {
-      this.download('system/invoiceIn/export', {
-        ...this.queryParams
-      }, `invoiceIn_${new Date().getTime()}.xlsx`)
+      },
+      /** 重置按钮操作 */
+      resetQuery() {
+        this.resetForm('queryForm');
+        this.handleQuery();
+      },
+      // 多选框选中数据
+      handleSelectionChange(selection) {
+        this.ids = selection.map(item => item.id)
+        this.single = selection.length !== 1
+        this.multiple = !selection.length
+      },
+      /** 新增按钮操作 */
+      handleAdd() {
+        this.reset();
+        this.open = true;
+        this.title = '添加发票购入信息';
+      },
+
+      handleUpdate(row) {
+        this.$prompt('请输入编辑原因', '提示', {
+          confirmButtonText: '确定',
+          cancelButtonText: '取消',
+          type: 'warning'
+        }).then(({ value }) => {
+          addReason({ reason: value, tableName: TableName.INVOICE_IN, tid: row.id, modifyTime: this.modifyTime })
+            .then(() => {
+              this.$message.success('提交成功')
+              this.reset();
+              const id = row.id || this.ids
+              getInvoiceIn(id).then(response => {
+                this.form = response.data;
+                this.open = true;
+                this.title = '修改发票购入信息';
+              });
+            })
+        }).catch(() => {
+          this.$message({
+            type: 'warning',
+            message: '请先输入编辑原因!'
+          });
+        });
+      }, // 银行回执
+      handleCommitUpload(val) {
+        this.form.paymentReceipts = val
+      },
+      // 发票单
+      handleCommitUploadInvoiceAttachments(val) {
+        this.form.invoiceAttachments = val
+      },
+
+      /** 提交按钮 */
+      submitForm() {
+        this.$refs['form'].validate(valid => {
+          if (valid) {
+            if (this.form.id != null) {
+              this.form = excludeParams(this.form, this.$exclude)
+              updateInvoiceIn(this.form).then(() => {
+                this.$modal.msgSuccess('修改成功');
+                this.open = false;
+                // 清空两个上传附件显示的文件列表
+                this.$refs.fileUploader1.clearFileList();
+                this.$refs.fileUploader2.clearFileList();
+                this.getList();
+              });
+            } else {
+              this.form = excludeParams(this.form, this.$exclude)
+              addInvoiceIn(this.form).then(() => {
+                this.$modal.msgSuccess('新增成功');
+                this.open = false;
+                // 清空两个上传附件显示的文件列表
+                this.$refs.fileUploader1.clearFileList();
+                this.$refs.fileUploader2.clearFileList();
+                this.getList();
+              });
+            }
+          }
+        });
+      },
+      /** 删除按钮操作 */
+      handleDelete(row) {
+        const ids = row.id || this.ids;
+        this.$modal.confirm('是否确认删除发票购入信息编号为"' + ids + '"的数据项？').then(function () {
+          return delInvoiceIn(ids);
+        }).then(() => {
+          this.getList();
+          this.$modal.msgSuccess('删除成功');
+        }).catch(() => {
+        });
+      },
+      /** 导出按钮操作 */
+      handleExport() {
+        this.download('system/invoiceIn/export', {
+          ...this.queryParams
+        }, `invoiceIn_${new Date().getTime()}.xlsx`)
+      }
     }
-  }
-};
+  };
 </script>

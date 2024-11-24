@@ -1,36 +1,36 @@
 <!--文件列表组件-->
 
 <script>
-export default {
-  name: "FileItems",
-  props: {
-    fileName: {
-      type: String,
-      default: "无名称"
-    }
-  },
-  data() {
-    return {
-      show: false,
-    }
-  },
-  computed: {
-    _fileName() {
-      return this.fileName
-    }
-  },
-  methods: {
-    // 点击某一个文件
-    handleCheckFile(item) {
-      window.open(item)
+  export default {
+    name: 'FileItems',
+    props: {
+      fileName: {
+        type: String,
+        default: '无名称'
+      }
     },
+    data() {
+      return {
+        show: false,
+      }
+    },
+    computed: {
+      _fileName() {
+        return this.fileName
+      }
+    },
+    methods: {
+      // 点击某一个文件
+      handleCheckFile(item) {
+        window.open(item)
+      },
 
-    // 点击删除文件
-    handleDeleteFile() {
-      this.$emit('handleFile', this.fileName)
+      // 点击删除文件
+      handleDeleteFile() {
+        this.$emit('handleFile', this.fileName)
+      }
     }
   }
-}
 </script>
 
 <template>
@@ -47,7 +47,7 @@ export default {
         {{ _fileName }}...
       </div>
 
-      <div class="options" v-show="show">
+      <div v-show="show" class="options">
         <el-button type="danger" size="mini" round @click="handleDeleteFile">删除</el-button>
       </div>
 

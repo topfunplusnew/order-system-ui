@@ -4,7 +4,7 @@
 */
 
 // import Clipboard from 'order-UI/src/directive/module/clipboard'
-import Clipboard from "quill/modules/clipboard";
+import Clipboard from 'quill/modules/clipboard';
 export default {
   bind(el, binding, vnode) {
     switch (binding.arg) {

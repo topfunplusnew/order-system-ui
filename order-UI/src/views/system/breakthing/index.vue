@@ -1,7 +1,7 @@
 <script>
-export default {
-  name: "index"
-}
+  export default {
+    name: 'Index'
+  }
 </script>
 
 <template>

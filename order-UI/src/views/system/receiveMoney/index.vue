@@ -421,321 +421,321 @@
 </template>
 
 <script>
-import {addReceiveMoney, delReceiveMoney, listReceiveMoney} from "@/api/system/receiveMoney";
-import SearchOption from "@/components/SearchOption.vue";
-import {listBankAccount} from "@/api/system/bankAccount";
-import {excludeParams} from "@/api/tool/exclude";
-import {addReason} from "@/api/system/user";
-import {TableName} from "@/api/tool/enums";
-import {mixin_printHTML} from "../../dashboard/mixins/print";
-import CheckFiles from "../../../components/CheckFiles.vue";
+  import { addReceiveMoney, delReceiveMoney, listReceiveMoney } from '@/api/system/receiveMoney';
+  import SearchOption from '@/components/SearchOption.vue';
+  import { listBankAccount } from '@/api/system/bankAccount';
+  import { excludeParams } from '@/api/tool/exclude';
+  import { addReason } from '@/api/system/user';
+  import { TableName } from '@/api/tool/enums';
+  import { mixin_printHTML } from '../../dashboard/mixins/print';
+  import CheckFiles from '../../../components/CheckFiles.vue';
 
-import {listCompany} from "../../../api/system/company";
-import {mixin_receive_money_fill} from "./receiveMoneyFill";
-import {listCars} from "../../../api/system/cars";
-import {getReceiveMoney, updateReceiveMoney} from "../../../api/system/receiveMoney";
-import {mixin_checkfile} from "../../dashboard/mixins/checkfiles/mixin_checkfile";
-import BankType from "@/views/dashboard/components/common/BankType.vue";
-import {mixin_bankType} from "../../dashboard/mixins/common/common_bankType";
-import {mixin_receive_money_subject} from "@/views/dashboard/mixins/receivemoney/receive_money_subject";
+  import { listCompany } from '../../../api/system/company';
+  import { mixin_receive_money_fill } from './receiveMoneyFill';
+  import { listCars } from '../../../api/system/cars';
+  import { getReceiveMoney, updateReceiveMoney } from '../../../api/system/receiveMoney';
+  import { mixin_checkfile } from '../../dashboard/mixins/checkfiles/mixin_checkfile';
+  import BankType from '@/views/dashboard/components/common/BankType.vue';
+  import { mixin_bankType } from '../../dashboard/mixins/common/common_bankType';
+  import { mixin_receive_money_subject } from '@/views/dashboard/mixins/receivemoney/receive_money_subject';
 
-export default {
-  name: "ReceiveMoney",
-  components: {BankType, CheckFiles, SearchOption},
-  mixins: [mixin_printHTML, mixin_receive_money_fill, mixin_checkfile, mixin_bankType, mixin_receive_money_subject],
-  data() {
-    return {
-      // 遮罩层
-      loading: true,
-      // 选中数组
-      ids: [],
-      // 非单个禁用
-      single: true,
-      // 非多个禁用
-      multiple: true,
-      // 显示搜索条件
-      showSearch: true,
-      // 总条数
-      total: 0,
-      // 收款信息表格数据
-      receiveMoneyList: [],
-      // 弹出层标题
-      title: "",
-      // 是否显示弹出层
-      open: false,
-      // 查询参数
-      queryParams: {
-        pageNum: 1,
-        pageSize: 10,
-        receiveNO: null,
-        fundsDate: null,
-        receiveType: null,
-        tableName: null,
-        tID: null,
-        moneyAmount: null,
-        selfAcountsName: null,
-        selfBankNo: null,
-        selfBankName: null,
-        selfBankID: null,
-        otherAcountsName: null,
-        otherBankNo: null,
-        otherBankName: null,
-        companyName: null,
-        companyId: null,
-        companyType: null,
-        comments: null,
-        addtime: null,
-        userId: null,
-        UserName: null,
-        delFlag: null
-      },
-      // 表单参数
-      form: {
+  export default {
+    name: 'ReceiveMoney',
+    components: { BankType, CheckFiles, SearchOption },
+    mixins: [mixin_printHTML, mixin_receive_money_fill, mixin_checkfile, mixin_bankType, mixin_receive_money_subject],
+    data() {
+      return {
+        // 遮罩层
+        loading: true,
+        // 选中数组
+        ids: [],
+        // 非单个禁用
+        single: true,
+        // 非多个禁用
+        multiple: true,
+        // 显示搜索条件
+        showSearch: true,
+        // 总条数
+        total: 0,
+        // 收款信息表格数据
+        receiveMoneyList: [],
+        // 弹出层标题
+        title: '',
+        // 是否显示弹出层
+        open: false,
+        // 查询参数
+        queryParams: {
+          pageNum: 1,
+          pageSize: 10,
+          receiveNO: null,
+          fundsDate: null,
+          receiveType: null,
+          tableName: null,
+          tID: null,
+          moneyAmount: null,
+          selfAcountsName: null,
+          selfBankNo: null,
+          selfBankName: null,
+          selfBankID: null,
+          otherAcountsName: null,
+          otherBankNo: null,
+          otherBankName: null,
+          companyName: null,
+          companyId: null,
+          companyType: null,
+          comments: null,
+          addtime: null,
+          userId: null,
+          UserName: null,
+          delFlag: null
+        },
+        // 表单参数
+        form: {
         
-      },
-      // 表单校验
-      rules: {
-        fundsDate: [
-          {required: true, message: "日期不能为空", trigger: "blur"}],
-        moneyAmount:
-          [{required: true, message: "金额不能为空", trigger: "blur"}],
-        selfAcountsName: [
-          {required: true, message: "己方户名不能为空", trigger: "change"}],
-        selfBankNo: [
-          {required: true, message: "己方账号不能为空", trigger: "blur"}],
-        selfBankName: [
-          {required: true, message: "己方开户行不能为空", trigger: "blur"}],
-        otherAcountsName: [
-          {required: true, message: "对方户名不能为空", trigger: "blur"}],
-        otherBankNo: [
-          {required: true, message: "对方账号不能为空", trigger: "blur"}],
-        otherBankName: [
-          {required: true, message: "对方开户行不能为空", trigger: "blur"}],
-      },
-      columns: [
-        {key: 0, label: `日期`, visible: true},
-        {key: 1, label: `支付类型`, visible: true},
-        {key: 2, label: `金额`, visible: true},
-        {key: 3, label: `乙方户名`, visible: true},
-        {key: 4, label: `己方账号`, visible: true},
-        {key: 5, label: `己方开户行`, visible: true},
-        {key: 6, label: `对方户名`, visible: true},
-        {key: 7, label: `对方账号`, visible: true},
-        {key: 8, label: `对方开户行`, visible: true},
-        {key: 9, label: `对方公司`, visible: true},
-        {key: 10, label: `对方公司类型`, visible: true},
-      ],
-      //银行卡查询
-      bankQuery: ''
-    };
-  },
-  //展示与隐藏
-  watch: {
-    columns: {
-      handler: function (newVal){
-        localStorage.setItem("receivemoney-columns", JSON.stringify(newVal))
-      },
-      deep: true,
-    }
-  },
-  created() {
-    // 查询列表
-    this.getList()
-    // 获取本地显示隐藏列的存储 以便于下一次用户打开的时候读取喜好
-    if (localStorage.getItem('receivemoney-columns') === 'null'
-      || !localStorage.getItem('receivemoney-columns')) {
-      //设置localStorage
-      localStorage.setItem("receivemoney-columns", JSON.stringify(this.columns))
-    } else {
-      this.columns = JSON.parse(localStorage.getItem('receivemoney-columns'));
-    }
-  },
-  methods: {
-    listCars,
-    listCompany,
-    listBankAccount,
-    updateReceiveMoney() {
-      return updateReceiveMoney
-    },
-    getReceiveMoney() {
-      return getReceiveMoney
-    },
-    //银行卡附件上传
-    handleCommitUpload(val) {
-      this.form.transactionHistoryAttachment = val;
-    },
-    /** 查询收款信息列表 */
-    getList() {
-      this.loading = true;
-      listReceiveMoney(this.queryParams).then(response => {
-        this.receiveMoneyList = response.rows;
-        this.total = response.total;
-        this.loading = false;
-      });
-    },
-    // 取消按钮
-    cancel() {
-      this.open = false;
-      this.reset();
-    },
-    // 表单重置
-    reset() {
-      this.form = {
-        id: null,
-        receiveNO: null,
-        fundsDate: null,
-        receiveType: null,
-        tableName: null,
-        tID: null,
-        moneyAmount: null,
-        // 己方银行卡的账户类型
-        selfBankCardType: null,
-        selfAcountsName: null,
-        selfBankNo: null,
-        selfBankName: null,
-        selfBankID: null,
-        // 对方银行卡账户的类型
-        otherBankCardType: null,
-        otherAcountsName: null,
-        otherBankNo: null,
-        otherBankName: null,
-        companyName: null,
-        companyId: null,
-        companyType: null,
-        comments: null,
-        addtime: null,
-        userId: null,
-        UserName: null,
-        updateTime: null,
-        delFlag: null
+        },
+        // 表单校验
+        rules: {
+          fundsDate: [
+            { required: true, message: '日期不能为空', trigger: 'blur' }],
+          moneyAmount:
+            [{ required: true, message: '金额不能为空', trigger: 'blur' }],
+          selfAcountsName: [
+            { required: true, message: '己方户名不能为空', trigger: 'change' }],
+          selfBankNo: [
+            { required: true, message: '己方账号不能为空', trigger: 'blur' }],
+          selfBankName: [
+            { required: true, message: '己方开户行不能为空', trigger: 'blur' }],
+          otherAcountsName: [
+            { required: true, message: '对方户名不能为空', trigger: 'blur' }],
+          otherBankNo: [
+            { required: true, message: '对方账号不能为空', trigger: 'blur' }],
+          otherBankName: [
+            { required: true, message: '对方开户行不能为空', trigger: 'blur' }],
+        },
+        columns: [
+          { key: 0, label: `日期`, visible: true },
+          { key: 1, label: `支付类型`, visible: true },
+          { key: 2, label: `金额`, visible: true },
+          { key: 3, label: `乙方户名`, visible: true },
+          { key: 4, label: `己方账号`, visible: true },
+          { key: 5, label: `己方开户行`, visible: true },
+          { key: 6, label: `对方户名`, visible: true },
+          { key: 7, label: `对方账号`, visible: true },
+          { key: 8, label: `对方开户行`, visible: true },
+          { key: 9, label: `对方公司`, visible: true },
+          { key: 10, label: `对方公司类型`, visible: true },
+        ],
+        // 银行卡查询
+        bankQuery: ''
       };
-      this.resetForm("form");
     },
-    /** 搜索按钮操作 */
-    handleQuery() {
-      this.queryParams.pageNum = 1;
-      this.getList();
+    // 展示与隐藏
+    watch: {
+      columns: {
+        handler: function (newVal) {
+          localStorage.setItem('receivemoney-columns', JSON.stringify(newVal))
+        },
+        deep: true,
+      }
     },
-    /** 重置按钮操作 */
-    resetQuery() {
-      this.resetForm("queryForm");
-      this.handleQuery();
+    created() {
+      // 查询列表
+      this.getList()
+      // 获取本地显示隐藏列的存储 以便于下一次用户打开的时候读取喜好
+      if (localStorage.getItem('receivemoney-columns') === 'null' ||
+        !localStorage.getItem('receivemoney-columns')) {
+        // 设置localStorage
+        localStorage.setItem('receivemoney-columns', JSON.stringify(this.columns))
+      } else {
+        this.columns = JSON.parse(localStorage.getItem('receivemoney-columns'));
+      }
     },
-    // 多选框选中数据
-    handleSelectionChange(selection) {
-      this.ids = selection.map(item => item.id)
-      this.single = selection.length !== 1
-      this.multiple = !selection.length
-    },
-    /** 新增按钮操作 */
-    handleAdd() {
-      this.reset();
-      this.open = true;
-      this.title = "添加收款信息";
-    },
-    /** 修改按钮操作 */
-    handleUpdate(row) {
-      this.$prompt('请输入编辑原因', '提示', {
-        confirmButtonText: '确定',
-        cancelButtonText: '取消',
-        type: 'warning'
-      }).then(({value}) => {
-        addReason({reason: value, tableName: TableName.RECEIVE_MONEY, tid: row.id, modifyTime: this.modifyTime})
-          .then(() => {
-            this.$message.success('提交成功')
-            this.reset();
-            const id = row.id || this.ids
-            getReceiveMoney(id).then(response => {
-              this.form = response.data;
-              this.form.receiveType = response.data.receiveType.split('-')
-              this.open = true;
-              this.title = "修改收款信息";
-            });
-          })
-      }).catch(() => {
-        this.$message({
-          type: 'warning',
-          message: '请先输入编辑原因!'
+    methods: {
+      listCars,
+      listCompany,
+      listBankAccount,
+      updateReceiveMoney() {
+        return updateReceiveMoney
+      },
+      getReceiveMoney() {
+        return getReceiveMoney
+      },
+      // 银行卡附件上传
+      handleCommitUpload(val) {
+        this.form.transactionHistoryAttachment = val;
+      },
+      /** 查询收款信息列表 */
+      getList() {
+        this.loading = true;
+        listReceiveMoney(this.queryParams).then(response => {
+          this.receiveMoneyList = response.rows;
+          this.total = response.total;
+          this.loading = false;
         });
-      });
-    },
-
-    /** 提交按钮 */
-    submitForm() {
-      this.$refs["form"].validate(valid => {
-        if (valid) {
-          if (this.form.id != null) {
-            // 去除参数
-            this.form = excludeParams(this.form, this.$exclude)
-            // 需要拼凑收款类型  但是不能修改响应式的payType 这是一个数组
-            let receiveType = null
-            if (this.form.receiveType) {
-              receiveType = this.form.receiveType.join('-')
-            } else {
-              this.$message.warning('请选择收款类型')
-              return
-            }
-            // 组装收款对象
-            const body = {
-              ...this.form,
-              receiveType: receiveType
-            }
-            updateReceiveMoney(body).then(() => {
-              this.$modal.msgSuccess("修改成功");
-              this.open = false;
-              this.clearFiles();
-              this.getList();
-            })
-          } else {
-            // 去除参数
-            this.form = excludeParams(this.form, this.$exclude)
-            // 需要拼凑收款类型  但是不能修改响应式的payType 这是一个数组
-            let receiveType = null
-            if (this.form.receiveType) {
-              receiveType = this.form.receiveType.join('-')
-            } else {
-              this.$message.warning('请选择收款类型')
-              return
-            }
-            // 组装收款对象
-            const body = {
-              ...this.form,
-              receiveType: receiveType
-            }
-            // 添加收款信息
-            addReceiveMoney(body).then(() => {
-              this.$modal.msgSuccess("新增成功");
-              this.open = false;
-              this.clearFiles();
-              this.getList();
-            })
-          }
-        }
-      });
-    },
-    /** 删除按钮操作 */
-    handleDelete(row) {
-      const ids = row.id || this.ids;
-      this.$modal.confirm('是否确认删除收款信息编号为"' + ids + '"的数据项？').then(function () {
-        return delReceiveMoney(ids);
-      }).then(() => {
+      },
+      // 取消按钮
+      cancel() {
+        this.open = false;
+        this.reset();
+      },
+      // 表单重置
+      reset() {
+        this.form = {
+          id: null,
+          receiveNO: null,
+          fundsDate: null,
+          receiveType: null,
+          tableName: null,
+          tID: null,
+          moneyAmount: null,
+          // 己方银行卡的账户类型
+          selfBankCardType: null,
+          selfAcountsName: null,
+          selfBankNo: null,
+          selfBankName: null,
+          selfBankID: null,
+          // 对方银行卡账户的类型
+          otherBankCardType: null,
+          otherAcountsName: null,
+          otherBankNo: null,
+          otherBankName: null,
+          companyName: null,
+          companyId: null,
+          companyType: null,
+          comments: null,
+          addtime: null,
+          userId: null,
+          UserName: null,
+          updateTime: null,
+          delFlag: null
+        };
+        this.resetForm('form');
+      },
+      /** 搜索按钮操作 */
+      handleQuery() {
+        this.queryParams.pageNum = 1;
         this.getList();
-        this.$modal.msgSuccess("删除成功");
-      }).catch(() => {
-      });
-    },
-    // 清除文件
-    clearFiles () {
-      this.$refs.fileUploader.clearFileList()
-    },
-    /** 导出按钮操作 */
-    handleExport() {
-      this.download('system/receiveMoney/export', {
-        ...this.queryParams
-      }, `receiveMoney_${new Date().getTime()}.xlsx`)
+      },
+      /** 重置按钮操作 */
+      resetQuery() {
+        this.resetForm('queryForm');
+        this.handleQuery();
+      },
+      // 多选框选中数据
+      handleSelectionChange(selection) {
+        this.ids = selection.map(item => item.id)
+        this.single = selection.length !== 1
+        this.multiple = !selection.length
+      },
+      /** 新增按钮操作 */
+      handleAdd() {
+        this.reset();
+        this.open = true;
+        this.title = '添加收款信息';
+      },
+      /** 修改按钮操作 */
+      handleUpdate(row) {
+        this.$prompt('请输入编辑原因', '提示', {
+          confirmButtonText: '确定',
+          cancelButtonText: '取消',
+          type: 'warning'
+        }).then(({ value }) => {
+          addReason({ reason: value, tableName: TableName.RECEIVE_MONEY, tid: row.id, modifyTime: this.modifyTime })
+            .then(() => {
+              this.$message.success('提交成功')
+              this.reset();
+              const id = row.id || this.ids
+              getReceiveMoney(id).then(response => {
+                this.form = response.data;
+                this.form.receiveType = response.data.receiveType.split('-')
+                this.open = true;
+                this.title = '修改收款信息';
+              });
+            })
+        }).catch(() => {
+          this.$message({
+            type: 'warning',
+            message: '请先输入编辑原因!'
+          });
+        });
+      },
+
+      /** 提交按钮 */
+      submitForm() {
+        this.$refs['form'].validate(valid => {
+          if (valid) {
+            if (this.form.id != null) {
+              // 去除参数
+              this.form = excludeParams(this.form, this.$exclude)
+              // 需要拼凑收款类型  但是不能修改响应式的payType 这是一个数组
+              let receiveType = null
+              if (this.form.receiveType) {
+                receiveType = this.form.receiveType.join('-')
+              } else {
+                this.$message.warning('请选择收款类型')
+                return
+              }
+              // 组装收款对象
+              const body = {
+                ...this.form,
+                receiveType: receiveType
+              }
+              updateReceiveMoney(body).then(() => {
+                this.$modal.msgSuccess('修改成功');
+                this.open = false;
+                this.clearFiles();
+                this.getList();
+              })
+            } else {
+              // 去除参数
+              this.form = excludeParams(this.form, this.$exclude)
+              // 需要拼凑收款类型  但是不能修改响应式的payType 这是一个数组
+              let receiveType = null
+              if (this.form.receiveType) {
+                receiveType = this.form.receiveType.join('-')
+              } else {
+                this.$message.warning('请选择收款类型')
+                return
+              }
+              // 组装收款对象
+              const body = {
+                ...this.form,
+                receiveType: receiveType
+              }
+              // 添加收款信息
+              addReceiveMoney(body).then(() => {
+                this.$modal.msgSuccess('新增成功');
+                this.open = false;
+                this.clearFiles();
+                this.getList();
+              })
+            }
+          }
+        });
+      },
+      /** 删除按钮操作 */
+      handleDelete(row) {
+        const ids = row.id || this.ids;
+        this.$modal.confirm('是否确认删除收款信息编号为"' + ids + '"的数据项？').then(function () {
+          return delReceiveMoney(ids);
+        }).then(() => {
+          this.getList();
+          this.$modal.msgSuccess('删除成功');
+        }).catch(() => {
+        });
+      },
+      // 清除文件
+      clearFiles () {
+        this.$refs.fileUploader.clearFileList()
+      },
+      /** 导出按钮操作 */
+      handleExport() {
+        this.download('system/receiveMoney/export', {
+          ...this.queryParams
+        }, `receiveMoney_${new Date().getTime()}.xlsx`)
+      }
     }
-  }
-};
+  };
 </script>
 <style scoped>
 .w-85px {
