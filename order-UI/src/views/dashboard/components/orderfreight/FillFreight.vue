@@ -44,18 +44,77 @@
       // 订单的填充 主要是 填充车牌 司机 车队
       // 陆运 填充 val.landCarNo 陆运车牌 val.landDriverName 司机姓名 fleet 车队
       // 海运 填充 val.seaCarNo 海运车牌 seaDriverName 海运公司 fleet 为 无
+      // 这里要让用户选择填充海运费还是陆运费
       handleCommitBackOrder(val) {
+        // 判断一下 如果陆运费 > 0 说明有陆运信息 如果海运费大于0 说明有海运信息
+        console.log(val)
+        // 判断是否包含陆运或海运
+        const hasLandFreight = val.landFreight > 0
+        const hasSeaFreight = val.seaFreight > 0
+
+        if (hasLandFreight || hasSeaFreight) {
+          // 如果同时包含陆运和海运，提示用户选择
+          if (hasLandFreight && hasSeaFreight) {
+            this.$confirm(
+              '此订单同时包含陆运和海运，请选择填充',
+              '填充运输信息',
+              {
+                confirmButtonText: '海运',
+                cancelButtonText: '陆运',
+                type: 'warning',
+                center: true
+              }
+            )
+              .then(() => {
+                this.handleFillSeaInfo(val) // 填充海运费
+              })
+              .catch(() => {
+                this.handleFillLandInfo(val) // 填充陆运费
+              })
+          } else {
+            // 如果只包含陆运或海运，直接填充相应的运输费用
+            this.handleFillTransportInfo(val, hasLandFreight ? 'land' : 'sea')
+          }
+        } else {
+          this.$message.error('此订单没有运输信息，请自行填写')
+        }
+      },
+      // 填充运费的函数
+      handleFillTransportInfo(val, transportType) {
+        if (transportType === 'land') {
+          this.handleFillLandInfo(val)
+        } else if (transportType === 'sea') {
+          this.handleFillSeaInfo(val)
+        }
+      },
+      handleFillLandInfo(val) {
         // 填充银行卡信息 todo 这里的银行卡户名 填写的是司机的名称 后续是否需要修改?
-        this.form.otherAcountsName = val.landDriverName || val.seaDriverName
-        this.form.otherBankNo = val.landBankNo || val.seaBankNo
-        this.form.otherBankName = val.landBankName || val.seaBankName
+        this.form.otherAcountsName = val.landDriverName
+        this.form.otherBankNo = val.landBankNo
+        this.form.otherBankName = val.landBankName
 
         // 填充司机信息
-        this.form.driverName = val.landDriverName || val.seaDriverName
-        this.form.carNo = val.landCarNo || val.seaCarNo
-        this.form.fleet = val.fleet || '无'
-      },
+        this.form.driverName = val.landDriverName
+        this.form.carNo = val.landCarNo
+        this.form.fleet = val.fleet
 
+        // 填充运输类型
+        this.form.freightType = '陆运'
+      },
+      // 填充海运费
+      handleFillSeaInfo(val) {
+        // 填充银行卡信息 todo 这里的银行卡户名 填写的是司机的名称 后续是否需要修改?
+        this.form.otherAcountsName = val.seaDriverName
+        this.form.otherBankNo = val.seaBankNo
+        this.form.otherBankName = val.seaBankName
+
+        // 填充司机信息
+        this.form.driverName = val.seaDriverName
+        this.form.carNo = val.seaCarNo
+        this.form.fleet = '无'
+        // 填充运输类型
+        this.form.freightType = '海运'
+      },
       // 己方公司点击确定的回调
       handleCommitBack(val) {
         this.form.otherBankNo = val.bankNo

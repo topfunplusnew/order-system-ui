@@ -136,7 +136,7 @@
       size="mini"
       :cell-style="
         () => {
-          return { padding: '.5px' };
+          return { padding: '.5px' }
         }
       "
       @selection-change="handleSelectionChange"
@@ -471,8 +471,8 @@
         </el-form-item>
       </el-form>
       <div slot="footer" class="dialog-footer">
-        <el-button type="primary" @click="submitForm"> 确 定 </el-button>
-        <el-button @click="cancel"> 取 消 </el-button>
+        <el-button type="primary" @click="submitForm">确 定</el-button>
+        <el-button @click="cancel">取 消</el-button>
       </div>
     </el-dialog>
 
@@ -659,30 +659,30 @@
     getOrderFreight,
     delOrderFreight,
     addOrderFreight,
-    updateOrderFreight,
-  } from '@/api/system/orderFreight';
-  import SearchOption from '@/components/SearchOption.vue';
-  import { listBankAccount } from '@/api/system/bankAccount';
-  import ApplyPayment from '@/views/dashboard/components/common/ApplyPayment.vue';
-  import { TableName } from '@/api/tool/enums';
-  import { addDateRange } from '@/utils/ruoyi';
-  import { listData } from '@/api/system/dict/data';
-  import { listFleet } from '@/api/system/fleet';
-  import { excludeParams } from '@/api/tool/exclude';
-  import { mixin_order_base } from '../../dashboard/mixins/order/order_base';
-  import { mixin_order_freight_payment } from '../../dashboard/mixins/order/order_freight_payment';
-  import InfoDialog from '../../../components/InfoDialog.vue';
-  import { mixin_payment_subject } from '../../dashboard/mixins/payment/payment_subject';
-  import { PaymentState } from '../../../api/tool/enums';
-  import CheckOrderInfo from '../../dashboard/components/orderfreight/CheckOrderInfo.vue';
-  import FillFreight from '../../dashboard/components/orderfreight/FillFreight.vue';
-  import { mixin_order_freight_fill } from './orderFreightFill';
+    updateOrderFreight
+  } from '@/api/system/orderFreight'
+  import SearchOption from '@/components/SearchOption.vue'
+  import { listBankAccount } from '@/api/system/bankAccount'
+  import ApplyPayment from '@/views/dashboard/components/common/ApplyPayment.vue'
+  import { TableName } from '@/api/tool/enums'
+  import { addDateRange } from '@/utils/ruoyi'
+  import { listData } from '@/api/system/dict/data'
+  import { listFleet } from '@/api/system/fleet'
+  import { excludeParams } from '@/api/tool/exclude'
+  import { mixin_order_base } from '../../dashboard/mixins/order/order_base'
+  import { mixin_order_freight_payment } from '../../dashboard/mixins/order/order_freight_payment'
+  import InfoDialog from '../../../components/InfoDialog.vue'
+  import { mixin_payment_subject } from '../../dashboard/mixins/payment/payment_subject'
+  import { PaymentState } from '../../../api/tool/enums'
+  import CheckOrderInfo from '../../dashboard/components/orderfreight/CheckOrderInfo.vue'
+  import FillFreight from '../../dashboard/components/orderfreight/FillFreight.vue'
+  import { mixin_order_freight_fill } from './orderFreightFill'
   import {
     FREIGHT_TYPE,
-    mixin_freight_payment,
-  } from '@/views/dashboard/mixins/freight/freight_payment';
-  import { fix } from '../../../api/tool/format';
-  import BankType from '@/views/dashboard/components/common/BankType.vue';
+    mixin_freight_payment
+  } from '@/views/dashboard/mixins/freight/freight_payment'
+  import { fix } from '../../../api/tool/format'
+  import BankType from '@/views/dashboard/components/common/BankType.vue'
 
   export default {
     name: 'OrderFreight',
@@ -692,14 +692,14 @@
       CheckOrderInfo,
       InfoDialog,
       ApplyPayment,
-      SearchOption,
+      SearchOption
     },
     mixins: [
       mixin_order_freight_fill,
       mixin_order_base,
       mixin_order_freight_payment,
       /* 引入支付类型的混入*/ mixin_payment_subject,
-      /* 引入支付类型的混入*/ mixin_freight_payment,
+      /* 引入支付类型的混入*/ mixin_freight_payment
     ],
     data() {
       return {
@@ -753,7 +753,7 @@
           addtime: null,
           userId: null,
           UserName: null,
-          delFlag: null,
+          delFlag: null
         },
         // 表单参数
         form: {},
@@ -776,42 +776,42 @@
           { key: 13, label: `是否可编辑`, visible: true },
           { key: 14, label: `付款人姓名`, visible: true },
           { key: 15, label: `付款日期`, visible: true },
-          { key: 16, label: `备注`, visible: true },
+          { key: 16, label: `备注`, visible: true }
         ],
         bankInputDisabled: false,
         tID: null,
         freight: null,
         applyInfo: null,
         applyPaymentVisible: false,
-        needInfo: {},
-      };
+        needInfo: {}
+      }
     },
     computed: {
       FREIGHT_TYPE() {
-        return FREIGHT_TYPE;
+        return FREIGHT_TYPE
       },
       TableName() {
-        return TableName;
-      },
+        return TableName
+      }
     },
     watch: {
       columns: {
         handler: function (newVal) {
-          localStorage.setItem('freight-columns', JSON.stringify(newVal));
+          localStorage.setItem('freight-columns', JSON.stringify(newVal))
         },
-        deep: true,
-      },
+        deep: true
+      }
     },
     created() {
       // 拿到地址栏中的参数
-      const { fundsDate, driver } = this.$route.query;
+      const { fundsDate, driver } = this.$route.query
       // 如果存在
       if (fundsDate && driver) {
         // 拿取地址中的参数 查询list
-        this.getQueryParams(fundsDate, driver);
+        this.getQueryParams(fundsDate, driver)
       } else {
         // 如果没有 正常查询
-        this.getList();
+        this.getList()
       }
       // 设置本地存储
       if (
@@ -819,14 +819,14 @@
         !localStorage.getItem('freight-columns')
       ) {
         // 设置localStorage
-        localStorage.setItem('freight-columns', JSON.stringify(this.columns));
+        localStorage.setItem('freight-columns', JSON.stringify(this.columns))
       } else {
-        this.columns = JSON.parse(localStorage.getItem('freight-columns'));
+        this.columns = JSON.parse(localStorage.getItem('freight-columns'))
       }
     },
     mounted() {
       if (Object.keys(this.$route.query).length) {
-        this.$router.replace({ path: this.$route.path });
+        this.$router.replace({ path: this.$route.path })
       }
     },
     methods: {
@@ -836,16 +836,16 @@
       listBankAccount,
       // 拿到付款状态
       PaymentState() {
-        return PaymentState;
+        return PaymentState
       },
       // 拿取地址中的参数 查询list展示
       getQueryParams(fundsDate, driver) {
         // 当都存在的时候 表名是跳转过来的 要查询一次list
         listOrderFreight({ payDate: fundsDate, driverName: driver }).then(
           (response) => {
-            this.orderFreightList = response.rows;
-            this.total = response.total;
-            this.loading = false;
+            this.orderFreightList = response.rows
+            this.total = response.total
+            this.loading = false
             // 如果查询到了
             if (this.total > 0) {
               this.$message.success(
@@ -856,7 +856,7 @@
                   '的' +
                   this.total +
                   '条数据'
-              );
+              )
             } else {
               this.$message.warning(
                 '未查询到付款时间为' +
@@ -864,47 +864,47 @@
                   '司机名称为' +
                   driver +
                   '的运费信息'
-              );
+              )
             }
           }
-        );
+        )
       },
       // 填充己方银行卡账户类型
       handleBankTypeSelf(value) {
-        this.freightSelfOnceInfo.selfBankCardType = value;
+        this.freightSelfOnceInfo.selfBankCardType = value
       },
       // 对方银行账户类型
       handleBankTypeOther(value) {
-        this.freightSelfOnceInfo.otherBankCardType = value;
+        this.freightSelfOnceInfo.otherBankCardType = value
       },
       changeOpen() {
-        this.needMoney = 0;
-        this.applyPaymentVisible = false;
-        this.getList();
+        this.needMoney = 0
+        this.applyPaymentVisible = false
+        this.getList()
       },
       /** 查询订单运费列表 */
       getList() {
-        this.loading = true;
+        this.loading = true
         // applyDateStartTime
         listOrderFreight(
           addDateRange(this.queryParams, this.dateRange, 'orderfreight')
         ).then((response) => {
-          this.orderFreightList = response.rows;
-          this.total = response.total;
-          this.loading = false;
-        });
+          this.orderFreightList = response.rows
+          this.total = response.total
+          this.loading = false
+        })
       },
       printHTML() {
         this.$print({
           printable: 'printBox',
           type: 'html',
-          targetStyles: ['*'], // 打印内容使用所有HTML样式，没有设置这个属性/值，设置分页打印没有效果
-        });
+          targetStyles: ['*'] // 打印内容使用所有HTML样式，没有设置这个属性/值，设置分页打印没有效果
+        })
       },
       // 取消按钮
       cancel() {
-        this.open = false;
-        this.reset();
+        this.open = false
+        this.reset()
       },
       // 表单重置
       reset() {
@@ -939,109 +939,109 @@
           UserName: null,
           delFlag: null,
           // 对方银行卡类型
-          otherBankCardType: null,
-        };
-        this.resetForm('form');
+          otherBankCardType: null
+        }
+        this.resetForm('form')
       },
       /** 搜索按钮操作 */
       handleQuery() {
-        this.queryParams.pageNum = 1;
-        this.getList();
+        this.queryParams.pageNum = 1
+        this.getList()
       },
       /** 重置按钮操作 */
       resetQuery() {
-        this.resetForm('queryForm');
-        this.handleQuery();
+        this.resetForm('queryForm')
+        this.handleQuery()
       },
       // 多选框选中数据
       handleSelectionChange(selection) {
-        this.selectedList = selection;
-        this.ids = selection.map((item) => item.id);
-        this.single = selection.length !== 1;
-        this.multiple = !selection.length;
+        this.selectedList = selection
+        this.ids = selection.map((item) => item.id)
+        this.single = selection.length !== 1
+        this.multiple = !selection.length
       },
       /** 新增按钮操作 */
       handleAdd() {
-        this.reset();
-        this.open = true;
-        this.title = '添加订单运费申请';
+        this.reset()
+        this.open = true
+        this.title = '添加订单运费申请'
       },
       /** 修改按钮操作 */
       handleUpdate(row) {
-        this.reset();
-        const id = row.id || this.ids;
+        this.reset()
+        const id = row.id || this.ids
         getOrderFreight(id).then((response) => {
-          this.form = response.data;
-          this.open = true;
-          this.title = '修改订单运费';
-        });
+          this.form = response.data
+          this.open = true
+          this.title = '修改订单运费'
+        })
       },
       /** 提交按钮 */
       submitForm() {
         this.$refs['form'].validate((valid) => {
           if (valid) {
             if (this.form.id != null) {
-              this.form = excludeParams(this.form, this.$exclude);
+              this.form = excludeParams(this.form, this.$exclude)
               updateOrderFreight(this.form).then(() => {
-                this.$modal.msgSuccess('修改成功');
-                this.open = false;
-                this.getList();
-              });
+                this.$modal.msgSuccess('修改成功')
+                this.open = false
+                this.getList()
+              })
             } else {
-              this.form = excludeParams(this.form, this.$exclude);
+              this.form = excludeParams(this.form, this.$exclude)
               addOrderFreight(this.form).then(() => {
-                this.$modal.msgSuccess('新增成功');
-                this.open = false;
-                this.getList();
-              });
+                this.$modal.msgSuccess('新增成功')
+                this.open = false
+                this.getList()
+              })
             }
           }
-        });
+        })
       },
       /** 删除按钮操作 */
       handleDelete(row) {
-        const ids = row.id || this.ids;
+        const ids = row.id || this.ids
         this.$modal
           .confirm('是否确认删除订单运费编号为"' + ids + '"的数据项？')
           .then(function () {
-            return delOrderFreight(ids);
+            return delOrderFreight(ids)
           })
           .then(() => {
-            this.getList();
-            this.$modal.msgSuccess('删除成功');
+            this.getList()
+            this.$modal.msgSuccess('删除成功')
           })
-          .catch(() => {});
+          .catch(() => {})
       },
       /** 导出按钮操作 */
       handleExport() {
         this.download(
           'system/orderFreight/export',
           {
-            ...this.queryParams,
+            ...this.queryParams
           },
           `orderFreight_${new Date().getTime()}.xlsx`
-        );
-      },
-    },
-  };
+        )
+      }
+    }
+  }
 </script>
 <style scoped>
-.order-freight-body {
-  display: flex;
-  justify-content: flex-end;
-}
+  .order-freight-body {
+    display: flex;
+    justify-content: flex-end;
+  }
 
-.order-freight-info {
-  width: 50%;
-}
+  .order-freight-info {
+    width: 50%;
+  }
 
-.order-freight-self-info {
-  width: 50%;
-}
+  .order-freight-self-info {
+    width: 50%;
+  }
 
-.order-freight-submit {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-}
+  .order-freight-submit {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+  }
 </style>
