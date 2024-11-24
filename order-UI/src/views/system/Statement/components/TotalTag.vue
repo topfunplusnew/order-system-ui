@@ -3,8 +3,7 @@
     props: {
       tags: {
         type: Object,
-        default: () => {
-        }
+        default: () => {}
       }
     },
     data() {
@@ -93,9 +92,14 @@
 </template>
 
 <style scoped lang="scss">
-.like {
-  cursor: pointer;
-  font-size: 25px;
-  display: inline-block;
-}
+  .like {
+    cursor: pointer;
+    font-size: 25px;
+    display: inline-block;
+  }
+
+  .el-statistic__head {
+    color: #000; /* 根据需求设置颜色 */
+    font-weight: bold;
+  }
 </style>
