@@ -78,7 +78,7 @@
             const configValue = res.rows[0]?.configValue
             // 根据configValue去拿取科目名称
             getSubjectLevel(configValue).then((res) => {
-              // 校验一下
+              // 校验科目
               if (!res.data) {
                 this.$message.warning('科目不存在')
               }
@@ -112,10 +112,7 @@
                     // 累计金额
                     let nowMoney = Number(0)
                     // 拿到汇总账
-                    // TODO 对于res.data不存在的情况进行校验
-                    const append = res?.rows.map((item) => {
-                      console.log(item)
-
+                    const append = res.rows.map((item) => {
                       // 金额累计计算
                       nowMoney = lastMoney + Number(item.moneyAmount)
                       // 更新

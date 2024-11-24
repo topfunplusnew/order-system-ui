@@ -109,7 +109,6 @@
         prop="subjectName"
         width="140"
       />
-      <!--      todo 客户编号 未知-->
       <el-table-column
         show-overflow-tooltip
         label="客户编号"

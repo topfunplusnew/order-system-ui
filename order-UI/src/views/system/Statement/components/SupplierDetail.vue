@@ -3,7 +3,6 @@
 <script>
   import { listConfig } from '@/api/system/config'
   import {
-    getCustomerFiveParams,
     getSupplierSubjectDetailSomeDay,
     getSupplierSubjectDetailSummary
   } from '@/api/system/statement'
@@ -58,7 +57,6 @@
     },
 
     methods: {
-      // 查看明细 点击的时候 先让用户输入时间 然后拿该行数据的companyId查询该供应商的明细账
       handleCheck() {
         // 清除一下状态
         this.tableData = []
@@ -78,6 +76,7 @@
             const configValue = res.rows[0]?.configValue
             // 根据configValue去拿取科目名称
             getSubjectLevel(configValue).then((res) => {
+              // 校验科目
               if (!res.data) {
                 this.$message.warning('科目不存在')
               }
@@ -112,7 +111,6 @@
                     let nowMoney = Number(0)
                     // 拿到汇总账
                     const append = res.data.map((item) => {
-                      console.log(item)
                       // 金额累计计算
                       nowMoney = lastMoney + Number(item.moneyAmount)
                       // 更新
@@ -158,7 +156,6 @@
         getFunction(tableName)(payNo).then((res) => {
           // 填充数据
           this.needToShowInfo = res.data
-          console.log(this.needToShowInfo)
           // 根据对应表名渲染对应的展示组件
           this.Components = this.getComponents(tableName)
           if (this.Components !== null) {
@@ -182,14 +179,8 @@
           [TableName.INVENTORY]: INVENTORY,
           [TableName.ORDER_DETAIL]: ORDER_DETAIL
         }
-        return components[tableName] || null // 默认返回 null，如果没有匹配的 tableName
-      },
-      // todo 查询某个供应商的五个字段
-      getCustomerTags(companyId) {
-        // 发送请求查询五个字段
-        getCustomerFiveParams(companyId).then((res) => {
-          this.tags = res.data || null
-        })
+        // 默认返回 null，如果没有匹配的 tableName
+        return components[tableName] || null
       }
     }
   }
