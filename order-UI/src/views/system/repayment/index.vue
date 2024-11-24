@@ -1,30 +1,52 @@
 <template>
   <div class="app-container">
-    <el-form v-show="showSearch" ref="queryForm" :model="timesQuery" size="mini" :inline="true" label-width="68px">
+    <el-form
+      v-show="showSearch"
+      ref="queryForm"
+      :model="timesQuery"
+      size="mini"
+      :inline="true"
+      label-width="68px"
+    >
       <el-form-item label="开始时间" prop="beginTime">
         <el-date-picker
           v-model="timesQuery.beginTime"
           type="datetime"
-          placeholder="请选择开始时间" value-format="yyyy-MM-dd HH:mm:ss">
-        </el-date-picker>
+          placeholder="请选择开始时间"
+          value-format="yyyy-MM-dd HH:mm:ss"
+        ></el-date-picker>
       </el-form-item>
       <el-form-item label="结束时间" prop="endTime">
         <el-date-picker
           v-model="timesQuery.endTime"
           type="datetime"
-          placeholder="请选择结束时间" value-format="yyyy-MM-dd HH:mm:ss">
-        </el-date-picker>
+          placeholder="请选择结束时间"
+          value-format="yyyy-MM-dd HH:mm:ss"
+        ></el-date-picker>
       </el-form-item>
       <el-form-item>
-        <el-button type="primary" icon="el-icon-search" size="mini" @click="handleQueryTime">搜索</el-button>
+        <el-button
+          type="primary"
+          icon="el-icon-search"
+          size="mini"
+          @click="handleQueryTime"
+        >
+          搜索
+        </el-button>
       </el-form-item>
     </el-form>
 
     <el-row :gutter="10" class="mb8">
       <el-col :span="1.5">
-        <el-button icon="el-icon-refresh" size="mini" @click="resetQuery">刷新</el-button>
+        <el-button icon="el-icon-refresh" size="mini" @click="resetQuery">
+          刷新
+        </el-button>
       </el-col>
-      <right-toolbar :showSearch.sync="showSearch" :columns="columns" @queryTable="getList">
+      <right-toolbar
+        :showSearch.sync="showSearch"
+        :columns="columns"
+        @queryTable="getList"
+      >
         <template #print>
           <el-col :span="1.5">
             <el-button
@@ -32,8 +54,7 @@
               icon="el-icon-printer"
               size="mini"
               @click="printHTML"
-            >
-            </el-button>
+            ></el-button>
           </el-col>
         </template>
         <!--        导出-->
@@ -45,52 +66,104 @@
               icon="el-icon-folder-opened"
               size="mini"
               @click="handleExport"
-            >
-            </el-button>
+            ></el-button>
           </el-col>
         </template>
       </right-toolbar>
     </el-row>
 
-    <el-table id="printBox" v-loading="loading" v-horizontal-scroll="'always'" border :data="repaymentList"
-              size="mini" :cell-style="()=>{return {padding:'2px'}}" @selection-change="handleSelectionChange">
-      <el-table-column v-if="columns[0].visible" label="还款金额" align="center" prop="moneyAmount"
-                       show-overflow-tooltip />
-      <el-table-column v-if="columns[1].visible" label="付息" align="center" prop="ratio" show-overflow-tooltip />
-      <el-table-column v-if="columns[2].visible" label="还款日期" align="center" prop="payDate" show-overflow-tooltip />
-      <el-table-column v-if="columns[3].visible" label="还款账户" align="center" prop="acountsName"
-                       show-overflow-tooltip />
-      <el-table-column v-if="columns[4].visible" label="还款账号" align="center" prop="bankNo" show-overflow-tooltip />
-      <el-table-column label="备注" align="center" prop="comments" show-overflow-tooltip />
-      <el-table-column label="操作" align="center" class-name="small-padding fixed-width" fixed="right">
+    <el-table
+      id="printBox"
+      v-loading="loading"
+      v-horizontal-scroll="'always'"
+      border
+      :data="repaymentList"
+      size="mini"
+      :cell-style="
+        () => {
+          return { padding: '2px' }
+        }
+      "
+      @selection-change="handleSelectionChange"
+    >
+      <el-table-column
+        v-if="columns[0].visible"
+        label="还款金额"
+        align="center"
+        prop="moneyAmount"
+        show-overflow-tooltip
+      />
+      <el-table-column
+        v-if="columns[1].visible"
+        label="付息"
+        align="center"
+        prop="ratio"
+        show-overflow-tooltip
+      />
+      <el-table-column
+        v-if="columns[2].visible"
+        label="还款日期"
+        align="center"
+        prop="payDate"
+        show-overflow-tooltip
+      />
+      <el-table-column
+        v-if="columns[3].visible"
+        label="还款账户"
+        align="center"
+        prop="acountsName"
+        show-overflow-tooltip
+      />
+      <el-table-column
+        v-if="columns[4].visible"
+        label="还款账号"
+        align="center"
+        prop="bankNo"
+        show-overflow-tooltip
+      />
+      <el-table-column
+        label="备注"
+        align="center"
+        prop="comments"
+        show-overflow-tooltip
+      />
+      <el-table-column
+        label="操作"
+        align="center"
+        class-name="small-padding fixed-width"
+        fixed="right"
+      >
         <template slot-scope="scope">
           <el-button
-            v-if="scope.row.checkState ==='未申请'"
+            v-if="scope.row.checkState === '未申请'"
             size="mini"
             type="warning"
             @click="applyForPayment(scope.row)"
-          >申请付款
+          >
+            申请付款
           </el-button>
           <el-button
-            v-if="scope.row.checkState ==='审核中'"
+            v-if="scope.row.checkState === '审核中'"
             size="mini"
             type="warning"
             disabled
-          >审核中
+          >
+            审核中
           </el-button>
           <el-button
             v-hasPermi="['system:repayment:remove']"
             size="mini"
             type="danger"
             @click="handleDelete(scope.row)"
-          >删除
+          >
+            删除
           </el-button>
         </template>
       </el-table-column>
     </el-table>
 
     <pagination
-      v-show="total>0"
+      v-show="total > 0"
       :total="total"
       :page.sync="queryParams.pageNum"
       :limit.sync="queryParams.pageSize"
@@ -98,8 +171,14 @@
     />
 
     <!-- 添加或修改贷款还款信息对话框 -->
-    <el-dialog :close-on-click-modal="false" :show-close="false" :title="title" :visible.sync="open" width="500px"
-               append-to-body>
+    <el-dialog
+      :close-on-click-modal="false"
+      :show-close="false"
+      :title="title"
+      :visible.sync="open"
+      width="500px"
+      append-to-body
+    >
       <el-form ref="form" :model="form" :rules="rules" label-width="80px">
         <el-form-item label="贷款编号" prop="loanNO">
           <el-input v-model="form.loanNO" placeholder="请输入贷款编号" />
@@ -132,22 +211,37 @@
       </div>
     </el-dialog>
 
-
-    <el-dialog :close-on-click-modal="false" :show-close="false" title="付款申请"
-               :visible.sync="PaymentApplyInfoVisible" width="45%">
+    <el-dialog
+      :close-on-click-modal="false"
+      :show-close="false"
+      title="付款申请"
+      :visible.sync="PaymentApplyInfoVisible"
+      width="45%"
+    >
       <keep-alive>
-        <ApplyPayment :table-name="TableName.REPAYMENT" :t-i-d="tID"
-                      :need-money="needMoney" :need-info="{}" @changeOpen="changePaymentApplyInfoVisible" />
+        <ApplyPayment
+          :table-name="TableName.REPAYMENT"
+          :t-i-d="tID"
+          :need-money="needMoney"
+          :need-info="{}"
+          @changeOpen="changePaymentApplyInfoVisible"
+        />
       </keep-alive>
     </el-dialog>
   </div>
 </template>
 
 <script>
-  import { listRepayment, getRepayment, delRepayment, addRepayment, updateRepayment } from '@/api/system/repayment';
-  import { mapGetters } from 'vuex';
-  import ApplyPayment from '@/views/dashboard/components/common/ApplyPayment.vue';
-  import { TableName } from '@/api/tool/enums';
+  import {
+    listRepayment,
+    getRepayment,
+    delRepayment,
+    addRepayment,
+    updateRepayment
+  } from '@/api/system/repayment'
+  import { mapGetters } from 'vuex'
+  import ApplyPayment from '@/views/dashboard/components/common/ApplyPayment.vue'
+  import { TableName } from '@/api/tool/enums'
 
   export default {
     name: 'Repayment',
@@ -198,7 +292,7 @@
           { key: 3, label: `付息`, visible: true },
           { key: 4, label: `还款日期`, visible: true },
           { key: 5, label: `还款账户`, visible: true },
-          { key: 6, label: `还款账号`, visible: true },
+          { key: 6, label: `还款账号`, visible: true }
         ],
         timesQuery: {
           beginTime: '',
@@ -214,25 +308,27 @@
         tID: '',
         needMoney: 0,
         PaymentApplyInfoVisible: false
-      };
+      }
     },
     // 展示与隐藏
     watch: {
       columns: {
-        handler: (newVal) => {
+        handler: function (newVal) {
           localStorage.setItem('repayment-columns', JSON.stringify(newVal))
         },
-        deep: true,
+        deep: true
       }
     },
     created() {
-      this.getList();
-      if (localStorage.getItem('repayment-columns') === 'null' ||
-        !localStorage.getItem('repayment-columns')) {
+      this.getList()
+      if (
+        localStorage.getItem('repayment-columns') === 'null' ||
+        !localStorage.getItem('repayment-columns')
+      ) {
         // 设置localStorage
         localStorage.setItem('repayment-columns', JSON.stringify(this.columns))
       } else {
-        this.columns = JSON.parse(localStorage.getItem('repayment-columns'));
+        this.columns = JSON.parse(localStorage.getItem('repayment-columns'))
       }
       this.$store.dispatch('money/getRepaymentList')
     },
@@ -244,8 +340,8 @@
     },
     methods: {
       applyForPayment(row) {
-        this.tID = row.id;
-        this.PaymentApplyInfoVisible = true;
+        this.tID = row.id
+        this.PaymentApplyInfoVisible = true
         this.needMoney = row.moneyAmount
       },
       changePaymentApplyInfoVisible() {
@@ -262,7 +358,7 @@
       },
       // 筛选方法
       filterTime() {
-        return this.repaymentList.filter(item => {
+        return this.repaymentList.filter((item) => {
           // 时间转换
           const time_search = new Date(item.payDate).getTime()
           const time_start = new Date(this.timesQuery.beginTime).getTime()
@@ -276,22 +372,22 @@
         this.$print({
           printable: 'printBox',
           type: 'html',
-          targetStyles: ['*'], // 打印内容使用所有HTML样式，没有设置这个属性/值，设置分页打印没有效果
+          targetStyles: ['*'] // 打印内容使用所有HTML样式，没有设置这个属性/值，设置分页打印没有效果
         })
       },
       /** 查询贷款还款信息列表 */
       getList() {
-        this.loading = true;
-        listRepayment(this.queryParams).then(response => {
-          this.repaymentList = response.rows;
-          this.total = response.total;
-          this.loading = false;
-        });
+        this.loading = true
+        listRepayment(this.queryParams).then((response) => {
+          this.repaymentList = response.rows
+          this.total = response.total
+          this.loading = false
+        })
       },
       // 取消按钮
       cancel() {
-        this.open = false;
-        this.reset();
+        this.open = false
+        this.reset()
       },
       // 表单重置
       reset() {
@@ -310,87 +406,93 @@
           UserName: null,
           updateTime: null,
           delFlag: null
-        };
-        this.resetForm('form');
+        }
+        this.resetForm('form')
       },
       /** 搜索按钮操作 */
       handleQuery() {
-        this.queryParams.pageNum = 1;
-        this.getList();
+        this.queryParams.pageNum = 1
+        this.getList()
       },
       /** 重置按钮操作 */
       resetQuery() {
-        this.resetForm('queryForm');
-        this.handleQuery();
+        this.resetForm('queryForm')
+        this.handleQuery()
       },
       // 多选框选中数据
       handleSelectionChange(selection) {
-        this.ids = selection.map(item => item.id)
+        this.ids = selection.map((item) => item.id)
         this.single = selection.length !== 1
         this.multiple = !selection.length
       },
       /** 新增按钮操作 */
       handleAdd() {
-        this.reset();
-        this.open = true;
-        this.title = '添加贷款还款信息';
+        this.reset()
+        this.open = true
+        this.title = '添加贷款还款信息'
       },
       /** 修改按钮操作 */
       handleUpdate(row) {
-        this.reset();
+        this.reset()
         const id = row.id || this.ids
-        getRepayment(id).then(response => {
-          this.form = response.data;
-          this.open = true;
-          this.title = '修改贷款还款信息';
-        });
+        getRepayment(id).then((response) => {
+          this.form = response.data
+          this.open = true
+          this.title = '修改贷款还款信息'
+        })
       },
       /** 提交按钮 */
       submitForm() {
-        this.$refs['form'].validate(valid => {
+        this.$refs['form'].validate((valid) => {
           if (valid) {
             if (this.form.id != null) {
-              this.form.delFlag = null;
-              this.form.addtime = null;
-              this.form.updateTime = null;
-              this.form.userId = null;
-              updateRepayment(this.form).then(response => {
-                this.$modal.msgSuccess('修改成功');
-                this.open = false;
-                this.getList();
-              });
+              this.form.delFlag = null
+              this.form.addtime = null
+              this.form.updateTime = null
+              this.form.userId = null
+              updateRepayment(this.form).then((response) => {
+                this.$modal.msgSuccess('修改成功')
+                this.open = false
+                this.getList()
+              })
             } else {
-              this.form.delFlag = null;
-              this.form.addtime = null;
-              this.form.updateTime = null;
-              this.form.userId = null;
-              addRepayment(this.form).then(response => {
-                this.$modal.msgSuccess('新增成功');
-                this.open = false;
-                this.getList();
-              });
+              this.form.delFlag = null
+              this.form.addtime = null
+              this.form.updateTime = null
+              this.form.userId = null
+              addRepayment(this.form).then((response) => {
+                this.$modal.msgSuccess('新增成功')
+                this.open = false
+                this.getList()
+              })
             }
           }
-        });
+        })
       },
       /** 删除按钮操作 */
       handleDelete(row) {
-        const ids = row.id || this.ids;
-        this.$modal.confirm('是否确认删除贷款还款信息编号为"' + ids + '"的数据项？').then(function () {
-          return delRepayment(ids);
-        }).then(() => {
-          this.getList();
-          this.$modal.msgSuccess('删除成功');
-        }).catch(() => {
-        });
+        const ids = row.id || this.ids
+        this.$modal
+          .confirm('是否确认删除贷款还款信息编号为"' + ids + '"的数据项？')
+          .then(function () {
+            return delRepayment(ids)
+          })
+          .then(() => {
+            this.getList()
+            this.$modal.msgSuccess('删除成功')
+          })
+          .catch(() => {})
       },
       /** 导出按钮操作 */
       handleExport() {
-        this.download('system/repayment/export', {
-          ...this.queryParams
-        }, `repayment_${new Date().getTime()}.xlsx`)
+        this.download(
+          'system/repayment/export',
+          {
+            ...this.queryParams
+          },
+          `repayment_${new Date().getTime()}.xlsx`
+        )
       }
     }
-  };
+  }
 </script>
-

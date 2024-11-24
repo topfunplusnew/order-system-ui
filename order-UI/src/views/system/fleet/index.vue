@@ -1,6 +1,13 @@
 <template>
   <div class="app-container">
-    <el-form v-show="showSearch" ref="queryForm" :model="queryParams" size="mini" :inline="true" label-width="80px">
+    <el-form
+      v-show="showSearch"
+      ref="queryForm"
+      :model="queryParams"
+      size="mini"
+      :inline="true"
+      label-width="80px"
+    >
       <el-form-item label="车队名称" prop="fname">
         <el-input
           v-model="queryParams.fname"
@@ -34,14 +41,23 @@
         />
       </el-form-item>
       <el-form-item>
-        <el-button type="primary" icon="el-icon-search" size="mini" @click="handleQuery">搜索</el-button>
+        <el-button
+          type="primary"
+          icon="el-icon-search"
+          size="mini"
+          @click="handleQuery"
+        >
+          搜索
+        </el-button>
       </el-form-item>
     </el-form>
 
     <el-row :gutter="10" class="mb8">
       <!-- 刷新按钮-->
       <el-col :span="1.5">
-        <el-button icon="el-icon-refresh" size="mini" @click="resetQuery">刷新</el-button>
+        <el-button icon="el-icon-refresh" size="mini" @click="resetQuery">
+          刷新
+        </el-button>
       </el-col>
       <!-- 新增按钮 -->
       <el-col :span="1.5">
@@ -50,11 +66,16 @@
           type="danger"
           size="mini"
           @click="handleAdd"
-        >添加车队信息
+        >
+          添加车队信息
         </el-button>
       </el-col>
 
-      <right-toolbar :showSearch.sync="showSearch" :columns="columns" @queryTable="getList">
+      <right-toolbar
+        :showSearch.sync="showSearch"
+        :columns="columns"
+        @queryTable="getList"
+      >
         <!--    打印    -->
         <template #print>
           <el-col :span="1.5">
@@ -63,8 +84,7 @@
               icon="el-icon-printer"
               size="mini"
               @click="printHTML"
-            >
-            </el-button>
+            ></el-button>
           </el-col>
         </template>
         <!--        导出-->
@@ -76,42 +96,74 @@
               icon="el-icon-folder-opened"
               size="mini"
               @click="handleExport"
-            >
-            </el-button>
+            ></el-button>
           </el-col>
         </template>
       </right-toolbar>
     </el-row>
 
-    <el-table id="printBox" v-horizontal-scroll="'always'" v-loading="loading" border
-              :data="fleetList" size="mini" @selection-change="handleSelectionChange">
+    <el-table
+      id="printBox"
+      v-horizontal-scroll="'always'"
+      v-loading="loading"
+      border
+      :data="fleetList"
+      size="mini"
+      @selection-change="handleSelectionChange"
+    >
       <!--   fixme 大小写错误 -->
-      <el-table-column v-if="columns[0].visible" label="车队名称" align="center" prop="fname" />
-      <el-table-column v-if="columns[1].visible" label="车队经理" align="center" prop="fleader" />
-      <el-table-column v-if="columns[2].visible" label="车队经理电话" align="center" prop="tel" />
-      <el-table-column v-if="columns[3].visible" label="地址" align="center" prop="address" />
-      <el-table-column label="操作" align="center" class-name="small-padding fixed-width">
+      <el-table-column
+        v-if="columns[0].visible"
+        label="车队名称"
+        align="center"
+        prop="fname"
+      />
+      <el-table-column
+        v-if="columns[1].visible"
+        label="车队经理"
+        align="center"
+        prop="fleader"
+      />
+      <el-table-column
+        v-if="columns[2].visible"
+        label="车队经理电话"
+        align="center"
+        prop="tel"
+      />
+      <el-table-column
+        v-if="columns[3].visible"
+        label="地址"
+        align="center"
+        prop="address"
+      />
+      <el-table-column
+        label="操作"
+        align="center"
+        class-name="small-padding fixed-width"
+      >
         <template slot-scope="scope">
           <el-button
             v-hasPermi="['system:fleet:edit']"
             size="mini"
             type="primary"
             @click="handleUpdate(scope.row)"
-          >编辑
+          >
+            编辑
           </el-button>
           <el-button
             v-hasPermi="['system:fleet:remove']"
             size="mini"
             type="danger"
             @click="handleDelete(scope.row)"
-          >删除
+          >
+            删除
           </el-button>
         </template>
       </el-table-column>
     </el-table>
 
     <pagination
-      v-show="total>0"
+      v-show="total > 0"
       :total="total"
       :page.sync="queryParams.pageNum"
       :limit.sync="queryParams.pageSize"
@@ -119,8 +171,14 @@
     />
 
     <!-- 添加或修改车队对话框 -->
-    <el-dialog :close-on-click-modal="false" :show-close="false" :title="title" :visible.sync="open" width="500px"
-               append-to-body>
+    <el-dialog
+      :close-on-click-modal="false"
+      :show-close="false"
+      :title="title"
+      :visible.sync="open"
+      width="500px"
+      append-to-body
+    >
       <el-form ref="form" :model="form" :rules="rules" label-width="120px">
         <el-form-item label="车队名称" prop="fname">
           <el-input v-model="form.fname" placeholder="请输入车队名称" />
@@ -144,7 +202,13 @@
 </template>
 
 <script>
-  import { listFleet, getFleet, delFleet, addFleet, updateFleet } from '@/api/system/fleet';
+  import {
+    listFleet,
+    getFleet,
+    delFleet,
+    addFleet,
+    updateFleet
+  } from '@/api/system/fleet'
 
   export default {
     name: 'Fleet',
@@ -187,47 +251,45 @@
           // 添加校验
           fname: [
             { required: true, message: '车队名称不能为空', trigger: 'blur' }
-
           ],
           fLeader: [
             { required: true, message: '车队经理不能为空', trigger: 'blur' }
-
           ],
           tel: [
             { required: true, message: '车队经理电话不能为空', trigger: 'blur' }
-
           ],
           address: [
             { required: true, message: '地址不能为空', trigger: 'blur' }
-
-          ],
+          ]
         },
         columns: [
           { key: 0, label: `车队名称`, visible: true },
           { key: 1, label: `车队经理`, visible: true },
           { key: 2, label: `车队经理电话`, visible: true },
-          { key: 3, label: `地址`, visible: true },
+          { key: 3, label: `地址`, visible: true }
         ]
-      };
+      }
     },
     // 展示与隐藏
     watch: {
       columns: {
-        handler: (newVal) => {
+        handler: function (newVal) {
           localStorage.setItem('fleet-columns', JSON.stringify(newVal))
         },
-        deep: true,
+        deep: true
       }
     },
 
     created() {
-      this.getList();
-      if (localStorage.getItem('fleet-columns') === 'null' ||
-        !localStorage.getItem('fleet-columns')) {
+      this.getList()
+      if (
+        localStorage.getItem('fleet-columns') === 'null' ||
+        !localStorage.getItem('fleet-columns')
+      ) {
         // 设置localStorage
         localStorage.setItem('fleet-columns', JSON.stringify(this.columns))
       } else {
-        this.columns = JSON.parse(localStorage.getItem('fleet-columns'));
+        this.columns = JSON.parse(localStorage.getItem('fleet-columns'))
       }
     },
     methods: {
@@ -236,22 +298,22 @@
         this.$print({
           printable: 'printBox',
           type: 'html',
-          targetStyles: ['*'], // 打印内容使用所有HTML样式，没有设置这个属性/值，设置分页打印没有效果
+          targetStyles: ['*'] // 打印内容使用所有HTML样式，没有设置这个属性/值，设置分页打印没有效果
         })
       },
       /** 查询车队列表 */
       getList() {
-        this.loading = true;
-        listFleet(this.queryParams).then(response => {
-          this.fleetList = response.rows;
-          this.total = response.total;
-          this.loading = false;
-        });
+        this.loading = true
+        listFleet(this.queryParams).then((response) => {
+          this.fleetList = response.rows
+          this.total = response.total
+          this.loading = false
+        })
       },
       // 取消按钮
       cancel() {
-        this.open = false;
-        this.reset();
+        this.open = false
+        this.reset()
       },
       // 表单重置
       reset() {
@@ -264,87 +326,93 @@
           addtime: null,
           editTime: null,
           delFlag: null
-        };
-        this.resetForm('form');
+        }
+        this.resetForm('form')
       },
       /** 搜索按钮操作 */
       handleQuery() {
-        this.queryParams.pageNum = 1;
-        this.getList();
+        this.queryParams.pageNum = 1
+        this.getList()
       },
       /** 重置按钮操作 */
       resetQuery() {
-        this.resetForm('queryForm');
-        this.handleQuery();
+        this.resetForm('queryForm')
+        this.handleQuery()
       },
       // 多选框选中数据
       handleSelectionChange(selection) {
-        this.ids = selection.map(item => item.id)
+        this.ids = selection.map((item) => item.id)
         this.single = selection.length !== 1
         this.multiple = !selection.length
       },
       /** 新增按钮操作 */
       handleAdd() {
-        this.reset();
-        this.open = true;
-        this.title = '添加车队';
+        this.reset()
+        this.open = true
+        this.title = '添加车队'
       },
       /** 修改按钮操作 */
       handleUpdate(row) {
-        this.reset();
+        this.reset()
         const id = row.id || this.ids
-        getFleet(id).then(response => {
-          this.form = response.data;
-          this.open = true;
-          this.title = '修改车队';
-        });
+        getFleet(id).then((response) => {
+          this.form = response.data
+          this.open = true
+          this.title = '修改车队'
+        })
       },
       /** 提交按钮 */
       submitForm() {
-        this.$refs['form'].validate(valid => {
+        this.$refs['form'].validate((valid) => {
           if (valid) {
             if (this.form.id != null) {
-              this.form.delFlag = null;
-              this.form.addtime = null;
-              this.form.updateTime = null;
-              this.form.userId = null;
-              updateFleet(this.form).then(response => {
-                this.$modal.msgSuccess('修改成功');
-                this.open = false;
-                this.getList();
-              });
+              this.form.delFlag = null
+              this.form.addtime = null
+              this.form.updateTime = null
+              this.form.userId = null
+              updateFleet(this.form).then((response) => {
+                this.$modal.msgSuccess('修改成功')
+                this.open = false
+                this.getList()
+              })
             } else {
-              addFleet(this.form).then(response => {
-                this.form.delFlag = null;
-                this.form.addtime = null;
-                this.form.updateTime = null;
-                this.form.userId = null;
-                this.$modal.msgSuccess('新增成功');
-                this.open = false;
-                this.getList();
-              });
+              addFleet(this.form).then((response) => {
+                this.form.delFlag = null
+                this.form.addtime = null
+                this.form.updateTime = null
+                this.form.userId = null
+                this.$modal.msgSuccess('新增成功')
+                this.open = false
+                this.getList()
+              })
             }
           }
-        });
+        })
       },
       /** 删除按钮操作 */
       handleDelete(row) {
-        const ids = row.id || this.ids;
-        this.$modal.confirm('是否确认删除车队编号为"' + ids + '"的数据项？').then(function () {
-          return delFleet(ids);
-        }).then(() => {
-          this.getList();
-          this.$modal.msgSuccess('删除成功');
-        }).catch(() => {
-        });
+        const ids = row.id || this.ids
+        this.$modal
+          .confirm('是否确认删除车队编号为"' + ids + '"的数据项？')
+          .then(function () {
+            return delFleet(ids)
+          })
+          .then(() => {
+            this.getList()
+            this.$modal.msgSuccess('删除成功')
+          })
+          .catch(() => {})
       },
       /** 导出按钮操作 */
       handleExport() {
-        this.download('system/fleet/export', {
-          ...this.queryParams
-        }, `fleet_${new Date().getTime()}.xlsx`)
+        this.download(
+          'system/fleet/export',
+          {
+            ...this.queryParams
+          },
+          `fleet_${new Date().getTime()}.xlsx`
+        )
       }
     }
-  };
+  }
 </script>
-

@@ -369,7 +369,7 @@
     watch: {
       // 展示与隐藏
       columns: {
-        handler: (newVal) => {
+        handler: function (newVal) {
           localStorage.setItem('subject-columns', JSON.stringify(newVal))
         },
         deep: true
@@ -551,7 +551,7 @@
       submitFormType() {
         // 如果添加类别
         this.formType.title = this.formType.type
-        addSubject(this.formType).then((response) => {
+        addSubject(this.formType).then(() => {
           this.$modal.msgSuccess('修改成功')
           this.openType = false
           this.getList()

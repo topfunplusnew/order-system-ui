@@ -1,54 +1,82 @@
 <template>
   <div class="app-container">
-    <el-form v-show="showSearch" ref="queryForm" :model="queryParams" size="mini" :inline="true" label-width="68px">
+    <el-form
+      v-show="showSearch"
+      ref="queryForm"
+      :model="queryParams"
+      size="mini"
+      :inline="true"
+      label-width="68px"
+    >
       <el-form-item label="开始时间" prop="issueDateStart">
         <el-date-picker
           v-model="queryParams.issueDateStart"
           type="datetime"
-          placeholder="选择日期" value-format="yyyy-MM-dd HH:mm:ss">
-        </el-date-picker>
+          placeholder="选择日期"
+          value-format="yyyy-MM-dd HH:mm:ss"
+        ></el-date-picker>
       </el-form-item>
       <el-form-item label="结束时间" prop="issueDateEnd">
         <el-date-picker
           v-model="queryParams.issueDateEnd"
           type="datetime"
-          placeholder="选择日期" value-format="yyyy-MM-dd HH:mm:ss">
-        </el-date-picker>
+          placeholder="选择日期"
+          value-format="yyyy-MM-dd HH:mm:ss"
+        ></el-date-picker>
       </el-form-item>
       <el-form-item label="票据号码" prop="billNo">
         <el-input
           v-model="queryParams.billNo"
           placeholder="请输入票据号码"
-          @keyup.enter.native="handleQuery" />
+          @keyup.enter.native="handleQuery"
+        />
       </el-form-item>
       <el-form-item label="排序方式">
-        <el-select v-model="queryParams.isOrderBybillNo" placeholder="请选择排序方式" size="mini" clearable>
+        <el-select
+          v-model="queryParams.isOrderBybillNo"
+          placeholder="请选择排序方式"
+          size="mini"
+          clearable
+        >
           <el-option
             v-for="item in options"
             :key="item.value"
             :label="item.label"
-            :value="item.value">
-          </el-option>
+            :value="item.value"
+          ></el-option>
         </el-select>
       </el-form-item>
       <el-form-item>
-        <el-button type="primary" icon="el-icon-search" size="mini" @click="handleQuery">查询流水</el-button>
+        <el-button
+          type="primary"
+          icon="el-icon-search"
+          size="mini"
+          @click="handleQuery"
+        >
+          查询流水
+        </el-button>
       </el-form-item>
     </el-form>
 
     <el-row :gutter="10" class="mb8">
       <el-col :span="1.5">
-        <el-button icon="el-icon-refresh" size="mini" @click="resetQuery">刷新</el-button>
+        <el-button icon="el-icon-refresh" size="mini" @click="resetQuery">
+          刷新
+        </el-button>
       </el-col>
-      <right-toolbar :showSearch.sync="showSearch" :columns="columns" @queryTable="getList">
+      <right-toolbar
+        :showSearch.sync="showSearch"
+        :columns="columns"
+        @queryTable="getList"
+      >
         <template #print>
           <el-col :span="1.5">
             <el-button
               plain
               icon="el-icon-printer"
               size="mini"
-              @click="printHTML">
-            </el-button>
+              @click="printHTML"
+            ></el-button>
           </el-col>
         </template>
         <!--        导出-->
@@ -59,49 +87,182 @@
               plain
               icon="el-icon-folder-opened"
               size="mini"
-              @click="handleExport">
-            </el-button>
+              @click="handleExport"
+            ></el-button>
           </el-col>
         </template>
       </right-toolbar>
     </el-row>
 
-    <el-table v-loading="loading" v-horizontal-scroll="'always'" border
-              :data="bankAcceptanceList" show-summary
-              id="printBox" :summary-method="getSummaries" size="mini" :cell-style="()=>{return {padding:'2px'}}"
-              height="480px" @selection-change="handleSelectionChange">
-      <el-table-column label="ID" align="center" prop="id" width="120" show-overflow-tooltip />
+    <el-table
+      v-loading="loading"
+      v-horizontal-scroll="'always'"
+      border
+      :data="bankAcceptanceList"
+      show-summary
+      id="printBox"
+      :summary-method="getSummaries"
+      size="mini"
+      :cell-style="
+        () => {
+          return { padding: '2px' }
+        }
+      "
+      height="480px"
+      @selection-change="handleSelectionChange"
+    >
+      <el-table-column
+        label="ID"
+        align="center"
+        prop="id"
+        width="120"
+        show-overflow-tooltip
+      />
       <!--      <el-table-column label="操作日期" align="center" prop="operateDate" width="120" show-overflow-tooltip/>-->
-      <el-table-column label="票据号码" align="center" prop="billNo" width="120" show-overflow-tooltip />
-      <el-table-column label="出票日期" align="center" prop="issueDate" width="120" show-overflow-tooltip />
-      <el-table-column label="到期日期" align="center" prop="dueDate" width="120" show-overflow-tooltip />
-      <el-table-column label="我方承兑账户" align="center" prop="billAccount" width="120" show-overflow-tooltip />
-      <el-table-column label="票据交易日期" align="center" prop="billDate" width="120" show-overflow-tooltip />
+      <el-table-column
+        label="票据号码"
+        align="center"
+        prop="billNo"
+        width="120"
+        show-overflow-tooltip
+      />
+      <el-table-column
+        label="出票日期"
+        align="center"
+        prop="issueDate"
+        width="120"
+        show-overflow-tooltip
+      />
+      <el-table-column
+        label="到期日期"
+        align="center"
+        prop="dueDate"
+        width="120"
+        show-overflow-tooltip
+      />
+      <el-table-column
+        label="我方承兑账户"
+        align="center"
+        prop="billAccount"
+        width="120"
+        show-overflow-tooltip
+      />
+      <el-table-column
+        label="票据交易日期"
+        align="center"
+        prop="billDate"
+        width="120"
+        show-overflow-tooltip
+      />
       <!--      <el-table-column label="分类（收入/支出）" align="center" prop="billType" width="120" show-overflow-tooltip/>-->
-      <el-table-column label="收票事由" align="center" prop="incomeReason" width="120" show-overflow-tooltip />
+      <el-table-column
+        label="收票事由"
+        align="center"
+        prop="incomeReason"
+        width="120"
+        show-overflow-tooltip
+      />
       <!--      <el-table-column label="票据金额" align="center" prop="billAmount" width="120" show-overflow-tooltip/>-->
       <!--      <el-table-column label="贴息点数" align="center" prop="inDiscountPoints" width="120" show-overflow-tooltip/>-->
       <!--      <el-table-column label="贴息金额" align="center" prop="inDiscountAmount" width="120" show-overflow-tooltip/>-->
-      <el-table-column label="票据种类（电子/纸质）" align="center" prop="billCategory" width="120"
-                       show-overflow-tooltip />
-      <el-table-column label="背书人(来源)" align="center" prop="incomeEndorser" width="120" show-overflow-tooltip />
-      <el-table-column label="收入票据来源" align="center" prop="incomeOrigin" width="120" show-overflow-tooltip />
-      <el-table-column label="收入票据金额" align="center" prop="incomeBillAmount" width="120" show-overflow-tooltip />
-      <el-table-column label="收入贴息点数" align="center" prop="incomeInDiscountPoints" width="120"
-                       show-overflow-tooltip />
-      <el-table-column label="收入贴息金额" align="center" prop="incomeInDiscountAmount" width="120"
-                       show-overflow-tooltip />
-      <el-table-column label="背书是由" align="center" prop="expenseReason" width="120" show-overflow-tooltip />
-      <el-table-column label="被背书人" align="center" prop="expenseEndorser" width="120" show-overflow-tooltip />
-      <el-table-column label="支出票据来源" align="center" prop="expenseOrigin" width="120" show-overflow-tooltip />
-      <el-table-column label="支出票据金额" align="center" prop="expenseBillAmount" width="120"
-                       show-overflow-tooltip />
-      <el-table-column label="支出贴息点数" align="center" prop="expenseInDiscountPoints" width="120"
-                       show-overflow-tooltip />
-      <el-table-column label="支出贴息金额" align="center" prop="expenseInDiscountAmount" width="120"
-                       show-overflow-tooltip />
-      <el-table-column label="备注" align="center" prop="comments" width="120" show-overflow-tooltip />
-      <el-table-column label="操作" align="center" class-name="small-padding fixed-width" width="150px" fixed="right">
+      <el-table-column
+        label="票据种类（电子/纸质）"
+        align="center"
+        prop="billCategory"
+        width="120"
+        show-overflow-tooltip
+      />
+      <el-table-column
+        label="背书人(来源)"
+        align="center"
+        prop="incomeEndorser"
+        width="120"
+        show-overflow-tooltip
+      />
+      <el-table-column
+        label="收入票据来源"
+        align="center"
+        prop="incomeOrigin"
+        width="120"
+        show-overflow-tooltip
+      />
+      <el-table-column
+        label="收入票据金额"
+        align="center"
+        prop="incomeBillAmount"
+        width="120"
+        show-overflow-tooltip
+      />
+      <el-table-column
+        label="收入贴息点数"
+        align="center"
+        prop="incomeInDiscountPoints"
+        width="120"
+        show-overflow-tooltip
+      />
+      <el-table-column
+        label="收入贴息金额"
+        align="center"
+        prop="incomeInDiscountAmount"
+        width="120"
+        show-overflow-tooltip
+      />
+      <el-table-column
+        label="背书是由"
+        align="center"
+        prop="expenseReason"
+        width="120"
+        show-overflow-tooltip
+      />
+      <el-table-column
+        label="被背书人"
+        align="center"
+        prop="expenseEndorser"
+        width="120"
+        show-overflow-tooltip
+      />
+      <el-table-column
+        label="支出票据来源"
+        align="center"
+        prop="expenseOrigin"
+        width="120"
+        show-overflow-tooltip
+      />
+      <el-table-column
+        label="支出票据金额"
+        align="center"
+        prop="expenseBillAmount"
+        width="120"
+        show-overflow-tooltip
+      />
+      <el-table-column
+        label="支出贴息点数"
+        align="center"
+        prop="expenseInDiscountPoints"
+        width="120"
+        show-overflow-tooltip
+      />
+      <el-table-column
+        label="支出贴息金额"
+        align="center"
+        prop="expenseInDiscountAmount"
+        width="120"
+        show-overflow-tooltip
+      />
+      <el-table-column
+        label="备注"
+        align="center"
+        prop="comments"
+        width="120"
+        show-overflow-tooltip
+      />
+      <el-table-column
+        label="操作"
+        align="center"
+        class-name="small-padding fixed-width"
+        width="150px"
+        fixed="right"
+      >
         <template slot-scope="scope">
           <!--          <el-button-->
           <!--            size="mini"-->
@@ -113,68 +274,201 @@
             v-hasPermi="['system:bankacceptance:remove']"
             size="mini"
             type="text"
-            @click="handleCheck(scope.row)">查看详情
+            @click="handleCheck(scope.row)"
+          >
+            查看详情
           </el-button>
           <el-button
             v-hasPermi="['system:bankacceptance:remove']"
             size="mini"
             type="danger"
-            @click="handleDelete(scope.row)">删除
+            @click="handleDelete(scope.row)"
+          >
+            删除
           </el-button>
         </template>
       </el-table-column>
     </el-table>
 
-
     <pagination
-      v-show="total>0"
+      v-show="total > 0"
       :total="total"
       :page.sync="queryParams.pageNum"
       :limit.sync="queryParams.pageSize"
       @pagination="getList"
     />
 
-
     <InfoDialog title="票据详情" :visible.sync="totalVisible">
       <template #info>
-        <el-table v-loading="loading" v-horizontal-scroll="'always'" border
-                  :data="bankAcceptanceMoneyList" show-summary
-                  id="printBox" :summary-method="getSummaries" size="mini" :cell-style="()=>{return {padding:'2px'}}"
-                  height="480px" @selection-change="handleSelectionChange">
-          <el-table-column label="ID" align="center" prop="id" width="120" show-overflow-tooltip />
+        <el-table
+          v-loading="loading"
+          v-horizontal-scroll="'always'"
+          border
+          :data="bankAcceptanceMoneyList"
+          show-summary
+          id="printBox"
+          :summary-method="getSummaries"
+          size="mini"
+          :cell-style="
+            () => {
+              return { padding: '2px' }
+            }
+          "
+          height="480px"
+          @selection-change="handleSelectionChange"
+        >
+          <el-table-column
+            label="ID"
+            align="center"
+            prop="id"
+            width="120"
+            show-overflow-tooltip
+          />
           <!--      <el-table-column label="操作日期" align="center" prop="operateDate" width="120" show-overflow-tooltip/>-->
-          <el-table-column label="票据号码" align="center" prop="billNo" width="120" show-overflow-tooltip />
-          <el-table-column label="出票日期" align="center" prop="issueDate" width="120" show-overflow-tooltip />
-          <el-table-column label="到期日期" align="center" prop="dueDate" width="120" show-overflow-tooltip />
-          <el-table-column label="我方承兑账户" align="center" prop="billAccount" width="120" show-overflow-tooltip />
-          <el-table-column label="票据交易日期" align="center" prop="billDate" width="120" show-overflow-tooltip />
+          <el-table-column
+            label="票据号码"
+            align="center"
+            prop="billNo"
+            width="120"
+            show-overflow-tooltip
+          />
+          <el-table-column
+            label="出票日期"
+            align="center"
+            prop="issueDate"
+            width="120"
+            show-overflow-tooltip
+          />
+          <el-table-column
+            label="到期日期"
+            align="center"
+            prop="dueDate"
+            width="120"
+            show-overflow-tooltip
+          />
+          <el-table-column
+            label="我方承兑账户"
+            align="center"
+            prop="billAccount"
+            width="120"
+            show-overflow-tooltip
+          />
+          <el-table-column
+            label="票据交易日期"
+            align="center"
+            prop="billDate"
+            width="120"
+            show-overflow-tooltip
+          />
           <!--      <el-table-column label="分类（收入/支出）" align="center" prop="billType" width="120" show-overflow-tooltip/>-->
-          <el-table-column label="收票事由" align="center" prop="incomeReason" width="120" show-overflow-tooltip />
+          <el-table-column
+            label="收票事由"
+            align="center"
+            prop="incomeReason"
+            width="120"
+            show-overflow-tooltip
+          />
           <!--      <el-table-column label="票据金额" align="center" prop="billAmount" width="120" show-overflow-tooltip/>-->
           <!--      <el-table-column label="贴息点数" align="center" prop="inDiscountPoints" width="120" show-overflow-tooltip/>-->
           <!--      <el-table-column label="贴息金额" align="center" prop="inDiscountAmount" width="120" show-overflow-tooltip/>-->
-          <el-table-column label="票据种类（电子/纸质）" align="center" prop="billCategory" width="120"
-                           show-overflow-tooltip />
-          <el-table-column label="背书人(来源)" align="center" prop="incomeEndorser" width="120" show-overflow-tooltip />
-          <el-table-column label="收入票据来源" align="center" prop="incomeOrigin" width="120" show-overflow-tooltip />
-          <el-table-column label="收入票据金额" align="center" prop="incomeBillAmount" width="120"
-                           show-overflow-tooltip />
-          <el-table-column label="收入贴息点数" align="center" prop="incomeInDiscountPoints" width="120"
-                           show-overflow-tooltip />
-          <el-table-column label="收入贴息金额" align="center" prop="incomeInDiscountAmount" width="120"
-                           show-overflow-tooltip />
-          <el-table-column label="背书是由" align="center" prop="expenseReason" width="120" show-overflow-tooltip />
-          <el-table-column label="被背书人" align="center" prop="expenseEndorser" width="120" show-overflow-tooltip />
-          <el-table-column label="支出票据来源" align="center" prop="expenseOrigin" width="120" show-overflow-tooltip />
-          <el-table-column label="支出票据金额" align="center" prop="expenseBillAmount" width="120"
-                           show-overflow-tooltip />
-          <el-table-column label="支出贴息点数" align="center" prop="expenseInDiscountPoints" width="120"
-                           show-overflow-tooltip />
-          <el-table-column label="支出贴息金额" align="center" prop="expenseInDiscountAmount" width="120"
-                           show-overflow-tooltip />
-          <el-table-column label="票据余额" align="center" prop="balance" width="120"
-                           show-overflow-tooltip />
-          <el-table-column label="备注" align="center" prop="comments" width="120" show-overflow-tooltip />
+          <el-table-column
+            label="票据种类（电子/纸质）"
+            align="center"
+            prop="billCategory"
+            width="120"
+            show-overflow-tooltip
+          />
+          <el-table-column
+            label="背书人(来源)"
+            align="center"
+            prop="incomeEndorser"
+            width="120"
+            show-overflow-tooltip
+          />
+          <el-table-column
+            label="收入票据来源"
+            align="center"
+            prop="incomeOrigin"
+            width="120"
+            show-overflow-tooltip
+          />
+          <el-table-column
+            label="收入票据金额"
+            align="center"
+            prop="incomeBillAmount"
+            width="120"
+            show-overflow-tooltip
+          />
+          <el-table-column
+            label="收入贴息点数"
+            align="center"
+            prop="incomeInDiscountPoints"
+            width="120"
+            show-overflow-tooltip
+          />
+          <el-table-column
+            label="收入贴息金额"
+            align="center"
+            prop="incomeInDiscountAmount"
+            width="120"
+            show-overflow-tooltip
+          />
+          <el-table-column
+            label="背书是由"
+            align="center"
+            prop="expenseReason"
+            width="120"
+            show-overflow-tooltip
+          />
+          <el-table-column
+            label="被背书人"
+            align="center"
+            prop="expenseEndorser"
+            width="120"
+            show-overflow-tooltip
+          />
+          <el-table-column
+            label="支出票据来源"
+            align="center"
+            prop="expenseOrigin"
+            width="120"
+            show-overflow-tooltip
+          />
+          <el-table-column
+            label="支出票据金额"
+            align="center"
+            prop="expenseBillAmount"
+            width="120"
+            show-overflow-tooltip
+          />
+          <el-table-column
+            label="支出贴息点数"
+            align="center"
+            prop="expenseInDiscountPoints"
+            width="120"
+            show-overflow-tooltip
+          />
+          <el-table-column
+            label="支出贴息金额"
+            align="center"
+            prop="expenseInDiscountAmount"
+            width="120"
+            show-overflow-tooltip
+          />
+          <el-table-column
+            label="票据余额"
+            align="center"
+            prop="balance"
+            width="120"
+            show-overflow-tooltip
+          />
+          <el-table-column
+            label="备注"
+            align="center"
+            prop="comments"
+            width="120"
+            show-overflow-tooltip
+          />
         </el-table>
       </template>
     </InfoDialog>
@@ -280,15 +574,15 @@
     delBankAcceptance,
     addBankAcceptance,
     updateBankAcceptance
-  } from '@/api/system/bankAcceptance';
-  import { formatTime } from '@/api/tool/format';
-  import SearchOption from '@/components/SearchOption.vue';
-  import { listBankAccount } from '@/api/system/bankAccount';
-  import { mixin_printHTML } from '@/views/dashboard/mixins/print';
-  import { excludeParams } from '@/api/tool/exclude';
-  import InfoDialog from '../../../components/InfoDialog.vue';
-  import { listBankAcceptanceBalanceMoney } from '../../../api/system/bankAcceptance';
-  import { tansParams } from '../../../utils/ruoyi';
+  } from '@/api/system/bankAcceptance'
+  import { formatTime } from '@/api/tool/format'
+  import SearchOption from '@/components/SearchOption.vue'
+  import { listBankAccount } from '@/api/system/bankAccount'
+  import { mixin_printHTML } from '@/views/dashboard/mixins/print'
+  import { excludeParams } from '@/api/tool/exclude'
+  import InfoDialog from '../../../components/InfoDialog.vue'
+  import { listBankAcceptanceBalanceMoney } from '../../../api/system/bankAcceptance'
+  import { tansParams } from '../../../utils/ruoyi'
 
   export default {
     name: 'BankAcceptance',
@@ -359,18 +653,20 @@
           { key: 11, label: `来源`, visible: true },
           { key: 12, label: `背书人`, visible: true },
           { key: 13, label: `被背书人`, visible: true },
-          { key: 14, label: `背书事由`, visible: true },
+          { key: 14, label: `背书事由`, visible: true }
         ],
         // 表单参数
         form: {},
         // 表单校验
         rules: {
           billNo: [
-            { required: true, message: '请输入票据号码', trigger: 'blur' }],
+            { required: true, message: '请输入票据号码', trigger: 'blur' }
+          ],
           dueDate: [
-            { required: true, message: '请输入到期日期', trigger: 'blur' }],
+            { required: true, message: '请输入到期日期', trigger: 'blur' }
+          ],
           reason: [
-            { required: true, message: '请选择收票事由', trigger: 'change' },
+            { required: true, message: '请选择收票事由', trigger: 'change' }
           ],
           issueDate: [
             { required: true, message: '请输入出票日期', trigger: 'blur' }
@@ -392,77 +688,92 @@
           ],
           // 添加校验
           billAccount: [
-            { required: true, message: '请选择我方承兑账户', trigger: 'blur' }],
+            { required: true, message: '请选择我方承兑账户', trigger: 'blur' }
+          ],
           billType: [
-            { required: true, message: '请选择票据种类', trigger: 'change' }],
+            { required: true, message: '请选择票据种类', trigger: 'change' }
+          ],
           billDate: [
-            { required: true, message: '请选择票据日期', trigger: 'change' }],
+            { required: true, message: '请选择票据日期', trigger: 'change' }
+          ],
           billAmount: [
-            { required: true, message: '请输入票据金额', trigger: 'blur' }],
+            { required: true, message: '请输入票据金额', trigger: 'blur' }
+          ],
           inDiscountPoints: [
-            { required: true, message: '请输入贴息点数', trigger: 'blur' }],
+            { required: true, message: '请输入贴息点数', trigger: 'blur' }
+          ],
           inDiscountAmount: [
             { required: true, message: '请输入贴息金额', trigger: 'blur' }
           ]
         },
-        options: [{
-          value: '操作日期',
-          label: '操作日期'
-        }, {
-          value: '票据单号',
-          label: '票据单号'
-        },],
+        options: [
+          {
+            value: '操作日期',
+            label: '操作日期'
+          },
+          {
+            value: '票据单号',
+            label: '票据单号'
+          }
+        ],
         // 查看票据余额
         totalVisible: false,
-        bankAcceptanceMoneyList: [],
-      };
+        bankAcceptanceMoneyList: []
+      }
     },
     // 展示与隐藏
     watch: {
       columns: {
-        handler: (newVal) => {
+        handler: function (newVal) {
           localStorage.setItem('bankacceptance-columns', JSON.stringify(newVal))
         },
-        deep: true,
+        deep: true
       }
     },
     created() {
-      this.getList();
-      if (localStorage.getItem('bankacceptance-columns') === 'null' ||
-        !localStorage.getItem('bankacceptance-columns')) {
+      this.getList()
+      if (
+        localStorage.getItem('bankacceptance-columns') === 'null' ||
+        !localStorage.getItem('bankacceptance-columns')
+      ) {
         // 设置localStorage
-        localStorage.setItem('bankacceptance-columns', JSON.stringify(this.columns))
+        localStorage.setItem(
+          'bankacceptance-columns',
+          JSON.stringify(this.columns)
+        )
       } else {
-        this.columns = JSON.parse(localStorage.getItem('bankacceptance-columns'));
+        this.columns = JSON.parse(
+          localStorage.getItem('bankacceptance-columns')
+        )
       }
     },
     methods: {
       listBankAccount,
       // 查看某张票据的收入支出详情
       handleCheck(row) {
-        listBankAcceptanceBalanceMoney({ billNo: row.billNo }).then(res => {
-          this.bankAcceptanceMoneyList = res.rows;
-          this.totalVisible = true;
+        listBankAcceptanceBalanceMoney({ billNo: row.billNo }).then((res) => {
+          this.bankAcceptanceMoneyList = res.rows
+          this.totalVisible = true
         })
       },
       // 填充
       handleCommitBack(val) {
-        this.form.billAccount = val.acountsName;
+        this.form.billAccount = val.acountsName
       },
       // 自定义列统计总函数
       getSummaries(param) {
-        const { columns, data } = param;
-        const sums = [];
+        const { columns, data } = param
+        const sums = []
         columns.forEach((column, index) => {
           if (index === 0) {
-            sums[index] = '统计';
-            return;
+            sums[index] = '统计'
+            return
           }
-          const values = data.map(item => {
+          const values = data.map((item) => {
             return Number(item[column.property])
-          });
+          })
 
-          if (!values.every(value => isNaN(value))) {
+          if (!values.every((value) => isNaN(value))) {
             // 对指定列进行计算
             // if(index)
             // 需要进行统计的索引列
@@ -470,34 +781,34 @@
             // index !== 9 && index !== 1 && index !== 16 && index !== 2
             if (out_list.includes(index)) {
               sums[index] = values.reduce((prev, curr) => {
-                const value = Number(curr);
+                const value = Number(curr)
                 if (!isNaN(value)) {
-                  return prev + curr;
+                  return prev + curr
                 } else {
-                  return prev;
+                  return prev
                 }
-              }, 0);
-              sums[index] += ' ';
+              }, 0)
+              sums[index] += ' '
             }
           } else {
-            sums[index] = '';
+            sums[index] = ''
           }
-        });
-        return sums;
+        })
+        return sums
       },
       /** 查询商业票据、银行承兑列表 */
       getList() {
-        this.loading = true;
-        listBankAcceptanceAll(this.queryParams).then(response => {
-          this.bankAcceptanceList = response.rows;
-          this.total = response.total;
-          this.loading = false;
-        });
+        this.loading = true
+        listBankAcceptanceAll(this.queryParams).then((response) => {
+          this.bankAcceptanceList = response.rows
+          this.total = response.total
+          this.loading = false
+        })
       },
       // 取消按钮
       cancel() {
-        this.open = false;
-        this.reset();
+        this.open = false
+        this.reset()
       },
       // 表单重置
       reset() {
@@ -525,99 +836,108 @@
           UserName: null,
           updateTime: null,
           delFlag: null
-        };
-        this.resetForm('form');
+        }
+        this.resetForm('form')
       },
       /** 搜索按钮操作 */
       handleQuery() {
-        this.queryParams.pageNum = 1;
+        this.queryParams.pageNum = 1
         if (!this.queryParams.params) {
-          this.queryParams.params = {};
+          this.queryParams.params = {}
         }
         // 添加searchParams 如果这个存在
         if (this.queryParams.isOrderBybillNo) {
-          this.queryParams.params['isOrderBybillNo'] = 'true';
+          this.queryParams.params['isOrderBybillNo'] = 'true'
         }
-        this.getList();
+        this.getList()
       },
       /** 重置按钮操作 */
       resetQuery() {
-        this.resetForm('queryForm');
+        this.resetForm('queryForm')
         // this.queryParams.issueDate = ''
-        this.handleQuery();
+        this.handleQuery()
       },
       // 多选框选中数据
       handleSelectionChange(selection) {
-        this.ids = selection.map(item => item.id)
+        this.ids = selection.map((item) => item.id)
         this.single = selection.length !== 1
         this.multiple = !selection.length
       },
       /** 新增按钮操作 */
       handleAdd() {
-        this.reset();
-        this.open = true;
-        this.title = '添加收入商业票据、银行承兑';
+        this.reset()
+        this.open = true
+        this.title = '添加收入商业票据、银行承兑'
         this.form.billDate = formatTime(new Date())
       },
       /** 修改按钮操作 */
       handleUpdate(row) {
-        this.reset();
+        this.reset()
         const id = row.id || this.ids
-        getBankAcceptance(id).then(response => {
-          this.form = response.data;
-          this.open = true;
-          this.title = '修改收入商业票据、银行承兑';
-        });
+        getBankAcceptance(id).then((response) => {
+          this.form = response.data
+          this.open = true
+          this.title = '修改收入商业票据、银行承兑'
+        })
       },
       /** 提交按钮 */
       submitForm() {
-        this.$refs['form'].validate(valid => {
+        this.$refs['form'].validate((valid) => {
           if (valid) {
             if (this.form.id != null) {
-              this.form.delFlag = null;
-              this.form.addtime = null;
-              this.form.updateTime = null;
-              this.form.userId = null;
+              this.form.delFlag = null
+              this.form.addtime = null
+              this.form.updateTime = null
+              this.form.userId = null
               this.form.billType = '收入'
               this.form = excludeParams(this.form, this.$exclude)
-              updateBankAcceptance(this.form).then(response => {
-                this.$modal.msgSuccess('修改成功');
-                this.open = false;
-                this.getList();
-              });
+              updateBankAcceptance(this.form).then((response) => {
+                this.$modal.msgSuccess('修改成功')
+                this.open = false
+                this.getList()
+              })
             } else {
-              this.form.delFlag = null;
-              this.form.addtime = null;
-              this.form.updateTime = null;
-              this.form.userId = null;
+              this.form.delFlag = null
+              this.form.addtime = null
+              this.form.updateTime = null
+              this.form.userId = null
               this.form.billType = '收入'
               this.form = excludeParams(this.form, this.$exclude)
-              addBankAcceptance(this.form).then(response => {
-                this.$modal.msgSuccess('新增成功');
-                this.open = false;
-                this.getList();
-              });
+              addBankAcceptance(this.form).then((response) => {
+                this.$modal.msgSuccess('新增成功')
+                this.open = false
+                this.getList()
+              })
             }
           }
-        });
+        })
       },
       /** 删除按钮操作 */
       handleDelete(row) {
-        const ids = row.id || this.ids;
-        this.$modal.confirm('是否确认删除商业票据、银行承兑编号为"' + ids + '"的数据项？').then(function () {
-          return delBankAcceptance(ids);
-        }).then(() => {
-          this.getList();
-          this.$modal.msgSuccess('删除成功');
-        }).catch(() => {
-        });
+        const ids = row.id || this.ids
+        this.$modal
+          .confirm(
+            '是否确认删除商业票据、银行承兑编号为"' + ids + '"的数据项？'
+          )
+          .then(function () {
+            return delBankAcceptance(ids)
+          })
+          .then(() => {
+            this.getList()
+            this.$modal.msgSuccess('删除成功')
+          })
+          .catch(() => {})
       },
       /** 导出按钮操作 */
       handleExport() {
-        this.download('system/bankAcceptance/export', {
-          ...this.queryParams
-        }, `bankAcceptance_${new Date().getTime()}.xlsx`)
+        this.download(
+          'system/bankAcceptance/export',
+          {
+            ...this.queryParams
+          },
+          `bankAcceptance_${new Date().getTime()}.xlsx`
+        )
       }
     }
-  };
+  }
 </script>

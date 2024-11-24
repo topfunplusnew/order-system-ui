@@ -1,6 +1,13 @@
 <template>
   <div class="app-container">
-    <el-form v-show="showSearch" ref="queryForm" :model="queryParams" size="mini" :inline="true" label-width="68px">
+    <el-form
+      v-show="showSearch"
+      ref="queryForm"
+      :model="queryParams"
+      size="mini"
+      :inline="true"
+      label-width="68px"
+    >
       <!--      <el-form-item label="对应的表名" prop="tableName">-->
       <!--        <el-input-->
       <!--          v-model="queryParams.tableName"-->
@@ -106,8 +113,17 @@
       <!--        />-->
       <!--      </el-form-item>-->
       <el-form-item>
-        <el-button type="primary" icon="el-icon-search" size="mini" @click="handleQuery">搜索</el-button>
-        <el-button icon="el-icon-refresh" size="mini" @click="resetQuery">重置</el-button>
+        <el-button
+          type="primary"
+          icon="el-icon-search"
+          size="mini"
+          @click="handleQuery"
+        >
+          搜索
+        </el-button>
+        <el-button icon="el-icon-refresh" size="mini" @click="resetQuery">
+          重置
+        </el-button>
       </el-form-item>
     </el-form>
 
@@ -120,7 +136,8 @@
           icon="el-icon-plus"
           size="mini"
           @click="handleAdd"
-        >新增付款信息
+        >
+          新增付款信息
         </el-button>
       </el-col>
       <el-col :span="1.5">
@@ -132,10 +149,15 @@
           size="mini"
           :disabled="multiple"
           @click="handleDelete"
-        >删除
+        >
+          删除
         </el-button>
       </el-col>
-      <right-toolbar :showSearch.sync="showSearch" :columns="columns" @queryTable="getList">
+      <right-toolbar
+        :showSearch.sync="showSearch"
+        :columns="columns"
+        @queryTable="getList"
+      >
         <template #print>
           <el-col :span="1.5">
             <el-button
@@ -143,8 +165,7 @@
               icon="el-icon-printer"
               size="mini"
               @click="printHTML"
-            >
-            </el-button>
+            ></el-button>
           </el-col>
         </template>
         <!--        导出-->
@@ -156,80 +177,170 @@
               icon="el-icon-folder-opened"
               size="mini"
               @click="handleExport"
-            >
-            </el-button>
+            ></el-button>
           </el-col>
         </template>
       </right-toolbar>
     </el-row>
 
-
     <!--    列表-->
-    <el-table id="printBox" v-horizontal-scroll="'always'" v-loading="loading" border
-              :data="paymentApplyList" @selection-change="handleSelectionChange">
+    <el-table
+      id="printBox"
+      v-horizontal-scroll="'always'"
+      v-loading="loading"
+      border
+      :data="paymentApplyList"
+      @selection-change="handleSelectionChange"
+    >
       <!--      <el-table-column label="对应的表名" align="center" prop="tableName"/>-->
       <!--      <el-table-column label="对应的表主键" align="center" prop="tID"/>-->
-      <el-table-column v-if="columns[0].visible" label="日期" align="center" prop="fundsDate" />
-      <el-table-column v-if="columns[1].visible" label="支付类型" align="center" prop="payType" />
-      <el-table-column v-if="columns[2].visible" label="金额" align="center" prop="moneyAmount" />
-      <el-table-column v-if="columns[3].visible" label="对方户名" align="center" prop="otherAcountsName" />
-      <el-table-column v-if="columns[4].visible" label="对方账号" align="center" prop="otherBankNo" />
-      <el-table-column v-if="columns[5].visible" label="对方开户行" align="center" prop="otherBankName" />
-      <el-table-column v-if="columns[6].visible" label="对方公司" align="center" prop="companyName" />
+      <el-table-column
+        v-if="columns[0].visible"
+        label="日期"
+        align="center"
+        prop="fundsDate"
+      />
+      <el-table-column
+        v-if="columns[1].visible"
+        label="支付类型"
+        align="center"
+        prop="payType"
+      />
+      <el-table-column
+        v-if="columns[2].visible"
+        label="金额"
+        align="center"
+        prop="moneyAmount"
+      />
+      <el-table-column
+        v-if="columns[3].visible"
+        label="对方户名"
+        align="center"
+        prop="otherAcountsName"
+      />
+      <el-table-column
+        v-if="columns[4].visible"
+        label="对方账号"
+        align="center"
+        prop="otherBankNo"
+      />
+      <el-table-column
+        v-if="columns[5].visible"
+        label="对方开户行"
+        align="center"
+        prop="otherBankName"
+      />
+      <el-table-column
+        v-if="columns[6].visible"
+        label="对方公司"
+        align="center"
+        prop="companyName"
+      />
       <!--      <el-table-column label="对方公司ID" align="center" prop="companyId"/>-->
-      <el-table-column v-if="columns[7].visible" label="对方公司类型" align="center" prop="companyType" />
-      <el-table-column v-if="columns[8].visible" label="付款原因" align="center" prop="reason" />
-      <el-table-column v-if="columns[9].visible" label="附件" align="center" prop="attachment">
+      <el-table-column
+        v-if="columns[7].visible"
+        label="对方公司类型"
+        align="center"
+        prop="companyType"
+      />
+      <el-table-column
+        v-if="columns[8].visible"
+        label="付款原因"
+        align="center"
+        prop="reason"
+      />
+      <el-table-column
+        v-if="columns[9].visible"
+        label="附件"
+        align="center"
+        prop="attachment"
+      >
         <template #default="scope">
-          <img v-if="isPic(scope.row.attachment)" :src="scope.row.attachment" alt=""
-               style="width: 100%;height: 100%">
-          <span v-else-if="scope.row.attachment === '' || scope.row.attachment === null">无附件</span>
+          <img
+            v-if="isPic(scope.row.attachment)"
+            :src="scope.row.attachment"
+            alt=""
+            style="width: 100%; height: 100%"
+          />
+          <span
+            v-else-if="
+              scope.row.attachment === '' || scope.row.attachment === null
+            "
+          >
+            无附件
+          </span>
           <span v-else>
             文件不支持预览，请手动下载:
-            <a style="color: red"
-               :href="scope.row.attachment">{{ scope.row.attachment }}</a>
+            <a style="color: red" :href="scope.row.attachment">
+              {{ scope.row.attachment }}
+            </a>
           </span>
         </template>
       </el-table-column>
-      <el-table-column v-if="columns[10].visible" label="申请人" align="center" prop="applyPerson" />
+      <el-table-column
+        v-if="columns[10].visible"
+        label="申请人"
+        align="center"
+        prop="applyPerson"
+      />
       <!--      <el-table-column label="申请人ID" align="center" prop="applyPersonID"/>-->
-      <el-table-column v-if="columns[11].visible" label="审核状态" align="center" prop="checkState">
+      <el-table-column
+        v-if="columns[11].visible"
+        label="审核状态"
+        align="center"
+        prop="checkState"
+      >
         <template slot-scope="scope">
           <el-tag
             :type="scope.row.checkState === '通过' ? 'success' : 'danger'"
-            disable-transitions>{{ scope.row.checkState }}
+            disable-transitions
+          >
+            {{ scope.row.checkState }}
           </el-tag>
         </template>
       </el-table-column>
-      <el-table-column v-if="columns[12].visible" label="备注" align="center" prop="comments" />
-      <el-table-column label="操作" align="center" class-name="small-padding fixed-width" fixed="right">
+      <el-table-column
+        v-if="columns[12].visible"
+        label="备注"
+        align="center"
+        prop="comments"
+      />
+      <el-table-column
+        label="操作"
+        align="center"
+        class-name="small-padding fixed-width"
+        fixed="right"
+      >
         <template slot-scope="scope">
           <el-button
             v-hasPermi="['system:paymentapply:edit']"
             size="mini"
             type="primary"
             @click="handleUpdate(scope.row)"
-          >修改
+          >
+            修改
           </el-button>
           <el-button
             v-hasPermi="['system:paymentapply:remove']"
             size="mini"
             type="danger"
             @click="handleDelete(scope.row)"
-          >删除
+          >
+            删除
           </el-button>
           <el-button
             v-hasPermi="['system:paymentapply:remove']"
             size="mini"
             @click="checkPaymentApplyInfo(scope.row)"
-          >查看信息
+          >
+            查看信息
           </el-button>
         </template>
       </el-table-column>
     </el-table>
 
     <pagination
-      v-show="total>0"
+      v-show="total > 0"
       :total="total"
       :page.sync="queryParams.pageNum"
       :limit.sync="queryParams.pageSize"
@@ -237,7 +348,14 @@
     />
 
     <!-- 2.添加或修改付款信息对话框 -->
-    <el-dialog :close-on-click-modal="false" :show-close="false" title="付款申请" :visible.sync="open" width="500px" append-to-body>
+    <el-dialog
+      :close-on-click-modal="false"
+      :show-close="false"
+      title="付款申请"
+      :visible.sync="open"
+      width="500px"
+      append-to-body
+    >
       <el-form ref="form" :model="form" :rules="rules" label-width="80px">
         <!--        表名要自动填充 手动添加无需-->
         <!--        <el-form-item label="对应的表名" prop="tableName">-->
@@ -250,32 +368,40 @@
           <el-date-picker
             v-model="form.fundsDate"
             type="datetime"
-            placeholder="选择日期">
-          </el-date-picker>
+            placeholder="选择日期"
+          ></el-date-picker>
         </el-form-item>
         <el-form-item label="支付类型" prop="payType">
           <!--          <el-input v-model="form.receiveType" placeholder="请输入支付类型"/>-->
           <el-row :gutter="5">
             <!--            一级分类-->
             <el-col :span="8">
-              <el-select v-model="currentSort.levelOne" placeholder="请选择一级分类" @change="handleSelectOneLevel">
+              <el-select
+                v-model="currentSort.levelOne"
+                placeholder="请选择一级分类"
+                @change="handleSelectOneLevel"
+              >
                 <el-option
                   v-for="item in OneLevelOption"
                   :key="item.id"
                   :label="item.title"
-                  :value="item.title">
-                </el-option>
+                  :value="item.title"
+                ></el-option>
               </el-select>
             </el-col>
             <!--            二级分类-->
             <el-col :span="8">
-              <el-select v-model="currentSort.levelTwo" placeholder="请选择二级分类" @change="handleSelectTwoLevel">
+              <el-select
+                v-model="currentSort.levelTwo"
+                placeholder="请选择二级分类"
+                @change="handleSelectTwoLevel"
+              >
                 <el-option
                   v-for="item in TwoLevelOption"
                   :key="item.id"
                   :label="item.title"
-                  :value="item.title">
-                </el-option>
+                  :value="item.title"
+                ></el-option>
               </el-select>
             </el-col>
           </el-row>
@@ -288,15 +414,38 @@
         <el-form-item label="对方户名" prop="otherAcountsName">
           <el-row>
             <el-col :span="10">
-              <el-input v-model="form.otherAcountsName" placeholder="请输入对方户名" />
+              <el-input
+                v-model="form.otherAcountsName"
+                placeholder="请输入对方户名"
+              />
             </el-col>
             <el-col :span="3">
-              <SearchOption :get-data="listCompany" icon="el-icon-search" @commitBack="handleCommitBack">
+              <SearchOption
+                :get-data="listCompany"
+                icon="el-icon-search"
+                @commitBack="handleCommitBack"
+              >
                 <template #table-columns>
-                  <el-table-column label="公司名称" align="center" prop="companyName" />
-                  <el-table-column label="公司类型" align="center" prop="companyType" />
-                  <el-table-column label="开户行" align="center" prop="bankName" />
-                  <el-table-column label="开户名" align="center" prop="acountsName" />
+                  <el-table-column
+                    label="公司名称"
+                    align="center"
+                    prop="companyName"
+                  />
+                  <el-table-column
+                    label="公司类型"
+                    align="center"
+                    prop="companyType"
+                  />
+                  <el-table-column
+                    label="开户行"
+                    align="center"
+                    prop="bankName"
+                  />
+                  <el-table-column
+                    label="开户名"
+                    align="center"
+                    prop="acountsName"
+                  />
                   <el-table-column label="账号" align="center" prop="bankNo" />
                 </template>
               </SearchOption>
@@ -307,7 +456,10 @@
           <el-input v-model="form.otherBankNo" placeholder="请输入对方账号" />
         </el-form-item>
         <el-form-item label="对方开户行" prop="otherBankName">
-          <el-input v-model="form.otherBankName" placeholder="请输入对方开户行" />
+          <el-input
+            v-model="form.otherBankName"
+            placeholder="请输入对方开户行"
+          />
         </el-form-item>
         <el-form-item label="对方公司" prop="companyName">
           <el-input v-model="form.companyName" placeholder="请输入对方公司" />
@@ -317,7 +469,11 @@
         <!--        </el-form-item>-->
 
         <el-form-item label="付款原因" prop="reason">
-          <el-input v-model="form.reason" type="textarea" placeholder="请输入内容" />
+          <el-input
+            v-model="form.reason"
+            type="textarea"
+            placeholder="请输入内容"
+          />
         </el-form-item>
 
         <!--        文件-->
@@ -346,14 +502,22 @@
     </el-dialog>
 
     <!--    查看-->
-    <el-dialog :close-on-click-modal="false" :show-close="false"
-               title="查看信息"
-               :visible.sync="checkVisible"
-               width="30%">
-      <NeedToShowInfo :need-to-show-info="needToShowInfo" :table-name-to-prop="tableName" />
+    <el-dialog
+      :close-on-click-modal="false"
+      :show-close="false"
+      title="查看信息"
+      :visible.sync="checkVisible"
+      width="30%"
+    >
+      <NeedToShowInfo
+        :need-to-show-info="needToShowInfo"
+        :table-name-to-prop="tableName"
+      />
       <span slot="footer" class="dialog-footer">
         <el-button @click="checkVisible = false">取 消</el-button>
-        <el-button type="primary" @click="checkVisible = false">确 定</el-button>
+        <el-button type="primary" @click="checkVisible = false">
+          确 定
+        </el-button>
       </span>
     </el-dialog>
   </div>
@@ -366,17 +530,17 @@
     delPaymentApply,
     addPaymentApply,
     updatePaymentApply
-  } from '@/api/system/paymentApply';
-  import { excludeParams } from '@/api/tool/exclude';
-  import { listSubject } from '@/api/system/subject';
-  import { formatDate } from '@/utils';
-  import SearchOption from '@/components/SearchOption.vue';
-  import { listCompany } from '@/api/system/company';
-  import NeedToShowInfo from '@/components/NeedToShowInfo.vue';
-  import { TableName } from '@/api/tool/enums';
-  import { getOrderFreight } from '@/api/system/orderFreight';
-  import { getBorrowedMoney } from '@/api/system/borrowedMoney';
-  import { findFileExtension } from '@/utils/trash/utils';
+  } from '@/api/system/paymentApply'
+  import { excludeParams } from '@/api/tool/exclude'
+  import { listSubject } from '@/api/system/subject'
+  import { formatDate } from '@/utils'
+  import SearchOption from '@/components/SearchOption.vue'
+  import { listCompany } from '@/api/system/company'
+  import NeedToShowInfo from '@/components/NeedToShowInfo.vue'
+  import { TableName } from '@/api/tool/enums'
+  import { getOrderFreight } from '@/api/system/orderFreight'
+  import { getBorrowedMoney } from '@/api/system/borrowedMoney'
+  import { findFileExtension } from '@/utils/trash/utils'
 
   export default {
     name: 'PaymentApply',
@@ -445,7 +609,7 @@
           { key: 9, label: `附件`, visible: true },
           { key: 10, label: `申请人`, visible: true },
           { key: 11, label: `审核状态`, visible: true },
-          { key: 12, label: `备注`, visible: true },
+          { key: 12, label: `备注`, visible: true }
         ],
         // 付款分类信息
         subjectTree: [],
@@ -462,37 +626,42 @@
         checkVisible: false,
         needToShowInfo: {},
         tableName: ''
-      };
+      }
     },
     computed: {
       TableName() {
         return TableName
       },
       fullLevel() {
-        return this.currentSort.levelOne + '-' + this.currentSort.levelTwo;
+        return this.currentSort.levelOne + '-' + this.currentSort.levelTwo
       }
     },
     // 展示与隐藏
     watch: {
       columns: {
-        handler: (newVal) => {
+        handler: function (newVal) {
           localStorage.setItem('paymentapply-columns', JSON.stringify(newVal))
         },
-        deep: true,
+        deep: true
       }
     },
     created() {
-      this.getList();
-      if (localStorage.getItem('paymentapply-columns') === 'null' ||
-        !localStorage.getItem('paymentapply-columns')) {
+      this.getList()
+      if (
+        localStorage.getItem('paymentapply-columns') === 'null' ||
+        !localStorage.getItem('paymentapply-columns')
+      ) {
         // 设置localStorage
-        localStorage.setItem('paymentapply-columns', JSON.stringify(this.columns))
+        localStorage.setItem(
+          'paymentapply-columns',
+          JSON.stringify(this.columns)
+        )
       } else {
-        this.columns = JSON.parse(localStorage.getItem('paymentapply-columns'));
+        this.columns = JSON.parse(localStorage.getItem('paymentapply-columns'))
       }
-      listSubject().then(res => {
-        this.subjectTree = this.handleTree(res.data, 'id', 'parentId');
-        this.OneLevelOption = this.subjectTree;
+      listSubject().then((res) => {
+        this.subjectTree = this.handleTree(res.data, 'id', 'parentId')
+        this.OneLevelOption = this.subjectTree
       })
     },
     methods: {
@@ -504,12 +673,13 @@
       },
       // 点击一级分类后的回调
       handleSelectOneLevel(value) {
-        this.currentSort.levelOne = value;
+        this.currentSort.levelOne = value
         for (var i = 0; i < this.OneLevelOption.length; i++) {
           // 每个一级分类
           var oneSubject = this.OneLevelOption[i]
           // 判断：所有一级分类id和点击一级分类id是否一样
-          if (value === oneSubject.title) { // ===即比较值 还要比较类型
+          if (value === oneSubject.title) {
+            // ===即比较值 还要比较类型
             // 从一级分类中获取所有的二级分类
             this.TwoLevelOption = oneSubject.children
             // 把二级分类Id值清空
@@ -519,27 +689,27 @@
       },
       // 点击二级
       handleSelectTwoLevel(value) {
-        this.currentSort.levelTwo = value;
+        this.currentSort.levelTwo = value
       },
 
       // 对方信息 - 点击确认后自动填充
       handleCommitBack(val) {
-        this.form.otherBankNo = val.bankNo;
-        this.form.otherBankName = val.bankName;
-        this.form.companyName = val.companyName;
-        this.form.companyId = val.id;
-        this.form.otherAcountsName = val.acountsName;
+        this.form.otherBankNo = val.bankNo
+        this.form.otherBankName = val.bankName
+        this.form.companyName = val.companyName
+        this.form.companyId = val.id
+        this.form.otherAcountsName = val.acountsName
         this.form.companyType = val.companyType
       },
       // 上传的回调函数
       handleCommitUpload(val) {
-        this.form.attachment = val;
+        this.form.attachment = val
       },
       printHTML() {
         this.$print({
           printable: 'printBox',
           type: 'html',
-          targetStyles: ['*'], // 打印内容使用所有HTML样式，没有设置这个属性/值，设置分页打印没有效果
+          targetStyles: ['*'] // 打印内容使用所有HTML样式，没有设置这个属性/值，设置分页打印没有效果
         })
       },
       checkPaymentApplyInfo(row) {
@@ -549,44 +719,44 @@
           // 订单运费
           case TableName.ORDER_FREIGHT: {
             // 发请求 获取订单运费信息
-            getOrderFreight(row.tID).then(res => {
+            getOrderFreight(row.tID).then((res) => {
               console.log('运费信息', res)
               this.needToShowInfo = res.data
               this.tableName = TableName.ORDER_FREIGHT
             })
-            break;
+            break
           }
           case TableName.BORROWED_MONEY:
-            getBorrowedMoney(row.tID).then(res => {
+            getBorrowedMoney(row.tID).then((res) => {
               console.log('借款信息', res)
               this.needToShowInfo = res.data
               this.tableName = TableName.BORROWED_MONEY
             })
-            break;
+            break
 
           // todo 这里继续加表名 然后发请求获取数据 赋值给需要展示的needToShowInfo 然后创建组件
           case 'paymentApplyDetailItem':
             this.needToShowInfo = item.paymentApplyDetailItem
-            break;
+            break
           default:
-            break;
+            break
         }
         // 查询信息
-        this.checkVisible = true;
+        this.checkVisible = true
       },
       /** 查询付款信息列表 */
       getList() {
-        this.loading = true;
-        listPaymentApply(this.queryParams).then(response => {
-          this.paymentApplyList = response.rows;
-          this.total = response.total;
-          this.loading = false;
-        });
+        this.loading = true
+        listPaymentApply(this.queryParams).then((response) => {
+          this.paymentApplyList = response.rows
+          this.total = response.total
+          this.loading = false
+        })
       },
       // 取消按钮
       cancel() {
-        this.open = false;
-        this.reset();
+        this.open = false
+        this.reset()
       },
       // 表单重置
       reset() {
@@ -615,82 +785,89 @@
           updateTime: null,
           delFlag: null,
           submitflag: null
-        };
-        this.resetForm('form');
+        }
+        this.resetForm('form')
       },
       /** 搜索按钮操作 */
       handleQuery() {
-        this.queryParams.pageNum = 1;
-        this.getList();
+        this.queryParams.pageNum = 1
+        this.getList()
       },
       /** 重置按钮操作 */
       resetQuery() {
-        this.resetForm('queryForm');
-        this.handleQuery();
+        this.resetForm('queryForm')
+        this.handleQuery()
       },
       // 多选框选中数据
       handleSelectionChange(selection) {
-        this.ids = selection.map(item => item.id)
+        this.ids = selection.map((item) => item.id)
         this.single = selection.length !== 1
         this.multiple = !selection.length
       },
       /** 新增按钮操作 */
       handleAdd() {
-        this.reset();
-        this.open = true;
-        this.title = '添加付款信息';
+        this.reset()
+        this.open = true
+        this.title = '添加付款信息'
       },
       /** 修改按钮操作 */
       handleUpdate(row) {
-        this.reset();
+        this.reset()
         const id = row.id || this.ids
-        getPaymentApply(id).then(response => {
-          this.form = response.data;
-          this.open = true;
-          this.title = '修改付款信息';
-        });
+        getPaymentApply(id).then((response) => {
+          this.form = response.data
+          this.open = true
+          this.title = '修改付款信息'
+        })
       },
       /** 提交按钮 */
       submitForm() {
-        this.$refs['form'].validate(valid => {
+        this.$refs['form'].validate((valid) => {
           if (valid) {
             if (this.form.id != null) {
               // 排除不必要字段
               excludeParams(this, this.$exclude)
-              updatePaymentApply(this.form).then(response => {
-                this.$modal.msgSuccess('修改成功');
-                this.open = false;
-                this.getList();
-              });
+              updatePaymentApply(this.form).then((response) => {
+                this.$modal.msgSuccess('修改成功')
+                this.open = false
+                this.getList()
+              })
             } else {
               excludeParams(this, this.$exclude)
-              this.form.payType = this.fullLevel;
-              addPaymentApply(this.form).then(response => {
-                this.$modal.msgSuccess('新增成功');
-                this.open = false;
-                this.getList();
-              });
+              this.form.payType = this.fullLevel
+              addPaymentApply(this.form).then((response) => {
+                this.$modal.msgSuccess('新增成功')
+                this.open = false
+                this.getList()
+              })
             }
           }
-        });
+        })
       },
       /** 删除按钮操作 */
       handleDelete(row) {
-        const ids = row.id || this.ids;
-        this.$modal.confirm('是否确认删除付款信息编号为"' + ids + '"的数据项？').then(function () {
-          return delPaymentApply(ids);
-        }).then(() => {
-          this.getList();
-          this.$modal.msgSuccess('删除成功');
-        }).catch(() => {
-        });
+        const ids = row.id || this.ids
+        this.$modal
+          .confirm('是否确认删除付款信息编号为"' + ids + '"的数据项？')
+          .then(function () {
+            return delPaymentApply(ids)
+          })
+          .then(() => {
+            this.getList()
+            this.$modal.msgSuccess('删除成功')
+          })
+          .catch(() => {})
       },
       /** 导出按钮操作 */
       handleExport() {
-        this.download('system/paymentApply/export', {
-          ...this.queryParams
-        }, `paymentApply_${new Date().getTime()}.xlsx`)
+        this.download(
+          'system/paymentApply/export',
+          {
+            ...this.queryParams
+          },
+          `paymentApply_${new Date().getTime()}.xlsx`
+        )
       }
     }
-  };
+  }
 </script>

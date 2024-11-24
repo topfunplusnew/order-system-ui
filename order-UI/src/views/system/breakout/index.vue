@@ -1,6 +1,13 @@
 <template>
   <div class="app-container">
-    <el-form v-show="showSearch" ref="queryForm" :model="queryParams" size="mini" :inline="true" label-width="68px">
+    <el-form
+      v-show="showSearch"
+      ref="queryForm"
+      :model="queryParams"
+      size="mini"
+      :inline="true"
+      label-width="68px"
+    >
       <el-form-item label="仓库名称" prop="storeHouseName">
         <el-input
           v-model="queryParams.storeHouseName"
@@ -14,16 +21,27 @@
           v-model="queryParams.outDate"
           type="datetime"
           placeholder="选择时间"
-          value-format="yyyy-MM-dd HH:mm:ss">
-        </el-date-picker>
+          value-format="yyyy-MM-dd HH:mm:ss"
+        ></el-date-picker>
       </el-form-item>
       <el-form-item>
-        <el-button type="primary" icon="el-icon-search" size="mini" @click="handleQuery">搜索</el-button>
+        <el-button
+          type="primary"
+          icon="el-icon-search"
+          size="mini"
+          @click="handleQuery"
+        >
+          搜索
+        </el-button>
       </el-form-item>
     </el-form>
 
     <el-row :gutter="10" class="mb8">
-      <right-toolbar :showSearch.sync="showSearch" :columns="columns" @queryTable="getList">
+      <right-toolbar
+        :showSearch.sync="showSearch"
+        :columns="columns"
+        @queryTable="getList"
+      >
         <template #print>
           <el-col :span="1.5">
             <el-button
@@ -31,8 +49,7 @@
               icon="el-icon-printer"
               size="mini"
               @click="printHTML"
-            >
-            </el-button>
+            ></el-button>
           </el-col>
         </template>
         <template #export>
@@ -43,47 +60,75 @@
               icon="el-icon-folder-opened"
               size="mini"
               @click="handleExport"
-            >
-            </el-button>
+            ></el-button>
           </el-col>
         </template>
       </right-toolbar>
     </el-row>
 
-    <el-table id="printBox" v-horizontal-scroll="'always'" v-loading="loading" border
-              :data="exWarehouseList" size="mini" @selection-change="handleSelectionChange">
-      <el-table-column v-if="columns[1].visible" label="仓库名称" align="center" prop="storeHouseName" />
-      <el-table-column v-if="columns[2].visible" label="出库日期" align="center" prop="outDate" />
-      <el-table-column v-if="columns[3].visible" label="出库量" align="center" prop="outAmount" />
-      <el-table-column label="操作" align="center" class-name="small-padding fixed-width">
+    <el-table
+      id="printBox"
+      v-horizontal-scroll="'always'"
+      v-loading="loading"
+      border
+      :data="exWarehouseList"
+      size="mini"
+      @selection-change="handleSelectionChange"
+    >
+      <el-table-column
+        v-if="columns[1].visible"
+        label="仓库名称"
+        align="center"
+        prop="storeHouseName"
+      />
+      <el-table-column
+        v-if="columns[2].visible"
+        label="出库日期"
+        align="center"
+        prop="outDate"
+      />
+      <el-table-column
+        v-if="columns[3].visible"
+        label="出库量"
+        align="center"
+        prop="outAmount"
+      />
+      <el-table-column
+        label="操作"
+        align="center"
+        class-name="small-padding fixed-width"
+      >
         <template slot-scope="scope">
           <el-button
             v-hasPermi="['system:breakou:edit']"
             size="mini"
             type="primary"
             @click="handleUpdate(scope.row)"
-          >修改
+          >
+            修改
           </el-button>
           <el-button
             v-hasPermi="['system:breakou:list']"
             size="mini"
             type="warning"
             @click="checkInvoInfo(scope.row)"
-          >查看库存信息
+          >
+            查看库存信息
           </el-button>
           <el-button
             v-hasPermi="['system:breakou:remove']"
             size="mini"
             type="danger"
             @click="handleDelete(scope.row)"
-          >删除
+          >
+            删除
           </el-button>
         </template>
       </el-table-column>
     </el-table>
 
     <pagination
-      v-show="total>0"
+      v-show="total > 0"
       :total="total"
       :page.sync="queryParams.pageNum"
       :limit.sync="queryParams.pageSize"
@@ -91,14 +136,23 @@
     />
 
     <!-- 添加或修改出库对话框 -->
-    <el-dialog :close-on-click-modal="false" :show-close="false" :title="title" :visible.sync="open" width="500px"
-               append-to-body>
+    <el-dialog
+      :close-on-click-modal="false"
+      :show-close="false"
+      :title="title"
+      :visible.sync="open"
+      width="500px"
+      append-to-body
+    >
       <el-form ref="form" :model="form" :rules="rules" label-width="80px">
         <!--        <el-form-item label="订单编号" prop="ordersNo">-->
         <!--          <el-input v-model="form.ordersNo" placeholder="请输入订单编号"/>-->
         <!--        </el-form-item>-->
         <el-form-item label="仓库名称" prop="storeHouseName">
-          <el-input v-model="form.storeHouseName" placeholder="请输入仓库名称" />
+          <el-input
+            v-model="form.storeHouseName"
+            placeholder="请输入仓库名称"
+          />
         </el-form-item>
         <!--        <el-form-item label="仓库存储的货物ID" prop="storeID">-->
         <!--          <el-input v-model="form.storeID" placeholder="请输入仓库存储的货物ID"/>-->
@@ -107,8 +161,9 @@
           <el-date-picker
             v-model="form.outDate"
             type="datetime"
-            placeholder="选择日期" value-format="yyyy-MM-dd HH:mm:ss">
-          </el-date-picker>
+            placeholder="选择日期"
+            value-format="yyyy-MM-dd HH:mm:ss"
+          ></el-date-picker>
         </el-form-item>
         <el-form-item label="出库量" prop="outAmount">
           <el-input v-model="form.outAmount" placeholder="请输入出库量" />
@@ -120,9 +175,14 @@
       </div>
     </el-dialog>
 
-
-    <el-dialog :close-on-click-modal="false" :show-close="true" title="库存信息" :visible.sync="inventoryInfoVisible"
-               width="70%" append-to-body>
+    <el-dialog
+      :close-on-click-modal="false"
+      :show-close="true"
+      title="库存信息"
+      :visible.sync="inventoryInfoVisible"
+      width="70%"
+      append-to-body
+    >
       <el-descriptions title="库存详情" border>
         <el-descriptions-item label="陆地车号">
           {{ inventoryInfo.landCarNo }}
@@ -214,11 +274,11 @@
     delExWarehouse,
     addExWarehouse,
     updateExWarehouse
-  } from '@/api/system/exWarehouse';
-  import { listGoodsOrder } from '@/api/system/goodsOrder';
-  import TagsItem from '@/components/TagsItem/index.vue';
-  import { getInventory, listInventory } from '@/api/system/inventory';
-  import { excludeParams } from '@/api/tool/exclude';
+  } from '@/api/system/exWarehouse'
+  import { listGoodsOrder } from '@/api/system/goodsOrder'
+  import TagsItem from '@/components/TagsItem/index.vue'
+  import { getInventory, listInventory } from '@/api/system/inventory'
+  import { excludeParams } from '@/api/tool/exclude'
 
   export default {
     name: 'ExWarehouse',
@@ -246,7 +306,7 @@
           delFlag: null,
           addtime: null,
           userId: null,
-          UserName: null,
+          UserName: null
         },
         form: {},
         rules: {},
@@ -254,54 +314,56 @@
           { key: 0, label: `id`, visible: true },
           { key: 1, label: `仓库名称`, visible: true },
           { key: 2, label: `出库日期`, visible: true },
-          { key: 3, label: `出库量`, visible: true },
+          { key: 3, label: `出库量`, visible: true }
         ],
         checkOrderVisible: false,
         orderDetailInfo: {},
         inventoryInfo: {},
         inventoryInfoVisible: false
-      };
+      }
     },
     // 显示与隐藏
     watch: {
       columns: {
-        handler: (newVal) => {
+        handler: function (newVal) {
           localStorage.setItem('breakout-columns', JSON.stringify(newVal))
         },
-        deep: true,
+        deep: true
       }
     },
     created() {
-      this.getList();
-      if (localStorage.getItem('breakout-columns') === 'null' ||
-        !localStorage.getItem('breakout-columns')) {
+      this.getList()
+      if (
+        localStorage.getItem('breakout-columns') === 'null' ||
+        !localStorage.getItem('breakout-columns')
+      ) {
         // 设置localStorage
         localStorage.setItem('breakout-columns', JSON.stringify(this.columns))
       } else {
-        this.columns = JSON.parse(localStorage.getItem('breakout-columns'));
+        this.columns = JSON.parse(localStorage.getItem('breakout-columns'))
       }
     },
     methods: {
       // 查看库存信息 查询当前行的库存信息
       checkInvoInfo(row) {
-        getInventory(row.storeID).then(res => {
+        getInventory(row.storeID).then((res) => {
           this.inventoryInfo = res.data
-          this.inventoryInfoVisible = true;
+          this.inventoryInfoVisible = true
         })
       },
       /** 查询出库列表 */
       getList() {
-        this.loading = true;
-        listExWarehouse(this.queryParams).then(response => {
-          this.exWarehouseList = response.rows;
-          this.total = response.total;
-          this.loading = false;
-        });
+        this.loading = true
+        listExWarehouse(this.queryParams).then((response) => {
+          this.exWarehouseList = response.rows
+          this.total = response.total
+          this.loading = false
+        })
       },
       // 取消按钮
       cancel() {
-        this.open = false;
-        this.reset();
+        this.open = false
+        this.reset()
       },
       // 表单重置
       reset() {
@@ -318,22 +380,22 @@
           addtime: null,
           userId: null,
           UserName: null
-        };
-        this.resetForm('form');
+        }
+        this.resetForm('form')
       },
       /** 搜索按钮操作 */
       handleQuery() {
-        this.queryParams.pageNum = 1;
-        this.getList();
+        this.queryParams.pageNum = 1
+        this.getList()
       },
       /** 重置按钮操作 */
       resetQuery() {
-        this.resetForm('queryForm');
-        this.handleQuery();
+        this.resetForm('queryForm')
+        this.handleQuery()
       },
       // 多选框选中数据
       handleSelectionChange(selection) {
-        this.ids = selection.map(item => item.id)
+        this.ids = selection.map((item) => item.id)
         this.single = selection.length !== 1
         this.multiple = !selection.length
       },
@@ -341,64 +403,71 @@
         this.$print({
           printable: 'printBox',
           type: 'html',
-          targetStyles: ['*'], // 打印内容使用所有HTML样式，没有设置这个属性/值，设置分页打印没有效果
+          targetStyles: ['*'] // 打印内容使用所有HTML样式，没有设置这个属性/值，设置分页打印没有效果
         })
       },
       /** 新增按钮操作 */
       handleAdd() {
-        this.reset();
-        this.open = true;
-        this.title = '添加出库';
+        this.reset()
+        this.open = true
+        this.title = '添加出库'
       },
       /** 修改按钮操作 */
       handleUpdate(row) {
-        this.reset();
+        this.reset()
         const id = row.id || this.ids
-        getExWarehouse(id).then(response => {
-          this.form = response.data;
-          this.open = true;
-          this.title = '修改出库';
-        });
+        getExWarehouse(id).then((response) => {
+          this.form = response.data
+          this.open = true
+          this.title = '修改出库'
+        })
       },
       /** 提交按钮 */
       submitForm() {
-        this.$refs['form'].validate(valid => {
+        this.$refs['form'].validate((valid) => {
           if (valid) {
             if (this.form.id != null) {
               this.form = excludeParams(this.form, this.$exclude)
-              updateExWarehouse(this.form).then(response => {
-                this.$modal.msgSuccess('修改成功');
-                this.open = false;
-                this.getList();
-              });
+              updateExWarehouse(this.form).then((response) => {
+                this.$modal.msgSuccess('修改成功')
+                this.open = false
+                this.getList()
+              })
             } else {
               this.form = excludeParams(this.form, this.$exclude)
-              addExWarehouse(this.form).then(response => {
-                this.$modal.msgSuccess('新增成功');
-                this.open = false;
-                this.getList();
-              });
+              addExWarehouse(this.form).then((response) => {
+                this.$modal.msgSuccess('新增成功')
+                this.open = false
+                this.getList()
+              })
             }
           }
-        });
+        })
       },
       /** 删除按钮操作 */
       handleDelete(row) {
-        const ids = row.id || this.ids;
-        this.$modal.confirm('是否确认删除出库编号为"' + ids + '"的数据项？').then(function () {
-          return delExWarehouse(ids);
-        }).then(() => {
-          this.getList();
-          this.$modal.msgSuccess('删除成功');
-        }).catch(() => {
-        });
+        const ids = row.id || this.ids
+        this.$modal
+          .confirm('是否确认删除出库编号为"' + ids + '"的数据项？')
+          .then(function () {
+            return delExWarehouse(ids)
+          })
+          .then(() => {
+            this.getList()
+            this.$modal.msgSuccess('删除成功')
+          })
+          .catch(() => {})
       },
       /** 导出按钮操作 */
       handleExport() {
-        this.download('system/exWarehouse/export', {
-          ...this.queryParams
-        }, `exWarehouse_${new Date().getTime()}.xlsx`)
+        this.download(
+          'system/exWarehouse/export',
+          {
+            ...this.queryParams
+          },
+          `exWarehouse_${new Date().getTime()}.xlsx`
+        )
       }
     }
-  };
+  }
 </script>
