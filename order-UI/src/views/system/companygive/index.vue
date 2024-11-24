@@ -281,7 +281,7 @@
         </el-row>
       </el-form>
       <br />
-      <el-divider>默认银行卡信息</el-divider>
+      <!-- <el-divider>默认银行卡信息</el-divider>
       <el-row>
         <el-row>
           <el-row v-if="defaultBankCardInfo.not !== true">
@@ -320,7 +320,7 @@
             </el-descriptions>
           </el-row>
         </el-row>
-      </el-row>
+      </el-row> -->
       <el-divider>已绑定银行卡</el-divider>
       <el-row>
         <el-table
@@ -354,13 +354,13 @@
               >
                 <i class="el-icon-delete"></i>
               </el-button>
-              <el-button
+              <!-- <el-button
                 v-hasPermi="['system:companygive:edit']"
                 size="mini"
                 @click="addDefaultCard(scope.row)"
               >
                 设置为默认
-              </el-button>
+              </el-button> -->
             </template>
           </el-table-column>
         </el-table>
@@ -589,21 +589,21 @@
 
 <script>
   import {
-    listCompany,
-    getCompany,
-    delCompany,
-    addCompany,
-    updateCompany
-  } from '@/api/system/company'
-  import {
     delBankAccount,
     listBankAccount,
     setDefault
   } from '@/api/system/bankAccount'
+  import {
+    addCompany,
+    delCompany,
+    getCompany,
+    listCompany,
+    updateCompany
+  } from '@/api/system/company'
   import { excludeParams } from '@/api/tool/exclude'
+  import { INFO_TYPE, isUsed } from '../../../api/system/isUsed'
   import AddBank from '../../dashboard/components/company/AddBank.vue'
   import AddBankAccounts from '../../dashboard/components/company/AddBankAccounts.vue'
-  import { INFO_TYPE, isUsed } from '../../../api/system/isUsed'
 
   export default {
     name: 'Company',
@@ -826,6 +826,7 @@
       // 点击银行卡后弹窗
       jumpBankNo(row) {
         this.currentID = row.id
+        // 封装要展示的对象
         this.currentInfo = Object.assign(this.currentInfo, {
           relationName: row.relationName,
           id: row.id,
@@ -843,22 +844,26 @@
           comments: row.comments,
           companyName: row.companyName
         })
+        // 搜索条件
+        const query = { companyId: row.id, ...this.queryParams }
         // 查询某供应商信息 账户名称应该是公司名称
-        listBankAccount({ companyId: row.id }).then((res) => {
+        listBankAccount(query).then((res) => {
           this.singleInfo = res.rows
           this.bankTotal = res.total
+          // 打开弹窗
+          this.dialogFormVisible = true
         })
         // 查询供应商的默认银行卡信息
-        listBankAccount({ acountsType: '供应商默认', companyId: row.id }).then(
-          (res) => {
-            if (res.rows.length > 0) {
-              this.defaultBankCardInfo = res.rows[0]
-            } else {
-              this.defaultBankCardInfo.not = true
-            }
-            this.dialogFormVisible = true
-          }
-        )
+        // listBankAccount({ acountsType: '供应商默认', companyId: row.id }).then(
+        //   (res) => {
+        //     if (res.rows.length > 0) {
+        //       this.defaultBankCardInfo = res.rows[0]
+        //     } else {
+        //       this.defaultBankCardInfo.not = true
+        //     }
+        //     this.dialogFormVisible = true
+        //   }
+        // )
       },
       // 查询已经绑定的银行卡信息
       getBankList() {

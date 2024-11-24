@@ -27,7 +27,9 @@
             ></el-date-picker>
           </el-col>
           <el-col :span="2">
-            <el-button type="primary" size="mini" @click="handleSearch">搜索</el-button>
+            <el-button type="primary" size="mini" @click="handleSearch">
+              搜索
+            </el-button>
           </el-col>
         </el-row>
       </el-col>
@@ -72,8 +74,7 @@
                 icon="el-icon-printer"
                 size="mini"
                 @click="printHTML"
-              >
-              </el-button>
+              ></el-button>
             </el-col>
           </template>
           <!--        导出-->
@@ -85,8 +86,7 @@
                 icon="el-icon-folder-opened"
                 size="mini"
                 @click="handleExport"
-              >
-              </el-button>
+              ></el-button>
             </el-col>
           </template>
         </right-toolbar>
@@ -101,7 +101,11 @@
           style="width: 100%"
           :loading="loading"
           :header-cell-style="{ background: '#f0f0f0', color: '#333' }"
-          :cell-style="()=>{return {padding:'2px'}}"
+          :cell-style="
+            () => {
+              return { padding: '2px' }
+            }
+          "
         >
           <el-table-column
             v-if="columns[0].visible"
@@ -159,26 +163,30 @@
             show-overflow-tooltip
           ></el-table-column>
           <el-table-column
+            v-if="columns[9].visible"
             prop="landCarNo"
             label="陆运车牌"
             show-overflow-tooltip
           >
             <template #default="scope">
-              <span v-if="scope.row.landCarNo !== null">{{ scope.row.landCarNo }}</span>
+              <span v-if="scope.row.landCarNo !== null">
+                {{ scope.row.landCarNo }}
+              </span>
               <span v-else>无</span>
             </template>
-            <template v-if="columns[9].visible"></template>
           </el-table-column>
           <el-table-column
+            v-if="columns[10].visible"
             prop="seaCarNo"
             label="柜号"
             show-overflow-tooltip
           >
             <template #default="scope">
-              <span v-if="scope.row.seaCarNo !== null">{{ scope.row.seaCarNo }}</span>
+              <span v-if="scope.row.seaCarNo !== null">
+                {{ scope.row.seaCarNo }}
+              </span>
               <span v-else>无</span>
             </template>
-            <template v-if="columns[10].visible"></template>
           </el-table-column>
           <el-table-column
             v-if="columns[11].visible"
@@ -194,7 +202,7 @@
           ></el-table-column>
         </el-table>
         <pagination
-          v-show="total>0"
+          v-show="total > 0"
           :total="total"
           :page.sync="queryParams.pageNum"
           :limit.sync="queryParams.pageSize"
@@ -205,30 +213,13 @@
 
       <!--      右侧利润-->
       <el-col :xs="24" :sm="12" :md="12" :lg="12">
-        <el-table
-          height="130"
-          :empty-text="' '"
-        >
-          <el-table-column
-            prop="date"
-            label="￥0"
-            align="center"
-          >
-            <el-table-column
-              prop="date"
-              label="利润总额"
-            >
-              <el-table-column
-                prop="date"
-                label="费用合计"
-              ></el-table-column>
+        <el-table height="130" :empty-text="' '">
+          <el-table-column prop="date" label="￥0" align="center">
+            <el-table-column prop="date" label="利润总额">
+              <el-table-column prop="date" label="费用合计"></el-table-column>
             </el-table-column>
-            <el-table-column
-              label="￥0"
-            >
-              <el-table-column
-                label="￥0"
-              ></el-table-column>
+            <el-table-column label="￥0">
+              <el-table-column label="￥0"></el-table-column>
             </el-table-column>
           </el-table-column>
         </el-table>
@@ -238,9 +229,9 @@
 </template>
 
 <script>
-  import { mixin_printHTML } from './dashboard/mixins/print';
-  import { getDeliveryList } from '../api/system/statement';
-  import { parseTime } from '@/utils/ruoyi';
+  import { parseTime } from '@/utils/ruoyi'
+  import { getDeliveryList } from '../api/system/statement'
+  import { mixin_printHTML } from './dashboard/mixins/print'
 
   export default {
     name: 'Index',
@@ -271,26 +262,25 @@
           { key: 11, label: `车队`, visible: true },
           { key: 12, label: `运费`, visible: true }
         ]
-      };
-
+      }
     },
     computed: {
       xs() {
-        return this.$store.state.viewport === 'xs';
+        return this.$store.state.viewport === 'xs'
       }
     },
     created() {
-      this.getList();
+      this.getList()
     },
     methods: {
       handleSearch() {
-        this.getList();
+        this.getList()
       },
       getList() {
         this.loading = true
-        getDeliveryList(this.queryParams).then(res => {
-          this.tableData = res.rows;
-          this.total = res.total;
+        getDeliveryList(this.queryParams).then((res) => {
+          this.tableData = res.rows
+          this.total = res.total
           this.reset()
           this.loading = false
         })
@@ -301,78 +291,85 @@
           endTime: '',
           pageNum: 1,
           pageSize: 10
-        };
+        }
       },
       handleExport() {
-        this.download('statistics/export/todayOrderList', {
-          startTime: this.queryParams.beginTime,
-          endTime: this.queryParams.endTime
-        }, `todayOrderList${new Date().getTime()}.xlsx`)
-      },
+        this.download(
+          'statistics/export/todayOrderList',
+          {
+            startTime: this.queryParams.beginTime,
+            endTime: this.queryParams.endTime
+          },
+          `todayOrderList${new Date().getTime()}.xlsx`
+        )
+      }
     }
-  };
+  }
 </script>
 
 <style scoped lang="scss">
-@import "~element-ui/lib/theme-chalk/index.css";
+  @import '~element-ui/lib/theme-chalk/index.css';
 
-.button-search {
-  line-height: 60px;
-}
+  .button-search {
+    line-height: 60px;
+  }
 
-.el-row {
-  margin-bottom: 20px;
-}
-
-.el-col {
-  border-radius: 4px;
-}
-
-.el-date-editor.el-input, .el-date-editor.el-input__inner {
-  width: 120px;
-}
-
-.el-button--mini {
-  padding: 6px 12px;
-}
-
-.el-table th {
-  font-weight: bold;
-}
-
-.el-table td, .el-table th {
-  padding: 8px;
-}
-
-.el-table .cell {
-  font-size: 14px;
-}
-
-.el-table thead {
-  font-weight: bold;
-}
-
-// Media Queries for responsiveness
-@media (max-width: 768px) {
   .el-row {
-    margin: 20px 0;
+    margin-bottom: 20px;
   }
 
   .el-col {
-    margin-bottom: 10px;
+    border-radius: 4px;
   }
 
-  .el-date-editor.el-input, .el-date-editor.el-input__inner {
-    width: 100%;
+  .el-date-editor.el-input,
+  .el-date-editor.el-input__inner {
+    width: 120px;
   }
 
   .el-button--mini {
-    width: 100%;
-    margin-top: 10px;
+    padding: 6px 12px;
   }
 
-  .el-table {
-    overflow-x: auto;
+  .el-table th {
+    font-weight: bold;
   }
-}
+
+  .el-table td,
+  .el-table th {
+    padding: 8px;
+  }
+
+  .el-table .cell {
+    font-size: 14px;
+  }
+
+  .el-table thead {
+    font-weight: bold;
+  }
+
+  // Media Queries for responsiveness
+  @media (max-width: 768px) {
+    .el-row {
+      margin: 20px 0;
+    }
+
+    .el-col {
+      margin-bottom: 10px;
+    }
+
+    .el-date-editor.el-input,
+    .el-date-editor.el-input__inner {
+      width: 100%;
+    }
+
+    .el-button--mini {
+      width: 100%;
+      margin-top: 10px;
+    }
+
+    .el-table {
+      overflow-x: auto;
+    }
+  }
 </style>

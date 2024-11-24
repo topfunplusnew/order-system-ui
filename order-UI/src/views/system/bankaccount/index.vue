@@ -263,12 +263,18 @@
           </el-select>
         </el-form-item>
         <!--        如果选择了己方公司 还要选择一个公私户类型-->
-        <el-row v-if="form.acountsType === PUBLIC_DICT_TYPE.SELF_COMPANY">
-          <el-form-item label="公私户类型" prop="isPublicAccount">
-            <el-radio v-model="form.isPublicAccount" label="1">公户</el-radio>
-            <el-radio v-model="form.isPublicAccount" label="0">私户</el-radio>
-          </el-form-item>
-        </el-row>
+        <div v-if="form.isPublicAccount !== null">
+          <el-row v-if="form.acountsType === PUBLIC_DICT_TYPE.SELF_COMPANY">
+            <el-form-item label="公私户类型" prop="isPublicAccount">
+              <el-radio v-model="form.isPublicAccount" :label="1">
+                公户
+              </el-radio>
+              <el-radio v-model="form.isPublicAccount" :label="0">
+                私户
+              </el-radio>
+            </el-form-item>
+          </el-row>
+        </div>
         <!--        填写户名-->
         <el-form-item label="户名" prop="acountsName">
           <!--          如果是司机 那么就选择-->
@@ -606,25 +612,24 @@
 
 <script>
   import {
-    getBankAccount,
-    delBankAccount,
     addBankAccount,
-    updateBankAccount,
-    transfer
+    delBankAccount,
+    getBankAccount,
+    updateBankAccount
   } from '@/api/system/bankAccount'
-  import { listCompany } from '@/api/system/company'
-  import SearchOption from '@/components/SearchOption.vue'
-  import { mixin_printHTML } from '@/views/dashboard/mixins/print'
   import {
     addBankAccountChange,
     listBankAccountChange
   } from '@/api/system/bankAccountChange'
+  import { listCompany } from '@/api/system/company'
+  import SearchOption from '@/components/SearchOption.vue'
+  import { PUBLIC_DICT_TYPE } from '@/utils/order'
+  import CheckBankMoney from '@/views/dashboard/components/common/CheckBankMoney.vue'
+  import { mixin_printHTML } from '@/views/dashboard/mixins/print'
   import { listBankAccount } from '../../../api/system/bankAccount'
   import { listCars } from '../../../api/system/cars'
-  import { excludeParams } from '../../../api/tool/exclude'
   import { listUser } from '../../../api/system/user'
-  import CheckBankMoney from '@/views/dashboard/components/common/CheckBankMoney.vue'
-  import { PUBLIC_DICT_TYPE } from '@/utils/order'
+  import { excludeParams } from '../../../api/tool/exclude'
 
   export default {
     name: 'BankAccount',
@@ -898,7 +903,7 @@
           selfBankNo: bankNo,
           payNO: '手动调整',
           ...this.adjustmentInfo
-        }).then((res) => {
+        }).then(() => {
           this.$message.success('调整成功~')
           this.Adjustment = false
           this.getList()
@@ -962,6 +967,7 @@
       handleUpdate(row) {
         this.reset()
         const id = row.id || this.ids
+        // 获取银行卡的信息
         getBankAccount(id).then((response) => {
           this.form = response.data
           this.open = true
