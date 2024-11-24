@@ -1,25 +1,26 @@
 <!--司机科目明细表-->
 
 <script>
-  import TotalTag from '@/views/system/Statement/components/TotalTag.vue';
+  import { listConfig } from '@/api/system/config'
   import {
     getFreightSubjectDetailSummary,
-    getFreightSubjectDetailSummarySomeDay,
-  } from '@/api/system/statement';
-  import { getSubjectLevel } from '@/api/system/subject';
-  import { listConfig } from '@/api/system/config';
-  import { getFunction } from '@/utils/order/mapper';
-  import PAYMENT from '@/components/NeedToShow/PAYMENT.vue';
-  import { TableName } from '@/api/tool/enums';
-  import GOODS_ORDER from '@/components/NeedToShow/GOODS_ORDER.vue';
-  import INVOICE_IN from '@/components/NeedToShow/INVOICE_IN.vue';
-  import INVOICE_OUT from '@/components/NeedToShow/INVOICE_OUT.vue';
-  import INVOICE_ORTHER from '@/components/NeedToShow/INVOICE_ORTHER.vue';
-  import OFFSETTING from '@/components/NeedToShow/OFFSETTING.vue';
-  import INVENTORY from '@/components/NeedToShow/INVENTORY.vue';
-  import REBATE from '@/components/NeedToShow/REBATE.vue';
-  import ORDER_DETAIL from '@/components/NeedToShow/ORDER_DETAIL.vue';
-  import { fix } from '../../../../api/tool/format';
+    getFreightSubjectDetailSummarySomeDay
+  } from '@/api/system/statement'
+  import { getSubjectLevel } from '@/api/system/subject'
+  import { TableName } from '@/api/tool/enums'
+  import GOODS_ORDER from '@/components/NeedToShow/GOODS_ORDER.vue'
+  import INVENTORY from '@/components/NeedToShow/INVENTORY.vue'
+  import INVOICE_IN from '@/components/NeedToShow/INVOICE_IN.vue'
+  import INVOICE_ORTHER from '@/components/NeedToShow/INVOICE_ORTHER.vue'
+  import INVOICE_OUT from '@/components/NeedToShow/INVOICE_OUT.vue'
+  import OFFSETTING from '@/components/NeedToShow/OFFSETTING.vue'
+  import ORDER_DETAIL from '@/components/NeedToShow/ORDER_DETAIL.vue'
+  import PAYMENT from '@/components/NeedToShow/PAYMENT.vue'
+  import REBATE from '@/components/NeedToShow/REBATE.vue'
+  import { getFunction } from '@/utils/order/mapper'
+  import TotalTag from '@/views/system/Statement/components/TotalTag.vue'
+  import { ReportType } from '../../../../api/tool/enums'
+  import { fix } from '../../../../api/tool/format'
 
   export default {
     name: 'FreightDetail',
@@ -28,8 +29,8 @@
       // 需要查看的那一行司机的信息
       detail: {
         type: Object,
-        default: () => {},
-      },
+        default: () => {}
+      }
     },
     data() {
       return {
@@ -46,13 +47,13 @@
         needToShowInfo: null,
 
         // 五个字段 tags
-        tags: null,
-      };
+        tags: null
+      }
     },
     computed: {
       driverId() {
-        return this.detail.companyId;
-      },
+        return this.detail.companyId
+      }
     },
 
     methods: {
@@ -61,87 +62,115 @@
         // 打开时间选择框
         this.$datePicker().then((res) => {
           // 清除一下状态
-          this.tableData = [];
+          this.tableData = []
           // 组装查询条件 分别为开始时间 结束时间 司机id
           const query = {
             companyId: this.driverId,
             beginTime: res.beginTime,
-            endTime: res.endTime,
-          };
+            endTime: res.endTime
+          }
           // 拿到时间 为了查询上年结转
           // 查询科目 填充
-          listConfig({ configKey: 'order.freightDetailSummary.subjectNo' }).then(
-            (res) => {
-              // 科目编码
-              const configValue = res.rows[0]?.configValue;
-              // 根据configValue去拿取科目名称
-              getSubjectLevel(configValue).then((res) => {
-                // 拿到科目名称
-                const subjectName = res.data?.title;
-                // 查询明细账之前 要先查询上年结转的余额本币填充
-                getFreightSubjectDetailSummarySomeDay({
-                  beginTime: query.beginTime,
-                  companyId: this.driverId,
-                }).then((res) => {
-                  // 拿到上年的数据
-                  const lastYearDetail = res.data;
-                  // 把上年结转的数据放在最前面 并且摘要为上年结转
-                  this.tableData.push({
-                    ...lastYearDetail,
-                    summary: '上年结转',
-                    moneyAmountLocal: lastYearDetail.moneyAmount,
-                    subjectNo: configValue,
-                    subjectName: subjectName,
-                  });
-                  // 查询司机明细账
-                  getFreightSubjectDetailSummary(query).then((res) => {
+          listConfig({
+            configKey: 'order.freightDetailSummary.subjectNo'
+          }).then((res) => {
+            // 科目编码
+            const configValue = res.rows[0]?.configValue
+            // 根据configValue去拿取科目名称
+            getSubjectLevel(configValue).then((res) => {
+              // 校验一下
+              if (!res.data) {
+                this.$message.warning('科目不存在')
+              }
+              // 拿到科目名称
+              const subjectName = res.data?.title
+              // 查询明细账之前 要先查询上年结转的余额本币填充
+              getFreightSubjectDetailSummarySomeDay({
+                beginTime: query.beginTime,
+                // 运费的id是carId
+                carId: this.driverId
+              }).then((res) => {
+                if (!res.data) {
+                  this.$message.warning('上年结转数据不存在')
+                  return
+                }
+                // 拿到上年的数据
+                const lastYearDetail = res.data
+                // 把上年结转的数据放在最前面 并且摘要为上年结转
+                this.tableData.push({
+                  ...lastYearDetail,
+                  summary: '上年结转',
+                  moneyAmountLocal: lastYearDetail.moneyAmount,
+                  subjectNo: configValue,
+                  subjectName: subjectName
+                })
+                // 查询司机明细账
+                getFreightSubjectDetailSummary(query).then((res) => {
+                  try {
                     // 上年结转的余额
-                    let lastMoney = Number(lastYearDetail.moneyAmount);
+                    let lastMoney = Number(lastYearDetail.moneyAmount)
                     // 累计金额
-                    let nowMoney = Number(0);
+                    let nowMoney = Number(0)
                     // 拿到汇总账
                     // TODO 对于res.data不存在的情况进行校验
-                    const append = res.data.map((item) => {
+                    const append = res?.rows.map((item) => {
+                      console.log(item)
+
                       // 金额累计计算
-                      nowMoney = lastMoney + Number(item.moneyAmount);
+                      nowMoney = lastMoney + Number(item.moneyAmount)
                       // 更新
-                      lastMoney = nowMoney;
-                      return {
-                        ...item,
-                        moneyAmountLocal: fix(nowMoney),
-                        subjectNo: configValue,
-                        subjectName: subjectName,
-                      };
-                    });
+                      lastMoney = nowMoney
+                      // 如果有了摘要 不做处理
+                      if (item.summary) {
+                        return {
+                          ...item,
+                          moneyAmountLocal: fix(nowMoney),
+                          subjectNo: configValue,
+                          subjectName: subjectName
+                        }
+                      } else {
+                        return {
+                          ...item,
+                          // 如果没有摘要 就加上对应的摘要
+                          summary: ReportType.FREIGHT[item.tableName],
+                          moneyAmountLocal: fix(nowMoney),
+                          subjectNo: configValue,
+                          subjectName: subjectName
+                        }
+                      }
+                    })
                     // 添加到上年结转数据的后面
-                    this.tableData = this.tableData.concat(append);
+                    this.tableData = this.tableData.concat(append)
                     // 打开弹窗
-                    this.dialogVisible = true;
-                  });
-                });
-              });
-            }
-          );
-        });
+                    this.dialogVisible = true
+                  } catch (err) {
+                    this.$message.warning('查询失败')
+                    return
+                  }
+                })
+              })
+            })
+          })
+        })
       },
       // 查询对应的信息 通过拿表名和id  对应两个字段为tableName payNo
       handleSearch(row) {
         // 拿到表名和id
-        const { tableName, payNo } = row;
+        const { tableName, payNo } = row
         // 根据tableName动态获取某个JS模块
         if (tableName && payNo) {
           getFunction(tableName)(payNo).then((res) => {
             // 填充数据
-            this.needToShowInfo = res.data;
+            this.needToShowInfo = res.data
             // 根据对应表名渲染对应的展示组件
-            this.Components = this.getComponents(tableName);
+            this.Components = this.getComponents(tableName)
             if (this.Components !== null) {
               // 打开弹窗
-              this.infoVisible = true;
+              this.infoVisible = true
             } else {
-              this.$message.warning('组件渲染有误');
+              this.$message.warning('组件渲染有误')
             }
-          });
+          })
         }
       },
       // 根据对应的表名渲染对应的组件
@@ -155,12 +184,12 @@
           [TableName.OFFSETTING]: OFFSETTING,
           [TableName.REBATE]: REBATE,
           [TableName.INVENTORY]: INVENTORY,
-          [TableName.ORDER_DETAIL]: ORDER_DETAIL,
-        };
-        return components[tableName] || null; // 默认返回 null，如果没有匹配的 tableName
-      },
-    },
-  };
+          [TableName.ORDER_DETAIL]: ORDER_DETAIL
+        }
+        return components[tableName] || null // 默认返回 null，如果没有匹配的 tableName
+      }
+    }
+  }
 </script>
 
 <template>
@@ -192,7 +221,7 @@
           size="mini"
           :cell-style="
             () => {
-              return { padding: '2px' };
+              return { padding: '2px' }
             }
           "
         >
@@ -343,9 +372,9 @@
       </el-card>
       <span slot="footer" class="dialog-footer">
         <el-button @click="dialogVisible = false">取 消</el-button>
-        <el-button type="primary" @click="dialogVisible = false"
-        >确 定</el-button
-        >
+        <el-button type="primary" @click="dialogVisible = false">
+          确 定
+        </el-button>
       </span>
     </el-dialog>
 

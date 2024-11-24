@@ -1,3 +1,5 @@
+// 系统常用枚举类
+
 export const TableName = Object.freeze({
   BANK_ACCOUNT_CHANGE: 'bankaccountchange',
   BORROWED_MONEY: 'borrowedmoney',
@@ -35,8 +37,41 @@ export const TableName = Object.freeze({
   REPAYMENT: 'repayment',
   SOCIAL_INSURANCE: 'socialinsurance',
   BALANCEACCOUNT: 'balanceaccounts',
-  STOREHOUSE: 'storehouse',
-});
+  STOREHOUSE: 'storehouse'
+})
+
+// 报表所用类型
+export const ReportType = Object.freeze({
+  // 客户
+  CUSTOMER: {
+    invoicein: '发票购入',
+    invoiceout: '发票售出',
+    // 第三方开票 客户为发票买入
+    invoiceother: '发票购入',
+    goodsorder: '客户提货',
+    offsetting: '冲抵货款',
+    balanceaccounts: '平账'
+  },
+  // 供应商
+  SUPPLIER: {
+    invoicein: '发票购入',
+    invoiceout: '发票售出',
+    goodsorder: '从厂家进货',
+    orderdetail: '从厂家进货',
+    // 第三方开票 客户为发票卖出
+    invoiceother: '发票售出',
+    offsetting: '冲抵货款',
+    inventory: '商品入库',
+    rebate: '供应商返利',
+    balanceaccounts: '平账'
+  },
+  // 运费
+  FREIGHT: {
+    goodsorder: '应付运费',
+    offsetting: '冲抵货款',
+    inventory: '应付运费'
+  }
+})
 
 // 收款类型
 export const ReceiveType = {
@@ -49,13 +84,12 @@ export const DocumentNumber = Object.freeze({
   INVENTORY: '库存列表',
   INVOICE_IN: '买入票点',
   INVOICE_OUT: '卖出票点',
-  INVOICE_OTHER: '第三方开票',
+  INVOICE_OTHER: '第三方开票'
   // PAYMENT: '收付款'
 })
 
 // 支付状态
 export const PaymentState = [
-
   {
     value: '未支付',
     label: '未支付'
@@ -63,8 +97,7 @@ export const PaymentState = [
   {
     value: '已支付',
     label: '已支付'
-  },
-
+  }
 ]
 
 // 审核状态
@@ -76,5 +109,5 @@ export const CheckState = [
   {
     value: '审核中',
     label: '审核中'
-  },
+  }
 ]

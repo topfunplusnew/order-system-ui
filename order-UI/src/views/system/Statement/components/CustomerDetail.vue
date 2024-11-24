@@ -19,6 +19,7 @@
   import REBATE from '@/components/NeedToShow/REBATE.vue'
   import { getFunction } from '@/utils/order/mapper'
   import TotalTag from '@/views/system/Statement/components/TotalTag.vue'
+  import { ReportType } from '../../../../api/tool/enums'
   import { fix } from '../../../../api/tool/format'
 
   export default {
@@ -79,6 +80,10 @@
             const configValue = res.rows[0]?.configValue
             // 根据configValue去拿取科目名称
             getSubjectLevel(configValue).then((res) => {
+              // 校验科目
+              if (!res.data) {
+                this.$message.warning('科目不存在')
+              }
               // 拿到科目名称
               const subjectName = res.data.title
               // 查询明细账之前 要先查询上年结转的余额本币填充
@@ -86,6 +91,10 @@
                 beginTime: times.beginTime,
                 companyId: this.customerId
               }).then((res) => {
+                if (!res.data) {
+                  this.$message.warning('上年结转数据不存在')
+                  return
+                }
                 // 拿到上年的数据
                 const lastYearDetail = res.data
                 // 把上年结转的数据放在最前面 并且摘要为上年结转
@@ -98,29 +107,46 @@
                 })
                 // 查询客户明细账
                 getCustomerSubjectDetailSummary(query).then((res) => {
-                  // 上年结转的余额
-                  let lastMoney = Number(lastYearDetail.moneyAmount)
-                  // 累计金额
-                  let nowMoney = Number(0)
-                  // 拿到汇总账
-                  const append = res.data.map((item) => {
-                    // 金额累计计算
-                    nowMoney = lastMoney + Number(item.moneyAmount)
-                    // 更新
-                    lastMoney = nowMoney
-                    return {
-                      ...item,
-                      moneyAmountLocal: fix(nowMoney),
-                      subjectNo: configValue,
-                      subjectName: subjectName
-                    }
-                  })
-                  // 添加到上年结转数据的后面
-                  this.tableData = this.tableData.concat(append)
-                  // 查询该客户的五个tag的值
-                  this.getCustomerTags(companyId)
-                  // 打开弹窗
-                  this.dialogVisible = true
+                  try {
+                    // 上年结转的余额
+                    let lastMoney = Number(lastYearDetail.moneyAmount)
+                    // 累计金额
+                    let nowMoney = Number(0)
+                    // 拿到汇总账
+                    const append = res.data.map((item) => {
+                      // 金额累计计算
+                      nowMoney = lastMoney + Number(item.moneyAmount)
+                      // 更新
+                      lastMoney = nowMoney
+                      // 如果有了摘要 不做处理
+                      if (item.summary) {
+                        return {
+                          ...item,
+                          moneyAmountLocal: fix(nowMoney),
+                          subjectNo: configValue,
+                          subjectName: subjectName
+                        }
+                      } else {
+                        return {
+                          ...item,
+                          // 如果没有摘要 就加上对应的摘要
+                          summary: ReportType.CUSTOMER[item.tableName],
+                          moneyAmountLocal: fix(nowMoney),
+                          subjectNo: configValue,
+                          subjectName: subjectName
+                        }
+                      }
+                    })
+                    // 添加到上年结转数据的后面
+                    this.tableData = this.tableData.concat(append)
+                    // 查询该客户的五个tag的值
+                    this.getCustomerTags(companyId)
+                    // 打开弹窗
+                    this.dialogVisible = true
+                  } catch (err) {
+                    this.$message.error('查询失败:', err)
+                    return
+                  }
                 })
               })
             })
