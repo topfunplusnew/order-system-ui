@@ -3,18 +3,10 @@
 <template>
   <div class="app-container">
     <el-row style="background-color: #e6e6e6">
-      <el-button type="primary" icon="el-icon-refresh" @click="refresh">
-        刷新
-      </el-button>
+      <el-button type="primary" icon="el-icon-refresh" @click="refresh">刷新</el-button>
     </el-row>
     <hr color="#e6e6e6" />
-    <el-form
-      ref="queryForm"
-      :model="queryParams"
-      size="mini"
-      :inline="true"
-      label-width="68px"
-    >
+    <el-form ref="queryForm" :model="queryParams" size="mini" :inline="true" label-width="68px">
       <el-form-item label="开始时间" prop="beginTime">
         <el-date-picker
           v-model="queryParams.beginTime"
@@ -34,37 +26,21 @@
         />
       </el-form-item>
       <el-form-item label="客户名称" prop="companyName">
-        <el-input
-          v-model="queryParams.companyName"
-          placeholder="请输入客户名称"
-          clearable
-        />
+        <el-input v-model="queryParams.companyName" placeholder="请输入客户名称" clearable />
       </el-form-item>
       <el-form-item>
-        <el-button
-          type="primary"
-          icon="el-icon-search"
-          size="mini"
-          @click="handleQuery"
-        >
+        <el-button type="primary" icon="el-icon-search" size="mini" @click="handleQuery">
           搜索
         </el-button>
       </el-form-item>
     </el-form>
     <hr color="#e6e6e6" />
-    <el-row style="font-weight: bold; font-size: 20px; margin: 0 30px">
-      客户科目余额汇总表
-    </el-row>
+    <el-row style="font-weight: bold; font-size: 20px; margin: 0 30px">客户科目余额汇总表</el-row>
     <el-row :gutter="10" class="mb8">
       <right-toolbar :columns="columns" @queryTable="getList">
         <template #print>
           <el-col :span="1.5">
-            <el-button
-              plain
-              icon="el-icon-printer"
-              size="mini"
-              @click="printHTML"
-            />
+            <el-button plain icon="el-icon-printer" size="mini" @click="printHTML" />
           </el-col>
         </template>
         <template #export>

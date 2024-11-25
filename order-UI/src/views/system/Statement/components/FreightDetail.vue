@@ -193,18 +193,10 @@
 <template>
   <div>
     <!--    司机明细表的按钮-->
-    <el-button type="primary" size="mini" @click="handleCheck">
-      查看明细
-    </el-button>
+    <el-button type="primary" size="mini" @click="handleCheck">查看明细</el-button>
 
     <!--    司机明细表的弹窗-->
-    <el-dialog
-      title="提示"
-      :visible.sync="dialogVisible"
-      width="900px"
-      fullscreen
-      append-to-body
-    >
+    <el-dialog title="提示" :visible.sync="dialogVisible" width="900px" fullscreen append-to-body>
       <br />
       <br />
       <!--      司机的结转数据-->
@@ -301,38 +293,19 @@
           />
 
           <!--        这两列应该是根据moneyAmount字段的正负进行判断-->
-          <el-table-column
-            show-overflow-tooltip
-            label="借方发生额"
-            align="center"
-            width="140"
-          >
+          <el-table-column show-overflow-tooltip label="借方发生额" align="center" width="140">
             <template slot-scope="scope">
-              {{
-                scope.row.moneyAmount > 0
-                  ? '-'
-                  : Math.abs(scope.row.moneyAmount)
-              }}
+              {{ scope.row.moneyAmount > 0 ? '-' : Math.abs(scope.row.moneyAmount) }}
             </template>
           </el-table-column>
-          <el-table-column
-            show-overflow-tooltip
-            label="贷方发生额"
-            align="center"
-            width="140"
-          >
+          <el-table-column show-overflow-tooltip label="贷方发生额" align="center" width="140">
             <template slot-scope="scope">
               {{ scope.row.moneyAmount > 0 ? scope.row.moneyAmount : '-' }}
             </template>
           </el-table-column>
 
           <!--        方向根据余额本币的正负进行判断 这个要先查询上年结转的余额本币 进行填充-->
-          <el-table-column
-            show-overflow-tooltip
-            label="方向"
-            align="center"
-            width="140"
-          >
+          <el-table-column show-overflow-tooltip label="方向" align="center" width="140">
             <template slot-scope="scope">
               {{ scope.row.moneyAmountLocal > 0 ? '贷方' : '借方' }}
             </template>
@@ -370,19 +343,12 @@
       </el-card>
       <span slot="footer" class="dialog-footer">
         <el-button @click="dialogVisible = false">取 消</el-button>
-        <el-button type="primary" @click="dialogVisible = false">
-          确 定
-        </el-button>
+        <el-button type="primary" @click="dialogVisible = false">确 定</el-button>
       </span>
     </el-dialog>
 
     <!--    对应信息的弹窗-->
-    <el-dialog
-      title="信息"
-      :visible.sync="infoVisible"
-      width="900px"
-      append-to-body
-    >
+    <el-dialog title="信息" :visible.sync="infoVisible" width="900px" append-to-body>
       <component :is="Components" :need-to-show-info="needToShowInfo" />
     </el-dialog>
   </div>
