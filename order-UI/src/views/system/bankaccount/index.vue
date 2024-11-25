@@ -263,7 +263,7 @@
           </el-select>
         </el-form-item>
         <!--        如果选择了己方公司 还要选择一个公私户类型-->
-        <div v-if="form.isPublicAccount !== null">
+        <div>
           <el-row v-if="form.acountsType === PUBLIC_DICT_TYPE.SELF_COMPANY">
             <el-form-item label="公私户类型" prop="isPublicAccount">
               <el-radio v-model="form.isPublicAccount" :label="1">

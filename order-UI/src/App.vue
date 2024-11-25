@@ -13,20 +13,21 @@
     components: { ThemePicker },
     metaInfo() {
       return {
-        title: this.$store.state.settings.dynamicTitle && this.$store.state.settings.title,
-        titleTemplate: title => {
-          return title ? `${title} - ${process.env.VUE_APP_TITLE}` : process.env.VUE_APP_TITLE
+        title:
+          this.$store.state.settings.dynamicTitle &&
+          this.$store.state.settings.title,
+        titleTemplate: (title) => {
+          return title
+            ? `${title} - ${process.env.VUE_APP_TITLE}`
+            : process.env.VUE_APP_TITLE
         }
       }
     },
-    created() {
-
-    }
+    created() {}
   }
 </script>
 <style scoped>
-#app .theme-picker {
-  display: none;
-}
-
+  #app .theme-picker {
+    display: none;
+  }
 </style>

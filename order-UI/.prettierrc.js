@@ -6,5 +6,16 @@ module.exports = {
   arrowParens: 'always', // 箭头函数参数总是带括号，未明确冲突但更通用
   htmlWhitespaceSensitivity: 'ignore', // Vue 文件中忽略 HTML 格式空格的敏感性
   vueIndentScriptAndStyle: true, // Vue 文件中的 `<script>` 和 `<style>` 标签中缩进
-  endOfLine: 'lf' // 使用 LF 换行符，避免跨平台问题
+  endOfLine: 'lf', // 使用 LF 换行符，避免跨平台问题
+  printWidth: 100, // 每行代码最大长度
+  tabWidth: 2, // 缩进空格数
+  useTabs: false, // 使用空格而不是 tab 缩进
+  quoteProps: 'as-needed', // 对象属性只在必要时使用引号
+  jsxSingleQuote: false, // JSX 中使用双引号
+  bracketSameLine: false, // HTML 标签的 > 放在最后一行的末尾
+  rangeStart: 0, // 格式化的起始位置
+  rangeEnd: Infinity, // 格式化的结束位置
+  requirePragma: false, // 是否要求文件顶部有特殊注释才格式化
+  insertPragma: false, // 是否在文件顶部插入特殊注释
+  proseWrap: 'preserve' // 是否要换行
 }
