@@ -1,4 +1,4 @@
-import { listGoodsOrder } from '../../../../api/system/goodsOrder';
+import { listGoodsOrder } from '../../../../api/system/goodsOrder'
 
 /**
  * 订单基类
@@ -30,7 +30,7 @@ export var mixin_order_base = {
         { key: 19, label: '是否可编辑', visible: true },
         { key: 20, label: '客户是否开票', visible: true },
         { key: 21, label: '供应商是否开票', visible: true },
-        { key: 22, label: '备注', visible: true },
+        { key: 22, label: '备注', visible: true }
       ],
       // 顶部条件搜索
       queryOrderInfo: {},
@@ -75,7 +75,7 @@ export var mixin_order_base = {
         comments: null,
         addtime: null,
         userId: null,
-        UserName: null,
+        UserName: null
       },
       // 用于字段与中文名称映射
       mapper: {
@@ -130,55 +130,55 @@ export var mixin_order_base = {
         saleManager: '销售经理',
         userName: '修改人',
         supplierNames: '供应商',
-        allPayments: '总货款',
-      },
-    };
+        allPayments: '总货款'
+      }
+    }
   },
   methods: {
     // 查询订单的列表
     getList() {
-      const isAdjust = this.isAdjustOrder ? '是' : '否';
+      const isAdjust = this.isAdjustOrder ? '是' : '否'
       // 查询订单
       listGoodsOrder({
         ...this.queryParams,
-        isAdjust: isAdjust, // 根据是否为调整单获取数据
+        isAdjust: isAdjust // 根据是否为调整单获取数据
       }).then((response) => {
-        this.goodsOrderList = response.rows;
-        this.total = response.total;
-        this.loading = false;
-      });
+        this.goodsOrderList = response.rows
+        this.total = response.total
+        this.loading = false
+      })
     },
     // 获取供应商的名称列表 主要用于表格的供应商列表的展示
     getSupplierNames(list) {
       if (list.length === 0) {
-        return;
+        return
       }
       return list.map((item) => {
         return {
           supplier: item.supplier,
-          supplierID: item.supplierID,
-        };
-      });
+          supplierID: item.supplierID
+        }
+      })
     },
     // 休眠函数
     sleep(ms) {
-      return new Promise((resolve) => setTimeout(resolve, ms));
+      return new Promise((resolve) => setTimeout(resolve, ms))
     },
     // 格式化对象
     formatData(data) {
-      let formattedString = '';
+      let formattedString = ''
       for (const key in data) {
         if (Reflect.has(data, key)) {
-          const value = data[key];
-          const mappedKey = this.mapper[key] || key;
-          formattedString += `${mappedKey}: ${value}\n`;
+          const value = data[key]
+          const mappedKey = this.mapper[key] || key
+          formattedString += `${mappedKey}: ${value}\n`
         }
       }
-      return formattedString.trim(); // 去掉最后一个换行符
+      return formattedString.trim() // 去掉最后一个换行符
     },
     // 查看某一个文件
     checkFileItem(item) {
-      window.open(item);
-    },
-  },
-};
+      window.open(item)
+    }
+  }
+}

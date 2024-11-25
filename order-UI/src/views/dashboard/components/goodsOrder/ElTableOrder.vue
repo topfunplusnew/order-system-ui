@@ -17,10 +17,11 @@
   import { mixin_printHTML } from '@/views/dashboard/mixins/print'
   import reLength from '@/views/dashboard/mixins/reLength'
   import GOODS_ORDER from '../../../../components/NeedToShow/GOODS_ORDER.vue'
+  import QuerySearchBar from './QuerySearchBar.vue'
 
   export default {
     name: 'ElTableOrder',
-    components: { DialogWrapper, CheckFiles },
+    components: { DialogWrapper, CheckFiles, QuerySearchBar },
     // 引入打印的混入、拖动表头宽度引起的变化、订单的基本信息的混入
     mixins: [
       // 打印功能
@@ -78,9 +79,7 @@
         deep: true
       }
     },
-    mounted() {
-      console.log(this.isAdjustOrder)
-    },
+
     created() {
       // 获取订单列表
       this.getList()
@@ -97,6 +96,7 @@
     methods: {
       updateGoodsOrder,
       getGoodsOrder,
+
       // 给特定的某些行高亮颜色
       tableRowClassName({ row }) {
         // 如果row.isAdjusted 的值为是，并且 isAdjust 的值也为是，那么就显示背景颜色为红色
@@ -130,6 +130,11 @@
           default:
             break
         }
+      },
+      // 处理顶部搜索框
+      handleGetQueryParams(value) {
+        this.queryParams = value
+        this.getList()
       },
       // 删除某一个订单
       handleDelete(row) {
@@ -180,8 +185,12 @@
 
 <template>
   <div>
+    <div>
+      <!--    这是框架自带的搜索模组，封装成了组件并且放在与index.vue同级目录下-->
+      <QuerySearchBar :query-items="queryParams" @updateQuery="handleGetQueryParams" />
+    </div>
+    <!--    通用弹窗 配合common_dialogs 使用-->
     <div v-if="currentComponent">
-      <!--    通用弹窗 配合common_dialogs 使用-->
       <DialogWrapper
         :current-component="currentComponent"
         :dialog-visible="dialogVisible"

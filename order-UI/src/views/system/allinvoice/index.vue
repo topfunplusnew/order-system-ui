@@ -41,38 +41,22 @@
         />
       </el-form-item>
       <el-form-item>
-        <el-button
-          type="primary"
-          icon="el-icon-search"
-          size="mini"
-          @click="handleQuery"
-        >
+        <el-button type="primary" icon="el-icon-search" size="mini" @click="handleQuery">
           搜索
         </el-button>
       </el-form-item>
     </el-form>
     <el-row :gutter="10" class="mb8">
       <el-col :span="1.5">
-        <el-button icon="el-icon-refresh" size="mini" @click="resetQuery">
-          刷新
-        </el-button>
+        <el-button icon="el-icon-refresh" size="mini" @click="resetQuery">刷新</el-button>
       </el-col>
       <el-col :span="1.5">
         <ExcelImport />
       </el-col>
-      <right-toolbar
-        :showSearch.sync="showSearch"
-        :columns="columns"
-        @queryTable="getList"
-      >
+      <right-toolbar :showSearch.sync="showSearch" :columns="columns" @queryTable="getList">
         <template #print>
           <el-col :span="1.5">
-            <el-button
-              plain
-              icon="el-icon-printer"
-              size="mini"
-              @click="printHTML"
-            ></el-button>
+            <el-button plain icon="el-icon-printer" size="mini" @click="printHTML"></el-button>
           </el-col>
         </template>
 
@@ -105,13 +89,7 @@
       size="mini"
       @selection-change="handleSelectionChange"
     >
-      <el-table-column
-        v-if="columns[0].visible"
-        label="id"
-        align="center"
-        prop="id"
-        width="140"
-      />
+      <el-table-column v-if="columns[0].visible" label="id" align="center" prop="id" width="140" />
       <el-table-column
         v-if="columns[1].visible"
         label="开票日期"
@@ -177,10 +155,7 @@
         show-overflow-tooltip
       >
         <template slot-scope="scope">
-          <el-tag
-            :type="scope.row.isOrderTax === 0 ? 'danger' : 'success'"
-            disable-transitions
-          >
+          <el-tag :type="scope.row.isOrderTax === 0 ? 'danger' : 'success'" disable-transitions>
             {{ scope.row.isOrderTax === 0 ? '否' : '是' }}
           </el-tag>
         </template>
@@ -305,43 +280,28 @@
           <el-input v-model="form.invoiceDate" placeholder="请输入开票日期" />
         </el-form-item>
         <el-form-item label="我方开票实体" prop="invoiceObject">
-          <el-input
-            v-model="form.invoiceObject"
-            placeholder="请输入我方开票实体"
-          />
+          <el-input v-model="form.invoiceObject" placeholder="请输入我方开票实体" />
         </el-form-item>
         <el-form-item label="开票金额" prop="invoiceAmount">
           <el-input v-model="form.invoiceAmount" placeholder="请输入开票金额" />
         </el-form-item>
         <el-form-item label="对方公司名称" prop="companyName">
-          <el-input
-            v-model="form.companyName"
-            placeholder="请输入对方公司名称"
-          />
+          <el-input v-model="form.companyName" placeholder="请输入对方公司名称" />
         </el-form-item>
         <el-form-item label="对方公司ID" prop="companyID">
           <el-input v-model="form.companyID" placeholder="请输入对方公司ID" />
         </el-form-item>
         <el-form-item label="票据单位名称" prop="invoiceCompanyName">
-          <el-input
-            v-model="form.invoiceCompanyName"
-            placeholder="请输入票据单位名称"
-          />
+          <el-input v-model="form.invoiceCompanyName" placeholder="请输入票据单位名称" />
         </el-form-item>
         <el-form-item label="票点" prop="ticketPoint">
           <el-input v-model="form.ticketPoint" placeholder="请输入票点" />
         </el-form-item>
         <el-form-item label="票点金额" prop="ticketPointAmount">
-          <el-input
-            v-model="form.ticketPointAmount"
-            placeholder="请输入票点金额"
-          />
+          <el-input v-model="form.ticketPointAmount" placeholder="请输入票点金额" />
         </el-form-item>
         <el-form-item label="是否订单对应票点" prop="isOrderTax">
-          <el-input
-            v-model="form.isOrderTax"
-            placeholder="请输入是否订单对应票点"
-          />
+          <el-input v-model="form.isOrderTax" placeholder="请输入是否订单对应票点" />
         </el-form-item>
         <el-form-item label="备注" prop="comments">
           <el-input v-model="form.comments" placeholder="请输入备注" />
@@ -368,18 +328,11 @@
 </template>
 
 <script>
-  import {
-    listInvoiceIn,
-    getInvoiceIn,
-    delInvoiceIn,
-    addInvoiceIn,
-    updateInvoiceIn
-  } from '@/api/system/invoiceIn'
-  import { mixin_printHTML } from '@/views/dashboard/mixins/print'
-  import { listInvoiceAll } from '@/api/system/allInvoice'
+  import { getAllinvoice, listInvoiceAll } from '@/api/system/allInvoice'
+  import { addInvoiceIn, delInvoiceIn, updateInvoiceIn } from '@/api/system/invoiceIn'
   import { TableName } from '@/api/tool/enums'
-  import { addReason } from '@/api/system/user'
   import ExcelImport from '@/views/dashboard/components/common/ExcelImport.vue'
+  import { mixin_printHTML } from '@/views/dashboard/mixins/print'
 
   export default {
     name: 'InvoiceIn',
