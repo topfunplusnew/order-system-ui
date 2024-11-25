@@ -10,12 +10,7 @@
       label-width="68px"
     >
       <el-form-item label="账户类型">
-        <el-select
-          v-model="queryParams.bankCardType"
-          placeholder="账户类型"
-          size="mini"
-          clearable
-        >
+        <el-select v-model="queryParams.bankCardType" placeholder="账户类型" size="mini" clearable>
           <el-option
             v-for="item in typeOption"
             :key="item.value"
@@ -57,21 +52,14 @@
         />
       </el-form-item>
       <el-form-item>
-        <el-button
-          type="primary"
-          icon="el-icon-search"
-          size="mini"
-          @click="handleQuery"
-        >
+        <el-button type="primary" icon="el-icon-search" size="mini" @click="handleQuery">
           搜索
         </el-button>
       </el-form-item>
     </el-form>
     <el-row :gutter="10" class="mb8">
       <el-col :span="1.5">
-        <el-button icon="el-icon-refresh" size="mini" @click="resetQuery">
-          刷新
-        </el-button>
+        <el-button icon="el-icon-refresh" size="mini" @click="resetQuery">刷新</el-button>
       </el-col>
       <el-col :span="1.5">
         <el-select v-model="value" placeholder="余额排序" size="mini">
@@ -99,42 +87,17 @@
         }
       "
     >
-      <el-table-column
-        label="余额"
-        align="center"
-        prop="sumMoney"
-        show-overflow-tooltip
-      />
+      <el-table-column label="余额" align="center" prop="sumMoney" show-overflow-tooltip />
       <el-table-column
         label="银行卡类型"
         align="center"
         prop="bankCardType"
         show-overflow-tooltip
       />
-      <el-table-column
-        label="显示名称"
-        align="center"
-        prop="displayName"
-        show-overflow-tooltip
-      />
-      <el-table-column
-        label="开户名称"
-        align="center"
-        prop="acountsName"
-        show-overflow-tooltip
-      />
-      <el-table-column
-        label="银行账号"
-        align="center"
-        prop="bankNo"
-        show-overflow-tooltip
-      />
-      <el-table-column
-        label="开户行"
-        align="center"
-        prop="bankName"
-        show-overflow-tooltip
-      />
+      <el-table-column label="显示名称" align="center" prop="displayName" show-overflow-tooltip />
+      <el-table-column label="开户名称" align="center" prop="acountsName" show-overflow-tooltip />
+      <el-table-column label="银行账号" align="center" prop="bankNo" show-overflow-tooltip />
+      <el-table-column label="开户行" align="center" prop="bankName" show-overflow-tooltip />
     </el-table>
   </div>
 </template>
@@ -142,10 +105,7 @@
 <script>
   import { listCompany } from '@/api/system/company'
   import { mixin_printHTML } from '@/views/dashboard/mixins/print'
-  import {
-    listBankAccount,
-    listBankAccountSelf
-  } from '../../../api/system/bankAccount'
+  import { listBankAccount, listBankAccountSelf } from '../../../api/system/bankAccount'
 
   export default {
     name: 'BankAccount',
@@ -249,10 +209,7 @@
         listBankAccountSelf().then((response) => {
           this.bankAccountList = response.data
           // 存储到本地
-          localStorage.setItem(
-            'bankAccountList',
-            JSON.stringify(this.bankAccountList)
-          )
+          localStorage.setItem('bankAccountList', JSON.stringify(this.bankAccountList))
           this.total = response.data.length
           this.loading = false
         })
@@ -260,9 +217,7 @@
       // 银行卡筛选
       handleQuery() {
         // 每次重新刷新数组后筛选
-        this.bankAccountList = JSON.parse(
-          localStorage.getItem('bankAccountList')
-        )
+        this.bankAccountList = JSON.parse(localStorage.getItem('bankAccountList'))
         // 如果queryParams都是空 那么就返回全部数据
         const values = Object.values(this.queryParams)
 
@@ -275,14 +230,25 @@
           return this.bankAccountList
         }
         // 对银行卡列表进行筛选
-        this.bankAccountList = this.bankAccountList.filter((item) => {
-          this.handleFilter(item)
-        })
+        this.bankAccountList = this.bankAccountList.filter((item) => this.handleFilter(item))
       },
       // 筛选函数
       handleFilter(item) {
+        // 如果每一个属性都满足 即为true
+        let flag = true
         // item要满足queryParams中的每一个参数 但是也可以满足某一个参数
-        // TODO 待完善
+        Object.keys(this.queryParams).forEach((key) => {
+          console.log(key, item[key], this.queryParams[key])
+
+          // 两边都存在这个属性
+          if (item[key] && this.queryParams[key]) {
+            // 存在 且不相等
+            if (item[key] !== this.queryParams[key]) {
+              flag = false
+            }
+          }
+        })
+        return flag
       },
       /** 重置按钮操作 */
       resetQuery() {
