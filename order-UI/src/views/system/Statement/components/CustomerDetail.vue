@@ -106,52 +106,68 @@
                   subjectNo: configValue,
                   subjectName: subjectName
                 })
+                // 参数 包含配置值 和 科目名称
+                const config = {
+                  configValue,
+                  subjectName
+                }
                 // 查询客户明细账
-                getCustomerSubjectDetailSummary(query).then((res) => {
-                  try {
-                    // 上年结转的余额
-                    let lastMoney = Number(lastYearDetail.moneyAmount)
-                    // 累计金额
-                    let nowMoney = Number(0)
-                    // 拿到汇总账
-                    const append = res.data.map((item) => {
-                      // 金额累计计算
-                      nowMoney = lastMoney + Number(item.moneyAmount)
-                      // 更新
-                      lastMoney = nowMoney
-                      // 如果有了摘要 不做处理
-                      if (item.summary) {
-                        return {
-                          ...item,
-                          moneyAmountLocal: fix(nowMoney),
-                          subjectNo: configValue,
-                          subjectName: subjectName
-                        }
-                      } else {
-                        return {
-                          ...item,
-                          // 如果没有摘要 就加上对应的摘要
-                          summary: ReportType.CUSTOMER[item.tableName],
-                          moneyAmountLocal: fix(nowMoney),
-                          subjectNo: configValue,
-                          subjectName: subjectName
-                        }
-                      }
-                    })
-                    // 添加到上年结转数据的后面
-                    this.tableData = this.tableData.concat(append)
-                    // 查询该客户的五个tag的值
-                    this.getCustomerTags(query.companyId)
-                    // 打开弹窗
-                    this.dialogVisible = true
-                  } catch (err) {
-                    this.$message.error('查询失败:', err)
-                    return
-                  }
-                })
+                this.checkCustomerDetail(query, lastYearDetail, config)
               })
             })
           })
+        })
+      },
+      /**
+       * 查询客户明细账
+       * @param {Object} query
+       * @param {Object} lastYearDetail
+       * @param {Object} config
+       * @returns {void}
+       */
+      checkCustomerDetail(query, lastYearDetail, config) {
+        // 查询客户明细账
+        getCustomerSubjectDetailSummary(query).then((res) => {
+          try {
+            // 上年结转的余额
+            let lastMoney = Number(lastYearDetail.moneyAmount)
+            // 累计金额
+            let nowMoney = Number(0)
+            // 拿到汇总账
+            const append = res.data.map((item) => {
+              // 金额累计计算
+              nowMoney = lastMoney + Number(item.moneyAmount)
+              // 更新
+              lastMoney = nowMoney
+              // 如果有了摘要 不做处理
+              if (item.summary) {
+                return {
+                  ...item,
+                  moneyAmountLocal: fix(nowMoney),
+                  subjectNo: config.configValue,
+                  subjectName: config.subjectName
+                }
+              } else {
+                return {
+                  ...item,
+                  // 如果没有摘要 就加上对应的摘要
+                  summary: ReportType.CUSTOMER[item.tableName],
+                  moneyAmountLocal: fix(nowMoney),
+                  subjectNo: config.configValue,
+                  subjectName: config.subjectName
+                }
+              }
+            })
+            // 添加到上年结转数据的后面
+            this.tableData = this.tableData.concat(append)
+            // 查询该客户的五个tag的值
+            this.getCustomerTags(query.companyId)
+            // 打开弹窗
+            this.dialogVisible = true
+          } catch (err) {
+            this.$message.error('查询失败:', err)
+            return
+          }
         })
       },
       // 查询对应的信息 通过拿表名和id  对应两个字段为tableName payNo

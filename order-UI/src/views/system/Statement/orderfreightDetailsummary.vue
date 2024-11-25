@@ -2,18 +2,10 @@
 <template>
   <div class="app-container">
     <el-row style="background-color: #e6e6e6">
-      <el-button type="primary" icon="el-icon-refresh" @click="refresh">
-        刷新
-      </el-button>
+      <el-button type="primary" icon="el-icon-refresh" @click="refresh">刷新</el-button>
     </el-row>
     <hr color="#e6e6e6" />
-    <el-form
-      ref="queryForm"
-      :model="queryParams"
-      size="mini"
-      :inline="true"
-      label-width="68px"
-    >
+    <el-form ref="queryForm" :model="queryParams" size="mini" :inline="true" label-width="68px">
       <el-form-item label="开始时间" prop="beginTime">
         <el-date-picker
           v-model="queryParams.beginTime"
@@ -49,30 +41,18 @@
         </el-select>
       </el-form-item>
       <el-form-item>
-        <el-button
-          type="primary"
-          icon="el-icon-search"
-          size="mini"
-          @click="handleQuery"
-        >
+        <el-button type="primary" icon="el-icon-search" size="mini" @click="handleQuery">
           搜索
         </el-button>
       </el-form-item>
     </el-form>
     <hr color="#e6e6e6" />
-    <el-row style="font-weight: bold; font-size: 20px; margin: 0 30px">
-      运费科目汇总账
-    </el-row>
+    <el-row style="font-weight: bold; font-size: 20px; margin: 0 30px">运费科目汇总账</el-row>
     <el-row :gutter="10" class="mb8">
       <right-toolbar :columns="columns" @queryTable="getList">
         <template #print>
           <el-col :span="1.5">
-            <el-button
-              plain
-              icon="el-icon-printer"
-              size="mini"
-              @click="printHTML"
-            />
+            <el-button plain icon="el-icon-printer" size="mini" @click="printHTML" />
           </el-col>
         </template>
         <template #export>
@@ -110,12 +90,7 @@
         type="index"
         width="160"
       />
-      <el-table-column
-        label="司机姓名"
-        align="center"
-        prop="companyName"
-        width="110"
-      />
+      <el-table-column label="司机姓名" align="center" prop="companyName" width="110" />
       <el-table-column label="初期方向" align="center" width="160">
         <template slot-scope="scope">
           <div v-if="scope">
@@ -126,41 +101,16 @@
           </div>
         </template>
       </el-table-column>
-      <el-table-column
-        label="初期余额"
-        align="center"
-        prop="beginningBalance"
-        width="160"
-      />
-      <el-table-column
-        label="借方"
-        align="center"
-        prop="positiveSum"
-        width="160"
-      />
-      <el-table-column
-        label="贷方"
-        align="center"
-        prop="negativeSum"
-        width="160"
-      >
+      <el-table-column label="初期余额" align="center" prop="beginningBalance" width="160" />
+      <el-table-column label="借方" align="center" prop="positiveSum" width="160" />
+      <el-table-column label="贷方" align="center" prop="negativeSum" width="160">
         <template slot-scope="scope">
           {{ Math.abs(scope.row.negativeSum) }}
         </template>
       </el-table-column>
-      <el-table-column
-        label="平账金额"
-        align="center"
-        prop="balanceaccountsAmount"
-        width="160"
-      />
+      <el-table-column label="平账金额" align="center" prop="balanceaccountsAmount" width="160" />
       <el-table-column label="车牌号" align="center" prop="carNo" width="110" />
-      <el-table-column
-        label="期末方向"
-        align="center"
-        prop="initialBalanceDirection"
-        width="160"
-      >
+      <el-table-column label="期末方向" align="center" prop="initialBalanceDirection" width="160">
         <template slot-scope="scope">
           <div v-if="scope">
             <!--  现在总的需要前端自己计算方向,计算公式为 期初/期末余额>0 则为贷,反之为借,相等为平-->
@@ -170,25 +120,9 @@
           </div>
         </template>
       </el-table-column>
-      <el-table-column
-        label="期末余额"
-        align="center"
-        prop="endingBalance"
-        width="160"
-      />
-      <el-table-column
-        label="业务员"
-        align="center"
-        prop="salesman"
-        width="160"
-      />
-      <el-table-column
-        label="操作"
-        align="center"
-        prop="driverName"
-        width="150"
-        fixed="right"
-      >
+      <el-table-column label="期末余额" align="center" prop="endingBalance" width="160" />
+      <el-table-column label="业务员" align="center" prop="salesman" width="160" />
+      <el-table-column label="操作" align="center" prop="driverName" width="150" fixed="right">
         <template slot-scope="scope">
           <FreightDetail :detail="scope.row" />
         </template>
@@ -210,12 +144,7 @@
       :visible.sync="dialogVisible"
       width="30%"
     >
-      <el-form
-        ref="queryForm"
-        :model="queryParams"
-        size="mini"
-        label-width="68px"
-      >
+      <el-form ref="queryForm" :model="queryParams" size="mini" label-width="68px">
         <el-form-item label="开始时间" prop="beginTime">
           <el-date-picker
             v-model="queryParams.beginTime"

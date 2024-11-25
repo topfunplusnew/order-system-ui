@@ -3,18 +3,10 @@
 <template>
   <div class="app-container">
     <el-row style="background-color: #e6e6e6">
-      <el-button type="primary" icon="el-icon-refresh" @click="refresh"
-      >刷新</el-button
-      >
+      <el-button type="primary" icon="el-icon-refresh" @click="refresh">刷新</el-button>
     </el-row>
     <hr color="#e6e6e6" />
-    <el-form
-      ref="queryForm"
-      :model="queryParams"
-      size="mini"
-      :inline="true"
-      label-width="68px"
-    >
+    <el-form ref="queryForm" :model="queryParams" size="mini" :inline="true" label-width="68px">
       <el-form-item label="开始时间" prop="beginTime">
         <el-date-picker
           v-model="queryParams.beginTime"
@@ -22,8 +14,7 @@
           placeholder="请选择开始时间"
           value-format="yyyy-MM-dd HH:mm:ss"
           clearable
-        >
-        </el-date-picker>
+        ></el-date-picker>
       </el-form-item>
       <el-form-item label="结束时间" prop="endTime">
         <el-date-picker
@@ -32,8 +23,7 @@
           placeholder="请选择结束时间"
           value-format="yyyy-MM-dd HH:mm:ss"
           clearable
-        >
-        </el-date-picker>
+        ></el-date-picker>
       </el-form-item>
       <el-form-item label="供应商名称" prop="companyName">
         <el-input
@@ -43,29 +33,18 @@
         ></el-input>
       </el-form-item>
       <el-form-item>
-        <el-button
-          type="primary"
-          icon="el-icon-search"
-          size="mini"
-          @click="handleQuery"
-        >搜索</el-button
-        >
+        <el-button type="primary" icon="el-icon-search" size="mini" @click="handleQuery">
+          搜索
+        </el-button>
       </el-form-item>
     </el-form>
     <hr color="#e6e6e6" />
-    <el-row style="font-weight: bold; font-size: 20px; margin: 0 30px">
-      供应商科目余额汇总表
-    </el-row>
+    <el-row style="font-weight: bold; font-size: 20px; margin: 0 30px">供应商科目余额汇总表</el-row>
     <el-row :gutter="10" class="mb8">
       <right-toolbar :columns="columns" @queryTable="getList">
         <template #print>
           <el-col :span="1.5">
-            <el-button
-              plain
-              icon="el-icon-printer"
-              size="mini"
-              @click="printHTML"
-            />
+            <el-button plain icon="el-icon-printer" size="mini" @click="printHTML" />
           </el-col>
         </template>
         <template #export>
@@ -92,7 +71,7 @@
       size="mini"
       :cell-style="
         () => {
-          return { padding: '2px' };
+          return { padding: '2px' }
         }
       "
     >
@@ -220,14 +199,13 @@
 </template>
 
 <script>
-  import { mixin_printHTML } from '@/views/dashboard/mixins/print';
-  import { parseTime } from '../../../utils/ruoyi';
-  import { getSupplierSubjectSummary } from '@/api/system/statement';
-  import { getTimeOffset } from '@/utils/order';
-  import { listConfig } from '@/api/system/config';
-  import { getSubjectLevel } from '@/api/system/subject';
-  import SupplierDetail from '@/views/system/Statement/components/SupplierDetail.vue';
+  import { getSupplierSubjectSummary } from '@/api/system/statement'
+  import { getTimeOffset } from '@/utils/order'
+  import { mixin_printHTML } from '@/views/dashboard/mixins/print'
+  import SupplierDetail from '@/views/system/Statement/components/SupplierDetail.vue'
+  import { parseTime } from '../../../utils/ruoyi'
 
+  import { getConfigValue } from './data/config_get'
   export default {
     name: 'CustomerSummary',
     components: { SupplierDetail },
@@ -250,71 +228,63 @@
           // 日期往前推迟一年 工具函数
           beginTime: getTimeOffset('{y}-{m}-{d} {h}:{i}:{s}', 1),
           endTime: parseTime(new Date(), '{y}-{m}-{d} {h}:{i}:{s}'),
-          companyName: null,
+          companyName: null
         },
         // 表单校验
         columns: [],
-        dialogVisible: false,
-      };
+        dialogVisible: false
+      }
     },
     created() {
-      this.getList();
+      this.getList()
     },
     methods: {
       /** 查询向外部借出款信息列表 */
-      getList() {
+      async getList() {
         // 获取供应商科目余额汇总表数据 填充到表格中
-        this.loading = true;
-        // 获取参数设置中的编码 然后根据编码去换取科目名称 填充到tableData中
+        this.loading = true
         // 根据config_key order.customerDetailSummary.subjectNo 拿到键值
-        listConfig({ configKey: 'order.supplierDetailSummary.subjectNo' }).then(
-          (res) => {
-            const configValue = res.rows[0]?.configValue;
-            // 根据configValue去拿取科目名称
-            getSubjectLevel(configValue).then((res) => {
-              // 拿到科目名称
-              const subjectName = res?.data.title || null;
-              // 拿取供应商科目余额汇总表数据 然后给tableData每一条数据赋值科目编码和名称
-              getSupplierSubjectSummary(this.queryParams).then((response) => {
-                // 组装tableData
-                this.tableData = response?.rows.map((item) => {
-                  return {
-                    ...item,
-                    subjectNo: configValue,
-                    subjectName: subjectName,
-                  };
-                });
-                this.total = response.total;
-                this.loading = false;
-              });
-            });
-          }
-        );
+        const key = { configKey: 'order.supplierDetailSummary.subjectNo' }
+        // 拿到科目名称
+        const { subjectName, configValue } = await getConfigValue(key)
+        // 拿取供应商科目余额汇总表数据 然后给tableData每一条数据赋值科目编码和名称
+        getSupplierSubjectSummary(this.queryParams).then((response) => {
+          // 组装tableData
+          this.tableData = response?.rows.map((item) => {
+            return {
+              ...item,
+              subjectNo: configValue,
+              subjectName: subjectName
+            }
+          })
+          this.total = response.total
+          this.loading = false
+        })
       },
       /** 搜索按钮操作 */
       handleQuery() {
-        this.queryParams.pageNum = 1;
-        this.getList();
+        this.queryParams.pageNum = 1
+        this.getList()
       },
       refresh() {
-        this.getList();
+        this.getList()
       },
       handleSubmitTime() {
         this.download(
           'statistics/export/companysummary',
           {
-            ...this.queryParams,
+            ...this.queryParams
           },
           `供应商科目余额汇总表_${parseTime(new Date().getTime())}.xlsx`
-        );
+        )
       },
       // 导出
       handleExport() {
         this.$datePicker().then((res) => {
           // todo 2. 导出
-          console.log(res);
-        });
-      },
-    },
-  };
+          console.log(res)
+        })
+      }
+    }
+  }
 </script>

@@ -35,12 +35,7 @@
         />
       </el-form-item>
       <el-form-item>
-        <el-button
-          type="primary"
-          icon="el-icon-search"
-          size="mini"
-          @click="handleQuery"
-        >
+        <el-button type="primary" icon="el-icon-search" size="mini" @click="handleQuery">
           搜索
         </el-button>
       </el-form-item>
@@ -48,9 +43,7 @@
 
     <el-row :gutter="10" class="mb8">
       <el-col :span="1.5">
-        <el-button icon="el-icon-refresh" size="mini" @click="resetQuery">
-          刷新
-        </el-button>
+        <el-button icon="el-icon-refresh" size="mini" @click="resetQuery">刷新</el-button>
       </el-col>
       <el-col :span="1.5">
         <el-button
@@ -62,19 +55,10 @@
           新增银行卡信息
         </el-button>
       </el-col>
-      <right-toolbar
-        :showSearch.sync="showSearch"
-        :columns="columns"
-        @queryTable="getList"
-      >
+      <right-toolbar :showSearch.sync="showSearch" :columns="columns" @queryTable="getList">
         <template #print>
           <el-col :span="1.5">
-            <el-button
-              plain
-              icon="el-icon-printer"
-              size="mini"
-              @click="printHTML"
-            ></el-button>
+            <el-button plain icon="el-icon-printer" size="mini" @click="printHTML"></el-button>
           </el-col>
         </template>
         <template #export>
@@ -109,12 +93,8 @@
     >
       <el-table-column label="绑定状态" align="center" width="200">
         <template slot-scope="scope">
-          <span v-if="scope.row.companyId === 0" style="color: #138fe1">
-            己方公司银行卡
-          </span>
-          <span v-else-if="scope.row.companyId === -1" style="color: #ff5722">
-            该卡未被绑定
-          </span>
+          <span v-if="scope.row.companyId === 0" style="color: #138fe1">己方公司银行卡</span>
+          <span v-else-if="scope.row.companyId === -1" style="color: #ff5722">该卡未被绑定</span>
           <span v-else>已绑定</span>
         </template>
       </el-table-column>
@@ -125,31 +105,14 @@
         prop="acountsType"
         width="200"
       />
-      <el-table-column
-        label="公私户类型"
-        align="center"
-        prop="isPublicAccount"
-        width="200"
-      >
+      <el-table-column label="公私户类型" align="center" prop="isPublicAccount" width="200">
         <template slot-scope="scope">
-          <span v-if="scope.row.isPublicAccount === 0" style="color: #138fe1">
-            私户
-          </span>
-          <span
-            v-else-if="scope.row.isPublicAccount === 1"
-            style="color: #ff5722"
-          >
-            公户
-          </span>
+          <span v-if="scope.row.isPublicAccount === 0" style="color: #138fe1">私户</span>
+          <span v-else-if="scope.row.isPublicAccount === 1" style="color: #ff5722">公户</span>
           <span v-else>未区分</span>
         </template>
       </el-table-column>
-      <el-table-column
-        label="显示名称"
-        align="center"
-        prop="displayName"
-        width="200"
-      />
+      <el-table-column label="显示名称" align="center" prop="displayName" width="200" />
       <el-table-column
         v-if="columns[4].visible"
         label="公司名称"
@@ -194,11 +157,7 @@
       >
         <template slot-scope="scope">
           <el-row>
-            <el-button
-              size="mini"
-              type="text"
-              @click="checkBankChangeFlow(scope.row)"
-            >
+            <el-button size="mini" type="text" @click="checkBankChangeFlow(scope.row)">
               变动流水
             </el-button>
           </el-row>
@@ -266,12 +225,8 @@
         <div>
           <el-row v-if="form.acountsType === PUBLIC_DICT_TYPE.SELF_COMPANY">
             <el-form-item label="公私户类型" prop="isPublicAccount">
-              <el-radio v-model="form.isPublicAccount" :label="1">
-                公户
-              </el-radio>
-              <el-radio v-model="form.isPublicAccount" :label="0">
-                私户
-              </el-radio>
+              <el-radio v-model="form.isPublicAccount" :label="1">公户</el-radio>
+              <el-radio v-model="form.isPublicAccount" :label="0">私户</el-radio>
             </el-form-item>
           </el-row>
         </div>
@@ -294,41 +249,13 @@
                   @commitBack="handleCommitBackBankAccount"
                 >
                   <template #table-columns>
-                    <el-table-column
-                      label="司机"
-                      align="center"
-                      prop="driver"
-                    />
-                    <el-table-column
-                      label="车牌号"
-                      align="center"
-                      prop="carNo"
-                    />
-                    <el-table-column
-                      label="司机电话"
-                      align="center"
-                      prop="tel"
-                    />
-                    <el-table-column
-                      label="开户名"
-                      align="center"
-                      prop="acountsName"
-                    />
-                    <el-table-column
-                      label="账号"
-                      align="center"
-                      prop="bankNo"
-                    />
-                    <el-table-column
-                      label="开户行"
-                      align="center"
-                      prop="bankName"
-                    />
-                    <el-table-column
-                      label="运输方式"
-                      align="center"
-                      prop="carType"
-                    />
+                    <el-table-column label="司机" align="center" prop="driver" />
+                    <el-table-column label="车牌号" align="center" prop="carNo" />
+                    <el-table-column label="司机电话" align="center" prop="tel" />
+                    <el-table-column label="开户名" align="center" prop="acountsName" />
+                    <el-table-column label="账号" align="center" prop="bankNo" />
+                    <el-table-column label="开户行" align="center" prop="bankName" />
+                    <el-table-column label="运输方式" align="center" prop="carType" />
                   </template>
                 </SearchOption>
               </el-tooltip>
@@ -382,42 +309,12 @@
                       prop="phonenumber"
                       width="120"
                     />
-                    <el-table-column
-                      label="就职状态"
-                      align="center"
-                      prop="state"
-                      width="120"
-                    />
-                    <el-table-column
-                      label="入职时间"
-                      align="center"
-                      prop="startDate"
-                      width="120"
-                    />
-                    <el-table-column
-                      label="身份证号码"
-                      align="center"
-                      prop="iDCard"
-                      width="120"
-                    />
-                    <el-table-column
-                      label="性别"
-                      align="center"
-                      prop="sex"
-                      width="120"
-                    />
-                    <el-table-column
-                      label="出生日期"
-                      align="center"
-                      prop="birthday"
-                      width="120"
-                    />
-                    <el-table-column
-                      label="民族"
-                      align="center"
-                      prop="nation"
-                      width="120"
-                    />
+                    <el-table-column label="就职状态" align="center" prop="state" width="120" />
+                    <el-table-column label="入职时间" align="center" prop="startDate" width="120" />
+                    <el-table-column label="身份证号码" align="center" prop="iDCard" width="120" />
+                    <el-table-column label="性别" align="center" prop="sex" width="120" />
+                    <el-table-column label="出生日期" align="center" prop="birthday" width="120" />
+                    <el-table-column label="民族" align="center" prop="nation" width="120" />
                     <el-table-column
                       label="政治面貌"
                       align="center"
@@ -459,10 +356,7 @@
               </el-tooltip>
             </el-col>
             <!-- 供应商信息搜索-->
-            <el-col
-              v-if="form.acountsType === PUBLIC_DICT_TYPE.SUPPLIER"
-              :span="2"
-            >
+            <el-col v-if="form.acountsType === PUBLIC_DICT_TYPE.SUPPLIER" :span="2">
               <SearchOption
                 :limit-info="{ companyType: '供应商' }"
                 :get-data="listCompany"
@@ -470,20 +364,13 @@
                 @update:queryName="handleQueryCompanyGive"
               >
                 <template #table-columns>
-                  <el-table-column
-                    label="供应商"
-                    align="center"
-                    prop="companyName"
-                  />
+                  <el-table-column label="供应商" align="center" prop="companyName" />
                   <el-table-column label="地址" align="center" prop="address" />
                 </template>
               </SearchOption>
             </el-col>
             <!-- 客户信息搜索-->
-            <el-col
-              v-if="form.acountsType === PUBLIC_DICT_TYPE.CUSTOMER"
-              :span="2"
-            >
+            <el-col v-if="form.acountsType === PUBLIC_DICT_TYPE.CUSTOMER" :span="2">
               <SearchOption
                 :limit-info="{ companyType: '客户' }"
                 :get-data="listCompany"
@@ -491,31 +378,11 @@
                 @update:queryName="handleQueryCompany"
               >
                 <template #table-columns>
-                  <el-table-column
-                    label="客户"
-                    align="center"
-                    prop="relationName"
-                  />
-                  <el-table-column
-                    label="老板姓名"
-                    align="center"
-                    prop="leader"
-                  />
-                  <el-table-column
-                    label="老板电话"
-                    align="center"
-                    prop="leaderTel"
-                  />
-                  <el-table-column
-                    label="公司名称"
-                    align="center"
-                    prop="companyName"
-                  />
-                  <el-table-column
-                    label="销售经理"
-                    align="center"
-                    prop="salesManager"
-                  />
+                  <el-table-column label="客户" align="center" prop="relationName" />
+                  <el-table-column label="老板姓名" align="center" prop="leader" />
+                  <el-table-column label="老板电话" align="center" prop="leaderTel" />
+                  <el-table-column label="公司名称" align="center" prop="companyName" />
+                  <el-table-column label="销售经理" align="center" prop="salesManager" />
                 </template>
               </SearchOption>
             </el-col>
@@ -569,11 +436,7 @@
             </el-col>
             <el-col :span="6">
               <el-form-item>
-                <el-button
-                  type="primary"
-                  size="mini"
-                  @click="getBankAcountChangeList"
-                >
+                <el-button type="primary" size="mini" @click="getBankAcountChangeList">
                   搜索
                 </el-button>
               </el-form-item>
@@ -581,16 +444,8 @@
           </el-form>
         </div>
         <el-table :data="bankChangeList" style="width: 100%">
-          <el-table-column
-            prop="selfBankNo"
-            label="己方账号"
-            width="180"
-          ></el-table-column>
-          <el-table-column
-            prop="operateDate"
-            label="日期"
-            width="180"
-          ></el-table-column>
+          <el-table-column prop="selfBankNo" label="己方账号" width="180"></el-table-column>
+          <el-table-column prop="operateDate" label="日期" width="180"></el-table-column>
           <el-table-column prop="changeType" label="变动类型"></el-table-column>
           <el-table-column prop="moneyAmount" label="金额"></el-table-column>
         </el-table>
@@ -617,14 +472,10 @@
     getBankAccount,
     updateBankAccount
   } from '@/api/system/bankAccount'
-  import {
-    addBankAccountChange,
-    listBankAccountChange
-  } from '@/api/system/bankAccountChange'
+  import { addBankAccountChange, listBankAccountChange } from '@/api/system/bankAccountChange'
   import { listCompany } from '@/api/system/company'
   import SearchOption from '@/components/SearchOption.vue'
   import { PUBLIC_DICT_TYPE } from '@/utils/order'
-  import CheckBankMoney from '@/views/dashboard/components/common/CheckBankMoney.vue'
   import { mixin_printHTML } from '@/views/dashboard/mixins/print'
   import { listBankAccount } from '../../../api/system/bankAccount'
   import { listCars } from '../../../api/system/cars'
@@ -633,7 +484,7 @@
 
   export default {
     name: 'BankAccount',
-    components: { CheckBankMoney, SearchOption },
+    components: { SearchOption },
     mixins: [mixin_printHTML],
     data() {
       return {
@@ -691,24 +542,12 @@
         },
         // 表单校验
         rules: {
-          bankNo: [
-            { required: true, message: '银行账号不能为空', trigger: 'blur' }
-          ],
-          bankName: [
-            { required: true, message: '开户行不能为空', trigger: 'blur' }
-          ],
-          acountsName: [
-            { required: true, message: '账户名称不能为空', trigger: 'blur' }
-          ],
-          acountsType: [
-            { required: true, message: '账户类型不能为空', trigger: 'blur' }
-          ],
-          companyName: [
-            { required: true, message: '公司名称不能为空', trigger: 'blur' }
-          ],
-          companyType: [
-            { required: true, message: '公司类型不能为空', trigger: 'blur' }
-          ]
+          bankNo: [{ required: true, message: '银行账号不能为空', trigger: 'blur' }],
+          bankName: [{ required: true, message: '开户行不能为空', trigger: 'blur' }],
+          acountsName: [{ required: true, message: '账户名称不能为空', trigger: 'blur' }],
+          acountsType: [{ required: true, message: '账户类型不能为空', trigger: 'blur' }],
+          companyName: [{ required: true, message: '公司名称不能为空', trigger: 'blur' }],
+          companyType: [{ required: true, message: '公司类型不能为空', trigger: 'blur' }]
         },
         // 对方类型
         options: [
@@ -784,17 +623,11 @@
       },
       // 是否是己方公司
       isNeed() {
-        return (
-          this.form.acountsType !== '己方公司' &&
-          this.form.acountsType !== '司机'
-        )
+        return this.form.acountsType !== '己方公司' && this.form.acountsType !== '司机'
       },
       showLabel() {
         if (this.form.acountsType) {
-          return (
-            this.options.find((item) => item.value === this.form.acountsType)
-              .value + '名称'
-          )
+          return this.options.find((item) => item.value === this.form.acountsType).value + '名称'
         } else {
           return '公司名称'
         }
@@ -815,10 +648,7 @@
         localStorage.getItem('bankaccount-columns') === 'null' ||
         !localStorage.getItem('bankaccount-columns')
       ) {
-        localStorage.setItem(
-          'bankaccount-columns',
-          JSON.stringify(this.columns)
-        )
+        localStorage.setItem('bankaccount-columns', JSON.stringify(this.columns))
       } else {
         this.columns = JSON.parse(localStorage.getItem('bankaccount-columns'))
       }

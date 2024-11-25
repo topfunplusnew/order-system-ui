@@ -5,39 +5,33 @@
       return {
         visible: false,
         beginTime: null,
-        endTime: null,
-      };
+        endTime: null
+      }
     },
     methods: {
+      // 关闭弹窗
       handleClose() {
-        this.visible = false;
+        this.visible = false
       },
+      // 点击确定
       handleConfirm() {
         if (this.beginTime && this.endTime) {
           this.$emit('resolve', {
             beginTime: this.beginTime,
-            endTime: this.endTime,
-          });
-          this.handleClose();
+            endTime: this.endTime
+          })
+          this.handleClose()
         } else {
-          this.$message.error('请选择有效的日期');
+          this.$message.error('请选择有效的日期')
         }
-      },
-      show() {
-        this.visible = true;
-      },
-    },
-  };
+      }
+    }
+  }
 </script>
 
 <template>
   <div>
-    <el-dialog
-      :visible.sync="visible"
-      title="选择日期"
-      width="350px"
-      @close="handleClose"
-    >
+    <el-dialog :visible.sync="visible" title="选择日期" width="350px" @close="handleClose">
       <el-row style="text-align: center">
         <el-date-picker
           v-model="beginTime"

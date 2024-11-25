@@ -202,14 +202,12 @@
 </template>
 
 <script>
-  import { listConfig } from '@/api/system/config'
-  import { getCustomerSubjectSummary } from '@/api/system/statement'
-  import { getSubjectLevel } from '@/api/system/subject'
   import { getTimeOffset } from '@/utils/order'
   import { mixin_printHTML } from '@/views/dashboard/mixins/print'
   import CustomerDetail from '@/views/system/Statement/components/CustomerDetail.vue'
+  import { getCustomerSubjectSummary } from '../../../api/system/statement'
   import { parseTime } from '../../../utils/ruoyi'
-
+  import { getConfigValue } from './data/config_get'
   export default {
     name: 'CustomerSummary',
     components: { CustomerDetail },
@@ -244,32 +242,37 @@
     },
     methods: {
       /** 查询向外部借出款信息列表 */
-      getList() {
+      async getList() {
         // 获取客户科目余额汇总表数据 填充到表格中
         this.loading = true
         // 获取参数设置中的编码 然后根据编码去换取科目名称 填充到tableData中
-        // 根据config_key order.customerDetailSummary.subjectNo 拿到键值
         const key = { configKey: 'order.customerDetailSummary.subjectNo' }
-        listConfig(key).then((res) => {
-          const configValue = res.rows[0]?.configValue
-          // 根据configValue去拿取科目名称
-          getSubjectLevel(configValue).then((res) => {
-            // 拿到科目名称
-            const subjectName = res.data.title
-            // 拿取客户科目余额汇总表数据 然后给tableData每一条数据赋值科目编码和名称
-            getCustomerSubjectSummary(this.queryParams).then((response) => {
-              // 组装tableData
-              this.tableData = response?.rows.map((item) => {
-                return {
-                  ...item,
-                  subjectNo: configValue,
-                  subjectName: subjectName
-                }
-              })
-              this.total = response.total
-              this.loading = false
+        // 拿到科目名称
+        const { subjectName, configValue } = await getConfigValue(key)
+
+        // 拿取客户科目余额汇总表数据 然后给tableData每一条数据赋值科目编码和名称
+        getCustomerSubjectSummary(this.queryParams).then((response) => {
+          try {
+            const data = response.rows || response.data
+            // 校验
+            if (!data) {
+              this.$message.warning('暂无数据')
+              return
+            }
+            // 组装tableData
+            this.tableData = data.map((item) => {
+              return {
+                ...item,
+                subjectNo: configValue,
+                subjectName: subjectName
+              }
             })
-          })
+            this.total = response.total
+            this.loading = false
+          } catch (error) {
+            console.log(error)
+            return
+          }
         })
       },
       /** 搜索按钮操作 */

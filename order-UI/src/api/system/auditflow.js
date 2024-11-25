@@ -1,6 +1,10 @@
 import request from '@/utils/request'
 
-// 查询审核流程列表
+/**
+ * 查询审核流程列表
+ * @param {any} query
+ * @returns {any}
+ */
 export function listAuditflow(query) {
   return request({
     url: '/system/auditflow/list',

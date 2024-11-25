@@ -142,13 +142,7 @@ Vue.prototype.$close = () => {
 // targetProperty: 需要筛选的时间字段
 // return 筛选后的数组
 // 使用: this.$dateRange(this, this.bankList, 'createTime', this.timesQuery.startTime,this.timesQuery.endTime)
-Vue.prototype.$dateRange = function (
-  _this,
-  targetList,
-  targetProperty,
-  startTime,
-  endTime
-) {
+Vue.prototype.$dateRange = function (_this, targetList, targetProperty, startTime, endTime) {
   // 开始时间 结束时间的时间戳
   const start = new Date(startTime).getTime()
   const end_date = new Date(endTime)
