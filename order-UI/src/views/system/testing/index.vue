@@ -1,8 +1,7 @@
 <template>
   <div>
-    <div class="flex-display">
+    <!-- <div class="flex-display">
       <div class="left-box">文件上传(input)：</div>
-      <!--      上传文件标签-->
       <input type="file" class="file-ipt" multiple @change="onChange" />
     </div>
     <hr />
@@ -15,7 +14,9 @@
         width="180"
       >
       </el-table-column>
-    </el-table>
+    </el-table> -->
+
+    <!-- <el-button type="primary">点击增加{{ count }}</el-button> -->
   </div>
 </template>
 <script>

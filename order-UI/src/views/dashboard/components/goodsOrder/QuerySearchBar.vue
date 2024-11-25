@@ -99,42 +99,60 @@
             </el-button>
           </el-form-item>
         </el-col>
+        <!-- <el-col :span="4">
+          <el-form-item>
+            <el-button type="primary" icon="el-icon-search" size="mini" @click="handleProcess">
+              点击增加{{ count }}
+            </el-button>
+          </el-form-item>
+        </el-col> -->
       </el-row>
     </el-form>
   </div>
 </template>
 <script>
-  import { Options, OptionInvent } from '../../mixins/order/order_Invoice'
+  import { computed, ref } from '@vue/composition-api'
+  import { OptionInvent, Options } from '../../mixins/order/order_Invoice'
+
   export default {
     name: 'QuerySearchBar',
     props: {
       queryParams: {
         type: Object,
-        default: () => {
-          return {}
-        }
+        default: () => ({})
       }
     },
-    data() {
+    setup(props, { emit }) {
+      // 数据状态
+      const optionInvent = ref(OptionInvent)
+      const options = ref(Options)
+      const testValue = ref(0)
+
+      // 计算属性
+      const queryItems = computed({
+        get: () => props.queryParams,
+        set: (val) => emit('updateQuery', val)
+      })
+
+      const handleQuery = () => {
+        emit('updateQuery', queryItems.value)
+      }
+
+      // // TODO 测试hooks
+      // const { count, handleProcess } = useCounter()
+
+      // 返回 setup 中定义的数据和方法
       return {
-        optionInvent: OptionInvent,
-        options: Options
+        optionInvent,
+        options,
+        queryItems,
+        testValue,
+        // count,
+        // handleProcess,
+        handleQuery
       }
     },
-    computed: {
-      queryItems: {
-        get() {
-          return this.queryParams
-        },
-        set(val) {
-          this.$emit('updateQuery', val)
-        }
-      }
-    },
-    methods: {
-      handleQuery() {
-        this.$emit('updateQuery', this.queryItems)
-      }
-    }
+    mounted() {},
+    methods: {}
   }
 </script>

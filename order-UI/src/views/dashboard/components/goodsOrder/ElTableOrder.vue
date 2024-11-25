@@ -185,8 +185,8 @@
 
 <template>
   <div>
+    <!--    这是框架自带的搜索模组，封装成了组件并且放在与index.vue同级目录下-->
     <div>
-      <!--    这是框架自带的搜索模组，封装成了组件并且放在与index.vue同级目录下-->
       <QuerySearchBar :query-items="queryParams" @updateQuery="handleGetQueryParams" />
     </div>
     <!--    通用弹窗 配合common_dialogs 使用-->

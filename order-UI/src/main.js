@@ -189,6 +189,11 @@ Vue.prototype.$datePicker = function () {
     })
   })
 }
+
+// 引入composition-api写法
+import VueCompositionAPI from '@vue/composition-api'
+
+Vue.use(VueCompositionAPI)
 export const isNull = (val) => {
   return !val ? '暂无' : val
 }
