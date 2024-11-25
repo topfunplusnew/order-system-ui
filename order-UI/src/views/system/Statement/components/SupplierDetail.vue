@@ -1,12 +1,10 @@
 <!--供应商科目明细表-->
 
 <script>
-  import { listConfig } from '@/api/system/config'
   import {
     getSupplierSubjectDetailSomeDay,
     getSupplierSubjectDetailSummary
   } from '@/api/system/statement'
-  import { getSubjectLevel } from '@/api/system/subject'
   import { TableName } from '@/api/tool/enums'
   import GOODS_ORDER from '@/components/NeedToShow/GOODS_ORDER.vue'
   import INVENTORY from '@/components/NeedToShow/INVENTORY.vue'
@@ -21,6 +19,7 @@
   import TotalTag from '@/views/system/Statement/components/TotalTag.vue'
   import { ReportType } from '../../../../api/tool/enums'
   import { fix } from '../../../../api/tool/format'
+  import { getConfigValue } from '../data/config_get'
 
   export default {
     name: 'SupplierDetail',
@@ -68,84 +67,90 @@
             beginTime: res.beginTime,
             endTime: res.endTime
           }
+          // 查询科目信息
           const key = { configKey: 'order.customerDetailSummary.subjectNo' }
-          // 查询科目 填充
-          listConfig(key).then((res) => {
-            // 科目编码
-            const configValue = res.rows[0]?.configValue
-            // 根据configValue去拿取科目名称
-            getSubjectLevel(configValue).then((res) => {
-              // 校验科目
+          getConfigValue(key).then(({ configValue, subjectName }) => {
+            // 查询明细账之前 要先查询上年结转的余额本币填充
+            const body = {
+              beginTime: query.beginTime,
+              companyId: query.companyId
+            }
+            // 获取供应商结转
+            getSupplierSubjectDetailSomeDay(body).then((res) => {
+              // 校验
               if (!res.data) {
-                this.$message.warning('科目不存在')
+                this.$message.warning('上年结转数据不存在')
+                return
               }
-              // 拿到科目名称
-              const subjectName = res.data.title
-              // 查询明细账之前 要先查询上年结转的余额本币填充
-              const body = {
-                beginTime: query.beginTime,
-                companyId: query.companyId
-              }
-              getSupplierSubjectDetailSomeDay(body).then((res) => {
-                // 校验
-                if (!res.data) {
-                  this.$message.warning('上年结转数据不存在')
-                  return
-                }
-                // 拿到上年的数据
-                const lastYearDetail = res.data
-                // 把上年结转的数据放在最前面 并且摘要为上年结转
-                this.tableData.push({
-                  ...lastYearDetail,
-                  summary: '上年结转',
-                  moneyAmountLocal: lastYearDetail.moneyAmount,
-                  subjectNo: configValue,
-                  subjectName: subjectName
-                })
-                // 查询供应商明细账
-                getSupplierSubjectDetailSummary(query).then((res) => {
-                  try {
-                    // 上年结转的余额
-                    let lastMoney = Number(lastYearDetail.moneyAmount)
-                    // 累计金额
-                    let nowMoney = Number(0)
-                    // 拿到汇总账
-                    const append = res.data.map((item) => {
-                      // 金额累计计算
-                      nowMoney = lastMoney + Number(item.moneyAmount)
-                      // 更新
-                      lastMoney = nowMoney
-                      // 如果有了摘要 不做处理
-                      if (item.summary) {
-                        return {
-                          ...item,
-                          moneyAmountLocal: fix(nowMoney),
-                          subjectNo: configValue,
-                          subjectName: subjectName
-                        }
-                      } else {
-                        return {
-                          ...item,
-                          // 如果没有摘要 就加上对应的摘要
-                          summary: ReportType.SUPPLIER[item.tableName],
-                          moneyAmountLocal: fix(nowMoney),
-                          subjectNo: configValue,
-                          subjectName: subjectName
-                        }
-                      }
-                    })
-                    // 添加到上年结转数据的后面
-                    this.tableData = this.tableData.concat(append)
-                    // 打开弹窗
-                    this.dialogVisible = true
-                  } catch (err) {
-                    this.$message.error(err)
-                    return
-                  }
-                })
+              // 拿到上年的数据
+              const lastYearDetail = res.data
+              // 把上年结转的数据放在最前面 并且摘要为上年结转
+              this.tableData.push({
+                ...lastYearDetail,
+                summary: '上年结转',
+                moneyAmountLocal: lastYearDetail.moneyAmount,
+                subjectNo: configValue,
+                subjectName: subjectName
               })
+              // 参数 包含配置值 和 科目名称
+              const config = {
+                configValue,
+                subjectName
+              }
+              // 查询明细账
+              this.checkSupplierDetail(query, lastYearDetail, config)
             })
           })
+        })
+      },
+      /**
+       * 查询供应商明细账
+       * @param {any} query
+       * @param {any} lastYearDetail
+       * @param {any} config
+       * @returns {any}
+       */
+      checkSupplierDetail(query, lastYearDetail, config) {
+        // 查询供应商明细账
+        getSupplierSubjectDetailSummary(query).then((res) => {
+          try {
+            // 上年结转的余额
+            let lastMoney = Number(lastYearDetail.moneyAmount)
+            // 累计金额
+            let nowMoney = Number(0)
+            // 拿到汇总账
+            const append = res.data.map((item) => {
+              // 金额累计计算
+              nowMoney = lastMoney + Number(item.moneyAmount)
+              // 更新
+              lastMoney = nowMoney
+              // 如果有了摘要 不做处理
+              if (item.summary) {
+                return {
+                  ...item,
+                  moneyAmountLocal: fix(nowMoney),
+                  subjectNo: config.configValue,
+                  subjectName: config.subjectName
+                }
+              } else {
+                return {
+                  ...item,
+                  // 如果没有摘要 就加上对应的摘要
+                  summary: ReportType.SUPPLIER[item.tableName],
+                  moneyAmountLocal: fix(nowMoney),
+                  subjectNo: config.configValue,
+                  subjectName: config.subjectName
+                }
+              }
+            })
+            // 添加到上年结转数据的后面
+            this.tableData = this.tableData.concat(append)
+            // 打开弹窗
+            this.dialogVisible = true
+          } catch (err) {
+            this.$message.error(err)
+            return
+          }
         })
       },
       // 查询对应的信息 通过拿表名和id  对应两个字段为tableName payNo

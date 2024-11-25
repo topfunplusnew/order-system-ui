@@ -169,7 +169,9 @@ import DatePickerDialog from './views/dashboard/components/common/DatePickerDial
 
 Vue.prototype.$datePicker = function () {
   return new Promise((resolve) => {
+    // 获取一个构造函数
     const DatePickerConstructor = Vue.extend(DatePickerDialog)
+    // 实例化
     const datePickerInstance = new DatePickerConstructor({
       propsData: { resolve }
     })

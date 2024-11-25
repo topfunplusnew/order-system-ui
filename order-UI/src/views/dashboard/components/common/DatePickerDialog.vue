@@ -24,6 +24,12 @@
         } else {
           this.$message.error('请选择有效的日期')
         }
+      },
+      show() {
+        this.visible = true
+      },
+      close() {
+        this.visible = false
       }
     }
   }

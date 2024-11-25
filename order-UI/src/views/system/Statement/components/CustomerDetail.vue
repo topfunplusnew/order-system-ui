@@ -1,13 +1,11 @@
 <!--客户科目明细表-->
 
 <script>
-  import { listConfig } from '@/api/system/config'
   import {
     getCustomerFiveParams,
     getCustomerSubjectDetailSomeDay,
     getCustomerSubjectDetailSummary
   } from '@/api/system/statement'
-  import { getSubjectLevel } from '@/api/system/subject'
   import { TableName } from '@/api/tool/enums'
   import GOODS_ORDER from '@/components/NeedToShow/GOODS_ORDER.vue'
   import INVENTORY from '@/components/NeedToShow/INVENTORY.vue'
@@ -21,6 +19,7 @@
   import TotalTag from '@/views/system/Statement/components/TotalTag.vue'
   import { ReportType } from '../../../../api/tool/enums'
   import { fix } from '../../../../api/tool/format'
+  import { getConfigValue } from '../data/config_get'
 
   export default {
     name: 'CustomerDetail',
@@ -70,50 +69,38 @@
             beginTime: res.beginTime,
             endTime: res.endTime
           }
-          // key
+          // 获取参数
           const key = { configKey: 'order.customerDetailSummary.subjectNo' }
-          // 查询科目 填充
-          listConfig(key).then((res) => {
-            // 科目编码
-            const configValue = res.rows[0]?.configValue
-            // 根据configValue去拿取科目名称
-            getSubjectLevel(configValue).then((res) => {
-              // 校验科目
+          getConfigValue(key).then(({ configValue, subjectName }) => {
+            // 查询明细账之前 要先查询上年结转的余额本币填充
+            const body = {
+              beginTime: query.beginTime,
+              companyId: query.companyId
+            }
+            // 查询客户指定时间结转
+            getCustomerSubjectDetailSomeDay(body).then((res) => {
+              // 校验
               if (!res.data) {
-                this.$message.warning('科目不存在')
+                this.$message.warning('上年结转数据不存在')
+                return
               }
-              // 拿到科目名称
-              const subjectName = res.data.title
-              // 查询明细账之前 要先查询上年结转的余额本币填充
-              const body = {
-                beginTime: query.beginTime,
-                companyId: query.companyId
-              }
-              // 查询客户指定时间结转
-              getCustomerSubjectDetailSomeDay(body).then((res) => {
-                // 校验
-                if (!res.data) {
-                  this.$message.warning('上年结转数据不存在')
-                  return
-                }
-                // 拿到上年的数据
-                const lastYearDetail = res.data
-                // 把上年结转的数据放在最前面 并且摘要为上年结转
-                this.tableData.push({
-                  ...lastYearDetail,
-                  summary: '上年结转',
-                  moneyAmountLocal: lastYearDetail.moneyAmount,
-                  subjectNo: configValue,
-                  subjectName: subjectName
-                })
-                // 参数 包含配置值 和 科目名称
-                const config = {
-                  configValue,
-                  subjectName
-                }
-                // 查询客户明细账
-                this.checkCustomerDetail(query, lastYearDetail, config)
+              // 拿到上年的数据
+              const lastYearDetail = res.data
+              // 把上年结转的数据放在最前面 并且摘要为上年结转
+              this.tableData.push({
+                ...lastYearDetail,
+                summary: '上年结转',
+                moneyAmountLocal: lastYearDetail.moneyAmount,
+                subjectNo: configValue,
+                subjectName: subjectName
               })
+              // 参数 包含配置值 和 科目名称
+              const config = {
+                configValue,
+                subjectName
+              }
+              // 查询客户明细账
+              this.checkCustomerDetail(query, lastYearDetail, config)
             })
           })
         })
