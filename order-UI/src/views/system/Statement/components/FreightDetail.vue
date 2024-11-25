@@ -69,11 +69,10 @@
             beginTime: res.beginTime,
             endTime: res.endTime
           }
-          // 拿到时间 为了查询上年结转
+          // 拿到key
+          const key = { configKey: 'order.freightDetailSummary.subjectNo' }
           // 查询科目 填充
-          listConfig({
-            configKey: 'order.freightDetailSummary.subjectNo'
-          }).then((res) => {
+          listConfig(key).then((res) => {
             // 科目编码
             const configValue = res.rows[0]?.configValue
             // 根据configValue去拿取科目名称
@@ -85,11 +84,13 @@
               // 拿到科目名称
               const subjectName = res.data?.title
               // 查询明细账之前 要先查询上年结转的余额本币填充
-              getFreightSubjectDetailSummarySomeDay({
+              const body = {
                 beginTime: query.beginTime,
-                // 运费的id是carId
-                carId: this.driverId
-              }).then((res) => {
+                companyId: query.companyId
+              }
+              // 查询司机账户指定时间结转
+              getFreightSubjectDetailSummarySomeDay(body).then((res) => {
+                // 校验一下
                 if (!res.data) {
                   this.$message.warning('上年结转数据不存在')
                   return

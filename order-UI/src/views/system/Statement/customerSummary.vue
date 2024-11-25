@@ -273,29 +273,28 @@
         this.loading = true
         // 获取参数设置中的编码 然后根据编码去换取科目名称 填充到tableData中
         // 根据config_key order.customerDetailSummary.subjectNo 拿到键值
-        listConfig({ configKey: 'order.customerDetailSummary.subjectNo' }).then(
-          (res) => {
-            const configValue = res.rows[0]?.configValue
-            // 根据configValue去拿取科目名称
-            getSubjectLevel(configValue).then((res) => {
-              // 拿到科目名称
-              const subjectName = res.data.title
-              // 拿取客户科目余额汇总表数据 然后给tableData每一条数据赋值科目编码和名称
-              getCustomerSubjectSummary(this.queryParams).then((response) => {
-                // 组装tableData
-                this.tableData = response?.rows.map((item) => {
-                  return {
-                    ...item,
-                    subjectNo: configValue,
-                    subjectName: subjectName
-                  }
-                })
-                this.total = response.total
-                this.loading = false
+        const key = { configKey: 'order.customerDetailSummary.subjectNo' }
+        listConfig(key).then((res) => {
+          const configValue = res.rows[0]?.configValue
+          // 根据configValue去拿取科目名称
+          getSubjectLevel(configValue).then((res) => {
+            // 拿到科目名称
+            const subjectName = res.data.title
+            // 拿取客户科目余额汇总表数据 然后给tableData每一条数据赋值科目编码和名称
+            getCustomerSubjectSummary(this.queryParams).then((response) => {
+              // 组装tableData
+              this.tableData = response?.rows.map((item) => {
+                return {
+                  ...item,
+                  subjectNo: configValue,
+                  subjectName: subjectName
+                }
               })
+              this.total = response.total
+              this.loading = false
             })
-          }
-        )
+          })
+        })
       },
       /** 搜索按钮操作 */
       handleQuery() {

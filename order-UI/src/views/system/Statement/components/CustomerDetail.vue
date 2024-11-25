@@ -70,12 +70,10 @@
             beginTime: res.beginTime,
             endTime: res.endTime
           }
-          // 拿到时间 为了查询上年结转
-          const { companyId, ...times } = query
+          // key
+          const key = { configKey: 'order.customerDetailSummary.subjectNo' }
           // 查询科目 填充
-          listConfig({
-            configKey: 'order.customerDetailSummary.subjectNo'
-          }).then((res) => {
+          listConfig(key).then((res) => {
             // 科目编码
             const configValue = res.rows[0]?.configValue
             // 根据configValue去拿取科目名称
@@ -87,10 +85,13 @@
               // 拿到科目名称
               const subjectName = res.data.title
               // 查询明细账之前 要先查询上年结转的余额本币填充
-              getCustomerSubjectDetailSomeDay({
-                beginTime: times.beginTime,
-                companyId: this.customerId
-              }).then((res) => {
+              const body = {
+                beginTime: query.beginTime,
+                companyId: query.companyId
+              }
+              // 查询客户指定时间结转
+              getCustomerSubjectDetailSomeDay(body).then((res) => {
+                // 校验
                 if (!res.data) {
                   this.$message.warning('上年结转数据不存在')
                   return
@@ -140,7 +141,7 @@
                     // 添加到上年结转数据的后面
                     this.tableData = this.tableData.concat(append)
                     // 查询该客户的五个tag的值
-                    this.getCustomerTags(companyId)
+                    this.getCustomerTags(query.companyId)
                     // 打开弹窗
                     this.dialogVisible = true
                   } catch (err) {

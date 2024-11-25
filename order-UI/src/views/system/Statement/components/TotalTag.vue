@@ -99,6 +99,7 @@
   }
 
   .el-statistic__head {
+    display: block;
     color: #000; /* 根据需求设置颜色 */
     font-weight: bold;
   }

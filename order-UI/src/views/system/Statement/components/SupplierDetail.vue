@@ -83,10 +83,11 @@
               // 拿到科目名称
               const subjectName = res.data.title
               // 查询明细账之前 要先查询上年结转的余额本币填充
-              getSupplierSubjectDetailSomeDay({
+              const body = {
                 beginTime: query.beginTime,
-                companyId: this.supplierId
-              }).then((res) => {
+                companyId: query.companyId
+              }
+              getSupplierSubjectDetailSomeDay(body).then((res) => {
                 // 校验
                 if (!res.data) {
                   this.$message.warning('上年结转数据不存在')

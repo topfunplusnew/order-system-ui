@@ -99,7 +99,7 @@
       size="mini"
       :cell-style="
         () => {
-          return { padding: '2px' };
+          return { padding: '2px' }
         }
       "
     >
@@ -146,8 +146,8 @@
       >
         <template slot-scope="scope">
           {{ Math.abs(scope.row.negativeSum) }}
-        </template></el-table-column
-      >
+        </template>
+      </el-table-column>
       <el-table-column
         label="平账金额"
         align="center"
@@ -174,6 +174,12 @@
         label="期末余额"
         align="center"
         prop="endingBalance"
+        width="160"
+      />
+      <el-table-column
+        label="业务员"
+        align="center"
+        prop="salesman"
         width="160"
       />
       <el-table-column
@@ -238,14 +244,14 @@
 </template>
 
 <script>
-  import { mixin_printHTML } from '@/views/dashboard/mixins/print';
+  import { mixin_printHTML } from '@/views/dashboard/mixins/print'
   import {
     getFreightSubjectDetailSummary,
     getFreightSubjectDetailSummarySomeDay,
-    getOrderFreightDetailSummary,
-  } from '../../../api/system/statement';
-  import { parseTime } from '../../../utils/ruoyi';
-  import FreightDetail from './components/FreightDetail.vue';
+    getOrderFreightDetailSummary
+  } from '../../../api/system/statement'
+  import { parseTime } from '../../../utils/ruoyi'
+  import FreightDetail from './components/FreightDetail.vue'
 
   export default {
     name: 'LendMoney',
@@ -273,17 +279,17 @@
           endTime: parseTime(new Date()),
           carNo: '',
           // 是否为海运 默认为false
-          isSea: false,
+          isSea: false
         },
         options: [
           {
             value: true,
-            label: '海运',
+            label: '海运'
           },
           {
             value: false,
-            label: '陆运',
-          },
+            label: '陆运'
+          }
         ],
         // 表单校验
         columns: [
@@ -295,7 +301,7 @@
           { key: 5, label: `已付运费`, visible: true },
           { key: 6, label: `司机姓名`, visible: true },
           { key: 7, label: `期末方向`, visible: true },
-          { key: 8, label: `期末余额`, visible: true },
+          { key: 8, label: `期末余额`, visible: true }
         ],
         dialogVisible: false,
 
@@ -305,87 +311,87 @@
         detailList: [],
         detailLoading: false,
         beginTime: '',
-        endTime: '',
-      };
+        endTime: ''
+      }
     },
     computed: {},
     created() {
-      this.getList();
+      this.getList()
     },
     methods: {
       /** 查询向外部借出款信息列表 */
       getList() {
-        this.loading = true;
+        this.loading = true
         getOrderFreightDetailSummary(this.queryParams).then((response) => {
-          this.lendMoneyList = response.rows;
-          this.total = response.total;
-          this.loading = false;
-        });
+          this.lendMoneyList = response.rows
+          this.total = response.total
+          this.loading = false
+        })
       },
       // 运费明细获取
       handleCheckCarNoFreight(row) {
-        const carNo = row.carNo;
+        const carNo = row.carNo
         // 选择时间
         this.$datePicker().then((res) => {
           // 封装查询对象
           const query = {
             carId: row.companyId,
             beginTime: res.beginTime,
-            endTime: res.endTime,
-          };
+            endTime: res.endTime
+          }
           // 先查询上年结转
           getFreightSubjectDetailSummarySomeDay(query).then((res) => {
-            const item = res?.data;
+            const item = res?.data
             // 某个车牌的查询明细
             getFreightSubjectDetailSummary(query).then((res) => {
-              this.detailTitle = `车牌号为${carNo}的运费明细`;
-              this.detailList = res.rows;
+              this.detailTitle = `车牌号为${carNo}的运费明细`
+              this.detailList = res.rows
               // 对数据进行处理 如果借方发生额不为空 摘要为付运费 如果贷方发生额不为空 为司机运费
               this.detailList.forEach((item) => {
                 if (item.freightPaid) {
-                  this.$set(item, 'comments', '付运费');
+                  this.$set(item, 'comments', '付运费')
                 } else if (item.freightUnPaid) {
-                  this.$set(item, 'comments', '司机运费');
+                  this.$set(item, 'comments', '司机运费')
                 }
-              });
+              })
               if (item) {
-                this.$set(item, 'comments', '上年结转');
+                this.$set(item, 'comments', '上年结转')
                 // 如果能查出来 那么就推入到头部
-                this.detailList.unshift(item);
+                this.detailList.unshift(item)
               }
-              console.log(this.detailList);
-              this.$message.success('查询成功');
-              this.detailVisible = true;
-            });
-          });
-        });
+              console.log(this.detailList)
+              this.$message.success('查询成功')
+              this.detailVisible = true
+            })
+          })
+        })
       },
       // 关闭
       close() {
-        this.detailVisible = false;
+        this.detailVisible = false
       },
       /** 搜索按钮操作 */
       handleQuery() {
-        this.queryParams.pageNum = 1;
-        this.getList();
+        this.queryParams.pageNum = 1
+        this.getList()
       },
       refresh() {
-        this.getList();
+        this.getList()
       },
       handleSubmitTime() {
         this.download(
           'statistics/export/orderfreightDetailsummary',
           {
-            ...this.queryParams,
+            ...this.queryParams
           },
           `运费科目汇总_${parseTime(new Date().getTime())}.xlsx`
-        );
-        this.dialogVisible = false;
+        )
+        this.dialogVisible = false
       },
       /** 导出按钮操作 */
       handleExport() {
-        this.dialogVisible = true;
-      },
-    },
-  };
+        this.dialogVisible = true
+      }
+    }
+  }
 </script>
