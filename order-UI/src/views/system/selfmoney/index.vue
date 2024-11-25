@@ -238,8 +238,6 @@
         let flag = true
         // item要满足queryParams中的每一个参数 但是也可以满足某一个参数
         Object.keys(this.queryParams).forEach((key) => {
-          console.log(key, item[key], this.queryParams[key])
-
           // 两边都存在这个属性
           if (item[key] && this.queryParams[key]) {
             // 存在 且不相等

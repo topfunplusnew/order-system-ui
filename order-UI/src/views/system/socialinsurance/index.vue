@@ -33,12 +33,7 @@
         />
       </el-form-item>
       <el-form-item>
-        <el-button
-          type="primary"
-          icon="el-icon-search"
-          size="mini"
-          @click="handleQuery"
-        >
+        <el-button type="primary" icon="el-icon-search" size="mini" @click="handleQuery">
           搜索
         </el-button>
         <!--        <el-button icon="el-icon-refresh" size="mini" @click="resetQuery">重置</el-button>-->
@@ -47,28 +42,15 @@
 
     <el-row :gutter="10" class="mb8">
       <el-col :span="1.5">
-        <el-button icon="el-icon-refresh" size="mini" @click="resetQuery">
-          刷新
-        </el-button>
+        <el-button icon="el-icon-refresh" size="mini" @click="resetQuery">刷新</el-button>
       </el-col>
       <el-col :span="1.5">
-        <el-button type="danger" size="mini" @click="addSocial">
-          新增社保基金信息
-        </el-button>
+        <el-button type="danger" size="mini" @click="addSocial">新增社保基金信息</el-button>
       </el-col>
-      <right-toolbar
-        :showSearch.sync="showSearch"
-        :columns="columns"
-        @queryTable="getList"
-      >
+      <right-toolbar :showSearch.sync="showSearch" :columns="columns" @queryTable="getList">
         <template #print>
           <el-col :span="1.5">
-            <el-button
-              plain
-              icon="el-icon-printer"
-              size="mini"
-              @click="printJSON"
-            ></el-button>
+            <el-button plain icon="el-icon-printer" size="mini" @click="printJSON"></el-button>
           </el-col>
         </template>
         <!--        导出-->
@@ -311,35 +293,19 @@
         </el-col>
       </el-row>
       <br />
-      <el-table
-        :data="socialInsuranceItemsList"
-        style="width: 100%"
-        size="mini"
-      >
+      <el-table :data="socialInsuranceItemsList" style="width: 100%" size="mini">
         <el-table-column label="操作">
           <template slot-scope="scope">
-            <el-button
-              size="mini"
-              type="danger"
-              @click="handleDeleteItem(scope.$index, scope.row)"
-            >
+            <el-button size="mini" type="danger" @click="handleDeleteItem(scope.$index, scope.row)">
               删除
             </el-button>
           </template>
         </el-table-column>
         <!--        本月缴纳基数-->
         <el-table-column :label="'本月缴纳基数:' + basicSocialInsurance">
-          <el-table-column
-            prop="employeeName"
-            label="姓名"
-            width="120"
-          ></el-table-column>
+          <el-table-column prop="employeeName" label="姓名" width="120"></el-table-column>
           <el-table-column label="社保增减人员情况" prop="name" width="120">
-            <el-table-column
-              prop="isRecruiting"
-              label="是否增员"
-              width="120"
-            ></el-table-column>
+            <el-table-column prop="isRecruiting" label="是否增员" width="120"></el-table-column>
           </el-table-column>
           <el-table-column label="基本医疗保险">
             <el-table-column
@@ -355,10 +321,7 @@
           </el-table-column>
         </el-table-column>
         <!--            工伤保险-->
-        <el-table-column
-          label="工伤保险"
-          prop="injuryInsurance"
-        ></el-table-column>
+        <el-table-column label="工伤保险" prop="injuryInsurance"></el-table-column>
         <!--        本月公积金缴纳基数-->
         <el-table-column :label="'本月公积金缴纳基数:' + basicHousingFund">
           <!--          缴纳社保和停止社保时间-->
@@ -404,20 +367,10 @@
               label="公司缴纳"
               width="120"
             ></el-table-column>
-            <el-table-column
-              prop="housingFundSelf"
-              label="个人缴纳"
-              width="120"
-            ></el-table-column>
+            <el-table-column prop="housingFundSelf" label="个人缴纳" width="120"></el-table-column>
           </el-table-column>
-          <el-table-column
-            label="个人缴纳总额"
-            prop="sumSelf"
-          ></el-table-column>
-          <el-table-column
-            label="公司缴纳总额"
-            prop="sumCompany"
-          ></el-table-column>
+          <el-table-column label="个人缴纳总额" prop="sumSelf"></el-table-column>
+          <el-table-column label="公司缴纳总额" prop="sumCompany"></el-table-column>
         </el-table-column>
       </el-table>
 
@@ -440,16 +393,10 @@
         <el-form ref="form" :model="form" :rules="rules" label-width="140px">
           <el-col :span="8">
             <el-form-item label="社保缴纳基数" prop="basicSocialInsurance">
-              <el-input
-                v-model="form.basicSocialInsurance"
-                placeholder="请输入社保缴纳基数"
-              />
+              <el-input v-model="form.basicSocialInsurance" placeholder="请输入社保缴纳基数" />
             </el-form-item>
             <el-form-item label="公积金基数" prop="basicHousingFund">
-              <el-input
-                v-model="form.basicHousingFund"
-                placeholder="请输入公积金基数"
-              />
+              <el-input v-model="form.basicHousingFund" placeholder="请输入公积金基数" />
             </el-form-item>
             <el-form-item label="部门" prop="depName">
               <el-input v-model="form.depName" placeholder="请输入部门" />
@@ -458,10 +405,7 @@
               <el-input v-model="form.employeeName" placeholder="请输入姓名" />
             </el-form-item>
             <el-form-item label="人员编号" prop="employeeID">
-              <el-input
-                v-model="form.employeeID"
-                placeholder="请输入人员编号"
-              />
+              <el-input v-model="form.employeeID" placeholder="请输入人员编号" />
             </el-form-item>
             <el-form-item label="缴费时间" prop="insuranceDate">
               <el-date-picker
@@ -502,41 +446,26 @@
             <!--            <el-form-item label="基本医疗保险-公司" prop="healthySecurityCompany">-->
             <!--            </el-form-item>-->
             <el-form-item label="工伤保险" prop="injuryInsurance">
-              <el-input
-                v-model="form.injuryInsurance"
-                placeholder="请输入工伤保险缴纳金额"
-              />
+              <el-input v-model="form.injuryInsurance" placeholder="请输入工伤保险缴纳金额" />
             </el-form-item>
             <el-form-item label="失业保险" prop="unemploymentSecuritySelf">
               <el-col :span="11">
-                <el-input
-                  v-model="form.unemploymentSecuritySelf"
-                  placeholder="个人缴纳金额"
-                />
+                <el-input v-model="form.unemploymentSecuritySelf" placeholder="个人缴纳金额" />
               </el-col>
               <el-col :span="2" class="line">-</el-col>
               <el-col :span="11">
-                <el-input
-                  v-model="form.unemploymentSecurityCompany"
-                  placeholder="公司缴纳金额"
-                />
+                <el-input v-model="form.unemploymentSecurityCompany" placeholder="公司缴纳金额" />
               </el-col>
             </el-form-item>
             <!--            <el-form-item label="失业保险-公司" prop="unemploymentSecurityCompany">-->
             <!--            </el-form-item>-->
             <el-form-item label="养老保险" prop="retirementSecuritySelf">
               <el-col :span="11">
-                <el-input
-                  v-model="form.retirementSecuritySelf"
-                  placeholder="个人缴纳金额"
-                />
+                <el-input v-model="form.retirementSecuritySelf" placeholder="个人缴纳金额" />
               </el-col>
               <el-col :span="2" class="line">-</el-col>
               <el-col :span="11">
-                <el-input
-                  v-model="form.retirementSecurityCompany"
-                  placeholder="公司缴纳金额"
-                />
+                <el-input v-model="form.retirementSecurityCompany" placeholder="公司缴纳金额" />
               </el-col>
             </el-form-item>
             <!--            <el-form-item label="养老保险-公司" prop="retirementSecurityCompany">-->
@@ -545,34 +474,22 @@
           <el-col :span="8">
             <el-form-item label="大额医保" prop="largeMedicalSecuritySelf">
               <el-col :span="11">
-                <el-input
-                  v-model="form.largeMedicalSecuritySelf"
-                  placeholder="个人缴纳金额"
-                />
+                <el-input v-model="form.largeMedicalSecuritySelf" placeholder="个人缴纳金额" />
               </el-col>
               <el-col :span="2" class="line">-</el-col>
               <el-col :span="11">
-                <el-input
-                  v-model="form.largeMedicalSecurityCompany"
-                  placeholder="公司缴纳"
-                />
+                <el-input v-model="form.largeMedicalSecurityCompany" placeholder="公司缴纳" />
               </el-col>
             </el-form-item>
             <!--            <el-form-item label="大额医保-公司" prop="largeMedicalSecurityCompany">-->
             <!--            </el-form-item>-->
             <el-form-item label="公积金" prop="housingFundSelf">
               <el-col :span="11">
-                <el-input
-                  v-model="form.housingFundSelf"
-                  placeholder="个人缴纳金额"
-                />
+                <el-input v-model="form.housingFundSelf" placeholder="个人缴纳金额" />
               </el-col>
               <el-col :span="2" class="line">-</el-col>
               <el-col :span="11">
-                <el-input
-                  v-model="form.housingFundCompany"
-                  placeholder="公司缴纳金额"
-                />
+                <el-input v-model="form.housingFundCompany" placeholder="公司缴纳金额" />
               </el-col>
             </el-form-item>
             <!--            <el-form-item label="公积金-公司" prop="housingFundCompany">-->
@@ -591,9 +508,7 @@
       </el-row>
       <span slot="footer" class="dialog-footer">
         <el-button @click="addSocialDialogVisible = false">取 消</el-button>
-        <el-button type="primary" @click="addSocialInsureItemInfo">
-          确 定
-        </el-button>
+        <el-button type="primary" @click="addSocialInsureItemInfo">确 定</el-button>
       </span>
     </el-dialog>
   </div>
@@ -601,10 +516,10 @@
 
 <script>
   import {
-    listSocialInsurance,
-    getSocialInsurance,
-    delSocialInsurance,
     addSocialInsurance,
+    delSocialInsurance,
+    getSocialInsurance,
+    listSocialInsurance,
     updateSocialInsurance
   } from '@/api/system/socialInsurance'
   import { excludeParams } from '@/api/tool/exclude'
@@ -695,33 +610,19 @@
             { required: true, message: '基本医疗保险不能为空', trigger: 'blur' }
           ],
 
-          basicHousingFund: [
-            { required: true, message: '公积金基数不能为空', trigger: 'blur' }
-          ],
+          basicHousingFund: [{ required: true, message: '公积金基数不能为空', trigger: 'blur' }],
 
-          depName: [
-            { required: true, message: '部门不能为空', trigger: 'blur' }
-          ],
+          depName: [{ required: true, message: '部门不能为空', trigger: 'blur' }],
 
-          employeeName: [
-            { required: true, message: '姓名不能为空', trigger: 'blur' }
-          ],
+          employeeName: [{ required: true, message: '姓名不能为空', trigger: 'blur' }],
 
-          employeeID: [
-            { required: true, message: '人员编号不能为空', trigger: 'blur' }
-          ],
+          employeeID: [{ required: true, message: '人员编号不能为空', trigger: 'blur' }],
 
-          insuranceDate: [
-            { required: true, message: '缴费时间不能为空', trigger: 'blur' }
-          ],
+          insuranceDate: [{ required: true, message: '缴费时间不能为空', trigger: 'blur' }],
 
-          isRecruiting: [
-            { required: true, message: '是否增员不能为空', trigger: 'change' }
-          ],
+          isRecruiting: [{ required: true, message: '是否增员不能为空', trigger: 'change' }],
 
-          isDepletion: [
-            { required: true, message: '是否减员不能为空', trigger: 'change' }
-          ],
+          isDepletion: [{ required: true, message: '是否减员不能为空', trigger: 'change' }],
 
           healthySecuritySelf: [
             { required: true, message: '基本医疗保险不能为空', trigger: 'blur' }
@@ -734,9 +635,7 @@
               trigger: 'blur'
             }
           ],
-          injuryInsurance: [
-            { required: true, message: '工伤保险不能为空', trigger: 'blur' }
-          ],
+          injuryInsurance: [{ required: true, message: '工伤保险不能为空', trigger: 'blur' }],
           unemploymentSecuritySelf: [
             { required: true, message: '失业保险不能为空', trigger: 'blur' }
           ],
@@ -764,18 +663,10 @@
               trigger: 'blur'
             }
           ],
-          housingFundSelf: [
-            { required: true, message: '公积金不能为空', trigger: 'blur' }
-          ],
-          housingFundCompany: [
-            { required: true, message: '公积金-公司不能为空', trigger: 'blur' }
-          ],
-          sumSelf: [
-            { required: true, message: '个人缴费总额不能为空', trigger: 'blur' }
-          ],
-          sumCompany: [
-            { required: true, message: '公司缴费总额不能为空', trigger: 'blur' }
-          ]
+          housingFundSelf: [{ required: true, message: '公积金不能为空', trigger: 'blur' }],
+          housingFundCompany: [{ required: true, message: '公积金-公司不能为空', trigger: 'blur' }],
+          sumSelf: [{ required: true, message: '个人缴费总额不能为空', trigger: 'blur' }],
+          sumCompany: [{ required: true, message: '公司缴费总额不能为空', trigger: 'blur' }]
         },
         // 添加社保基金的弹窗
         addSocialDialogVisible: false,
@@ -792,10 +683,7 @@
     watch: {
       columns: {
         handler: function (newVal) {
-          localStorage.setItem(
-            'socialinsurance-columns',
-            JSON.stringify(newVal)
-          )
+          localStorage.setItem('socialinsurance-columns', JSON.stringify(newVal))
         },
         deep: true
       }
@@ -807,14 +695,9 @@
         !localStorage.getItem('socialinsurance-columns')
       ) {
         // 设置localStorage
-        localStorage.setItem(
-          'socialinsurance-columns',
-          JSON.stringify(this.columns)
-        )
+        localStorage.setItem('socialinsurance-columns', JSON.stringify(this.columns))
       } else {
-        this.columns = JSON.parse(
-          localStorage.getItem('socialinsurance-columns')
-        )
+        this.columns = JSON.parse(localStorage.getItem('socialinsurance-columns'))
       }
     },
     methods: {
@@ -826,11 +709,7 @@
         this.$refs['form'].validate((valid) => {
           if (valid) {
             // 修改
-            if (
-              this.form.id !== null &&
-              this.form.id !== undefined &&
-              this.form.id !== ''
-            ) {
+            if (this.form.id !== null && this.form.id !== undefined && this.form.id !== '') {
               this.form.sumSelf = this.sumSummary(this.form, 'Self')
               this.form.sumCompany = this.sumSummary(this.form, 'Company')
               this.form = excludeParams(this.form, this.$exclude)
@@ -871,7 +750,7 @@
         this.open = true
         this.reset()
       },
-      handleDeleteItem(index, row) {
+      handleDeleteItem(index) {
         this.socialInsuranceItemsList.splice(index, 1)
         this.$message.success('删除成功')
       },
@@ -992,7 +871,7 @@
       async submitForm() {
         if (this.form.id != null) {
           this.form = excludeParams(this.form, this.$exclude)
-          updateSocialInsurance(this.form).then((response) => {
+          updateSocialInsurance(this.form).then(() => {
             this.$modal.msgSuccess('修改成功')
             this.open = false
             this.getList()

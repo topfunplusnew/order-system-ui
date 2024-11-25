@@ -44,17 +44,10 @@
         />
       </el-form-item>
       <el-form-item>
-        <el-button
-          type="primary"
-          icon="el-icon-search"
-          size="mini"
-          @click="handleQuery"
-        >
+        <el-button type="primary" icon="el-icon-search" size="mini" @click="handleQuery">
           搜索
         </el-button>
-        <el-button icon="el-icon-refresh" size="mini" @click="resetQuery">
-          重置
-        </el-button>
+        <el-button icon="el-icon-refresh" size="mini" @click="resetQuery">重置</el-button>
       </el-form-item>
     </el-form>
 
@@ -85,19 +78,10 @@
         </el-button>
       </el-col>
 
-      <right-toolbar
-        :show-search.sync="showSearch"
-        :columns="columns"
-        @queryTable="getList"
-      >
+      <right-toolbar :show-search.sync="showSearch" :columns="columns" @queryTable="getList">
         <template #print>
           <el-col :span="1.5">
-            <el-button
-              plain
-              icon="el-icon-printer"
-              size="mini"
-              @click="printHTML"
-            />
+            <el-button plain icon="el-icon-printer" size="mini" @click="printHTML" />
           </el-col>
         </template>
         <!--        导出-->
@@ -124,23 +108,16 @@
       border
       :cell-style="
         () => {
-          return { padding: '2px' };
+          return { padding: '2px' }
         }
       "
       @selection-change="handleSelectionChange"
     >
       <el-table-column type="selection" width="55" align="center" />
       <el-table-column label="id" align="center" prop="id" />
-      <el-table-column
-        label="交易时间"
-        align="center"
-        prop="transactionTime"
-        width="180"
-      >
+      <el-table-column label="交易时间" align="center" prop="transactionTime" width="180">
         <template slot-scope="scope">
-          <span>{{
-            parseTime(scope.row.transactionTime, '{y}-{m}-{d} {h}:{i}:{s}')
-          }}</span>
+          <span>{{ parseTime(scope.row.transactionTime, '{y}-{m}-{d} {h}:{i}:{s}') }}</span>
         </template>
       </el-table-column>
       <el-table-column label="金额" align="center" prop="amount" />
@@ -164,11 +141,7 @@
       />
       <el-table-column label="冲抵类型" align="center" show-overflow-tooltip>
         <template slot-scope="scope">
-          <span>{{
-            scope.row.referenceTableName === 'offsetting'
-              ? '冲抵货款'
-              : '内部转账'
-          }}</span>
+          <span>{{ scope.row.referenceTableName === 'offsetting' ? '冲抵货款' : '内部转账' }}</span>
         </template>
       </el-table-column>
       <el-table-column
@@ -184,23 +157,13 @@
             :path="scope.row.attachment"
             @needToUpdate="
               (value) =>
-                handleUpdateFilePath(
-                  value,
-                  scope.row,
-                  'attachment',
-                  getRecord,
-                  updateRecord
-                )
+                handleUpdateFilePath(value, scope.row, 'attachment', getRecord, updateRecord)
             "
           />
         </template>
       </el-table-column>
       <el-table-column label="备注" align="center" prop="remarks" />
-      <el-table-column
-        label="操作"
-        align="center"
-        class-name="small-padding fixed-width"
-      >
+      <el-table-column label="操作" align="center" class-name="small-padding fixed-width">
         <template slot-scope="scope">
           <el-button
             v-hasPermi="['system:record:edit']"
@@ -236,10 +199,8 @@
         <!--        目前支持两种类型 一种是冲抵货款 一种是冲抵第三方开票-->
         <el-form-item label="冲抵类型">
           <el-row>
-            <el-radio v-model="cashType" label="offsetting">
-              冲抵货款
-            </el-radio>
-            <el-radio v-model="cashType" label="transfer"> 内部转账 </el-radio>
+            <el-radio v-model="cashType" label="offsetting">冲抵货款</el-radio>
+            <el-radio v-model="cashType" label="transfer">内部转账</el-radio>
           </el-row>
         </el-form-item>
         <el-divider>
@@ -276,41 +237,22 @@
                       prop="acountsType"
                       width="200"
                     />
-                    <el-table-column
-                      label="显示名称"
-                      align="center"
-                      prop="displayName"
-                    />
+                    <el-table-column label="显示名称" align="center" prop="displayName" />
                     <el-table-column
                       label="开户名称"
                       align="center"
                       prop="acountsName"
                       width="200"
                     />
-                    <el-table-column
-                      label="银行账号"
-                      align="center"
-                      prop="bankNo"
-                      width="200"
-                    />
-                    <el-table-column
-                      label="开户行"
-                      align="center"
-                      prop="bankName"
-                      width="200"
-                    />
+                    <el-table-column label="银行账号" align="center" prop="bankNo" width="200" />
+                    <el-table-column label="开户行" align="center" prop="bankName" width="200" />
                     <el-table-column
                       label="公司名称"
                       align="center"
                       prop="companyName"
                       width="200"
                     />
-                    <el-table-column
-                      label="余额"
-                      align="center"
-                      prop="amount"
-                      width="200"
-                    />
+                    <el-table-column label="余额" align="center" prop="amount" width="200" />
                   </template>
                 </SearchOption>
               </el-col>
@@ -320,27 +262,15 @@
         <!--        如果是冲抵货款 还需要选择一个公司 -->
         <el-row v-if="cashType === CASH_TYPE.OFF_SETTING">
           <el-form-item label="收入方类型">
-            <el-radio v-model="form.sourceCompanyType" label="客户">
-              客户
-            </el-radio>
-            <el-radio v-model="form.sourceCompanyType" label="供应商">
-              供应商
-            </el-radio>
-            <el-radio v-model="form.sourceCompanyType" label="司机">
-              司机
-            </el-radio>
-            <el-radio v-model="form.sourceCompanyType" label="己方公司">
-              己方公司
-            </el-radio>
+            <el-radio v-model="form.sourceCompanyType" label="客户">客户</el-radio>
+            <el-radio v-model="form.sourceCompanyType" label="供应商">供应商</el-radio>
+            <el-radio v-model="form.sourceCompanyType" label="司机">司机</el-radio>
+            <el-radio v-model="form.sourceCompanyType" label="己方公司">己方公司</el-radio>
           </el-form-item>
           <el-form-item label="收入方">
             <el-row>
               <el-col :span="14">
-                <el-input
-                  v-model="sourceName"
-                  type="text"
-                  placeholder="请输入收入方"
-                />
+                <el-input v-model="sourceName" type="text" placeholder="请输入收入方" />
               </el-col>
               <!--              如果是司机-->
               <el-col v-if="form.sourceCompanyType === '司机'" :span="4">
@@ -354,21 +284,9 @@
                   @commitBack="handleCommitBackDriver"
                 >
                   <template #table-columns>
-                    <el-table-column
-                      label="司机姓名"
-                      align="center"
-                      prop="driver"
-                    />
-                    <el-table-column
-                      label="司机电话"
-                      align="center"
-                      prop="tel"
-                    />
-                    <el-table-column
-                      label="运输类型"
-                      align="center"
-                      prop="carType"
-                    />
+                    <el-table-column label="司机姓名" align="center" prop="driver" />
+                    <el-table-column label="司机电话" align="center" prop="tel" />
+                    <el-table-column label="运输类型" align="center" prop="carType" />
                   </template>
                 </SearchOption>
               </el-col>
@@ -384,45 +302,18 @@
                   @commitBack="handleCommitBackSelfAccount"
                 >
                   <template #table-columns>
-                    <el-table-column
-                      label="账户类型"
-                      align="center"
-                      prop="acountsType"
-                    />
-                    <el-table-column
-                      label="显示名称"
-                      align="center"
-                      prop="displayName"
-                    />
-                    <el-table-column
-                      label="开户名称(户名)"
-                      align="center"
-                      prop="acountsName"
-                    />
-                    <el-table-column
-                      label="账号(银行账号)"
-                      align="center"
-                      prop="bankNo"
-                    />
-                    <el-table-column
-                      label="开户行"
-                      align="center"
-                      prop="bankName"
-                    />
-                    <el-table-column
-                      label="公司名称"
-                      align="center"
-                      prop="companyName"
-                    />
+                    <el-table-column label="账户类型" align="center" prop="acountsType" />
+                    <el-table-column label="显示名称" align="center" prop="displayName" />
+                    <el-table-column label="开户名称(户名)" align="center" prop="acountsName" />
+                    <el-table-column label="账号(银行账号)" align="center" prop="bankNo" />
+                    <el-table-column label="开户行" align="center" prop="bankName" />
+                    <el-table-column label="公司名称" align="center" prop="companyName" />
                   </template>
                 </SearchOption>
               </el-col>
               <!--              如果是其他-->
               <el-col
-                v-if="
-                  form.sourceCompanyType !== '司机' &&
-                    form.sourceCompanyType !== '己方公司'
-                "
+                v-if="form.sourceCompanyType !== '司机' && form.sourceCompanyType !== '己方公司'"
                 :span="4"
               >
                 <SearchOption
@@ -435,36 +326,12 @@
                   @commitBack="handleCommitBackCompanyGet"
                 >
                   <template #table-columns>
-                    <el-table-column
-                      label="公司名称"
-                      align="center"
-                      prop="companyName"
-                    />
-                    <el-table-column
-                      label="公司类型"
-                      align="center"
-                      prop="companyType"
-                    />
-                    <el-table-column
-                      label="老板姓名"
-                      align="center"
-                      prop="leader"
-                    />
-                    <el-table-column
-                      label="老板电话"
-                      align="center"
-                      prop="leaderTel"
-                    />
-                    <el-table-column
-                      label="区域"
-                      align="center"
-                      prop="region"
-                    />
-                    <el-table-column
-                      label="销售经理"
-                      align="center"
-                      prop="salesManager"
-                    />
+                    <el-table-column label="公司名称" align="center" prop="companyName" />
+                    <el-table-column label="公司类型" align="center" prop="companyType" />
+                    <el-table-column label="老板姓名" align="center" prop="leader" />
+                    <el-table-column label="老板电话" align="center" prop="leaderTel" />
+                    <el-table-column label="区域" align="center" prop="region" />
+                    <el-table-column label="销售经理" align="center" prop="salesManager" />
                   </template>
                 </SearchOption>
               </el-col>
@@ -504,41 +371,22 @@
                       prop="acountsType"
                       width="200"
                     />
-                    <el-table-column
-                      label="显示名称"
-                      align="center"
-                      prop="displayName"
-                    />
+                    <el-table-column label="显示名称" align="center" prop="displayName" />
                     <el-table-column
                       label="开户名称"
                       align="center"
                       prop="acountsName"
                       width="200"
                     />
-                    <el-table-column
-                      label="银行账号"
-                      align="center"
-                      prop="bankNo"
-                      width="200"
-                    />
-                    <el-table-column
-                      label="开户行"
-                      align="center"
-                      prop="bankName"
-                      width="200"
-                    />
+                    <el-table-column label="银行账号" align="center" prop="bankNo" width="200" />
+                    <el-table-column label="开户行" align="center" prop="bankName" width="200" />
                     <el-table-column
                       label="公司名称"
                       align="center"
                       prop="companyName"
                       width="200"
                     />
-                    <el-table-column
-                      label="余额"
-                      align="center"
-                      prop="amount"
-                      width="200"
-                    />
+                    <el-table-column label="余额" align="center" prop="amount" width="200" />
                   </template>
                 </SearchOption>
               </el-col>
@@ -548,27 +396,15 @@
         <!--        如果是冲抵货款 才要选择对方的公司类型 而如果是其他类型 不需要选择 直接填充-->
         <el-row v-if="cashType === CASH_TYPE.OFF_SETTING">
           <el-form-item label="支出方类型">
-            <el-radio v-model="form.targetCompanyType" label="客户">
-              客户
-            </el-radio>
-            <el-radio v-model="form.targetCompanyType" label="供应商">
-              供应商
-            </el-radio>
-            <el-radio v-model="form.targetCompanyType" label="司机">
-              司机
-            </el-radio>
-            <el-radio v-model="form.targetCompanyType" label="己方公司">
-              己方公司
-            </el-radio>
+            <el-radio v-model="form.targetCompanyType" label="客户">客户</el-radio>
+            <el-radio v-model="form.targetCompanyType" label="供应商">供应商</el-radio>
+            <el-radio v-model="form.targetCompanyType" label="司机">司机</el-radio>
+            <el-radio v-model="form.targetCompanyType" label="己方公司">己方公司</el-radio>
           </el-form-item>
           <el-form-item label="支出方">
             <el-row>
               <el-col :span="14">
-                <el-input
-                  v-model="targetName"
-                  type="text"
-                  placeholder="请输入支出方"
-                />
+                <el-input v-model="targetName" type="text" placeholder="请输入支出方" />
               </el-col>
               <!--              如果是司机-->
               <el-col v-if="form.targetCompanyType === '司机'" :span="4">
@@ -582,34 +418,15 @@
                   @commitBack="handleCommitBackDriver"
                 >
                   <template #table-columns>
-                    <el-table-column
-                      label="司机姓名"
-                      align="center"
-                      prop="driver"
-                    />
-                    <el-table-column
-                      label="司机电话"
-                      align="center"
-                      prop="tel"
-                    />
-                    <el-table-column
-                      label="账号类型"
-                      align="center"
-                      prop="acountsType"
-                    />
-                    <el-table-column
-                      label="运输类型"
-                      align="center"
-                      prop="carType"
-                    />
+                    <el-table-column label="司机姓名" align="center" prop="driver" />
+                    <el-table-column label="司机电话" align="center" prop="tel" />
+                    <el-table-column label="账号类型" align="center" prop="acountsType" />
+                    <el-table-column label="运输类型" align="center" prop="carType" />
                   </template>
                 </SearchOption>
               </el-col>
               <!--              如果是己方公司-->
-              <el-col
-                v-else-if="form.targetCompanyType === '己方公司'"
-                :span="4"
-              >
+              <el-col v-else-if="form.targetCompanyType === '己方公司'" :span="4">
                 <SearchOption
                   :limit-info="{ acountsType: form.targetCompanyType }"
                   :get-data="listBankAccount"
@@ -620,36 +437,12 @@
                   @commitBack="handleCommitBackSelfAccount"
                 >
                   <template #table-columns>
-                    <el-table-column
-                      label="账户类型"
-                      align="center"
-                      prop="acountsType"
-                    />
-                    <el-table-column
-                      label="显示名称"
-                      align="center"
-                      prop="displayName"
-                    />
-                    <el-table-column
-                      label="开户名称(户名)"
-                      align="center"
-                      prop="acountsName"
-                    />
-                    <el-table-column
-                      label="账号(银行账号)"
-                      align="center"
-                      prop="bankNo"
-                    />
-                    <el-table-column
-                      label="开户行"
-                      align="center"
-                      prop="bankName"
-                    />
-                    <el-table-column
-                      label="公司名称"
-                      align="center"
-                      prop="companyName"
-                    />
+                    <el-table-column label="账户类型" align="center" prop="acountsType" />
+                    <el-table-column label="显示名称" align="center" prop="displayName" />
+                    <el-table-column label="开户名称(户名)" align="center" prop="acountsName" />
+                    <el-table-column label="账号(银行账号)" align="center" prop="bankNo" />
+                    <el-table-column label="开户行" align="center" prop="bankName" />
+                    <el-table-column label="公司名称" align="center" prop="companyName" />
                   </template>
                 </SearchOption>
               </el-col>
@@ -665,36 +458,12 @@
                   @commitBack="handleCommitBackCompanyPay"
                 >
                   <template #table-columns>
-                    <el-table-column
-                      label="公司名称"
-                      align="center"
-                      prop="companyName"
-                    />
-                    <el-table-column
-                      label="公司类型"
-                      align="center"
-                      prop="companyType"
-                    />
-                    <el-table-column
-                      label="老板姓名"
-                      align="center"
-                      prop="leader"
-                    />
-                    <el-table-column
-                      label="老板电话"
-                      align="center"
-                      prop="leaderTel"
-                    />
-                    <el-table-column
-                      label="区域"
-                      align="center"
-                      prop="region"
-                    />
-                    <el-table-column
-                      label="销售经理"
-                      align="center"
-                      prop="salesManager"
-                    />
+                    <el-table-column label="公司名称" align="center" prop="companyName" />
+                    <el-table-column label="公司类型" align="center" prop="companyType" />
+                    <el-table-column label="老板姓名" align="center" prop="leader" />
+                    <el-table-column label="老板电话" align="center" prop="leaderTel" />
+                    <el-table-column label="区域" align="center" prop="region" />
+                    <el-table-column label="销售经理" align="center" prop="salesManager" />
                   </template>
                 </SearchOption>
               </el-col>
@@ -715,9 +484,7 @@
             <el-col :span="14">
               <el-input
                 v-model="form.amount"
-                :placeholder="
-                  cashType === CASH_TYPE.TRANSFER ? '转账金额' : '冲抵金额'
-                "
+                :placeholder="cashType === CASH_TYPE.TRANSFER ? '转账金额' : '冲抵金额'"
                 type="number"
               />
             </el-col>
@@ -740,8 +507,8 @@
         </el-form-item>
       </el-form>
       <div slot="footer" class="dialog-footer">
-        <el-button type="primary" @click="submitForm"> 确 定 </el-button>
-        <el-button @click="cancel"> 取 消 </el-button>
+        <el-button type="primary" @click="submitForm">确 定</el-button>
+        <el-button @click="cancel">取 消</el-button>
       </div>
     </el-dialog>
 
@@ -754,38 +521,34 @@
       width="48%"
     >
       <el-row v-for="(item, index) in checkFileList" :key="index">
-        <el-button
-          type="text"
-          icon="el-icon-document"
-          @click="checkFileItem(item)"
-        >
+        <el-button type="text" icon="el-icon-document" @click="checkFileItem(item)">
           {{ item }}
         </el-button>
       </el-row>
-      <el-button @click="checkAttachmentVisible = false"> 关 闭 </el-button>
+      <el-button @click="checkAttachmentVisible = false">关 闭</el-button>
     </el-dialog>
   </div>
 </template>
 
 <script>
-  import { listRecord, delRecord, addRecord } from '@/api/system/record';
-  import { parseTime } from '../../../utils/ruoyi';
-  import { mixin_printHTML } from '../../dashboard/mixins/print';
-  import { mixin_record_uploadFiles } from '../../dashboard/mixins/record/record_upload';
-  import { listCompany } from '../../../api/system/company';
-  import SearchOption from '../../../components/SearchOption.vue';
-  import { excludeParams } from '../../../api/tool/exclude';
-  import { TableName } from '../../../api/tool/enums';
-  import CheckFiles from '../../../components/CheckFiles.vue';
-  import { mixin_record_fill } from './recordFill';
-  import { CASH_TYPE } from './constrant';
-  import { getRecord, updateRecord } from '../../../api/system/record';
-  import { mixin_checkfile } from '../../dashboard/mixins/checkfiles/mixin_checkfile';
-  import { listBankAccount, transfer } from '../../../api/system/bankAccount';
-  import { listCars } from '@/api/system/cars';
-  import BankType from '@/views/dashboard/components/common/BankType.vue';
-  import { mixin_bankType } from '@/views/dashboard/mixins/common/common_bankType';
-  import { PUBLIC_DICT_TYPE } from '../../../utils/order';
+  import { listCars } from '@/api/system/cars'
+  import { addRecord, delRecord, listRecord } from '@/api/system/record'
+  import BankType from '@/views/dashboard/components/common/BankType.vue'
+  import { mixin_bankType } from '@/views/dashboard/mixins/common/common_bankType'
+  import { listBankAccount, transfer } from '../../../api/system/bankAccount'
+  import { listCompany } from '../../../api/system/company'
+  import { getRecord, updateRecord } from '../../../api/system/record'
+  import { TableName } from '../../../api/tool/enums'
+  import { excludeParams } from '../../../api/tool/exclude'
+  import CheckFiles from '../../../components/CheckFiles.vue'
+  import SearchOption from '../../../components/SearchOption.vue'
+  import { PUBLIC_DICT_TYPE } from '../../../utils/order'
+  import { parseTime } from '../../../utils/ruoyi'
+  import { mixin_checkfile } from '../../dashboard/mixins/checkfiles/mixin_checkfile'
+  import { mixin_printHTML } from '../../dashboard/mixins/print'
+  import { mixin_record_uploadFiles } from '../../dashboard/mixins/record/record_upload'
+  import { CASH_TYPE } from './constrant'
+  import { mixin_record_fill } from './recordFill'
 
   export default {
     name: 'Record',
@@ -800,7 +563,7 @@
       // 通用文件上传下载混入
       mixin_checkfile,
       // 通用银行卡类型选择混入
-      mixin_bankType,
+      mixin_bankType
     ],
     data() {
       return {
@@ -841,48 +604,42 @@
           UserName: null,
           delFlag: null,
           sourceCompanyName: null,
-          targetCompanyName: null,
+          targetCompanyName: null
         },
         // 表单参数
         form: {},
         // 表单校验
         rules: {
-          transactionTime: [
-            { required: true, message: '交易时间不能为空', trigger: 'blur' },
-          ],
+          transactionTime: [{ required: true, message: '交易时间不能为空', trigger: 'blur' }],
           supplierId: [
             {
               required: true,
               message: '供应商id(或者说来源方)不能为空',
-              trigger: 'blur',
-            },
+              trigger: 'blur'
+            }
           ],
           customerId: [
             {
               required: true,
               message: '客户id(或者说目的地)不能为空',
-              trigger: 'blur',
-            },
+              trigger: 'blur'
+            }
           ],
           amount: [{ required: true, message: '金额不能为空', trigger: 'blur' }],
-          referenceTableId: [
-            { required: true, message: '对应表id不能为空', trigger: 'blur' },
-          ],
-          referenceTableName: [
-            { required: true, message: '对应表名不能为空', trigger: 'blur' },
-          ],
+          referenceTableId: [{ required: true, message: '对应表id不能为空', trigger: 'blur' }],
+          referenceTableName: [{ required: true, message: '对应表名不能为空', trigger: 'blur' }]
         },
         // 显示隐藏列
         columns: [],
 
         // 冲抵类型 默认为冲抵货款
-        cashType: CASH_TYPE.OFF_SETTING,
-      };
+        cashType: CASH_TYPE.OFF_SETTING
+      }
     },
     // 计算属性
     computed: {
       CASH_TYPE() {
-        return CASH_TYPE;
+        return CASH_TYPE
       },
       /**
        * 显示的源
@@ -892,12 +649,12 @@
       source() {
         // 如果是冲抵货款 那么就是用货款来去冲抵金额
         if (this.cashType === CASH_TYPE.OFF_SETTING) {
-          return '支出方金额';
+          return '支出方金额'
         }
         if (this.cashType === CASH_TYPE.TRANSFER) {
-          return '支出方';
+          return '支出方'
         }
-        return '支出';
+        return '支出'
       },
       /**
        * 显示的去
@@ -906,14 +663,14 @@
        */
       target() {
         if (this.cashType === CASH_TYPE.OFF_SETTING) {
-          return '收入方金额';
+          return '收入方金额'
         }
         if (this.cashType === CASH_TYPE.TRANSFER) {
-          return '收入方';
+          return '收入方'
         }
 
-        return '收入';
-      },
+        return '收入'
+      }
     },
     watch: {
       cashType: {
@@ -922,13 +679,13 @@
          * @param val
          */
         handler() {
-          this.reset();
+          this.reset()
         },
-        immediate: true,
-      },
+        immediate: true
+      }
     },
     created() {
-      this.getList();
+      this.getList()
     },
     methods: {
       listCars,
@@ -939,23 +696,23 @@
       getRecord,
       /** 查询现金记账列表 */
       getList() {
-        this.loading = true;
-        this.queryParams.params = {};
+        this.loading = true
+        this.queryParams.params = {}
         if (this.dateRange != null && this.dateRange != '') {
-          this.queryParams.params['beginTransactionTime'] = this.dateRange[0];
-          this.queryParams.params['endTransactionTime'] = this.dateRange[1];
+          this.queryParams.params['beginTransactionTime'] = this.dateRange[0]
+          this.queryParams.params['endTransactionTime'] = this.dateRange[1]
         }
         listRecord(this.queryParams).then((response) => {
-          this.recordList = response.rows;
-          this.total = response.total;
-          this.loading = false;
-        });
+          this.recordList = response.rows
+          this.total = response.total
+          this.loading = false
+        })
       },
       // 取消按钮
       cancel() {
-        this.open = false;
-        this.reset();
-        this.$refs.uploadFile.clearFileList();
+        this.open = false
+        this.reset()
+        this.$refs.uploadFile.clearFileList()
       },
       // 表单重置
       reset() {
@@ -979,43 +736,43 @@
           targetCompanyType: '客户',
           // 收入方与支付方的银行卡账户类型
           selfBankCardType: null,
-          otherBankType: null,
-        };
+          otherBankType: null
+        }
         // 把展示字段给赋值为null
-        this.sourceName = null;
-        this.targetName = null;
-        this.resetForm('form');
+        this.sourceName = null
+        this.targetName = null
+        this.resetForm('form')
       },
       /** 搜索按钮操作 */
       handleQuery() {
-        this.queryParams.pageNum = 1;
-        this.getList();
+        this.queryParams.pageNum = 1
+        this.getList()
       },
       /** 重置按钮操作 */
       resetQuery() {
-        this.dateRange = [];
-        this.resetForm('queryForm');
-        this.handleQuery();
+        this.dateRange = []
+        this.resetForm('queryForm')
+        this.handleQuery()
       },
       // 多选框选中数据
       handleSelectionChange(selection) {
-        this.ids = selection.map((item) => item.id);
-        this.single = selection.length !== 1;
-        this.multiple = !selection.length;
+        this.ids = selection.map((item) => item.id)
+        this.single = selection.length !== 1
+        this.multiple = !selection.length
       },
       /** 新增按钮操作 */
       handleAdd() {
-        this.reset();
-        this.open = true;
-        this.title = '添加冲抵款';
+        this.reset()
+        this.open = true
+        this.title = '添加冲抵款'
       },
       // 修改操作
       handleUpdate(row) {
         // 根据类型赋值
-        this.reset();
-        const id = row.id || this.ids;
+        this.reset()
+        const id = row.id || this.ids
         // 添加现金记账记录
-        this.handleAddRecord(id);
+        this.handleAddRecord(id)
       },
       /**
        * 添加现金记账记录
@@ -1023,140 +780,140 @@
        */
       handleAddRecord(id) {
         getRecord(id).then((response) => {
-          const data = response.data;
-          console.log('data', data);
+          const data = response.data
+          console.log('data', data)
 
-          this.form = data;
-          this.cashType = data.referenceTableName;
+          this.form = data
+          this.cashType = data.referenceTableName
           this.$nextTick(() => {
             // 公共字段填充逻辑
-            this.sourceName = data.sourceCompanyName;
-            this.targetName = data.targetCompanyName;
-            this.form.sourceId = data.sourceId;
-            this.form.targetId = data.targetId;
-            this.form.referenceTableName = data.referenceTableName;
-            this.form.referenceTableId = data.referenceTableId;
-            this.form.amount = data.amount;
-            this.form.transactionTime = data.transactionTime;
-            this.form.remarks = data.remarks;
+            this.sourceName = data.sourceCompanyName
+            this.targetName = data.targetCompanyName
+            this.form.sourceId = data.sourceId
+            this.form.targetId = data.targetId
+            this.form.referenceTableName = data.referenceTableName
+            this.form.referenceTableId = data.referenceTableId
+            this.form.amount = data.amount
+            this.form.transactionTime = data.transactionTime
+            this.form.remarks = data.remarks
 
             // 根据冲抵类型填充特定字段
             if (this.cashType === CASH_TYPE.OFF_SETTING) {
               // 如果是冲抵货款
-              this.form.targetCompanyType = data.targetCompanyType;
-              this.form.sourceCompanyType = data.sourceCompanyType;
+              this.form.targetCompanyType = data.targetCompanyType
+              this.form.sourceCompanyType = data.sourceCompanyType
             } else {
               // 如果是内部转账
-              this.form.sourceCompanyType = PUBLIC_DICT_TYPE.SELF_COMPANY;
-              this.form.targetCompanyType = PUBLIC_DICT_TYPE.SELF_COMPANY;
+              this.form.sourceCompanyType = PUBLIC_DICT_TYPE.SELF_COMPANY
+              this.form.targetCompanyType = PUBLIC_DICT_TYPE.SELF_COMPANY
             }
-          });
+          })
 
-          this.open = true;
-          this.title = '修改冲抵款';
-        });
+          this.open = true
+          this.title = '修改冲抵款'
+        })
       },
       /** 提交按钮 */
       submitForm() {
         this.$refs['form'].validate((valid) => {
-          if (!valid) return;
+          if (!valid) return
           // 提取公共逻辑
-          this.form = excludeParams(this.form, this.$exclude);
+          this.form = excludeParams(this.form, this.$exclude)
           // 判断是修改还是新增
           if (this.form.id != null) {
-            this.updateRecordInfo();
+            this.updateRecordInfo()
           } else {
-            this.addRecordInfo();
+            this.addRecordInfo()
           }
-        });
+        })
       },
 
       // 修改记录
       updateRecordInfo() {
         updateRecord(this.form).then(() => {
-          this.onSuccess('修改成功');
-        });
+          this.onSuccess('修改成功')
+        })
       },
 
       // 新增记录
       addRecordInfo() {
         if (this.cashType === CASH_TYPE.OFF_SETTING) {
-          this.handleOffsetting();
+          this.handleOffsetting()
         } else {
-          this.handleTransfer();
+          this.handleTransfer()
         }
       },
 
       // 处理冲抵货款逻辑
       handleOffsetting() {
-        this.form.referenceTableName = TableName.OFFSETTING;
-        this.form.referenceTableId = -1;
+        this.form.referenceTableName = TableName.OFFSETTING
+        this.form.referenceTableId = -1
 
         addRecord(this.form).then(() => {
-          this.onSuccess('新增成功', true);
-        });
+          this.onSuccess('新增成功', true)
+        })
       },
 
       // 处理内部转账逻辑
       handleTransfer() {
         // 填充表单的公司类型和转账相关信息
-        this.form.sourceCompanyType = PUBLIC_DICT_TYPE.SELF_COMPANY;
-        this.form.targetCompanyType = PUBLIC_DICT_TYPE.SELF_COMPANY;
+        this.form.sourceCompanyType = PUBLIC_DICT_TYPE.SELF_COMPANY
+        this.form.targetCompanyType = PUBLIC_DICT_TYPE.SELF_COMPANY
         // 填充转账类型表
-        this.form.referenceTableName = CASH_TYPE.TRANSFER;
-        this.form.referenceTableId = -1;
+        this.form.referenceTableName = CASH_TYPE.TRANSFER
+        this.form.referenceTableId = -1
         // 组装转账信息
         const transferBody = {
           fromBankNo: this.eachInfo.source,
           toBankNo: this.eachInfo.target,
           money: this.form.amount,
           selfBankCardType: this.form.selfBankCardType,
-          otherBankCardType: this.form.otherBankCardType,
-        };
+          otherBankCardType: this.form.otherBankCardType
+        }
         // 添加转账信息
         transfer(transferBody).then(() => {
           // 添加现金记账
           addRecord(this.form).then(() => {
-            this.onSuccess('新增成功', true, true);
-          });
-        });
+            this.onSuccess('新增成功', true, true)
+          })
+        })
       },
 
       // 公共成功处理逻辑
       onSuccess(message, resetForm = false, resetEachInfo = false) {
-        this.$modal.msgSuccess(message);
-        this.open = false;
-        this.getList();
-        this.$refs.uploadFile.clearFileList();
+        this.$modal.msgSuccess(message)
+        this.open = false
+        this.getList()
+        this.$refs.uploadFile.clearFileList()
 
-        if (resetForm) this.reset();
-        if (resetEachInfo) this.resetEachInfo();
+        if (resetForm) this.reset()
+        if (resetEachInfo) this.resetEachInfo()
       },
 
       /** 删除按钮操作 */
       handleDelete(row) {
-        const ids = row.id || this.ids;
+        const ids = row.id || this.ids
         this.$modal
           .confirm('是否确认删除现金记账编号为"' + ids + '"的数据项？')
           .then(function () {
-            return delRecord(ids);
+            return delRecord(ids)
           })
           .then(() => {
-            this.getList();
-            this.$modal.msgSuccess('删除成功');
+            this.getList()
+            this.$modal.msgSuccess('删除成功')
           })
-          .catch(() => {});
+          .catch(() => {})
       },
       /** 导出按钮操作 */
       handleExport() {
         this.download(
           'system/record/export',
           {
-            ...this.queryParams,
+            ...this.queryParams
           },
           `record_${new Date().getTime()}.xlsx`
-        );
-      },
-    },
-  };
+        )
+      }
+    }
+  }
 </script>

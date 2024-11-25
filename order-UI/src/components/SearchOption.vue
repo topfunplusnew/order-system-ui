@@ -17,7 +17,7 @@
 
 <!--特别注意 针对某些特殊情况 可以补充字段-->
 <script>
-  import { mixin_search_option } from '../views/dashboard/mixins/search_option/serch_option';
+  import { mixin_search_option } from '../views/dashboard/mixins/search_option/serch_option'
 
   export default {
     name: 'SearchOption',
@@ -26,31 +26,31 @@
       // 弹出框的标题
       title: {
         type: String,
-        default: '标题',
+        default: '标题'
       },
       // 图标信息
       icon: {
         type: String,
-        default: 'el-icon-search',
+        default: 'el-icon-search'
       },
       // 查询条件
       queryInfo: {
         type: String,
-        default: 'name',
+        default: 'name'
       },
       queryName: {
         type: String,
-        default: 'name',
+        default: 'name'
       },
       // 查询标签
       queryLabel: {
         type: String,
-        default: 'name',
+        default: 'name'
       },
       disable: {
         type: Boolean,
-        default: false,
-      },
+        default: false
+      }
     },
     data() {
       return {
@@ -61,75 +61,72 @@
         dialogVisible: false,
         // 加载效果
         loading: false,
-        queryParams: {},
-      };
+        queryParams: {}
+      }
     },
 
     computed: {
       query: {
         set(val) {
-          this.$emit('update:queryName', val);
+          this.$emit('update:queryName', val)
         },
         get() {
-          return this.queryName;
-        },
-      },
+          return this.queryName
+        }
+      }
     },
     watch: {
       query: {
         handler() {
-          var queryParams = Object.create({}); // 创建一个代理对象
+          var queryParams = Object.create({}) // 创建一个代理对象
           // 传入的queryInfo是需要查询的字段名 queryName绑定的是需要查找的变量
           Object.defineProperty(queryParams, this.queryInfo, {
             value: this.query,
-            enumerable: true,
-          });
+            enumerable: true
+          })
           // Object.assign只能赋值可枚举属性
-          Object.assign(this.limitInfo, queryParams);
-        },
-      },
+          Object.assign(this.limitInfo, queryParams)
+        }
+      }
     },
     methods: {
       getList() {
         // 启动加载效果
-        this.loading = true;
+        this.loading = true
         // 获取表格数据
-        this.getTableData();
+        this.getTableData()
       },
       // 点击弹窗
       handleCallBack() {
+        // 刷新状态
+        this.tableData = []
         // 获取数据 渲染表格
-        this.getList();
-        this.dialogVisible = true;
+        this.getList()
+        this.dialogVisible = true
       },
       // 点击确认
       commitSomeThing(row) {
-        this.$emit('commitBack', row);
-        this.dialogVisible = false;
+        this.$emit('commitBack', row)
+        this.dialogVisible = false
       },
       // 条件查询
       handleSearchInfo() {
         this.getData({
-          ...this.limitInfo,
+          ...this.limitInfo
         }).then((res) => {
-          this.total = res.total;
-          this.tableData = res.rows;
-          this.loading = false;
-        });
-      },
-    },
-  };
+          this.total = res.total
+          this.tableData = res.rows
+          this.loading = false
+        })
+      }
+    }
+  }
 </script>
 
 <template>
   <div>
     <!--    按钮-->
-    <el-button
-      size="mini"
-      :icon="icon"
-      type="primary"
-      @click="handleCallBack"
-    ></el-button>
+    <el-button size="mini" :icon="icon" type="primary" @click="handleCallBack"></el-button>
     <!--    弹窗-->
     <el-dialog
       :close-on-click-modal="false"
@@ -156,13 +153,11 @@
               ></el-input>
             </el-col>
             <el-col :span="4">
-              <el-button type="primary" size="mini" @click="handleSearchInfo"
-              >搜索</el-button
-              >
+              <el-button type="primary" size="mini" @click="handleSearchInfo">搜索</el-button>
             </el-col>
           </el-row>
         </div>
-        <el-table v-loading="loading" :data="tableData" size="mini">
+        <el-table :key="tableData.length" v-loading="loading" :data="tableData" size="mini">
           <!--   这里给表格的数据行-->
           <slot name="table-columns" :tableData="tableData"></slot>
           <!--          点击确认的地方-->
@@ -173,7 +168,8 @@
                 size="small"
                 :disabled="disable"
                 @click="commitSomeThing(scope.row)"
-              >确认
+              >
+                确认
               </el-button>
             </template>
           </el-table-column>
@@ -188,9 +184,7 @@
       </el-row>
       <span slot="footer" class="dialog-footer">
         <el-button @click="dialogVisible = false">取 消</el-button>
-        <el-button type="primary" @click="dialogVisible = false"
-        >确 定</el-button
-        >
+        <el-button type="primary" @click="dialogVisible = false">确 定</el-button>
       </span>
     </el-dialog>
   </div>

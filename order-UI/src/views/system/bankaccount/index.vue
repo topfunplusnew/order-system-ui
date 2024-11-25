@@ -811,7 +811,7 @@
             // 如果id不为空 那么就是修改操作
             if (this.form.id != null) {
               this.form = excludeParams(this.form, this.$exclude)
-              updateBankAccount(this.form).then((response) => {
+              updateBankAccount(this.form).then(() => {
                 this.$modal.msgSuccess('修改成功')
                 this.open = false
                 this.getList()
@@ -833,7 +833,7 @@
                 }
               }
               // 添加银行卡信息
-              addBankAccount(this.form).then((response) => {
+              addBankAccount(this.form).then(() => {
                 this.$modal.msgSuccess('新增成功')
                 this.open = false
                 this.getList()
