@@ -184,14 +184,13 @@
 			<el-table-column
 				align="center"
 				width="200"
-				v-for="(element, index) in bankAccountList[0].cardTypeBalances"
-				:key="element.id"
+				v-for="element in typeList"
+				:key="element"
+				:label="element"
 			>
-				<template slot-scope="scope"
-					>{{ scope.row.cardTypeBalances[index].bankCardType }}-{{
-						scope.row.cardTypeBalances[index].amount
-					}}</template
-				>
+				<template slot-scope="scope">
+					{{ scope.row.cardTypeBalances | handleArray(element) }}
+				</template>
 			</el-table-column>
 			<el-table-column
 				label="银行卡操作"
@@ -650,7 +649,10 @@ export default {
 			multiple: true,
 			showSearch: true,
 			total: 0,
+			// 银行卡列表
 			bankAccountList: [],
+			// 类型列表
+			typeList: [],
 			title: '',
 			open: false,
 			queryParams: {
@@ -828,6 +830,13 @@ export default {
 	mounted() {
 		this.getList();
 	},
+	filters: {
+		// values 为被筛选的数据 prop为自定义传入的属性
+		handleArray(values, prop) {
+			const target = values.filter(item => item.bankCardType === prop);
+			return target.length === 0 ? '未绑定' : target[0].amount;
+		}
+	},
 	methods: {
 		listUser,
 		listCars,
@@ -918,56 +927,11 @@ export default {
 		getList() {
 			this.loading = true;
 			listBankAccount(this.queryParams).then(response => {
-				// Array.from() 将对象数组转为数组
-				// let bankAccounts = Array.from(response.rows);
-
-				this.$nextTick(() => {
-					try {
-						let bankAccounts = JSON.parse(JSON.stringify(response.rows));
-						const newBankAccounts = bankAccounts.map(element => {
-							if (element.cardTypeBalances.length === 2) {
-								return element;
-							}
-
-							if (element.cardTypeBalances.length === 0) {
-								element.cardTypeBalances.push(this.handlePushUntyped());
-								element.cardTypeBalances.push(this.handlePushUntyped());
-								return element;
-							}
-							// 要判断一下 承兑户在前面 现金户在后面
-							if (
-								element.cardTypeBalances.length === 1 &&
-								element.cardTypeBalances.some(
-									el => el.bankCardType === '承兑户'
-								)
-							) {
-								element.cardTypeBalances.push(this.handlePushUntyped()); // 推入到后面保证顺序
-								return element;
-							}
-
-							// 现金户在前面
-							if (
-								element.cardTypeBalances.length === 1 &&
-								element.cardTypeBalances.some(
-									el => el.bankCardType === '现金户'
-								)
-							) {
-								element.cardTypeBalances.unshift(this.handlePushUntyped());
-								return element;
-							}
-
-							return element;
-						});
-						this.bankAccountList = newBankAccounts;
-
-						console.log(this.bankAccountList);
-					} catch (error) {
-						console.log(error);
-					}
-					this.total = response.total;
-					this.loading = false;
-					console.log(this.bankAccountList);
-				});
+				// 先拿到类型列表
+				this.typeList = this.getAllTypes(response.rows);
+				this.bankAccountList = response.rows;
+				this.total = response.total;
+				this.loading = false;
 			});
 		},
 		handlePushUntyped() {
@@ -990,6 +954,7 @@ export default {
 
 			return Array.from(types);
 		},
+
 		// 取消按钮
 		cancel() {
 			this.open = false;
