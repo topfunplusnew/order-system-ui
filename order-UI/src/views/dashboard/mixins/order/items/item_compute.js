@@ -25,7 +25,7 @@ export var mixin_item_compute = {
 			return fix(
 				((this.orderItemInfo.length *
 					this.orderItemInfo.width *
-					this.orderItemInfo.outPieces) /
+					this.orderItemInfo.actualPieces) /
 					1000000) *
 					this.orderItemInfo.paymentUnload +
 					Number(this.orderItemInfo.paymentsWithSundry)
@@ -82,7 +82,7 @@ export var mixin_item_compute = {
 			return fix(
 				(this.orderItemInfo.length *
 					this.orderItemInfo.width *
-					this.orderItemInfo.outPieces *
+					this.orderItemInfo.actualPieces *
 					this.orderItemInfo.paymentUnload) /
 					1000000 +
 					Number(this.orderItemInfo.paymentsWithSundry)
@@ -138,7 +138,7 @@ export var mixin_item_compute = {
 			return fix(
 				(this.orderItemInfo.length *
 					this.orderItemInfo.width *
-					this.orderItemInfo.outPieces *
+					this.orderItemInfo.actualPieces *
 					this.orderItemInfo.paymentUnload) /
 					1000000 +
 					Number(this.orderItemInfo.paymentsWithSundry)
@@ -195,7 +195,7 @@ export var mixin_item_compute = {
 			return fix(
 				(this.orderItemInfo.length *
 					this.orderItemInfo.width *
-					this.orderItemInfo.outPieces *
+					this.orderItemInfo.actualPieces *
 					this.orderItemInfo.paymentUnload) /
 					1000000 +
 					Number(this.orderItemInfo.paymentsWithSundry)

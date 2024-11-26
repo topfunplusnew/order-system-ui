@@ -408,17 +408,17 @@
 </template>
 
 <script>
-import resetPwd from './resetPwd';
 import { getUserProfile } from '@/api/system/user';
-import ShowLabel from '../../../../components/ShowLabel.vue';
+import Treeselect from '@riophae/vue-treeselect';
+import '@riophae/vue-treeselect/dist/vue-treeselect.css';
 import {
 	deptTreeSelect,
 	getUser,
 	updateUser
 } from '../../../../api/system/user';
+import ShowLabel from '../../../../components/ShowLabel.vue';
 import { getToken } from '../../../../utils/auth';
-import Treeselect from '@riophae/vue-treeselect';
-import '@riophae/vue-treeselect/dist/vue-treeselect.css';
+import resetPwd from './resetPwd';
 
 export default {
 	name: 'Profile',
@@ -481,7 +481,7 @@ export default {
 					},
 					{
 						pattern: /^[^<>"'|\\]+$/,
-						message: '不能包含非法字符：< > " \' \\\ |',
+						// message: '不能包含非法字符：< > " \' \\\ |',
 						trigger: 'blur'
 					}
 				],

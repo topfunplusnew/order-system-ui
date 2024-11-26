@@ -298,20 +298,19 @@
 
 <script>
 import {
-	listExWarehouse,
-	getExWarehouse,
-	delExWarehouse,
 	addExWarehouse,
+	delExWarehouse,
+	getExWarehouse,
+	listExWarehouse,
 	updateExWarehouse
 } from '@/api/system/exWarehouse';
 import { listGoodsOrder } from '@/api/system/goodsOrder';
-import TagsItem from '@/components/TagsItem/index.vue';
 import {
 	addInventory,
-	getInventory,
-	listInventory
+	getInventory
 } from '@/api/system/inventory';
 import { excludeParams } from '@/api/tool/exclude';
+import TagsItem from '@/components/TagsItem/index.vue';
 import InventoryForm from '../../dashboard/components/inventory/InventoryForm.vue';
 
 export default {
@@ -427,7 +426,7 @@ export default {
 			}).then(() => {
 				addInventory(
 					excludeParams(this.secondInventoryInfo, this.$exclude)
-				).then(res => {
+				).then(() => {
 					this.$message.success('二次出库成功');
 				});
 			});

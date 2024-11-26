@@ -63,7 +63,7 @@ export default {
 					},
 					{
 						pattern: /^[^<>"'|\\]+$/,
-						message: '不能包含非法字符：< > " \' \\\ |',
+						// message: '不能包含非法字符：< > " \' \\\ |',
 						trigger: 'blur'
 					}
 				],
