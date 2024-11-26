@@ -834,7 +834,7 @@ export default {
 		// values 为被筛选的数据 prop为自定义传入的属性
 		handleArray(values, prop) {
 			const target = values.filter(item => item.bankCardType === prop);
-			return target.length === 0 ? '未绑定' : target[0].amount;
+			return target.length === 0 ? '无数据' : target[0].amount;
 		}
 	},
 	methods: {
