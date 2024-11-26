@@ -179,11 +179,19 @@
 			/>
 
 			<!-- 余额的展示 分为现金户和承兑户的展示 -->
-			<!-- TODO -->
-			<el-table-column label="余额" align="center" prop="amount" width="200">
-				<!-- 因为后端返回的每一个数据的卡的类型不一样所以要做下拉框 -->
-				<template slot="header"> </template>
-				<template slot-scope=""> </template>
+			<!-- bankAccountList需要在data中声明一个默认的属性 cardTypeBalances 不然会报undefined-->
+
+			<el-table-column
+				align="center"
+				width="200"
+				v-for="(element, index) in bankAccountList[0].cardTypeBalances"
+				:key="element.id"
+			>
+				<template slot-scope="scope"
+					>{{ scope.row.cardTypeBalances[index].bankCardType }}-{{
+						scope.row.cardTypeBalances[index].amount
+					}}</template
+				>
 			</el-table-column>
 			<el-table-column
 				label="银行卡操作"
@@ -807,8 +815,7 @@ export default {
 		}
 	},
 	created() {
-		this.getList();
-		this.getCompanyInfo();
+		// this.getList();
 		if (
 			localStorage.getItem('bankaccount-columns') === 'null' ||
 			!localStorage.getItem('bankaccount-columns')
@@ -817,6 +824,9 @@ export default {
 		} else {
 			this.columns = JSON.parse(localStorage.getItem('bankaccount-columns'));
 		}
+	},
+	mounted() {
+		this.getList();
 	},
 	methods: {
 		listUser,
@@ -904,15 +914,81 @@ export default {
 				this.getList();
 			});
 		},
-		/** 查询银行账号列表 */
+		// 查询列表
 		getList() {
 			this.loading = true;
 			listBankAccount(this.queryParams).then(response => {
-				this.bankAccountList = response.rows;
-				console.log(response);
-				this.total = response.total;
-				this.loading = false;
+				// Array.from() 将对象数组转为数组
+				// let bankAccounts = Array.from(response.rows);
+
+				this.$nextTick(() => {
+					try {
+						let bankAccounts = JSON.parse(JSON.stringify(response.rows));
+						const newBankAccounts = bankAccounts.map(element => {
+							if (element.cardTypeBalances.length === 2) {
+								return element;
+							}
+
+							if (element.cardTypeBalances.length === 0) {
+								element.cardTypeBalances.push(this.handlePushUntyped());
+								element.cardTypeBalances.push(this.handlePushUntyped());
+								return element;
+							}
+							// 要判断一下 承兑户在前面 现金户在后面
+							if (
+								element.cardTypeBalances.length === 1 &&
+								element.cardTypeBalances.some(
+									el => el.bankCardType === '承兑户'
+								)
+							) {
+								element.cardTypeBalances.push(this.handlePushUntyped()); // 推入到后面保证顺序
+								return element;
+							}
+
+							// 现金户在前面
+							if (
+								element.cardTypeBalances.length === 1 &&
+								element.cardTypeBalances.some(
+									el => el.bankCardType === '现金户'
+								)
+							) {
+								element.cardTypeBalances.unshift(this.handlePushUntyped());
+								return element;
+							}
+
+							return element;
+						});
+						this.bankAccountList = newBankAccounts;
+
+						console.log(this.bankAccountList);
+					} catch (error) {
+						console.log(error);
+					}
+					this.total = response.total;
+					this.loading = false;
+					console.log(this.bankAccountList);
+				});
 			});
+		},
+		handlePushUntyped() {
+			return {
+				bankCardType: '未指定',
+				amount: 0
+			};
+		},
+		// 获取所有的类型
+		getAllTypes(bankAccounts) {
+			// 收集所有的可能
+			let types = new Set();
+			bankAccounts.forEach(element => {
+				element.cardTypeBalances.forEach(item => {
+					types.add(item.bankCardType);
+				});
+			});
+
+			console.log('所有的类型:', types);
+
+			return Array.from(types);
 		},
 		// 取消按钮
 		cancel() {

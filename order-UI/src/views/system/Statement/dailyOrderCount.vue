@@ -228,8 +228,8 @@ export default {
 						</el-table-column>
 						<!--            年份信息 遍历年份数组-->
 						<el-table-column
-							v-for="(item, index) in handleData(statementList, 0)"
 							v-if="statementList.length !== 0"
+							v-for="(item, index) in handleData(statementList, 0)"
 							:key="index"
 							align="center"
 							:label="item + `年`"
