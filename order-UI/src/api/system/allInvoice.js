@@ -1,4 +1,4 @@
-import request from '@/utils/request'
+import request from '@/utils/request';
 
 /**
  * 查询全部发票
@@ -6,9 +6,9 @@ import request from '@/utils/request'
  * @returns {any}
  */
 export function listInvoiceAll(query) {
-  return request({
-    url: '/system/allinvoice/list',
-    method: 'get',
-    params: query
-  })
+	return request({
+		url: '/system/allinvoice/list',
+		method: 'get',
+		params: query
+	});
 }

@@ -11,25 +11,24 @@ import { getInventory } from '@/api/system/inventory';
 import { getOrderDetail } from '@/api/system/orderDetail';
 
 export function getFunction(tableName) {
-
-  switch (tableName) {
-    case TableName.GOODS_ORDER:
-      return getGoodsOrder;
-    case TableName.PAYMENT:
-      return getPayment;
-    case TableName.INVOICE_IN:
-      return getInvoiceIn;
-    case TableName.INVOICE_OUT:
-      return getInvoiceOut;
-    case TableName.INVOICE_OTHER:
-      return getInvoiceOther;
-    case TableName.OFFSETTING:
-      return getOffsetting;
-    case TableName.REBATE:
-      return getRebate;
-    case TableName.INVENTORY:
-      return getInventory;
-    case TableName.ORDER_DETAIL:
-      return getOrderDetail
-  }
+	switch (tableName) {
+		case TableName.GOODS_ORDER:
+			return getGoodsOrder;
+		case TableName.PAYMENT:
+			return getPayment;
+		case TableName.INVOICE_IN:
+			return getInvoiceIn;
+		case TableName.INVOICE_OUT:
+			return getInvoiceOut;
+		case TableName.INVOICE_OTHER:
+			return getInvoiceOther;
+		case TableName.OFFSETTING:
+			return getOffsetting;
+		case TableName.REBATE:
+			return getRebate;
+		case TableName.INVENTORY:
+			return getInventory;
+		case TableName.ORDER_DETAIL:
+			return getOrderDetail;
+	}
 }

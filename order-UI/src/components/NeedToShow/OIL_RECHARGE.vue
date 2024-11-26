@@ -1,26 +1,34 @@
 <script>
-  export default {
-    name: 'OILRECHARGE',
-    props: {
-      needToShowInfo: {
-        type: Object
-      }
-    }
-  }
+export default {
+	name: 'OILRECHARGE',
+	props: {
+		needToShowInfo: {
+			type: Object
+		}
+	}
+};
 </script>
 
 <template>
-  <div>
-    <el-descriptions title="加油卡充值信息">
-      <el-descriptions-item label="审核状态">{{ needToShowInfo.checkState }}</el-descriptions-item>
-      <el-descriptions-item label="加油卡卡号">{{ needToShowInfo.oilCardNo }}</el-descriptions-item>
-      <el-descriptions-item label="充值类型">{{ needToShowInfo.rechargeType }}</el-descriptions-item>
-      <el-descriptions-item label="充值时间">{{ needToShowInfo.rechargeDate }}</el-descriptions-item>
-      <el-descriptions-item label="充值人员姓名">{{ needToShowInfo.rechargeName }}</el-descriptions-item>
-    </el-descriptions>
-  </div>
+	<div>
+		<el-descriptions title="加油卡充值信息">
+			<el-descriptions-item label="审核状态">{{
+				needToShowInfo.checkState
+			}}</el-descriptions-item>
+			<el-descriptions-item label="加油卡卡号">{{
+				needToShowInfo.oilCardNo
+			}}</el-descriptions-item>
+			<el-descriptions-item label="充值类型">{{
+				needToShowInfo.rechargeType
+			}}</el-descriptions-item>
+			<el-descriptions-item label="充值时间">{{
+				needToShowInfo.rechargeDate
+			}}</el-descriptions-item>
+			<el-descriptions-item label="充值人员姓名">{{
+				needToShowInfo.rechargeName
+			}}</el-descriptions-item>
+		</el-descriptions>
+	</div>
 </template>
 
-<style scoped lang="scss">
-
-</style>
+<style scoped lang="scss"></style>

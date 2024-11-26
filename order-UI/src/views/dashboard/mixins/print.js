@@ -1,13 +1,13 @@
 // 混入
 export var mixin_printHTML = {
-  data: function () {
-    return {}
-  },
-  methods: {
-    printHTML() {
-      const printContent = document.getElementById('printBox').outerHTML;
-      const newWindow = window.open('', '_blank');
-      newWindow.document.write(`
+	data: function () {
+		return {};
+	},
+	methods: {
+		printHTML() {
+			const printContent = document.getElementById('printBox').outerHTML;
+			const newWindow = window.open('', '_blank');
+			newWindow.document.write(`
     <html>
       <head>
         <style>
@@ -21,9 +21,9 @@ export var mixin_printHTML = {
       <body>${printContent}</body>
     </html>
   `);
-      newWindow.document.close();
-      newWindow.print();
-      newWindow.close();
-    },
-  }
-}
+			newWindow.document.close();
+			newWindow.print();
+			newWindow.close();
+		}
+	}
+};

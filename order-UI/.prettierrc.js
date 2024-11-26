@@ -1,21 +1,15 @@
 module.exports = {
-  semi: false, // 禁用分号，适配 ESLint 的 semi: 0
-  singleQuote: true, // 使用单引号，适配 quotes: ['error', 'single']
-  trailingComma: 'none', // 禁用尾随逗号，适配 ESLint 的规则
-  bracketSpacing: true, // 对象大括号内有空格，适配 object-curly-spacing: ['error', 'always']
-  arrowParens: 'always', // 箭头函数参数总是带括号，未明确冲突但更通用
-  htmlWhitespaceSensitivity: 'ignore', // Vue 文件中忽略 HTML 格式空格的敏感性
-  vueIndentScriptAndStyle: true, // Vue 文件中的 `<script>` 和 `<style>` 标签中缩进
-  endOfLine: 'lf', // 使用 LF 换行符，避免跨平台问题
-  printWidth: 100, // 每行代码最大长度
-  tabWidth: 2, // 缩进空格数
-  useTabs: false, // 使用空格而不是 tab 缩进
-  quoteProps: 'as-needed', // 对象属性只在必要时使用引号
-  jsxSingleQuote: false, // JSX 中使用双引号
-  bracketSameLine: false, // HTML 标签的 > 放在最后一行的末尾
-  rangeStart: 0, // 格式化的起始位置
-  rangeEnd: Infinity, // 格式化的结束位置
-  requirePragma: false, // 是否要求文件顶部有特殊注释才格式化
-  insertPragma: false, // 是否在文件顶部插入特殊注释
-  proseWrap: 'preserve' // 是否要换行
-}
+	printWidth: 80, // 一行最多 80 字符(默认80)
+	tabWidth: 2, // 每个tab相当于多少个空格（默认2）
+	useTabs: true, // 是否使用tab进行缩进（默认false）
+	semi: true, // 行尾需要有分号(默认true)
+	singleQuote: true, // 使用单引号（默认false）
+	quoteProps: 'as-needed', // 对象的 key 仅在必要时用引号
+	jsxSingleQuote: false, // jsx 不使用单引号，而使用双引号
+	trailingComma: 'none', // 多行使用拖尾逗号（默认none）
+	bracketSpacing: true, // 在对象，数组括号与文字之间加空格 "{ foo: bar }"（默认true）
+	jsxBracketSameLine: false, // 多行JSX中的>放置在最后一行的结尾，而不是另起一行（默认false）
+	htmlWhitespaceSensitivity: 'css', // 根据显示样式决定 html 要不要折行
+	arrowParens: 'avoid', // 只有一个参数的箭头函数的参数是否带圆括号（默认avoid:添加括号）
+	endOfLine: 'auto' // 行尾换行符
+};

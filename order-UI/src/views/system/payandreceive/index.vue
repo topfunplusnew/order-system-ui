@@ -1,15 +1,11 @@
 <script>
-  export default {
-    name: 'index.vue'
-  }
+export default {
+	name: 'index.vue'
+};
 </script>
 
 <template>
-  <div>
-    客户收付款信息
-  </div>
+	<div>客户收付款信息</div>
 </template>
 
-<style scoped lang="scss">
-
-</style>
+<style scoped lang="scss"></style>

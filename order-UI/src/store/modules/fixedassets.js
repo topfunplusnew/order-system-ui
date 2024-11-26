@@ -2,26 +2,26 @@
 import { listFixedAssets } from '@/api/system/fixedAssets';
 
 const state = {
-  fixedassetsList: []
-}
+	fixedassetsList: []
+};
 
 const mutations = {
-  setFixedassetsList(state, data) {
-    state.fixedassetsList = data
-  }
-}
+	setFixedassetsList(state, data) {
+		state.fixedassetsList = data;
+	}
+};
 
 const actions = {
-  getFixedassetsList({ commit }) {
-    listFixedAssets().then(res => {
-      commit('setFixedassetsList', res.rows)
-    })
-  }
-}
+	getFixedassetsList({ commit }) {
+		listFixedAssets().then(res => {
+			commit('setFixedassetsList', res.rows);
+		});
+	}
+};
 
 export default {
-  namespaced: true,
-  state,
-  mutations,
-  actions
-}
+	namespaced: true,
+	state,
+	mutations,
+	actions
+};

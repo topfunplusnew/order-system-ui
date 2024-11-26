@@ -8,112 +8,117 @@ import { listRecoverMoney } from '@/api/system/recoverMoney';
  * @type {{tempBorrowedMoneyList: *[]}}
  */
 const state = {
-  // 借钱
-  tempBorrowedMoneyList: [],
-  // 贷款还款记录
-  tempRepaymentList: [],
-  // 向外借钱
-  tempLendMoneyList: [],
-  // 资金收回
-  tempRecoverMoneyList: [],
+	// 借钱
+	tempBorrowedMoneyList: [],
+	// 贷款还款记录
+	tempRepaymentList: [],
+	// 向外借钱
+	tempLendMoneyList: [],
+	// 资金收回
+	tempRecoverMoneyList: [],
 
-  // 运费自动填充字段
-  freightFee: 0,
-}
+	// 运费自动填充字段
+	freightFee: 0
+};
 
 const mutations = {
-  // 借钱
-  setTempBorrowedMoneyList(state, tempBorrowedMoneyList) {
-    state.tempBorrowedMoneyList = tempBorrowedMoneyList
-  },
-  // 还款
-  setRepaymentList(state, tempRepaymentList) {
-    state.tempRepaymentList = tempRepaymentList
-  },
-  // 向外借钱
-  setTempLendMoneyList(state, tempLendMoneyList) {
-    state.tempLendMoneyList = tempLendMoneyList
-  },
-  // 资金收回
-  setTempRecoverMoneyList(state, tempRecoverMoneyList) {
-    state.tempRecoverMoneyList = tempRecoverMoneyList
-  },
+	// 借钱
+	setTempBorrowedMoneyList(state, tempBorrowedMoneyList) {
+		state.tempBorrowedMoneyList = tempBorrowedMoneyList;
+	},
+	// 还款
+	setRepaymentList(state, tempRepaymentList) {
+		state.tempRepaymentList = tempRepaymentList;
+	},
+	// 向外借钱
+	setTempLendMoneyList(state, tempLendMoneyList) {
+		state.tempLendMoneyList = tempLendMoneyList;
+	},
+	// 资金收回
+	setTempRecoverMoneyList(state, tempRecoverMoneyList) {
+		state.tempRecoverMoneyList = tempRecoverMoneyList;
+	},
 
-  // 运费填充
-  setFreightFee(state, freightFee) {
-    state.freightFee = freightFee
-  },
-  // 清空状态
-  clearFreightFeeState(state) {
-    state.freightFee = ''
-  }
-}
+	// 运费填充
+	setFreightFee(state, freightFee) {
+		state.freightFee = freightFee;
+	},
+	// 清空状态
+	clearFreightFeeState(state) {
+		state.freightFee = '';
+	}
+};
 
 const actions = {
-  // 获取款临时借列表
-  getTempBorrowedMoneyList({ commit }, payload) {
-    return new Promise((resolve, reject) => {
-      listBorrowedMoney().then(response => {
-        const tempList = response.rows
-        tempList.forEach(item => {
-          item.isEnd = item.isEnd ? '是' : '否'
-        })
-        commit('setTempBorrowedMoneyList', tempList)
-        resolve(response)
-      }).catch(err => {
-        reject(err)
-      })
-    })
-  },
-  // 获取还款信息
-  getRepaymentList({ commit }, payload) {
-    return new Promise((resolve, reject) => {
-      listRepayment().then(response => {
-        const repaymentList = response.rows;
-        commit('setRepaymentList', repaymentList)
-        resolve(response)
-      }).catch(err => {
-        reject(err)
-      })
-    })
-  },
-  // 向外借钱
-  getTempLendMoneyList({ commit }, payload) {
-    return new Promise((resolve, reject) => {
-      listLendMoney().then(response => {
-        const tempLendMoneyList = response.rows
-        commit('setTempLendMoneyList', tempLendMoneyList)
-        resolve(response)
-      }).catch(err => {
-        reject(err)
-      })
-    })
-  },
-  // 资金收回
-  getTempRecoverMoneyList({ commit }, payload) {
-    return new Promise((resolve, reject) => {
-      listRecoverMoney().then(response => {
-        const tempRecoverMoneyList = response.rows
-        commit('setTempRecoverMoneyList', tempRecoverMoneyList)
-        resolve(response)
-      })
-    }
-    )
-  },
+	// 获取款临时借列表
+	getTempBorrowedMoneyList({ commit }, payload) {
+		return new Promise((resolve, reject) => {
+			listBorrowedMoney()
+				.then(response => {
+					const tempList = response.rows;
+					tempList.forEach(item => {
+						item.isEnd = item.isEnd ? '是' : '否';
+					});
+					commit('setTempBorrowedMoneyList', tempList);
+					resolve(response);
+				})
+				.catch(err => {
+					reject(err);
+				});
+		});
+	},
+	// 获取还款信息
+	getRepaymentList({ commit }, payload) {
+		return new Promise((resolve, reject) => {
+			listRepayment()
+				.then(response => {
+					const repaymentList = response.rows;
+					commit('setRepaymentList', repaymentList);
+					resolve(response);
+				})
+				.catch(err => {
+					reject(err);
+				});
+		});
+	},
+	// 向外借钱
+	getTempLendMoneyList({ commit }, payload) {
+		return new Promise((resolve, reject) => {
+			listLendMoney()
+				.then(response => {
+					const tempLendMoneyList = response.rows;
+					commit('setTempLendMoneyList', tempLendMoneyList);
+					resolve(response);
+				})
+				.catch(err => {
+					reject(err);
+				});
+		});
+	},
+	// 资金收回
+	getTempRecoverMoneyList({ commit }, payload) {
+		return new Promise((resolve, reject) => {
+			listRecoverMoney().then(response => {
+				const tempRecoverMoneyList = response.rows;
+				commit('setTempRecoverMoneyList', tempRecoverMoneyList);
+				resolve(response);
+			});
+		});
+	},
 
-  // 填充运费
-  setFreightFree({ commit }, payload) {
-    commit('setFreightFee', payload)
-  },
-  // 清空运费
-  clearFreightFree({ commit }) {
-    commit('clearFreightFeeState')
-  }
-}
+	// 填充运费
+	setFreightFree({ commit }, payload) {
+		commit('setFreightFee', payload);
+	},
+	// 清空运费
+	clearFreightFree({ commit }) {
+		commit('clearFreightFeeState');
+	}
+};
 
 export default {
-  namespaced: true,
-  state,
-  mutations,
-  actions
-}
+	namespaced: true,
+	state,
+	mutations,
+	actions
+};

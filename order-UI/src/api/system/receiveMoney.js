@@ -1,44 +1,44 @@
-import request from '@/utils/request'
+import request from '@/utils/request';
 
 // 查询收款信息列表
 export function listReceiveMoney(query) {
-  return request({
-    url: '/system/receiveMoney/list',
-    method: 'get',
-    params: query
-  })
+	return request({
+		url: '/system/receiveMoney/list',
+		method: 'get',
+		params: query
+	});
 }
 
 // 查询收款信息详细
 export function getReceiveMoney(id) {
-  return request({
-    url: '/system/receiveMoney/' + id,
-    method: 'get'
-  })
+	return request({
+		url: '/system/receiveMoney/' + id,
+		method: 'get'
+	});
 }
 
 // 新增收款信息
 export function addReceiveMoney(data) {
-  return request({
-    url: '/system/receiveMoney',
-    method: 'post',
-    data: data
-  })
+	return request({
+		url: '/system/receiveMoney',
+		method: 'post',
+		data: data
+	});
 }
 
 // 修改收款信息
 export function updateReceiveMoney(data) {
-  return request({
-    url: '/system/receiveMoney',
-    method: 'put',
-    data: data
-  })
+	return request({
+		url: '/system/receiveMoney',
+		method: 'put',
+		data: data
+	});
 }
 
 // 删除收款信息
 export function delReceiveMoney(id) {
-  return request({
-    url: '/system/receiveMoney/' + id,
-    method: 'delete'
-  })
+	return request({
+		url: '/system/receiveMoney/' + id,
+		method: 'delete'
+	});
 }

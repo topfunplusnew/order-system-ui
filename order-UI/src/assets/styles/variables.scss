@@ -1,12 +1,12 @@
 // base color
 $blue: #324157;
-$light-blue: #3A71A8;
-$red: #C03639;
-$pink: #E65D6E;
-$green: #30B08F;
-$tiffany: #4AB7BD;
-$yellow: #FEC171;
-$panGreen: #30B08F;
+$light-blue: #3a71a8;
+$red: #c03639;
+$pink: #e65d6e;
+$green: #30b08f;
+$tiffany: #4ab7bd;
+$yellow: #fec171;
+$panGreen: #30b08f;
 
 // 默认菜单主题风格
 $base-menu-color: #bfcbd9;
@@ -14,7 +14,7 @@ $base-menu-color-active: #f4f4f5;
 $base-menu-background: #304156;
 $base-logo-title-color: #ffffff;
 
-$base-menu-light-color: rgba(0, 0, 0, .70);
+$base-menu-light-color: rgba(0, 0, 0, 0.7);
 $base-menu-light-background: #ffffff;
 $base-logo-light-title-color: #001529;
 
@@ -50,5 +50,5 @@ $base-sidebar-width: 241px;
   subMenuHover: $base-sub-menu-hover;
   sideBarWidth: $base-sidebar-width;
   logoTitleColor: $base-logo-title-color;
-  logoLightTitleColor: $base-logo-light-title-color
+  logoLightTitleColor: $base-logo-light-title-color;
 }

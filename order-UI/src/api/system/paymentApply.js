@@ -1,44 +1,44 @@
-import request from '@/utils/request'
+import request from '@/utils/request';
 
 // 查询付款信息列表
 export function listPaymentApply(query) {
-  return request({
-    url: '/system/paymentApply/list',
-    method: 'get',
-    params: query
-  })
+	return request({
+		url: '/system/paymentApply/list',
+		method: 'get',
+		params: query
+	});
 }
 
 // 查询付款信息详细
 export function getPaymentApply(id) {
-  return request({
-    url: '/system/paymentApply/' + id,
-    method: 'get'
-  })
+	return request({
+		url: '/system/paymentApply/' + id,
+		method: 'get'
+	});
 }
 
 // 新增付款信息
 export function addPaymentApply(data) {
-  return request({
-    url: '/system/paymentApply',
-    method: 'post',
-    data: data
-  })
+	return request({
+		url: '/system/paymentApply',
+		method: 'post',
+		data: data
+	});
 }
 
 // 修改付款信息
 export function updatePaymentApply(data) {
-  return request({
-    url: '/system/paymentApply',
-    method: 'put',
-    data: data
-  })
+	return request({
+		url: '/system/paymentApply',
+		method: 'put',
+		data: data
+	});
 }
 
 // 删除付款信息
 export function delPaymentApply(id) {
-  return request({
-    url: '/system/paymentApply/' + id,
-    method: 'delete'
-  })
+	return request({
+		url: '/system/paymentApply/' + id,
+		method: 'delete'
+	});
 }

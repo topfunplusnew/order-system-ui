@@ -1,48 +1,47 @@
-import request from '@/utils/request'
+import request from '@/utils/request';
 
 // 查询台阶制列表
 export function listSalesstepincentivedetails(query) {
-  return request({
-    url: '/system/salessingorderincentivedetails/list',
-    method: 'get',
-    params: query
-  })
+	return request({
+		url: '/system/salessingorderincentivedetails/list',
+		method: 'get',
+		params: query
+	});
 }
 
 // 查询台阶制详细
 export function getSalesstepincentivedetails(id) {
-  return request({
-    url: '/system/salessingorderincentivedetails/' + id,
-    method: 'get'
-  })
+	return request({
+		url: '/system/salessingorderincentivedetails/' + id,
+		method: 'get'
+	});
 }
 
 // 新增台阶制
 export function addSalesstepincentivedetails(data) {
-  return request({
-    url: '/system/salessingorderincentivedetails',
-    method: 'post',
-    data: data
-  })
+	return request({
+		url: '/system/salessingorderincentivedetails',
+		method: 'post',
+		data: data
+	});
 }
 
 // 修改台阶制
 export function updateSalesstepincentivedetails(data) {
-  return request({
-    url: '/system/salessingorderincentivedetails',
-    method: 'put',
-    data: data
-  })
+	return request({
+		url: '/system/salessingorderincentivedetails',
+		method: 'put',
+		data: data
+	});
 }
 
 // 删除台阶制
 export function delSalesstepincentivedetails(id) {
-  return request({
-    url: '/system/salessingorderincentivedetails/' + id,
-    method: 'delete'
-  })
+	return request({
+		url: '/system/salessingorderincentivedetails/' + id,
+		method: 'delete'
+	});
 }
-
 
 /**
  * import request from '@/utils/request'

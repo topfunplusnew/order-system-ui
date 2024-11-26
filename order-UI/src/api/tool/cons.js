@@ -1,3 +1,3 @@
 export function formatValue(value) {
-  return value === null || value === '' ? '-' : value;
+	return value === null || value === '' ? '-' : value;
 }

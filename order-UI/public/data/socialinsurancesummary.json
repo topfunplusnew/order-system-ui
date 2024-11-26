@@ -155,16 +155,6 @@
       "type": "string"
     }
   },
-  "required": [
-    "total",
-    "rows",
-    "code",
-    "msg"
-  ],
-  "x-apifox-orders": [
-    "total",
-    "rows",
-    "code",
-    "msg"
-  ]
+  "required": ["total", "rows", "code", "msg"],
+  "x-apifox-orders": ["total", "rows", "code", "msg"]
 }

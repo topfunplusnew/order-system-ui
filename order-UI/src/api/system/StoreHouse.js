@@ -1,44 +1,44 @@
-import request from '@/utils/request'
+import request from '@/utils/request';
 
 // 查询库房列表
 export function listStoreHouse(query) {
-  return request({
-    url: '/system/StoreHouse/list',
-    method: 'get',
-    params: query
-  })
+	return request({
+		url: '/system/StoreHouse/list',
+		method: 'get',
+		params: query
+	});
 }
 
 // 查询库房详细
 export function getStoreHouse(id) {
-  return request({
-    url: '/system/StoreHouse/' + id,
-    method: 'get'
-  })
+	return request({
+		url: '/system/StoreHouse/' + id,
+		method: 'get'
+	});
 }
 
 // 新增库房
 export function addStoreHouse(data) {
-  return request({
-    url: '/system/StoreHouse',
-    method: 'post',
-    data: data
-  })
+	return request({
+		url: '/system/StoreHouse',
+		method: 'post',
+		data: data
+	});
 }
 
 // 修改库房
 export function updateStoreHouse(data) {
-  return request({
-    url: '/system/StoreHouse',
-    method: 'put',
-    data: data
-  })
+	return request({
+		url: '/system/StoreHouse',
+		method: 'put',
+		data: data
+	});
 }
 
 // 删除库房
 export function delStoreHouse(id) {
-  return request({
-    url: '/system/StoreHouse/' + id,
-    method: 'delete'
-  })
+	return request({
+		url: '/system/StoreHouse/' + id,
+		method: 'delete'
+	});
 }
