@@ -177,13 +177,14 @@
 				prop="bankName"
 				width="200"
 			/>
-			<el-table-column
-				v-if="columns[5].visible"
-				label="余额"
-				align="center"
-				prop="amount"
-				width="200"
-			/>
+
+			<!-- 余额的展示 分为现金户和承兑户的展示 -->
+			<!-- TODO -->
+			<el-table-column label="余额" align="center" prop="amount" width="200">
+				<!-- 因为后端返回的每一个数据的卡的类型不一样所以要做下拉框 -->
+				<template slot="header"> </template>
+				<template slot-scope=""> </template>
+			</el-table-column>
 			<el-table-column
 				label="银行卡操作"
 				align="center"

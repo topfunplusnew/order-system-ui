@@ -14,6 +14,8 @@ export var mixin_item_addItem = {
 				this.orderItemInfo.freight =
 					Number(this.orderItemInfo.landFreight) +
 					(this.isSea ? Number(this.orderItemInfo.seaFreight) : 0);
+
+				// 根据不同的符号来设置对应的值
 				const taxMapping = {
 					'00': {
 						paymentFactory: this.paymentFactory00,
@@ -58,7 +60,7 @@ export var mixin_item_addItem = {
 		}
 	},
 	methods: {
-		// 添加订单vuex
+		// 添加订单到vuex进行管理 添加的是货物
 		addOrderItem() {
 			this.loading = true;
 			this.$store.commit('order/changeOrderItemStatus', {
@@ -72,27 +74,30 @@ export var mixin_item_addItem = {
 		},
 		// 供应商信息 从供应商发货
 		handleCommitBackCompany(val) {
+			// 重置
 			this.resetOrderItemInfo();
 			this.orderItemInfo.supplierID = val.id; // goodsOrderList->供应商ID
 			this.orderItemInfo.supplier = val.companyName;
 		},
 		// 仓库信息 从仓库发货
 		handleCommitBackInventory(val) {
+			// 重置
 			this.resetOrderItemInfo();
+			// 填充仓库和库存的信息
 			this.orderItemInfo.storeID = val.id; // goodsOrderList ->库存ID
 			this.orderItemInfo.storeHouseID = val.storeHouseid; // goodsOrderList ->库存ID
+			this.orderItemInfo.storeName = val.storeHouseName;
+
+			// 如果有这个变量 那么就赋值为空
 			if (this.orderItemInfo.supplier) {
 				this.orderItemInfo.supplier = null;
 			}
-			this.orderItemInfo.storeName = val.storeHouseName;
+			// 填充货物级别
 			this.orderItemInfo.length = val.length;
 			this.orderItemInfo.height = val.height;
 			this.orderItemInfo.width = val.width;
 			this.orderItemInfo.levelID = val.levelID;
 			this.orderItemInfo.levelName = val.levelName;
-			// 出厂片数让用户自己填
-			this.orderItemInfo.pieces = val.stockNumber;
-			this.currentStockNumber = val.stockNumber; // 暂存
 		},
 		// 产品级别自动填充
 		handleCommitBackProductLevel(val) {
