@@ -7,8 +7,12 @@
       <el-descriptions-item label="客户">{{ orderInfo.customer }}</el-descriptions-item>
       <el-descriptions-item label="销售经理">{{ orderInfo.saleManager }}</el-descriptions-item>
       <el-descriptions-item label="陆运车牌">{{ orderInfo.landCarNo }}</el-descriptions-item>
-      <el-descriptions-item label="陆运司机姓名">{{ orderInfo.landDriverName }}</el-descriptions-item>
-      <el-descriptions-item label="陆运司机电话">{{ orderInfo.landDriverTel }}</el-descriptions-item>
+      <el-descriptions-item label="陆运司机姓名">
+        {{ orderInfo.landDriverName }}
+      </el-descriptions-item>
+      <el-descriptions-item label="陆运司机电话">
+        {{ orderInfo.landDriverTel }}
+      </el-descriptions-item>
       <el-descriptions-item label="柜号">{{ orderInfo.seaCarNo }}</el-descriptions-item>
       <el-descriptions-item label="海运公司">{{ orderInfo.seaDriverName }}</el-descriptions-item>
       <el-descriptions-item label="海运司机电话">{{ orderInfo.seaDriverTel }}</el-descriptions-item>
@@ -28,17 +32,18 @@
     components: { OrderDetailInfo },
     props: {
       // 传递过来的订单信息 要检查一下是否是调整单 如果是 那么就有第二个tab 如果不是那么就 没有
-      orderInfo: {}
+      orderInfo: {
+        type: Object
+      }
     },
     data() {
-      return {};
+      return {}
     },
     computed: {},
     methods: {
       // 每一个组件都要实现这么一个函数 这个函数用来执行相关的业务操作
-      handleProcess() {
-
-      }
+      handleProcess() {},
+      handleReject() {}
     }
   }
 </script>

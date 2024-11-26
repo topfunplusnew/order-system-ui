@@ -692,6 +692,7 @@
                   <el-row v-if="scope.row.landFreight > 0 || scope.row.seaFreight > 0">
                     <el-button
                       v-if="scope.row.landFreight > 0"
+                      :key="scope.row.params.isHaveOrderLandfreight"
                       v-hasPermi="['system:goodsorder:remove']"
                       size="mini"
                       type="warning"
@@ -702,6 +703,7 @@
                     </el-button>
                     <el-button
                       v-if="scope.row.seaFreight > 0"
+                      :key="scope.row.params.isHaveOrderSeafreight"
                       v-hasPermi="['system:goodsorder:remove']"
                       :disabled="scope.row.params.isHaveOrderSeafreight === 'true'"
                       size="mini"

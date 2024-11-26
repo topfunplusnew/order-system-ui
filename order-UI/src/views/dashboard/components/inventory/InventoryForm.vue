@@ -1,9 +1,9 @@
 <script>
-  import SearchOption from '@/components/SearchOption.vue';
-  import { listStoreHouse } from '@/api/system/StoreHouse';
-  import { listCars } from '@/api/system/cars';
-  import { listFleet } from '@/api/system/fleet';
-  import InventoryItem from './InventoryItem.vue';
+  import SearchOption from '@/components/SearchOption.vue'
+  import { listStoreHouse } from '@/api/system/StoreHouse'
+  import { listCars } from '@/api/system/cars'
+  import { listFleet } from '@/api/system/fleet'
+  import InventoryItem from './InventoryItem.vue'
 
   export default {
     name: 'InventoryForm',
@@ -28,16 +28,14 @@
         querySeaCars: '',
         // 海运和陆运
         isLand: false,
-        isSea: false,
+        isSea: false
       }
     },
     computed: {},
     created() {
-      this.resetInventoryInfo();
+      this.resetInventoryInfo()
     },
-    mounted() {
-
-    },
+    mounted() {},
     methods: {
       listFleet,
       listCars,
@@ -78,12 +76,12 @@
       },
 
       // 更新海运司机
-      handleCommitBackSeaCar (value) {
+      handleCommitBackSeaCar(value) {
         this.inventoryInfo.seaCarNo = value.carNo
         this.inventoryInfo.seaDriverName = value.driver
         this.inventoryInfo.seaDriverTel = value.tel
       },
-      handleChangeSeaCar (value) {
+      handleChangeSeaCar(value) {
         this.querySeaCars = value
       },
       resetInventoryInfo() {
@@ -99,8 +97,7 @@
           seaDriverTel: null
         }
       }
-    },
-
+    }
   }
 </script>
 
@@ -152,16 +149,12 @@
           </el-row>
         </el-form-item>
         <el-form-item label="运输方式">
-          <el-checkbox v-model="isLand">
-            陆运
-          </el-checkbox>
-          <el-checkbox v-model="isSea">
-            海运
-          </el-checkbox>
+          <el-checkbox v-model="isLand">陆运</el-checkbox>
+          <el-checkbox v-model="isSea">海运</el-checkbox>
         </el-form-item>
 
         <!--      陆运-->
-        <el-row v-if="isLand" style="margin:20px 0;">
+        <el-row v-if="isLand" style="margin: 20px 0">
           <el-form-item label="车牌">
             <el-row>
               <el-col :span="20">
@@ -242,7 +235,7 @@
           </el-form-item>
         </el-row>
         <!--      海运-->
-        <el-row v-if="isSea" style="margin:10px 0;">
+        <el-row v-if="isSea" style="margin: 10px 0">
           <!--          todo 车牌修改为柜号 且自己输入 不提供自动填充 -->
           <el-form-item label="柜号">
             <el-row>
@@ -257,7 +250,7 @@
               </el-col>
               <el-col :span="4">
                 <SearchOption
-                  :limit-info="{carType:'海运'}"
+                  :limit-info="{ carType: '海运' }"
                   :get-data="listCars"
                   query-label="车牌"
                   query-info="carNo"
@@ -296,21 +289,23 @@
             />
           </el-form-item>
         </el-row>
-        <br>
+        <br />
       </el-card>
     </el-form>
-    <br>
-    <br>
+    <br />
+    <br />
     <!--    货物个体信息-->
     <el-card class="box-card" shadow="hover">
       <div slot="header" class="clearfix">
-        <el-button type="text" style="color: #156fb2" icon="el-icon-notebook-2">
-          货物信息
-        </el-button>
+        <el-button type="text" style="color: #156fb2" icon="el-icon-notebook-2">货物信息</el-button>
       </div>
       <!--      传入库存信息 因为只有一个货物入库 所以只需要更新一个信息-->
-      <InventoryItem ref="inventoryItem" :inventory-info="inventoryInfo" />
+      <InventoryItem
+        ref="inventoryItem"
+        :inventory-info="inventoryInfo"
+        :is-sea="isSea"
+        :is-land="isLand"
+      />
     </el-card>
   </div>
 </template>
-
