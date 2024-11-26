@@ -43,8 +43,13 @@ export default {
 						group-separator=","
 						:precision="2"
 						:value="totalIncludingTax"
-						title="含税货款"
-					></el-statistic>
+					>
+						<template #title>
+							<span style="color: red; font-size: 16px; font-weight: bold"
+								>含税货款</span
+							>
+						</template>
+					</el-statistic>
 				</div>
 			</el-col>
 			<el-col :span="4">
@@ -53,8 +58,13 @@ export default {
 						group-separator=","
 						:precision="2"
 						:value="totalExcludingTax"
-						title="不含税货款"
-					></el-statistic>
+					>
+						<template #title>
+							<span style="color: red; font-size: 16px; font-weight: bold"
+								>不含税货款</span
+							>
+						</template>
+					</el-statistic>
 				</div>
 			</el-col>
 			<el-col :span="4">
@@ -63,8 +73,13 @@ export default {
 						group-separator=","
 						:precision="2"
 						:value="publicAccountInCome"
-						title="公户收款"
-					></el-statistic>
+					>
+						<template #title>
+							<span style="color: red; font-size: 16px; font-weight: bold"
+								>公户收款</span
+							>
+						</template>
+					</el-statistic>
 				</div>
 			</el-col>
 			<el-col :span="4">
@@ -73,8 +88,13 @@ export default {
 						group-separator=","
 						:precision="2"
 						:value="noPublicAccountInCome"
-						title="私户收款"
-					></el-statistic>
+					>
+						<template #title>
+							<span style="color: red; font-size: 16px; font-weight: bold"
+								>私户收款</span
+							>
+						</template>
+					</el-statistic>
 				</div>
 			</el-col>
 			<el-col :span="4">
@@ -83,8 +103,13 @@ export default {
 						group-separator=","
 						:precision="2"
 						:value="totalTicketPoints"
-						title="票点收入"
-					></el-statistic>
+					>
+						<template #title>
+							<span style="color: red; font-size: 16px; font-weight: bold"
+								>票点收入</span
+							>
+						</template>
+					</el-statistic>
 				</div>
 			</el-col>
 		</el-row>
