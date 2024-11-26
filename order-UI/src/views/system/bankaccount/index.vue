@@ -934,12 +934,6 @@ export default {
 				this.loading = false;
 			});
 		},
-		handlePushUntyped() {
-			return {
-				bankCardType: '未指定',
-				amount: 0
-			};
-		},
 		// 获取所有的类型
 		getAllTypes(bankAccounts) {
 			// 收集所有的可能
@@ -949,9 +943,6 @@ export default {
 					types.add(item.bankCardType);
 				});
 			});
-
-			console.log('所有的类型:', types);
-
 			return Array.from(types);
 		},
 

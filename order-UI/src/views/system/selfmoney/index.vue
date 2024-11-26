@@ -218,25 +218,6 @@ export default {
 				}
 			}
 		}
-		// 监听type
-		// type: {
-		//   handler(value) {
-		//     this.bankAccountList = JSON.parse(
-		//       localStorage.getItem('bankAccountList')
-		//     )
-
-		//     // 根据账户类型进行筛选
-		//     if (value === '现金户') {
-		//       this.bankAccountList = this.bankAccountList.filter(
-		//         (item) => item.bankCardType === '现金户'
-		//       )
-		//     } else if (value === '承兑') {
-		//       this.bankAccountList = this.bankAccountList.filter(
-		//         (item) => item.bankCardType === '承兑'
-		//       )
-		//     }
-		//   }
-		// }
 	},
 	created() {
 		this.getList();
@@ -244,6 +225,7 @@ export default {
 	methods: {
 		listBankAccount,
 		listCompany,
+
 		getList() {
 			this.loading = true;
 			listBankAccountSelf().then(response => {
