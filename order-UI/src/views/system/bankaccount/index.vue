@@ -761,8 +761,8 @@ export default {
 			bankChangeList: [],
 			currentBankNo: '',
 			bankAcountQuery: {
-				bankAcountTotalPageNum: 10,
-				bankAcountTotalPageSize: 1,
+				bankAcountTotalPageNum: 1,
+				bankAcountTotalPageSize: 10,
 				operateDate: null
 			},
 			bankAcountTotal: 0,
@@ -835,8 +835,8 @@ export default {
 			listBankAccountChange({ selfBankNo: row.bankNo }).then(res => {
 				this.bankChangeList = res.rows;
 				this.bankAcountTotal = res.total;
+				this.bankChangeDialogVisible = true;
 			});
-			this.bankChangeDialogVisible = true;
 		},
 		// 分页的请求
 		getBankAcountChangeList() {

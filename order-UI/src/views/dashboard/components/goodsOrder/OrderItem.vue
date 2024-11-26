@@ -324,7 +324,7 @@ export default {
 					<span class="text-bold">出厂片数</span>
 					<hr />
 					<el-input
-						v-model="orderItemInfo.actualPieces"
+						v-model="orderItemInfo.pieces"
 						type="text"
 						placeholder="请输入出厂片数"
 					/>

@@ -329,41 +329,6 @@ export default {
 			},
 			deep: true,
 			immediate: true
-		},
-		// 出厂片数
-		pieces: {
-			handler() {
-				// 修改片数自动计算
-				if (this.Tax === '00') {
-					this.orderItemInfo.paymentFactory = this.paymentFactory00;
-					this.orderItemInfo.payments = this.payments00;
-					this.orderItemInfo.tonnage = this.tonnage00;
-					this.orderItemInfo.landFreight = this.landFreight00;
-					this.orderItemInfo.profit = this.profit00;
-					this.orderItemInfo.profitNoTax = this.profitNoTax00;
-				} else if (this.Tax === '10') {
-					this.orderItemInfo.paymentFactory = this.paymentFactory10;
-					this.orderItemInfo.payments = this.payments10;
-					this.orderItemInfo.tonnage = this.tonnage10;
-					this.orderItemInfo.landFreight = this.landFreight10;
-					this.orderItemInfo.profit = this.profit10;
-					this.orderItemInfo.profitNoTax = this.profitNoTax10;
-				} else if (this.Tax === '01') {
-					this.orderItemInfo.paymentFactory = this.paymentFactory01;
-					this.orderItemInfo.payments = this.payments01;
-					this.orderItemInfo.tonnage = this.tonnage01;
-					this.orderItemInfo.landFreight = this.landFreight01;
-					this.orderItemInfo.profit = this.profit01;
-					this.orderItemInfo.profitNoTax = this.profitNoTax01;
-				} else {
-					this.orderItemInfo.paymentFactory = this.paymentFactory11;
-					this.orderItemInfo.payments = this.payments11;
-					this.orderItemInfo.tonnage = this.tonnage11;
-					this.orderItemInfo.landFreight = this.landFreight11;
-					this.orderItemInfo.profit = this.profit11;
-					this.orderItemInfo.profitNoTax = this.profitNoTax11;
-				}
-			}
 		}
 	},
 	created() {
@@ -420,11 +385,11 @@ export default {
 				piecesPerPack: 0,
 				packs: 0,
 				price: 0,
-				isIncludeTaxFactory: '0',
+				isIncludeTaxFactory: 0,
 				sundryCost: 0,
 				paymentFactory: 0,
 				paymentUnload: 0,
-				isIncludeTaxSale: '0',
+				isIncludeTaxSale: 0,
 				payments: 0,
 				erro: 0,
 				tonnage: 0,
@@ -620,10 +585,10 @@ export default {
 			<div class="order-item">
 				<span class="text-bold">出厂是否含税</span>
 				<hr />
-				<el-radio v-model="orderItemInfo.isIncludeTaxFactory" label="1"
+				<el-radio v-model="orderItemInfo.isIncludeTaxFactory" :label="1"
 					>是</el-radio
 				>
-				<el-radio v-model="orderItemInfo.isIncludeTaxFactory" label="0"
+				<el-radio v-model="orderItemInfo.isIncludeTaxFactory" :label="0"
 					>否</el-radio
 				>
 			</div>
@@ -666,10 +631,10 @@ export default {
 			<div class="order-item">
 				<span class="text-bold">销售是否含税</span>
 				<hr />
-				<el-radio v-model="orderItemInfo.isIncludeTaxSale" label="1"
+				<el-radio v-model="orderItemInfo.isIncludeTaxSale" :label="1"
 					>是</el-radio
 				>
-				<el-radio v-model="orderItemInfo.isIncludeTaxSale" label="0"
+				<el-radio v-model="orderItemInfo.isIncludeTaxSale" :label="0"
 					>否</el-radio
 				>
 			</div>

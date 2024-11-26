@@ -243,59 +243,6 @@ export var mixin_item_compute = {
 			);
 		}
 	},
-	watch: {
-		// 根据出厂片数自动计算
-		pieces: {
-			handler(val) {
-				// 如果选择的是仓库发货
-				if (this.orderItemInfo.supplierID === null) {
-					if (val > this.currentStockNumber) {
-						this.$message.error('出厂片数不能大于库存量!');
-						this.orderItemInfo.pieces = this.currentStockNumber;
-					} else {
-						// 修改片数自动计算
-						if (
-							this.orderItemInfo.isIncludeTaxFactory === '0' &&
-							this.orderItemInfo.isIncludeTaxSale === '0'
-						) {
-							this.orderItemInfo.paymentFactory = this.paymentFactory00;
-							this.orderItemInfo.payments = this.payments00;
-							this.orderItemInfo.tonnage = this.tonnage00;
-							this.orderItemInfo.landFreight = this.landFreight00;
-							this.orderItemInfo.profit = this.profit00;
-							this.orderItemInfo.profitNoTax = this.profitNoTax00;
-						} else if (
-							this.orderItemInfo.isIncludeTaxFactory === '1' &&
-							this.orderItemInfo.isIncludeTaxSale === '0'
-						) {
-							this.orderItemInfo.paymentFactory = this.paymentFactory10;
-							this.orderItemInfo.payments = this.payments10;
-							this.orderItemInfo.tonnage = this.tonnage10;
-							this.orderItemInfo.landFreight = this.landFreight10;
-							this.orderItemInfo.profit = this.profit10;
-							this.orderItemInfo.profitNoTax = this.profitNoTax10;
-						} else if (
-							this.orderItemInfo.isIncludeTaxFactory === '0' &&
-							this.orderItemInfo.isIncludeTaxSale === '1'
-						) {
-							this.orderItemInfo.paymentFactory = this.paymentFactory01;
-							this.orderItemInfo.payments = this.payments01;
-							this.orderItemInfo.tonnage = this.tonnage01;
-							this.orderItemInfo.landFreight = this.landFreight01;
-							this.orderItemInfo.profit = this.profit01;
-							this.orderItemInfo.profitNoTax = this.profitNoTax01;
-						} else {
-							this.orderItemInfo.paymentFactory = this.paymentFactory11;
-							this.orderItemInfo.payments = this.payments11;
-							this.orderItemInfo.tonnage = this.tonnage11;
-							this.orderItemInfo.landFreight = this.landFreight11;
-							this.orderItemInfo.profit = this.profit11;
-							this.orderItemInfo.profitNoTax = this.profitNoTax11;
-						}
-					}
-				}
-			}
-		}
-	},
+	watch: {},
 	methods: {}
 };
