@@ -270,7 +270,7 @@ export default {
 				// 两边都存在这个属性
 				if (item[key] && this.queryParams[key]) {
 					// 存在 且不相等
-					if (item[key] !== this.queryParams[key]) {
+					if (item[key].indexOf(this.queryParams[key]) === -1) {
 						flag = false;
 					}
 				}
@@ -279,6 +279,7 @@ export default {
 		},
 		/** 重置按钮操作 */
 		resetQuery() {
+			this.getList();
 			this.resetForm('queryForm');
 			this.handleQuery();
 		}
