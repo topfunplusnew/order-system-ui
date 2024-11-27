@@ -67,11 +67,14 @@ export default {
 						// 放入tableData中 el-table中tableData的数据结构为 [{},{},{}] 对象中每一个属性对应一个column 的prop
 						this.tableData.push(utils.sheet_to_json(workbook.Sheets[item]));
 					});
+
+					// TODO 这里面包含了三个sheet的表数据 每一个对象是一个excel中的行数据
+					console.log('表格数据', this.tableData);
+					// console.log(this.tableData[1][0]['价税合计'])
 					// 存储vuex中 供给子组件使用
 					this.handleStoreExcel();
 					// 打开选择sheet的弹窗
 					this.dialogVisible = true;
-					// console.log(this.tableData[1][0]['价税合计'])
 					return params;
 					// 重写数据
 				} catch (e) {

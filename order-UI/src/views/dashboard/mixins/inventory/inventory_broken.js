@@ -1,5 +1,5 @@
+import { addExWarehouse } from '../../../../api/system/exWarehouse';
 import { parseTime } from '../../../../utils/ruoyi';
-
 export var mixin_inventory_broken = {
 	data: function () {
 		return {
@@ -24,7 +24,7 @@ export var mixin_inventory_broken = {
 		// 提交货物破损出库
 		submitBreakInvoiceIn() {
 			this.breakInfo.outAmount = this.breakNumber;
-			addExWarehouse(this.breakInfo).then(res => {
+			addExWarehouse(this.breakInfo).then(() => {
 				this.$message.success('货物破损出库成功~');
 			});
 			this.breakInvoiceInVisible = false;
