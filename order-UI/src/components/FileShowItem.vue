@@ -24,12 +24,13 @@ export default {
 		}
 	},
 	methods: {
-		handleUpload({ file, onSuccess, onError, onProgress }) {
+		handleUpload({ file, onProgress }) {
 			this.progress = null;
 			const formData = new FormData();
 			formData.append('file', file);
 
 			// 使用 axios 发起上传请求
+			// eslint-disable-next-line no-undef
 			axios
 				.post(this.baseUrl, formData, {
 					headers: this.headers,
@@ -52,7 +53,7 @@ export default {
 					// 文件上传失败
 				})
 				.catch(err => {
-					onError(err);
+					this.$message.error(err.message);
 				});
 		},
 		// 处理上传进度
@@ -67,7 +68,7 @@ export default {
 	<div>
 		<div class="file-container">
 			<div class="file-icon">
-				<el-icon class="el-icon-plus"> </el-icon>
+				<el-icon class="el-icon-plus"></el-icon>
 			</div>
 			<div class="file-name">
 				<el-upload

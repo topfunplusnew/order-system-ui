@@ -104,14 +104,14 @@ export default {
 				<el-dropdown-menu slot="dropdown">
 					<el-dropdown-item>
 						<el-button size="mini" type="text" @click="uploadFile(path)"
-							>上传附件</el-button
-						>
+							>上传附件
+						</el-button>
 					</el-dropdown-item>
 					<el-dropdown-item>
 						<div v-if="path">
 							<el-button size="mini" type="text" @click="checkFiles(path)"
-								>查看附件</el-button
-							>
+								>查看附件
+							</el-button>
 						</div>
 					</el-dropdown-item>
 				</el-dropdown-menu>

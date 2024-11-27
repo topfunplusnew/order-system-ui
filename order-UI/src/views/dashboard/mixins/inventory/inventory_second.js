@@ -1,5 +1,5 @@
-import { parseTime } from '../../../../utils/ruoyi';
 import { addExWarehouse } from '@/api/system/exWarehouse';
+import { parseTime } from '../../../../utils/ruoyi';
 
 export var mixin_inventory_second = {
 	data: function () {
@@ -26,10 +26,11 @@ export var mixin_inventory_second = {
 		// 提交二次出库信息
 		submitSecondInvoiceIn() {
 			this.secondInfo.outAmount = this.secondNumber;
-			addExWarehouse(this.secondInfo).then(res => {
+			addExWarehouse(this.secondInfo).then(() => {
 				this.$message.success('加工后出库成功~');
+				this.secondInvoiceInVisible = false;
+				this.getList();
 			});
-			this.secondInvoiceInVisible = false;
 		}
 	}
 };

@@ -283,7 +283,6 @@ export default {
 				// 如果不是仓库发货
 				// 是否含税 厂家否 客户否
 				if (this.Tax === '00') {
-					this.orderItemInfo.erro = 0.8;
 					this.orderItemInfo.paymentFactory = this.paymentFactory00;
 					this.orderItemInfo.payments = this.payments00;
 					this.orderItemInfo.tonnage = this.tonnage00;
@@ -292,7 +291,6 @@ export default {
 					this.orderItemInfo.profitNoTax = this.profitNoTax00;
 				} else if (this.Tax === '10') {
 					// 误差为0
-					this.orderItemInfo.erro = 0;
 					this.orderItemInfo.paymentFactory = this.paymentFactory10;
 					this.orderItemInfo.payments = this.payments10;
 					this.orderItemInfo.tonnage = this.tonnage10;
@@ -301,7 +299,6 @@ export default {
 					this.orderItemInfo.profitNoTax = this.profitNoTax10;
 				} else if (this.Tax === '01') {
 					// 误差为0
-					this.orderItemInfo.erro = 0;
 					this.orderItemInfo.paymentFactory = this.paymentFactory01;
 					this.orderItemInfo.payments = this.payments01;
 					this.orderItemInfo.tonnage = this.tonnage01;
@@ -310,7 +307,6 @@ export default {
 					this.orderItemInfo.profitNoTax = this.profitNoTax01;
 				} else {
 					// 误差为0
-					this.orderItemInfo.erro = 0;
 					this.orderItemInfo.paymentFactory = this.paymentFactory11;
 					this.orderItemInfo.payments = this.payments11;
 					this.orderItemInfo.tonnage = this.tonnage11;
@@ -319,7 +315,7 @@ export default {
 					this.orderItemInfo.profitNoTax = this.profitNoTax11;
 				}
 				// 运费自动填充
-				if (this.seaFreight === undefined) {
+				if (!this.orderItemInfo.seaFreight) {
 					this.orderItemInfo.freight = Number(this.orderItemInfo.landFreight);
 				} else {
 					this.orderItemInfo.freight =
@@ -354,6 +350,8 @@ export default {
 			this.orderItemInfo.length = val.length;
 			this.orderItemInfo.width = val.width;
 			this.orderItemInfo.levelNo = val.levelNo;
+			// 填充误差吨位差
+			this.orderItemInfo.erro = val.tonnage;
 		},
 		handleUpdateQueryNameStore(val) {
 			this.queryStore = val;

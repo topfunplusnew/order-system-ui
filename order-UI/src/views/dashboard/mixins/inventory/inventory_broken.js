@@ -26,8 +26,9 @@ export var mixin_inventory_broken = {
 			this.breakInfo.outAmount = this.breakNumber;
 			addExWarehouse(this.breakInfo).then(() => {
 				this.$message.success('货物破损出库成功~');
+				this.breakInvoiceInVisible = false;
+				this.getList();
 			});
-			this.breakInvoiceInVisible = false;
 		}
 	}
 };
