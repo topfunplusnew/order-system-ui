@@ -42,7 +42,9 @@ export default {
 			// 获取上传的第一个文件
 			const file = e.target.files[0];
 			// 校验一下文件类型
-			this.checkFileType(file);
+			if (!this.checkFileType(file)) {
+				return false;
+			}
 			// fileReader读取文件
 			const fileReader = new FileReader();
 			// FileReader 接口的 load 事件在成功读取文件时触发。
@@ -93,6 +95,7 @@ export default {
 				this.$modal.msgError(`文件格式不正确, 请上传xls/xlsx格式文件!`);
 				return false;
 			}
+			return true;
 		},
 		// 清除状态
 		clearState() {
