@@ -812,24 +812,29 @@
 			:show-close="false"
 			title="二次出库"
 			:visible.sync="secondInvoiceInVisible"
-			width="50%"
+			width="30%"
 			append-to-body
 		>
 			<div slot="footer" class="dialog-footer">
 				<el-row :gutter="5">
-					<el-col :span="4">
+					<el-col :span="8">
 						<span style="font-weight: bolder; line-height: 30px"
 							>请输入出库数量</span
 						>
 					</el-col>
 					<el-col :span="10">
-						<el-input v-model="secondNumber" placeholder="请输入出库数量" />
+						<el-input
+							type="number"
+							v-model="secondNumber"
+							placeholder="请输入出库数量"
+						/>
 					</el-col>
 				</el-row>
+				<br />
 				<el-button type="primary" @click="submitSecondInvoiceIn"
 					>确 定</el-button
 				>
-				<el-button @click="secondInvoiceInVisible = false">取 消</el-button>
+				<el-button @click="secondInvoiceInVisible = false"> 取 消</el-button>
 			</div>
 		</el-dialog>
 
@@ -839,20 +844,25 @@
 			:show-close="false"
 			title="货物破损出库"
 			:visible.sync="breakInvoiceInVisible"
-			width="50%"
+			width="30%"
 			append-to-body
 		>
 			<div slot="footer" class="dialog-footer">
 				<el-row :gutter="5">
-					<el-col :span="4">
+					<el-col :span="8">
 						<span style="font-weight: bolder; line-height: 30px"
 							>请输入出库数量</span
 						>
 					</el-col>
 					<el-col :span="10">
-						<el-input v-model="breakNumber" placeholder="请输入出库数量" />
+						<el-input
+							type="number"
+							v-model="breakNumber"
+							placeholder="请输入出库数量"
+						/>
 					</el-col>
 				</el-row>
+				<br />
 				<el-button type="primary" @click="submitBreakInvoiceIn"
 					>确 定</el-button
 				>
