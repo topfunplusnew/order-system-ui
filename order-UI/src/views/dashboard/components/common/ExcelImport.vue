@@ -39,14 +39,24 @@ export default {
 		 * @param e Event
 		 */
 		onChange(e) {
-			// 获取上传的第一个文件
-			const file = e.target.files[0];
-			// 校验一下文件类型
-			if (!this.checkFileType(file)) {
+			// 清除状态
+			this.handleClearExcel();
+
+			if (e.target.files.length === 0) {
+				this.$message.warning('请选择文件,当前没有选择任何文件!!');
 				return false;
 			}
+			// 获取上传的第一个文件
+			const file = e.target.files[0];
+
+			if (!this.checkFileType(file)) {
+				this.$message.warning(`文件格式不正确, 请上传xls/xlsx格式文件!`);
+				return false;
+			}
+
 			// fileReader读取文件
 			const fileReader = new FileReader();
+
 			// FileReader 接口的 load 事件在成功读取文件时触发。
 			fileReader.onload = ev => {
 				try {
@@ -54,30 +64,18 @@ export default {
 					const data = ev.target.result;
 					// read是xlsx库提供的一个方法 返回一个workbook工作铺对象 里面包含sheets对象，sheet对象中包含表名，表数据等
 					const workbook = read(data, { type: 'binary' });
-					// 参数数组
-					const params = [];
 					// 取对应表生成json表格内容  SheetNames 是所有的 Sheet item就是每一个Sheet
 					workbook.SheetNames.forEach(item => {
 						// 填充到sheetList中
 						this.sheetList.push(item);
-						// 添加到params这个map中
-						params.push({
-							name: item,
-							// 将workbook中的某个sheet转为js数组
-							dataList: utils.sheet_to_json(workbook.Sheets[item])
-						});
 						// 放入tableData中 el-table中tableData的数据结构为 [{},{},{}] 对象中每一个属性对应一个column 的prop
 						this.tableData.push(utils.sheet_to_json(workbook.Sheets[item]));
 					});
-
-					// TODO 这里面包含了三个sheet的表数据 每一个对象是一个excel中的行数据
-					console.log('表格数据', this.tableData);
-					// console.log(this.tableData[1][0]['价税合计'])
 					// 存储vuex中 供给子组件使用
-					this.handleStoreExcel();
+					this.handleStoreExcel(this.tableData);
 					// 打开选择sheet的弹窗
 					this.dialogVisible = true;
-					return params;
+					return true;
 					// 重写数据
 				} catch (e) {
 					console.log('读取excel发生异常:' + e);
@@ -90,12 +88,7 @@ export default {
 		checkFileType(file) {
 			const fileName = file.name.split('.');
 			const fileExt = fileName[fileName.length - 1];
-			const isTypeOk = ['xls', 'xlsx'].indexOf(fileExt) >= 0;
-			if (!isTypeOk) {
-				this.$modal.msgError(`文件格式不正确, 请上传xls/xlsx格式文件!`);
-				return false;
-			}
-			return true;
+			return ['xls', 'xlsx'].indexOf(fileExt) >= 0;
 		},
 		// 清除状态
 		clearState() {
@@ -112,8 +105,8 @@ export default {
 		<div>
 			<div class="custom-file-input">
 				<el-button size="mini" type="success" @click="handleUpload"
-					>excel批量开票</el-button
-				>
+					>excel批量开票
+				</el-button>
 				<input
 					ref="fileInput"
 					type="file"

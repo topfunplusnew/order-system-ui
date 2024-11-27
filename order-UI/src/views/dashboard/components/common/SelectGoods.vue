@@ -123,7 +123,7 @@ export default {
 			border
 			:data="goodsOrderList"
 			virtual-scroll
-			max-height="750"
+			max-height="850"
 			size="mini"
 			:cell-style="
 				() => {

@@ -1,9 +1,9 @@
 export var mixin_excel_server = {
 	methods: {
 		// 将读取的数据存储到vuex中
-		handleStoreExcel() {
+		handleStoreExcel(data) {
 			// 把读取的tableData存储到vuex中
-			this.$store.dispatch('excel/setExcelData', this.tableData);
+			this.$store.dispatch('excel/setExcelData', data);
 		},
 		// 清除读取的数据
 		handleClearExcel() {
