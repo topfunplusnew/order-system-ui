@@ -3,7 +3,8 @@ const state = {
 	excelData: [],
 	// 打开的批量开票页面 已经选中的订单列表
 	selectedOrders: [],
-
+	// todo 选中的批量开票的列表 需要对订单列表进行处理
+	selectedInvoiceList: [],
 	// 左侧选择的公司信息
 	companyList: [],
 	// 购买方临时信息存储 类型为数组

@@ -315,8 +315,8 @@ export default {
 						</el-card>
 					</el-col>
 					<!--            展示已经开票的信息-->
-					<el-col :span="4">
-						<InvoiceBody :invoice-in="{}" />
+					<el-col :span="5">
+						<InvoiceBody />
 					</el-col>
 				</el-row>
 				<span slot="footer" class="dialog-footer">
