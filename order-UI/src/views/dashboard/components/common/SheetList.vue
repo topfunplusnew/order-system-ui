@@ -9,17 +9,17 @@ import SelectGoods from '@/views/dashboard/components/common/SelectGoods.vue';
 import SheetItem from '@/views/dashboard/components/common/SheetItem.vue';
 import { mixin_excel_server } from '@/views/dashboard/components/common/utils/excelServer';
 import { mapGetters } from 'vuex';
-import EllipsisText from '@/views/dashboard/components/common/EllipsisText.vue';
 import { getCompany } from '@/api/system/company';
 import CompanyInformation from '@/views/dashboard/components/common/CompanyInformation.vue';
 import InvoiceBody from '@/views/dashboard/components/common/InvoiceBody.vue';
+import CompanysList from '@/views/dashboard/components/common/CompanysList.vue';
 
 export default {
 	name: 'SheetList',
 	components: {
+		CompanysList,
 		InvoiceBody,
 		CompanyInformation,
-		EllipsisText,
 		SelectGoods,
 		SheetItem
 	},
@@ -82,28 +82,51 @@ export default {
 		 * 对某一个excel点击打开的函数
 		 * @param excelItem 选中的某一个excel 例:信息汇总表
 		 * @param excelIndex 选中的excel的索引 例:0
-		 * fixme
 		 */
 		handleInvoiceAll(excelItem, excelIndex) {
+			let arr = [];
+			let purchaseMap = new Map();
+			let sellerMap = new Map();
+
 			// 读取excel的数据
 			const excelInfo = this.handleReadExcel();
 
-			const purchaseMap = new Map();
 			// 需要销售方id 销售方的名称和类型 以及购买方id  购买方类型 和名称
-			excelInfo[excelIndex]
-				.map(item => {
-					return this.mapperParams(item); // 映射关系
-				})
-				.forEach(element => {
-					this.purchaseHandler(element, purchaseMap);
-				});
-			// 存储购买方变量
+			arr = excelInfo[excelIndex].map(item => {
+				return this.mapperParams(item); // 映射关系
+			});
+
+			let ok = arr.every(item => this.purchaseHandler(item));
+
+			if (!ok) {
+				this.$message.error('存在订单中存在购买方和销方的信息，请检查');
+			}
+
+			// 对数组每一个进行遍历 收集元素
+			arr.forEach(element => {
+				const isPurchase = element.sellerId === 0; // 判断是否是购买方
+
+				const map = isPurchase ? purchaseMap : sellerMap; // 根据判断选择 Map
+				const id = isPurchase ? element.purchaseId : element.sellerId; // 购买方或销售方的 id
+				const name = isPurchase ? element.purchaseName : element.sellerName; // 购买方或销售方的 name
+				const type = isPurchase ? element.purchaseType : element.sellerType; // 购买方或销售方的 type
+
+				// 确保 id 不为 undefined 或空值
+				if (id == null || id === '') {
+					return; // 跳过当前元素
+				}
+				// 获取当前 Map 中的记录，如果存在则累加总数，不存在则直接插入
+				const existing = map.get(id);
+				if (existing) {
+					existing.total += element.total; // 累加 total
+				} else {
+					map.set(id, { id, type, name, total: element.total }); // 插入新的记录
+				}
+			});
+
 			this.purchaseTotalInfo = Array.from(purchaseMap.values());
-
-			console.log('供应商统计', this.purchaseTotalInfo);
-
-			// 存储到暂存 方便后面使用
-			this.$store.dispatch('excel/setTempData', this.purchaseTotalInfo);
+			this.sellerTotalInfo = Array.from(sellerMap.values());
+			// this.$store.dispatch('excel/setTempData', this.purchaseTotalInfo);
 			// 打开弹窗
 			this.invoiceAllVisible = true;
 		},
@@ -119,27 +142,18 @@ export default {
 				total: item['价税合计']
 			};
 		},
-		// 对供应商进行统计的函数
-		purchaseHandler(item, purchaseMap) {
-			// 如果没有这个供应商或者客户 那么就返回
-			if (!item.purchaseId) {
-				return;
+		// 对公司进行校验
+		purchaseHandler(item) {
+			// 如果都为0
+			if (!item.purchaseId && !item.sellerId) {
+				return false;
 			}
-			// 如果购买方和销方的id都不为0 那么说明冲突
+			// 如果购买方和销方的id都不为0
 			if (item.purchaseId && item.sellerId) {
-				return;
+				return false;
 			}
-			// 对供应商进行分类统计 放入一个map中
-			if (purchaseMap.has(item.purchaseId)) {
-				// 如果有
-				purchaseMap.set(item.purchaseId, {
-					...item
-				});
-			}
-			// 添加到MAP中
-			purchaseMap.set(item.purchaseId, {
-				...item
-			});
+
+			return !(item.purchaseId < 0 || item.sellerId < 0);
 		},
 		// 弹窗左侧供应商列表的筛选
 		handleFilter() {
@@ -158,7 +172,6 @@ export default {
 
 		//查看某一个公司的信息
 		handleCheck(row) {
-			console.log(row);
 			this.supplierInfo.supplierLoading = true;
 			getCompany(row.id).then(res => {
 				this.supplierInfo = res.data;
@@ -257,89 +270,18 @@ export default {
 											<span class="bold-text">购买方信息</span>
 										</el-divider>
 										<!--                  购买方的信息-->
-										<el-table
-											:data="purchaseTotalInfo"
-											size="mini"
-											:cell-style="
-												() => {
-													return { padding: '2px' };
-												}
-											"
-											style="width: 100%"
-											max-height="850"
-											border
-										>
-											<!--                      多选框-->
-											<el-table-column
-												type="selection"
-												width="55"
-											></el-table-column>
-											<el-table-column prop="id" label="ID"></el-table-column>
-											<el-table-column
-												prop="name"
-												label="购买方公司"
-											></el-table-column>
-											<el-table-column prop="money" label="金额">
-												<template slot-scope="scope">
-													<span class="bold-text">{{ scope.row.money }}</span>
-												</template>
-											</el-table-column>
-											<el-table-column label="供应商信息">
-												<template slot-scope="scope">
-													<el-button
-														size="mini"
-														type="text"
-														@click="handleCheck(scope.row)"
-														>查看
-													</el-button>
-												</template>
-											</el-table-column>
-										</el-table>
-
+										<CompanysList
+											:company-total-info="purchaseTotalInfo"
+											@handleCheck="handleCheck"
+										/>
 										<el-divider>
 											<span class="bold-text">销方信息</span>
 										</el-divider>
 										<!--                  销方的列表-->
-										<el-table
-											:data="purchaseTotalInfo"
-											size="mini"
-											:cell-style="
-												() => {
-													return { padding: '2px' };
-												}
-											"
-											style="width: 100%"
-											max-height="850"
-											border
-										>
-											<!--                      多选框-->
-											<el-table-column
-												type="selection"
-												width="55"
-											></el-table-column>
-											<el-table-column prop="id" label="ID"></el-table-column>
-											<el-table-column
-												prop="name"
-												label="购买方公司"
-											></el-table-column>
-											<el-table-column prop="money" label="金额">
-												<template slot-scope="scope">
-													<span class="bold-text">{{ scope.row.money }}</span>
-													<!--   todo 想法：选择某个订单后，做一个动态减少数值的效果-->
-													<!--  <span class="bold-text minus-text" ref="minusValueRef">{{ minusValue }}</span>-->
-												</template>
-											</el-table-column>
-											<el-table-column label="已分配订单">
-												<template slot-scope="">
-													<el-button
-														size="mini"
-														type="text"
-														@click="handleCheck"
-														>查看
-													</el-button>
-												</template>
-											</el-table-column>
-										</el-table>
+										<CompanysList
+											:company-total-info="sellerTotalInfo"
+											@handleCheck="handleCheck"
+										/>
 									</div>
 								</el-card>
 							</div>

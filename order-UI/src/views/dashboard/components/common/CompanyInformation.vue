@@ -28,6 +28,7 @@ export default {
 	},
 	data() {
 		return {
+			// 供应商开票的票点
 			point: 0,
 			debounceTimer: null, // 存储防抖定时器
 			timeOut: 500
