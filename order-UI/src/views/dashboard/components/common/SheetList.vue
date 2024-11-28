@@ -14,6 +14,7 @@ import CompanyInformation from '@/views/dashboard/components/common/CompanyInfor
 import InvoiceBody from '@/views/dashboard/components/common/InvoiceBody.vue';
 import CompanysList from '@/views/dashboard/components/common/CompanysList.vue';
 
+// 默认导出组件
 export default {
 	name: 'SheetList',
 	components: {
@@ -37,8 +38,13 @@ export default {
 	data() {
 		return {
 			// 左上角供应商的信息
-			supplierInfo: {
-				// 供应商信息的loading效果
+			companyInfo: {
+				companyName: '选择公司以查看',
+				companyType: '暂无',
+				leader: '暂无',
+				region: '暂无',
+				leaderTel: '暂无',
+				comments: '暂无',
 				supplierLoading: false
 			},
 			// 本批开的票点
@@ -50,8 +56,10 @@ export default {
 			purchaseTotalInfo: [],
 			// 销方统计
 			sellerTotalInfo: [],
-			// 供应商搜索字段
-			querySupplier: null,
+			// 购买方搜索字段
+			purchase: null,
+			// 卖出方搜索字段
+			seller: null,
 			// 减去的金额
 			minusValue: 0
 		};
@@ -126,7 +134,10 @@ export default {
 
 			this.purchaseTotalInfo = Array.from(purchaseMap.values());
 			this.sellerTotalInfo = Array.from(sellerMap.values());
-			// this.$store.dispatch('excel/setTempData', this.purchaseTotalInfo);
+
+			// 暂存
+			this.handleStorePurchaseInfo(this.purchaseTotalInfo);
+			this.handleStoreSellerInfo(this.sellerTotalInfo);
 			// 打开弹窗
 			this.invoiceAllVisible = true;
 		},
@@ -158,11 +169,18 @@ export default {
 		// 弹窗左侧供应商列表的筛选
 		handleFilter() {
 			// 每次操作之前都要重置 重置的逻辑就是从暂存拿出新的进行复制
-			this.purchaseTotalInfo = this.$store.getters.tempData;
+			this.handleReset();
 			// 筛选
-			this.purchaseTotalInfo = this.purchaseTotalInfo.filter(item => {
-				return item.name.indexOf(this.querySupplier) !== -1;
-			});
+			if (this.purchase) {
+				this.purchaseTotalInfo = this.purchaseTotalInfo.filter(item => {
+					return item.name.indexOf(this.purchase) !== -1;
+				});
+			}
+			if (this.seller) {
+				this.sellerTotalInfo = this.sellerTotalInfo.filter(item => {
+					return item.name.indexOf(this.seller) !== -1;
+				});
+			}
 		},
 		// 分配金额的具体函数
 		handleAllocate(item) {
@@ -172,15 +190,16 @@ export default {
 
 		//查看某一个公司的信息
 		handleCheck(row) {
-			this.supplierInfo.supplierLoading = true;
-			getCompany(row.id).then(res => {
-				this.supplierInfo = res.data;
-				this.supplierInfo.supplierLoading = false;
+			this.companyInfo.supplierLoading = true;
+			getCompany(row.id, row.type).then(res => {
+				this.companyInfo = res.data;
+				this.companyInfo.supplierLoading = false;
 			});
 		},
 		// 重置筛选结果
 		handleReset() {
-			this.purchaseTotalInfo = this.$store.getters.tempData;
+			this.purchaseTotalInfo = this.$store.getters.purchaseTempInfo;
+			this.sellerTotalInfo = this.$store.getters.sellerTempInfo;
 		},
 		// 重置订单列表的数据 通过事件总线实现
 		handleResetOrderList() {
@@ -219,7 +238,7 @@ export default {
 						<div class="left-box">
 							<!--  左上角展示供应商的信息-->
 							<CompanyInformation
-								:supplier-info="supplierInfo"
+								:company-info="companyInfo"
 								@update:point="handleUpdatePoint"
 							/>
 
@@ -227,28 +246,21 @@ export default {
 							<div class="left-box-item">
 								<el-card class="box-card">
 									<div slot="header" class="clearfix">
-										<span class="bold-text">购买方分配剩余金额</span>
-										<el-button
-											style="float: right; padding: 3px 0"
-											type="text"
-											@click="handleReset"
-										>
-											重置筛选
-										</el-button>
+										<span class="bold-text">分配剩余金额</span>
 									</div>
 									<!--              购买方和销方 搜索区域-->
 									<el-form :inline="true" class="demo-form-inline">
 										<el-form-item label="购买方名称">
 											<el-input
-												v-model="querySupplier"
-												placeholder="请输入供应商名称"
+												v-model="purchase"
+												placeholder="请输入购买方名称"
 												size="mini"
 												clearable
 											></el-input>
 										</el-form-item>
 										<el-form-item label="销方名称">
 											<el-input
-												v-model="querySupplier"
+												v-model="seller"
 												placeholder="请输入销方名称"
 												size="mini"
 												clearable
@@ -260,6 +272,15 @@ export default {
 												size="mini"
 												@click="handleFilter"
 												>查询
+											</el-button>
+										</el-form-item>
+										<el-form-item>
+											<el-button
+												type="warning"
+												size="mini"
+												@click="handleReset"
+											>
+												重置
 											</el-button>
 										</el-form-item>
 									</el-form>

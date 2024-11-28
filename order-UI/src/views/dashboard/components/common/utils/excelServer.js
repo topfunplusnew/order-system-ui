@@ -14,13 +14,19 @@ export var mixin_excel_server = {
 			return this.$store.getters.excelData;
 		},
 
-		// 对暂存数据进行维护
-		handleStoreTempData(value) {
-			this.$store.dispatch('excel/setTempData', value);
+		// 暂存购买的信息
+		handleStorePurchaseInfo(data) {
+			this.$store.dispatch('excel/setPurchaseTempInfo', data);
 		},
-		// 清除暂存数据
-		handleClearTempData() {
-			this.$store.dispatch('excel/clearTempData');
+		handleClearPurchaseInfo() {
+			this.$store.dispatch('excel/clearPurchaseTempInfo');
+		},
+		// 暂存卖出方的信息
+		handleStoreSellerInfo(data) {
+			this.$store.dispatch('excel/setSellerTempInfo', data);
+		},
+		handleClearSellerInfo() {
+			this.$store.dispatch('excel/clearSellerTempInfo');
 		}
 	}
 };

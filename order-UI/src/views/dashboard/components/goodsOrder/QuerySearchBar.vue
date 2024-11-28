@@ -42,6 +42,17 @@
 					</el-form-item>
 				</el-col>
 				<el-col :span="6">
+					<el-form-item label="供应商" prop="supplierNames">
+						<el-input
+							v-model="queryItems.supplierNames"
+							placeholder="请输入供应商名称"
+							clearable
+							size="mini"
+							@keyup.enter.native="handleQuery"
+						></el-input>
+					</el-form-item>
+				</el-col>
+				<el-col :span="6">
 					<el-form-item label="司机名称" prop="landDriverName">
 						<el-input
 							v-model="queryItems.landDriverName"
@@ -91,22 +102,6 @@
 						</el-select>
 					</el-form-item>
 				</el-col>
-				<el-col :span="6">
-					<el-form-item label="开票状态" prop="invoiceState">
-						<el-select
-							v-model="queryItems.invoiceState"
-							placeholder="请选择"
-							size="mini"
-						>
-							<el-option
-								v-for="item in optionInvent"
-								:key="item.value"
-								:label="item.label"
-								:value="item.value"
-							></el-option>
-						</el-select>
-					</el-form-item>
-				</el-col>
 				<el-col :span="4">
 					<el-form-item>
 						<el-button
@@ -119,13 +114,6 @@
 						</el-button>
 					</el-form-item>
 				</el-col>
-				<!-- <el-col :span="4">
-          <el-form-item>
-            <el-button type="primary" icon="el-icon-search" size="mini" @click="handleProcess">
-              点击增加{{ count }}
-            </el-button>
-          </el-form-item>
-        </el-col> -->
 			</el-row>
 		</el-form>
 	</div>

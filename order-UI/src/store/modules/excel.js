@@ -1,10 +1,15 @@
 const state = {
 	// 读取的excel数据sheets列表
 	excelData: [],
-	// 暂存
-	tempData: [],
 	// 打开的批量开票页面 已经选中的订单列表
-	selectedOrders: []
+	selectedOrders: [],
+
+	// 左侧选择的公司信息
+	companyList: [],
+	// 购买方临时信息存储 类型为数组
+	purchaseTempInfo: [],
+	// 卖家临时信息存储 类型为数组
+	sellerTempInfo: []
 };
 
 const mutations = {
@@ -14,12 +19,11 @@ const mutations = {
 	CLEAR_EXCEL_DATA: state => {
 		state.excelData = [];
 	},
-
-	SET_TEMP_DATA: (state, data) => {
-		state.tempData = data;
+	SET_COMPANY_LIST: (state, data) => {
+		state.companyList = data;
 	},
-	CLEAR_TEMP_DATA: state => {
-		state.tempData = [];
+	CLEAR_COMPANY_LIST: state => {
+		state.companyList = [];
 	},
 
 	SET_SELECTED_ORDERS: (state, data) => {
@@ -27,6 +31,19 @@ const mutations = {
 	},
 	CLEAR_SELECTED_ORDERS: state => {
 		state.selectedOrders = [];
+	},
+
+	SET_PURCHASE_TEMP_INFO: (state, data) => {
+		state.purchaseTempInfo = data;
+	},
+	CLEAR_PURCHASE_TEMP_INFO: state => {
+		state.purchaseTempInfo = [];
+	},
+	SET_SELLER_TEMP_INFO: (state, data) => {
+		state.sellerTempInfo = data;
+	},
+	CLEAR_SELLER_TEMP_INFO: state => {
+		state.sellerTempInfo = [];
 	}
 };
 
@@ -37,13 +54,11 @@ const actions = {
 	clearExcelData({ commit }) {
 		commit('CLEAR_EXCEL_DATA');
 	},
-
-	// 暂存数据的操作
-	setTempData({ commit }, data) {
-		commit('SET_TEMP_DATA', data);
+	setCompanyList({ commit }, data) {
+		commit('SET_COMPANY_LIST', data);
 	},
-	clearTempData({ commit }) {
-		commit('CLEAR_TEMP_DATA');
+	clearCompanyList({ commit }) {
+		commit('CLEAR_COMPANY_LIST');
 	},
 
 	setSelectedOrders({ commit }, data) {
@@ -51,6 +66,19 @@ const actions = {
 	},
 	clearSelectedOrders({ commit }) {
 		commit('CLEAR_SELECTED_ORDERS');
+	},
+
+	setPurchaseTempInfo({ commit }, data) {
+		commit('SET_PURCHASE_TEMP_INFO', data);
+	},
+	clearPurchaseTempInfo({ commit }) {
+		commit('CLEAR_PURCHASE_TEMP_INFO');
+	},
+	setSellerTempInfo({ commit }, data) {
+		commit('SET_SELLER_TEMP_INFO', data);
+	},
+	clearSellerTempInfo({ commit }) {
+		commit('CLEAR_SELLER_TEMP_INFO)');
 	}
 };
 

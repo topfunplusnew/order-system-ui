@@ -46,9 +46,10 @@ const getters = {
 	deptName: state => state.trash.deptName,
 	// excel数据
 	excelData: state => state.excel.excelData,
-	// 暂存的excel数据
-	tempData: state => state.excel.tempData,
 	// 选中的订单的数据
-	selectedOrder: state => state.excel.selectedOrders
+	selectedOrder: state => state.excel.selectedOrders,
+	purchaseTempInfo: state => state.excel.purchaseTempInfo,
+	sellerTempInfo: state => state.excel.sellerTempInfo,
+	companyList: state => state.excel.companyList
 };
 export default getters;

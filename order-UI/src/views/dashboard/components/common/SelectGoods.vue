@@ -30,21 +30,31 @@ export default {
 	mounted() {
 		// 接受事件总线传递来的该组件的更新操作 并且传入回调函数
 		this.$bus.$on('select-goods:update', () => this.refresh());
+		// 接受分配剩余金额传入的关于客户或者供应商的筛选
+		this.$bus.$on('update-goods-order-company', value =>
+			this.handleFilterOrders(value)
+		);
 	},
 	beforeDestroy() {
 		// 清除事件监听 防止内存泄漏
 		this.$bus.$off('select-goods:update', () => this.refresh()); // 清理事件监听
+		this.$bus.$off('update-goods-order-company', () => this.refresh());
 	},
 	methods: {
 		// 获取订单列表
-		getList() {
+		async getList() {
 			this.loading = true;
-			listGoodsOrder(this.queryParams).then(res => {
-				this.goodsOrderList = res.rows;
+			try {
+				const res = await listGoodsOrder(this.queryParams);
+				this.goodsOrderList = res.rows; // 更新数据
 				this.total = res.total;
+			} catch (error) {
+				console.error('Failed to fetch goods order list:', error);
+			} finally {
 				this.loading = false;
-			});
+			}
 		},
+
 		// 多选 这边需要通过vuex进行管理状态 因为跨越组件了
 		handleSelectionChange(selection) {
 			// 本地也维护一份数据
@@ -52,8 +62,46 @@ export default {
 			// 由vuex维护选中的订单列表 以便于其他组件使用
 			this.$store.dispatch('excel/setSelectedOrders', selection);
 		},
-		handleQuery() {
-			this.queryParams.pageNum = 1;
+		// 筛选订单列表 主要是用于当左侧选择某个公司后要选择对应公司的订单
+		handleFilterOrders(value) {
+			console.log('value', value);
+			// 不合法
+			if (value.id < 0) this.refresh();
+			// 什么都不选 就只getList
+			if (!value.id) this.refresh();
+
+			value.type === '客户'
+				? this.handleCustomerFilter(value.id)
+				: this.handleSupplierFilter(value.id);
+		},
+		// 对客户的筛选
+		async handleCustomerFilter(companyId) {
+			console.log(companyId);
+			if (!companyId) {
+				this.$message.warning('非法id!');
+			}
+			try {
+				this.queryParams.customerID = companyId;
+				await this.getList();
+			} catch (err) {
+				console.error('Error fetching list:', err);
+			}
+		},
+		// 对供应商的筛选
+		async handleSupplierFilter(companyId) {
+			console.log(companyId);
+			if (!companyId) {
+				this.$message.warning('非法id!');
+			}
+			try {
+				this.queryParams[`supplierId`] = companyId;
+				await this.getList();
+			} catch (err) {
+				console.error('Error fetching list:', err);
+			}
+		},
+		handleQuery(value) {
+			this.queryParams = value;
 			this.getList();
 		},
 		// 重新拉取数据
@@ -68,7 +116,7 @@ export default {
 				orderDateStart: null,
 				orderDateEnd: null,
 				pageNum: 1,
-				pageSize: 10,
+				pageSize: 20,
 				ordersNo: null,
 				orderDate: null,
 				customer: null,
@@ -108,13 +156,7 @@ export default {
 
 <template>
 	<div>
-		<QuerySearchBar
-			:handle-query="handleQuery"
-			:options="options"
-			:options-invoice="optionsInvoice"
-			:query-params="queryParams"
-			:show-search="true"
-		/>
+		<QuerySearchBar :query-params="queryParams" @updateQuery="handleQuery" />
 		<el-table
 			id="printBox"
 			v-loading="loading"
@@ -123,7 +165,7 @@ export default {
 			border
 			:data="goodsOrderList"
 			virtual-scroll
-			max-height="850"
+			max-height="462px"
 			size="mini"
 			:cell-style="
 				() => {

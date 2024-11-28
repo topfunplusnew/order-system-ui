@@ -4,10 +4,16 @@ import EllipsisText from '@/views/dashboard/components/common/EllipsisText.vue';
 export default {
 	components: { EllipsisText },
 	props: {
-		supplierInfo: {
+		companyInfo: {
 			type: Object,
 			default: () => {
 				return {
+					companyName: '选择公司以查看',
+					companyType: '暂无',
+					leader: '暂无',
+					region: '暂无',
+					leaderTel: '暂无',
+					comments: '暂无',
 					supplierLoading: false
 				};
 			}
@@ -40,27 +46,46 @@ export default {
 <template>
 	<div>
 		<div class="left-box-item">
-			<el-card class="box-card" v-loading="supplierInfo.supplierLoading">
-				<el-descriptions title="购买方信息" size="mini">
-					<el-descriptions-item label="用户名">
-						<EllipsisText title="张三是最帅的一个人" />
+			<el-card class="box-card" v-loading="companyInfo.supplierLoading">
+				<el-descriptions
+					:title="companyInfo.companyType + '信息：'"
+					size="mini"
+				>
+					<el-descriptions-item label="公司名称">
+						<EllipsisText :title="companyInfo.companyName" />
 					</el-descriptions-item>
-					<el-descriptions-item label="手机号">
-						<EllipsisText title="张三是最帅的一个人" />
+					<el-descriptions-item label="老板">
+						<EllipsisText :title="companyInfo.leader" />
 					</el-descriptions-item>
-					<el-descriptions-item label="居住地">
-						<EllipsisText title="张三是最帅的一个人" />
+					<el-descriptions-item label="区域">
+						<EllipsisText :title="companyInfo.region" />
+					</el-descriptions-item>
+					<el-descriptions-item label="联系电话">
+						<EllipsisText :title="companyInfo.leaderTel" />
 					</el-descriptions-item>
 					<el-descriptions-item label="备注">
-						<EllipsisText title="张三是最帅的一个人" />
-					</el-descriptions-item>
-					<el-descriptions-item label="联系地址">
-						<EllipsisText title="张三是最帅的一个人" />
+						<EllipsisText :title="companyInfo.comments" />
 					</el-descriptions-item>
 				</el-descriptions>
 				<!--                  输入本批开票票点-->
+			</el-card>
+
+			<br />
+			<el-card class="box-card">
+				<div slot="header" class="clearfix">
+					<span class="bold-text">票点</span>
+				</div>
 				<div>
-					<el-input v-model="point" placeholder="请输入本批开票票点"></el-input>
+					<el-form inline size="mini">
+						<el-form-item label="请输入本批开票票点">
+							<el-input
+								size="mini"
+								v-model="point"
+								clearable
+								placeholder="请输入本批开票票点"
+							></el-input>
+						</el-form-item>
+					</el-form>
 				</div>
 			</el-card>
 		</div>
@@ -70,5 +95,9 @@ export default {
 <style scoped lang="scss">
 .left-box-item {
 	margin-bottom: 20px;
+}
+
+.bold-text {
+	font-weight: bold;
 }
 </style>
