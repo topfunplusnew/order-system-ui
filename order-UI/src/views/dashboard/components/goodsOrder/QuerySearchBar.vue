@@ -116,11 +116,21 @@
 				</el-col>
 			</el-row>
 		</el-form>
+
+		<!--    批量开票-->
+		<div class="options">
+			<el-button type="success" size="mini" :disabled="op_customer">
+				开具客户发票
+			</el-button>
+			<el-button type="success" size="mini" :disabled="op_supplier">
+				开具供应商发票
+			</el-button>
+		</div>
 	</div>
 </template>
 <script>
-import { computed, ref } from '@vue/composition-api';
 import { OptionInvent, Options } from '../../mixins/order/order_Invoice';
+import { mapGetters } from 'vuex';
 
 export default {
 	name: 'QuerySearchBar',
@@ -130,37 +140,65 @@ export default {
 			default: () => ({})
 		}
 	},
-	setup(props, { emit }) {
-		// 数据状态
-		const optionInvent = ref(OptionInvent);
-		const options = ref(Options);
-		const testValue = ref(0);
-
-		// 计算属性
-		const queryItems = computed({
-			get: () => props.queryParams,
-			set: val => emit('updateQuery', val)
-		});
-
-		const handleQuery = () => {
-			emit('updateQuery', queryItems.value);
-		};
-
-		// // TODO 测试hooks
-		// const { count, handleProcess } = useCounter()
-
-		// 返回 setup 中定义的数据和方法
+	watch: {
+		// 监听选择订单的变化
+		selectedOrder: {
+			handler(val) {
+				this.handleAllocate(val);
+			},
+			immediate: true,
+			deep: true
+		}
+	},
+	computed: {
+		// 计算属性，用来处理 queryParams 的 get 和 set
+		queryItems: {
+			get() {
+				return this.queryParams;
+			},
+			set(val) {
+				this.$emit('updateQuery', val); // 触发父组件的更新事件
+			}
+		},
+		...mapGetters(['selectedOrder'])
+	},
+	data() {
 		return {
-			optionInvent,
-			options,
-			queryItems,
-			testValue,
-			// count,
-			// handleProcess,
-			handleQuery
+			optionInvent: OptionInvent, // 假设 OptionInvent 是已定义的数据
+			options: Options, // 假设 Options 是已定义的数据
+			testValue: 0,
+			op_customer: true,
+			op_supplier: true
 		};
 	},
-	mounted() {},
-	methods: {}
+	methods: {
+		// todo 分配金额的具体函数 选择某一个订单后要扣钱
+		handleAllocate(selected) {
+			console.log('监听items', selected);
+			// 订单中有很多供应商 还有总货款
+			if (typeof selected === 'object' && selected.length > 0) {
+				this.handleToggle(false);
+			} else {
+				this.handleToggle(true);
+			}
+		},
+		// 处理查询的方法
+		handleQuery() {
+			this.$emit('updateQuery', this.queryItems);
+		},
+		handleToggle(toggle) {
+			this.op_customer = toggle;
+			this.op_supplier = toggle;
+		}
+	}
 };
 </script>
+<style lang="scss" scoped>
+.options {
+	display: flex;
+
+	el-button {
+		margin-left: 10px;
+	}
+}
+</style>

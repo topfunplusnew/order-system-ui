@@ -13,10 +13,16 @@ import { getCompany } from '@/api/system/company';
 import CompanyInformation from '@/views/dashboard/components/common/CompanyInformation.vue';
 import InvoiceBody from '@/views/dashboard/components/common/InvoiceBody.vue';
 import CompanysList from '@/views/dashboard/components/common/CompanysList.vue';
+import Invoice from '@/views/dashboard/components/goodsOrder/Invoice.vue';
 
 // 默认导出组件
 export default {
 	name: 'SheetList',
+	computed: {
+		Invoice() {
+			return Invoice;
+		}
+	},
 	components: {
 		CompanysList,
 		InvoiceBody,
@@ -63,20 +69,6 @@ export default {
 			// 减去的金额
 			minusValue: 0
 		};
-	},
-	computed: {
-		// 拿到已经选择的订单
-		...mapGetters(['selectedOrder'])
-	},
-	watch: {
-		// 监听选择订单的变化
-		selectedOrder: {
-			handler(val) {
-				this.handleAllocate(val);
-			},
-			immediate: true,
-			deep: true
-		}
 	},
 	methods: {
 		/**
@@ -182,11 +174,6 @@ export default {
 				});
 			}
 		},
-		// 分配金额的具体函数
-		handleAllocate(item) {
-			console.log(item);
-			// 订单中有很多供应商 还有总货款
-		},
 
 		//查看某一个公司的信息
 		handleCheck(row) {
@@ -203,9 +190,9 @@ export default {
 		},
 		// 重置订单列表的数据 通过事件总线实现
 		handleResetOrderList() {
-			console.log('已经选择的订单', this.selectedOrder);
-
 			this.$bus.$emit('select-goods:update');
+			// 将高亮行去除样式
+			this.$bus.$emit('select-goods-row:update');
 		}
 	}
 };
@@ -329,7 +316,7 @@ export default {
 					</el-col>
 					<!--            展示已经开票的信息-->
 					<el-col :span="4">
-						<InvoiceBody />
+						<InvoiceBody :invoice-in="{}" />
 					</el-col>
 				</el-row>
 				<span slot="footer" class="dialog-footer">

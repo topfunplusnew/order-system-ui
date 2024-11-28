@@ -64,7 +64,6 @@ export default {
 		},
 		// 筛选订单列表 主要是用于当左侧选择某个公司后要选择对应公司的订单
 		handleFilterOrders(value) {
-			console.log('value', value);
 			// 不合法
 			if (value.id < 0) this.refresh();
 			// 什么都不选 就只getList
@@ -76,7 +75,6 @@ export default {
 		},
 		// 对客户的筛选
 		async handleCustomerFilter(companyId) {
-			console.log(companyId);
 			if (!companyId) {
 				this.$message.warning('非法id!');
 			}
@@ -89,7 +87,6 @@ export default {
 		},
 		// 对供应商的筛选
 		async handleSupplierFilter(companyId) {
-			console.log(companyId);
 			if (!companyId) {
 				this.$message.warning('非法id!');
 			}
@@ -157,6 +154,8 @@ export default {
 <template>
 	<div>
 		<QuerySearchBar :query-params="queryParams" @updateQuery="handleQuery" />
+
+		<!--    订单列表主体-->
 		<el-table
 			id="printBox"
 			v-loading="loading"
@@ -345,4 +344,6 @@ export default {
 	</div>
 </template>
 
-<style scoped lang="scss"></style>
+<style scoped lang="scss">
+
+</style>

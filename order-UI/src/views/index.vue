@@ -232,16 +232,36 @@
 import { parseTime } from '@/utils/ruoyi';
 import { getDeliveryList } from '../api/system/statement';
 import { mixin_printHTML } from './dashboard/mixins/print';
+import { getTimeOffset } from '@/utils/order';
 
 export default {
 	name: 'Index',
 	mixins: [mixin_printHTML],
 	data() {
+		// 获取今天零点
+		const startTime = new Date();
+		startTime.setHours(0, 0, 0, 0); // 设置为今天零点
+
+		// 获取今天晚上十二点
+		const endTime = new Date();
+		endTime.setHours(23, 59, 59, 999); // 设置为今天晚上12点
+
+		// 格式化函数
+		function formatDate(date) {
+			const y = date.getFullYear();
+			const m = String(date.getMonth() + 1).padStart(2, '0');
+			const d = String(date.getDate()).padStart(2, '0');
+			const h = String(date.getHours()).padStart(2, '0');
+			const i = String(date.getMinutes()).padStart(2, '0');
+			const s = String(date.getSeconds()).padStart(2, '0');
+			return `${y}-${m}-${d} ${h}:${i}:${s}`;
+		}
+
 		return {
 			loading: false,
 			queryParams: {
-				startTime: parseTime(new Date(), '{y}-{m}-{d} {h}:{i}:{s}'),
-				endTime: parseTime(new Date(), '{y}-{m}-{d} {h}:{i}:{s}'),
+				startTime: formatDate(startTime),
+				endTime: formatDate(endTime),
 				pageNum: 1,
 				pageSize: 10
 			},

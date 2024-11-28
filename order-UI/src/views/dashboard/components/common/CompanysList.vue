@@ -14,6 +14,10 @@ export default {
 			selectedRowId: null
 		};
 	},
+	mounted() {
+		// 重置行的样式
+		this.$bus.$on('select-goods-row:update', () => (this.selectedRowId = null));
+	},
 	methods: {
 		handleCheck(row) {
 			this.$emit('handleCheck', row);
@@ -56,7 +60,7 @@ export default {
 			<el-table-column prop="type" label="类型"></el-table-column>
 			<el-table-column prop="total" label="金额">
 				<template slot-scope="scope">
-					<span class="bold-text">{{ scope.row.total }}</span>
+					<span class="bold-text money">{{ scope.row.total }}</span>
 				</template>
 			</el-table-column>
 			<el-table-column label="公司信息" width="120">
@@ -80,5 +84,10 @@ export default {
 <style scoped lang="scss">
 .highlight-row {
 	background-color: #c5f695 !important; /* 设置选中行的背景颜色 */
+}
+
+.money {
+	color: #ff0000;
+	font-weight: bold;
 }
 </style>
