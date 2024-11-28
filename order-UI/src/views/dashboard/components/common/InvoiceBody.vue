@@ -1,40 +1,7 @@
 <script>
 import EllipsisText from '@/views/dashboard/components/common/EllipsisText.vue';
 import InvoiceItem from '@/views/dashboard/components/common/InvoiceItem.vue';
-
-// 发票对象
-export class InvoiceObject extends Object {
-	constructor(
-		companyName,
-		leader,
-		region,
-		leaderTel,
-		comments,
-		invoiceDate,
-		invoiceObject,
-		invoiceAmount,
-		companyType,
-		invoiceCompanyName,
-		ticketPoint,
-		ticketPointAmount,
-		isOrderTax
-	) {
-		super();
-		this.companyName = companyName;
-		this.leader = leader;
-		this.region = region;
-		this.leaderTel = leaderTel;
-		this.comments = comments;
-		this.invoiceDate = invoiceDate;
-		this.invoiceObject = invoiceObject;
-		this.invoiceAmount = invoiceAmount;
-		this.companyType = companyType;
-		this.invoiceCompanyName = invoiceCompanyName;
-		this.ticketPoint = ticketPoint;
-		this.ticketPointAmount = ticketPointAmount;
-		this.isOrderTax = isOrderTax;
-	}
-}
+import { mapGetters } from 'vuex';
 
 export default {
 	name: 'InvoiceBody',
@@ -44,6 +11,9 @@ export default {
 		return {
 			visible: false
 		};
+	},
+	computed: {
+		...mapGetters(['selectedInvoiceList'])
 	}
 };
 </script>
@@ -55,7 +25,10 @@ export default {
 				<span class="bold-text">开票信息</span>
 			</div>
 			<div>
-				<InvoiceItem v-for="(item, index) in invoiceList" :key="index" />
+				<InvoiceItem
+					v-for="(item, index) in selectedInvoiceList"
+					:key="index"
+				/>
 			</div>
 		</el-card>
 

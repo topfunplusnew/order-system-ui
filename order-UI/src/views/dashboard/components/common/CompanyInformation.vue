@@ -1,5 +1,6 @@
 <script>
 import EllipsisText from '@/views/dashboard/components/common/EllipsisText.vue';
+import { mapGetters } from 'vuex';
 
 export default {
 	components: { EllipsisText },
@@ -26,16 +27,17 @@ export default {
 				clearTimeout(this.debounceTimer);
 				// 设置新的定时器
 				this.debounceTimer = setTimeout(() => {
-					this.$emit('update:point', val);
+					this.$store.dispatch('excel/setTicketPoint', val);
 				}, this.timeOut); // 300ms 的防抖时间，可以根据需求调整
 			},
 			immediate: true
 		}
 	},
+	computed: {
+		...mapGetters(['ticketPoint', 'comment'])
+	},
 	data() {
 		return {
-			// 供应商开票的票点
-			point: 0,
 			debounceTimer: null, // 存储防抖定时器
 			timeOut: 500
 		};
@@ -77,12 +79,20 @@ export default {
 				</div>
 				<div>
 					<el-form inline size="mini">
-						<el-form-item label="请输入本批开票票点">
+						<el-form-item label="本批开票票点">
 							<el-input
 								size="mini"
-								v-model="point"
+								v-model="ticketPoint"
 								clearable
 								placeholder="请输入本批开票票点"
+							></el-input>
+						</el-form-item>
+						<el-form-item label="本批操作备注">
+							<el-input
+								size="mini"
+								v-model="comment"
+								clearable
+								placeholder="请输入本批操作备注"
 							></el-input>
 						</el-form-item>
 					</el-form>

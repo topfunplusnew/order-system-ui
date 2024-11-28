@@ -46,8 +46,13 @@ const getters = {
 	deptName: state => state.trash.deptName,
 	// excel数据
 	excelData: state => state.excel.excelData,
+	// 公共票点
+	ticketPoint: state => state.excel.ticketPoint,
+	// 备注
+	comment: state => state.excel.comment,
 	// 选中的订单的数据
 	selectedOrder: state => state.excel.selectedOrders,
+	selectedInvoiceList: state => state.excel.selectedInvoiceList,
 	purchaseTempInfo: state => state.excel.purchaseTempInfo,
 	sellerTempInfo: state => state.excel.sellerTempInfo,
 	companyList: state => state.excel.companyList

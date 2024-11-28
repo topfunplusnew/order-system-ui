@@ -8,21 +8,15 @@
 import SelectGoods from '@/views/dashboard/components/common/SelectGoods.vue';
 import SheetItem from '@/views/dashboard/components/common/SheetItem.vue';
 import { mixin_excel_server } from '@/views/dashboard/components/common/utils/excelServer';
-import { mapGetters } from 'vuex';
 import { getCompany } from '@/api/system/company';
 import CompanyInformation from '@/views/dashboard/components/common/CompanyInformation.vue';
 import InvoiceBody from '@/views/dashboard/components/common/InvoiceBody.vue';
 import CompanysList from '@/views/dashboard/components/common/CompanysList.vue';
-import Invoice from '@/views/dashboard/components/goodsOrder/Invoice.vue';
 
 // 默认导出组件
 export default {
 	name: 'SheetList',
-	computed: {
-		Invoice() {
-			return Invoice;
-		}
-	},
+	computed: {},
 	components: {
 		CompanysList,
 		InvoiceBody,
@@ -71,13 +65,6 @@ export default {
 		};
 	},
 	methods: {
-		/**
-		 * 更新订单的开票点
-		 * @param value 批量开票设置开票点
-		 */
-		handleUpdatePoint(value) {
-			console.log('票点', value);
-		},
 		/**
 		 * 对某一个excel点击打开的函数
 		 * @param excelItem 选中的某一个excel 例:信息汇总表

@@ -155,6 +155,7 @@ export default {
 	<div>
 		<QuerySearchBar :query-params="queryParams" @updateQuery="handleQuery" />
 
+		<!--    显示选择的公司 如果是客户 那么就是批量卖出 如果是供应商 那么就是批量买入-->
 		<!--    订单列表主体-->
 		<el-table
 			id="printBox"
@@ -179,21 +180,18 @@ export default {
 				label="日期"
 				align="center"
 				prop="orderDate"
-				fixed="left"
 			/>
 			<el-table-column
 				show-overflow-tooltip
 				label="客户"
 				align="center"
 				prop="customer"
-				fixed="left"
 			/>
 			<el-table-column
 				show-overflow-tooltip
 				label="供应商"
 				align="center"
 				prop="supplierNames"
-				fixed="left"
 				width="200"
 			></el-table-column>
 			<el-table-column

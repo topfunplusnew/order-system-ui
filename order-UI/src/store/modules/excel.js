@@ -1,9 +1,13 @@
 const state = {
 	// 读取的excel数据sheets列表
 	excelData: [],
+	// 公共票点
+	ticketPoint: 0,
+	// 公共备注
+	comment: '',
 	// 打开的批量开票页面 已经选中的订单列表
 	selectedOrders: [],
-	// todo 选中的批量开票的列表 需要对订单列表进行处理
+	// todo 选中的批量开票的列表 需要对订单列表进行处理 差一个选中订单后对订单的数据处理为开票的信息 然后交给右边组件进行批处理
 	selectedInvoiceList: [],
 	// 左侧选择的公司信息
 	companyList: [],
@@ -20,6 +24,18 @@ const mutations = {
 	CLEAR_EXCEL_DATA: state => {
 		state.excelData = [];
 	},
+	SET_TICKET_POINT: (state, data) => {
+		state.ticketPoint = data;
+	},
+	CLEAR_TICKET_POINT: state => {
+		state.ticketPoint = 0;
+	},
+	SET_COMMENT: (state, data) => {
+		state.comment = data;
+	},
+	CLEAR_COMMENT: state => {
+		state.comment = '';
+	},
 	SET_COMPANY_LIST: (state, data) => {
 		state.companyList = data;
 	},
@@ -32,6 +48,12 @@ const mutations = {
 	},
 	CLEAR_SELECTED_ORDERS: state => {
 		state.selectedOrders = [];
+	},
+	SET_SELECTED_INVOICE_LIST: (state, data) => {
+		state.selectedInvoiceList = data;
+	},
+	CLEAR_SELECTED_INVOICE_LIST: state => {
+		state.selectedInvoiceList = [];
 	},
 
 	SET_PURCHASE_TEMP_INFO: (state, data) => {
@@ -55,6 +77,19 @@ const actions = {
 	clearExcelData({ commit }) {
 		commit('CLEAR_EXCEL_DATA');
 	},
+	setTicketPoint({ commit }, data) {
+		commit('SET_TICKET_POINT', data);
+	},
+	clearTicketPoint({ commit }) {
+		commit('CLEAR_TICKET_POINT');
+	},
+
+	setComment({ commit }, data) {
+		commit('SET_COMMENT', data);
+	},
+	clearComment({ commit }) {
+		commit('CLEAR_COMMENT');
+	},
 	setCompanyList({ commit }, data) {
 		commit('SET_COMPANY_LIST', data);
 	},
@@ -67,6 +102,12 @@ const actions = {
 	},
 	clearSelectedOrders({ commit }) {
 		commit('CLEAR_SELECTED_ORDERS');
+	},
+	setSelectedInvoiceList({ commit }, data) {
+		commit('SET_SELECTED_INVOICE_LIST', data);
+	},
+	clearSelectedInvoiceList({ commit }) {
+		commit('CLEAR_SELECTED_INVOICE_LIST');
 	},
 
 	setPurchaseTempInfo({ commit }, data) {

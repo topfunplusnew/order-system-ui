@@ -1,6 +1,9 @@
 <script>
+import InvoiceIcon from '@/views/dashboard/components/common/InvoiceIcon.vue';
+
 export default {
 	name: 'InvoiceItem',
+	components: { InvoiceIcon },
 	props: {
 		invoice: {
 			type: Object,
@@ -22,6 +25,7 @@ export default {
 	<div>
 		<div class="invoice">
 			<div>
+				<InvoiceIcon />
 				<h4 class="invoice-title">张明测试数据</h4>
 				<p class="invoice-pra">
 					开票金额：<span style="color: #72d511">500</span>
