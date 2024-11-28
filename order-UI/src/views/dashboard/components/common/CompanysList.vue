@@ -9,20 +9,27 @@ export default {
 			}
 		}
 	},
+	data() {
+		return {
+			selectedRowId: null
+		};
+	},
 	methods: {
 		handleCheck(row) {
 			this.$emit('handleCheck', row);
 		},
-		//  选一个供应商 筛选一个list 只开票属于该id的 类型为type的 公司
-		// handleSelectionChange(selection) {
-		// 	this.handleStoreCompanyInfo(selection);
-		// },
-		handleStoreCompanyInfo(selection) {
-			this.$store.dispatch('excel/setCompanyList', selection);
-		},
 		// 筛选右侧的订单 通过事件总线提醒
 		handleFilterOrders(row) {
 			this.$bus.$emit('update-goods-order-company', row);
+			this.selectedRowId = row.id;
+		},
+		// 点击某一行变颜色的函数
+		handleRowClassName({ row }) {
+			return this.selectedRowId === row.id
+				? {
+						background: '#c5f695 !important'
+				  }
+				: {}; // 返回高亮类名
 		}
 	}
 };
@@ -32,6 +39,7 @@ export default {
 	<div>
 		<el-table
 			:data="companyTotalInfo"
+			:row-style="handleRowClassName"
 			:cell-style="
 				() => {
 					return { padding: '2px' };
@@ -69,4 +77,8 @@ export default {
 	</div>
 </template>
 
-<style scoped lang="scss"></style>
+<style scoped lang="scss">
+.highlight-row {
+	background-color: #c5f695 !important; /* 设置选中行的背景颜色 */
+}
+</style>
