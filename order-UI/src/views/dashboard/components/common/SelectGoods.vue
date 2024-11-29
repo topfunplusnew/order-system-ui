@@ -135,12 +135,13 @@ export default {
 				console.error('Error fetching list:', err);
 			}
 		},
-		// TODO 对于客户和供应商进行不同的扣除金额逻辑
+		// 对于客户和供应商进行不同的扣除金额逻辑
 		multipleMoney(orders) {
 			let money = 0;
 
 			// 如果是客户 那么就是对订单中的列表统计总货款之和 然后扣除
 			if (this.type === PUBLIC_DICT_TYPE.CUSTOMER) {
+				// 直接计算每一个订单的总货款之和
 				money = orders.reduce((pre, cur) => {
 					return pre + cur.allPayments;
 				});
@@ -148,11 +149,23 @@ export default {
 
 			// 如果是供应商 那么就是对订单中的列表统计出厂货款之和 然后扣除
 			if (this.type === PUBLIC_DICT_TYPE.SUPPLIER) {
-				// 出厂货款之和
+				// 遍历订单列表
+				for (let element of orders) {
+					let singleMoney = 0;
+					// 遍历每个订单的订单详情列表
+					for (let item of element.smailOrderDetails) {
+						singleMoney += item.paymentFactory;
+					}
+					money += singleMoney;
+				}
 			}
 
 			// 扣除金额
-			this.$store.commit('excel/MULTI_INVOICE_AMOUNT', money);
+			try {
+				this.$store.commit('excel/MULTI_INVOICE_AMOUNT', money);
+			} catch (err) {
+				this.$message.warning('err' + err);
+			}
 		},
 		// 对供应商的筛选
 		async handleSupplierFilter(companyId) {

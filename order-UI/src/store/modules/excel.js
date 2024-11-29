@@ -1,3 +1,5 @@
+import { Message } from 'element-ui';
+
 const state = {
 	// 读取的excel数据sheets列表
 	excelData: [],
@@ -66,6 +68,10 @@ const mutations = {
 	},
 	// 扣除开票金额
 	MULTI_INVOICE_AMOUNT: (state, data) => {
+		// 不能超过原有的钱
+		if (state.invoiceAmount - data < 0) {
+			throw new Error('超出开票金额');
+		}
 		state.invoiceAmount -= data;
 	},
 
