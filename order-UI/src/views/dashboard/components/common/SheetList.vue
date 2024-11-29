@@ -211,10 +211,7 @@ export default {
 					<el-col :span="6" :offset="1">
 						<div class="left-box">
 							<!--  左上角展示供应商的信息-->
-							<CompanyInformation
-								:company-info="companyInfo"
-								@update:point="handleUpdatePoint"
-							/>
+							<CompanyInformation :company-info="companyInfo" />
 
 							<!--              展示购买方 和 销方的金额-->
 							<div class="left-box-item">

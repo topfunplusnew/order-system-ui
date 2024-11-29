@@ -5,10 +5,23 @@ import {
 	OptionInvent,
 	Options
 } from '@/views/dashboard/mixins/order/order_Invoice';
+import { mapGetters } from 'vuex';
 
 export default {
 	name: 'SelectGoods',
 	components: { QuerySearchBar },
+	computed: {
+		...mapGetters(['ticketPoint', 'comment'])
+	},
+	watch: {
+		// 监听两个值的变化 取消禁用多选框
+		ticketPoint: {
+			handler(value) {
+				if (value) this.isBaned = false;
+			},
+			immediate: true
+		}
+	},
 	data() {
 		return {
 			// 查询参数
@@ -20,7 +33,10 @@ export default {
 			options: Options,
 			optionsInvoice: OptionInvent,
 			// 选中的订单列表
-			selectedGoodsOrderList: []
+			selectedGoodsOrderList: [],
+
+			// 多选框是否禁用
+			isBaned: false
 		};
 	},
 	created() {
@@ -31,9 +47,11 @@ export default {
 		// 接受事件总线传递来的该组件的更新操作 并且传入回调函数
 		this.$bus.$on('select-goods:update', () => this.refresh());
 		// 接受分配剩余金额传入的关于客户或者供应商的筛选
-		this.$bus.$on('update-goods-order-company', value =>
-			this.handleFilterOrders(value)
-		);
+		this.$bus.$on('update-goods-order-company', value => {
+			this.handleFilterOrders(value);
+			// 取消禁用多选框
+			this.isBaned = false;
+		});
 	},
 	beforeDestroy() {
 		// 清除事件监听 防止内存泄漏
@@ -43,6 +61,9 @@ export default {
 	methods: {
 		// 获取订单列表
 		async getList() {
+			// 先禁用多选框
+			this.isBaned = true;
+			// 打开加载
 			this.loading = true;
 			try {
 				const res = await listGoodsOrder(this.queryParams);
@@ -57,6 +78,12 @@ export default {
 
 		// 多选 这边需要通过vuex进行管理状态 因为跨越组件了
 		handleSelectionChange(selection) {
+			// 如果还没有输入票点 先提醒用户输入票点
+			if (!this.$store.getters.ticketPoint) {
+				this.$message.warning('请先输入票点!');
+				this.isBaned = true;
+				return;
+			}
 			// 本地也维护一份数据
 			this.selectedGoodsOrderList = selection;
 			// 由vuex维护选中的订单列表 以便于其他组件使用
@@ -100,6 +127,10 @@ export default {
 		handleQuery(value) {
 			this.queryParams = value;
 			this.getList();
+		},
+		// 多选框是否禁用
+		selectable() {
+			return !this.isBaned;
 		},
 		// 重新拉取数据
 		refresh() {
@@ -174,7 +205,12 @@ export default {
 			"
 			@selection-change="handleSelectionChange"
 		>
-			<el-table-column type="selection" width="55" align="center" />
+			<el-table-column
+				type="selection"
+				width="55"
+				align="center"
+				:selectable="selectable"
+			/>
 			<el-table-column
 				show-overflow-tooltip
 				label="日期"

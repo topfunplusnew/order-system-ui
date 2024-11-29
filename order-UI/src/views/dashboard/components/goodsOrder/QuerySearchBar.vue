@@ -145,7 +145,6 @@ import { OptionInvent, Options } from '../../mixins/order/order_Invoice';
 import { mapGetters } from 'vuex';
 import { PUBLIC_DICT_TYPE } from '@/utils/order';
 import { parseTime } from '@/utils/ruoyi';
-import order from '@/store/modules/order';
 
 // 发票对象
 export class InvoiceObject {
@@ -203,6 +202,7 @@ export default {
 		// 监听选择订单的变化
 		selectedOrder: {
 			handler(val) {
+				console.log(val);
 				// 判断是否长度大于0
 				typeof val === 'object' && val.length > 0
 					? this.handleToggle(false)
@@ -214,7 +214,7 @@ export default {
 				});
 
 				// 存储vuex
-				this.$store.dispatch('excel/clearSelectedInvoiceList', invoiceList);
+				this.$store.dispatch('excel/setSelectedInvoiceList', invoiceList);
 			},
 			immediate: true,
 			deep: true
@@ -251,7 +251,7 @@ export default {
 					orderItem.customerID,
 					orderItem.customer,
 					this.ticketPoint,
-					this.ticketPoint * orderItem.allPayments,
+					Number(this.ticketPoint) * Number(orderItem.allPayments),
 					orderItem.id,
 					this.comment
 				);
@@ -268,10 +268,10 @@ export default {
 					PUBLIC_DICT_TYPE.SUPPLIER,
 					orderItem.supplier,
 					// todo 这里是数组中 不好操作
-					orderItem.supplierID,
-					orderItem.customer,
+					orderItem.supplierID, // 供应商id
+					'山东鹏展',
 					this.ticketPoint,
-					this.ticketPoint * orderItem.allPayments,
+					Number(this.ticketPoint) * paymentFactory,
 					orderItem.id,
 					this.comment
 				);

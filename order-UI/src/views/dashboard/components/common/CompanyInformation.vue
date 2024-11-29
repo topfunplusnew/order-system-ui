@@ -20,6 +20,7 @@ export default {
 			}
 		}
 	},
+
 	watch: {
 		point: {
 			handler(val) {
@@ -34,6 +35,22 @@ export default {
 		}
 	},
 	computed: {
+		point: {
+			get() {
+				return this.ticketPoint;
+			},
+			set(val) {
+				this.$store.dispatch('excel/setTicketPoint', val);
+			}
+		},
+		comment: {
+			get() {
+				return this.comment;
+			},
+			set(val) {
+				this.$store.dispatch('excel/setComment', val);
+			}
+		},
 		...mapGetters(['ticketPoint', 'comment'])
 	},
 	data() {
@@ -82,7 +99,7 @@ export default {
 						<el-form-item label="本批开票票点">
 							<el-input
 								size="mini"
-								v-model="ticketPoint"
+								v-model="point"
 								clearable
 								placeholder="请输入本批开票票点"
 							></el-input>

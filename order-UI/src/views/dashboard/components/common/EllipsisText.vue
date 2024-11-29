@@ -14,7 +14,6 @@ export default {
 	name: 'EllipsisText',
 	props: {
 		title: {
-			type: String,
 			required: true
 		}
 	}
