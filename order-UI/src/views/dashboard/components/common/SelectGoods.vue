@@ -81,6 +81,9 @@ export default {
 			// 如果还没有输入票点 先提醒用户输入票点
 			if (!this.$store.getters.ticketPoint) {
 				this.$message.warning('请先输入票点!');
+				// 清除勾选
+				this.$refs.goodsTable.clearSelection();
+				// 禁用多选框 只有输入了票点后才能解禁
 				this.isBaned = true;
 				return;
 			}
@@ -102,24 +105,29 @@ export default {
 		},
 		// 对客户的筛选
 		async handleCustomerFilter(companyId) {
+			console.log('客户id:', companyId);
 			if (!companyId) {
 				this.$message.warning('非法id!');
 			}
 			try {
 				this.queryParams.customerID = companyId;
 				await this.getList();
+				// 查询完订单列表后清除搜索条件
+				this.resetParams();
 			} catch (err) {
 				console.error('Error fetching list:', err);
 			}
 		},
 		// 对供应商的筛选
 		async handleSupplierFilter(companyId) {
+			console.log('供应商id:', companyId);
 			if (!companyId) {
 				this.$message.warning('非法id!');
 			}
 			try {
-				this.queryParams[`supplierId`] = companyId;
+				this.queryParams.params[`supplierId`] = companyId;
 				await this.getList();
+				this.resetParams();
 			} catch (err) {
 				console.error('Error fetching list:', err);
 			}
@@ -175,7 +183,10 @@ export default {
 				adjustOrderid: null,
 				isedit: null,
 				customerIsInvoice: null,
-				isSupplierInvoice: null
+				isSupplierInvoice: null,
+				params: {
+					supplierId: null
+				}
 			};
 		}
 	}
@@ -193,6 +204,7 @@ export default {
 			v-loading="loading"
 			v-horizontal-scroll="'always'"
 			fit
+			ref="goodsTable"
 			border
 			:data="goodsOrderList"
 			virtual-scroll

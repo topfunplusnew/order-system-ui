@@ -1,16 +1,13 @@
 <script>
-import EllipsisText from '@/views/dashboard/components/common/EllipsisText.vue';
 import InvoiceItem from '@/views/dashboard/components/common/InvoiceItem.vue';
 import { mapGetters } from 'vuex';
 
 export default {
 	name: 'InvoiceBody',
-	components: { InvoiceItem, EllipsisText },
+	components: { InvoiceItem },
 	props: {},
 	data() {
-		return {
-
-		};
+		return {};
 	},
 	computed: {
 		...mapGetters(['selectedInvoiceList'])
@@ -24,7 +21,7 @@ export default {
 			<div slot="header" class="clearfix">
 				<span class="bold-text">开票信息</span>
 			</div>
-			<div>
+			<div class="invoice-list">
 				<InvoiceItem
 					v-for="(item, index) in selectedInvoiceList"
 					:key="index"
@@ -38,5 +35,10 @@ export default {
 <style scoped lang="scss">
 .bold-text {
 	font-weight: bold;
+}
+
+.invoice-list {
+	height: 750px;
+	overflow-y: scroll;
 }
 </style>

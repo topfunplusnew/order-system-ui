@@ -208,6 +208,9 @@ export default {
 					? this.handleToggle(false)
 					: this.handleToggle(true);
 
+				// 先清除上一次的状态
+				this.$store.dispatch('excel/clearSelectedInvoiceList');
+
 				// 对选择的每一个订单进行转换处理 把订单对象转为开票对象
 				const invoiceList = val.map(element => {
 					return this.handleTransform(element);
@@ -256,6 +259,7 @@ export default {
 					this.comment
 				);
 			} else {
+				// 拿到出厂货款
 				const paymentFactory = orderItem.smailOrderDetails.reduce(
 					(acc, cur) => acc + cur.paymentFactory,
 					0
@@ -263,11 +267,11 @@ export default {
 				// 供应商
 				return new InvoiceObject(
 					parseTime(new Date(), '{y}-{m}-{d} {h}:{i}:{s}'),
-					orderItem.supplier,
+					orderItem.supplier, // 同理
 					paymentFactory,
 					PUBLIC_DICT_TYPE.SUPPLIER,
-					orderItem.supplier,
 					// todo 这里是数组中 不好操作
+					orderItem.supplier,
 					orderItem.supplierID, // 供应商id
 					'山东鹏展',
 					this.ticketPoint,

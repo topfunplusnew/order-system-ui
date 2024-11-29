@@ -1,6 +1,7 @@
 <script>
 import InvoiceIcon from '@/views/dashboard/components/common/InvoiceIcon.vue';
 import EllipsisText from '@/views/dashboard/components/common/EllipsisText.vue';
+import { fix } from '../../../../api/tool/format';
 
 export default {
 	name: 'InvoiceItem',
@@ -18,9 +19,18 @@ export default {
 			visible: false
 		};
 	},
+	mounted() {
+		console.log(this.invoice);
+	},
 	methods: {
+		fix,
 		handleCheckInvoice() {
+			this.$refs.invoiceItem.classList.add('active');
 			this.visible = true;
+		},
+		handleClose() {
+			this.$refs.invoiceItem.classList.remove('active');
+			this.visible = false;
 		}
 	}
 };
@@ -28,14 +38,16 @@ export default {
 
 <template>
 	<div>
-		<div class="invoice">
+		<div class="invoice" ref="invoiceItem">
 			<div>
 				<h4 class="invoice-title">
 					<InvoiceIcon />
-					<span>张明测试数据</span>
+					<EllipsisText :title="invoice.companyName" />
 				</h4>
 				<p class="invoice-pra">
-					开票金额：<span style="color: #72d511">500</span>
+					开票金额：<span style="color: #72d511">{{
+						fix(invoice.ticketPointAmount)
+					}}</span>
 				</p>
 			</div>
 			<div class="invoice-option">
@@ -49,7 +61,7 @@ export default {
 		<el-dialog
 			title="开票信息"
 			:visible.sync="visible"
-			width="400px"
+			width="550px"
 			append-to-body
 		>
 			<el-descriptions title="开票信息" size="mini">
@@ -82,8 +94,8 @@ export default {
 				</el-descriptions-item>
 			</el-descriptions>
 			<span slot="footer" class="dialog-footer">
-				<el-button @click="visible = false">取 消</el-button>
-				<el-button type="primary" @click="visible = false">确 定</el-button>
+				<!--				<el-button @click="visible = false">取 消</el-button>-->
+				<el-button type="primary" @click="handleClose">关 闭</el-button>
 			</span>
 		</el-dialog>
 	</div>
@@ -98,8 +110,12 @@ export default {
 	background-color: #f8f8f9;
 	display: flex;
 	justify-content: space-around;
-	border: 2px solid #409eff;
 	align-items: center;
+
+	&:hover {
+		transition: all 0.5s ease-in-out;
+		border: 2px solid #69aff6;
+	}
 }
 
 .invoice-title {
@@ -119,5 +135,9 @@ export default {
 	display: flex;
 	justify-content: center;
 	align-items: center;
+}
+
+.active {
+	border: 2px solid #409eff;
 }
 </style>
