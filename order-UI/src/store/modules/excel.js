@@ -7,8 +7,10 @@ const state = {
 	comment: '',
 	// 打开的批量开票页面 已经选中的订单列表
 	selectedOrders: [],
-	// todo 选中的批量开票的列表 需要对订单列表进行处理 差一个选中订单后对订单的数据处理为开票的信息 然后交给右边组件进行批处理
+	// 选中的批量开票的列表 需要对订单列表进行处理 差一个选中订单后对订单的数据处理为开票的信息 然后交给右边组件进行批处理
 	selectedInvoiceList: [],
+	// 开票金额 用于判断是否超过了金额 超过不允许开票
+	invoiceAmount: 0,
 	// 左侧选择的公司信息
 	companyList: [],
 	// 购买方临时信息存储 类型为数组
@@ -51,9 +53,20 @@ const mutations = {
 	},
 	SET_SELECTED_INVOICE_LIST: (state, data) => {
 		state.selectedInvoiceList = data;
+		console.log('批量开票信息:', state.selectedInvoiceList);
 	},
 	CLEAR_SELECTED_INVOICE_LIST: state => {
 		state.selectedInvoiceList = [];
+	},
+	SET_INVOICE_AMOUNT: (state, data) => {
+		state.invoiceAmount = data;
+	},
+	CLEAR_INVOICE_AMOUNT: state => {
+		state.invoiceAmount = 0;
+	},
+	// 扣除开票金额
+	MULTI_INVOICE_AMOUNT: (state, data) => {
+		state.invoiceAmount -= data;
 	},
 
 	SET_PURCHASE_TEMP_INFO: (state, data) => {
@@ -108,6 +121,12 @@ const actions = {
 	},
 	clearSelectedInvoiceList({ commit }) {
 		commit('CLEAR_SELECTED_INVOICE_LIST');
+	},
+	setInvoiceAmount({ commit }, data) {
+		commit('SET_INVOICE_AMOUNT', data);
+	},
+	clearInvoiceAmount({ commit }) {
+		commit('CLEAR_INVOICE_AMOUNT');
 	},
 
 	setPurchaseTempInfo({ commit }, data) {

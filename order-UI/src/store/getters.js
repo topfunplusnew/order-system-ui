@@ -53,6 +53,8 @@ const getters = {
 	// 选中的订单的数据
 	selectedOrder: state => state.excel.selectedOrders,
 	selectedInvoiceList: state => state.excel.selectedInvoiceList,
+	// 开票的金额
+	invoiceAmount: state => state.excel.invoiceAmount,
 	purchaseTempInfo: state => state.excel.purchaseTempInfo,
 	sellerTempInfo: state => state.excel.sellerTempInfo,
 	companyList: state => state.excel.companyList

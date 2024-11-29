@@ -1,11 +1,10 @@
 <script>
-import InvoiceIcon from '@/views/dashboard/components/common/InvoiceIcon.vue';
 import EllipsisText from '@/views/dashboard/components/common/EllipsisText.vue';
 import { fix } from '../../../../api/tool/format';
 
 export default {
 	name: 'InvoiceItem',
-	components: { EllipsisText, InvoiceIcon },
+	components: { EllipsisText },
 	props: {
 		invoice: {
 			type: Object,
@@ -40,10 +39,10 @@ export default {
 	<div>
 		<div class="invoice" ref="invoiceItem">
 			<div>
-				<h4 class="invoice-title">
-					<InvoiceIcon />
-					<EllipsisText :title="invoice.companyName" />
-				</h4>
+				<!--				<h4 class="invoice-title">-->
+				<!--					<InvoiceIcon />-->
+				<!--					<EllipsisText :title="invoice.companyName" />-->
+				<!--				</h4>-->
 				<p class="invoice-pra">
 					开票金额：<span style="color: #72d511">{{
 						fix(invoice.ticketPointAmount)
@@ -51,7 +50,7 @@ export default {
 				</p>
 			</div>
 			<div class="invoice-option">
-				<el-button type="primary" size="mini" @click="handleCheckInvoice">
+				<el-button type="text" size="mini" @click="handleCheckInvoice">
 					查看开票信息
 				</el-button>
 			</div>
@@ -105,7 +104,7 @@ export default {
 .invoice {
 	width: 100%;
 	margin: 10px;
-	height: 70px;
+	height: 35px;
 	border-radius: 15px;
 	background-color: #f8f8f9;
 	display: flex;

@@ -6,6 +6,7 @@ import {
 	Options
 } from '@/views/dashboard/mixins/order/order_Invoice';
 import { mapGetters } from 'vuex';
+import { PUBLIC_DICT_TYPE } from '@/utils/order';
 
 export default {
 	name: 'SelectGoods',
@@ -32,11 +33,13 @@ export default {
 			loading: false,
 			options: Options,
 			optionsInvoice: OptionInvent,
-			// 选中的订单列表
-			selectedGoodsOrderList: [],
-
 			// 多选框是否禁用
-			isBaned: false
+			isBaned: false,
+			// 是否点击了检索
+			hasClicked: false,
+
+			// 判断是供应商还是客户
+			type: null
 		};
 	},
 	created() {
@@ -46,17 +49,21 @@ export default {
 	mounted() {
 		// 接受事件总线传递来的该组件的更新操作 并且传入回调函数
 		this.$bus.$on('select-goods:update', () => this.refresh());
+		// 监听重置筛选的事件 将是否检索设置为未检索
+		this.$bus.$on('select-goods-row:update', () => (this.hasClicked = false));
 		// 接受分配剩余金额传入的关于客户或者供应商的筛选
 		this.$bus.$on('update-goods-order-company', value => {
 			this.handleFilterOrders(value);
+			// 赋值类型
+			this.type = value.type;
 			// 取消禁用多选框
 			this.isBaned = false;
 		});
 	},
 	beforeDestroy() {
 		// 清除事件监听 防止内存泄漏
-		this.$bus.$off('select-goods:update', () => this.refresh()); // 清理事件监听
-		this.$bus.$off('update-goods-order-company', () => this.refresh());
+		this.$bus.$off('select-goods:update'); // 清理事件监听
+		this.$bus.$off('update-goods-order-company');
 	},
 	methods: {
 		// 获取订单列表
@@ -87,10 +94,19 @@ export default {
 				this.isBaned = true;
 				return;
 			}
-			// 本地也维护一份数据
-			this.selectedGoodsOrderList = selection;
+
+			// 判断是否点击了检索
+			if (!this.hasClicked) {
+				this.$message.warning('请先检索一个公司!');
+				this.$refs.goodsTable.clearSelection();
+				this.isBaned = true;
+				return;
+			}
 			// 由vuex维护选中的订单列表 以便于其他组件使用
 			this.$store.dispatch('excel/setSelectedOrders', selection);
+
+			// 扣除金额 这里要判断一下 如果是客户 扣除的是总货款 如果是供应商 扣除的出厂货款之和
+			this.multipleMoney(selection);
 		},
 		// 筛选订单列表 主要是用于当左侧选择某个公司后要选择对应公司的订单
 		handleFilterOrders(value) {
@@ -99,34 +115,55 @@ export default {
 			// 什么都不选 就只getList
 			if (!value.id) this.refresh();
 
-			value.type === '客户'
+			value.type === PUBLIC_DICT_TYPE.CUSTOMER
 				? this.handleCustomerFilter(value.id)
 				: this.handleSupplierFilter(value.id);
 		},
 		// 对客户的筛选
 		async handleCustomerFilter(companyId) {
-			console.log('客户id:', companyId);
 			if (!companyId) {
 				this.$message.warning('非法id!');
 			}
 			try {
 				this.queryParams.customerID = companyId;
 				await this.getList();
+				// 设置点击了检索标记
+				this.hasClicked = true;
 				// 查询完订单列表后清除搜索条件
 				this.resetParams();
 			} catch (err) {
 				console.error('Error fetching list:', err);
 			}
 		},
+		// TODO 对于客户和供应商进行不同的扣除金额逻辑
+		multipleMoney(orders) {
+			let money = 0;
+
+			// 如果是客户 那么就是对订单中的列表统计总货款之和 然后扣除
+			if (this.type === PUBLIC_DICT_TYPE.CUSTOMER) {
+				money = orders.reduce((pre, cur) => {
+					return pre + cur.allPayments;
+				});
+			}
+
+			// 如果是供应商 那么就是对订单中的列表统计出厂货款之和 然后扣除
+			if (this.type === PUBLIC_DICT_TYPE.SUPPLIER) {
+				// 出厂货款之和
+			}
+
+			// 扣除金额
+			this.$store.commit('excel/MULTI_INVOICE_AMOUNT', money);
+		},
 		// 对供应商的筛选
 		async handleSupplierFilter(companyId) {
-			console.log('供应商id:', companyId);
 			if (!companyId) {
 				this.$message.warning('非法id!');
 			}
 			try {
 				this.queryParams.params[`supplierId`] = companyId;
 				await this.getList();
+				// 设置点击了检索标记
+				this.hasClicked = true;
 				this.resetParams();
 			} catch (err) {
 				console.error('Error fetching list:', err);

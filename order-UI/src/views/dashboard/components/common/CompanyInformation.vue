@@ -43,7 +43,7 @@ export default {
 				this.$store.dispatch('excel/setTicketPoint', val);
 			}
 		},
-		comment: {
+		comments: {
 			get() {
 				return this.comment;
 			},
@@ -107,7 +107,7 @@ export default {
 						<el-form-item label="本批操作备注">
 							<el-input
 								size="mini"
-								v-model="comment"
+								v-model="comments"
 								clearable
 								placeholder="请输入本批操作备注"
 							></el-input>

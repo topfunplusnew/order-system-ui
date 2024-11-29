@@ -18,6 +18,10 @@ export default {
 		// 重置行的样式
 		this.$bus.$on('select-goods-row:update', () => (this.selectedRowId = null));
 	},
+	beforeDestroy() {
+		// 清除事件监听 防止内存泄漏
+		this.$bus.$off('select-goods:update'); // 清理事件监听
+	},
 	methods: {
 		handleCheck(row) {
 			this.$emit('handleCheck', row);
@@ -25,6 +29,9 @@ export default {
 		// 筛选右侧的订单 通过事件总线提醒
 		handleFilterOrders(row) {
 			this.$bus.$emit('update-goods-order-company', row);
+			// 维护开票金额
+			this.$store.dispatch('excel/clearInvoiceAmount');
+			this.$store.dispatch('excel/setInvoiceAmount', row.total);
 			this.selectedRowId = row.id;
 		},
 		// 点击某一行变颜色的函数
@@ -51,7 +58,7 @@ export default {
 			"
 			size="mini"
 			style="width: 100%"
-			max-height="850"
+			max-height="800"
 			border
 		>
 			<!--                      多选框-->
