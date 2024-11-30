@@ -1,4 +1,4 @@
-import { Message } from 'element-ui';
+import Vue from 'vue';
 
 const state = {
 	// 读取的excel数据sheets列表
@@ -13,8 +13,6 @@ const state = {
 	selectedInvoiceList: [],
 	// 开票金额 用于判断是否超过了金额 超过不允许开票
 	invoiceAmount: 0,
-	// 左侧选择的公司信息
-	companyList: [],
 	// 购买方临时信息存储 类型为数组
 	purchaseTempInfo: [],
 	// 卖家临时信息存储 类型为数组
@@ -40,13 +38,6 @@ const mutations = {
 	CLEAR_COMMENT: state => {
 		state.comment = '';
 	},
-	SET_COMPANY_LIST: (state, data) => {
-		state.companyList = data;
-	},
-	CLEAR_COMPANY_LIST: state => {
-		state.companyList = [];
-	},
-
 	SET_SELECTED_ORDERS: (state, data) => {
 		state.selectedOrders = data;
 	},
@@ -66,13 +57,30 @@ const mutations = {
 	CLEAR_INVOICE_AMOUNT: state => {
 		state.invoiceAmount = 0;
 	},
+	// 加上开票金额
+	ADD_INVOICE_AMOUNT: (state, data) => {
+		// 开票金额不能为负数
+		if (data < 0) {
+			throw new Error('开票金额不能为负数');
+		}
+
+		// state.invoiceAmount += data;
+		Vue.set(state, 'invoiceAmount', state.invoiceAmount + data);
+	},
 	// 扣除开票金额
 	MULTI_INVOICE_AMOUNT: (state, data) => {
+		// 开票金额不能为负数
+		if (data < 0) {
+			throw new Error('开票金额不能为负数');
+		}
+
 		// 不能超过原有的钱
 		if (state.invoiceAmount - data < 0) {
 			throw new Error('超出开票金额');
 		}
-		state.invoiceAmount -= data;
+
+		// state.invoiceAmount -= data;
+		Vue.set(state, 'invoiceAmount', state.invoiceAmount - data);
 	},
 
 	SET_PURCHASE_TEMP_INFO: (state, data) => {
@@ -108,12 +116,6 @@ const actions = {
 	},
 	clearComment({ commit }) {
 		commit('CLEAR_COMMENT');
-	},
-	setCompanyList({ commit }, data) {
-		commit('SET_COMPANY_LIST', data);
-	},
-	clearCompanyList({ commit }) {
-		commit('CLEAR_COMPANY_LIST');
 	},
 
 	setSelectedOrders({ commit }, data) {

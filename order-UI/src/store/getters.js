@@ -52,9 +52,11 @@ const getters = {
 	comment: state => state.excel.comment,
 	// 选中的订单的数据
 	selectedOrder: state => state.excel.selectedOrders,
+	// 对应的开票列表
 	selectedInvoiceList: state => state.excel.selectedInvoiceList,
 	// 开票的金额
 	invoiceAmount: state => state.excel.invoiceAmount,
+	// 暂存购买的信息
 	purchaseTempInfo: state => state.excel.purchaseTempInfo,
 	sellerTempInfo: state => state.excel.sellerTempInfo,
 	companyList: state => state.excel.companyList

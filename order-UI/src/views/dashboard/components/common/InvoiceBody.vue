@@ -3,6 +3,9 @@ import InvoiceItem from '@/views/dashboard/components/common/InvoiceItem.vue';
 import { mapGetters } from 'vuex';
 import { PUBLIC_DICT_TYPE } from '@/utils/order';
 import { parseTime } from '@/utils/ruoyi';
+import { getUuid } from '@/utils/trash/utils';
+import { TableName } from '@/api/tool/enums';
+import { batchInvoice } from '@/api/system/excel';
 
 // 发票对象
 export class InvoiceObject {
@@ -30,6 +33,14 @@ export class InvoiceObject {
 		this.ticketPointAmount = ticketPointAmount;
 		this.isOrderTax = isOrderTax;
 		this.comments = comments;
+		// 随机生成一个uuid
+		this.params = {
+			uuid: getUuid(),
+			tableName:
+				this.companyType === PUBLIC_DICT_TYPE.CUSTOMER
+					? TableName.INVOICE_OUT
+					: TableName.INVOICE_IN
+		};
 	}
 }
 
@@ -88,9 +99,27 @@ export default {
 	},
 	methods: {
 		// 批量发票卖出
-		handleInvoiceOutBatch() {},
+		async handleInvoiceOutBatch() {
+			// 首先从vuex拿出数据
+			const invoiceList = this.$store.getters.selectedInvoiceList;
+
+			// 校验一下
+			if (invoiceList.length === 0) {
+				this.$message.warning('开票列表为空,请检查!');
+			}
+
+			// 发送请求 批量添加开票信息
+			const res = await batchInvoice(invoiceList);
+
+			this.handleCheckInvoice(res.data);
+		},
 		// 批量发票买入
-		handleInvoiceInBatch() {},
+		async handleInvoiceInBatch() {},
+
+		// 校验
+		handleCheckInvoice(resultList) {
+			// 逻辑是，resultList中只要有一个元素的result 为 failure 弹出弹窗 显示开票数组
+		},
 		// 分配金额的具体函数 选择某一个订单后要扣钱
 		handleTransform(orderItem) {
 			if (this.invoiceType === PUBLIC_DICT_TYPE.CUSTOMER) {
@@ -170,11 +199,24 @@ export default {
 			this.invoiceType = value.type;
 			this.supplierId = value.id;
 		});
+
+		this.$bus.$on('invoice-clear', () => {
+			// 重置开票金额
+			sessionStorage.clear();
+			this.$store.dispatch('excel/clearInvoiceAmount');
+			// 重置开票列表
+			this.$store.dispatch('excel/clearSelectedInvoiceList');
+			// 清除右上角公司信息
+			this.companyName = null;
+			this.invoiceType = null;
+			this.supplierId = null;
+		});
 	},
 	beforeDestroy() {
 		// 清除事件监听 防止内存泄漏
 		this.$bus.$off('select-goods:update'); // 清理事件监听
 		this.$bus.$off('update-goods-order-company');
+		this.$bus.$off('invoice-clear');
 	}
 };
 </script>
@@ -234,10 +276,13 @@ export default {
 
 .money {
 	color: red;
+	font-weight: bolder;
 }
 
 .options {
 	display: flex;
+	justify-content: center;
+	align-items: center;
 
 	el-button {
 		margin-left: 10px;

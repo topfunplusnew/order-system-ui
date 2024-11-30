@@ -102,7 +102,7 @@ export default {
 
 <style scoped lang="scss">
 .invoice {
-	width: 100%;
+	width: 90%;
 	margin: 10px;
 	height: 35px;
 	border-radius: 15px;
@@ -110,9 +110,11 @@ export default {
 	display: flex;
 	justify-content: space-around;
 	align-items: center;
+	transition: all 0.2s ease-in-out;
+
+	cursor: pointer;
 
 	&:hover {
-		transition: all 0.5s ease-in-out;
 		border: 2px solid #69aff6;
 	}
 }

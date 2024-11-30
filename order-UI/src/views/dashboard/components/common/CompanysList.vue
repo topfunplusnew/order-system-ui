@@ -32,6 +32,7 @@ export default {
 			// 维护开票金额
 			this.$store.dispatch('excel/clearInvoiceAmount');
 			this.$store.dispatch('excel/setInvoiceAmount', row.total);
+			sessionStorage.setItem('invoiceAmount', row.total);
 			this.selectedRowId = row.id;
 		},
 		// 点击某一行变颜色的函数

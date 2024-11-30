@@ -39,7 +39,10 @@ export default {
 			hasClicked: false,
 
 			// 判断是供应商还是客户
-			type: null
+			type: null,
+
+			// 订单选择的时候保存选中的行，方便取消选中后计算钱
+			preOrderList: []
 		};
 	},
 	created() {
@@ -58,6 +61,11 @@ export default {
 			this.type = value.type;
 			// 取消禁用多选框
 			this.isBaned = false;
+		});
+
+		// 监听清除事件 要清除选择的订单
+		this.$bus.$on('invoice-clear', () => {
+			this.$store.dispatch('excel/clearSelectedOrders');
 		});
 	},
 	beforeDestroy() {
@@ -135,38 +143,63 @@ export default {
 				console.error('Error fetching list:', err);
 			}
 		},
-		// 对于客户和供应商进行不同的扣除金额逻辑
+		// 处理选择的订单
 		multipleMoney(orders) {
+			const addedRows = orders.filter(row => !this.preOrderList.includes(row));
+			const removedRows = this.preOrderList.filter(
+				row => !orders.includes(row)
+			);
+
+			// 更新选择的订单
+			this.preOrderList = orders;
+
+			// 计算要扣除的钱
 			let money = 0;
-
-			// 如果是客户 那么就是对订单中的列表统计总货款之和 然后扣除
-			if (this.type === PUBLIC_DICT_TYPE.CUSTOMER) {
-				// 直接计算每一个订单的总货款之和
-				money = orders.reduce((pre, cur) => {
-					return pre + cur.allPayments;
-				});
-			}
-
-			// 如果是供应商 那么就是对订单中的列表统计出厂货款之和 然后扣除
-			if (this.type === PUBLIC_DICT_TYPE.SUPPLIER) {
-				// 遍历订单列表
-				for (let element of orders) {
-					let singleMoney = 0;
-					// 遍历每个订单的订单详情列表
-					for (let item of element.smailOrderDetails) {
-						singleMoney += item.paymentFactory;
-					}
-					money += singleMoney;
-				}
-			}
-
-			// 扣除金额
 			try {
-				this.$store.commit('excel/MULTI_INVOICE_AMOUNT', money);
+				// 如果取消选中的行不为空，扣除对应的金额
+				if (removedRows.length !== 0) {
+					money = this.calculateMoney(removedRows, this.type);
+					if (money > 0) {
+						this.$store.commit('excel/ADD_INVOICE_AMOUNT', money);
+					}
+				}
+
+				// 如果选中的行不为空，增加对应的金额
+				if (addedRows.length !== 0) {
+					money = this.calculateMoney(addedRows, this.type);
+					if (money > 0) {
+						this.$store.commit('excel/MULTI_INVOICE_AMOUNT', money);
+					}
+				}
 			} catch (err) {
-				this.$message.warning('err' + err);
+				this.$message.warning('操作失败: ' + err.message || err);
+				// 取消勾选
+				this.$refs.goodsTable.clearSelection();
+				// 重置金额
+				this.$store.dispatch(
+					'excel/setInvoiceAmount',
+					sessionStorage.getItem('invoiceAmount')
+				);
 			}
 		},
+		// 计算操作金额的函数
+		calculateMoney(rows, type) {
+			let money = 0;
+			if (rows.length === 0) return money;
+
+			rows.forEach(row => {
+				if (type === PUBLIC_DICT_TYPE.CUSTOMER) {
+					money += row.allPayments; // 客户操作金额
+				} else if (type === PUBLIC_DICT_TYPE.SUPPLIER) {
+					row.smailOrderDetails.forEach(detail => {
+						money += detail.paymentFactory; // 供应商操作金额
+					});
+				}
+			});
+
+			return money;
+		},
+
 		// 对供应商的筛选
 		async handleSupplierFilter(companyId) {
 			if (!companyId) {

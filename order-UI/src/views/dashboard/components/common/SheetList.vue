@@ -38,15 +38,7 @@ export default {
 	data() {
 		return {
 			// 左上角供应商的信息
-			companyInfo: {
-				companyName: '选择公司以查看',
-				companyType: '暂无',
-				leader: '暂无',
-				region: '暂无',
-				leaderTel: '暂无',
-				comments: '暂无',
-				supplierLoading: false
-			},
+			companyInfo: {},
 			// 本批开的票点
 			// 订单选择弹窗
 			invoiceAllVisible: false,
@@ -71,6 +63,12 @@ export default {
 		 * @param excelIndex 选中的excel的索引 例:0
 		 */
 		handleInvoiceAll(excelItem, excelIndex) {
+			// 先清除
+			this.reset();
+			// 清除购买方和销方的信息
+			this.handleClearPurchaseInfo();
+			this.handleClearSellerInfo();
+
 			let arr = [];
 			let purchaseMap = new Map();
 			let sellerMap = new Map();
@@ -114,7 +112,7 @@ export default {
 			this.purchaseTotalInfo = Array.from(purchaseMap.values());
 			this.sellerTotalInfo = Array.from(sellerMap.values());
 
-			// 暂存
+			// 暂存购买方和销方的信息
 			this.handleStorePurchaseInfo(this.purchaseTotalInfo);
 			this.handleStoreSellerInfo(this.sellerTotalInfo);
 			// 打开弹窗
@@ -164,11 +162,23 @@ export default {
 
 		//查看某一个公司的信息
 		handleCheck(row) {
+			this.handleResetCompanyInfo();
 			this.companyInfo.supplierLoading = true;
 			getCompany(row.id, row.type).then(res => {
 				this.companyInfo = res.data;
 				this.companyInfo.supplierLoading = false;
 			});
+		},
+		handleResetCompanyInfo() {
+			this.companyInfo = {
+				companyName: '选择公司以查看',
+				companyType: '暂无',
+				leader: '暂无',
+				region: '暂无',
+				leaderTel: '暂无',
+				comments: '暂无',
+				supplierLoading: false
+			};
 		},
 		// 重置筛选结果
 		handleReset() {
@@ -180,6 +190,26 @@ export default {
 			this.$bus.$emit('select-goods:update');
 			// 将高亮行去除样式
 			this.$bus.$emit('select-goods-row:update');
+		},
+
+		// 关闭的逻辑 要清除所有状态
+		handleClose() {
+			this.reset();
+			this.invoiceAllVisible = false;
+		},
+		reset() {
+			// 清除左上角公司信息
+			this.handleResetCompanyInfo();
+			// 清除订单列表的数据
+			this.handleResetOrderList();
+			// 重置公司筛选结果
+			this.handleReset();
+			// 清除票点
+			this.$store.dispatch('excel/clearTicketPoint');
+			// 清除备注
+			this.$store.dispatch('excel/clearComment');
+			// 发布事件 组件中清除自己状态
+			this.$bus.$emit('invoice-clear');
 		}
 	}
 };
@@ -208,7 +238,7 @@ export default {
 			>
 				<!--        展示某个公司有多少钱可以开-->
 				<el-row :gutter="12">
-					<el-col :span="6" :offset="1">
+					<el-col :span="6">
 						<div class="left-box">
 							<!--  左上角展示供应商的信息-->
 							<CompanyInformation :company-info="companyInfo" />
@@ -280,7 +310,7 @@ export default {
 						</div>
 					</el-col>
 					<!-- 右侧的订单选择 查询的订单列表是没有开过发票的订单-->
-					<el-col :span="11">
+					<el-col :span="12">
 						<!-- 展示读取的excel基本信息-->
 						<el-card class="box-card">
 							<div slot="header" class="clearfix">
@@ -299,15 +329,15 @@ export default {
 						</el-card>
 					</el-col>
 					<!--            展示已经开票的信息-->
-					<el-col :span="5">
+					<el-col :span="6">
 						<InvoiceBody />
 					</el-col>
 				</el-row>
 				<span slot="footer" class="dialog-footer">
-					<el-button @click="invoiceAllVisible = false">取 消</el-button>
-					<el-button type="primary" @click="invoiceAllVisible = false"
-						>确 定</el-button
-					>
+					<el-button @click="handleClose">关 闭</el-button>
+					<!--					<el-button type="primary" @click="invoiceAllVisible = false"-->
+					<!--						>确 定</el-button-->
+					<!--					>-->
 				</span>
 			</el-dialog>
 		</div>
