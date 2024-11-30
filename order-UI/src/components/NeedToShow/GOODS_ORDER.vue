@@ -12,6 +12,10 @@ export default {
 				return {};
 			}
 		}
+	},
+	methods: {
+		handleProcess() {},
+		handleReject() {}
 	}
 };
 </script>

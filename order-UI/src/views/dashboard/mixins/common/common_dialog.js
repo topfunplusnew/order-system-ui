@@ -64,7 +64,11 @@ export var common_dialog = {
 			// 关闭弹窗
 			this.dialogVisible = false;
 			// 清除状态后重新拉取一下数据
-			this?.getList();
+			try {
+				this?.getList();
+			} catch (err) {
+				console.log(err);
+			}
 		}
 	}
 };

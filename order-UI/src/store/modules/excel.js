@@ -46,11 +46,13 @@ const mutations = {
 	},
 	SET_SELECTED_INVOICE_LIST: (state, data) => {
 		state.selectedInvoiceList = data;
-		console.log('批量开票信息:', state.selectedInvoiceList);
 	},
 	CLEAR_SELECTED_INVOICE_LIST: state => {
 		state.selectedInvoiceList = [];
 	},
+	// 修改其中某一个开票的值
+	// TODO
+	UPDATE_SOME_INVOICE_VALUE: (state, { index, value }) => {},
 	SET_INVOICE_AMOUNT: (state, data) => {
 		state.invoiceAmount = data;
 	},

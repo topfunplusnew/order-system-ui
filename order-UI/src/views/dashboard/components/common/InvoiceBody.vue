@@ -5,7 +5,9 @@ import { PUBLIC_DICT_TYPE } from '@/utils/order';
 import { parseTime } from '@/utils/ruoyi';
 import { getUuid } from '@/utils/trash/utils';
 import { TableName } from '@/api/tool/enums';
-import { batchInvoice } from '@/api/system/excel';
+import DialogWrapper from '@/views/dashboard/components/common/DialogWrapper.vue';
+import { common_dialog } from '@/views/dashboard/mixins/common/common_dialog';
+import ReadyList from '@/views/dashboard/components/common/ReadyList.vue';
 
 // 发票对象
 export class InvoiceObject {
@@ -46,7 +48,8 @@ export class InvoiceObject {
 
 export default {
 	name: 'InvoiceBody',
-	components: { InvoiceItem },
+	components: { DialogWrapper, InvoiceItem },
+	mixins: [common_dialog],
 	props: {},
 	watch: {
 		// 监听选择订单的变化
@@ -98,8 +101,8 @@ export default {
 		])
 	},
 	methods: {
-		// 批量发票卖出
-		async handleInvoiceOutBatch() {
+		// 批量开发票
+		async handleInvoiceBatch() {
 			// 首先从vuex拿出数据
 			const invoiceList = this.$store.getters.selectedInvoiceList;
 
@@ -108,17 +111,16 @@ export default {
 				this.$message.warning('开票列表为空,请检查!');
 			}
 
-			// 发送请求 批量添加开票信息
-			const res = await batchInvoice(invoiceList);
-
-			this.handleCheckInvoice(res.data);
+			// 弹出弹窗 让用户检查
+			this.handleCheckInvoice(invoiceList);
 		},
-		// 批量发票买入
-		async handleInvoiceInBatch() {},
 
 		// 校验
 		handleCheckInvoice(resultList) {
-			// 逻辑是，resultList中只要有一个元素的result 为 failure 弹出弹窗 显示开票数组
+			// 打开弹窗
+			this.openDialog(ReadyList, '待开票列表', '900px', {
+				list: resultList
+			});
 		},
 		// 分配金额的具体函数 选择某一个订单后要扣钱
 		handleTransform(orderItem) {
@@ -167,6 +169,8 @@ export default {
 				(pre, cur) => pre + cur.paymentFactory,
 				0
 			);
+
+			console.log('出厂货款:', paymentFactory);
 
 			// 供应商
 			return new InvoiceObject(
@@ -246,7 +250,7 @@ export default {
 					type="success"
 					size="mini"
 					:disabled="op_customer"
-					@click="handleInvoiceOutBatch"
+					@click="handleInvoiceBatch"
 				>
 					开具客户发票
 				</el-button>
@@ -255,12 +259,26 @@ export default {
 					type="success"
 					size="mini"
 					:disabled="op_supplier"
-					@click="handleInvoiceInBatch"
+					@click="handleInvoiceBatch"
 				>
 					开具供应商发票
 				</el-button>
 			</div>
 		</el-card>
+
+		<!--    通用弹窗 配合common_dialogs 使用-->
+		<div v-if="currentComponent">
+			<DialogWrapper
+				:current-component="currentComponent"
+				:dialog-visible="dialogVisible"
+				:dialog-props="dialogProps"
+				:dialog-title="dialogTitle"
+				:dialog-width="dialogWidth"
+				@update:dialogVisible="args => (dialogVisible = false)"
+				@close="handleCloseDialog"
+				@confirm="handleDialogConfirm"
+			/>
+		</div>
 	</div>
 </template>
 

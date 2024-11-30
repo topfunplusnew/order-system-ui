@@ -1,5 +1,5 @@
 <script>
-import { listGoodsOrder } from '@/api/system/goodsOrder';
+import { getGoodsOrder, listGoodsOrder } from '@/api/system/goodsOrder';
 import QuerySearchBar from '@/views/dashboard/components/goodsOrder/QuerySearchBar.vue';
 import {
 	OptionInvent,
@@ -7,10 +7,14 @@ import {
 } from '@/views/dashboard/mixins/order/order_Invoice';
 import { mapGetters } from 'vuex';
 import { PUBLIC_DICT_TYPE } from '@/utils/order';
+import DialogWrapper from '@/views/dashboard/components/common/DialogWrapper.vue';
+import { common_dialog } from '@/views/dashboard/mixins/common/common_dialog';
+import GOODS_ORDER from '@/components/NeedToShow/GOODS_ORDER.vue';
 
 export default {
 	name: 'SelectGoods',
-	components: { QuerySearchBar },
+	components: { DialogWrapper, QuerySearchBar },
+	mixins: [common_dialog],
 	computed: {
 		...mapGetters(['ticketPoint', 'comment'])
 	},
@@ -40,7 +44,7 @@ export default {
 
 			// 判断是供应商还是客户
 			type: null,
-
+			id: null,
 			// 订单选择的时候保存选中的行，方便取消选中后计算钱
 			preOrderList: []
 		};
@@ -59,6 +63,8 @@ export default {
 			this.handleFilterOrders(value);
 			// 赋值类型
 			this.type = value.type;
+			// 赋值id 用于查找供应商
+			this.id = value.id;
 			// 取消禁用多选框
 			this.isBaned = false;
 		});
@@ -76,10 +82,12 @@ export default {
 	methods: {
 		// 获取订单列表
 		async getList() {
-			// 先禁用多选框
-			this.isBaned = true;
-			// 打开加载
-			this.loading = true;
+			if (!this.$store.getters.ticketPoint || !this.hasClicked) {
+				// 先禁用多选框
+				this.isBaned = true;
+				// 打开加载
+				this.loading = true;
+			}
 			try {
 				const res = await listGoodsOrder(this.queryParams);
 				this.goodsOrderList = res.rows; // 更新数据
@@ -158,7 +166,8 @@ export default {
 			try {
 				// 如果取消选中的行不为空，扣除对应的金额
 				if (removedRows.length !== 0) {
-					money = this.calculateMoney(removedRows, this.type);
+					money =
+						this.calculateMoney(removedRows, this.type) * this.ticketPoint;
 					if (money > 0) {
 						this.$store.commit('excel/ADD_INVOICE_AMOUNT', money);
 					}
@@ -166,7 +175,9 @@ export default {
 
 				// 如果选中的行不为空，增加对应的金额
 				if (addedRows.length !== 0) {
-					money = this.calculateMoney(addedRows, this.type);
+					money = this.calculateMoney(addedRows, this.type) * this.ticketPoint;
+
+					console.log('供应商计算金额:', money);
 					if (money > 0) {
 						this.$store.commit('excel/MULTI_INVOICE_AMOUNT', money);
 					}
@@ -189,10 +200,13 @@ export default {
 
 			rows.forEach(row => {
 				if (type === PUBLIC_DICT_TYPE.CUSTOMER) {
-					money += row.allPayments; // 客户操作金额
+					// 客户操作金额
+					money += row.allPayments;
 				} else if (type === PUBLIC_DICT_TYPE.SUPPLIER) {
 					row.smailOrderDetails.forEach(detail => {
-						money += detail.paymentFactory; // 供应商操作金额
+						if (detail.supplierID === this.id) {
+							money += detail.paymentFactory; // 供应商操作金额
+						}
 					});
 				}
 			});
@@ -278,6 +292,20 @@ export default {
 
 <template>
 	<div>
+		<!--    通用弹窗 配合common_dialogs 使用-->
+		<div v-if="currentComponent">
+			<DialogWrapper
+				:current-component="currentComponent"
+				:dialog-visible="dialogVisible"
+				:dialog-props="dialogProps"
+				:dialog-title="dialogTitle"
+				:dialog-width="dialogWidth"
+				@update:dialogVisible="args => (dialogVisible = false)"
+				@close="handleCloseDialog"
+				@confirm="handleDialogConfirm"
+			/>
+		</div>
+
 		<QuerySearchBar :query-params="queryParams" @updateQuery="handleQuery" />
 
 		<!--    显示选择的公司 如果是客户 那么就是批量卖出 如果是供应商 那么就是批量买入-->
