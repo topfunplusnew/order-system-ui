@@ -755,13 +755,17 @@
 						</el-row>
 					</el-form-item>
 				</el-row>
-				<el-form-item label="对方银行账户类型">
+				<el-form-item label="对方银行账户类型" v-if="value !== '对外付款'">
 					<BankType
 						:select-type="form.otherBankCardType"
 						@updateSelectedType="changeOtherBankType"
 					/>
 				</el-form-item>
-				<el-form-item label="对方账号" prop="otherBankNo">
+				<el-form-item
+					label="对方账号"
+					prop="otherBankNo"
+					v-if="value !== '对外付款'"
+				>
 					<el-row>
 						<el-col :span="14">
 							<el-input
@@ -810,7 +814,11 @@
 						</el-col>
 					</el-row>
 				</el-form-item>
-				<el-form-item label="对方开户行" prop="otherBankName">
+				<el-form-item
+					label="对方开户行"
+					prop="otherBankName"
+					v-if="value !== '对外付款'"
+				>
 					<el-input
 						v-model="form.otherBankName"
 						placeholder="请输入对方开户行"
