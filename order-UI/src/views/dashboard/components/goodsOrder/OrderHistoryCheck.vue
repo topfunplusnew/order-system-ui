@@ -1,7 +1,8 @@
 <template>
 	<el-dialog
-		:close-on-click-modal="false"
 		:show-close="false"
+		:close-on-click-modal="false"
+		:close-on-press-escape="false"
 		title="订单历史信息"
 		:visible.sync="checkHistoryOrderVisible"
 		width="1100px"
