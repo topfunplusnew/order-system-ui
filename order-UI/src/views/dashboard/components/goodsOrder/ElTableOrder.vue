@@ -22,10 +22,13 @@ import { mixin_printHTML } from '@/views/dashboard/mixins/print';
 import reLength from '@/views/dashboard/mixins/reLength';
 import GOODS_ORDER from '../../../../components/NeedToShow/GOODS_ORDER.vue';
 import QuerySearchBar from './QuerySearchBar.vue';
+import { mixin_order_orderHistory } from '@/views/dashboard/mixins/order/order_history';
+import OrderHistoryCheck from '@/views/dashboard/components/goodsOrder/OrderHistoryCheck.vue';
+import { parseTime } from '@/utils/ruoyi';
 
 export default {
 	name: 'ElTableOrder',
-	components: { DialogWrapper, CheckFiles, QuerySearchBar },
+	components: { OrderHistoryCheck, DialogWrapper, CheckFiles, QuerySearchBar },
 	// 引入打印的混入、拖动表头宽度引起的变化、订单的基本信息的混入
 	mixins: [
 		// 打印功能
@@ -55,7 +58,9 @@ export default {
 		// 发货单
 		mixin_order_deliverGoods,
 		// 运费申请
-		mixin_order_freeApply
+		mixin_order_freeApply,
+		// 订单历史记录查看
+		mixin_order_orderHistory
 	],
 	props: {
 		// 是否为调整单
@@ -98,6 +103,7 @@ export default {
 		}
 	},
 	methods: {
+		parseTime,
 		updateGoodsOrder,
 		getGoodsOrder,
 
@@ -210,13 +216,25 @@ export default {
 			/>
 		</div>
 
+		<!--    订单历史记录查看-->
+		<div>
+			<OrderHistoryCheck
+				:active-names="activeNames"
+				:check-history-order-visible="checkHistoryOrderVisible"
+				:checkcurrent-order-item-info="checkcurrentOrderItemInfo"
+				:order-history-info-list="orderHistoryInfoList"
+				:parse-time="parseTime(new Date(), '{y}-{m}-{d} {h}:{i}:{s}')"
+				@close="closeOrderHistoryCheck"
+			/>
+		</div>
+
 		<!--    顶部按钮操作-->
 		<div>
 			<el-row :gutter="10" class="mb8">
 				<el-col :span="1.5">
 					<el-button icon="el-icon-refresh" size="mini" @click="resetQuery"
-						>刷新</el-button
-					>
+						>刷新
+					</el-button>
 				</el-col>
 				<el-col v-if="!isAdjustOrder" :span="1.5">
 					<el-button
@@ -312,13 +330,13 @@ export default {
 							</el-dropdown-menu>
 						</el-dropdown>
 						<!--          禁用-->
-						<!--          <el-button-->
-						<!--            style="margin-left: 5px"-->
-						<!--            size="mini"-->
-						<!--            type="text"-->
-						<!--            @click="checkOrderHistory(scope.row)"-->
-						<!--          >查看历史-->
-						<!--          </el-button>-->
+						<el-button
+							style="margin-left: 5px"
+							size="mini"
+							type="text"
+							@click="checkOrderHistory(scope.row)"
+							>查看历史
+						</el-button>
 					</template>
 				</el-table-column>
 				<el-table-column
@@ -798,6 +816,7 @@ export default {
 .invoice {
 	width: 100%;
 	height: 100%;
+
 	&:hover {
 		cursor: pointer;
 		color: #df6565;

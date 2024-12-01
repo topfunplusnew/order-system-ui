@@ -32,6 +32,7 @@ export var mixin_order_orderHistory = {
 		},
 		// 查看订单历史信息
 		checkOrderHistory(row) {
+			console.log('行数据:', row);
 			const id = row.id;
 			// 先获取原订单的信息
 			getGoodsOrder(id).then(res => {
@@ -39,55 +40,64 @@ export var mixin_order_orderHistory = {
 			});
 			// 查询订单历史信息
 			getHistoryGoodsOrder({ goodsOrderID: id }).then(res => {
-				// 如果拿到的列表为空 说明没有人修改过
 				if (res.rows.length === 0) {
 					this.$message.warning('没有修改记录');
 					return;
 				}
-				// 拿到列表
 				this.orderHistoryInfoList = res.rows;
-				// 对列表中每一个值进行操作
-				for (let i = 0; i < this.orderHistoryInfoList.length - 1; i++) {
-					// diff属性中包含了旧的信息和新的信息 给CodeDiff组件进行JSON字符串比较
-					this.orderHistoryInfoList[i].diff = {
-						old: this.formatData(
-							excludeParams(
-								this.orderHistoryInfoList[i],
-								this.$excludeWithUpdate
-							)
-						),
+
+				// 将最新的数据推入
+				for (let i = 0; i < this.orderHistoryInfoList.length; i++) {
+					const current = this.orderHistoryInfoList[i];
+					const previous = this.orderHistoryInfoList[i + 1] || {}; // 保证不会越界
+					current.diff = {
 						new: this.formatData(
-							excludeParams(
-								this.orderHistoryInfoList[i + 1],
-								this.$excludeWithUpdate
-							)
+							excludeParams(current, this.$excludeWithUpdate)
 						),
-						updateTime: this.parseTime(
-							this.orderHistoryInfoList[i + 1].updateTime
-						)
+						old: this.formatData(
+							excludeParams(previous, this.$excludeWithUpdate)
+						),
+						updateTime: this.parseTime(current.updateTime)
 					};
 				}
+
 				// 处理最后一个元素
-				if (this.orderHistoryInfoList.length > 0) {
-					this.orderHistoryInfoList[this.orderHistoryInfoList.length - 1].diff =
-						{
-							old: this.formatData(
-								excludeParams(
-									this.orderHistoryInfoList[
-										this.orderHistoryInfoList.length - 1
-									],
-									this.$excludeWithUpdate
-								)
-							),
+				const len = this.orderHistoryInfoList.length;
+				if (len > 0) {
+					this.orderHistoryInfoList.push({
+						diff: {
 							new: this.formatData(
 								excludeParams(
-									this.currentOrderItemInfo,
+									this.orderHistoryInfoList[len - 1],
 									this.$excludeWithUpdate
 								)
 							),
-							updateTime: this.parseTime(this.currentOrderItemInfo.updateTime)
-						};
+							old: null,
+							updateTime: this.parseTime(
+								this.orderHistoryInfoList[len - 1].updateTime
+							)
+						}
+					});
+
+					// 处理第一个元素
+					if (row) {
+						this.orderHistoryInfoList.unshift({
+							diff: {
+								new: this.formatData(
+									excludeParams(row, this.$excludeWithUpdate)
+								),
+								old: this.formatData(
+									excludeParams(
+										this.orderHistoryInfoList[0],
+										this.$excludeWithUpdate
+									)
+								),
+								updateTime: this.parseTime(row.updateTime)
+							}
+						});
+					}
 				}
+
 				this.checkHistoryOrderVisible = true;
 			});
 		},

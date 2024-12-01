@@ -9,7 +9,7 @@
 		<el-row>
 			<el-col :span="18" :offset="3">
 				<el-timeline>
-					<el-timeline-item :timestamp="'今天' + parseTime" placement="top">
+					<el-timeline-item timestamp="至今" placement="top">
 						<el-button
 							type="success"
 							icon="el-icon-document"
@@ -52,7 +52,7 @@
 			</el-col>
 		</el-row>
 		<div slot="footer" class="dialog-footer">
-			<el-button @click="close"> 关 闭 </el-button>
+			<el-button @click="close"> 关 闭</el-button>
 		</div>
 	</el-dialog>
 </template>
@@ -98,3 +98,42 @@ export default {
 	}
 };
 </script>
+
+<style lang="scss" scoped>
+.center {
+	// 解决vue-code-diff对不齐和显示下拉标志问题
+	max-height: 600px;
+	overflow-y: auto;
+	overflow-x: hidden;
+
+	/* 样式穿透-起始行左右对齐，*/
+
+	.d2h-code-side-line {
+		height: 15px;
+	}
+
+	code.hljs {
+		padding: 0;
+	}
+
+	// 删除行统计显示
+
+	.d2h-code-side-linenumber {
+		display: none;
+	}
+
+	.d2h-code-side-line {
+		padding: unset;
+	}
+
+	.d2h-code-line-ctn {
+		width: unset;
+	}
+
+	// 删除第一行的统计结果
+
+	.d2h-info {
+		display: none;
+	}
+}
+</style>
