@@ -32,74 +32,44 @@ export var mixin_order_orderHistory = {
 		},
 		// 查看订单历史信息
 		checkOrderHistory(row) {
-			console.log('行数据:', row);
 			const id = row.id;
 			// 先获取原订单的信息
-			getGoodsOrder(id).then(res => {
+			getGoodsOrder(row.id).then(res => {
 				this.currentOrderItemInfo = res.data;
-			});
-			// 查询订单历史信息
-			getHistoryGoodsOrder({ goodsOrderID: id }).then(res => {
-				if (res.rows.length === 0) {
-					this.$message.warning('没有修改记录');
-					return;
-				}
-				this.orderHistoryInfoList = res.rows;
+				// 获取订单历史记录信息
+				getHistoryGoodsOrder({ goodsOrderID: id }).then(res => {
+					if (res.total === 0) {
+						this.$message.warning('无订单历史信息');
+						return;
+					}
+					this.orderHistoryInfoList = [];
+					let array = res.rows;
 
-				// 将最新的数据推入
-				for (let i = 0; i < this.orderHistoryInfoList.length; i++) {
-					const current = this.orderHistoryInfoList[i];
-					const previous = this.orderHistoryInfoList[i + 1] || {}; // 保证不会越界
-					current.diff = {
-						new: this.formatData(
-							excludeParams(current, this.$excludeWithUpdate)
-						),
-						old: this.formatData(
-							excludeParams(previous, this.$excludeWithUpdate)
-						),
-						updateTime: this.parseTime(current.updateTime)
-					};
-				}
+					array.unshift(JSON.parse(JSON.stringify(row)));
 
-				// 处理最后一个元素
-				const len = this.orderHistoryInfoList.length;
-				if (len > 0) {
-					this.orderHistoryInfoList.push({
-						diff: {
-							new: this.formatData(
-								excludeParams(
-									this.orderHistoryInfoList[len - 1],
-									this.$excludeWithUpdate
-								)
-							),
-							old: null,
-							updateTime: this.parseTime(
-								this.orderHistoryInfoList[len - 1].updateTime
-							)
-						}
-					});
-
-					// 处理第一个元素
-					if (row) {
-						this.orderHistoryInfoList.unshift({
+					for (let i = array.length - 1; i > 0; i--) {
+						const item = array[i];
+						const new_item = array[i - 1];
+						this.orderHistoryInfoList.push({
 							diff: {
-								new: this.formatData(
-									excludeParams(row, this.$excludeWithUpdate)
+								old: this.format(excludeParams(item, this.$excludeWithUpdate)),
+								new: this.format(
+									excludeParams(new_item, this.$excludeWithUpdate)
 								),
-								old: this.formatData(
-									excludeParams(
-										this.orderHistoryInfoList[0],
-										this.$excludeWithUpdate
-									)
-								),
-								updateTime: this.parseTime(row.updateTime)
+								updateTime: item.updateTime,
+								userName: item.userName,
+								remark: item.remark
 							}
 						});
 					}
-				}
-
-				this.checkHistoryOrderVisible = true;
+					this.orderHistoryInfoList.reverse();
+					this.checkHistoryOrderVisible = true;
+				});
 			});
+			// 查询订单历史信息
+		},
+		format(data) {
+			return this.formatData(excludeParams(data, this.$excludeWithUpdate));
 		},
 		// 关闭历史订单的弹窗
 		closeOrderHistoryCheck() {

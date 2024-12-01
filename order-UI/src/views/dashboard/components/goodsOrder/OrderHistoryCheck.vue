@@ -27,13 +27,15 @@
 					>
 						<el-collapse v-model="activeNames">
 							<el-collapse-item
-								:title="item.userName + ':' + item.remark"
+								:title="item.diff.userName + ':' + item.diff.remark"
 								:name="index"
 							>
 								<el-card>
 									<template #header>
 										<span style="font-weight: bold"
-											>修改人:{{ item.userName }}-{{ item.remark }}</span
+											>修改人:{{ item.diff.userName }}-{{
+												item.diff.remark
+											}}</span
 										>
 									</template>
 									<div>
