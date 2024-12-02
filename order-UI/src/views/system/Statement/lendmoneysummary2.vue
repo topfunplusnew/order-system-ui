@@ -18,17 +18,17 @@
 			<el-form-item label="开始时间" prop="beginTime">
 				<el-date-picker
 					v-model="queryParams.beginTime"
-					type="datetime"
+					type="date"
 					placeholder="请选择开始时间"
-					value-format="yyyy-MM-dd HH:mm:ss"
+					value-format="yyyy-MM-dd"
 				></el-date-picker>
 			</el-form-item>
 			<el-form-item label="结束时间" prop="endTime">
 				<el-date-picker
 					v-model="queryParams.endTime"
-					type="datetime"
+					type="date"
 					placeholder="请选择结束时间"
-					value-format="yyyy-MM-dd HH:mm:ss"
+					value-format="yyyy-MM-dd"
 				></el-date-picker>
 			</el-form-item>
 			<el-form-item>
@@ -277,18 +277,18 @@
 				<el-form-item label="开始时间" prop="beginTime">
 					<el-date-picker
 						v-model="queryParams.beginTime"
-						type="datetime"
+						type="date"
 						placeholder="选择时间"
-						value-format="yyyy-MM-dd HH:mm:ss"
+						value-format="yyyy-MM-dd"
 						size="mini"
 					></el-date-picker>
 				</el-form-item>
 				<el-form-item label="结束时间" prop="endTime">
 					<el-date-picker
 						v-model="queryParams.endTime"
-						type="datetime"
+						type="date"
 						placeholder="选择时间"
-						value-format="yyyy-MM-dd HH:mm:ss"
+						value-format="yyyy-MM-dd"
 						size="mini"
 					></el-date-picker>
 				</el-form-item>
@@ -303,8 +303,6 @@
 
 <script>
 import { getLendMoneySummary2 } from '@/api/system/statement';
-import SearchOption from '@/components/SearchOption.vue';
-import ApplyPayment from '@/views/dashboard/components/common/ApplyPayment.vue';
 import { mixin_printHTML } from '@/views/dashboard/mixins/print';
 import { listRecoverMoney } from '../../../api/system/recoverMoney';
 import InfoDialog from '../../../components/InfoDialog.vue';
@@ -312,7 +310,7 @@ import { parseTime } from '../../../utils/ruoyi';
 
 export default {
 	name: 'LendMoney',
-	components: { InfoDialog, ApplyPayment, SearchOption },
+	components: { InfoDialog },
 	dicts: ['order_target_type'],
 	mixins: [mixin_printHTML],
 	data() {

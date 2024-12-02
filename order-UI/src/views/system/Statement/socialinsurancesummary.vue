@@ -17,9 +17,9 @@
 			<el-form-item label="开始时间" prop="beginTime">
 				<el-date-picker
 					v-model="queryParams.beginTime"
-					type="datetime"
+					type="date"
 					placeholder="选择时间"
-					value-format="yyyy-MM-dd HH:mm:ss"
+					value-format="yyyy-MM-dd"
 					size="mini"
 					style="width: 100px"
 				></el-date-picker>
@@ -27,9 +27,9 @@
 			<el-form-item label="结束时间" prop="endTime">
 				<el-date-picker
 					v-model="queryParams.endTime"
-					type="datetime"
+					type="date"
 					placeholder="选择时间"
-					value-format="yyyy-MM-dd HH:mm:ss"
+					value-format="yyyy-MM-dd"
 					size="mini"
 					style="width: 100px"
 				></el-date-picker>
@@ -260,18 +260,18 @@
 				<el-form-item label="开始时间" prop="beginTime">
 					<el-date-picker
 						v-model="queryParams.beginTime"
-						type="datetime"
+						type="date"
 						placeholder="选择时间"
-						value-format="yyyy-MM-dd HH:mm:ss"
+						value-format="yyyy-MM-dd"
 						size="mini"
 					></el-date-picker>
 				</el-form-item>
 				<el-form-item label="结束时间" prop="endTime">
 					<el-date-picker
 						v-model="queryParams.endTime"
-						type="datetime"
+						type="date"
 						placeholder="选择时间"
-						value-format="yyyy-MM-dd HH:mm:ss"
+						value-format="yyyy-MM-dd"
 						size="mini"
 					></el-date-picker>
 				</el-form-item>
@@ -285,14 +285,6 @@
 </template>
 
 <script>
-import {
-	listSocialInsurance,
-	getSocialInsurance,
-	delSocialInsurance,
-	addSocialInsurance,
-	updateSocialInsurance
-} from '@/api/system/socialInsurance';
-import { excludeParams } from '@/api/tool/exclude';
 import { mixin_printHTML } from '@/views/dashboard/mixins/print';
 import { getSocialInsuranceSummary } from '@/api/system/statement';
 import { parseTime } from '../../../utils/ruoyi';

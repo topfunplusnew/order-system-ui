@@ -13,12 +13,12 @@ export default {
 				// 上个月的第一天
 				beginTime: parseTime(
 					new Date(new Date().getFullYear(), new Date().getMonth() - 1, 1),
-					'{y}-{m}-{d} {h}:{i}:{s}'
+					'{y}-{m}-{d}'
 				),
 				// 本月最后一天
 				endTime: parseTime(
 					new Date(new Date().getFullYear(), new Date().getMonth() + 1, 0),
-					'{y}-{m}-{d} {h}:{i}:{s}'
+					'{y}-{m}-{d}'
 				)
 			},
 			loading: '',
@@ -108,8 +108,8 @@ export default {
 			<!--    刷新行-->
 			<el-row style="background-color: #e6e6e6">
 				<el-button type="primary" icon="el-icon-refresh" @click="refresh"
-					>刷新</el-button
-				>
+					>刷新
+				</el-button>
 			</el-row>
 			<hr color="#e6e6e6" />
 			<!--    时间范围搜索行-->
@@ -124,9 +124,9 @@ export default {
 					<el-form-item label="时间" prop="companyName">
 						<el-date-picker
 							v-model="queryParams.beginTime"
-							type="datetime"
+							type="date"
 							size="mini"
-							value-format="yyyy-MM-dd HH:mm:ss"
+							value-format="yyyy-MM-dd"
 							placeholder="选择日期"
 						>
 						</el-date-picker>
@@ -134,9 +134,9 @@ export default {
 					<el-form-item>
 						<el-date-picker
 							v-model="queryParams.endTime"
-							type="datetime"
+							type="date"
 							size="mini"
-							value-format="yyyy-MM-dd HH:mm:ss"
+							value-format="yyyy-MM-dd"
 							placeholder="选择日期"
 						>
 						</el-date-picker>
@@ -147,8 +147,8 @@ export default {
 							icon="el-icon-search"
 							size="mini"
 							@click="handleQuery"
-							>搜索</el-button
-						>
+							>搜索
+						</el-button>
 					</el-form-item>
 				</el-form>
 			</el-row>
@@ -273,9 +273,9 @@ export default {
 				<el-form-item label="开始时间" prop="beginTime">
 					<el-date-picker
 						v-model="queryParams.beginTime"
-						type="datetime"
+						type="date"
 						placeholder="选择时间"
-						value-format="yyyy-MM-dd HH:mm:ss"
+						value-format="yyyy-MM-dd"
 						size="mini"
 					>
 					</el-date-picker>
@@ -283,9 +283,9 @@ export default {
 				<el-form-item label="结束时间" prop="endTime">
 					<el-date-picker
 						v-model="queryParams.endTime"
-						type="datetime"
+						type="date"
 						placeholder="选择时间"
-						value-format="yyyy-MM-dd HH:mm:ss"
+						value-format="yyyy-MM-dd"
 						size="mini"
 					>
 					</el-date-picker>

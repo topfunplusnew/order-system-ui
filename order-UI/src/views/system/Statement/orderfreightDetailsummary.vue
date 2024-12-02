@@ -3,8 +3,8 @@
 	<div class="app-container">
 		<el-row style="background-color: #e6e6e6">
 			<el-button type="primary" icon="el-icon-refresh" @click="refresh"
-				>刷新</el-button
-			>
+				>刷新
+			</el-button>
 		</el-row>
 		<hr color="#e6e6e6" />
 		<el-form
@@ -17,17 +17,17 @@
 			<el-form-item label="开始时间" prop="beginTime">
 				<el-date-picker
 					v-model="queryParams.beginTime"
-					type="datetime"
+					type="date"
 					placeholder="请选择开始时间"
-					value-format="yyyy-MM-dd HH:mm:ss"
+					value-format="yyyy-MM-dd"
 				/>
 			</el-form-item>
 			<el-form-item label="结束时间" prop="endTime">
 				<el-date-picker
 					v-model="queryParams.endTime"
-					type="datetime"
+					type="date"
 					placeholder="请选择结束时间"
-					value-format="yyyy-MM-dd HH:mm:ss"
+					value-format="yyyy-MM-dd"
 				/>
 			</el-form-item>
 			<el-form-item label="车牌号" prop="carNo">
@@ -61,8 +61,8 @@
 		</el-form>
 		<hr color="#e6e6e6" />
 		<el-row style="font-weight: bold; font-size: 20px; margin: 0 30px"
-			>运费科目汇总账</el-row
-		>
+			>运费科目汇总账
+		</el-row>
 		<el-row :gutter="10" class="mb8">
 			<right-toolbar :columns="columns" @queryTable="getList">
 				<template #print>
@@ -219,18 +219,18 @@
 				<el-form-item label="开始时间" prop="beginTime">
 					<el-date-picker
 						v-model="queryParams.beginTime"
-						type="datetime"
+						type="date"
 						placeholder="选择时间"
-						value-format="yyyy-MM-dd HH:mm:ss"
+						value-format="yyyy-MM-dd"
 						size="mini"
 					/>
 				</el-form-item>
 				<el-form-item label="结束时间" prop="endTime">
 					<el-date-picker
 						v-model="queryParams.endTime"
-						type="datetime"
+						type="date"
 						placeholder="选择时间"
-						value-format="yyyy-MM-dd HH:mm:ss"
+						value-format="yyyy-MM-dd"
 						size="mini"
 					/>
 				</el-form-item>
@@ -274,7 +274,7 @@ export default {
 				pageSize: 50,
 				beginTime: parseTime(
 					new Date(new Date().getTime() - 30 * 24 * 60 * 60 * 1000),
-					'{y}-{m}-{d} {h}:{i}:{s}'
+					'{y}-{m}-{d}'
 				),
 				endTime: parseTime(new Date()),
 				carNo: '',

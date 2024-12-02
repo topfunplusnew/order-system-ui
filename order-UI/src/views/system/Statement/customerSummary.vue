@@ -4,8 +4,8 @@
 	<div class="app-container">
 		<el-row style="background-color: #e6e6e6">
 			<el-button type="primary" icon="el-icon-refresh" @click="refresh"
-				>刷新</el-button
-			>
+				>刷新
+			</el-button>
 		</el-row>
 		<hr color="#e6e6e6" />
 		<el-form
@@ -18,18 +18,18 @@
 			<el-form-item label="开始时间" prop="beginTime">
 				<el-date-picker
 					v-model="queryParams.beginTime"
-					type="datetime"
+					type="date"
 					placeholder="请选择开始时间"
-					value-format="yyyy-MM-dd HH:mm:ss"
+					value-format="yyyy-MM-dd"
 					clearable
 				/>
 			</el-form-item>
 			<el-form-item label="结束时间" prop="endTime">
 				<el-date-picker
 					v-model="queryParams.endTime"
-					type="datetime"
+					type="date"
 					placeholder="请选择结束时间"
-					value-format="yyyy-MM-dd HH:mm:ss"
+					value-format="yyyy-MM-dd"
 					clearable
 				/>
 			</el-form-item>
@@ -53,8 +53,8 @@
 		</el-form>
 		<hr color="#e6e6e6" />
 		<el-row style="font-weight: bold; font-size: 20px; margin: 0 30px"
-			>客户科目余额汇总表</el-row
-		>
+			>客户科目余额汇总表
+		</el-row>
 		<el-row :gutter="10" class="mb8">
 			<right-toolbar :columns="columns" @queryTable="getList">
 				<template #print>
@@ -232,6 +232,7 @@ import CustomerDetail from '@/views/system/Statement/components/CustomerDetail.v
 import { getCustomerSubjectSummary } from '../../../api/system/statement';
 import { parseTime } from '../../../utils/ruoyi';
 import { getConfigValue } from './data/config_get';
+
 export default {
 	name: 'CustomerSummary',
 	components: { CustomerDetail },
@@ -252,8 +253,8 @@ export default {
 				pageNum: 1,
 				pageSize: 50,
 				// 日期往前推迟一年 工具函数
-				beginTime: getTimeOffset('{y}-{m}-{d} {h}:{i}:{s}', 1),
-				endTime: parseTime(new Date(), '{y}-{m}-{d} {h}:{i}:{s}'),
+				beginTime: getTimeOffset('{y}-{m}-{d}', 1),
+				endTime: parseTime(new Date(), '{y}-{m}-{d}'),
 				companyName: null
 			},
 			// 表单校验

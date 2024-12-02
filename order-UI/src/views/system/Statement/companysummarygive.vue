@@ -3,8 +3,8 @@
 	<div class="app-container">
 		<el-row style="background-color: #e6e6e6">
 			<el-button type="primary" icon="el-icon-refresh" @click="refresh"
-				>刷新</el-button
-			>
+				>刷新
+			</el-button>
 		</el-row>
 		<hr color="#e6e6e6" />
 		<el-form
@@ -17,18 +17,18 @@
 			<el-form-item label="开始时间" prop="beginTime">
 				<el-date-picker
 					v-model="queryParams.beginTime"
-					type="datetime"
+					type="date"
 					placeholder="请选择开始时间"
-					value-format="yyyy-MM-dd HH:mm:ss"
+					value-format="yyyy-MM-dd"
 				>
 				</el-date-picker>
 			</el-form-item>
 			<el-form-item label="结束时间" prop="endTime">
 				<el-date-picker
 					v-model="queryParams.endTime"
-					type="datetime"
+					type="date"
 					placeholder="请选择结束时间"
-					value-format="yyyy-MM-dd HH:mm:ss"
+					value-format="yyyy-MM-dd"
 				>
 				</el-date-picker>
 			</el-form-item>
@@ -38,8 +38,8 @@
 					icon="el-icon-search"
 					size="mini"
 					@click="handleQuery"
-					>搜索</el-button
-				>
+					>搜索
+				</el-button>
 			</el-form-item>
 		</el-form>
 		<hr color="#e6e6e6" />
@@ -274,9 +274,9 @@
 				<el-form-item label="开始时间" prop="beginTime">
 					<el-date-picker
 						v-model="queryParams.beginTime"
-						type="datetime"
+						type="date"
 						placeholder="选择时间"
-						value-format="yyyy-MM-dd HH:mm:ss"
+						value-format="yyyy-MM-dd"
 						size="mini"
 					>
 					</el-date-picker>
@@ -284,9 +284,9 @@
 				<el-form-item label="结束时间" prop="endTime">
 					<el-date-picker
 						v-model="queryParams.endTime"
-						type="datetime"
+						type="date"
 						placeholder="选择时间"
-						value-format="yyyy-MM-dd HH:mm:ss"
+						value-format="yyyy-MM-dd"
 						size="mini"
 					>
 					</el-date-picker>
@@ -303,8 +303,6 @@
 <script>
 import { mixin_printHTML } from '@/views/dashboard/mixins/print';
 import {
-	getCompanySummary,
-	getOrderFreightDetailSummary,
 	getSupplierSuymmary
 } from '../../../api/system/statement';
 import { parseTime } from '../../../utils/ruoyi';
@@ -328,7 +326,7 @@ export default {
 				pageNum: 1,
 				pageSize: 50,
 				beginTime: '',
-				endTime: parseTime(new Date())
+				endTime: parseTime(new Date(), '{y}-{m}-{d}')
 			},
 			// 表单校验
 			columns: [
