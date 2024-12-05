@@ -3,6 +3,15 @@
 <script>
 export default {
 	name: 'FileItems',
+	// 动态引入
+	components: {
+		ExcelIcon: () => import('@/views/dashboard/components/icons/ExcelIcon.vue'),
+		WordIcon: () => import('@/views/dashboard/components/icons/WordIcon.vue'),
+		ImgIcon: () => import('@/views/dashboard/components/icons/ImgIcon.vue'),
+		FileIcon: () => import('@/views/dashboard/components/icons/FileIcon.vue'),
+		PowerIcon: () => import('@/views/dashboard/components/icons/PowerIcon.vue'),
+		TextIcon: () => import('@/views/dashboard/components/icons/TextIcon.vue')
+	},
 	props: {
 		fileName: {
 			type: String,
@@ -10,13 +19,30 @@ export default {
 		}
 	},
 	data() {
-		return {
-			show: false
-		};
+		return {};
 	},
 	computed: {
 		_fileName() {
 			return this.fileName;
+		},
+		currentIcon() {
+			// 文件后缀与组件的映射关系
+			const iconMap = {
+				'.doc': 'WordIcon',
+				'.docx': 'WordIcon',
+				'.xls': 'ExcelIcon',
+				'.xlsx': 'ExcelIcon',
+				'.pdf': 'PowerIcon',
+				'.txt': 'TextIcon'
+			};
+
+			// 提取文件后缀
+			const fileExt = this._fileName
+				.slice(this._fileName.lastIndexOf('.'))
+				.toLowerCase();
+
+			// 根据后缀查找对应组件
+			return iconMap[fileExt] || 'FileIcon';
 		}
 	},
 	methods: {
@@ -35,23 +61,23 @@ export default {
 
 <template>
 	<div>
-		<div
-			class="file-container"
-			@mouseover="show = true"
-			@mouseleave="show = false"
-		>
-			<div class="file-icon">
-				<el-icon class="el-icon-document"> </el-icon>
-			</div>
-
-			<div class="file-name" @click="handleCheckFile(fileName)">
-				{{ _fileName }}...
-			</div>
-
-			<div v-show="show" class="options">
-				<el-button type="danger" size="mini" round @click="handleDeleteFile"
-					>删除</el-button
+		<div class="file-container">
+			<div class="delete">
+				<el-button
+					type="danger"
+					size="mini"
+					circle
+					icon="el-icon-close"
+					round
+					@click="handleDeleteFile"
 				>
+				</el-button>
+			</div>
+			<div class="file-icon">
+				<component :is="currentIcon" v-if="currentIcon"></component>
+				<div class="file-name" @click="handleCheckFile(fileName)">
+					{{ _fileName }}...
+				</div>
 			</div>
 		</div>
 	</div>
@@ -59,6 +85,7 @@ export default {
 
 <style scoped lang="scss">
 .file-container {
+	position: relative;
 	margin: 4px 4px;
 	width: 98px;
 	height: 98px;
@@ -96,8 +123,10 @@ export default {
 		color: #c31212;
 	}
 
-	.options {
-		margin: 10px;
+	.delete {
+		position: absolute;
+		right: 5px;
+		top: 5px;
 	}
 }
 </style>
