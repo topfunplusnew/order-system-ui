@@ -48,13 +48,13 @@
 		<el-row :gutter="10" class="mb8">
 			<el-col :span="1.5">
 				<el-button icon="el-icon-refresh" size="mini" @click="resetQuery"
-					>刷新</el-button
-				>
+					>刷新
+				</el-button>
 			</el-col>
 			<el-col :span="1.5">
 				<el-button type="danger" size="mini" @click="addSocial"
-					>新增社保基金信息</el-button
-				>
+					>新增社保基金信息
+				</el-button>
 			</el-col>
 			<right-toolbar
 				:showSearch.sync="showSearch"
@@ -439,13 +439,13 @@
 			<el-row>
 				<el-form ref="form" :model="form" :rules="rules" label-width="140px">
 					<el-col :span="8">
-						<el-form-item label="社保缴纳基数" prop="basicSocialInsurance">
+						<el-form-item label="本月社保缴纳基数" prop="basicSocialInsurance">
 							<el-input
 								v-model="form.basicSocialInsurance"
 								placeholder="请输入社保缴纳基数"
 							/>
 						</el-form-item>
-						<el-form-item label="公积金基数" prop="basicHousingFund">
+						<el-form-item label="本月公积金基数" prop="basicHousingFund">
 							<el-input
 								v-model="form.basicHousingFund"
 								placeholder="请输入公积金基数"
@@ -469,7 +469,7 @@
 								type="datetime"
 								placeholder="选择缴费时间"
 								value-format="yyyy-MM-dd HH:mm:ss"
-								style="width: 120px"
+								style="width: 100%"
 							></el-date-picker>
 						</el-form-item>
 					</el-col>
@@ -490,7 +490,13 @@
 									style="width: 100%"
 								/>
 							</el-col>
-							<el-col :span="2" class="line">-</el-col>
+							<el-col
+								:span="2"
+								class="line"
+								style="text-align: center; font-weight: bolder"
+							>
+								-
+							</el-col>
 							<el-col :span="11">
 								<el-input
 									v-model="form.healthySecurityCompany"
@@ -514,7 +520,13 @@
 									placeholder="个人缴纳金额"
 								/>
 							</el-col>
-							<el-col :span="2" class="line">-</el-col>
+							<el-col
+								:span="2"
+								class="line"
+								style="text-align: center; font-weight: bolder"
+							>
+								-
+							</el-col>
 							<el-col :span="11">
 								<el-input
 									v-model="form.unemploymentSecurityCompany"
@@ -525,19 +537,30 @@
 						<!--            <el-form-item label="失业保险-公司" prop="unemploymentSecurityCompany">-->
 						<!--            </el-form-item>-->
 						<el-form-item label="养老保险" prop="retirementSecuritySelf">
-							<el-col :span="11">
-								<el-input
-									v-model="form.retirementSecuritySelf"
-									placeholder="个人缴纳金额"
-								/>
-							</el-col>
-							<el-col :span="2" class="line">-</el-col>
-							<el-col :span="11">
-								<el-input
-									v-model="form.retirementSecurityCompany"
-									placeholder="公司缴纳金额"
-								/>
-							</el-col>
+							<el-row align="middle">
+								<!-- 个人缴纳 -->
+								<el-col :span="11">
+									<el-input
+										v-model="form.retirementSecuritySelf"
+										placeholder="个人缴纳金额"
+									/>
+								</el-col>
+								<!-- 横线 -->
+								<el-col
+									:span="2"
+									class="line"
+									style="text-align: center; font-weight: bolder"
+								>
+									-
+								</el-col>
+								<!-- 公司缴纳 -->
+								<el-col :span="11">
+									<el-input
+										v-model="form.retirementSecurityCompany"
+										placeholder="公司缴纳金额"
+									/>
+								</el-col>
+							</el-row>
 						</el-form-item>
 						<!--            <el-form-item label="养老保险-公司" prop="retirementSecurityCompany">-->
 						<!--            </el-form-item>-->
@@ -550,7 +573,13 @@
 									placeholder="个人缴纳金额"
 								/>
 							</el-col>
-							<el-col :span="2" class="line">-</el-col>
+							<el-col
+								:span="2"
+								class="line"
+								style="text-align: center; font-weight: bolder"
+							>
+								-
+							</el-col>
 							<el-col :span="11">
 								<el-input
 									v-model="form.largeMedicalSecurityCompany"
@@ -567,7 +596,13 @@
 									placeholder="个人缴纳金额"
 								/>
 							</el-col>
-							<el-col :span="2" class="line">-</el-col>
+							<el-col
+								:span="2"
+								class="line"
+								style="text-align: center; font-weight: bolder"
+							>
+								-
+							</el-col>
 							<el-col :span="11">
 								<el-input
 									v-model="form.housingFundCompany"
@@ -602,6 +637,7 @@
 <script>
 import {
 	addSocialInsurance,
+	batchAddSocialInsurance,
 	delSocialInsurance,
 	getSocialInsurance,
 	listSocialInsurance,
@@ -696,7 +732,12 @@ export default {
 				],
 
 				basicHousingFund: [
-					{ required: true, message: '公积金基数不能为空', trigger: 'blur' }
+					{ required: true, message: '公积金基数不能为空', trigger: 'blur' },
+					{
+						// 必须是浮点数
+						pattern: /^[+-]?\d+(\.\d+)?$/,
+						message: '请输入正确的数字'
+					}
 				],
 
 				depName: [{ required: true, message: '部门不能为空', trigger: 'blur' }],
@@ -722,7 +763,12 @@ export default {
 				],
 
 				healthySecuritySelf: [
-					{ required: true, message: '基本医疗保险不能为空', trigger: 'blur' }
+					{ required: true, message: '基本医疗保险不能为空', trigger: 'blur' },
+					{
+						// 必须是浮点数
+						pattern: /^[+-]?\d+(\.\d+)?$/,
+						message: '请输入正确的数字'
+					}
 				],
 
 				healthySecurityCompany: [
@@ -730,49 +776,109 @@ export default {
 						required: true,
 						message: '公司基本医疗保险不能为空',
 						trigger: 'blur'
+					},
+					{
+						// 必须是浮点数
+						pattern: /^[+-]?\d+(\.\d+)?$/,
+						message: '请输入正确的数字'
 					}
 				],
 				injuryInsurance: [
-					{ required: true, message: '工伤保险不能为空', trigger: 'blur' }
+					{ required: true, message: '工伤保险不能为空', trigger: 'blur' },
+					{
+						// 必须是浮点数
+						pattern: /^[+-]?\d+(\.\d+)?$/,
+						message: '请输入正确的数字'
+					}
 				],
 				unemploymentSecuritySelf: [
-					{ required: true, message: '失业保险不能为空', trigger: 'blur' }
+					{ required: true, message: '失业保险不能为空', trigger: 'blur' },
+					{
+						// 必须是浮点数
+						pattern: /^[+-]?\d+(\.\d+)?$/,
+						message: '请输入正确的数字'
+					}
 				],
 
 				unemploymentSecurityCompany: [
-					{ required: true, message: '公司失业保险不能为空', trigger: 'blur' }
+					{ required: true, message: '公司失业保险不能为空', trigger: 'blur' },
+					{
+						// 必须是浮点数
+						pattern: /^[+-]?\d+(\.\d+)?$/,
+						message: '请输入正确的数字'
+					}
 				],
 				retirementSecuritySelf: [
-					{ required: true, message: '养老保险不能为空', trigger: 'blur' }
+					{ required: true, message: '养老保险不能为空', trigger: 'blur' },
+					{
+						// 必须是浮点数
+						pattern: /^[+-]?\d+(\.\d+)?$/,
+						message: '请输入正确的数字'
+					}
 				],
 				retirementSecurityCompany: [
 					{
 						required: true,
 						message: '养老保险-公司不能为空',
 						trigger: 'blur'
+					},
+					{
+						// 必须是浮点数
+						pattern: /^[+-]?\d+(\.\d+)?$/,
+						message: '请输入正确的数字'
 					}
 				],
 				largeMedicalSecuritySelf: [
-					{ required: true, message: '大额医保不能为空', trigger: 'blur' }
+					{ required: true, message: '大额医保不能为空', trigger: 'blur' },
+					{
+						// 必须是浮点数
+						pattern: /^[+-]?\d+(\.\d+)?$/,
+						message: '请输入正确的数字'
+					}
 				],
 				largeMedicalSecurityCompany: [
 					{
 						required: true,
 						message: '大额医保-公司不能为空',
 						trigger: 'blur'
+					},
+					{
+						// 必须是浮点数
+						pattern: /^[+-]?\d+(\.\d+)?$/,
+						message: '请输入正确的数字'
 					}
 				],
 				housingFundSelf: [
-					{ required: true, message: '公积金不能为空', trigger: 'blur' }
+					{ required: true, message: '公积金不能为空', trigger: 'blur' },
+					{
+						// 必须是浮点数
+						pattern: /^[+-]?\d+(\.\d+)?$/,
+						message: '请输入正确的数字'
+					}
 				],
 				housingFundCompany: [
-					{ required: true, message: '公积金-公司不能为空', trigger: 'blur' }
+					{ required: true, message: '公积金-公司不能为空', trigger: 'blur' },
+					{
+						// 必须是浮点数
+						pattern: /^[+-]?\d+(\.\d+)?$/,
+						message: '请输入正确的数字'
+					}
 				],
 				sumSelf: [
-					{ required: true, message: '个人缴费总额不能为空', trigger: 'blur' }
+					{ required: true, message: '个人缴费总额不能为空', trigger: 'blur' },
+					{
+						// 必须是浮点数
+						pattern: /^[+-]?\d+(\.\d+)?$/,
+						message: '请输入正确的数字'
+					}
 				],
 				sumCompany: [
-					{ required: true, message: '公司缴费总额不能为空', trigger: 'blur' }
+					{ required: true, message: '公司缴费总额不能为空', trigger: 'blur' },
+					{
+						// 必须是浮点数
+						pattern: /^[+-]?\d+(\.\d+)?$/,
+						message: '请输入正确的数字'
+					}
 				]
 			},
 			// 添加社保基金的弹窗
@@ -791,6 +897,15 @@ export default {
 		columns: {
 			handler: function (newVal) {
 				localStorage.setItem('socialinsurance-columns', JSON.stringify(newVal));
+			},
+			deep: true
+		},
+		'form.isRecruiting': {
+			handler: function (newVal) {
+				// 与 this.form.isDepletion为互斥字段
+				newVal === '是'
+					? (this.form.isDepletion = '否')
+					: (this.form.isDepletion = '是');
 			},
 			deep: true
 		}
@@ -846,6 +961,7 @@ export default {
 						const item = JSON.parse(JSON.stringify(this.form));
 						// 往列表中推入一个个体信息
 						this.socialInsuranceItemsList.push(item);
+						// 不再清除填写 让用户可以使用上次的信息
 						this.reset();
 						this.addSocialDialogVisible = false;
 					}
@@ -923,8 +1039,10 @@ export default {
 				employeeName: null,
 				employeeID: null,
 				insuranceDate: null,
-				isRecruiting: null,
-				isDepletion: null,
+				// 默认为是
+				isRecruiting: '是',
+				// 默认是否
+				isDepletion: '否',
 				healthySecuritySelf: null,
 				healthySecurityCompany: null,
 				injuryInsurance: null,
@@ -994,32 +1112,40 @@ export default {
 				});
 				// 添加
 			} else {
-				// 批量添加
-				for (let i = 0; i < this.socialInsuranceItemsList.length; i++) {
-					const item = this.socialInsuranceItemsList[i];
-					try {
-						const response = await addSocialInsurance(item);
-						this.socialInsuranceItemsList.splice(i, 1);
-						i--;
-						this.$message.success(
-							`添加成功,剩余${this.socialInsuranceItemsList.length}人员未添加`
-						);
-						// 调用 sleep 函数增加间隔时间，例如 1000 毫秒（1 秒）
-						await this.sleep(1500);
-					} catch (error) {
-						console.error(
-							`第${
-								this.socialInsuranceItemsList.indexOf(item) + 1
-							}条信息添加失败:`,
-							error
-						);
-					}
-				}
-				if (this.socialInsuranceItemsList.length === 0) {
-					this.$message.success('所有人员社保信息添加成功');
+				// 调用后端批量添加社保金接口
+				batchAddSocialInsurance(this.socialInsuranceItemsList).then(() => {
+					this.$modal.msgSuccess('添加成功');
 					this.open = false;
+					this.socialInsuranceItemsList = [];
 					this.getList();
-				}
+				});
+
+				// 批量添加
+				// for (let i = 0; i < this.socialInsuranceItemsList.length; i++) {
+				// 	const item = this.socialInsuranceItemsList[i];
+				// 	try {
+				// 		const response = await addSocialInsurance(item);
+				// 		this.socialInsuranceItemsList.splice(i, 1);
+				// 		i--;
+				// 		this.$message.success(
+				// 			`添加成功,剩余${this.socialInsuranceItemsList.length}人员未添加`
+				// 		);
+				// 		// 调用 sleep 函数增加间隔时间，例如 1000 毫秒（1 秒）
+				// 		await this.sleep(1500);
+				// 	} catch (error) {
+				// 		console.error(
+				// 			`第${
+				// 				this.socialInsuranceItemsList.indexOf(item) + 1
+				// 			}条信息添加失败:`,
+				// 			error
+				// 		);
+				// 	}
+				// }
+				// if (this.socialInsuranceItemsList.length === 0) {
+				// 	this.$message.success('所有人员社保信息添加成功');
+				// 	this.open = false;
+				// 	this.getList();
+				// }
 			}
 		},
 		/** 删除按钮操作 */

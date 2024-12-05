@@ -42,3 +42,12 @@ export function delSocialInsurance(id) {
 		method: 'delete'
 	});
 }
+
+// 批量新增社保基金
+export function batchAddSocialInsurance(data) {
+	return request({
+		url: '/system/socialInsurance/batchAdd',
+		method: 'post',
+		data: data
+	});
+}
