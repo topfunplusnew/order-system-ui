@@ -296,6 +296,7 @@
 						</el-form-item>
 						<el-form-item label="收入贴息金额" prop="inDiscountAmount">
 							<el-input
+								disabled
 								v-model="form.inDiscountAmount"
 								placeholder="请输入贴息金额"
 							/>
@@ -543,8 +544,17 @@ export default {
 				localStorage.setItem('bankacceptance-columns', JSON.stringify(newVal));
 			},
 			deep: true
+		},
+		// 贴息金额的自动计算
+		form: {
+			handler() {
+				this.form.inDiscountAmount =
+					this.form.billAmount * this.form.inDiscountPoints;
+			},
+			deep: true
 		}
 	},
+
 	created() {
 		this.getList();
 		if (
@@ -563,7 +573,6 @@ export default {
 	methods: {
 		listBankAccount,
 		handleCommitBack(val) {
-			console.log(val);
 			this.form.billAccount = val.acountsName;
 		},
 		// 自定义列统计总函数
@@ -627,11 +636,13 @@ export default {
 				billAccount: null,
 				billDate: null,
 				billType: null,
-				reason: null,
+				// 收票是由默认为购买
+				reason: '购买',
 				billAmount: null,
 				inDiscountPoints: null,
 				inDiscountAmount: null,
-				billCategory: null,
+				// 票据种类默认为电子
+				billCategory: '电子',
 				origin: null,
 				endorser: null,
 				endorsee: null,

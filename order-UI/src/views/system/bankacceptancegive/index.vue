@@ -39,16 +39,16 @@
 					icon="el-icon-search"
 					size="mini"
 					@click="handleQuery"
-					>搜索</el-button
-				>
+					>搜索
+				</el-button>
 			</el-form-item>
 		</el-form>
 
 		<el-row :gutter="10" class="mb8">
 			<el-col :span="1.5">
 				<el-button icon="el-icon-refresh" size="mini" @click="resetQuery"
-					>刷新</el-button
-				>
+					>刷新
+				</el-button>
 			</el-col>
 			<el-col :span="1.5">
 				<el-button
@@ -248,7 +248,7 @@
 			:show-close="false"
 			:title="title"
 			:visible.sync="open"
-			width="55%"
+			width="60%"
 			append-to-body
 		>
 			<el-form ref="form" :model="form" :rules="rules" label-width="140px">
@@ -260,8 +260,8 @@
 						<el-form-item label="背书事由" prop="reason">
 							<el-radio v-model="form.reason" label="购买">购买</el-radio>
 							<el-radio v-model="form.reason" label="客户付款"
-								>客户付款</el-radio
-							>
+								>客户付款
+							</el-radio>
 						</el-form-item>
 						<el-form-item label="被背书人" prop="endorser">
 							<el-input v-model="form.endorser" placeholder="请输入背书人" />
@@ -280,6 +280,7 @@
 						</el-form-item>
 						<el-form-item label="支出贴息金额" prop="inDiscountAmount">
 							<el-input
+								disabled
 								v-model="form.inDiscountAmount"
 								placeholder="请输入贴息金额"
 							/>
@@ -287,10 +288,10 @@
 					</el-col>
 					<el-col :span="12">
 						<el-form-item label="票据种类" prop="billCategory">
-							<el-radio v-model="form.billCategory" label="电子">购买</el-radio>
+							<el-radio v-model="form.billCategory" label="电子">电子</el-radio>
 							<el-radio v-model="form.billCategory" label="纸质"
-								>客户付款</el-radio
-							>
+								>纸质
+							</el-radio>
 						</el-form-item>
 						<el-form-item label="我方承兑账户" prop="billAccount">
 							<el-row>
@@ -336,36 +337,45 @@
 								</el-col>
 							</el-row>
 						</el-form-item>
-						<el-form-item label="我方收票日期" prop="billDate">
-							<el-date-picker
-								v-model="form.billDate"
-								type="datetime"
-								placeholder="选择日期"
-								format="yyyy 年 MM 月 dd 日"
-								value-format="yyyy-MM-dd HH:mm:ss"
-							>
-							</el-date-picker>
-						</el-form-item>
-						<el-form-item label="出票日期" prop="issueDate">
-							<el-date-picker
-								v-model="form.issueDate"
-								type="datetime"
-								placeholder="选择日期"
-								format="yyyy 年 MM 月 dd 日"
-								value-format="yyyy-MM-dd HH:mm:ss"
-							>
-							</el-date-picker>
-						</el-form-item>
-						<el-form-item label="到期日期" prop="dueDate">
-							<el-date-picker
-								v-model="form.dueDate"
-								type="datetime"
-								placeholder="选择日期"
-								format="yyyy 年 MM 月 dd 日"
-								value-format="yyyy-MM-dd HH:mm:ss"
-							>
-							</el-date-picker>
-						</el-form-item>
+						<div style="width: 80%">
+							<el-form-item label="我方收票日期" prop="billDate">
+								<el-date-picker
+									style="width: 100%"
+									v-model="form.billDate"
+									type="datetime"
+									placeholder="选择日期"
+									format="yyyy 年 MM 月 dd 日"
+									value-format="yyyy-MM-dd HH:mm:ss"
+								>
+								</el-date-picker>
+							</el-form-item>
+						</div>
+						<div style="width: 80%">
+							<el-form-item label="出票日期" prop="issueDate">
+								<el-date-picker
+									style="width: 100%"
+									v-model="form.issueDate"
+									type="datetime"
+									placeholder="选择日期"
+									format="yyyy 年 MM 月 dd 日"
+									value-format="yyyy-MM-dd HH:mm:ss"
+								>
+								</el-date-picker>
+							</el-form-item>
+						</div>
+						<div style="width: 80%">
+							<el-form-item label="到期日期" prop="dueDate">
+								<el-date-picker
+									style="width: 100%"
+									v-model="form.dueDate"
+									type="datetime"
+									placeholder="选择日期"
+									format="yyyy 年 MM 月 dd 日"
+									value-format="yyyy-MM-dd HH:mm:ss"
+								>
+								</el-date-picker>
+							</el-form-item>
+						</div>
 						<!--        单选-->
 						<!--            <el-form-item label="背书事由" prop="endorseReason">-->
 						<!--              <el-radio v-model="form.endorseReason" label="出卖">出卖</el-radio>-->
@@ -528,6 +538,16 @@ export default {
 	created() {
 		this.getList();
 	},
+	watch: {
+		// 贴息金额的自动计算
+		form: {
+			handler() {
+				this.form.inDiscountAmount =
+					this.form.billAmount * this.form.inDiscountPoints;
+			},
+			deep: true
+		}
+	},
 	methods: {
 		listBankAccount,
 
@@ -601,11 +621,11 @@ export default {
 				billAccount: null,
 				billDate: null,
 				billType: null,
-				reason: null,
+				reason: '购买',
 				billAmount: null,
 				inDiscountPoints: null,
 				inDiscountAmount: null,
-				billCategory: null,
+				billCategory: '电子',
 				origin: null,
 				endorser: null,
 				endorsee: null,
