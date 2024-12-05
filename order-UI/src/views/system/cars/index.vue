@@ -273,18 +273,15 @@ import {
 	addCars,
 	updateCars
 } from '@/api/system/cars';
-import { addFleet, updateFleet } from '@/api/system/fleet';
-import { listCompany } from '@/api/system/company';
 import { excludeParams } from '@/api/tool/exclude';
 import SearchOption from '../../../components/SearchOption.vue';
 import { listBankAccount } from '../../../api/system/bankAccount';
 import DialogListShow from '../../../components/DialogListShow.vue';
-import AddBankAccounts from '../../dashboard/components/company/AddBankAccounts.vue';
 import { INFO_TYPE, isUsed } from '../../../api/system/isUsed';
 
 export default {
 	name: 'Cars',
-	components: { AddBankAccounts, DialogListShow, SearchOption },
+	components: { DialogListShow, SearchOption },
 	data() {
 		return {
 			loading: true,
@@ -319,21 +316,8 @@ export default {
 					{ required: true, message: '司机姓名不能为空', trigger: 'blur' }
 				],
 				tel: [{ required: true, message: '司机电话不能为空', trigger: 'blur' }],
-				bankName: [
-					{ required: true, message: '开户行不能为空', trigger: 'blur' }
-				],
 				carsName: [
 					{ required: true, message: '车辆名称不能为空', trigger: 'blur' }
-				],
-				bankNo: [
-					{ required: true, message: '银行卡号不能为空', trigger: 'blur' }
-				],
-				acountsName: [
-					{
-						required: true,
-						message: '开户名不能为空',
-						trigger: 'blur'
-					}
 				],
 				acountsType: [
 					{ required: true, message: '账号类型不能为空', trigger: 'blur' }
@@ -442,13 +426,9 @@ export default {
 				bankName: null,
 				acountsName: null,
 				bankNo: null,
-				acountsType: null,
-				carType: null,
-				addtime: null,
-				userId: null,
-				UserName: null,
-				updateTime: null,
-				delFlag: null
+				// 默认值
+				acountsType: '1',
+				carType: '陆运'
 			};
 			this.resetForm('form');
 		},
