@@ -273,6 +273,7 @@
 								<el-col :span="20">
 									<!--                  v-model="form.endorser"-->
 									<el-input
+										disabled
 										placeholder="请输入被背书人"
 										v-model="form.endorserName"
 									/>
@@ -355,6 +356,7 @@
 							<el-row>
 								<el-col :span="20">
 									<el-input
+										disabled
 										v-model="form.billAccount"
 										placeholder="请输入我方承兑账户"
 									/>
@@ -675,8 +677,7 @@ export default {
 				inDiscountAmount: null,
 				billCategory: '电子',
 				origin: null,
-				endorser: null,
-				endorsee: null,
+				endorserName: null,
 				endorseReason: null,
 				comments: null,
 				addtime: null,

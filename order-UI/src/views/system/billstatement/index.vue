@@ -175,7 +175,7 @@
 			<el-table-column
 				label="背书人(来源)"
 				align="center"
-				prop="incomeEndorser"
+				prop="incomeEndorserName"
 				width="120"
 				show-overflow-tooltip
 			/>
@@ -217,7 +217,7 @@
 			<el-table-column
 				label="被背书人"
 				align="center"
-				prop="expenseEndorser"
+				prop="expenseEndorserName"
 				width="120"
 				show-overflow-tooltip
 			/>

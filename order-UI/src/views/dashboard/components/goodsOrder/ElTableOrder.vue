@@ -302,7 +302,12 @@ export default {
 									v-hasPermi="['system:goodsorder:edit']"
 									command="handleUpdate"
 								>
-									<el-button size="mini" type="primary">修 改</el-button>
+									<el-button
+										size="mini"
+										type="primary"
+										:disabled="!scope.row.isedit"
+										>修 改
+									</el-button>
 								</el-dropdown-item>
 								<el-dropdown-item command="handleCheckOrderDetailInfo">
 									<el-button size="mini" type="warning">货 物</el-button>
