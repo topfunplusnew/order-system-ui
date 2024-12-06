@@ -489,7 +489,7 @@ export default {
 				/>
 				<el-table-column
 					show-overflow-tooltip
-					label="业务员"
+					label="录入员"
 					align="center"
 					prop="userName"
 					width="120px"

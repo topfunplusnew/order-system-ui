@@ -207,7 +207,8 @@ export default {
 				orderDetailList: [],
 				fleet: '',
 				orderState: '',
-				orderDate: '',
+				// 订单日期默认为今天
+				orderDate: parseTime(new Date()),
 				orderType: '',
 				landCarID: '',
 				landCarNo: '',
@@ -272,6 +273,7 @@ export default {
 					<el-row>
 						<el-col :span="14">
 							<el-input
+								disabled
 								v-model="orderInfo.customer"
 								type="text"
 								size="mini"
@@ -338,8 +340,8 @@ export default {
 					/>
 				</el-form-item>
 				<el-form-item label="运输方式">
-					<el-checkbox v-model="isLand"> 陆运 </el-checkbox>
-					<el-checkbox v-model="isSea"> 海运 </el-checkbox>
+					<el-checkbox v-model="isLand"> 陆运</el-checkbox>
+					<el-checkbox v-model="isSea"> 海运</el-checkbox>
 				</el-form-item>
 
 				<!--      陆运-->
@@ -578,7 +580,12 @@ export default {
 			<!--      如果没有订单信息-->
 			<el-row>
 				<el-col style="text-align: center">
-					<el-button type="primary" icon="el-icon-plus" @click="addOrderItem">
+					<el-button
+						size="mini"
+						type="primary"
+						icon="el-icon-plus"
+						@click="addOrderItem"
+					>
 						添加订单货物信息
 					</el-button>
 				</el-col>

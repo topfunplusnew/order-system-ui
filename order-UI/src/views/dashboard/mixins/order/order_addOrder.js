@@ -19,7 +19,6 @@ export var mixin_order_add = {
 	methods: {
 		// 新增按钮操作
 		handleAdd() {
-			this.reset();
 			// 打开弹窗
 			this.openDialog(OrderForm, '添加订单', '1300px', {
 				orderId: null,
@@ -57,53 +56,6 @@ export var mixin_order_add = {
 						message: '请先输入编辑原因!'
 					});
 				});
-		},
-		// 表单重置
-		reset() {
-			this.orderInfo = {
-				id: null,
-				ordersNo: null,
-				orderDate: null,
-				customer: null,
-				customerID: null,
-				landCarID: null,
-				landCarNo: null,
-				landDriverTel: null,
-				landDriverName: null,
-				seaCarID: null,
-				seaCarNo: null,
-				seaDriverTel: null,
-				seaDriverName: null,
-				checkUserId: null,
-				checkState: null,
-				invoiceState: null,
-				path: null,
-				PaymentState: null,
-				landBankName: null,
-				landBankNo: null,
-				seaBankName: null,
-				seaBankNo: null,
-				receiveProof: null,
-				saleManager: null,
-				fleet: null,
-				isAdjusted: null,
-				adjustDate: null,
-				isAdjust: null,
-				adjustOrderid: null,
-				isedit: null,
-				customerIsInvoice: null,
-				isSupplierInvoice: null,
-				cancelFlag: null,
-				comments: null,
-				addtime: null,
-				userId: null,
-				UserName: null,
-				updateTime: null
-			};
-			this.resetForm('form');
-			// 清除vuex的状态
-			this.$store.commit('order/CLEAR_ORDER_ITEM_LIST');
-			sessionStorage.removeItem('order_id');
 		}
 	}
 };
