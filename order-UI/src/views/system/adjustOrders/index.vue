@@ -6,7 +6,6 @@
 
 		<!-- 订单历史信息查看  mixin_order_orderHistory -->
 		<OrderHistoryCheck
-			:active-names="activeNames"
 			:check-history-order-visible="checkHistoryOrderVisible"
 			:checkcurrent-order-item-info="checkcurrentOrderItemInfo"
 			:order-history-info-list="orderHistoryInfoList"
