@@ -64,10 +64,32 @@
 					</el-form-item>
 				</el-col>
 				<el-col :span="6">
+					<el-form-item label="车牌" prop="landCarNo">
+						<el-input
+							v-model="queryParams.landCarNo"
+							placeholder="请输入车牌"
+							clearable
+							size="mini"
+							@keyup.enter.native="handleQuery"
+						></el-input>
+					</el-form-item>
+				</el-col>
+				<el-col :span="6">
 					<el-form-item label="海运公司" prop="seaDriverName">
 						<el-input
 							v-model="queryParams.seaDriverName"
 							placeholder="请输入海运公司"
+							clearable
+							size="mini"
+							@keyup.enter.native="handleQuery"
+						></el-input>
+					</el-form-item>
+				</el-col>
+				<el-col :span="6">
+					<el-form-item label="柜号" prop="seaCarNo">
+						<el-input
+							v-model="queryParams.seaCarNo"
+							placeholder="请输入柜号"
 							clearable
 							size="mini"
 							@keyup.enter.native="handleQuery"

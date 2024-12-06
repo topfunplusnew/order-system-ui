@@ -403,6 +403,32 @@ export default {
 					</template>
 				</el-table-column>
 				<el-table-column
+					v-show="columns[13].visible"
+					show-overflow-tooltip
+					label="审核状态"
+					align="center"
+					prop="checkState"
+					width="120"
+				>
+					<template #default="scope">
+						<el-row v-if="scope.row.checkState === '已审核'">
+							{{ scope.row.checkState }}
+						</el-row>
+						<el-row v-else>
+							<el-row>
+								<el-button
+									v-hasPermi="['system:goodsorder:audit']"
+									type="text"
+									size="mini"
+									@click="handleCheck(scope.row)"
+								>
+									审核
+								</el-button>
+							</el-row>
+						</el-row>
+					</template>
+				</el-table-column>
+				<el-table-column
 					v-show="columns[3].visible"
 					show-overflow-tooltip
 					label="陆运车牌"
@@ -510,32 +536,7 @@ export default {
 					prop="userName"
 					width="120px"
 				/>
-				<el-table-column
-					v-show="columns[13].visible"
-					show-overflow-tooltip
-					label="审核状态"
-					align="center"
-					prop="checkState"
-					width="120"
-				>
-					<template #default="scope">
-						<el-row v-if="scope.row.checkState === '已审核'">
-							{{ scope.row.checkState }}
-						</el-row>
-						<el-row v-else>
-							<el-row>
-								<el-button
-									v-hasPermi="['system:goodsorder:audit']"
-									type="text"
-									size="mini"
-									@click="handleCheck(scope.row)"
-								>
-									审核
-								</el-button>
-							</el-row>
-						</el-row>
-					</template>
-				</el-table-column>
+
 				<el-table-column
 					v-show="columns[14].visible"
 					show-overflow-tooltip
@@ -690,7 +691,7 @@ export default {
 					label="订单操作"
 					align="center"
 					class-name="small-padding fixed-width"
-					width="160px"
+					width="200px"
 					fixed="right"
 				>
 					<template slot-scope="scope">

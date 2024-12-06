@@ -220,7 +220,7 @@
 						>
 							<template #table-columns>
 								<el-table-column
-									label="公司名称"
+									:label="value"
 									align="center"
 									prop="companyName"
 								/>

@@ -5,8 +5,6 @@ import { addRebate } from '@/api/system/Rebate';
 import SearchOption from '@/components/SearchOption.vue';
 import { listCompany } from '@/api/system/company';
 import { listBankAccount } from '@/api/system/bankAccount';
-import { getGoodsOrder, updateGoodsOrder } from '@/api/system/goodsOrder';
-import { excludeParams } from '@/api/tool/exclude';
 import { getDicts } from '../../../../api/system/dict/data';
 
 export default {
@@ -50,6 +48,35 @@ export default {
 	methods: {
 		listBankAccount,
 		listCompany,
+		getSummaries(param) {
+			const { columns, data } = param;
+			const sums = [];
+			columns.forEach((column, index) => {
+				if (index === 0) {
+					sums[index] = '合计';
+					return;
+				}
+
+				const includes = [14, 19, 21, 24, 26, 28];
+				const values = data.map(item => Number(item[column.property]));
+				if (!values.every(value => isNaN(value))) {
+					// 包含的计算
+					if (includes.includes(index)) {
+						sums[index] = values.reduce((prev, curr) => {
+							const value = Number(curr);
+							if (!isNaN(value)) {
+								return prev + curr;
+							} else {
+								return prev;
+							}
+						}, 0);
+						sums[index] += '';
+					}
+				}
+			});
+
+			return sums;
+		},
 		// 返利方式
 		listRebateMethods() {
 			getDicts('order_rebate_type').then(res => {
@@ -128,6 +155,8 @@ export default {
 					}
 				"
 				size="mini"
+				show-summary
+				:summary-method="getSummaries"
 			>
 				<el-table-column
 					v-if="!ban"

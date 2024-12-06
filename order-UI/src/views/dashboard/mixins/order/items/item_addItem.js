@@ -99,11 +99,12 @@ export var mixin_item_addItem = {
 			this.orderItemInfo.levelID = val.levelID;
 			this.orderItemInfo.levelName = val.levelName;
 
-
+			// 填充误差
+			this.orderItemInfo.erro = val.tonnage;
 		},
 		// 产品级别自动填充
 		handleCommitBackProductLevel(val) {
-			// todo 这里用产品级别的吨位 填充了误差
+			// 这里用产品级别的吨位 填充了误差
 			this.orderItemInfo.erro = val.tonnage;
 			this.orderItemInfo.levelID = val.id;
 			this.orderItemInfo.levelName = val.levelName;

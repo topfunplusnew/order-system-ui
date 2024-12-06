@@ -143,14 +143,19 @@ export default {
 				// 对订单货物列表的每一个货物都执行这个操作
 				this.orderItemList.forEach(item => updateOrderItem(item));
 				// 添加订单信息
-				addGoodsOrder({ ...this.orderInfo, PaymentState: '' }).then(() => {
-					// 清空订单列表基础信息
-					this.resetOrderInfo();
-					// 清除状态
-					this.$store.commit('order/clearOrderItemList');
-					this.isSea = false;
-					this.isLand = false;
-				});
+				addGoodsOrder({ ...this.orderInfo, PaymentState: '' })
+					.then(() => {
+						// 清空订单列表基础信息
+						this.resetOrderInfo();
+						// 清除状态
+						this.$store.commit('order/clearOrderItemList');
+						this.isSea = false;
+						this.isLand = false;
+					})
+					.catch(err => {
+						this.$message.error(err);
+						this.handleReject();
+					});
 				// 反之 则是修改操作
 			} else {
 				this.handleUpdateGoodsOrder();
@@ -467,7 +472,7 @@ export default {
 				</el-row>
 				<!--      海运-->
 				<el-row v-if="isSea" style="margin: 10px 0">
-					<!--          todo 车牌修改为柜号 且自己输入 不提供自动填充 -->
+					<!--   车牌修改为柜号 且自己输入 不提供自动填充 -->
 					<el-form-item label="柜号">
 						<el-row>
 							<el-col :span="20">

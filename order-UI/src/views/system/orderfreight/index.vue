@@ -6,7 +6,7 @@
 			:model="queryParams"
 			size="mini"
 			:inline="true"
-			label-width="120px"
+			label-width="150px"
 		>
 			<el-form-item label="申请开始日期" prop="applyDate">
 				<el-date-picker
@@ -19,10 +19,29 @@
 					clearable
 				/>
 			</el-form-item>
+			<el-form-item label="支付日期" prop="payDate">
+				<el-date-picker
+					v-model="queryParams.payDate"
+					placeholder="请选择支付日期"
+					style="width: 240px"
+					value-format="yyyy-MM-dd"
+					type="date"
+					clearable
+				/>
+			</el-form-item>
 			<el-form-item label="司机名称/海运公司" prop="driverName">
 				<el-input
 					v-model="queryParams.driverName"
 					placeholder="请输入司机名称"
+					clearable
+					size="mini"
+					@keyup.enter.native="handleQuery"
+				/>
+			</el-form-item>
+			<el-form-item label="车牌/柜号" prop="carNo">
+				<el-input
+					v-model="queryParams.carNo"
+					placeholder="请输入车牌/柜号"
 					clearable
 					size="mini"
 					@keyup.enter.native="handleQuery"
@@ -37,7 +56,16 @@
 					@keyup.enter.native="handleQuery"
 				/>
 			</el-form-item>
-			<el-form-item label="审核状态" prop="paymentState">
+			<el-form-item label="对方户名" prop="otherAcountsName">
+				<el-input
+					v-model="queryParams.otherAcountsName"
+					placeholder="请输入车队名称"
+					clearable
+					size="mini"
+					@keyup.enter.native="handleQuery"
+				/>
+			</el-form-item>
+			<el-form-item label="支付状态" prop="paymentState">
 				<el-select
 					v-model="queryParams.paymentState"
 					placeholder="请选择"
