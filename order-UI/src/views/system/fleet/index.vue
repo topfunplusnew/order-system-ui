@@ -16,9 +16,9 @@
 					@keyup.enter.native="handleQuery"
 				/>
 			</el-form-item>
-			<el-form-item label="车队经理" prop="fLeader">
+			<el-form-item label="车队经理" prop="fleader">
 				<el-input
-					v-model="queryParams.fLeader"
+					v-model="queryParams.fleader"
 					placeholder="请输入车队经理"
 					clearable
 					@keyup.enter.native="handleQuery"
@@ -183,7 +183,7 @@
 				<el-form-item label="车队名称" prop="fname">
 					<el-input v-model="form.fname" placeholder="请输入车队名称" />
 				</el-form-item>
-				<el-form-item label="车队经理" prop="fLeader">
+				<el-form-item label="车队经理" prop="fleader">
 					<el-input v-model="form.fleader" placeholder="请输入车队经理" />
 				</el-form-item>
 				<el-form-item label="车队经理电话" prop="tel">
@@ -237,7 +237,7 @@ export default {
 				pageNum: 1,
 				pageSize: 10,
 				fname: null,
-				fLeader: null,
+				fleader: null,
 				tel: null,
 				address: null,
 				addtime: null,
@@ -252,7 +252,7 @@ export default {
 				fname: [
 					{ required: true, message: '车队名称不能为空', trigger: 'blur' }
 				],
-				fLeader: [
+				fleader: [
 					{ required: true, message: '车队经理不能为空', trigger: 'blur' }
 				],
 				tel: [
