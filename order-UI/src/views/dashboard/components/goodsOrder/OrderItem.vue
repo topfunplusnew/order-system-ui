@@ -286,6 +286,7 @@ export default {
 					<span class="text-bold">厚度</span>
 					<hr />
 					<el-input
+						disabled
 						v-model="orderItemInfo.height"
 						type="text"
 						placeholder="请输入厚度"
@@ -295,6 +296,7 @@ export default {
 					<span class="text-bold">长度</span>
 					<hr />
 					<el-input
+						disabled
 						v-model="orderItemInfo.length"
 						type="text"
 						placeholder="请输入长度"
@@ -304,6 +306,7 @@ export default {
 					<span class="text-bold">宽度</span>
 					<hr />
 					<el-input
+						disabled
 						v-model="orderItemInfo.width"
 						type="text"
 						placeholder="请输入宽度"

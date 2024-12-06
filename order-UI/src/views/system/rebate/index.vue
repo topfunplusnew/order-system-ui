@@ -40,8 +40,8 @@
 					icon="el-icon-search"
 					size="mini"
 					@click="handleQuery"
-					>搜索</el-button
-				>
+					>搜索
+				</el-button>
 			</el-form-item>
 		</el-form>
 
@@ -49,8 +49,8 @@
 			<!-- 刷新按钮-->
 			<el-col :span="1.5">
 				<el-button icon="el-icon-refresh" size="mini" @click="resetQuery"
-					>刷新</el-button
-				>
+					>刷新
+				</el-button>
 			</el-col>
 			<el-col :span="1.5">
 				<el-button
@@ -377,11 +377,6 @@
 													align="center"
 													prop="bankName"
 												/>
-												<el-table-column
-													label="公司名称"
-													align="center"
-													prop="companyName"
-												/>
 											</template>
 										</SearchOption>
 									</el-col>
@@ -494,11 +489,11 @@
 		>
 			<el-row>
 				<el-button type="primary" size="mini" @click="selectBySupplier"
-					>根据供应商选择</el-button
-				>
+					>根据供应商选择
+				</el-button>
 				<el-button type="primary" size="mini" @click="selectOrderItem"
-					>选择订单</el-button
-				>
+					>选择订单
+				</el-button>
 			</el-row>
 			<hr />
 			<el-row>
@@ -953,8 +948,8 @@
 					</el-row>
 					<el-row style="text-align: center; margin-top: 15px">
 						<el-button type="primary" @click="handleCommitSupplier"
-							>确定</el-button
-						>
+							>确定
+						</el-button>
 					</el-row>
 				</div>
 			</template>

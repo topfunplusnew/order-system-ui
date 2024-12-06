@@ -308,7 +308,7 @@
 											<el-table-column
 												:label="type"
 												align="center"
-												prop="relationName"
+												prop="companyName"
 											/>
 											<el-table-column
 												label="老板姓名"
@@ -324,11 +324,6 @@
 												label="区域"
 												align="center"
 												prop="region"
-											/>
-											<el-table-column
-												label="公司名称"
-												align="center"
-												prop="companyName"
 											/>
 											<el-table-column
 												label="销售经理"

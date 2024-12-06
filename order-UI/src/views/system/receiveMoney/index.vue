@@ -366,11 +366,6 @@
 												align="center"
 												prop="bankName"
 											/>
-											<el-table-column
-												label="公司名称"
-												align="center"
-												prop="companyName"
-											/>
 										</template>
 									</SearchOption>
 								</el-col>

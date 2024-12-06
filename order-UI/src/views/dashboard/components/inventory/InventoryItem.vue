@@ -497,16 +497,17 @@ export default {
 				<span class="text-bold">计量单位</span>
 				<hr />
 				<el-radio v-model="orderItemInfo.countingUnit" label="片"
-					>片数</el-radio
-				>
+					>片数
+				</el-radio>
 				<el-radio v-model="orderItemInfo.countingUnit" label="其他"
-					>其他</el-radio
-				>
+					>其他
+				</el-radio>
 			</div>
 			<div class="order-item">
 				<span class="text-bold">厚度</span>
 				<hr />
 				<el-input
+					disabled
 					v-model="orderItemInfo.height"
 					type="text"
 					placeholder="请输入厚度"
@@ -516,6 +517,7 @@ export default {
 				<span class="text-bold">长度</span>
 				<hr />
 				<el-input
+					disabled
 					v-model="orderItemInfo.length"
 					type="text"
 					placeholder="请输入长度"
@@ -525,6 +527,7 @@ export default {
 				<span class="text-bold">宽度</span>
 				<hr />
 				<el-input
+					disabled
 					v-model="orderItemInfo.width"
 					type="text"
 					placeholder="请输入宽度"
@@ -584,11 +587,11 @@ export default {
 				<span class="text-bold">出厂是否含税</span>
 				<hr />
 				<el-radio v-model="orderItemInfo.isIncludeTaxFactory" :label="1"
-					>是</el-radio
-				>
+					>是
+				</el-radio>
 				<el-radio v-model="orderItemInfo.isIncludeTaxFactory" :label="0"
-					>否</el-radio
-				>
+					>否
+				</el-radio>
 			</div>
 			<div class="order-item">
 				<span class="text-bold">杂费</span>
@@ -630,11 +633,11 @@ export default {
 				<span class="text-bold">销售是否含税</span>
 				<hr />
 				<el-radio v-model="orderItemInfo.isIncludeTaxSale" :label="1"
-					>是</el-radio
-				>
+					>是
+				</el-radio>
 				<el-radio v-model="orderItemInfo.isIncludeTaxSale" :label="0"
-					>否</el-radio
-				>
+					>否
+				</el-radio>
 			</div>
 
 			<div class="order-item">

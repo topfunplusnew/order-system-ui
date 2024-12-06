@@ -100,11 +100,11 @@
 					icon="el-icon-search"
 					size="mini"
 					@click="handleQuery"
-					>搜索</el-button
-				>
+					>搜索
+				</el-button>
 				<el-button icon="el-icon-refresh" size="mini" @click="resetQuery"
-					>重置</el-button
-				>
+					>重置
+				</el-button>
 			</el-form-item>
 		</el-form>
 
@@ -386,6 +386,11 @@
 							>
 								<template #table-columns>
 									<el-table-column
+										:label="companyType"
+										align="center"
+										prop="companyName"
+									/>
+									<el-table-column
 										label="老板姓名"
 										align="center"
 										prop="leader"
@@ -396,11 +401,7 @@
 										prop="leaderTel"
 									/>
 									<el-table-column label="区域" align="center" prop="region" />
-									<el-table-column
-										label="公司名称"
-										align="center"
-										prop="companyName"
-									/>
+
 									<el-table-column
 										label="销售经理"
 										align="center"

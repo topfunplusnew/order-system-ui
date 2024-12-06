@@ -24,7 +24,7 @@ export var mixin_form_fillInfo = {
 		// 客户搜索的自动填充
 		handleCommitBackCompany(val) {
 			this.orderInfo.customerID = val.id;
-			this.orderInfo.customer = val.relationName;
+			this.orderInfo.customer = val.companyName;
 			this.orderInfo.saleManager = val.salesManager;
 		},
 		handleUpdateCompanyName(val) {

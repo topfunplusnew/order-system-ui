@@ -8,6 +8,8 @@ import { listFleet } from '../../../../api/system/fleet';
 import { listData } from '../../../../api/system/dict/data';
 import { listGoodsOrder } from '../../../../api/system/goodsOrder';
 import { isNull } from '../../../../main';
+import { PUBLIC_DICT_TYPE } from '@/utils/order';
+import { TableName } from '@/api/tool/enums';
 
 export default {
 	name: 'FillFreight',
@@ -52,6 +54,11 @@ export default {
 			const hasLandFreight = val.landFreight > 0;
 			const hasSeaFreight = val.seaFreight > 0;
 
+			// 填充进本信息 ordersNo source
+			this.form.ordersNo = val.ordersNo;
+			this.form.source = TableName.GOODS_ORDER;
+
+			// 付款人员姓名
 			if (hasLandFreight || hasSeaFreight) {
 				// 如果同时包含陆运和海运，提示用户选择
 				if (hasLandFreight && hasSeaFreight) {
@@ -98,6 +105,9 @@ export default {
 			this.form.carNo = val.landCarNo;
 			this.form.fleet = val.fleet;
 
+			// 填充主键
+			this.form.driverId = val.landCarID;
+
 			// 填充运输类型
 			this.form.freightType = '陆运';
 		},
@@ -112,6 +122,10 @@ export default {
 			this.form.driverName = val.seaDriverName;
 			this.form.carNo = val.seaCarNo;
 			this.form.fleet = '无';
+
+			// 填充主键
+			this.form.driverId = val.seaCarID;
+
 			// 填充运输类型
 			this.form.freightType = '海运';
 		},

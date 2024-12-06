@@ -248,31 +248,6 @@
 				show-overflow-tooltip
 			/>
 			<el-table-column
-				v-if="columns[13].visible"
-				label="是否可编辑"
-				align="center"
-				prop="isedit"
-				width="100"
-				show-overflow-tooltip
-			>
-				<template slot-scope="scope">
-					<el-tag
-						v-if="scope.row.isedit === 0"
-						:type="scope.row.isedit === 0 ? 'danger' : 'success'"
-						disable-transitions
-					>
-						不可编辑
-					</el-tag>
-					<el-tag
-						v-if="scope.row.isedit === 1"
-						:type="scope.row.isedit === 1 ? 'success' : 'danger'"
-						disable-transitions
-					>
-						可编辑
-					</el-tag>
-				</template>
-			</el-table-column>
-			<el-table-column
 				v-if="columns[14].visible"
 				label="付款人员姓名"
 				align="center"
@@ -307,6 +282,7 @@
 					<CheckOrderInfo :row="scope.row" />
 
 					<el-button
+						v-if="scope.row.isedit"
 						v-hasPermi="['system:freight:edit']"
 						size="mini"
 						type="primary"

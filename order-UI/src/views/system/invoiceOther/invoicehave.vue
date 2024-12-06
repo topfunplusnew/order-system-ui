@@ -453,7 +453,7 @@
 										<el-table-column
 											label="供应商"
 											align="center"
-											prop="relationName"
+											prop="companyName"
 										/>
 										<el-table-column
 											label="老板姓名"
