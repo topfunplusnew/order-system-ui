@@ -181,6 +181,7 @@ export default {
 		},
 		// 表格的导出
 		handleExport() {
+			debugger;
 			this.download(
 				'system/goodsOrder/export',
 				{

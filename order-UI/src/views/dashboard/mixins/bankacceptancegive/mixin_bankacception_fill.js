@@ -4,8 +4,6 @@ export const mixin_bank_acception_fill = {
 			queryBank: '',
 			// 背书人类型 默认为客户
 			type: '客户',
-			// 展示背书人
-			endorser: '',
 			// 搜索客户
 			companyName: ''
 		};
@@ -24,7 +22,7 @@ export const mixin_bank_acception_fill = {
 		},
 		handleCommitBackCompany(val) {
 			// 填充展示字段
-			this.endorser = val.companyName;
+			this.form.endorserName = val.companyName;
 			// 数据库修改 2024/12/5
 			this.form.origin = val.companyType;
 			this.form.endorser = val.id;

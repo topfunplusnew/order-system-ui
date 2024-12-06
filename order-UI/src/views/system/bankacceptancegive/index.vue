@@ -143,7 +143,7 @@
 			<el-table-column
 				label="背书人"
 				align="center"
-				prop="endorser"
+				prop="endorserName"
 				show-overflow-tooltip
 			/>
 			<el-table-column
@@ -267,12 +267,15 @@
 							<el-radio v-model="type" label="客户">客户</el-radio>
 							<el-radio v-model="type" label="供应商"> 供应商</el-radio>
 						</el-form-item>
-						<el-form-item label="被背书人" prop="endorser">
+						<el-form-item label="被背书人" prop="endorserName">
 							<!--							<el-input v-model="form.endorser" placeholder="请输入背书人" />-->
 							<el-row>
 								<el-col :span="20">
 									<!--                  v-model="form.endorser"-->
-									<el-input placeholder="请输入被背书人" v-model="endorser" />
+									<el-input
+										placeholder="请输入被背书人"
+										v-model="form.endorserName"
+									/>
 								</el-col>
 								<el-col :span="4">
 									<!-- 选择的是客户或者供应商名称-->
@@ -554,11 +557,8 @@ export default {
 				origin: [
 					{ required: true, message: '请选择票据来源', trigger: 'blur' }
 				],
-				endorsee: [
+				endorserName: [
 					{ required: true, message: '请输入被背书人', trigger: 'blur' }
-				],
-				endorser: [
-					{ required: true, message: '请输入背书人', trigger: 'blur' }
 				],
 				// 添加校验
 				billAccount: [
