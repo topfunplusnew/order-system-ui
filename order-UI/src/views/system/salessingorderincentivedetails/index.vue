@@ -286,7 +286,7 @@
 				<el-row>
 					<el-col :span="12">
 						<el-form-item label="订单">
-							<!--        子组件 填充订单信息 包含日期 业务员(UserName) 客户名称 不含税利润 -->
+							<!--        子组件 填充订单信息 包含日期 录入员(UserName) 客户名称 不含税利润 -->
 							<Incent @update:orderInfo="handleFillOrderInfo" />
 						</el-form-item>
 						<el-form-item label="订单日期" prop="orderDate">
@@ -299,10 +299,10 @@
 							>
 							</el-date-picker>
 						</el-form-item>
-						<el-form-item label="业务员" prop="rewardReceiver">
+						<el-form-item label="录入员" prop="rewardReceiver">
 							<el-input
 								v-model="form.rewardReceiver"
-								placeholder="请输入业务员"
+								placeholder="请输入录入员"
 							/>
 						</el-form-item>
 						<el-form-item label="客户名称" prop="companyName">

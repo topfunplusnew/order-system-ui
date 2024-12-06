@@ -16,7 +16,6 @@ export var mixin_order_orderHistory = {
 			checkHistoryOrderVisible: false,
 			// 订单历史信息列表
 			orderHistoryInfoList: [],
-			activeNames: [],
 			// 订单详情映射对象 然后每一个订单的详情列表都按照这个映射以后进行比较渲染
 			/**
 			 * 查看原订单信息的功能
@@ -26,10 +25,6 @@ export var mixin_order_orderHistory = {
 		};
 	},
 	methods: {
-		// 查看原订单信息
-		checkcurrentOrderItemInfo() {
-			this.currentOrderItemInfoVisible = true;
-		},
 		// 查看订单历史信息
 		checkOrderHistory(row) {
 			const id = row.id;

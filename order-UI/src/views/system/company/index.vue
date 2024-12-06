@@ -242,10 +242,10 @@
 								placeholder="请输入老板联系方式"
 							/>
 						</el-form-item>
-						<el-form-item label="业务员" prop="salesman">
+						<el-form-item label="录入员" prop="salesman">
 							<el-input
 								v-model="form.salesman"
-								placeholder="请输入业务员名称"
+								placeholder="请输入录入员名称"
 							/>
 						</el-form-item>
 					</el-col>
@@ -700,7 +700,7 @@ export default {
 					{ required: true, message: '公司地址不能为空', trigger: 'blur' }
 				],
 				salesman: [
-					{ required: true, message: '业务员不能为空', trigger: 'blur' }
+					{ required: true, message: '录入员不能为空', trigger: 'blur' }
 				],
 				leader: [
 					{ required: true, message: '老板姓名不能为空', trigger: 'blur' }

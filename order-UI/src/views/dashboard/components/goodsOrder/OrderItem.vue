@@ -58,6 +58,13 @@ export default {
 			deep: true,
 			immediate: true // 立即执行一次
 		},
+		'orderItemInfo.pieces': {
+			handler(val) {
+				// 填充卸货片数为出厂片数，根据用户输入减少
+				this.orderItemInfo.actualPieces = val;
+			},
+			deep: true
+		},
 		index: {
 			handler(val) {
 				console.log('watch:index:', val);
@@ -269,11 +276,11 @@ export default {
 					<span class="text-bold">计量单位</span>
 					<hr />
 					<el-radio v-model="orderItemInfo.countingUnit" label="片"
-						>片数</el-radio
-					>
+						>片数
+					</el-radio>
 					<el-radio v-model="orderItemInfo.countingUnit" label="其他"
-						>其他</el-radio
-					>
+						>其他
+					</el-radio>
 				</div>
 				<div class="order-item">
 					<span class="text-bold">厚度</span>
@@ -342,11 +349,11 @@ export default {
 					<span class="text-bold">出厂是否含税</span>
 					<hr />
 					<el-radio v-model="orderItemInfo.isIncludeTaxFactory" :label="1"
-						>是</el-radio
-					>
+						>是
+					</el-radio>
 					<el-radio v-model="orderItemInfo.isIncludeTaxFactory" :label="0"
-						>否</el-radio
-					>
+						>否
+					</el-radio>
 				</div>
 				<div class="order-item">
 					<span class="text-bold">杂费</span>
@@ -388,11 +395,11 @@ export default {
 					<span class="text-bold">销售是否含税</span>
 					<hr />
 					<el-radio v-model="orderItemInfo.isIncludeTaxSale" :label="1"
-						>是</el-radio
-					>
+						>是
+					</el-radio>
 					<el-radio v-model="orderItemInfo.isIncludeTaxSale" :label="0"
-						>否</el-radio
-					>
+						>否
+					</el-radio>
 				</div>
 				<div class="order-item">
 					<span class="text-bold">总货款杂费</span>

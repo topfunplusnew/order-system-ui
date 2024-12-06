@@ -153,23 +153,6 @@ export default {
 					</template>
 				</el-table-column>
 				<el-table-column
-					label="订单日期"
-					align="center"
-					prop="orderDate"
-					fixed="left"
-					show-overflow-tooltip
-				/>
-				<el-table-column
-					label="客户"
-					align="center"
-					prop="customer"
-					show-overflow-tooltip
-				>
-					<template slot-scope="scope">
-						{{ scope.row.customer ? scope.row.customer : '-' }}
-					</template>
-				</el-table-column>
-				<el-table-column
 					label="仓库名称"
 					align="center"
 					prop="storeHouseName"
@@ -217,12 +200,6 @@ export default {
 					show-overflow-tooltip
 				/>
 				<el-table-column
-					label="出厂片数"
-					align="center"
-					prop="pieces"
-					show-overflow-tooltip
-				/>
-				<el-table-column
 					label="每包片数"
 					align="center"
 					prop="piecesPerPack"
@@ -234,6 +211,13 @@ export default {
 					prop="packs"
 					show-overflow-tooltip
 				/>
+				<el-table-column
+					label="出厂片数"
+					align="center"
+					prop="pieces"
+					show-overflow-tooltip
+				/>
+
 				<el-table-column
 					label="出厂单价"
 					align="center"
@@ -265,6 +249,12 @@ export default {
 					show-overflow-tooltip
 				/>
 				<el-table-column
+					label="卸货片数"
+					align="center"
+					prop="actualPieces"
+					show-overflow-tooltip
+				/>
+				<el-table-column
 					label="卸货价"
 					align="center"
 					prop="paymentUnload"
@@ -282,12 +272,20 @@ export default {
 						</el-tag>
 					</template>
 				</el-table-column>
+
+				<el-table-column
+					label="总货款杂费"
+					align="center"
+					prop="paymentsWithSundry"
+					show-overflow-tooltip
+				/>
 				<el-table-column
 					label="总货款"
 					align="center"
 					prop="payments"
 					show-overflow-tooltip
 				/>
+
 				<el-table-column
 					label="误差"
 					align="center"
@@ -304,6 +302,12 @@ export default {
 					label="陆运费单价"
 					align="center"
 					prop="landFreightPrice"
+					show-overflow-tooltip
+				/>
+				<el-table-column
+					label="加费"
+					align="center"
+					prop="additionalFees"
 					show-overflow-tooltip
 				/>
 				<el-table-column
@@ -324,6 +328,7 @@ export default {
 					prop="freight"
 					show-overflow-tooltip
 				/>
+
 				<el-table-column
 					label="其他费用"
 					align="center"
@@ -342,24 +347,7 @@ export default {
 					prop="profitNoTax"
 					show-overflow-tooltip
 				/>
-				<el-table-column
-					label="实际片数"
-					align="center"
-					prop="actualPieces"
-					show-overflow-tooltip
-				/>
-				<el-table-column
-					label="总货款杂费"
-					align="center"
-					prop="paymentsWithSundry"
-					show-overflow-tooltip
-				/>
-				<el-table-column
-					label="加费"
-					align="center"
-					prop="additionalFees"
-					show-overflow-tooltip
-				/>
+
 				<el-table-column
 					label="物流利润"
 					align="center"

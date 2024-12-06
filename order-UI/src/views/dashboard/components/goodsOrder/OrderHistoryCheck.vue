@@ -3,7 +3,7 @@
 		:show-close="false"
 		:close-on-click-modal="false"
 		:close-on-press-escape="false"
-		title="订单历史信息"
+		title="订单历史对比信息"
 		:visible.sync="checkHistoryOrderVisible"
 		width="1100px"
 	>
@@ -19,7 +19,7 @@
 							查看原订单信息
 						</el-button>
 					</el-timeline-item>
-					<!--            修改的时间线-->
+					<!--					            修改的时间线-->
 					<el-timeline-item
 						v-for="(item, index) in orderHistoryInfoList"
 						:key="index"
@@ -54,6 +54,21 @@
 				</el-timeline>
 			</el-col>
 		</el-row>
+
+		<div v-if="currentComponent">
+			<DialogWrapper
+				:current-component="currentComponent"
+				:dialog-visible="dialogVisible"
+				:dialog-props="dialogProps"
+				:dialog-title="dialogTitle"
+				:dialog-width="dialogWidth"
+				:close-confirm="true"
+				@update:dialogVisible="args => (dialogVisible = false)"
+				@close="handleCloseDialog"
+				@confirm="handleDialogConfirm"
+			/>
+		</div>
+
 		<div slot="footer" class="dialog-footer">
 			<el-button @click="close"> 关 闭</el-button>
 		</div>
@@ -61,25 +76,17 @@
 </template>
 <script>
 import CodeDiff from 'vue-code-diff';
+import { common_dialog } from '@/views/dashboard/mixins/common/common_dialog';
+import GOODS_ORDER from '@/components/NeedToShow/GOODS_ORDER.vue';
+import DialogWrapper from '@/views/dashboard/components/common/DialogWrapper.vue';
 
 export default {
 	name: 'OrderHistoryCheck',
-	components: { CodeDiff },
+	components: { DialogWrapper, CodeDiff },
+	mixins: [common_dialog],
 	props: {
-		activeNames: {
-			type: Array,
-			default() {
-				return [];
-			}
-		},
 		checkHistoryOrderVisible: {
 			type: Boolean
-		},
-		checkcurrentOrderItemInfo: {
-			type: Function,
-			default() {
-				return () => {};
-			}
 		},
 		orderHistoryInfoList: {
 			type: Array,
@@ -87,14 +94,24 @@ export default {
 				return [];
 			}
 		},
-		parseTime: {
-			type: String,
+		currentInfo: {
+			type: Object,
 			default() {
-				return '';
+				return {};
 			}
 		}
 	},
+	data() {
+		return {
+			activeNames: []
+		};
+	},
 	methods: {
+		checkcurrentOrderItemInfo() {
+			this.openDialog(GOODS_ORDER, '查看原订单信息', '50%', {
+				needToShowInfo: this.currentInfo
+			});
+		},
 		close() {
 			this.$emit('close');
 		}

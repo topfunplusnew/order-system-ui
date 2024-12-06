@@ -1,5 +1,5 @@
 <script>
-import { getGoodsOrder, listGoodsOrder } from '@/api/system/goodsOrder';
+import { listGoodsOrder } from '@/api/system/goodsOrder';
 import QuerySearchBar from '@/views/dashboard/components/goodsOrder/QuerySearchBar.vue';
 import {
 	OptionInvent,
@@ -9,7 +9,6 @@ import { mapGetters } from 'vuex';
 import { PUBLIC_DICT_TYPE } from '@/utils/order';
 import DialogWrapper from '@/views/dashboard/components/common/DialogWrapper.vue';
 import { common_dialog } from '@/views/dashboard/mixins/common/common_dialog';
-import GOODS_ORDER from '@/components/NeedToShow/GOODS_ORDER.vue';
 
 export default {
 	name: 'SelectGoods',
@@ -442,7 +441,7 @@ export default {
 			/>
 			<el-table-column
 				show-overflow-tooltip
-				label="业务员"
+				label="录入员"
 				align="center"
 				prop="userName"
 				width="120px"

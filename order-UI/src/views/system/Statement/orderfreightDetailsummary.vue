@@ -177,7 +177,7 @@
 				width="160"
 			/>
 			<el-table-column
-				label="业务员"
+				label="录入员"
 				align="center"
 				prop="salesman"
 				width="160"

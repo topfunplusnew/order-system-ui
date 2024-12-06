@@ -122,7 +122,7 @@
 					<el-table-column
 						v-if="columns[2].visible"
 						prop="salesman"
-						label="业务员"
+						label="录入员"
 						show-overflow-tooltip
 					></el-table-column>
 					<el-table-column
@@ -270,7 +270,7 @@ export default {
 			columns: [
 				{ key: 0, label: `日期`, visible: true },
 				{ key: 1, label: `客户`, visible: true },
-				{ key: 2, label: `业务员`, visible: true },
+				{ key: 2, label: `录入员`, visible: true },
 				{ key: 3, label: `含税利润`, visible: true },
 				{ key: 4, label: `不含税利润`, visible: true },
 				{ key: 5, label: `总货款`, visible: true },

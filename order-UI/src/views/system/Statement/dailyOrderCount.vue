@@ -24,7 +24,7 @@ export default {
 			loading: '',
 			columns: [
 				{ key: 0, label: `客户`, visible: true },
-				{ key: 1, label: `业务员`, visible: true },
+				{ key: 1, label: `录入员`, visible: true },
 				{ key: 2, label: `区域`, visible: true },
 				{ key: 3, label: `联系方式`, visible: true }
 			],
@@ -210,7 +210,7 @@ export default {
 							/>
 							<el-table-column
 								v-if="columns[1].visible"
-								label="业务员"
+								label="录入员"
 								align="driverName"
 								prop="salesman"
 								width="200"

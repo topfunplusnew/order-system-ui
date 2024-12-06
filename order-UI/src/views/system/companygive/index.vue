@@ -209,8 +209,8 @@
 						<el-form-item label="老板姓名" prop="leader">
 							<el-input v-model="form.leader" placeholder="请输入老板姓名" />
 						</el-form-item>
-						<el-form-item label="业务员" prop="salesman">
-							<el-input v-model="form.salesman" placeholder="请输入业务员" />
+						<el-form-item label="录入员" prop="salesman">
+							<el-input v-model="form.salesman" placeholder="请输入录入员" />
 						</el-form-item>
 					</el-col>
 					<el-col :span="12">
@@ -676,7 +676,7 @@ export default {
 					{ required: true, message: '公司地址不能为空', trigger: 'blur' }
 				],
 				salesman: [
-					{ required: true, message: '业务员不能为空', trigger: 'blur' }
+					{ required: true, message: '录入员不能为空', trigger: 'blur' }
 				],
 				leader: [
 					{ required: true, message: '老板姓名不能为空', trigger: 'blur' }

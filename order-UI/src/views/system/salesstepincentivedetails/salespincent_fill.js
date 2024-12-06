@@ -6,7 +6,7 @@ export var mixin_step_order_fill = {
 		return {};
 	},
 	methods: {
-		//  填充订单信息 包含日期 业务员(UserName) 客户名称 不含税利润
+		//  填充订单信息 包含日期 录入员(UserName) 客户名称 不含税利润
 		handleFillOrderInfo(value) {
 			this.form.orderNo = value.ordersNo;
 			this.form.orderDate = value.orderDate;

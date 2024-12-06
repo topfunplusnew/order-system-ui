@@ -19,7 +19,9 @@
 		<!-- 底部操作按钮 -->
 		<template #footer>
 			<el-button @click="handleClose">关闭</el-button>
-			<el-button type="primary" @click="handleConfirm">确认</el-button>
+			<el-button type="primary" @click="handleConfirm" v-if="!closeConfirm"
+				>确认
+			</el-button>
 		</template>
 	</el-dialog>
 </template>
@@ -53,6 +55,11 @@ export default {
 		dialogWidth: {
 			type: String,
 			default: '50%'
+		},
+		// 是否关闭确认键
+		closeConfirm: {
+			type: Boolean,
+			default: false
 		}
 	},
 	// 监听事件

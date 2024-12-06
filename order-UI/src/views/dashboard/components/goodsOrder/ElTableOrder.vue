@@ -25,10 +25,17 @@ import QuerySearchBar from './QuerySearchBar.vue';
 import { mixin_order_orderHistory } from '@/views/dashboard/mixins/order/order_history';
 import OrderHistoryCheck from '@/views/dashboard/components/goodsOrder/OrderHistoryCheck.vue';
 import { parseTime } from '@/utils/ruoyi';
+import HistoryList from '@/views/dashboard/components/goodsOrder/HistoryList.vue';
 
 export default {
 	name: 'ElTableOrder',
-	components: { OrderHistoryCheck, DialogWrapper, CheckFiles, QuerySearchBar },
+	components: {
+		HistoryList,
+		OrderHistoryCheck,
+		DialogWrapper,
+		CheckFiles,
+		QuerySearchBar
+	},
 	// 引入打印的混入、拖动表头宽度引起的变化、订单的基本信息的混入
 	mixins: [
 		// 打印功能
@@ -210,11 +217,9 @@ export default {
 		<!--    订单历史记录查看-->
 		<div>
 			<OrderHistoryCheck
-				:active-names="activeNames"
 				:check-history-order-visible="checkHistoryOrderVisible"
-				:checkcurrent-order-item-info="checkcurrentOrderItemInfo"
 				:order-history-info-list="orderHistoryInfoList"
-				:parse-time="parseTime(new Date(), '{y}-{m}-{d} {h}:{i}:{s}')"
+				:current-info="currentOrderItemInfo"
 				@close="closeOrderHistoryCheck"
 			/>
 		</div>
@@ -321,13 +326,24 @@ export default {
 							</el-dropdown-menu>
 						</el-dropdown>
 						<!--          禁用-->
-						<el-button
-							style="margin-left: 5px"
-							size="mini"
-							type="text"
-							@click="checkOrderHistory(scope.row)"
-							>查看历史
-						</el-button>
+
+						<el-dropdown size="mini">
+							<el-button size="mini" type="text">历史记录</el-button>
+							<el-dropdown-menu slot="dropdown">
+								<el-dropdown-item>
+									<HistoryList :row="scope.row" />
+								</el-dropdown-item>
+								<el-dropdown-item>
+									<el-button
+										style="margin-left: 5px"
+										size="mini"
+										type="text"
+										@click="checkOrderHistory(scope.row)"
+										>历史对比
+									</el-button>
+								</el-dropdown-item>
+							</el-dropdown-menu>
+						</el-dropdown>
 					</template>
 				</el-table-column>
 				<el-table-column
