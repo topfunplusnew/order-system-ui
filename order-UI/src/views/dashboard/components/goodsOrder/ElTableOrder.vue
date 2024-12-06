@@ -76,7 +76,12 @@ export default {
 			// 加载中的效果
 			loading: true,
 			// 订单总数 用于分页
-			total: 0
+			total: 0,
+			// 本地维护的查询参数
+			queryParams: {
+				pageNum: 1,
+				pageSize: 50
+			}
 		};
 	},
 	watch: {
@@ -106,7 +111,6 @@ export default {
 		parseTime,
 		updateGoodsOrder,
 		getGoodsOrder,
-
 		// 给特定的某些行高亮颜色
 		tableRowClassName({ row }) {
 			// 如果row.isAdjusted 的值为是，并且 isAdjust 的值也为是，那么就显示背景颜色为红色
@@ -159,11 +163,6 @@ export default {
 					this.$modal.msgSuccess('删除成功');
 				});
 		},
-		/** 搜索按钮操作 */
-		handleQuery() {
-			this.queryParams.pageNum = 1;
-			this.getList();
-		},
 		// 查看原订单的信息
 		handleCheckPrevious(row) {
 			const { id } = row;
@@ -174,14 +173,8 @@ export default {
 				});
 			});
 		},
-		/** 重置按钮操作 */
-		resetQuery() {
-			this.resetForm('queryForm');
-			this.handleQuery();
-		},
 		// 表格的导出
 		handleExport() {
-			debugger;
 			this.download(
 				'system/goodsOrder/export',
 				{
@@ -198,10 +191,7 @@ export default {
 	<div>
 		<!--    这是框架自带的搜索模组，封装成了组件并且放在与index.vue同级目录下-->
 		<div>
-			<QuerySearchBar
-				:query-items="queryParams"
-				@updateQuery="handleGetQueryParams"
-			/>
+			<QuerySearchBar @updateQuery="handleGetQueryParams" />
 		</div>
 		<!--    通用弹窗 配合common_dialogs 使用-->
 		<div v-if="currentComponent">
@@ -232,11 +222,6 @@ export default {
 		<!--    顶部按钮操作-->
 		<div>
 			<el-row :gutter="10" class="mb8">
-				<el-col :span="1.5">
-					<el-button icon="el-icon-refresh" size="mini" @click="resetQuery"
-						>刷新
-					</el-button>
-				</el-col>
 				<el-col v-if="!isAdjustOrder" :span="1.5">
 					<el-button
 						v-hasPermi="['system:goodsorder:add']"

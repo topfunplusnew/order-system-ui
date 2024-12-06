@@ -34,49 +34,7 @@ export var mixin_order_base = {
 			],
 			// 顶部条件搜索
 			queryOrderInfo: {},
-			// 查询参数
-			queryParams: {
-				orderDateStart: null,
-				orderDateEnd: null,
-				pageNum: 1,
-				pageSize: 50,
-				ordersNo: null,
-				orderDate: null,
-				customer: null,
-				customerID: null,
-				landCarID: null,
-				landCarNo: null,
-				landDriverTel: null,
-				landDriverName: null,
-				seaCarID: null,
-				seaCarNo: null,
-				seaDriverTel: null,
-				seaDriverName: null,
-				checkUserId: null,
-				checkState: null,
-				invoiceState: null,
-				path: null,
-				PaymentState: null,
-				landBankName: null,
-				landBankNo: null,
-				seaBankName: null,
-				seaBankNo: null,
-				receiveProof: null,
-				saleManager: null,
-				fleet: null,
-				isAdjusted: null,
-				adjustDate: null,
-				isAdjust: null,
-				adjustOrderid: null,
-				isedit: null,
-				customerIsInvoice: null,
-				isSupplierInvoice: null,
-				cancelFlag: null,
-				comments: null,
-				addtime: null,
-				userId: null,
-				UserName: null
-			},
+
 			// 用于字段与中文名称映射
 			mapper: {
 				orderDate: '订单日期',
@@ -175,10 +133,6 @@ export var mixin_order_base = {
 				}
 			}
 			return formattedString.trim(); // 去掉最后一个换行符
-		},
-		// 查看某一个文件
-		checkFileItem(item) {
-			window.open(item);
 		}
 	}
 };
