@@ -264,7 +264,7 @@
 			:show-close="false"
 			:title="title"
 			:visible.sync="open"
-			width="62%"
+			width="800px"
 			append-to-body
 		>
 			<el-form ref="form" :model="form" :rules="rules" label-width="140px">
@@ -279,8 +279,62 @@
 								客户付款
 							</el-radio>
 						</el-form-item>
+						<el-form-item label="背书人类型" prop="reason">
+							<el-radio v-model="type" label="客户">客户</el-radio>
+							<el-radio v-model="type" label="供应商"> 供应商</el-radio>
+						</el-form-item>
 						<el-form-item label="背书人" prop="endorser">
-							<el-input v-model="form.endorser" placeholder="请输入背书人" />
+							<el-row>
+								<el-col :span="20">
+									<!--                  v-model="form.endorser"-->
+									<el-input placeholder="请输入背书人" v-model="endorser" />
+								</el-col>
+								<el-col :span="4">
+									<!-- 选择的是客户或者供应商名称-->
+									<SearchOption
+										:limit-info="{ companyType: type }"
+										:get-data="listCompany"
+										query-info="companyName"
+										query-label="公司名称"
+										:query-name="companyName"
+										@update:queryName="handleUpdateCompanyName"
+										@commitBack="handleCommitBackCompany"
+									>
+										<template #table-columns>
+											<el-table-column
+												:label="type"
+												align="center"
+												prop="relationName"
+											/>
+											<el-table-column
+												label="老板姓名"
+												align="center"
+												prop="leader"
+											/>
+											<el-table-column
+												label="老板电话"
+												align="center"
+												prop="leaderTel"
+											/>
+											<el-table-column
+												label="区域"
+												align="center"
+												prop="region"
+											/>
+											<el-table-column
+												label="公司名称"
+												align="center"
+												prop="companyName"
+											/>
+											<el-table-column
+												label="销售经理"
+												align="center"
+												prop="salesManager"
+											/>
+										</template>
+									</SearchOption>
+								</el-col>
+							</el-row>
 						</el-form-item>
 						<el-form-item label="收入票据金额" prop="billAmount">
 							<el-input
@@ -309,13 +363,13 @@
 						</el-form-item>
 						<el-form-item label="我方承兑账户" prop="billAccount">
 							<el-row>
-								<el-col :span="10">
+								<el-col :span="20">
 									<el-input
 										v-model="form.billAccount"
 										placeholder="请输入我方承兑账户"
 									/>
 								</el-col>
-								<el-col :span="3">
+								<el-col :span="4">
 									<SearchOption
 										:get-data="listBankAccount"
 										:limit-info="{ accountType: '己方公司' }"
@@ -379,13 +433,6 @@
 								value-format="yyyy-MM-dd HH:mm:ss"
 							></el-date-picker>
 						</el-form-item>
-						<!--            <el-form-item label="背书事由" prop="endorseReason">-->
-						<!--              <el-radio v-model="form.endorseReason" label="出卖">出卖</el-radio>-->
-						<!--              <el-radio v-model="form.endorseReason" label="付货款">付货款</el-radio>-->
-						<!--            </el-form-item>-->
-						<!--            <el-form-item label="来源" prop="origin">-->
-						<!--              <el-input v-model="form.origin" placeholder="请输入来源"/>-->
-						<!--            </el-form-item>-->
 						<el-form-item label="备注" prop="comments">
 							<el-input v-model="form.comments" placeholder="请输入备注" />
 						</el-form-item>
@@ -415,6 +462,7 @@ import { mixin_printHTML } from '@/views/dashboard/mixins/print';
 import { excludeParams } from '@/api/tool/exclude';
 import { mixin_bankacception_fill } from '../../dashboard/mixins/bankacceptance/bankacception_fill';
 import CheckTotal from '../../dashboard/components/bankacceptance/CheckTotal.vue';
+import { listCompany } from '@/api/system/company';
 
 export default {
 	name: 'BankAcceptance',
@@ -571,6 +619,7 @@ export default {
 		}
 	},
 	methods: {
+		listCompany,
 		listBankAccount,
 		handleCommitBack(val) {
 			this.form.billAccount = val.acountsName;
