@@ -26,7 +26,21 @@ export default {
 			maxFileNum: 5
 		};
 	},
-
+	computed: {
+		// 过滤出来图片 给模板使用
+		imgList() {
+			// 不一定只有jpg格式的 可能还有png格式
+			const type = ['.jpeg', '.jpg', '.png', '.svg'];
+			// 根据文件名称的后缀来判断
+			return this.checkFileList.filter(el => {
+				return type.some(item => item === el.slice(el.lastIndexOf('.')));
+			});
+		},
+		// 不大于五个附件返回true
+		isFull() {
+			return this.checkFileList.length < this.maxFileNum;
+		}
+	},
 	mounted() {
 		// 事件总线 接受dialogVisible的变化 设置一个全局监听器 当监听到某个事件发生的时候 那么就要执行相关逻辑
 		this.$bus.$on('changeFileVisible', value => {
@@ -124,7 +138,10 @@ export default {
 			:visible.sync="dialogVisible"
 			width="620px"
 			append-to-body
+			:close-on-click-modal="false"
+			:close-on-press-escape="false"
 		>
+			<h3>附件列表</h3>
 			<div class="file-list">
 				<!--        上传过的文件列表-->
 				<FileItems
@@ -135,7 +152,21 @@ export default {
 					@handleFile="handleDeleteFile"
 				/>
 				<!--        支持上传-->
-				<FileShowItem @handleFile="handleAddFile" />
+				<FileShowItem @handleFile="handleAddFile" v-if="isFull" />
+			</div>
+
+			<h3>附件图片预览</h3>
+			<div class="img-list">
+				<!--        只渲染checkFileList中的图片-->
+				<div>
+					<img
+						v-for="(item, index) in imgList"
+						:key="index"
+						:src="item"
+						alt="该附件无图片"
+						@click="handleCheckFile(item)"
+					/>
+				</div>
 			</div>
 			<span slot="footer" class="dialog-footer">
 				<el-button @click="dialogVisible = false">取 消</el-button>
@@ -159,5 +190,15 @@ export default {
 	border-radius: 15px;
 	background: #fafafa;
 	margin-bottom: 10px;
+}
+
+.img-list {
+	height: 600px;
+	overflow-y: scroll;
+
+	img {
+		width: 100%;
+		height: 100%;
+	}
 }
 </style>
