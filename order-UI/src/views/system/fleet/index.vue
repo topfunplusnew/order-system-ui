@@ -184,7 +184,7 @@
 					<el-input v-model="form.fname" placeholder="请输入车队名称" />
 				</el-form-item>
 				<el-form-item label="车队经理" prop="fLeader">
-					<el-input v-model="form.fLeader" placeholder="请输入车队经理" />
+					<el-input v-model="form.fleader" placeholder="请输入车队经理" />
 				</el-form-item>
 				<el-form-item label="车队经理电话" prop="tel">
 					<el-input v-model="form.tel" placeholder="请输入车队经理电话" />
@@ -318,7 +318,7 @@ export default {
 			this.form = {
 				id: null,
 				fname: null,
-				fLeader: null,
+				fleader: null,
 				tel: null,
 				address: null,
 				addtime: null,
