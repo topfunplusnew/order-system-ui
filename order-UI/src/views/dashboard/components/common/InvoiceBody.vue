@@ -230,10 +230,11 @@ export default {
 		<el-card class="box-card">
 			<div slot="header" class="clearfix">
 				<span class="bold-text">开票信息 </span>
-				<div v-if="companyName">{{ '公司名称：' + companyName }}</div>
-				<div v-if="invoiceAmount">
-					剩余开票金额： <span class="money">{{ invoiceAmount }}</span>
-				</div>
+			</div>
+			<div>{{ '公司名称：' + (companyName ? companyName : '无') }}</div>
+			<div>
+				剩余开票金额：
+				<span class="money">{{ invoiceAmount ? invoiceAmount : '无' }}</span>
 			</div>
 			<div class="invoice-list">
 				<InvoiceItem
@@ -288,7 +289,7 @@ export default {
 }
 
 .invoice-list {
-	height: 670px;
+	height: 730px;
 	overflow-y: scroll;
 }
 

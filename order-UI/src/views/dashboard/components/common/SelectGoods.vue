@@ -175,7 +175,7 @@ export default {
 			try {
 				// 赋值搜索条件
 				this.queryParams.customerID = companyId;
-				// 强制更新vue
+				// 强制更新vue 在更新数据后依赖于 DOM 的最新状态，比如获取某个元素的大小、位置等
 				await this.$nextTick();
 				// 获取订单列表
 				await this.getList();
@@ -363,7 +363,8 @@ export default {
 			border
 			:data="goodsOrderList"
 			virtual-scroll
-			max-height="462px"
+			max-height="400px"
+			height="400px"
 			size="mini"
 			:cell-style="
 				() => {

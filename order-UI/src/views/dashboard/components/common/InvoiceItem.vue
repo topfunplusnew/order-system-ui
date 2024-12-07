@@ -111,13 +111,13 @@ export default {
 	width: 90%;
 	margin: 10px;
 	height: 35px;
-	border-radius: 15px;
+	border-radius: 4px;
 	background-color: #f8f8f9;
 	display: flex;
 	justify-content: space-around;
 	align-items: center;
 	transition: all 0.2s ease-in-out;
-
+	border: 1px solid #cbf2ff;
 	cursor: pointer;
 
 	&:hover {
