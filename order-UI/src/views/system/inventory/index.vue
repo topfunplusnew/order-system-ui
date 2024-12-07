@@ -31,8 +31,8 @@
 			<!-- 刷新按钮-->
 			<el-col :span="1.5">
 				<el-button icon="el-icon-refresh" size="mini" @click="resetQuery"
-					>刷新</el-button
-				>
+					>刷新
+				</el-button>
 			</el-col>
 			<el-col :span="1.5">
 				<el-button
@@ -395,8 +395,8 @@
 								size="mini"
 								type="text"
 								@click="handlePayment(scope.row)"
-								>付款</el-button
-							>
+								>付款
+							</el-button>
 							<el-button
 								size="mini"
 								type="text"
@@ -596,11 +596,11 @@
 						</el-form-item>
 						<el-form-item label="出厂是否含税" prop="isIncludeTaxFactory">
 							<el-radio v-model="form.isIncludeTaxFactory" :label="1"
-								>是</el-radio
-							>
+								>是
+							</el-radio>
 							<el-radio v-model="form.isIncludeTaxFactory" :label="0"
-								>否</el-radio
-							>
+								>否
+							</el-radio>
 						</el-form-item>
 						<el-form-item label="杂费" prop="sundryCost">
 							<el-input v-model="form.sundryCost" placeholder="请输入杂费" />
@@ -832,8 +832,8 @@
 				</el-row>
 				<br />
 				<el-button type="primary" @click="submitSecondInvoiceIn"
-					>确 定</el-button
-				>
+					>确 定
+				</el-button>
 				<el-button @click="secondInvoiceInVisible = false"> 取 消</el-button>
 			</div>
 		</el-dialog>
@@ -864,8 +864,8 @@
 				</el-row>
 				<br />
 				<el-button type="primary" @click="submitBreakInvoiceIn"
-					>确 定</el-button
-				>
+					>确 定
+				</el-button>
 				<el-button @click="breakInvoiceInVisible = false">取 消</el-button>
 			</div>
 		</el-dialog>
