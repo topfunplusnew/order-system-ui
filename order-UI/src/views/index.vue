@@ -122,7 +122,7 @@
 					<el-table-column
 						v-if="columns[2].visible"
 						prop="salesman"
-						label="录入员"
+						label="销售经理"
 						show-overflow-tooltip
 					></el-table-column>
 					<el-table-column
