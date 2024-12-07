@@ -18,6 +18,14 @@ export default {
 			visible: false
 		};
 	},
+	computed: {
+		amount() {
+			if (this.invoice === null) {
+				return '无';
+			}
+			return fix(this.invoice.ticketPointAmount);
+		}
+	},
 	mounted() {
 		console.log(this.invoice);
 	},
@@ -44,9 +52,7 @@ export default {
 				<!--					<EllipsisText :title="invoice.companyName" />-->
 				<!--				</h4>-->
 				<p class="invoice-pra">
-					开票金额：<span style="color: #72d511">{{
-						fix(invoice.ticketPointAmount)
-					}}</span>
+					开票金额：<span style="color: #72d511">{{ amount }}</span>
 				</p>
 			</div>
 			<div class="invoice-option">

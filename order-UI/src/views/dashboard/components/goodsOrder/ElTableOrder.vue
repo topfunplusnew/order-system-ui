@@ -174,7 +174,6 @@ export default {
 		handleCheckPrevious(row) {
 			const { id } = row;
 			getGoodsOrder(id).then(res => {
-				// todo
 				this.openDialog(GOODS_ORDER, '查看原订单信息', '50%', {
 					needToShowInfo: res.data
 				});

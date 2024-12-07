@@ -33,6 +33,8 @@ export default {
 			this.$store.dispatch('excel/clearInvoiceAmount');
 			this.$store.dispatch('excel/setInvoiceAmount', row.total);
 			sessionStorage.setItem('invoiceAmount', row.total);
+
+			// 方便变颜色
 			this.selectedRowId = row.id;
 		},
 		// 点击某一行变颜色的函数

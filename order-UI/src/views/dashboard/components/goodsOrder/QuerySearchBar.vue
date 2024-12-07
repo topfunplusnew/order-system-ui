@@ -107,6 +107,30 @@
 						></el-input>
 					</el-form-item>
 				</el-col>
+
+				<el-col :span="6">
+					<el-form-item label="录入员" prop="userName">
+						<el-input
+							v-model="queryParams.userName"
+							placeholder="请输入录入员"
+							clearable
+							size="mini"
+							@keyup.enter.native="handleQuery"
+						></el-input>
+					</el-form-item>
+				</el-col>
+				<el-col :span="6">
+					<el-form-item label="销售经理" prop="saleManager">
+						<el-input
+							v-model="queryParams.saleManager"
+							placeholder="请输入车队名称"
+							clearable
+							size="mini"
+							@keyup.enter.native="handleQuery"
+						></el-input>
+					</el-form-item>
+				</el-col>
+
 				<el-col :span="6">
 					<el-form-item label="审核状态" prop="checkState">
 						<el-select
@@ -160,6 +184,10 @@ export default {
 			queryParams: {}
 		};
 	},
+	mounted() {
+		// 清除搜索条件
+		this.$bus.$on('select-goods:update', () => this.resetParams());
+	},
 	methods: {
 		// 处理查询的方法
 		handleQuery() {
@@ -193,7 +221,7 @@ export default {
 				seaDriverName: null,
 				checkUserId: null,
 				checkState: null,
-				invoiceState: null,
+				invoiceState: '未开票',
 				path: null,
 				PaymentState: null,
 				landBankName: null,
@@ -205,7 +233,7 @@ export default {
 				fleet: null,
 				isAdjusted: null,
 				adjustDate: null,
-				isAdjust: null,
+				isAdjust: '否',
 				adjustOrderid: null,
 				isedit: null,
 				customerIsInvoice: null,

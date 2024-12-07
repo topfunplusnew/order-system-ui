@@ -247,7 +247,7 @@ export default {
 							<div class="left-box-item">
 								<el-card class="box-card">
 									<div slot="header" class="clearfix">
-										<span class="bold-text">分配剩余金额</span>
+										<span class="bold-text">导入公司列表</span>
 									</div>
 									<!--              购买方和销方 搜索区域-->
 									<el-form :inline="true" class="demo-form-inline">

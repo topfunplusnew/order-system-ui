@@ -2,9 +2,7 @@
 import { getGoodsOrder } from '@/api/system/goodsOrder';
 import DialogWrapper from '@/views/dashboard/components/common/DialogWrapper.vue';
 import { common_dialog } from '@/views/dashboard/mixins/common/common_dialog';
-import OrderInfos from '@/views/dashboard/components/goodsOrder/OrderInfos.vue';
 import { batchInvoice } from '@/api/system/excel';
-import Invoice from '@/views/dashboard/components/goodsOrder/Invoice.vue';
 import INVOICE_OUT from '@/components/NeedToShow/INVOICE_OUT.vue';
 import { TableName } from '@/api/tool/enums';
 import INVOICE_IN from '@/components/NeedToShow/INVOICE_IN.vue';
@@ -54,6 +52,8 @@ export default {
 			// 如果成功
 			if (target.flag) {
 				this.$message.success('本批开票成功');
+				// 发送时间 告诉订单列表重新加载
+				this.$bus.$emit('select-goods:update');
 			} else {
 				const uuid = target.uuid;
 				// 查找该出错的信息

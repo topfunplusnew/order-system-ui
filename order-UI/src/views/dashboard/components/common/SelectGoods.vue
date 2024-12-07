@@ -15,6 +15,7 @@ export default {
 	components: { DialogWrapper, QuerySearchBar },
 	mixins: [common_dialog],
 	computed: {
+		// 拿出需要的
 		...mapGetters(['ticketPoint', 'comment'])
 	},
 	watch: {
@@ -29,7 +30,9 @@ export default {
 	data() {
 		return {
 			// 查询参数
-			queryParams: {},
+			queryParams: {
+				params: {}
+			},
 			// 订单列表
 			goodsOrderList: [],
 			total: 0,
@@ -45,7 +48,10 @@ export default {
 			type: null,
 			id: null,
 			// 订单选择的时候保存选中的行，方便取消选中后计算钱
-			preOrderList: []
+			preOrderList: [],
+
+			// 左下角检索的信号量
+			checkFlag: null
 		};
 	},
 	created() {
@@ -53,13 +59,24 @@ export default {
 		this.getList();
 	},
 	mounted() {
+		// 清除一下状态
+		this.checkFlag = null;
+
 		// 接受事件总线传递来的该组件的更新操作 并且传入回调函数
 		this.$bus.$on('select-goods:update', () => this.refresh());
-		// 监听重置筛选的事件 将是否检索设置为未检索
-		this.$bus.$on('select-goods-row:update', () => (this.hasClicked = false));
+		// 监听重置筛选的事件 将是否检索设置为未检索 信号量为空
+		this.$bus.$on('select-goods-row:update', () => {
+			this.hasClicked = false;
+			this.checkFlag = null;
+			// 重置搜索条件
+			this.resetParams();
+		});
 		// 接受分配剩余金额传入的关于客户或者供应商的筛选
 		this.$bus.$on('update-goods-order-company', value => {
+			// 筛选订单列表
 			this.handleFilterOrders(value);
+			// 赋值
+			this.checkFlag = value;
 			// 赋值类型
 			this.type = value.type;
 			// 赋值id 用于查找供应商
@@ -81,18 +98,33 @@ export default {
 	methods: {
 		// 获取订单列表
 		async getList() {
+			// 如果没有输入票点
 			if (!this.$store.getters.ticketPoint || !this.hasClicked) {
 				// 先禁用多选框
 				this.isBaned = true;
 				// 打开加载
 				this.loading = true;
 			}
+
+			// 如果信号量有值
+			if (this.checkFlag) {
+				try {
+					// 判断一下类型 赋值
+					this.checkFlag.type === PUBLIC_DICT_TYPE.CUSTOMER
+						? (this.queryParams.customerID = this.checkFlag.id)
+						: (this.queryParams.params[`supplierId`] = this.checkFlag.id);
+				} catch (err) {
+					console.log('Error parsing checkFlag:', err);
+				}
+			}
+
+			// 搜索
 			try {
 				const res = await listGoodsOrder(this.queryParams);
 				this.goodsOrderList = res.rows; // 更新数据
 				this.total = res.total;
 			} catch (error) {
-				console.error('Failed to fetch goods order list:', error);
+				console.log('Failed to fetch goods order list:', error);
 			} finally {
 				this.loading = false;
 			}
@@ -136,11 +168,16 @@ export default {
 		},
 		// 对客户的筛选
 		async handleCustomerFilter(companyId) {
+			console.log('检索的id:', companyId);
 			if (!companyId) {
 				this.$message.warning('非法id!');
 			}
 			try {
+				// 赋值搜索条件
 				this.queryParams.customerID = companyId;
+				// 强制更新vue
+				await this.$nextTick();
+				// 获取订单列表
 				await this.getList();
 				// 设置点击了检索标记
 				this.hasClicked = true;
@@ -150,8 +187,29 @@ export default {
 				console.error('Error fetching list:', err);
 			}
 		},
+		// 对供应商的筛选
+		async handleSupplierFilter(companyId) {
+			console.log('检索的id:', companyId);
+			if (!companyId) {
+				this.$message.warning('非法id!');
+			}
+			try {
+				// 赋值数据
+				this.queryParams.params[`supplierId`] = companyId;
+				// 强制更新vue
+				await this.$nextTick();
+				// 获取列表
+				await this.getList();
+				// 设置点击了检索标记
+				this.hasClicked = true;
+				this.resetParams();
+			} catch (err) {
+				console.error('Error fetching list:', err);
+			}
+		},
 		// 处理选择的订单
 		multipleMoney(orders) {
+			// 查找出新增的行和取消勾选的行
 			const addedRows = orders.filter(row => !this.preOrderList.includes(row));
 			const removedRows = this.preOrderList.filter(
 				row => !orders.includes(row)
@@ -167,7 +225,7 @@ export default {
 				if (removedRows.length !== 0) {
 					money =
 						this.calculateMoney(removedRows, this.type) * this.ticketPoint;
-					if (money > 0) {
+					if (money && money > 0) {
 						this.$store.commit('excel/ADD_INVOICE_AMOUNT', money);
 					}
 				}
@@ -177,7 +235,7 @@ export default {
 					money = this.calculateMoney(addedRows, this.type) * this.ticketPoint;
 
 					console.log('供应商计算金额:', money);
-					if (money > 0) {
+					if (money && money > 0) {
 						this.$store.commit('excel/MULTI_INVOICE_AMOUNT', money);
 					}
 				}
@@ -213,23 +271,9 @@ export default {
 			return money;
 		},
 
-		// 对供应商的筛选
-		async handleSupplierFilter(companyId) {
-			if (!companyId) {
-				this.$message.warning('非法id!');
-			}
-			try {
-				this.queryParams.params[`supplierId`] = companyId;
-				await this.getList();
-				// 设置点击了检索标记
-				this.hasClicked = true;
-				this.resetParams();
-			} catch (err) {
-				console.error('Error fetching list:', err);
-			}
-		},
 		handleQuery(value) {
-			this.queryParams = value;
+			// this.queryParams = value;
+			Object.assign(this.queryParams, value);
 			this.getList();
 		},
 		// 多选框是否禁用
@@ -238,6 +282,7 @@ export default {
 		},
 		// 重新拉取数据
 		refresh() {
+			this.checkFlag = null;
 			this.resetParams();
 			this.getList();
 		},
