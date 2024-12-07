@@ -193,6 +193,15 @@ export default {
 		handleQuery() {
 			this.queryParams.pageNum = 1;
 			this.queryParams.pageSize = 50;
+
+			// 处理一下时间 客户要求开始时间和结束时间都是同一天 前端拼接零点和二十四点
+			if (this.queryParams.orderDateStart && this.queryParams.orderDateEnd) {
+				this.queryParams.orderDateStart =
+					this.queryParams.orderDateStart + ' 00:00:00';
+				this.queryParams.orderDateEnd =
+					this.queryParams.orderDateEnd + ' 23:59:59';
+			}
+			// 提交
 			this.$emit('updateQuery', this.queryParams);
 		},
 		/** 重置按钮操作 */
