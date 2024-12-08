@@ -226,7 +226,7 @@ export default {
 				seaDriverName: null,
 				checkUserId: null,
 				checkState: null,
-				invoiceState: '未开票',
+				// invoiceState: '未开票',
 				path: null,
 				PaymentState: null,
 				landBankName: null,
