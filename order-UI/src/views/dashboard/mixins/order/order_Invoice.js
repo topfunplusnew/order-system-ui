@@ -16,16 +16,12 @@ export const Options = [
 
 export const OptionInvent = [
 	{
-		value: '未开票',
-		label: '未开票'
+		value: 1,
+		label: '是'
 	},
 	{
-		value: '部分开票',
-		label: '部分开票'
-	},
-	{
-		value: '已开票',
-		label: '已开票'
+		value: 0,
+		label: '否'
 	}
 ];
 /**

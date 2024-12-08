@@ -5,7 +5,7 @@
 			:model="queryParams"
 			size="mini"
 			:inline="true"
-			label-width="70px"
+			label-width="85px"
 		>
 			<el-row>
 				<el-col :span="6">
@@ -149,6 +149,40 @@
 					</el-form-item>
 				</el-col>
 				<el-col :span="6">
+					<el-form-item label="供应商是否开票">
+						<el-select
+							v-model="queryParams.params.isIncludeTaxSale"
+							placeholder="请选择"
+							size="mini"
+							clearable
+						>
+							<el-option
+								v-for="item in OptionInvent()"
+								:key="item.value"
+								:label="item.label"
+								:value="item.value"
+							></el-option>
+						</el-select>
+					</el-form-item>
+				</el-col>
+				<el-col :span="6">
+					<el-form-item label="客户是否开票">
+						<el-select
+							v-model="queryParams.params.isIncludeTaxFactory"
+							placeholder="请选择"
+							size="mini"
+							clearable
+						>
+							<el-option
+								v-for="item in OptionInvent()"
+								:key="item.value"
+								:label="item.label"
+								:value="item.value"
+							></el-option>
+						</el-select>
+					</el-form-item>
+				</el-col>
+				<el-col :span="6">
 					<el-button
 						type="primary"
 						icon="el-icon-search"
@@ -166,7 +200,10 @@
 	</div>
 </template>
 <script>
-import { OptionInvent, Options } from '../../mixins/order/order_Invoice';
+import {
+	OptionInvent,
+	Options
+} from '@/views/dashboard/mixins/order/order_Invoice';
 
 export default {
 	name: 'QuerySearchBar',
@@ -177,7 +214,12 @@ export default {
 			optionInvent: OptionInvent, // 假设 OptionInvent 是已定义的数据
 			options: Options, // 假设 Options 是已定义的数据,
 			// 查询参数
-			queryParams: {}
+			queryParams: {
+				params: {
+					isIncludeTaxSale: null,
+					isIncludeTaxFactory: null
+				}
+			}
 		};
 	},
 	mounted() {
@@ -185,6 +227,9 @@ export default {
 		this.$bus.$on('select-goods:update', () => this.resetParams());
 	},
 	methods: {
+		OptionInvent() {
+			return OptionInvent;
+		},
 		// 处理查询的方法
 		handleQuery() {
 			this.queryParams.pageNum = 1;
@@ -243,7 +288,11 @@ export default {
 				isedit: null,
 				customerIsInvoice: null,
 				isSupplierInvoice: null,
-				comments: null
+				comments: null,
+				params: {
+					isIncludeTaxSale: 0,
+					isIncludeTaxFactory: 0
+				}
 			};
 		}
 	}

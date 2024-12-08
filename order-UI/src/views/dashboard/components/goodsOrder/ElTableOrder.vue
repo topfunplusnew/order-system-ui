@@ -224,7 +224,7 @@ export default {
 		</div>
 
 		<!--    顶部按钮操作-->
-		<div>
+		<div style="padding: 10px">
 			<el-row :gutter="10" class="mb8">
 				<el-col v-if="!isAdjustOrder" :span="1.5">
 					<el-button

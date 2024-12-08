@@ -1,5 +1,8 @@
 <template>
 	<el-dialog
+		v-el-drag-dialog
+		v-el-relen-dialog
+		v-if="dialogVisible"
 		:title="dialogTitle"
 		:visible.sync="dialogVisible"
 		:width="dialogWidth"
@@ -28,6 +31,9 @@
 
 <script>
 import { Message } from 'element-ui';
+// 引入弹窗可拖动属性
+import elDragDialog from '../../directive/dialog/drugDialog';
+import elRelenDialog from '../../directive/dialog/relenDialog';
 
 export default {
 	props: {
@@ -62,6 +68,11 @@ export default {
 			default: false
 		}
 	},
+	directives: {
+		elDragDialog,
+		elRelenDialog
+	},
+
 	// 监听事件
 	emits: ['update:dialogVisible', 'confirm', 'close'],
 	methods: {
