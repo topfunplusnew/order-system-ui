@@ -89,23 +89,43 @@ export default {
 
 			// 对数组每一个进行遍历 收集元素
 			arr.forEach(element => {
-				const isPurchase = element.sellerId === 0; // 判断是否是购买方
+				// 判断对方是否是购买方
+				const isPurchase = element.sellerId === 0;
+				// 根据判断选择 Map
+				const map = isPurchase ? purchaseMap : sellerMap;
+				// 购买方或销售方的 id
+				const id = isPurchase ? element.purchaseId : element.sellerId;
+				// 购买方或销售方的 name
+				const name = isPurchase ? element.purchaseName : element.sellerName;
+				// 购买方或销售方的 type
+				const type = isPurchase ? element.purchaseType : element.sellerType;
 
-				const map = isPurchase ? purchaseMap : sellerMap; // 根据判断选择 Map
-				const id = isPurchase ? element.purchaseId : element.sellerId; // 购买方或销售方的 id
-				const name = isPurchase ? element.purchaseName : element.sellerName; // 购买方或销售方的 name
-				const type = isPurchase ? element.purchaseType : element.sellerType; // 购买方或销售方的 type
-
+				// 必然有一方是我方 对方如果是购买方 那么我方就是销售方 反之一样
+				const us = isPurchase ? element.sellerName : element.purchaseName;
 				// 确保 id 不为 undefined 或空值
 				if (id == null || id === '') {
 					return; // 跳过当前元素
 				}
+
+				// 唯一键
+				const _onlyKey = id + us;
 				// 获取当前 Map 中的记录，如果存在则累加总数，不存在则直接插入
-				const existing = map.get(id);
-				if (existing) {
-					existing.total += element.total; // 累加 total
+				const _existing = map.get(_onlyKey);
+
+				// 如果存在id 并且 我方名称不一样
+				if (_existing) {
+					_existing.total += element.total; // 累加 total
+
+					// 插入新的记录
 				} else {
-					map.set(id, { id, type, name, total: element.total }); // 插入新的记录
+					map.set(_onlyKey, {
+						id,
+						type,
+						name,
+						// 我方公司名称
+						us,
+						total: element.total
+					});
 				}
 			});
 
@@ -238,7 +258,7 @@ export default {
 			>
 				<!--        展示某个公司有多少钱可以开-->
 				<el-row :gutter="12">
-					<el-col :span="6">
+					<el-col :span="8">
 						<div class="left-box">
 							<!--  左上角展示供应商的信息-->
 							<CompanyInformation :company-info="companyInfo" />
@@ -329,7 +349,7 @@ export default {
 						</el-card>
 					</el-col>
 					<!--            展示已经开票的信息-->
-					<el-col :span="6">
+					<el-col :span="4">
 						<InvoiceBody />
 					</el-col>
 				</el-row>

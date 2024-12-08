@@ -148,22 +148,18 @@
 						</el-select>
 					</el-form-item>
 				</el-col>
-				<el-col :span="4">
-					<el-form-item>
-						<el-button
-							type="primary"
-							icon="el-icon-search"
-							size="mini"
-							@click="handleQuery"
-						>
-							搜索
-						</el-button>
-					</el-form-item>
-					<el-form-item>
-						<el-button icon="el-icon-refresh" size="mini" @click="resetQuery"
-							>刷新
-						</el-button>
-					</el-form-item>
+				<el-col :span="6">
+					<el-button
+						type="primary"
+						icon="el-icon-search"
+						size="mini"
+						@click="handleQuery"
+					>
+						搜索
+					</el-button>
+					<el-button icon="el-icon-refresh" size="mini" @click="resetQuery"
+						>刷新
+					</el-button>
 				</el-col>
 			</el-row>
 		</el-form>

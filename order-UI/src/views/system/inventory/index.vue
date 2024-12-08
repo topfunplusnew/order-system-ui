@@ -370,7 +370,7 @@
 					/>
 					<el-table-column
 						v-if="columns[34].visible"
-						label="客户佣金"
+						label="佣金"
 						align="center"
 						prop="customerCommission"
 						width="150"
@@ -773,10 +773,10 @@
 						<el-form-item label="返利金额" prop="rebate">
 							<el-input v-model="form.rebate" placeholder="请输入返利金额" />
 						</el-form-item>
-						<el-form-item label="客户佣金" prop="customerCommission">
+						<el-form-item label="佣金" prop="customerCommission">
 							<el-input
 								v-model="form.customerCommission"
-								placeholder="请输入客户佣金"
+								placeholder="请输入佣金"
 							/>
 						</el-form-item>
 						<el-form-item label="备注" prop="comments">
@@ -1012,7 +1012,7 @@ export default {
 				{ key: 31, label: `总贷款杂费`, visible: true },
 				{ key: 32, label: `加费`, visible: true },
 				{ key: 33, label: `返利金额`, visible: true },
-				{ key: 34, label: `客户佣金`, visible: true },
+				{ key: 34, label: `佣金`, visible: true },
 				{ key: 35, label: `备注`, visible: true }
 			],
 

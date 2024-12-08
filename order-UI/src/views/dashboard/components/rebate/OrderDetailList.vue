@@ -154,7 +154,7 @@ export default {
 			</el-table-column>
 			<!-- 其他列保持类似 -->
 			<el-table-column
-				label="客户佣金"
+				label="佣金"
 				align="center"
 				prop="customerCommission"
 				min-width="90"

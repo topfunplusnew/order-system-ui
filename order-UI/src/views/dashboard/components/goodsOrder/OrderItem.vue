@@ -538,12 +538,12 @@ export default {
 					/>
 				</div>
 				<div class="order-item">
-					<span class="text-bold">客户佣金</span>
+					<span class="text-bold">佣金</span>
 					<hr />
 					<el-input
 						v-model="orderItemInfo.customerCommission"
 						type="text"
-						placeholder="客户佣金"
+						placeholder="佣金"
 					/>
 				</div>
 			</div>

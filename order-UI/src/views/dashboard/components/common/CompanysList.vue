@@ -66,7 +66,8 @@ export default {
 		>
 			<!--                      多选框-->
 			<el-table-column prop="id" label="ID"></el-table-column>
-			<el-table-column prop="name" label="公司名称"></el-table-column>
+			<el-table-column prop="us" label="我方"></el-table-column>
+			<el-table-column prop="name" label="对方公司"></el-table-column>
 			<el-table-column prop="type" label="类型"></el-table-column>
 			<el-table-column prop="total" label="金额">
 				<template slot-scope="scope">

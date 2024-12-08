@@ -69,7 +69,7 @@ export var mixin_order_base = {
 				additionalFees: '额外费用',
 				storeHouseName: '仓库名称',
 				logisticsProfit: '物流利润',
-				customerCommission: '客户佣金',
+				customerCommission: '佣金',
 				comments: '备注',
 				updateTime: '订单修改时间',
 				remark: '修改记录',

@@ -348,7 +348,7 @@
 			/>
 			<el-table-column
 				v-if="columns[33].visible"
-				label="客户佣金"
+				label="佣金"
 				align="center"
 				prop="customerCommission"
 			/>
@@ -533,10 +533,10 @@
 						placeholder="请输入物流利润"
 					/>
 				</el-form-item>
-				<el-form-item label="客户佣金" prop="customerCommission">
+				<el-form-item label="佣金" prop="customerCommission">
 					<el-input
 						v-model="form.customerCommission"
-						placeholder="请输入客户佣金"
+						placeholder="请输入佣金"
 					/>
 				</el-form-item>
 				<el-form-item label="是否被调整单" prop="isAdjusted">
@@ -701,7 +701,7 @@
 				<el-descriptions-item label="物流利润">{{
 					orderDetailInfo.logisticsProfit
 				}}</el-descriptions-item>
-				<el-descriptions-item label="客户佣金">{{
+				<el-descriptions-item label="佣金">{{
 					orderDetailInfo.customerCommission
 				}}</el-descriptions-item>
 				<!--        <el-descriptions-item label="是否被调整单">{{ orderDetailInfo.isAdjusted }}</el-descriptions-item>-->
@@ -955,7 +955,7 @@ export default {
 				{ key: 30, label: `仓库名称`, visible: true },
 				{ key: 31, label: `仓库存储的货物ID`, visible: true },
 				{ key: 32, label: `物流利润`, visible: true },
-				{ key: 33, label: `客户佣金`, visible: true },
+				{ key: 33, label: `佣金`, visible: true },
 				{ key: 34, label: `是否被调整单`, visible: true },
 				{ key: 35, label: `调整日期`, visible: true },
 				{ key: 36, label: `供应商ID`, visible: true }

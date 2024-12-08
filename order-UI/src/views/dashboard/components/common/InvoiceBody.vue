@@ -293,7 +293,7 @@ export default {
 }
 
 .invoice-list {
-	height: 730px;
+	height: 600px;
 	overflow-y: scroll;
 }
 

@@ -536,14 +536,14 @@ export default {
 					width="120px"
 				/>
 
-				<el-table-column
-					v-show="columns[14].visible"
-					show-overflow-tooltip
-					label="开票状态"
-					align="center"
-					prop="invoiceState"
-					width="120px"
-				/>
+				<!--				<el-table-column-->
+				<!--					v-show="columns[14].visible"-->
+				<!--					show-overflow-tooltip-->
+				<!--					label="开票状态"-->
+				<!--					align="center"-->
+				<!--					prop="invoiceState"-->
+				<!--					width="120px"-->
+				<!--				/>-->
 				<el-table-column
 					v-show="columns[15].visible"
 					show-overflow-tooltip

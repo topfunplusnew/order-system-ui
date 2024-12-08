@@ -331,7 +331,9 @@ export default {
 				customerIsInvoice: null,
 				isSupplierInvoice: null,
 				params: {
-					supplierId: null
+					supplierId: null,
+					isIncludeTaxSale: 1,
+					isIncludeTaxFactory: 1
 				}
 			};
 		}
@@ -504,13 +506,7 @@ export default {
 				prop="checkState"
 				width="120"
 			></el-table-column>
-			<el-table-column
-				show-overflow-tooltip
-				label="开票状态"
-				align="center"
-				prop="invoiceState"
-				width="120px"
-			/>
+			<!--			/>-->
 			<el-table-column
 				show-overflow-tooltip
 				label="客户是否开票"

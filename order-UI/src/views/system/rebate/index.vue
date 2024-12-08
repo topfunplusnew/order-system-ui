@@ -659,7 +659,7 @@
 								prop="logisticsProfit"
 							/>
 							<el-table-column
-								label="客户佣金"
+								label="佣金"
 								align="center"
 								prop="customerCommission"
 							/>

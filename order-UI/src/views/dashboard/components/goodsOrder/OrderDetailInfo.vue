@@ -384,7 +384,7 @@ export default {
 					show-overflow-tooltip
 				/>
 				<el-table-column
-					label="客户佣金"
+					label="佣金"
 					align="center"
 					prop="customerCommission"
 					show-overflow-tooltip

@@ -201,7 +201,7 @@
 
 			<el-table-column
 				v-if="columns[5].visible"
-				label="客户佣金"
+				label="佣金"
 				align="center"
 				prop="customerCommission"
 				show-overflow-tooltip
@@ -325,10 +325,10 @@
 						</el-form-item>
 					</el-col>
 					<el-col :span="12">
-						<el-form-item label="客户佣金" prop="customerCommission">
+						<el-form-item label="佣金" prop="customerCommission">
 							<el-input
 								v-model="form.customerCommission"
-								placeholder="请输入客户佣金"
+								placeholder="请输入佣金"
 							/>
 						</el-form-item>
 						<el-form-item label="综合单车利润" prop="comprehensiveProfit">
@@ -436,7 +436,7 @@ export default {
 				{ key: 2, label: `接受奖励人员`, visible: true },
 				{ key: 3, label: `订单不含税利润`, visible: true },
 				{ key: 4, label: `厂家返利`, visible: true },
-				{ key: 5, label: `客户佣金`, visible: true },
+				{ key: 5, label: `佣金`, visible: true },
 				{ key: 6, label: `综合单车利润`, visible: true },
 				{ key: 7, label: `奖励金额`, visible: true },
 				{ key: 8, label: `奖励日期`, visible: true },

@@ -893,7 +893,7 @@ export default {
 				this.currentInfo.bankName = row.bankName;
 				this.currentInfo.acountsName = row.acountsName;
 				// 应该是调用修改客户信息的修改银行卡信息
-				updateCompany(this.currentInfo).then(res => {
+				updateCompany(this.currentInfo).then(() => {
 					this.$message.success('添加成功');
 				});
 			}
@@ -905,7 +905,7 @@ export default {
 				setDefault({
 					...excludeParams(row, this.$exclude),
 					acountsType: '供应商默认'
-				}).then(res => {
+				}).then(() => {
 					this.$message.success('设置成功~');
 					this.dialogFormVisible = false; // 关闭银行卡弹窗
 					this.addDefaultCardVisible = false;
@@ -928,7 +928,7 @@ export default {
 								this.dialogFormVisible = false;
 								this.$router.push('/baseInfo/bankaccount');
 							})
-							.catch(err => {});
+							.catch(() => {});
 					} else {
 						this.addDefaultCardVisible = true;
 					}
@@ -937,7 +937,7 @@ export default {
 		},
 		// 删除用户已绑定的某张银行卡信息
 		handleDeleteBankaccount(row) {
-			delBankAccount(row.id).then(res => {
+			delBankAccount(row.id).then(() => {
 				this.$message.success('删除成功~');
 				this.dialogFormVisible = false;
 				this.getList();
