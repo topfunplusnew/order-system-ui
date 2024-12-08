@@ -16,6 +16,14 @@
 					@keyup.enter.native="handleQuery"
 				/>
 			</el-form-item>
+			<el-form-item label="级别名称" prop="levelName">
+				<el-input
+					v-model="queryParams.levelName"
+					placeholder="请输入级别名称"
+					clearable
+					@keyup.enter.native="handleQuery"
+				/>
+			</el-form-item>
 			<el-form-item>
 				<el-button
 					type="primary"
