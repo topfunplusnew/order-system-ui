@@ -209,17 +209,17 @@
 						<el-form-item label="老板姓名" prop="leader">
 							<el-input v-model="form.leader" placeholder="请输入老板姓名" />
 						</el-form-item>
-						<el-form-item label="录入员" prop="salesman">
-							<el-input v-model="form.salesman" placeholder="请输入录入员" />
-						</el-form-item>
-					</el-col>
-					<el-col :span="12">
+						<!--						<el-form-item label="录入员" prop="salesman">-->
+						<!--							<el-input v-model="form.salesman" placeholder="请输入录入员" />-->
+						<!--						</el-form-item>-->
 						<el-form-item label="老板电话" prop="leaderTel">
 							<el-input
 								v-model="form.leaderTel"
 								placeholder="请输入联系人电话"
 							/>
 						</el-form-item>
+					</el-col>
+					<el-col :span="12">
 						<el-form-item label="省" prop="province">
 							<el-select
 								v-model="form.province"
@@ -675,25 +675,23 @@ export default {
 				address: [
 					{ required: true, message: '公司地址不能为空', trigger: 'blur' }
 				],
-				salesman: [
-					{ required: true, message: '录入员不能为空', trigger: 'blur' }
-				],
-				leader: [
-					{ required: true, message: '老板姓名不能为空', trigger: 'blur' }
-				],
-				leaderTel: [
-					{ required: true, message: '老板电话不能为空', trigger: 'blur' }
-				],
+				// salesman: [
+				// 	{ required: true, message: '录入员不能为空', trigger: 'blur' }
+				// ],
+				// leader: [
+				// 	{ required: true, message: '老板姓名不能为空', trigger: 'blur' }
+				// ],
+				// leaderTel: [
+				// 	{ required: true, message: '老板电话不能为空', trigger: 'blur' }
+				// ],
 				salesManager: [
 					{ required: true, message: '销售经理不能为空', trigger: 'blur' }
 				],
 				province: [
 					{ required: true, message: '省份信息不能为空', trigger: 'blur' }
 				],
-				city: [
-					{ required: true, message: '市县信息不能为空', trigger: 'blur' }
-				],
-				county: [{ required: true, message: '乡镇不能为空', trigger: 'blur' }]
+				city: [{ required: true, message: '市县信息不能为空', trigger: 'blur' }]
+				// county: [{ required: true, message: '乡镇不能为空', trigger: 'blur' }]
 			},
 			columns: [
 				{ key: 0, label: `供应商`, visible: true },

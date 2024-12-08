@@ -242,12 +242,12 @@
 								placeholder="请输入老板联系方式"
 							/>
 						</el-form-item>
-						<el-form-item label="录入员" prop="salesman">
-							<el-input
-								v-model="form.salesman"
-								placeholder="请输入录入员名称"
-							/>
-						</el-form-item>
+						<!--						<el-form-item label="录入员" prop="salesman">-->
+						<!--							<el-input-->
+						<!--								v-model="form.salesman"-->
+						<!--								placeholder="请输入录入员名称"-->
+						<!--							/>-->
+						<!--						</el-form-item>-->
 					</el-col>
 					<el-col :span="12">
 						<el-form-item label="销售经理" prop="salesManager">
@@ -286,9 +286,9 @@
 								></el-option>
 							</el-select>
 						</el-form-item>
-						<el-form-item label="乡镇" prop="county">
-							<el-input v-model="form.county" placeholder="请输入乡镇" />
-						</el-form-item>
+						<!--						<el-form-item label="乡镇" prop="county">-->
+						<!--							<el-input v-model="form.county" placeholder="请输入乡镇" />-->
+						<!--						</el-form-item>-->
 						<el-form-item label="地址" prop="address">
 							<el-input v-model="form.address" placeholder="请输入地址" />
 						</el-form-item>
@@ -699,15 +699,15 @@ export default {
 				address: [
 					{ required: true, message: '公司地址不能为空', trigger: 'blur' }
 				],
-				salesman: [
-					{ required: true, message: '录入员不能为空', trigger: 'blur' }
-				],
-				leader: [
-					{ required: true, message: '老板姓名不能为空', trigger: 'blur' }
-				],
-				leaderTel: [
-					{ required: true, message: '老板电话不能为空', trigger: 'blur' }
-				],
+				// salesman: [
+				// 	{ required: true, message: '录入员不能为空', trigger: 'blur' }
+				// ],
+				// leader: [
+				// 	{ required: true, message: '老板姓名不能为空', trigger: 'blur' }
+				// ],
+				// leaderTel: [
+				// 	{ required: true, message: '老板电话不能为空', trigger: 'blur' }
+				// ],
 				salesManager: [
 					{ required: true, message: '销售经理不能为空', trigger: 'blur' }
 				],
