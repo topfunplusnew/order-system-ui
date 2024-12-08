@@ -1,6 +1,6 @@
 <script>
 import EllipsisText from '@/views/dashboard/components/common/EllipsisText.vue';
-import { mapGetters } from 'vuex';
+// import { mapGetters } from 'vuex';
 
 export default {
 	components: { EllipsisText },
@@ -21,38 +21,38 @@ export default {
 		}
 	},
 
-	watch: {
-		point: {
-			handler(val) {
-				// 清除之前的定时器
-				clearTimeout(this.debounceTimer);
-				// 设置新的定时器
-				this.debounceTimer = setTimeout(() => {
-					this.$store.dispatch('excel/setTicketPoint', val);
-				}, this.timeOut); // 300ms 的防抖时间，可以根据需求调整
-			},
-			immediate: true
-		}
-	},
-	computed: {
-		point: {
-			get() {
-				return this.ticketPoint;
-			},
-			set(val) {
-				this.$store.dispatch('excel/setTicketPoint', val);
-			}
-		},
-		comments: {
-			get() {
-				return this.comment;
-			},
-			set(val) {
-				this.$store.dispatch('excel/setComment', val);
-			}
-		},
-		...mapGetters(['ticketPoint', 'comment'])
-	},
+	// watch: {
+	// 	point: {
+	// 		handler(val) {
+	// 			// 清除之前的定时器
+	// 			clearTimeout(this.debounceTimer);
+	// 			// 设置新的定时器
+	// 			this.debounceTimer = setTimeout(() => {
+	// 				this.$store.dispatch('excel/setTicketPoint', val);
+	// 			}, this.timeOut); // 300ms 的防抖时间，可以根据需求调整
+	// 		},
+	// 		immediate: true
+	// 	}
+	// },
+	// computed: {
+	// 	point: {
+	// 		get() {
+	// 			return this.ticketPoint;
+	// 		},
+	// 		set(val) {
+	// 			this.$store.dispatch('excel/setTicketPoint', val);
+	// 		}
+	// 	},
+	// 	comments: {
+	// 		get() {
+	// 			return this.comment;
+	// 		},
+	// 		set(val) {
+	// 			this.$store.dispatch('excel/setComment', val);
+	// 		}
+	// 	},
+	// 	...mapGetters(['ticketPoint', 'comment'])
+	// },
 	data() {
 		return {
 			debounceTimer: null, // 存储防抖定时器
@@ -90,31 +90,31 @@ export default {
 			</el-card>
 
 			<br />
-			<el-card class="box-card">
-				<div slot="header" class="clearfix">
-					<span class="bold-text">票点</span>
-				</div>
-				<div>
-					<el-form inline size="mini">
-						<el-form-item label="本批开票票点">
-							<el-input
-								size="mini"
-								v-model="point"
-								clearable
-								placeholder="请输入本批开票票点"
-							></el-input>
-						</el-form-item>
-						<el-form-item label="本批操作备注">
-							<el-input
-								size="mini"
-								v-model="comments"
-								clearable
-								placeholder="请输入本批操作备注"
-							></el-input>
-						</el-form-item>
-					</el-form>
-				</div>
-			</el-card>
+			<!--			<el-card class="box-card">-->
+			<!--				<div slot="header" class="clearfix">-->
+			<!--					<span class="bold-text">票点</span>-->
+			<!--				</div>-->
+			<!--				<div>-->
+			<!--					<el-form inline size="mini">-->
+			<!--						<el-form-item label="本批开票票点">-->
+			<!--							<el-input-->
+			<!--								size="mini"-->
+			<!--								v-model="point"-->
+			<!--								clearable-->
+			<!--								placeholder="请输入本批开票票点"-->
+			<!--							></el-input>-->
+			<!--						</el-form-item>-->
+			<!--						<el-form-item label="本批操作备注">-->
+			<!--							<el-input-->
+			<!--								size="mini"-->
+			<!--								v-model="comments"-->
+			<!--								clearable-->
+			<!--								placeholder="请输入本批操作备注"-->
+			<!--							></el-input>-->
+			<!--						</el-form-item>-->
+			<!--					</el-form>-->
+			<!--				</div>-->
+			<!--			</el-card>-->
 		</div>
 	</div>
 </template>

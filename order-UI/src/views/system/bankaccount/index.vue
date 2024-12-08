@@ -49,8 +49,8 @@
 		<el-row :gutter="10" class="mb8">
 			<el-col :span="1.5">
 				<el-button icon="el-icon-refresh" size="mini" @click="resetQuery"
-					>刷新</el-button
-				>
+					>刷新
+				</el-button>
 			</el-col>
 			<el-col :span="1.5">
 				<el-button
@@ -274,11 +274,11 @@
 					<el-row v-if="form.acountsType === PUBLIC_DICT_TYPE.SELF_COMPANY">
 						<el-form-item label="公私户类型" prop="isPublicAccount">
 							<el-radio v-model="form.isPublicAccount" :label="1"
-								>公户</el-radio
-							>
+								>公户
+							</el-radio>
 							<el-radio v-model="form.isPublicAccount" :label="0"
-								>私户</el-radio
-							>
+								>私户
+							</el-radio>
 						</el-form-item>
 					</el-row>
 				</div>
@@ -551,7 +551,7 @@
 			:show-close="false"
 			title="银行卡流水"
 			:visible.sync="bankChangeDialogVisible"
-			width="600px"
+			width="850px"
 			append-to-body
 		>
 			<el-row>

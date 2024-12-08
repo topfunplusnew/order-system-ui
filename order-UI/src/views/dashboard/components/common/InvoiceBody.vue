@@ -138,13 +138,15 @@ export default {
 			return new InvoiceObject(
 				parseTime(new Date(), '{y}-{m}-{d} {h}:{i}:{s}'),
 				'山东鹏展',
-				orderItem.allPayments,
+				Number(orderItem.allPayments),
 				PUBLIC_DICT_TYPE.CUSTOMER,
 				orderItem.customer,
 				orderItem.customerID,
 				orderItem.customer,
-				this.ticketPoint,
-				Number(this.ticketPoint) * Number(orderItem.allPayments),
+				// this.ticketPoint, 不再计算票点 默认为0
+				0,
+				// Number(this.ticketPoint) * Number(orderItem.allPayments),
+				Number(orderItem.allPayments),
 				orderItem.id,
 				this.comment
 			);
@@ -176,13 +178,15 @@ export default {
 			return new InvoiceObject(
 				parseTime(new Date(), '{y}-{m}-{d} {h}:{i}:{s}'),
 				_suppliers[0].supplier,
-				paymentFactory,
+				Number(paymentFactory),
 				PUBLIC_DICT_TYPE.SUPPLIER,
 				_suppliers[0].supplier,
 				_suppliers[0].supplierID, // 供应商id
 				'山东鹏展',
-				this.ticketPoint,
-				Number(this.ticketPoint) * paymentFactory,
+				// this.ticketPoint,
+				0,
+				// Number(this.ticketPoint) * paymentFactory, 不再计算票点
+				Number(paymentFactory),
 				orderItem.id,
 				this.comment
 			);

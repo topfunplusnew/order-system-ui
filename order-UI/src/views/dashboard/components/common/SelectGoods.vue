@@ -99,12 +99,12 @@ export default {
 		// 获取订单列表
 		async getList() {
 			// 如果没有输入票点
-			if (!this.$store.getters.ticketPoint || !this.hasClicked) {
-				// 先禁用多选框
-				this.isBaned = true;
-				// 打开加载
-				this.loading = true;
-			}
+			// if (!this.$store.getters.ticketPoint || !this.hasClicked) {
+			// 	// 先禁用多选框
+			// 	this.isBaned = true;
+			// 	// 打开加载
+			// 	this.loading = true;
+			// }
 
 			// 如果信号量有值
 			if (this.checkFlag) {
@@ -133,14 +133,14 @@ export default {
 		// 多选 这边需要通过vuex进行管理状态 因为跨越组件了
 		handleSelectionChange(selection) {
 			// 如果还没有输入票点 先提醒用户输入票点
-			if (!this.$store.getters.ticketPoint) {
-				this.$message.warning('请先输入票点!');
-				// 清除勾选
-				this.$refs.goodsTable.clearSelection();
-				// 禁用多选框 只有输入了票点后才能解禁
-				this.isBaned = true;
-				return;
-			}
+			// if (!this.$store.getters.ticketPoint) {
+			// 	this.$message.warning('请先输入票点!');
+			// 	// 清除勾选
+			// 	this.$refs.goodsTable.clearSelection();
+			// 	// 禁用多选框 只有输入了票点后才能解禁
+			// 	this.isBaned = true;
+			// 	return;
+			// }
 
 			// 判断是否点击了检索
 			if (!this.hasClicked) {
@@ -223,8 +223,10 @@ export default {
 			try {
 				// 如果取消选中的行不为空，扣除对应的金额
 				if (removedRows.length !== 0) {
-					money =
-						this.calculateMoney(removedRows, this.type) * this.ticketPoint;
+					// money =
+					// 	this.calculateMoney(removedRows, this.type) * this.ticketPoint;
+					// 不再计算票点
+					money = this.calculateMoney(removedRows, this.type);
 					if (money && money > 0) {
 						this.$store.commit('excel/ADD_INVOICE_AMOUNT', money);
 					}
@@ -232,9 +234,9 @@ export default {
 
 				// 如果选中的行不为空，增加对应的金额
 				if (addedRows.length !== 0) {
-					money = this.calculateMoney(addedRows, this.type) * this.ticketPoint;
+					// money = this.calculateMoney(addedRows, this.type) * this.ticketPoint;
+					money = this.calculateMoney(addedRows, this.type);
 
-					console.log('供应商计算金额:', money);
 					if (money && money > 0) {
 						this.$store.commit('excel/MULTI_INVOICE_AMOUNT', money);
 					}
@@ -256,9 +258,12 @@ export default {
 			if (rows.length === 0) return money;
 
 			rows.forEach(row => {
+				// 计算客户的钱
 				if (type === PUBLIC_DICT_TYPE.CUSTOMER) {
 					// 客户操作金额
 					money += row.allPayments;
+
+					// 计算供应商的钱
 				} else if (type === PUBLIC_DICT_TYPE.SUPPLIER) {
 					row.smailOrderDetails.forEach(detail => {
 						if (detail.supplierID === this.id) {
