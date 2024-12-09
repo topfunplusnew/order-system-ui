@@ -40,20 +40,15 @@ export var mixin_order_Invoice = {
 		};
 	},
 	methods: {
-		// 判断货物列表中是否开票
-		hasOpen(row, type) {
-			if (row.orderDetailList === null) {
-				return false;
-			}
-			if (row.orderDetailList.length <= 0) {
-				return false;
-			}
-			// 客户开票
-			if (type === 1) {
-				return row.orderDetailList.some(item => item.isIncludeTaxFactory === 1);
-				// 供应商开票
-			}
-			return row.orderDetailList.some(item => item.isIncludeTaxSale === 1);
+		// 判断是否含税
+		hasInvoice(row, type) {
+			return type === PUBLIC_DICT_TYPE.CUSTOMER
+				? row.smailOrderDetails.some(item => {
+						return item.isIncludeTaxSale === 1;
+				  })
+				: row.smailOrderDetails.some(item => {
+						return item.isIncludeTaxFactory === 1;
+				  });
 		},
 		// 点击客户开票按钮 客户开票 最大开票金额为总货款
 		updateOrderItemVisibleCustomerInvoice(row) {

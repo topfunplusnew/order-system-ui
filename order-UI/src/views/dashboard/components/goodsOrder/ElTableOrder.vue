@@ -26,9 +26,15 @@ import { mixin_order_orderHistory } from '@/views/dashboard/mixins/order/order_h
 import OrderHistoryCheck from '@/views/dashboard/components/goodsOrder/OrderHistoryCheck.vue';
 import { parseTime } from '@/utils/ruoyi';
 import HistoryList from '@/views/dashboard/components/goodsOrder/HistoryList.vue';
+import { PUBLIC_DICT_TYPE } from '@/utils/order';
 
 export default {
 	name: 'ElTableOrder',
+	computed: {
+		PUBLIC_DICT_TYPE() {
+			return PUBLIC_DICT_TYPE;
+		}
+	},
 	components: {
 		HistoryList,
 		OrderHistoryCheck,
@@ -535,15 +541,6 @@ export default {
 					prop="userName"
 					width="120px"
 				/>
-
-				<!--				<el-table-column-->
-				<!--					v-show="columns[14].visible"-->
-				<!--					show-overflow-tooltip-->
-				<!--					label="开票状态"-->
-				<!--					align="center"-->
-				<!--					prop="invoiceState"-->
-				<!--					width="120px"-->
-				<!--				/>-->
 				<el-table-column
 					v-show="columns[15].visible"
 					show-overflow-tooltip
@@ -610,35 +607,23 @@ export default {
 					show-overflow-tooltip
 					label="客户是否开票"
 					align="center"
-					prop="customerIsInvoice"
 					width="150px"
 				>
 					<template #default="scope">
-						<el-row v-if="hasOpen(scope.row, 1)">
-							<el-row v-if="scope.row.customerIsInvoice > 0">
+						<el-row>
+							<el-row v-if="hasInvoice(scope.row, PUBLIC_DICT_TYPE.CUSTOMER)">
 								<el-row>
 									<el-button
 										type="text"
 										size="mini"
 										@click="updateOrderItemVisibleCustomerInvoice(scope.row)"
 									>
-										继续开票
+										开票
 									</el-button>
 								</el-row>
 							</el-row>
-							<el-row v-else>
-								<el-row>
-									<el-button
-										type="text"
-										size="mini"
-										@click="updateOrderItemVisibleCustomerInvoice(scope.row)"
-									>
-										前去开票
-									</el-button>
-								</el-row>
-							</el-row>
+							<el-row v-else>无开票</el-row>
 						</el-row>
-						<el-row v-else>无开票</el-row>
 					</template>
 				</el-table-column>
 				<el-table-column
@@ -646,35 +631,23 @@ export default {
 					show-overflow-tooltip
 					label="供应商是否开票"
 					align="center"
-					prop="isSupplierInvoice"
 					width="120px"
 				>
 					<template #default="scope">
-						<el-row v-if="hasOpen(scope.row, 0)">
-							<el-row v-if="scope.row.isSupplierInvoice > 0">
+						<el-row>
+							<el-row v-if="hasInvoice(scope.row, PUBLIC_DICT_TYPE.SUPPLIER)">
 								<el-row>
 									<el-button
 										type="text"
 										size="mini"
 										@click="updateOrderItemVisibleSupplierInvoice(scope.row)"
 									>
-										继续开票
+										开票
 									</el-button>
 								</el-row>
 							</el-row>
-							<el-row v-else>
-								<el-row>
-									<el-button
-										type="text"
-										size="mini"
-										@click="updateOrderItemVisibleSupplierInvoice(scope.row)"
-									>
-										前去开票
-									</el-button>
-								</el-row>
-							</el-row>
+							<el-row v-else>无开票</el-row>
 						</el-row>
-						<el-row v-else>无开票</el-row>
 					</template>
 				</el-table-column>
 				<el-table-column
