@@ -293,7 +293,7 @@
 			:show-close="false"
 			title="添加产品级别"
 			:visible.sync="addProductLevelOpen"
-			width="30%"
+			width="600px"
 		>
 			<!--      添加产品级别的表单-->
 			<el-form
@@ -420,17 +420,12 @@
 import {
 	addProductLevel,
 	delProductLevel,
+	getMaxLevelNo,
 	getProductLevel,
 	listProductLevel,
 	updateProductLevel
 } from '@/api/system/productLevel';
-import {
-	addData,
-	delData,
-	getData,
-	getDicts,
-	listData
-} from '@/api/system/dict/data';
+import { addData, delData, getDicts, listData } from '@/api/system/dict/data';
 import { updateData } from '../../../api/system/dict/data';
 import { mixin_printHTML } from '../../dashboard/mixins/print';
 import { excludeParams } from '../../../api/tool/exclude';
@@ -583,13 +578,34 @@ export default {
 			},
 			deep: true
 		},
-		// 监听产品级别变化 自动填充级别编码
+		// 监听产品分类变化 自动填充分类编码 查询各个分类的最大级别数，然后+1后存储
 		'addCategoryModel.categoryName': function (newVal) {
 			if (newVal !== null) {
 				// 查询该级别名称对应的级别编码
 				this.addCategoryModel.categoryNo = this.dictList.find(
 					item => item.dictLabel === newVal
 				).dictValue;
+
+				// 查询该分类名称下的最大的级别编码
+				getMaxLevelNo().then(res => {
+					const _levelMap = res?.data;
+					console.log(_levelMap);
+					if (!_levelMap) {
+						this.$message.error('请先添加分类!');
+						return;
+					}
+					// 填充级别编码
+					this.$nextTick(() => {
+						this.$set(
+							this.addCategoryModel,
+							'levelNo',
+							this.addCategoryModel.categoryNo +
+								(_levelMap[this.addCategoryModel.categoryNo] + 1)
+						);
+					});
+				});
+			} else {
+				this.$message.error('分类名称为空!');
 			}
 		},
 		'tempCategoryInfo.levelNo': {
@@ -664,7 +680,7 @@ export default {
 				this.addDictInfo.dictLabel = this.tempCategoryInfo.categoryName;
 				this.addDictInfo.dictValue = this.tempCategoryInfo.levelNo;
 				this.addDictInfo.dictCode = this.tempCategoryInfo.dictCode;
-				updateData(this.addDictInfo).then(res => {
+				updateData(this.addDictInfo).then(() => {
 					this.$message.success('修改成功~');
 					this.getDictsData();
 				});
@@ -674,7 +690,7 @@ export default {
 				this.addDictInfo.dictValue = this.tempCategoryInfo.levelNo;
 				// 字典类型为 'order_product_categories'
 				this.addDictInfo.dictType = 'order_product_categories';
-				addData(this.addDictInfo).then(res => {
+				addData(this.addDictInfo).then(() => {
 					this.$message.success('添加成功~');
 					this.getDictsData();
 				});
@@ -687,7 +703,7 @@ export default {
 				cancelButtonText: '取消',
 				type: 'warning'
 			}).then(() => {
-				delData(row.dictCode).then(res => {
+				delData(row.dictCode).then(() => {
 					this.$message({
 						type: 'success',
 						message: '删除成功!'
@@ -701,7 +717,7 @@ export default {
 		submitAddLevel() {
 			// 添加级别信息
 			addProductLevel(excludeParams(this.addCategoryModel, this.$exclude)).then(
-				res => {
+				() => {
 					this.$message.success('添加成功~');
 					this.cancelAddProductCategory();
 					this.getList();
@@ -749,6 +765,10 @@ export default {
 			};
 		},
 		cancelAddProductCategory() {
+			this.resetCategoryModel();
+			this.addProductLevelOpen = false;
+		},
+		resetCategoryModel() {
 			this.addCategoryModel = {
 				categoryName: '',
 				levelNo: '',
@@ -761,7 +781,6 @@ export default {
 				userId: '',
 				UserName: ''
 			};
-			this.addProductLevelOpen = false;
 		},
 		// 取消按钮
 		cancel() {

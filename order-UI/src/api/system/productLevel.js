@@ -42,3 +42,11 @@ export function delProductLevel(id) {
 		method: 'delete'
 	});
 }
+
+// 查询各个分类最大的levelNo
+export function getMaxLevelNo() {
+	return request({
+		url: '/system/productLevel/MaxLevelNo',
+		method: 'get'
+	});
+}

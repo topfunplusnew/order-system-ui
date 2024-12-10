@@ -29,7 +29,7 @@ export default {
 				).then(() => {
 					// 跳转到订单运费界面 并且传递参数
 					this.$router.push({
-						path: '/order/order/freight',
+						path: '/order/order/orderfreight',
 						query: {
 							fundsDate: row.fundsDate,
 							driver: res.data.driver
