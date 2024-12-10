@@ -229,10 +229,8 @@
 </template>
 
 <script>
-import { parseTime } from '@/utils/ruoyi';
 import { getDeliveryList } from '../api/system/statement';
 import { mixin_printHTML } from './dashboard/mixins/print';
-import { getTimeOffset } from '@/utils/order';
 
 export default {
 	name: 'Index',

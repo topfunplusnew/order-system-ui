@@ -143,7 +143,24 @@
 				align="center"
 				prop="isUseOilCard"
 				show-overflow-tooltip
+			>
+				<template slot-scope="scope">
+					<el-tag
+						:type="scope.row.isUseOilCard === 1 ? 'success' : 'danger'"
+						disable-transitions
+					>
+						{{ scope.row.isUseOilCard === 1 ? '是' : '否' }}
+					</el-tag>
+				</template>
+			</el-table-column>
+
+			<el-table-column
+				label="油卡号"
+				align="center"
+				prop="oilCard"
+				show-overflow-tooltip
 			/>
+
 			<el-table-column
 				v-if="columns[5].visible"
 				label="随同乘车人员"
@@ -327,7 +344,7 @@
 			:show-close="false"
 			:title="title"
 			:visible.sync="open"
-			width="1100px"
+			width="1500px"
 			append-to-body
 		>
 			<div>
@@ -434,7 +451,7 @@
 							<el-form-item label="出车前车况" prop="startCarState">
 								<el-input
 									v-model="form.startCarState"
-									placeholder="请输入出车前车况"
+									placeholder="外观是否有划痕、磕碰、掉漆、内部是否清洁"
 								/>
 							</el-form-item>
 							<el-form-item label="回来后里程" prop="endMile">
@@ -446,7 +463,7 @@
 							<el-form-item label="回来后车况" prop="endCarState">
 								<el-input
 									v-model="form.endCarState"
-									placeholder="请输入回来后车况"
+									placeholder="是否洗车、内部是否清洁"
 								/>
 							</el-form-item>
 							<el-form-item label="用车里程数" prop="miles">
@@ -460,6 +477,7 @@
 							</el-form-item>
 							<el-form-item label="行程中违法次数" prop="violationsCount">
 								<el-input
+									type="number"
 									v-model="form.violationsCount"
 									placeholder="请输入行程中违法次数"
 								/>
@@ -468,6 +486,7 @@
 						<el-col :span="8">
 							<el-form-item label="违章罚款金额金额" prop="fine">
 								<el-input
+									type="number"
 									v-model="form.fine"
 									placeholder="请输入违章罚款金额金额"
 								/>
@@ -491,6 +510,7 @@
 								prop="refuelingFrequency"
 							>
 								<el-input
+									type="number"
 									v-model="form.refuelingFrequency"
 									placeholder="请输入行程中使用加油卡加油次数"
 								/>
