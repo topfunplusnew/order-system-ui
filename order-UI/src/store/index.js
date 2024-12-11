@@ -40,6 +40,8 @@ const store = new Vuex.Store({
 		trash,
 		// excel
 		excel
+		// 出差
+		// bussinessTrip: () => import('./modules/bussinessTrip')
 	},
 	getters
 });

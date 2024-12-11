@@ -543,7 +543,7 @@
 			:show-close="false"
 			title="油卡消费记录"
 			:visible.sync="oilCardConsumeVisible"
-			width="75%"
+			width="1200px"
 			append-to-body
 		>
 			<el-form ref="form" :model="oilCardConsumeInfo" label-width="160px">
@@ -725,6 +725,20 @@
 				<el-button type="primary" @click="clearOilCard">清除填写</el-button>
 			</div>
 		</el-dialog>
+
+		<!--    通用的弹窗组件-->
+		<div v-if="currentComponent">
+			<DialogWrapper
+				:current-component="currentComponent"
+				:dialog-visible="dialogVisible"
+				:dialog-props="dialogProps"
+				:dialog-title="dialogTitle"
+				:dialog-width="dialogWidth"
+				@update:dialogVisible="args => (dialogVisible = false)"
+				@close="handleCloseDialog"
+				@confirm="handleDialogConfirm"
+			/>
+		</div>
 	</div>
 </template>
 
@@ -741,11 +755,18 @@ import '@riophae/vue-treeselect/dist/vue-treeselect.css';
 import CheckFiles from '../../../components/CheckFiles.vue';
 import { getCarApply, updateCarApply } from '../../../api/system/carApply';
 import { mixin_checkfile } from '../../dashboard/mixins/checkfiles/mixin_checkfile';
+import DialogWrapper from '@/views/dashboard/components/common/DialogWrapper.vue';
+import { common_dialog } from '@/views/dashboard/mixins/common/common_dialog';
 
 export default {
 	name: 'CarApply',
-	components: { CheckFiles, Treeselect, SearchOption },
-	mixins: [mixin_printHTML, mixin_businesstrip_car_apply, mixin_checkfile],
+	components: { DialogWrapper, CheckFiles, Treeselect, SearchOption },
+	mixins: [
+		mixin_printHTML,
+		common_dialog,
+		mixin_businesstrip_car_apply,
+		mixin_checkfile
+	],
 	data() {
 		return {
 			// 遮罩层

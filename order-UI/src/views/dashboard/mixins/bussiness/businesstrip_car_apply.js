@@ -3,6 +3,7 @@ import { getBusinessTrip } from '../../../../api/system/BusinessTrip';
 import { addOilCardConsume } from '../../../../api/system/OilCardConsume';
 import { checkOilCard } from '../../../../api/system/oilCard';
 import { mapGetters } from 'vuex';
+import OilCardRecharge from '@/views/dashboard/components/common/OilCardRecharge.vue';
 
 export var mixin_businesstrip_car_apply = {
 	data: function () {
@@ -36,7 +37,7 @@ export var mixin_businesstrip_car_apply = {
 			this.form.path = url;
 		},
 		// 打开油卡消费记录的弹窗
-		openOilCardOpen(e) {
+		openOilCardOpen() {
 			this.resetOilCardConsumeInfo();
 			this.oilCardConsumeVisible = true;
 		},
@@ -76,6 +77,7 @@ export var mixin_businesstrip_car_apply = {
 		},
 		// 添加油卡消费信息
 		submitOilCard() {
+			// 是否携带了油卡
 			this.form.isUseOilCard = '1';
 			// 要检查油卡的余额是否够用 如果够用就保存数据 如果不够用 那么就要提示是否充值  如果充值 就要弹出充值页面
 			checkOilCard({
@@ -89,63 +91,29 @@ export var mixin_businesstrip_car_apply = {
 						cancelButtonText: '否',
 						type: 'warning'
 					}).then(() => {
-						this.oilCardDialogVisible = true;
-						this.moneyInfo.rechargeName = this.trueName;
+						// 打开油卡充值的弹窗
+						this.openDialog(
+							OilCardRecharge,
+							'加油卡充值(需审核通过)',
+							'800px',
+							{
+								OilCardFillInfo: this.oilCardConsumeInfo
+							}
+						);
 					});
 					// 如果油卡信息不存在
 				} else if (res.data.error === '油卡不存在') {
 					this.$message.error('油卡不存在');
 					// 如果存在并且余额充足
 				} else {
-					// 先从session拿出出差信息ID 判断是否存在
-					const businessTripID = JSON.parse(
-						sessionStorage.getItem('BusinessTrip-ID')
-					);
-					getBusinessTrip(businessTripID).then(res => {
-						if (
-							res.data === undefined ||
-							res.data === {} ||
-							res.data === null
-						) {
-							this.$message.error('出差信息为空!请先添加出差信息');
-						} else {
-							// 纠正money
-							this.oilCardConsumeInfo.rechargeMoney =
-								this.isRecharge === '2'
-									? '0'
-									: this.oilCardConsumeInfo.rechargeMoney;
-							// 添加油卡消费信息
-							addOilCardConsume({
-								...this.oilCardConsumeInfo,
-								bTripId: businessTripID
-							}).then(() => {
-								this.$message.success('保存成功~');
-								setTimeout(() => {
-									// 回写充值账户信息到报销项中
-									if (this.form.isUseOilCard === '1') {
-										// 还要进一步判断 如果充值金额大于0 就要添加到报销项中
-										if (this.oilCardConsumeInfo.rechargeMoney > 0) {
-											this.tripReimbursementList.push({
-												index: this.tripReimbursementList.length + 1,
-												item: '加油卡现金充值金额',
-												itemCost: this.oilCardConsumeInfo.rechargeMoney,
-												isDisabled: true // 不可更改
-											});
-											this.$message.success('填写保存成功,相关费用已罗列');
-										} else {
-											this.$message.success(
-												'填写保存成功 充值金额为' +
-													this.oilCardConsumeInfo.rechargeMoney +
-													'元'
-											);
-										}
-									}
-								}, 100);
-								// 关闭油卡消费添加弹窗
-								this.oilCardConsumeVisible = false;
-							});
-						}
-					});
+					// 纠正money
+					this.oilCardConsumeInfo.rechargeMoney =
+						this.isRecharge === '2'
+							? '0'
+							: this.oilCardConsumeInfo.rechargeMoney;
+					// todo 这里先保存一下油卡的消费信息 后面添加车辆申请的时候 把这个信息同时保存在车辆申请的子对象中
+					// 关闭油卡消费添加弹窗
+					this.oilCardConsumeVisible = false;
 				}
 			});
 		},

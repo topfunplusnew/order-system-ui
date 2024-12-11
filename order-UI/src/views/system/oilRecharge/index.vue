@@ -330,7 +330,6 @@ import {
 	listOilRecharge
 } from '@/api/system/oilRecharge';
 import { mixin_printHTML } from '@/views/dashboard/mixins/print';
-import ApplyPayment from '@/views/dashboard/components/common/ApplyPayment.vue';
 import { TableName } from '@/api/tool/enums';
 import SearchOption from '@/components/SearchOption.vue';
 import { listOilCard } from '@/api/system/oilCard';
@@ -356,7 +355,7 @@ export default {
 		},
 		...mapGetters(['trueName'])
 	},
-	components: { CheckFiles, OilApply, SearchOption, ApplyPayment },
+	components: { CheckFiles, OilApply, SearchOption },
 	mixins: [mixin_printHTML, mixin_oil_recharge_fill, mixin_checkfile],
 	data() {
 		return {
