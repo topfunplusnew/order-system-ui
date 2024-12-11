@@ -156,7 +156,7 @@
 			id="printBox"
 			v-loading="loading"
 			v-horizontal-scroll="'always'"
-			:data="paymentList"
+			:data="computedPaymentList"
 			size="mini"
 			border
 			:cell-style="
@@ -1074,6 +1074,16 @@ export default {
 	computed: {
 		PAYMENT_TYPES() {
 			return PAYMENT_TYPES;
+		},
+
+		// 处理审核状态
+		computedPaymentList() {
+			return this.paymentList.map(item => {
+				return {
+					...item,
+					auditState: item.auditState === null ? false : item.auditState === '1'
+				};
+			});
 		}
 	},
 	// 展示与隐藏
@@ -1242,6 +1252,15 @@ export default {
 		handlePayment() {
 			// 先去除无用参数
 			this.chooseInfo = excludeParams(this.chooseInfo, this.$exclude);
+
+			// 对auditState做保证处理
+			this.chooseInfo.auditState =
+				this.chooseInfo.auditState === null
+					? '0'
+					: this.chooseInfo.auditState === true
+					? '1'
+					: '0';
+
 			// 更新付款状态
 			updatePayment({ ...this.chooseInfo, paymentState: '已支付' }).then(
 				res => {

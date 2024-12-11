@@ -18,21 +18,25 @@ export var mixin_payment_audit = {
 
 	methods: {
 		handlePaymentAudit(row, e) {
+			// 更新视图
+			row.auditStatus = e;
+			// 保存审核状态
+			let _auditState = e ? '1' : '0';
 			if (e === true) {
-				paymentAudit({ ...row, auditStatus: '1' }).then(res => {
+				paymentAudit({ ...row, auditStatus: _auditState }).then(() => {
 					this.$message({
 						type: 'success',
 						message: '复核成功!'
 					});
-					location.reload();
+					this.getList();
 				});
 			} else {
-				paymentAudit({ ...row, auditStatus: '0' }).then(res => {
+				paymentAudit({ ...row, auditStatus: _auditState }).then(() => {
 					this.$message({
 						type: 'success',
 						message: '取消复核!'
 					});
-					location.reload();
+					this.getList();
 				});
 			}
 		}
