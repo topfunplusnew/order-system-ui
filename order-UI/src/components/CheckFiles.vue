@@ -163,8 +163,7 @@ export default {
 						v-for="(item, index) in imgList"
 						:key="index"
 						:src="item"
-						alt="该附件无图片"
-						@click="handleCheckFile(item)"
+						alt="该附件无图片/图片无法查看"
 					/>
 				</div>
 			</div>

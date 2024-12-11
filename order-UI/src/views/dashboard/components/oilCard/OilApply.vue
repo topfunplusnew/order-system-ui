@@ -1,19 +1,26 @@
 <script>
-import SearchOption from '@/components/SearchOption.vue';
 import { listSubject } from '@/api/system/subject';
 import { listBankAccount } from '@/api/system/bankAccount';
-import { addPaymentApply, listPaymentApply } from '@/api/system/paymentApply';
+import { addPaymentApply } from '@/api/system/paymentApply';
 import { excludeParams } from '@/api/tool/exclude';
 import { TableName } from '@/api/tool/enums';
+import { mixin_payment_subject } from '@/views/dashboard/mixins/payment/payment_subject';
 
 export default {
 	name: 'OilApply',
-	components: { SearchOption },
+	components: {},
+	mixins: [mixin_payment_subject],
 	props: {
 		// 关联表名
-		tableName: '',
+		tableName: {
+			type: String,
+			default: ''
+		},
 		// 关联表的主键ID
-		tID: '',
+		tID: {
+			type: String,
+			default: ''
+		},
 		// 需要自动填充的钱
 		needMoney: {
 			type: Number
@@ -62,30 +69,13 @@ export default {
 			// 禁用输入框
 			inputDisabled: false,
 			// 禁用银行卡输入 因为现金支付不需要银行卡信息
-			bankInputDisabled: false,
-			// 付款分类信息
-			subjectTree: [],
-			// 分类信息
-			currentSort: {
-				levelOne: '',
-				levelTwo: ''
-			},
-			// 一级分类列表
-			OneLevelOption: [],
-			// 二级分类
-			TwoLevelOption: [],
-			paymentTypeOptions: []
+			bankInputDisabled: false
 		};
-	},
-	computed: {
-		fullLevel() {
-			return this.currentSort.levelOne + '-' + this.currentSort.levelTwo;
-		}
 	},
 	watch: {
 		// 监听传入的金额
 		needMoney: {
-			handler(val) {
+			handler() {
 				// 如果传入的必须自动填充的金额大于0 则自动填充 且无法修改
 				if (this.needMoney >= 0) {
 					this.form.moneyAmount = this.needMoney;
@@ -111,40 +101,14 @@ export default {
 		}
 	},
 	created() {
-		// 查询科目信息
-		listSubject().then(res => {
-			this.subjectTree = this.handleTree(res.data, 'id', 'parentId');
-			this.OneLevelOption = this.subjectTree;
-		});
 		// 填充金额
 		this.fillMoney();
-
 		// 填充表信息
 		if (this.tableName === TableName.OIL_RECHARGE) {
 			this.form.companyType = '其他';
 		}
 	},
 	methods: {
-		// 点击一级分类后的回调
-		handleSelectOneLevel(value) {
-			this.currentSort.levelOne = value;
-			for (var i = 0; i < this.OneLevelOption.length; i++) {
-				// 每个一级分类
-				var oneSubject = this.OneLevelOption[i];
-				// 判断：所有一级分类id和点击一级分类id是否一样
-				if (value === oneSubject.title) {
-					// ===即比较值 还要比较类型
-					// 从一级分类中获取所有的二级分类
-					this.TwoLevelOption = oneSubject.children;
-					// 把二级分类Id值清空
-					this.currentSort.levelTwo = '';
-				}
-			}
-		},
-		// 点击二级
-		handleSelectTwoLevel(value) {
-			this.currentSort.levelTwo = value;
-		},
 		listBankAccount,
 		// 上传的回调函数
 		handleCommitUpload(val) {
@@ -188,10 +152,6 @@ export default {
 				delFlag: null,
 				submitflag: null
 			};
-			this.currentSort = {
-				levelOne: '',
-				levelTwo: ''
-			};
 			this.resetForm('form');
 		},
 
@@ -199,12 +159,30 @@ export default {
 		submitForm() {
 			this.$refs['form'].validate(valid => {
 				if (valid) {
+					// 对多余的参数进行过滤
 					excludeParams(this, this.$exclude);
+					// 对表名进行处理
 					this.form.tableName = this.tableName;
 					this.form.tID = this.tID;
-					this.form.payType = this.fullLevel;
-					this.form.checkState = ''; // 审核状态赋空
-					addPaymentApply(this.form).then(response => {
+					// 审核状态赋空
+					this.form.checkState = '';
+
+					// 对支付类型进行处理
+					let paymentType = null;
+
+					// 如果选了类型
+					if (this.form.payType) {
+						paymentType = this.form.payType.join('-');
+					} else {
+						this.$message.warning('请选择付款类型');
+						return;
+					}
+
+					// 拼装body
+					const body = { ...this.form, payType: paymentType };
+
+					// 添加付款
+					addPaymentApply(body).then(() => {
 						this.$modal.msgSuccess('付款申请添加成功');
 						this.reset();
 						this.$emit('changeOpen');
@@ -234,40 +212,12 @@ export default {
 					</el-date-picker>
 				</el-form-item>
 				<el-form-item label="支付类型" prop="payType">
-					<el-row :gutter="5">
-						<!--            一级分类-->
-						<el-col :span="8">
-							<el-select
-								v-model="currentSort.levelOne"
-								placeholder="请选择一级分类"
-								@change="handleSelectOneLevel"
-							>
-								<el-option
-									v-for="item in OneLevelOption"
-									:key="item.id"
-									:label="item.title"
-									:value="item.title"
-								>
-								</el-option>
-							</el-select>
-						</el-col>
-						<!--            二级分类-->
-						<el-col :span="8">
-							<el-select
-								v-model="currentSort.levelTwo"
-								placeholder="请选择二级分类"
-								@change="handleSelectTwoLevel"
-							>
-								<el-option
-									v-for="item in TwoLevelOption"
-									:key="item.id"
-									:label="item.title"
-									:value="item.title"
-								>
-								</el-option>
-							</el-select>
-						</el-col>
-					</el-row>
+					<el-cascader
+						v-model="form.payType"
+						:options="paymentTypeTree"
+						:props="props"
+						@change="handleChange"
+					></el-cascader>
 				</el-form-item>
 				<el-form-item label="金额" prop="moneyAmount">
 					<el-input

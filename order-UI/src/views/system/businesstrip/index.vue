@@ -697,9 +697,7 @@ import {
 	listBusinessTrip
 } from '@/api/system/BusinessTrip';
 import { mixin_printHTML } from '@/views/dashboard/mixins/print';
-import SearchOption from '@/components/SearchOption.vue';
 import { mapGetters } from 'vuex';
-import PaymentApply from '@/views/system/paymentApply/index.vue';
 import ApplyPayment from '@/views/dashboard/components/common/ApplyPayment.vue';
 import { TableName } from '@/api/tool/enums';
 import { listBankAccount } from '@/api/system/bankAccount';
@@ -727,8 +725,6 @@ export default {
 		StepsForm,
 		InfoDialog,
 		ApplyPayment,
-		PaymentApply,
-		SearchOption,
 		Treeselect
 	},
 	mixins: [

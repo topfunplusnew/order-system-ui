@@ -950,7 +950,6 @@ import { mixin_payment_subject } from '../../dashboard/mixins/payment/payment_su
 import { mixin_printHTML } from '@/views/dashboard/mixins/print';
 import DynamicField from '@/components/DynamicField.vue';
 import { mixin_paymentindex_fill } from './paymentFill';
-import CheckPrevious from '../../dashboard/components/payment/CheckPrevious.vue';
 import CheckDetail from '../../dashboard/components/payment/CheckDetail.vue';
 import BankType from '@/views/dashboard/components/common/BankType.vue';
 import { mixin_bankType } from '../../dashboard/mixins/common/common_bankType';
@@ -960,7 +959,6 @@ export default {
 	components: {
 		BankType,
 		CheckDetail,
-		CheckPrevious,
 		DynamicField,
 		SearchOption
 	},
@@ -1264,7 +1262,7 @@ export default {
 						this.form = excludeParams(this.form, this.$exclude);
 						this.form.paymentState = '已支付';
 						// 修改支付状态
-						updatePayment(this.form).then(response => {
+						updatePayment(this.form).then(() => {
 							this.$modal.msgSuccess('支付成功~');
 							this.open = false;
 							this.getList();
@@ -1287,7 +1285,7 @@ export default {
 						// 拼凑body
 						const body = { ...this.form, payType: paymentType };
 						// 添加付款信息
-						addPayment(body).then(response => {
+						addPayment(body).then(() => {
 							this.$modal.msgSuccess('新增成功');
 							this.open = false;
 							this.getList();

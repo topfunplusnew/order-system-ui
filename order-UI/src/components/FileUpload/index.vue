@@ -16,7 +16,7 @@
 			class="upload-file-uploader"
 		>
 			<!-- 上传按钮 -->
-			<el-button size="mini" type="primary"> 上传文件 </el-button>
+			<el-button size="mini" type="primary"> 上传文件</el-button>
 			<!-- 上传提示 -->
 			<!--      <div class="el-upload__tip" slot="tip" v-if="showTip">-->
 			<!--        请上传-->
@@ -172,7 +172,7 @@ export default {
 		// 上传成功回调
 		handleUploadSuccess(res, file) {
 			if (res.code === 200) {
-				this.uploadList.push({ name: res.fileName, url: res.url });
+				this.uploadList.push({ name: res.fileName, url: res.fileName });
 				this.uploadedSuccessfully();
 			} else {
 				this.number--;
