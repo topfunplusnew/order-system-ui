@@ -437,6 +437,64 @@
 		>
 			<template #info>
 				<el-row>
+					<el-form
+						ref="queryForm"
+						:model="carsQueryParams"
+						size="mini"
+						:inline="true"
+						label-width="120px"
+					>
+						<el-form-item label="申请时间">
+							<el-date-picker
+								v-model="carsQueryParams.applyDate"
+								type="daterange"
+								range-separator="至"
+								start-placeholder="开始日期"
+								end-placeholder="结束日期"
+								size="mini"
+								value-format="yyyy-MM-dd"
+							/>
+						</el-form-item>
+						<el-form-item label="申请人">
+							<el-input
+								v-model="carsQueryParams.applyUser"
+								placeholder="请输入申请人"
+							/>
+						</el-form-item>
+						<el-form-item label="部门">
+							<el-input
+								v-model="carsQueryParams.department"
+								placeholder="请输入部门"
+							/>
+						</el-form-item>
+						<el-form-item label="车牌">
+							<el-input
+								v-model="carsQueryParams.carNo"
+								placeholder="请输入车牌"
+							/>
+						</el-form-item>
+						<el-form-item label="车辆绑定状态">
+							<el-radio v-model="carsQueryParams.bTripIdIsNull" label="true"
+								>已绑定
+							</el-radio>
+							<el-radio v-model="carsQueryParams.bTripIdIsNull" label="false"
+								>未被绑定
+							</el-radio>
+						</el-form-item>
+						<el-form-item>
+							<el-button
+								type="primary"
+								icon="el-icon-search"
+								@click="getCarsList"
+								>搜索
+							</el-button>
+						</el-form-item>
+						<el-form-item>
+							<el-button icon="el-icon-refresh-right" @click="handleRefreshCars"
+								>刷新
+							</el-button>
+						</el-form-item>
+					</el-form>
 					<el-table
 						id="printBox"
 						v-loading="loading"
@@ -598,6 +656,15 @@
 							</template>
 						</el-table-column>
 					</el-table>
+
+					<!--          分页 需要单独的分页-->
+					<pagination
+						v-show="carsTotal > 0"
+						:total="carsTotal"
+						:page.sync="carsQueryParams.pageNum"
+						:limit.sync="carsQueryParams.pageSize"
+						@pagination="getCarsList"
+					/>
 				</el-row>
 			</template>
 		</InfoDialog>
@@ -631,12 +698,10 @@ import {
 } from '@/api/system/BusinessTrip';
 import { mixin_printHTML } from '@/views/dashboard/mixins/print';
 import SearchOption from '@/components/SearchOption.vue';
-import { listData } from '@/api/system/dict/data';
 import { mapGetters } from 'vuex';
 import PaymentApply from '@/views/system/paymentApply/index.vue';
 import ApplyPayment from '@/views/dashboard/components/common/ApplyPayment.vue';
 import { TableName } from '@/api/tool/enums';
-import { listOilCard } from '@/api/system/oilCard';
 import { listBankAccount } from '@/api/system/bankAccount';
 import { parseTime } from '@/utils/ruoyi';
 import { mixin_car_apply } from '../../dashboard/mixins/bussiness/index_car_apply';
@@ -778,7 +843,7 @@ export default {
 		},
 		// 监听是否携带了油卡 如果携带，那么要打开填写加油卡消费记录的弹窗
 		'carApplyForm.isUseOilCard': {
-			handler: function (newVal) {
+			handler: function () {
 				// console.log(newVal)
 			}
 		}
@@ -814,8 +879,6 @@ export default {
 		updateBusinessTrip,
 		getBusinessTrip,
 		listBankAccount,
-		listOilCard,
-		listData,
 		// 转换部门树形结构
 		normalizer(node) {
 			if (node.children && !node.children.length) {

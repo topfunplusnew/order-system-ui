@@ -118,7 +118,7 @@ export var mixin_businesstrip_car_apply = {
 							addOilCardConsume({
 								...this.oilCardConsumeInfo,
 								bTripId: businessTripID
-							}).then(res => {
+							}).then(() => {
 								this.$message.success('保存成功~');
 								setTimeout(() => {
 									// 回写充值账户信息到报销项中

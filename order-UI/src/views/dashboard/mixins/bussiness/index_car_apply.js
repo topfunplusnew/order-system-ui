@@ -9,17 +9,42 @@ export var mixin_car_apply = {
 			hasCarApplyInfo: false,
 			indexCarApplyVisible: false,
 			carApplyList: [],
-
 			// 是否是索引车辆使用信息
-			isIndexCarInfo: false
+			isIndexCarInfo: false,
+			// 车辆引用信息的分页相关
+			carsTotal: 0,
+			carsQueryParams: {}
 		};
 	},
+	watch: {
+		'carsQueryParams.bTripIdIsNull': {
+			handler(val) {
+				// 通过params.bTripIdIsNull这个属性给定字符串 'true' 开启仅允许搜索未绑定的车辆申请. 仅当字符串为true的时候开启
+				this.carsQueryParams.params[`bTripIdIsNull`] = val.toString() + '';
+				this.getCarsList();
+			}
+		}
+	},
 	methods: {
+		// 车辆引用的方法
+		getCarsList() {
+			listCarApply(this.carsQueryParams).then(res => {
+				this.carApplyList = res.rows;
+				this.carsTotal = res.total;
+			});
+		},
+		handleRefreshCars() {
+			this.resetCarsQueryParams();
+			this.getCarsList();
+		},
 		// 索引车辆使用信息
 		indexCarApplyInfo() {
+			this.resetCarsQueryParams();
 			listCarApply().then(res => {
 				this.carApplyList = res.rows;
 				this.indexCarApplyVisible = true;
+				// 车辆分页的总数
+				this.carsTotal = res.total;
 			});
 		},
 		// 引用该车辆使用信息
@@ -41,6 +66,19 @@ export var mixin_car_apply = {
 			// 是索引车辆信息
 			this.isIndexCarInfo = true;
 			this.indexCarApplyVisible = false;
+		},
+
+		resetCarsQueryParams() {
+			this.carsTotal = 0;
+			this.carsQueryParams = {
+				pageNum: 1,
+				pageSize: 10,
+				applyUser: null,
+				department: null,
+				carNo: null,
+				bTripIdIsNull: null,
+				params: {}
+			};
 		}
 	}
 };

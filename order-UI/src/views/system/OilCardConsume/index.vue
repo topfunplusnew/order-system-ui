@@ -180,20 +180,19 @@
 				prop="attachmentOiladd"
 			>
 				<template #default="scope">
-					<!--          <img v-if="isPic(scope.row.attachmentOiladd)" :src="scope.row.attachmentOiladd" alt=""-->
-					<!--               style="width: 100%;height: 100%">-->
-					<!--          <span v-else-if="scope.row.attachmentOiladd === '' || scope.row.attachmentOiladd === null">无附件</span>-->
-					<!--          <span v-else>-->
-					<!--            文件不支持预览，请手动下载:-->
-					<!--          <a style="color: red"-->
-					<!--             :href="scope.row.attachmentOiladd">{{ scope.row.attachmentOiladd }}</a>-->
-					<!--          </span>-->
-					<span v-if="!scope.row.attachmentOiladd">无</span>
-					<span v-else>
-						<a style="color: red" :href="scope.row.attachmentOiladd">
-							<el-button size="mini" type="success">下载</el-button>
-						</a>
-					</span>
+					<CheckFiles
+						:path="scope.row.attachmentOiladd"
+						@needToUpdate="
+							value =>
+								handleUpdateFilePath(
+									value,
+									scope.row,
+									'attachmentOiladd',
+									getOilCardConsume,
+									updateOilCardConsume
+								)
+						"
+					/>
 				</template>
 			</el-table-column>
 			<el-table-column
@@ -209,6 +208,14 @@
 				fixed="right"
 			>
 				<template slot-scope="scope">
+					<el-button
+						v-hasPermi="['system:oilcardconsume:edit']"
+						size="mini"
+						type="primary"
+						@click="handleUpdate(scope.row)"
+					>
+						修改
+					</el-button>
 					<el-button
 						v-hasPermi="['system:oilcardconsume:remove']"
 						size="mini"
@@ -309,10 +316,13 @@ import {
 } from '@/api/system/OilCardConsume';
 import { mixin_printHTML } from '@/views/dashboard/mixins/print';
 import { findFileExtension } from '@/utils/trash/utils';
+import CheckFiles from '@/components/CheckFiles.vue';
+import { mixin_checkfile } from '@/views/dashboard/mixins/checkfiles/mixin_checkfile';
 
 export default {
 	name: 'OilCardConsume',
-	mixins: [mixin_printHTML],
+	components: { CheckFiles },
+	mixins: [mixin_printHTML, mixin_checkfile],
 	data() {
 		return {
 			loading: true,
@@ -389,6 +399,8 @@ export default {
 		}
 	},
 	methods: {
+		updateOilCardConsume,
+		getOilCardConsume,
 		/** 查询加油卡消费信息列表 */
 		getList() {
 			this.loading = true;
@@ -468,13 +480,13 @@ export default {
 			this.$refs['form'].validate(valid => {
 				if (valid) {
 					if (this.form.id != null) {
-						updateOilCardConsume(this.form).then(response => {
+						updateOilCardConsume(this.form).then(() => {
 							this.$modal.msgSuccess('修改成功');
 							this.open = false;
 							this.getList();
 						});
 					} else {
-						addOilCardConsume(this.form).then(response => {
+						addOilCardConsume(this.form).then(() => {
 							this.$modal.msgSuccess('新增成功');
 							this.open = false;
 							this.getList();
