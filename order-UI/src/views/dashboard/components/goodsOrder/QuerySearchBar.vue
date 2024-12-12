@@ -16,6 +16,7 @@
 							placeholder="选择时间"
 							value-format="yyyy-MM-dd"
 							size="mini"
+							style="width: 70%"
 						></el-date-picker>
 					</el-form-item>
 				</el-col>
@@ -26,6 +27,7 @@
 							type="date"
 							placeholder="选择时间"
 							value-format="yyyy-MM-dd"
+							style="width: 70%"
 							size="mini"
 						></el-date-picker>
 					</el-form-item>

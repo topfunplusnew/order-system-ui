@@ -112,6 +112,7 @@ export var mixin_businesstrip_car_apply = {
 							? '0'
 							: this.oilCardConsumeInfo.rechargeMoney;
 					// todo 这里先保存一下油卡的消费信息 后面添加车辆申请的时候 把这个信息同时保存在车辆申请的子对象中
+					// todo youtrack 出差管理 -> 出差登记和车辆申请闭环了
 					// 关闭油卡消费添加弹窗
 					this.oilCardConsumeVisible = false;
 				}

@@ -266,6 +266,33 @@
 				prop="refuelingFrequency"
 				show-overflow-tooltip
 			/>
+
+			<!--      在行程中使用加油卡的加油次数和派车人之间加入4列，“加油金额、加油卡余额、加油小票是否交回公司、现金加油”-->
+			<el-table-column
+				label="加油金额"
+				align="center"
+				prop="refuelingMoney"
+				show-overflow-tooltip
+			/>
+			<el-table-column
+				label="加油卡余额"
+				align="center"
+				prop="oilCardBalance"
+				show-overflow-tooltip
+			/>
+			<el-table-column
+				label="加油小票是否交回公司"
+				align="center"
+				prop="isTicketReturned"
+				show-overflow-tooltip
+			/>
+			<el-table-column
+				label="现金加油"
+				align="center"
+				prop="cashRefueling"
+				show-overflow-tooltip
+			/>
+
 			<el-table-column
 				v-if="columns[20].visible"
 				label="派车人"
@@ -434,8 +461,6 @@
 									value-format="yyyy-MM-dd HH:mm:ss"
 								></el-date-picker>
 							</el-form-item>
-						</el-col>
-						<el-col :span="8">
 							<el-form-item label="用车事由" prop="applyPurpose">
 								<el-input
 									v-model="form.applyPurpose"
@@ -448,6 +473,8 @@
 									placeholder="请输入出车前里程"
 								/>
 							</el-form-item>
+						</el-col>
+						<el-col :span="8">
 							<el-form-item label="出车前车况" prop="startCarState">
 								<el-input
 									v-model="form.startCarState"
@@ -482,8 +509,6 @@
 									placeholder="请输入行程中违法次数"
 								/>
 							</el-form-item>
-						</el-col>
-						<el-col :span="8">
 							<el-form-item label="违章罚款金额金额" prop="fine">
 								<el-input
 									type="number"
@@ -515,6 +540,42 @@
 									placeholder="请输入行程中使用加油卡加油次数"
 								/>
 							</el-form-item>
+						</el-col>
+						<el-col :span="8">
+							<!--              在行程中使用加油卡的加油次数和派车人之间加入4列，“加油金额、加油卡余额、加油小票是否交回公司、现金加油”。-->
+							<el-form-item label="加油金额" prop="refuelingMoney">
+								<el-input
+									type="number"
+									v-model="form.refuelingMoney"
+									placeholder="请输入加油金额"
+								/>
+							</el-form-item>
+							<el-form-item label="加油卡余额" prop="oilCardBalance">
+								<el-input
+									type="number"
+									v-model="form.oilCardBalance"
+									placeholder="请输入加油卡余额"
+								/>
+							</el-form-item>
+							<el-form-item
+								label="加油小票是否交回公司"
+								prop="isTicketReturned"
+							>
+								<el-radio v-model="form.isTicketReturned" label="是"
+									>是
+								</el-radio>
+								<el-radio v-model="form.isTicketReturned" label="否"
+									>否
+								</el-radio>
+							</el-form-item>
+							<el-form-item label="现金加油" prop="cashRefueling">
+								<el-input
+									type="number"
+									v-model="form.cashRefueling"
+									placeholder="请输入行程中使用加油卡加油次数"
+								/>
+							</el-form-item>
+
 							<el-form-item label="派车人" prop="dispatchPerson">
 								<el-input
 									v-model="form.dispatchPerson"
@@ -936,6 +997,12 @@ export default {
 				refuelingFrequency: null,
 				dispatchPerson: null,
 				comments: null,
+
+				// 新增四个字段
+				refuelingMoney: null,
+				oilCardBalance: null,
+				isTicketReturned: null,
+				cashRefueling: null,
 				addtime: null,
 				userId: null,
 				UserName: null,

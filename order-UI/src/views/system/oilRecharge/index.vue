@@ -552,7 +552,7 @@ export default {
 				if (valid) {
 					if (this.form.id != null) {
 						this.form = excludeParams(this.form, this.$exclude);
-						updateOilRecharge(this.form).then(response => {
+						updateOilRecharge(this.form).then(() => {
 							this.$modal.msgSuccess('修改成功');
 							this.open = false;
 							this.$refs.uploadFile.clearFileList();
@@ -560,7 +560,7 @@ export default {
 						});
 					} else {
 						this.form = excludeParams(this.form, this.$exclude);
-						addOilRecharge(this.form).then(response => {
+						addOilRecharge(this.form).then(() => {
 							this.$modal.msgSuccess('新增成功');
 							this.open = false;
 							this.$refs.uploadFile.clearFileList();
