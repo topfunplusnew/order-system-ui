@@ -1001,7 +1001,7 @@ export default {
 				// 新增四个字段
 				refuelingMoney: null,
 				oilCardBalance: null,
-				isTicketReturned: null,
+				isTicketReturned: '否',
 				cashRefueling: null,
 				addtime: null,
 				userId: null,
@@ -1011,6 +1011,9 @@ export default {
 				path: null
 			};
 			this.resetForm('form');
+
+			// 清除session中的信息
+			sessionStorage.removeItem('oilCardConsumeInfo');
 		},
 		/** 搜索按钮操作 */
 		handleQuery() {
@@ -1041,6 +1044,9 @@ export default {
 			const id = row.id || this.ids;
 			getCarApply(id).then(response => {
 				this.form = response.data;
+
+				// 需要针对油卡的信息进行特别处理
+				console.log(response);
 				this.open = true;
 				this.title = '修改车辆使用申请';
 			});
@@ -1050,16 +1056,25 @@ export default {
 			this.$refs['form'].validate(valid => {
 				if (valid) {
 					if (this.form.id != null) {
-						updateCarApply(this.form).then(response => {
+						updateCarApply(this.form).then(() => {
 							this.$modal.msgSuccess('修改成功');
 							this.open = false;
 							this.getList();
 						});
 					} else {
-						addCarApply(this.form).then(response => {
+						// 从session中拿出油卡信息  放入form.oilCardConsume中
+						this.form.oilCardConsume = sessionStorage.getItem(
+							'oilCardConsumeInfo'
+						)
+							? JSON.parse(sessionStorage.getItem('oilCardConsumeInfo'))
+							: {};
+
+						addCarApply(this.form).then(() => {
 							this.$modal.msgSuccess('新增成功');
 							this.open = false;
 							this.getList();
+							// 清除session中的内容
+							sessionStorage.removeItem('oilCardConsumeInfo');
 						});
 					}
 				}
