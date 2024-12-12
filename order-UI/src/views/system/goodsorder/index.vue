@@ -7,7 +7,7 @@
 </template>
 
 <script>
-import ElTableOrder from '@/views/dashboard/components/goodsOrder/ElTableOrder.vue';
+import ElTableOrder from '../../../views/dashboard/components/goodsOrder/ElTableOrder.vue';
 import { mapGetters } from 'vuex';
 import { parseTime } from '../../../utils/ruoyi';
 import { mixin_order_Invoice } from '../../dashboard/mixins/order/order_Invoice';

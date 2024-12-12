@@ -35,8 +35,7 @@ export default {
 					goodsOrderList: this.orderHistoryInfoList
 				});
 			});
-		},
-
+		}
 	}
 };
 </script>

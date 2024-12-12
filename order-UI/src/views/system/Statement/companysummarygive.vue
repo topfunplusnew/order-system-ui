@@ -302,9 +302,7 @@
 
 <script>
 import { mixin_printHTML } from '@/views/dashboard/mixins/print';
-import {
-	getSupplierSuymmary
-} from '../../../api/system/statement';
+import { getSupplierSuymmary } from '../../../api/system/statement';
 import { parseTime } from '../../../utils/ruoyi';
 
 export default {

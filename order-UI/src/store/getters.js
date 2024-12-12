@@ -59,9 +59,8 @@ const getters = {
 	// 暂存购买的信息
 	purchaseTempInfo: state => state.excel.purchaseTempInfo,
 	sellerTempInfo: state => state.excel.sellerTempInfo,
-	companyList: state => state.excel.companyList,
+	companyList: state => state.excel.companyList
 
 	// 出差
-
 };
 export default getters;
