@@ -97,7 +97,7 @@
 			size="mini"
 			:cell-style="
 				() => {
-					return { padding: '2px' };
+					return { padding: '1.5px' };
 				}
 			"
 			@selection-change="handleSelectionChange"
@@ -154,7 +154,7 @@
 					>
 						<el-button
 							size="mini"
-							type="primary"
+							type="text"
 							:disabled="
 								scope.row.ordersNo === '二次加工' ||
 								scope.row.ordersNo === '货物破损'
@@ -164,11 +164,7 @@
 							查看订单信息
 						</el-button>
 					</el-tooltip>
-					<el-button
-						size="mini"
-						type="danger"
-						@click="checkInvoInfo(scope.row)"
-					>
+					<el-button size="mini" type="text" @click="checkInvoInfo(scope.row)">
 						查看库存信息
 					</el-button>
 				</template>
@@ -230,9 +226,9 @@
 			:show-close="false"
 			title="查看订单信息"
 			:visible.sync="checkOrderVisible"
-			width="65%"
+			width="900px"
 		>
-			<el-descriptions title="订单信息" :column="3" border>
+			<el-descriptions title="订单信息" :column="3" border size="mini">
 				<el-descriptions-item label="id">
 					{{ orderDetailInfo.id || '-' }}
 				</el-descriptions-item>
@@ -350,9 +346,9 @@
 			:show-close="false"
 			title="查看库存信息"
 			:visible.sync="checkInventoryVisible"
-			width="65%"
+			width="900px"
 		>
-			<el-descriptions title="库存详情" border>
+			<el-descriptions title="库存详情" border size="mini">
 				<el-descriptions-item label="创建者">
 					{{ inventoryInfo.createBy || '-' }}
 				</el-descriptions-item>
@@ -593,12 +589,11 @@ export default {
 		this.reset();
 	},
 	methods: {
-		formatDate,
 		checkOrderInfo(row) {
-			this.checkOrderVisible = true;
 			// 查询订单详情
 			listGoodsOrder({ ordersNo: row.ordersNo }).then(res => {
 				this.orderDetailInfo = res.rows[0];
+				this.checkOrderVisible = true;
 			});
 		},
 

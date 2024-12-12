@@ -102,7 +102,7 @@
 					<el-button
 						v-hasPermi="['system:secondinventory:add']"
 						size="mini"
-						type="warning"
+						type="text"
 						@click="secondInventory(scope.row)"
 					>
 						二次入库
@@ -110,7 +110,7 @@
 					<el-button
 						v-hasPermi="['system:secondinventory:list']"
 						size="mini"
-						type="warning"
+						type="text"
 						@click="checkInvoInfo(scope.row)"
 					>
 						查看库存信息
@@ -209,10 +209,10 @@
 			:show-close="true"
 			title="库存信息"
 			:visible.sync="inventoryInfoVisible"
-			width="70%"
+			width="900px"
 			append-to-body
 		>
-			<el-descriptions title="库存详情" border>
+			<el-descriptions title="库存详情" border size="mini">
 				<el-descriptions-item label="陆地车号">
 					{{ inventoryInfo.landCarNo }}
 				</el-descriptions-item>
@@ -305,10 +305,7 @@ import {
 	updateExWarehouse
 } from '@/api/system/exWarehouse';
 import { listGoodsOrder } from '@/api/system/goodsOrder';
-import {
-	addInventory,
-	getInventory
-} from '@/api/system/inventory';
+import { addInventory, getInventory } from '@/api/system/inventory';
 import { excludeParams } from '@/api/tool/exclude';
 import TagsItem from '@/components/TagsItem/index.vue';
 import InventoryForm from '../../dashboard/components/inventory/InventoryForm.vue';

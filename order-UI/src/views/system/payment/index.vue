@@ -161,7 +161,7 @@
 			border
 			:cell-style="
 				() => {
-					return { padding: '2px' };
+					return { padding: '1.5px' };
 				}
 			"
 			@selection-change="handleSelectionChange"
@@ -274,7 +274,10 @@
 				show-overflow-tooltip
 			>
 				<template #default="scope">
-					<DynamicField :row="scope.row" field="paymentState" />
+					<StateTag
+						:state-title="scope.row.paymentState"
+						:state-mapper="{ 0: '未支付', 2: '已支付' }"
+					/>
 				</template>
 			</el-table-column>
 			<el-table-column
@@ -953,10 +956,12 @@ import { mixin_paymentindex_fill } from './paymentFill';
 import CheckDetail from '../../dashboard/components/payment/CheckDetail.vue';
 import BankType from '@/views/dashboard/components/common/BankType.vue';
 import { mixin_bankType } from '../../dashboard/mixins/common/common_bankType';
+import StateTag from '@/views/dashboard/components/common/StateTag.vue';
 
 export default {
 	name: 'Payment',
 	components: {
+		StateTag,
 		BankType,
 		CheckDetail,
 		DynamicField,

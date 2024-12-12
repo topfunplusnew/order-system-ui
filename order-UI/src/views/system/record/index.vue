@@ -124,7 +124,7 @@
 			border
 			:cell-style="
 				() => {
-					return { padding: '2px' };
+					return { padding: '1.5px' };
 				}
 			"
 			@selection-change="handleSelectionChange"

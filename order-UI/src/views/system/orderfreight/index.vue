@@ -234,7 +234,14 @@
 				prop="paymentState"
 				width="100"
 				show-overflow-tooltip
-			/>
+			>
+				<template slot-scope="scope">
+					<StateTag
+						:state-title="scope.row.paymentState"
+						:state-mapper="{ 0: '未支付', 2: '已支付' }"
+					/>
+				</template>
+			</el-table-column>
 			<el-table-column
 				v-if="columns[8].visible"
 				label="司机姓名"
@@ -687,10 +694,12 @@ import {
 } from '@/views/dashboard/mixins/freight/freight_payment';
 import { fix } from '../../../api/tool/format';
 import BankType from '@/views/dashboard/components/common/BankType.vue';
+import StateTag from '@/views/dashboard/components/common/StateTag.vue';
 
 export default {
 	name: 'OrderFreight',
 	components: {
+		StateTag,
 		BankType,
 		FillFreight,
 		CheckOrderInfo,

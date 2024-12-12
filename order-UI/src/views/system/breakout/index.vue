@@ -100,17 +100,9 @@
 			>
 				<template slot-scope="scope">
 					<el-button
-						v-hasPermi="['system:breakou:edit']"
-						size="mini"
-						type="primary"
-						@click="handleUpdate(scope.row)"
-					>
-						修改
-					</el-button>
-					<el-button
 						v-hasPermi="['system:breakou:list']"
 						size="mini"
-						type="warning"
+						type="text"
 						@click="checkInvoInfo(scope.row)"
 					>
 						查看库存信息
@@ -122,6 +114,14 @@
 						@click="handleDelete(scope.row)"
 					>
 						删除
+					</el-button>
+					<el-button
+						v-hasPermi="['system:breakou:edit']"
+						size="mini"
+						type="primary"
+						@click="handleUpdate(scope.row)"
+					>
+						修改
 					</el-button>
 				</template>
 			</el-table-column>
@@ -275,14 +275,12 @@ import {
 	addExWarehouse,
 	updateExWarehouse
 } from '@/api/system/exWarehouse';
-import { listGoodsOrder } from '@/api/system/goodsOrder';
-import TagsItem from '@/components/TagsItem/index.vue';
-import { getInventory, listInventory } from '@/api/system/inventory';
+import { getInventory } from '@/api/system/inventory';
 import { excludeParams } from '@/api/tool/exclude';
 
 export default {
 	name: 'ExWarehouse',
-	components: { TagsItem },
+	components: {},
 	data() {
 		return {
 			loading: true,
@@ -428,14 +426,14 @@ export default {
 				if (valid) {
 					if (this.form.id != null) {
 						this.form = excludeParams(this.form, this.$exclude);
-						updateExWarehouse(this.form).then(response => {
+						updateExWarehouse(this.form).then(() => {
 							this.$modal.msgSuccess('修改成功');
 							this.open = false;
 							this.getList();
 						});
 					} else {
 						this.form = excludeParams(this.form, this.$exclude);
-						addExWarehouse(this.form).then(response => {
+						addExWarehouse(this.form).then(() => {
 							this.$modal.msgSuccess('新增成功');
 							this.open = false;
 							this.getList();

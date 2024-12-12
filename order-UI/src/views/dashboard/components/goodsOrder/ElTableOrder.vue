@@ -27,6 +27,7 @@ import OrderHistoryCheck from '@/views/dashboard/components/goodsOrder/OrderHist
 import { parseTime } from '@/utils/ruoyi';
 import HistoryList from '@/views/dashboard/components/goodsOrder/HistoryList.vue';
 import { PUBLIC_DICT_TYPE } from '@/utils/order';
+import StateTag from '@/views/dashboard/components/common/StateTag.vue';
 
 export default {
 	name: 'ElTableOrder',
@@ -36,6 +37,7 @@ export default {
 		}
 	},
 	components: {
+		StateTag,
 		HistoryList,
 		OrderHistoryCheck,
 		DialogWrapper,
@@ -417,7 +419,10 @@ export default {
 				>
 					<template #default="scope">
 						<el-row v-if="scope.row.checkState === '已审核'">
-							{{ scope.row.checkState }}
+							<StateTag
+								:state-title="scope.row.checkState"
+								:state-mapper="{ 2: '已审核' }"
+							/>
 						</el-row>
 						<el-row v-else>
 							<el-row>
@@ -598,7 +603,10 @@ export default {
 					width="100px"
 				>
 					<template slot-scope="scope">
-						{{ scope.row.isedit === 0 ? '否' : '是' }}
+						<StateTag
+							:state-title="scope.row.isedit === 0 ? '否' : '是'"
+							:state-mapper="{ 0: '否', 2: '是' }"
+						/>
 					</template>
 				</el-table-column>
 				<!--      客户供应商是否开票-->
@@ -622,7 +630,12 @@ export default {
 									</el-button>
 								</el-row>
 							</el-row>
-							<el-row v-else>无开票</el-row>
+							<el-row v-else>
+								<StateTag
+									:state-title="`无开票`"
+									:state-mapper="{ 3: '无开票' }"
+								/>
+							</el-row>
 						</el-row>
 					</template>
 				</el-table-column>
@@ -646,7 +659,12 @@ export default {
 									</el-button>
 								</el-row>
 							</el-row>
-							<el-row v-else>无开票</el-row>
+							<el-row v-else>
+								<StateTag
+									:state-title="`无开票`"
+									:state-mapper="{ 3: '无开票' }"
+								/>
+							</el-row>
 						</el-row>
 					</template>
 				</el-table-column>
@@ -722,63 +740,63 @@ export default {
 						</el-dropdown>
 					</template>
 				</el-table-column>
-				<el-table-column
-					show-overflow-tooltip
-					label="运费申请"
-					align="center"
-					class-name="small-padding fixed-width"
-					width="100px"
-					fixed="right"
-				>
-					<template slot-scope="scope">
-						<!--          如果有订单运费 那么就禁用按钮-->
-						<el-dropdown size="mini" type="text">
-							<el-button
-								type="text"
-								:disabled="
-									!(scope.row.landFreight > 0 || scope.row.seaFreight > 0)
-								"
-							>
-								操作
-							</el-button>
-							<el-dropdown-menu slot="dropdown">
-								<el-dropdown-item>
-									<el-row
-										v-if="scope.row.landFreight > 0 || scope.row.seaFreight > 0"
-									>
-										<el-button
-											v-if="scope.row.landFreight > 0"
-											:key="scope.row.params.isHaveOrderLandfreight"
-											v-hasPermi="['system:goodsorder:remove']"
-											size="mini"
-											type="warning"
-											:disabled="
-												scope.row.params.isHaveOrderLandfreight === 'true'
-											"
-											@click="handleApplyLandFree(scope.row)"
-										>
-											陆运费申请
-										</el-button>
-										<el-button
-											v-if="scope.row.seaFreight > 0"
-											:key="scope.row.params.isHaveOrderSeafreight"
-											v-hasPermi="['system:goodsorder:remove']"
-											:disabled="
-												scope.row.params.isHaveOrderSeafreight === 'true'
-											"
-											size="mini"
-											type="primary"
-											@click="handleApplySeaFree(scope.row)"
-										>
-											海运费申请
-										</el-button>
-									</el-row>
-									<el-row v-else>无运费信息</el-row>
-								</el-dropdown-item>
-							</el-dropdown-menu>
-						</el-dropdown>
-					</template>
-				</el-table-column>
+				<!--				<el-table-column-->
+				<!--					show-overflow-tooltip-->
+				<!--					label="运费申请"-->
+				<!--					align="center"-->
+				<!--					class-name="small-padding fixed-width"-->
+				<!--					width="100px"-->
+				<!--					fixed="right"-->
+				<!--				>-->
+				<!--					<template slot-scope="scope">-->
+				<!--						&lt;!&ndash;          如果有订单运费 那么就禁用按钮&ndash;&gt;-->
+				<!--						<el-dropdown size="mini" type="text">-->
+				<!--							<el-button-->
+				<!--								type="text"-->
+				<!--								:disabled="-->
+				<!--									!(scope.row.landFreight > 0 || scope.row.seaFreight > 0)-->
+				<!--								"-->
+				<!--							>-->
+				<!--								操作-->
+				<!--							</el-button>-->
+				<!--							<el-dropdown-menu slot="dropdown">-->
+				<!--								<el-dropdown-item>-->
+				<!--									<el-row-->
+				<!--										v-if="scope.row.landFreight > 0 || scope.row.seaFreight > 0"-->
+				<!--									>-->
+				<!--										<el-button-->
+				<!--											v-if="scope.row.landFreight > 0"-->
+				<!--											:key="scope.row.params.isHaveOrderLandfreight"-->
+				<!--											v-hasPermi="['system:goodsorder:remove']"-->
+				<!--											size="mini"-->
+				<!--											type="warning"-->
+				<!--											:disabled="-->
+				<!--												scope.row.params.isHaveOrderLandfreight === 'true'-->
+				<!--											"-->
+				<!--											@click="handleApplyLandFree(scope.row)"-->
+				<!--										>-->
+				<!--											陆运费申请-->
+				<!--										</el-button>-->
+				<!--										<el-button-->
+				<!--											v-if="scope.row.seaFreight > 0"-->
+				<!--											:key="scope.row.params.isHaveOrderSeafreight"-->
+				<!--											v-hasPermi="['system:goodsorder:remove']"-->
+				<!--											:disabled="-->
+				<!--												scope.row.params.isHaveOrderSeafreight === 'true'-->
+				<!--											"-->
+				<!--											size="mini"-->
+				<!--											type="primary"-->
+				<!--											@click="handleApplySeaFree(scope.row)"-->
+				<!--										>-->
+				<!--											海运费申请-->
+				<!--										</el-button>-->
+				<!--									</el-row>-->
+				<!--									<el-row v-else>无运费信息</el-row>-->
+				<!--								</el-dropdown-item>-->
+				<!--							</el-dropdown-menu>-->
+				<!--						</el-dropdown>-->
+				<!--					</template>-->
+				<!--				</el-table-column>-->
 			</el-table>
 			<!--    分页组件-->
 			<pagination

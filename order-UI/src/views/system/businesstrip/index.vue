@@ -89,7 +89,7 @@
 			:data="BusinessTripList"
 			:cell-style="
 				() => {
-					return { padding: '2px' };
+					return { padding: '1.5px' };
 				}
 			"
 			@selection-change="handleSelectionChange"
@@ -154,9 +154,26 @@
 				prop="isReimburse"
 			>
 				<template slot-scope="scope">
-					{{ scope.row.isReimburse === 0 ? '否' : '是' }}
+					<StateTag
+						:state-title="scope.row.isReimburse === 0 ? '否' : '是'"
+						:state-mapper="{ 0: '否', 2: '是' }"
+					/>
 				</template>
 			</el-table-column>
+			<el-table-column label="付款状态" align="center" prop="checkState">
+				<template slot-scope="scope">
+					<StateTag
+						:state-title="scope.row.checkState"
+						:state-mapper="{
+							0: '未审核',
+							1: '已审核',
+							2: '已支付',
+							3: '未申请'
+						}"
+					/>
+				</template>
+			</el-table-column>
+
 			<el-table-column
 				v-if="columns[7].visible"
 				label="备注"
@@ -179,6 +196,7 @@
 						发起付款申请
 					</el-button>
 					<el-button
+						:disabled="scope.row.checkState === '已支付'"
 						v-hasPermi="['system:businesstrip:edit']"
 						size="mini"
 						type="primary"
@@ -716,10 +734,12 @@ import '@riophae/vue-treeselect/dist/vue-treeselect.css';
 import Treeselect from '@riophae/vue-treeselect';
 import CheckFiles from '@/components/CheckFiles.vue';
 import { mixin_checkfile } from '../../dashboard/mixins/checkfiles/mixin_checkfile';
+import StateTag from '@/views/dashboard/components/common/StateTag.vue';
 
 export default {
 	name: 'BusinessTrip',
 	components: {
+		StateTag,
 		CheckFiles,
 		SubjectOption,
 		StepsForm,
