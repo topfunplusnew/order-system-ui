@@ -141,41 +141,41 @@
 				prop="rebateType"
 				show-overflow-tooltip
 			/>
-			<el-table-column
-				v-if="columns[3].visible"
-				label="收款户名"
-				align="center"
-				prop="inAcountsName"
-				show-overflow-tooltip
-			/>
-			<el-table-column
-				v-if="columns[4].visible"
-				label="收款账号"
-				align="center"
-				prop="inBankNo"
-				width="160"
-				show-overflow-tooltip
-			/>
+			<!--			<el-table-column-->
+			<!--				v-if="columns[3].visible"-->
+			<!--				label="收款户名"-->
+			<!--				align="center"-->
+			<!--				prop="inAcountsName"-->
+			<!--				show-overflow-tooltip-->
+			<!--			/>-->
+			<!--			<el-table-column-->
+			<!--				v-if="columns[4].visible"-->
+			<!--				label="收款账号"-->
+			<!--				align="center"-->
+			<!--				prop="inBankNo"-->
+			<!--				width="160"-->
+			<!--				show-overflow-tooltip-->
+			<!--			/>-->
 			<el-table-column
 				v-if="columns[5].visible"
 				label="供应商"
 				align="center"
 				prop="supplier"
 			/>
-			<el-table-column
-				v-if="columns[6].visible"
-				label="付款户名"
-				align="center"
-				prop="outAcountsName"
-				show-overflow-tooltip
-			/>
-			<el-table-column
-				v-if="columns[7].visible"
-				label="付款款账号"
-				align="center"
-				prop="outBankNo"
-				width="160"
-			/>
+			<!--			<el-table-column-->
+			<!--				v-if="columns[6].visible"-->
+			<!--				label="付款户名"-->
+			<!--				align="center"-->
+			<!--				prop="outAcountsName"-->
+			<!--				show-overflow-tooltip-->
+			<!--			/>-->
+			<!--			<el-table-column-->
+			<!--				v-if="columns[7].visible"-->
+			<!--				label="付款款账号"-->
+			<!--				align="center"-->
+			<!--				prop="outBankNo"-->
+			<!--				width="160"-->
+			<!--			/>-->
 			<el-table-column
 				v-if="columns[8].visible"
 				label="返利原因"
@@ -327,130 +327,130 @@
 									</el-col>
 								</el-row>
 							</el-form-item>
-							<el-form-item label="收款方账户类型">
-								<BankType
-									:select-type="form.selfBankCardType"
-									@updateSelectedType="changeSelfBankType"
-								/>
-							</el-form-item>
-							<el-form-item label="收款户名" prop="inAcountsName">
-								<el-row>
-									<el-col :span="15">
-										<el-input
-											v-model="form.inAcountsName"
-											placeholder="请输入收款户名"
-										/>
-									</el-col>
-									<el-col :span="4">
-										<SearchOption
-											:limit-info="{ acountsType: '己方公司' }"
-											:get-data="listBankAccount"
-											:query-name="queryBankAcount"
-											query-label="户名查找"
-											query-info="acountsName"
-											@commitBack="handleCommitBackBankAcount"
-											@update:queryName="handleUpdateQueryBankAcount"
-										>
-											<template #table-columns>
-												<el-table-column
-													label="账户类型"
-													align="center"
-													prop="acountsType"
-												/>
-												<el-table-column
-													label="显示名称"
-													align="center"
-													prop="displayName"
-												/>
-												<el-table-column
-													label="开户名称(户名)"
-													align="center"
-													prop="acountsName"
-												/>
-												<el-table-column
-													label="账号(银行账号)"
-													align="center"
-													prop="bankNo"
-												/>
-												<el-table-column
-													label="开户行"
-													align="center"
-													prop="bankName"
-												/>
-											</template>
-										</SearchOption>
-									</el-col>
-								</el-row>
-							</el-form-item>
-							<el-form-item label="收款账号" prop="inBankNo">
-								<el-input
-									v-model="form.inBankNo"
-									placeholder="请输入收款账号"
-								/>
-							</el-form-item>
-						</el-col>
-						<el-col :span="12">
-							<el-form-item label="付款方账户类型">
-								<BankType
-									:select-type="form.otherBankCardType"
-									@updateSelectedType="changeOtherBankType"
-								/>
-							</el-form-item>
-							<el-form-item label="付款户名" prop="outAcountsName">
-								<el-row>
-									<el-col :span="15">
-										<el-input
-											v-model="form.outAcountsName"
-											placeholder="请输入付款户名"
-										/>
-									</el-col>
-									<el-col :span="4">
-										<SearchOption
-											:limit-info="{ acountsType: '供应商' }"
-											:get-data="listBankAccount"
-											:query-name="bankAcountSelf"
-											query-label="户名查找"
-											query-info="acountsName"
-											@commitBack="handleCommitBackBankAcountSelf"
-											@update:queryName="handleUpdateQueryBankAcountSelf"
-										>
-											<template #table-columns>
-												<el-table-column
-													label="账户类型"
-													align="center"
-													prop="acountsType"
-												/>
-												<el-table-column
-													label="开户名称(户名)"
-													align="center"
-													prop="acountsName"
-												/>
-												<el-table-column
-													label="账号(银行账号)"
-													align="center"
-													prop="bankNo"
-												/>
-												<el-table-column
-													label="开户行"
-													align="center"
-													prop="bankName"
-												/>
-												<el-table-column
-													label="公司名称"
-													align="center"
-													prop="companyName"
-												/>
-											</template>
-										</SearchOption>
-									</el-col>
-								</el-row>
-							</el-form-item>
-							<el-form-item label="付款账号" prop="outBankNo">
-								<el-input
-									v-model="form.outBankNo"
-									placeholder="请输入付款款账号"
-								/>
-							</el-form-item>
+							<!--							<el-form-item label="收款方账户类型">-->
+							<!--								<BankType-->
+							<!--									:select-type="form.selfBankCardType"-->
+							<!--									@updateSelectedType="changeSelfBankType"-->
+							<!--								/>-->
+							<!--							</el-form-item>-->
+							<!--							<el-form-item label="收款户名" prop="inAcountsName">-->
+							<!--								<el-row>-->
+							<!--									<el-col :span="15">-->
+							<!--										<el-input-->
+							<!--											v-model="form.inAcountsName"-->
+							<!--											placeholder="请输入收款户名"-->
+							<!--										/>-->
+							<!--									</el-col>-->
+							<!--									<el-col :span="4">-->
+							<!--										<SearchOption-->
+							<!--											:limit-info="{ acountsType: '己方公司' }"-->
+							<!--											:get-data="listBankAccount"-->
+							<!--											:query-name="queryBankAcount"-->
+							<!--											query-label="户名查找"-->
+							<!--											query-info="acountsName"-->
+							<!--											@commitBack="handleCommitBackBankAcount"-->
+							<!--											@update:queryName="handleUpdateQueryBankAcount"-->
+							<!--										>-->
+							<!--											<template #table-columns>-->
+							<!--												<el-table-column-->
+							<!--													label="账户类型"-->
+							<!--													align="center"-->
+							<!--													prop="acountsType"-->
+							<!--												/>-->
+							<!--												<el-table-column-->
+							<!--													label="显示名称"-->
+							<!--													align="center"-->
+							<!--													prop="displayName"-->
+							<!--												/>-->
+							<!--												<el-table-column-->
+							<!--													label="开户名称(户名)"-->
+							<!--													align="center"-->
+							<!--													prop="acountsName"-->
+							<!--												/>-->
+							<!--												<el-table-column-->
+							<!--													label="账号(银行账号)"-->
+							<!--													align="center"-->
+							<!--													prop="bankNo"-->
+							<!--												/>-->
+							<!--												<el-table-column-->
+							<!--													label="开户行"-->
+							<!--													align="center"-->
+							<!--													prop="bankName"-->
+							<!--												/>-->
+							<!--											</template>-->
+							<!--										</SearchOption>-->
+							<!--									</el-col>-->
+							<!--								</el-row>-->
+							<!--							</el-form-item>-->
+							<!--							<el-form-item label="收款账号" prop="inBankNo">-->
+							<!--								<el-input-->
+							<!--									v-model="form.inBankNo"-->
+							<!--									placeholder="请输入收款账号"-->
+							<!--								/>-->
+							<!--							</el-form-item>-->
+							<!--						</el-col>-->
+							<!--						<el-col :span="12">-->
+							<!--							<el-form-item label="付款方账户类型">-->
+							<!--								<BankType-->
+							<!--									:select-type="form.otherBankCardType"-->
+							<!--									@updateSelectedType="changeOtherBankType"-->
+							<!--								/>-->
+							<!--							</el-form-item>-->
+							<!--							<el-form-item label="付款户名" prop="outAcountsName">-->
+							<!--								<el-row>-->
+							<!--									<el-col :span="15">-->
+							<!--										<el-input-->
+							<!--											v-model="form.outAcountsName"-->
+							<!--											placeholder="请输入付款户名"-->
+							<!--										/>-->
+							<!--									</el-col>-->
+							<!--									<el-col :span="4">-->
+							<!--										<SearchOption-->
+							<!--											:limit-info="{ acountsType: '供应商' }"-->
+							<!--											:get-data="listBankAccount"-->
+							<!--											:query-name="bankAcountSelf"-->
+							<!--											query-label="户名查找"-->
+							<!--											query-info="acountsName"-->
+							<!--											@commitBack="handleCommitBackBankAcountSelf"-->
+							<!--											@update:queryName="handleUpdateQueryBankAcountSelf"-->
+							<!--										>-->
+							<!--											<template #table-columns>-->
+							<!--												<el-table-column-->
+							<!--													label="账户类型"-->
+							<!--													align="center"-->
+							<!--													prop="acountsType"-->
+							<!--												/>-->
+							<!--												<el-table-column-->
+							<!--													label="开户名称(户名)"-->
+							<!--													align="center"-->
+							<!--													prop="acountsName"-->
+							<!--												/>-->
+							<!--												<el-table-column-->
+							<!--													label="账号(银行账号)"-->
+							<!--													align="center"-->
+							<!--													prop="bankNo"-->
+							<!--												/>-->
+							<!--												<el-table-column-->
+							<!--													label="开户行"-->
+							<!--													align="center"-->
+							<!--													prop="bankName"-->
+							<!--												/>-->
+							<!--												<el-table-column-->
+							<!--													label="公司名称"-->
+							<!--													align="center"-->
+							<!--													prop="companyName"-->
+							<!--												/>-->
+							<!--											</template>-->
+							<!--										</SearchOption>-->
+							<!--									</el-col>-->
+							<!--								</el-row>-->
+							<!--							</el-form-item>-->
+							<!--							<el-form-item label="付款账号" prop="outBankNo">-->
+							<!--								<el-input-->
+							<!--									v-model="form.outBankNo"-->
+							<!--									placeholder="请输入付款款账号"-->
+							<!--								/>-->
+							<!--							</el-form-item>-->
 							<el-form-item label="金额" prop="rebate">
 								<el-input v-model="form.rebate" placeholder="请输入金额" />
 							</el-form-item>
