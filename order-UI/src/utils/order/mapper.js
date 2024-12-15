@@ -9,6 +9,7 @@ import { getOffsetting } from '@/api/system/Offsetting';
 import { getRebate } from '@/api/system/Rebate';
 import { getInventory } from '@/api/system/inventory';
 import { getOrderDetail } from '@/api/system/orderDetail';
+import { getBankAcceptance } from '@/api/system/bankAcceptance';
 
 export function getFunction(tableName) {
 	switch (tableName) {
@@ -30,5 +31,7 @@ export function getFunction(tableName) {
 			return getInventory;
 		case TableName.ORDER_DETAIL:
 			return getOrderDetail;
+		case TableName.BANK_ACCOUNT_CHANGE:
+			return getBankAcceptance;
 	}
 }

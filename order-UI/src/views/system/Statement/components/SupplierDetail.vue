@@ -20,6 +20,7 @@ import TotalTag from '@/views/system/Statement/components/TotalTag.vue';
 import { ReportType } from '../../../../api/tool/enums';
 import { fix } from '../../../../api/tool/format';
 import { getConfigValue } from '../data/config_get';
+import BANK_ACCEPTANCE from '@/components/NeedToShow/BANK_ACCEPTANCE.vue';
 
 export default {
 	name: 'SupplierDetail',
@@ -182,7 +183,9 @@ export default {
 				[TableName.OFFSETTING]: OFFSETTING,
 				[TableName.REBATE]: REBATE,
 				[TableName.INVENTORY]: INVENTORY,
-				[TableName.ORDER_DETAIL]: ORDER_DETAIL
+				[TableName.ORDER_DETAIL]: ORDER_DETAIL,
+				// 需要前端在这两个明细表上进行适配bankacceptance
+				[TableName.BANK_ACCOUNT_CHANGE]: BANK_ACCEPTANCE
 			};
 			// 默认返回 null，如果没有匹配的 tableName
 			return components[tableName] || null;
@@ -195,8 +198,8 @@ export default {
 	<div>
 		<!--    供应商明细表的按钮-->
 		<el-button type="primary" size="mini" @click="handleCheck"
-			>查看明细</el-button
-		>
+			>查看明细
+		</el-button>
 
 		<!--    供应商明细表的弹窗-->
 		<el-dialog
