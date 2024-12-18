@@ -28,11 +28,12 @@ export default {
 					}
 				).then(() => {
 					// 跳转到订单运费界面 并且传递参数
+					// TODO 需要等待后端写好运费申请的页面 跳转到订单运费界面 并且传递参数
 					this.$router.push({
-						path: '/order/order/orderfreight',
+						path: '/freight/applyfreight',
 						query: {
 							fundsDate: row.fundsDate,
-							driver: res.data.driver
+							driverId: res.data.id
 						}
 					});
 				});
