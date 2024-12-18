@@ -47,7 +47,8 @@ module.exports = {
 		devtool: 'source-map',
 		resolve: {
 			alias: {
-				'@': resolve(__dirname, 'src')
+				// '@': resolve(__dirname, 'src')
+				'@': resolve('src')
 			}
 		},
 		plugins: [
