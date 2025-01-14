@@ -22,7 +22,7 @@ module.exports = {
 		open: true,
 		proxy: {
 			[process.env.VUE_APP_BASE_API]: {
-				target: `https://bak.xuni.rocks`,
+				target: `http://24.233.1.45:60035/`,
 				// target: 'http://24.233.1.45:8080',
 				// target: 'http://localhost:8080',
 				// target: 'http://172.20.193.200:8080',

@@ -1,13 +1,14 @@
 <!--订单表组件-->
 
 <script>
-import OrderItem from '@/views/dashboard/components/goodsOrder/OrderItem.vue';
+// import OrderItem from '@/views/dashboard/components/goodsOrder/OrderItem.vue';
 import SearchOption from '../../../../components/SearchOption.vue';
 import { listCompany } from '../../../../api/system/company';
 import { listBankAccount } from '../../../../api/system/bankAccount';
 import { listCars } from '../../../../api/system/cars';
 import { listFleet } from '../../../../api/system/fleet';
 import { parseTime } from '../../../../utils/ruoyi';
+import { mixin_item_addItem } from '../../mixins/order/items/item_addItem';
 import {
 	addGoodsOrder,
 	getGoodsOrder,
@@ -16,11 +17,14 @@ import {
 import { excludeParams } from '../../../../api/tool/exclude';
 import { mapGetters } from 'vuex';
 import { mixin_form_fillInfo } from '../../mixins/order/form/form_fillInfo';
+import { listInventory } from '../../../../api/system/inventory';
+import { listProductLevel } from '../../../../api/system/productLevel';
+import { fix } from '../../../../api/tool/format';
 
 export default {
 	name: 'OrderForm',
-	components: { SearchOption, OrderItem },
-	mixins: [mixin_form_fillInfo],
+	components: { SearchOption /*OrderItem*/ },
+	mixins: [mixin_form_fillInfo, mixin_item_addItem],
 	props: {
 		// 父组件传递的订单id，主要用于当修改订单信息时 抓取服务器数据 然后自动填充到表单中
 		orderId: {
@@ -37,10 +41,17 @@ export default {
 		return {
 			// 单个订单基本信息 由此组件维护 而订单中的货物的信息 由vuex中的订单货物列表orderItemList维护
 			orderInfo: {},
+			// 2025/1/14 订单货物列表
+			orderdetailList: [],
+			checkedOrderdetail: [],
 			// 海运还是陆运
 			isLand: false,
 			isSea: false,
-			orderNums: 0
+			orderNums: 0,
+
+			querySupplier: null,
+			queryLevel: null,
+			queryStore: null
 		};
 	},
 	computed: {
@@ -79,10 +90,13 @@ export default {
 		this.orderId && this.getGoodsOrderInfo(this.orderId);
 	},
 	methods: {
+		fix,
+		listInventory,
 		listFleet,
 		listCars,
 		listBankAccount,
 		listCompany,
+		listProductLevel,
 		// 获取订单信息的方法 这个方法会根据父组件传递过来的id (props.orderId)的变化 来查询对应的订单信息
 		getGoodsOrderInfo(id) {
 			getGoodsOrder(id).then(response => {
@@ -112,21 +126,210 @@ export default {
 				});
 			});
 		},
-		// 点击添加货物
-		addOrderItem() {
-			// 需要添加的货物的信息 后续可能会加入更多
-			const temp = {
-				orderIndex: this.orderNums
-			};
-			this.$store.commit('order/addsOrderItem', temp);
-			this.orderNums++;
+		// --- 2025/1/14 添加订单详情
+		handleAddOrderdetail() {
+			let obj = {};
+			obj.orderDate = new Date();
+			obj.supplier = '';
+			obj.supplierID = '';
+			obj.customer = '';
+			obj.customerID = '';
+			obj.levelID = '';
+			obj.levelName = '';
+			obj.countingUnit = '片';
+			obj.height = '';
+			obj.length = '';
+			obj.width = '';
+			obj.piecesPerPack = '';
+			obj.pieces = '';
+			obj.packs = '';
+			obj.price = '';
+			obj.isIncludeTaxFactory = '否';
+			obj.sundryCost = '';
+			obj.paymentFactory = '';
+			obj.paymentUnload = '';
+			obj.isIncludeTaxSale = '否';
+			obj.payments = '';
+			obj.erro = '';
+			obj.tonnage = '';
+			obj.landFreightPrice = '';
+			obj.landFreight = '';
+			obj.seaFreight = '';
+			obj.freight = '';
+			obj.otherCost = '';
+			obj.profit = '';
+			obj.profitNoTax = '';
+			obj.actualPieces = '';
+			obj.paymentsWithSundry = '';
+			obj.additionalFees = '';
+			obj.storeHouseID = '';
+			obj.storeHouseName = '';
+			obj.storeID = '';
+			obj.logisticsProfit = '';
+			obj.customerCommission = '';
+			obj.isAdjusted = 0;
+			obj.adjustOrderNo = '';
+			obj.adjustDate = '';
+			obj.comments = '';
+			this.orderdetailList.push(obj);
 		},
-		// 删除订单详情
-		handleDeleteOrderDetail(index) {
-			// 删除orderItemList中索引为index的元素
-			this.$store.commit('order/removeOrderItem', index);
-			this.orderNums--;
+
+		// 筛选无剩余片数的库存
+		filterNoStockNumber(data) {
+			return new Promise(resolve => {
+				resolve(data.filter(item => item.stockNumber > 0));
+			});
 		},
+		handleDeleteOrderdetail() {
+			if (this.checkedOrderdetail.length === 0) {
+				this.$message.error('请先选择要删除的订单详情数据');
+			} else {
+				const orderdetails = this.orderdetailList;
+				const checkedOrderdetails = this.checkedOrderdetail;
+				this.orderdetailList = orderdetails.filter(function (item) {
+					return checkedOrderdetails.indexOf(item.index) === -1;
+				});
+			}
+		},
+		rowOrderdetailIndex({ row, rowIndex }) {
+			row.index = rowIndex + 1;
+		},
+		getSummary(param) {
+			const { columns, data } = param;
+			const exclude = [16, 19, 23, 24, 25, 28];
+			const sums = [];
+			columns.forEach((column, index) => {
+				if (index === 0) {
+					sums[index] = '合计';
+					return;
+				}
+				if (exclude.includes(index)) {
+					const values = data.map(item => Number(item[column.property]));
+					if (!values.every(value => isNaN(value))) {
+						sums[index] = values.reduce((prev, curr) => {
+							const value = Number(curr);
+							if (!isNaN(value)) {
+								return prev + curr;
+							} else {
+								return prev;
+							}
+						}, 0);
+						sums[index] += ' 元';
+					} else {
+						sums[index] = 'N/A';
+					}
+				}
+			});
+
+			return sums;
+		},
+		handleOrderdetailSelectionChange(selection) {
+			this.checkedOrderdetail = selection.map(item => item.index);
+		},
+
+		// 更新仓库的查询字段
+		handleUpdateQueryNameStore(value) {
+			this.queryStore = value;
+		},
+		// 更新供应商的查询字段
+		handleUpdateQuerySupplier(value) {
+			this.querySupplier = value;
+		},
+		handleUpdateQueryNameLevel(value) {
+			this.queryLevel = value;
+		},
+		// 填充货物信息中的供应商
+		handleCommitBackSupplier(scope, val) {
+			scope.row.supplier = val.companyName;
+			scope.row.supplierID = val.companyId;
+			scope.row.currentType = 'supplier'; // 设置当前类型为供应商
+		},
+		// 仓库信息 从仓库发货
+		handleCommitBackInventory(scope, val) {
+			scope.row.storeID = val.id;
+			scope.row.storeHouseID = val.storeHouseid;
+			scope.row.storeHouseName = val.storeHouseName;
+			if (scope.row.supplier) {
+				scope.row.supplier = null;
+			}
+			scope.row.length = val.length;
+			scope.row.height = val.height;
+			scope.row.width = val.width;
+			scope.row.levelID = val.levelID;
+			scope.row.levelName = val.levelName;
+			// 填充误差
+			scope.row.erro = val.tonnage;
+			scope.row.currentType = 'storeHouseName'; // 设置当前类型为仓库
+		},
+		// 产品级别自动填充
+		handleCommitBackProductLevel(scope, val) {
+			// 这里用产品级别的吨位 填充了误差
+			scope.row.erro = val.tonnage;
+			scope.row.levelID = val.id;
+			scope.row.levelName = val.levelName;
+			scope.row.height = val.height;
+			scope.row.length = val.length;
+			scope.row.width = val.width;
+			scope.row.levelNo = val.levelNo;
+		},
+		calculatePacks(scope) {
+			const res = scope.row.packs * scope.row.piecesPerPack;
+			scope.row.actualPieces = scope.row.pieces = res;
+			// 计算吨位
+			scope.row.tonnage = fix(
+				((Number(scope.row.height) - Number(scope.row.erro)) *
+					scope.row.length *
+					scope.row.width *
+					scope.row.pieces) /
+					1000000 /
+					20 /
+					20
+			);
+		},
+		calculatePrice(scope) {
+			// 计算出厂货款
+			scope.row.paymentFactory = fix(
+				((scope.row.length * scope.row.width * scope.row.pieces) / 1000000) *
+					scope.row.price +
+					Number(scope.row.sundryCost)
+			);
+			// 计算利润和不含税利润
+			scope.row.profit = fix(
+				scope.row.payments -
+					scope.row.paymentFactory -
+					scope.row.landFreight -
+					scope.row.seaFreight
+			);
+			scope.row.profitNoTax = fix(
+				scope.row.payments -
+					scope.row.paymentFactory -
+					scope.row.landFreight -
+					scope.row.seaFreight -
+					scope.row.otherCost
+			);
+		},
+		calculatePayment(scope) {
+			scope.row.payments = fix(
+				((scope.row.length * scope.row.width * scope.row.actualPieces) /
+					1000000) *
+					scope.row.paymentUnload +
+					Number(scope.row.paymentsWithSundry)
+			);
+		},
+		calculateLandFreight(scope) {
+			scope.row.landFreight = fix(
+				Number(scope.row.tonnage) * Number(scope.row.landFreightPrice) +
+					Number(scope.row.additionalFees)
+			);
+		},
+		// todo
+		calculateFreight(scope) {},
+		// 设置当前绑定类型
+		setCurrentType(row, type) {
+			row.currentType = type;
+		},
+		// ---
+
 		// 提交订单
 		// 订单列表的对象封装一个，订单详情有两个一样的对象 对应供应商发货和仓库发货
 		handleProcess() {
@@ -348,7 +551,6 @@ export default {
 					<el-checkbox v-model="isLand"> 陆运</el-checkbox>
 					<el-checkbox v-model="isSea"> 海运</el-checkbox>
 				</el-form-item>
-
 				<!--      陆运-->
 				<el-row v-if="isLand" style="margin: 20px 0">
 					<el-form-item label="车牌">
@@ -545,56 +747,574 @@ export default {
 			</el-card>
 		</el-form>
 		<br />
-		<!--    货物信息 可以添加多个货物信息-->
+		<!--   todo 货物信息 可以添加多个货物信息-->
 		<el-card class="box-card" shadow="hover">
-			<div slot="header" class="clearfix">
-				<el-button
-					type="text"
-					style="color: #156fb2"
-					icon="el-icon-shopping-cart-2"
+			<div>
+				<el-row :gutter="10" class="mb8">
+					<el-col :span="1.5">
+						<el-button size="mini" type="primary" @click="handleAddOrderdetail"
+							>添加
+						</el-button>
+					</el-col>
+					<el-col :span="1.5">
+						<el-button
+							size="mini"
+							type="danger"
+							@click="handleDeleteOrderdetail"
+							>删除
+						</el-button>
+					</el-col>
+				</el-row>
+
+				<!--        订单货物-->
+				<el-table
+					size="mini"
+					:data="orderdetailList"
+					show-summary
+					:summary-method="getSummary"
+					:row-class-name="rowOrderdetailIndex"
+					@selection-change="handleOrderdetailSelectionChange"
+					ref="orderdetail"
 				>
-					订单货物信息
-				</el-button>
-				<el-button type="text" style="color: #156fb2; float: right">
-					货物个数:{{ orderNums }}
-				</el-button>
-			</div>
-			<!--      如果有订单信息  orderItemList是存储的货物列表 -->
-			<div v-if="orderItemList.length !== 0">
-				<div v-for="(item, index) in orderItemList" :key="index">
-					<transition name="fade">
-						<OrderItem
-							:temp-order-info="item"
-							:is-land="isLand"
-							:is-sea="isSea"
-							:index="index"
-						>
-							<template #action>
-								<el-button
-									style="float: right; padding: 3px 0; color: red"
-									type="text"
-									@click="handleDeleteOrderDetail(index, $event)"
+					<el-table-column type="selection" width="90" align="center" />
+					<el-table-column
+						label="序号"
+						align="center"
+						prop="index"
+						width="50"
+					/>
+					<el-table-column label="供应商/仓库" width="200">
+						<template #default="scope">
+							<el-row>
+								<!-- 动态绑定的 Input -->
+								<el-col :span="12">
+									<el-input
+										size="mini"
+										v-model="scope.row[scope.row.currentType || 'supplier']"
+										placeholder="请输入供应商/仓库"
+									/>
+								</el-col>
+
+								<!-- 供应商按钮 -->
+								<el-col :span="6">
+									<SearchOption
+										:get-data="listCompany"
+										icon="el-icon-user"
+										query-label="供应商名称"
+										query-info="companyName"
+										:query-name="querySupplier"
+										:limit-info="{ companyType: '供应商' }"
+										@commitBack="
+											value => handleCommitBackSupplier(scope, value)
+										"
+										@update:queryName="handleUpdateQuerySupplier"
+										@click="setCurrentType(scope.row, 'supplier')"
+									>
+										<template #table-columns>
+											<el-table-column
+												label="供应商名称"
+												align="center"
+												prop="companyName"
+											/>
+											<el-table-column
+												label="联系人"
+												align="center"
+												prop="relationName"
+											/>
+											<el-table-column
+												label="电话"
+												align="center"
+												prop="relationTel"
+											/>
+										</template>
+									</SearchOption>
+								</el-col>
+
+								<!-- 仓库按钮 -->
+								<el-col :span="6">
+									<SearchOption
+										:get-data="listInventory"
+										icon="el-icon-s-home"
+										:limit-info="{}"
+										query-label="仓库名称"
+										query-info="storeHouseName"
+										:query-name="queryStore"
+										@commitBack="
+											value => handleCommitBackInventory(scope, value)
+										"
+										@update:queryName="handleUpdateQueryNameStore"
+										@click="setCurrentType(scope.row, 'storeHouseName')"
+									>
+										<template #table-columns>
+											<el-table-column
+												label="仓库名称"
+												align="center"
+												prop="storeHouseName"
+											/>
+											<el-table-column
+												label="入库日期"
+												align="center"
+												prop="storeDate"
+											/>
+											<el-table-column
+												label="剩余量"
+												align="center"
+												prop="stockNumber"
+											>
+												<template #default="scope">
+													{{ scope.row.stockNumber }}
+												</template>
+											</el-table-column>
+											<el-table-column
+												label="供应商"
+												align="center"
+												prop="supplier"
+											/>
+											<el-table-column
+												label="级别编码"
+												align="center"
+												prop="levelID"
+											/>
+											<el-table-column
+												label="级别名称"
+												align="center"
+												prop="levelName"
+											/>
+										</template>
+									</SearchOption>
+								</el-col>
+							</el-row>
+						</template>
+					</el-table-column>
+
+					<!--					<el-table-column label="仓库名称" prop="storeHouseName" width="150">-->
+					<!--						<template #default="scope">-->
+					<!--							<el-col :span="16">-->
+					<!--								<el-input-->
+					<!--									size="mini"-->
+					<!--									v-model="scope.row.storeHouseName"-->
+					<!--									placeholder="请输入仓库名称"-->
+					<!--								/>-->
+					<!--							</el-col>-->
+					<!--						-->
+					<!--						</template>-->
+					<!--					</el-table-column>-->
+					<el-table-column label="级别名称" prop="levelName" width="150">
+						<template #default="scope">
+							<el-col :span="16">
+								<el-input
+									size="mini"
+									v-model="scope.row.levelName"
+									placeholder="请输入级别名称"
+								/>
+							</el-col>
+							<el-col :span="8">
+								<SearchOption
+									:get-data="listProductLevel"
+									icon="el-icon-search"
+									:limit-info="{}"
+									query-label="级别名称"
+									query-info="levelName"
+									:query-name="queryLevel"
+									@update:queryName="handleUpdateQueryNameLevel"
+									@commitBack="
+										value => handleCommitBackProductLevel(scope, value)
+									"
 								>
-									删除
-								</el-button>
-							</template>
-						</OrderItem>
-					</transition>
-				</div>
-			</div>
-			<!--      如果没有订单信息-->
-			<el-row>
-				<el-col style="text-align: center">
-					<el-button
-						size="mini"
-						type="primary"
-						icon="el-icon-plus"
-						@click="addOrderItem"
+									<template #table-columns>
+										<el-table-column
+											label="级别编码"
+											align="center"
+											prop="levelNo"
+										/>
+										<el-table-column
+											label="级别名称"
+											align="center"
+											prop="levelName"
+										/>
+										<el-table-column
+											label="分类编号"
+											align="center"
+											prop="categoryNo"
+										/>
+										<el-table-column
+											label="分类名称"
+											align="center"
+											prop="categoryName"
+										/>
+										<el-table-column
+											label="厚度"
+											align="center"
+											prop="height"
+										/>
+										<el-table-column
+											label="长度"
+											align="center"
+											prop="length"
+										/>
+										<el-table-column label="宽度" align="center" prop="width" />
+										<el-table-column
+											label="误差"
+											align="center"
+											prop="tonnage"
+										/>
+									</template>
+								</SearchOption>
+							</el-col>
+						</template>
+					</el-table-column>
+					<el-table-column label="计量单位" prop="countingUnit" width="150">
+						<template #default="scope">
+							<el-radio-group v-model="scope.row.countingUnit" size="mini">
+								<el-radio label="片">片数</el-radio>
+								<el-radio label="其他">其他</el-radio>
+							</el-radio-group>
+						</template>
+					</el-table-column>
+					<el-table-column label="厚度" prop="height" width="150">
+						<template #default="scope">
+							<el-input
+								size="mini"
+								v-model="scope.row.height"
+								placeholder="请选择产品级别"
+								disabled
+							/>
+						</template>
+					</el-table-column>
+					<el-table-column label="长度" prop="length" width="150">
+						<template #default="scope">
+							<el-input
+								size="mini"
+								v-model="scope.row.length"
+								placeholder="请选择产品级别"
+								disabled
+							/>
+						</template>
+					</el-table-column>
+					<el-table-column label="宽度" prop="width" width="150">
+						<template #default="scope">
+							<el-input
+								size="mini"
+								v-model="scope.row.width"
+								placeholder="请选择产品级别"
+								disabled
+							/>
+						</template>
+					</el-table-column>
+					<el-table-column label="每包片数" prop="piecesPerPack" width="150">
+						<template #default="scope">
+							<el-input
+								size="mini"
+								type="number"
+								v-model="scope.row.piecesPerPack"
+								@input="
+									() =>
+										scope.row.packs > 0
+											? (scope.row.actualPieces = scope.row.pieces =
+													scope.row.packs * scope.row.piecesPerPack)
+											: ''
+								"
+								placeholder="请输入每包片数"
+							/>
+						</template>
+					</el-table-column>
+					<el-table-column label="包数" prop="packs" width="150">
+						<template #default="scope">
+							<el-input
+								size="mini"
+								type="number"
+								@input="() => calculatePacks(scope)"
+								v-model.lazy="scope.row.packs"
+								:placeholder="
+									scope.row.piecesPerPack <= 0
+										? '请先输入每包片数'
+										: '请输入包数'
+								"
+								:disabled="scope.row.piecesPerPack <= 0"
+							/>
+						</template>
+					</el-table-column>
+
+					<el-table-column label="出厂片数" prop="pieces" width="150">
+						<template #default="scope">
+							<el-input
+								type="number"
+								size="mini"
+								v-model="scope.row.pieces"
+								placeholder="请输入出厂片数"
+								disabled
+							/>
+						</template>
+					</el-table-column>
+
+					<el-table-column label="出厂单价" prop="price" width="150">
+						<template #default="scope">
+							<el-input
+								size="mini"
+								type="number"
+								v-model="scope.row.price"
+								:placeholder="
+									scope.row.pieces <= 0 ? '请先完善出厂片数' : '请输入出厂单价'
+								"
+								:disabled="scope.row.pieces <= 0"
+							/>
+						</template>
+					</el-table-column>
+					<el-table-column
+						label="出厂是否含税"
+						prop="isIncludeTaxFactory"
+						width="150"
 					>
-						添加订单货物信息
-					</el-button>
-				</el-col>
-			</el-row>
+						<template #default="scope">
+							<el-radio-group
+								v-model="scope.row.isIncludeTaxFactory"
+								size="mini"
+							>
+								<el-radio label="是">是</el-radio>
+								<el-radio label="否">否</el-radio>
+							</el-radio-group>
+						</template>
+					</el-table-column>
+					<el-table-column label="杂费" prop="sundryCost" width="150">
+						<template #default="scope">
+							<el-input
+								size="mini"
+								type="number"
+								v-model.lazy="scope.row.sundryCost"
+								@input="() => calculatePrice(scope)"
+								:placeholder="
+									scope.row.price <= 0 ? '请先完善出厂单价' : '请输入杂费'
+								"
+								:disabled="scope.row.price <= 0"
+							/>
+						</template>
+					</el-table-column>
+					<el-table-column label="出厂货款" prop="paymentFactory" width="150">
+						<template #default="scope">
+							<el-input
+								size="mini"
+								type="number"
+								v-model="scope.row.paymentFactory"
+								placeholder="请输入出厂货款"
+								disabled
+							/>
+						</template>
+					</el-table-column>
+					<el-table-column label="卸货片数" prop="actualPieces" width="150">
+						<template #default="scope">
+							<el-input
+								size="mini"
+								v-model="scope.row.actualPieces"
+								placeholder="请输入卸货片数"
+								disabled
+							/>
+						</template>
+					</el-table-column>
+					<el-table-column label="卸货价" prop="paymentUnload" width="150">
+						<template #default="scope">
+							<el-input
+								size="mini"
+								type="number"
+								v-model="scope.row.paymentUnload"
+								placeholder="请输入卸货价"
+							/>
+						</template>
+					</el-table-column>
+					<el-table-column
+						label="销售是否含税"
+						prop="isIncludeTaxSale"
+						width="150"
+					>
+						<template #default="scope">
+							<el-radio-group v-model="scope.row.isIncludeTaxSale" size="mini">
+								<el-radio label="是">是</el-radio>
+								<el-radio label="否">否</el-radio>
+							</el-radio-group>
+						</template>
+					</el-table-column>
+
+					<el-table-column
+						label="总货款杂费"
+						prop="paymentsWithSundry"
+						width="150"
+					>
+						<template #default="scope">
+							<el-input
+								size="mini"
+								v-model.lazy="scope.row.paymentsWithSundry"
+								@input="() => calculatePayment(scope)"
+								:disabled="scope.row.paymentUnload <= 0"
+								:placeholder="
+									scope.row.paymentUnload <= 0
+										? '请先完善卸货价'
+										: '请输入总货款杂费'
+								"
+							/>
+						</template>
+					</el-table-column>
+					<el-table-column label="总货款" prop="payments" width="150">
+						<template #default="scope">
+							<el-input
+								size="mini"
+								type="number"
+								v-model="scope.row.payments"
+								placeholder="请输入总货款"
+								disabled
+							/>
+						</template>
+					</el-table-column>
+					<el-table-column label="误差" prop="erro" width="150">
+						<template #default="scope">
+							<el-input
+								size="mini"
+								v-model="scope.row.erro"
+								placeholder="请输入误差"
+								disabled
+							/>
+						</template>
+					</el-table-column>
+					<el-table-column label="吨位" prop="tonnage" width="150">
+						<template #default="scope">
+							<el-input
+								size="mini"
+								v-model="scope.row.tonnage"
+								placeholder="请输入吨位"
+								disabled
+							/>
+						</template>
+					</el-table-column>
+					<el-table-column
+						label="陆运费单价"
+						prop="landFreightPrice"
+						width="150"
+						v-if="isLand"
+					>
+						<template #default="scope">
+							<el-input
+								size="mini"
+								v-model="scope.row.landFreightPrice"
+								placeholder="请输入陆运费单价"
+							/>
+						</template>
+					</el-table-column>
+					<el-table-column label="加费" prop="additionalFees" width="150">
+						<template #default="scope">
+							<el-input
+								size="mini"
+								v-model.lazy="scope.row.additionalFees"
+								@input="() => calculateLandFreight(scope)"
+								:placeholder="
+									scope.row.landFreightPrice <= 0
+										? '请先完善陆运费单价'
+										: '请输入加费'
+								"
+								:disabled="scope.row.landFreightPrice <= 0"
+							/>
+						</template>
+					</el-table-column>
+					<el-table-column
+						label="陆运费"
+						prop="landFreight"
+						width="150"
+						v-if="isLand"
+						disabled
+					>
+						<template #default="scope">
+							<el-input
+								size="mini"
+								v-model="scope.row.landFreight"
+								placeholder="请输入陆运费"
+							/>
+						</template>
+					</el-table-column>
+					<el-table-column
+						label="海运费"
+						prop="seaFreight"
+						width="150"
+						v-if="isSea"
+					>
+						<template #default="scope">
+							<el-input
+								size="mini"
+								v-model="scope.row.seaFreight"
+								placeholder="请输入海运费"
+							/>
+						</template>
+					</el-table-column>
+
+					<el-table-column label="总运费" prop="freight" width="150">
+						<template #default="scope">
+							<el-input
+								size="mini"
+								v-model="scope.row.freight"
+								placeholder="请完善运费信息"
+								@input="() => calculateFreight(scope)"
+								disabled
+							/>
+						</template>
+					</el-table-column>
+					<el-table-column label="其他费用" prop="otherCost" width="150">
+						<template #default="scope">
+							<el-input
+								size="mini"
+								v-model="scope.row.otherCost"
+								placeholder="请输入其他费用"
+							/>
+						</template>
+					</el-table-column>
+					<el-table-column label="利润" prop="profit" width="150">
+						<template #default="scope">
+							<el-input
+								size="mini"
+								v-model="scope.row.profit"
+								placeholder="请输入利润"
+								disabled
+							/>
+						</template>
+					</el-table-column>
+					<el-table-column label="不含税利润" prop="profitNoTax" width="150">
+						<template #default="scope">
+							<el-input
+								size="mini"
+								v-model="scope.row.profitNoTax"
+								placeholder="请输入不含税利润"
+								disabled
+							/>
+						</template>
+					</el-table-column>
+					<el-table-column label="物流利润" prop="logisticsProfit" width="150">
+						<template #default="scope">
+							<el-input
+								size="mini"
+								v-model="scope.row.logisticsProfit"
+								placeholder="请输入物流利润"
+							/>
+						</template>
+					</el-table-column>
+					<el-table-column
+						label="客户佣金"
+						prop="customerCommission"
+						width="150"
+					>
+						<template #default="scope">
+							<el-input
+								size="mini"
+								v-model="scope.row.customerCommission"
+								placeholder="请输入客户佣金"
+							/>
+						</template>
+					</el-table-column>
+					<el-table-column label="备注" prop="comments" width="150">
+						<template #default="scope">
+							<el-input
+								size="mini"
+								v-model="scope.row.comments"
+								placeholder="请输入备注"
+							/>
+						</template>
+					</el-table-column>
+				</el-table>
+			</div>
 		</el-card>
 	</div>
 </template>

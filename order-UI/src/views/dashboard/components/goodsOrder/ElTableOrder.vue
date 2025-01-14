@@ -129,7 +129,7 @@ export default {
 		// 给特定的某些行高亮颜色
 		tableRowClassName({ row }) {
 			// 如果row.isAdjusted 的值为是，并且 isAdjust 的值也为是，那么就显示背景颜色为红色
-			if (row.isAdjusted === '是' && this.isAdjustOrder) {
+			if (row.isAdjusted === 1 && this.isAdjustOrder) {
 				return {
 					background: '#c6ffe6 !important'
 				};

@@ -93,24 +93,24 @@ export default {
 	methods: {
 		listProductLevel,
 		listInventory,
-		listCompany,
-		// 更新仓库的查询字段
-		handleUpdateQueryNameStore(value) {
-			this.queryStore = value;
-		},
-		// 更新供应商的查询字段
-		handleUpdateQuerySupplier(value) {
-			this.querySupplier = value;
-		},
-		handleUpdateQueryNameLevel(value) {
-			this.queryLevel = value;
-		},
-		// 筛选无剩余片数的库存
-		filterNoStockNumber(data) {
-			return new Promise(resolve => {
-				resolve(data.filter(item => item.stockNumber > 0));
-			});
-		}
+		listCompany
+		// // 更新仓库的查询字段
+		// handleUpdateQueryNameStore(value) {
+		// 	this.queryStore = value;
+		// },
+		// // 更新供应商的查询字段
+		// handleUpdateQuerySupplier(value) {
+		// 	this.querySupplier = value;
+		// },
+		// handleUpdateQueryNameLevel(value) {
+		// 	this.queryLevel = value;
+		// },
+		// // 筛选无剩余片数的库存
+		// filterNoStockNumber(data) {
+		// 	return new Promise(resolve => {
+		// 		resolve(data.filter(item => item.stockNumber > 0));
+		// 	});
+		// }
 	}
 };
 </script>

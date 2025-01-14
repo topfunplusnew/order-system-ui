@@ -38,7 +38,6 @@ export default {
 			// 弹窗
 			dialogVisible: false,
 			tableData: [],
-
 			// 查询对应信息的弹窗
 			infoVisible: false,
 

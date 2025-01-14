@@ -79,40 +79,8 @@ export var mixin_item_addItem = {
 			this.orderItemInfo.supplierID = val.id; // goodsOrderList->供应商ID
 			this.orderItemInfo.supplier = val.companyName;
 		},
-		// 仓库信息 从仓库发货
-		handleCommitBackInventory(val) {
-			// 重置
-			this.resetOrderItemInfo();
-			// 填充仓库和库存的信息
-			this.orderItemInfo.storeID = val.id; // goodsOrderList ->库存ID
-			this.orderItemInfo.storeHouseID = val.storeHouseid; // goodsOrderList ->库存ID
-			this.orderItemInfo.storeName = val.storeHouseName;
 
-			// 如果有这个变量 那么就赋值为空
-			if (this.orderItemInfo.supplier) {
-				this.orderItemInfo.supplier = null;
-			}
-			// 填充货物级别
-			this.orderItemInfo.length = val.length;
-			this.orderItemInfo.height = val.height;
-			this.orderItemInfo.width = val.width;
-			this.orderItemInfo.levelID = val.levelID;
-			this.orderItemInfo.levelName = val.levelName;
 
-			// 填充误差
-			this.orderItemInfo.erro = val.tonnage;
-		},
-		// 产品级别自动填充
-		handleCommitBackProductLevel(val) {
-			// 这里用产品级别的吨位 填充了误差
-			this.orderItemInfo.erro = val.tonnage;
-			this.orderItemInfo.levelID = val.id;
-			this.orderItemInfo.levelName = val.levelName;
-			this.orderItemInfo.height = val.height;
-			this.orderItemInfo.length = val.length;
-			this.orderItemInfo.width = val.width;
-			this.orderItemInfo.levelNo = val.levelNo;
-		},
 		// 重置订单个体信息
 		resetOrderItemInfo() {
 			this.orderItemInfo = {

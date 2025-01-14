@@ -95,7 +95,7 @@ export var mixin_order_base = {
 	methods: {
 		// 查询订单的列表
 		getList() {
-			const isAdjust = this.isAdjustOrder ? '是' : '否';
+			const isAdjust = this.isAdjustOrder ? 1 : 0;
 			// 查询订单
 			listGoodsOrder({
 				...this.queryParams,
