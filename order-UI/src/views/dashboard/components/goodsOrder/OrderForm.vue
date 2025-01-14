@@ -45,7 +45,6 @@ export default {
 			isLand: false,
 			isSea: false,
 			orderNums: 0,
-
 			querySupplier: null,
 			queryLevel: null,
 			queryStore: null
@@ -103,23 +102,11 @@ export default {
 				this.isLand = response.data.landFreight > 0;
 				this.isSea = response.data.seaFreight > 0;
 				// 将数据库拿到的订单列表装入vuex 这里维护的主要是索引，因为索引可以确定某个货物的状态
-				const list = response.data.orderDetailList.map((item, index) => ({
-					...item,
-					orderIndex: index
-				}));
-				// 将数据装入vuex维护的订单列表中
-				this.$store.dispatch('order/setOrderItemListAsync', list);
-				// orderNums 是当前已经装填到vuex中的货物数量
-				this.orderNums = response.data.orderDetailList.length;
-				// 填充订单货物列表中的信息
-				// 遍历 填充属性
-				this.orderInfo.orderDetailList.forEach(item => {
-					Object.assign(item, {
-						customerID: this.orderInfo.customerID,
-						customer: this.orderInfo.customer,
-						isIncludeTaxFactory: item.isIncludeTaxFactory,
-						isIncludeTaxSale: item.isIncludeTaxSale
-					});
+				this.orderdetailList = response.data.orderDetailList.map(item => {
+					return {
+						...item,
+						countingUnit: item.countingUnit === '片' ? '片数' : '其他'
+					};
 				});
 			});
 		},
@@ -141,11 +128,11 @@ export default {
 			obj.pieces = '';
 			obj.packs = '';
 			obj.price = '';
-			obj.isIncludeTaxFactory = '否';
+			obj.isIncludeTaxFactory = 0;
 			obj.sundryCost = '';
 			obj.paymentFactory = '';
 			obj.paymentUnload = '';
-			obj.isIncludeTaxSale = '否';
+			obj.isIncludeTaxSale = 0;
 			obj.payments = '';
 			obj.erro = '';
 			obj.tonnage = '';
@@ -211,6 +198,7 @@ export default {
 								return prev;
 							}
 						}, 0);
+						sums[index] = fix(sums[index]);
 						sums[index] += ' 元';
 					} else {
 						sums[index] = 'N/A';
@@ -295,7 +283,7 @@ export default {
 		},
 		calculatePaymentFactory(scope) {
 			scope.row.paymentFactory =
-				scope.row.isIncludeTaxFactory === '否'
+				scope.row.isIncludeTaxFactory === 0
 					? fix(
 							(scope.row.length * scope.row.width * scope.row.pieces) /
 								(1000000 * scope.row.price) +
@@ -323,8 +311,8 @@ export default {
 			// 计算不含税利润
 			function calculateProfitNoTax() {
 				if (
-					scope.row.isIncludeTaxFactory === '否' &&
-					scope.row.isIncludeTaxSale === '否'
+					scope.row.isIncludeTaxFactory === 0 &&
+					scope.row.isIncludeTaxSale === 0
 				) {
 					return fix(
 						scope.row.payments -
@@ -334,8 +322,8 @@ export default {
 							scope.row.otherCost
 					);
 				} else if (
-					scope.row.isIncludeTaxFactory === '是' &&
-					scope.row.isIncludeTaxSale === '否'
+					scope.row.isIncludeTaxFactory === 1 &&
+					scope.row.isIncludeTaxSale === 0
 				) {
 					return fix(
 						scope.row.payments -
@@ -345,8 +333,8 @@ export default {
 							scope.row.otherCost
 					);
 				} else if (
-					scope.row.isIncludeTaxFactory === '否' &&
-					scope.row.isIncludeTaxSale === '是'
+					scope.row.isIncludeTaxFactory === 0 &&
+					scope.row.isIncludeTaxSale === 1
 				) {
 					return fix(
 						scope.row.payments / 1.075 -
@@ -378,8 +366,8 @@ export default {
 		calculatePayment(scope) {
 			function calcu() {
 				if (
-					scope.row.isIncludeTaxFactory === '否' &&
-					scope.row.isIncludeTaxSale === '否'
+					scope.row.isIncludeTaxFactory === 1 &&
+					scope.row.isIncludeTaxSale === 0
 				) {
 					scope.row.payments = fix(
 						(scope.row.length * scope.row.width * scope.row.actualPieces) /
@@ -432,7 +420,7 @@ export default {
 			// 如果没有orderId 那么是添加操作
 			if (!this.orderId) {
 				// 从vuex拿到订单详细列表 加入到订单信息中
-				this.orderInfo.orderDetailList = this.orderItemList;
+				this.orderInfo.orderDetailList = this.orderdetailList;
 				// 对每一个订单添加客户信息和时间
 				const updateOrderItem = item => {
 					item.customerID = this.orderInfo.customerID;
@@ -440,14 +428,12 @@ export default {
 					item.orderDate = parseTime(new Date(), '{y}-{m}-{d} {h}:{i}:{s}');
 				};
 				// 对订单货物列表的每一个货物都执行这个操作
-				this.orderItemList.forEach(item => updateOrderItem(item));
+				this.orderdetailList.forEach(item => updateOrderItem(item));
 				// 添加订单信息
 				addGoodsOrder({ ...this.orderInfo, PaymentState: '' })
 					.then(() => {
 						// 清空订单列表基础信息
 						this.resetOrderInfo();
-						// 清除状态
-						this.$store.commit('order/clearOrderItemList');
 						this.isSea = false;
 						this.isLand = false;
 					})
@@ -464,18 +450,16 @@ export default {
 		handleUpdateGoodsOrder() {
 			if (this.orderId != null) {
 				// 先拿到订单货物信息
-				this.orderInfo.orderDetailList = this.orderItemList; // 从vuex拿到订单详细列表 加入到订单信息中
+				this.orderInfo.orderDetailList = this.orderdetailList;
 				// 订单详情添加客户信息
-				const formatOrderItem = item => ({
+				const formatOrderItem = () => ({
 					customerID: this.orderInfo.customerID,
 					customer: this.orderInfo.customer,
-					isIncludeTaxFactory: item.isIncludeTaxFactory === '是' ? '1' : '0',
-					isIncludeTaxSale: item.isIncludeTaxSale === '是' ? '1' : '0',
 					orderDate: parseTime(new Date(), '{y}-{m}-{d} {h}:{i}:{s}')
 				});
 				// 对每一个货物都添加
-				this.orderItemList.forEach(item =>
-					Object.assign(item, formatOrderItem(item))
+				this.orderdetailList.forEach(item =>
+					Object.assign(item, formatOrderItem())
 				);
 				this.orderInfo = excludeParams(this.orderInfo, this.$exclude);
 				// 修改订单
@@ -485,7 +469,6 @@ export default {
 					remark: sessionStorage.getItem('order-edit-reason')
 				}).then(() => {
 					this.resetOrderInfo(); // 清空订单列表基础信息
-					this.$store.commit('order/clearOrderItemList');
 					sessionStorage.removeItem('order-edit-reason');
 					this.isSea = false;
 					this.isLand = false;
@@ -494,11 +477,9 @@ export default {
 		},
 		// 取消添加订单
 		handleReject() {
-			this.orderNums = 0;
 			this.isSea = false;
 			this.isLand = false;
-			// this.$store.commit('order/clearOrderItemList'); // 清空订单详情填写信息
-			this.resetOrderInfo(); // 清空订单列表基础信息
+			this.resetOrderInfo();
 		},
 		// 信息重置
 		resetOrderInfo() {
@@ -527,6 +508,7 @@ export default {
 				isSea: '',
 				isLand: ''
 			};
+			this.orderdetailList = [];
 		},
 		// 重置陆运费
 		resetSeaCarInfo() {
@@ -935,6 +917,9 @@ export default {
 										query-label="仓库名称"
 										query-info="storeHouseName"
 										:query-name="queryStore"
+										:additional-limit-info="
+											tableData => filterNoStockNumber(tableData)
+										"
 										@commitBack="
 											value => handleCommitBackInventory(scope, value)
 										"
@@ -1151,8 +1136,8 @@ export default {
 								size="mini"
 								@change="() => recalculateFactory(scope)"
 							>
-								<el-radio label="是">是</el-radio>
-								<el-radio label="否">否</el-radio>
+								<el-radio :label="1">是</el-radio>
+								<el-radio :label="0">否</el-radio>
 							</el-radio-group>
 						</template>
 					</el-table-column>
@@ -1217,8 +1202,8 @@ export default {
 								size="mini"
 								@change="() => recalculateSale(scope)"
 							>
-								<el-radio label="是">是</el-radio>
-								<el-radio label="否">否</el-radio>
+								<el-radio :label="1">是</el-radio>
+								<el-radio :label="0">否</el-radio>
 							</el-radio-group>
 						</template>
 					</el-table-column>
