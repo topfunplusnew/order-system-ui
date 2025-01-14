@@ -1,14 +1,12 @@
 <!--订单表组件-->
 
 <script>
-// import OrderItem from '@/views/dashboard/components/goodsOrder/OrderItem.vue';
 import SearchOption from '../../../../components/SearchOption.vue';
 import { listCompany } from '../../../../api/system/company';
 import { listBankAccount } from '../../../../api/system/bankAccount';
 import { listCars } from '../../../../api/system/cars';
 import { listFleet } from '../../../../api/system/fleet';
 import { parseTime } from '../../../../utils/ruoyi';
-import { mixin_item_addItem } from '../../mixins/order/items/item_addItem';
 import {
 	addGoodsOrder,
 	getGoodsOrder,
@@ -24,7 +22,7 @@ import { fix } from '../../../../api/tool/format';
 export default {
 	name: 'OrderForm',
 	components: { SearchOption /*OrderItem*/ },
-	mixins: [mixin_form_fillInfo, mixin_item_addItem],
+	mixins: [mixin_form_fillInfo],
 	props: {
 		// 父组件传递的订单id，主要用于当修改订单信息时 抓取服务器数据 然后自动填充到表单中
 		orderId: {
@@ -39,7 +37,6 @@ export default {
 	},
 	data() {
 		return {
-			// 单个订单基本信息 由此组件维护 而订单中的货物的信息 由vuex中的订单货物列表orderItemList维护
 			orderInfo: {},
 			// 2025/1/14 订单货物列表
 			orderdetailList: [],
@@ -272,6 +269,13 @@ export default {
 			scope.row.width = val.width;
 			scope.row.levelNo = val.levelNo;
 		},
+		// 重新计算总货款
+		recalculateSale(scope) {
+			this.calculatePayment(scope);
+		},
+		recalculateFactory(scope) {
+			this.calculatePaymentFactory(scope);
+		},
 		calculatePacks(scope) {
 			const res = scope.row.packs * scope.row.piecesPerPack;
 			scope.row.actualPieces = scope.row.pieces = res;
@@ -285,45 +289,137 @@ export default {
 					20 /
 					20
 			);
+			if (scope.row.paymentFactory > 0) {
+				this.calculatePaymentFactory(scope);
+			}
+		},
+		calculatePaymentFactory(scope) {
+			scope.row.paymentFactory =
+				scope.row.isIncludeTaxFactory === '否'
+					? fix(
+							(scope.row.length * scope.row.width * scope.row.pieces) /
+								(1000000 * scope.row.price) +
+								Number(scope.row.sundryCost)
+					  )
+					: fix(
+							(scope.row.length *
+								scope.row.width *
+								scope.row.pieces *
+								scope.row.price) /
+								(1000000 + scope.row.sundryCost)
+					  );
 		},
 		calculatePrice(scope) {
 			// 计算出厂货款
-			scope.row.paymentFactory = fix(
-				((scope.row.length * scope.row.width * scope.row.pieces) / 1000000) *
-					scope.row.price +
-					Number(scope.row.sundryCost)
-			);
-			// 计算利润和不含税利润
+			this.calculatePaymentFactory(scope);
+			// 计算利润
 			scope.row.profit = fix(
 				scope.row.payments -
 					scope.row.paymentFactory -
 					scope.row.landFreight -
 					scope.row.seaFreight
 			);
-			scope.row.profitNoTax = fix(
-				scope.row.payments -
-					scope.row.paymentFactory -
-					scope.row.landFreight -
-					scope.row.seaFreight -
-					scope.row.otherCost
-			);
+
+			// 计算不含税利润
+			function calculateProfitNoTax() {
+				if (
+					scope.row.isIncludeTaxFactory === '否' &&
+					scope.row.isIncludeTaxSale === '否'
+				) {
+					return fix(
+						scope.row.payments -
+							scope.row.paymentFactory -
+							scope.row.landFreight -
+							scope.row.seaFreight -
+							scope.row.otherCost
+					);
+				} else if (
+					scope.row.isIncludeTaxFactory === '是' &&
+					scope.row.isIncludeTaxSale === '否'
+				) {
+					return fix(
+						scope.row.payments -
+							scope.row.paymentFactory / 1.075 -
+							scope.row.landFreight -
+							scope.row.seaFreight -
+							scope.row.otherCost
+					);
+				} else if (
+					scope.row.isIncludeTaxFactory === '否' &&
+					scope.row.isIncludeTaxSale === '是'
+				) {
+					return fix(
+						scope.row.payments / 1.075 -
+							scope.row.paymentFactory -
+							scope.row.landFreight -
+							scope.row.seaFreight -
+							scope.row.otherCost
+					);
+				} else {
+					return fix(
+						scope.row.payments -
+							scope.row.paymentFactory -
+							scope.row.landFreight * 1.075 -
+							scope.row.seaFreight -
+							((scope.row.height *
+								scope.row.length *
+								scope.row.width *
+								scope.row.pieces) /
+								1000000 /
+								20) *
+								0.5 -
+							scope.row.otherCost
+					);
+				}
+			}
+
+			scope.row.profitNoTax = calculateProfitNoTax();
 		},
 		calculatePayment(scope) {
-			scope.row.payments = fix(
-				((scope.row.length * scope.row.width * scope.row.actualPieces) /
-					1000000) *
-					scope.row.paymentUnload +
-					Number(scope.row.paymentsWithSundry)
-			);
+			function calcu() {
+				if (
+					scope.row.isIncludeTaxFactory === '否' &&
+					scope.row.isIncludeTaxSale === '否'
+				) {
+					scope.row.payments = fix(
+						(scope.row.length * scope.row.width * scope.row.actualPieces) /
+							(1000000 * scope.row.paymentUnload) +
+							Number(scope.row.paymentsWithSundry)
+					);
+				} else {
+					scope.row.payments = fix(
+						(scope.row.length *
+							scope.row.width *
+							scope.row.actualPieces *
+							scope.row.paymentUnload) /
+							1000000 +
+							Number(scope.row.paymentsWithSundry)
+					);
+				}
+			}
+
+			if (scope.row.payments > 0) {
+				calcu();
+				this.calculatePrice(scope);
+			} else {
+				calcu();
+			}
 		},
 		calculateLandFreight(scope) {
 			scope.row.landFreight = fix(
 				Number(scope.row.tonnage) * Number(scope.row.landFreightPrice) +
 					Number(scope.row.additionalFees)
 			);
+			this.calculateFreight(scope);
 		},
-		// todo
-		calculateFreight(scope) {},
+		calculateFreight(scope) {
+			scope.row.freight = fix(
+				Number(scope.row.landFreight) +
+					(this.isSea ? Number(scope.row.seaFreight) : 0)
+			);
+
+			this.calculatePrice(scope);
+		},
 		// 设置当前绑定类型
 		setCurrentType(row, type) {
 			row.currentType = type;
@@ -401,7 +497,7 @@ export default {
 			this.orderNums = 0;
 			this.isSea = false;
 			this.isLand = false;
-			this.$store.commit('order/clearOrderItemList'); // 清空订单详情填写信息
+			// this.$store.commit('order/clearOrderItemList'); // 清空订单详情填写信息
 			this.resetOrderInfo(); // 清空订单列表基础信息
 		},
 		// 信息重置
@@ -886,19 +982,6 @@ export default {
 							</el-row>
 						</template>
 					</el-table-column>
-
-					<!--					<el-table-column label="仓库名称" prop="storeHouseName" width="150">-->
-					<!--						<template #default="scope">-->
-					<!--							<el-col :span="16">-->
-					<!--								<el-input-->
-					<!--									size="mini"-->
-					<!--									v-model="scope.row.storeHouseName"-->
-					<!--									placeholder="请输入仓库名称"-->
-					<!--								/>-->
-					<!--							</el-col>-->
-					<!--						-->
-					<!--						</template>-->
-					<!--					</el-table-column>-->
 					<el-table-column label="级别名称" prop="levelName" width="150">
 						<template #default="scope">
 							<el-col :span="16">
@@ -1008,11 +1091,7 @@ export default {
 								type="number"
 								v-model="scope.row.piecesPerPack"
 								@input="
-									() =>
-										scope.row.packs > 0
-											? (scope.row.actualPieces = scope.row.pieces =
-													scope.row.packs * scope.row.piecesPerPack)
-											: ''
+									() => (scope.row.packs > 0 ? calculatePacks(scope) : '')
 								"
 								placeholder="请输入每包片数"
 							/>
@@ -1053,6 +1132,7 @@ export default {
 								size="mini"
 								type="number"
 								v-model="scope.row.price"
+								@input="scope.row.sundryCost > 0 ? calculatePrice(scope) : ''"
 								:placeholder="
 									scope.row.pieces <= 0 ? '请先完善出厂片数' : '请输入出厂单价'
 								"
@@ -1069,6 +1149,7 @@ export default {
 							<el-radio-group
 								v-model="scope.row.isIncludeTaxFactory"
 								size="mini"
+								@change="() => recalculateFactory(scope)"
 							>
 								<el-radio label="是">是</el-radio>
 								<el-radio label="否">否</el-radio>
@@ -1115,8 +1196,13 @@ export default {
 							<el-input
 								size="mini"
 								type="number"
-								v-model="scope.row.paymentUnload"
+								v-model.lazy="scope.row.paymentUnload"
 								placeholder="请输入卸货价"
+								@input="
+									scope.row.paymentsWithSundry > 0
+										? calculatePayment(scope)
+										: ''
+								"
 							/>
 						</template>
 					</el-table-column>
@@ -1126,7 +1212,11 @@ export default {
 						width="150"
 					>
 						<template #default="scope">
-							<el-radio-group v-model="scope.row.isIncludeTaxSale" size="mini">
+							<el-radio-group
+								v-model="scope.row.isIncludeTaxSale"
+								size="mini"
+								@change="() => recalculateSale(scope)"
+							>
 								<el-radio label="是">是</el-radio>
 								<el-radio label="否">否</el-radio>
 							</el-radio-group>
@@ -1192,7 +1282,13 @@ export default {
 						<template #default="scope">
 							<el-input
 								size="mini"
-								v-model="scope.row.landFreightPrice"
+								v-model.lazy="scope.row.landFreightPrice"
+								@input="
+									() =>
+										scope.row.additionalFees > 0
+											? calculateLandFreight(scope)
+											: ''
+								"
 								placeholder="请输入陆运费单价"
 							/>
 						</template>
@@ -1236,7 +1332,8 @@ export default {
 						<template #default="scope">
 							<el-input
 								size="mini"
-								v-model="scope.row.seaFreight"
+								v-model.lazy="scope.row.seaFreight"
+								@input="() => calculateFreight(scope)"
 								placeholder="请输入海运费"
 							/>
 						</template>
@@ -1248,7 +1345,6 @@ export default {
 								size="mini"
 								v-model="scope.row.freight"
 								placeholder="请完善运费信息"
-								@input="() => calculateFreight(scope)"
 								disabled
 							/>
 						</template>
@@ -1257,8 +1353,9 @@ export default {
 						<template #default="scope">
 							<el-input
 								size="mini"
-								v-model="scope.row.otherCost"
+								v-model.lazy="scope.row.otherCost"
 								placeholder="请输入其他费用"
+								@input="() => calculatePrice(scope)"
 							/>
 						</template>
 					</el-table-column>
