@@ -107,17 +107,17 @@ export var mixin_order_base = {
 			});
 		},
 		// 获取供应商的名称列表 主要用于表格的供应商列表的展示
-		// getSupplierNames(list) {
-		// 	if (list.length === 0) {
-		// 		return;
-		// 	}
-		// 	return list.map(item => {
-		// 		return {
-		// 			supplier: item.supplier,
-		// 			supplierID: item.supplierID
-		// 		};
-		// 	});
-		// },
+		getSupplierNames(list) {
+			if (list.length === 0) {
+				return;
+			}
+			return list.map(item => {
+				return {
+					supplier: item.supplier,
+					supplierID: item.supplierID
+				};
+			});
+		},
 		// 休眠函数
 		sleep(ms) {
 			return new Promise(resolve => setTimeout(resolve, ms));

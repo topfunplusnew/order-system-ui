@@ -13,7 +13,6 @@ import {
 	updateGoodsOrder
 } from '../../../../api/system/goodsOrder';
 import { excludeParams } from '../../../../api/tool/exclude';
-import { mapGetters } from 'vuex';
 import { mixin_form_fillInfo } from '../../mixins/order/form/form_fillInfo';
 import { listInventory } from '../../../../api/system/inventory';
 import { listProductLevel } from '../../../../api/system/productLevel';
@@ -21,7 +20,7 @@ import { fix } from '../../../../api/tool/format';
 
 export default {
 	name: 'OrderForm',
-	components: { SearchOption /*OrderItem*/ },
+	components: { SearchOption },
 	mixins: [mixin_form_fillInfo],
 	props: {
 		// 父组件传递的订单id，主要用于当修改订单信息时 抓取服务器数据 然后自动填充到表单中
@@ -52,7 +51,7 @@ export default {
 	},
 	computed: {
 		// 拿到vuex中维护的订单列表
-		...mapGetters(['orderItemList'])
+		// ...mapGetters(['orderItemList'])
 	},
 	watch: {
 		// 监听父组件传递过来的订单id的变化
