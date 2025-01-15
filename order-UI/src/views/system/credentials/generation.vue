@@ -477,7 +477,7 @@ export default {
 								show-overflow-tooltip
 							/>
 							<el-table-column
-								label="我方开票实体"
+								label="我方收票主体"
 								align="center"
 								prop="invoiceObject"
 								show-overflow-tooltip

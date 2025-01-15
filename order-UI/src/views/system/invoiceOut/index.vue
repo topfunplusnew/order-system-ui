@@ -116,7 +116,7 @@
 			/>
 			<el-table-column
 				v-if="columns[1].visible"
-				label="我方开票实体"
+				label="我方收票主体"
 				align="center"
 				prop="invoiceObject"
 				show-overflow-tooltip
@@ -279,10 +279,10 @@
 						value-format="yyyy-MM-dd HH:mm:ss"
 					></el-date-picker>
 				</el-form-item>
-				<el-form-item label="我方开票实体" prop="invoiceObject">
+				<el-form-item label="我方收票主体" prop="invoiceObject">
 					<el-input
 						v-model="form.invoiceObject"
-						placeholder="请输入我方开票实体"
+						placeholder="请输入我方收票主体"
 					/>
 				</el-form-item>
 				<el-form-item label="开票金额" prop="invoiceAmount">
@@ -465,7 +465,7 @@ export default {
 			rules: {},
 			columns: [
 				{ key: 0, label: `开票日期`, visible: true },
-				{ key: 1, label: `我方开票实体`, visible: true },
+				{ key: 1, label: `我方收票主体`, visible: true },
 				{ key: 2, label: `开票金额`, visible: true },
 				{ key: 3, label: `公司类别`, visible: true },
 				{ key: 4, label: `公司名称`, visible: true },

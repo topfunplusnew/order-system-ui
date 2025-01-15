@@ -89,13 +89,11 @@ export default {
 	watch: {
 		query: {
 			handler() {
-				var queryParams = Object.create({}); // 创建一个代理对象
-				// 传入的queryInfo是需要查询的字段名 queryName绑定的是需要查找的变量
+				var queryParams = Object.create({});
 				Object.defineProperty(queryParams, this.queryInfo, {
 					value: this.query,
 					enumerable: true
 				});
-				// Object.assign只能赋值可枚举属性
 				Object.assign(this.limitInfo, queryParams);
 			}
 		}

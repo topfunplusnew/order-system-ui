@@ -51,23 +51,6 @@ export default {
 			// 查询组
 			queryItemsCompany: {
 				queryList: [
-					// {
-					// 	id: 1,
-					// 	label: '公司类型',
-					// 	prop: 'companyType',
-					// 	type: 'select',
-					// 	value: '',
-					// 	options: [
-					// 		{
-					// 			label: '供应商',
-					// 			value: '供应商'
-					// 		},
-					// 		{
-					// 			label: '客户',
-					// 			value: '客户'
-					// 		}
-					// 	]
-					// },
 					{
 						id: 1,
 						label: '老板姓名',
@@ -111,20 +94,13 @@ export default {
 			}
 		};
 	},
-	computed: {
-		// 拿到vuex中维护的订单列表
-		// ...mapGetters(['orderItemList'])
-	},
 	watch: {
-		// 监听父组件传递过来的订单id的变化
 		orderId: {
 			handler(val) {
-				// 刷新订单表单的数据是无论如何都要执行的 所以先执行
 				this.resetOrderInfo();
 				this.orderId && this.getGoodsOrderInfo(val);
 			}
 		},
-		// 监听海运和陆运 如果不选 那么就要清空海运和陆运的相关信息
 		isLand: {
 			handler(val) {
 				if (val === false) {
@@ -152,7 +128,6 @@ export default {
 		listBankAccount,
 		listCompany,
 		listProductLevel,
-		// 获取订单信息的方法 这个方法会根据父组件传递过来的id (props.orderId)的变化 来查询对应的订单信息
 		getGoodsOrderInfo(id) {
 			getGoodsOrder(id).then(response => {
 				this.orderInfo = response.data;
@@ -509,7 +484,6 @@ export default {
 					Object.assign(item, formatOrderItem())
 				);
 				this.orderInfo = excludeParams(this.orderInfo, this.$exclude);
-				// 修改订单
 				updateGoodsOrder({
 					...this.orderInfo,
 					PaymentState: '',
@@ -539,7 +513,6 @@ export default {
 				orderDetailList: [],
 				fleet: '',
 				orderState: '',
-				// 订单日期默认为今天
 				orderDate: parseTime(new Date()),
 				orderType: '',
 				landCarID: '',

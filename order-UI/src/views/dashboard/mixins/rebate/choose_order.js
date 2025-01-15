@@ -109,12 +109,26 @@ export var mixin_choose_order = {
 		},
 		// 确认选择 货物的列表 点击后 会把goods数组中的id 放到form中
 		submitSelectOrderDetail() {
-			// 主要是通过货物的id来实现订单的关联
+			const result = this.goods.reduce(
+				(prev, next) => {
+					// 累加面积
+					prev.area += (next.height * next.width * next.pieces) / 1000000;
+					// 累加重箱
+					prev.weightBox +=
+						(next.height * next.length * next.width * next.pieces) /
+						1000000 /
+						20;
+					return prev;
+				},
+				{ area: 0, weightBox: 0 } // 初始值
+			);
 			this.goods.forEach(item => {
-				// 放入form的数组中 传递给后端 后端要返回orderDetailIds数组 通过这个数组 再拿回关联的订单信息
 				this.form.orderDetailIds.push(item.id);
 			});
-			// 关闭弹窗
+			this.form.area = result.area;
+			this.form.weightBox = result.weightBox;
+			this.form.rebate =
+				this.form.area * this.form.weightBox * this.form.unitPrice;
 			this.orderDialogVisible = false;
 		},
 		// 清空已选择的货物

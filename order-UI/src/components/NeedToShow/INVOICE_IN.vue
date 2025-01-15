@@ -15,7 +15,7 @@ export default {
 			<el-descriptions-item label="开票日期">{{
 				needToShowInfo.invoiceDate
 			}}</el-descriptions-item>
-			<el-descriptions-item label="我方开票实体">{{
+			<el-descriptions-item label="我方收票实体">{{
 				needToShowInfo.invoiceObject
 			}}</el-descriptions-item>
 			<el-descriptions-item label="开票金额">{{

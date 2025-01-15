@@ -304,10 +304,10 @@
 				<el-form-item label="开票日期" prop="invoiceDate">
 					<el-input v-model="form.invoiceDate" placeholder="请输入开票日期" />
 				</el-form-item>
-				<el-form-item label="我方开票实体" prop="invoiceObject">
+				<el-form-item label="我方收票主体" prop="invoiceObject">
 					<el-input
 						v-model="form.invoiceObject"
-						placeholder="请输入我方开票实体"
+						placeholder="请输入我方收票主体"
 					/>
 				</el-form-item>
 				<el-form-item label="开票金额" prop="invoiceAmount">

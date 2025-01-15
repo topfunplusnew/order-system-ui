@@ -242,11 +242,12 @@
 		>
 			<el-row>
 				<el-form ref="form" :model="form" :rules="rules" label-width="120px">
-					<!--        多选 且树表 展示多个订单 每个订单里面有多个订单详情-->
 					<el-row>
 						<el-col :span="12">
+							<el-form-item label="系数" prop="unitPrice">
+								<el-input v-model="form.unitPrice" placeholder="请输入系数" />
+							</el-form-item>
 							<el-form-item label="返利货物">
-								<!--                如果订单详情里面没有货物，请先选择订单，再选择订单详情-->
 								<el-button
 									v-if="goods.length === 0"
 									size="mini"
@@ -451,9 +452,26 @@
 							<!--									placeholder="请输入付款款账号"-->
 							<!--								/>-->
 							<!--							</el-form-item>-->
+
+							<el-form-item label="面积值" prop="area">
+								<el-input
+									v-model="form.area"
+									placeholder="根据订单自动计算"
+									disabled
+								/>
+							</el-form-item>
+							<el-form-item label="重箱值" prop="weightBox">
+								<el-input
+									v-model="form.weightBox"
+									placeholder="根据订单自动计算"
+									disabled
+								/>
+							</el-form-item>
 							<el-form-item label="金额" prop="rebate">
 								<el-input v-model="form.rebate" placeholder="请输入金额" />
 							</el-form-item>
+						</el-col>
+						<el-col :span="12">
 							<el-form-item label="返利原因" prop="rebateReason">
 								<el-input
 									v-model="form.rebateReason"
@@ -980,7 +998,7 @@ import {
 	updateRebate
 } from '@/api/system/Rebate';
 import { mixin_printHTML } from '@/views/dashboard/mixins/print';
-import ApplyPayment from '@/views/dashboard/components/common/ApplyPayment.vue';
+// import ApplyPayment from '@/views/dashboard/components/common/ApplyPayment.vue';
 import { TableName } from '@/api/tool/enums';
 import { listGoodsOrder } from '@/api/system/goodsOrder';
 import OrderInfos from '@/views/dashboard/components/goodsOrder/OrderInfos.vue';
@@ -993,20 +1011,18 @@ import OrderDetailList from '../../dashboard/components/rebate/OrderDetailList.v
 import { mixin_choose_order } from '../../dashboard/mixins/rebate/choose_order';
 import { mixin_rebate_fill } from '../../dashboard/mixins/rebate/rebate_fill';
 import { isNull } from '../../../main';
-import BankType from '@/views/dashboard/components/common/BankType.vue';
+// import BankType from '@/views/dashboard/components/common/BankType.vue';
 import { listOrderDetailByIds } from '@/api/system/orderDetail';
 import { mixin_bankType } from '../../dashboard/mixins/common/common_bankType';
 
 export default {
 	name: 'Rebate',
 	components: {
-		BankType,
 		OrderDetailList,
 		InfoDialog,
 		SearchOption,
 		OrderDetailInfo,
-		OrderInfos,
-		ApplyPayment
+		OrderInfos
 	},
 	mixins: [
 		mixin_printHTML,
@@ -1228,6 +1244,9 @@ export default {
 				outAcountsName: null,
 				outBankNo: null,
 				rebateReason: null,
+				unitPrice: null,
+				weightBox: null,
+				area: null,
 				comments: null,
 				addtime: null,
 				userId: null,
@@ -1285,14 +1304,14 @@ export default {
 			this.$refs['form'].validate(valid => {
 				if (valid) {
 					if (this.form.id != null) {
-						updateRebate(this.form).then(response => {
+						updateRebate(this.form).then(() => {
 							this.$modal.msgSuccess('修改成功');
 							this.open = false;
 							this.goods = [];
 							this.getList();
 						});
 					} else {
-						addRebate(this.form).then(response => {
+						addRebate(this.form).then(() => {
 							this.$modal.msgSuccess('新增成功');
 							this.open = false;
 							this.goods = [];
