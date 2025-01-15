@@ -91,49 +91,15 @@
 			"
 			@selection-change="handleSelectionChange"
 		>
-			<el-table-column
-				label="车牌/柜号"
-				align="center"
-				prop="carNo"
-				width="220"
-			/>
-			<el-table-column
-				label="司机姓名/海运公司"
-				align="center"
-				prop="driver"
-				width="220"
-			/>
-			<el-table-column label="司机电话" align="center" prop="tel" width="200" />
-			<el-table-column
-				label="户名"
-				align="center"
-				prop="acountsName"
-				width="200"
-			/>
-			<el-table-column
-				label="银行账号"
-				align="center"
-				prop="bankNo"
-				width="200"
-			/>
-			<el-table-column
-				label="开户行"
-				align="center"
-				prop="bankName"
-				width="200"
-			/>
-			<el-table-column
-				label="运输类型"
-				align="center"
-				prop="carType"
-				width="200"
-			/>
+			<el-table-column label="车牌/柜号" align="center" prop="carNo" />
+			<el-table-column label="司机姓名/海运公司" align="center" prop="driver" />
+			<el-table-column label="司机电话" align="center" prop="tel" />
+			<el-table-column label="运输类型" align="center" prop="carType" />
 			<el-table-column
 				label="操作"
 				align="center"
 				class-name="small-padding fixed-width"
 				fixed="right"
-				width="180"
 			>
 				<template slot-scope="scope">
 					<el-button size="mini" type="text" @click="checkBankInfo(scope.row)">

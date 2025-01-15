@@ -51,6 +51,31 @@ export default {
 		disable: {
 			type: Boolean,
 			default: false
+		},
+
+		// 搜索项集合
+		queryItems: {
+			type: Object,
+			default: () => {
+				return {
+					queryList: [
+						{
+							id: 1,
+							label: '公司名称',
+							prop: 'companyName',
+							type: 'input',
+							value: ''
+						},
+						{
+							id: 2,
+							label: '老板姓名',
+							prop: 'leader',
+							type: 'input',
+							value: ''
+						}
+					]
+				};
+			}
 		}
 	},
 	data() {
@@ -145,6 +170,43 @@ export default {
 			<!--      弹出的表格内容-->
 			<el-row>
 				<div>
+					<el-form
+						ref="queryForm"
+						:model="queryItems"
+						size="mini"
+						:inline="true"
+						label-width="130px"
+					>
+						<el-form-item
+							v-for="item in queryItems.queryList"
+							:label="item.label"
+							:prop="item.prop"
+							:key="item.id"
+						>
+							<el-input
+								v-if="item.type === 'input'"
+								v-model="item.value"
+								size="mini"
+								clearable
+							></el-input>
+							<el-select
+								v-else-if="item.type === 'select'"
+								v-model="item.value"
+								size="mini"
+								clearable
+							>
+								<el-option
+									v-for="option in item.options"
+									:key="option.value"
+									:label="option.label"
+									:value="option.value"
+								></el-option>
+							</el-select>
+						</el-form-item>
+						<!--   搜素-->
+					</el-form>
+				</div>
+				<div>
 					<el-row :gutter="5">
 						<el-col :span="4">
 							<span style="font-weight: bolder">{{ queryLabel }}</span>
@@ -160,19 +222,22 @@ export default {
 						</el-col>
 						<el-col :span="4">
 							<el-button type="primary" size="mini" @click="handleSearchInfo"
-								>搜索</el-button
-							>
+								>搜索
+							</el-button>
 						</el-col>
 					</el-row>
 				</div>
+
+				<!--        列表页-->
 				<el-table
 					:key="tableData.length"
 					v-loading="loading"
 					:data="tableData"
 					size="mini"
 				>
-					<!--   这里给表格的数据行-->
+					<!--          todo-->
 					<slot name="table-columns" :tableData="tableData"></slot>
+
 					<!--          点击确认的地方-->
 					<el-table-column fixed="right" label="操作" width="100">
 						<template slot-scope="scope">

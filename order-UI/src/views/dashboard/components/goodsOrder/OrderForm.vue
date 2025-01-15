@@ -46,7 +46,27 @@ export default {
 			orderNums: 0,
 			querySupplier: null,
 			queryLevel: null,
-			queryStore: null
+			queryStore: null,
+
+			// 查询组
+			queryCompanyItems: {
+				queryList: [
+					{
+						id: 1,
+						label: '公司名称',
+						prop: 'companyName',
+						type: 'input',
+						value: ''
+					},
+					{
+						id: 2,
+						label: '老板姓名',
+						prop: 'leader',
+						type: 'input',
+						value: ''
+					}
+				]
+			}
 		};
 	},
 	computed: {
@@ -565,6 +585,7 @@ export default {
 								:query-name="queryCompanyName"
 								@update:queryName="handleUpdateCompanyName"
 								@commitBack="handleCommitBackCompany"
+								:query-items="queryCompanyItems"
 							>
 								<template #table-columns>
 									<el-table-column

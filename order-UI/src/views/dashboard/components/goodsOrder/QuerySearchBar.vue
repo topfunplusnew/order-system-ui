@@ -285,7 +285,7 @@ export default {
 				fleet: null,
 				isAdjusted: null,
 				adjustDate: null,
-				isAdjust: '否',
+				isAdjust: 0,
 				adjustOrderid: null,
 				isedit: null,
 				customerIsInvoice: null,

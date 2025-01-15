@@ -687,7 +687,7 @@ export default {
 					<template slot-scope="scope">
 						<!--          调整单-->
 						<el-button
-							:disabled="scope.row.isAdjusted === '是'"
+							:disabled="scope.row.isAdjusted === 1"
 							size="mini"
 							type="text"
 							@click="handleOrderItemInfo(scope.row)"

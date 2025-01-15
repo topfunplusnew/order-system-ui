@@ -98,14 +98,6 @@ export default {
 	methods: {
 		// 获取订单列表
 		async getList() {
-			// 如果没有输入票点
-			// if (!this.$store.getters.ticketPoint || !this.hasClicked) {
-			// 	// 先禁用多选框
-			// 	this.isBaned = true;
-			// 	// 打开加载
-			// 	this.loading = true;
-			// }
-
 			// 如果信号量有值
 			if (this.checkFlag) {
 				try {
@@ -325,7 +317,7 @@ export default {
 				fleet: null,
 				isAdjusted: null,
 				adjustDate: null,
-				isAdjust: '否',
+				isAdjust: 0,
 				adjustOrderid: null,
 				isedit: null,
 				customerIsInvoice: null,

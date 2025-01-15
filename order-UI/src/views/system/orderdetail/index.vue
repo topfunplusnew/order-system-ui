@@ -363,7 +363,7 @@
 			>
 				<template slot-scope="scope">
 					<el-tag
-						:type="scope.row.isAdjusted === '否' ? 'danger' : 'success'"
+						:type="scope.row.isAdjusted === 0 ? 'danger' : 'success'"
 						disable-transitions
 						>{{ scope.row.isAdjusted }}
 					</el-tag>

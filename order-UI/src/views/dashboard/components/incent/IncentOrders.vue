@@ -43,7 +43,7 @@ export default {
 				fleet: null,
 				isAdjusted: null,
 				adjustDate: null,
-				isAdjust: '否',
+				isAdjust: 0,
 				adjustOrderid: null,
 				isedit: null,
 				customerIsInvoice: null,
@@ -183,9 +183,9 @@ export default {
 				align="center"
 				prop="seaCarNo"
 			>
-				<template #default="scope">{{
-					!scope.row.seaCarNo ? '无' : scope.row.seaCarNo
-				}}</template>
+				<template #default="scope"
+					>{{ !scope.row.seaCarNo ? '无' : scope.row.seaCarNo }}
+				</template>
 			</el-table-column>
 			<el-table-column
 				show-overflow-tooltip
@@ -194,9 +194,9 @@ export default {
 				prop="seaDriverTel"
 				width="100px"
 			>
-				<template #default="scope">{{
-					!scope.row.seaDriverTel ? '无' : scope.row.seaDriverTel
-				}}</template>
+				<template #default="scope"
+					>{{ !scope.row.seaDriverTel ? '无' : scope.row.seaDriverTel }}
+				</template>
 			</el-table-column>
 			<el-table-column
 				show-overflow-tooltip
@@ -205,9 +205,9 @@ export default {
 				prop="seaDriverName"
 				width="100px"
 			>
-				<template #default="scope">{{
-					!scope.row.seaDriverName ? '无' : scope.row.seaDriverName
-				}}</template>
+				<template #default="scope"
+					>{{ !scope.row.seaDriverName ? '无' : scope.row.seaDriverName }}
+				</template>
 			</el-table-column>
 			<el-table-column
 				show-overflow-tooltip
@@ -264,8 +264,8 @@ export default {
 			>
 				<template #default="scope">
 					<el-button type="text" size="mini" @click="handleIndex(scope.row)"
-						>引用</el-button
-					>
+						>引用
+					</el-button>
 				</template>
 			</el-table-column>
 		</el-table>
