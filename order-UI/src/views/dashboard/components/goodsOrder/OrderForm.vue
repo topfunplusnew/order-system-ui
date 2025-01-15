@@ -49,19 +49,61 @@ export default {
 			queryStore: null,
 
 			// 查询组
-			queryCompanyItems: {
+			queryItemsCompany: {
+				queryList: [
+					// {
+					// 	id: 1,
+					// 	label: '公司类型',
+					// 	prop: 'companyType',
+					// 	type: 'select',
+					// 	value: '',
+					// 	options: [
+					// 		{
+					// 			label: '供应商',
+					// 			value: '供应商'
+					// 		},
+					// 		{
+					// 			label: '客户',
+					// 			value: '客户'
+					// 		}
+					// 	]
+					// },
+					{
+						id: 1,
+						label: '老板姓名',
+						prop: 'leader',
+						type: 'input',
+						value: ''
+					}
+				]
+			},
+			queryItemsOrder: {
 				queryList: [
 					{
 						id: 1,
-						label: '公司名称',
-						prop: 'companyName',
+						label: '厚度',
+						prop: 'height',
 						type: 'input',
 						value: ''
 					},
 					{
 						id: 2,
-						label: '老板姓名',
-						prop: 'leader',
+						label: '宽度',
+						prop: 'width',
+						type: 'input',
+						value: ''
+					},
+					{
+						id: 3,
+						label: '长度',
+						prop: 'length',
+						type: 'input',
+						value: ''
+					},
+					{
+						id: 4,
+						label: '分类名称',
+						prop: 'levelName',
 						type: 'input',
 						value: ''
 					}
@@ -99,9 +141,7 @@ export default {
 		}
 	},
 	created() {
-		// 组件初始化的时候清空状态
 		this.resetOrderInfo();
-		// 只有传递的订单id合法才会去抓取数据 当主动添加订单的时候订单id是空 不会执行
 		this.orderId && this.getGoodsOrderInfo(this.orderId);
 	},
 	methods: {
@@ -115,12 +155,9 @@ export default {
 		// 获取订单信息的方法 这个方法会根据父组件传递过来的id (props.orderId)的变化 来查询对应的订单信息
 		getGoodsOrderInfo(id) {
 			getGoodsOrder(id).then(response => {
-				// 拿到服务器给的订单数据
 				this.orderInfo = response.data;
-				// 如果海运费或者陆运费大于0
 				this.isLand = response.data.landFreight > 0;
 				this.isSea = response.data.seaFreight > 0;
-				// 将数据库拿到的订单列表装入vuex 这里维护的主要是索引，因为索引可以确定某个货物的状态
 				this.orderdetailList = response.data.orderDetailList.map(item => {
 					return {
 						...item,
@@ -585,7 +622,7 @@ export default {
 								:query-name="queryCompanyName"
 								@update:queryName="handleUpdateCompanyName"
 								@commitBack="handleCommitBackCompany"
-								:query-items="queryCompanyItems"
+								:query-items="queryItemsCompany"
 							>
 								<template #table-columns>
 									<el-table-column
@@ -999,6 +1036,7 @@ export default {
 									@commitBack="
 										value => handleCommitBackProductLevel(scope, value)
 									"
+									:query-items="queryItemsOrder"
 								>
 									<template #table-columns>
 										<el-table-column

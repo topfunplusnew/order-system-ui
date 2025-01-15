@@ -58,22 +58,7 @@ export default {
 			type: Object,
 			default: () => {
 				return {
-					queryList: [
-						{
-							id: 1,
-							label: '公司名称',
-							prop: 'companyName',
-							type: 'input',
-							value: ''
-						},
-						{
-							id: 2,
-							label: '老板姓名',
-							prop: 'leader',
-							type: 'input',
-							value: ''
-						}
-					]
+					queryList: []
 				};
 			}
 		}
@@ -137,9 +122,15 @@ export default {
 		},
 		// 条件查询
 		handleSearchInfo() {
-			this.getData({
+			if (this.queryItems.queryList.length > 0) {
+				this.queryItems.queryList.forEach(item => {
+					this.limitInfo[item.prop] = item.value;
+				});
+			}
+			const query = {
 				...this.limitInfo
-			}).then(res => {
+			};
+			this.getData(query).then(res => {
 				this.total = res.total;
 				this.tableData = res.rows;
 				this.loading = false;
@@ -175,7 +166,7 @@ export default {
 						:model="queryItems"
 						size="mini"
 						:inline="true"
-						label-width="130px"
+						label-width="100px"
 					>
 						<el-form-item
 							v-for="item in queryItems.queryList"
@@ -186,6 +177,7 @@ export default {
 							<el-input
 								v-if="item.type === 'input'"
 								v-model="item.value"
+								placeholder="请输入"
 								size="mini"
 								clearable
 							></el-input>
@@ -193,6 +185,7 @@ export default {
 								v-else-if="item.type === 'select'"
 								v-model="item.value"
 								size="mini"
+								placeholder="请选择"
 								clearable
 							>
 								<el-option
@@ -203,15 +196,7 @@ export default {
 								></el-option>
 							</el-select>
 						</el-form-item>
-						<!--   搜素-->
-					</el-form>
-				</div>
-				<div>
-					<el-row :gutter="5">
-						<el-col :span="4">
-							<span style="font-weight: bolder">{{ queryLabel }}</span>
-						</el-col>
-						<el-col :span="10">
+						<el-form-item :label="queryLabel" prop="createTime">
 							<el-input
 								v-model="query"
 								type="text"
@@ -219,13 +204,13 @@ export default {
 								size="mini"
 								clearable
 							></el-input>
-						</el-col>
-						<el-col :span="4">
+						</el-form-item>
+						<el-form-item>
 							<el-button type="primary" size="mini" @click="handleSearchInfo"
 								>搜索
 							</el-button>
-						</el-col>
-					</el-row>
+						</el-form-item>
+					</el-form>
 				</div>
 
 				<!--        列表页-->

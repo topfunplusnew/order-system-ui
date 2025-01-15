@@ -627,6 +627,7 @@
 										:limit-info="{ oilType: '主卡' }"
 										@commitBack="handleCommitBackOilCard"
 										@update:queryName="handleCommitBackQueryOilCard"
+										:query-items="queryItemsOilCard"
 									>
 										<template #table-columns>
 											<el-table-column
@@ -910,7 +911,28 @@ export default {
 				{ key: 20, label: `派车人`, visible: true },
 				{ key: 21, label: `备注`, visible: true },
 				{ key: 22, label: `附件路径`, visible: true }
-			]
+			],
+			queryItemsOilCard: {
+				queryList: [
+					{
+						id: 1,
+						label: '加油卡类别',
+						prop: 'oilType',
+						type: 'select',
+						value: '',
+						options: [
+							{
+								label: '主卡',
+								value: '主卡'
+							},
+							{
+								label: '副卡',
+								value: '副卡'
+							}
+						]
+					}
+				]
+			}
 		};
 	},
 	// 展示与隐藏
