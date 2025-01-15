@@ -153,6 +153,8 @@ export default {
 			obj.isAdjusted = 0;
 			obj.adjustOrderNo = '';
 			obj.adjustDate = '';
+			obj.factoryRebateAmount = '';
+			obj.factoryDiscountAmount = '';
 			obj.comments = '';
 			this.orderdetailList.push(obj);
 		},
@@ -414,24 +416,17 @@ export default {
 		// ---
 
 		// 提交订单
-		// 订单列表的对象封装一个，订单详情有两个一样的对象 对应供应商发货和仓库发货
 		handleProcess() {
-			// 如果没有orderId 那么是添加操作
 			if (!this.orderId) {
-				// 从vuex拿到订单详细列表 加入到订单信息中
 				this.orderInfo.orderDetailList = this.orderdetailList;
-				// 对每一个订单添加客户信息和时间
 				const updateOrderItem = item => {
 					item.customerID = this.orderInfo.customerID;
 					item.customer = this.orderInfo.customer;
 					item.orderDate = parseTime(new Date(), '{y}-{m}-{d} {h}:{i}:{s}');
 				};
-				// 对订单货物列表的每一个货物都执行这个操作
 				this.orderdetailList.forEach(item => updateOrderItem(item));
-				// 添加订单信息
 				addGoodsOrder({ ...this.orderInfo, PaymentState: '' })
 					.then(() => {
-						// 清空订单列表基础信息
 						this.resetOrderInfo();
 						this.isSea = false;
 						this.isLand = false;
@@ -440,7 +435,6 @@ export default {
 						this.$message.error(err);
 						this.handleReject();
 					});
-				// 反之 则是修改操作
 			} else {
 				this.handleUpdateGoodsOrder();
 			}
@@ -448,15 +442,12 @@ export default {
 		// 修改后提交订单信息
 		handleUpdateGoodsOrder() {
 			if (this.orderId != null) {
-				// 先拿到订单货物信息
 				this.orderInfo.orderDetailList = this.orderdetailList;
-				// 订单详情添加客户信息
 				const formatOrderItem = () => ({
 					customerID: this.orderInfo.customerID,
 					customer: this.orderInfo.customer,
 					orderDate: parseTime(new Date(), '{y}-{m}-{d} {h}:{i}:{s}')
 				});
-				// 对每一个货物都添加
 				this.orderdetailList.forEach(item =>
 					Object.assign(item, formatOrderItem())
 				);
@@ -1385,6 +1376,35 @@ export default {
 							/>
 						</template>
 					</el-table-column>
+
+					<!--          降价金额-->
+					<el-table-column
+						label="厂家返利金额"
+						prop="customerCommission"
+						width="150"
+					>
+						<template #default="scope">
+							<el-input
+								size="mini"
+								v-model="scope.row.factoryRebateAmount"
+								placeholder="请输入厂家返利金额"
+							/>
+						</template>
+					</el-table-column>
+					<el-table-column
+						label="厂家降价金额"
+						prop="customerCommission"
+						width="150"
+					>
+						<template #default="scope">
+							<el-input
+								size="mini"
+								v-model="scope.row.factoryDiscountAmount"
+								placeholder="请输入厂家降价金额"
+							/>
+						</template>
+					</el-table-column>
+
 					<el-table-column label="备注" prop="comments" width="150">
 						<template #default="scope">
 							<el-input

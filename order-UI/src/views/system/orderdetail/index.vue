@@ -16,8 +16,8 @@
 			<!--      左侧操作栏-->
 			<el-col :span="1.5">
 				<el-button icon="el-icon-refresh" size="mini" @click="resetQuery"
-					>刷新</el-button
-				>
+					>刷新
+				</el-button>
 			</el-col>
 			<el-col :span="1.5">
 				<el-button
@@ -579,138 +579,132 @@
 			width="30%"
 		>
 			<el-descriptions title="订单信息" :column="1" border>
-				<el-descriptions-item label="id">{{
-					orderDetailInfo.id
-				}}</el-descriptions-item>
-				<el-descriptions-item label="日期">{{
-					orderDetailInfo.orderDate
-				}}</el-descriptions-item>
-				<el-descriptions-item label="订单编号">{{
-					orderDetailInfo.ordersNo
-				}}</el-descriptions-item>
-				<el-descriptions-item label="客户">{{
-					orderDetailInfo.customer
-				}}</el-descriptions-item>
-				<el-descriptions-item label="客户ID">{{
-					orderDetailInfo.customerID
-				}}</el-descriptions-item>
-				<el-descriptions-item label="级别编码">{{
-					orderDetailInfo.levelID
-				}}</el-descriptions-item>
-				<el-descriptions-item label="级别名称">{{
-					orderDetailInfo.levelName
-				}}</el-descriptions-item>
-				<el-descriptions-item label="计量单位">{{
-					orderDetailInfo.countingUnit
-				}}</el-descriptions-item>
-				<el-descriptions-item label="厚度">{{
-					orderDetailInfo.height
-				}}</el-descriptions-item>
-				<el-descriptions-item label="长度">{{
-					orderDetailInfo.length
-				}}</el-descriptions-item>
-				<el-descriptions-item label="宽度">{{
-					orderDetailInfo.width
-				}}</el-descriptions-item>
-				<el-descriptions-item label="出厂片数">{{
-					orderDetailInfo.pieces
-				}}</el-descriptions-item>
-				<el-descriptions-item label="每包片数">{{
-					orderDetailInfo.piecesPerPack
-				}}</el-descriptions-item>
-				<el-descriptions-item label="包数">{{
-					orderDetailInfo.packs
-				}}</el-descriptions-item>
-				<el-descriptions-item label="出厂单价">{{
-					orderDetailInfo.price
-				}}</el-descriptions-item>
-				<!--        <el-descriptions-item label="出厂是否含税">{{ orderDetailInfo.isIncludeTaxFactory }}</el-descriptions-item>-->
+				<el-descriptions-item label="id"
+					>{{ orderDetailInfo.id }}
+				</el-descriptions-item>
+				<el-descriptions-item label="日期"
+					>{{ orderDetailInfo.orderDate }}
+				</el-descriptions-item>
+				<el-descriptions-item label="订单编号"
+					>{{ orderDetailInfo.ordersNo }}
+				</el-descriptions-item>
+				<el-descriptions-item label="客户"
+					>{{ orderDetailInfo.customer }}
+				</el-descriptions-item>
+				<el-descriptions-item label="级别编码"
+					>{{ orderDetailInfo.levelID }}
+				</el-descriptions-item>
+				<el-descriptions-item label="级别名称"
+					>{{ orderDetailInfo.levelName }}
+				</el-descriptions-item>
+				<el-descriptions-item label="计量单位"
+					>{{ orderDetailInfo.countingUnit }}
+				</el-descriptions-item>
+				<el-descriptions-item label="厚度"
+					>{{ orderDetailInfo.height }}
+				</el-descriptions-item>
+				<el-descriptions-item label="长度"
+					>{{ orderDetailInfo.length }}
+				</el-descriptions-item>
+				<el-descriptions-item label="宽度"
+					>{{ orderDetailInfo.width }}
+				</el-descriptions-item>
+				<el-descriptions-item label="出厂片数"
+					>{{ orderDetailInfo.pieces }}
+				</el-descriptions-item>
+				<el-descriptions-item label="每包片数"
+					>{{ orderDetailInfo.piecesPerPack }}
+				</el-descriptions-item>
+				<el-descriptions-item label="包数"
+					>{{ orderDetailInfo.packs }}
+				</el-descriptions-item>
+				<el-descriptions-item label="出厂单价"
+					>{{ orderDetailInfo.price }}
+				</el-descriptions-item>
 				<el-descriptions-item label="出厂是否含税">
 					<TagsItem
 						:check-info="orderDetailInfo.isIncludeTaxFactory"
 						check-value="否"
 					/>
 				</el-descriptions-item>
-				<el-descriptions-item label="杂费">{{
-					orderDetailInfo.sundryCost
-				}}</el-descriptions-item>
-				<el-descriptions-item label="出厂货款">{{
-					orderDetailInfo.paymentFactory
-				}}</el-descriptions-item>
-				<el-descriptions-item label="卸货价">{{
-					orderDetailInfo.paymentUnload
-				}}</el-descriptions-item>
-				<!--        <el-descriptions-item label="销售是否含税">{{ orderDetailInfo.isIncludeTaxSale }}</el-descriptions-item>-->
+				<el-descriptions-item label="杂费"
+					>{{ orderDetailInfo.sundryCost }}
+				</el-descriptions-item>
+				<el-descriptions-item label="出厂货款"
+					>{{ orderDetailInfo.paymentFactory }}
+				</el-descriptions-item>
+				<el-descriptions-item label="卸货价"
+					>{{ orderDetailInfo.paymentUnload }}
+				</el-descriptions-item>
 				<el-descriptions-item label="销售是否含税">
 					<TagsItem
 						:check-info="orderDetailInfo.isIncludeTaxSale"
 						check-value="否"
 					/>
 				</el-descriptions-item>
-				<el-descriptions-item label="总货款">{{
-					orderDetailInfo.payments
-				}}</el-descriptions-item>
-				<el-descriptions-item label="误差">{{
-					orderDetailInfo.erro
-				}}</el-descriptions-item>
-				<el-descriptions-item label="吨位">{{
-					orderDetailInfo.tonnage
-				}}</el-descriptions-item>
-				<el-descriptions-item label="陆运费单价">{{
-					orderDetailInfo.landFreightPrice
-				}}</el-descriptions-item>
-				<el-descriptions-item label="陆运费">{{
-					orderDetailInfo.landFreight
-				}}</el-descriptions-item>
-				<el-descriptions-item label="海运费">{{
-					orderDetailInfo.seaFreight
-				}}</el-descriptions-item>
-				<el-descriptions-item label="总运费">{{
-					orderDetailInfo.freight
-				}}</el-descriptions-item>
-				<el-descriptions-item label="其他费用">{{
-					orderDetailInfo.otherCost
-				}}</el-descriptions-item>
-				<el-descriptions-item label="利润">{{
-					orderDetailInfo.profit
-				}}</el-descriptions-item>
-				<el-descriptions-item label="不含税利润">{{
-					orderDetailInfo.profitNoTax
-				}}</el-descriptions-item>
-				<el-descriptions-item label="实际片数">{{
-					orderDetailInfo.actualPieces
-				}}</el-descriptions-item>
-				<el-descriptions-item label="总运费">{{
-					orderDetailInfo.freight
-				}}</el-descriptions-item>
-				<el-descriptions-item label="总货款杂费">{{
-					orderDetailInfo.paymentsWithSundry
-				}}</el-descriptions-item>
-				<el-descriptions-item label="加费">{{
-					orderDetailInfo.additionalFees
-				}}</el-descriptions-item>
-				<el-descriptions-item label="仓库ID">{{
-					orderDetailInfo.storeHouseID
-				}}</el-descriptions-item>
-				<el-descriptions-item label="仓库名称">{{
-					orderDetailInfo.storeHouseName
-				}}</el-descriptions-item>
-				<el-descriptions-item label="仓库存储的货物ID">{{
-					orderDetailInfo.storeID
-				}}</el-descriptions-item>
-				<el-descriptions-item label="物流利润">{{
-					orderDetailInfo.logisticsProfit
-				}}</el-descriptions-item>
-				<el-descriptions-item label="佣金">{{
-					orderDetailInfo.customerCommission
-				}}</el-descriptions-item>
-				<!--        <el-descriptions-item label="是否被调整单">{{ orderDetailInfo.isAdjusted }}</el-descriptions-item>-->
+				<el-descriptions-item label="总货款"
+					>{{ orderDetailInfo.payments }}
+				</el-descriptions-item>
+				<el-descriptions-item label="误差"
+					>{{ orderDetailInfo.erro }}
+				</el-descriptions-item>
+				<el-descriptions-item label="吨位"
+					>{{ orderDetailInfo.tonnage }}
+				</el-descriptions-item>
+				<el-descriptions-item label="陆运费单价"
+					>{{ orderDetailInfo.landFreightPrice }}
+				</el-descriptions-item>
+				<el-descriptions-item label="陆运费"
+					>{{ orderDetailInfo.landFreight }}
+				</el-descriptions-item>
+				<el-descriptions-item label="海运费"
+					>{{ orderDetailInfo.seaFreight }}
+				</el-descriptions-item>
+				<el-descriptions-item label="总运费"
+					>{{ orderDetailInfo.freight }}
+				</el-descriptions-item>
+				<el-descriptions-item label="其他费用"
+					>{{ orderDetailInfo.otherCost }}
+				</el-descriptions-item>
+				<el-descriptions-item label="利润"
+					>{{ orderDetailInfo.profit }}
+				</el-descriptions-item>
+				<el-descriptions-item label="不含税利润"
+					>{{ orderDetailInfo.profitNoTax }}
+				</el-descriptions-item>
+				<el-descriptions-item label="实际片数"
+					>{{ orderDetailInfo.actualPieces }}
+				</el-descriptions-item>
+				<el-descriptions-item label="总运费"
+					>{{ orderDetailInfo.freight }}
+				</el-descriptions-item>
+				<el-descriptions-item label="总货款杂费"
+					>{{ orderDetailInfo.paymentsWithSundry }}
+				</el-descriptions-item>
+				<el-descriptions-item label="加费"
+					>{{ orderDetailInfo.additionalFees }}
+				</el-descriptions-item>
+				<el-descriptions-item label="仓库名称"
+					>{{ orderDetailInfo.storeHouseName }}
+				</el-descriptions-item>
+				<el-descriptions-item label="物流利润"
+					>{{ orderDetailInfo.logisticsProfit }}
+				</el-descriptions-item>
+				<el-descriptions-item label="佣金"
+					>{{ orderDetailInfo.customerCommission }}
+				</el-descriptions-item>
+				<el-descriptions-item label="厂家返利金额"
+					>{{ orderDetailInfo.factoryRebateAmount }}
+				</el-descriptions-item>
+				<el-descriptions-item label="厂家降价金额"
+					>{{ orderDetailInfo.factoryDiscountAmount }}
+				</el-descriptions-item>
 				<el-descriptions-item label="是否被调整单">
 					<TagsItem :check-info="orderDetailInfo.isAdjusted" check-value="否" />
 				</el-descriptions-item>
-				<el-descriptions-item label="调整日期">{{
-					orderDetailInfo.adjustDate
-				}}</el-descriptions-item>
+				<el-descriptions-item label="调整日期"
+					>{{ orderDetailInfo.adjustDate }}
+				</el-descriptions-item>
 			</el-descriptions>
 
 			<span slot="footer" class="dialog-footer">
@@ -1010,14 +1004,14 @@ export default {
 		},
 
 		// 订单
-		handleOrder1(row) {
+		handleOrder1() {
 			this.Order1Visible = true;
 		},
 		// 上传和收到条
-		handleUpload(row) {
+		handleUpload() {
 			this.handleUploadVisible = true;
 		},
-		handleCommit(row) {
+		handleCommit() {
 			this.handleCommitVisible = true;
 		},
 		submitChangeOrder() {
