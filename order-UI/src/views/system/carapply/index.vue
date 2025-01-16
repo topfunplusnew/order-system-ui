@@ -260,6 +260,13 @@
 				show-overflow-tooltip
 			/>
 			<el-table-column
+				v-if="columns[18].visible"
+				label="维修金额"
+				align="center"
+				prop="repairMoney"
+				show-overflow-tooltip
+			/>
+			<el-table-column
 				v-if="columns[19].visible"
 				label="行程中使用加油卡加油次数"
 				align="center"
@@ -275,6 +282,12 @@
 				show-overflow-tooltip
 			/>
 			<el-table-column
+				label="现金加油次数"
+				align="center"
+				prop="cashRefuelingFrequency"
+				show-overflow-tooltip
+			/>
+			<el-table-column
 				label="加油卡余额"
 				align="center"
 				prop="oilCardBalance"
@@ -287,7 +300,7 @@
 				show-overflow-tooltip
 			/>
 			<el-table-column
-				label="现金加油"
+				label="现金加油金额"
 				align="center"
 				prop="cashRefueling"
 				show-overflow-tooltip
@@ -531,6 +544,16 @@
 								/>
 							</el-form-item>
 							<el-form-item
+								v-if="form.isMaintenance === '是'"
+								label="维修金额"
+								prop="repairMoney "
+							>
+								<el-input
+									v-model="form.repairMoney"
+									placeholder="请输入维修金额"
+								/>
+							</el-form-item>
+							<el-form-item
 								label="行程中使用加油卡加油次数"
 								prop="refuelingFrequency"
 							>
@@ -538,6 +561,13 @@
 									type="number"
 									v-model="form.refuelingFrequency"
 									placeholder="请输入行程中使用加油卡加油次数"
+								/>
+							</el-form-item>
+							<el-form-item label="现金加油次数" prop="cashRefuelingFrequency">
+								<el-input
+									type="number"
+									v-model="form.cashRefuelingFrequency"
+									placeholder="现金加油次数"
 								/>
 							</el-form-item>
 						</el-col>
@@ -1016,7 +1046,11 @@ export default {
 				fine: null,
 				isMaintenance: '否',
 				maintenanceMoney: null,
+				// 新增字段 维修金额
+				repairMoney: '',
 				refuelingFrequency: null,
+				// 新增字段
+				cashRefuelingFrequency: null,
 				dispatchPerson: null,
 				comments: null,
 
