@@ -224,7 +224,7 @@ export default {
 				:is-adjust="isAdjustOrder"
 			/>
 		</div>
-		<div>
+		<div v-if="isAdjustOrder">
 			<el-tag type="info" class="tag-spacing">调整一次</el-tag>
 			<el-tag type="success" class="tag-spacing">调整两次</el-tag>
 			<el-tag type="warning" class="tag-spacing">三次以上</el-tag>
