@@ -1229,7 +1229,7 @@ export default {
 				inputErrorMessage: '请输入正确的数字!'
 			}).then(({ value }) => {
 				getRebate(row.id).then(res => {
-					let rebateList = res.data.actualReceivedDetails.detailList;
+					let rebate = res.data.actualReceivedDetails;
 
 					let item = {
 						uuid: getUuid(),
@@ -1237,19 +1237,18 @@ export default {
 						actualReceivedDate: parseTime(new Date())
 					};
 					let body = JSON.parse(JSON.stringify(row));
-					if (rebateList.length <= 0) {
+					if (rebate === null) {
 						let actualReceivedDetails = {
 							detailList: []
 						};
 						actualReceivedDetails.detailList.push(item);
 						body.actualReceivedDetails = actualReceivedDetails;
 					} else {
-						rebateList.push(item);
-						body.actualReceivedDetails.detailList = rebateList;
+						rebate.detailList.push(item);
+						body.actualReceivedDetails = {
+							detailList: rebate.detailList
+						};
 					}
-
-					console.log(body);
-					// 添加返利
 					updateRebate(body).then(() => {
 						this.$modal.msgSuccess('返利成功');
 					});
