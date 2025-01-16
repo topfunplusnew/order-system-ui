@@ -2,6 +2,7 @@
 import { addDateRange } from '../../../../utils/ruoyi';
 import { noPageListRebate } from '../../../../api/system/Rebate';
 import { getGoodsOrder } from '../../../../api/system/goodsOrder';
+import { fix } from '../../../../api/tool/format';
 
 export var mixin_choose_order = {
 	data() {
@@ -122,13 +123,15 @@ export var mixin_choose_order = {
 				},
 				{ area: 0, weightBox: 0 } // 初始值
 			);
+
 			this.goods.forEach(item => {
 				this.form.orderDetailIds.push(item.id);
 			});
 			this.form.area = result.area;
 			this.form.weightBox = result.weightBox;
-			this.form.rebate =
-				this.form.area * this.form.weightBox * this.form.unitPrice;
+			this.form.rebate = fix(
+				this.form.area * this.form.weightBox * this.form.unitPrice
+			);
 			this.orderDialogVisible = false;
 		},
 		// 清空已选择的货物

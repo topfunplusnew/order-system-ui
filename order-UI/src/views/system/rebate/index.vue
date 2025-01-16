@@ -197,6 +197,16 @@
 				prop="comments"
 				show-overflow-tooltip
 			/>
+			<el-table-column label="返利流水" align="center" show-overflow-tooltip>
+				<template slot-scope="scope">
+					<el-button
+						size="mini"
+						type="text"
+						@click="handleRebateDetail(scope.row)"
+						>查看流水
+					</el-button>
+				</template>
+			</el-table-column>
 			<el-table-column
 				label="操作"
 				align="center"
@@ -205,6 +215,13 @@
 				fixed="right"
 			>
 				<template slot-scope="scope">
+					<el-button
+						v-hasPermi="['system:rebate:edit']"
+						size="mini"
+						type="text"
+						@click="handleRebate(scope.row)"
+						>返利
+					</el-button>
 					<el-button
 						v-hasPermi="['system:rebate:edit']"
 						size="mini"
@@ -1014,6 +1031,8 @@ import { isNull } from '../../../main';
 // import BankType from '@/views/dashboard/components/common/BankType.vue';
 import { listOrderDetailByIds } from '@/api/system/orderDetail';
 import { mixin_bankType } from '../../dashboard/mixins/common/common_bankType';
+import { getUuid } from '../../../utils/trash/utils';
+import { parseTime } from '../../../utils/ruoyi';
 
 export default {
 	name: 'Rebate',
@@ -1175,14 +1194,14 @@ export default {
 		isNull,
 		listCompany,
 		listBankAccount,
-		// 自动填充的信息
-		handleCommitBackBankAcount(val) {
-			this.form.inAcountsName = val.acountsName;
-			this.form.inBankNo = val.bankNo;
-		},
-		handleUpdateQueryBankAcount(val) {
-			this.queryBankAcount = val;
-		},
+		// // 自动填充的信息
+		// handleCommitBackBankAcount(val) {
+		// 	this.form.inAcountsName = val.acountsName;
+		// 	this.form.inBankNo = val.bankNo;
+		// },
+		// handleUpdateQueryBankAcount(val) {
+		// 	this.queryBankAcount = val;
+		// },
 		handleCommitBackCompanyGive(val) {
 			this.form.supplier = val.companyName;
 			this.form.supplierID = val.id;
@@ -1190,17 +1209,78 @@ export default {
 		handleQueryCompanyGive(val) {
 			this.queryCompanyGive = val;
 		},
-		handleCommitBackBankAcountSelf(val) {
-			this.form.outAcountsName = val.acountsName;
-			this.form.outBankNo = val.bankNo;
-		},
-		handleUpdateQueryBankAcountSelf(val) {
-			this.bankAcountSelf = val;
-		},
+		// handleCommitBackBankAcountSelf(val) {
+		// 	this.form.outAcountsName = val.acountsName;
+		// 	this.form.outBankNo = val.bankNo;
+		// },
+		// handleUpdateQueryBankAcountSelf(val) {
+		// 	this.bankAcountSelf = val;
+		// },
 
 		// 表格中的表头 筛选方法 主要是为了筛选供应商
 		filterName(value, row) {
 			return row.supplier === value;
+		},
+		handleRebate(row) {
+			this.$prompt('请输入本次返利金额', '提示', {
+				confirmButtonText: '确定',
+				cancelButtonText: '取消',
+				inputPattern: /^\d+$/,
+				inputErrorMessage: '请输入正确的数字!'
+			}).then(({ value }) => {
+				let item = {
+					uuid: getUuid(),
+					actualReceived: value,
+					actualReceivedDate: parseTime(new Date())
+				};
+				let actualReceivedDetails = {
+					detailList: []
+				};
+				actualReceivedDetails.detailList.push(item);
+				let body = {
+					...row,
+					actualReceivedDetails: actualReceivedDetails
+				};
+				// 添加返利
+				updateRebate(body).then(() => {
+					this.$modal.msgSuccess('返利成功');
+				});
+			});
+		},
+		// 查询返利流水账
+		handleRebateDetail(row) {
+			getRebate(row.id).then(res => {
+				// 	this.$model({
+				// 		type: 'object',
+				// 		data: {
+				// 			name: '张三',
+				// 			age: 25,
+				// 			address: '北京市'
+				// 		},
+				// 		labels: {
+				// 			name: '姓名',
+				// 			age: '年龄',
+				// 			address: '地址'
+				// 		},
+				// 		title: '返利流水账 '
+				// 	});
+				// },
+				this.$model({
+					type: 'array',
+					items: res.data.actualReceivedDetails.detailList,
+					array: [
+						{
+							prop: 'actualReceived',
+							label: '实收'
+						},
+						{
+							prop: 'actualReceivedDate',
+							label: '实收日期'
+						}
+					],
+					title: '返利流水账 '
+				});
+			});
 		},
 		/** 查询返利回扣列表 */
 		getList() {

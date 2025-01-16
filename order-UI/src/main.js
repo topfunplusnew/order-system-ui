@@ -44,6 +44,7 @@ import DictTag from '@/components/DictTag';
 import VueMeta from 'vue-meta';
 // 字典数据组件
 import DictData from '@/components/DictData';
+import ModelPlugin from './components/ModelDialog';
 // 引入表格横向滚动插件
 import horizontalScroll from 'el-table-horizontal-scroll';
 // 打印
@@ -59,6 +60,7 @@ import VueVirtualScroller from 'vue-virtual-scroller';
 import 'vue-virtual-scroller/dist/vue-virtual-scroller.css';
 
 Vue.use(VueVirtualScroller);
+Vue.use(ModelPlugin);
 
 window.axios = service;
 Vue.prototype.getDicts = getDicts;
