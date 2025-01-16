@@ -128,13 +128,23 @@ export default {
 		getGoodsOrder,
 		// 给特定的某些行高亮颜色
 		tableRowClassName({ row }) {
-			// 如果row.isAdjusted 的值为是，并且 isAdjust 的值也为是，那么就显示背景颜色为红色
-			if (row.isAdjusted === 1 && this.isAdjustOrder) {
-				return {
-					background: '#c6ffe6 !important'
-				};
+			if (row.isAdjust > 0 && this.isAdjustOrder) {
+				if (row.isAdjust === 2) {
+					return {
+						background: '#c6ffe6 !important'
+					};
+				} else if (row.isAdjust === 3) {
+					return {
+						background: '#ffcccc !important'
+					};
+				} else {
+					return {
+						background: '#f0f0f0 !important'
+					};
+				}
+			} else {
+				return '';
 			}
-			return '';
 		},
 		// 处理下拉菜单  使用的是事件委托
 		handleCommand(command, row) {
@@ -205,7 +215,10 @@ export default {
 	<div>
 		<!--    这是框架自带的搜索模组，封装成了组件并且放在与index.vue同级目录下-->
 		<div>
-			<QuerySearchBar @updateQuery="handleGetQueryParams" />
+			<QuerySearchBar
+				@updateQuery="handleGetQueryParams"
+				:is-adjust="isAdjustOrder"
+			/>
 		</div>
 		<!--    通用弹窗 配合common_dialogs 使用-->
 		<div v-if="currentComponent">
@@ -685,9 +698,7 @@ export default {
 					fixed="right"
 				>
 					<template slot-scope="scope">
-						<!--          调整单-->
 						<el-button
-							:disabled="scope.row.isAdjusted === 1"
 							size="mini"
 							type="text"
 							@click="handleOrderItemInfo(scope.row)"

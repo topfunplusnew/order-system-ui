@@ -95,12 +95,9 @@ export var mixin_order_base = {
 	methods: {
 		// 查询订单的列表
 		getList() {
-			const isAdjust = this.isAdjustOrder ? 1 : 0;
+			this.queryParams.isAdjust = this.isAdjustOrder ? -1 : 0;
 			// 查询订单
-			listGoodsOrder({
-				...this.queryParams,
-				isAdjust: isAdjust // 根据是否为调整单获取数据
-			}).then(response => {
+			listGoodsOrder(this.queryParams).then(response => {
 				this.goodsOrderList = response.rows;
 				this.total = response.total;
 				this.loading = false;

@@ -5,19 +5,19 @@
 		<ElTableOrder :is-adjust-order="true" />
 
 		<!-- 订单历史信息查看  mixin_order_orderHistory -->
-		<OrderHistoryCheck
-			:check-history-order-visible="checkHistoryOrderVisible"
-			:checkcurrent-order-item-info="checkcurrentOrderItemInfo"
-			:order-history-info-list="orderHistoryInfoList"
-			:parse-time="parseTime(new Date(), '{y}-{m}-{d} {h}:{i}:{s}')"
-			@close="closeOrderHistoryCheck"
-		/>
+		<!--		<OrderHistoryCheck-->
+		<!--			:check-history-order-visible="checkHistoryOrderVisible"-->
+		<!--			:checkcurrent-order-item-info="checkcurrentOrderItemInfo"-->
+		<!--			:order-history-info-list="orderHistoryInfoList"-->
+		<!--			:parse-time="parseTime(new Date(), '{y}-{m}-{d} {h}:{i}:{s}')"-->
+		<!--			@close="closeOrderHistoryCheck"-->
+		<!--		/>-->
 	</div>
 </template>
 
 <script>
 import ElTableOrder from '@/views/dashboard/components/goodsOrder/ElTableOrder.vue';
-import OrderHistoryCheck from '@/views/dashboard/components/goodsOrder/OrderHistoryCheck.vue';
+// import OrderHistoryCheck from '@/views/dashboard/components/goodsOrder/OrderHistoryCheck.vue';
 import { mapGetters } from 'vuex';
 import { parseTime } from '../../../utils/ruoyi';
 import { mixin_order_Invoice } from '../../dashboard/mixins/order/order_Invoice';
@@ -28,7 +28,6 @@ export default {
 	name: 'AdjustOrders',
 	// 组件注册
 	components: {
-		OrderHistoryCheck,
 		ElTableOrder
 	},
 	// 混入 订单逻辑分布在混入文件中

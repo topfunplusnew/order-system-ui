@@ -1228,22 +1228,31 @@ export default {
 				inputPattern: /^\d+$/,
 				inputErrorMessage: '请输入正确的数字!'
 			}).then(({ value }) => {
-				let item = {
-					uuid: getUuid(),
-					actualReceived: value,
-					actualReceivedDate: parseTime(new Date())
-				};
-				let actualReceivedDetails = {
-					detailList: []
-				};
-				actualReceivedDetails.detailList.push(item);
-				let body = {
-					...row,
-					actualReceivedDetails: actualReceivedDetails
-				};
-				// 添加返利
-				updateRebate(body).then(() => {
-					this.$modal.msgSuccess('返利成功');
+				getRebate(row.id).then(res => {
+					let rebateList = res.data.actualReceivedDetails.detailList;
+
+					let item = {
+						uuid: getUuid(),
+						actualReceived: Number(value),
+						actualReceivedDate: parseTime(new Date())
+					};
+					let body = JSON.parse(JSON.stringify(row));
+					if (rebateList.length <= 0) {
+						let actualReceivedDetails = {
+							detailList: []
+						};
+						actualReceivedDetails.detailList.push(item);
+						body.actualReceivedDetails = actualReceivedDetails;
+					} else {
+						rebateList.push(item);
+						body.actualReceivedDetails.detailList = rebateList;
+					}
+
+					console.log(body);
+					// 添加返利
+					updateRebate(body).then(() => {
+						this.$modal.msgSuccess('返利成功');
+					});
 				});
 			});
 		},
