@@ -112,7 +112,7 @@ export default {
 				<el-descriptions-item label="物流利润"
 					>{{ needToShowInfo.logisticsProfit }} 元</el-descriptions-item
 				>
-				<el-descriptions-item label="客户佣金"
+				<el-descriptions-item label="佣金"
 					>{{ needToShowInfo.customerCommission }} 元</el-descriptions-item
 				>
 				<el-descriptions-item label="调整订单号">{{

@@ -1396,7 +1396,7 @@ export default {
 						</template>
 					</el-table-column>
 					<el-table-column
-						label="客户佣金"
+						label="佣金"
 						prop="customerCommission"
 						width="150"
 					>
@@ -1404,7 +1404,7 @@ export default {
 							<el-input
 								size="mini"
 								v-model="scope.row.customerCommission"
-								placeholder="请输入客户佣金"
+								placeholder="请输入佣金"
 							/>
 						</template>
 					</el-table-column>
