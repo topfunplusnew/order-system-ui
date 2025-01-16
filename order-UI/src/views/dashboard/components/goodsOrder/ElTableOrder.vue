@@ -129,9 +129,13 @@ export default {
 		// 给特定的某些行高亮颜色
 		tableRowClassName({ row }) {
 			if (row.isAdjust > 0 && this.isAdjustOrder) {
-				if (row.isAdjust === 2) {
+				if (row.isAdjust === 1) {
 					return {
-						background: '#c6ffe6 !important'
+						background: '#f0f0f0 !important'
+					};
+				} else if (row.isAdjust === 2) {
+					return {
+						background: '#f0f9eb !important'
 					};
 				} else if (row.isAdjust === 3) {
 					return {
@@ -139,7 +143,7 @@ export default {
 					};
 				} else {
 					return {
-						background: '#f0f0f0 !important'
+						background: '#fdf6ec !important'
 					};
 				}
 			} else {
@@ -219,6 +223,11 @@ export default {
 				@updateQuery="handleGetQueryParams"
 				:is-adjust="isAdjustOrder"
 			/>
+		</div>
+		<div>
+			<el-tag type="info" class="tag-spacing">调整一次</el-tag>
+			<el-tag type="success" class="tag-spacing">调整两次</el-tag>
+			<el-tag type="warning" class="tag-spacing">三次以上</el-tag>
 		</div>
 		<!--    通用弹窗 配合common_dialogs 使用-->
 		<div v-if="currentComponent">
@@ -831,5 +840,9 @@ export default {
 		color: #df6565;
 		font-weight: bold;
 	}
+}
+
+.tag-spacing {
+	margin-right: 8px;
 }
 </style>

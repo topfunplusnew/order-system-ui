@@ -95,13 +95,22 @@ export var mixin_order_base = {
 	methods: {
 		// 查询订单的列表
 		getList() {
-			this.queryParams.isAdjust = this.isAdjustOrder ? -1 : 0;
-			// 查询订单
-			listGoodsOrder(this.queryParams).then(response => {
-				this.goodsOrderList = response.rows;
-				this.total = response.total;
-				this.loading = false;
-			});
+			if (!this.queryParams.isAdjust) {
+				const isAdjust = this.isAdjustOrder ? -1 : 0;
+				listGoodsOrder({ ...this.queryParams, isAdjust: isAdjust }).then(
+					response => {
+						this.goodsOrderList = response.rows;
+						this.total = response.total;
+						this.loading = false;
+					}
+				);
+			} else {
+				listGoodsOrder(this.queryParams).then(response => {
+					this.goodsOrderList = response.rows;
+					this.total = response.total;
+					this.loading = false;
+				});
+			}
 		},
 		// 获取供应商的名称列表 主要用于表格的供应商列表的展示
 		getSupplierNames(list) {
