@@ -1,9 +1,5 @@
 import { getToken } from '../../../../utils/auth';
-import { getBusinessTrip } from '../../../../api/system/BusinessTrip';
-import { addOilCardConsume } from '../../../../api/system/OilCardConsume';
-import { checkOilCard } from '../../../../api/system/oilCard';
 import { mapGetters } from 'vuex';
-import OilCardRecharge from '@/views/dashboard/components/common/OilCardRecharge.vue';
 
 export var mixin_businesstrip_car_apply = {
 	data: function () {
@@ -36,100 +32,27 @@ export var mixin_businesstrip_car_apply = {
 		handleFileUploadCarApply(url) {
 			this.form.path = url;
 		},
-		// 打开油卡消费记录的弹窗
-		openOilCardOpen() {
-			this.resetOilCardConsumeInfo();
-			this.oilCardConsumeVisible = true;
-		},
 		updateQueryCars(val) {
 			this.queryCars = val;
 		},
 		handleCommitBackCars(val) {
 			this.form.carNo = val.dictLabel;
 		},
-		handleCommitBackOilCard(val) {
-			this.oilCardConsumeInfo.oilCardNo = val.oilCardNo;
+		handleCommitBackOilCard(val, row) {
+			row.oilCardNo = val.oilCardNo;
 		},
 		handleCommitBackQueryOilCard(val) {
 			this.queryOilCard = val;
 		},
 		// 公司车辆
-		handleCommitCarNumber(val) {
-			this.oilCardConsumeInfo.carNo = val.dictLabel;
+		handleCommitCarNumber(val, row) {
+			row.carNo = val.dictLabel;
 		},
 		handleCommitBackQueryCarNumber(val) {
 			this.queryCarNumber = val;
 		},
-		// 文件上传
-		handleFileSuccess(response, file, fileList) {
-			if (response.code === 200) {
-				this.oilCardConsumeInfo.attachmentOiladd = response.url;
-				console.log(this.oilCardConsumeInfo.attachmentOiladd);
-				this.$message.success('上传成功');
-			} else {
-				this.$message.error('上传失败');
-			}
-			fileList.pop();
-		},
-		// 查看附件
 		checkPath(path) {
 			window.open(path);
-		},
-		// 添加油卡消费信息
-		submitOilCard() {
-			// 是否携带了油卡
-			this.form.isUseOilCard = '1';
-			// 要检查油卡的余额是否够用 如果够用就保存数据 如果不够用 那么就要提示是否充值  如果充值 就要弹出充值页面
-			checkOilCard({
-				oilCardNo: this.oilCardConsumeInfo.oilCardNo,
-				consumeAmount: this.oilCardConsumeInfo.refuelingMoney
-			}).then(res => {
-				// 如果余额不足 要进行充值
-				if (res.data.error === '油卡余额不足') {
-					this.$confirm('油卡余额不足,是否充值?', '提示', {
-						confirmButtonText: '是',
-						cancelButtonText: '否',
-						type: 'warning'
-					}).then(() => {
-						// 打开油卡充值的弹窗
-						this.openDialog(
-							OilCardRecharge,
-							'加油卡充值(需审核通过)',
-							'800px',
-							{
-								OilCardFillInfo: this.oilCardConsumeInfo
-							}
-						);
-					});
-					// 如果油卡信息不存在
-				} else if (res.data.error === '油卡不存在') {
-					this.$message.error('油卡不存在');
-					// 如果存在并且余额充足
-				} else {
-					// 纠正money
-					this.oilCardConsumeInfo.rechargeMoney =
-						this.isRecharge === '2'
-							? '0'
-							: this.oilCardConsumeInfo.rechargeMoney;
-
-					// 保存油卡的消费记录
-					sessionStorage.setItem(
-						'oilCardConsumeInfo',
-						JSON.stringify(this.oilCardConsumeInfo)
-					);
-					this.$message.success('保存成功');
-					// 关闭油卡消费添加弹窗
-					this.oilCardConsumeVisible = false;
-				}
-			});
-		},
-		clearOilCard() {
-			this.oilCardConsumeVisible = false;
-			this.oilCardConsumeInfo = {};
-			this.form.isUseOilCard = '0';
-			// 清除油卡信息
-			sessionStorage.removeItem('oilCardConsumeInfo');
-			this.$message.success('已清除');
 		},
 		resetOilCardConsumeInfo() {
 			this.oilCardConsumeInfo = {

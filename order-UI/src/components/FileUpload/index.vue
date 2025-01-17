@@ -31,6 +31,7 @@
 			class="upload-file-list el-upload-list el-upload-list--text"
 			name="el-fade-in-linear"
 			tag="ul"
+			v-if="isShowName"
 		>
 			<li
 				v-for="(file, index) in fileList"
@@ -84,6 +85,10 @@ export default {
 		},
 		// 是否显示提示
 		isShowTip: {
+			type: Boolean,
+			default: true
+		},
+		isShowName: {
 			type: Boolean,
 			default: true
 		}

@@ -1395,11 +1395,7 @@ export default {
 							/>
 						</template>
 					</el-table-column>
-					<el-table-column
-						label="佣金"
-						prop="customerCommission"
-						width="150"
-					>
+					<el-table-column label="佣金" prop="customerCommission" width="150">
 						<template #default="scope">
 							<el-input
 								size="mini"
