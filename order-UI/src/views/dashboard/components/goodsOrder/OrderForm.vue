@@ -258,12 +258,15 @@ export default {
 		},
 		// 填充货物信息中的供应商
 		handleCommitBackSupplier(scope, val) {
+			Object.assign(scope.row, {});
+			// 如果已经选择了仓库
 			scope.row.supplier = val.companyName;
 			scope.row.supplierID = val.companyId;
 			scope.row.currentType = 'supplier'; // 设置当前类型为供应商
 		},
 		// 仓库信息 从仓库发货
 		handleCommitBackInventory(scope, val) {
+			Object.assign(scope.row, {});
 			scope.row.storeID = val.id;
 			scope.row.storeHouseID = val.storeHouseid;
 			scope.row.storeHouseName = val.storeHouseName;
