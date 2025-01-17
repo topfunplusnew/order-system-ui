@@ -460,16 +460,11 @@ export default {
 					item.orderDate = parseTime(new Date(), '{y}-{m}-{d} {h}:{i}:{s}');
 				};
 				this.orderdetailList.forEach(item => updateOrderItem(item));
-				addGoodsOrder({ ...this.orderInfo, PaymentState: '' })
-					.then(() => {
-						this.resetOrderInfo();
-						this.isSea = false;
-						this.isLand = false;
-					})
-					.catch(err => {
-						this.$message.error(err);
-						this.handleReject();
-					});
+				addGoodsOrder({ ...this.orderInfo, PaymentState: '' }).then(() => {
+					this.resetOrderInfo();
+					this.isSea = false;
+					this.isLand = false;
+				});
 			} else {
 				this.handleUpdateGoodsOrder();
 			}

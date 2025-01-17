@@ -29,8 +29,11 @@ export var common_dialog = {
 		// 处理
 		async handleCallBack(callback) {
 			// 执行回调函数
-			await callback();
+			const res = await callback();
 
+			if (res.code !== 200) {
+				return Promise.reject();
+			}
 			// 延时加载list
 			return Promise.resolve();
 		},
@@ -45,10 +48,14 @@ export var common_dialog = {
 		// 弹窗点击确认 todo 这个方法可以整合到对应混入中
 		handleDialogConfirm(callback, message = '操作成功') {
 			this.checkDialog(callback);
-			this.handleCallBack(callback).then(() => {
-				this.$message.success(message);
-				this.clearStatus();
-			});
+			this.handleCallBack(callback)
+				.then(() => {
+					this.$message.success(message);
+					this.clearStatus();
+				})
+				.catch(err => {
+					this.$message.error(err);
+				});
 		},
 		// 弹窗相关校验
 		checkDialog(callback) {
@@ -62,7 +69,7 @@ export var common_dialog = {
 			// 清除组件 防止下次导致污染渲染
 			this.currentComponent = null;
 			// 关闭弹窗
-			this.dialogVisible = false;
+			// this.dialogVisible = false;
 			// 清除状态后重新拉取一下数据
 			try {
 				this?.getList();
