@@ -558,7 +558,7 @@
 							show-overflow-tooltip
 						>
 							<template slot-scope="scope">
-								{{ scope.row.isUseOilCard == 1 ? '是' : '否' }}
+								{{ scope.row.isUseOilCard === 1 ? '是' : '否' }}
 							</template>
 						</el-table-column>
 						<el-table-column
@@ -727,7 +727,7 @@ import StepsForm from '../../dashboard/components/businessTrip/StepsForm.vue';
 import { mixin_common_upload } from '../../dashboard/mixins/common/common_upload';
 import { mixin_business_trip_update } from '../../dashboard/mixins/bussiness/business_trip_update';
 import { mixin_business_trip_car_apply } from '../../dashboard/mixins/bussiness/bussiness_trip_car_apply';
-import { mixin_business_trip_oil_card } from '../../dashboard/mixins/bussiness/bussiness_trip_oil_card';
+// import { mixin_business_trip_oil_card } from '../../dashboard/mixins/bussiness/bussiness_trip_oil_card';
 import SubjectOption from '../../../components/SubjectOption.vue';
 import { listDept } from '@/api/system/dept';
 import '@riophae/vue-treeselect/dist/vue-treeselect.css';
@@ -754,7 +754,7 @@ export default {
 		mixin_business_trip_add,
 		mixin_business_trip_update,
 		mixin_business_trip_car_apply,
-		mixin_business_trip_oil_card,
+		// mixin_business_trip_oil_card,
 		mixin_checkfile
 	],
 	data() {
@@ -932,6 +932,11 @@ export default {
 		handleType(value, scope) {
 			scope.row.item = value;
 		},
+		changePaymentApplyInfoVisible() {
+			this.needMoney = 0;
+			this.applyForPaymentDialogVisible = false;
+			this.getList();
+		},
 
 		/** 查询出差列表 */
 		getList() {
@@ -1108,7 +1113,7 @@ export default {
 		},
 		/** 出差报销删除按钮操作 */
 		handleDeleteTripReimbursement() {
-			if (this.checkedTripReimbursement.length == 0) {
+			if (this.checkedTripReimbursement.length === 0) {
 				this.$modal.msgError('请先选择要删除的出差报销数据');
 			} else {
 				const tripReimbursementList = this.tripReimbursementList;
@@ -1116,7 +1121,7 @@ export default {
 				this.tripReimbursementList = tripReimbursementList.filter(function (
 					item
 				) {
-					return checkedTripReimbursement.indexOf(item.index) == -1;
+					return checkedTripReimbursement.indexOf(item.index) === -1;
 				});
 			}
 		},

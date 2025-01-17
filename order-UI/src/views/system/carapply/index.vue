@@ -620,6 +620,8 @@
 								</el-button>
 							</el-col>
 						</el-row>
+
+						<!--            油卡消费记录-->
 						<el-table
 							size="mini"
 							:data="oilCardConsumeList"
@@ -627,6 +629,9 @@
 							@selection-change="handleOilCardSelectionChange"
 							ref="oilCardTable"
 						>
+							<template #empty>
+								<span>当前无油卡消费记录,若有,请添加油卡消费记录</span>
+							</template>
 							<!-- 多选 -->
 							<el-table-column type="selection" width="90" align="center" />
 							<!-- 序号 -->
