@@ -29,7 +29,10 @@ import HistoryList from '@/views/dashboard/components/goodsOrder/HistoryList.vue
 import { PUBLIC_DICT_TYPE } from '@/utils/order';
 import StateTag from '@/views/dashboard/components/common/StateTag.vue';
 import { excludeParams } from '../../../../api/tool/exclude';
-import { listGoodsOrder } from '../../../../api/system/goodsOrder';
+import {
+	auditGoodsOrder,
+	listGoodsOrder
+} from '../../../../api/system/goodsOrder';
 
 export default {
 	name: 'ElTableOrder',
@@ -229,14 +232,12 @@ export default {
 		},
 		handleReCheck(row) {
 			this.$modal.confirm('是否取消审核').then(() => {
-				getGoodsOrder(row.id).then(res => {
-					updateGoodsOrder({
-						...excludeParams(res.data, this.$exclude),
-						checkState: '未审核'
-					}).then(() => {
-						this.$modal.msgSuccess('取消审核成功');
-						this.getList();
-					});
+				auditGoodsOrder({
+					id: row.id,
+					isaudit: false
+				}).then(() => {
+					this.$modal.msgSuccess('取消审核成功');
+					this.getList();
 				});
 			});
 		},

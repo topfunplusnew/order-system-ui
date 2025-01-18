@@ -43,16 +43,6 @@ export var common_dialog = {
 			if (!(callback instanceof Function)) {
 				throw new Error('回调函数未定义');
 			}
-		},
-		// 清除状态
-		clearStatus() {
-			// 清除组件 防止下次导致污染渲染
-			this.currentComponent = null;
-			try {
-				this?.getList();
-			} catch (err) {
-				console.log('抓取数据 getList 发生错误:', err);
-			}
 		}
 	}
 };

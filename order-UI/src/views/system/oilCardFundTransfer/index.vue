@@ -289,6 +289,7 @@ import { mixin_printHTML } from '@/views/dashboard/mixins/print';
 import SearchOption from '@/components/SearchOption.vue';
 import { listOilCard } from '@/api/system/oilCard';
 import { excludeParams } from '@/api/tool/exclude';
+import { parseTime } from '../../../utils/ruoyi';
 
 export default {
 	name: 'OilCardFundTransfer',
@@ -415,7 +416,7 @@ export default {
 				oilMainCardNo: null,
 				oilSecondCardNo: null,
 				rechargeMoney: null,
-				rechargeDate: new Date().getTime(),
+				rechargeDate: parseTime(new Date(), '{y}-{m}-{d} {h}:{i}:{s}'),
 				rechargeName: null,
 				comments: null,
 				addtime: null,
@@ -464,14 +465,14 @@ export default {
 				if (valid) {
 					if (this.form.id != null) {
 						this.form = excludeParams(this.form, this.$exclude);
-						updateOilCardFundTransfer(this.form).then(response => {
+						updateOilCardFundTransfer(this.form).then(() => {
 							this.$modal.msgSuccess('修改成功');
 							this.open = false;
 							this.getList();
 						});
 					} else {
 						this.form = excludeParams(this.form, this.$exclude);
-						addOilCardFundTransfer(this.form).then(response => {
+						addOilCardFundTransfer(this.form).then(() => {
 							this.$modal.msgSuccess('新增成功');
 							this.open = false;
 							this.getList();
