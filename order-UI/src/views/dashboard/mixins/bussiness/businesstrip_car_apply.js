@@ -36,7 +36,7 @@ export var mixin_businesstrip_car_apply = {
 			this.queryCars = val;
 		},
 		handleCommitBackCars(val) {
-			this.form.carNo = val.dictLabel;
+			this.form.carNo = val.licensePlate;
 		},
 		handleCommitBackOilCard(val, row) {
 			row.oilCardNo = val.oilCardNo;

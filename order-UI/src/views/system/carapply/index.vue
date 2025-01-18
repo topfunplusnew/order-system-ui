@@ -417,16 +417,19 @@
 									</el-col>
 									<el-col :span="4">
 										<SearchOption
-											:limit-info="{ dictType: 'order_cars' }"
-											:get-data="listData"
+											:limit-info="{}"
+											:get-data="listVehicles"
 											query-label="车牌搜索"
 											:query-name="queryCars"
-											query-info="dictLabel"
+											query-info="licensePlate"
 											@update:queryName="updateQueryCars"
 											@commitBack="handleCommitBackCars"
 										>
 											<template #table-columns>
-												<el-table-column label="车牌" prop="dictLabel" />
+												<el-table-column label="车牌" prop="licensePlate" />
+												<el-table-column label="车辆型号" prop="model" />
+												<el-table-column label="购买时间" prop="purchaseDate" />
+												<el-table-column label="行驶里程" prop="mileage" />
 											</template>
 										</SearchOption>
 									</el-col>
@@ -600,7 +603,6 @@
 							</el-form-item>
 						</el-col>
 					</el-row>
-					<!--       todo       油卡充值列表-->
 					<div style="padding: 30px">
 						<el-row :gutter="10" class="mb8">
 							<el-col :span="1.5">
@@ -899,6 +901,8 @@ import { getCarApply, updateCarApply } from '../../../api/system/carApply';
 import { mixin_checkfile } from '../../dashboard/mixins/checkfiles/mixin_checkfile';
 import DialogWrapper from '@/views/dashboard/components/common/DialogWrapper.vue';
 import { common_dialog } from '@/views/dashboard/mixins/common/common_dialog';
+import { listVehicles } from '../../../api/system/vehicles';
+import { excludeParams } from '../../../api/tool/exclude';
 
 export default {
 	name: 'CarApply',
@@ -1042,6 +1046,7 @@ export default {
 		}
 	},
 	methods: {
+		listVehicles,
 		updateCarApply() {
 			return updateCarApply;
 		},
@@ -1197,14 +1202,14 @@ export default {
 			this.$refs['form'].validate(valid => {
 				if (valid) {
 					if (this.form.id != null) {
-						updateCarApply(this.form).then(() => {
+						updateCarApply(excludeParams(this.form, this.$exclude)).then(() => {
 							this.$modal.msgSuccess('修改成功');
 							this.open = false;
 							this.getList();
 						});
 					} else {
 						this.form.oilCardConsumes = this.oilCardConsumeList;
-						addCarApply(this.form).then(() => {
+						addCarApply(excludeParams(this.form, this.$exclude)).then(() => {
 							this.$modal.msgSuccess('新增成功');
 							this.open = false;
 							this.getList();
