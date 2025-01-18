@@ -42,3 +42,12 @@ export function delCarApply(id) {
 		method: 'delete'
 	});
 }
+
+// todo 批量修改车辆派出的btripId
+export function updateCarApplyBtripId(data) {
+	return request({
+		url: '/system/carApply/updateCarApplyBtripId',
+		method: 'put',
+		data: data
+	});
+}

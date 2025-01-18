@@ -310,51 +310,77 @@
 						</el-col>
 					</el-row>
 					<el-row v-if="useCar === '是'" style="margin: 20px 0">
-						<el-card class="box-card">
-							<div slot="header" class="clearfix">
-								<span>车辆信息</span>
-								<!--索引车辆使用信息-->
-								<el-button
-									style="float: right; padding: 3px 0; color: #409eff"
-									size="mini"
-									type="text"
-									@click="indexCarApplyInfo"
-								>
-									引用车辆使用信息
+						<!--            车辆信息-->
+						<el-row :gutter="10" class="mb8">
+							<el-col :span="1.5">
+								<el-button size="mini" type="primary" @click="handleAddCars"
+									>添加
 								</el-button>
-							</div>
-							<div
-								v-if="!hasCarApplyInfo"
-								style="text-align: center; color: #999"
-							>
-								暂无车辆信息
-							</div>
-							<div v-else>
-								<el-descriptions>
-									<el-descriptions-item label="申请时间">
-										{{ carApplyInformation.applyDate }}
-									</el-descriptions-item>
-									<el-descriptions-item label="申请人">
-										{{ carApplyInformation.applyUser }}
-									</el-descriptions-item>
-									<el-descriptions-item label="部门">
-										{{ carApplyInformation.department }}
-									</el-descriptions-item>
-									<el-descriptions-item label="车牌">
-										{{ carApplyInformation.carNo }}
-									</el-descriptions-item>
-									<el-descriptions-item label="用车时间">
-										{{ carApplyInformation.startTime }}
-									</el-descriptions-item>
-									<el-descriptions-item label="还车时间">
-										{{ carApplyInformation.endTime }}
-									</el-descriptions-item>
-									<el-descriptions-item label="用车事由">
-										{{ carApplyInformation.ApplyPurpose }}
-									</el-descriptions-item>
-								</el-descriptions>
-							</div>
-						</el-card>
+							</el-col>
+							<el-col :span="1.5">
+								<el-button size="mini" type="danger" @click="handleDeleteCars"
+									>删除
+								</el-button>
+							</el-col>
+						</el-row>
+						<el-table
+							size="mini"
+							:data="carsList"
+							:row-class-name="rowCarsIndex"
+							@selection-change="handleCarsSelectionChange"
+						>
+							<el-table-column type="selection" width="90" align="center" />
+							<el-table-column label="序号" align="center" prop="index" />
+							<el-table-column label="车牌号" align="center">
+								<template #default="scope">
+									<el-row>
+										<el-col :span="20">
+											<el-input
+												size="mini"
+												disabled
+												v-model="scope.row.carNo"
+											/>
+										</el-col>
+										<el-col :span="4">
+											<SearchOption
+												:limit-info="{}"
+												:get-data="listCarApply"
+												:query-name="queryCarApply"
+												query-info="carNo"
+												query-label="车牌"
+												@commitBack="
+													value => handleCommitBackCarApply(value, scope)
+												"
+												@update:queryName="handleQueryCarApply"
+											>
+												<template #table-columns>
+													<el-table-column label="申请人" prop="applyUser" />
+													<el-table-column label="部门" prop="department" />
+													<el-table-column label="车牌" prop="carNo" />
+													<el-table-column label="用车时间" prop="startTime" />
+													<el-table-column label="还车时间" prop="endTime" />
+												</template>
+											</SearchOption>
+										</el-col>
+									</el-row>
+								</template>
+							</el-table-column>
+							<el-table-column label="车辆信息" align="center">
+								<template #default="scope">
+									<el-button
+										v-if="scope.row.carNo"
+										type="text"
+										size="mini"
+										@click="handleCheckCar(scope.row)"
+									>
+										查看车辆信息
+									</el-button>
+									<el-button v-else type="text" size="mini">
+										请先引用车辆
+									</el-button>
+								</template>
+							</el-table-column>
+						</el-table>
 					</el-row>
 					<hr />
 					<el-row :gutter="10" class="mb8">
@@ -704,6 +730,20 @@
 				/>
 			</keep-alive>
 		</el-dialog>
+
+		<div v-if="currentComponent">
+			<DialogWrapper
+				:current-component="currentComponent"
+				:dialog-visible="dialogVisible"
+				:dialog-props="dialogProps"
+				:dialog-title="dialogTitle"
+				:dialog-width="dialogWidth"
+				:close-confirm="closeConfirm"
+				@update:dialogVisible="args => (dialogVisible = false)"
+				@close="handleCloseDialog"
+				@confirm="handleDialogConfirm"
+			/>
+		</div>
 	</div>
 </template>
 
@@ -719,15 +759,12 @@ import { mapGetters } from 'vuex';
 import ApplyPayment from '@/views/dashboard/components/common/ApplyPayment.vue';
 import { TableName } from '@/api/tool/enums';
 import { listBankAccount } from '@/api/system/bankAccount';
-import { parseTime } from '@/utils/ruoyi';
-import { mixin_car_apply } from '../../dashboard/mixins/bussiness/index_car_apply';
 import InfoDialog from '../../../components/InfoDialog.vue';
 import { mixin_business_trip_add } from '../../dashboard/mixins/bussiness/business_trip_add';
 import StepsForm from '../../dashboard/components/businessTrip/StepsForm.vue';
 import { mixin_common_upload } from '../../dashboard/mixins/common/common_upload';
 import { mixin_business_trip_update } from '../../dashboard/mixins/bussiness/business_trip_update';
 import { mixin_business_trip_car_apply } from '../../dashboard/mixins/bussiness/bussiness_trip_car_apply';
-// import { mixin_business_trip_oil_card } from '../../dashboard/mixins/bussiness/bussiness_trip_oil_card';
 import SubjectOption from '../../../components/SubjectOption.vue';
 import { listDept } from '@/api/system/dept';
 import '@riophae/vue-treeselect/dist/vue-treeselect.css';
@@ -735,10 +772,18 @@ import Treeselect from '@riophae/vue-treeselect';
 import CheckFiles from '@/components/CheckFiles.vue';
 import { mixin_checkfile } from '../../dashboard/mixins/checkfiles/mixin_checkfile';
 import StateTag from '@/views/dashboard/components/common/StateTag.vue';
+import { listCarApply } from '../../../api/system/carApply';
+import SearchOption from '../../../components/SearchOption.vue';
+import { common_dialog } from '../../dashboard/mixins/common/common_dialog';
+import DialogWrapper from '../../dashboard/components/common/DialogWrapper.vue';
+import CARS from '../../../components/NeedToShow/CARS.vue';
+import { listCars } from '../../../api/system/cars';
 
 export default {
 	name: 'BusinessTrip',
 	components: {
+		DialogWrapper,
+		SearchOption,
 		StateTag,
 		CheckFiles,
 		SubjectOption,
@@ -750,11 +795,10 @@ export default {
 	mixins: [
 		mixin_printHTML,
 		mixin_common_upload,
-		mixin_car_apply,
+		common_dialog,
 		mixin_business_trip_add,
 		mixin_business_trip_update,
 		mixin_business_trip_car_apply,
-		// mixin_business_trip_oil_card,
 		mixin_checkfile
 	],
 	data() {
@@ -846,7 +890,11 @@ export default {
 			],
 			queryBankAcount: '',
 			// 互斥变量UUID
-			UUID: ''
+			UUID: '',
+
+			carsList: [],
+			checkedCars: [],
+			queryCarApply: ''
 		};
 	},
 	// 展示与隐藏
@@ -892,6 +940,7 @@ export default {
 		...mapGetters(['deptName'])
 	},
 	methods: {
+		listCarApply,
 		updateBusinessTrip,
 		getBusinessTrip,
 		listBankAccount,
@@ -937,7 +986,55 @@ export default {
 			this.applyForPaymentDialogVisible = false;
 			this.getList();
 		},
-
+		handleCarsSelectionChange(selection) {
+			this.checkedCars = selection.map(item => item.index);
+		},
+		rowCarsIndex({ row, rowIndex }) {
+			row.index = rowIndex + 1;
+		},
+		handleAddCars() {
+			let obj = {
+				bTripId: null,
+				carNo: null
+			};
+			// 将初始化对象添加到 carsList
+			this.carsList.push(obj);
+		},
+		handleDeleteCars() {
+			if (this.checkedCars.length === 0) {
+				this.$message.error('请先选择要删除的车辆数据');
+			} else {
+				const cars = this.carsList;
+				const checkedCars = this.checkedCars;
+				this.carsList = cars.filter(function (item) {
+					return checkedCars.indexOf(item.index) === -1;
+				});
+			}
+		},
+		handleCommitBackCarApply(value, scope) {
+			scope.row.bTripId = value.bTripId;
+			scope.row.carNo = value.carNo;
+		},
+		handleQueryCarApply(value) {
+			this.queryCarApply = value;
+		},
+		handleCheckCar(row) {
+			listCars({ carNo: row.carNo }).then(res => {
+				if (res.rows.length > 0) {
+					this.openDialog(
+						CARS,
+						'查看车辆信息',
+						'650px',
+						{
+							needToShowInfo: res.rows[0]
+						},
+						true
+					);
+				} else {
+					this.$message.error('该车辆不存在');
+				}
+			});
+		},
 		/** 查询出差列表 */
 		getList() {
 			this.loading = true;
@@ -953,9 +1050,7 @@ export default {
 			this.active = 0;
 			this.reset();
 			this.$refs.uploadFile.clearFileList();
-			this.resetCarApplyInformation();
-			// 设置索引为false
-			this.isIndexCarInfo = false;
+			this.carsList = [];
 		},
 		// 出差信息表单重置
 		reset() {
@@ -977,92 +1072,6 @@ export default {
 			};
 			this.tripReimbursementList = [];
 			this.resetForm('form');
-		},
-		// 重置车辆申请的状态
-		resetCarApplyForm() {
-			this.carApplyForm = {
-				applyDate: parseTime(new Date(), '{y}-{m}-{d} {h}:{i}:{s}'),
-				applyUser: this.trueName,
-				department: this.deptName, // 从vuex中拿到
-				carNo: '',
-				isUseOilCard: '0',
-				refuelingFrequency: '',
-				applyPurpose: '',
-				startTime: '',
-				endTime: '',
-				miles: '',
-				endMile: '',
-				startMile: '',
-				startCarState: '',
-				endCarState: '',
-				backStopPlace: '',
-				violationsCount: '',
-				fine: '',
-				isMaintenance: '否',
-				maintenanceMoney: '',
-				dispatchPerson: '',
-				peers: '',
-				comments: '',
-				path: ''
-			};
-		},
-		// 重置车辆申请信息
-		resetCarApplyInformation() {
-			this.hasCarApplyInfo = false;
-			this.carApplyInformation = {
-				applyDate: parseTime(new Date(), '{y}-{m}-{d} {h}:{i}:{s}'),
-				applyUser: this.trueName,
-				department: this.deptName, // 从vuex中拿到
-				carNo: '',
-				isUseOilCard: '0',
-				refuelingFrequency: '',
-				applyPurpose: '',
-				startTime: '',
-				endTime: '',
-				miles: '',
-				endMile: '',
-				startMile: '',
-				startCarState: '',
-				endCarState: '',
-				backStopPlace: '',
-				violationsCount: '',
-				fine: '',
-				isMaintenance: '否',
-				maintenanceMoney: '',
-				dispatchPerson: '',
-				peers: '',
-				comments: '',
-				path: ''
-			};
-		},
-		// 重置加油卡重置信息的表单
-		resetOilCardRechargeInfo() {
-			this.moneyInfo = {
-				oilCardNo: '',
-				rechargeType: '',
-				rechargeMoney: '',
-				rechargeDate: parseTime(new Date(), '{y}-{m}-{d} {h}:{i}:{s}'),
-				rechargeName: '',
-				acountsName: '',
-				bankNo: '',
-				attachment: '',
-				comments: ''
-			};
-		},
-		// 充值加油卡消费信息的表单
-		resetOilCardConsumeInfo() {
-			this.oilCardConsumeInfo = {
-				oilCardNo: '', // 加油卡卡号
-				useDate: '', // 使用加油卡时间
-				carNo: '', // 车辆车牌号
-				startCardSurplus: '', // 期初余额
-				rechargeMoney: '', // 充值金额
-				refuelingNumber: '', // 加油量
-				unitPrice: '', // 单价
-				refuelingMoney: '', // 加油金额
-				attachmentOiladd: '', // 加油小票附件路径
-				comments: '' // 备注
-			};
 		},
 		/** 搜索按钮操作 */
 		handleQuery() {

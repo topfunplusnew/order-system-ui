@@ -31,13 +31,11 @@ export var common_dialog = {
 		},
 		handleCloseDialog(callback) {
 			this.checkDialog(callback);
-			// todo
 			callback(this);
 		},
 		// 弹窗点击确认 只有回调成功才关闭弹窗
 		handleDialogConfirm(callback) {
 			this.checkDialog(callback);
-			// todo
 			callback(this);
 		},
 		// 弹窗相关校验

@@ -6,6 +6,12 @@ export default {
 			type: Object,
 			default: () => {}
 		}
+	},
+	methods: {
+		handleProcess(that) {
+			that.dialogVisible = false;
+		},
+		handleReject() {}
 	}
 };
 </script>
