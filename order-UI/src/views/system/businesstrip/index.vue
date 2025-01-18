@@ -473,245 +473,6 @@
 			</div>
 		</el-dialog>
 
-		<!--    车辆索引-->
-		<InfoDialog
-			:visible="indexCarApplyVisible"
-			title="引用车辆使用信息"
-			@close="indexCarApplyVisible = false"
-		>
-			<template #info>
-				<el-row>
-					<el-form
-						ref="queryForm"
-						:model="carsQueryParams"
-						size="mini"
-						:inline="true"
-						label-width="120px"
-					>
-						<el-form-item label="申请时间">
-							<el-date-picker
-								v-model="carsQueryParams.applyDate"
-								type="daterange"
-								range-separator="至"
-								start-placeholder="开始日期"
-								end-placeholder="结束日期"
-								size="mini"
-								value-format="yyyy-MM-dd"
-							/>
-						</el-form-item>
-						<el-form-item label="申请人">
-							<el-input
-								v-model="carsQueryParams.applyUser"
-								placeholder="请输入申请人"
-							/>
-						</el-form-item>
-						<el-form-item label="部门">
-							<el-input
-								v-model="carsQueryParams.department"
-								placeholder="请输入部门"
-							/>
-						</el-form-item>
-						<el-form-item label="车牌">
-							<el-input
-								v-model="carsQueryParams.carNo"
-								placeholder="请输入车牌"
-							/>
-						</el-form-item>
-						<el-form-item label="车辆绑定状态">
-							<el-radio v-model="carsQueryParams.bTripIdIsNull" label="true"
-								>已绑定
-							</el-radio>
-							<el-radio v-model="carsQueryParams.bTripIdIsNull" label="false"
-								>未被绑定
-							</el-radio>
-						</el-form-item>
-						<el-form-item>
-							<el-button
-								type="primary"
-								icon="el-icon-search"
-								@click="getCarsList"
-								>搜索
-							</el-button>
-						</el-form-item>
-						<el-form-item>
-							<el-button icon="el-icon-refresh-right" @click="handleRefreshCars"
-								>刷新
-							</el-button>
-						</el-form-item>
-					</el-form>
-					<el-table
-						id="printBox"
-						v-loading="loading"
-						v-horizontal-scroll="'always'"
-						border
-						:data="carApplyList"
-						size="mini"
-						:cell-style="
-							() => {
-								return { padding: '2px' };
-							}
-						"
-						@selection-change="handleSelectionChange"
-					>
-						<el-table-column
-							label="申请时间"
-							align="center"
-							prop="applyDate"
-							show-overflow-tooltip
-						/>
-						<el-table-column
-							label="申请人"
-							align="center"
-							prop="applyUser"
-							show-overflow-tooltip
-						/>
-						<el-table-column
-							label="部门"
-							align="center"
-							prop="department"
-							show-overflow-tooltip
-						/>
-						<el-table-column
-							label="车牌"
-							align="center"
-							prop="carNo"
-							show-overflow-tooltip
-						/>
-						<el-table-column
-							label="是否携带油卡"
-							align="center"
-							prop="isUseOilCard"
-							show-overflow-tooltip
-						>
-							<template slot-scope="scope">
-								{{ scope.row.isUseOilCard === 1 ? '是' : '否' }}
-							</template>
-						</el-table-column>
-						<el-table-column
-							label="随同乘车人员"
-							align="center"
-							prop="peers"
-							show-overflow-tooltip
-						/>
-						<el-table-column
-							label="用车时间"
-							align="center"
-							prop="startTime"
-							show-overflow-tooltip
-						/>
-						<el-table-column
-							label="还车时间"
-							align="center"
-							prop="endTime"
-							show-overflow-tooltip
-						/>
-						<el-table-column
-							label="用车事由"
-							align="center"
-							prop="applyPurpose"
-							show-overflow-tooltip
-						/>
-						<el-table-column
-							label="出车前里程"
-							align="center"
-							prop="startMile"
-							show-overflow-tooltip
-						/>
-						<el-table-column
-							label="出车前车况"
-							align="center"
-							prop="startCarState"
-							show-overflow-tooltip
-						/>
-						<el-table-column
-							label="回来后里程"
-							align="center"
-							prop="endMile"
-							show-overflow-tooltip
-						/>
-						<el-table-column
-							label="回来后车况"
-							align="center"
-							prop="endCarState"
-							show-overflow-tooltip
-						/>
-						<el-table-column
-							label="用车里程数"
-							align="center"
-							prop="miles"
-							show-overflow-tooltip
-						/>
-						<el-table-column
-							label="回程停靠位置"
-							align="center"
-							prop="backStopPlace"
-							show-overflow-tooltip
-						/>
-						<el-table-column
-							label="行程中违法次数"
-							align="center"
-							prop="violationsCount"
-							show-overflow-tooltip
-						/>
-						<el-table-column
-							label="违章罚款金额"
-							align="center"
-							prop="fine"
-							show-overflow-tooltip
-						/>
-						<el-table-column
-							label="行程中是否维修/保养"
-							align="center"
-							prop="isMaintenance"
-							show-overflow-tooltip
-						/>
-						<el-table-column
-							label="保养金额"
-							align="center"
-							prop="maintenanceMoney"
-							show-overflow-tooltip
-						/>
-						<el-table-column
-							label="行程中使用加油卡加油次数"
-							align="center"
-							prop="refuelingFrequency"
-							show-overflow-tooltip
-						/>
-						<el-table-column
-							label="派车人"
-							align="center"
-							prop="dispatchPerson"
-							show-overflow-tooltip
-						/>
-						<el-table-column
-							label="操作"
-							align="center"
-							class-name="small-padding fixed-width"
-							fixed="right"
-						>
-							<template slot-scope="scope">
-								<el-button
-									size="mini"
-									type="success"
-									@click="indexThisCarApplyInfo(scope.row)"
-								>
-									引用
-								</el-button>
-							</template>
-						</el-table-column>
-					</el-table>
-
-					<!--          分页 需要单独的分页-->
-					<pagination
-						v-show="carsTotal > 0"
-						:total="carsTotal"
-						:page.sync="carsQueryParams.pageNum"
-						:limit.sync="carsQueryParams.pageSize"
-						@pagination="getCarsList"
-					/>
-				</el-row>
-			</template>
-		</InfoDialog>
 		<!--    付款申请弹窗-->
 		<el-dialog
 			:close-on-click-modal="false"
@@ -918,7 +679,6 @@ export default {
 		listDept().then(response => {
 			this.deptOptions = this.handleTree(response.data, 'deptId');
 		});
-		this.resetCarApplyForm();
 		if (
 			localStorage.getItem('BusinessTrip-columns') === 'null' ||
 			!localStorage.getItem('BusinessTrip-columns')
@@ -994,7 +754,7 @@ export default {
 		},
 		handleAddCars() {
 			let obj = {
-				bTripId: null,
+				id: null,
 				carNo: null
 			};
 			// 将初始化对象添加到 carsList
@@ -1012,8 +772,42 @@ export default {
 			}
 		},
 		handleCommitBackCarApply(value, scope) {
-			scope.row.bTripId = value.bTripId;
+			scope.row.id = value.id;
 			scope.row.carNo = value.carNo;
+
+			function addReimbursementItem(item, cost) {
+				const existingItem = this.tripReimbursementList.find(
+					reimbursement => reimbursement.item === item
+				);
+
+				// 如果该项费用已经存在，则累加
+				if (existingItem) {
+					existingItem.itemCost = Number(existingItem.itemCost) + Number(cost);
+				} else {
+					// 否则添加新的费用项
+					this.tripReimbursementList.push({
+						item: item,
+						itemCost: cost
+					});
+				}
+			}
+
+			// 引用车辆的时候需要将费用置于小项中
+			if (value.fine) {
+				addReimbursementItem.call(this, '规章费用', value.fine);
+			}
+			if (value.refuelingMoney) {
+				addReimbursementItem.call(this, '加油费用', value.refuelingMoney);
+			}
+			if (value.cashRefueling) {
+				addReimbursementItem.call(this, '现金加油费用', value.cashRefueling);
+			}
+			if (value.repairMoney) {
+				addReimbursementItem.call(this, '维修费用', value.repairMoney);
+			}
+			if (value.maintenanceMoney) {
+				addReimbursementItem.call(this, '保养费用', value.maintenanceMoney);
+			}
 		},
 		handleQueryCarApply(value) {
 			this.queryCarApply = value;
@@ -1047,13 +841,12 @@ export default {
 		// 取消按钮
 		cancel() {
 			this.open = false;
-			this.active = 0;
 			this.reset();
 			this.$refs.uploadFile.clearFileList();
-			this.carsList = [];
 		},
 		// 出差信息表单重置
 		reset() {
+			this.active = 0;
 			this.form = {
 				id: null,
 				employeeID: null,
@@ -1071,6 +864,7 @@ export default {
 				delFlag: null
 			};
 			this.tripReimbursementList = [];
+			this.carsList = [];
 			this.resetForm('form');
 		},
 		/** 搜索按钮操作 */

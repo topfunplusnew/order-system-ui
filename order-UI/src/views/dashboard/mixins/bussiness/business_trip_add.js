@@ -3,7 +3,10 @@ import {
 	addBusinessTrip,
 	updateBusinessTrip
 } from '../../../../api/system/BusinessTrip';
-import { updateCarApply } from '../../../../api/system/carApply';
+import {
+	updateCarApply,
+	updateCarApplyBatch
+} from '../../../../api/system/carApply';
 import { getUuid } from '../../../../utils/trash/utils';
 
 // 出差添加信息模块
@@ -53,7 +56,11 @@ export var mixin_business_trip_add = {
 				updateBusinessTrip(excludeParams(this.form, this.$exclude))
 					.then(() => {
 						if (useCar) {
-							updateCarApply().then(() => {
+							const body = {
+								bTripId: this.form.id,
+								carApplyIds: this.carsList.map(item => item.id).join(',')
+							};
+							updateCarApplyBatch(body).then(() => {
 								handleSuccess('车辆信息修改成功');
 							});
 						} else {
@@ -66,13 +73,14 @@ export var mixin_business_trip_add = {
 			} else {
 				// 新增逻辑
 				addBusinessTrip({ ...this.form, UUID: this.UUID })
-					.then(() => {
+					.then(res => {
 						if (useCar) {
+							const body = {
+								bTripId: res.data.id,
+								carApplyIds: this.carsList.map(item => item.id).join(',')
+							};
 							// 提交车辆信息
-							// 如果需要出差 ID，可以从 `res` 中获取并赋值
-							// this.carApplyInformation.bTripId = res.data.id;
-							// todo 这里需要进行批量操作
-							updateCarApply().then(() => {
+							updateCarApplyBatch(body).then(() => {
 								handleSuccess('车辆信息提交成功');
 							});
 						} else {

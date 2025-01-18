@@ -10,7 +10,6 @@ export var mixin_business_trip_update = {
 		// 修改操作
 		handleUpdate(row) {
 			this.reset();
-			this.resetCarApplyInformation();
 			const id = row.id || this.ids;
 			// 拿到该行id对应的出差信息
 			getBusinessTrip(id).then(response => {
@@ -22,9 +21,8 @@ export var mixin_business_trip_update = {
 						this.$message.info('本出差信息无车辆使用记录');
 					} else {
 						this.useCar = '是';
-						this.hasCarApplyInfo = true;
 						this.$message.success('查询到本出差信息有车辆使用记录，已自动填充');
-						this.carApplyInformation = res.rows[0];
+						this.carsList = res.rows;
 					}
 				});
 				// 报销项信息保存状态

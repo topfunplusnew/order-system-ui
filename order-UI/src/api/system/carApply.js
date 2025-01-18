@@ -43,11 +43,13 @@ export function delCarApply(id) {
 	});
 }
 
-// todo 批量修改车辆派出的btripId
-export function updateCarApplyBtripId(data) {
+export function updateCarApplyBatch(data) {
 	return request({
-		url: '/system/carApply/updateCarApplyBtripId',
-		method: 'put',
-		data: data
+		url: '/system/carApply/confirmTripRelation',
+		method: 'post',
+		params: {
+			bTripId: data.bTripId,
+			carApplyIds: data.carApplyIds
+		}
 	});
 }
