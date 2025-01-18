@@ -1193,6 +1193,7 @@ export default {
 			const id = row.id || this.ids;
 			getCarApply(id).then(response => {
 				this.form = response.data;
+				this.oilCardConsumeList = response.data.oilCardConsumes;
 				this.open = true;
 				this.title = '修改车辆使用申请';
 			});
