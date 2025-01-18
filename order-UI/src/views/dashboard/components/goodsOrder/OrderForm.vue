@@ -258,7 +258,8 @@ export default {
 		},
 		// 填充货物信息中的供应商
 		handleCommitBackSupplier(scope, val) {
-			Object.assign(scope.row, {});
+			// 一个一个清除
+			this.clearDetail(scope);
 			// 如果已经选择了仓库
 			scope.row.supplier = val.companyName;
 			scope.row.supplierID = val.companyId;
@@ -266,13 +267,10 @@ export default {
 		},
 		// 仓库信息 从仓库发货
 		handleCommitBackInventory(scope, val) {
-			Object.assign(scope.row, {});
+			this.clearDetail(scope);
 			scope.row.storeID = val.id;
 			scope.row.storeHouseID = val.storeHouseid;
 			scope.row.storeHouseName = val.storeHouseName;
-			if (scope.row.supplier) {
-				scope.row.supplier = null;
-			}
 			scope.row.length = val.length;
 			scope.row.height = val.height;
 			scope.row.width = val.width;
@@ -527,6 +525,52 @@ export default {
 				isLand: ''
 			};
 			this.orderdetailList = [];
+		},
+		clearDetail(scope) {
+			scope.row.orderDate = new Date();
+			scope.row.supplier = '';
+			scope.row.supplierID = '';
+			scope.row.customer = '';
+			scope.row.customerID = '';
+			scope.row.levelID = '';
+			scope.row.levelName = '';
+			scope.row.countingUnit = '片';
+			scope.row.height = '';
+			scope.row.length = '';
+			scope.row.width = '';
+			scope.row.piecesPerPack = '';
+			scope.row.pieces = '';
+			scope.row.packs = '';
+			scope.row.price = '';
+			scope.row.isIncludeTaxFactory = 0;
+			scope.row.sundryCost = '';
+			scope.row.paymentFactory = '';
+			scope.row.paymentUnload = '';
+			scope.row.isIncludeTaxSale = 0;
+			scope.row.payments = '';
+			scope.row.erro = '';
+			scope.row.tonnage = '';
+			scope.row.landFreightPrice = '';
+			scope.row.landFreight = '';
+			scope.row.seaFreight = '';
+			scope.row.freight = '';
+			scope.row.otherCost = '';
+			scope.row.profit = '';
+			scope.row.profitNoTax = '';
+			scope.row.actualPieces = '';
+			scope.row.paymentsWithSundry = '';
+			scope.row.additionalFees = '';
+			scope.row.storeHouseID = '';
+			scope.row.storeHouseName = '';
+			scope.row.storeID = '';
+			scope.row.logisticsProfit = '';
+			scope.row.customerCommission = '';
+			scope.row.isAdjusted = 0;
+			scope.row.adjustOrderNo = '';
+			scope.row.adjustDate = '';
+			scope.row.factoryRebateAmount = '';
+			scope.row.factoryDiscountAmount = '';
+			scope.row.comments = '';
 		},
 		// 重置陆运费
 		resetSeaCarInfo() {

@@ -28,6 +28,8 @@ import { parseTime } from '@/utils/ruoyi';
 import HistoryList from '@/views/dashboard/components/goodsOrder/HistoryList.vue';
 import { PUBLIC_DICT_TYPE } from '@/utils/order';
 import StateTag from '@/views/dashboard/components/common/StateTag.vue';
+import { excludeParams } from '../../../../api/tool/exclude';
+import { listGoodsOrder } from '../../../../api/system/goodsOrder';
 
 export default {
 	name: 'ElTableOrder',
@@ -139,11 +141,11 @@ export default {
 					};
 				} else if (row.isAdjust === 3) {
 					return {
-						background: '#ffcccc !important'
+						background: '#fdf6ec !important'
 					};
 				} else {
 					return {
-						background: '#fdf6ec !important'
+						background: '#ffcccc !important'
 					};
 				}
 			} else {
@@ -192,12 +194,37 @@ export default {
 					this.$modal.msgSuccess('删除成功');
 				});
 		},
+		// 查看调整单信息
+		handleCheckAdjust(row) {
+			const query = {
+				adjustOrderid: row.id
+			};
+			listGoodsOrder(query).then(res => {
+				const data = res.rows.filter(item => item.isAdjust > 0)[0];
+				this.openDialog(GOODS_ORDER, '查看调整单信息', '50%', {
+					needToShowInfo: data
+				});
+			});
+		},
 		// 查看原订单的信息
 		handleCheckPrevious(row) {
-			const { id } = row;
-			getGoodsOrder(id).then(res => {
+			const { adjustOrderid } = row;
+			getGoodsOrder(adjustOrderid).then(res => {
 				this.openDialog(GOODS_ORDER, '查看原订单信息', '50%', {
 					needToShowInfo: res.data
+				});
+			});
+		},
+		handleReCheck(row) {
+			this.$modal.confirm('是否取消审核').then(() => {
+				getGoodsOrder(row.id).then(res => {
+					updateGoodsOrder({
+						...excludeParams(res.data, this.$exclude),
+						checkState: '未审核'
+					}).then(() => {
+						this.$modal.msgSuccess('取消审核成功');
+						this.getList();
+					});
 				});
 			});
 		},
@@ -225,9 +252,15 @@ export default {
 			/>
 		</div>
 		<div v-if="isAdjustOrder">
+			<el-tag class="custom-tag">负数单</el-tag>
 			<el-tag type="info" class="tag-spacing">调整一次</el-tag>
 			<el-tag type="success" class="tag-spacing">调整两次</el-tag>
-			<el-tag type="warning" class="tag-spacing">三次以上</el-tag>
+			<el-tag type="warning" class="tag-spacing">调整三次</el-tag>
+			<el-tag
+				style="background-color: #ed5b3a; color: white"
+				class="tag-spacing"
+				>三次以上
+			</el-tag>
 		</div>
 		<!--    通用弹窗 配合common_dialogs 使用-->
 		<div v-if="currentComponent">
@@ -444,6 +477,8 @@ export default {
 							<StateTag
 								:state-title="scope.row.checkState"
 								:state-mapper="{ 2: '已审核' }"
+								@click.native="handleReCheck(scope.row)"
+								style="cursor: pointer"
 							/>
 						</el-row>
 						<el-row v-else>
@@ -710,6 +745,14 @@ export default {
 						<el-button
 							size="mini"
 							type="text"
+							v-if="!isAdjustOrder"
+							@click="handleCheckAdjust(scope.row)"
+						>
+							查看调整单
+						</el-button>
+						<el-button
+							size="mini"
+							type="text"
 							@click="handleOrderItemInfo(scope.row)"
 						>
 							调整单
@@ -843,6 +886,14 @@ export default {
 }
 
 .tag-spacing {
+	margin-right: 8px;
+}
+
+.custom-tag {
+	background-color: #ffffff !important; /* 背景颜色设为白色 */
+	border: 0.4px solid #aed3fa !important; /* 边框颜色自定义（这里用了蓝色） */
+	color: #a6a5a5 !important; /* 文本颜色与边框一致 */
+	font-weight: bold; /* 字体加粗 */
 	margin-right: 8px;
 }
 </style>

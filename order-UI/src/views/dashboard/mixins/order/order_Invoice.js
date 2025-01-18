@@ -42,6 +42,7 @@ export var mixin_order_Invoice = {
 	methods: {
 		// 判断是否含税
 		hasInvoice(row, type) {
+			console.log(row);
 			return type === PUBLIC_DICT_TYPE.CUSTOMER
 				? row.smailOrderDetails.some(item => {
 						return item.isIncludeTaxSale === 1;

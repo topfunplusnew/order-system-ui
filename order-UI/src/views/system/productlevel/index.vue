@@ -201,7 +201,7 @@
 			:show-close="false"
 			title="添加产品分类"
 			:visible.sync="addCategoryOpen"
-			width="40%"
+			width="600px"
 		>
 			<el-row>
 				<el-col :span="12">
@@ -567,7 +567,10 @@ export default {
 			// 分类
 			level_total: 0,
 			level_pageNum: 1,
-			level_pageSize: 10
+			level_pageSize: 10,
+
+			// 最大的级别编码数
+			maxCategoryNo: null
 		};
 	},
 	// 展示与隐藏
@@ -628,11 +631,7 @@ export default {
 	},
 	created() {
 		this.getList();
-		// 获取产品字典信息
-		getDicts('order_product_categories').then(res => {
-			this.dictList = res.data;
-			console.log(this.dictList);
-		});
+
 		if (
 			localStorage.getItem('productlevel-columns') === 'null' ||
 			!localStorage.getItem('productlevel-columns')
@@ -656,7 +655,32 @@ export default {
 		},
 		// 点击添加产品分类信息
 		handleAddProductSort() {
-			this.addCategoryOpen = true;
+			function plusOne(maxValue) {
+				let arr = maxValue.split('');
+				for (let i = arr.length - 1; i >= 0; i--) {
+					arr[i] = Number(arr[i]) + 1 + '';
+					arr[i] = (Number(arr[i]) % 10) + '';
+
+					if (arr[i] !== '0') {
+						return arr.join('');
+					}
+				}
+				arr.map(() => '0');
+				arr.unshift(1);
+				return arr.join('');
+			}
+
+			// 获取产品字典信息
+			getDicts('order_product_categories').then(res => {
+				this.dictList = res.data;
+				const maxNo = Math.max(...res.data.map(obj => Number(obj.dictValue)));
+				//this.maxCategoryNo
+				let maxValue = res.data.find(
+					obj => Number(obj.dictValue) === maxNo
+				).dictValue;
+				this.tempCategoryInfo.levelNo = plusOne(maxValue);
+				this.addCategoryOpen = true;
+			});
 		},
 		// 点击添加产品级别信息
 		handleAddProductLevel() {
@@ -683,6 +707,7 @@ export default {
 				updateData(this.addDictInfo).then(() => {
 					this.$message.success('修改成功~');
 					this.getDictsData();
+					this.cancelAddProductLevel();
 				});
 			} else {
 				// 新增
@@ -693,6 +718,7 @@ export default {
 				addData(this.addDictInfo).then(() => {
 					this.$message.success('添加成功~');
 					this.getDictsData();
+					this.cancelAddProductLevel();
 				});
 			}
 		},

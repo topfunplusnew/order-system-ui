@@ -29,6 +29,9 @@ export default {
 <template>
 	<div>
 		<el-descriptions title="订单信息" size="mini" border>
+			<el-descriptions-item label="订单ID">
+				{{ formatValue(orderInfo.id) }}
+			</el-descriptions-item>
 			<el-descriptions-item label="日期">
 				{{ formatValue(orderInfo.orderDate) }}
 			</el-descriptions-item>
