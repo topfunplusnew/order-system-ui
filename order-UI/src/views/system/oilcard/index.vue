@@ -121,6 +121,13 @@
 						>
 							<template slot-scope="scope">
 								<el-button
+									size="mini"
+									type="text"
+									@click="handleCheck(scope.row)"
+								>
+									查看明细
+								</el-button>
+								<el-button
 									v-hasPermi="['system:oilcard:edit']"
 									size="mini"
 									type="primary"
@@ -382,6 +389,19 @@
 				<el-button @click="moneyDialogVisible = false">取 消</el-button>
 			</div>
 		</el-dialog>
+
+		<div v-if="currentComponent">
+			<DialogWrapper
+				:current-component="currentComponent"
+				:dialog-visible="dialogVisible"
+				:dialog-props="dialogProps"
+				:dialog-title="dialogTitle"
+				:dialog-width="dialogWidth"
+				@update:dialogVisible="args => (dialogVisible = false)"
+				@close="handleCloseDialog"
+				@confirm="handleDialogConfirm"
+			/>
+		</div>
 	</div>
 </template>
 
@@ -399,10 +419,15 @@ import { listBankAccount } from '@/api/system/bankAccount';
 import { addOilRecharge } from '@/api/system/oilRecharge';
 import { mapGetters } from 'vuex';
 import { parseTime } from '@/utils/ruoyi';
+import { getOilCardDetailSummary } from '../../../api/system/statement';
+import OilCardDetail from '../Statement/OilCardDetail.vue';
+import { common_dialog } from '../../dashboard/mixins/common/common_dialog';
+import DialogWrapper from '../../dashboard/components/common/DialogWrapper.vue';
 
 export default {
 	name: 'OilCard',
-	components: { SearchOption },
+	components: { DialogWrapper, SearchOption },
+	mixins: [common_dialog],
 	data() {
 		return {
 			// 遮罩层
@@ -501,7 +526,7 @@ export default {
 	},
 	computed: {
 		change: {
-			set(val) {
+			set() {
 				this.isMain = !this.isMain;
 			},
 			get() {
@@ -561,7 +586,7 @@ export default {
 		// 确认银行卡充值
 		submitMoney() {
 			// 添加
-			addOilRecharge(this.moneyInfo).then(res => {
+			addOilRecharge(this.moneyInfo).then(() => {
 				this.$message.success('充值成功');
 			});
 			this.moneyDialogVisible = false;
@@ -651,6 +676,28 @@ export default {
 			this.open = true;
 			this.title = '添加加油卡信息';
 		},
+		// 查看明细
+		handleCheck(row) {
+			this.$datePicker().then(({ beginTime, endTime }) => {
+				const body = {
+					beginTime,
+					endTime,
+					oilCardNo: row.oilCardNo
+				};
+				getOilCardDetailSummary(body).then(res => {
+					const body = res.data;
+					this.openDialog(
+						OilCardDetail,
+						'油卡明细',
+						'900px',
+						{
+							records: body
+						},
+						true
+					);
+				});
+			});
+		},
 		/** 修改按钮操作 */
 		handleUpdate(row) {
 			this.reset();
@@ -667,14 +714,14 @@ export default {
 				if (valid) {
 					if (this.form.id != null) {
 						this.form = excludeParams(this.form, this.$exclude);
-						updateOilCard(this.form).then(response => {
+						updateOilCard(this.form).then(() => {
 							this.$modal.msgSuccess('修改成功');
 							this.open = false;
 							this.getList();
 						});
 					} else {
 						this.form = excludeParams(this.form, this.$exclude);
-						addOilCard(this.form).then(response => {
+						addOilCard(this.form).then(() => {
 							this.$modal.msgSuccess('新增成功');
 							this.open = false;
 							this.getList();

@@ -315,7 +315,6 @@ import {
 	updateOilCardConsume
 } from '@/api/system/OilCardConsume';
 import { mixin_printHTML } from '@/views/dashboard/mixins/print';
-import { findFileExtension } from '@/utils/trash/utils';
 import CheckFiles from '@/components/CheckFiles.vue';
 import { mixin_checkfile } from '@/views/dashboard/mixins/checkfiles/mixin_checkfile';
 
@@ -455,16 +454,13 @@ export default {
 			this.single = selection.length !== 1;
 			this.multiple = !selection.length;
 		},
-		isPic(url) {
-			console.log(url);
-			return this.$imgs.includes(findFileExtension(url));
-		},
 		/** 新增按钮操作 */
 		handleAdd() {
 			this.reset();
 			this.open = true;
 			this.title = '添加加油卡消费信息';
 		},
+
 		/** 修改按钮操作 */
 		handleUpdate(row) {
 			this.reset();
