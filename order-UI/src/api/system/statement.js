@@ -275,3 +275,22 @@ export function getOilCardDetailSummary(query) {
 		params: query
 	});
 }
+
+/**
+ * 油卡消费信息明细表
+ * @param {Object} query
+ * @param {startTime} query.carNo - 车牌号
+ * @param  {startTime} query.applyUser - 申请人
+ * @param {startTime} query.startTime - 开始时间
+ * @param  {startTime} query.endTime - 结束时间
+ * @param {startTime} query.cashRefuelingFrequency - 现金加油次数
+ * @param {startTime} query.cashRefueling - 现金加油金额
+ * @returns
+ */
+export function cashOilCardSummary(query) {
+	return request({
+		url: '/system/carApply/cashRefuelingLedger',
+		method: 'get',
+		params: query
+	});
+}
