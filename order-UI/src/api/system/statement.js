@@ -260,3 +260,18 @@ export function getFreightSubjectDetailSummarySomeDay(query) {
 		params: query
 	});
 }
+
+/**
+ * 油卡消费信息明细表
+ * @param {Object} query
+ * @param {startTime} query.startTime - 开始时间
+ * @param {endTime} query.endTime - 结束时间
+ * @returns
+ */
+export function getOilCardDetailSummary(query) {
+	return request({
+		url: '/system/oilCard/OilCardBalanceDetail',
+		method: 'get',
+		params: query
+	});
+}
