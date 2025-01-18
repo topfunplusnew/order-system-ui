@@ -6,34 +6,73 @@
 			:model="queryParams"
 			size="mini"
 			:inline="true"
-			label-width="68px"
+			label-width="100px"
 		>
-			<el-form-item label="返利开始日期" prop="rebateStartTime">
-				<el-date-picker
-					v-model="queryParams.rebateStartTime"
-					type="datetime"
-					placeholder="选择开始时间"
-					value-format="yyyy-MM-dd HH:mm:ss"
-				>
-				</el-date-picker>
-			</el-form-item>
-			<el-form-item label="返利结束日期" prop="rebateEndTime">
-				<el-date-picker
-					v-model="queryParams.rebateEndTime"
-					type="datetime"
-					placeholder="选择开始时间"
-					value-format="yyyy-MM-dd HH:mm:ss"
-				>
-				</el-date-picker>
-			</el-form-item>
-			<el-form-item label="供应商" prop="supplier">
-				<el-input
-					v-model="queryParams.supplier"
-					placeholder="请输入供应商"
-					clearable
-					@keyup.enter.native="handleQuery"
-				/>
-			</el-form-item>
+			<el-row>
+				<el-form-item label="返利开始日期" prop="rebateStartTime">
+					<el-date-picker
+						v-model="queryParams.rebateStartTime"
+						type="datetime"
+						placeholder="选择开始时间"
+						value-format="yyyy-MM-dd HH:mm:ss"
+					>
+					</el-date-picker>
+				</el-form-item>
+				<el-form-item label="返利结束日期" prop="rebateEndTime">
+					<el-date-picker
+						v-model="queryParams.rebateEndTime"
+						type="datetime"
+						placeholder="选择开始时间"
+						value-format="yyyy-MM-dd HH:mm:ss"
+					>
+					</el-date-picker>
+				</el-form-item>
+				<el-form-item label="供应商" prop="supplier">
+					<el-input
+						v-model="queryParams.supplier"
+						placeholder="请输入供应商"
+						clearable
+						@keyup.enter.native="handleQuery"
+					/>
+				</el-form-item>
+			</el-row>
+
+			<el-row>
+				<!--      返利允许根据产品级别搜索-->
+				<el-form-item label="级别名称">
+					<el-input
+						v-model="queryParams.params.orderDetailLevelName"
+						placeholder="请输入级别名称"
+						clearable
+						@keyup.enter.native="handleQuery"
+					/>
+				</el-form-item>
+				<el-form-item label="长度">
+					<el-input
+						v-model="queryParams.params.orderDetailLength"
+						placeholder="请输入长度"
+						clearable
+						@keyup.enter.native="handleQuery"
+					/>
+				</el-form-item>
+				<el-form-item label="宽度">
+					<el-input
+						v-model="queryParams.params.orderDetailWidth"
+						placeholder="请输入宽度"
+						clearable
+						@keyup.enter.native="handleQuery"
+					/>
+				</el-form-item>
+				<el-form-item label="厚度">
+					<el-input
+						v-model="queryParams.params.orderDetailHeight"
+						placeholder="请输入厚度"
+						clearable
+						@keyup.enter.native="handleQuery"
+					/>
+				</el-form-item>
+			</el-row>
+
 			<el-form-item>
 				<el-button
 					type="primary"
@@ -261,13 +300,17 @@
 				<el-form ref="form" :model="form" :rules="rules" label-width="120px">
 					<el-row>
 						<el-col :span="12">
+							<!-- 系数输入框 -->
 							<el-form-item label="系数" prop="unitPrice">
 								<el-input v-model="form.unitPrice" placeholder="请输入系数" />
 							</el-form-item>
+
+							<!-- 返利货物 -->
 							<el-form-item label="返利货物">
 								<el-button
 									v-if="goods.length === 0"
 									size="mini"
+									:disabled="!form.unitPrice"
 									@click="orderDialogVisible = true"
 								>
 									选择订单
@@ -276,6 +319,7 @@
 									<el-button
 										size="mini"
 										type="success"
+										:disabled="!form.unitPrice"
 										@click="checkSelectedGoods"
 									>
 										查看已选择货物
@@ -283,33 +327,42 @@
 									<el-button
 										size="mini"
 										type="danger"
+										:disabled="!form.unitPrice"
 										@click="refreshSelectedGoods"
 									>
 										重新选择货物
 									</el-button>
 								</el-row>
 							</el-form-item>
+
+							<!-- 日期 -->
 							<el-form-item label="日期" prop="rebateDate">
 								<el-date-picker
 									v-model="form.rebateDate"
 									type="datetime"
 									placeholder="日期"
 									value-format="yyyy-MM-dd HH:mm:ss"
-								>
-								</el-date-picker>
+									:disabled="!form.unitPrice"
+								/>
 							</el-form-item>
+
+							<!-- 类型 -->
 							<el-form-item label="类型" prop="rebateType">
-								<el-select v-model="form.rebateType" placeholder="请选择">
+								<el-select
+									v-model="form.rebateType"
+									placeholder="请选择"
+									:disabled="!form.unitPrice"
+								>
 									<el-option
 										v-for="item in rebateTypes"
 										:key="item.value"
 										:label="item.label"
 										:value="item.value"
-									>
-									</el-option>
+									/>
 								</el-select>
 							</el-form-item>
-							<!--        供应商直接选择 不要自己填-->
+
+							<!-- 供应商 -->
 							<el-form-item label="请选择供应商" prop="supplier">
 								<el-row>
 									<el-col :span="15">
@@ -328,6 +381,7 @@
 											query-label="供应商查找"
 											@commitBack="handleCommitBackCompanyGive"
 											@update:queryName="handleQueryCompanyGive"
+											:disabled="!form.unitPrice"
 										>
 											<template #table-columns>
 												<el-table-column
@@ -345,131 +399,8 @@
 									</el-col>
 								</el-row>
 							</el-form-item>
-							<!--							<el-form-item label="收款方账户类型">-->
-							<!--								<BankType-->
-							<!--									:select-type="form.selfBankCardType"-->
-							<!--									@updateSelectedType="changeSelfBankType"-->
-							<!--								/>-->
-							<!--							</el-form-item>-->
-							<!--							<el-form-item label="收款户名" prop="inAcountsName">-->
-							<!--								<el-row>-->
-							<!--									<el-col :span="15">-->
-							<!--										<el-input-->
-							<!--											v-model="form.inAcountsName"-->
-							<!--											placeholder="请输入收款户名"-->
-							<!--										/>-->
-							<!--									</el-col>-->
-							<!--									<el-col :span="4">-->
-							<!--										<SearchOption-->
-							<!--											:limit-info="{ acountsType: '己方公司' }"-->
-							<!--											:get-data="listBankAccount"-->
-							<!--											:query-name="queryBankAcount"-->
-							<!--											query-label="户名查找"-->
-							<!--											query-info="acountsName"-->
-							<!--											@commitBack="handleCommitBackBankAcount"-->
-							<!--											@update:queryName="handleUpdateQueryBankAcount"-->
-							<!--										>-->
-							<!--											<template #table-columns>-->
-							<!--												<el-table-column-->
-							<!--													label="账户类型"-->
-							<!--													align="center"-->
-							<!--													prop="acountsType"-->
-							<!--												/>-->
-							<!--												<el-table-column-->
-							<!--													label="显示名称"-->
-							<!--													align="center"-->
-							<!--													prop="displayName"-->
-							<!--												/>-->
-							<!--												<el-table-column-->
-							<!--													label="开户名称(户名)"-->
-							<!--													align="center"-->
-							<!--													prop="acountsName"-->
-							<!--												/>-->
-							<!--												<el-table-column-->
-							<!--													label="账号(银行账号)"-->
-							<!--													align="center"-->
-							<!--													prop="bankNo"-->
-							<!--												/>-->
-							<!--												<el-table-column-->
-							<!--													label="开户行"-->
-							<!--													align="center"-->
-							<!--													prop="bankName"-->
-							<!--												/>-->
-							<!--											</template>-->
-							<!--										</SearchOption>-->
-							<!--									</el-col>-->
-							<!--								</el-row>-->
-							<!--							</el-form-item>-->
-							<!--							<el-form-item label="收款账号" prop="inBankNo">-->
-							<!--								<el-input-->
-							<!--									v-model="form.inBankNo"-->
-							<!--									placeholder="请输入收款账号"-->
-							<!--								/>-->
-							<!--							</el-form-item>-->
-							<!--						</el-col>-->
-							<!--						<el-col :span="12">-->
-							<!--							<el-form-item label="付款方账户类型">-->
-							<!--								<BankType-->
-							<!--									:select-type="form.otherBankCardType"-->
-							<!--									@updateSelectedType="changeOtherBankType"-->
-							<!--								/>-->
-							<!--							</el-form-item>-->
-							<!--							<el-form-item label="付款户名" prop="outAcountsName">-->
-							<!--								<el-row>-->
-							<!--									<el-col :span="15">-->
-							<!--										<el-input-->
-							<!--											v-model="form.outAcountsName"-->
-							<!--											placeholder="请输入付款户名"-->
-							<!--										/>-->
-							<!--									</el-col>-->
-							<!--									<el-col :span="4">-->
-							<!--										<SearchOption-->
-							<!--											:limit-info="{ acountsType: '供应商' }"-->
-							<!--											:get-data="listBankAccount"-->
-							<!--											:query-name="bankAcountSelf"-->
-							<!--											query-label="户名查找"-->
-							<!--											query-info="acountsName"-->
-							<!--											@commitBack="handleCommitBackBankAcountSelf"-->
-							<!--											@update:queryName="handleUpdateQueryBankAcountSelf"-->
-							<!--										>-->
-							<!--											<template #table-columns>-->
-							<!--												<el-table-column-->
-							<!--													label="账户类型"-->
-							<!--													align="center"-->
-							<!--													prop="acountsType"-->
-							<!--												/>-->
-							<!--												<el-table-column-->
-							<!--													label="开户名称(户名)"-->
-							<!--													align="center"-->
-							<!--													prop="acountsName"-->
-							<!--												/>-->
-							<!--												<el-table-column-->
-							<!--													label="账号(银行账号)"-->
-							<!--													align="center"-->
-							<!--													prop="bankNo"-->
-							<!--												/>-->
-							<!--												<el-table-column-->
-							<!--													label="开户行"-->
-							<!--													align="center"-->
-							<!--													prop="bankName"-->
-							<!--												/>-->
-							<!--												<el-table-column-->
-							<!--													label="公司名称"-->
-							<!--													align="center"-->
-							<!--													prop="companyName"-->
-							<!--												/>-->
-							<!--											</template>-->
-							<!--										</SearchOption>-->
-							<!--									</el-col>-->
-							<!--								</el-row>-->
-							<!--							</el-form-item>-->
-							<!--							<el-form-item label="付款账号" prop="outBankNo">-->
-							<!--								<el-input-->
-							<!--									v-model="form.outBankNo"-->
-							<!--									placeholder="请输入付款款账号"-->
-							<!--								/>-->
-							<!--							</el-form-item>-->
 
+							<!-- 面积值 -->
 							<el-form-item label="面积值" prop="area">
 								<el-input
 									v-model="form.area"
@@ -477,6 +408,8 @@
 									disabled
 								/>
 							</el-form-item>
+
+							<!-- 重箱值 -->
 							<el-form-item label="重箱值" prop="weightBox">
 								<el-input
 									v-model="form.weightBox"
@@ -484,25 +417,42 @@
 									disabled
 								/>
 							</el-form-item>
+
+							<!-- 金额 -->
 							<el-form-item label="金额" prop="rebate">
-								<el-input v-model="form.rebate" placeholder="请输入金额" />
+								<el-input
+									v-model="form.rebate"
+									placeholder="请输入金额"
+									:disabled="!form.unitPrice"
+								/>
 							</el-form-item>
 						</el-col>
+
 						<el-col :span="12">
+							<!-- 返利原因 -->
 							<el-form-item label="返利原因" prop="rebateReason">
 								<el-input
 									v-model="form.rebateReason"
 									placeholder="请输入返利原因"
+									:disabled="!form.unitPrice"
 								/>
 							</el-form-item>
+							<!-- 返利方式 -->
 							<el-form-item label="返利方式" prop="rebateMethod">
 								<el-input
 									v-model="form.rebateMethod"
 									placeholder="请输入返利方式"
+									:disabled="!form.unitPrice"
 								/>
 							</el-form-item>
+
+							<!-- 备注 -->
 							<el-form-item label="备注" prop="comments">
-								<el-input v-model="form.comments" placeholder="请输入备注" />
+								<el-input
+									v-model="form.comments"
+									placeholder="请输入备注"
+									:disabled="!form.unitPrice"
+								/>
 							</el-form-item>
 						</el-col>
 					</el-row>
@@ -716,7 +666,7 @@
 				v-loading="loading"
 				fit
 				border
-				:data="orderList"
+				:data="selectOrdersList"
 				max-height="750"
 				size="mini"
 				:cell-style="
@@ -875,9 +825,9 @@
 			<pagination
 				v-show="orderTotal > 0"
 				:total="orderTotal"
-				:page.sync="queryParams.pageNum"
-				:limit.sync="queryParams.pageSize"
-				@pagination="getOrderList"
+				:page.sync="queryParams.orderPageNum"
+				:limit.sync="queryParams.orderPageSize"
+				@pagination="selectOrderItem"
 			/>
 		</el-dialog>
 
@@ -1094,7 +1044,15 @@ export default {
 				addtime: null,
 				userId: null,
 				UserName: null,
-				delFlag: null
+				delFlag: null,
+				params: {
+					orderDetailLevelName: null,
+					orderDetailWidth: null,
+					orderDetailHeight: null,
+					orderDetailLength: null
+				},
+				orderPageNum: null,
+				orderPageSize: null
 			},
 			// 表单参数
 			form: {},
@@ -1165,7 +1123,10 @@ export default {
 			queryBankAcount: '',
 			// 搜索供应商
 			queryCompanyGive: '',
-			bankAcountSelf: ''
+			bankAcountSelf: '',
+
+			// 订单选择的框
+			selectOrdersList: []
 		};
 	},
 	computed: {
@@ -1194,14 +1155,6 @@ export default {
 		isNull,
 		listCompany,
 		listBankAccount,
-		// // 自动填充的信息
-		// handleCommitBackBankAcount(val) {
-		// 	this.form.inAcountsName = val.acountsName;
-		// 	this.form.inBankNo = val.bankNo;
-		// },
-		// handleUpdateQueryBankAcount(val) {
-		// 	this.queryBankAcount = val;
-		// },
 		handleCommitBackCompanyGive(val) {
 			this.form.supplier = val.companyName;
 			this.form.supplierID = val.id;
@@ -1209,14 +1162,6 @@ export default {
 		handleQueryCompanyGive(val) {
 			this.queryCompanyGive = val;
 		},
-		// handleCommitBackBankAcountSelf(val) {
-		// 	this.form.outAcountsName = val.acountsName;
-		// 	this.form.outBankNo = val.bankNo;
-		// },
-		// handleUpdateQueryBankAcountSelf(val) {
-		// 	this.bankAcountSelf = val;
-		// },
-
 		// 表格中的表头 筛选方法 主要是为了筛选供应商
 		filterName(value, row) {
 			return row.supplier === value;
@@ -1258,21 +1203,6 @@ export default {
 		// 查询返利流水账
 		handleRebateDetail(row) {
 			getRebate(row.id).then(res => {
-				// 	this.$model({
-				// 		type: 'object',
-				// 		data: {
-				// 			name: '张三',
-				// 			age: 25,
-				// 			address: '北京市'
-				// 		},
-				// 		labels: {
-				// 			name: '姓名',
-				// 			age: '年龄',
-				// 			address: '地址'
-				// 		},
-				// 		title: '返利流水账 '
-				// 	});
-				// },
 				this.$model({
 					type: 'array',
 					items: res.data.actualReceivedDetails.detailList,
@@ -1296,14 +1226,6 @@ export default {
 			listRebate(this.queryParams).then(response => {
 				this.RebateList = response.rows;
 				this.total = response.total;
-				this.loading = false;
-			});
-		},
-		// 弹出的列表页分页
-		getOrderList() {
-			listGoodsOrder(this.queryParams).then(response => {
-				this.orderList = response.rows;
-				this.orderTotal = response.orderTotal;
 				this.loading = false;
 			});
 		},

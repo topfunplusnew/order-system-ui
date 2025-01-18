@@ -86,6 +86,19 @@
 					<span class="amount">{{ scope.row.cashRefueling.toFixed(2) }}</span>
 				</template>
 			</el-table-column>
+
+			<!-- 操作列：查看车辆详情 -->
+			<el-table-column label="操作" align="center" width="120">
+				<template #default="scope">
+					<el-button
+						size="small"
+						type="text"
+						@click="viewCarDetails(scope.row.carNo)"
+					>
+						查看详情
+					</el-button>
+				</template>
+			</el-table-column>
 		</el-table>
 
 		<!-- 汇总信息 -->
@@ -97,14 +110,34 @@
 				<span>总现金加油金额: </span><b>{{ totalAmount.toFixed(2) }} 元</b>
 			</div>
 		</div>
+
+		<div v-if="currentComponent">
+			<DialogWrapper
+				:current-component="currentComponent"
+				:dialog-visible="dialogVisible"
+				:dialog-props="dialogProps"
+				:dialog-title="dialogTitle"
+				:dialog-width="dialogWidth"
+				@update:dialogVisible="args => (dialogVisible = false)"
+				@close="handleCloseDialog"
+				@confirm="handleDialogConfirm"
+			/>
+		</div>
 	</div>
 </template>
 
 <script>
-import { cashOilCardSummary } from '../../../api/system/statement'; // 假设 API 函数路径
+import { cashOilCardSummary } from '../../../api/system/statement';
+import DialogWrapper from '../../dashboard/components/common/DialogWrapper.vue';
+import { common_dialog } from '../../dashboard/mixins/common/common_dialog';
+import { listVehicles } from '../../../api/system/vehicles';
+import CARS from '../../../components/NeedToShow/CARS.vue';
+import COMPANY_CAR from '../../../components/NeedToShow/COMPANY_CAR.vue'; // 假设 API 函数路径
 
 export default {
 	name: 'CashOilCardSummary',
+	components: { DialogWrapper },
+	mixins: [common_dialog],
 	data() {
 		return {
 			query: {
@@ -160,6 +193,19 @@ export default {
 			};
 			// 调用查询方法，获取重置后的数据
 			this.fetchData();
+		},
+		viewCarDetails(licensePlate) {
+			listVehicles({ licensePlate: licensePlate }).then(res => {
+				this.openDialog(
+					COMPANY_CAR,
+					'车辆详情',
+					'800px',
+					{
+						needToShowInfo: res.rows[0]
+					},
+					true
+				);
+			});
 		}
 	}
 };
@@ -240,6 +286,14 @@ export default {
 
 .summary-item b {
 	color: #409eff;
+}
+
+.el-button {
+	font-size: 14px;
+}
+
+.reset-button {
+	margin-left: 10px;
 }
 
 /* 调整输入框和按钮的大小 */

@@ -1,7 +1,10 @@
 // 添加返利回扣时选择订单的逻辑
 import { addDateRange } from '../../../../utils/ruoyi';
 import { noPageListRebate } from '../../../../api/system/Rebate';
-import { getGoodsOrder } from '../../../../api/system/goodsOrder';
+import {
+	getGoodsOrder,
+	listGoodsOrder
+} from '../../../../api/system/goodsOrder';
 import { fix } from '../../../../api/tool/format';
 
 export var mixin_choose_order = {
@@ -36,7 +39,16 @@ export var mixin_choose_order = {
 	methods: {
 		// 点击选择订单
 		selectOrderItem() {
-			this.orderSelectVisible = true;
+			const body = {
+				...this.queryParams,
+				pageNum: this.queryParams.orderPageNum,
+				pageSize: this.queryParams.orderPageSize
+			};
+			listGoodsOrder(body).then(res => {
+				this.selectOrdersList = res.rows;
+				this.orderTotal = res.total;
+				this.orderSelectVisible = true;
+			});
 		},
 		// 两种方式 一种是直接选订单 另一种是先选供应商 再选订单
 		// 1.根据供应商选择
