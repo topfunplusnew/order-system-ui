@@ -30,7 +30,9 @@ export var common_dialog = {
 		async handleCallBack(callback) {
 			// 执行回调函数
 			const res = await callback();
-
+			if (res === undefined) {
+				return Promise.resolve();
+			}
 			if (res.code !== 200) {
 				return Promise.reject();
 			}
@@ -50,7 +52,7 @@ export var common_dialog = {
 			this.checkDialog(callback);
 			this.handleCallBack(callback)
 				.then(() => {
-					this.$message.success(message);
+					console.log(message);
 					this.clearStatus();
 				})
 				.catch(err => {

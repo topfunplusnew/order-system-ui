@@ -201,7 +201,7 @@ export default {
 			};
 			listGoodsOrder(query).then(res => {
 				const data = res.rows.filter(item => item.isAdjust > 0)[0];
-				this.openDialog(GOODS_ORDER, '查看调整单信息', '50%', {
+				this.openDialog(GOODS_ORDER, '查看调整单信息', '650px', {
 					needToShowInfo: data
 				});
 			});
@@ -210,7 +210,7 @@ export default {
 		handleCheckPrevious(row) {
 			const { adjustOrderid } = row;
 			getGoodsOrder(adjustOrderid).then(res => {
-				this.openDialog(GOODS_ORDER, '查看原订单信息', '50%', {
+				this.openDialog(GOODS_ORDER, '查看原订单信息', '650px', {
 					needToShowInfo: res.data
 				});
 			});
