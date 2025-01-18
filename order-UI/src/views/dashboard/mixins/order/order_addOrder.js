@@ -20,10 +20,16 @@ export var mixin_order_add = {
 		// 新增按钮操作
 		handleAdd() {
 			// 打开弹窗
-			this.openDialog(OrderForm, '添加订单', '1300px', {
-				orderId: null,
-				submitInfo: '添加订单'
-			});
+			this.openDialog(
+				OrderForm,
+				'添加订单',
+				'1300px',
+				{
+					orderId: null,
+					submitInfo: '添加订单'
+				},
+				false
+			);
 		},
 		// 修改订单的操作
 		handleUpdate(row) {

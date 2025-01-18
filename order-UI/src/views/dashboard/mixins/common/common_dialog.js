@@ -13,28 +13,29 @@ export var common_dialog = {
 			dialogVisible: false,
 			// 要渲染的功能组件
 			currentComponent: null,
+			// 是否关闭确认按钮
+			closeConfirm: null,
 			// 传递给弹窗的属性
 			dialogProps: null
 		};
 	},
 	methods: {
 		// 打开弹窗的函数 嵌入到别的混入中使用
-		openDialog(component, title, width = '50%', props) {
+		openDialog(component, title, width = '50%', props, closeConfirm = false) {
 			this.currentComponent = component;
 			this.dialogTitle = title;
 			this.dialogWidth = width;
 			this.dialogProps = props;
+			this.closeConfirm = closeConfirm;
 			this.dialogVisible = true;
 		},
 		// 处理
 		async handleCallBack(callback) {
 			// 执行回调函数
 			const res = await callback();
-			if (res === undefined) {
-				return Promise.resolve();
-			}
+
 			if (res.code !== 200) {
-				return Promise.reject();
+				return Promise.reject(res.msg);
 			}
 			// 延时加载list
 			return Promise.resolve();
@@ -70,13 +71,10 @@ export var common_dialog = {
 		clearStatus() {
 			// 清除组件 防止下次导致污染渲染
 			this.currentComponent = null;
-			// 关闭弹窗
-			// this.dialogVisible = false;
-			// 清除状态后重新拉取一下数据
 			try {
 				this?.getList();
 			} catch (err) {
-				console.log(err);
+				console.log('抓取数据 getList 发生错误:', err);
 			}
 		}
 	}

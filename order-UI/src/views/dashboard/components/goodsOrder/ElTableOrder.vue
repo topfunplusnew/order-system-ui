@@ -201,18 +201,30 @@ export default {
 			};
 			listGoodsOrder(query).then(res => {
 				const data = res.rows.filter(item => item.isAdjust > 0)[0];
-				this.openDialog(GOODS_ORDER, '查看调整单信息', '650px', {
-					needToShowInfo: data
-				});
+				this.openDialog(
+					GOODS_ORDER,
+					'查看调整单信息',
+					'650px',
+					{
+						needToShowInfo: data
+					},
+					true
+				);
 			});
 		},
 		// 查看原订单的信息
 		handleCheckPrevious(row) {
 			const { adjustOrderid } = row;
 			getGoodsOrder(adjustOrderid).then(res => {
-				this.openDialog(GOODS_ORDER, '查看原订单信息', '650px', {
-					needToShowInfo: res.data
-				});
+				this.openDialog(
+					GOODS_ORDER,
+					'查看原订单信息',
+					'650px',
+					{
+						needToShowInfo: res.data
+					},
+					true
+				);
 			});
 		},
 		handleReCheck(row) {
@@ -270,6 +282,7 @@ export default {
 				:dialog-props="dialogProps"
 				:dialog-title="dialogTitle"
 				:dialog-width="dialogWidth"
+				:close-confirm="closeConfirm"
 				@update:dialogVisible="args => (dialogVisible = false)"
 				@close="handleCloseDialog"
 				@confirm="handleDialogConfirm"
