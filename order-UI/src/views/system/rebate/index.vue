@@ -662,6 +662,7 @@
 			:visible.sync="orderSelectVisible"
 			width="70%"
 		>
+			<QuerySearchBar @updateQuery="handleGetQueryParams" />
 			<el-table
 				v-loading="loading"
 				fit
@@ -825,8 +826,8 @@
 			<pagination
 				v-show="orderTotal > 0"
 				:total="orderTotal"
-				:page.sync="queryParams.orderPageNum"
-				:limit.sync="queryParams.orderPageSize"
+				:page.sync="queryOrderParams.pageNum"
+				:limit.sync="queryOrderParams.pageSize"
 				@pagination="selectOrderItem"
 			/>
 		</el-dialog>
@@ -983,10 +984,12 @@ import { listOrderDetailByIds } from '@/api/system/orderDetail';
 import { mixin_bankType } from '../../dashboard/mixins/common/common_bankType';
 import { getUuid } from '../../../utils/trash/utils';
 import { parseTime } from '../../../utils/ruoyi';
+import QuerySearchBar from '../../dashboard/components/goodsOrder/QuerySearchBar.vue';
 
 export default {
 	name: 'Rebate',
 	components: {
+		QuerySearchBar,
 		OrderDetailList,
 		InfoDialog,
 		SearchOption,
@@ -1050,9 +1053,11 @@ export default {
 					orderDetailWidth: null,
 					orderDetailHeight: null,
 					orderDetailLength: null
-				},
-				orderPageNum: null,
-				orderPageSize: null
+				}
+			},
+			queryOrderParams: {
+				pageNum: 1,
+				pageSize: 10
 			},
 			// 表单参数
 			form: {},
@@ -1219,6 +1224,11 @@ export default {
 					title: '返利流水账 '
 				});
 			});
+		},
+		// 订单选择的搜索模组
+		handleGetQueryParams(value) {
+			this.queryOrderParams = value;
+			this.selectOrderItem();
 		},
 		/** 查询返利回扣列表 */
 		getList() {

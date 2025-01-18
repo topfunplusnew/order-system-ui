@@ -28,7 +28,6 @@ import { parseTime } from '@/utils/ruoyi';
 import HistoryList from '@/views/dashboard/components/goodsOrder/HistoryList.vue';
 import { PUBLIC_DICT_TYPE } from '@/utils/order';
 import StateTag from '@/views/dashboard/components/common/StateTag.vue';
-import { excludeParams } from '../../../../api/tool/exclude';
 import {
 	auditGoodsOrder,
 	listGoodsOrder

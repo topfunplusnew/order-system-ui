@@ -39,12 +39,7 @@ export var mixin_choose_order = {
 	methods: {
 		// 点击选择订单
 		selectOrderItem() {
-			const body = {
-				...this.queryParams,
-				pageNum: this.queryParams.orderPageNum,
-				pageSize: this.queryParams.orderPageSize
-			};
-			listGoodsOrder(body).then(res => {
+			listGoodsOrder(this.queryOrderParams).then(res => {
 				this.selectOrdersList = res.rows;
 				this.orderTotal = res.total;
 				this.orderSelectVisible = true;
