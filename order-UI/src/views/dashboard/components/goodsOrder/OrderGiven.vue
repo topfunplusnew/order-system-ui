@@ -35,7 +35,9 @@ export default {
 		}
 	},
 	methods: {
-		handleProcess() {},
+		handleProcess(that) {
+			that.dialogVisible = false;
+		},
 		handleReject() {}
 	}
 };

@@ -48,23 +48,23 @@ export default {
 			this.form.attachment = val;
 		},
 		// 提交的方法
-		handleProcess() {
+		handleProcess(that) {
 			this.$refs['form'].validate(valid => {
 				if (valid) {
 					if (this.form.id != null) {
 						this.form = excludeParams(this.form, this.$exclude);
 						updateOilRecharge(this.form).then(() => {
 							this.$modal.msgSuccess('修改成功');
-							this.open = false;
 							this.$refs.uploadFile.clearFileList();
+							that.dialogVisible = false;
 							this.getList();
 						});
 					} else {
 						this.form = excludeParams(this.form, this.$exclude);
 						addOilRecharge(this.form).then(() => {
 							this.$modal.msgSuccess('新增成功');
-							this.open = false;
 							this.$refs.uploadFile.clearFileList();
+							that.dialogVisible = false;
 							this.getList();
 						});
 					}

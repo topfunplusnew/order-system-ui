@@ -108,9 +108,15 @@ export default {
 	},
 	methods: {
 		checkcurrentOrderItemInfo() {
-			this.openDialog(GOODS_ORDER, '查看原订单信息', '50%', {
-				needToShowInfo: this.currentInfo
-			});
+			this.openDialog(
+				GOODS_ORDER,
+				'查看原订单信息',
+				'50%',
+				{
+					needToShowInfo: this.currentInfo
+				},
+				true
+			);
 		},
 		close() {
 			this.$emit('close');

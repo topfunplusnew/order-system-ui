@@ -31,9 +31,15 @@ export default {
 					return;
 				}
 				this.orderHistoryInfoList = res.rows;
-				this.openDialog(OrderHistoryList, '订单历史记录', '50%', {
-					goodsOrderList: this.orderHistoryInfoList
-				});
+				this.openDialog(
+					OrderHistoryList,
+					'订单历史记录',
+					'50%',
+					{
+						goodsOrderList: this.orderHistoryInfoList
+					},
+					true
+				);
 			});
 		}
 	}

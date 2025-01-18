@@ -28,9 +28,15 @@ export var mixin_freight_payment = {
 				source: FREIGHT_TYPE.INVENTORY
 			};
 			// 直接添加运费信息 统一在运费模块付款
-			this.openDialog(FreeApply, '添加运费', '650px', {
-				orderInfo: freight
-			});
+			this.openDialog(
+				FreeApply,
+				'添加运费',
+				'650px',
+				{
+					orderInfo: freight
+				},
+				false
+			);
 		}
 	}
 };

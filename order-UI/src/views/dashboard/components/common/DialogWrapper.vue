@@ -92,7 +92,7 @@ export default {
 			// 执行函数 这个函数 要求每一个业务组件都要实现
 			const callback = this.$refs.dynamicComponent?.handleProcess;
 			if (callback) {
-				this.$emit('confirm', callback, '操作成功~');
+				this.$emit('confirm', callback);
 			} else {
 				Message.warning('组件未实现handleProcess方法');
 			}

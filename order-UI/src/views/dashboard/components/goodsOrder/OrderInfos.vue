@@ -20,7 +20,9 @@ export default {
 	mounted() {},
 	methods: {
 		formatValue,
-		handleProcess() {},
+		handleProcess(that) {
+			that.dialogVisible = false;
+		},
 		handleReject() {}
 	}
 };

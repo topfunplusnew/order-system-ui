@@ -46,10 +46,16 @@ export var mixin_order_add = {
 
 			if (diffInMs < oneDayInMs) {
 				// 打开弹窗
-				this.openDialog(OrderForm, '修改订单', '1300px', {
-					orderId: row.id,
-					submitInfo: '修改订单'
-				});
+				this.openDialog(
+					OrderForm,
+					'修改订单',
+					'1300px',
+					{
+						orderId: row.id,
+						submitInfo: '修改订单'
+					},
+					false
+				);
 			} else {
 				this.$prompt('请输入编辑订单原因', '提示', {
 					confirmButtonText: '确定',
@@ -67,10 +73,16 @@ export var mixin_order_add = {
 							sessionStorage.setItem('order-edit-reason', value);
 							this.$message.success('提交成功');
 							// 打开弹窗
-							this.openDialog(OrderForm, '修改订单', '1300px', {
-								orderId: row.id,
-								submitInfo: '修改订单'
-							});
+							this.openDialog(
+								OrderForm,
+								'修改订单',
+								'1300px',
+								{
+									orderId: row.id,
+									submitInfo: '修改订单'
+								},
+								false
+							);
 						});
 					})
 					.catch(() => {

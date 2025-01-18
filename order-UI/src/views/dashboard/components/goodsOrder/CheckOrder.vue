@@ -62,7 +62,9 @@ export default {
 	computed: {},
 	methods: {
 		// 每一个组件都要实现这么一个函数 这个函数用来执行相关的业务操作
-		handleProcess() {},
+		handleProcess(that) {
+			that.dialogVisible = false;
+		},
 		handleReject() {}
 	}
 };

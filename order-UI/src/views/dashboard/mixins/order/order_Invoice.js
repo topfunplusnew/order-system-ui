@@ -66,10 +66,16 @@ export var mixin_order_Invoice = {
 				// 补充最大金额 最大金额为总货款
 				this.maxInvent = res.data.allPayments;
 				// 打开弹窗
-				this.openDialog(Invoice, '客户开票', undefined, {
-					invoiceInfo: invoiceInfo,
-					maxInvent: this.maxInvent
-				});
+				this.openDialog(
+					Invoice,
+					'客户开票',
+					undefined,
+					{
+						invoiceInfo: invoiceInfo,
+						maxInvent: this.maxInvent
+					},
+					false
+				);
 			});
 		},
 		// 点击供应商开票按钮 如果是供应商开票 则是订单详情中该供应商对应的订单货物的出厂货款
@@ -105,10 +111,16 @@ export var mixin_order_Invoice = {
 						this.maxInvent += item.paymentFactory;
 					});
 					// 打开弹窗
-					this.openDialog(Invoice, '供应商开票', undefined, {
-						invoiceInfo: invoiceInfo,
-						maxInvent: this.maxInvent
-					});
+					this.openDialog(
+						Invoice,
+						'供应商开票',
+						undefined,
+						{
+							invoiceInfo: invoiceInfo,
+							maxInvent: this.maxInvent
+						},
+						false
+					);
 				});
 			};
 		}

@@ -118,9 +118,15 @@ export default {
 		// 校验
 		handleCheckInvoice(resultList) {
 			// 打开弹窗
-			this.openDialog(ReadyList, '待开票列表', '900px', {
-				list: resultList
-			});
+			this.openDialog(
+				ReadyList,
+				'待开票列表',
+				'900px',
+				{
+					list: resultList
+				},
+				false
+			);
 		},
 		// 分配金额的具体函数 选择某一个订单后要扣钱
 		handleTransform(orderItem) {

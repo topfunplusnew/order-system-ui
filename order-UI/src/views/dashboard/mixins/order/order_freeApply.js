@@ -37,9 +37,15 @@ export var mixin_order_freeApply = {
 				res => {
 					if (res.rows.length === 0) {
 						// 打开弹窗
-						this.openDialog(FreeApply, '添加陆运费', '600px', {
-							orderInfo: landFreightInfo
-						});
+						this.openDialog(
+							FreeApply,
+							'添加陆运费',
+							'600px',
+							{
+								orderInfo: landFreightInfo
+							},
+							false
+						);
 					} else {
 						this.$message.error('该订单已有陆运费信息!!!');
 					}
@@ -68,9 +74,15 @@ export var mixin_order_freeApply = {
 				res => {
 					if (res.rows.length === 0) {
 						// 打开弹窗
-						this.openDialog(FreeApply, '添加海运费', '600px', {
-							orderInfo: seaFreightInfo
-						});
+						this.openDialog(
+							FreeApply,
+							'添加海运费',
+							'600px',
+							{
+								orderInfo: seaFreightInfo
+							},
+							true
+						);
 					} else {
 						this.$message.error('该订单已有运费信息!!!');
 					}

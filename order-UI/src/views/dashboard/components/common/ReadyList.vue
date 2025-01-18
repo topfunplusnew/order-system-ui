@@ -31,29 +31,31 @@ export default {
 			getGoodsOrder(row.isOrderTax).then(res => {
 				this.orderInfo = res.data;
 				// 打开弹窗
-				this.openDialog(GOODS_ORDER, '订单信息', '1000px', {
-					needToShowInfo: this.orderInfo
-				});
+				this.openDialog(
+					GOODS_ORDER,
+					'订单信息',
+					'1000px',
+					{
+						needToShowInfo: this.orderInfo
+					},
+					true
+				);
 			});
 		},
 		// handleUpdate(row) {},
 		// handleDelete(row) {},
 
 		// 业务逻辑方法
-		async handleProcess() {
-			// 在这里实现批量开票的业务 不过这里如果出错了，那么就要不关闭弹窗，让用户修改信息后再添加
+		async handleProcess(that) {
 			const invoices = this.list.filter(item => item !== null);
-
-			// 批量开票
 			const res = await batchInvoice(invoices);
-
 			const target = this.checkInvoice(res.data);
-
 			// 如果成功
 			if (target.flag) {
 				this.$message.success('本批开票成功');
 				// 发送时间 告诉订单列表重新加载
 				this.$bus.$emit('select-goods:update');
+				that.dialogVisible = false;
 			} else {
 				const uuid = target.uuid;
 				// 查找该出错的信息
@@ -63,17 +65,29 @@ export default {
 						switch (item.tableName) {
 							case TableName.INVOICE_OUT: {
 								// 打开弹窗 让用户知道 并且去修改
-								this.openDialog(INVOICE_OUT, '发票信息', '900px', {
-									needToShowInfo: item
-								});
+								this.openDialog(
+									INVOICE_OUT,
+									'发票信息',
+									'900px',
+									{
+										needToShowInfo: item
+									},
+									false
+								);
 								break;
 							}
 							case TableName.INVOICE_IN: {
 								// 打开弹窗 让用户知道 并且去修改
 								// 打开弹窗 让用户知道 并且去修改
-								this.openDialog(INVOICE_IN, '发票信息', '900px', {
-									needToShowInfo: item
-								});
+								this.openDialog(
+									INVOICE_IN,
+									'发票信息',
+									'900px',
+									{
+										needToShowInfo: item
+									},
+									false
+								);
 							}
 						}
 					}

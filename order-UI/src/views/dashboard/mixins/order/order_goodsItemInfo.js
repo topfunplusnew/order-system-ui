@@ -24,10 +24,16 @@ export var mixin_order_goodsItemInfo = {
 			getGoodsOrder(row.id).then(res => {
 				this.orderDetailInfoList = res.data.orderDetailList;
 				// 打开弹窗
-				this.openDialog(OrderDetailInfo, '查看订单货物', '1300px', {
-					orderDetailInfoList: this.orderDetailInfoList,
-					ban: false
-				});
+				this.openDialog(
+					OrderDetailInfo,
+					'查看订单货物',
+					'1300px',
+					{
+						orderDetailInfoList: this.orderDetailInfoList,
+						ban: false
+					},
+					true
+				);
 			});
 		},
 		// 当订单详情组件删除个体后，这里要进行刷新列表操作

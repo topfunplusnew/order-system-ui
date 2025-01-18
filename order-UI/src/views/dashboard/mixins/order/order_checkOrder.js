@@ -17,10 +17,16 @@ export var mixin_order_checkOrder = {
 				this.orderInfo = res.data;
 				this.orderDetailInfo = res.data.orderDetailList;
 				// 打开弹窗
-				this.openDialog(CheckOrder, '查看订单详情', '1300px', {
-					orderInfo: this.orderInfo,
-					orderDetailInfo: this.orderDetailInfo
-				});
+				this.openDialog(
+					CheckOrder,
+					'查看订单详情',
+					'1300px',
+					{
+						orderInfo: this.orderInfo,
+						orderDetailInfo: this.orderDetailInfo
+					},
+					true
+				);
 			});
 		}
 	}

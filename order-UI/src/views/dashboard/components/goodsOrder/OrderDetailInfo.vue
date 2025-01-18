@@ -84,8 +84,9 @@ export default {
 			});
 		},
 		// 每一个组件必须要实现的方法
-		handleProcess() {
+		handleProcess(that) {
 			console.log('order-detail-commit');
+			that.dialogVisible = false;
 		},
 		handleReject() {
 			console.log('order-detail-reject');

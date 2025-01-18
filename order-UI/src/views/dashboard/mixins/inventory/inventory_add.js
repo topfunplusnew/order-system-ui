@@ -20,7 +20,7 @@ export var mixin_inventory_add = {
 		// 添加货物
 		addNewInventory() {
 			this.resetInventoryInfo();
-			this.openDialog(InventoryForm, '添加货物', '1300px', {});
+			this.openDialog(InventoryForm, '添加货物', '1300px', {}, false);
 		},
 		// 重置仓库信息
 		resetInventoryInfo() {

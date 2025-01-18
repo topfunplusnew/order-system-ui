@@ -227,7 +227,7 @@ export default {
 			this.form.companyType = val.companyType;
 		},
 		// 作为表单的子元素必须要重写该方法
-		handleProcess() {
+		handleProcess(that) {
 			// 去除参数
 			this.form = excludeParams(this.form, this.$exclude);
 			let total_out = 0,
@@ -252,6 +252,7 @@ export default {
 					addInvoiceOut(body).then(() => {
 						this.$message.success('客户开票成功~');
 						this.resetOpenTitleInfo();
+						that.dialogVisible = false;
 						this.getList();
 					});
 				});

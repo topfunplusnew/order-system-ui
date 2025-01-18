@@ -262,7 +262,7 @@ export default {
 			this.clearDetail(scope);
 			// 如果已经选择了仓库
 			scope.row.supplier = val.companyName;
-			scope.row.supplierID = val.companyId;
+			scope.row.supplierID = val.id;
 			scope.row.currentType = 'supplier'; // 设置当前类型为供应商
 		},
 		// 仓库信息 从仓库发货
@@ -449,7 +449,7 @@ export default {
 		// ---
 
 		// 提交订单
-		handleProcess() {
+		handleProcess(that) {
 			if (!this.orderId) {
 				this.orderInfo.orderDetailList = this.orderdetailList;
 				const updateOrderItem = item => {
@@ -462,6 +462,11 @@ export default {
 					this.resetOrderInfo();
 					this.isSea = false;
 					this.isLand = false;
+					this.$message({
+						message: '添加成功',
+						type: 'success'
+					});
+					that.dialogVisible = false;
 				});
 			} else {
 				this.handleUpdateGoodsOrder();

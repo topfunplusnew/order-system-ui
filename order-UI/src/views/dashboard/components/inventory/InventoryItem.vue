@@ -357,10 +357,11 @@ export default {
 			this.queryStore = val;
 		},
 		// 添加入库
-		handleProcess() {
+		handleProcess(that) {
 			addInventory({ ...this.orderItemInfo, ...this.inventoryInfo }).then(
 				() => {
 					this.$message.success('入库成功');
+					that.dialogVisible = false;
 					this.resetInventory();
 				}
 			);

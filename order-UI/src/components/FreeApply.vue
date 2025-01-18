@@ -56,7 +56,7 @@ export default {
 		listBankAccount,
 		listCompany,
 		// 提交运费信息
-		handleProcess() {
+		handleProcess(that) {
 			// this.orderInfo就是父组件传递过来的组装的运费信息
 			Object.assign(this.form, this.orderInfo);
 			console.log(this.form);
@@ -68,7 +68,9 @@ export default {
 			};
 			// 添加运费信息
 			addOrderFreight(query).then(() => {
+				this.$message.success('操作成功');
 				this.reset();
+				that.dialogVisible = false;
 			});
 		},
 		// 选择银行卡 自动填充相关信息

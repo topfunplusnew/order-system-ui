@@ -1,6 +1,6 @@
 /**
  * 通用的弹窗组件 配合弹窗组件的混入 放在弹窗组件所在的父组件当中
- * @type {{data(): {currentComponent: null, dialogVisible: boolean, dialogTitle: null, dialogWidth: null, dialogProps: {}}, methods: {handleCloseDialog(*): void, handleDialogConfirm(*, string=): void, checkDialog(*): void, clearStatus(): void, openDialog(*, *, string=, *): void}}}
+ * @type {{data(): {currentComponent: null, dialogVisible: boolean, dialogTitle: null, dialogWidth: null, dialogProps: {}, closeConfirm: boolean}, methods: {handleCloseDialog(*): void, handleDialogConfirm(*, string=): void, checkDialog(*): void, clearStatus(): void, openDialog(*, *, string=, *): void}}}
  */
 export var common_dialog = {
 	data() {
@@ -14,7 +14,7 @@ export var common_dialog = {
 			// 要渲染的功能组件
 			currentComponent: null,
 			// 是否关闭确认按钮
-			closeConfirm: null,
+			closeConfirm: false,
 			// 传递给弹窗的属性
 			dialogProps: null
 		};
@@ -29,43 +29,22 @@ export var common_dialog = {
 			this.closeConfirm = closeConfirm;
 			this.dialogVisible = true;
 		},
-		// 处理
-		async handleCallBack(callback) {
-			// 执行回调函数
-			const res = await callback();
-
-			if (res.code !== 200) {
-				return Promise.reject(res.msg);
-			}
-			// 延时加载list
-			return Promise.resolve();
-		},
-		// 弹窗点击关闭 这里可以执行一些取消清理工作
 		handleCloseDialog(callback) {
-			// 校验
 			this.checkDialog(callback);
-			this.handleCallBack(callback).then(() => {
-				this.clearStatus();
-			});
+			// todo
+			callback(this);
 		},
-		// 弹窗点击确认 todo 这个方法可以整合到对应混入中
-		handleDialogConfirm(callback, message = '操作成功') {
+		// 弹窗点击确认 只有回调成功才关闭弹窗
+		handleDialogConfirm(callback) {
 			this.checkDialog(callback);
-			this.handleCallBack(callback)
-				.then(() => {
-					console.log(message);
-					this.clearStatus();
-				})
-				.catch(err => {
-					this.$message.error(err);
-				});
+			// todo
+			callback(this);
 		},
 		// 弹窗相关校验
 		checkDialog(callback) {
 			if (!(callback instanceof Function)) {
 				throw new Error('回调函数未定义');
 			}
-			// todo 其他逻辑
 		},
 		// 清除状态
 		clearStatus() {
