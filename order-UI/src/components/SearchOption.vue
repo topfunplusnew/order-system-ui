@@ -125,6 +125,7 @@ export default {
 					this.limitInfo[item.prop] = item.value;
 				});
 			}
+			this.limitInfo[this.queryInfo] = this.query;
 			const query = {
 				...this.limitInfo
 			};
@@ -194,7 +195,7 @@ export default {
 								></el-option>
 							</el-select>
 						</el-form-item>
-						<el-form-item :label="queryLabel" prop="createTime">
+						<el-form-item :label="queryLabel">
 							<el-input
 								v-model="query"
 								type="text"
@@ -218,7 +219,6 @@ export default {
 					:data="tableData"
 					size="mini"
 				>
-					<!--          todo-->
 					<slot name="table-columns" :tableData="tableData"></slot>
 
 					<!--          点击确认的地方-->
