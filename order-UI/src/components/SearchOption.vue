@@ -134,6 +134,11 @@ export default {
 			const query = {
 				...this.limitInfo
 			};
+
+			console.log('limit:', this.limitInfo);
+
+			console.log(query);
+
 			this.getData(query).then(res => {
 				this.total = res.total;
 				this.tableData = res.rows;

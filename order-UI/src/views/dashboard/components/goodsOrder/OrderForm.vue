@@ -5,6 +5,8 @@ import { listBankAccount } from '../../../../api/system/bankAccount';
 import { listCars } from '../../../../api/system/cars';
 import { listCompany } from '../../../../api/system/company';
 import { listFleet } from '../../../../api/system/fleet';
+import { listDetail } from '../../../../api/system/detail';
+import { listExitInventory } from '../../../../api/system/inventoryMain';
 import {
 	addGoodsOrder,
 	getGoodsOrder,
@@ -17,7 +19,6 @@ import { fix } from '../../../../api/tool/format';
 import SearchOption from '../../../../components/SearchOption.vue';
 import { parseTime } from '../../../../utils/ruoyi';
 import { mixin_form_fillInfo } from '../../mixins/order/form/form_fillInfo';
-
 export default {
 	name: 'OrderForm',
 	components: { SearchOption },
@@ -91,6 +92,45 @@ export default {
 						value: ''
 					}
 				]
+			},
+			queryItemsStoreHouse: {
+				queryList: [
+					{
+						id: 1,
+						label: '厚度',
+						prop: 'height',
+						type: 'input',
+						value: ''
+					},
+					{
+						id: 2,
+						label: '宽度',
+						prop: 'width',
+						type: 'input',
+						value: ''
+					},
+					{
+						id: 3,
+						label: '长度',
+						prop: 'length',
+						type: 'input',
+						value: ''
+					},
+					{
+						id: 4,
+						label: '分类名称',
+						prop: 'levelName',
+						type: 'input',
+						value: ''
+					},
+					{
+						id: 5,
+						label: '入库时间',
+						prop: 'storeDate',
+						type: 'input',
+						value: ''
+					}
+				]
 			}
 		};
 	},
@@ -128,6 +168,8 @@ export default {
 		listBankAccount,
 		listCompany,
 		listProductLevel,
+		listDetail,
+		listExitInventory,
 		getGoodsOrderInfo(id) {
 			getGoodsOrder(id).then(response => {
 				this.orderInfo = response.data;
@@ -193,6 +235,8 @@ export default {
 
 		// 筛选无剩余片数的库存
 		filterNoStockNumber(data) {
+			console.log('筛选', data);
+
 			return new Promise(resolve => {
 				resolve(data.filter(item => item.stockNumber > 0));
 			});
@@ -869,7 +913,7 @@ export default {
 							</el-col>
 						</el-row>
 					</el-form-item>
-					<!--          todo 原为海运司机 现改为海运公司-->
+					<!--  原为海运司机 现改为海运公司-->
 					<el-form-item label="海运公司">
 						<el-input
 							v-model="orderInfo.seaDriverName"
@@ -978,9 +1022,8 @@ export default {
 
 								<!-- 仓库按钮 -->
 								<el-col :span="6">
-									<!-- todo 这里获取库存需要修改 -->
 									<SearchOption
-										:get-data="listInventory"
+										:get-data="listExitInventory"
 										icon="el-icon-s-home"
 										:limit-info="{}"
 										query-label="仓库名称"
@@ -993,6 +1036,7 @@ export default {
 											value => handleCommitBackInventory(scope, value)
 										"
 										@update:queryName="handleUpdateQueryNameStore"
+										:queryItems="queryItemsStoreHouse"
 										@click="setCurrentType(scope.row, 'storeHouseName')"
 									>
 										<template #table-columns>
@@ -1000,35 +1044,163 @@ export default {
 												label="仓库名称"
 												align="center"
 												prop="storeHouseName"
-											/>
-											<el-table-column
-												label="入库日期"
-												align="center"
-												prop="storeDate"
+												show-overflow-tooltip
 											/>
 											<el-table-column
 												label="剩余量"
 												align="center"
 												prop="stockNumber"
-											>
-												<template #default="scope">
-													{{ scope.row.stockNumber }}
-												</template>
-											</el-table-column>
+												show-overflow-tooltip
+											/>
+											<el-table-column
+												label="入库时间"
+												align="center"
+												prop="storeDate"
+												show-overflow-tooltip
+											/>
 											<el-table-column
 												label="供应商"
 												align="center"
 												prop="supplier"
+												show-overflow-tooltip
 											/>
 											<el-table-column
 												label="级别编码"
 												align="center"
 												prop="levelID"
+												show-overflow-tooltip
 											/>
 											<el-table-column
 												label="级别名称"
 												align="center"
 												prop="levelName"
+												show-overflow-tooltip
+											/>
+											<el-table-column
+												label="供应商"
+												align="center"
+												prop="supplier"
+												show-overflow-tooltip
+											/>
+											<el-table-column
+												label="级别名称"
+												align="center"
+												prop="levelName"
+												show-overflow-tooltip
+											/>
+											<el-table-column
+												label="计量单位"
+												align="center"
+												prop="countingUnit"
+												show-overflow-tooltip
+											/>
+											<el-table-column
+												label="厚度"
+												align="center"
+												prop="height"
+												show-overflow-tooltip
+											/>
+											<el-table-column
+												label="长度"
+												align="center"
+												prop="length"
+												show-overflow-tooltip
+											/>
+											<el-table-column
+												label="宽度"
+												align="center"
+												prop="width"
+												show-overflow-tooltip
+											/>
+											<el-table-column
+												label="片数"
+												align="center"
+												prop="pieces"
+												show-overflow-tooltip
+											/>
+											<el-table-column
+												label="每包片数"
+												align="center"
+												prop="piecesPerPack"
+												show-overflow-tooltip
+											/>
+											<el-table-column
+												label="包数"
+												align="center"
+												prop="packs"
+												show-overflow-tooltip
+											/>
+											<el-table-column
+												label="出厂单价"
+												align="center"
+												prop="price"
+												show-overflow-tooltip
+											/>
+											<el-table-column
+												label="是否含税"
+												align="center"
+												prop="isIncludeTaxFactory"
+												show-overflow-tooltip
+											/>
+											<el-table-column
+												label="杂费"
+												align="center"
+												prop="sundryCost"
+												show-overflow-tooltip
+											/>
+											<el-table-column
+												label="出厂货款"
+												align="center"
+												prop="paymentFactory"
+												show-overflow-tooltip
+											/>
+											<el-table-column
+												label="卸货价"
+												align="center"
+												prop="paymentUnload"
+												show-overflow-tooltip
+											/>
+											<el-table-column
+												label="销售是否含税"
+												align="center"
+												prop="isIncludeTaxSale"
+												show-overflow-tooltip
+											/>
+											<el-table-column
+												label="总货款"
+												align="center"
+												prop="payments"
+												show-overflow-tooltip
+											/>
+											<el-table-column
+												label="误差"
+												align="center"
+												prop="erro"
+												show-overflow-tooltip
+											/>
+											<el-table-column
+												label="吨位"
+												align="center"
+												prop="tonnage"
+												show-overflow-tooltip
+											/>
+											<el-table-column
+												label="陆运费单价"
+												align="center"
+												prop="landFreightPrice"
+												show-overflow-tooltip
+											/>
+											<el-table-column
+												label="陆运费"
+												align="center"
+												prop="landFreight"
+												show-overflow-tooltip
+											/>
+											<el-table-column
+												label="海运费"
+												align="center"
+												prop="seaFreight"
+												show-overflow-tooltip
 											/>
 										</template>
 									</SearchOption>

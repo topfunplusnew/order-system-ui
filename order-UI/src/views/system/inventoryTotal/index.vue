@@ -59,7 +59,7 @@
 					class="category-card"
 				>
 					<div class="card-header">
-						<strong>{{ category }}</strong>
+						<strong>{{ items[0].levelName }}</strong>
 						<el-button
 							type="text"
 							size="mini"
@@ -69,12 +69,19 @@
 						>
 					</div>
 					<div class="card-content">
-						<el-table :data="items" size="mini" border stripe>
+						<el-table :data="paginatedData[category]" size="mini" border stripe>
+							<el-table-column
+								label="级别名称"
+								prop="levelName"
+								align="center"
+								show-overflow-tooltip
+							/>
 							<el-table-column
 								label="剩余量"
 								prop="total_remaining"
 								align="center"
 							/>
+							<el-table-column label="级别编码" prop="levelNo" align="center" />
 							<el-table-column
 								label="总出库量"
 								prop="total_stock_out"
@@ -91,22 +98,23 @@
 								prop="categoryNo"
 								align="center"
 							/>
-							<el-table-column label="长度" prop="length" align="center" />
-							<el-table-column label="宽度" prop="width" align="center" />
-							<el-table-column
-								label="级别名称"
-								prop="levelName"
-								align="center"
-							/>
-							<el-table-column label="吨位" prop="tonnage" align="center" />
-							<el-table-column label="级别编码" prop="levelNo" align="center" />
 							<el-table-column
 								label="类别名称"
 								prop="categoryName"
 								align="center"
 							/>
+							<el-table-column label="长度" prop="length" align="center" />
+							<el-table-column label="宽度" prop="width" align="center" />
+							<el-table-column label="吨位" prop="tonnage" align="center" />
 							<el-table-column label="高度" prop="height" align="center" />
 						</el-table>
+						<el-pagination
+							:current-page.sync="pagination[category].currentPage"
+							:page-size="pagination[category].pageSize"
+							:total="items.length"
+							layout="prev, pager, next"
+							@current-change="handlePageChange(category)"
+						/>
 					</div>
 				</el-card>
 			</el-col>
@@ -130,6 +138,7 @@
 <script>
 import { listInventoryMain } from '@/api/system/inventoryMain';
 import { inventorySummary } from '../../../api/system/statement';
+import { listInventoryDetails } from '../../../api/system/inventoryMain';
 
 export default {
 	name: 'InventoryTotal',
@@ -143,7 +152,9 @@ export default {
 			inventoryMainList: [],
 			categorizedInventory: {},
 			changeLogVisible: false,
-			changeLogData: []
+			changeLogData: [],
+			pagination: {},
+			paginatedData: {}
 		};
 	},
 	created() {
@@ -169,13 +180,37 @@ export default {
 		},
 		categorizeInventory() {
 			this.categorizedInventory = this.inventoryMainList.reduce((acc, item) => {
-				const category = item.levelNo || '未分类';
+				const category = item.levelID || '未分类';
 				if (!acc[category]) {
 					acc[category] = [];
 				}
 				acc[category].push(item);
 				return acc;
 			}, {});
+
+			this.initializePagination();
+		},
+		initializePagination() {
+			Object.keys(this.categorizedInventory).forEach(category => {
+				this.$set(this.pagination, category, {
+					currentPage: 1,
+					pageSize: 10
+				});
+				this.updatePaginatedData(category);
+			});
+		},
+		updatePaginatedData(category) {
+			const { currentPage, pageSize } = this.pagination[category];
+			const start = (currentPage - 1) * pageSize;
+			const end = start + pageSize;
+			this.$set(
+				this.paginatedData,
+				category,
+				this.categorizedInventory[category].slice(start, end)
+			);
+		},
+		handlePageChange(category) {
+			this.updatePaginatedData(category);
 		},
 		handleQuery() {
 			this.getInventoryData();
@@ -189,11 +224,31 @@ export default {
 			this.handleQuery();
 		},
 		openChangeLog(category) {
-			this.changeLogData = [
-				{ date: '2023-10-01', type: '入库', quantity: 100, remark: '初始入库' },
-				{ date: '2023-10-05', type: '出库', quantity: 20, remark: '销售出库' }
-			];
-			this.changeLogVisible = true;
+			this.$datePicker().then(({ startDate, endDate }) => {
+				const query = {
+					startDate,
+					endDate,
+					levelID: category
+				};
+				listInventoryDetails(query).then(response => {
+					console.log(response);
+					this.changeLogData = [
+						{
+							date: '2023-10-01',
+							type: '入库',
+							quantity: 100,
+							remark: '初始入库'
+						},
+						{
+							date: '2023-10-05',
+							type: '出库',
+							quantity: 20,
+							remark: '销售出库'
+						}
+					];
+					this.changeLogVisible = true;
+				});
+			});
 		}
 	}
 };

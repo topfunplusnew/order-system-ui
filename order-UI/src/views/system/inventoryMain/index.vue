@@ -123,111 +123,121 @@
 			></right-toolbar>
 		</el-row>
 
-		<el-table
-			size="mini"
-			v-loading="loading"
-			:data="inventoryMainList"
-			@selection-change="handleSelectionChange"
-			stripe
-			style="width: 100%; margin-bottom: 20px"
-		>
-			<el-table-column type="selection" width="50" align="center" />
-			<el-table-column label="ID" align="center" prop="id" width="80" />
-			<el-table-column
-				label="仓库名称"
-				align="center"
-				prop="storeHouseName"
-				width="150"
+		<el-col :span="4">
+			<div class="tree-container">
+				<el-tree
+					:data="storeList"
+					:props="defaultProps"
+					@node-click="handleNodeClick"
+				/>
+			</div>
+		</el-col>
+		<el-col :span="20">
+			<el-table
+				size="mini"
+				v-loading="loading"
+				:data="inventoryMainList"
+				@selection-change="handleSelectionChange"
+				stripe
+				style="width: 100%; margin-bottom: 20px"
+			>
+				<el-table-column type="selection" width="50" align="center" />
+				<el-table-column label="ID" align="center" prop="id" width="80" />
+				<el-table-column
+					label="仓库名称"
+					align="center"
+					prop="storeHouseName"
+					width="150"
+				/>
+				<el-table-column
+					label="入库日期"
+					align="center"
+					prop="storeDate"
+					width="150"
+				/>
+				<el-table-column
+					label="陆运车牌"
+					align="center"
+					prop="landCarNo"
+					width="120"
+				/>
+				<el-table-column
+					label="陆运司机电话"
+					align="center"
+					prop="landDriverTel"
+					width="150"
+				/>
+				<el-table-column
+					label="陆地司机姓名"
+					align="center"
+					prop="landDriverName"
+					width="120"
+				/>
+				<el-table-column
+					label="海运车牌"
+					align="center"
+					prop="seaCarNo"
+					width="120"
+				/>
+				<el-table-column
+					label="海运司机电话"
+					align="center"
+					prop="seaDriverTel"
+					width="150"
+				/>
+				<el-table-column
+					label="海运司机姓名"
+					align="center"
+					prop="seaDriverName"
+					width="120"
+				/>
+				<el-table-column
+					label="货物来源公司"
+					align="center"
+					prop="goodsCompany"
+					width="180"
+				/>
+				<el-table-column
+					label="子项陆运费之和"
+					align="center"
+					prop="allLandFreight"
+					width="150"
+				/>
+				<el-table-column
+					label="子项海运费之和"
+					align="center"
+					prop="allSeaFreight"
+					width="150"
+				/>
+				<el-table-column label="操作" align="center" width="150">
+					<template slot-scope="scope">
+						<el-button
+							size="mini"
+							type="text"
+							icon="el-icon-edit"
+							@click="handleUpdate(scope.row)"
+							v-hasPermi="['system:inventoryMain:edit']"
+							>修改
+						</el-button>
+						<el-button
+							size="mini"
+							type="text"
+							icon="el-icon-delete"
+							@click="handleDelete(scope.row)"
+							v-hasPermi="['system:inventoryMain:remove']"
+							>删除
+						</el-button>
+					</template>
+				</el-table-column>
+			</el-table>
+			<pagination
+				v-show="total > 0"
+				:total="total"
+				:page.sync="queryParams.pageNum"
+				:limit.sync="queryParams.pageSize"
+				@pagination="getList"
 			/>
-			<el-table-column
-				label="入库日期"
-				align="center"
-				prop="storeDate"
-				width="150"
-			/>
-			<el-table-column
-				label="陆运车牌"
-				align="center"
-				prop="landCarNo"
-				width="120"
-			/>
-			<el-table-column
-				label="陆运司机电话"
-				align="center"
-				prop="landDriverTel"
-				width="150"
-			/>
-			<el-table-column
-				label="陆地司机姓名"
-				align="center"
-				prop="landDriverName"
-				width="120"
-			/>
-			<el-table-column
-				label="海运车牌"
-				align="center"
-				prop="seaCarNo"
-				width="120"
-			/>
-			<el-table-column
-				label="海运司机电话"
-				align="center"
-				prop="seaDriverTel"
-				width="150"
-			/>
-			<el-table-column
-				label="海运司机姓名"
-				align="center"
-				prop="seaDriverName"
-				width="120"
-			/>
-			<el-table-column
-				label="货物来源公司"
-				align="center"
-				prop="goodsCompany"
-				width="180"
-			/>
-			<el-table-column
-				label="子项陆运费之和"
-				align="center"
-				prop="allLandFreight"
-				width="150"
-			/>
-			<el-table-column
-				label="子项海运费之和"
-				align="center"
-				prop="allSeaFreight"
-				width="150"
-			/>
-			<el-table-column label="操作" align="center" width="150">
-				<template slot-scope="scope">
-					<el-button
-						size="mini"
-						type="text"
-						icon="el-icon-edit"
-						@click="handleUpdate(scope.row)"
-						v-hasPermi="['system:inventoryMain:edit']"
-						>修改
-					</el-button>
-					<el-button
-						size="mini"
-						type="text"
-						icon="el-icon-delete"
-						@click="handleDelete(scope.row)"
-						v-hasPermi="['system:inventoryMain:remove']"
-						>删除
-					</el-button>
-				</template>
-			</el-table-column>
-		</el-table>
-
-		<pagination
-			v-show="total > 0"
-			:total="total"
-			:page.sync="queryParams.pageNum"
-			:limit.sync="queryParams.pageSize"
-			@pagination="getList"
-		/>
+		</el-col>
 
 		<!-- 添加或修改库存库存主表对话框 -->
 		<el-dialog
@@ -1080,6 +1090,11 @@ export default {
 			form: {},
 			// 表单校验
 			rules: {},
+			storeList: [],
+			// 树表的数据结构
+			defaultProps: {
+				label: 'label'
+			},
 			// 海运还是陆运
 			isLand: false,
 			isSea: false,
@@ -1135,6 +1150,15 @@ export default {
 	},
 	created() {
 		this.getList();
+		// 抓取左侧仓库信息
+		listStoreHouse().then(res => {
+			this.storeList = res.rows.map(item => {
+				return {
+					label: item.storeHouseName,
+					children: []
+				};
+			});
+		});
 	},
 	isLand: {
 		handler(val) {
@@ -1157,6 +1181,13 @@ export default {
 		listFleet,
 		listProductLevel,
 		listCompany,
+		handleNodeClick(data) {
+			this.loading = true;
+			listInventoryMain({ storeHouseName: data.label }).then(res => {
+				this.inventoryMainList = res.rows;
+				this.loading = false;
+			});
+		},
 		filterNoStockNumber(data) {
 			return new Promise(resolve => {
 				resolve(data.filter(item => item.stockNumber > 0));

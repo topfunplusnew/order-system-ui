@@ -168,6 +168,17 @@
 			</el-table-column>
 			<el-table-column label="保险金额" align="center" prop="insuranceCost" />
 			<el-table-column label="备注" align="center" prop="notes" />
+			<el-table-column label="附件" align="center">
+				<template slot-scope="scope">
+					<el-button
+						size="mini"
+						type="primary"
+						icon="el-icon-upload"
+						@click="handleUploadAttachments(scope.row)"
+						>附件上传
+					</el-button>
+				</template>
+			</el-table-column>
 			<!--			<el-table-column label="扩展性保留字段" align="center" prop="extraInfo" />-->
 			<el-table-column
 				label="操作"
@@ -190,6 +201,13 @@
 						@click="handleDelete(scope.row)"
 						v-hasPermi="['system:vehicles:remove']"
 						>删除
+					</el-button>
+					<el-button
+						size="mini"
+						type="text"
+						icon="el-icon-picture"
+						@click="handleViewAttachments(scope.row)"
+						>查看附件
 					</el-button>
 				</template>
 			</el-table-column>
@@ -256,6 +274,65 @@
 				<el-button type="primary" @click="submitForm">确 定</el-button>
 				<el-button @click="cancel">取 消</el-button>
 			</div>
+		</el-dialog>
+
+		<!-- 查看附件对话框 -->
+		<el-dialog
+			:title="'查看附件'"
+			:visible.sync="attachmentsDialogVisible"
+			width="600px"
+			append-to-body
+		>
+			<el-carousel
+				v-if="imageAttachments.length"
+				:interval="5000"
+				type="card"
+				height="400px"
+			>
+				<el-carousel-item
+					v-for="(item, index) in imageAttachments"
+					:key="index"
+				>
+					<img
+						:src="item.url"
+						:alt="item.name"
+						style="width: 100%; height: 100%"
+					/>
+				</el-carousel-item>
+			</el-carousel>
+			<div v-if="nonImageAttachments.length" class="non-image-attachments">
+				<div
+					v-for="(item, index) in nonImageAttachments"
+					:key="index"
+					class="attachment-item"
+				>
+					<i class="el-icon-document"></i>
+					<a :href="item.url" target="_blank">{{ item.name }}</a>
+				</div>
+			</div>
+		</el-dialog>
+
+		<!-- 附件上传对话框 -->
+		<el-dialog
+			:title="'附件上传'"
+			:visible.sync="uploadDialogVisible"
+			width="600px"
+			append-to-body
+		>
+			<el-upload
+				class="upload-demo"
+				action="#"
+				list-type="picture-card"
+				:multiple="true"
+				:file-list="fileList"
+				:auto-upload="false"
+				:on-preview="handlePreview"
+				:on-remove="handleRemove"
+				:on-change="handleChange"
+			>
+				<i class="el-icon-plus"></i>
+			</el-upload>
+			<el-button type="primary" @click="submitUpload">上传</el-button>
 		</el-dialog>
 	</div>
 </template>
@@ -331,7 +408,14 @@ export default {
 				insuranceCost: [
 					{ required: true, message: '保险金额不能为空', trigger: 'blur' }
 				]
-			}
+			},
+			attachmentsDialogVisible: false,
+			attachments: [],
+			imageAttachments: [],
+			nonImageAttachments: [],
+			uploadDialogVisible: false,
+			fileList: [],
+			currentRow: null
 		};
 	},
 	created() {
@@ -406,13 +490,13 @@ export default {
 			this.$refs['form'].validate(valid => {
 				if (valid) {
 					if (this.form.id != null) {
-						updateVehicles(this.form).then(response => {
+						updateVehicles(this.form).then(() => {
 							this.$modal.msgSuccess('修改成功');
 							this.open = false;
 							this.getList();
 						});
 					} else {
-						addVehicles(this.form).then(response => {
+						addVehicles(this.form).then(() => {
 							this.$modal.msgSuccess('新增成功');
 							this.open = false;
 							this.getList();
@@ -444,7 +528,67 @@ export default {
 				},
 				`vehicles_${new Date().getTime()}.xlsx`
 			);
+		},
+		/** 查看附件按钮操作 */
+		handleViewAttachments(row) {
+			// 拿取附件数据
+			if (!row.extraInfo) {
+				this.$modal.msgError('该车辆没有附件');
+				return;
+			}
+			this.attachments = row.extraInfo.attachments;
+			this.imageAttachments = this.attachments.filter(item =>
+				item.url.match(/\.(jpeg|jpg|gif|png)$/i)
+			);
+			this.nonImageAttachments = this.attachments.filter(
+				item => !item.url.match(/\.(jpeg|jpg|gif|png)$/i)
+			);
+			this.attachmentsDialogVisible = true;
+		},
+		/** 附件上传按钮操作 */
+		handleUploadAttachments(row) {
+			this.currentRow = row;
+			this.uploadDialogVisible = true;
+		},
+		handlePreview(file) {
+			console.log(file);
+		},
+		handleRemove(file, fileList) {
+			this.fileList = fileList;
+		},
+		handleChange(file, fileList) {
+			this.fileList = fileList;
+		},
+		submitUpload() {
+			// 将上传的文件信息保存到当前行的 extraInfo 字段中
+			this.currentRow.extraInfo = {
+				attachments: this.fileList.map(file => ({
+					url: URL.createObjectURL(file.raw),
+					name: file.name
+				}))
+			};
+			// 更新当前行数据
+			updateVehicles(this.currentRow).then(() => {
+				this.getList();
+				// 模拟上传成功
+				this.$modal.msgSuccess('上传成功');
+				this.uploadDialogVisible = false;
+			});
 		}
 	}
 };
 </script>
+
+<style scoped>
+.non-image-attachments {
+	margin-top: 20px;
+}
+.attachment-item {
+	display: flex;
+	align-items: center;
+	margin-bottom: 10px;
+}
+.attachment-item i {
+	margin-right: 10px;
+}
+</style>

@@ -1,6 +1,10 @@
 import request from '@/utils/request';
 
-// 查询库存子列表
+/**
+ * 查询库存子详细
+ * @param {*} query
+ * @returns
+ */
 export function listDetail(query) {
 	return request({
 		url: '/system/inventoryDetail/list',
