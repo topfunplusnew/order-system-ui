@@ -22,13 +22,6 @@ export var _fill = {
 		handleUpdateQueryNameStore(value) {
 			this.queryStore = value;
 		},
-		// 车队的自动填充
-		handleChangeFleet(val) {
-			this.queryFleet = val;
-		},
-		handleCommitBackFleet(val) {
-			this.form.fleet = val.fname;
-		},
 		// 客户搜索的自动填充
 		handleCommitBackCompany(val) {
 			this.form.customerID = val.id;

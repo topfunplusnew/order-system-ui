@@ -1,22 +1,22 @@
 <!--订单表组件-->
 
 <script>
-import SearchOption from '../../../../components/SearchOption.vue';
-import { listCompany } from '../../../../api/system/company';
 import { listBankAccount } from '../../../../api/system/bankAccount';
 import { listCars } from '../../../../api/system/cars';
+import { listCompany } from '../../../../api/system/company';
 import { listFleet } from '../../../../api/system/fleet';
-import { parseTime } from '../../../../utils/ruoyi';
 import {
 	addGoodsOrder,
 	getGoodsOrder,
 	updateGoodsOrder
 } from '../../../../api/system/goodsOrder';
-import { excludeParams } from '../../../../api/tool/exclude';
-import { mixin_form_fillInfo } from '../../mixins/order/form/form_fillInfo';
 import { listInventory } from '../../../../api/system/inventory';
 import { listProductLevel } from '../../../../api/system/productLevel';
+import { excludeParams } from '../../../../api/tool/exclude';
 import { fix } from '../../../../api/tool/format';
+import SearchOption from '../../../../components/SearchOption.vue';
+import { parseTime } from '../../../../utils/ruoyi';
+import { mixin_form_fillInfo } from '../../mixins/order/form/form_fillInfo';
 
 export default {
 	name: 'OrderForm',
@@ -978,6 +978,7 @@ export default {
 
 								<!-- 仓库按钮 -->
 								<el-col :span="6">
+									<!-- todo 这里获取库存需要修改 -->
 									<SearchOption
 										:get-data="listInventory"
 										icon="el-icon-s-home"

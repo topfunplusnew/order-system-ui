@@ -61,13 +61,18 @@ export default {
 					queryList: []
 				};
 			}
+		},
+		// 请求方法返回的数据是否分页
+		isPage: {
+			type: Boolean,
+			default: true
 		}
 	},
 	data() {
 		return {
 			// 显示总行数
 			total: 0,
-			pageNum: 0,
+			pageNum: 1,
 			pageSize: 10,
 			dialogVisible: false,
 			// 加载效果
@@ -236,6 +241,7 @@ export default {
 					</el-table-column>
 				</el-table>
 				<pagination
+					v-if="isPage"
 					v-show="total > 0"
 					:total="total"
 					:page.sync="pageNum"

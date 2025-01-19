@@ -6,40 +6,14 @@
 			size="small"
 			:inline="true"
 			v-show="showSearch"
-			label-width="68px"
+			label-width="100px"
 		>
-			<el-form-item label="主表ID，关联inventory_main表的id" prop="mainId">
-				<el-input
-					v-model="queryParams.mainId"
-					placeholder="请输入主表ID，关联inventory_main表的id"
-					clearable
-					@keyup.enter.native="handleQuery"
-				/>
-			</el-form-item>
-			<el-form-item
-				label="库存量(片数)(用来记录入库时的个数)"
-				prop="stockNumber"
-			>
-				<el-input
-					v-model="queryParams.stockNumber"
-					placeholder="请输入库存量(片数)(用来记录入库时的个数)"
-					clearable
-					@keyup.enter.native="handleQuery"
-				/>
-			</el-form-item>
 			<el-form-item label="供应商" prop="supplier">
 				<el-input
 					v-model="queryParams.supplier"
 					placeholder="请输入供应商"
 					clearable
-					@keyup.enter.native="handleQuery"
-				/>
-			</el-form-item>
-			<el-form-item label="供应商ID" prop="supplierId">
-				<el-input
-					v-model="queryParams.supplierId"
-					placeholder="请输入供应商ID"
-					clearable
+					size="mini"
 					@keyup.enter.native="handleQuery"
 				/>
 			</el-form-item>
@@ -48,6 +22,7 @@
 					v-model="queryParams.levelID"
 					placeholder="请输入级别编码"
 					clearable
+					size="mini"
 					@keyup.enter.native="handleQuery"
 				/>
 			</el-form-item>
@@ -56,14 +31,7 @@
 					v-model="queryParams.levelName"
 					placeholder="请输入级别名称"
 					clearable
-					@keyup.enter.native="handleQuery"
-				/>
-			</el-form-item>
-			<el-form-item label="计量单位" prop="countingUnit">
-				<el-input
-					v-model="queryParams.countingUnit"
-					placeholder="请输入计量单位"
-					clearable
+					size="mini"
 					@keyup.enter.native="handleQuery"
 				/>
 			</el-form-item>
@@ -72,6 +40,7 @@
 					v-model="queryParams.height"
 					placeholder="请输入厚度"
 					clearable
+					size="mini"
 					@keyup.enter.native="handleQuery"
 				/>
 			</el-form-item>
@@ -80,6 +49,7 @@
 					v-model="queryParams.length"
 					placeholder="请输入长度"
 					clearable
+					size="mini"
 					@keyup.enter.native="handleQuery"
 				/>
 			</el-form-item>
@@ -88,94 +58,7 @@
 					v-model="queryParams.width"
 					placeholder="请输入宽度"
 					clearable
-					@keyup.enter.native="handleQuery"
-				/>
-			</el-form-item>
-			<el-form-item label="出厂片数" prop="pieces">
-				<el-input
-					v-model="queryParams.pieces"
-					placeholder="请输入出厂片数"
-					clearable
-					@keyup.enter.native="handleQuery"
-				/>
-			</el-form-item>
-			<el-form-item label="每包片数" prop="piecesPerPack">
-				<el-input
-					v-model="queryParams.piecesPerPack"
-					placeholder="请输入每包片数"
-					clearable
-					@keyup.enter.native="handleQuery"
-				/>
-			</el-form-item>
-			<el-form-item label="包数" prop="packs">
-				<el-input
-					v-model="queryParams.packs"
-					placeholder="请输入包数"
-					clearable
-					@keyup.enter.native="handleQuery"
-				/>
-			</el-form-item>
-			<el-form-item label="出厂单价" prop="price">
-				<el-input
-					v-model="queryParams.price"
-					placeholder="请输入出厂单价"
-					clearable
-					@keyup.enter.native="handleQuery"
-				/>
-			</el-form-item>
-			<el-form-item label="出厂是否含税" prop="isIncludeTaxFactory">
-				<el-input
-					v-model="queryParams.isIncludeTaxFactory"
-					placeholder="请输入出厂是否含税"
-					clearable
-					@keyup.enter.native="handleQuery"
-				/>
-			</el-form-item>
-			<el-form-item label="杂费" prop="sundryCost">
-				<el-input
-					v-model="queryParams.sundryCost"
-					placeholder="请输入杂费"
-					clearable
-					@keyup.enter.native="handleQuery"
-				/>
-			</el-form-item>
-			<el-form-item label="出厂货款" prop="paymentFactory">
-				<el-input
-					v-model="queryParams.paymentFactory"
-					placeholder="请输入出厂货款"
-					clearable
-					@keyup.enter.native="handleQuery"
-				/>
-			</el-form-item>
-			<el-form-item label="卸货价" prop="paymentUnload">
-				<el-input
-					v-model="queryParams.paymentUnload"
-					placeholder="请输入卸货价"
-					clearable
-					@keyup.enter.native="handleQuery"
-				/>
-			</el-form-item>
-			<el-form-item label="销售是否含税" prop="isIncludeTaxSale">
-				<el-input
-					v-model="queryParams.isIncludeTaxSale"
-					placeholder="请输入销售是否含税"
-					clearable
-					@keyup.enter.native="handleQuery"
-				/>
-			</el-form-item>
-			<el-form-item label="总货款" prop="payments">
-				<el-input
-					v-model="queryParams.payments"
-					placeholder="请输入总货款"
-					clearable
-					@keyup.enter.native="handleQuery"
-				/>
-			</el-form-item>
-			<el-form-item label="误差" prop="erro">
-				<el-input
-					v-model="queryParams.erro"
-					placeholder="请输入误差"
-					clearable
+					size="mini"
 					@keyup.enter.native="handleQuery"
 				/>
 			</el-form-item>
@@ -184,129 +67,7 @@
 					v-model="queryParams.tonnage"
 					placeholder="请输入吨位"
 					clearable
-					@keyup.enter.native="handleQuery"
-				/>
-			</el-form-item>
-			<el-form-item label="陆运费单价" prop="landFreightPrice">
-				<el-input
-					v-model="queryParams.landFreightPrice"
-					placeholder="请输入陆运费单价"
-					clearable
-					@keyup.enter.native="handleQuery"
-				/>
-			</el-form-item>
-			<el-form-item label="陆运费" prop="landFreight">
-				<el-input
-					v-model="queryParams.landFreight"
-					placeholder="请输入陆运费"
-					clearable
-					@keyup.enter.native="handleQuery"
-				/>
-			</el-form-item>
-			<el-form-item label="海运费" prop="seaFreight">
-				<el-input
-					v-model="queryParams.seaFreight"
-					placeholder="请输入海运费"
-					clearable
-					@keyup.enter.native="handleQuery"
-				/>
-			</el-form-item>
-			<el-form-item label="运费" prop="freight">
-				<el-input
-					v-model="queryParams.freight"
-					placeholder="请输入运费"
-					clearable
-					@keyup.enter.native="handleQuery"
-				/>
-			</el-form-item>
-			<el-form-item label="其他费用" prop="otherCost">
-				<el-input
-					v-model="queryParams.otherCost"
-					placeholder="请输入其他费用"
-					clearable
-					@keyup.enter.native="handleQuery"
-				/>
-			</el-form-item>
-			<el-form-item label="利润" prop="profit">
-				<el-input
-					v-model="queryParams.profit"
-					placeholder="请输入利润"
-					clearable
-					@keyup.enter.native="handleQuery"
-				/>
-			</el-form-item>
-			<el-form-item label="不含税利润" prop="profitNoTax">
-				<el-input
-					v-model="queryParams.profitNoTax"
-					placeholder="请输入不含税利润"
-					clearable
-					@keyup.enter.native="handleQuery"
-				/>
-			</el-form-item>
-			<el-form-item
-				label="实际片数(用来记录仓库还剩余的个数)"
-				prop="actualPieces"
-			>
-				<el-input
-					v-model="queryParams.actualPieces"
-					placeholder="请输入实际片数(用来记录仓库还剩余的个数)"
-					clearable
-					@keyup.enter.native="handleQuery"
-				/>
-			</el-form-item>
-			<el-form-item label="总货款杂费" prop="paymentsWithSundry">
-				<el-input
-					v-model="queryParams.paymentsWithSundry"
-					placeholder="请输入总货款杂费"
-					clearable
-					@keyup.enter.native="handleQuery"
-				/>
-			</el-form-item>
-			<el-form-item label="加费" prop="additionalFees">
-				<el-input
-					v-model="queryParams.additionalFees"
-					placeholder="请输入加费"
-					clearable
-					@keyup.enter.native="handleQuery"
-				/>
-			</el-form-item>
-			<el-form-item label="返利金额" prop="rebate">
-				<el-input
-					v-model="queryParams.rebate"
-					placeholder="请输入返利金额"
-					clearable
-					@keyup.enter.native="handleQuery"
-				/>
-			</el-form-item>
-			<el-form-item label="客户佣金" prop="customerCommission">
-				<el-input
-					v-model="queryParams.customerCommission"
-					placeholder="请输入客户佣金"
-					clearable
-					@keyup.enter.native="handleQuery"
-				/>
-			</el-form-item>
-			<el-form-item label="备注" prop="comments">
-				<el-input
-					v-model="queryParams.comments"
-					placeholder="请输入备注"
-					clearable
-					@keyup.enter.native="handleQuery"
-				/>
-			</el-form-item>
-			<el-form-item label="二次入库对应的出库id" prop="exWareHoustId">
-				<el-input
-					v-model="queryParams.exWareHoustId"
-					placeholder="请输入二次入库对应的出库id"
-					clearable
-					@keyup.enter.native="handleQuery"
-				/>
-			</el-form-item>
-			<el-form-item label="删除标记" prop="delFlag">
-				<el-input
-					v-model="queryParams.delFlag"
-					placeholder="请输入删除标记"
-					clearable
+					size="mini"
 					@keyup.enter.native="handleQuery"
 				/>
 			</el-form-item>
@@ -325,7 +86,7 @@
 		</el-form>
 
 		<el-row :gutter="10" class="mb8">
-			<el-col :span="1.5">
+			<!-- <el-col :span="1.5">
 				<el-button
 					type="primary"
 					plain
@@ -359,7 +120,7 @@
 					v-hasPermi="['system:detail:remove']"
 					>删除
 				</el-button>
-			</el-col>
+			</el-col> -->
 			<el-col :span="1.5">
 				<el-button
 					type="warning"
@@ -383,19 +144,9 @@
 			@selection-change="handleSelectionChange"
 		>
 			<el-table-column type="selection" width="55" align="center" />
-			<el-table-column label="主键ID" align="center" prop="id" />
-			<el-table-column
-				label="主表ID，关联inventory_main表的id"
-				align="center"
-				prop="mainId"
-			/>
-			<el-table-column
-				label="库存量(片数)(用来记录入库时的个数)"
-				align="center"
-				prop="stockNumber"
-			/>
+			<el-table-column label="ID" align="center" prop="id" />
+			<el-table-column label="库存量" align="center" prop="stockNumber" />
 			<el-table-column label="供应商" align="center" prop="supplier" />
-			<el-table-column label="供应商ID" align="center" prop="supplierId" />
 			<el-table-column label="级别编码" align="center" prop="levelID" />
 			<el-table-column label="级别名称" align="center" prop="levelName" />
 			<el-table-column label="计量单位" align="center" prop="countingUnit" />
@@ -433,11 +184,7 @@
 			<el-table-column label="其他费用" align="center" prop="otherCost" />
 			<el-table-column label="利润" align="center" prop="profit" />
 			<el-table-column label="不含税利润" align="center" prop="profitNoTax" />
-			<el-table-column
-				label="实际片数(用来记录仓库还剩余的个数)"
-				align="center"
-				prop="actualPieces"
-			/>
+			<el-table-column label="实际片数" align="center" prop="actualPieces" />
 			<el-table-column
 				label="总货款杂费"
 				align="center"
@@ -451,12 +198,6 @@
 				prop="customerCommission"
 			/>
 			<el-table-column label="备注" align="center" prop="comments" />
-			<el-table-column
-				label="二次入库对应的出库id"
-				align="center"
-				prop="exWareHoustId"
-			/>
-			<el-table-column label="删除标记" align="center" prop="delFlag" />
 			<el-table-column
 				label="操作"
 				align="center"
@@ -602,13 +343,10 @@
 				<el-form-item label="不含税利润" prop="profitNoTax">
 					<el-input v-model="form.profitNoTax" placeholder="请输入不含税利润" />
 				</el-form-item>
-				<el-form-item
-					label="实际片数(用来记录仓库还剩余的个数)"
-					prop="actualPieces"
-				>
+				<el-form-item label="实际片数" prop="actualPieces">
 					<el-input
 						v-model="form.actualPieces"
-						placeholder="请输入实际片数(用来记录仓库还剩余的个数)"
+						placeholder="用来记录仓库还剩余的个数"
 					/>
 				</el-form-item>
 				<el-form-item label="总货款杂费" prop="paymentsWithSundry">
@@ -652,10 +390,10 @@
 
 <script>
 import {
-	listDetail,
-	getDetail,
-	delDetail,
 	addDetail,
+	delDetail,
+	getDetail,
+	listDetail,
 	updateDetail
 } from '@/api/system/detail';
 
@@ -836,13 +574,13 @@ export default {
 			this.$refs['form'].validate(valid => {
 				if (valid) {
 					if (this.form.id != null) {
-						updateDetail(this.form).then(response => {
+						updateDetail(this.form).then(() => {
 							this.$modal.msgSuccess('修改成功');
 							this.open = false;
 							this.getList();
 						});
 					} else {
-						addDetail(this.form).then(response => {
+						addDetail(this.form).then(() => {
 							this.$modal.msgSuccess('新增成功');
 							this.open = false;
 							this.getList();

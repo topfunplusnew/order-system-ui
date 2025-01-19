@@ -124,6 +124,7 @@
 		</el-row>
 
 		<el-table
+			size="mini"
 			v-loading="loading"
 			:data="inventoryMainList"
 			@selection-change="handleSelectionChange"
@@ -235,6 +236,7 @@
 							:query-name="queryStore"
 							@commitBack="value => handleCommitBackInventory(value)"
 							@update:queryName="handleUpdateQueryNameStore"
+							:is-page="false"
 						>
 							<template #table-columns>
 								<el-table-column
@@ -980,21 +982,21 @@
 
 <script>
 import {
-	listInventoryMain,
-	getInventoryMain,
-	delInventoryMain,
 	addInventoryMain,
+	delInventoryMain,
+	getInventoryMain,
+	listInventoryMain,
 	updateInventoryMain
 } from '@/api/system/inventoryMain';
-import SearchOption from '../../../components/SearchOption.vue';
-import { fix } from '../../../api/tool/format';
-import { listCompany } from '../../../api/system/company';
-import { listProductLevel } from '../../../api/system/productLevel';
-import { _fill } from './fill';
-import { listFleet } from '../../../api/system/fleet';
 import { listCars } from '../../../api/system/cars';
+import { listCompany } from '../../../api/system/company';
+import { listFleet } from '../../../api/system/fleet';
 import { listInventory } from '../../../api/system/inventory';
+import { listProductLevel } from '../../../api/system/productLevel';
 import { listStoreHouse } from '../../../api/system/StoreHouse';
+import { fix } from '../../../api/tool/format';
+import SearchOption from '../../../components/SearchOption.vue';
+import { _fill } from './fill';
 
 export default {
 	name: 'InventoryMain',
