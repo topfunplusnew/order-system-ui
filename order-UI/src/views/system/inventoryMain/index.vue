@@ -84,7 +84,7 @@
 			</el-col>
 			<el-col :span="1.5">
 				<el-button
-					type="success"
+					type="primary"
 					plain
 					icon="el-icon-edit"
 					size="mini"
@@ -128,53 +128,78 @@
 			v-loading="loading"
 			:data="inventoryMainList"
 			@selection-change="handleSelectionChange"
+			stripe
+			style="width: 100%; margin-bottom: 20px"
 		>
-			<el-table-column type="selection" width="55" align="center" />
-			<el-table-column label="ID" align="center" prop="id" />
-			<el-table-column label="仓库名称" align="center" prop="storeHouseName" />
-			<el-table-column label="入库日期" align="center" prop="storeDate" />
-			<el-table-column label="陆运车牌" align="center" prop="landCarNo" />
+			<el-table-column type="selection" width="50" align="center" />
+			<el-table-column label="ID" align="center" prop="id" width="80" />
+			<el-table-column
+				label="仓库名称"
+				align="center"
+				prop="storeHouseName"
+				width="150"
+			/>
+			<el-table-column
+				label="入库日期"
+				align="center"
+				prop="storeDate"
+				width="150"
+			/>
+			<el-table-column
+				label="陆运车牌"
+				align="center"
+				prop="landCarNo"
+				width="120"
+			/>
 			<el-table-column
 				label="陆运司机电话"
 				align="center"
 				prop="landDriverTel"
+				width="150"
 			/>
 			<el-table-column
 				label="陆地司机姓名"
 				align="center"
 				prop="landDriverName"
+				width="120"
 			/>
-			<el-table-column label="海运车牌" align="center" prop="seaCarNo" />
+			<el-table-column
+				label="海运车牌"
+				align="center"
+				prop="seaCarNo"
+				width="120"
+			/>
 			<el-table-column
 				label="海运司机电话"
 				align="center"
 				prop="seaDriverTel"
+				width="150"
 			/>
 			<el-table-column
 				label="海运司机姓名"
 				align="center"
 				prop="seaDriverName"
+				width="120"
 			/>
 			<el-table-column
-				label="货物来源公司(本部或者海盛)"
+				label="货物来源公司"
 				align="center"
 				prop="goodsCompany"
+				width="180"
 			/>
 			<el-table-column
 				label="子项陆运费之和"
 				align="center"
 				prop="allLandFreight"
+				width="150"
 			/>
 			<el-table-column
 				label="子项海运费之和"
 				align="center"
 				prop="allSeaFreight"
+				width="150"
 			/>
-			<el-table-column
-				label="操作"
-				align="center"
-				class-name="small-padding fixed-width"
-			>
+			<el-table-column label="操作" align="center" width="150">
 				<template slot-scope="scope">
 					<el-button
 						size="mini"
@@ -1468,6 +1493,8 @@ export default {
 			const id = row.id || this.ids;
 			getInventoryMain(id).then(response => {
 				this.form = response.data;
+				this.isSea = response.data.allSeaFreight > 0;
+				this.isLand = response.data.allLandFreight > 0;
 				this.inventoryDetailList = response.data.inventoryDetailList;
 				this.open = true;
 				this.title = '修改库存';
@@ -1478,6 +1505,20 @@ export default {
 			this.$refs['form'].validate(valid => {
 				if (valid) {
 					this.form.inventoryDetailList = this.inventoryDetailList;
+					// 计算陆运费
+					this.form.allLandFreight = this.isLand
+						? this.inventoryDetailList.reduce(
+								(prev, curr) => prev + curr.landFreight,
+								0
+						  )
+						: 0;
+					// 计算海运费
+					this.form.allSeaFreight = this.isSea
+						? this.inventoryDetailList.reduce(
+								(prev, curr) => prev + curr.seaFreight,
+								0
+						  )
+						: 0;
 					if (this.form.id != null) {
 						updateInventoryMain(this.form).then(() => {
 							this.$modal.msgSuccess('修改成功');
@@ -1580,3 +1621,9 @@ export default {
 	}
 };
 </script>
+
+<style scoped>
+.el-table .el-button {
+	margin: 0 5px;
+}
+</style>

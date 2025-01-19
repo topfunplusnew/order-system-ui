@@ -139,6 +139,7 @@
 		</el-row>
 
 		<el-table
+			size="mini"
 			v-loading="loading"
 			:data="detailList"
 			@selection-change="handleSelectionChange"
@@ -198,7 +199,7 @@
 				prop="customerCommission"
 			/>
 			<el-table-column label="备注" align="center" prop="comments" />
-			<el-table-column
+			<!-- <el-table-column
 				label="操作"
 				align="center"
 				class-name="small-padding fixed-width"
@@ -220,8 +221,8 @@
 						v-hasPermi="['system:detail:remove']"
 						>删除
 					</el-button>
-				</template>
-			</el-table-column>
+				</template> -->
+			<!-- </el-table-column> -->
 		</el-table>
 
 		<pagination
