@@ -294,3 +294,11 @@ export function cashOilCardSummary(query) {
 		params: query
 	});
 }
+
+export function inventorySummary(query) {
+	return request({
+		url: '/system/inventoryMain/totalStock',
+		method: 'get',
+		params: query
+	});
+}
