@@ -70,8 +70,8 @@
 		<el-row :gutter="10" class="mb8">
 			<el-col :span="1.5">
 				<el-button icon="el-icon-refresh" size="mini" @click="resetQuery"
-					>刷新</el-button
-				>
+					>刷新
+				</el-button>
 			</el-col>
 			<el-col :span="1.5">
 				<el-select v-model="value" placeholder="余额排序" size="mini">
@@ -225,7 +225,6 @@ export default {
 	methods: {
 		listBankAccount,
 		listCompany,
-
 		getList() {
 			this.loading = true;
 			listBankAccountSelf().then(response => {
@@ -286,3 +285,107 @@ export default {
 	}
 };
 </script>
+<style scoped>
+/* 整体容器样式 */
+.app-container {
+	padding: 20px;
+	background-color: #f9f9f9;
+	border-radius: 8px;
+	box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+/* 筛选框样式 */
+.el-form {
+	background-color: #ffffff;
+	padding: 15px;
+	border-radius: 8px;
+	box-shadow: 0 1px 6px rgba(0, 0, 0, 0.1);
+	margin-bottom: 20px;
+}
+
+.el-form-item {
+	margin-right: 15px;
+}
+
+/* 按钮样式 */
+.el-button {
+	font-size: 14px;
+	border-radius: 6px;
+	transition: background-color 0.3s;
+}
+
+.el-button:hover {
+	background-color: #409eff;
+	color: white;
+}
+
+/* 筛选框中的按钮样式 */
+.el-button.icon-refresh {
+	background-color: #67c23a;
+}
+
+.el-button.icon-refresh:hover {
+	background-color: #52b233;
+}
+
+/* 表格样式 */
+#printBox {
+	background-color: #ffffff;
+	border-radius: 8px;
+	box-shadow: 0 1px 6px rgba(0, 0, 0, 0.1);
+}
+
+.el-table th {
+	background-color: #f4f4f4;
+	color: #333;
+	font-weight: bold;
+	text-align: center;
+}
+
+.el-table td {
+	text-align: center;
+	padding: 12px;
+	font-size: 14px;
+	color: #555;
+}
+
+.el-table .el-table-column--center {
+	text-align: center;
+}
+
+/* 搜索框外部的操作区域 */
+.mb8 {
+	margin-bottom: 20px;
+}
+
+/* 列表筛选 */
+.el-select {
+	width: 100%;
+}
+
+.el-select .el-input__inner {
+	border-radius: 6px;
+}
+
+/* 自定义滚动条 */
+.el-scrollbar__wrap {
+	scrollbar-width: thin;
+}
+
+.el-scrollbar__wrap::-webkit-scrollbar {
+	width: 6px;
+}
+
+.el-scrollbar__wrap::-webkit-scrollbar-thumb {
+	background: #dcdfe6;
+	border-radius: 10px;
+}
+
+.el-scrollbar__wrap::-webkit-scrollbar-thumb:hover {
+	background: #c0c4cc;
+}
+
+.el-scrollbar__wrap::-webkit-scrollbar-track {
+	background: #f5f5f5;
+}
+</style>
