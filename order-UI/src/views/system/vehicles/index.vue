@@ -557,6 +557,10 @@ export default {
 				this.$modal.msgError('该车辆没有附件');
 				return;
 			}
+			if (!row.extraInfo.attachments) {
+				this.$modal.msgError('该车辆没有附件');
+				return;
+			}
 			this.attachments = row.extraInfo.attachments;
 			this.imageAttachments = this.attachments
 				.filter(item => item.name.match(/\.(jpeg|jpg|gif|png)$/i))
@@ -573,13 +577,20 @@ export default {
 		/** 附件上传按钮操作 */
 		handleUploadAttachments(row) {
 			this.currentRow = row;
+			this.fileList = this.uploadList = row.extraInfo.attachments
+				? row.extraInfo.attachments
+				: [];
 			this.uploadDialogVisible = true;
 		},
 		handlePreview(file) {
-			console.log(file);
+			window.open(file.url);
 		},
 		handleRemove(file, fileList) {
 			this.fileList = fileList;
+			this.uploadList = fileList.map(item => ({
+				name: item.name,
+				url: item.url
+			}));
 		},
 		handleChange(file, fileList) {
 			this.fileList = fileList;
@@ -609,8 +620,21 @@ export default {
 	display: flex;
 	align-items: center;
 	margin-bottom: 10px;
+	padding: 10px;
+	border: 1px solid #ebeef5;
+	border-radius: 4px;
+	background-color: #f5f7fa;
 }
 .attachment-item i {
 	margin-right: 10px;
+	font-size: 20px;
+	color: #409eff;
+}
+.attachment-item a {
+	color: #409eff;
+	text-decoration: none;
+}
+.attachment-item a:hover {
+	text-decoration: underline;
 }
 </style>
