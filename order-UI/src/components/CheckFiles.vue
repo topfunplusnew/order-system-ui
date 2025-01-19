@@ -142,11 +142,10 @@ export default {
 			:close-on-press-escape="false"
 		>
 			<h3>附件列表</h3>
-			<div class="file-list">
+			<div class="file-list" v-if="path">
 				<!--        上传过的文件列表-->
 				<FileItems
 					v-for="(item, index) in checkFileList"
-					v-if="path"
 					:key="index"
 					:file-name="item"
 					@handleFile="handleDeleteFile"

@@ -577,7 +577,7 @@ export default {
 		/** 附件上传按钮操作 */
 		handleUploadAttachments(row) {
 			this.currentRow = row;
-			this.fileList = this.uploadList = row.extraInfo.attachments
+			this.fileList = this.uploadList = row.extraInfo?.attachments
 				? row.extraInfo.attachments
 				: [];
 			this.uploadDialogVisible = true;

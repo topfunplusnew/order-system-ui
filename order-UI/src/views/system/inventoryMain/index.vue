@@ -124,7 +124,7 @@
 		</el-row>
 
 		<el-col :span="4">
-			<div class="tree-container">
+			<div class="tree-container" style="max-height: 400px; overflow-y: auto">
 				<el-tree
 					:data="storeList"
 					:props="defaultProps"
@@ -243,7 +243,7 @@
 		<el-dialog
 			:title="title"
 			:visible.sync="open"
-			width="1100px"
+			width="1200px"
 			append-to-body
 		>
 			<el-form
@@ -301,6 +301,9 @@
 						placeholder="请输入货物来源公司(本部或者海盛)"
 					/>
 				</el-form-item>
+				<el-form-item label="附件">
+					<file-upload @input="handleCommitUpload" /> </el-form-item
+				><br />
 				<el-form-item label="运输方式">
 					<el-checkbox v-model="isLand"> 陆运</el-checkbox>
 					<el-checkbox v-model="isSea"> 海运</el-checkbox>
@@ -378,6 +381,26 @@
 							style="width: 120px"
 						/>
 					</el-form-item>
+					<el-form-item label="银行卡号">
+						<el-input
+							v-model="form.landBankNo"
+							type="text"
+							size="mini"
+							placeholder="请输入陆运银行卡号"
+							style="width: 120px"
+						/>
+					</el-form-item>
+					<!-- 添加车队 -->
+					<el-form-item label="车队">
+						<el-input
+							v-model="form.fleet"
+							type="text"
+							size="mini"
+							placeholder="请输入车队"
+							style="width: 130px"
+						/>
+					</el-form-item>
+					<!-- 添加附件上传 -->
 				</el-row>
 				<!--      海运-->
 				<el-row v-if="isSea" style="margin: 10px 0">
@@ -446,6 +469,15 @@
 							type="text"
 							size="mini"
 							placeholder="请输入电话"
+							style="width: 120px"
+						/>
+					</el-form-item>
+					<el-form-item label="银行卡号">
+						<el-input
+							v-model="form.seaBankNo"
+							type="text"
+							size="mini"
+							placeholder="请输入海运银行卡号"
 							style="width: 120px"
 						/>
 					</el-form-item>
@@ -1032,7 +1064,6 @@ import { listStoreHouse } from '../../../api/system/StoreHouse';
 import { fix } from '../../../api/tool/format';
 import SearchOption from '../../../components/SearchOption.vue';
 import { _fill } from './fill';
-
 export default {
 	name: 'InventoryMain',
 	components: { SearchOption },
@@ -1181,6 +1212,9 @@ export default {
 		listFleet,
 		listProductLevel,
 		listCompany,
+		handleCommitUpload(val) {
+			this.form.attachment = val;
+		},
 		handleNodeClick(data) {
 			this.loading = true;
 			listInventoryMain({ storeHouseName: data.label }).then(res => {
