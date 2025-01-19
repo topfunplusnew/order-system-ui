@@ -503,6 +503,7 @@
 							</el-row>
 						</template>
 					</el-table-column>
+
 					<el-table-column label="级别名称" prop="levelName" width="150">
 						<template #default="scope">
 							<el-col :span="16">
@@ -606,6 +607,16 @@
 							/>
 						</template>
 					</el-table-column>
+					<el-table-column label="库存量" prop="stockNumber" width="150">
+						<template #default="scope">
+							<el-input
+								size="mini"
+								v-model.lazy="scope.row.stockNumber"
+								@change="() => (scope.row.actualPieces = scope.row.stockNumber)"
+								placeholder="入库时片数"
+							/>
+						</template>
+					</el-table-column>
 					<el-table-column label="每包片数" prop="piecesPerPack" width="150">
 						<template #default="scope">
 							<el-input
@@ -703,12 +714,12 @@
 							/>
 						</template>
 					</el-table-column>
-					<el-table-column label="卸货片数" prop="actualPieces" width="150">
+					<el-table-column label="实际片数" prop="actualPieces" width="150">
 						<template #default="scope">
 							<el-input
 								size="mini"
 								v-model="scope.row.actualPieces"
-								placeholder="请输入卸货片数"
+								placeholder="仓库还剩余片数"
 								disabled
 							/>
 						</template>
