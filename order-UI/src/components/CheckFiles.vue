@@ -142,9 +142,10 @@ export default {
 			:close-on-press-escape="false"
 		>
 			<h3>附件列表</h3>
-			<div class="file-list" v-if="path">
+			<div class="file-list">
 				<!--        上传过的文件列表-->
 				<FileItems
+					v-if="path"
 					v-for="(item, index) in checkFileList"
 					:key="index"
 					:file-name="item"

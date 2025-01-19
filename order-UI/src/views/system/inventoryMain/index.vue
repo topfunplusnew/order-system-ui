@@ -48,10 +48,10 @@
 					@keyup.enter.native="handleQuery"
 				/>
 			</el-form-item>
-			<el-form-item label="海运司机姓名" prop="seaDriverName">
+			<el-form-item label="海运公司" prop="seaDriverName">
 				<el-input
 					v-model="queryParams.seaDriverName"
-					placeholder="请输入海运司机姓名"
+					placeholder="请输入海运公司"
 					clearable
 					@keyup.enter.native="handleQuery"
 				/>
@@ -156,6 +156,35 @@
 					width="150"
 				/>
 				<el-table-column
+					label="审核状态"
+					align="center"
+					prop="checkState"
+					width="150"
+				>
+					<template #default="scope">
+						<el-row v-if="scope.row.checkState === '已审核'">
+							<StateTag
+								:state-title="scope.row.checkState"
+								:state-mapper="{ 2: '已审核' }"
+								@click.native="handleReCheck(scope.row)"
+								style="cursor: pointer"
+							/>
+						</el-row>
+						<el-row v-else>
+							<el-row>
+								<el-button
+									v-hasPermi="['system:inventoryMain:audit']"
+									type="text"
+									size="mini"
+									@click="handleCheck(scope.row)"
+								>
+									审核
+								</el-button>
+							</el-row>
+						</el-row>
+					</template>
+				</el-table-column>
+				<el-table-column
 					label="陆运车牌"
 					align="center"
 					prop="landCarNo"
@@ -174,7 +203,13 @@
 					width="120"
 				/>
 				<el-table-column
-					label="海运车牌"
+					label="陆运银行卡号"
+					align="center"
+					prop="landBankNo"
+					width="120"
+				/>
+				<el-table-column
+					label="柜号"
 					align="center"
 					prop="seaCarNo"
 					width="120"
@@ -186,9 +221,15 @@
 					width="150"
 				/>
 				<el-table-column
-					label="海运司机姓名"
+					label="海运公司"
 					align="center"
 					prop="seaDriverName"
+					width="120"
+				/>
+				<el-table-column
+					label="海运银行卡号"
+					align="center"
+					prop="seaBankNo"
 					width="120"
 				/>
 				<el-table-column
@@ -209,7 +250,30 @@
 					prop="allSeaFreight"
 					width="150"
 				/>
-				<el-table-column label="操作" align="center" width="150">
+				<el-table-column
+					label="收到条附件路径"
+					align="center"
+					prop="allSeaFreight"
+					width="150"
+					fixed="right"
+				>
+					<template slot-scope="scope">
+						<check-files
+							:path="scope.row.receiveProof"
+							@needToUpdate="
+								value =>
+									handleUpdateFilePath(
+										value,
+										scope.row,
+										'receiveProof',
+										getInventoryMain,
+										updateInventoryMain
+									)
+							"
+						/>
+					</template>
+				</el-table-column>
+				<el-table-column label="操作" align="center" width="150" fixed="right">
 					<template slot-scope="scope">
 						<el-button
 							size="mini"
@@ -1064,10 +1128,13 @@ import { listStoreHouse } from '../../../api/system/StoreHouse';
 import { fix } from '../../../api/tool/format';
 import SearchOption from '../../../components/SearchOption.vue';
 import { _fill } from './fill';
+import { mixin_checkfile } from '../../dashboard/mixins/checkfiles/mixin_checkfile';
+import CheckFiles from '../../../components/CheckFiles.vue';
+import { auditInventory } from '../../../api/system/inventoryMain';
 export default {
 	name: 'InventoryMain',
-	components: { SearchOption },
-	mixins: [_fill],
+	components: { SearchOption, CheckFiles },
+	mixins: [_fill, mixin_checkfile],
 	data() {
 		return {
 			// 遮罩层
@@ -1213,7 +1280,7 @@ export default {
 		listProductLevel,
 		listCompany,
 		handleCommitUpload(val) {
-			this.form.attachment = val;
+			this.form.receiveProof = val;
 		},
 		handleNodeClick(data) {
 			this.loading = true;
@@ -1225,6 +1292,34 @@ export default {
 		filterNoStockNumber(data) {
 			return new Promise(resolve => {
 				resolve(data.filter(item => item.stockNumber > 0));
+			});
+		},
+		handleCheck(row) {
+			// 弹出确认和取消
+			this.$confirm('是否审核该信息?', '提示', {
+				confirmButtonText: '确定',
+				cancelButtonText: '取消',
+				type: 'warning'
+			}).then(() => {
+				// 修改审核状态
+				auditInventory({ id: row.id, isaudit: true }).then(() => {
+					this.$message({
+						type: 'success',
+						message: '操作成功~!'
+					});
+					this.getList();
+				});
+			});
+		},
+		handleReCheck(row) {
+			this.$modal.confirm('是否取消审核').then(() => {
+				auditInventory({
+					id: row.id,
+					isaudit: false
+				}).then(() => {
+					this.$modal.msgSuccess('取消审核成功');
+					this.getList();
+				});
 			});
 		},
 		getSummary(param) {

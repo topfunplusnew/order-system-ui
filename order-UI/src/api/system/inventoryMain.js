@@ -59,3 +59,14 @@ export function listInventoryDetails(query) {
 		params: query
 	});
 }
+// 库存审核
+export function auditInventory(data) {
+	return request({
+		url: '/system/inventoryMain/audit',
+		method: 'put',
+		params: {
+			id: data.id,
+			isaudit: data.isaudit
+		}
+	});
+}
