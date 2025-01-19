@@ -136,6 +136,7 @@
 		</el-row>
 
 		<el-table
+			size="mini"
 			v-loading="loading"
 			:data="vehiclesList"
 			@selection-change="handleSelectionChange"
@@ -283,6 +284,7 @@
 			width="600px"
 			append-to-body
 		>
+			<h3>图片附件</h3>
 			<el-carousel
 				v-if="imageAttachments.length"
 				:interval="5000"
@@ -301,6 +303,7 @@
 				</el-carousel-item>
 			</el-carousel>
 			<div v-if="nonImageAttachments.length" class="non-image-attachments">
+				<h3>非图片附件</h3>
 				<div
 					v-for="(item, index) in nonImageAttachments"
 					:key="index"
@@ -321,11 +324,15 @@
 		>
 			<el-upload
 				class="upload-demo"
-				action="#"
+				:action="uploadFileUrl"
+				:headers="{
+					Authorization: 'Bearer ' + getToken()
+				}"
 				list-type="picture-card"
+				:on-success="handleUploadSuccess"
 				:multiple="true"
 				:file-list="fileList"
-				:auto-upload="false"
+				:auto-upload="true"
 				:on-preview="handlePreview"
 				:on-remove="handleRemove"
 				:on-change="handleChange"
@@ -346,7 +353,7 @@ import {
 	updateVehicles
 } from '@/api/system/vehicles';
 import { parseTime } from '../../../utils/ruoyi';
-
+import { getToken } from '@/utils/auth';
 export default {
 	name: 'Vehicles',
 	data() {
@@ -415,7 +422,10 @@ export default {
 			nonImageAttachments: [],
 			uploadDialogVisible: false,
 			fileList: [],
-			currentRow: null
+			currentRow: null,
+			uploadList: [],
+			number: 0,
+			uploadFileUrl: process.env.VUE_APP_BASE_API + '/common/upload'
 		};
 	},
 	created() {
@@ -423,6 +433,17 @@ export default {
 	},
 	methods: {
 		parseTime,
+		getToken,
+		// 上传成功回调
+		handleUploadSuccess(res, file) {
+			if (res.code === 200) {
+				this.uploadList.push({ name: file.name, url: res.fileName });
+				this.$message.success('上传成功');
+			} else {
+				this.$modal.msgError(res.msg);
+				this.$refs.fileUpload.handleRemove(file);
+			}
+		},
 		/** 查询车辆信息列表 */
 		getList() {
 			this.loading = true;
@@ -537,12 +558,16 @@ export default {
 				return;
 			}
 			this.attachments = row.extraInfo.attachments;
-			this.imageAttachments = this.attachments.filter(item =>
-				item.url.match(/\.(jpeg|jpg|gif|png)$/i)
-			);
+			this.imageAttachments = this.attachments
+				.filter(item => item.name.match(/\.(jpeg|jpg|gif|png)$/i))
+				.map(item => ({
+					...item,
+					url: item.url.replace(/^blob:/, '')
+				}));
 			this.nonImageAttachments = this.attachments.filter(
-				item => !item.url.match(/\.(jpeg|jpg|gif|png)$/i)
+				item => !item.name.match(/\.(jpeg|jpg|gif|png)$/i)
 			);
+
 			this.attachmentsDialogVisible = true;
 		},
 		/** 附件上传按钮操作 */
@@ -562,10 +587,7 @@ export default {
 		submitUpload() {
 			// 将上传的文件信息保存到当前行的 extraInfo 字段中
 			this.currentRow.extraInfo = {
-				attachments: this.fileList.map(file => ({
-					url: URL.createObjectURL(file.raw),
-					name: file.name
-				}))
+				attachments: this.uploadList
 			};
 			// 更新当前行数据
 			updateVehicles(this.currentRow).then(() => {
