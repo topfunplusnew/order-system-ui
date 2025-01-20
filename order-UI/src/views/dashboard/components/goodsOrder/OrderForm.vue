@@ -513,11 +513,11 @@ export default {
 					that.dialogVisible = false;
 				});
 			} else {
-				this.handleUpdateGoodsOrder();
+				this.handleUpdateGoodsOrder(that);
 			}
 		},
 		// 修改后提交订单信息
-		handleUpdateGoodsOrder() {
+		handleUpdateGoodsOrder(that) {
 			if (this.orderId != null) {
 				this.orderInfo.orderDetailList = this.orderdetailList;
 				const formatOrderItem = () => ({
@@ -535,7 +535,12 @@ export default {
 					remark: sessionStorage.getItem('order-edit-reason')
 				}).then(() => {
 					this.resetOrderInfo(); // 清空订单列表基础信息
+					this.$message({
+						message: '修改成功',
+						type: 'success'
+					});
 					sessionStorage.removeItem('order-edit-reason');
+					that.dialogVisible = false;
 					this.isSea = false;
 					this.isLand = false;
 				});
