@@ -156,6 +156,12 @@
 					width="150"
 				/>
 				<el-table-column
+					label="货物来源公司"
+					align="center"
+					prop="goodsCompany"
+					width="180"
+				/>
+				<el-table-column
 					label="审核状态"
 					align="center"
 					prop="checkState"
@@ -244,12 +250,7 @@
 					prop="seaBankName"
 					width="120"
 				/>
-				<el-table-column
-					label="货物来源公司"
-					align="center"
-					prop="goodsCompany"
-					width="180"
-				/>
+
 				<el-table-column
 					label="子项陆运费之和"
 					align="center"

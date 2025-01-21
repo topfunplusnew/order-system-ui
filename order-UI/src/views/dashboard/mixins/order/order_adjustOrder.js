@@ -41,7 +41,7 @@ export var mixin_order_adjustOrder = {
 						...orderInfo,
 						ordersNo: '',
 						adjustDate: parseTime(new Date())
-					}).then(res => {
+					}).then(() => {
 						this.$message.success('调整单提交成功');
 						this.getList();
 					});

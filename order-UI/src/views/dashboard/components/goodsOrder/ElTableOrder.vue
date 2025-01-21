@@ -202,6 +202,10 @@ export default {
 				adjustOrderid: row.id
 			};
 			listGoodsOrder(query).then(res => {
+				if (res.rows.length === 0) {
+					this.$modal.msgError('该订单没有调整单');
+					return;
+				}
 				const data = res.rows.filter(item => item.isAdjust > 0)[0];
 				this.openDialog(
 					GOODS_ORDER,

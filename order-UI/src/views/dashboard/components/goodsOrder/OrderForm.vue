@@ -238,7 +238,7 @@ export default {
 			console.log('筛选', data);
 
 			return new Promise(resolve => {
-				resolve(data.filter(item => item.stockNumber > 0));
+				resolve(data.filter(item => item.actualPieces > 0));
 			});
 		},
 		handleDeleteOrderdetail() {
@@ -1028,6 +1028,7 @@ export default {
 								<!-- 仓库按钮 -->
 								<el-col :span="6">
 									<SearchOption
+										title="库存信息"
 										:get-data="listExitInventory"
 										icon="el-icon-s-home"
 										:limit-info="{}"
@@ -1046,6 +1047,18 @@ export default {
 									>
 										<template #table-columns>
 											<el-table-column
+												label="级别名称"
+												align="center"
+												prop="levelName"
+												show-overflow-tooltip
+											/>
+											<el-table-column
+												label="级别编码"
+												align="center"
+												prop="levelID"
+												show-overflow-tooltip
+											/>
+											<el-table-column
 												label="仓库名称"
 												align="center"
 												prop="storeHouseName"
@@ -1054,7 +1067,7 @@ export default {
 											<el-table-column
 												label="剩余量"
 												align="center"
-												prop="stockNumber"
+												prop="actualPieces"
 												show-overflow-tooltip
 											/>
 											<el-table-column
@@ -1070,27 +1083,9 @@ export default {
 												show-overflow-tooltip
 											/>
 											<el-table-column
-												label="级别编码"
-												align="center"
-												prop="levelID"
-												show-overflow-tooltip
-											/>
-											<el-table-column
-												label="级别名称"
-												align="center"
-												prop="levelName"
-												show-overflow-tooltip
-											/>
-											<el-table-column
 												label="供应商"
 												align="center"
 												prop="supplier"
-												show-overflow-tooltip
-											/>
-											<el-table-column
-												label="级别名称"
-												align="center"
-												prop="levelName"
 												show-overflow-tooltip
 											/>
 											<el-table-column

@@ -8,10 +8,12 @@ export default {
 		const today = new Date();
 		const oneMonthAgo = new Date();
 		oneMonthAgo.setMonth(today.getMonth() - 1);
+		const oneMonthLater = new Date();
+		oneMonthLater.setMonth(today.getMonth() + 1);
 		return {
 			queryParams: {
 				startDate: this.formatDate(oneMonthAgo),
-				endDate: this.formatDate(today),
+				endDate: this.formatDate(oneMonthLater),
 				payDate: '',
 				fleet: '',
 				carNo: '',
@@ -51,9 +53,11 @@ export default {
 			const today = new Date();
 			const oneMonthAgo = new Date();
 			oneMonthAgo.setMonth(today.getMonth() - 1);
+			const oneMonthLater = new Date();
+			oneMonthLater.setMonth(today.getMonth() + 1);
 			this.queryParams = {
 				startDate: this.formatDate(oneMonthAgo),
-				endDate: this.formatDate(today),
+				endDate: this.formatDate(oneMonthLater),
 				payDate: '',
 				fleet: '',
 				carNo: '',
