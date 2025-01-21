@@ -1,15 +1,16 @@
 // 根据对应表名返回特定方法
-import { TableName } from '@/api/tool/enums';
-import { getGoodsOrder } from '@/api/system/goodsOrder';
-import { getPayment } from '@/api/system/payment';
-import { getInvoiceIn } from '@/api/system/invoiceIn';
-import { getInvoiceOut } from '@/api/system/invoiceOut';
-import { getInvoiceOther } from '@/api/system/invoiceOther';
-import { getOffsetting } from '@/api/system/Offsetting';
-import { getRebate } from '@/api/system/Rebate';
-import { getInventory } from '@/api/system/inventory';
-import { getOrderDetail } from '@/api/system/orderDetail';
 import { getBankAcceptance } from '@/api/system/bankAcceptance';
+import { getGoodsOrder } from '@/api/system/goodsOrder';
+import { getInvoiceIn } from '@/api/system/invoiceIn';
+import { getInvoiceOther } from '@/api/system/invoiceOther';
+import { getInvoiceOut } from '@/api/system/invoiceOut';
+import { getOffsetting } from '@/api/system/Offsetting';
+import { getOrderDetail } from '@/api/system/orderDetail';
+import { getPayment } from '@/api/system/payment';
+import { getRebate } from '@/api/system/Rebate';
+import { TableName } from '@/api/tool/enums';
+import { getDetail } from '../../api/system/detail';
+import { getInventoryMain } from '../../api/system/inventoryMain';
 
 export function getFunction(tableName) {
 	switch (tableName) {
@@ -27,8 +28,10 @@ export function getFunction(tableName) {
 			return getOffsetting;
 		case TableName.REBATE:
 			return getRebate;
-		case TableName.INVENTORY:
-			return getInventory;
+		case TableName.INVENTORMAIN:
+			return getInventoryMain;
+		case TableName.INVENTORDETAIL:
+			return getDetail;
 		case TableName.ORDER_DETAIL:
 			return getOrderDetail;
 		case TableName.BANK_ACCOUNT_CHANGE:

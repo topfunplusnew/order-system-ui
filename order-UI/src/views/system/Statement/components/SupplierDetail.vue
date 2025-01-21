@@ -7,7 +7,6 @@ import {
 } from '@/api/system/statement';
 import { TableName } from '@/api/tool/enums';
 import GOODS_ORDER from '@/components/NeedToShow/GOODS_ORDER.vue';
-import INVENTORY from '@/components/NeedToShow/INVENTORY.vue';
 import INVOICE_IN from '@/components/NeedToShow/INVOICE_IN.vue';
 import INVOICE_ORTHER from '@/components/NeedToShow/INVOICE_ORTHER.vue';
 import INVOICE_OUT from '@/components/NeedToShow/INVOICE_OUT.vue';
@@ -21,6 +20,7 @@ import { ReportType } from '../../../../api/tool/enums';
 import { fix } from '../../../../api/tool/format';
 import { getConfigValue } from '../data/config_get';
 import BANK_ACCEPTANCE from '@/components/NeedToShow/BANK_ACCEPTANCE.vue';
+import INVENTORYDETAILVue from '../../../../components/NeedToShow/INVENTORYDETAIL.vue';
 
 export default {
 	name: 'SupplierDetail',
@@ -182,7 +182,7 @@ export default {
 				[TableName.INVOICE_OTHER]: INVOICE_ORTHER,
 				[TableName.OFFSETTING]: OFFSETTING,
 				[TableName.REBATE]: REBATE,
-				[TableName.INVENTORY]: INVENTORY,
+				[TableName.INVENTORDETAIL]: INVENTORYDETAILVue,
 				[TableName.ORDER_DETAIL]: ORDER_DETAIL,
 				// 需要前端在这两个明细表上进行适配bankacceptance
 				[TableName.BANK_ACCOUNT_CHANGE]: BANK_ACCEPTANCE

@@ -1,6 +1,6 @@
 <script>
 export default {
-	name: 'INVENTORY',
+	name: 'INVENTORYDETAIL',
 	props: {
 		needToShowInfo: {
 			type: Object,
@@ -13,7 +13,7 @@ export default {
 <template>
 	<div>
 		<el-card>
-			<el-descriptions title="库存信息">
+			<el-descriptions title="库存详细信息">
 				<el-descriptions-item label="供应商">
 					{{ needToShowInfo.supplier }}
 				</el-descriptions-item>
@@ -34,9 +34,6 @@ export default {
 				</el-descriptions-item>
 				<el-descriptions-item label="审核状态">
 					{{ needToShowInfo.checkState }}
-				</el-descriptions-item>
-				<el-descriptions-item label="审核人编号">
-					{{ needToShowInfo.checkUserId }}
 				</el-descriptions-item>
 				<el-descriptions-item label="车队">
 					{{ needToShowInfo.fleet }}
@@ -71,14 +68,8 @@ export default {
 				<el-descriptions-item label="海运司机电话">
 					{{ needToShowInfo.seaDriverTel }}
 				</el-descriptions-item>
-				<el-descriptions-item label="订单仓库选择时是否显示">
-					{{ needToShowInfo.showFlag }}
-				</el-descriptions-item>
 				<el-descriptions-item label="入库日期">
 					{{ new Date(needToShowInfo.storeDate).toLocaleDateString() }}
-				</el-descriptions-item>
-				<el-descriptions-item label="仓库ID">
-					{{ needToShowInfo.storeHouseid }}
 				</el-descriptions-item>
 				<el-descriptions-item label="仓库名称">
 					{{ needToShowInfo.storeHouseName }}
@@ -99,7 +90,7 @@ export default {
 				<el-descriptions-item label="每包数量">
 					{{ needToShowInfo.piecesPerPack }}
 				</el-descriptions-item>
-				<el-descriptions-item label="包装总数">
+				<el-descriptions-item label="包数">
 					{{ needToShowInfo.packs }}
 				</el-descriptions-item>
 				<el-descriptions-item label="单价">
