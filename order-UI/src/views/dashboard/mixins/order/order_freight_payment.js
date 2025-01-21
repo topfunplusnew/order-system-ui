@@ -1,6 +1,7 @@
 // 运费一键申请
+import { batchPayment } from '../../../../api/system/payment';
+import { TableName } from '../../../../api/tool/enums';
 import { parseTime } from '../../../../utils/ruoyi';
-
 export var mixin_order_freight_payment = {
 	data: function () {
 		return {
@@ -40,6 +41,8 @@ export var mixin_order_freight_payment = {
 		},
 		// 一键申请运费
 		handleFreightPaymentOnce() {
+			// 重置运费信息
+			this.resetFreightSelfOnceInfo();
 			// 初始化为0
 			this.total_freight = 0;
 			// 遍历选择的数组
@@ -54,8 +57,6 @@ export var mixin_order_freight_payment = {
 			});
 			// 合并展示数据
 			this.selectedList = this.mergeFreight(this.selectedList);
-			// 重置运费信息
-			this.resetFreightSelfOnceInfo();
 			// 打开运费付款页面
 			this.freightOnceVisible = true;
 		},
@@ -86,7 +87,7 @@ export var mixin_order_freight_payment = {
 			return {
 				// 构建对方信息
 				fundsDate: parseTime(new Date()),
-				tableName: orderFreight.source,
+				tableName: TableName.ORDER_FREIGHT,
 				tID: orderFreight.id,
 				moneyAmount: orderFreight.moneyAmount,
 				otherAcountsName: orderFreight.otherAcountsName,
@@ -106,43 +107,60 @@ export var mixin_order_freight_payment = {
 		},
 		// 一键付运费
 		submitFreightOnce() {
-			// 填充己方信息
-			this.batchPaymentList.forEach(item => {
-				Object.assign(item, {
-					...this.freightSelfOnceInfo,
-					payType: this.freightSelfOnceInfo.payType.join('-')
-				});
-			});
-			// 合并计算数据
-			const result = [];
-			const map = new Map();
-			this.batchPaymentList.forEach(item => {
-				const { companyId, ...rest } = item; // 提取 driverId 和其他字段
-				if (!map.has(companyId)) {
-					// 如果该 driverId 不存在，新增一个对象
-					map.set(companyId, { ...rest, driverIds: [companyId] });
-				} else {
-					// 如果存在，更新 driverIds
-					const existing = map.get(companyId);
-					existing.extraInfo.sourceInfos.push({
-						tableName: item.tableName,
-						tID: item.tID
+			this.$refs.freightPaymentOnceForm.validate(valid => {
+				if (valid) {
+					this.$confirm('确定一键付运费吗?', '提示', {
+						confirmButtonText: '确定',
+						cancelButtonText: '取消',
+						type: 'warning'
+					}).then(() => {
+						// 填充己方信息
+						this.batchPaymentList.forEach(item => {
+							Object.assign(item, {
+								...this.freightSelfOnceInfo,
+								payType: this.freightSelfOnceInfo.payType.join('-')
+							});
+						});
+						// 合并计算数据
+						const result = [];
+						const map = new Map();
+						this.batchPaymentList.forEach(item => {
+							const { companyId, ...rest } = item; // 提取 driverId 和其他字段
+							if (!map.has(companyId)) {
+								// 如果该 driverId 不存在，新增一个对象
+								map.set(companyId, {
+									...rest,
+									extraInfo: {
+										sourceInfos: [
+											{
+												tableName: TableName.ORDER_FREIGHT,
+												tID: item.tID
+											}
+										]
+									}
+								});
+							} else {
+								// 如果存在，更新 driverIds
+								const existing = map.get(companyId);
+								existing.extraInfo.sourceInfos.push({
+									tableName: item.tableName,
+									tID: item.tID
+								});
+							}
+						});
+						map.forEach(value => {
+							result.push(value);
+						});
+						// 批量添加付款信息
+						batchPayment(result).then(() => {
+							this.$message.success('一键运费付款成功');
+							this.resetFreightSelfOnceInfo();
+							this.freightOnceVisible = false;
+							this.getList();
+						});
 					});
 				}
 			});
-			map.forEach(value => {
-				result.push(value);
-			});
-
-			console.log(map);
-
-			// 批量添加付款信息
-			// batchPayment(this.batchPaymentList).then(() => {
-			// 	this.$message.success('一键运费付款成功');
-			// 	this.resetFreightSelfOnceInfo();
-			// 	this.freightOnceVisible = false;
-			// 	this.getList();
-			// });
 		},
 		// 填充查询信息
 		handleCommitBackBank(val) {
@@ -159,6 +177,7 @@ export var mixin_order_freight_payment = {
 				// 对方银行账户类型
 				otherBankCardType: null
 			};
+			this.batchPaymentList = [];
 		}
 	}
 };

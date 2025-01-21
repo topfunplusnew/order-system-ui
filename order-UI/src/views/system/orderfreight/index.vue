@@ -559,7 +559,12 @@
 					</div>
 					<!--          我方付款信息-->
 					<div class="order-freight-self-info">
-						<el-form :model="freightSelfOnceInfo" label-width="120px">
+						<el-form
+							ref="freightPaymentOnceForm"
+							:model="freightSelfOnceInfo"
+							:rules="freightSelfOnceInfoRules"
+							label-width="120px"
+						>
 							<el-form-item label="支付类型" prop="payType">
 								<el-cascader
 									v-model="freightSelfOnceInfo.payType"
@@ -648,15 +653,17 @@
 									{{ fix(total_freight) }}
 								</el-button>
 							</el-form-item>
+							<el-form-item>
+								<div class="order-freight-submit">
+									<el-button type="success" @click="submitFreightOnce">
+										一键付运费
+									</el-button>
+								</div>
+							</el-form-item>
 						</el-form>
 					</div>
 				</div>
 				<!--        然后是一个按钮 表示一键付运费-->
-				<el-row class="order-freight-submit">
-					<el-button type="success" @click="submitFreightOnce">
-						一键付运费
-					</el-button>
-				</el-row>
 			</template>
 		</InfoDialog>
 
@@ -814,7 +821,28 @@ export default {
 			freight: null,
 			applyInfo: null,
 			applyPaymentVisible: false,
-			needInfo: {}
+			needInfo: {},
+			freightSelfOnceInfo: {
+				payType: null,
+				selfAcountsName: '',
+				selfBankNo: '',
+				selfBankName: '',
+				otherBankCardType: null
+			},
+			freightSelfOnceInfoRules: {
+				payType: [
+					{ required: true, message: '请选择支付类型', trigger: 'change' }
+				],
+				selfAcountsName: [
+					{ required: true, message: '请输入己方户名', trigger: 'blur' }
+				],
+				selfBankNo: [
+					{ required: true, message: '请输入己方账号', trigger: 'blur' }
+				],
+				selfBankName: [
+					{ required: true, message: '请输入己方开户行', trigger: 'blur' }
+				]
+			}
 		};
 	},
 	computed: {
