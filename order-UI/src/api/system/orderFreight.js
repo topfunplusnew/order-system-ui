@@ -42,3 +42,12 @@ export function delOrderFreight(id) {
 		method: 'delete'
 	});
 }
+
+// 获取订单申请运费列表
+export function getOrderFreightList(query) {
+	return request({
+		url: '/system/orderFreight/ledger',
+		method: 'get',
+		params: query
+	});
+}
