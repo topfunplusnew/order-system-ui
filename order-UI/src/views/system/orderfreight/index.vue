@@ -172,6 +172,14 @@
 			<!--      多选 一键申请运费-->
 			<el-table-column type="selection" width="55" fixed="left" />
 			<el-table-column
+				v-if="columns[0].visible"
+				label="付款日期"
+				align="center"
+				prop="payDate"
+				width="100"
+				show-overflow-tooltip
+			/>
+			<el-table-column
 				v-if="columns[1].visible"
 				label="运费类型"
 				align="center"
@@ -181,6 +189,22 @@
 			/>
 			<el-table-column
 				v-if="columns[2].visible"
+				label="车队"
+				align="center"
+				prop="fleet"
+				width="100"
+				show-overflow-tooltip
+			/>
+			<el-table-column
+				v-if="columns[3].visible"
+				label="车牌号"
+				align="center"
+				prop="carNo"
+				width="100"
+				show-overflow-tooltip
+			/>
+			<el-table-column
+				v-if="columns[4].visible"
 				label="金额"
 				align="center"
 				prop="moneyAmount"
@@ -188,7 +212,7 @@
 				show-overflow-tooltip
 			/>
 			<el-table-column
-				v-if="columns[3].visible"
+				v-if="columns[5].visible"
 				label="对方户名"
 				align="center"
 				prop="otherAcountsName"
@@ -196,7 +220,7 @@
 				show-overflow-tooltip
 			/>
 			<el-table-column
-				v-if="columns[4].visible"
+				v-if="columns[6].visible"
 				label="对方账号"
 				align="center"
 				prop="otherBankNo"
@@ -204,7 +228,7 @@
 				show-overflow-tooltip
 			/>
 			<el-table-column
-				v-if="columns[5].visible"
+				v-if="columns[7].visible"
 				label="对方开户行"
 				align="center"
 				prop="otherBankName"
@@ -212,6 +236,7 @@
 				show-overflow-tooltip
 			/>
 			<el-table-column
+				v-if="columns[8].visible"
 				label="运费来源"
 				align="center"
 				prop="source"
@@ -228,7 +253,7 @@
 				</template>
 			</el-table-column>
 			<el-table-column
-				v-if="columns[7].visible"
+				v-if="columns[9].visible"
 				label="支付状态"
 				align="center"
 				prop="paymentState"
@@ -243,31 +268,7 @@
 				</template>
 			</el-table-column>
 			<el-table-column
-				v-if="columns[8].visible"
-				label="司机姓名"
-				align="center"
-				prop="driverName"
-				width="100"
-				show-overflow-tooltip
-			/>
-			<el-table-column
-				v-if="columns[9].visible"
-				label="车牌号"
-				align="center"
-				prop="carNo"
-				width="100"
-				show-overflow-tooltip
-			/>
-			<el-table-column
 				v-if="columns[10].visible"
-				label="车队"
-				align="center"
-				prop="fleet"
-				width="100"
-				show-overflow-tooltip
-			/>
-			<el-table-column
-				v-if="columns[11].visible"
 				label="申请人员姓名"
 				align="center"
 				prop="applyUserName"
@@ -275,7 +276,7 @@
 				show-overflow-tooltip
 			/>
 			<el-table-column
-				v-if="columns[12].visible"
+				v-if="columns[11].visible"
 				label="申请日期"
 				align="center"
 				prop="applyDate"
@@ -283,7 +284,7 @@
 				show-overflow-tooltip
 			/>
 			<el-table-column
-				v-if="columns[14].visible"
+				v-if="columns[12].visible"
 				label="付款人员姓名"
 				align="center"
 				prop="payUserName"
@@ -291,10 +292,26 @@
 				show-overflow-tooltip
 			/>
 			<el-table-column
-				v-if="columns[15].visible"
-				label="付款日期"
+				v-if="columns[13].visible"
+				label="己方户名"
 				align="center"
-				prop="payDate"
+				prop="selfAcountsName"
+				width="100"
+				show-overflow-tooltip
+			/>
+			<el-table-column
+				v-if="columns[14].visible"
+				label="己方账号"
+				align="center"
+				prop="selfBankNo"
+				width="100"
+				show-overflow-tooltip
+			/>
+			<el-table-column
+				v-if="columns[15].visible"
+				label="己方开户行"
+				align="center"
+				prop="selfBankName"
 				width="100"
 				show-overflow-tooltip
 			/>
@@ -650,6 +667,7 @@
 			title="运费付款申请"
 			:visible.sync="applyPaymentVisible"
 			width="500px"
+			append-to-body
 		>
 			<keep-alive>
 				<ApplyPayment
@@ -773,22 +791,22 @@ export default {
 			// 表单校验
 			rules: {},
 			columns: [
-				{ key: 0, label: `订单编号`, visible: true },
+				{ key: 0, label: `付款日期`, visible: true },
 				{ key: 1, label: `运费类型`, visible: true },
-				{ key: 2, label: `金额`, visible: true },
-				{ key: 3, label: `对方户名`, visible: true },
-				{ key: 4, label: `对方账号`, visible: true },
-				{ key: 5, label: `对方开户行`, visible: true },
-				{ key: 6, label: `备注`, visible: true },
-				{ key: 7, label: `支付状态`, visible: true },
-				{ key: 8, label: `司机姓名`, visible: true },
-				{ key: 9, label: `车牌号`, visible: true },
-				{ key: 10, label: `车队`, visible: true },
-				{ key: 11, label: `申请人姓名`, visible: true },
-				{ key: 12, label: `申请日期`, visible: true },
-				{ key: 13, label: `是否可编辑`, visible: true },
-				{ key: 14, label: `付款人姓名`, visible: true },
-				{ key: 15, label: `付款日期`, visible: true },
+				{ key: 2, label: `车队`, visible: true },
+				{ key: 3, label: `车牌号`, visible: true },
+				{ key: 4, label: `金额`, visible: true },
+				{ key: 5, label: `对方户名`, visible: true },
+				{ key: 6, label: `对方账号`, visible: true },
+				{ key: 7, label: `对方开户行`, visible: true },
+				{ key: 8, label: `运费来源`, visible: true },
+				{ key: 9, label: `支付状态`, visible: true },
+				{ key: 10, label: `申请人员姓名`, visible: true },
+				{ key: 11, label: `申请日期`, visible: true },
+				{ key: 12, label: `付款人员姓名`, visible: true },
+				{ key: 13, label: `己方户名`, visible: true },
+				{ key: 14, label: `己方账号`, visible: true },
+				{ key: 15, label: `己方开户行`, visible: true },
 				{ key: 16, label: `备注`, visible: true }
 			],
 			bankInputDisabled: false,

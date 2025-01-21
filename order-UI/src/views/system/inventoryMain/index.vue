@@ -209,6 +209,12 @@
 					width="120"
 				/>
 				<el-table-column
+					label="陆运银行户名"
+					align="center"
+					prop="landBankName"
+					width="120"
+				/>
+				<el-table-column
 					label="柜号"
 					align="center"
 					prop="seaCarNo"
@@ -230,6 +236,12 @@
 					label="海运银行卡号"
 					align="center"
 					prop="seaBankNo"
+					width="120"
+				/>
+				<el-table-column
+					label="海运银行户名"
+					align="center"
+					prop="seaBankName"
 					width="120"
 				/>
 				<el-table-column
@@ -454,6 +466,15 @@
 							style="width: 120px"
 						/>
 					</el-form-item>
+					<el-form-item label="开户行">
+						<el-input
+							v-model="form.landBankName"
+							type="text"
+							size="mini"
+							placeholder="请输入陆运开户行"
+							style="width: 120px"
+						/>
+					</el-form-item>
 					<!-- 添加车队 -->
 					<el-form-item label="车队">
 						<el-input
@@ -542,6 +563,15 @@
 							type="text"
 							size="mini"
 							placeholder="请输入海运银行卡号"
+							style="width: 120px"
+						/>
+					</el-form-item>
+					<el-form-item label="开户行">
+						<el-input
+							v-model="form.seaBankName"
+							type="text"
+							size="mini"
+							placeholder="请输入海运开户行"
 							style="width: 120px"
 						/>
 					</el-form-item>

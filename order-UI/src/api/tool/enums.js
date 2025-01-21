@@ -37,7 +37,9 @@ export const TableName = Object.freeze({
 	REPAYMENT: 'repayment',
 	SOCIAL_INSURANCE: 'socialinsurance',
 	BALANCEACCOUNT: 'balanceaccounts',
-	STOREHOUSE: 'storehouse'
+	STOREHOUSE: 'storehouse',
+	INVENTORMAIN: 'inventory_main',
+	INVENTORDETAIL: 'inventory_detail'
 });
 
 // 报表所用类型
