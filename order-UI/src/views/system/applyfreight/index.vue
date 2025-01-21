@@ -1,9 +1,12 @@
 <script>
 import { getOrderFreightList } from '@/api/system/orderFreight';
 import { mixin_order_freeApply } from '../../dashboard/mixins/order/order_freeApply';
+import { common_dialog } from '../../dashboard/mixins/common/common_dialog';
+import DialogWrapper from '../../dashboard/components/common/DialogWrapper.vue';
 export default {
 	name: 'index',
-	mixins: [mixin_order_freeApply],
+	components: { DialogWrapper },
+	mixins: [mixin_order_freeApply, common_dialog],
 	data() {
 		const today = new Date();
 		const oneMonthAgo = new Date();
@@ -332,6 +335,19 @@ export default {
 		>
 			<img :src="receiptImageUrl" alt="收据" style="width: 100%" />
 		</el-dialog>
+
+		<div v-if="currentComponent">
+			<DialogWrapper
+				:current-component="currentComponent"
+				:dialog-visible="dialogVisible"
+				:dialog-props="dialogProps"
+				:dialog-title="dialogTitle"
+				:dialog-width="dialogWidth"
+				@update:dialogVisible="args => (dialogVisible = false)"
+				@close="handleCloseDialog"
+				@confirm="handleDialogConfirm"
+			/>
+		</div>
 	</div>
 </template>
 

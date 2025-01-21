@@ -113,3 +113,9 @@ export const CheckState = [
 		label: '审核中'
 	}
 ];
+
+// 运费来源
+export const FreightSource = Object.freeze({
+	GOODS_ORDER: 'goodsorder',
+	INVENTORY_MAIN: 'inventory_main'
+});
