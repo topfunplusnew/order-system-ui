@@ -165,7 +165,11 @@ export default {
 				prop="fleet"
 				label="车队"
 				align="center"
-			/>
+			>
+				<template slot-scope="scope">
+					{{ scope.row.transport_type === 'sea' ? '无' : scope.row.fleet }}
+				</template>
+			</el-table-column>
 			<el-table-column
 				show-overflow-tooltip
 				prop="driver_bank_no"
@@ -266,7 +270,11 @@ export default {
 				prop="tonnage"
 				label="吨位"
 				align="center"
-			/>
+			>
+				<template slot-scope="scope">
+					{{ scope.row.transport_type === 'sea' ? '无' : scope.row.tonnage }}
+				</template>
+			</el-table-column>
 			<el-table-column
 				show-overflow-tooltip
 				label="运费申请"
@@ -277,12 +285,12 @@ export default {
 			>
 				<template slot-scope="scope">
 					<el-dropdown size="mini" type="text">
-						<el-button type="text" :disabled="!(scope.row.freight > 0)">
+						<el-button type="text" :disabled="!scope.row.freight">
 							操作
 						</el-button>
 						<el-dropdown-menu slot="dropdown">
 							<el-dropdown-item>
-								<el-row v-if="scope.row.freight > 0">
+								<el-row v-if="scope.row.freight">
 									<el-button
 										v-if="scope.row.transport_type === 'land'"
 										size="mini"
