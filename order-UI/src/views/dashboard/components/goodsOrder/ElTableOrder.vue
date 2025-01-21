@@ -16,7 +16,7 @@ import { mixin_order_audit } from '@/views/dashboard/mixins/order/order_audit';
 import { mixin_order_base } from '@/views/dashboard/mixins/order/order_base';
 import { mixin_order_checkOrder } from '@/views/dashboard/mixins/order/order_checkOrder';
 import { mixin_order_deliverGoods } from '@/views/dashboard/mixins/order/order_deliverGoods';
-import { mixin_order_freeApply } from '@/views/dashboard/mixins/order/order_freeApply';
+// import { mixin_order_freeApply } from '@/views/dashboard/mixins/order/order_freeApply';
 import { mixin_order_goodsItemInfo } from '@/views/dashboard/mixins/order/order_goodsItemInfo';
 import { mixin_printHTML } from '@/views/dashboard/mixins/print';
 import reLength from '@/views/dashboard/mixins/reLength';
@@ -77,7 +77,7 @@ export default {
 		// 发货单
 		mixin_order_deliverGoods,
 		// 运费申请
-		mixin_order_freeApply,
+		// mixin_order_freeApply,
 		// 订单历史记录查看
 		mixin_order_orderHistory
 	],

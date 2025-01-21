@@ -1,10 +1,9 @@
-<!--TODO 等待后端接口 需要列出来订单调整单中的所有的运费申请-->
-
 <script>
 import { getOrderFreightList } from '@/api/system/orderFreight';
-
+import { mixin_order_freeApply } from '../../dashboard/mixins/order/order_freeApply';
 export default {
 	name: 'index',
+	mixins: [mixin_order_freeApply],
 	data() {
 		const today = new Date();
 		const oneMonthAgo = new Date();
@@ -17,13 +16,13 @@ export default {
 				fleet: '',
 				carNo: '',
 				bankName: '',
-				paymentState: ''
+				paymentState: '',
+				pageNum: 1,
+				pageSize: 10
 			},
 			freightList: [],
 			loading: false,
 			total: 0,
-			pageNum: 1,
-			pageSize: 10,
 			receiptDialogVisible: false,
 			receiptImageUrl: ''
 		};
@@ -37,11 +36,7 @@ export default {
 		},
 		async fetchFreightList() {
 			this.loading = true;
-			const response = await getOrderFreightList({
-				...this.queryParams,
-				pageNum: this.pageNum,
-				pageSize: this.pageSize
-			});
+			const response = await getOrderFreightList(this.queryParams);
 			if (response.code === 200) {
 				this.freightList = response.rows;
 				this.total = response.total;
@@ -49,7 +44,7 @@ export default {
 			this.loading = false;
 		},
 		handleQuery() {
-			this.pageNum = 1;
+			this.queryParams.pageNum = 1;
 			this.fetchFreightList();
 		},
 		resetQuery() {
@@ -63,25 +58,15 @@ export default {
 				fleet: '',
 				carNo: '',
 				bankName: '',
-				paymentState: ''
+				paymentState: '',
+				pageNum: 1,
+				pageSize: 10
 			};
 			this.handleQuery();
-		},
-		handlePaginationChange(pageNum) {
-			this.pageNum = pageNum;
-			this.fetchFreightList();
 		},
 		viewReceipt(url) {
 			this.receiptImageUrl = url;
 			this.receiptDialogVisible = true;
-		},
-		handleApplyLandFree(row) {
-			// 处理陆运费申请逻辑
-			console.log('陆运费申请', row);
-		},
-		handleApplySeaFree(row) {
-			// 处理海运费申请逻辑
-			console.log('海运费申请', row);
 		}
 	},
 	created() {
@@ -322,9 +307,9 @@ export default {
 		<pagination
 			v-show="total > 0"
 			:total="total"
-			:page.sync="pageNum"
-			:limit.sync="pageSize"
-			@pagination="handlePaginationChange"
+			:page.sync="queryParams.pageNum"
+			:limit.sync="queryParams.pageSize"
+			@pagination="fetchFreightList"
 		/>
 
 		<el-dialog

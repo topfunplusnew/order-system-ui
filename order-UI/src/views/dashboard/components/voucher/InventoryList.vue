@@ -104,7 +104,7 @@ export default {
 						tableName: TableName.INVENTORY,
 						tid: row.id,
 						modifyTime: this.modifyTime
-					}).then(res => {
+					}).then(() => {
 						this.$message.success('提交成功');
 						this.reset();
 						const id = row.id || this.ids;
