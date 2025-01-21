@@ -288,12 +288,15 @@ export default {
 			>
 				<template slot-scope="scope">
 					<el-dropdown size="mini" type="text">
-						<el-button type="text" :disabled="!scope.row.freight">
+						<el-button
+							type="text"
+							:disabled="!(scope.row.payment_state === '未申请')"
+						>
 							操作
 						</el-button>
 						<el-dropdown-menu slot="dropdown">
 							<el-dropdown-item>
-								<el-row v-if="scope.row.freight">
+								<el-row v-if="scope.row.payment_state === '未申请'">
 									<el-button
 										v-if="scope.row.transport_type === 'land'"
 										size="mini"
