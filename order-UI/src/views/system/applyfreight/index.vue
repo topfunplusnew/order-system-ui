@@ -165,83 +165,14 @@ export default {
 		>
 			<el-table-column
 				show-overflow-tooltip
-				prop="fleet"
-				label="车队"
-				align="center"
-			>
-				<template slot-scope="scope">
-					{{ scope.row.transport_type === 'sea' ? '无' : scope.row.fleet }}
-				</template>
-			</el-table-column>
-			<el-table-column
-				show-overflow-tooltip
-				prop="driver_bank_no"
-				label="银行卡号"
-				align="center"
-			/>
-			<el-table-column
-				show-overflow-tooltip
 				prop="payment_state"
-				label="支付状态"
+				label="运费状态"
 				align="center"
 			/>
 			<el-table-column
 				show-overflow-tooltip
-				prop="entry_user"
-				label="录入用户"
-				align="center"
-			/>
-			<el-table-column
-				show-overflow-tooltip
-				prop="addTime"
-				label="添加时间"
-				align="center"
-			/>
-			<el-table-column
-				show-overflow-tooltip
-				prop="driver_bank_name"
-				label="银行名称"
-				align="center"
-			/>
-			<el-table-column
-				show-overflow-tooltip
-				prop="freight"
-				label="运费"
-				align="center"
-			/>
-			<el-table-column
-				show-overflow-tooltip
-				prop="check_state"
-				label="审核状态"
-				align="center"
-			/>
-			<el-table-column
-				show-overflow-tooltip
-				prop="document_date"
-				label="单据日期"
-				align="center"
-			/>
-			<el-table-column
-				show-overflow-tooltip
-				prop="source"
-				label="来源"
-				align="center"
-			/>
-			<el-table-column show-overflow-tooltip label="收据" align="center">
-				<template slot-scope="scope">
-					<el-button
-						type="text"
-						size="mini"
-						@click="viewReceipt(scope.row.receiveProof)"
-					>
-						查看
-					</el-button>
-				</template>
-			</el-table-column>
-			<el-table-column
-				show-overflow-tooltip
-				prop="average_freight_price"
-				label="平均运费价格"
+				prop="payDate"
+				label="支付时间"
 				align="center"
 			/>
 			<el-table-column show-overflow-tooltip label="运输类型" align="center">
@@ -258,14 +189,36 @@ export default {
 			</el-table-column>
 			<el-table-column
 				show-overflow-tooltip
-				prop="customer_or_storehouse_name"
-				label="客户或仓库名称"
+				prop="document_date"
+				label="订单日期"
 				align="center"
 			/>
 			<el-table-column
 				show-overflow-tooltip
+				prop="customer_or_storehouse_name"
+				label="客户/仓库名称"
+				align="center"
+			/>
+			<el-table-column
+				show-overflow-tooltip
+				prop="entry_user"
+				label="录入员"
+				align="center"
+			/>
+			<el-table-column
+				show-overflow-tooltip
+				prop="fleet"
+				label="车队"
+				align="center"
+			>
+				<template slot-scope="scope">
+					{{ scope.row.transport_type === 'sea' ? '无' : scope.row.fleet }}
+				</template>
+			</el-table-column>
+			<el-table-column
+				show-overflow-tooltip
 				prop="car_no"
-				label="车牌号"
+				label="车牌号/柜号"
 				align="center"
 			/>
 			<el-table-column
@@ -278,6 +231,59 @@ export default {
 					{{ scope.row.transport_type === 'sea' ? '无' : scope.row.tonnage }}
 				</template>
 			</el-table-column>
+			<el-table-column
+				show-overflow-tooltip
+				prop="average_freight_price"
+				label="平均运费价格"
+				align="center"
+			/>
+			<el-table-column
+				show-overflow-tooltip
+				prop="freight"
+				label="运费"
+				align="center"
+			/>
+			<el-table-column
+				show-overflow-tooltip
+				prop="driver_bank_name"
+				label="司机户名"
+				align="center"
+			/>
+			<el-table-column
+				show-overflow-tooltip
+				prop="driver_bank_no"
+				label="司机银行账号"
+				align="center"
+			/>
+			<el-table-column show-overflow-tooltip label="收据" align="center">
+				<template slot-scope="scope">
+					<el-button
+						type="text"
+						size="mini"
+						@click="viewReceipt(scope.row.receiveProof)"
+					>
+						查看
+					</el-button>
+				</template>
+			</el-table-column>
+			<el-table-column
+				show-overflow-tooltip
+				prop="source"
+				label="订单来源"
+				align="center"
+			/>
+			<el-table-column
+				show-overflow-tooltip
+				prop="check_state"
+				label="订单状态"
+				align="center"
+			/>
+			<el-table-column
+				show-overflow-tooltip
+				prop="paid_amount"
+				label="已支付金额"
+				align="center"
+			/>
 			<el-table-column
 				show-overflow-tooltip
 				label="运费申请"
