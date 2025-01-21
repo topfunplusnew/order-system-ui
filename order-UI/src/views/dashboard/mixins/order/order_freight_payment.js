@@ -1,7 +1,7 @@
 // 运费一键申请
-import { parseTime } from '../../../../utils/ruoyi';
-import { TableName } from '../../../../api/tool/enums';
 import { batchPayment } from '../../../../api/system/payment';
+import { TableName } from '../../../../api/tool/enums';
+import { parseTime } from '../../../../utils/ruoyi';
 
 export var mixin_order_freight_payment = {
 	data: function () {
@@ -23,7 +23,7 @@ export var mixin_order_freight_payment = {
 		}
 	},
 	methods: {
-		// 勾选未支付 todo
+		// 勾选未支付
 		selectUnPayment(rows) {
 			let flag = false;
 			if (rows) {
@@ -54,10 +54,34 @@ export var mixin_order_freight_payment = {
 				// 累加
 				this.total_freight += Number(item.moneyAmount);
 			});
+			// 合并展示数据
+			this.selectedList = this.mergeFreight();
 			// 重置运费信息
 			this.resetFreightSelfOnceInfo();
 			// 打开运费付款页面
 			this.freightOnceVisible = true;
+		},
+		// 司机相同的运费信息合并为一条运费信息
+		mergeFreight(list) {
+			let map = new Map();
+			list.forEach(item => {
+				let key = item.driverId;
+				if (map.has(key)) {
+					let temp = map.get(key);
+					temp.moneyAmount += item.moneyAmount;
+					temp.comments += `;${item.comments}`;
+				} else {
+					map.set(key, item);
+				}
+			});
+			list = Array.from(map.values());
+			return list;
+		},
+		mergePayment() {
+			this.batchPaymentList.forEach(item => {
+				item.extraInfo = {};
+				item.extraInfo.sourceInfos = [];
+			});
 		},
 		// 将orderFreight对象转换为Payment对象
 		convertOrderFreightToPayment(orderFreight) {
@@ -91,6 +115,8 @@ export var mixin_order_freight_payment = {
 					payType: this.freightSelfOnceInfo.payType.join('-')
 				});
 			});
+			// 合并计算数据
+			this.batchPaymentList = this.mergeFreight(this.batchPaymentList);
 			// 批量添加付款信息
 			batchPayment(this.batchPaymentList).then(() => {
 				this.$message.success('一键运费付款成功');
