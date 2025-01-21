@@ -1,6 +1,4 @@
 // 运费一键申请
-import { batchPayment } from '../../../../api/system/payment';
-import { TableName } from '../../../../api/tool/enums';
 import { parseTime } from '../../../../utils/ruoyi';
 
 export var mixin_order_freight_payment = {
@@ -55,7 +53,7 @@ export var mixin_order_freight_payment = {
 				this.total_freight += Number(item.moneyAmount);
 			});
 			// 合并展示数据
-			this.selectedList = this.mergeFreight();
+			this.selectedList = this.mergeFreight(this.selectedList);
 			// 重置运费信息
 			this.resetFreightSelfOnceInfo();
 			// 打开运费付款页面
@@ -68,27 +66,27 @@ export var mixin_order_freight_payment = {
 				let key = item.driverId;
 				if (map.has(key)) {
 					let temp = map.get(key);
-					temp.moneyAmount += item.moneyAmount;
+					temp = { ...temp };
+					temp.moneyAmount =
+						Number(temp.moneyAmount) + Number(item.moneyAmount);
 					temp.comments += `;${item.comments}`;
+					map.set(key, temp);
 				} else {
-					map.set(key, item);
+					map.set(key, { ...item });
 				}
 			});
-			list = Array.from(map.values());
-			return list;
-		},
-		mergePayment() {
-			this.batchPaymentList.forEach(item => {
-				item.extraInfo = {};
-				item.extraInfo.sourceInfos = [];
+			// 对数字进行fix
+			map.forEach(value => {
+				value.moneyAmount = Number(value.moneyAmount).toFixed(3);
 			});
+			return Array.from(map.values());
 		},
 		// 将orderFreight对象转换为Payment对象
 		convertOrderFreightToPayment(orderFreight) {
 			return {
 				// 构建对方信息
 				fundsDate: parseTime(new Date()),
-				tableName: TableName.ORDER_FREIGHT,
+				tableName: orderFreight.source,
 				tID: orderFreight.id,
 				moneyAmount: orderFreight.moneyAmount,
 				otherAcountsName: orderFreight.otherAcountsName,
@@ -116,14 +114,35 @@ export var mixin_order_freight_payment = {
 				});
 			});
 			// 合并计算数据
-			this.batchPaymentList = this.mergeFreight(this.batchPaymentList);
-			// 批量添加付款信息
-			batchPayment(this.batchPaymentList).then(() => {
-				this.$message.success('一键运费付款成功');
-				this.resetFreightSelfOnceInfo();
-				this.freightOnceVisible = false;
-				this.getList();
+			const result = [];
+			const map = new Map();
+			this.batchPaymentList.forEach(item => {
+				const { companyId, ...rest } = item; // 提取 driverId 和其他字段
+				if (!map.has(companyId)) {
+					// 如果该 driverId 不存在，新增一个对象
+					map.set(companyId, { ...rest, driverIds: [companyId] });
+				} else {
+					// 如果存在，更新 driverIds
+					const existing = map.get(companyId);
+					existing.extraInfo.sourceInfos.push({
+						tableName: item.tableName,
+						tID: item.tID
+					});
+				}
 			});
+			map.forEach(value => {
+				result.push(value);
+			});
+
+			console.log(map);
+
+			// 批量添加付款信息
+			// batchPayment(this.batchPaymentList).then(() => {
+			// 	this.$message.success('一键运费付款成功');
+			// 	this.resetFreightSelfOnceInfo();
+			// 	this.freightOnceVisible = false;
+			// 	this.getList();
+			// });
 		},
 		// 填充查询信息
 		handleCommitBackBank(val) {
