@@ -1,5 +1,9 @@
 <script>
-import { getOrderFreightList } from '@/api/system/orderFreight';
+import {
+	getOrderFreightList,
+	getOrderFreight,
+	updateOrderFreight
+} from '@/api/system/orderFreight';
 import { mixin_order_freeApply } from '../../dashboard/mixins/order/order_freeApply';
 import { common_dialog } from '../../dashboard/mixins/common/common_dialog';
 import DialogWrapper from '../../dashboard/components/common/DialogWrapper.vue';
@@ -29,10 +33,19 @@ export default {
 			loading: false,
 			total: 0,
 			receiptDialogVisible: false,
-			receiptImageUrl: ''
+			receiptImageUrl: '',
+			attachmentDialogVisible: false,
+			attachments: []
 		};
 	},
+	computed: {
+		imageAttachments() {
+			return this.attachments.filter(att => att.match(/\.(jpeg|jpg|gif|png)$/));
+		}
+	},
 	methods: {
+		getOrderFreight,
+		updateOrderFreight,
 		formatDate(date) {
 			const year = date.getFullYear();
 			const month = (date.getMonth() + 1).toString().padStart(2, '0');
@@ -74,6 +87,14 @@ export default {
 		viewReceipt(url) {
 			this.receiptImageUrl = url;
 			this.receiptDialogVisible = true;
+		},
+		viewAttachments(receiveProof) {
+			if (!receiveProof.trim()) {
+				this.$message.warning('没有附件');
+				return;
+			}
+			this.attachments = receiveProof.split('|').filter(Boolean);
+			this.attachmentDialogVisible = true;
 		}
 	},
 	created() {
@@ -257,13 +278,7 @@ export default {
 			/>
 			<el-table-column show-overflow-tooltip label="收据" align="center">
 				<template slot-scope="scope">
-					<el-button
-						type="text"
-						size="mini"
-						@click="viewReceipt(scope.row.receiveProof)"
-					>
-						查看
-					</el-button>
+					<div>收据</div>
 				</template>
 			</el-table-column>
 			<el-table-column
@@ -284,6 +299,17 @@ export default {
 				label="已支付金额"
 				align="center"
 			/>
+			<el-table-column show-overflow-tooltip label="附件查看" align="center">
+				<template slot-scope="scope">
+					<el-button
+						type="text"
+						size="mini"
+						@click="viewAttachments(scope.row.receiveProof)"
+					>
+						附件查看
+					</el-button>
+				</template>
+			</el-table-column>
 			<el-table-column
 				show-overflow-tooltip
 				label="运费申请"
@@ -336,13 +362,44 @@ export default {
 			@pagination="fetchFreightList"
 		/>
 
-		<el-dialog
+		<!-- <el-dialog
 			:title="'查看收据'"
 			:visible.sync="receiptDialogVisible"
 			width="50%"
 			append-to-body
 		>
 			<img :src="receiptImageUrl" alt="收据" style="width: 100%" />
+		</el-dialog> -->
+
+		<el-dialog
+			:title="'附件查看'"
+			:visible.sync="attachmentDialogVisible"
+			width="50%"
+			append-to-body
+		>
+			<el-carousel
+				:interval="5000"
+				type="card"
+				height="400px"
+				v-if="imageAttachments.length"
+			>
+				<el-carousel-item
+					v-for="(item, index) in imageAttachments"
+					:key="index"
+				>
+					<img :src="item" alt="附件" style="width: 100%; height: 100%" />
+				</el-carousel-item>
+			</el-carousel>
+			<div v-else>
+				<el-link
+					v-for="(item, index) in attachments"
+					:key="index"
+					:href="item"
+					target="_blank"
+				>
+					{{ item }}
+				</el-link>
+			</div>
 		</el-dialog>
 
 		<div v-if="currentComponent">
