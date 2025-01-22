@@ -478,13 +478,57 @@
 					</el-form-item>
 					<!-- 添加车队 -->
 					<el-form-item label="车队">
-						<el-input
+						<!-- <el-input
 							v-model="form.fleet"
 							type="text"
 							size="mini"
 							placeholder="请输入车队"
 							style="width: 130px"
-						/>
+						/> -->
+						<el-row>
+							<el-col :span="12">
+								<el-input
+									v-model="form.fleet"
+									type="text"
+									size="mini"
+									placeholder="请输入车队"
+								/>
+							</el-col>
+							<el-col :span="4">
+								<SearchOption
+									:limit-info="{}"
+									:get-data="listFleet"
+									query-label="车队名称"
+									query-info="fname"
+									:query-name="queryFleet"
+									@commitBack="handleCommitBackFleet"
+									@update:queryName="handleChangeFleet"
+								>
+									<template #table-columns>
+										<el-table-column
+											label="车队名称"
+											align="center"
+											prop="fname"
+										/>
+										<el-table-column
+											label="车队经理"
+											align="center"
+											prop="fleader"
+										/>
+										<el-table-column
+											label="车队经理电话"
+											align="center"
+											prop="tel"
+										/>
+										<el-table-column
+											label="地址"
+											align="center"
+											prop="address"
+										/>
+									</template>
+								</SearchOption>
+							</el-col>
+						</el-row>
 					</el-form-item>
 					<!-- 添加附件上传 -->
 				</el-row>
@@ -1230,6 +1274,7 @@ export default {
 			querySupplier: null,
 			queryLevel: null,
 			queryStore: null,
+			queryFleet: null,
 
 			// 查询组
 			queryItemsCompany: {
@@ -1558,6 +1603,13 @@ export default {
 
 			this.calculatePrice(scope);
 		},
+		handleCommitBackFleet(val) {
+			this.form.fleet = val.fname;
+		},
+		// 车队的自动填充
+		handleChangeFleet(val) {
+			this.queryFleet = val;
+		},
 		// 设置当前绑定类型
 		setCurrentType(row, type) {
 			row.currentType = type;
@@ -1640,6 +1692,7 @@ export default {
 				landCarNo: null,
 				landDriverTel: null,
 				landDriverName: null,
+				fleet: null,
 				seaCarID: null,
 				seaCarNo: null,
 				seaDriverTel: null,

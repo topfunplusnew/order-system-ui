@@ -169,7 +169,6 @@
 			"
 			@selection-change="handleSelectionChange"
 		>
-			<!--      多选 一键申请运费-->
 			<el-table-column type="selection" width="55" fixed="left" />
 			<el-table-column
 				v-if="columns[0].visible"

@@ -127,9 +127,13 @@
 		>
 			<el-table :data="changeLogData" size="mini" border stripe>
 				<el-table-column label="日期" prop="date" align="center" />
-				<el-table-column label="变动类型" prop="type" align="center" />
-				<el-table-column label="数量" prop="quantity" align="center" />
-				<el-table-column label="备注" prop="remark" align="center" />
+				<el-table-column label="变动数量" prop="change_amount" align="center" />
+				<el-table-column
+					label="剩余库存"
+					prop="remaining_stock"
+					align="center"
+				/>
+				<!-- <el-table-column label="表名" prop="tableName" align="center" /> -->
 			</el-table>
 		</el-dialog>
 	</div>
@@ -213,7 +217,7 @@ export default {
 			this.updatePaginatedData(category);
 		},
 		handleQuery() {
-			this.getInventoryData();
+			this.getSummary();
 		},
 		resetQuery() {
 			this.queryParams = {
@@ -231,21 +235,7 @@ export default {
 					levelID: category
 				};
 				listInventoryDetails(query).then(response => {
-					console.log(response);
-					this.changeLogData = [
-						{
-							date: '2023-10-01',
-							type: '入库',
-							quantity: 100,
-							remark: '初始入库'
-						},
-						{
-							date: '2023-10-05',
-							type: '出库',
-							quantity: 20,
-							remark: '销售出库'
-						}
-					];
+					this.changeLogData = response.data;
 					this.changeLogVisible = true;
 				});
 			});
