@@ -1629,6 +1629,8 @@ export default {
 		},
 		// 表单重置
 		reset() {
+			this.isSea = false;
+			this.isLand = false;
 			this.form = {
 				id: null,
 				storeHouseid: null,
