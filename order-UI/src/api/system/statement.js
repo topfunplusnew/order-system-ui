@@ -302,3 +302,18 @@ export function inventorySummary(query) {
 		params: query
 	});
 }
+
+/**
+ * 资金日报表
+ * @param {Object} query
+ * @param {beginTime} query.beginTime - 开始日期
+ * @param  {endTime} query.endTime - 结束日期
+ * @returns
+ */
+export function getTodaySelfCompanyMoneySummary(query) {
+	return request({
+		url: '/statistics/getTodaySelfCompanyMoneySummary',
+		method: 'get',
+		params: query
+	});
+}
