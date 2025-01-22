@@ -10,7 +10,7 @@
 					</el-col>
 					<el-col :span="6">
 						<el-date-picker
-							v-model="queryParams.beginTime"
+							v-model="queryParams.startTime"
 							type="datetime"
 							size="mini"
 							value-format="yyyy-MM-dd HH:mm:ss"
@@ -42,7 +42,7 @@
 					</el-col>
 					<el-col :span="6">
 						<el-date-picker
-							v-model="queryParams.beginTime"
+							v-model="queryParams.startTime"
 							type="datetime"
 							size="mini"
 							value-format="yyyy-MM-dd HH:mm:ss"
@@ -311,7 +311,6 @@ export default {
 			getDeliveryList(this.queryParams).then(res => {
 				this.tableData = res.rows;
 				this.total = res.total;
-				this.reset();
 				this.loading = false;
 			});
 		},
@@ -327,7 +326,7 @@ export default {
 			this.download(
 				'statistics/export/todayOrderList',
 				{
-					startTime: this.queryParams.beginTime,
+					startTime: this.queryParams.startTime,
 					endTime: this.queryParams.endTime
 				},
 				`todayOrderList${new Date().getTime()}.xlsx`
