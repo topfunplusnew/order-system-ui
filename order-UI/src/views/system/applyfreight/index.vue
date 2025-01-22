@@ -147,6 +147,13 @@ export default {
 					clearable
 				/>
 			</el-form-item>
+			<el-form-item label="海运公司">
+				<el-input
+					v-model="queryParams.driverName"
+					placeholder="请输入海运公司"
+					clearable
+				/>
+			</el-form-item>
 			<el-form-item label="车牌号">
 				<el-input
 					v-model="queryParams.carNo"
@@ -154,10 +161,10 @@ export default {
 					clearable
 				/>
 			</el-form-item>
-			<el-form-item label="银行卡号">
+			<el-form-item label="对方户名">
 				<el-input
 					v-model="queryParams.bankName"
-					placeholder="请输入银行卡号"
+					placeholder="请输入对方户名"
 					clearable
 				/>
 			</el-form-item>
@@ -276,11 +283,6 @@ export default {
 				label="司机银行账号"
 				align="center"
 			/>
-			<el-table-column show-overflow-tooltip label="收据" align="center">
-				<template slot-scope="scope">
-					<div>收据</div>
-				</template>
-			</el-table-column>
 			<el-table-column
 				show-overflow-tooltip
 				prop="source"
@@ -293,13 +295,7 @@ export default {
 				label="订单状态"
 				align="center"
 			/>
-			<el-table-column
-				show-overflow-tooltip
-				prop="paid_amount"
-				label="已支付金额"
-				align="center"
-			/>
-			<el-table-column show-overflow-tooltip label="附件查看" align="center">
+			<el-table-column show-overflow-tooltip label="收到条" align="center">
 				<template slot-scope="scope">
 					<el-button
 						type="text"
@@ -310,6 +306,13 @@ export default {
 					</el-button>
 				</template>
 			</el-table-column>
+			<el-table-column
+				show-overflow-tooltip
+				prop="paid_amount"
+				label="已支付金额"
+				align="center"
+			/>
+
 			<el-table-column
 				show-overflow-tooltip
 				label="运费申请"
