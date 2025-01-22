@@ -26,6 +26,8 @@
 					<el-table-column prop="date" label="日期" />
 					<el-table-column prop="acountsName" label="户名" />
 					<el-table-column prop="bankNo" label="银行账号" />
+					<el-table-column prop="displayName" label="展示名称" />
+					<el-table-column prop="bankCardType" label="银行卡类别" />
 					<el-table-column label="资金日报部分">
 						<el-table-column prop="previousBalance" label="上日余额" />
 						<el-table-column prop="totalIncome" label="本日收款" />
