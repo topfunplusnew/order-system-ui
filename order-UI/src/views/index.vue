@@ -108,6 +108,13 @@
 					"
 				>
 					<el-table-column
+						prop="index"
+						label="序号"
+						width="50"
+						align="center"
+						type="index"
+					></el-table-column>
+					<el-table-column
 						v-if="columns[0].visible"
 						prop="orderDate"
 						label="日期"
@@ -122,7 +129,12 @@
 					<el-table-column
 						v-if="columns[2].visible"
 						prop="salesman"
-						label="销售经理"
+						label="业务员"
+						show-overflow-tooltip
+					></el-table-column>
+					<el-table-column
+						prop="arrears"
+						label="欠款"
 						show-overflow-tooltip
 					></el-table-column>
 					<el-table-column
