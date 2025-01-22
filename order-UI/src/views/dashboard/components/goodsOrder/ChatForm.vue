@@ -80,7 +80,7 @@ export default {
 						<th>日期</th>
 						<th>等级</th>
 						<th>厚度(mm)</th>
-						<th>规格</th>
+						<th colspan="2">规格</th>
 						<th>片数</th>
 						<th>数量</th>
 						<th>单价</th>
@@ -96,7 +96,8 @@ export default {
 							<td>{{ item.orderDate }}</td>
 							<td>{{ item.levelName }}</td>
 							<td>{{ item.height }}</td>
-							<td>{{ item.length }} x {{ item.width }}</td>
+							<td>{{ item.length }}</td>
+							<td>{{ item.width }}</td>
 							<td>{{ item.pieces }}</td>
 							<td>{{ item.packs }}</td>
 							<td>{{ item.price }}</td>
