@@ -228,10 +228,12 @@ export default {
 			this.handleQuery();
 		},
 		openChangeLog(category) {
-			this.$datePicker().then(({ startDate, endDate }) => {
+			this.$datePicker().then(({ beginTime, endTime }) => {
+				console.log(beginTime, endTime);
+
 				const query = {
-					startDate,
-					endDate,
+					startDate: beginTime,
+					endDate: endTime,
 					levelID: category
 				};
 				listInventoryDetails(query).then(response => {

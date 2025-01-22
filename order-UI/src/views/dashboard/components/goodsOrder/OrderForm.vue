@@ -321,7 +321,7 @@ export default {
 			scope.row.levelID = val.levelID;
 			scope.row.levelName = val.levelName;
 			// 填充误差
-			scope.row.erro = val.tonnage;
+			scope.row.erro = val.erro;
 			scope.row.currentType = 'storeHouseName'; // 设置当前类型为仓库
 		},
 		// 产品级别自动填充
@@ -870,7 +870,7 @@ export default {
 				<!--      海运-->
 				<el-row v-if="isSea" style="margin: 10px 0">
 					<!--   车牌修改为柜号 且自己输入 不提供自动填充 -->
-					<el-form-item label="柜号">
+					<el-form-item label="柜号(填写)">
 						<el-row>
 							<el-col :span="20">
 								<el-input
