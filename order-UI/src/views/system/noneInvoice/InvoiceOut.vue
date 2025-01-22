@@ -208,26 +208,7 @@
 					/>
 				</template>
 			</el-table-column>
-			<el-table-column
-				v-if="columns[8].visible"
-				label="订单信息"
-				align="center"
-				prop="isOrderTax"
-				width="180"
-			>
-				<template slot-scope="scope">
-					<el-row v-if="scope.row.isOrderTax === 0">无关联订单</el-row>
-					<el-row v-else>
-						<el-button
-							size="mini"
-							type="text"
-							@click="checkOrderInfo(scope.row)"
-						>
-							查看订单信息
-						</el-button>
-					</el-row>
-				</template>
-			</el-table-column>
+
 			<el-table-column
 				label="操作"
 				align="center"
@@ -452,7 +433,7 @@ export default {
 				invoiceCompanyName: null,
 				ticketPoint: null,
 				ticketPointAmount: null,
-				isOrderTax: null,
+				isOrderTax: 0,
 				comments: null,
 				addtime: null,
 				userId: null,
@@ -472,7 +453,6 @@ export default {
 				{ key: 5, label: `票据单位名称`, visible: true },
 				{ key: 6, label: `票点`, visible: true },
 				{ key: 7, label: `票点金额`, visible: true },
-				{ key: 8, label: `订单信息`, visible: true },
 				{ key: 9, label: `备注`, visible: true }
 			],
 			beginTime: '',
