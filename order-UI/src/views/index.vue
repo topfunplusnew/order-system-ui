@@ -1,240 +1,266 @@
 <template>
 	<div>
-		<el-row style="margin: 35px 0">
-			<el-col :xs="24" :sm="12" :md="11" :lg="11" :offset="xs ? 0 : 1">
-				<el-row>
-					<el-col :span="6">
-						<span style="font-weight: bold; font-size: 24px; color: #156fb2">
+		<el-row style="margin: 35px 0" :gutter="40">
+			<!-- 标记1 -->
+			<el-col :span="12">
+				<el-row :gutter="10">
+					<el-col :span="24">
+						<div
+							style="
+								font-weight: bold;
+								font-size: 24px;
+								color: #156fb2;
+								line-height: 60px;
+							"
+						>
 							今日发货列表
-						</span>
+						</div>
 					</el-col>
-					<el-col :span="6">
-						<el-date-picker
-							v-model="queryParams.startTime"
-							type="datetime"
+					<el-form :inline="true" :model="queryParams">
+						<el-form-item label="开始时间">
+							<el-date-picker
+								v-model="queryParams.startTime"
+								type="datetime"
+								size="mini"
+								value-format="yyyy-MM-dd HH:mm:ss"
+								placeholder="开始日期"
+								class="responsive-date-picker"
+							></el-date-picker>
+						</el-form-item>
+						<el-form-item label="结束时间">
+							<el-date-picker
+								v-model="queryParams.endTime"
+								type="datetime"
+								size="mini"
+								value-format="yyyy-MM-dd HH:mm:ss"
+								placeholder="结束日期"
+								class="responsive-date-picker"
+							></el-date-picker>
+						</el-form-item>
+						<el-form-item>
+							<el-button type="primary" size="mini" @click="handleSearch">
+								搜索
+							</el-button>
+						</el-form-item>
+					</el-form>
+				</el-row>
+				<el-row :gutter="50">
+					<el-col>
+						<right-toolbar :columns="columns" @queryTable="getList">
+							<template #print>
+								<el-col :span="1.5">
+									<el-button
+										plain
+										icon="el-icon-printer"
+										size="mini"
+										@click="printHTML"
+									></el-button>
+								</el-col>
+							</template>
+							<!--        导出-->
+							<template #export>
+								<el-col :span="1.5">
+									<el-button
+										v-hasPermi="['system:bankaccount:export']"
+										plain
+										icon="el-icon-folder-opened"
+										size="mini"
+										@click="handleExport"
+									></el-button>
+								</el-col>
+							</template>
+						</right-toolbar>
+						<!--        发货列表-->
+						<el-table
+							id="printBox"
 							size="mini"
-							value-format="yyyy-MM-dd HH:mm:ss"
-							placeholder="开始日期"
-						></el-date-picker>
-					</el-col>
-					<el-col :span="6">
-						<el-date-picker
-							v-model="queryParams.endTime"
-							type="datetime"
-							size="mini"
-							value-format="yyyy-MM-dd HH:mm:ss"
-							placeholder="结束日期"
-						></el-date-picker>
-					</el-col>
-					<el-col :span="2">
-						<el-button type="primary" size="mini" @click="handleSearch">
-							搜索
-						</el-button>
+							:data="tableData"
+							max-height="500"
+							show-summary
+							border
+							style="width: 100%"
+							:loading="loading"
+							:header-cell-style="{ background: '#f0f0f0', color: '#333' }"
+							:cell-style="
+								() => {
+									return { padding: '2px' };
+								}
+							"
+						>
+							<el-table-column
+								prop="index"
+								label="序号"
+								width="50"
+								align="center"
+								type="index"
+							></el-table-column>
+							<el-table-column
+								v-if="columns[0].visible"
+								prop="orderDate"
+								label="日期"
+								show-overflow-tooltip
+							></el-table-column>
+							<el-table-column
+								v-if="columns[1].visible"
+								prop="companyName"
+								label="客户"
+								show-overflow-tooltip
+							></el-table-column>
+							<el-table-column
+								v-if="columns[2].visible"
+								prop="salesman"
+								label="业务员"
+								show-overflow-tooltip
+							></el-table-column>
+							<el-table-column
+								v-if="columns[3].visible"
+								prop="arrears"
+								label="欠款"
+								show-overflow-tooltip
+							></el-table-column>
+							<el-table-column
+								v-if="columns[4].visible"
+								prop="profit"
+								label="含税利润"
+								show-overflow-tooltip
+							></el-table-column>
+							<el-table-column
+								v-if="columns[5].visible"
+								prop="profitNoTax"
+								label="不含税利润"
+								width="110"
+								show-overflow-tooltip
+							></el-table-column>
+							<el-table-column
+								v-if="columns[6].visible"
+								prop="payments"
+								label="总货款"
+								show-overflow-tooltip
+							></el-table-column>
+							<el-table-column
+								v-if="columns[7].visible"
+								prop="paymentFactory"
+								label="出厂货款"
+								show-overflow-tooltip
+							></el-table-column>
+							<el-table-column
+								v-if="columns[8].visible"
+								prop="tonnage"
+								label="吨位"
+								show-overflow-tooltip
+							></el-table-column>
+							<el-table-column
+								v-if="columns[9].visible"
+								prop="clerk"
+								label="内勤"
+								show-overflow-tooltip
+							></el-table-column>
+							<el-table-column
+								v-if="columns[10].visible"
+								prop="landCarNo"
+								label="陆运车牌"
+								show-overflow-tooltip
+							>
+								<template #default="scope">
+									<span v-if="scope.row.landCarNo !== null">
+										{{ scope.row.landCarNo }}
+									</span>
+									<span v-else>无</span>
+								</template>
+							</el-table-column>
+							<el-table-column
+								v-if="columns[11].visible"
+								prop="seaCarNo"
+								label="柜号"
+								show-overflow-tooltip
+							>
+								<template #default="scope">
+									<span v-if="scope.row.seaCarNo !== null">
+										{{ scope.row.seaCarNo }}
+									</span>
+									<span v-else>无</span>
+								</template>
+							</el-table-column>
+							<el-table-column
+								v-if="columns[12].visible"
+								prop="fleet"
+								label="车队"
+								show-overflow-tooltip
+							></el-table-column>
+							<el-table-column
+								v-if="columns[13].visible"
+								prop="freight"
+								label="运费"
+								show-overflow-tooltip
+							></el-table-column>
+						</el-table>
+						<pagination
+							v-show="total > 0"
+							:total="total"
+							:page.sync="queryParams.pageNum"
+							:limit.sync="queryParams.pageSize"
+							@pagination="getList"
+							style="width: 100%; text-align: center"
+						/>
+						<!--        分页-->
 					</el-col>
 				</el-row>
 			</el-col>
-			<el-col :xs="24" :sm="12" :md="12" :lg="12">
-				<el-row>
-					<el-col :span="6">
-						<span style="font-weight: bold; font-size: 24px; color: #156fb2">
+			<!-- 标记2 -->
+			<el-col :span="12">
+				<el-row :gutter="10">
+					<el-col :span="24">
+						<div
+							style="
+								font-weight: bold;
+								font-size: 24px;
+								color: #156fb2;
+								line-height: 60px;
+							"
+						>
 							利润
-						</span>
+						</div>
 					</el-col>
-					<el-col :span="6">
-						<el-date-picker
-							v-model="queryParams.startTime"
-							type="datetime"
-							size="mini"
-							value-format="yyyy-MM-dd HH:mm:ss"
-							placeholder="开始日期"
-						></el-date-picker>
-					</el-col>
-					<el-col :span="6">
-						<el-date-picker
-							v-model="queryParams.endTime"
-							type="datetime"
-							size="mini"
-							value-format="yyyy-MM-dd HH:mm:ss"
-							placeholder="结束日期"
-						></el-date-picker>
-					</el-col>
-					<el-col :span="2">
-						<el-button type="primary" size="mini">搜索</el-button>
-					</el-col>
+					<el-form :inline="true" :model="queryParams">
+						<el-form-item label="开始时间">
+							<el-date-picker
+								v-model="queryParams.startTime"
+								type="datetime"
+								size="mini"
+								value-format="yyyy-MM-dd HH:mm:ss"
+								placeholder="开始日期"
+								class="responsive-date-picker"
+							></el-date-picker>
+						</el-form-item>
+						<el-form-item label="结束时间">
+							<el-date-picker
+								v-model="queryParams.endTime"
+								type="datetime"
+								size="mini"
+								value-format="yyyy-MM-dd HH:mm:ss"
+								placeholder="结束日期"
+								class="responsive-date-picker"
+							></el-date-picker>
+						</el-form-item>
+						<el-form-item>
+							<el-button type="primary" size="mini" @click="handleSearch">
+								搜索
+							</el-button>
+						</el-form-item>
+					</el-form>
 				</el-row>
-			</el-col>
-		</el-row>
-		<el-row :gutter="50">
-			<el-col :xs="24" :sm="12" :md="11" :lg="11" :offset="xs ? 0 : 1">
-				<right-toolbar :columns="columns" @queryTable="getList">
-					<template #print>
-						<el-col :span="1.5">
-							<el-button
-								plain
-								icon="el-icon-printer"
-								size="mini"
-								@click="printHTML"
-							></el-button>
-						</el-col>
-					</template>
-					<!--        导出-->
-					<template #export>
-						<el-col :span="1.5">
-							<el-button
-								v-hasPermi="['system:bankaccount:export']"
-								plain
-								icon="el-icon-folder-opened"
-								size="mini"
-								@click="handleExport"
-							></el-button>
-						</el-col>
-					</template>
-				</right-toolbar>
-				<!--        发货列表-->
-				<el-table
-					id="printBox"
-					size="mini"
-					:data="tableData"
-					max-height="500"
-					show-summary
-					border
-					style="width: 100%"
-					:loading="loading"
-					:header-cell-style="{ background: '#f0f0f0', color: '#333' }"
-					:cell-style="
-						() => {
-							return { padding: '2px' };
-						}
-					"
-				>
-					<el-table-column
-						prop="index"
-						label="序号"
-						width="50"
-						align="center"
-						type="index"
-					></el-table-column>
-					<el-table-column
-						v-if="columns[0].visible"
-						prop="orderDate"
-						label="日期"
-						show-overflow-tooltip
-					></el-table-column>
-					<el-table-column
-						v-if="columns[1].visible"
-						prop="companyName"
-						label="客户"
-						show-overflow-tooltip
-					></el-table-column>
-					<el-table-column
-						v-if="columns[2].visible"
-						prop="salesman"
-						label="业务员"
-						show-overflow-tooltip
-					></el-table-column>
-					<el-table-column
-						prop="arrears"
-						label="欠款"
-						show-overflow-tooltip
-					></el-table-column>
-					<el-table-column
-						v-if="columns[3].visible"
-						prop="profit"
-						label="含税利润"
-						show-overflow-tooltip
-					></el-table-column>
-					<el-table-column
-						v-if="columns[4].visible"
-						prop="profitNoTax"
-						label="不含税利润"
-						width="110"
-						show-overflow-tooltip
-					></el-table-column>
-					<el-table-column
-						v-if="columns[5].visible"
-						prop="payments"
-						label="总货款"
-						show-overflow-tooltip
-					></el-table-column>
-					<el-table-column
-						v-if="columns[6].visible"
-						prop="paymentFactory"
-						label="出厂货款"
-						show-overflow-tooltip
-					></el-table-column>
-					<el-table-column
-						v-if="columns[7].visible"
-						prop="tonnage"
-						label="吨位"
-						show-overflow-tooltip
-					></el-table-column>
-					<el-table-column
-						v-if="columns[8].visible"
-						prop="clerk"
-						label="内勤"
-						show-overflow-tooltip
-					></el-table-column>
-					<el-table-column
-						v-if="columns[9].visible"
-						prop="landCarNo"
-						label="陆运车牌"
-						show-overflow-tooltip
-					>
-						<template #default="scope">
-							<span v-if="scope.row.landCarNo !== null">
-								{{ scope.row.landCarNo }}
-							</span>
-							<span v-else>无</span>
-						</template>
-					</el-table-column>
-					<el-table-column
-						v-if="columns[10].visible"
-						prop="seaCarNo"
-						label="柜号"
-						show-overflow-tooltip
-					>
-						<template #default="scope">
-							<span v-if="scope.row.seaCarNo !== null">
-								{{ scope.row.seaCarNo }}
-							</span>
-							<span v-else>无</span>
-						</template>
-					</el-table-column>
-					<el-table-column
-						v-if="columns[11].visible"
-						prop="fleet"
-						label="车队"
-						show-overflow-tooltip
-					></el-table-column>
-					<el-table-column
-						v-if="columns[12].visible"
-						prop="freight"
-						label="运费"
-						show-overflow-tooltip
-					></el-table-column>
-				</el-table>
-				<pagination
-					v-show="total > 0"
-					:total="total"
-					:page.sync="queryParams.pageNum"
-					:limit.sync="queryParams.pageSize"
-					@pagination="getList"
-				/>
-				<!--        分页-->
-			</el-col>
-
-			<!--      右侧利润-->
-			<el-col :xs="24" :sm="12" :md="12" :lg="12">
-				<el-table height="130" :empty-text="' '">
-					<el-table-column prop="date" label="￥0" align="center">
-						<el-table-column prop="date" label="利润总额">
-							<el-table-column prop="date" label="费用合计"></el-table-column>
+				<el-row>
+					<el-table height="130" :empty-text="' '">
+						<el-table-column prop="date" label="￥0" align="center">
+							<el-table-column prop="date" label="利润总额">
+								<el-table-column prop="date" label="费用合计"></el-table-column>
+							</el-table-column>
+							<el-table-column label="￥0">
+								<el-table-column label="￥0"></el-table-column>
+							</el-table-column>
 						</el-table-column>
-						<el-table-column label="￥0">
-							<el-table-column label="￥0"></el-table-column>
-						</el-table-column>
-					</el-table-column>
-				</el-table>
+					</el-table>
+				</el-row>
 			</el-col>
 		</el-row>
 	</div>
@@ -281,16 +307,17 @@ export default {
 				{ key: 0, label: `日期`, visible: true },
 				{ key: 1, label: `客户`, visible: true },
 				{ key: 2, label: `录入员`, visible: true },
-				{ key: 3, label: `含税利润`, visible: true },
-				{ key: 4, label: `不含税利润`, visible: true },
-				{ key: 5, label: `总货款`, visible: true },
-				{ key: 6, label: `出厂货款`, visible: true },
-				{ key: 7, label: `吨位`, visible: true },
-				{ key: 8, label: `内勤`, visible: true },
-				{ key: 9, label: `陆运车牌`, visible: true },
-				{ key: 10, label: `柜号`, visible: true },
-				{ key: 11, label: `车队`, visible: true },
-				{ key: 12, label: `运费`, visible: true }
+				{ key: 3, label: `欠款`, visible: true },
+				{ key: 4, label: `含税利润`, visible: true },
+				{ key: 5, label: `不含税利润`, visible: true },
+				{ key: 6, label: `总货款`, visible: true },
+				{ key: 7, label: `出厂货款`, visible: true },
+				{ key: 8, label: `吨位`, visible: true },
+				{ key: 9, label: `内勤`, visible: true },
+				{ key: 10, label: `陆运车牌`, visible: true },
+				{ key: 11, label: `柜号`, visible: true },
+				{ key: 12, label: `车队`, visible: true },
+				{ key: 13, label: `运费`, visible: true }
 			]
 		};
 	},
@@ -353,7 +380,11 @@ export default {
 
 .el-date-editor.el-input,
 .el-date-editor.el-input__inner {
-	width: 120px;
+	width: 150px;
+}
+
+.responsive-date-picker {
+	width: 150px;
 }
 
 .el-button--mini {
@@ -378,7 +409,7 @@ export default {
 }
 
 // Media Queries for responsiveness
-@media (max-width: 768px) {
+@media (max-width: 960px) {
 	.el-row {
 		margin: 20px 0;
 	}
@@ -388,7 +419,8 @@ export default {
 	}
 
 	.el-date-editor.el-input,
-	.el-date-editor.el-input__inner {
+	.el-date-editor.el-input__inner,
+	.responsive-date-picker {
 		width: 100%;
 	}
 
