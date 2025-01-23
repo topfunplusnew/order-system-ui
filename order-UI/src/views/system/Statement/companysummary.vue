@@ -202,10 +202,12 @@
 			>
 				<template slot-scope="scope">
 					{{
-						Number(scope.row.previousMonthCarryover) +
-						Number(scope.row.monthlyReceiveMoney) +
-						Number(scope.row.monthlyInvoiceAmount) -
-						Number(scope.row.monthlyOrderPayments)
+						fix(
+							Number(scope.row.previousMonthCarryover) +
+								Number(scope.row.monthlyReceiveMoney) +
+								Number(scope.row.monthlyInvoiceAmount) -
+								Number(scope.row.monthlyOrderPayments)
+						)
 					}}
 				</template>
 			</el-table-column>
@@ -267,10 +269,12 @@
 			>
 				<template slot-scope="scope">
 					{{
-						Number(scope.row.previousYearCarryover) +
-						Number(scope.row.yearlyReceiveMoney) +
-						Number(scope.row.yearlyInvoiceAmount) -
-						Number(scope.row.yearlyOrderPayments)
+						fix(
+							Number(scope.row.previousYearCarryover) +
+								Number(scope.row.yearlyReceiveMoney) +
+								Number(scope.row.yearlyInvoiceAmount) -
+								Number(scope.row.yearlyOrderPayments)
+						)
 					}}
 				</template>
 			</el-table-column>
@@ -329,7 +333,7 @@
 import { mixin_printHTML } from '@/views/dashboard/mixins/print';
 import { getCompanySummary } from '../../../api/system/statement';
 import { parseTime } from '../../../utils/ruoyi';
-
+import { fix } from '../../../api/tool/format';
 export default {
 	name: 'Companysummary',
 	dicts: ['order_target_type'],
@@ -381,6 +385,7 @@ export default {
 		this.getList();
 	},
 	methods: {
+		fix,
 		/** 查询向外部借出款信息列表 */
 		getList() {
 			this.loading = true;

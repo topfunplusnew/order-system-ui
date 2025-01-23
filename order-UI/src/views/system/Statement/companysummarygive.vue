@@ -121,10 +121,12 @@
 			>
 				<template slot-scope="scope">
 					{{
-						Number(scope.row.previousDayCarryover) +
-						Number(scope.row.dailyOrderPayments) +
-						Number(scope.row.dailyInvoiceAmount) -
-						Number(scope.row.dailyReceiveMoney)
+						fix(
+							Number(scope.row.previousDayCarryover) +
+								Number(scope.row.dailyOrderPayments) +
+								Number(scope.row.dailyInvoiceAmount) -
+								Number(scope.row.dailyReceiveMoney)
+						)
 					}}
 				</template>
 			</el-table-column>
@@ -194,10 +196,12 @@
 			>
 				<template slot-scope="scope">
 					{{
-						Number(scope.row.previousMonthCarryover) +
-						Number(scope.row.monthlyReceiveMoney) +
-						Number(scope.row.monthlyInvoiceAmount) -
-						Number(scope.row.monthlyOrderPayments)
+						fix(
+							Number(scope.row.previousMonthCarryover) +
+								Number(scope.row.monthlyReceiveMoney) +
+								Number(scope.row.monthlyInvoiceAmount) -
+								Number(scope.row.monthlyOrderPayments)
+						)
 					}}
 				</template>
 			</el-table-column>
@@ -243,10 +247,12 @@
 			>
 				<template slot-scope="scope">
 					{{
-						Number(scope.row.previousYearCarryover) +
-						Number(scope.row.yearlyReceiveMoney) +
-						Number(scope.row.yearlyInvoiceAmount) -
-						Number(scope.row.yearlyOrderPayments)
+						fix(
+							Number(scope.row.previousYearCarryover) +
+								Number(scope.row.yearlyReceiveMoney) +
+								Number(scope.row.yearlyInvoiceAmount) -
+								Number(scope.row.yearlyOrderPayments)
+						)
 					}}
 				</template>
 			</el-table-column>
@@ -304,6 +310,7 @@
 import { mixin_printHTML } from '@/views/dashboard/mixins/print';
 import { getSupplierSuymmary } from '../../../api/system/statement';
 import { parseTime } from '../../../utils/ruoyi';
+import { fix } from '../../../api/tool/format';
 
 export default {
 	name: 'Companysummarygive',
@@ -354,6 +361,7 @@ export default {
 		this.getList();
 	},
 	methods: {
+		fix,
 		/** 查询向外部借出款信息列表 */
 		getList() {
 			this.loading = true;

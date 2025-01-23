@@ -2,6 +2,7 @@
 import { getFleetFreightSummary } from '../../../api/system/statement';
 import { parseTime } from '../../../utils/ruoyi';
 import { mixin_printHTML } from '../../dashboard/mixins/print';
+import { fix } from '../../../api/tool/format';
 
 export default {
 	name: 'Fleetfreightsummary',
@@ -43,6 +44,7 @@ export default {
 		this.getList();
 	},
 	methods: {
+		fix,
 		getList() {
 			this.loading = true;
 			getFleetFreightSummary(this.queryParams).then(res => {
@@ -224,7 +226,11 @@ export default {
 								align="center"
 								prop="debtAmountToday"
 								width="200"
-							/>
+							>
+								<template slot-scope="scope">
+									{{ fix(scope.row.debtAmountToday) }}
+								</template>
+							</el-table-column>
 						</el-table-column>
 
 						<!-- 运费月报 -->
@@ -256,7 +262,11 @@ export default {
 								align="center"
 								prop="debtAmountThisMonth"
 								width="200"
-							/>
+							>
+								<template slot-scope="scope">
+									{{ fix(scope.row.debtAmountThisMonth) }}
+								</template>
+							</el-table-column>
 						</el-table-column>
 
 						<!-- 运费年报 -->
@@ -288,7 +298,11 @@ export default {
 								align="center"
 								prop="debtAmountThisYear"
 								width="200"
-							/>
+							>
+								<template slot-scope="scope">
+									{{ fix(scope.row.debtAmountThisYear) }}
+								</template>
+							</el-table-column>
 						</el-table-column>
 					</el-table>
 
