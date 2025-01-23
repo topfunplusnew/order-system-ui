@@ -200,7 +200,7 @@
 				prop="customerCommission"
 			/>
 			<el-table-column label="备注" align="center" prop="comments" />
-			<!-- <el-table-column
+			<el-table-column
 				label="操作"
 				align="center"
 				class-name="small-padding fixed-width"
@@ -209,21 +209,19 @@
 					<el-button
 						size="mini"
 						type="text"
-						icon="el-icon-edit"
-						@click="handleUpdate(scope.row)"
-						v-hasPermi="['system:detail:edit']"
-						>修改
+						@click="secondryInventoryOut(scope.row)"
+					>
+						加工后出库
 					</el-button>
 					<el-button
 						size="mini"
 						type="text"
-						icon="el-icon-delete"
-						@click="handleDelete(scope.row)"
-						v-hasPermi="['system:detail:remove']"
-						>删除
+						@click="afterbreakInventoryOut(scope.row)"
+					>
+						破损后出库
 					</el-button>
-				</template> -->
-			<!-- </el-table-column> -->
+				</template>
+			</el-table-column>
 		</el-table>
 
 		<pagination
@@ -387,6 +385,69 @@
 				<el-button @click="cancel">取 消</el-button>
 			</div>
 		</el-dialog>
+
+		<!-- 二次出库对话框 -->
+		<el-dialog
+			:close-on-click-modal="false"
+			:show-close="false"
+			title="二次出库"
+			:visible.sync="secondInvoiceInVisible"
+			width="30%"
+			append-to-body
+		>
+			<div slot="footer" class="dialog-footer">
+				<el-row :gutter="5">
+					<el-col :span="8">
+						<span style="font-weight: bolder; line-height: 30px"
+							>请输入出库数量</span
+						>
+					</el-col>
+					<el-col :span="10">
+						<el-input
+							type="number"
+							v-model="secondNumber"
+							placeholder="请输入出库数量"
+						/>
+					</el-col>
+				</el-row>
+				<br />
+				<el-button type="primary" @click="submitSecondInvoiceIn"
+					>确 定</el-button
+				>
+				<el-button @click="secondInvoiceInVisible = false">取 消</el-button>
+			</div>
+		</el-dialog>
+		<!-- 货物破损出库对话框 -->
+		<el-dialog
+			:close-on-click-modal="false"
+			:show-close="false"
+			title="货物破损出库"
+			:visible.sync="breakInvoiceInVisible"
+			width="30%"
+			append-to-body
+		>
+			<div slot="footer" class="dialog-footer">
+				<el-row :gutter="5">
+					<el-col :span="8">
+						<span style="font-weight: bolder; line-height: 30px"
+							>请输入出库数量</span
+						>
+					</el-col>
+					<el-col :span="10">
+						<el-input
+							type="number"
+							v-model="breakNumber"
+							placeholder="请输入出库数量"
+						/>
+					</el-col>
+				</el-row>
+				<br />
+				<el-button type="primary" @click="submitBreakInvoiceIn"
+					>确 定</el-button
+				>
+				<el-button @click="breakInvoiceInVisible = false">取 消</el-button>
+			</div>
+		</el-dialog>
 	</div>
 </template>
 
@@ -398,6 +459,8 @@ import {
 	listDetail,
 	updateDetail
 } from '@/api/system/detail';
+import { addExWarehouse } from '@/api/system/exWarehouse';
+import { parseTime } from '@/utils/ruoyi';
 
 export default {
 	name: 'Detail',
@@ -474,7 +537,13 @@ export default {
 						trigger: 'blur'
 					}
 				]
-			}
+			},
+			secondNumber: 0,
+			secondInvoiceInVisible: false,
+			secondInfo: {},
+			breakNumber: 0,
+			breakInvoiceInVisible: false,
+			breakInfo: {}
 		};
 	},
 	created() {
@@ -614,6 +683,42 @@ export default {
 				},
 				`detail_${new Date().getTime()}.xlsx`
 			);
+		},
+		secondryInventoryOut(row) {
+			this.secondInfo = {
+				ordersNo: '二次加工',
+				storeHouseid: row.storeHouseid,
+				storeHouseName: row.storeHouseName,
+				storeID: row.id,
+				outDate: parseTime(new Date())
+			};
+			this.secondInvoiceInVisible = true;
+		},
+		submitSecondInvoiceIn() {
+			this.secondInfo.outAmount = this.secondNumber;
+			addExWarehouse(this.secondInfo).then(() => {
+				this.$message.success('加工后出库成功~');
+				this.secondInvoiceInVisible = false;
+				this.getList();
+			});
+		},
+		afterbreakInventoryOut(row) {
+			this.breakInfo = {
+				ordersNo: '货物破损',
+				storeHouseid: row.storeHouseid,
+				storeHouseName: row.storeHouseName,
+				storeID: row.id,
+				outDate: parseTime(new Date())
+			};
+			this.breakInvoiceInVisible = true;
+		},
+		submitBreakInvoiceIn() {
+			this.breakInfo.outAmount = this.breakNumber;
+			addExWarehouse(this.breakInfo).then(() => {
+				this.$message.success('货物破损出库成功~');
+				this.breakInvoiceInVisible = false;
+				this.getList();
+			});
 		}
 	}
 };
