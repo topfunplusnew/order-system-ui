@@ -363,8 +363,9 @@ export default {
 			scope.row.paymentFactory =
 				scope.row.isIncludeTaxFactory === 0
 					? fix(
-							(scope.row.length * scope.row.width * scope.row.pieces) /
-								(1000000 * scope.row.price) +
+							((scope.row.length * scope.row.width * scope.row.pieces) /
+								1000000) *
+								scope.row.price +
 								Number(scope.row.sundryCost)
 					  )
 					: fix(
@@ -372,7 +373,8 @@ export default {
 								scope.row.width *
 								scope.row.pieces *
 								scope.row.price) /
-								(1000000 + scope.row.sundryCost)
+								1000000 +
+								scope.row.sundryCost
 					  );
 		},
 		calculatePrice(scope) {

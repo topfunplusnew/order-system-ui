@@ -37,7 +37,7 @@
 		</el-form>
 		<el-row>
 			<el-col :span="5">
-				<el-tree
+				<!-- <el-tree
 					:data="dict.type.order_product_categories"
 					:props="defaultProps"
 					:load="getDictsData"
@@ -49,7 +49,30 @@
 							{{ data.value }} {{ data.label }}
 						</span>
 					</span>
+				</el-tree> -->
+
+				<el-tree
+					:data="tempCategories"
+					:props="defaultProps"
+					:load="getCategoryList"
+					@node-click="handleNodeClick"
+				>
+					<span slot-scope="{ data }" class="custom-tree-node">
+						<span>
+							<i class="el-icon-document-remove"></i>
+							{{ data.value }} {{ data.label }}
+						</span>
+					</span>
 				</el-tree>
+				<div style="width: 450px">
+					<pagination
+						v-show="category_total > 0"
+						:total="category_total"
+						:page.sync="category_pageNum"
+						:limit.sync="category_pageSize"
+						@pagination="getCategoryList"
+					/>
+				</div>
 			</el-col>
 			<el-col :span="19">
 				<el-row :gutter="10" class="mb8">
@@ -570,7 +593,14 @@ export default {
 			level_pageSize: 10,
 
 			// 最大的级别编码数
-			maxCategoryNo: null
+			maxCategoryNo: null,
+
+			// 左侧树表的数据
+			tempCategories: [],
+
+			category_total: 0,
+			category_pageNum: 1,
+			category_pageSize: 20
 		};
 	},
 	// 展示与隐藏
@@ -631,6 +661,8 @@ export default {
 	},
 	created() {
 		this.getList();
+		// 获取树
+		this.getCategoryList();
 
 		if (
 			localStorage.getItem('productlevel-columns') === 'null' ||
@@ -757,18 +789,25 @@ export default {
 				this.productLevelList = response.rows;
 				this.total = response.total;
 				this.loading = false;
-				// 渲染分类
-				this.categoryList = response.rows.map(item => {
-					return {
-						label: item.categoryName,
-						children: ''
-					};
-				});
-				// 去重 拿到字典里
-				listData({ dictType: 'order_product_categories' }).then(res => {
-					this.tempCategoryList = res.rows;
-					this.level_total = res.total;
-				});
+			});
+		},
+		// 分页获取左边的分类树
+		getCategoryList() {
+			listData({
+				dictType: 'order_product_categories',
+				pageNum: this.category_pageNum,
+				pageSize: this.category_pageSize
+			}).then(res => {
+				this.tempCategories = res.rows
+					.map(item => {
+						return {
+							label: item.dictLabel,
+							value: item.dictValue,
+							children: ''
+						};
+					})
+					.sort((a, b) => Number(a.value) - Number(b.value));
+				this.category_total = res.total;
 			});
 		},
 		// 分页获取
