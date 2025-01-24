@@ -602,12 +602,11 @@ import {
 } from '@/api/system/company';
 import { excludeParams } from '@/api/tool/exclude';
 import { INFO_TYPE, isUsed } from '../../../api/system/isUsed';
-import AddBank from '../../dashboard/components/company/AddBank.vue';
 import AddBankAccounts from '../../dashboard/components/company/AddBankAccounts.vue';
 
 export default {
 	name: 'Company',
-	components: { AddBankAccounts, AddBank },
+	components: { AddBankAccounts },
 	data() {
 		return {
 			// 遮罩层
@@ -840,7 +839,10 @@ export default {
 				companyName: row.companyName
 			});
 			// 搜索条件
-			const query = { companyId: row.id, ...this.queryParams };
+			const query = {
+				companyId: row.id,
+				acountsType: this.queryParams.companyType
+			};
 			// 查询某供应商信息 账户名称应该是公司名称
 			listBankAccount(query).then(res => {
 				this.singleInfo = res.rows;
@@ -1040,7 +1042,7 @@ export default {
 						this.form.addtime = null;
 						this.form.updateTime = null;
 						this.form.userId = null;
-						updateCompany(this.form).then(response => {
+						updateCompany(this.form).then(() => {
 							this.$modal.msgSuccess('修改成功');
 							this.open = false;
 							this.getList();
@@ -1050,7 +1052,7 @@ export default {
 						this.form.addtime = null;
 						this.form.updateTime = null;
 						this.form.userId = null;
-						addCompany(this.form).then(response => {
+						addCompany(this.form).then(() => {
 							this.$modal.msgSuccess('新增成功');
 							this.open = false;
 							this.getList();

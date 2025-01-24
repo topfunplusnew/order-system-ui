@@ -7,6 +7,7 @@
 			size="mini"
 			:inline="true"
 			label-width="68px"
+			class="form-container"
 		>
 			<el-form-item label="客户名称" prop="relationName">
 				<el-input
@@ -91,6 +92,7 @@
 				}
 			"
 			@selection-change="handleSelectionChange"
+			class="table-container"
 		>
 			<el-table-column label="id" align="center" prop="id" width="70" />
 			<el-table-column
@@ -211,6 +213,7 @@
 			:visible.sync="open"
 			width="54%"
 			append-to-body
+			class="dialog-container"
 		>
 			<el-form ref="form" :model="form" :rules="rules" label-width="110px">
 				<el-row :gutter="4">
@@ -311,6 +314,7 @@
 			title="账号搜索"
 			:visible.sync="dialogFormSearchVisible"
 			width="60%"
+			class="dialog-container"
 		>
 			<el-form :model="queryParams">
 				<el-row :gutter="4">
@@ -341,6 +345,7 @@
 				v-loading="loading"
 				:data="companyList"
 				@selection-change="handleSelectionChange"
+				class="table-container"
 			>
 				<el-table-column
 					label="操作"
@@ -378,6 +383,7 @@
 			:show-close="false"
 			title="银行卡号"
 			:visible.sync="dialogFormVisible"
+			class="dialog-container"
 		>
 			<el-form :model="currentInfo">
 				<el-row :gutter="4" style="text-align: center">
@@ -436,6 +442,7 @@
 					v-loading="loading"
 					:data="singleInfo"
 					@selection-change="handleSelectionChange"
+					class="table-container"
 				>
 					<!--          为本公司绑定银行卡 拿到该客户的信息 然后进行添加银行卡的操作  通过companyId把银行卡和客户供应商绑定-->
 					<template #append>
@@ -495,6 +502,7 @@
 				title="操作银行卡"
 				:visible.sync="dialogBankInfoVisible"
 				width="60%"
+				class="dialog-container"
 			>
 				<el-form :model="queryBankInfo">
 					<el-row :gutter="4">
@@ -529,7 +537,11 @@
 					</el-row>
 				</el-form>
 				<el-row>
-					<el-table v-loading="loading" :data="bankInfo">
+					<el-table
+						v-loading="loading"
+						:data="bankInfo"
+						class="table-container"
+					>
 						<el-table-column label="银行卡号" align="center" prop="bankNo" />
 						<el-table-column
 							label="账户类型"
@@ -575,6 +587,7 @@
 			:visible.sync="addDefaultCardVisible"
 			width="500px"
 			append-to-body
+			class="dialog-container"
 		>
 			<el-table
 				v-loading="loading"
@@ -583,6 +596,7 @@
 				:data="singleInfo"
 				height="300px"
 				@selection-change="handleSelectionChange"
+				class="table-container"
 			>
 				<el-table-column label="账户类型" align="center" prop="acountsType" />
 				<el-table-column
@@ -629,12 +643,11 @@ import {
 } from '@/api/system/company';
 import { excludeParams } from '@/api/tool/exclude';
 import { INFO_TYPE, isUsed } from '../../../api/system/isUsed';
-import AddBank from '../../dashboard/components/company/AddBank.vue';
 import AddBankAccounts from '../../dashboard/components/company/AddBankAccounts.vue';
 
 export default {
 	name: 'Company',
-	components: { AddBankAccounts, AddBank },
+	components: { AddBankAccounts },
 	data() {
 		// 自定义校验规则
 		const validateRegion = (rule, value, callback) => {
@@ -861,7 +874,10 @@ export default {
 				companyName: row.companyName
 			});
 			// 搜索信息
-			const query = { companyId: row.id, ...this.queryParams };
+			const query = {
+				companyId: row.id,
+				acountsType: this.queryParams.companyType
+			};
 			// 查询已绑定的银行卡信息
 			listBankAccount(query).then(res => {
 				this.singleInfo = res.rows;
@@ -917,7 +933,7 @@ export default {
 				this.currentInfo.bankName = row.bankName;
 				this.currentInfo.acountsName = row.acountsName;
 				// 如果该用户没有银行卡，那么就修改客户信息里面的银行卡信息，如果有银行卡 添加
-				updateCompany(this.currentInfo).then(res => {
+				updateCompany(this.currentInfo).then(() => {
 					this.$message.success('添加成功');
 				});
 			}
@@ -930,7 +946,7 @@ export default {
 				setDefault({
 					...excludeParams(row, this.$exclude),
 					acountsType: '客户默认'
-				}).then(res => {
+				}).then(() => {
 					this.$message.success('设置成功~');
 					this.dialogFormVisible = false; // 关闭银行卡弹窗
 					this.addDefaultCardVisible = false;
@@ -953,7 +969,7 @@ export default {
 								this.dialogFormVisible = false;
 								this.$router.push('/baseInfo/bankaccount');
 							})
-							.catch(err => {});
+							.catch(() => {});
 					} else {
 						this.addDefaultCardVisible = true;
 					}
@@ -962,7 +978,7 @@ export default {
 		},
 		// 删除用户已绑定的某张银行卡信息
 		handleDeleteBankaccount(row) {
-			delBankAccount(row.id).then(res => {
+			delBankAccount(row.id).then(() => {
 				this.$message.success('删除成功~');
 				this.dialogFormVisible = false;
 				this.getList();
@@ -1062,14 +1078,14 @@ export default {
 				if (valid) {
 					if (this.form.id != null) {
 						this.form = excludeParams(this.form, this.$exclude);
-						updateCompany(this.form).then(response => {
+						updateCompany(this.form).then(() => {
 							this.$modal.msgSuccess('修改成功');
 							this.open = false;
 							this.getList();
 						});
 					} else {
 						this.form = excludeParams(this.form, this.$exclude);
-						addCompany(this.form).then(response => {
+						addCompany(this.form).then(() => {
 							this.$modal.msgSuccess('新增成功');
 							this.open = false;
 							this.getList();
@@ -1132,5 +1148,16 @@ export default {
 </script>
 
 <style scoped>
-/* 样式保持不变 */
+.form-container {
+	background-color: #f9f9f9;
+	padding: 10px;
+	border-radius: 5px;
+	margin-bottom: 10px;
+}
+
+.table-container {
+	background-color: #fff;
+	border-radius: 5px;
+	padding: 10px;
+}
 </style>

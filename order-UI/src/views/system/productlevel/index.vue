@@ -37,20 +37,6 @@
 		</el-form>
 		<el-row>
 			<el-col :span="5">
-				<!-- <el-tree
-					:data="dict.type.order_product_categories"
-					:props="defaultProps"
-					:load="getDictsData"
-					@node-click="handleNodeClick"
-				>
-					<span slot-scope="{ data }" class="custom-tree-node">
-						<span>
-							<i class="el-icon-document-remove"></i>
-							{{ data.value }} {{ data.label }}
-						</span>
-					</span>
-				</el-tree> -->
-
 				<el-tree
 					:data="tempCategories"
 					:props="defaultProps"
@@ -322,7 +308,7 @@
 			<el-form
 				ref="queryForm"
 				:model="addCategoryModel"
-				size="small"
+				size="mini"
 				label-width="120px"
 				:rules="rules"
 			>
@@ -612,34 +598,35 @@ export default {
 			deep: true
 		},
 		// 监听产品分类变化 自动填充分类编码 查询各个分类的最大级别数，然后+1后存储
-		'addCategoryModel.categoryName': function (newVal) {
-			if (newVal !== null) {
-				// 查询该级别名称对应的级别编码
-				this.addCategoryModel.categoryNo = this.dictList.find(
-					item => item.dictLabel === newVal
-				).dictValue;
+		'addCategoryModel.categoryName': {
+			handler(newVal) {
+				if (newVal !== null) {
+					this.addCategoryModel.categoryNo = this.dictList.find(
+						item => item.dictLabel === newVal
+					).dictValue;
 
-				// 查询该分类名称下的最大的级别编码
-				getMaxLevelNo().then(res => {
-					const _levelMap = res?.data;
-					console.log(_levelMap);
-					if (!_levelMap) {
-						this.$message.error('请先添加分类!');
-						return;
-					}
-					// 填充级别编码
-					this.$nextTick(() => {
-						this.$set(
-							this.addCategoryModel,
-							'levelNo',
-							this.addCategoryModel.categoryNo +
-								(_levelMap[this.addCategoryModel.categoryNo] + 1)
-						);
+					getMaxLevelNo().then(res => {
+						const _levelMap = res?.data;
+						console.log(_levelMap);
+						if (!_levelMap) {
+							this.$message.error('请先添加分类!');
+							return;
+						}
+						this.$nextTick(() => {
+							this.$set(
+								this.addCategoryModel,
+								'levelNo',
+								this.addCategoryModel.categoryNo +
+									(_levelMap[this.addCategoryModel.categoryNo] + 1)
+							);
+						});
 					});
-				});
-			} else {
-				this.$message.error('分类名称为空!');
-			}
+				} else {
+					this.$message.error('分类名称为空!');
+				}
+			},
+			deep: true,
+			immediate: true
 		},
 		'tempCategoryInfo.levelNo': {
 			handler(val) {
@@ -651,12 +638,16 @@ export default {
 			},
 			deep: true
 		},
-		'form.categoryName': function (newVal) {
-			if (newVal !== null) {
-				this.form.categoryNo = this.dictList.find(
-					item => item.dictLabel === newVal
-				).dictValue;
-			}
+		'form.categoryName': {
+			handler(newVal) {
+				if (newVal !== null) {
+					this.form.categoryNo = this.dictList.find(
+						item => item.dictLabel === newVal
+					).dictValue;
+				}
+			},
+			deep: true,
+			immediate: true
 		}
 	},
 	created() {
@@ -711,6 +702,7 @@ export default {
 					obj => Number(obj.dictValue) === maxNo
 				).dictValue;
 				this.tempCategoryInfo.levelNo = plusOne(maxValue);
+				this.getDictsData();
 				this.addCategoryOpen = true;
 			});
 		},
