@@ -221,6 +221,7 @@
 						<el-input
 							v-model="tempCategoryInfo.levelNo"
 							placeholder="请输入级别编码"
+							@input="validateLevelNo"
 						></el-input>
 					</el-row>
 				</el-col>
@@ -312,11 +313,11 @@
 				label-width="120px"
 				:rules="rules"
 			>
-				<!--        分类 也是字典数据-->
 				<el-form-item label="分类" prop="categoryName">
 					<el-select
 						v-model="addCategoryModel.categoryName"
 						placeholder="请选择分类名称"
+						@change="handleChangeLevelNo"
 					>
 						<el-option
 							v-for="item in dict.type.order_product_categories"
@@ -392,7 +393,11 @@
 					<el-input v-model="form.levelName" placeholder="请输入级别名称" />
 				</el-form-item>
 				<el-form-item label="分类编号" prop="tableName">
-					<el-input v-model="form.categoryNo" placeholder="请输入分类编号" />
+					<el-input
+						v-model="form.categoryNo"
+						placeholder="请输入分类编号"
+						@input="validateFormCategory"
+					/>
 				</el-form-item>
 				<el-form-item label="分类名称" prop="categoryName">
 					<el-select v-model="form.categoryName" placeholder="请选择分类名称">
@@ -596,60 +601,6 @@ export default {
 				localStorage.setItem('productlevel-columns', JSON.stringify(newVal));
 			},
 			deep: true
-		},
-		// 监听产品分类变化 自动填充分类编码 查询各个分类的最大级别数，然后+1后存储
-		'addCategoryModel.categoryName': {
-			handler(newVal) {
-				if (newVal !== null) {
-					getMaxLevelNo().then(res => {
-						const _levelMap = res?.data;
-						// 自动填充分类编码
-						this.addCategoryModel.categoryNo = this.dictList.find(
-							item => item.dictLabel === newVal
-						).dictValue;
-						if (!_levelMap) {
-							this.$message.error('请先添加分类!');
-							return;
-						}
-						if (!_levelMap[this.addCategoryModel.categoryNo]) {
-							this.$message.error('获取异常，请检查是否有该级别编码!');
-							return;
-						}
-						this.$nextTick(() => {
-							this.$set(
-								this.addCategoryModel,
-								'levelNo',
-								this.addCategoryModel.categoryNo +
-									(_levelMap[this.addCategoryModel.categoryNo] + 1)
-							);
-						});
-					});
-				} else {
-					this.$message.error('分类名称为空!');
-				}
-			},
-			deep: true
-		},
-		'tempCategoryInfo.levelNo': {
-			handler(val) {
-				// 校验newVal的值，只能是数字 如果是其他就提示
-				if (isNaN(val)) {
-					this.$message.error('请输入数字');
-					this.tempCategoryInfo.levelNo = '';
-				}
-			},
-			deep: true
-		},
-		'form.categoryName': {
-			handler(newVal) {
-				if (newVal !== null) {
-					this.form.categoryNo = this.dictList.find(
-						item => item.dictLabel === newVal
-					).dictValue;
-				}
-			},
-			deep: true,
-			immediate: true
 		}
 	},
 	created() {
@@ -671,6 +622,53 @@ export default {
 		}
 	},
 	methods: {
+		// 监听产品分类变化 自动填充分类编码 查询各个分类的最大级别数，然后+1后存储
+		handleChangeLevelNo(newVal) {
+			if (newVal) {
+				getMaxLevelNo().then(res => {
+					const _levelMap = res?.data;
+					const category = this.dictList.find(
+						item => item.dictLabel === newVal
+					);
+					if (!category) {
+						this.$message.error('分类名称不存在!');
+						return;
+					}
+					// 自动填充分类编码
+					this.addCategoryModel.categoryNo = category.dictValue;
+					if (!_levelMap) {
+						this.$message.error('请先添加分类!');
+						return;
+					}
+					if (!_levelMap[this.addCategoryModel.categoryNo]) {
+						this.$message.error('获取异常，请检查是否有该级别编码!');
+						return;
+					}
+					this.$nextTick(() => {
+						this.$set(
+							this.addCategoryModel,
+							'levelNo',
+							this.addCategoryModel.categoryNo +
+								(_levelMap[this.addCategoryModel.categoryNo] + 1)
+						);
+					});
+				});
+			}
+		},
+		validateLevelNo(val) {
+			// 校验newVal的值，只能是数字 如果是其他就提示
+			if (isNaN(val)) {
+				this.$message.error('请输入数字');
+				this.tempCategoryInfo.levelNo = '';
+			}
+		},
+		validateFormCategory(newVal) {
+			if (newVal !== null) {
+				this.form.categoryNo = this.dictList.find(
+					item => item.dictLabel === newVal
+				).dictValue;
+			}
+		},
 		// 左侧的产品列表点击某个分类
 		handleNodeClick(data) {
 			// 发请求  获取数据
