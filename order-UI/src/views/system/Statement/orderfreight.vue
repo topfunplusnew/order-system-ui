@@ -20,21 +20,22 @@ export default {
 			},
 			loading: '',
 			columns: [
-				{ key: 0, label: `车牌号`, visible: true },
-				{ key: 1, label: `司机姓名`, visible: true },
-				{ key: 2, label: `司机银行账号`, visible: true },
-				{ key: 3, label: `日支付总额`, visible: true },
-				{ key: 4, label: `日未支付总额`, visible: true },
-				{ key: 5, label: `日应付总额`, visible: true },
-				{ key: 6, label: `月支付总额`, visible: true },
-				{ key: 7, label: `月未支付总额`, visible: true },
-				{ key: 8, label: `月应付总额`, visible: true },
-				{ key: 9, label: `年支付总额`, visible: true },
-				{ key: 10, label: `年未支付总额`, visible: true },
-				{ key: 11, label: `年应付总额`, visible: true },
-				{ key: 12, label: `上一天未支付总额`, visible: true },
-				{ key: 13, label: `上一个月未支付总额`, visible: true },
-				{ key: 14, label: `上一年未支付总额`, visible: true }
+				{ key: 0, label: `车号`, visible: true },
+				{ key: 1, label: `收款人姓名`, visible: true },
+				{ key: 2, label: `收款银行卡号`, visible: true },
+				{ key: 3, label: `收款司机`, visible: true },
+				{ key: 4, label: `上日欠运费`, visible: true },
+				{ key: 5, label: `当日应付运费`, visible: true },
+				{ key: 6, label: `本日付款金额`, visible: true },
+				{ key: 7, label: `本日欠款余额`, visible: true },
+				{ key: 8, label: `上月结转欠款金额`, visible: true },
+				{ key: 9, label: `本月付款金额合计`, visible: true },
+				{ key: 10, label: `本月累计应付运费`, visible: true },
+				{ key: 11, label: `本月欠款金额`, visible: true },
+				{ key: 12, label: `上年结转欠款金额`, visible: true },
+				{ key: 13, label: `本年付款金额合计`, visible: true },
+				{ key: 14, label: `本年累计应付运费`, visible: true },
+				{ key: 15, label: `本年欠款金额`, visible: true }
 			],
 			statementList: [],
 			dialogVisible: false
@@ -166,108 +167,132 @@ export default {
 						"
 					>
 						<el-table-column
+							label="序号"
+							align="center"
+							type="index"
+							width="50"
+						/>
+						<!-- todo 缺少字段 -->
+						<!-- <el-table-column
 							v-if="columns[0].visible"
-							label="车牌号"
+							label="卸货客户"
+							align="center"
+							prop="carNo"
+							width="200"
+						/> -->
+						<el-table-column
+							v-if="columns[0].visible"
+							label="车号"
 							align="center"
 							prop="carNo"
 							width="200"
 						/>
 						<el-table-column
 							v-if="columns[1].visible"
-							label="司机姓名"
-							align="driverName"
-							prop="driverName"
+							label="收款人姓名"
+							align="center"
+							prop="otherAcountsName"
 							width="200"
 						/>
 						<el-table-column
 							v-if="columns[2].visible"
-							label="司机银行账号"
+							label="收款银行卡号"
 							align="center"
 							prop="otherBankNo"
 							width="200"
 						/>
 						<el-table-column
 							v-if="columns[3].visible"
-							label="日支付总额"
-							align="center"
-							prop="dailyPaidAmount"
+							label="收款司机"
+							align="driverName"
+							prop="driverName"
 							width="200"
 						/>
+
 						<el-table-column
-							v-if="columns[4].visible"
-							label="日未支付总额"
-							align="center"
-							prop="dailyUnpaidAmount"
-							width="200"
-						/>
-						<el-table-column
-							v-if="columns[5].visible"
-							label="日应付总额"
-							align="center"
-							prop="dailyTotalAmount"
-							width="200"
-						/>
-						<el-table-column
-							v-if="columns[12].visible"
-							label="上一天未支付总额"
+							v-if="columns[3].visible"
+							label="上日欠运费"
 							align="center"
 							prop="previousDayUnpaidAmount"
 							width="200"
 						/>
 						<el-table-column
-							v-if="columns[6].visible"
-							label="月支付总额"
+							v-if="columns[4].visible"
+							label="当日应付运费"
 							align="center"
-							prop="monthlyPaidAmount"
+							prop="dailyTotalAmount"
 							width="200"
 						/>
+						<el-table-column
+							v-if="columns[5].visible"
+							label="本日付款金额"
+							align="center"
+							prop="dailyPaidAmount"
+							width="200"
+						/>
+						<el-table-column
+							v-if="columns[6].visible"
+							label="本日欠款余额"
+							align="center"
+							prop="dailyUnpaidAmount"
+							width="200"
+						/>
+
 						<el-table-column
 							v-if="columns[7].visible"
-							label="月未支付总额"
-							align="center"
-							prop="monthlyUnpaidAmount"
-							width="200"
-						/>
-						<el-table-column
-							v-if="columns[8].visible"
-							label="月应付总额"
-							align="center"
-							prop="monthlyTotalAmount"
-							width="200"
-						/>
-						<el-table-column
-							v-if="columns[13].visible"
-							label="上一个月未支付总额"
+							label="上月结转欠款金额"
 							align="center"
 							prop="previousMonthUnpaidAmount"
 							width="200"
 						/>
 						<el-table-column
+							v-if="columns[8].visible"
+							label="本月付款金额合计"
+							align="center"
+							prop="monthlyPaidAmount"
+							width="200"
+						/>
+						<el-table-column
 							v-if="columns[9].visible"
-							label="年支付总额"
+							label="本月累计应付运费"
+							align="center"
+							prop="monthlyTotalAmount"
+							width="200"
+						/>
+						<el-table-column
+							v-if="columns[10].visible"
+							label="本月欠款金额"
+							align="center"
+							prop="monthlyUnpaidAmount"
+							width="200"
+						/>
+
+						<el-table-column
+							v-if="columns[11].visible"
+							label="上年结转欠款金额"
+							align="center"
+							prop="previousYearUnpaidAmount"
+							width="200"
+						/>
+						<el-table-column
+							v-if="columns[12].visible"
+							label="本年付款金额合计"
 							align="center"
 							prop="monthlyUnpaidAmount"
 							width="200"
 						/>
 						<el-table-column
-							v-if="columns[10].visible"
-							label="年未支付总额"
-							align="center"
-							prop="yearlyUnpaidAmount"
-							width="200"
-						/>
-						<el-table-column
-							v-if="columns[11].visible"
-							label="年应付总额"
+							v-if="columns[13].visible"
+							label="本年累计应付运费"
 							align="center"
 							prop="yearlyTotalAmount"
 							width="200"
 						/>
 						<el-table-column
 							v-if="columns[14].visible"
-							label="上一年未支付总额"
+							label="本年欠款金额"
 							align="center"
-							prop="previousYearUnpaidAmount"
+							prop="yearlyUnpaidAmount"
 							width="200"
 						/>
 					</el-table>
