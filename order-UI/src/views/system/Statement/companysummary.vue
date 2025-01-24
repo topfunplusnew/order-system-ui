@@ -138,7 +138,7 @@
 			<el-table-column
 				v-if="columns[6].visible"
 				show-overflow-tooltip
-				label="本日欠款金额"
+				label="本日欠款余额"
 				align="center"
 				prop="amountOwedToday"
 				width="140"
@@ -204,9 +204,9 @@
 					{{
 						fix(
 							Number(scope.row.previousMonthCarryover) +
-								Number(scope.row.monthlyReceiveMoney) +
+								Number(scope.row.monthlyOrderPayments) +
 								Number(scope.row.monthlyInvoiceAmount) -
-								Number(scope.row.monthlyOrderPayments)
+								Number(scope.row.monthlyReceiveMoney)
 						)
 					}}
 				</template>
@@ -271,9 +271,9 @@
 					{{
 						fix(
 							Number(scope.row.previousYearCarryover) +
-								Number(scope.row.yearlyReceiveMoney) +
+								Number(scope.row.yearlyOrderPayments) +
 								Number(scope.row.yearlyInvoiceAmount) -
-								Number(scope.row.yearlyOrderPayments)
+								Number(scope.row.yearlyReceiveMoney)
 						)
 					}}
 				</template>

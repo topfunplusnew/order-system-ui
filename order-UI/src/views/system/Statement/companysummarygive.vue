@@ -198,9 +198,9 @@
 					{{
 						fix(
 							Number(scope.row.previousMonthCarryover) +
-								Number(scope.row.monthlyReceiveMoney) +
+								Number(scope.row.monthlyOrderPayments) +
 								Number(scope.row.monthlyInvoiceAmount) -
-								Number(scope.row.monthlyOrderPayments)
+								Number(scope.row.monthlyReceiveMoney)
 						)
 					}}
 				</template>
@@ -249,9 +249,9 @@
 					{{
 						fix(
 							Number(scope.row.previousYearCarryover) +
-								Number(scope.row.yearlyReceiveMoney) +
+								Number(scope.row.yearlyOrderPayments) +
 								Number(scope.row.yearlyInvoiceAmount) -
-								Number(scope.row.yearlyOrderPayments)
+								Number(scope.row.yearlyReceiveMoney)
 						)
 					}}
 				</template>
