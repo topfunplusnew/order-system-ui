@@ -289,9 +289,9 @@
 								></el-option>
 							</el-select>
 						</el-form-item>
-						<!--						<el-form-item label="乡镇" prop="county">-->
-						<!--							<el-input v-model="form.county" placeholder="请输入乡镇" />-->
-						<!--						</el-form-item>-->
+						<el-form-item label="乡镇" prop="county">
+							<el-input v-model="form.county" placeholder="请输入乡镇" />
+						</el-form-item>
 						<el-form-item label="地址" prop="address">
 							<el-input v-model="form.address" placeholder="请输入地址" />
 						</el-form-item>
