@@ -173,8 +173,8 @@ export default {
 		getGoodsOrderInfo(id) {
 			getGoodsOrder(id).then(response => {
 				this.orderInfo = response.data;
-				this.isLand = response.data.landFreight !== null;
-				this.isSea = response.data.seaFreight !== null;
+				this.isLand = response.data.landFreight ? true : false;
+				this.isSea = response.data.seaFreight ? true : false;
 				this.orderdetailList = response.data.orderDetailList.map(item => {
 					return {
 						...item,
