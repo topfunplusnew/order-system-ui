@@ -600,6 +600,8 @@ export default {
 		// 监听产品分类变化 自动填充分类编码 查询各个分类的最大级别数，然后+1后存储
 		'addCategoryModel.categoryName': {
 			handler(newVal) {
+				console.log(newVal);
+
 				if (newVal !== null) {
 					this.addCategoryModel.categoryNo = this.dictList.find(
 						item => item.dictLabel === newVal
@@ -678,6 +680,7 @@ export default {
 		},
 		// 点击添加产品分类信息
 		handleAddProductSort() {
+			// +1的操作
 			function plusOne(maxValue) {
 				let arr = maxValue.split('');
 				for (let i = arr.length - 1; i >= 0; i--) {
@@ -693,11 +696,9 @@ export default {
 				return arr.join('');
 			}
 
-			// 获取产品字典信息
+			// 获取产品字典信息 为了自动填充最大的分类编码
 			getDicts('order_product_categories').then(res => {
-				this.dictList = res.data;
 				const maxNo = Math.max(...res.data.map(obj => Number(obj.dictValue)));
-				//this.maxCategoryNo
 				let maxValue = res.data.find(
 					obj => Number(obj.dictValue) === maxNo
 				).dictValue;
@@ -706,8 +707,15 @@ export default {
 				this.addCategoryOpen = true;
 			});
 		},
+		// 点击新增产品级别信息获取字典数据
+		getDictsValues() {
+			getDicts('order_product_categories').then(res => {
+				this.dictList = res.data;
+			});
+		},
 		// 点击添加产品级别信息
 		handleAddProductLevel() {
+			this.getDictsValues();
 			this.addProductLevelOpen = true;
 		},
 		// 点击编辑
@@ -730,7 +738,7 @@ export default {
 				this.addDictInfo.dictCode = this.tempCategoryInfo.dictCode;
 				updateData(this.addDictInfo).then(() => {
 					this.$message.success('修改成功~');
-					this.getDictsData();
+					this.getList();
 					this.cancelAddProductLevel();
 				});
 			} else {
@@ -741,7 +749,7 @@ export default {
 				this.addDictInfo.dictType = 'order_product_categories';
 				addData(this.addDictInfo).then(() => {
 					this.$message.success('添加成功~');
-					this.getDictsData();
+					this.getList();
 					this.cancelAddProductLevel();
 				});
 			}
@@ -802,7 +810,7 @@ export default {
 				this.category_total = res.total;
 			});
 		},
-		// 分页获取
+		// 添加产品分类弹窗中的分页获取数据的函数
 		getDictsData() {
 			listData({
 				dictType: 'order_product_categories',
@@ -900,7 +908,7 @@ export default {
 						this.form.addtime = null;
 						this.form.updateTime = null;
 						this.form.userId = null;
-						updateProductLevel(this.form).then(response => {
+						updateProductLevel(this.form).then(() => {
 							this.$modal.msgSuccess('修改成功');
 							this.open = false;
 							this.getList();
@@ -910,7 +918,7 @@ export default {
 						this.form.addtime = null;
 						this.form.updateTime = null;
 						this.form.userId = null;
-						addProductLevel(this.form).then(response => {
+						addProductLevel(this.form).then(() => {
 							this.$modal.msgSuccess('新增成功');
 							this.open = false;
 							this.getList();
