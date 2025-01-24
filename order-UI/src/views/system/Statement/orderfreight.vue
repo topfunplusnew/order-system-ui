@@ -9,6 +9,7 @@ export default {
 	mixins: [mixin_printHTML],
 	data() {
 		return {
+			total: 0,
 			queryParams: {
 				beginTime: parseTime(
 					new Date(new Date().getTime() - 30 * 24 * 60 * 60 * 1000),
@@ -44,6 +45,7 @@ export default {
 	created() {
 		getOrderFreight(this.queryParams).then(res => {
 			this.statementList = res.rows;
+			this.total = res.total;
 		});
 	},
 	methods: {
@@ -51,6 +53,7 @@ export default {
 		handleQuery() {
 			getOrderFreight(this.queryParams).then(res => {
 				this.statementList = res.rows;
+				this.total = res.total;
 			});
 		},
 		refresh() {
@@ -296,6 +299,13 @@ export default {
 							width="200"
 						/>
 					</el-table>
+					<pagination
+						v-show="total > 0"
+						:total="total"
+						:page.sync="queryParams.pageNum"
+						:limit.sync="queryParams.pageSize"
+						@pagination="handleQuery"
+					/>
 				</el-row>
 			</el-row>
 		</div>

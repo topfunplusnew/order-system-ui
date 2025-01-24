@@ -123,6 +123,11 @@
 					新增付款信息
 				</el-button>
 			</el-col>
+			<el-col :span="1.5">
+				<el-button type="success" size="mini" @click="handleOnce">
+					一键付款
+				</el-button>
+			</el-col>
 			<right-toolbar
 				:showSearch.sync="showSearch"
 				:columns="columns"
@@ -927,6 +932,22 @@
 				<el-button type="primary" @click="handlePayment">确 定</el-button>
 			</span>
 		</el-dialog>
+
+		<el-dialog
+			title="一键付款"
+			:visible.sync="oneClickPaymentDialogVisible"
+			width="30%"
+		>
+			<div>一键付款</div>
+			<span slot="footer" class="dialog-footer">
+				<el-button @click="oneClickPaymentDialogVisible = false"
+					>取 消</el-button
+				>
+				<el-button type="primary" @click="oneClickPaymentDialogVisible = false"
+					>确 定</el-button
+				>
+			</span>
+		</el-dialog>
 	</div>
 </template>
 
@@ -1073,7 +1094,8 @@ export default {
 			],
 			// 银行卡选择的弹窗
 			chooseBankDialogVisible: false,
-			chooseInfo: {}
+			chooseInfo: {},
+			oneClickPaymentDialogVisible: false
 		};
 	},
 	computed: {
@@ -1117,6 +1139,10 @@ export default {
 		listCars,
 		listBankAccount,
 		listCompany,
+		// 一键付款
+		handleOnce() {
+			this.oneClickPaymentDialogVisible = true;
+		},
 		// 选择己方银行账户类型
 		changeCustomSelfBankType(value) {
 			this.chooseInfo.selfBankCardType = value;
