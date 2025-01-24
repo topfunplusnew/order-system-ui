@@ -939,6 +939,7 @@
 			title="一键付款"
 			:visible.sync="oneClickPaymentDialogVisible"
 			width="50%"
+			size="mini"
 		>
 			<el-table :data="batchPaymentData" border>
 				<el-table-column prop="otherAcountsName" label="对方户名" />
@@ -951,19 +952,27 @@
 							v-for="info in scope.row.extraInfo.sourceInfos"
 							:key="info.tableId"
 						>
-							{{ info.tableName }} - {{ info.tableId }}
+							<!-- {{ info.tableName }} - {{ info.tableId }} -->
+							<el-button size="mini" @click="viewSourceInfo(scope.row)"
+								>查看{{ `ID:` + info.tableId }}</el-button
+							>
 						</div>
 					</template>
 				</el-table-column>
 			</el-table>
 			<span slot="footer" class="dialog-footer">
-				<el-button @click="oneClickPaymentDialogVisible = false"
-					>取 消</el-button
-				>
-				<el-button type="primary" @click="oneClickPaymentDialogVisible = false"
-					>确 定</el-button
-				>
+				<el-button @click="handleCloseOnce">取 消</el-button>
+				<el-button type="primary" @click="handleSubmitOnce">确 定</el-button>
 			</span>
+		</el-dialog>
+
+		<el-dialog
+			title="信息"
+			:visible.sync="infoVisible"
+			width="900px"
+			append-to-body
+		>
+			<component :is="Components" :need-to-show-info="needToShowInfo" />
 		</el-dialog>
 	</div>
 </template>
@@ -996,6 +1005,19 @@ import BankType from '@/views/dashboard/components/common/BankType.vue';
 import { mixin_bankType } from '../../dashboard/mixins/common/common_bankType';
 import StateTag from '@/views/dashboard/components/common/StateTag.vue';
 import { batchPayment } from '../../../api/system/payment';
+import { getFunction } from '../../../utils/order/mapper';
+import { TableName } from '../../../api/tool/enums';
+import GOODS_ORDER from '@/components/NeedToShow/GOODS_ORDER.vue';
+import INVENTORY from '@/components/NeedToShow/INVENTORY.vue';
+import INVOICE_IN from '@/components/NeedToShow/INVOICE_IN.vue';
+import INVOICE_ORTHER from '@/components/NeedToShow/INVOICE_ORTHER.vue';
+import INVOICE_OUT from '@/components/NeedToShow/INVOICE_OUT.vue';
+import OFFSETTING from '@/components/NeedToShow/OFFSETTING.vue';
+import PAYMENT from '@/components/NeedToShow/PAYMENT.vue';
+import REBATE from '@/components/NeedToShow/REBATE.vue';
+import BANK_ACCEPTANCE from '@/components/NeedToShow/BANK_ACCEPTANCE.vue';
+import BUSSNIESS_TRIPVue from '../../../components/NeedToShow/BUSSNIESS_TRIP.vue';
+import LEND_MONEYVue from '../../../components/NeedToShow/LEND_MONEY.vue';
 export default {
 	name: 'Payment',
 	components: {
@@ -1115,7 +1137,11 @@ export default {
 			oneClickPaymentDialogVisible: false,
 
 			// 展示一下合并的信息
-			batchPaymentData: []
+			batchPaymentData: [],
+			// 对应渲染的组件和信息
+			Components: null,
+			needToShowInfo: null,
+			infoVisible: false
 		};
 	},
 	computed: {
@@ -1209,15 +1235,58 @@ export default {
 					});
 					// 将map转为数组
 					const data = Array.from(map.values());
-					// this.batchPayment(data).then(res => {
-					// 	this.$message.success(res.msg);
-					// 	this.getList();
-					// });
-
 					this.batchPaymentData = data;
 					this.oneClickPaymentDialogVisible = true;
 				}
 			});
+		},
+		handleCloseOnce() {
+			this.oneClickPaymentDialogVisible = false;
+		},
+		handleSubmitOnce() {
+			this.batchPayment(this.batchPaymentData).then(res => {
+				this.$message.success(res.msg);
+				this.oneClickPaymentDialogVisible = false;
+				this.getList();
+			});
+		},
+		// 查看来源信息
+		viewSourceInfo(row) {
+			console.log(row);
+
+			getFunction(row.tableName)(row.tID).then(res => {
+				if (!res.data) {
+					this.$message.error('未找到来源信息');
+					return;
+				}
+				// 填充数据
+				this.needToShowInfo = res.data;
+				// 根据对应表名渲染对应的展示组件
+				this.Components = this.getComponents(row.tableName);
+				if (this.Components !== null) {
+					// 打开弹窗
+					this.infoVisible = true;
+				} else {
+					this.$message.warning('组件渲染有误');
+				}
+			});
+		},
+		getComponents(tableName) {
+			const components = {
+				[TableName.GOODS_ORDER]: GOODS_ORDER,
+				[TableName.PAYMENT]: PAYMENT,
+				[TableName.INVOICE_IN]: INVOICE_IN,
+				[TableName.INVOICE_OUT]: INVOICE_OUT,
+				[TableName.INVOICE_OTHER]: INVOICE_ORTHER,
+				[TableName.OFFSETTING]: OFFSETTING,
+				[TableName.REBATE]: REBATE,
+				[TableName.INVENTORMAIN]: INVENTORY,
+				// 需要前端在这两个明细表上进行适配bankacceptance
+				[TableName.BANK_ACCOUNT_CHANGE]: BANK_ACCEPTANCE,
+				[TableName.BUSINESS_TRIP]: BUSSNIESS_TRIPVue,
+				[TableName.LEND_MONEY]: LEND_MONEYVue
+			};
+			return components[tableName] || null; // 默认返回 null，如果没有匹配的 tableName
 		},
 		// 选择己方银行账户类型
 		changeCustomSelfBankType(value) {

@@ -61,7 +61,7 @@ export default {
 		},
 		handleSubmitTime() {
 			this.download(
-				'statistics/export/orderfreightDetailsummary',
+				'statistics/export/orderfreightsummary',
 				{
 					// beginTime: this.queryParams.beginTime,
 					endTime: this.queryParams.endTime

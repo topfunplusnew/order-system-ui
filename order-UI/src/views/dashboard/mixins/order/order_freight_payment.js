@@ -134,7 +134,7 @@ export var mixin_order_freight_payment = {
 										sourceInfos: [
 											{
 												tableName: TableName.ORDER_FREIGHT,
-												tID: item.tID
+												tableId: item.tID
 											}
 										]
 									}
@@ -144,7 +144,7 @@ export var mixin_order_freight_payment = {
 								const existing = map.get(companyId);
 								existing.extraInfo.sourceInfos.push({
 									tableName: item.tableName,
-									tID: item.tID
+									tableId: item.tID
 								});
 							}
 						});
