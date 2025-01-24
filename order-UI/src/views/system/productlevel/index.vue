@@ -600,18 +600,19 @@ export default {
 		// 监听产品分类变化 自动填充分类编码 查询各个分类的最大级别数，然后+1后存储
 		'addCategoryModel.categoryName': {
 			handler(newVal) {
-				console.log(newVal);
-
 				if (newVal !== null) {
-					this.addCategoryModel.categoryNo = this.dictList.find(
-						item => item.dictLabel === newVal
-					).dictValue;
-
 					getMaxLevelNo().then(res => {
 						const _levelMap = res?.data;
-						console.log(_levelMap);
+						// 自动填充分类编码
+						this.addCategoryModel.categoryNo = this.dictList.find(
+							item => item.dictLabel === newVal
+						).dictValue;
 						if (!_levelMap) {
 							this.$message.error('请先添加分类!');
+							return;
+						}
+						if (!_levelMap[this.addCategoryModel.categoryNo]) {
+							this.$message.error('获取异常，请检查是否有该级别编码!');
 							return;
 						}
 						this.$nextTick(() => {
@@ -627,8 +628,7 @@ export default {
 					this.$message.error('分类名称为空!');
 				}
 			},
-			deep: true,
-			immediate: true
+			deep: true
 		},
 		'tempCategoryInfo.levelNo': {
 			handler(val) {
@@ -727,11 +727,7 @@ export default {
 		// 点击提交 这里修改产品分类 添加到字典中
 		submitAddCategory() {
 			// 两种情况 如果没有自动填充dictCode 说明是新增 需要添加到字典中 其他则是修改
-			if (
-				this.tempCategoryInfo.dictCode !== '' &&
-				this.tempCategoryInfo.dictCode !== undefined &&
-				this.tempCategoryInfo.dictCode !== null
-			) {
+			if (this.tempCategoryInfo.dictCode) {
 				// 添加到字典中
 				this.addDictInfo.dictLabel = this.tempCategoryInfo.categoryName;
 				this.addDictInfo.dictValue = this.tempCategoryInfo.levelNo;
