@@ -923,6 +923,7 @@
 					<!--          选择对方银行账户类型-->
 					<el-form-item label="对方银行账户类型">
 						<BankType
+							v-if="chooseBankDialogVisible"
 							:select-type="chooseInfo.otherBankCardType"
 							@updateSelectedType="changeCustomOtherBankType"
 						/>
@@ -941,10 +942,22 @@
 			width="50%"
 			size="mini"
 		>
+			<el-divider>一键付款信息</el-divider>
 			<el-table :data="batchPaymentData" border>
 				<el-table-column prop="otherAcountsName" label="对方户名" />
 				<el-table-column prop="otherBankNo" label="对方账号" />
 				<el-table-column prop="otherBankName" label="对方开户行" />
+				<el-table-column label="对方账户类型">
+					<template slot-scope="scope">
+						<BankType
+							v-if="oneClickPaymentDialogVisible"
+							:select-type="scope.row.otherBankCardType"
+							@updateSelectedType="
+								value => changeRowOtherBankType(scope.row, value)
+							"
+						/>
+					</template>
+				</el-table-column>
 				<el-table-column prop="moneyAmount" label="金额" />
 				<el-table-column label="来源信息">
 					<template slot-scope="scope">
@@ -960,6 +973,80 @@
 					</template>
 				</el-table-column>
 			</el-table>
+			<el-divider>我方信息</el-divider>
+			<div>
+				<el-form :model="chooseInfo" label-width="150px">
+					<el-form-item label="己方银行账户类型" prop="selfBankNo">
+						<BankType
+							v-if="oneClickPaymentDialogVisible"
+							:select-type="chooseInfo.selfBankCardType"
+							@updateSelectedType="changeCustomSelfBankType"
+						/>
+					</el-form-item>
+					<el-form-item label="己方户名" prop="selfAcountsName">
+						<el-row>
+							<el-col :span="10">
+								<el-input
+									v-model="chooseInfo.selfAcountsName"
+									placeholder="请输入己方户名"
+								/>
+							</el-col>
+							<el-col :span="3">
+								<SearchOption
+									:limit-info="{ acountsType: '己方公司' }"
+									:get-data="listBankAccount"
+									icon="el-icon-search"
+									query-label="户名查找"
+									query-info="acountsName"
+									:query-name="queryChoose"
+									@commitBack="handleCommitBackChoose"
+									@update:queryName="handleUpdateQueryChoose"
+								>
+									<template #table-columns>
+										<el-table-column
+											label="账号类型"
+											align="center"
+											prop="acountsType"
+										/>
+										<el-table-column
+											label="显示名称"
+											align="center"
+											prop="displayName"
+										/>
+										<el-table-column
+											label="开户行"
+											align="center"
+											prop="bankName"
+										/>
+										<el-table-column
+											label="开户名"
+											align="center"
+											prop="acountsName"
+										/>
+										<el-table-column
+											label="账号"
+											align="center"
+											prop="bankNo"
+										/>
+									</template>
+								</SearchOption>
+							</el-col>
+						</el-row>
+					</el-form-item>
+					<el-form-item label="己方账号" prop="selfBankNo">
+						<el-input
+							v-model="chooseInfo.selfBankNo"
+							placeholder="请输入己方账号"
+						/>
+					</el-form-item>
+					<el-form-item label="己方开户行" prop="selfBankName">
+						<el-input
+							v-model="chooseInfo.selfBankName"
+							placeholder="请输入己方开户行"
+						/>
+					</el-form-item>
+				</el-form>
+			</div>
 			<span slot="footer" class="dialog-footer">
 				<el-button @click="handleCloseOnce">取 消</el-button>
 				<el-button type="primary" @click="handleSubmitOnce">确 定</el-button>
@@ -1199,9 +1286,16 @@ export default {
 					unpaidRows.forEach(row => {
 						this.$refs.paymentTable.toggleRowSelection(row, true);
 					});
+					// 处理数据
+					const selectRows = unpaidRows.map(row => {
+						return {
+							...row,
+							auditState: row.auditState === true ? '1' : '0'
+						};
+					});
 					// 对选中的行按照对方账户进行分组 然后批量付款
 					const map = new Map();
-					unpaidRows.forEach(row => {
+					selectRows.forEach(row => {
 						// 处理null的情况
 						if (
 							!row.otherBankName ||
@@ -1236,24 +1330,40 @@ export default {
 					// 将map转为数组
 					const data = Array.from(map.values());
 					this.batchPaymentData = data;
+					// 重置我方信息
+					this.resetChooseInfo();
+					// 打开弹窗
 					this.oneClickPaymentDialogVisible = true;
 				}
 			});
+		},
+		// 表格中选择对方银行卡类型
+		changeRowOtherBankType(row, value) {
+			row.otherBankCardType = value;
 		},
 		handleCloseOnce() {
 			this.oneClickPaymentDialogVisible = false;
 		},
 		handleSubmitOnce() {
-			this.batchPayment(this.batchPaymentData).then(res => {
+			// 一键付款 chooseInfo
+			const data = this.batchPaymentData.map(item => {
+				return {
+					...item,
+					selfAcountsName: this.chooseInfo.selfAcountsName,
+					selfBankNo: this.chooseInfo.selfBankNo,
+					selfBankName: this.chooseInfo.selfBankName,
+					selfBankCardType: this.chooseInfo.selfBankCardType
+				};
+			});
+			this.batchPayment(data).then(res => {
 				this.$message.success(res.msg);
+				this.resetChooseInfo();
 				this.oneClickPaymentDialogVisible = false;
 				this.getList();
 			});
 		},
 		// 查看来源信息
 		viewSourceInfo(row) {
-			console.log(row);
-
 			getFunction(row.tableName)(row.tID).then(res => {
 				if (!res.data) {
 					this.$message.error('未找到来源信息');

@@ -55,6 +55,7 @@ export var mixin_order_freight_payment = {
 				// 累加
 				this.total_freight += Number(item.moneyAmount);
 			});
+
 			// 合并展示数据
 			this.selectedList = this.mergeFreight(this.selectedList);
 			// 打开运费付款页面
@@ -65,6 +66,8 @@ export var mixin_order_freight_payment = {
 			let map = new Map();
 			list.forEach(item => {
 				let key = item.driverId;
+				console.log(key, item);
+
 				if (map.has(key)) {
 					let temp = map.get(key);
 					temp = { ...temp };

@@ -30,7 +30,7 @@ export default {
 	},
 	data() {
 		return {
-			localSelectType: this.selectType
+			localSelectType: null
 		};
 	},
 	watch: {

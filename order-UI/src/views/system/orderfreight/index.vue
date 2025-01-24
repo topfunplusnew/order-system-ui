@@ -572,10 +572,16 @@
 								/>
 							</el-form-item>
 							<el-form-item label="对方账号类型" prop="otherBankCardType">
-								<BankType @updateSelectedType="handleBankTypeOther" />
+								<BankType
+									v-if="freightOnceVisible"
+									@updateSelectedType="handleBankTypeOther"
+								/>
 							</el-form-item>
 							<el-form-item label="己方账号类型" prop="selfBankCardType">
-								<BankType @updateSelectedType="handleBankTypeSelf" />
+								<BankType
+									v-if="freightOnceVisible"
+									@updateSelectedType="handleBankTypeSelf"
+								/>
 							</el-form-item>
 							<el-form-item label="己方户名" prop="selfAcountsName">
 								<el-row>
