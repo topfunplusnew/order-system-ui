@@ -471,10 +471,14 @@
 							:span="2"
 						>
 							<SearchOption
+								title="供应商信息"
 								:limit-info="{ companyType: '供应商' }"
 								:get-data="listCompany"
 								@commitBack="handleCommitBackCompanyGive"
 								@update:queryName="handleQueryCompanyGive"
+								query-info="companyName"
+								query-label="公司名称"
+								:query-name="queryCompanyGive"
 							>
 								<template #table-columns>
 									<el-table-column
@@ -492,10 +496,14 @@
 							:span="2"
 						>
 							<SearchOption
+								title="客户信息"
 								:limit-info="{ companyType: '客户' }"
 								:get-data="listCompany"
 								@commitBack="handleCommitBackCompany"
 								@update:queryName="handleQueryCompany"
+								query-info="companyName"
+								query-label="公司名称"
+								:query-name="queryCompany"
 							>
 								<template #table-columns>
 									<el-table-column
