@@ -16,7 +16,6 @@ import { mixin_order_audit } from '@/views/dashboard/mixins/order/order_audit';
 import { mixin_order_base } from '@/views/dashboard/mixins/order/order_base';
 import { mixin_order_checkOrder } from '@/views/dashboard/mixins/order/order_checkOrder';
 import { mixin_order_deliverGoods } from '@/views/dashboard/mixins/order/order_deliverGoods';
-// import { mixin_order_freeApply } from '@/views/dashboard/mixins/order/order_freeApply';
 import { mixin_order_goodsItemInfo } from '@/views/dashboard/mixins/order/order_goodsItemInfo';
 import { mixin_printHTML } from '@/views/dashboard/mixins/print';
 import reLength from '@/views/dashboard/mixins/reLength';
@@ -426,6 +425,7 @@ export default {
 					</template>
 				</el-table-column>
 				<el-table-column
+					v-show="columns[0].visible"
 					show-overflow-tooltip
 					label="ID"
 					align="center"
@@ -433,7 +433,7 @@ export default {
 					fixed="left"
 				/>
 				<el-table-column
-					v-show="columns[0].visible"
+					v-show="columns[1].visible"
 					show-overflow-tooltip
 					label="日期"
 					align="center"
@@ -441,7 +441,7 @@ export default {
 					fixed="left"
 				/>
 				<el-table-column
-					v-show="columns[1].visible"
+					v-show="columns[2].visible"
 					show-overflow-tooltip
 					label="客户"
 					align="center"
@@ -449,7 +449,7 @@ export default {
 					fixed="left"
 				/>
 				<el-table-column
-					v-show="columns[2].visible"
+					v-show="columns[3].visible"
 					show-overflow-tooltip
 					label="供应商"
 					align="center"
@@ -482,7 +482,7 @@ export default {
 					</template>
 				</el-table-column>
 				<el-table-column
-					v-show="columns[13].visible"
+					v-show="columns[4].visible"
 					show-overflow-tooltip
 					label="审核状态"
 					align="center"
@@ -513,14 +513,14 @@ export default {
 					</template>
 				</el-table-column>
 				<el-table-column
-					v-show="columns[3].visible"
+					v-show="columns[5].visible"
 					show-overflow-tooltip
 					label="陆运车牌"
 					align="center"
 					prop="landCarNo"
 				/>
 				<el-table-column
-					v-show="columns[4].visible"
+					v-show="columns[6].visible"
 					show-overflow-tooltip
 					label="陆运司机电话"
 					align="center"
@@ -528,7 +528,7 @@ export default {
 					width="100px"
 				/>
 				<el-table-column
-					v-show="columns[5].visible"
+					v-show="columns[7].visible"
 					show-overflow-tooltip
 					label="陆地司机姓名"
 					align="center"
@@ -536,6 +536,7 @@ export default {
 					width="100px"
 				/>
 				<el-table-column
+					v-show="columns[8].visible"
 					show-overflow-tooltip
 					label="总货款"
 					align="center"
@@ -547,7 +548,7 @@ export default {
 					</template>
 				</el-table-column>
 				<el-table-column
-					v-show="columns[6].visible"
+					v-show="columns[9].visible"
 					show-overflow-tooltip
 					label="陆运费"
 					align="center"
@@ -556,7 +557,7 @@ export default {
 				/>
 				<!--      原为海运车牌号-->
 				<el-table-column
-					v-show="columns[7].visible"
+					v-show="columns[10].visible"
 					show-overflow-tooltip
 					label="海运柜号"
 					align="center"
@@ -567,7 +568,7 @@ export default {
 					</template>
 				</el-table-column>
 				<el-table-column
-					v-show="columns[8].visible"
+					v-show="columns[11].visible"
 					show-overflow-tooltip
 					label="海运司机电话"
 					align="center"
@@ -580,7 +581,7 @@ export default {
 				</el-table-column>
 				<!--      原为海运司机姓名-->
 				<el-table-column
-					v-show="columns[9].visible"
+					v-show="columns[12].visible"
 					show-overflow-tooltip
 					label="海运公司"
 					align="center"
@@ -592,7 +593,7 @@ export default {
 					</template>
 				</el-table-column>
 				<el-table-column
-					v-show="columns[10].visible"
+					v-show="columns[13].visible"
 					show-overflow-tooltip
 					label="海运费"
 					align="center"
@@ -600,20 +601,21 @@ export default {
 					width="100px"
 				/>
 				<el-table-column
-					v-show="columns[11].visible"
+					v-show="columns[14].visible"
 					show-overflow-tooltip
 					label="销售经理"
 					align="center"
 					prop="saleManager"
 				/>
 				<el-table-column
-					v-show="columns[12].visible"
+					v-show="columns[15].visible"
 					show-overflow-tooltip
 					label="车队"
 					align="center"
 					prop="fleet"
 				/>
 				<el-table-column
+					v-show="columns[16].visible"
 					show-overflow-tooltip
 					label="录入员"
 					align="center"
@@ -621,7 +623,7 @@ export default {
 					width="120px"
 				/>
 				<el-table-column
-					v-show="columns[15].visible"
+					v-show="columns[17].visible"
 					show-overflow-tooltip
 					label="附件"
 					align="center"
@@ -645,7 +647,7 @@ export default {
 					</template>
 				</el-table-column>
 				<el-table-column
-					v-show="columns[17].visible"
+					v-show="columns[18].visible"
 					show-overflow-tooltip
 					label="收到条附件路径"
 					align="center"
@@ -820,63 +822,6 @@ export default {
 						</el-dropdown>
 					</template>
 				</el-table-column>
-				<!--				<el-table-column-->
-				<!--					show-overflow-tooltip-->
-				<!--					label="运费申请"-->
-				<!--					align="center"-->
-				<!--					class-name="small-padding fixed-width"-->
-				<!--					width="100px"-->
-				<!--					fixed="right"-->
-				<!--				>-->
-				<!--					<template slot-scope="scope">-->
-				<!--						&lt;!&ndash;          如果有订单运费 那么就禁用按钮&ndash;&gt;-->
-				<!--						<el-dropdown size="mini" type="text">-->
-				<!--							<el-button-->
-				<!--								type="text"-->
-				<!--								:disabled="-->
-				<!--									!(scope.row.landFreight > 0 || scope.row.seaFreight > 0)-->
-				<!--								"-->
-				<!--							>-->
-				<!--								操作-->
-				<!--							</el-button>-->
-				<!--							<el-dropdown-menu slot="dropdown">-->
-				<!--								<el-dropdown-item>-->
-				<!--									<el-row-->
-				<!--										v-if="scope.row.landFreight > 0 || scope.row.seaFreight > 0"-->
-				<!--									>-->
-				<!--										<el-button-->
-				<!--											v-if="scope.row.landFreight > 0"-->
-				<!--											:key="scope.row.params.isHaveOrderLandfreight"-->
-				<!--											v-hasPermi="['system:goodsorder:remove']"-->
-				<!--											size="mini"-->
-				<!--											type="warning"-->
-				<!--											:disabled="-->
-				<!--												scope.row.params.isHaveOrderLandfreight === 'true'-->
-				<!--											"-->
-				<!--											@click="handleApplyLandFree(scope.row)"-->
-				<!--										>-->
-				<!--											陆运费申请-->
-				<!--										</el-button>-->
-				<!--										<el-button-->
-				<!--											v-if="scope.row.seaFreight > 0"-->
-				<!--											:key="scope.row.params.isHaveOrderSeafreight"-->
-				<!--											v-hasPermi="['system:goodsorder:remove']"-->
-				<!--											:disabled="-->
-				<!--												scope.row.params.isHaveOrderSeafreight === 'true'-->
-				<!--											"-->
-				<!--											size="mini"-->
-				<!--											type="primary"-->
-				<!--											@click="handleApplySeaFree(scope.row)"-->
-				<!--										>-->
-				<!--											海运费申请-->
-				<!--										</el-button>-->
-				<!--									</el-row>-->
-				<!--									<el-row v-else>无运费信息</el-row>-->
-				<!--								</el-dropdown-item>-->
-				<!--							</el-dropdown-menu>-->
-				<!--						</el-dropdown>-->
-				<!--					</template>-->
-				<!--				</el-table-column>-->
 			</el-table>
 			<!--    分页组件-->
 			<pagination

@@ -36,23 +36,10 @@
 				>
 					搜索
 				</el-button>
-				<!--        <el-button icon="el-icon-refresh" size="mini" @click="resetQuery">重置</el-button>-->
 			</el-form-item>
 		</el-form>
 
 		<el-row :gutter="10" class="mb8">
-			<!--      <el-col :span="1.5">-->
-			<!--        <el-button-->
-			<!--          type="primary"-->
-			<!--          plain-->
-			<!--          icon="el-icon-plus"-->
-			<!--          size="mini"-->
-			<!--          @click="handleAdd"-->
-			<!--          v-hasPermi="['system:exwarehouse:add']"-->
-			<!--        >新增出库信息-->
-			<!--        </el-button>-->
-			<!--      </el-col>-->
-			<!-- 刷新按钮-->
 			<el-col :span="1.5">
 				<el-button icon="el-icon-refresh" size="mini" @click="resetQuery">
 					刷新
@@ -349,9 +336,6 @@
 			width="900px"
 		>
 			<el-descriptions title="库存详情" border size="mini">
-				<el-descriptions-item label="创建者">
-					{{ inventoryInfo.createBy || '-' }}
-				</el-descriptions-item>
 				<el-descriptions-item label="备注">
 					{{ inventoryInfo.remark || '-' }}
 				</el-descriptions-item>
@@ -475,9 +459,6 @@
 				<el-descriptions-item label="备注信息">
 					{{ inventoryInfo.comments }}
 				</el-descriptions-item>
-				<el-descriptions-item label="用户名">
-					{{ inventoryInfo.userName }}
-				</el-descriptions-item>
 			</el-descriptions>
 			<span slot="footer" class="dialog-footer">
 				<el-button @click="checkInventoryVisible = false">取 消</el-button>
@@ -501,8 +482,8 @@ import { listGoodsOrder } from '@/api/system/goodsOrder';
 import TagsItem from '@/components/TagsItem/index.vue';
 import { getInventory, listInventory } from '@/api/system/inventory';
 import { listConfig } from '@/api/system/config';
-import { formatDate } from '../../../utils';
 import { addDateRange } from '@/utils/ruoyi';
+import { getDetail, listDetail } from '../../../api/system/detail';
 
 export default {
 	name: 'ExWarehouse',
@@ -599,7 +580,7 @@ export default {
 
 		// 查看库存信息 查询当前行的库存信息
 		checkInvoInfo(row) {
-			getInventory(row.storeID).then(res => {
+			getDetail(row.storeID).then(res => {
 				this.inventoryInfo = res.data;
 				this.checkInventoryVisible = true;
 			});

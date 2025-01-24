@@ -4,7 +4,7 @@ import { numToChineseUppercase } from '@/api/tool/format';
 import { getCustomerSubjectDetailSomeDay } from '@/api/system/statement';
 import { parseTime } from '@/utils/ruoyi';
 import { listOrderDetailByOrderNos } from '@/api/system/orderDetail';
-
+import { fix } from '../../../../api/tool/format';
 export default {
 	name: 'ChatForm',
 	props: {
@@ -49,6 +49,7 @@ export default {
 		console.log(this.currentOrderInfo);
 	},
 	methods: {
+		fix,
 		numToChineseUppercase,
 		printHTML() {
 			this.$print({
@@ -112,14 +113,14 @@ export default {
 						<td />
 						<td style="text-align: left">货款</td>
 						<td colspan="7" />
-						<td>{{ orderInfo.allPayments }}</td>
+						<td>{{ fix(orderInfo.allPayments) }}</td>
 						<td />
 					</tr>
 					<tr>
 						<td />
 						<td style="text-align: left">余额</td>
 						<td colspan="7" />
-						<td>{{ moneyAmount }}</td>
+						<td>{{ fix(moneyAmount) }}</td>
 						<td />
 					</tr>
 					<tr>
@@ -127,7 +128,7 @@ export default {
 						<!-- 货款 + 余额-->
 						<td style="text-align: left">货款合计</td>
 						<td colspan="7" />
-						<td>{{ totalPayments }}</td>
+						<td>{{ fix(totalPayments) }}</td>
 						<td />
 					</tr>
 					<tr>

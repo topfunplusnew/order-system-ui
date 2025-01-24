@@ -1,9 +1,8 @@
 <script>
-import { numToChineseUppercase } from '../../../../api/tool/format';
+import { fix, numToChineseUppercase } from '../../../../api/tool/format';
 import { listOrderDetailByOrderNos } from '@/api/system/orderDetail';
 import { parseTime } from '../../../../utils/ruoyi';
 import { getCustomerSubjectDetailSomeDay } from '@/api/system/statement';
-
 export default {
 	name: 'ChatForm2',
 	props: {
@@ -48,6 +47,7 @@ export default {
 		console.log(this.currentOrderInfo);
 	},
 	methods: {
+		fix,
 		numToChineseUppercase,
 		printHTML() {
 			this.$print({
@@ -107,21 +107,21 @@ export default {
 						<td colspan="5" style="text-align: left">
 							大写:{{ numToChineseUppercase(orderInfo.allPayments) }}
 						</td>
-						<td>{{ orderInfo.allPayments || 0 }}</td>
+						<td>{{ fix(orderInfo.allPayments) || 0 }}</td>
 					</tr>
 					<tr>
 						<td style="text-align: left">欠款</td>
 						<td colspan="5" style="text-align: left">
 							大写:{{ numToChineseUppercase(moneyAmount || 0) }}
 						</td>
-						<td>{{ moneyAmount || 0 }}</td>
+						<td>{{ fix(moneyAmount) || 0 }}</td>
 					</tr>
 					<tr>
 						<td style="text-align: left">合计欠款</td>
 						<td colspan="5" style="text-align: left">
 							大写:{{ numToChineseUppercase(totalPayments) }}
 						</td>
-						<td>{{ totalPayments || 0 }}</td>
+						<td>{{ fix(totalPayments) || 0 }}</td>
 					</tr>
 					<tr>
 						<td colspan="7" style="text-align: left">
