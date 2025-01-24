@@ -170,7 +170,9 @@
 				}
 			"
 			@selection-change="handleSelectionChange"
+			ref="paymentTable"
 		>
+			<el-table-column type="selection" width="55" />
 			<el-table-column label="id" align="center" prop="id" />
 			<el-table-column
 				label="日期"
@@ -936,9 +938,24 @@
 		<el-dialog
 			title="一键付款"
 			:visible.sync="oneClickPaymentDialogVisible"
-			width="30%"
+			width="50%"
 		>
-			<div>一键付款</div>
+			<el-table :data="batchPaymentData" border>
+				<el-table-column prop="otherAcountsName" label="对方户名" />
+				<el-table-column prop="otherBankNo" label="对方账号" />
+				<el-table-column prop="otherBankName" label="对方开户行" />
+				<el-table-column prop="moneyAmount" label="金额" />
+				<el-table-column label="来源信息">
+					<template slot-scope="scope">
+						<div
+							v-for="info in scope.row.extraInfo.sourceInfos"
+							:key="info.tableId"
+						>
+							{{ info.tableName }} - {{ info.tableId }}
+						</div>
+					</template>
+				</el-table-column>
+			</el-table>
 			<span slot="footer" class="dialog-footer">
 				<el-button @click="oneClickPaymentDialogVisible = false"
 					>取 消</el-button
@@ -978,7 +995,7 @@ import CheckDetail from '../../dashboard/components/payment/CheckDetail.vue';
 import BankType from '@/views/dashboard/components/common/BankType.vue';
 import { mixin_bankType } from '../../dashboard/mixins/common/common_bankType';
 import StateTag from '@/views/dashboard/components/common/StateTag.vue';
-
+import { batchPayment } from '../../../api/system/payment';
 export default {
 	name: 'Payment',
 	components: {
@@ -1095,7 +1112,10 @@ export default {
 			// 银行卡选择的弹窗
 			chooseBankDialogVisible: false,
 			chooseInfo: {},
-			oneClickPaymentDialogVisible: false
+			oneClickPaymentDialogVisible: false,
+
+			// 展示一下合并的信息
+			batchPaymentData: []
 		};
 	},
 	computed: {
@@ -1138,10 +1158,66 @@ export default {
 		isNull,
 		listCars,
 		listBankAccount,
+		batchPayment,
 		listCompany,
 		// 一键付款
 		handleOnce() {
-			this.oneClickPaymentDialogVisible = true;
+			this.$nextTick(() => {
+				this.$refs.paymentTable.clearSelection();
+				const unpaidRows = this.computedPaymentList.filter(
+					row => row.paymentState === '未支付'
+				);
+				if (unpaidRows.length === 0) {
+					this.$message.warning('没有需要付款的信息');
+				} else {
+					unpaidRows.forEach(row => {
+						this.$refs.paymentTable.toggleRowSelection(row, true);
+					});
+					// 对选中的行按照对方账户进行分组 然后批量付款
+					const map = new Map();
+					unpaidRows.forEach(row => {
+						// 处理null的情况
+						if (
+							!row.otherBankName ||
+							!row.otherBankNo ||
+							!row.otherAcountsName
+						) {
+							this.$message.warning('对方银行账户信息不完整');
+							return;
+						}
+
+						// 组合一个唯一键作为键值
+						const key = `${row.otherBankName}#${row.otherBankNo}#${row.otherAcountsName}`;
+						if (map.has(key)) {
+							map.get(key).extraInfo.sourceInfos.push({
+								tableName: row.tableName,
+								tableId: row.tID
+							});
+						} else {
+							map.set(key, {
+								...row,
+								extraInfo: {
+									sourceInfos: [
+										{
+											tableName: row.tableName,
+											tableId: row.tID
+										}
+									]
+								}
+							});
+						}
+					});
+					// 将map转为数组
+					const data = Array.from(map.values());
+					// this.batchPayment(data).then(res => {
+					// 	this.$message.success(res.msg);
+					// 	this.getList();
+					// });
+
+					this.batchPaymentData = data;
+					this.oneClickPaymentDialogVisible = true;
+				}
+			});
 		},
 		// 选择己方银行账户类型
 		changeCustomSelfBankType(value) {

@@ -11,10 +11,10 @@ export default {
 		return {
 			total: 0,
 			queryParams: {
-				beginTime: parseTime(
-					new Date(new Date().getTime() - 30 * 24 * 60 * 60 * 1000),
-					'{y}-{m}-{d}'
-				),
+				// beginTime: parseTime(
+				// 	new Date(new Date().getTime() - 30 * 24 * 60 * 60 * 1000),
+				// 	'{y}-{m}-{d}'
+				// ),
 				endTime: parseTime(new Date(), '{y}-{m}-{d}'),
 				pageNum: 1,
 				pageSize: 50
@@ -63,7 +63,7 @@ export default {
 			this.download(
 				'statistics/export/orderfreightDetailsummary',
 				{
-					beginTime: this.queryParams.beginTime,
+					// beginTime: this.queryParams.beginTime,
 					endTime: this.queryParams.endTime
 				},
 				`运费报表${parseTime(new Date().getTime())}.xlsx`
@@ -96,7 +96,7 @@ export default {
 					:inline="true"
 					label-width="100px"
 				>
-					<el-form-item label="时间" prop="companyName">
+					<!-- <el-form-item label="时间" prop="companyName">
 						<el-date-picker
 							v-model="queryParams.beginTime"
 							type="date"
@@ -104,7 +104,7 @@ export default {
 							value-format="yyyy-MM-dd"
 							placeholder="选择日期"
 						/>
-					</el-form-item>
+					</el-form-item> -->
 					<el-form-item>
 						<el-date-picker
 							v-model="queryParams.endTime"
@@ -312,7 +312,7 @@ export default {
 		<el-dialog
 			:close-on-click-modal="false"
 			:show-close="false"
-			title="请选择导出时间段"
+			title="请选择导出时间"
 			:visible.sync="dialogVisible"
 			width="30%"
 		>
@@ -322,7 +322,7 @@ export default {
 				size="mini"
 				label-width="68px"
 			>
-				<el-form-item label="开始时间" prop="beginTime">
+				<!-- <el-form-item label="开始时间" prop="beginTime">
 					<el-date-picker
 						v-model="queryParams.beginTime"
 						type="date"
@@ -330,8 +330,8 @@ export default {
 						value-format="yyyy-MM-dd"
 						size="mini"
 					/>
-				</el-form-item>
-				<el-form-item label="结束时间" prop="endTime">
+				</el-form-item> -->
+				<el-form-item label="时间" prop="endTime">
 					<el-date-picker
 						v-model="queryParams.endTime"
 						type="date"
