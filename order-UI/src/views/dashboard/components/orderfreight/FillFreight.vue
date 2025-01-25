@@ -47,8 +47,6 @@ export default {
 		// 海运 填充 val.seaCarNo 海运车牌 seaDriverName 海运公司 fleet 为 无
 		// 这里要让用户选择填充海运费还是陆运费
 		handleCommitBackOrder(val) {
-			console.log(val);
-
 			// 判断是否包含陆运或海运
 			const hasLandFreight = val.landFreight ? true : false;
 			const hasSeaFreight = val.seaFreight ? true : false;

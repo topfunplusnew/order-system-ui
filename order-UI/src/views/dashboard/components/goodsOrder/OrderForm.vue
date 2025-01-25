@@ -360,22 +360,22 @@ export default {
 			}
 		},
 		calculatePaymentFactory(scope) {
-			scope.row.paymentFactory =
-				scope.row.isIncludeTaxFactory === 0
-					? fix(
-							((scope.row.length * scope.row.width * scope.row.pieces) /
-								1000000) *
-								scope.row.price +
-								Number(scope.row.sundryCost)
-					  )
-					: fix(
-							(scope.row.length *
-								scope.row.width *
-								scope.row.pieces *
-								scope.row.price) /
-								1000000 +
-								scope.row.sundryCost
-					  );
+			if (scope.row.isIncludeTaxFactory === 0) {
+				scope.row.paymentFactory = fix(
+					((scope.row.length * scope.row.width * scope.row.pieces) / 1000000) *
+						scope.row.price +
+						Number(scope.row.sundryCost)
+				);
+			} else {
+				scope.row.paymentFactory = fix(
+					(scope.row.length *
+						scope.row.width *
+						scope.row.pieces *
+						scope.row.price) /
+						1000000 +
+						Number(scope.row.sundryCost)
+				);
+			}
 		},
 		calculatePrice(scope) {
 			// 计算出厂货款
@@ -427,16 +427,15 @@ export default {
 					return fix(
 						scope.row.payments -
 							scope.row.paymentFactory -
-							scope.row.landFreight * 1.075 -
-							scope.row.seaFreight -
-							((scope.row.height *
+							(scope.row.landFreight + scope.row.seaFreight) * 1.075 -
+							(((scope.row.height *
 								scope.row.length *
 								scope.row.width *
 								scope.row.pieces) /
 								1000000 /
 								20) *
 								0.5 -
-							scope.row.otherCost
+								scope.row.otherCost)
 					);
 				}
 			}
@@ -446,7 +445,7 @@ export default {
 		calculatePayment(scope) {
 			function calcu() {
 				if (
-					scope.row.isIncludeTaxFactory === 1 &&
+					scope.row.isIncludeTaxFactory === 0 &&
 					scope.row.isIncludeTaxSale === 0
 				) {
 					scope.row.payments = fix(
@@ -1320,7 +1319,7 @@ export default {
 								type="number"
 								v-model="scope.row.piecesPerPack"
 								@input="
-									() => (scope.row.packs > 0 ? calculatePacks(scope) : '')
+									() => (scope.row.packs >= 0 ? calculatePacks(scope) : '')
 								"
 								placeholder="请输入每包片数"
 							/>
@@ -1361,7 +1360,7 @@ export default {
 								size="mini"
 								type="number"
 								v-model="scope.row.price"
-								@input="scope.row.sundryCost > 0 ? calculatePrice(scope) : ''"
+								@input="scope.row.sundryCost >= 0 ? calculatePrice(scope) : ''"
 								:placeholder="
 									scope.row.pieces <= 0 ? '请先完善出厂片数' : '请输入出厂单价'
 								"
@@ -1428,7 +1427,7 @@ export default {
 								v-model.lazy="scope.row.paymentUnload"
 								placeholder="请输入卸货价"
 								@input="
-									scope.row.paymentsWithSundry > 0
+									scope.row.paymentsWithSundry >= 0
 										? calculatePayment(scope)
 										: ''
 								"
@@ -1514,7 +1513,7 @@ export default {
 								v-model.lazy="scope.row.landFreightPrice"
 								@input="
 									() =>
-										scope.row.additionalFees > 0
+										scope.row.additionalFees >= 0
 											? calculateLandFreight(scope)
 											: ''
 								"
