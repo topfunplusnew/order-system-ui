@@ -8,7 +8,6 @@ import { listFleet } from '../../../../api/system/fleet';
 import { listData } from '../../../../api/system/dict/data';
 import { listGoodsOrder } from '../../../../api/system/goodsOrder';
 import { isNull } from '../../../../main';
-import { PUBLIC_DICT_TYPE } from '@/utils/order';
 import { TableName } from '@/api/tool/enums';
 
 export default {
