@@ -123,11 +123,11 @@
 					新增付款信息
 				</el-button>
 			</el-col>
-			<el-col :span="1.5">
+			<!-- <el-col :span="1.5">
 				<el-button type="success" size="mini" @click="handleOnce">
 					一键付款
 				</el-button>
-			</el-col>
+			</el-col> -->
 			<right-toolbar
 				:showSearch.sync="showSearch"
 				:columns="columns"

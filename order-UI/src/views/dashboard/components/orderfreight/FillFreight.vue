@@ -158,6 +158,8 @@ export default {
 			this.$refs['form'].validate(valid => {
 				if (valid) {
 					this.form = excludeParams(this.form, this.$exclude);
+					// 运费修正需要使用字段isOrderFreightFix
+					this.form.extraInfo = { isOrderFreightFix: true };
 					addOrderFreight(this.form).then(() => {
 						this.$modal.msgSuccess('新增成功');
 						this.visible = false;

@@ -66,8 +66,6 @@ export var mixin_order_freight_payment = {
 			let map = new Map();
 			list.forEach(item => {
 				let key = item.driverId;
-				console.log(key, item);
-
 				if (map.has(key)) {
 					let temp = map.get(key);
 					temp = { ...temp };
@@ -91,6 +89,7 @@ export var mixin_order_freight_payment = {
 				// 构建对方信息
 				fundsDate: parseTime(new Date()),
 				tableName: TableName.ORDER_FREIGHT,
+				// 这里的表id是运费的id
 				tID: orderFreight.id,
 				moneyAmount: orderFreight.moneyAmount,
 				otherAcountsName: orderFreight.otherAcountsName,
@@ -128,7 +127,8 @@ export var mixin_order_freight_payment = {
 						const result = [];
 						const map = new Map();
 						this.batchPaymentList.forEach(item => {
-							const { companyId, ...rest } = item; // 提取 driverId 和其他字段
+							// 提取 driverId 和其他字段
+							const { companyId, ...rest } = item;
 							if (!map.has(companyId)) {
 								// 如果该 driverId 不存在，新增一个对象
 								map.set(companyId, {
@@ -146,14 +146,19 @@ export var mixin_order_freight_payment = {
 								// 如果存在，更新 driverIds
 								const existing = map.get(companyId);
 								existing.extraInfo.sourceInfos.push({
-									tableName: item.tableName,
+									tableName: TableName.ORDER_FREIGHT,
 									tableId: item.tID
 								});
+								// 累计金额
+								existing.moneyAmount = (
+									Number(existing.moneyAmount) + Number(item.moneyAmount)
+								).toFixed(3);
 							}
 						});
 						map.forEach(value => {
 							result.push(value);
 						});
+
 						// 批量添加付款信息
 						batchPayment(result).then(() => {
 							this.$message.success('一键运费付款成功');
