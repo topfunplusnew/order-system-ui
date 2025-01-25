@@ -48,14 +48,14 @@ export default {
 		// 海运 填充 val.seaCarNo 海运车牌 seaDriverName 海运公司 fleet 为 无
 		// 这里要让用户选择填充海运费还是陆运费
 		handleCommitBackOrder(val) {
-			// 判断一下 如果陆运费 > 0 说明有陆运信息 如果海运费大于0 说明有海运信息
 			console.log(val);
+
 			// 判断是否包含陆运或海运
-			const hasLandFreight = val.landFreight > 0;
-			const hasSeaFreight = val.seaFreight > 0;
+			const hasLandFreight = val.landFreight ? true : false;
+			const hasSeaFreight = val.seaFreight ? true : false;
 
 			// 填充进本信息 ordersNo source
-			this.form.ordersNo = val.ordersNo;
+			this.form.ordersNo = val.id;
 			this.form.source = TableName.GOODS_ORDER;
 
 			// 付款人员姓名
@@ -226,14 +226,12 @@ export default {
 			@close="visible = false"
 		>
 			<template #info>
-				<el-form ref="form" :model="form" :rules="rules" label-width="80px">
+				<el-form ref="form" :model="form" :rules="rules" label-width="100px">
 					<!--           选择订单 主要是为了根据ordersNo 查询对应的司机和车队以及车牌信息 然后自动填充-->
 					<el-form-item label="订单信息">
 						<el-row>
 							<el-col :span="8">
-								<span style="color: #1c84c6">
-									选择订单自动填充相关信息(可选)
-								</span>
+								<span style="color: #1c84c6"> 选择订单自动填充相关信息 </span>
 							</el-col>
 							<el-col :span="4">
 								<SearchOption
@@ -382,11 +380,12 @@ export default {
 						<el-row>
 							<el-col :span="10">
 								<el-input
+									disabled
 									v-model="form.otherAcountsName"
-									placeholder="请输入对方户名"
+									placeholder="请选择订单填充"
 								/>
 							</el-col>
-							<el-col :span="3">
+							<!-- <el-col :span="3">
 								<SearchOption
 									:get-data="listBankAccount"
 									icon="el-icon-search"
@@ -425,28 +424,41 @@ export default {
 										/>
 									</template>
 								</SearchOption>
-							</el-col>
+							</el-col> -->
 						</el-row>
 					</el-form-item>
 					<el-form-item label="对方账号" prop="otherBankNo">
-						<el-input v-model="form.otherBankNo" placeholder="请输入对方账号" />
+						<el-input
+							disabled
+							v-model="form.otherBankNo"
+							placeholder="请选择订单填充"
+						/>
 					</el-form-item>
 					<el-form-item label="对方开户行" prop="otherBankName">
 						<el-input
+							disabled
 							v-model="form.otherBankName"
-							placeholder="请输入对方开户行"
+							placeholder="请选择订单填充"
 						/>
 					</el-form-item>
 					<!--          下面这些可以通过选择订单 然后自动补齐-->
 					<el-form-item label="司机姓名" prop="driverName">
-						<el-input v-model="form.driverName" placeholder="请输入司机姓名" />
+						<el-input
+							disabled
+							v-model="form.driverName"
+							placeholder="请选择订单填充"
+						/>
 					</el-form-item>
 					<el-form-item label="车牌号/柜号" prop="carNo">
 						<el-row>
 							<el-col :span="20">
-								<el-input v-model="form.carNo" placeholder="请输入车牌号" />
+								<el-input
+									disabled
+									v-model="form.carNo"
+									placeholder="请选择订单填充"
+								/>
 							</el-col>
-							<el-col :span="4">
+							<!-- <el-col :span="4">
 								<SearchOption
 									:limit-info="{ dictType: 'order_cars' }"
 									:get-data="listData"
@@ -460,14 +472,18 @@ export default {
 										<el-table-column label="车牌" prop="dictLabel" />
 									</template>
 								</SearchOption>
-							</el-col>
+							</el-col> -->
 						</el-row>
 					</el-form-item>
 					<el-form-item label="车队" prop="fleet">
 						<el-col :span="20">
-							<el-input v-model="form.fleet" placeholder="请输入车队" />
+							<el-input
+								disabled
+								v-model="form.fleet"
+								placeholder="请选择订单填充"
+							/>
 						</el-col>
-						<el-col :span="4">
+						<!-- <el-col :span="4">
 							<SearchOption
 								:limit-info="{}"
 								:get-data="listFleet"
@@ -481,7 +497,7 @@ export default {
 									<el-table-column label="车队名称" prop="fname" />
 								</template>
 							</SearchOption>
-						</el-col>
+						</el-col> -->
 					</el-form-item>
 					<el-form-item label="申请日期" prop="applyDate">
 						<el-date-picker
