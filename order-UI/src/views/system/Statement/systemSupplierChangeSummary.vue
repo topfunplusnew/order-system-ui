@@ -81,21 +81,21 @@
 				show-overflow-tooltip
 				label="供应商名称"
 				align="center"
-				prop="supplierName"
+				prop="companyName"
 			/>
 			<el-table-column
 				v-if="columns[3].visible"
 				show-overflow-tooltip
 				label="昨日欠款金额"
 				align="center"
-				prop="previousDayDebt"
+				prop="previousDayCarryover"
 			/>
 			<el-table-column
 				v-if="columns[4].visible"
 				show-overflow-tooltip
 				label="当日进货金额"
 				align="center"
-				prop="dailyPurchaseAmount"
+				prop="dailyOrderPayments"
 			/>
 			<el-table-column
 				v-if="columns[5].visible"

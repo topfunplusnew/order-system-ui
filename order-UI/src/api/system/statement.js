@@ -317,3 +317,42 @@ export function getTodaySelfCompanyMoneySummary(query) {
 		params: query
 	});
 }
+
+/**
+ * 供应商当日发生业务统计表
+ * @param {Object} query
+ * @param  {endTime} query.endTime - 结束日期
+ * @returns
+ */
+export function getTodaySupplierSummary() {
+	return request({
+		url: '/statistics/todaysuppliersuymmary',
+		method: 'get'
+	});
+}
+
+/**
+ * 客户当日发生业务统计表
+ * @param {Object} query
+ * @param  {endTime} query.endTime - 结束日期
+ * @returns
+ */
+export function getTodayCustomerSummary() {
+	return request({
+		url: '/statistics/todaycompanysummary',
+		method: 'get'
+	});
+}
+
+/**
+ * 运费当日发生业务统计表
+ * @param {Object} query
+ * @param  {endTime} query.endTime - 结束日期
+ * @returns
+ */
+export function getTodayFreightSummary() {
+	return request({
+		url: '/statistics/todaycompanysummary',
+		method: 'get'
+	});
+}
