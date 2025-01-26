@@ -1218,9 +1218,10 @@ import { _fill } from './fill';
 import { mixin_checkfile } from '../../dashboard/mixins/checkfiles/mixin_checkfile';
 import CheckFiles from '../../../components/CheckFiles.vue';
 import { auditInventory } from '../../../api/system/inventoryMain';
+import StateTag from '../../dashboard/components/common/StateTag.vue';
 export default {
 	name: 'InventoryMain',
-	components: { SearchOption, CheckFiles },
+	components: { SearchOption, CheckFiles, StateTag },
 	mixins: [_fill, mixin_checkfile],
 	data() {
 		return {
