@@ -13,9 +13,9 @@
 			inline="true"
 			label-width="68px"
 		>
-			<el-form-item label="日期" prop="date">
+			<el-form-item label="日期" prop="endTime">
 				<el-date-picker
-					v-model="queryParams.date"
+					v-model="queryParams.endTime"
 					type="date"
 					placeholder="请选择日期"
 					value-format="yyyy-MM-dd"
@@ -75,27 +75,31 @@
 				label="日期"
 				align="center"
 				prop="date"
-			/>
+			>
+				<template slot-scope="">
+					{{ this.queryParams.endTime }}
+				</template>
+			</el-table-column>
 			<el-table-column
 				v-if="columns[2].visible"
 				show-overflow-tooltip
 				label="客户名称"
 				align="center"
-				prop="customerName"
+				prop="companyName"
 			/>
 			<el-table-column
 				v-if="columns[3].visible"
 				show-overflow-tooltip
 				label="昨日欠款金额"
 				align="center"
-				prop="previousDayDebt"
+				prop="previousDayCarryover"
 			/>
 			<el-table-column
 				v-if="columns[4].visible"
 				show-overflow-tooltip
 				label="当日销货金额"
 				align="center"
-				prop="dailySalesAmount"
+				prop="dailyOrderPayments"
 			/>
 			<el-table-column
 				v-if="columns[5].visible"
@@ -109,32 +113,29 @@
 				show-overflow-tooltip
 				label="当日回款金额"
 				align="center"
-				prop="dailyPaymentAmount"
+				prop="dailyReceiveMoney"
 			/>
 			<el-table-column
 				v-if="columns[7].visible"
 				show-overflow-tooltip
 				label="当日欠款金额"
 				align="center"
-				prop="dailyDebtAmount"
 			>
 				<template slot-scope="scope">
 					{{
-						Number(scope.row.previousDayDebt) +
-						Number(scope.row.dailySalesAmount) +
-						Number(scope.row.dailyInvoiceAmount) -
-						Number(scope.row.dailyPaymentAmount)
+						fix(
+							Number(scope.row.previousDayCarryover) +
+								Number(scope.row.dailyOrderPayments) +
+								Number(scope.row.dailyInvoiceAmount) -
+								Number(scope.row.dailyReceiveMoney)
+						)
 					}}
 				</template>
 			</el-table-column>
 		</el-table>
-		<pagination
-			v-show="total > 0"
-			:total="total"
-			:page.sync="queryParams.pageNum"
-			:limit.sync="queryParams.pageSize"
-			@pagination="getList"
-		/>
+		<el-row style="font-weight: bold; font-size: 16px; margin: 10px 30px">
+			数据量总数: {{ total }}
+		</el-row>
 		<el-dialog
 			:close-on-click-modal="false"
 			:show-close="false"
@@ -150,7 +151,7 @@
 			>
 				<el-form-item label="日期" prop="date">
 					<el-date-picker
-						v-model="queryParams.date"
+						v-model="queryParams.endTime"
 						type="date"
 						placeholder="选择日期"
 						value-format="yyyy-MM-dd"
@@ -169,6 +170,7 @@
 <script>
 import { parseTime } from '../../../utils/ruoyi';
 import { fix } from '../../../api/tool/format';
+import { getTodayCustomerSummary } from '../../../api/system/statement';
 export default {
 	name: 'SystemCustomerChangeSummary',
 	data() {
@@ -177,9 +179,7 @@ export default {
 			total: 0,
 			tableData: [],
 			queryParams: {
-				pageNum: 1,
-				pageSize: 50,
-				date: parseTime(new Date(), '{y}-{m}-{d}')
+				endTime: parseTime(new Date(), '{y}-{m}-{d}')
 			},
 			columns: [
 				{ key: 0, label: '序号', visible: true },
@@ -202,30 +202,11 @@ export default {
 		getList() {
 			this.loading = true;
 			// 模拟数据
-			this.tableData = [
-				{
-					index: 1,
-					date: '2023-10-01',
-					customerName: '客户A',
-					previousDayDebt: 1000,
-					dailySalesAmount: 500,
-					dailyInvoiceAmount: 200,
-					dailyPaymentAmount: 300,
-					dailyDebtAmount: 1400
-				},
-				{
-					index: 2,
-					date: '2023-10-01',
-					customerName: '客户B',
-					previousDayDebt: 2000,
-					dailySalesAmount: 1000,
-					dailyInvoiceAmount: 400,
-					dailyPaymentAmount: 600,
-					dailyDebtAmount: 2800
-				}
-			];
-			this.total = this.tableData.length;
-			this.loading = false;
+			getTodayCustomerSummary(this.queryParams).then(response => {
+				this.tableData = response.rows;
+				this.total = response.total;
+				this.loading = false;
+			});
 		},
 		handleQuery() {
 			this.queryParams.pageNum = 1;
@@ -236,7 +217,13 @@ export default {
 		},
 		handleSubmitTime() {
 			// 模拟导出逻辑
-			console.log('导出数据', this.queryParams);
+			this.download(
+				'statistics/export/todaycompanysummary',
+				{
+					...this.queryParams
+				},
+				`客户当日发生业务统计表_${parseTime(new Date().getTime())}.xlsx`
+			);
 			this.dialogVisible = false;
 		},
 		handleExport() {

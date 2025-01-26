@@ -13,9 +13,9 @@
 			inline="true"
 			label-width="68px"
 		>
-			<el-form-item label="日期" prop="date">
+			<el-form-item label="日期" prop="endTime">
 				<el-date-picker
-					v-model="queryParams.date"
+					v-model="queryParams.endTime"
 					type="date"
 					placeholder="请选择日期"
 					value-format="yyyy-MM-dd"
@@ -74,14 +74,14 @@
 				show-overflow-tooltip
 				label="日期"
 				align="center"
-				prop="date"
+				prop="fundsDate"
 			/>
 			<el-table-column
 				v-if="columns[2].visible"
 				show-overflow-tooltip
 				label="车牌号"
 				align="center"
-				prop="licensePlate"
+				prop="carNo"
 			/>
 			<el-table-column
 				v-if="columns[3].visible"
@@ -102,45 +102,43 @@
 				show-overflow-tooltip
 				label="上日应付运费"
 				align="center"
-				prop="previousDayFreight"
+				prop="previousDayUnpaidAmount"
 			/>
 			<el-table-column
 				v-if="columns[6].visible"
 				show-overflow-tooltip
 				label="当日应付运费"
 				align="center"
-				prop="dailyFreight"
+				prop="dailyTotalAmount"
 			/>
 			<el-table-column
 				v-if="columns[7].visible"
 				show-overflow-tooltip
 				label="本日付费金额"
 				align="center"
-				prop="dailyPayment"
+				prop="dailyPaidAmount"
 			/>
 			<el-table-column
 				v-if="columns[8].visible"
 				show-overflow-tooltip
 				label="本日欠运费余额"
 				align="center"
-				prop="dailyDebt"
+				prop="dailyUnpaidAmount"
 			>
-				<template slot-scope="scope">
+				<!-- <template slot-scope="scope">
 					{{
-						Number(scope.row.previousDayFreight) +
-						Number(scope.row.dailyFreight) -
-						Number(scope.row.dailyPayment)
+						fix(
+							Number(scope.row.previousDayFreight) +
+								Number(scope.row.dailyFreight) -
+								Number(scope.row.dailyPayment)
+						)
 					}}
-				</template>
+				</template> -->
 			</el-table-column>
 		</el-table>
-		<pagination
-			v-show="total > 0"
-			:total="total"
-			:page.sync="queryParams.pageNum"
-			:limit.sync="queryParams.pageSize"
-			@pagination="getList"
-		/>
+		<el-row style="font-weight: bold; font-size: 16px; margin: 10px 30px">
+			数据量总数: {{ total }}
+		</el-row>
 		<el-dialog
 			:close-on-click-modal="false"
 			:show-close="false"
@@ -154,9 +152,9 @@
 				size="mini"
 				label-width="68px"
 			>
-				<el-form-item label="日期" prop="date">
+				<el-form-item label="日期" prop="endTime">
 					<el-date-picker
-						v-model="queryParams.date"
+						v-model="queryParams.endTime"
 						type="date"
 						placeholder="选择日期"
 						value-format="yyyy-MM-dd"
@@ -175,6 +173,7 @@
 <script>
 import { parseTime } from '../../../utils/ruoyi';
 import { fix } from '../../../api/tool/format';
+import { getTodayFreightSummary } from '../../../api/system/statement';
 export default {
 	name: 'SystemFreightChangeSummary',
 	data() {
@@ -183,9 +182,7 @@ export default {
 			total: 0,
 			tableData: [],
 			queryParams: {
-				pageNum: 1,
-				pageSize: 50,
-				date: parseTime(new Date(), '{y}-{m}-{d}')
+				endTime: parseTime(new Date(), '{y}-{m}-{d}')
 			},
 			columns: [
 				{ key: 0, label: '序号', visible: true },
@@ -208,33 +205,11 @@ export default {
 		fix,
 		getList() {
 			this.loading = true;
-			// 模拟数据
-			this.tableData = [
-				{
-					index: 1,
-					date: '2023-10-01',
-					licensePlate: '粤A12345',
-					driver: '司机A',
-					fleet: '车队A',
-					previousDayFreight: 1000,
-					dailyFreight: 500,
-					dailyPayment: 300,
-					dailyDebt: 1200
-				},
-				{
-					index: 2,
-					date: '2023-10-01',
-					licensePlate: '粤B67890',
-					driver: '司机B',
-					fleet: '车队B',
-					previousDayFreight: 2000,
-					dailyFreight: 1000,
-					dailyPayment: 600,
-					dailyDebt: 2400
-				}
-			];
-			this.total = this.tableData.length;
-			this.loading = false;
+			getTodayFreightSummary(this.queryParams).then(res => {
+				this.tableData = res.rows;
+				this.total = res.total;
+				this.loading = false;
+			});
 		},
 		handleQuery() {
 			this.queryParams.pageNum = 1;
@@ -245,7 +220,14 @@ export default {
 		},
 		handleSubmitTime() {
 			// 模拟导出逻辑
-			console.log('导出数据', this.queryParams);
+			// 模拟导出逻辑
+			this.download(
+				'statistics/export/todayorderfreightsummary',
+				{
+					...this.queryParams
+				},
+				`运费当日发生业务统计表_${parseTime(new Date().getTime())}.xlsx`
+			);
 			this.dialogVisible = false;
 		},
 		handleExport() {

@@ -324,10 +324,11 @@ export function getTodaySelfCompanyMoneySummary(query) {
  * @param  {endTime} query.endTime - 结束日期
  * @returns
  */
-export function getTodaySupplierSummary() {
+export function getTodaySupplierSummary(query) {
 	return request({
 		url: '/statistics/todaysuppliersuymmary',
-		method: 'get'
+		method: 'get',
+		params: query
 	});
 }
 
@@ -337,10 +338,11 @@ export function getTodaySupplierSummary() {
  * @param  {endTime} query.endTime - 结束日期
  * @returns
  */
-export function getTodayCustomerSummary() {
+export function getTodayCustomerSummary(query) {
 	return request({
 		url: '/statistics/todaycompanysummary',
-		method: 'get'
+		method: 'get',
+		params: query
 	});
 }
 
@@ -350,9 +352,10 @@ export function getTodayCustomerSummary() {
  * @param  {endTime} query.endTime - 结束日期
  * @returns
  */
-export function getTodayFreightSummary() {
+export function getTodayFreightSummary(query) {
 	return request({
-		url: '/statistics/todaycompanysummary',
-		method: 'get'
+		url: '/statistics/todayorderfreightsummary',
+		method: 'get',
+		params: query
 	});
 }
