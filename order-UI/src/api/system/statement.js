@@ -359,3 +359,16 @@ export function getTodayFreightSummary(query) {
 		params: query
 	});
 }
+
+/**
+ * 银行卡资金变动情况
+ * @param {Object} query
+ * @returns
+ */
+export function getBankCardChangeSummary(query) {
+	return request({
+		url: '/system/bankAccountChange/list',
+		method: 'get',
+		params: query
+	});
+}

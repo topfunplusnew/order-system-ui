@@ -62,6 +62,9 @@
 					新增银行卡信息
 				</el-button>
 			</el-col>
+			<el-col :span="1.5">
+				<BankAccountChangeDash />
+			</el-col>
 			<right-toolbar
 				:showSearch.sync="showSearch"
 				:columns="columns"
@@ -639,10 +642,11 @@ import { listBankAccount } from '../../../api/system/bankAccount';
 import { listCars } from '../../../api/system/cars';
 import { listUser } from '../../../api/system/user';
 import { excludeParams } from '../../../api/tool/exclude';
+import BankAccountChangeDash from '../Statement/bankAccountChangeDash.vue';
 
 export default {
 	name: 'BankAccount',
-	components: { SearchOption },
+	components: { SearchOption, BankAccountChangeDash },
 	mixins: [mixin_printHTML],
 	data() {
 		return {
