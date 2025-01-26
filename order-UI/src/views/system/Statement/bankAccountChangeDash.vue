@@ -6,12 +6,29 @@
 		>
 
 		<!-- 导入Excel弹窗 -->
-		<el-dialog :visible.sync="importDialogVisible" title="导入Excel表格">
+		<el-dialog
+			:visible.sync="importDialogVisible"
+			title="导入Excel表格"
+			@close="handleImportDialogClose"
+		>
 			<div class="dialog-content">
 				<p>
 					请上传银行明细相关excel文件，excel文件中每一个sheet为一个银行卡的明细
 				</p>
 				<input type="file" @change="handleFileUpload" accept=".xlsx, .xls" />
+				<div v-if="uploadedFiles.length > 0" class="uploaded-files">
+					<h4>已上传的文件：</h4>
+					<ul>
+						<li
+							v-for="(file, index) in uploadedFiles"
+							:key="index"
+							class="uploaded-file-item"
+						>
+							<ExcelIcon class="excel-icon" />
+							<el-link @click="handleFileClick(file)">{{ file.name }}</el-link>
+						</li>
+					</ul>
+				</div>
 			</div>
 		</el-dialog>
 
@@ -43,7 +60,10 @@
 		<el-dialog :visible.sync="dataDialogVisible" title="Sheet数据" fullscreen>
 			<div class="sheet-data-container">
 				<div class="left-panel">
-					<h3>系统数据</h3>
+					<h3>
+						系统查询卡号为
+						<span class="titles">{{ selectedSheet }}</span> 的银行卡明细数据
+					</h3>
 					<!-- 展示系统数据 -->
 					<div class="system-data-container">
 						<table>
@@ -73,7 +93,7 @@
 					</div>
 				</div>
 				<div class="right-panel">
-					<h3>Excel数据</h3>
+					<h3>导入的银行卡流水明细</h3>
 					<div class="excel-data-container">
 						<table>
 							<thead>
@@ -101,9 +121,13 @@
 <script>
 import * as XLSX from 'xlsx';
 import { getBankCardChangeSummary } from '@/api/system/statement';
+import ExcelIcon from '@/views/dashboard/components/icons/ExcelIcon.vue';
 
 export default {
 	name: 'BankExcelImport',
+	components: {
+		ExcelIcon
+	},
 	data() {
 		return {
 			importDialogVisible: false,
@@ -114,7 +138,8 @@ export default {
 			excelHeaders: [],
 			excelData: [],
 			fileData: null, // 添加 fileData 属性
-			systemData: [] // 添加 systemData 属性
+			systemData: [], // 添加 systemData 属性
+			uploadedFiles: [] // 添加 uploadedFiles 属性
 		};
 	},
 	methods: {
@@ -132,10 +157,20 @@ export default {
 				this.fileData = new Uint8Array(e.target.result); // 保存文件数据到 fileData
 				const workbook = XLSX.read(this.fileData, { type: 'array' });
 				this.sheets = workbook.SheetNames;
+				this.uploadedFiles.push({ name: file.name, data: this.fileData });
 				this.importDialogVisible = false;
 				this.sheetDialogVisible = true;
 			};
 			reader.readAsArrayBuffer(file);
+		},
+		handleFileClick(file) {
+			this.fileData = file.data;
+			const workbook = XLSX.read(this.fileData, { type: 'array' });
+			this.sheets = workbook.SheetNames;
+			this.sheetDialogVisible = true;
+		},
+		handleImportDialogClose() {
+			this.importDialogVisible = false;
 		},
 		async showSheetData() {
 			// 获取系统数据
@@ -171,6 +206,27 @@ export default {
 	padding: 20px;
 }
 
+.uploaded-files {
+	margin-top: 20px;
+	width: 100%;
+}
+
+.uploaded-file-item {
+	display: flex;
+	align-items: center;
+	margin-top: 10px;
+	padding: 10px;
+	background-color: #f9f9f9;
+	border: 1px solid #e0e0e0;
+	border-radius: 5px;
+	gap: 26px;
+}
+
+.uploaded-file-item .excel-icon {
+	width: 20px;
+	height: 25px;
+}
+
 .sheet-select-container {
 	display: flex;
 	align-items: center;
@@ -184,45 +240,57 @@ export default {
 .sheet-data-container {
 	display: flex;
 	height: 100%;
+	background-color: #f0f2f5;
+	border-radius: 10px;
+	padding: 20px;
+	box-shadow: 0 2px 12px rgba(0, 0, 0, 0.1);
 }
+
 .left-panel,
 .right-panel {
 	width: 50%;
-	padding: 20px;
+	padding: 10px; /* 调整内边距 */
 	overflow-y: auto;
-	max-height: 650px; /* 固定高度 */
-}
-.left-panel {
-	background-color: #f5f5f5;
-}
-.right-panel {
+	max-height: 700px; /* 固定高度 */
 	background-color: #ffffff;
+	border-radius: 10px;
+	box-shadow: 0 2px 12px rgba(0, 0, 0, 0.1);
+}
+
+.left-panel {
+	margin-right: 10px;
 }
 
 .system-data-container {
-	max-height: 600px; /* 固定高度 */
+	max-height: 700px; /* 固定高度 */
 	overflow-y: auto; /* 竖向滚动条 */
 }
 
 .excel-data-container {
-	max-height: 600px; /* 固定高度 */
 	overflow-y: auto; /* 竖向滚动条 */
 }
 
 table {
 	width: 100%;
 	border-collapse: collapse;
+	font-size: 12px; /* 调整字体大小 */
 }
 
 th,
 td {
 	border: 1px solid #ddd;
-	padding: 8px;
+	padding: 4px; /* 调整内边距 */
 	text-align: left;
 }
 
 th {
 	background-color: #f2f2f2;
 	font-weight: bold;
+}
+
+.titles {
+	color: #409eff;
+	font-weight: bold;
+	margin: 10px 0;
 }
 </style>
