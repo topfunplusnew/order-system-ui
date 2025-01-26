@@ -175,12 +175,7 @@ export default {
 				this.orderInfo = response.data;
 				this.isLand = response.data.landFreight ? true : false;
 				this.isSea = response.data.seaFreight ? true : false;
-				this.orderdetailList = response.data.orderDetailList.map(item => {
-					return {
-						...item,
-						countingUnit: item.countingUnit === '片' ? '片数' : '其他'
-					};
-				});
+				this.orderdetailList = response.data.orderDetailList;
 			});
 		},
 		// --- 2025/1/14 添加订单详情
@@ -235,10 +230,11 @@ export default {
 
 		// 筛选无剩余片数的库存
 		filterNoStockNumber(data) {
-			console.log('筛选', data);
-
 			return new Promise(resolve => {
-				resolve(data.filter(item => item.actualPieces > 0));
+				const res = data
+					.filter(item => item.actualPieces > 0)
+					.sort((a, b) => b.actualPieces - a.actualPieces);
+				resolve(res);
 			});
 		},
 		handleDeleteOrderdetail() {

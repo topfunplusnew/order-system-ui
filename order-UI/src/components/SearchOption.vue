@@ -16,6 +16,8 @@
 <!--   - @update:queryName: 修改父组件传入的 queryName 的值，保证输入框的响应式 -->
 <!--   - @commitBack(val): 点击确认后的回调，val 是需要自动填充的对象 -->
 
+<!-- 混入中是对于数据的进一步处理 mixin_search_option -->
+
 <!--特别注意 针对某些特殊情况 可以补充字段-->
 <script>
 import { mixin_search_option } from '../views/dashboard/mixins/search_option/serch_option';
@@ -134,10 +136,6 @@ export default {
 			const query = {
 				...this.limitInfo
 			};
-
-			console.log('limit:', this.limitInfo);
-
-			console.log(query);
 
 			this.getData(query).then(res => {
 				this.total = res.total;
@@ -264,4 +262,31 @@ export default {
 	</div>
 </template>
 
-<style scoped lang="scss"></style>
+<style scoped lang="scss">
+.el-button {
+	margin-bottom: 10px;
+}
+
+.el-dialog {
+	.dialog-footer {
+		text-align: right;
+	}
+}
+
+.el-form {
+	margin-bottom: 20px;
+}
+
+.el-form-item {
+	margin-right: 20px;
+}
+
+.el-table {
+	margin-top: 20px;
+}
+
+.pagination {
+	margin-top: 20px;
+	text-align: right;
+}
+</style>

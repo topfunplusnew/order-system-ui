@@ -27,12 +27,13 @@ export var mixin_search_option = {
 	},
 	methods: {
 		getTableData() {
-			// 调用获取数据的函数，并传入分页参数
-			this.getData({
+			const data = {
 				...this.limitInfo,
 				pageNum: this.pageNum,
 				pageSize: this.pageSize
-			})
+			};
+			// 调用获取数据的函数，并传入分页参数
+			this.getData(data)
 				.then(res => {
 					if (res && res.rows) {
 						return this.additionalLimitInfo(res.rows).then(data => {
