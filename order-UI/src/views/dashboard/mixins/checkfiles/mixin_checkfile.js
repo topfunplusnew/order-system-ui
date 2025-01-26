@@ -38,6 +38,8 @@ export var mixin_checkfile = {
 		 * @param {Function} onUpdate - 更新文件记录的接口方法，需返回 Promise
 		 */
 		handleUpdateFilePath(value, row, prop, onGet, onUpdate) {
+			console.log('onGet, onUpdate', onGet, onUpdate);
+
 			// 检查 onGet 和 onUpdate 是否为函数
 			if (typeof onGet !== 'function' || typeof onUpdate !== 'function') {
 				this.$message.error('组件内部错误！请检查传入的参数类型。');

@@ -677,9 +677,10 @@
 								<!-- 供应商按钮 -->
 								<el-col :span="6">
 									<SearchOption
+										title="供应商信息"
 										:get-data="listCompany"
 										icon="el-icon-user"
-										query-label="供应商名称"
+										query-label="公司名称"
 										query-info="companyName"
 										:query-name="querySupplier"
 										:limit-info="{ companyType: '供应商' }"
@@ -688,12 +689,18 @@
 										"
 										@update:queryName="handleUpdateQuerySupplier"
 										@click="setCurrentType(scope.row, 'supplier')"
+										:query-items="queryItemsSupplier"
 									>
 										<template #table-columns>
 											<el-table-column
-												label="供应商名称"
+												label="公司名称"
 												align="center"
 												prop="companyName"
+											/>
+											<el-table-column
+												label="销售经理"
+												align="center"
+												prop="salesManager"
 											/>
 											<el-table-column
 												label="联系人"
@@ -704,6 +711,11 @@
 												label="电话"
 												align="center"
 												prop="relationTel"
+											/>
+											<el-table-column
+												label="地址"
+												align="center"
+												prop="address"
 											/>
 										</template>
 									</SearchOption>
@@ -1193,7 +1205,7 @@ import {
 	getInventoryMain,
 	listInventoryMain,
 	updateInventoryMain
-} from '@/api/system/inventoryMain';
+} from '../../../api/system/inventoryMain';
 import { listCars } from '../../../api/system/cars';
 import { listCompany } from '../../../api/system/company';
 import { listFleet } from '../../../api/system/fleet';
@@ -1277,12 +1289,19 @@ export default {
 			queryFleet: null,
 
 			// 查询组
-			queryItemsCompany: {
+			queryItemsSupplier: {
 				queryList: [
 					{
 						id: 1,
 						label: '老板姓名',
 						prop: 'leader',
+						type: 'input',
+						value: ''
+					},
+					{
+						id: 2,
+						label: '联系人',
+						prop: 'relationName',
 						type: 'input',
 						value: ''
 					}
@@ -1355,6 +1374,8 @@ export default {
 		listFleet,
 		listProductLevel,
 		listCompany,
+		getInventoryMain,
+		updateInventoryMain,
 		handleCommitUpload(val) {
 			this.form.receiveProof = val;
 		},
