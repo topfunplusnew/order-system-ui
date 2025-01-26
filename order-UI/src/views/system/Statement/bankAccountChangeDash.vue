@@ -42,49 +42,53 @@
 				<div class="left-panel">
 					<h3>系统数据</h3>
 					<!-- 展示系统数据 -->
-					<table>
-						<thead>
-							<tr>
-								<th>银行卡号</th>
-								<th>操作日期</th>
-								<th>变动类型</th>
-								<th>金额</th>
-								<th>公司类型</th>
-								<th>银行卡类型</th>
-								<th>用户名</th>
-							</tr>
-						</thead>
-						<tbody>
-							<tr v-for="(item, index) in systemData" :key="index">
-								<td>{{ item.selfBankNo }}</td>
-								<td>{{ item.operateDate }}</td>
-								<td>{{ item.changeType }}</td>
-								<td>{{ item.moneyAmount }}</td>
-								<td>{{ item.companyType }}</td>
-								<td>{{ item.bankCardType }}</td>
-								<td>{{ item.userName }}</td>
-							</tr>
-						</tbody>
-					</table>
+					<div class="system-data-container">
+						<table>
+							<thead>
+								<tr>
+									<th>银行卡号</th>
+									<th>操作日期</th>
+									<th>变动类型</th>
+									<th>金额</th>
+									<th>公司类型</th>
+									<th>银行卡类型</th>
+									<th>用户名</th>
+								</tr>
+							</thead>
+							<tbody>
+								<tr v-for="(item, index) in systemData" :key="index">
+									<td>{{ item.selfBankNo }}</td>
+									<td>{{ item.operateDate }}</td>
+									<td>{{ item.changeType }}</td>
+									<td>{{ item.moneyAmount }}</td>
+									<td>{{ item.companyType }}</td>
+									<td>{{ item.bankCardType }}</td>
+									<td>{{ item.userName }}</td>
+								</tr>
+							</tbody>
+						</table>
+					</div>
 				</div>
 				<div class="right-panel">
 					<h3>Excel数据</h3>
-					<table>
-						<thead>
-							<tr>
-								<th v-for="(header, index) in excelHeaders" :key="index">
-									{{ header }}
-								</th>
-							</tr>
-						</thead>
-						<tbody>
-							<tr v-for="(row, rowIndex) in excelData" :key="rowIndex">
-								<td v-for="(cell, cellIndex) in row" :key="cellIndex">
-									{{ cell }}
-								</td>
-							</tr>
-						</tbody>
-					</table>
+					<div class="excel-data-container">
+						<table>
+							<thead>
+								<tr>
+									<th v-for="(header, index) in excelHeaders" :key="index">
+										{{ header }}
+									</th>
+								</tr>
+							</thead>
+							<tbody>
+								<tr v-for="(row, rowIndex) in excelData" :key="rowIndex">
+									<td v-for="(cell, cellIndex) in row" :key="cellIndex">
+										{{ cell }}
+									</td>
+								</tr>
+							</tbody>
+						</table>
+					</div>
 				</div>
 			</div>
 		</el-dialog>
@@ -128,7 +132,13 @@ export default {
 		},
 		async showSheetData() {
 			// 获取系统数据
-			const response = await getBankCardChangeSummary({});
+			const query = {};
+			if (!/^\d{16,19}$/.test(this.selectedSheet)) {
+				this.$message.error('银行卡号格式错误');
+				return;
+			}
+			query.selfBankNo = this.selectedSheet;
+			const response = await getBankCardChangeSummary(query);
 			this.systemData = response.rows;
 
 			// 获取Excel数据
@@ -173,12 +183,23 @@ export default {
 	width: 50%;
 	padding: 20px;
 	overflow-y: auto;
+	max-height: 650px; /* 固定高度 */
 }
 .left-panel {
 	background-color: #f5f5f5;
 }
 .right-panel {
 	background-color: #ffffff;
+}
+
+.system-data-container {
+	max-height: 600px; /* 固定高度 */
+	overflow-y: auto; /* 竖向滚动条 */
+}
+
+.excel-data-container {
+	max-height: 600px; /* 固定高度 */
+	overflow-y: auto; /* 竖向滚动条 */
 }
 
 table {
