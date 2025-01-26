@@ -685,6 +685,7 @@ export default {
 						</el-col>
 						<el-col :span="4">
 							<SearchOption
+								title="客户信息"
 								:limit-info="{ companyType: '客户' }"
 								:get-data="listCompany"
 								query-info="companyName"
@@ -696,9 +697,14 @@ export default {
 							>
 								<template #table-columns>
 									<el-table-column
-										label="客户"
+										label="公司名称"
 										align="center"
 										prop="companyName"
+									/>
+									<el-table-column
+										label="销售经理"
+										align="center"
+										prop="salesManager"
 									/>
 									<el-table-column
 										label="老板姓名"
@@ -715,11 +721,6 @@ export default {
 										label="联系人"
 										align="center"
 										prop="relationName"
-									/>
-									<el-table-column
-										label="销售经理"
-										align="center"
-										prop="salesManager"
 									/>
 								</template>
 							</SearchOption>
@@ -763,6 +764,7 @@ export default {
 							<el-col :span="4">
 								<!--搜索银行卡信息-->
 								<SearchOption
+									title="陆运信息"
 									:limit-info="{ carType: '陆运' }"
 									:get-data="listCars"
 									query-label="车牌搜索"
@@ -789,7 +791,7 @@ export default {
 											prop="acountsName"
 										/>
 										<el-table-column
-											label="账号"
+											label="银行卡号"
 											align="center"
 											prop="bankNo"
 										/>
@@ -833,6 +835,7 @@ export default {
 							</el-col>
 							<el-col :span="4">
 								<SearchOption
+									title="车队信息"
 									:limit-info="{}"
 									:get-data="listFleet"
 									query-label="车队名称"
@@ -884,33 +887,30 @@ export default {
 							</el-col>
 							<el-col :span="4">
 								<SearchOption
+									title="海运信息"
 									:limit-info="{ carType: '海运' }"
 									:get-data="listCars"
-									query-label="车牌"
+									query-label="柜号"
 									query-info="carNo"
 									:query-name="querySeaCars"
 									@commitBack="handleCommitBackSeaCar"
 									@update:queryName="handleChangeSeaCar"
 								>
 									<template #table-columns>
-										<el-table-column label="车牌" align="center" prop="carNo" />
+										<el-table-column label="柜号" align="center" prop="carNo" />
 										<el-table-column
-											label="司机"
+											label="海运公司"
 											align="center"
 											prop="driver"
 										/>
-										<el-table-column
-											label="司机电话"
-											align="center"
-											prop="tel"
-										/>
+										<el-table-column label="电话" align="center" prop="tel" />
 										<el-table-column
 											label="开户名"
 											align="center"
 											prop="acountsName"
 										/>
 										<el-table-column
-											label="账号"
+											label="银行卡号"
 											align="center"
 											prop="bankNo"
 										/>
@@ -994,6 +994,7 @@ export default {
 								<!-- 供应商按钮 -->
 								<el-col :span="6">
 									<SearchOption
+										title="供应商信息"
 										:get-data="listCompany"
 										icon="el-icon-user"
 										query-label="供应商名称"
@@ -1008,9 +1009,14 @@ export default {
 									>
 										<template #table-columns>
 											<el-table-column
-												label="供应商名称"
+												label="公司名称"
 												align="center"
 												prop="companyName"
+											/>
+											<el-table-column
+												label="销售经理"
+												align="center"
+												prop="salesManager"
 											/>
 											<el-table-column
 												label="联系人"
@@ -1021,6 +1027,11 @@ export default {
 												label="电话"
 												align="center"
 												prop="relationTel"
+											/>
+											<el-table-column
+												label="地址"
+												align="center"
+												prop="address"
 											/>
 										</template>
 									</SearchOption>
