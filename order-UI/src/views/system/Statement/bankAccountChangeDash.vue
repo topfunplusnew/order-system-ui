@@ -8,7 +8,10 @@
 		<!-- 导入Excel弹窗 -->
 		<el-dialog :visible.sync="importDialogVisible" title="导入Excel表格">
 			<div class="dialog-content">
-				<input type="file" @change="handleFileUpload" />
+				<p>
+					请上传银行明细相关excel文件，excel文件中每一个sheet为一个银行卡的明细
+				</p>
+				<input type="file" @change="handleFileUpload" accept=".xlsx, .xls" />
 			</div>
 		</el-dialog>
 
@@ -120,6 +123,10 @@ export default {
 		},
 		handleFileUpload(event) {
 			const file = event.target.files[0];
+			if (!file.name.endsWith('.xlsx') && !file.name.endsWith('.xls')) {
+				this.$message.error('只能上传Excel文件');
+				return;
+			}
 			const reader = new FileReader();
 			reader.onload = e => {
 				this.fileData = new Uint8Array(e.target.result); // 保存文件数据到 fileData
