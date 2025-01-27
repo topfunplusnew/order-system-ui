@@ -450,7 +450,7 @@ export default {
 						this.form.addtime = null;
 						this.form.updateTime = null;
 						this.form.userId = null;
-						updateRepayment(this.form).then(response => {
+						updateRepayment(this.form).then(() => {
 							this.$modal.msgSuccess('修改成功');
 							this.open = false;
 							this.getList();
@@ -460,7 +460,7 @@ export default {
 						this.form.addtime = null;
 						this.form.updateTime = null;
 						this.form.userId = null;
-						addRepayment(this.form).then(response => {
+						addRepayment(this.form).then(() => {
 							this.$modal.msgSuccess('新增成功');
 							this.open = false;
 							this.getList();
