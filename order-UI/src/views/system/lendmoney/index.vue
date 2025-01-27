@@ -319,7 +319,7 @@
 			:show-close="false"
 			:title="title"
 			:visible.sync="open"
-			width="50%"
+			width="1000px"
 			append-to-body
 		>
 			<el-form ref="form" :model="form" :rules="rules" label-width="160px">
@@ -367,13 +367,11 @@
 								</el-col>
 								<el-col :span="3">
 									<SearchOption
+										title="对方账户"
 										:get-data="listBankAccount"
 										icon="el-icon-search"
 										:limit-info="{
-											acountsType:
-												form.targetType === '其他' || form.targetType === '员工'
-													? ''
-													: form.targetType
+											acountsType: form.targetType
 										}"
 										query-label="户名查找"
 										query-info="acountsName"

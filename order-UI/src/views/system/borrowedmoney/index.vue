@@ -250,12 +250,12 @@
 								placeholder="请输入抵押担保"
 							/>
 						</el-form-item>
-						<el-form-item label="我方银行账户类型">
+						<!-- <el-form-item label="我方银行账户类型">
 							<BankType
 								:select-type="form.selfBankCardType"
 								@updateSelectedType="changeSelfBankType"
 							/>
-						</el-form-item>
+						</el-form-item> -->
 						<el-form-item label="打入账户" prop="acountsName">
 							<el-row>
 								<el-col :span="20">
