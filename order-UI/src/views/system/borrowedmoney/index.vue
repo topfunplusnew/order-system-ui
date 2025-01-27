@@ -162,7 +162,7 @@
 			>
 				<template slot-scope="scope">
 					<el-button
-						v-if="scope.row.isEnd === '0'"
+						v-if="scope.row.isEnd !== '0'"
 						size="mini"
 						type="warning"
 						@click="handleGiveBackMoney(scope.row)"
