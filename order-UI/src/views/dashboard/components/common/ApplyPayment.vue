@@ -543,6 +543,10 @@ export default {
 					// 填充公司类型
 					this.form.companyType = this.value;
 					// 添加付款类型
+					if (!this.form.payType) {
+						this.$modal.msgError('请选择付款类型');
+						return;
+					}
 					const payType = this.form.payType.join('-');
 					const body = {
 						...this.form,

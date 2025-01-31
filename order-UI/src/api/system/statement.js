@@ -372,3 +372,32 @@ export function getBankCardChangeSummary(query) {
 		params: query
 	});
 }
+
+/**
+ * 资金统计
+ * @param {Object} query
+ * @param {string} query.endTime - 结束时间
+ * @returns
+ */
+export function getMoneySummary(query) {
+	return request({
+		url: '/statistics/getallmoney',
+		method: 'get',
+		params: query
+	});
+}
+
+/**
+ * 资金变动统计
+ * @param {Object} query
+ * @param {string} query.startTime - 开始时间
+ * @param {string} query.endTime - 结束时间
+ * @returns
+ */
+export function getMoneyChangeSummary(query) {
+	return request({
+		url: '/statistics/getallmoneychange',
+		method: 'get',
+		params: query
+	});
+}
