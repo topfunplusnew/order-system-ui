@@ -7,10 +7,11 @@ import {
 import { mixin_order_freeApply } from '../../dashboard/mixins/order/order_freeApply';
 import { common_dialog } from '../../dashboard/mixins/common/common_dialog';
 import DialogWrapper from '../../dashboard/components/common/DialogWrapper.vue';
+import { mixin_printHTML } from '../../dashboard/mixins/print';
 export default {
 	name: 'index',
 	components: { DialogWrapper },
-	mixins: [mixin_order_freeApply, common_dialog],
+	mixins: [mixin_order_freeApply, common_dialog, mixin_printHTML],
 	data() {
 		const today = new Date();
 		const oneMonthAgo = new Date();
@@ -35,7 +36,42 @@ export default {
 			receiptDialogVisible: false,
 			receiptImageUrl: '',
 			attachmentDialogVisible: false,
-			attachments: []
+			attachments: [],
+			columns: [
+				{ key: 0, label: '运费状态', prop: 'payment_state', visible: true },
+				{ key: 1, label: '支付时间', prop: 'payDate', visible: true },
+				{ key: 2, label: '运输类型', prop: 'transport_type', visible: true },
+				{ key: 3, label: '订单日期', prop: 'document_date', visible: true },
+				{
+					key: 4,
+					label: '客户/仓库名称',
+					prop: 'customer_or_storehouse_name',
+					visible: true
+				},
+				{ key: 5, label: '录入员', prop: 'entry_user', visible: true },
+				{ key: 6, label: '车队', prop: 'fleet', visible: true },
+				{ key: 7, label: '车牌号/柜号', prop: 'car_no', visible: true },
+				{ key: 8, label: '吨位', prop: 'tonnage', visible: true },
+				{
+					key: 9,
+					label: '平均运费价格',
+					prop: 'average_freight_price',
+					visible: true
+				},
+				{ key: 10, label: '运费', prop: 'freight', visible: true },
+				{ key: 11, label: '司机户名', prop: 'driver_bank_name', visible: true },
+				{
+					key: 12,
+					label: '司机银行账号',
+					prop: 'driver_bank_no',
+					visible: true
+				},
+				{ key: 13, label: '订单来源', prop: 'source', visible: true },
+				{ key: 14, label: '订单状态', prop: 'check_state', visible: true },
+				{ key: 15, label: '收到条', prop: 'receiveProof', visible: true },
+				{ key: 16, label: '已支付金额', prop: 'paid_amount', visible: true },
+				{ key: 17, label: '运费申请', prop: 'action', visible: true }
+			]
 		};
 	},
 	computed: {
@@ -183,7 +219,24 @@ export default {
 			</el-form-item>
 		</el-form>
 
+		<el-row>
+			<el-col>
+				<right-toolbar :columns="columns" @queryTable="getList">
+					<template #print>
+						<el-col :span="1.5">
+							<el-button
+								plain
+								icon="el-icon-printer"
+								size="mini"
+								@click="printHTML"
+							></el-button>
+						</el-col>
+					</template>
+				</right-toolbar>
+			</el-col>
+		</el-row>
 		<el-table
+			id="printBox"
 			:data="freightList"
 			v-loading="loading"
 			border
@@ -191,20 +244,32 @@ export default {
 			size="mini"
 			style="width: 100%; margin-top: 20px"
 		>
+			<!-- 运费状态 -->
 			<el-table-column
+				v-if="columns[0].visible"
 				show-overflow-tooltip
 				prop="payment_state"
 				label="运费状态"
 				align="center"
 			/>
+
+			<!-- 支付时间 -->
 			<el-table-column
+				v-if="columns[1].visible"
 				show-overflow-tooltip
 				prop="payDate"
 				label="支付时间"
 				align="center"
 			/>
-			<el-table-column show-overflow-tooltip label="运输类型" align="center">
-				<template slot-scope="scope">
+
+			<!-- 运输类型 -->
+			<el-table-column
+				v-if="columns[2].visible"
+				show-overflow-tooltip
+				label="运输类型"
+				align="center"
+			>
+				<template #default="scope">
 					<span
 						:class="{
 							'sea-transport': scope.row.transport_type === 'sea',
@@ -215,88 +280,131 @@ export default {
 					</span>
 				</template>
 			</el-table-column>
+
+			<!-- 订单日期 -->
 			<el-table-column
+				v-if="columns[3].visible"
 				show-overflow-tooltip
 				prop="document_date"
 				label="订单日期"
 				align="center"
 			/>
+
+			<!-- 客户/仓库名称 -->
 			<el-table-column
+				v-if="columns[4].visible"
 				show-overflow-tooltip
 				prop="customer_or_storehouse_name"
 				label="客户/仓库名称"
 				align="center"
 			/>
+
+			<!-- 录入员 -->
 			<el-table-column
+				v-if="columns[5].visible"
 				show-overflow-tooltip
 				prop="entry_user"
 				label="录入员"
 				align="center"
 			/>
+
+			<!-- 车队 -->
 			<el-table-column
+				v-if="columns[6].visible"
 				show-overflow-tooltip
 				prop="fleet"
 				label="车队"
 				align="center"
 			>
-				<template slot-scope="scope">
+				<template #default="scope">
 					{{ scope.row.transport_type === 'sea' ? '无' : scope.row.fleet }}
 				</template>
 			</el-table-column>
+
+			<!-- 车牌号/柜号 -->
 			<el-table-column
+				v-if="columns[7].visible"
 				show-overflow-tooltip
 				prop="car_no"
 				label="车牌号/柜号"
 				align="center"
 			/>
+
+			<!-- 吨位 -->
 			<el-table-column
+				v-if="columns[8].visible"
 				show-overflow-tooltip
 				prop="tonnage"
 				label="吨位"
 				align="center"
 			>
-				<template slot-scope="scope">
+				<template #default="scope">
 					{{ scope.row.transport_type === 'sea' ? '无' : scope.row.tonnage }}
 				</template>
 			</el-table-column>
+
+			<!-- 平均运费价格 -->
 			<el-table-column
+				v-if="columns[9].visible"
 				show-overflow-tooltip
 				prop="average_freight_price"
 				label="平均运费价格"
 				align="center"
 			/>
+
+			<!-- 运费 -->
 			<el-table-column
+				v-if="columns[10].visible"
 				show-overflow-tooltip
 				prop="freight"
 				label="运费"
 				align="center"
 			/>
+
+			<!-- 司机户名 -->
 			<el-table-column
+				v-if="columns[11].visible"
 				show-overflow-tooltip
 				prop="driver_bank_name"
 				label="司机户名"
 				align="center"
 			/>
+
+			<!-- 司机银行账号 -->
 			<el-table-column
+				v-if="columns[12].visible"
 				show-overflow-tooltip
 				prop="driver_bank_no"
 				label="司机银行账号"
 				align="center"
 			/>
+
+			<!-- 订单来源 -->
 			<el-table-column
+				v-if="columns[13].visible"
 				show-overflow-tooltip
 				prop="source"
 				label="订单来源"
 				align="center"
 			/>
+
+			<!-- 订单状态 -->
 			<el-table-column
+				v-if="columns[14].visible"
 				show-overflow-tooltip
 				prop="check_state"
 				label="订单状态"
 				align="center"
 			/>
-			<el-table-column show-overflow-tooltip label="收到条" align="center">
-				<template slot-scope="scope">
+
+			<!-- 收到条 -->
+			<el-table-column
+				v-if="columns[15].visible"
+				show-overflow-tooltip
+				label="收到条"
+				align="center"
+			>
+				<template #default="scope">
 					<el-button
 						type="text"
 						size="mini"
@@ -306,14 +414,19 @@ export default {
 					</el-button>
 				</template>
 			</el-table-column>
+
+			<!-- 已支付金额 -->
 			<el-table-column
+				v-if="columns[16].visible"
 				show-overflow-tooltip
 				prop="paid_amount"
 				label="已支付金额"
 				align="center"
 			/>
 
+			<!-- 运费申请 -->
 			<el-table-column
+				v-if="columns[17].visible"
 				show-overflow-tooltip
 				label="运费申请"
 				align="center"
@@ -321,11 +434,11 @@ export default {
 				width="100px"
 				fixed="right"
 			>
-				<template slot-scope="scope">
+				<template #default="scope">
 					<el-dropdown size="mini" type="text">
 						<el-button
 							type="text"
-							:disabled="!(scope.row.payment_state === '未申请')"
+							:disabled="scope.row.payment_state !== '未申请'"
 						>
 							操作
 						</el-button>
