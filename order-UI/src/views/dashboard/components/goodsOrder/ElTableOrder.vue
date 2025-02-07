@@ -99,7 +99,32 @@ export default {
 			queryParams: {
 				pageNum: 1,
 				pageSize: 50
-			}
+			},
+			columns: [
+				{ key: 0, label: 'ID', visible: true },
+				{ key: 1, label: '日期', visible: true },
+				{ key: 2, label: '客户', visible: true },
+				{ key: 3, label: '供应商', visible: true },
+				{ key: 4, label: '审核状态', visible: true },
+				{ key: 5, label: '陆运车牌', visible: true },
+				{ key: 6, label: '陆运司机电话', visible: true },
+				{ key: 7, label: '陆地司机姓名', visible: true },
+				{ key: 8, label: '总货款', visible: true },
+				{ key: 9, label: '陆运费', visible: true },
+				{ key: 10, label: '海运柜号', visible: true },
+				{ key: 11, label: '海运司机电话', visible: true },
+				{ key: 12, label: '海运公司', visible: true },
+				{ key: 13, label: '海运费', visible: true },
+				{ key: 14, label: '销售经理', visible: true },
+				{ key: 15, label: '车队', visible: true },
+				{ key: 16, label: '录入员', visible: true },
+				{ key: 17, label: '附件', visible: true },
+				{ key: 18, label: '收到条附件', visible: true },
+				{ key: 19, label: '是否可编辑', visible: true },
+				{ key: 20, label: '客户是否开票', visible: true },
+				{ key: 21, label: '供应商是否开票', visible: true },
+				{ key: 22, label: '备注', visible: true }
+			]
 		};
 	},
 	watch: {
@@ -425,7 +450,7 @@ export default {
 					</template>
 				</el-table-column>
 				<el-table-column
-					v-show="columns[0].visible"
+					v-if="columns[0].visible"
 					show-overflow-tooltip
 					label="ID"
 					align="center"
@@ -433,7 +458,7 @@ export default {
 					fixed="left"
 				/>
 				<el-table-column
-					v-show="columns[1].visible"
+					v-if="columns[1].visible"
 					show-overflow-tooltip
 					label="日期"
 					align="center"
@@ -441,7 +466,7 @@ export default {
 					fixed="left"
 				/>
 				<el-table-column
-					v-show="columns[2].visible"
+					v-if="columns[2].visible"
 					show-overflow-tooltip
 					label="客户"
 					align="center"
@@ -449,7 +474,7 @@ export default {
 					fixed="left"
 				/>
 				<el-table-column
-					v-show="columns[3].visible"
+					v-if="columns[3].visible"
 					show-overflow-tooltip
 					label="供应商"
 					align="center"
@@ -482,7 +507,7 @@ export default {
 					</template>
 				</el-table-column>
 				<el-table-column
-					v-show="columns[4].visible"
+					v-if="columns[4].visible"
 					show-overflow-tooltip
 					label="审核状态"
 					align="center"
@@ -513,14 +538,14 @@ export default {
 					</template>
 				</el-table-column>
 				<el-table-column
-					v-show="columns[5].visible"
+					v-if="columns[5].visible"
 					show-overflow-tooltip
 					label="陆运车牌"
 					align="center"
 					prop="landCarNo"
 				/>
 				<el-table-column
-					v-show="columns[6].visible"
+					v-if="columns[6].visible"
 					show-overflow-tooltip
 					label="陆运司机电话"
 					align="center"
@@ -528,7 +553,7 @@ export default {
 					width="100px"
 				/>
 				<el-table-column
-					v-show="columns[7].visible"
+					v-if="columns[7].visible"
 					show-overflow-tooltip
 					label="陆地司机姓名"
 					align="center"
@@ -536,7 +561,7 @@ export default {
 					width="100px"
 				/>
 				<el-table-column
-					v-show="columns[8].visible"
+					v-if="columns[8].visible"
 					show-overflow-tooltip
 					label="总货款"
 					align="center"
@@ -548,7 +573,7 @@ export default {
 					</template>
 				</el-table-column>
 				<el-table-column
-					v-show="columns[9].visible"
+					v-if="columns[9].visible"
 					show-overflow-tooltip
 					label="陆运费"
 					align="center"
@@ -557,7 +582,7 @@ export default {
 				/>
 				<!--      原为海运车牌号-->
 				<el-table-column
-					v-show="columns[10].visible"
+					v-if="columns[10].visible"
 					show-overflow-tooltip
 					label="海运柜号"
 					align="center"
@@ -568,7 +593,7 @@ export default {
 					</template>
 				</el-table-column>
 				<el-table-column
-					v-show="columns[11].visible"
+					v-if="columns[11].visible"
 					show-overflow-tooltip
 					label="海运司机电话"
 					align="center"
@@ -581,7 +606,7 @@ export default {
 				</el-table-column>
 				<!--      原为海运司机姓名-->
 				<el-table-column
-					v-show="columns[12].visible"
+					v-if="columns[12].visible"
 					show-overflow-tooltip
 					label="海运公司"
 					align="center"
@@ -593,7 +618,7 @@ export default {
 					</template>
 				</el-table-column>
 				<el-table-column
-					v-show="columns[13].visible"
+					v-if="columns[13].visible"
 					show-overflow-tooltip
 					label="海运费"
 					align="center"
@@ -601,21 +626,21 @@ export default {
 					width="100px"
 				/>
 				<el-table-column
-					v-show="columns[14].visible"
+					v-if="columns[14].visible"
 					show-overflow-tooltip
 					label="销售经理"
 					align="center"
 					prop="saleManager"
 				/>
 				<el-table-column
-					v-show="columns[15].visible"
+					v-if="columns[15].visible"
 					show-overflow-tooltip
 					label="车队"
 					align="center"
 					prop="fleet"
 				/>
 				<el-table-column
-					v-show="columns[16].visible"
+					v-if="columns[16].visible"
 					show-overflow-tooltip
 					label="录入员"
 					align="center"
@@ -623,7 +648,7 @@ export default {
 					width="120px"
 				/>
 				<el-table-column
-					v-show="columns[17].visible"
+					v-if="columns[17].visible"
 					show-overflow-tooltip
 					label="附件"
 					align="center"
@@ -647,7 +672,7 @@ export default {
 					</template>
 				</el-table-column>
 				<el-table-column
-					v-show="columns[18].visible"
+					v-if="columns[18].visible"
 					show-overflow-tooltip
 					label="收到条附件路径"
 					align="center"
@@ -671,7 +696,7 @@ export default {
 					</template>
 				</el-table-column>
 				<el-table-column
-					v-show="columns[19].visible"
+					v-if="columns[19].visible"
 					show-overflow-tooltip
 					label="是否可编辑"
 					align="center"
@@ -687,7 +712,7 @@ export default {
 				</el-table-column>
 				<!--      客户供应商是否开票-->
 				<el-table-column
-					v-show="columns[20].visible"
+					v-if="columns[20].visible"
 					show-overflow-tooltip
 					label="客户是否开票"
 					align="center"
@@ -716,7 +741,7 @@ export default {
 					</template>
 				</el-table-column>
 				<el-table-column
-					v-show="columns[21].visible"
+					v-if="columns[21].visible"
 					show-overflow-tooltip
 					label="供应商是否开票"
 					align="center"
@@ -745,7 +770,7 @@ export default {
 					</template>
 				</el-table-column>
 				<el-table-column
-					v-show="columns[22].visible"
+					v-if="columns[22].visible"
 					show-overflow-tooltip
 					label="备注"
 					align="center"
@@ -825,7 +850,7 @@ export default {
 			</el-table>
 			<!--    分页组件-->
 			<pagination
-				v-show="total > 0"
+				v-if="total > 0"
 				:total="total"
 				:page.sync="queryParams.pageNum"
 				:limit.sync="queryParams.pageSize"
