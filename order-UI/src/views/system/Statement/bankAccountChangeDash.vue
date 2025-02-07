@@ -15,6 +15,10 @@
 				<p>
 					请上传银行明细相关excel文件，excel文件中每一个sheet为一个银行卡的明细
 				</p>
+				<el-button type="primary" @click="downloadTemplate" size="mini"
+					>下载excel模板</el-button
+				>
+				<br />
 				<input type="file" @change="handleFileUpload" accept=".xlsx, .xls" />
 				<div v-if="uploadedFiles.length > 0" class="uploaded-files">
 					<h4>已上传的文件：</h4>
@@ -192,6 +196,21 @@ export default {
 
 			this.sheetDialogVisible = false;
 			this.dataDialogVisible = true;
+		},
+		downloadTemplate() {
+			const workbook = XLSX.utils.book_new();
+			const sheetName = `银行卡号${Math.floor(
+				Math.random() * 10000000000000000
+			)}`;
+			const data = [
+				['操作日期', '变动类型', '金额', '公司类型', '银行卡类型', '用户名'],
+				['2023-01-01', '存款', '1000.00', '公司A', '储蓄卡', '张三'],
+				['2023-01-02', '取款', '500.00', '公司B', '信用卡', '李四']
+				// ...更多随机数据
+			];
+			const worksheet = XLSX.utils.aoa_to_sheet(data);
+			XLSX.utils.book_append_sheet(workbook, worksheet, sheetName);
+			XLSX.writeFile(workbook, '银行卡明细模板.xlsx');
 		}
 	}
 };
