@@ -445,8 +445,9 @@ export default {
 					scope.row.isIncludeTaxSale === 0
 				) {
 					scope.row.payments = fix(
-						(scope.row.length * scope.row.width * scope.row.actualPieces) /
-							(1000000 * scope.row.paymentUnload) +
+						((scope.row.length * scope.row.width * scope.row.actualPieces) /
+							1000000) *
+							scope.row.paymentUnload +
 							Number(scope.row.paymentsWithSundry)
 					);
 				} else {
@@ -460,7 +461,6 @@ export default {
 					);
 				}
 			}
-
 			if (scope.row.payments > 0) {
 				calcu();
 				this.calculatePrice(scope);
@@ -1457,7 +1457,6 @@ export default {
 							</el-radio-group>
 						</template>
 					</el-table-column>
-
 					<el-table-column
 						label="总货款杂费"
 						prop="paymentsWithSundry"
