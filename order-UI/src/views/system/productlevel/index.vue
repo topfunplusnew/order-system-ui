@@ -641,7 +641,14 @@ export default {
 						return;
 					}
 					if (!_levelMap[this.addCategoryModel.categoryNo]) {
-						this.$message.error('获取异常，请检查是否有该级别编码!');
+						this.$message.warning('无相关数据 已生成');
+						this.$nextTick(() => {
+							this.$set(
+								this.addCategoryModel,
+								'levelNo',
+								this.addCategoryModel.categoryNo + 1
+							);
+						});
 						return;
 					}
 					this.$nextTick(() => {
@@ -649,7 +656,7 @@ export default {
 							this.addCategoryModel,
 							'levelNo',
 							this.addCategoryModel.categoryNo +
-								(_levelMap[this.addCategoryModel.categoryNo] + 1)
+								(Number(_levelMap[this.addCategoryModel.categoryNo]) + 1)
 						);
 					});
 				});
