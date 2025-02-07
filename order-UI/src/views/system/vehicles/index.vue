@@ -131,21 +131,55 @@
 			</el-col>
 			<right-toolbar
 				:showSearch.sync="showSearch"
+				:columns="columns"
 				@queryTable="getList"
-			></right-toolbar>
+			>
+				<template #print>
+					<el-col :span="1.5">
+						<el-button
+							plain
+							icon="el-icon-printer"
+							size="mini"
+							@click="printHTML"
+						></el-button>
+					</el-col>
+				</template>
+				<template #export>
+					<el-col :span="1.5">
+						<el-button
+							v-hasPermi="['system:bankaccount:export']"
+							plain
+							icon="el-icon-folder-opened"
+							size="mini"
+							@click="handleExport"
+						></el-button>
+					</el-col>
+				</template>
+			</right-toolbar>
 		</el-row>
 
 		<el-table
+			id="printBox"
 			size="mini"
 			v-loading="loading"
 			:data="vehiclesList"
 			@selection-change="handleSelectionChange"
 		>
 			<el-table-column type="selection" width="55" align="center" />
-			<el-table-column label="ID" align="center" prop="id" />
-			<el-table-column label="车辆型号" align="center" prop="model" />
-			<el-table-column label="车牌号" align="center" prop="licensePlate" />
 			<el-table-column
+				v-if="columns[0].visible"
+				label="车辆型号"
+				align="center"
+				prop="model"
+			/>
+			<el-table-column
+				v-if="columns[1].visible"
+				label="车牌号"
+				align="center"
+				prop="licensePlate"
+			/>
+			<el-table-column
+				v-if="columns[2].visible"
 				label="购买时间"
 				align="center"
 				prop="purchaseDate"
@@ -155,9 +189,20 @@
 					<span>{{ parseTime(scope.row.purchaseDate, '{y}-{m}-{d}') }}</span>
 				</template>
 			</el-table-column>
-			<el-table-column label="行驶里程" align="center" prop="mileage" />
-			<el-table-column label="保养金额" align="center" prop="maintenanceCost" />
 			<el-table-column
+				v-if="columns[3].visible"
+				label="行驶里程"
+				align="center"
+				prop="mileage"
+			/>
+			<el-table-column
+				v-if="columns[4].visible"
+				label="保养金额"
+				align="center"
+				prop="maintenanceCost"
+			/>
+			<el-table-column
+				v-if="columns[5].visible"
 				label="保养日期"
 				align="center"
 				prop="maintenanceDate"
@@ -167,8 +212,18 @@
 					<span>{{ parseTime(scope.row.maintenanceDate, '{y}-{m}-{d}') }}</span>
 				</template>
 			</el-table-column>
-			<el-table-column label="保险金额" align="center" prop="insuranceCost" />
-			<el-table-column label="备注" align="center" prop="notes" />
+			<el-table-column
+				v-if="columns[6].visible"
+				label="保险金额"
+				align="center"
+				prop="insuranceCost"
+			/>
+			<el-table-column
+				v-if="columns[7].visible"
+				label="备注"
+				align="center"
+				prop="notes"
+			/>
 			<el-table-column label="附件" align="center">
 				<template slot-scope="scope">
 					<el-button
@@ -354,8 +409,10 @@ import {
 } from '@/api/system/vehicles';
 import { parseTime } from '../../../utils/ruoyi';
 import { getToken } from '@/utils/auth';
+import { mixin_printHTML } from '../../dashboard/mixins/print';
 export default {
 	name: 'Vehicles',
+	mixins: [mixin_printHTML],
 	data() {
 		return {
 			// 遮罩层
@@ -392,6 +449,16 @@ export default {
 			},
 			// 表单参数
 			form: {},
+			columns: [
+				{ key: 0, label: `车辆型号`, visible: true },
+				{ key: 1, label: `车牌号`, visible: true },
+				{ key: 2, label: `购买时间`, visible: true },
+				{ key: 3, label: `行驶里程`, visible: true },
+				{ key: 4, label: `保养金额`, visible: true },
+				{ key: 5, label: `保养日期`, visible: true },
+				{ key: 6, label: `保险金额`, visible: true },
+				{ key: 7, label: `备注`, visible: true }
+			],
 			// 表单校验
 			rules: {
 				model: [

@@ -91,10 +91,30 @@
 			"
 			@selection-change="handleSelectionChange"
 		>
-			<el-table-column label="车牌/柜号" align="center" prop="carNo" />
-			<el-table-column label="司机姓名/海运公司" align="center" prop="driver" />
-			<el-table-column label="司机电话" align="center" prop="tel" />
-			<el-table-column label="运输类型" align="center" prop="carType" />
+			<el-table-column
+				v-if="columns[0].visible"
+				label="车牌/柜号"
+				align="center"
+				prop="carNo"
+			/>
+			<el-table-column
+				v-if="columns[1].visible"
+				label="司机姓名/海运公司"
+				align="center"
+				prop="driver"
+			/>
+			<el-table-column
+				v-if="columns[2].visible"
+				label="司机电话"
+				align="center"
+				prop="tel"
+			/>
+			<el-table-column
+				v-if="columns[3].visible"
+				label="运输类型"
+				align="center"
+				prop="carType"
+			/>
 			<el-table-column
 				label="操作"
 				align="center"
@@ -303,13 +323,10 @@ export default {
 				}
 			],
 			columns: [
-				{ key: 0, label: `车牌`, visible: true },
-				{ key: 1, label: `司机姓名`, visible: true },
+				{ key: 0, label: `车牌/柜号`, visible: true },
+				{ key: 1, label: `司机姓名/海运公司`, visible: true },
 				{ key: 2, label: `司机电话`, visible: true },
-				{ key: 3, label: `户名`, visible: true },
-				{ key: 4, label: `银行账号`, visible: true },
-				{ key: 5, label: `开户行`, visible: true },
-				{ key: 6, label: `运输类型`, visible: true }
+				{ key: 3, label: `运输类型`, visible: true }
 			],
 			companyList: [],
 			queryCars: '',

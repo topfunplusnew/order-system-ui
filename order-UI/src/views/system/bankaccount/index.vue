@@ -110,7 +110,12 @@
 			"
 			@selection-change="handleSelectionChange"
 		>
-			<el-table-column label="绑定状态" align="center" width="200">
+			<el-table-column
+				v-if="columns[0].visible"
+				label="绑定状态"
+				align="center"
+				width="200"
+			>
 				<template slot-scope="scope">
 					<span v-if="scope.row.companyId === 0" style="color: #138fe1"
 						>己方公司银行卡</span
@@ -122,13 +127,14 @@
 				</template>
 			</el-table-column>
 			<el-table-column
-				v-if="columns[0].visible"
+				v-if="columns[1].visible"
 				label="账户类型"
 				align="center"
 				prop="acountsType"
 				width="200"
 			/>
 			<el-table-column
+				v-if="columns[2].visible"
 				label="公私户类型"
 				align="center"
 				prop="isPublicAccount"
@@ -147,6 +153,7 @@
 				</template>
 			</el-table-column>
 			<el-table-column
+				v-if="columns[3].visible"
 				label="显示名称"
 				align="center"
 				prop="displayName"
@@ -154,30 +161,30 @@
 			/>
 			<el-table-column
 				v-if="columns[4].visible"
-				label="公司名称"
-				align="center"
-				prop="companyName"
-				width="200"
-			/>
-			<el-table-column
-				v-if="columns[1].visible"
 				label="开户名称"
 				align="center"
 				prop="acountsName"
 				width="200"
 			/>
 			<el-table-column
-				v-if="columns[2].visible"
+				v-if="columns[5].visible"
 				label="银行账号"
 				align="center"
 				prop="bankNo"
 				width="200"
 			/>
 			<el-table-column
-				v-if="columns[3].visible"
+				v-if="columns[6].visible"
 				label="开户行"
 				align="center"
 				prop="bankName"
+				width="200"
+			/>
+			<el-table-column
+				v-if="columns[7].visible"
+				label="公司名称"
+				align="center"
+				prop="companyName"
 				width="200"
 			/>
 
@@ -755,12 +762,14 @@ export default {
 			],
 			// 隐藏列信息
 			columns: [
-				{ key: 0, label: `账户类型`, visible: true },
-				{ key: 1, label: `开户名称`, visible: true },
-				{ key: 2, label: `账号(银行卡号)`, visible: true },
-				{ key: 3, label: `开户行`, visible: true },
-				{ key: 4, label: `公司名称`, visible: true },
-				{ key: 5, label: `余额`, visible: true }
+				{ key: 0, label: `绑定状态`, visible: true },
+				{ key: 1, label: `账户类型`, visible: true },
+				{ key: 2, label: `公私户类型`, visible: true },
+				{ key: 3, label: `显示名称`, visible: true },
+				{ key: 4, label: `开户名称`, visible: true },
+				{ key: 5, label: `银行账号`, visible: true },
+				{ key: 6, label: `开户行`, visible: true },
+				{ key: 7, label: `公司名称`, visible: true }
 			],
 			companyList: [],
 			// 调整银行卡
@@ -885,10 +894,8 @@ export default {
 			this.queryUser = val;
 		},
 		handleCommitBackUser(val) {
-			console.log(val);
 			this.form.companyName = val.trueName;
 			this.form.companyId = val.userId;
-			console.log(this.form);
 		},
 		// 搜索供应商信息的回调
 		handleCommitBackCompanyGive(val) {

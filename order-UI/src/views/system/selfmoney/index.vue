@@ -83,6 +83,21 @@
 					></el-option>
 				</el-select>
 			</el-col>
+
+			<el-col>
+				<right-toolbar :columns="columns" @queryTable="getList">
+					<template #print>
+						<el-col :span="1.5">
+							<el-button
+								plain
+								icon="el-icon-printer"
+								size="mini"
+								@click="printHTML"
+							></el-button>
+						</el-col>
+					</template>
+				</right-toolbar>
+			</el-col>
 		</el-row>
 
 		<el-table
@@ -100,36 +115,42 @@
 			"
 		>
 			<el-table-column
+				v-if="columns[0].visible"
 				label="余额"
 				align="center"
 				prop="sumMoney"
 				show-overflow-tooltip
 			/>
 			<el-table-column
+				v-if="columns[1].visible"
 				label="银行卡类型"
 				align="center"
 				prop="bankCardType"
 				show-overflow-tooltip
 			/>
 			<el-table-column
+				v-if="columns[2].visible"
 				label="显示名称"
 				align="center"
 				prop="displayName"
 				show-overflow-tooltip
 			/>
 			<el-table-column
+				v-if="columns[3].visible"
 				label="开户名称"
 				align="center"
 				prop="acountsName"
 				show-overflow-tooltip
 			/>
 			<el-table-column
+				v-if="columns[4].visible"
 				label="银行账号"
 				align="center"
 				prop="bankNo"
 				show-overflow-tooltip
 			/>
 			<el-table-column
+				v-if="columns[5].visible"
 				label="开户行"
 				align="center"
 				prop="bankName"
@@ -175,6 +196,14 @@ export default {
 				companyName: '',
 				acountsType: ''
 			},
+			columns: [
+				{ key: 0, label: `余额`, visible: true },
+				{ key: 1, label: `银行卡类型`, visible: true },
+				{ key: 2, label: `显示名称`, visible: true },
+				{ key: 3, label: `开户名称`, visible: true },
+				{ key: 4, label: `银行账号`, visible: true },
+				{ key: 5, label: `开户行`, visible: true }
+			],
 			// 排序选择
 			options: [
 				{
@@ -262,13 +291,9 @@ export default {
 		},
 		// 筛选函数
 		handleFilter(item) {
-			// 如果每一个属性都满足 即为true
 			let flag = true;
-			// item要满足queryParams中的每一个参数 但是也可以满足某一个参数
 			Object.keys(this.queryParams).forEach(key => {
-				// 两边都存在这个属性
 				if (item[key] && this.queryParams[key]) {
-					// 存在 且不相等
 					if (item[key].indexOf(this.queryParams[key]) === -1) {
 						flag = false;
 					}

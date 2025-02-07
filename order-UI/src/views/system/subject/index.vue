@@ -127,7 +127,7 @@
 					/>
 					<!--          <el-table-column label="父级ID" align="center" prop="parentId" v-if="columns[3].visible"/>-->
 					<el-table-column
-						v-if="columns[4].visible"
+						v-if="columns[3].visible"
 						label="备注"
 						align="center"
 						prop="remark"
@@ -314,8 +314,7 @@ export default {
 				{ key: 0, label: `科目名称`, visible: true },
 				{ key: 1, label: `科目编码`, visible: true },
 				{ key: 2, label: `科目类别`, visible: true },
-				{ key: 3, label: `父级ID`, visible: true },
-				{ key: 4, label: `备注`, visible: true }
+				{ key: 3, label: `备注`, visible: true }
 			],
 			// 表单校验
 			rules: {
