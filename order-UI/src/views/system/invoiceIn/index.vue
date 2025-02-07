@@ -163,7 +163,7 @@
 			</el-table-column>
 			<!-- 现在不显示 -->
 			<el-table-column
-				v-if="columns[9].visible && false"
+				v-if="columns[8].visible && false"
 				label="审核状态"
 				align="center"
 				prop="checkState"
@@ -190,7 +190,7 @@
 				</template>
 			</el-table-column>
 			<el-table-column
-				v-if="columns[10].visible"
+				v-if="columns[9].visible"
 				label="备注"
 				align="center"
 				prop="comments"
@@ -508,8 +508,7 @@ export default {
 				{ key: 6, label: `票点`, visible: true },
 				{ key: 7, label: `票点金额`, visible: true },
 				{ key: 8, label: `订单信息`, visible: true },
-				{ key: 9, label: `审核状态`, visible: true },
-				{ key: 10, label: `备注`, visible: true }
+				{ key: 9, label: `备注`, visible: true }
 			],
 
 			// 公司类型

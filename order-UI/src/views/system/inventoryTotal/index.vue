@@ -47,7 +47,7 @@
 			</el-form-item>
 		</el-form>
 
-		<el-row :gutter="20">
+		<el-row :gutter="20" v-if="Object.keys(categorizedInventory).length !== 0">
 			<el-col
 				:span="8"
 				v-for="(items, category) in categorizedInventory"
@@ -117,6 +117,11 @@
 						/>
 					</div>
 				</el-card>
+			</el-col>
+		</el-row>
+		<el-row v-else>
+			<el-col :span="24">
+				<el-empty description="暂无数据" />
 			</el-col>
 		</el-row>
 		<el-dialog
@@ -249,7 +254,6 @@ export default {
 <style scoped>
 .app-container {
 	padding: 20px;
-	background-color: #f5f5f5;
 }
 .search-form {
 	margin-bottom: 20px;

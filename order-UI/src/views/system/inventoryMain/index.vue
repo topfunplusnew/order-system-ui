@@ -119,8 +119,31 @@
 			</el-col>
 			<right-toolbar
 				:showSearch.sync="showSearch"
+				:columns="columns"
 				@queryTable="getList"
-			></right-toolbar>
+			>
+				<template #print>
+					<el-col :span="1.5">
+						<el-button
+							plain
+							icon="el-icon-printer"
+							size="mini"
+							@click="printHTML"
+						></el-button>
+					</el-col>
+				</template>
+				<template #export>
+					<el-col :span="1.5">
+						<el-button
+							v-hasPermi="['system:bankaccount:export']"
+							plain
+							icon="el-icon-folder-opened"
+							size="mini"
+							@click="handleExport"
+						></el-button>
+					</el-col>
+				</template>
+			</right-toolbar>
 		</el-row>
 
 		<el-col :span="4">
@@ -134,6 +157,7 @@
 		</el-col>
 		<el-col :span="20">
 			<el-table
+				id="printBox"
 				size="mini"
 				v-loading="loading"
 				:data="inventoryMainList"
@@ -142,26 +166,41 @@
 				style="width: 100%; margin-bottom: 20px"
 			>
 				<el-table-column type="selection" width="50" align="center" />
-				<el-table-column label="ID" align="center" prop="id" width="80" />
+
 				<el-table-column
+					v-if="columns[0].visible"
+					label="ID"
+					align="center"
+					prop="id"
+					width="80"
+				/>
+
+				<el-table-column
+					v-if="columns[1].visible"
 					label="仓库名称"
 					align="center"
 					prop="storeHouseName"
 					width="150"
 				/>
+
 				<el-table-column
+					v-if="columns[2].visible"
 					label="入库日期"
 					align="center"
 					prop="storeDate"
 					width="150"
 				/>
+
 				<el-table-column
+					v-if="columns[3].visible"
 					label="货物来源公司"
 					align="center"
 					prop="goodsCompany"
 					width="180"
 				/>
+
 				<el-table-column
+					v-if="columns[4].visible"
 					label="审核状态"
 					align="center"
 					prop="checkState"
@@ -190,61 +229,81 @@
 						</el-row>
 					</template>
 				</el-table-column>
+
 				<el-table-column
+					v-if="columns[5].visible"
 					label="陆运车牌"
 					align="center"
 					prop="landCarNo"
 					width="120"
 				/>
+
 				<el-table-column
+					v-if="columns[6].visible"
 					label="陆运司机电话"
 					align="center"
 					prop="landDriverTel"
 					width="150"
 				/>
+
 				<el-table-column
+					v-if="columns[7].visible"
 					label="陆地司机姓名"
 					align="center"
 					prop="landDriverName"
 					width="120"
 				/>
+
 				<el-table-column
+					v-if="columns[8].visible"
 					label="陆运银行卡号"
 					align="center"
 					prop="landBankNo"
 					width="120"
 				/>
+
 				<el-table-column
+					v-if="columns[9].visible"
 					label="陆运银行户名"
 					align="center"
 					prop="landBankName"
 					width="120"
 				/>
+
 				<el-table-column
+					v-if="columns[10].visible"
 					label="柜号"
 					align="center"
 					prop="seaCarNo"
 					width="120"
 				/>
+
 				<el-table-column
+					v-if="columns[11].visible"
 					label="海运司机电话"
 					align="center"
 					prop="seaDriverTel"
 					width="150"
 				/>
+
 				<el-table-column
+					v-if="columns[12].visible"
 					label="海运公司"
 					align="center"
 					prop="seaDriverName"
 					width="120"
 				/>
+
 				<el-table-column
+					v-if="columns[13].visible"
 					label="海运银行卡号"
 					align="center"
 					prop="seaBankNo"
 					width="120"
 				/>
+
 				<el-table-column
+					v-if="columns[14].visible"
 					label="海运银行户名"
 					align="center"
 					prop="seaBankName"
@@ -252,18 +311,23 @@
 				/>
 
 				<el-table-column
+					v-if="columns[15].visible"
 					label="子项陆运费之和"
 					align="center"
 					prop="allLandFreight"
 					width="150"
 				/>
+
 				<el-table-column
+					v-if="columns[16].visible"
 					label="子项海运费之和"
 					align="center"
 					prop="allSeaFreight"
 					width="150"
 				/>
+
 				<el-table-column
+					v-if="columns[17].visible"
 					label="收到条附件路径"
 					align="center"
 					prop="allSeaFreight"
@@ -286,7 +350,14 @@
 						/>
 					</template>
 				</el-table-column>
-				<el-table-column label="操作" align="center" width="150" fixed="right">
+
+				<el-table-column
+					v-if="columns[18].visible"
+					label="操作"
+					align="center"
+					width="150"
+					fixed="right"
+				>
 					<template slot-scope="scope">
 						<el-button
 							size="mini"
@@ -307,6 +378,7 @@
 					</template>
 				</el-table-column>
 			</el-table>
+
 			<pagination
 				v-show="total > 0"
 				:total="total"
@@ -1219,10 +1291,11 @@ import { mixin_checkfile } from '../../dashboard/mixins/checkfiles/mixin_checkfi
 import CheckFiles from '../../../components/CheckFiles.vue';
 import { auditInventory } from '../../../api/system/inventoryMain';
 import StateTag from '../../dashboard/components/common/StateTag.vue';
+import { mixin_printHTML } from '../../dashboard/mixins/print';
 export default {
 	name: 'InventoryMain',
 	components: { SearchOption, CheckFiles, StateTag },
-	mixins: [_fill, mixin_checkfile],
+	mixins: [_fill, mixin_checkfile, mixin_printHTML],
 	data() {
 		return {
 			// 遮罩层
@@ -1274,6 +1347,27 @@ export default {
 			},
 			// 表单参数
 			form: {},
+			columns: [
+				{ key: 0, label: 'ID', visible: true },
+				{ key: 1, label: '仓库名称', visible: true },
+				{ key: 2, label: '入库日期', visible: true },
+				{ key: 3, label: '货物来源公司', visible: true },
+				{ key: 4, label: '审核状态', visible: true },
+				{ key: 5, label: '陆运车牌', visible: true },
+				{ key: 6, label: '陆运司机电话', visible: true },
+				{ key: 7, label: '陆地司机姓名', visible: true },
+				{ key: 8, label: '陆运银行卡号', visible: true },
+				{ key: 9, label: '陆运银行户名', visible: true },
+				{ key: 10, label: '柜号', visible: true },
+				{ key: 11, label: '海运司机电话', visible: true },
+				{ key: 12, label: '海运公司', visible: true },
+				{ key: 13, label: '海运银行卡号', visible: true },
+				{ key: 14, label: '海运银行户名', visible: true },
+				{ key: 15, label: '子项陆运费之和', visible: true },
+				{ key: 16, label: '子项海运费之和', visible: true },
+				{ key: 17, label: '收到条附件路径', visible: true },
+				{ key: 18, label: '操作', visible: true }
+			],
 			// 表单校验
 			rules: {},
 			storeList: [],

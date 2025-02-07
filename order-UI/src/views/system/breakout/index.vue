@@ -76,19 +76,19 @@
 			@selection-change="handleSelectionChange"
 		>
 			<el-table-column
-				v-if="columns[1].visible"
+				v-if="columns[0].visible"
 				label="仓库名称"
 				align="center"
 				prop="storeHouseName"
 			/>
 			<el-table-column
-				v-if="columns[2].visible"
+				v-if="columns[1].visible"
 				label="出库日期"
 				align="center"
 				prop="outDate"
 			/>
 			<el-table-column
-				v-if="columns[3].visible"
+				v-if="columns[2].visible"
 				label="出库量"
 				align="center"
 				prop="outAmount"
@@ -1190,10 +1190,9 @@ export default {
 			form: {},
 			rules: {},
 			columns: [
-				{ key: 0, label: `id`, visible: true },
-				{ key: 1, label: `仓库名称`, visible: true },
-				{ key: 2, label: `出库日期`, visible: true },
-				{ key: 3, label: `出库量`, visible: true }
+				{ key: 0, label: `仓库名称`, visible: true },
+				{ key: 1, label: `出库日期`, visible: true },
+				{ key: 2, label: `出库量`, visible: true }
 			],
 			inventoryInfoVisible: false,
 			isLand: false,

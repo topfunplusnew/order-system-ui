@@ -89,35 +89,20 @@
 			"
 			@selection-change="handleSelectionChange"
 		>
-			<!--      <el-table-column label="id" align="center" prop="id" v-if="columns[0].visible"/>-->
-			<!--      <el-table-column label="订单编号" align="center" prop="ordersNo" v-if="columns[1].visible">-->
-			<!--        <template slot-scope="scope">-->
-			<!--          <el-tag type="success" v-if="scope.row.ordersNo ==='二次加工' || scope.row.ordersNo === '货物破损'">-->
-			<!--            <span>-->
-			<!--              {{ scope.row.ordersNo }}货物-->
-			<!--            </span>-->
-			<!--          </el-tag>-->
-			<!--          <span v-else>-->
-			<!--            {{ scope.row.ordersNo }}-->
-			<!--          </span>-->
-			<!--        </template>-->
-			<!--      </el-table-column>-->
-			<!--      <el-table-column label="仓库ID" align="center" prop="storeHouseid"/>-->
 			<el-table-column
-				v-if="columns[2].visible"
+				v-if="columns[0].visible"
 				label="仓库名称"
 				align="center"
 				prop="storeHouseName"
 			/>
-			<!--      <el-table-column label="仓库存储的货物ID" align="center" prop="storeID"/>-->
 			<el-table-column
-				v-if="columns[3].visible"
+				v-if="columns[1].visible"
 				label="出库日期"
 				align="center"
 				prop="outDate"
 			/>
 			<el-table-column
-				v-if="columns[4].visible"
+				v-if="columns[2].visible"
 				label="出库量"
 				align="center"
 				prop="outAmount"
@@ -531,11 +516,9 @@ export default {
 			// 表单校验
 			rules: {},
 			columns: [
-				{ key: 0, label: `id`, visible: true },
-				{ key: 1, label: `订单编号`, visible: true },
-				{ key: 2, label: `仓库名称`, visible: true },
-				{ key: 3, label: `出库日期`, visible: true },
-				{ key: 4, label: `出库量`, visible: true }
+				{ key: 0, label: `仓库名称`, visible: true },
+				{ key: 1, label: `出库日期`, visible: true },
+				{ key: 2, label: `出库量`, visible: true }
 			],
 			checkOrderVisible: false,
 			orderDetailInfo: {},
