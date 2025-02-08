@@ -163,6 +163,7 @@
 						v-loading="loading"
 						v-horizontal-scroll="'always'"
 						border
+						size="mini"
 						:data="subCardList"
 						@selection-change="handleSelectionChange"
 					>

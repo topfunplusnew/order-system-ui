@@ -258,7 +258,11 @@ export default {
 									align="center"
 									prop="dayPercentage"
 									width="300"
-								/>
+								>
+									<template #default="scope">
+										{{ (scope.row.dayPercentage * 100).toFixed(2) }}%
+									</template>
+								</el-table-column>
 							</el-table-column>
 
 							<!-- 费用月报 -->
@@ -284,7 +288,11 @@ export default {
 									align="center"
 									prop="monthPercentage"
 									width="300"
-								/>
+								>
+									<template #default="scope">
+										{{ (scope.row.monthPercentage * 100).toFixed(2) }}%
+									</template>
+								</el-table-column>
 							</el-table-column>
 
 							<!-- 费用年报 -->
@@ -310,7 +318,11 @@ export default {
 									align="center"
 									prop="yearPercentage"
 									width="300"
-								/>
+								>
+									<template #default="scope">
+										{{ (scope.row.yearPercentage * 100).toFixed(2) }}%
+									</template></el-table-column
+								>
 							</el-table-column>
 						</el-table-column>
 					</el-table>
