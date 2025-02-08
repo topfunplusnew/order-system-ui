@@ -72,7 +72,7 @@ export default {
 		},
 		handleSubmitTime() {
 			this.download(
-				'statistics/export/orderfreightsummary',
+				'statistics/export/bankAcountChangeSummary',
 				{
 					endTime: this.queryParams.endTime
 				},
