@@ -314,20 +314,27 @@ export default {
 		refresh() {
 			this.getList();
 		},
-		handleSubmitTime() {
-			this.download(
-				'statistics/export/companysummary',
-				{
-					...this.queryParams
-				},
-				`供应商科目余额汇总表_${parseTime(new Date().getTime())}.xlsx`
-			);
-		},
+		// handleSubmitTime() {
+		// 	this.download(
+		// 		'statistics/export/companysummary',
+		// 		{
+		// 			...this.queryParams
+		// 		},
+		// 		`供应商科目余额汇总表_${parseTime(new Date().getTime())}.xlsx`
+		// 	);
+		// },
 		// 导出
 		handleExport() {
-			this.$datePicker().then(res => {
-				// todo 2. 导出
-				console.log(res);
+			this.$datePicker().then(({ beginTime, endTime }) => {
+				this.queryParams.beginTime = beginTime;
+				this.queryParams.endTime = endTime;
+				this.download(
+					'statistics/export/supplierSummary',
+					{
+						...this.queryParams
+					},
+					`供应商科目余额汇总表_${parseTime(new Date().getTime())}.xlsx`
+				);
 			});
 		}
 	}

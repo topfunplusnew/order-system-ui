@@ -9,7 +9,7 @@
 					<el-input
 						v-model="query.carNo"
 						placeholder="请输入车牌号"
-						size="small"
+						size="mini"
 						clearable
 					/>
 				</el-form-item>
@@ -17,20 +17,20 @@
 					<el-date-picker
 						v-model="query.startTime"
 						type="datetime"
+						value-format="yyyy-MM-dd HH:mm:ss"
 						placeholder="选择开始时间"
-						class="filter-item"
 						clearable
-						size="small"
+						size="mini"
 					/>
 				</el-form-item>
 				<el-form-item label="结束时间">
 					<el-date-picker
 						v-model="query.endTime"
 						type="datetime"
+						value-format="yyyy-MM-dd HH:mm:ss"
 						placeholder="选择结束时间"
-						class="filter-item"
 						clearable
-						size="small"
+						size="mini"
 					/>
 				</el-form-item>
 				<el-form-item>
@@ -38,10 +38,10 @@
 						type="primary"
 						@click="fetchData"
 						class="query-button"
-						size="small"
+						size="mini"
 						>查询
 					</el-button>
-					<el-button @click="resetForm" class="reset-button" size="small"
+					<el-button @click="resetForm" class="reset-button" size="mini"
 						>重置
 					</el-button>
 				</el-form-item>
@@ -213,6 +213,8 @@ export default {
 	},
 	methods: {
 		async fetchData() {
+			console.log('查询条件:', this.query);
+
 			try {
 				const response = await cashOilCardSummary(this.query);
 				if (response.code === 200) {
