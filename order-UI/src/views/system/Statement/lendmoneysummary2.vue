@@ -462,11 +462,11 @@ export default {
 		/** 导出按钮操作 */
 		handleSubmitTime() {
 			this.download(
-				'statistics/export/lendMoney',
+				'statistics/export/lendMoney2',
 				{
 					...this.queryParams
 				},
-				`期货保证金_${parseTime(new Date().getTime())}.xlsx`
+				`期货保证金台账_${parseTime(new Date().getTime())}.xlsx`
 			);
 			this.dialogVisible = false;
 		},

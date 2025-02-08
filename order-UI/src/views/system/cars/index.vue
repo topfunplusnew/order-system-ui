@@ -16,14 +16,6 @@
 					@keyup.enter.native="handleQuery"
 				/>
 			</el-form-item>
-			<el-form-item label="户名" prop="acountsName">
-				<el-input
-					v-model="queryParams.acountsName"
-					placeholder="请输入户名"
-					clearable
-					@keyup.enter.native="handleQuery"
-				/>
-			</el-form-item>
 			<el-form-item>
 				<el-button type="primary" size="mini" @click="handleQuery">
 					搜索

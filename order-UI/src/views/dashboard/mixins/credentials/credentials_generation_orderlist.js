@@ -1,8 +1,8 @@
 // 运费一键申请
-import { DocumentNumber } from '../../../../api/tool/enums';
-import { parseTime } from '../../../../utils/ruoyi';
 import { mapGetters } from 'vuex';
 import { listGoodsOrder } from '../../../../api/system/goodsOrder';
+import { DocumentNumber } from '../../../../api/tool/enums';
+import { parseTime } from '../../../../utils/ruoyi';
 
 export var mixin_credentials_generation_orderlist = {
 	data: function () {
@@ -27,7 +27,7 @@ export var mixin_credentials_generation_orderlist = {
 			handler(val) {
 				// 赋值类型 根据这个类型来决定渲染哪一个组件
 				this.DOC_TYPE = val;
-				this.$message.info('type:' + this.DOC_TYPE);
+				// this.$message.info('type:' + this.DOC_TYPE);
 				this.orderDialogVisible = true;
 			},
 			deep: true
@@ -71,10 +71,10 @@ export var mixin_credentials_generation_orderlist = {
 				this.needToMakeList.push({
 					quote: parseTime(new Date()),
 					voucherType: '主营业务成本-票点成本',
-					lender: item.invoiceAmount,
+					lender: Number(item.invoiceAmount),
 					borrower: '',
 					comments: '无',
-					amount: item.invoiceAmount,
+					amount: Number(item.invoiceAmount),
 					// 基本信息
 					voucherNo:
 						`${strings}_` +
@@ -89,9 +89,9 @@ export var mixin_credentials_generation_orderlist = {
 					quote: parseTime(new Date()),
 					voucherType: '应付账款-供应商往来-' + item.companyName,
 					lender: '',
-					borrower: item.invoiceAmount,
+					borrower: Number(item.invoiceAmount),
 					comments: '无',
-					amount: item.invoiceAmount,
+					amount: Number(item.invoiceAmount),
 					voucherNo:
 						`${strings}_` +
 						this.selectedNeedOrderList.map(item => item.id).join('_') +
@@ -108,10 +108,10 @@ export var mixin_credentials_generation_orderlist = {
 				this.needToMakeList.push({
 					quote: parseTime(new Date()),
 					voucherType: '应收账款-客户往来' + item.companyName,
-					lender: item.invoiceAmount,
+					lender: Number(item.invoiceAmount),
 					borrower: '',
 					comments: '无',
-					amount: item.invoiceAmount,
+					amount: Number(item.invoiceAmount),
 					voucherNo:
 						`${strings}_` +
 						this.selectedNeedOrderList.map(item => item.id).join('_') +
@@ -125,9 +125,9 @@ export var mixin_credentials_generation_orderlist = {
 					quote: parseTime(new Date()),
 					voucherType: '主营业务收入-票点收入',
 					lender: '',
-					borrower: item.invoiceAmount,
+					borrower: Number(item.invoiceAmount),
 					comments: '无',
-					amount: item.invoiceAmount,
+					amount: Number(item.invoiceAmount),
 					voucherNo:
 						`${strings}_` +
 						this.selectedNeedOrderList.map(item => item.id).join('_') +
@@ -148,10 +148,10 @@ export var mixin_credentials_generation_orderlist = {
 				this.needToMakeList.push({
 					quote: parseTime(new Date()),
 					voucherType: '主营业务成本-票点成本',
-					lender: item.invoiceAmount,
+					lender: Number(item.invoiceAmount),
 					borrower: '',
 					comments: '无',
-					amount: item.invoiceAmount,
+					amount: Number(item.invoiceAmount),
 					voucherNo:
 						`${strings}_` +
 						this.selectedNeedOrderList.map(item => item.id).join('_') +
@@ -164,9 +164,9 @@ export var mixin_credentials_generation_orderlist = {
 					quote: parseTime(new Date()),
 					voucherType: '应付账款-供应商往来-' + item.Supplier,
 					lender: '',
-					borrower: item.invoiceAmount,
+					borrower: Number(item.invoiceAmount),
 					comments: '无',
-					amount: item.invoiceAmount,
+					amount: Number(item.invoiceAmount),
 					voucherNo:
 						`${strings}_` +
 						this.selectedNeedOrderList.map(item => item.id).join('_') +
@@ -178,10 +178,10 @@ export var mixin_credentials_generation_orderlist = {
 				this.needToMakeList.push({
 					quote: parseTime(new Date()),
 					voucherType: '应收账款-客户往来' + item.customer,
-					lender: item.invoiceAmount,
+					lender: Number(item.invoiceAmount),
 					borrower: '',
 					comments: '无',
-					amount: item.invoiceAmount,
+					amount: Number(item.invoiceAmount),
 					voucherNo:
 						`${strings}_` +
 						this.selectedNeedOrderList.map(item => item.id).join('_') +
@@ -194,9 +194,9 @@ export var mixin_credentials_generation_orderlist = {
 					quote: parseTime(new Date()),
 					voucherType: '主营业务收入-票点收入',
 					lender: '',
-					borrower: item.invoiceAmount,
+					borrower: Number(item.invoiceAmount),
 					comments: '无',
-					amount: item.invoiceAmount,
+					amount: Number(item.invoiceAmount),
 					voucherNo:
 						`${strings}_` +
 						this.selectedNeedOrderList.map(item => item.id).join('_') +
@@ -213,43 +213,47 @@ export var mixin_credentials_generation_orderlist = {
 			// 1. 如果出厂货款大于0 贷 应付账款 - 供应商往来 - 宁夏xxxxx 供应商名字 金额 2271.46  **注意一个订单多个供应商  group by 供应商分组 *
 			function makeSupplierVoucher(item, strings) {
 				if (item.supplierNames) {
-					// 获取供应商列表 分组添加
-					item.orderDetailList.forEach(element => {
-						// 贷方
-						this.needToMakeList.push({
-							quote: parseTime(new Date()) + element.supplier + '进货',
-							voucherType: '应付账款-供应商往来-' + element.supplier,
-							lender: '',
-							borrower: element.paymentFactory,
-							comments: element.supplier,
-							amount: element.paymentFactory,
-							// 基本信息
-							voucherNo:
-								`${strings}_` +
-								this.selectedNeedOrderList.map(item => item.id).join('_') +
-								'_',
-							pid: item.id,
-							vDate: parseTime(new Date()),
-							makeUser: this.trueName
+					if (item.smailOrderDetails) {
+						// 获取供应商列表 分组添加
+						item.smailOrderDetails.forEach(element => {
+							// 贷方
+							this.needToMakeList.push({
+								quote: parseTime(new Date()) + element.supplier + '进货',
+								voucherType: '应付账款-供应商往来-' + element.supplier,
+								lender: '',
+								borrower: Number(element.paymentFactory),
+								comments: element.supplier,
+								amount: Number(element.paymentFactory),
+								// 基本信息
+								voucherNo:
+									`${strings}_` +
+									this.selectedNeedOrderList.map(item => item.id).join('_') +
+									'_',
+								pid: item.id,
+								vDate: parseTime(new Date()),
+								makeUser: this.trueName
+							});
+							// 借方
+							this.needToMakeList.push({
+								quote: parseTime(new Date()) + element.supplier + '进货',
+								voucherType: '主营业务成本-玻璃成本',
+								lender: Number(element.paymentFactory),
+								borrower: '',
+								comments: '无',
+								amount: Number(element.paymentFactory),
+								// 基本信息
+								voucherNo:
+									`${strings}_` +
+									this.selectedNeedOrderList.map(item => item.id).join('_') +
+									'_',
+								pid: item.id,
+								vDate: parseTime(new Date()),
+								makeUser: this.trueName
+							});
 						});
-						// 借方
-						this.needToMakeList.push({
-							quote: parseTime(new Date()) + element.supplier + '进货',
-							voucherType: '主营业务成本-玻璃成本',
-							lender: element.paymentFactory,
-							borrower: '',
-							comments: '无',
-							amount: element.paymentFactory,
-							// 基本信息
-							voucherNo:
-								`${strings}_` +
-								this.selectedNeedOrderList.map(item => item.id).join('_') +
-								'_',
-							pid: item.id,
-							vDate: parseTime(new Date()),
-							makeUser: this.trueName
-						});
-					});
+					} else {
+						this.$message.error('订单详情为空');
+					}
 				}
 			}
 
@@ -260,10 +264,10 @@ export var mixin_credentials_generation_orderlist = {
 					this.needToMakeList.push({
 						quote: parseTime(new Date()) + item.customer + '进货',
 						voucherType: '主营业务收入-玻璃收入-金额',
-						lender: item.allPayments,
+						lender: Number(item.allPayments),
 						borrower: '',
 						comments: item.customer,
-						amount: item.allPayments,
+						amount: Number(item.allPayments),
 						// 基本信息
 						voucherNo:
 							`${strings}_` +
@@ -278,9 +282,9 @@ export var mixin_credentials_generation_orderlist = {
 						quote: parseTime(new Date()) + item.customer + '进货',
 						voucherType: '应收账款-客户往来-' + item.customer,
 						lender: '',
-						borrower: item.allPayments,
+						borrower: Number(item.allPayments),
 						comments: '无',
-						amount: item.allPayments,
+						amount: Number(item.allPayments),
 						// 基本信息
 						voucherNo:
 							`${strings}_` +
@@ -301,9 +305,9 @@ export var mixin_credentials_generation_orderlist = {
 						quote: parseTime(new Date()) + '运费',
 						voucherType: '应付运费-陆运',
 						lender: '',
-						borrower: item.landFreight,
+						borrower: Number(item.landFreight),
 						comments: item.landCarNo,
-						amount: item.landFreight,
+						amount: Number(item.landFreight),
 						// 基本信息
 						voucherNo:
 							`${strings}_` +
@@ -318,9 +322,9 @@ export var mixin_credentials_generation_orderlist = {
 							quote: parseTime(new Date()) + '运费',
 							voucherType: '应付运费-海运',
 							lender: '',
-							borrower: item.seaFreight,
+							borrower: Number(item.seaFreight),
 							comments: item.seaCarNo,
-							amount: item.seaFreight,
+							amount: Number(item.seaFreight),
 							// 基本信息
 							voucherNo:
 								`${strings}_` +
@@ -335,10 +339,10 @@ export var mixin_credentials_generation_orderlist = {
 					this.needToMakeList.push({
 						quote: parseTime(new Date()) + '运费',
 						voucherType: '主营业务成本-运费成本',
-						lender: item.landFreight + item.seaFreight,
+						lender: Number(item.landFreight) + Number(item.seaFreight),
 						borrower: '',
 						comments: item.landCarNo,
-						amount: item.landFreight + item.seaFreight,
+						amount: Number(item.landFreight) + Number(item.seaFreight),
 						// 基本信息
 						voucherNo:
 							`${strings}_` +
@@ -375,9 +379,9 @@ export var mixin_credentials_generation_orderlist = {
 					quote: parseTime(new Date()) + item.supplier + '进货',
 					voucherType: '应付账款-供应商往来-' + item.supplier,
 					lender: '',
-					borrower: item.paymentFactory,
+					borrower: Number(item.paymentFactory),
 					comments: item.supplier,
-					amount: item.paymentFactory,
+					amount: Number(item.paymentFactory),
 					// 基本信息
 					voucherNo:
 						`${strings}_` +
@@ -391,10 +395,10 @@ export var mixin_credentials_generation_orderlist = {
 				this.needToMakeList.push({
 					quote: parseTime(new Date()) + item.supplier + '进货',
 					voucherType: '主营业务成本-玻璃成本',
-					lender: item.paymentFactory,
+					lender: Number(item.paymentFactory),
 					borrower: '',
 					comments: '无',
-					amount: item.paymentFactory,
+					amount: Number(item.paymentFactory),
 					// 基本信息
 					voucherNo:
 						`${strings}_` +
@@ -411,9 +415,9 @@ export var mixin_credentials_generation_orderlist = {
 						quote: parseTime(new Date()) + '运费',
 						voucherType: '应付运费-陆运',
 						lender: '',
-						borrower: item.landFreight,
+						borrower: Number(item.landFreight),
 						comments: item.landCarNo,
-						amount: item.landFreight,
+						amount: Number(item.landFreight),
 						// 基本信息
 						voucherNo:
 							`${strings}_` +
@@ -428,9 +432,9 @@ export var mixin_credentials_generation_orderlist = {
 							quote: parseTime(new Date()) + '运费',
 							voucherType: '应付运费-海运',
 							lender: '',
-							borrower: item.seaFreight,
+							borrower: Number(item.seaFreight),
 							comments: item.seaCarNo,
-							amount: item.seaFreight,
+							amount: Number(item.seaFreight),
 							// 基本信息
 							voucherNo:
 								`${strings}_` +
@@ -445,10 +449,10 @@ export var mixin_credentials_generation_orderlist = {
 					this.needToMakeList.push({
 						quote: parseTime(new Date()) + '运费',
 						voucherType: '主营业务成本-运费成本',
-						lender: item.landFreight + item.seaFreight,
+						lender: Number(item.landFreight) + Number(item.seaFreight),
 						borrower: '',
 						comments: item.landCarNo,
-						amount: item.landFreight + item.seaFreight,
+						amount: Number(item.landFreight) + Number(item.seaFreight),
 						// 基本信息
 						voucherNo:
 							`${strings}_` +
@@ -469,8 +473,8 @@ export var mixin_credentials_generation_orderlist = {
 		},
 		// 获取出厂货款
 		getPaymentFactory(row) {
-			return row.orderDetailList.reduce((pre, cur) => {
-				return pre + cur.paymentFactory;
+			return row.smailOrderDetails.reduce((pre, cur) => {
+				return Number(pre) + Number(cur.paymentFactory);
 			}, 0);
 		},
 		// 获取供应商列表

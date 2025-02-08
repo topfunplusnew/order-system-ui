@@ -740,6 +740,7 @@ export default {
 				updateData(this.addDictInfo).then(() => {
 					this.$message.success('修改成功~');
 					this.getList();
+					location.reload();
 					this.cancelAddProductLevel();
 				});
 			} else {
@@ -751,6 +752,7 @@ export default {
 				addData(this.addDictInfo).then(() => {
 					this.$message.success('添加成功~');
 					this.getList();
+					location.reload();
 					this.cancelAddProductLevel();
 				});
 			}

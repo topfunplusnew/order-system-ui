@@ -323,8 +323,9 @@
 							<el-row>
 								<el-col :span="10">
 									<el-input
+										disabled
 										v-model="form.selfAcountsName"
-										placeholder="请输入己方户名"
+										placeholder="请选择"
 									/>
 								</el-col>
 								<!--   自定义组件查找-->
@@ -373,14 +374,16 @@
 						</el-form-item>
 						<el-form-item label="己方账号" prop="selfBankNo">
 							<el-input
+								disabled
 								v-model="form.selfBankNo"
-								placeholder="请输入己方账号"
+								placeholder="请选择"
 							/>
 						</el-form-item>
 						<el-form-item label="己方开户行" prop="selfBankName">
 							<el-input
+								disabled
 								v-model="form.selfBankName"
-								placeholder="请输入己方开户行"
+								placeholder="请选择"
 							/>
 						</el-form-item>
 						<el-form-item label="对方类型(请确认)">
@@ -408,10 +411,9 @@
 							<el-row>
 								<el-col :span="14">
 									<el-input
+										disabled
 										v-model="form.companyName"
-										:placeholder="
-											value === '司机' ? '请输入司机' : '请输入对方公司'
-										"
+										placeholder="请选择"
 									/>
 								</el-col>
 								<el-col v-if="value === '司机'" :span="4">
@@ -529,8 +531,9 @@
 						>
 							<el-col :span="10">
 								<el-input
+									disabled
 									v-model="form.otherBankNo"
-									placeholder="请输入对方账号"
+									placeholder="请选择"
 								/>
 							</el-col>
 							<el-col :span="3">
@@ -576,8 +579,9 @@
 							v-if="value !== '对外付款'"
 						>
 							<el-input
+								disabled
 								v-model="form.otherBankName"
-								placeholder="请输入己方开户行"
+								placeholder="请选择"
 							/>
 						</el-form-item>
 						<el-form-item
@@ -586,8 +590,9 @@
 							v-if="value !== '对外付款'"
 						>
 							<el-input
+								disabled
 								v-model="form.otherAcountsName"
-								placeholder="请输入己方开户行"
+								placeholder="请选择"
 							/>
 						</el-form-item>
 						<el-form-item label="银行卡流水编号" prop="transactionHistory">

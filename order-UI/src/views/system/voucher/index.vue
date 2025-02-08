@@ -8,14 +8,15 @@
 			:inline="true"
 			label-width="68px"
 		>
-			<el-form-item label="凭证编号" prop="voucherNo">
+			<!-- 后端不支持 已删除 -->
+			<!-- <el-form-item label="凭证编号" prop="voucherNo">
 				<el-input
 					v-model="queryParams.voucherNo"
 					placeholder="请输入凭证编号"
 					clearable
 					@keyup.enter.native="handleQuery"
 				/>
-			</el-form-item>
+			</el-form-item> -->
 			<el-form-item label="分类" prop="voucherNo">
 				<el-select
 					v-model="queryParams.voucherNoPrefix"
@@ -102,10 +103,9 @@
 				v-if="columns[1].visible"
 				label="制单日期"
 				align="center"
-				prop="vDate"
+				prop="vdate"
 				show-overflow-tooltip
 			/>
-
 			<!-- 制单人 -->
 			<el-table-column
 				v-if="columns[2].visible"
@@ -150,7 +150,6 @@
 				prop="voucherType"
 				show-overflow-tooltip
 			/>
-
 			<!-- 备注 -->
 			<el-table-column
 				v-if="columns[7].visible"

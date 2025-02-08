@@ -1,10 +1,9 @@
 <script>
-import SubjectOption from '../../../components/SubjectOption.vue';
 import CrendentMake from '../../dashboard/components/voucher/CrendentMake.vue';
 
 export default {
 	name: 'Makecredentials',
-	components: { CrendentMake, SubjectOption },
+	components: { CrendentMake },
 	data() {
 		return {};
 	},

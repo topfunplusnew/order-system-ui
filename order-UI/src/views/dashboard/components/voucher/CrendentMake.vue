@@ -216,7 +216,8 @@ export default {
 				borrower: '',
 				lender: '',
 				quote: '',
-				comments: ''
+				comments: '',
+				...this.voucher
 			};
 			this.computedToMakeList.push(obj);
 		},

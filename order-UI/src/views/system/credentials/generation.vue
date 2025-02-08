@@ -224,11 +224,11 @@ export default {
 								width="200"
 							>
 								<template #default="scope">
-									<el-row v-if="scope.row.supplierNames !== null">
+									<el-row v-if="scope.row.smailOrderDetails">
 										<el-row>
 											<span
 												v-for="(item, index) in getSupplierNames(
-													scope.row.orderDetailList
+													scope.row.smailOrderDetails
 												)"
 												:key="index"
 											>

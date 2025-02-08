@@ -251,12 +251,17 @@
 					/>
 					<el-table-column
 						v-if="columns[10].visible"
-						key="phonenumber"
 						label="性别"
 						align="center"
 						prop="sex"
 						width="120"
-					/>
+					>
+						<!-- 0男1女 -->
+
+						<template slot-scope="scope">
+							{{ scope.row.sex == 0 ? '男' : '女' }}
+						</template>
+					</el-table-column>
 					<el-table-column
 						v-if="columns[11].visible"
 						key="phonenumber"
