@@ -88,87 +88,100 @@
 			"
 			border
 		>
+			<!-- 凭证编号 -->
 			<el-table-column
+				v-if="columns[0].visible"
 				label="凭证编号"
 				align="center"
 				prop="voucherNo"
 				width="300"
 			/>
+
+			<!-- 制单日期 -->
 			<el-table-column
+				v-if="columns[1].visible"
 				label="制单日期"
 				align="center"
 				prop="vDate"
 				show-overflow-tooltip
 			/>
+
+			<!-- 制单人 -->
 			<el-table-column
+				v-if="columns[2].visible"
 				label="制单人"
 				align="center"
 				prop="makeUser"
 				show-overflow-tooltip
 			/>
+
+			<!-- 合计 -->
 			<el-table-column
+				v-if="columns[3].visible"
 				label="合计"
 				align="center"
 				prop="amount"
 				show-overflow-tooltip
 			/>
+
+			<!-- 借方 -->
 			<el-table-column
+				v-if="columns[4].visible"
 				label="借方"
 				align="center"
 				prop="borrower"
 				show-overflow-tooltip
 			/>
+
+			<!-- 贷方 -->
 			<el-table-column
+				v-if="columns[5].visible"
 				label="贷方"
 				align="center"
 				prop="lender"
 				show-overflow-tooltip
 			/>
-			<!--      <el-table-column label="订单" align="center" prop="pid"/>-->
+
+			<!-- 凭证类型 -->
 			<el-table-column
+				v-if="columns[6].visible"
 				label="凭证类型"
 				align="center"
 				prop="voucherType"
 				show-overflow-tooltip
 			/>
+
+			<!-- 备注 -->
 			<el-table-column
+				v-if="columns[7].visible"
 				label="备注"
 				align="center"
 				prop="comments"
 				show-overflow-tooltip
 			/>
+
+			<!-- 操作 -->
 			<el-table-column
 				label="操作"
 				align="center"
 				class-name="small-padding fixed-width"
 			>
 				<template slot-scope="scope">
-					<!--          <el-button-->
-					<!--            size="mini"-->
-					<!--            type="text"-->
-					<!--            @click="handleUpdate(scope.row)"-->
-					<!--            v-hasPermi="['system:voucher:edit']"-->
-					<!--          >修改-->
-					<!--          </el-button>-->
-					<!--          <el-button-->
-					<!--            size="mini"-->
-					<!--            type="text"-->
-					<!--            @click="handleView(scope.row)"-->
-					<!--          >查看-->
-					<!--          </el-button>-->
 					<el-button
 						v-if="isOrderOrNot(scope.row)"
 						size="mini"
 						type="text"
 						@click="handleGoodsOrder(scope.row)"
-						>查看订单信息
+					>
+						查看订单信息
 					</el-button>
 					<el-button
 						v-hasPermi="['system:voucher:remove']"
 						size="mini"
 						type="text"
 						@click="handleDelete(scope.row)"
-						>删除
+					>
+						删除
 					</el-button>
 				</template>
 			</el-table-column>
@@ -277,7 +290,17 @@ export default {
 			form: {},
 			// 表单校验
 			rules: {},
-			columns: [],
+			columns: [
+				{ key: 0, label: `凭证编号`, visible: true },
+				{ key: 1, label: `制单日期`, visible: true },
+				{ key: 2, label: `制单人`, visible: true },
+				{ key: 3, label: `合计`, visible: true },
+				{ key: 4, label: `借方`, visible: true },
+				{ key: 5, label: `贷方`, visible: true },
+				{ key: 6, label: `凭证类型`, visible: true },
+				{ key: 7, label: `备注`, visible: true }
+			],
+
 			options: [
 				{
 					value: 'orderId_',

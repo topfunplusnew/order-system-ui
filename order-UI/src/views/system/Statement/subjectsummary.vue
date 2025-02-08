@@ -22,22 +22,19 @@ export default {
 			},
 			loading: false,
 			columns: [
-				{ key: 0, label: `车牌号`, visible: true },
-				{ key: 1, label: `司机姓名`, visible: true },
-				{ key: 2, label: `司机银行账号`, visible: true },
-				{ key: 3, label: `日支付总额`, visible: true },
-				{ key: 4, label: `日未支付总额`, visible: true },
-				{ key: 5, label: `日应付总额`, visible: true },
-				{ key: 6, label: `月支付总额`, visible: true },
-				{ key: 7, label: `月未支付总额`, visible: true },
-				{ key: 8, label: `月应付总额`, visible: true },
-				{ key: 9, label: `年支付总额`, visible: true },
-				{ key: 10, label: `年未支付总额`, visible: true },
-				{ key: 11, label: `年应付总额`, visible: true },
-				{ key: 12, label: `上一天未支付总额`, visible: true },
-				{ key: 13, label: `上一个月未支付总额`, visible: true },
-				{ key: 14, label: `上一年未支付总额`, visible: true }
+				{ key: 0, label: '费用科目汇总和费用占比', visible: true },
+				{ key: 1, label: '费用科目名称', visible: true },
+				{ key: 2, label: '费用日报', visible: true },
+				{ key: 3, label: '付款金额', visible: true },
+				{ key: 4, label: '占比', visible: true },
+				{ key: 5, label: '费用月报', visible: true },
+				{ key: 6, label: '付款金额', visible: true },
+				{ key: 7, label: '占比', visible: true },
+				{ key: 8, label: '费用年报', visible: true },
+				{ key: 9, label: '付款金额', visible: true },
+				{ key: 10, label: '占比', visible: true }
 			],
+
 			statementList: [],
 			dialogVisible: false
 		};
@@ -223,51 +220,92 @@ export default {
 							}
 						"
 					>
-						<el-table-column label="费用科目汇总和费用占比" align="center">
-							<el-table-column align="center">
+						<!-- 费用科目汇总和费用占比 -->
+						<el-table-column
+							v-if="columns[0].visible"
+							label="费用科目汇总和费用占比"
+							align="center"
+						>
+							<!-- 费用科目名称 -->
+							<el-table-column
+								v-if="columns[1].visible"
+								label="费用科目名称"
+								align="center"
+								prop="payType"
+								width="300"
+							/>
+
+							<!-- 费用日报 -->
+							<el-table-column
+								v-if="columns[2].visible"
+								label="费用日报"
+								align="center"
+								prop="carNo"
+							>
+								<!-- 付款金额 -->
 								<el-table-column
-									label="费用科目名称"
-									align="center"
-									prop="payType"
-									width="300"
-								/>
-							</el-table-column>
-							<el-table-column label="费用日报" align="center" prop="carNo">
-								<el-table-column
+									v-if="columns[3].visible"
 									label="付款金额"
 									align="center"
 									prop="daySum"
 									width="300"
 								/>
+
+								<!-- 占比 -->
 								<el-table-column
+									v-if="columns[4].visible"
 									label="占比"
 									align="center"
 									prop="dayPercentage"
 									width="300"
 								/>
 							</el-table-column>
-							<el-table-column label="费用月报" align="center" prop="carNo">
+
+							<!-- 费用月报 -->
+							<el-table-column
+								v-if="columns[5].visible"
+								label="费用月报"
+								align="center"
+								prop="carNo"
+							>
+								<!-- 付款金额 -->
 								<el-table-column
+									v-if="columns[6].visible"
 									label="付款金额"
 									align="center"
 									prop="monthSum"
 									width="300"
 								/>
+
+								<!-- 占比 -->
 								<el-table-column
+									v-if="columns[7].visible"
 									label="占比"
 									align="center"
 									prop="monthPercentage"
 									width="300"
 								/>
 							</el-table-column>
-							<el-table-column label="费用年报" align="center" prop="carNo">
+
+							<!-- 费用年报 -->
+							<el-table-column
+								v-if="columns[8].visible"
+								label="费用年报"
+								align="center"
+								prop="carNo"
+							>
+								<!-- 付款金额 -->
 								<el-table-column
+									v-if="columns[9].visible"
 									label="付款金额"
 									align="center"
 									prop="yearSum"
 									width="300"
 								/>
+
+								<!-- 占比 -->
 								<el-table-column
+									v-if="columns[10].visible"
 									label="占比"
 									align="center"
 									prop="yearPercentage"

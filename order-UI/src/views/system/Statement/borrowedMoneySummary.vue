@@ -323,8 +323,7 @@ export default {
 				{ key: 5, label: `贷款年限`, visible: true },
 				{ key: 6, label: `抵押担保`, visible: true },
 				{ key: 7, label: `打入账户`, visible: true },
-				{ key: 8, label: `打入账号`, visible: true },
-				{ key: 9, label: `已还款标记`, visible: true }
+				{ key: 8, label: `打入账号`, visible: true }
 			],
 			// 搜索参数
 			timesQuery: {

@@ -103,6 +103,7 @@
 				}
 			"
 		>
+			<!-- 序号 -->
 			<el-table-column
 				v-if="columns[0].visible"
 				label="序号"
@@ -110,35 +111,53 @@
 				type="index"
 				width="160"
 			/>
+
+			<!-- 司机姓名 -->
 			<el-table-column
+				v-if="columns[1].visible"
 				label="司机姓名"
 				align="center"
 				prop="companyName"
 				width="110"
 			/>
-			<el-table-column label="初期方向" align="center" width="160">
+
+			<!-- 初期方向 -->
+			<el-table-column
+				v-if="columns[2].visible"
+				label="初期方向"
+				align="center"
+				width="160"
+			>
 				<template slot-scope="scope">
 					<div v-if="scope">
-						<!--  现在总的需要前端自己计算方向,计算公式为 期初/期末余额>0 则为贷,反之为借,相等为平-->
 						<span v-if="scope.row.beginningBalance > 0">贷</span>
 						<span v-else-if="scope.row.beginningBalance < 0">借</span>
 						<span v-else>平</span>
 					</div>
 				</template>
 			</el-table-column>
+
+			<!-- 初期余额 -->
 			<el-table-column
+				v-if="columns[3].visible"
 				label="初期余额"
 				align="center"
 				prop="beginningBalance"
 				width="160"
 			/>
+
+			<!-- 借方 -->
 			<el-table-column
+				v-if="columns[4].visible"
 				label="借方"
 				align="center"
 				prop="positiveSum"
 				width="160"
 			/>
+
+			<!-- 贷方 -->
 			<el-table-column
+				v-if="columns[5].visible"
 				label="贷方"
 				align="center"
 				prop="negativeSum"
@@ -148,14 +167,28 @@
 					{{ Math.abs(scope.row.negativeSum) }}
 				</template>
 			</el-table-column>
+
+			<!-- 平账金额 -->
 			<el-table-column
+				v-if="columns[6].visible"
 				label="平账金额"
 				align="center"
 				prop="balanceaccountsAmount"
 				width="160"
 			/>
-			<el-table-column label="车牌号" align="center" prop="carNo" width="110" />
+
+			<!-- 车牌号 -->
 			<el-table-column
+				v-if="columns[7].visible"
+				label="车牌号"
+				align="center"
+				prop="carNo"
+				width="110"
+			/>
+
+			<!-- 期末方向 -->
+			<el-table-column
+				v-if="columns[8].visible"
 				label="期末方向"
 				align="center"
 				prop="initialBalanceDirection"
@@ -163,25 +196,32 @@
 			>
 				<template slot-scope="scope">
 					<div v-if="scope">
-						<!--  现在总的需要前端自己计算方向,计算公式为 期初/期末余额>0 则为贷,反之为借,相等为平-->
 						<span v-if="scope.row.endingBalance > 0">贷</span>
 						<span v-else-if="scope.row.endingBalance < 0">借</span>
 						<span v-else>平</span>
 					</div>
 				</template>
 			</el-table-column>
+
+			<!-- 期末余额 -->
 			<el-table-column
+				v-if="columns[9].visible"
 				label="期末余额"
 				align="center"
 				prop="endingBalance"
 				width="160"
 			/>
+
+			<!-- 录入员 -->
 			<el-table-column
+				v-if="columns[10].visible"
 				label="录入员"
 				align="center"
 				prop="salesman"
 				width="160"
 			/>
+
+			<!-- 操作 -->
 			<el-table-column
 				label="操作"
 				align="center"
@@ -293,16 +333,19 @@ export default {
 			],
 			// 表单校验
 			columns: [
-				{ key: 0, label: `序号`, visible: true },
-				{ key: 1, label: `初期方向`, visible: true },
-				{ key: 2, label: `初期余额`, visible: true },
-				{ key: 3, label: `车牌号`, visible: true },
-				{ key: 4, label: `应付运费`, visible: true },
-				{ key: 5, label: `已付运费`, visible: true },
-				{ key: 6, label: `司机姓名`, visible: true },
-				{ key: 7, label: `期末方向`, visible: true },
-				{ key: 8, label: `期末余额`, visible: true }
+				{ key: 0, label: '序号', visible: true },
+				{ key: 1, label: '司机姓名', visible: true },
+				{ key: 2, label: '初期方向', visible: true },
+				{ key: 3, label: '初期余额', visible: true },
+				{ key: 4, label: '借方', visible: true },
+				{ key: 5, label: '贷方', visible: true },
+				{ key: 6, label: '平账金额', visible: true },
+				{ key: 7, label: '车牌号', visible: true },
+				{ key: 8, label: '期末方向', visible: true },
+				{ key: 9, label: '期末余额', visible: true },
+				{ key: 10, label: '录入员', visible: true }
 			],
+
 			dialogVisible: false,
 
 			// 运费报表明细表

@@ -1,8 +1,73 @@
 <template>
 	<div class="oil-card-balance-detail">
 		<h2>油卡余额详情报表</h2>
+
+		<el-row>
+			<el-form
+				ref="queryForm"
+				:model="queryParams"
+				size="mini"
+				:inline="true"
+				label-width="100px"
+			>
+				<el-form-item label="油卡号">
+					<el-input
+						v-model="queryParams.oilCardNo"
+						placeholder="请输入油卡号"
+						clearable
+						size="mini"
+					/>
+				</el-form-item>
+				<el-form-item label="时间" prop="companyName">
+					<el-date-picker
+						v-model="queryParams.beginTime"
+						type="date"
+						size="mini"
+						value-format="yyyy-MM-dd"
+						placeholder="选择日期"
+					>
+					</el-date-picker>
+				</el-form-item>
+				<el-form-item>
+					<el-date-picker
+						v-model="queryParams.endTime"
+						type="date"
+						size="mini"
+						value-format="yyyy-MM-dd"
+						placeholder="选择日期"
+					>
+					</el-date-picker>
+				</el-form-item>
+
+				<el-form-item>
+					<el-button
+						type="primary"
+						icon="el-icon-search"
+						size="mini"
+						@click="fetchOilCardDetails"
+						>搜索</el-button
+					>
+				</el-form-item>
+			</el-form>
+		</el-row>
+
+		<el-row :gutter="10" class="mb8">
+			<right-toolbar :columns="columns" @queryTable="fetchOilCardDetails">
+				<template #print>
+					<el-col :span="1.5">
+						<el-button
+							plain
+							icon="el-icon-printer"
+							size="mini"
+							@click="printHTML"
+						/>
+					</el-col>
+				</template>
+			</right-toolbar>
+		</el-row>
 		<!-- 表格展示 -->
 		<el-table
+			id="printBox"
 			:data="oilCardDetails"
 			border
 			stripe
@@ -10,20 +75,35 @@
 			style="width: 100%"
 		>
 			<!-- 序号列 -->
-			<el-table-column label="序号" align="center">
+			<el-table-column v-if="columns[0].visible" label="序号" align="center">
 				<template #default="scope">
 					{{ scope.$index + 1 }}
 				</template>
 			</el-table-column>
 
 			<!-- 油卡编号 -->
-			<el-table-column prop="oilCardNo" label="油卡编号" align="center" />
+			<el-table-column
+				v-if="columns[1].visible"
+				prop="oilCardNo"
+				label="油卡编号"
+				align="center"
+			/>
 
 			<!-- 变动日期 -->
-			<el-table-column prop="changeDate" label="变动日期" align="center" />
+			<el-table-column
+				v-if="columns[2].visible"
+				prop="changeDate"
+				label="变动日期"
+				align="center"
+			/>
 
 			<!-- 变动金额 -->
-			<el-table-column prop="changeAmount" label="变动金额 (元)" align="center">
+			<el-table-column
+				v-if="columns[3].visible"
+				prop="changeAmount"
+				label="变动金额 (元)"
+				align="center"
+			>
 				<template #default="scope">
 					{{ scope.row.changeAmount.toFixed(2) }}
 				</template>
@@ -31,6 +111,7 @@
 
 			<!-- 运行余额 -->
 			<el-table-column
+				v-if="columns[4].visible"
 				prop="runningBalance"
 				label="运行余额 (元)"
 				align="center"
@@ -41,7 +122,12 @@
 			</el-table-column>
 
 			<!-- 操作列 -->
-			<el-table-column label="操作" align="center" width="120">
+			<el-table-column
+				v-if="columns[5].visible"
+				label="操作"
+				align="center"
+				width="120"
+			>
 				<template #default="scope">
 					<el-button type="text" size="mini" @click="viewDetail(scope.row)">
 						查看明细
@@ -88,25 +174,40 @@ import {
 	getOilCardDetailSummary,
 	fetchDetailById
 } from '../../../api/system/statement';
+import { mixin_printHTML } from '../../dashboard/mixins/print';
 
 export default {
 	name: 'OilCardBalanceDetail',
+	mixins: [mixin_printHTML],
 	data() {
 		return {
 			oilCardDetails: [], // 存储油卡数据
 			totalChangeAmount: 0, // 总变动金额
 			latestBalance: 0, // 最新运行余额
 			detailDialogVisible: false, // 控制明细弹窗显示
-			detailInfo: [] // 存储明细信息
+			detailInfo: [], // 存储明细信息
+			queryParams: {
+				oilCardNo: '', // 油卡号
+				beginTime: '', // 开始时间
+				endTime: '' // 结束时间
+			},
+			columns: [
+				{ key: 0, label: '序号', visible: true },
+				{ key: 1, label: '油卡编号', visible: true },
+				{ key: 2, label: '变动日期', visible: true },
+				{ key: 3, label: '变动金额 (元)', visible: true },
+				{ key: 4, label: '运行余额 (元)', visible: true },
+				{ key: 5, label: '操作', visible: true }
+			]
 		};
 	},
 	created() {
-		this.fetchOilCardDetails();
+		// this.fetchOilCardDetails();
 	},
 	methods: {
 		async fetchOilCardDetails() {
 			try {
-				const response = await getOilCardDetailSummary();
+				const response = await getOilCardDetailSummary(this.queryParams);
 				if (response.code === 200) {
 					this.oilCardDetails = response.data;
 

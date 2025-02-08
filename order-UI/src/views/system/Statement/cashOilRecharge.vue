@@ -48,36 +48,94 @@
 			</div>
 		</el-form>
 
+		<el-row :gutter="10" class="mb8">
+			<right-toolbar :columns="columns" @queryTable="fetchData">
+				<template #print>
+					<el-col :span="1.5">
+						<el-button
+							plain
+							icon="el-icon-printer"
+							size="mini"
+							@click="printHTML"
+						/>
+					</el-col>
+				</template>
+			</right-toolbar>
+		</el-row>
 		<!-- 数据表格 -->
 		<el-table
+			id="printBox"
 			:data="tableData"
 			border
 			stripe
 			size="medium"
 			style="width: 100%; margin-top: 20px"
 		>
-			<el-table-column label="序号" align="center" width="60">
+			<!-- 序号列 -->
+			<el-table-column
+				v-if="columns[0].visible"
+				label="序号"
+				align="center"
+				width="60"
+			>
 				<template #default="scope">
 					{{ scope.$index + 1 }}
 				</template>
 			</el-table-column>
 
-			<el-table-column label="车牌号" prop="carNo" align="center" />
-			<el-table-column label="申请人" prop="applyUser" align="center" />
-			<el-table-column label="开始时间" prop="startTime" align="center" />
-			<el-table-column label="结束时间" prop="endTime" align="center" />
+			<!-- 车牌号 -->
 			<el-table-column
+				v-if="columns[1].visible"
+				label="车牌号"
+				prop="carNo"
+				align="center"
+			/>
+
+			<!-- 申请人 -->
+			<el-table-column
+				v-if="columns[2].visible"
+				label="申请人"
+				prop="applyUser"
+				align="center"
+			/>
+
+			<!-- 开始时间 -->
+			<el-table-column
+				v-if="columns[3].visible"
+				label="开始时间"
+				prop="startTime"
+				align="center"
+			/>
+
+			<!-- 结束时间 -->
+			<el-table-column
+				v-if="columns[4].visible"
+				label="结束时间"
+				prop="endTime"
+				align="center"
+			/>
+
+			<!-- 现金加油次数 -->
+			<el-table-column
+				v-if="columns[5].visible"
 				label="现金加油次数"
 				prop="cashRefuelingFrequency"
 				align="center"
 			/>
-			<el-table-column label="现金加油金额" prop="cashRefueling" align="center">
+
+			<!-- 现金加油金额 -->
+			<el-table-column
+				v-if="columns[6].visible"
+				label="现金加油金额"
+				prop="cashRefueling"
+				align="center"
+			>
 				<template #default="scope">
 					<span class="amount">{{ scope.row.cashRefueling.toFixed(2) }}</span>
 				</template>
 			</el-table-column>
 
-			<!-- 操作列：查看车辆详情 -->
+			<!-- 操作列 -->
 			<el-table-column label="操作" align="center" width="120">
 				<template #default="scope">
 					<el-button
@@ -122,11 +180,12 @@ import DialogWrapper from '../../dashboard/components/common/DialogWrapper.vue';
 import { common_dialog } from '../../dashboard/mixins/common/common_dialog';
 import { listVehicles } from '../../../api/system/vehicles';
 import COMPANY_CAR from '../../../components/NeedToShow/COMPANY_CAR.vue'; // 假设 API 函数路径
+import { mixin_printHTML } from '../../dashboard/mixins/print';
 
 export default {
 	name: 'CashOilCardSummary',
 	components: { DialogWrapper },
-	mixins: [common_dialog],
+	mixins: [common_dialog, mixin_printHTML],
 	data() {
 		return {
 			query: {
@@ -137,7 +196,16 @@ export default {
 			},
 			tableData: [], // 存储表格数据
 			totalFrequency: 0, // 总现金加油次数
-			totalAmount: 0 // 总现金加油金额
+			totalAmount: 0, // 总现金加油金额
+			columns: [
+				{ key: 0, label: '序号', visible: true },
+				{ key: 1, label: '车牌号', visible: true },
+				{ key: 2, label: '申请人', visible: true },
+				{ key: 3, label: '开始时间', visible: true },
+				{ key: 4, label: '结束时间', visible: true },
+				{ key: 5, label: '现金加油次数', visible: true },
+				{ key: 6, label: '现金加油金额', visible: true }
+			]
 		};
 	},
 	created() {

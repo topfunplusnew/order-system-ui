@@ -96,6 +96,7 @@
 			"
 		>
 			<el-table-column
+				v-if="columns[0].visible"
 				show-overflow-tooltip
 				label="科目编码"
 				align="center"
@@ -103,6 +104,7 @@
 				width="140"
 			/>
 			<el-table-column
+				v-if="columns[1].visible"
 				show-overflow-tooltip
 				label="科目名称"
 				align="center"
@@ -110,6 +112,7 @@
 				width="140"
 			/>
 			<el-table-column
+				v-if="columns[2].visible"
 				show-overflow-tooltip
 				label="供应商编号"
 				align="center"
@@ -117,6 +120,7 @@
 				width="140"
 			/>
 			<el-table-column
+				v-if="columns[3].visible"
 				show-overflow-tooltip
 				label="供应商名称"
 				align="center"
@@ -124,6 +128,7 @@
 				width="140"
 			/>
 			<el-table-column
+				v-if="columns[4].visible"
 				show-overflow-tooltip
 				label="期初方向"
 				align="center"
@@ -141,6 +146,7 @@
 				</template>
 			</el-table-column>
 			<el-table-column
+				v-if="columns[5].visible"
 				show-overflow-tooltip
 				label="期初余额"
 				align="center"
@@ -148,6 +154,7 @@
 				width="140"
 			/>
 			<el-table-column
+				v-if="columns[6].visible"
 				show-overflow-tooltip
 				label="借方(付供应商货款)"
 				align="center"
@@ -155,6 +162,7 @@
 				width="140"
 			/>
 			<el-table-column
+				v-if="columns[7].visible"
 				show-overflow-tooltip
 				label="贷方(从厂家提货)"
 				align="center"
@@ -166,6 +174,7 @@
 				</template>
 			</el-table-column>
 			<el-table-column
+				v-if="columns[8].visible"
 				show-overflow-tooltip
 				label="平账金额"
 				align="center"
@@ -173,6 +182,7 @@
 				width="140"
 			/>
 			<el-table-column
+				v-if="columns[9].visible"
 				show-overflow-tooltip
 				label="期末方向"
 				align="center"
@@ -190,13 +200,14 @@
 				</template>
 			</el-table-column>
 			<el-table-column
+				v-if="columns[10].visible"
 				show-overflow-tooltip
 				label="期末余额"
 				align="center"
 				prop="endingBalance"
 				width="140"
 			/>
-			<!--      操作列-->
+			<!-- 操作列 -->
 			<el-table-column
 				label="操作"
 				align="center"
@@ -208,6 +219,7 @@
 				</template>
 			</el-table-column>
 		</el-table>
+
 		<pagination
 			v-show="total > 0"
 			:total="total"
@@ -251,8 +263,20 @@ export default {
 				endTime: parseTime(new Date(), '{y}-{m}-{d}'),
 				companyName: null
 			},
-			// 表单校验
-			columns: [],
+			columns: [
+				{ key: 0, label: '科目编码', visible: true },
+				{ key: 1, label: '科目名称', visible: true },
+				{ key: 2, label: '供应商编号', visible: true },
+				{ key: 3, label: '供应商名称', visible: true },
+				{ key: 4, label: '期初方向', visible: true },
+				{ key: 5, label: '期初余额', visible: true },
+				{ key: 6, label: '借方(付供应商货款)', visible: true },
+				{ key: 7, label: '贷方(从厂家提货)', visible: true },
+				{ key: 8, label: '平账金额', visible: true },
+				{ key: 9, label: '期末方向', visible: true },
+				{ key: 10, label: '期末余额', visible: true }
+			],
+
 			dialogVisible: false
 		};
 	},
