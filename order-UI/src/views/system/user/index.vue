@@ -1199,6 +1199,7 @@ export default {
 	},
 	created() {
 		this.getList();
+
 		if (
 			localStorage.getItem('user-columns') === 'null' ||
 			!localStorage.getItem('user-columns')
