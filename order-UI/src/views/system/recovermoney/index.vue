@@ -80,7 +80,6 @@
 			"
 			@selection-change="handleSelectionChange"
 		>
-			<el-table-column label="id" align="center" prop="id" />
 			<el-table-column
 				v-if="columns[0].visible"
 				label="收回金额"

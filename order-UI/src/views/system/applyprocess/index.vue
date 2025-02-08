@@ -195,6 +195,7 @@ export default {
 		<!--    放置付款信息列表-->
 		<el-row>
 			<el-table
+				id="printBox"
 				v-loading="loading"
 				:data="paymentList"
 				border

@@ -146,114 +146,125 @@
 				width="120"
 				show-overflow-tooltip
 			/>
-			<el-table-column label="社保增减员情况" align="center">
+			<el-table-column
+				label="社保增减员情况"
+				v-if="columns[6].visible"
+				align="center"
+			>
 				<el-table-column
-					v-if="columns[6].visible"
 					label="是否增员"
 					align="center"
 					prop="isRecruiting"
 					show-overflow-tooltip
 				/>
 				<el-table-column
-					v-if="columns[7].visible"
 					label="是否减员"
 					align="center"
 					prop="isDepletion"
 					show-overflow-tooltip
 				/>
 			</el-table-column>
-			<el-table-column label="基本医疗保险" align="center">
+			<el-table-column
+				label="基本医疗保险"
+				v-if="columns[7].visible"
+				align="center"
+			>
 				<el-table-column
-					v-if="columns[8].visible"
 					label="个人缴纳"
 					align="center"
 					prop="healthySecuritySelf"
 				/>
 				<el-table-column
-					v-if="columns[9].visible"
 					label="公司缴纳"
 					align="center"
 					prop="healthySecurityCompany"
 				/>
 			</el-table-column>
 			<el-table-column
-				v-if="columns[10].visible"
+				v-if="columns[8].visible"
 				label="工伤保险"
 				align="center"
 				prop="injuryInsurance"
 			/>
-			<el-table-column label="失业保险" align="center">
+			<el-table-column
+				label="失业保险"
+				v-if="columns[9].visible"
+				align="center"
+			>
 				<el-table-column
-					v-if="columns[11].visible"
 					label="个人缴纳"
 					align="center"
 					prop="unemploymentSecuritySelf"
 				/>
 				<el-table-column
-					v-if="columns[12].visible"
 					label="公司缴纳"
 					align="center"
 					prop="unemploymentSecurityCompany"
 				/>
 			</el-table-column>
-			<el-table-column label="养老保险" align="center">
+			<el-table-column
+				label="养老保险"
+				v-if="columns[10].visible"
+				align="center"
+			>
 				<el-table-column
-					v-if="columns[13].visible"
 					label="个人缴纳"
 					align="center"
 					prop="retirementSecuritySelf"
 				/>
 				<el-table-column
-					v-if="columns[14].visible"
 					label="公司缴纳"
 					align="center"
 					prop="retirementSecurityCompany"
 				/>
 			</el-table-column>
-			<el-table-column label="大额医保" align="center">
+			<el-table-column
+				label="大额医保"
+				v-if="columns[11].visible"
+				align="center"
+			>
 				<el-table-column
-					v-if="columns[15].visible"
 					label="个人缴纳"
 					align="center"
 					prop="largeMedicalSecuritySelf"
 				/>
 				<el-table-column
-					v-if="columns[16].visible"
 					label="公司缴纳"
 					align="center"
 					prop="largeMedicalSecurityCompany"
 				/>
 			</el-table-column>
-			<el-table-column label="公积金缴纳" align="center">
+			<el-table-column
+				label="公积金缴纳"
+				v-if="columns[12].visible"
+				align="center"
+			>
 				<el-table-column
-					v-if="columns[17].visible"
 					label="个人缴纳"
 					align="center"
 					prop="housingFundSelf"
 				/>
 				<el-table-column
-					v-if="columns[18].visible"
 					label="公司缴纳"
 					align="center"
 					prop="housingFundCompany"
 				/>
 			</el-table-column>
 			<el-table-column
-				v-if="columns[19].visible"
+				v-if="columns[13].visible"
 				label="个人缴费总额"
 				align="center"
 				prop="sumSelf"
 				width="120"
 			/>
 			<el-table-column
-				v-if="columns[20].visible"
+				v-if="columns[14].visible"
 				label="公司缴费总额"
 				align="center"
 				prop="sumCompany"
 				width="120"
 			/>
 			<el-table-column
-				v-if="columns[21].visible"
 				label="备注"
 				align="center"
 				prop="comments"
@@ -705,22 +716,15 @@ export default {
 				{ key: 3, label: `社保缴纳基数`, visible: true },
 				{ key: 4, label: `公积金基数`, visible: true },
 				{ key: 5, label: `缴费时间`, visible: true },
-				{ key: 6, label: `社保增减员情况-是否增员`, visible: true },
-				{ key: 7, label: `社保增减员情况-是否减员`, visible: true },
-				{ key: 8, label: `基本医疗保险-个人`, visible: true },
-				{ key: 9, label: `基本医疗保险-公司`, visible: true },
-				{ key: 10, label: `工伤保险`, visible: true },
-				{ key: 11, label: `失业保险-个人`, visible: true },
-				{ key: 12, label: `失业保险-公司`, visible: true },
-				{ key: 13, label: `养老保险-个人`, visible: true },
-				{ key: 14, label: `养老保险-公司`, visible: true },
-				{ key: 15, label: `大额医保-个人`, visible: true },
-				{ key: 16, label: `大额医保-公司`, visible: true },
-				{ key: 17, label: `公积金-个人`, visible: true },
-				{ key: 18, label: `公积金-公司`, visible: true },
-				{ key: 19, label: `个人缴费总额`, visible: true },
-				{ key: 20, label: `公司缴费总额`, visible: true },
-				{ key: 21, label: `备注`, visible: true }
+				{ key: 6, label: `社保增减员情况`, visible: true },
+				{ key: 7, label: `基本医疗保险`, visible: true },
+				{ key: 8, label: `工伤保险`, visible: true },
+				{ key: 9, label: `失业保险`, visible: true },
+				{ key: 10, label: `养老保险`, visible: true },
+				{ key: 11, label: `大额医保`, visible: true },
+				{ key: 12, label: `公积金`, visible: true },
+				{ key: 13, label: `个人缴费总额`, visible: true },
+				{ key: 14, label: `公司缴费总额`, visible: true }
 			],
 
 			// 表单参数

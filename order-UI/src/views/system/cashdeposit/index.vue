@@ -123,7 +123,7 @@
 
 				<!-- 对象 -->
 				<el-table-column
-					v-if="columns[2].visible"
+					v-if="columns[1].visible"
 					label="对象"
 					align="center"
 					prop="target"
@@ -133,7 +133,7 @@
 
 				<!-- 对象类型 -->
 				<el-table-column
-					v-if="columns[1].visible"
+					v-if="columns[2].visible"
 					label="对象类型"
 					align="center"
 					prop="targetType"
@@ -183,7 +183,7 @@
 
 				<!-- 我方支付账户 -->
 				<el-table-column
-					v-if="columns[8].visible"
+					v-if="columns[7].visible"
 					label="我方支付账户"
 					align="center"
 					prop="selfAcountsName"
@@ -193,7 +193,7 @@
 
 				<!-- 我方账号 -->
 				<el-table-column
-					v-if="columns[9].visible"
+					v-if="columns[8].visible"
 					label="我方账号"
 					align="center"
 					prop="selfBankNo"
@@ -203,7 +203,7 @@
 
 				<!-- 我方开户行 -->
 				<el-table-column
-					v-if="columns[10].visible"
+					v-if="columns[9].visible"
 					label="我方开户行"
 					align="center"
 					prop="selfBankName"
@@ -213,7 +213,7 @@
 
 				<!-- 支付期货保证金时间 -->
 				<el-table-column
-					v-if="columns[11].visible"
+					v-if="columns[10].visible"
 					label="支付期货保证金时间"
 					align="center"
 					prop="futuresDate"
@@ -223,6 +223,7 @@
 
 				<!-- 事由 -->
 				<el-table-column
+					v-if="columns[11].visible"
 					label="事由"
 					align="center"
 					prop="reason"
@@ -742,17 +743,17 @@ export default {
 			},
 			columns: [
 				{ key: 0, label: '期货保证金公司', visible: true },
-				{ key: 1, label: '对象类型', visible: true },
-				{ key: 2, label: '对象', visible: true },
+				{ key: 1, label: '对象', visible: true },
+				{ key: 2, label: '对象类型', visible: true },
 				{ key: 3, label: '保证金金额', visible: true },
 				{ key: 4, label: '对方账户', visible: true },
 				{ key: 5, label: '对方账号', visible: true },
 				{ key: 6, label: '对方开户行', visible: true },
-				{ key: 7, label: '我方开户行', visible: true },
-				{ key: 8, label: '我方支付账户', visible: true },
-				{ key: 9, label: '我方账号', visible: true },
-				{ key: 10, label: '我方开户行', visible: true },
-				{ key: 11, label: '支付期货保证金时间', visible: true }
+				{ key: 7, label: '我方支付账户', visible: true },
+				{ key: 8, label: '我方账号', visible: true },
+				{ key: 9, label: '我方开户行', visible: true },
+				{ key: 10, label: '支付期货保证金时间', visible: true },
+				{ key: 11, label: '是由', visible: true }
 			],
 			// 搜索参数
 			timesQuery: {
