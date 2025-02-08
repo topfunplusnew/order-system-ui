@@ -98,11 +98,7 @@
 			border
 			:data="lendMoneyList"
 			size="mini"
-			:cell-style="
-				() => {
-					return { padding: '1px' };
-				}
-			"
+			:cell-style="() => ({ padding: '1px' })"
 			@selection-change="handleSelectionChange"
 		>
 			<el-table-column
@@ -117,8 +113,9 @@
 					<DynamicField :row="scope.row" field="futuresMarginCompany" />
 				</template>
 			</el-table-column>
+
 			<el-table-column
-				v-if="columns[2].visible"
+				v-if="columns[1].visible"
 				label="对象"
 				align="center"
 				prop="target"
@@ -129,8 +126,9 @@
 					<DynamicField :row="scope.row" field="target" />
 				</template>
 			</el-table-column>
+
 			<el-table-column
-				v-if="columns[1].visible"
+				v-if="columns[2].visible"
 				label="对象类型"
 				align="center"
 				prop="targetType"
@@ -141,6 +139,7 @@
 					<DynamicField :row="scope.row" field="targetType" />
 				</template>
 			</el-table-column>
+
 			<el-table-column
 				v-if="columns[3].visible"
 				label="保证金金额"
@@ -153,6 +152,7 @@
 					<DynamicField :row="scope.row" field="moneyAmount" />
 				</template>
 			</el-table-column>
+
 			<el-table-column
 				v-if="columns[4].visible"
 				label="对方账户"
@@ -165,6 +165,7 @@
 					<DynamicField :row="scope.row" field="targetAcountsName" />
 				</template>
 			</el-table-column>
+
 			<el-table-column
 				v-if="columns[5].visible"
 				label="对方账号"
@@ -177,6 +178,7 @@
 					<DynamicField :row="scope.row" field="targetBankNo" />
 				</template>
 			</el-table-column>
+
 			<el-table-column
 				v-if="columns[6].visible"
 				label="对方开户行"
@@ -189,6 +191,7 @@
 					<DynamicField :row="scope.row" field="targetBankName" />
 				</template>
 			</el-table-column>
+
 			<el-table-column
 				v-if="columns[7].visible"
 				label="我方支付账户"
@@ -201,6 +204,7 @@
 					<DynamicField :row="scope.row" field="selfAcountsName" />
 				</template>
 			</el-table-column>
+
 			<el-table-column
 				v-if="columns[8].visible"
 				label="我方账号"
@@ -213,6 +217,7 @@
 					<DynamicField :row="scope.row" field="selfBankNo" />
 				</template>
 			</el-table-column>
+
 			<el-table-column
 				v-if="columns[9].visible"
 				label="我方开户行"
@@ -225,6 +230,7 @@
 					<DynamicField :row="scope.row" field="selfBankName" />
 				</template>
 			</el-table-column>
+
 			<el-table-column
 				v-if="columns[10].visible"
 				label="支付期货保证金时间"
@@ -237,6 +243,7 @@
 					<DynamicField :row="scope.row" field="futuresDate" />
 				</template>
 			</el-table-column>
+
 			<el-table-column
 				v-if="columns[11].visible"
 				label="事由"
@@ -249,6 +256,7 @@
 					<DynamicField :row="scope.row" field="reason" />
 				</template>
 			</el-table-column>
+
 			<el-table-column
 				label="备注"
 				align="center"
@@ -256,6 +264,7 @@
 				width="110"
 				show-overflow-tooltip
 			/>
+
 			<el-table-column
 				label="操作"
 				align="center"
@@ -270,35 +279,40 @@
 							size="mini"
 							type="text"
 							@click="applyForPayment(scope.row)"
-							>申请付款
+						>
+							申请付款
 						</el-button>
 						<el-button
 							v-if="scope.row.checkState === '审核中'"
 							size="mini"
 							type="warning"
 							disabled
-							>审核中
+						>
+							审核中
 						</el-button>
 						<el-button
 							v-hasPermi="['system:lendmoney:remove']"
 							size="mini"
 							type="text"
 							@click="handleGetBackMoney(scope.row)"
-							>收回资金
+						>
+							收回资金
 						</el-button>
 						<el-button
 							v-hasPermi="['system:lendmoney:edit']"
 							size="mini"
 							type="primary"
 							@click="handleUpdate(scope.row)"
-							>修改
+						>
+							修改
 						</el-button>
 						<el-button
 							v-hasPermi="['system:lendmoney:remove']"
 							size="mini"
 							type="danger"
 							@click="handleDelete(scope.row)"
-							>删除
+						>
+							删除
 						</el-button>
 					</el-row>
 				</template>
@@ -758,20 +772,20 @@ export default {
 				reason: [{ required: true, message: '请输入是由!', trigger: 'blur' }]
 			},
 			columns: [
-				/*  {key: 0, label: `借出款编号`, visible: true},*/
 				{ key: 0, label: `期货保证金公司`, visible: true },
-				{ key: 1, label: `对象类型`, visible: true },
-				{ key: 2, label: `对象`, visible: true },
+				{ key: 1, label: `对象`, visible: true },
+				{ key: 2, label: `对象类型`, visible: true },
 				{ key: 3, label: `保证金金额`, visible: true },
 				{ key: 4, label: `对方账户`, visible: true },
 				{ key: 5, label: `对方账号`, visible: true },
 				{ key: 6, label: `对方开户行`, visible: true },
-				{ key: 7, label: `我方开户行`, visible: true },
-				{ key: 8, label: `我方支付账户`, visible: true },
-				{ key: 9, label: `我方账号`, visible: true },
-				{ key: 10, label: `我方开户行`, visible: true },
-				{ key: 11, label: `支付期货保证金时间`, visible: true }
+				{ key: 7, label: `我方支付账户`, visible: true },
+				{ key: 8, label: `我方账号`, visible: true },
+				{ key: 9, label: `我方开户行`, visible: true },
+				{ key: 10, label: `支付期货保证金时间`, visible: true },
+				{ key: 11, label: `事由`, visible: true }
 			],
+
 			// 搜索参数
 			timesQuery: {
 				beginTime: '',

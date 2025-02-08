@@ -13,20 +13,11 @@
 						clearable
 					/>
 				</el-form-item>
-				<el-form-item label="申请人">
-					<el-input
-						v-model="query.applyUser"
-						placeholder="请输入申请人"
-						size="small"
-						clearable
-					/>
-				</el-form-item>
 				<el-form-item label="开始时间">
 					<el-date-picker
 						v-model="query.startTime"
 						type="datetime"
 						placeholder="选择开始时间"
-						:picker-options="datePickerOptions"
 						class="filter-item"
 						clearable
 						size="small"
@@ -37,7 +28,6 @@
 						v-model="query.endTime"
 						type="datetime"
 						placeholder="选择结束时间"
-						:picker-options="datePickerOptions"
 						class="filter-item"
 						clearable
 						size="small"
@@ -131,7 +121,6 @@ import { cashOilCardSummary } from '../../../api/system/statement';
 import DialogWrapper from '../../dashboard/components/common/DialogWrapper.vue';
 import { common_dialog } from '../../dashboard/mixins/common/common_dialog';
 import { listVehicles } from '../../../api/system/vehicles';
-import CARS from '../../../components/NeedToShow/CARS.vue';
 import COMPANY_CAR from '../../../components/NeedToShow/COMPANY_CAR.vue'; // 假设 API 函数路径
 
 export default {
@@ -148,12 +137,7 @@ export default {
 			},
 			tableData: [], // 存储表格数据
 			totalFrequency: 0, // 总现金加油次数
-			totalAmount: 0, // 总现金加油金额
-			datePickerOptions: {
-				disabledDate(time) {
-					return time.getTime() > Date.now(); // 禁用未来日期
-				}
-			}
+			totalAmount: 0 // 总现金加油金额
 		};
 	},
 	created() {

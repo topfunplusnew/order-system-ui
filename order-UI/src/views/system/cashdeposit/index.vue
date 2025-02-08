@@ -93,186 +93,207 @@
 			</right-toolbar>
 		</el-row>
 
-		<el-table
-			id="printBox"
-			v-loading="loading"
-			v-horizontal-scroll="'always'"
-			border
-			:data="lendMoneyList"
-			size="mini"
-			:cell-style="
-				() => {
-					return { padding: '1px' };
-				}
-			"
-			@selection-change="handleSelectionChange"
-		>
-			<!--      <el-table-column label="id" align="center" prop="id"/>-->
-			<!--      <el-table-column label="借出款编号" align="center" prop="futuresNO" v-if="columns[0].visible"/>-->
-			<el-table-column
-				v-if="columns[0].visible"
-				label="期货保证金公司"
-				align="center"
-				prop="futuresMarginCompany"
-				width="130"
-				show-overflow-tooltip
+		<template>
+			<el-table
+				id="printBox"
+				v-loading="loading"
+				v-horizontal-scroll="'always'"
+				border
+				:data="lendMoneyList"
+				size="mini"
+				:cell-style="() => ({ padding: '1px' })"
+				@selection-change="handleSelectionChange"
 			>
-				<template slot-scope="scope">
-					<span
-						v-if="
-							scope.row.futuresMarginCompany !== '' &&
-							scope.row.futuresMarginCompany !== null
-						"
-					>
-						{{ scope.row.futuresMarginCompany }}
-					</span>
-					<span v-else> 无期货保证金公司 </span>
-				</template>
-			</el-table-column>
-			<el-table-column
-				v-if="columns[2].visible"
-				label="对象"
-				align="center"
-				prop="target"
-				width="110"
-				show-overflow-tooltip
-			/>
-			<el-table-column
-				v-if="columns[1].visible"
-				label="对象类型"
-				align="center"
-				prop="targetType"
-				width="110"
-				show-overflow-tooltip
-			/>
-			<el-table-column
-				v-if="columns[3].visible"
-				label="保证金金额"
-				align="center"
-				prop="moneyAmount"
-				width="110"
-				show-overflow-tooltip
-			/>
-			<el-table-column
-				v-if="columns[4].visible"
-				label="对方账户"
-				align="center"
-				prop="targetAcountsName"
-				width="110"
-				show-overflow-tooltip
-			>
-			</el-table-column>
-			<el-table-column
-				v-if="columns[5].visible"
-				label="对方账号"
-				align="center"
-				prop="targetBankNo"
-				width="160"
-				show-overflow-tooltip
-			/>
-			<el-table-column
-				v-if="columns[6].visible"
-				label="对方开户行"
-				align="center"
-				prop="targetBankName"
-				width="110"
-				show-overflow-tooltip
-			/>
-			<el-table-column
-				v-if="columns[7].visible"
-				label="我方支付账户"
-				align="center"
-				prop="selfAcountsName"
-				show-overflow-tooltip
-				width="160"
-			/>
-			<el-table-column
-				v-if="columns[8].visible"
-				label="我方账号"
-				align="center"
-				prop="selfBankNo"
-				width="110"
-				show-overflow-tooltip
-			/>
-			<el-table-column
-				v-if="columns[9].visible"
-				label="我方开户行"
-				align="center"
-				prop="selfBankName"
-				width="110"
-				show-overflow-tooltip
-			/>
-			<el-table-column
-				v-if="columns[10].visible"
-				label="支付期货保证金时间"
-				align="center"
-				prop="futuresDate"
-				show-overflow-tooltip
-				width="110"
-			/>
-			<el-table-column
-				v-if="columns[11].visible"
-				label="事由"
-				align="center"
-				prop="reason"
-				width="110"
-				show-overflow-tooltip
-			/>
-			<el-table-column
-				label="备注"
-				align="center"
-				prop="comments"
-				width="110"
-				show-overflow-tooltip
-			/>
-			<el-table-column
-				label="操作"
-				align="center"
-				class-name="small-padding fixed-width"
-				width="230px"
-				fixed="right"
-			>
-				<template slot-scope="scope">
-					<el-row>
-						<el-button
-							v-if="scope.row.checkState === '未申请'"
-							size="mini"
-							type="text"
-							@click="applyForPayment(scope.row)"
-							>申请付款
-						</el-button>
-						<el-button
-							v-if="scope.row.checkState === '审核中'"
-							size="mini"
-							type="warning"
-							disabled
-							>审核中
-						</el-button>
-						<el-button
-							v-hasPermi="['system:lendmoney:remove']"
-							size="mini"
-							type="text"
-							@click="handleGetBackMoney(scope.row)"
-							>收回资金
-						</el-button>
-						<el-button
-							v-hasPermi="['system:lendmoney:edit']"
-							size="mini"
-							type="primary"
-							@click="handleUpdate(scope.row)"
-							>修改
-						</el-button>
-						<el-button
-							v-hasPermi="['system:lendmoney:remove']"
-							size="mini"
-							type="danger"
-							@click="handleDelete(scope.row)"
-							>删除
-						</el-button>
-					</el-row>
-				</template>
-			</el-table-column>
-		</el-table>
+				<!-- 期货保证金公司 -->
+				<el-table-column
+					v-if="columns[0].visible"
+					label="期货保证金公司"
+					align="center"
+					prop="futuresMarginCompany"
+					width="130"
+					show-overflow-tooltip
+				>
+					<template slot-scope="scope">
+						<span v-if="scope.row.futuresMarginCompany">
+							{{ scope.row.futuresMarginCompany }}
+						</span>
+						<span v-else>无期货保证金公司</span>
+					</template>
+				</el-table-column>
+
+				<!-- 对象 -->
+				<el-table-column
+					v-if="columns[2].visible"
+					label="对象"
+					align="center"
+					prop="target"
+					width="110"
+					show-overflow-tooltip
+				/>
+
+				<!-- 对象类型 -->
+				<el-table-column
+					v-if="columns[1].visible"
+					label="对象类型"
+					align="center"
+					prop="targetType"
+					width="110"
+					show-overflow-tooltip
+				/>
+
+				<!-- 保证金金额 -->
+				<el-table-column
+					v-if="columns[3].visible"
+					label="保证金金额"
+					align="center"
+					prop="moneyAmount"
+					width="110"
+					show-overflow-tooltip
+				/>
+
+				<!-- 对方账户 -->
+				<el-table-column
+					v-if="columns[4].visible"
+					label="对方账户"
+					align="center"
+					prop="targetAcountsName"
+					width="110"
+					show-overflow-tooltip
+				/>
+
+				<!-- 对方账号 -->
+				<el-table-column
+					v-if="columns[5].visible"
+					label="对方账号"
+					align="center"
+					prop="targetBankNo"
+					width="160"
+					show-overflow-tooltip
+				/>
+
+				<!-- 对方开户行 -->
+				<el-table-column
+					v-if="columns[6].visible"
+					label="对方开户行"
+					align="center"
+					prop="targetBankName"
+					width="110"
+					show-overflow-tooltip
+				/>
+
+				<!-- 我方支付账户 -->
+				<el-table-column
+					v-if="columns[8].visible"
+					label="我方支付账户"
+					align="center"
+					prop="selfAcountsName"
+					width="160"
+					show-overflow-tooltip
+				/>
+
+				<!-- 我方账号 -->
+				<el-table-column
+					v-if="columns[9].visible"
+					label="我方账号"
+					align="center"
+					prop="selfBankNo"
+					width="110"
+					show-overflow-tooltip
+				/>
+
+				<!-- 我方开户行 -->
+				<el-table-column
+					v-if="columns[10].visible"
+					label="我方开户行"
+					align="center"
+					prop="selfBankName"
+					width="110"
+					show-overflow-tooltip
+				/>
+
+				<!-- 支付期货保证金时间 -->
+				<el-table-column
+					v-if="columns[11].visible"
+					label="支付期货保证金时间"
+					align="center"
+					prop="futuresDate"
+					width="130"
+					show-overflow-tooltip
+				/>
+
+				<!-- 事由 -->
+				<el-table-column
+					label="事由"
+					align="center"
+					prop="reason"
+					width="110"
+					show-overflow-tooltip
+				/>
+
+				<!-- 备注 -->
+				<el-table-column
+					label="备注"
+					align="center"
+					prop="comments"
+					width="110"
+					show-overflow-tooltip
+				/>
+
+				<!-- 操作列 -->
+				<el-table-column
+					label="操作"
+					align="center"
+					class-name="small-padding fixed-width"
+					width="230px"
+					fixed="right"
+				>
+					<template slot-scope="scope">
+						<el-row>
+							<el-button
+								v-if="scope.row.checkState === '未申请'"
+								size="mini"
+								type="text"
+								@click="applyForPayment(scope.row)"
+							>
+								申请付款
+							</el-button>
+							<el-button
+								v-if="scope.row.checkState === '审核中'"
+								size="mini"
+								type="warning"
+								disabled
+							>
+								审核中
+							</el-button>
+							<el-button
+								v-hasPermi="['system:lendmoney:remove']"
+								size="mini"
+								type="text"
+								@click="handleGetBackMoney(scope.row)"
+							>
+								收回资金
+							</el-button>
+							<el-button
+								v-hasPermi="['system:lendmoney:edit']"
+								size="mini"
+								type="primary"
+								@click="handleUpdate(scope.row)"
+							>
+								修改
+							</el-button>
+							<el-button
+								v-hasPermi="['system:lendmoney:remove']"
+								size="mini"
+								type="danger"
+								@click="handleDelete(scope.row)"
+							>
+								删除
+							</el-button>
+						</el-row>
+					</template>
+				</el-table-column>
+			</el-table>
+		</template>
 
 		<pagination
 			v-show="total > 0"
@@ -612,8 +633,6 @@ import { listCompany } from '@/api/system/company';
 import ApplyPayment from '@/views/dashboard/components/common/ApplyPayment.vue';
 import { TableName } from '@/api/tool/enums';
 import { excludeParams } from '@/api/tool/exclude';
-import { addReceiveMoney } from '../../../api/system/receiveMoney';
-import { parseTime } from '../../../utils/ruoyi';
 import { mixin_reviveMoney } from '../../dashboard/mixins/receive';
 import { mixin_printHTML } from '../../dashboard/mixins/print';
 import { ReceiveType } from '../../../api/tool/enums';
@@ -722,19 +741,18 @@ export default {
 				reason: [{ required: true, message: '请输入是由!', trigger: 'blur' }]
 			},
 			columns: [
-				/*  {key: 0, label: `借出款编号`, visible: true},*/
-				{ key: 0, label: `期货保证金公司`, visible: true },
-				{ key: 1, label: `对象类型`, visible: true },
-				{ key: 2, label: `对象`, visible: true },
-				{ key: 3, label: `保证金金额`, visible: true },
-				{ key: 4, label: `对方账户`, visible: true },
-				{ key: 5, label: `对方账号`, visible: true },
-				{ key: 6, label: `对方开户行`, visible: true },
-				{ key: 7, label: `我方开户行`, visible: true },
-				{ key: 8, label: `我方支付账户`, visible: true },
-				{ key: 9, label: `我方账号`, visible: true },
-				{ key: 10, label: `我方开户行`, visible: true },
-				{ key: 11, label: `支付期货保证金时间`, visible: true }
+				{ key: 0, label: '期货保证金公司', visible: true },
+				{ key: 1, label: '对象类型', visible: true },
+				{ key: 2, label: '对象', visible: true },
+				{ key: 3, label: '保证金金额', visible: true },
+				{ key: 4, label: '对方账户', visible: true },
+				{ key: 5, label: '对方账号', visible: true },
+				{ key: 6, label: '对方开户行', visible: true },
+				{ key: 7, label: '我方开户行', visible: true },
+				{ key: 8, label: '我方支付账户', visible: true },
+				{ key: 9, label: '我方账号', visible: true },
+				{ key: 10, label: '我方开户行', visible: true },
+				{ key: 11, label: '支付期货保证金时间', visible: true }
 			],
 			// 搜索参数
 			timesQuery: {

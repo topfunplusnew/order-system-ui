@@ -157,6 +157,8 @@
 				</template>
 			</right-toolbar>
 		</el-row>
+
+		<!-- todo -->
 		<el-table
 			id="printBox"
 			v-loading="loading"
@@ -173,12 +175,18 @@
 			ref="paymentTable"
 		>
 			<el-table-column type="selection" width="55" />
-			<el-table-column label="id" align="center" prop="id" />
+			<el-table-column
+				label="id"
+				align="center"
+				prop="id"
+				v-if="columns[0].visible"
+			/>
 			<el-table-column
 				label="日期"
 				align="center"
 				prop="fundsDate"
 				width="120"
+				v-if="columns[1].visible"
 				show-overflow-tooltip
 			>
 				<template #default="scope">
@@ -190,6 +198,7 @@
 				align="center"
 				prop="payType"
 				width="120"
+				v-if="columns[2].visible"
 				show-overflow-tooltip
 			>
 				<template #default="scope">
@@ -201,6 +210,7 @@
 				align="center"
 				prop="moneyAmount"
 				width="120"
+				v-if="columns[3].visible"
 				show-overflow-tooltip
 			>
 				<template #default="scope">
@@ -212,6 +222,7 @@
 				align="center"
 				prop="selfAcountsName"
 				width="120"
+				v-if="columns[4].visible"
 				show-overflow-tooltip
 			>
 				<template #default="scope">
@@ -223,6 +234,7 @@
 				align="center"
 				prop="selfBankNo"
 				width="120"
+				v-if="columns[5].visible"
 				show-overflow-tooltip
 			>
 				<template #default="scope">
@@ -234,6 +246,7 @@
 				align="center"
 				prop="selfBankName"
 				width="120"
+				v-if="columns[6].visible"
 				show-overflow-tooltip
 			>
 				<template #default="scope">
@@ -245,6 +258,7 @@
 				align="center"
 				prop="otherAcountsName"
 				width="120"
+				v-if="columns[7].visible"
 				show-overflow-tooltip
 			>
 				<template #default="scope">
@@ -256,6 +270,7 @@
 				align="center"
 				prop="otherBankNo"
 				width="120"
+				v-if="columns[8].visible"
 				show-overflow-tooltip
 			>
 				<template #default="scope">
@@ -267,6 +282,7 @@
 				align="center"
 				prop="otherBankName"
 				width="120"
+				v-if="columns[9].visible"
 				show-overflow-tooltip
 			>
 				<template #default="scope">
@@ -278,6 +294,7 @@
 				align="center"
 				prop="paymentState"
 				width="120"
+				v-if="columns[10].visible"
 				show-overflow-tooltip
 			>
 				<template #default="scope">
@@ -292,6 +309,7 @@
 				align="center"
 				prop="companyName"
 				width="120"
+				v-if="columns[11].visible"
 				show-overflow-tooltip
 			>
 				<template #default="scope">
@@ -303,6 +321,7 @@
 				align="center"
 				prop="companyType"
 				width="120"
+				v-if="columns[12].visible"
 				show-overflow-tooltip
 			>
 				<template #default="scope">
@@ -314,6 +333,7 @@
 				align="center"
 				prop="comments"
 				width="120"
+				v-if="columns[13].visible"
 				show-overflow-tooltip
 			/>
 			<el-table-column
@@ -392,6 +412,7 @@
 			:page.sync="queryParams.pageNum"
 			:limit.sync="queryParams.pageSize"
 			@pagination="getList"
+			z
 		/>
 
 		<!--     添加或修改付款信息对话框 -->

@@ -216,6 +216,7 @@
 				show-overflow-tooltip
 			/>
 			<el-table-column
+				v-if="columns[13].visible"
 				label="备注"
 				align="center"
 				prop="comments"
