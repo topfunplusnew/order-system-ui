@@ -1,8 +1,6 @@
 <script>
 import { getUserProfile } from '@/api/system/user';
 import CheckApply from '@/views/dashboard/components/applyProcess/CheckApply.vue';
-import { listAuditflow, updateAuditflow } from '@/api/system/auditflow';
-import { updateAuditInfo } from '@/api/system/auditInfo';
 import { TableName } from '@/api/tool/enums';
 import { getOrderFreight } from '@/api/system/orderFreight';
 import { getBorrowedMoney } from '@/api/system/borrowedMoney';
@@ -122,6 +120,7 @@ export default {
 		},
 
 		// 根据表名查询
+		// todo 这里后续需要不断迭代
 		checkWithTableName(tableName, tID) {
 			// 展示对应表信息
 			this.tableNameToProp = tableName;
@@ -140,9 +139,9 @@ export default {
 						this.needToShowInfo = res.data;
 					});
 					break;
-				case 'paymentApplyDetailItem':
-					this.needToShowInfo = item.paymentApplyDetailItem;
-					break;
+				// case 'paymentApplyDetailItem':
+				// 	this.needToShowInfo = item.paymentApplyDetailItem;
+				// 	break;
 
 				// 油卡充值
 				case TableName.OIL_RECHARGE:
@@ -156,6 +155,7 @@ export default {
 						this.needToShowInfo = res.data;
 					});
 					break;
+				// 商品订单
 				case TableName.GOODS_ORDER:
 					getGoodsOrder(tID).then(res => {
 						this.needToShowInfo = res.data;

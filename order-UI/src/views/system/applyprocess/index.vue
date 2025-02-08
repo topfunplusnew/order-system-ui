@@ -5,7 +5,6 @@ import { getPaymentApply, listPaymentApply } from '@/api/system/paymentApply';
 import { listAuditInfoGroup } from '@/api/system/auditInfo';
 import StepInfo from '@/views/dashboard/components/applyProcess/StepInfo.vue';
 import { mapGetters } from 'vuex';
-import { findFileExtension } from '@/utils/trash/utils';
 import { listAuditInfo } from '../../../api/system/auditInfo';
 import { mixin_printHTML } from '../../dashboard/mixins/print';
 
@@ -137,7 +136,7 @@ export default {
 					this.paymentList = res.rows;
 					this.$close();
 				})
-				.catch(err => {
+				.catch(() => {
 					this.$close();
 				});
 		},
@@ -298,10 +297,21 @@ export default {
 						</el-button>
 					</template>
 				</el-table-column>
-				<el-table-column label="审核状态" width="80" fixed="right">
+				<el-table-column
+					label="审核状态"
+					width="80"
+					fixed="right"
+					align="center"
+				>
 					<template slot-scope="scope">
 						<el-tag
-							:type="scope.row.checkState === '通过' ? 'success' : 'primary'"
+							:type="
+								scope.row.checkState === '通过'
+									? 'success'
+									: scope.row.checkState === '未通过'
+									? 'danger'
+									: 'primary'
+							"
 						>
 							{{ scope.row.checkState }}
 						</el-tag>

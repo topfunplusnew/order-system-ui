@@ -72,7 +72,11 @@
 			<el-form-item v-if="value !== '员工'" label="对方公司" prop="companyName">
 				<el-row>
 					<el-col :span="14">
-						<el-input v-model="form.companyName" placeholder="请输入对方公司" />
+						<el-input
+							disabled
+							v-model="form.companyName"
+							placeholder="请选择"
+						/>
 					</el-col>
 					<el-col :span="4">
 						<SearchOption
@@ -155,8 +159,8 @@
 						<el-col :span="14">
 							<el-input
 								v-model="form.otherBankNo"
-								placeholder="请输入对方账号"
-								:disabled="bankInputDisabled"
+								placeholder="请选择"
+								disabled
 							/>
 						</el-col>
 						<el-col v-if="bankInputDisabled === false" :span="3">
@@ -212,7 +216,7 @@
 					<el-input
 						v-model="form.otherBankName"
 						placeholder="请输入对方开户行"
-						:disabled="bankInputDisabled"
+						disabled
 					/>
 				</el-form-item>
 			</el-row>

@@ -283,6 +283,10 @@
 								icon="el-icon-search"
 								:limit-info="{ oilType: '主卡' }"
 								@commitBack="handleCommitBack"
+								@update:queryName="handleUpdateQueryName"
+								:query-name="queryCard"
+								query-info="oilCardNo"
+								query-label="加油卡卡号"
 							>
 								<template #table-columns>
 									<el-table-column prop="oilCardNo" label="加油卡卡号" />
@@ -496,6 +500,7 @@ export default {
 				{ key: 1, label: `当前金额`, visible: true },
 				{ key: 2, label: `备注`, visible: true }
 			],
+			queryCard: null,
 
 			// 加油卡充值界面的弹窗
 			moneyDialogVisible: false,
@@ -570,6 +575,9 @@ export default {
 		handleUpdateQueryBankAcount(val) {
 			this.queryBankAcount = val;
 		},
+		handleUpdateQueryName(val) {
+			this.queryCard = val;
+		},
 		handleUpload(val) {
 			this.moneyInfo.attachment = val;
 		},
@@ -581,14 +589,16 @@ export default {
 		},
 		// 加油卡充值
 		handleMoney() {
-			this.moneyDialogVisible = true;
 			this.moneyInfo.rechargeName = this.trueName;
+			this.moneyDialogVisible = true;
 		},
 		// 确认银行卡充值
 		submitMoney() {
 			// 添加
 			addOilRecharge(this.moneyInfo).then(() => {
-				this.$message.success('充值成功');
+				this.$message.success(
+					'油卡充值信息新增成功，请前往出差管理/加油卡充值记录查看'
+				);
 			});
 			this.moneyDialogVisible = false;
 		},
