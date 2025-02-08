@@ -1161,34 +1161,48 @@ export default {
 				confirmButtonText: '确定',
 				cancelButtonText: '取消',
 				inputPattern: /^\d+$/,
-				inputErrorMessage: '请输入正确的数字!'
-			}).then(({ value }) => {
-				getRebate(row.id).then(res => {
-					let rebate = res.data.actualReceivedDetails;
-
-					let item = {
-						uuid: getUuid(),
-						actualReceived: Number(value),
-						actualReceivedDate: parseTime(new Date())
-					};
-					let body = JSON.parse(JSON.stringify(row));
-					if (rebate === null) {
-						let actualReceivedDetails = {
-							detailList: []
-						};
-						actualReceivedDetails.detailList.push(item);
-						body.actualReceivedDetails = actualReceivedDetails;
-					} else {
-						rebate.detailList.push(item);
-						body.actualReceivedDetails = {
-							detailList: rebate.detailList
-						};
-					}
-					updateRebate(body).then(() => {
-						this.$modal.msgSuccess('返利成功');
-					});
+				inputErrorMessage: '请输入正确的数字!',
+				inputType: 'number'
+			})
+				.then(({ value }) => {
+					this.$prompt('请选择返利日期', '提示', {
+						confirmButtonText: '确定',
+						cancelButtonText: '取消',
+						inputType: 'date'
+					})
+						.then(({ value: date }) => {
+							getRebate(row.id).then(res => {
+								let rebate = res.data.actualReceivedDetails;
+								let item = {
+									uuid: getUuid(),
+									actualReceived: Number(value),
+									actualReceivedDate: parseTime(new Date(date))
+								};
+								let body = JSON.parse(JSON.stringify(row));
+								if (rebate === null) {
+									let actualReceivedDetails = {
+										detailList: []
+									};
+									actualReceivedDetails.detailList.push(item);
+									body.actualReceivedDetails = actualReceivedDetails;
+								} else {
+									rebate.detailList.push(item);
+									body.actualReceivedDetails = {
+										detailList: rebate.detailList
+									};
+								}
+								updateRebate(body).then(() => {
+									this.$modal.msgSuccess('返利成功');
+								});
+							});
+						})
+						.catch(() => {
+							this.$modal.msgError('取消选择返利日期');
+						});
+				})
+				.catch(() => {
+					this.$modal.msgError('取消输入返利金额');
 				});
-			});
 		},
 		// 查询返利流水账
 		handleRebateDetail(row) {
