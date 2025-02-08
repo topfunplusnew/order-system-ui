@@ -17,11 +17,18 @@
 				/>
 			</el-form-item>
 			<el-form-item label="入库日期" prop="storeDate">
-				<el-input
+				<!-- <el-input
 					v-model="queryParams.storeDate"
 					placeholder="请输入入库日期"
 					clearable
 					@keyup.enter.native="handleQuery"
+				/> -->
+				<el-date-picker
+					v-model="queryParams.storeDate"
+					type="date"
+					value-format="yyyy-MM-dd"
+					placeholder="选择入库日期"
+					clearable
 				/>
 			</el-form-item>
 			<el-form-item label="陆运车牌" prop="landCarNo">

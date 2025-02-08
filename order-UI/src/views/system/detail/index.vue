@@ -927,7 +927,7 @@ export default {
 		/** 导出按钮操作 */
 		handleExport() {
 			this.download(
-				'system/detail/export',
+				'system/inventoryDetail/export',
 				{
 					...this.queryParams
 				},

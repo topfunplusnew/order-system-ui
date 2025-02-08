@@ -69,8 +69,7 @@ export default {
 				{ key: 13, label: '订单来源', prop: 'source', visible: true },
 				{ key: 14, label: '订单状态', prop: 'check_state', visible: true },
 				{ key: 15, label: '收到条', prop: 'receiveProof', visible: true },
-				{ key: 16, label: '已支付金额', prop: 'paid_amount', visible: true },
-				{ key: 17, label: '运费申请', prop: 'action', visible: true }
+				{ key: 16, label: '已支付金额', prop: 'paid_amount', visible: true }
 			]
 		};
 	},
@@ -428,7 +427,6 @@ export default {
 
 			<!-- 运费申请 -->
 			<el-table-column
-				v-if="columns[17].visible"
 				show-overflow-tooltip
 				label="运费申请"
 				align="center"

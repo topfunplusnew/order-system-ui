@@ -20,6 +20,7 @@
 				<el-date-picker
 					v-model="queryParams.storeDate"
 					type="date"
+					value-format="yyyy-MM-dd"
 					placeholder="选择入库日期"
 					clearable
 					@change="handleQuery"
@@ -29,6 +30,7 @@
 				<el-input
 					v-model="queryParams.supplier"
 					placeholder="请输入供应商"
+					value-format="yyyy-MM-dd"
 					clearable
 					@keyup.enter.native="handleQuery"
 				/>
