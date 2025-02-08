@@ -489,7 +489,7 @@
 			width="80%"
 			append-to-body
 		>
-			<el-form ref="form" :model="form" :rules="rules" label-width="80px">
+			<el-form ref="form" :model="form" :rules="rules" label-width="120px">
 				<el-row :gutter="10">
 					<el-col :span="6">
 						<el-row>
@@ -953,20 +953,20 @@
 
 <script>
 import {
-	listUser,
-	getUser,
-	delUser,
 	addUser,
-	updateUser,
-	resetUserPwd,
 	changeUserStatus,
-	deptTreeSelect
+	delUser,
+	deptTreeSelect,
+	getUser,
+	listUser,
+	resetUserPwd,
+	updateUser
 } from '@/api/system/user';
+import ShowLabel from '@/components/ShowLabel.vue';
 import { getToken } from '@/utils/auth';
 import Treeselect from '@riophae/vue-treeselect';
 import '@riophae/vue-treeselect/dist/vue-treeselect.css';
 import { parseTime } from '../../../utils/ruoyi';
-import ShowLabel from '@/components/ShowLabel.vue';
 
 export default {
 	name: 'User',
@@ -1089,7 +1089,7 @@ export default {
 					},
 					{
 						pattern: /^[^<>"'|\\]+$/,
-						message: '不能包含非法字符：< > " \' \\\ |',
+						message: '不能包含非法字符：< > " \' \\ |',
 						trigger: 'blur'
 					}
 				],
@@ -1104,6 +1104,79 @@ export default {
 					{
 						pattern: /^1[3|4|5|6|7|8|9][0-9]\d{8}$/,
 						message: '请输入正确的手机号码',
+						trigger: 'blur'
+					}
+				],
+				trueName: [
+					{ required: true, message: '真实姓名不能为空', trigger: 'blur' },
+					{
+						min: 2,
+						max: 20,
+						message: '真实姓名长度必须介于 2 和 20 之间',
+						trigger: 'blur'
+					}
+				],
+				iDCard: [
+					{
+						pattern: /(^\d{15}$)|(^\d{18}$)|(^\d{17}(\d|X|x)$)/,
+						message: '请输入正确的身份证号码',
+						trigger: 'blur'
+					}
+				],
+				bankNo: [
+					{
+						pattern: /^[0-9]{16,19}$/,
+						message: '请输入正确的银行卡号',
+						trigger: 'blur'
+					}
+				],
+				relationPersonTel: [
+					{
+						pattern: /^1[3|4|5|6|7|8|9][0-9]\d{8}$/,
+						message: '请输入正确的手机号码',
+						trigger: 'blur'
+					}
+				],
+				deptId: [
+					{ required: true, message: '归属部门不能为空', trigger: 'change' }
+				],
+				postName: [
+					{ required: true, message: '岗位不能为空', trigger: 'blur' }
+				],
+				roleIds: [
+					{ required: true, message: '用户角色不能为空', trigger: 'change' }
+				],
+				state: [
+					{ required: true, message: '在职状态不能为空', trigger: 'change' }
+				],
+				startDate: [
+					{ required: true, message: '入职时间不能为空', trigger: 'change' }
+				],
+				education: [
+					{ required: true, message: '学历不能为空', trigger: 'blur' }
+				],
+				gradualUniversity: [
+					{ required: true, message: '毕业院校不能为空', trigger: 'blur' }
+				],
+				profession: [
+					{ required: true, message: '专业不能为空', trigger: 'blur' }
+				],
+				gradualDate: [
+					{ required: true, message: '毕业时间不能为空', trigger: 'change' }
+				],
+				domicileAddress: [
+					{ required: true, message: '户籍地址不能为空', trigger: 'blur' }
+				],
+				residentialAddress: [
+					{ required: true, message: '居住地址不能为空', trigger: 'blur' }
+				],
+				relationPerson: [
+					{ required: true, message: '紧急联系人不能为空', trigger: 'blur' }
+				],
+				relationship: [
+					{
+						required: true,
+						message: '与紧急联系人关系不能为空',
 						trigger: 'blur'
 					}
 				]

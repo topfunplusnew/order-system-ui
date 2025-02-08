@@ -186,14 +186,6 @@
 				width="150px"
 			/>
 			<el-table-column
-				v-if="columns[1].visible"
-				label="客户名称"
-				align="center"
-				prop="customer"
-				fixed="left"
-				show-overflow-tooltip
-			/>
-			<el-table-column
 				v-if="columns[2].visible"
 				label="负责人姓名"
 				align="center"
@@ -201,27 +193,11 @@
 				width="150px"
 			/>
 			<el-table-column
-				v-if="columns[1].visible"
-				label="客户名称"
-				align="center"
-				prop="customer"
-				fixed="left"
-				show-overflow-tooltip
-			/>
-			<el-table-column
 				v-if="columns[3].visible"
 				label="负责人电话"
 				align="center"
 				prop="LeaderTel"
 				width="150px"
-				show-overflow-tooltip
-			/>
-			<el-table-column
-				v-if="columns[1].visible"
-				label="客户名称"
-				align="center"
-				prop="customer"
-				fixed="left"
 				show-overflow-tooltip
 			/>
 			<el-table-column

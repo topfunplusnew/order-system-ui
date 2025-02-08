@@ -227,8 +227,8 @@
 						<el-col :span="14">
 							<el-input
 								v-model="form.otherBankNo"
-								placeholder="请输入对方账号"
-								:disabled="bankInputDisabled"
+								placeholder="请选择"
+								disabled
 							/>
 						</el-col>
 						<el-col v-if="bankInputDisabled === false" :span="3">
@@ -285,7 +285,7 @@
 					<el-input
 						v-model="form.otherBankName"
 						placeholder="请输入对方开户行"
-						:disabled="bankInputDisabled"
+						disabled
 					/>
 				</el-form-item>
 			</el-row>
@@ -296,8 +296,8 @@
 						<el-col :span="14">
 							<el-input
 								v-model="form.otherBankNo"
-								placeholder="请输入对方账号"
-								:disabled="bankInputDisabled"
+								placeholder="请选择"
+								disabled
 							/>
 						</el-col>
 						<el-col v-if="bankInputDisabled === false" :span="3">
@@ -353,7 +353,7 @@
 					<el-input
 						v-model="form.otherBankName"
 						placeholder="请输入对方开户行"
-						:disabled="bankInputDisabled"
+						disabled
 					/>
 				</el-form-item>
 			</el-row>
@@ -365,8 +365,8 @@
 						<el-col :span="14">
 							<el-input
 								v-model="form.otherBankNo"
-								placeholder="请输入对方账号"
-								:disabled="bankInputDisabled"
+								placeholder="请选择"
+								disabled
 							/>
 						</el-col>
 						<el-col v-if="bankInputDisabled === false" :span="3">
@@ -422,7 +422,7 @@
 					<el-input
 						v-model="form.otherBankName"
 						placeholder="请输入对方开户行"
-						:disabled="bankInputDisabled"
+						disabled
 					/>
 				</el-form-item>
 			</el-row>

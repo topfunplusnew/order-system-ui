@@ -6,7 +6,7 @@
 			:model="queryParams"
 			size="mini"
 			:inline="true"
-			label-width="120px"
+			label-width="150px"
 		>
 			<el-form-item label="加油卡卡号" prop="oilCardNo">
 				<el-input

@@ -747,9 +747,10 @@
 								<!-- 动态绑定的 Input -->
 								<el-col :span="18">
 									<el-input
+										disabled
 										size="mini"
 										v-model="scope.row.supplier"
-										placeholder="请输入供应商"
+										placeholder="请选择"
 									/>
 								</el-col>
 
@@ -807,9 +808,10 @@
 						<template #default="scope">
 							<el-col :span="16">
 								<el-input
+									disabled
 									size="mini"
 									v-model="scope.row.levelName"
-									placeholder="请输入级别名称"
+									placeholder="请选择"
 								/>
 							</el-col>
 							<el-col :span="8">

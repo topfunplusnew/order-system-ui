@@ -27,7 +27,7 @@
 			<el-form-item label="供应商/客户" prop="searchCompamyName">
 				<el-input
 					v-model="queryParams.searchCompamyName"
-					placeholder="请输入开票日期"
+					placeholder="请输入供应商/客户"
 					clearable
 					@keyup.enter.native="handleQuery"
 				/>
@@ -35,7 +35,7 @@
 			<el-form-item label="开票单位" prop="searchInvoiceCompanyName">
 				<el-input
 					v-model="queryParams.searchInvoiceCompanyName"
-					placeholder="请输入开票日期"
+					placeholder="请输入开票单位"
 					clearable
 					@keyup.enter.native="handleQuery"
 				/>
