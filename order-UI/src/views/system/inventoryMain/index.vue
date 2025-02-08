@@ -899,7 +899,7 @@
 							/>
 						</template>
 					</el-table-column>
-					<el-table-column label="库存量" prop="stockNumber" width="150">
+					<!-- <el-table-column label="库存量" prop="stockNumber" width="150">
 						<template #default="scope">
 							<el-input
 								size="mini"
@@ -908,7 +908,7 @@
 								placeholder="入库时片数"
 							/>
 						</template>
-					</el-table-column>
+					</el-table-column> -->
 					<el-table-column label="每包片数" prop="piecesPerPack" width="150">
 						<template #default="scope">
 							<el-input
@@ -1006,7 +1006,19 @@
 							/>
 						</template>
 					</el-table-column>
-					<el-table-column label="实际片数" prop="actualPieces" width="150">
+
+					<!-- 后端跟我说这个放在后面，实际片数不展示  -->
+					<el-table-column label="库存量" prop="stockNumber" width="150">
+						<template #default="scope">
+							<el-input
+								size="mini"
+								v-model.lazy="scope.row.stockNumber"
+								@change="() => (scope.row.actualPieces = scope.row.stockNumber)"
+								placeholder="入库时片数"
+							/>
+						</template>
+					</el-table-column>
+					<!-- <el-table-column label="实际片数" prop="actualPieces" width="150">
 						<template #default="scope">
 							<el-input
 								size="mini"
@@ -1015,7 +1027,7 @@
 								disabled
 							/>
 						</template>
-					</el-table-column>
+					</el-table-column> -->
 					<el-table-column label="卸货价" prop="paymentUnload" width="150">
 						<template #default="scope">
 							<el-input
@@ -1535,7 +1547,6 @@ export default {
 							}
 						}, 0);
 						sums[index] = fix(sums[index]);
-						sums[index] += ' 元';
 					} else {
 						sums[index] = 'N/A';
 					}
@@ -1871,14 +1882,14 @@ export default {
 					// 计算陆运费
 					this.form.allLandFreight = this.isLand
 						? this.inventoryDetailList.reduce(
-								(prev, curr) => prev + curr.landFreight,
+								(prev, curr) => Number(prev) + Number(curr.landFreight),
 								0
 						  )
 						: 0;
 					// 计算海运费
 					this.form.allSeaFreight = this.isSea
 						? this.inventoryDetailList.reduce(
-								(prev, curr) => prev + curr.seaFreight,
+								(prev, curr) => Number(prev) + Number(curr.seaFreight),
 								0
 						  )
 						: 0;

@@ -18,7 +18,7 @@ export var mixin_order_freeApply = {
 			if (row.source === '订单' || row.source === '调整单')
 				source = FreightSource.GOODS_ORDER;
 			else source = FreightSource.INVENTORY_MAIN;
-			// 首先获取车辆信息
+
 			getCars(row.car_id).then(res => {
 				if (!res.data) {
 					this.$message.error('请先添加车辆信息');
@@ -29,7 +29,6 @@ export var mixin_order_freeApply = {
 					ordersNo: row.source_id,
 					freightType: row.transport_type === 'sea' ? '海运' : '陆运',
 					moneyAmount: row.freight,
-					// 对方银行卡信息
 					otherAcountsName: res.data.acountsName,
 					otherBankNo: res.data.bankNo,
 					otherBankName: res.data.bankName,
@@ -38,7 +37,6 @@ export var mixin_order_freeApply = {
 					driverId: row.car_id,
 					carNo: res.data.carNo,
 					fleet: row.fleet,
-					// 区分订单还是库存开的运费字段
 					source: source
 				};
 				// 打开弹窗

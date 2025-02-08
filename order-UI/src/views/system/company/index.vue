@@ -94,7 +94,6 @@
 			@selection-change="handleSelectionChange"
 			class="table-container"
 		>
-			<el-table-column label="id" align="center" prop="id" width="70" />
 			<el-table-column
 				v-if="columns[0].visible"
 				label="客户名称"
@@ -112,7 +111,7 @@
 				show-overflow-tooltip
 			/>
 			<el-table-column
-				v-if="columns[3].visible"
+				v-if="columns[2].visible"
 				label="老板电话"
 				align="center"
 				prop="leaderTel"
@@ -120,7 +119,7 @@
 				show-overflow-tooltip
 			/>
 			<el-table-column
-				v-if="columns[6].visible"
+				v-if="columns[3].visible"
 				label="区域"
 				align="center"
 				prop="region"
@@ -128,7 +127,7 @@
 				show-overflow-tooltip
 			/>
 			<el-table-column
-				v-if="columns[2].visible"
+				v-if="columns[4].visible"
 				label="联系人"
 				align="center"
 				prop="relationName"
@@ -136,7 +135,7 @@
 				show-overflow-tooltip
 			/>
 			<el-table-column
-				v-if="columns[7].visible"
+				v-if="columns[5].visible"
 				label="销售经理"
 				align="center"
 				prop="salesManager"
@@ -144,7 +143,7 @@
 				show-overflow-tooltip
 			/>
 			<el-table-column
-				v-if="columns[5].visible"
+				v-if="columns[6].visible"
 				label="地址"
 				align="center"
 				prop="address"
@@ -152,7 +151,7 @@
 				show-overflow-tooltip
 			/>
 			<el-table-column
-				v-if="columns[4].visible"
+				v-if="columns[7].visible"
 				label="电话"
 				align="center"
 				prop="relationTel"
@@ -733,12 +732,12 @@ export default {
 			columns: [
 				{ key: 0, label: `客户`, visible: true },
 				{ key: 1, label: `老板姓名`, visible: true },
-				{ key: 2, label: `公司名称`, visible: true },
-				{ key: 3, label: `老板电话`, visible: true },
-				{ key: 4, label: `电话`, visible: true },
-				{ key: 5, label: `地址`, visible: true },
-				{ key: 6, label: `区域`, visible: true },
-				{ key: 7, label: `销售经理`, visible: true },
+				{ key: 2, label: `老板电话`, visible: true },
+				{ key: 3, label: `区域`, visible: true },
+				{ key: 4, label: `联系人`, visible: true },
+				{ key: 5, label: `销售经理`, visible: true },
+				{ key: 6, label: `地址`, visible: true },
+				{ key: 7, label: `电话`, visible: true },
 				{ key: 8, label: `备注`, visible: true }
 			],
 			dialogFormVisible: false, // 搜索已绑定的银行卡信息

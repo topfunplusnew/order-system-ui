@@ -141,83 +141,85 @@ export default {
 
 <template>
 	<div class="app-container">
-		<el-form
-			:model="queryParams"
-			ref="queryForm"
-			size="mini"
-			:inline="true"
-			label-width="80px"
-			class="query-form"
-		>
-			<el-form-item label="开始时间">
-				<el-date-picker
-					v-model="queryParams.startDate"
-					type="date"
-					value-format="yyyy-MM-dd"
-					placeholder="请选择开始时间"
-					clearable
-				/>
-			</el-form-item>
-			<el-form-item label="结束时间">
-				<el-date-picker
-					v-model="queryParams.endDate"
-					type="date"
-					value-format="yyyy-MM-dd"
-					placeholder="请选择结束时间"
-					clearable
-				/>
-			</el-form-item>
-			<el-form-item label="支付时间">
-				<el-date-picker
-					v-model="queryParams.payDate"
-					type="date"
-					value-format="yyyy-MM-dd"
-					placeholder="请选择支付时间"
-					clearable
-				/>
-			</el-form-item>
-			<el-form-item label="车队">
-				<el-input
-					v-model="queryParams.fleet"
-					placeholder="请输入车队"
-					clearable
-				/>
-			</el-form-item>
-			<el-form-item label="海运公司">
-				<el-input
-					v-model="queryParams.driverName"
-					placeholder="请输入海运公司"
-					clearable
-				/>
-			</el-form-item>
-			<el-form-item label="车牌号">
-				<el-input
-					v-model="queryParams.carNo"
-					placeholder="请输入车牌号"
-					clearable
-				/>
-			</el-form-item>
-			<el-form-item label="对方户名">
-				<el-input
-					v-model="queryParams.bankName"
-					placeholder="请输入对方户名"
-					clearable
-				/>
-			</el-form-item>
-			<el-form-item label="支付状态">
-				<el-input
-					v-model="queryParams.paymentState"
-					placeholder="请输入支付状态"
-					clearable
-				/>
-			</el-form-item>
-			<el-form-item>
-				<el-button type="primary" icon="el-icon-search" @click="handleQuery"
-					>搜索</el-button
-				>
-				<el-button icon="el-icon-refresh" @click="resetQuery">重置</el-button>
-			</el-form-item>
-		</el-form>
+		<el-card class="box-card">
+			<el-form
+				:model="queryParams"
+				ref="queryForm"
+				size="mini"
+				:inline="true"
+				label-width="80px"
+				class="query-form"
+			>
+				<el-form-item label="开始时间">
+					<el-date-picker
+						v-model="queryParams.startDate"
+						type="date"
+						value-format="yyyy-MM-dd"
+						placeholder="请选择开始时间"
+						clearable
+					/>
+				</el-form-item>
+				<el-form-item label="结束时间">
+					<el-date-picker
+						v-model="queryParams.endDate"
+						type="date"
+						value-format="yyyy-MM-dd"
+						placeholder="请选择结束时间"
+						clearable
+					/>
+				</el-form-item>
+				<el-form-item label="支付时间">
+					<el-date-picker
+						v-model="queryParams.payDate"
+						type="date"
+						value-format="yyyy-MM-dd"
+						placeholder="请选择支付时间"
+						clearable
+					/>
+				</el-form-item>
+				<el-form-item label="车队">
+					<el-input
+						v-model="queryParams.fleet"
+						placeholder="请输入车队"
+						clearable
+					/>
+				</el-form-item>
+				<el-form-item label="海运公司">
+					<el-input
+						v-model="queryParams.driverName"
+						placeholder="请输入海运公司"
+						clearable
+					/>
+				</el-form-item>
+				<el-form-item label="车牌号">
+					<el-input
+						v-model="queryParams.carNo"
+						placeholder="请输入车牌号"
+						clearable
+					/>
+				</el-form-item>
+				<el-form-item label="对方户名">
+					<el-input
+						v-model="queryParams.bankName"
+						placeholder="请输入对方户名"
+						clearable
+					/>
+				</el-form-item>
+				<el-form-item label="支付状态">
+					<el-input
+						v-model="queryParams.paymentState"
+						placeholder="请输入支付状态"
+						clearable
+					/>
+				</el-form-item>
+				<el-form-item>
+					<el-button type="primary" icon="el-icon-search" @click="handleQuery"
+						>搜索</el-button
+					>
+					<el-button icon="el-icon-refresh" @click="resetQuery">重置</el-button>
+				</el-form-item>
+			</el-form>
+		</el-card>
 
 		<el-row>
 			<el-col>
@@ -535,10 +537,8 @@ export default {
 
 <style scoped>
 .query-form {
-	background-color: #f5f7fa;
 	padding: 20px;
 	border-radius: 8px;
-	margin-bottom: 20px;
 }
 .sea-transport {
 	font-weight: bold;

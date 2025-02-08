@@ -88,7 +88,6 @@
 			"
 			@selection-change="handleSelectionChange"
 		>
-			<el-table-column label="id" align="center" prop="id" />
 			<el-table-column
 				v-if="columns[0].visible"
 				label="供应商"
@@ -696,9 +695,7 @@ export default {
 				{ key: 0, label: `供应商`, visible: true },
 				{ key: 1, label: `地址`, visible: true },
 				{ key: 2, label: `联系人`, visible: true },
-				{ key: 3, label: `银行卡账号`, visible: true },
-				/* {key: 4, label: `开户名`, visible: true},
-         {key: 5, label: `开户行`, visible: true},*/
+				{ key: 3, label: `老板电话`, visible: true },
 				{ key: 4, label: `电话`, visible: true },
 				{ key: 5, label: `备注`, visible: true }
 			],

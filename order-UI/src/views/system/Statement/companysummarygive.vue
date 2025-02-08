@@ -96,6 +96,16 @@
 				width="140"
 			/>
 			<el-table-column
+				show-overflow-tooltip
+				label="时间"
+				align="center"
+				width="140"
+			>
+				<template slot-scope="">
+					{{ queryParams.endTime }}
+				</template>
+			</el-table-column>
+			<el-table-column
 				v-if="columns[1] && columns[1].visible"
 				show-overflow-tooltip
 				label="供应商名称"

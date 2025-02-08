@@ -13,7 +13,7 @@ export default {
 	props: {
 		row: {
 			type: Object,
-			default: {}
+			default: () => {}
 		},
 		title: {
 			type: String,
@@ -34,16 +34,11 @@ export default {
 	methods: {
 		// 查看运费对应的订单单据信息
 		handleCheck(row) {
-			const orderNo = row.ordersNo || row.orderNo;
-			// 拿到ordersNo 去查询订单信息
-			checkOrderByOrderNo(orderNo).then(res => {
+			// 根据获取到的订单id获取订单详情
+			getGoodsOrder(row.ordersNo).then(res => {
 				this.orderInfo = res.data;
-				const id = res.data.id;
-				// 根据获取到的订单id获取订单详情
-				getGoodsOrder(id).then(res => {
-					this.orderInfo.orderDetailList = res.data.orderDetailList;
-					this.visible = true;
-				});
+				this.orderInfo.orderDetailList = res.data.orderDetailList;
+				this.visible = true;
 			});
 		},
 		// 切换tab时候 要查询

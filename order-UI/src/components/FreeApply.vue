@@ -59,7 +59,6 @@ export default {
 		handleProcess(that) {
 			// this.orderInfo就是父组件传递过来的组装的运费信息
 			Object.assign(this.form, this.orderInfo);
-			console.log(this.form);
 			// 发送请求 添加运费信息 applyDate为现在
 			const query = {
 				...this.form,

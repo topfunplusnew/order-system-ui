@@ -264,9 +264,9 @@
 		<el-dialog
 			:close-on-click-modal="false"
 			:show-close="false"
-			title="请选择导出时间段"
+			title="请选择"
 			:visible.sync="dialogVisible"
-			width="30%"
+			width="500px"
 		>
 			<el-form
 				ref="queryForm"

@@ -329,7 +329,16 @@ export default {
 		isOrderOrNot(row) {
 			// todo 日后如果有新的凭证类型 就放入这个数组中
 			const excludeList = ['inventory_'];
-			return !excludeList.some(item => row.voucherNo.startsWith(item));
+			for (const item of excludeList) {
+				let voucherNo = row.voucherNo;
+				if (!voucherNo) {
+					return false;
+				}
+				if (voucherNo.startsWith(item)) {
+					return false;
+				}
+			}
+			return true;
 		},
 		/** 查询凭证列表 */
 		getList() {

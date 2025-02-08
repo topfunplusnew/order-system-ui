@@ -248,7 +248,7 @@
 			:show-close="false"
 			title="请选择导出时间段"
 			:visible.sync="dialogVisible"
-			width="30%"
+			width="500px"
 		>
 			<el-form
 				ref="queryForm"
@@ -256,6 +256,19 @@
 				size="mini"
 				label-width="68px"
 			>
+				<el-form-item label="车牌" prop="carNo">
+					<el-input v-model="queryParams.carNo" placeholder="请输入车牌号" />
+				</el-form-item>
+				<el-form-item label="运输类型" prop="isSea">
+					<el-select v-model="queryParams.isSea" placeholder="请选择">
+						<el-option
+							v-for="item in options"
+							:key="item.value"
+							:label="item.label"
+							:value="item.value"
+						/>
+					</el-select>
+				</el-form-item>
 				<el-form-item label="开始时间" prop="beginTime">
 					<el-date-picker
 						v-model="queryParams.beginTime"

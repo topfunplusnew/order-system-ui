@@ -184,6 +184,16 @@ export default {
 							width="200"
 						/> -->
 						<el-table-column
+							show-overflow-tooltip
+							label="时间"
+							align="center"
+							width="140"
+						>
+							<template slot-scope="">
+								{{ queryParams.endTime }}
+							</template>
+						</el-table-column>
+						<el-table-column
 							v-if="columns[0].visible"
 							label="车号"
 							align="center"

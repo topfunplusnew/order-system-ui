@@ -12,7 +12,7 @@ export var mixin_vouncher_options = {
 		handleView() {},
 		// 查看订单列表信息
 		handleGoodsOrder(row) {
-			if (row.pid === 0) {
+			if (!row.pid) {
 				this.$message.warning('无订单信息');
 			} else {
 				getGoodsOrder(row.pid).then(res => {
