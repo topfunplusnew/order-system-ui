@@ -116,7 +116,12 @@
 				align="center"
 				prop="companyName"
 			/>
-			<el-table-column label="对方公司类型" align="center" prop="companyType">
+			<el-table-column
+				label="对方公司类型"
+				align="center"
+				prop="companyType"
+				v-if="columns[3].visible"
+			>
 				<template slot-scope="scope">
 					{{ scope.row.companyType === 1 ? '客户' : '供应商' }}
 				</template>
@@ -375,7 +380,6 @@ export default {
 				{ key: 3, label: `对方公司类型`, visible: true },
 				{ key: 4, label: `备注`, visible: true },
 				{ key: 5, label: `添加时间`, visible: true }
-				/* {key: 6, label: `操作人员ID`, visible: true},*/
 			],
 			// 表单校验
 			rules: {

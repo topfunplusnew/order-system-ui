@@ -85,11 +85,7 @@
 				</el-button>
 			</el-col>
 
-			<right-toolbar
-				:show-search.sync="showSearch"
-				:columns="columns"
-				@queryTable="getList"
-			>
+			<right-toolbar :columns="columns" @queryTable="getList">
 				<template #print>
 					<el-col :span="1.5">
 						<el-button
@@ -130,8 +126,18 @@
 			@selection-change="handleSelectionChange"
 		>
 			<el-table-column type="selection" width="55" align="center" />
-			<el-table-column label="id" align="center" prop="id" />
+
+			<!-- 1. id -->
 			<el-table-column
+				v-if="columns[0].visible"
+				label="id"
+				align="center"
+				prop="id"
+			/>
+
+			<!-- 2. 交易时间 -->
+			<el-table-column
+				v-if="columns[1].visible"
 				label="交易时间"
 				align="center"
 				prop="transactionTime"
@@ -143,26 +149,49 @@
 					}}</span>
 				</template>
 			</el-table-column>
-			<el-table-column label="金额" align="center" prop="amount" />
+
+			<!-- 3. 金额 -->
 			<el-table-column
+				v-if="columns[2].visible"
+				label="金额"
+				align="center"
+				prop="amount"
+			/>
+
+			<!-- 4. 收入方 -->
+			<el-table-column
+				v-if="columns[3].visible"
 				label="收入方"
 				align="center"
 				prop="sourceCompanyName"
 				show-overflow-tooltip
 			/>
+
+			<!-- 5. 收入方公司类型 -->
 			<el-table-column
+				v-if="columns[4].visible"
 				label="收入方公司类型"
 				align="center"
 				prop="sourceCompanyType"
 				show-overflow-tooltip
 			/>
+
+			<!-- 6. 支出方 -->
 			<el-table-column
+				v-if="columns[5].visible"
 				label="支出方"
 				align="center"
 				prop="targetCompanyName"
 				show-overflow-tooltip
 			/>
-			<el-table-column label="冲抵类型" align="center" show-overflow-tooltip>
+
+			<!-- 7. 冲抵类型 -->
+			<el-table-column
+				v-if="columns[6].visible"
+				label="冲抵类型"
+				align="center"
+				show-overflow-tooltip
+			>
 				<template slot-scope="scope">
 					<span>{{
 						scope.row.referenceTableName === 'offsetting'
@@ -171,14 +200,23 @@
 					}}</span>
 				</template>
 			</el-table-column>
+
+			<!-- 8. 支出方公司类型 -->
 			<el-table-column
+				v-if="columns[7].visible"
 				label="支出方公司类型"
 				align="center"
 				prop="targetCompanyType"
 				show-overflow-tooltip
 			/>
-			<!--      附件上传-->
-			<el-table-column label="附件" align="center" prop="attachment">
+
+			<!-- 9. 附件 -->
+			<el-table-column
+				v-if="columns[8].visible"
+				label="附件"
+				align="center"
+				prop="attachment"
+			>
 				<template #default="scope">
 					<CheckFiles
 						:path="scope.row.attachment"
@@ -195,7 +233,16 @@
 					/>
 				</template>
 			</el-table-column>
-			<el-table-column label="备注" align="center" prop="remarks" />
+
+			<!-- 10. 备注 -->
+			<el-table-column
+				v-if="columns[9].visible"
+				label="备注"
+				align="center"
+				prop="remarks"
+			/>
+
+			<!-- 操作列 -->
 			<el-table-column
 				label="操作"
 				align="center"
@@ -207,17 +254,15 @@
 						size="mini"
 						type="primary"
 						@click="handleUpdate(scope.row)"
+						>修改</el-button
 					>
-						修改
-					</el-button>
 					<el-button
 						v-hasPermi="['system:record:remove']"
 						size="mini"
 						type="danger"
 						@click="handleDelete(scope.row)"
+						>删除</el-button
 					>
-						删除
-					</el-button>
 				</template>
 			</el-table-column>
 		</el-table>
@@ -843,6 +888,29 @@ export default {
 			},
 			// 表单参数
 			form: {},
+			columns: [
+				{ key: 0, label: 'ID', prop: 'id', visible: true },
+				{ key: 1, label: '交易时间', prop: 'transactionTime', visible: true },
+				{ key: 2, label: '金额', prop: 'amount', visible: true },
+				{ key: 3, label: '收入方', prop: 'incomeParty', visible: true },
+				{
+					key: 4,
+					label: '收入方公司类型',
+					prop: 'incomeCompanyType',
+					visible: true
+				},
+				{ key: 5, label: '支出方', prop: 'expenseParty', visible: true },
+				{ key: 6, label: '冲抵类型', prop: 'offsetType', visible: true },
+				{
+					key: 7,
+					label: '支出方公司类型',
+					prop: 'expenseCompanyType',
+					visible: true
+				},
+				{ key: 8, label: '附件', prop: 'attachment', visible: true },
+				{ key: 9, label: '备注', prop: 'comments', visible: true }
+			],
+
 			// 表单校验
 			rules: {
 				transactionTime: [
@@ -870,8 +938,6 @@ export default {
 					{ required: true, message: '对应表名不能为空', trigger: 'blur' }
 				]
 			},
-			// 显示隐藏列
-			columns: [],
 
 			// 冲抵类型 默认为冲抵货款
 			cashType: CASH_TYPE.OFF_SETTING

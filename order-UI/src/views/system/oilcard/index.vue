@@ -7,7 +7,7 @@
 			:model="queryParams"
 			size="mini"
 			:inline="true"
-			label-width="68px"
+			label-width="120px"
 		>
 			<el-form-item label="加油卡卡号" prop="oilCardNo">
 				<el-input
@@ -241,12 +241,12 @@
 					<el-radio v-model="form.oilType" label="主卡">主卡</el-radio>
 					<el-radio v-model="form.oilType" label="副卡">副卡</el-radio>
 				</el-form-item>
-				<el-form-item label="加油卡金额" prop="moneyAmount">
+				<!-- <el-form-item label="加油卡金额" prop="moneyAmount">
 					<el-input
 						v-model="form.moneyAmount"
 						placeholder="请输入使用加油卡金额"
 					/>
-				</el-form-item>
+				</el-form-item> -->
 				<el-form-item label="备注" prop="comments">
 					<el-input v-model="form.comments" placeholder="请输入使用备注" />
 				</el-form-item>

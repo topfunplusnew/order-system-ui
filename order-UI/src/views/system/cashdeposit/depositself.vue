@@ -109,113 +109,119 @@
 		>
 			<el-table-column
 				v-if="columns[0].visible"
-				label="押金公司"
+				:label="columns[0].label"
+				:prop="columns[0].prop"
 				align="center"
-				prop="futuresMarginCompany"
 				width="130"
 				show-overflow-tooltip
 			>
 				<template slot-scope="scope">
-					<span
-						v-if="
-							scope.row.futuresMarginCompany !== '' &&
-							scope.row.futuresMarginCompany !== null
-						"
-					>
-						{{ scope.row.futuresMarginCompany }}
-					</span>
+					<span v-if="scope.row.futuresMarginCompany">{{
+						scope.row.futuresMarginCompany
+					}}</span>
 					<span v-else> 无押金公司 </span>
 				</template>
 			</el-table-column>
-			<el-table-column
-				v-if="columns[2].visible"
-				label="对象"
-				align="center"
-				prop="target"
-				width="110"
-				show-overflow-tooltip
-			/>
+
 			<el-table-column
 				v-if="columns[1].visible"
-				label="对象类型"
+				:label="columns[1].label"
+				:prop="columns[1].prop"
 				align="center"
-				prop="targetType"
 				width="110"
 				show-overflow-tooltip
 			/>
+
+			<el-table-column
+				v-if="columns[2].visible"
+				:label="columns[2].label"
+				:prop="columns[2].prop"
+				align="center"
+				width="110"
+				show-overflow-tooltip
+			/>
+
 			<el-table-column
 				v-if="columns[3].visible"
-				label="保证金金额"
+				:label="columns[3].label"
+				:prop="columns[3].prop"
 				align="center"
-				prop="moneyAmount"
 				width="110"
 				show-overflow-tooltip
 			/>
+
 			<el-table-column
 				v-if="columns[4].visible"
-				label="对方账户"
+				:label="columns[4].label"
+				:prop="columns[4].prop"
 				align="center"
-				prop="targetAcountsName"
 				width="110"
 				show-overflow-tooltip
-			>
-			</el-table-column>
+			/>
+
 			<el-table-column
 				v-if="columns[5].visible"
-				label="对方账号"
+				:label="columns[5].label"
+				:prop="columns[5].prop"
 				align="center"
-				prop="targetBankNo"
 				width="160"
 				show-overflow-tooltip
 			/>
+
 			<el-table-column
 				v-if="columns[6].visible"
-				label="对方开户行"
+				:label="columns[6].label"
+				:prop="columns[6].prop"
 				align="center"
-				prop="targetBankName"
 				width="110"
 				show-overflow-tooltip
 			/>
+
 			<el-table-column
 				v-if="columns[7].visible"
-				label="我方支付账户"
+				:label="columns[7].label"
+				:prop="columns[7].prop"
 				align="center"
-				prop="selfAcountsName"
-				show-overflow-tooltip
 				width="160"
+				show-overflow-tooltip
 			/>
+
 			<el-table-column
 				v-if="columns[8].visible"
-				label="我方账号"
+				:label="columns[8].label"
+				:prop="columns[8].prop"
 				align="center"
-				prop="selfBankNo"
 				width="110"
 				show-overflow-tooltip
 			/>
+
 			<el-table-column
 				v-if="columns[9].visible"
-				label="我方开户行"
+				:label="columns[9].label"
+				:prop="columns[9].prop"
 				align="center"
-				prop="selfBankName"
 				width="110"
 				show-overflow-tooltip
 			/>
+
 			<el-table-column
 				v-if="columns[10].visible"
-				label="支付押金时间"
+				:label="columns[10].label"
+				:prop="columns[10].prop"
 				align="center"
-				prop="futuresDate"
-				show-overflow-tooltip
 				width="110"
+				show-overflow-tooltip
 			/>
+
 			<el-table-column
 				v-if="columns[11].visible"
-				label="事由"
+				:label="columns[11].label"
+				:prop="columns[11].prop"
 				align="center"
-				prop="reason"
 				width="110"
 				show-overflow-tooltip
 			/>
+
 			<el-table-column
 				label="备注"
 				align="center"
@@ -223,6 +229,7 @@
 				width="110"
 				show-overflow-tooltip
 			/>
+
 			<el-table-column
 				label="操作"
 				align="center"
@@ -237,36 +244,36 @@
 							size="mini"
 							type="text"
 							@click="applyForPayment(scope.row)"
-							>申请付款
-						</el-button>
+							>申请付款</el-button
+						>
 						<el-button
 							v-if="scope.row.checkState === '审核中'"
 							size="mini"
 							type="warning"
 							disabled
-							>审核中
-						</el-button>
+							>审核中</el-button
+						>
 						<el-button
 							v-hasPermi="['system:lendmoney:remove']"
 							size="mini"
 							type="text"
 							@click="handleGetBackMoney(scope.row)"
-							>收回资金
-						</el-button>
+							>收回资金</el-button
+						>
 						<el-button
 							v-hasPermi="['system:lendmoney:edit']"
 							size="mini"
 							type="primary"
 							@click="handleUpdate(scope.row)"
-							>修改
-						</el-button>
+							>修改</el-button
+						>
 						<el-button
 							v-hasPermi="['system:lendmoney:remove']"
 							size="mini"
 							type="danger"
 							@click="handleDelete(scope.row)"
-							>删除
-						</el-button>
+							>删除</el-button
+						>
 					</el-row>
 				</template>
 			</el-table-column>
@@ -716,20 +723,30 @@ export default {
 				reason: [{ required: true, message: '请输入是由!', trigger: 'blur' }]
 			},
 			columns: [
-				/*  {key: 0, label: `借出款编号`, visible: true},*/
-				{ key: 0, label: `押金公司`, visible: true },
-				{ key: 1, label: `对象类型`, visible: true },
-				{ key: 2, label: `对象`, visible: true },
-				{ key: 3, label: `保证金金额`, visible: true },
-				{ key: 4, label: `对方账户`, visible: true },
-				{ key: 5, label: `对方账号`, visible: true },
-				{ key: 6, label: `对方开户行`, visible: true },
-				{ key: 7, label: `我方开户行`, visible: true },
-				{ key: 8, label: `我方支付账户`, visible: true },
-				{ key: 9, label: `我方账号`, visible: true },
-				{ key: 10, label: `我方开户行`, visible: true },
-				{ key: 11, label: `支付押金时间`, visible: true }
+				{
+					key: 0,
+					label: '押金公司',
+					prop: 'futuresMarginCompany',
+					visible: true
+				},
+				{ key: 1, label: '对象类型', prop: 'targetType', visible: true },
+				{ key: 2, label: '对象', prop: 'target', visible: true },
+				{ key: 3, label: '保证金金额', prop: 'moneyAmount', visible: true },
+				{ key: 4, label: '对方账户', prop: 'targetAcountsName', visible: true },
+				{ key: 5, label: '对方账号', prop: 'targetBankNo', visible: true },
+				{ key: 6, label: '对方开户行', prop: 'targetBankName', visible: true },
+				{
+					key: 7,
+					label: '我方支付账户',
+					prop: 'selfAcountsName',
+					visible: true
+				},
+				{ key: 8, label: '我方账号', prop: 'selfBankNo', visible: true },
+				{ key: 9, label: '我方开户行', prop: 'selfBankName', visible: true },
+				{ key: 10, label: '支付押金时间', prop: 'futuresDate', visible: true },
+				{ key: 11, label: '事由', prop: 'reason', visible: true }
 			],
+
 			// 搜索参数
 			timesQuery: {
 				beginTime: '',

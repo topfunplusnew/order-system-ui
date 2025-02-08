@@ -297,7 +297,11 @@
 					<!--          如果是司机 那么就选择-->
 					<el-row v-if="form.acountsType === PUBLIC_DICT_TYPE.DRIVER">
 						<el-col :span="20">
-							<el-input v-model="form.acountsName" placeholder="请输入户名" />
+							<el-input
+								disabled
+								v-model="form.acountsName"
+								placeholder="请选择"
+							/>
 						</el-col>
 						<el-col :span="4">
 							<el-tooltip content="选择已经添加过的账户" placement="top">
@@ -359,7 +363,11 @@
 				<el-form-item v-if="isNeed" :label="showLabel" prop="companyName">
 					<el-row>
 						<el-col :span="10">
-							<el-input v-model="form.companyName" placeholder="请输入名称" />
+							<el-input
+								disabled
+								v-model="form.companyName"
+								placeholder="请选择"
+							/>
 						</el-col>
 						<!-- 己方员工信息搜索-->
 						<el-col v-if="form.acountsType === '员工'" :span="2">

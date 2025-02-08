@@ -159,6 +159,7 @@
 			"
 			@selection-change="handleSelectionChange"
 		>
+			<!-- 日期 -->
 			<el-table-column
 				v-if="columns[0].visible"
 				label="日期"
@@ -166,6 +167,8 @@
 				prop="rebateDate"
 				show-overflow-tooltip
 			/>
+
+			<!-- 金额 -->
 			<el-table-column
 				v-if="columns[1].visible"
 				label="金额"
@@ -173,6 +176,8 @@
 				prop="rebate"
 				show-overflow-tooltip
 			/>
+
+			<!-- 类型 -->
 			<el-table-column
 				v-if="columns[2].visible"
 				label="类型"
@@ -180,72 +185,55 @@
 				prop="rebateType"
 				show-overflow-tooltip
 			/>
-			<!--			<el-table-column-->
-			<!--				v-if="columns[3].visible"-->
-			<!--				label="收款户名"-->
-			<!--				align="center"-->
-			<!--				prop="inAcountsName"-->
-			<!--				show-overflow-tooltip-->
-			<!--			/>-->
-			<!--			<el-table-column-->
-			<!--				v-if="columns[4].visible"-->
-			<!--				label="收款账号"-->
-			<!--				align="center"-->
-			<!--				prop="inBankNo"-->
-			<!--				width="160"-->
-			<!--				show-overflow-tooltip-->
-			<!--			/>-->
+
+			<!-- 供应商 -->
 			<el-table-column
-				v-if="columns[5].visible"
+				v-if="columns[3].visible"
 				label="供应商"
 				align="center"
 				prop="supplier"
 			/>
-			<!--			<el-table-column-->
-			<!--				v-if="columns[6].visible"-->
-			<!--				label="付款户名"-->
-			<!--				align="center"-->
-			<!--				prop="outAcountsName"-->
-			<!--				show-overflow-tooltip-->
-			<!--			/>-->
-			<!--			<el-table-column-->
-			<!--				v-if="columns[7].visible"-->
-			<!--				label="付款款账号"-->
-			<!--				align="center"-->
-			<!--				prop="outBankNo"-->
-			<!--				width="160"-->
-			<!--			/>-->
+
+			<!-- 返利原因 -->
 			<el-table-column
-				v-if="columns[8].visible"
+				v-if="columns[4].visible"
 				label="返利原因"
 				align="center"
 				prop="rebateReason"
 				show-overflow-tooltip
 			/>
+
+			<!-- 返利方式 -->
 			<el-table-column
-				v-if="columns[9].visible"
+				v-if="columns[5].visible"
 				label="返利方式"
 				align="center"
 				prop="rebateMethod"
 				show-overflow-tooltip
 			/>
+
+			<!-- 备注 -->
 			<el-table-column
-				v-if="columns[10].visible"
+				v-if="columns[6].visible"
 				label="备注"
 				align="center"
 				prop="comments"
 				show-overflow-tooltip
 			/>
+
+			<!-- 返利流水 -->
 			<el-table-column label="返利流水" align="center" show-overflow-tooltip>
 				<template slot-scope="scope">
 					<el-button
 						size="mini"
 						type="text"
 						@click="handleRebateDetail(scope.row)"
-						>查看流水
-					</el-button>
+						>查看流水</el-button
+					>
 				</template>
 			</el-table-column>
+
+			<!-- 操作 -->
 			<el-table-column
 				label="操作"
 				align="center"
@@ -259,22 +247,22 @@
 						size="mini"
 						type="text"
 						@click="handleRebate(scope.row)"
-						>返利
-					</el-button>
+						>返利</el-button
+					>
 					<el-button
 						v-hasPermi="['system:rebate:edit']"
 						size="mini"
 						type="primary"
 						@click="handleUpdate(scope.row)"
-						>修改
-					</el-button>
+						>修改</el-button
+					>
 					<el-button
 						v-hasPermi="['system:rebate:remove']"
 						size="mini"
 						type="danger"
 						@click="handleDelete(scope.row)"
-						>删除
-					</el-button>
+						>删除</el-button
+					>
 				</template>
 			</el-table-column>
 		</el-table>
@@ -1109,15 +1097,12 @@ export default {
 				{ key: 0, label: `日期`, visible: true },
 				{ key: 1, label: `金额`, visible: true },
 				{ key: 2, label: `类型`, visible: true },
-				{ key: 3, label: `收款户名`, visible: true },
-				{ key: 4, label: `收款账号`, visible: true },
-				{ key: 5, label: `供应商`, visible: true },
-				{ key: 6, label: `付款户名`, visible: true },
-				{ key: 7, label: `付款款账号`, visible: true },
-				{ key: 8, label: `返利原因`, visible: true },
-				{ key: 9, label: `返利方式`, visible: true },
-				{ key: 10, label: `备注`, visible: true }
+				{ key: 3, label: `供应商`, visible: true },
+				{ key: 4, label: `返利原因`, visible: true },
+				{ key: 5, label: `返利方式`, visible: true },
+				{ key: 6, label: `备注`, visible: true }
 			],
+
 			// 订单列表 级联
 			orderList: [],
 			// 订单详情列表 级联

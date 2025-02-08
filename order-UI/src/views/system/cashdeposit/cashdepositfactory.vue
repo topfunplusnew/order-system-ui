@@ -107,8 +107,7 @@
 			"
 			@selection-change="handleSelectionChange"
 		>
-			<!--      <el-table-column label="id" align="center" prop="id"/>-->
-			<!--      <el-table-column label="借出款编号" align="center" prop="futuresNO" v-if="columns[0].visible"/>-->
+			<!-- 厂家保证金公司 -->
 			<el-table-column
 				v-if="columns[0].visible"
 				label="厂家保证金公司"
@@ -126,9 +125,11 @@
 					>
 						{{ scope.row.futuresMarginCompany }}
 					</span>
-					<span v-else> 无厂家保证金公司 </span>
+					<span v-else>无厂家保证金公司</span>
 				</template>
 			</el-table-column>
+
+			<!-- 对象 -->
 			<el-table-column
 				v-if="columns[2].visible"
 				label="对象"
@@ -137,6 +138,8 @@
 				width="110"
 				show-overflow-tooltip
 			/>
+
+			<!-- 对象类型 -->
 			<el-table-column
 				v-if="columns[1].visible"
 				label="对象类型"
@@ -145,6 +148,8 @@
 				width="110"
 				show-overflow-tooltip
 			/>
+
+			<!-- 保证金金额 -->
 			<el-table-column
 				v-if="columns[3].visible"
 				label="保证金金额"
@@ -153,6 +158,8 @@
 				width="110"
 				show-overflow-tooltip
 			/>
+
+			<!-- 对方账户 -->
 			<el-table-column
 				v-if="columns[4].visible"
 				label="对方账户"
@@ -160,8 +167,9 @@
 				prop="targetAcountsName"
 				width="110"
 				show-overflow-tooltip
-			>
-			</el-table-column>
+			/>
+
+			<!-- 对方账号 -->
 			<el-table-column
 				v-if="columns[5].visible"
 				label="对方账号"
@@ -170,6 +178,8 @@
 				width="160"
 				show-overflow-tooltip
 			/>
+
+			<!-- 对方开户行 -->
 			<el-table-column
 				v-if="columns[6].visible"
 				label="对方开户行"
@@ -178,14 +188,18 @@
 				width="110"
 				show-overflow-tooltip
 			/>
+
+			<!-- 我方支付账户 -->
 			<el-table-column
 				v-if="columns[7].visible"
 				label="我方支付账户"
 				align="center"
 				prop="selfAcountsName"
-				show-overflow-tooltip
 				width="160"
+				show-overflow-tooltip
 			/>
+
+			<!-- 我方账号 -->
 			<el-table-column
 				v-if="columns[8].visible"
 				label="我方账号"
@@ -194,6 +208,8 @@
 				width="110"
 				show-overflow-tooltip
 			/>
+
+			<!-- 我方开户行 -->
 			<el-table-column
 				v-if="columns[9].visible"
 				label="我方开户行"
@@ -202,14 +218,18 @@
 				width="110"
 				show-overflow-tooltip
 			/>
+
+			<!-- 支付厂家保证金时间 -->
 			<el-table-column
 				v-if="columns[10].visible"
 				label="支付厂家保证金时间"
 				align="center"
 				prop="futuresDate"
-				show-overflow-tooltip
 				width="110"
+				show-overflow-tooltip
 			/>
+
+			<!-- 事由 -->
 			<el-table-column
 				v-if="columns[11].visible"
 				label="事由"
@@ -218,6 +238,8 @@
 				width="110"
 				show-overflow-tooltip
 			/>
+
+			<!-- 备注 -->
 			<el-table-column
 				label="备注"
 				align="center"
@@ -225,6 +247,8 @@
 				width="110"
 				show-overflow-tooltip
 			/>
+
+			<!-- 操作列 -->
 			<el-table-column
 				label="操作"
 				align="center"
@@ -725,20 +749,20 @@ export default {
 				reason: [{ required: true, message: '请输入是由!', trigger: 'blur' }]
 			},
 			columns: [
-				/*  {key: 0, label: `借出款编号`, visible: true},*/
-				{ key: 0, label: `厂家保证金公司`, visible: true },
-				{ key: 1, label: `对象类型`, visible: true },
-				{ key: 2, label: `对象`, visible: true },
-				{ key: 3, label: `保证金金额`, visible: true },
-				{ key: 4, label: `对方账户`, visible: true },
-				{ key: 5, label: `对方账号`, visible: true },
-				{ key: 6, label: `对方开户行`, visible: true },
-				{ key: 7, label: `我方开户行`, visible: true },
-				{ key: 8, label: `我方支付账户`, visible: true },
-				{ key: 9, label: `我方账号`, visible: true },
-				{ key: 10, label: `我方开户行`, visible: true },
-				{ key: 11, label: `支付厂家保证金时间`, visible: true }
+				{ key: 0, label: '厂家保证金公司', visible: true },
+				{ key: 1, label: '对象类型', visible: true },
+				{ key: 2, label: '对象', visible: true },
+				{ key: 3, label: '保证金金额', visible: true },
+				{ key: 4, label: '对方账户', visible: true },
+				{ key: 5, label: '对方账号', visible: true },
+				{ key: 6, label: '对方开户行', visible: true },
+				{ key: 7, label: '我方支付账户', visible: true },
+				{ key: 8, label: '我方账号', visible: true },
+				{ key: 9, label: '我方开户行', visible: true },
+				{ key: 10, label: '支付厂家保证金时间', visible: true },
+				{ key: 11, label: '事由', visible: true }
 			],
+
 			// 搜索参数
 			timesQuery: {
 				beginTime: '',
