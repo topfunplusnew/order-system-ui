@@ -158,6 +158,8 @@ export default {
 					this.$store
 						.dispatch('Login', this.loginForm)
 						.then(() => {
+							// 清除localStorage
+							localStorage.clear();
 							this.$router.push({ path: this.redirect || '/' }).catch(() => {});
 						})
 						.catch(() => {

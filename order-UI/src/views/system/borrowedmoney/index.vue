@@ -327,7 +327,7 @@
 			:show-close="false"
 			title="还款操作"
 			:visible.sync="giveBackMoneyShow"
-			width="30%"
+			width="500px"
 		>
 			<el-row>
 				<el-form ref="form" :model="moneyBackInfo" label-width="140px">
@@ -355,8 +355,9 @@
 						<el-row>
 							<el-col :span="10">
 								<el-input
+									disabled
 									v-model="moneyBackInfo.acountsName"
-									placeholder="请输入银行户名"
+									placeholder="请选择"
 								/>
 							</el-col>
 							<el-col :span="3">
@@ -398,8 +399,9 @@
 					</el-form-item>
 					<el-form-item label="开户行" prop="bankNo">
 						<el-input
+							disabled
 							v-model="moneyBackInfo.bankNo"
-							placeholder="请输入开户行"
+							placeholder="请选择"
 						/>
 					</el-form-item>
 					<el-form-item label="备注" prop="comments">
@@ -426,8 +428,7 @@ import {
 	getBorrowedMoney,
 	delBorrowedMoney,
 	addBorrowedMoney,
-	updateBorrowedMoney,
-	getBorrowedMoneyByUuid
+	updateBorrowedMoney
 } from '@/api/system/borrowedMoney';
 import { mapGetters, mapState } from 'vuex';
 import { addRepayment } from '@/api/system/repayment';
