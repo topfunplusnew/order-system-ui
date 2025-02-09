@@ -134,7 +134,7 @@
 						fix(
 							Number(scope.row.previousDayCarryover) +
 								Number(scope.row.dailyOrderPayments) +
-								Number(scope.row.dailyInvoiceAmount) -
+								Number(scope.row.dailyInvoiceAmount) +
 								Number(scope.row.dailyReceiveMoney)
 						)
 					}}
@@ -209,7 +209,7 @@
 						fix(
 							Number(scope.row.previousMonthCarryover) +
 								Number(scope.row.monthlyOrderPayments) +
-								Number(scope.row.monthlyInvoiceAmount) -
+								Number(scope.row.monthlyInvoiceAmount) +
 								Number(scope.row.monthlyReceiveMoney)
 						)
 					}}
@@ -260,7 +260,7 @@
 						fix(
 							Number(scope.row.previousYearCarryover) +
 								Number(scope.row.yearlyOrderPayments) +
-								Number(scope.row.yearlyInvoiceAmount) -
+								Number(scope.row.yearlyInvoiceAmount) +
 								Number(scope.row.yearlyReceiveMoney)
 						)
 					}}
