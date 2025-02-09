@@ -624,7 +624,7 @@ export default {
 		/** 导出按钮操作 */
 		handleExport() {
 			this.download(
-				'system/invoiceIn/export',
+				'system/allinvoice/export',
 				{
 					...this.queryParams
 				},

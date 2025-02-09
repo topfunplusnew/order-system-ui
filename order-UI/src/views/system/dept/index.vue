@@ -80,6 +80,11 @@
 			:tree-props="{ children: 'children', hasChildren: 'hasChildren' }"
 		>
 			<el-table-column
+				prop="deptId"
+				label="部门编号"
+				width="260"
+			></el-table-column>
+			<el-table-column
 				prop="deptName"
 				label="部门名称"
 				width="260"
