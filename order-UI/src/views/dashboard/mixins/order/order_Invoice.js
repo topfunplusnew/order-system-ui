@@ -1,7 +1,7 @@
-import { getCompany } from '../../../../api/system/company';
-import { getGoodsOrder } from '../../../../api/system/goodsOrder';
 import { PUBLIC_DICT_TYPE } from '@/utils/order';
 import Invoice from '@/views/dashboard/components/goodsOrder/Invoice.vue';
+import { getCompany } from '../../../../api/system/company';
+import { getGoodsOrder } from '../../../../api/system/goodsOrder';
 // 状态
 export const Options = [
 	{
@@ -85,19 +85,6 @@ export var mixin_order_Invoice = {
 				domain: 2,
 				isOrderTax: row.id
 			};
-			// 如果供应商ID不存在 直接更新
-			if (!supplierID) {
-				updateGoodsOrder(row);
-				return;
-			}
-			invoiceInfo.companyID = supplierID;
-			// 获取公司信息 然后更新订单信息
-			getCompany(supplierID, PUBLIC_DICT_TYPE.SUPPLIER).then(res => {
-				invoiceInfo.companyName = res.data.companyName;
-				invoiceInfo.companyType = res.data.companyType;
-				// 然后查询订单详情，拿到开票的个数 这个个数是拿来展示视图
-				updateGoodsOrder(row);
-			});
 			// 更新订单信息的函数
 			const updateGoodsOrder = row => {
 				// 更新订单信息
@@ -123,6 +110,19 @@ export var mixin_order_Invoice = {
 					);
 				});
 			};
+			// 如果供应商ID不存在 直接更新
+			if (!supplierID) {
+				updateGoodsOrder(row);
+				return;
+			}
+			invoiceInfo.companyID = supplierID;
+			// 获取公司信息 然后更新订单信息
+			getCompany(supplierID, PUBLIC_DICT_TYPE.SUPPLIER).then(res => {
+				invoiceInfo.companyName = res.data.companyName;
+				invoiceInfo.companyType = res.data.companyType;
+				// 然后查询订单详情，拿到开票的个数 这个个数是拿来展示视图
+				updateGoodsOrder(row);
+			});
 		}
 	}
 };
