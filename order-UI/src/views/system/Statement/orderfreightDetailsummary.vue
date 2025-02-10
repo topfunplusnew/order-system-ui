@@ -75,7 +75,8 @@
 						/>
 					</el-col>
 				</template>
-				<template #export>
+				<!-- 后端说把导出扣了 -->
+				<!-- <template #export>
 					<el-col :span="1.5">
 						<el-button
 							v-hasPermi="['system:company:export']"
@@ -85,7 +86,7 @@
 							@click="handleExport"
 						/>
 					</el-col>
-				</template>
+				</template> -->
 			</right-toolbar>
 		</el-row>
 

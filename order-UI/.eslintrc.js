@@ -19,6 +19,7 @@ module.exports = {
 		'vue/no-mutating-props': 0, //允许子元素通过v-model修改父元素传的props值
 		'vue/no-use-v-if-with-v-for': 0, //允许v-if和v-for共存
 		'vue/valid-template-root': 0, //允许只有一个template
-		'no-empty': 0 //允许代码块为空
+		'no-empty': 0, //允许代码块为空
+		'no-unused-vars': 0 //允许定义变量不使用
 	}
 };

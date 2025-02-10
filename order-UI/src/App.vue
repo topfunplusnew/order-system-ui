@@ -22,8 +22,7 @@ export default {
 					: process.env.VUE_APP_TITLE;
 			}
 		};
-	},
-	created() {}
+	}
 };
 </script>
 <style scoped>
