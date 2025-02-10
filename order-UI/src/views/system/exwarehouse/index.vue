@@ -60,8 +60,8 @@
 						></el-button>
 					</el-col>
 				</template>
-				<!--        导出-->
-				<template #export>
+				<!--    后端说导出不要了 删除了    导出-->
+				<!-- <template #export>
 					<el-col :span="1.5">
 						<el-button
 							v-hasPermi="['system:exwarehouse:export']"
@@ -71,7 +71,7 @@
 							@click="handleExport"
 						></el-button>
 					</el-col>
-				</template>
+				</template> -->
 			</right-toolbar>
 		</el-row>
 

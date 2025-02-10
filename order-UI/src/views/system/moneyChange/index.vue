@@ -9,10 +9,12 @@
 		>
 			<el-form-item label="模块名称" prop="moduleName">
 				<el-select
-					v-model="queryParams.moduleName"
+					v-model="queryParams.moduleNames"
+					multiple
+					collapse-tags
 					placeholder="请选择模块"
 					clearable
-					style="width: 200px"
+					style="width: 360px"
 				>
 					<el-option
 						v-for="item in moduleOptions"
@@ -112,7 +114,7 @@ export default {
 		return {
 			// 查询参数
 			queryParams: {
-				moduleName: undefined,
+				moduleNames: [],
 				dateRange: [this.parseTime(start), this.parseTime(end)]
 			},
 			// 模块选项
@@ -183,7 +185,7 @@ export default {
 		setChartOption() {
 			const option = {
 				title: {
-					text: '模块数据变化趋势'
+					text: '资金变动图表'
 				},
 				tooltip: {
 					trigger: 'axis',
