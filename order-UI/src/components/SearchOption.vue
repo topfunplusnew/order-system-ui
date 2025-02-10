@@ -29,7 +29,7 @@ export default {
 		// 弹出框的标题
 		title: {
 			type: String,
-			default: '标题'
+			default: '请选择'
 		},
 		// 图标信息
 		icon: {

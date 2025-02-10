@@ -234,6 +234,7 @@ export default {
 							</el-col>
 							<el-col :span="4">
 								<SearchOption
+									title="订单信息"
 									:limit-info="{}"
 									:get-data="listGoodsOrder"
 									query-label="ID搜索"
