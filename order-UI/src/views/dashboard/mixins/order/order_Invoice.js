@@ -52,6 +52,10 @@ export var mixin_order_Invoice = {
 		},
 		// 点击客户开票按钮 客户开票 最大开票金额为总货款
 		updateOrderItemVisibleCustomerInvoice(row) {
+			if (!row.customerIsInvoice) {
+				this.$message.error('该订单不支持客户开票');
+				return;
+			}
 			// 开票实体对象
 			const invoiceInfo = {
 				domain: 1,
@@ -59,12 +63,20 @@ export var mixin_order_Invoice = {
 			};
 			// 设置该订单信息 需要进行一次查询 获取订单的开票个数
 			getGoodsOrder(row.id).then(res => {
+				if (!res.data) {
+					this.$message.error('订单不存在!');
+					return;
+				}
 				invoiceInfo.orderInfo = res.data;
 				// 保存客户和供应商开票个数
-				invoiceInfo.customerInvoiceNumber = res.data.customerIsInvoice;
-				invoiceInfo.supplierInvoiceNumber = res.data.isSupplierInvoice;
+				invoiceInfo.customerInvoiceNumber = res.data.customerIsInvoice || 0;
+				invoiceInfo.supplierInvoiceNumber = res.data.isSupplierInvoice || 0;
+				if (!res.data.allPayments) {
+					this.$message.error('订单货款不存在或货款为0!');
+					return;
+				}
 				// 补充最大金额 最大金额为总货款
-				this.maxInvent = res.data.allPayments;
+				this.maxInvent = Number(res.data.allPayments);
 				// 打开弹窗
 				this.openDialog(
 					Invoice,
@@ -80,22 +92,26 @@ export var mixin_order_Invoice = {
 		},
 		// 点击供应商开票按钮 如果是供应商开票 则是订单详情中该供应商对应的订单货物的出厂货款
 		updateOrderItemVisibleSupplierInvoice(row, supplierID) {
-			// 开票实体对象
-			const invoiceInfo = {
-				domain: 2,
-				isOrderTax: row.id
-			};
 			// 更新订单信息的函数
 			const updateGoodsOrder = row => {
 				// 更新订单信息
 				getGoodsOrder(row.id).then(res => {
+					if (!res.data) {
+						this.$message.error('订单不存在!');
+						return;
+					}
 					invoiceInfo.orderInfo = res.data;
 					// 保存客户和供应商开票个数
 					invoiceInfo.customerInvoiceNumber = res.data.customerIsInvoice;
 					invoiceInfo.supplierInvoiceNumber = res.data.isSupplierInvoice;
+					if (!res.data.orderDetailList) {
+						this.$message.error('订单货物不存在!');
+						return;
+					}
 					// 补充最大金额 最大金额为出厂货款
 					res.data.orderDetailList.forEach(item => {
-						this.maxInvent += item.paymentFactory;
+						const paymentFactory = item.paymentFactory || 0;
+						this.maxInvent = Number(this.maxInvent) + Number(paymentFactory);
 					});
 					// 打开弹窗
 					this.openDialog(
@@ -110,6 +126,16 @@ export var mixin_order_Invoice = {
 					);
 				});
 			};
+			if (!row.isSupplierInvoice) {
+				this.$message.error('该订单不支持供应商开票!');
+				return;
+			}
+			// 开票实体对象
+			const invoiceInfo = {
+				domain: 2,
+				isOrderTax: row.id
+			};
+
 			// 如果供应商ID不存在 直接更新
 			if (!supplierID) {
 				updateGoodsOrder(row);

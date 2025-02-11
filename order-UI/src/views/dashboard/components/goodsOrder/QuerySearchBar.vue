@@ -125,7 +125,7 @@
 			</el-form-item>
 			<el-form-item label="供应商是否开票">
 				<el-select
-					v-model="queryParams.params.isIncludeTaxSale"
+					v-model="queryParams.params.isIncludeTaxFactory"
 					placeholder="请选择"
 					size="mini"
 					clearable
@@ -140,7 +140,7 @@
 			</el-form-item>
 			<el-form-item label="客户是否开票">
 				<el-select
-					v-model="queryParams.params.isIncludeTaxFactory"
+					v-model="queryParams.params.isIncludeTaxSale"
 					placeholder="请选择"
 					size="mini"
 					clearable
