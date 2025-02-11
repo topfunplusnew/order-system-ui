@@ -9,7 +9,10 @@ export default {
 	},
 	methods: {
 		handleProcess(that) {
-			that.dialogVisible = false;
+			return new Promise((resolve, reject) => {
+				that.dialogVisible = false;
+				resolve();
+			});
 		},
 		handleReject() {}
 	}

@@ -79,11 +79,14 @@ export default {
 				applyDate: parseTime(new Date()),
 				applyUserName: this.trueName
 			};
-			// 添加运费信息
-			addOrderFreight(query).then(() => {
-				this.$message.success('操作成功');
-				this.reset();
-				that.dialogVisible = false;
+			return new Promise((resolve, reject) => {
+				// 添加运费信息
+				addOrderFreight(query).then(() => {
+					that.dialogVisible = false;
+					this.reset();
+					this.$message.success('操作成功');
+					resolve();
+				});
 			});
 		},
 		// 选择银行卡 自动填充相关信息

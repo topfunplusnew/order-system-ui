@@ -501,57 +501,60 @@ export default {
 
 		// 提交订单
 		handleProcess(that) {
-			if (!this.orderId) {
-				this.orderInfo.orderDetailList = this.orderdetailList;
-				const updateOrderItem = item => {
-					item.customerID = this.orderInfo.customerID;
-					item.customer = this.orderInfo.customer;
-					item.orderDate = parseTime(new Date(), '{y}-{m}-{d} {h}:{i}:{s}');
-				};
-				this.orderdetailList.forEach(item => updateOrderItem(item));
-				addGoodsOrder({ ...this.orderInfo, PaymentState: '' }).then(() => {
-					this.resetOrderInfo();
-					this.isSea = false;
-					this.isLand = false;
-					this.$message({
-						message: '添加成功',
-						type: 'success'
+			return new Promise((resolve, reject) => {
+				// 如果是新增订单
+				if (!this.orderId) {
+					this.orderInfo.orderDetailList = this.orderdetailList;
+					const updateOrderItem = item => {
+						item.customerID = this.orderInfo.customerID;
+						item.customer = this.orderInfo.customer;
+						item.orderDate = parseTime(new Date(), '{y}-{m}-{d} {h}:{i}:{s}');
+					};
+					this.orderdetailList.forEach(item => updateOrderItem(item));
+					// 添加订单
+					addGoodsOrder({ ...this.orderInfo, PaymentState: '' }).then(() => {
+						this.resetOrderInfo();
+						this.isSea = false;
+						this.isLand = false;
+						this.$message({
+							message: '添加成功',
+							type: 'success'
+						});
+						that.dialogVisible = false;
+						resolve();
 					});
-					that.dialogVisible = false;
-				});
-			} else {
-				this.handleUpdateGoodsOrder(that);
-			}
-		},
-		// 修改后提交订单信息
-		handleUpdateGoodsOrder(that) {
-			if (this.orderId != null) {
-				this.orderInfo.orderDetailList = this.orderdetailList;
-				const formatOrderItem = () => ({
-					customerID: this.orderInfo.customerID,
-					customer: this.orderInfo.customer,
-					orderDate: parseTime(new Date(), '{y}-{m}-{d} {h}:{i}:{s}')
-				});
-				this.orderdetailList.forEach(item =>
-					Object.assign(item, formatOrderItem())
-				);
-				this.orderInfo = excludeParams(this.orderInfo, this.$exclude);
-				updateGoodsOrder({
-					...this.orderInfo,
-					PaymentState: '',
-					remark: sessionStorage.getItem('order-edit-reason')
-				}).then(() => {
-					this.resetOrderInfo(); // 清空订单列表基础信息
-					this.$message({
-						message: '修改成功',
-						type: 'success'
-					});
-					sessionStorage.removeItem('order-edit-reason');
-					that.dialogVisible = false;
-					this.isSea = false;
-					this.isLand = false;
-				});
-			}
+					// 如果是修改订单
+				} else {
+					if (this.orderId != null) {
+						this.orderInfo.orderDetailList = this.orderdetailList;
+						const formatOrderItem = () => ({
+							customerID: this.orderInfo.customerID,
+							customer: this.orderInfo.customer,
+							orderDate: parseTime(new Date(), '{y}-{m}-{d} {h}:{i}:{s}')
+						});
+						this.orderdetailList.forEach(item =>
+							Object.assign(item, formatOrderItem())
+						);
+						this.orderInfo = excludeParams(this.orderInfo, this.$exclude);
+						updateGoodsOrder({
+							...this.orderInfo,
+							PaymentState: '',
+							remark: sessionStorage.getItem('order-edit-reason')
+						}).then(() => {
+							this.resetOrderInfo(); // 清空订单列表基础信息
+							this.$message({
+								message: '修改成功',
+								type: 'success'
+							});
+							sessionStorage.removeItem('order-edit-reason');
+							this.isSea = false;
+							this.isLand = false;
+							that.dialogVisible = false;
+							resolve();
+						});
+					}
+				}
+			});
 		},
 		// 取消添加订单
 		handleReject() {

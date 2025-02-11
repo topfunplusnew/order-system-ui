@@ -358,13 +358,16 @@ export default {
 		},
 		// 添加入库
 		handleProcess(that) {
-			addInventory({ ...this.orderItemInfo, ...this.inventoryInfo }).then(
-				() => {
-					this.$message.success('入库成功');
-					that.dialogVisible = false;
-					this.resetInventory();
-				}
-			);
+			return new Promise((resolve, reject) => {
+				addInventory({ ...this.orderItemInfo, ...this.inventoryInfo }).then(
+					() => {
+						that.dialogVisible = false;
+						this.resetInventory();
+						this.$message.success('入库成功');
+						resolve();
+					}
+				);
+			});
 		},
 		handleReject() {},
 		resetInventory() {

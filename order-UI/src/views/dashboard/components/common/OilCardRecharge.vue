@@ -51,23 +51,25 @@ export default {
 		handleProcess(that) {
 			this.$refs['form'].validate(valid => {
 				if (valid) {
-					if (this.form.id != null) {
-						this.form = excludeParams(this.form, this.$exclude);
-						updateOilRecharge(this.form).then(() => {
-							this.$modal.msgSuccess('修改成功');
-							this.$refs.uploadFile.clearFileList();
-							that.dialogVisible = false;
-							this.getList();
-						});
-					} else {
-						this.form = excludeParams(this.form, this.$exclude);
-						addOilRecharge(this.form).then(() => {
-							this.$modal.msgSuccess('新增成功');
-							this.$refs.uploadFile.clearFileList();
-							that.dialogVisible = false;
-							this.getList();
-						});
-					}
+					return new Promise((resolve, reject) => {
+						if (this.form.id != null) {
+							this.form = excludeParams(this.form, this.$exclude);
+							updateOilRecharge(this.form).then(() => {
+								that.dialogVisible = false;
+								this.$refs.uploadFile.clearFileList();
+								this.$modal.msgSuccess('修改成功');
+								resolve();
+							});
+						} else {
+							this.form = excludeParams(this.form, this.$exclude);
+							addOilRecharge(this.form).then(() => {
+								that.dialogVisible = false;
+								this.$refs.uploadFile.clearFileList();
+								this.$modal.msgSuccess('新增成功');
+								resolve();
+							});
+						}
+					});
 				}
 			});
 		},

@@ -233,48 +233,60 @@ export default {
 			let total_out = 0,
 				total_in = 0;
 
-			// 客户开票 domain = 1
-			if (this.invoiceInfo.domain === 1) {
-				// 先检查一下可不可以开票 即检查是否超过钱
-				checkOrderAllinvoice(this.invoiceInfo.isOrderTax).then(res => {
-					total_out = res.data?.total_out || 0;
-					if (Number(this.form.invoiceAmount) + total_out > this.maxInvent) {
-						this.$message.error('累计开票金额超过总货款');
-						this.resetMoney();
-						return;
-					}
-					// 组装开票实体
-					const body = {
-						...this.form,
-						...this.invoiceInfo
-					};
-					// 添加开票信息
-					addInvoiceOut(body).then(() => {
-						this.$message.success('客户开票成功~');
-						this.resetOpenTitleInfo();
-						that.dialogVisible = false;
-						this.getList();
+			return new Promise((resolve, reject) => {
+				// 客户开票 domain = 1
+				if (this.invoiceInfo.domain === 1) {
+					// 先检查一下可不可以开票 即检查是否超过钱
+					checkOrderAllinvoice(this.invoiceInfo.isOrderTax).then(res => {
+						if (!res.data) {
+							this.$message.error('检查开票时发现暂无数据');
+							return;
+						}
+						total_out = res.data.total_out || 0;
+						if (Number(this.form.invoiceAmount) + total_out > this.maxInvent) {
+							this.$message.error('累计开票金额超过总货款');
+							this.resetMoney();
+							return;
+						}
+						// 组装开票实体
+						const body = {
+							...this.form,
+							...this.invoiceInfo
+						};
+						// 添加发票卖出
+						addInvoiceOut(body).then(() => {
+							this.resetOpenTitleInfo();
+							that.dialogVisible = false;
+							this.$message.success('客户开票成功~');
+							resolve();
+						});
 					});
-				});
-				// 供应商开票 domain = 2
-			} else {
-				checkOrderAllinvoice(this.invoiceInfo.isOrderTax).then(res => {
-					total_in = res.data?.total_in || 0;
-					if (Number(this.form.invoiceAmount) + total_in > this.maxInvent) {
-						this.$message.error('累计开票金额超过出厂货款');
-						this.resetMoney();
-					}
-					const body = {
-						...this.form,
-						...this.invoiceInfo
-					};
-					addInvoiceIn(body).then(() => {
-						this.$message.success('供应商开票成功~');
-						this.resetOpenTitleInfo();
-						this.getList();
+					// 供应商开票 domain = 2
+				} else {
+					checkOrderAllinvoice(this.invoiceInfo.isOrderTax).then(res => {
+						if (!res.data) {
+							this.$message.error('检查开票时发现暂无数据');
+							return;
+						}
+						total_in = res.data.total_in || 0;
+						if (Number(this.form.invoiceAmount) + total_in > this.maxInvent) {
+							this.$message.error('累计开票金额超过出厂货款');
+							this.resetMoney();
+						}
+						const body = {
+							...this.form,
+							...this.invoiceInfo
+						};
+						// 添加发票买入
+						addInvoiceIn(body).then(() => {
+							this.resetOpenTitleInfo();
+							that.dialogVisible = false;
+							this.$message.success('供应商开票成功~');
+							resolve();
+						});
 					});
-				});
-			}
+				}
+			});
 		},
 		// 重写关闭逻辑
 		handleReject() {},

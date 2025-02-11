@@ -51,48 +51,52 @@ export default {
 			const res = await batchInvoice(invoices);
 			const target = this.checkInvoice(res.data);
 			// 如果成功
-			if (target.flag) {
-				this.$message.success('本批开票成功');
-				// 发送时间 告诉订单列表重新加载
-				this.$bus.$emit('select-goods:update');
-				that.dialogVisible = false;
-			} else {
-				const uuid = target.uuid;
-				// 查找该出错的信息
-				invoices.forEach(item => {
-					if (item.uuid === uuid) {
-						// 判断一下tableName
-						switch (item.tableName) {
-							case TableName.INVOICE_OUT: {
-								// 打开弹窗 让用户知道 并且去修改
-								this.openDialog(
-									INVOICE_OUT,
-									'发票信息',
-									'900px',
-									{
-										needToShowInfo: item
-									},
-									false
-								);
-								break;
-							}
-							case TableName.INVOICE_IN: {
-								// 打开弹窗 让用户知道 并且去修改
-								// 打开弹窗 让用户知道 并且去修改
-								this.openDialog(
-									INVOICE_IN,
-									'发票信息',
-									'900px',
-									{
-										needToShowInfo: item
-									},
-									false
-								);
+			return new Promise((resolve, reject) => {
+				if (target.flag) {
+					// 发送时间 告诉订单列表重新加载
+					that.dialogVisible = false;
+					this.$bus.$emit('select-goods:update');
+					this.$message.success('本批开票成功');
+					resolve();
+				} else {
+					reject();
+					this.$message.error('本批开票有误，请检查');
+					const uuid = target.uuid;
+					// 查找该出错的信息
+					invoices.forEach(item => {
+						if (item.uuid === uuid) {
+							// 判断一下tableName
+							switch (item.tableName) {
+								case TableName.INVOICE_OUT: {
+									// 打开弹窗 让用户知道 并且去修改
+									this.openDialog(
+										INVOICE_OUT,
+										'发票信息',
+										'900px',
+										{
+											needToShowInfo: item
+										},
+										false
+									);
+									break;
+								}
+								case TableName.INVOICE_IN: {
+									// 打开弹窗 让用户知道 并且去修改
+									this.openDialog(
+										INVOICE_IN,
+										'发票信息',
+										'900px',
+										{
+											needToShowInfo: item
+										},
+										false
+									);
+								}
 							}
 						}
-					}
-				});
-			}
+					});
+				}
+			});
 		},
 		handleReject() {},
 		// 检查是否开成功了

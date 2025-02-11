@@ -87,7 +87,7 @@ export default {
 			const day = date.getDate().toString().padStart(2, '0');
 			return `${year}-${month}-${day}`;
 		},
-		async fetchFreightList() {
+		async getList() {
 			this.loading = true;
 			const response = await getOrderFreightList(this.queryParams);
 			if (response.code === 200) {
@@ -98,7 +98,7 @@ export default {
 		},
 		handleQuery() {
 			this.queryParams.pageNum = 1;
-			this.fetchFreightList();
+			this.getList();
 		},
 		resetQuery() {
 			const today = new Date();
@@ -133,7 +133,7 @@ export default {
 		}
 	},
 	created() {
-		this.fetchFreightList();
+		this.getList();
 	}
 };
 </script>
@@ -475,7 +475,7 @@ export default {
 			:total="total"
 			:page.sync="queryParams.pageNum"
 			:limit.sync="queryParams.pageSize"
-			@pagination="fetchFreightList"
+			@pagination="getList"
 		/>
 
 		<!-- <el-dialog
