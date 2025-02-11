@@ -42,6 +42,43 @@ export const TableName = Object.freeze({
 	INVENTORDETAIL: 'inventory_detail'
 });
 
+export const moduleNames = Object.freeze({
+	goodsorder: '订单',
+	inventory: '库存',
+	payment: '付款',
+	receivemoney: '收款',
+	borrowedmoney: '借出款',
+	lendmoney: '借入款',
+	recovermoney: '借出资金回收',
+	repayment: '贷款还款',
+	bankaccountchange: '银行账户变动',
+	businesstrip: '出差',
+	carapply: '车辆申请',
+	cars: '车辆',
+	company: '公司',
+	customervisit: '客户拜访',
+	exwarehouse: '出库',
+	fixedassets: '固定资产',
+	fleet: '车队',
+	invoicein: '发票购入',
+	invoiceout: '发票售出',
+	invoiceother: '第三方发票',
+	offsetting: '冲抵货款',
+	oilcard: '油卡',
+	oilcardconsume: '油卡消费',
+	oilcardfundtransfer: '油卡资金转移',
+	oilrecharge: '油卡充值',
+	orderdetail: '订单详情',
+	orderfreight: '订单运费',
+	productlevel: '产品级别',
+	rebate: '返利',
+	socialinsurance: '社保',
+	balanceaccounts: '平账',
+	storehouse: '仓库',
+	inventory_main: '库存',
+	inventory_detail: '库存明细'
+});
+
 // 报表所用类型
 export const ReportType = Object.freeze({
 	// 客户

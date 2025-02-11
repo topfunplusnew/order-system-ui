@@ -103,7 +103,8 @@
 
 <script>
 import * as echarts from 'echarts';
-
+import { moduleNames } from '../../../api/tool/enums';
+import { getFundChangeDetail } from '../../../api/system/sql';
 export default {
 	name: 'MoneyChange',
 	data() {
@@ -111,6 +112,11 @@ export default {
 		const start = new Date();
 		start.setMonth(start.getMonth() - 1);
 
+		// 生成映射关系
+		const moduleOption = Object.keys(moduleNames).map(key => ({
+			value: key,
+			label: moduleNames[key]
+		}));
 		return {
 			// 查询参数
 			queryParams: {
@@ -118,33 +124,32 @@ export default {
 				dateRange: [this.parseTime(start), this.parseTime(end)]
 			},
 			// 模块选项
-			moduleOptions: [
-				{ label: '模块A', value: 'moduleA' },
-				{ label: '模块B', value: 'moduleB' },
-				{ label: '模块C', value: 'moduleC' },
-				{ label: '模块D', value: 'moduleD' }
-			],
+			moduleOptions: moduleOption,
 			// 图表实例
 			chart: null,
 			// Mock数据
-			mockData: {
+			dataSource: {
 				xAxis: ['1月', '2月', '3月', '4月', '5月', '6月'],
 				series: [
 					{
-						name: '模块A',
+						name: '模块1',
 						data: [120, 132, 101, 134, 90, 230]
 					},
 					{
-						name: '模块B',
+						name: '模块2',
 						data: [220, 182, 191, 234, 290, 330]
 					},
 					{
-						name: '模块C',
+						name: '模块3',
 						data: [150, 232, 201, 154, 190, 330]
 					},
 					{
-						name: '模块D',
+						name: '模块4',
 						data: [320, 332, 301, 334, 390, 330]
+					},
+					{
+						name: '模块5',
+						data: [820, 932, 901, 934, 1290, 1330]
 					}
 				]
 			},
@@ -169,6 +174,11 @@ export default {
 		}
 	},
 	methods: {
+		// 格式化JSON 因为后端传递过来的changedInfo是字符串，需要转换为JSON对象
+		parseJSON(strings) {
+			if (!strings) return {};
+			return JSON.parse(JSON.parse(JSON.stringify(strings)));
+		},
 		// 格式化日期
 		parseTime(date) {
 			const year = date.getFullYear();
@@ -183,6 +193,32 @@ export default {
 		},
 		// 设置图表配置
 		setChartOption() {
+			// 在这对dataSource进行赋值
+			getFundChangeDetail().then(res => {
+				if (!res.rows) {
+					this.$message.warning('暂无数据可以展示');
+					return;
+				}
+				// 先转换JSON
+				const data = res.rows.map(item => {
+					return {
+						...item,
+						originalInfo: this.parseJSON(item.originalInfo),
+						changedInfo: this.parseJSON(item.changedInfo)
+					};
+				});
+
+				// 按照模块分组
+				const groupedData = new Map();
+				data.forEach(item => {
+					if (groupedData.has(item.tableName)) {
+						groupedData.get(item.tableName).push(item);
+					} else {
+						groupedData.set(item.tableName, [item]);
+					}
+				});
+				// todo 2025-2-11  钱的相关计算比较麻烦
+			});
 			const option = {
 				title: {
 					text: '资金变动图表'
@@ -198,7 +234,7 @@ export default {
 					}
 				},
 				legend: {
-					data: this.mockData.series.map(item => item.name)
+					data: this.dataSource.series.map(item => item.name)
 				},
 				grid: {
 					left: '3%',
@@ -214,12 +250,12 @@ export default {
 				xAxis: {
 					type: 'category',
 					boundaryGap: false,
-					data: this.mockData.xAxis
+					data: this.dataSource.xAxis
 				},
 				yAxis: {
 					type: 'value'
 				},
-				series: this.mockData.series.map(item => ({
+				series: this.dataSource.series.map(item => ({
 					name: item.name,
 					type: 'line',
 					data: item.data,
@@ -259,7 +295,7 @@ export default {
 			// 模拟获取详细数据
 			this.detailData = {
 				moduleName: params.seriesName,
-				date: this.mockData.xAxis[params.dataIndex],
+				date: this.dataSource.xAxis[params.dataIndex],
 				value: params.value,
 				ratio: (((params.value - 100) / 100) * 100).toFixed(2),
 				records: [
