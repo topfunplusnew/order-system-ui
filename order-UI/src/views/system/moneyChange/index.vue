@@ -44,13 +44,13 @@
 			</el-form-item>
 		</el-form>
 
+		<!-- 老旧代码 -->
 		<!-- 图表区域 -->
-		<div class="chart-container">
+		<!-- <div class="chart-container">
 			<div ref="chart" style="height: 500px"></div>
-		</div>
-
+		</div> -->
 		<!-- 数据详情弹窗 -->
-		<el-dialog
+		<!-- <el-dialog
 			title="数据详情"
 			:visible.sync="dialogVisible"
 			width="50%"
@@ -97,7 +97,7 @@
 				<el-table-column prop="operator" label="操作人" width="120" />
 				<el-table-column prop="remark" label="备注" />
 			</el-table>
-		</el-dialog>
+		</el-dialog> -->
 	</div>
 </template>
 
@@ -113,55 +113,55 @@ export default {
 		start.setMonth(start.getMonth() - 1);
 
 		// 生成映射关系
-		const moduleOption = Object.keys(moduleNames).map(key => ({
-			value: key,
-			label: moduleNames[key]
-		}));
+		// const moduleOption = Object.keys(moduleNames).map(key => ({
+		// 	value: key,
+		// 	label: moduleNames[key]
+		// }));
 		return {
 			// 查询参数
 			queryParams: {
 				moduleNames: [],
 				dateRange: [this.parseTime(start), this.parseTime(end)]
-			},
-			// 模块选项
-			moduleOptions: moduleOption,
-			// 图表实例
-			chart: null,
-			// Mock数据
-			dataSource: {
-				xAxis: ['1月', '2月', '3月', '4月', '5月', '6月'],
-				series: [
-					{
-						name: '模块1',
-						data: [120, 132, 101, 134, 90, 230]
-					},
-					{
-						name: '模块2',
-						data: [220, 182, 191, 234, 290, 330]
-					},
-					{
-						name: '模块3',
-						data: [150, 232, 201, 154, 190, 330]
-					},
-					{
-						name: '模块4',
-						data: [320, 332, 301, 334, 390, 330]
-					},
-					{
-						name: '模块5',
-						data: [820, 932, 901, 934, 1290, 1330]
-					}
-				]
-			},
-			// 新增的数据
-			dialogVisible: false,
-			detailData: {
-				moduleName: '',
-				date: '',
-				value: 0,
-				ratio: 0,
-				records: []
 			}
+			// // 模块选项
+			// moduleOptions: moduleOption,
+			// // 图表实例
+			// chart: null,
+			// // Mock数据
+			// dataSource: {
+			// 	xAxis: ['1月', '2月', '3月', '4月', '5月', '6月'],
+			// 	series: [
+			// 		{
+			// 			name: '模块1',
+			// 			data: [120, 132, 101, 134, 90, 230]
+			// 		},
+			// 		{
+			// 			name: '模块2',
+			// 			data: [220, 182, 191, 234, 290, 330]
+			// 		},
+			// 		{
+			// 			name: '模块3',
+			// 			data: [150, 232, 201, 154, 190, 330]
+			// 		},
+			// 		{
+			// 			name: '模块4',
+			// 			data: [320, 332, 301, 334, 390, 330]
+			// 		},
+			// 		{
+			// 			name: '模块5',
+			// 			data: [820, 932, 901, 934, 1290, 1330]
+			// 		}
+			// 	]
+			// },
+			// // 新增的数据
+			// dialogVisible: false,
+			// detailData: {
+			// 	moduleName: '',
+			// 	date: '',
+			// 	value: 0,
+			// 	ratio: 0,
+			// 	records: []
+			// }
 		};
 	},
 	mounted() {
@@ -217,7 +217,9 @@ export default {
 						groupedData.set(item.tableName, [item]);
 					}
 				});
-				// todo 2025-2-11  钱的相关计算比较麻烦
+				// todo 2025-2-10  钱的相关计算比较麻烦
+				// todo 2025-2-11  展示 一个模块的某一个数据 在 某个月到某个月之间若干天的变化数据 以单个卡片的形式展示在页面中
+				// todo 比如 订单A 在2月7号的数据，他在三月到四月之间的所有的变动信息(changedInfo) 以卡片的形式展示在页面中
 			});
 			const option = {
 				title: {
@@ -289,49 +291,49 @@ export default {
 			start.setMonth(start.getMonth() - 1);
 			this.queryParams.dateRange = [this.parseTime(start), this.parseTime(end)];
 			this.handleQuery();
-		},
-		// 处理图表点击事件
-		handleChartPointClick(params) {
-			// 模拟获取详细数据
-			this.detailData = {
-				moduleName: params.seriesName,
-				date: this.dataSource.xAxis[params.dataIndex],
-				value: params.value,
-				ratio: (((params.value - 100) / 100) * 100).toFixed(2),
-				records: [
-					{
-						time: '2024-01-15 09:30:00',
-						type: '收入',
-						amount: 1500,
-						operator: '张三',
-						remark: '项目款项'
-					},
-					{
-						time: '2024-01-15 10:15:00',
-						type: '支出',
-						amount: -500,
-						operator: '李四',
-						remark: '设备采购'
-					},
-					{
-						time: '2024-01-15 14:20:00',
-						type: '收入',
-						amount: 2000,
-						operator: '王五',
-						remark: '服务费'
-					},
-					{
-						time: '2024-01-15 16:45:00',
-						type: '支出',
-						amount: -800,
-						operator: '赵六',
-						remark: '日常开支'
-					}
-				]
-			};
-
-			this.dialogVisible = true;
 		}
+		// 处理图表点击事件
+		// handleChartPointClick(params) {
+		// 	// 模拟获取详细数据
+		// 	this.detailData = {
+		// 		moduleName: params.seriesName,
+		// 		date: this.dataSource.xAxis[params.dataIndex],
+		// 		value: params.value,
+		// 		ratio: (((params.value - 100) / 100) * 100).toFixed(2),
+		// 		records: [
+		// 			{
+		// 				time: '2024-01-15 09:30:00',
+		// 				type: '收入',
+		// 				amount: 1500,
+		// 				operator: '张三',
+		// 				remark: '项目款项'
+		// 			},
+		// 			{
+		// 				time: '2024-01-15 10:15:00',
+		// 				type: '支出',
+		// 				amount: -500,
+		// 				operator: '李四',
+		// 				remark: '设备采购'
+		// 			},
+		// 			{
+		// 				time: '2024-01-15 14:20:00',
+		// 				type: '收入',
+		// 				amount: 2000,
+		// 				operator: '王五',
+		// 				remark: '服务费'
+		// 			},
+		// 			{
+		// 				time: '2024-01-15 16:45:00',
+		// 				type: '支出',
+		// 				amount: -800,
+		// 				operator: '赵六',
+		// 				remark: '日常开支'
+		// 			}
+		// 		]
+		// 	};
+
+		// 	this.dialogVisible = true;
+		// }
 	}
 };
 </script>

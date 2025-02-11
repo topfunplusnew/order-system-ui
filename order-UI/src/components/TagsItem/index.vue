@@ -5,7 +5,10 @@ export default {
 	// checkValue=>判断值为假的值
 	props: {
 		checkInfo: {},
-		checkValue: ''
+		checkValue: {
+			type: String,
+			default: ''
+		}
 	}
 };
 </script>

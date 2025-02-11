@@ -59,6 +59,7 @@
 				</tr>
 
 				<!-- 销项列表-->
+				<!-- eslint-disable-next-line -->
 				<tr v-for="(item, index) in computedToMakeList">
 					<!--          序号-->
 					<td>

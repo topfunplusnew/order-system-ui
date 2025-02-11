@@ -582,17 +582,15 @@ import {
 	updateBankAcceptance
 } from '@/api/system/bankAcceptance';
 import { formatTime } from '@/api/tool/format';
-import SearchOption from '@/components/SearchOption.vue';
 import { listBankAccount } from '@/api/system/bankAccount';
 import { mixin_printHTML } from '@/views/dashboard/mixins/print';
 import { excludeParams } from '@/api/tool/exclude';
 import InfoDialog from '../../../components/InfoDialog.vue';
 import { listBankAcceptanceBalanceMoney } from '../../../api/system/bankAcceptance';
-import { tansParams } from '../../../utils/ruoyi';
 
 export default {
 	name: 'BankAcceptance',
-	components: { InfoDialog, SearchOption },
+	components: { InfoDialog },
 	mixins: [mixin_printHTML],
 	data() {
 		return {

@@ -2,7 +2,10 @@
 export default {
 	name: 'ShowLabel',
 	props: {
-		title: ''
+		title: {
+			type: String,
+			default: ''
+		}
 	}
 };
 </script>

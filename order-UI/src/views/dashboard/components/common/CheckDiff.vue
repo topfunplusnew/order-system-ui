@@ -18,7 +18,10 @@ export default {
 		diffObjectB: {
 			required: true
 		},
-		switchOn: false
+		switchOn: {
+			type: Boolean,
+			default: false
+		}
 	},
 	data() {
 		return {

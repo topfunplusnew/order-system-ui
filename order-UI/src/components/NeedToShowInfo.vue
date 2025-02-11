@@ -12,7 +12,10 @@ export default {
 	name: 'NeedToShowInfo',
 	props: {
 		needToShowInfo: {},
-		tableNameToProp: ''
+		tableNameToProp: {
+			type: String,
+			default: ''
+		}
 	},
 	data() {
 		return {
@@ -20,6 +23,7 @@ export default {
 		};
 	},
 	computed: {
+		// eslint-disable-next-line
 		show() {
 			switch (this.tableNameToProp) {
 				// 如果是车辆信息

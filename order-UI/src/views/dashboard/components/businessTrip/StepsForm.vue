@@ -8,11 +8,20 @@ export default {
 			default: 0
 		},
 		// 第一步骤标题
-		titleOne: '',
+		titleOne: {
+			type: String,
+			default: '填写信息'
+		},
 		// 第二步骤标题
-		titleTwo: '',
+		titleTwo: {
+			type: String,
+			default: '确认信息'
+		},
 		// 头部的提示
-		titleInfo: ''
+		titleInfo: {
+			type: String,
+			default: '请按照提示填写信息'
+		}
 	},
 	data() {
 		return {};

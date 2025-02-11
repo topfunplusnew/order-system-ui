@@ -1,13 +1,11 @@
 <script>
-import SearchOption from '../../../../components/SearchOption.vue';
 import { listCompany } from '../../../../api/system/company';
 import { excludeParams } from '../../../../api/tool/exclude';
 import { addBankAccount } from '../../../../api/system/bankAccount';
-import { listCars } from '../../../../api/system/cars';
 
 export default {
 	name: 'AddBankAccounts',
-	components: { SearchOption },
+	components: {},
 	props: {
 		companyType: {
 			type: String,

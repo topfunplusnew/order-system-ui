@@ -9,6 +9,8 @@ const CompressionPlugin = require('compression-webpack-plugin');
 const name = process.env.VUE_APP_TITLE || '订单管理系统'; // 网页标题
 const port = process.env.port || process.env.npm_config_port || 40080; // 端口
 
+// 缓存编译结果，提高二次编译速度
+const HardSourceWebpackPlugin = require('hard-source-webpack-plugin');
 module.exports = {
 	publicPath: process.env.NODE_ENV === 'production' ? '/' : '/',
 	outputDir: 'ordersdist',
@@ -23,9 +25,9 @@ module.exports = {
 		proxy: {
 			[process.env.VUE_APP_BASE_API]: {
 				// target: `http://24.233.1.45:60035/`,
-				target: `https://bak202.xuni.rocks`,
+				// target: `https://bak202.xuni.rocks`,
 				// target: 'http://24.233.1.45:8080',
-				// target: 'http://localhost:8080',
+				target: 'http://localhost:8080',
 				// target: 'http://172.20.193.200:8080',
 				// target: `http://192.168.1.191:8080`,
 				changeOrigin: true,
@@ -60,7 +62,8 @@ module.exports = {
 				algorithm: 'gzip', // 使用gzip压缩
 				minRatio: 0.8, // 压缩比例，小于 80% 的文件不会被压缩
 				deleteOriginalAssets: false // 压缩后删除原文件
-			})
+			}),
+			new HardSourceWebpackPlugin()
 		]
 	},
 	chainWebpack(config) {

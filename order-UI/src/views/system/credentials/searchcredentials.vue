@@ -134,7 +134,7 @@ export default {
 						class-name="small-padding fixed-width"
 						fixed="right"
 					>
-						<template slot-scope="scope">
+						<template slot-scope="">
 							<el-button
 								v-hasPermi="['system:goodsorder:remove']"
 								size="mini"

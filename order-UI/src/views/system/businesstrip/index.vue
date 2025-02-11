@@ -520,7 +520,6 @@ import { mapGetters } from 'vuex';
 import ApplyPayment from '@/views/dashboard/components/common/ApplyPayment.vue';
 import { TableName } from '@/api/tool/enums';
 import { listBankAccount } from '@/api/system/bankAccount';
-import InfoDialog from '../../../components/InfoDialog.vue';
 import { mixin_business_trip_add } from '../../dashboard/mixins/bussiness/business_trip_add';
 import StepsForm from '../../dashboard/components/businessTrip/StepsForm.vue';
 import { mixin_common_upload } from '../../dashboard/mixins/common/common_upload';
@@ -549,7 +548,6 @@ export default {
 		CheckFiles,
 		SubjectOption,
 		StepsForm,
-		InfoDialog,
 		ApplyPayment,
 		Treeselect
 	},

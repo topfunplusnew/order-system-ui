@@ -140,18 +140,24 @@ export default {
 	computed: {
 		// 计算两个周期值
 		cycleTotal: function () {
+			// eslint-disable-next-line
 			this.cycle01 = this.checkNum(this.cycle01, 1, 7);
+			// eslint-disable-next-line
 			this.cycle02 = this.checkNum(this.cycle02, 1, 7);
 			return this.cycle01 + '-' + this.cycle02;
 		},
 		// 计算平均用到的值
 		averageTotal: function () {
+			// 不要进行eslint检查
+			// eslint-disable-next-line
 			this.average01 = this.checkNum(this.average01, 1, 4);
+			// eslint-disable-next-line
 			this.average02 = this.checkNum(this.average02, 1, 7);
 			return this.average02 + '#' + this.average01;
 		},
 		// 最近的工作日（格式）
 		weekdayCheck: function () {
+			// eslint-disable-next-line
 			this.weekday = this.checkNum(this.weekday, 1, 7);
 			return this.weekday;
 		},

@@ -1,9 +1,9 @@
-import axios from 'axios';
-import { Loading, Message } from 'element-ui';
-import { saveAs } from 'file-saver';
 import { getToken } from '@/utils/auth';
 import errorCode from '@/utils/errorCode';
 import { blobValidate } from '@/utils/ruoyi';
+import axios from 'axios';
+import { Loading, Message } from 'element-ui';
+import { saveAs } from 'file-saver';
 
 const baseURL = process.env.VUE_APP_BASE_API;
 let downloadLoadingInstance;
@@ -52,7 +52,7 @@ export default {
 		});
 	},
 	zip(url, name) {
-		var url = baseURL + url;
+		var urls = baseURL + url;
 		downloadLoadingInstance = Loading.service({
 			text: '正在下载数据，请稍候',
 			spinner: 'el-icon-loading',
@@ -60,7 +60,7 @@ export default {
 		});
 		axios({
 			method: 'get',
-			url: url,
+			url: urls,
 			responseType: 'blob',
 			headers: { Authorization: 'Bearer ' + getToken() }
 		})

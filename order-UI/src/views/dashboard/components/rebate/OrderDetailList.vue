@@ -6,7 +6,7 @@ export default {
 	props: {
 		orderDetailList: {
 			type: Array,
-			default: []
+			default: () => []
 		}
 	},
 	data() {

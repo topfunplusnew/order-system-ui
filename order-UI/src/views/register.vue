@@ -136,6 +136,7 @@ export default {
 					},
 					{
 						pattern: /^[^<>"'|\\]+$/,
+						// eslint-disable-next-line
 						message: '不能包含非法字符：< > " \' \\\ |',
 						trigger: 'blur'
 					}

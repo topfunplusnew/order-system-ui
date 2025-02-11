@@ -736,7 +736,7 @@ export default {
 
 				// todo 这里继续加表名 然后发请求获取数据 赋值给需要展示的needToShowInfo 然后创建组件
 				case 'paymentApplyDetailItem':
-					this.needToShowInfo = item.paymentApplyDetailItem;
+					// this.needToShowInfo = item.paymentApplyDetailItem;
 					break;
 				default:
 					break;

@@ -441,17 +441,15 @@ import { addRepayment } from '@/api/system/repayment';
 import SearchOption from '@/components/SearchOption.vue';
 import { listBankAccount } from '@/api/system/bankAccount';
 import { listCompany } from '@/api/system/company';
-import ApplyPayment from '@/views/dashboard/components/common/ApplyPayment.vue';
 import { TableName } from '@/api/tool/enums';
-import { addDateRange, parseTime } from '@/utils/ruoyi';
+import { addDateRange } from '@/utils/ruoyi';
 import { excludeParams } from '@/api/tool/exclude';
 import { mixin_printHTML } from '../../dashboard/mixins/print';
-import BankType from '@/views/dashboard/components/common/BankType.vue';
 import { mixin_bankType } from '../../dashboard/mixins/common/common_bankType';
 
 export default {
 	name: 'BorrowedMoney',
-	components: { BankType, ApplyPayment, SearchOption },
+	components: { SearchOption },
 	mixins: [mixin_printHTML, mixin_bankType],
 	data() {
 		var validateloanNO = (rule, value, callback) => {

@@ -5,7 +5,7 @@
 	"author": "0434实验室",
 	"license": "MIT",
 	"scripts": {
-		"dev": "vue-cli-service serve",
+		"dev": "vue-cli-service serve --modern",
 		"build:prod": "vue-cli-service build",
 		"build:stage": "vue-cli-service build --mode staging",
 		"test": "node ./src/app_test.js",
@@ -88,6 +88,7 @@
 		"eslint-plugin-prettier": "^4.0.0",
 		"eslint-plugin-vue": "^8.0.3",
 		"globals": "^15.12.0",
+		"hard-source-webpack-plugin": "^0.13.1",
 		"html-webpack-plugin": "^5.6.3",
 		"lint-staged": "10.5.3",
 		"prettier": "^2.4.1",

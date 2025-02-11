@@ -7,7 +7,7 @@ export var mixin_order_base = {
 	data: function () {
 		return {
 			// 订单的显示隐藏列
-			
+
 			// 顶部条件搜索
 			queryOrderInfo: {},
 

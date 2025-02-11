@@ -202,12 +202,11 @@ import { addDateRange } from '@/utils/ruoyi';
 import { addReason } from '@/api/system/user';
 import { TableName } from '@/api/tool/enums';
 import { excludeParams } from '@/api/tool/exclude';
-import BankType from '@/views/dashboard/components/common/BankType.vue';
 import { mixin_printHTML } from '@/views/dashboard/mixins/print';
 
 export default {
 	name: 'RecoverMoney',
-	components: { BankType },
+	components: {},
 	mixins: [mixin_printHTML],
 	data() {
 		return {

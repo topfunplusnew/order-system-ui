@@ -1,12 +1,11 @@
 <script>
 import { getGoodsOrder } from '../../../../api/system/goodsOrder';
 import InfoDialog from '../../../../components/InfoDialog.vue';
-import OrderList from '../voucher/OrderList.vue';
 import IncentOrders from './IncentOrders.vue';
 
 export default {
 	name: 'Incent',
-	components: { IncentOrders, OrderList, InfoDialog },
+	components: { IncentOrders, InfoDialog },
 	data() {
 		return {
 			orderItemVisible: false,

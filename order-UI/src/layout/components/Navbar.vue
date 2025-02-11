@@ -45,24 +45,14 @@ import { mapGetters } from 'vuex';
 import Breadcrumb from '@/components/Breadcrumb';
 import TopNav from '@/components/TopNav';
 import Hamburger from '@/components/Hamburger';
-import Screenfull from '@/components/Screenfull';
-import SizeSelect from '@/components/SizeSelect';
 import Search from '@/components/HeaderSearch';
-import RuoYiGit from '@/components/RuoYi/Git';
-import RuoYiDoc from '@/components/RuoYi/Doc';
-import CheckBankMoney from '@/views/dashboard/components/common/CheckBankMoney.vue';
 
 export default {
 	components: {
-		CheckBankMoney,
 		Breadcrumb,
 		TopNav,
 		Hamburger,
-		Screenfull,
-		SizeSelect,
-		Search,
-		RuoYiGit,
-		RuoYiDoc
+		Search
 	},
 	data() {
 		return {

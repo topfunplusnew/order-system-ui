@@ -248,8 +248,6 @@
 </template>
 
 <script>
-import SearchOption from '@/components/SearchOption.vue';
-import ApplyPayment from '@/views/dashboard/components/common/ApplyPayment.vue';
 import { mixin_printHTML } from '@/views/dashboard/mixins/print';
 import { getBorrowedMoneySummary } from '../../../api/system/statement';
 import { getRepaymentMoneyNoPage } from '../../../api/system/repayment';
@@ -258,7 +256,7 @@ import InfoDialog from '../../../components/InfoDialog.vue';
 
 export default {
 	name: 'BorrowedMoneySummary',
-	components: { InfoDialog, ApplyPayment, SearchOption },
+	components: { InfoDialog },
 	dicts: ['order_target_type'],
 	mixins: [mixin_printHTML],
 	data() {
