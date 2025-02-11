@@ -711,7 +711,18 @@ export default {
 					{ required: true, message: '日期不能为空', trigger: 'blur' }
 				],
 				moneyAmount: [
-					{ required: true, message: '金额不能为空', trigger: 'blur' }
+					{ required: true, message: '金额不能为空', trigger: 'blur' },
+					// 金额校验 小数点只能两位
+					{
+						validator: (rule, value, callback) => {
+							if (!/^\d+(\.\d{1,2})?$/.test(value)) {
+								callback(new Error('金额只能为数字且小数点后最多两位'));
+							} else {
+								callback();
+							}
+						},
+						trigger: 'blur'
+					}
 				],
 				selfAcountsName: [
 					{ required: true, message: '己方户名不能为空', trigger: 'change' }

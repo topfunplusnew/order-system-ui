@@ -299,7 +299,7 @@
 					<el-form-item :label="source">
 						<el-row>
 							<el-col :span="20">
-								<el-input v-model="sourceName" placeholder="请选择" />
+								<el-input disabled v-model="sourceName" placeholder="请选择" />
 							</el-col>
 							<!--            只有内部转账 才会选择-->
 							<el-col :span="3">
@@ -380,9 +380,10 @@
 						<el-row>
 							<el-col :span="14">
 								<el-input
+									disabled
 									v-model="sourceName"
 									type="text"
-									placeholder="请输入收入方"
+									placeholder="请选择"
 								/>
 							</el-col>
 							<!--              如果是司机-->
@@ -528,7 +529,7 @@
 					<el-form-item :label="target">
 						<el-row>
 							<el-col :span="20">
-								<el-input v-model="targetName" placeholder="请选择" />
+								<el-input disabled v-model="targetName" placeholder="请选择" />
 							</el-col>
 							<el-col :span="3">
 								<SearchOption
@@ -608,9 +609,10 @@
 						<el-row>
 							<el-col :span="14">
 								<el-input
+									disabled
 									v-model="targetName"
 									type="text"
-									placeholder="请输入支出方"
+									placeholder="请选择"
 								/>
 							</el-col>
 							<!--              如果是司机-->

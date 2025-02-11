@@ -482,8 +482,9 @@
 						<el-form-item label="供应商公司名称" prop="Supplier">
 							<el-col :span="20">
 								<el-input
+									disabled
 									v-model="form.Supplier"
-									placeholder="请输入供应商公司名称"
+									placeholder="请选择"
 								/>
 							</el-col>
 							<el-col :span="4">
@@ -534,8 +535,9 @@
 						<el-form-item label="客户公司名称" prop="customer">
 							<el-col :span="20">
 								<el-input
+									disabled
 									v-model="form.customer"
-									placeholder="请输入客户公司名称"
+									placeholder="请选择"
 								/>
 							</el-col>
 							<el-col :span="4">
@@ -694,7 +696,38 @@ export default {
 			queryCompanyCustomerName: '',
 			queryGoodsOrder: '',
 			// 表单校验
-			rules: {},
+			rules: {
+				ordersNo: [
+					{ required: true, message: '请选择关联订单', trigger: 'blur' }
+				],
+				invoiceAmount: [
+					{ required: true, message: '请输入开票金额', trigger: 'blur' }
+				],
+				supplierTicketPoint: [
+					{ required: true, message: '请输入供应商票点', trigger: 'blur' }
+				],
+				supplierPointAmount: [
+					{ required: true, message: '请输入供应商票点金额', trigger: 'blur' }
+				],
+				Supplier: [
+					{ required: true, message: '请输入供应商公司名称', trigger: 'blur' }
+				],
+				customer: [
+					{ required: true, message: '请输入客户公司名称', trigger: 'blur' }
+				],
+				invoiceCompanyName: [
+					{ required: true, message: '请输入票据单位名称', trigger: 'blur' }
+				],
+				customerTicketPoint: [
+					{ required: true, message: '请输入客户票点', trigger: 'blur' }
+				],
+				customerPointAmount: [
+					{ required: true, message: '请输入客户票点金额', trigger: 'blur' }
+				],
+				invoiceDate: [
+					{ required: true, message: '请选择开票日期', trigger: 'blur' }
+				]
+			},
 			columns: [
 				{ key: 0, label: `开票日期`, visible: true },
 				{ key: 1, label: `开票金额`, visible: true },

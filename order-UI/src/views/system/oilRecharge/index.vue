@@ -252,8 +252,9 @@
 					<el-row>
 						<el-col :span="10">
 							<el-input
+								disabled
 								v-model="form.oilCardNo"
-								placeholder="请输入加油卡卡号"
+								placeholder="请选择"
 							/>
 						</el-col>
 						<el-col :span="4">
@@ -404,7 +405,25 @@ export default {
 				rechargeType: '银行卡'
 			},
 			// 表单校验
-			rules: {},
+			rules: {
+				oilCardNo: [
+					{ required: true, message: '请输入加油卡卡号', trigger: 'blur' }
+				],
+				rechargeMoney: [
+					{ required: true, message: '请输入充值金额', trigger: 'blur' },
+					// 金额校验
+					{
+						validator: (rule, value, callback) => {
+							if (!/^\d+(\.\d{1,2})?$/.test(value)) {
+								callback(new Error('请输入正确的金额'));
+							} else {
+								callback();
+							}
+						},
+						trigger: 'blur'
+					}
+				]
+			},
 			columns: [
 				{ key: 0, label: `审核状态`, visible: true },
 				{ key: 1, label: `加油卡卡号`, visible: true },

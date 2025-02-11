@@ -260,8 +260,9 @@
 							<el-row>
 								<el-col :span="20">
 									<el-input
+										disabled
 										v-model="form.acountsName"
-										placeholder="请输入抵押担保"
+										placeholder="请选择"
 									/>
 								</el-col>
 								<el-col :span="4">
@@ -307,7 +308,7 @@
 							</el-row>
 						</el-form-item>
 						<el-form-item label="打入账号" prop="bankNo">
-							<el-input v-model="form.bankNo" placeholder="请输入抵押担保" />
+							<el-input disabled v-model="form.bankNo" placeholder="请选择" />
 						</el-form-item>
 						<el-form-item label="备注" prop="comments">
 							<el-input v-model="form.comments" placeholder="请输入备注" />
@@ -330,7 +331,12 @@
 			width="500px"
 		>
 			<el-row>
-				<el-form ref="form" :model="moneyBackInfo" label-width="140px">
+				<el-form
+					ref="form"
+					:model="moneyBackInfo"
+					label-width="140px"
+					:rules="borrowedMoneyRules"
+				>
 					<el-form-item label="还款金额" prop="moneyAmount">
 						<el-input
 							v-model="moneyBackInfo.moneyAmount"
@@ -494,7 +500,17 @@ export default {
 					{ required: true, message: '贷款来源不能为空', trigger: 'blur' }
 				],
 				moneyAmount: [
-					{ required: true, message: '借入金额不能为空', trigger: 'blur' }
+					{ required: true, message: '借入金额不能为空', trigger: 'blur' },
+					{
+						validator: (rule, value, callback) => {
+							if (!/^\d+(\.\d{1,2})?$/.test(value)) {
+								callback(new Error('金额只能为数字且小数点后最多两位'));
+							} else {
+								callback();
+							}
+						},
+						trigger: 'blur'
+					}
 				],
 				ratio: [
 					{ required: true, message: '贷款利率不能为空', trigger: 'blur' }
@@ -514,6 +530,41 @@ export default {
 				bankNo: [
 					{ required: true, message: '打入账号不能为空', trigger: 'blur' }
 				]
+			},
+			borrowedMoneyRules: {
+				moneyAmount: [
+					{ required: true, message: '还款金额不能为空', trigger: 'blur' },
+					{
+						validator: (rule, value, callback) => {
+							if (!/^\d+(\.\d{1,2})?$/.test(value)) {
+								callback(new Error('金额只能为数字且小数点后最多两位'));
+							} else {
+								callback();
+							}
+						},
+						trigger: 'blur'
+					}
+				],
+				ratio: [
+					{ required: true, message: '付息金额不能为空', trigger: 'blur' },
+					{
+						validator: (rule, value, callback) => {
+							if (!/^\d+(\.\d{1,2})?$/.test(value)) {
+								callback(new Error('金额只能为数字且小数点后最多两位'));
+							} else {
+								callback();
+							}
+						},
+						trigger: 'blur'
+					}
+				],
+				payDate: [
+					{ required: true, message: '支付日期不能为空', trigger: 'blur' }
+				],
+				acountsName: [
+					{ required: true, message: '银行户名不能为空', trigger: 'blur' }
+				],
+				bankNo: [{ required: true, message: '开户行不能为空', trigger: 'blur' }]
 			},
 			dateRange: [],
 			columns: [

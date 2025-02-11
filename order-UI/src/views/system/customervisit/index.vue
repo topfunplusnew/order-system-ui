@@ -560,7 +560,64 @@ export default {
 			// 表单参数
 			form: {},
 			// 表单校验
-			rules: {},
+			rules: {
+				visitDate: [
+					{ required: true, message: '请选择走访日期', trigger: 'blur' }
+				],
+				province: [{ required: true, message: '请选择省', trigger: 'blur' }],
+				city: [{ required: true, message: '请选择市', trigger: 'blur' }],
+				county: [{ required: true, message: '请输入乡镇', trigger: 'blur' }],
+				customer: [
+					{ required: true, message: '请输入客户名称', trigger: 'blur' }
+				],
+				leaderName: [
+					{ required: true, message: '请输入负责人姓名', trigger: 'blur' }
+				],
+				LeaderTel: [
+					{ required: true, message: '请输入负责人电话', trigger: 'blur' }
+				],
+				equipment: [
+					{ required: true, message: '请输入厂房设备', trigger: 'blur' }
+				],
+				competitor: [
+					{ required: true, message: '请输入竞争对手', trigger: 'blur' }
+				],
+				localDealer: [
+					{ required: true, message: '请输入当地经销商', trigger: 'blur' }
+				],
+				monthlyConsumption: [
+					{ required: true, message: '请输入月用货量', trigger: 'blur' }
+				],
+				whiteGlassFactory: [
+					{
+						required: true,
+						message: '请输入白玻用货习惯及厂家',
+						trigger: 'blur'
+					}
+				],
+				loweGlassConsumption: [
+					{
+						required: true,
+						message: '请输入lowe玻璃用货厂家及用量',
+						trigger: 'blur'
+					}
+				],
+				colorGlassConsumption: [
+					{
+						required: true,
+						message: '请输入色玻、过度色玻璃用货厂家及用量',
+						trigger: 'blur'
+					}
+				],
+				specialGlassConsumption: [
+					{
+						required: true,
+						message: '请输入特色厚度、特殊尺寸、协议品用货厂家及用量',
+						trigger: 'blur'
+					}
+				],
+				comments: [{ required: true, message: '请输入备注', trigger: 'blur' }]
+			},
 			columns: [
 				{ key: 0, label: `是否审核`, visible: true },
 				/* {key: 1, label: `人员`, visible: true},

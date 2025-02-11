@@ -468,7 +468,32 @@ export default {
 			// 表单参数
 			form: {},
 			// 表单校验
-			rules: {},
+			rules: {
+				inDate: [
+					{ required: true, message: '请选择入库日期', trigger: 'blur' }
+				],
+				inMethod: [
+					{ required: true, message: '请选择入库方式', trigger: 'blur' }
+				],
+				fromInfo: [
+					{ required: true, message: '请输入对方信息', trigger: 'blur' }
+				],
+				itemName: [
+					{ required: true, message: '请输入物品名称', trigger: 'blur' }
+				],
+				quantity: [{ required: true, message: '请输入数量', trigger: 'blur' }],
+				estimatedValue: [
+					{
+						required: true,
+						message: '请输入预估价值/购买金额',
+						trigger: 'blur'
+					}
+				],
+				handler: [{ required: true, message: '请输入经办人', trigger: 'blur' }],
+				receiveMethod: [
+					{ required: true, message: '请输入收礼方式', trigger: 'blur' }
+				]
+			},
 			columns: [
 				{ key: 0, label: `ID`, visible: true },
 				{ key: 1, label: `入库日期`, visible: true },

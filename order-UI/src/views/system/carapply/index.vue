@@ -971,7 +971,75 @@ export default {
 			// 表单参数
 			form: {},
 			// 表单校验
-			rules: {},
+			rules: {
+				applyDate: [
+					{ required: true, message: '请选择申请时间', trigger: 'blur' }
+				],
+				applyUser: [
+					{ required: true, message: '请输入申请人', trigger: 'blur' }
+				],
+				department: [
+					{ required: true, message: '请选择部门', trigger: 'blur' }
+				],
+				carNo: [{ required: true, message: '请输入车牌', trigger: 'blur' }],
+				peers: [
+					{ required: true, message: '请输入随同乘车人员', trigger: 'blur' }
+				],
+				startTime: [
+					{ required: true, message: '请选择用车时间', trigger: 'blur' }
+				],
+				endTime: [
+					{ required: true, message: '请选择还车时间', trigger: 'blur' }
+				],
+				applyPurpose: [
+					{ required: true, message: '请输入用车事由', trigger: 'blur' }
+				],
+				startMile: [
+					{ required: true, message: '请输入出车前里程', trigger: 'blur' }
+				],
+				startCarState: [
+					{ required: true, message: '请输入出车前车况', trigger: 'blur' }
+				],
+				endMile: [
+					{ required: true, message: '请输入回来后里程', trigger: 'blur' }
+				],
+				endCarState: [
+					{ required: true, message: '请输入回来后车况', trigger: 'blur' }
+				],
+				miles: [
+					{ required: true, message: '请输入用车里程数', trigger: 'blur' }
+				],
+				backStopPlace: [
+					{ required: true, message: '请输入回程停靠位置', trigger: 'blur' }
+				],
+				violationsCount: [
+					{ required: true, message: '请输入行程中违法次数', trigger: 'blur' }
+				],
+				fine: [
+					{ required: true, message: '请输入违章罚款金额', trigger: 'blur' }
+				],
+				isMaintenance: [
+					{
+						required: true,
+						message: '请选择行程中是否维修/保养',
+						trigger: 'blur'
+					}
+				],
+				maintenanceMoney: [
+					{ required: true, message: '请输入保养金额', trigger: 'blur' }
+				],
+				refuelingFrequency: [
+					{
+						required: true,
+						message: '请输入行程中使用加油卡加油次数',
+						trigger: 'blur'
+					}
+				],
+				dispatchPerson: [
+					{ required: true, message: '请输入派车人', trigger: 'blur' }
+				],
+				comments: [{ required: true, message: '请输入备注', trigger: 'blur' }]
+			},
 			columns: [
 				{ key: 0, label: '申请时间', visible: true },
 				{ key: 1, label: '申请人', visible: true },

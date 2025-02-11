@@ -456,8 +456,9 @@
 					<el-row>
 						<el-col :span="10">
 							<el-input
+								disabled
 								v-model="form.selfAcountsName"
-								placeholder="请输入己方户名"
+								placeholder="请选择"
 							/>
 						</el-col>
 						<el-col :span="3">
@@ -499,13 +500,10 @@
 					</el-row>
 				</el-form-item>
 				<el-form-item label="己方账号" prop="selfBankNo">
-					<el-input v-model="form.selfBankNo" placeholder="请输入己方账号" />
+					<el-input disabled v-model="form.selfBankNo" placeholder="请选择" />
 				</el-form-item>
 				<el-form-item label="己方开户行" prop="selfBankName">
-					<el-input
-						v-model="form.selfBankName"
-						placeholder="请输入己方开户行"
-					/>
+					<el-input disabled v-model="form.selfBankName" placeholder="请选择" />
 				</el-form-item>
 				<el-form-item label="对方类型">
 					<el-select v-model="value" placeholder="请选择">
@@ -526,8 +524,9 @@
 							<el-col :span="10">
 								<!--                <el-input v-model="form.otherAcountsName" placeholder="请输入对方户名"/>-->
 								<el-input
+									disabled
 									v-model="form.companyName"
-									placeholder="请输入供应商名称"
+									placeholder="请选择"
 								/>
 							</el-col>
 							<el-col :span="3">
@@ -618,8 +617,9 @@
 							<el-col :span="10">
 								<!--                <el-input v-model="form.otherAcountsName" placeholder="请输入对方户名"/>-->
 								<el-input
+									disabled
 									v-model="form.companyName"
-									placeholder="请输入对方公司"
+									placeholder="请选择"
 								/>
 							</el-col>
 							<el-col :span="3">
@@ -710,8 +710,9 @@
 							<el-col :span="10">
 								<!--                <el-input v-model="form.otherAcountsName" placeholder="请输入对方户名"/>-->
 								<el-input
+									disabled
 									v-model="form.companyName"
-									placeholder="请输入对方公司"
+									placeholder="请选择"
 								/>
 							</el-col>
 							<el-col :span="3">
@@ -800,8 +801,9 @@
 					<el-row>
 						<el-col :span="14">
 							<el-input
+								disabled
 								v-model="form.otherBankNo"
-								placeholder="请输入对方账号"
+								placeholder="请选择"
 							/>
 						</el-col>
 						<el-col :span="4">
@@ -851,8 +853,9 @@
 					v-if="value !== '对外付款'"
 				>
 					<el-input
+						disabled
 						v-model="form.otherBankName"
-						placeholder="请输入对方开户行"
+						placeholder="请选择"
 					/>
 				</el-form-item>
 				<el-form-item label="备注" prop="comments">
@@ -1197,7 +1200,43 @@ export default {
 			// 表单参数
 			form: {},
 			// 表单校验
-			rules: {},
+			rules: {
+				fundsDate: [{ required: true, message: '请选择日期', trigger: 'blur' }],
+				payType: [
+					{ required: true, message: '请选择付款类型', trigger: 'blur' }
+				],
+				moneyAmount: [
+					{ required: true, message: '请输入金额', trigger: 'blur' },
+					{
+						validator: (rule, value, callback) => {
+							if (!/^\d+(\.\d{1,2})?$/.test(value)) {
+								callback(new Error('金额只能为数字且小数点后最多两位'));
+							} else {
+								callback();
+							}
+						},
+						trigger: 'blur'
+					}
+				],
+				selfAcountsName: [
+					{ required: true, message: '请输入己方户名', trigger: 'blur' }
+				],
+				selfBankNo: [
+					{ required: true, message: '请输入己方账号', trigger: 'blur' }
+				],
+				selfBankName: [
+					{ required: true, message: '请输入己方开户行', trigger: 'blur' }
+				],
+				otherAcountsName: [
+					{ required: true, message: '请输入对方户名', trigger: 'blur' }
+				],
+				otherBankNo: [
+					{ required: true, message: '请输入对方账号', trigger: 'blur' }
+				],
+				otherBankName: [
+					{ required: true, message: '请输入对方开户行', trigger: 'blur' }
+				]
+			},
 			columns: [
 				{ key: 0, label: ` id`, visible: true },
 				{ key: 1, label: `日期`, visible: true },

@@ -454,8 +454,39 @@ export default {
 			form: {},
 			// 表单校验
 			rules: {
-				orderNo: [
-					{ required: true, message: '订单编号不能为空', trigger: 'blur' }
+				orderDate: [
+					{ required: true, message: '请选择订单日期', trigger: 'blur' }
+				],
+				salesPerson: [
+					{ required: true, message: '请输入接受奖励人员', trigger: 'blur' }
+				],
+				incentiveReason: [
+					{ required: true, message: '请输入奖励原因', trigger: 'blur' }
+				],
+				orderProfit: [
+					{ required: true, message: '请输入订单不含税利润', trigger: 'blur' }
+				],
+				manufacturerRebateProfit: [
+					{
+						required: true,
+						message: '请输入厂家返利/承兑贴点利润',
+						trigger: 'blur'
+					}
+				],
+				customerCommission: [
+					{ required: true, message: '请输入佣金', trigger: 'blur' }
+				],
+				comprehensiveProfit: [
+					{ required: true, message: '请输入综合单车利润', trigger: 'blur' }
+				],
+				profitStandardMet: [
+					{ required: true, message: '请选择利润是否达标', trigger: 'blur' }
+				],
+				rewardAmount: [
+					{ required: true, message: '请输入奖励金额', trigger: 'blur' }
+				],
+				rewardDate: [
+					{ required: true, message: '请选择奖励日期', trigger: 'blur' }
 				]
 			},
 			columns: [

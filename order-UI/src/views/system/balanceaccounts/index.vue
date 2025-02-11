@@ -389,7 +389,18 @@ export default {
 				],
 
 				moneyAmount: [
-					{ required: true, message: '金额不能为空', trigger: 'blur' }
+					{ required: true, message: '金额不能为空', trigger: 'blur' },
+					// 数字校验
+					{
+						validator: (rule, value, callback) => {
+							if (!/^\d+(\.\d{1,2})?$/.test(value)) {
+								callback(new Error('请输入正确的金额'));
+							} else {
+								callback();
+							}
+						},
+						trigger: 'blur'
+					}
 				],
 				companyName: [
 					{ required: true, message: '对方公司不能为空', trigger: 'blur' }

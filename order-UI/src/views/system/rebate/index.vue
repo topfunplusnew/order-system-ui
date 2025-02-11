@@ -301,7 +301,7 @@
 									:disabled="!form.unitPrice"
 									@click="orderDialogVisible = true"
 								>
-									选择订单
+									{{ form.unitPrice ? `选择订单` : `请先输入系数后选择订单` }}
 								</el-button>
 								<el-row v-else>
 									<el-button
@@ -1065,11 +1065,18 @@ export default {
 			],
 			// 表单校验
 			rules: {
+				unitPrice: [
+					{ required: true, message: '系数不能为空', trigger: 'blur' },
+					{ min: 0, message: '系数必须大于0', trigger: 'blur' },
+					{ type: 'number', message: '系数必须为数字值', trigger: 'blur' }
+				],
 				rebateDate: [
 					{ required: true, message: '返利日期不能为空', trigger: 'blur' }
 				],
 				rebate: [
-					{ required: true, message: '返利金额不能为空', trigger: 'blur' }
+					{ required: true, message: '返利金额不能为空', trigger: 'blur' },
+					{ min: 0, message: '返利金额必须大于0', trigger: 'blur' },
+					{ type: 'number', message: '返利金额必须为数字值', trigger: 'blur' }
 				],
 				rebateType: [
 					{ required: true, message: '返利类型不能为空', trigger: 'change' }

@@ -509,7 +509,35 @@ export default {
 			// 表单参数
 			form: {},
 			// 表单校验
-			rules: {},
+			rules: {
+				outDate: [
+					{ required: true, message: '请选择出库日期', trigger: 'blur' }
+				],
+				giftSource: [
+					{ required: true, message: '请选择礼品来源', trigger: 'blur' }
+				],
+				outMethod: [
+					{ required: true, message: '请选择出库方式', trigger: 'blur' }
+				],
+				recipientInfo: [
+					{ required: true, message: '请输入对方信息', trigger: 'blur' }
+				],
+				recipientReceiver: [
+					{ required: true, message: '请输入对方收礼人员', trigger: 'blur' }
+				],
+				itemName: [
+					{ required: true, message: '请输入物品名称', trigger: 'blur' }
+				],
+				quantity: [{ required: true, message: '请输入数量', trigger: 'blur' }],
+				estimatedValue: [
+					{
+						required: true,
+						message: '请输入预估价值/购买金额',
+						trigger: 'blur'
+					}
+				],
+				handler: [{ required: true, message: '请输入经办人', trigger: 'blur' }]
+			},
 			columns: [
 				{ key: 0, label: `ID`, visible: true },
 				{ key: 1, label: `出库日期`, visible: true },

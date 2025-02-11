@@ -38,6 +38,16 @@ export default {
 	data() {
 		return {
 			orderInfo: {},
+			orderRules: {
+				orderDate: [
+					{ required: true, message: '请选择订单日期', trigger: 'blur' }
+				],
+				customer: [{ required: true, message: '请选择客户', trigger: 'blur' }],
+				saleManager: [
+					{ required: true, message: '请输入销售经理', trigger: 'blur' }
+				],
+				comments: [{ required: true, message: '请输入备注', trigger: 'blur' }]
+			},
 			// 2025/1/14 订单货物列表
 			orderdetailList: [],
 			checkedOrderdetail: [],
@@ -647,7 +657,12 @@ export default {
 <template>
 	<div>
 		<!--    订单基本信息-->
-		<el-form :inline="true" :model="orderInfo" label-width="80px">
+		<el-form
+			:inline="true"
+			:model="orderInfo"
+			label-width="80px"
+			:rules="orderRules"
+		>
 			<el-card class="box-card" shadow="hover">
 				<div slot="header" class="clearfix">
 					<el-button

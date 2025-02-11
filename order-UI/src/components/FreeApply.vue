@@ -17,7 +17,21 @@ export default {
 	data() {
 		return {
 			queryAcountsName: '',
-			form: {}
+			form: {},
+			rules: {
+				otherAcountsName: [
+					{ required: true, message: '请输入对方户名', trigger: 'blur' }
+				],
+				otherBankNo: [
+					{ required: true, message: '请输入对方账号', trigger: 'blur' }
+				],
+				otherBankName: [
+					{ required: true, message: '请输入对方开户行', trigger: 'blur' }
+				],
+				payDate: [
+					{ required: true, message: '请选择支付日期', trigger: 'blur' }
+				]
+			}
 		};
 	},
 	computed: {
@@ -99,11 +113,15 @@ export default {
 
 <template>
 	<div>
-		<el-form ref="form" :model="form" label-width="80px">
-			<el-form-item label="对方户名">
+		<el-form ref="form" :model="form" label-width="80px" :rules="rules">
+			<el-form-item label="对方户名" prop="otherAcountsName">
 				<el-row>
 					<el-col :span="10">
-						<el-input v-model="form.otherAcountsName" />
+						<el-input
+							disabled
+							v-model="form.otherAcountsName"
+							placeholder="请选择"
+						/>
 					</el-col>
 					<el-col :span="4">
 						<!--搜索银行卡信息-->
@@ -141,13 +159,13 @@ export default {
 					</el-col>
 				</el-row>
 			</el-form-item>
-			<el-form-item label="对方账号">
-				<el-input v-model="form.otherBankNo" />
+			<el-form-item label="对方账号" prop="otherBankNo">
+				<el-input disabled v-model="form.otherBankNo" placeholder="请选择" />
 			</el-form-item>
-			<el-form-item label="对方开户行">
-				<el-input v-model="form.otherBankName" />
+			<el-form-item label="对方开户行" prop="otherBankName">
+				<el-input disabled v-model="form.otherBankName" placeholder="请选择" />
 			</el-form-item>
-			<el-form-item label="支付日期">
+			<el-form-item label="支付日期" prop="payDate">
 				<el-date-picker
 					v-model="form.payDate"
 					type="datetime"

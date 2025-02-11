@@ -579,13 +579,33 @@ export default {
 					{ required: true, message: '请选择票据日期', trigger: 'change' }
 				],
 				billAmount: [
-					{ required: true, message: '请输入票据金额', trigger: 'blur' }
+					{ required: true, message: '请输入票据金额', trigger: 'blur' },
+					{
+						validator: (rule, value, callback) => {
+							if (!/^\d+(\.\d{1,2})?$/.test(value)) {
+								callback(new Error('金额只能为数字且小数点后最多两位'));
+							} else {
+								callback();
+							}
+						},
+						trigger: 'blur'
+					}
 				],
 				inDiscountPoints: [
 					{ required: true, message: '请输入贴息点数', trigger: 'blur' }
 				],
 				inDiscountAmount: [
-					{ required: true, message: '请输入贴息金额', trigger: 'blur' }
+					{ required: true, message: '请输入贴息金额', trigger: 'blur' },
+					{
+						validator: (rule, value, callback) => {
+							if (!/^\d+(\.\d{1,2})?$/.test(value)) {
+								callback(new Error('金额只能为数字且小数点后最多两位'));
+							} else {
+								callback();
+							}
+						},
+						trigger: 'blur'
+					}
 				]
 			}
 		};

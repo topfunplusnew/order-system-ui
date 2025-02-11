@@ -195,8 +195,9 @@
 					<el-row>
 						<el-col :span="10">
 							<el-input
+								disabled
 								v-model="form.oilMainCardNo"
-								placeholder="请输入主加油卡卡号"
+								placeholder="请选择"
 							/>
 						</el-col>
 						<el-col :span="4">
@@ -229,8 +230,9 @@
 					<el-row>
 						<el-col :span="10">
 							<el-input
+								disabled
 								v-model="form.oilSecondCardNo"
-								placeholder="请输入副加油卡卡号"
+								placeholder="请选择"
 							/>
 						</el-col>
 						<el-col :span="4">
@@ -335,7 +337,28 @@ export default {
 				rechargeDate: new Date().getTime()
 			},
 			// 表单校验
-			rules: {},
+			rules: {
+				oilMainCardNo: [
+					{ required: true, message: '请输入主加油卡卡号', trigger: 'blur' }
+				],
+				oilSecondCardNo: [
+					{ required: true, message: '请输入副加油卡卡号', trigger: 'blur' }
+				],
+				rechargeMoney: [
+					{ required: true, message: '请输入充值金额', trigger: 'blur' },
+					// 金额校验
+					{
+						validator: (rule, value, callback) => {
+							if (!/^\d+(\.\d{1,2})?$/.test(value)) {
+								callback(new Error('请输入正确的金额'));
+							} else {
+								callback();
+							}
+						},
+						trigger: 'blur'
+					}
+				]
+			},
 			columns: [
 				{ key: 0, label: `id`, visible: true },
 				{ key: 1, label: `主加油卡卡号`, visible: true },

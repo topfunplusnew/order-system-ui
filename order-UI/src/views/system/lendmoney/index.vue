@@ -375,8 +375,9 @@
 							<el-row>
 								<el-col :span="10">
 									<el-input
+										disabled
 										v-model="form.targetAcountsName"
-										placeholder="请输入对方账户"
+										placeholder="请选择"
 									/>
 								</el-col>
 								<el-col :span="3">
@@ -426,14 +427,16 @@
 						</el-form-item>
 						<el-form-item label="对方账号" prop="targetBankNo">
 							<el-input
+								disabled
 								v-model="form.targetBankNo"
-								placeholder="请输入对方账号"
+								placeholder="请选择"
 							/>
 						</el-form-item>
 						<el-form-item label="对方开户行" prop="targetBankName">
 							<el-input
+								disabled
 								v-model="form.targetBankName"
-								placeholder="请输入对方开户行"
+								placeholder="请选择"
 							/>
 						</el-form-item>
 					</el-col>
@@ -442,8 +445,9 @@
 							<el-row>
 								<el-col :span="10">
 									<el-input
+										disabled
 										v-model="form.selfAcountsName"
-										placeholder="请输入我方支付账户"
+										placeholder="请选择"
 									/>
 								</el-col>
 								<el-col :span="3">
@@ -490,14 +494,16 @@
 						</el-form-item>
 						<el-form-item label="我方账号" prop="selfBankNo">
 							<el-input
+								disabled
 								v-model="form.selfBankNo"
-								placeholder="请输入我方账号"
+								placeholder="请选择"
 							/>
 						</el-form-item>
 						<el-form-item label="我方开户行" prop="selfBankName">
 							<el-input
+								disabled
 								v-model="form.selfBankName"
-								placeholder="请输入我方开户行"
+								placeholder="请选择"
 							/>
 						</el-form-item>
 						<el-form-item label="事由" prop="reason">
@@ -525,7 +531,11 @@
 			append-to-body
 		>
 			<el-row>
-				<el-form :model="recoverMoneyEntity" label-width="120">
+				<el-form
+					:model="recoverMoneyEntity"
+					label-width="120"
+					:rules="receiveRules"
+				>
 					<el-form-item label="收回账户" prop="acountsName">
 						<el-row>
 							<el-col :span="10">
@@ -731,7 +741,17 @@ export default {
 				target: [{ required: true, message: '对象不能为空', trigger: 'blur' }],
 
 				moneyAmount: [
-					{ required: true, message: '保证金金额不能为空', trigger: 'blur' }
+					{ required: true, message: '保证金金额不能为空', trigger: 'blur' },
+					{
+						validator: (rule, value, callback) => {
+							if (!/^\d+(\.\d{1,2})?$/.test(value)) {
+								callback(new Error('金额只能为数字且小数点后最多两位'));
+							} else {
+								callback();
+							}
+						},
+						trigger: 'blur'
+					}
 				],
 
 				targetAcountsName: [
@@ -770,6 +790,34 @@ export default {
 					}
 				],
 				reason: [{ required: true, message: '请输入是由!', trigger: 'blur' }]
+			},
+			receiveRules: {
+				acountsName: [
+					{ required: true, message: '收回账户不能为空', trigger: 'blur' }
+				],
+				bankNo: [
+					{ required: true, message: '收回账号不能为空', trigger: 'blur' }
+				],
+				moneyAmount: [
+					{ required: true, message: '收回金额不能为空', trigger: 'blur' },
+					{
+						validator: (rule, value, callback) => {
+							if (!/^\d+(\.\d{1,2})?$/.test(value)) {
+								callback(new Error('金额只能为数字且小数点后最多两位'));
+							} else {
+								callback();
+							}
+						},
+						trigger: 'blur'
+					}
+				],
+				payDate: [
+					{
+						required: true,
+						message: '收回日期不能为空',
+						trigger: 'blur'
+					}
+				]
 			},
 			columns: [
 				{ key: 0, label: `期货保证金公司`, visible: true },

@@ -18,7 +18,26 @@ export default {
 		return {
 			visible: false,
 			form: {},
-			rules: {},
+			rules: {
+				moneyAmount: [
+					{ required: true, message: '请输入金额', trigger: 'blur' }
+				],
+				otherAcountsName: [
+					{ required: true, message: '请输入对方户名', trigger: 'blur' }
+				],
+				otherBankNo: [
+					{ required: true, message: '请输入对方账号', trigger: 'blur' }
+				],
+				otherBankName: [
+					{ required: true, message: '请输入对方开户行', trigger: 'blur' }
+				],
+				applyDate: [
+					{ required: true, message: '请选择申请日期', trigger: 'blur' }
+				],
+				payDate: [
+					{ required: true, message: '请选择付款日期', trigger: 'blur' }
+				]
+			},
 
 			// 搜索字段
 			queryCompany: '',

@@ -384,10 +384,30 @@ export default {
 					{ required: true, message: '计量单位不能为空', trigger: 'blur' }
 				],
 				amountIncludeTax: [
-					{ required: true, message: '含税金额不能为空', trigger: 'blur' }
+					{ required: true, message: '含税金额不能为空', trigger: 'blur' },
+					{
+						validator: (rule, value, callback) => {
+							if (!/^\d+(\.\d{1,2})?$/.test(value)) {
+								callback(new Error('金额只能为数字且小数点后最多两位'));
+							} else {
+								callback();
+							}
+						},
+						trigger: 'blur'
+					}
 				],
 				amountNoTax: [
-					{ required: true, message: '不含税金额不能为空', trigger: 'blur' }
+					{ required: true, message: '不含税金额不能为空', trigger: 'blur' },
+					{
+						validator: (rule, value, callback) => {
+							if (!/^\d+(\.\d{1,2})?$/.test(value)) {
+								callback(new Error('金额只能为数字且小数点后最多两位'));
+							} else {
+								callback();
+							}
+						},
+						trigger: 'blur'
+					}
 				],
 				account: [
 					{ required: true, message: '户名名称不能为空', trigger: 'blur' }

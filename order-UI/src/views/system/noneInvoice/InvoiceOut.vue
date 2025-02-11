@@ -168,7 +168,7 @@
 				</template>
 			</el-table-column>
 			<el-table-column
-				v-if="columns[9].visible"
+				v-if="columns[8].visible"
 				label="备注"
 				align="center"
 				prop="comments"
@@ -283,8 +283,9 @@
 					<el-row>
 						<el-col :span="10">
 							<el-input
+								disabled
 								v-model="form.companyName"
-								placeholder="请输入对方公司名称"
+								placeholder="请选择"
 							/>
 						</el-col>
 						<el-col :span="2">
@@ -443,7 +444,29 @@ export default {
 			// 表单参数
 			form: {},
 			// 表单校验
-			rules: {},
+			rules: {
+				invoiceDate: [
+					{ required: true, message: '请选择开票日期', trigger: 'blur' }
+				],
+				invoiceObject: [
+					{ required: true, message: '请输入我方收票主体', trigger: 'blur' }
+				],
+				invoiceAmount: [
+					{ required: true, message: '请输入开票金额', trigger: 'blur' }
+				],
+				companyName: [
+					{ required: true, message: '请输入公司名称', trigger: 'blur' }
+				],
+				invoiceCompanyName: [
+					{ required: true, message: '请输入票据单位名称', trigger: 'blur' }
+				],
+				ticketPoint: [
+					{ required: true, message: '请输入票点', trigger: 'blur' }
+				],
+				ticketPointAmount: [
+					{ required: true, message: '请输入票点金额', trigger: 'blur' }
+				]
+			},
 			columns: [
 				{ key: 0, label: `开票日期`, visible: true },
 				{ key: 1, label: `我方收票主体`, visible: true },
@@ -453,7 +476,7 @@ export default {
 				{ key: 5, label: `票据单位名称`, visible: true },
 				{ key: 6, label: `票点`, visible: true },
 				{ key: 7, label: `票点金额`, visible: true },
-				{ key: 9, label: `备注`, visible: true }
+				{ key: 8, label: `备注`, visible: true }
 			],
 			beginTime: '',
 			endTime: '',
