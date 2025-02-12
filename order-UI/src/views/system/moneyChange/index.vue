@@ -6,16 +6,17 @@
 			ref="queryForm"
 			:inline="true"
 			class="search-form"
-			size="small"
+			size="mini"
 		>
-			<el-form-item label="模块名称" prop="moduleName">
+			<el-form-item label="模块名称">
 				<el-select
-					v-model="queryParams.moduleNames"
+					v-model="tables"
 					multiple
 					collapse-tags
 					placeholder="请选择模块"
 					clearable
 					style="width: 240px"
+					size="mini"
 				>
 					<el-option
 						v-for="item in moduleOptions"
@@ -25,7 +26,7 @@
 					/>
 				</el-select>
 			</el-form-item>
-			<el-form-item label="时间范围" prop="dateRange">
+			<el-form-item label="时间范围">
 				<el-date-picker
 					v-model="queryParams.dateRange"
 					type="daterange"
@@ -35,7 +36,17 @@
 					value-format="yyyy-MM-dd"
 					:default-time="['00:00:00', '23:59:59']"
 					style="width: 240px"
-					size="small"
+					size="mini"
+				/>
+			</el-form-item>
+			<el-form-item label="目标查询日期">
+				<el-date-picker
+					v-model="queryParams.params.targetDate"
+					type="date"
+					placeholder="选择日期"
+					value-format="yyyy-MM-dd"
+					style="width: 240px"
+					size="mini"
 				/>
 			</el-form-item>
 			<el-form-item>
@@ -54,16 +65,26 @@
 		</el-form>
 
 		<div class="card-container">
-			<el-row :gutter="20">
+			<el-row>
+				<el-alert
+					title="复杂信息请前往对应的模块查看对应的信息!"
+					type="warning"
+				>
+				</el-alert>
+			</el-row>
+			<br />
+			<el-row :gutter="20" v-if="groupedChangeList && changeList.length">
 				<el-col
-					:span="6"
+					:span="12"
 					v-for="(group, tableName) in groupedChangeList"
 					:key="tableName"
 					class="card-col"
 				>
 					<el-card class="change-card" shadow="hover">
 						<div slot="header" class="card-header">
-							<span class="card-title">{{ tableName || '未知表' }}</span>
+							<span class="card-title">{{
+								getModuleName(tableName) || '未知表'
+							}}</span>
 							<div class="card-header-right">
 								<span class="record-count">共 {{ group.length }} 条记录</span>
 							</div>
@@ -99,16 +120,35 @@
 														:key="key"
 														class="info-row"
 													>
-														<span class="info-label"
-															>{{ translateField(key) }}：</span
-														>
-														<span class="info-value">{{ value }}</span>
+														<span class="info-label">{{
+															translateField(key, tableName)
+														}}</span>
+														<span class="info-value">{{
+															translateValue(key, value, tableName)
+														}}</span>
 													</div>
 												</template>
 											</div>
 										</div>
 										<div class="original-info">
-											{{ item.originalInfoId ? '查看原始信息' : '无先前信息' }}
+											<div class="section-title">先前信息:</div>
+											<div class="changed-info" v-if="item.originalInfoId">
+												<template v-if="item.originalInfo">
+													<div
+														v-for="(value, key) in parseJSON(item.originalInfo)"
+														:key="key"
+														class="info-row"
+													>
+														<span class="info-label">{{
+															translateField(key, tableName)
+														}}</span>
+														<span class="info-value">{{
+															translateValue(key, value, tableName)
+														}}</span>
+													</div>
+												</template>
+											</div>
+											<div v-else>无先前信息</div>
 										</div>
 									</div>
 									<div
@@ -121,55 +161,82 @@
 					</el-card>
 				</el-col>
 			</el-row>
+			<el-row v-else>
+				<el-empty description="暂无数据"></el-empty>
+			</el-row>
 		</div>
 	</div>
 </template>
 
 <script>
 import { getFundChangeDetail } from '../../../api/system/sql';
+
+import { moduleNames } from '../../../api/tool/enums';
+import { PARAMS_TRANSFORM } from './index.js';
 export default {
 	name: 'MoneyChange',
 	data() {
-		const end = new Date();
-		const start = new Date();
-		start.setMonth(start.getMonth() - 1);
+		// 需要的模块
+		const filtersModule = [
+			'virtualbankaccountchange',
+			'payment',
+			'receivemoney',
+			'invoiceother',
+			'invoicein',
+			'invoiceout',
+			'bankacceptance',
+			'orderDetail',
+			'goodsorder',
+			'orderfreight',
+			'inventory_detail',
+			'inventory_main',
+			'bankaccountchange',
+			'borrowedmoney',
+			'repayment',
+			'lendmoney',
+			'recovermoney'
+		];
+		const filterTables = Object.keys(moduleNames)
+			.map(key => {
+				if (filtersModule.includes(key)) {
+					return {
+						value: key,
+						label: moduleNames[key]
+					};
+				}
+			})
+			.filter(item => {
+				if (item) {
+					return item;
+				}
+			});
 
 		return {
+			tables: filterTables,
 			// 查询参数
 			queryParams: {
-				moduleNames: [], // 初始化为空数组
-				dateRange: [this.parseTime(start), this.parseTime(end)]
+				pageNum: 1,
+				pageSize: 10,
+				// 时间范围
+				dateRange: [],
+				originalInfoId: null,
+				tableName: null,
+				backupTime: null,
+				backupType: null,
+				backupUserTruenames: null,
+				backupUserIds: null,
+				params: {
+					startTime: null,
+					endTime: null,
+					tableNames: filtersModule,
+					targetDate: null
+				}
 			},
 			changeList: [],
 			// 添加模块选项
-			moduleOptions: [
-				{ value: 'company', label: '公司信息' },
-				{ value: 'user', label: '用户信息' },
-				{ value: 'role', label: '角色信息' },
-				{ value: 'dept', label: '部门信息' },
-				{ value: 'menu', label: '菜单信息' }
-			],
+			moduleOptions: filterTables,
 			// 字段翻译映射
-			fieldTranslations: {
-				city: '城市',
-				county: '区县',
-				leader: '负责人',
-				region: '地区',
-				userId: '用户ID',
-				address: '地址',
-				addtime: '添加时间',
-				delFlag: '删除标记',
-				UserName: '用户名',
-				comments: '备注',
-				province: '省份',
-				userName: '用户名',
-				leaderTel: '负责人电话',
-				companyName: '公司名称',
-				companyType: '公司类型',
-				relationTel: '关联电话',
-				relationName: '关联人姓名',
-				salesManager: '销售经理'
-			}
+			fieldTranslations: PARAMS_TRANSFORM
 		};
 	},
 	computed: {
@@ -216,8 +283,12 @@ export default {
 			};
 			return typeMap[type] || type;
 		},
+		getModuleName(moduleName) {
+			return moduleNames[moduleName] || moduleName;
+		},
 		getList() {
-			getFundChangeDetail().then(res => {
+			this.queryParams.params.tableNames = this.tables.map(item => item.value);
+			getFundChangeDetail(this.queryParams).then(res => {
 				if (!res.rows) {
 					this.$message.warning('当前搜索条件下，无相关信息');
 					return;
@@ -227,7 +298,13 @@ export default {
 		},
 		// 处理查询
 		handleQuery() {
-			this.getList(this.queryParams);
+			const startTime = this.queryParams.dateRange[0];
+			const endTime = this.queryParams.dateRange[1];
+
+			this.queryParams.params.startTime = startTime;
+			this.queryParams.params.endTime = endTime;
+
+			this.getList();
 		},
 		// 重置查询
 		resetQuery() {
@@ -258,13 +335,37 @@ export default {
 			};
 		},
 
-		translateField(field) {
-			return this.fieldTranslations[field] || field;
+		translateField(field, tableName) {
+			if (field === 'userName' || field === 'userId') {
+				return null;
+			}
+			if (field === 'params') {
+				return null;
+			}
+			if (field === 'updateTime') {
+				return '更新时间';
+			}
+			if (field === 'createTime') {
+				return '创建时间';
+			}
+			if (field === 'extraInfo') {
+				return null;
+			}
+			return this.fieldTranslations[tableName][field] || field + ':';
 		},
 
-		showDetail(item) {
-			// 实现详情查看逻辑
-			console.log('查看详情', item);
+		translateValue(key, value, tableName) {
+			if (key === 'userName' || key === 'userId') {
+				return null;
+			}
+			if (key === 'extraInfo') {
+				return null;
+			}
+			if (typeof value === 'object') {
+				return '复杂信息';
+			}
+
+			return value;
 		}
 	}
 };
@@ -457,22 +558,10 @@ export default {
 	margin-top: 8px;
 }
 
-/* 响应式布局 */
-@media screen and (max-width: 1600px) {
-	.el-col {
-		width: 33.33% !important;
-	}
-}
-
+/* 修改响应式布局 */
 @media screen and (max-width: 1200px) {
 	.el-col {
-		width: 50% !important;
-	}
-}
-
-@media screen and (max-width: 768px) {
-	.el-col {
-		width: 100% !important;
+		width: 100% !important; /* 直接改为100%，小屏幕时一行一个 */
 	}
 }
 </style>
