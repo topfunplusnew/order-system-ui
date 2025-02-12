@@ -824,6 +824,7 @@ export default {
 						<el-button
 							size="mini"
 							type="text"
+							:disabled="scope.row.isAdjust < 0"
 							@click="handleOrderItemInfo(scope.row)"
 						>
 							调整单
