@@ -3,7 +3,10 @@ export default {
 	name: 'PAYMENT',
 	props: {
 		needToShowInfo: {
-			type: Object
+			type: Object,
+			default: () => {
+				return {};
+			}
 		}
 	}
 };

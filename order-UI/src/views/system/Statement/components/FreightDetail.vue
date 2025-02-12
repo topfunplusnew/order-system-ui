@@ -114,7 +114,7 @@ export default {
 		checkFreightDetail(query, lastYearDetail, config) {
 			// 查询司机明细账
 			getFreightSubjectDetailSummary(query).then(res => {
-				if (!res.rows || !res.data) {
+				if (!res.rows && !res.data) {
 					this.$message.warning('未查询到相关数据');
 					return;
 				}
@@ -181,7 +181,10 @@ export default {
 						this.$message.warning('组件渲染有误');
 						return;
 					}
-					this.infoVisible = true;
+					// 确保赋值完毕后再打开弹窗
+					this.$nextTick(() => {
+						this.infoVisible = true;
+					});
 				});
 			}
 		},

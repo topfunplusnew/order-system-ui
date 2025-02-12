@@ -3,17 +3,8 @@ export default {
 	name: 'ORDERFREIGHT',
 	props: {
 		needToShowInfo: {
-			type: Object
-		}
-	},
-	data() {
-		return {
-			needToShow: {}
-		};
-	},
-	watch: {
-		needToShowInfo(val) {
-			this.needToShow = val;
+			type: Object,
+			default: () => {}
 		}
 	}
 };
@@ -23,35 +14,35 @@ export default {
 	<div>
 		<el-descriptions title="订单运费信息">
 			<el-descriptions-item label="运费类型">{{
-				needToShow.freightType
+				needToShowInfo.freightType
 			}}</el-descriptions-item>
 			<el-descriptions-item label="金额">{{
-				needToShow.moneyAmount
+				needToShowInfo.moneyAmount
 			}}</el-descriptions-item>
 			<el-descriptions-item label="对方户名">{{
-				needToShow.otherAcountsName
+				needToShowInfo.otherAcountsName
 			}}</el-descriptions-item>
 			<el-descriptions-item label="对方账号">{{
-				needToShow.otherBankNo
+				needToShowInfo.otherBankNo
 			}}</el-descriptions-item>
 			<el-descriptions-item label="对方开户行">{{
-				needToShow.otherBankName
+				needToShowInfo.otherBankName
 			}}</el-descriptions-item>
 			<el-descriptions-item label="支付状态">{{
-				needToShow.paymentState
+				needToShowInfo.paymentState
 			}}</el-descriptions-item>
 			<el-descriptions-item label="司机姓名">{{
-				needToShow.driverName
+				needToShowInfo.driverName
 			}}</el-descriptions-item>
 			<el-descriptions-item label="车牌号">{{
-				needToShow.carNo
+				needToShowInfo.carNo
 			}}</el-descriptions-item>
 			<el-descriptions-item label="车队">{{
-				needToShow.fleet
+				needToShowInfo.fleet
 			}}</el-descriptions-item>
-			<!--      <el-descriptions-item label="付款人员姓名">{{ needToShow.payUserName }}</el-descriptions-item>-->
+			<!--      <el-descriptions-item label="付款人员姓名">{{ needToShowInfo.payUserName }}</el-descriptions-item>-->
 			<el-descriptions-item label="备注">{{
-				needToShow.comments
+				needToShowInfo.comments
 			}}</el-descriptions-item>
 		</el-descriptions>
 	</div>

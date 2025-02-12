@@ -3,7 +3,8 @@ export default {
 	name: 'REBATE',
 	props: {
 		needToShowInfo: {
-			type: Object
+			type: Object,
+			default: () => ({})
 		}
 	},
 	computed: {
