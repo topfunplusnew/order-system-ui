@@ -15,7 +15,10 @@ export default {
 	},
 	methods: {
 		handleCheck(row) {
-			// 先根据银行卡信息 去 查询司机姓名
+			if (!row.companyId) {
+				this.$message.error('本行数据有误:司机ID为空！');
+				return;
+			}
 			getCars(row.companyId).then(res => {
 				// 点击确认后跳转到订单运费界面 携带搜索参数
 				this.$confirm(
@@ -27,8 +30,6 @@ export default {
 						type: 'warning'
 					}
 				).then(() => {
-					// 跳转到订单运费界面 并且传递参数
-					// TODO 需要等待后端写好运费申请的页面 跳转到订单运费界面 并且传递参数
 					this.$router.push({
 						path: '/freight/applyfreight',
 						query: {

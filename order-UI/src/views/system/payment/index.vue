@@ -393,7 +393,7 @@
 				</template>
 			</el-table-column>
 
-			<el-table-column
+			<!-- <el-table-column
 				label="运费信息"
 				align="center"
 				class-name="small-padding fixed-width"
@@ -403,7 +403,7 @@
 				<template slot-scope="scope">
 					<CheckDetail :row="scope.row" />
 				</template>
-			</el-table-column>
+			</el-table-column> -->
 		</el-table>
 
 		<pagination

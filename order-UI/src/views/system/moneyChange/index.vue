@@ -6,6 +6,7 @@
 			ref="queryForm"
 			:inline="true"
 			class="search-form"
+			size="small"
 		>
 			<el-form-item label="模块名称" prop="moduleName">
 				<el-select
@@ -14,7 +15,7 @@
 					collapse-tags
 					placeholder="请选择模块"
 					clearable
-					style="width: 360px"
+					style="width: 240px"
 				>
 					<el-option
 						v-for="item in moduleOptions"
@@ -33,77 +34,98 @@
 					end-placeholder="结束日期"
 					value-format="yyyy-MM-dd"
 					:default-time="['00:00:00', '23:59:59']"
-					style="width: 360px"
+					style="width: 240px"
+					size="small"
 				/>
 			</el-form-item>
 			<el-form-item>
-				<el-button type="primary" icon="el-icon-search" @click="handleQuery"
-					>搜索</el-button
+				<el-button
+					type="primary"
+					icon="el-icon-search"
+					size="small"
+					@click="handleQuery"
 				>
-				<el-button icon="el-icon-refresh" @click="resetQuery">重置</el-button>
+					搜索
+				</el-button>
+				<el-button icon="el-icon-refresh" size="small" @click="resetQuery">
+					重置
+				</el-button>
 			</el-form-item>
 		</el-form>
 
-		<!-- 老旧代码 -->
-		<!-- 图表区域 -->
-		<!-- <div class="chart-container">
-			<div ref="chart" style="height: 500px"></div>
-		</div> -->
-		<!-- 数据详情弹窗 -->
-		<!-- <el-dialog
-			title="数据详情"
-			:visible.sync="dialogVisible"
-			width="50%"
-			:close-on-click-modal="false"
-		>
-			<el-descriptions :column="2" border>
-				<el-descriptions-item label="模块名称">{{
-					detailData.moduleName
-				}}</el-descriptions-item>
-				<el-descriptions-item label="时间点">{{
-					detailData.date
-				}}</el-descriptions-item>
-				<el-descriptions-item label="数值">{{
-					detailData.value
-				}}</el-descriptions-item>
-				<el-descriptions-item label="环比">
-					<span :class="detailData.ratio >= 0 ? 'text-success' : 'text-danger'">
-						{{ detailData.ratio }}%
-						<i
-							:class="detailData.ratio >= 0 ? 'el-icon-top' : 'el-icon-bottom'"
-						></i>
-					</span>
-				</el-descriptions-item>
-			</el-descriptions>
-
-			<el-table
-				:data="detailData.records"
-				style="width: 100%; margin-top: 20px"
-				border
-				stripe
-				size="mini"
-			>
-				<el-table-column prop="time" label="时间" width="180" />
-				<el-table-column prop="type" label="类型" width="120" />
-				<el-table-column prop="amount" label="金额" width="120">
-					<template slot-scope="scope">
-						<span
-							:class="scope.row.amount >= 0 ? 'text-success' : 'text-danger'"
-						>
-							{{ scope.row.amount >= 0 ? '+' : '' }}{{ scope.row.amount }}
-						</span>
-					</template>
-				</el-table-column>
-				<el-table-column prop="operator" label="操作人" width="120" />
-				<el-table-column prop="remark" label="备注" />
-			</el-table>
-		</el-dialog> -->
+		<div class="card-container">
+			<el-row :gutter="20">
+				<el-col
+					:span="6"
+					v-for="(group, tableName) in groupedChangeList"
+					:key="tableName"
+					class="card-col"
+				>
+					<el-card class="change-card" shadow="hover">
+						<div slot="header" class="card-header">
+							<span class="card-title">{{ tableName || '未知表' }}</span>
+							<div class="card-header-right">
+								<span class="record-count">共 {{ group.length }} 条记录</span>
+							</div>
+						</div>
+						<div class="card-content">
+							<div class="content-wrapper">
+								<div
+									v-for="(item, index) in group"
+									:key="index"
+									class="change-record"
+								>
+									<div class="record-header">
+										<span
+											class="backup-type"
+											:class="getBackupTypeClass(item.backupType)"
+										>
+											{{ transforTypes(item.backupType) }}
+										</span>
+										<span class="record-time">{{
+											formatDateTime(item.backupTime)
+										}}</span>
+										<span class="record-operator">{{
+											item.backupUserTruename
+										}}</span>
+									</div>
+									<div class="record-content">
+										<div class="info-section">
+											<div class="section-title">变更信息：</div>
+											<div class="changed-info">
+												<template v-if="item.changedInfo">
+													<div
+														v-for="(value, key) in parseJSON(item.changedInfo)"
+														:key="key"
+														class="info-row"
+													>
+														<span class="info-label"
+															>{{ translateField(key) }}：</span
+														>
+														<span class="info-value">{{ value }}</span>
+													</div>
+												</template>
+											</div>
+										</div>
+										<div class="original-info">
+											{{ item.originalInfoId ? '查看原始信息' : '无先前信息' }}
+										</div>
+									</div>
+									<div
+										class="record-divider"
+										v-if="index !== group.length - 1"
+									></div>
+								</div>
+							</div>
+						</div>
+					</el-card>
+				</el-col>
+			</el-row>
+		</div>
 	</div>
 </template>
 
 <script>
-import * as echarts from 'echarts';
-import { moduleNames } from '../../../api/tool/enums';
 import { getFundChangeDetail } from '../../../api/system/sql';
 export default {
 	name: 'MoneyChange',
@@ -112,66 +134,65 @@ export default {
 		const start = new Date();
 		start.setMonth(start.getMonth() - 1);
 
-		// 生成映射关系
-		// const moduleOption = Object.keys(moduleNames).map(key => ({
-		// 	value: key,
-		// 	label: moduleNames[key]
-		// }));
 		return {
 			// 查询参数
 			queryParams: {
-				moduleNames: [],
+				moduleNames: [], // 初始化为空数组
 				dateRange: [this.parseTime(start), this.parseTime(end)]
+			},
+			changeList: [],
+			// 添加模块选项
+			moduleOptions: [
+				{ value: 'company', label: '公司信息' },
+				{ value: 'user', label: '用户信息' },
+				{ value: 'role', label: '角色信息' },
+				{ value: 'dept', label: '部门信息' },
+				{ value: 'menu', label: '菜单信息' }
+			],
+			// 字段翻译映射
+			fieldTranslations: {
+				city: '城市',
+				county: '区县',
+				leader: '负责人',
+				region: '地区',
+				userId: '用户ID',
+				address: '地址',
+				addtime: '添加时间',
+				delFlag: '删除标记',
+				UserName: '用户名',
+				comments: '备注',
+				province: '省份',
+				userName: '用户名',
+				leaderTel: '负责人电话',
+				companyName: '公司名称',
+				companyType: '公司类型',
+				relationTel: '关联电话',
+				relationName: '关联人姓名',
+				salesManager: '销售经理'
 			}
-			// // 模块选项
-			// moduleOptions: moduleOption,
-			// // 图表实例
-			// chart: null,
-			// // Mock数据
-			// dataSource: {
-			// 	xAxis: ['1月', '2月', '3月', '4月', '5月', '6月'],
-			// 	series: [
-			// 		{
-			// 			name: '模块1',
-			// 			data: [120, 132, 101, 134, 90, 230]
-			// 		},
-			// 		{
-			// 			name: '模块2',
-			// 			data: [220, 182, 191, 234, 290, 330]
-			// 		},
-			// 		{
-			// 			name: '模块3',
-			// 			data: [150, 232, 201, 154, 190, 330]
-			// 		},
-			// 		{
-			// 			name: '模块4',
-			// 			data: [320, 332, 301, 334, 390, 330]
-			// 		},
-			// 		{
-			// 			name: '模块5',
-			// 			data: [820, 932, 901, 934, 1290, 1330]
-			// 		}
-			// 	]
-			// },
-			// // 新增的数据
-			// dialogVisible: false,
-			// detailData: {
-			// 	moduleName: '',
-			// 	date: '',
-			// 	value: 0,
-			// 	ratio: 0,
-			// 	records: []
-			// }
 		};
 	},
-	mounted() {
-		this.initChart();
-	},
-	beforeDestroy() {
-		if (this.chart) {
-			this.chart.dispose();
-			this.chart = null;
+	computed: {
+		// 将changeList按tableName分组
+		groupedChangeList() {
+			const groups = {};
+			this.changeList.forEach(item => {
+				if (!groups[item.tableName]) {
+					groups[item.tableName] = [];
+				}
+				groups[item.tableName].push(item);
+			});
+			// 对每个分组内的记录按时间倒序排序
+			Object.keys(groups).forEach(tableName => {
+				groups[tableName].sort(
+					(a, b) => new Date(b.backupTime) - new Date(a.backupTime)
+				);
+			});
+			return groups;
 		}
+	},
+	created() {
+		this.getList();
 	},
 	methods: {
 		// 格式化JSON 因为后端传递过来的changedInfo是字符串，需要转换为JSON对象
@@ -181,107 +202,32 @@ export default {
 		},
 		// 格式化日期
 		parseTime(date) {
+			if (!date) return '';
 			const year = date.getFullYear();
 			const month = (date.getMonth() + 1).toString().padStart(2, '0');
 			const day = date.getDate().toString().padStart(2, '0');
 			return `${year}-${month}-${day}`;
 		},
-		// 初始化图表
-		initChart() {
-			this.chart = echarts.init(this.$refs.chart);
-			this.setChartOption();
+		transforTypes(type) {
+			const typeMap = {
+				insert: '新增',
+				update: '修改',
+				delete: '删除'
+			};
+			return typeMap[type] || type;
 		},
-		// 设置图表配置
-		setChartOption() {
-			// 在这对dataSource进行赋值
+		getList() {
 			getFundChangeDetail().then(res => {
 				if (!res.rows) {
-					this.$message.warning('暂无数据可以展示');
+					this.$message.warning('当前搜索条件下，无相关信息');
 					return;
 				}
-				// 先转换JSON
-				const data = res.rows.map(item => {
-					return {
-						...item,
-						originalInfo: this.parseJSON(item.originalInfo),
-						changedInfo: this.parseJSON(item.changedInfo)
-					};
-				});
-
-				// 按照模块分组
-				const groupedData = new Map();
-				data.forEach(item => {
-					if (groupedData.has(item.tableName)) {
-						groupedData.get(item.tableName).push(item);
-					} else {
-						groupedData.set(item.tableName, [item]);
-					}
-				});
-				// todo 2025-2-10  钱的相关计算比较麻烦
-				// todo 2025-2-11  展示 一个模块的某一个数据 在 某个月到某个月之间若干天的变化数据 以单个卡片的形式展示在页面中
-				// todo 比如 订单A 在2月7号的数据，他在三月到四月之间的所有的变动信息(changedInfo) 以卡片的形式展示在页面中
-			});
-			const option = {
-				title: {
-					text: '资金变动图表'
-				},
-				tooltip: {
-					trigger: 'axis',
-					formatter: params => {
-						let result = params[0].axisValue + '<br/>';
-						params.forEach(param => {
-							result += `${param.seriesName}: ${param.value}<br/>`;
-						});
-						return result;
-					}
-				},
-				legend: {
-					data: this.dataSource.series.map(item => item.name)
-				},
-				grid: {
-					left: '3%',
-					right: '4%',
-					bottom: '3%',
-					containLabel: true
-				},
-				toolbox: {
-					feature: {
-						saveAsImage: {}
-					}
-				},
-				xAxis: {
-					type: 'category',
-					boundaryGap: false,
-					data: this.dataSource.xAxis
-				},
-				yAxis: {
-					type: 'value'
-				},
-				series: this.dataSource.series.map(item => ({
-					name: item.name,
-					type: 'line',
-					data: item.data,
-					smooth: true,
-					showSymbol: false,
-					emphasis: {
-						focus: 'series',
-						blurScope: 'coordinateSystem'
-					}
-				}))
-			};
-			this.chart.setOption(option);
-
-			// 添加点击事件监听
-			this.chart.on('click', params => {
-				this.handleChartPointClick(params);
+				this.changeList = res.rows;
 			});
 		},
 		// 处理查询
 		handleQuery() {
-			// TODO: 这里添加实际的数据查询逻辑
-			console.log('查询参数：', this.queryParams);
-			// 模拟数据更新
-			this.setChartOption();
+			this.getList(this.queryParams);
 		},
 		// 重置查询
 		resetQuery() {
@@ -291,85 +237,242 @@ export default {
 			start.setMonth(start.getMonth() - 1);
 			this.queryParams.dateRange = [this.parseTime(start), this.parseTime(end)];
 			this.handleQuery();
-		}
-		// 处理图表点击事件
-		// handleChartPointClick(params) {
-		// 	// 模拟获取详细数据
-		// 	this.detailData = {
-		// 		moduleName: params.seriesName,
-		// 		date: this.dataSource.xAxis[params.dataIndex],
-		// 		value: params.value,
-		// 		ratio: (((params.value - 100) / 100) * 100).toFixed(2),
-		// 		records: [
-		// 			{
-		// 				time: '2024-01-15 09:30:00',
-		// 				type: '收入',
-		// 				amount: 1500,
-		// 				operator: '张三',
-		// 				remark: '项目款项'
-		// 			},
-		// 			{
-		// 				time: '2024-01-15 10:15:00',
-		// 				type: '支出',
-		// 				amount: -500,
-		// 				operator: '李四',
-		// 				remark: '设备采购'
-		// 			},
-		// 			{
-		// 				time: '2024-01-15 14:20:00',
-		// 				type: '收入',
-		// 				amount: 2000,
-		// 				operator: '王五',
-		// 				remark: '服务费'
-		// 			},
-		// 			{
-		// 				time: '2024-01-15 16:45:00',
-		// 				type: '支出',
-		// 				amount: -800,
-		// 				operator: '赵六',
-		// 				remark: '日常开支'
-		// 			}
-		// 		]
-		// 	};
+		},
+		// 新增方法
+		formatDateTime(dateStr) {
+			if (!dateStr) return '';
+			const date = new Date(dateStr);
+			return `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(
+				2,
+				'0'
+			)}-${String(date.getDate()).padStart(2, '0')} ${String(
+				date.getHours()
+			).padStart(2, '0')}:${String(date.getMinutes()).padStart(2, '0')}`;
+		},
 
-		// 	this.dialogVisible = true;
-		// }
+		getBackupTypeClass(type) {
+			return {
+				'type-insert': type === 'insert',
+				'type-update': type === 'update',
+				'type-delete': type === 'delete'
+			};
+		},
+
+		translateField(field) {
+			return this.fieldTranslations[field] || field;
+		},
+
+		showDetail(item) {
+			// 实现详情查看逻辑
+			console.log('查看详情', item);
+		}
 	}
 };
 </script>
 
 <style scoped>
 .search-form {
-	margin-bottom: 20px;
+	margin-bottom: 15px;
 	background: #fff;
-	padding: 20px;
+	padding: 12px 15px;
 	border-radius: 4px;
+	box-shadow: 0 1px 4px rgba(0, 0, 0, 0.05);
 }
 
-.chart-container {
-	background: #fff;
-	padding: 20px;
-	border-radius: 4px;
+.search-form :deep(.el-form-item) {
+	margin-bottom: 0;
+	margin-right: 15px;
 }
 
-.text-success {
+.search-form :deep(.el-form-item__label) {
+	font-size: 13px;
+	padding-right: 8px;
+}
+
+.search-form :deep(.el-input__inner) {
+	height: 32px;
+	line-height: 32px;
+}
+
+.search-form :deep(.el-range-editor.el-input__inner) {
+	padding: 0 5px;
+}
+
+.search-form :deep(.el-range-separator) {
+	padding: 0 3px;
+}
+
+.search-form :deep(.el-button) {
+	padding: 8px 15px;
+}
+
+.card-container {
+	padding: 10px;
+}
+
+.card-col {
+	margin-bottom: 15px;
+}
+
+.change-card {
+	transition: all 0.3s;
+	background: #fff;
+	display: flex;
+	flex-direction: column;
+}
+
+.change-card:hover {
+	transform: translateY(-5px);
+	box-shadow: 0 2px 12px 0 rgba(0, 0, 0, 0.1);
+}
+
+.card-header {
+	flex-shrink: 0;
+	display: flex;
+	justify-content: space-between;
+	align-items: center;
+	padding: 10px;
+	border-bottom: 1px solid #ebeef5;
+}
+
+.card-title {
+	font-size: 14px;
+	font-weight: bold;
+	color: #303133;
+}
+
+.card-header-right {
+	display: flex;
+	align-items: center;
+	gap: 10px;
+}
+
+.record-count {
+	font-size: 12px;
+	color: #909399;
+}
+
+.change-record {
+	padding: 8px 0;
+}
+
+.record-header {
+	display: flex;
+	align-items: center;
+	margin-bottom: 8px;
+	gap: 8px;
+}
+
+.record-time {
+	font-size: 12px;
+	color: #909399;
+}
+
+.record-operator {
+	font-size: 12px;
+	color: #606266;
+}
+
+.record-content {
+	padding-left: 8px;
+	border-left: 2px solid #ebeef5;
+}
+
+.record-divider {
+	height: 1px;
+	background-color: #ebeef5;
+	margin: 12px 0;
+}
+
+.card-content {
+	flex: 1;
+	padding: 8px;
+	overflow-y: auto;
+	max-height: 400px;
+}
+
+.backup-type {
+	padding: 2px 6px;
+	border-radius: 3px;
+	font-size: 12px;
+}
+
+.type-insert {
+	background-color: #f0f9eb;
 	color: #67c23a;
 }
 
-.text-danger {
+.type-update {
+	background-color: #ecf5ff;
+	color: #409eff;
+}
+
+.type-delete {
+	background-color: #fef0f0;
 	color: #f56c6c;
 }
 
-/* 弹窗内容的样式 */
-:deep(.el-dialog__body) {
-	padding: 20px;
+.info-section {
+	margin-top: 8px;
+	padding: 8px;
+	background: #f8f9fa;
+	border-radius: 4px;
 }
 
-.el-descriptions {
-	margin-bottom: 20px;
+.section-title {
+	font-weight: bold;
+	color: #303133;
+	margin-bottom: 5px;
+	font-size: 12px;
 }
 
-.el-descriptions-item {
-	padding: 12px 20px;
+.changed-info {
+	overflow-y: visible;
+}
+
+.info-row {
+	display: flex;
+	margin-bottom: 3px;
+	font-size: 12px;
+}
+
+.info-label {
+	color: #909399;
+	width: 80px;
+	flex-shrink: 0;
+}
+
+.info-value {
+	color: #606266;
+	flex: 1;
+	word-break: break-all;
+}
+
+.original-info {
+	flex-shrink: 0;
+	color: #909399;
+	font-size: 12px;
+	padding: 3px 0;
+	border-top: 1px solid #ebeef5;
+	margin-top: 8px;
+}
+
+/* 响应式布局 */
+@media screen and (max-width: 1600px) {
+	.el-col {
+		width: 33.33% !important;
+	}
+}
+
+@media screen and (max-width: 1200px) {
+	.el-col {
+		width: 50% !important;
+	}
+}
+
+@media screen and (max-width: 768px) {
+	.el-col {
+		width: 100% !important;
+	}
 }
 </style>
