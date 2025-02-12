@@ -21,6 +21,7 @@ import { fix } from '../../../../api/tool/format';
 import { getConfigValue } from '../data/config_get';
 import BANK_ACCEPTANCE from '@/components/NeedToShow/BANK_ACCEPTANCE.vue';
 import INVENTORYDETAILVue from '../../../../components/NeedToShow/INVENTORYDETAIL.vue';
+import ORDER_FREIGHTVue from '../../../../components/NeedToShow/ORDER_FREIGHT.vue';
 
 export default {
 	name: 'SupplierDetail',
@@ -114,6 +115,10 @@ export default {
 		checkSupplierDetail(query, lastYearDetail, config) {
 			// 查询供应商明细账
 			getSupplierSubjectDetailSummary(query).then(res => {
+				if (!res.rows || !res.data) {
+					this.$message.warning('未查询到相关数据');
+					return;
+				}
 				try {
 					// 上年结转的余额
 					let lastMoney = Number(lastYearDetail.moneyAmount);
@@ -158,20 +163,21 @@ export default {
 		handleSearch(row) {
 			// 拿到表名和id
 			const { tableName, payNo } = row;
+			if (!tableName || !payNo) {
+				this.$message.warning('该行数据有误:模块名或者凭证号不存在');
+				return;
+			}
 			// 根据tableName动态获取某个JS模块
 			getFunction(tableName)(payNo).then(res => {
 				// 填充数据
 				this.needToShowInfo = res.data;
-				console.log(res);
-
 				// 根据对应表名渲染对应的展示组件
 				this.Components = this.getComponents(tableName);
-				if (this.Components !== null) {
-					// 打开弹窗
-					this.infoVisible = true;
-				} else {
+				if (this.Components == null) {
 					this.$message.warning('组件渲染有误');
+					return;
 				}
+				this.infoVisible = true;
 			});
 		},
 		// 根据对应的表名渲染对应的组件
@@ -187,7 +193,8 @@ export default {
 				[TableName.INVENTORDETAIL]: INVENTORYDETAILVue,
 				[TableName.ORDER_DETAIL]: ORDER_DETAIL,
 				// 需要前端在这两个明细表上进行适配bankacceptance
-				[TableName.BANK_ACCOUNT_CHANGE]: BANK_ACCEPTANCE
+				[TableName.BANK_ACCOUNT_CHANGE]: BANK_ACCEPTANCE,
+				[TableName.ORDER_FREIGHT]: ORDER_FREIGHTVue
 			};
 			// 默认返回 null，如果没有匹配的 tableName
 			return components[tableName] || null;

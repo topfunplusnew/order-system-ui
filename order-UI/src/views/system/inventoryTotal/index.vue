@@ -183,6 +183,11 @@
 			width="50%"
 			class="change-log-dialog"
 		>
+			<el-row>
+				<el-col :span="24">
+					<div id="changeLogChart" style="width: 100%; height: 300px"></div>
+				</el-col>
+			</el-row>
 			<el-table :data="changeLogData" size="mini" border stripe>
 				<el-table-column label="日期" prop="date" align="center" />
 				<el-table-column label="变动数量" prop="change_amount" align="center" />
@@ -201,6 +206,7 @@
 import { listInventoryMain } from '@/api/system/inventoryMain';
 import { inventorySummary } from '../../../api/system/statement';
 import { listInventoryDetails } from '../../../api/system/inventoryMain';
+import * as echarts from 'echarts';
 
 export default {
 	name: 'InventoryTotal',
@@ -229,6 +235,9 @@ export default {
 	created() {
 		// this.getInventoryData();
 		this.getSummary();
+	},
+	mounted() {
+		this.initChangeLogChart();
 	},
 	methods: {
 		getInventoryData() {
@@ -284,6 +293,36 @@ export default {
 		handleQuery() {
 			this.getSummary();
 		},
+		initChangeLogChart() {
+			this.$$nextTick(() => {
+				const chartDom = document.getElementById('changeLogChart');
+
+				this.changeLogChart = echarts.init(chartDom);
+				const option = {
+					title: {
+						text: '库存变动记录'
+					},
+					tooltip: {
+						trigger: 'axis'
+					},
+					xAxis: {
+						type: 'category',
+						data: []
+					},
+					yAxis: {
+						type: 'value'
+					},
+					series: [
+						{
+							name: '变动数量',
+							type: 'line',
+							data: []
+						}
+					]
+				};
+				this.changeLogChart.setOption(option);
+			});
+		},
 		resetQuery() {
 			this.queryParams = {
 				storeHouseName: '',
@@ -294,8 +333,6 @@ export default {
 		},
 		openChangeLog(category) {
 			this.$datePicker().then(({ beginTime, endTime }) => {
-				console.log(beginTime, endTime);
-
 				const query = {
 					startDate: beginTime,
 					endDate: endTime,

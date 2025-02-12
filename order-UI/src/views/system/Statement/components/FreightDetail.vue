@@ -20,6 +20,7 @@ import TotalTag from '@/views/system/Statement/components/TotalTag.vue';
 import { ReportType } from '../../../../api/tool/enums';
 import { fix } from '../../../../api/tool/format';
 import { getConfigValue } from '../data/config_get';
+import ORDER_FREIGHTVue from '../../../../components/NeedToShow/ORDER_FREIGHT.vue';
 
 export default {
 	name: 'FreightDetail',
@@ -113,6 +114,10 @@ export default {
 		checkFreightDetail(query, lastYearDetail, config) {
 			// 查询司机明细账
 			getFreightSubjectDetailSummary(query).then(res => {
+				if (!res.rows || !res.data) {
+					this.$message.warning('未查询到相关数据');
+					return;
+				}
 				try {
 					// 上年结转的余额
 					let lastMoney = Number(lastYearDetail.moneyAmount);
@@ -157,19 +162,26 @@ export default {
 		handleSearch(row) {
 			// 拿到表名和id
 			const { tableName, payNo } = row;
+			if (!tableName || !payNo) {
+				this.$message.warning('该行数据有误:模块名或者凭证号不存在');
+				return;
+			}
 			// 根据tableName动态获取某个JS模块
 			if (tableName && payNo) {
 				getFunction(tableName)(payNo).then(res => {
+					if (!res.data) {
+						this.$message.warning('查询该模块条件下，暂无详细数据');
+						return;
+					}
 					// 填充数据
 					this.needToShowInfo = res.data;
 					// 根据对应表名渲染对应的展示组件
 					this.Components = this.getComponents(tableName);
-					if (this.Components !== null) {
-						// 打开弹窗
-						this.infoVisible = true;
-					} else {
+					if (this.Components == null) {
 						this.$message.warning('组件渲染有误');
+						return;
 					}
+					this.infoVisible = true;
 				});
 			}
 		},
@@ -183,8 +195,9 @@ export default {
 				[TableName.INVOICE_OTHER]: INVOICE_ORTHER,
 				[TableName.OFFSETTING]: OFFSETTING,
 				[TableName.REBATE]: REBATE,
-				[TableName.INVENTORY]: INVENTORY,
-				[TableName.ORDER_DETAIL]: ORDER_DETAIL
+				[TableName.INVENTORMAIN]: INVENTORY,
+				[TableName.ORDER_DETAIL]: ORDER_DETAIL,
+				[TableName.ORDER_FREIGHT]: ORDER_FREIGHTVue
 			};
 			return components[tableName] || null; // 默认返回 null，如果没有匹配的 tableName
 		}
