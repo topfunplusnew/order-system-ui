@@ -3,7 +3,7 @@
 <script>
 import SheetList from '@/views/dashboard/components/common/SheetList.vue';
 import { mixin_excel_server } from '@/views/dashboard/components/common/utils/excelServer';
-import { read, utils } from 'xlsx';
+import { read, utils, writeFile } from 'xlsx';
 
 export default {
 	name: 'ExcelImport',
@@ -94,6 +94,103 @@ export default {
 		clearState() {
 			this.sheetList = [];
 			this.tableData = [];
+		},
+		// 下载模板
+		downloadTemplate() {
+			// 模板数据
+			const templateData = [
+				{
+					销方ID: 0,
+					销方类型: '己方公司',
+					销方名称: '我方科技有限公司',
+					购买方ID: 1001,
+					购买方类型: '客户',
+					购买方名称: '客户公司A',
+					价税合计: 10000.0
+				},
+				{
+					销方ID: 2001,
+					销方类型: '供应商',
+					销方名称: '供应商公司B',
+					购买方ID: 0,
+					购买方类型: '己方公司',
+					购买方名称: '我方科技有限公司',
+					价税合计: 5000.5
+				},
+				{
+					销方ID: 3001,
+					销方类型: '客户',
+					销方名称: '客户公司C',
+					购买方ID: 0,
+					购买方类型: '己方公司',
+					购买方名称: '我方科技有限公司',
+					价税合计: 8500.25
+				},
+				{
+					销方ID: 0,
+					销方类型: '己方公司',
+					销方名称: '我方科技有限公司',
+					购买方ID: 4001,
+					购买方类型: '供应商',
+					购买方名称: '供应商公司D',
+					价税合计: 12500.8
+				},
+				{
+					销方ID: 5001,
+					销方类型: '供应商',
+					销方名称: '供应商公司E',
+					购买方ID: 6001,
+					购买方类型: '客户',
+					购买方名称: '客户公司F',
+					价税合计: 15000.6
+				}
+			];
+
+			// 创建工作簿
+			const wb = utils.book_new();
+
+			// 将数据转换为工作表
+			const ws = utils.json_to_sheet(templateData);
+
+			// 在数据下方添加说明信息
+			const notes = [
+				['数据填写规范说明：'],
+				['1. ID规则：'],
+				['   - 当类型为"己方公司"时，对应的ID必须为0'],
+				['   - 其他类型的ID必须为非0的数字'],
+				['2. 类型规则：'],
+				['   - 类型只能为：己方公司、客户、供应商'],
+				['   - 销方和购买方不能同时为己方公司'],
+				['   - 销方和购买方不能同时为除己方公司外的其他类型'],
+				['3. 金额规则：'],
+				['   - 价税合计必须保留两位小数'],
+				[''],
+				['注：此说明行可删除']
+			];
+
+			// 计算数据的行数
+			const dataRowCount = templateData.length;
+
+			// 在数据下方添加说明
+			utils.sheet_add_aoa(ws, notes, { origin: `A${dataRowCount + 3}` });
+
+			// 设置列宽
+			const colWidth = [
+				{ wch: 12 }, // 销方ID
+				{ wch: 12 }, // 销方类型
+				{ wch: 25 }, // 销方名称
+				{ wch: 12 }, // 购买方ID
+				{ wch: 12 }, // 购买方类型
+				{ wch: 25 }, // 购买方名称
+				{ wch: 15 } // 价税合计
+			];
+			ws['!cols'] = colWidth;
+
+			// 将工作表添加到工作簿
+			utils.book_append_sheet(wb, ws, '开票模板');
+
+			// 下载文件
+			writeFile(wb, '批量开票模板.xlsx');
 		}
 	}
 };
@@ -106,6 +203,9 @@ export default {
 			<div class="custom-file-input">
 				<el-button size="mini" type="success" @click="handleUpload"
 					>excel批量开票
+				</el-button>
+				<el-button size="mini" type="primary" @click="downloadTemplate"
+					>下载模板
 				</el-button>
 				<input
 					ref="fileInput"
