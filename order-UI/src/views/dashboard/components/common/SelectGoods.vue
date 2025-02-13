@@ -167,6 +167,8 @@ export default {
 			try {
 				// 赋值搜索条件
 				this.queryParams.customerID = companyId;
+				// todo 2025-2-13 订单搜索需要传入companyType
+				this.queryParams.companyType = PUBLIC_DICT_TYPE.CUSTOMER;
 				// 强制更新vue 在更新数据后依赖于 DOM 的最新状态，比如获取某个元素的大小、位置等
 				await this.$nextTick();
 				// 获取订单列表
@@ -188,6 +190,8 @@ export default {
 			try {
 				// 赋值数据
 				this.queryParams.params[`supplierId`] = companyId;
+				// todo 2025-2-13 订单搜索需要传入companyType
+				this.queryParams.companyType = PUBLIC_DICT_TYPE.CUSTOMER;
 				// 强制更新vue
 				await this.$nextTick();
 				// 获取列表

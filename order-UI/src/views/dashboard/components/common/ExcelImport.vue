@@ -1,4 +1,4 @@
-<!--excel导入组件-->
+<!--excel导入组件 对外展示为一个按钮-->
 
 <script>
 import SheetList from '@/views/dashboard/components/common/SheetList.vue';
