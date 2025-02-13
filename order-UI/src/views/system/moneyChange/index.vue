@@ -173,6 +173,8 @@ import { getFundChangeDetail } from '../../../api/system/sql';
 
 import { moduleNames } from '../../../api/tool/enums';
 import { PARAMS_TRANSFORM } from './index.js';
+
+import _ from 'lodash';
 export default {
 	name: 'MoneyChange',
 	data() {
@@ -211,8 +213,9 @@ export default {
 				}
 			});
 
+		const filterValues = filterTables.map(item => item.value);
 		return {
-			tables: filterTables,
+			tables: filterValues,
 			// 查询参数
 			queryParams: {
 				pageNum: 1,
@@ -287,9 +290,7 @@ export default {
 			return moduleNames[moduleName] || moduleName;
 		},
 		getList() {
-			this.queryParams.params.tableNames = Array.from(this.tables).map(
-				item => item
-			);
+			this.queryParams.params.tableNames = _.cloneDeep(this.tables);
 			getFundChangeDetail(this.queryParams).then(res => {
 				if (!res.rows) {
 					this.$message.warning('当前搜索条件下，无相关信息');
