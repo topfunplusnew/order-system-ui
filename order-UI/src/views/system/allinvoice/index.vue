@@ -107,13 +107,6 @@
 		>
 			<el-table-column
 				v-if="columns[0].visible"
-				label="id"
-				align="center"
-				prop="id"
-				width="140"
-			/>
-			<el-table-column
-				v-if="columns[1].visible"
 				label="开票日期"
 				align="center"
 				prop="invoiceDate"
@@ -121,7 +114,7 @@
 				show-overflow-tooltip
 			/>
 			<el-table-column
-				v-if="columns[2].visible"
+				v-if="columns[1].visible"
 				label="发票金额"
 				align="center"
 				prop="invoiceAmount"
@@ -129,7 +122,7 @@
 				show-overflow-tooltip
 			/>
 			<el-table-column
-				v-if="columns[3].visible"
+				v-if="columns[2].visible"
 				label="公司类型"
 				align="center"
 				prop="companyType"
@@ -137,7 +130,7 @@
 				show-overflow-tooltip
 			/>
 			<el-table-column
-				v-if="columns[4].visible"
+				v-if="columns[3].visible"
 				label="公司名称"
 				align="center"
 				prop="companyName"
@@ -145,7 +138,7 @@
 				show-overflow-tooltip
 			/>
 			<el-table-column
-				v-if="columns[5].visible"
+				v-if="columns[4].visible"
 				label="开票单位名称"
 				align="center"
 				prop="invoiceCompanyName"
@@ -153,7 +146,7 @@
 				show-overflow-tooltip
 			/>
 			<el-table-column
-				v-if="columns[6].visible"
+				v-if="columns[5].visible"
 				label="票点"
 				align="center"
 				prop="ticketPoint"
@@ -161,7 +154,7 @@
 				show-overflow-tooltip
 			/>
 			<el-table-column
-				v-if="columns[7].visible"
+				v-if="columns[6].visible"
 				label="票点金额"
 				align="center"
 				prop="ticketPointAmount"
@@ -169,7 +162,7 @@
 				show-overflow-tooltip
 			/>
 			<el-table-column
-				v-if="columns[8].visible"
+				v-if="columns[7].visible"
 				label="是否为订单税"
 				align="center"
 				prop="isOrderTax"
@@ -186,7 +179,7 @@
 				</template>
 			</el-table-column>
 			<el-table-column
-				v-if="columns[9].visible"
+				v-if="columns[8].visible"
 				label="供应商名称"
 				align="center"
 				prop="supplier"
@@ -194,7 +187,7 @@
 				show-overflow-tooltip
 			/>
 			<el-table-column
-				v-if="columns[10].visible"
+				v-if="columns[9].visible"
 				label="客户名称"
 				align="center"
 				prop="customer"
@@ -202,7 +195,7 @@
 				show-overflow-tooltip
 			/>
 			<el-table-column
-				v-if="columns[11].visible"
+				v-if="columns[10].visible"
 				label="采购发票金额"
 				align="center"
 				prop="purchaseInvoiceAmount"
@@ -210,7 +203,7 @@
 				show-overflow-tooltip
 			/>
 			<el-table-column
-				v-if="columns[12].visible"
+				v-if="columns[11].visible"
 				label="票点成本（点数）"
 				align="center"
 				prop="ticketPointCost"
@@ -218,7 +211,7 @@
 				show-overflow-tooltip
 			/>
 			<el-table-column
-				v-if="columns[13].visible"
+				v-if="columns[12].visible"
 				label="票点成本（金额）"
 				align="center"
 				prop="ticketPointCostAmount"
@@ -226,7 +219,7 @@
 				show-overflow-tooltip
 			/>
 			<el-table-column
-				v-if="columns[14].visible"
+				v-if="columns[13].visible"
 				label="票点收入（点数）"
 				align="center"
 				prop="ticketPointIncome"
@@ -234,7 +227,7 @@
 				show-overflow-tooltip
 			/>
 			<el-table-column
-				v-if="columns[15].visible"
+				v-if="columns[14].visible"
 				label="票点收入（金额）"
 				align="center"
 				prop="ticketPointIncomeAmount"
@@ -242,7 +235,7 @@
 				show-overflow-tooltip
 			/>
 			<el-table-column
-				v-if="columns[16].visible"
+				v-if="columns[15].visible"
 				label="票点差额"
 				align="center"
 				prop="ticketPointDifference"
@@ -250,7 +243,7 @@
 				show-overflow-tooltip
 			/>
 			<el-table-column
-				v-if="columns[17].visible"
+				v-if="columns[16].visible"
 				label="总货款"
 				align="center"
 				prop="allPayments"
@@ -258,7 +251,7 @@
 				show-overflow-tooltip
 			/>
 			<el-table-column
-				v-if="columns[18].visible"
+				v-if="columns[17].visible"
 				label="实际开票日期"
 				align="center"
 				prop="orderDate"
@@ -266,7 +259,7 @@
 				show-overflow-tooltip
 			/>
 			<el-table-column
-				v-if="columns[19].visible"
+				v-if="columns[18].visible"
 				label="当月欠票"
 				align="center"
 				prop="oweamount"
@@ -274,7 +267,7 @@
 				show-overflow-tooltip
 			/>
 			<el-table-column
-				v-if="columns[20].visible"
+				v-if="columns[19].visible"
 				label="备注"
 				align="center"
 				prop="comments"
@@ -431,27 +424,26 @@ export default {
 			// 表单校验
 			rules: {},
 			columns: [
-				{ key: 0, label: `id`, visible: true },
-				{ key: 1, label: `开票日期`, visible: true },
-				{ key: 2, label: `发票金额`, visible: true },
-				{ key: 3, label: `公司类型`, visible: true },
-				{ key: 4, label: `公司名称`, visible: true },
-				{ key: 5, label: `开票单位名称`, visible: true },
-				{ key: 6, label: `票点`, visible: true },
-				{ key: 7, label: `票点金额`, visible: true },
-				{ key: 8, label: `是否为订单税`, visible: true },
-				{ key: 9, label: `供应商名称`, visible: true },
-				{ key: 10, label: `客户名称`, visible: true },
-				{ key: 11, label: `采购发票金额`, visible: true },
-				{ key: 12, label: `票点成本（点数）`, visible: true },
-				{ key: 13, label: `票点成本（金额）`, visible: true },
-				{ key: 14, label: `票点收入（点数）`, visible: true },
-				{ key: 15, label: `票点收入（金额）`, visible: true },
-				{ key: 16, label: `票点差额`, visible: true },
-				{ key: 17, label: `总贷款`, visible: true },
-				{ key: 18, label: `实际开票日期`, visible: true },
-				{ key: 19, label: `当月欠票`, visible: true },
-				{ key: 20, label: `备注`, visible: true }
+				{ key: 0, label: `开票日期`, visible: true },
+				{ key: 1, label: `发票金额`, visible: true },
+				{ key: 2, label: `公司类型`, visible: true },
+				{ key: 3, label: `公司名称`, visible: true },
+				{ key: 4, label: `开票单位名称`, visible: true },
+				{ key: 5, label: `票点`, visible: true },
+				{ key: 6, label: `票点金额`, visible: true },
+				{ key: 7, label: `是否为订单税`, visible: true },
+				{ key: 8, label: `供应商名称`, visible: true },
+				{ key: 9, label: `客户名称`, visible: true },
+				{ key: 10, label: `采购发票金额`, visible: true },
+				{ key: 11, label: `票点成本（点数）`, visible: true },
+				{ key: 12, label: `票点成本（金额）`, visible: true },
+				{ key: 13, label: `票点收入（点数）`, visible: true },
+				{ key: 14, label: `票点收入（金额）`, visible: true },
+				{ key: 15, label: `票点差额`, visible: true },
+				{ key: 16, label: `总贷款`, visible: true },
+				{ key: 17, label: `实际开票日期`, visible: true },
+				{ key: 18, label: `当月欠票`, visible: true },
+				{ key: 19, label: `备注`, visible: true }
 			],
 			options: [
 				{
