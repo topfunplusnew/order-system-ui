@@ -5,13 +5,13 @@
 <!-- 我方处于不同的位置 如果我方是销方，那么就选择订单 然后给购买方批量开票 -->
 
 <script>
+import { getCompany } from '@/api/system/company';
+import CompanyInformation from '@/views/dashboard/components/common/CompanyInformation.vue';
+import CompanysList from '@/views/dashboard/components/common/CompanysList.vue';
+import InvoiceBody from '@/views/dashboard/components/common/InvoiceBody.vue';
 import SelectGoods from '@/views/dashboard/components/common/SelectGoods.vue';
 import SheetItem from '@/views/dashboard/components/common/SheetItem.vue';
 import { mixin_excel_server } from '@/views/dashboard/components/common/utils/excelServer';
-import { getCompany } from '@/api/system/company';
-import CompanyInformation from '@/views/dashboard/components/common/CompanyInformation.vue';
-import InvoiceBody from '@/views/dashboard/components/common/InvoiceBody.vue';
-import CompanysList from '@/views/dashboard/components/common/CompanysList.vue';
 
 // 默认导出组件
 export default {
@@ -185,6 +185,11 @@ export default {
 			this.handleResetCompanyInfo();
 			this.companyInfo.supplierLoading = true;
 			getCompany(row.id, row.type).then(res => {
+				if (!res.data && !res.rows) {
+					this.$message.error('暂无该公司的数据');
+					this.companyInfo.supplierLoading = false;
+					return;
+				}
 				this.companyInfo = res.data;
 				this.companyInfo.supplierLoading = false;
 			});
@@ -256,28 +261,31 @@ export default {
 				:visible.sync="invoiceAllVisible"
 				append-to-body
 			>
-				<!--        展示某个公司有多少钱可以开-->
-				<el-row :gutter="12">
-					<el-col :span="8">
+				<el-row :gutter="12" class="invoice-container">
+					<!-- 左侧区域 -->
+					<el-col :span="8" :sm="24" :md="8" class="left-section">
 						<div class="left-box">
-							<!--  左上角展示供应商的信息-->
-							<CompanyInformation :company-info="companyInfo" />
+							<!-- 公司信息卡片 -->
+							<CompanyInformation
+								:company-info="companyInfo"
+								class="company-info-card"
+							/>
 
-							<!--              展示购买方 和 销方的金额-->
+							<!-- 导入公司列表卡片 -->
 							<div class="left-box-item">
 								<el-card class="box-card">
 									<div slot="header" class="clearfix">
 										<span class="bold-text">导入公司列表</span>
 									</div>
-									<!--              购买方和销方 搜索区域-->
-									<el-form :inline="true" class="demo-form-inline">
+									<!-- 搜索表单 -->
+									<el-form :inline="true" class="search-form">
 										<el-form-item label="购买方名称">
 											<el-input
 												v-model="purchase"
 												placeholder="请输入购买方名称"
 												size="mini"
 												clearable
-											></el-input>
+											/>
 										</el-form-item>
 										<el-form-item label="销方名称">
 											<el-input
@@ -285,17 +293,16 @@ export default {
 												placeholder="请输入销方名称"
 												size="mini"
 												clearable
-											></el-input>
+											/>
 										</el-form-item>
-										<el-form-item>
+										<el-form-item class="button-group">
 											<el-button
 												type="primary"
 												size="mini"
 												@click="handleFilter"
-												>查询
+											>
+												查询
 											</el-button>
-										</el-form-item>
-										<el-form-item>
 											<el-button
 												type="warning"
 												size="mini"
@@ -305,13 +312,12 @@ export default {
 											</el-button>
 										</el-form-item>
 									</el-form>
-									<!--          每一个供应商可以开的钱的统计表格  这里同时展示购买方 和 销方的信息  -->
 
+									<!-- 公司列表 -->
 									<div class="pay-others">
 										<el-divider>
 											<span class="bold-text">购买方信息</span>
 										</el-divider>
-										<!--                  购买方的信息-->
 										<CompanysList
 											:company-total-info="purchaseTotalInfo"
 											@handleCheck="handleCheck"
@@ -319,7 +325,6 @@ export default {
 										<el-divider>
 											<span class="bold-text">销方信息</span>
 										</el-divider>
-										<!--                  销方的列表-->
 										<CompanysList
 											:company-total-info="sellerTotalInfo"
 											@handleCheck="handleCheck"
@@ -329,9 +334,9 @@ export default {
 							</div>
 						</div>
 					</el-col>
-					<!-- 右侧的订单选择 查询的订单列表是没有开过发票的订单-->
-					<el-col :span="12">
-						<!-- 展示读取的excel基本信息-->
+
+					<!-- 中间区域 -->
+					<el-col :span="12" :sm="24" :md="12" class="middle-section">
 						<el-card class="box-card">
 							<div slot="header" class="clearfix">
 								<span class="bold-text">订单列表(未开票)</span>
@@ -343,13 +348,12 @@ export default {
 									重置筛选
 								</el-button>
 							</div>
-
-							<!--          订单选择模块-->
 							<SelectGoods />
 						</el-card>
 					</el-col>
-					<!--            展示已经开票的信息-->
-					<el-col :span="4">
+
+					<!-- 右侧区域 -->
+					<el-col :span="4" :sm="24" :md="4" class="right-section">
 						<InvoiceBody />
 					</el-col>
 				</el-row>
@@ -389,12 +393,94 @@ export default {
 
 /*开票弹窗相关的样式*/
 .left-box {
+	height: 100%;
 	display: flex;
 	flex-direction: column;
+	gap: 20px;
+
+	.company-info-card {
+		flex-shrink: 0;
+	}
+
+	.left-box-item {
+		flex: 1;
+		overflow: hidden;
+
+		.box-card {
+			height: 100%;
+			display: flex;
+			flex-direction: column;
+
+			::v-deep .el-card__body {
+				flex: 1;
+				overflow: hidden;
+				display: flex;
+				flex-direction: column;
+			}
+		}
+	}
+}
+
+.search-form {
+	margin-bottom: 15px;
+
+	@media screen and (max-width: 768px) {
+		.el-form-item {
+			display: block;
+			margin-right: 0;
+			margin-bottom: 10px;
+
+			.el-input {
+				width: 100%;
+			}
+		}
+
+		.button-group {
+			text-align: right;
+		}
+	}
 }
 
 .pay-others {
-	max-height: 300px;
-	overflow-x: scroll;
+	flex: 1;
+	overflow-y: auto;
+	padding-right: 5px;
+
+	&::-webkit-scrollbar {
+		width: 4px;
+	}
+
+	&::-webkit-scrollbar-thumb {
+		background: #dcdfe6;
+		border-radius: 2px;
+	}
+
+	&::-webkit-scrollbar-track {
+		background: transparent;
+	}
+}
+
+.box-card {
+	height: 100%;
+
+	::v-deep .el-card__body {
+		height: calc(100% - 50px);
+		overflow-y: auto;
+	}
+}
+
+@media screen and (max-width: 768px) {
+	.invoice-container {
+		height: auto;
+		overflow: visible;
+	}
+
+	.left-box {
+		gap: 10px;
+	}
+
+	.pay-others {
+		max-height: 300px;
+	}
 }
 </style>

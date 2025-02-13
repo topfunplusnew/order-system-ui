@@ -203,26 +203,33 @@ export default {
 				row => !orders.includes(row)
 			);
 
+			// 非法参数校验
+			const _row = addedRows[0] || removedRows[0];
+			if (
+				_row.params.totalInvoiceAmount == null ||
+				_row.params.totalInvoiceAmount === undefined
+			) {
+				this.$message.warning('参数有误：已开票金额为空');
+				return;
+			}
+			// 排除小于0的情况
+			if (_row.params.totalInvoiceAmount < 0) {
+				this.$message.warning('参数有误：已开票金额小于0');
+				return;
+			}
 			// 更新选择的订单
 			this.preOrderList = orders;
 
 			// 计算要扣除的钱
 			let money = 0;
 			try {
-				// 如果取消选中的行不为空，扣除对应的金额
 				if (removedRows.length !== 0) {
-					// money =
-					// 	this.calculateMoney(removedRows, this.type) * this.ticketPoint;
-					// 不再计算票点
 					money = this.calculateMoney(removedRows, this.type);
 					if (money && money > 0) {
 						this.$store.commit('excel/ADD_INVOICE_AMOUNT', money);
 					}
 				}
-
-				// 如果选中的行不为空，增加对应的金额
 				if (addedRows.length !== 0) {
-					// money = this.calculateMoney(addedRows, this.type) * this.ticketPoint;
 					money = this.calculateMoney(addedRows, this.type);
 
 					if (money && money > 0) {
@@ -244,22 +251,44 @@ export default {
 		calculateMoney(rows, type) {
 			let money = 0;
 			if (rows.length === 0) return money;
-
-			rows.forEach(row => {
-				// 计算客户的钱
+			for (let row of rows) {
 				if (type === PUBLIC_DICT_TYPE.CUSTOMER) {
-					// 客户操作金额
-					money += row.allPayments;
-
-					// 计算供应商的钱
-				} else if (type === PUBLIC_DICT_TYPE.SUPPLIER) {
-					row.smailOrderDetails.forEach(detail => {
-						if (detail.supplierID === this.id) {
-							money += detail.paymentFactory; // 供应商操作金额
+					if (row.params.totalInvoiceAmount > 0) {
+						if (row.params.totalInvoiceAmount > row.allPayments) {
+							this.$message.warning('参数有误：已开票金额大于总货款');
+							break;
 						}
-					});
+						money += row.params.totalInvoiceAmount;
+					} else {
+						// 客户操作金额
+						money += row.allPayments;
+					}
+				} else if (type === PUBLIC_DICT_TYPE.SUPPLIER) {
+					let _total = 0;
+					if (!row.smailOrderDetails) {
+						this.$message.warning('该行订单详情为空，总出厂货款为0');
+					} else {
+						// 计算总的出场货款
+						_total = row.smailOrderDetails.reduce(
+							(pre, cur) => pre + Number(cur.paymentFactory),
+							0
+						);
+					}
+					if (row.params.totalInvoiceAmount > 0) {
+						if (row.params.totalInvoiceAmount > _total) {
+							this.$message.warning('参数有误：已开票金额大于总出厂货款');
+							break;
+						}
+						money += row.params.totalInvoiceAmount;
+					} else {
+						row.smailOrderDetails.forEach(detail => {
+							if (detail.supplierID === this.id) {
+								money += detail.paymentFactory;
+							}
+						});
+					}
 				}
-			});
+			}
 
 			return money;
 		},
@@ -374,6 +403,17 @@ export default {
 				align="center"
 				:selectable="selectable"
 			/>
+			<el-table-column
+				v-if="type"
+				show-overflow-tooltip
+				:label="type + `已开票金额`"
+				align="center"
+				width="150px"
+			>
+				<template #default="scope">
+					{{ scope.row.params.totalInvoiceAmount }}
+				</template>
+			</el-table-column>
 			<el-table-column
 				show-overflow-tooltip
 				label="日期"

@@ -46,9 +46,13 @@ export default {
 		async handleProcess(that) {
 			const invoices = this.list.filter(item => item !== null);
 			const res = await batchInvoice(invoices);
+			if (!res.data && !res.rows) {
+				this.$message.error('批量开票出现问题：返回结果非法');
+				return;
+			}
 			const target = this.checkInvoice(res.data);
-			// 如果成功
 			return new Promise((resolve, reject) => {
+				// 如果成功
 				if (target.flag) {
 					// 发送时间 告诉订单列表重新加载
 					that.dialogVisible = false;
@@ -59,7 +63,7 @@ export default {
 					reject();
 					this.$message.error('本批开票有误，请检查');
 					const uuid = target.uuid;
-					// 查找该出错的信息
+					// todo 查找该出错的信息
 					invoices.forEach(item => {
 						if (item.uuid === uuid) {
 							// 判断一下tableName
