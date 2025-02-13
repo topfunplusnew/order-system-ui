@@ -67,7 +67,7 @@
 		<div class="card-container">
 			<el-row>
 				<el-alert
-					title="复杂信息请前往对应的模块查看对应的信息!"
+					title="复杂信息请前往对应的模块查看对应的信息,对于删除操作，无法查看原信息!"
 					type="warning"
 				>
 				</el-alert>
