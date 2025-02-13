@@ -60,8 +60,8 @@ export default {
 					this.$message.success('本批开票成功');
 					resolve();
 				} else {
-					reject();
 					this.$message.error('本批开票有误，请检查');
+					reject();
 					const uuid = target.uuid;
 					// todo 查找该出错的信息
 					invoices.forEach(item => {
