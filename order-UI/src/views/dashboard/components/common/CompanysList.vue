@@ -1,4 +1,5 @@
 <script>
+import { PUBLIC_DICT_TYPE } from '../../../../utils/order';
 export default {
 	name: 'CompanysList',
 	props: {
@@ -39,6 +40,12 @@ export default {
 		},
 		// 点击某一行变颜色的函数
 		handleRowClassName({ row }) {
+			if (!row) {
+				return {};
+			}
+			if (!row.type) {
+				return {};
+			}
 			return this.selectedRowId === row.id
 				? {
 						background: '#c5f695 !important'

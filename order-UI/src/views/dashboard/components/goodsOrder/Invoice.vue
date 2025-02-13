@@ -249,7 +249,7 @@ export default {
 						}
 						total_out = res.data.totalAmount || 0;
 						if (Number(this.form.invoiceAmount) + total_out > this.maxInvent) {
-							this.$message.error('累计开票金额超过总货款');
+							this.$message.error('累计开票金额超过总货款，请修改开票金额！');
 							this.resetMoney();
 							return;
 						}
@@ -279,8 +279,9 @@ export default {
 						}
 						total_in = res.data.totalAmount || 0;
 						if (Number(this.form.invoiceAmount) + total_in > this.maxInvent) {
-							this.$message.error('累计开票金额超过出厂货款');
+							this.$message.error('累计开票金额超过出厂货款，请修改开票金额！');
 							this.resetMoney();
+							return;
 						}
 						const body = {
 							...this.form,
