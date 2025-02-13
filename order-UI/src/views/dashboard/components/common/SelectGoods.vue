@@ -348,6 +348,7 @@ export default {
 				customerIsInvoice: null,
 				isSupplierInvoice: null,
 				params: {
+					BatchInsertInvoiceCompanyType: PUBLIC_DICT_TYPE.CUSTOMER,
 					supplierId: null,
 					isIncludeTaxSale: null,
 					isIncludeTaxFactory: null

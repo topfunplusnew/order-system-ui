@@ -247,7 +247,7 @@ export default {
 							this.$message.error('检查开票时发现暂无数据');
 							return;
 						}
-						total_out = res.data.total_out || 0;
+						total_out = res.data.totalAmount || 0;
 						if (Number(this.form.invoiceAmount) + total_out > this.maxInvent) {
 							this.$message.error('累计开票金额超过总货款');
 							this.resetMoney();
@@ -277,7 +277,7 @@ export default {
 							this.$message.error('检查开票时发现暂无数据');
 							return;
 						}
-						total_in = res.data.total_in || 0;
+						total_in = res.data.totalAmount || 0;
 						if (Number(this.form.invoiceAmount) + total_in > this.maxInvent) {
 							this.$message.error('累计开票金额超过出厂货款');
 							this.resetMoney();
