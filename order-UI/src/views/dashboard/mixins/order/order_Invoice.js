@@ -52,7 +52,11 @@ export var mixin_order_Invoice = {
 		},
 		// 点击客户开票按钮 客户开票 最大开票金额为总货款
 		updateOrderItemVisibleCustomerInvoice(row) {
-			if (!row.customerIsInvoice) {
+			if (
+				!row.smailOrderDetails.some(item => {
+					return item.isIncludeTaxSale === 1;
+				})
+			) {
 				this.$message.error('该订单不支持客户开票');
 				return;
 			}
@@ -126,7 +130,11 @@ export var mixin_order_Invoice = {
 					);
 				});
 			};
-			if (!row.isSupplierInvoice) {
+			if (
+				!row.smailOrderDetails.some(item => {
+					return item.isIncludeTaxFactory === 1;
+				})
+			) {
 				this.$message.error('该订单不支持供应商开票!');
 				return;
 			}

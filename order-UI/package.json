@@ -5,7 +5,7 @@
 	"author": "0434实验室",
 	"license": "MIT",
 	"scripts": {
-		"dev": "vue-cli-service serve --modern",
+		"dev": "vue-cli-service serve",
 		"build:prod": "vue-cli-service build",
 		"build:stage": "vue-cli-service build --mode staging",
 		"test": "node ./src/app_test.js",
@@ -55,6 +55,7 @@
 		"js-cookie": "3.0.1",
 		"jsencrypt": "3.0.0-rc.1",
 		"jsondiffpatch": "^0.6.0",
+		"lodash": "^4.17.21",
 		"mysql": "^2.18.1",
 		"nprogress": "0.2.0",
 		"print-js": "^1.6.0",
@@ -83,7 +84,7 @@
 		"@vue/runtime-dom": "^3.5.13",
 		"babel-plugin-dynamic-import-node": "2.3.3",
 		"chalk": "4.1.0",
-		"compression-webpack-plugin": "6.1.2",
+		"compression-webpack-plugin": "5.0.2",
 		"connect": "3.6.6",
 		"eslint": "^7.32.0",
 		"eslint-config-prettier": "^8.3.0",
@@ -99,7 +100,8 @@
 		"sass-loader": "10.1.1",
 		"script-ext-html-webpack-plugin": "2.1.5",
 		"svg-sprite-loader": "5.1.1",
-		"vue-template-compiler": "2.6.12"
+		"vue-template-compiler": "2.6.12",
+		"webpack": "^5.97.1"
 	},
 	"engines": {
 		"node": ">=8.9",

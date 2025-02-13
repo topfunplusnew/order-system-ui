@@ -287,7 +287,9 @@ export default {
 			return moduleNames[moduleName] || moduleName;
 		},
 		getList() {
-			this.queryParams.params.tableNames = this.tables.map(item => item.value);
+			this.queryParams.params.tableNames = Array.from(this.tables).map(
+				item => item
+			);
 			getFundChangeDetail(this.queryParams).then(res => {
 				if (!res.rows) {
 					this.$message.warning('当前搜索条件下，无相关信息');

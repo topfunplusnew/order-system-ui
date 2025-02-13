@@ -5,7 +5,7 @@ function resolve(dir) {
 	return path.join(__dirname, dir);
 }
 
-const CompressionPlugin = require('compression-webpack-plugin');
+// const CompressionPlugin = require('compression-webpack-plugin');
 const name = process.env.VUE_APP_TITLE || '订单管理系统'; // 网页标题
 const port = process.env.port || process.env.npm_config_port || 40080; // 端口
 
@@ -55,14 +55,14 @@ module.exports = {
 			}
 		},
 		plugins: [
-			new CompressionPlugin({
-				cache: false, // 不启用文件缓存
-				test: /\.(js|css|html|jpe?g|png|gif|svg)?$/i, // 压缩文件格式
-				filename: '[path][base].gz[query]', // 压缩后的文件名
-				algorithm: 'gzip', // 使用gzip压缩
-				minRatio: 0.8, // 压缩比例，小于 80% 的文件不会被压缩
-				deleteOriginalAssets: false // 压缩后删除原文件
-			}),
+			// new CompressionPlugin({
+			// 	cache: false, // 不启用文件缓存
+			// 	test: /\.(js|css|html|jpe?g|png|gif|svg)?$/i, // 压缩文件格式
+			// 	filename: '[path][base].gz[query]', // 压缩后的文件名
+			// 	algorithm: 'gzip', // 使用gzip压缩
+			// 	minRatio: 0.8, // 压缩比例，小于 80% 的文件不会被压缩
+			// 	deleteOriginalAssets: false // 压缩后删除原文件
+			// }),
 			new HardSourceWebpackPlugin()
 		]
 	},
