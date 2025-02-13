@@ -114,6 +114,7 @@ import { addInvoiceOut } from '@/api/system/invoiceOut';
 import { excludeParams } from '@/api/tool/exclude';
 import { listCompany } from '@/api/system/company';
 import { fix } from '@/api/tool/format';
+import { PUBLIC_DICT_TYPE } from '../../../../utils/order';
 
 export default {
 	name: 'Invoice',
@@ -236,8 +237,12 @@ export default {
 			return new Promise((resolve, reject) => {
 				// 客户开票 domain = 1
 				if (this.invoiceInfo.domain === 1) {
+					const query = {
+						id: this.invoiceInfo.isOrderTax,
+						companyType: PUBLIC_DICT_TYPE.CUSTOMER
+					};
 					// 先检查一下可不可以开票 即检查是否超过钱
-					checkOrderAllinvoice(this.invoiceInfo.isOrderTax).then(res => {
+					checkOrderAllinvoice(query).then(res => {
 						if (!res.data) {
 							this.$message.error('检查开票时发现暂无数据');
 							return;
@@ -263,7 +268,11 @@ export default {
 					});
 					// 供应商开票 domain = 2
 				} else {
-					checkOrderAllinvoice(this.invoiceInfo.isOrderTax).then(res => {
+					const query = {
+						id: this.invoiceInfo.isOrderTax,
+						companyType: PUBLIC_DICT_TYPE.SUPPLIER
+					};
+					checkOrderAllinvoice(query).then(res => {
 						if (!res.data) {
 							this.$message.error('检查开票时发现暂无数据');
 							return;

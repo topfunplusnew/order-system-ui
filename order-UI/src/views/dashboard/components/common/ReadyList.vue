@@ -42,9 +42,6 @@ export default {
 				);
 			});
 		},
-		// handleUpdate(row) {},
-		// handleDelete(row) {},
-
 		// 业务逻辑方法
 		async handleProcess(that) {
 			const invoices = this.list.filter(item => item !== null);

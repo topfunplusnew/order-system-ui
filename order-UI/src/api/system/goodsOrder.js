@@ -82,10 +82,11 @@ export function getHistoryGoodsOrder(query) {
 }
 
 // 根据订单id检查
-export function checkOrderAllinvoice(id) {
+export function checkOrderAllinvoice(params) {
 	return request({
-		url: '/system/allinvoice/checkInvoiceAmount/?id=' + id,
-		method: 'get'
+		url: '/system/allinvoice/checkInvoiceAmount',
+		method: 'get',
+		params: params
 	});
 }
 

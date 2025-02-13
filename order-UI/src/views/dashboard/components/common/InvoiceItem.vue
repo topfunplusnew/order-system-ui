@@ -47,10 +47,6 @@ export default {
 	<div>
 		<div class="invoice" ref="invoiceItem">
 			<div>
-				<!--				<h4 class="invoice-title">-->
-				<!--					<InvoiceIcon />-->
-				<!--					<EllipsisText :title="invoice.companyName" />-->
-				<!--				</h4>-->
 				<p class="invoice-pra">
 					开票金额：<span style="color: #72d511">{{ amount }}</span>
 				</p>
@@ -99,7 +95,6 @@ export default {
 				</el-descriptions-item>
 			</el-descriptions>
 			<span slot="footer" class="dialog-footer">
-				<!--				<el-button @click="visible = false">取 消</el-button>-->
 				<el-button type="primary" @click="handleClose">关 闭</el-button>
 			</span>
 		</el-dialog>

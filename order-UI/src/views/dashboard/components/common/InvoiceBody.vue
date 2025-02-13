@@ -55,7 +55,6 @@ export default {
 		// 监听选择订单的变化
 		selectedOrder: {
 			handler(val) {
-				console.log(val);
 				// 判断是否长度大于0
 				typeof val === 'object' && val.length > 0
 					? this.handleToggle(false)
@@ -149,9 +148,7 @@ export default {
 				orderItem.customer,
 				orderItem.customerID,
 				orderItem.customer,
-				// this.ticketPoint, 不再计算票点 默认为0
 				0,
-				// Number(this.ticketPoint) * Number(orderItem.allPayments),
 				Number(orderItem.allPayments),
 				orderItem.id,
 				this.comment
@@ -178,8 +175,6 @@ export default {
 				0
 			);
 
-			console.log('出厂货款:', paymentFactory);
-
 			// 供应商
 			return new InvoiceObject(
 				parseTime(new Date(), '{y}-{m}-{d} {h}:{i}:{s}'),
@@ -189,9 +184,7 @@ export default {
 				_suppliers[0].supplier,
 				_suppliers[0].supplierID, // 供应商id
 				'山东鹏展',
-				// this.ticketPoint,
 				0,
-				// Number(this.ticketPoint) * paymentFactory, 不再计算票点
 				Number(paymentFactory),
 				orderItem.id,
 				this.comment
