@@ -1,0 +1,160 @@
+{
+  "type": "object",
+  "properties": {
+    "total": {
+      "type": "integer"
+    },
+    "rows": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "integer",
+            "title": "信息id"
+          },
+          "basicSocialInsurance": {
+            "type": "integer",
+            "title": "社保缴纳基数"
+          },
+          "basicHousingFund": {
+            "type": "integer",
+            "title": "公积金基数"
+          },
+          "depName": {
+            "type": "string",
+            "title": "部门"
+          },
+          "employeeName": {
+            "type": "string",
+            "title": "姓名"
+          },
+          "employeeID": {
+            "type": "string",
+            "title": "人员编号"
+          },
+          "insuranceDate": {
+            "type": "string",
+            "title": "缴费时间"
+          },
+          "isRecruiting": {
+            "type": "string",
+            "title": "是否增员"
+          },
+          "isDepletion": {
+            "type": "string",
+            "title": "是否减员"
+          },
+          "healthySecuritySelf": {
+            "type": "integer",
+            "title": "基本医疗保险-个人"
+          },
+          "healthySecurityCompany": {
+            "type": "integer",
+            "title": "基本医疗保险-公司"
+          },
+          "injuryInsurance": {
+            "type": "integer",
+            "title": "工伤保险"
+          },
+          "unemploymentSecuritySelf": {
+            "type": "integer",
+            "title": "失业保险-个人"
+          },
+          "unemploymentSecurityCompany": {
+            "type": "integer",
+            "title": "失业保险-公司"
+          },
+          "retirementSecuritySelf": {
+            "type": "integer",
+            "title": "养老保险-个人"
+          },
+          "retirementSecurityCompany": {
+            "type": "integer",
+            "title": "养老保险-公司"
+          },
+          "largeMedicalSecuritySelf": {
+            "type": "integer",
+            "title": "大额医保-个人"
+          },
+          "largeMedicalSecurityCompany": {
+            "type": "integer",
+            "title": "大额医保-公司"
+          },
+          "housingFundSelf": {
+            "type": "integer",
+            "title": "公积金-个人"
+          },
+          "housingFundCompany": {
+            "type": "integer",
+            "title": "公积金-公司"
+          },
+          "sumSelf": {
+            "type": "integer",
+            "title": "个人缴费总额"
+          },
+          "sumCompany": {
+            "type": "integer",
+            "title": "公司缴费总额"
+          },
+          "comments": {
+            "type": "string",
+            "title": "备注"
+          },
+          "totalSumSelf": {
+            "type": "integer",
+            "title": "总金额-个人"
+          },
+          "totalSumCompany": {
+            "type": "integer",
+            "title": "总金额-公司"
+          }
+        },
+        "x-apifox-orders": [
+          "createBy",
+          "createTime",
+          "updateBy",
+          "updateTime",
+          "remark",
+          "id",
+          "basicSocialInsurance",
+          "basicHousingFund",
+          "depName",
+          "employeeName",
+          "employeeID",
+          "insuranceDate",
+          "isRecruiting",
+          "isDepletion",
+          "healthySecuritySelf",
+          "healthySecurityCompany",
+          "injuryInsurance",
+          "unemploymentSecuritySelf",
+          "unemploymentSecurityCompany",
+          "retirementSecuritySelf",
+          "retirementSecurityCompany",
+          "largeMedicalSecuritySelf",
+          "largeMedicalSecurityCompany",
+          "housingFundSelf",
+          "housingFundCompany",
+          "sumSelf",
+          "sumCompany",
+          "comments",
+          "addtime",
+          "userId",
+          "delFlag",
+          "totalSumSelf",
+          "totalSumCompany",
+          "userName"
+        ]
+      }
+    },
+    "code": {
+      "type": "integer"
+    },
+    "msg": {
+      "type": "string"
+    }
+  },
+  "required": ["total", "rows", "code", "msg"],
+  "x-apifox-orders": ["total", "rows", "code", "msg"]
+}

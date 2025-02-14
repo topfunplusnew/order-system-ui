@@ -1,0 +1,121 @@
+import { listGoodsOrder } from '../../../../api/system/goodsOrder';
+
+/**
+ * 订单基类
+ */
+export var mixin_order_base = {
+	data: function () {
+		return {
+			// 订单的显示隐藏列
+
+			// 顶部条件搜索
+			queryOrderInfo: {},
+
+			// 用于字段与中文名称映射
+			mapper: {
+				orderDate: '订单日期',
+				supplier: '供应商名称',
+				customer: '客户名称',
+				levelName: '级别名称',
+				countingUnit: '计数单位',
+				height: '高度',
+				length: '长度',
+				width: '宽度',
+				pieces: '数量',
+				piecesPerPack: '每包数量',
+				packs: '包数',
+				price: '单价',
+				isIncludeTaxFactory: '是否含税（工厂）',
+				sundryCost: '杂费',
+				paymentFactory: '出厂货款',
+				paymentUnload: '卸货费用',
+				isIncludeTaxSale: '是否含税（销售）',
+				payments: '销售付款',
+				erro: '误差',
+				tonnage: '吨位',
+				landFreightPrice: '陆运价格',
+				landFreight: '陆运费',
+				seaFreight: '海运费',
+				freight: '运费',
+				otherCost: '其他费用',
+				profit: '利润',
+				profitNoTax: '无税利润',
+				actualPieces: '实际数量',
+				paymentsWithSundry: '含杂费付款',
+				additionalFees: '额外费用',
+				storeHouseName: '仓库名称',
+				logisticsProfit: '物流利润',
+				customerCommission: '佣金',
+				comments: '备注',
+				updateTime: '订单修改时间',
+				remark: '修改记录',
+				landCarNo: '陆运车牌号',
+				landDriverName: '陆运司机姓名',
+				landBankNo: '陆运司机银行卡号',
+				landDriverTel: '陆运司机电话',
+				fleet: '车队',
+				seaCarNo: '柜号',
+				seaDriverName: '海运公司',
+				seaDriverTel: '海运司机电话',
+				seaBankNo: '海运司机银行卡号',
+				seaBankName: '海运司机开户名',
+				landBankName: '陆运司机开户名',
+				companyName: '公司名称',
+				saleManager: '销售经理',
+				userName: '修改人',
+				supplierNames: '供应商',
+				allPayments: '总货款'
+			}
+		};
+	},
+	methods: {
+		// 查询订单的列表
+		getList() {
+			if (!this.queryParams.isAdjust) {
+				const isAdjust = this.isAdjustOrder ? -1 : 0;
+				listGoodsOrder({
+					...this.queryParams,
+					isAdjust: isAdjust
+				}).then(response => {
+					this.goodsOrderList = response.rows;
+					this.total = response.total;
+					this.loading = false;
+				});
+			} else {
+				listGoodsOrder(this.queryParams).then(response => {
+					this.goodsOrderList = response.rows;
+					this.total = response.total;
+					this.loading = false;
+				});
+			}
+		},
+		// 获取供应商的名称列表 主要用于表格的供应商列表的展示
+		getSupplierNames(list) {
+			if (list.length === 0) {
+				return;
+			}
+			return list.map(item => {
+				return {
+					supplier: item.supplier,
+					supplierID: item.supplierID
+				};
+			});
+		},
+		// 休眠函数
+		sleep(ms) {
+			return new Promise(resolve => setTimeout(resolve, ms));
+		},
+		// 格式化对象
+		formatData(data) {
+			let formattedString = '';
+			for (const key in data) {
+				if (Reflect.has(data, key)) {
+					const value = data[key];
+					const mappedKey = this.mapper[key] || key;
+					formattedString += `${mappedKey}: ${value}\n`;
+				}
+			}
+			return formattedString.trim(); // 去掉最后一个换行符
+		}
+	}
+};

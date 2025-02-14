@@ -1,6 +1,6 @@
 module.exports = {
 	printWidth: 80, // 一行最多 80 字符(默认80)
-	tabWidth: 2, // 每个tab相当于多少个空格（默认2）
+	tabWidth: 4, // 每个tab相当于多少个空格（默认2）
 	useTabs: true, // 是否使用tab进行缩进（默认false）
 	semi: true, // 行尾需要有分号(默认true)
 	singleQuote: true, // 使用单引号（默认false）
