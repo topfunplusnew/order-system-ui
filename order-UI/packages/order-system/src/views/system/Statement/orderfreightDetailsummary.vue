@@ -77,16 +77,16 @@
 				</template>
 				<!-- 后端说把导出扣了 -->
 				<!-- <template #export>
-					<el-col :span="1.5">
-						<el-button
-							v-hasPermi="['system:company:export']"
-							plain
-							icon="el-icon-folder-opened"
-							size="mini"
-							@click="handleExport"
-						/>
-					</el-col>
-				</template> -->
+          <el-col :span="1.5">
+            <el-button
+              v-hasPermi="['system:company:export']"
+              plain
+              icon="el-icon-folder-opened"
+              size="mini"
+              @click="handleExport"
+            />
+          </el-col>
+        </template> -->
 			</right-toolbar>
 		</el-row>
 
@@ -172,17 +172,17 @@
 			</el-table-column>
 
 			<!-- 平账金额 -->
-			<el-table-column
-				v-if="columns[6].visible"
-				label="平账金额"
-				align="center"
-				prop="balanceaccountsAmount"
-				width="160"
-			/>
+			<!--			<el-table-column-->
+			<!--				v-if="columns[6].visible"-->
+			<!--				label="平账金额"-->
+			<!--				align="center"-->
+			<!--				prop="balanceaccountsAmount"-->
+			<!--				width="160"-->
+			<!--			/>-->
 
 			<!-- 车牌号 -->
 			<el-table-column
-				v-if="columns[7].visible"
+				v-if="columns[6].visible"
 				label="车牌号"
 				align="center"
 				prop="carNo"
@@ -191,7 +191,7 @@
 
 			<!-- 期末方向 -->
 			<el-table-column
-				v-if="columns[8].visible"
+				v-if="columns[7].visible"
 				label="期末方向"
 				align="center"
 				prop="initialBalanceDirection"
@@ -208,7 +208,7 @@
 
 			<!-- 期末余额 -->
 			<el-table-column
-				v-if="columns[9].visible"
+				v-if="columns[8].visible"
 				label="期末余额"
 				align="center"
 				prop="endingBalance"
@@ -217,7 +217,7 @@
 
 			<!-- 录入员 -->
 			<el-table-column
-				v-if="columns[10].visible"
+				v-if="columns[9].visible"
 				label="录入员"
 				align="center"
 				prop="salesman"
@@ -360,11 +360,10 @@ export default {
 				{ key: 3, label: '初期余额', visible: true },
 				{ key: 4, label: '借方', visible: true },
 				{ key: 5, label: '贷方', visible: true },
-				{ key: 6, label: '平账金额', visible: true },
-				{ key: 7, label: '车牌号', visible: true },
-				{ key: 8, label: '期末方向', visible: true },
-				{ key: 9, label: '期末余额', visible: true },
-				{ key: 10, label: '录入员', visible: true }
+				{ key: 6, label: '车牌号', visible: true },
+				{ key: 7, label: '期末方向', visible: true },
+				{ key: 8, label: '期末余额', visible: true },
+				{ key: 9, label: '录入员', visible: true }
 			],
 
 			dialogVisible: false,
