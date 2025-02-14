@@ -230,6 +230,7 @@ import { moduleNames } from '../../../api/tool/enums';
 import { PARAMS_TRANSFORM } from './index.js';
 
 import _ from 'lodash';
+
 export default {
 	name: 'MoneyChange',
 	data() {
@@ -276,7 +277,12 @@ export default {
 				pageNum: 1,
 				pageSize: 10,
 				// 时间范围
-				dateRange: [],
+				dateRange: [
+					this.parseTime(
+						new Date(new Date().setMonth(new Date().getMonth() - 1))
+					),
+					this.parseTime(new Date())
+				],
 				originalInfoId: null,
 				tableName: null,
 				backupTime: null,
@@ -317,7 +323,7 @@ export default {
 		}
 	},
 	created() {
-		this.getList();
+		this.handleQuery();
 	},
 	methods: {
 		// 格式化JSON 因为后端传递过来的changedInfo是字符串，需要转换为JSON对象
