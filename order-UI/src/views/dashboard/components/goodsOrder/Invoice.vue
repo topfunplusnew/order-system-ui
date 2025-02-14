@@ -88,16 +88,16 @@
 						placeholder="请输入票据单位名称"
 					/>
 				</el-form-item>
-				<el-form-item label="票点" prop="ticketPoint">
+				<!-- <el-form-item label="票点" prop="ticketPoint">
 					<el-input v-model="form.ticketPoint" placeholder="请输入票点" />
-				</el-form-item>
-				<el-form-item label="票点金额" prop="ticketPointAmount">
+				</el-form-item> -->
+				<!-- <el-form-item label="票点金额" prop="ticketPointAmount">
 					<el-input
 						v-model="form.ticketPointAmount"
 						placeholder="请输入票点金额"
 						disabled
 					/>
-				</el-form-item>
+				</el-form-item> -->
 				<el-form-item label="备注" prop="comments">
 					<el-input v-model="form.comments" placeholder="请输入备注" />
 				</el-form-item>

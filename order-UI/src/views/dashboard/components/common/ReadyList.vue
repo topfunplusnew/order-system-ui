@@ -45,12 +45,20 @@ export default {
 		// 业务逻辑方法
 		async handleProcess(that) {
 			const invoices = this.list.filter(item => item !== null);
+			if (invoices.length === 0) {
+				this.$message.error('开票信息为空');
+				return;
+			}
 			const res = await batchInvoice(invoices);
 			if (!res.data && !res.rows) {
 				this.$message.error('批量开票出现问题：返回结果非法');
 				return;
 			}
 			const target = this.checkInvoice(res.data);
+			if (!target) {
+				this.$message.error('批量开票出现问题：返回结果非法');
+				return;
+			}
 			return new Promise((resolve, reject) => {
 				// 如果成功
 				if (target.flag) {
@@ -60,42 +68,48 @@ export default {
 					this.$message.success('本批开票成功');
 					resolve();
 				} else {
-					this.$message.error('本批开票有误，请检查');
+					this.$message.error('本批开票有误 请检查错误信息后重新提交');
 					reject();
-					const uuid = target.uuid;
-					// todo 查找该出错的信息
-					invoices.forEach(item => {
-						if (item.uuid === uuid) {
-							// 判断一下tableName
-							switch (item.tableName) {
-								case TableName.INVOICE_OUT: {
-									// 打开弹窗 让用户知道 并且去修改
-									this.openDialog(
-										INVOICE_OUT,
-										'发票信息',
-										'900px',
-										{
-											needToShowInfo: item
-										},
-										false
-									);
-									break;
+					setTimeout(() => {
+						const uuid = target.uuid;
+						for (let i = 0; i < invoices.length; i++) {
+							const item = invoices[i];
+							const index = i;
+							if (item.uuid === uuid) {
+								// 查找该出错的信息 提示用户
+								this.$message.error(`第${index}条信息发生错误:${item.result}`);
+								// 判断一下tableName
+								switch (item.tableName) {
+									case TableName.INVOICE_OUT: {
+										// 打开弹窗 让用户知道 并且去修改
+										this.openDialog(
+											INVOICE_OUT,
+											'出错的发票信息',
+											'900px',
+											{
+												needToShowInfo: item
+											},
+											false
+										);
+										break;
+									}
+									case TableName.INVOICE_IN: {
+										// 打开弹窗 让用户知道 并且去修改
+										this.openDialog(
+											INVOICE_IN,
+											'出错的发票信息',
+											'900px',
+											{
+												needToShowInfo: item
+											},
+											false
+										);
+									}
 								}
-								case TableName.INVOICE_IN: {
-									// 打开弹窗 让用户知道 并且去修改
-									this.openDialog(
-										INVOICE_IN,
-										'发票信息',
-										'900px',
-										{
-											needToShowInfo: item
-										},
-										false
-									);
-								}
+								break;
 							}
 						}
-					});
+					}, 1000);
 				}
 			});
 		},

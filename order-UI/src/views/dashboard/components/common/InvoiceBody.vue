@@ -142,7 +142,8 @@ export default {
 			// 客户
 			return new InvoiceObject(
 				parseTime(new Date(), '{y}-{m}-{d} {h}:{i}:{s}'),
-				'山东鹏展',
+				// 我方公司实体
+				sessionStorage.getItem('us'),
 				Number(orderItem.allPayments),
 				PUBLIC_DICT_TYPE.CUSTOMER,
 				orderItem.customer,
@@ -178,12 +179,12 @@ export default {
 			// 供应商
 			return new InvoiceObject(
 				parseTime(new Date(), '{y}-{m}-{d} {h}:{i}:{s}'),
-				_suppliers[0].supplier,
+				sessionStorage.getItem('us'),
 				Number(paymentFactory),
 				PUBLIC_DICT_TYPE.SUPPLIER,
 				_suppliers[0].supplier,
 				_suppliers[0].supplierID, // 供应商id
-				'山东鹏展',
+				_suppliers[0].supplier,
 				0,
 				Number(paymentFactory),
 				orderItem.id,

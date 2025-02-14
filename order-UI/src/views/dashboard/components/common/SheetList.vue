@@ -223,6 +223,9 @@ export default {
 			this.invoiceAllVisible = false;
 		},
 		reset() {
+			// sessionStorage
+			sessionStorage.removeItem('us');
+			sessionStorage.removeItem('invoiceAmount');
 			// 清除左上角公司信息
 			this.handleResetCompanyInfo();
 			// 清除订单列表的数据

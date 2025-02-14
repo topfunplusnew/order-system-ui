@@ -1,5 +1,4 @@
 <script>
-import { PUBLIC_DICT_TYPE } from '../../../../utils/order';
 export default {
 	name: 'CompanysList',
 	props: {
@@ -33,6 +32,8 @@ export default {
 			// 维护开票金额
 			this.$store.dispatch('excel/clearInvoiceAmount');
 			this.$store.dispatch('excel/setInvoiceAmount', row.total);
+			// 需要暂存我方实体
+			sessionStorage.setItem('us', row.us || '');
 			sessionStorage.setItem('invoiceAmount', row.total);
 
 			// 方便变颜色
