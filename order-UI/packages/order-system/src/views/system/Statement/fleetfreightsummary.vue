@@ -10,10 +10,10 @@ export default {
 	data() {
 		return {
 			queryParams: {
-				beginTime: parseTime(
-					new Date(new Date().getTime() - 30 * 24 * 60 * 60 * 1000),
-					'{y}-{m}-{d}'
-				),
+				// beginTime: parseTime(
+				// 	new Date(new Date().getTime() - 30 * 24 * 60 * 60 * 1000),
+				// 	'{y}-{m}-{d}'
+				// ),
 				endTime: parseTime(new Date(), '{y}-{m}-{d}'),
 				pageNum: 1,
 				pageSize: 50
@@ -62,10 +62,10 @@ export default {
 			this.handleQuery();
 		},
 		reset() {
-			this.queryParams.beginTime = parseTime(
-				new Date(new Date().getTime() - 30 * 24 * 60 * 60 * 1000),
-				'{y}-{m}-{d}'
-			);
+			// this.queryParams.beginTime = parseTime(
+			// 	new Date(new Date().getTime() - 30 * 24 * 60 * 60 * 1000),
+			// 	'{y}-{m}-{d}'
+			// );
 			this.queryParams.endTime = parseTime(new Date(), '{y}-{m}-{d}');
 			this.queryParams.pageNum = 1;
 			this.queryParams.pageSize = 50;
@@ -112,15 +112,15 @@ export default {
 					:inline="true"
 					label-width="100px"
 				>
-					<el-form-item label="时间" prop="companyName">
-						<el-date-picker
-							v-model="queryParams.beginTime"
-							type="date"
-							size="mini"
-							value-format="yyyy-MM-dd"
-							placeholder="选择日期"
-						></el-date-picker>
-					</el-form-item>
+					<!--					<el-form-item label="时间" prop="companyName">-->
+					<!--						<el-date-picker-->
+					<!--							v-model="queryParams.beginTime"-->
+					<!--							type="date"-->
+					<!--							size="mini"-->
+					<!--							value-format="yyyy-MM-dd"-->
+					<!--							placeholder="选择日期"-->
+					<!--						></el-date-picker>-->
+					<!--					</el-form-item>-->
 					<el-form-item>
 						<el-date-picker
 							v-model="queryParams.endTime"
