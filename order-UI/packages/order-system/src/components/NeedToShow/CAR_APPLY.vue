@@ -37,7 +37,7 @@ export default {
 				{{ needToShowInfo.endTime }}
 			</el-descriptions-item>
 			<el-descriptions-item label="用车事由">
-				{{ needToShowInfo.ApplyPurpose }}
+				{{ needToShowInfo.applyPurpose }}
 			</el-descriptions-item>
 			<el-descriptions-item label="出车前里程">
 				{{ needToShowInfo.startMile }}
@@ -85,6 +85,21 @@ export default {
 				{{ needToShowInfo.cashRefuelingFrequency }}
 			</el-descriptions-item>
 		</el-descriptions>
+
+		<h4 style="font-weight: bold">加油卡消费信息</h4>
+		<el-table :data="needToShowInfo.oilCardConsumes" style="width: 100%">
+			<el-table-column prop="oilCardNo" label="油卡号" />
+			<el-table-column prop="useDate" label="使用日期" />
+			<el-table-column prop="carNo" label="车牌号" />
+			<el-table-column prop="startCardSurplus" label="开始卡余额" />
+			<el-table-column prop="refuelingNumber" label="加油次数" />
+			<el-table-column prop="unitPrice" label="单价" />
+			<el-table-column prop="refuelingMoney" label="加油金额" />
+			<el-table-column prop="rechargeMoney" label="充值金额" />
+			<el-table-column prop="endCardSurplus" label="结束卡余额" />
+			<el-table-column prop="attachmentOiladd" label="附件" />
+			<el-table-column prop="comments" label="备注" />
+		</el-table>
 	</div>
 </template>
 
