@@ -248,22 +248,18 @@ export default {
 			try {
 				const { tableName, tableId } = row;
 				const response = await fetchDetailById({ tableName, tableId });
-				if (response.code === 200) {
-					if (!response.data) {
-						this.$message.warning('无相关数据');
-						return;
-					}
-					// 将明细数据格式化为键值对
-					this.detailInfo = Object.entries(response.data).map(
-						([key, value]) => ({
-							key,
-							value
-						})
-					);
-					this.detailDialogVisible = true;
-				} else {
-					this.$message.error(response.msg || '获取明细失败');
+				if (!response.data) {
+					this.$message.warning('无相关数据');
+					return;
 				}
+				// 将明细数据格式化为键值对
+				this.detailInfo = Object.entries(response.data).map(
+					([key, value]) => ({
+						key,
+						value
+					})
+				);
+				this.detailDialogVisible = true;
 			} catch (error) {
 				console.error('获取明细失败:', error);
 				this.$message.error('获取明细失败');
