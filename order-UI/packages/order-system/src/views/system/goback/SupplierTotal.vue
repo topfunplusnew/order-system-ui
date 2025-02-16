@@ -6,7 +6,7 @@
 				<el-form-item label="时间：">
 					<el-date-picker clearable v-model="searchForm.endTime" type="date" placeholder="请选择时间" value-format="yyyy-MM-dd" size="small"></el-date-picker>
 				</el-form-item>
-				<el-form-item label="客户">
+				<el-form-item label="供应商">
 					<el-row>
 						<el-col :span="4">
 							<SearchOption
@@ -28,7 +28,7 @@
 							</SearchOption>
 						</el-col>
 						<el-col :span="20">
-							<el-input clearable v-model="searchForm.supplier" placeholder="请输入客户" size="small">
+							<el-input clearable v-model="searchForm.supplier" placeholder="请输入供应商" size="small">
 								<i slot="prefix" class="el-input__icon el-icon-search"></i>
 							</el-input>
 						</el-col>
@@ -52,14 +52,14 @@
 		<!-- 表格区域 -->
 		<el-table :data="tableData" border style="width: 100%" v-loading="loading" size="small">
 			<el-table-column prop="time" label="日期"></el-table-column>
-			<el-table-column prop="companyName" label="客户"></el-table-column>
+			<el-table-column prop="companyName" label="供应商"></el-table-column>
 			<el-table-column prop="moneyAmount" label="余额">
 				<template slot-scope="scope">
 					<span :class="{ negative: scope.row.moneyAmount < 0 }">{{ scope.row.moneyAmount }}</span>
 				</template>
 			</el-table-column>
 			<el-table-column prop="lastOrderTime" label="最后一次交易日期"></el-table-column>
-			<el-table-column label="查看客户信息" align="center">
+			<el-table-column label="查看供应商信息" align="center">
 				<template slot-scope="scope">
 					<el-link :underline="false" type="primary" @click="handleViewSUPPLIERInfo(scope.row.companyId)">查看</el-link>
 				</template>
@@ -144,7 +144,7 @@ export default {
 		handleUpdateCompanyName(value) {
 			this.companyName = value;
 		},
-		// 查看客户信息
+		// 查看供应商信息
 		handleViewSUPPLIERInfo(id) {
 			getCompany(id, PUBLIC_DICT_TYPE.SUPPLIER).then(res => {
 				if (!res.data && !res.rows) {
