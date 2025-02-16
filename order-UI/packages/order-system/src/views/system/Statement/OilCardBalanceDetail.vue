@@ -128,11 +128,26 @@
 			<el-table-column
 				v-if="columns[4].visible"
 				prop="runningBalance"
-				label="运行余额 (元)"
+				label="余额 (元)"
 				align="center"
 			>
 				<template #default="scope">
 					{{ scope.row.runningBalance.toFixed(2) }}
+				</template>
+			</el-table-column>
+
+			<el-table-column label="车辆申请信息" align="center">
+				<template #default="scope">
+					<div v-if="scope.row.carApplyId">
+						<el-button
+							type="text"
+							size="mini"
+							@click="viewCarDetail(scope.row.carApplyId)"
+						>
+							查看明细
+						</el-button>
+					</div>
+					<div v-else>暂无车辆申请信息</div>
 				</template>
 			</el-table-column>
 
@@ -169,7 +184,7 @@
 		<el-dialog
 			title="明细信息"
 			:visible.sync="detailDialogVisible"
-			width="600px"
+			width="900px"
 		>
 			<component :is="component" :need-to-show-info="needToShowInfo" />
 			<span slot="footer" class="dialog-footer">
@@ -188,6 +203,8 @@ import { getOilCardConsume } from '@/api/system/OilCardConsume';
 import OIL_RECHARGE from '@/components/NeedToShow/OIL_RECHARGE.vue';
 import OIL_TRANSFOR from '@/components/NeedToShow/OIL_TRANSFOR.vue';
 import OIL_CONSUME from '@/components/NeedToShow/OIL_CONSUME.vue';
+import { getCarApply } from '@/api/system/carApply';
+import CAR_APPLY from '@/components/NeedToShow/CAR_APPLY.vue';
 
 export default {
 	name: 'OilCardBalanceDetail',
@@ -285,6 +302,16 @@ export default {
 				}
 			}
 			this.detailDialogVisible = true;
+		},
+		viewCarDetail(id) {
+			getCarApply(id).then(res => {
+				if (!res.data) {
+					this.$message.warning('无相关数据');
+				}
+				this.needToShowInfo = res.data;
+				this.component = CAR_APPLY;
+				this.detailDialogVisible = true;
+			});
 		}
 	}
 };
