@@ -128,10 +128,10 @@
 				</el-button>
 			</el-col>
 			<!-- <el-col :span="1.5">
-				<el-button type="success" size="mini" @click="handleOnce">
-					一键付款
-				</el-button>
-			</el-col> -->
+        <el-button type="success" size="mini" @click="handleOnce">
+          一键付款
+        </el-button>
+      </el-col> -->
 			<right-toolbar
 				:showSearch.sync="showSearch"
 				:columns="columns"
@@ -398,16 +398,16 @@
 			</el-table-column>
 
 			<!-- <el-table-column
-				label="运费信息"
-				align="center"
-				class-name="small-padding fixed-width"
-				width="150"
-				fixed="right"
-			>
-				<template slot-scope="scope">
-					<CheckDetail :row="scope.row" />
-				</template>
-			</el-table-column> -->
+        label="运费信息"
+        align="center"
+        class-name="small-padding fixed-width"
+        width="150"
+        fixed="right"
+      >
+        <template slot-scope="scope">
+          <CheckDetail :row="scope.row" />
+        </template>
+      </el-table-column> -->
 		</el-table>
 
 		<pagination
@@ -908,8 +908,8 @@
 			</el-form>
 			<div slot="footer" class="dialog-footer">
 				<el-button type="primary" @click="submitForm"
-					>确认付款</el-button
-				>
+					>确认付款
+				</el-button>
 				<el-button @click="cancel">取 消</el-button>
 			</div>
 		</el-dialog>
@@ -991,13 +991,13 @@
 						/>
 					</el-form-item>
 					<!--          选择对方银行账户类型-->
-					<el-form-item label="对方银行账户类型">
-						<BankType
-							v-if="chooseBankDialogVisible"
-							:select-type="chooseInfo.otherBankCardType"
-							@updateSelectedType="changeCustomOtherBankType"
-						/>
-					</el-form-item>
+					<!--					<el-form-item label="对方银行账户类型">-->
+					<!--						<BankType-->
+					<!--							v-if="chooseBankDialogVisible"-->
+					<!--							:select-type="chooseInfo.otherBankCardType"-->
+					<!--							@updateSelectedType="changeCustomOtherBankType"-->
+					<!--						/>-->
+					<!--					</el-form-item>-->
 				</el-form>
 			</div>
 			<span slot="footer" class="dialog-footer">
@@ -1044,8 +1044,8 @@
 							<el-button
 								size="mini"
 								@click="viewSourceInfo(scope.row)"
-								>查看{{ `ID:` + info.tableId }}</el-button
-							>
+								>查看{{ `ID:` + info.tableId }}
+							</el-button>
 						</div>
 					</template>
 				</el-table-column>
@@ -1184,6 +1184,7 @@ import REBATE from '@/components/NeedToShow/REBATE.vue';
 import BANK_ACCEPTANCE from '@/components/NeedToShow/BANK_ACCEPTANCE.vue';
 import BUSSNIESS_TRIPVue from '../../../components/NeedToShow/BUSSNIESS_TRIP.vue';
 import LEND_MONEYVue from '../../../components/NeedToShow/LEND_MONEY.vue';
+
 export default {
 	name: 'Payment',
 	components: {
