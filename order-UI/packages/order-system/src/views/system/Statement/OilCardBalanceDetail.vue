@@ -113,6 +113,17 @@
 				</template>
 			</el-table-column>
 
+			<el-table-column prop="tableName" label="业务名称" align="center">
+				<template #default="scope">
+					{{
+						scope.tableName === 'oilrecharge'
+							? '充值'
+							: scope.tableName === 'oilcardfundtransfer'
+							? '圈存'
+							: '消费'
+					}}
+				</template>
+			</el-table-column>
 			<!-- 运行余额 -->
 			<el-table-column
 				v-if="columns[4].visible"
@@ -160,16 +171,7 @@
 			:visible.sync="detailDialogVisible"
 			width="600px"
 		>
-			<el-table
-				:data="detailInfo"
-				border
-				stripe
-				size="mini"
-				style="width: 100%"
-			>
-				<el-table-column prop="key" label="字段名" align="center" />
-				<el-table-column prop="value" label="字段值" align="center" />
-			</el-table>
+			<component :is="component" :need-to-show-info="needToShowInfo" />
 			<span slot="footer" class="dialog-footer">
 				<el-button @click="detailDialogVisible = false">关闭</el-button>
 			</span>
@@ -178,11 +180,14 @@
 </template>
 
 <script>
-import {
-	getOilCardDetailSummary,
-	fetchDetailById
-} from '../../../api/system/statement';
+import { getOilCardDetailSummary } from '../../../api/system/statement';
 import { mixin_printHTML } from '../../dashboard/mixins/print';
+import { getOilRecharge } from '@/api/system/oilRecharge';
+import { getOilCardFundTransfer } from '@/api/system/oilCardFundTransfer';
+import { getOilCardConsume } from '@/api/system/OilCardConsume';
+import OIL_RECHARGE from '@/components/NeedToShow/OIL_RECHARGE.vue';
+import OIL_TRANSFOR from '@/components/NeedToShow/OIL_TRANSFOR.vue';
+import OIL_CONSUME from '@/components/NeedToShow/OIL_CONSUME.vue';
 
 export default {
 	name: 'OilCardBalanceDetail',
@@ -206,7 +211,9 @@ export default {
 				{ key: 3, label: '变动金额 (元)', visible: true },
 				{ key: 4, label: '运行余额 (元)', visible: true },
 				{ key: 5, label: '操作', visible: true }
-			]
+			],
+			component: null,
+			needToShowInfo: null
 		};
 	},
 	created() {
@@ -241,22 +248,42 @@ export default {
 				this.$message.error('获取油卡详情失败');
 			}
 		},
-
+		async fetchDetailById(query) {
+			switch (query.tableName) {
+				case 'oilrecharge':
+					return getOilRecharge(query.tableId);
+				case 'oilcardfundtransfer':
+					return getOilCardFundTransfer(query.tableId);
+				default:
+					return getOilCardConsume(query.tableId);
+			}
+		},
 		// 查看明细逻辑
 		async viewDetail(row) {
 			const { tableName, tableId } = row;
-			const response = await fetchDetailById({ tableName, tableId });
+			const response = await this.fetchDetailById({ tableName, tableId });
 			if (!response.data) {
 				this.$message.warning('无相关数据');
 				return;
 			}
-			// 将明细数据格式化为键值对
-			this.detailInfo = Object.entries(response.data).map(
-				([key, value]) => ({
-					key,
-					value
-				})
-			);
+			// 根据表名展示不同信息
+			switch (tableName) {
+				case 'oilrecharge': {
+					this.needToShowInfo = response.data;
+					this.component = OIL_RECHARGE;
+					break;
+				}
+				case 'oilcardfundtransfer': {
+					this.needToShowInfo = response.data;
+					this.component = OIL_TRANSFOR;
+					break;
+				}
+				case 'oilcardconsume': {
+					this.needToShowInfo = response.data;
+					this.component = OIL_CONSUME;
+					break;
+				}
+			}
 			this.detailDialogVisible = true;
 		}
 	}
