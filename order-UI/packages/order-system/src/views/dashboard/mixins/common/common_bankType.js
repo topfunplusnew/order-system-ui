@@ -2,7 +2,7 @@
 
 export var mixin_bankType = {
 	methods: {
-		// 填充己方的银行卡账户类型
+		// 填充我方的银行卡账户类型
 		changeSelfBankType(value) {
 			if (this.form && typeof this.form === 'object') {
 				this.$set(this.form, 'selfBankCardType', value);

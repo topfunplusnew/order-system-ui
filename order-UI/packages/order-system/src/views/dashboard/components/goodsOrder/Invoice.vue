@@ -1,46 +1,24 @@
 <template>
 	<div>
 		<el-row>
-			<el-form
-				:model="form"
-				label-width="110px"
-				:rules="CheckRules.updateOrderItemVisibleTitleRules"
-			>
+			<el-form :model="form" label-width="110px" :rules="CheckRules.updateOrderItemVisibleTitleRules">
 				<el-form-item label="开票日期" prop="invoiceDate">
-					<el-date-picker
-						v-model="form.invoiceDate"
-						type="datetime"
-						placeholder="选择日期"
-						value-format="yyyy-MM-dd HH:mm:ss"
-					/>
+					<el-date-picker v-model="form.invoiceDate" type="datetime" placeholder="选择日期" value-format="yyyy-MM-dd HH:mm:ss" />
 				</el-form-item>
 				<el-form-item label="我方开票实体" prop="invoiceObject">
-					<el-input
-						v-model="form.invoiceObject"
-						placeholder="请输入我方开票实体"
-					/>
+					<el-input v-model="form.invoiceObject" placeholder="请输入我方开票实体" />
 				</el-form-item>
 				<el-form-item label="开票金额" prop="invoiceAmount">
-					<el-input
-						v-model="form.invoiceAmount"
-						placeholder="请输入开票金额"
-					/>
+					<el-input v-model="form.invoiceAmount" placeholder="请输入开票金额" />
 				</el-form-item>
 				<el-form-item label="公司名称" prop="companyName">
 					<el-row>
 						<el-col :span="10">
-							<el-input
-								v-model="form.companyName"
-								placeholder="请输入对方公司名称"
-							/>
+							<el-input v-model="form.companyName" placeholder="请输入对方公司名称" />
 						</el-col>
 						<el-col :span="2">
 							<SearchOption
-								:limit-info="
-									form.domain === 1
-										? { companyType: '客户' }
-										: { companyType: '供应商' }
-								"
+								:limit-info="form.domain === 1 ? { companyType: '客户' } : { companyType: '供应商' }"
 								:get-data="listCompany"
 								query-info="companyName"
 								query-label="公司名称"
@@ -49,40 +27,12 @@
 								@commitBack="handleCommitBackCompany"
 							>
 								<template #table-columns>
-									<el-table-column
-										:label="
-											form.domain === 1
-												? '客户'
-												: '供应商'
-										"
-										align="center"
-										prop="relationName"
-									>
-										<el-table-column
-											label="老板姓名"
-											align="center"
-											prop="leader"
-										/>
-										<el-table-column
-											label="老板电话"
-											align="center"
-											prop="leaderTel"
-										/>
-										<el-table-column
-											label="区域"
-											align="center"
-											prop="region"
-										/>
-										<el-table-column
-											label="公司名称"
-											align="center"
-											prop="companyName"
-										/>
-										<el-table-column
-											label="销售经理"
-											align="center"
-											prop="salesManager"
-										/>
+									<el-table-column :label="form.domain === 1 ? '客户' : '供应商'" align="center" prop="relationName">
+										<el-table-column label="老板姓名" align="center" prop="leader" />
+										<el-table-column label="老板电话" align="center" prop="leaderTel" />
+										<el-table-column label="区域" align="center" prop="region" />
+										<el-table-column label="公司名称" align="center" prop="companyName" />
+										<el-table-column label="销售经理" align="center" prop="salesManager" />
 									</el-table-column>
 								</template>
 							</SearchOption>
@@ -90,10 +40,7 @@
 					</el-row>
 				</el-form-item>
 				<el-form-item label="票据单位名称" prop="invoiceCompanyName">
-					<el-input
-						v-model="form.invoiceCompanyName"
-						placeholder="请输入票据单位名称"
-					/>
+					<el-input v-model="form.invoiceCompanyName" placeholder="请输入票据单位名称" />
 				</el-form-item>
 				<!-- <el-form-item label="票点" prop="ticketPoint">
 					<el-input v-model="form.ticketPoint" placeholder="请输入票点" />
@@ -106,10 +53,7 @@
 					/>
 				</el-form-item> -->
 				<el-form-item label="备注" prop="comments">
-					<el-input
-						v-model="form.comments"
-						placeholder="请输入备注"
-					/>
+					<el-input v-model="form.comments" placeholder="请输入备注" />
 				</el-form-item>
 			</el-form>
 		</el-row>
@@ -241,10 +185,7 @@ export default {
 					this.resetMoney();
 				}
 				// 填充票点金额
-				this.form.ticketPointAmount = fix(
-					Number(this.form.ticketPoint) *
-						Number(this.form.invoiceAmount)
-				);
+				this.form.ticketPointAmount = fix(Number(this.form.ticketPoint) * Number(this.form.invoiceAmount));
 			},
 			deep: true
 		}
@@ -287,13 +228,8 @@ export default {
 							return;
 						}
 						total_out = res.data.totalAmount || 0;
-						if (
-							Number(this.form.invoiceAmount) + total_out >
-							this.maxInvent
-						) {
-							this.$message.error(
-								'累计开票金额超过总货款，请修改开票金额！'
-							);
+						if (Number(this.form.invoiceAmount) + total_out > this.maxInvent) {
+							this.$message.error('累计开票金额超过总货款，请修改开票金额！');
 							this.resetMoney();
 							return;
 						}
@@ -322,13 +258,8 @@ export default {
 							return;
 						}
 						total_in = res.data.totalAmount || 0;
-						if (
-							Number(this.form.invoiceAmount) + total_in >
-							this.maxInvent
-						) {
-							this.$message.error(
-								'累计开票金额超过出厂货款，请修改开票金额！'
-							);
+						if (Number(this.form.invoiceAmount) + total_in > this.maxInvent) {
+							this.$message.error('累计开票金额超过出厂货款，请修改开票金额！');
 							this.resetMoney();
 							return;
 						}

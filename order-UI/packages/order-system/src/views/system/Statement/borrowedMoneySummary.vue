@@ -2,66 +2,27 @@
 <template>
 	<div class="app-container">
 		<el-row style="background-color: #e6e6e6">
-			<el-button type="primary" icon="el-icon-refresh" @click="refresh"
-				>刷新</el-button
-			>
+			<el-button type="primary" icon="el-icon-refresh" @click="refresh">刷新</el-button>
 		</el-row>
 		<hr color="#e6e6e6" />
-		<el-form
-			v-show="showSearch"
-			ref="queryForm"
-			:model="queryParams"
-			size="mini"
-			:inline="true"
-			label-width="68px"
-		>
+		<el-form v-show="showSearch" ref="queryForm" :model="queryParams" size="mini" :inline="true" label-width="68px">
 			<el-form-item label="开始时间" prop="beginTime">
-				<el-date-picker
-					v-model="queryParams.beginTime"
-					type="date"
-					placeholder="请选择开始时间"
-					value-format="yyyy-MM-dd"
-				>
-				</el-date-picker>
+				<el-date-picker v-model="queryParams.beginTime" type="date" placeholder="请选择开始时间" value-format="yyyy-MM-dd"></el-date-picker>
 			</el-form-item>
 			<el-form-item label="结束时间" prop="endTime">
-				<el-date-picker
-					v-model="queryParams.endTime"
-					type="date"
-					placeholder="请选择结束时间"
-					value-format="yyyy-MM-dd"
-				>
-				</el-date-picker>
+				<el-date-picker v-model="queryParams.endTime" type="date" placeholder="请选择结束时间" value-format="yyyy-MM-dd"></el-date-picker>
 			</el-form-item>
 			<el-form-item>
-				<el-button
-					type="primary"
-					icon="el-icon-search"
-					size="mini"
-					@click="handleQuery"
-					>搜索</el-button
-				>
+				<el-button type="primary" icon="el-icon-search" size="mini" @click="handleQuery">搜索</el-button>
 			</el-form-item>
 		</el-form>
 		<hr color="#e6e6e6" />
-		<el-row style="font-weight: bold; font-size: 20px; margin: 0 30px">
-			贷款管理台账
-		</el-row>
+		<el-row style="font-weight: bold; font-size: 20px; margin: 0 30px">贷款管理台账</el-row>
 		<el-row :gutter="10" class="mb8">
-			<right-toolbar
-				:showSearch.sync="showSearch"
-				:columns="columns"
-				@queryTable="getList"
-			>
+			<right-toolbar :showSearch.sync="showSearch" :columns="columns" @queryTable="getList">
 				<template #print>
 					<el-col :span="1.5">
-						<el-button
-							plain
-							icon="el-icon-printer"
-							size="mini"
-							@click="printHTML"
-						>
-						</el-button>
+						<el-button plain icon="el-icon-printer" size="mini" @click="printHTML"></el-button>
 					</el-col>
 				</template>
 			</right-toolbar>
@@ -80,102 +41,27 @@
 				}
 			"
 		>
-			<el-table-column
-				v-if="columns[0].visible"
-				label="id"
-				align="center"
-				prop="id"
-			/>
-			<el-table-column
-				v-if="columns[1].visible"
-				label="贷款来源"
-				align="center"
-				prop="origin"
-			/>
-			<el-table-column
-				v-if="columns[2].visible"
-				label="借入金额"
-				align="center"
-				prop="moneyAmount"
-			/>
-			<el-table-column
-				v-if="columns[3].visible"
-				label="贷款利率"
-				align="center"
-				prop="ratio"
-			/>
-			<el-table-column
-				v-if="columns[4].visible"
-				label="贷款发放日期"
-				align="center"
-				prop="loanDate"
-			/>
-			<el-table-column
-				v-if="columns[5].visible"
-				label="贷款年限"
-				align="center"
-				prop="loanDuring"
-			/>
-			<el-table-column
-				v-if="columns[6].visible"
-				label="抵押担保"
-				align="center"
-				prop="mortgageGuarantee"
-				show-overflow-tooltip
-			/>
-			<el-table-column
-				v-if="columns[7].visible"
-				label="打入账户"
-				align="center"
-				prop="acountsName"
-				show-overflow-tooltip
-			/>
-			<el-table-column
-				v-if="columns[8].visible"
-				label="打入账号"
-				align="center"
-				prop="bankNo"
-				show-overflow-tooltip
-			/>
-			<el-table-column
-				label="备注"
-				align="center"
-				prop="comments"
-				show-overflow-tooltip
-			/>
-			<el-table-column
-				label="操作"
-				align="center"
-				class-name="small-padding fixed-width"
-				width="120"
-				fixed="right"
-			>
+			<el-table-column v-if="columns[0].visible" label="id" align="center" prop="id" />
+			<el-table-column v-if="columns[1].visible" label="贷款来源" align="center" prop="origin" />
+			<el-table-column v-if="columns[2].visible" label="借入金额" align="center" prop="moneyAmount" />
+			<el-table-column v-if="columns[3].visible" label="贷款利率" align="center" prop="ratio" />
+			<el-table-column v-if="columns[4].visible" label="贷款发放日期" align="center" prop="loanDate" />
+			<el-table-column v-if="columns[5].visible" label="贷款年限" align="center" prop="loanDuring" />
+			<el-table-column v-if="columns[6].visible" label="抵押担保" align="center" prop="mortgageGuarantee" show-overflow-tooltip />
+			<el-table-column v-if="columns[7].visible" label="打入账户" align="center" prop="acountsName" show-overflow-tooltip />
+			<el-table-column v-if="columns[8].visible" label="打入账号" align="center" prop="bankNo" show-overflow-tooltip />
+			<el-table-column label="备注" align="center" prop="comments" show-overflow-tooltip />
+			<el-table-column label="操作" align="center" class-name="small-padding fixed-width" width="120" fixed="right">
 				<template slot-scope="scope">
-					<el-button
-						size="mini"
-						type="warning"
-						@click="checkDetail(scope.row)"
-					>
-						查看历史还款
-					</el-button>
+					<el-button size="mini" type="warning" @click="checkDetail(scope.row)">查看历史还款</el-button>
 				</template>
 			</el-table-column>
 		</el-table>
 
-		<pagination
-			v-show="total > 0"
-			:total="total"
-			:page.sync="queryParams.pageNum"
-			:limit.sync="queryParams.pageSize"
-			@pagination="getList"
-		/>
+		<pagination v-show="total > 0" :total="total" :page.sync="queryParams.pageNum" :limit.sync="queryParams.pageSize" @pagination="getList" />
 
 		<!--    历史还款记录弹窗-->
-		<InfoDialog
-			title="历史还款记录"
-			:visible.sync="dialogHistoryVisible"
-			:width="'620px'"
-		>
+		<InfoDialog title="历史还款记录" :visible.sync="dialogHistoryVisible" :width="'620px'">
 			<template #info>
 				<el-table
 					v-if="tableData.length !== 0"
@@ -194,60 +80,25 @@
 							<span v-if="scope.$index === 0">贷款还款</span>
 						</template>
 					</el-table-column>
-					<el-table-column prop="payDate" label="时间" width="180">
-					</el-table-column>
-					<el-table-column prop="moneyAmount" label="还款金额">
-					</el-table-column>
+					<el-table-column prop="payDate" label="时间" width="180"></el-table-column>
+					<el-table-column prop="moneyAmount" label="还款金额"></el-table-column>
 				</el-table>
-				<pagination
-					v-show="detailTotal > 0"
-					:total="detailTotal"
-					:page.sync="queryRepaymentParams.pageNum"
-					:limit.sync="queryRepaymentParams.pageSize"
-					@pagination="getRepaymentMoneyList"
-				/>
+				<pagination v-show="detailTotal > 0" :total="detailTotal" :page.sync="queryRepaymentParams.pageNum" :limit.sync="queryRepaymentParams.pageSize" @pagination="getRepaymentMoneyList" />
 			</template>
 		</InfoDialog>
 
-		<el-dialog
-			:close-on-click-modal="false"
-			:show-close="false"
-			title="请选择导出时间段"
-			:visible.sync="dialogVisible"
-			width="30%"
-		>
-			<el-form
-				ref="queryForm"
-				:model="queryParams"
-				size="mini"
-				label-width="68px"
-			>
+		<el-dialog :close-on-click-modal="false" :show-close="false" title="请选择导出时间段" :visible.sync="dialogVisible" width="30%">
+			<el-form ref="queryForm" :model="queryParams" size="mini" label-width="68px">
 				<el-form-item label="开始时间" prop="beginTime">
-					<el-date-picker
-						v-model="queryParams.beginTime"
-						type="date"
-						placeholder="选择时间"
-						value-format="yyyy-MM-dd"
-						size="mini"
-					>
-					</el-date-picker>
+					<el-date-picker v-model="queryParams.beginTime" type="date" placeholder="选择时间" value-format="yyyy-MM-dd" size="mini"></el-date-picker>
 				</el-form-item>
 				<el-form-item label="结束时间" prop="endTime">
-					<el-date-picker
-						v-model="queryParams.endTime"
-						type="date"
-						placeholder="选择时间"
-						value-format="yyyy-MM-dd"
-						size="mini"
-					>
-					</el-date-picker>
+					<el-date-picker v-model="queryParams.endTime" type="date" placeholder="选择时间" value-format="yyyy-MM-dd" size="mini"></el-date-picker>
 				</el-form-item>
 			</el-form>
 			<span slot="footer" class="dialog-footer">
 				<el-button @click="dialogVisible = false">取 消</el-button>
-				<el-button type="primary" @click="handleSubmitTime"
-					>导 出</el-button
-				>
+				<el-button type="primary" @click="handleSubmitTime">导 出</el-button>
 			</span>
 		</el-dialog>
 	</div>

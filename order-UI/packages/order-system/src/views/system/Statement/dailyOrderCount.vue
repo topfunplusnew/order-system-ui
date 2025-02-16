@@ -11,23 +11,9 @@ export default {
 		return {
 			queryParams: {
 				// 上个月的第一天
-				beginTime: parseTime(
-					new Date(
-						new Date().getFullYear(),
-						new Date().getMonth() - 1,
-						1
-					),
-					'{y}-{m}-{d}'
-				),
+				beginTime: parseTime(new Date(new Date().getFullYear(), new Date().getMonth() - 1, 1), '{y}-{m}-{d}'),
 				// 本月最后一天
-				endTime: parseTime(
-					new Date(
-						new Date().getFullYear(),
-						new Date().getMonth() + 1,
-						0
-					),
-					'{y}-{m}-{d}'
-				)
+				endTime: parseTime(new Date(new Date().getFullYear(), new Date().getMonth() + 1, 0), '{y}-{m}-{d}')
 			},
 			loading: '',
 			columns: [
@@ -76,9 +62,7 @@ export default {
 			} else {
 				// 筛选函数
 				const handler = orderStatisticsList => {
-					return orderStatisticsList.filter(
-						item => item.orderDateButMonth.split('-')[0] === type
-					);
+					return orderStatisticsList.filter(item => item.orderDateButMonth.split('-')[0] === type);
 				};
 				return handler(list[0].orderStatisticsList);
 			}
@@ -115,84 +99,36 @@ export default {
 		<div class="app-container">
 			<!--    刷新行-->
 			<el-row style="background-color: #e6e6e6">
-				<el-button
-					type="primary"
-					icon="el-icon-refresh"
-					@click="refresh"
-					>刷新
-				</el-button>
+				<el-button type="primary" icon="el-icon-refresh" @click="refresh">刷新</el-button>
 			</el-row>
 			<hr color="#e6e6e6" />
 			<!--    时间范围搜索行-->
 			<el-row>
-				<el-form
-					ref="queryForm"
-					:model="queryParams"
-					size="mini"
-					:inline="true"
-					label-width="100px"
-				>
+				<el-form ref="queryForm" :model="queryParams" size="mini" :inline="true" label-width="100px">
 					<el-form-item label="时间" prop="companyName">
-						<el-date-picker
-							v-model="queryParams.beginTime"
-							type="date"
-							size="mini"
-							value-format="yyyy-MM-dd"
-							placeholder="选择日期"
-						>
-						</el-date-picker>
+						<el-date-picker v-model="queryParams.beginTime" type="date" size="mini" value-format="yyyy-MM-dd" placeholder="选择日期"></el-date-picker>
 					</el-form-item>
 					<el-form-item>
-						<el-date-picker
-							v-model="queryParams.endTime"
-							type="date"
-							size="mini"
-							value-format="yyyy-MM-dd"
-							placeholder="选择日期"
-						>
-						</el-date-picker>
+						<el-date-picker v-model="queryParams.endTime" type="date" size="mini" value-format="yyyy-MM-dd" placeholder="选择日期"></el-date-picker>
 					</el-form-item>
 					<el-form-item>
-						<el-button
-							type="primary"
-							icon="el-icon-search"
-							size="mini"
-							@click="handleQuery"
-							>搜索
-						</el-button>
+						<el-button type="primary" icon="el-icon-search" size="mini" @click="handleQuery">搜索</el-button>
 					</el-form-item>
 				</el-form>
 			</el-row>
 			<hr color="#e6e6e6" />
 			<el-row>
-				<el-row
-					style="font-weight: bold; font-size: 20px; margin: 0 30px"
-				>
-					客户每日发货次数
-				</el-row>
+				<el-row style="font-weight: bold; font-size: 20px; margin: 0 30px">客户每日发货次数</el-row>
 				<el-row>
 					<right-toolbar :columns="columns">
 						<template #print>
 							<el-col :span="1.5">
-								<el-button
-									plain
-									icon="el-icon-printer"
-									size="mini"
-									@click="printHTML"
-								>
-								</el-button>
+								<el-button plain icon="el-icon-printer" size="mini" @click="printHTML"></el-button>
 							</el-col>
 						</template>
 						<template #export>
 							<el-col :span="1.5">
-								<el-button
-									v-hasPermi="['system:supplier:export']"
-									plain
-									icon="el-icon-folder-opened"
-									size="mini"
-									@click="handleExport"
-								>
-								</el-button>
+								<el-button v-hasPermi="['system:supplier:export']" plain icon="el-icon-folder-opened" size="mini" @click="handleExport"></el-button>
 							</el-col>
 						</template>
 					</right-toolbar>
@@ -214,76 +150,23 @@ export default {
 						"
 					>
 						<el-table-column align="center">
-							<el-table-column
-								v-if="columns[0].visible"
-								label="客户"
-								align="center"
-								prop="companyName"
-								width="200"
-							/>
-							<el-table-column
-								v-if="columns[1].visible"
-								label="录入员"
-								align="driverName"
-								prop="salesman"
-								width="200"
-							/>
-							<el-table-column
-								v-if="columns[2].visible"
-								label="区域"
-								align="center"
-								prop="region"
-								width="200"
-							/>
+							<el-table-column v-if="columns[0].visible" label="客户" align="center" prop="companyName" width="200" />
+							<el-table-column v-if="columns[1].visible" label="录入员" align="driverName" prop="salesman" width="200" />
+							<el-table-column v-if="columns[2].visible" label="区域" align="center" prop="region" width="200" />
 						</el-table-column>
 						<!--            联系方式-->
-						<el-table-column
-							align="center"
-							label="联系方式"
-							prop="phone"
-						>
-						</el-table-column>
+						<el-table-column align="center" label="联系方式" prop="phone"></el-table-column>
 						<!--            年份信息 遍历年份数组-->
 						<template v-if="statementList.length !== 0">
-							<el-table-column
-								v-for="(item, index) in handleData(
-									statementList,
-									0
-								)"
-								:key="index"
-								align="center"
-								:label="item + `年`"
-							>
+							<el-table-column v-for="(item, index) in handleData(statementList, 0)" :key="index" align="center" :label="item + `年`">
 								<!--              遍历月份 先拿到该年份下的月份数据 然后在下面进行遍历-->
-								<el-table-column
-									v-for="(element, cols) in handleData(
-										statementList,
-										item
-									)"
-									:key="cols"
-									label="发货量"
-									align="center"
-									width="100"
-								>
+								<el-table-column v-for="(element, cols) in handleData(statementList, item)" :key="cols" label="发货量" align="center" width="100">
 									<template #header>
-										{{
-											element.orderDateButMonth.split(
-												'-'
-											)[1] + `月份`
-										}}
+										{{ element.orderDateButMonth.split('-')[1] + `月份` }}
 									</template>
 									<template #default="scope">
-										<div
-											v-if="
-												scope.row.orderStatisticsList
-													.length !== 0
-											"
-										>
-											{{
-												scope.row.orderStatisticsList[
-													index
-												].orderCount
-											}}
+										<div v-if="scope.row.orderStatisticsList.length !== 0">
+											{{ scope.row.orderStatisticsList[index].orderCount }}
 										</div>
 										<div v-else>0</div>
 									</template>
@@ -294,45 +177,18 @@ export default {
 				</el-row>
 			</el-row>
 		</div>
-		<el-dialog
-			:close-on-click-modal="false"
-			:show-close="false"
-			title="请选择导出时间段"
-			:visible.sync="dialogVisible"
-			width="30%"
-		>
-			<el-form
-				ref="queryForm"
-				:model="queryParams"
-				size="mini"
-				label-width="68px"
-			>
+		<el-dialog :close-on-click-modal="false" :show-close="false" title="请选择导出时间段" :visible.sync="dialogVisible" width="30%">
+			<el-form ref="queryForm" :model="queryParams" size="mini" label-width="68px">
 				<el-form-item label="开始时间" prop="beginTime">
-					<el-date-picker
-						v-model="queryParams.beginTime"
-						type="date"
-						placeholder="选择时间"
-						value-format="yyyy-MM-dd"
-						size="mini"
-					>
-					</el-date-picker>
+					<el-date-picker v-model="queryParams.beginTime" type="date" placeholder="选择时间" value-format="yyyy-MM-dd" size="mini"></el-date-picker>
 				</el-form-item>
 				<el-form-item label="结束时间" prop="endTime">
-					<el-date-picker
-						v-model="queryParams.endTime"
-						type="date"
-						placeholder="选择时间"
-						value-format="yyyy-MM-dd"
-						size="mini"
-					>
-					</el-date-picker>
+					<el-date-picker v-model="queryParams.endTime" type="date" placeholder="选择时间" value-format="yyyy-MM-dd" size="mini"></el-date-picker>
 				</el-form-item>
 			</el-form>
 			<span slot="footer" class="dialog-footer">
 				<el-button @click="dialogVisible = false">取 消</el-button>
-				<el-button type="primary" @click="handleSubmitTime"
-					>导 出</el-button
-				>
+				<el-button type="primary" @click="handleSubmitTime">导 出</el-button>
 			</span>
 		</el-dialog>
 	</div>

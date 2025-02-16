@@ -52,26 +52,15 @@ export default {
 
 <template>
 	<div>
-		<el-button size="mini" type="text" @click="handleCheck(row)"
-			>查看原单据
-		</el-button>
+		<el-button size="mini" type="text" @click="handleCheck(row)">查看原单据</el-button>
 
-		<el-dialog
-			title="数据展示"
-			:visible.sync="dialogVisible"
-			width="500px"
-			append-to-body
-		>
+		<el-dialog title="数据展示" :visible.sync="dialogVisible" width="500px" append-to-body>
 			<el-descriptions title="数据信息">
-				<el-descriptions-item label="用户名"
-					>kooriookami</el-descriptions-item
-				>
+				<el-descriptions-item label="用户名">kooriookami</el-descriptions-item>
 			</el-descriptions>
 			<span slot="footer" class="dialog-footer">
 				<el-button @click="dialogVisible = false">取 消</el-button>
-				<el-button type="primary" @click="dialogVisible = false"
-					>确 定</el-button
-				>
+				<el-button type="primary" @click="dialogVisible = false">确 定</el-button>
 			</span>
 		</el-dialog>
 	</div>

@@ -40,8 +40,7 @@ export default {
 			el._vClipBoard.text = function () {
 				return binding.value;
 			};
-			el._vClipBoard.action = () =>
-				binding.arg === 'cut' ? 'cut' : 'copy';
+			el._vClipBoard.action = () => (binding.arg === 'cut' ? 'cut' : 'copy');
 		}
 	},
 	unbind(el, binding) {

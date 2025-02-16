@@ -63,9 +63,7 @@ export default {
 							dataList: utils.sheet_to_json(workbook.Sheets[item])
 						});
 						// 放入tableData中 el-table中tableData的数据结构为 [{},{},{}] 对象中每一个属性对应一个column 的prop
-						this.tableData.push(
-							utils.sheet_to_json(workbook.Sheets[item])
-						);
+						this.tableData.push(utils.sheet_to_json(workbook.Sheets[item]));
 					});
 					// tableData是所有Sheet的数据 tableData[0]是第一个Sheet
 					console.log('tableData:', this.tableData);

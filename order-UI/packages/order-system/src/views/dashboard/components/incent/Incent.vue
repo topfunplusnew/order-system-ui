@@ -29,16 +29,11 @@ export default {
 
 <template>
 	<div>
-		<el-button size="mini" type="text" @click="handleCheck"
-			>查看订单</el-button
-		>
+		<el-button size="mini" type="text" @click="handleCheck">查看订单</el-button>
 
 		<InfoDialog :title="orderTitle" :visible.sync="orderItemVisible">
 			<template #info>
-				<IncentOrders
-					@indexOrder="handleIndexOrder"
-					@close="orderItemVisible = false"
-				/>
+				<IncentOrders @indexOrder="handleIndexOrder" @close="orderItemVisible = false" />
 			</template>
 		</InfoDialog>
 	</div>

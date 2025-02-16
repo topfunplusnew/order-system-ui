@@ -1,38 +1,22 @@
 <template>
 	<el-form size="small">
 		<el-form-item>
-			<el-radio v-model="radioValue" :label="1">
-				周，允许的通配符[, - * ? / L #]
-			</el-radio>
+			<el-radio v-model="radioValue" :label="1">周，允许的通配符[, - * ? / L #]</el-radio>
 		</el-form-item>
 
 		<el-form-item>
-			<el-radio v-model="radioValue" :label="2"> 不指定 </el-radio>
+			<el-radio v-model="radioValue" :label="2">不指定</el-radio>
 		</el-form-item>
 
 		<el-form-item>
 			<el-radio v-model="radioValue" :label="3">
 				周期从星期
 				<el-select v-model="cycle01" clearable>
-					<el-option
-						v-for="(item, index) of weekList"
-						:key="index"
-						:label="item.value"
-						:value="item.key"
-						:disabled="item.key === 1"
-						>{{ item.value }}</el-option
-					>
+					<el-option v-for="(item, index) of weekList" :key="index" :label="item.value" :value="item.key" :disabled="item.key === 1">{{ item.value }}</el-option>
 				</el-select>
 				-
 				<el-select v-model="cycle02" clearable>
-					<el-option
-						v-for="(item, index) of weekList"
-						:key="index"
-						:label="item.value"
-						:value="item.key"
-						:disabled="item.key < cycle01 && item.key !== 1"
-						>{{ item.value }}</el-option
-					>
+					<el-option v-for="(item, index) of weekList" :key="index" :label="item.value" :value="item.key" :disabled="item.key < cycle01 && item.key !== 1">{{ item.value }}</el-option>
 				</el-select>
 			</el-radio>
 		</el-form-item>
@@ -43,13 +27,7 @@
 				<el-input-number v-model="average01" :min="1" :max="4" />
 				周的星期
 				<el-select v-model="average02" clearable>
-					<el-option
-						v-for="(item, index) of weekList"
-						:key="index"
-						:label="item.value"
-						:value="item.key"
-						>{{ item.value }}</el-option
-					>
+					<el-option v-for="(item, index) of weekList" :key="index" :label="item.value" :value="item.key">{{ item.value }}</el-option>
 				</el-select>
 			</el-radio>
 		</el-form-item>
@@ -58,13 +36,7 @@
 			<el-radio v-model="radioValue" :label="5">
 				本月最后一个星期
 				<el-select v-model="weekday" clearable>
-					<el-option
-						v-for="(item, index) of weekList"
-						:key="index"
-						:label="item.value"
-						:value="item.key"
-						>{{ item.value }}</el-option
-					>
+					<el-option v-for="(item, index) of weekList" :key="index" :label="item.value" :value="item.key">{{ item.value }}</el-option>
 				</el-select>
 			</el-radio>
 		</el-form-item>
@@ -72,20 +44,8 @@
 		<el-form-item>
 			<el-radio v-model="radioValue" :label="6">
 				指定
-				<el-select
-					v-model="checkboxList"
-					clearable
-					placeholder="可多选"
-					multiple
-					style="width: 100%"
-				>
-					<el-option
-						v-for="(item, index) of weekList"
-						:key="index"
-						:label="item.value"
-						:value="String(item.key)"
-						>{{ item.value }}</el-option
-					>
+				<el-select v-model="checkboxList" clearable placeholder="可多选" multiple style="width: 100%">
+					<el-option v-for="(item, index) of weekList" :key="index" :label="item.value" :value="String(item.key)">{{ item.value }}</el-option>
 				</el-select>
 			</el-radio>
 		</el-form-item>

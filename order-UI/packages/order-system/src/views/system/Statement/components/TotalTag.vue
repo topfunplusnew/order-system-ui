@@ -39,100 +39,45 @@ export default {
 		<el-row :gutter="20">
 			<el-col :span="4">
 				<div>
-					<el-statistic
-						group-separator=","
-						:precision="2"
-						:value="totalIncludingTax"
-					>
+					<el-statistic group-separator="," :precision="2" :value="totalIncludingTax">
 						<template #title>
-							<span
-								style="
-									color: red;
-									font-size: 16px;
-									font-weight: bold;
-								"
-								>含税货款</span
-							>
+							<span style="color: red; font-size: 16px; font-weight: bold">含税货款</span>
 						</template>
 					</el-statistic>
 				</div>
 			</el-col>
 			<el-col :span="4">
 				<div>
-					<el-statistic
-						group-separator=","
-						:precision="2"
-						:value="totalExcludingTax"
-					>
+					<el-statistic group-separator="," :precision="2" :value="totalExcludingTax">
 						<template #title>
-							<span
-								style="
-									color: red;
-									font-size: 16px;
-									font-weight: bold;
-								"
-								>不含税货款</span
-							>
+							<span style="color: red; font-size: 16px; font-weight: bold">不含税货款</span>
 						</template>
 					</el-statistic>
 				</div>
 			</el-col>
 			<el-col :span="4">
 				<div>
-					<el-statistic
-						group-separator=","
-						:precision="2"
-						:value="publicAccountInCome"
-					>
+					<el-statistic group-separator="," :precision="2" :value="publicAccountInCome">
 						<template #title>
-							<span
-								style="
-									color: red;
-									font-size: 16px;
-									font-weight: bold;
-								"
-								>公户收款</span
-							>
+							<span style="color: red; font-size: 16px; font-weight: bold">公户收款</span>
 						</template>
 					</el-statistic>
 				</div>
 			</el-col>
 			<el-col :span="4">
 				<div>
-					<el-statistic
-						group-separator=","
-						:precision="2"
-						:value="noPublicAccountInCome"
-					>
+					<el-statistic group-separator="," :precision="2" :value="noPublicAccountInCome">
 						<template #title>
-							<span
-								style="
-									color: red;
-									font-size: 16px;
-									font-weight: bold;
-								"
-								>私户收款</span
-							>
+							<span style="color: red; font-size: 16px; font-weight: bold">私户收款</span>
 						</template>
 					</el-statistic>
 				</div>
 			</el-col>
 			<el-col :span="4">
 				<div>
-					<el-statistic
-						group-separator=","
-						:precision="2"
-						:value="totalTicketPoints"
-					>
+					<el-statistic group-separator="," :precision="2" :value="totalTicketPoints">
 						<template #title>
-							<span
-								style="
-									color: red;
-									font-size: 16px;
-									font-weight: bold;
-								"
-								>票点收入</span
-							>
+							<span style="color: red; font-size: 16px; font-weight: bold">票点收入</span>
 						</template>
 					</el-statistic>
 				</div>

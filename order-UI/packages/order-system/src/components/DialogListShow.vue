@@ -1,20 +1,8 @@
 <template>
 	<div>
-		<el-dialog
-			:close-on-click-modal="false"
-			v-bind="$attrs"
-			:title="title"
-			v-on="$listeners"
-			@open="onOpen"
-		>
+		<el-dialog :close-on-click-modal="false" v-bind="$attrs" :title="title" v-on="$listeners" @open="onOpen">
 			<el-row>
-				<el-table
-					:data="showInfoList"
-					:loading="loading"
-					height="450px"
-					size="mini"
-					:cell-style="cellStyle"
-				>
+				<el-table :data="showInfoList" :loading="loading" height="450px" size="mini" :cell-style="cellStyle">
 					<template #append>
 						<AddBankAccounts
 							:company-info="{
@@ -26,13 +14,7 @@
 					</template>
 					<slot name="column"></slot>
 				</el-table>
-				<pagination
-					v-show="total > 0"
-					:total="total"
-					:current-page.sync="queryParams.pageNum"
-					:page-size.sync="queryParams.pageSize"
-					@pagination="fetchData"
-				/>
+				<pagination v-show="total > 0" :total="total" :current-page.sync="queryParams.pageNum" :page-size.sync="queryParams.pageSize" @pagination="fetchData" />
 			</el-row>
 			<template #footer>
 				<el-button @click="close">取消</el-button>

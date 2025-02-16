@@ -1,65 +1,27 @@
 <template>
 	<div class="app-container">
 		<!--    查询组-->
-		<el-form
-			v-show="showSearch"
-			ref="queryForm"
-			:model="queryOrderInfo"
-			size="small"
-			:inline="true"
-			label-width="100px"
-		>
-		</el-form>
+		<el-form v-show="showSearch" ref="queryForm" :model="queryOrderInfo" size="small" :inline="true" label-width="100px"></el-form>
 		<!--       表格上方操作栏-->
 
 		<el-row :gutter="10" class="mb8">
 			<!--      左侧操作栏-->
 			<el-col :span="1.5">
-				<el-button
-					icon="el-icon-refresh"
-					size="mini"
-					@click="resetQuery"
-					>刷新
-				</el-button>
+				<el-button icon="el-icon-refresh" size="mini" @click="resetQuery">刷新</el-button>
 			</el-col>
 			<el-col :span="1.5">
-				<el-button
-					v-hasPermi="['system:orderdetail:export']"
-					type="warning"
-					plain
-					icon="el-icon-download"
-					size="mini"
-					@click="handleExport"
-					>导出订单数据
-				</el-button>
+				<el-button v-hasPermi="['system:orderdetail:export']" type="warning" plain icon="el-icon-download" size="mini" @click="handleExport">导出订单数据</el-button>
 			</el-col>
-			<right-toolbar
-				:showSearch.sync="showSearch"
-				:columns="columns"
-				@queryTable="getList"
-			>
+			<right-toolbar :showSearch.sync="showSearch" :columns="columns" @queryTable="getList">
 				<template #print>
 					<el-col :span="1.5">
-						<el-button
-							plain
-							icon="el-icon-printer"
-							size="mini"
-							@click="printHTML"
-						>
-						</el-button>
+						<el-button plain icon="el-icon-printer" size="mini" @click="printHTML"></el-button>
 					</el-col>
 				</template>
 				<!--        导出-->
 				<template #export>
 					<el-col :span="1.5">
-						<el-button
-							v-hasPermi="['system:company:export']"
-							plain
-							icon="el-icon-folder-opened"
-							size="mini"
-							@click="handleExport"
-						>
-						</el-button>
+						<el-button v-hasPermi="['system:company:export']" plain icon="el-icon-folder-opened" size="mini" @click="handleExport"></el-button>
 					</el-col>
 				</template>
 			</right-toolbar>
@@ -76,391 +38,108 @@
 			max-height="700"
 			@selection-change="handleSelectionChange"
 		>
-			<el-table-column
-				label="操作"
-				align="center"
-				class-name="small-padding fixed-width"
-				width="170px"
-				fixed="left"
-			>
+			<el-table-column label="操作" align="center" class-name="small-padding fixed-width" width="170px" fixed="left">
 				<template slot-scope="scope">
-					<el-button
-						size="mini"
-						@click="checkOrderItemInfo(scope.row)"
-						>查看
-					</el-button>
-					<el-button
-						v-hasPermi="['system:orderdetail:remove']"
-						size="mini"
-						type="danger"
-						@click="handleDelete(scope.row)"
-						>删除
-					</el-button>
+					<el-button size="mini" @click="checkOrderItemInfo(scope.row)">查看</el-button>
+					<el-button v-hasPermi="['system:orderdetail:remove']" size="mini" type="danger" @click="handleDelete(scope.row)">删除</el-button>
 				</template>
 			</el-table-column>
 			<!--      固定列-->
 			<el-table-column label="id" align="center" prop="id" fixed="left" />
-			<el-table-column
-				label="订单日期"
-				align="center"
-				prop="orderDate"
-				fixed="left"
-			/>
-			<el-table-column
-				label="订单编号"
-				align="center"
-				prop="ordersNo"
-				fixed="left"
-			/>
-			<el-table-column
-				label="客户"
-				align="center"
-				prop="customer"
-				fixed="left"
-			/>
-			<el-table-column
-				label="供应商"
-				align="center"
-				prop="supplier"
-				fixed="left"
-			/>
+			<el-table-column label="订单日期" align="center" prop="orderDate" fixed="left" />
+			<el-table-column label="订单编号" align="center" prop="ordersNo" fixed="left" />
+			<el-table-column label="客户" align="center" prop="customer" fixed="left" />
+			<el-table-column label="供应商" align="center" prop="supplier" fixed="left" />
 			<!--      滚动列-->
-			<el-table-column
-				v-if="columns[36].visible"
-				label="供应商ID"
-				align="center"
-				prop="supplierID"
-			/>
-			<el-table-column
-				v-if="columns[0].visible"
-				label="客户ID"
-				align="center"
-				prop="customerID"
-			/>
-			<el-table-column
-				v-if="columns[1].visible"
-				label="级别编码"
-				align="center"
-				prop="levelID"
-			/>
-			<el-table-column
-				v-if="columns[2].visible"
-				label="级别名称"
-				align="center"
-				prop="levelName"
-			/>
-			<el-table-column
-				v-if="columns[3].visible"
-				label="计量单位"
-				align="center"
-				prop="countingUnit"
-			/>
-			<el-table-column
-				v-if="columns[4].visible"
-				label="厚度"
-				align="center"
-				prop="height"
-			/>
-			<el-table-column
-				v-if="columns[5].visible"
-				label="长度"
-				align="center"
-				prop="length"
-			/>
-			<el-table-column
-				v-if="columns[6].visible"
-				label="宽度"
-				align="center"
-				prop="width"
-			/>
-			<el-table-column
-				v-if="columns[7].visible"
-				label="出厂片数"
-				align="center"
-				prop="pieces"
-			/>
-			<el-table-column
-				v-if="columns[8].visible"
-				label="每包片数"
-				align="center"
-				prop="piecesPerPack"
-			/>
-			<el-table-column
-				v-if="columns[9].visible"
-				label="包数"
-				align="center"
-				prop="packs"
-			/>
-			<el-table-column
-				v-if="columns[10].visible"
-				label="出厂单价"
-				align="center"
-				prop="price"
-			/>
+			<el-table-column v-if="columns[36].visible" label="供应商ID" align="center" prop="supplierID" />
+			<el-table-column v-if="columns[0].visible" label="客户ID" align="center" prop="customerID" />
+			<el-table-column v-if="columns[1].visible" label="级别编码" align="center" prop="levelID" />
+			<el-table-column v-if="columns[2].visible" label="级别名称" align="center" prop="levelName" />
+			<el-table-column v-if="columns[3].visible" label="计量单位" align="center" prop="countingUnit" />
+			<el-table-column v-if="columns[4].visible" label="厚度" align="center" prop="height" />
+			<el-table-column v-if="columns[5].visible" label="长度" align="center" prop="length" />
+			<el-table-column v-if="columns[6].visible" label="宽度" align="center" prop="width" />
+			<el-table-column v-if="columns[7].visible" label="出厂片数" align="center" prop="pieces" />
+			<el-table-column v-if="columns[8].visible" label="每包片数" align="center" prop="piecesPerPack" />
+			<el-table-column v-if="columns[9].visible" label="包数" align="center" prop="packs" />
+			<el-table-column v-if="columns[10].visible" label="出厂单价" align="center" prop="price" />
 			<!--      <el-table-column label="出厂是否含税" align="center" prop="isIncludeTaxFactory"/>-->
 			<!--      是与否-->
-			<el-table-column
-				v-if="columns[11].visible"
-				label="出厂是否含税"
-				align="center"
-				prop="isIncludeTaxFactory"
-			>
+			<el-table-column v-if="columns[11].visible" label="出厂是否含税" align="center" prop="isIncludeTaxFactory">
 				<template slot-scope="scope">
-					<el-tag
-						:type="
-							scope.row.isIncludeTaxFactory === '否'
-								? 'danger'
-								: 'success'
-						"
-						disable-transitions
-						>{{ scope.row.isIncludeTaxFactory }}
-					</el-tag>
+					<el-tag :type="scope.row.isIncludeTaxFactory === '否' ? 'danger' : 'success'" disable-transitions>{{ scope.row.isIncludeTaxFactory }}</el-tag>
 				</template>
 			</el-table-column>
-			<el-table-column
-				v-if="columns[12].visible"
-				label="杂费"
-				align="center"
-				prop="sundryCost"
-			/>
-			<el-table-column
-				v-if="columns[13].visible"
-				label="出厂货款"
-				align="center"
-				prop="paymentFactory"
-			/>
-			<el-table-column
-				v-if="columns[14].visible"
-				label="卸货价"
-				align="center"
-				prop="paymentUnload"
-			/>
+			<el-table-column v-if="columns[12].visible" label="杂费" align="center" prop="sundryCost" />
+			<el-table-column v-if="columns[13].visible" label="出厂货款" align="center" prop="paymentFactory" />
+			<el-table-column v-if="columns[14].visible" label="卸货价" align="center" prop="paymentUnload" />
 			<!--      <el-table-column label="销售是否含税" align="center" prop="isIncludeTaxSale"/>-->
 			<!--      是与否-->
-			<el-table-column
-				v-if="columns[15].visible"
-				label="销售是否含税"
-				align="center"
-				prop="isIncludeTaxSale"
-			>
+			<el-table-column v-if="columns[15].visible" label="销售是否含税" align="center" prop="isIncludeTaxSale">
 				<template slot-scope="scope">
-					<el-tag
-						:type="
-							scope.row.isIncludeTaxSale === '否'
-								? 'danger'
-								: 'success'
-						"
-						disable-transitions
-						>{{ scope.row.isIncludeTaxSale }}
-					</el-tag>
+					<el-tag :type="scope.row.isIncludeTaxSale === '否' ? 'danger' : 'success'" disable-transitions>{{ scope.row.isIncludeTaxSale }}</el-tag>
 				</template>
 			</el-table-column>
-			<el-table-column
-				v-if="columns[16].visible"
-				label="总货款"
-				align="center"
-				prop="payments"
-			/>
-			<el-table-column
-				v-if="columns[17].visible"
-				label="误差"
-				align="center"
-				prop="erro"
-			/>
-			<el-table-column
-				v-if="columns[18].visible"
-				label="吨位"
-				align="center"
-				prop="tonnage"
-			/>
-			<el-table-column
-				v-if="columns[19].visible"
-				label="陆运费单价"
-				align="center"
-				prop="landFreightPrice"
-			/>
-			<el-table-column
-				v-if="columns[20].visible"
-				label="陆运费"
-				align="center"
-				prop="landFreight"
-			/>
-			<el-table-column
-				v-if="columns[21].visible"
-				label="海运费"
-				align="center"
-				prop="seaFreight"
-			/>
-			<el-table-column
-				v-if="columns[22].visible"
-				label="总运费"
-				align="center"
-				prop="freight"
-			/>
-			<el-table-column
-				v-if="columns[23].visible"
-				label="其他费用"
-				align="center"
-				prop="otherCost"
-			/>
-			<el-table-column
-				v-if="columns[24].visible"
-				label="利润"
-				align="center"
-				prop="profit"
-			/>
-			<el-table-column
-				v-if="columns[25].visible"
-				label="不含税利润"
-				align="center"
-				prop="profitNoTax"
-			/>
-			<el-table-column
-				v-if="columns[26].visible"
-				label="实际片数"
-				align="center"
-				prop="actualPieces"
-			/>
-			<el-table-column
-				v-if="columns[27].visible"
-				label="总货款杂费"
-				align="center"
-				prop="paymentsWithSundry"
-			/>
-			<el-table-column
-				v-if="columns[28].visible"
-				label="加费"
-				align="center"
-				prop="additionalFees"
-			/>
-			<el-table-column
-				v-if="columns[29].visible"
-				label="仓库ID"
-				align="center"
-				prop="storeHouseID"
-			/>
-			<el-table-column
-				v-if="columns[30].visible"
-				label="仓库名称"
-				align="center"
-				prop="storeHouseName"
-			/>
-			<el-table-column
-				v-if="columns[31].visible"
-				label="仓库存储的货物ID"
-				align="center"
-				prop="storeID"
-			/>
-			<el-table-column
-				v-if="columns[32].visible"
-				label="物流利润"
-				align="center"
-				prop="logisticsProfit"
-			/>
-			<el-table-column
-				v-if="columns[33].visible"
-				label="佣金"
-				align="center"
-				prop="customerCommission"
-			/>
+			<el-table-column v-if="columns[16].visible" label="总货款" align="center" prop="payments" />
+			<el-table-column v-if="columns[17].visible" label="误差" align="center" prop="erro" />
+			<el-table-column v-if="columns[18].visible" label="吨位" align="center" prop="tonnage" />
+			<el-table-column v-if="columns[19].visible" label="陆运费单价" align="center" prop="landFreightPrice" />
+			<el-table-column v-if="columns[20].visible" label="陆运费" align="center" prop="landFreight" />
+			<el-table-column v-if="columns[21].visible" label="海运费" align="center" prop="seaFreight" />
+			<el-table-column v-if="columns[22].visible" label="总运费" align="center" prop="freight" />
+			<el-table-column v-if="columns[23].visible" label="其他费用" align="center" prop="otherCost" />
+			<el-table-column v-if="columns[24].visible" label="利润" align="center" prop="profit" />
+			<el-table-column v-if="columns[25].visible" label="不含税利润" align="center" prop="profitNoTax" />
+			<el-table-column v-if="columns[26].visible" label="实际片数" align="center" prop="actualPieces" />
+			<el-table-column v-if="columns[27].visible" label="总货款杂费" align="center" prop="paymentsWithSundry" />
+			<el-table-column v-if="columns[28].visible" label="加费" align="center" prop="additionalFees" />
+			<el-table-column v-if="columns[29].visible" label="仓库ID" align="center" prop="storeHouseID" />
+			<el-table-column v-if="columns[30].visible" label="仓库名称" align="center" prop="storeHouseName" />
+			<el-table-column v-if="columns[31].visible" label="仓库存储的货物ID" align="center" prop="storeID" />
+			<el-table-column v-if="columns[32].visible" label="物流利润" align="center" prop="logisticsProfit" />
+			<el-table-column v-if="columns[33].visible" label="佣金" align="center" prop="customerCommission" />
 			<!--      <el-table-column label="是否被调整单" align="center" prop="isAdjusted"/>-->
 
 			<!--      是与否-->
-			<el-table-column
-				v-if="columns[34].visible"
-				label="是否被调整单"
-				align="center"
-				prop="isAdjusted"
-			>
+			<el-table-column v-if="columns[34].visible" label="是否被调整单" align="center" prop="isAdjusted">
 				<template slot-scope="scope">
-					<el-tag
-						:type="
-							scope.row.isAdjusted === 0 ? 'danger' : 'success'
-						"
-						disable-transitions
-						>{{ scope.row.isAdjusted }}
-					</el-tag>
+					<el-tag :type="scope.row.isAdjusted === 0 ? 'danger' : 'success'" disable-transitions>{{ scope.row.isAdjusted }}</el-tag>
 				</template>
 			</el-table-column>
-			<el-table-column
-				v-if="columns[35].visible"
-				label="调整日期"
-				align="center"
-				prop="adjustDate"
-			/>
+			<el-table-column v-if="columns[35].visible" label="调整日期" align="center" prop="adjustDate" />
 		</el-table>
 
-		<pagination
-			v-show="total > 0"
-			:total="total"
-			:page.sync="queryParams.pageNum"
-			:limit.sync="queryParams.pageSize"
-			@pagination="getList"
-		/>
+		<pagination v-show="total > 0" :total="total" :page.sync="queryParams.pageNum" :limit.sync="queryParams.pageSize" @pagination="getList" />
 
 		<!-- 添加或修改订单详情对话框 -->
-		<el-dialog
-			:close-on-click-modal="false"
-			:show-close="false"
-			:title="title"
-			:visible.sync="open"
-			width="500px"
-			append-to-body
-		>
+		<el-dialog :close-on-click-modal="false" :show-close="false" :title="title" :visible.sync="open" width="500px" append-to-body>
 			<el-form ref="form" :model="form" :rules="rules" label-width="80px">
 				<el-form-item label="订单编号" prop="ordersNo">
-					<el-input
-						v-model="form.ordersNo"
-						placeholder="请输入订单编号"
-					/>
+					<el-input v-model="form.ordersNo" placeholder="请输入订单编号" />
 				</el-form-item>
 				<el-form-item label="订单日期" prop="orderDate">
-					<el-input
-						v-model="form.orderDate"
-						placeholder="请输入订单日期"
-					/>
+					<el-input v-model="form.orderDate" placeholder="请输入订单日期" />
 				</el-form-item>
 				<el-form-item label="供应商" prop="supplier">
-					<el-input
-						v-model="form.supplier"
-						placeholder="请输入供应商"
-					/>
+					<el-input v-model="form.supplier" placeholder="请输入供应商" />
 				</el-form-item>
 				<el-form-item label="供应商ID" prop="supplierID">
-					<el-input
-						v-model="form.supplierID"
-						placeholder="请输入供应商ID"
-					/>
+					<el-input v-model="form.supplierID" placeholder="请输入供应商ID" />
 				</el-form-item>
 				<el-form-item label="客户" prop="customer">
-					<el-input
-						v-model="form.customer"
-						placeholder="请输入客户"
-					/>
+					<el-input v-model="form.customer" placeholder="请输入客户" />
 				</el-form-item>
 				<el-form-item label="客户ID" prop="customerID">
-					<el-input
-						v-model="form.customerID"
-						placeholder="请输入客户ID"
-					/>
+					<el-input v-model="form.customerID" placeholder="请输入客户ID" />
 				</el-form-item>
 				<el-form-item label="级别编码" prop="levelID">
-					<el-input
-						v-model="form.levelID"
-						placeholder="请输入级别编码"
-					/>
+					<el-input v-model="form.levelID" placeholder="请输入级别编码" />
 				</el-form-item>
 				<el-form-item label="级别名称" prop="levelName">
-					<el-input
-						v-model="form.levelName"
-						placeholder="请输入级别名称"
-					/>
+					<el-input v-model="form.levelName" placeholder="请输入级别名称" />
 				</el-form-item>
 				<el-form-item label="计量单位" prop="countingUnit">
-					<el-input
-						v-model="form.countingUnit"
-						placeholder="请输入计量单位"
-					/>
+					<el-input v-model="form.countingUnit" placeholder="请输入计量单位" />
 				</el-form-item>
 				<el-form-item label="厚度" prop="height">
 					<el-input v-model="form.height" placeholder="请输入厚度" />
@@ -472,61 +151,34 @@
 					<el-input v-model="form.width" placeholder="请输入宽度" />
 				</el-form-item>
 				<el-form-item label="出厂片数" prop="pieces">
-					<el-input
-						v-model="form.pieces"
-						placeholder="请输入出厂片数"
-					/>
+					<el-input v-model="form.pieces" placeholder="请输入出厂片数" />
 				</el-form-item>
 				<el-form-item label="每包片数" prop="piecesPerPack">
-					<el-input
-						v-model="form.piecesPerPack"
-						placeholder="请输入每包片数"
-					/>
+					<el-input v-model="form.piecesPerPack" placeholder="请输入每包片数" />
 				</el-form-item>
 				<el-form-item label="包数" prop="packs">
 					<el-input v-model="form.packs" placeholder="请输入包数" />
 				</el-form-item>
 				<el-form-item label="出厂单价" prop="price">
-					<el-input
-						v-model="form.price"
-						placeholder="请输入出厂单价"
-					/>
+					<el-input v-model="form.price" placeholder="请输入出厂单价" />
 				</el-form-item>
 				<el-form-item label="出厂是否含税" prop="isIncludeTaxFactory">
-					<el-input
-						v-model="form.isIncludeTaxFactory"
-						placeholder="请输入出厂是否含税"
-					/>
+					<el-input v-model="form.isIncludeTaxFactory" placeholder="请输入出厂是否含税" />
 				</el-form-item>
 				<el-form-item label="杂费" prop="sundryCost">
-					<el-input
-						v-model="form.sundryCost"
-						placeholder="请输入杂费"
-					/>
+					<el-input v-model="form.sundryCost" placeholder="请输入杂费" />
 				</el-form-item>
 				<el-form-item label="出厂货款" prop="paymentFactory">
-					<el-input
-						v-model="form.paymentFactory"
-						placeholder="请输入出厂货款"
-					/>
+					<el-input v-model="form.paymentFactory" placeholder="请输入出厂货款" />
 				</el-form-item>
 				<el-form-item label="卸货价" prop="paymentUnload">
-					<el-input
-						v-model="form.paymentUnload"
-						placeholder="请输入卸货价"
-					/>
+					<el-input v-model="form.paymentUnload" placeholder="请输入卸货价" />
 				</el-form-item>
 				<el-form-item label="销售是否含税" prop="isIncludeTaxSale">
-					<el-input
-						v-model="form.isIncludeTaxSale"
-						placeholder="请输入销售是否含税"
-					/>
+					<el-input v-model="form.isIncludeTaxSale" placeholder="请输入销售是否含税" />
 				</el-form-item>
 				<el-form-item label="总货款" prop="payments">
-					<el-input
-						v-model="form.payments"
-						placeholder="请输入总货款"
-					/>
+					<el-input v-model="form.payments" placeholder="请输入总货款" />
 				</el-form-item>
 				<el-form-item label="误差" prop="erro">
 					<el-input v-model="form.erro" placeholder="请输入误差" />
@@ -535,133 +187,70 @@
 					<el-input v-model="form.tonnage" placeholder="请输入吨位" />
 				</el-form-item>
 				<el-form-item label="陆运费单价" prop="landFreightPrice">
-					<el-input
-						v-model="form.landFreightPrice"
-						placeholder="请输入陆运费单价"
-					/>
+					<el-input v-model="form.landFreightPrice" placeholder="请输入陆运费单价" />
 				</el-form-item>
 				<el-form-item label="陆运费" prop="landFreight">
-					<el-input
-						v-model="form.landFreight"
-						placeholder="请输入陆运费"
-					/>
+					<el-input v-model="form.landFreight" placeholder="请输入陆运费" />
 				</el-form-item>
 				<el-form-item label="海运费" prop="seaFreight">
-					<el-input
-						v-model="form.seaFreight"
-						placeholder="请输入海运费"
-					/>
+					<el-input v-model="form.seaFreight" placeholder="请输入海运费" />
 				</el-form-item>
 				<el-form-item label="总运费" prop="freight">
-					<el-input
-						v-model="form.freight"
-						placeholder="请输入总运费"
-					/>
+					<el-input v-model="form.freight" placeholder="请输入总运费" />
 				</el-form-item>
 				<el-form-item label="其他费用" prop="otherCost">
-					<el-input
-						v-model="form.otherCost"
-						placeholder="请输入其他费用"
-					/>
+					<el-input v-model="form.otherCost" placeholder="请输入其他费用" />
 				</el-form-item>
 				<el-form-item label="利润" prop="profit">
 					<el-input v-model="form.profit" placeholder="请输入利润" />
 				</el-form-item>
 				<el-form-item label="不含税利润" prop="profitNoTax">
-					<el-input
-						v-model="form.profitNoTax"
-						placeholder="请输入不含税利润"
-					/>
+					<el-input v-model="form.profitNoTax" placeholder="请输入不含税利润" />
 				</el-form-item>
 				<el-form-item label="实际片数" prop="actualPieces">
-					<el-input
-						v-model="form.actualPieces"
-						placeholder="请输入实际片数"
-					/>
+					<el-input v-model="form.actualPieces" placeholder="请输入实际片数" />
 				</el-form-item>
 				<el-form-item label="总货款杂费" prop="paymentsWithSundry">
-					<el-input
-						v-model="form.paymentsWithSundry"
-						placeholder="请输入总货款杂费"
-					/>
+					<el-input v-model="form.paymentsWithSundry" placeholder="请输入总货款杂费" />
 				</el-form-item>
 				<el-form-item label="加费" prop="additionalFees">
-					<el-input
-						v-model="form.additionalFees"
-						placeholder="请输入加费"
-					/>
+					<el-input v-model="form.additionalFees" placeholder="请输入加费" />
 				</el-form-item>
 				<el-form-item label="仓库ID" prop="storeHouseID">
-					<el-input
-						v-model="form.storeHouseID"
-						placeholder="请输入仓库ID"
-					/>
+					<el-input v-model="form.storeHouseID" placeholder="请输入仓库ID" />
 				</el-form-item>
 				<el-form-item label="仓库名称" prop="storeHouseName">
-					<el-input
-						v-model="form.storeHouseName"
-						placeholder="请输入仓库名称"
-					/>
+					<el-input v-model="form.storeHouseName" placeholder="请输入仓库名称" />
 				</el-form-item>
 				<el-form-item label="仓库存储的货物ID" prop="storeID">
-					<el-input
-						v-model="form.storeID"
-						placeholder="请输入仓库存储的货物ID"
-					/>
+					<el-input v-model="form.storeID" placeholder="请输入仓库存储的货物ID" />
 				</el-form-item>
 				<el-form-item label="物流利润" prop="logisticsProfit">
-					<el-input
-						v-model="form.logisticsProfit"
-						placeholder="请输入物流利润"
-					/>
+					<el-input v-model="form.logisticsProfit" placeholder="请输入物流利润" />
 				</el-form-item>
 				<el-form-item label="佣金" prop="customerCommission">
-					<el-input
-						v-model="form.customerCommission"
-						placeholder="请输入佣金"
-					/>
+					<el-input v-model="form.customerCommission" placeholder="请输入佣金" />
 				</el-form-item>
 				<el-form-item label="是否被调整单" prop="isAdjusted">
-					<el-input
-						v-model="form.isAdjusted"
-						placeholder="请输入是否被调整单"
-					/>
+					<el-input v-model="form.isAdjusted" placeholder="请输入是否被调整单" />
 				</el-form-item>
 				<el-form-item label="调整日期" prop="adjustDate">
-					<el-input
-						v-model="form.adjustDate"
-						placeholder="请输入调整日期"
-					/>
+					<el-input v-model="form.adjustDate" placeholder="请输入调整日期" />
 				</el-form-item>
 				<el-form-item label="作废标记" prop="cancelFlag">
-					<el-input
-						v-model="form.cancelFlag"
-						placeholder="请输入作废标记"
-					/>
+					<el-input v-model="form.cancelFlag" placeholder="请输入作废标记" />
 				</el-form-item>
 				<el-form-item label="备注" prop="comments">
-					<el-input
-						v-model="form.comments"
-						placeholder="请输入备注"
-					/>
+					<el-input v-model="form.comments" placeholder="请输入备注" />
 				</el-form-item>
 				<el-form-item label="添加时间" prop="addtime">
-					<el-input
-						v-model="form.addtime"
-						placeholder="请输入添加时间"
-					/>
+					<el-input v-model="form.addtime" placeholder="请输入添加时间" />
 				</el-form-item>
 				<el-form-item label="操作人员ID" prop="userId">
-					<el-input
-						v-model="form.userId"
-						placeholder="请输入操作人员ID"
-					/>
+					<el-input v-model="form.userId" placeholder="请输入操作人员ID" />
 				</el-form-item>
 				<el-form-item label="操作人员姓名" prop="UserName">
-					<el-input
-						v-model="form.UserName"
-						placeholder="请输入操作人员姓名"
-					/>
+					<el-input v-model="form.UserName" placeholder="请输入操作人员姓名" />
 				</el-form-item>
 			</el-form>
 			<div slot="footer" class="dialog-footer">
@@ -671,275 +260,122 @@
 		</el-dialog>
 
 		<!--    点击查看某个订单的弹窗   -->
-		<el-dialog
-			:close-on-click-modal="false"
-			:show-close="false"
-			title="查看订单信息"
-			:visible.sync="checkOrderVisible"
-			width="30%"
-		>
+		<el-dialog :close-on-click-modal="false" :show-close="false" title="查看订单信息" :visible.sync="checkOrderVisible" width="30%">
 			<el-descriptions title="订单信息" :column="1" border>
-				<el-descriptions-item label="id"
-					>{{ orderDetailInfo.id }}
-				</el-descriptions-item>
-				<el-descriptions-item label="日期"
-					>{{ orderDetailInfo.orderDate }}
-				</el-descriptions-item>
-				<el-descriptions-item label="订单编号"
-					>{{ orderDetailInfo.ordersNo }}
-				</el-descriptions-item>
-				<el-descriptions-item label="客户"
-					>{{ orderDetailInfo.customer }}
-				</el-descriptions-item>
-				<el-descriptions-item label="级别编码"
-					>{{ orderDetailInfo.levelID }}
-				</el-descriptions-item>
-				<el-descriptions-item label="级别名称"
-					>{{ orderDetailInfo.levelName }}
-				</el-descriptions-item>
-				<el-descriptions-item label="计量单位"
-					>{{ orderDetailInfo.countingUnit }}
-				</el-descriptions-item>
-				<el-descriptions-item label="厚度"
-					>{{ orderDetailInfo.height }}
-				</el-descriptions-item>
-				<el-descriptions-item label="长度"
-					>{{ orderDetailInfo.length }}
-				</el-descriptions-item>
-				<el-descriptions-item label="宽度"
-					>{{ orderDetailInfo.width }}
-				</el-descriptions-item>
-				<el-descriptions-item label="出厂片数"
-					>{{ orderDetailInfo.pieces }}
-				</el-descriptions-item>
-				<el-descriptions-item label="每包片数"
-					>{{ orderDetailInfo.piecesPerPack }}
-				</el-descriptions-item>
-				<el-descriptions-item label="包数"
-					>{{ orderDetailInfo.packs }}
-				</el-descriptions-item>
-				<el-descriptions-item label="出厂单价"
-					>{{ orderDetailInfo.price }}
-				</el-descriptions-item>
+				<el-descriptions-item label="id">{{ orderDetailInfo.id }}</el-descriptions-item>
+				<el-descriptions-item label="日期">{{ orderDetailInfo.orderDate }}</el-descriptions-item>
+				<el-descriptions-item label="订单编号">{{ orderDetailInfo.ordersNo }}</el-descriptions-item>
+				<el-descriptions-item label="客户">{{ orderDetailInfo.customer }}</el-descriptions-item>
+				<el-descriptions-item label="级别编码">{{ orderDetailInfo.levelID }}</el-descriptions-item>
+				<el-descriptions-item label="级别名称">{{ orderDetailInfo.levelName }}</el-descriptions-item>
+				<el-descriptions-item label="计量单位">{{ orderDetailInfo.countingUnit }}</el-descriptions-item>
+				<el-descriptions-item label="厚度">{{ orderDetailInfo.height }}</el-descriptions-item>
+				<el-descriptions-item label="长度">{{ orderDetailInfo.length }}</el-descriptions-item>
+				<el-descriptions-item label="宽度">{{ orderDetailInfo.width }}</el-descriptions-item>
+				<el-descriptions-item label="出厂片数">{{ orderDetailInfo.pieces }}</el-descriptions-item>
+				<el-descriptions-item label="每包片数">{{ orderDetailInfo.piecesPerPack }}</el-descriptions-item>
+				<el-descriptions-item label="包数">{{ orderDetailInfo.packs }}</el-descriptions-item>
+				<el-descriptions-item label="出厂单价">{{ orderDetailInfo.price }}</el-descriptions-item>
 				<el-descriptions-item label="出厂是否含税">
-					<TagsItem
-						:check-info="orderDetailInfo.isIncludeTaxFactory"
-						check-value="否"
-					/>
+					<TagsItem :check-info="orderDetailInfo.isIncludeTaxFactory" check-value="否" />
 				</el-descriptions-item>
-				<el-descriptions-item label="杂费"
-					>{{ orderDetailInfo.sundryCost }}
-				</el-descriptions-item>
-				<el-descriptions-item label="出厂货款"
-					>{{ orderDetailInfo.paymentFactory }}
-				</el-descriptions-item>
-				<el-descriptions-item label="卸货价"
-					>{{ orderDetailInfo.paymentUnload }}
-				</el-descriptions-item>
+				<el-descriptions-item label="杂费">{{ orderDetailInfo.sundryCost }}</el-descriptions-item>
+				<el-descriptions-item label="出厂货款">{{ orderDetailInfo.paymentFactory }}</el-descriptions-item>
+				<el-descriptions-item label="卸货价">{{ orderDetailInfo.paymentUnload }}</el-descriptions-item>
 				<el-descriptions-item label="销售是否含税">
-					<TagsItem
-						:check-info="orderDetailInfo.isIncludeTaxSale"
-						check-value="否"
-					/>
+					<TagsItem :check-info="orderDetailInfo.isIncludeTaxSale" check-value="否" />
 				</el-descriptions-item>
-				<el-descriptions-item label="总货款"
-					>{{ orderDetailInfo.payments }}
-				</el-descriptions-item>
-				<el-descriptions-item label="误差"
-					>{{ orderDetailInfo.erro }}
-				</el-descriptions-item>
-				<el-descriptions-item label="吨位"
-					>{{ orderDetailInfo.tonnage }}
-				</el-descriptions-item>
-				<el-descriptions-item label="陆运费单价"
-					>{{ orderDetailInfo.landFreightPrice }}
-				</el-descriptions-item>
-				<el-descriptions-item label="陆运费"
-					>{{ orderDetailInfo.landFreight }}
-				</el-descriptions-item>
-				<el-descriptions-item label="海运费"
-					>{{ orderDetailInfo.seaFreight }}
-				</el-descriptions-item>
-				<el-descriptions-item label="总运费"
-					>{{ orderDetailInfo.freight }}
-				</el-descriptions-item>
-				<el-descriptions-item label="其他费用"
-					>{{ orderDetailInfo.otherCost }}
-				</el-descriptions-item>
-				<el-descriptions-item label="利润"
-					>{{ orderDetailInfo.profit }}
-				</el-descriptions-item>
-				<el-descriptions-item label="不含税利润"
-					>{{ orderDetailInfo.profitNoTax }}
-				</el-descriptions-item>
-				<el-descriptions-item label="实际片数"
-					>{{ orderDetailInfo.actualPieces }}
-				</el-descriptions-item>
-				<el-descriptions-item label="总运费"
-					>{{ orderDetailInfo.freight }}
-				</el-descriptions-item>
-				<el-descriptions-item label="总货款杂费"
-					>{{ orderDetailInfo.paymentsWithSundry }}
-				</el-descriptions-item>
-				<el-descriptions-item label="加费"
-					>{{ orderDetailInfo.additionalFees }}
-				</el-descriptions-item>
-				<el-descriptions-item label="仓库名称"
-					>{{ orderDetailInfo.storeHouseName }}
-				</el-descriptions-item>
-				<el-descriptions-item label="物流利润"
-					>{{ orderDetailInfo.logisticsProfit }}
-				</el-descriptions-item>
-				<el-descriptions-item label="佣金"
-					>{{ orderDetailInfo.customerCommission }}
-				</el-descriptions-item>
-				<el-descriptions-item label="厂家返利金额"
-					>{{ orderDetailInfo.factoryRebateAmount }}
-				</el-descriptions-item>
-				<el-descriptions-item label="厂家降价金额"
-					>{{ orderDetailInfo.factoryDiscountAmount }}
-				</el-descriptions-item>
+				<el-descriptions-item label="总货款">{{ orderDetailInfo.payments }}</el-descriptions-item>
+				<el-descriptions-item label="误差">{{ orderDetailInfo.erro }}</el-descriptions-item>
+				<el-descriptions-item label="吨位">{{ orderDetailInfo.tonnage }}</el-descriptions-item>
+				<el-descriptions-item label="陆运费单价">{{ orderDetailInfo.landFreightPrice }}</el-descriptions-item>
+				<el-descriptions-item label="陆运费">{{ orderDetailInfo.landFreight }}</el-descriptions-item>
+				<el-descriptions-item label="海运费">{{ orderDetailInfo.seaFreight }}</el-descriptions-item>
+				<el-descriptions-item label="总运费">{{ orderDetailInfo.freight }}</el-descriptions-item>
+				<el-descriptions-item label="其他费用">{{ orderDetailInfo.otherCost }}</el-descriptions-item>
+				<el-descriptions-item label="利润">{{ orderDetailInfo.profit }}</el-descriptions-item>
+				<el-descriptions-item label="不含税利润">{{ orderDetailInfo.profitNoTax }}</el-descriptions-item>
+				<el-descriptions-item label="实际片数">{{ orderDetailInfo.actualPieces }}</el-descriptions-item>
+				<el-descriptions-item label="总运费">{{ orderDetailInfo.freight }}</el-descriptions-item>
+				<el-descriptions-item label="总货款杂费">{{ orderDetailInfo.paymentsWithSundry }}</el-descriptions-item>
+				<el-descriptions-item label="加费">{{ orderDetailInfo.additionalFees }}</el-descriptions-item>
+				<el-descriptions-item label="仓库名称">{{ orderDetailInfo.storeHouseName }}</el-descriptions-item>
+				<el-descriptions-item label="物流利润">{{ orderDetailInfo.logisticsProfit }}</el-descriptions-item>
+				<el-descriptions-item label="佣金">{{ orderDetailInfo.customerCommission }}</el-descriptions-item>
+				<el-descriptions-item label="厂家返利金额">{{ orderDetailInfo.factoryRebateAmount }}</el-descriptions-item>
+				<el-descriptions-item label="厂家降价金额">{{ orderDetailInfo.factoryDiscountAmount }}</el-descriptions-item>
 				<el-descriptions-item label="是否被调整单">
-					<TagsItem
-						:check-info="orderDetailInfo.isAdjusted"
-						check-value="否"
-					/>
+					<TagsItem :check-info="orderDetailInfo.isAdjusted" check-value="否" />
 				</el-descriptions-item>
-				<el-descriptions-item label="调整日期"
-					>{{ orderDetailInfo.adjustDate }}
-				</el-descriptions-item>
+				<el-descriptions-item label="调整日期">{{ orderDetailInfo.adjustDate }}</el-descriptions-item>
 			</el-descriptions>
 
 			<span slot="footer" class="dialog-footer">
 				<el-button @click="checkOrderVisible = false">取 消</el-button>
-				<el-button type="primary" @click="checkOrderVisible = false"
-					>确 定</el-button
-				>
+				<el-button type="primary" @click="checkOrderVisible = false">确 定</el-button>
 			</span>
 		</el-dialog>
 
 		<!--    点击调整单的弹窗-->
-		<el-dialog
-			:close-on-click-modal="false"
-			:show-close="false"
-			title="提示"
-			:visible.sync="handleOrderVisible"
-			width="30%"
-		>
+		<el-dialog :close-on-click-modal="false" :show-close="false" title="提示" :visible.sync="handleOrderVisible" width="30%">
 			<span>点击调整单的弹窗</span>
 			<span slot="footer" class="dialog-footer">
 				<el-button @click="handleOrderVisible = false">取 消</el-button>
-				<el-button type="primary" @click="handleOrderVisible = false"
-					>确 定</el-button
-				>
+				<el-button type="primary" @click="handleOrderVisible = false">确 定</el-button>
 			</span>
 		</el-dialog>
 
 		<!--    点击发货单1的弹窗-->
-		<el-dialog
-			:close-on-click-modal="false"
-			:show-close="false"
-			title="提示"
-			:visible.sync="Order1Visible"
-			width="30%"
-		>
+		<el-dialog :close-on-click-modal="false" :show-close="false" title="提示" :visible.sync="Order1Visible" width="30%">
 			<span>点击发货单1的弹窗</span>
 			<span slot="footer" class="dialog-footer">
 				<el-button @click="Order1Visible = false">取 消</el-button>
-				<el-button type="primary" @click="Order1Visible = false"
-					>确 定</el-button
-				>
+				<el-button type="primary" @click="Order1Visible = false">确 定</el-button>
 			</span>
 		</el-dialog>
 
 		<!--    点击发货单2的弹窗-->
-		<el-dialog
-			:close-on-click-modal="false"
-			:show-close="false"
-			title="提示"
-			:visible.sync="Order2Visible"
-			width="30%"
-		>
+		<el-dialog :close-on-click-modal="false" :show-close="false" title="提示" :visible.sync="Order2Visible" width="30%">
 			<span>点击发货单2的弹窗</span>
 			<span slot="footer" class="dialog-footer">
 				<el-button @click="Order2Visible = false">取 消</el-button>
-				<el-button type="primary" @click="Order2Visible = false"
-					>确 定</el-button
-				>
+				<el-button type="primary" @click="Order2Visible = false">确 定</el-button>
 			</span>
 		</el-dialog>
 
 		<!--    点击发货单3的弹窗-->
-		<el-dialog
-			:close-on-click-modal="false"
-			:show-close="false"
-			title="提示"
-			:visible.sync="Order3Visible"
-			width="30%"
-		>
+		<el-dialog :close-on-click-modal="false" :show-close="false" title="提示" :visible.sync="Order3Visible" width="30%">
 			<span>点击发货单3的弹窗</span>
 			<span slot="footer" class="dialog-footer">
 				<el-button @click="Order3Visible = false">取 消</el-button>
-				<el-button type="primary" @click="Order3Visible = false"
-					>确 定</el-button
-				>
+				<el-button type="primary" @click="Order3Visible = false">确 定</el-button>
 			</span>
 		</el-dialog>
 
 		<!--    上传附件的弹窗-->
-		<el-dialog
-			:close-on-click-modal="false"
-			:show-close="false"
-			title="提示"
-			:visible.sync="handleUploadVisible"
-			width="30%"
-		>
+		<el-dialog :close-on-click-modal="false" :show-close="false" title="提示" :visible.sync="handleUploadVisible" width="30%">
 			<span>上传附件的弹窗</span>
 			<span slot="footer" class="dialog-footer">
-				<el-button @click="handleUploadVisible = false"
-					>取 消</el-button
-				>
-				<el-button type="primary" @click="handleUploadVisible = false"
-					>确 定</el-button
-				>
+				<el-button @click="handleUploadVisible = false">取 消</el-button>
+				<el-button type="primary" @click="handleUploadVisible = false">确 定</el-button>
 			</span>
 		</el-dialog>
 
 		<!--    上传收到条的弹窗-->
-		<el-dialog
-			:close-on-click-modal="false"
-			:show-close="false"
-			title="提示"
-			:visible.sync="handleCommitVisible"
-			width="30%"
-		>
+		<el-dialog :close-on-click-modal="false" :show-close="false" title="提示" :visible.sync="handleCommitVisible" width="30%">
 			<span>上传收到条的弹窗</span>
 			<span slot="footer" class="dialog-footer">
-				<el-button @click="handleCommitVisible = false"
-					>取 消</el-button
-				>
-				<el-button type="primary" @click="handleCommitVisible = false"
-					>确 定</el-button
-				>
+				<el-button @click="handleCommitVisible = false">取 消</el-button>
+				<el-button type="primary" @click="handleCommitVisible = false">确 定</el-button>
 			</span>
 		</el-dialog>
 	</div>
 </template>
 
 <script>
-import {
-	listOrderDetail,
-	getOrderDetail,
-	delOrderDetail,
-	addOrderDetail,
-	updateOrderDetail
-} from '@/api/system/orderDetail';
+import { listOrderDetail, getOrderDetail, delOrderDetail, addOrderDetail, updateOrderDetail } from '@/api/system/orderDetail';
 import TagsItem from '@/components/TagsItem/index.vue';
-import {
-	addGoodsOrder,
-	adjustGoodsOrder,
-	getGoodsOrder
-} from '@/api/system/goodsOrder';
+import { addGoodsOrder, adjustGoodsOrder, getGoodsOrder } from '@/api/system/goodsOrder';
 
 export default {
 	name: 'OrderDetail',

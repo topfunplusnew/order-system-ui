@@ -80,11 +80,7 @@ export default {
 				legend: {
 					left: 'center',
 					bottom: '10',
-					data: [
-						'Allocated Budget',
-						'Expected Spending',
-						'Actual Spending'
-					]
+					data: ['Allocated Budget', 'Expected Spending', 'Actual Spending']
 				},
 				series: [
 					{
@@ -109,9 +105,7 @@ export default {
 								name: 'Expected Spending'
 							},
 							{
-								value: [
-									5500, 11000, 12000, 15000, 12000, 12000
-								],
+								value: [5500, 11000, 12000, 15000, 12000, 12000],
 								name: 'Actual Spending'
 							}
 						],

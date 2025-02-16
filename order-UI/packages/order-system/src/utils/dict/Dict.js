@@ -66,13 +66,9 @@ function loadDict(dict, dictMeta) {
 		const type = dictMeta.type;
 		let dicts = dictMeta.responseConverter(response, dictMeta);
 		if (!(dicts instanceof Array)) {
-			console.error(
-				'the return of responseConverter must be Array.<DictData>'
-			);
+			console.error('the return of responseConverter must be Array.<DictData>');
 			dicts = [];
-		} else if (
-			dicts.filter(d => d instanceof DictData).length !== dicts.length
-		) {
+		} else if (dicts.filter(d => d instanceof DictData).length !== dicts.length) {
 			console.error('the type of elements in dicts must be DictData');
 			dicts = [];
 		}

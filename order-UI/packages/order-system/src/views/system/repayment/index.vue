@@ -1,76 +1,31 @@
 <template>
 	<div class="app-container">
-		<el-form
-			v-show="showSearch"
-			ref="queryForm"
-			:model="timesQuery"
-			size="mini"
-			:inline="true"
-			label-width="68px"
-		>
+		<el-form v-show="showSearch" ref="queryForm" :model="timesQuery" size="mini" :inline="true" label-width="68px">
 			<el-form-item label="开始时间" prop="beginTime">
-				<el-date-picker
-					v-model="timesQuery.beginTime"
-					type="datetime"
-					placeholder="请选择开始时间"
-					value-format="yyyy-MM-dd HH:mm:ss"
-				></el-date-picker>
+				<el-date-picker v-model="timesQuery.beginTime" type="datetime" placeholder="请选择开始时间" value-format="yyyy-MM-dd HH:mm:ss"></el-date-picker>
 			</el-form-item>
 			<el-form-item label="结束时间" prop="endTime">
-				<el-date-picker
-					v-model="timesQuery.endTime"
-					type="datetime"
-					placeholder="请选择结束时间"
-					value-format="yyyy-MM-dd HH:mm:ss"
-				></el-date-picker>
+				<el-date-picker v-model="timesQuery.endTime" type="datetime" placeholder="请选择结束时间" value-format="yyyy-MM-dd HH:mm:ss"></el-date-picker>
 			</el-form-item>
 			<el-form-item>
-				<el-button
-					type="primary"
-					icon="el-icon-search"
-					size="mini"
-					@click="handleQueryTime"
-				>
-					搜索
-				</el-button>
+				<el-button type="primary" icon="el-icon-search" size="mini" @click="handleQueryTime">搜索</el-button>
 			</el-form-item>
 		</el-form>
 
 		<el-row :gutter="10" class="mb8">
 			<el-col :span="1.5">
-				<el-button
-					icon="el-icon-refresh"
-					size="mini"
-					@click="resetQuery"
-				>
-					刷新
-				</el-button>
+				<el-button icon="el-icon-refresh" size="mini" @click="resetQuery">刷新</el-button>
 			</el-col>
-			<right-toolbar
-				:showSearch.sync="showSearch"
-				:columns="columns"
-				@queryTable="getList"
-			>
+			<right-toolbar :showSearch.sync="showSearch" :columns="columns" @queryTable="getList">
 				<template #print>
 					<el-col :span="1.5">
-						<el-button
-							plain
-							icon="el-icon-printer"
-							size="mini"
-							@click="printHTML"
-						></el-button>
+						<el-button plain icon="el-icon-printer" size="mini" @click="printHTML"></el-button>
 					</el-col>
 				</template>
 				<!--        导出-->
 				<template #export>
 					<el-col :span="1.5">
-						<el-button
-							v-hasPermi="['system:repayment:export']"
-							plain
-							icon="el-icon-folder-opened"
-							size="mini"
-							@click="handleExport"
-						></el-button>
+						<el-button v-hasPermi="['system:repayment:export']" plain icon="el-icon-folder-opened" size="mini" @click="handleExport"></el-button>
 					</el-col>
 				</template>
 			</right-toolbar>
@@ -90,144 +45,49 @@
 			"
 			@selection-change="handleSelectionChange"
 		>
-			<el-table-column
-				v-if="columns[0].visible"
-				label="还款金额"
-				align="center"
-				prop="moneyAmount"
-				show-overflow-tooltip
-			/>
-			<el-table-column
-				v-if="columns[1].visible"
-				label="付息"
-				align="center"
-				prop="ratio"
-				show-overflow-tooltip
-			/>
-			<el-table-column
-				v-if="columns[2].visible"
-				label="还款日期"
-				align="center"
-				prop="payDate"
-				show-overflow-tooltip
-			/>
-			<el-table-column
-				v-if="columns[3].visible"
-				label="还款账户"
-				align="center"
-				prop="acountsName"
-				show-overflow-tooltip
-			/>
-			<el-table-column
-				v-if="columns[4].visible"
-				label="还款账号"
-				align="center"
-				prop="bankNo"
-				show-overflow-tooltip
-			/>
-			<el-table-column
-				label="备注"
-				align="center"
-				prop="comments"
-				show-overflow-tooltip
-			/>
-			<el-table-column
-				label="操作"
-				align="center"
-				class-name="small-padding fixed-width"
-				fixed="right"
-			>
+			<el-table-column v-if="columns[0].visible" label="还款金额" align="center" prop="moneyAmount" show-overflow-tooltip />
+			<el-table-column v-if="columns[1].visible" label="付息" align="center" prop="ratio" show-overflow-tooltip />
+			<el-table-column v-if="columns[2].visible" label="还款日期" align="center" prop="payDate" show-overflow-tooltip />
+			<el-table-column v-if="columns[3].visible" label="还款账户" align="center" prop="acountsName" show-overflow-tooltip />
+			<el-table-column v-if="columns[4].visible" label="还款账号" align="center" prop="bankNo" show-overflow-tooltip />
+			<el-table-column label="备注" align="center" prop="comments" show-overflow-tooltip />
+			<el-table-column label="操作" align="center" class-name="small-padding fixed-width" fixed="right">
 				<template slot-scope="scope">
-					<el-button
-						v-if="scope.row.checkState === '未申请'"
-						size="mini"
-						type="warning"
-						@click="applyForPayment(scope.row)"
-					>
-						申请付款
-					</el-button>
-					<el-button
-						v-if="scope.row.checkState === '审核中'"
-						size="mini"
-						type="warning"
-						disabled
-					>
-						审核中
-					</el-button>
-					<el-button
-						v-hasPermi="['system:repayment:remove']"
-						size="mini"
-						type="danger"
-						@click="handleDelete(scope.row)"
-					>
-						删除
-					</el-button>
+					<el-button v-if="scope.row.checkState === '未申请'" size="mini" type="warning" @click="applyForPayment(scope.row)">申请付款</el-button>
+					<el-button v-if="scope.row.checkState === '审核中'" size="mini" type="warning" disabled>审核中</el-button>
+					<el-button v-hasPermi="['system:repayment:remove']" size="mini" type="danger" @click="handleDelete(scope.row)">删除</el-button>
 				</template>
 			</el-table-column>
 		</el-table>
 
-		<pagination
-			v-show="total > 0"
-			:total="total"
-			:page.sync="queryParams.pageNum"
-			:limit.sync="queryParams.pageSize"
-			@pagination="getList"
-		/>
+		<pagination v-show="total > 0" :total="total" :page.sync="queryParams.pageNum" :limit.sync="queryParams.pageSize" @pagination="getList" />
 
 		<!-- 添加或修改贷款还款信息对话框 -->
-		<el-dialog
-			:close-on-click-modal="false"
-			:show-close="false"
-			:title="title"
-			:visible.sync="open"
-			width="500px"
-			append-to-body
-		>
+		<el-dialog :close-on-click-modal="false" :show-close="false" :title="title" :visible.sync="open" width="500px" append-to-body>
 			<el-form ref="form" :model="form" :rules="rules" label-width="80px">
 				<el-form-item label="贷款编号" prop="loanNO">
-					<el-input
-						v-model="form.loanNO"
-						placeholder="请输入贷款编号"
-					/>
+					<el-input v-model="form.loanNO" placeholder="请输入贷款编号" />
 				</el-form-item>
 				<el-form-item label="还款编号" prop="payNO">
-					<el-input
-						v-model="form.payNO"
-						placeholder="请输入还款编号"
-					/>
+					<el-input v-model="form.payNO" placeholder="请输入还款编号" />
 				</el-form-item>
 				<el-form-item label="还" prop="moneyAmount">
-					<el-input
-						v-model="form.moneyAmount"
-						placeholder="请输入还"
-					/>
+					<el-input v-model="form.moneyAmount" placeholder="请输入还" />
 				</el-form-item>
 				<el-form-item label="付息" prop="ratio">
 					<el-input v-model="form.ratio" placeholder="请输入付息" />
 				</el-form-item>
 				<el-form-item label="还款日期" prop="payDate">
-					<el-input
-						v-model="form.payDate"
-						placeholder="请输入还款日期"
-					/>
+					<el-input v-model="form.payDate" placeholder="请输入还款日期" />
 				</el-form-item>
 				<el-form-item label="还款账户" prop="acountsName">
-					<el-input
-						v-model="form.acountsName"
-						placeholder="请输入还款账户"
-					/>
+					<el-input v-model="form.acountsName" placeholder="请输入还款账户" />
 				</el-form-item>
 				<el-form-item label="还款账号" prop="bankNo">
-					<el-input
-						v-model="form.bankNo"
-						placeholder="请输入还款账号"
-					/>
+					<el-input v-model="form.bankNo" placeholder="请输入还款账号" />
 				</el-form-item>
 				<el-form-item label="备注" prop="comments">
-					<el-input
-						v-model="form.comments"
-						placeholder="请输入备注"
-					/>
+					<el-input v-model="form.comments" placeholder="请输入备注" />
 				</el-form-item>
 			</el-form>
 			<div slot="footer" class="dialog-footer">
@@ -236,34 +96,16 @@
 			</div>
 		</el-dialog>
 
-		<el-dialog
-			:close-on-click-modal="false"
-			:show-close="false"
-			title="付款申请"
-			:visible.sync="PaymentApplyInfoVisible"
-			width="45%"
-		>
+		<el-dialog :close-on-click-modal="false" :show-close="false" title="付款申请" :visible.sync="PaymentApplyInfoVisible" width="45%">
 			<keep-alive>
-				<ApplyPayment
-					:table-name="TableName.REPAYMENT"
-					:t-i-d="tID"
-					:need-money="needMoney"
-					:need-info="{}"
-					@changeOpen="changePaymentApplyInfoVisible"
-				/>
+				<ApplyPayment :table-name="TableName.REPAYMENT" :t-i-d="tID" :need-money="needMoney" :need-info="{}" @changeOpen="changePaymentApplyInfoVisible" />
 			</keep-alive>
 		</el-dialog>
 	</div>
 </template>
 
 <script>
-import {
-	listRepayment,
-	getRepayment,
-	delRepayment,
-	addRepayment,
-	updateRepayment
-} from '@/api/system/repayment';
+import { listRepayment, getRepayment, delRepayment, addRepayment, updateRepayment } from '@/api/system/repayment';
 import { mapGetters } from 'vuex';
 import ApplyPayment from '@/views/dashboard/components/common/ApplyPayment.vue';
 import { TableName } from '@/api/tool/enums';
@@ -339,29 +181,18 @@ export default {
 	watch: {
 		columns: {
 			handler: function (newVal) {
-				localStorage.setItem(
-					'repayment-columns',
-					JSON.stringify(newVal)
-				);
+				localStorage.setItem('repayment-columns', JSON.stringify(newVal));
 			},
 			deep: true
 		}
 	},
 	created() {
 		this.getList();
-		if (
-			localStorage.getItem('repayment-columns') === 'null' ||
-			!localStorage.getItem('repayment-columns')
-		) {
+		if (localStorage.getItem('repayment-columns') === 'null' || !localStorage.getItem('repayment-columns')) {
 			// 设置localStorage
-			localStorage.setItem(
-				'repayment-columns',
-				JSON.stringify(this.columns)
-			);
+			localStorage.setItem('repayment-columns', JSON.stringify(this.columns));
 		} else {
-			this.columns = JSON.parse(
-				localStorage.getItem('repayment-columns')
-			);
+			this.columns = JSON.parse(localStorage.getItem('repayment-columns'));
 		}
 		this.$store.dispatch('money/getRepaymentList');
 	},
@@ -394,9 +225,7 @@ export default {
 			return this.repaymentList.filter(item => {
 				// 时间转换
 				const time_search = new Date(item.payDate).getTime();
-				const time_start = new Date(
-					this.timesQuery.beginTime
-				).getTime();
+				const time_start = new Date(this.timesQuery.beginTime).getTime();
 				const date = new Date(this.timesQuery.endTime);
 				date.setDate(date.getDate() + 1);
 				const time_end = date.getTime();
@@ -508,9 +337,7 @@ export default {
 		handleDelete(row) {
 			const ids = row.id || this.ids;
 			this.$modal
-				.confirm(
-					'是否确认删除贷款还款信息编号为"' + ids + '"的数据项？'
-				)
+				.confirm('是否确认删除贷款还款信息编号为"' + ids + '"的数据项？')
 				.then(function () {
 					return delRepayment(ids);
 				})

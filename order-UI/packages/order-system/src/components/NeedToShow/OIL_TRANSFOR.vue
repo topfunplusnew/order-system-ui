@@ -18,9 +18,7 @@ export default {
 			<el-descriptions-item label="副卡号">
 				{{ needToShowInfo.oilSecondCardNo }}
 			</el-descriptions-item>
-			<el-descriptions-item label="圈存金额">
-				{{ needToShowInfo.rechargeMoney }} 元
-			</el-descriptions-item>
+			<el-descriptions-item label="圈存金额">{{ needToShowInfo.rechargeMoney }} 元</el-descriptions-item>
 			<el-descriptions-item label="圈存时间">
 				{{ needToShowInfo.rechargeDate }}
 			</el-descriptions-item>

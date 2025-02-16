@@ -22,8 +22,7 @@ export default {
 		dialogHeaderEl.style.cursor = 'move';
 
 		// 获取原有属性 ie dom元素.currentStyle 火狐谷歌 window.getComputedStyle(dom元素, null);
-		const sty =
-			dragDom.currentStyle || window.getComputedStyle(dragDom, null);
+		const sty = dragDom.currentStyle || window.getComputedStyle(dragDom, null);
 
 		let moveDown = e => {
 			// 鼠标按下，计算当前元素距离可视区的距离
@@ -35,12 +34,8 @@ export default {
 
 			// 注意在ie中 第一次获取到的值为组件自带50% 移动之后赋值为px
 			if (sty.left.includes('%')) {
-				styL =
-					+document.body.clientWidth *
-					(+sty.left.replace(/%/g, '') / 100);
-				styT =
-					+document.body.clientHeight *
-					(+sty.top.replace(/%/g, '') / 100);
+				styL = +document.body.clientWidth * (+sty.left.replace(/%/g, '') / 100);
+				styT = +document.body.clientHeight * (+sty.top.replace(/%/g, '') / 100);
 			} else {
 				styL = +sty.left.replace(/px/g, '');
 				styT = +sty.top.replace(/px/g, '');
@@ -115,8 +110,7 @@ export default {
 				let y = e.clientY - disY;
 				//比较是否小于最小宽高
 				dragDom.style.width = x > minWidth ? `${x}px` : minWidth + 'px';
-				dragDom.style.height =
-					y > minHeight ? `${y}px` : minHeight + 'px';
+				dragDom.style.height = y > minHeight ? `${y}px` : minHeight + 'px';
 			};
 			//拉伸结束
 			document.onmouseup = function (e) {
@@ -144,22 +138,17 @@ export default {
 			document.onmousemove = function (e) {
 				e.preventDefault(); // 移动时禁用默认事件
 				//右侧鼠标拖拽位置
-				if (
-					clientX > EloffsetLeft + elW - 10 &&
-					clientX < EloffsetLeft + elW
-				) {
+				if (clientX > EloffsetLeft + elW - 10 && clientX < EloffsetLeft + elW) {
 					//往左拖拽
 					if (clientX > e.clientX) {
 						if (dragDom.clientWidth < minWidth) {
 						} else {
-							dragDom.style.width =
-								elW - (clientX - e.clientX) * 2 + 'px';
+							dragDom.style.width = elW - (clientX - e.clientX) * 2 + 'px';
 						}
 					}
 					//往右拖拽
 					if (clientX < e.clientX) {
-						dragDom.style.width =
-							elW + (e.clientX - clientX) * 2 + 'px';
+						dragDom.style.width = elW + (e.clientX - clientX) * 2 + 'px';
 					}
 				}
 			};
@@ -192,15 +181,13 @@ export default {
 				if (clientX > EloffsetLeft && clientX < EloffsetLeft + 10) {
 					//往左拖拽
 					if (clientX > e.clientX) {
-						dragDom.style.width =
-							elW + (clientX - e.clientX) * 2 + 'px';
+						dragDom.style.width = elW + (clientX - e.clientX) * 2 + 'px';
 					}
 					//往右拖拽
 					if (clientX < e.clientX) {
 						if (dragDom.clientWidth < minWidth) {
 						} else {
-							dragDom.style.width =
-								elW - (e.clientX - clientX) * 2 + 'px';
+							dragDom.style.width = elW - (e.clientX - clientX) * 2 + 'px';
 						}
 					}
 				}
@@ -231,22 +218,17 @@ export default {
 			document.onmousemove = function (e) {
 				e.preventDefault(); // 移动时禁用默认事件
 				//底部鼠标拖拽位置
-				if (
-					ELscrollTop + clientY > EloffsetTop + elH - 20 &&
-					ELscrollTop + clientY < EloffsetTop + elH
-				) {
+				if (ELscrollTop + clientY > EloffsetTop + elH - 20 && ELscrollTop + clientY < EloffsetTop + elH) {
 					//往上拖拽
 					if (clientY > e.clientY) {
 						if (dragDom.clientHeight < minHeight) {
 						} else {
-							dragDom.style.height =
-								elH - (clientY - e.clientY) * 2 + 'px';
+							dragDom.style.height = elH - (clientY - e.clientY) * 2 + 'px';
 						}
 					}
 					//往下拖拽
 					if (clientY < e.clientY) {
-						dragDom.style.height =
-							elH + (e.clientY - clientY) * 2 + 'px';
+						dragDom.style.height = elH + (e.clientY - clientY) * 2 + 'px';
 					}
 				}
 			};

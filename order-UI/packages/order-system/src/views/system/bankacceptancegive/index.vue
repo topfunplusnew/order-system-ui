@@ -1,93 +1,36 @@
 <template>
 	<div class="app-container">
-		<el-form
-			v-show="showSearch"
-			ref="queryForm"
-			:model="queryParams"
-			size="mini"
-			:inline="true"
-			label-width="68px"
-		>
+		<el-form v-show="showSearch" ref="queryForm" :model="queryParams" size="mini" :inline="true" label-width="68px">
 			<el-form-item label="开始时间" prop="issueDateStart">
-				<el-date-picker
-					v-model="queryParams.issueDateStart"
-					type="datetime"
-					placeholder="选择日期"
-					value-format="yyyy-MM-dd HH:mm:ss"
-				>
-				</el-date-picker>
+				<el-date-picker v-model="queryParams.issueDateStart" type="datetime" placeholder="选择日期" value-format="yyyy-MM-dd HH:mm:ss"></el-date-picker>
 			</el-form-item>
 			<el-form-item label="结束时间" prop="issueDateEnd">
-				<el-date-picker
-					v-model="queryParams.issueDateEnd"
-					type="datetime"
-					placeholder="选择日期"
-					value-format="yyyy-MM-dd HH:mm:ss"
-				>
-				</el-date-picker>
+				<el-date-picker v-model="queryParams.issueDateEnd" type="datetime" placeholder="选择日期" value-format="yyyy-MM-dd HH:mm:ss"></el-date-picker>
 			</el-form-item>
 			<el-form-item label="票据号码" prop="billNo">
-				<el-input
-					v-model="queryParams.billNo"
-					placeholder="请输入票据号码"
-					@keyup.enter.native="handleQuery"
-				/>
+				<el-input v-model="queryParams.billNo" placeholder="请输入票据号码" @keyup.enter.native="handleQuery" />
 			</el-form-item>
 			<el-form-item>
-				<el-button
-					type="primary"
-					icon="el-icon-search"
-					size="mini"
-					@click="handleQuery"
-					>搜索
-				</el-button>
+				<el-button type="primary" icon="el-icon-search" size="mini" @click="handleQuery">搜索</el-button>
 			</el-form-item>
 		</el-form>
 
 		<el-row :gutter="10" class="mb8">
 			<el-col :span="1.5">
-				<el-button
-					icon="el-icon-refresh"
-					size="mini"
-					@click="resetQuery"
-					>刷新
-				</el-button>
+				<el-button icon="el-icon-refresh" size="mini" @click="resetQuery">刷新</el-button>
 			</el-col>
 			<el-col :span="1.5">
-				<el-button
-					v-hasPermi="['system:bankacceptance:add']"
-					type="danger"
-					size="mini"
-					@click="handleAdd"
-					>添加支出商业票据
-				</el-button>
+				<el-button v-hasPermi="['system:bankacceptance:add']" type="danger" size="mini" @click="handleAdd">添加支出商业票据</el-button>
 			</el-col>
-			<right-toolbar
-				:showSearch.sync="showSearch"
-				:columns="columns"
-				@queryTable="getList"
-			>
+			<right-toolbar :showSearch.sync="showSearch" :columns="columns" @queryTable="getList">
 				<template #print>
 					<el-col :span="1.5">
-						<el-button
-							plain
-							icon="el-icon-printer"
-							size="mini"
-							@click="printHTML"
-						>
-						</el-button>
+						<el-button plain icon="el-icon-printer" size="mini" @click="printHTML"></el-button>
 					</el-col>
 				</template>
 				<template #export>
 					<el-col :span="1.5">
-						<el-button
-							v-hasPermi="['system:bankacceptance:export']"
-							plain
-							icon="el-icon-folder-opened"
-							size="mini"
-							@click="handleExport"
-						>
-						</el-button>
+						<el-button v-hasPermi="['system:bankacceptance:export']" plain icon="el-icon-folder-opened" size="mini" @click="handleExport"></el-button>
 					</el-col>
 				</template>
 			</right-toolbar>
@@ -106,203 +49,63 @@
 			:cell-style="() => ({ padding: '.5px' })"
 			@selection-change="handleSelectionChange"
 		>
-			<el-table-column
-				v-if="columns[0].visible"
-				label="ID"
-				align="center"
-				prop="id"
-			/>
+			<el-table-column v-if="columns[0].visible" label="ID" align="center" prop="id" />
 
-			<el-table-column
-				v-if="columns[1].visible"
-				label="操作日期"
-				align="center"
-				prop="operateDate"
-				show-overflow-tooltip
-			/>
-			<el-table-column
-				v-if="columns[2].visible"
-				label="票据种类"
-				align="center"
-				prop="billCategory"
-				show-overflow-tooltip
-			/>
-			<el-table-column
-				v-if="columns[3].visible"
-				label="票据号码"
-				align="center"
-				prop="billNo"
-				show-overflow-tooltip
-			>
+			<el-table-column v-if="columns[1].visible" label="操作日期" align="center" prop="operateDate" show-overflow-tooltip />
+			<el-table-column v-if="columns[2].visible" label="票据种类" align="center" prop="billCategory" show-overflow-tooltip />
+			<el-table-column v-if="columns[3].visible" label="票据号码" align="center" prop="billNo" show-overflow-tooltip>
 				<template #default="scope">
 					<CheckTotal :row="scope.row" />
 				</template>
 			</el-table-column>
 
-			<el-table-column
-				v-if="columns[4].visible"
-				label="收票事由"
-				align="center"
-				prop="reason"
-				show-overflow-tooltip
-			/>
-			<el-table-column
-				v-if="columns[5].visible"
-				label="背书人"
-				align="center"
-				prop="endorserName"
-				show-overflow-tooltip
-			/>
+			<el-table-column v-if="columns[4].visible" label="收票事由" align="center" prop="reason" show-overflow-tooltip />
+			<el-table-column v-if="columns[5].visible" label="背书人" align="center" prop="endorserName" show-overflow-tooltip />
 
-			<el-table-column
-				v-if="columns[6].visible"
-				label="出票日期"
-				align="center"
-				prop="issueDate"
-				show-overflow-tooltip
-			/>
-			<el-table-column
-				v-if="columns[7].visible"
-				label="到期日期"
-				align="center"
-				prop="dueDate"
-				show-overflow-tooltip
-			/>
-			<el-table-column
-				v-if="columns[8].visible"
-				label="我方承兑账户"
-				align="center"
-				prop="billAccount"
-				show-overflow-tooltip
-			/>
-			<el-table-column
-				v-if="columns[9].visible"
-				label="票据交易日期"
-				align="center"
-				prop="billDate"
-				show-overflow-tooltip
-			/>
+			<el-table-column v-if="columns[6].visible" label="出票日期" align="center" prop="issueDate" show-overflow-tooltip />
+			<el-table-column v-if="columns[7].visible" label="到期日期" align="center" prop="dueDate" show-overflow-tooltip />
+			<el-table-column v-if="columns[8].visible" label="我方承兑账户" align="center" prop="billAccount" show-overflow-tooltip />
+			<el-table-column v-if="columns[9].visible" label="票据交易日期" align="center" prop="billDate" show-overflow-tooltip />
 
-			<el-table-column
-				v-if="columns[10].visible"
-				label="票据金额"
-				align="center"
-				prop="billAmount"
-				show-overflow-tooltip
-			/>
-			<el-table-column
-				v-if="columns[11].visible"
-				label="贴息点数"
-				align="center"
-				prop="inDiscountPoints"
-				show-overflow-tooltip
-			/>
-			<el-table-column
-				v-if="columns[12].visible"
-				label="贴息金额"
-				align="center"
-				prop="inDiscountAmount"
-				show-overflow-tooltip
-			/>
+			<el-table-column v-if="columns[10].visible" label="票据金额" align="center" prop="billAmount" show-overflow-tooltip />
+			<el-table-column v-if="columns[11].visible" label="贴息点数" align="center" prop="inDiscountPoints" show-overflow-tooltip />
+			<el-table-column v-if="columns[12].visible" label="贴息金额" align="center" prop="inDiscountAmount" show-overflow-tooltip />
 
-			<el-table-column
-				v-if="columns[13].visible"
-				label="来源"
-				align="center"
-				prop="origin"
-				show-overflow-tooltip
-			/>
-			<el-table-column
-				v-if="columns[14].visible"
-				label="备注"
-				align="center"
-				prop="comments"
-				show-overflow-tooltip
-			/>
+			<el-table-column v-if="columns[13].visible" label="来源" align="center" prop="origin" show-overflow-tooltip />
+			<el-table-column v-if="columns[14].visible" label="备注" align="center" prop="comments" show-overflow-tooltip />
 
-			<el-table-column
-				label="操作"
-				align="center"
-				class-name="small-padding fixed-width"
-				width="150px"
-				fixed="right"
-			>
+			<el-table-column label="操作" align="center" class-name="small-padding fixed-width" width="150px" fixed="right">
 				<template #default="scope">
-					<el-button
-						v-hasPermi="['system:bankacceptance:edit']"
-						size="mini"
-						type="primary"
-						@click="handleUpdate(scope.row)"
-						>修改</el-button
-					>
-					<el-button
-						v-hasPermi="['system:bankacceptance:remove']"
-						size="mini"
-						type="danger"
-						@click="handleDelete(scope.row)"
-						>删除</el-button
-					>
+					<el-button v-hasPermi="['system:bankacceptance:edit']" size="mini" type="primary" @click="handleUpdate(scope.row)">修改</el-button>
+					<el-button v-hasPermi="['system:bankacceptance:remove']" size="mini" type="danger" @click="handleDelete(scope.row)">删除</el-button>
 				</template>
 			</el-table-column>
 		</el-table>
 
-		<pagination
-			v-show="total > 0"
-			:total="total"
-			:page.sync="queryParams.pageNum"
-			:limit.sync="queryParams.pageSize"
-			@pagination="getList"
-		/>
+		<pagination v-show="total > 0" :total="total" :page.sync="queryParams.pageNum" :limit.sync="queryParams.pageSize" @pagination="getList" />
 
 		<!-- 添加或修改商业票据、银行承兑对话框 -->
-		<el-dialog
-			:close-on-click-modal="false"
-			:show-close="false"
-			:title="title"
-			:visible.sync="open"
-			width="800px"
-			append-to-body
-		>
-			<el-form
-				ref="form"
-				:model="form"
-				:rules="rules"
-				label-width="140px"
-			>
+		<el-dialog :close-on-click-modal="false" :show-close="false" :title="title" :visible.sync="open" width="800px" append-to-body>
+			<el-form ref="form" :model="form" :rules="rules" label-width="140px">
 				<el-row>
 					<el-col :span="12">
 						<el-form-item label="票据号码" prop="billNo">
-							<el-input
-								v-model="form.billNo"
-								placeholder="请输入票据号码"
-							/>
+							<el-input v-model="form.billNo" placeholder="请输入票据号码" />
 						</el-form-item>
 						<el-form-item label="背书事由" prop="reason">
-							<el-radio v-model="form.reason" label="购买"
-								>购买</el-radio
-							>
-							<el-radio v-model="form.reason" label="客户付款"
-								>客户付款
-							</el-radio>
+							<el-radio v-model="form.reason" label="购买">购买</el-radio>
+							<el-radio v-model="form.reason" label="客户付款">客户付款</el-radio>
 						</el-form-item>
 						<el-form-item label="被背书人类型" prop="reason">
-							<el-radio v-model="type" label="客户"
-								>客户</el-radio
-							>
-							<el-radio v-model="type" label="供应商">
-								供应商</el-radio
-							>
+							<el-radio v-model="type" label="客户">客户</el-radio>
+							<el-radio v-model="type" label="供应商">供应商</el-radio>
 						</el-form-item>
 						<el-form-item label="被背书人" prop="endorserName">
 							<!--							<el-input v-model="form.endorser" placeholder="请输入背书人" />-->
 							<el-row>
 								<el-col :span="20">
 									<!--                  v-model="form.endorser"-->
-									<el-input
-										disabled
-										placeholder="请输入被背书人"
-										v-model="form.endorserName"
-									/>
+									<el-input disabled placeholder="请输入被背书人" v-model="form.endorserName" />
 								</el-col>
 								<el-col :span="4">
 									<!-- 选择的是客户或者供应商名称-->
@@ -312,121 +115,57 @@
 										query-info="companyName"
 										query-label="公司名称"
 										:query-name="companyName"
-										@update:queryName="
-											handleUpdateCompanyName
-										"
+										@update:queryName="handleUpdateCompanyName"
 										@commitBack="handleCommitBackCompany"
 									>
 										<template #table-columns>
-											<el-table-column
-												:label="type"
-												align="center"
-												prop="companyName"
-											/>
-											<el-table-column
-												label="老板姓名"
-												align="center"
-												prop="leader"
-											/>
-											<el-table-column
-												label="老板电话"
-												align="center"
-												prop="leaderTel"
-											/>
-											<el-table-column
-												label="区域"
-												align="center"
-												prop="region"
-											/>
-											<el-table-column
-												label="销售经理"
-												align="center"
-												prop="salesManager"
-											/>
+											<el-table-column :label="type" align="center" prop="companyName" />
+											<el-table-column label="老板姓名" align="center" prop="leader" />
+											<el-table-column label="老板电话" align="center" prop="leaderTel" />
+											<el-table-column label="区域" align="center" prop="region" />
+											<el-table-column label="销售经理" align="center" prop="salesManager" />
 										</template>
 									</SearchOption>
 								</el-col>
 							</el-row>
 						</el-form-item>
 						<el-form-item label="支出票据金额" prop="billAmount">
-							<el-input
-								v-model="form.billAmount"
-								placeholder="请输入票据金额"
-							/>
+							<el-input v-model="form.billAmount" placeholder="请输入票据金额" />
 						</el-form-item>
-						<el-form-item
-							label="支出贴息点数"
-							prop="inDiscountPoints"
-						>
-							<el-input
-								v-model="form.inDiscountPoints"
-								placeholder="请输入贴息点数"
-							/>
+						<el-form-item label="支出贴息点数" prop="inDiscountPoints">
+							<el-input v-model="form.inDiscountPoints" placeholder="请输入贴息点数" />
 						</el-form-item>
-						<el-form-item
-							label="支出贴息金额"
-							prop="inDiscountAmount"
-						>
-							<el-input
-								disabled
-								v-model="form.inDiscountAmount"
-								placeholder="请输入贴息金额"
-							/>
+						<el-form-item label="支出贴息金额" prop="inDiscountAmount">
+							<el-input disabled v-model="form.inDiscountAmount" placeholder="请输入贴息金额" />
 						</el-form-item>
 					</el-col>
 					<el-col :span="12">
 						<el-form-item label="票据种类" prop="billCategory">
-							<el-radio v-model="form.billCategory" label="电子"
-								>电子</el-radio
-							>
-							<el-radio v-model="form.billCategory" label="纸质"
-								>纸质
-							</el-radio>
+							<el-radio v-model="form.billCategory" label="电子">电子</el-radio>
+							<el-radio v-model="form.billCategory" label="纸质">纸质</el-radio>
 						</el-form-item>
 						<el-form-item label="我方承兑账户" prop="billAccount">
 							<el-row>
 								<el-col :span="20">
-									<el-input
-										disabled
-										v-model="form.billAccount"
-										placeholder="请输入我方承兑账户"
-									/>
+									<el-input disabled v-model="form.billAccount" placeholder="请输入我方承兑账户" />
 								</el-col>
 								<el-col :span="4">
 									<SearchOption
 										:get-data="listBankAccount"
 										:limit-info="{
-											accountType: '己方公司'
+											accountType: '我方公司'
 										}"
 										query-label="户名查找"
 										query-info="acountsName"
 										:query-name="queryBank"
 										@commitBack="handleCommitBack"
-										@update:queryName="
-											handleUpdateQueryName
-										"
+										@update:queryName="handleUpdateQueryName"
 									>
 										<template #table-columns>
-											<el-table-column
-												label="显示名称"
-												align="center"
-												prop="displayName"
-											/>
-											<el-table-column
-												label="开户名称(户名)"
-												align="center"
-												prop="acountsName"
-											/>
-											<el-table-column
-												label="账号(银行账号)"
-												align="center"
-												prop="bankNo"
-											/>
-											<el-table-column
-												label="开户行"
-												align="center"
-												prop="bankName"
-											/>
+											<el-table-column label="显示名称" align="center" prop="displayName" />
+											<el-table-column label="开户名称(户名)" align="center" prop="acountsName" />
+											<el-table-column label="账号(银行账号)" align="center" prop="bankNo" />
+											<el-table-column label="开户行" align="center" prop="bankName" />
 										</template>
 									</SearchOption>
 								</el-col>
@@ -441,8 +180,7 @@
 									placeholder="选择日期"
 									format="yyyy 年 MM 月 dd 日"
 									value-format="yyyy-MM-dd HH:mm:ss"
-								>
-								</el-date-picker>
+								></el-date-picker>
 							</el-form-item>
 						</div>
 						<div style="width: 100%">
@@ -454,8 +192,7 @@
 									placeholder="选择日期"
 									format="yyyy 年 MM 月 dd 日"
 									value-format="yyyy-MM-dd HH:mm:ss"
-								>
-								</el-date-picker>
+								></el-date-picker>
 							</el-form-item>
 						</div>
 						<div style="width: 100%">
@@ -467,15 +204,11 @@
 									placeholder="选择日期"
 									format="yyyy 年 MM 月 dd 日"
 									value-format="yyyy-MM-dd HH:mm:ss"
-								>
-								</el-date-picker>
+								></el-date-picker>
 							</el-form-item>
 						</div>
 						<el-form-item label="备注" prop="comments">
-							<el-input
-								v-model="form.comments"
-								placeholder="请输入备注"
-							/>
+							<el-input v-model="form.comments" placeholder="请输入备注" />
 						</el-form-item>
 					</el-col>
 				</el-row>
@@ -489,13 +222,7 @@
 </template>
 
 <script>
-import {
-	listBankAcceptance,
-	getBankAcceptance,
-	delBankAcceptance,
-	addBankAcceptance,
-	updateBankAcceptance
-} from '@/api/system/bankAcceptance';
+import { listBankAcceptance, getBankAcceptance, delBankAcceptance, addBankAcceptance, updateBankAcceptance } from '@/api/system/bankAcceptance';
 import { formatTime } from '@/api/tool/format';
 import SearchOption from '@/components/SearchOption.vue';
 import { listBankAccount } from '@/api/system/bankAccount';
@@ -665,11 +392,7 @@ export default {
 					{
 						validator: (rule, value, callback) => {
 							if (!/^\d+(\.\d{1,2})?$/.test(value)) {
-								callback(
-									new Error(
-										'金额只能为数字且小数点后最多两位'
-									)
-								);
+								callback(new Error('金额只能为数字且小数点后最多两位'));
 							} else {
 								callback();
 							}
@@ -693,11 +416,7 @@ export default {
 					{
 						validator: (rule, value, callback) => {
 							if (!/^\d+(\.\d{1,2})?$/.test(value)) {
-								callback(
-									new Error(
-										'金额只能为数字且小数点后最多两位'
-									)
-								);
+								callback(new Error('金额只能为数字且小数点后最多两位'));
 							} else {
 								callback();
 							}
@@ -715,8 +434,7 @@ export default {
 		// 贴息金额的自动计算
 		form: {
 			handler() {
-				this.form.inDiscountAmount =
-					this.form.billAmount * this.form.inDiscountPoints;
+				this.form.inDiscountAmount = this.form.billAmount * this.form.inDiscountPoints;
 			},
 			deep: true
 		}
@@ -882,11 +600,7 @@ export default {
 		handleDelete(row) {
 			const ids = row.id || this.ids;
 			this.$modal
-				.confirm(
-					'是否确认删除商业票据、银行承兑编号为"' +
-						ids +
-						'"的数据项？'
-				)
+				.confirm('是否确认删除商业票据、银行承兑编号为"' + ids + '"的数据项？')
 				.then(function () {
 					return delBankAcceptance(ids);
 				})

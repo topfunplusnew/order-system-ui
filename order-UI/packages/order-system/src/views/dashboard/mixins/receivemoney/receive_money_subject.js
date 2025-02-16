@@ -24,9 +24,7 @@ export var mixin_receive_money_subject = {
 	methods: {
 		makeTree() {
 			// 找到根节点 通过筛选出parentId为0的元素
-			this.paymentTypeTree = this.paymentTypeOptions.filter(
-				item => item.parentId === 0
-			);
+			this.paymentTypeTree = this.paymentTypeOptions.filter(item => item.parentId === 0);
 			// 循环每一个根节点，找他们的子节点
 			this.paymentTypeTree.forEach(root => {
 				this.findChildren(root);
@@ -34,9 +32,7 @@ export var mixin_receive_money_subject = {
 		},
 		findChildren(parent) {
 			// 对传入根节点的子数组进行操作
-			parent.children = this.paymentTypeOptions.filter(
-				item => item.parentId === parent.id
-			);
+			parent.children = this.paymentTypeOptions.filter(item => item.parentId === parent.id);
 			parent.children.forEach(child => {
 				this.findChildren(child); // 递归处理子节点
 			});

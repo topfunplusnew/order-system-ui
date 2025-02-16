@@ -23,10 +23,7 @@ export default {
 <template>
 	<div>
 		<OrderInfos :order-info="needToShowInfo" />
-		<OrderDetailInfo
-			:order-detail-info-list="needToShowInfo.orderDetailList"
-			:ban="true"
-		/>
+		<OrderDetailInfo :order-detail-info-list="needToShowInfo.orderDetailList" :ban="true" />
 	</div>
 </template>
 

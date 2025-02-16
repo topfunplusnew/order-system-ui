@@ -16,10 +16,7 @@ export default {
 	},
 	mounted() {
 		// 重置行的样式
-		this.$bus.$on(
-			'select-goods-row:update',
-			() => (this.selectedRowId = null)
-		);
+		this.$bus.$on('select-goods-row:update', () => (this.selectedRowId = null));
 	},
 	beforeDestroy() {
 		// 清除事件监听 防止内存泄漏
@@ -87,19 +84,8 @@ export default {
 			</el-table-column>
 			<el-table-column label="公司信息" width="120">
 				<template slot-scope="scope">
-					<el-button
-						size="mini"
-						type="text"
-						@click="handleCheck(scope.row)"
-						>查看
-					</el-button>
-					<el-button
-						size="mini"
-						type="text"
-						@click="handleFilterOrders(scope.row)"
-					>
-						检索
-					</el-button>
+					<el-button size="mini" type="text" @click="handleCheck(scope.row)">查看</el-button>
+					<el-button size="mini" type="text" @click="handleFilterOrders(scope.row)">检索</el-button>
 				</template>
 			</el-table-column>
 		</el-table>

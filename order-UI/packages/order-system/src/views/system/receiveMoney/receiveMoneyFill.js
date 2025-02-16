@@ -45,7 +45,7 @@ export var mixin_receive_money_fill = {
 			this.carName = val;
 		},
 
-		// 己方信息 点击确认的回调函数 点击后自动补充相关字段
+		// 我方信息 点击确认的回调函数 点击后自动补充相关字段
 		handleCallBack(val) {
 			this.form.selfAcountsName = val.acountsName;
 			this.form.selfBankNo = val.bankNo;

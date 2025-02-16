@@ -5,16 +5,7 @@
 			<el-col :span="12">
 				<el-row :gutter="10">
 					<el-col :span="24">
-						<div
-							style="
-								font-weight: bold;
-								font-size: 24px;
-								color: #156fb2;
-								line-height: 60px;
-							"
-						>
-							今日发货列表
-						</div>
+						<div style="font-weight: bold; font-size: 24px; color: #156fb2; line-height: 60px">今日发货列表</div>
 					</el-col>
 					<el-form :inline="true" :model="queryParams">
 						<el-form-item label="开始时间">
@@ -38,13 +29,7 @@
 							></el-date-picker>
 						</el-form-item>
 						<el-form-item>
-							<el-button
-								type="primary"
-								size="mini"
-								@click="handleSearch"
-							>
-								搜索
-							</el-button>
+							<el-button type="primary" size="mini" @click="handleSearch">搜索</el-button>
 						</el-form-item>
 					</el-form>
 				</el-row>
@@ -53,26 +38,13 @@
 						<right-toolbar :columns="columns" @queryTable="getList">
 							<template #print>
 								<el-col :span="1.5">
-									<el-button
-										plain
-										icon="el-icon-printer"
-										size="mini"
-										@click="printHTML"
-									></el-button>
+									<el-button plain icon="el-icon-printer" size="mini" @click="printHTML"></el-button>
 								</el-col>
 							</template>
 							<!--        导出-->
 							<template #export>
 								<el-col :span="1.5">
-									<el-button
-										v-hasPermi="[
-											'system:bankaccount:export'
-										]"
-										plain
-										icon="el-icon-folder-opened"
-										size="mini"
-										@click="handleExport"
-									></el-button>
+									<el-button v-hasPermi="['system:bankaccount:export']" plain icon="el-icon-folder-opened" size="mini" @click="handleExport"></el-button>
 								</el-col>
 							</template>
 						</right-toolbar>
@@ -96,80 +68,18 @@
 								}
 							"
 						>
-							<el-table-column
-								prop="index"
-								label="序号"
-								width="50"
-								align="center"
-								type="index"
-							></el-table-column>
-							<el-table-column
-								v-if="columns[0].visible"
-								prop="orderDate"
-								label="日期"
-								show-overflow-tooltip
-							></el-table-column>
-							<el-table-column
-								v-if="columns[1].visible"
-								prop="companyName"
-								label="客户"
-								show-overflow-tooltip
-							></el-table-column>
-							<el-table-column
-								v-if="columns[2].visible"
-								prop="salesman"
-								label="业务员"
-								show-overflow-tooltip
-							></el-table-column>
-							<el-table-column
-								v-if="columns[3].visible"
-								prop="arrears"
-								label="欠款"
-								show-overflow-tooltip
-							></el-table-column>
-							<el-table-column
-								v-if="columns[4].visible"
-								prop="profit"
-								label="含税利润"
-								show-overflow-tooltip
-							></el-table-column>
-							<el-table-column
-								v-if="columns[5].visible"
-								prop="profitNoTax"
-								label="不含税利润"
-								width="110"
-								show-overflow-tooltip
-							></el-table-column>
-							<el-table-column
-								v-if="columns[6].visible"
-								prop="payments"
-								label="总货款"
-								show-overflow-tooltip
-							></el-table-column>
-							<el-table-column
-								v-if="columns[7].visible"
-								prop="paymentFactory"
-								label="出厂货款"
-								show-overflow-tooltip
-							></el-table-column>
-							<el-table-column
-								v-if="columns[8].visible"
-								prop="tonnage"
-								label="吨位"
-								show-overflow-tooltip
-							></el-table-column>
-							<el-table-column
-								v-if="columns[9].visible"
-								prop="clerk"
-								label="内勤"
-								show-overflow-tooltip
-							></el-table-column>
-							<el-table-column
-								v-if="columns[10].visible"
-								prop="landCarNo"
-								label="陆运车牌"
-								show-overflow-tooltip
-							>
+							<el-table-column prop="index" label="序号" width="50" align="center" type="index"></el-table-column>
+							<el-table-column v-if="columns[0].visible" prop="orderDate" label="日期" show-overflow-tooltip></el-table-column>
+							<el-table-column v-if="columns[1].visible" prop="companyName" label="客户" show-overflow-tooltip></el-table-column>
+							<el-table-column v-if="columns[2].visible" prop="salesman" label="业务员" show-overflow-tooltip></el-table-column>
+							<el-table-column v-if="columns[3].visible" prop="arrears" label="欠款" show-overflow-tooltip></el-table-column>
+							<el-table-column v-if="columns[4].visible" prop="profit" label="含税利润" show-overflow-tooltip></el-table-column>
+							<el-table-column v-if="columns[5].visible" prop="profitNoTax" label="不含税利润" width="110" show-overflow-tooltip></el-table-column>
+							<el-table-column v-if="columns[6].visible" prop="payments" label="总货款" show-overflow-tooltip></el-table-column>
+							<el-table-column v-if="columns[7].visible" prop="paymentFactory" label="出厂货款" show-overflow-tooltip></el-table-column>
+							<el-table-column v-if="columns[8].visible" prop="tonnage" label="吨位" show-overflow-tooltip></el-table-column>
+							<el-table-column v-if="columns[9].visible" prop="clerk" label="内勤" show-overflow-tooltip></el-table-column>
+							<el-table-column v-if="columns[10].visible" prop="landCarNo" label="陆运车牌" show-overflow-tooltip>
 								<template #default="scope">
 									<span v-if="scope.row.landCarNo !== null">
 										{{ scope.row.landCarNo }}
@@ -177,12 +87,7 @@
 									<span v-else>无</span>
 								</template>
 							</el-table-column>
-							<el-table-column
-								v-if="columns[11].visible"
-								prop="seaCarNo"
-								label="柜号"
-								show-overflow-tooltip
-							>
+							<el-table-column v-if="columns[11].visible" prop="seaCarNo" label="柜号" show-overflow-tooltip>
 								<template #default="scope">
 									<span v-if="scope.row.seaCarNo !== null">
 										{{ scope.row.seaCarNo }}
@@ -190,18 +95,8 @@
 									<span v-else>无</span>
 								</template>
 							</el-table-column>
-							<el-table-column
-								v-if="columns[12].visible"
-								prop="fleet"
-								label="车队"
-								show-overflow-tooltip
-							></el-table-column>
-							<el-table-column
-								v-if="columns[13].visible"
-								prop="freight"
-								label="运费"
-								show-overflow-tooltip
-							></el-table-column>
+							<el-table-column v-if="columns[12].visible" prop="fleet" label="车队" show-overflow-tooltip></el-table-column>
+							<el-table-column v-if="columns[13].visible" prop="freight" label="运费" show-overflow-tooltip></el-table-column>
 						</el-table>
 						<pagination
 							v-show="total > 0"
@@ -219,16 +114,7 @@
 			<el-col :span="12">
 				<el-row :gutter="10">
 					<el-col :span="24">
-						<div
-							style="
-								font-weight: bold;
-								font-size: 24px;
-								color: #156fb2;
-								line-height: 60px;
-							"
-						>
-							利润
-						</div>
+						<div style="font-weight: bold; font-size: 24px; color: #156fb2; line-height: 60px">利润</div>
 					</el-col>
 					<el-form :inline="true" :model="queryParams">
 						<el-form-item label="开始时间">
@@ -252,13 +138,7 @@
 							></el-date-picker>
 						</el-form-item>
 						<el-form-item>
-							<el-button
-								type="primary"
-								size="mini"
-								@click="handleSearch"
-							>
-								搜索
-							</el-button>
+							<el-button type="primary" size="mini" @click="handleSearch">搜索</el-button>
 						</el-form-item>
 					</el-form>
 				</el-row>
@@ -266,10 +146,7 @@
 					<el-table height="130" :empty-text="' '">
 						<el-table-column prop="date" label="￥0" align="center">
 							<el-table-column prop="date" label="利润总额">
-								<el-table-column
-									prop="date"
-									label="费用合计"
-								></el-table-column>
+								<el-table-column prop="date" label="费用合计"></el-table-column>
 							</el-table-column>
 							<el-table-column label="￥0">
 								<el-table-column label="￥0"></el-table-column>

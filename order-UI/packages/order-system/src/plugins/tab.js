@@ -7,16 +7,8 @@ export default {
 		const { path, query, matched } = router.currentRoute;
 		if (obj === undefined) {
 			matched.forEach(m => {
-				if (
-					m.components &&
-					m.components.default &&
-					m.components.default.name
-				) {
-					if (
-						!['Layout', 'ParentView'].includes(
-							m.components.default.name
-						)
-					) {
+				if (m.components && m.components.default && m.components.default.name) {
+					if (!['Layout', 'ParentView'].includes(m.components.default.name)) {
 						obj = {
 							name: m.components.default.name,
 							path: path,
@@ -44,15 +36,13 @@ export default {
 	// 关闭指定tab页签
 	closePage(obj) {
 		if (obj === undefined) {
-			return store
-				.dispatch('tagsView/delView', router.currentRoute)
-				.then(({ visitedViews }) => {
-					const latestView = visitedViews.slice(-1)[0];
-					if (latestView) {
-						return router.push(latestView.fullPath);
-					}
-					return router.push('/');
-				});
+			return store.dispatch('tagsView/delView', router.currentRoute).then(({ visitedViews }) => {
+				const latestView = visitedViews.slice(-1)[0];
+				if (latestView) {
+					return router.push(latestView.fullPath);
+				}
+				return router.push('/');
+			});
 		}
 		return store.dispatch('tagsView/delView', obj);
 	},
@@ -62,24 +52,15 @@ export default {
 	},
 	// 关闭左侧tab页签
 	closeLeftPage(obj) {
-		return store.dispatch(
-			'tagsView/delLeftTags',
-			obj || router.currentRoute
-		);
+		return store.dispatch('tagsView/delLeftTags', obj || router.currentRoute);
 	},
 	// 关闭右侧tab页签
 	closeRightPage(obj) {
-		return store.dispatch(
-			'tagsView/delRightTags',
-			obj || router.currentRoute
-		);
+		return store.dispatch('tagsView/delRightTags', obj || router.currentRoute);
 	},
 	// 关闭其他tab页签
 	closeOtherPage(obj) {
-		return store.dispatch(
-			'tagsView/delOthersViews',
-			obj || router.currentRoute
-		);
+		return store.dispatch('tagsView/delOthersViews', obj || router.currentRoute);
 	},
 	// 添加tab页签
 	openPage(title, url, params) {

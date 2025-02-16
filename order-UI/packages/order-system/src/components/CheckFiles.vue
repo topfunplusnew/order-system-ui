@@ -37,9 +37,7 @@ export default {
 			const type = ['.jpeg', '.jpg', '.png', '.svg'];
 			// 根据文件名称的后缀来判断
 			return this.checkFileList.filter(el => {
-				return type.some(
-					item => item === el.slice(el.lastIndexOf('.'))
-				);
+				return type.some(item => item === el.slice(el.lastIndexOf('.')));
 			});
 		},
 		// 不大于五个附件返回true
@@ -59,9 +57,7 @@ export default {
 			this.checkFileList = [];
 			// 如果path有值 才能分隔 没有值就是本身
 			if (path) {
-				this.checkFileList = path
-					.split('|')
-					.filter(item => item !== '');
+				this.checkFileList = path.split('|').filter(item => item !== '');
 			}
 			this.dialogVisible = true;
 		},
@@ -70,9 +66,7 @@ export default {
 			// fileList即为已经上传的文件列表
 			this.checkFileList = [];
 			if (path) {
-				this.checkFileList = path
-					.split('|')
-					.filter(item => item !== '');
+				this.checkFileList = path.split('|').filter(item => item !== '');
 			}
 			this.dialogVisible = true;
 		},
@@ -81,9 +75,7 @@ export default {
 			let newPath = null;
 			// 如果长度大于等于5 不得上传
 			if (this.checkFileList.length >= this.maxFileNum) {
-				this.$message.error(
-					'最多只能上传' + this.maxFileNum + '个文件'
-				);
+				this.$message.error('最多只能上传' + this.maxFileNum + '个文件');
 			} else {
 				// 如果push进去后 列表长度为0 那么就拼接一个|
 				if (this.checkFileList.length === 0) {
@@ -125,26 +117,16 @@ export default {
 		<div>
 			<el-dropdown>
 				<span class="el-dropdown-link" style="color: orangered">
-					附件<i class="el-icon-arrow-down el-icon--right"></i>
+					附件
+					<i class="el-icon-arrow-down el-icon--right"></i>
 				</span>
 				<el-dropdown-menu slot="dropdown">
 					<el-dropdown-item>
-						<el-button
-							size="mini"
-							type="text"
-							v-if="isUpload"
-							@click="uploadFile(path)"
-							>上传附件
-						</el-button>
+						<el-button size="mini" type="text" v-if="isUpload" @click="uploadFile(path)">上传附件</el-button>
 					</el-dropdown-item>
 					<el-dropdown-item>
 						<div v-if="path">
-							<el-button
-								size="mini"
-								type="text"
-								@click="checkFiles(path)"
-								>查看附件
-							</el-button>
+							<el-button size="mini" type="text" @click="checkFiles(path)">查看附件</el-button>
 						</div>
 						<div v-else>无附件</div>
 					</el-dropdown-item>
@@ -153,48 +135,25 @@ export default {
 		</div>
 
 		<!--    文件列表-->
-		<el-dialog
-			title="文件列表(最多上传五个文件)"
-			:visible.sync="dialogVisible"
-			width="620px"
-			append-to-body
-			:close-on-click-modal="false"
-			:close-on-press-escape="false"
-		>
+		<el-dialog title="文件列表(最多上传五个文件)" :visible.sync="dialogVisible" width="620px" append-to-body :close-on-click-modal="false" :close-on-press-escape="false">
 			<h3>附件列表</h3>
 			<div class="file-list">
 				<!--        上传过的文件列表-->
-				<FileItems
-					v-if="path"
-					v-for="(item, index) in checkFileList"
-					:key="index"
-					:file-name="item"
-					@handleFile="handleDeleteFile"
-				/>
+				<FileItems v-if="path" v-for="(item, index) in checkFileList" :key="index" :file-name="item" @handleFile="handleDeleteFile" />
 				<!--        支持上传-->
-				<FileShowItem
-					@handleFile="handleAddFile"
-					v-if="isFull && isUpload"
-				/>
+				<FileShowItem @handleFile="handleAddFile" v-if="isFull && isUpload" />
 			</div>
 
 			<h3>附件图片预览</h3>
 			<div class="img-list">
 				<!--        只渲染checkFileList中的图片-->
 				<div>
-					<img
-						v-for="(item, index) in imgList"
-						:key="index"
-						:src="item"
-						alt="该附件无图片/图片无法查看"
-					/>
+					<img v-for="(item, index) in imgList" :key="index" :src="item" alt="该附件无图片/图片无法查看" />
 				</div>
 			</div>
 			<span slot="footer" class="dialog-footer">
 				<el-button @click="dialogVisible = false">取 消</el-button>
-				<el-button type="primary" @click="dialogVisible = false"
-					>确 定</el-button
-				>
+				<el-button type="primary" @click="dialogVisible = false">确 定</el-button>
 			</span>
 		</el-dialog>
 	</div>

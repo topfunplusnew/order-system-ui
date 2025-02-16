@@ -43,13 +43,7 @@ const componentChild = {
 		options(h, conf, key) {
 			const list = [];
 			conf.options.forEach(item => {
-				list.push(
-					<el-option
-						label={item.label}
-						value={item.value}
-						disabled={item.disabled}
-					></el-option>
-				);
+				list.push(<el-option label={item.label} value={item.value} disabled={item.disabled}></el-option>);
 			});
 			return list;
 		}
@@ -58,12 +52,7 @@ const componentChild = {
 		options(h, conf, key) {
 			const list = [];
 			conf.options.forEach(item => {
-				if (conf.optionType === 'button')
-					list.push(
-						<el-radio-button label={item.value}>
-							{item.label}
-						</el-radio-button>
-					);
+				if (conf.optionType === 'button') list.push(<el-radio-button label={item.value}>{item.label}</el-radio-button>);
 				else
 					list.push(
 						<el-radio label={item.value} border={conf.border}>
@@ -79,11 +68,7 @@ const componentChild = {
 			const list = [];
 			conf.options.forEach(item => {
 				if (conf.optionType === 'button') {
-					list.push(
-						<el-checkbox-button label={item.value}>
-							{item.label}
-						</el-checkbox-button>
-					);
+					list.push(<el-checkbox-button label={item.value}>{item.label}</el-checkbox-button>);
 				} else {
 					list.push(
 						<el-checkbox label={item.value} border={conf.border}>
@@ -102,11 +87,7 @@ const componentChild = {
 				list.push(<i class="el-icon-plus"></i>);
 			} else {
 				list.push(
-					<el-button
-						size="small"
-						type="primary"
-						icon="el-icon-upload"
-					>
+					<el-button size="small" type="primary" icon="el-icon-upload">
 						{conf.buttonText}
 					</el-button>
 				);

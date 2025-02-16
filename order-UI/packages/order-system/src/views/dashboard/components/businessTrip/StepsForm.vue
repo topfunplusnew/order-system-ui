@@ -36,15 +36,15 @@ export default {
 		<el-row>
 			<div>
 				<el-steps :active="active" finish-status="success">
-					<el-step :title="titleOne"> </el-step>
-					<el-step :title="titleTwo"> </el-step>
+					<el-step :title="titleOne"></el-step>
+					<el-step :title="titleTwo"></el-step>
 				</el-steps>
 			</div>
 		</el-row>
 		<!--      提示信息-->
 		<br />
 		<el-row>
-			<el-alert :title="titleInfo" type="info"> </el-alert>
+			<el-alert :title="titleInfo" type="info"></el-alert>
 		</el-row>
 		<br />
 		<el-row justify="center">

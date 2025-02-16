@@ -46,7 +46,7 @@ export var mixin_businesstrip_car_apply = {
 		},
 		// 公司车辆
 		handleCommitCarNumber(val, row) {
-			row.carNo = val.dictLabel;
+			row.carNo = val.licensePlate;
 		},
 		handleCommitBackQueryCarNumber(val) {
 			this.queryCarNumber = val;

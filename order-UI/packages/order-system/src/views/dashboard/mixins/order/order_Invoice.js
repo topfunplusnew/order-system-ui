@@ -73,10 +73,8 @@ export var mixin_order_Invoice = {
 				}
 				invoiceInfo.orderInfo = res.data;
 				// 保存客户和供应商开票个数
-				invoiceInfo.customerInvoiceNumber =
-					res.data.customerIsInvoice || 0;
-				invoiceInfo.supplierInvoiceNumber =
-					res.data.isSupplierInvoice || 0;
+				invoiceInfo.customerInvoiceNumber = res.data.customerIsInvoice || 0;
+				invoiceInfo.supplierInvoiceNumber = res.data.isSupplierInvoice || 0;
 				if (!res.data.allPayments) {
 					this.$message.error('订单货款不存在或货款为0!');
 					return;
@@ -108,10 +106,8 @@ export var mixin_order_Invoice = {
 					}
 					invoiceInfo.orderInfo = res.data;
 					// 保存客户和供应商开票个数
-					invoiceInfo.customerInvoiceNumber =
-						res.data.customerIsInvoice;
-					invoiceInfo.supplierInvoiceNumber =
-						res.data.isSupplierInvoice;
+					invoiceInfo.customerInvoiceNumber = res.data.customerIsInvoice;
+					invoiceInfo.supplierInvoiceNumber = res.data.isSupplierInvoice;
 					if (!res.data.orderDetailList) {
 						this.$message.error('订单货物不存在!');
 						return;
@@ -119,8 +115,7 @@ export var mixin_order_Invoice = {
 					// 补充最大金额 最大金额为出厂货款
 					res.data.orderDetailList.forEach(item => {
 						const paymentFactory = item.paymentFactory || 0;
-						this.maxInvent =
-							Number(this.maxInvent) + Number(paymentFactory);
+						this.maxInvent = Number(this.maxInvent) + Number(paymentFactory);
 					});
 					// 打开弹窗
 					this.openDialog(

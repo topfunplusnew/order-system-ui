@@ -2,66 +2,31 @@
 	<div>
 		<el-tabs type="border-card">
 			<el-tab-pane v-if="shouldHide('second')" label="秒">
-				<CrontabSecond
-					ref="cronsecond"
-					:check="checkNumber"
-					:cron="crontabValueObj"
-					@update="updateCrontabValue"
-				/>
+				<CrontabSecond ref="cronsecond" :check="checkNumber" :cron="crontabValueObj" @update="updateCrontabValue" />
 			</el-tab-pane>
 
 			<el-tab-pane v-if="shouldHide('min')" label="分钟">
-				<CrontabMin
-					ref="cronmin"
-					:check="checkNumber"
-					:cron="crontabValueObj"
-					@update="updateCrontabValue"
-				/>
+				<CrontabMin ref="cronmin" :check="checkNumber" :cron="crontabValueObj" @update="updateCrontabValue" />
 			</el-tab-pane>
 
 			<el-tab-pane v-if="shouldHide('hour')" label="小时">
-				<CrontabHour
-					ref="cronhour"
-					:check="checkNumber"
-					:cron="crontabValueObj"
-					@update="updateCrontabValue"
-				/>
+				<CrontabHour ref="cronhour" :check="checkNumber" :cron="crontabValueObj" @update="updateCrontabValue" />
 			</el-tab-pane>
 
 			<el-tab-pane v-if="shouldHide('day')" label="日">
-				<CrontabDay
-					ref="cronday"
-					:check="checkNumber"
-					:cron="crontabValueObj"
-					@update="updateCrontabValue"
-				/>
+				<CrontabDay ref="cronday" :check="checkNumber" :cron="crontabValueObj" @update="updateCrontabValue" />
 			</el-tab-pane>
 
 			<el-tab-pane v-if="shouldHide('month')" label="月">
-				<CrontabMonth
-					ref="cronmonth"
-					:check="checkNumber"
-					:cron="crontabValueObj"
-					@update="updateCrontabValue"
-				/>
+				<CrontabMonth ref="cronmonth" :check="checkNumber" :cron="crontabValueObj" @update="updateCrontabValue" />
 			</el-tab-pane>
 
 			<el-tab-pane v-if="shouldHide('week')" label="周">
-				<CrontabWeek
-					ref="cronweek"
-					:check="checkNumber"
-					:cron="crontabValueObj"
-					@update="updateCrontabValue"
-				/>
+				<CrontabWeek ref="cronweek" :check="checkNumber" :cron="crontabValueObj" @update="updateCrontabValue" />
 			</el-tab-pane>
 
 			<el-tab-pane v-if="shouldHide('year')" label="年">
-				<CrontabYear
-					ref="cronyear"
-					:check="checkNumber"
-					:cron="crontabValueObj"
-					@update="updateCrontabValue"
-				/>
+				<CrontabYear ref="cronyear" :check="checkNumber" :cron="crontabValueObj" @update="updateCrontabValue" />
 			</el-tab-pane>
 		</el-tabs>
 
@@ -106,12 +71,8 @@
 			<CrontabResult :ex="crontabValueString"></CrontabResult>
 
 			<div class="pop_btn">
-				<el-button size="small" type="primary" @click="submitFill"
-					>确定</el-button
-				>
-				<el-button size="small" type="warning" @click="clearCron"
-					>重置</el-button
-				>
+				<el-button size="small" type="primary" @click="submitFill">确定</el-button>
+				<el-button size="small" type="warning" @click="clearCron">重置</el-button>
 				<el-button size="small" @click="hidePopup">取消</el-button>
 			</div>
 		</div>
@@ -160,19 +121,7 @@ export default {
 	computed: {
 		crontabValueString: function () {
 			const obj = this.crontabValueObj;
-			const str =
-				obj.second +
-				' ' +
-				obj.min +
-				' ' +
-				obj.hour +
-				' ' +
-				obj.day +
-				' ' +
-				obj.month +
-				' ' +
-				obj.week +
-				(obj.year == '' ? '' : ' ' + obj.year);
+			const str = obj.second + ' ' + obj.min + ' ' + obj.hour + ' ' + obj.day + ' ' + obj.month + ' ' + obj.week + (obj.year == '' ? '' : ' ' + obj.year);
 			return str;
 		}
 	},
@@ -187,8 +136,7 @@ export default {
 	},
 	methods: {
 		shouldHide(key) {
-			if (this.hideComponent && this.hideComponent.includes(key))
-				return false;
+			if (this.hideComponent && this.hideComponent.includes(key)) return false;
 			return true;
 		},
 		resolveExp() {
@@ -243,16 +191,12 @@ export default {
 					insValue = 1;
 				} else if (value.indexOf('-') > -1) {
 					const indexArr = value.split('-');
-					isNaN(indexArr[0])
-						? (this.$refs[refName].cycle01 = 0)
-						: (this.$refs[refName].cycle01 = indexArr[0]);
+					isNaN(indexArr[0]) ? (this.$refs[refName].cycle01 = 0) : (this.$refs[refName].cycle01 = indexArr[0]);
 					this.$refs[refName].cycle02 = indexArr[1];
 					insValue = 2;
 				} else if (value.indexOf('/') > -1) {
 					const indexArr = value.split('/');
-					isNaN(indexArr[0])
-						? (this.$refs[refName].average01 = 0)
-						: (this.$refs[refName].average01 = indexArr[0]);
+					isNaN(indexArr[0]) ? (this.$refs[refName].average01 = 0) : (this.$refs[refName].average01 = indexArr[0]);
 					this.$refs[refName].average02 = indexArr[1];
 					insValue = 3;
 				} else {
@@ -266,23 +210,17 @@ export default {
 					insValue = 2;
 				} else if (value.indexOf('-') > -1) {
 					const indexArr = value.split('-');
-					isNaN(indexArr[0])
-						? (this.$refs[refName].cycle01 = 0)
-						: (this.$refs[refName].cycle01 = indexArr[0]);
+					isNaN(indexArr[0]) ? (this.$refs[refName].cycle01 = 0) : (this.$refs[refName].cycle01 = indexArr[0]);
 					this.$refs[refName].cycle02 = indexArr[1];
 					insValue = 3;
 				} else if (value.indexOf('/') > -1) {
 					const indexArr = value.split('/');
-					isNaN(indexArr[0])
-						? (this.$refs[refName].average01 = 0)
-						: (this.$refs[refName].average01 = indexArr[0]);
+					isNaN(indexArr[0]) ? (this.$refs[refName].average01 = 0) : (this.$refs[refName].average01 = indexArr[0]);
 					this.$refs[refName].average02 = indexArr[1];
 					insValue = 4;
 				} else if (value.indexOf('W') > -1) {
 					const indexArr = value.split('W');
-					isNaN(indexArr[0])
-						? (this.$refs[refName].workday = 0)
-						: (this.$refs[refName].workday = indexArr[0]);
+					isNaN(indexArr[0]) ? (this.$refs[refName].workday = 0) : (this.$refs[refName].workday = indexArr[0]);
 					insValue = 5;
 				} else if (value === 'L') {
 					insValue = 6;
@@ -297,23 +235,17 @@ export default {
 					insValue = 2;
 				} else if (value.indexOf('-') > -1) {
 					const indexArr = value.split('-');
-					isNaN(indexArr[0])
-						? (this.$refs[refName].cycle01 = 0)
-						: (this.$refs[refName].cycle01 = indexArr[0]);
+					isNaN(indexArr[0]) ? (this.$refs[refName].cycle01 = 0) : (this.$refs[refName].cycle01 = indexArr[0]);
 					this.$refs[refName].cycle02 = indexArr[1];
 					insValue = 3;
 				} else if (value.indexOf('#') > -1) {
 					const indexArr = value.split('#');
-					isNaN(indexArr[0])
-						? (this.$refs[refName].average01 = 1)
-						: (this.$refs[refName].average01 = indexArr[0]);
+					isNaN(indexArr[0]) ? (this.$refs[refName].average01 = 1) : (this.$refs[refName].average01 = indexArr[0]);
 					this.$refs[refName].average02 = indexArr[1];
 					insValue = 4;
 				} else if (value.indexOf('L') > -1) {
 					const indexArr = value.split('L');
-					isNaN(indexArr[0])
-						? (this.$refs[refName].weekday = 1)
-						: (this.$refs[refName].weekday = indexArr[0]);
+					isNaN(indexArr[0]) ? (this.$refs[refName].weekday = 1) : (this.$refs[refName].weekday = indexArr[0]);
 					insValue = 5;
 				} else {
 					this.$refs[refName].checkboxList = value.split(',');

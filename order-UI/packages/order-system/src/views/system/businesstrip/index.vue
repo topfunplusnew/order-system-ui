@@ -1,85 +1,33 @@
 <template>
 	<div class="app-container">
-		<el-form
-			v-show="showSearch"
-			ref="queryForm"
-			:model="queryParams"
-			size="mini"
-			:inline="true"
-			label-width="68px"
-		>
+		<el-form v-show="showSearch" ref="queryForm" :model="queryParams" size="mini" :inline="true" label-width="68px">
 			<el-form-item label="出差时间" prop="starttime">
-				<el-date-picker
-					v-model="queryParams.starttime"
-					type="datetime"
-					placeholder="选择日期"
-					value-format="yyyy-MM-dd HH:mm:ss"
-				></el-date-picker>
+				<el-date-picker v-model="queryParams.starttime" type="datetime" placeholder="选择日期" value-format="yyyy-MM-dd HH:mm:ss"></el-date-picker>
 			</el-form-item>
 			<el-form-item label="返回时间" prop="endtime">
-				<el-date-picker
-					v-model="queryParams.endtime"
-					type="datetime"
-					placeholder="选择日期"
-					value-format="yyyy-MM-dd HH:mm:ss"
-				></el-date-picker>
+				<el-date-picker v-model="queryParams.endtime" type="datetime" placeholder="选择日期" value-format="yyyy-MM-dd HH:mm:ss"></el-date-picker>
 			</el-form-item>
 			<el-form-item>
-				<el-button
-					type="primary"
-					icon="el-icon-search"
-					size="mini"
-					@click="handleQuery"
-				>
-					搜索
-				</el-button>
+				<el-button type="primary" icon="el-icon-search" size="mini" @click="handleQuery">搜索</el-button>
 			</el-form-item>
 		</el-form>
 		<el-row :gutter="10" class="mb8">
 			<el-col :span="1.5">
-				<el-button
-					v-hasPermi="['system:businesstrip:add']"
-					type="danger"
-					size="mini"
-					@click="handleAdd"
-				>
-					新增出差信息
-				</el-button>
+				<el-button v-hasPermi="['system:businesstrip:add']" type="danger" size="mini" @click="handleAdd">新增出差信息</el-button>
 			</el-col>
 			<el-col :span="1.5">
-				<el-button
-					icon="el-icon-refresh"
-					size="mini"
-					@click="resetQuery"
-				>
-					刷新
-				</el-button>
+				<el-button icon="el-icon-refresh" size="mini" @click="resetQuery">刷新</el-button>
 			</el-col>
-			<right-toolbar
-				:showSearch.sync="showSearch"
-				:columns="columns"
-				@queryTable="getList"
-			>
+			<right-toolbar :showSearch.sync="showSearch" :columns="columns" @queryTable="getList">
 				<template #print>
 					<el-col :span="1.5">
-						<el-button
-							plain
-							icon="el-icon-printer"
-							size="mini"
-							@click="printHTML"
-						></el-button>
+						<el-button plain icon="el-icon-printer" size="mini" @click="printHTML"></el-button>
 					</el-col>
 				</template>
 				<!--        导出-->
 				<template #export>
 					<el-col :span="1.5">
-						<el-button
-							v-hasPermi="['system:businesstrip:export']"
-							plain
-							icon="el-icon-folder-opened"
-							size="mini"
-							@click="handleExport"
-						></el-button>
+						<el-button v-hasPermi="['system:businesstrip:export']" plain icon="el-icon-folder-opened" size="mini" @click="handleExport"></el-button>
 					</el-col>
 				</template>
 			</right-toolbar>
@@ -99,69 +47,19 @@
 			@selection-change="handleSelectionChange"
 		>
 			<!--      <el-table-column label="报销人ID" align="center" prop="employeeID"/>-->
-			<el-table-column
-				v-if="columns[0].visible"
-				label="报销人"
-				align="center"
-				prop="employee"
-			/>
-			<el-table-column
-				v-if="columns[1].visible"
-				label="共同出差人员"
-				align="center"
-				prop="personnel"
-			/>
-			<el-table-column
-				v-if="columns[2].visible"
-				label="部门"
-				align="center"
-				prop="deptName"
-			/>
-			<el-table-column
-				v-if="columns[3].visible"
-				label="出差时间"
-				align="center"
-				prop="starttime"
-			/>
-			<el-table-column
-				v-if="columns[4].visible"
-				label="出差结束时间"
-				align="center"
-				prop="endtime"
-			/>
-			<el-table-column
-				v-if="columns[5].visible"
-				label="附件"
-				align="center"
-				prop="attachmentPath"
-			>
+			<el-table-column v-if="columns[0].visible" label="报销人" align="center" prop="employee" />
+			<el-table-column v-if="columns[1].visible" label="共同出差人员" align="center" prop="personnel" />
+			<el-table-column v-if="columns[2].visible" label="部门" align="center" prop="deptName" />
+			<el-table-column v-if="columns[3].visible" label="出差时间" align="center" prop="starttime" />
+			<el-table-column v-if="columns[4].visible" label="出差结束时间" align="center" prop="endtime" />
+			<el-table-column v-if="columns[5].visible" label="附件" align="center" prop="attachmentPath">
 				<template #default="scope">
-					<CheckFiles
-						:path="scope.row.attachmentPath"
-						@needToUpdate="
-							value =>
-								handleUpdateFilePath(
-									value,
-									scope.row,
-									'attachmentPath',
-									getBusinessTrip,
-									updateBusinessTrip
-								)
-						"
-					/>
+					<CheckFiles :path="scope.row.attachmentPath" @needToUpdate="value => handleUpdateFilePath(value, scope.row, 'attachmentPath', getBusinessTrip, updateBusinessTrip)" />
 				</template>
 			</el-table-column>
-			<el-table-column
-				v-if="columns[6].visible"
-				label="是否已报销"
-				align="center"
-				prop="isReimburse"
-			>
+			<el-table-column v-if="columns[6].visible" label="是否已报销" align="center" prop="isReimburse">
 				<template slot-scope="scope">
-					<StateTag
-						:state-title="scope.row.isReimburse === 0 ? '否' : '是'"
-						:state-mapper="{ 0: '否', 2: '是' }"
-					/>
+					<StateTag :state-title="scope.row.isReimburse === 0 ? '否' : '是'" :state-mapper="{ 0: '否', 2: '是' }" />
 				</template>
 			</el-table-column>
 			<el-table-column label="付款状态" align="center" prop="checkState">
@@ -178,137 +76,51 @@
 				</template>
 			</el-table-column>
 
-			<el-table-column
-				v-if="columns[7].visible"
-				label="备注"
-				align="center"
-				prop="comments"
-			/>
-			<el-table-column
-				label="操作"
-				align="center"
-				class-name="small-padding fixed-width"
-				width="260px"
-				fixed="right"
-			>
+			<el-table-column v-if="columns[7].visible" label="备注" align="center" prop="comments" />
+			<el-table-column label="操作" align="center" class-name="small-padding fixed-width" width="260px" fixed="right">
 				<template slot-scope="scope">
-					<el-button
-						size="mini"
-						type="text"
-						@click="applyForPayment(scope.row)"
-					>
-						发起付款申请
-					</el-button>
-					<el-button
-						:disabled="scope.row.checkState === '已支付'"
-						v-hasPermi="['system:businesstrip:edit']"
-						size="mini"
-						type="primary"
-						@click="handleUpdate(scope.row)"
-					>
-						修改
-					</el-button>
-					<el-button
-						v-hasPermi="['system:businesstrip:remove']"
-						size="mini"
-						type="danger"
-						@click="handleDelete(scope.row)"
-					>
-						删除
-					</el-button>
+					<el-button size="mini" type="text" @click="applyForPayment(scope.row)">发起付款申请</el-button>
+					<el-button :disabled="scope.row.checkState === '已支付'" v-hasPermi="['system:businesstrip:edit']" size="mini" type="primary" @click="handleUpdate(scope.row)">修改</el-button>
+					<el-button v-hasPermi="['system:businesstrip:remove']" size="mini" type="danger" @click="handleDelete(scope.row)">删除</el-button>
 				</template>
 			</el-table-column>
 		</el-table>
 
-		<pagination
-			v-show="total > 0"
-			:total="total"
-			:page.sync="queryParams.pageNum"
-			:limit.sync="queryParams.pageSize"
-			@pagination="getList"
-		/>
+		<pagination v-show="total > 0" :total="total" :page.sync="queryParams.pageNum" :limit.sync="queryParams.pageSize" @pagination="getList" />
 
 		<!-- 添加或修改出差对话框 -->
-		<el-dialog
-			:close-on-click-modal="false"
-			:show-close="false"
-			:title="title"
-			:visible.sync="open"
-			width="1000px"
-		>
-			<StepsForm
-				:active="active"
-				title-one="基本信息登记"
-				title-two="报销信息"
-				title-info="请按照步骤填写出差信息"
-			>
+		<el-dialog :close-on-click-modal="false" :show-close="false" :title="title" :visible.sync="open" width="1000px">
+			<StepsForm :active="active" title-one="基本信息登记" title-two="报销信息" title-info="请按照步骤填写出差信息">
 				<!--         第一步骤 填写出差基本信息 保存出差基本信息-->
 				<template #step-one>
-					<el-form
-						ref="form"
-						:model="form"
-						:rules="rules"
-						label-width="120px"
-					>
+					<el-form ref="form" :model="form" :rules="rules" label-width="120px">
 						<el-col :span="12">
 							<el-form-item label="报销人" prop="employee">
-								<el-input
-									v-model="form.employee"
-									disabled
-									placeholder="请输入报销人"
-								/>
+								<el-input v-model="form.employee" disabled placeholder="请输入报销人" />
 							</el-form-item>
 							<!-- <el-form-item label="部门" prop="deptName">
                 <el-input v-model="form.deptName" placeholder="请输入部门"/>
               </el-form-item>
               <el-row> -->
 							<el-form-item label="部门" prop="deptName">
-								<treeselect
-									v-model="form.deptName"
-									:options="deptOptions"
-									:normalizer="normalizer"
-									placeholder="请选择部门"
-								/>
+								<treeselect v-model="form.deptName" :options="deptOptions" :normalizer="normalizer" placeholder="请选择部门" />
 							</el-form-item>
 							<el-form-item label="共同出差人员" prop="personnel">
-								<el-input
-									v-model="form.personnel"
-									placeholder="请输入共同出差人员"
-								/>
+								<el-input v-model="form.personnel" placeholder="请输入共同出差人员" />
 							</el-form-item>
 							<el-form-item label="出差时间" prop="starttime">
-								<el-date-picker
-									v-model="form.starttime"
-									type="datetime"
-									placeholder="选择出差时间"
-									value-format="yyyy-MM-dd HH:mm:ss"
-								></el-date-picker>
+								<el-date-picker v-model="form.starttime" type="datetime" placeholder="选择出差时间" value-format="yyyy-MM-dd HH:mm:ss"></el-date-picker>
 							</el-form-item>
 							<el-form-item label="出差结束时间" prop="endtime">
-								<el-date-picker
-									v-model="form.endtime"
-									type="datetime"
-									placeholder="选择出差结束时间"
-									value-format="yyyy-MM-dd HH:mm:ss"
-								></el-date-picker>
+								<el-date-picker v-model="form.endtime" type="datetime" placeholder="选择出差结束时间" value-format="yyyy-MM-dd HH:mm:ss"></el-date-picker>
 							</el-form-item>
 						</el-col>
 						<el-col :span="12">
-							<el-form-item
-								label="附件地址"
-								prop="attachmentPath"
-							>
-								<file-upload
-									ref="uploadFile"
-									@input="handleCommitUpload"
-								/>
+							<el-form-item label="附件地址" prop="attachmentPath">
+								<file-upload ref="uploadFile" @input="handleCommitUpload" />
 							</el-form-item>
 							<el-form-item label="备注" prop="comments">
-								<el-input
-									v-model="form.comments"
-									type="textarea"
-									placeholder="请输入内容"
-								/>
+								<el-input v-model="form.comments" type="textarea" placeholder="请输入内容" />
 							</el-form-item>
 						</el-col>
 					</el-form>
@@ -317,9 +129,7 @@
 				<template #step-two>
 					<el-row>
 						<el-col :span="5">
-							<span style="font-weight: bolder"
-								>是否使用车辆</span
-							>
+							<span style="font-weight: bolder">是否使用车辆</span>
 						</el-col>
 						<el-col :span="5">
 							<el-radio v-model="useCar" label="是">是</el-radio>
@@ -330,47 +140,20 @@
 						<!--            车辆信息-->
 						<el-row :gutter="10" class="mb8">
 							<el-col :span="1.5">
-								<el-button
-									size="mini"
-									type="primary"
-									@click="handleAddCars"
-									>添加
-								</el-button>
+								<el-button size="mini" type="primary" @click="handleAddCars">添加</el-button>
 							</el-col>
 							<el-col :span="1.5">
-								<el-button
-									size="mini"
-									type="danger"
-									@click="handleDeleteCars"
-									>删除
-								</el-button>
+								<el-button size="mini" type="danger" @click="handleDeleteCars">删除</el-button>
 							</el-col>
 						</el-row>
-						<el-table
-							size="mini"
-							:data="carsList"
-							:row-class-name="rowCarsIndex"
-							@selection-change="handleCarsSelectionChange"
-						>
-							<el-table-column
-								type="selection"
-								width="90"
-								align="center"
-							/>
-							<el-table-column
-								label="序号"
-								align="center"
-								prop="index"
-							/>
+						<el-table size="mini" :data="carsList" :row-class-name="rowCarsIndex" @selection-change="handleCarsSelectionChange">
+							<el-table-column type="selection" width="90" align="center" />
+							<el-table-column label="序号" align="center" prop="index" />
 							<el-table-column label="车牌号" align="center">
 								<template #default="scope">
 									<el-row>
 										<el-col :span="20">
-											<el-input
-												size="mini"
-												disabled
-												v-model="scope.row.carNo"
-											/>
+											<el-input size="mini" disabled v-model="scope.row.carNo" />
 										</el-col>
 										<el-col :span="4">
 											<SearchOption
@@ -379,38 +162,15 @@
 												:query-name="queryCarApply"
 												query-info="carNo"
 												query-label="车牌"
-												@commitBack="
-													value =>
-														handleCommitBackCarApply(
-															value,
-															scope
-														)
-												"
-												@update:queryName="
-													handleQueryCarApply
-												"
+												@commitBack="value => handleCommitBackCarApply(value, scope)"
+												@update:queryName="handleQueryCarApply"
 											>
 												<template #table-columns>
-													<el-table-column
-														label="申请人"
-														prop="applyUser"
-													/>
-													<el-table-column
-														label="部门"
-														prop="department"
-													/>
-													<el-table-column
-														label="车牌"
-														prop="carNo"
-													/>
-													<el-table-column
-														label="用车时间"
-														prop="startTime"
-													/>
-													<el-table-column
-														label="还车时间"
-														prop="endTime"
-													/>
+													<el-table-column label="申请人" prop="applyUser" />
+													<el-table-column label="部门" prop="department" />
+													<el-table-column label="车牌" prop="carNo" />
+													<el-table-column label="用车时间" prop="startTime" />
+													<el-table-column label="还车时间" prop="endTime" />
 												</template>
 											</SearchOption>
 										</el-col>
@@ -419,17 +179,8 @@
 							</el-table-column>
 							<el-table-column label="车辆信息" align="center">
 								<template #default="scope">
-									<el-button
-										v-if="scope.row.carNo"
-										type="text"
-										size="mini"
-										@click="handleCheckCar(scope.row)"
-									>
-										查看车辆信息
-									</el-button>
-									<el-button v-else type="text" size="mini">
-										请先引用车辆
-									</el-button>
+									<el-button v-if="scope.row.carNo" type="text" size="mini" @click="handleCheckCar(scope.row)">查看车辆信息</el-button>
+									<el-button v-else type="text" size="mini">请先引用车辆</el-button>
 								</template>
 							</el-table-column>
 						</el-table>
@@ -440,76 +191,30 @@
 							<span style="font-weight: bolder">填写报销项</span>
 						</el-col>
 						<el-col :span="3">
-							<el-button
-								type="primary"
-								size="mini"
-								@click="handleAddTripReimbursement"
-							>
-								添加报销项
-							</el-button>
+							<el-button type="primary" size="mini" @click="handleAddTripReimbursement">添加报销项</el-button>
 						</el-col>
 						<el-col :span="3">
-							<el-button
-								type="danger"
-								size="mini"
-								@click="handleDeleteTripReimbursement"
-							>
-								删除报销项
-							</el-button>
+							<el-button type="danger" size="mini" @click="handleDeleteTripReimbursement">删除报销项</el-button>
 						</el-col>
 					</el-row>
-					<el-table
-						ref="tripReimbursement"
-						:data="tripReimbursementList"
-						:row-class-name="rowTripReimbursementIndex"
-						@selection-change="
-							handleTripReimbursementSelectionChange
-						"
-					>
-						<el-table-column
-							type="selection"
-							width="100"
-							align="center"
-						/>
-						<el-table-column
-							label="序号"
-							align="center"
-							prop="index"
-							width="150px"
-						/>
-						<el-table-column
-							label="报销项"
-							prop="item"
-							width="350px"
-						>
+					<el-table ref="tripReimbursement" :data="tripReimbursementList" :row-class-name="rowTripReimbursementIndex" @selection-change="handleTripReimbursementSelectionChange">
+						<el-table-column type="selection" width="100" align="center" />
+						<el-table-column label="序号" align="center" prop="index" width="150px" />
+						<el-table-column label="报销项" prop="item" width="350px">
 							<template slot-scope="scope">
 								<el-row>
 									<el-col :span="20">
-										<el-input
-											v-model="scope.row.item"
-											placeholder="请输入报销项"
-											:disabled="scope.row.isDisabled"
-										/>
+										<el-input v-model="scope.row.item" placeholder="请输入报销项" :disabled="scope.row.isDisabled" />
 									</el-col>
 									<el-col :span="4">
-										<SubjectOption
-											@update:type="
-												value =>
-													handleType(value, scope)
-											"
-										/>
+										<SubjectOption @update:type="value => handleType(value, scope)" />
 									</el-col>
 								</el-row>
 							</template>
 						</el-table-column>
 						<el-table-column label="费用" prop="itemCost">
 							<template slot-scope="scope">
-								<el-input
-									v-model="scope.row.itemCost"
-									type="number"
-									placeholder="请输入费用"
-									:disabled="scope.row.isDisabled"
-								/>
+								<el-input v-model="scope.row.itemCost" type="number" placeholder="请输入费用" :disabled="scope.row.isDisabled" />
 							</template>
 						</el-table-column>
 					</el-table>
@@ -517,51 +222,23 @@
 				<template #step-three>
 					<el-result icon="success" title="申请提交成功">
 						<template slot="extra">
-							<el-button
-								type="primary"
-								size="medium"
-								@click="closeAll"
-							>
-								关闭
-							</el-button>
+							<el-button type="primary" size="medium" @click="closeAll">关闭</el-button>
 						</template>
 					</el-result>
 				</template>
 			</StepsForm>
 			<div v-if="active !== 2" slot="footer" class="dialog-footer">
-				<el-button v-if="active !== 0" type="warning" @click="before">
-					上一步
-				</el-button>
-				<el-button v-if="active !== 1" type="warning" @click="next">
-					下一步
-				</el-button>
-				<el-button
-					v-if="active === 1"
-					type="success"
-					@click="nextAndSubmit"
-				>
-					完成提交
-				</el-button>
+				<el-button v-if="active !== 0" type="warning" @click="before">上一步</el-button>
+				<el-button v-if="active !== 1" type="warning" @click="next">下一步</el-button>
+				<el-button v-if="active === 1" type="success" @click="nextAndSubmit">完成提交</el-button>
 				<el-button @click="cancel">取 消</el-button>
 			</div>
 		</el-dialog>
 
 		<!--    付款申请弹窗-->
-		<el-dialog
-			:close-on-click-modal="false"
-			:show-close="false"
-			title="提示"
-			:visible.sync="applyForPaymentDialogVisible"
-			width="60%"
-		>
+		<el-dialog :close-on-click-modal="false" :show-close="false" title="提示" :visible.sync="applyForPaymentDialogVisible" width="60%">
 			<keep-alive>
-				<ApplyPayment
-					:table-name="TableName.BUSINESS_TRIP"
-					:t-i-d="tID"
-					:need-info="{}"
-					:need-money="needMoney"
-					@changeOpen="changePaymentApplyInfoVisible"
-				/>
+				<ApplyPayment :table-name="TableName.BUSINESS_TRIP" :t-i-d="tID" :need-info="{}" :need-money="needMoney" @changeOpen="changePaymentApplyInfoVisible" />
 			</keep-alive>
 		</el-dialog>
 
@@ -582,12 +259,7 @@
 </template>
 
 <script>
-import {
-	delBusinessTrip,
-	getBusinessTrip,
-	updateBusinessTrip,
-	listBusinessTrip
-} from '@/api/system/BusinessTrip';
+import { delBusinessTrip, getBusinessTrip, updateBusinessTrip, listBusinessTrip } from '@/api/system/BusinessTrip';
 import { mixin_printHTML } from '@/views/dashboard/mixins/print';
 import { mapGetters } from 'vuex';
 import ApplyPayment from '@/views/dashboard/components/common/ApplyPayment.vue';
@@ -624,15 +296,7 @@ export default {
 		ApplyPayment,
 		Treeselect
 	},
-	mixins: [
-		mixin_printHTML,
-		mixin_common_upload,
-		common_dialog,
-		mixin_business_trip_add,
-		mixin_business_trip_update,
-		mixin_business_trip_car_apply,
-		mixin_checkfile
-	],
+	mixins: [mixin_printHTML, mixin_common_upload, common_dialog, mixin_business_trip_add, mixin_business_trip_update, mixin_business_trip_car_apply, mixin_checkfile],
 	data() {
 		return {
 			loading: true,
@@ -749,10 +413,7 @@ export default {
 	watch: {
 		columns: {
 			handler: function (newVal) {
-				localStorage.setItem(
-					'BusinessTrip-columns',
-					JSON.stringify(newVal)
-				);
+				localStorage.setItem('BusinessTrip-columns', JSON.stringify(newVal));
 			},
 			deep: true
 		},
@@ -769,19 +430,11 @@ export default {
 		listDept().then(response => {
 			this.deptOptions = this.handleTree(response.data, 'deptId');
 		});
-		if (
-			localStorage.getItem('BusinessTrip-columns') === 'null' ||
-			!localStorage.getItem('BusinessTrip-columns')
-		) {
+		if (localStorage.getItem('BusinessTrip-columns') === 'null' || !localStorage.getItem('BusinessTrip-columns')) {
 			// 设置localStorage
-			localStorage.setItem(
-				'BusinessTrip-columns',
-				JSON.stringify(this.columns)
-			);
+			localStorage.setItem('BusinessTrip-columns', JSON.stringify(this.columns));
 		} else {
-			this.columns = JSON.parse(
-				localStorage.getItem('BusinessTrip-columns')
-			);
+			this.columns = JSON.parse(localStorage.getItem('BusinessTrip-columns'));
 		}
 	},
 	computed: {
@@ -811,10 +464,7 @@ export default {
 		applyForPayment(row) {
 			getBusinessTrip(row.id).then(res => {
 				// 出差费用包含 报销项 车辆使用申请的保养金额 加油金额 初期金额
-				if (
-					res.data.tripReimbursementList !== null &&
-					res.data.tripReimbursementList !== undefined
-				) {
+				if (res.data.tripReimbursementList !== null && res.data.tripReimbursementList !== undefined) {
 					if (res.data.tripReimbursementList.length > 0) {
 						res.data.tripReimbursementList.forEach(item => {
 							this.needMoney += item.itemCost;
@@ -868,14 +518,11 @@ export default {
 			scope.row.carNo = value.carNo;
 
 			function addReimbursementItem(item, cost) {
-				const existingItem = this.tripReimbursementList.find(
-					reimbursement => reimbursement.item === item
-				);
+				const existingItem = this.tripReimbursementList.find(reimbursement => reimbursement.item === item);
 
 				// 如果该项费用已经存在，则累加
 				if (existingItem) {
-					existingItem.itemCost =
-						Number(existingItem.itemCost) + Number(cost);
+					existingItem.itemCost = Number(existingItem.itemCost) + Number(cost);
 				} else {
 					// 否则添加新的费用项
 					this.tripReimbursementList.push({
@@ -890,28 +537,16 @@ export default {
 				addReimbursementItem.call(this, '规章费用', value.fine);
 			}
 			if (value.refuelingMoney) {
-				addReimbursementItem.call(
-					this,
-					'加油费用',
-					value.refuelingMoney
-				);
+				addReimbursementItem.call(this, '加油费用', value.refuelingMoney);
 			}
 			if (value.cashRefueling) {
-				addReimbursementItem.call(
-					this,
-					'现金加油费用',
-					value.cashRefueling
-				);
+				addReimbursementItem.call(this, '现金加油费用', value.cashRefueling);
 			}
 			if (value.repairMoney) {
 				addReimbursementItem.call(this, '维修费用', value.repairMoney);
 			}
 			if (value.maintenanceMoney) {
-				addReimbursementItem.call(
-					this,
-					'保养费用',
-					value.maintenanceMoney
-				);
+				addReimbursementItem.call(this, '保养费用', value.maintenanceMoney);
 			}
 		},
 		handleQueryCarApply(value) {
@@ -1026,13 +661,9 @@ export default {
 			} else {
 				const tripReimbursementList = this.tripReimbursementList;
 				const checkedTripReimbursement = this.checkedTripReimbursement;
-				this.tripReimbursementList = tripReimbursementList.filter(
-					function (item) {
-						return (
-							checkedTripReimbursement.indexOf(item.index) === -1
-						);
-					}
-				);
+				this.tripReimbursementList = tripReimbursementList.filter(function (item) {
+					return checkedTripReimbursement.indexOf(item.index) === -1;
+				});
 			}
 		},
 		/** 复选框选中数据 */

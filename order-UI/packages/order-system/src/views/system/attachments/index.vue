@@ -1,276 +1,102 @@
 <template>
 	<div class="app-container">
-		<el-form
-			:model="queryParams"
-			ref="queryForm"
-			size="small"
-			:inline="true"
-			v-show="showSearch"
-			label-width="68px"
-		>
+		<el-form :model="queryParams" ref="queryForm" size="small" :inline="true" v-show="showSearch" label-width="68px">
 			<el-form-item label="关联表名" prop="tableName">
-				<el-input
-					v-model="queryParams.tableName"
-					placeholder="请输入关联表名"
-					clearable
-					@keyup.enter.native="handleQuery"
-				/>
+				<el-input v-model="queryParams.tableName" placeholder="请输入关联表名" clearable @keyup.enter.native="handleQuery" />
 			</el-form-item>
 			<el-form-item label="关联表的 ID" prop="tableId">
-				<el-input
-					v-model="queryParams.tableId"
-					placeholder="请输入关联表的 ID"
-					clearable
-					@keyup.enter.native="handleQuery"
-				/>
+				<el-input v-model="queryParams.tableId" placeholder="请输入关联表的 ID" clearable @keyup.enter.native="handleQuery" />
 			</el-form-item>
 			<el-form-item label="附件的 URL" prop="url">
-				<el-input
-					v-model="queryParams.url"
-					placeholder="请输入附件的 URL"
-					clearable
-					@keyup.enter.native="handleQuery"
-				/>
+				<el-input v-model="queryParams.url" placeholder="请输入附件的 URL" clearable @keyup.enter.native="handleQuery" />
 			</el-form-item>
 			<el-form-item label="文件名" prop="fileName">
-				<el-input
-					v-model="queryParams.fileName"
-					placeholder="请输入文件名"
-					clearable
-					@keyup.enter.native="handleQuery"
-				/>
+				<el-input v-model="queryParams.fileName" placeholder="请输入文件名" clearable @keyup.enter.native="handleQuery" />
 			</el-form-item>
 			<el-form-item label="上传日期" prop="uploadDate">
-				<el-date-picker
-					clearable
-					v-model="queryParams.uploadDate"
-					type="date"
-					value-format="yyyy-MM-dd"
-					placeholder="请选择上传日期"
-				>
-				</el-date-picker>
+				<el-date-picker clearable v-model="queryParams.uploadDate" type="date" value-format="yyyy-MM-dd" placeholder="请选择上传日期"></el-date-picker>
 			</el-form-item>
 			<el-form-item label="标记" prop="flag">
-				<el-input
-					v-model="queryParams.flag"
-					placeholder="请输入标记"
-					clearable
-					@keyup.enter.native="handleQuery"
-				/>
+				<el-input v-model="queryParams.flag" placeholder="请输入标记" clearable @keyup.enter.native="handleQuery" />
 			</el-form-item>
 			<el-form-item label="逻辑删除标记" prop="delFlag">
-				<el-input
-					v-model="queryParams.delFlag"
-					placeholder="请输入逻辑删除标记"
-					clearable
-					@keyup.enter.native="handleQuery"
-				/>
+				<el-input v-model="queryParams.delFlag" placeholder="请输入逻辑删除标记" clearable @keyup.enter.native="handleQuery" />
 			</el-form-item>
 			<el-form-item>
-				<el-button
-					type="primary"
-					icon="el-icon-search"
-					size="mini"
-					@click="handleQuery"
-					>搜索</el-button
-				>
-				<el-button
-					icon="el-icon-refresh"
-					size="mini"
-					@click="resetQuery"
-					>重置</el-button
-				>
+				<el-button type="primary" icon="el-icon-search" size="mini" @click="handleQuery">搜索</el-button>
+				<el-button icon="el-icon-refresh" size="mini" @click="resetQuery">重置</el-button>
 			</el-form-item>
 		</el-form>
 
 		<el-row :gutter="10" class="mb8">
 			<el-col :span="1.5">
-				<el-button
-					type="primary"
-					plain
-					icon="el-icon-plus"
-					size="mini"
-					@click="handleAdd"
-					v-hasPermi="['system:attachments:add']"
-					>新增</el-button
-				>
+				<el-button type="primary" plain icon="el-icon-plus" size="mini" @click="handleAdd" v-hasPermi="['system:attachments:add']">新增</el-button>
 			</el-col>
 			<el-col :span="1.5">
-				<el-button
-					type="success"
-					plain
-					icon="el-icon-edit"
-					size="mini"
-					:disabled="single"
-					@click="handleUpdate"
-					v-hasPermi="['system:attachments:edit']"
-					>修改</el-button
-				>
+				<el-button type="success" plain icon="el-icon-edit" size="mini" :disabled="single" @click="handleUpdate" v-hasPermi="['system:attachments:edit']">修改</el-button>
 			</el-col>
 			<el-col :span="1.5">
-				<el-button
-					type="danger"
-					plain
-					icon="el-icon-delete"
-					size="mini"
-					:disabled="multiple"
-					@click="handleDelete"
-					v-hasPermi="['system:attachments:remove']"
-					>删除</el-button
-				>
+				<el-button type="danger" plain icon="el-icon-delete" size="mini" :disabled="multiple" @click="handleDelete" v-hasPermi="['system:attachments:remove']">删除</el-button>
 			</el-col>
 			<el-col :span="1.5">
-				<el-button
-					type="warning"
-					plain
-					icon="el-icon-download"
-					size="mini"
-					@click="handleExport"
-					v-hasPermi="['system:attachments:export']"
-					>导出</el-button
-				>
+				<el-button type="warning" plain icon="el-icon-download" size="mini" @click="handleExport" v-hasPermi="['system:attachments:export']">导出</el-button>
 			</el-col>
-			<right-toolbar
-				:showSearch.sync="showSearch"
-				@queryTable="getList"
-			></right-toolbar>
+			<right-toolbar :showSearch.sync="showSearch" @queryTable="getList"></right-toolbar>
 		</el-row>
 
-		<el-table
-			v-loading="loading"
-			:data="attachmentsList"
-			@selection-change="handleSelectionChange"
-		>
+		<el-table v-loading="loading" :data="attachmentsList" @selection-change="handleSelectionChange">
 			<el-table-column type="selection" width="55" align="center" />
 			<el-table-column label="主键，自增" align="center" prop="id" />
 			<el-table-column label="关联表名" align="center" prop="tableName" />
-			<el-table-column
-				label="关联表的 ID"
-				align="center"
-				prop="tableId"
-			/>
+			<el-table-column label="关联表的 ID" align="center" prop="tableId" />
 			<el-table-column label="附件的 URL" align="center" prop="url" />
 			<el-table-column label="文件名" align="center" prop="fileName" />
-			<el-table-column
-				label="文件扩展名"
-				align="center"
-				prop="fileType"
-			/>
-			<el-table-column
-				label="上传日期"
-				align="center"
-				prop="uploadDate"
-				width="180"
-			>
+			<el-table-column label="文件扩展名" align="center" prop="fileType" />
+			<el-table-column label="上传日期" align="center" prop="uploadDate" width="180">
 				<template slot-scope="scope">
-					<span>{{
-						parseTime(scope.row.uploadDate, '{y}-{m}-{d}')
-					}}</span>
+					<span>{{ parseTime(scope.row.uploadDate, '{y}-{m}-{d}') }}</span>
 				</template>
 			</el-table-column>
 			<el-table-column label="描述" align="center" prop="description" />
 			<el-table-column label="标记" align="center" prop="flag" />
-			<el-table-column
-				label="逻辑删除标记"
-				align="center"
-				prop="delFlag"
-			/>
-			<el-table-column
-				label="扩展性保留字段"
-				align="center"
-				prop="extraInfo"
-			/>
-			<el-table-column
-				label="操作"
-				align="center"
-				class-name="small-padding fixed-width"
-			>
+			<el-table-column label="逻辑删除标记" align="center" prop="delFlag" />
+			<el-table-column label="扩展性保留字段" align="center" prop="extraInfo" />
+			<el-table-column label="操作" align="center" class-name="small-padding fixed-width">
 				<template slot-scope="scope">
-					<el-button
-						size="mini"
-						type="text"
-						icon="el-icon-edit"
-						@click="handleUpdate(scope.row)"
-						v-hasPermi="['system:attachments:edit']"
-						>修改</el-button
-					>
-					<el-button
-						size="mini"
-						type="text"
-						icon="el-icon-delete"
-						@click="handleDelete(scope.row)"
-						v-hasPermi="['system:attachments:remove']"
-						>删除</el-button
-					>
+					<el-button size="mini" type="text" icon="el-icon-edit" @click="handleUpdate(scope.row)" v-hasPermi="['system:attachments:edit']">修改</el-button>
+					<el-button size="mini" type="text" icon="el-icon-delete" @click="handleDelete(scope.row)" v-hasPermi="['system:attachments:remove']">删除</el-button>
 				</template>
 			</el-table-column>
 		</el-table>
 
-		<pagination
-			v-show="total > 0"
-			:total="total"
-			:page.sync="queryParams.pageNum"
-			:limit.sync="queryParams.pageSize"
-			@pagination="getList"
-		/>
+		<pagination v-show="total > 0" :total="total" :page.sync="queryParams.pageNum" :limit.sync="queryParams.pageSize" @pagination="getList" />
 
 		<!-- 添加或修改通用附件对话框 -->
-		<el-dialog
-			:title="title"
-			:visible.sync="open"
-			width="500px"
-			append-to-body
-		>
+		<el-dialog :title="title" :visible.sync="open" width="500px" append-to-body>
 			<el-form ref="form" :model="form" :rules="rules" label-width="80px">
 				<el-form-item label="关联表名" prop="tableName">
-					<el-input
-						v-model="form.tableName"
-						placeholder="请输入关联表名"
-					/>
+					<el-input v-model="form.tableName" placeholder="请输入关联表名" />
 				</el-form-item>
 				<el-form-item label="关联表的 ID" prop="tableId">
-					<el-input
-						v-model="form.tableId"
-						placeholder="请输入关联表的 ID"
-					/>
+					<el-input v-model="form.tableId" placeholder="请输入关联表的 ID" />
 				</el-form-item>
 				<el-form-item label="附件的 URL" prop="url">
-					<el-input
-						v-model="form.url"
-						placeholder="请输入附件的 URL"
-					/>
+					<el-input v-model="form.url" placeholder="请输入附件的 URL" />
 				</el-form-item>
 				<el-form-item label="文件名" prop="fileName">
-					<el-input
-						v-model="form.fileName"
-						placeholder="请输入文件名"
-					/>
+					<el-input v-model="form.fileName" placeholder="请输入文件名" />
 				</el-form-item>
 				<el-form-item label="上传日期" prop="uploadDate">
-					<el-date-picker
-						clearable
-						v-model="form.uploadDate"
-						type="date"
-						value-format="yyyy-MM-dd"
-						placeholder="请选择上传日期"
-					>
-					</el-date-picker>
+					<el-date-picker clearable v-model="form.uploadDate" type="date" value-format="yyyy-MM-dd" placeholder="请选择上传日期"></el-date-picker>
 				</el-form-item>
 				<el-form-item label="描述" prop="description">
-					<el-input
-						v-model="form.description"
-						type="textarea"
-						placeholder="请输入内容"
-					/>
+					<el-input v-model="form.description" type="textarea" placeholder="请输入内容" />
 				</el-form-item>
 				<el-form-item label="标记" prop="flag">
 					<el-input v-model="form.flag" placeholder="请输入标记" />
 				</el-form-item>
 				<el-form-item label="逻辑删除标记" prop="delFlag">
-					<el-input
-						v-model="form.delFlag"
-						placeholder="请输入逻辑删除标记"
-					/>
+					<el-input v-model="form.delFlag" placeholder="请输入逻辑删除标记" />
 				</el-form-item>
 			</el-form>
 			<div slot="footer" class="dialog-footer">
@@ -282,13 +108,7 @@
 </template>
 
 <script>
-import {
-	listAttachments,
-	getAttachments,
-	delAttachments,
-	addAttachments,
-	updateAttachments
-} from '@/api/system/attachments';
+import { listAttachments, getAttachments, delAttachments, addAttachments, updateAttachments } from '@/api/system/attachments';
 
 export default {
 	name: 'Attachments',

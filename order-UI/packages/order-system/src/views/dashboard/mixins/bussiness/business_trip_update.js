@@ -21,15 +21,12 @@ export var mixin_business_trip_update = {
 						this.$message.info('本出差信息无车辆使用记录');
 					} else {
 						this.useCar = '是';
-						this.$message.success(
-							'查询到本出差信息有车辆使用记录，已自动填充'
-						);
+						this.$message.success('查询到本出差信息有车辆使用记录，已自动填充');
 						this.carsList = res.rows;
 					}
 				});
 				// 报销项信息保存状态
-				this.tripReimbursementList =
-					response.data.tripReimbursementList;
+				this.tripReimbursementList = response.data.tripReimbursementList;
 				this.title = '修改出差';
 				this.open = true;
 			});

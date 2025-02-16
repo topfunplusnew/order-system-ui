@@ -1,13 +1,6 @@
 <template>
 	<div class="app-container">
-		<el-form
-			v-show="showSearch"
-			ref="queryForm"
-			:model="queryParams"
-			size="mini"
-			:inline="true"
-			label-width="68px"
-		>
+		<el-form v-show="showSearch" ref="queryForm" :model="queryParams" size="mini" :inline="true" label-width="68px">
 			<el-form-item label="操作时间" prop="operateDate">
 				<el-date-picker
 					v-model="dateRange"
@@ -20,75 +13,31 @@
 				></el-date-picker>
 			</el-form-item>
 			<el-form-item label="公司" prop="companyName">
-				<el-input
-					v-model="queryParams.companyName"
-					placeholder="请输入公司"
-					clearable
-					@keyup.enter.native="handleQuery"
-				/>
+				<el-input v-model="queryParams.companyName" placeholder="请输入公司" clearable @keyup.enter.native="handleQuery" />
 			</el-form-item>
 			<el-form-item label="备注" prop="comments">
-				<el-input
-					v-model="queryParams.comments"
-					placeholder="请输入备注"
-					clearable
-					@keyup.enter.native="handleQuery"
-				/>
+				<el-input v-model="queryParams.comments" placeholder="请输入备注" clearable @keyup.enter.native="handleQuery" />
 			</el-form-item>
 			<el-form-item>
-				<el-button
-					type="primary"
-					icon="el-icon-search"
-					size="mini"
-					@click="handleQuery"
-					>搜索</el-button
-				>
-				<el-button
-					icon="el-icon-refresh"
-					size="mini"
-					@click="resetQuery"
-					>重置</el-button
-				>
+				<el-button type="primary" icon="el-icon-search" size="mini" @click="handleQuery">搜索</el-button>
+				<el-button icon="el-icon-refresh" size="mini" @click="resetQuery">重置</el-button>
 			</el-form-item>
 		</el-form>
 
 		<el-row :gutter="10" class="mb8">
 			<el-col :span="1.5">
-				<el-button
-					v-hasPermi="['system:offsetting:add']"
-					type="danger"
-					size="mini"
-					@click="handleAdd"
-					>新增冲抵货款信息
-				</el-button>
+				<el-button v-hasPermi="['system:offsetting:add']" type="danger" size="mini" @click="handleAdd">新增冲抵货款信息</el-button>
 			</el-col>
-			<right-toolbar
-				:showSearch.sync="showSearch"
-				:columns="columns"
-				@queryTable="getList"
-			>
+			<right-toolbar :showSearch.sync="showSearch" :columns="columns" @queryTable="getList">
 				<template #print>
 					<el-col :span="1.5">
-						<el-button
-							plain
-							icon="el-icon-printer"
-							size="mini"
-							@click="printJSON"
-						>
-						</el-button>
+						<el-button plain icon="el-icon-printer" size="mini" @click="printJSON"></el-button>
 					</el-col>
 				</template>
 				<!--        导出-->
 				<template #export>
 					<el-col :span="1.5">
-						<el-button
-							v-hasPermi="['system:socialinsurance:export']"
-							plain
-							icon="el-icon-folder-opened"
-							size="mini"
-							@click="handleExport"
-						>
-						</el-button>
+						<el-button v-hasPermi="['system:socialinsurance:export']" plain icon="el-icon-folder-opened" size="mini" @click="handleExport"></el-button>
 					</el-col>
 				</template>
 			</right-toolbar>
@@ -108,153 +57,57 @@
 			@selection-change="handleSelectionChange"
 		>
 			<el-table-column label="id" align="center" prop="id" />
-			<el-table-column
-				v-if="columns[0].visible"
-				label="冲抵编号"
-				align="center"
-				prop="pffsetNO"
-				show-overflow-tooltip
-			/>
-			<el-table-column
-				v-if="columns[1].visible"
-				label="操作时间"
-				align="center"
-				prop="operateDate"
-				show-overflow-tooltip
-			/>
-			<el-table-column
-				v-if="columns[2].visible"
-				label="冲抵类型"
-				align="center"
-				prop="operateType"
-				show-overflow-tooltip
-			/>
-			<el-table-column
-				v-if="columns[3].visible"
-				label="金额"
-				align="center"
-				prop="moneyAmount"
-				show-overflow-tooltip
-			/>
-			<el-table-column
-				v-if="columns[4].visible"
-				label="公司"
-				align="center"
-				prop="companyName"
-				show-overflow-tooltip
-			/>
-			<el-table-column
-				v-if="columns[5].visible"
-				label="公司类型"
-				align="center"
-				prop="companyType"
-				show-overflow-tooltip
-			>
+			<el-table-column v-if="columns[0].visible" label="冲抵编号" align="center" prop="pffsetNO" show-overflow-tooltip />
+			<el-table-column v-if="columns[1].visible" label="操作时间" align="center" prop="operateDate" show-overflow-tooltip />
+			<el-table-column v-if="columns[2].visible" label="冲抵类型" align="center" prop="operateType" show-overflow-tooltip />
+			<el-table-column v-if="columns[3].visible" label="金额" align="center" prop="moneyAmount" show-overflow-tooltip />
+			<el-table-column v-if="columns[4].visible" label="公司" align="center" prop="companyName" show-overflow-tooltip />
+			<el-table-column v-if="columns[5].visible" label="公司类型" align="center" prop="companyType" show-overflow-tooltip>
 				<template #default="scope">
 					<el-tag v-if="scope.row.companyType === '1'">客户</el-tag>
 					<el-tag v-else>供应商</el-tag>
 				</template>
 			</el-table-column>
-			<el-table-column
-				v-if="columns[6].visible"
-				label="备注"
-				align="center"
-				prop="comments"
-				show-overflow-tooltip
-			/>
-			<el-table-column
-				label="操作"
-				align="center"
-				class-name="small-padding fixed-width"
-			>
+			<el-table-column v-if="columns[6].visible" label="备注" align="center" prop="comments" show-overflow-tooltip />
+			<el-table-column label="操作" align="center" class-name="small-padding fixed-width">
 				<template slot-scope="scope">
-					<el-button
-						v-hasPermi="['system:offsetting:edit']"
-						size="mini"
-						type="primary"
-						@click="handleUpdate(scope.row)"
-						>修改
-					</el-button>
-					<el-button
-						v-hasPermi="['system:offsetting:remove']"
-						size="mini"
-						type="danger"
-						@click="handleDelete(scope.row)"
-						>删除
-					</el-button>
+					<el-button v-hasPermi="['system:offsetting:edit']" size="mini" type="primary" @click="handleUpdate(scope.row)">修改</el-button>
+					<el-button v-hasPermi="['system:offsetting:remove']" size="mini" type="danger" @click="handleDelete(scope.row)">删除</el-button>
 				</template>
 			</el-table-column>
 		</el-table>
 
-		<pagination
-			v-show="total > 0"
-			:total="total"
-			:page.sync="queryParams.pageNum"
-			:limit.sync="queryParams.pageSize"
-			@pagination="getList"
-		/>
+		<pagination v-show="total > 0" :total="total" :page.sync="queryParams.pageNum" :limit.sync="queryParams.pageSize" @pagination="getList" />
 
 		<!-- 添加或修改对冲账信息对话框 -->
-		<el-dialog
-			:close-on-click-modal="false"
-			:show-close="false"
-			:title="title"
-			:visible.sync="open"
-			width="500px"
-			append-to-body
-		>
+		<el-dialog :close-on-click-modal="false" :show-close="false" :title="title" :visible.sync="open" width="500px" append-to-body>
 			<el-form ref="form" :model="form" :rules="rules" label-width="80px">
 				<!--        todo 暂时传递一个随机的uuid -->
 				<!--        <el-form-item label="冲抵编号" prop="OffsetNO">-->
 				<!--          <el-input v-model="form.OffsetNO" placeholder="请输入冲抵编号"/>-->
 				<!--        </el-form-item>-->
 				<el-form-item label="操作时间" prop="operateDate">
-					<el-date-picker
-						v-model="form.operateDate"
-						type="datetime"
-						placeholder="选择日期"
-						value-format="yyyy-MM-dd HH:mm:ss"
-						style="width: 70%"
-					>
-					</el-date-picker>
+					<el-date-picker v-model="form.operateDate" type="datetime" placeholder="选择日期" value-format="yyyy-MM-dd HH:mm:ss" style="width: 70%"></el-date-picker>
 				</el-form-item>
 				<el-form-item label="冲抵类型" prop="operateType">
-					<el-radio v-model="form.operateType" label="收入"
-						>收入</el-radio
-					>
-					<el-radio v-model="form.operateType" label="支出"
-						>支出</el-radio
-					>
+					<el-radio v-model="form.operateType" label="收入">收入</el-radio>
+					<el-radio v-model="form.operateType" label="支出">支出</el-radio>
 				</el-form-item>
 				<el-form-item label="金额" prop="moneyAmount">
-					<el-input
-						v-model="form.moneyAmount"
-						placeholder="请输入金额"
-					/>
+					<el-input v-model="form.moneyAmount" placeholder="请输入金额" />
 				</el-form-item>
 				<el-form-item label="公司类型" prop="companyType">
-					<el-radio v-model="form.companyType" label="1"
-						>客户</el-radio
-					>
-					<el-radio v-model="form.companyType" label="2"
-						>供应商</el-radio
-					>
+					<el-radio v-model="form.companyType" label="1">客户</el-radio>
+					<el-radio v-model="form.companyType" label="2">供应商</el-radio>
 				</el-form-item>
 				<el-form-item label="公司" prop="companyName">
 					<el-row>
 						<el-col :span="20">
-							<el-input
-								v-model="form.companyName"
-								placeholder="请输入公司"
-							/>
+							<el-input v-model="form.companyName" placeholder="请输入公司" />
 						</el-col>
 						<el-col :span="4">
 							<SearchOption
-								:limit-info="
-									form.companyType === '1'
-										? { companyType: '客户' }
-										: { companyType: '供应商' }
-								"
+								:limit-info="form.companyType === '1' ? { companyType: '客户' } : { companyType: '供应商' }"
 								:get-data="listCompany"
 								query-info="companyName"
 								query-label="公司名称"
@@ -263,35 +116,11 @@
 								@commitBack="handleCommitBackCompany"
 							>
 								<template #table-columns>
-									<el-table-column
-										:label="
-											form.companyType === '1'
-												? '客户'
-												: '供应商'
-										"
-										align="center"
-										prop="companyName"
-									/>
-									<el-table-column
-										label="老板姓名"
-										align="center"
-										prop="leader"
-									/>
-									<el-table-column
-										label="老板电话"
-										align="center"
-										prop="leaderTel"
-									/>
-									<el-table-column
-										label="区域"
-										align="center"
-										prop="region"
-									/>
-									<el-table-column
-										label="销售经理"
-										align="center"
-										prop="salesManager"
-									/>
+									<el-table-column :label="form.companyType === '1' ? '客户' : '供应商'" align="center" prop="companyName" />
+									<el-table-column label="老板姓名" align="center" prop="leader" />
+									<el-table-column label="老板电话" align="center" prop="leaderTel" />
+									<el-table-column label="区域" align="center" prop="region" />
+									<el-table-column label="销售经理" align="center" prop="salesManager" />
 								</template>
 							</SearchOption>
 						</el-col>
@@ -301,10 +130,7 @@
 				<!--          <el-input v-model="form.companyId" placeholder="请输入公司ID"/>-->
 				<!--        </el-form-item>-->
 				<el-form-item label="备注" prop="comments">
-					<el-input
-						v-model="form.comments"
-						placeholder="请输入备注"
-					/>
+					<el-input v-model="form.comments" placeholder="请输入备注" />
 				</el-form-item>
 			</el-form>
 			<div slot="footer" class="dialog-footer">
@@ -316,13 +142,7 @@
 </template>
 
 <script>
-import {
-	listOffsetting,
-	getOffsetting,
-	delOffsetting,
-	addOffsetting,
-	updateOffsetting
-} from '@/api/system/Offsetting';
+import { listOffsetting, getOffsetting, delOffsetting, addOffsetting, updateOffsetting } from '@/api/system/Offsetting';
 import SearchOption from '@/components/SearchOption.vue';
 import { listCompany } from '@/api/system/company';
 import { excludeParams } from '@/api/tool/exclude';
@@ -431,18 +251,10 @@ export default {
 	},
 	created() {
 		this.getList();
-		if (
-			localStorage.getItem('offseting-columns') === 'null' ||
-			!localStorage.getItem('offseting-columns')
-		) {
-			localStorage.setItem(
-				'offseting-columns',
-				JSON.stringify(this.columns)
-			);
+		if (localStorage.getItem('offseting-columns') === 'null' || !localStorage.getItem('offseting-columns')) {
+			localStorage.setItem('offseting-columns', JSON.stringify(this.columns));
 		} else {
-			this.columns = JSON.parse(
-				localStorage.getItem('offseting-columns')
-			);
+			this.columns = JSON.parse(localStorage.getItem('offseting-columns'));
 		}
 	},
 	methods: {
@@ -455,32 +267,18 @@ export default {
 			this.companyName = val;
 		},
 		printJSON() {
-			const exclude = [
-				'userId',
-				'createBy',
-				'createTime',
-				'updateBy',
-				'updateTime',
-				'addtime',
-				'delFlag',
-				'userName',
-				'remark'
-			];
+			const exclude = ['userId', 'createBy', 'createTime', 'updateBy', 'updateTime', 'addtime', 'delFlag', 'userName', 'remark'];
 			this.$print({
 				maxWidth: 3000,
 				printable: this.OffsettingList,
-				properties: Object.keys(this.OffsettingList[0]).filter(
-					item => !exclude.includes(item)
-				),
+				properties: Object.keys(this.OffsettingList[0]).filter(item => !exclude.includes(item)),
 				type: 'json'
 			});
 		},
 		/** 查询对冲账信息列表 */
 		getList() {
 			this.loading = true;
-			listOffsetting(
-				addDateRange(this.queryParams, this.dateRange, 'operate')
-			).then(response => {
+			listOffsetting(addDateRange(this.queryParams, this.dateRange, 'operate')).then(response => {
 				this.OffsettingList = response.rows;
 				this.total = response.total;
 				this.loading = false;

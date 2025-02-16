@@ -1,72 +1,30 @@
 <template>
 	<div class="app-container">
-		<el-form
-			v-show="showSearch"
-			ref="queryForm"
-			:model="queryParams"
-			size="mini"
-			:inline="true"
-			label-width="68px"
-		>
+		<el-form v-show="showSearch" ref="queryForm" :model="queryParams" size="mini" :inline="true" label-width="68px">
 			<el-form-item label="车牌" prop="carNo">
-				<el-input
-					v-model="queryParams.carNo"
-					placeholder="请输入车牌"
-					clearable
-					@keyup.enter.native="handleQuery"
-				/>
+				<el-input v-model="queryParams.carNo" placeholder="请输入车牌" clearable @keyup.enter.native="handleQuery" />
 			</el-form-item>
 			<el-form-item>
-				<el-button type="primary" size="mini" @click="handleQuery">
-					搜索
-				</el-button>
+				<el-button type="primary" size="mini" @click="handleQuery">搜索</el-button>
 			</el-form-item>
 		</el-form>
 		<el-row :gutter="10" class="mb8">
 			<el-col :span="1.5">
-				<el-button
-					icon="el-icon-refresh"
-					size="mini"
-					@click="resetQuery"
-				>
-					刷新
-				</el-button>
+				<el-button icon="el-icon-refresh" size="mini" @click="resetQuery">刷新</el-button>
 			</el-col>
 			<el-col :span="1.5">
-				<el-button
-					v-hasPermi="['system:cars:add']"
-					type="danger"
-					size="mini"
-					@click="handleAdd"
-				>
-					添加车辆信息
-				</el-button>
+				<el-button v-hasPermi="['system:cars:add']" type="danger" size="mini" @click="handleAdd">添加车辆信息</el-button>
 			</el-col>
-			<right-toolbar
-				:showSearch.sync="showSearch"
-				:columns="columns"
-				@queryTable="getList"
-			>
+			<right-toolbar :showSearch.sync="showSearch" :columns="columns" @queryTable="getList">
 				<template #print>
 					<el-col :span="1.5">
-						<el-button
-							plain
-							icon="el-icon-printer"
-							size="mini"
-							@click="printHTML"
-						></el-button>
+						<el-button plain icon="el-icon-printer" size="mini" @click="printHTML"></el-button>
 					</el-col>
 				</template>
 				<!--        导出-->
 				<template #export>
 					<el-col :span="1.5">
-						<el-button
-							v-hasPermi="['system:bankaccount:export']"
-							plain
-							icon="el-icon-folder-opened"
-							size="mini"
-							@click="handleExport"
-						></el-button>
+						<el-button v-hasPermi="['system:bankaccount:export']" plain icon="el-icon-folder-opened" size="mini" @click="handleExport"></el-button>
 					</el-col>
 				</template>
 			</right-toolbar>
@@ -87,87 +45,24 @@
 			"
 			@selection-change="handleSelectionChange"
 		>
-			<el-table-column
-				v-if="columns[0].visible"
-				label="车牌/柜号"
-				align="center"
-				prop="carNo"
-			/>
-			<el-table-column
-				v-if="columns[1].visible"
-				label="司机姓名/海运公司"
-				align="center"
-				prop="driver"
-			/>
-			<el-table-column
-				v-if="columns[2].visible"
-				label="司机电话"
-				align="center"
-				prop="tel"
-			/>
-			<el-table-column
-				v-if="columns[3].visible"
-				label="运输类型"
-				align="center"
-				prop="carType"
-			/>
-			<el-table-column
-				label="操作"
-				align="center"
-				class-name="small-padding fixed-width"
-				fixed="right"
-			>
+			<el-table-column v-if="columns[0].visible" label="车牌/柜号" align="center" prop="carNo" />
+			<el-table-column v-if="columns[1].visible" label="司机姓名/海运公司" align="center" prop="driver" />
+			<el-table-column v-if="columns[2].visible" label="司机电话" align="center" prop="tel" />
+			<el-table-column v-if="columns[3].visible" label="运输类型" align="center" prop="carType" />
+			<el-table-column label="操作" align="center" class-name="small-padding fixed-width" fixed="right">
 				<template slot-scope="scope">
-					<el-button
-						size="mini"
-						type="text"
-						@click="checkBankInfo(scope.row)"
-					>
-						查看银行卡
-					</el-button>
-					<el-button
-						v-hasPermi="['system:cars:edit']"
-						size="mini"
-						type="primary"
-						@click="handleUpdate(scope.row)"
-					>
-						编辑
-					</el-button>
-					<el-button
-						v-hasPermi="['system:cars:remove']"
-						size="mini"
-						type="danger"
-						@click="handleDelete(scope.row)"
-					>
-						删除
-					</el-button>
+					<el-button size="mini" type="text" @click="checkBankInfo(scope.row)">查看银行卡</el-button>
+					<el-button v-hasPermi="['system:cars:edit']" size="mini" type="primary" @click="handleUpdate(scope.row)">编辑</el-button>
+					<el-button v-hasPermi="['system:cars:remove']" size="mini" type="danger" @click="handleDelete(scope.row)">删除</el-button>
 				</template>
 			</el-table-column>
 		</el-table>
 
-		<pagination
-			v-show="total > 0"
-			:total="total"
-			:page.sync="queryParams.pageNum"
-			:limit.sync="queryParams.pageSize"
-			@pagination="getList"
-		/>
+		<pagination v-show="total > 0" :total="total" :page.sync="queryParams.pageNum" :limit.sync="queryParams.pageSize" @pagination="getList" />
 
 		<!-- 添加或修改外部车辆信息对话框 -->
-		<el-dialog
-			:close-on-click-modal="false"
-			:show-close="false"
-			:title="title"
-			:visible.sync="open"
-			width="500px"
-			append-to-body
-		>
-			<el-form
-				ref="form"
-				:model="form"
-				:rules="rules"
-				label-width="120px"
-			>
+		<el-dialog :close-on-click-modal="false" :show-close="false" :title="title" :visible.sync="open" width="500px" append-to-body>
+			<el-form ref="form" :model="form" :rules="rules" label-width="120px">
 				<el-form-item label="车牌" prop="carNo">
 					<el-input v-model="form.carNo" placeholder="请输入车牌" />
 				</el-form-item>
@@ -180,10 +75,7 @@
 				<el-form-item label="开户行" prop="bankName">
 					<el-row>
 						<el-col :span="10">
-							<el-input
-								v-model="form.bankName"
-								placeholder="请输入开户行"
-							/>
+							<el-input v-model="form.bankName" placeholder="请输入开户行" />
 						</el-col>
 						<el-col :span="3">
 							<SearchOption
@@ -200,56 +92,29 @@
 								@update:queryName="handleCommitQueryName"
 							>
 								<template #table-columns>
-									<el-table-column
-										label="账号类型"
-										align="center"
-										prop="acountsType"
-									/>
-									<el-table-column
-										label="开户行"
-										align="center"
-										prop="bankName"
-									/>
-									<el-table-column
-										label="开户名"
-										align="center"
-										prop="acountsName"
-									/>
-									<el-table-column
-										label="账号"
-										align="center"
-										prop="bankNo"
-									/>
+									<el-table-column label="账号类型" align="center" prop="acountsType" />
+									<el-table-column label="开户行" align="center" prop="bankName" />
+									<el-table-column label="开户名" align="center" prop="acountsName" />
+									<el-table-column label="账号" align="center" prop="bankNo" />
 								</template>
 							</SearchOption>
 						</el-col>
 					</el-row>
 				</el-form-item>
 				<el-form-item label="开户名" prop="acountsName">
-					<el-input
-						v-model="form.acountsName"
-						placeholder="请输入开户名"
-					/>
+					<el-input v-model="form.acountsName" placeholder="请输入开户名" />
 				</el-form-item>
 				<el-form-item label="账号" prop="bankNo">
 					<el-input v-model="form.bankNo" placeholder="请输入账号" />
 				</el-form-item>
 				<el-form-item label="账号类型" prop="acountsType">
-					<el-radio v-model="form.acountsType" label="1"
-						>收款</el-radio
-					>
-					<el-radio v-model="form.acountsType" label="2"
-						>付款</el-radio
-					>
+					<el-radio v-model="form.acountsType" label="1">收款</el-radio>
+					<el-radio v-model="form.acountsType" label="2">付款</el-radio>
 				</el-form-item>
 
 				<el-form-item label="运输类型" prop="carType">
-					<el-radio v-model="form.carType" label="陆运"
-						>陆运</el-radio
-					>
-					<el-radio v-model="form.carType" label="海运"
-						>海运</el-radio
-					>
+					<el-radio v-model="form.carType" label="陆运">陆运</el-radio>
+					<el-radio v-model="form.carType" label="海运">海运</el-radio>
 				</el-form-item>
 			</el-form>
 			<div slot="footer" class="dialog-footer">
@@ -260,33 +125,12 @@
 
 		<!--    查看银行卡组件-->
 		<keep-alive>
-			<DialogListShow
-				:title="'司机银行卡信息'"
-				:get-data="listBankAccount"
-				:query-object="queryObject"
-				:visible.sync="driverBankAccout"
-			>
+			<DialogListShow :title="'司机银行卡信息'" :get-data="listBankAccount" :query-object="queryObject" :visible.sync="driverBankAccout">
 				<template #column>
-					<el-table-column
-						label="账号类型"
-						align="center"
-						prop="acountsType"
-					/>
-					<el-table-column
-						label="开户行"
-						align="center"
-						prop="bankName"
-					/>
-					<el-table-column
-						label="开户名"
-						align="center"
-						prop="acountsName"
-					/>
-					<el-table-column
-						label="账号"
-						align="center"
-						prop="bankNo"
-					/>
+					<el-table-column label="账号类型" align="center" prop="acountsType" />
+					<el-table-column label="开户行" align="center" prop="bankName" />
+					<el-table-column label="开户名" align="center" prop="acountsName" />
+					<el-table-column label="账号" align="center" prop="bankNo" />
 				</template>
 			</DialogListShow>
 		</keep-alive>
@@ -294,13 +138,7 @@
 </template>
 
 <script>
-import {
-	listCars,
-	getCars,
-	delCars,
-	addCars,
-	updateCars
-} from '@/api/system/cars';
+import { listCars, getCars, delCars, addCars, updateCars } from '@/api/system/cars';
 import { excludeParams } from '@/api/tool/exclude';
 import SearchOption from '../../../components/SearchOption.vue';
 import { listBankAccount } from '../../../api/system/bankAccount';
@@ -417,10 +255,7 @@ export default {
 	},
 	created() {
 		this.getList();
-		if (
-			localStorage.getItem('car-columns') === 'null' ||
-			!localStorage.getItem('car-columns')
-		) {
+		if (localStorage.getItem('car-columns') === 'null' || !localStorage.getItem('car-columns')) {
 			localStorage.setItem('car-columns', JSON.stringify(this.columns));
 		} else {
 			this.columns = JSON.parse(localStorage.getItem('car-columns'));
@@ -557,11 +392,7 @@ export default {
 					isUsed(query).then(res => {
 						if (res.data.isUsed) {
 							this.$modal
-								.confirm(
-									'系统检测该车辆信息:"' +
-										ids +
-										'"的车辆信息数据在系统中被使用，是否要继续删除?'
-								)
+								.confirm('系统检测该车辆信息:"' + ids + '"的车辆信息数据在系统中被使用，是否要继续删除?')
 								.then(function () {
 									return delCars(ids);
 								})

@@ -1,13 +1,6 @@
 <template>
 	<div class="app-container">
-		<el-form
-			v-show="showSearch"
-			ref="queryForm"
-			:model="queryParams"
-			size="small"
-			:inline="true"
-			label-width="68px"
-		>
+		<el-form v-show="showSearch" ref="queryForm" :model="queryParams" size="small" :inline="true" label-width="68px">
 			<el-form-item label="出库日期">
 				<el-date-picker
 					v-model="daterangeOutDate"
@@ -20,158 +13,57 @@
 				></el-date-picker>
 			</el-form-item>
 			<el-form-item label="经办人" prop="handler">
-				<el-input
-					v-model="queryParams.handler"
-					placeholder="请输入经办人"
-					clearable
-					@keyup.enter.native="handleQuery"
-				/>
+				<el-input v-model="queryParams.handler" placeholder="请输入经办人" clearable @keyup.enter.native="handleQuery" />
 			</el-form-item>
 			<el-form-item label="客户" prop="companyName">
-				<el-input
-					v-model="queryParams.companyName"
-					placeholder="请输入客户"
-					clearable
-					@keyup.enter.native="handleQuery"
-				/>
+				<el-input v-model="queryParams.companyName" placeholder="请输入客户" clearable @keyup.enter.native="handleQuery" />
 			</el-form-item>
 			<el-form-item label="礼品来源" prop="giftSource">
-				<el-tooltip
-					class="item"
-					effect="dark"
-					content="礼品来源可在字典中进行修改"
-					placement="top"
-				>
-					<el-select
-						v-model="queryParams.giftSource"
-						placeholder="请选择礼品来源"
-						clearable
-					>
-						<el-option
-							v-for="dict in dict.type.order_gift_source"
-							:key="dict.value"
-							:label="dict.label"
-							:value="dict.value"
-						/>
+				<el-tooltip class="item" effect="dark" content="礼品来源可在字典中进行修改" placement="top">
+					<el-select v-model="queryParams.giftSource" placeholder="请选择礼品来源" clearable>
+						<el-option v-for="dict in dict.type.order_gift_source" :key="dict.value" :label="dict.label" :value="dict.value" />
 					</el-select>
 				</el-tooltip>
 			</el-form-item>
 			<el-form-item label="出库方式" prop="outMethod">
-				<el-tooltip
-					class="item"
-					effect="dark"
-					content="出库方式可在字典中进行修改"
-					placement="top"
-				>
-					<el-select
-						v-model="queryParams.outMethod"
-						placeholder="请选择出库方式"
-						clearable
-					>
-						<el-option
-							v-for="dict in dict.type.order_gift_out_method"
-							:key="dict.value"
-							:label="dict.label"
-							:value="dict.value"
-						/>
+				<el-tooltip class="item" effect="dark" content="出库方式可在字典中进行修改" placement="top">
+					<el-select v-model="queryParams.outMethod" placeholder="请选择出库方式" clearable>
+						<el-option v-for="dict in dict.type.order_gift_out_method" :key="dict.value" :label="dict.label" :value="dict.value" />
 					</el-select>
 				</el-tooltip>
 			</el-form-item>
 			<el-form-item label="对方收礼人员" prop="recipientReceiver">
-				<el-input
-					v-model="queryParams.recipientReceiver"
-					placeholder="请输入对方收礼人员"
-					clearable
-					@keyup.enter.native="handleQuery"
-				/>
+				<el-input v-model="queryParams.recipientReceiver" placeholder="请输入对方收礼人员" clearable @keyup.enter.native="handleQuery" />
 			</el-form-item>
 			<el-form-item label="物品名称" prop="itemName">
-				<el-input
-					v-model="queryParams.itemName"
-					placeholder="请输入物品名称"
-					clearable
-					@keyup.enter.native="handleQuery"
-				/>
+				<el-input v-model="queryParams.itemName" placeholder="请输入物品名称" clearable @keyup.enter.native="handleQuery" />
 			</el-form-item>
 
 			<el-form-item>
-				<el-button
-					type="primary"
-					icon="el-icon-search"
-					size="mini"
-					@click="handleQuery"
-					>搜索
-				</el-button>
-				<el-button
-					icon="el-icon-refresh"
-					size="mini"
-					@click="resetQuery"
-					>重置
-				</el-button>
+				<el-button type="primary" icon="el-icon-search" size="mini" @click="handleQuery">搜索</el-button>
+				<el-button icon="el-icon-refresh" size="mini" @click="resetQuery">重置</el-button>
 			</el-form-item>
 		</el-form>
 
 		<el-row :gutter="10" class="mb8">
 			<el-col :span="1.5">
-				<el-button
-					v-hasPermi="['system:giftOut:add']"
-					type="primary"
-					plain
-					icon="el-icon-plus"
-					size="mini"
-					@click="handleAdd"
-					>新增
-				</el-button>
+				<el-button v-hasPermi="['system:giftOut:add']" type="primary" plain icon="el-icon-plus" size="mini" @click="handleAdd">新增</el-button>
 			</el-col>
 			<el-col :span="1.5">
-				<el-button
-					v-hasPermi="['system:giftOut:remove']"
-					type="danger"
-					plain
-					icon="el-icon-delete"
-					size="mini"
-					:disabled="multiple"
-					@click="handleDelete"
-					>删除
-				</el-button>
+				<el-button v-hasPermi="['system:giftOut:remove']" type="danger" plain icon="el-icon-delete" size="mini" :disabled="multiple" @click="handleDelete">删除</el-button>
 			</el-col>
 			<el-col :span="1.5">
-				<el-button
-					v-hasPermi="['system:giftOut:export']"
-					type="warning"
-					plain
-					icon="el-icon-download"
-					size="mini"
-					@click="handleExport"
-					>导出
-				</el-button>
+				<el-button v-hasPermi="['system:giftOut:export']" type="warning" plain icon="el-icon-download" size="mini" @click="handleExport">导出</el-button>
 			</el-col>
-			<right-toolbar
-				:showSearch.sync="showSearch"
-				:columns="columns"
-				@queryTable="getList"
-			>
+			<right-toolbar :showSearch.sync="showSearch" :columns="columns" @queryTable="getList">
 				<template #print>
 					<el-col :span="1.5">
-						<el-button
-							plain
-							icon="el-icon-printer"
-							size="mini"
-							@click="printHTML"
-						>
-						</el-button>
+						<el-button plain icon="el-icon-printer" size="mini" @click="printHTML"></el-button>
 					</el-col>
 				</template>
 				<template #export>
 					<el-col :span="1.5">
-						<el-button
-							v-hasPermi="['system:adjustOrders:export']"
-							plain
-							icon="el-icon-folder-opened"
-							size="mini"
-							@click="handleExport"
-						>
-						</el-button>
+						<el-button v-hasPermi="['system:adjustOrders:export']" plain icon="el-icon-folder-opened" size="mini" @click="handleExport"></el-button>
 					</el-col>
 				</template>
 			</right-toolbar>
@@ -192,201 +84,75 @@
 		>
 			<el-table-column type="selection" width="55" align="center" />
 
-			<el-table-column
-				v-if="columns[0].visible"
-				label="ID"
-				align="center"
-				prop="id"
-			/>
+			<el-table-column v-if="columns[0].visible" label="ID" align="center" prop="id" />
 
-			<el-table-column
-				v-if="columns[1].visible"
-				label="出库日期"
-				align="center"
-				prop="outDate"
-				width="180"
-			>
+			<el-table-column v-if="columns[1].visible" label="出库日期" align="center" prop="outDate" width="180">
 				<template #default="scope">
-					<span>{{
-						parseTime(scope.row.outDate, '{y}-{m}-{d} {h}:{i}:{s}')
-					}}</span>
+					<span>{{ parseTime(scope.row.outDate, '{y}-{m}-{d} {h}:{i}:{s}') }}</span>
 				</template>
 			</el-table-column>
 
-			<el-table-column
-				v-if="columns[2].visible"
-				label="礼品来源"
-				align="center"
-				prop="giftSource"
-			>
+			<el-table-column v-if="columns[2].visible" label="礼品来源" align="center" prop="giftSource">
 				<template #default="scope">
-					<dict-tag
-						:options="dict.type.order_gift_source"
-						:value="scope.row.giftSource"
-					/>
+					<dict-tag :options="dict.type.order_gift_source" :value="scope.row.giftSource" />
 				</template>
 			</el-table-column>
 
-			<el-table-column
-				v-if="columns[3].visible"
-				label="出库方式"
-				align="center"
-				prop="outMethod"
-			>
+			<el-table-column v-if="columns[3].visible" label="出库方式" align="center" prop="outMethod">
 				<template #default="scope">
-					<dict-tag
-						:options="dict.type.order_gift_out_method"
-						:value="scope.row.outMethod"
-					/>
+					<dict-tag :options="dict.type.order_gift_out_method" :value="scope.row.outMethod" />
 				</template>
 			</el-table-column>
 
-			<el-table-column
-				v-if="columns[4].visible"
-				label="公司名称"
-				align="center"
-				prop="companyName"
-			/>
+			<el-table-column v-if="columns[4].visible" label="公司名称" align="center" prop="companyName" />
 
-			<el-table-column
-				v-if="columns[5].visible"
-				label="对方收礼人员"
-				align="center"
-				prop="recipientReceiver"
-			/>
+			<el-table-column v-if="columns[5].visible" label="对方收礼人员" align="center" prop="recipientReceiver" />
 
-			<el-table-column
-				v-if="columns[6].visible"
-				label="物品名称"
-				align="center"
-				prop="itemName"
-			/>
+			<el-table-column v-if="columns[6].visible" label="物品名称" align="center" prop="itemName" />
 
-			<el-table-column
-				v-if="columns[7].visible"
-				label="数量"
-				align="center"
-				prop="quantity"
-			/>
+			<el-table-column v-if="columns[7].visible" label="数量" align="center" prop="quantity" />
 
-			<el-table-column
-				v-if="columns[8].visible"
-				label="预估价值/购买金额"
-				align="center"
-				prop="estimatedValue"
-			/>
+			<el-table-column v-if="columns[8].visible" label="预估价值/购买金额" align="center" prop="estimatedValue" />
 
-			<el-table-column
-				v-if="columns[9].visible"
-				label="经办人"
-				align="center"
-				prop="handler"
-			/>
+			<el-table-column v-if="columns[9].visible" label="经办人" align="center" prop="handler" />
 
-			<el-table-column
-				v-if="columns[10].visible"
-				label="备注"
-				align="center"
-				prop="remark"
-			/>
+			<el-table-column v-if="columns[10].visible" label="备注" align="center" prop="remark" />
 
-			<el-table-column
-				v-if="columns[11].visible"
-				label="操作"
-				align="center"
-				class-name="small-padding fixed-width"
-			>
+			<el-table-column v-if="columns[11].visible" label="操作" align="center" class-name="small-padding fixed-width">
 				<template #default="scope">
-					<el-button
-						v-hasPermi="['system:giftOut:edit']"
-						size="mini"
-						type="text"
-						icon="el-icon-edit"
-						@click="handleUpdate(scope.row)"
-						>修改
-					</el-button>
-					<el-button
-						v-hasPermi="['system:giftOut:remove']"
-						size="mini"
-						type="text"
-						icon="el-icon-delete"
-						@click="handleDelete(scope.row)"
-						>删除
-					</el-button>
+					<el-button v-hasPermi="['system:giftOut:edit']" size="mini" type="text" icon="el-icon-edit" @click="handleUpdate(scope.row)">修改</el-button>
+					<el-button v-hasPermi="['system:giftOut:remove']" size="mini" type="text" icon="el-icon-delete" @click="handleDelete(scope.row)">删除</el-button>
 				</template>
 			</el-table-column>
 		</el-table>
 
-		<pagination
-			v-show="total > 0"
-			:total="total"
-			:page.sync="queryParams.pageNum"
-			:limit.sync="queryParams.pageSize"
-			@pagination="getList"
-		/>
+		<pagination v-show="total > 0" :total="total" :page.sync="queryParams.pageNum" :limit.sync="queryParams.pageSize" @pagination="getList" />
 
 		<!-- 添加或修改礼品出库信息对话框 -->
-		<el-dialog
-			:title="title"
-			:visible.sync="open"
-			width="500px"
-			append-to-body
-		>
+		<el-dialog :title="title" :visible.sync="open" width="500px" append-to-body>
 			<el-form ref="form" :model="form" :rules="rules" label-width="80px">
 				<el-form-item label="出库日期" prop="outDate">
-					<el-date-picker
-						v-model="form.outDate"
-						clearable
-						type="datetime"
-						value-format="yyyy-MM-dd HH:mm:ss"
-						placeholder="请选择出库日期"
-					>
-					</el-date-picker>
+					<el-date-picker v-model="form.outDate" clearable type="datetime" value-format="yyyy-MM-dd HH:mm:ss" placeholder="请选择出库日期"></el-date-picker>
 				</el-form-item>
 				<el-form-item label="礼品来源" prop="giftSource">
-					<el-select
-						v-model="form.giftSource"
-						placeholder="请选择礼品来源"
-					>
-						<el-option
-							v-for="dict in dict.type.order_gift_source"
-							:key="dict.value"
-							:label="dict.label"
-							:value="dict.value"
-						></el-option>
+					<el-select v-model="form.giftSource" placeholder="请选择礼品来源">
+						<el-option v-for="dict in dict.type.order_gift_source" :key="dict.value" :label="dict.label" :value="dict.value"></el-option>
 					</el-select>
 				</el-form-item>
 				<el-form-item label="出库方式" prop="outMethod">
-					<el-select
-						v-model="form.outMethod"
-						placeholder="请选择出库方式"
-					>
-						<el-option
-							v-for="dict in dict.type.order_gift_out_method"
-							:key="dict.value"
-							:label="dict.label"
-							:value="dict.value"
-						></el-option>
+					<el-select v-model="form.outMethod" placeholder="请选择出库方式">
+						<el-option v-for="dict in dict.type.order_gift_out_method" :key="dict.value" :label="dict.label" :value="dict.value"></el-option>
 					</el-select>
 				</el-form-item>
 				<el-form-item label="对方类型">
 					<el-select v-model="companyType" placeholder="请选择">
-						<el-option
-							v-for="item in OTHER_TYPE()"
-							:key="item.value"
-							:label="item.label"
-							:value="item.value"
-						>
-						</el-option>
+						<el-option v-for="item in OTHER_TYPE()" :key="item.value" :label="item.label" :value="item.value"></el-option>
 					</el-select>
 				</el-form-item>
 				<el-form-item label="对方信息" prop="recipientInfo">
 					<el-row>
 						<el-col :span="10">
-							<el-input
-								v-model="form.companyName"
-								placeholder="请输入对方信息"
-							/>
+							<el-input v-model="form.companyName" placeholder="请输入对方信息" />
 						</el-col>
 						<el-col :span="2">
 							<SearchOption
@@ -399,73 +165,34 @@
 								@commitBack="handleCommitBackCompany"
 							>
 								<template #table-columns>
-									<el-table-column
-										:label="companyType"
-										align="center"
-										prop="companyName"
-									/>
-									<el-table-column
-										label="老板姓名"
-										align="center"
-										prop="leader"
-									/>
-									<el-table-column
-										label="老板电话"
-										align="center"
-										prop="leaderTel"
-									/>
-									<el-table-column
-										label="区域"
-										align="center"
-										prop="region"
-									/>
+									<el-table-column :label="companyType" align="center" prop="companyName" />
+									<el-table-column label="老板姓名" align="center" prop="leader" />
+									<el-table-column label="老板电话" align="center" prop="leaderTel" />
+									<el-table-column label="区域" align="center" prop="region" />
 
-									<el-table-column
-										label="销售经理"
-										align="center"
-										prop="salesManager"
-									/>
+									<el-table-column label="销售经理" align="center" prop="salesManager" />
 								</template>
 							</SearchOption>
 						</el-col>
 					</el-row>
 				</el-form-item>
 				<el-form-item label="对方收礼人员" prop="recipientReceiver">
-					<el-input
-						v-model="form.recipientReceiver"
-						placeholder="请输入送礼-对方收礼人员"
-					/>
+					<el-input v-model="form.recipientReceiver" placeholder="请输入送礼-对方收礼人员" />
 				</el-form-item>
 				<el-form-item label="物品名称" prop="itemName">
-					<el-input
-						v-model="form.itemName"
-						placeholder="请输入物品名称"
-					/>
+					<el-input v-model="form.itemName" placeholder="请输入物品名称" />
 				</el-form-item>
 				<el-form-item label="数量" prop="quantity">
-					<el-input
-						v-model="form.quantity"
-						placeholder="请输入数量"
-					/>
+					<el-input v-model="form.quantity" placeholder="请输入数量" />
 				</el-form-item>
 				<el-form-item label="预估价值/购买金额" prop="estimatedValue">
-					<el-input
-						v-model="form.estimatedValue"
-						placeholder="请输入预估价值/购买金额"
-					/>
+					<el-input v-model="form.estimatedValue" placeholder="请输入预估价值/购买金额" />
 				</el-form-item>
 				<el-form-item label="经办人" prop="handler">
-					<el-input
-						v-model="form.handler"
-						placeholder="请输入经办人"
-					/>
+					<el-input v-model="form.handler" placeholder="请输入经办人" />
 				</el-form-item>
 				<el-form-item label="备注" prop="remark">
-					<el-input
-						v-model="form.remark"
-						type="textarea"
-						placeholder="请输入内容"
-					/>
+					<el-input v-model="form.remark" type="textarea" placeholder="请输入内容" />
 				</el-form-item>
 			</el-form>
 			<div slot="footer" class="dialog-footer">
@@ -477,13 +204,7 @@
 </template>
 
 <script>
-import {
-	listGiftOut,
-	getGiftOut,
-	delGiftOut,
-	addGiftOut,
-	updateGiftOut
-} from '@/api/system/giftOut';
+import { listGiftOut, getGiftOut, delGiftOut, addGiftOut, updateGiftOut } from '@/api/system/giftOut';
 import { parseTime } from '../../../utils/ruoyi';
 import { mixin_printHTML } from '../../dashboard/mixins/print';
 import SearchOption from '../../../components/SearchOption.vue';
@@ -579,9 +300,7 @@ export default {
 						trigger: 'blur'
 					}
 				],
-				quantity: [
-					{ required: true, message: '请输入数量', trigger: 'blur' }
-				],
+				quantity: [{ required: true, message: '请输入数量', trigger: 'blur' }],
 				estimatedValue: [
 					{
 						required: true,
@@ -589,9 +308,7 @@ export default {
 						trigger: 'blur'
 					}
 				],
-				handler: [
-					{ required: true, message: '请输入经办人', trigger: 'blur' }
-				]
+				handler: [{ required: true, message: '请输入经办人', trigger: 'blur' }]
 			},
 			columns: [
 				{ key: 0, label: `ID`, visible: true },
@@ -624,10 +341,8 @@ export default {
 			this.loading = true;
 			this.queryParams.params = {};
 			if (this.daterangeOutDate != null && this.daterangeOutDate != '') {
-				this.queryParams.params['beginOutDate'] =
-					this.daterangeOutDate[0];
-				this.queryParams.params['endOutDate'] =
-					this.daterangeOutDate[1];
+				this.queryParams.params['beginOutDate'] = this.daterangeOutDate[0];
+				this.queryParams.params['endOutDate'] = this.daterangeOutDate[1];
 			}
 			listGiftOut(this.queryParams).then(response => {
 				this.giftOutList = response.rows;
@@ -720,9 +435,7 @@ export default {
 		handleDelete(row) {
 			const ids = row.id || this.ids;
 			this.$modal
-				.confirm(
-					'是否确认删除礼品出库信息编号为"' + ids + '"的数据项？'
-				)
+				.confirm('是否确认删除礼品出库信息编号为"' + ids + '"的数据项？')
 				.then(function () {
 					return delGiftOut(ids);
 				})

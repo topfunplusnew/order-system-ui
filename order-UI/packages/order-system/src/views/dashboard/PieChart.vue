@@ -52,13 +52,7 @@ export default {
 				legend: {
 					left: 'center',
 					bottom: '10',
-					data: [
-						'Industries',
-						'Technology',
-						'Forex',
-						'Gold',
-						'Forecasts'
-					]
+					data: ['Industries', 'Technology', 'Forex', 'Gold', 'Forecasts']
 				},
 				series: [
 					{

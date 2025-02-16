@@ -59,16 +59,12 @@ export var mixin_record_uploadFiles = {
 				formData.append('file', file);
 				try {
 					// 调用上传接口
-					const response = await axios.post(
-						process.env.VUE_APP_BASE_API + '/common/upload',
-						formData,
-						{
-							headers: {
-								...this.headers,
-								'Content-Type': 'multipart/form-data'
-							}
+					const response = await axios.post(process.env.VUE_APP_BASE_API + '/common/upload', formData, {
+						headers: {
+							...this.headers,
+							'Content-Type': 'multipart/form-data'
 						}
-					);
+					});
 					// 删除
 					this.fileList.splice(i, 1);
 					i--;
@@ -81,9 +77,7 @@ export var mixin_record_uploadFiles = {
 						this.$message.error(response.data.msg);
 					}
 				} catch (e) {
-					this.$message.error(
-						`第${this.fileList.indexOf(file) + 1}个文件上传失败:`
-					);
+					this.$message.error(`第${this.fileList.indexOf(file) + 1}个文件上传失败:`);
 				}
 			}
 		},

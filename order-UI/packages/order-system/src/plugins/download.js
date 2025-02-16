@@ -10,12 +10,7 @@ let downloadLoadingInstance;
 
 export default {
 	name(name, isDelete = true) {
-		var url =
-			baseURL +
-			'/common/download?fileName=' +
-			encodeURIComponent(name) +
-			'&delete=' +
-			isDelete;
+		var url = baseURL + '/common/download?fileName=' + encodeURIComponent(name) + '&delete=' + isDelete;
 		axios({
 			method: 'get',
 			url: url,
@@ -25,20 +20,14 @@ export default {
 			const isBlob = blobValidate(res.data);
 			if (isBlob) {
 				const blob = new Blob([res.data]);
-				this.saveAs(
-					blob,
-					decodeURIComponent(res.headers['download-filename'])
-				);
+				this.saveAs(blob, decodeURIComponent(res.headers['download-filename']));
 			} else {
 				this.printErrMsg(res.data);
 			}
 		});
 	},
 	resource(resource) {
-		var url =
-			baseURL +
-			'/common/download/resource?resource=' +
-			encodeURIComponent(resource);
+		var url = baseURL + '/common/download/resource?resource=' + encodeURIComponent(resource);
 		axios({
 			method: 'get',
 			url: url,
@@ -48,10 +37,7 @@ export default {
 			const isBlob = blobValidate(res.data);
 			if (isBlob) {
 				const blob = new Blob([res.data]);
-				this.saveAs(
-					blob,
-					decodeURIComponent(res.headers['download-filename'])
-				);
+				this.saveAs(blob, decodeURIComponent(res.headers['download-filename']));
 			} else {
 				this.printErrMsg(res.data);
 			}
@@ -94,8 +80,7 @@ export default {
 	async printErrMsg(data) {
 		const resText = await data.text();
 		const rspObj = JSON.parse(resText);
-		const errMsg =
-			errorCode[rspObj.code] || rspObj.msg || errorCode['default'];
+		const errMsg = errorCode[rspObj.code] || rspObj.msg || errorCode['default'];
 		Message.error(errMsg);
 	}
 };

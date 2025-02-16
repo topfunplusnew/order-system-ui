@@ -136,11 +136,7 @@ export default {
 			<el-form-item label="对方户名" prop="otherAcountsName">
 				<el-row>
 					<el-col :span="10">
-						<el-input
-							disabled
-							v-model="form.otherAcountsName"
-							placeholder="请选择"
-						/>
+						<el-input disabled v-model="form.otherAcountsName" placeholder="请选择" />
 					</el-col>
 					<el-col :span="4">
 						<!--搜索银行卡信息-->
@@ -157,61 +153,29 @@ export default {
 							@update:queryName="handleChange"
 						>
 							<template #table-columns>
-								<el-table-column
-									label="开户行"
-									align="center"
-									prop="bankName"
-								/>
-								<el-table-column
-									label="开户名"
-									align="center"
-									prop="acountsName"
-								/>
-								<el-table-column
-									label="账号"
-									align="center"
-									prop="bankNo"
-								/>
-								<el-table-column
-									label="余额"
-									align="center"
-									prop="surplusMoney"
-								/>
+								<el-table-column label="开户行" align="center" prop="bankName" />
+								<el-table-column label="开户名" align="center" prop="acountsName" />
+								<el-table-column label="账号" align="center" prop="bankNo" />
+								<el-table-column label="余额" align="center" prop="surplusMoney" />
 							</template>
 						</SearchOption>
 					</el-col>
 				</el-row>
 			</el-form-item>
 			<el-form-item label="对方账号" prop="otherBankNo">
-				<el-input
-					disabled
-					v-model="form.otherBankNo"
-					placeholder="请选择"
-				/>
+				<el-input disabled v-model="form.otherBankNo" placeholder="请选择" />
 			</el-form-item>
 			<el-form-item label="对方开户行" prop="otherBankName">
-				<el-input
-					disabled
-					v-model="form.otherBankName"
-					placeholder="请选择"
-				/>
+				<el-input disabled v-model="form.otherBankName" placeholder="请选择" />
 			</el-form-item>
 			<el-form-item label="支付日期" prop="payDate">
-				<el-date-picker
-					v-model="form.payDate"
-					type="datetime"
-					placeholder="选择日期"
-					value-format="yyyy-MM-dd HH:mm:ss"
-				/>
+				<el-date-picker v-model="form.payDate" type="datetime" placeholder="选择日期" value-format="yyyy-MM-dd HH:mm:ss" />
 			</el-form-item>
 			<el-form-item label="备注信息">
 				<el-input v-model="form.content" placeholder="请输入备注信息" />
 			</el-form-item>
 			<el-form-item label="附加备注">
-				<el-input
-					v-model="form.comments"
-					placeholder="请输入附加备注"
-				/>
+				<el-input v-model="form.comments" placeholder="请输入附加备注" />
 			</el-form-item>
 		</el-form>
 	</div>

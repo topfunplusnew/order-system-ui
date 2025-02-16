@@ -1,67 +1,30 @@
 <template>
 	<div class="login">
 		<h1 class="title">订单管理系统</h1>
-		<el-form
-			ref="loginForm"
-			:model="loginForm"
-			:rules="loginRules"
-			class="login-form"
-		>
+		<el-form ref="loginForm" :model="loginForm" :rules="loginRules" class="login-form">
 			<h5 style="font-weight: bolder">
 				<i class="el-icon-user-solid" />
 				用户登录
 			</h5>
 			<el-form-item prop="username">
-				<el-input
-					v-model="loginForm.username"
-					type="text"
-					auto-complete="off"
-					placeholder="账号"
-				>
-					<svg-icon
-						slot="prefix"
-						icon-class="user"
-						class="el-input__icon input-icon"
-					/>
+				<el-input v-model="loginForm.username" type="text" auto-complete="off" placeholder="账号">
+					<svg-icon slot="prefix" icon-class="user" class="el-input__icon input-icon" />
 				</el-input>
 			</el-form-item>
 			<el-form-item prop="password">
-				<el-input
-					v-model="loginForm.password"
-					type="password"
-					auto-complete="off"
-					placeholder="密码"
-					@keyup.enter.native="handleLogin"
-				>
-					<svg-icon
-						slot="prefix"
-						icon-class="password"
-						class="el-input__icon input-icon"
-					/>
+				<el-input v-model="loginForm.password" type="password" auto-complete="off" placeholder="密码" @keyup.enter.native="handleLogin">
+					<svg-icon slot="prefix" icon-class="password" class="el-input__icon input-icon" />
 				</el-input>
 			</el-form-item>
 
-			<el-checkbox
-				v-model="loginForm.rememberMe"
-				style="margin: 0px 0px 25px 0px"
-			>
-				记住密码
-			</el-checkbox>
+			<el-checkbox v-model="loginForm.rememberMe" style="margin: 0px 0px 25px 0px">记住密码</el-checkbox>
 			<el-form-item style="width: 100%">
-				<el-button
-					:loading="loading"
-					size="medium"
-					type="primary"
-					style="width: 100%"
-					@click.native.prevent="handleLogin"
-				>
+				<el-button :loading="loading" size="medium" type="primary" style="width: 100%" @click.native.prevent="handleLogin">
 					<span v-if="!loading">登 录</span>
 					<span v-else>登 录 中...</span>
 				</el-button>
 				<div v-if="register" style="float: right">
-					<router-link class="link-type" :to="'/register'">
-						立即注册
-					</router-link>
+					<router-link class="link-type" :to="'/register'">立即注册</router-link>
 				</div>
 			</el-form-item>
 		</el-form>
@@ -146,14 +109,9 @@ export default {
 			const password = Cookies.get('password');
 			const rememberMe = Cookies.get('rememberMe');
 			this.loginForm = {
-				username:
-					username === undefined ? this.loginForm.username : username,
-				password:
-					password === undefined
-						? this.loginForm.password
-						: decrypt(password),
-				rememberMe:
-					rememberMe === undefined ? false : Boolean(rememberMe)
+				username: username === undefined ? this.loginForm.username : username,
+				password: password === undefined ? this.loginForm.password : decrypt(password),
+				rememberMe: rememberMe === undefined ? false : Boolean(rememberMe)
 			};
 		},
 		handleLogin() {
@@ -164,13 +122,9 @@ export default {
 						Cookies.set('username', this.loginForm.username, {
 							expires: 30
 						});
-						Cookies.set(
-							'password',
-							encrypt(this.loginForm.password),
-							{
-								expires: 30
-							}
-						);
+						Cookies.set('password', encrypt(this.loginForm.password), {
+							expires: 30
+						});
 						Cookies.set('rememberMe', this.loginForm.rememberMe, {
 							expires: 30
 						});
@@ -184,9 +138,7 @@ export default {
 						.then(() => {
 							// 清除localStorage
 							localStorage.clear();
-							this.$router
-								.push({ path: this.redirect || '/' })
-								.catch(() => {});
+							this.$router.push({ path: this.redirect || '/' }).catch(() => {});
 						})
 						.catch(() => {
 							this.loading = false;

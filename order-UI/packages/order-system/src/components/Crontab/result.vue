@@ -160,14 +160,7 @@ export default {
 						}
 
 						// 判断日期的合法性，不合法的话也是跳出当前循环
-						if (
-							this.checkDate(
-								YY + '-' + MM + '-' + thisDD + ' 00:00:00'
-							) !== true &&
-							this.dayRule !== 'workDay' &&
-							this.dayRule !== 'lastWeek' &&
-							this.dayRule !== 'lastDay'
-						) {
+						if (this.checkDate(YY + '-' + MM + '-' + thisDD + ' 00:00:00') !== true && this.dayRule !== 'workDay' && this.dayRule !== 'lastWeek' && this.dayRule !== 'lastDay') {
 							resetDay();
 							continue goMonth;
 						}
@@ -175,22 +168,8 @@ export default {
 						if (this.dayRule == 'lastDay') {
 							// 如果不是合法日期则需要将前将日期调到合法日期即月末最后一天
 
-							if (
-								this.checkDate(
-									YY + '-' + MM + '-' + thisDD + ' 00:00:00'
-								) !== true
-							) {
-								while (
-									DD > 0 &&
-									this.checkDate(
-										YY +
-											'-' +
-											MM +
-											'-' +
-											thisDD +
-											' 00:00:00'
-									) !== true
-								) {
+							if (this.checkDate(YY + '-' + MM + '-' + thisDD + ' 00:00:00') !== true) {
+								while (DD > 0 && this.checkDate(YY + '-' + MM + '-' + thisDD + ' 00:00:00') !== true) {
 									DD--;
 
 									thisDD = DD < 10 ? '0' + DD : DD;
@@ -198,49 +177,21 @@ export default {
 							}
 						} else if (this.dayRule == 'workDay') {
 							// 校验并调整如果是2月30号这种日期传进来时需调整至正常月底
-							if (
-								this.checkDate(
-									YY + '-' + MM + '-' + thisDD + ' 00:00:00'
-								) !== true
-							) {
-								while (
-									DD > 0 &&
-									this.checkDate(
-										YY +
-											'-' +
-											MM +
-											'-' +
-											thisDD +
-											' 00:00:00'
-									) !== true
-								) {
+							if (this.checkDate(YY + '-' + MM + '-' + thisDD + ' 00:00:00') !== true) {
+								while (DD > 0 && this.checkDate(YY + '-' + MM + '-' + thisDD + ' 00:00:00') !== true) {
 									DD--;
 									thisDD = DD < 10 ? '0' + DD : DD;
 								}
 							}
 							// 获取达到条件的日期是星期X
-							const thisWeek = this.formatDate(
-								new Date(
-									YY + '-' + MM + '-' + thisDD + ' 00:00:00'
-								),
-								'week'
-							);
+							const thisWeek = this.formatDate(new Date(YY + '-' + MM + '-' + thisDD + ' 00:00:00'), 'week');
 							// 当星期日时
 							if (thisWeek == 1) {
 								// 先找下一个日，并判断是否为月底
 								DD++;
 								thisDD = DD < 10 ? '0' + DD : DD;
 								// 判断下一日已经不是合法日期
-								if (
-									this.checkDate(
-										YY +
-											'-' +
-											MM +
-											'-' +
-											thisDD +
-											' 00:00:00'
-									) !== true
-								) {
+								if (this.checkDate(YY + '-' + MM + '-' + thisDD + ' 00:00:00') !== true) {
 									DD -= 3;
 								}
 							} else if (thisWeek == 7) {
@@ -254,12 +205,7 @@ export default {
 						} else if (this.dayRule == 'weekDay') {
 							// 如果指定了是星期几
 							// 获取当前日期是属于星期几
-							const thisWeek = this.formatDate(
-								new Date(
-									YY + '-' + MM + '-' + DD + ' 00:00:00'
-								),
-								'week'
-							);
+							const thisWeek = this.formatDate(new Date(YY + '-' + MM + '-' + DD + ' 00:00:00'), 'week');
 							// 校验当前星期是否在星期池（dayRuleSup）中
 							if (this.dayRuleSup.indexOf(thisWeek) < 0) {
 								// 如果到达最大值时
@@ -276,55 +222,23 @@ export default {
 						} else if (this.dayRule == 'assWeek') {
 							// 如果指定了是第几周的星期几
 							// 获取每月1号是属于星期几
-							const thisWeek = this.formatDate(
-								new Date(
-									YY + '-' + MM + '-' + DD + ' 00:00:00'
-								),
-								'week'
-							);
+							const thisWeek = this.formatDate(new Date(YY + '-' + MM + '-' + DD + ' 00:00:00'), 'week');
 							if (this.dayRuleSup[1] >= thisWeek) {
-								DD =
-									(this.dayRuleSup[0] - 1) * 7 +
-									this.dayRuleSup[1] -
-									thisWeek +
-									1;
+								DD = (this.dayRuleSup[0] - 1) * 7 + this.dayRuleSup[1] - thisWeek + 1;
 							} else {
-								DD =
-									this.dayRuleSup[0] * 7 +
-									this.dayRuleSup[1] -
-									thisWeek +
-									1;
+								DD = this.dayRuleSup[0] * 7 + this.dayRuleSup[1] - thisWeek + 1;
 							}
 						} else if (this.dayRule == 'lastWeek') {
 							// 如果指定了每月最后一个星期几
 							// 校验并调整如果是2月30号这种日期传进来时需调整至正常月底
-							if (
-								this.checkDate(
-									YY + '-' + MM + '-' + thisDD + ' 00:00:00'
-								) !== true
-							) {
-								while (
-									DD > 0 &&
-									this.checkDate(
-										YY +
-											'-' +
-											MM +
-											'-' +
-											thisDD +
-											' 00:00:00'
-									) !== true
-								) {
+							if (this.checkDate(YY + '-' + MM + '-' + thisDD + ' 00:00:00') !== true) {
+								while (DD > 0 && this.checkDate(YY + '-' + MM + '-' + thisDD + ' 00:00:00') !== true) {
 									DD--;
 									thisDD = DD < 10 ? '0' + DD : DD;
 								}
 							}
 							// 获取月末最后一天是星期几
-							const thisWeek = this.formatDate(
-								new Date(
-									YY + '-' + MM + '-' + thisDD + ' 00:00:00'
-								),
-								'week'
-							);
+							const thisWeek = this.formatDate(new Date(YY + '-' + MM + '-' + thisDD + ' 00:00:00'), 'week');
 							// 找到要求中最近的那个星期几
 							if (this.dayRuleSup < thisWeek) {
 								DD -= thisWeek - this.dayRuleSup;
@@ -337,8 +251,7 @@ export default {
 
 						// 循环“时”数组
 						goHour: for (let hi = hIdx; hi < hDate.length; hi++) {
-							const hh =
-								hDate[hi] < 10 ? '0' + hDate[hi] : hDate[hi];
+							const hh = hDate[hi] < 10 ? '0' + hDate[hi] : hDate[hi];
 
 							// 如果到达最大值时
 							if (nMin > mDate[mDate.length - 1]) {
@@ -358,15 +271,8 @@ export default {
 								continue;
 							}
 							// 循环"分"数组
-							goMin: for (
-								let mi = mIdx;
-								mi < mDate.length;
-								mi++
-							) {
-								const mm =
-									mDate[mi] < 10
-										? '0' + mDate[mi]
-										: mDate[mi];
+							goMin: for (let mi = mIdx; mi < mDate.length; mi++) {
+								const mm = mDate[mi] < 10 ? '0' + mDate[mi] : mDate[mi];
 
 								// 如果到达最大值时
 								if (nSecond > sDate[sDate.length - 1]) {
@@ -390,30 +296,11 @@ export default {
 									continue;
 								}
 								// 循环"秒"数组
-								for (
-									let si = sIdx;
-									si <= sDate.length - 1;
-									si++
-								) {
-									const ss =
-										sDate[si] < 10
-											? '0' + sDate[si]
-											: sDate[si];
+								for (let si = sIdx; si <= sDate.length - 1; si++) {
+									const ss = sDate[si] < 10 ? '0' + sDate[si] : sDate[si];
 									// 添加当前时间（时间合法性在日期循环时已经判断）
 									if (MM !== '00' && DD !== '00') {
-										resultArr.push(
-											YY +
-												'-' +
-												MM +
-												'-' +
-												DD +
-												' ' +
-												hh +
-												':' +
-												mm +
-												':' +
-												ss
-										);
+										resultArr.push(YY + '-' + MM + '-' + DD + ' ' + hh + ':' + mm + ':' + ss);
 										nums++;
 									}
 									// 如果条数满了就退出循环
@@ -427,10 +314,7 @@ export default {
 												resetHour();
 												if (Di == DDate.length - 1) {
 													resetDay();
-													if (
-														Mi ==
-														MDate.length - 1
-													) {
+													if (Mi == MDate.length - 1) {
 														resetMonth();
 														continue goYear;
 													}
@@ -454,9 +338,7 @@ export default {
 			} else {
 				this.resultList = resultArr;
 				if (resultArr.length !== 5) {
-					this.resultList.push(
-						'最近100年内只有上面' + resultArr.length + '条结果！'
-					);
+					this.resultList.push('最近100年内只有上面' + resultArr.length + '条结果！');
 				}
 			}
 			// 计算完成-显示结果
@@ -508,10 +390,7 @@ export default {
 				} else if (rule.indexOf('#') >= 0) {
 					this.dayRule = 'assWeek';
 					const matchRule = rule.match(/[0-9]{1}/g);
-					this.dayRuleSup = [
-						Number(matchRule[1]),
-						Number(matchRule[0])
-					];
+					this.dayRuleSup = [Number(matchRule[1]), Number(matchRule[0])];
 					this.dateArr[3] = [1];
 					if (this.dayRuleSup[1] == 7) {
 						this.dayRuleSup[1] = 0;
@@ -659,19 +538,7 @@ export default {
 			const week = time.getDay();
 			// 如果传递了type的话
 			if (type == undefined) {
-				return (
-					Y +
-					'-' +
-					(M < 10 ? '0' + M : M) +
-					'-' +
-					(D < 10 ? '0' + D : D) +
-					' ' +
-					(h < 10 ? '0' + h : h) +
-					':' +
-					(m < 10 ? '0' + m : m) +
-					':' +
-					(s < 10 ? '0' + s : s)
-				);
+				return Y + '-' + (M < 10 ? '0' + M : M) + '-' + (D < 10 ? '0' + D : D) + ' ' + (h < 10 ? '0' + h : h) + ':' + (m < 10 ? '0' + m : m) + ':' + (s < 10 ? '0' + s : s);
 			} else if (type == 'week') {
 				// 在quartz中 1为星期日
 				return week + 1;

@@ -1,29 +1,10 @@
 <template>
 	<div class="app-container">
 		<!-- 搜索区域 -->
-		<el-form
-			:model="queryParams"
-			ref="queryForm"
-			:inline="true"
-			class="search-form"
-			size="mini"
-		>
+		<el-form :model="queryParams" ref="queryForm" :inline="true" class="search-form" size="mini">
 			<el-form-item label="模块名称">
-				<el-select
-					v-model="tables"
-					multiple
-					collapse-tags
-					placeholder="请选择模块"
-					clearable
-					style="width: 240px"
-					size="mini"
-				>
-					<el-option
-						v-for="item in moduleOptions"
-						:key="item.value"
-						:label="item.label"
-						:value="item.value"
-					/>
+				<el-select v-model="tables" multiple collapse-tags placeholder="请选择模块" clearable style="width: 240px" size="mini">
+					<el-option v-for="item in moduleOptions" :key="item.value" :label="item.label" :value="item.value" />
 				</el-select>
 			</el-form-item>
 			<el-form-item label="时间范围">
@@ -40,176 +21,64 @@
 				/>
 			</el-form-item>
 			<el-form-item label="目标查询日期">
-				<el-date-picker
-					v-model="queryParams.params.targetDate"
-					type="date"
-					placeholder="选择日期"
-					value-format="yyyy-MM-dd"
-					style="width: 240px"
-					size="mini"
-				/>
+				<el-date-picker v-model="queryParams.params.targetDate" type="date" placeholder="选择日期" value-format="yyyy-MM-dd" style="width: 240px" size="mini" />
 			</el-form-item>
 			<el-form-item>
-				<el-button
-					type="primary"
-					icon="el-icon-search"
-					size="small"
-					@click="handleQuery"
-				>
-					搜索
-				</el-button>
-				<el-button
-					icon="el-icon-refresh"
-					size="small"
-					@click="resetQuery"
-				>
-					重置
-				</el-button>
+				<el-button type="primary" icon="el-icon-search" size="small" @click="handleQuery">搜索</el-button>
+				<el-button icon="el-icon-refresh" size="small" @click="resetQuery">重置</el-button>
 			</el-form-item>
 		</el-form>
 
 		<div class="card-container">
 			<el-row>
-				<el-alert
-					title="复杂信息请前往对应的模块查看对应的信息,对于删除操作，无法查看原信息!"
-					type="warning"
-				>
-				</el-alert>
+				<el-alert title="复杂信息请前往对应的模块查看对应的信息,对于删除操作，无法查看原信息!" type="warning"></el-alert>
 			</el-row>
 			<br />
 			<el-row :gutter="20" v-if="groupedChangeList && changeList.length">
-				<el-col
-					:span="12"
-					v-for="(group, tableName) in groupedChangeList"
-					:key="tableName"
-					class="card-col"
-				>
+				<el-col :span="12" v-for="(group, tableName) in groupedChangeList" :key="tableName" class="card-col">
 					<el-card class="change-card" shadow="hover">
 						<div slot="header" class="card-header">
-							<span class="card-title">{{
-								getModuleName(tableName) || '未知表'
-							}}</span>
+							<span class="card-title">{{ getModuleName(tableName) || '未知表' }}</span>
 							<div class="card-header-right">
-								<span class="record-count"
-									>共 {{ group.length }} 条记录</span
-								>
+								<span class="record-count">共 {{ group.length }} 条记录</span>
 							</div>
 						</div>
 						<div class="card-content">
 							<div class="content-wrapper">
-								<div
-									v-for="(item, index) in group"
-									:key="index"
-									class="change-record"
-								>
+								<div v-for="(item, index) in group" :key="index" class="change-record">
 									<div class="record-header">
-										<span
-											class="backup-type"
-											:class="
-												getBackupTypeClass(
-													item.backupType
-												)
-											"
-										>
+										<span class="backup-type" :class="getBackupTypeClass(item.backupType)">
 											{{ transforTypes(item.backupType) }}
 										</span>
-										<span class="record-time">{{
-											formatDateTime(item.backupTime)
-										}}</span>
-										<span class="record-operator">{{
-											item.backupUserTruename
-										}}</span>
+										<span class="record-time">{{ formatDateTime(item.backupTime) }}</span>
+										<span class="record-operator">{{ item.backupUserTruename }}</span>
 									</div>
 									<div class="record-content">
 										<div class="info-section">
-											<div class="section-title">
-												变更信息：
-											</div>
+											<div class="section-title">变更信息：</div>
 											<div class="changed-info">
-												<template
-													v-if="item.changedInfo"
-												>
-													<div
-														v-for="(
-															value, key
-														) in parseJSON(
-															item.changedInfo
-														)"
-														:key="key"
-														class="info-row"
-													>
-														<span
-															class="info-label"
-															>{{
-																translateField(
-																	key,
-																	tableName
-																)
-															}}</span
-														>
-														<span
-															class="info-value"
-															>{{
-																translateValue(
-																	key,
-																	value,
-																	tableName
-																)
-															}}</span
-														>
+												<template v-if="item.changedInfo">
+													<div v-for="(value, key) in parseJSON(item.changedInfo)" :key="key" class="info-row">
+														<span class="info-label">{{ translateField(key, tableName) }}</span>
+														<span class="info-value">{{ translateValue(key, value, tableName) }}</span>
 													</div>
 												</template>
 											</div>
 										</div>
 										<div class="original-info">
-											<div class="section-title">
-												先前信息:
-											</div>
-											<div
-												class="changed-info"
-												v-if="item.originalInfoId"
-											>
-												<template
-													v-if="item.originalInfo"
-												>
-													<div
-														v-for="(
-															value, key
-														) in parseJSON(
-															item.originalInfo
-														)"
-														:key="key"
-														class="info-row"
-													>
-														<span
-															class="info-label"
-															>{{
-																translateField(
-																	key,
-																	tableName
-																)
-															}}</span
-														>
-														<span
-															class="info-value"
-															>{{
-																translateValue(
-																	key,
-																	value,
-																	tableName
-																)
-															}}</span
-														>
+											<div class="section-title">先前信息:</div>
+											<div class="changed-info" v-if="item.originalInfoId">
+												<template v-if="item.originalInfo">
+													<div v-for="(value, key) in parseJSON(item.originalInfo)" :key="key" class="info-row">
+														<span class="info-label">{{ translateField(key, tableName) }}</span>
+														<span class="info-value">{{ translateValue(key, value, tableName) }}</span>
 													</div>
 												</template>
 											</div>
 											<div v-else>无先前信息</div>
 										</div>
 									</div>
-									<div
-										class="record-divider"
-										v-if="index !== group.length - 1"
-									></div>
+									<div class="record-divider" v-if="index !== group.length - 1"></div>
 								</div>
 							</div>
 						</div>
@@ -277,12 +146,7 @@ export default {
 				pageNum: 1,
 				pageSize: 10,
 				// 时间范围
-				dateRange: [
-					this.parseTime(
-						new Date(new Date().setMonth(new Date().getMonth() - 1))
-					),
-					this.parseTime(new Date())
-				],
+				dateRange: [this.parseTime(new Date(new Date().setMonth(new Date().getMonth() - 1))), this.parseTime(new Date())],
 				originalInfoId: null,
 				tableName: null,
 				backupTime: null,
@@ -315,9 +179,7 @@ export default {
 			});
 			// 对每个分组内的记录按时间倒序排序
 			Object.keys(groups).forEach(tableName => {
-				groups[tableName].sort(
-					(a, b) => new Date(b.backupTime) - new Date(a.backupTime)
-				);
+				groups[tableName].sort((a, b) => new Date(b.backupTime) - new Date(a.backupTime));
 			});
 			return groups;
 		}
@@ -376,22 +238,14 @@ export default {
 			const end = new Date();
 			const start = new Date();
 			start.setMonth(start.getMonth() - 1);
-			this.queryParams.dateRange = [
-				this.parseTime(start),
-				this.parseTime(end)
-			];
+			this.queryParams.dateRange = [this.parseTime(start), this.parseTime(end)];
 			this.handleQuery();
 		},
 		// 新增方法
 		formatDateTime(dateStr) {
 			if (!dateStr) return '';
 			const date = new Date(dateStr);
-			return `${date.getFullYear()}-${String(
-				date.getMonth() + 1
-			).padStart(2, '0')}-${String(date.getDate()).padStart(
-				2,
-				'0'
-			)} ${String(date.getHours()).padStart(2, '0')}:${String(
+			return `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}-${String(date.getDate()).padStart(2, '0')} ${String(date.getHours()).padStart(2, '0')}:${String(
 				date.getMinutes()
 			).padStart(2, '0')}`;
 		},

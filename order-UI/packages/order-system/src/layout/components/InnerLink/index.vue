@@ -1,15 +1,6 @@
 <template>
-	<div
-		v-loading="loading"
-		:style="'height:' + height"
-		element-loading-text="正在加载页面，请稍候！"
-	>
-		<iframe
-			:id="iframeId"
-			style="width: 100%; height: 100%"
-			:src="src"
-			frameborder="no"
-		></iframe>
+	<div v-loading="loading" :style="'height:' + height" element-loading-text="正在加载页面，请稍候！">
+		<iframe :id="iframeId" style="width: 100%; height: 100%" :src="src" frameborder="no"></iframe>
 	</div>
 </template>
 

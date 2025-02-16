@@ -1,89 +1,35 @@
 <template>
 	<div class="app-container">
 		<!-- 筛选框 -->
-		<el-form
-			v-show="showSearch"
-			ref="queryForm"
-			:model="queryParams"
-			size="mini"
-			:inline="true"
-			label-width="68px"
-		>
+		<el-form v-show="showSearch" ref="queryForm" :model="queryParams" size="mini" :inline="true" label-width="68px">
 			<el-form-item label="账户类型">
-				<el-select
-					v-model="queryParams.bankCardType"
-					placeholder="账户类型"
-					size="mini"
-					clearable
-				>
-					<el-option
-						v-for="item in typeOption"
-						:key="item.value"
-						:label="item.label"
-						:value="item.value"
-					></el-option>
+				<el-select v-model="queryParams.bankCardType" placeholder="账户类型" size="mini" clearable>
+					<el-option v-for="item in typeOption" :key="item.value" :label="item.label" :value="item.value"></el-option>
 				</el-select>
 			</el-form-item>
 			<el-form-item label="开户名称" prop="acountsName">
-				<el-input
-					v-model="queryParams.acountsName"
-					placeholder="请输入开户名称"
-					clearable
-					@keyup.enter.native="handleQuery"
-				/>
+				<el-input v-model="queryParams.acountsName" placeholder="请输入开户名称" clearable @keyup.enter.native="handleQuery" />
 			</el-form-item>
 			<el-form-item label="开户行" prop="acountsName">
-				<el-input
-					v-model="queryParams.bankName"
-					placeholder="请输入开户行"
-					clearable
-					@keyup.enter.native="handleQuery"
-				/>
+				<el-input v-model="queryParams.bankName" placeholder="请输入开户行" clearable @keyup.enter.native="handleQuery" />
 			</el-form-item>
 			<el-form-item label="银行账号" prop="bankNo">
-				<el-input
-					v-model="queryParams.bankNo"
-					placeholder="请输入银行账号"
-					clearable
-					@keyup.enter.native="handleQuery"
-				/>
+				<el-input v-model="queryParams.bankNo" placeholder="请输入银行账号" clearable @keyup.enter.native="handleQuery" />
 			</el-form-item>
 			<el-form-item label="显示名称" prop="displayName">
-				<el-input
-					v-model="queryParams.displayName"
-					placeholder="请输入显示名称"
-					clearable
-					@keyup.enter.native="handleQuery"
-				/>
+				<el-input v-model="queryParams.displayName" placeholder="请输入显示名称" clearable @keyup.enter.native="handleQuery" />
 			</el-form-item>
 			<el-form-item>
-				<el-button
-					type="primary"
-					icon="el-icon-search"
-					size="mini"
-					@click="handleQuery"
-				>
-					搜索
-				</el-button>
+				<el-button type="primary" icon="el-icon-search" size="mini" @click="handleQuery">搜索</el-button>
 			</el-form-item>
 		</el-form>
 		<el-row :gutter="10" class="mb8">
 			<el-col :span="1.5">
-				<el-button
-					icon="el-icon-refresh"
-					size="mini"
-					@click="resetQuery"
-					>刷新
-				</el-button>
+				<el-button icon="el-icon-refresh" size="mini" @click="resetQuery">刷新</el-button>
 			</el-col>
 			<el-col :span="1.5">
 				<el-select v-model="value" placeholder="余额排序" size="mini">
-					<el-option
-						v-for="item in options"
-						:key="item.value"
-						:label="item.label"
-						:value="item.value"
-					></el-option>
+					<el-option v-for="item in options" :key="item.value" :label="item.label" :value="item.value"></el-option>
 				</el-select>
 			</el-col>
 
@@ -91,12 +37,7 @@
 				<right-toolbar :columns="columns" @queryTable="getList">
 					<template #print>
 						<el-col :span="1.5">
-							<el-button
-								plain
-								icon="el-icon-printer"
-								size="mini"
-								@click="printHTML"
-							></el-button>
+							<el-button plain icon="el-icon-printer" size="mini" @click="printHTML"></el-button>
 						</el-col>
 					</template>
 				</right-toolbar>
@@ -117,48 +58,12 @@
 				}
 			"
 		>
-			<el-table-column
-				v-if="columns[0].visible"
-				label="余额"
-				align="center"
-				prop="sumMoney"
-				show-overflow-tooltip
-			/>
-			<el-table-column
-				v-if="columns[1].visible"
-				label="银行卡类型"
-				align="center"
-				prop="bankCardType"
-				show-overflow-tooltip
-			/>
-			<el-table-column
-				v-if="columns[2].visible"
-				label="显示名称"
-				align="center"
-				prop="displayName"
-				show-overflow-tooltip
-			/>
-			<el-table-column
-				v-if="columns[3].visible"
-				label="开户名称"
-				align="center"
-				prop="acountsName"
-				show-overflow-tooltip
-			/>
-			<el-table-column
-				v-if="columns[4].visible"
-				label="银行账号"
-				align="center"
-				prop="bankNo"
-				show-overflow-tooltip
-			/>
-			<el-table-column
-				v-if="columns[5].visible"
-				label="开户行"
-				align="center"
-				prop="bankName"
-				show-overflow-tooltip
-			/>
+			<el-table-column v-if="columns[0].visible" label="余额" align="center" prop="sumMoney" show-overflow-tooltip />
+			<el-table-column v-if="columns[1].visible" label="银行卡类型" align="center" prop="bankCardType" show-overflow-tooltip />
+			<el-table-column v-if="columns[2].visible" label="显示名称" align="center" prop="displayName" show-overflow-tooltip />
+			<el-table-column v-if="columns[3].visible" label="开户名称" align="center" prop="acountsName" show-overflow-tooltip />
+			<el-table-column v-if="columns[4].visible" label="银行账号" align="center" prop="bankNo" show-overflow-tooltip />
+			<el-table-column v-if="columns[5].visible" label="开户行" align="center" prop="bankName" show-overflow-tooltip />
 		</el-table>
 	</div>
 </template>
@@ -166,10 +71,7 @@
 <script>
 import { listCompany } from '@/api/system/company';
 import { mixin_printHTML } from '@/views/dashboard/mixins/print';
-import {
-	listBankAccount,
-	listBankAccountSelf
-} from '../../../api/system/bankAccount';
+import { listBankAccount, listBankAccountSelf } from '../../../api/system/bankAccount';
 
 export default {
 	name: 'BankAccount',
@@ -262,10 +164,7 @@ export default {
 			listBankAccountSelf().then(response => {
 				this.bankAccountList = response.data;
 				// 存储到本地
-				localStorage.setItem(
-					'bankAccountList',
-					JSON.stringify(this.bankAccountList)
-				);
+				localStorage.setItem('bankAccountList', JSON.stringify(this.bankAccountList));
 				this.total = response.data.length;
 				this.loading = false;
 			});
@@ -273,9 +172,7 @@ export default {
 		// 银行卡筛选
 		handleQuery() {
 			// 每次重新刷新数组后筛选
-			this.bankAccountList = JSON.parse(
-				localStorage.getItem('bankAccountList')
-			);
+			this.bankAccountList = JSON.parse(localStorage.getItem('bankAccountList'));
 			// 如果queryParams都是空 那么就返回全部数据
 			const values = Object.values(this.queryParams);
 
@@ -288,9 +185,7 @@ export default {
 				return this.bankAccountList;
 			}
 			// 对银行卡列表进行筛选
-			this.bankAccountList = this.bankAccountList.filter(item =>
-				this.handleFilter(item)
-			);
+			this.bankAccountList = this.bankAccountList.filter(item => this.handleFilter(item));
 		},
 		// 筛选函数
 		handleFilter(item) {

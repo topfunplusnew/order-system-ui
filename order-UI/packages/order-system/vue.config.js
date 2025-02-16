@@ -21,7 +21,7 @@ module.exports = {
 		open: true,
 		proxy: {
 			[process.env.VUE_APP_BASE_API]: {
-				target: `http://24.233.1.45:60035/`,
+				target: `http://24.233.1.45:60035`,
 				// target: `https://bak202.xuni.rocks`,
 				// target: 'http://24.233.1.45:8080',
 				// target: 'http://localhost:8080',
@@ -67,10 +67,7 @@ module.exports = {
 		config.plugins.delete('prefetch'); // TODO: need test
 
 		// set svg-sprite-loader
-		config.module
-			.rule('svg')
-			.exclude.add(resolve('src/assets/icons'))
-			.end();
+		config.module.rule('svg').exclude.add(resolve('src/assets/icons')).end();
 		config.module
 			.rule('icons')
 			.test(/\.svg$/)

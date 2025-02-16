@@ -1,45 +1,18 @@
 <template>
-	<el-menu
-		:default-active="activeMenu"
-		mode="horizontal"
-		@select="handleSelect"
-	>
+	<el-menu :default-active="activeMenu" mode="horizontal" @select="handleSelect">
 		<template v-for="(item, index) in topMenus">
-			<el-menu-item
-				v-if="index < visibleNumber"
-				:key="index"
-				:style="{ '--theme': theme }"
-				:index="item.path"
-			>
-				<svg-icon
-					v-if="item.meta && item.meta.icon && item.meta.icon !== '#'"
-					:icon-class="item.meta.icon"
-				/>
+			<el-menu-item v-if="index < visibleNumber" :key="index" :style="{ '--theme': theme }" :index="item.path">
+				<svg-icon v-if="item.meta && item.meta.icon && item.meta.icon !== '#'" :icon-class="item.meta.icon" />
 				{{ item.meta.title }}
 			</el-menu-item>
 		</template>
 
 		<!-- 顶部菜单超出数量折叠 -->
-		<el-submenu
-			v-if="topMenus.length > visibleNumber"
-			:style="{ '--theme': theme }"
-			index="more"
-		>
+		<el-submenu v-if="topMenus.length > visibleNumber" :style="{ '--theme': theme }" index="more">
 			<template slot="title">更多菜单</template>
 			<template v-for="(item, index) in topMenus">
-				<el-menu-item
-					v-if="index >= visibleNumber"
-					:key="index"
-					:index="item.path"
-				>
-					<svg-icon
-						v-if="
-							item.meta &&
-							item.meta.icon &&
-							item.meta.icon !== '#'
-						"
-						:icon-class="item.meta.icon"
-					/>
+				<el-menu-item v-if="index >= visibleNumber" :key="index" :index="item.path">
+					<svg-icon v-if="item.meta && item.meta.icon && item.meta.icon !== '#'" :icon-class="item.meta.icon" />
 					{{ item.meta.title }}
 				</el-menu-item>
 			</template>
@@ -92,14 +65,10 @@ export default {
 				for (var item in router.children) {
 					if (router.children[item].parentPath === undefined) {
 						if (router.path === '/') {
-							router.children[item].path =
-								'/' + router.children[item].path;
+							router.children[item].path = '/' + router.children[item].path;
 						} else {
 							if (!this.ishttp(router.children[item].path)) {
-								router.children[item].path =
-									router.path +
-									'/' +
-									router.children[item].path;
+								router.children[item].path = router.path + '/' + router.children[item].path;
 							}
 						}
 						router.children[item].parentPath = router.path;
@@ -113,11 +82,7 @@ export default {
 		activeMenu() {
 			const path = this.$route.path;
 			let activePath = path;
-			if (
-				path !== undefined &&
-				path.lastIndexOf('/') > 0 &&
-				hideList.indexOf(path) === -1
-			) {
+			if (path !== undefined && path.lastIndexOf('/') > 0 && hideList.indexOf(path) === -1) {
 				const tmpPath = path.substring(1, path.length);
 				activePath = '/' + tmpPath.substring(0, tmpPath.indexOf('/'));
 				if (!this.$route.meta.link) {
@@ -155,9 +120,7 @@ export default {
 				window.open(key, '_blank');
 			} else if (!route || !route.children) {
 				// 没有子路由路径内部打开
-				const routeMenu = this.childrenMenus.find(
-					item => item.path === key
-				);
+				const routeMenu = this.childrenMenus.find(item => item.path === key);
 				if (routeMenu && routeMenu.query) {
 					const query = JSON.parse(routeMenu.query);
 					this.$router.push({ path: key, query: query });
@@ -176,10 +139,7 @@ export default {
 			var routes = [];
 			if (this.childrenMenus && this.childrenMenus.length > 0) {
 				this.childrenMenus.map(item => {
-					if (
-						key == item.parentPath ||
-						(key == 'index' && item.path == '')
-					) {
+					if (key == item.parentPath || (key == 'index' && item.path == '')) {
 						routes.push(item);
 					}
 				});
@@ -191,9 +151,7 @@ export default {
 			}
 		},
 		ishttp(url) {
-			return (
-				url.indexOf('http://') !== -1 || url.indexOf('https://') !== -1
-			);
+			return url.indexOf('http://') !== -1 || url.indexOf('https://') !== -1;
 		}
 	}
 };

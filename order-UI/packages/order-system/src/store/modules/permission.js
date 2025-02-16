@@ -46,10 +46,7 @@ const permission = {
 					});
 					router.addRoutes(asyncRoutes);
 					commit('SET_ROUTES', rewriteRoutes);
-					commit(
-						'SET_SIDEBAR_ROUTERS',
-						constantRoutes.concat(sidebarRoutes)
-					);
+					commit('SET_SIDEBAR_ROUTERS', constantRoutes.concat(sidebarRoutes));
 					commit('SET_DEFAULT_ROUTES', sidebarRoutes);
 					commit('SET_TOPBAR_ROUTES', sidebarRoutes);
 					resolve(rewriteRoutes);
@@ -95,9 +92,7 @@ function filterChildren(childrenMap, lastRouter = false) {
 				el.children.forEach(c => {
 					c.path = el.path + '/' + c.path;
 					if (c.children && c.children.length) {
-						children = children.concat(
-							filterChildren(c.children, c)
-						);
+						children = children.concat(filterChildren(c.children, c));
 						return;
 					}
 					children.push(c);

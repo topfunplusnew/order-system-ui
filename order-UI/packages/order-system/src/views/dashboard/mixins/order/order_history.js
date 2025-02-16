@@ -1,7 +1,4 @@
-import {
-	getGoodsOrder,
-	getHistoryGoodsOrder
-} from '../../../../api/system/goodsOrder';
+import { getGoodsOrder, getHistoryGoodsOrder } from '../../../../api/system/goodsOrder';
 import { excludeParams } from '../../../../api/tool/exclude';
 
 /**
@@ -47,15 +44,8 @@ export var mixin_order_orderHistory = {
 						const new_item = array[i - 1];
 						this.orderHistoryInfoList.push({
 							diff: {
-								old: this.format(
-									excludeParams(item, this.$excludeWithUpdate)
-								),
-								new: this.format(
-									excludeParams(
-										new_item,
-										this.$excludeWithUpdate
-									)
-								),
+								old: this.format(excludeParams(item, this.$excludeWithUpdate)),
+								new: this.format(excludeParams(new_item, this.$excludeWithUpdate)),
 								updateTime: item.updateTime,
 								userName: item.userName,
 								remark: item.remark
@@ -69,9 +59,7 @@ export var mixin_order_orderHistory = {
 			// 查询订单历史信息
 		},
 		format(data) {
-			return this.formatData(
-				excludeParams(data, this.$excludeWithUpdate)
-			);
+			return this.formatData(excludeParams(data, this.$excludeWithUpdate));
 		},
 		// 关闭历史订单的弹窗
 		closeOrderHistoryCheck() {

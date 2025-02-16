@@ -1,10 +1,7 @@
 // 添加返利回扣时选择订单的逻辑
 import { addDateRange } from '../../../../utils/ruoyi';
 import { noPageListRebate } from '../../../../api/system/Rebate';
-import {
-	getGoodsOrder,
-	listGoodsOrder
-} from '../../../../api/system/goodsOrder';
+import { getGoodsOrder, listGoodsOrder } from '../../../../api/system/goodsOrder';
 import { fix } from '../../../../api/tool/format';
 
 export var mixin_choose_order = {
@@ -57,12 +54,7 @@ export var mixin_choose_order = {
 		// 确认选择供应商
 		handleCommitSupplier() {
 			// 点击选择供应商和时间段后 查询列表 然后弹出选择货物详情
-			noPageListRebate(
-				addDateRange(
-					this.queryParamsSupplier,
-					this.queryParamsSupplier.dateRange
-				)
-			).then(res => {
+			noPageListRebate(addDateRange(this.queryParamsSupplier, this.queryParamsSupplier.dateRange)).then(res => {
 				this.needToSelectOrderDetailList = res.rows;
 				this.orderGoodsListVisible = true;
 			});
@@ -120,13 +112,9 @@ export var mixin_choose_order = {
 			const result = this.goods.reduce(
 				(prev, next) => {
 					// 累加面积
-					prev.area +=
-						(next.height * next.width * next.pieces) / 1000000;
+					prev.area += (next.height * next.width * next.pieces) / 1000000;
 					// 累加重箱
-					prev.weightBox +=
-						(next.height * next.length * next.width * next.pieces) /
-						1000000 /
-						20;
+					prev.weightBox += (next.height * next.length * next.width * next.pieces) / 1000000 / 20;
 					return prev;
 				},
 				{ area: 0, weightBox: 0 } // 初始值
@@ -137,9 +125,7 @@ export var mixin_choose_order = {
 			});
 			this.form.area = result.area;
 			this.form.weightBox = result.weightBox;
-			this.form.rebate = fix(
-				this.form.area * this.form.weightBox * this.form.unitPrice
-			);
+			this.form.rebate = fix(this.form.area * this.form.weightBox * this.form.unitPrice);
 			this.orderDialogVisible = false;
 		},
 		// 清空已选择的货物

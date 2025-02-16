@@ -67,10 +67,7 @@ export default {
 		checked: {
 			columns: {
 				handler: function (newVal) {
-					localStorage.setItem(
-						'applyprocess-columns',
-						JSON.stringify(newVal)
-					);
+					localStorage.setItem('applyprocess-columns', JSON.stringify(newVal));
 				},
 				deep: true
 			},
@@ -85,19 +82,11 @@ export default {
 		}
 	},
 	created() {
-		if (
-			localStorage.getItem('applyprocess-columns') === 'null' ||
-			!localStorage.getItem('applyprocess-columns')
-		) {
+		if (localStorage.getItem('applyprocess-columns') === 'null' || !localStorage.getItem('applyprocess-columns')) {
 			// 设置localStorage
-			localStorage.setItem(
-				'applyprocess-columns',
-				JSON.stringify(this.columns)
-			);
+			localStorage.setItem('applyprocess-columns', JSON.stringify(this.columns));
 		} else {
-			this.columns = JSON.parse(
-				localStorage.getItem('applyprocess-columns')
-			);
+			this.columns = JSON.parse(localStorage.getItem('applyprocess-columns'));
 		}
 		// 获取付款信息
 		listPaymentApply({
@@ -188,12 +177,7 @@ export default {
 				<!--    打印    -->
 				<template #print>
 					<el-col :span="1.5">
-						<el-button
-							plain
-							icon="el-icon-printer"
-							size="mini"
-							@click="printHTML"
-						></el-button>
+						<el-button plain icon="el-icon-printer" size="mini" @click="printHTML"></el-button>
 					</el-col>
 				</template>
 			</right-toolbar>
@@ -214,157 +198,46 @@ export default {
 				size="mini"
 				align="center"
 			>
-				<el-table-column
-					v-if="columns[0].visible"
-					fixed
-					prop="fundsDate"
-					label="日期"
-					width="150"
-					show-overflow-tooltip
-				></el-table-column>
-				<el-table-column
-					v-if="columns[1].visible"
-					prop="payType"
-					label="支付类型"
-					width="150"
-					show-overflow-tooltip
-				></el-table-column>
-				<el-table-column
-					v-if="columns[2].visible"
-					prop="moneyAmount"
-					label="金额"
-					width="120"
-					show-overflow-tooltip
-				></el-table-column>
-				<el-table-column
-					v-if="columns[3].visible"
-					prop="otherBankNo"
-					label="对方账号"
-					width="300"
-					show-overflow-tooltip
-				></el-table-column>
-				<el-table-column
-					v-if="columns[4].visible"
-					prop="companyName"
-					label="对方公司"
-					width="120"
-					show-overflow-tooltip
-				></el-table-column>
-				<el-table-column
-					v-if="columns[5].visible"
-					prop="reason"
-					label="付款原因"
-					width="120"
-					show-overflow-tooltip
-				></el-table-column>
-				<el-table-column
-					v-if="columns[6].visible"
-					prop="attachment"
-					label="附件"
-					width="120"
-					show-overflow-tooltip
-				>
+				<el-table-column v-if="columns[0].visible" fixed prop="fundsDate" label="日期" width="150" show-overflow-tooltip></el-table-column>
+				<el-table-column v-if="columns[1].visible" prop="payType" label="支付类型" width="150" show-overflow-tooltip></el-table-column>
+				<el-table-column v-if="columns[2].visible" prop="moneyAmount" label="金额" width="120" show-overflow-tooltip></el-table-column>
+				<el-table-column v-if="columns[3].visible" prop="otherBankNo" label="对方账号" width="300" show-overflow-tooltip></el-table-column>
+				<el-table-column v-if="columns[4].visible" prop="companyName" label="对方公司" width="120" show-overflow-tooltip></el-table-column>
+				<el-table-column v-if="columns[5].visible" prop="reason" label="付款原因" width="120" show-overflow-tooltip></el-table-column>
+				<el-table-column v-if="columns[6].visible" prop="attachment" label="附件" width="120" show-overflow-tooltip>
 					<template #default="scope">
-						<span
-							v-if="
-								scope.row.attachment === '' ||
-								scope.row.attachment === null
-							"
-						>
-							无附件
-						</span>
+						<span v-if="scope.row.attachment === '' || scope.row.attachment === null">无附件</span>
 						<span v-else>
-							<el-button
-								size="mini"
-								type="text"
-								@click="checkFile(scope.row)"
-							>
-								查看附件
-							</el-button>
+							<el-button size="mini" type="text" @click="checkFile(scope.row)">查看附件</el-button>
 						</span>
 					</template>
 				</el-table-column>
-				<el-table-column
-					v-if="columns[7].visible"
-					prop="applyPerson"
-					label="申请人"
-					width="120"
-					show-overflow-tooltip
-				></el-table-column>
-				<el-table-column
-					v-if="columns[8].visible"
-					prop="comments"
-					label="备注"
-					width="120"
-					show-overflow-tooltip
-				></el-table-column>
+				<el-table-column v-if="columns[7].visible" prop="applyPerson" label="申请人" width="120" show-overflow-tooltip></el-table-column>
+				<el-table-column v-if="columns[8].visible" prop="comments" label="备注" width="120" show-overflow-tooltip></el-table-column>
 				<el-table-column label="操作" width="80">
 					<template slot-scope="scope">
-						<el-button
-							type="text"
-							size="mini"
-							@click="handleCheckInfo(scope.row)"
-						>
-							查看
-						</el-button>
+						<el-button type="text" size="mini" @click="handleCheckInfo(scope.row)">查看</el-button>
 					</template>
 				</el-table-column>
-				<el-table-column
-					label="审核状态"
-					width="80"
-					fixed="right"
-					align="center"
-				>
+				<el-table-column label="审核状态" width="80" fixed="right" align="center">
 					<template slot-scope="scope">
-						<el-tag
-							:type="
-								scope.row.checkState === '通过'
-									? 'success'
-									: scope.row.checkState === '未通过'
-									? 'danger'
-									: 'primary'
-							"
-						>
+						<el-tag :type="scope.row.checkState === '通过' ? 'success' : scope.row.checkState === '未通过' ? 'danger' : 'primary'">
 							{{ scope.row.checkState }}
 						</el-tag>
 					</template>
 				</el-table-column>
-				<el-table-column
-					v-if="columns[9].visible"
-					fixed="right"
-					label="审核流程"
-					width="200"
-					show-overflow-tooltip
-				>
+				<el-table-column v-if="columns[9].visible" fixed="right" label="审核流程" width="200" show-overflow-tooltip>
 					<template slot-scope="scope">
-						<el-button
-							type="warning"
-							size="mini"
-							@click="handleCheckApplyInfo(scope.row)"
-						>
-							查看审核流程信息
-						</el-button>
+						<el-button type="warning" size="mini" @click="handleCheckApplyInfo(scope.row)">查看审核流程信息</el-button>
 					</template>
 				</el-table-column>
 			</el-table>
 			<!--      分页-->
-			<pagination
-				v-show="total > 0"
-				:total="total"
-				:page.sync="pageNum"
-				:limit.sync="pageSize"
-				@pagination="getPaymentList"
-			/>
+			<pagination v-show="total > 0" :total="total" :page.sync="pageNum" :limit.sync="pageSize" @pagination="getPaymentList" />
 		</el-row>
 
 		<!--    查看付款信息的详细信息-->
-		<el-dialog
-			:close-on-click-modal="false"
-			:show-close="false"
-			title="付款信息详细"
-			:visible.sync="checkInfoDialogVisible"
-			width="50%"
-		>
+		<el-dialog :close-on-click-modal="false" :show-close="false" title="付款信息详细" :visible.sync="checkInfoDialogVisible" width="50%">
 			<el-descriptions title="付款信息明细">
 				<el-descriptions-item label="申请人">
 					{{ checkPaymentInfo.applyPerson }}
@@ -398,31 +271,15 @@ export default {
 				</el-descriptions-item>
 			</el-descriptions>
 			<span slot="footer" class="dialog-footer">
-				<el-button @click="checkInfoDialogVisible = false"
-					>取 消</el-button
-				>
-				<el-button
-					type="primary"
-					@click="checkInfoDialogVisible = false"
-				>
-					确 定
-				</el-button>
+				<el-button @click="checkInfoDialogVisible = false">取 消</el-button>
+				<el-button type="primary" @click="checkInfoDialogVisible = false">确 定</el-button>
 			</span>
 		</el-dialog>
 
 		<!--      审核流程步骤图信息  -->
-		<el-dialog
-			:close-on-click-modal="false"
-			:show-close="false"
-			:visible.sync="checkApplyInfoDialogVisible"
-			title="审核流程多项信息"
-			width="58%"
-		>
+		<el-dialog :close-on-click-modal="false" :show-close="false" :visible.sync="checkApplyInfoDialogVisible" title="审核流程多项信息" width="58%">
 			<el-row v-for="(item, index) in auditInfoList" :key="index">
-				<el-collapse
-					v-model="activeNames"
-					@change="handleChangeApplyItem"
-				>
+				<el-collapse v-model="activeNames" @change="handleChangeApplyItem">
 					<el-collapse-item name="1">
 						<template #title>
 							<el-row>
@@ -438,12 +295,8 @@ export default {
 				</el-collapse>
 			</el-row>
 			<span slot="footer" class="dialog-footer">
-				<el-button @click="checkApplyInfoDialogVisible = false">
-					取 消
-				</el-button>
-				<el-button type="primary" @click="onSubmitApply"
-					>确 定</el-button
-				>
+				<el-button @click="checkApplyInfoDialogVisible = false">取 消</el-button>
+				<el-button type="primary" @click="onSubmitApply">确 定</el-button>
 			</span>
 		</el-dialog>
 	</div>

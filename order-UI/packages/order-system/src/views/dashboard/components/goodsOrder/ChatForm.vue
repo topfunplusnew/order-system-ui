@@ -23,9 +23,7 @@ export default {
 	computed: {
 		// 货款合计
 		totalPayments() {
-			return (
-				Number(this.orderInfo.allPayments) + Number(this.moneyAmount)
-			);
+			return Number(this.orderInfo.allPayments) + Number(this.moneyAmount);
 		}
 	},
 	created() {
@@ -67,7 +65,7 @@ export default {
 <template>
 	<div>
 		<el-row>
-			<el-button @click="printHTML"> 打印 </el-button>
+			<el-button @click="printHTML">打印</el-button>
 		</el-row>
 		<div id="printBoxs" class="invoice-container">
 			<div class="invoice-title">销货发货单</div>
@@ -105,9 +103,7 @@ export default {
 							<td>{{ item.packs }}</td>
 							<td>{{ item.price }}</td>
 							<td>
-								{{
-									item.isIncludeTaxFactory === 0 ? '否' : '是'
-								}}
+								{{ item.isIncludeTaxFactory === 0 ? '否' : '是' }}
 							</td>
 							<td>{{ item.otherCost }}</td>
 							<td>{{ item.payments }}</td>
@@ -141,9 +137,7 @@ export default {
 						<td />
 						<!--          合计只有一个大写-->
 						<td style="text-align: left">合计</td>
-						<td colspan="7">
-							大写：{{ numToChineseUppercase(totalPayments) }}
-						</td>
+						<td colspan="7">大写：{{ numToChineseUppercase(totalPayments) }}</td>
 						<td />
 						<td />
 					</tr>
@@ -152,9 +146,7 @@ export default {
 
 			<div class="footer-note">
 				<p>注：</p>
-				<p>
-					1.玻璃为易碎品，请当面验货（若遇破损、淋雨、气泡、结石等一切质量问题均由司当面解决，收货后出现问题由客户自负，我公司概不负责）。
-				</p>
+				<p>1.玻璃为易碎品，请当面验货（若遇破损、淋雨、气泡、结石等一切质量问题均由司当面解决，收货后出现问题由客户自负，我公司概不负责）。</p>
 				<p>2.此单据等同合同，收货方签字认可后具有法律效力。</p>
 				<p>3.若发生纠纷，双方同意由供货方所在地法院处理。</p>
 			</div>

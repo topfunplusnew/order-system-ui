@@ -55,24 +55,10 @@ export default {
 			<el-descriptions-item v-if="orderInfo.isAdjusted" label="调整日期">
 				{{ formatValue(orderInfo.adjustDate) }}
 			</el-descriptions-item>
-			<el-descriptions-item
-				v-if="
-					orderInfo.customerIsInvoice !== null &&
-					orderInfo.customerIsInvoice !== undefined &&
-					orderInfo.customerIsInvoice !== ''
-				"
-				label="客户是否开票"
-			>
+			<el-descriptions-item v-if="orderInfo.customerIsInvoice !== null && orderInfo.customerIsInvoice !== undefined && orderInfo.customerIsInvoice !== ''" label="客户是否开票">
 				{{ orderInfo.customerIsInvoice === 0 ? '未开票' : '开票' }}
 			</el-descriptions-item>
-			<el-descriptions-item
-				v-if="
-					orderInfo.isSupplierInvoice !== null &&
-					orderInfo.isSupplierInvoice !== undefined &&
-					orderInfo.isSupplierInvoice !== ''
-				"
-				label="供应商是否开票"
-			>
+			<el-descriptions-item v-if="orderInfo.isSupplierInvoice !== null && orderInfo.isSupplierInvoice !== undefined && orderInfo.isSupplierInvoice !== ''" label="供应商是否开票">
 				{{ orderInfo.isSupplierInvoice === 0 ? '未开票' : '开票' }}
 			</el-descriptions-item>
 			<el-descriptions-item label="销售经理">

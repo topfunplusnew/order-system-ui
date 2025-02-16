@@ -6,9 +6,7 @@ const ModelPlugin = {
 			const ModelConstructor = Vue.extend(ModelDialog);
 
 			// 生成唯一标识
-			const uniqueId = `model-dialog-${Date.now()}-${Math.random()
-				.toString(36)
-				.substr(2, 9)}`;
+			const uniqueId = `model-dialog-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`;
 
 			// 创建容器并设置唯一标识
 			const container = document.createElement('div');
@@ -39,8 +37,7 @@ const ModelPlugin = {
 						instance.$destroy(); // 销毁 Vue 实例
 
 						// 根据唯一标识找到并移除 DOM 节点
-						const elementToRemove =
-							document.getElementById(uniqueId);
+						const elementToRemove = document.getElementById(uniqueId);
 						if (elementToRemove) {
 							document.body.removeChild(elementToRemove);
 						}

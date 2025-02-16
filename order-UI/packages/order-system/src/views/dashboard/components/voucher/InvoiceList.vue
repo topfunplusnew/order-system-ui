@@ -74,17 +74,13 @@ export default {
 					this.loading = false;
 				});
 			} else if (val === TableName.INVOICE_OUT) {
-				listInvoiceOut(
-					addDateRange(this.queryParams, this.dateRange, 'invoiceout')
-				).then(response => {
+				listInvoiceOut(addDateRange(this.queryParams, this.dateRange, 'invoiceout')).then(response => {
 					this.invoiceList = response.rows;
 					this.total = response.total;
 					this.loading = false;
 				});
 			} else {
-				listInvoiceOther(
-					addDateRange(this.queryParams, this.dateRange)
-				).then(response => {
+				listInvoiceOther(addDateRange(this.queryParams, this.dateRange)).then(response => {
 					this.invoiceList = response.rows;
 					this.total = response.total;
 					this.loading = false;
@@ -97,41 +93,16 @@ export default {
 
 <template>
 	<div>
-		<el-form
-			ref="queryForm"
-			v-loading="loading"
-			:model="queryParams"
-			size="mini"
-			:inline="true"
-			label-width="150px"
-		>
+		<el-form ref="queryForm" v-loading="loading" :model="queryParams" size="mini" :inline="true" label-width="150px">
 			<!--      时间查询-->
 			<el-form-item label="开票开始日期" prop="beginTime">
-				<el-date-picker
-					v-model="queryParams.beginTime"
-					type="datetime"
-					placeholder="选择日期"
-					value-format="yyyy-MM-dd HH:mm:ss"
-				>
-				</el-date-picker>
+				<el-date-picker v-model="queryParams.beginTime" type="datetime" placeholder="选择日期" value-format="yyyy-MM-dd HH:mm:ss"></el-date-picker>
 			</el-form-item>
 			<el-form-item label="开票结束日期" prop="endTime">
-				<el-date-picker
-					v-model="queryParams.endTime"
-					type="datetime"
-					placeholder="选择日期"
-					value-format="yyyy-MM-dd HH:mm:ss"
-				>
-				</el-date-picker>
+				<el-date-picker v-model="queryParams.endTime" type="datetime" placeholder="选择日期" value-format="yyyy-MM-dd HH:mm:ss"></el-date-picker>
 			</el-form-item>
 			<el-form-item>
-				<el-button
-					type="primary"
-					icon="el-icon-search"
-					size="mini"
-					@click="handleQuery"
-					>搜索</el-button
-				>
+				<el-button type="primary" icon="el-icon-search" size="mini" @click="handleQuery">搜索</el-button>
 			</el-form-item>
 		</el-form>
 		<!--    这里可以添加一些操作-->
@@ -153,65 +124,16 @@ export default {
 				"
 				@selection-change="handleSelectionChange"
 			>
-				<el-table-column
-					type="selection"
-					width="55"
-					fixed="left"
-				></el-table-column>
-				<el-table-column
-					label="开票日期"
-					align="center"
-					prop="invoiceDate"
-					show-overflow-tooltip
-				/>
-				<el-table-column
-					label="开票金额"
-					align="center"
-					prop="invoiceAmount"
-					show-overflow-tooltip
-				/>
-				<el-table-column
-					label="供应商票点"
-					align="center"
-					prop="supplierTicketPoint"
-					show-overflow-tooltip
-				/>
-				<el-table-column
-					label="供应商票点金额"
-					align="center"
-					prop="supplierPointAmount"
-					show-overflow-tooltip
-				/>
-				<el-table-column
-					label="供应商公司名称"
-					align="center"
-					prop="Supplier"
-					show-overflow-tooltip
-				/>
-				<el-table-column
-					label="客户公司名称"
-					align="center"
-					prop="customer"
-					show-overflow-tooltip
-				/>
-				<el-table-column
-					label="票据单位名称"
-					align="center"
-					prop="invoiceCompanyName"
-					show-overflow-tooltip
-				/>
-				<el-table-column
-					label="客户票点"
-					align="center"
-					prop="customerTicketPoint"
-					show-overflow-tooltip
-				/>
-				<el-table-column
-					label="票点金额"
-					align="center"
-					prop="customerPointAmount"
-					show-overflow-tooltip
-				/>
+				<el-table-column type="selection" width="55" fixed="left"></el-table-column>
+				<el-table-column label="开票日期" align="center" prop="invoiceDate" show-overflow-tooltip />
+				<el-table-column label="开票金额" align="center" prop="invoiceAmount" show-overflow-tooltip />
+				<el-table-column label="供应商票点" align="center" prop="supplierTicketPoint" show-overflow-tooltip />
+				<el-table-column label="供应商票点金额" align="center" prop="supplierPointAmount" show-overflow-tooltip />
+				<el-table-column label="供应商公司名称" align="center" prop="Supplier" show-overflow-tooltip />
+				<el-table-column label="客户公司名称" align="center" prop="customer" show-overflow-tooltip />
+				<el-table-column label="票据单位名称" align="center" prop="invoiceCompanyName" show-overflow-tooltip />
+				<el-table-column label="客户票点" align="center" prop="customerTicketPoint" show-overflow-tooltip />
+				<el-table-column label="票点金额" align="center" prop="customerPointAmount" show-overflow-tooltip />
 			</el-table>
 		</el-row>
 		<el-row v-else>
@@ -229,63 +151,15 @@ export default {
 				"
 				@selection-change="handleSelectionChange"
 			>
-				<el-table-column
-					type="selection"
-					width="55"
-					fixed="left"
-				></el-table-column>
-				<el-table-column
-					label="开票日期"
-					align="center"
-					prop="invoiceDate"
-					show-overflow-tooltip
-				/>
-				<el-table-column
-					label="我方开票实体"
-					align="center"
-					prop="invoiceObject"
-					width="100px"
-					show-overflow-tooltip
-				/>
-				<el-table-column
-					label="开票金额"
-					align="center"
-					prop="invoiceAmount"
-					show-overflow-tooltip
-				/>
-				<el-table-column
-					label="对方公司类别"
-					align="center"
-					prop="companyType"
-					width="100px"
-					show-overflow-tooltip
-				/>
-				<el-table-column
-					label="对方公司名称"
-					align="center"
-					prop="companyName"
-					width="100px"
-					show-overflow-tooltip
-				/>
-				<el-table-column
-					label="票据单位名称"
-					align="center"
-					prop="invoiceCompanyName"
-					width="100px"
-					show-overflow-tooltip
-				/>
-				<el-table-column
-					label="票点"
-					align="center"
-					prop="ticketPoint"
-					show-overflow-tooltip
-				/>
-				<el-table-column
-					label="票点金额"
-					align="center"
-					prop="ticketPointAmount"
-					show-overflow-tooltip
-				/>
+				<el-table-column type="selection" width="55" fixed="left"></el-table-column>
+				<el-table-column label="开票日期" align="center" prop="invoiceDate" show-overflow-tooltip />
+				<el-table-column label="我方开票实体" align="center" prop="invoiceObject" width="100px" show-overflow-tooltip />
+				<el-table-column label="开票金额" align="center" prop="invoiceAmount" show-overflow-tooltip />
+				<el-table-column label="对方公司类别" align="center" prop="companyType" width="100px" show-overflow-tooltip />
+				<el-table-column label="对方公司名称" align="center" prop="companyName" width="100px" show-overflow-tooltip />
+				<el-table-column label="票据单位名称" align="center" prop="invoiceCompanyName" width="100px" show-overflow-tooltip />
+				<el-table-column label="票点" align="center" prop="ticketPoint" show-overflow-tooltip />
+				<el-table-column label="票点金额" align="center" prop="ticketPointAmount" show-overflow-tooltip />
 				<el-table-column label="备注" align="center" prop="comments" />
 			</el-table>
 		</el-row>

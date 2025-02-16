@@ -15,8 +15,8 @@ export default {
 		<div class="tooltip-container">
 			<span class="text">
 				<slot name="icon" />
-				{{ title }}</span
-			>
+				{{ title }}
+			</span>
 		</div>
 	</div>
 </template>

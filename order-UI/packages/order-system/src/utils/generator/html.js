@@ -40,11 +40,7 @@ function buildFormTemplate(conf, child, type) {
 		labelPosition = `label-position="${conf.labelPosition}"`;
 	}
 	const disabled = conf.disabled ? `:disabled="${conf.disabled}"` : '';
-	let str = `<el-form ref="${conf.formRef}" :model="${
-		conf.formModel
-	}" :rules="${conf.formRules}" size="${
-		conf.size
-	}" ${disabled} label-width="${conf.labelWidth}px" ${labelPosition}>
+	let str = `<el-form ref="${conf.formRef}" :model="${conf.formModel}" :rules="${conf.formRules}" size="${conf.size}" ${disabled} label-width="${conf.labelWidth}px" ${labelPosition}>
       ${child}
       ${buildFromBtns(conf, type)}
     </el-form>`;
@@ -85,14 +81,10 @@ function colWrapper(element, str) {
 const layouts = {
 	colFormItem(element) {
 		let labelWidth = '';
-		if (
-			element.labelWidth &&
-			element.labelWidth !== confGlobal.labelWidth
-		) {
+		if (element.labelWidth && element.labelWidth !== confGlobal.labelWidth) {
 			labelWidth = `label-width="${element.labelWidth}px"`;
 		}
-		const required =
-			!trigger[element.tag] && element.required ? 'required' : '';
+		const required = !trigger[element.tag] && element.required ? 'required' : '';
 		const tagDom = tags[element.tag] ? tags[element.tag](element) : null;
 		let str = `<el-form-item ${labelWidth} label="${element.label}" prop="${element.vModel}" ${required}>
         ${tagDom}
@@ -102,10 +94,8 @@ const layouts = {
 	},
 	rowFormItem(element) {
 		const type = element.type === 'default' ? '' : `type="${element.type}"`;
-		const justify =
-			element.type === 'default' ? '' : `justify="${element.justify}"`;
-		const align =
-			element.type === 'default' ? '' : `align="${element.align}"`;
+		const justify = element.type === 'default' ? '' : `justify="${element.justify}"`;
+		const align = element.type === 'default' ? '' : `align="${element.align}"`;
 		const gutter = element.gutter ? `gutter="${element.gutter}"` : '';
 		const children = element.children.map(el => layouts[el.layout](el));
 		let str = `<el-row ${type} ${justify} ${align} ${gutter}>
@@ -128,23 +118,15 @@ const tags = {
 		return `<${el.tag} ${type} ${icon} ${size} ${disabled}>${child}</${el.tag}>`;
 	},
 	'el-input': el => {
-		const { disabled, vModel, clearable, placeholder, width } =
-			attrBuilder(el);
+		const { disabled, vModel, clearable, placeholder, width } = attrBuilder(el);
 		const maxlength = el.maxlength ? `:maxlength="${el.maxlength}"` : '';
 		const showWordLimit = el['show-word-limit'] ? 'show-word-limit' : '';
 		const readonly = el.readonly ? 'readonly' : '';
-		const prefixIcon = el['prefix-icon']
-			? `prefix-icon='${el['prefix-icon']}'`
-			: '';
-		const suffixIcon = el['suffix-icon']
-			? `suffix-icon='${el['suffix-icon']}'`
-			: '';
+		const prefixIcon = el['prefix-icon'] ? `prefix-icon='${el['prefix-icon']}'` : '';
+		const suffixIcon = el['suffix-icon'] ? `suffix-icon='${el['suffix-icon']}'` : '';
 		const showPassword = el['show-password'] ? 'show-password' : '';
 		const type = el.type ? `type="${el.type}"` : '';
-		const autosize =
-			el.autosize && el.autosize.minRows
-				? `:autosize="{minRows: ${el.autosize.minRows}, maxRows: ${el.autosize.maxRows}}"`
-				: '';
+		const autosize = el.autosize && el.autosize.minRows ? `:autosize="{minRows: ${el.autosize.minRows}, maxRows: ${el.autosize.maxRows}}"` : '';
 		let child = buildElInputChild(el);
 
 		if (child) child = `\n${child}\n`; // 换行
@@ -152,9 +134,7 @@ const tags = {
 	},
 	'el-input-number': el => {
 		const { disabled, vModel, placeholder } = attrBuilder(el);
-		const controlsPosition = el['controls-position']
-			? `controls-position=${el['controls-position']}`
-			: '';
+		const controlsPosition = el['controls-position'] ? `controls-position=${el['controls-position']}` : '';
 		const min = el.min ? `:min='${el.min}'` : '';
 		const max = el.max ? `:max='${el.max}'` : '';
 		const step = el.step ? `:step='${el.step}'` : '';
@@ -164,8 +144,7 @@ const tags = {
 		return `<${el.tag} ${vModel} ${placeholder} ${step} ${stepStrictly} ${precision} ${controlsPosition} ${min} ${max} ${disabled}></${el.tag}>`;
 	},
 	'el-select': el => {
-		const { disabled, vModel, clearable, placeholder, width } =
-			attrBuilder(el);
+		const { disabled, vModel, clearable, placeholder, width } = attrBuilder(el);
 		const filterable = el.filterable ? 'filterable' : '';
 		const multiple = el.multiple ? 'multiple' : '';
 		let child = buildElSelectChild(el);
@@ -193,40 +172,22 @@ const tags = {
 	},
 	'el-switch': el => {
 		const { disabled, vModel } = attrBuilder(el);
-		const activeText = el['active-text']
-			? `active-text="${el['active-text']}"`
-			: '';
-		const inactiveText = el['inactive-text']
-			? `inactive-text="${el['inactive-text']}"`
-			: '';
-		const activeColor = el['active-color']
-			? `active-color="${el['active-color']}"`
-			: '';
-		const inactiveColor = el['inactive-color']
-			? `inactive-color="${el['inactive-color']}"`
-			: '';
-		const activeValue =
-			el['active-value'] !== true
-				? `:active-value='${JSON.stringify(el['active-value'])}'`
-				: '';
-		const inactiveValue =
-			el['inactive-value'] !== false
-				? `:inactive-value='${JSON.stringify(el['inactive-value'])}'`
-				: '';
+		const activeText = el['active-text'] ? `active-text="${el['active-text']}"` : '';
+		const inactiveText = el['inactive-text'] ? `inactive-text="${el['inactive-text']}"` : '';
+		const activeColor = el['active-color'] ? `active-color="${el['active-color']}"` : '';
+		const inactiveColor = el['inactive-color'] ? `inactive-color="${el['inactive-color']}"` : '';
+		const activeValue = el['active-value'] !== true ? `:active-value='${JSON.stringify(el['active-value'])}'` : '';
+		const inactiveValue = el['inactive-value'] !== false ? `:inactive-value='${JSON.stringify(el['inactive-value'])}'` : '';
 
 		return `<${el.tag} ${vModel} ${activeText} ${inactiveText} ${activeColor} ${inactiveColor} ${activeValue} ${inactiveValue} ${disabled}></${el.tag}>`;
 	},
 	'el-cascader': el => {
-		const { disabled, vModel, clearable, placeholder, width } =
-			attrBuilder(el);
+		const { disabled, vModel, clearable, placeholder, width } = attrBuilder(el);
 		const options = el.options ? `:options="${el.vModel}Options"` : '';
 		const props = el.props ? `:props="${el.vModel}Props"` : '';
-		const showAllLevels = el['show-all-levels']
-			? ''
-			: ':show-all-levels="false"';
+		const showAllLevels = el['show-all-levels'] ? '' : ':show-all-levels="false"';
 		const filterable = el.filterable ? 'filterable' : '';
-		const separator =
-			el.separator === '/' ? '' : `separator="${el.separator}"`;
+		const separator = el.separator === '/' ? '' : `separator="${el.separator}"`;
 
 		return `<${el.tag} ${vModel} ${options} ${props} ${width} ${showAllLevels} ${placeholder} ${separator} ${filterable} ${clearable} ${disabled}></${el.tag}>`;
 	},
@@ -236,51 +197,29 @@ const tags = {
 		const max = el.max ? `:max='${el.max}'` : '';
 		const step = el.step ? `:step='${el.step}'` : '';
 		const range = el.range ? 'range' : '';
-		const showStops = el['show-stops']
-			? `:show-stops="${el['show-stops']}"`
-			: '';
+		const showStops = el['show-stops'] ? `:show-stops="${el['show-stops']}"` : '';
 
 		return `<${el.tag} ${min} ${max} ${step} ${vModel} ${range} ${showStops} ${disabled}></${el.tag}>`;
 	},
 	'el-time-picker': el => {
-		const { disabled, vModel, clearable, placeholder, width } =
-			attrBuilder(el);
-		const startPlaceholder = el['start-placeholder']
-			? `start-placeholder="${el['start-placeholder']}"`
-			: '';
-		const endPlaceholder = el['end-placeholder']
-			? `end-placeholder="${el['end-placeholder']}"`
-			: '';
-		const rangeSeparator = el['range-separator']
-			? `range-separator="${el['range-separator']}"`
-			: '';
+		const { disabled, vModel, clearable, placeholder, width } = attrBuilder(el);
+		const startPlaceholder = el['start-placeholder'] ? `start-placeholder="${el['start-placeholder']}"` : '';
+		const endPlaceholder = el['end-placeholder'] ? `end-placeholder="${el['end-placeholder']}"` : '';
+		const rangeSeparator = el['range-separator'] ? `range-separator="${el['range-separator']}"` : '';
 		const isRange = el['is-range'] ? 'is-range' : '';
 		const format = el.format ? `format="${el.format}"` : '';
-		const valueFormat = el['value-format']
-			? `value-format="${el['value-format']}"`
-			: '';
-		const pickerOptions = el['picker-options']
-			? `:picker-options='${JSON.stringify(el['picker-options'])}'`
-			: '';
+		const valueFormat = el['value-format'] ? `value-format="${el['value-format']}"` : '';
+		const pickerOptions = el['picker-options'] ? `:picker-options='${JSON.stringify(el['picker-options'])}'` : '';
 
 		return `<${el.tag} ${vModel} ${isRange} ${format} ${valueFormat} ${pickerOptions} ${width} ${placeholder} ${startPlaceholder} ${endPlaceholder} ${rangeSeparator} ${clearable} ${disabled}></${el.tag}>`;
 	},
 	'el-date-picker': el => {
-		const { disabled, vModel, clearable, placeholder, width } =
-			attrBuilder(el);
-		const startPlaceholder = el['start-placeholder']
-			? `start-placeholder="${el['start-placeholder']}"`
-			: '';
-		const endPlaceholder = el['end-placeholder']
-			? `end-placeholder="${el['end-placeholder']}"`
-			: '';
-		const rangeSeparator = el['range-separator']
-			? `range-separator="${el['range-separator']}"`
-			: '';
+		const { disabled, vModel, clearable, placeholder, width } = attrBuilder(el);
+		const startPlaceholder = el['start-placeholder'] ? `start-placeholder="${el['start-placeholder']}"` : '';
+		const endPlaceholder = el['end-placeholder'] ? `end-placeholder="${el['end-placeholder']}"` : '';
+		const rangeSeparator = el['range-separator'] ? `range-separator="${el['range-separator']}"` : '';
 		const format = el.format ? `format="${el.format}"` : '';
-		const valueFormat = el['value-format']
-			? `value-format="${el['value-format']}"`
-			: '';
+		const valueFormat = el['value-format'] ? `value-format="${el['value-format']}"` : '';
 		const type = el.type === 'date' ? '' : `type="${el.type}"`;
 		const readonly = el.readonly ? 'readonly' : '';
 
@@ -299,9 +238,7 @@ const tags = {
 		const { disabled, vModel } = attrBuilder(el);
 		const size = `size="${el.size}"`;
 		const showAlpha = el['show-alpha'] ? 'show-alpha' : '';
-		const colorFormat = el['color-format']
-			? `color-format="${el['color-format']}"`
-			: '';
+		const colorFormat = el['color-format'] ? `color-format="${el['color-format']}"` : '';
 
 		return `<${el.tag} ${vModel} ${size} ${showAlpha} ${colorFormat} ${disabled}></${el.tag}>`;
 	},
@@ -309,12 +246,10 @@ const tags = {
 		const disabled = el.disabled ? ":disabled='true'" : '';
 		const action = el.action ? `:action="${el.vModel}Action"` : '';
 		const multiple = el.multiple ? 'multiple' : '';
-		const listType =
-			el['list-type'] !== 'text' ? `list-type="${el['list-type']}"` : '';
+		const listType = el['list-type'] !== 'text' ? `list-type="${el['list-type']}"` : '';
 		const accept = el.accept ? `accept="${el.accept}"` : '';
 		const name = el.name !== 'file' ? `name="${el.name}"` : '';
-		const autoUpload =
-			el['auto-upload'] === false ? ':auto-upload="false"' : '';
+		const autoUpload = el['auto-upload'] === false ? ':auto-upload="false"' : '';
 		const beforeUpload = `:before-upload="${el.vModel}BeforeUpload"`;
 		const fileList = `:file-list="${el.vModel}fileList"`;
 		const ref = `ref="${el.vModel}"`;
@@ -359,9 +294,7 @@ function buildElInputChild(conf) {
 function buildElSelectChild(conf) {
 	const children = [];
 	if (conf.options && conf.options.length) {
-		children.push(
-			`<el-option v-for="(item, index) in ${conf.vModel}Options" :key="index" :label="item.label" :value="item.value" :disabled="item.disabled"></el-option>`
-		);
+		children.push(`<el-option v-for="(item, index) in ${conf.vModel}Options" :key="index" :label="item.label" :value="item.value" :disabled="item.disabled"></el-option>`);
 	}
 	return children.join('\n');
 }
@@ -369,12 +302,9 @@ function buildElSelectChild(conf) {
 function buildElRadioGroupChild(conf) {
 	const children = [];
 	if (conf.options && conf.options.length) {
-		const tag =
-			conf.optionType === 'button' ? 'el-radio-button' : 'el-radio';
+		const tag = conf.optionType === 'button' ? 'el-radio-button' : 'el-radio';
 		const border = conf.border ? 'border' : '';
-		children.push(
-			`<${tag} v-for="(item, index) in ${conf.vModel}Options" :key="index" :label="item.value" :disabled="item.disabled" ${border}>{{item.label}}</${tag}>`
-		);
+		children.push(`<${tag} v-for="(item, index) in ${conf.vModel}Options" :key="index" :label="item.value" :disabled="item.disabled" ${border}>{{item.label}}</${tag}>`);
 	}
 	return children.join('\n');
 }
@@ -382,28 +312,18 @@ function buildElRadioGroupChild(conf) {
 function buildElCheckboxGroupChild(conf) {
 	const children = [];
 	if (conf.options && conf.options.length) {
-		const tag =
-			conf.optionType === 'button' ? 'el-checkbox-button' : 'el-checkbox';
+		const tag = conf.optionType === 'button' ? 'el-checkbox-button' : 'el-checkbox';
 		const border = conf.border ? 'border' : '';
-		children.push(
-			`<${tag} v-for="(item, index) in ${conf.vModel}Options" :key="index" :label="item.value" :disabled="item.disabled" ${border}>{{item.label}}</${tag}>`
-		);
+		children.push(`<${tag} v-for="(item, index) in ${conf.vModel}Options" :key="index" :label="item.value" :disabled="item.disabled" ${border}>{{item.label}}</${tag}>`);
 	}
 	return children.join('\n');
 }
 
 function buildElUploadChild(conf) {
 	const list = [];
-	if (conf['list-type'] === 'picture-card')
-		list.push('<i class="el-icon-plus"></i>');
-	else
-		list.push(
-			`<el-button size="small" type="primary" icon="el-icon-upload">${conf.buttonText}</el-button>`
-		);
-	if (conf.showTip)
-		list.push(
-			`<div slot="tip" class="el-upload__tip">只能上传不超过 ${conf.fileSize}${conf.sizeUnit} 的${conf.accept}文件</div>`
-		);
+	if (conf['list-type'] === 'picture-card') list.push('<i class="el-icon-plus"></i>');
+	else list.push(`<el-button size="small" type="primary" icon="el-icon-upload">${conf.buttonText}</el-button>`);
+	if (conf.showTip) list.push(`<div slot="tip" class="el-upload__tip">只能上传不超过 ${conf.fileSize}${conf.sizeUnit} 的${conf.accept}文件</div>`);
 	return list.join('\n');
 }
 

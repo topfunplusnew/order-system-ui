@@ -98,13 +98,7 @@ export default {
 <template>
 	<div>
 		<!--    搜索组-->
-		<QuerySearchBar
-			:handle-query="handleQuery"
-			:options="Options()"
-			:options-invoice="OptionInvent()"
-			:query-params="queryParams"
-			:show-search="true"
-		/>
+		<QuerySearchBar :handle-query="handleQuery" :options="Options()" :options-invoice="OptionInvent()" :query-params="queryParams" :show-search="true" />
 		<!--    这里可以添加一些操作-->
 		<slot name="option"></slot>
 		<!--    订单列表-->
@@ -124,40 +118,11 @@ export default {
 			"
 			@selection-change="handleSelectionChange"
 		>
-			<el-table-column
-				type="selection"
-				width="55"
-				fixed="left"
-			></el-table-column>
-			<el-table-column
-				show-overflow-tooltip
-				label="ID"
-				align="center"
-				prop="id"
-				fixed="left"
-			/>
-			<el-table-column
-				show-overflow-tooltip
-				label="日期"
-				align="center"
-				prop="orderDate"
-				fixed="left"
-			/>
-			<el-table-column
-				show-overflow-tooltip
-				label="客户"
-				align="center"
-				prop="customer"
-				fixed="left"
-			/>
-			<el-table-column
-				show-overflow-tooltip
-				label="供应商"
-				align="center"
-				prop="supplierNames"
-				fixed="left"
-				width="200"
-			>
+			<el-table-column type="selection" width="55" fixed="left"></el-table-column>
+			<el-table-column show-overflow-tooltip label="ID" align="center" prop="id" fixed="left" />
+			<el-table-column show-overflow-tooltip label="日期" align="center" prop="orderDate" fixed="left" />
+			<el-table-column show-overflow-tooltip label="客户" align="center" prop="customer" fixed="left" />
+			<el-table-column show-overflow-tooltip label="供应商" align="center" prop="supplierNames" fixed="left" width="200">
 				<!--        <template #default="scope">-->
 				<!--          <el-row>-->
 				<!--          <span v-for="(item, index) in getSupplierNames(scope.row.orderDetailList)" :key="index">-->
@@ -166,135 +131,36 @@ export default {
 				<!--          </el-row>-->
 				<!--        </template>-->
 			</el-table-column>
-			<el-table-column
-				show-overflow-tooltip
-				label="陆运车牌"
-				align="center"
-				prop="landCarNo"
-			/>
-			<el-table-column
-				show-overflow-tooltip
-				label="陆运司机电话"
-				align="center"
-				prop="landDriverTel"
-				width="100px"
-			/>
-			<el-table-column
-				show-overflow-tooltip
-				label="陆地司机姓名"
-				align="center"
-				prop="landDriverName"
-				width="100px"
-			/>
-			<el-table-column
-				show-overflow-tooltip
-				label="陆运费"
-				align="center"
-				prop="landFreight"
-				width="100px"
-			/>
-			<el-table-column
-				show-overflow-tooltip
-				label="柜号"
-				align="center"
-				prop="seaCarNo"
-			>
-				<template #default="scope">{{
-					!scope.row.seaCarNo ? '无' : scope.row.seaCarNo
-				}}</template>
+			<el-table-column show-overflow-tooltip label="陆运车牌" align="center" prop="landCarNo" />
+			<el-table-column show-overflow-tooltip label="陆运司机电话" align="center" prop="landDriverTel" width="100px" />
+			<el-table-column show-overflow-tooltip label="陆地司机姓名" align="center" prop="landDriverName" width="100px" />
+			<el-table-column show-overflow-tooltip label="陆运费" align="center" prop="landFreight" width="100px" />
+			<el-table-column show-overflow-tooltip label="柜号" align="center" prop="seaCarNo">
+				<template #default="scope">{{ !scope.row.seaCarNo ? '无' : scope.row.seaCarNo }}</template>
 			</el-table-column>
-			<el-table-column
-				show-overflow-tooltip
-				label="海运司机电话"
-				align="center"
-				prop="seaDriverTel"
-				width="100px"
-			>
-				<template #default="scope">{{
-					!scope.row.seaDriverTel ? '无' : scope.row.seaDriverTel
-				}}</template>
+			<el-table-column show-overflow-tooltip label="海运司机电话" align="center" prop="seaDriverTel" width="100px">
+				<template #default="scope">{{ !scope.row.seaDriverTel ? '无' : scope.row.seaDriverTel }}</template>
 			</el-table-column>
-			<el-table-column
-				show-overflow-tooltip
-				label="海运公司"
-				align="center"
-				prop="seaDriverName"
-				width="100px"
-			>
-				<template #default="scope">{{
-					!scope.row.seaDriverName ? '无' : scope.row.seaDriverName
-				}}</template>
+			<el-table-column show-overflow-tooltip label="海运公司" align="center" prop="seaDriverName" width="100px">
+				<template #default="scope">{{ !scope.row.seaDriverName ? '无' : scope.row.seaDriverName }}</template>
 			</el-table-column>
-			<el-table-column
-				show-overflow-tooltip
-				label="海运费"
-				align="center"
-				prop="seaFreight"
-				width="100px"
-			/>
-			<el-table-column
-				show-overflow-tooltip
-				label="销售经理"
-				align="center"
-				prop="saleManager"
-			/>
-			<el-table-column
-				show-overflow-tooltip
-				label="车队"
-				align="center"
-				prop="fleet"
-			/>
-			<el-table-column
-				show-overflow-tooltip
-				label="审核状态"
-				align="center"
-				prop="checkState"
-				width="120"
-			/>
-			<el-table-column
-				show-overflow-tooltip
-				label="开票状态"
-				align="center"
-				prop="invoiceState"
-				width="120px"
-			/>
-			<el-table-column
-				show-overflow-tooltip
-				label="打款状态"
-				align="center"
-				prop="paymentState"
-				width="120px"
-			/>
-			<el-table-column
-				show-overflow-tooltip
-				label="是否可编辑"
-				align="center"
-				prop="isedit"
-				width="100px"
-			>
+			<el-table-column show-overflow-tooltip label="海运费" align="center" prop="seaFreight" width="100px" />
+			<el-table-column show-overflow-tooltip label="销售经理" align="center" prop="saleManager" />
+			<el-table-column show-overflow-tooltip label="车队" align="center" prop="fleet" />
+			<el-table-column show-overflow-tooltip label="审核状态" align="center" prop="checkState" width="120" />
+			<el-table-column show-overflow-tooltip label="开票状态" align="center" prop="invoiceState" width="120px" />
+			<el-table-column show-overflow-tooltip label="打款状态" align="center" prop="paymentState" width="120px" />
+			<el-table-column show-overflow-tooltip label="是否可编辑" align="center" prop="isedit" width="100px">
 				<template slot-scope="scope">
-					<el-tag
-						:type="scope.row.isedit === 0 ? 'danger' : 'success'"
-					>
+					<el-tag :type="scope.row.isedit === 0 ? 'danger' : 'success'">
 						{{ scope.row.isedit === 0 ? '否' : '是' }}
 					</el-tag>
 				</template>
 			</el-table-column>
-			<el-table-column
-				show-overflow-tooltip
-				label="备注"
-				align="center"
-				prop="comments"
-			/>
+			<el-table-column show-overflow-tooltip label="备注" align="center" prop="comments" />
 		</el-table>
 
-		<pagination
-			v-show="total > 0"
-			:total="total"
-			:page.sync="queryParams.pageNum"
-			:limit.sync="queryParams.pageSize"
-			@pagination="getList"
-		/>
+		<pagination v-show="total > 0" :total="total" :page.sync="queryParams.pageNum" :limit.sync="queryParams.pageSize" @pagination="getList" />
 	</div>
 </template>
 

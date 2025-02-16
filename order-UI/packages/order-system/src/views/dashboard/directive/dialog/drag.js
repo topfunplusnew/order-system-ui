@@ -26,24 +26,18 @@ export default {
 			const screenHeight = document.body.clientHeight;
 
 			const minDragDomLeft = dragDom.offsetLeft;
-			const maxDragDomLeft =
-				screenWidth - dragDom.offsetLeft - dragDomWidth;
+			const maxDragDomLeft = screenWidth - dragDom.offsetLeft - dragDomWidth;
 
 			const minDragDomTop = dragDom.offsetTop;
-			const maxDragDomTop =
-				screenHeight - dragDom.offsetTop - dragDomheight;
+			const maxDragDomTop = screenHeight - dragDom.offsetTop - dragDomheight;
 
 			// 获取到的值带px 正则匹配替换
 			let styL = getStyle(dragDom, 'left');
 			let styT = getStyle(dragDom, 'top');
 
 			if (styL.includes('%')) {
-				styL =
-					+document.body.clientWidth *
-					(+styL.replace(/%/g, '') / 100);
-				styT =
-					+document.body.clientHeight *
-					(+styT.replace(/%/g, '') / 100);
+				styL = +document.body.clientWidth * (+styL.replace(/%/g, '') / 100);
+				styT = +document.body.clientHeight * (+styT.replace(/%/g, '') / 100);
 			} else {
 				styL = +styL.replace(/\px/g, '');
 				styT = +styT.replace(/\px/g, '');
@@ -68,9 +62,7 @@ export default {
 				}
 
 				// 移动当前元素
-				dragDom.style.cssText += `;left:${left + styL}px;top:${
-					top + styT
-				}px;`;
+				dragDom.style.cssText += `;left:${left + styL}px;top:${top + styT}px;`;
 
 				// emit onDrag event
 				vnode.child.$emit('dragDialog');

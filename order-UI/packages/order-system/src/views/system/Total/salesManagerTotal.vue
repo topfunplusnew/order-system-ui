@@ -2,73 +2,32 @@
 <template>
 	<div class="app-container">
 		<el-row style="background-color: #e6e6e6">
-			<el-button type="primary" icon="el-icon-refresh" @click="refresh"
-				>刷新</el-button
-			>
+			<el-button type="primary" icon="el-icon-refresh" @click="refresh">刷新</el-button>
 		</el-row>
 		<hr color="#e6e6e6" />
-		<el-form
-			ref="queryForm"
-			:model="queryParams"
-			size="mini"
-			:inline="true"
-			label-width="68px"
-		>
+		<el-form ref="queryForm" :model="queryParams" size="mini" :inline="true" label-width="68px">
 			<el-form-item label="开始时间" prop="beginTime">
-				<el-date-picker
-					v-model="queryParams.beginTime"
-					type="datetime"
-					placeholder="请选择开始时间"
-					value-format="yyyy-MM-dd HH:mm:ss"
-				>
-				</el-date-picker>
+				<el-date-picker v-model="queryParams.beginTime" type="datetime" placeholder="请选择开始时间" value-format="yyyy-MM-dd HH:mm:ss"></el-date-picker>
 			</el-form-item>
 			<el-form-item label="结束时间" prop="endTime">
-				<el-date-picker
-					v-model="queryParams.endTime"
-					type="datetime"
-					placeholder="请选择结束时间"
-					value-format="yyyy-MM-dd HH:mm:ss"
-				>
-				</el-date-picker>
+				<el-date-picker v-model="queryParams.endTime" type="datetime" placeholder="请选择结束时间" value-format="yyyy-MM-dd HH:mm:ss"></el-date-picker>
 			</el-form-item>
 			<el-form-item>
-				<el-button
-					type="primary"
-					icon="el-icon-search"
-					size="mini"
-					@click="handleQuery"
-					>搜索</el-button
-				>
+				<el-button type="primary" icon="el-icon-search" size="mini" @click="handleQuery">搜索</el-button>
 			</el-form-item>
 		</el-form>
 		<hr color="#e6e6e6" />
-		<el-row style="font-weight: bold; font-size: 20px; margin: 0 30px">
-			销售经理统计
-		</el-row>
+		<el-row style="font-weight: bold; font-size: 20px; margin: 0 30px">销售经理统计</el-row>
 		<el-row :gutter="10" class="mb8">
 			<right-toolbar :columns="columns" @queryTable="getList">
 				<template #print>
 					<el-col :span="1.5">
-						<el-button
-							plain
-							icon="el-icon-printer"
-							size="mini"
-							@click="printHTML"
-						>
-						</el-button>
+						<el-button plain icon="el-icon-printer" size="mini" @click="printHTML"></el-button>
 					</el-col>
 				</template>
 				<template #export>
 					<el-col :span="1.5">
-						<el-button
-							v-hasPermi="['system:company:export']"
-							plain
-							icon="el-icon-folder-opened"
-							size="mini"
-							@click="handleExport"
-						>
-						</el-button>
+						<el-button v-hasPermi="['system:company:export']" plain icon="el-icon-folder-opened" size="mini" @click="handleExport"></el-button>
 					</el-col>
 				</template>
 			</right-toolbar>
@@ -87,86 +46,28 @@
 				}
 			"
 		>
-			<el-table-column
-				v-if="columns[0].visible"
-				label="日期"
-				align="center"
-				prop="time"
-				show-overflow-tooltip
-			/>
-			<el-table-column
-				v-if="columns[1].visible"
-				label="销售经理名称"
-				align="center"
-				prop="salesManager"
-				show-overflow-tooltip
-			/>
+			<el-table-column v-if="columns[0].visible" label="日期" align="center" prop="time" show-overflow-tooltip />
+			<el-table-column v-if="columns[1].visible" label="销售经理名称" align="center" prop="salesManager" show-overflow-tooltip />
 
-			<el-table-column
-				v-if="columns[3].visible"
-				label="发货车数"
-				align="center"
-				prop="uniqueOrderCount"
-				show-overflow-tooltip
-			>
-			</el-table-column>
-			<el-table-column
-				v-if="columns[2].visible"
-				label="不含税利润"
-				align="center"
-				prop="totalProfit"
-				show-overflow-tooltip
-			/>
+			<el-table-column v-if="columns[3].visible" label="发货车数" align="center" prop="uniqueOrderCount" show-overflow-tooltip></el-table-column>
+			<el-table-column v-if="columns[2].visible" label="不含税利润" align="center" prop="totalProfit" show-overflow-tooltip />
 		</el-table>
 
-		<pagination
-			v-show="total > 0"
-			:total="total"
-			:page.sync="queryParams.pageNum"
-			:limit.sync="queryParams.pageSize"
-			@pagination="getList"
-		/>
-		<el-dialog
-			:close-on-click-modal="false"
-			:show-close="false"
-			title="请选择导出时间段"
-			:visible.sync="dialogVisible"
-			width="350px"
-		>
+		<pagination v-show="total > 0" :total="total" :page.sync="queryParams.pageNum" :limit.sync="queryParams.pageSize" @pagination="getList" />
+		<el-dialog :close-on-click-modal="false" :show-close="false" title="请选择导出时间段" :visible.sync="dialogVisible" width="350px">
 			<el-row>
-				<el-form
-					ref="queryForm"
-					:model="queryParams"
-					size="mini"
-					label-width="68px"
-				>
+				<el-form ref="queryForm" :model="queryParams" size="mini" label-width="68px">
 					<el-form-item label="开始时间" prop="beginTime">
-						<el-date-picker
-							v-model="queryParams.beginTime"
-							type="datetime"
-							placeholder="选择时间"
-							value-format="yyyy-MM-dd HH:mm:ss"
-							size="mini"
-						>
-						</el-date-picker>
+						<el-date-picker v-model="queryParams.beginTime" type="datetime" placeholder="选择时间" value-format="yyyy-MM-dd HH:mm:ss" size="mini"></el-date-picker>
 					</el-form-item>
 					<el-form-item label="结束时间" prop="endTime">
-						<el-date-picker
-							v-model="queryParams.endTime"
-							type="datetime"
-							placeholder="选择时间"
-							value-format="yyyy-MM-dd HH:mm:ss"
-							size="mini"
-						>
-						</el-date-picker>
+						<el-date-picker v-model="queryParams.endTime" type="datetime" placeholder="选择时间" value-format="yyyy-MM-dd HH:mm:ss" size="mini"></el-date-picker>
 					</el-form-item>
 				</el-form>
 			</el-row>
 			<span slot="footer" class="dialog-footer">
 				<el-button @click="dialogVisible = false">取 消</el-button>
-				<el-button type="primary" @click="handleSubmitTime"
-					>导 出</el-button
-				>
+				<el-button type="primary" @click="handleSubmitTime">导 出</el-button>
 			</span>
 		</el-dialog>
 	</div>
@@ -194,10 +95,7 @@ export default {
 			queryParams: {
 				pageNum: 1,
 				pageSize: 50,
-				beginTime: parseTime(
-					this.getlastYearDate(),
-					'{y}-{m}-{d} {h}:{i}:{s}'
-				),
+				beginTime: parseTime(this.getlastYearDate(), '{y}-{m}-{d} {h}:{i}:{s}'),
 				endTime: parseTime(new Date(), '{y}-{m}-{d} {h}:{i}:{s}')
 			},
 			// 表单校验

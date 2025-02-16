@@ -1,13 +1,6 @@
 <template>
 	<div class="app-container">
-		<el-form
-			v-show="showSearch"
-			ref="queryForm"
-			:model="queryParams"
-			size="small"
-			:inline="true"
-			label-width="68px"
-		>
+		<el-form v-show="showSearch" ref="queryForm" :model="queryParams" size="small" :inline="true" label-width="68px">
 			<!-- 后端不支持 已删除 -->
 			<!-- <el-form-item label="凭证编号" prop="voucherNo">
 				<el-input
@@ -18,24 +11,12 @@
 				/>
 			</el-form-item> -->
 			<el-form-item label="分类" prop="voucherNo">
-				<el-select
-					v-model="queryParams.voucherNoPrefix"
-					placeholder="单据类型"
-					clearable
-				>
-					<el-option
-						v-for="item in options"
-						:key="item.value"
-						:label="item.label"
-						:value="item.value"
-					>
-					</el-option>
+				<el-select v-model="queryParams.voucherNoPrefix" placeholder="单据类型" clearable>
+					<el-option v-for="item in options" :key="item.value" :label="item.label" :value="item.value"></el-option>
 				</el-select>
 			</el-form-item>
 			<el-form-item>
-				<el-button type="primary" size="mini" @click="handleQuery"
-					>搜索</el-button
-				>
+				<el-button type="primary" size="mini" @click="handleQuery">搜索</el-button>
 			</el-form-item>
 		</el-form>
 		<el-row>
@@ -44,33 +25,16 @@
 			</el-col>
 		</el-row>
 		<el-row :gutter="10" class="mb8">
-			<right-toolbar
-				:showSearch.sync="showSearch"
-				:columns="columns"
-				@queryTable="getList"
-			>
+			<right-toolbar :showSearch.sync="showSearch" :columns="columns" @queryTable="getList">
 				<template #print>
 					<el-col :span="1.5">
-						<el-button
-							plain
-							icon="el-icon-printer"
-							size="mini"
-							@click="printHTML"
-						>
-						</el-button>
+						<el-button plain icon="el-icon-printer" size="mini" @click="printHTML"></el-button>
 					</el-col>
 				</template>
 				<!--        导出-->
 				<template #export>
 					<el-col :span="1.5">
-						<el-button
-							v-hasPermi="['system:freight:export']"
-							plain
-							icon="el-icon-folder-opened"
-							size="mini"
-							@click="handleExport"
-						>
-						</el-button>
+						<el-button v-hasPermi="['system:freight:export']" plain icon="el-icon-folder-opened" size="mini" @click="handleExport"></el-button>
 					</el-col>
 				</template>
 			</right-toolbar>
@@ -90,121 +54,43 @@
 			border
 		>
 			<!-- 凭证编号 -->
-			<el-table-column
-				v-if="columns[0].visible"
-				label="凭证编号"
-				align="center"
-				prop="voucherNo"
-				width="300"
-			/>
+			<el-table-column v-if="columns[0].visible" label="凭证编号" align="center" prop="voucherNo" width="300" />
 
 			<!-- 制单日期 -->
-			<el-table-column
-				v-if="columns[1].visible"
-				label="制单日期"
-				align="center"
-				prop="vdate"
-				show-overflow-tooltip
-			/>
+			<el-table-column v-if="columns[1].visible" label="制单日期" align="center" prop="vdate" show-overflow-tooltip />
 			<!-- 制单人 -->
-			<el-table-column
-				v-if="columns[2].visible"
-				label="制单人"
-				align="center"
-				prop="makeUser"
-				show-overflow-tooltip
-			/>
+			<el-table-column v-if="columns[2].visible" label="制单人" align="center" prop="makeUser" show-overflow-tooltip />
 
 			<!-- 合计 -->
-			<el-table-column
-				v-if="columns[3].visible"
-				label="合计"
-				align="center"
-				prop="amount"
-				show-overflow-tooltip
-			/>
+			<el-table-column v-if="columns[3].visible" label="合计" align="center" prop="amount" show-overflow-tooltip />
 
 			<!-- 借方 -->
-			<el-table-column
-				v-if="columns[4].visible"
-				label="借方"
-				align="center"
-				prop="borrower"
-				show-overflow-tooltip
-			/>
+			<el-table-column v-if="columns[4].visible" label="借方" align="center" prop="borrower" show-overflow-tooltip />
 
 			<!-- 贷方 -->
-			<el-table-column
-				v-if="columns[5].visible"
-				label="贷方"
-				align="center"
-				prop="lender"
-				show-overflow-tooltip
-			/>
+			<el-table-column v-if="columns[5].visible" label="贷方" align="center" prop="lender" show-overflow-tooltip />
 
 			<!-- 凭证类型 -->
-			<el-table-column
-				v-if="columns[6].visible"
-				label="凭证类型"
-				align="center"
-				prop="voucherType"
-				show-overflow-tooltip
-			/>
+			<el-table-column v-if="columns[6].visible" label="凭证类型" align="center" prop="voucherType" show-overflow-tooltip />
 			<!-- 备注 -->
-			<el-table-column
-				v-if="columns[7].visible"
-				label="备注"
-				align="center"
-				prop="comments"
-				show-overflow-tooltip
-			/>
+			<el-table-column v-if="columns[7].visible" label="备注" align="center" prop="comments" show-overflow-tooltip />
 
 			<!-- 操作 -->
-			<el-table-column
-				label="操作"
-				align="center"
-				class-name="small-padding fixed-width"
-			>
+			<el-table-column label="操作" align="center" class-name="small-padding fixed-width">
 				<template slot-scope="scope">
-					<el-button
-						v-if="isOrderOrNot(scope.row)"
-						size="mini"
-						type="text"
-						@click="handleGoodsOrder(scope.row)"
-					>
-						查看订单信息
-					</el-button>
-					<el-button
-						v-hasPermi="['system:voucher:remove']"
-						size="mini"
-						type="text"
-						@click="handleDelete(scope.row)"
-					>
-						删除
-					</el-button>
+					<el-button v-if="isOrderOrNot(scope.row)" size="mini" type="text" @click="handleGoodsOrder(scope.row)">查看订单信息</el-button>
+					<el-button v-hasPermi="['system:voucher:remove']" size="mini" type="text" @click="handleDelete(scope.row)">删除</el-button>
 				</template>
 			</el-table-column>
 		</el-table>
 
-		<pagination
-			v-show="total > 0"
-			:total="total"
-			:page.sync="queryParams.pageNum"
-			:limit.sync="queryParams.pageSize"
-			@pagination="getList"
-		/>
+		<pagination v-show="total > 0" :total="total" :page.sync="queryParams.pageNum" :limit.sync="queryParams.pageSize" @pagination="getList" />
 
 		<!--    查看订单的弹窗-->
-		<InfoDialog
-			:visible="goodsOrderVisible"
-			title="订单列表"
-			@close="goodsOrderVisible = false"
-		>
+		<InfoDialog :visible="goodsOrderVisible" title="订单列表" @close="goodsOrderVisible = false">
 			<template #info>
 				<OrderInfos :order-info="orderInfo" />
-				<OrderDetailInfo
-					:order-detail-info-list="orderInfo.orderDetailList"
-				/>
+				<OrderDetailInfo :order-detail-info-list="orderInfo.orderDetailList" />
 			</template>
 		</InfoDialog>
 		<!-- 添加或修改凭证对话框 -->
@@ -344,14 +230,7 @@ export default {
 		/** 查询凭证列表 */
 		getList() {
 			this.loading = true;
-			listVoucher(
-				addDateRange(
-					this.queryParams,
-					[],
-					'voucher',
-					this.queryParams.voucherNoPrefix
-				)
-			).then(response => {
+			listVoucher(addDateRange(this.queryParams, [], 'voucher', this.queryParams.voucherNoPrefix)).then(response => {
 				this.voucherList = response.rows;
 				this.total = response.total;
 				this.loading = false;

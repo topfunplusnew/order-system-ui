@@ -1,12 +1,6 @@
 import { excludeParams } from '../../../../api/tool/exclude';
-import {
-	addBusinessTrip,
-	updateBusinessTrip
-} from '../../../../api/system/BusinessTrip';
-import {
-	updateCarApply,
-	updateCarApplyBatch
-} from '../../../../api/system/carApply';
+import { addBusinessTrip, updateBusinessTrip } from '../../../../api/system/BusinessTrip';
+import { updateCarApply, updateCarApplyBatch } from '../../../../api/system/carApply';
 import { getUuid } from '../../../../utils/trash/utils';
 
 // 出差添加信息模块
@@ -58,9 +52,7 @@ export var mixin_business_trip_add = {
 						if (useCar) {
 							const body = {
 								bTripId: this.form.id,
-								carApplyIds: this.carsList
-									.map(item => item.id)
-									.join(',')
+								carApplyIds: this.carsList.map(item => item.id).join(',')
 							};
 							updateCarApplyBatch(body).then(() => {
 								handleSuccess('车辆信息修改成功');
@@ -79,9 +71,7 @@ export var mixin_business_trip_add = {
 						if (useCar) {
 							const body = {
 								bTripId: res.data.id,
-								carApplyIds: this.carsList
-									.map(item => item.id)
-									.join(',')
+								carApplyIds: this.carsList.map(item => item.id).join(',')
 							};
 							// 提交车辆信息
 							updateCarApplyBatch(body).then(() => {

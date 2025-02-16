@@ -24,9 +24,7 @@ export default {
 			<el-descriptions-item label="目标">
 				{{ needToShowInfo.target }}
 			</el-descriptions-item>
-			<el-descriptions-item label="金额">
-				{{ needToShowInfo.moneyAmount }} 元
-			</el-descriptions-item>
+			<el-descriptions-item label="金额">{{ needToShowInfo.moneyAmount }} 元</el-descriptions-item>
 			<el-descriptions-item label="目标账户名">
 				{{ needToShowInfo.targetAcountsName }}
 			</el-descriptions-item>

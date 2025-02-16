@@ -26,9 +26,7 @@ export default {
 		},
 		makeTree() {
 			// 找到根节点 通过筛选出parentId为0的元素
-			this.paymentTypeTree = this.paymentTypeOptions.filter(
-				item => item.parentId === 0
-			);
+			this.paymentTypeTree = this.paymentTypeOptions.filter(item => item.parentId === 0);
 			// 循环每一个根节点，找他们的子节点
 			this.paymentTypeTree.forEach(root => {
 				this.findChildren(root);
@@ -36,9 +34,7 @@ export default {
 		},
 		findChildren(parent) {
 			// 对传入根节点的子数组进行操作
-			parent.children = this.paymentTypeOptions.filter(
-				item => item.parentId === parent.id
-			);
+			parent.children = this.paymentTypeOptions.filter(item => item.parentId === parent.id);
 			parent.children.forEach(child => {
 				this.findChildren(child); // 递归处理子节点
 			});
@@ -51,9 +47,7 @@ export default {
 		// 点击某个节点
 		handleNodeClick(value) {
 			// 查找该节点的父节点
-			const parent = this.paymentTypeOptions.find(
-				item => item.id === value.parentId
-			);
+			const parent = this.paymentTypeOptions.find(item => item.id === value.parentId);
 			if (parent !== undefined) {
 				// 拼接类型
 				if (value.type !== parent.title) {
@@ -74,28 +68,12 @@ export default {
 
 <template>
 	<div>
-		<el-button
-			type="primary"
-			size="mini"
-			icon="el-icon-search"
-			@click="getDataList"
-		></el-button>
-		<el-dialog
-			title="选择科目类型"
-			:visible.sync="dialogVisible"
-			width="300px"
-			append-to-body
-		>
-			<el-tree
-				:data="paymentTypeTree"
-				:props="props"
-				@node-click="handleNodeClick"
-			></el-tree>
+		<el-button type="primary" size="mini" icon="el-icon-search" @click="getDataList"></el-button>
+		<el-dialog title="选择科目类型" :visible.sync="dialogVisible" width="300px" append-to-body>
+			<el-tree :data="paymentTypeTree" :props="props" @node-click="handleNodeClick"></el-tree>
 			<span slot="footer" class="dialog-footer">
 				<el-button @click="dialogVisible = false">取 消</el-button>
-				<el-button type="primary" @click="submitSubject"
-					>确 定</el-button
-				>
+				<el-button type="primary" @click="submitSubject">确 定</el-button>
 			</span>
 		</el-dialog>
 	</div>

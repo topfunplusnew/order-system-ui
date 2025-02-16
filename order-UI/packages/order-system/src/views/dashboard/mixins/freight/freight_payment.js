@@ -14,7 +14,7 @@ export var mixin_freight_payment = {
 		// 进货单运费的付款
 		handlePayment(row) {
 			console.log(row);
-			// 组装订单运费信息 己方银行卡信息弹窗自己选
+			// 组装订单运费信息 我方银行卡信息弹窗自己选
 			const freight = {
 				ordersNo: row.id,
 				freightType: '陆运',

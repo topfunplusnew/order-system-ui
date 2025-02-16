@@ -1,10 +1,7 @@
 <!--为公司绑定银行卡 本质是银行卡修改 通用组件-->
 
 <script>
-import {
-	listBankAccount,
-	updateBankAccount
-} from '../../../../api/system/bankAccount';
+import { listBankAccount, updateBankAccount } from '../../../../api/system/bankAccount';
 
 export default {
 	name: 'AddBank',
@@ -39,13 +36,11 @@ export default {
 	},
 	methods: {
 		getList() {
-			// 未被绑定的卡为-1 己方公司为0
-			listBankAccount({ companyId: -1, ...this.queryParams }).then(
-				res => {
-					this.tableData = res.rows;
-					this.total = res.total;
-				}
-			);
+			// 未被绑定的卡为-1 我方公司为0
+			listBankAccount({ companyId: -1, ...this.queryParams }).then(res => {
+				this.tableData = res.rows;
+				this.total = res.total;
+			});
 		},
 		handleQuery() {
 			this.queryParams.pageNum = 1;
@@ -86,17 +81,10 @@ export default {
 	<div>
 		<div style="text-align: center">
 			<!--  添加银行卡的操作 搜索未绑定的银行卡,修改银行卡 -->
-			<el-button size="mini" type="primary" @click="handleAdd"
-				>添加银行卡
-			</el-button>
+			<el-button size="mini" type="primary" @click="handleAdd">添加银行卡</el-button>
 		</div>
 
-		<el-dialog
-			title="选择需要绑定的银行卡"
-			:visible.sync="dialogFormVisible"
-			append-to-body
-			width="58%"
-		>
+		<el-dialog title="选择需要绑定的银行卡" :visible.sync="dialogFormVisible" append-to-body width="58%">
 			<div slot="title">
 				<div style="display: flex; justify-content: space-between">
 					<div>
@@ -109,11 +97,7 @@ export default {
 							style="width: 200px; margin-right: 10px"
 							@keyup.enter.native="handleQuery"
 						/>
-						<el-button
-							type="primary"
-							size="mini"
-							@click="handleQuery"
-						>
+						<el-button type="primary" size="mini" @click="handleQuery">
 							<i class="el-icon-search" />
 							搜索
 						</el-button>
@@ -121,50 +105,18 @@ export default {
 				</div>
 			</div>
 			<el-table :data="tableData" size="mini" stripe style="width: 100%">
-				<el-table-column
-					label="账户类型"
-					align="center"
-					prop="acountsType"
-				/>
-				<el-table-column
-					label="开户名称"
-					align="center"
-					prop="acountsName"
-				/>
-				<el-table-column
-					label="银行账号"
-					align="center"
-					prop="bankNo"
-				/>
-				<el-table-column
-					label="开户行"
-					align="center"
-					prop="bankName"
-				/>
+				<el-table-column label="账户类型" align="center" prop="acountsType" />
+				<el-table-column label="开户名称" align="center" prop="acountsName" />
+				<el-table-column label="银行账号" align="center" prop="bankNo" />
+				<el-table-column label="开户行" align="center" prop="bankName" />
 				<el-table-column label="余额" align="center" prop="amount" />
-				<el-table-column
-					label="银行卡操作"
-					align="center"
-					class-name="small-padding fixed-width"
-					fixed="right"
-				>
+				<el-table-column label="银行卡操作" align="center" class-name="small-padding fixed-width" fixed="right">
 					<template slot-scope="scope">
-						<el-button
-							size="mini"
-							type="text"
-							@click="chooseThisBankAccount(scope.row)"
-							>选择
-						</el-button>
+						<el-button size="mini" type="text" @click="chooseThisBankAccount(scope.row)">选择</el-button>
 					</template>
 				</el-table-column>
 			</el-table>
-			<pagination
-				v-show="total > 0"
-				:total="total"
-				:page.sync="queryParams.pageNum"
-				:limit.sync="queryParams.pageSize"
-				@pagination="getList"
-			/>
+			<pagination v-show="total > 0" :total="total" :page.sync="queryParams.pageNum" :limit.sync="queryParams.pageSize" @pagination="getList" />
 			<span slot="footer" class="dialog-footer">
 				<el-button @click="dialogFormVisible = false">取 消</el-button>
 			</span>

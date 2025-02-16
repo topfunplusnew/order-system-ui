@@ -1,8 +1,5 @@
 import axios from 'axios';
-import {
-	getGoodsOrder,
-	updateGoodsOrder
-} from '../../../../api/system/goodsOrder';
+import { getGoodsOrder, updateGoodsOrder } from '../../../../api/system/goodsOrder';
 import { getToken } from '../../../../utils/auth';
 import { excludeParams } from '../../../../api/tool/exclude';
 
@@ -95,16 +92,12 @@ export var mixin_order_uploadFiles = {
 				formData.append('file', file);
 				try {
 					// 调用上传接口
-					const response = await axios.post(
-						process.env.VUE_APP_BASE_API + '/common/upload',
-						formData,
-						{
-							headers: {
-								...this.headers,
-								'Content-Type': 'multipart/form-data'
-							}
+					const response = await axios.post(process.env.VUE_APP_BASE_API + '/common/upload', formData, {
+						headers: {
+							...this.headers,
+							'Content-Type': 'multipart/form-data'
 						}
-					);
+					});
 					this.fileList.splice(i, 1);
 					i--;
 					// 等待
@@ -115,26 +108,18 @@ export var mixin_order_uploadFiles = {
 						this.$message.error(response.data.msg);
 					}
 				} catch (e) {
-					console.error(
-						`第${this.fileList.indexOf(file) + 1}个文件上传失败:`,
-						e
-					);
+					console.error(`第${this.fileList.indexOf(file) + 1}个文件上传失败:`, e);
 				}
 			}
 			// 全部上传完事后 修改订单的附件
-			this.tempOrderInfo = excludeParams(
-				this.tempOrderInfo,
-				this.$exclude
-			);
+			this.tempOrderInfo = excludeParams(this.tempOrderInfo, this.$exclude);
 			const path = this.fileNamesList.join('|');
 			if (type === 'path') {
 				// 修改订单信息
-				updateGoodsOrder({ ...this.tempOrderInfo, path: path }).then(
-					res => {
-						this.$message.success('保存成功');
-						this.getList();
-					}
-				);
+				updateGoodsOrder({ ...this.tempOrderInfo, path: path }).then(res => {
+					this.$message.success('保存成功');
+					this.getList();
+				});
 				// 收到条
 			} else if (type === 'receiveProof') {
 				// 修改订单信息

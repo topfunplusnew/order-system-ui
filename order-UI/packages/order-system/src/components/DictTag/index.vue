@@ -3,28 +3,14 @@
 		<template v-for="(item, index) in options">
 			<template v-if="values.includes(item.value)">
 				<span
-					v-if="
-						(item.raw.listClass == 'default' ||
-							item.raw.listClass == '') &&
-						(item.raw.cssClass == '' || item.raw.cssClass == null)
-					"
+					v-if="(item.raw.listClass == 'default' || item.raw.listClass == '') && (item.raw.cssClass == '' || item.raw.cssClass == null)"
 					:key="item.value"
 					:index="index"
 					:class="item.raw.cssClass"
-					>{{ item.label + ' ' }}</span
 				>
-				<el-tag
-					v-else
-					:key="item.value"
-					:disable-transitions="true"
-					:index="index"
-					:type="
-						item.raw.listClass == 'primary'
-							? ''
-							: item.raw.listClass
-					"
-					:class="item.raw.cssClass"
-				>
+					{{ item.label + ' ' }}
+				</span>
+				<el-tag v-else :key="item.value" :disable-transitions="true" :index="index" :type="item.raw.listClass == 'primary' ? '' : item.raw.listClass" :class="item.raw.cssClass">
 					{{ item.label + ' ' }}
 				</el-tag>
 			</template>
@@ -69,27 +55,14 @@ export default {
 	},
 	computed: {
 		values() {
-			if (
-				this.value === null ||
-				typeof this.value === 'undefined' ||
-				this.value === ''
-			)
-				return [];
-			return Array.isArray(this.value)
-				? this.value.map(item => '' + item)
-				: String(this.value).split(this.separator);
+			if (this.value === null || typeof this.value === 'undefined' || this.value === '') return [];
+			return Array.isArray(this.value) ? this.value.map(item => '' + item) : String(this.value).split(this.separator);
 		},
 		unmatch() {
 			// eslint-disable-next-line
 			this.unmatchArray = [];
 			// 没有value不显示
-			if (
-				this.value === null ||
-				typeof this.value === 'undefined' ||
-				this.value === '' ||
-				this.options.length === 0
-			)
-				return false;
+			if (this.value === null || typeof this.value === 'undefined' || this.value === '' || this.options.length === 0) return false;
 			// 传入值为数组
 			let unmatch = false; // 添加一个标志来判断是否有未匹配项
 			this.values.forEach(item => {

@@ -48,23 +48,17 @@ export default {
 		<div class="invoice" ref="invoiceItem">
 			<div>
 				<p class="invoice-pra">
-					开票金额：<span style="color: #72d511">{{ amount }}</span>
+					开票金额：
+					<span style="color: #72d511">{{ amount }}</span>
 				</p>
 			</div>
 			<div class="invoice-option">
-				<el-button type="text" size="mini" @click="handleCheckInvoice">
-					查看开票信息
-				</el-button>
+				<el-button type="text" size="mini" @click="handleCheckInvoice">查看开票信息</el-button>
 			</div>
 		</div>
 
 		<!--		查看开票信息的弹窗-->
-		<el-dialog
-			title="开票信息"
-			:visible.sync="visible"
-			width="550px"
-			append-to-body
-		>
+		<el-dialog title="开票信息" :visible.sync="visible" width="550px" append-to-body>
 			<el-descriptions title="开票信息" size="mini">
 				<el-descriptions-item label="公司名称">
 					<EllipsisText :title="invoice.companyName" />

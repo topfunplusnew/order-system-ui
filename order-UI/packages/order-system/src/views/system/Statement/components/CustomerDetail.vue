@@ -1,11 +1,7 @@
 <!--客户科目明细表-->
 
 <script>
-import {
-	getCustomerFiveParams,
-	getCustomerSubjectDetailSomeDay,
-	getCustomerSubjectDetailSummary
-} from '@/api/system/statement';
+import { getCustomerFiveParams, getCustomerSubjectDetailSomeDay, getCustomerSubjectDetailSummary } from '@/api/system/statement';
 import { TableName } from '@/api/tool/enums';
 import GOODS_ORDER from '@/components/NeedToShow/GOODS_ORDER.vue';
 import INVENTORY from '@/components/NeedToShow/INVENTORY.vue';
@@ -222,18 +218,10 @@ export default {
 <template>
 	<div>
 		<!--    客户明细表的按钮-->
-		<el-button type="primary" size="mini" @click="handleCheck"
-			>查看明细
-		</el-button>
+		<el-button type="primary" size="mini" @click="handleCheck">查看明细</el-button>
 
 		<!--    客户明细表的弹窗-->
-		<el-dialog
-			title="提示"
-			:visible.sync="dialogVisible"
-			width="900px"
-			fullscreen
-			append-to-body
-		>
+		<el-dialog title="提示" :visible.sync="dialogVisible" width="900px" fullscreen append-to-body>
 			<!--      客户明细表五个字段的显示组件 跟现在的客户明细表在一个查询框下
                 含税货款、不含税货款、公户收款、私户收款、票点收入
                 这五个数据-->
@@ -256,175 +244,56 @@ export default {
 						}
 					"
 				>
-					<el-table-column
-						show-overflow-tooltip
-						label="时间"
-						align="center"
-						prop="operateDate"
-						width="140"
-					/>
+					<el-table-column show-overflow-tooltip label="时间" align="center" prop="operateDate" width="140" />
 					<!--      操作列-->
-					<el-table-column
-						label="凭证号"
-						align="center"
-						class-name="small-padding fixed-width"
-						width="140"
-						prop="payNo"
-					>
+					<el-table-column label="凭证号" align="center" class-name="small-padding fixed-width" width="140" prop="payNo">
 						<template slot-scope="scope">
-							<el-button
-								v-if="scope.row.payNo"
-								type="text"
-								size="mini"
-								@click="handleSearch(scope.row)"
-							>
-								点击查询对应信息
-							</el-button>
+							<el-button v-if="scope.row.payNo" type="text" size="mini" @click="handleSearch(scope.row)">点击查询对应信息</el-button>
 						</template>
 					</el-table-column>
-					<el-table-column
-						show-overflow-tooltip
-						label="科目编码"
-						align="center"
-						prop="subjectNo"
-						width="140"
-					/>
-					<el-table-column
-						show-overflow-tooltip
-						label="科目名称"
-						align="center"
-						prop="subjectName"
-						width="140"
-					/>
-					<el-table-column
-						show-overflow-tooltip
-						label="客户编号"
-						align="center"
-						prop="companyId"
-						width="140"
-					/>
-					<el-table-column
-						show-overflow-tooltip
-						label="客户名称"
-						align="center"
-						prop="companyName"
-						width="140"
-					/>
-					<el-table-column
-						show-overflow-tooltip
-						label="客户银行户名（对方真实收付款名称）"
-						align="center"
-						prop="otherAccountsName"
-						width="140"
-					/>
-					<el-table-column
-						show-overflow-tooltip
-						label="客户银行卡号"
-						align="center"
-						prop="otherBankNo"
-						width="140"
-					/>
+					<el-table-column show-overflow-tooltip label="科目编码" align="center" prop="subjectNo" width="140" />
+					<el-table-column show-overflow-tooltip label="科目名称" align="center" prop="subjectName" width="140" />
+					<el-table-column show-overflow-tooltip label="客户编号" align="center" prop="companyId" width="140" />
+					<el-table-column show-overflow-tooltip label="客户名称" align="center" prop="companyName" width="140" />
+					<el-table-column show-overflow-tooltip label="客户银行户名（对方真实收付款名称）" align="center" prop="otherAccountsName" width="140" />
+					<el-table-column show-overflow-tooltip label="客户银行卡号" align="center" prop="otherBankNo" width="140" />
 
 					<!-- TODO 摘要根据表名来确定类型 例如 payment对应付款 receive对应收款(应收付款)  md文档中有详细-->
-					<el-table-column
-						show-overflow-tooltip
-						label="摘要"
-						align="center"
-						prop="summary"
-						width="140"
-					/>
+					<el-table-column show-overflow-tooltip label="摘要" align="center" prop="summary" width="140" />
 
 					<!--        这两列应该是根据moneyAmount字段的正负进行判断-->
-					<el-table-column
-						show-overflow-tooltip
-						label="借方(客户提货+买票点)"
-						align="center"
-						prop="positiveSum"
-						width="140"
-					>
+					<el-table-column show-overflow-tooltip label="借方(客户提货+买票点)" align="center" prop="positiveSum" width="140">
 						<template slot-scope="scope">
-							{{
-								scope.row.moneyAmount > 0
-									? scope.row.moneyAmount
-									: '-'
-							}}
+							{{ scope.row.moneyAmount > 0 ? scope.row.moneyAmount : '-' }}
 						</template>
 					</el-table-column>
-					<el-table-column
-						show-overflow-tooltip
-						label="贷方(收客户款)"
-						align="center"
-						prop="negativeSum"
-						width="140"
-					>
+					<el-table-column show-overflow-tooltip label="贷方(收客户款)" align="center" prop="negativeSum" width="140">
 						<template slot-scope="scope">
-							{{
-								scope.row.moneyAmount > 0
-									? '-'
-									: Math.abs(scope.row.moneyAmount)
-							}}
+							{{ scope.row.moneyAmount > 0 ? '-' : Math.abs(scope.row.moneyAmount) }}
 						</template>
 					</el-table-column>
 
 					<!--        方向根据余额本币的正负进行判断 这个要先查询上年结转的余额本币 进行填充-->
-					<el-table-column
-						show-overflow-tooltip
-						label="方向"
-						align="center"
-						width="140"
-					>
+					<el-table-column show-overflow-tooltip label="方向" align="center" width="140">
 						<template slot-scope="scope">
-							{{
-								scope.row.moneyAmountLocal > 0 ? '借方' : '贷方'
-							}}
+							{{ scope.row.moneyAmountLocal > 0 ? '借方' : '贷方' }}
 						</template>
 					</el-table-column>
 
-					<el-table-column
-						show-overflow-tooltip
-						label="余额本币"
-						align="center"
-						prop="moneyAmountLocal"
-						width="140"
-					/>
-					<el-table-column
-						show-overflow-tooltip
-						label="我方收款户名"
-						align="center"
-						prop="selfAccountsName"
-						width="140"
-					/>
-					<el-table-column
-						show-overflow-tooltip
-						label="我方银行账号"
-						align="center"
-						prop="selfBankNo"
-						width="140"
-					/>
-					<el-table-column
-						show-overflow-tooltip
-						label="我方开户行地址"
-						align="center"
-						prop="selfBankName"
-						width="140"
-					/>
+					<el-table-column show-overflow-tooltip label="余额本币" align="center" prop="moneyAmountLocal" width="140" />
+					<el-table-column show-overflow-tooltip label="我方收款户名" align="center" prop="selfAccountsName" width="140" />
+					<el-table-column show-overflow-tooltip label="我方银行账号" align="center" prop="selfBankNo" width="140" />
+					<el-table-column show-overflow-tooltip label="我方开户行地址" align="center" prop="selfBankName" width="140" />
 				</el-table>
 			</el-card>
 			<span slot="footer" class="dialog-footer">
 				<el-button @click="dialogVisible = false">取 消</el-button>
-				<el-button type="primary" @click="dialogVisible = false"
-					>确 定</el-button
-				>
+				<el-button type="primary" @click="dialogVisible = false">确 定</el-button>
 			</span>
 		</el-dialog>
 
 		<!--    对应信息的弹窗-->
-		<el-dialog
-			title="信息"
-			:visible.sync="infoVisible"
-			width="900px"
-			append-to-body
-		>
+		<el-dialog title="信息" :visible.sync="infoVisible" width="900px" append-to-body>
 			<component :is="Components" :need-to-show-info="needToShowInfo" />
 		</el-dialog>
 	</div>

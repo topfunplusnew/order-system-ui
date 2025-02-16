@@ -5,20 +5,12 @@
 			<el-radio-group v-model="recordType" @change="filterRecords">
 				<el-radio-button label="all">全部</el-radio-button>
 				<el-radio-button label="oilrecharge">充值记录</el-radio-button>
-				<el-radio-button label="oilcardconsume"
-					>消费记录</el-radio-button
-				>
+				<el-radio-button label="oilcardconsume">消费记录</el-radio-button>
 			</el-radio-group>
 		</div>
 
 		<!-- 表格展示 -->
-		<el-table
-			:data="filteredRecords"
-			border
-			stripe
-			size="mini"
-			style="width: 100%"
-		>
+		<el-table :data="filteredRecords" border stripe size="mini" style="width: 100%">
 			<!-- 序号列 -->
 			<el-table-column label="序号" align="center" width="60">
 				<template #default="scope">
@@ -29,9 +21,7 @@
 			<!-- 类型 -->
 			<el-table-column label="类型" align="center" width="120">
 				<template #default="scope">
-					{{
-						scope.row.tableName === 'oilrecharge' ? '充值' : '消费'
-					}}
+					{{ scope.row.tableName === 'oilrecharge' ? '充值' : '消费' }}
 				</template>
 			</el-table-column>
 
@@ -39,18 +29,10 @@
 			<el-table-column prop="oilCardNo" label="油卡编号" align="center" />
 
 			<!-- 日期 -->
-			<el-table-column
-				prop="changeDate"
-				label="变动日期"
-				align="center"
-			/>
+			<el-table-column prop="changeDate" label="变动日期" align="center" />
 
 			<!-- 变动金额 -->
-			<el-table-column
-				prop="changeAmount"
-				label="变动金额 (元)"
-				align="center"
-			>
+			<el-table-column prop="changeAmount" label="变动金额 (元)" align="center">
 				<template #default="scope">
 					<span
 						:class="{
@@ -64,11 +46,7 @@
 			</el-table-column>
 
 			<!-- 当前余额 -->
-			<el-table-column
-				prop="runningBalance"
-				label="余额 (元)"
-				align="center"
-			>
+			<el-table-column prop="runningBalance" label="余额 (元)" align="center">
 				<template #default="scope">
 					{{ scope.row.runningBalance.toFixed(2) }}
 				</template>
@@ -78,13 +56,19 @@
 		<!-- 汇总信息 -->
 		<div class="summary" style="margin-top: 20px; text-align: right">
 			<p>
-				总充值金额: <b>{{ totalRecharge.toFixed(2) }}</b> 元
+				总充值金额:
+				<b>{{ totalRecharge.toFixed(2) }}</b>
+				元
 			</p>
 			<p>
-				总消费金额: <b>{{ totalConsume.toFixed(2) }}</b> 元
+				总消费金额:
+				<b>{{ totalConsume.toFixed(2) }}</b>
+				元
 			</p>
 			<p>
-				当前余额: <b>{{ currentBalance.toFixed(2) }}</b> 元
+				当前余额:
+				<b>{{ currentBalance.toFixed(2) }}</b>
+				元
 			</p>
 		</div>
 	</div>
@@ -126,27 +110,18 @@ export default {
 		initializeData(records) {
 			this.filteredRecords = [...records];
 
-			this.totalRecharge = records
-				.filter(item => item.tableName === 'oilrecharge')
-				.reduce((sum, item) => sum + item.changeAmount, 0);
+			this.totalRecharge = records.filter(item => item.tableName === 'oilrecharge').reduce((sum, item) => sum + item.changeAmount, 0);
 
-			this.totalConsume = records
-				.filter(item => item.tableName === 'oilcardconsume')
-				.reduce((sum, item) => sum + Math.abs(item.changeAmount), 0);
+			this.totalConsume = records.filter(item => item.tableName === 'oilcardconsume').reduce((sum, item) => sum + Math.abs(item.changeAmount), 0);
 
-			this.currentBalance =
-				records.length > 0
-					? records[records.length - 1].runningBalance
-					: 0;
+			this.currentBalance = records.length > 0 ? records[records.length - 1].runningBalance : 0;
 		},
 		// 筛选记录
 		filterRecords() {
 			if (this.recordType === 'all') {
 				this.filteredRecords = [...this.records];
 			} else {
-				this.filteredRecords = this.records.filter(
-					record => record.tableName === this.recordType
-				);
+				this.filteredRecords = this.records.filter(record => record.tableName === this.recordType);
 			}
 		}
 	}

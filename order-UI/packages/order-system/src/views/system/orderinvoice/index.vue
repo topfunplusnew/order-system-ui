@@ -1,381 +1,143 @@
 <template>
 	<div class="app-container">
-		<el-form
-			v-show="showSearch"
-			ref="queryForm"
-			:model="queryParams"
-			size="mini"
-			:inline="true"
-			label-width="68px"
-		>
+		<el-form v-show="showSearch" ref="queryForm" :model="queryParams" size="mini" :inline="true" label-width="68px">
 			<el-form-item label="订单编号" prop="ordersNo">
-				<el-input
-					v-model="queryParams.ordersNo"
-					placeholder="请输入订单编号"
-					clearable
-					@keyup.enter.native="handleQuery"
-				/>
+				<el-input v-model="queryParams.ordersNo" placeholder="请输入订单编号" clearable @keyup.enter.native="handleQuery" />
 			</el-form-item>
 			<el-form-item label="开票日期" prop="invoiceDate">
-				<el-input
-					v-model="queryParams.invoiceDate"
-					placeholder="请输入开票日期"
-					clearable
-					@keyup.enter.native="handleQuery"
-				/>
+				<el-input v-model="queryParams.invoiceDate" placeholder="请输入开票日期" clearable @keyup.enter.native="handleQuery" />
 			</el-form-item>
 			<el-form-item label="应开票金额" prop="invoiceAmount">
-				<el-input
-					v-model="queryParams.invoiceAmount"
-					placeholder="请输入应开票金额"
-					clearable
-					@keyup.enter.native="handleQuery"
-				/>
+				<el-input v-model="queryParams.invoiceAmount" placeholder="请输入应开票金额" clearable @keyup.enter.native="handleQuery" />
 			</el-form-item>
 			<el-form-item label="公司名称" prop="companyName">
-				<el-input
-					v-model="queryParams.companyName"
-					placeholder="请输入公司名称"
-					clearable
-					@keyup.enter.native="handleQuery"
-				/>
+				<el-input v-model="queryParams.companyName" placeholder="请输入公司名称" clearable @keyup.enter.native="handleQuery" />
 			</el-form-item>
 			<el-form-item label="公司名称" prop="companyID">
-				<el-input
-					v-model="queryParams.companyID"
-					placeholder="请输入公司名称"
-					clearable
-					@keyup.enter.native="handleQuery"
-				/>
+				<el-input v-model="queryParams.companyID" placeholder="请输入公司名称" clearable @keyup.enter.native="handleQuery" />
 			</el-form-item>
 			<el-form-item label="票据单位名称" prop="invoiceCompanyName">
-				<el-input
-					v-model="queryParams.invoiceCompanyName"
-					placeholder="请输入票据单位名称"
-					clearable
-					@keyup.enter.native="handleQuery"
-				/>
+				<el-input v-model="queryParams.invoiceCompanyName" placeholder="请输入票据单位名称" clearable @keyup.enter.native="handleQuery" />
 			</el-form-item>
 			<el-form-item label="实际开票金额" prop="actualInvoiceAmount">
-				<el-input
-					v-model="queryParams.actualInvoiceAmount"
-					placeholder="请输入实际开票金额"
-					clearable
-					@keyup.enter.native="handleQuery"
-				/>
+				<el-input v-model="queryParams.actualInvoiceAmount" placeholder="请输入实际开票金额" clearable @keyup.enter.native="handleQuery" />
 			</el-form-item>
 			<el-form-item label="票点" prop="ticketPoint">
-				<el-input
-					v-model="queryParams.ticketPoint"
-					placeholder="请输入票点"
-					clearable
-					@keyup.enter.native="handleQuery"
-				/>
+				<el-input v-model="queryParams.ticketPoint" placeholder="请输入票点" clearable @keyup.enter.native="handleQuery" />
 			</el-form-item>
 			<el-form-item label="票点金额" prop="ticketPointAmount">
-				<el-input
-					v-model="queryParams.ticketPointAmount"
-					placeholder="请输入票点金额"
-					clearable
-					@keyup.enter.native="handleQuery"
-				/>
+				<el-input v-model="queryParams.ticketPointAmount" placeholder="请输入票点金额" clearable @keyup.enter.native="handleQuery" />
 			</el-form-item>
 			<el-form-item label="备注" prop="comments">
-				<el-input
-					v-model="queryParams.comments"
-					placeholder="请输入备注"
-					clearable
-					@keyup.enter.native="handleQuery"
-				/>
+				<el-input v-model="queryParams.comments" placeholder="请输入备注" clearable @keyup.enter.native="handleQuery" />
 			</el-form-item>
 			<el-form-item label="添加时间" prop="addtime">
-				<el-input
-					v-model="queryParams.addtime"
-					placeholder="请输入添加时间"
-					clearable
-					@keyup.enter.native="handleQuery"
-				/>
+				<el-input v-model="queryParams.addtime" placeholder="请输入添加时间" clearable @keyup.enter.native="handleQuery" />
 			</el-form-item>
 			<el-form-item label="操作人员ID" prop="userId">
-				<el-input
-					v-model="queryParams.userId"
-					placeholder="请输入操作人员ID"
-					clearable
-					@keyup.enter.native="handleQuery"
-				/>
+				<el-input v-model="queryParams.userId" placeholder="请输入操作人员ID" clearable @keyup.enter.native="handleQuery" />
 			</el-form-item>
 			<el-form-item label="操作人员姓名" prop="UserName">
-				<el-input
-					v-model="queryParams.UserName"
-					placeholder="请输入操作人员姓名"
-					clearable
-					@keyup.enter.native="handleQuery"
-				/>
+				<el-input v-model="queryParams.UserName" placeholder="请输入操作人员姓名" clearable @keyup.enter.native="handleQuery" />
 			</el-form-item>
 			<el-form-item label="删除标记" prop="delFlag">
-				<el-input
-					v-model="queryParams.delFlag"
-					placeholder="请输入删除标记"
-					clearable
-					@keyup.enter.native="handleQuery"
-				/>
+				<el-input v-model="queryParams.delFlag" placeholder="请输入删除标记" clearable @keyup.enter.native="handleQuery" />
 			</el-form-item>
 			<el-form-item>
-				<el-button
-					type="primary"
-					icon="el-icon-search"
-					size="mini"
-					@click="handleQuery"
-					>搜索</el-button
-				>
-				<el-button
-					icon="el-icon-refresh"
-					size="mini"
-					@click="resetQuery"
-					>重置</el-button
-				>
+				<el-button type="primary" icon="el-icon-search" size="mini" @click="handleQuery">搜索</el-button>
+				<el-button icon="el-icon-refresh" size="mini" @click="resetQuery">重置</el-button>
 			</el-form-item>
 		</el-form>
 
 		<el-row :gutter="10" class="mb8">
 			<el-col :span="1.5">
-				<el-button
-					v-hasPermi="['system:orderinvoice:add']"
-					type="primary"
-					plain
-					icon="el-icon-plus"
-					size="mini"
-					@click="handleAdd"
-					>新增</el-button
-				>
+				<el-button v-hasPermi="['system:orderinvoice:add']" type="primary" plain icon="el-icon-plus" size="mini" @click="handleAdd">新增</el-button>
 			</el-col>
 			<el-col :span="1.5">
-				<el-button
-					v-hasPermi="['system:orderinvoice:edit']"
-					type="success"
-					plain
-					icon="el-icon-edit"
-					size="mini"
-					:disabled="single"
-					@click="handleUpdate"
-					>修改</el-button
-				>
+				<el-button v-hasPermi="['system:orderinvoice:edit']" type="success" plain icon="el-icon-edit" size="mini" :disabled="single" @click="handleUpdate">修改</el-button>
 			</el-col>
 			<el-col :span="1.5">
-				<el-button
-					v-hasPermi="['system:orderinvoice:remove']"
-					type="danger"
-					plain
-					icon="el-icon-delete"
-					size="mini"
-					:disabled="multiple"
-					@click="handleDelete"
-					>删除</el-button
-				>
+				<el-button v-hasPermi="['system:orderinvoice:remove']" type="danger" plain icon="el-icon-delete" size="mini" :disabled="multiple" @click="handleDelete">删除</el-button>
 			</el-col>
 			<el-col :span="1.5">
-				<el-button
-					v-hasPermi="['system:orderinvoice:export']"
-					type="warning"
-					plain
-					icon="el-icon-download"
-					size="mini"
-					@click="handleExport"
-					>导出</el-button
-				>
+				<el-button v-hasPermi="['system:orderinvoice:export']" type="warning" plain icon="el-icon-download" size="mini" @click="handleExport">导出</el-button>
 			</el-col>
-			<right-toolbar
-				:showSearch.sync="showSearch"
-				@queryTable="getList"
-			></right-toolbar>
+			<right-toolbar :showSearch.sync="showSearch" @queryTable="getList"></right-toolbar>
 		</el-row>
 
-		<el-table
-			v-loading="loading"
-			:data="orderinvoiceList"
-			@selection-change="handleSelectionChange"
-		>
+		<el-table v-loading="loading" :data="orderinvoiceList" @selection-change="handleSelectionChange">
 			<el-table-column type="selection" width="55" align="center" />
 			<el-table-column label="id" align="center" prop="id" />
 			<el-table-column label="订单编号" align="center" prop="ordersNo" />
-			<el-table-column
-				label="开票日期"
-				align="center"
-				prop="invoiceDate"
-			/>
-			<el-table-column
-				label="开票类型"
-				align="center"
-				prop="invoiceType"
-			/>
-			<el-table-column
-				label="应开票金额"
-				align="center"
-				prop="invoiceAmount"
-			/>
-			<el-table-column
-				label="公司类别"
-				align="center"
-				prop="companyType"
-			/>
-			<el-table-column
-				label="公司名称"
-				align="center"
-				prop="companyName"
-			/>
+			<el-table-column label="开票日期" align="center" prop="invoiceDate" />
+			<el-table-column label="开票类型" align="center" prop="invoiceType" />
+			<el-table-column label="应开票金额" align="center" prop="invoiceAmount" />
+			<el-table-column label="公司类别" align="center" prop="companyType" />
+			<el-table-column label="公司名称" align="center" prop="companyName" />
 			<el-table-column label="公司名称" align="center" prop="companyID" />
-			<el-table-column
-				label="票据单位名称"
-				align="center"
-				prop="invoiceCompanyName"
-			/>
-			<el-table-column
-				label="实际开票金额"
-				align="center"
-				prop="actualInvoiceAmount"
-			/>
+			<el-table-column label="票据单位名称" align="center" prop="invoiceCompanyName" />
+			<el-table-column label="实际开票金额" align="center" prop="actualInvoiceAmount" />
 			<el-table-column label="票点" align="center" prop="ticketPoint" />
-			<el-table-column
-				label="票点金额"
-				align="center"
-				prop="ticketPointAmount"
-			/>
+			<el-table-column label="票点金额" align="center" prop="ticketPointAmount" />
 			<el-table-column label="备注" align="center" prop="comments" />
 			<el-table-column label="添加时间" align="center" prop="addtime" />
 			<el-table-column label="操作人员ID" align="center" prop="userId" />
-			<el-table-column
-				label="操作人员姓名"
-				align="center"
-				prop="UserName"
-			/>
+			<el-table-column label="操作人员姓名" align="center" prop="UserName" />
 			<el-table-column label="删除标记" align="center" prop="delFlag" />
-			<el-table-column
-				label="操作"
-				align="center"
-				class-name="small-padding fixed-width"
-			>
+			<el-table-column label="操作" align="center" class-name="small-padding fixed-width">
 				<template slot-scope="scope">
-					<el-button
-						v-hasPermi="['system:orderinvoice:edit']"
-						size="mini"
-						type="text"
-						icon="el-icon-edit"
-						@click="handleUpdate(scope.row)"
-						>修改</el-button
-					>
-					<el-button
-						v-hasPermi="['system:orderinvoice:remove']"
-						size="mini"
-						type="text"
-						icon="el-icon-delete"
-						@click="handleDelete(scope.row)"
-						>删除</el-button
-					>
+					<el-button v-hasPermi="['system:orderinvoice:edit']" size="mini" type="text" icon="el-icon-edit" @click="handleUpdate(scope.row)">修改</el-button>
+					<el-button v-hasPermi="['system:orderinvoice:remove']" size="mini" type="text" icon="el-icon-delete" @click="handleDelete(scope.row)">删除</el-button>
 				</template>
 			</el-table-column>
 		</el-table>
 
-		<pagination
-			v-show="total > 0"
-			:total="total"
-			:page.sync="queryParams.pageNum"
-			:limit.sync="queryParams.pageSize"
-			@pagination="getList"
-		/>
+		<pagination v-show="total > 0" :total="total" :page.sync="queryParams.pageNum" :limit.sync="queryParams.pageSize" @pagination="getList" />
 
 		<!-- 添加或修改订单发票对话框 -->
-		<el-dialog
-			:close-on-click-modal="false"
-			:show-close="false"
-			:title="title"
-			:visible.sync="open"
-			width="500px"
-			append-to-body
-		>
+		<el-dialog :close-on-click-modal="false" :show-close="false" :title="title" :visible.sync="open" width="500px" append-to-body>
 			<el-form ref="form" :model="form" :rules="rules" label-width="80px">
 				<el-form-item label="订单编号" prop="ordersNo">
-					<el-input
-						v-model="form.ordersNo"
-						placeholder="请输入订单编号"
-					/>
+					<el-input v-model="form.ordersNo" placeholder="请输入订单编号" />
 				</el-form-item>
 				<el-form-item label="开票日期" prop="invoiceDate">
-					<el-input
-						v-model="form.invoiceDate"
-						placeholder="请输入开票日期"
-					/>
+					<el-input v-model="form.invoiceDate" placeholder="请输入开票日期" />
 				</el-form-item>
 				<el-form-item label="应开票金额" prop="invoiceAmount">
-					<el-input
-						v-model="form.invoiceAmount"
-						placeholder="请输入应开票金额"
-					/>
+					<el-input v-model="form.invoiceAmount" placeholder="请输入应开票金额" />
 				</el-form-item>
 				<el-form-item label="公司名称" prop="companyName">
-					<el-input
-						v-model="form.companyName"
-						placeholder="请输入公司名称"
-					/>
+					<el-input v-model="form.companyName" placeholder="请输入公司名称" />
 				</el-form-item>
 				<el-form-item label="公司名称" prop="companyID">
-					<el-input
-						v-model="form.companyID"
-						placeholder="请输入公司名称"
-					/>
+					<el-input v-model="form.companyID" placeholder="请输入公司名称" />
 				</el-form-item>
 				<el-form-item label="票据单位名称" prop="invoiceCompanyName">
-					<el-input
-						v-model="form.invoiceCompanyName"
-						placeholder="请输入票据单位名称"
-					/>
+					<el-input v-model="form.invoiceCompanyName" placeholder="请输入票据单位名称" />
 				</el-form-item>
 				<el-form-item label="实际开票金额" prop="actualInvoiceAmount">
-					<el-input
-						v-model="form.actualInvoiceAmount"
-						placeholder="请输入实际开票金额"
-					/>
+					<el-input v-model="form.actualInvoiceAmount" placeholder="请输入实际开票金额" />
 				</el-form-item>
 				<el-form-item label="票点" prop="ticketPoint">
-					<el-input
-						v-model="form.ticketPoint"
-						placeholder="请输入票点"
-					/>
+					<el-input v-model="form.ticketPoint" placeholder="请输入票点" />
 				</el-form-item>
 				<el-form-item label="票点金额" prop="ticketPointAmount">
-					<el-input
-						v-model="form.ticketPointAmount"
-						placeholder="请输入票点金额"
-					/>
+					<el-input v-model="form.ticketPointAmount" placeholder="请输入票点金额" />
 				</el-form-item>
 				<el-form-item label="备注" prop="comments">
-					<el-input
-						v-model="form.comments"
-						placeholder="请输入备注"
-					/>
+					<el-input v-model="form.comments" placeholder="请输入备注" />
 				</el-form-item>
 				<el-form-item label="添加时间" prop="addtime">
-					<el-input
-						v-model="form.addtime"
-						placeholder="请输入添加时间"
-					/>
+					<el-input v-model="form.addtime" placeholder="请输入添加时间" />
 				</el-form-item>
 				<el-form-item label="操作人员ID" prop="userId">
-					<el-input
-						v-model="form.userId"
-						placeholder="请输入操作人员ID"
-					/>
+					<el-input v-model="form.userId" placeholder="请输入操作人员ID" />
 				</el-form-item>
 				<el-form-item label="操作人员姓名" prop="UserName">
-					<el-input
-						v-model="form.UserName"
-						placeholder="请输入操作人员姓名"
-					/>
+					<el-input v-model="form.UserName" placeholder="请输入操作人员姓名" />
 				</el-form-item>
 				<el-form-item label="删除标记" prop="delFlag">
-					<el-input
-						v-model="form.delFlag"
-						placeholder="请输入删除标记"
-					/>
+					<el-input v-model="form.delFlag" placeholder="请输入删除标记" />
 				</el-form-item>
 			</el-form>
 			<div slot="footer" class="dialog-footer">
@@ -387,13 +149,7 @@
 </template>
 
 <script>
-import {
-	listOrderinvoice,
-	getOrderinvoice,
-	delOrderinvoice,
-	addOrderinvoice,
-	updateOrderinvoice
-} from '@/api/system/orderinvoice';
+import { listOrderinvoice, getOrderinvoice, delOrderinvoice, addOrderinvoice, updateOrderinvoice } from '@/api/system/orderinvoice';
 
 export default {
 	name: 'Orderinvoice',

@@ -37,10 +37,7 @@ export default {
 					onUploadProgress: progressEvent => {
 						if (progressEvent.lengthComputable) {
 							// 计算上传进度并传递给 onProgress 回调
-							const progress = Math.round(
-								(progressEvent.loaded / progressEvent.total) *
-									100
-							);
+							const progress = Math.round((progressEvent.loaded / progressEvent.total) * 100);
 							onProgress({ percent: progress });
 						}
 					}
@@ -90,10 +87,7 @@ export default {
 
 			<!-- 自定义的上传进度显示 -->
 			<div v-if="progress !== null" class="upload-progress-container">
-				<div
-					class="progress-bar"
-					:style="{ width: progress + '%' }"
-				></div>
+				<div class="progress-bar" :style="{ width: progress + '%' }"></div>
 				<span>{{ progress }}%</span>
 			</div>
 		</div>

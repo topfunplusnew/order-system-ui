@@ -2,15 +2,8 @@
 	<div class="app-container">
 		<el-row>
 			<el-col :xs="24" :sm="6" :md="4" :lg="2">
-				<el-avatar
-					shape="square"
-					:size="80"
-					:src="user.avatar"
-					style="margin-top: 10px"
-				></el-avatar>
-				<el-button type="primary" style="margin-top: 10px" size="mini">
-					更换头像
-				</el-button>
+				<el-avatar shape="square" :size="80" :src="user.avatar" style="margin-top: 10px"></el-avatar>
+				<el-button type="primary" style="margin-top: 10px" size="mini">更换头像</el-button>
 			</el-col>
 			<el-col :xs="24" :sm="18" :md="10" :lg="10">
 				<div class="block">
@@ -28,9 +21,7 @@
 							{{ user.email }}
 						</el-descriptions-item>
 						<el-descriptions-item label="性别">
-							<el-tag size="small">{{
-								user.sex === '1' ? '男' : '女'
-							}}</el-tag>
+							<el-tag size="small">{{ user.sex === '1' ? '男' : '女' }}</el-tag>
 						</el-descriptions-item>
 						<el-descriptions-item label="账号状态">
 							{{ user.status === '0' ? '正常' : '停用' }}
@@ -80,14 +71,7 @@
 		<hr color="#e7e7e7" />
 		<el-row>
 			<el-col :xs="24" :sm="6" :md="4" :lg="2">
-				<el-button
-					type="warning"
-					style="margin-top: 10px"
-					size="mini"
-					@click="updateUserInfo"
-				>
-					修改信息
-				</el-button>
+				<el-button type="warning" style="margin-top: 10px" size="mini" @click="updateUserInfo">修改信息</el-button>
 			</el-col>
 			<el-col :xs="24" :sm="18" :md="10" :lg="10">
 				<div class="block">
@@ -129,28 +113,14 @@
 		</el-row>
 		<hr color="#e7e7e7" />
 		<el-row>
-			<el-col
-				:xs="24"
-				:sm="24"
-				:md="16"
-				:lg="8"
-				:offset-md="4"
-				:offset-lg="2"
-			>
+			<el-col :xs="24" :sm="24" :md="16" :lg="8" :offset-md="4" :offset-lg="2">
 				<el-row>
 					<resetPwd />
 				</el-row>
 			</el-col>
 		</el-row>
 
-		<el-dialog
-			:close-on-click-modal="false"
-			:show-close="false"
-			title="修改个人信息"
-			:visible.sync="open"
-			width="80%"
-			append-to-body
-		>
+		<el-dialog :close-on-click-modal="false" :show-close="false" title="修改个人信息" :visible.sync="open" width="80%" append-to-body>
 			<el-form ref="form" :model="form" :rules="rules" label-width="80px">
 				<el-row :gutter="10">
 					<el-col :span="6">
@@ -164,87 +134,33 @@
 						<br />
 						<el-row>
 							<el-form-item label="用户昵称" prop="nickName">
-								<el-input
-									v-model="form.nickName"
-									placeholder="请输入用户昵称"
-									maxlength="30"
-								/>
+								<el-input v-model="form.nickName" placeholder="请输入用户昵称" maxlength="30" />
 							</el-form-item>
-							<el-form-item
-								v-if="form.userId == undefined"
-								label="用户名称"
-								prop="userName"
-							>
-								<el-input
-									v-model="form.userName"
-									placeholder="请输入用户名称"
-									maxlength="30"
-								/>
+							<el-form-item v-if="form.userId == undefined" label="用户名称" prop="userName">
+								<el-input v-model="form.userName" placeholder="请输入用户名称" maxlength="30" />
 							</el-form-item>
-							<el-form-item
-								v-if="form.userId == undefined"
-								label="用户密码"
-								prop="password"
-							>
-								<el-input
-									v-model="form.password"
-									placeholder="请输入用户密码"
-									type="password"
-									maxlength="20"
-									show-password
-								/>
+							<el-form-item v-if="form.userId == undefined" label="用户密码" prop="password">
+								<el-input v-model="form.password" placeholder="请输入用户密码" type="password" maxlength="20" show-password />
 							</el-form-item>
 							<el-form-item label="用户性别">
-								<el-select
-									v-model="form.sex"
-									placeholder="请选择性别"
-								>
-									<el-option
-										v-for="dict in dict.type.sys_user_sex"
-										:key="dict.value"
-										:label="dict.label"
-										:value="dict.value"
-									></el-option>
+								<el-select v-model="form.sex" placeholder="请选择性别">
+									<el-option v-for="dict in dict.type.sys_user_sex" :key="dict.value" :label="dict.label" :value="dict.value"></el-option>
 								</el-select>
 							</el-form-item>
 							<el-form-item label="角色">
-								<el-select
-									v-model="form.roleIds"
-									multiple
-									placeholder="请选择角色"
-								>
-									<el-option
-										v-for="item in roleOptions"
-										:key="item.roleId"
-										:label="item.roleName"
-										:value="item.roleId"
-										:disabled="item.status == 1"
-									></el-option>
+								<el-select v-model="form.roleIds" multiple placeholder="请选择角色">
+									<el-option v-for="item in roleOptions" :key="item.roleId" :label="item.roleName" :value="item.roleId" :disabled="item.status == 1"></el-option>
 								</el-select>
 							</el-form-item>
 							<el-form-item label="归属部门" prop="deptId">
-								<treeselect
-									v-model="form.deptId"
-									:options="deptOptions"
-									:show-count="true"
-									placeholder="请选择归属部门"
-								/>
+								<treeselect v-model="form.deptId" :options="deptOptions" :show-count="true" placeholder="请选择归属部门" />
 							</el-form-item>
 							<el-form-item label="邮箱" prop="email">
-								<el-input
-									v-model="form.email"
-									placeholder="请输入邮箱"
-									maxlength="50"
-								/>
+								<el-input v-model="form.email" placeholder="请输入邮箱" maxlength="50" />
 							</el-form-item>
 							<el-form-item label="状态">
 								<el-radio-group v-model="form.status">
-									<el-radio
-										v-for="dict in dict.type
-											.sys_normal_disable"
-										:key="dict.value"
-										:label="dict.value"
-									>
+									<el-radio v-for="dict in dict.type.sys_normal_disable" :key="dict.value" :label="dict.value">
 										{{ dict.label }}
 									</el-radio>
 								</el-radio-group>
@@ -262,49 +178,25 @@
 						<br />
 						<el-row>
 							<el-form-item label="真实姓名">
-								<el-input
-									v-model="form.trueName"
-									placeholder="请输入真实姓名"
-								/>
+								<el-input v-model="form.trueName" placeholder="请输入真实姓名" />
 							</el-form-item>
 							<el-form-item label="手机号码" prop="phonenumber">
-								<el-input
-									v-model="form.phonenumber"
-									placeholder="请输入手机号码"
-									maxlength="11"
-								/>
+								<el-input v-model="form.phonenumber" placeholder="请输入手机号码" maxlength="11" />
 							</el-form-item>
 							<el-form-item label="身份证号码">
-								<el-input
-									v-model="form.iDCard"
-									placeholder="请输入身份证号码"
-								/>
+								<el-input v-model="form.iDCard" placeholder="请输入身份证号码" />
 							</el-form-item>
 							<el-form-item label="开户银行">
-								<el-input
-									v-model="form.bankName"
-									placeholder="请输入开户银行"
-								/>
+								<el-input v-model="form.bankName" placeholder="请输入开户银行" />
 							</el-form-item>
 							<el-form-item label="银行账号">
-								<el-input
-									v-model="form.bankNo"
-									placeholder="请输入银行账号"
-								/>
+								<el-input v-model="form.bankNo" placeholder="请输入银行账号" />
 							</el-form-item>
 							<el-form-item label="出生日期">
-								<el-date-picker
-									v-model="form.birthday"
-									type="datetime"
-									placeholder="选择出生日期"
-									value-format="yyyy-MM-dd HH:mm:ss"
-								></el-date-picker>
+								<el-date-picker v-model="form.birthday" type="datetime" placeholder="选择出生日期" value-format="yyyy-MM-dd HH:mm:ss"></el-date-picker>
 							</el-form-item>
 							<el-form-item label="民族">
-								<el-input
-									v-model="form.nation"
-									placeholder="请输入民族"
-								/>
+								<el-input v-model="form.nation" placeholder="请输入民族" />
 							</el-form-item>
 						</el-row>
 					</el-col>
@@ -319,59 +211,29 @@
 						<br />
 						<el-row>
 							<el-form-item label="学历">
-								<el-input
-									v-model="form.education"
-									placeholder="请输入学历"
-								/>
+								<el-input v-model="form.education" placeholder="请输入学历" />
 							</el-form-item>
 							<el-form-item label="毕业院校">
-								<el-input
-									v-model="form.gradualUniversity"
-									placeholder="请输入毕业院校"
-								/>
+								<el-input v-model="form.gradualUniversity" placeholder="请输入毕业院校" />
 							</el-form-item>
 							<el-form-item label="专业">
-								<el-input
-									v-model="form.profession"
-									placeholder="请输入专业"
-								/>
+								<el-input v-model="form.profession" placeholder="请输入专业" />
 							</el-form-item>
 							<el-form-item label="毕业时间">
-								<el-date-picker
-									v-model="form.gradualDate"
-									type="datetime"
-									placeholder="选择毕业时间"
-									value-format="yyyy-MM-dd HH:mm:ss"
-								></el-date-picker>
+								<el-date-picker v-model="form.gradualDate" type="datetime" placeholder="选择毕业时间" value-format="yyyy-MM-dd HH:mm:ss"></el-date-picker>
 							</el-form-item>
 							<el-form-item label="岗位">
-								<el-input
-									v-model="form.postName"
-									placeholder="请输入岗位"
-								/>
+								<el-input v-model="form.postName" placeholder="请输入岗位" />
 							</el-form-item>
 							<el-form-item label="在职状态">
-								<el-radio v-model="form.state" label="在职"
-									>在职</el-radio
-								>
-								<el-radio v-model="form.state" label="离职"
-									>离职</el-radio
-								>
+								<el-radio v-model="form.state" label="在职">在职</el-radio>
+								<el-radio v-model="form.state" label="离职">离职</el-radio>
 							</el-form-item>
 							<el-form-item label="入职时间">
-								<el-date-picker
-									v-model="form.startDate"
-									type="datetime"
-									placeholder="选择入职时间"
-									value-format="yyyy-MM-dd HH:mm:ss"
-								></el-date-picker>
+								<el-date-picker v-model="form.startDate" type="datetime" placeholder="选择入职时间" value-format="yyyy-MM-dd HH:mm:ss"></el-date-picker>
 							</el-form-item>
 							<el-form-item label="备注">
-								<el-input
-									v-model="form.remark"
-									type="textarea"
-									placeholder="请输入内容"
-								></el-input>
+								<el-input v-model="form.remark" type="textarea" placeholder="请输入内容"></el-input>
 							</el-form-item>
 						</el-row>
 					</el-col>
@@ -386,46 +248,25 @@
 						<br />
 						<el-row>
 							<el-form-item label="政治面貌">
-								<el-input
-									v-model="form.politicalStatus"
-									placeholder="请输入政治面貌"
-								/>
+								<el-input v-model="form.politicalStatus" placeholder="请输入政治面貌" />
 							</el-form-item>
 							<el-form-item label="婚姻状况">
-								<el-input
-									v-model="form.maritalStatus"
-									placeholder="请输入婚姻状况"
-								/>
+								<el-input v-model="form.maritalStatus" placeholder="请输入婚姻状况" />
 							</el-form-item>
 							<el-form-item label="户籍地址">
-								<el-input
-									v-model="form.domicileAddress"
-									placeholder="请输入户籍地址"
-								/>
+								<el-input v-model="form.domicileAddress" placeholder="请输入户籍地址" />
 							</el-form-item>
 							<el-form-item label="居住地址">
-								<el-input
-									v-model="form.residentialAddress"
-									placeholder="请输入居住地址"
-								/>
+								<el-input v-model="form.residentialAddress" placeholder="请输入居住地址" />
 							</el-form-item>
 							<el-form-item label="紧急联系人">
-								<el-input
-									v-model="form.relationPerson"
-									placeholder="请输入紧急联系人"
-								/>
+								<el-input v-model="form.relationPerson" placeholder="请输入紧急联系人" />
 							</el-form-item>
 							<el-form-item label="紧急联系人电话">
-								<el-input
-									v-model="form.relationPersonTel"
-									placeholder="请输入紧急联系人电话"
-								/>
+								<el-input v-model="form.relationPersonTel" placeholder="请输入紧急联系人电话" />
 							</el-form-item>
 							<el-form-item label="关系">
-								<el-input
-									v-model="form.relationship"
-									placeholder="请输入关系"
-								/>
+								<el-input v-model="form.relationship" placeholder="请输入关系" />
 							</el-form-item>
 						</el-row>
 					</el-col>
@@ -443,11 +284,7 @@
 import { getUserProfile } from '@/api/system/user';
 import Treeselect from '@riophae/vue-treeselect';
 import '@riophae/vue-treeselect/dist/vue-treeselect.css';
-import {
-	deptTreeSelect,
-	getUser,
-	updateUser
-} from '../../../../api/system/user';
+import { deptTreeSelect, getUser, updateUser } from '../../../../api/system/user';
 import ShowLabel from '../../../../components/ShowLabel.vue';
 import { getToken } from '../../../../utils/auth';
 import resetPwd from './resetPwd';

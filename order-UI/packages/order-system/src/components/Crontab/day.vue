@@ -1,24 +1,19 @@
 <template>
 	<el-form size="small">
 		<el-form-item>
-			<el-radio v-model="radioValue" :label="1">
-				日，允许的通配符[, - * ? / L W]
-			</el-radio>
+			<el-radio v-model="radioValue" :label="1">日，允许的通配符[, - * ? / L W]</el-radio>
 		</el-form-item>
 
 		<el-form-item>
-			<el-radio v-model="radioValue" :label="2"> 不指定 </el-radio>
+			<el-radio v-model="radioValue" :label="2">不指定</el-radio>
 		</el-form-item>
 
 		<el-form-item>
 			<el-radio v-model="radioValue" :label="3">
 				周期从
-				<el-input-number v-model="cycle01" :min="1" :max="30" /> -
-				<el-input-number
-					v-model="cycle02"
-					:min="cycle01 ? cycle01 + 1 : 2"
-					:max="31"
-				/>
+				<el-input-number v-model="cycle01" :min="1" :max="30" />
+				-
+				<el-input-number v-model="cycle02" :min="cycle01 ? cycle01 + 1 : 2" :max="31" />
 				日
 			</el-radio>
 		</el-form-item>
@@ -28,11 +23,7 @@
 				从
 				<el-input-number v-model="average01" :min="1" :max="30" />
 				号开始，每
-				<el-input-number
-					v-model="average02"
-					:min="1"
-					:max="31 - average01 || 1"
-				/>
+				<el-input-number v-model="average02" :min="1" :max="31 - average01 || 1" />
 				日执行一次
 			</el-radio>
 		</el-form-item>
@@ -46,22 +37,14 @@
 		</el-form-item>
 
 		<el-form-item>
-			<el-radio v-model="radioValue" :label="6"> 本月最后一天 </el-radio>
+			<el-radio v-model="radioValue" :label="6">本月最后一天</el-radio>
 		</el-form-item>
 
 		<el-form-item>
 			<el-radio v-model="radioValue" :label="7">
 				指定
-				<el-select
-					v-model="checkboxList"
-					clearable
-					placeholder="可多选"
-					multiple
-					style="width: 100%"
-				>
-					<el-option v-for="item in 31" :key="item" :value="item">{{
-						item
-					}}</el-option>
+				<el-select v-model="checkboxList" clearable placeholder="可多选" multiple style="width: 100%">
+					<el-option v-for="item in 31" :key="item" :value="item">{{ item }}</el-option>
 				</el-select>
 			</el-radio>
 		</el-form-item>
@@ -88,22 +71,13 @@ export default {
 		// 计算两个周期值
 		cycleTotal: function () {
 			const cycle01 = this.checkNum(this.cycle01, 1, 30);
-			const cycle02 = this.checkNum(
-				this.cycle02,
-				cycle01 ? cycle01 + 1 : 2,
-				31,
-				31
-			);
+			const cycle02 = this.checkNum(this.cycle02, cycle01 ? cycle01 + 1 : 2, 31, 31);
 			return cycle01 + '-' + cycle02;
 		},
 		// 计算平均用到的值
 		averageTotal: function () {
 			const average01 = this.checkNum(this.average01, 1, 30);
-			const average02 = this.checkNum(
-				this.average02,
-				1,
-				31 - average01 || 0
-			);
+			const average02 = this.checkNum(this.average02, 1, 31 - average01 || 0);
 			return average01 + '/' + average02;
 		},
 		// 计算工作日格式

@@ -13,21 +13,12 @@
 		@close="handleClose"
 	>
 		<!-- 动态渲染内容 -->
-		<component
-			:is="currentComponent"
-			ref="dynamicComponent"
-			v-bind="dialogProps"
-		/>
+		<component :is="currentComponent" ref="dynamicComponent" v-bind="dialogProps" />
 
 		<!-- 底部操作按钮 -->
 		<template #footer>
 			<el-button @click="handleClose">关闭</el-button>
-			<el-button
-				type="primary"
-				@click="handleConfirm"
-				v-if="!closeConfirm"
-				>确认
-			</el-button>
+			<el-button type="primary" @click="handleConfirm" v-if="!closeConfirm">确认</el-button>
 		</template>
 	</el-dialog>
 </template>

@@ -34,14 +34,10 @@ const mutations = {
 				break;
 			}
 		}
-		state.iframeViews = state.iframeViews.filter(
-			item => item.path !== view.path
-		);
+		state.iframeViews = state.iframeViews.filter(item => item.path !== view.path);
 	},
 	DEL_IFRAME_VIEW: (state, view) => {
-		state.iframeViews = state.iframeViews.filter(
-			item => item.path !== view.path
-		);
+		state.iframeViews = state.iframeViews.filter(item => item.path !== view.path);
 	},
 	DEL_CACHED_VIEW: (state, view) => {
 		const index = state.cachedViews.indexOf(view.name);
@@ -52,9 +48,7 @@ const mutations = {
 		state.visitedViews = state.visitedViews.filter(v => {
 			return v.meta.affix || v.path === view.path;
 		});
-		state.iframeViews = state.iframeViews.filter(
-			item => item.path === view.path
-		);
+		state.iframeViews = state.iframeViews.filter(item => item.path === view.path);
 	},
 	DEL_OTHERS_CACHED_VIEWS: (state, view) => {
 		const index = state.cachedViews.indexOf(view.name);
@@ -95,9 +89,7 @@ const mutations = {
 				state.cachedViews.splice(i, 1);
 			}
 			if (item.meta.link) {
-				const fi = state.iframeViews.findIndex(
-					v => v.path === item.path
-				);
+				const fi = state.iframeViews.findIndex(v => v.path === item.path);
 				state.iframeViews.splice(fi, 1);
 			}
 			return false;
@@ -117,9 +109,7 @@ const mutations = {
 				state.cachedViews.splice(i, 1);
 			}
 			if (item.meta.link) {
-				const fi = state.iframeViews.findIndex(
-					v => v.path === item.path
-				);
+				const fi = state.iframeViews.findIndex(v => v.path === item.path);
 				state.iframeViews.splice(fi, 1);
 			}
 			return false;

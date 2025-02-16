@@ -11,19 +11,7 @@ import ReadyList from '@/views/dashboard/components/common/ReadyList.vue';
 
 // 发票对象
 export class InvoiceObject {
-	constructor(
-		invoiceDate,
-		invoiceObject,
-		invoiceAmount,
-		companyType,
-		companyName,
-		companyID,
-		invoiceCompanyName,
-		ticketPoint,
-		ticketPointAmount,
-		isOrderTax,
-		comments
-	) {
+	constructor(invoiceDate, invoiceObject, invoiceAmount, companyType, companyName, companyID, invoiceCompanyName, ticketPoint, ticketPointAmount, isOrderTax, comments) {
 		this.invoiceDate = invoiceDate;
 		this.invoiceObject = invoiceObject;
 		this.invoiceAmount = invoiceAmount;
@@ -38,10 +26,7 @@ export class InvoiceObject {
 		// 随机生成一个uuid
 		this.params = {
 			uuid: getUuid(),
-			tableName:
-				this.companyType === PUBLIC_DICT_TYPE.CUSTOMER
-					? TableName.INVOICE_OUT
-					: TableName.INVOICE_IN
+			tableName: this.companyType === PUBLIC_DICT_TYPE.CUSTOMER ? TableName.INVOICE_OUT : TableName.INVOICE_IN
 		};
 	}
 }
@@ -56,9 +41,7 @@ export default {
 		selectedOrder: {
 			handler(val) {
 				// 判断是否长度大于0
-				typeof val === 'object' && val.length > 0
-					? this.handleToggle(false)
-					: this.handleToggle(true);
+				typeof val === 'object' && val.length > 0 ? this.handleToggle(false) : this.handleToggle(true);
 
 				// 先清除上一次的状态
 				this.$store.dispatch('excel/clearSelectedInvoiceList');
@@ -69,10 +52,7 @@ export default {
 				});
 
 				// 存储vuex
-				this.$store.dispatch(
-					'excel/setSelectedInvoiceList',
-					invoiceList
-				);
+				this.$store.dispatch('excel/setSelectedInvoiceList', invoiceList);
 			},
 			immediate: true,
 			deep: true
@@ -94,13 +74,7 @@ export default {
 		PUBLIC_DICT_TYPE() {
 			return PUBLIC_DICT_TYPE;
 		},
-		...mapGetters([
-			'selectedInvoiceList',
-			'selectedOrder',
-			'ticketPoint',
-			'comment',
-			'invoiceAmount'
-		])
+		...mapGetters(['selectedInvoiceList', 'selectedOrder', 'ticketPoint', 'comment', 'invoiceAmount'])
 	},
 	methods: {
 		// 批量开发票
@@ -160,11 +134,7 @@ export default {
 		},
 		// 对供应商进行处理
 		handleSupplier(orderItem) {
-			if (
-				!orderItem.smailOrderDetails ||
-				orderItem.smailOrderDetails.length === 0
-			)
-				return null;
+			if (!orderItem.smailOrderDetails || orderItem.smailOrderDetails.length === 0) return null;
 
 			// 先找到该检索的供应商
 			const _suppliers = orderItem.smailOrderDetails.filter(item => {
@@ -174,10 +144,7 @@ export default {
 			if (_suppliers.length === 0) return null;
 
 			// 计算该供应商的出场货款
-			const paymentFactory = _suppliers.reduce(
-				(pre, cur) => pre + cur.paymentFactory,
-				0
-			);
+			const paymentFactory = _suppliers.reduce((pre, cur) => pre + cur.paymentFactory, 0);
 
 			// 供应商
 			return new InvoiceObject(
@@ -236,43 +203,21 @@ export default {
 	<div>
 		<el-card class="box-card">
 			<div slot="header" class="clearfix">
-				<span class="bold-text">开票信息 </span>
+				<span class="bold-text">开票信息</span>
 			</div>
 			<div>{{ '公司名称：' + (companyName ? companyName : '无') }}</div>
 			<div>
 				剩余开票金额：
-				<span class="money">{{
-					invoiceAmount ? invoiceAmount : '无'
-				}}</span>
+				<span class="money">{{ invoiceAmount ? invoiceAmount : '无' }}</span>
 			</div>
 			<div class="invoice-list">
-				<InvoiceItem
-					v-for="(item, index) in selectedInvoiceList"
-					:key="index"
-					:invoice="item"
-				/>
+				<InvoiceItem v-for="(item, index) in selectedInvoiceList" :key="index" :invoice="item" />
 			</div>
 
 			<!--    批量开票-->
 			<div class="options">
-				<el-button
-					v-if="invoiceType === PUBLIC_DICT_TYPE.CUSTOMER"
-					type="success"
-					size="mini"
-					:disabled="op_customer"
-					@click="handleInvoiceBatch"
-				>
-					开具客户发票
-				</el-button>
-				<el-button
-					v-if="invoiceType === PUBLIC_DICT_TYPE.SUPPLIER"
-					type="success"
-					size="mini"
-					:disabled="op_supplier"
-					@click="handleInvoiceBatch"
-				>
-					开具供应商发票
-				</el-button>
+				<el-button v-if="invoiceType === PUBLIC_DICT_TYPE.CUSTOMER" type="success" size="mini" :disabled="op_customer" @click="handleInvoiceBatch">开具客户发票</el-button>
+				<el-button v-if="invoiceType === PUBLIC_DICT_TYPE.SUPPLIER" type="success" size="mini" :disabled="op_supplier" @click="handleInvoiceBatch">开具供应商发票</el-button>
 			</div>
 		</el-card>
 

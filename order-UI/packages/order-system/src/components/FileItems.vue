@@ -5,17 +5,12 @@ export default {
 	name: 'FileItems',
 	// 动态引入
 	components: {
-		ExcelIcon: () =>
-			import('@/views/dashboard/components/icons/ExcelIcon.vue'),
-		WordIcon: () =>
-			import('@/views/dashboard/components/icons/WordIcon.vue'),
+		ExcelIcon: () => import('@/views/dashboard/components/icons/ExcelIcon.vue'),
+		WordIcon: () => import('@/views/dashboard/components/icons/WordIcon.vue'),
 		ImgIcon: () => import('@/views/dashboard/components/icons/ImgIcon.vue'),
-		FileIcon: () =>
-			import('@/views/dashboard/components/icons/FileIcon.vue'),
-		PowerIcon: () =>
-			import('@/views/dashboard/components/icons/PowerIcon.vue'),
-		TextIcon: () =>
-			import('@/views/dashboard/components/icons/TextIcon.vue')
+		FileIcon: () => import('@/views/dashboard/components/icons/FileIcon.vue'),
+		PowerIcon: () => import('@/views/dashboard/components/icons/PowerIcon.vue'),
+		TextIcon: () => import('@/views/dashboard/components/icons/TextIcon.vue')
 	},
 	props: {
 		fileName: {
@@ -42,9 +37,7 @@ export default {
 			};
 
 			// 提取文件后缀
-			const fileExt = this._fileName
-				.slice(this._fileName.lastIndexOf('.'))
-				.toLowerCase();
+			const fileExt = this._fileName.slice(this._fileName.lastIndexOf('.')).toLowerCase();
 
 			// 根据后缀查找对应组件
 			return iconMap[fileExt] || 'FileIcon';
@@ -68,21 +61,11 @@ export default {
 	<div>
 		<div class="file-container">
 			<div class="delete">
-				<el-button
-					type="danger"
-					size="mini"
-					circle
-					icon="el-icon-close"
-					round
-					@click="handleDeleteFile"
-				>
-				</el-button>
+				<el-button type="danger" size="mini" circle icon="el-icon-close" round @click="handleDeleteFile"></el-button>
 			</div>
 			<div class="file-icon">
 				<component :is="currentIcon" v-if="currentIcon"></component>
-				<div class="file-name" @click="handleCheckFile(fileName)">
-					{{ _fileName }}...
-				</div>
+				<div class="file-name" @click="handleCheckFile(fileName)">{{ _fileName }}...</div>
 			</div>
 		</div>
 	</div>

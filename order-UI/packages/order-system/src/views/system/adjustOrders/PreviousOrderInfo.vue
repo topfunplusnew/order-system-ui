@@ -1,18 +1,10 @@
 <template>
-	<el-dialog
-		:close-on-click-modal="false"
-		title="原订单信息"
-		:visible.sync="checkReviousOrderInfoVisible"
-		width="1100px"
-	>
+	<el-dialog :close-on-click-modal="false" title="原订单信息" :visible.sync="checkReviousOrderInfoVisible" width="1100px">
 		<el-row>
 			<OrderInfos :order-info="previousOrderInfo" />
 		</el-row>
 		<el-row>
-			<OrderDetailInfo
-				:order-detail-info-list="previousOrderInfo.orderDetailList"
-				:ban="true"
-			/>
+			<OrderDetailInfo :order-detail-info-list="previousOrderInfo.orderDetailList" :ban="true" />
 		</el-row>
 		<span slot="footer" class="dialog-footer">
 			<el-button @click="close">关 闭</el-button>

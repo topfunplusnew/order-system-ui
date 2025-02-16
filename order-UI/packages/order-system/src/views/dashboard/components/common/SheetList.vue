@@ -96,18 +96,12 @@ export default {
 				// 购买方或销售方的 id
 				const id = isPurchase ? element.purchaseId : element.sellerId;
 				// 购买方或销售方的 name
-				const name = isPurchase
-					? element.purchaseName
-					: element.sellerName;
+				const name = isPurchase ? element.purchaseName : element.sellerName;
 				// 购买方或销售方的 type
-				const type = isPurchase
-					? element.purchaseType
-					: element.sellerType;
+				const type = isPurchase ? element.purchaseType : element.sellerType;
 
 				// 必然有一方是我方 对方如果是购买方 那么我方就是销售方 反之一样
-				const us = isPurchase
-					? element.sellerName
-					: element.purchaseName;
+				const us = isPurchase ? element.sellerName : element.purchaseName;
 				// 确保 id 不为 undefined 或空值
 				if (id == null || id === '') {
 					return; // 跳过当前元素
@@ -254,100 +248,49 @@ export default {
 		<!--    Excel Sheet的选择列表-->
 		<div class="sheet-container">
 			<!--      点击某一个sheet-->
-			<SheetItem
-				v-for="(item, index) in sheetList"
-				:key="item"
-				:title="item"
-				@click.native="handleInvoiceAll(item, index)"
-			/>
+			<SheetItem v-for="(item, index) in sheetList" :key="item" :title="item" @click.native="handleInvoiceAll(item, index)" />
 		</div>
 
 		<!--    批量开票的弹窗-->
 		<div>
-			<el-dialog
-				title="批量开票"
-				fullscreen
-				:visible.sync="invoiceAllVisible"
-				append-to-body
-			>
+			<el-dialog title="批量开票" fullscreen :visible.sync="invoiceAllVisible" append-to-body>
 				<el-row :gutter="12" class="invoice-container">
 					<!-- 左侧区域 -->
 					<el-col :span="8" :sm="24" :md="8" class="left-section">
 						<div class="left-box">
 							<!-- 公司信息卡片 -->
-							<CompanyInformation
-								:company-info="companyInfo"
-								class="company-info-card"
-							/>
+							<CompanyInformation :company-info="companyInfo" class="company-info-card" />
 
 							<!-- 导入公司列表卡片 -->
 							<div class="left-box-item">
 								<el-card class="box-card">
 									<div slot="header" class="clearfix">
-										<span class="bold-text"
-											>导入公司列表</span
-										>
+										<span class="bold-text">导入公司列表</span>
 									</div>
 									<!-- 搜索表单 -->
 									<el-form :inline="true" class="search-form">
 										<el-form-item label="购买方名称">
-											<el-input
-												v-model="purchase"
-												placeholder="请输入购买方名称"
-												size="mini"
-												clearable
-											/>
+											<el-input v-model="purchase" placeholder="请输入购买方名称" size="mini" clearable />
 										</el-form-item>
 										<el-form-item label="销方名称">
-											<el-input
-												v-model="seller"
-												placeholder="请输入销方名称"
-												size="mini"
-												clearable
-											/>
+											<el-input v-model="seller" placeholder="请输入销方名称" size="mini" clearable />
 										</el-form-item>
 										<el-form-item class="button-group">
-											<el-button
-												type="primary"
-												size="mini"
-												@click="handleFilter"
-											>
-												查询
-											</el-button>
-											<el-button
-												type="warning"
-												size="mini"
-												@click="handleReset"
-											>
-												重置
-											</el-button>
+											<el-button type="primary" size="mini" @click="handleFilter">查询</el-button>
+											<el-button type="warning" size="mini" @click="handleReset">重置</el-button>
 										</el-form-item>
 									</el-form>
 
 									<!-- 公司列表 -->
 									<div class="pay-others">
 										<el-divider>
-											<span class="bold-text"
-												>购买方信息</span
-											>
+											<span class="bold-text">购买方信息</span>
 										</el-divider>
-										<CompanysList
-											:company-total-info="
-												purchaseTotalInfo
-											"
-											@handleCheck="handleCheck"
-										/>
+										<CompanysList :company-total-info="purchaseTotalInfo" @handleCheck="handleCheck" />
 										<el-divider>
-											<span class="bold-text"
-												>销方信息</span
-											>
+											<span class="bold-text">销方信息</span>
 										</el-divider>
-										<CompanysList
-											:company-total-info="
-												sellerTotalInfo
-											"
-											@handleCheck="handleCheck"
-										/>
+										<CompanysList :company-total-info="sellerTotalInfo" @handleCheck="handleCheck" />
 									</div>
 								</el-card>
 							</div>
@@ -359,13 +302,7 @@ export default {
 						<el-card class="box-card">
 							<div slot="header" class="clearfix">
 								<span class="bold-text">订单列表(未开票)</span>
-								<el-button
-									style="float: right; padding: 3px 0"
-									type="text"
-									@click="handleResetOrderList"
-								>
-									重置筛选
-								</el-button>
+								<el-button style="float: right; padding: 3px 0" type="text" @click="handleResetOrderList">重置筛选</el-button>
 							</div>
 							<SelectGoods />
 						</el-card>

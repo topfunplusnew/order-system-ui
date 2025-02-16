@@ -48,235 +48,92 @@ export default {
 		// 公式计算相关的计算属性
 		// 是否含税 厂家否 客户否
 		paymentFactory00() {
-			return fix(
-				((this.orderItemInfo.length *
-					this.orderItemInfo.width *
-					this.orderItemInfo.pieces) /
-					1000000) *
-					this.orderItemInfo.price +
-					Number(this.orderItemInfo.sundryCost)
-			);
+			return fix(((this.orderItemInfo.length * this.orderItemInfo.width * this.orderItemInfo.pieces) / 1000000) * this.orderItemInfo.price + Number(this.orderItemInfo.sundryCost));
 		},
 		payments00() {
 			return fix(
-				((this.orderItemInfo.length *
-					this.orderItemInfo.width *
-					this.orderItemInfo.outPieces) /
-					1000000) *
-					this.orderItemInfo.paymentUnload +
-					Number(this.orderItemInfo.paymentsWithSundry)
+				((this.orderItemInfo.length * this.orderItemInfo.width * this.orderItemInfo.outPieces) / 1000000) * this.orderItemInfo.paymentUnload + Number(this.orderItemInfo.paymentsWithSundry)
 			);
 		},
 		// todo  长度宽度高度过低 会计算吨位为0
 		tonnage00() {
-			return fix(
-				((Number(this.orderItemInfo.height) -
-					Number(this.orderItemInfo.erro)) *
-					this.orderItemInfo.length *
-					this.orderItemInfo.width *
-					this.orderItemInfo.pieces) /
-					1000000 /
-					20 /
-					20
-			);
+			return fix(((Number(this.orderItemInfo.height) - Number(this.orderItemInfo.erro)) * this.orderItemInfo.length * this.orderItemInfo.width * this.orderItemInfo.pieces) / 1000000 / 20 / 20);
 		},
 		landFreight00() {
-			return fix(
-				Number(this.orderItemInfo.tonnage) *
-					Number(this.orderItemInfo.landFreightPrice) +
-					Number(this.orderItemInfo.additionalFees)
-			);
+			return fix(Number(this.orderItemInfo.tonnage) * Number(this.orderItemInfo.landFreightPrice) + Number(this.orderItemInfo.additionalFees));
 		},
 		profit00() {
-			return fix(
-				this.orderItemInfo.payments -
-					this.orderItemInfo.paymentFactory -
-					this.orderItemInfo.landFreight -
-					this.orderItemInfo.seaFreight
-			);
+			return fix(this.orderItemInfo.payments - this.orderItemInfo.paymentFactory - this.orderItemInfo.landFreight - this.orderItemInfo.seaFreight);
 		},
 		profitNoTax00() {
-			return fix(
-				this.orderItemInfo.payments -
-					this.orderItemInfo.paymentFactory -
-					this.orderItemInfo.landFreight -
-					this.orderItemInfo.seaFreight -
-					this.orderItemInfo.otherCost
-			);
+			return fix(this.orderItemInfo.payments - this.orderItemInfo.paymentFactory - this.orderItemInfo.landFreight - this.orderItemInfo.seaFreight - this.orderItemInfo.otherCost);
 		},
 		// 是否含税10
 		paymentFactory10() {
-			return fix(
-				(this.orderItemInfo.length *
-					this.orderItemInfo.width *
-					this.orderItemInfo.pieces *
-					this.orderItemInfo.price) /
-					1000000 +
-					Number(this.orderItemInfo.sundryCost)
-			);
+			return fix((this.orderItemInfo.length * this.orderItemInfo.width * this.orderItemInfo.pieces * this.orderItemInfo.price) / 1000000 + Number(this.orderItemInfo.sundryCost));
 		},
 		payments10() {
 			return fix(
-				(this.orderItemInfo.length *
-					this.orderItemInfo.width *
-					this.orderItemInfo.outPieces *
-					this.orderItemInfo.paymentUnload) /
-					1000000 +
-					Number(this.orderItemInfo.paymentsWithSundry)
+				(this.orderItemInfo.length * this.orderItemInfo.width * this.orderItemInfo.outPieces * this.orderItemInfo.paymentUnload) / 1000000 + Number(this.orderItemInfo.paymentsWithSundry)
 			);
 		},
 		tonnage10() {
-			return fix(
-				((this.orderItemInfo.height - this.orderItemInfo.erro) *
-					this.orderItemInfo.length *
-					this.orderItemInfo.width *
-					this.orderItemInfo.pieces) /
-					1000000 /
-					20 /
-					20
-			);
+			return fix(((this.orderItemInfo.height - this.orderItemInfo.erro) * this.orderItemInfo.length * this.orderItemInfo.width * this.orderItemInfo.pieces) / 1000000 / 20 / 20);
 		},
 		landFreight10() {
-			return fix(
-				this.orderItemInfo.tonnage *
-					this.orderItemInfo.landFreightPrice +
-					Number(this.orderItemInfo.additionalFees)
-			);
+			return fix(this.orderItemInfo.tonnage * this.orderItemInfo.landFreightPrice + Number(this.orderItemInfo.additionalFees));
 		},
 		profit10() {
-			return fix(
-				this.orderItemInfo.payments -
-					this.orderItemInfo.paymentFactory -
-					this.orderItemInfo.landFreight -
-					this.orderItemInfo.seaFreight
-			);
+			return fix(this.orderItemInfo.payments - this.orderItemInfo.paymentFactory - this.orderItemInfo.landFreight - this.orderItemInfo.seaFreight);
 		},
 		profitNoTax10() {
-			return fix(
-				this.orderItemInfo.payments -
-					this.orderItemInfo.paymentFactory / 1.075 -
-					this.orderItemInfo.landFreight -
-					this.orderItemInfo.seaFreight -
-					this.orderItemInfo.otherCost
-			);
+			return fix(this.orderItemInfo.payments - this.orderItemInfo.paymentFactory / 1.075 - this.orderItemInfo.landFreight - this.orderItemInfo.seaFreight - this.orderItemInfo.otherCost);
 		},
 		// 是否含税01
 		paymentFactory01() {
-			return fix(
-				((this.orderItemInfo.length *
-					this.orderItemInfo.width *
-					this.orderItemInfo.pieces) /
-					1000000) *
-					this.orderItemInfo.price +
-					Number(this.orderItemInfo.sundryCost)
-			);
+			return fix(((this.orderItemInfo.length * this.orderItemInfo.width * this.orderItemInfo.pieces) / 1000000) * this.orderItemInfo.price + Number(this.orderItemInfo.sundryCost));
 		},
 		payments01() {
 			return fix(
-				(this.orderItemInfo.length *
-					this.orderItemInfo.width *
-					this.orderItemInfo.outPieces *
-					this.orderItemInfo.paymentUnload) /
-					1000000 +
-					Number(this.orderItemInfo.paymentsWithSundry)
+				(this.orderItemInfo.length * this.orderItemInfo.width * this.orderItemInfo.outPieces * this.orderItemInfo.paymentUnload) / 1000000 + Number(this.orderItemInfo.paymentsWithSundry)
 			);
 		},
 		tonnage01() {
-			return fix(
-				((this.orderItemInfo.height - this.orderItemInfo.erro) *
-					this.orderItemInfo.length *
-					this.orderItemInfo.width *
-					this.orderItemInfo.pieces) /
-					1000000 /
-					20 /
-					20
-			);
+			return fix(((this.orderItemInfo.height - this.orderItemInfo.erro) * this.orderItemInfo.length * this.orderItemInfo.width * this.orderItemInfo.pieces) / 1000000 / 20 / 20);
 		},
 		landFreight01() {
-			return fix(
-				Number(
-					this.orderItemInfo.tonnage *
-						this.orderItemInfo.landFreightPrice
-				) + Number(this.orderItemInfo.additionalFees)
-			);
+			return fix(Number(this.orderItemInfo.tonnage * this.orderItemInfo.landFreightPrice) + Number(this.orderItemInfo.additionalFees));
 		},
 		profit01() {
-			return fix(
-				this.orderItemInfo.payments -
-					this.orderItemInfo.paymentFactory -
-					this.orderItemInfo.landFreight -
-					this.orderItemInfo.seaFreight
-			);
+			return fix(this.orderItemInfo.payments - this.orderItemInfo.paymentFactory - this.orderItemInfo.landFreight - this.orderItemInfo.seaFreight);
 		},
 		profitNoTax01() {
-			return fix(
-				this.orderItemInfo.payments / 1.075 -
-					this.orderItemInfo.paymentFactory -
-					this.orderItemInfo.landFreight -
-					this.orderItemInfo.seaFreight -
-					this.orderItemInfo.otherCost
-			);
+			return fix(this.orderItemInfo.payments / 1.075 - this.orderItemInfo.paymentFactory - this.orderItemInfo.landFreight - this.orderItemInfo.seaFreight - this.orderItemInfo.otherCost);
 		},
 		// 是否含税11
 		paymentFactory11() {
-			return fix(
-				(this.orderItemInfo.length *
-					this.orderItemInfo.width *
-					this.orderItemInfo.pieces *
-					this.orderItemInfo.price) /
-					1000000 +
-					Number(this.orderItemInfo.sundryCost)
-			);
+			return fix((this.orderItemInfo.length * this.orderItemInfo.width * this.orderItemInfo.pieces * this.orderItemInfo.price) / 1000000 + Number(this.orderItemInfo.sundryCost));
 		},
 		payments11() {
 			return fix(
-				(this.orderItemInfo.length *
-					this.orderItemInfo.width *
-					this.orderItemInfo.outPieces *
-					this.orderItemInfo.paymentUnload) /
-					1000000 +
-					Number(this.orderItemInfo.paymentsWithSundry)
+				(this.orderItemInfo.length * this.orderItemInfo.width * this.orderItemInfo.outPieces * this.orderItemInfo.paymentUnload) / 1000000 + Number(this.orderItemInfo.paymentsWithSundry)
 			);
 		},
 		tonnage11() {
-			return fix(
-				((this.orderItemInfo.height - this.orderItemInfo.erro) *
-					this.orderItemInfo.length *
-					this.orderItemInfo.width *
-					this.orderItemInfo.pieces) /
-					1000000 /
-					20 /
-					20
-			);
+			return fix(((this.orderItemInfo.height - this.orderItemInfo.erro) * this.orderItemInfo.length * this.orderItemInfo.width * this.orderItemInfo.pieces) / 1000000 / 20 / 20);
 		},
 		landFreight11() {
-			return fix(
-				this.orderItemInfo.tonnage *
-					this.orderItemInfo.landFreightPrice +
-					Number(this.orderItemInfo.additionalFees)
-			);
+			return fix(this.orderItemInfo.tonnage * this.orderItemInfo.landFreightPrice + Number(this.orderItemInfo.additionalFees));
 		},
 		profit11() {
-			return fix(
-				this.orderItemInfo.payments -
-					this.orderItemInfo.paymentFactory -
-					this.orderItemInfo.landFreight -
-					this.orderItemInfo.seaFreight
-			);
+			return fix(this.orderItemInfo.payments - this.orderItemInfo.paymentFactory - this.orderItemInfo.landFreight - this.orderItemInfo.seaFreight);
 		},
 		profitNoTax11() {
 			return fix(
 				this.orderItemInfo.payments -
 					this.orderItemInfo.paymentFactory -
-					(this.orderItemInfo.landFreight -
-						this.orderItemInfo.seaFreight * 1.075) -
-					((this.orderItemInfo.height *
-						this.orderItemInfo.length *
-						this.orderItemInfo.width *
-						this.orderItemInfo.pieces) /
-						1000000 /
-						20) *
-						0.5 -
+					(this.orderItemInfo.landFreight - this.orderItemInfo.seaFreight * 1.075) -
+					((this.orderItemInfo.height * this.orderItemInfo.length * this.orderItemInfo.width * this.orderItemInfo.pieces) / 1000000 / 20) * 0.5 -
 					this.orderItemInfo.otherCost
 			);
 		}
@@ -320,13 +177,9 @@ export default {
 				}
 				// 运费自动填充
 				if (!this.orderItemInfo.seaFreight) {
-					this.orderItemInfo.freight = Number(
-						this.orderItemInfo.landFreight
-					);
+					this.orderItemInfo.freight = Number(this.orderItemInfo.landFreight);
 				} else {
-					this.orderItemInfo.freight =
-						Number(this.orderItemInfo.landFreight) +
-						Number(this.orderItemInfo.seaFreight);
+					this.orderItemInfo.freight = Number(this.orderItemInfo.landFreight) + Number(this.orderItemInfo.seaFreight);
 				}
 			},
 			deep: true,
@@ -436,11 +289,7 @@ export default {
 			<div class="order-item">
 				<span class="text-bold">供应商</span>
 				<hr />
-				<el-input
-					v-model="orderItemInfo.supplier"
-					placeholder="请输入供应商"
-					disabled
-				/>
+				<el-input v-model="orderItemInfo.supplier" placeholder="请输入供应商" disabled />
 				<SearchOption
 					:get-data="listCompany"
 					icon="el-icon-user"
@@ -452,32 +301,16 @@ export default {
 					@update:queryName="handleUpdateQueryName"
 				>
 					<template #table-columns>
-						<el-table-column
-							label="供应商名称"
-							align="center"
-							prop="companyName"
-						/>
-						<el-table-column
-							label="联系人"
-							align="center"
-							prop="relationName"
-						/>
-						<el-table-column
-							label="电话"
-							align="center"
-							prop="relationTel"
-						/>
+						<el-table-column label="供应商名称" align="center" prop="companyName" />
+						<el-table-column label="联系人" align="center" prop="relationName" />
+						<el-table-column label="电话" align="center" prop="relationTel" />
 					</template>
 				</SearchOption>
 			</div>
 			<div class="order-item">
 				<span class="text-bold">产品名称</span>
 				<hr />
-				<el-input
-					v-model="orderItemInfo.levelName"
-					type="text"
-					placeholder="请输入产品名称"
-				/>
+				<el-input v-model="orderItemInfo.levelName" type="text" placeholder="请输入产品名称" />
 				<SearchOption
 					:get-data="listProductLevel"
 					icon="el-icon-search"
@@ -489,115 +322,52 @@ export default {
 					@update:queryName="handleUpdateQueryNameStore"
 				>
 					<template #table-columns>
-						<el-table-column
-							label="级别编码"
-							align="center"
-							prop="levelNo"
-						/>
-						<el-table-column
-							label="级别名称"
-							align="center"
-							prop="levelName"
-						/>
-						<el-table-column
-							label="分类编号"
-							align="center"
-							prop="categoryNo"
-						/>
-						<el-table-column
-							label="分类名称"
-							align="center"
-							prop="categoryName"
-						/>
-						<el-table-column
-							label="厚度"
-							align="center"
-							prop="height"
-						/>
-						<el-table-column
-							label="长度"
-							align="center"
-							prop="length"
-						/>
-						<el-table-column
-							label="宽度"
-							align="center"
-							prop="width"
-						/>
-						<el-table-column
-							label="吨位"
-							align="center"
-							prop="tonnage"
-						/>
+						<el-table-column label="级别编码" align="center" prop="levelNo" />
+						<el-table-column label="级别名称" align="center" prop="levelName" />
+						<el-table-column label="分类编号" align="center" prop="categoryNo" />
+						<el-table-column label="分类名称" align="center" prop="categoryName" />
+						<el-table-column label="厚度" align="center" prop="height" />
+						<el-table-column label="长度" align="center" prop="length" />
+						<el-table-column label="宽度" align="center" prop="width" />
+						<el-table-column label="吨位" align="center" prop="tonnage" />
 					</template>
 				</SearchOption>
 			</div>
 			<div class="order-item">
 				<span class="text-bold">计量单位</span>
 				<hr />
-				<el-radio v-model="orderItemInfo.countingUnit" label="片"
-					>片数
-				</el-radio>
-				<el-radio v-model="orderItemInfo.countingUnit" label="其他"
-					>其他
-				</el-radio>
+				<el-radio v-model="orderItemInfo.countingUnit" label="片">片数</el-radio>
+				<el-radio v-model="orderItemInfo.countingUnit" label="其他">其他</el-radio>
 			</div>
 			<div class="order-item">
 				<span class="text-bold">厚度</span>
 				<hr />
-				<el-input
-					disabled
-					v-model="orderItemInfo.height"
-					type="text"
-					placeholder="请输入厚度"
-				/>
+				<el-input disabled v-model="orderItemInfo.height" type="text" placeholder="请输入厚度" />
 			</div>
 			<div class="order-item">
 				<span class="text-bold">长度</span>
 				<hr />
-				<el-input
-					disabled
-					v-model="orderItemInfo.length"
-					type="text"
-					placeholder="请输入长度"
-				/>
+				<el-input disabled v-model="orderItemInfo.length" type="text" placeholder="请输入长度" />
 			</div>
 			<div class="order-item">
 				<span class="text-bold">宽度</span>
 				<hr />
-				<el-input
-					disabled
-					v-model="orderItemInfo.width"
-					type="text"
-					placeholder="请输入宽度"
-				/>
+				<el-input disabled v-model="orderItemInfo.width" type="text" placeholder="请输入宽度" />
 			</div>
 			<div class="order-item">
 				<span class="text-bold">每包片数</span>
 				<hr />
-				<el-input
-					v-model="orderItemInfo.piecesPerPack"
-					type="text"
-					placeholder="请输入每包片数"
-				/>
+				<el-input v-model="orderItemInfo.piecesPerPack" type="text" placeholder="请输入每包片数" />
 			</div>
 			<div class="order-item">
 				<span class="text-bold">包数</span>
 				<hr />
-				<el-input
-					v-model="orderItemInfo.packs"
-					type="text"
-					placeholder="请输入包数"
-				/>
+				<el-input v-model="orderItemInfo.packs" type="text" placeholder="请输入包数" />
 			</div>
 			<div class="order-item">
 				<span class="text-bold">库存量</span>
 				<hr />
-				<el-input
-					v-model="orderItemInfo.stockNumber"
-					type="text"
-					placeholder="请输入出厂片数"
-				/>
+				<el-input v-model="orderItemInfo.stockNumber" type="text" placeholder="请输入出厂片数" />
 			</div>
 			<!-- <div class="order-item">
         <span class="text-bold">实际片数</span>
@@ -607,198 +377,113 @@ export default {
 			<div class="order-item">
 				<span class="text-bold">出厂片数</span>
 				<hr />
-				<el-input
-					v-model="orderItemInfo.pieces"
-					type="text"
-					placeholder="请输入出厂片数"
-				/>
+				<el-input v-model="orderItemInfo.pieces" type="text" placeholder="请输入出厂片数" />
 			</div>
 			<div class="order-item">
 				<span class="text-bold">出厂单价</span>
 				<hr />
-				<el-input
-					v-model="orderItemInfo.price"
-					type="text"
-					placeholder="请输入出厂单价"
-				/>
+				<el-input v-model="orderItemInfo.price" type="text" placeholder="请输入出厂单价" />
 			</div>
 			<div class="order-item">
 				<span class="text-bold">出厂是否含税</span>
 				<hr />
-				<el-radio v-model="orderItemInfo.isIncludeTaxFactory" :label="1"
-					>是
-				</el-radio>
-				<el-radio v-model="orderItemInfo.isIncludeTaxFactory" :label="0"
-					>否
-				</el-radio>
+				<el-radio v-model="orderItemInfo.isIncludeTaxFactory" :label="1">是</el-radio>
+				<el-radio v-model="orderItemInfo.isIncludeTaxFactory" :label="0">否</el-radio>
 			</div>
 			<div class="order-item">
 				<span class="text-bold">杂费</span>
 				<hr />
-				<el-input
-					v-model="orderItemInfo.sundryCost"
-					type="text"
-					placeholder="请输入杂费"
-				/>
+				<el-input v-model="orderItemInfo.sundryCost" type="text" placeholder="请输入杂费" />
 			</div>
 			<div class="order-item">
 				<span class="text-bold">出厂货款</span>
 				<hr />
-				<el-input
-					v-model="orderItemInfo.paymentFactory"
-					type="text"
-					placeholder="请输入出厂贷款"
-				/>
+				<el-input v-model="orderItemInfo.paymentFactory" type="text" placeholder="请输入出厂贷款" />
 			</div>
 			<div class="order-item">
 				<span class="text-bold">卸货片数</span>
 				<hr />
-				<el-input
-					v-model="orderItemInfo.outPieces"
-					type="text"
-					placeholder="请输入卸货片数"
-				/>
+				<el-input v-model="orderItemInfo.outPieces" type="text" placeholder="请输入卸货片数" />
 			</div>
 			<div class="order-item">
 				<span class="text-bold">卸货价</span>
 				<hr />
-				<el-input
-					v-model="orderItemInfo.paymentUnload"
-					type="text"
-					placeholder="请输入卸货价"
-				/>
+				<el-input v-model="orderItemInfo.paymentUnload" type="text" placeholder="请输入卸货价" />
 			</div>
 			<div class="order-item">
 				<span class="text-bold">销售是否含税</span>
 				<hr />
-				<el-radio v-model="orderItemInfo.isIncludeTaxSale" :label="1"
-					>是
-				</el-radio>
-				<el-radio v-model="orderItemInfo.isIncludeTaxSale" :label="0"
-					>否
-				</el-radio>
+				<el-radio v-model="orderItemInfo.isIncludeTaxSale" :label="1">是</el-radio>
+				<el-radio v-model="orderItemInfo.isIncludeTaxSale" :label="0">否</el-radio>
 			</div>
 
 			<div class="order-item">
 				<span class="text-bold">总货款杂费</span>
 				<hr />
-				<el-input
-					v-model="orderItemInfo.paymentsWithSundry"
-					type="text"
-					placeholder="总货款杂费"
-				/>
+				<el-input v-model="orderItemInfo.paymentsWithSundry" type="text" placeholder="总货款杂费" />
 			</div>
 
 			<div class="order-item">
 				<span class="text-bold">总货款</span>
 				<hr />
-				<el-input
-					v-model="orderItemInfo.payments"
-					type="text"
-					placeholder="请输入总货款"
-				/>
+				<el-input v-model="orderItemInfo.payments" type="text" placeholder="请输入总货款" />
 			</div>
 
 			<div class="order-item">
 				<span class="text-bold">误差</span>
 				<hr />
-				<el-input
-					v-model="orderItemInfo.erro"
-					type="text"
-					placeholder="请输入误差"
-					disabled
-				/>
+				<el-input v-model="orderItemInfo.erro" type="text" placeholder="请输入误差" disabled />
 			</div>
 			<div class="order-item">
 				<span class="text-bold">吨位</span>
 				<hr />
-				<el-input
-					v-model="orderItemInfo.tonnage"
-					type="text"
-					placeholder="请输入吨位"
-				/>
+				<el-input v-model="orderItemInfo.tonnage" type="text" placeholder="请输入吨位" />
 			</div>
 			<div class="order-item">
 				<span class="text-bold">陆运费单价</span>
 				<hr />
-				<el-input
-					v-model="orderItemInfo.landFreightPrice"
-					type="text"
-					placeholder="请输入陆运费单价"
-				/>
+				<el-input v-model="orderItemInfo.landFreightPrice" type="text" placeholder="请输入陆运费单价" />
 			</div>
 			<div class="order-item">
 				<span class="text-bold">加费</span>
 				<hr />
-				<el-input
-					v-model="orderItemInfo.additionalFees"
-					type="text"
-					placeholder="加费"
-				/>
+				<el-input v-model="orderItemInfo.additionalFees" type="text" placeholder="加费" />
 			</div>
 			<div class="order-item">
 				<span class="text-bold">陆运费</span>
 				<hr />
-				<el-input
-					v-model="orderItemInfo.landFreight"
-					type="text"
-					placeholder="陆运费"
-				/>
+				<el-input v-model="orderItemInfo.landFreight" type="text" placeholder="陆运费" />
 			</div>
 			<div v-if="isSea" class="order-item">
 				<span class="text-bold">海运费</span>
 				<hr />
-				<el-input
-					v-model="orderItemInfo.seaFreight"
-					type="text"
-					placeholder="海运费"
-				/>
+				<el-input v-model="orderItemInfo.seaFreight" type="text" placeholder="海运费" />
 			</div>
 			<div class="order-item">
 				<span class="text-bold">总运费</span>
 				<hr />
-				<el-input
-					v-model="orderItemInfo.freight"
-					type="text"
-					placeholder="总运费"
-				/>
+				<el-input v-model="orderItemInfo.freight" type="text" placeholder="总运费" />
 			</div>
 
 			<div class="order-item">
 				<span class="text-bold">其他费用</span>
 				<hr />
-				<el-input
-					v-model="orderItemInfo.otherCost"
-					type="text"
-					placeholder="其他费用"
-				/>
+				<el-input v-model="orderItemInfo.otherCost" type="text" placeholder="其他费用" />
 			</div>
 			<div class="order-item">
 				<span class="text-bold">利润</span>
 				<hr />
-				<el-input
-					v-model="orderItemInfo.profit"
-					type="text"
-					placeholder="利润"
-				/>
+				<el-input v-model="orderItemInfo.profit" type="text" placeholder="利润" />
 			</div>
 			<div class="order-item">
 				<span class="text-bold">不含税利润</span>
 				<hr />
-				<el-input
-					v-model="orderItemInfo.profitNoTax"
-					type="text"
-					placeholder="不含税利润"
-				/>
+				<el-input v-model="orderItemInfo.profitNoTax" type="text" placeholder="不含税利润" />
 			</div>
 			<div class="order-item">
 				<span class="text-bold">备注</span>
 				<hr />
-				<el-input
-					v-model="orderItemInfo.comments"
-					type="text"
-					placeholder="备注"
-				/>
+				<el-input v-model="orderItemInfo.comments" type="text" placeholder="备注" />
 			</div>
 		</div>
 	</div>

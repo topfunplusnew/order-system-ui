@@ -1,117 +1,40 @@
 <template>
 	<!-- 授权用户 -->
-	<el-dialog
-		:close-on-click-modal="false"
-		:show-close="false"
-		title="选择用户"
-		:visible.sync="visible"
-		width="800px"
-		top="5vh"
-		append-to-body
-	>
-		<el-form
-			ref="queryForm"
-			:model="queryParams"
-			size="mini"
-			:inline="true"
-		>
+	<el-dialog :close-on-click-modal="false" :show-close="false" title="选择用户" :visible.sync="visible" width="800px" top="5vh" append-to-body>
+		<el-form ref="queryForm" :model="queryParams" size="mini" :inline="true">
 			<el-form-item label="用户名称" prop="userName">
-				<el-input
-					v-model="queryParams.userName"
-					placeholder="请输入用户名称"
-					clearable
-					@keyup.enter.native="handleQuery"
-				/>
+				<el-input v-model="queryParams.userName" placeholder="请输入用户名称" clearable @keyup.enter.native="handleQuery" />
 			</el-form-item>
 			<el-form-item label="手机号码" prop="phonenumber">
-				<el-input
-					v-model="queryParams.phonenumber"
-					placeholder="请输入手机号码"
-					clearable
-					@keyup.enter.native="handleQuery"
-				/>
+				<el-input v-model="queryParams.phonenumber" placeholder="请输入手机号码" clearable @keyup.enter.native="handleQuery" />
 			</el-form-item>
 			<el-form-item>
-				<el-button
-					type="primary"
-					icon="el-icon-search"
-					size="mini"
-					@click="handleQuery"
-					>搜索</el-button
-				>
-				<el-button
-					icon="el-icon-refresh"
-					size="mini"
-					@click="resetQuery"
-					>重置</el-button
-				>
+				<el-button type="primary" icon="el-icon-search" size="mini" @click="handleQuery">搜索</el-button>
+				<el-button icon="el-icon-refresh" size="mini" @click="resetQuery">重置</el-button>
 			</el-form-item>
 		</el-form>
 		<el-row>
-			<el-table
-				ref="table"
-				:data="userList"
-				height="260px"
-				@row-click="clickRow"
-				@selection-change="handleSelectionChange"
-			>
+			<el-table ref="table" :data="userList" height="260px" @row-click="clickRow" @selection-change="handleSelectionChange">
 				<el-table-column type="selection" width="55"></el-table-column>
-				<el-table-column
-					label="用户名称"
-					prop="userName"
-					:show-overflow-tooltip="true"
-				/>
-				<el-table-column
-					label="用户昵称"
-					prop="nickName"
-					:show-overflow-tooltip="true"
-				/>
-				<el-table-column
-					label="邮箱"
-					prop="email"
-					:show-overflow-tooltip="true"
-				/>
-				<el-table-column
-					label="手机"
-					prop="phonenumber"
-					:show-overflow-tooltip="true"
-				/>
+				<el-table-column label="用户名称" prop="userName" :show-overflow-tooltip="true" />
+				<el-table-column label="用户昵称" prop="nickName" :show-overflow-tooltip="true" />
+				<el-table-column label="邮箱" prop="email" :show-overflow-tooltip="true" />
+				<el-table-column label="手机" prop="phonenumber" :show-overflow-tooltip="true" />
 				<el-table-column label="状态" align="center" prop="status">
 					<template slot-scope="scope">
-						<dict-tag
-							:options="dict.type.sys_normal_disable"
-							:value="scope.row.status"
-						/>
+						<dict-tag :options="dict.type.sys_normal_disable" :value="scope.row.status" />
 					</template>
 				</el-table-column>
-				<el-table-column
-					label="创建时间"
-					align="center"
-					prop="createTime"
-					width="180"
-				>
+				<el-table-column label="创建时间" align="center" prop="createTime" width="180">
 					<template slot-scope="scope">
-						<span>{{
-							parseTime(
-								scope.row.createTime,
-								'{y}-{m}-{d} {h}:{i}:{s}'
-							)
-						}}</span>
+						<span>{{ parseTime(scope.row.createTime, '{y}-{m}-{d} {h}:{i}:{s}') }}</span>
 					</template>
 				</el-table-column>
 			</el-table>
-			<pagination
-				v-show="total > 0"
-				:total="total"
-				:page.sync="queryParams.pageNum"
-				:limit.sync="queryParams.pageSize"
-				@pagination="getList"
-			/>
+			<pagination v-show="total > 0" :total="total" :page.sync="queryParams.pageNum" :limit.sync="queryParams.pageSize" @pagination="getList" />
 		</el-row>
 		<div slot="footer" class="dialog-footer">
-			<el-button type="primary" @click="handleSelectUser"
-				>确 定</el-button
-			>
+			<el-button type="primary" @click="handleSelectUser">确 定</el-button>
 			<el-button @click="visible = false">取 消</el-button>
 		</div>
 	</el-dialog>
@@ -188,13 +111,11 @@ export default {
 				this.$modal.msgError('请选择要分配的用户');
 				return;
 			}
-			authUserSelectAll({ roleId: roleId, userIds: userIds }).then(
-				res => {
-					this.$modal.msgSuccess(res.msg);
-					this.visible = false;
-					this.$emit('ok');
-				}
-			);
+			authUserSelectAll({ roleId: roleId, userIds: userIds }).then(res => {
+				this.$modal.msgSuccess(res.msg);
+				this.visible = false;
+				this.$emit('ok');
+			});
 		}
 	}
 };

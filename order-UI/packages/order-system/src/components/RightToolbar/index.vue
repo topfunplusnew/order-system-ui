@@ -2,64 +2,26 @@
 	<div class="top-right-btn" :style="style">
 		<el-row>
 			<!--      打印-->
-			<el-tooltip
-				class="item"
-				effect="dark"
-				content="打印"
-				placement="top"
-				style="margin-right: 10px"
-			>
+			<el-tooltip class="item" effect="dark" content="打印" placement="top" style="margin-right: 10px">
 				<slot name="print"></slot>
 			</el-tooltip>
 
 			<!--      导出-->
-			<el-tooltip
-				class="item"
-				effect="dark"
-				content="导出"
-				placement="top"
-			>
+			<el-tooltip class="item" effect="dark" content="导出" placement="top">
 				<slot name="export"></slot>
 			</el-tooltip>
-			<el-tooltip
-				class="item"
-				effect="dark"
-				content="导出2"
-				placement="top"
-			>
+			<el-tooltip class="item" effect="dark" content="导出2" placement="top">
 				<slot name="export2"></slot>
 			</el-tooltip>
 			<!-- 隐藏列的控制   -->
-			<el-tooltip
-				v-if="columns"
-				class="item"
-				style="margin-right: 10px"
-				effect="dark"
-				content="显隐列"
-				placement="top"
-			>
-				<el-button
-					v-if="showColumnsType == 'transfer'"
-					size="mini"
-					circle
-					icon="el-icon-s-open"
-					@click="showColumn()"
-				/>
-				<el-dropdown
-					v-if="showColumnsType == 'checkbox'"
-					trigger="click"
-					:hide-on-click="false"
-					style="padding-left: 12px"
-				>
+			<el-tooltip v-if="columns" class="item" style="margin-right: 10px" effect="dark" content="显隐列" placement="top">
+				<el-button v-if="showColumnsType == 'transfer'" size="mini" circle icon="el-icon-s-open" @click="showColumn()" />
+				<el-dropdown v-if="showColumnsType == 'checkbox'" trigger="click" :hide-on-click="false" style="padding-left: 12px">
 					<el-button size="mini" icon="el-icon-s-open" />
 					<el-dropdown-menu slot="dropdown">
 						<template v-for="item in columns">
 							<el-dropdown-item :key="item.key">
-								<el-checkbox
-									:checked="item.visible"
-									:label="item.label"
-									@change="checkboxChange($event, item.label)"
-								/>
+								<el-checkbox :checked="item.visible" :label="item.label" @change="checkboxChange($event, item.label)" />
 							</el-dropdown-item>
 						</template>
 					</el-dropdown-menu>
@@ -75,18 +37,8 @@
 			<!--        <el-button size="mini" circle icon="el-icon-refresh" @click="refresh()"/>-->
 			<!--      </el-tooltip>-->
 		</el-row>
-		<el-dialog
-			:close-on-click-modal="false"
-			:title="title"
-			:visible.sync="open"
-			append-to-body
-		>
-			<el-transfer
-				v-model="value"
-				:titles="['显示', '隐藏']"
-				:data="columns"
-				@change="dataChange"
-			></el-transfer>
+		<el-dialog :close-on-click-modal="false" :title="title" :visible.sync="open" append-to-body>
+			<el-transfer v-model="value" :titles="['显示', '隐藏']" :data="columns" @change="dataChange"></el-transfer>
 		</el-dialog>
 	</div>
 </template>

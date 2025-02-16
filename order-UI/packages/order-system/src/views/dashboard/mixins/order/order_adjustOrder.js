@@ -1,7 +1,4 @@
-import {
-	adjustGoodsOrder,
-	getGoodsOrder
-} from '../../../../api/system/goodsOrder';
+import { adjustGoodsOrder, getGoodsOrder } from '../../../../api/system/goodsOrder';
 import { excludeParams } from '../../../../api/tool/exclude';
 import { parseTime } from '../../../../utils/ruoyi';
 

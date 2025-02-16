@@ -150,116 +150,44 @@ export default {
 <template>
 	<div>
 		<!--    按钮-->
-		<el-button
-			size="mini"
-			:icon="icon"
-			type="primary"
-			@click="handleCallBack"
-		></el-button>
+		<el-button size="mini" :icon="icon" type="primary" @click="handleCallBack"></el-button>
 		<!--    弹窗-->
-		<el-dialog
-			:close-on-click-modal="false"
-			:title="title"
-			:visible.sync="dialogVisible"
-			destroy-on-close
-			width="65%"
-			append-to-body
-		>
+		<el-dialog :close-on-click-modal="false" :title="title" :visible.sync="dialogVisible" destroy-on-close width="65%" append-to-body>
 			<!--      弹出的表格内容-->
 			<el-row>
 				<div>
-					<el-form
-						ref="queryForm"
-						:model="queryItems"
-						size="mini"
-						:inline="true"
-						label-width="100px"
-					>
-						<el-form-item
-							v-for="item in queryItems.queryList"
-							:label="item.label"
-							:prop="item.prop"
-							:key="item.id"
-						>
-							<el-input
-								v-if="item.type === 'input'"
-								v-model="item.value"
-								placeholder="请输入"
-								size="mini"
-								clearable
-							></el-input>
-							<el-select
-								v-else-if="item.type === 'select'"
-								v-model="item.value"
-								size="mini"
-								placeholder="请选择"
-								clearable
-							>
-								<el-option
-									v-for="option in item.options"
-									:key="option.value"
-									:label="option.label"
-									:value="option.value"
-								></el-option>
+					<el-form ref="queryForm" :model="queryItems" size="mini" :inline="true" label-width="100px">
+						<el-form-item v-for="item in queryItems.queryList" :label="item.label" :prop="item.prop" :key="item.id">
+							<el-input v-if="item.type === 'input'" v-model="item.value" placeholder="请输入" size="mini" clearable></el-input>
+							<el-select v-else-if="item.type === 'select'" v-model="item.value" size="mini" placeholder="请选择" clearable>
+								<el-option v-for="option in item.options" :key="option.value" :label="option.label" :value="option.value"></el-option>
 							</el-select>
 						</el-form-item>
 						<el-form-item :label="queryLabel">
-							<el-input
-								v-model="query"
-								type="text"
-								placeholder="请输入"
-								size="mini"
-								clearable
-							></el-input>
+							<el-input v-model="query" type="text" placeholder="请输入" size="mini" clearable></el-input>
 						</el-form-item>
 						<el-form-item>
-							<el-button
-								type="primary"
-								size="mini"
-								@click="handleSearchInfo"
-								>搜索
-							</el-button>
+							<el-button type="primary" size="mini" @click="handleSearchInfo">搜索</el-button>
 						</el-form-item>
 					</el-form>
 				</div>
 
 				<!--        列表页-->
-				<el-table
-					:key="tableData.length"
-					v-loading="loading"
-					:data="tableData"
-					size="mini"
-				>
+				<el-table :key="tableData.length" v-loading="loading" :data="tableData" size="mini">
 					<slot name="table-columns" :tableData="tableData"></slot>
 
 					<!--          点击确认的地方-->
 					<el-table-column fixed="right" label="操作" width="100">
 						<template slot-scope="scope">
-							<el-button
-								type="danger"
-								size="small"
-								:disabled="disable"
-								@click="commitSomeThing(scope.row)"
-							>
-								确认
-							</el-button>
+							<el-button type="danger" size="small" :disabled="disable" @click="commitSomeThing(scope.row)">确认</el-button>
 						</template>
 					</el-table-column>
 				</el-table>
-				<pagination
-					v-if="isPage"
-					v-show="total > 0"
-					:total="total"
-					:page.sync="pageNum"
-					:limit.sync="pageSize"
-					@pagination="getList"
-				/>
+				<pagination v-if="isPage" v-show="total > 0" :total="total" :page.sync="pageNum" :limit.sync="pageSize" @pagination="getList" />
 			</el-row>
 			<span slot="footer" class="dialog-footer">
 				<el-button @click="dialogVisible = false">取 消</el-button>
-				<el-button type="primary" @click="dialogVisible = false"
-					>确 定</el-button
-				>
+				<el-button type="primary" @click="dialogVisible = false">确 定</el-button>
 			</span>
 		</el-dialog>
 	</div>

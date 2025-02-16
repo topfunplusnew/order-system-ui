@@ -1,88 +1,35 @@
 <template>
 	<div class="app-container">
 		<!--    搜索框-->
-		<el-form
-			v-show="showSearch"
-			ref="queryForm"
-			:model="queryParams"
-			size="mini"
-			:inline="true"
-			label-width="68px"
-		>
+		<el-form v-show="showSearch" ref="queryForm" :model="queryParams" size="mini" :inline="true" label-width="68px">
 			<el-form-item label="操作时间" prop="beginTime">
-				<el-date-picker
-					v-model="dateRange"
-					style="width: 240px"
-					value-format="yyyy-MM-dd HH:mm:ss"
-					type="daterange"
-					start-placeholder="开始日期"
-					end-placeholder="结束日期"
-				></el-date-picker>
+				<el-date-picker v-model="dateRange" style="width: 240px" value-format="yyyy-MM-dd HH:mm:ss" type="daterange" start-placeholder="开始日期" end-placeholder="结束日期"></el-date-picker>
 			</el-form-item>
 			<el-form-item label="对方公司" prop="companyName">
-				<el-input
-					v-model="queryParams.companyName"
-					placeholder="请输入对方公司"
-					clearable
-				/>
+				<el-input v-model="queryParams.companyName" placeholder="请输入对方公司" clearable />
 			</el-form-item>
 			<el-form-item>
-				<el-button
-					type="primary"
-					icon="el-icon-search"
-					size="mini"
-					@click="handleQuery"
-				>
-					搜索
-				</el-button>
+				<el-button type="primary" icon="el-icon-search" size="mini" @click="handleQuery">搜索</el-button>
 			</el-form-item>
 		</el-form>
 
 		<el-row :gutter="10" class="mb8">
 			<el-col :span="1.5">
-				<el-button
-					icon="el-icon-refresh"
-					size="mini"
-					@click="resetQuery"
-				>
-					刷新
-				</el-button>
+				<el-button icon="el-icon-refresh" size="mini" @click="resetQuery">刷新</el-button>
 			</el-col>
 			<el-col :span="1.5">
-				<el-button
-					v-hasPermi="['system:balanceaccounts:add']"
-					type="danger"
-					size="mini"
-					@click="handleAdd"
-				>
-					新增平账信息
-				</el-button>
+				<el-button v-hasPermi="['system:balanceaccounts:add']" type="danger" size="mini" @click="handleAdd">新增平账信息</el-button>
 			</el-col>
-			<right-toolbar
-				:showSearch.sync="showSearch"
-				:columns="columns"
-				@queryTable="getList"
-			>
+			<right-toolbar :showSearch.sync="showSearch" :columns="columns" @queryTable="getList">
 				<template #print>
 					<el-col :span="1.5">
-						<el-button
-							plain
-							icon="el-icon-printer"
-							size="mini"
-							@click="printHTML"
-						></el-button>
+						<el-button plain icon="el-icon-printer" size="mini" @click="printHTML"></el-button>
 					</el-col>
 				</template>
 				<!--        导出-->
 				<template #export>
 					<el-col :span="1.5">
-						<el-button
-							v-hasPermi="['system:balanceaccounts:export']"
-							plain
-							icon="el-icon-folder-opened"
-							size="mini"
-							@click="handleExport"
-						></el-button>
+						<el-button v-hasPermi="['system:balanceaccounts:export']" plain icon="el-icon-folder-opened" size="mini" @click="handleExport"></el-button>
 					</el-col>
 				</template>
 			</right-toolbar>
@@ -102,129 +49,45 @@
 			"
 			@selection-change="handleSelectionChange"
 		>
-			<el-table-column
-				v-if="columns[0].visible"
-				label="操作时间"
-				align="center"
-				prop="operateDate"
-			/>
-			<el-table-column
-				v-if="columns[1].visible"
-				label="金额"
-				align="center"
-				prop="moneyAmount"
-			/>
-			<el-table-column
-				v-if="columns[2].visible"
-				label="对方公司"
-				align="center"
-				prop="companyName"
-			/>
-			<el-table-column
-				label="对方公司类型"
-				align="center"
-				prop="companyType"
-				v-if="columns[3].visible"
-			>
+			<el-table-column v-if="columns[0].visible" label="操作时间" align="center" prop="operateDate" />
+			<el-table-column v-if="columns[1].visible" label="金额" align="center" prop="moneyAmount" />
+			<el-table-column v-if="columns[2].visible" label="对方公司" align="center" prop="companyName" />
+			<el-table-column label="对方公司类型" align="center" prop="companyType" v-if="columns[3].visible">
 				<template slot-scope="scope">
 					{{ scope.row.companyType === 1 ? '客户' : '供应商' }}
 				</template>
 			</el-table-column>
-			<el-table-column
-				v-if="columns[4].visible"
-				label="备注"
-				align="center"
-				prop="comments"
-			/>
-			<el-table-column
-				v-if="columns[5].visible"
-				label="添加时间"
-				align="center"
-				prop="addtime"
-			/>
-			<el-table-column
-				label="操作"
-				align="center"
-				class-name="small-padding fixed-width"
-			>
+			<el-table-column v-if="columns[4].visible" label="备注" align="center" prop="comments" />
+			<el-table-column v-if="columns[5].visible" label="添加时间" align="center" prop="addtime" />
+			<el-table-column label="操作" align="center" class-name="small-padding fixed-width">
 				<template slot-scope="scope">
-					<el-button
-						v-hasPermi="['system:balanceaccounts:edit']"
-						size="mini"
-						type="primary"
-						@click="handleUpdate(scope.row)"
-					>
-						编辑
-					</el-button>
-					<el-button
-						v-hasPermi="['system:balanceaccounts:remove']"
-						size="mini"
-						type="danger"
-						@click="handleDelete(scope.row)"
-					>
-						删除
-					</el-button>
+					<el-button v-hasPermi="['system:balanceaccounts:edit']" size="mini" type="primary" @click="handleUpdate(scope.row)">编辑</el-button>
+					<el-button v-hasPermi="['system:balanceaccounts:remove']" size="mini" type="danger" @click="handleDelete(scope.row)">删除</el-button>
 				</template>
 			</el-table-column>
 		</el-table>
-		<pagination
-			v-show="total > 0"
-			:total="total"
-			:page.sync="queryParams.pageNum"
-			:limit.sync="queryParams.pageSize"
-			@pagination="getList"
-		/>
+		<pagination v-show="total > 0" :total="total" :page.sync="queryParams.pageNum" :limit.sync="queryParams.pageSize" @pagination="getList" />
 
 		<!-- 添加或修改平账信息对话框 -->
-		<el-dialog
-			:close-on-click-modal="false"
-			:show-close="false"
-			:title="title"
-			:visible.sync="open"
-			width="700px"
-			append-to-body
-		>
-			<el-form
-				ref="form"
-				:model="form"
-				:rules="rules"
-				label-width="120px"
-			>
+		<el-dialog :close-on-click-modal="false" :show-close="false" :title="title" :visible.sync="open" width="700px" append-to-body>
+			<el-form ref="form" :model="form" :rules="rules" label-width="120px">
 				<el-form-item label="操作时间" prop="operateDate">
 					<!--          <el-input v-model="form.operateDate" placeholder="请输入操作时间"/>-->
-					<el-date-picker
-						v-model="form.operateDate"
-						type="datetime"
-						placeholder="选择操作时间"
-						value-format="yyyy-MM-dd HH:mm:ss"
-					></el-date-picker>
+					<el-date-picker v-model="form.operateDate" type="datetime" placeholder="选择操作时间" value-format="yyyy-MM-dd HH:mm:ss"></el-date-picker>
 				</el-form-item>
 				<el-form-item label="金额" prop="moneyAmount">
-					<el-input
-						v-model="form.moneyAmount"
-						placeholder="请输入金额"
-					/>
+					<el-input v-model="form.moneyAmount" placeholder="请输入金额" />
 				</el-form-item>
 				<el-form-item label="对方类型(请确认)">
 					<el-select v-model="value" placeholder="请选择">
-						<el-option
-							v-for="item in options"
-							:key="item.value"
-							:label="item.label"
-							:value="item.value"
-						></el-option>
+						<el-option v-for="item in options" :key="item.value" :label="item.label" :value="item.value"></el-option>
 					</el-select>
-					<span style="color: #1c84c6; font-size: 12px">
-						请注意选择正确的对方公司类型!
-					</span>
+					<span style="color: #1c84c6; font-size: 12px">请注意选择正确的对方公司类型!</span>
 				</el-form-item>
 				<el-form-item label="对方公司" prop="companyName">
 					<el-row>
 						<el-col :span="12">
-							<el-input
-								v-model="form.companyName"
-								placeholder="请输入对方公司"
-							/>
+							<el-input v-model="form.companyName" placeholder="请输入对方公司" />
 						</el-col>
 						<SearchOption
 							:limit-info="{ companyType: value }"
@@ -236,52 +99,21 @@
 							@commitBack="handleCommitBackCompany"
 						>
 							<template #table-columns>
-								<el-table-column
-									:label="value"
-									align="center"
-									prop="companyName"
-								/>
-								<el-table-column
-									label="对方公司类型"
-									align="center"
-									prop="companyType"
-								/>
-								<el-table-column
-									label="老板姓名"
-									align="center"
-									prop="leader"
-								/>
-								<el-table-column
-									label="老板电话"
-									align="center"
-									prop="leaderTel"
-								/>
-								<el-table-column
-									label="区域"
-									align="center"
-									prop="region"
-								/>
-								<el-table-column
-									label="销售经理"
-									align="center"
-									prop="salesManager"
-								/>
+								<el-table-column :label="value" align="center" prop="companyName" />
+								<el-table-column label="对方公司类型" align="center" prop="companyType" />
+								<el-table-column label="老板姓名" align="center" prop="leader" />
+								<el-table-column label="老板电话" align="center" prop="leaderTel" />
+								<el-table-column label="区域" align="center" prop="region" />
+								<el-table-column label="销售经理" align="center" prop="salesManager" />
 							</template>
 						</SearchOption>
 					</el-row>
 				</el-form-item>
 				<el-form-item label="对方公司类型" prop="companyType">
-					<el-input
-						v-model="form.companyType"
-						type="text"
-						placeholder="请输入对方公司类型"
-					></el-input>
+					<el-input v-model="form.companyType" type="text" placeholder="请输入对方公司类型"></el-input>
 				</el-form-item>
 				<el-form-item label="备注" prop="comments">
-					<el-input
-						v-model="form.comments"
-						placeholder="请输入备注"
-					/>
+					<el-input v-model="form.comments" placeholder="请输入备注" />
 				</el-form-item>
 			</el-form>
 			<div slot="footer" class="dialog-footer">
@@ -291,54 +123,28 @@
 		</el-dialog>
 
 		<!--    点击公司查询的弹窗-->
-		<el-dialog
-			:close-on-click-modal="false"
-			:show-close="false"
-			title="公司查询"
-			:visible.sync="companyDialogVisible"
-			width="40%"
-		>
+		<el-dialog :close-on-click-modal="false" :show-close="false" title="公司查询" :visible.sync="companyDialogVisible" width="40%">
 			<el-row>
 				<el-table :data="companyInfoList" border style="width: 100%">
-					<el-table-column
-						label="公司名称"
-						align="center"
-						prop="companyName"
-					/>
+					<el-table-column label="公司名称" align="center" prop="companyName" />
 					<el-table-column label="公司id" align="center" prop="id" />
 					<el-table-column fixed="right" label="操作" width="100">
 						<template slot-scope="scope">
-							<el-button
-								type="danger"
-								size="small"
-								@click="commitCompanyInfo(scope.row)"
-							>
-								确定
-							</el-button>
+							<el-button type="danger" size="small" @click="commitCompanyInfo(scope.row)">确定</el-button>
 						</template>
 					</el-table-column>
 				</el-table>
 			</el-row>
 			<span slot="footer" class="dialog-footer">
-				<el-button @click="companyDialogVisible = false"
-					>取 消</el-button
-				>
-				<el-button type="primary" @click="companyDialogVisible = false">
-					确 定
-				</el-button>
+				<el-button @click="companyDialogVisible = false">取 消</el-button>
+				<el-button type="primary" @click="companyDialogVisible = false">确 定</el-button>
 			</span>
 		</el-dialog>
 	</div>
 </template>
 
 <script>
-import {
-	listBalanceAccounts,
-	getBalanceAccounts,
-	delBalanceAccounts,
-	addBalanceAccounts,
-	updateBalanceAccounts
-} from '@/api/system/BalanceAccounts';
+import { listBalanceAccounts, getBalanceAccounts, delBalanceAccounts, addBalanceAccounts, updateBalanceAccounts } from '@/api/system/BalanceAccounts';
 import company from '@/views/system/company/index.vue';
 import { mapGetters } from 'vuex';
 import { addDateRange, parseTime } from '@/utils/ruoyi';
@@ -474,10 +280,7 @@ export default {
 	watch: {
 		columns: {
 			handler: function (newVal) {
-				localStorage.setItem(
-					'balanceaccounts-columns',
-					JSON.stringify(newVal)
-				);
+				localStorage.setItem('balanceaccounts-columns', JSON.stringify(newVal));
 			},
 			deep: true
 		}
@@ -487,18 +290,10 @@ export default {
 		// 获取平账信息
 		this.$store.dispatch('balanceaccounts/getbalanceaccountsList');
 		// 控制隐藏列
-		if (
-			localStorage.getItem('balanceaccounts-columns') === 'null' ||
-			!localStorage.getItem('balanceaccounts-columns')
-		) {
-			localStorage.setItem(
-				'balanceaccounts-columns',
-				JSON.stringify(this.columns)
-			);
+		if (localStorage.getItem('balanceaccounts-columns') === 'null' || !localStorage.getItem('balanceaccounts-columns')) {
+			localStorage.setItem('balanceaccounts-columns', JSON.stringify(this.columns));
 		} else {
-			this.columns = JSON.parse(
-				localStorage.getItem('balanceaccounts-columns')
-			);
+			this.columns = JSON.parse(localStorage.getItem('balanceaccounts-columns'));
 		}
 	},
 	methods: {
@@ -530,9 +325,7 @@ export default {
 		/** 查询平账信息列表 */
 		getList() {
 			this.loading = true;
-			listBalanceAccounts(
-				addDateRange(this.queryParams, this.dateRange)
-			).then(response => {
+			listBalanceAccounts(addDateRange(this.queryParams, this.dateRange)).then(response => {
 				this.BalanceAccountsList = response.rows;
 				this.total = response.total;
 				this.loading = false;
@@ -603,15 +396,11 @@ export default {
 						this.form.updateTime = null;
 						this.form.userId = null;
 						// this.form.companyType = this.form.companyType === '供应商' ? 2 : 1
-						this.form.operateDate = parseTime(
-							this.form.operateDate,
-							'{y}-{m}-{d} {h}:{i}:{s}'
-						);
+						this.form.operateDate = parseTime(this.form.operateDate, '{y}-{m}-{d} {h}:{i}:{s}');
 						this.form = excludeParams(this.form, this.$exclude);
 						updateBalanceAccounts({
 							...this.form,
-							companyType:
-								this.form.companyType === '供应商' ? 2 : 1
+							companyType: this.form.companyType === '供应商' ? 2 : 1
 						}).then(response => {
 							this.$modal.msgSuccess('修改成功');
 							this.open = false;
@@ -623,15 +412,11 @@ export default {
 						this.form.updateTime = null;
 						this.form.userId = null;
 						// this.form.companyType = this.form.companyType === '供应商' ? 2 : 1
-						this.form.operateDate = parseTime(
-							this.form.operateDate,
-							'{y}-{m}-{d} {h}:{i}:{s}'
-						);
+						this.form.operateDate = parseTime(this.form.operateDate, '{y}-{m}-{d} {h}:{i}:{s}');
 						this.form = excludeParams(this.form, this.$exclude);
 						addBalanceAccounts({
 							...this.form,
-							companyType:
-								this.form.companyType === '供应商' ? 2 : 1
+							companyType: this.form.companyType === '供应商' ? 2 : 1
 						}).then(response => {
 							this.$modal.msgSuccess('新增成功');
 							this.open = false;

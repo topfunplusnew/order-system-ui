@@ -2,76 +2,33 @@
 <template>
 	<div class="app-container">
 		<el-row style="background-color: #e6e6e6">
-			<el-button type="primary" icon="el-icon-refresh" @click="refresh">
-				刷新
-			</el-button>
+			<el-button type="primary" icon="el-icon-refresh" @click="refresh">刷新</el-button>
 		</el-row>
 		<hr color="#e6e6e6" />
-		<el-form
-			v-show="showSearch"
-			ref="queryForm"
-			:model="queryParams"
-			size="mini"
-			:inline="true"
-			label-width="68px"
-		>
+		<el-form v-show="showSearch" ref="queryForm" :model="queryParams" size="mini" :inline="true" label-width="68px">
 			<el-form-item label="开始时间" prop="beginTime">
-				<el-date-picker
-					v-model="queryParams.beginTime"
-					type="date"
-					placeholder="请选择开始时间"
-					value-format="yyyy-MM-dd"
-				></el-date-picker>
+				<el-date-picker v-model="queryParams.beginTime" type="date" placeholder="请选择开始时间" value-format="yyyy-MM-dd"></el-date-picker>
 			</el-form-item>
 			<el-form-item label="结束时间" prop="endTime">
-				<el-date-picker
-					v-model="queryParams.endTime"
-					type="date"
-					placeholder="请选择结束时间"
-					value-format="yyyy-MM-dd"
-				></el-date-picker>
+				<el-date-picker v-model="queryParams.endTime" type="date" placeholder="请选择结束时间" value-format="yyyy-MM-dd"></el-date-picker>
 			</el-form-item>
 			<el-form-item>
-				<el-button
-					type="primary"
-					icon="el-icon-search"
-					size="mini"
-					@click="handleQuery"
-				>
-					搜索
-				</el-button>
+				<el-button type="primary" icon="el-icon-search" size="mini" @click="handleQuery">搜索</el-button>
 			</el-form-item>
 		</el-form>
 		<hr color="#e6e6e6" />
-		<el-row style="font-weight: bold; font-size: 20px; margin: 0 30px">
-			期货保证金台账
-		</el-row>
+		<el-row style="font-weight: bold; font-size: 20px; margin: 0 30px">期货保证金台账</el-row>
 		<el-row :gutter="10" class="mb8">
-			<right-toolbar
-				:showSearch.sync="showSearch"
-				:columns="columns"
-				@queryTable="getList"
-			>
+			<right-toolbar :showSearch.sync="showSearch" :columns="columns" @queryTable="getList">
 				<template #print>
 					<el-col :span="1.5">
-						<el-button
-							plain
-							icon="el-icon-printer"
-							size="mini"
-							@click="printHTML"
-						></el-button>
+						<el-button plain icon="el-icon-printer" size="mini" @click="printHTML"></el-button>
 					</el-col>
 				</template>
 				<!--        导出-->
 				<template #export>
 					<el-col :span="1.5">
-						<el-button
-							v-hasPermi="['system:company:export']"
-							plain
-							icon="el-icon-folder-opened"
-							size="mini"
-							@click="handleExport"
-						></el-button>
+						<el-button v-hasPermi="['system:company:export']" plain icon="el-icon-folder-opened" size="mini" @click="handleExport"></el-button>
 					</el-col>
 				</template>
 			</right-toolbar>
@@ -90,143 +47,38 @@
 				}
 			"
 		>
-			<el-table-column
-				v-if="columns[0].visible"
-				label="期货保证金公司"
-				align="center"
-				prop="futuresMarginCompany"
-				width="130"
-			>
+			<el-table-column v-if="columns[0].visible" label="期货保证金公司" align="center" prop="futuresMarginCompany" width="130">
 				<template slot-scope="scope">
-					<span
-						v-if="
-							scope.row.futuresMarginCompany !== '' &&
-							scope.row.futuresMarginCompany !== null
-						"
-					>
+					<span v-if="scope.row.futuresMarginCompany !== '' && scope.row.futuresMarginCompany !== null">
 						{{ scope.row.futuresMarginCompany }}
 					</span>
 					<span v-else>无期货保证金公司</span>
 				</template>
 			</el-table-column>
-			<el-table-column
-				v-if="columns[1].visible"
-				label="对象类型"
-				align="center"
-				prop="targetType"
-				width="110"
-			/>
-			<el-table-column
-				v-if="columns[2].visible"
-				label="对象"
-				align="center"
-				prop="target"
-				width="110"
-			/>
-			<el-table-column
-				v-if="columns[3].visible"
-				label="保证金金额"
-				align="center"
-				prop="moneyAmount"
-				width="110"
-			/>
+			<el-table-column v-if="columns[1].visible" label="对象类型" align="center" prop="targetType" width="110" />
+			<el-table-column v-if="columns[2].visible" label="对象" align="center" prop="target" width="110" />
+			<el-table-column v-if="columns[3].visible" label="保证金金额" align="center" prop="moneyAmount" width="110" />
 
-			<el-table-column
-				v-if="columns[4].visible"
-				label="对方户名"
-				align="center"
-				prop="targetAcountsName"
-				width="160"
-			></el-table-column>
-			<el-table-column
-				v-if="columns[5].visible"
-				label="对方收保证金账号"
-				align="center"
-				prop="targetBankNo"
-				width="160"
-			/>
-			<el-table-column
-				v-if="columns[6].visible"
-				label="对方开户行"
-				align="center"
-				prop="targetBankName"
-				width="160"
-			/>
+			<el-table-column v-if="columns[4].visible" label="对方户名" align="center" prop="targetAcountsName" width="160"></el-table-column>
+			<el-table-column v-if="columns[5].visible" label="对方收保证金账号" align="center" prop="targetBankNo" width="160" />
+			<el-table-column v-if="columns[6].visible" label="对方开户行" align="center" prop="targetBankName" width="160" />
 
-			<el-table-column
-				v-if="columns[7].visible"
-				label="我方支付保证金账户名称"
-				align="center"
-				prop="selfAcountsName"
-				width="160"
-			/>
-			<el-table-column
-				v-if="columns[8].visible"
-				label="我方付款账号"
-				align="center"
-				prop="selfBankNo"
-				width="160"
-			/>
-			<el-table-column
-				v-if="columns[9].visible"
-				label="我方支付保证金开户行"
-				align="center"
-				prop="selfBankName"
-				width="160"
-			/>
-			<el-table-column
-				v-if="columns[10].visible"
-				label="支付期货保证金时间"
-				align="center"
-				prop="futuresDate"
-				width="160"
-			/>
-			<el-table-column
-				v-if="columns[11].visible"
-				label="事由"
-				align="center"
-				prop="reason"
-				width="160"
-			/>
-			<el-table-column
-				v-if="columns[12].visible"
-				label="备注"
-				align="center"
-				prop="comments"
-				width="160"
-			/>
-			<el-table-column
-				label="操作"
-				align="center"
-				class-name="small-padding fixed-width"
-				width="120"
-				fixed="right"
-			>
+			<el-table-column v-if="columns[7].visible" label="我方支付保证金账户名称" align="center" prop="selfAcountsName" width="160" />
+			<el-table-column v-if="columns[8].visible" label="我方付款账号" align="center" prop="selfBankNo" width="160" />
+			<el-table-column v-if="columns[9].visible" label="我方支付保证金开户行" align="center" prop="selfBankName" width="160" />
+			<el-table-column v-if="columns[10].visible" label="支付期货保证金时间" align="center" prop="futuresDate" width="160" />
+			<el-table-column v-if="columns[11].visible" label="事由" align="center" prop="reason" width="160" />
+			<el-table-column v-if="columns[12].visible" label="备注" align="center" prop="comments" width="160" />
+			<el-table-column label="操作" align="center" class-name="small-padding fixed-width" width="120" fixed="right">
 				<template slot-scope="scope">
-					<el-button
-						size="mini"
-						type="warning"
-						@click="checkDetail(scope.row)"
-					>
-						查看历史收回
-					</el-button>
+					<el-button size="mini" type="warning" @click="checkDetail(scope.row)">查看历史收回</el-button>
 				</template>
 			</el-table-column>
 		</el-table>
 
-		<pagination
-			v-show="total > 0"
-			:total="total"
-			:page.sync="queryParams.pageNum"
-			:limit.sync="queryParams.pageSize"
-			@pagination="getList"
-		/>
+		<pagination v-show="total > 0" :total="total" :page.sync="queryParams.pageNum" :limit.sync="queryParams.pageSize" @pagination="getList" />
 
-		<InfoDialog
-			title="历史还款记录"
-			:visible.sync="dialogHistoryVisible"
-			:width="'620px'"
-		>
+		<InfoDialog title="历史还款记录" :visible.sync="dialogHistoryVisible" :width="'620px'">
 			<template #info>
 				<el-table
 					v-if="tableData.length !== 0"
@@ -242,68 +94,28 @@
 				>
 					<el-table-column prop="" width="180">
 						<template #default="scope">
-							<span v-if="scope.$index === 0"
-								>期货保证金收回</span
-							>
+							<span v-if="scope.$index === 0">期货保证金收回</span>
 						</template>
 					</el-table-column>
-					<el-table-column
-						prop="recoverDate"
-						label="时间"
-						width="180"
-					></el-table-column>
-					<el-table-column
-						prop="moneyAmount"
-						label="收回金额"
-					></el-table-column>
+					<el-table-column prop="recoverDate" label="时间" width="180"></el-table-column>
+					<el-table-column prop="moneyAmount" label="收回金额"></el-table-column>
 				</el-table>
-				<pagination
-					v-show="detailTotal > 0"
-					:total="detailTotal"
-					:page.sync="queryRepaymentParams.pageNum"
-					:limit.sync="queryRepaymentParams.pageSize"
-					@pagination="getRepaymentMoneyList"
-				/>
+				<pagination v-show="detailTotal > 0" :total="detailTotal" :page.sync="queryRepaymentParams.pageNum" :limit.sync="queryRepaymentParams.pageSize" @pagination="getRepaymentMoneyList" />
 			</template>
 		</InfoDialog>
 
-		<el-dialog
-			:close-on-click-modal="false"
-			:show-close="false"
-			title="请选择"
-			:visible.sync="dialogVisible"
-			width="500px"
-		>
-			<el-form
-				ref="queryForm"
-				:model="queryParams"
-				size="mini"
-				label-width="68px"
-			>
+		<el-dialog :close-on-click-modal="false" :show-close="false" title="请选择" :visible.sync="dialogVisible" width="500px">
+			<el-form ref="queryForm" :model="queryParams" size="mini" label-width="68px">
 				<el-form-item label="开始时间" prop="beginTime">
-					<el-date-picker
-						v-model="queryParams.beginTime"
-						type="date"
-						placeholder="选择时间"
-						value-format="yyyy-MM-dd"
-						size="mini"
-					></el-date-picker>
+					<el-date-picker v-model="queryParams.beginTime" type="date" placeholder="选择时间" value-format="yyyy-MM-dd" size="mini"></el-date-picker>
 				</el-form-item>
 				<el-form-item label="结束时间" prop="endTime">
-					<el-date-picker
-						v-model="queryParams.endTime"
-						type="date"
-						placeholder="选择时间"
-						value-format="yyyy-MM-dd"
-						size="mini"
-					></el-date-picker>
+					<el-date-picker v-model="queryParams.endTime" type="date" placeholder="选择时间" value-format="yyyy-MM-dd" size="mini"></el-date-picker>
 				</el-form-item>
 			</el-form>
 			<span slot="footer" class="dialog-footer">
 				<el-button @click="dialogVisible = false">取 消</el-button>
-				<el-button type="primary" @click="handleSubmitTime"
-					>导 出</el-button
-				>
+				<el-button type="primary" @click="handleSubmitTime">导 出</el-button>
 			</span>
 		</el-dialog>
 	</div>

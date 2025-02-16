@@ -1,77 +1,30 @@
 <template>
 	<div class="app-container">
-		<el-form
-			v-show="showSearch"
-			ref="queryForm"
-			:model="queryParams"
-			size="mini"
-			:inline="true"
-			label-width="100px"
-		>
+		<el-form v-show="showSearch" ref="queryForm" :model="queryParams" size="mini" :inline="true" label-width="100px">
 			<el-form-item label="供应商名称" prop="companyName">
-				<el-input
-					v-model="queryParams.companyName"
-					placeholder="请输入供应商名称"
-					clearable
-					@keyup.enter.native="handleQuery"
-				/>
+				<el-input v-model="queryParams.companyName" placeholder="请输入供应商名称" clearable @keyup.enter.native="handleQuery" />
 			</el-form-item>
 			<el-form-item>
-				<el-button
-					type="primary"
-					icon="el-icon-search"
-					size="mini"
-					@click="handleQuery"
-				>
-					搜索
-				</el-button>
+				<el-button type="primary" icon="el-icon-search" size="mini" @click="handleQuery">搜索</el-button>
 			</el-form-item>
 		</el-form>
 
 		<el-row :gutter="10" class="mb8">
 			<el-col :span="1.5">
-				<el-button
-					icon="el-icon-refresh"
-					size="mini"
-					@click="resetQuery"
-				>
-					刷新
-				</el-button>
+				<el-button icon="el-icon-refresh" size="mini" @click="resetQuery">刷新</el-button>
 			</el-col>
 			<el-col :span="1.5">
-				<el-button
-					v-hasPermi="['system:supplier:add']"
-					type="danger"
-					size="mini"
-					@click="handleAdd"
-				>
-					新增供应商信息
-				</el-button>
+				<el-button v-hasPermi="['system:supplier:add']" type="danger" size="mini" @click="handleAdd">新增供应商信息</el-button>
 			</el-col>
-			<right-toolbar
-				:showSearch.sync="showSearch"
-				:columns="columns"
-				@queryTable="getList"
-			>
+			<right-toolbar :showSearch.sync="showSearch" :columns="columns" @queryTable="getList">
 				<template #print>
 					<el-col :span="1.5">
-						<el-button
-							plain
-							icon="el-icon-printer"
-							size="mini"
-							@click="printHTML"
-						></el-button>
+						<el-button plain icon="el-icon-printer" size="mini" @click="printHTML"></el-button>
 					</el-col>
 				</template>
 				<template #export>
 					<el-col :span="1.5">
-						<el-button
-							v-hasPermi="['system:companygive:export']"
-							plain
-							icon="el-icon-folder-opened"
-							size="mini"
-							@click="handleExport"
-						></el-button>
+						<el-button v-hasPermi="['system:companygive:export']" plain icon="el-icon-folder-opened" size="mini" @click="handleExport"></el-button>
 					</el-col>
 				</template>
 			</right-toolbar>
@@ -92,194 +45,66 @@
 			"
 			@selection-change="handleSelectionChange"
 		>
-			<el-table-column
-				v-if="columns[0].visible"
-				label="供应商"
-				align="center"
-				prop="companyName"
-				width="200"
-				show-overflow-tooltip
-			/>
-			<el-table-column
-				v-if="columns[1].visible"
-				label="地址"
-				align="center"
-				prop="address"
-				width="200"
-				show-overflow-tooltip
-			/>
-			<el-table-column
-				v-if="columns[2].visible"
-				label="联系人"
-				align="center"
-				prop="relationName"
-				width="200"
-				show-overflow-tooltip
-			/>
-			<el-table-column
-				v-if="columns[3].visible"
-				label="老板电话"
-				align="center"
-				prop="leaderTel"
-				width="200"
-				show-overflow-tooltip
-			/>
-			<el-table-column
-				v-if="columns[4].visible"
-				label="电话"
-				align="center"
-				prop="relationTel"
-				width="200"
-				show-overflow-tooltip
-			/>
-			<el-table-column
-				v-if="columns[5].visible"
-				label="备注"
-				align="center"
-				prop="comments"
-				width="200"
-				show-overflow-tooltip
-			/>
-			<el-table-column
-				label="操作"
-				align="center"
-				class-name="small-padding fixed-width"
-				fixed="right"
-				width="180"
-			>
+			<el-table-column v-if="columns[0].visible" label="供应商" align="center" prop="companyName" width="200" show-overflow-tooltip />
+			<el-table-column v-if="columns[1].visible" label="地址" align="center" prop="address" width="200" show-overflow-tooltip />
+			<el-table-column v-if="columns[2].visible" label="联系人" align="center" prop="relationName" width="200" show-overflow-tooltip />
+			<el-table-column v-if="columns[3].visible" label="老板电话" align="center" prop="leaderTel" width="200" show-overflow-tooltip />
+			<el-table-column v-if="columns[4].visible" label="电话" align="center" prop="relationTel" width="200" show-overflow-tooltip />
+			<el-table-column v-if="columns[5].visible" label="备注" align="center" prop="comments" width="200" show-overflow-tooltip />
+			<el-table-column label="操作" align="center" class-name="small-padding fixed-width" fixed="right" width="180">
 				<template slot-scope="scope">
-					<el-button
-						size="mini"
-						type="text"
-						@click="jumpBankNo(scope.row)"
-					>
-						银行卡号
-					</el-button>
-					<el-button
-						v-hasPermi="['system:companygive:edit']"
-						size="mini"
-						type="primary"
-						@click="handleUpdate(scope.row)"
-					>
-						编辑
-					</el-button>
-					<el-button
-						v-hasPermi="['system:companygive:remove']"
-						size="mini"
-						type="danger"
-						@click="handleDelete(scope.row)"
-					>
-						删除
-					</el-button>
+					<el-button size="mini" type="text" @click="jumpBankNo(scope.row)">银行卡号</el-button>
+					<el-button v-hasPermi="['system:companygive:edit']" size="mini" type="primary" @click="handleUpdate(scope.row)">编辑</el-button>
+					<el-button v-hasPermi="['system:companygive:remove']" size="mini" type="danger" @click="handleDelete(scope.row)">删除</el-button>
 				</template>
 			</el-table-column>
 		</el-table>
 
-		<pagination
-			v-show="total > 0"
-			:total="total"
-			:page.sync="queryParams.pageNum"
-			:limit.sync="queryParams.pageSize"
-			@pagination="getList"
-		/>
+		<pagination v-show="total > 0" :total="total" :page.sync="queryParams.pageNum" :limit.sync="queryParams.pageSize" @pagination="getList" />
 
 		<!-- 添加或修改供应商、供应商信息对话框 -->
-		<el-dialog
-			:close-on-click-modal="false"
-			:show-close="false"
-			:title="title"
-			:visible.sync="open"
-			width="54%"
-			append-to-body
-		>
-			<el-form
-				ref="form"
-				:model="form"
-				:rules="rules"
-				label-width="120px"
-			>
+		<el-dialog :close-on-click-modal="false" :show-close="false" :title="title" :visible.sync="open" width="54%" append-to-body>
+			<el-form ref="form" :model="form" :rules="rules" label-width="120px">
 				<el-row :gutter="4">
 					<el-col :span="12">
 						<el-form-item label="供应商名称" prop="companyName">
-							<el-input
-								v-model="form.companyName"
-								placeholder="请输入供应商名称"
-							/>
+							<el-input v-model="form.companyName" placeholder="请输入供应商名称" />
 						</el-form-item>
 						<el-form-item label="供应商电话" prop="relationTel">
-							<el-input
-								v-model="form.relationTel"
-								placeholder="请输入联系人电话"
-							/>
+							<el-input v-model="form.relationTel" placeholder="请输入联系人电话" />
 						</el-form-item>
 						<el-form-item label="联系人" prop="relationName">
-							<el-input
-								v-model="form.relationName"
-								placeholder="请输入联系人"
-							/>
+							<el-input v-model="form.relationName" placeholder="请输入联系人" />
 						</el-form-item>
 						<el-form-item label="老板姓名" prop="leader">
-							<el-input
-								v-model="form.leader"
-								placeholder="请输入老板姓名"
-							/>
+							<el-input v-model="form.leader" placeholder="请输入老板姓名" />
 						</el-form-item>
 						<!--						<el-form-item label="录入员" prop="salesman">-->
 						<!--							<el-input v-model="form.salesman" placeholder="请输入录入员" />-->
 						<!--						</el-form-item>-->
 						<el-form-item label="老板电话" prop="leaderTel">
-							<el-input
-								v-model="form.leaderTel"
-								placeholder="请输入联系人电话"
-							/>
+							<el-input v-model="form.leaderTel" placeholder="请输入联系人电话" />
 						</el-form-item>
 					</el-col>
 					<el-col :span="12">
 						<el-form-item label="省" prop="province">
-							<el-select
-								v-model="form.province"
-								placeholder="请选择省"
-								@change="changeProvince"
-							>
-								<el-option
-									v-for="item in provinceList"
-									:key="item.code"
-									:label="item.name"
-									:value="item.name"
-								></el-option>
+							<el-select v-model="form.province" placeholder="请选择省" @change="changeProvince">
+								<el-option v-for="item in provinceList" :key="item.code" :label="item.name" :value="item.name"></el-option>
 							</el-select>
 						</el-form-item>
 						<el-form-item label="市县" prop="city">
-							<el-select
-								v-model="form.city"
-								placeholder="请选择市"
-								@change="changeCity"
-							>
-								<el-option
-									v-for="item in cityList"
-									:key="item.code"
-									:label="item.name"
-									:value="item.name"
-								></el-option>
+							<el-select v-model="form.city" placeholder="请选择市" @change="changeCity">
+								<el-option v-for="item in cityList" :key="item.code" :label="item.name" :value="item.name"></el-option>
 							</el-select>
 						</el-form-item>
 						<el-form-item label="乡镇" prop="county">
-							<el-input
-								v-model="form.county"
-								placeholder="请输入乡镇"
-							/>
+							<el-input v-model="form.county" placeholder="请输入乡镇" />
 						</el-form-item>
 						<el-form-item label="地址" prop="address">
-							<el-input
-								v-model="form.address"
-								placeholder="请输入地址"
-							/>
+							<el-input v-model="form.address" placeholder="请输入地址" />
 						</el-form-item>
 						<el-form-item label="备注" prop="comments">
-							<el-input
-								v-model="form.comments"
-								placeholder="请输入备注"
-							/>
+							<el-input v-model="form.comments" placeholder="请输入备注" />
 						</el-form-item>
 					</el-col>
 				</el-row>
@@ -291,12 +116,7 @@
 		</el-dialog>
 
 		<!--    银行卡-->
-		<el-dialog
-			:close-on-click-modal="false"
-			:show-close="false"
-			title="银行卡号"
-			:visible.sync="dialogFormVisible"
-		>
+		<el-dialog :close-on-click-modal="false" :show-close="false" title="银行卡号" :visible.sync="dialogFormVisible">
 			<el-form :model="currentInfo">
 				<el-row :gutter="4" style="text-align: center">
 					<span style="font-weight: bolder; font-size: 18px">
@@ -347,47 +167,18 @@
       </el-row> -->
 			<el-divider>已绑定银行卡</el-divider>
 			<el-row>
-				<el-table
-					v-loading="loading"
-					:data="singleInfo"
-					@selection-change="handleSelectionChange"
-				>
+				<el-table v-loading="loading" :data="singleInfo" @selection-change="handleSelectionChange">
 					<template #append>
 						<!--            <AddBank :company-info="currentInfo" @changeBankOpen="handleChangeBank"/>-->
-						<AddBankAccounts
-							:company-info="currentInfo"
-							@callGetList="handleChangeBank"
-						/>
+						<AddBankAccounts :company-info="currentInfo" @callGetList="handleChangeBank" />
 					</template>
 					<el-table-column label="序号" align="center" prop="id" />
-					<el-table-column
-						label="户名"
-						align="center"
-						prop="acountsName"
-					/>
-					<el-table-column
-						label="银行卡号"
-						align="center"
-						prop="bankNo"
-					/>
-					<el-table-column
-						label="银行卡余额"
-						align="center"
-						prop="amount"
-					/>
-					<el-table-column
-						label="操作"
-						align="center"
-						class-name="small-padding fixed-width"
-						fixed="right"
-						width="180"
-					>
+					<el-table-column label="户名" align="center" prop="acountsName" />
+					<el-table-column label="银行卡号" align="center" prop="bankNo" />
+					<el-table-column label="银行卡余额" align="center" prop="amount" />
+					<el-table-column label="操作" align="center" class-name="small-padding fixed-width" fixed="right" width="180">
 						<template slot-scope="scope">
-							<el-button
-								v-hasPermi="['system:companygive:remove']"
-								size="mini"
-								@click="handleDeleteBankaccount(scope.row)"
-							>
+							<el-button v-hasPermi="['system:companygive:remove']" size="mini" @click="handleDeleteBankaccount(scope.row)">
 								<i class="el-icon-delete"></i>
 							</el-button>
 							<!-- <el-button
@@ -403,277 +194,97 @@
 			</el-row>
 			<div slot="footer" class="dialog-footer">
 				<el-button @click="dialogFormVisible = false">取 消</el-button>
-				<el-button type="primary" @click="dialogFormVisible = false">
-					确 定
-				</el-button>
+				<el-button type="primary" @click="dialogFormVisible = false">确 定</el-button>
 			</div>
-			<pagination
-				v-show="bankTotal > 0"
-				:total="bankTotal"
-				:page.sync="bankPageNum"
-				:limit.sync="bankPageSize"
-				@pagination="getBankList"
-			/>
+			<pagination v-show="bankTotal > 0" :total="bankTotal" :page.sync="bankPageNum" :limit.sync="bankPageSize" @pagination="getBankList" />
 
-			<el-dialog
-				:close-on-click-modal="false"
-				:show-close="false"
-				title="操作银行卡"
-				:visible.sync="dialogBankInfoVisible"
-				append-to-body
-			>
+			<el-dialog :close-on-click-modal="false" :show-close="false" title="操作银行卡" :visible.sync="dialogBankInfoVisible" append-to-body>
 				<el-form :model="queryBankInfo">
 					<el-row :gutter="4">
 						<el-col :span="8">
-							<el-form-item
-								label="账号类型"
-								:label-width="formLabelWidth"
-							>
-								<el-select
-									v-model="queryBankInfo.acountsType"
-									placeholder="请选择"
-								>
-									<el-option
-										v-for="item in acountsTypeList"
-										:key="item.value"
-										:label="item.label"
-										:value="item.value"
-									></el-option>
+							<el-form-item label="账号类型" :label-width="formLabelWidth">
+								<el-select v-model="queryBankInfo.acountsType" placeholder="请选择">
+									<el-option v-for="item in acountsTypeList" :key="item.value" :label="item.label" :value="item.value"></el-option>
 								</el-select>
 							</el-form-item>
 						</el-col>
 						<el-col :span="8">
-							<el-form-item
-								label="账户名"
-								:label-width="formLabelWidth"
-							>
-								<el-input
-									v-model="queryBankInfo.acountsName"
-									autocomplete="off"
-								></el-input>
+							<el-form-item label="账户名" :label-width="formLabelWidth">
+								<el-input v-model="queryBankInfo.acountsName" autocomplete="off"></el-input>
 							</el-form-item>
 						</el-col>
 						<el-col :span="3">
-							<el-button
-								type="primary"
-								@click="handleSearchBankInfo"
-							>
-								搜索
-							</el-button>
+							<el-button type="primary" @click="handleSearchBankInfo">搜索</el-button>
 						</el-col>
 					</el-row>
 				</el-form>
 				<el-row>
 					<el-table v-loading="loading" :data="bankInfo">
-						<el-table-column
-							label="银行卡号"
-							align="center"
-							prop="bankNo"
-						/>
-						<el-table-column
-							label="账户类型"
-							align="center"
-							prop="acountsType"
-						/>
-						<el-table-column
-							label="账户名"
-							align="center"
-							prop="acountsName"
-						/>
-						<el-table-column
-							label="操作"
-							align="center"
-							class-name="small-padding fixed-width"
-							fixed="right"
-							width="180"
-						>
+						<el-table-column label="银行卡号" align="center" prop="bankNo" />
+						<el-table-column label="账户类型" align="center" prop="acountsType" />
+						<el-table-column label="账户名" align="center" prop="acountsName" />
+						<el-table-column label="操作" align="center" class-name="small-padding fixed-width" fixed="right" width="180">
 							<template slot-scope="scope">
-								<el-button
-									type="danger"
-									@click="addThisBankInfo(scope.row)"
-								>
-									添加该银行卡
-								</el-button>
+								<el-button type="danger" @click="addThisBankInfo(scope.row)">添加该银行卡</el-button>
 							</template>
 						</el-table-column>
 					</el-table>
 				</el-row>
 				<div slot="footer" class="dialog-footer">
-					<el-button @click="dialogBankInfoVisible = false"
-						>取 消</el-button
-					>
-					<el-button
-						type="primary"
-						@click="dialogBankInfoVisible = false"
-					>
-						确 定
-					</el-button>
+					<el-button @click="dialogBankInfoVisible = false">取 消</el-button>
+					<el-button type="primary" @click="dialogBankInfoVisible = false">确 定</el-button>
 				</div>
-				<pagination
-					v-show="total > 0"
-					:total="total"
-					:page.sync="queryParams.pageNum"
-					:limit.sync="queryParams.pageSize"
-					@pagination="getList"
-				/>
+				<pagination v-show="total > 0" :total="total" :page.sync="queryParams.pageNum" :limit.sync="queryParams.pageSize" @pagination="getList" />
 			</el-dialog>
 		</el-dialog>
 
 		<!--    账号搜索-->
-		<el-dialog
-			:close-on-click-modal="false"
-			:show-close="true"
-			title="账号搜索"
-			:visible.sync="dialogFormSearchVisible"
-		>
+		<el-dialog :close-on-click-modal="false" :show-close="true" title="账号搜索" :visible.sync="dialogFormSearchVisible">
 			<el-form :model="queryParams">
 				<el-row :gutter="4">
 					<el-col :span="8">
-						<el-form-item
-							label="供应商名称"
-							:label-width="formLabelWidth"
-						>
-							<el-input
-								v-model="queryParams.relationName"
-								autocomplete="off"
-							></el-input>
+						<el-form-item label="供应商名称" :label-width="formLabelWidth">
+							<el-input v-model="queryParams.relationName" autocomplete="off"></el-input>
 						</el-form-item>
 					</el-col>
 					<el-col :span="8">
-						<el-form-item
-							label="银行账号"
-							:label-width="formLabelWidth"
-						>
-							<el-input
-								v-model="queryParams.bankNo"
-								autocomplete="off"
-							></el-input>
+						<el-form-item label="银行账号" :label-width="formLabelWidth">
+							<el-input v-model="queryParams.bankNo" autocomplete="off"></el-input>
 						</el-form-item>
 					</el-col>
 					<el-col :span="8">
-						<el-form-item
-							label="户名"
-							:label-width="formLabelWidth"
-						>
-							<el-input
-								v-model="queryParams.acountsName"
-								autocomplete="off"
-							></el-input>
+						<el-form-item label="户名" :label-width="formLabelWidth">
+							<el-input v-model="queryParams.acountsName" autocomplete="off"></el-input>
 						</el-form-item>
 					</el-col>
 					<el-col>
-						<el-button
-							type="primary"
-							style="margin-left: 50px"
-							@click="handleSearchCompanyGive"
-						>
-							提交
-						</el-button>
+						<el-button type="primary" style="margin-left: 50px" @click="handleSearchCompanyGive">提交</el-button>
 					</el-col>
 				</el-row>
 			</el-form>
-			<el-table
-				v-loading="loading"
-				:data="companyList"
-				@selection-change="handleSelectionChange"
-			>
-				<el-table-column
-					label="操作"
-					align="center"
-					class-name="small-padding fixed-width"
-					fixed="left"
-					width="180"
-				>
+			<el-table v-loading="loading" :data="companyList" @selection-change="handleSelectionChange">
+				<el-table-column label="操作" align="center" class-name="small-padding fixed-width" fixed="left" width="180">
 					<template slot-scope="">
-						<el-button
-							type="danger"
-							size="mini"
-							@click="dialogFormSearchVisible = false"
-						>
-							确认
-						</el-button>
+						<el-button type="danger" size="mini" @click="dialogFormSearchVisible = false">确认</el-button>
 					</template>
 				</el-table-column>
-				<el-table-column
-					label="供应商名称"
-					align="center"
-					prop="relationName"
-				/>
-				<el-table-column
-					label="银行卡号"
-					align="center"
-					prop="bankNo"
-				/>
-				<el-table-column
-					label="户名"
-					align="center"
-					prop="acountsName"
-				/>
+				<el-table-column label="供应商名称" align="center" prop="relationName" />
+				<el-table-column label="银行卡号" align="center" prop="bankNo" />
+				<el-table-column label="户名" align="center" prop="acountsName" />
 			</el-table>
-			<pagination
-				v-show="total > 0"
-				:total="total"
-				:page.sync="queryParams.pageNum"
-				:limit.sync="queryParams.pageSize"
-				@pagination="getList"
-			/>
+			<pagination v-show="total > 0" :total="total" :page.sync="queryParams.pageNum" :limit.sync="queryParams.pageSize" @pagination="getList" />
 		</el-dialog>
 
-		<el-dialog
-			:close-on-click-modal="false"
-			:show-close="false"
-			title="设置默认银行卡"
-			:visible.sync="addDefaultCardVisible"
-			width="500px"
-			append-to-body
-		>
-			<el-table
-				v-loading="loading"
-				v-horizontal-scroll="'always'"
-				border
-				:data="singleInfo"
-				height="300px"
-				@selection-change="handleSelectionChange"
-			>
-				<el-table-column
-					label="账户类型"
-					align="center"
-					prop="acountsType"
-				/>
-				<el-table-column
-					label="开户名称(户名)"
-					align="center"
-					prop="acountsName"
-				/>
-				<el-table-column
-					label="账号(银行账号)"
-					align="center"
-					prop="bankNo"
-				/>
-				<el-table-column
-					label="开户行"
-					align="center"
-					prop="bankName"
-				/>
-				<el-table-column
-					label="公司名称"
-					align="center"
-					prop="companyName"
-				/>
-				<el-table-column
-					label="操作"
-					align="center"
-					class-name="small-padding fixed-width"
-					fixed="right"
-				>
+		<el-dialog :close-on-click-modal="false" :show-close="false" title="设置默认银行卡" :visible.sync="addDefaultCardVisible" width="500px" append-to-body>
+			<el-table v-loading="loading" v-horizontal-scroll="'always'" border :data="singleInfo" height="300px" @selection-change="handleSelectionChange">
+				<el-table-column label="账户类型" align="center" prop="acountsType" />
+				<el-table-column label="开户名称(户名)" align="center" prop="acountsName" />
+				<el-table-column label="账号(银行账号)" align="center" prop="bankNo" />
+				<el-table-column label="开户行" align="center" prop="bankName" />
+				<el-table-column label="公司名称" align="center" prop="companyName" />
+				<el-table-column label="操作" align="center" class-name="small-padding fixed-width" fixed="right">
 					<template slot-scope="scope">
-						<el-button
-							size="mini"
-							type="primary"
-							@click="addDefaultCard(scope.row)"
-						>
-							设置为默认
-						</el-button>
+						<el-button size="mini" type="primary" @click="addDefaultCard(scope.row)">设置为默认</el-button>
 					</template>
 				</el-table-column>
 			</el-table>
@@ -682,18 +293,8 @@
 </template>
 
 <script>
-import {
-	delBankAccount,
-	listBankAccount,
-	setDefault
-} from '@/api/system/bankAccount';
-import {
-	addCompany,
-	delCompany,
-	getCompany,
-	listCompany,
-	updateCompany
-} from '@/api/system/company';
+import { delBankAccount, listBankAccount, setDefault } from '@/api/system/bankAccount';
+import { addCompany, delCompany, getCompany, listCompany, updateCompany } from '@/api/system/company';
 import { excludeParams } from '@/api/tool/exclude';
 import { INFO_TYPE, isUsed } from '../../../api/system/isUsed';
 import AddBankAccounts from '../../dashboard/components/company/AddBankAccounts.vue';
@@ -844,8 +445,8 @@ export default {
 			// 账户类型
 			acountsTypeList: [
 				{
-					value: '己方公司',
-					label: '己方公司'
+					value: '我方公司',
+					label: '我方公司'
 				},
 				{
 					value: '客户',
@@ -885,10 +486,7 @@ export default {
 	watch: {
 		columns: {
 			handler: function (newVal) {
-				localStorage.setItem(
-					'companygive-columns',
-					JSON.stringify(newVal)
-				);
+				localStorage.setItem('companygive-columns', JSON.stringify(newVal));
 			},
 			deep: true
 		},
@@ -910,19 +508,11 @@ export default {
 	},
 	created() {
 		this.getList();
-		if (
-			localStorage.getItem('companygive-columns') === 'null' ||
-			!localStorage.getItem('companygive-columns')
-		) {
+		if (localStorage.getItem('companygive-columns') === 'null' || !localStorage.getItem('companygive-columns')) {
 			// 设置localStorage
-			localStorage.setItem(
-				'companygive-columns',
-				JSON.stringify(this.columns)
-			);
+			localStorage.setItem('companygive-columns', JSON.stringify(this.columns));
 		} else {
-			this.columns = JSON.parse(
-				localStorage.getItem('companygive-columns')
-			);
+			this.columns = JSON.parse(localStorage.getItem('companygive-columns'));
 		}
 		// 获取城市信息
 		fetch('/area.json')
@@ -1047,15 +637,11 @@ export default {
 					acountsType: '供应商'
 				}).then(res => {
 					if (res.rows.length === 0) {
-						this.$confirm(
-							'您还没有设置银行卡信息，是否前往设置?',
-							'提示',
-							{
-								confirmButtonText: '确定',
-								cancelButtonText: '取消',
-								type: 'warning'
-							}
-						)
+						this.$confirm('您还没有设置银行卡信息，是否前往设置?', '提示', {
+							confirmButtonText: '确定',
+							cancelButtonText: '取消',
+							type: 'warning'
+						})
 							.then(() => {
 								this.dialogFormVisible = false;
 								this.$router.push('/baseInfo/bankaccount');
@@ -1205,11 +791,7 @@ export default {
 					isUsed(query).then(res => {
 						if (res.data.isUsed) {
 							this.$modal
-								.confirm(
-									'系统检测该信息:"' +
-										ids +
-										'"的供应商数据在系统中被使用，是否要继续删除?'
-								)
+								.confirm('系统检测该信息:"' + ids + '"的供应商数据在系统中被使用，是否要继续删除?')
 								.then(function () {
 									return delCompany(ids, '供应商');
 								})

@@ -1,9 +1,6 @@
 <script>
 import OrderInfos from '../goodsOrder/OrderInfos.vue';
-import {
-	checkOrderByOrderNo,
-	getGoodsOrder
-} from '../../../../api/system/goodsOrder';
+import { checkOrderByOrderNo, getGoodsOrder } from '../../../../api/system/goodsOrder';
 import InfoDialog from '../../../../components/InfoDialog.vue';
 import OrderDetailInfo from '../goodsOrder/OrderDetailInfo.vue';
 
@@ -56,56 +53,22 @@ export default {
 
 <template>
 	<div>
-		<el-button
-			v-hasPermi="['system:freight:edit']"
-			size="mini"
-			type="text"
-			@click="handleCheck(row)"
-			>{{ title }}
-		</el-button>
+		<el-button v-hasPermi="['system:freight:edit']" size="mini" type="text" @click="handleCheck(row)">{{ title }}</el-button>
 
 		<!--    弹窗-->
-		<InfoDialog
-			:visible="visible"
-			title="订单单据信息"
-			:width="'980px'"
-			@close="visible = false"
-		>
+		<InfoDialog :visible="visible" title="订单单据信息" :width="'980px'" @close="visible = false">
 			<template #info>
-				<el-tabs
-					v-model="activeName"
-					type="card"
-					@tab-click="handleClick"
-				>
+				<el-tabs v-model="activeName" type="card" @tab-click="handleClick">
 					<!-- 查看订单(有可能为调整单)的信息 如果该订单是调整单 那么还要查看原订单的信息-->
-					<el-tab-pane
-						:label="
-							orderInfo.adjustOrderid
-								? '订单信息(该订单为调整单)'
-								: '该订单信息'
-						"
-						name="first"
-					>
+					<el-tab-pane :label="orderInfo.adjustOrderid ? '订单信息(该订单为调整单)' : '该订单信息'" name="first">
 						<OrderInfos :order-info="orderInfo" />
-						<OrderDetailInfo
-							:ban="true"
-							:order-detail-info-list="orderInfo.orderDetailList"
-						/>
+						<OrderDetailInfo :ban="true" :order-detail-info-list="orderInfo.orderDetailList" />
 					</el-tab-pane>
 
 					<!-- 如果订单为调整单 则要查看其的原订单信息-->
-					<el-tab-pane
-						v-if="orderInfo.adjustOrderid"
-						label="原订单信息"
-						name="second"
-					>
+					<el-tab-pane v-if="orderInfo.adjustOrderid" label="原订单信息" name="second">
 						<OrderInfos :order-info="adjustedOrderInfo" />
-						<OrderDetailInfo
-							:ban="true"
-							:order-detail-info-list="
-								adjustedOrderInfo.orderDetailList
-							"
-						/>
+						<OrderDetailInfo :ban="true" :order-detail-info-list="adjustedOrderInfo.orderDetailList" />
 					</el-tab-pane>
 				</el-tabs>
 			</template>

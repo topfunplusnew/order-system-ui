@@ -25,10 +25,7 @@ function install() {
 				labelField: 'dictLabel',
 				valueField: 'dictValue',
 				request(dictMeta) {
-					const storeDict = searchDictByKey(
-						store.getters.dict,
-						dictMeta.type
-					);
+					const storeDict = searchDictByKey(store.getters.dict, dictMeta.type);
 					if (storeDict) {
 						return new Promise(resolve => {
 							resolve(storeDict);

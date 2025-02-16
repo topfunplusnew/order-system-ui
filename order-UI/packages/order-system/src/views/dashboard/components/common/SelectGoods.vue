@@ -1,10 +1,7 @@
 <script>
 import { listGoodsOrder } from '@/api/system/goodsOrder';
 import QuerySearchBar from '@/views/dashboard/components/goodsOrder/QuerySearchBar.vue';
-import {
-	OptionInvent,
-	Options
-} from '@/views/dashboard/mixins/order/order_Invoice';
+import { OptionInvent, Options } from '@/views/dashboard/mixins/order/order_Invoice';
 import { mapGetters } from 'vuex';
 import { PUBLIC_DICT_TYPE } from '@/utils/order';
 import DialogWrapper from '@/views/dashboard/components/common/DialogWrapper.vue';
@@ -102,10 +99,7 @@ export default {
 			if (this.checkFlag) {
 				try {
 					// 判断一下类型 赋值
-					this.checkFlag.type === PUBLIC_DICT_TYPE.CUSTOMER
-						? (this.queryParams.customerID = this.checkFlag.id)
-						: (this.queryParams.params[`supplierId`] =
-								this.checkFlag.id);
+					this.checkFlag.type === PUBLIC_DICT_TYPE.CUSTOMER ? (this.queryParams.customerID = this.checkFlag.id) : (this.queryParams.params[`supplierId`] = this.checkFlag.id);
 				} catch (err) {
 					console.log('Error parsing checkFlag:', err);
 				}
@@ -145,9 +139,7 @@ export default {
 			// 什么都不选 就只getList
 			if (!value.id) this.refresh();
 
-			value.type === PUBLIC_DICT_TYPE.CUSTOMER
-				? this.handleCustomerFilter(value.id)
-				: this.handleSupplierFilter(value.id);
+			value.type === PUBLIC_DICT_TYPE.CUSTOMER ? this.handleCustomerFilter(value.id) : this.handleSupplierFilter(value.id);
 		},
 		// 对客户的筛选
 		async handleCustomerFilter(companyId) {
@@ -159,8 +151,7 @@ export default {
 				// 赋值搜索条件
 				this.queryParams.customerID = companyId;
 				// 2025-2-13 订单搜索需要传入companyType
-				this.queryParams.params.BatchInsertInvoiceCompanyType =
-					PUBLIC_DICT_TYPE.CUSTOMER;
+				this.queryParams.params.BatchInsertInvoiceCompanyType = PUBLIC_DICT_TYPE.CUSTOMER;
 				// 强制更新vue 在更新数据后依赖于 DOM 的最新状态，比如获取某个元素的大小、位置等
 				await this.$nextTick();
 				// 获取订单列表
@@ -183,8 +174,7 @@ export default {
 				// 赋值数据
 				this.queryParams.params[`supplierId`] = companyId;
 				// 2025-2-13 订单搜索需要传入companyType
-				this.queryParams.params.BatchInsertInvoiceCompanyType =
-					PUBLIC_DICT_TYPE.CUSTOMER;
+				this.queryParams.params.BatchInsertInvoiceCompanyType = PUBLIC_DICT_TYPE.CUSTOMER;
 				// 强制更新vue
 				await this.$nextTick();
 				// 获取列表
@@ -199,19 +189,12 @@ export default {
 		// 处理选择的订单
 		multipleMoney(orders) {
 			// 查找出新增的行和取消勾选的行
-			const addedRows = orders.filter(
-				row => !this.preOrderList.includes(row)
-			);
-			const removedRows = this.preOrderList.filter(
-				row => !orders.includes(row)
-			);
+			const addedRows = orders.filter(row => !this.preOrderList.includes(row));
+			const removedRows = this.preOrderList.filter(row => !orders.includes(row));
 
 			// 非法参数校验
 			const _row = addedRows[0] || removedRows[0];
-			if (
-				_row.params.totalInvoiceAmount == null ||
-				_row.params.totalInvoiceAmount === undefined
-			) {
+			if (_row.params.totalInvoiceAmount == null || _row.params.totalInvoiceAmount === undefined) {
 				this.$message.warning('参数有误：已开票金额为空');
 				return;
 			}
@@ -244,10 +227,7 @@ export default {
 				// 取消勾选
 				this.$refs.goodsTable.clearSelection();
 				// 重置金额
-				this.$store.dispatch(
-					'excel/setInvoiceAmount',
-					sessionStorage.getItem('invoiceAmount')
-				);
+				this.$store.dispatch('excel/setInvoiceAmount', sessionStorage.getItem('invoiceAmount'));
 			}
 		},
 		// 计算操作金额的函数
@@ -258,9 +238,7 @@ export default {
 				if (type === PUBLIC_DICT_TYPE.CUSTOMER) {
 					if (row.params.totalInvoiceAmount > 0) {
 						if (row.params.totalInvoiceAmount > row.allPayments) {
-							this.$message.warning(
-								'参数有误：已开票金额大于总货款'
-							);
+							this.$message.warning('参数有误：已开票金额大于总货款');
 							break;
 						}
 						money += row.params.totalInvoiceAmount;
@@ -271,21 +249,14 @@ export default {
 				} else if (type === PUBLIC_DICT_TYPE.SUPPLIER) {
 					let _total = 0;
 					if (!row.smailOrderDetails) {
-						this.$message.warning(
-							'该行订单详情为空，总出厂货款为0'
-						);
+						this.$message.warning('该行订单详情为空，总出厂货款为0');
 					} else {
 						// 计算总的出场货款
-						_total = row.smailOrderDetails.reduce(
-							(pre, cur) => pre + Number(cur.paymentFactory),
-							0
-						);
+						_total = row.smailOrderDetails.reduce((pre, cur) => pre + Number(cur.paymentFactory), 0);
 					}
 					if (row.params.totalInvoiceAmount > 0) {
 						if (row.params.totalInvoiceAmount > _total) {
-							this.$message.warning(
-								'参数有误：已开票金额大于总出厂货款'
-							);
+							this.$message.warning('参数有误：已开票金额大于总出厂货款');
 							break;
 						}
 						money += row.params.totalInvoiceAmount;
@@ -384,10 +355,7 @@ export default {
 			/>
 		</div>
 
-		<QuerySearchBar
-			:query-params="queryParams"
-			@updateQuery="handleQuery"
-		/>
+		<QuerySearchBar :query-params="queryParams" @updateQuery="handleQuery" />
 
 		<!--    显示选择的公司 如果是客户 那么就是批量卖出 如果是供应商 那么就是批量买入-->
 		<!--    订单列表主体-->
@@ -410,185 +378,57 @@ export default {
 			"
 			@selection-change="handleSelectionChange"
 		>
-			<el-table-column
-				type="selection"
-				width="55"
-				align="center"
-				:selectable="selectable"
-			/>
-			<el-table-column
-				v-if="type"
-				show-overflow-tooltip
-				:label="type + `已开票金额`"
-				align="center"
-				width="150px"
-			>
+			<el-table-column type="selection" width="55" align="center" :selectable="selectable" />
+			<el-table-column v-if="type" show-overflow-tooltip :label="type + `已开票金额`" align="center" width="150px">
 				<template #default="scope">
 					{{ scope.row.params.totalInvoiceAmount }}
 				</template>
 			</el-table-column>
-			<el-table-column
-				show-overflow-tooltip
-				label="日期"
-				align="center"
-				prop="orderDate"
-			/>
-			<el-table-column
-				show-overflow-tooltip
-				label="客户"
-				align="center"
-				prop="customer"
-			/>
-			<el-table-column
-				show-overflow-tooltip
-				label="供应商"
-				align="center"
-				prop="supplierNames"
-				width="200"
-			></el-table-column>
-			<el-table-column
-				show-overflow-tooltip
-				label="陆运车牌"
-				align="center"
-				prop="landCarNo"
-			/>
-			<el-table-column
-				show-overflow-tooltip
-				label="陆运司机电话"
-				align="center"
-				prop="landDriverTel"
-				width="100px"
-			/>
-			<el-table-column
-				show-overflow-tooltip
-				label="陆地司机姓名"
-				align="center"
-				prop="landDriverName"
-				width="100px"
-			/>
-			<el-table-column
-				show-overflow-tooltip
-				label="总货款"
-				align="center"
-				prop="allPayments"
-				width="100px"
-			></el-table-column>
-			<el-table-column
-				show-overflow-tooltip
-				label="陆运费"
-				align="center"
-				prop="landFreight"
-				width="100px"
-			/>
+			<el-table-column show-overflow-tooltip label="日期" align="center" prop="orderDate" />
+			<el-table-column show-overflow-tooltip label="客户" align="center" prop="customer" />
+			<el-table-column show-overflow-tooltip label="供应商" align="center" prop="supplierNames" width="200"></el-table-column>
+			<el-table-column show-overflow-tooltip label="陆运车牌" align="center" prop="landCarNo" />
+			<el-table-column show-overflow-tooltip label="陆运司机电话" align="center" prop="landDriverTel" width="100px" />
+			<el-table-column show-overflow-tooltip label="陆地司机姓名" align="center" prop="landDriverName" width="100px" />
+			<el-table-column show-overflow-tooltip label="总货款" align="center" prop="allPayments" width="100px"></el-table-column>
+			<el-table-column show-overflow-tooltip label="陆运费" align="center" prop="landFreight" width="100px" />
 			<!--      原为海运车牌号-->
-			<el-table-column
-				show-overflow-tooltip
-				label="海运柜号"
-				align="center"
-				prop="seaCarNo"
-			>
+			<el-table-column show-overflow-tooltip label="海运柜号" align="center" prop="seaCarNo">
 				<template #default="scope">
 					{{ !scope.row.seaCarNo ? '无' : scope.row.seaCarNo }}
 				</template>
 			</el-table-column>
-			<el-table-column
-				show-overflow-tooltip
-				label="海运司机电话"
-				align="center"
-				prop="seaDriverTel"
-				width="100px"
-			>
+			<el-table-column show-overflow-tooltip label="海运司机电话" align="center" prop="seaDriverTel" width="100px">
 				<template #default="scope">
-					{{
-						!scope.row.seaDriverTel ? '无' : scope.row.seaDriverTel
-					}}
+					{{ !scope.row.seaDriverTel ? '无' : scope.row.seaDriverTel }}
 				</template>
 			</el-table-column>
 			<!--      原为海运司机姓名-->
-			<el-table-column
-				show-overflow-tooltip
-				label="海运公司"
-				align="center"
-				prop="seaDriverName"
-				width="100px"
-			>
+			<el-table-column show-overflow-tooltip label="海运公司" align="center" prop="seaDriverName" width="100px">
 				<template #default="scope">
-					{{
-						!scope.row.seaDriverName ? '无' : scope.row.seaDriverTel
-					}}
+					{{ !scope.row.seaDriverName ? '无' : scope.row.seaDriverTel }}
 				</template>
 			</el-table-column>
-			<el-table-column
-				show-overflow-tooltip
-				label="海运费"
-				align="center"
-				prop="seaFreight"
-				width="100px"
-			/>
-			<el-table-column
-				show-overflow-tooltip
-				label="销售经理"
-				align="center"
-				prop="saleManager"
-			/>
-			<el-table-column
-				show-overflow-tooltip
-				label="车队"
-				align="center"
-				prop="fleet"
-			/>
-			<el-table-column
-				show-overflow-tooltip
-				label="录入员"
-				align="center"
-				prop="userName"
-				width="120px"
-			/>
-			<el-table-column
-				show-overflow-tooltip
-				label="审核状态"
-				align="center"
-				prop="checkState"
-				width="120"
-			></el-table-column>
+			<el-table-column show-overflow-tooltip label="海运费" align="center" prop="seaFreight" width="100px" />
+			<el-table-column show-overflow-tooltip label="销售经理" align="center" prop="saleManager" />
+			<el-table-column show-overflow-tooltip label="车队" align="center" prop="fleet" />
+			<el-table-column show-overflow-tooltip label="录入员" align="center" prop="userName" width="120px" />
+			<el-table-column show-overflow-tooltip label="审核状态" align="center" prop="checkState" width="120"></el-table-column>
 			<!--			/>-->
-			<el-table-column
-				show-overflow-tooltip
-				label="客户是否开票"
-				align="center"
-				prop="customerIsInvoice"
-				width="150px"
-			>
+			<el-table-column show-overflow-tooltip label="客户是否开票" align="center" prop="customerIsInvoice" width="150px">
 				<template #default="scope">
 					{{ scope.row.customerIsInvoice === 1 ? '是' : '否' }}
 				</template>
 			</el-table-column>
-			<el-table-column
-				show-overflow-tooltip
-				label="供应商是否开票"
-				align="center"
-				prop="isSupplierInvoice"
-				width="120px"
-			>
+			<el-table-column show-overflow-tooltip label="供应商是否开票" align="center" prop="isSupplierInvoice" width="120px">
 				<template #default="scope">
 					{{ scope.row.isSupplierInvoice >= 1 ? '是' : '否' }}
 				</template>
 			</el-table-column>
-			<el-table-column
-				show-overflow-tooltip
-				label="备注"
-				align="center"
-				prop="comments"
-			/>
+			<el-table-column show-overflow-tooltip label="备注" align="center" prop="comments" />
 		</el-table>
 		<!--    分页组件-->
-		<pagination
-			v-show="total > 0"
-			:total="total"
-			:page.sync="queryParams.pageNum"
-			:limit.sync="queryParams.pageSize"
-			@pagination="getList"
-		/>
+		<pagination v-show="total > 0" :total="total" :page.sync="queryParams.pageNum" :limit.sync="queryParams.pageSize" @pagination="getList" />
 	</div>
 </template>
 

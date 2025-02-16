@@ -30,8 +30,8 @@ export default {
 			title: '',
 			options: [
 				{
-					value: '己方公司',
-					label: '己方公司'
+					value: '我方公司',
+					label: '我方公司'
 				},
 				{
 					value: '客户',
@@ -119,12 +119,8 @@ export default {
 		handleAddBankAccount() {
 			this.reset();
 			// 填充公司信息 公司类型和id
-			this.form.acountsType =
-				this.computedCompanyInfo.companyType ||
-				this.computedCompanyInfo.acountsType;
-			this.form.companyId =
-				this.computedCompanyInfo.id ||
-				this.computedCompanyInfo.companyId;
+			this.form.acountsType = this.computedCompanyInfo.companyType || this.computedCompanyInfo.acountsType;
+			this.form.companyId = this.computedCompanyInfo.id || this.computedCompanyInfo.companyId;
 			this.form.companyName = this.computedCompanyInfo.companyName;
 			// 打开弹窗
 			this.dialogVisible = true;
@@ -169,90 +165,43 @@ export default {
 	<div>
 		<!--      新增银行卡信息-->
 		<div class="add-bank-account">
-			<el-button
-				v-hasPermi="['system:company:add']"
-				type="text"
-				size="mini"
-				icon="el-icon-plus"
-				@click="handleAddBankAccount"
-				>新增银行卡信息
-			</el-button>
+			<el-button v-hasPermi="['system:company:add']" type="text" size="mini" icon="el-icon-plus" @click="handleAddBankAccount">新增银行卡信息</el-button>
 		</div>
-		<el-dialog
-			title="提示"
-			:visible.sync="dialogVisible"
-			width="30%"
-			append-to-body
-		>
+		<el-dialog title="提示" :visible.sync="dialogVisible" width="30%" append-to-body>
 			<div>
-				<el-form
-					ref="form"
-					:model="form"
-					:rules="rules"
-					label-width="120px"
-				>
+				<el-form ref="form" :model="form" :rules="rules" label-width="120px">
 					<el-form-item label="账号类型" prop="acountsType">
-						<el-select
-							v-model="form.acountsType"
-							placeholder="请选择账号类型"
-						>
-							<el-option
-								v-for="item in options"
-								:key="item.value"
-								:label="item.label"
-								:value="item.value"
-							>
-							</el-option>
+						<el-select v-model="form.acountsType" placeholder="请选择账号类型">
+							<el-option v-for="item in options" :key="item.value" :label="item.label" :value="item.value"></el-option>
 						</el-select>
 					</el-form-item>
 					<el-form-item label="户名" prop="acountsName">
 						<!--          如果是司机 那么就选择-->
 						<el-row v-if="form.acountsType === '司机'">
 							<el-col :span="20">
-								<el-input
-									v-model="form.acountsName"
-									placeholder="请输入户名"
-								/>
+								<el-input v-model="form.acountsName" placeholder="请输入户名" />
 							</el-col>
 						</el-row>
 						<el-row v-else>
-							<el-input
-								v-model="form.acountsName"
-								placeholder="请输入户名"
-							/>
+							<el-input v-model="form.acountsName" placeholder="请输入户名" />
 						</el-row>
 					</el-form-item>
 					<el-form-item label="公司名称" prop="companyName">
 						<el-row>
 							<el-col :span="10">
-								<el-input
-									v-model="form.companyName"
-									placeholder="请输入公司名称"
-								/>
+								<el-input v-model="form.companyName" placeholder="请输入公司名称" />
 							</el-col>
 						</el-row>
 					</el-form-item>
 					<el-form-item label="银行账号" prop="bankNo">
-						<el-input
-							v-model="form.bankNo"
-							placeholder="请输入银行账号"
-						/>
+						<el-input v-model="form.bankNo" placeholder="请输入银行账号" />
 					</el-form-item>
 					<el-form-item label="开户行" prop="bankName">
-						<el-input
-							v-model="form.bankName"
-							placeholder="请输入开户行"
-						/>
+						<el-input v-model="form.bankName" placeholder="请输入开户行" />
 					</el-form-item>
 				</el-form>
-				<div
-					slot="footer"
-					class="dialog-footer"
-					style="text-align: center"
-				>
-					<el-button type="primary" @click="submitForm"
-						>确 定</el-button
-					>
+				<div slot="footer" class="dialog-footer" style="text-align: center">
+					<el-button type="primary" @click="submitForm">确 定</el-button>
 					<el-button @click="cancel">取 消</el-button>
 				</div>
 			</div>

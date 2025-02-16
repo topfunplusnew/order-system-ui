@@ -1,38 +1,14 @@
 <template>
 	<div class="app-container">
-		<el-form
-			:model="queryParams"
-			ref="queryForm"
-			size="small"
-			:inline="true"
-			v-show="showSearch"
-			label-width="68px"
-		>
+		<el-form :model="queryParams" ref="queryForm" size="small" :inline="true" v-show="showSearch" label-width="68px">
 			<el-form-item label="车辆型号" prop="model">
-				<el-input
-					v-model="queryParams.model"
-					placeholder="请输入车辆型号"
-					clearable
-					@keyup.enter.native="handleQuery"
-				/>
+				<el-input v-model="queryParams.model" placeholder="请输入车辆型号" clearable @keyup.enter.native="handleQuery" />
 			</el-form-item>
 			<el-form-item label="车牌号" prop="licensePlate">
-				<el-input
-					v-model="queryParams.licensePlate"
-					placeholder="请输入车牌号"
-					clearable
-					@keyup.enter.native="handleQuery"
-				/>
+				<el-input v-model="queryParams.licensePlate" placeholder="请输入车牌号" clearable @keyup.enter.native="handleQuery" />
 			</el-form-item>
 			<el-form-item label="购买时间" prop="purchaseDate">
-				<el-date-picker
-					clearable
-					v-model="queryParams.purchaseDate"
-					type="date"
-					value-format="yyyy-MM-dd"
-					placeholder="请选择购买时间"
-				>
-				</el-date-picker>
+				<el-date-picker clearable v-model="queryParams.purchaseDate" type="date" value-format="yyyy-MM-dd" placeholder="请选择购买时间"></el-date-picker>
 			</el-form-item>
 			<!--			<el-form-item label="行驶里程" prop="mileage">-->
 			<!--				<el-input-->
@@ -69,285 +45,99 @@
 			<!--				/>-->
 			<!--			</el-form-item>-->
 			<el-form-item>
-				<el-button
-					type="primary"
-					icon="el-icon-search"
-					size="mini"
-					@click="handleQuery"
-					>搜索
-				</el-button>
-				<el-button
-					icon="el-icon-refresh"
-					size="mini"
-					@click="resetQuery"
-					>重置
-				</el-button>
+				<el-button type="primary" icon="el-icon-search" size="mini" @click="handleQuery">搜索</el-button>
+				<el-button icon="el-icon-refresh" size="mini" @click="resetQuery">重置</el-button>
 			</el-form-item>
 		</el-form>
 
 		<el-row :gutter="10" class="mb8">
 			<el-col :span="1.5">
-				<el-button
-					type="primary"
-					plain
-					icon="el-icon-plus"
-					size="mini"
-					@click="handleAdd"
-					v-hasPermi="['system:vehicles:add']"
-					>新增
-				</el-button>
+				<el-button type="primary" plain icon="el-icon-plus" size="mini" @click="handleAdd" v-hasPermi="['system:vehicles:add']">新增</el-button>
 			</el-col>
 			<el-col :span="1.5">
-				<el-button
-					type="success"
-					plain
-					icon="el-icon-edit"
-					size="mini"
-					:disabled="single"
-					@click="handleUpdate"
-					v-hasPermi="['system:vehicles:edit']"
-					>修改
-				</el-button>
+				<el-button type="success" plain icon="el-icon-edit" size="mini" :disabled="single" @click="handleUpdate" v-hasPermi="['system:vehicles:edit']">修改</el-button>
 			</el-col>
 			<el-col :span="1.5">
-				<el-button
-					type="danger"
-					plain
-					icon="el-icon-delete"
-					size="mini"
-					:disabled="multiple"
-					@click="handleDelete"
-					v-hasPermi="['system:vehicles:remove']"
-					>删除
-				</el-button>
+				<el-button type="danger" plain icon="el-icon-delete" size="mini" :disabled="multiple" @click="handleDelete" v-hasPermi="['system:vehicles:remove']">删除</el-button>
 			</el-col>
 			<el-col :span="1.5">
-				<el-button
-					type="warning"
-					plain
-					icon="el-icon-download"
-					size="mini"
-					@click="handleExport"
-					v-hasPermi="['system:vehicles:export']"
-					>导出
-				</el-button>
+				<el-button type="warning" plain icon="el-icon-download" size="mini" @click="handleExport" v-hasPermi="['system:vehicles:export']">导出</el-button>
 			</el-col>
-			<right-toolbar
-				:showSearch.sync="showSearch"
-				:columns="columns"
-				@queryTable="getList"
-			>
+			<right-toolbar :showSearch.sync="showSearch" :columns="columns" @queryTable="getList">
 				<template #print>
 					<el-col :span="1.5">
-						<el-button
-							plain
-							icon="el-icon-printer"
-							size="mini"
-							@click="printHTML"
-						></el-button>
+						<el-button plain icon="el-icon-printer" size="mini" @click="printHTML"></el-button>
 					</el-col>
 				</template>
 				<template #export>
 					<el-col :span="1.5">
-						<el-button
-							v-hasPermi="['system:bankaccount:export']"
-							plain
-							icon="el-icon-folder-opened"
-							size="mini"
-							@click="handleExport"
-						></el-button>
+						<el-button v-hasPermi="['system:bankaccount:export']" plain icon="el-icon-folder-opened" size="mini" @click="handleExport"></el-button>
 					</el-col>
 				</template>
 			</right-toolbar>
 		</el-row>
 
-		<el-table
-			id="printBox"
-			size="mini"
-			v-loading="loading"
-			:data="vehiclesList"
-			@selection-change="handleSelectionChange"
-		>
+		<el-table id="printBox" size="mini" v-loading="loading" :data="vehiclesList" @selection-change="handleSelectionChange">
 			<el-table-column type="selection" width="55" align="center" />
-			<el-table-column
-				v-if="columns[0].visible"
-				label="车辆型号"
-				align="center"
-				prop="model"
-			/>
-			<el-table-column
-				v-if="columns[1].visible"
-				label="车牌号"
-				align="center"
-				prop="licensePlate"
-			/>
-			<el-table-column
-				v-if="columns[2].visible"
-				label="购买时间"
-				align="center"
-				prop="purchaseDate"
-				width="180"
-			>
+			<el-table-column v-if="columns[0].visible" label="车辆型号" align="center" prop="model" />
+			<el-table-column v-if="columns[1].visible" label="车牌号" align="center" prop="licensePlate" />
+			<el-table-column v-if="columns[2].visible" label="购买时间" align="center" prop="purchaseDate" width="180">
 				<template slot-scope="scope">
-					<span>{{
-						parseTime(scope.row.purchaseDate, '{y}-{m}-{d}')
-					}}</span>
+					<span>{{ parseTime(scope.row.purchaseDate, '{y}-{m}-{d}') }}</span>
 				</template>
 			</el-table-column>
-			<el-table-column
-				v-if="columns[3].visible"
-				label="行驶里程"
-				align="center"
-				prop="mileage"
-			/>
-			<el-table-column
-				v-if="columns[4].visible"
-				label="保养金额"
-				align="center"
-				prop="maintenanceCost"
-			/>
-			<el-table-column
-				v-if="columns[5].visible"
-				label="保养日期"
-				align="center"
-				prop="maintenanceDate"
-				width="180"
-			>
+			<el-table-column v-if="columns[3].visible" label="行驶里程" align="center" prop="mileage" />
+			<el-table-column v-if="columns[4].visible" label="保养金额" align="center" prop="maintenanceCost" />
+			<el-table-column v-if="columns[5].visible" label="保养日期" align="center" prop="maintenanceDate" width="180">
 				<template slot-scope="scope">
-					<span>{{
-						parseTime(scope.row.maintenanceDate, '{y}-{m}-{d}')
-					}}</span>
+					<span>{{ parseTime(scope.row.maintenanceDate, '{y}-{m}-{d}') }}</span>
 				</template>
 			</el-table-column>
-			<el-table-column
-				v-if="columns[6].visible"
-				label="保险金额"
-				align="center"
-				prop="insuranceCost"
-			/>
-			<el-table-column
-				v-if="columns[7].visible"
-				label="备注"
-				align="center"
-				prop="notes"
-			/>
+			<el-table-column v-if="columns[6].visible" label="保险金额" align="center" prop="insuranceCost" />
+			<el-table-column v-if="columns[7].visible" label="备注" align="center" prop="notes" />
 			<el-table-column label="附件" align="center">
 				<template slot-scope="scope">
-					<el-button
-						size="mini"
-						type="primary"
-						icon="el-icon-upload"
-						@click="handleUploadAttachments(scope.row)"
-						>附件上传
-					</el-button>
+					<el-button size="mini" type="primary" icon="el-icon-upload" @click="handleUploadAttachments(scope.row)">附件上传</el-button>
 				</template>
 			</el-table-column>
 			<!--			<el-table-column label="扩展性保留字段" align="center" prop="extraInfo" />-->
-			<el-table-column
-				label="操作"
-				align="center"
-				class-name="small-padding fixed-width"
-			>
+			<el-table-column label="操作" align="center" class-name="small-padding fixed-width">
 				<template slot-scope="scope">
-					<el-button
-						size="mini"
-						type="text"
-						icon="el-icon-edit"
-						@click="handleUpdate(scope.row)"
-						v-hasPermi="['system:vehicles:edit']"
-						>修改
-					</el-button>
-					<el-button
-						size="mini"
-						type="text"
-						icon="el-icon-delete"
-						@click="handleDelete(scope.row)"
-						v-hasPermi="['system:vehicles:remove']"
-						>删除
-					</el-button>
-					<el-button
-						size="mini"
-						type="text"
-						icon="el-icon-picture"
-						@click="handleViewAttachments(scope.row)"
-						>查看附件
-					</el-button>
+					<el-button size="mini" type="text" icon="el-icon-edit" @click="handleUpdate(scope.row)" v-hasPermi="['system:vehicles:edit']">修改</el-button>
+					<el-button size="mini" type="text" icon="el-icon-delete" @click="handleDelete(scope.row)" v-hasPermi="['system:vehicles:remove']">删除</el-button>
+					<el-button size="mini" type="text" icon="el-icon-picture" @click="handleViewAttachments(scope.row)">查看附件</el-button>
 				</template>
 			</el-table-column>
 		</el-table>
 
-		<pagination
-			v-show="total > 0"
-			:total="total"
-			:page.sync="queryParams.pageNum"
-			:limit.sync="queryParams.pageSize"
-			@pagination="getList"
-		/>
+		<pagination v-show="total > 0" :total="total" :page.sync="queryParams.pageNum" :limit.sync="queryParams.pageSize" @pagination="getList" />
 
 		<!-- 添加或修改车辆信息对话框 -->
-		<el-dialog
-			:title="title"
-			:visible.sync="open"
-			width="500px"
-			append-to-body
-		>
+		<el-dialog :title="title" :visible.sync="open" width="500px" append-to-body>
 			<el-form ref="form" :model="form" :rules="rules" label-width="80px">
 				<el-form-item label="车辆型号" prop="model">
-					<el-input
-						v-model="form.model"
-						placeholder="请输入车辆型号"
-					/>
+					<el-input v-model="form.model" placeholder="请输入车辆型号" />
 				</el-form-item>
 				<el-form-item label="车牌号" prop="licensePlate">
-					<el-input
-						v-model="form.licensePlate"
-						placeholder="请输入车牌号"
-					/>
+					<el-input v-model="form.licensePlate" placeholder="请输入车牌号" />
 				</el-form-item>
 				<el-form-item label="购买时间" prop="purchaseDate">
-					<el-date-picker
-						clearable
-						v-model="form.purchaseDate"
-						type="date"
-						value-format="yyyy-MM-dd"
-						placeholder="请选择购买时间"
-					>
-					</el-date-picker>
+					<el-date-picker clearable v-model="form.purchaseDate" type="date" value-format="yyyy-MM-dd" placeholder="请选择购买时间"></el-date-picker>
 				</el-form-item>
 				<el-form-item label="行驶里程" prop="mileage">
-					<el-input
-						v-model="form.mileage"
-						placeholder="请输入行驶里程"
-					/>
+					<el-input v-model="form.mileage" placeholder="请输入行驶里程" />
 				</el-form-item>
 				<el-form-item label="保养金额" prop="maintenanceCost">
-					<el-input
-						v-model="form.maintenanceCost"
-						placeholder="请输入保养金额"
-					/>
+					<el-input v-model="form.maintenanceCost" placeholder="请输入保养金额" />
 				</el-form-item>
 				<el-form-item label="保养日期" prop="maintenanceDate">
-					<el-date-picker
-						clearable
-						v-model="form.maintenanceDate"
-						type="date"
-						value-format="yyyy-MM-dd"
-						placeholder="请选择保养日期"
-					>
-					</el-date-picker>
+					<el-date-picker clearable v-model="form.maintenanceDate" type="date" value-format="yyyy-MM-dd" placeholder="请选择保养日期"></el-date-picker>
 				</el-form-item>
 				<el-form-item label="保险金额" prop="insuranceCost">
-					<el-input
-						v-model="form.insuranceCost"
-						placeholder="请输入保险金额"
-					/>
+					<el-input v-model="form.insuranceCost" placeholder="请输入保险金额" />
 				</el-form-item>
 				<el-form-item label="备注" prop="notes">
-					<el-input
-						v-model="form.notes"
-						type="textarea"
-						placeholder="请输入内容"
-					/>
+					<el-input v-model="form.notes" type="textarea" placeholder="请输入内容" />
 				</el-form-item>
 			</el-form>
 			<div slot="footer" class="dialog-footer">
@@ -357,40 +147,16 @@
 		</el-dialog>
 
 		<!-- 查看附件对话框 -->
-		<el-dialog
-			:title="'查看附件'"
-			:visible.sync="attachmentsDialogVisible"
-			width="600px"
-			append-to-body
-		>
+		<el-dialog :title="'查看附件'" :visible.sync="attachmentsDialogVisible" width="600px" append-to-body>
 			<h3>图片附件</h3>
-			<el-carousel
-				v-if="imageAttachments.length"
-				:interval="5000"
-				type="card"
-				height="400px"
-			>
-				<el-carousel-item
-					v-for="(item, index) in imageAttachments"
-					:key="index"
-				>
-					<img
-						:src="item.url"
-						:alt="item.name"
-						style="width: 100%; height: 100%"
-					/>
+			<el-carousel v-if="imageAttachments.length" :interval="5000" type="card" height="400px">
+				<el-carousel-item v-for="(item, index) in imageAttachments" :key="index">
+					<img :src="item.url" :alt="item.name" style="width: 100%; height: 100%" />
 				</el-carousel-item>
 			</el-carousel>
-			<div
-				v-if="nonImageAttachments.length"
-				class="non-image-attachments"
-			>
+			<div v-if="nonImageAttachments.length" class="non-image-attachments">
 				<h3>非图片附件</h3>
-				<div
-					v-for="(item, index) in nonImageAttachments"
-					:key="index"
-					class="attachment-item"
-				>
+				<div v-for="(item, index) in nonImageAttachments" :key="index" class="attachment-item">
 					<i class="el-icon-document"></i>
 					<a :href="item.url" target="_blank">{{ item.name }}</a>
 				</div>
@@ -398,12 +164,7 @@
 		</el-dialog>
 
 		<!-- 附件上传对话框 -->
-		<el-dialog
-			:title="'附件上传'"
-			:visible.sync="uploadDialogVisible"
-			width="600px"
-			append-to-body
-		>
+		<el-dialog :title="'附件上传'" :visible.sync="uploadDialogVisible" width="600px" append-to-body>
 			<el-upload
 				class="upload-demo"
 				:action="uploadFileUrl"
@@ -427,13 +188,7 @@
 </template>
 
 <script>
-import {
-	listVehicles,
-	getVehicles,
-	delVehicles,
-	addVehicles,
-	updateVehicles
-} from '@/api/system/vehicles';
+import { listVehicles, getVehicles, delVehicles, addVehicles, updateVehicles } from '@/api/system/vehicles';
 import { parseTime } from '../../../utils/ruoyi';
 import { getToken } from '@/utils/auth';
 import { mixin_printHTML } from '../../dashboard/mixins/print';
@@ -690,18 +445,14 @@ export default {
 					...item,
 					url: item.url.replace(/^blob:/, '')
 				}));
-			this.nonImageAttachments = this.attachments.filter(
-				item => !item.name.match(/\.(jpeg|jpg|gif|png)$/i)
-			);
+			this.nonImageAttachments = this.attachments.filter(item => !item.name.match(/\.(jpeg|jpg|gif|png)$/i));
 
 			this.attachmentsDialogVisible = true;
 		},
 		/** 附件上传按钮操作 */
 		handleUploadAttachments(row) {
 			this.currentRow = row;
-			this.fileList = this.uploadList = row.extraInfo?.attachments
-				? row.extraInfo.attachments
-				: [];
+			this.fileList = this.uploadList = row.extraInfo?.attachments ? row.extraInfo.attachments : [];
 			this.uploadDialogVisible = true;
 		},
 		handlePreview(file) {

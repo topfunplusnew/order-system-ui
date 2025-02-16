@@ -1,20 +1,8 @@
 <template>
 	<div class="app-container">
-		<el-form
-			v-show="showSearch"
-			ref="queryForm"
-			:model="queryParams"
-			size="mini"
-			:inline="true"
-			label-width="68px"
-		>
+		<el-form v-show="showSearch" ref="queryForm" :model="queryParams" size="mini" :inline="true" label-width="68px">
 			<el-form-item label="仓库名称" prop="storeHouseName">
-				<el-input
-					v-model="queryParams.storeHouseName"
-					placeholder="请输入仓库名称"
-					clearable
-					@keyup.enter.native="handleQuery"
-				/>
+				<el-input v-model="queryParams.storeHouseName" placeholder="请输入仓库名称" clearable @keyup.enter.native="handleQuery" />
 			</el-form-item>
 			<el-form-item label="出库日期">
 				<el-date-picker
@@ -28,40 +16,18 @@
 				></el-date-picker>
 			</el-form-item>
 			<el-form-item>
-				<el-button
-					type="primary"
-					icon="el-icon-search"
-					size="mini"
-					@click="handleQuery"
-				>
-					搜索
-				</el-button>
+				<el-button type="primary" icon="el-icon-search" size="mini" @click="handleQuery">搜索</el-button>
 			</el-form-item>
 		</el-form>
 
 		<el-row :gutter="10" class="mb8">
 			<el-col :span="1.5">
-				<el-button
-					icon="el-icon-refresh"
-					size="mini"
-					@click="resetQuery"
-				>
-					刷新
-				</el-button>
+				<el-button icon="el-icon-refresh" size="mini" @click="resetQuery">刷新</el-button>
 			</el-col>
-			<right-toolbar
-				:showSearch.sync="showSearch"
-				:columns="columns"
-				@queryTable="getList"
-			>
+			<right-toolbar :showSearch.sync="showSearch" :columns="columns" @queryTable="getList">
 				<template #print>
 					<el-col :span="1.5">
-						<el-button
-							plain
-							icon="el-icon-printer"
-							size="mini"
-							@click="printHTML"
-						></el-button>
+						<el-button plain icon="el-icon-printer" size="mini" @click="printHTML"></el-button>
 					</el-col>
 				</template>
 				<!--    后端说导出不要了 删除了    导出-->
@@ -93,81 +59,30 @@
 			"
 			@selection-change="handleSelectionChange"
 		>
-			<el-table-column
-				v-if="columns[0].visible"
-				label="仓库名称"
-				align="center"
-				prop="storeHouseName"
-			/>
-			<el-table-column
-				v-if="columns[1].visible"
-				label="出库日期"
-				align="center"
-				prop="outDate"
-			/>
-			<el-table-column
-				v-if="columns[2].visible"
-				label="出库量"
-				align="center"
-				prop="outAmount"
-			/>
-			<el-table-column
-				label="操作"
-				align="center"
-				class-name="small-padding fixed-width"
-			>
+			<el-table-column v-if="columns[0].visible" label="仓库名称" align="center" prop="storeHouseName" />
+			<el-table-column v-if="columns[1].visible" label="出库日期" align="center" prop="outDate" />
+			<el-table-column v-if="columns[2].visible" label="出库量" align="center" prop="outAmount" />
+			<el-table-column label="操作" align="center" class-name="small-padding fixed-width">
 				<template slot-scope="scope">
 					<el-tooltip
 						class="item"
 						effect="dark"
-						:content="
-							scope.row.ordersNo === '二次加工' ||
-							scope.row.ordersNo === '货物破损'
-								? '特殊货物无法查看'
-								: '查看订单信息'
-						"
+						:content="scope.row.ordersNo === '二次加工' || scope.row.ordersNo === '货物破损' ? '特殊货物无法查看' : '查看订单信息'"
 						placement="top-start"
 					>
-						<el-button
-							size="mini"
-							type="text"
-							:disabled="
-								scope.row.ordersNo === '二次加工' ||
-								scope.row.ordersNo === '货物破损'
-							"
-							@click="checkOrderInfo(scope.row)"
-						>
+						<el-button size="mini" type="text" :disabled="scope.row.ordersNo === '二次加工' || scope.row.ordersNo === '货物破损'" @click="checkOrderInfo(scope.row)">
 							查看订单信息
 						</el-button>
 					</el-tooltip>
-					<el-button
-						size="mini"
-						type="text"
-						@click="checkInvoInfo(scope.row)"
-					>
-						查看库存信息
-					</el-button>
+					<el-button size="mini" type="text" @click="checkInvoInfo(scope.row)">查看库存信息</el-button>
 				</template>
 			</el-table-column>
 		</el-table>
 
-		<pagination
-			v-show="total > 0"
-			:total="total"
-			:page.sync="queryParams.pageNum"
-			:limit.sync="queryParams.pageSize"
-			@pagination="getList"
-		/>
+		<pagination v-show="total > 0" :total="total" :page.sync="queryParams.pageNum" :limit.sync="queryParams.pageSize" @pagination="getList" />
 
 		<!-- 添加或修改出库对话框 -->
-		<el-dialog
-			:close-on-click-modal="false"
-			:show-close="false"
-			:title="title"
-			:visible.sync="open"
-			width="500px"
-			append-to-body
-		>
+		<el-dialog :close-on-click-modal="false" :show-close="false" :title="title" :visible.sync="open" width="500px" append-to-body>
 			<el-form ref="form" :model="form" :rules="rules" label-width="80px">
 				<!--        <el-form-item label="订单编号" prop="ordersNo">-->
 				<!--          <el-input v-model="form.ordersNo" placeholder="请输入订单编号"/>-->
@@ -176,28 +91,16 @@
 				<!--          <el-input v-model="form.storeHouseid" placeholder="请输入仓库ID"/>-->
 				<!--        </el-form-item>-->
 				<el-form-item label="仓库名称" prop="storeHouseName">
-					<el-input
-						v-model="form.storeHouseName"
-						placeholder="请输入仓库名称"
-					/>
+					<el-input v-model="form.storeHouseName" placeholder="请输入仓库名称" />
 				</el-form-item>
 				<el-form-item label="仓库存储的货物ID" prop="storeID">
-					<el-input
-						v-model="form.storeID"
-						placeholder="请输入仓库存储的货物ID"
-					/>
+					<el-input v-model="form.storeID" placeholder="请输入仓库存储的货物ID" />
 				</el-form-item>
 				<el-form-item label="出库日期" prop="outDate">
-					<el-input
-						v-model="form.outDate"
-						placeholder="请输入出库日期"
-					/>
+					<el-input v-model="form.outDate" placeholder="请输入出库日期" />
 				</el-form-item>
 				<el-form-item label="出库量" prop="outAmount">
-					<el-input
-						v-model="form.outAmount"
-						placeholder="请输入出库量"
-					/>
+					<el-input v-model="form.outAmount" placeholder="请输入出库量" />
 				</el-form-item>
 			</el-form>
 			<div slot="footer" class="dialog-footer">
@@ -207,13 +110,7 @@
 		</el-dialog>
 
 		<!--    查看订单详情信息-->
-		<el-dialog
-			:close-on-click-modal="false"
-			:show-close="false"
-			title="查看订单信息"
-			:visible.sync="checkOrderVisible"
-			width="900px"
-		>
+		<el-dialog :close-on-click-modal="false" :show-close="false" title="查看订单信息" :visible.sync="checkOrderVisible" width="900px">
 			<el-descriptions title="订单信息" :column="3" border size="mini">
 				<el-descriptions-item label="id">
 					{{ orderDetailInfo.id || '-' }}
@@ -231,16 +128,10 @@
 					{{ orderDetailInfo.fleet || '-' }}
 				</el-descriptions-item>
 				<el-descriptions-item label="审核状态">
-					<TagsItem
-						:check-info="orderDetailInfo.checkState"
-						checkValue="未审核"
-					/>
+					<TagsItem :check-info="orderDetailInfo.checkState" checkValue="未审核" />
 				</el-descriptions-item>
 				<el-descriptions-item label="开票状态">
-					<TagsItem
-						:check-info="orderDetailInfo.invoiceState"
-						checkValue="未开票"
-					/>
+					<TagsItem :check-info="orderDetailInfo.invoiceState" checkValue="未开票" />
 				</el-descriptions-item>
 				<el-descriptions-item label="附件">
 					{{ orderDetailInfo.path || '-' }}
@@ -282,37 +173,22 @@
 					{{ orderDetailInfo.receiveProof || '-' }}
 				</el-descriptions-item>
 				<el-descriptions-item label="是否被调整单">
-					<TagsItem
-						:check-info="orderDetailInfo.isAdjusted"
-						check-value="否"
-					/>
+					<TagsItem :check-info="orderDetailInfo.isAdjusted" check-value="否" />
 				</el-descriptions-item>
-				<el-descriptions-item
-					v-if="orderDetailInfo.isAdjusted"
-					label="调整日期"
-				>
+				<el-descriptions-item v-if="orderDetailInfo.isAdjusted" label="调整日期">
 					{{ orderDetailInfo.adjustDate }}
 				</el-descriptions-item>
 				<el-descriptions-item label="原订单编号">
 					{{ orderDetailInfo.adjustOrderid }}
 				</el-descriptions-item>
 				<el-descriptions-item label="是否可编辑">
-					<TagsItem
-						:check-info="isOrNot(orderDetailInfo.isedit)"
-						check-value="否"
-					/>
+					<TagsItem :check-info="isOrNot(orderDetailInfo.isedit)" check-value="否" />
 				</el-descriptions-item>
 				<el-descriptions-item label="客户是否开票">
-					<TagsItem
-						:check-info="isOrNot(orderDetailInfo.customerIsInvoice)"
-						check-value="否"
-					/>
+					<TagsItem :check-info="isOrNot(orderDetailInfo.customerIsInvoice)" check-value="否" />
 				</el-descriptions-item>
 				<el-descriptions-item label="供应商是否开票">
-					<TagsItem
-						:check-info="isOrNot(orderDetailInfo.customerIsInvoice)"
-						check-value="否"
-					/>
+					<TagsItem :check-info="isOrNot(orderDetailInfo.customerIsInvoice)" check-value="否" />
 				</el-descriptions-item>
 				<el-descriptions-item label="陆运费">
 					{{ orderDetailInfo.landFreight }}
@@ -323,20 +199,12 @@
 			</el-descriptions>
 			<span slot="footer" class="dialog-footer">
 				<el-button @click="checkOrderVisible = false">取 消</el-button>
-				<el-button type="primary" @click="checkOrderVisible = false">
-					确 定
-				</el-button>
+				<el-button type="primary" @click="checkOrderVisible = false">确 定</el-button>
 			</span>
 		</el-dialog>
 
 		<!--    库存信息-->
-		<el-dialog
-			:close-on-click-modal="false"
-			:show-close="false"
-			title="查看库存信息"
-			:visible.sync="checkInventoryVisible"
-			width="900px"
-		>
+		<el-dialog :close-on-click-modal="false" :show-close="false" title="查看库存信息" :visible.sync="checkInventoryVisible" width="900px">
 			<el-descriptions title="库存详情" border size="mini">
 				<el-descriptions-item label="备注">
 					{{ inventoryInfo.remark || '-' }}
@@ -463,28 +331,15 @@
 				</el-descriptions-item>
 			</el-descriptions>
 			<span slot="footer" class="dialog-footer">
-				<el-button @click="checkInventoryVisible = false"
-					>取 消</el-button
-				>
-				<el-button
-					type="primary"
-					@click="checkInventoryVisible = false"
-				>
-					确 定
-				</el-button>
+				<el-button @click="checkInventoryVisible = false">取 消</el-button>
+				<el-button type="primary" @click="checkInventoryVisible = false">确 定</el-button>
 			</span>
 		</el-dialog>
 	</div>
 </template>
 
 <script>
-import {
-	listExWarehouse,
-	getExWarehouse,
-	delExWarehouse,
-	addExWarehouse,
-	updateExWarehouse
-} from '@/api/system/exWarehouse';
+import { listExWarehouse, getExWarehouse, delExWarehouse, addExWarehouse, updateExWarehouse } from '@/api/system/exWarehouse';
 import { listGoodsOrder } from '@/api/system/goodsOrder';
 import TagsItem from '@/components/TagsItem/index.vue';
 import { getInventory, listInventory } from '@/api/system/inventory';
@@ -552,29 +407,18 @@ export default {
 	watch: {
 		columns: {
 			handler: function (newVal) {
-				localStorage.setItem(
-					'exwarehouse-columns',
-					JSON.stringify(newVal)
-				);
+				localStorage.setItem('exwarehouse-columns', JSON.stringify(newVal));
 			},
 			deep: true
 		}
 	},
 	created() {
 		this.getList();
-		if (
-			localStorage.getItem('exwarehouse-columns') === 'null' ||
-			!localStorage.getItem('exwarehouse-columns')
-		) {
+		if (localStorage.getItem('exwarehouse-columns') === 'null' || !localStorage.getItem('exwarehouse-columns')) {
 			// 设置localStorage
-			localStorage.setItem(
-				'exwarehouse-columns',
-				JSON.stringify(this.columns)
-			);
+			localStorage.setItem('exwarehouse-columns', JSON.stringify(this.columns));
 		} else {
-			this.columns = JSON.parse(
-				localStorage.getItem('exwarehouse-columns')
-			);
+			this.columns = JSON.parse(localStorage.getItem('exwarehouse-columns'));
 		}
 	},
 	// 取消按钮
@@ -606,9 +450,7 @@ export default {
 		getList() {
 			this.loading = true;
 			// this.dateRange
-			listExWarehouse(
-				addDateRange(this.queryParams, this.dateRange)
-			).then(response => {
+			listExWarehouse(addDateRange(this.queryParams, this.dateRange)).then(response => {
 				this.exWarehouseList = response.rows;
 				this.total = response.total;
 				this.loading = false;

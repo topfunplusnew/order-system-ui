@@ -1,93 +1,37 @@
 <template>
 	<div class="register">
-		<el-form
-			ref="registerForm"
-			:model="registerForm"
-			:rules="registerRules"
-			class="register-form"
-		>
+		<el-form ref="registerForm" :model="registerForm" :rules="registerRules" class="register-form">
 			<h3 class="title">订单管理系统</h3>
 			<el-form-item prop="username">
-				<el-input
-					v-model="registerForm.username"
-					type="text"
-					auto-complete="off"
-					placeholder="账号"
-				>
-					<svg-icon
-						slot="prefix"
-						icon-class="user"
-						class="el-input__icon input-icon"
-					/>
+				<el-input v-model="registerForm.username" type="text" auto-complete="off" placeholder="账号">
+					<svg-icon slot="prefix" icon-class="user" class="el-input__icon input-icon" />
 				</el-input>
 			</el-form-item>
 			<el-form-item prop="password">
-				<el-input
-					v-model="registerForm.password"
-					type="password"
-					auto-complete="off"
-					placeholder="密码"
-					@keyup.enter.native="handleRegister"
-				>
-					<svg-icon
-						slot="prefix"
-						icon-class="password"
-						class="el-input__icon input-icon"
-					/>
+				<el-input v-model="registerForm.password" type="password" auto-complete="off" placeholder="密码" @keyup.enter.native="handleRegister">
+					<svg-icon slot="prefix" icon-class="password" class="el-input__icon input-icon" />
 				</el-input>
 			</el-form-item>
 			<el-form-item prop="confirmPassword">
-				<el-input
-					v-model="registerForm.confirmPassword"
-					type="password"
-					auto-complete="off"
-					placeholder="确认密码"
-					@keyup.enter.native="handleRegister"
-				>
-					<svg-icon
-						slot="prefix"
-						icon-class="password"
-						class="el-input__icon input-icon"
-					/>
+				<el-input v-model="registerForm.confirmPassword" type="password" auto-complete="off" placeholder="确认密码" @keyup.enter.native="handleRegister">
+					<svg-icon slot="prefix" icon-class="password" class="el-input__icon input-icon" />
 				</el-input>
 			</el-form-item>
 			<el-form-item v-if="captchaEnabled" prop="code">
-				<el-input
-					v-model="registerForm.code"
-					auto-complete="off"
-					placeholder="验证码"
-					style="width: 63%"
-					@keyup.enter.native="handleRegister"
-				>
-					<svg-icon
-						slot="prefix"
-						icon-class="validCode"
-						class="el-input__icon input-icon"
-					/>
+				<el-input v-model="registerForm.code" auto-complete="off" placeholder="验证码" style="width: 63%" @keyup.enter.native="handleRegister">
+					<svg-icon slot="prefix" icon-class="validCode" class="el-input__icon input-icon" />
 				</el-input>
 				<div class="register-code">
-					<img
-						:src="codeUrl"
-						class="register-code-img"
-						@click="getCode"
-					/>
+					<img :src="codeUrl" class="register-code-img" @click="getCode" />
 				</div>
 			</el-form-item>
 			<el-form-item style="width: 100%">
-				<el-button
-					:loading="loading"
-					size="medium"
-					type="primary"
-					style="width: 100%"
-					@click.native.prevent="handleRegister"
-				>
+				<el-button :loading="loading" size="medium" type="primary" style="width: 100%" @click.native.prevent="handleRegister">
 					<span v-if="!loading">注 册</span>
 					<span v-else>注 册 中...</span>
 				</el-button>
 				<div style="float: right">
-					<router-link class="link-type" :to="'/login'"
-						>使用已有账户登录</router-link
-					>
+					<router-link class="link-type" :to="'/login'">使用已有账户登录</router-link>
 				</div>
 			</el-form-item>
 		</el-form>
@@ -183,10 +127,7 @@ export default {
 	methods: {
 		getCode() {
 			getCodeImg().then(res => {
-				this.captchaEnabled =
-					res.captchaEnabled === undefined
-						? true
-						: res.captchaEnabled;
+				this.captchaEnabled = res.captchaEnabled === undefined ? true : res.captchaEnabled;
 				if (this.captchaEnabled) {
 					this.codeUrl = 'data:image/gif;base64,' + res.img;
 					this.registerForm.uuid = res.uuid;
@@ -200,16 +141,10 @@ export default {
 					register(this.registerForm)
 						.then(res => {
 							const username = this.registerForm.username;
-							this.$alert(
-								"<font color='red'>恭喜你，您的账号 " +
-									username +
-									' 注册成功！</font>',
-								'系统提示',
-								{
-									dangerouslyUseHTMLString: true,
-									type: 'success'
-								}
-							)
+							this.$alert("<font color='red'>恭喜你，您的账号 " + username + ' 注册成功！</font>', '系统提示', {
+								dangerouslyUseHTMLString: true,
+								type: 'success'
+							})
 								.then(() => {
 									this.$router.push('/login');
 								})

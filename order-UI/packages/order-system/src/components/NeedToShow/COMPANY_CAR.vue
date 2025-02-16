@@ -11,9 +11,7 @@ export default {
 		// 提取 extraInfo 的附件列表
 		attachments() {
 			// todo 附件需要处理一下
-			return this.needToSowInfo.extraInfo
-				? Object.values(this.needToShowInfo.extraInfo)
-				: [];
+			return this.needToSowInfo.extraInfo ? Object.values(this.needToShowInfo.extraInfo) : [];
 		}
 	},
 	methods: {
@@ -55,21 +53,9 @@ export default {
 		<!-- 附件轮播图 -->
 		<div v-if="attachments.length" class="carousel-container">
 			<h3>附件信息</h3>
-			<el-carousel
-				indicator-position="outside"
-				height="300px"
-				autoplay
-				class="carousel"
-			>
-				<el-carousel-item
-					v-for="(attachment, index) in attachments"
-					:key="index"
-				>
-					<img
-						:src="attachment"
-						alt="附件图片"
-						class="carousel-image"
-					/>
+			<el-carousel indicator-position="outside" height="300px" autoplay class="carousel">
+				<el-carousel-item v-for="(attachment, index) in attachments" :key="index">
+					<img :src="attachment" alt="附件图片" class="carousel-image" />
 				</el-carousel-item>
 			</el-carousel>
 		</div>

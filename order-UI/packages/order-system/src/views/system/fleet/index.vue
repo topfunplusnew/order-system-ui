@@ -1,211 +1,76 @@
 <template>
 	<div class="app-container">
-		<el-form
-			v-show="showSearch"
-			ref="queryForm"
-			:model="queryParams"
-			size="mini"
-			:inline="true"
-			label-width="80px"
-		>
+		<el-form v-show="showSearch" ref="queryForm" :model="queryParams" size="mini" :inline="true" label-width="80px">
 			<el-form-item label="车队名称" prop="fname">
-				<el-input
-					v-model="queryParams.fname"
-					placeholder="请输入车队名称"
-					clearable
-					@keyup.enter.native="handleQuery"
-				/>
+				<el-input v-model="queryParams.fname" placeholder="请输入车队名称" clearable @keyup.enter.native="handleQuery" />
 			</el-form-item>
 			<el-form-item label="车队经理" prop="fleader">
-				<el-input
-					v-model="queryParams.fleader"
-					placeholder="请输入车队经理"
-					clearable
-					@keyup.enter.native="handleQuery"
-				/>
+				<el-input v-model="queryParams.fleader" placeholder="请输入车队经理" clearable @keyup.enter.native="handleQuery" />
 			</el-form-item>
 			<el-form-item label="经理电话" prop="tel">
-				<el-input
-					v-model="queryParams.tel"
-					placeholder="请输入车队经理电话"
-					clearable
-					@keyup.enter.native="handleQuery"
-				/>
+				<el-input v-model="queryParams.tel" placeholder="请输入车队经理电话" clearable @keyup.enter.native="handleQuery" />
 			</el-form-item>
 			<el-form-item label="地址" prop="address">
-				<el-input
-					v-model="queryParams.address"
-					placeholder="请输入地址"
-					clearable
-					@keyup.enter.native="handleQuery"
-				/>
+				<el-input v-model="queryParams.address" placeholder="请输入地址" clearable @keyup.enter.native="handleQuery" />
 			</el-form-item>
 			<el-form-item>
-				<el-button
-					type="primary"
-					icon="el-icon-search"
-					size="mini"
-					@click="handleQuery"
-				>
-					搜索
-				</el-button>
+				<el-button type="primary" icon="el-icon-search" size="mini" @click="handleQuery">搜索</el-button>
 			</el-form-item>
 		</el-form>
 
 		<el-row :gutter="10" class="mb8">
 			<!-- 刷新按钮-->
 			<el-col :span="1.5">
-				<el-button
-					icon="el-icon-refresh"
-					size="mini"
-					@click="resetQuery"
-				>
-					刷新
-				</el-button>
+				<el-button icon="el-icon-refresh" size="mini" @click="resetQuery">刷新</el-button>
 			</el-col>
 			<!-- 新增按钮 -->
 			<el-col :span="1.5">
-				<el-button
-					v-hasPermi="['system:fleet:add']"
-					type="danger"
-					size="mini"
-					@click="handleAdd"
-				>
-					添加车队信息
-				</el-button>
+				<el-button v-hasPermi="['system:fleet:add']" type="danger" size="mini" @click="handleAdd">添加车队信息</el-button>
 			</el-col>
 
-			<right-toolbar
-				:showSearch.sync="showSearch"
-				:columns="columns"
-				@queryTable="getList"
-			>
+			<right-toolbar :showSearch.sync="showSearch" :columns="columns" @queryTable="getList">
 				<!--    打印    -->
 				<template #print>
 					<el-col :span="1.5">
-						<el-button
-							plain
-							icon="el-icon-printer"
-							size="mini"
-							@click="printHTML"
-						></el-button>
+						<el-button plain icon="el-icon-printer" size="mini" @click="printHTML"></el-button>
 					</el-col>
 				</template>
 				<!--        导出-->
 				<template #export>
 					<el-col :span="1.5">
-						<el-button
-							v-hasPermi="['system:fleet:export']"
-							plain
-							icon="el-icon-folder-opened"
-							size="mini"
-							@click="handleExport"
-						></el-button>
+						<el-button v-hasPermi="['system:fleet:export']" plain icon="el-icon-folder-opened" size="mini" @click="handleExport"></el-button>
 					</el-col>
 				</template>
 			</right-toolbar>
 		</el-row>
 
-		<el-table
-			id="printBox"
-			v-horizontal-scroll="'always'"
-			v-loading="loading"
-			border
-			:data="fleetList"
-			size="mini"
-			@selection-change="handleSelectionChange"
-		>
+		<el-table id="printBox" v-horizontal-scroll="'always'" v-loading="loading" border :data="fleetList" size="mini" @selection-change="handleSelectionChange">
 			<!--   fixme 大小写错误 -->
-			<el-table-column
-				v-if="columns[0].visible"
-				label="车队名称"
-				align="center"
-				prop="fname"
-			/>
-			<el-table-column
-				v-if="columns[1].visible"
-				label="车队经理"
-				align="center"
-				prop="fleader"
-			/>
-			<el-table-column
-				v-if="columns[2].visible"
-				label="车队经理电话"
-				align="center"
-				prop="tel"
-			/>
-			<el-table-column
-				v-if="columns[3].visible"
-				label="地址"
-				align="center"
-				prop="address"
-			/>
-			<el-table-column
-				label="操作"
-				align="center"
-				class-name="small-padding fixed-width"
-			>
+			<el-table-column v-if="columns[0].visible" label="车队名称" align="center" prop="fname" />
+			<el-table-column v-if="columns[1].visible" label="车队经理" align="center" prop="fleader" />
+			<el-table-column v-if="columns[2].visible" label="车队经理电话" align="center" prop="tel" />
+			<el-table-column v-if="columns[3].visible" label="地址" align="center" prop="address" />
+			<el-table-column label="操作" align="center" class-name="small-padding fixed-width">
 				<template slot-scope="scope">
-					<el-button
-						v-hasPermi="['system:fleet:edit']"
-						size="mini"
-						type="primary"
-						@click="handleUpdate(scope.row)"
-					>
-						编辑
-					</el-button>
-					<el-button
-						v-hasPermi="['system:fleet:remove']"
-						size="mini"
-						type="danger"
-						@click="handleDelete(scope.row)"
-					>
-						删除
-					</el-button>
+					<el-button v-hasPermi="['system:fleet:edit']" size="mini" type="primary" @click="handleUpdate(scope.row)">编辑</el-button>
+					<el-button v-hasPermi="['system:fleet:remove']" size="mini" type="danger" @click="handleDelete(scope.row)">删除</el-button>
 				</template>
 			</el-table-column>
 		</el-table>
 
-		<pagination
-			v-show="total > 0"
-			:total="total"
-			:page.sync="queryParams.pageNum"
-			:limit.sync="queryParams.pageSize"
-			@pagination="getList"
-		/>
+		<pagination v-show="total > 0" :total="total" :page.sync="queryParams.pageNum" :limit.sync="queryParams.pageSize" @pagination="getList" />
 
 		<!-- 添加或修改车队对话框 -->
-		<el-dialog
-			:close-on-click-modal="false"
-			:show-close="false"
-			:title="title"
-			:visible.sync="open"
-			width="500px"
-			append-to-body
-		>
-			<el-form
-				ref="form"
-				:model="form"
-				:rules="rules"
-				label-width="120px"
-			>
+		<el-dialog :close-on-click-modal="false" :show-close="false" :title="title" :visible.sync="open" width="500px" append-to-body>
+			<el-form ref="form" :model="form" :rules="rules" label-width="120px">
 				<el-form-item label="车队名称" prop="fname">
-					<el-input
-						v-model="form.fname"
-						placeholder="请输入车队名称"
-					/>
+					<el-input v-model="form.fname" placeholder="请输入车队名称" />
 				</el-form-item>
 				<el-form-item label="车队经理" prop="fleader">
-					<el-input
-						v-model="form.fleader"
-						placeholder="请输入车队经理"
-					/>
+					<el-input v-model="form.fleader" placeholder="请输入车队经理" />
 				</el-form-item>
 				<el-form-item label="车队经理电话" prop="tel">
-					<el-input
-						v-model="form.tel"
-						placeholder="请输入车队经理电话"
-					/>
+					<el-input v-model="form.tel" placeholder="请输入车队经理电话" />
 				</el-form-item>
 				<el-form-item label="地址" prop="address">
 					<el-input v-model="form.address" placeholder="请输入地址" />
@@ -220,13 +85,7 @@
 </template>
 
 <script>
-import {
-	listFleet,
-	getFleet,
-	delFleet,
-	addFleet,
-	updateFleet
-} from '@/api/system/fleet';
+import { listFleet, getFleet, delFleet, addFleet, updateFleet } from '@/api/system/fleet';
 
 export default {
 	name: 'Fleet',
@@ -288,9 +147,7 @@ export default {
 						trigger: 'blur'
 					}
 				],
-				address: [
-					{ required: true, message: '地址不能为空', trigger: 'blur' }
-				]
+				address: [{ required: true, message: '地址不能为空', trigger: 'blur' }]
 			},
 			columns: [
 				{ key: 0, label: `车队名称`, visible: true },
@@ -312,10 +169,7 @@ export default {
 
 	created() {
 		this.getList();
-		if (
-			localStorage.getItem('fleet-columns') === 'null' ||
-			!localStorage.getItem('fleet-columns')
-		) {
+		if (localStorage.getItem('fleet-columns') === 'null' || !localStorage.getItem('fleet-columns')) {
 			// 设置localStorage
 			localStorage.setItem('fleet-columns', JSON.stringify(this.columns));
 		} else {

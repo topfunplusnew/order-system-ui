@@ -1,37 +1,17 @@
 <template>
 	<div>
-		<select
-			v-model="mailAddress1"
-			style="width: 19rem"
-			@change="provinceChange"
-		>
-			<option
-				v-for="(item, index) in provinceList"
-				:key="index"
-				:value="item"
-			>
+		<select v-model="mailAddress1" style="width: 19rem" @change="provinceChange">
+			<option v-for="(item, index) in provinceList" :key="index" :value="item">
 				{{ item.name }}
 			</option>
 		</select>
-		<select
-			v-model="mailAddress2"
-			style="width: 19rem; margin-left: 1rem"
-			@change="cityChange"
-		>
-			<option
-				v-for="(item, index) in cityList"
-				:key="index"
-				:value="item"
-			>
+		<select v-model="mailAddress2" style="width: 19rem; margin-left: 1rem" @change="cityChange">
+			<option v-for="(item, index) in cityList" :key="index" :value="item">
 				{{ item.name }}
 			</option>
 		</select>
 		<select v-model="mailAddress3" style="width: 19rem; margin-left: 1rem">
-			<option
-				v-for="(item, index) in countyList"
-				:key="index"
-				:value="item"
-			>
+			<option v-for="(item, index) in countyList" :key="index" :value="item">
 				{{ item.name }}
 			</option>
 		</select>

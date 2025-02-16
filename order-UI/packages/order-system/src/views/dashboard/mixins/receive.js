@@ -11,7 +11,7 @@ export var mixin_reviveMoney = {
 			tableName: '',
 			// 收款账款信息
 			moneyAmount: '',
-			// 己方银行信息 需要银行ID
+			// 我方银行信息 需要银行ID
 			selfAcountsName: '',
 			selfBankNo: '',
 			selfBankName: '',
@@ -35,23 +35,14 @@ export var mixin_reviveMoney = {
 			this.tableName = tableName;
 		},
 		// 初始化我方银行卡信息
-		initReviveMoneySelfAccountInfo(
-			selfAcountsName,
-			selfBankNo,
-			selfBankName,
-			selfBankID
-		) {
+		initReviveMoneySelfAccountInfo(selfAcountsName, selfBankNo, selfBankName, selfBankID) {
 			this.selfAcountsName = selfAcountsName;
 			this.selfBankNo = selfBankNo;
 			this.selfBankName = selfBankName;
 			this.selfBankID = selfBankID;
 		},
 		// 初始化对方账户信息
-		initReviveMoneyOtherAccountInfo(
-			otherAcountsName,
-			otherBankNo,
-			otherBankName
-		) {
+		initReviveMoneyOtherAccountInfo(otherAcountsName, otherBankNo, otherBankName) {
 			this.otherAcountsName = otherAcountsName;
 			this.otherBankNo = otherBankNo;
 			this.otherBankName = otherBankName;

@@ -4,11 +4,12 @@
 			<el-col :span="12" class="card-box">
 				<el-card>
 					<div slot="header">
-						<span><i class="el-icon-cpu"></i> CPU</span>
+						<span>
+							<i class="el-icon-cpu"></i>
+							CPU
+						</span>
 					</div>
-					<div
-						class="el-table el-table--enable-row-hover el-table--medium"
-					>
+					<div class="el-table el-table--enable-row-hover el-table--medium">
 						<table cellspacing="0" style="width: 100%">
 							<thead>
 								<tr>
@@ -36,9 +37,7 @@
 										<div class="cell">用户使用率</div>
 									</td>
 									<td class="el-table__cell is-leaf">
-										<div v-if="server.cpu" class="cell">
-											{{ server.cpu.used }}%
-										</div>
+										<div v-if="server.cpu" class="cell">{{ server.cpu.used }}%</div>
 									</td>
 								</tr>
 								<tr>
@@ -46,9 +45,7 @@
 										<div class="cell">系统使用率</div>
 									</td>
 									<td class="el-table__cell is-leaf">
-										<div v-if="server.cpu" class="cell">
-											{{ server.cpu.sys }}%
-										</div>
+										<div v-if="server.cpu" class="cell">{{ server.cpu.sys }}%</div>
 									</td>
 								</tr>
 								<tr>
@@ -56,9 +53,7 @@
 										<div class="cell">当前空闲率</div>
 									</td>
 									<td class="el-table__cell is-leaf">
-										<div v-if="server.cpu" class="cell">
-											{{ server.cpu.free }}%
-										</div>
+										<div v-if="server.cpu" class="cell">{{ server.cpu.free }}%</div>
 									</td>
 								</tr>
 							</tbody>
@@ -70,11 +65,12 @@
 			<el-col :span="12" class="card-box">
 				<el-card>
 					<div slot="header">
-						<span><i class="el-icon-tickets"></i> 内存</span>
+						<span>
+							<i class="el-icon-tickets"></i>
+							内存
+						</span>
 					</div>
-					<div
-						class="el-table el-table--enable-row-hover el-table--medium"
-					>
+					<div class="el-table el-table--enable-row-hover el-table--medium">
 						<table cellspacing="0" style="width: 100%">
 							<thead>
 								<tr>
@@ -95,14 +91,10 @@
 										<div class="cell">总内存</div>
 									</td>
 									<td class="el-table__cell is-leaf">
-										<div v-if="server.mem" class="cell">
-											{{ server.mem.total }}G
-										</div>
+										<div v-if="server.mem" class="cell">{{ server.mem.total }}G</div>
 									</td>
 									<td class="el-table__cell is-leaf">
-										<div v-if="server.jvm" class="cell">
-											{{ server.jvm.total }}M
-										</div>
+										<div v-if="server.jvm" class="cell">{{ server.jvm.total }}M</div>
 									</td>
 								</tr>
 								<tr>
@@ -110,14 +102,10 @@
 										<div class="cell">已用内存</div>
 									</td>
 									<td class="el-table__cell is-leaf">
-										<div v-if="server.mem" class="cell">
-											{{ server.mem.used }}G
-										</div>
+										<div v-if="server.mem" class="cell">{{ server.mem.used }}G</div>
 									</td>
 									<td class="el-table__cell is-leaf">
-										<div v-if="server.jvm" class="cell">
-											{{ server.jvm.used }}M
-										</div>
+										<div v-if="server.jvm" class="cell">{{ server.jvm.used }}M</div>
 									</td>
 								</tr>
 								<tr>
@@ -125,14 +113,10 @@
 										<div class="cell">剩余内存</div>
 									</td>
 									<td class="el-table__cell is-leaf">
-										<div v-if="server.mem" class="cell">
-											{{ server.mem.free }}G
-										</div>
+										<div v-if="server.mem" class="cell">{{ server.mem.free }}G</div>
 									</td>
 									<td class="el-table__cell is-leaf">
-										<div v-if="server.jvm" class="cell">
-											{{ server.jvm.free }}M
-										</div>
+										<div v-if="server.jvm" class="cell">{{ server.jvm.free }}M</div>
 									</td>
 								</tr>
 								<tr>
@@ -144,8 +128,7 @@
 											v-if="server.mem"
 											class="cell"
 											:class="{
-												'text-danger':
-													server.mem.usage > 80
+												'text-danger': server.mem.usage > 80
 											}"
 										>
 											{{ server.mem.usage }}%
@@ -156,8 +139,7 @@
 											v-if="server.jvm"
 											class="cell"
 											:class="{
-												'text-danger':
-													server.jvm.usage > 80
+												'text-danger': server.jvm.usage > 80
 											}"
 										>
 											{{ server.jvm.usage }}%
@@ -173,11 +155,12 @@
 			<el-col :span="24" class="card-box">
 				<el-card>
 					<div slot="header">
-						<span><i class="el-icon-monitor"></i> 服务器信息</span>
+						<span>
+							<i class="el-icon-monitor"></i>
+							服务器信息
+						</span>
 					</div>
-					<div
-						class="el-table el-table--enable-row-hover el-table--medium"
-					>
+					<div class="el-table el-table--enable-row-hover el-table--medium">
 						<table cellspacing="0" style="width: 100%">
 							<tbody>
 								<tr>
@@ -225,18 +208,13 @@
 			<el-col :span="24" class="card-box">
 				<el-card>
 					<div slot="header">
-						<span
-							><i class="el-icon-coffee-cup"></i>
-							Java虚拟机信息</span
-						>
+						<span>
+							<i class="el-icon-coffee-cup"></i>
+							Java虚拟机信息
+						</span>
 					</div>
-					<div
-						class="el-table el-table--enable-row-hover el-table--medium"
-					>
-						<table
-							cellspacing="0"
-							style="width: 100%; table-layout: fixed"
-						>
+					<div class="el-table el-table--enable-row-hover el-table--medium">
+						<table cellspacing="0" style="width: 100%; table-layout: fixed">
 							<tbody>
 								<tr>
 									<td class="el-table__cell is-leaf">
@@ -275,48 +253,30 @@
 									</td>
 								</tr>
 								<tr>
-									<td
-										colspan="1"
-										class="el-table__cell is-leaf"
-									>
+									<td colspan="1" class="el-table__cell is-leaf">
 										<div class="cell">安装路径</div>
 									</td>
-									<td
-										colspan="3"
-										class="el-table__cell is-leaf"
-									>
+									<td colspan="3" class="el-table__cell is-leaf">
 										<div v-if="server.jvm" class="cell">
 											{{ server.jvm.home }}
 										</div>
 									</td>
 								</tr>
 								<tr>
-									<td
-										colspan="1"
-										class="el-table__cell is-leaf"
-									>
+									<td colspan="1" class="el-table__cell is-leaf">
 										<div class="cell">项目路径</div>
 									</td>
-									<td
-										colspan="3"
-										class="el-table__cell is-leaf"
-									>
+									<td colspan="3" class="el-table__cell is-leaf">
 										<div v-if="server.sys" class="cell">
 											{{ server.sys.userDir }}
 										</div>
 									</td>
 								</tr>
 								<tr>
-									<td
-										colspan="1"
-										class="el-table__cell is-leaf"
-									>
+									<td colspan="1" class="el-table__cell is-leaf">
 										<div class="cell">运行参数</div>
 									</td>
-									<td
-										colspan="3"
-										class="el-table__cell is-leaf"
-									>
+									<td colspan="3" class="el-table__cell is-leaf">
 										<div v-if="server.jvm" class="cell">
 											{{ server.jvm.inputArgs }}
 										</div>
@@ -331,17 +291,16 @@
 			<el-col :span="24" class="card-box">
 				<el-card>
 					<div slot="header">
-						<span><i class="el-icon-receiving"></i> 磁盘状态</span>
+						<span>
+							<i class="el-icon-receiving"></i>
+							磁盘状态
+						</span>
 					</div>
-					<div
-						class="el-table el-table--enable-row-hover el-table--medium"
-					>
+					<div class="el-table el-table--enable-row-hover el-table--medium">
 						<table cellspacing="0" style="width: 100%">
 							<thead>
 								<tr>
-									<th
-										class="el-table__cell el-table__cell is-leaf"
-									>
+									<th class="el-table__cell el-table__cell is-leaf">
 										<div class="cell">盘符路径</div>
 									</th>
 									<th class="el-table__cell is-leaf">
@@ -365,10 +324,7 @@
 								</tr>
 							</thead>
 							<tbody v-if="server.sysFiles">
-								<tr
-									v-for="(sysFile, index) in server.sysFiles"
-									:key="index"
-								>
+								<tr v-for="(sysFile, index) in server.sysFiles" :key="index">
 									<td class="el-table__cell is-leaf">
 										<div class="cell">
 											{{ sysFile.dirName }}
@@ -403,8 +359,7 @@
 										<div
 											class="cell"
 											:class="{
-												'text-danger':
-													sysFile.usage > 80
+												'text-danger': sysFile.usage > 80
 											}"
 										>
 											{{ sysFile.usage }}%

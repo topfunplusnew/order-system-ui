@@ -15,8 +15,7 @@ export var mixin_order_freeApply = {
 		// 申请陆运费
 		handleApplyLandFree(row) {
 			let source = null;
-			if (row.source === '订单' || row.source === '调整单')
-				source = FreightSource.GOODS_ORDER;
+			if (row.source === '订单' || row.source === '调整单') source = FreightSource.GOODS_ORDER;
 			else source = FreightSource.INVENTORY_MAIN;
 
 			getCars(row.car_id).then(res => {
@@ -24,7 +23,7 @@ export var mixin_order_freeApply = {
 					this.$message.error('请先添加车辆信息');
 					return;
 				}
-				// 组装订单运费信息 己方银行卡信息弹窗自己选
+				// 组装订单运费信息 我方银行卡信息弹窗自己选
 				const landFreightInfo = {
 					ordersNo: row.source_id,
 					freightType: row.transport_type === 'sea' ? '海运' : '陆运',
@@ -54,8 +53,7 @@ export var mixin_order_freeApply = {
 		// 申请海运费
 		handleApplySeaFree(row) {
 			let source = null;
-			if (row.source === '订单' || row.source === '调整单')
-				source = FreightSource.GOODS_ORDER;
+			if (row.source === '订单' || row.source === '调整单') source = FreightSource.GOODS_ORDER;
 			else source = FreightSource.INVENTORY_MAIN;
 			// 首先获取车辆信息
 			getCars(row.car_id).then(res => {

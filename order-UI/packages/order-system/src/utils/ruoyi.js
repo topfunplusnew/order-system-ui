@@ -61,12 +61,7 @@ export function resetForm(refName) {
 export function addDateRange(params, dateRange, propName, otherParams) {
 	// 如果是走访记录的时间查询
 	const search = params;
-	search.params =
-		typeof search.params === 'object' &&
-		search.params !== null &&
-		!Array.isArray(search.params)
-			? search.params
-			: {};
+	search.params = typeof search.params === 'object' && search.params !== null && !Array.isArray(search.params) ? search.params : {};
 	dateRange = Array.isArray(dateRange) ? dateRange : [];
 	// 需要格式化什么 加if就行了
 	if (propName === 'visit') {
@@ -275,15 +270,10 @@ export function tansParams(params) {
 		if (value !== null && value !== '' && typeof value !== 'undefined') {
 			if (typeof value === 'object') {
 				for (const key of Object.keys(value)) {
-					if (
-						value[key] !== null &&
-						value[key] !== '' &&
-						typeof value[key] !== 'undefined'
-					) {
+					if (value[key] !== null && value[key] !== '' && typeof value[key] !== 'undefined') {
 						const params = propName + '[' + key + ']';
 						var subPart = encodeURIComponent(params) + '=';
-						result +=
-							subPart + encodeURIComponent(value[key]) + '&';
+						result += subPart + encodeURIComponent(value[key]) + '&';
 					}
 				}
 			} else {

@@ -1,13 +1,6 @@
 <template>
 	<div class="app-container">
-		<el-form
-			v-show="showSearch"
-			ref="queryForm"
-			:model="queryParams"
-			size="mini"
-			:inline="true"
-			label-width="68px"
-		>
+		<el-form v-show="showSearch" ref="queryForm" :model="queryParams" size="mini" :inline="true" label-width="68px">
 			<el-form-item label="付款时间">
 				<el-date-picker
 					v-model="dateRange"
@@ -20,57 +13,27 @@
 				></el-date-picker>
 			</el-form-item>
 			<el-form-item>
-				<el-button
-					type="primary"
-					icon="el-icon-search"
-					size="mini"
-					@click="handleQuery"
-				>
-					搜索
-				</el-button>
+				<el-button type="primary" icon="el-icon-search" size="mini" @click="handleQuery">搜索</el-button>
 			</el-form-item>
 		</el-form>
 
 		<el-row :gutter="10" class="mb8">
 			<el-col :span="1.5">
-				<el-button
-					icon="el-icon-refresh"
-					size="mini"
-					@click="resetQuery"
-				>
-					刷新
-				</el-button>
+				<el-button icon="el-icon-refresh" size="mini" @click="resetQuery">刷新</el-button>
 			</el-col>
 			<el-col :span="1.5">
-				<el-button type="danger" size="mini" @click="handleAdd">
-					新增固定资产信息
-				</el-button>
+				<el-button type="danger" size="mini" @click="handleAdd">新增固定资产信息</el-button>
 			</el-col>
-			<right-toolbar
-				:showSearch.sync="showSearch"
-				:columns="columns"
-				@queryTable="getList"
-			>
+			<right-toolbar :showSearch.sync="showSearch" :columns="columns" @queryTable="getList">
 				<template #print>
 					<el-col :span="1.5">
-						<el-button
-							plain
-							icon="el-icon-printer"
-							size="mini"
-							@click="printHTML"
-						></el-button>
+						<el-button plain icon="el-icon-printer" size="mini" @click="printHTML"></el-button>
 					</el-col>
 				</template>
 				<!--        导出-->
 				<template #export>
 					<el-col :span="1.5">
-						<el-button
-							v-hasPermi="['system:company:export']"
-							plain
-							icon="el-icon-folder-opened"
-							size="mini"
-							@click="handleExport"
-						></el-button>
+						<el-button v-hasPermi="['system:company:export']" plain icon="el-icon-folder-opened" size="mini" @click="handleExport"></el-button>
 					</el-col>
 				</template>
 			</right-toolbar>
@@ -90,234 +53,75 @@
 			"
 			@selection-change="handleSelectionChange"
 		>
-			<el-table-column
-				v-if="columns[0].visible"
-				label="购入日期"
-				align="center"
-				prop="buyDate"
-				width="120px"
-				show-overflow-tooltip
-			/>
-			<el-table-column
-				v-if="columns[1].visible"
-				label="资产编号"
-				align="center"
-				prop="assetNo"
-				show-overflow-tooltip
-			/>
-			<el-table-column
-				v-if="columns[2].visible"
-				label="资产名称"
-				align="center"
-				prop="assetName"
-				show-overflow-tooltip
-			/>
-			<el-table-column
-				v-if="columns[3].visible"
-				label="规格型号"
-				align="center"
-				prop="specification"
-				show-overflow-tooltip
-			/>
-			<el-table-column
-				v-if="columns[4].visible"
-				label="数量"
-				align="center"
-				prop="number"
-				show-overflow-tooltip
-			/>
-			<el-table-column
-				v-if="columns[5].visible"
-				label="计量单位"
-				align="center"
-				prop="measurementUnit"
-				show-overflow-tooltip
-			/>
-			<el-table-column
-				v-if="columns[6].visible"
-				label="含税金额"
-				align="center"
-				prop="amountIncludeTax"
-				show-overflow-tooltip
-			/>
-			<el-table-column
-				v-if="columns[7].visible"
-				label="不含税金额"
-				align="center"
-				prop="amountNoTax"
-				show-overflow-tooltip
-			/>
-			<el-table-column
-				v-if="columns[8].visible"
-				label="户名名称"
-				align="center"
-				prop="account"
-				show-overflow-tooltip
-			/>
-			<el-table-column
-				v-if="columns[9].visible"
-				label="使用部门"
-				align="center"
-				prop="department"
-				show-overflow-tooltip
-			/>
-			<el-table-column
-				v-if="columns[10].visible"
-				label="固定资产清理时间"
-				align="center"
-				prop="scrapDate"
-				show-overflow-tooltip
-			/>
-			<el-table-column
-				v-if="columns[11].visible"
-				label="清理/变卖价值"
-				align="center"
-				prop="saleAmount"
-				show-overflow-tooltip
-			/>
-			<el-table-column
-				v-if="columns[12].visible"
-				label="备注"
-				align="center"
-				prop="comments"
-				show-overflow-tooltip
-			/>
-			<el-table-column
-				label="操作"
-				align="center"
-				class-name="small-padding fixed-width"
-			>
+			<el-table-column v-if="columns[0].visible" label="购入日期" align="center" prop="buyDate" width="120px" show-overflow-tooltip />
+			<el-table-column v-if="columns[1].visible" label="资产编号" align="center" prop="assetNo" show-overflow-tooltip />
+			<el-table-column v-if="columns[2].visible" label="资产名称" align="center" prop="assetName" show-overflow-tooltip />
+			<el-table-column v-if="columns[3].visible" label="规格型号" align="center" prop="specification" show-overflow-tooltip />
+			<el-table-column v-if="columns[4].visible" label="数量" align="center" prop="number" show-overflow-tooltip />
+			<el-table-column v-if="columns[5].visible" label="计量单位" align="center" prop="measurementUnit" show-overflow-tooltip />
+			<el-table-column v-if="columns[6].visible" label="含税金额" align="center" prop="amountIncludeTax" show-overflow-tooltip />
+			<el-table-column v-if="columns[7].visible" label="不含税金额" align="center" prop="amountNoTax" show-overflow-tooltip />
+			<el-table-column v-if="columns[8].visible" label="户名名称" align="center" prop="account" show-overflow-tooltip />
+			<el-table-column v-if="columns[9].visible" label="使用部门" align="center" prop="department" show-overflow-tooltip />
+			<el-table-column v-if="columns[10].visible" label="固定资产清理时间" align="center" prop="scrapDate" show-overflow-tooltip />
+			<el-table-column v-if="columns[11].visible" label="清理/变卖价值" align="center" prop="saleAmount" show-overflow-tooltip />
+			<el-table-column v-if="columns[12].visible" label="备注" align="center" prop="comments" show-overflow-tooltip />
+			<el-table-column label="操作" align="center" class-name="small-padding fixed-width">
 				<template slot-scope="scope">
-					<el-button
-						v-hasPermi="['system:fixedassets:edit']"
-						size="mini"
-						type="primary"
-						@click="handleUpdate(scope.row)"
-					>
-						修改
-					</el-button>
-					<el-button
-						v-hasPermi="['system:fixedassets:remove']"
-						size="mini"
-						type="danger"
-						@click="handleDelete(scope.row)"
-					>
-						删除
-					</el-button>
+					<el-button v-hasPermi="['system:fixedassets:edit']" size="mini" type="primary" @click="handleUpdate(scope.row)">修改</el-button>
+					<el-button v-hasPermi="['system:fixedassets:remove']" size="mini" type="danger" @click="handleDelete(scope.row)">删除</el-button>
 				</template>
 			</el-table-column>
 		</el-table>
 
-		<pagination
-			v-show="total > 0"
-			:total="total"
-			:page.sync="queryParams.pageNum"
-			:limit.sync="queryParams.pageSize"
-			@pagination="getList"
-		/>
+		<pagination v-show="total > 0" :total="total" :page.sync="queryParams.pageNum" :limit.sync="queryParams.pageSize" @pagination="getList" />
 
 		<!-- 添加或修改固定资产对话框 -->
-		<el-dialog
-			:close-on-click-modal="false"
-			:show-close="false"
-			:title="title"
-			:visible.sync="open"
-			width="50%"
-			append-to-body
-		>
-			<el-form
-				ref="form"
-				:model="form"
-				:rules="rules"
-				label-width="120px"
-			>
+		<el-dialog :close-on-click-modal="false" :show-close="false" :title="title" :visible.sync="open" width="50%" append-to-body>
+			<el-form ref="form" :model="form" :rules="rules" label-width="120px">
 				<el-row>
 					<el-col :span="12">
 						<el-form-item label="购入日期" prop="buyDate">
-							<el-date-picker
-								v-model="form.buyDate"
-								type="datetime"
-								placeholder="购入日期"
-								value-format="yyyy-MM-dd HH:mm:ss"
-							></el-date-picker>
+							<el-date-picker v-model="form.buyDate" type="datetime" placeholder="购入日期" value-format="yyyy-MM-dd HH:mm:ss"></el-date-picker>
 						</el-form-item>
 						<el-form-item label="资产编号" prop="assetNo">
-							<el-input
-								v-model="form.assetNo"
-								placeholder="请输入资产编号"
-							/>
+							<el-input v-model="form.assetNo" placeholder="请输入资产编号" />
 						</el-form-item>
 						<el-form-item label="资产名称" prop="assetName">
-							<el-input
-								v-model="form.assetName"
-								placeholder="请输入资产名称"
-							/>
+							<el-input v-model="form.assetName" placeholder="请输入资产名称" />
 						</el-form-item>
 						<el-form-item label="规格型号" prop=" specification">
-							<el-input
-								v-model="form.specification"
-								placeholder="请输入规格型号"
-							/>
+							<el-input v-model="form.specification" placeholder="请输入规格型号" />
 						</el-form-item>
 						<el-form-item label="数量" prop="number">
-							<el-input
-								v-model="form.number"
-								placeholder="请输入数量"
-							/>
+							<el-input v-model="form.number" placeholder="请输入数量" />
 						</el-form-item>
 						<el-form-item label="计量单位" prop="measurementUnit">
-							<el-input
-								v-model="form.measurementUnit"
-								placeholder="请输入计量单位"
-							/>
+							<el-input v-model="form.measurementUnit" placeholder="请输入计量单位" />
 						</el-form-item>
 						<el-form-item label="含税金额" prop="amountIncludeTax">
-							<el-input
-								v-model="form.amountIncludeTax"
-								placeholder="请输入含税金额"
-							/>
+							<el-input v-model="form.amountIncludeTax" placeholder="请输入含税金额" />
 						</el-form-item>
 					</el-col>
 					<el-col :span="12">
 						<el-form-item label="不含税金额" prop="amountNoTax">
-							<el-input
-								v-model="form.amountNoTax"
-								placeholder="请输入不含税金额"
-							/>
+							<el-input v-model="form.amountNoTax" placeholder="请输入不含税金额" />
 						</el-form-item>
 						<el-form-item label="户名名称" prop="account">
-							<el-radio v-model="form.account" label="公户"
-								>公户</el-radio
-							>
-							<el-radio v-model="form.account" label="个人"
-								>个人</el-radio
-							>
+							<el-radio v-model="form.account" label="公户">公户</el-radio>
+							<el-radio v-model="form.account" label="个人">个人</el-radio>
 						</el-form-item>
 						<el-form-item label="使用部门" prop="department">
-							<el-input
-								v-model="form.department"
-								placeholder="请输入使用部门"
-							/>
+							<el-input v-model="form.department" placeholder="请输入使用部门" />
 						</el-form-item>
 						<el-form-item label="固定资产清理时间" prop="scrapDate">
-							<el-date-picker
-								v-model="form.scrapDate"
-								type="datetime"
-								placeholder="固定资产清理时间"
-								value-format="yyyy-MM-dd HH:mm:ss"
-							></el-date-picker>
+							<el-date-picker v-model="form.scrapDate" type="datetime" placeholder="固定资产清理时间" value-format="yyyy-MM-dd HH:mm:ss"></el-date-picker>
 						</el-form-item>
 						<el-form-item label="清理/变卖价值" prop="saleAmount">
-							<el-input
-								v-model="form.saleAmount"
-								placeholder="请输入清理/变卖价值"
-							/>
+							<el-input v-model="form.saleAmount" placeholder="请输入清理/变卖价值" />
 						</el-form-item>
 						<el-form-item label="备注" prop="comments">
-							<el-input
-								v-model="form.comments"
-								placeholder="请输入备注"
-							/>
+							<el-input v-model="form.comments" placeholder="请输入备注" />
 						</el-form-item>
 					</el-col>
 				</el-row>
@@ -331,13 +135,7 @@
 </template>
 
 <script>
-import {
-	listFixedAssets,
-	getFixedAssets,
-	delFixedAssets,
-	addFixedAssets,
-	updateFixedAssets
-} from '@/api/system/fixedAssets';
+import { listFixedAssets, getFixedAssets, delFixedAssets, addFixedAssets, updateFixedAssets } from '@/api/system/fixedAssets';
 import { mapGetters } from 'vuex';
 import { excludeParams } from '@/api/tool/exclude';
 import { addDateRange } from '@/utils/ruoyi';
@@ -420,9 +218,7 @@ export default {
 						trigger: 'blur'
 					}
 				],
-				number: [
-					{ required: true, message: '数量不能为空', trigger: 'blur' }
-				],
+				number: [{ required: true, message: '数量不能为空', trigger: 'blur' }],
 				measurementUnit: [
 					{
 						required: true,
@@ -439,11 +235,7 @@ export default {
 					{
 						validator: (rule, value, callback) => {
 							if (!/^\d+(\.\d{1,2})?$/.test(value)) {
-								callback(
-									new Error(
-										'金额只能为数字且小数点后最多两位'
-									)
-								);
+								callback(new Error('金额只能为数字且小数点后最多两位'));
 							} else {
 								callback();
 							}
@@ -460,11 +252,7 @@ export default {
 					{
 						validator: (rule, value, callback) => {
 							if (!/^\d+(\.\d{1,2})?$/.test(value)) {
-								callback(
-									new Error(
-										'金额只能为数字且小数点后最多两位'
-									)
-								);
+								callback(new Error('金额只能为数字且小数点后最多两位'));
 							} else {
 								callback();
 							}
@@ -541,10 +329,7 @@ export default {
 	watch: {
 		columns: {
 			handler: function (newVal) {
-				localStorage.setItem(
-					'fixedassets-columns',
-					JSON.stringify(newVal)
-				);
+				localStorage.setItem('fixedassets-columns', JSON.stringify(newVal));
 			},
 			deep: true
 		}
@@ -554,19 +339,11 @@ export default {
 		this.getList();
 		this.$store.dispatch('fixedassets/getFixedassetsList');
 		this.loading = false;
-		if (
-			localStorage.getItem('fixedassets-columns') === 'null' ||
-			!localStorage.getItem('fixedassets-columns')
-		) {
+		if (localStorage.getItem('fixedassets-columns') === 'null' || !localStorage.getItem('fixedassets-columns')) {
 			// 设置localStorage
-			localStorage.setItem(
-				'fixedassets-columns',
-				JSON.stringify(this.columns)
-			);
+			localStorage.setItem('fixedassets-columns', JSON.stringify(this.columns));
 		} else {
-			this.columns = JSON.parse(
-				localStorage.getItem('fixedassets-columns')
-			);
+			this.columns = JSON.parse(localStorage.getItem('fixedassets-columns'));
 		}
 	},
 	computed: {
@@ -581,13 +358,7 @@ export default {
 			// 重新赋值
 			this.fixedAssetsList = this.fixedassetsList;
 			// 筛选
-			this.fixedAssetsList = this.$dateRange(
-				this,
-				'fixedAssetsList',
-				'buyDate',
-				this.timesQuery.beginTime,
-				this.timesQuery.endTime
-			);
+			this.fixedAssetsList = this.$dateRange(this, 'fixedAssetsList', 'buyDate', this.timesQuery.beginTime, this.timesQuery.endTime);
 		},
 		printHTML() {
 			this.$print({
@@ -600,9 +371,7 @@ export default {
 		getList() {
 			this.loading = true;
 			// dateRange buyDateStartTime
-			listFixedAssets(
-				addDateRange(this.queryParams, this.dateRange, 'fixedassets')
-			).then(response => {
+			listFixedAssets(addDateRange(this.queryParams, this.dateRange, 'fixedassets')).then(response => {
 				this.fixedAssetsList = response.rows;
 				this.total = response.total;
 				this.loading = false;

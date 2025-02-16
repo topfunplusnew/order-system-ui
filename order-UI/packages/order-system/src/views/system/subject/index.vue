@@ -51,53 +51,22 @@
 			<el-col :span="24">
 				<el-row :gutter="10" class="mb8">
 					<el-col :span="1.5">
-						<el-button
-							type="info"
-							plain
-							size="mini"
-							@click="toggleExpandAll"
-						>
-							展开/折叠
-						</el-button>
+						<el-button type="info" plain size="mini" @click="toggleExpandAll">展开/折叠</el-button>
 					</el-col>
 					<el-col :span="1.5">
-						<el-button plain size="mini" @click="resetQuery"
-							>刷新</el-button
-						>
+						<el-button plain size="mini" @click="resetQuery">刷新</el-button>
 					</el-col>
 					<el-col :span="1.5">
-						<el-button
-							type="primary"
-							size="mini"
-							@click="handleAddType"
-						>
-							1-添加科目类型
-						</el-button>
+						<el-button type="primary" size="mini" @click="handleAddType">1-添加科目类型</el-button>
 					</el-col>
 					<el-col :span="1.5">
-						<el-button
-							v-hasPermi="['system:subject:add']"
-							type="danger"
-							size="mini"
-							@click="handleAdd"
-						>
-							2-添加科目信息
-						</el-button>
+						<el-button v-hasPermi="['system:subject:add']" type="danger" size="mini" @click="handleAdd">2-添加科目信息</el-button>
 					</el-col>
-					<right-toolbar
-						:showSearch.sync="showSearch"
-						:columns="columns"
-						@queryTable="getList"
-					>
+					<right-toolbar :showSearch.sync="showSearch" :columns="columns" @queryTable="getList">
 						<!--    打印    -->
 						<template #print>
 							<el-col :span="1.5">
-								<el-button
-									plain
-									icon="el-icon-printer"
-									size="mini"
-									@click="printHTML"
-								></el-button>
+								<el-button plain icon="el-icon-printer" size="mini" @click="printHTML"></el-button>
 							</el-col>
 						</template>
 					</right-toolbar>
@@ -117,122 +86,45 @@
 					}"
 					size="mini"
 				>
-					<el-table-column
-						v-if="columns[0].visible"
-						label="科目名称"
-						prop="title"
-					/>
-					<el-table-column
-						v-if="columns[1].visible"
-						label="科目编码"
-						align="center"
-						prop="subjectNo"
-					/>
-					<el-table-column
-						label="排序"
-						prop="orderNum"
-						width="120"
-					></el-table-column>
-					<el-table-column
-						v-if="columns[2].visible"
-						label="科目类别"
-						align="center"
-						prop="type"
-					/>
+					<el-table-column v-if="columns[0].visible" label="科目名称" prop="title" />
+					<el-table-column v-if="columns[1].visible" label="科目编码" align="center" prop="subjectNo" />
+					<el-table-column label="排序" prop="orderNum" width="120"></el-table-column>
+					<el-table-column v-if="columns[2].visible" label="科目类别" align="center" prop="type" />
 					<!--          <el-table-column label="父级ID" align="center" prop="parentId" v-if="columns[3].visible"/>-->
-					<el-table-column
-						v-if="columns[3].visible"
-						label="备注"
-						align="center"
-						prop="remark"
-					/>
-					<el-table-column
-						label="操作"
-						align="center"
-						class-name="small-padding fixed-width"
-					>
+					<el-table-column v-if="columns[3].visible" label="备注" align="center" prop="remark" />
+					<el-table-column label="操作" align="center" class-name="small-padding fixed-width">
 						<template slot-scope="scope">
-							<el-button
-								v-hasPermi="['system:subject:edit']"
-								size="mini"
-								@click="handleUpdate(scope.row)"
-							>
-								修改
-							</el-button>
-							<el-button
-								v-hasPermi="['system:subject:add']"
-								size="mini"
-								type="primary"
-								@click="handleAdd(scope.row)"
-							>
-								新增
-							</el-button>
-							<el-button
-								v-hasPermi="['system:subject:remove']"
-								size="mini"
-								type="danger"
-								@click="handleDelete(scope.row)"
-							>
-								删除
-							</el-button>
+							<el-button v-hasPermi="['system:subject:edit']" size="mini" @click="handleUpdate(scope.row)">修改</el-button>
+							<el-button v-hasPermi="['system:subject:add']" size="mini" type="primary" @click="handleAdd(scope.row)">新增</el-button>
+							<el-button v-hasPermi="['system:subject:remove']" size="mini" type="danger" @click="handleDelete(scope.row)">删除</el-button>
 						</template>
 					</el-table-column>
 				</el-table>
 			</el-col>
 		</el-row>
 		<!-- 添加或修改科目对话框 -->
-		<el-dialog
-			:close-on-click-modal="false"
-			:show-close="false"
-			:title="title"
-			:visible.sync="open"
-			width="500px"
-			append-to-body
-		>
+		<el-dialog :close-on-click-modal="false" :show-close="false" :title="title" :visible.sync="open" width="500px" append-to-body>
 			<el-form ref="form" :model="form" :rules="rules" label-width="80px">
 				<el-form-item label="父级ID" prop="parentId">
-					<treeselect
-						v-model="form.parentId"
-						:options="subjectOptions"
-						:normalizer="normalizer"
-						placeholder="请选择父级ID"
-					/>
+					<treeselect v-model="form.parentId" :options="subjectOptions" :normalizer="normalizer" placeholder="请选择父级ID" />
 				</el-form-item>
 				<el-form-item label="分类名称" prop="type">
 					<!--          <el-input v-model="form.type" placeholder="请输入分类名称"/>-->
 					<el-select v-model="form.type" placeholder="请选择">
-						<el-option
-							v-for="item in options"
-							:key="item.value"
-							:label="item.label"
-							:value="item.value"
-						></el-option>
+						<el-option v-for="item in options" :key="item.value" :label="item.label" :value="item.value"></el-option>
 					</el-select>
 				</el-form-item>
 				<el-form-item label="科目名称" prop="title">
-					<el-input
-						v-model="form.title"
-						placeholder="请输入科目名称"
-					/>
+					<el-input v-model="form.title" placeholder="请输入科目名称" />
 				</el-form-item>
 				<el-form-item label="排序" prop="orderNum">
-					<el-input
-						v-model="form.orderNum"
-						placeholder="请输入排序"
-					/>
+					<el-input v-model="form.orderNum" placeholder="请输入排序" />
 				</el-form-item>
 				<el-form-item label="编号" prop="subjectNo">
-					<el-input
-						v-model="form.subjectNo"
-						placeholder="请输入编号"
-					/>
+					<el-input v-model="form.subjectNo" placeholder="请输入编号" />
 				</el-form-item>
 				<el-form-item label="备注" prop="remark">
-					<el-input
-						v-model="form.remark"
-						type="textarea"
-						placeholder="请输入内容"
-					/>
+					<el-input v-model="form.remark" type="textarea" placeholder="请输入内容" />
 				</el-form-item>
 			</el-form>
 			<div slot="footer" class="dialog-footer">
@@ -242,44 +134,22 @@
 		</el-dialog>
 
 		<!--    添加科目分类的弹窗-->
-		<el-dialog
-			:close-on-click-modal="false"
-			:show-close="false"
-			title="添加科目分类"
-			:visible.sync="openType"
-			width="500px"
-			append-to-body
-		>
+		<el-dialog :close-on-click-modal="false" :show-close="false" title="添加科目分类" :visible.sync="openType" width="500px" append-to-body>
 			<el-form :model="formType" :rules="rules" label-width="80px">
 				<el-form-item label="科目分类" prop="type">
 					<el-select v-model="formType.type" placeholder="请选择">
-						<el-option
-							v-for="item in options"
-							:key="item.value"
-							:label="item.label"
-							:value="item.value"
-						></el-option>
+						<el-option v-for="item in options" :key="item.value" :label="item.label" :value="item.value"></el-option>
 					</el-select>
 				</el-form-item>
 				<el-form-item label="科目编号" prop="subjectNo">
-					<el-input
-						v-model="formType.subjectNo"
-						type="textarea"
-						placeholder="请输入科目编号"
-					/>
+					<el-input v-model="formType.subjectNo" type="textarea" placeholder="请输入科目编号" />
 				</el-form-item>
 				<el-form-item label="备注" prop="remark">
-					<el-input
-						v-model="formType.remark"
-						type="textarea"
-						placeholder="请输入备注"
-					/>
+					<el-input v-model="formType.remark" type="textarea" placeholder="请输入备注" />
 				</el-form-item>
 			</el-form>
 			<div slot="footer" class="dialog-footer">
-				<el-button type="primary" @click="submitFormType"
-					>确 定</el-button
-				>
+				<el-button type="primary" @click="submitFormType">确 定</el-button>
 				<el-button @click="cancel">取 消</el-button>
 			</div>
 		</el-dialog>
@@ -287,13 +157,7 @@
 </template>
 
 <script>
-import {
-	listSubject,
-	getSubject,
-	delSubject,
-	addSubject,
-	updateSubject
-} from '@/api/system/subject';
+import { listSubject, getSubject, delSubject, addSubject, updateSubject } from '@/api/system/subject';
 import Treeselect from '@riophae/vue-treeselect';
 import '@riophae/vue-treeselect/dist/vue-treeselect.css';
 import { mixin_printHTML } from '../../dashboard/mixins/print';
@@ -357,9 +221,7 @@ export default {
 						trigger: 'change'
 					}
 				],
-				subjectNo: [
-					{ required: true, message: '编号不能为空', trigger: 'blur' }
-				]
+				subjectNo: [{ required: true, message: '编号不能为空', trigger: 'blur' }]
 			},
 
 			// 树形控件
@@ -429,15 +291,9 @@ export default {
 	},
 	created() {
 		this.getList();
-		if (
-			localStorage.getItem('subject-columns') === 'null' ||
-			!localStorage.getItem('subject-columns')
-		) {
+		if (localStorage.getItem('subject-columns') === 'null' || !localStorage.getItem('subject-columns')) {
 			// 设置localStorage
-			localStorage.setItem(
-				'subject-columns',
-				JSON.stringify(this.columns)
-			);
+			localStorage.setItem('subject-columns', JSON.stringify(this.columns));
 		} else {
 			this.columns = JSON.parse(localStorage.getItem('subject-columns'));
 		}
@@ -469,11 +325,7 @@ export default {
 			this.loading = true;
 			listSubject(this.queryParams).then(response => {
 				// children:[]
-				this.subjectList = this.handleTree(
-					response.data,
-					'id',
-					'parentId'
-				);
+				this.subjectList = this.handleTree(response.data, 'id', 'parentId');
 				this.orderNumSort(this.subjectList);
 				this.loading = false;
 			});
@@ -494,11 +346,7 @@ export default {
 			listSubject().then(response => {
 				this.subjectOptions = [];
 				const data = { id: 0, title: '科目根信息', children: [] };
-				data.children = this.handleTree(
-					response.data,
-					'id',
-					'parentId'
-				);
+				data.children = this.handleTree(response.data, 'id', 'parentId');
 				this.subjectOptions.push(data);
 			});
 		},

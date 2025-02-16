@@ -1,258 +1,92 @@
 <template>
 	<div class="app-container">
-		<el-form
-			v-show="showSearch"
-			ref="queryForm"
-			:model="queryParams"
-			size="mini"
-			:inline="true"
-			label-width="68px"
-		>
+		<el-form v-show="showSearch" ref="queryForm" :model="queryParams" size="mini" :inline="true" label-width="68px">
 			<el-form-item label="表名" prop="tableName">
-				<el-input
-					v-model="queryParams.tableName"
-					placeholder="请输入表名"
-					clearable
-					@keyup.enter.native="handleQuery"
-				/>
+				<el-input v-model="queryParams.tableName" placeholder="请输入表名" clearable @keyup.enter.native="handleQuery" />
 			</el-form-item>
 			<el-form-item label="修改时间" prop="modifyTime">
-				<el-input
-					v-model="queryParams.modifyTime"
-					placeholder="请输入修改时间"
-					clearable
-					@keyup.enter.native="handleQuery"
-				/>
+				<el-input v-model="queryParams.modifyTime" placeholder="请输入修改时间" clearable @keyup.enter.native="handleQuery" />
 			</el-form-item>
 			<el-form-item label="修改原因" prop="reason">
-				<el-input
-					v-model="queryParams.reason"
-					placeholder="请输入修改原因"
-					clearable
-					@keyup.enter.native="handleQuery"
-				/>
+				<el-input v-model="queryParams.reason" placeholder="请输入修改原因" clearable @keyup.enter.native="handleQuery" />
 			</el-form-item>
 			<el-form-item label="修改表对应信息的id" prop="tid">
-				<el-input
-					v-model="queryParams.tid"
-					placeholder="请输入修改表对应信息的id"
-					clearable
-					@keyup.enter.native="handleQuery"
-				/>
+				<el-input v-model="queryParams.tid" placeholder="请输入修改表对应信息的id" clearable @keyup.enter.native="handleQuery" />
 			</el-form-item>
 			<el-form-item label="添加时间" prop="addtime">
-				<el-input
-					v-model="queryParams.addtime"
-					placeholder="请输入添加时间"
-					clearable
-					@keyup.enter.native="handleQuery"
-				/>
+				<el-input v-model="queryParams.addtime" placeholder="请输入添加时间" clearable @keyup.enter.native="handleQuery" />
 			</el-form-item>
 			<el-form-item label="操作人员ID" prop="userId">
-				<el-input
-					v-model="queryParams.userId"
-					placeholder="请输入操作人员ID"
-					clearable
-					@keyup.enter.native="handleQuery"
-				/>
+				<el-input v-model="queryParams.userId" placeholder="请输入操作人员ID" clearable @keyup.enter.native="handleQuery" />
 			</el-form-item>
 			<el-form-item label="操作人员姓名" prop="UserName">
-				<el-input
-					v-model="queryParams.UserName"
-					placeholder="请输入操作人员姓名"
-					clearable
-					@keyup.enter.native="handleQuery"
-				/>
+				<el-input v-model="queryParams.UserName" placeholder="请输入操作人员姓名" clearable @keyup.enter.native="handleQuery" />
 			</el-form-item>
 			<el-form-item>
-				<el-button
-					type="primary"
-					icon="el-icon-search"
-					size="mini"
-					@click="handleQuery"
-				>
-					搜索
-				</el-button>
-				<el-button
-					icon="el-icon-refresh"
-					size="mini"
-					@click="resetQuery"
-				>
-					重置
-				</el-button>
+				<el-button type="primary" icon="el-icon-search" size="mini" @click="handleQuery">搜索</el-button>
+				<el-button icon="el-icon-refresh" size="mini" @click="resetQuery">重置</el-button>
 			</el-form-item>
 		</el-form>
 
 		<el-row :gutter="10" class="mb8">
 			<el-col :span="1.5">
-				<el-button
-					v-hasPermi="['system:tableeditmessage:add']"
-					type="primary"
-					plain
-					icon="el-icon-plus"
-					size="mini"
-					@click="handleAdd"
-				>
-					新增
-				</el-button>
+				<el-button v-hasPermi="['system:tableeditmessage:add']" type="primary" plain icon="el-icon-plus" size="mini" @click="handleAdd">新增</el-button>
 			</el-col>
 			<el-col :span="1.5">
-				<el-button
-					v-hasPermi="['system:tableeditmessage:edit']"
-					type="success"
-					plain
-					icon="el-icon-edit"
-					size="mini"
-					:disabled="single"
-					@click="handleUpdate"
-				>
-					修改
-				</el-button>
+				<el-button v-hasPermi="['system:tableeditmessage:edit']" type="success" plain icon="el-icon-edit" size="mini" :disabled="single" @click="handleUpdate">修改</el-button>
 			</el-col>
 			<el-col :span="1.5">
-				<el-button
-					v-hasPermi="['system:tableeditmessage:remove']"
-					type="danger"
-					plain
-					icon="el-icon-delete"
-					size="mini"
-					:disabled="multiple"
-					@click="handleDelete"
-				>
-					删除
-				</el-button>
+				<el-button v-hasPermi="['system:tableeditmessage:remove']" type="danger" plain icon="el-icon-delete" size="mini" :disabled="multiple" @click="handleDelete">删除</el-button>
 			</el-col>
 			<el-col :span="1.5">
-				<el-button
-					v-hasPermi="['system:tableeditmessage:export']"
-					type="warning"
-					plain
-					icon="el-icon-download"
-					size="mini"
-					@click="handleExport"
-				>
-					导出
-				</el-button>
+				<el-button v-hasPermi="['system:tableeditmessage:export']" type="warning" plain icon="el-icon-download" size="mini" @click="handleExport">导出</el-button>
 			</el-col>
-			<right-toolbar
-				:showSearch.sync="showSearch"
-				@queryTable="getList"
-			></right-toolbar>
+			<right-toolbar :showSearch.sync="showSearch" @queryTable="getList"></right-toolbar>
 		</el-row>
 
-		<el-table
-			v-loading="loading"
-			:data="tableEditMessageList"
-			@selection-change="handleSelectionChange"
-		>
+		<el-table v-loading="loading" :data="tableEditMessageList" @selection-change="handleSelectionChange">
 			<el-table-column type="selection" width="55" align="center" />
 			<el-table-column label="id" align="center" prop="id" />
 			<el-table-column label="表名" align="center" prop="tableName" />
-			<el-table-column
-				label="修改时间"
-				align="center"
-				prop="modifyTime"
-			/>
+			<el-table-column label="修改时间" align="center" prop="modifyTime" />
 			<el-table-column label="修改原因" align="center" prop="reason" />
-			<el-table-column
-				label="修改表对应信息的id"
-				align="center"
-				prop="tid"
-			/>
+			<el-table-column label="修改表对应信息的id" align="center" prop="tid" />
 			<el-table-column label="添加时间" align="center" prop="addtime" />
 			<el-table-column label="操作人员ID" align="center" prop="userId" />
-			<el-table-column
-				label="操作人员姓名"
-				align="center"
-				prop="UserName"
-			/>
-			<el-table-column
-				label="操作"
-				align="center"
-				class-name="small-padding fixed-width"
-			>
+			<el-table-column label="操作人员姓名" align="center" prop="UserName" />
+			<el-table-column label="操作" align="center" class-name="small-padding fixed-width">
 				<template slot-scope="scope">
-					<el-button
-						v-hasPermi="['system:tableeditmessage:edit']"
-						size="mini"
-						type="text"
-						icon="el-icon-edit"
-						@click="handleUpdate(scope.row)"
-					>
-						修改
-					</el-button>
-					<el-button
-						v-hasPermi="['system:tableeditmessage:remove']"
-						size="mini"
-						type="text"
-						icon="el-icon-delete"
-						@click="handleDelete(scope.row)"
-					>
-						删除
-					</el-button>
+					<el-button v-hasPermi="['system:tableeditmessage:edit']" size="mini" type="text" icon="el-icon-edit" @click="handleUpdate(scope.row)">修改</el-button>
+					<el-button v-hasPermi="['system:tableeditmessage:remove']" size="mini" type="text" icon="el-icon-delete" @click="handleDelete(scope.row)">删除</el-button>
 				</template>
 			</el-table-column>
 		</el-table>
 
-		<pagination
-			v-show="total > 0"
-			:total="total"
-			:page.sync="queryParams.pageNum"
-			:limit.sync="queryParams.pageSize"
-			@pagination="getList"
-		/>
+		<pagination v-show="total > 0" :total="total" :page.sync="queryParams.pageNum" :limit.sync="queryParams.pageSize" @pagination="getList" />
 
 		<!-- 添加或修改编辑原因对话框 -->
-		<el-dialog
-			:close-on-click-modal="false"
-			:show-close="false"
-			:title="title"
-			:visible.sync="open"
-			width="500px"
-			append-to-body
-		>
+		<el-dialog :close-on-click-modal="false" :show-close="false" :title="title" :visible.sync="open" width="500px" append-to-body>
 			<el-form ref="form" :model="form" :rules="rules" label-width="80px">
 				<el-form-item label="表名" prop="tableName">
-					<el-input
-						v-model="form.tableName"
-						placeholder="请输入表名"
-					/>
+					<el-input v-model="form.tableName" placeholder="请输入表名" />
 				</el-form-item>
 				<el-form-item label="修改时间" prop="modifyTime">
-					<el-input
-						v-model="form.modifyTime"
-						placeholder="请输入修改时间"
-					/>
+					<el-input v-model="form.modifyTime" placeholder="请输入修改时间" />
 				</el-form-item>
 				<el-form-item label="修改原因" prop="reason">
-					<el-input
-						v-model="form.reason"
-						placeholder="请输入修改原因"
-					/>
+					<el-input v-model="form.reason" placeholder="请输入修改原因" />
 				</el-form-item>
 				<el-form-item label="修改表对应信息的id" prop="tid">
-					<el-input
-						v-model="form.tid"
-						placeholder="请输入修改表对应信息的id"
-					/>
+					<el-input v-model="form.tid" placeholder="请输入修改表对应信息的id" />
 				</el-form-item>
 				<el-form-item label="添加时间" prop="addtime">
-					<el-input
-						v-model="form.addtime"
-						placeholder="请输入添加时间"
-					/>
+					<el-input v-model="form.addtime" placeholder="请输入添加时间" />
 				</el-form-item>
 				<el-form-item label="操作人员ID" prop="userId">
-					<el-input
-						v-model="form.userId"
-						placeholder="请输入操作人员ID"
-					/>
+					<el-input v-model="form.userId" placeholder="请输入操作人员ID" />
 				</el-form-item>
 				<el-form-item label="操作人员姓名" prop="UserName">
-					<el-input
-						v-model="form.UserName"
-						placeholder="请输入操作人员姓名"
-					/>
+					<el-input v-model="form.UserName" placeholder="请输入操作人员姓名" />
 				</el-form-item>
 			</el-form>
 			<div slot="footer" class="dialog-footer">
@@ -264,13 +98,7 @@
 </template>
 
 <script>
-import {
-	listTableEditMessage,
-	getTableEditMessage,
-	delTableEditMessage,
-	addTableEditMessage,
-	updateTableEditMessage
-} from '@/api/system/tableEditMessage';
+import { listTableEditMessage, getTableEditMessage, delTableEditMessage, addTableEditMessage, updateTableEditMessage } from '@/api/system/tableEditMessage';
 
 export default {
 	name: 'TableEditMessage',

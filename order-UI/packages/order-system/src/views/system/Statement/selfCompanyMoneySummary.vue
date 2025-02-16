@@ -3,23 +3,12 @@
 		<el-row>
 			<el-col :span="24">
 				<el-card>
-					<el-form
-						:inline="true"
-						:model="queryParams"
-						class="demo-form-inline"
-					>
+					<el-form :inline="true" :model="queryParams" class="demo-form-inline">
 						<el-form-item label="日期">
-							<el-date-picker
-								v-model="queryParams.endTime"
-								type="date"
-								placeholder="选择日期"
-								value-format="yyyy-MM-dd"
-							/>
+							<el-date-picker v-model="queryParams.endTime" type="date" placeholder="选择日期" value-format="yyyy-MM-dd" />
 						</el-form-item>
 						<el-form-item>
-							<el-button type="primary" @click="fetchData"
-								>查询</el-button
-							>
+							<el-button type="primary" @click="fetchData">查询</el-button>
 						</el-form-item>
 					</el-form>
 				</el-card>
@@ -35,49 +24,22 @@
 					<el-table-column prop="displayName" label="展示名称" />
 					<el-table-column prop="bankCardType" label="银行卡类别" />
 					<el-table-column label="资金日报部分">
-						<el-table-column
-							prop="previousBalance"
-							label="上日余额"
-						/>
+						<el-table-column prop="previousBalance" label="上日余额" />
 						<el-table-column prop="totalIncome" label="本日收款" />
 						<el-table-column prop="totalExpense" label="本日付款" />
-						<el-table-column
-							prop="currentBalance"
-							label="本日余额"
-						/>
+						<el-table-column prop="currentBalance" label="本日余额" />
 					</el-table-column>
 					<el-table-column label="资金月报部分">
-						<el-table-column
-							prop="previousMonthBalance"
-							label="上月余额"
-						/>
-						<el-table-column
-							prop="monthlyIncome"
-							label="本月收款"
-						/>
-						<el-table-column
-							prop="monthlyExpense"
-							label="本月付款"
-						/>
-						<el-table-column
-							prop="monthlyBalance"
-							label="本月余额"
-						/>
+						<el-table-column prop="previousMonthBalance" label="上月余额" />
+						<el-table-column prop="monthlyIncome" label="本月收款" />
+						<el-table-column prop="monthlyExpense" label="本月付款" />
+						<el-table-column prop="monthlyBalance" label="本月余额" />
 					</el-table-column>
 					<el-table-column label="资金年报部分">
-						<el-table-column
-							prop="previousYearBalance"
-							label="上年余额"
-						/>
+						<el-table-column prop="previousYearBalance" label="上年余额" />
 						<el-table-column prop="yearlyIncome" label="本年收款" />
-						<el-table-column
-							prop="yearlyExpense"
-							label="本年付款"
-						/>
-						<el-table-column
-							prop="yearlyBalance"
-							label="本年余额"
-						/>
+						<el-table-column prop="yearlyExpense" label="本年付款" />
+						<el-table-column prop="yearlyBalance" label="本年余额" />
 					</el-table-column>
 				</el-table>
 			</el-col>
@@ -109,16 +71,12 @@ export default {
 			return `${y}-${m}-${d}`;
 		},
 		async fetchData() {
-			const response = await getTodaySelfCompanyMoneySummary(
-				this.queryParams
-			);
+			const response = await getTodaySelfCompanyMoneySummary(this.queryParams);
 			if (response.code === 200) {
 				this.tableData = response.data.map(item => {
 					return {
 						...item,
-						date: this.formatDate(
-							new Date(this.queryParams.endTime)
-						),
+						date: this.formatDate(new Date(this.queryParams.endTime)),
 						acountsName: item.acountsName || '-',
 						bankNo: item.bankNo || '-'
 					};

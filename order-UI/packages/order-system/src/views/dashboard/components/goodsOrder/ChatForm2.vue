@@ -21,9 +21,7 @@ export default {
 	computed: {
 		// 合计欠款
 		totalPayments() {
-			return (
-				Number(this.orderInfo.allPayments) + Number(this.moneyAmount)
-			);
+			return Number(this.orderInfo.allPayments) + Number(this.moneyAmount);
 		}
 	},
 	created() {
@@ -65,7 +63,7 @@ export default {
 <template>
 	<div>
 		<el-row>
-			<el-button @click="printHTML"> 打印 </el-button>
+			<el-button @click="printHTML">打印</el-button>
 		</el-row>
 		<div id="printBoxs" class="invoice-container">
 			<div class="invoice-title">发货单</div>
@@ -93,17 +91,14 @@ export default {
 					<template v-if="orderInfo.smailOrderDetails.length > 0">
 						<tr v-for="item in itemList" :key="item.ordersNo">
 							<td>
-								{{ item.levelName }} - {{ item.height }} x
-								{{ item.length }} x
+								{{ item.levelName }} - {{ item.height }} x {{ item.length }} x
 								{{ item.width }}
 							</td>
 							<td>{{ item.pieces }}</td>
 							<td>{{ item.packs }}</td>
 							<td>{{ item.price }}</td>
 							<td>
-								{{
-									item.isIncludeTaxFactory === 0 ? '否' : '是'
-								}}
+								{{ item.isIncludeTaxFactory === 0 ? '否' : '是' }}
 							</td>
 							<td>{{ item.otherCost }}</td>
 							<td>{{ item.payments }}</td>
@@ -111,38 +106,24 @@ export default {
 					</template>
 					<tr>
 						<td style="text-align: left">本次货款</td>
-						<td colspan="5" style="text-align: left">
-							大写:{{
-								numToChineseUppercase(orderInfo.allPayments)
-							}}
-						</td>
+						<td colspan="5" style="text-align: left">大写:{{ numToChineseUppercase(orderInfo.allPayments) }}</td>
 						<td>{{ fix(orderInfo.allPayments) || 0 }}</td>
 					</tr>
 					<tr>
 						<td style="text-align: left">欠款</td>
-						<td colspan="5" style="text-align: left">
-							大写:{{ numToChineseUppercase(moneyAmount || 0) }}
-						</td>
+						<td colspan="5" style="text-align: left">大写:{{ numToChineseUppercase(moneyAmount || 0) }}</td>
 						<td>{{ fix(moneyAmount) || 0 }}</td>
 					</tr>
 					<tr>
 						<td style="text-align: left">合计欠款</td>
-						<td colspan="5" style="text-align: left">
-							大写:{{ numToChineseUppercase(totalPayments) }}
-						</td>
+						<td colspan="5" style="text-align: left">大写:{{ numToChineseUppercase(totalPayments) }}</td>
 						<td>{{ fix(totalPayments) || 0 }}</td>
 					</tr>
 					<tr>
 						<td colspan="7" style="text-align: left">
 							<p>注：</p>
-							<p>
-								1.
-								玻璃为易碎品，请当面验货，出现问题由司当面解决，收货后出现一切质量问题，由客户自负，我公司概不负责。
-							</p>
-							<p>
-								2.
-								此单据等同合同，客户收货后具有法律效力，若发生经济纠纷，由供货方所在地法庭处理。
-							</p>
+							<p>1. 玻璃为易碎品，请当面验货，出现问题由司当面解决，收货后出现一切质量问题，由客户自负，我公司概不负责。</p>
+							<p>2. 此单据等同合同，客户收货后具有法律效力，若发生经济纠纷，由供货方所在地法庭处理。</p>
 						</td>
 					</tr>
 				</tbody>

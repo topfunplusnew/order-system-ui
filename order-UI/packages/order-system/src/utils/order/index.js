@@ -18,10 +18,7 @@ export const debounce = (fn, delay = 500) => {
 };
 
 // 日期往前推一年
-export function getTimeOffset(
-	format = '{y}-{m}-{d} {h}:{i}:{s}',
-	yearsOffset = 0
-) {
+export function getTimeOffset(format = '{y}-{m}-{d} {h}:{i}:{s}', yearsOffset = 0) {
 	// 格式化时间
 	function parseTime(date, format) {
 		const formatObj = {
@@ -58,7 +55,7 @@ export const OTHER_TYPE = [
 	}
 ];
 
-// 客户 供应商 司机 员工 其他 己方公司 公共字典
+// 客户 供应商 司机 员工 其他 我方公司 公共字典
 export const PUBLIC_DICT_TYPE = {
 	// 客户
 	CUSTOMER: '客户',
@@ -70,6 +67,6 @@ export const PUBLIC_DICT_TYPE = {
 	EMPLOYEE: '员工',
 	// 其他
 	OTHER: '其他',
-	// 己方公司
-	SELF_COMPANY: '己方公司'
+	// 我方公司
+	SELF_COMPANY: '我方公司'
 };

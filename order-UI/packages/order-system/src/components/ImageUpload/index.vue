@@ -24,25 +24,18 @@
 		<div v-if="showTip" slot="tip" class="el-upload__tip">
 			请上传
 			<template v-if="fileSize">
-				大小不超过 <b style="color: #f56c6c">{{ fileSize }}MB</b>
+				大小不超过
+				<b style="color: #f56c6c">{{ fileSize }}MB</b>
 			</template>
 			<template v-if="fileType">
-				格式为 <b style="color: #f56c6c">{{ fileType.join('/') }}</b>
+				格式为
+				<b style="color: #f56c6c">{{ fileType.join('/') }}</b>
 			</template>
 			的文件
 		</div>
 
-		<el-dialog
-			:close-on-click-modal="false"
-			:visible.sync="dialogVisible"
-			title="预览"
-			width="800"
-			append-to-body
-		>
-			<img
-				:src="dialogImageUrl"
-				style="display: block; max-width: 100%; margin: 0 auto"
-			/>
+		<el-dialog :close-on-click-modal="false" :visible.sync="dialogVisible" title="预览" width="800" append-to-body>
+			<img :src="dialogImageUrl" style="display: block; max-width: 100%; margin: 0 auto" />
 		</el-dialog>
 	</div>
 </template>
@@ -100,9 +93,7 @@ export default {
 			handler(val) {
 				if (val) {
 					// 首先将值转为数组
-					const list = Array.isArray(val)
-						? val
-						: this.value.split(',');
+					const list = Array.isArray(val) ? val : this.value.split(',');
 					// 然后将数组转为对象数组
 					this.fileList = list.map(item => {
 						if (typeof item === 'string') {
@@ -133,14 +124,11 @@ export default {
 			if (this.fileType.length) {
 				let fileExtension = '';
 				if (file.name.lastIndexOf('.') > -1) {
-					fileExtension = file.name.slice(
-						file.name.lastIndexOf('.') + 1
-					);
+					fileExtension = file.name.slice(file.name.lastIndexOf('.') + 1);
 				}
 				isImg = this.fileType.some(type => {
 					if (file.type.indexOf(type) > -1) return true;
-					if (fileExtension && fileExtension.indexOf(type) > -1)
-						return true;
+					if (fileExtension && fileExtension.indexOf(type) > -1) return true;
 					return false;
 				});
 			} else {
@@ -148,19 +136,13 @@ export default {
 			}
 
 			if (!isImg) {
-				this.$modal.msgError(
-					`文件格式不正确, 请上传${this.fileType.join(
-						'/'
-					)}图片格式文件!`
-				);
+				this.$modal.msgError(`文件格式不正确, 请上传${this.fileType.join('/')}图片格式文件!`);
 				return false;
 			}
 			if (this.fileSize) {
 				const isLt = file.size / 1024 / 1024 < this.fileSize;
 				if (!isLt) {
-					this.$modal.msgError(
-						`上传头像图片大小不能超过 ${this.fileSize} MB!`
-					);
+					this.$modal.msgError(`上传头像图片大小不能超过 ${this.fileSize} MB!`);
 					return false;
 				}
 			}

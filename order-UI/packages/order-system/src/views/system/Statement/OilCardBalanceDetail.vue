@@ -3,50 +3,19 @@
 		<h2>油卡余额详情报表</h2>
 
 		<el-row>
-			<el-form
-				ref="queryForm"
-				:model="queryParams"
-				size="mini"
-				:inline="true"
-				label-width="100px"
-			>
+			<el-form ref="queryForm" :model="queryParams" size="mini" :inline="true" label-width="100px">
 				<el-form-item label="油卡号">
-					<el-input
-						v-model="queryParams.oilCardNo"
-						placeholder="请输入油卡号"
-						clearable
-						size="mini"
-					/>
+					<el-input v-model="queryParams.oilCardNo" placeholder="请输入油卡号" clearable size="mini" />
 				</el-form-item>
 				<el-form-item label="时间" prop="companyName">
-					<el-date-picker
-						v-model="queryParams.beginTime"
-						type="date"
-						size="mini"
-						value-format="yyyy-MM-dd"
-						placeholder="选择日期"
-					>
-					</el-date-picker>
+					<el-date-picker v-model="queryParams.beginTime" type="date" size="mini" value-format="yyyy-MM-dd" placeholder="选择日期"></el-date-picker>
 				</el-form-item>
 				<el-form-item>
-					<el-date-picker
-						v-model="queryParams.endTime"
-						type="date"
-						size="mini"
-						value-format="yyyy-MM-dd"
-						placeholder="选择日期"
-					>
-					</el-date-picker>
+					<el-date-picker v-model="queryParams.endTime" type="date" size="mini" value-format="yyyy-MM-dd" placeholder="选择日期"></el-date-picker>
 				</el-form-item>
 
 				<el-form-item>
-					<el-button
-						type="primary"
-						icon="el-icon-search"
-						size="mini"
-						@click="fetchOilCardDetails"
-						>搜索
-					</el-button>
+					<el-button type="primary" icon="el-icon-search" size="mini" @click="fetchOilCardDetails">搜索</el-button>
 				</el-form-item>
 			</el-form>
 		</el-row>
@@ -55,59 +24,28 @@
 			<right-toolbar :columns="columns" @queryTable="fetchOilCardDetails">
 				<template #print>
 					<el-col :span="1.5">
-						<el-button
-							plain
-							icon="el-icon-printer"
-							size="mini"
-							@click="printHTML"
-						/>
+						<el-button plain icon="el-icon-printer" size="mini" @click="printHTML" />
 					</el-col>
 				</template>
 			</right-toolbar>
 		</el-row>
 		<!-- 表格展示 -->
-		<el-table
-			id="printBox"
-			:data="oilCardDetails"
-			border
-			stripe
-			size="mini"
-			style="width: 100%"
-		>
+		<el-table id="printBox" :data="oilCardDetails" border stripe size="mini" style="width: 100%">
 			<!-- 序号列 -->
-			<el-table-column
-				v-if="columns[0].visible"
-				label="序号"
-				align="center"
-			>
+			<el-table-column v-if="columns[0].visible" label="序号" align="center">
 				<template #default="scope">
 					{{ scope.$index + 1 }}
 				</template>
 			</el-table-column>
 
 			<!-- 油卡编号 -->
-			<el-table-column
-				v-if="columns[1].visible"
-				prop="oilCardNo"
-				label="油卡编号"
-				align="center"
-			/>
+			<el-table-column v-if="columns[1].visible" prop="oilCardNo" label="油卡编号" align="center" />
 
 			<!-- 变动日期 -->
-			<el-table-column
-				v-if="columns[2].visible"
-				prop="changeDate"
-				label="变动日期"
-				align="center"
-			/>
+			<el-table-column v-if="columns[2].visible" prop="changeDate" label="变动日期" align="center" />
 
 			<!-- 变动金额 -->
-			<el-table-column
-				v-if="columns[3].visible"
-				prop="changeAmount"
-				label="变动金额 (元)"
-				align="center"
-			>
+			<el-table-column v-if="columns[3].visible" prop="changeAmount" label="变动金额 (元)" align="center">
 				<template #default="scope">
 					{{ scope.row.changeAmount.toFixed(2) }}
 				</template>
@@ -115,22 +53,11 @@
 
 			<el-table-column prop="tableName" label="业务名称" align="center">
 				<template #default="scope">
-					{{
-						scope.row.tableName === 'oilrecharge'
-							? '充值'
-							: scope.row.tableName === 'oilcardfundtransfer'
-							? '圈存'
-							: '消费'
-					}}
+					{{ scope.row.tableName === 'oilrecharge' ? '充值' : scope.row.tableName === 'oilcardfundtransfer' ? '圈存' : '消费' }}
 				</template>
 			</el-table-column>
 			<!-- 运行余额 -->
-			<el-table-column
-				v-if="columns[4].visible"
-				prop="runningBalance"
-				label="余额 (元)"
-				align="center"
-			>
+			<el-table-column v-if="columns[4].visible" prop="runningBalance" label="余额 (元)" align="center">
 				<template #default="scope">
 					{{ scope.row.runningBalance.toFixed(2) }}
 				</template>
@@ -139,33 +66,16 @@
 			<el-table-column label="车辆申请信息" align="center">
 				<template #default="scope">
 					<div v-if="scope.row.carApplyId">
-						<el-button
-							type="text"
-							size="mini"
-							@click="viewCarDetail(scope.row.carApplyId)"
-						>
-							查看明细
-						</el-button>
+						<el-button type="text" size="mini" @click="viewCarDetail(scope.row.carApplyId)">查看明细</el-button>
 					</div>
 					<div v-else>暂无车辆申请信息</div>
 				</template>
 			</el-table-column>
 
 			<!-- 操作列 -->
-			<el-table-column
-				v-if="columns[5].visible"
-				label="操作"
-				align="center"
-				width="120"
-			>
+			<el-table-column v-if="columns[5].visible" label="操作" align="center" width="120">
 				<template #default="scope">
-					<el-button
-						type="text"
-						size="mini"
-						@click="viewDetail(scope.row)"
-					>
-						查看明细
-					</el-button>
+					<el-button type="text" size="mini" @click="viewDetail(scope.row)">查看明细</el-button>
 				</template>
 			</el-table-column>
 		</el-table>
@@ -173,19 +83,19 @@
 		<!-- 汇总信息 -->
 		<div class="summary" style="margin-top: 20px; text-align: right">
 			<div>
-				总变动金额: <b>{{ totalChangeAmount.toFixed(2) }}</b> 元
+				总变动金额:
+				<b>{{ totalChangeAmount.toFixed(2) }}</b>
+				元
 			</div>
 			<div>
-				最新运行余额: <b>{{ latestBalance.toFixed(2) }}</b> 元
+				最新运行余额:
+				<b>{{ latestBalance.toFixed(2) }}</b>
+				元
 			</div>
 		</div>
 
 		<!-- 弹窗展示 -->
-		<el-dialog
-			title="明细信息"
-			:visible.sync="detailDialogVisible"
-			width="900px"
-		>
+		<el-dialog title="明细信息" :visible.sync="detailDialogVisible" width="900px">
 			<component :is="component" :need-to-show-info="needToShowInfo" />
 			<span slot="footer" class="dialog-footer">
 				<el-button @click="detailDialogVisible = false">关闭</el-button>
@@ -239,24 +149,16 @@ export default {
 	methods: {
 		async fetchOilCardDetails() {
 			try {
-				const response = await getOilCardDetailSummary(
-					this.queryParams
-				);
+				const response = await getOilCardDetailSummary(this.queryParams);
 				if (response.code === 200) {
 					this.oilCardDetails = response.data;
 
 					// 计算总变动金额
-					this.totalChangeAmount = this.oilCardDetails.reduce(
-						(sum, item) => sum + item.changeAmount,
-						0
-					);
+					this.totalChangeAmount = this.oilCardDetails.reduce((sum, item) => sum + item.changeAmount, 0);
 
 					// 获取最新运行余额（最后一条记录的 runningBalance）
 					if (this.oilCardDetails.length > 0) {
-						this.latestBalance =
-							this.oilCardDetails[
-								this.oilCardDetails.length - 1
-							].runningBalance;
+						this.latestBalance = this.oilCardDetails[this.oilCardDetails.length - 1].runningBalance;
 					}
 				} else {
 					this.$message.error(response.msg || '获取油卡详情失败');

@@ -15,10 +15,8 @@ export default {
 
 <template>
 	<div>
-		<el-tag v-if="checkInfo === checkValue" size="small" type="danger"
-			>{{ checkInfo }}
-		</el-tag>
-		<el-tag v-else size="small">{{ checkInfo }} </el-tag>
+		<el-tag v-if="checkInfo === checkValue" size="small" type="danger">{{ checkInfo }}</el-tag>
+		<el-tag v-else size="small">{{ checkInfo }}</el-tag>
 	</div>
 </template>
 

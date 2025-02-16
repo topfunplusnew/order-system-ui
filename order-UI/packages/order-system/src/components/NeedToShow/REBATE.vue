@@ -19,9 +19,7 @@ export default {
 	<div class="rebate-container">
 		<el-card>
 			<el-descriptions title="返利信息" :column="2">
-				<el-descriptions-item label="返利金额">
-					{{ needToShowInfo.rebate }} 元
-				</el-descriptions-item>
+				<el-descriptions-item label="返利金额">{{ needToShowInfo.rebate }} 元</el-descriptions-item>
 				<el-descriptions-item label="返利日期">
 					{{ new Date(needToShowInfo.rebateDate).toLocaleString() }}
 				</el-descriptions-item>
@@ -54,17 +52,11 @@ export default {
 
 			<el-table :data="detailList" style="width: 100%">
 				<el-table-column prop="actualReceived" label="实际收到金额">
-					<template slot-scope="scope">
-						{{ scope.row.actualReceived }} 元
-					</template>
+					<template slot-scope="scope">{{ scope.row.actualReceived }} 元</template>
 				</el-table-column>
 				<el-table-column prop="actualReceivedDate" label="实际收到日期">
 					<template slot-scope="scope">
-						{{
-							new Date(
-								scope.row.actualReceivedDate
-							).toLocaleString()
-						}}
+						{{ new Date(scope.row.actualReceivedDate).toLocaleString() }}
 					</template>
 				</el-table-column>
 			</el-table>

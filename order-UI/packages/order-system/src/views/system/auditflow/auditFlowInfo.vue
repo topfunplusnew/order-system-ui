@@ -1,13 +1,6 @@
 <template>
 	<div>
-		<el-dialog
-			:close-on-click-modal="false"
-			:show-close="false"
-			v-bind="$attrs"
-			title="选择审核人员"
-			v-on="$listeners"
-			@open="onOpen"
-		>
+		<el-dialog :close-on-click-modal="false" :show-close="false" v-bind="$attrs" title="选择审核人员" v-on="$listeners" @open="onOpen">
 			<el-row>
 				<el-col :span="6">
 					<Fonts content="请选择部门" />
@@ -25,20 +18,8 @@
 				</el-col>
 				<el-col :span="18">
 					<Fonts content="请选择部门人员" />
-					<el-button
-						v-if="ids.length !== 0"
-						type="success"
-						size="mini"
-						@click="handleSelectAll"
-						>确认已选择的
-					</el-button>
-					<el-button
-						v-if="ids.length !== 0"
-						type="danger"
-						size="mini"
-						@click="handleDeleteAll"
-						>删除已选择的
-					</el-button>
+					<el-button v-if="ids.length !== 0" type="success" size="mini" @click="handleSelectAll">确认已选择的</el-button>
+					<el-button v-if="ids.length !== 0" type="danger" size="mini" @click="handleDeleteAll">删除已选择的</el-button>
 					<el-table
 						v-loading="loading"
 						border
@@ -51,117 +32,26 @@
 						"
 						@selection-change="handleSelectionChange"
 					>
-						<el-table-column
-							type="selection"
-							width="50"
-							align="center"
-						/>
-						<el-table-column
-							key="userId"
-							label="用户编号"
-							align="center"
-							prop="userId"
-						/>
-						<el-table-column
-							key="userName"
-							label="用户名称"
-							align="center"
-							prop="userName"
-							:show-overflow-tooltip="true"
-						/>
-						<el-table-column
-							key="nickName"
-							label="用户昵称"
-							align="center"
-							prop="nickName"
-							:show-overflow-tooltip="true"
-						/>
-						<el-table-column
-							key="trueName"
-							label="真实姓名"
-							align="center"
-							prop="trueName"
-							:show-overflow-tooltip="true"
-						/>
-						<el-table-column
-							key="deptName"
-							label="岗位"
-							align="center"
-							prop="postName"
-							:show-overflow-tooltip="true"
-						/>
-						<el-table-column
-							key="phonenumber"
-							label="手机号码"
-							align="center"
-							prop="phonenumber"
-							width="120"
-						/>
-						<el-table-column
-							key="state"
-							label="就职状态"
-							align="center"
-							prop="state"
-							width="120"
-						/>
-						<el-table-column
-							key="startDate"
-							label="入职时间"
-							align="center"
-							prop="startDate"
-							width="120"
-						/>
-						<el-table-column
-							key="iDCard"
-							label="身份证号码"
-							align="center"
-							prop="iDCard"
-							width="120"
-						/>
-						<el-table-column
-							key="sex"
-							label="性别"
-							align="center"
-							prop="sex"
-							width="120"
-						/>
-						<el-table-column
-							key="birthday"
-							label="出生日期"
-							align="center"
-							prop="birthday"
-							width="120"
-						/>
-						<el-table-column
-							key="nation"
-							label="民族"
-							align="center"
-							prop="nation"
-							width="120"
-						/>
-						<el-table-column
-							key="status"
-							label="操作"
-							align="center"
-							fixed="right"
-						>
+						<el-table-column type="selection" width="50" align="center" />
+						<el-table-column key="userId" label="用户编号" align="center" prop="userId" />
+						<el-table-column key="userName" label="用户名称" align="center" prop="userName" :show-overflow-tooltip="true" />
+						<el-table-column key="nickName" label="用户昵称" align="center" prop="nickName" :show-overflow-tooltip="true" />
+						<el-table-column key="trueName" label="真实姓名" align="center" prop="trueName" :show-overflow-tooltip="true" />
+						<el-table-column key="deptName" label="岗位" align="center" prop="postName" :show-overflow-tooltip="true" />
+						<el-table-column key="phonenumber" label="手机号码" align="center" prop="phonenumber" width="120" />
+						<el-table-column key="state" label="就职状态" align="center" prop="state" width="120" />
+						<el-table-column key="startDate" label="入职时间" align="center" prop="startDate" width="120" />
+						<el-table-column key="iDCard" label="身份证号码" align="center" prop="iDCard" width="120" />
+						<el-table-column key="sex" label="性别" align="center" prop="sex" width="120" />
+						<el-table-column key="birthday" label="出生日期" align="center" prop="birthday" width="120" />
+						<el-table-column key="nation" label="民族" align="center" prop="nation" width="120" />
+						<el-table-column key="status" label="操作" align="center" fixed="right">
 							<template slot-scope="scope">
-								<el-button
-									type="success"
-									size="mini"
-									@click="handleSelect(scope.row)"
-									>选择
-								</el-button>
+								<el-button type="success" size="mini" @click="handleSelect(scope.row)">选择</el-button>
 							</template>
 						</el-table-column>
 					</el-table>
-					<pagination
-						v-show="total > 0"
-						:total="total"
-						:page.sync="queryParams.pageNum"
-						:limit.sync="queryParams.pageSize"
-						@pagination="getList"
-					/>
+					<pagination v-show="total > 0" :total="total" :page.sync="queryParams.pageNum" :limit.sync="queryParams.pageSize" @pagination="getList" />
 				</el-col>
 			</el-row>
 			<div slot="footer">
@@ -246,13 +136,11 @@ export default {
 		},
 		getList() {
 			this.loading = true;
-			listUser(this.addDateRange(this.queryParams, this.dateRange)).then(
-				response => {
-					this.userList = response.rows;
-					this.total = response.total;
-					this.loading = false;
-				}
-			);
+			listUser(this.addDateRange(this.queryParams, this.dateRange)).then(response => {
+				this.userList = response.rows;
+				this.total = response.total;
+				this.loading = false;
+			});
 		},
 		// 筛选节点
 		filterNode(value, data) {

@@ -2,17 +2,8 @@
 
 <template>
 	<div>
-		<el-select
-			v-model="localSelectType"
-			placeholder="请选择账户类型"
-			@change="handleEmitType"
-		>
-			<el-option
-				v-for="item in dict.type.order_bank_card_type_nodel"
-				:key="item.value"
-				:label="item.label"
-				:value="item.value"
-			/>
+		<el-select v-model="localSelectType" placeholder="请选择账户类型" @change="handleEmitType">
+			<el-option v-for="item in dict.type.order_bank_card_type_nodel" :key="item.value" :label="item.label" :value="item.value" />
 		</el-select>
 	</div>
 </template>

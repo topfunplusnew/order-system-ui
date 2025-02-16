@@ -10,8 +10,8 @@ export default {
 
 <template>
 	<div>
-		<el-switch v-model="value1" disabled> </el-switch>
-		<el-switch v-model="value2" disabled> </el-switch>
+		<el-switch v-model="value1" disabled></el-switch>
+		<el-switch v-model="value2" disabled></el-switch>
 	</div>
 </template>
 

@@ -3,20 +3,11 @@
 	<div class="app-container">
 		<el-form ref="form" :model="form" :rules="rules" label-width="120px">
 			<el-form-item label="日期" prop="fundsDate">
-				<el-date-picker
-					v-model="form.fundsDate"
-					type="datetime"
-					value-format="yyyy-MM-dd HH:mm:ss"
-					placeholder="选择日期"
-				/>
+				<el-date-picker v-model="form.fundsDate" type="datetime" value-format="yyyy-MM-dd HH:mm:ss" placeholder="选择日期" />
 			</el-form-item>
 			<el-form-item label="支付类型" prop="payType">
 				<el-row :gutter="5">
-					<el-cascader
-						v-model="form.payType"
-						:options="paymentTypeTree"
-						:props="props"
-					/>
+					<el-cascader v-model="form.payType" :options="paymentTypeTree" :props="props" />
 					<!-- <el-col :span="8">
             <el-select
               v-model="currentSort.levelOne"
@@ -48,39 +39,20 @@
 				</el-row>
 			</el-form-item>
 			<el-form-item label="金额" prop="moneyAmount">
-				<el-input
-					v-model="form.moneyAmount"
-					placeholder="请输入金额"
-					:disabled="inputDisabled"
-				/>
+				<el-input v-model="form.moneyAmount" placeholder="请输入金额" :disabled="inputDisabled" />
 			</el-form-item>
 			<el-form-item label="对方类型(请确认)">
 				<el-select v-model="value" placeholder="请选择">
-					<el-option
-						v-for="item in options"
-						:key="item.value"
-						:label="item.label"
-						:value="item.value"
-					/>
+					<el-option v-for="item in options" :key="item.value" :label="item.label" :value="item.value" />
 				</el-select>
-				<span style="color: #1c84c6; font-size: 12px"
-					>请注意选择正确的对方公司类型!</span
-				>
+				<span style="color: #1c84c6; font-size: 12px">请注意选择正确的对方公司类型!</span>
 			</el-form-item>
 
-			<!--      公司的填充 这里主要是为了companyId 如果选择的是己方公司 那么就不显示这个选择公司-->
-			<el-form-item
-				v-if="value !== '员工'"
-				label="对方公司"
-				prop="companyName"
-			>
+			<!--      公司的填充 这里主要是为了companyId 如果选择的是我方公司 那么就不显示这个选择公司-->
+			<el-form-item v-if="value !== '员工'" label="对方公司" prop="companyName">
 				<el-row>
 					<el-col :span="14">
-						<el-input
-							disabled
-							v-model="form.companyName"
-							placeholder="请选择"
-						/>
+						<el-input disabled v-model="form.companyName" placeholder="请选择" />
 					</el-col>
 					<el-col :span="4">
 						<SearchOption
@@ -94,62 +66,14 @@
 							@commitBack="handleCommitBackOther"
 						>
 							<template #table-columns>
-								<el-table-column
-									:label="`${value}名称`"
-									align="center"
-									prop="companyName"
-									width="180"
-									show-overflow-tooltip
-								/>
-								<el-table-column
-									label="老板姓名"
-									align="center"
-									prop="leader"
-									width="180"
-									show-overflow-tooltip
-								/>
-								<el-table-column
-									label="老板电话"
-									align="center"
-									prop="leaderTel"
-									width="180"
-									show-overflow-tooltip
-								/>
-								<el-table-column
-									label="区域"
-									align="center"
-									prop="region"
-									width="180"
-									show-overflow-tooltip
-								/>
-								<el-table-column
-									label="联系人"
-									align="center"
-									prop="relationName"
-									width="180"
-									show-overflow-tooltip
-								/>
-								<el-table-column
-									label="销售经理"
-									align="center"
-									prop="salesManager"
-									width="180"
-									show-overflow-tooltip
-								/>
-								<el-table-column
-									label="地址"
-									align="center"
-									prop="address"
-									width="150"
-									show-overflow-tooltip
-								/>
-								<el-table-column
-									label="电话"
-									align="center"
-									prop="relationTel"
-									width="180"
-									show-overflow-tooltip
-								/>
+								<el-table-column :label="`${value}名称`" align="center" prop="companyName" width="180" show-overflow-tooltip />
+								<el-table-column label="老板姓名" align="center" prop="leader" width="180" show-overflow-tooltip />
+								<el-table-column label="老板电话" align="center" prop="leaderTel" width="180" show-overflow-tooltip />
+								<el-table-column label="区域" align="center" prop="region" width="180" show-overflow-tooltip />
+								<el-table-column label="联系人" align="center" prop="relationName" width="180" show-overflow-tooltip />
+								<el-table-column label="销售经理" align="center" prop="salesManager" width="180" show-overflow-tooltip />
+								<el-table-column label="地址" align="center" prop="address" width="150" show-overflow-tooltip />
+								<el-table-column label="电话" align="center" prop="relationTel" width="180" show-overflow-tooltip />
 							</template>
 						</SearchOption>
 					</el-col>
@@ -161,11 +85,7 @@
 				<el-form-item label="对方账号(客户)" prop="otherBankNo">
 					<el-row>
 						<el-col :span="14">
-							<el-input
-								v-model="form.otherBankNo"
-								placeholder="请选择"
-								disabled
-							/>
+							<el-input v-model="form.otherBankNo" placeholder="请选择" disabled />
 						</el-col>
 						<el-col v-if="bankInputDisabled === false" :span="3">
 							<SearchOption
@@ -179,38 +99,22 @@
 								@update:queryName="handleUpdateQueryName"
 							>
 								<template #table-columns>
-									<el-table-column
-										label="公司名称"
-										align="center"
-										prop="companyName"
-									>
+									<el-table-column label="公司名称" align="center" prop="companyName">
 										<template #default="scope">
 											{{ isNull(scope.row.companyName) }}
 										</template>
 									</el-table-column>
-									<el-table-column
-										label="开户行"
-										align="center"
-										prop="bankName"
-									>
+									<el-table-column label="开户行" align="center" prop="bankName">
 										<template #default="scope">
 											{{ isNull(scope.row.bankName) }}
 										</template>
 									</el-table-column>
-									<el-table-column
-										label="开户名"
-										align="center"
-										prop="acountsName"
-									>
+									<el-table-column label="开户名" align="center" prop="acountsName">
 										<template #default="scope">
 											{{ isNull(scope.row.acountsName) }}
 										</template>
 									</el-table-column>
-									<el-table-column
-										label="账号"
-										align="center"
-										prop="bankNo"
-									>
+									<el-table-column label="账号" align="center" prop="bankNo">
 										<template #default="scope">
 											{{ isNull(scope.row.bankNo) }}
 										</template>
@@ -221,11 +125,7 @@
 					</el-row>
 				</el-form-item>
 				<el-form-item label="对方开户行" prop="otherBankName">
-					<el-input
-						v-model="form.otherBankName"
-						placeholder="请输入对方开户行"
-						disabled
-					/>
+					<el-input v-model="form.otherBankName" placeholder="请输入对方开户行" disabled />
 				</el-form-item>
 			</el-row>
 			<!--      如果是供应商-->
@@ -233,11 +133,7 @@
 				<el-form-item label="对方账号(供应商)" prop="otherBankNo">
 					<el-row>
 						<el-col :span="14">
-							<el-input
-								v-model="form.otherBankNo"
-								placeholder="请选择"
-								disabled
-							/>
+							<el-input v-model="form.otherBankNo" placeholder="请选择" disabled />
 						</el-col>
 						<el-col v-if="bankInputDisabled === false" :span="3">
 							<SearchOption
@@ -251,38 +147,22 @@
 								@update:queryName="handleUpdateQueryName"
 							>
 								<template #table-columns>
-									<el-table-column
-										label="公司名称"
-										align="center"
-										prop="companyName"
-									>
+									<el-table-column label="公司名称" align="center" prop="companyName">
 										<template #default="scope">
 											{{ isNull(scope.row.companyName) }}
 										</template>
 									</el-table-column>
-									<el-table-column
-										label="开户行"
-										align="center"
-										prop="bankName"
-									>
+									<el-table-column label="开户行" align="center" prop="bankName">
 										<template #default="scope">
 											{{ isNull(scope.row.bankName) }}
 										</template>
 									</el-table-column>
-									<el-table-column
-										label="开户名"
-										align="center"
-										prop="acountsName"
-									>
+									<el-table-column label="开户名" align="center" prop="acountsName">
 										<template #default="scope">
 											{{ isNull(scope.row.acountsName) }}
 										</template>
 									</el-table-column>
-									<el-table-column
-										label="账号"
-										align="center"
-										prop="bankNo"
-									>
+									<el-table-column label="账号" align="center" prop="bankNo">
 										<template #default="scope">
 											{{ isNull(scope.row.bankNo) }}
 										</template>
@@ -294,11 +174,7 @@
 				</el-form-item>
 
 				<el-form-item label="对方开户行" prop="otherBankName">
-					<el-input
-						v-model="form.otherBankName"
-						placeholder="请输入对方开户行"
-						disabled
-					/>
+					<el-input v-model="form.otherBankName" placeholder="请输入对方开户行" disabled />
 				</el-form-item>
 			</el-row>
 			<!--    如果是司机-->
@@ -306,11 +182,7 @@
 				<el-form-item label="对方账号(司机)" prop="otherBankNo">
 					<el-row>
 						<el-col :span="14">
-							<el-input
-								v-model="form.otherBankNo"
-								placeholder="请选择"
-								disabled
-							/>
+							<el-input v-model="form.otherBankNo" placeholder="请选择" disabled />
 						</el-col>
 						<el-col v-if="bankInputDisabled === false" :span="3">
 							<SearchOption
@@ -324,38 +196,22 @@
 								@update:queryName="handleUpdateQueryName"
 							>
 								<template #table-columns>
-									<el-table-column
-										label="司机名称"
-										align="center"
-										prop="companyName"
-									>
+									<el-table-column label="司机名称" align="center" prop="companyName">
 										<template #default="scope">
 											{{ isNull(scope.row.companyName) }}
 										</template>
 									</el-table-column>
-									<el-table-column
-										label="开户行"
-										align="center"
-										prop="bankName"
-									>
+									<el-table-column label="开户行" align="center" prop="bankName">
 										<template #default="scope">
 											{{ isNull(scope.row.bankName) }}
 										</template>
 									</el-table-column>
-									<el-table-column
-										label="开户名"
-										align="center"
-										prop="acountsName"
-									>
+									<el-table-column label="开户名" align="center" prop="acountsName">
 										<template #default="scope">
 											{{ isNull(scope.row.acountsName) }}
 										</template>
 									</el-table-column>
-									<el-table-column
-										label="账号"
-										align="center"
-										prop="bankNo"
-									>
+									<el-table-column label="账号" align="center" prop="bankNo">
 										<template #default="scope">
 											{{ isNull(scope.row.bankNo) }}
 										</template>
@@ -366,11 +222,7 @@
 					</el-row>
 				</el-form-item>
 				<el-form-item label="对方开户行" prop="otherBankName">
-					<el-input
-						v-model="form.otherBankName"
-						placeholder="请输入对方开户行"
-						disabled
-					/>
+					<el-input v-model="form.otherBankName" placeholder="请输入对方开户行" disabled />
 				</el-form-item>
 			</el-row>
 
@@ -379,11 +231,7 @@
 				<el-form-item label="对方账号(员工)" prop="otherBankNo">
 					<el-row>
 						<el-col :span="14">
-							<el-input
-								v-model="form.otherBankNo"
-								placeholder="请选择"
-								disabled
-							/>
+							<el-input v-model="form.otherBankNo" placeholder="请选择" disabled />
 						</el-col>
 						<el-col v-if="bankInputDisabled === false" :span="3">
 							<SearchOption
@@ -397,38 +245,22 @@
 								@update:queryName="handleUpdateQueryName"
 							>
 								<template #table-columns>
-									<el-table-column
-										label="员工名称"
-										align="center"
-										prop="companyName"
-									>
+									<el-table-column label="员工名称" align="center" prop="companyName">
 										<template #default="scope">
 											{{ isNull(scope.row.companyName) }}
 										</template>
 									</el-table-column>
-									<el-table-column
-										label="开户行"
-										align="center"
-										prop="bankName"
-									>
+									<el-table-column label="开户行" align="center" prop="bankName">
 										<template #default="scope">
 											{{ isNull(scope.row.bankName) }}
 										</template>
 									</el-table-column>
-									<el-table-column
-										label="开户名"
-										align="center"
-										prop="acountsName"
-									>
+									<el-table-column label="开户名" align="center" prop="acountsName">
 										<template #default="scope">
 											{{ isNull(scope.row.acountsName) }}
 										</template>
 									</el-table-column>
-									<el-table-column
-										label="账号"
-										align="center"
-										prop="bankNo"
-									>
+									<el-table-column label="账号" align="center" prop="bankNo">
 										<template #default="scope">
 											{{ isNull(scope.row.bankNo) }}
 										</template>
@@ -439,20 +271,12 @@
 					</el-row>
 				</el-form-item>
 				<el-form-item label="对方开户行" prop="otherBankName">
-					<el-input
-						v-model="form.otherBankName"
-						placeholder="请输入对方开户行"
-						disabled
-					/>
+					<el-input v-model="form.otherBankName" placeholder="请输入对方开户行" disabled />
 				</el-form-item>
 			</el-row>
 
 			<el-form-item label="付款原因" prop="reason">
-				<el-input
-					v-model="form.reason"
-					type="textarea"
-					placeholder="请输入内容"
-				/>
+				<el-input v-model="form.reason" type="textarea" placeholder="请输入内容" />
 			</el-form-item>
 			<el-form-item label="附件" prop="attachment">
 				<file-upload @input="handleCommitUpload" />
@@ -462,8 +286,8 @@
 			</el-form-item>
 		</el-form>
 		<div slot="footer" class="dialog-footer" style="text-align: center">
-			<el-button type="primary" @click="submitForm"> 提交申请 </el-button>
-			<el-button @click="close"> 关闭 </el-button>
+			<el-button type="primary" @click="submitForm">提交申请</el-button>
+			<el-button @click="close">关闭</el-button>
 		</div>
 	</div>
 </template>
@@ -485,13 +309,7 @@ import { mixin_receive_money_subject } from '../../mixins/receivemoney/receive_m
 export default {
 	name: 'ApplyPayment',
 	components: { SearchOption },
-	mixins: [
-		mixin_payment_apply,
-		mixin_payment_level,
-		mixin_payment_watcher,
-		mixin_payment_fill,
-		mixin_receive_money_subject
-	],
+	mixins: [mixin_payment_apply, mixin_payment_level, mixin_payment_watcher, mixin_payment_fill, mixin_receive_money_subject],
 	data() {
 		return {
 			// 遮罩层

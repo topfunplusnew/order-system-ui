@@ -1,28 +1,11 @@
 <template>
 	<div class="app-container">
-		<el-form
-			v-show="showSearch"
-			ref="queryForm"
-			:model="queryParams"
-			size="mini"
-			:inline="true"
-			label-width="68px"
-		>
+		<el-form v-show="showSearch" ref="queryForm" :model="queryParams" size="mini" :inline="true" label-width="68px">
 			<el-form-item label="客户" prop="customer">
-				<el-input
-					v-model="queryParams.customer"
-					placeholder="请输入客户姓名"
-					clearable
-					@keyup.enter.native="handleQuery"
-				/>
+				<el-input v-model="queryParams.customer" placeholder="请输入客户姓名" clearable @keyup.enter.native="handleQuery" />
 			</el-form-item>
 			<el-form-item label="区域" prop="region">
-				<el-input
-					v-model="queryParams.region"
-					placeholder="请输入区域"
-					clearable
-					@keyup.enter.native="handleQuery"
-				/>
+				<el-input v-model="queryParams.region" placeholder="请输入区域" clearable @keyup.enter.native="handleQuery" />
 			</el-form-item>
 			<!--      <el-form-item label="省" prop="province">-->
 			<!--        &lt;!&ndash;          <el-input v-model="form.province" placeholder="请输入省"/>&ndash;&gt;-->
@@ -61,14 +44,7 @@
 				></el-date-picker>
 			</el-form-item>
 			<el-form-item>
-				<el-button
-					type="primary"
-					icon="el-icon-search"
-					size="mini"
-					@click="handleQuery"
-				>
-					搜索
-				</el-button>
+				<el-button type="primary" icon="el-icon-search" size="mini" @click="handleQuery">搜索</el-button>
 			</el-form-item>
 
 			<!--      <el-form-item>-->
@@ -79,51 +55,21 @@
 		<el-row :gutter="10" class="mb8">
 			<!-- 刷新按钮-->
 			<el-col :span="1.5">
-				<el-button
-					icon="el-icon-refresh"
-					size="mini"
-					@click="resetQuery"
-				>
-					刷新
-				</el-button>
+				<el-button icon="el-icon-refresh" size="mini" @click="resetQuery">刷新</el-button>
 			</el-col>
 			<el-col :span="1.5">
-				<el-button
-					v-hasPermi="['system:customervisit:add']"
-					type="danger"
-					plain
-					icon="el-icon-plus"
-					size="mini"
-					@click="handleAdd"
-				>
-					新增走访记录
-				</el-button>
+				<el-button v-hasPermi="['system:customervisit:add']" type="danger" plain icon="el-icon-plus" size="mini" @click="handleAdd">新增走访记录</el-button>
 			</el-col>
-			<right-toolbar
-				:showSearch.sync="showSearch"
-				:columns="columns"
-				@queryTable="getList"
-			>
+			<right-toolbar :showSearch.sync="showSearch" :columns="columns" @queryTable="getList">
 				<template #print>
 					<el-col :span="1.5">
-						<el-button
-							plain
-							icon="el-icon-printer"
-							size="mini"
-							@click="printHTML"
-						></el-button>
+						<el-button plain icon="el-icon-printer" size="mini" @click="printHTML"></el-button>
 					</el-col>
 				</template>
 				<!--        导出-->
 				<template #export>
 					<el-col :span="1.5">
-						<el-button
-							v-hasPermi="['system:customervisit:export']"
-							plain
-							icon="el-icon-folder-opened"
-							size="mini"
-							@click="handleExport"
-						></el-button>
+						<el-button v-hasPermi="['system:customervisit:export']" plain icon="el-icon-folder-opened" size="mini" @click="handleExport"></el-button>
 					</el-col>
 				</template>
 			</right-toolbar>
@@ -144,358 +90,107 @@
 			@selection-change="handleSelectionChange"
 		>
 			<el-table-column label="id" align="center" prop="id" fixed="left" />
-			<el-table-column
-				label="走访日期"
-				align="center"
-				prop="visitDate"
-				fixed="left"
-				show-overflow-tooltip
-			/>
-			<el-table-column
-				v-if="columns[0].visible"
-				label="是否审核"
-				align="center"
-				prop="isCheckState"
-				fixed="left"
-				show-overflow-tooltip
-				width="120px"
-			>
+			<el-table-column label="走访日期" align="center" prop="visitDate" fixed="left" show-overflow-tooltip />
+			<el-table-column v-if="columns[0].visible" label="是否审核" align="center" prop="isCheckState" fixed="left" show-overflow-tooltip width="120px">
 				<template #default="scope">
 					<el-row v-if="scope.row.checkState === 1">
 						<el-tag type="success">
-							{{
-								scope.row.checkState === 0 ? '未审核' : '已审核'
-							}}
+							{{ scope.row.checkState === 0 ? '未审核' : '已审核' }}
 						</el-tag>
 					</el-row>
 					<el-row v-else>
 						<el-row>
-							<el-button
-								v-hasPermi="['system:customervisit:audit']"
-								type="text"
-								size="mini"
-								@click="handleCheck(scope.row)"
-							>
-								审核
-							</el-button>
+							<el-button v-hasPermi="['system:customervisit:audit']" type="text" size="mini" @click="handleCheck(scope.row)">审核</el-button>
 						</el-row>
 					</el-row>
 				</template>
 			</el-table-column>
-			<el-table-column
-				v-if="columns[1].visible"
-				label="客户名称"
-				align="center"
-				prop="customer"
-				fixed="left"
-				show-overflow-tooltip
-				width="150px"
-			/>
-			<el-table-column
-				v-if="columns[2].visible"
-				label="负责人姓名"
-				align="center"
-				prop="leaderName"
-				width="150px"
-			/>
-			<el-table-column
-				v-if="columns[3].visible"
-				label="负责人电话"
-				align="center"
-				prop="LeaderTel"
-				width="150px"
-				show-overflow-tooltip
-			/>
-			<el-table-column
-				v-if="columns[4].visible"
-				label="厂房设备"
-				align="center"
-				prop="equipment"
-				width="150px"
-				show-overflow-tooltip
-			/>
-			<el-table-column
-				v-if="columns[5].visible"
-				label="竞争对手"
-				align="center"
-				prop="competitor"
-				width="150px"
-				show-overflow-tooltip
-			/>
-			<el-table-column
-				v-if="columns[6].visible"
-				label="当地经销商"
-				align="center"
-				prop="localDealer"
-				width="150px"
-				show-overflow-tooltip
-			/>
-			<el-table-column
-				v-if="columns[7].visible"
-				label="月用货量"
-				align="center"
-				prop="monthlyConsumption"
-				show-overflow-tooltip
-				width="150px"
-			/>
-			<el-table-column
-				v-if="columns[8].visible"
-				label="白玻用货习惯及厂家"
-				align="center"
-				prop="whiteGlassFactory"
-				width="200px"
-				show-overflow-tooltip
-			/>
-			<el-table-column
-				v-if="columns[9].visible"
-				label="lowe玻璃用货厂家及用量"
-				align="center"
-				prop="loweGlassConsumption"
-				width="300px"
-				show-overflow-tooltip
-			/>
-			<el-table-column
-				v-if="columns[10].visible"
-				label="色玻、过度色玻璃用货厂家及用量"
-				align="center"
-				prop="colorGlassConsumption"
-				width="300px"
-				show-overflow-tooltip
-			/>
-			<el-table-column
-				v-if="columns[11].visible"
-				label="特色厚度、特殊尺寸、协议品用货厂家及用量"
-				align="center"
-				prop="specialGlassConsumption"
-				width="300px"
-				show-overflow-tooltip
-			/>
-			<el-table-column
-				v-if="columns[12].visible"
-				label="备注"
-				align="center"
-				prop="comments"
-				show-overflow-tooltip
-				width="180px"
-			/>
+			<el-table-column v-if="columns[1].visible" label="客户名称" align="center" prop="customer" fixed="left" show-overflow-tooltip width="150px" />
+			<el-table-column v-if="columns[2].visible" label="负责人姓名" align="center" prop="leaderName" width="150px" />
+			<el-table-column v-if="columns[3].visible" label="负责人电话" align="center" prop="LeaderTel" width="150px" show-overflow-tooltip />
+			<el-table-column v-if="columns[4].visible" label="厂房设备" align="center" prop="equipment" width="150px" show-overflow-tooltip />
+			<el-table-column v-if="columns[5].visible" label="竞争对手" align="center" prop="competitor" width="150px" show-overflow-tooltip />
+			<el-table-column v-if="columns[6].visible" label="当地经销商" align="center" prop="localDealer" width="150px" show-overflow-tooltip />
+			<el-table-column v-if="columns[7].visible" label="月用货量" align="center" prop="monthlyConsumption" show-overflow-tooltip width="150px" />
+			<el-table-column v-if="columns[8].visible" label="白玻用货习惯及厂家" align="center" prop="whiteGlassFactory" width="200px" show-overflow-tooltip />
+			<el-table-column v-if="columns[9].visible" label="lowe玻璃用货厂家及用量" align="center" prop="loweGlassConsumption" width="300px" show-overflow-tooltip />
+			<el-table-column v-if="columns[10].visible" label="色玻、过度色玻璃用货厂家及用量" align="center" prop="colorGlassConsumption" width="300px" show-overflow-tooltip />
+			<el-table-column v-if="columns[11].visible" label="特色厚度、特殊尺寸、协议品用货厂家及用量" align="center" prop="specialGlassConsumption" width="300px" show-overflow-tooltip />
+			<el-table-column v-if="columns[12].visible" label="备注" align="center" prop="comments" show-overflow-tooltip width="180px" />
 
-			<el-table-column
-				v-if="columns[13].visible"
-				label="省"
-				align="center"
-				prop="province"
-				show-overflow-tooltip
-				width="180px"
-			/>
-			<el-table-column
-				v-if="columns[14].visible"
-				label="市"
-				align="center"
-				prop="city"
-				show-overflow-tooltip
-				width="180px"
-			/>
-			<el-table-column
-				v-if="columns[15].visible"
-				label="乡镇"
-				align="center"
-				prop="county"
-				show-overflow-tooltip
-				width="180px"
-			/>
-			<el-table-column
-				label="操作"
-				align="center"
-				class-name="small-padding fixed-width"
-				fixed="right"
-				width="130px"
-			>
+			<el-table-column v-if="columns[13].visible" label="省" align="center" prop="province" show-overflow-tooltip width="180px" />
+			<el-table-column v-if="columns[14].visible" label="市" align="center" prop="city" show-overflow-tooltip width="180px" />
+			<el-table-column v-if="columns[15].visible" label="乡镇" align="center" prop="county" show-overflow-tooltip width="180px" />
+			<el-table-column label="操作" align="center" class-name="small-padding fixed-width" fixed="right" width="130px">
 				<template slot-scope="scope">
-					<el-button
-						v-hasPermi="['system:customervisit:edit']"
-						size="mini"
-						type="primary"
-						:disabled="scope.row.checkState === 1"
-						@click="handleUpdate(scope.row)"
-					>
-						编辑
-					</el-button>
-					<el-button
-						v-hasPermi="['system:customervisit:remove']"
-						size="mini"
-						type="danger"
-						:disabled="scope.row.checkState === 1"
-						@click="handleDelete(scope.row)"
-					>
-						删除
-					</el-button>
+					<el-button v-hasPermi="['system:customervisit:edit']" size="mini" type="primary" :disabled="scope.row.checkState === 1" @click="handleUpdate(scope.row)">编辑</el-button>
+					<el-button v-hasPermi="['system:customervisit:remove']" size="mini" type="danger" :disabled="scope.row.checkState === 1" @click="handleDelete(scope.row)">删除</el-button>
 				</template>
 			</el-table-column>
 		</el-table>
 
-		<pagination
-			v-show="total > 0"
-			:total="total"
-			:page.sync="queryParams.pageNum"
-			:limit.sync="queryParams.pageSize"
-			@pagination="getList"
-		/>
+		<pagination v-show="total > 0" :total="total" :page.sync="queryParams.pageNum" :limit.sync="queryParams.pageSize" @pagination="getList" />
 
 		<!-- 添加或修改走访记录对话框 -->
-		<el-dialog
-			:close-on-click-modal="false"
-			:show-close="false"
-			:title="title"
-			:visible.sync="open"
-			width="70%"
-			append-to-body
-			fullscreen
-		>
+		<el-dialog :close-on-click-modal="false" :show-close="false" :title="title" :visible.sync="open" width="70%" append-to-body fullscreen>
 			<el-form ref="form" :model="form" :rules="rules" label-width="80px">
 				<el-col :span="8">
 					<el-form-item label="走访日期" prop="visitDate">
-						<el-date-picker
-							v-model="form.visitDate"
-							type="datetime"
-							placeholder="选择走访日期"
-							value-format="yyyy-MM-dd HH:mm:ss"
-						></el-date-picker>
+						<el-date-picker v-model="form.visitDate" type="datetime" placeholder="选择走访日期" value-format="yyyy-MM-dd HH:mm:ss"></el-date-picker>
 					</el-form-item>
 					<el-form-item label="省" prop="province">
-						<el-select
-							v-model="form.province"
-							filterable
-							placeholder="请选择省"
-							@change="changeProvince"
-						>
-							<el-option
-								v-for="item in provinceList"
-								:key="item.code"
-								:label="item.name"
-								:value="item.name"
-							></el-option>
+						<el-select v-model="form.province" filterable placeholder="请选择省" @change="changeProvince">
+							<el-option v-for="item in provinceList" :key="item.code" :label="item.name" :value="item.name"></el-option>
 						</el-select>
 					</el-form-item>
 					<el-form-item label="市县" prop="city">
 						<!--          <el-input v-model="form.city" placeholder="请输入市县"/>-->
-						<el-select
-							v-model="form.city"
-							filterable
-							placeholder="请选择市"
-							@change="changeCity"
-						>
-							<el-option
-								v-for="item in cityList"
-								:key="item.code"
-								:label="item.name"
-								:value="item.name"
-							></el-option>
+						<el-select v-model="form.city" filterable placeholder="请选择市" @change="changeCity">
+							<el-option v-for="item in cityList" :key="item.code" :label="item.name" :value="item.name"></el-option>
 						</el-select>
 					</el-form-item>
 					<el-form-item label="乡镇" prop="county">
-						<el-input
-							v-model="form.county"
-							placeholder="请输入乡镇"
-						/>
+						<el-input v-model="form.county" placeholder="请输入乡镇" />
 					</el-form-item>
 					<el-form-item label="客户名称" prop="customer">
-						<el-input
-							v-model="form.customer"
-							placeholder="请输入客户名称"
-						/>
+						<el-input v-model="form.customer" placeholder="请输入客户名称" />
 					</el-form-item>
 					<el-form-item label="负责人" prop="leaderName">
-						<el-input
-							v-model="form.leaderName"
-							type="textarea"
-							placeholder="请输入内容"
-						/>
+						<el-input v-model="form.leaderName" type="textarea" placeholder="请输入内容" />
 					</el-form-item>
 					<el-form-item label="负责人电话" prop="LeaderTel">
-						<el-input
-							v-model="form.LeaderTel"
-							type="textarea"
-							placeholder="请输入内容"
-						/>
+						<el-input v-model="form.LeaderTel" type="textarea" placeholder="请输入内容" />
 					</el-form-item>
 					<el-form-item label="厂房设备" prop="equipment">
-						<el-input
-							v-model="form.equipment"
-							placeholder="请输入厂房设备"
-							type="textarea"
-						/>
+						<el-input v-model="form.equipment" placeholder="请输入厂房设备" type="textarea" />
 					</el-form-item>
 				</el-col>
 				<el-col :span="8">
 					<el-form-item label="竞争对手" prop="competitor">
-						<el-input
-							v-model="form.competitor"
-							placeholder="请输入竞争对手"
-							type="textarea"
-						/>
+						<el-input v-model="form.competitor" placeholder="请输入竞争对手" type="textarea" />
 					</el-form-item>
 					<el-form-item label="当地经销商" prop="localDealer">
-						<el-input
-							v-model="form.localDealer"
-							placeholder="请输入当地经销商"
-							type="textarea"
-						/>
+						<el-input v-model="form.localDealer" placeholder="请输入当地经销商" type="textarea" />
 					</el-form-item>
 					<el-form-item label="月用货量" prop="monthlyConsumption">
-						<el-input
-							v-model="form.monthlyConsumption"
-							placeholder="请输入月用货量"
-							type="textarea"
-						/>
+						<el-input v-model="form.monthlyConsumption" placeholder="请输入月用货量" type="textarea" />
 					</el-form-item>
-					<el-form-item
-						label="白玻用货习惯及厂家"
-						prop="whiteGlassFactory"
-					>
-						<el-input
-							v-model="form.whiteGlassFactory"
-							placeholder="请输入白玻用货习惯及厂家"
-							type="textarea"
-						/>
+					<el-form-item label="白玻用货习惯及厂家" prop="whiteGlassFactory">
+						<el-input v-model="form.whiteGlassFactory" placeholder="请输入白玻用货习惯及厂家" type="textarea" />
 					</el-form-item>
-					<el-form-item
-						label="lowe玻璃用货厂家及用量"
-						prop="loweGlassConsumption"
-					>
-						<el-input
-							v-model="form.loweGlassConsumption"
-							placeholder="请输入lowe玻璃用货厂家及用量"
-							type="textarea"
-						/>
+					<el-form-item label="lowe玻璃用货厂家及用量" prop="loweGlassConsumption">
+						<el-input v-model="form.loweGlassConsumption" placeholder="请输入lowe玻璃用货厂家及用量" type="textarea" />
 					</el-form-item>
 				</el-col>
 				<el-col :span="8">
-					<el-form-item
-						label="色玻、过度色玻璃用货厂家及用量"
-						prop="colorGlassConsumption"
-					>
-						<el-input
-							v-model="form.colorGlassConsumption"
-							placeholder="请输入色玻、过度色玻璃用货厂家及用量"
-							type="textarea"
-						/>
+					<el-form-item label="色玻、过度色玻璃用货厂家及用量" prop="colorGlassConsumption">
+						<el-input v-model="form.colorGlassConsumption" placeholder="请输入色玻、过度色玻璃用货厂家及用量" type="textarea" />
 					</el-form-item>
-					<el-form-item
-						label="特色厚度、特殊尺寸、协议品用货厂家及用量"
-						prop="specialGlassConsumption"
-					>
-						<el-input
-							v-model="form.specialGlassConsumption"
-							placeholder="请输入特色厚度、特殊尺寸、协议品用货厂家及用量"
-							type="textarea"
-						/>
+					<el-form-item label="特色厚度、特殊尺寸、协议品用货厂家及用量" prop="specialGlassConsumption">
+						<el-input v-model="form.specialGlassConsumption" placeholder="请输入特色厚度、特殊尺寸、协议品用货厂家及用量" type="textarea" />
 					</el-form-item>
 					<el-form-item label="备注" prop="comments">
-						<el-input
-							v-model="form.comments"
-							placeholder="请输入备注"
-							type="textarea"
-						/>
+						<el-input v-model="form.comments" placeholder="请输入备注" type="textarea" />
 					</el-form-item>
 					<!--          <el-form-item label="提交时间" prop="submittime">-->
 					<!--            <el-input v-model="form.submittime" placeholder="请输入添加时间"/>-->
@@ -511,14 +206,7 @@
 </template>
 
 <script>
-import {
-	listCustomerVisit,
-	getCustomerVisit,
-	delCustomerVisit,
-	addCustomerVisit,
-	updateCustomerVisit,
-	auditCustomerVisit
-} from '@/api/system/CustomerVisit';
+import { listCustomerVisit, getCustomerVisit, delCustomerVisit, addCustomerVisit, updateCustomerVisit, auditCustomerVisit } from '@/api/system/CustomerVisit';
 import { excludeParams } from '@/api/tool/exclude';
 
 export default {
@@ -583,15 +271,9 @@ export default {
 						trigger: 'blur'
 					}
 				],
-				province: [
-					{ required: true, message: '请选择省', trigger: 'blur' }
-				],
-				city: [
-					{ required: true, message: '请选择市', trigger: 'blur' }
-				],
-				county: [
-					{ required: true, message: '请输入乡镇', trigger: 'blur' }
-				],
+				province: [{ required: true, message: '请选择省', trigger: 'blur' }],
+				city: [{ required: true, message: '请选择市', trigger: 'blur' }],
+				county: [{ required: true, message: '请输入乡镇', trigger: 'blur' }],
 				customer: [
 					{
 						required: true,
@@ -665,14 +347,11 @@ export default {
 				specialGlassConsumption: [
 					{
 						required: true,
-						message:
-							'请输入特色厚度、特殊尺寸、协议品用货厂家及用量',
+						message: '请输入特色厚度、特殊尺寸、协议品用货厂家及用量',
 						trigger: 'blur'
 					}
 				],
-				comments: [
-					{ required: true, message: '请输入备注', trigger: 'blur' }
-				]
+				comments: [{ required: true, message: '请输入备注', trigger: 'blur' }]
 			},
 			columns: [
 				{ key: 0, label: `是否审核`, visible: true },
@@ -716,10 +395,7 @@ export default {
 	watch: {
 		columns: {
 			handler: function (newVal) {
-				localStorage.setItem(
-					'customervisit-columns',
-					JSON.stringify(newVal)
-				);
+				localStorage.setItem('customervisit-columns', JSON.stringify(newVal));
 			},
 			deep: true
 		},
@@ -769,19 +445,11 @@ export default {
 				this.provinceList = res;
 			});
 		this.getList();
-		if (
-			localStorage.getItem('customervisit-columns') === 'null' ||
-			!localStorage.getItem('customervisit-columns')
-		) {
+		if (localStorage.getItem('customervisit-columns') === 'null' || !localStorage.getItem('customervisit-columns')) {
 			// 设置localStorage
-			localStorage.setItem(
-				'customervisit-columns',
-				JSON.stringify(this.columns)
-			);
+			localStorage.setItem('customervisit-columns', JSON.stringify(this.columns));
 		} else {
-			this.columns = JSON.parse(
-				localStorage.getItem('customervisit-columns')
-			);
+			this.columns = JSON.parse(localStorage.getItem('customervisit-columns'));
 		}
 	},
 	methods: {
@@ -817,14 +485,7 @@ export default {
 		getList() {
 			this.loading = true;
 			// 范围时间搜索方法
-			listCustomerVisit(
-				this.addDateRange(
-					this.queryParams,
-					this.dateRange,
-					'visit',
-					this.queryParams.region
-				)
-			).then(response => {
+			listCustomerVisit(this.addDateRange(this.queryParams, this.dateRange, 'visit', this.queryParams.region)).then(response => {
 				this.CustomerVisitList = response.rows;
 				this.total = response.total;
 				this.loading = false;

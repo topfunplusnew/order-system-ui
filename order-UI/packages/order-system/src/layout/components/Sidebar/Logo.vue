@@ -1,16 +1,7 @@
 <template>
-	<div
-		class="sidebar-logo-container"
-		:class="{ collapse: collapse }"
-		:style="{ backgroundColor: variables.menuLightBackground }"
-	>
+	<div class="sidebar-logo-container" :class="{ collapse: collapse }" :style="{ backgroundColor: variables.menuLightBackground }">
 		<transition name="sidebarLogoFade">
-			<router-link
-				v-if="collapse"
-				key="collapse"
-				class="sidebar-logo-link"
-				to="/"
-			>
+			<router-link v-if="collapse" key="collapse" class="sidebar-logo-link" to="/">
 				<h1 class="sidebar-title" :style="{ color: '#156fb2' }">
 					{{ title }}
 				</h1>

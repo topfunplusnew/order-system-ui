@@ -48,13 +48,9 @@ export default {
 				{{ needToShowInfo.comments || '暂无备注' }}
 			</el-descriptions-item>
 		</el-descriptions>
-		<el-table
-			:data="needToShowInfo.tripReimbursementList"
-			style="width: 100%"
-		>
-			<el-table-column prop="item" label="报销项目"> </el-table-column>
-			<el-table-column prop="itemCost" label="费用 (元)">
-			</el-table-column>
+		<el-table :data="needToShowInfo.tripReimbursementList" style="width: 100%">
+			<el-table-column prop="item" label="报销项目"></el-table-column>
+			<el-table-column prop="itemCost" label="费用 (元)"></el-table-column>
 		</el-table>
 	</div>
 </template>

@@ -24,18 +24,12 @@ export default {
 			<el-descriptions-item label="期初余额">
 				{{ needToShowInfo.startCardSurplus }}
 			</el-descriptions-item>
-			<el-descriptions-item label="加油量(升)">
-				{{ needToShowInfo.refuelingNumber }} 升
-			</el-descriptions-item>
+			<el-descriptions-item label="加油量(升)">{{ needToShowInfo.refuelingNumber }} 升</el-descriptions-item>
 			<el-descriptions-item label="单价">
 				{{ needToShowInfo.unitPrice }}
 			</el-descriptions-item>
-			<el-descriptions-item label="加油金额(元)">
-				{{ needToShowInfo.refuelingMoney }} 元
-			</el-descriptions-item>
-			<el-descriptions-item label="充值金额(元)">
-				{{ needToShowInfo.rechargeMoney }} 元
-			</el-descriptions-item>
+			<el-descriptions-item label="加油金额(元)">{{ needToShowInfo.refuelingMoney }} 元</el-descriptions-item>
+			<el-descriptions-item label="充值金额(元)">{{ needToShowInfo.rechargeMoney }} 元</el-descriptions-item>
 			<el-descriptions-item label="加油卡余额">
 				{{ needToShowInfo.endCardSurplus }}
 			</el-descriptions-item>

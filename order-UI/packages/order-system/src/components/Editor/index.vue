@@ -13,8 +13,7 @@
 			:show-file-list="false"
 			:headers="headers"
 			style="display: none"
-		>
-		</el-upload>
+		></el-upload>
 		<div ref="editor" class="editor" :style="styles"></div>
 	</div>
 </template>
@@ -170,9 +169,7 @@ export default {
 			if (this.fileSize) {
 				const isLt = file.size / 1024 / 1024 < this.fileSize;
 				if (!isLt) {
-					this.$message.error(
-						`上传文件大小不能超过 ${this.fileSize} MB!`
-					);
+					this.$message.error(`上传文件大小不能超过 ${this.fileSize} MB!`);
 					return false;
 				}
 			}
@@ -186,11 +183,7 @@ export default {
 				// 获取光标所在位置
 				const length = quill.getSelection().index;
 				// 插入图片  res.url为服务器返回的图片地址
-				quill.insertEmbed(
-					length,
-					'image',
-					process.env.VUE_APP_BASE_API + res.fileName
-				);
+				quill.insertEmbed(length, 'image', process.env.VUE_APP_BASE_API + res.fileName);
 				// 调整光标到最后
 				quill.setSelection(length + 1);
 			} else {

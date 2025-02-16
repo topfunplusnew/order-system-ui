@@ -1,95 +1,36 @@
 <template>
 	<div class="app-container">
-		<el-form
-			v-show="showSearch"
-			ref="queryForm"
-			:model="queryParams"
-			size="mini"
-			:inline="true"
-			label-width="68px"
-		>
+		<el-form v-show="showSearch" ref="queryForm" :model="queryParams" size="mini" :inline="true" label-width="68px">
 			<el-form-item label="主加油卡卡号" prop="oilMainCardNo">
-				<el-input
-					v-model="queryParams.oilMainCardNo"
-					placeholder="请输入主加油卡卡号"
-					clearable
-					@keyup.enter.native="handleQuery"
-				/>
+				<el-input v-model="queryParams.oilMainCardNo" placeholder="请输入主加油卡卡号" clearable @keyup.enter.native="handleQuery" />
 			</el-form-item>
 			<el-form-item label="副加油卡卡号" prop="oilSecondCardNo">
-				<el-input
-					v-model="queryParams.oilSecondCardNo"
-					placeholder="请输入副加油卡卡号"
-					clearable
-					@keyup.enter.native="handleQuery"
-				/>
+				<el-input v-model="queryParams.oilSecondCardNo" placeholder="请输入副加油卡卡号" clearable @keyup.enter.native="handleQuery" />
 			</el-form-item>
 			<el-form-item label="充值时间" prop="rechargeDate">
-				<el-date-picker
-					v-model="queryParams.rechargeDate"
-					type="datetime"
-					placeholder="选择充值时间"
-					value-format="yyyy-MM-dd HH:mm:ss"
-				></el-date-picker>
+				<el-date-picker v-model="queryParams.rechargeDate" type="datetime" placeholder="选择充值时间" value-format="yyyy-MM-dd HH:mm:ss"></el-date-picker>
 			</el-form-item>
 			<el-form-item>
-				<el-button
-					type="primary"
-					icon="el-icon-search"
-					size="mini"
-					@click="handleQuery"
-				>
-					搜索
-				</el-button>
+				<el-button type="primary" icon="el-icon-search" size="mini" @click="handleQuery">搜索</el-button>
 			</el-form-item>
 		</el-form>
 		<el-row :gutter="10" class="mb8">
 			<el-col :span="1.5">
-				<el-button
-					v-hasPermi="['system:oilcardfundtransfer:add']"
-					type="primary"
-					plain
-					icon="el-icon-plus"
-					size="mini"
-					@click="handleAdd"
-				>
-					新增加油卡圈存信息
-				</el-button>
+				<el-button v-hasPermi="['system:oilcardfundtransfer:add']" type="primary" plain icon="el-icon-plus" size="mini" @click="handleAdd">新增加油卡圈存信息</el-button>
 			</el-col>
 			<el-col :span="1.5">
-				<el-button
-					icon="el-icon-refresh"
-					size="mini"
-					@click="resetQuery"
-				>
-					重置
-				</el-button>
+				<el-button icon="el-icon-refresh" size="mini" @click="resetQuery">重置</el-button>
 			</el-col>
-			<right-toolbar
-				:showSearch.sync="showSearch"
-				:columns="columns"
-				@queryTable="getList"
-			>
+			<right-toolbar :showSearch.sync="showSearch" :columns="columns" @queryTable="getList">
 				<template #print>
 					<el-col :span="1.5">
-						<el-button
-							plain
-							icon="el-icon-printer"
-							size="mini"
-							@click="printHTML"
-						></el-button>
+						<el-button plain icon="el-icon-printer" size="mini" @click="printHTML"></el-button>
 					</el-col>
 				</template>
 				<!--        导出-->
 				<template #export>
 					<el-col :span="1.5">
-						<el-button
-							v-hasPermi="['system:oilcardfundtransfer:export']"
-							plain
-							icon="el-icon-folder-opened"
-							size="mini"
-							@click="handleExport"
-						></el-button>
+						<el-button v-hasPermi="['system:oilcardfundtransfer:export']" plain icon="el-icon-folder-opened" size="mini" @click="handleExport"></el-button>
 					</el-col>
 				</template>
 			</right-toolbar>
@@ -109,105 +50,30 @@
 			"
 			@selection-change="handleSelectionChange"
 		>
-			<el-table-column
-				v-if="columns[0].visible"
-				label="id"
-				align="center"
-				prop="id"
-			/>
-			<el-table-column
-				v-if="columns[1].visible"
-				label="主加油卡卡号"
-				align="center"
-				prop="oilMainCardNo"
-			/>
-			<el-table-column
-				v-if="columns[2].visible"
-				label="副加油卡卡号"
-				align="center"
-				prop="oilSecondCardNo"
-			/>
-			<el-table-column
-				v-if="columns[3].visible"
-				label="充值金额"
-				align="center"
-				prop="rechargeMoney"
-			/>
-			<el-table-column
-				v-if="columns[4].visible"
-				label="充值时间"
-				align="center"
-				prop="rechargeDate"
-			/>
-			<el-table-column
-				v-if="columns[5].visible"
-				label="充值人员姓名"
-				align="center"
-				prop="rechargeName"
-			/>
-			<el-table-column
-				v-if="columns[6].visible"
-				label="备注"
-				align="center"
-				prop="comments"
-			/>
-			<el-table-column
-				label="操作"
-				align="center"
-				class-name="small-padding fixed-width"
-			>
+			<el-table-column v-if="columns[0].visible" label="id" align="center" prop="id" />
+			<el-table-column v-if="columns[1].visible" label="主加油卡卡号" align="center" prop="oilMainCardNo" />
+			<el-table-column v-if="columns[2].visible" label="副加油卡卡号" align="center" prop="oilSecondCardNo" />
+			<el-table-column v-if="columns[3].visible" label="充值金额" align="center" prop="rechargeMoney" />
+			<el-table-column v-if="columns[4].visible" label="充值时间" align="center" prop="rechargeDate" />
+			<el-table-column v-if="columns[5].visible" label="充值人员姓名" align="center" prop="rechargeName" />
+			<el-table-column v-if="columns[6].visible" label="备注" align="center" prop="comments" />
+			<el-table-column label="操作" align="center" class-name="small-padding fixed-width">
 				<template slot-scope="scope">
-					<el-button
-						v-hasPermi="['system:oilcardfundtransfer:edit']"
-						size="mini"
-						type="primary"
-						@click="handleUpdate(scope.row)"
-					>
-						修改
-					</el-button>
-					<el-button
-						v-hasPermi="['system:oilcardfundtransfer:remove']"
-						size="mini"
-						type="danger"
-						@click="handleDelete(scope.row)"
-					>
-						删除
-					</el-button>
+					<el-button v-hasPermi="['system:oilcardfundtransfer:edit']" size="mini" type="primary" @click="handleUpdate(scope.row)">修改</el-button>
+					<el-button v-hasPermi="['system:oilcardfundtransfer:remove']" size="mini" type="danger" @click="handleDelete(scope.row)">删除</el-button>
 				</template>
 			</el-table-column>
 		</el-table>
 
-		<pagination
-			v-show="total > 0"
-			:total="total"
-			:page.sync="queryParams.pageNum"
-			:limit.sync="queryParams.pageSize"
-			@pagination="getList"
-		/>
+		<pagination v-show="total > 0" :total="total" :page.sync="queryParams.pageNum" :limit.sync="queryParams.pageSize" @pagination="getList" />
 
 		<!-- 添加或修改加油卡圈存对话框 -->
-		<el-dialog
-			:close-on-click-modal="false"
-			:show-close="false"
-			:title="title"
-			:visible.sync="open"
-			width="500px"
-			append-to-body
-		>
-			<el-form
-				ref="form"
-				:model="form"
-				:rules="rules"
-				label-width="120px"
-			>
+		<el-dialog :close-on-click-modal="false" :show-close="false" :title="title" :visible.sync="open" width="500px" append-to-body>
+			<el-form ref="form" :model="form" :rules="rules" label-width="120px">
 				<el-form-item label="主加油卡卡号" prop="oilMainCardNo">
 					<el-row>
 						<el-col :span="10">
-							<el-input
-								disabled
-								v-model="form.oilMainCardNo"
-								placeholder="请选择"
-							/>
+							<el-input disabled v-model="form.oilMainCardNo" placeholder="请选择" />
 						</el-col>
 						<el-col :span="4">
 							<SearchOption
@@ -220,16 +86,8 @@
 								@update:queryName="handleCommitBackQueryOilCard"
 							>
 								<template #table-columns>
-									<el-table-column
-										label="加油卡卡号"
-										align="center"
-										prop="oilCardNo"
-									/>
-									<el-table-column
-										label="当前金额"
-										align="center"
-										prop="moneyAmount"
-									/>
+									<el-table-column label="加油卡卡号" align="center" prop="oilCardNo" />
+									<el-table-column label="当前金额" align="center" prop="moneyAmount" />
 								</template>
 							</SearchOption>
 						</el-col>
@@ -238,11 +96,7 @@
 				<el-form-item label="副加油卡卡号" prop="oilSecondCardNo">
 					<el-row>
 						<el-col :span="10">
-							<el-input
-								disabled
-								v-model="form.oilSecondCardNo"
-								placeholder="请选择"
-							/>
+							<el-input disabled v-model="form.oilSecondCardNo" placeholder="请选择" />
 						</el-col>
 						<el-col :span="4">
 							<SearchOption
@@ -252,40 +106,24 @@
 								query-label="油卡账号查询"
 								:limit-info="{ oilType: '副卡' }"
 								@commitBack="handleCommitBackOilCardOther"
-								@update:queryName="
-									handleCommitBackQueryOilCardOther
-								"
+								@update:queryName="handleCommitBackQueryOilCardOther"
 							>
 								<template #table-columns>
-									<el-table-column
-										label="加油卡卡号"
-										align="center"
-										prop="oilCardNo"
-									/>
-									<el-table-column
-										label="当前金额"
-										align="center"
-										prop="moneyAmount"
-									/>
+									<el-table-column label="加油卡卡号" align="center" prop="oilCardNo" />
+									<el-table-column label="当前金额" align="center" prop="moneyAmount" />
 								</template>
 							</SearchOption>
 						</el-col>
 					</el-row>
 				</el-form-item>
 				<el-form-item label="充值金额" prop="rechargeMoney">
-					<el-input
-						v-model="form.rechargeMoney"
-						placeholder="请输入充值金额"
-					/>
+					<el-input v-model="form.rechargeMoney" placeholder="请输入充值金额" />
 				</el-form-item>
 				<!--        <el-form-item label="充值人员姓名" prop="rechargeName">-->
 				<!--          <el-input v-model="form.rechargeName" placeholder="请输入充值人员姓名"/>-->
 				<!--        </el-form-item>-->
 				<el-form-item label="备注" prop="comments">
-					<el-input
-						v-model="form.comments"
-						placeholder="请输入备注"
-					/>
+					<el-input v-model="form.comments" placeholder="请输入备注" />
 				</el-form-item>
 			</el-form>
 			<div slot="footer" class="dialog-footer">
@@ -297,13 +135,7 @@
 </template>
 
 <script>
-import {
-	listOilCardFundTransfer,
-	getOilCardFundTransfer,
-	delOilCardFundTransfer,
-	addOilCardFundTransfer,
-	updateOilCardFundTransfer
-} from '@/api/system/oilCardFundTransfer';
+import { listOilCardFundTransfer, getOilCardFundTransfer, delOilCardFundTransfer, addOilCardFundTransfer, updateOilCardFundTransfer } from '@/api/system/oilCardFundTransfer';
 import { mixin_printHTML } from '@/views/dashboard/mixins/print';
 import SearchOption from '@/components/SearchOption.vue';
 import { listOilCard } from '@/api/system/oilCard';
@@ -406,29 +238,18 @@ export default {
 	watch: {
 		columns: {
 			handler: function (newVal) {
-				localStorage.setItem(
-					'oilcardfundtransfer-columns',
-					JSON.stringify(newVal)
-				);
+				localStorage.setItem('oilcardfundtransfer-columns', JSON.stringify(newVal));
 			},
 			deep: true
 		}
 	},
 	created() {
 		this.getList();
-		if (
-			localStorage.getItem('oilcardfundtransfer-columns') === 'null' ||
-			!localStorage.getItem('oilcardfundtransfer-columns')
-		) {
+		if (localStorage.getItem('oilcardfundtransfer-columns') === 'null' || !localStorage.getItem('oilcardfundtransfer-columns')) {
 			// 设置localStorage
-			localStorage.setItem(
-				'oilcardfundtransfer-columns',
-				JSON.stringify(this.columns)
-			);
+			localStorage.setItem('oilcardfundtransfer-columns', JSON.stringify(this.columns));
 		} else {
-			this.columns = JSON.parse(
-				localStorage.getItem('oilcardfundtransfer-columns')
-			);
+			this.columns = JSON.parse(localStorage.getItem('oilcardfundtransfer-columns'));
 		}
 	},
 	methods: {

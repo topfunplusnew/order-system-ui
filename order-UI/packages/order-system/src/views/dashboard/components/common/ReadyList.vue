@@ -68,9 +68,7 @@ export default {
 					this.$message.success('本批开票成功');
 					resolve();
 				} else {
-					this.$message.error(
-						'本批开票有误 请检查错误信息后重新提交'
-					);
+					this.$message.error('本批开票有误 请检查错误信息后重新提交');
 					reject();
 					setTimeout(() => {
 						const uuid = target.uuid;
@@ -79,9 +77,7 @@ export default {
 							const index = i;
 							if (item.uuid === uuid) {
 								// 查找该出错的信息 提示用户
-								this.$message.error(
-									`第${index}条信息发生错误:${item.result}`
-								);
+								this.$message.error(`第${index}条信息发生错误:${item.result}`);
 								// 判断一下tableName
 								switch (item.tableName) {
 									case TableName.INVOICE_OUT: {
@@ -160,77 +156,20 @@ export default {
 				}
 			"
 		>
-			<el-table-column
-				label="开票日期"
-				align="center"
-				prop="invoiceDate"
-				show-overflow-tooltip
-			/>
-			<el-table-column
-				label="我方开票实体"
-				align="center"
-				prop="invoiceObject"
-				show-overflow-tooltip
-			/>
-			<el-table-column
-				label="开票金额"
-				align="center"
-				prop="invoiceAmount"
-				show-overflow-tooltip
-			/>
-			<el-table-column
-				label="公司类别"
-				align="center"
-				prop="companyType"
-				show-overflow-tooltip
-			/>
-			<el-table-column
-				label="公司名称"
-				align="center"
-				prop="companyName"
-				show-overflow-tooltip
-			/>
-			<el-table-column
-				label="票据单位名称"
-				align="center"
-				prop="invoiceCompanyName"
-				show-overflow-tooltip
-			/>
-			<el-table-column
-				label="票点"
-				align="center"
-				prop="ticketPoint"
-				show-overflow-tooltip
-			/>
-			<el-table-column
-				label="票点金额"
-				align="center"
-				prop="ticketPointAmount"
-				show-overflow-tooltip
-			/>
-			<el-table-column
-				label="备注"
-				align="center"
-				prop="comments"
-				show-overflow-tooltip
-			/>
-			<el-table-column
-				label="订单信息"
-				align="center"
-				prop="isOrderTax"
-				width="180"
-			>
+			<el-table-column label="开票日期" align="center" prop="invoiceDate" show-overflow-tooltip />
+			<el-table-column label="我方开票实体" align="center" prop="invoiceObject" show-overflow-tooltip />
+			<el-table-column label="开票金额" align="center" prop="invoiceAmount" show-overflow-tooltip />
+			<el-table-column label="公司类别" align="center" prop="companyType" show-overflow-tooltip />
+			<el-table-column label="公司名称" align="center" prop="companyName" show-overflow-tooltip />
+			<el-table-column label="票据单位名称" align="center" prop="invoiceCompanyName" show-overflow-tooltip />
+			<el-table-column label="票点" align="center" prop="ticketPoint" show-overflow-tooltip />
+			<el-table-column label="票点金额" align="center" prop="ticketPointAmount" show-overflow-tooltip />
+			<el-table-column label="备注" align="center" prop="comments" show-overflow-tooltip />
+			<el-table-column label="订单信息" align="center" prop="isOrderTax" width="180">
 				<template slot-scope="scope">
-					<el-row v-if="scope.row.isOrderTax === 0"
-						>无关联订单</el-row
-					>
+					<el-row v-if="scope.row.isOrderTax === 0">无关联订单</el-row>
 					<el-row v-else>
-						<el-button
-							size="mini"
-							type="text"
-							@click="checkOrderInfo(scope.row)"
-							>查看订单信息
-						</el-button>
+						<el-button size="mini" type="text" @click="checkOrderInfo(scope.row)">查看订单信息</el-button>
 					</el-row>
 				</template>
 			</el-table-column>

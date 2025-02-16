@@ -1,10 +1,5 @@
 <template>
-	<el-scrollbar
-		ref="scrollContainer"
-		:vertical="false"
-		class="scroll-container"
-		@wheel.native.prevent="handleScroll"
-	>
+	<el-scrollbar ref="scrollContainer" :vertical="false" class="scroll-container" @wheel.native.prevent="handleScroll">
 		<slot />
 	</el-scrollbar>
 </template>
@@ -34,8 +29,7 @@ export default {
 		handleScroll(e) {
 			const eventDelta = e.wheelDelta || -e.deltaY * 40;
 			const $scrollWrapper = this.scrollWrapper;
-			$scrollWrapper.scrollLeft =
-				$scrollWrapper.scrollLeft + eventDelta / 4;
+			$scrollWrapper.scrollLeft = $scrollWrapper.scrollLeft + eventDelta / 4;
 		},
 		emitScroll() {
 			this.$emit('scroll');
@@ -58,35 +52,22 @@ export default {
 			if (firstTag === currentTag) {
 				$scrollWrapper.scrollLeft = 0;
 			} else if (lastTag === currentTag) {
-				$scrollWrapper.scrollLeft =
-					$scrollWrapper.scrollWidth - $containerWidth;
+				$scrollWrapper.scrollLeft = $scrollWrapper.scrollWidth - $containerWidth;
 			} else {
 				// find preTag and nextTag
-				const currentIndex = tagList.findIndex(
-					item => item === currentTag
-				);
+				const currentIndex = tagList.findIndex(item => item === currentTag);
 				const prevTag = tagList[currentIndex - 1];
 				const nextTag = tagList[currentIndex + 1];
 
 				// the tag's offsetLeft after of nextTag
-				const afterNextTagOffsetLeft =
-					nextTag.$el.offsetLeft +
-					nextTag.$el.offsetWidth +
-					tagAndTagSpacing;
+				const afterNextTagOffsetLeft = nextTag.$el.offsetLeft + nextTag.$el.offsetWidth + tagAndTagSpacing;
 
 				// the tag's offsetLeft before of prevTag
-				const beforePrevTagOffsetLeft =
-					prevTag.$el.offsetLeft - tagAndTagSpacing;
+				const beforePrevTagOffsetLeft = prevTag.$el.offsetLeft - tagAndTagSpacing;
 
-				if (
-					afterNextTagOffsetLeft >
-					$scrollWrapper.scrollLeft + $containerWidth
-				) {
-					$scrollWrapper.scrollLeft =
-						afterNextTagOffsetLeft - $containerWidth;
-				} else if (
-					beforePrevTagOffsetLeft < $scrollWrapper.scrollLeft
-				) {
+				if (afterNextTagOffsetLeft > $scrollWrapper.scrollLeft + $containerWidth) {
+					$scrollWrapper.scrollLeft = afterNextTagOffsetLeft - $containerWidth;
+				} else if (beforePrevTagOffsetLeft < $scrollWrapper.scrollLeft) {
 					$scrollWrapper.scrollLeft = beforePrevTagOffsetLeft;
 				}
 			}

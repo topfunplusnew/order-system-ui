@@ -213,57 +213,28 @@ export default {
 <template>
 	<div>
 		<div class="app-container">
-			<el-form
-				ref="form"
-				:model="form"
-				:rules="rules"
-				label-width="120px"
-			>
+			<el-form ref="form" :model="form" :rules="rules" label-width="120px">
 				<el-form-item label="日期" prop="fundsDate">
-					<el-date-picker
-						v-model="form.fundsDate"
-						type="datetime"
-						value-format="yyyy-MM-dd HH:mm:ss"
-						placeholder="选择日期"
-					>
-					</el-date-picker>
+					<el-date-picker v-model="form.fundsDate" type="datetime" value-format="yyyy-MM-dd HH:mm:ss" placeholder="选择日期"></el-date-picker>
 				</el-form-item>
 				<el-form-item label="支付类型" prop="payType">
-					<el-cascader
-						v-model="form.payType"
-						:options="paymentTypeTree"
-						:props="props"
-						@change="handleChange"
-					></el-cascader>
+					<el-cascader v-model="form.payType" :options="paymentTypeTree" :props="props" @change="handleChange"></el-cascader>
 				</el-form-item>
 				<el-form-item label="金额" prop="moneyAmount">
-					<el-input
-						v-model="form.moneyAmount"
-						placeholder="请输入金额"
-						:disabled="inputDisabled"
-					/>
+					<el-input v-model="form.moneyAmount" placeholder="请输入金额" :disabled="inputDisabled" />
 				</el-form-item>
 				<el-form-item label="付款原因" prop="reason">
-					<el-input
-						v-model="form.reason"
-						type="textarea"
-						placeholder="请输入内容"
-					/>
+					<el-input v-model="form.reason" type="textarea" placeholder="请输入内容" />
 				</el-form-item>
 				<el-form-item label="附件" prop="attachment">
 					<file-upload @input="handleCommitUpload" />
 				</el-form-item>
 				<el-form-item label="备注" prop="comments">
-					<el-input
-						v-model="form.comments"
-						placeholder="请输入备注"
-					/>
+					<el-input v-model="form.comments" placeholder="请输入备注" />
 				</el-form-item>
 			</el-form>
 			<div slot="footer" class="dialog-footer" style="text-align: center">
-				<el-button type="primary" @click="submitForm"
-					>提交申请</el-button
-				>
+				<el-button type="primary" @click="submitForm">提交申请</el-button>
 				<el-button @click="close">关闭</el-button>
 			</div>
 		</div>

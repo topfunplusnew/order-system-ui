@@ -6,47 +6,17 @@
 		<el-form :model="query" label-width="80px" class="filter-form">
 			<div class="form-row">
 				<el-form-item label="车牌号">
-					<el-input
-						v-model="query.carNo"
-						placeholder="请输入车牌号"
-						size="mini"
-						clearable
-					/>
+					<el-input v-model="query.carNo" placeholder="请输入车牌号" size="mini" clearable />
 				</el-form-item>
 				<el-form-item label="开始时间">
-					<el-date-picker
-						v-model="query.startTime"
-						type="datetime"
-						value-format="yyyy-MM-dd HH:mm:ss"
-						placeholder="选择开始时间"
-						clearable
-						size="mini"
-					/>
+					<el-date-picker v-model="query.startTime" type="datetime" value-format="yyyy-MM-dd HH:mm:ss" placeholder="选择开始时间" clearable size="mini" />
 				</el-form-item>
 				<el-form-item label="结束时间">
-					<el-date-picker
-						v-model="query.endTime"
-						type="datetime"
-						value-format="yyyy-MM-dd HH:mm:ss"
-						placeholder="选择结束时间"
-						clearable
-						size="mini"
-					/>
+					<el-date-picker v-model="query.endTime" type="datetime" value-format="yyyy-MM-dd HH:mm:ss" placeholder="选择结束时间" clearable size="mini" />
 				</el-form-item>
 				<el-form-item>
-					<el-button
-						type="primary"
-						@click="fetchData"
-						class="query-button"
-						size="mini"
-						>查询
-					</el-button>
-					<el-button
-						@click="resetForm"
-						class="reset-button"
-						size="mini"
-						>重置
-					</el-button>
+					<el-button type="primary" @click="fetchData" class="query-button" size="mini">查询</el-button>
+					<el-button @click="resetForm" class="reset-button" size="mini">重置</el-button>
 				</el-form-item>
 			</div>
 		</el-form>
@@ -55,101 +25,46 @@
 			<right-toolbar :columns="columns" @queryTable="fetchData">
 				<template #print>
 					<el-col :span="1.5">
-						<el-button
-							plain
-							icon="el-icon-printer"
-							size="mini"
-							@click="printHTML"
-						/>
+						<el-button plain icon="el-icon-printer" size="mini" @click="printHTML" />
 					</el-col>
 				</template>
 			</right-toolbar>
 		</el-row>
 		<!-- 数据表格 -->
-		<el-table
-			id="printBox"
-			:data="tableData"
-			border
-			stripe
-			size="medium"
-			style="width: 100%; margin-top: 20px"
-		>
+		<el-table id="printBox" :data="tableData" border stripe size="medium" style="width: 100%; margin-top: 20px">
 			<!-- 序号列 -->
-			<el-table-column
-				v-if="columns[0].visible"
-				label="序号"
-				align="center"
-				width="60"
-			>
+			<el-table-column v-if="columns[0].visible" label="序号" align="center" width="60">
 				<template #default="scope">
 					{{ scope.$index + 1 }}
 				</template>
 			</el-table-column>
 
 			<!-- 车牌号 -->
-			<el-table-column
-				v-if="columns[1].visible"
-				label="车牌号"
-				prop="carNo"
-				align="center"
-			/>
+			<el-table-column v-if="columns[1].visible" label="车牌号" prop="carNo" align="center" />
 
 			<!-- 申请人 -->
-			<el-table-column
-				v-if="columns[2].visible"
-				label="申请人"
-				prop="applyUser"
-				align="center"
-			/>
+			<el-table-column v-if="columns[2].visible" label="申请人" prop="applyUser" align="center" />
 
 			<!-- 开始时间 -->
-			<el-table-column
-				v-if="columns[3].visible"
-				label="开始时间"
-				prop="startTime"
-				align="center"
-			/>
+			<el-table-column v-if="columns[3].visible" label="开始时间" prop="startTime" align="center" />
 
 			<!-- 结束时间 -->
-			<el-table-column
-				v-if="columns[4].visible"
-				label="结束时间"
-				prop="endTime"
-				align="center"
-			/>
+			<el-table-column v-if="columns[4].visible" label="结束时间" prop="endTime" align="center" />
 
 			<!-- 现金加油次数 -->
-			<el-table-column
-				v-if="columns[5].visible"
-				label="现金加油次数"
-				prop="cashRefuelingFrequency"
-				align="center"
-			/>
+			<el-table-column v-if="columns[5].visible" label="现金加油次数" prop="cashRefuelingFrequency" align="center" />
 
 			<!-- 现金加油金额 -->
-			<el-table-column
-				v-if="columns[6].visible"
-				label="现金加油金额"
-				prop="cashRefueling"
-				align="center"
-			>
+			<el-table-column v-if="columns[6].visible" label="现金加油金额" prop="cashRefueling" align="center">
 				<template #default="scope">
-					<span class="amount">{{
-						scope.row.cashRefueling.toFixed(2)
-					}}</span>
+					<span class="amount">{{ scope.row.cashRefueling.toFixed(2) }}</span>
 				</template>
 			</el-table-column>
 
 			<!-- 操作列 -->
 			<el-table-column label="操作" align="center" width="120">
 				<template #default="scope">
-					<el-button
-						size="small"
-						type="text"
-						@click="viewCarDetails(scope.row.carNo)"
-					>
-						查看详情
-					</el-button>
+					<el-button size="small" type="text" @click="viewCarDetails(scope.row.carNo)">查看详情</el-button>
 				</template>
 			</el-table-column>
 		</el-table>
@@ -157,11 +72,12 @@
 		<!-- 汇总信息 -->
 		<div class="summary">
 			<div class="summary-item">
-				<span>总现金加油次数: </span><b>{{ totalFrequency }}</b>
+				<span>总现金加油次数:</span>
+				<b>{{ totalFrequency }}</b>
 			</div>
 			<div class="summary-item">
-				<span>总现金加油金额: </span
-				><b>{{ totalAmount.toFixed(2) }} 元</b>
+				<span>总现金加油金额:</span>
+				<b>{{ totalAmount.toFixed(2) }} 元</b>
 			</div>
 		</div>
 
@@ -227,14 +143,8 @@ export default {
 					this.tableData = response.rows;
 
 					// 计算总现金加油次数和总金额
-					this.totalFrequency = this.tableData.reduce(
-						(sum, row) => sum + row.cashRefuelingFrequency,
-						0
-					);
-					this.totalAmount = this.tableData.reduce(
-						(sum, row) => sum + row.cashRefueling,
-						0
-					);
+					this.totalFrequency = this.tableData.reduce((sum, row) => sum + row.cashRefuelingFrequency, 0);
+					this.totalAmount = this.tableData.reduce((sum, row) => sum + row.cashRefueling, 0);
 				} else {
 					this.$message.error(response.msg || '查询失败');
 				}

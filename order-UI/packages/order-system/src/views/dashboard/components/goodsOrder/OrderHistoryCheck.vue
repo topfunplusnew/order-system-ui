@@ -1,53 +1,21 @@
 <template>
-	<el-dialog
-		:show-close="false"
-		:close-on-click-modal="false"
-		:close-on-press-escape="false"
-		title="订单历史对比信息"
-		:visible.sync="checkHistoryOrderVisible"
-		width="1100px"
-	>
+	<el-dialog :show-close="false" :close-on-click-modal="false" :close-on-press-escape="false" title="订单历史对比信息" :visible.sync="checkHistoryOrderVisible" width="1100px">
 		<el-row>
 			<el-col :span="18" :offset="3">
 				<el-timeline>
 					<el-timeline-item timestamp="至今" placement="top">
-						<el-button
-							type="success"
-							icon="el-icon-document"
-							@click="checkcurrentOrderItemInfo"
-						>
-							查看原订单信息
-						</el-button>
+						<el-button type="success" icon="el-icon-document" @click="checkcurrentOrderItemInfo">查看原订单信息</el-button>
 					</el-timeline-item>
 					<!--					            修改的时间线-->
-					<el-timeline-item
-						v-for="(item, index) in orderHistoryInfoList"
-						:key="index"
-						placement="top"
-						:timestamp="item.diff.updateTime"
-					>
+					<el-timeline-item v-for="(item, index) in orderHistoryInfoList" :key="index" placement="top" :timestamp="item.diff.updateTime">
 						<el-collapse v-model="activeNames">
-							<el-collapse-item
-								:title="
-									item.diff.userName + ':' + item.diff.remark
-								"
-								:name="index"
-							>
+							<el-collapse-item :title="item.diff.userName + ':' + item.diff.remark" :name="index">
 								<el-card>
 									<template #header>
-										<span style="font-weight: bold"
-											>修改人:{{ item.diff.userName }}-{{
-												item.diff.remark
-											}}</span
-										>
+										<span style="font-weight: bold">修改人:{{ item.diff.userName }}-{{ item.diff.remark }}</span>
 									</template>
 									<div>
-										<CodeDiff
-											:old-string="item.diff.old"
-											:new-string="item.diff.new"
-											:context="10"
-											output-format="line-by-line"
-										/>
+										<CodeDiff :old-string="item.diff.old" :new-string="item.diff.new" :context="10" output-format="line-by-line" />
 									</div>
 								</el-card>
 							</el-collapse-item>
@@ -72,7 +40,7 @@
 		</div>
 
 		<div slot="footer" class="dialog-footer">
-			<el-button @click="close"> 关 闭</el-button>
+			<el-button @click="close">关 闭</el-button>
 		</div>
 	</el-dialog>
 </template>

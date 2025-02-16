@@ -105,10 +105,7 @@ export default {
 			<el-form-item label="加油卡卡号" prop="oilCardNo">
 				<el-row>
 					<el-col :span="10">
-						<el-input
-							v-model="form.oilCardNo"
-							placeholder="请输入加油卡卡号"
-						/>
+						<el-input v-model="form.oilCardNo" placeholder="请输入加油卡卡号" />
 					</el-col>
 					<el-col :span="4">
 						<SearchOption
@@ -121,33 +118,18 @@ export default {
 							@update:queryName="handleCommitBackQueryOilCard"
 						>
 							<template #table-columns>
-								<el-table-column
-									label="加油卡卡号"
-									align="center"
-									prop="oilCardNo"
-								/>
-								<el-table-column
-									label="当前金额"
-									align="center"
-									prop="moneyAmount"
-								/>
+								<el-table-column label="加油卡卡号" align="center" prop="oilCardNo" />
+								<el-table-column label="当前金额" align="center" prop="moneyAmount" />
 							</template>
 						</SearchOption>
 					</el-col>
 				</el-row>
 			</el-form-item>
 			<el-form-item label="充值金额" prop="rechargeMoney">
-				<el-input
-					v-model="form.rechargeMoney"
-					placeholder="请输入充值金额"
-				/>
+				<el-input v-model="form.rechargeMoney" placeholder="请输入充值金额" />
 			</el-form-item>
 			<el-form-item label="充值人员姓名" prop="rechargeName">
-				<el-input
-					v-model="form.rechargeName"
-					disabled
-					placeholder="请输入充值人员姓名"
-				/>
+				<el-input v-model="form.rechargeName" disabled placeholder="请输入充值人员姓名" />
 			</el-form-item>
 			<el-form-item label="充值附件" prop="attachment">
 				<file-upload ref="uploadFile" @input="handleUpload" />

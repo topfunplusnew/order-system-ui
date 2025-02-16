@@ -61,12 +61,7 @@ export default {
 		},
 		// 按钮type绑定
 		types(item) {
-			return !this.findUserIdIndex(
-				this.loginUser.userId,
-				item.auditauthority
-			)
-				? 'warning'
-				: 'primary';
+			return !this.findUserIdIndex(this.loginUser.userId, item.auditauthority) ? 'warning' : 'primary';
 		},
 		// 按钮禁用
 		isDisable(item) {
@@ -96,10 +91,7 @@ export default {
 			console.log('审核个体信息', item);
 			// 根据tableName来决定给哪个发请求
 			// todo tid? tID?
-			this.checkWithTableName(
-				item.paymentApply.tableName,
-				item.paymentApply.tid
-			);
+			this.checkWithTableName(item.paymentApply.tableName, item.paymentApply.tid);
 
 			// 赋值 先拿到付款申请对象
 			this.currentCheckPaymentApply = item.paymentApply;
@@ -176,43 +168,19 @@ export default {
 	<div>
 		<el-row>
 			<el-col :span="4">
-				<span
-					style="
-						font-weight: bolder;
-						font-size: 16px;
-						line-height: 100px;
-					"
-				>
-					审核进度:
-				</span>
+				<span style="font-weight: bolder; font-size: 16px; line-height: 100px">审核进度:</span>
 			</el-col>
 			<el-col :span="18">
-				<el-steps
-					:active="currentStep"
-					finish-status="success"
-					style="margin-top: 20px"
-				>
+				<el-steps :active="currentStep" finish-status="success" style="margin-top: 20px">
 					<!--      循环-->
-					<el-step
-						v-for="(item, index) in processInfo"
-						:key="index"
-						:status="
-							item.checkState === '通过' ? 'success' : 'error'
-						"
-					>
+					<el-step v-for="(item, index) in processInfo" :key="index" :status="item.checkState === '通过' ? 'success' : 'error'">
 						<template #title>
 							<span style="font-weight: bolder">
 								{{ item.flowname }}
 							</span>
 						</template>
 						<template #description>
-							<span style="font-weight: bolder">
-								审核意见:{{
-									item.auditcomment === null
-										? '无'
-										: item.auditcomment
-								}}
-							</span>
+							<span style="font-weight: bolder">审核意见:{{ item.auditcomment === null ? '无' : item.auditcomment }}</span>
 						</template>
 					</el-step>
 				</el-steps>
@@ -222,64 +190,31 @@ export default {
 		<br />
 		<el-row>
 			<el-col :span="4">
-				<span
-					style="
-						font-weight: bolder;
-						font-size: 16px;
-						line-height: 100px;
-					"
-				>
-					审核明细:
-				</span>
+				<span style="font-weight: bolder; font-size: 16px; line-height: 100px">审核明细:</span>
 			</el-col>
 			<el-col :span="18">
 				<el-timeline>
-					<el-timeline-item
-						v-for="(item, index) in processInfo"
-						:key="index"
-						:timestamp="item.auditdate"
-						placement="top"
-					>
+					<el-timeline-item v-for="(item, index) in processInfo" :key="index" :timestamp="item.auditdate" placement="top">
 						<el-card :class="{ shadow: isDisable(item) }">
 							<el-row>
 								<el-col :span="18">
 									<h2>{{ item.flowname }}</h2>
 									<p>
 										<span class="tx-bolder">审核结果:</span>
-										<el-tag :type="isTag(item)">{{
-											item.checkState
-										}}</el-tag>
+										<el-tag :type="isTag(item)">{{ item.checkState }}</el-tag>
 									</p>
 									<p>
 										<span class="tx-bolder">审核意见:</span>
-										<span v-if="isChecked(item)">{{
-											item.auditcomment
-										}}</span>
+										<span v-if="isChecked(item)">{{ item.auditcomment }}</span>
 										<span v-else>
-											<el-tag type="warning"
-												>待审核</el-tag
-											></span
-										>
+											<el-tag type="warning">待审核</el-tag>
+										</span>
 									</p>
 								</el-col>
 								<el-col :span="4">
 									<!--  判断当前审核过程是否为登录用户的userId-->
-									<el-tooltip
-										class="item"
-										effect="dark"
-										:content="
-											!isDisable
-												? '您不用审核该项'
-												: '审核'
-										"
-										placement="top-start"
-									>
-										<el-button
-											:type="types(item)"
-											:disabled="isDisable(item)"
-											@click="handleCheckState(item)"
-											>审核
-										</el-button>
+									<el-tooltip class="item" effect="dark" :content="!isDisable ? '您不用审核该项' : '审核'" placement="top-start">
+										<el-button :type="types(item)" :disabled="isDisable(item)" @click="handleCheckState(item)">审核</el-button>
 									</el-tooltip>
 								</el-col>
 							</el-row>
@@ -288,34 +223,14 @@ export default {
 				</el-timeline>
 
 				<!-- 审核页面 checkPaymentApplyDialogVisible-->
-				<el-dialog
-					:close-on-click-modal="false"
-					title="流程审核"
-					:visible.sync="checkPaymentApplyDialogVisible"
-					width="65%"
-					append-to-body
-				>
+				<el-dialog :close-on-click-modal="false" title="流程审核" :visible.sync="checkPaymentApplyDialogVisible" width="65%" append-to-body>
 					<!--   需要展示的对应的表信息-->
-					<NeedToShowInfo
-						:need-to-show-info="needToShowInfo"
-						:table-name-to-prop="tableNameToProp"
-					/>
+					<NeedToShowInfo :need-to-show-info="needToShowInfo" :table-name-to-prop="tableNameToProp" />
 					<hr />
-					<CheckApply
-						:payment-apply-info="currentCheckPaymentApply"
-						:check-apply-info="checkApplyInfo"
-						@update:isCheckState="handleUpdateCheckState"
-					/>
+					<CheckApply :payment-apply-info="currentCheckPaymentApply" :check-apply-info="checkApplyInfo" @update:isCheckState="handleUpdateCheckState" />
 					<span slot="footer" class="dialog-footer">
-						<el-button
-							@click="checkPaymentApplyDialogVisible = false"
-							>取 消</el-button
-						>
-						<el-button
-							type="primary"
-							@click="checkPaymentApplyDialogVisible = false"
-							>确 定</el-button
-						>
+						<el-button @click="checkPaymentApplyDialogVisible = false">取 消</el-button>
+						<el-button type="primary" @click="checkPaymentApplyDialogVisible = false">确 定</el-button>
 					</span>
 				</el-dialog>
 			</el-col>

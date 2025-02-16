@@ -31,29 +31,17 @@ export default {
 	watch: {
 		switchOn: {
 			handler(newValue, oldValue) {
-				const diff = this.diffPatcher.diff(
-					this.diffObjectA,
-					this.diffObjectB
-				);
+				const diff = this.diffPatcher.diff(this.diffObjectA, this.diffObjectB);
 				this.$nextTick(() => {
-					this.$refs.compare.innerHTML = format(
-						diff,
-						this.diffObjectB
-					);
+					this.$refs.compare.innerHTML = format(diff, this.diffObjectB);
 				});
 			}
 		},
 		diffObjectA: {
 			handler(newValue, oldValue) {
-				const diff = this.diffPatcher.diff(
-					this.diffObjectA,
-					this.diffObjectB
-				);
+				const diff = this.diffPatcher.diff(this.diffObjectA, this.diffObjectB);
 				this.$nextTick(() => {
-					this.$refs.compare.innerHTML = format(
-						diff,
-						this.diffObjectB
-					);
+					this.$refs.compare.innerHTML = format(diff, this.diffObjectB);
 				});
 			}
 		}
@@ -79,14 +67,7 @@ export default {
 
 <template>
 	<div>
-		<el-dialog
-			:close-on-click-modal="false"
-			v-bind="$attrs"
-			:title="title"
-			width="500px"
-			v-on="$listeners"
-			@open="onOpen"
-		>
+		<el-dialog :close-on-click-modal="false" v-bind="$attrs" :title="title" width="500px" v-on="$listeners" @open="onOpen">
 			<el-card class="box-card">
 				<div ref="compare" style="width: 100%; height: 100%"></div>
 			</el-card>

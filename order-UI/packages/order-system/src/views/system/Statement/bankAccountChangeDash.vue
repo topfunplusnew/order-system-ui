@@ -1,41 +1,21 @@
 <template>
 	<div>
 		<!-- 导入按钮 -->
-		<el-button size="mini" type="success" @click="handleImport"
-			>银行卡资金对账</el-button
-		>
+		<el-button size="mini" type="success" @click="handleImport">银行卡资金对账</el-button>
 
 		<!-- 导入Excel弹窗 -->
-		<el-dialog
-			:visible.sync="importDialogVisible"
-			title="导入Excel表格"
-			@close="handleImportDialogClose"
-		>
+		<el-dialog :visible.sync="importDialogVisible" title="导入Excel表格" @close="handleImportDialogClose">
 			<div class="dialog-content">
-				<p>
-					请上传银行明细相关excel文件，excel文件中每一个sheet为一个银行卡的明细
-				</p>
-				<el-button type="primary" @click="downloadTemplate" size="mini"
-					>下载excel模板</el-button
-				>
+				<p>请上传银行明细相关excel文件，excel文件中每一个sheet为一个银行卡的明细</p>
+				<el-button type="primary" @click="downloadTemplate" size="mini">下载excel模板</el-button>
 				<br />
-				<input
-					type="file"
-					@change="handleFileUpload"
-					accept=".xlsx, .xls"
-				/>
+				<input type="file" @change="handleFileUpload" accept=".xlsx, .xls" />
 				<div v-if="uploadedFiles.length > 0" class="uploaded-files">
 					<h4>已上传的文件：</h4>
 					<ul>
-						<li
-							v-for="(file, index) in uploadedFiles"
-							:key="index"
-							class="uploaded-file-item"
-						>
+						<li v-for="(file, index) in uploadedFiles" :key="index" class="uploaded-file-item">
 							<ExcelIcon class="excel-icon" />
-							<el-link @click="handleFileClick(file)">{{
-								file.name
-							}}</el-link>
+							<el-link @click="handleFileClick(file)">{{ file.name }}</el-link>
 						</li>
 					</ul>
 				</div>
@@ -43,38 +23,20 @@
 		</el-dialog>
 
 		<!-- 选择Sheet弹窗 -->
-		<el-dialog
-			:visible.sync="sheetDialogVisible"
-			title="选择银行卡(sheet表)"
-		>
+		<el-dialog :visible.sync="sheetDialogVisible" title="选择银行卡(sheet表)">
 			<div class="dialog-content">
 				<p>sheet中为银行卡的明细，请选择银行卡明细进行对账</p>
 				<div class="sheet-select-container">
-					<el-select
-						v-model="selectedSheet"
-						placeholder="请选择一个Sheet"
-						size="mini"
-					>
-						<el-option
-							v-for="(sheet, index) in sheets"
-							:key="index"
-							:label="sheet"
-							:value="sheet"
-						></el-option>
+					<el-select v-model="selectedSheet" placeholder="请选择一个Sheet" size="mini">
+						<el-option v-for="(sheet, index) in sheets" :key="index" :label="sheet" :value="sheet"></el-option>
 					</el-select>
-					<el-button type="primary" size="mini" @click="showSheetData"
-						>确认</el-button
-					>
+					<el-button type="primary" size="mini" @click="showSheetData">确认</el-button>
 				</div>
 			</div>
 		</el-dialog>
 
 		<!-- 展示Sheet数据弹窗 -->
-		<el-dialog
-			:visible.sync="dataDialogVisible"
-			title="Sheet数据"
-			fullscreen
-		>
+		<el-dialog :visible.sync="dataDialogVisible" title="Sheet数据" fullscreen>
 			<div class="sheet-data-container">
 				<div class="left-panel">
 					<h3>
@@ -97,10 +59,7 @@
 								</tr>
 							</thead>
 							<tbody>
-								<tr
-									v-for="(item, index) in systemData"
-									:key="index"
-								>
+								<tr v-for="(item, index) in systemData" :key="index">
 									<td>{{ item.selfBankNo }}</td>
 									<td>{{ item.operateDate }}</td>
 									<td>{{ item.changeType }}</td>
@@ -119,23 +78,14 @@
 						<table>
 							<thead>
 								<tr>
-									<th
-										v-for="(header, index) in excelHeaders"
-										:key="index"
-									>
+									<th v-for="(header, index) in excelHeaders" :key="index">
 										{{ header }}
 									</th>
 								</tr>
 							</thead>
 							<tbody>
-								<tr
-									v-for="(row, rowIndex) in excelData"
-									:key="rowIndex"
-								>
-									<td
-										v-for="(cell, cellIndex) in row"
-										:key="cellIndex"
-									>
+								<tr v-for="(row, rowIndex) in excelData" :key="rowIndex">
+									<td v-for="(cell, cellIndex) in row" :key="cellIndex">
 										{{ cell }}
 									</td>
 								</tr>
@@ -228,18 +178,9 @@ export default {
 		},
 		downloadTemplate() {
 			const workbook = XLSX.utils.book_new();
-			const sheetName = `银行卡号${Math.floor(
-				Math.random() * 10000000000000000
-			)}`;
+			const sheetName = `银行卡号${Math.floor(Math.random() * 10000000000000000)}`;
 			const data = [
-				[
-					'操作日期',
-					'变动类型',
-					'金额',
-					'公司类型',
-					'银行卡类型',
-					'用户名'
-				],
+				['操作日期', '变动类型', '金额', '公司类型', '银行卡类型', '用户名'],
 				['2023-01-01', '存款', '1000.00', '公司A', '储蓄卡', '张三'],
 				['2023-01-02', '取款', '500.00', '公司B', '信用卡', '李四']
 				// ...更多随机数据

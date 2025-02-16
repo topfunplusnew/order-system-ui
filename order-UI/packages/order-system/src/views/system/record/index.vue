@@ -1,13 +1,6 @@
 <template>
 	<div class="app-container">
-		<el-form
-			v-show="showSearch"
-			ref="queryForm"
-			:model="queryParams"
-			size="small"
-			:inline="true"
-			label-width="68px"
-		>
+		<el-form v-show="showSearch" ref="queryForm" :model="queryParams" size="small" :inline="true" label-width="68px">
 			<el-form-item label="交易时间">
 				<el-date-picker
 					v-model="dateRange"
@@ -20,95 +13,38 @@
 				/>
 			</el-form-item>
 			<el-form-item label="收入方" prop="sourceCompanyName">
-				<el-input
-					v-model="queryParams.sourceCompanyName"
-					placeholder="请输入收入方公司名称"
-					clearable
-					@keyup.enter.native="handleQuery"
-				/>
+				<el-input v-model="queryParams.sourceCompanyName" placeholder="请输入收入方公司名称" clearable @keyup.enter.native="handleQuery" />
 			</el-form-item>
 			<el-form-item label="支出方" prop="targetCompanyName">
-				<el-input
-					v-model="queryParams.targetCompanyName"
-					placeholder="请输入收入方公司名称"
-					clearable
-					@keyup.enter.native="handleQuery"
-				/>
+				<el-input v-model="queryParams.targetCompanyName" placeholder="请输入收入方公司名称" clearable @keyup.enter.native="handleQuery" />
 			</el-form-item>
 			<el-form-item label="备注" prop="remarks">
-				<el-input
-					v-model="queryParams.remarks"
-					placeholder="请输入备注"
-					clearable
-					@keyup.enter.native="handleQuery"
-				/>
+				<el-input v-model="queryParams.remarks" placeholder="请输入备注" clearable @keyup.enter.native="handleQuery" />
 			</el-form-item>
 			<el-form-item>
-				<el-button
-					type="primary"
-					icon="el-icon-search"
-					size="mini"
-					@click="handleQuery"
-				>
-					搜索
-				</el-button>
-				<el-button
-					icon="el-icon-refresh"
-					size="mini"
-					@click="resetQuery"
-					>重置</el-button
-				>
+				<el-button type="primary" icon="el-icon-search" size="mini" @click="handleQuery">搜索</el-button>
+				<el-button icon="el-icon-refresh" size="mini" @click="resetQuery">重置</el-button>
 			</el-form-item>
 		</el-form>
 
 		<el-row :gutter="10" class="mb8">
 			<el-col :span="1.5">
-				<el-button
-					v-hasPermi="['system:record:add']"
-					type="primary"
-					plain
-					icon="el-icon-plus"
-					size="mini"
-					@click="handleAdd"
-				>
-					新增
-				</el-button>
+				<el-button v-hasPermi="['system:record:add']" type="primary" plain icon="el-icon-plus" size="mini" @click="handleAdd">新增</el-button>
 			</el-col>
 			<el-col :span="1.5">
-				<el-button
-					v-hasPermi="['system:record:remove']"
-					type="danger"
-					plain
-					icon="el-icon-delete"
-					size="mini"
-					:disabled="multiple"
-					@click="handleDelete"
-				>
-					删除
-				</el-button>
+				<el-button v-hasPermi="['system:record:remove']" type="danger" plain icon="el-icon-delete" size="mini" :disabled="multiple" @click="handleDelete">删除</el-button>
 			</el-col>
 
 			<right-toolbar :columns="columns" @queryTable="getList">
 				<template #print>
 					<el-col :span="1.5">
-						<el-button
-							plain
-							icon="el-icon-printer"
-							size="mini"
-							@click="printHTML"
-						/>
+						<el-button plain icon="el-icon-printer" size="mini" @click="printHTML" />
 					</el-col>
 				</template>
 				<!--        导出-->
 				<template #export>
 					<el-col :span="1.5">
-						<el-button
-							v-hasPermi="['system:payment:export']"
-							plain
-							icon="el-icon-folder-opened"
-							size="mini"
-							@click="handleExport"
-						/>
+						<el-button v-hasPermi="['system:payment:export']" plain icon="el-icon-folder-opened" size="mini" @click="handleExport" />
 					</el-col>
 				</template>
 			</right-toolbar>
@@ -131,178 +67,66 @@
 			<el-table-column type="selection" width="55" align="center" />
 
 			<!-- 1. id -->
-			<el-table-column
-				v-if="columns[0].visible"
-				label="id"
-				align="center"
-				prop="id"
-			/>
+			<el-table-column v-if="columns[0].visible" label="id" align="center" prop="id" />
 
 			<!-- 2. 交易时间 -->
-			<el-table-column
-				v-if="columns[1].visible"
-				label="交易时间"
-				align="center"
-				prop="transactionTime"
-				width="180"
-			>
+			<el-table-column v-if="columns[1].visible" label="交易时间" align="center" prop="transactionTime" width="180">
 				<template slot-scope="scope">
-					<span>{{
-						parseTime(
-							scope.row.transactionTime,
-							'{y}-{m}-{d} {h}:{i}:{s}'
-						)
-					}}</span>
+					<span>{{ parseTime(scope.row.transactionTime, '{y}-{m}-{d} {h}:{i}:{s}') }}</span>
 				</template>
 			</el-table-column>
 
 			<!-- 3. 金额 -->
-			<el-table-column
-				v-if="columns[2].visible"
-				label="金额"
-				align="center"
-				prop="amount"
-			/>
+			<el-table-column v-if="columns[2].visible" label="金额" align="center" prop="amount" />
 
 			<!-- 4. 收入方 -->
-			<el-table-column
-				v-if="columns[3].visible"
-				label="收入方"
-				align="center"
-				prop="sourceCompanyName"
-				show-overflow-tooltip
-			/>
+			<el-table-column v-if="columns[3].visible" label="收入方" align="center" prop="sourceCompanyName" show-overflow-tooltip />
 
 			<!-- 5. 收入方公司类型 -->
-			<el-table-column
-				v-if="columns[4].visible"
-				label="收入方公司类型"
-				align="center"
-				prop="sourceCompanyType"
-				show-overflow-tooltip
-			/>
+			<el-table-column v-if="columns[4].visible" label="收入方公司类型" align="center" prop="sourceCompanyType" show-overflow-tooltip />
 
 			<!-- 6. 支出方 -->
-			<el-table-column
-				v-if="columns[5].visible"
-				label="支出方"
-				align="center"
-				prop="targetCompanyName"
-				show-overflow-tooltip
-			/>
+			<el-table-column v-if="columns[5].visible" label="支出方" align="center" prop="targetCompanyName" show-overflow-tooltip />
 
 			<!-- 7. 冲抵类型 -->
-			<el-table-column
-				v-if="columns[6].visible"
-				label="冲抵类型"
-				align="center"
-				show-overflow-tooltip
-			>
+			<el-table-column v-if="columns[6].visible" label="冲抵类型" align="center" show-overflow-tooltip>
 				<template slot-scope="scope">
-					<span>{{
-						scope.row.referenceTableName === 'offsetting'
-							? '冲抵货款'
-							: '内部转账'
-					}}</span>
+					<span>{{ scope.row.referenceTableName === 'offsetting' ? '冲抵货款' : '内部转账' }}</span>
 				</template>
 			</el-table-column>
 
 			<!-- 8. 支出方公司类型 -->
-			<el-table-column
-				v-if="columns[7].visible"
-				label="支出方公司类型"
-				align="center"
-				prop="targetCompanyType"
-				show-overflow-tooltip
-			/>
+			<el-table-column v-if="columns[7].visible" label="支出方公司类型" align="center" prop="targetCompanyType" show-overflow-tooltip />
 
 			<!-- 9. 附件 -->
-			<el-table-column
-				v-if="columns[8].visible"
-				label="附件"
-				align="center"
-				prop="attachment"
-			>
+			<el-table-column v-if="columns[8].visible" label="附件" align="center" prop="attachment">
 				<template #default="scope">
-					<CheckFiles
-						:path="scope.row.attachment"
-						@needToUpdate="
-							value =>
-								handleUpdateFilePath(
-									value,
-									scope.row,
-									'attachment',
-									getRecord,
-									updateRecord
-								)
-						"
-					/>
+					<CheckFiles :path="scope.row.attachment" @needToUpdate="value => handleUpdateFilePath(value, scope.row, 'attachment', getRecord, updateRecord)" />
 				</template>
 			</el-table-column>
 
 			<!-- 10. 备注 -->
-			<el-table-column
-				v-if="columns[9].visible"
-				label="备注"
-				align="center"
-				prop="remarks"
-			/>
+			<el-table-column v-if="columns[9].visible" label="备注" align="center" prop="remarks" />
 
 			<!-- 操作列 -->
-			<el-table-column
-				label="操作"
-				align="center"
-				class-name="small-padding fixed-width"
-			>
+			<el-table-column label="操作" align="center" class-name="small-padding fixed-width">
 				<template slot-scope="scope">
-					<el-button
-						v-hasPermi="['system:record:edit']"
-						size="mini"
-						type="primary"
-						@click="handleUpdate(scope.row)"
-						>修改</el-button
-					>
-					<el-button
-						v-hasPermi="['system:record:remove']"
-						size="mini"
-						type="danger"
-						@click="handleDelete(scope.row)"
-						>删除</el-button
-					>
+					<el-button v-hasPermi="['system:record:edit']" size="mini" type="primary" @click="handleUpdate(scope.row)">修改</el-button>
+					<el-button v-hasPermi="['system:record:remove']" size="mini" type="danger" @click="handleDelete(scope.row)">删除</el-button>
 				</template>
 			</el-table-column>
 		</el-table>
 
-		<pagination
-			v-show="total > 0"
-			:total="total"
-			:page.sync="queryParams.pageNum"
-			:limit.sync="queryParams.pageSize"
-			@pagination="getList"
-		/>
+		<pagination v-show="total > 0" :total="total" :page.sync="queryParams.pageNum" :limit.sync="queryParams.pageSize" @pagination="getList" />
 
 		<!-- 添加或修改现金记账对话框  cashType 用于分别管理冲抵类型 : 冲抵货款 或者 冲抵第三方开票-->
-		<el-dialog
-			:title="title"
-			:visible.sync="open"
-			width="700px"
-			append-to-body
-		>
-			<el-form
-				ref="form"
-				:model="form"
-				:rules="rules"
-				label-width="150px"
-			>
+		<el-dialog :title="title" :visible.sync="open" width="700px" append-to-body>
+			<el-form ref="form" :model="form" :rules="rules" label-width="150px">
 				<!--        目前支持两种类型 一种是冲抵货款 一种是冲抵第三方开票-->
 				<el-form-item label="冲抵类型">
 					<el-row>
-						<el-radio v-model="cashType" label="offsetting"
-							>冲抵货款</el-radio
-						>
-						<el-radio v-model="cashType" label="transfer"
-							>内部转账</el-radio
-						>
+						<el-radio v-model="cashType" label="offsetting">冲抵货款</el-radio>
+						<el-radio v-model="cashType" label="transfer">内部转账</el-radio>
 					</el-row>
 				</el-form-item>
 				<el-divider>
@@ -319,17 +143,13 @@
 					<el-form-item :label="source">
 						<el-row>
 							<el-col :span="20">
-								<el-input
-									disabled
-									v-model="sourceName"
-									placeholder="请选择"
-								/>
+								<el-input disabled v-model="sourceName" placeholder="请选择" />
 							</el-col>
 							<!--            只有内部转账 才会选择-->
 							<el-col :span="3">
 								<SearchOption
 									:get-data="listBankAccount"
-									:limit-info="{ acountsType: '己方公司' }"
+									:limit-info="{ acountsType: '我方公司' }"
 									query-info="acountsName"
 									:query-name="querySupplier"
 									query-label="户名"
@@ -337,47 +157,13 @@
 									@update:queryName="updateQuerySupplier"
 								>
 									<template #table-columns>
-										<el-table-column
-											label="账户类型"
-											align="center"
-											prop="acountsType"
-											width="200"
-										/>
-										<el-table-column
-											label="显示名称"
-											align="center"
-											prop="displayName"
-										/>
-										<el-table-column
-											label="开户名称"
-											align="center"
-											prop="acountsName"
-											width="200"
-										/>
-										<el-table-column
-											label="银行账号"
-											align="center"
-											prop="bankNo"
-											width="200"
-										/>
-										<el-table-column
-											label="开户行"
-											align="center"
-											prop="bankName"
-											width="200"
-										/>
-										<el-table-column
-											label="公司名称"
-											align="center"
-											prop="companyName"
-											width="200"
-										/>
-										<el-table-column
-											label="余额"
-											align="center"
-											prop="amount"
-											width="200"
-										/>
+										<el-table-column label="账户类型" align="center" prop="acountsType" width="200" />
+										<el-table-column label="显示名称" align="center" prop="displayName" />
+										<el-table-column label="开户名称" align="center" prop="acountsName" width="200" />
+										<el-table-column label="银行账号" align="center" prop="bankNo" width="200" />
+										<el-table-column label="开户行" align="center" prop="bankName" width="200" />
+										<el-table-column label="公司名称" align="center" prop="companyName" width="200" />
+										<el-table-column label="余额" align="center" prop="amount" width="200" />
 									</template>
 								</SearchOption>
 							</el-col>
@@ -387,38 +173,18 @@
 				<!--        如果是冲抵货款 还需要选择一个公司 -->
 				<el-row v-if="cashType === CASH_TYPE.OFF_SETTING">
 					<el-form-item label="收入方类型">
-						<el-radio v-model="form.sourceCompanyType" label="客户"
-							>客户</el-radio
-						>
-						<el-radio
-							v-model="form.sourceCompanyType"
-							label="供应商"
-							>供应商</el-radio
-						>
-						<el-radio v-model="form.sourceCompanyType" label="司机"
-							>司机</el-radio
-						>
-						<el-radio
-							v-model="form.sourceCompanyType"
-							label="己方公司"
-							>己方公司</el-radio
-						>
+						<el-radio v-model="form.sourceCompanyType" label="客户">客户</el-radio>
+						<el-radio v-model="form.sourceCompanyType" label="供应商">供应商</el-radio>
+						<el-radio v-model="form.sourceCompanyType" label="司机">司机</el-radio>
+						<el-radio v-model="form.sourceCompanyType" label="我方公司">我方公司</el-radio>
 					</el-form-item>
 					<el-form-item label="收入方">
 						<el-row>
 							<el-col :span="14">
-								<el-input
-									disabled
-									v-model="sourceName"
-									type="text"
-									placeholder="请选择"
-								/>
+								<el-input disabled v-model="sourceName" type="text" placeholder="请选择" />
 							</el-col>
 							<!--              如果是司机-->
-							<el-col
-								v-if="form.sourceCompanyType === '司机'"
-								:span="4"
-							>
+							<el-col v-if="form.sourceCompanyType === '司机'" :span="4">
 								<SearchOption
 									:limit-info="{}"
 									:get-data="listCars"
@@ -429,29 +195,14 @@
 									@commitBack="handleCommitBackDriver"
 								>
 									<template #table-columns>
-										<el-table-column
-											label="司机姓名"
-											align="center"
-											prop="driver"
-										/>
-										<el-table-column
-											label="司机电话"
-											align="center"
-											prop="tel"
-										/>
-										<el-table-column
-											label="运输类型"
-											align="center"
-											prop="carType"
-										/>
+										<el-table-column label="司机姓名" align="center" prop="driver" />
+										<el-table-column label="司机电话" align="center" prop="tel" />
+										<el-table-column label="运输类型" align="center" prop="carType" />
 									</template>
 								</SearchOption>
 							</el-col>
-							<!--              如果是己方公司 -->
-							<el-col
-								v-if="form.sourceCompanyType === '己方公司'"
-								:span="4"
-							>
+							<!--              如果是我方公司 -->
+							<el-col v-if="form.sourceCompanyType === '我方公司'" :span="4">
 								<SearchOption
 									:limit-info="{
 										acountsType: form.sourceCompanyType
@@ -464,47 +215,17 @@
 									@commitBack="handleCommitBackSelfAccount"
 								>
 									<template #table-columns>
-										<el-table-column
-											label="账户类型"
-											align="center"
-											prop="acountsType"
-										/>
-										<el-table-column
-											label="显示名称"
-											align="center"
-											prop="displayName"
-										/>
-										<el-table-column
-											label="开户名称(户名)"
-											align="center"
-											prop="acountsName"
-										/>
-										<el-table-column
-											label="账号(银行账号)"
-											align="center"
-											prop="bankNo"
-										/>
-										<el-table-column
-											label="开户行"
-											align="center"
-											prop="bankName"
-										/>
-										<el-table-column
-											label="公司名称"
-											align="center"
-											prop="companyName"
-										/>
+										<el-table-column label="账户类型" align="center" prop="acountsType" />
+										<el-table-column label="显示名称" align="center" prop="displayName" />
+										<el-table-column label="开户名称(户名)" align="center" prop="acountsName" />
+										<el-table-column label="账号(银行账号)" align="center" prop="bankNo" />
+										<el-table-column label="开户行" align="center" prop="bankName" />
+										<el-table-column label="公司名称" align="center" prop="companyName" />
 									</template>
 								</SearchOption>
 							</el-col>
 							<!--              如果是其他-->
-							<el-col
-								v-if="
-									form.sourceCompanyType !== '司机' &&
-									form.sourceCompanyType !== '己方公司'
-								"
-								:span="4"
-							>
+							<el-col v-if="form.sourceCompanyType !== '司机' && form.sourceCompanyType !== '我方公司'" :span="4">
 								<SearchOption
 									:limit-info="{
 										companyType: form.sourceCompanyType
@@ -513,42 +234,16 @@
 									query-info="companyName"
 									query-label="公司名称"
 									:query-name="queryCompanyName"
-									@update:queryName="
-										handleUpdateCompanyNameGet
-									"
+									@update:queryName="handleUpdateCompanyNameGet"
 									@commitBack="handleCommitBackCompanyGet"
 								>
 									<template #table-columns>
-										<el-table-column
-											label="公司名称"
-											align="center"
-											prop="companyName"
-										/>
-										<el-table-column
-											label="公司类型"
-											align="center"
-											prop="companyType"
-										/>
-										<el-table-column
-											label="老板姓名"
-											align="center"
-											prop="leader"
-										/>
-										<el-table-column
-											label="老板电话"
-											align="center"
-											prop="leaderTel"
-										/>
-										<el-table-column
-											label="区域"
-											align="center"
-											prop="region"
-										/>
-										<el-table-column
-											label="销售经理"
-											align="center"
-											prop="salesManager"
-										/>
+										<el-table-column label="公司名称" align="center" prop="companyName" />
+										<el-table-column label="公司类型" align="center" prop="companyType" />
+										<el-table-column label="老板姓名" align="center" prop="leader" />
+										<el-table-column label="老板电话" align="center" prop="leaderTel" />
+										<el-table-column label="区域" align="center" prop="region" />
+										<el-table-column label="销售经理" align="center" prop="salesManager" />
 									</template>
 								</SearchOption>
 							</el-col>
@@ -569,16 +264,12 @@
 					<el-form-item :label="target">
 						<el-row>
 							<el-col :span="20">
-								<el-input
-									disabled
-									v-model="targetName"
-									placeholder="请选择"
-								/>
+								<el-input disabled v-model="targetName" placeholder="请选择" />
 							</el-col>
 							<el-col :span="3">
 								<SearchOption
 									:get-data="listBankAccount"
-									:limit-info="{ acountsType: '己方公司' }"
+									:limit-info="{ acountsType: '我方公司' }"
 									query-info="acountsName"
 									:query-name="queryCustomer"
 									query-label="户名"
@@ -586,47 +277,13 @@
 									@update:queryName="updateQueryCustomer"
 								>
 									<template #table-columns>
-										<el-table-column
-											label="账户类型"
-											align="center"
-											prop="acountsType"
-											width="200"
-										/>
-										<el-table-column
-											label="显示名称"
-											align="center"
-											prop="displayName"
-										/>
-										<el-table-column
-											label="开户名称"
-											align="center"
-											prop="acountsName"
-											width="200"
-										/>
-										<el-table-column
-											label="银行账号"
-											align="center"
-											prop="bankNo"
-											width="200"
-										/>
-										<el-table-column
-											label="开户行"
-											align="center"
-											prop="bankName"
-											width="200"
-										/>
-										<el-table-column
-											label="公司名称"
-											align="center"
-											prop="companyName"
-											width="200"
-										/>
-										<el-table-column
-											label="余额"
-											align="center"
-											prop="amount"
-											width="200"
-										/>
+										<el-table-column label="账户类型" align="center" prop="acountsType" width="200" />
+										<el-table-column label="显示名称" align="center" prop="displayName" />
+										<el-table-column label="开户名称" align="center" prop="acountsName" width="200" />
+										<el-table-column label="银行账号" align="center" prop="bankNo" width="200" />
+										<el-table-column label="开户行" align="center" prop="bankName" width="200" />
+										<el-table-column label="公司名称" align="center" prop="companyName" width="200" />
+										<el-table-column label="余额" align="center" prop="amount" width="200" />
 									</template>
 								</SearchOption>
 							</el-col>
@@ -636,38 +293,18 @@
 				<!--        如果是冲抵货款 才要选择对方的公司类型 而如果是其他类型 不需要选择 直接填充-->
 				<el-row v-if="cashType === CASH_TYPE.OFF_SETTING">
 					<el-form-item label="支出方类型">
-						<el-radio v-model="form.targetCompanyType" label="客户"
-							>客户</el-radio
-						>
-						<el-radio
-							v-model="form.targetCompanyType"
-							label="供应商"
-							>供应商</el-radio
-						>
-						<el-radio v-model="form.targetCompanyType" label="司机"
-							>司机</el-radio
-						>
-						<el-radio
-							v-model="form.targetCompanyType"
-							label="己方公司"
-							>己方公司</el-radio
-						>
+						<el-radio v-model="form.targetCompanyType" label="客户">客户</el-radio>
+						<el-radio v-model="form.targetCompanyType" label="供应商">供应商</el-radio>
+						<el-radio v-model="form.targetCompanyType" label="司机">司机</el-radio>
+						<el-radio v-model="form.targetCompanyType" label="我方公司">我方公司</el-radio>
 					</el-form-item>
 					<el-form-item label="支出方">
 						<el-row>
 							<el-col :span="14">
-								<el-input
-									disabled
-									v-model="targetName"
-									type="text"
-									placeholder="请选择"
-								/>
+								<el-input disabled v-model="targetName" type="text" placeholder="请选择" />
 							</el-col>
 							<!--              如果是司机-->
-							<el-col
-								v-if="form.targetCompanyType === '司机'"
-								:span="4"
-							>
+							<el-col v-if="form.targetCompanyType === '司机'" :span="4">
 								<SearchOption
 									:limit-info="{}"
 									:get-data="listCars"
@@ -678,36 +315,15 @@
 									@commitBack="handleCommitBackDriver"
 								>
 									<template #table-columns>
-										<el-table-column
-											label="司机姓名"
-											align="center"
-											prop="driver"
-										/>
-										<el-table-column
-											label="司机电话"
-											align="center"
-											prop="tel"
-										/>
-										<el-table-column
-											label="账号类型"
-											align="center"
-											prop="acountsType"
-										/>
-										<el-table-column
-											label="运输类型"
-											align="center"
-											prop="carType"
-										/>
+										<el-table-column label="司机姓名" align="center" prop="driver" />
+										<el-table-column label="司机电话" align="center" prop="tel" />
+										<el-table-column label="账号类型" align="center" prop="acountsType" />
+										<el-table-column label="运输类型" align="center" prop="carType" />
 									</template>
 								</SearchOption>
 							</el-col>
-							<!--              如果是己方公司-->
-							<el-col
-								v-else-if="
-									form.targetCompanyType === '己方公司'
-								"
-								:span="4"
-							>
+							<!--              如果是我方公司-->
+							<el-col v-else-if="form.targetCompanyType === '我方公司'" :span="4">
 								<SearchOption
 									:limit-info="{
 										acountsType: form.targetCompanyType
@@ -720,36 +336,12 @@
 									@commitBack="handleCommitBackSelfAccount"
 								>
 									<template #table-columns>
-										<el-table-column
-											label="账户类型"
-											align="center"
-											prop="acountsType"
-										/>
-										<el-table-column
-											label="显示名称"
-											align="center"
-											prop="displayName"
-										/>
-										<el-table-column
-											label="开户名称(户名)"
-											align="center"
-											prop="acountsName"
-										/>
-										<el-table-column
-											label="账号(银行账号)"
-											align="center"
-											prop="bankNo"
-										/>
-										<el-table-column
-											label="开户行"
-											align="center"
-											prop="bankName"
-										/>
-										<el-table-column
-											label="公司名称"
-											align="center"
-											prop="companyName"
-										/>
+										<el-table-column label="账户类型" align="center" prop="acountsType" />
+										<el-table-column label="显示名称" align="center" prop="displayName" />
+										<el-table-column label="开户名称(户名)" align="center" prop="acountsName" />
+										<el-table-column label="账号(银行账号)" align="center" prop="bankNo" />
+										<el-table-column label="开户行" align="center" prop="bankName" />
+										<el-table-column label="公司名称" align="center" prop="companyName" />
 									</template>
 								</SearchOption>
 							</el-col>
@@ -763,42 +355,16 @@
 									query-info="companyName"
 									query-label="公司名称"
 									:query-name="queryCompanyName"
-									@update:queryName="
-										handleUpdateCompanyNamePay
-									"
+									@update:queryName="handleUpdateCompanyNamePay"
 									@commitBack="handleCommitBackCompanyPay"
 								>
 									<template #table-columns>
-										<el-table-column
-											label="公司名称"
-											align="center"
-											prop="companyName"
-										/>
-										<el-table-column
-											label="公司类型"
-											align="center"
-											prop="companyType"
-										/>
-										<el-table-column
-											label="老板姓名"
-											align="center"
-											prop="leader"
-										/>
-										<el-table-column
-											label="老板电话"
-											align="center"
-											prop="leaderTel"
-										/>
-										<el-table-column
-											label="区域"
-											align="center"
-											prop="region"
-										/>
-										<el-table-column
-											label="销售经理"
-											align="center"
-											prop="salesManager"
-										/>
+										<el-table-column label="公司名称" align="center" prop="companyName" />
+										<el-table-column label="公司类型" align="center" prop="companyType" />
+										<el-table-column label="老板姓名" align="center" prop="leader" />
+										<el-table-column label="老板电话" align="center" prop="leaderTel" />
+										<el-table-column label="区域" align="center" prop="region" />
+										<el-table-column label="销售经理" align="center" prop="salesManager" />
 									</template>
 								</SearchOption>
 							</el-col>
@@ -811,25 +377,10 @@
 					基本信息
 				</el-divider>
 				<!--        金额只有在不是冲抵货款的其他类型中才会展示 冲抵货款在前面就已经输入了金额-->
-				<el-form-item
-					:label="
-						cashType === CASH_TYPE.TRANSFER
-							? '转账金额'
-							: '冲抵金额'
-					"
-					prop="amount"
-				>
+				<el-form-item :label="cashType === CASH_TYPE.TRANSFER ? '转账金额' : '冲抵金额'" prop="amount">
 					<el-row>
 						<el-col :span="14">
-							<el-input
-								v-model="form.amount"
-								:placeholder="
-									cashType === CASH_TYPE.TRANSFER
-										? '转账金额'
-										: '冲抵金额'
-								"
-								type="number"
-							/>
+							<el-input v-model="form.amount" :placeholder="cashType === CASH_TYPE.TRANSFER ? '转账金额' : '冲抵金额'" type="number" />
 						</el-col>
 					</el-row>
 				</el-form-item>
@@ -837,13 +388,7 @@
 					<file-upload ref="uploadFile" @input="handleCommitUpload" />
 				</el-form-item>
 				<el-form-item label="交易时间" prop="transactionTime">
-					<el-date-picker
-						v-model="form.transactionTime"
-						clearable
-						type="datetime"
-						value-format="yyyy-MM-dd HH:mm:ss"
-						placeholder="请选择交易时间"
-					/>
+					<el-date-picker v-model="form.transactionTime" clearable type="datetime" value-format="yyyy-MM-dd HH:mm:ss" placeholder="请选择交易时间" />
 				</el-form-item>
 				<el-form-item label="备注" prop="remarks">
 					<el-input v-model="form.remarks" placeholder="请输入备注" />
@@ -856,19 +401,9 @@
 		</el-dialog>
 
 		<!--    查看附件列表的组件-->
-		<el-dialog
-			:close-on-click-modal="false"
-			:show-close="false"
-			title="查看附件"
-			:visible.sync="checkAttachmentVisible"
-			width="48%"
-		>
+		<el-dialog :close-on-click-modal="false" :show-close="false" title="查看附件" :visible.sync="checkAttachmentVisible" width="48%">
 			<el-row v-for="(item, index) in checkFileList" :key="index">
-				<el-button
-					type="text"
-					icon="el-icon-document"
-					@click="checkFileItem(item)"
-				>
+				<el-button type="text" icon="el-icon-document" @click="checkFileItem(item)">
 					{{ item }}
 				</el-button>
 			</el-row>
@@ -1016,9 +551,7 @@ export default {
 						trigger: 'blur'
 					}
 				],
-				amount: [
-					{ required: true, message: '金额不能为空', trigger: 'blur' }
-				],
+				amount: [{ required: true, message: '金额不能为空', trigger: 'blur' }],
 				referenceTableId: [
 					{
 						required: true,
@@ -1102,10 +635,8 @@ export default {
 			this.loading = true;
 			this.queryParams.params = {};
 			if (this.dateRange != null && this.dateRange != '') {
-				this.queryParams.params['beginTransactionTime'] =
-					this.dateRange[0];
-				this.queryParams.params['endTransactionTime'] =
-					this.dateRange[1];
+				this.queryParams.params['beginTransactionTime'] = this.dateRange[0];
+				this.queryParams.params['endTransactionTime'] = this.dateRange[1];
 			}
 			listRecord(this.queryParams).then(response => {
 				this.recordList = response.rows;
@@ -1209,10 +740,8 @@ export default {
 						this.form.sourceCompanyType = data.sourceCompanyType;
 					} else {
 						// 如果是内部转账
-						this.form.sourceCompanyType =
-							PUBLIC_DICT_TYPE.SELF_COMPANY;
-						this.form.targetCompanyType =
-							PUBLIC_DICT_TYPE.SELF_COMPANY;
+						this.form.sourceCompanyType = PUBLIC_DICT_TYPE.SELF_COMPANY;
+						this.form.targetCompanyType = PUBLIC_DICT_TYPE.SELF_COMPANY;
 					}
 				});
 

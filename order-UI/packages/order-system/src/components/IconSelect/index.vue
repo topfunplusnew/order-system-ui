@@ -1,32 +1,14 @@
 <!-- @author zhengjie -->
 <template>
 	<div class="icon-body">
-		<el-input
-			v-model="name"
-			class="icon-search"
-			clearable
-			placeholder="请输入图标名称"
-			@clear="filterIcons"
-			@input="filterIcons"
-		>
+		<el-input v-model="name" class="icon-search" clearable placeholder="请输入图标名称" @clear="filterIcons" @input="filterIcons">
 			<i slot="suffix" class="el-icon-search el-input__icon" />
 		</el-input>
 		<div class="icon-list">
 			<div class="list-container">
-				<div
-					v-for="(item, index) in iconList"
-					:key="index"
-					class="icon-item-wrapper"
-					@click="selectedIcon(item)"
-				>
-					<div
-						:class="['icon-item', { active: activeIcon === item }]"
-					>
-						<svg-icon
-							:icon-class="item"
-							class-name="icon"
-							style="height: 25px; width: 16px"
-						/>
+				<div v-for="(item, index) in iconList" :key="index" class="icon-item-wrapper" @click="selectedIcon(item)">
+					<div :class="['icon-item', { active: activeIcon === item }]">
+						<svg-icon :icon-class="item" class-name="icon" style="height: 25px; width: 16px" />
 						<span>{{ item }}</span>
 					</div>
 				</div>
@@ -54,9 +36,7 @@ export default {
 		filterIcons() {
 			this.iconList = icons;
 			if (this.name) {
-				this.iconList = this.iconList.filter(item =>
-					item.includes(this.name)
-				);
+				this.iconList = this.iconList.filter(item => item.includes(this.name));
 			}
 		},
 		selectedIcon(name) {

@@ -1,0 +1,215 @@
+<template>
+	<div class="SUPPLIER-total">
+		<!-- 搜索区域 -->
+		<div class="search-area">
+			<el-form :inline="true" :model="searchForm" class="demo-form-inline" size="small">
+				<el-form-item label="时间：">
+					<el-date-picker clearable v-model="searchForm.endTime" type="date" placeholder="请选择时间" value-format="yyyy-MM-dd" size="small"></el-date-picker>
+				</el-form-item>
+				<el-form-item label="客户">
+					<el-row>
+						<el-col :span="4">
+							<SearchOption
+								:limit-info="{ companyType: PUBLIC_DICT_TYPE.SUPPLIER }"
+								:get-data="listCompany"
+								query-info="companyName"
+								query-label="公司名称"
+								:query-name="companyName"
+								@update:queryName="handleUpdateCompanyName"
+								@commitBack="handleCommitBackCompany"
+							>
+								<template #table-columns>
+									<el-table-column :label="PUBLIC_DICT_TYPE.SUPPLIER" align="center" prop="companyName" />
+									<el-table-column label="老板姓名" align="center" prop="leader" />
+									<el-table-column label="老板电话" align="center" prop="leaderTel" />
+									<el-table-column label="区域" align="center" prop="region" />
+									<el-table-column label="销售经理" align="center" prop="salesManager" />
+								</template>
+							</SearchOption>
+						</el-col>
+						<el-col :span="20">
+							<el-input clearable v-model="searchForm.supplier" placeholder="请输入客户" size="small">
+								<i slot="prefix" class="el-input__icon el-icon-search"></i>
+							</el-input>
+						</el-col>
+					</el-row>
+				</el-form-item>
+				<el-form-item label="余额：">
+					<el-select clearable v-model="searchForm.balanceCompare" placeholder="请选择" style="width: 80px" size="small">
+						<el-option label="≥" value="ge"></el-option>
+						<el-option label="≤" value="le"></el-option>
+						<el-option label="=" value="eq"></el-option>
+					</el-select>
+					<el-input clearable v-model="searchForm.balanceValue" placeholder="请输入余额" size="small" style="width: 120px; margin-left: 5px"></el-input>
+				</el-form-item>
+				<el-form-item>
+					<el-button type="primary" @click="getList" size="small">查询</el-button>
+					<el-button type="success" @click="handleExport" size="small">导出Excel</el-button>
+				</el-form-item>
+			</el-form>
+		</div>
+
+		<!-- 表格区域 -->
+		<el-table :data="tableData" border style="width: 100%" v-loading="loading" size="small">
+			<el-table-column prop="time" label="日期"></el-table-column>
+			<el-table-column prop="companyName" label="客户"></el-table-column>
+			<el-table-column prop="moneyAmount" label="余额">
+				<template slot-scope="scope">
+					<span :class="{ negative: scope.row.moneyAmount < 0 }">{{ scope.row.moneyAmount }}</span>
+				</template>
+			</el-table-column>
+			<el-table-column prop="lastOrderTime" label="最后一次交易日期"></el-table-column>
+			<el-table-column label="查看客户信息" align="center">
+				<template slot-scope="scope">
+					<el-link :underline="false" type="primary" @click="handleViewSUPPLIERInfo(scope.row.companyId)">查看</el-link>
+				</template>
+			</el-table-column>
+		</el-table>
+
+		<!-- 分页 -->
+		<pagination v-show="total > 0" :total="total" :current-page.sync="searchForm.pageNum" :page-size.sync="searchForm.pageSize" @pagination="getList" />
+		<div v-if="currentComponent">
+			<DialogWrapper
+				:current-component="currentComponent"
+				:dialog-visible="dialogVisible"
+				:dialog-props="dialogProps"
+				:dialog-title="dialogTitle"
+				:dialog-width="dialogWidth"
+				@update:dialogVisible="args => (dialogVisible = false)"
+				@close="handleCloseDialog"
+				@confirm="handleDialogConfirm"
+			/>
+		</div>
+	</div>
+</template>
+
+<script>
+import { QueryCustomer, QuerySUPPLIER } from '@/api/system/goback';
+import { parseTime } from '@/utils/ruoyi';
+import SearchOption from '@/components/SearchOption.vue';
+import { PUBLIC_DICT_TYPE } from '@/utils/order';
+import { getCompany, listCompany } from '@/api/system/company';
+import { common_dialog } from '@/views/dashboard/mixins/common/common_dialog';
+import DialogWrapper from '@/views/dashboard/components/common/DialogWrapper.vue';
+import COMPANY from '@/components/NeedToShow/COMPANY.vue';
+
+export default {
+	name: 'SUPPLIERTotal',
+	mixins: [common_dialog],
+	computed: {
+		PUBLIC_DICT_TYPE() {
+			return PUBLIC_DICT_TYPE;
+		}
+	},
+	components: { DialogWrapper, SearchOption },
+	data() {
+		return {
+			loading: false,
+			currentPage: 1,
+			pageSize: 10,
+			total: 0,
+			searchForm: {
+				endTime: parseTime(new Date(), '{y}-{m}-{d}'),
+				supplier: null,
+				companyId: '',
+				balanceCompare: '',
+				balanceValue: ''
+			},
+			tableData: [],
+			companyName: null
+		};
+	},
+	created() {
+		this.getList();
+	},
+	methods: {
+		listCompany,
+		// 查询方法
+		getList() {
+			this.loading = true;
+			const querySupplier = new QueryCustomer();
+			querySupplier.getCompanySummaryAndLastOrderTime(this.searchForm).then(res => {
+				if (!res.rows) {
+					this.$message.warning('当前搜索条件下，无相关信息');
+				}
+				this.tableData = res.rows;
+				this.total = res.total;
+				this.loading = false;
+			});
+		},
+		handleCommitBackCompany(value) {
+			this.searchForm.companyId = value.id;
+			this.searchForm.SUPPLIER = value.companyName;
+		},
+		handleUpdateCompanyName(value) {
+			this.companyName = value;
+		},
+		// 查看客户信息
+		handleViewSUPPLIERInfo(id) {
+			getCompany(id, PUBLIC_DICT_TYPE.SUPPLIER).then(res => {
+				if (!res.data && !res.rows) {
+					this.$message.warning('当前搜索条件下，无相关信息');
+					return;
+				}
+				this.openDialog(
+					COMPANY,
+					'供应商信息',
+					'800px',
+					{
+						needToShowInfo: res.data || res.rows[0]
+					},
+					false
+				);
+			});
+		},
+		// 导出Excel
+		handleExport() {
+			// TODO: 实现导出功能
+			this.$message.success('导出成功');
+		},
+
+		// 分页方法
+		handleSizeChange(val) {
+			this.pageSize = val;
+			this.getList();
+		},
+
+		handleCurrentChange(val) {
+			this.currentPage = val;
+			this.getList();
+		}
+	}
+};
+</script>
+
+<style scoped lang="scss">
+.SUPPLIER-total {
+	padding: 15px;
+
+	.search-area {
+		margin-bottom: 15px;
+		padding: 15px;
+		background-color: #fff;
+		border-radius: 4px;
+	}
+
+	.pagination-container {
+		margin-top: 15px;
+		display: flex;
+		justify-content: flex-end;
+	}
+
+	.negative {
+		color: red;
+	}
+
+	:deep(.el-form-item) {
+		margin-bottom: 10px;
+		margin-right: 10px;
+	}
+
+	:deep(.el-form-item__label) {
+		padding-right: 8px;
+	}
+}
+</style>

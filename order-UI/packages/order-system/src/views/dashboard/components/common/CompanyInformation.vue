@@ -66,10 +66,7 @@ export default {
 	<div>
 		<div class="left-box-item">
 			<el-card class="box-card" v-loading="companyInfo.supplierLoading">
-				<el-descriptions
-					:title="companyInfo.companyType + '信息：'"
-					size="mini"
-				>
+				<el-descriptions :title="companyInfo.companyType + '信息：'" size="mini">
 					<el-descriptions-item label="公司名称">
 						<EllipsisText :title="companyInfo.companyName" />
 					</el-descriptions-item>

@@ -16,7 +16,7 @@
 			class="upload-file-uploader"
 		>
 			<!-- 上传按钮 -->
-			<el-button size="mini" type="primary"> 上传文件</el-button>
+			<el-button size="mini" type="primary">上传文件</el-button>
 			<!-- 上传提示 -->
 			<!--      <div class="el-upload__tip" slot="tip" v-if="showTip">-->
 			<!--        请上传-->
@@ -27,35 +27,16 @@
 		</el-upload>
 
 		<!-- 文件列表 -->
-		<transition-group
-			class="upload-file-list el-upload-list el-upload-list--text"
-			name="el-fade-in-linear"
-			tag="ul"
-			v-if="isShowName"
-		>
-			<li
-				v-for="(file, index) in fileList"
-				:key="file.url"
-				class="el-upload-list__item ele-upload-list__item-content"
-			>
-				<el-link
-					:href="`${baseUrl}${file.url}`"
-					:underline="false"
-					target="_blank"
-				>
+		<transition-group class="upload-file-list el-upload-list el-upload-list--text" name="el-fade-in-linear" tag="ul" v-if="isShowName">
+			<li v-for="(file, index) in fileList" :key="file.url" class="el-upload-list__item ele-upload-list__item-content">
+				<el-link :href="`${baseUrl}${file.url}`" :underline="false" target="_blank">
 					<span class="el-icon-document">
 						{{ getFileName(file.name) }}
 					</span>
 				</el-link>
 				<div class="ele-upload-list__item-content-action">
 					<!--          删除上传过的文件-->
-					<el-link
-						:underline="false"
-						type="danger"
-						@click="handleDelete(index)"
-					>
-						删除
-					</el-link>
+					<el-link :underline="false" type="danger" @click="handleDelete(index)">删除</el-link>
 				</div>
 			</li>
 		</transition-group>
@@ -83,16 +64,7 @@ export default {
 		// 文件类型, 例如['png', 'jpg', 'jpeg']
 		fileType: {
 			type: Array,
-			default: () => [
-				'doc',
-				'xls',
-				'ppt',
-				'txt',
-				'pdf',
-				'png',
-				'jpg',
-				'jpeg'
-			]
+			default: () => ['doc', 'xls', 'ppt', 'txt', 'pdf', 'png', 'jpg', 'jpeg']
 		},
 		// 是否显示提示
 		isShowTip: {
@@ -131,9 +103,7 @@ export default {
 				if (val) {
 					let temp = 1;
 					// 首先将值转为数组
-					const list = Array.isArray(val)
-						? val
-						: this.value.split(',');
+					const list = Array.isArray(val) ? val : this.value.split(',');
 					// 然后将数组转为对象数组
 					this.fileList = list.map(item => {
 						if (typeof item === 'string') {
@@ -160,11 +130,7 @@ export default {
 				const fileExt = fileName[fileName.length - 1];
 				const isTypeOk = this.fileType.indexOf(fileExt) >= 0;
 				if (!isTypeOk) {
-					this.$modal.msgError(
-						`文件格式不正确, 请上传${this.fileType.join(
-							'/'
-						)}格式文件!`
-					);
+					this.$modal.msgError(`文件格式不正确, 请上传${this.fileType.join('/')}格式文件!`);
 					return false;
 				}
 			}
@@ -172,9 +138,7 @@ export default {
 			if (this.fileSize) {
 				const isLt = file.size / 1024 / 1024 < this.fileSize;
 				if (!isLt) {
-					this.$modal.msgError(
-						`上传文件大小不能超过 ${this.fileSize} MB!`
-					);
+					this.$modal.msgError(`上传文件大小不能超过 ${this.fileSize} MB!`);
 					return false;
 				}
 			}

@@ -76,12 +76,7 @@ export var mixin_credentials_generation_orderlist = {
 					comments: '无',
 					amount: Number(item.invoiceAmount),
 					// 基本信息
-					voucherNo:
-						`${strings}_` +
-						this.selectedNeedOrderList
-							.map(item => item.id)
-							.join('_') +
-						'_',
+					voucherNo: `${strings}_` + this.selectedNeedOrderList.map(item => item.id).join('_') + '_',
 					pid: item.isOrderTax,
 					vDate: parseTime(new Date()),
 					makeUser: this.trueName
@@ -94,12 +89,7 @@ export var mixin_credentials_generation_orderlist = {
 					borrower: Number(item.invoiceAmount),
 					comments: '无',
 					amount: Number(item.invoiceAmount),
-					voucherNo:
-						`${strings}_` +
-						this.selectedNeedOrderList
-							.map(item => item.id)
-							.join('_') +
-						'_',
+					voucherNo: `${strings}_` + this.selectedNeedOrderList.map(item => item.id).join('_') + '_',
 					pid: item.isOrderTax,
 					vDate: parseTime(new Date()),
 					makeUser: this.trueName
@@ -116,12 +106,7 @@ export var mixin_credentials_generation_orderlist = {
 					borrower: '',
 					comments: '无',
 					amount: Number(item.invoiceAmount),
-					voucherNo:
-						`${strings}_` +
-						this.selectedNeedOrderList
-							.map(item => item.id)
-							.join('_') +
-						'_',
+					voucherNo: `${strings}_` + this.selectedNeedOrderList.map(item => item.id).join('_') + '_',
 					pid: item.isOrderTax,
 					vDate: parseTime(new Date()),
 					makeUser: this.trueName
@@ -134,12 +119,7 @@ export var mixin_credentials_generation_orderlist = {
 					borrower: Number(item.invoiceAmount),
 					comments: '无',
 					amount: Number(item.invoiceAmount),
-					voucherNo:
-						`${strings}_` +
-						this.selectedNeedOrderList
-							.map(item => item.id)
-							.join('_') +
-						'_',
+					voucherNo: `${strings}_` + this.selectedNeedOrderList.map(item => item.id).join('_') + '_',
 					pid: item.isOrderTax,
 					vDate: parseTime(new Date()),
 					makeUser: this.trueName
@@ -160,12 +140,7 @@ export var mixin_credentials_generation_orderlist = {
 					borrower: '',
 					comments: '无',
 					amount: Number(item.invoiceAmount),
-					voucherNo:
-						`${strings}_` +
-						this.selectedNeedOrderList
-							.map(item => item.id)
-							.join('_') +
-						'_',
+					voucherNo: `${strings}_` + this.selectedNeedOrderList.map(item => item.id).join('_') + '_',
 					pid: orderId,
 					vDate: parseTime(new Date()),
 					makeUser: this.trueName
@@ -177,12 +152,7 @@ export var mixin_credentials_generation_orderlist = {
 					borrower: Number(item.invoiceAmount),
 					comments: '无',
 					amount: Number(item.invoiceAmount),
-					voucherNo:
-						`${strings}_` +
-						this.selectedNeedOrderList
-							.map(item => item.id)
-							.join('_') +
-						'_',
+					voucherNo: `${strings}_` + this.selectedNeedOrderList.map(item => item.id).join('_') + '_',
 					pid: orderId,
 					vDate: parseTime(new Date()),
 					makeUser: this.trueName
@@ -194,12 +164,7 @@ export var mixin_credentials_generation_orderlist = {
 					borrower: '',
 					comments: '无',
 					amount: Number(item.invoiceAmount),
-					voucherNo:
-						`${strings}_` +
-						this.selectedNeedOrderList
-							.map(item => item.id)
-							.join('_') +
-						'_',
+					voucherNo: `${strings}_` + this.selectedNeedOrderList.map(item => item.id).join('_') + '_',
 					pid: orderId,
 					vDate: parseTime(new Date()),
 					makeUser: this.trueName
@@ -211,12 +176,7 @@ export var mixin_credentials_generation_orderlist = {
 					borrower: Number(item.invoiceAmount),
 					comments: '无',
 					amount: Number(item.invoiceAmount),
-					voucherNo:
-						`${strings}_` +
-						this.selectedNeedOrderList
-							.map(item => item.id)
-							.join('_') +
-						'_',
+					voucherNo: `${strings}_` + this.selectedNeedOrderList.map(item => item.id).join('_') + '_',
 					pid: orderId,
 					vDate: parseTime(new Date()),
 					makeUser: this.trueName
@@ -234,45 +194,28 @@ export var mixin_credentials_generation_orderlist = {
 						item.smailOrderDetails.forEach(element => {
 							// 贷方
 							this.needToMakeList.push({
-								quote:
-									parseTime(new Date()) +
-									element.supplier +
-									'进货',
-								voucherType:
-									'应付账款-供应商往来-' + element.supplier,
+								quote: parseTime(new Date()) + element.supplier + '进货',
+								voucherType: '应付账款-供应商往来-' + element.supplier,
 								lender: '',
 								borrower: Number(element.paymentFactory),
 								comments: element.supplier,
 								amount: Number(element.paymentFactory),
 								// 基本信息
-								voucherNo:
-									`${strings}_` +
-									this.selectedNeedOrderList
-										.map(item => item.id)
-										.join('_') +
-									'_',
+								voucherNo: `${strings}_` + this.selectedNeedOrderList.map(item => item.id).join('_') + '_',
 								pid: item.id,
 								vDate: parseTime(new Date()),
 								makeUser: this.trueName
 							});
 							// 借方
 							this.needToMakeList.push({
-								quote:
-									parseTime(new Date()) +
-									element.supplier +
-									'进货',
+								quote: parseTime(new Date()) + element.supplier + '进货',
 								voucherType: '主营业务成本-玻璃成本',
 								lender: Number(element.paymentFactory),
 								borrower: '',
 								comments: '无',
 								amount: Number(element.paymentFactory),
 								// 基本信息
-								voucherNo:
-									`${strings}_` +
-									this.selectedNeedOrderList
-										.map(item => item.id)
-										.join('_') +
-									'_',
+								voucherNo: `${strings}_` + this.selectedNeedOrderList.map(item => item.id).join('_') + '_',
 								pid: item.id,
 								vDate: parseTime(new Date()),
 								makeUser: this.trueName
@@ -296,12 +239,7 @@ export var mixin_credentials_generation_orderlist = {
 						comments: item.customer,
 						amount: Number(item.allPayments),
 						// 基本信息
-						voucherNo:
-							`${strings}_` +
-							this.selectedNeedOrderList
-								.map(item => item.id)
-								.join('_') +
-							'_',
+						voucherNo: `${strings}_` + this.selectedNeedOrderList.map(item => item.id).join('_') + '_',
 						pid: item.id,
 						vDate: parseTime(new Date()),
 						makeUser: this.trueName
@@ -315,12 +253,7 @@ export var mixin_credentials_generation_orderlist = {
 						comments: '无',
 						amount: Number(item.allPayments),
 						// 基本信息
-						voucherNo:
-							`${strings}_` +
-							this.selectedNeedOrderList
-								.map(item => item.id)
-								.join('_') +
-							'_',
+						voucherNo: `${strings}_` + this.selectedNeedOrderList.map(item => item.id).join('_') + '_',
 						pid: item.id,
 						vDate: parseTime(new Date()),
 						makeUser: this.trueName
@@ -340,12 +273,7 @@ export var mixin_credentials_generation_orderlist = {
 						comments: item.landCarNo,
 						amount: Number(item.landFreight),
 						// 基本信息
-						voucherNo:
-							`${strings}_` +
-							this.selectedNeedOrderList
-								.map(item => item.id)
-								.join('_') +
-							'_',
+						voucherNo: `${strings}_` + this.selectedNeedOrderList.map(item => item.id).join('_') + '_',
 						pid: item.id,
 						vDate: parseTime(new Date()),
 						makeUser: this.trueName
@@ -359,12 +287,7 @@ export var mixin_credentials_generation_orderlist = {
 							comments: item.seaCarNo,
 							amount: Number(item.seaFreight),
 							// 基本信息
-							voucherNo:
-								`${strings}_` +
-								this.selectedNeedOrderList
-									.map(item => item.id)
-									.join('_') +
-								'_',
+							voucherNo: `${strings}_` + this.selectedNeedOrderList.map(item => item.id).join('_') + '_',
 							pid: item.id,
 							vDate: parseTime(new Date()),
 							makeUser: this.trueName
@@ -374,19 +297,12 @@ export var mixin_credentials_generation_orderlist = {
 					this.needToMakeList.push({
 						quote: parseTime(new Date()) + '运费',
 						voucherType: '主营业务成本-运费成本',
-						lender:
-							Number(item.landFreight) + Number(item.seaFreight),
+						lender: Number(item.landFreight) + Number(item.seaFreight),
 						borrower: '',
 						comments: item.landCarNo,
-						amount:
-							Number(item.landFreight) + Number(item.seaFreight),
+						amount: Number(item.landFreight) + Number(item.seaFreight),
 						// 基本信息
-						voucherNo:
-							`${strings}_` +
-							this.selectedNeedOrderList
-								.map(item => item.id)
-								.join('_') +
-							'_',
+						voucherNo: `${strings}_` + this.selectedNeedOrderList.map(item => item.id).join('_') + '_',
 						pid: item.id,
 						vDate: parseTime(new Date()),
 						makeUser: this.trueName
@@ -422,12 +338,7 @@ export var mixin_credentials_generation_orderlist = {
 					comments: item.supplier,
 					amount: Number(item.paymentFactory),
 					// 基本信息
-					voucherNo:
-						`${strings}_` +
-						this.selectedNeedOrderList
-							.map(item => item.id)
-							.join('_') +
-						'_',
+					voucherNo: `${strings}_` + this.selectedNeedOrderList.map(item => item.id).join('_') + '_',
 					pid: item.id,
 					vDate: parseTime(new Date()),
 					makeUser: this.trueName
@@ -441,12 +352,7 @@ export var mixin_credentials_generation_orderlist = {
 					comments: '无',
 					amount: Number(item.paymentFactory),
 					// 基本信息
-					voucherNo:
-						`${strings}_` +
-						this.selectedNeedOrderList
-							.map(item => item.id)
-							.join('_') +
-						'_',
+					voucherNo: `${strings}_` + this.selectedNeedOrderList.map(item => item.id).join('_') + '_',
 					pid: item.id,
 					vDate: parseTime(new Date()),
 					makeUser: this.trueName
@@ -462,12 +368,7 @@ export var mixin_credentials_generation_orderlist = {
 						comments: item.landCarNo,
 						amount: Number(item.landFreight),
 						// 基本信息
-						voucherNo:
-							`${strings}_` +
-							this.selectedNeedOrderList
-								.map(item => item.id)
-								.join('_') +
-							'_',
+						voucherNo: `${strings}_` + this.selectedNeedOrderList.map(item => item.id).join('_') + '_',
 						pid: item.id,
 						vDate: parseTime(new Date()),
 						makeUser: this.trueName
@@ -481,12 +382,7 @@ export var mixin_credentials_generation_orderlist = {
 							comments: item.seaCarNo,
 							amount: Number(item.seaFreight),
 							// 基本信息
-							voucherNo:
-								`${strings}_` +
-								this.selectedNeedOrderList
-									.map(item => item.id)
-									.join('_') +
-								'_',
+							voucherNo: `${strings}_` + this.selectedNeedOrderList.map(item => item.id).join('_') + '_',
 							pid: item.id,
 							vDate: parseTime(new Date()),
 							makeUser: this.trueName
@@ -496,19 +392,12 @@ export var mixin_credentials_generation_orderlist = {
 					this.needToMakeList.push({
 						quote: parseTime(new Date()) + '运费',
 						voucherType: '主营业务成本-运费成本',
-						lender:
-							Number(item.landFreight) + Number(item.seaFreight),
+						lender: Number(item.landFreight) + Number(item.seaFreight),
 						borrower: '',
 						comments: item.landCarNo,
-						amount:
-							Number(item.landFreight) + Number(item.seaFreight),
+						amount: Number(item.landFreight) + Number(item.seaFreight),
 						// 基本信息
-						voucherNo:
-							`${strings}_` +
-							this.selectedNeedOrderList
-								.map(item => item.id)
-								.join('_') +
-							'_',
+						voucherNo: `${strings}_` + this.selectedNeedOrderList.map(item => item.id).join('_') + '_',
 						pid: item.id,
 						vDate: parseTime(new Date()),
 						makeUser: this.trueName

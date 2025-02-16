@@ -70,7 +70,7 @@ export function setDefault(data) {
 	});
 }
 
-// 只查询己方的银行卡
+// 只查询我方的银行卡
 export function listBankAccountSelf(query) {
 	return request({
 		url: '/system/bankAccount/selfMoney',

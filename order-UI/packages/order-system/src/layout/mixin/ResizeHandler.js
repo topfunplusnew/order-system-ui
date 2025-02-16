@@ -34,10 +34,7 @@ export default {
 		$_resizeHandler() {
 			if (!document.hidden) {
 				const isMobile = this.$_isMobile();
-				store.dispatch(
-					'app/toggleDevice',
-					isMobile ? 'mobile' : 'desktop'
-				);
+				store.dispatch('app/toggleDevice', isMobile ? 'mobile' : 'desktop');
 
 				if (isMobile) {
 					store.dispatch('app/closeSideBar', {

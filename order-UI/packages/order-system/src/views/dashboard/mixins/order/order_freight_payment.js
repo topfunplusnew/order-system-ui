@@ -6,7 +6,7 @@ export var mixin_order_freight_payment = {
 	data: function () {
 		return {
 			freightOnceVisible: false,
-			// 己方银行卡信息
+			// 我方银行卡信息
 			freightSelfOnceInfo: {},
 			bankQuery: '',
 			selectedList: [],
@@ -49,8 +49,7 @@ export var mixin_order_freight_payment = {
 			this.selectedList.forEach(item => {
 				item = this.convertOrderFreightToPayment(item);
 				// 填充对方的银行类型
-				item.otherBankCardType =
-					this.freightSelfOnceInfo.otherBankCardType;
+				item.otherBankCardType = this.freightSelfOnceInfo.otherBankCardType;
 				// 推入到需要计算的数组
 				this.batchPaymentList.push(item);
 				// 累加
@@ -70,8 +69,7 @@ export var mixin_order_freight_payment = {
 				if (map.has(key)) {
 					let temp = map.get(key);
 					temp = { ...temp };
-					temp.moneyAmount =
-						Number(temp.moneyAmount) + Number(item.moneyAmount);
+					temp.moneyAmount = Number(temp.moneyAmount) + Number(item.moneyAmount);
 					temp.comments += `;${item.comments}`;
 					map.set(key, temp);
 				} else {
@@ -102,7 +100,7 @@ export var mixin_order_freight_payment = {
 				comments: orderFreight.content
 			};
 		},
-		// 自动填充己方信息
+		// 自动填充我方信息
 		handleCallBack(val) {
 			this.freightSelfOnceInfo.selfAcountsName = val.acountsName;
 			this.freightSelfOnceInfo.selfBankNo = val.bankNo;
@@ -117,12 +115,11 @@ export var mixin_order_freight_payment = {
 						cancelButtonText: '取消',
 						type: 'warning'
 					}).then(() => {
-						// 填充己方信息
+						// 填充我方信息
 						this.batchPaymentList.forEach(item => {
 							Object.assign(item, {
 								...this.freightSelfOnceInfo,
-								payType:
-									this.freightSelfOnceInfo.payType.join('-')
+								payType: this.freightSelfOnceInfo.payType.join('-')
 							});
 						});
 						// 合并计算数据
@@ -138,8 +135,7 @@ export var mixin_order_freight_payment = {
 									extraInfo: {
 										sourceInfos: [
 											{
-												tableName:
-													TableName.ORDER_FREIGHT,
+												tableName: TableName.ORDER_FREIGHT,
 												tableId: item.tID
 											}
 										]
@@ -153,10 +149,7 @@ export var mixin_order_freight_payment = {
 									tableId: item.tID
 								});
 								// 累计金额
-								existing.moneyAmount = (
-									Number(existing.moneyAmount) +
-									Number(item.moneyAmount)
-								).toFixed(3);
+								existing.moneyAmount = (Number(existing.moneyAmount) + Number(item.moneyAmount)).toFixed(3);
 							}
 						});
 						map.forEach(value => {
@@ -184,7 +177,7 @@ export var mixin_order_freight_payment = {
 				selfAcountsName: null,
 				selfBankNo: null,
 				selfBankName: null,
-				// 己方银行账户类型
+				// 我方银行账户类型
 				selfBankCardType: null,
 				// 对方银行账户类型
 				otherBankCardType: null
