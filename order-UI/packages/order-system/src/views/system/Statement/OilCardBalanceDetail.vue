@@ -238,7 +238,6 @@ export default {
 					this.$message.error(response.msg || '获取油卡详情失败');
 				}
 			} catch (error) {
-				console.error('获取油卡详情失败:', error);
 				this.$message.error('获取油卡详情失败');
 			}
 		},
