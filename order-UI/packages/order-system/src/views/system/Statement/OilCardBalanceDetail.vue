@@ -116,9 +116,9 @@
 			<el-table-column prop="tableName" label="业务名称" align="center">
 				<template #default="scope">
 					{{
-						scope.tableName === 'oilrecharge'
+						scope.row.tableName === 'oilrecharge'
 							? '充值'
-							: scope.tableName === 'oilcardfundtransfer'
+							: scope.row.tableName === 'oilcardfundtransfer'
 							? '圈存'
 							: '消费'
 					}}
