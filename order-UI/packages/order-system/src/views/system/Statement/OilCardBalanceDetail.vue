@@ -45,8 +45,8 @@
 						icon="el-icon-search"
 						size="mini"
 						@click="fetchOilCardDetails"
-						>搜索</el-button
-					>
+						>搜索
+					</el-button>
 				</el-form-item>
 			</el-form>
 		</el-row>
@@ -248,8 +248,11 @@ export default {
 			try {
 				const { tableName, tableId } = row;
 				const response = await fetchDetailById({ tableName, tableId });
-
 				if (response.code === 200) {
+					if (!response.data) {
+						this.$message.warning('无相关数据');
+						return;
+					}
 					// 将明细数据格式化为键值对
 					this.detailInfo = Object.entries(response.data).map(
 						([key, value]) => ({
