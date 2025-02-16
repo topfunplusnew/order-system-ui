@@ -245,25 +245,20 @@ export default {
 
 		// 查看明细逻辑
 		async viewDetail(row) {
-			try {
-				const { tableName, tableId } = row;
-				const response = await fetchDetailById({ tableName, tableId });
-				if (!response.data) {
-					this.$message.warning('无相关数据');
-					return;
-				}
-				// 将明细数据格式化为键值对
-				this.detailInfo = Object.entries(response.data).map(
-					([key, value]) => ({
-						key,
-						value
-					})
-				);
-				this.detailDialogVisible = true;
-			} catch (error) {
-				console.error('获取明细失败:', error);
-				this.$message.error('获取明细失败');
+			const { tableName, tableId } = row;
+			const response = await fetchDetailById({ tableName, tableId });
+			if (!response.data) {
+				this.$message.warning('无相关数据');
+				return;
 			}
+			// 将明细数据格式化为键值对
+			this.detailInfo = Object.entries(response.data).map(
+				([key, value]) => ({
+					key,
+					value
+				})
+			);
+			this.detailDialogVisible = true;
 		}
 	}
 };
