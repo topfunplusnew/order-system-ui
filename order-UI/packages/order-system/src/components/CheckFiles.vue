@@ -172,7 +172,10 @@ export default {
 					@handleFile="handleDeleteFile"
 				/>
 				<!--        支持上传-->
-				<FileShowItem @handleFile="handleAddFile" v-if="isFull" />
+				<FileShowItem
+					@handleFile="handleAddFile"
+					v-if="isFull && isUpload"
+				/>
 			</div>
 
 			<h3>附件图片预览</h3>
