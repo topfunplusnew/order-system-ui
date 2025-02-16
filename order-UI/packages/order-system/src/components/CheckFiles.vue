@@ -14,6 +14,10 @@ export default {
 		path: {
 			type: String,
 			default: ''
+		},
+		isUpload: {
+			type: Boolean,
+			default: true
 		}
 	},
 	data() {
@@ -128,6 +132,7 @@ export default {
 						<el-button
 							size="mini"
 							type="text"
+							v-if="isUpload"
 							@click="uploadFile(path)"
 							>上传附件
 						</el-button>
@@ -141,6 +146,7 @@ export default {
 								>查看附件
 							</el-button>
 						</div>
+						<div v-else>无附件</div>
 					</el-dropdown-item>
 				</el-dropdown-menu>
 			</el-dropdown>

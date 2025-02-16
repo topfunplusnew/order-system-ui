@@ -81,15 +81,15 @@ export default {
 		<!--    付款信息展示-->
 		<el-row>
 			<el-descriptions title="付款信息明细">
-				<el-descriptions-item label="申请人">{{
-					paymentApplyInfo.applyPerson
-				}}</el-descriptions-item>
-				<el-descriptions-item label="申请金额">{{
-					paymentApplyInfo.moneyAmount
-				}}</el-descriptions-item>
-				<el-descriptions-item label="备注">{{
-					paymentApplyInfo.comments
-				}}</el-descriptions-item>
+				<el-descriptions-item label="申请人"
+					>{{ paymentApplyInfo.applyPerson }}
+				</el-descriptions-item>
+				<el-descriptions-item label="申请金额"
+					>{{ paymentApplyInfo.moneyAmount }}
+				</el-descriptions-item>
+				<el-descriptions-item label="备注"
+					>{{ paymentApplyInfo.comments }}
+				</el-descriptions-item>
 				<el-descriptions-item label="公司类型">
 					{{ paymentApplyInfo.companyType }}
 				</el-descriptions-item>
@@ -113,7 +113,10 @@ export default {
 				</el-descriptions-item>
 				<el-descriptions-item label="附件">
 					<!--          这里不需要上传-->
-					<CheckFiles :path="paymentApplyInfo.attachment" />
+					<CheckFiles
+						:path="paymentApplyInfo.attachment"
+						:is-upload="false"
+					/>
 				</el-descriptions-item>
 			</el-descriptions>
 		</el-row>
@@ -139,8 +142,8 @@ export default {
 								<el-button
 									type="success"
 									@click="handleCheckSuccess"
-									>审核通过</el-button
-								>
+									>审核通过
+								</el-button>
 							</el-col>
 						</el-row>
 					</el-col>
@@ -158,8 +161,8 @@ export default {
 								<el-button
 									type="danger"
 									@click="handleCheckError"
-									>审核不通过</el-button
-								>
+									>审核不通过
+								</el-button>
 							</el-col>
 						</el-row>
 					</el-col>
