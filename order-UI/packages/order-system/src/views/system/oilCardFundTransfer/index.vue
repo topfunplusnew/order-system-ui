@@ -70,7 +70,11 @@
 		<!-- 添加或修改加油卡圈存对话框 -->
 		<el-dialog :close-on-click-modal="false" :show-close="false" :title="title" :visible.sync="open" width="500px" append-to-body>
 			<el-form ref="form" :model="form" :rules="rules" label-width="120px">
-				<el-form-item label="主加油卡卡号" prop="oilMainCardNo">
+				<el-form-item label="充值类型" prop="type">
+					<el-radio v-model="form.type" :label="1">主卡分配</el-radio>
+					<el-radio v-model="form.type" :label="2">副卡圈存</el-radio>
+				</el-form-item>
+				<el-form-item label="主加油卡卡号" prop="oilMainCardNo" v-if="form.type === 1">
 					<el-row>
 						<el-col :span="10">
 							<el-input disabled v-model="form.oilMainCardNo" placeholder="请选择" />
@@ -116,7 +120,8 @@
 						</el-col>
 					</el-row>
 				</el-form-item>
-				<el-form-item label="充值金额" prop="rechargeMoney">
+
+				<el-form-item :label="form.type === 1 ? `分配金额` : `圈存金额`" prop="rechargeMoney">
 					<el-input v-model="form.rechargeMoney" placeholder="请输入充值金额" />
 				</el-form-item>
 				<!--        <el-form-item label="充值人员姓名" prop="rechargeName">-->
@@ -198,6 +203,13 @@ export default {
 					{
 						required: true,
 						message: '请输入副加油卡卡号',
+						trigger: 'blur'
+					}
+				],
+				type: [
+					{
+						required: true,
+						message: '请选择充值类型',
 						trigger: 'blur'
 					}
 				],
@@ -291,6 +303,8 @@ export default {
 				rechargeMoney: null,
 				rechargeDate: parseTime(new Date(), '{y}-{m}-{d} {h}:{i}:{s}'),
 				rechargeName: null,
+				// 2025-2-17 油卡充值类型 1：主卡分配 2.副卡圈存
+				type: 1,
 				comments: null,
 				addtime: null,
 				userId: null,

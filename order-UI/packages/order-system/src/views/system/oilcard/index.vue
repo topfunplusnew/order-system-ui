@@ -61,7 +61,7 @@
 				<el-tab-pane lazy label="加油卡副卡管理" name="second">
 					<el-table id="printBox" v-loading="loading" v-horizontal-scroll="'always'" border size="mini" :data="subCardList" @selection-change="handleSelectionChange">
 						<el-table-column v-if="columns[0].visible" label="加油卡卡号" align="center" prop="oilCardNo" />
-						<el-table-column v-if="columns[1].visible" label="当前金额" align="center" prop="moneyAmount" />
+						<el-table-column v-if="columns[1].visible" label="可用金额" align="center" prop="moneyAmount" />
 						<el-table-column v-if="columns[2].visible" label="备注" align="center" prop="comments" />
 						<el-table-column label="操作" align="center" class-name="small-padding fixed-width" fixed="right">
 							<template slot-scope="scope">
@@ -89,11 +89,11 @@
 					<el-radio v-model="form.oilType" label="副卡">副卡</el-radio>
 				</el-form-item>
 				<!-- <el-form-item label="加油卡金额" prop="moneyAmount">
-					<el-input
-						v-model="form.moneyAmount"
-						placeholder="请输入使用加油卡金额"
-					/>
-				</el-form-item> -->
+          <el-input
+            v-model="form.moneyAmount"
+            placeholder="请输入使用加油卡金额"
+          />
+        </el-form-item> -->
 				<el-form-item label="备注" prop="comments">
 					<el-input v-model="form.comments" placeholder="请输入使用备注" />
 				</el-form-item>
