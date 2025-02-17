@@ -2,14 +2,14 @@
 	<div class="customer-info">
 		<!-- 搜索区域 -->
 		<div class="search-area">
-			<el-form :inline="true" :model="searchForm" class="demo-form-inline" size="small">
-				<el-form-item label="开始时间：">
+			<el-form :inline="true" :model="searchForm" ref="form" :rules="rules" class="demo-form-inline" size="small">
+				<el-form-item label="开始时间：" prop="startTime">
 					<el-date-picker v-model="searchForm.startTime" type="date" placeholder="请选择开始时间" value-format="yyyy-MM-dd" size="small"></el-date-picker>
 				</el-form-item>
-				<el-form-item label="结束时间：">
+				<el-form-item label="结束时间：" prop="endTime">
 					<el-date-picker v-model="searchForm.endTime" type="date" placeholder="请选择结束时间" value-format="yyyy-MM-dd" size="small"></el-date-picker>
 				</el-form-item>
-				<el-form-item label="客户">
+				<el-form-item label="客户" prop="customer">
 					<el-row>
 						<el-col :span="4">
 							<SearchOption
@@ -31,7 +31,7 @@
 							</SearchOption>
 						</el-col>
 						<el-col :span="20">
-							<el-input v-model="searchForm.customer" placeholder="请输入客户" clearable size="small">
+							<el-input disabled v-model="searchForm.customer" placeholder="请选择客户" clearable size="small">
 								<i slot="prefix" class="el-input__icon el-icon-search"></i>
 							</el-input>
 						</el-col>
@@ -39,7 +39,8 @@
 				</el-form-item>
 				<el-form-item>
 					<el-button type="primary" @click="getList" size="small">查询</el-button>
-					<el-button type="success" @click="excelExport" size="small">导出Excel</el-button>
+					<el-button @click="reset" size="small">刷新</el-button>
+					<el-button type="success" @click="excelExport(['欠款明细'])" size="small">导出Excel</el-button>
 				</el-form-item>
 			</el-form>
 		</div>
@@ -119,7 +120,12 @@ export default {
 			tableData: [],
 			needToShowInfo: null,
 			infoVisible: null,
-			Components: null
+			Components: null,
+			rules: {
+				startTime: [{ required: true, message: '请选择开始时间', trigger: 'blur' }],
+				endTime: [{ required: true, message: '请选择结束时间', trigger: 'blur' }],
+				customer: [{ required: true, message: '请选择客户', trigger: 'blur' }]
+			}
 		};
 	},
 	created() {
@@ -132,28 +138,41 @@ export default {
 		listCompany,
 		// 查询方法
 		getList() {
-			this.loading = true;
-			const body = {
-				beginTime: this.searchForm.startTime,
-				companyId: this.searchForm.companyId
-			};
-			// 查询客户指定时间结转
-			getCustomerSubjectDetailSomeDay(body).then(res => {
-				// 校验
-				if (!res.data) {
-					this.$message.warning('上年结转数据不存在');
-					return;
+			this.$refs['form']?.validate(valid => {
+				if (valid) {
+					this.loading = true;
+					const body = {
+						beginTime: this.searchForm.startTime,
+						companyId: this.searchForm.companyId
+					};
+					// 查询客户指定时间结转
+					getCustomerSubjectDetailSomeDay(body).then(res => {
+						// 校验
+						if (!res.data) {
+							this.$message.warning('上年结转数据不存在');
+							return;
+						}
+						// 拿到上年的数据
+						const lastYearDetail = res.data;
+						const query = {
+							companyId: this.searchForm.companyId,
+							beginTime: this.searchForm.startTime,
+							endTime: this.searchForm.endTime
+						};
+						// 查询客户明细账
+						this.checkCustomerDetail(query, lastYearDetail);
+					});
 				}
-				// 拿到上年的数据
-				const lastYearDetail = res.data;
-				const query = {
-					companyId: this.searchForm.companyId,
-					beginTime: this.searchForm.startTime,
-					endTime: this.searchForm.endTime
-				};
-				// 查询客户明细账
-				this.checkCustomerDetail(query, lastYearDetail);
 			});
+		},
+		reset() {
+			Object.assign(this.searchForm, {
+				startTime: '',
+				endTime: '',
+				customer: '',
+				companyId: null
+			});
+			this.tableData = [];
 		},
 		checkCustomerDetail(query, lastYearDetail) {
 			// 查询客户明细账
