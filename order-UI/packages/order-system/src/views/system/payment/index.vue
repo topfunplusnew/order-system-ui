@@ -151,6 +151,11 @@
 				</template>
 			</el-table-column>
 			<el-table-column label="备注" align="center" prop="comments" width="120" v-if="columns[13].visible" show-overflow-tooltip />
+			<el-table-column label="附件" align="center" prop="attachment" width="120" v-if="columns[14].visible" show-overflow-tooltip>
+				<template #default="scope">
+					<CheckFiles :path="scope.row.attachment" :needToUpdate="value => handleUpdateFilePath(value, scope.row, 'attachment', getPayment, updatePayment)" :is-upload="false" />
+				</template>
+			</el-table-column>
 			<el-table-column label="复核状态" align="center" class-name="small-padding fixed-width" width="80" fixed="right">
 				<template slot-scope="scope">
 					<el-switch
@@ -394,6 +399,9 @@
 				<el-form-item label="对方开户行" prop="otherBankName" v-if="value !== '对外付款'">
 					<el-input disabled v-model="form.otherBankName" placeholder="请选择" />
 				</el-form-item>
+				<el-form-item label="附件" prop="attachment">
+					<file-upload ref="fileUploader" @input="handleCommitUpload" />
+				</el-form-item>
 				<el-form-item label="备注" prop="comments">
 					<el-input v-model="form.comments" placeholder="请输入备注" />
 				</el-form-item>
@@ -535,7 +543,7 @@
 </template>
 
 <script>
-import { listPayment, delPayment, addPayment, updatePayment } from '@/api/system/payment';
+import { listPayment, delPayment, addPayment, updatePayment, getPayment } from '@/api/system/payment';
 import SearchOption from '@/components/SearchOption.vue';
 import { listCompany } from '@/api/system/company';
 import { excludeParams } from '@/api/tool/exclude';
@@ -567,17 +575,20 @@ import REBATE from '@/components/NeedToShow/REBATE.vue';
 import BANK_ACCEPTANCE from '@/components/NeedToShow/BANK_ACCEPTANCE.vue';
 import BUSSNIESS_TRIPVue from '../../../components/NeedToShow/BUSSNIESS_TRIP.vue';
 import LEND_MONEYVue from '../../../components/NeedToShow/LEND_MONEY.vue';
+import CheckFiles from '@/components/CheckFiles.vue';
+import { mixin_checkfile } from '@/views/dashboard/mixins/checkfiles/mixin_checkfile';
 
 export default {
 	name: 'Payment',
 	components: {
+		CheckFiles,
 		StateTag,
 		BankType,
 		CheckDetail,
 		DynamicField,
 		SearchOption
 	},
-	mixins: [mixin_printHTML, mixin_payment_audit, mixin_payment_select, mixin_payment_subject, mixin_paymentindex_fill, mixin_bankType],
+	mixins: [mixin_printHTML, mixin_payment_audit, mixin_payment_select, mixin_payment_subject, mixin_paymentindex_fill, mixin_bankType, mixin_checkfile],
 	data() {
 		return {
 			// 遮罩层
@@ -711,7 +722,8 @@ export default {
 				{ key: 10, label: `支付状态`, visible: true },
 				{ key: 11, label: `对方公司`, visible: true },
 				{ key: 12, label: `对方公司类型`, visible: true },
-				{ key: 13, label: `备注`, visible: true }
+				{ key: 13, label: `备注`, visible: true },
+				{ key: 14, label: `附件`, visible: true }
 			],
 			// 顶部筛选框
 			queryPayment: {},
@@ -785,68 +797,73 @@ export default {
 		}
 	},
 	methods: {
+		updatePayment,
+		getPayment,
 		isNull,
 		listCars,
 		listBankAccount,
 		batchPayment,
 		listCompany,
 		// 一键付款
-		handleOnce() {
-			this.$nextTick(() => {
-				this.$refs.paymentTable.clearSelection();
-				const unpaidRows = this.computedPaymentList.filter(row => row.paymentState === '未支付');
-				if (unpaidRows.length === 0) {
-					this.$message.warning('没有需要付款的信息');
-				} else {
-					unpaidRows.forEach(row => {
-						this.$refs.paymentTable.toggleRowSelection(row, true);
-					});
-					// 处理数据
-					const selectRows = unpaidRows.map(row => {
-						return {
-							...row,
-							auditState: row.auditState === true ? '1' : '0'
-						};
-					});
-					// 对选中的行按照对方账户进行分组 然后批量付款
-					const map = new Map();
-					selectRows.forEach(row => {
-						// 处理null的情况
-						if (!row.otherBankName || !row.otherBankNo || !row.otherAcountsName) {
-							this.$message.warning('对方银行账户信息不完整');
-							return;
-						}
-
-						// 组合一个唯一键作为键值
-						const key = `${row.otherBankName}#${row.otherBankNo}#${row.otherAcountsName}`;
-						if (map.has(key)) {
-							map.get(key).extraInfo.sourceInfos.push({
-								tableName: row.tableName,
-								tableId: row.tID
-							});
-						} else {
-							map.set(key, {
-								...row,
-								extraInfo: {
-									sourceInfos: [
-										{
-											tableName: row.tableName,
-											tableId: row.tID
-										}
-									]
-								}
-							});
-						}
-					});
-					// 将map转为数组
-					const data = Array.from(map.values());
-					this.batchPaymentData = data;
-					// 重置我方信息
-					this.resetChooseInfo();
-					// 打开弹窗
-					this.oneClickPaymentDialogVisible = true;
-				}
-			});
+		// handleOnce() {
+		// 	this.$nextTick(() => {
+		// 		this.$refs.paymentTable.clearSelection();
+		// 		const unpaidRows = this.computedPaymentList.filter(row => row.paymentState === '未支付');
+		// 		if (unpaidRows.length === 0) {
+		// 			this.$message.warning('没有需要付款的信息');
+		// 		} else {
+		// 			unpaidRows.forEach(row => {
+		// 				this.$refs.paymentTable.toggleRowSelection(row, true);
+		// 			});
+		// 			// 处理数据
+		// 			const selectRows = unpaidRows.map(row => {
+		// 				return {
+		// 					...row,
+		// 					auditState: row.auditState === true ? '1' : '0'
+		// 				};
+		// 			});
+		// 			// 对选中的行按照对方账户进行分组 然后批量付款
+		// 			const map = new Map();
+		// 			selectRows.forEach(row => {
+		// 				// 处理null的情况
+		// 				if (!row.otherBankName || !row.otherBankNo || !row.otherAcountsName) {
+		// 					this.$message.warning('对方银行账户信息不完整');
+		// 					return;
+		// 				}
+		//
+		// 				// 组合一个唯一键作为键值
+		// 				const key = `${row.otherBankName}#${row.otherBankNo}#${row.otherAcountsName}`;
+		// 				if (map.has(key)) {
+		// 					map.get(key).extraInfo.sourceInfos.push({
+		// 						tableName: row.tableName,
+		// 						tableId: row.tID
+		// 					});
+		// 				} else {
+		// 					map.set(key, {
+		// 						...row,
+		// 						extraInfo: {
+		// 							sourceInfos: [
+		// 								{
+		// 									tableName: row.tableName,
+		// 									tableId: row.tID
+		// 								}
+		// 							]
+		// 						}
+		// 					});
+		// 				}
+		// 			});
+		// 			// 将map转为数组
+		// 			const data = Array.from(map.values());
+		// 			this.batchPaymentData = data;
+		// 			// 重置我方信息
+		// 			this.resetChooseInfo();
+		// 			// 打开弹窗
+		// 			this.oneClickPaymentDialogVisible = true;
+		// 		}
+		// 	});
+		// },
+		handleCommitUpload(value) {
+			this.form.attachment = value;
 		},
 		// 表格中选择对方银行卡类型
 		changeRowOtherBankType(row, value) {
