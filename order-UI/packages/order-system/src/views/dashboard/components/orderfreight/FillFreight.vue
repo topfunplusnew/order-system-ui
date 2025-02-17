@@ -159,7 +159,7 @@ export default {
 			// 填充运输类型
 			this.form.freightType = '海运';
 		},
-		// 我方公司点击确定的回调
+		// 己方公司点击确定的回调
 		handleCommitBack(val) {
 			this.form.otherBankNo = val.bankNo;
 			this.form.otherBankName = val.bankName;

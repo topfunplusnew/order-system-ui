@@ -36,7 +36,7 @@ export default {
 	},
 	methods: {
 		getList() {
-			// 未被绑定的卡为-1 我方公司为0
+			// 未被绑定的卡为-1 己方公司为0
 			listBankAccount({ companyId: -1, ...this.queryParams }).then(res => {
 				this.tableData = res.rows;
 				this.total = res.total;

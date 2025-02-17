@@ -44,13 +44,13 @@
 				</el-form-item>
 				<el-form-item>
 					<el-button type="primary" @click="getList" size="small">查询</el-button>
-					<el-button type="success" @click="handleExport" size="small">导出Excel</el-button>
+					<el-button type="success" @click="excelExport" size="small">导出Excel</el-button>
 				</el-form-item>
 			</el-form>
 		</div>
 
 		<!-- 表格区域 -->
-		<el-table :data="tableData" border style="width: 100%" v-loading="loading" size="small">
+		<el-table id="educe-table" :data="tableData" border style="width: 100%" v-loading="loading" size="small">
 			<el-table-column prop="time" label="日期"></el-table-column>
 			<el-table-column prop="companyName" label="供应商"></el-table-column>
 			<el-table-column prop="moneyAmount" label="余额">
@@ -84,7 +84,7 @@
 </template>
 
 <script>
-import { QueryCustomer, QuerySUPPLIER } from '@/api/system/goback';
+import { QueryCustomer } from '@/api/system/goback';
 import { parseTime } from '@/utils/ruoyi';
 import SearchOption from '@/components/SearchOption.vue';
 import { PUBLIC_DICT_TYPE } from '@/utils/order';
@@ -92,10 +92,11 @@ import { getCompany, listCompany } from '@/api/system/company';
 import { common_dialog } from '@/views/dashboard/mixins/common/common_dialog';
 import DialogWrapper from '@/views/dashboard/components/common/DialogWrapper.vue';
 import COMPANY from '@/components/NeedToShow/COMPANY.vue';
+import { common_excel } from '@/views/dashboard/mixins/common/common_excel';
 
 export default {
 	name: 'SUPPLIERTotal',
-	mixins: [common_dialog],
+	mixins: [common_dialog, common_excel],
 	computed: {
 		PUBLIC_DICT_TYPE() {
 			return PUBLIC_DICT_TYPE;
@@ -128,9 +129,11 @@ export default {
 		getList() {
 			this.loading = true;
 			const querySupplier = new QueryCustomer();
-			querySupplier.getCompanySummaryAndLastOrderTime(this.searchForm).then(res => {
+			querySupplier.getSupplierBalance(this.searchForm).then(res => {
 				if (!res.rows) {
 					this.$message.warning('当前搜索条件下，无相关信息');
+					this.loading = false;
+					return;
 				}
 				this.tableData = res.rows;
 				this.total = res.total;
@@ -139,7 +142,7 @@ export default {
 		},
 		handleCommitBackCompany(value) {
 			this.searchForm.companyId = value.id;
-			this.searchForm.SUPPLIER = value.companyName;
+			this.searchForm.supplier = value.companyName;
 		},
 		handleUpdateCompanyName(value) {
 			this.companyName = value;
@@ -161,22 +164,6 @@ export default {
 					false
 				);
 			});
-		},
-		// 导出Excel
-		handleExport() {
-			// TODO: 实现导出功能
-			this.$message.success('导出成功');
-		},
-
-		// 分页方法
-		handleSizeChange(val) {
-			this.pageSize = val;
-			this.getList();
-		},
-
-		handleCurrentChange(val) {
-			this.currentPage = val;
-			this.getList();
 		}
 	}
 };

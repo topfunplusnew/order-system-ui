@@ -122,7 +122,7 @@ export default {
 						id,
 						type,
 						name,
-						// 我方公司名称
+						// 己方公司名称
 						us,
 						total: element.total
 					});

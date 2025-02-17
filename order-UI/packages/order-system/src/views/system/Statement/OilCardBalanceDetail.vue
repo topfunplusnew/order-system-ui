@@ -1,6 +1,6 @@
 <template>
 	<div class="oil-card-balance-detail">
-		<h2>油卡余额详情报表</h2>
+		<h2>油卡消费充值明细表</h2>
 
 		<el-row>
 			<el-form ref="queryForm" :model="queryParams" size="mini" :inline="true" label-width="100px">

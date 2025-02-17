@@ -44,7 +44,7 @@
 				</el-form-item>
 				<el-form-item>
 					<el-button type="primary" @click="getList" size="small">查询</el-button>
-					<el-button type="success" @click="handleExport" size="small">导出Excel</el-button>
+					<el-button type="success" @click="excelExport" size="small">导出Excel</el-button>
 				</el-form-item>
 			</el-form>
 		</div>
@@ -92,10 +92,11 @@ import { getCompany, listCompany } from '@/api/system/company';
 import { common_dialog } from '@/views/dashboard/mixins/common/common_dialog';
 import DialogWrapper from '@/views/dashboard/components/common/DialogWrapper.vue';
 import COMPANY from '@/components/NeedToShow/COMPANY.vue';
+import { common_excel } from '@/views/dashboard/mixins/common/common_excel';
 
 export default {
 	name: 'CustomerTotal',
-	mixins: [common_dialog],
+	mixins: [common_dialog, common_excel],
 	computed: {
 		PUBLIC_DICT_TYPE() {
 			return PUBLIC_DICT_TYPE;
@@ -131,6 +132,8 @@ export default {
 			queryCustomer.getCompanySummaryAndLastOrderTime(this.searchForm).then(res => {
 				if (!res.rows) {
 					this.$message.warning('当前搜索条件下，无相关信息');
+					this.loading = false;
+					return;
 				}
 				this.tableData = res.rows;
 				this.total = res.total;
@@ -161,22 +164,6 @@ export default {
 					false
 				);
 			});
-		},
-		// 导出Excel
-		handleExport() {
-			// TODO: 实现导出功能
-			this.$message.success('导出成功');
-		},
-
-		// 分页方法
-		handleSizeChange(val) {
-			this.pageSize = val;
-			this.getList();
-		},
-
-		handleCurrentChange(val) {
-			this.currentPage = val;
-			this.getList();
 		}
 	}
 };

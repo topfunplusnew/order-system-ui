@@ -119,7 +119,7 @@ export default {
 			// 客户
 			return new InvoiceObject(
 				parseTime(new Date(), '{y}-{m}-{d} {h}:{i}:{s}'),
-				// 我方公司实体
+				// 己方公司实体
 				sessionStorage.getItem('us'),
 				Number(orderItem.allPayments),
 				PUBLIC_DICT_TYPE.CUSTOMER,

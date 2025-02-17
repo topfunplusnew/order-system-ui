@@ -285,7 +285,7 @@
 											title="银行卡信息"
 											icon="el-icon-search"
 											:limit-info="{
-												acountsType: '我方公司'
+												acountsType: '己方公司'
 											}"
 											:query-name="bankQuery"
 											query-info="acountsName"

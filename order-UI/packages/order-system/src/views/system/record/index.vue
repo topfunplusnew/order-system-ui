@@ -149,7 +149,7 @@
 							<el-col :span="3">
 								<SearchOption
 									:get-data="listBankAccount"
-									:limit-info="{ acountsType: '我方公司' }"
+									:limit-info="{ acountsType: '己方公司' }"
 									query-info="acountsName"
 									:query-name="querySupplier"
 									query-label="户名"
@@ -176,7 +176,7 @@
 						<el-radio v-model="form.sourceCompanyType" label="客户">客户</el-radio>
 						<el-radio v-model="form.sourceCompanyType" label="供应商">供应商</el-radio>
 						<el-radio v-model="form.sourceCompanyType" label="司机">司机</el-radio>
-						<el-radio v-model="form.sourceCompanyType" label="我方公司">我方公司</el-radio>
+						<el-radio v-model="form.sourceCompanyType" label="己方公司">己方公司</el-radio>
 					</el-form-item>
 					<el-form-item label="收入方">
 						<el-row>
@@ -201,8 +201,8 @@
 									</template>
 								</SearchOption>
 							</el-col>
-							<!--              如果是我方公司 -->
-							<el-col v-if="form.sourceCompanyType === '我方公司'" :span="4">
+							<!--              如果是己方公司 -->
+							<el-col v-if="form.sourceCompanyType === '己方公司'" :span="4">
 								<SearchOption
 									:limit-info="{
 										acountsType: form.sourceCompanyType
@@ -225,7 +225,7 @@
 								</SearchOption>
 							</el-col>
 							<!--              如果是其他-->
-							<el-col v-if="form.sourceCompanyType !== '司机' && form.sourceCompanyType !== '我方公司'" :span="4">
+							<el-col v-if="form.sourceCompanyType !== '司机' && form.sourceCompanyType !== '己方公司'" :span="4">
 								<SearchOption
 									:limit-info="{
 										companyType: form.sourceCompanyType
@@ -269,7 +269,7 @@
 							<el-col :span="3">
 								<SearchOption
 									:get-data="listBankAccount"
-									:limit-info="{ acountsType: '我方公司' }"
+									:limit-info="{ acountsType: '己方公司' }"
 									query-info="acountsName"
 									:query-name="queryCustomer"
 									query-label="户名"
@@ -296,7 +296,7 @@
 						<el-radio v-model="form.targetCompanyType" label="客户">客户</el-radio>
 						<el-radio v-model="form.targetCompanyType" label="供应商">供应商</el-radio>
 						<el-radio v-model="form.targetCompanyType" label="司机">司机</el-radio>
-						<el-radio v-model="form.targetCompanyType" label="我方公司">我方公司</el-radio>
+						<el-radio v-model="form.targetCompanyType" label="己方公司">己方公司</el-radio>
 					</el-form-item>
 					<el-form-item label="支出方">
 						<el-row>
@@ -322,8 +322,8 @@
 									</template>
 								</SearchOption>
 							</el-col>
-							<!--              如果是我方公司-->
-							<el-col v-else-if="form.targetCompanyType === '我方公司'" :span="4">
+							<!--              如果是己方公司-->
+							<el-col v-else-if="form.targetCompanyType === '己方公司'" :span="4">
 								<SearchOption
 									:limit-info="{
 										acountsType: form.targetCompanyType

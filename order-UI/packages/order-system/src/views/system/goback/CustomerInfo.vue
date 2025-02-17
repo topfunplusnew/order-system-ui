@@ -90,7 +90,6 @@
 import SearchOption from '@/components/SearchOption.vue';
 import { PUBLIC_DICT_TYPE } from '@/utils/order';
 import { listCompany } from '@/api/system/company';
-import { QueryCustomer } from '@/api/system/goback';
 
 export default {
 	name: 'CustomerInfo',

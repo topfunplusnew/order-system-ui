@@ -14,7 +14,7 @@ export var mixin_order_freight_fill = {
 		};
 	},
 	methods: {
-		// 我方公司点击确定的回调
+		// 己方公司点击确定的回调
 		handleCommitBack(val) {
 			this.form.otherBankNo = val.bankNo;
 			this.form.otherBankName = val.bankName;

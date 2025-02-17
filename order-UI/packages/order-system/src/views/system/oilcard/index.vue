@@ -149,7 +149,7 @@
 					</el-col>
 					<el-col :span="4">
 						<SearchOption
-							:limit-info="{ acountsType: '我方公司' }"
+							:limit-info="{ acountsType: '己方公司' }"
 							:get-data="listBankAccount"
 							:query-name="queryBankAcount"
 							query-label="户名查找"

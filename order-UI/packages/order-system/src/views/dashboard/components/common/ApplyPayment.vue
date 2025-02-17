@@ -48,7 +48,7 @@
 				<span style="color: #1c84c6; font-size: 12px">请注意选择正确的对方公司类型!</span>
 			</el-form-item>
 
-			<!--      公司的填充 这里主要是为了companyId 如果选择的是我方公司 那么就不显示这个选择公司-->
+			<!--      公司的填充 这里主要是为了companyId 如果选择的是己方公司 那么就不显示这个选择公司-->
 			<el-form-item v-if="value !== '员工'" label="对方公司" prop="companyName">
 				<el-row>
 					<el-col :span="14">

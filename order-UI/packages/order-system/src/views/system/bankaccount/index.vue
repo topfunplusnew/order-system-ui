@@ -59,7 +59,7 @@
 		>
 			<el-table-column v-if="columns[0].visible" label="绑定状态" align="center" width="200">
 				<template slot-scope="scope">
-					<span v-if="scope.row.companyId === 0" style="color: #138fe1">我方公司银行卡</span>
+					<span v-if="scope.row.companyId === 0" style="color: #138fe1">己方公司银行卡</span>
 					<span v-else-if="scope.row.companyId === -1" style="color: #ff5722">该卡未被绑定</span>
 					<span v-else>已绑定</span>
 				</template>
@@ -107,13 +107,13 @@
 		<!-- 添加或修改银行账号对话框 -->
 		<el-dialog :close-on-click-modal="false" :show-close="false" :title="title" :visible.sync="open" width="500px" append-to-body>
 			<el-form ref="form" :model="form" :rules="rules" label-width="120px">
-				<!--        选择账号类型 分为：司机、公司、我方公司等等-->
+				<!--        选择账号类型 分为：司机、公司、己方公司等等-->
 				<el-form-item label="账号类型" prop="acountsType">
 					<el-select v-model="form.acountsType" placeholder="请选择账号类型">
 						<el-option v-for="item in options" :key="item.value" :label="item.label" :value="item.value"></el-option>
 					</el-select>
 				</el-form-item>
-				<!--        如果选择了我方公司 还要选择一个公私户类型-->
+				<!--        如果选择了己方公司 还要选择一个公私户类型-->
 				<div>
 					<el-row v-if="form.acountsType === PUBLIC_DICT_TYPE.SELF_COMPANY">
 						<el-form-item label="公私户类型" prop="isPublicAccount">
@@ -242,7 +242,7 @@
 					<el-input v-model="form.bankName" placeholder="请输入开户行" />
 				</el-form-item>
 
-				<!--        显示名称 只有我方公司才会区分-->
+				<!--        显示名称 只有己方公司才会区分-->
 				<el-form-item v-if="form.acountsType === PUBLIC_DICT_TYPE.SELF_COMPANY" label="显示名称" prop="displayName">
 					<el-input v-model="form.displayName" placeholder="请输入显示名称" />
 				</el-form-item>
@@ -414,8 +414,8 @@ export default {
 			// 对方类型
 			options: [
 				{
-					value: '我方公司',
-					label: '我方公司'
+					value: '己方公司',
+					label: '己方公司'
 				},
 				{
 					value: '客户',
@@ -485,9 +485,9 @@ export default {
 		PUBLIC_DICT_TYPE() {
 			return PUBLIC_DICT_TYPE;
 		},
-		// 是否是我方公司
+		// 是否是己方公司
 		isNeed() {
-			return this.form.acountsType !== '我方公司' && this.form.acountsType !== '司机';
+			return this.form.acountsType !== '己方公司' && this.form.acountsType !== '司机';
 		},
 		showLabel() {
 			if (this.form.acountsType) {
@@ -703,10 +703,10 @@ export default {
 						this.form = excludeParams(this.form, this.$exclude);
 						// 如果不填公司id
 						if (!this.form.companyId) {
-							// 如果是我方公司
+							// 如果是己方公司
 							if (this.form.acountsType === PUBLIC_DICT_TYPE.SELF_COMPANY) {
 								this.form.companyId = 0;
-								// 填充公司名称为我方公司
+								// 填充公司名称为己方公司
 								this.form.companyName = PUBLIC_DICT_TYPE.SELF_COMPANY;
 							} else {
 								// 其他银行卡填充-1 表示还没绑定

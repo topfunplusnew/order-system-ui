@@ -156,7 +156,7 @@
 		<!--                  <el-input v-model="form.billAccount" placeholder="请输入我方承兑账户"/>-->
 		<!--                </el-col>-->
 		<!--                <el-col :span="3">-->
-		<!--                  <SearchOption :get-data="listBankAccount" :limit-info="{accountType:'我方公司'}" title="我方承兑账户"-->
+		<!--                  <SearchOption :get-data="listBankAccount" :limit-info="{accountType:'己方公司'}" title="我方承兑账户"-->
 		<!--                                @commitBack="handleCommitBack">-->
 		<!--                    <template #table-columns>-->
 		<!--                      <el-table-column label="开户名称(户名)" align="center" prop="acountsName"/>-->

@@ -14,7 +14,7 @@ export var mixin_record_fill = {
 			queryCompanyName: '',
 			// 司机的搜索信息
 			queryDriver: '',
-			// 我方公司的搜索信息
+			// 己方公司的搜索信息
 			querySelfAccount: '',
 			// 转账双方的信息
 			eachInfo: {
@@ -93,22 +93,22 @@ export var mixin_record_fill = {
 				this.form.targetId = val.id;
 			}
 		},
-		// 填充我方公司的银行卡信息
+		// 填充己方公司的银行卡信息
 		handleUpdateSelfAccount(val) {
 			this.querySelfAccount = val;
 		},
 		handleCommitBackSelfAccount(val) {
 			// 如果sourceType选了 并且选的是司机
-			if (this.form.sourceCompanyType && this.form.sourceCompanyType === '我方公司') {
+			if (this.form.sourceCompanyType && this.form.sourceCompanyType === '己方公司') {
 				// 填充展示字段
 				this.sourceName = val.acountsName;
 				this.form.sourceId = val.id;
 			}
 			// 如果targetType选了 并且选的是司机
-			if (this.form.targetCompanyType && this.form.targetCompanyType === '我方公司') {
+			if (this.form.targetCompanyType && this.form.targetCompanyType === '己方公司') {
 				// 填充展示字段
 				this.targetName = val.acountsName;
-				// 填充业务字段 默认给0 因为是我方公司
+				// 填充业务字段 默认给0 因为是己方公司
 				this.form.targetId = val.id;
 			}
 		},

@@ -458,8 +458,8 @@ export default {
 			// 账户类型
 			acountsTypeList: [
 				{
-					value: '我方公司',
-					label: '我方公司'
+					value: '己方公司',
+					label: '己方公司'
 				},
 				{
 					value: '客户',

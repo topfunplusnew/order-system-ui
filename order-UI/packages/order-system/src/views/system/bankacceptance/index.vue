@@ -152,7 +152,7 @@
 									<SearchOption
 										:get-data="listBankAccount"
 										:limit-info="{
-											accountType: '我方公司'
+											accountType: '己方公司'
 										}"
 										title="我方承兑账户"
 										query-label="户名查找"

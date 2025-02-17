@@ -210,7 +210,7 @@
 						</el-col>
 						<el-col :span="3">
 							<SearchOption
-								:limit-info="{ acountsType: '我方公司' }"
+								:limit-info="{ acountsType: '己方公司' }"
 								:get-data="listBankAccount"
 								icon="el-icon-search"
 								query-label="户名查找"
@@ -418,7 +418,7 @@
 							</el-col>
 							<el-col :span="3">
 								<SearchOption
-									:limit-info="{ acountsType: '我方公司' }"
+									:limit-info="{ acountsType: '己方公司' }"
 									:get-data="listBankAccount"
 									icon="el-icon-search"
 									query-label="户名查找"
@@ -494,7 +494,7 @@
 							</el-col>
 							<el-col :span="3">
 								<SearchOption
-									:limit-info="{ acountsType: '我方公司' }"
+									:limit-info="{ acountsType: '己方公司' }"
 									:get-data="listBankAccount"
 									icon="el-icon-search"
 									query-label="户名查找"
@@ -1027,7 +1027,6 @@ export default {
 				this.resetChooseInfo();
 				this.chooseInfo = row;
 				this.chooseBankDialogVisible = true;
-				// 如果有我方银行卡的信息了 那么就直接蹦出确定
 			} else {
 				this.$confirm('是否付款?', '提示', {
 					confirmButtonText: '是',

@@ -186,7 +186,7 @@
 										:get-data="listBankAccount"
 										icon="el-icon-search"
 										:limit-info="{
-											acountsType: '我方公司'
+											acountsType: '己方公司'
 										}"
 										query-label="户名查找"
 										query-info="acountsName"
@@ -239,7 +239,7 @@
 								<SearchOption
 									:get-data="listBankAccount"
 									icon="el-icon-search"
-									:limit-info="{ acountsType: '我方公司' }"
+									:limit-info="{ acountsType: '己方公司' }"
 									query-label="户名查找"
 									query-info="acountsName"
 									:query-name="queryBank"
