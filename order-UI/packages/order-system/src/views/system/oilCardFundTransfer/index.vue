@@ -122,7 +122,7 @@
 				</el-form-item>
 
 				<el-form-item :label="form.type === 1 ? `分配金额` : `圈存金额`" prop="rechargeMoney">
-					<el-input v-model="form.rechargeMoney" placeholder="请输入充值金额" />
+					<el-input v-model="form.rechargeMoney" :placeholder="form.type === 1 ? `请输入分配金额` : `请输入圈存金额`" />
 				</el-form-item>
 				<!--        <el-form-item label="充值人员姓名" prop="rechargeName">-->
 				<!--          <el-input v-model="form.rechargeName" placeholder="请输入充值人员姓名"/>-->
