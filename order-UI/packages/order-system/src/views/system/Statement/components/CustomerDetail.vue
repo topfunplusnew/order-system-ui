@@ -204,7 +204,7 @@ export default {
 				[TableName.INVOICE_OTHER]: INVOICE_ORTHER,
 				[TableName.OFFSETTING]: OFFSETTING,
 				[TableName.REBATE]: REBATE,
-				// 货物主表
+				// 货物主表、
 				[TableName.INVENTORMAIN]: INVENTORY,
 				// 需要前端在这两个明细表上进行适配bankacceptance
 				[TableName.BANK_ACCOUNT_CHANGE]: BANK_ACCEPTANCE,

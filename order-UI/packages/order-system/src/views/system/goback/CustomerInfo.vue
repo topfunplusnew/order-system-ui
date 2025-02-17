@@ -133,49 +133,39 @@ export default {
 		// 查询方法
 		getList() {
 			this.loading = true;
-			// 获取参数
-			const key = {
-				configKey: 'order.customerDetailSummary.subjectNo'
+			const body = {
+				beginTime: this.searchForm.startTime,
+				companyId: this.searchForm.companyId
 			};
-			getConfigValue(key).then(({ configValue, subjectName }) => {
-				if (!configValue || !subjectName) {
-					this.$message.warning('配置信息查询有误');
+			// 查询客户指定时间结转
+			getCustomerSubjectDetailSomeDay(body).then(res => {
+				// 校验
+				if (!res.data) {
+					this.$message.warning('上年结转数据不存在');
 					return;
 				}
-				// 查询明细账之前 要先查询上年结转的余额本币填充
-				const body = {
+				// 拿到上年的数据
+				const lastYearDetail = res.data;
+				const query = {
+					companyId: this.searchForm.companyId,
 					beginTime: this.searchForm.startTime,
-					companyId: this.searchForm.companyId
+					endTime: this.searchForm.endTime
 				};
-				// 查询客户指定时间结转
-				getCustomerSubjectDetailSomeDay(body).then(res => {
-					// 校验
-					if (!res.data) {
-						this.$message.warning('上年结转数据不存在');
-						return;
-					}
-					// 拿到上年的数据
-					const lastYearDetail = res.data;
-					// 参数 包含配置值 和 科目名称
-					const config = {
-						configValue,
-						subjectName
-					};
-					const query = {
-						companyId: this.searchForm.companyId,
-						beginTime: this.searchForm.startTime,
-						endTime: this.searchForm.endTime
-					};
-					// 查询客户明细账
-					this.checkCustomerDetail(query, lastYearDetail, config);
-				});
+				// 查询客户明细账
+				this.checkCustomerDetail(query, lastYearDetail);
 			});
 		},
-		checkCustomerDetail(query, lastYearDetail, config) {
+		checkCustomerDetail(query, lastYearDetail) {
 			// 查询客户明细账
 			getCustomerSubjectDetailSummary(query).then(res => {
 				if (!res.rows && !res.data) {
 					this.$message.warning('未查询到相关数据');
+					this.loading = false;
+					return;
+				}
+				if (res.rows.length === 0) {
+					this.$message.warning('未查询到相关数据');
+					this.loading = false;
 					return;
 				}
 				try {
@@ -201,10 +191,10 @@ export default {
 					});
 					// 添加到上年结转数据的后面
 					this.tableData = this.tableData.concat(append);
-					this.loading = false;
 				} catch (err) {
 					this.$message.error('计算错误:', err);
 				}
+				this.loading = false;
 			});
 		},
 		handleSearch(row) {
