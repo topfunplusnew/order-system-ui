@@ -19,6 +19,7 @@ import { getConfigValue } from '../data/config_get';
 import BANK_ACCEPTANCE from '@/components/NeedToShow/BANK_ACCEPTANCE.vue';
 import INVENTORYDETAILVue from '../../../../components/NeedToShow/INVENTORYDETAIL.vue';
 import ORDER_FREIGHTVue from '../../../../components/NeedToShow/ORDER_FREIGHT.vue';
+import RECEIVE_MONEY from '@/components/NeedToShow/RECEIVE_MONEY.vue';
 
 export default {
 	name: 'SupplierDetail',
@@ -71,6 +72,10 @@ export default {
 					configKey: 'order.customerDetailSummary.subjectNo'
 				};
 				getConfigValue(key).then(({ configValue, subjectName }) => {
+					if (!configValue || !subjectName) {
+						this.$message.warning('配置信息查询有误');
+						return;
+					}
 					// 查询明细账之前 要先查询上年结转的余额本币填充
 					const body = {
 						beginTime: query.beginTime,
@@ -185,13 +190,23 @@ export default {
 		getComponents(tableName) {
 			const components = {
 				[TableName.GOODS_ORDER]: GOODS_ORDER,
+				// 付款
 				[TableName.PAYMENT]: PAYMENT,
+				// 付款
+				[TableName.RECEIVE_MONEY]: RECEIVE_MONEY,
+				// 发票买入
 				[TableName.INVOICE_IN]: INVOICE_IN,
+				// 发票卖出
 				[TableName.INVOICE_OUT]: INVOICE_OUT,
+				// 第三方发票
 				[TableName.INVOICE_OTHER]: INVOICE_ORTHER,
+				// 冲抵货款
 				[TableName.OFFSETTING]: OFFSETTING,
+				// 返利
 				[TableName.REBATE]: REBATE,
+				// 货款
 				[TableName.INVENTORDETAIL]: INVENTORYDETAILVue,
+				// 货物
 				[TableName.ORDER_DETAIL]: ORDER_DETAIL,
 				// 需要前端在这两个明细表上进行适配bankacceptance
 				[TableName.BANK_ACCOUNT_CHANGE]: BANK_ACCEPTANCE,

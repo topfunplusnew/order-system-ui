@@ -16,13 +16,13 @@
 				</el-form-item>
 				<el-form-item>
 					<el-button type="primary" @click="handleSearch" size="small">查询</el-button>
-					<el-button type="success" @click="handleExport" size="small">导出Excel</el-button>
+					<el-button type="success" @click="excelExport" size="small">导出Excel</el-button>
 				</el-form-item>
 			</el-form>
 		</div>
 
 		<!-- 表格区域 -->
-		<el-table :data="tableData" border style="width: 100%" v-loading="loading" size="small">
+		<el-table id="educe-table" :data="tableData" border style="width: 100%" v-loading="loading" size="small">
 			<el-table-column prop="date" label="日期" width="120"></el-table-column>
 			<el-table-column prop="name" label="名称" min-width="120"></el-table-column>
 			<el-table-column prop="transactionDetail" label="交易明细" width="120">
@@ -49,23 +49,17 @@
 
 		<!-- 分页 -->
 		<div class="pagination-container">
-			<el-pagination
-				@size-change="handleSizeChange"
-				@current-change="handleCurrentChange"
-				:current-page="currentPage"
-				:page-sizes="[10, 20, 50, 100]"
-				:page-size="pageSize"
-				:total="total"
-				layout="total, sizes, prev, pager, next, jumper"
-				size="small"
-			></el-pagination>
+      <pagination v-show="total > 0" :total="total" :current-page.sync="searchForm.pageNum" :page-size.sync="searchForm.pageSize" @pagination="getList" />
 		</div>
 	</div>
 </template>
 
 <script>
+import { common_excel } from '@/views/dashboard/mixins/common/common_excel';
+
 export default {
 	name: 'SupplierInfo',
+	mixins: [common_excel],
 	data() {
 		return {
 			loading: false,
