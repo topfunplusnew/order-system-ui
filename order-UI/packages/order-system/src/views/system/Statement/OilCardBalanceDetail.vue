@@ -7,10 +7,10 @@
 				<el-form-item label="油卡号">
 					<el-input v-model="queryParams.oilCardNo" placeholder="请输入油卡号" clearable size="mini" />
 				</el-form-item>
-				<el-form-item label="时间" prop="companyName">
+				<el-form-item label="时间" prop="beginTime">
 					<el-date-picker v-model="queryParams.beginTime" type="date" size="mini" value-format="yyyy-MM-dd" placeholder="选择日期"></el-date-picker>
 				</el-form-item>
-				<el-form-item>
+				<el-form-item prop="endTime">
 					<el-date-picker v-model="queryParams.endTime" type="date" size="mini" value-format="yyyy-MM-dd" placeholder="选择日期"></el-date-picker>
 				</el-form-item>
 
@@ -59,7 +59,21 @@
 			<!-- 运行余额 -->
 			<el-table-column v-if="columns[4].visible" prop="runningBalance" label="余额 (元)" align="center">
 				<template #default="scope">
-					{{ scope.row.runningBalance.toFixed(2) }}
+					{{ scope.row.runningBalance || 0 }}
+				</template>
+			</el-table-column>
+
+			<!--      这里可能需要动态展示，因为只有副卡用得到这一列-->
+			<el-table-column v-if="oilFundType === OilCardType.SUB" prop="runningVirtualBalance" label="累计待圈存金额 (元)" align="center">
+				<template #default="scope">
+					{{ scope.row.runningVirtualBalance || `无` }}
+				</template>
+			</el-table-column>
+
+			<!--      这里也需要动态展示，如果是tableName = oilcardfundtransfer需要展示类型-->
+			<el-table-column prop="type" label="消费类型" align="center">
+				<template slot-scope="scope">
+					<el-tag size="mini" :type="scope.row.type | typeFilter">{{ scope.row.type | statusFilter }}</el-tag>
 				</template>
 			</el-table-column>
 
@@ -73,7 +87,7 @@
 			</el-table-column>
 
 			<!-- 操作列 -->
-			<el-table-column v-if="columns[5].visible" label="操作" align="center" width="120">
+			<el-table-column label="操作" align="center" width="120">
 				<template #default="scope">
 					<el-button type="text" size="mini" @click="viewDetail(scope.row)">查看明细</el-button>
 				</template>
@@ -115,9 +129,16 @@ import OIL_TRANSFOR from '@/components/NeedToShow/OIL_TRANSFOR.vue';
 import OIL_CONSUME from '@/components/NeedToShow/OIL_CONSUME.vue';
 import { getCarApply } from '@/api/system/carApply';
 import CAR_APPLY from '@/components/NeedToShow/CAR_APPLY.vue';
+import { listOilCard } from '@/api/system/oilCard';
+import { OilCardOptionType, OilCardType } from '@/api/tool/enums';
 
 export default {
 	name: 'OilCardBalanceDetail',
+	computed: {
+		OilCardType() {
+			return OilCardType;
+		}
+	},
 	mixins: [mixin_printHTML],
 	data() {
 		return {
@@ -136,36 +157,74 @@ export default {
 				{ key: 1, label: '油卡编号', visible: true },
 				{ key: 2, label: '变动日期', visible: true },
 				{ key: 3, label: '变动金额 (元)', visible: true },
-				{ key: 4, label: '运行余额 (元)', visible: true },
-				{ key: 5, label: '操作', visible: true }
+				{ key: 4, label: '运行余额 (元)', visible: true }
 			],
 			component: null,
-			needToShowInfo: null
+			needToShowInfo: null,
+
+			// 操作类型 只用作区分
+			oilFundType: null
 		};
 	},
 	created() {
 		// this.fetchOilCardDetails();
 	},
+	filters: {
+		statusFilter(type) {
+			switch (type) {
+				case OilCardOptionType.MAIN_TO_SUB:
+					return '主卡分配';
+				case OilCardOptionType.SUB_TO_SUB:
+					return '副卡圈存';
+				default:
+					return '无';
+			}
+		},
+		typeFilter(type) {
+			switch (type) {
+				case OilCardOptionType.MAIN_TO_SUB:
+					return 'success';
+				case OilCardOptionType.SUB_TO_SUB:
+					return 'warning';
+				default:
+					return 'info';
+			}
+		}
+	},
 	methods: {
 		async fetchOilCardDetails() {
-			try {
-				const response = await getOilCardDetailSummary(this.queryParams);
-				if (response.code === 200) {
-					this.oilCardDetails = response.data;
+			// 先获取一下油卡的类型
+			const query = { oilCardNo: this.queryParams.oilCardNo };
+			listOilCard(query).then(res => {
+				if (!res.data && !res.rows) {
+					this.$message.error('获取油卡信息失败');
+					return;
+				}
+				if (res.rows && res.rows.length === 0) {
+					this.$message.error('未查询到油卡信息');
+					return;
+				}
+				this.oilFundType = res.rows[0].oilType;
 
+				// 获取该张油卡的消费明细
+				getOilCardDetailSummary(this.queryParams).then(response => {
+					if (!response.data && !response.rows) {
+						this.$message.error(response.msg || '获取后端油卡详情失败');
+						return;
+					}
+					if (response.rows && response.rows.length === 0) {
+						this.$message.error('未查询到油卡详情信息');
+						return;
+					}
+					this.oilCardDetails = response.data;
 					// 计算总变动金额
 					this.totalChangeAmount = this.oilCardDetails.reduce((sum, item) => sum + item.changeAmount, 0);
-
 					// 获取最新运行余额（最后一条记录的 runningBalance）
 					if (this.oilCardDetails.length > 0) {
 						this.latestBalance = this.oilCardDetails[this.oilCardDetails.length - 1].runningBalance;
 					}
-				} else {
-					this.$message.error(response.msg || '获取油卡详情失败');
-				}
-			} catch (error) {
-				this.$message.error('获取油卡详情失败');
-			}
+				});
+			});
 		},
 		async fetchDetailById(query) {
 			switch (query.tableName) {

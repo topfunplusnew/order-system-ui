@@ -158,3 +158,13 @@ export const FreightSource = Object.freeze({
 	GOODS_ORDER: 'goodsorder',
 	INVENTORY_MAIN: 'inventory_main'
 });
+
+// 主副卡操作的分别
+export const OilCardType = Object.freeze({
+	MAIN: '主卡',
+	SUB: '副卡'
+});
+export const OilCardOptionType = Object.freeze({
+	MAIN_TO_SUB: 0,
+	SUB_TO_SUB: 1
+});

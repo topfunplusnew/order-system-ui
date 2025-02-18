@@ -1,11 +1,11 @@
 <template>
 	<div class="app-container">
 		<el-form v-show="showSearch" ref="queryForm" :model="queryParams" size="mini" :inline="true" label-width="68px">
-			<el-form-item label="主加油卡卡号" prop="oilMainCardNo">
-				<el-input v-model="queryParams.oilMainCardNo" placeholder="请输入主加油卡卡号" clearable @keyup.enter.native="handleQuery" />
+			<el-form-item label="加油卡卡号1" prop="oilMainCardNo">
+				<el-input v-model="queryParams.oilMainCardNo" placeholder="请输入加油卡卡号1" clearable @keyup.enter.native="handleQuery" />
 			</el-form-item>
-			<el-form-item label="副加油卡卡号" prop="oilSecondCardNo">
-				<el-input v-model="queryParams.oilSecondCardNo" placeholder="请输入副加油卡卡号" clearable @keyup.enter.native="handleQuery" />
+			<el-form-item label="加油卡卡号2" prop="oilSecondCardNo">
+				<el-input v-model="queryParams.oilSecondCardNo" placeholder="请输入加油卡卡号2" clearable @keyup.enter.native="handleQuery" />
 			</el-form-item>
 			<el-form-item label="充值时间" prop="rechargeDate">
 				<el-date-picker v-model="queryParams.rechargeDate" type="datetime" placeholder="选择充值时间" value-format="yyyy-MM-dd HH:mm:ss"></el-date-picker>
@@ -16,7 +16,7 @@
 		</el-form>
 		<el-row :gutter="10" class="mb8">
 			<el-col :span="1.5">
-				<el-button v-hasPermi="['system:oilcardfundtransfer:add']" type="primary" plain icon="el-icon-plus" size="mini" @click="handleAdd">新增加油卡圈存信息</el-button>
+				<el-button v-hasPermi="['system:oilcardfundtransfer:add']" type="primary" plain icon="el-icon-plus" size="mini" @click="handleAdd">新增加油卡操作信息</el-button>
 			</el-col>
 			<el-col :span="1.5">
 				<el-button icon="el-icon-refresh" size="mini" @click="resetQuery">重置</el-button>
@@ -51,12 +51,17 @@
 			@selection-change="handleSelectionChange"
 		>
 			<el-table-column v-if="columns[0].visible" label="id" align="center" prop="id" />
-			<el-table-column v-if="columns[1].visible" label="主加油卡卡号" align="center" prop="oilMainCardNo" />
-			<el-table-column v-if="columns[2].visible" label="副加油卡卡号" align="center" prop="oilSecondCardNo" />
-			<el-table-column v-if="columns[3].visible" label="充值金额" align="center" prop="rechargeMoney" />
-			<el-table-column v-if="columns[4].visible" label="充值时间" align="center" prop="rechargeDate" />
-			<el-table-column v-if="columns[5].visible" label="充值人员姓名" align="center" prop="rechargeName" />
-			<el-table-column v-if="columns[6].visible" label="备注" align="center" prop="comments" />
+			<el-table-column v-if="columns[1].visible" label="加油卡卡号1" align="center" prop="oilMainCardNo" />
+			<el-table-column v-if="columns[2].visible" label="加油卡卡号2" align="center" prop="oilSecondCardNo" />
+			<el-table-column v-if="columns[3].visible" label="消费类型" align="center" prop="rechargeMoney">
+				<template slot-scope="scope">
+					<el-tag size="mini" :type="scope.row.type | typeFilter">{{ scope.row.type | statusFilter }}</el-tag>
+				</template>
+			</el-table-column>
+			<el-table-column v-if="columns[4].visible" label="操作金额" align="center" prop="rechargeMoney" />
+			<el-table-column v-if="columns[5].visible" label="操作时间" align="center" prop="rechargeDate" />
+			<el-table-column v-if="columns[6].visible" label="操作人员姓名" align="center" prop="rechargeName" />
+			<el-table-column v-if="columns[7].visible" label="备注" align="center" prop="comments" />
 			<el-table-column label="操作" align="center" class-name="small-padding fixed-width">
 				<template slot-scope="scope">
 					<el-button v-hasPermi="['system:oilcardfundtransfer:edit']" size="mini" type="primary" @click="handleUpdate(scope.row)">修改</el-button>
@@ -67,14 +72,14 @@
 
 		<pagination v-show="total > 0" :total="total" :page.sync="queryParams.pageNum" :limit.sync="queryParams.pageSize" @pagination="getList" />
 
-		<!-- 添加或修改加油卡圈存对话框 -->
+		<!-- 添加或修改加油卡操作对话框 -->
 		<el-dialog :close-on-click-modal="false" :show-close="false" :title="title" :visible.sync="open" width="500px" append-to-body>
 			<el-form ref="form" :model="form" :rules="rules" label-width="120px">
-				<el-form-item label="充值类型" prop="type">
-					<el-radio v-model="form.type" :label="1">主卡分配</el-radio>
-					<el-radio v-model="form.type" :label="2">副卡圈存</el-radio>
+				<el-form-item label="消费类型" prop="type">
+					<el-radio v-model="form.type" :label="OilCardOptionType.MAIN_TO_SUB">主卡分配</el-radio>
+					<el-radio v-model="form.type" :label="OilCardOptionType.SUB_TO_SUB">副卡圈存</el-radio>
 				</el-form-item>
-				<el-form-item label="主加油卡卡号" prop="oilMainCardNo" v-if="form.type === 1">
+				<el-form-item label="主加油卡卡号" prop="oilMainCardNo" v-if="form.type === OilCardOptionType.MAIN_TO_SUB">
 					<el-row>
 						<el-col :span="10">
 							<el-input disabled v-model="form.oilMainCardNo" placeholder="请选择" />
@@ -121,8 +126,8 @@
 					</el-row>
 				</el-form-item>
 
-				<el-form-item :label="form.type === 1 ? `分配金额` : `圈存金额`" prop="rechargeMoney">
-					<el-input v-model="form.rechargeMoney" :placeholder="form.type === 1 ? `请输入分配金额` : `请输入圈存金额`" />
+				<el-form-item :label="form.type === OilCardOptionType.MAIN_TO_SUB ? `分配金额` : `圈存金额`" prop="rechargeMoney">
+					<el-input v-model="form.rechargeMoney" :placeholder="form.type === OilCardOptionType.MAIN_TO_SUB ? `请输入分配金额` : `请输入圈存金额`" />
 				</el-form-item>
 				<!--        <el-form-item label="充值人员姓名" prop="rechargeName">-->
 				<!--          <el-input v-model="form.rechargeName" placeholder="请输入充值人员姓名"/>-->
@@ -146,9 +151,15 @@ import SearchOption from '@/components/SearchOption.vue';
 import { listOilCard } from '@/api/system/oilCard';
 import { excludeParams } from '@/api/tool/exclude';
 import { parseTime } from '../../../utils/ruoyi';
+import { OilCardOptionType } from '@/api/tool/enums';
 
 export default {
 	name: 'OilCardFundTransfer',
+	computed: {
+		OilCardOptionType() {
+			return OilCardOptionType;
+		}
+	},
 	components: { SearchOption },
 	mixins: [mixin_printHTML],
 	data() {
@@ -165,7 +176,7 @@ export default {
 			showSearch: true,
 			// 总条数
 			total: 0,
-			// 加油卡圈存表格数据
+			// 加油卡操作表格数据
 			oilCardFundTransferList: [],
 			// 弹出层标题
 			title: '',
@@ -209,7 +220,7 @@ export default {
 				type: [
 					{
 						required: true,
-						message: '请选择充值类型',
+						message: '请选择消费类型',
 						trigger: 'blur'
 					}
 				],
@@ -236,10 +247,11 @@ export default {
 				{ key: 0, label: `id`, visible: true },
 				{ key: 1, label: `主加油卡卡号`, visible: true },
 				{ key: 2, label: `副加油卡卡号`, visible: true },
-				{ key: 3, label: `充值金额`, visible: true },
-				{ key: 4, label: `充值时间`, visible: true },
-				{ key: 5, label: `充值人员姓名`, visible: true },
-				{ key: 6, label: `备注`, visible: true }
+				{ key: 3, label: `操作金额`, visible: true },
+				{ key: 4, label: `消费类型`, visible: true },
+				{ key: 5, label: `操作时间`, visible: true },
+				{ key: 6, label: `操作人员姓名`, visible: true },
+				{ key: 7, label: `备注`, visible: true }
 			],
 
 			queryOilCard: '',
@@ -264,6 +276,28 @@ export default {
 			this.columns = JSON.parse(localStorage.getItem('oilcardfundtransfer-columns'));
 		}
 	},
+	filters: {
+		statusFilter(type) {
+			switch (type) {
+				case OilCardOptionType.MAIN_TO_SUB:
+					return '主卡分配';
+				case OilCardOptionType.SUB_TO_SUB:
+					return '副卡圈存';
+				default:
+					return '未知类型';
+			}
+		},
+		typeFilter(type) {
+			switch (type) {
+				case OilCardOptionType.MAIN_TO_SUB:
+					return 'success';
+				case OilCardOptionType.SUB_TO_SUB:
+					return 'warning';
+				default:
+					return 'info';
+			}
+		}
+	},
 	methods: {
 		listOilCard,
 		// 主卡
@@ -280,7 +314,7 @@ export default {
 		handleCommitBackQueryOilCardOther(val) {
 			this.queryOilCardOther = val;
 		},
-		/** 查询加油卡圈存列表 */
+		/** 查询加油卡操作列表 */
 		getList() {
 			this.loading = true;
 			listOilCardFundTransfer(this.queryParams).then(response => {
@@ -303,8 +337,8 @@ export default {
 				rechargeMoney: null,
 				rechargeDate: parseTime(new Date(), '{y}-{m}-{d} {h}:{i}:{s}'),
 				rechargeName: null,
-				// 2025-2-17 油卡充值类型 1：主卡分配 2.副卡圈存
-				type: 1,
+				// 2025-2-17 油卡消费类型 1：主卡分配 2.副卡圈存
+				type: OilCardOptionType.MAIN_TO_SUB,
 				comments: null,
 				addtime: null,
 				userId: null,
@@ -334,7 +368,7 @@ export default {
 		handleAdd() {
 			this.reset();
 			this.open = true;
-			this.title = '添加加油卡圈存';
+			this.title = '添加加油卡操作';
 		},
 		/** 修改按钮操作 */
 		handleUpdate(row) {
@@ -343,13 +377,21 @@ export default {
 			getOilCardFundTransfer(id).then(response => {
 				this.form = response.data;
 				this.open = true;
-				this.title = '修改加油卡圈存';
+				this.title = '修改加油卡操作';
 			});
 		},
 		/** 提交按钮 */
 		submitForm() {
 			this.$refs['form'].validate(valid => {
 				if (valid) {
+					// 如果第一张卡为空 并且选择的类型是圈存
+					if (!this.form.oilMainCardNo && this.form.type === OilCardOptionType.SUB_TO_SUB) {
+						this.form.oilMainCardNo = this.form.oilSecondCardNo;
+					}
+					if (this.form.oilMainCardNo == null && this.form.type === OilCardOptionType.MAIN_TO_SUB) {
+						this.$modal.msgError('主卡卡号不能为空');
+						return;
+					}
 					if (this.form.id != null) {
 						this.form = excludeParams(this.form, this.$exclude);
 						updateOilCardFundTransfer(this.form).then(() => {
@@ -372,7 +414,7 @@ export default {
 		handleDelete(row) {
 			const ids = row.id || this.ids;
 			this.$modal
-				.confirm('是否确认删除加油卡圈存编号为"' + ids + '"的数据项？')
+				.confirm('是否确认删除加油卡操作编号为"' + ids + '"的数据项？')
 				.then(function () {
 					return delOilCardFundTransfer(ids);
 				})

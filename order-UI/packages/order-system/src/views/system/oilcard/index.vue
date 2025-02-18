@@ -62,6 +62,7 @@
 					<el-table id="printBox" v-loading="loading" v-horizontal-scroll="'always'" border size="mini" :data="subCardList" @selection-change="handleSelectionChange">
 						<el-table-column v-if="columns[0].visible" label="加油卡卡号" align="center" prop="oilCardNo" />
 						<el-table-column v-if="columns[1].visible" label="可用金额" align="center" prop="moneyAmount" />
+						<el-table-column label="待圈存金额" align="center" prop="virtualMoneyAmount" />
 						<el-table-column v-if="columns[2].visible" label="备注" align="center" prop="comments" />
 						<el-table-column label="操作" align="center" class-name="small-padding fixed-width" fixed="right">
 							<template slot-scope="scope">
