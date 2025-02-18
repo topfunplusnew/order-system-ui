@@ -56,7 +56,7 @@
 					{{ scope.row.tableName === 'oilrecharge' ? '充值' : scope.row.tableName === 'oilcardfundtransfer' ? '圈存' : '消费' }}
 				</template>
 			</el-table-column>
-			<!-- 运行余额 -->
+			<!-- 余额 -->
 			<el-table-column v-if="columns[4].visible" prop="runningBalance" label="余额 (元)" align="center">
 				<template #default="scope">
 					{{ scope.row.runningBalance || 0 }}
@@ -73,7 +73,8 @@
 			<!--      这里也需要动态展示，如果是tableName = oilcardfundtransfer需要展示类型-->
 			<el-table-column prop="type" label="消费类型" align="center">
 				<template slot-scope="scope">
-					<el-tag size="mini" :type="scope.row.type | typeFilter">{{ scope.row.type | statusFilter }}</el-tag>
+					<el-tag v-if="scope.row.tableName === TableName.OIL_CARD_FUND_TRANSFER" size="mini" :type="scope.row.type | typeFilter">{{ scope.row.type | statusFilter }}</el-tag>
+					<el-tag v-else>无</el-tag>
 				</template>
 			</el-table-column>
 
@@ -102,7 +103,7 @@
 				元
 			</div>
 			<div>
-				最新运行余额:
+				最新余额:
 				<b>{{ latestBalance.toFixed(2) }}</b>
 				元
 			</div>
@@ -130,11 +131,14 @@ import OIL_CONSUME from '@/components/NeedToShow/OIL_CONSUME.vue';
 import { getCarApply } from '@/api/system/carApply';
 import CAR_APPLY from '@/components/NeedToShow/CAR_APPLY.vue';
 import { listOilCard } from '@/api/system/oilCard';
-import { OilCardOptionType, OilCardType } from '@/api/tool/enums';
+import { OilCardOptionType, OilCardType, TableName } from '@/api/tool/enums';
 
 export default {
 	name: 'OilCardBalanceDetail',
 	computed: {
+		TableName() {
+			return TableName;
+		},
 		OilCardType() {
 			return OilCardType;
 		}
@@ -144,7 +148,7 @@ export default {
 		return {
 			oilCardDetails: [], // 存储油卡数据
 			totalChangeAmount: 0, // 总变动金额
-			latestBalance: 0, // 最新运行余额
+			latestBalance: 0, // 最新余额
 			detailDialogVisible: false, // 控制明细弹窗显示
 			detailInfo: [], // 存储明细信息
 			queryParams: {
@@ -157,7 +161,7 @@ export default {
 				{ key: 1, label: '油卡编号', visible: true },
 				{ key: 2, label: '变动日期', visible: true },
 				{ key: 3, label: '变动金额 (元)', visible: true },
-				{ key: 4, label: '运行余额 (元)', visible: true }
+				{ key: 4, label: '余额 (元)', visible: true }
 			],
 			component: null,
 			needToShowInfo: null,
@@ -219,7 +223,7 @@ export default {
 					this.oilCardDetails = response.data;
 					// 计算总变动金额
 					this.totalChangeAmount = this.oilCardDetails.reduce((sum, item) => sum + item.changeAmount, 0);
-					// 获取最新运行余额（最后一条记录的 runningBalance）
+					// 获取最新余额（最后一条记录的 runningBalance）
 					if (this.oilCardDetails.length > 0) {
 						this.latestBalance = this.oilCardDetails[this.oilCardDetails.length - 1].runningBalance;
 					}

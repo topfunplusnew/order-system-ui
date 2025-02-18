@@ -22,6 +22,9 @@
 			<el-col :span="1.5">
 				<el-button type="danger" size="mini" @click="handleMoney">加油卡充值</el-button>
 			</el-col>
+			<el-col :span="1.5">
+				<el-button type="success" size="mini" @click="handleOption">加油卡操作</el-button>
+			</el-col>
 			<right-toolbar :showSearch.sync="showSearch" :columns="columns" @queryTable="getList">
 				<template #print>
 					<el-col :span="1.5">
@@ -182,6 +185,76 @@
 			</div>
 		</el-dialog>
 
+		<!--    加油卡操作功能-->
+		<el-dialog :close-on-click-modal="false" :show-close="false" title="加油卡操作" :visible.sync="optionVisible" width="500px" append-to-body>
+			<el-form ref="oilCardForm" :model="oilCardOption" :rules="optionRules" label-width="120px">
+				<el-form-item label="消费类型" prop="type">
+					<el-radio v-model="oilCardOption.type" :label="OilCardOptionType.MAIN_TO_SUB">主卡分配</el-radio>
+					<el-radio v-model="oilCardOption.type" :label="OilCardOptionType.SUB_TO_SUB">副卡圈存</el-radio>
+				</el-form-item>
+				<el-form-item label="主加油卡卡号" prop="oilMainCardNo" v-if="oilCardOption.type === OilCardOptionType.MAIN_TO_SUB">
+					<el-row>
+						<el-col :span="10">
+							<el-input disabled v-model="oilCardOption.oilMainCardNo" placeholder="请选择" />
+						</el-col>
+						<el-col :span="4">
+							<SearchOption
+								:get-data="listOilCard"
+								query-info="oilCardNo"
+								:query-name="queryOilCard"
+								query-label="油卡账号查询"
+								:limit-info="{ oilType: '主卡' }"
+								@commitBack="handleCommitBackOilCard"
+								@update:queryName="handleCommitBackQueryOilCard"
+							>
+								<template #table-columns>
+									<el-table-column label="加油卡卡号" align="center" prop="oilCardNo" />
+									<el-table-column label="当前金额" align="center" prop="moneyAmount" />
+								</template>
+							</SearchOption>
+						</el-col>
+					</el-row>
+				</el-form-item>
+				<el-form-item label="副加油卡卡号" prop="oilSecondCardNo">
+					<el-row>
+						<el-col :span="10">
+							<el-input disabled v-model="oilCardOption.oilSecondCardNo" placeholder="请选择" />
+						</el-col>
+						<el-col :span="4">
+							<SearchOption
+								:get-data="listOilCard"
+								query-info="oilCardNo"
+								:query-name="queryOilCardOther"
+								query-label="油卡账号查询"
+								:limit-info="{ oilType: '副卡' }"
+								@commitBack="handleCommitBackOilCardOther"
+								@update:queryName="handleCommitBackQueryOilCardOther"
+							>
+								<template #table-columns>
+									<el-table-column label="加油卡卡号" align="center" prop="oilCardNo" />
+									<el-table-column label="当前金额" align="center" prop="moneyAmount" />
+								</template>
+							</SearchOption>
+						</el-col>
+					</el-row>
+				</el-form-item>
+
+				<el-form-item :label="oilCardOption.type === OilCardOptionType.MAIN_TO_SUB ? `分配金额` : `圈存金额`" prop="rechargeMoney">
+					<el-input v-model="oilCardOption.rechargeMoney" :placeholder="oilCardOption.type === OilCardOptionType.MAIN_TO_SUB ? `请输入分配金额` : `请输入圈存金额`" />
+				</el-form-item>
+				<!--        <el-form-item label="充值人员姓名" prop="rechargeName">-->
+				<!--          <el-input v-model="form.rechargeName" placeholder="请输入充值人员姓名"/>-->
+				<!--        </el-form-item>-->
+				<el-form-item label="备注" prop="comments">
+					<el-input v-model="oilCardOption.comments" placeholder="请输入备注" />
+				</el-form-item>
+			</el-form>
+			<div slot="footer" class="dialog-footer">
+				<el-button type="primary" @click="submitOilCardOption">确 定</el-button>
+				<el-button @click="cancelOilCardOption">取 消</el-button>
+			</div>
+		</el-dialog>
+
 		<div v-if="currentComponent">
 			<DialogWrapper
 				:current-component="currentComponent"
@@ -209,6 +282,8 @@ import { getOilCardDetailSummary } from '../../../api/system/statement';
 import OilCardDetail from '../Statement/OilCardDetail.vue';
 import { common_dialog } from '../../dashboard/mixins/common/common_dialog';
 import DialogWrapper from '../../dashboard/components/common/DialogWrapper.vue';
+import { OilCardOptionType } from '@/api/tool/enums';
+import { addOilCardFundTransfer, updateOilCardFundTransfer } from '@/api/system/oilCardFundTransfer';
 
 export default {
 	name: 'OilCard',
@@ -320,10 +395,60 @@ export default {
 					label: '银行卡'
 				}
 			],
-			queryBankAcount: ''
+			queryBankAcount: '',
+
+			// 2025-2-18 新增 油卡操作 功能
+			oilCardOption: {},
+			optionVisible: false,
+			queryOilCard: '',
+			queryOilCardOther: '',
+			optionRules: {
+				oilMainCardNo: [
+					{
+						required: true,
+						message: '请输入主加油卡卡号',
+						trigger: 'blur'
+					}
+				],
+				oilSecondCardNo: [
+					{
+						required: true,
+						message: '请输入副加油卡卡号',
+						trigger: 'blur'
+					}
+				],
+				type: [
+					{
+						required: true,
+						message: '请选择消费类型',
+						trigger: 'blur'
+					}
+				],
+				rechargeMoney: [
+					{
+						required: true,
+						message: '请输入充值金额',
+						trigger: 'blur'
+					},
+					// 金额校验
+					{
+						validator: (rule, value, callback) => {
+							if (!/^\d+(\.\d{1,2})?$/.test(value)) {
+								callback(new Error('请输入正确的金额'));
+							} else {
+								callback();
+							}
+						},
+						trigger: 'blur'
+					}
+				]
+			}
 		};
 	},
 	computed: {
+		OilCardOptionType() {
+			return OilCardOptionType;
+		},
 		change: {
 			set() {
 				this.isMain = !this.isMain;
@@ -368,6 +493,21 @@ export default {
 		handleUpdateQueryName(val) {
 			this.queryCard = val;
 		},
+		// 2025-2-18 新增 油卡操作 功能
+		handleCommitBackOilCard(val) {
+			this.oilCardOption.oilMainCardNo = val.oilCardNo;
+		},
+		handleCommitBackQueryOilCard(val) {
+			this.queryOilCard = val;
+		},
+		// 副卡
+		handleCommitBackOilCardOther(val) {
+			this.oilCardOption.oilSecondCardNo = val.oilCardNo;
+		},
+		handleCommitBackQueryOilCardOther(val) {
+			this.queryOilCardOther = val;
+		},
+		// 上传
 		handleUpload(val) {
 			this.moneyInfo.attachment = val;
 		},
@@ -382,16 +522,46 @@ export default {
 			this.moneyInfo.rechargeName = this.trueName;
 			this.moneyDialogVisible = true;
 		},
+		handleOption() {
+			this.resetOption();
+			this.optionVisible = true;
+		},
+		submitOilCardOption() {
+			this.$refs['oilCardForm'].validate(valid => {
+				if (valid) {
+					// 如果第一张卡为空 并且选择的类型是圈存
+					if (!this.oilCardOption.oilMainCardNo && this.oilCardOption.type === OilCardOptionType.SUB_TO_SUB) {
+						this.oilCardOption.oilMainCardNo = this.oilCardOption.oilSecondCardNo;
+					}
+					if (this.oilCardOption.oilMainCardNo == null && this.oilCardOption.type === OilCardOptionType.MAIN_TO_SUB) {
+						this.$modal.msgError('主卡卡号不能为空');
+						return;
+					}
+					if (this.oilCardOption.id != null) {
+						this.$message.error('暂不支持修改');
+					}
+					this.oilCardOption = excludeParams(this.oilCardOption, this.$exclude);
+					addOilCardFundTransfer(this.oilCardOption).then(() => {
+						this.$modal.msgSuccess('新增成功,请前往加油卡操作记录查看');
+						this.optionVisible = false;
+						this.getList();
+					});
+				}
+			});
+		},
+		cancelOilCardOption() {
+			this.optionVisible = false;
+			this.resetOption();
+		},
 		// 确认银行卡充值
 		submitMoney() {
 			// 添加
 			addOilRecharge(this.moneyInfo).then(() => {
 				this.$message.success('油卡充值信息新增成功，请前往出差管理/加油卡充值记录查看');
+				this.moneyDialogVisible = false;
 			});
-			this.moneyDialogVisible = false;
 		},
 		handleCommitBack(val) {
-			console.log(val);
 			// 自动填充加油卡信息
 			this.moneyInfo.oilCardNo = val.oilCardNo;
 		},
@@ -444,6 +614,25 @@ export default {
 				delFlag: null
 			};
 			this.resetForm('form');
+		},
+		resetOption() {
+			this.oilCardOption = {
+				id: null,
+				oilMainCardNo: null,
+				oilSecondCardNo: null,
+				rechargeMoney: null,
+				rechargeDate: parseTime(new Date(), '{y}-{m}-{d} {h}:{i}:{s}'),
+				rechargeName: null,
+				// 2025-2-17 油卡消费类型 1：主卡分配 2.副卡圈存
+				type: OilCardOptionType.MAIN_TO_SUB,
+				comments: null,
+				addtime: null,
+				userId: null,
+				UserName: null,
+				updateTime: null,
+				delFlag: null
+			};
+			this.resetForm('oilCardOption');
 		},
 		// 打印按钮操作
 		printHTML() {
