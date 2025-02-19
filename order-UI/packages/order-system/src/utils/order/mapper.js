@@ -34,6 +34,7 @@ import { getSocialInsurance } from '../../api/system/socialInsurance';
 import { getStoreHouse } from '../../api/system/StoreHouse';
 import { TableName } from '../../api/tool/enums';
 import { getGenTable } from '../../api/tool/gen';
+import { getRecord } from '@/api/system/record';
 
 export function getFunction(tableName) {
 	switch (tableName) {
@@ -48,7 +49,7 @@ export function getFunction(tableName) {
 		case TableName.INVOICE_OTHER:
 			return getInvoiceOther;
 		case TableName.OFFSETTING:
-			return getOffsetting;
+			return getRecord;
 		case TableName.REBATE:
 			return getRebate;
 		case TableName.INVENTORMAIN:
