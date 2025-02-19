@@ -53,11 +53,27 @@
 					<el-button v-if="scope.row.payNo" type="text" size="mini" @click="handleSearch(scope.row)">点击查询对应信息</el-button>
 				</template>
 			</el-table-column>
-			<el-table-column prop="lender" label="借方(付供应商货款)"></el-table-column>
-			<el-table-column prop="borrower" label="贷方(在供应商那里提货)"></el-table-column>
+			<el-table-column prop="lender" label="借方(客户提货+买票点)">
+				<template slot-scope="scope">
+					<div v-for="(item, index) in scope.row.detailList" :key="index">
+						<span style="color: red; margin-right: 6px">[{{ moduleNames[item.tableName] }}]</span>
+						<span style="margin-right: 7px">{{ item.lender }}</span>
+						<i class="el-icon-s-order" style="cursor: pointer" @click="handleCheckDetail(item)"></i>
+					</div>
+				</template>
+			</el-table-column>
+			<el-table-column prop="borrower" label="贷方(收客户款)">
+				<template slot-scope="scope">
+					<div v-for="(item, index) in scope.row.detailList" :key="index">
+						<span style="color: red; margin-right: 6px">[{{ moduleNames[item.tableName] }}]</span>
+						<span style="margin-right: 7px">{{ item.borrower }}</span>
+						<i class="el-icon-s-order" style="cursor: pointer" @click="handleCheckDetail(item)"></i>
+					</div>
+				</template>
+			</el-table-column>
 			<el-table-column prop="moneyAmountLocal" label="余额本币">
 				<template slot-scope="scope">
-					<span :class="{ negative: scope.row.moneyAmountLocal < 0 }">{{ scope.row.moneyAmountLocal }}</span>
+					<span :class="{ negative: scope.row.moneyAmountLocal < 0 }">{{ fix(scope.row.moneyAmountLocal) }}</span>
 				</template>
 			</el-table-column>
 		</el-table>
@@ -80,9 +96,9 @@ import { listCompany } from '@/api/system/company';
 import { common_excel } from '@/views/dashboard/mixins/common/common_excel';
 import { getConfigValue } from '@/views/system/Statement/data/config_get';
 import { getSupplierSubjectDetailSomeDay, getSupplierSubjectDetailSummary } from '@/api/system/statement';
-import { fix } from '@/api/tool/format';
+import { aggregateByDay, fix } from '@/api/tool/format';
 import { getFunction } from '@/utils/order/mapper';
-import { TableName } from '@/api/tool/enums';
+import { moduleNames, TableName } from '@/api/tool/enums';
 import GOODS_ORDER from '@/components/NeedToShow/GOODS_ORDER.vue';
 import PAYMENT from '@/components/NeedToShow/PAYMENT.vue';
 import INVOICE_IN from '@/components/NeedToShow/INVOICE_IN.vue';
@@ -100,6 +116,9 @@ import ORDER_DETAIL from '@/components/NeedToShow/ORDER_DETAIL.vue';
 export default {
 	name: 'SupplierInfo',
 	computed: {
+		moduleNames() {
+			return moduleNames;
+		},
 		PUBLIC_DICT_TYPE() {
 			return PUBLIC_DICT_TYPE;
 		}
@@ -137,6 +156,7 @@ export default {
 		}
 	},
 	methods: {
+		fix,
 		listCompany,
 		// 查询方法
 		getList() {
@@ -211,12 +231,15 @@ export default {
 						};
 					});
 					// 添加到上年结转数据的后面
-					this.tableData = this.tableData.concat(append);
+					this.tableData = aggregateByDay(append, `moneyAmountLocal`, `operateDate`);
 				} catch (err) {
 					this.$message.error('计算错误:', err);
 				}
 				this.loading = false;
 			});
+		},
+		handleCheckDetail(row) {
+			this.handleSearch(row);
 		},
 		handleSearch(row) {
 			// 拿到表名和id

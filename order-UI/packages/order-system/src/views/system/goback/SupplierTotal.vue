@@ -123,7 +123,7 @@ export default {
 			companyName: null,
 			rules: {
 				endTime: [{ required: true, message: '请选择时间', trigger: 'blur' }]
-  			}
+			}
 		};
 	},
 	created() {
