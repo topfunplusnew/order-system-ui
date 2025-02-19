@@ -70,7 +70,7 @@
 		</el-table>
 
 		<!-- 分页 -->
-		<pagination v-show="total > 0" :total="total" :current-page.sync="searchForm.pageNum" :page-size.sync="searchForm.pageSize" @pagination="getList" />
+		<!--		<pagination v-show="total > 0" :total="total" :current-page.sync="searchForm.pageNum" :page-size.sync="searchForm.pageSize" @pagination="getList" />-->
 		<div v-if="currentComponent">
 			<DialogWrapper
 				:current-component="currentComponent"
@@ -123,8 +123,6 @@ export default {
 			companyName: null,
 			rules: {
 				endTime: [{ required: true, message: '请选择时间', trigger: 'blur' }],
-				balanceCompare: [{ required: true, message: '请选择比较符', trigger: 'blur' }],
-				balanceValue: [{ required: true, message: '请输入余额', trigger: 'blur' }],
 				customer: [{ required: true, message: '请选择客户', trigger: 'blur' }]
 			}
 		};
@@ -141,13 +139,13 @@ export default {
 					this.loading = true;
 					const queryCustomer = new QueryCustomer();
 					queryCustomer.getCompanySummaryAndLastOrderTime(this.searchForm).then(res => {
-						if (!res.rows) {
+						if (!res.rows && !res.data) {
 							this.$message.warning('当前搜索条件下，无相关信息');
 							this.loading = false;
 							return;
 						}
-						this.tableData = res.rows;
-						this.total = res.total;
+						this.tableData = res.rows || res.data;
+						// this.total = res.total;
 						this.loading = false;
 					});
 				}

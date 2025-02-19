@@ -215,7 +215,7 @@ export default {
 		getList() {
 			this.queryParams.params.tableNames = _.cloneDeep(this.tables);
 			getFundChangeDetail(this.queryParams).then(res => {
-				if (!res.rows) {
+				if (!res.rows && !res.data) {
 					this.$message.warning('当前搜索条件下，无相关信息');
 					return;
 				}

@@ -184,7 +184,7 @@ export default {
 					this.loading = false;
 					return;
 				}
-				if (res.rows.length === 0) {
+				if (res.rows && res.rows.length === 0) {
 					this.$message.warning('未查询到相关数据');
 					this.loading = false;
 					return;
