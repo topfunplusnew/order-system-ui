@@ -50,25 +50,24 @@
 			<el-table-column prop="operateDate" label="日期"></el-table-column>
 			<el-table-column prop="payNo" label="欠款明细">
 				<template slot-scope="scope">
-					<el-button v-if="scope.row.payNo" type="text" size="mini" @click="handleSearch(scope.row)">点击查询对应信息</el-button>
-				</template>
-			</el-table-column>
-			<el-table-column prop="lender" label="借方(客户提货+买票点)">
-				<template slot-scope="scope">
-					<div v-for="(item, index) in scope.row.detailList" :key="index">
+					<div v-for="(item, index) in scope.row.lenderList" :key="index">
 						<span style="color: red; margin-right: 6px">[{{ moduleNames[item.tableName] }}]</span>
 						<span style="margin-right: 7px">{{ item.lender }}</span>
 						<i class="el-icon-s-order" style="cursor: pointer" @click="handleCheckDetail(item)"></i>
 					</div>
 				</template>
 			</el-table-column>
+			<el-table-column prop="lender" label="借方(客户提货+买票点)">
+				<template slot-scope="scope">
+					<span>
+						{{ scope.row.lender }}
+					</span>
+				</template>
+			</el-table-column>
 			<el-table-column prop="borrower" label="贷方(收客户款)">
 				<template slot-scope="scope">
-					<div v-for="(item, index) in scope.row.detailList" :key="index">
-						<span style="color: red; margin-right: 6px">[{{ moduleNames[item.tableName] }}]</span>
-						<span style="margin-right: 7px">{{ item.borrower }}</span>
-						<i class="el-icon-s-order" style="cursor: pointer" @click="handleCheckDetail(item)"></i>
-					</div>
+					<span style="margin-right: 10px">{{ scope.row.borrower }}</span>
+					<i class="el-icon-s-order" style="cursor: pointer" @click="handleCheckBorrowerDetailList(scope.row)"></i>
 				</template>
 			</el-table-column>
 			<el-table-column prop="moneyAmountLocal" label="余额本币">
@@ -86,6 +85,21 @@
 		<el-dialog title="信息" :visible.sync="infoVisible" width="900px" append-to-body>
 			<component :is="Components" :need-to-show-info="needToShowInfo" />
 		</el-dialog>
+
+		<el-dialog title="明细信息" :visible.sync="detailVisible" width="900px" append-to-body>
+			<el-table :data="detailList" border style="width: 100%" v-loading="loading" size="mini" :summary-method="getSummaries" show-summary>
+				<el-table-column prop="operateDate" label="日期"></el-table-column>
+				<el-table-column prop="payNo" label="凭证号"></el-table-column>
+				<el-table-column prop="lender" label="借方(客户提货+买票点)"></el-table-column>
+				<el-table-column prop="borrower" label="贷方(收客户款)"></el-table-column>
+				<el-table-column prop="moneyAmountLocal" label="余额本币"></el-table-column>
+				<el-table-column label="查看明细">
+					<template slot-scope="scope">
+						<i class="el-icon-s-order" style="cursor: pointer" @click="handleCheckDetail(scope.row)"></i>
+					</template>
+				</el-table-column>
+			</el-table>
+		</el-dialog>
 	</div>
 </template>
 
@@ -94,7 +108,6 @@ import SearchOption from '@/components/SearchOption.vue';
 import { PUBLIC_DICT_TYPE } from '@/utils/order';
 import { listCompany } from '@/api/system/company';
 import { common_excel } from '@/views/dashboard/mixins/common/common_excel';
-import { getConfigValue } from '@/views/system/Statement/data/config_get';
 import { getSupplierSubjectDetailSomeDay, getSupplierSubjectDetailSummary } from '@/api/system/statement';
 import { aggregateByDay, fix } from '@/api/tool/format';
 import { getFunction } from '@/utils/order/mapper';
@@ -146,7 +159,10 @@ export default {
 				startTime: [{ required: true, message: '请选择开始时间', trigger: 'blur' }],
 				endTime: [{ required: true, message: '请选择结束时间', trigger: 'blur' }],
 				supplier: [{ required: true, message: '请选择供应商', trigger: 'blur' }]
-			}
+			},
+			detailLoading: false,
+			detailList: [],
+			detailVisible: false
 		};
 	},
 	created() {
@@ -196,6 +212,41 @@ export default {
 			});
 			this.tableData = [];
 		},
+		getSummaries(param) {
+			const { columns, data } = param;
+			const sums = [];
+			columns.forEach((column, index) => {
+				if (index === 0) {
+					sums[index] = '总价';
+					return;
+				}
+				const values = data.map(item => Number(item[column.property]));
+				const exclude = ['operateDate', 'payNo', 'lender', 'borrower'];
+				if (exclude.includes(column.property)) {
+					sums[index] = '';
+					return;
+				}
+				if (!values.every(value => isNaN(value))) {
+					sums[index] = values.reduce((prev, curr) => {
+						const value = Number(curr);
+						if (!isNaN(value)) {
+							return prev + curr;
+						} else {
+							return prev;
+						}
+					}, 0);
+					sums[index] += ' 元';
+				} else {
+					sums[index] = 'N/A';
+				}
+			});
+
+			return sums;
+		}, // 贷方查看明细的弹窗
+		handleCheckBorrowerDetailList(row) {
+			this.detailList = row.borrowerList;
+			this.detailVisible = true;
+		},
 		checkCustomerDetail(query, lastYearDetail) {
 			// 查询供应商明细账
 			getSupplierSubjectDetailSummary(query).then(res => {
@@ -214,20 +265,50 @@ export default {
 					let lastMoney = Number(lastYearDetail.moneyAmount);
 					// 累计金额
 					let nowMoney = Number(0);
+					let totalLender = 0,
+						totalBorrower = 0,
+						lenderDetailList = [],
+						borrowerDetailList = [];
+					// 计算总和
+					res.data.forEach(item => {
+						const amount = Number(item.moneyAmount);
+						if (amount > 0) {
+							totalLender += amount;
+						} else if (amount < 0) {
+							totalBorrower += amount;
+						}
+					});
 					// 拿到汇总账
 					const append = res.data.map(item => {
 						// 金额累计计算
-						nowMoney = lastMoney + Number(item.moneyAmount);
+						nowMoney = Number(lastMoney) + Number(item.moneyAmount);
 						// 更新
 						lastMoney = nowMoney;
-						return {
+
+						const mapped = {
 							operateDate: item.operateDate,
 							payNo: item.payNo,
-							lender: fix(item.moneyAmount) > 0 ? fix(item.moneyAmount) : 0,
-							borrower: fix(item.moneyAmount) < 0 ? fix(item.moneyAmount) : 0,
+							// 借贷钱数总和
+							lender: totalLender,
+							borrower: totalBorrower,
+							// 余额本币
 							moneyAmountLocal: fix(nowMoney),
 							// 模块名
 							tableName: item.tableName
+						};
+						lenderDetailList.push({
+							...mapped,
+							lender: fix(item.moneyAmount) > 0 ? fix(item.moneyAmount) : 0
+						});
+						borrowerDetailList.push({
+							...mapped,
+							borrower: fix(item.moneyAmount) < 0 ? fix(item.moneyAmount) : 0
+						});
+						return {
+							...mapped,
+							// 借贷明细列表
+							lenderList: lenderDetailList,
+							borrowerList: borrowerDetailList
 						};
 					});
 					// 添加到上年结转数据的后面

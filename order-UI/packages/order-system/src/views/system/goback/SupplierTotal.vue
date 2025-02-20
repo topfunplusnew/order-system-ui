@@ -61,7 +61,6 @@
 					<span :class="{ negative: scope.row.moneyAmount < 0 }">{{ scope.row.moneyAmount }}</span>
 				</template>
 			</el-table-column>
-			<el-table-column prop="lastOrderTime" label="最后一次交易日期"></el-table-column>
 			<el-table-column label="查看供应商信息" align="center">
 				<template slot-scope="scope">
 					<el-link :underline="false" type="primary" @click="handleViewSUPPLIERInfo(scope.row.companyId)">查看</el-link>
