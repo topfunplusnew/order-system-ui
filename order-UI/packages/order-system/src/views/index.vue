@@ -117,17 +117,17 @@
 						<div style="font-weight: bold; font-size: 24px; color: #156fb2; line-height: 60px">利润</div>
 					</el-col>
 					<el-form :inline="true" :model="queryParams">
-						<el-form-item label="开始时间">
-							<el-date-picker
-								v-model="queryParams.startTime"
-								type="datetime"
-								size="mini"
-								value-format="yyyy-MM-dd HH:mm:ss"
-								placeholder="开始日期"
-								class="responsive-date-picker"
-							></el-date-picker>
-						</el-form-item>
-						<el-form-item label="结束时间">
+						<!--						<el-form-item label="开始时间">-->
+						<!--							<el-date-picker-->
+						<!--								v-model="queryParams.startTime"-->
+						<!--								type="datetime"-->
+						<!--								size="mini"-->
+						<!--								value-format="yyyy-MM-dd HH:mm:ss"-->
+						<!--								placeholder="开始日期"-->
+						<!--								class="responsive-date-picker"-->
+						<!--							></el-date-picker>-->
+						<!--						</el-form-item>-->
+						<el-form-item label="时间">
 							<el-date-picker
 								v-model="queryParams.endTime"
 								type="datetime"
@@ -138,18 +138,18 @@
 							></el-date-picker>
 						</el-form-item>
 						<el-form-item>
-							<el-button type="primary" size="mini" @click="handleSearch">搜索</el-button>
+							<el-button type="primary" size="mini" @click="handleProfitSearch">搜索</el-button>
 						</el-form-item>
 					</el-form>
 				</el-row>
 				<el-row>
-					<el-table height="130" :empty-text="' '">
-						<el-table-column prop="date" label="￥0" align="center">
-							<el-table-column prop="date" label="利润总额">
-								<el-table-column prop="date" label="费用合计"></el-table-column>
+					<el-table height="130" :empty-text="' '" :data="dailyProfit">
+						<el-table-column :label="`￥${moneyAmount}`" align="center">
+							<el-table-column prop="dailyProfit" label="利润总额">
+								<el-table-column prop="dailyExpense" label="费用合计"></el-table-column>
 							</el-table-column>
-							<el-table-column label="￥0">
-								<el-table-column label="￥0"></el-table-column>
+							<el-table-column :label="`￥${dailyProfit}`">
+								<el-table-column :label="`￥${dailyExpense}`"></el-table-column>
 							</el-table-column>
 						</el-table-column>
 					</el-table>
@@ -160,7 +160,7 @@
 </template>
 
 <script>
-import { getDeliveryList } from '../api/system/statement';
+import { getDailyProfit, getDeliveryList } from '../api/system/statement';
 import { mixin_printHTML } from './dashboard/mixins/print';
 
 export default {
@@ -211,7 +211,10 @@ export default {
 				{ key: 11, label: `柜号`, visible: true },
 				{ key: 12, label: `车队`, visible: true },
 				{ key: 13, label: `运费`, visible: true }
-			]
+			],
+			dailyProfit: null,
+			dailyExpense: null,
+			moneyAmount: null
 		};
 	},
 	computed: {
@@ -221,10 +224,19 @@ export default {
 	},
 	created() {
 		this.getList();
+		this.handleProfitSearch();
 	},
 	methods: {
 		handleSearch() {
 			this.getList();
+		},
+		handleProfitSearch() {
+			this.dailyProfit = [];
+			getDailyProfit(this.queryParams).then(res => {
+				this.dailyProfit = res.data.dailyProfit;
+				this.dailyExpense = res.data.dailyExpense;
+				this.moneyAmount = res.data.dailyProfit - res.data.dailyExpense;
+			});
 		},
 		getList() {
 			this.loading = true;

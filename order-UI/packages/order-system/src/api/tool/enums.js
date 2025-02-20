@@ -168,3 +168,22 @@ export const OilCardOptionType = Object.freeze({
 	MAIN_TO_SUB: 0,
 	SUB_TO_SUB: 1
 });
+
+export const PaymentOptions = Object.freeze([
+	{
+		value: '客户',
+		label: '客户'
+	},
+	{
+		value: '供应商',
+		label: '供应商'
+	},
+	{
+		value: '司机',
+		label: '司机'
+	},
+	{
+		value: '对外付款',
+		label: '对外付款'
+	}
+]);

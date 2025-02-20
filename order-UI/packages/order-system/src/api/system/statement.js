@@ -401,3 +401,17 @@ export function getMoneyChangeSummary(query) {
 		params: query
 	});
 }
+
+/**
+ * 获取每日利润
+ * @param {Object} query
+ * @param {string} query.endTime - 结束时间
+ * @returns
+ */
+export function getDailyProfit(query) {
+	return request({
+		url: '/statistics/getHomeProfitExpenseTotal',
+		method: 'get',
+		params: query
+	});
+}

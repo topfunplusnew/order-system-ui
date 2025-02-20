@@ -18,6 +18,9 @@ import { listBankAccount } from '@/api/system/bankAccount';
 import { excludeParams } from '@/api/tool/exclude';
 import { addPayment, updatePayment } from '@/api/system/payment';
 import CheckFiles from '@/components/CheckFiles.vue';
+import { OTHER_TYPE } from '@/utils/order';
+import { PaymentOptions } from '@/api/tool/enums';
+import { listCars } from '@/api/system/cars';
 
 export default {
 	name: 'Index',
@@ -190,6 +193,13 @@ export default {
 		...mapGetters(['checked'])
 	},
 	methods: {
+		listCars,
+		PaymentOptions() {
+			return PaymentOptions;
+		},
+		OTHER_TYPE() {
+			return OTHER_TYPE;
+		},
 		listBankAccount,
 		listCompany,
 		handleAdd() {
@@ -282,7 +292,7 @@ export default {
 						// 填充公司类型
 						this.form.companyType = this.value;
 						// 拼凑body
-						const body = { ...this.form, payType: paymentType };
+						const body = { ...this.form, payType: paymentType, tableName: 'daily' };
 						// 添加付款信息
 						addPayment(body).then(() => {
 							this.$modal.msgSuccess('新增成功');
@@ -339,7 +349,7 @@ export default {
 			</el-col>
 
 			<el-col :span="1.5">
-				<el-button size="mini" type="danger" @click="handleAdd">新增付款信息</el-button>
+				<el-button size="mini" type="danger" @click="handleAdd">申请日常费用报销</el-button>
 			</el-col>
 
 			<right-toolbar :columns="columns">
@@ -516,9 +526,11 @@ export default {
 				<el-form-item label="我方开户行" prop="selfBankName">
 					<el-input disabled v-model="form.selfBankName" placeholder="请选择" />
 				</el-form-item>
+
+				<!--        2025-2-21 付款新增 后端说不需要对方信息-->
 				<el-form-item label="对方类型">
 					<el-select v-model="value" placeholder="请选择">
-						<el-option v-for="item in options" :key="item.value" :label="item.label" :value="item.value"></el-option>
+						<el-option v-for="item in PaymentOptions()" :key="item.value" :label="item.label" :value="item.value"></el-option>
 					</el-select>
 				</el-form-item>
 
