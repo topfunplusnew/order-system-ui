@@ -221,8 +221,6 @@ export default {
 						return;
 					}
 					this.oilCardDetails = response.data;
-
-					console.log(this.oilCardDetails, response.data);
 					// 计算总变动金额
 					this.totalChangeAmount = this.oilCardDetails.reduce((sum, item) => sum + item.changeAmount, 0);
 					// 获取最新余额（最后一条记录的 runningBalance）

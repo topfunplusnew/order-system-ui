@@ -429,3 +429,17 @@ export function getDailyExpenseReports(query) {
 		params: query
 	});
 }
+
+/**
+ * 原系统数据统计模块的数据统计页面
+ * @param {Object} query
+ * @param {string} query.date - 结束时间
+ * @returns
+ */
+export function getOrderSystemData(query) {
+	return request({
+		url: '/statistics/getSystemMultiDimensionData',
+		method: 'get',
+		params: query
+	});
+}
