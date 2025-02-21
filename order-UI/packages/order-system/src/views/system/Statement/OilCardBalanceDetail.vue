@@ -47,13 +47,13 @@
 			<!-- 变动金额 -->
 			<el-table-column v-if="columns[3].visible" prop="changeAmount" label="变动金额 (元)" align="center">
 				<template #default="scope">
-					{{ scope.row.changeAmount.toFixed(2) }}
+					{{ scope.row.changeAmount }}
 				</template>
 			</el-table-column>
 
 			<el-table-column prop="tableName" label="业务名称" align="center">
 				<template #default="scope">
-					{{ scope.row.tableName === 'oilrecharge' ? '充值' : scope.row.tableName === 'oilcardfundtransfer' ? '圈存' : '消费' }}
+					{{ scope.row.tableName === 'oilrecharge' ? '充值' : scope.row.tableName === 'oilcardfundtransfer' ? '分配或圈存' : '消费' }}
 				</template>
 			</el-table-column>
 			<!-- 余额 -->
@@ -221,6 +221,8 @@ export default {
 						return;
 					}
 					this.oilCardDetails = response.data;
+
+					console.log(this.oilCardDetails, response.data);
 					// 计算总变动金额
 					this.totalChangeAmount = this.oilCardDetails.reduce((sum, item) => sum + item.changeAmount, 0);
 					// 获取最新余额（最后一条记录的 runningBalance）
