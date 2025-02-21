@@ -110,9 +110,10 @@ export const ReportType = Object.freeze({
 	},
 	// 运费
 	FREIGHT: {
-		goodsorder: '应付运费',
+		goodsorder: '付运费',
 		offsetting: '冲抵货款',
-		inventory: '应付运费'
+		inventory_main: '付运费',
+		orderfreight: '司机运费'
 	}
 });
 
