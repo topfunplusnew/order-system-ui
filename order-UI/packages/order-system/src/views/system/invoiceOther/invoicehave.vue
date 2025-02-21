@@ -59,7 +59,8 @@
 				</template>
 			</el-table-column>
 			<el-table-column v-if="columns[4].visible" label="供应商公司名称" align="center" prop="Supplier" show-overflow-tooltip />
-			<el-table-column v-if="columns[5].visible" label="订单信息" align="center" prop="isOrderTax" width="180" show-overflow-tooltip>
+			<el-table-column v-if="columns[5].visible" label="客户公司名称" align="center" prop="customer" show-overflow-tooltip />
+			<el-table-column v-if="columns[6].visible" label="订单信息" align="center" prop="isOrderTax" width="180" show-overflow-tooltip>
 				<template slot-scope="scope">
 					<el-row v-if="scope.row.isOrderTax === 0">无关联订单</el-row>
 					<el-row v-else>
@@ -77,7 +78,7 @@
 					<CheckFiles :path="scope.row.invoiceAttachments" @needToUpdate="value => handleUpdateFilePath(value, scope.row, 'paymentReceipts', getInvoiceOther, updateInvoiceOther)" />
 				</template>
 			</el-table-column>
-			<el-table-column v-if="columns[6].visible" label="备注" align="center" prop="comments" />
+			<el-table-column v-if="columns[7].visible" label="备注" align="center" prop="comments" />
 			<el-table-column label="操作" align="center" class-name="small-padding fixed-width">
 				<template slot-scope="scope">
 					<el-button v-hasPermi="['system:invoiceother:edit']" size="mini" type="primary" @click="handleUpdate(scope.row)">修改</el-button>
@@ -376,11 +377,11 @@ export default {
 				{ key: 2, label: `供应商票点`, visible: true },
 				{ key: 3, label: `供应商票点金额`, visible: true },
 				{ key: 4, label: `供应商公司名称`, visible: true },
-				// {key: 5, label: `客户公司名称`, visible: true},
-				{ key: 5, label: `票据单位名称`, visible: true },
+				{ key: 5, label: `客户公司名称`, visible: true },
+				{ key: 6, label: `票据单位名称`, visible: true },
 				// {key: 7, label: `客户票点`, visible: true},
 				// {key: 8, label: `票点金额`, visible: true},
-				{ key: 6, label: `备注`, visible: true }
+				{ key: 7, label: `备注`, visible: true }
 			],
 			checkOrderInfoVisible: false,
 			orderInfo: {}

@@ -109,5 +109,7 @@ export function getFunction(tableName) {
 			return getBalanceAccounts;
 		case TableName.STOREHOUSE:
 			return getStoreHouse;
+		case TableName.BANK_ACCEPTANCE:
+			return getBankAcceptance;
 	}
 }

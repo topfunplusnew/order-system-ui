@@ -153,7 +153,6 @@ export default {
 					this.dialogVisible = true;
 				} catch (err) {
 					this.$message.warning('查询失败');
-					return;
 				}
 			});
 		},

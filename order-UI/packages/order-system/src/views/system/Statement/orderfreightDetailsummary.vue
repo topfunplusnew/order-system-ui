@@ -267,7 +267,6 @@ export default {
 							// 如果能查出来 那么就推入到头部
 							this.detailList.unshift(item);
 						}
-						console.log(this.detailList);
 						this.$message.success('查询成功');
 						this.detailVisible = true;
 					});

@@ -1,6 +1,7 @@
 // 系统常用枚举类
 
 export const TableName = Object.freeze({
+	BANK_ACCEPTANCE: 'bankacceptance',
 	BANK_ACCOUNT_CHANGE: 'bankaccountchange',
 	BORROWED_MONEY: 'borrowedmoney',
 	BUSINESS_TRIP: 'businesstrip',
@@ -91,7 +92,8 @@ export const ReportType = Object.freeze({
 		invoiceother: '发票购入',
 		goodsorder: '客户提货',
 		offsetting: '冲抵货款',
-		balanceaccounts: '平账'
+		balanceaccounts: '平账',
+		bankacceptance: '商业票据'
 	},
 	// 供应商
 	SUPPLIER: {

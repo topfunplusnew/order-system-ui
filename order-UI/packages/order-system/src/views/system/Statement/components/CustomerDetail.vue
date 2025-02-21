@@ -207,7 +207,7 @@ export default {
 				// 货物主表、
 				[TableName.INVENTORMAIN]: INVENTORY,
 				// 需要前端在这两个明细表上进行适配bankacceptance
-				[TableName.BANK_ACCOUNT_CHANGE]: BANK_ACCEPTANCE,
+				[TableName.BANK_ACCEPTANCE]: BANK_ACCEPTANCE,
 				[TableName.ORDER_FREIGHT]: ORDER_FREIGHTVue
 			};
 			return components[tableName] || null; // 默认返回 null，如果没有匹配的 tableName
