@@ -49,9 +49,9 @@
 					<el-option v-for="item in OptionInvent()" :key="item.value" :label="item.label" :value="item.value"></el-option>
 				</el-select>
 			</el-form-item>
-			<el-form-item label="调整次数" v-if="isAdjust">
-				<el-input v-model="queryParams.isAdjust" placeholder="请输入调整次数" size="mini" clearable />
-			</el-form-item>
+			<!--			<el-form-item label="调整次数" v-if="isAdjust">-->
+			<!--				<el-input v-model="queryParams.isAdjust" placeholder="请输入调整次数" size="mini" clearable />-->
+			<!--			</el-form-item>-->
 			<el-form-item>
 				<el-button type="primary" icon="el-icon-search" size="mini" @click="handleQuery">搜索</el-button>
 			</el-form-item>

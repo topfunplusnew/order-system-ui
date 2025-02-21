@@ -415,3 +415,17 @@ export function getDailyProfit(query) {
 		params: query
 	});
 }
+
+/**
+ * 获取原系统日常费用日报表
+ * @param {Object} query
+ * @param {string} query.endTime - 结束时间
+ * @returns
+ */
+export function getDailyExpenseReports(query) {
+	return request({
+		url: '/statistics/selectDailyExpenseReportsByDate',
+		method: 'get',
+		params: query
+	});
+}
