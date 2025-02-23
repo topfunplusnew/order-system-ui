@@ -443,3 +443,17 @@ export function getOrderSystemData(query) {
 		params: query
 	});
 }
+
+/**
+ * 额外报表，本日应当利润
+ * @param {Object} query
+ * @param {string} query.date - 结束时间
+ * @returns
+ */
+export function getDailyProfitStatistics(query) {
+	return request({
+		url: '/statistics/getDailyProfitStatistics',
+		method: 'get',
+		params: query
+	});
+}

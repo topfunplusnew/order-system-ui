@@ -433,7 +433,6 @@
 <script>
 import { listRebate, getRebate, delRebate, addRebate, updateRebate } from '@/api/system/Rebate';
 import { mixin_printHTML } from '@/views/dashboard/mixins/print';
-// import ApplyPayment from '@/views/dashboard/components/common/ApplyPayment.vue';
 import { TableName } from '@/api/tool/enums';
 import { listGoodsOrder } from '@/api/system/goodsOrder';
 import OrderInfos from '@/views/dashboard/components/goodsOrder/OrderInfos.vue';
@@ -446,7 +445,6 @@ import OrderDetailList from '../../dashboard/components/rebate/OrderDetailList.v
 import { mixin_choose_order } from '../../dashboard/mixins/rebate/choose_order';
 import { mixin_rebate_fill } from '../../dashboard/mixins/rebate/rebate_fill';
 import { isNull } from '../../../main';
-// import BankType from '@/views/dashboard/components/common/BankType.vue';
 import { listOrderDetailByIds } from '@/api/system/orderDetail';
 import { mixin_bankType } from '../../dashboard/mixins/common/common_bankType';
 import { getUuid } from '../../../utils/trash/utils';
@@ -545,12 +543,7 @@ export default {
 						message: '系数不能为空',
 						trigger: 'blur'
 					},
-					{ min: 0, message: '系数必须大于0', trigger: 'blur' },
-					{
-						type: 'number',
-						message: '系数必须为数字值',
-						trigger: 'blur'
-					}
+					{ min: 0, message: '系数必须大于0', trigger: 'blur' }
 				],
 				rebateDate: [
 					{
@@ -565,12 +558,7 @@ export default {
 						message: '返利金额不能为空',
 						trigger: 'blur'
 					},
-					{ min: 0, message: '返利金额必须大于0', trigger: 'blur' },
-					{
-						type: 'number',
-						message: '返利金额必须为数字值',
-						trigger: 'blur'
-					}
+					{ min: 0, message: '返利金额必须大于0', trigger: 'blur' }
 				],
 				rebateType: [
 					{

@@ -99,6 +99,7 @@ import { moduleNames } from '../../../api/tool/enums';
 import { PARAMS_TRANSFORM } from './index.js';
 
 import _ from 'lodash';
+import { parseTime } from '@/utils/ruoyi';
 
 export default {
 	name: 'MoneyChange',
@@ -157,7 +158,7 @@ export default {
 					startTime: null,
 					endTime: null,
 					tableNames: filtersModule,
-					targetDate: null
+					targetDate: parseTime(new Date(), '{y}-{m}-{d}')
 				}
 			},
 			changeList: [],

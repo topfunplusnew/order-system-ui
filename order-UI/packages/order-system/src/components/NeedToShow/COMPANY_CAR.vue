@@ -11,7 +11,7 @@ export default {
 		// 提取 extraInfo 的附件列表
 		attachments() {
 			// todo 附件需要处理一下
-			return this.needToSowInfo.extraInfo ? Object.values(this.needToShowInfo.extraInfo) : [];
+			return this.needToShowInfo.extraInfo ? Object.values(this.needToShowInfo.extraInfo.attachments) : [];
 		}
 	},
 	methods: {

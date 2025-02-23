@@ -116,20 +116,10 @@
 					<el-col :span="24">
 						<div style="font-weight: bold; font-size: 24px; color: #156fb2; line-height: 60px">利润</div>
 					</el-col>
-					<el-form :inline="true" :model="queryParams">
-						<!--						<el-form-item label="开始时间">-->
-						<!--							<el-date-picker-->
-						<!--								v-model="queryParams.startTime"-->
-						<!--								type="datetime"-->
-						<!--								size="mini"-->
-						<!--								value-format="yyyy-MM-dd HH:mm:ss"-->
-						<!--								placeholder="开始日期"-->
-						<!--								class="responsive-date-picker"-->
-						<!--							></el-date-picker>-->
-						<!--						</el-form-item>-->
+					<el-form :inline="true" :model="queryParamsHome">
 						<el-form-item label="时间">
 							<el-date-picker
-								v-model="queryParams.endTime"
+								v-model="queryParamsHome.endTime"
 								type="datetime"
 								size="mini"
 								value-format="yyyy-MM-dd HH:mm:ss"
@@ -194,6 +184,9 @@ export default {
 				pageNum: 1,
 				pageSize: 10
 			},
+			queryParamsHome: {
+				endTime: formatDate(endTime)
+			},
 			tableData: [],
 			total: 0,
 			columns: [
@@ -217,11 +210,6 @@ export default {
 			moneyAmount: null
 		};
 	},
-	computed: {
-		xs() {
-			return this.$store.state.viewport === 'xs';
-		}
-	},
 	created() {
 		this.getList();
 		this.handleProfitSearch();
@@ -232,7 +220,7 @@ export default {
 		},
 		handleProfitSearch() {
 			this.dailyProfit = [];
-			getDailyProfit(this.queryParams).then(res => {
+			getDailyProfit(this.queryParamsHome).then(res => {
 				this.dailyProfit = res.data.dailyProfit;
 				this.dailyExpense = res.data.dailyExpense;
 				this.moneyAmount = res.data.dailyProfit - res.data.dailyExpense;
@@ -245,14 +233,6 @@ export default {
 				this.total = res.total;
 				this.loading = false;
 			});
-		},
-		reset() {
-			this.queryParams = {
-				startTime: '',
-				endTime: '',
-				pageNum: 1,
-				pageSize: 10
-			};
 		},
 		handleExport() {
 			this.download(
