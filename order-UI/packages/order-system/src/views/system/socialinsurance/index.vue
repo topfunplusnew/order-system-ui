@@ -10,9 +10,11 @@
 			<el-form-item label="人员编号" prop="employeeID">
 				<el-input v-model="queryParams.employeeID" placeholder="请输入人员编号" clearable @keyup.enter.native="handleQuery" />
 			</el-form-item>
+			<el-form-item label="缴纳时间" prop="insuranceDate">
+				<el-date-picker v-model="queryParams.insuranceDate" type="date" placeholder="选择时间" value-format="yyyy-MM-dd" size="mini"></el-date-picker>
+			</el-form-item>
 			<el-form-item>
 				<el-button type="primary" icon="el-icon-search" size="mini" @click="handleQuery">搜索</el-button>
-				<!--        <el-button icon="el-icon-refresh" size="mini" @click="resetQuery">重置</el-button>-->
 			</el-form-item>
 		</el-form>
 
