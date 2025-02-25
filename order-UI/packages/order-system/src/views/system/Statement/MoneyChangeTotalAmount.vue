@@ -9,9 +9,11 @@ export default {
 				startTime: '',
 				endTime: ''
 			},
-			changeTableData: []
+			changeTableData: [],
+			spanArr: [] // 存储合并信息的数组
 		};
 	},
+	created() {},
 	methods: {
 		async handleChangeSearch() {
 			const response = await getMoneyChangeSummary(this.changeForm);
@@ -104,16 +106,14 @@ export default {
 
 			<!-- 表格 -->
 			<el-row :gutter="10">
-				<el-table :data="changeTableData" border class="money-table" :row-style="tableRowClassName">
+				<el-table :data="changeTableData" border class="money-table" :row-style="tableRowClassName" :span-method="objectSpanMethod">
 					<el-table-column prop="label" label="项目"></el-table-column>
 					<el-table-column prop="value" label="基准日期金额" :formatter="formatValue"></el-table-column>
-					<!--					<el-table-column prop="label" label="对比日资金流变动">-->
-					<!--						<template slot="scope">-->
-					<!--							<div>-->
-					<!--								即：等于对比日订单系统-&#45;&#45;&#45;&#45;&#45;&#45;数据统计-&#45;&#45;订单系统利润（&#45;&#45;67000）-->
-					<!--							</div>-->
-					<!--						</template>-->
-					<!--					</el-table-column>-->
+					<el-table-column prop="des" label="对比日资金流变动">
+						<template slot-scope="scope">
+							<div>{{ scope.row.value - scope.row.anotherLabel }}</div>
+						</template>
+					</el-table-column>
 					<el-table-column prop="anotherLabel" label="对比日期总额" :formatter="formatValue"></el-table-column>
 					<el-table-column prop="anotherValue" label="对比日期总额变动情况(对比日期-基准日期)" :formatter="formatValue"></el-table-column>
 				</el-table>
