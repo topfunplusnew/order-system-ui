@@ -117,15 +117,18 @@
 						<div style="font-weight: bold; font-size: 24px; color: #156fb2; line-height: 60px">利润</div>
 					</el-col>
 					<el-form :inline="true" :model="queryParamsHome">
-						<el-form-item label="时间">
+						<el-form-item label="开始日期">
 							<el-date-picker
-								v-model="queryParamsHome.endTime"
-								type="datetime"
+								v-model="queryParamsHome.beginTime"
+								type="date"
 								size="mini"
-								value-format="yyyy-MM-dd HH:mm:ss"
-								placeholder="结束日期"
+								value-format="yyyy-MM-dd"
+								placeholder="开始日期"
 								class="responsive-date-picker"
 							></el-date-picker>
+						</el-form-item>
+						<el-form-item label="时间">
+							<el-date-picker v-model="queryParamsHome.endTime" type="date" size="mini" value-format="yyyy-MM-dd" placeholder="结束日期" class="responsive-date-picker"></el-date-picker>
 						</el-form-item>
 						<el-form-item>
 							<el-button type="primary" size="mini" @click="handleProfitSearch">搜索</el-button>
@@ -152,6 +155,7 @@
 <script>
 import { getDailyProfit, getDeliveryList } from '../api/system/statement';
 import { mixin_printHTML } from './dashboard/mixins/print';
+import { parseTime } from '@/utils/ruoyi';
 
 export default {
 	name: 'Index',
@@ -185,7 +189,8 @@ export default {
 				pageSize: 10
 			},
 			queryParamsHome: {
-				endTime: formatDate(endTime)
+				beginTime: parseTime(new Date(), '{y}-{m}-{d}'),
+				endTime: formatDate(new Date(), '{y}-{m}-{d}')
 			},
 			tableData: [],
 			total: 0,
