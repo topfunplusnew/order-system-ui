@@ -49,13 +49,7 @@
 			<el-table-column v-if="columns[4].visible" label="备注" align="center" prop="comments" show-overflow-tooltip />
 			<el-table-column label="操作" align="center" class-name="small-padding fixed-width" fixed="right">
 				<template slot-scope="scope">
-					<!--          <el-button-->
-					<!--            size="mini"-->
-					<!--            type="primary"-->
-					<!--            @click="handleUpdate(scope.row)"-->
-					<!--            v-hasPermi="['system:recovermoney:edit']"-->
-					<!--          >修改-->
-					<!--          </el-button>-->
+					<el-button size="mini" type="primary" @click="handleUpdateRecoverMoney(scope.row)" v-hasPermi="['system:recovermoney:edit']">修改</el-button>
 					<el-button v-hasPermi="['system:recovermoney:remove']" size="mini" type="danger" @click="handleDelete(scope.row)">删除</el-button>
 				</template>
 			</el-table-column>
@@ -240,7 +234,7 @@ export default {
 			this.title = '添加借出款收回信息';
 		},
 		/* /!** 修改按钮操作 *!/
-    handleUpdate(row) {
+    handleUpdateRecoverMoney(row) {
       this.reset();
       const id = row.id || this.ids
       getRecoverMoney(id).then(response => {
@@ -250,7 +244,7 @@ export default {
       });
     },*/
 		/** 修改按钮操作 */
-		handleUpdate(row) {
+		handleUpdateRecoverMoney(row) {
 			this.$prompt('请输入编辑原因', '提示', {
 				confirmButtonText: '确定',
 				cancelButtonText: '取消',

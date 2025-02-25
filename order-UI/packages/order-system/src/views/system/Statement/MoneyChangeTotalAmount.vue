@@ -1,5 +1,6 @@
 <script>
 import { getMoneyChangeSummary } from '@/api/system/statement';
+import {fix} from "order-system/src/api/tool/format";
 
 export default {
 	name: 'MoneyChangeTotalAmount',
@@ -15,6 +16,7 @@ export default {
 	},
 	created() {},
 	methods: {
+    fix,
 		async handleChangeSearch() {
 			const response = await getMoneyChangeSummary(this.changeForm);
 			const data = response.data;
@@ -111,7 +113,7 @@ export default {
 					<el-table-column prop="value" label="基准日期金额" :formatter="formatValue"></el-table-column>
 					<el-table-column prop="des" label="对比日资金流变动">
 						<template slot-scope="scope">
-							<div>{{ scope.row.value - scope.row.anotherLabel }}</div>
+							<div>{{ fix(scope.row.value - scope.row.anotherLabel) }}</div>
 						</template>
 					</el-table-column>
 					<el-table-column prop="anotherLabel" label="对比日期总额" :formatter="formatValue"></el-table-column>
