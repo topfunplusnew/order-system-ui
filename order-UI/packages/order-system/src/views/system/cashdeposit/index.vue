@@ -102,6 +102,7 @@
 				<el-table-column label="操作" align="center" class-name="small-padding fixed-width" width="230px" fixed="right">
 					<template slot-scope="scope">
 						<el-row>
+							<el-button size="mini" type="text" @click="checkDetail(scope.row)">查看历史收回</el-button>
 							<el-button v-if="scope.row.checkState === '未申请'" size="mini" type="text" @click="applyForPayment(scope.row)">申请付款</el-button>
 							<el-button v-if="scope.row.checkState === '审核中'" size="mini" type="warning" disabled>审核中</el-button>
 							<el-button v-hasPermi="['system:lendmoney:remove']" size="mini" type="text" @click="handleGetBackMoney(scope.row)">收回资金</el-button>
@@ -280,13 +281,39 @@
 				<ApplyPayment :table-name="TableName.LEND_MONEY" :t-i-d="tid" :need-money="needMoney" :need-info="needInfo" @changeOpen="changeOpen" />
 			</keep-alive>
 		</el-dialog>
+
+		<InfoDialog title="历史还款记录" :visible.sync="dialogHistoryVisible" :width="'620px'">
+			<template #info>
+				<el-table
+					v-if="tableData.length !== 0"
+					:data="tableData"
+					size="mini"
+					:cell-style="
+						() => {
+							return { padding: '2px' };
+						}
+					"
+					border
+					:span-method="mergeCells"
+				>
+					<el-table-column prop="" width="180">
+						<template #default="scope">
+							<span v-if="scope.$index === 0">期货保证金收回</span>
+						</template>
+					</el-table-column>
+					<el-table-column prop="recoverDate" label="时间" width="180"></el-table-column>
+					<el-table-column prop="moneyAmount" label="收回金额"></el-table-column>
+				</el-table>
+				<pagination v-show="detailTotal > 0" :total="detailTotal" :page.sync="queryRepaymentParams.pageNum" :limit.sync="queryRepaymentParams.pageSize" @pagination="getRepaymentMoneyList" />
+			</template>
+		</InfoDialog>
 	</div>
 </template>
 
 <script>
 import { addLendMoney, delLendMoney, getLendMoney, listLendMoney, updateLendMoney } from '@/api/system/lendMoney';
 import { mapGetters } from 'vuex';
-import { addRecoverMoney } from '@/api/system/recoverMoney';
+import { addRecoverMoney, listRecoverMoney } from '@/api/system/recoverMoney';
 import SearchOption from '@/components/SearchOption.vue';
 import { listBankAccount } from '@/api/system/bankAccount';
 import { listCompany } from '@/api/system/company';
@@ -296,9 +323,10 @@ import { excludeParams } from '@/api/tool/exclude';
 import { mixin_reviveMoney } from '../../dashboard/mixins/receive';
 import { mixin_printHTML } from '../../dashboard/mixins/print';
 import { ReceiveType } from '../../../api/tool/enums';
+import InfoDialog from '@/components/InfoDialog.vue';
 
 export default {
-	components: { ApplyPayment, SearchOption },
+	components: { InfoDialog, ApplyPayment, SearchOption },
 	mixins: [mixin_reviveMoney, mixin_printHTML],
 	dicts: ['order_target_type'],
 	data() {
@@ -485,7 +513,15 @@ export default {
 			applyDialogVisible: false,
 			tid: '',
 			needMoney: 0,
-			needInfo: {}
+			needInfo: {},
+
+			detailTotal: 0,
+			queryRepaymentParams: {
+				pageNum: 1,
+				pageSize: 10
+			},
+			dialogHistoryVisible: false,
+			tableData: []
 		};
 	},
 	created() {
@@ -502,6 +538,42 @@ export default {
 	methods: {
 		listCompany,
 		listBankAccount,
+		// 查看历史还款信息
+		checkDetail(row) {
+			this.getRepaymentMoneyList(row);
+		},
+		getRepaymentMoneyList(row) {
+			// 查询
+			listRecoverMoney({
+				futuresNO: row.futuresNO,
+				...this.queryRepaymentParams
+			}).then(res => {
+				this.tableData = res.rows;
+				this.detailTotal = res.total;
+				if (res.rows.length === 0) {
+					this.$message.error('暂无数据');
+				} else {
+					this.$message.success('查询成功');
+					this.dialogHistoryVisible = true;
+				}
+			});
+		},
+		mergeCells({ row, column, rowIndex, columnIndex }) {
+			if (columnIndex === 0) {
+				// 合并第一列 "期货保证金收回"
+				if (rowIndex === 0) {
+					return {
+						rowspan: this.tableData.length,
+						colspan: 1
+					};
+				} else {
+					return {
+						rowspan: 0,
+						colspan: 0
+					};
+				}
+			}
+		},
 		// 付款申请
 		applyForPayment(row) {
 			this.tid = row.id;

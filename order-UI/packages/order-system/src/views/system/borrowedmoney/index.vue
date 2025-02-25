@@ -54,8 +54,9 @@
 			<el-table-column v-if="columns[7].visible" label="打入账户" align="center" prop="acountsName" show-overflow-tooltip />
 			<el-table-column v-if="columns[8].visible" label="打入账号" align="center" prop="bankNo" show-overflow-tooltip />
 			<el-table-column label="备注" align="center" prop="comments" show-overflow-tooltip />
-			<el-table-column label="操作" align="center" class-name="small-padding fixed-width" width="160px" fixed="right">
+			<el-table-column label="操作" align="center" class-name="small-padding fixed-width" width="200px" fixed="right">
 				<template slot-scope="scope">
+					<el-button size="mini" type="text" @click="checkDetail(scope.row)">查看历史还款</el-button>
 					<el-button v-if="scope.row.isEnd !== '0'" size="mini" type="warning" @click="handleGiveBackMoney(scope.row)">还款</el-button>
 					<el-button v-if="scope.row.isEnd === '1'" size="mini" type="success" @click="handleGiveEnoughBackMoney(scope.row)">已还款</el-button>
 					<el-button v-hasPermi="['system:borrowedmoney:edit']" size="mini" type="primary" @click="handleUpdate(scope.row)">编辑</el-button>
@@ -91,11 +92,11 @@
 							<el-input v-model="form.mortgageGuarantee" placeholder="请输入抵押担保" />
 						</el-form-item>
 						<!-- <el-form-item label="我方银行账户类型">
-							<BankType
-								:select-type="form.selfBankCardType"
-								@updateSelectedType="changeSelfBankType"
-							/>
-						</el-form-item> -->
+              <BankType
+                :select-type="form.selfBankCardType"
+                @updateSelectedType="changeSelfBankType"
+              />
+            </el-form-item> -->
 						<el-form-item label="打入账户" prop="acountsName">
 							<el-row>
 								<el-col :span="20">
@@ -192,13 +193,39 @@
 				<el-button @click="giveBackMoneyShow = false">取 消</el-button>
 			</div>
 		</el-dialog>
+
+		<InfoDialog title="历史还款记录" :visible.sync="dialogHistoryVisible" :width="'620px'">
+			<template #info>
+				<el-table
+					v-if="tableData.length !== 0"
+					:data="tableData"
+					size="mini"
+					:cell-style="
+						() => {
+							return { padding: '2px' };
+						}
+					"
+					border
+					:span-method="mergeCells"
+				>
+					<el-table-column prop="" width="180">
+						<template #default="scope">
+							<span v-if="scope.$index === 0">贷款还款</span>
+						</template>
+					</el-table-column>
+					<el-table-column prop="payDate" label="时间" width="180"></el-table-column>
+					<el-table-column prop="moneyAmount" label="还款金额"></el-table-column>
+				</el-table>
+				<pagination v-show="detailTotal > 0" :total="detailTotal" :page.sync="queryRepaymentParams.pageNum" :limit.sync="queryRepaymentParams.pageSize" @pagination="getRepaymentMoneyList" />
+			</template>
+		</InfoDialog>
 	</div>
 </template>
 
 <script>
 import { listBorrowedMoney, getBorrowedMoney, delBorrowedMoney, addBorrowedMoney, updateBorrowedMoney } from '@/api/system/borrowedMoney';
 import { mapGetters, mapState } from 'vuex';
-import { addRepayment } from '@/api/system/repayment';
+import { addRepayment, getRepaymentMoneyNoPage } from '@/api/system/repayment';
 import SearchOption from '@/components/SearchOption.vue';
 import { listBankAccount } from '@/api/system/bankAccount';
 import { listCompany } from '@/api/system/company';
@@ -207,10 +234,11 @@ import { addDateRange } from '@/utils/ruoyi';
 import { excludeParams } from '@/api/tool/exclude';
 import { mixin_printHTML } from '../../dashboard/mixins/print';
 import { mixin_bankType } from '../../dashboard/mixins/common/common_bankType';
+import InfoDialog from '@/components/InfoDialog.vue';
 
 export default {
 	name: 'BorrowedMoney',
-	components: { SearchOption },
+	components: { InfoDialog, SearchOption },
 	mixins: [mixin_printHTML, mixin_bankType],
 	data() {
 		var validateloanNO = (rule, value, callback) => {
@@ -417,7 +445,16 @@ export default {
 
 			// 查询变量
 			queryBankAcount: '',
-			loanNO: ''
+			loanNO: '',
+
+			// 点击查看历史还款
+			queryRepaymentParams: {
+				pageNum: 1,
+				pageSize: 10
+			},
+			tableData: [],
+			detailTotal: 0,
+			dialogHistoryVisible: false
 		};
 	},
 	created() {
@@ -448,6 +485,42 @@ export default {
 	methods: {
 		listCompany,
 		listBankAccount,
+		// 查看历史还款信息
+		checkDetail(row) {
+			this.getRepaymentMoneyList(row);
+		},
+		getRepaymentMoneyList(row) {
+			// 查询
+			getRepaymentMoneyNoPage({
+				loanNO: row.loanNO,
+				...this.queryRepaymentParams
+			}).then(res => {
+				this.tableData = res.rows;
+				this.detailTotal = res.total;
+				if (res.rows.length === 0) {
+					this.$message.error('暂无数据');
+				} else {
+					this.$message.success('查询成功');
+					this.dialogHistoryVisible = true;
+				}
+			});
+		},
+		mergeCells({ row, column, rowIndex, columnIndex }) {
+			if (columnIndex === 0) {
+				// 合并第一列 "期货保证金收回"
+				if (rowIndex === 0) {
+					return {
+						rowspan: this.tableData.length,
+						colspan: 1
+					};
+				} else {
+					return {
+						rowspan: 0,
+						colspan: 0
+					};
+				}
+			}
+		},
 		// 处理还款的事件函数  这里应该先填写还款信息 然后在还款信息页面申请付款
 		handleGiveBackMoney(row) {
 			this.giveBackMoneyShow = true;
