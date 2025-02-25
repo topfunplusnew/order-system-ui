@@ -40,6 +40,7 @@
 			</right-toolbar>
 		</el-row>
 
+		<!--    数据表格 主要是借出款记录-->
 		<el-table
 			id="printBox"
 			v-loading="loading"
@@ -76,8 +77,11 @@
 			</el-table-column>
 		</el-table>
 
+		<!--    分页-->
+
 		<pagination v-show="total > 0" :total="total" :page.sync="queryParams.pageNum" :limit.sync="queryParams.pageSize" @pagination="getList" />
 
+		<!--    查看历史收回-->
 		<InfoDialog title="历史还款记录" :visible.sync="dialogHistoryVisible" :width="'620px'">
 			<template #info>
 				<el-table
@@ -111,6 +115,7 @@
 			</template>
 		</InfoDialog>
 
+		<!--    导出弹窗-->
 		<el-dialog :close-on-click-modal="false" :show-close="false" title="请选择导出时间段" :visible.sync="dialogVisible" width="30%">
 			<el-form ref="queryForm" :model="queryParams" size="mini" label-width="68px">
 				<el-form-item label="开始时间" prop="beginTime">
@@ -126,7 +131,7 @@
 			</span>
 		</el-dialog>
 
-		<!--    todo-->
+		<!--    收回资金的弹窗-->
 		<el-dialog :close-on-click-modal="false" :show-close="false" title="收回资金操作" :visible.sync="giveRecoverMoneyShow" width="40%" append-to-body>
 			<el-row>
 				<el-form :model="recoverMoneyEntity" label-width="120" :rules="receiveRules">
@@ -347,9 +352,9 @@ export default {
 			showSearch: true,
 			// 表格中的数据
 			total: 0,
+			// 表格中的数据
 			lendMoneyList: [],
-			title: '',
-			open: false,
+			// 表格的查询参数
 			queryParams: {
 				pageNum: 1,
 				pageSize: 50,
@@ -372,6 +377,9 @@ export default {
 				UserName: null,
 				delFlag: null
 			},
+			// 添加或者修改
+			title: '',
+			open: false,
 			// 表单校验
 			columns: [
 				{ key: 0, label: '借款人', prop: 'target', visible: true },
@@ -444,6 +452,7 @@ export default {
 			},
 			dialogHistoryVisible: false,
 			form: {},
+			// 添加借给员工的表单校验
 			rules: {
 				// 添加校验
 				futuresNO: [
@@ -659,6 +668,55 @@ export default {
 				this.loading = false;
 			});
 		},
+		// 操作列相关函数 包括 查看历史收回 付款申请 收回资金 修改 删除
+		checkDetail(row) {
+			this.getRepaymentMoneyList(row);
+		},
+		applyForPayment(row) {
+			this.tid = row.id;
+			this.needMoney = row.moneyAmount;
+			this.needInfo = {
+				bankNo: row.targetBankNo,
+				acountsName: row.targetAcountsName,
+				bankName: row.targetBankName
+			};
+			this.applyDialogVisible = true;
+		},
+		// 点击收回资金按钮
+		handleGetBackMoney(row) {
+			// 初始化表的信息
+			this.initReviveMoneyTableInfo(row.id, ReceiveType.LEND_MONEY_GET_BACK, TableName.LEND_MONEY);
+			// 初始化对方账户信息
+			this.initReviveMoneyOtherAccountInfo(row.targetAcountsName, row.targetBankNo, row.targetBankName);
+			// 打开添加借出款收回的信息弹窗
+			this.recoverMoneyEntity.futuresNO = row.futuresNO; // 初始化uuid
+			// 赋值收款信息
+			this.initComment('借出款收回');
+			this.giveRecoverMoneyShow = true;
+		},
+		// 修改按钮操作
+		handleUpdate(row) {
+			this.reset();
+			const id = row.id || this.ids;
+			getLendMoney(id).then(response => {
+				this.form = response.data;
+				this.open = true;
+				this.title = '修改向外部借出款信息';
+			});
+		},
+		// 删除按钮操作
+		handleDelete(row) {
+			const ids = row.id || this.ids;
+			this.$modal
+				.confirm('是否确认删除向外部借出款信息编号为"' + ids + '"的数据项？')
+				.then(function () {
+					return delLendMoney(ids);
+				})
+				.then(() => {
+					this.getList();
+					this.$modal.msgSuccess('删除成功');
+				});
+		},
 		// 取消按钮
 		cancel() {
 			this.open = false;
@@ -699,21 +757,10 @@ export default {
 			this.resetForm('queryForm');
 			this.handleQuery();
 		},
-
 		handleAdd() {
 			this.reset();
 			this.open = true;
 			this.title = '添加向外部借出款信息';
-		},
-		/** 修改按钮操作 */
-		handleUpdate(row) {
-			this.reset();
-			const id = row.id || this.ids;
-			getLendMoney(id).then(response => {
-				this.form = response.data;
-				this.open = true;
-				this.title = '修改向外部借出款信息';
-			});
 		},
 		/** 提交按钮 */
 		submitForm() {
@@ -744,10 +791,6 @@ export default {
 					}
 				}
 			});
-		},
-		// 查看历史还款信息
-		checkDetail(row) {
-			this.getRepaymentMoneyList(row);
 		},
 		getRepaymentMoneyList(row) {
 			// 查询
@@ -797,20 +840,6 @@ export default {
 		/** 导出按钮操作 */
 		handleExport() {
 			this.dialogVisible = true;
-		},
-		/** 删除按钮操作 */
-		handleDelete(row) {
-			const ids = row.id || this.ids;
-			this.$modal
-				.confirm('是否确认删除向外部借出款信息编号为"' + ids + '"的数据项？')
-				.then(function () {
-					return delLendMoney(ids);
-				})
-				.then(() => {
-					this.getList();
-					this.$modal.msgSuccess('删除成功');
-				})
-				.catch(() => {});
 		},
 		changeOpen() {
 			this.needMoney = 0;
@@ -877,28 +906,6 @@ export default {
 			this.initReviveMoneySelfAccountInfo(val.acountsName, val.bankNo, val.bankName, val.id);
 			this.recoverMoneyEntity.acountsName = val.acountsName;
 			this.recoverMoneyEntity.bankNo = val.bankNo;
-		},
-		applyForPayment(row) {
-			this.tid = row.id;
-			this.needMoney = row.moneyAmount;
-			this.needInfo = {
-				bankNo: row.targetBankNo,
-				acountsName: row.targetAcountsName,
-				bankName: row.targetBankName
-			};
-			this.applyDialogVisible = true;
-		},
-		// 点击收回资金按钮
-		handleGetBackMoney(row) {
-			// 初始化表的信息
-			this.initReviveMoneyTableInfo(row.id, ReceiveType.LEND_MONEY_GET_BACK, TableName.LEND_MONEY);
-			// 初始化对方账户信息
-			this.initReviveMoneyOtherAccountInfo(row.targetAcountsName, row.targetBankNo, row.targetBankName);
-			// 打开添加借出款收回的信息弹窗
-			this.recoverMoneyEntity.futuresNO = row.futuresNO; // 初始化uuid
-			// 赋值收款信息
-			this.initComment('借出款收回');
-			this.giveRecoverMoneyShow = true;
 		},
 		// 收回资金弹窗内的修改
 		handleUpdateRecoverMoney(row) {
