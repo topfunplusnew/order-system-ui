@@ -119,7 +119,7 @@
 					<el-form :inline="true" :model="queryParamsHome">
 						<el-form-item label="开始日期">
 							<el-date-picker
-								v-model="queryParamsHome.beginTime"
+								v-model="queryParamsHome.startTime"
 								type="date"
 								size="mini"
 								value-format="yyyy-MM-dd"
@@ -189,8 +189,8 @@ export default {
 				pageSize: 10
 			},
 			queryParamsHome: {
-				beginTime: parseTime(new Date(), '{y}-{m}-{d}'),
-				endTime: formatDate(new Date(), '{y}-{m}-{d}')
+				startTime: parseTime(new Date(), '{y}-{m}-{d}'),
+				endTime: parseTime(new Date(), '{y}-{m}-{d}')
 			},
 			tableData: [],
 			total: 0,
