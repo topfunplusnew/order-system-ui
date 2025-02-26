@@ -360,7 +360,7 @@ export default {
 				pageSize: 50,
 				futuresNO: null,
 				futuresMarginCompany: null,
-				targetType: `员工`,
+				targetType: null,
 				target: null,
 				moneyAmount: null,
 				targetAcountsName: null,
@@ -553,7 +553,7 @@ export default {
 			recoverMoneyEntity: {
 				acountsName: '',
 				bankNo: '',
-				targetType: `员工`
+				targetType: null
 			},
 			// 收款信息实体
 			receiveMoneyEntity: {},
@@ -727,7 +727,7 @@ export default {
 				id: null,
 				futuresNO: null,
 				futuresMarginCompany: null,
-				targetType: `员工`,
+				targetType: null,
 				target: null,
 				moneyAmount: null,
 				targetAcountsName: null,
@@ -881,7 +881,7 @@ export default {
 		resetRecoverMoney() {
 			this.recoverMoneyEntity = {
 				futuresNO: null,
-				targetType: `员工`,
+				targetType: null,
 				target: null,
 				moneyAmount: null,
 				targetAcountsName: null,
