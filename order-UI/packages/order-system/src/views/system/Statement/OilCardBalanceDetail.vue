@@ -222,10 +222,10 @@ export default {
 					}
 					this.oilCardDetails = response.data;
 					// 计算总变动金额
-					this.totalChangeAmount = this.oilCardDetails.reduce((sum, item) => sum + item.changeAmount, 0);
+					this.totalChangeAmount = this.oilCardDetails.reduce((sum, item) => sum + item.changeAmount ?? 0, 0);
 					// 获取最新余额（最后一条记录的 runningBalance）
 					if (this.oilCardDetails.length > 0) {
-						this.latestBalance = this.oilCardDetails[this.oilCardDetails.length - 1].runningBalance;
+						this.latestBalance = this.oilCardDetails[this.oilCardDetails.length - 1].runningBalance ?? 0;
 					}
 				});
 			});
