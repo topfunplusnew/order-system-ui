@@ -21,6 +21,10 @@ export var mixin_payment_apply = {
 				{
 					value: '员工',
 					label: '员工'
+				},
+				{
+					value: '对外付款',
+					label: '对外付款'
 				}
 			],
 			value: '客户'

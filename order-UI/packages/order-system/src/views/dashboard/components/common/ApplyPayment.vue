@@ -8,34 +8,6 @@
 			<el-form-item label="支付类型" prop="payType">
 				<el-row :gutter="5">
 					<el-cascader v-model="form.payType" :options="paymentTypeTree" :props="props" />
-					<!-- <el-col :span="8">
-            <el-select
-              v-model="currentSort.levelOne"
-              placeholder="请选择一级分类"
-              @change="handleSelectOneLevel"
-            >
-              <el-option
-                v-for="item in OneLevelOption"
-                :key="item.id"
-                :label="item.title"
-                :value="item.title"
-              />
-            </el-select>
-          </el-col>
-          <el-col :span="8">
-            <el-select
-              v-model="currentSort.levelTwo"
-              placeholder="请选择二级分类"
-              @change="handleSelectTwoLevel"
-            >
-              <el-option
-                v-for="item in TwoLevelOption"
-                :key="item.id"
-                :label="item.title"
-                :value="item.title"
-              />
-            </el-select>
-          </el-col> -->
 				</el-row>
 			</el-form-item>
 			<el-form-item label="金额" prop="moneyAmount">
