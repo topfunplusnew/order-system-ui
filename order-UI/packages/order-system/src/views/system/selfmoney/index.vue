@@ -58,12 +58,18 @@
 				}
 			"
 		>
-			<el-table-column v-if="columns[0].visible" label="余额" align="center" prop="sumMoney" show-overflow-tooltip />
-			<el-table-column v-if="columns[1].visible" label="银行卡类型" align="center" prop="bankCardType" show-overflow-tooltip />
-			<el-table-column v-if="columns[2].visible" label="显示名称" align="center" prop="displayName" show-overflow-tooltip />
-			<el-table-column v-if="columns[3].visible" label="开户名称" align="center" prop="acountsName" show-overflow-tooltip />
-			<el-table-column v-if="columns[4].visible" label="银行账号" align="center" prop="bankNo" show-overflow-tooltip />
-			<el-table-column v-if="columns[5].visible" label="开户行" align="center" prop="bankName" show-overflow-tooltip />
+			<el-table-column v-if="columns[0].visible" label="银行账号" align="center" prop="bankNo" show-overflow-tooltip>
+				<template #default="scope">
+					<div>
+						<span style="color: red">[{{ scope.row.bankCardType }}]</span>
+						{{ scope.row.bankNo }}
+					</div>
+				</template>
+			</el-table-column>
+			<el-table-column v-if="columns[1].visible" label="显示名称" align="center" prop="displayName" show-overflow-tooltip />
+			<el-table-column v-if="columns[2].visible" label="开户名称" align="center" prop="acountsName" show-overflow-tooltip />
+			<el-table-column v-if="columns[3].visible" label="开户行" align="center" prop="bankName" show-overflow-tooltip />
+			<el-table-column v-if="columns[4].visible" label="余额" align="center" prop="sumMoney" show-overflow-tooltip />
 		</el-table>
 	</div>
 </template>
@@ -102,12 +108,11 @@ export default {
 				acountsType: ''
 			},
 			columns: [
-				{ key: 0, label: `余额`, visible: true },
-				{ key: 1, label: `银行卡类型`, visible: true },
-				{ key: 2, label: `显示名称`, visible: true },
-				{ key: 3, label: `开户名称`, visible: true },
-				{ key: 4, label: `银行账号`, visible: true },
-				{ key: 5, label: `开户行`, visible: true }
+				{ key: 0, label: `银行账号`, visible: true },
+				{ key: 1, label: `显示名称`, visible: true },
+				{ key: 2, label: `开户名称`, visible: true },
+				{ key: 3, label: `开户行`, visible: true },
+				{ key: 4, label: `余额`, visible: true }
 			],
 			// 排序选择
 			options: [

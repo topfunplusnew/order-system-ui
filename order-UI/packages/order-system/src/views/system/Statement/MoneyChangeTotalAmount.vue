@@ -1,6 +1,6 @@
 <script>
 import { getMoneyChangeSummary } from '@/api/system/statement';
-import {fix} from "order-system/src/api/tool/format";
+import { fix } from 'order-system/src/api/tool/format';
 
 export default {
 	name: 'MoneyChangeTotalAmount',
@@ -16,7 +16,7 @@ export default {
 	},
 	created() {},
 	methods: {
-    fix,
+		fix,
 		async handleChangeSearch() {
 			const response = await getMoneyChangeSummary(this.changeForm);
 			const data = response.data;
@@ -86,6 +86,25 @@ export default {
 				createRow('客户票点合计', data.companyTotalInvoiceAmount, startTimeMoney.companyTotalInvoiceAmount, endTimeMoney.companyTotalInvoiceAmount),
 				createRow('供应商票点合计', data.supplierTotalInvoiceAmount, startTimeMoney.supplierTotalInvoiceAmount, endTimeMoney.supplierTotalInvoiceAmount)
 			];
+		},
+		// 合并行的方法
+		objectSpanMethod({ row, column, rowIndex, columnIndex }) {
+			// 只对“对比日资金流变动”列进行合并
+			if (columnIndex === 2) {
+				if (rowIndex === 0) {
+					// 合并所有行
+					return {
+						rowspan: this.changeTableData.length,
+						colspan: 1
+					};
+				} else {
+					// 其他行不显示
+					return {
+						rowspan: 0,
+						colspan: 0
+					};
+				}
+			}
 		}
 	}
 };
@@ -113,7 +132,10 @@ export default {
 					<el-table-column prop="value" label="基准日期金额" :formatter="formatValue"></el-table-column>
 					<el-table-column prop="des" label="对比日资金流变动">
 						<template slot-scope="scope">
-							<div>{{ fix(scope.row.value - scope.row.anotherLabel) }}</div>
+							<!-- 只在第一行显示差值 -->
+							<div v-if="scope.$index === 0">
+								{{ fix(scope.row.anotherLabel - scope.row.value) }}
+							</div>
 						</template>
 					</el-table-column>
 					<el-table-column prop="anotherLabel" label="对比日期总额" :formatter="formatValue"></el-table-column>

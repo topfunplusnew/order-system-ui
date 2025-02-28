@@ -215,7 +215,7 @@ export default {
 				<el-table-column label="其他费用" align="center" prop="otherCost" show-overflow-tooltip />
 				<el-table-column label="利润" align="center" prop="profit" show-overflow-tooltip />
 				<el-table-column label="不含税利润" align="center" prop="profitNoTax" show-overflow-tooltip />
-
+				<el-table-column label="备注" align="center" prop="comments" show-overflow-tooltip />
 				<el-table-column label="物流利润" align="center" prop="logisticsProfit" show-overflow-tooltip />
 				<el-table-column label="佣金" align="center" prop="customerCommission" show-overflow-tooltip />
 			</el-table>

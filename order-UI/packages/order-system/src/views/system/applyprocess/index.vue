@@ -25,7 +25,7 @@ import ApplyPayment from '@/views/dashboard/components/common/ApplyPayment.vue';
 
 export default {
 	name: 'Index',
-	components: { ApplyPayment, CheckFiles, BankType, SearchOption, StepInfo },
+	components: { ApplyPayment, CheckFiles, StepInfo },
 	mixins: [mixin_printHTML, mixin_payment_subject, mixin_bankType, mixin_paymentindex_fill, mixin_payment_select],
 	data() {
 		return {
