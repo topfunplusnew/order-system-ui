@@ -136,7 +136,7 @@
 				</el-divider>
 
 				<!--        2025-2-28 新增转账账户-->
-				<el-form-item label="转账账户">
+				<el-form-item label="转账账户" v-if="cashType === CASH_TYPE.TRANSFER">
 					<el-row>
 						<el-col :span="14">
 							<el-input v-model="form.sourceBankNo" disabled placeholder="请选择转账账户"></el-input>
@@ -287,7 +287,7 @@
 					<el-icon class="el-icon-remove" />
 					支付方信息
 				</el-divider>
-				<el-form-item label="目标账户">
+				<el-form-item label="目标账户" v-if="cashType === CASH_TYPE.TRANSFER">
 					<el-row>
 						<el-col :span="14">
 							<el-input v-model="form.targetBankNo" disabled placeholder="请选择目标账户"></el-input>
