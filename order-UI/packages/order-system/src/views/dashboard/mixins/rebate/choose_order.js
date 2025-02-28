@@ -109,6 +109,7 @@ export var mixin_choose_order = {
 		},
 		// 确认选择 货物的列表 点击后 会把goods数组中的id 放到form中
 		submitSelectOrderDetail() {
+			// 计算重箱和面积的和
 			const result = this.goods.reduce(
 				(prev, next) => {
 					// 累加面积
@@ -123,9 +124,15 @@ export var mixin_choose_order = {
 			this.goods.forEach(item => {
 				this.form.orderDetailIds.push(item.id);
 			});
-			this.form.area = result.area;
-			this.form.weightBox = result.weightBox;
-			this.form.rebate = fix(this.form.area * this.form.weightBox * this.form.unitPrice);
+
+			// 判断一下是重箱还是面积 选择进行复制
+			if (this.form.rebateMethod === 1) {
+				this.form.weightBox = result.weightBox || 0;
+			} else {
+				this.form.area = result.area || 0;
+			}
+			this.form.rebate = fix((this.form.area || this.form.weightBox) * this.form.unitPrice);
+
 			this.orderDialogVisible = false;
 		},
 		// 清空已选择的货物

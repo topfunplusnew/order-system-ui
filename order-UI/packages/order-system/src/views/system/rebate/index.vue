@@ -128,6 +128,14 @@
 								<el-input v-model="form.unitPrice" placeholder="请输入系数" />
 							</el-form-item>
 
+							<!--              需要进行选择 是面积值还是重箱值-->
+							<el-form-item label="返利方式" prop="rebateMethod">
+								<el-select v-model="form.rebateMethod" placeholder="请选择" :disabled="!form.unitPrice" @change="() => (form.rebate > 0 ? submitSelectOrderDetail() : '')">
+									<el-option label="重箱" :value="1" />
+									<el-option label="面积" :value="2" />
+								</el-select>
+							</el-form-item>
+
 							<!-- 返利货物 -->
 							<el-form-item label="返利货物">
 								<el-button v-if="goods.length === 0" size="mini" :disabled="!form.unitPrice" @click="orderDialogVisible = true">
@@ -179,14 +187,13 @@
 								</el-row>
 							</el-form-item>
 
-							<!-- 面积值 -->
-							<el-form-item label="面积值" prop="area">
-								<el-input v-model="form.area" placeholder="根据订单自动计算" disabled />
-							</el-form-item>
-
 							<!-- 重箱值 -->
-							<el-form-item label="重箱值" prop="weightBox">
+							<el-form-item label="重箱值" prop="weightBox" v-if="areaOrWeightBox === 1">
 								<el-input v-model="form.weightBox" placeholder="根据订单自动计算" disabled />
+							</el-form-item>
+							<!-- 面积值 -->
+							<el-form-item label="面积值" prop="area" v-if="areaOrWeightBox === 2">
+								<el-input v-model="form.area" placeholder="根据订单自动计算" disabled />
 							</el-form-item>
 
 							<!-- 金额 -->
@@ -199,10 +206,6 @@
 							<!-- 返利原因 -->
 							<el-form-item label="返利原因" prop="rebateReason">
 								<el-input v-model="form.rebateReason" placeholder="请输入返利原因" :disabled="!form.unitPrice" />
-							</el-form-item>
-							<!-- 返利方式 -->
-							<el-form-item label="返利方式" prop="rebateMethod">
-								<el-input v-model="form.rebateMethod" placeholder="请输入返利方式" :disabled="!form.unitPrice" />
 							</el-form-item>
 
 							<!-- 备注 -->
@@ -633,7 +636,10 @@ export default {
 			bankAcountSelf: '',
 
 			// 订单选择的框
-			selectOrdersList: []
+			selectOrdersList: [],
+
+			// 选择重箱还是面积
+			areaOrWeightBox: 1
 		};
 	},
 	computed: {
