@@ -11,7 +11,7 @@
 				</el-row>
 			</el-form-item>
 			<el-form-item label="金额" prop="moneyAmount">
-				<el-input v-model="form.moneyAmount" placeholder="请输入金额" :disabled="inputDisabled" />
+				<el-input v-model="form.moneyAmount" placeholder="请输入金额" :disabled="inputDisabled && moneyInputDisabled" />
 			</el-form-item>
 			<el-form-item label="对方类型(请确认)">
 				<el-select v-model="value" placeholder="请选择">
