@@ -80,23 +80,24 @@
 			<!-- 日期 -->
 			<el-table-column v-if="columns[0].visible" label="日期" align="center" prop="rebateDate" show-overflow-tooltip />
 
+			<el-table-column v-if="columns[1].visible" label="（返利/降价）单价" align="center" prop="unitPrice" show-overflow-tooltip />
 			<!-- 金额 -->
-			<el-table-column v-if="columns[1].visible" label="金额" align="center" prop="rebate" show-overflow-tooltip />
+			<el-table-column v-if="columns[2].visible" label="金额" align="center" prop="rebate" show-overflow-tooltip />
 
 			<!-- 类型 -->
-			<el-table-column v-if="columns[2].visible" label="类型" align="center" prop="rebateType" show-overflow-tooltip />
+			<el-table-column v-if="columns[3].visible" label="类型" align="center" prop="rebateType" show-overflow-tooltip />
 
 			<!-- 供应商 -->
-			<el-table-column v-if="columns[3].visible" label="供应商" align="center" prop="supplier" />
+			<el-table-column v-if="columns[4].visible" label="供应商" align="center" prop="supplier" />
 
 			<!-- 返利原因 -->
-			<el-table-column v-if="columns[4].visible" label="返利原因" align="center" prop="rebateReason" show-overflow-tooltip />
+			<el-table-column v-if="columns[5].visible" label="返利原因" align="center" prop="rebateReason" show-overflow-tooltip />
 
 			<!-- 返利方式 -->
-			<el-table-column v-if="columns[5].visible" label="返利方式" align="center" prop="rebateMethod" show-overflow-tooltip />
+			<el-table-column v-if="columns[6].visible" label="返利方式" align="center" prop="rebateMethod" show-overflow-tooltip />
 
 			<!-- 备注 -->
-			<el-table-column v-if="columns[6].visible" label="备注" align="center" prop="comments" show-overflow-tooltip />
+			<el-table-column v-if="columns[7].visible" label="备注" align="center" prop="comments" show-overflow-tooltip />
 
 			<!-- 返利流水 -->
 			<el-table-column label="返利流水" align="center" show-overflow-tooltip>
@@ -118,14 +119,14 @@
 		<pagination v-show="total > 0" :total="total" :page.sync="queryParams.pageNum" :limit.sync="queryParams.pageSize" @pagination="getList" />
 
 		<!-- 添加或修改返利回扣对话框 -->
-		<el-dialog :close-on-click-modal="false" :show-close="false" :title="title" :visible.sync="open" width="50%" append-to-body>
+		<el-dialog :close-on-click-modal="false" :show-close="false" :title="title" :visible.sync="open" width="800px" append-to-body>
 			<el-row>
 				<el-form ref="form" :model="form" :rules="rules" label-width="120px">
 					<el-row>
 						<el-col :span="12">
 							<!-- 系数输入框 -->
-							<el-form-item label="系数" prop="unitPrice">
-								<el-input v-model="form.unitPrice" placeholder="请输入系数" />
+							<el-form-item label="（返利/降价）单价" prop="unitPrice">
+								<el-input v-model="form.unitPrice" placeholder="请输入（返利/降价）单价" />
 							</el-form-item>
 
 							<!--              需要进行选择 是面积值还是重箱值-->
@@ -615,12 +616,13 @@ export default {
 			},
 			columns: [
 				{ key: 0, label: `日期`, visible: true },
-				{ key: 1, label: `金额`, visible: true },
-				{ key: 2, label: `类型`, visible: true },
-				{ key: 3, label: `供应商`, visible: true },
-				{ key: 4, label: `返利原因`, visible: true },
-				{ key: 5, label: `返利方式`, visible: true },
-				{ key: 6, label: `备注`, visible: true }
+				{ key: 1, label: `单价`, visible: true },
+				{ key: 2, label: `金额`, visible: true },
+				{ key: 3, label: `类型`, visible: true },
+				{ key: 4, label: `供应商`, visible: true },
+				{ key: 5, label: `返利原因`, visible: true },
+				{ key: 6, label: `返利方式`, visible: true },
+				{ key: 7, label: `备注`, visible: true }
 			],
 
 			// 订单列表 级联
@@ -727,6 +729,10 @@ export default {
 		// 查询返利流水账
 		handleRebateDetail(row) {
 			getRebate(row.id).then(res => {
+				if (!res.data.actualReceivedDetails || !res.data.actualReceivedDetails.detailList) {
+					this.$modal.msgError('没有返利流水账');
+					return;
+				}
 				this.$model({
 					type: 'array',
 					items: res.data.actualReceivedDetails.detailList,
