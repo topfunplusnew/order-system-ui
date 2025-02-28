@@ -593,9 +593,9 @@
 							<el-input size="mini" v-model="scope.row.logisticsProfit" placeholder="请输入物流利润" />
 						</template>
 					</el-table-column>
-					<el-table-column label="佣金" prop="customerCommission" width="150">
+					<el-table-column label="客户佣金" prop="customerCommission" width="150">
 						<template #default="scope">
-							<el-input size="mini" v-model="scope.row.customerCommission" placeholder="请输入佣金" />
+							<el-input size="mini" v-model="scope.row.customerCommission" placeholder="请输入客户佣金" />
 						</template>
 					</el-table-column>
 

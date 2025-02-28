@@ -323,7 +323,7 @@
 				<el-descriptions-item label="返利">
 					{{ inventoryInfo.rebate }}
 				</el-descriptions-item>
-				<el-descriptions-item label="佣金">
+				<el-descriptions-item label="客户佣金">
 					{{ inventoryInfo.customerCommission }}
 				</el-descriptions-item>
 				<el-descriptions-item label="备注信息">

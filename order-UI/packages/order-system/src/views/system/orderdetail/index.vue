@@ -97,7 +97,7 @@
 			<el-table-column v-if="columns[30].visible" label="仓库名称" align="center" prop="storeHouseName" />
 			<el-table-column v-if="columns[31].visible" label="仓库存储的货物ID" align="center" prop="storeID" />
 			<el-table-column v-if="columns[32].visible" label="物流利润" align="center" prop="logisticsProfit" />
-			<el-table-column v-if="columns[33].visible" label="佣金" align="center" prop="customerCommission" />
+			<el-table-column v-if="columns[33].visible" label="客户佣金" align="center" prop="customerCommission" />
 			<!--      <el-table-column label="是否被调整单" align="center" prop="isAdjusted"/>-->
 
 			<!--      是与否-->
@@ -228,8 +228,8 @@
 				<el-form-item label="物流利润" prop="logisticsProfit">
 					<el-input v-model="form.logisticsProfit" placeholder="请输入物流利润" />
 				</el-form-item>
-				<el-form-item label="佣金" prop="customerCommission">
-					<el-input v-model="form.customerCommission" placeholder="请输入佣金" />
+				<el-form-item label="客户佣金" prop="customerCommission">
+					<el-input v-model="form.customerCommission" placeholder="请输入客户佣金" />
 				</el-form-item>
 				<el-form-item label="是否被调整单" prop="isAdjusted">
 					<el-input v-model="form.isAdjusted" placeholder="请输入是否被调整单" />
@@ -301,7 +301,7 @@
 				<el-descriptions-item label="加费">{{ orderDetailInfo.additionalFees }}</el-descriptions-item>
 				<el-descriptions-item label="仓库名称">{{ orderDetailInfo.storeHouseName }}</el-descriptions-item>
 				<el-descriptions-item label="物流利润">{{ orderDetailInfo.logisticsProfit }}</el-descriptions-item>
-				<el-descriptions-item label="佣金">{{ orderDetailInfo.customerCommission }}</el-descriptions-item>
+				<el-descriptions-item label="客户佣金">{{ orderDetailInfo.customerCommission }}</el-descriptions-item>
 				<el-descriptions-item label="厂家返利金额">{{ orderDetailInfo.factoryRebateAmount }}</el-descriptions-item>
 				<el-descriptions-item label="厂家降价金额">{{ orderDetailInfo.factoryDiscountAmount }}</el-descriptions-item>
 				<el-descriptions-item label="是否被调整单">
@@ -492,7 +492,7 @@ export default {
 				{ key: 30, label: `仓库名称`, visible: true },
 				{ key: 31, label: `仓库存储的货物ID`, visible: true },
 				{ key: 32, label: `物流利润`, visible: true },
-				{ key: 33, label: `佣金`, visible: true },
+				{ key: 33, label: `客户佣金`, visible: true },
 				{ key: 34, label: `是否被调整单`, visible: true },
 				{ key: 35, label: `调整日期`, visible: true },
 				{ key: 36, label: `供应商ID`, visible: true }

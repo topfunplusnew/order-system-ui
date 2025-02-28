@@ -21,7 +21,9 @@
 			</el-form-item>
 
 			<!--      公司的填充 这里主要是为了companyId 如果选择的是己方公司 那么就不显示这个选择公司-->
-			<el-form-item v-if="value !== '员工'" label="对方公司" prop="companyName">
+
+			<!--      2025-2-28 后端说 如果是对外付款 不需要选择对方公司-->
+			<el-form-item v-if="value !== '员工' && value !== '对外付款'" label="对方公司" prop="companyName">
 				<el-row>
 					<el-col :span="14">
 						<el-input disabled v-model="form.companyName" placeholder="请选择" />

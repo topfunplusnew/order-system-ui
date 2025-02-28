@@ -312,7 +312,7 @@ export default {
 							<el-table-column label="总货款杂费" align="center" prop="paymentsWithSundry" width="150" />
 							<el-table-column label="加费" align="center" prop="additionalFees" width="150" />
 							<el-table-column label="返利金额" align="center" prop="rebate" width="150" />
-							<el-table-column label="佣金" align="center" prop="customerCommission" width="150" />
+							<el-table-column label="客户佣金" align="center" prop="customerCommission" width="150" />
 							<el-table-column label="备注" align="center" prop="comments" width="150" />
 						</el-table>
 					</el-row>

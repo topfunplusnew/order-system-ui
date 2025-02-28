@@ -200,10 +200,8 @@ export default {
 						<el-tag disable-transitions>{{ scope.row.isIncludeTaxSale === 0 ? '否' : '是' }}</el-tag>
 					</template>
 				</el-table-column>
-
 				<el-table-column label="总货款杂费" align="center" prop="paymentsWithSundry" show-overflow-tooltip />
 				<el-table-column label="总货款" align="center" prop="payments" show-overflow-tooltip />
-
 				<el-table-column label="误差" align="center" prop="erro" show-overflow-tooltip />
 				<el-table-column label="吨位" align="center" prop="tonnage" show-overflow-tooltip />
 				<el-table-column label="陆运费单价" align="center" prop="landFreightPrice" show-overflow-tooltip />
@@ -211,13 +209,12 @@ export default {
 				<el-table-column label="陆运费" align="center" prop="landFreight" show-overflow-tooltip />
 				<el-table-column label="海运费" align="center" prop="seaFreight" show-overflow-tooltip />
 				<el-table-column label="总运费" align="center" prop="freight" show-overflow-tooltip />
-
 				<el-table-column label="其他费用" align="center" prop="otherCost" show-overflow-tooltip />
 				<el-table-column label="利润" align="center" prop="profit" show-overflow-tooltip />
 				<el-table-column label="不含税利润" align="center" prop="profitNoTax" show-overflow-tooltip />
 				<el-table-column label="备注" align="center" prop="comments" show-overflow-tooltip />
 				<el-table-column label="物流利润" align="center" prop="logisticsProfit" show-overflow-tooltip />
-				<el-table-column label="佣金" align="center" prop="customerCommission" show-overflow-tooltip />
+				<el-table-column label="客户佣金" align="center" prop="customerCommission" show-overflow-tooltip />
 			</el-table>
 		</el-row>
 

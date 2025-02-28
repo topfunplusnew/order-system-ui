@@ -87,7 +87,7 @@
 			<el-table-column v-if="columns[4].visible" label="奖励原因" align="center" prop="incentiveReason" show-overflow-tooltip />
 			<el-table-column v-if="columns[5].visible" label="不含税利润" align="center" prop="orderProfit" show-overflow-tooltip />
 			<el-table-column v-if="columns[6].visible" label="厂家返利/承兑贴点利润" align="center" prop="manufacturerRebateProfit" show-overflow-tooltip />
-			<el-table-column v-if="columns[7].visible" label="佣金" align="center" prop="customerCommission" show-overflow-tooltip />
+			<el-table-column v-if="columns[7].visible" label="客户佣金" align="center" prop="customerCommission" show-overflow-tooltip />
 			<el-table-column v-if="columns[8].visible" label="综合单车利润" align="center" prop="comprehensiveProfit" show-overflow-tooltip />
 			<el-table-column v-if="columns[9].visible" label="利润是否达标" align="center" prop="profitStandardMet" show-overflow-tooltip />
 			<el-table-column v-if="columns[10].visible" label="奖励金额" align="center" prop="rewardAmount" show-overflow-tooltip />
@@ -136,8 +136,8 @@
 						</el-form-item>
 					</el-col>
 					<el-col :span="12">
-						<el-form-item label="佣金" prop="customerCommission">
-							<el-input v-model="form.customerCommission" placeholder="请输入佣金" />
+						<el-form-item label="客户佣金" prop="customerCommission">
+							<el-input v-model="form.customerCommission" placeholder="请输入客户佣金" />
 						</el-form-item>
 						<el-form-item label="综合单车利润" prop="comprehensiveProfit">
 							<el-input v-model="form.comprehensiveProfit" placeholder="请输入综合单车利润" disabled />
@@ -255,7 +255,7 @@ export default {
 						trigger: 'blur'
 					}
 				],
-				customerCommission: [{ required: true, message: '请输入佣金', trigger: 'blur' }],
+				customerCommission: [{ required: true, message: '请输入客户佣金', trigger: 'blur' }],
 				comprehensiveProfit: [
 					{
 						required: true,
@@ -293,7 +293,7 @@ export default {
 				{ key: 4, label: `奖励原因`, visible: true },
 				{ key: 5, label: `不含税利润`, visible: true },
 				{ key: 6, label: `厂家返利/承兑贴点利润`, visible: true },
-				{ key: 7, label: `佣金`, visible: true },
+				{ key: 7, label: `客户佣金`, visible: true },
 				{ key: 8, label: `综合单车利润`, visible: true },
 				{ key: 9, label: `利润是否达标`, visible: true },
 				{ key: 10, label: `奖励金额`, visible: true },

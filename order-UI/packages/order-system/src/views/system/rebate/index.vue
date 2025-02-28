@@ -296,7 +296,7 @@
 							<el-table-column label="加费" align="center" prop="additionalFees" />
 							<el-table-column label="仓库名称" align="center" prop="storeHouseName" />
 							<el-table-column label="物流利润" align="center" prop="logisticsProfit" />
-							<el-table-column label="佣金" align="center" prop="customerCommission" />
+							<el-table-column label="客户佣金" align="center" prop="customerCommission" />
 						</el-table>
 					</el-row>
 				</el-row>
