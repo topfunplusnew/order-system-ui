@@ -35,16 +35,17 @@
 
 			<!-- 表格 -->
 			<el-row :gutter="10">
-				<el-table :data="changeTableData" border class="money-table" :row-style="tableRowClassName">
+				<el-table :data="changeTableData" border class="money-table" :row-style="tableRowClassName" :span-method="objectSpanMethod">
 					<el-table-column prop="label" label="项目"></el-table-column>
 					<el-table-column prop="value" label="基准日期金额" :formatter="formatValue"></el-table-column>
-					<!--					<el-table-column prop="label" label="对比日资金流变动">-->
-					<!--						<template slot="scope">-->
-					<!--							<div>-->
-					<!--								即：等于对比日订单系统-&#45;&#45;&#45;&#45;&#45;&#45;数据统计-&#45;&#45;订单系统利润（&#45;&#45;67000）-->
-					<!--							</div>-->
-					<!--						</template>-->
-					<!--					</el-table-column>-->
+					<el-table-column prop="des" label="对比日资金流变动">
+						<template slot-scope="scope">
+							<!-- 只在第一行显示差值 -->
+							<div v-if="scope.$index === 0">
+								{{ fix(scope.row.anotherLabel - scope.row.value) }}
+							</div>
+						</template>
+					</el-table-column>
 					<el-table-column prop="anotherLabel" label="对比日期总额" :formatter="formatValue"></el-table-column>
 					<el-table-column prop="anotherValue" label="对比日期总额变动情况(对比日期-基准日期)" :formatter="formatValue"></el-table-column>
 				</el-table>
@@ -56,6 +57,7 @@
 <script>
 import { getMoneySummary, getMoneyChangeSummary } from '@/api/system/statement';
 import { parseTime } from '../../../utils/ruoyi';
+import { fix } from 'order-system/src/api/tool/format';
 
 export default {
 	name: 'TotalMoneyChange',
@@ -78,6 +80,7 @@ export default {
 		this.handleSearch();
 	},
 	methods: {
+		fix,
 		async handleSearch() {
 			const response = await getMoneySummary(this.searchForm);
 			const data = response.data;
@@ -176,6 +179,25 @@ export default {
 		},
 		openChangeDialog() {
 			this.changeDialogVisible = true;
+		},
+		// 合并行的方法
+		objectSpanMethod({ row, column, rowIndex, columnIndex }) {
+			// 只对“对比日资金流变动”列进行合并
+			if (columnIndex === 2) {
+				if (rowIndex === 0) {
+					// 合并所有行
+					return {
+						rowspan: this.changeTableData.length,
+						colspan: 1
+					};
+				} else {
+					// 其他行不显示
+					return {
+						rowspan: 0,
+						colspan: 0
+					};
+				}
+			}
 		}
 	}
 };

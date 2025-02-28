@@ -81,32 +81,33 @@
 
 			<!-- 4. 收入方 -->
 			<el-table-column v-if="columns[3].visible" label="收入方" align="center" prop="sourceCompanyName" show-overflow-tooltip />
+			<el-table-column v-if="columns[4].visible" label="收入账户" align="center" prop="targetBankNo" show-overflow-tooltip />
 
 			<!-- 5. 收入方公司类型 -->
-			<el-table-column v-if="columns[4].visible" label="收入方公司类型" align="center" prop="sourceCompanyType" show-overflow-tooltip />
+			<el-table-column v-if="columns[5].visible" label="收入方公司类型" align="center" prop="sourceCompanyType" show-overflow-tooltip />
 
 			<!-- 6. 支出方 -->
-			<el-table-column v-if="columns[5].visible" label="支出方" align="center" prop="targetCompanyName" show-overflow-tooltip />
-
+			<el-table-column v-if="columns[6].visible" label="支出方" align="center" prop="targetCompanyName" show-overflow-tooltip />
+			<el-table-column v-if="columns[7].visible" label="转账账户" align="center" prop="sourceBankNo" show-overflow-tooltip />
 			<!-- 7. 冲抵类型 -->
-			<el-table-column v-if="columns[6].visible" label="冲抵类型" align="center" show-overflow-tooltip>
+			<el-table-column v-if="columns[8].visible" label="冲抵类型" align="center" show-overflow-tooltip>
 				<template slot-scope="scope">
 					<span>{{ scope.row.referenceTableName === 'offsetting' ? '冲抵货款' : '内部转账' }}</span>
 				</template>
 			</el-table-column>
 
 			<!-- 8. 支出方公司类型 -->
-			<el-table-column v-if="columns[7].visible" label="支出方公司类型" align="center" prop="targetCompanyType" show-overflow-tooltip />
+			<el-table-column v-if="columns[9].visible" label="支出方公司类型" align="center" prop="targetCompanyType" show-overflow-tooltip />
 
 			<!-- 9. 附件 -->
-			<el-table-column v-if="columns[8].visible" label="附件" align="center" prop="attachment">
+			<el-table-column v-if="columns[10].visible" label="附件" align="center" prop="attachment">
 				<template #default="scope">
 					<CheckFiles :path="scope.row.attachment" @needToUpdate="value => handleUpdateFilePath(value, scope.row, 'attachment', getRecord, updateRecord)" />
 				</template>
 			</el-table-column>
 
 			<!-- 10. 备注 -->
-			<el-table-column v-if="columns[9].visible" label="备注" align="center" prop="remarks" />
+			<el-table-column v-if="columns[11].visible" label="备注" align="center" prop="remarks" show-overflow-tooltip />
 
 			<!-- 操作列 -->
 			<el-table-column label="操作" align="center" class-name="small-padding fixed-width">
@@ -133,6 +134,37 @@
 					<el-icon class="el-icon-circle-plus" />
 					收入方信息
 				</el-divider>
+
+				<!--        2025-2-28 新增转账账户-->
+				<el-form-item label="转账账户">
+					<el-row>
+						<el-col :span="14">
+							<el-input v-model="form.sourceBankNo" disabled placeholder="请选择转账账户"></el-input>
+						</el-col>
+						<el-col :span="4">
+							<SearchOption
+								:get-data="listBankAccount"
+								:limit-info="{}"
+								query-info="acountsName"
+								:query-name="querySourceBankNo"
+								query-label="户名"
+								@commitBack="value => (form.sourceBankNo = value.bankNo)"
+								@update:queryName="value => (querySourceBankNo = value)"
+							>
+								<template #table-columns>
+									<el-table-column label="账户类型" align="center" prop="acountsType" width="200" />
+									<el-table-column label="显示名称" align="center" prop="displayName" />
+									<el-table-column label="开户名称" align="center" prop="acountsName" width="200" />
+									<el-table-column label="银行账号" align="center" prop="bankNo" width="200" />
+									<el-table-column label="开户行" align="center" prop="bankName" width="200" />
+									<el-table-column label="公司名称" align="center" prop="companyName" width="200" />
+									<el-table-column label="余额" align="center" prop="amount" width="200" />
+								</template>
+							</SearchOption>
+						</el-col>
+					</el-row>
+				</el-form-item>
+
 				<!--        1.选择原 只有在内部转账的情况下才会展示-->
 				<div v-if="cashType === CASH_TYPE.TRANSFER">
 					<!--          选择收入账户类型-->
@@ -142,7 +174,7 @@
 					</el-form-item>
 					<el-form-item :label="source">
 						<el-row>
-							<el-col :span="20">
+							<el-col :span="14">
 								<el-input disabled v-model="sourceName" placeholder="请选择" />
 							</el-col>
 							<!--            只有内部转账 才会选择-->
@@ -255,6 +287,34 @@
 					<el-icon class="el-icon-remove" />
 					支付方信息
 				</el-divider>
+				<el-form-item label="目标账户">
+					<el-row>
+						<el-col :span="14">
+							<el-input v-model="form.targetBankNo" disabled placeholder="请选择目标账户"></el-input>
+						</el-col>
+						<el-col :span="4">
+							<SearchOption
+								:get-data="listBankAccount"
+								:limit-info="{}"
+								query-info="acountsName"
+								:query-name="querySourceBankNo"
+								query-label="户名"
+								@commitBack="value => (form.targetBankNo = value.bankNo)"
+								@update:queryName="value => (querySourceBankNo = value)"
+							>
+								<template #table-columns>
+									<el-table-column label="账户类型" align="center" prop="acountsType" width="200" />
+									<el-table-column label="显示名称" align="center" prop="displayName" />
+									<el-table-column label="开户名称" align="center" prop="acountsName" width="200" />
+									<el-table-column label="银行账号" align="center" prop="bankNo" width="200" />
+									<el-table-column label="开户行" align="center" prop="bankName" width="200" />
+									<el-table-column label="公司名称" align="center" prop="companyName" width="200" />
+									<el-table-column label="余额" align="center" prop="amount" width="200" />
+								</template>
+							</SearchOption>
+						</el-col>
+					</el-row>
+				</el-form-item>
 				<div v-if="cashType === CASH_TYPE.TRANSFER">
 					<!--          选择支出账户类型-->
 					<el-form-item label="支出账户类型">
@@ -263,7 +323,7 @@
 					<!--        2.选择去-->
 					<el-form-item :label="target">
 						<el-row>
-							<el-col :span="20">
+							<el-col :span="14">
 								<el-input disabled v-model="targetName" placeholder="请选择" />
 							</el-col>
 							<el-col :span="3">
@@ -500,32 +560,34 @@ export default {
 				},
 				{ key: 2, label: '金额', prop: 'amount', visible: true },
 				{ key: 3, label: '收入方', prop: 'incomeParty', visible: true },
+				{ key: 4, label: '收入账户', prop: 'targetBankNo', visible: true },
 				{
-					key: 4,
+					key: 5,
 					label: '收入方公司类型',
 					prop: 'incomeCompanyType',
 					visible: true
 				},
 				{
-					key: 5,
+					key: 6,
 					label: '支出方',
 					prop: 'expenseParty',
 					visible: true
 				},
+				{ key: 7, label: '转账账户', prop: 'sourceBankNo', visible: true },
 				{
-					key: 6,
+					key: 8,
 					label: '冲抵类型',
 					prop: 'offsetType',
 					visible: true
 				},
 				{
-					key: 7,
+					key: 9,
 					label: '支出方公司类型',
 					prop: 'expenseCompanyType',
 					visible: true
 				},
-				{ key: 8, label: '附件', prop: 'attachment', visible: true },
-				{ key: 9, label: '备注', prop: 'comments', visible: true }
+				{ key: 10, label: '附件', prop: 'attachment', visible: true },
+				{ key: 11, label: '备注', prop: 'comments', visible: true }
 			],
 
 			// 表单校验
@@ -569,7 +631,10 @@ export default {
 			},
 
 			// 冲抵类型 默认为冲抵货款
-			cashType: CASH_TYPE.OFF_SETTING
+			cashType: CASH_TYPE.OFF_SETTING,
+
+			// 新增的字段
+			querySourceBankNo: null
 		};
 	},
 	// 计算属性
@@ -672,7 +737,10 @@ export default {
 				targetCompanyType: '客户',
 				// 收入方与支付方的银行卡账户类型
 				selfBankCardType: null,
-				otherBankType: null
+				otherBankType: null,
+				// 2025-2-28 新增转账账户
+				sourceBankNo: null,
+				targetBankNo: null
 			};
 			// 把展示字段给赋值为null
 			this.sourceName = null;
@@ -717,7 +785,6 @@ export default {
 		handleAddRecord(id) {
 			getRecord(id).then(response => {
 				const data = response.data;
-				console.log('data', data);
 
 				this.form = data;
 				this.cashType = data.referenceTableName;
@@ -798,20 +865,20 @@ export default {
 			// 填充转账类型表
 			this.form.referenceTableName = CASH_TYPE.TRANSFER;
 			this.form.referenceTableId = -1;
-			// 组装转账信息
-			const transferBody = {
-				fromBankNo: this.eachInfo.source,
-				toBankNo: this.eachInfo.target,
-				money: this.form.amount,
-				selfBankCardType: this.form.selfBankCardType,
-				otherBankCardType: this.form.otherBankCardType
-			};
-			// 添加转账信息
-			transfer(transferBody).then(() => {
-				// 添加现金记账
-				addRecord(this.form).then(() => {
-					this.onSuccess('新增成功', true, true);
-				});
+			// // 组装转账信息
+			// const transferBody = {
+			// 	fromBankNo: this.eachInfo.source,
+			// 	toBankNo: this.eachInfo.target,
+			// 	money: this.form.amount,
+			// 	selfBankCardType: this.form.selfBankCardType,
+			// 	otherBankCardType: this.form.otherBankCardType
+			// };
+			// 2025-2-28 不在需要前端添加转账信息
+			// transfer(transferBody).then(() => {
+			// 	// 添加现金记账
+			// });
+			addRecord(this.form).then(() => {
+				this.onSuccess('新增成功', true, true);
 			});
 		},
 

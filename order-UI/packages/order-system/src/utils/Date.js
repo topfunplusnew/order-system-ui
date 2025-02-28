@@ -23,3 +23,10 @@ export function fmtDate(date, pattern) {
 	}
 	return d.toLocaleString();
 }
+
+// 获取当前日期的前一天
+export function getPreviousDay(date) {
+	const previousDay = new Date(date); // 创建一个新对象，避免修改原始对象
+	previousDay.setDate(previousDay.getDate() - 1); // 设置日期为当前日期的前一天
+	return previousDay;
+}
