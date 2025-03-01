@@ -21,7 +21,6 @@ export default {
 		fix,
 		async handleChangeSearch() {
 			// 开始时间为endTime往前推一天
-
 			this.changeForm.startTime = parseTime(getPreviousDay(new Date(this.changeForm.endTime)), '{y}-{m}-{d}');
 			const response = await getMoneyChangeSummary(this.changeForm);
 			const data = response.data;
@@ -32,14 +31,16 @@ export default {
 		},
 		calculateTotalBalance(data) {
 			return (
-				data.companyTotalBalance +
-				data.selfCompanyTotalFunds +
-				data.supplierTotalBalance +
-				data.driverUnpaidAmount +
-				data.futuresMarginBalance +
-				data.loanFromCompany +
+				data.companyTotalBalance + // ①应收账款---客户欠款合计数
+				data.selfCompanyTotalFunds + // ②银行存款---公司所有银行资金合计
+				data.futuresMarginBalance + // ③保证金----期货保证金
+				data.loanFromCompany + // ④其他应收---个人或公司从我公司借款
+				data.remainingInventoryAmount - // ⑤库存
+				data.driverUnpaidAmount - // ⑥应付账款---运费合计
+				data.supplierTotalBalance - // ⑦应付账款---欠厂家货款
 				data.loanBalance
-			).toFixed(2);
+			) // ⑧其他应付款---公司从外面借款合计
+				.toFixed(2);
 		},
 		tableRowClassName({ rowIndex }) {
 			if (rowIndex === 0) {
@@ -61,13 +62,12 @@ export default {
 			const data = {
 				companyTotalBalance: calculateDifference('companyTotalBalance'),
 				supplierTotalBalance: calculateDifference('supplierTotalBalance'),
-				companyTotalInvoiceAmount: calculateDifference('companyTotalInvoiceAmount'),
-				supplierTotalInvoiceAmount: calculateDifference('supplierTotalInvoiceAmount'),
 				driverUnpaidAmount: calculateDifference('driverUnpaidAmount'),
 				selfCompanyTotalFunds: calculateDifference('selfCompanyTotalFunds'),
 				loanBalance: calculateDifference('loanBalance'),
 				futuresMarginBalance: calculateDifference('futuresMarginBalance'),
-				loanFromCompany: calculateDifference('loanFromCompany')
+				loanFromCompany: calculateDifference('loanFromCompany'),
+				remainingInventoryAmount: calculateDifference('remainingInventoryAmount')
 			};
 
 			// 创建表格数据的函数
@@ -80,19 +80,17 @@ export default {
 
 			// 返回格式化后的数据
 			return [
-				createRow('资金总额（即股东权益）=①+②+③+④+⑤+⑥+⑦', this.calculateTotalBalance(data), this.calculateTotalBalance(startTimeMoney), this.calculateTotalBalance(endTimeMoney)),
+				createRow('资金总额（即股东权益）=①+②+③+④+⑤-⑥-⑦-⑧', this.calculateTotalBalance(data), this.calculateTotalBalance(startTimeMoney), this.calculateTotalBalance(endTimeMoney)),
 				createRow('①应收账款---客户欠款合计数', data.companyTotalBalance, startTimeMoney.companyTotalBalance, endTimeMoney.companyTotalBalance),
 				createRow('②银行存款---公司所有银行资金合计', data.selfCompanyTotalFunds, startTimeMoney.selfCompanyTotalFunds, endTimeMoney.selfCompanyTotalFunds),
-				createRow('⑦应付账款---欠厂家货款', data.supplierTotalBalance, startTimeMoney.supplierTotalBalance, endTimeMoney.supplierTotalBalance),
-				createRow('⑥应付账款---运费合计', data.driverUnpaidAmount, startTimeMoney.driverUnpaidAmount, endTimeMoney.driverUnpaidAmount),
 				createRow('③保证金----期货保证金', data.futuresMarginBalance, startTimeMoney.futuresMarginBalance, endTimeMoney.futuresMarginBalance),
 				createRow('④其他应收---个人或公司从我公司借款', data.loanFromCompany, startTimeMoney.loanFromCompany, endTimeMoney.loanFromCompany),
-				createRow('⑧其他应付款---公司从外面借款合计', data.loanBalance, startTimeMoney.loanBalance, endTimeMoney.loanBalance),
-				createRow('客户票点合计', data.companyTotalInvoiceAmount, startTimeMoney.companyTotalInvoiceAmount, endTimeMoney.companyTotalInvoiceAmount),
-				createRow('供应商票点合计', data.supplierTotalInvoiceAmount, startTimeMoney.supplierTotalInvoiceAmount, endTimeMoney.supplierTotalInvoiceAmount)
+				createRow('⑤库存', data.remainingInventoryAmount, startTimeMoney.remainingInventoryAmount, endTimeMoney.remainingInventoryAmount),
+				createRow('⑥应付账款---运费合计', data.driverUnpaidAmount, startTimeMoney.driverUnpaidAmount, endTimeMoney.driverUnpaidAmount),
+				createRow('⑦应付账款---欠厂家货款', data.supplierTotalBalance, startTimeMoney.supplierTotalBalance, endTimeMoney.supplierTotalBalance),
+				createRow('⑧其他应付款---公司从外面借款合计', data.loanBalance, startTimeMoney.loanBalance, endTimeMoney.loanBalance)
 			];
 		},
-		// 合并行的方法
 		// 合并行和列的方法
 		objectSpanMethod({ row, column, rowIndex, columnIndex }) {
 			// 合并“科目名称”列
@@ -112,7 +110,7 @@ export default {
 				} else if (rowIndex === 6) {
 					// 合并“负债类”行
 					return {
-						rowspan: 4, // 合并 4 行
+						rowspan: 3, // 合并 3 行
 						colspan: 1
 					};
 				} else {
