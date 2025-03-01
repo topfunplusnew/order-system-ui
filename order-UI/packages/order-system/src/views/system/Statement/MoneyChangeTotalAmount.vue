@@ -93,11 +93,40 @@ export default {
 			];
 		},
 		// 合并行的方法
+		// 合并行和列的方法
 		objectSpanMethod({ row, column, rowIndex, columnIndex }) {
-			// 只对“对比日资金流变动”列进行合并
-			if (columnIndex === 2) {
+			// 合并“科目名称”列
+			if (columnIndex === 0) {
 				if (rowIndex === 0) {
-					// 合并所有行
+					// 第一行显示“股东权益”，不合并
+					return {
+						rowspan: 1,
+						colspan: 1
+					};
+				} else if (rowIndex === 1) {
+					// 合并“资产类”行
+					return {
+						rowspan: 5, // 合并 5 行
+						colspan: 1
+					};
+				} else if (rowIndex === 6) {
+					// 合并“负债类”行
+					return {
+						rowspan: 4, // 合并 4 行
+						colspan: 1
+					};
+				} else {
+					// 其他行不显示
+					return {
+						rowspan: 0,
+						colspan: 0
+					};
+				}
+			}
+			// 合并“对比日资金流变动”列
+			else if (columnIndex === 3) {
+				if (rowIndex === 0) {
+					// 第一行显示差值，合并所有行
 					return {
 						rowspan: this.changeTableData.length,
 						colspan: 1
@@ -109,32 +138,13 @@ export default {
 						colspan: 0
 					};
 				}
-			} else if (columnIndex === 0) {
-				if (rowIndex === 0) {
-					// 合并所有行
-					return {
-						rowspan: 1,
-						colspan: 1
-					};
-				} else if (rowIndex === 1) {
-					// 合并资产类
-					return {
-						rowspan: 5,
-						colspan: 1
-					};
-				} else if (rowIndex === 6) {
-					// 合并负债类
-					return {
-						rowspan: 3,
-						colspan: 1
-					};
-				} else {
-					// 其他行不显示
-					return {
-						rowspan: 0,
-						colspan: 0
-					};
-				}
+			}
+			// 其他列不合并
+			else {
+				return {
+					rowspan: 1,
+					colspan: 1
+				};
 			}
 		}
 	}
@@ -145,9 +155,6 @@ export default {
 	<div>
 		<div class="container">
 			<el-form :inline="true" :model="changeForm" class="search-form">
-				<!--				<el-form-item label="基准日期">-->
-				<!--					<el-date-picker v-model="changeForm.startTime" type="date" value-format="yyyy-MM-dd" placeholder="选择基准日期"></el-date-picker>-->
-				<!--				</el-form-item>-->
 				<el-form-item label="日期查询">
 					<el-date-picker v-model="changeForm.endTime" type="date" value-format="yyyy-MM-dd" placeholder="选择日期"></el-date-picker>
 				</el-form-item>
@@ -159,17 +166,19 @@ export default {
 			<!-- 表格 -->
 			<el-row :gutter="10">
 				<el-table :data="changeTableData" border class="money-table" :row-style="tableRowClassName" :span-method="objectSpanMethod">
-					<el-table-column prop="des" label="科目名称">
+					<el-table-column label="科目名称">
 						<template slot-scope="scope">
-							<!-- 只在第一行显示差值 -->
+							<!-- 只在第一行显示“股东权益” -->
 							<div v-if="scope.$index === 0">股东权益</div>
-							<div v-if="[1, 2, 3, 4, 5].includes(scope.$index)">资产类</div>
-							<div v-if="[6, 7, 8].includes(scope.$index)">负债类</div>
+							<!-- 合并“资产类” -->
+							<div v-if="scope.$index === 1">资产类</div>
+							<!-- 合并“负债类” -->
+							<div v-if="scope.$index === 6">负债类</div>
 						</template>
 					</el-table-column>
 					<el-table-column prop="label" label="项目"></el-table-column>
 					<el-table-column prop="value" label="上日资金总额" :formatter="formatValue"></el-table-column>
-					<el-table-column prop="des" label="当日资金流变动">
+					<el-table-column label="对比日资金流变动">
 						<template slot-scope="scope">
 							<!-- 只在第一行显示差值 -->
 							<div v-if="scope.$index === 0">
