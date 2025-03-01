@@ -33,16 +33,16 @@
 
 				<!-- 后端说把导出扣了 -->
 				<!-- <template #export>
-					<el-col :span="1.5">
-						<el-button
-							v-hasPermi="['system:company:export']"
-							plain
-							icon="el-icon-folder-opened"
-							size="mini"
-							@click="handleExport"
-						/>
-					</el-col>
-				</template> -->
+          <el-col :span="1.5">
+            <el-button
+              v-hasPermi="['system:company:export']"
+              plain
+              icon="el-icon-folder-opened"
+              size="mini"
+              @click="handleExport"
+            />
+          </el-col>
+        </template> -->
 			</right-toolbar>
 		</el-row>
 
@@ -158,6 +158,17 @@ export default {
 			const { subjectName, configValue } = await getConfigValue(key);
 			// 拿取供应商科目余额汇总表数据 然后给tableData每一条数据赋值科目编码和名称
 			getSupplierSubjectSummary(this.queryParams).then(response => {
+				const data = response.rows || response.data;
+				// 校验
+				if (!data) {
+					this.$message.warning('暂无数据');
+					return;
+				}
+
+				if (data.length && data.length === 0) {
+					this.$message.warning('暂无数据');
+					return;
+				}
 				// 组装tableData
 				this.tableData = response?.rows.map(item => {
 					return {
