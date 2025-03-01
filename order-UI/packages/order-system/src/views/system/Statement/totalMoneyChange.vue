@@ -8,9 +8,9 @@
 			<el-form-item>
 				<el-button type="primary" @click="handleSearch">搜索</el-button>
 			</el-form-item>
-			<el-form-item>
-				<el-button type="success" @click="openChangeDialog">查看资金变动</el-button>
-			</el-form-item>
+			<!--			<el-form-item>-->
+			<!--				<el-button type="success" @click="openChangeDialog">查看资金变动</el-button>-->
+			<!--			</el-form-item>-->
 		</el-form>
 
 		<!-- 表格 -->

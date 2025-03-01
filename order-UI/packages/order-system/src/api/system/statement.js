@@ -457,3 +457,20 @@ export function getDailyProfitStatistics(query) {
 		params: query
 	});
 }
+
+export function getFundFlowDetailList(query) {
+	return request({
+		url: 'statistics/getFundFlowDetailList',
+		method: 'get',
+		params: query
+	});
+}
+
+// /statistics/findFundFlowBalanceInLocalCurrencyAtDate
+export function findFundFlowBalanceInLocalCurrencyAtDate(query) {
+	return request({
+		url: 'statistics/findFundFlowBalanceInLocalCurrencyAtDate',
+		method: 'get',
+		params: query
+	});
+}
