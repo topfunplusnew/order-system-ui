@@ -153,7 +153,7 @@
 									<SearchOption
 										:get-data="listBankAccount"
 										:limit-info="{
-											accountType: '己方公司'
+											acountsType: '己方公司'
 										}"
 										query-label="户名查找"
 										query-info="acountsName"
@@ -223,7 +223,7 @@
 
 <script>
 import { listBankAcceptance, getBankAcceptance, delBankAcceptance, addBankAcceptance, updateBankAcceptance } from '@/api/system/bankAcceptance';
-import { formatTime } from '@/api/tool/format';
+import { fix, formatTime } from '@/api/tool/format';
 import SearchOption from '@/components/SearchOption.vue';
 import { listBankAccount } from '@/api/system/bankAccount';
 import { excludeParams } from '@/api/tool/exclude';
@@ -434,7 +434,7 @@ export default {
 		// 贴息金额的自动计算
 		form: {
 			handler() {
-				this.form.inDiscountAmount = this.form.billAmount * this.form.inDiscountPoints;
+				this.form.inDiscountAmount = Number(this.form.billAmount * this.form.inDiscountPoints).toFixed(2);
 			},
 			deep: true
 		}
@@ -446,7 +446,6 @@ export default {
 		// 自定义列统计总函数
 		getSummaries(param) {
 			const { columns, data } = param;
-			console.log(param);
 			const sums = [];
 			columns.forEach((column, index) => {
 				if (index === 0) {
