@@ -22,7 +22,7 @@
 				<el-button icon="el-icon-refresh" size="mini" @click="resetQuery">刷新</el-button>
 			</el-col>
 			<el-col :span="1.5">
-				<el-button type="danger" size="mini" @click="handleAdd">新增固定资产信息</el-button>
+				<el-button type="danger" size="mini" @click="handleAdd">新增低值易耗品台账信息</el-button>
 			</el-col>
 			<right-toolbar :showSearch.sync="showSearch" :columns="columns" @queryTable="getList">
 				<template #print>
@@ -44,7 +44,7 @@
 			v-horizontal-scroll="'always'"
 			v-loading="loading"
 			border
-			:data="fixedAssetsList"
+			:data="lowvalueconsumablesList"
 			size="mini"
 			:cell-style="
 				() => {
@@ -63,20 +63,20 @@
 			<el-table-column v-if="columns[7].visible" label="不含税金额" align="center" prop="amountNoTax" show-overflow-tooltip />
 			<el-table-column v-if="columns[8].visible" label="户名名称" align="center" prop="account" show-overflow-tooltip />
 			<el-table-column v-if="columns[9].visible" label="使用部门" align="center" prop="department" show-overflow-tooltip />
-			<el-table-column v-if="columns[10].visible" label="固定资产清理时间" align="center" prop="scrapDate" show-overflow-tooltip />
+			<el-table-column v-if="columns[10].visible" label="低值易耗品台账清理时间" align="center" prop="scrapDate" show-overflow-tooltip />
 			<el-table-column v-if="columns[11].visible" label="清理/变卖价值" align="center" prop="saleAmount" show-overflow-tooltip />
 			<el-table-column v-if="columns[12].visible" label="备注" align="center" prop="comments" show-overflow-tooltip />
 			<el-table-column label="操作" align="center" class-name="small-padding fixed-width">
 				<template slot-scope="scope">
-					<el-button v-hasPermi="['system:fixedassets:edit']" size="mini" type="primary" @click="handleUpdate(scope.row)">修改</el-button>
-					<el-button v-hasPermi="['system:fixedassets:remove']" size="mini" type="danger" @click="handleDelete(scope.row)">删除</el-button>
+					<el-button v-hasPermi="['system:lowvalueconsumables:edit']" size="mini" type="primary" @click="handleUpdate(scope.row)">修改</el-button>
+					<el-button v-hasPermi="['system:lowvalueconsumables:remove']" size="mini" type="danger" @click="handleDelete(scope.row)">删除</el-button>
 				</template>
 			</el-table-column>
 		</el-table>
 
 		<pagination v-show="total > 0" :total="total" :page.sync="queryParams.pageNum" :limit.sync="queryParams.pageSize" @pagination="getList" />
 
-		<!-- 添加或修改固定资产对话框 -->
+		<!-- 添加或修改低值易耗品台账对话框 -->
 		<el-dialog :close-on-click-modal="false" :show-close="false" :title="title" :visible.sync="open" width="50%" append-to-body>
 			<el-form ref="form" :model="form" :rules="rules" label-width="120px">
 				<el-row>
@@ -114,8 +114,8 @@
 						<el-form-item label="使用部门" prop="department">
 							<el-input v-model="form.department" placeholder="请输入使用部门" />
 						</el-form-item>
-						<el-form-item label="固定资产清理时间" prop="scrapDate">
-							<el-date-picker v-model="form.scrapDate" type="datetime" placeholder="固定资产清理时间" value-format="yyyy-MM-dd HH:mm:ss"></el-date-picker>
+						<el-form-item label="低值易耗品台账清理时间" prop="scrapDate">
+							<el-date-picker v-model="form.scrapDate" type="datetime" placeholder="低值易耗品台账清理时间" value-format="yyyy-MM-dd HH:mm:ss"></el-date-picker>
 						</el-form-item>
 						<el-form-item label="清理/变卖价值" prop="saleAmount">
 							<el-input v-model="form.saleAmount" placeholder="请输入清理/变卖价值" />
@@ -136,12 +136,11 @@
 
 <script>
 import { listFixedAssets, getFixedAssets, delFixedAssets, addFixedAssets, updateFixedAssets } from '@/api/system/fixedAssets';
-import { mapGetters } from 'vuex';
 import { excludeParams } from '@/api/tool/exclude';
 import { addDateRange } from '@/utils/ruoyi';
 
 export default {
-	name: 'FixedAssets',
+	name: 'lowvalueconsumables',
 	data() {
 		return {
 			// 遮罩层
@@ -156,8 +155,8 @@ export default {
 			showSearch: true,
 			// 总条数
 			total: 0,
-			// 固定资产表格数据
-			fixedAssetsList: [],
+			// 低值易耗品台账表格数据
+			lowvalueconsumablesList: [],
 			// 弹出层标题
 			title: '',
 			// 是否显示弹出层
@@ -166,7 +165,8 @@ export default {
 			// 查询参数
 			queryParams: {
 				pageNum: 1,
-				pageSize: 10
+				pageSize: 10,
+				type: 1
 			},
 			// 表单参数
 			form: {},
@@ -260,7 +260,7 @@ export default {
 				scrapDate: [
 					{
 						required: true,
-						message: '固定资产清理时间不能为空',
+						message: '低值易耗品台账清理时间不能为空',
 						trigger: 'blur'
 					}
 				],
@@ -290,7 +290,7 @@ export default {
 				{ key: 7, label: `不含税金额`, visible: true },
 				{ key: 8, label: `户名名称`, visible: true },
 				{ key: 9, label: `使用部门`, visible: true },
-				{ key: 10, label: `固定资产清理时间`, visible: true },
+				{ key: 10, label: `低值易耗品台账清理时间`, visible: true },
 				{ key: 11, label: `清理/变卖价值`, visible: true },
 				{ key: 12, label: `备注`, visible: true }
 			],
@@ -312,7 +312,7 @@ export default {
 	watch: {
 		columns: {
 			handler: function (newVal) {
-				localStorage.setItem('fixedassets-columns', JSON.stringify(newVal));
+				localStorage.setItem('lowvalueconsumables-columns', JSON.stringify(newVal));
 			},
 			deep: true
 		}
@@ -320,17 +320,14 @@ export default {
 	created() {
 		// 获取信息
 		this.getList();
-		this.$store.dispatch('fixedassets/getFixedassetsList');
+		this.$store.dispatch('lowvalueconsumables/getFixedAssetsList');
 		this.loading = false;
-		if (localStorage.getItem('fixedassets-columns') === 'null' || !localStorage.getItem('fixedassets-columns')) {
+		if (localStorage.getItem('lowvalueconsumables-columns') === 'null' || !localStorage.getItem('lowvalueconsumables-columns')) {
 			// 设置localStorage
-			localStorage.setItem('fixedassets-columns', JSON.stringify(this.columns));
+			localStorage.setItem('lowvalueconsumables-columns', JSON.stringify(this.columns));
 		} else {
-			this.columns = JSON.parse(localStorage.getItem('fixedassets-columns'));
+			this.columns = JSON.parse(localStorage.getItem('lowvalueconsumables-columns'));
 		}
-	},
-	computed: {
-		...mapGetters(['fixedassetsList'])
 	},
 	methods: {
 		printHTML() {
@@ -340,11 +337,11 @@ export default {
 				targetStyles: ['*'] // 打印内容使用所有HTML样式，没有设置这个属性/值，设置分页打印没有效果
 			});
 		},
-		/** 查询固定资产列表 */
+		/** 查询低值易耗品台账列表 */
 		getList() {
 			this.loading = true;
 			listFixedAssets(addDateRange(this.queryParams, this.dateRange, 'fixedassets')).then(response => {
-				this.fixedAssetsList = response.rows;
+				this.lowvalueconsumablesList = response.rows;
 				this.total = response.total;
 				this.loading = false;
 			});
@@ -375,7 +372,8 @@ export default {
 				userId: null,
 				UserName: null,
 				updateTime: null,
-				delFlag: null
+				delFlag: null,
+				type: 1
 			};
 			this.dateRange = [];
 			this.resetForm('form');
@@ -401,7 +399,7 @@ export default {
 		handleAdd() {
 			this.reset();
 			this.open = true;
-			this.title = '添加固定资产';
+			this.title = '添加低值易耗品台账';
 		},
 		/** 修改按钮操作 */
 		handleUpdate(row) {
@@ -410,7 +408,7 @@ export default {
 			getFixedAssets(id).then(response => {
 				this.form = response.data;
 				this.open = true;
-				this.title = '修改固定资产';
+				this.title = '修改低值易耗品台账';
 			});
 		},
 		/** 提交按钮 */
@@ -440,7 +438,7 @@ export default {
 		handleDelete(row) {
 			const ids = row.id || this.ids;
 			this.$modal
-				.confirm('是否确认删除固定资产编号为"' + ids + '"的数据项？')
+				.confirm('是否确认删除低值易耗品台账编号为"' + ids + '"的数据项？')
 				.then(function () {
 					return delFixedAssets(ids);
 				})
@@ -453,11 +451,11 @@ export default {
 		/** 导出按钮操作 */
 		handleExport() {
 			this.download(
-				'system/fixedAssets/export',
+				'system/fixedassets/export',
 				{
 					...this.queryParams
 				},
-				`fixedAssets_${new Date().getTime()}.xlsx`
+				`lowvalueconsumables_${new Date().getTime()}.xlsx`
 			);
 		}
 	}
