@@ -18,7 +18,46 @@
 				></el-date-picker>
 			</el-form-item>
 			<el-form-item label="我方卡号：" required>
-				<el-input v-model="query.ourBankNO" placeholder="请输入我方卡号" size="small"></el-input>
+				<el-row>
+					<el-col :span="20">
+						<el-input v-model="query.ourBankNO" placeholder="请输入我方卡号" size="small" disabled></el-input>
+					</el-col>
+					<el-col :span="4">
+						<SearchOption
+							:get-data="listBankAccount"
+							icon="el-icon-search"
+							:limit-info="{ acountsType: '己方公司' }"
+							query-label="银行卡查找"
+							query-info="bankNo"
+							:query-name="queryBank"
+							@commitBack="value => (query.ourBankNO = value.bankNo)"
+							@update:queryName="value => (queryBank = value)"
+						>
+							<template #table-columns>
+								<el-table-column label="公司名称" align="center" prop="companyName">
+									<template #default="scope">
+										{{ scope.row.companyName }}
+									</template>
+								</el-table-column>
+								<el-table-column label="开户行" align="center" prop="bankName">
+									<template #default="scope">
+										{{ scope.row.bankName }}
+									</template>
+								</el-table-column>
+								<el-table-column label="开户名" align="center" prop="acountsName">
+									<template #default="scope">
+										{{ scope.row.acountsName }}
+									</template>
+								</el-table-column>
+								<el-table-column label="账号" align="center" prop="bankNo">
+									<template #default="scope">
+										{{ scope.row.bankNo }}
+									</template>
+								</el-table-column>
+							</template>
+						</SearchOption>
+					</el-col>
+				</el-row>
 			</el-form-item>
 			<el-form-item label="对象名称：">
 				<el-input v-model="query.otherName" placeholder="请输入对象名称" size="small"></el-input>
@@ -86,16 +125,42 @@
 
 		<!-- 数据为空时的提示 -->
 		<el-empty v-if="!loading && statementData.length === 0" description="暂无数据"></el-empty>
+
+		<div v-if="currentComponent">
+			<DialogWrapper
+				:current-component="currentComponent"
+				:dialog-visible="dialogVisible"
+				:dialog-props="dialogProps"
+				:dialog-title="dialogTitle"
+				:dialog-width="dialogWidth"
+				@update:dialogVisible="args => (dialogVisible = false)"
+				@close="handleCloseDialog"
+				@confirm="handleDialogConfirm"
+			/>
+		</div>
 	</div>
 </template>
 
 <script>
 import { findFundFlowBalanceInLocalCurrencyAtDate, getFundFlowDetailList } from '@/api/system/statement'; // 假设你的请求方法在该文件中，需根据实际路径调整
-import _ from 'lodash';
+import { TableName } from '@/api/tool/enums';
+import { getReceiveMoney, getReceiveMoneyByReceiveNO } from '@/api/system/receiveMoney';
+import { common_dialog } from '@/views/dashboard/mixins/common/common_dialog';
+import DialogWrapper from '@/views/dashboard/components/common/DialogWrapper.vue';
+import RECEIVE_MONEY from '@/components/NeedToShow/RECEIVE_MONEY.vue';
+import { getRecord } from '@/api/system/record';
+import OFFSETTING from '@/components/NeedToShow/OFFSETTING.vue';
+import { getPayment, getPaymentByPayNO } from '@/api/system/payment';
+import PAYMENT from '@/components/NeedToShow/PAYMENT.vue';
+import SearchOption from '@/components/SearchOption.vue';
+import { listBankAccount } from '@/api/system/bankAccount';
 
 export default {
+	components: { SearchOption, DialogWrapper },
+	mixins: [common_dialog],
 	data() {
 		return {
+			queryBank: '',
 			query: {
 				startTime: '',
 				endTime: '',
@@ -114,7 +179,52 @@ export default {
 		};
 	},
 	methods: {
-		handleCheckDetail(row) {},
+		listBankAccount,
+		handleCheckDetail(row) {
+			// 如果表名是receiveMoney（表示收款的）则通过接口根据UUID获取收款信息详细信息 展示收款信息后用户可以在这里再联查其他表
+			if (row.tableName === TableName.RECEIVE_MONEY) {
+				getReceiveMoneyByReceiveNO(row.payNO).then(res => {
+					if (res.data) {
+						this.openDialog(
+							RECEIVE_MONEY,
+							'收款信息',
+							'700px',
+							{
+								needToShowInfo: res.data
+							},
+							false
+						);
+					}
+				});
+			} else if (row.tableName === TableName.CASH_RECORD) {
+				getRecord(row.payNO).then(res => {
+					this.openDialog(
+						OFFSETTING,
+						`现金记账`,
+						'700px',
+						{
+							needToShowInfo: res.data
+						},
+						false
+					);
+				});
+			} else {
+				getPaymentByPayNO(row.payNO).then(res => {
+					this.openDialog(
+						PAYMENT,
+						`付款信息`,
+						'700px',
+						{
+							needToShowInfo: res.data
+						},
+						false
+					);
+				});
+			}
+			//如果表名是cash_record，则直接根据payNo返回的是cash_record中表的主键，可以直接查询
+			//其余类型均属于payment表，通过接口 获取付款信息详细信息根据uuid
+			//根据UUID获取具体付款信息，用户可以在付款信息这里继续查看对应信息（因为这里有对应的表名和对应id）
+		},
 		// 获取银行流水数据
 		fetchStatementData() {
 			// 清空

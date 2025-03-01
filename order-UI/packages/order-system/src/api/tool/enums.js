@@ -41,7 +41,8 @@ export const TableName = Object.freeze({
 	STOREHOUSE: 'storehouse',
 	INVENTORMAIN: 'inventory_main',
 	INVENTORDETAIL: 'inventory_detail',
-	DAILY: 'daily'
+	DAILY: 'daily',
+	CASH_RECORD: 'cash_record'
 });
 
 export const moduleNames = Object.freeze({

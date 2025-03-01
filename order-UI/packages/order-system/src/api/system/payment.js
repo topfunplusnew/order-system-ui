@@ -51,3 +51,12 @@ export function batchPayment(data) {
 		data: data
 	});
 }
+
+// /system/payment/payNO/0ce1c554-b32b-4cb2-b715-bb8f85635d0c
+// 付款单号
+export function getPaymentByPayNO(id) {
+	return request({
+		url: '/system/payment/payNO/' + id,
+		method: 'get'
+	});
+}

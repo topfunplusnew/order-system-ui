@@ -42,3 +42,11 @@ export function delReceiveMoney(id) {
 		method: 'delete'
 	});
 }
+
+///system/receiveMoney/receiveNO/8dac7bfd-218a-4040-a0f5-af5172a87222
+export function getReceiveMoneyByReceiveNO(receiveNO) {
+	return request({
+		url: '/system/receiveMoney/receiveNO/' + receiveNO,
+		method: 'get'
+	});
+}
