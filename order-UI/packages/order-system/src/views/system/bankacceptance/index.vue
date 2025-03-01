@@ -404,7 +404,7 @@ export default {
 		// 贴息金额的自动计算
 		form: {
 			handler() {
-				this.form.inDiscountAmount = this.form.billAmount * this.form.inDiscountPoints;
+				this.form.inDiscountAmount = Number(this.form.billAmount * this.form.inDiscountPoints).toFixed(2);
 			},
 			deep: true
 		}
