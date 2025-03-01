@@ -171,14 +171,14 @@ export default {
 				<!-- 未入账部分 -->
 				<tr class="bg-green">
 					<td rowspan="5">未入账部分（权责发生）</td>
-					<td>①当日应收厂家返利金额</td>
+					<td>①当日应收计提厂家返利金额</td>
 					<td>￥ {{ dailyProfitStatistics.systemGlassCostDay.toFixed(2) }}</td>
 					<td>￥ {{ dailyProfitStatistics.systemGlassCostMonth.toFixed(2) }}</td>
 					<td>￥ {{ dailyProfitStatistics.systemGlassCostYear.toFixed(2) }}</td>
 					<!-- 年度数据 -->
 				</tr>
 				<tr class="bg-green">
-					<td>②当日应收厂家降价金额</td>
+					<td>②当日应收计提厂家降价金额</td>
 					<td>￥ {{ dailyProfitStatistics.systemPayableFreightDay.toFixed(2) }}</td>
 					<td>￥ {{ dailyProfitStatistics.systemPayableFreightMonth.toFixed(2) }}</td>
 					<td>￥ {{ dailyProfitStatistics.systemPayableFreightYear.toFixed(2) }}</td>

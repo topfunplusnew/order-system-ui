@@ -302,8 +302,8 @@
 				<el-descriptions-item label="仓库名称">{{ orderDetailInfo.storeHouseName }}</el-descriptions-item>
 				<el-descriptions-item label="物流利润">{{ orderDetailInfo.logisticsProfit }}</el-descriptions-item>
 				<el-descriptions-item label="客户佣金">{{ orderDetailInfo.customerCommission }}</el-descriptions-item>
-				<el-descriptions-item label="厂家返利金额">{{ orderDetailInfo.factoryRebateAmount }}</el-descriptions-item>
-				<el-descriptions-item label="厂家降价金额">{{ orderDetailInfo.factoryDiscountAmount }}</el-descriptions-item>
+				<el-descriptions-item label="计提厂家返利金额">{{ orderDetailInfo.factoryRebateAmount }}</el-descriptions-item>
+				<el-descriptions-item label="计提厂家降价金额">{{ orderDetailInfo.factoryDiscountAmount }}</el-descriptions-item>
 				<el-descriptions-item label="是否被调整单">
 					<TagsItem :check-info="orderDetailInfo.isAdjusted" check-value="否" />
 				</el-descriptions-item>

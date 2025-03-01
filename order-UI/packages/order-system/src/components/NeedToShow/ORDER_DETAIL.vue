@@ -46,7 +46,10 @@ export default {
 				<el-descriptions-item label="附加费用">{{ needToShowInfo.additionalFees }} 元</el-descriptions-item>
 				<el-descriptions-item label="仓库名称">{{ needToShowInfo.storeHouseName || '无' }}</el-descriptions-item>
 				<el-descriptions-item label="物流利润">{{ needToShowInfo.logisticsProfit }} 元</el-descriptions-item>
-				<el-descriptions-item label="佣金">{{ needToShowInfo.customerCommission }} 元</el-descriptions-item>
+				<el-descriptions-item label="客户佣金">{{ needToShowInfo.customerCommission }} 元</el-descriptions-item>
+				<el-descriptions-item label="厂家佣金">{{ needToShowInfo.factoryCommission }} 元</el-descriptions-item>
+				<el-descriptions-item label="计提厂家返利金额">{{ needToShowInfo.factoryRebateAmount }} 元</el-descriptions-item>
+				<el-descriptions-item label="计提厂家降价金额">{{ needToShowInfo.factoryDiscountAmount }} 元</el-descriptions-item>
 				<el-descriptions-item label="调整订单号">{{ needToShowInfo.adjustOrderNo || '无' }}</el-descriptions-item>
 				<el-descriptions-item label="调整日期">{{ needToShowInfo.adjustDate || '无' }}</el-descriptions-item>
 				<el-descriptions-item label="备注">

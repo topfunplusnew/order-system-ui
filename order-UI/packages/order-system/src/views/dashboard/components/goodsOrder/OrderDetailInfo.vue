@@ -215,6 +215,9 @@ export default {
 				<el-table-column label="备注" align="center" prop="comments" show-overflow-tooltip />
 				<el-table-column label="物流利润" align="center" prop="logisticsProfit" show-overflow-tooltip />
 				<el-table-column label="客户佣金" align="center" prop="customerCommission" show-overflow-tooltip />
+				<el-table-column label="厂家佣金" align="center" prop="factoryCommission" show-overflow-tooltip />
+				<el-table-column label="计提厂家返利金额" align="center" prop="factoryRebateAmount" show-overflow-tooltip />
+				<el-table-column label="计提厂家降价金额" align="center" prop="factoryDiscountAmount" show-overflow-tooltip />
 			</el-table>
 		</el-row>
 

@@ -15,6 +15,7 @@ import { fix } from '../../../../api/tool/format';
 import SearchOption from '../../../../components/SearchOption.vue';
 import { parseTime } from '../../../../utils/ruoyi';
 import { mixin_form_fillInfo } from '../../mixins/order/form/form_fillInfo';
+
 export default {
 	name: 'OrderForm',
 	components: { SearchOption },
@@ -400,6 +401,7 @@ export default {
 					scope.row.payments = fix((scope.row.length * scope.row.width * scope.row.actualPieces * scope.row.paymentUnload) / 1000000 + Number(scope.row.paymentsWithSundry));
 				}
 			}
+
 			if (scope.row.payments > 0) {
 				calcu();
 				this.calculatePrice(scope);
@@ -1061,21 +1063,21 @@ export default {
 							<el-input size="mini" v-model="scope.row.logisticsProfit" placeholder="请输入物流利润" />
 						</template>
 					</el-table-column>
-					<el-table-column label="佣金" prop="customerCommission" width="150">
+					<el-table-column label="客户佣金" prop="customerCommission" width="150">
 						<template #default="scope">
 							<el-input size="mini" v-model="scope.row.customerCommission" placeholder="请输入佣金" />
 						</template>
 					</el-table-column>
 
 					<!--          降价金额-->
-					<el-table-column label="厂家返利金额" prop="customerCommission" width="150">
+					<el-table-column label="计提厂家返利金额" prop="customerCommission" width="150">
 						<template #default="scope">
-							<el-input size="mini" v-model="scope.row.factoryRebateAmount" placeholder="请输入厂家返利金额" />
+							<el-input size="mini" v-model="scope.row.factoryRebateAmount" placeholder="请输入计提厂家返利金额" />
 						</template>
 					</el-table-column>
-					<el-table-column label="厂家降价金额" prop="customerCommission" width="150">
+					<el-table-column label="计提厂家降价金额" prop="customerCommission" width="150">
 						<template #default="scope">
-							<el-input size="mini" v-model="scope.row.factoryDiscountAmount" placeholder="请输入厂家降价金额" />
+							<el-input size="mini" v-model="scope.row.factoryDiscountAmount" placeholder="请输入计提厂家降价金额" />
 						</template>
 					</el-table-column>
 

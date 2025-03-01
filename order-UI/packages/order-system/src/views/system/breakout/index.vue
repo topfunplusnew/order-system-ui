@@ -518,14 +518,14 @@
 					</el-table-column>
 
 					<!--          降价金额-->
-					<el-table-column label="厂家返利金额" prop="customerCommission" width="150">
+					<el-table-column label="计提厂家返利金额" prop="customerCommission" width="150">
 						<template #default="scope">
-							<el-input size="mini" v-model="scope.row.factoryRebateAmount" placeholder="请输入厂家返利金额" />
+							<el-input size="mini" v-model="scope.row.factoryRebateAmount" placeholder="请输入计提厂家返利金额" />
 						</template>
 					</el-table-column>
-					<el-table-column label="厂家降价金额" prop="customerCommission" width="150">
+					<el-table-column label="计提厂家降价金额" prop="customerCommission" width="150">
 						<template #default="scope">
-							<el-input size="mini" v-model="scope.row.factoryDiscountAmount" placeholder="请输入厂家降价金额" />
+							<el-input size="mini" v-model="scope.row.factoryDiscountAmount" placeholder="请输入计提厂家降价金额" />
 						</template>
 					</el-table-column>
 
