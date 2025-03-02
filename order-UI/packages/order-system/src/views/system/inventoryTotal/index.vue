@@ -71,7 +71,7 @@
 							<el-table-column label="长度" prop="length" align="center" />
 							<el-table-column label="宽度" prop="width" align="center" />
 							<el-table-column label="吨位" prop="tonnage" align="center" />
-							<el-table-column label="高度" prop="height" align="center" />
+							<el-table-column label="厚度" prop="height" align="center" />
 						</el-table>
 						<el-pagination
 							:current-page.sync="pagination[category].currentPage"

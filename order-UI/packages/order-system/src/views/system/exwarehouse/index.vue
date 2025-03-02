@@ -227,7 +227,7 @@
 				<el-descriptions-item label="计数单位">
 					{{ inventoryInfo.countingUnit }}
 				</el-descriptions-item>
-				<el-descriptions-item label="高度">
+				<el-descriptions-item label="厚度">
 					{{ inventoryInfo.height }}
 				</el-descriptions-item>
 				<el-descriptions-item label="长度">

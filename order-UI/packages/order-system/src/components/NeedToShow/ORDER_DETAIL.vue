@@ -19,7 +19,7 @@ export default {
 				<el-descriptions-item label="客户">{{ needToShowInfo.customer }}</el-descriptions-item>
 				<el-descriptions-item label="级别名称">{{ needToShowInfo.levelName }}</el-descriptions-item>
 				<el-descriptions-item label="计量单位">{{ needToShowInfo.countingUnit }}</el-descriptions-item>
-				<el-descriptions-item label="高度">{{ needToShowInfo.height }}</el-descriptions-item>
+				<el-descriptions-item label="厚度">{{ needToShowInfo.height }}</el-descriptions-item>
 				<el-descriptions-item label="长度">{{ needToShowInfo.length }}</el-descriptions-item>
 				<el-descriptions-item label="宽度">{{ needToShowInfo.width }}</el-descriptions-item>
 				<el-descriptions-item label="总片数">{{ needToShowInfo.pieces }}</el-descriptions-item>

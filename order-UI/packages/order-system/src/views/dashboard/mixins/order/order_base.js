@@ -18,7 +18,7 @@ export var mixin_order_base = {
 				customer: '客户名称',
 				levelName: '级别名称',
 				countingUnit: '计数单位',
-				height: '高度',
+				height: '厚度',
 				length: '长度',
 				width: '宽度',
 				pieces: '数量',
