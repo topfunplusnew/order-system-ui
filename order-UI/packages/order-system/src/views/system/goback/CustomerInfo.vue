@@ -374,7 +374,8 @@ export default {
 				[TableName.INVENTORMAIN]: INVENTORY,
 				// 需要前端在这两个明细表上进行适配bankacceptance
 				[TableName.BANK_ACCOUNT_CHANGE]: BANK_ACCEPTANCE,
-				[TableName.ORDER_FREIGHT]: ORDER_FREIGHTVue
+				[TableName.ORDER_FREIGHT]: ORDER_FREIGHTVue,
+				[TableName.BANK_ACCEPTANCE]: BANK_ACCEPTANCE
 			};
 			return components[tableName] || null; // 默认返回 null，如果没有匹配的 tableName
 		},

@@ -29,7 +29,9 @@ export default {
 			if (!dateString) return '无'; // 如果日期为空，返回 '无'
 			const date = new Date(dateString);
 			return date.toLocaleString(); // 格式化日期
-		}
+		},
+		handleReject() {},
+		handleProcess() {}
 	}
 };
 </script>

@@ -263,7 +263,8 @@ export default {
 			this.download(
 				'system/goodsOrder/export',
 				{
-					...this.queryParams
+					...this.queryParams,
+					isAdjusted: this.isAdjustOrder ? 1 : 0
 				},
 				`goodsOrder_${new Date().getTime()}.xlsx`
 			);

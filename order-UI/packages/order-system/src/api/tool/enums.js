@@ -81,7 +81,8 @@ export const moduleNames = Object.freeze({
 	balanceaccounts: '平账',
 	storehouse: '仓库',
 	inventory_main: '库存',
-	inventory_detail: '库存明细'
+	inventory_detail: '库存明细',
+	bankacceptance: '商业票据'
 });
 
 // 报表所用类型
