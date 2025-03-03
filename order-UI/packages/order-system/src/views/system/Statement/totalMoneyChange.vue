@@ -22,7 +22,6 @@
 import { getMoneySummary } from '@/api/system/statement';
 import { parseTime } from '../../../utils/ruoyi';
 import { fix } from 'order-system/src/api/tool/format';
-import { getPreviousDay } from '@/utils/Date';
 
 export default {
 	name: 'TotalMoneyChange',
@@ -31,14 +30,7 @@ export default {
 			searchForm: {
 				endTime: parseTime(new Date(), '{y}-{m}-{d}')
 			},
-			changeForm: {
-				startTime: '',
-				endTime: ''
-			},
-			tableData: [],
-			changeTableData: [],
-			anotherTableData: [],
-			changeDialogVisible: false
+			tableData: []
 		};
 	},
 	created() {
@@ -57,7 +49,7 @@ export default {
 				value
 			});
 			return [
-				createRow('资金总额=①+②+③+④+⑤+⑥-⑦', this.calculateTotalBalance(data)),
+				createRow('资金总额=①+②-③-④+⑤+⑥-⑦', this.calculateTotalBalance(data)),
 				createRow('①客户欠款合计数', data.companyTotalBalance),
 				createRow('②所有银行卡资金合计', data.selfCompanyTotalFunds),
 				createRow('③欠厂家货款', data.supplierTotalBalance),
@@ -80,14 +72,15 @@ export default {
 				loanBalance: data.loanBalance || 0
 			};
 
+			// 按照公式计算资金总额：① + ② - ③ - ④ + ⑤ + ⑥ - ⑦
 			const result =
-				safeData.companyTotalBalance +
-				safeData.selfCompanyTotalFunds +
-				safeData.supplierTotalBalance -
-				safeData.driverUnpaidAmount -
-				safeData.futuresMarginBalance +
-				safeData.loanFromCompany +
-				safeData.loanBalance;
+				safeData.companyTotalBalance + // ①客户欠款合计数
+				safeData.selfCompanyTotalFunds - // ②所有银行卡资金合计
+				safeData.supplierTotalBalance - // ③欠厂家货款
+				safeData.driverUnpaidAmount + // ④未支付运费合计
+				safeData.futuresMarginBalance + // ⑤期货保证金
+				safeData.loanFromCompany - // ⑥其他应收-个人从公司借款
+				safeData.loanBalance; // ⑦公司从外面借款合计
 
 			return result.toFixed(2); // 保留两位小数
 		},
