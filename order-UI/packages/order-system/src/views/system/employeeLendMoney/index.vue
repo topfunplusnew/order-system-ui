@@ -9,10 +9,10 @@
 		<hr color="#e6e6e6" />
 		<el-form v-show="showSearch" ref="queryForm" :model="queryParams" size="mini" :inline="true" label-width="68px">
 			<el-form-item label="开始时间" prop="beginTime">
-				<el-date-picker v-model="queryParams.beginTime" type="date" placeholder="请选择开始时间" value-format="yyyy-MM-dd"></el-date-picker>
+				<el-date-picker v-model="queryParams.params.beginTime" type="date" placeholder="请选择开始时间" value-format="yyyy-MM-dd"></el-date-picker>
 			</el-form-item>
 			<el-form-item label="结束时间" prop="endTime">
-				<el-date-picker v-model="queryParams.endTime" type="date" placeholder="请选择结束时间" value-format="yyyy-MM-dd"></el-date-picker>
+				<el-date-picker v-model="queryParams.params.endTime" type="date" placeholder="请选择结束时间" value-format="yyyy-MM-dd"></el-date-picker>
 			</el-form-item>
 			<el-form-item>
 				<el-button type="primary" icon="el-icon-search" size="mini" @click="handleQuery">搜索</el-button>
@@ -372,10 +372,10 @@ export default {
 				futuresDate: null,
 				reason: null,
 				comments: null,
-				addtime: null,
-				userId: null,
-				UserName: null,
-				delFlag: null
+				params: {
+					beginTime: null,
+					endTime: null
+				}
 			},
 			// 添加或者修改
 			title: '',

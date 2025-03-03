@@ -1,11 +1,11 @@
 <template>
 	<div class="app-container">
-		<el-form v-show="showSearch" ref="queryForm" :model="timesQuery" size="mini" :inline="true" label-width="68px">
-			<el-form-item label="开始时间" prop="beginTime">
-				<el-date-picker v-model="timesQuery.beginTime" type="datetime" placeholder="请选择开始时间" value-format="yyyy-MM-dd HH:mm:ss"></el-date-picker>
+		<el-form v-show="showSearch" ref="queryForm" :model="queryParams" size="mini" :inline="true" label-width="68px">
+			<el-form-item label="开始时间" prop="startTime">
+				<el-date-picker v-model="queryParams.startTime" type="datetime" placeholder="请选择开始时间" value-format="yyyy-MM-dd HH:mm:ss"></el-date-picker>
 			</el-form-item>
-			<el-form-item label="结束时间" prop="endTime">
-				<el-date-picker v-model="timesQuery.endTime" type="datetime" placeholder="请选择结束时间" value-format="yyyy-MM-dd HH:mm:ss"></el-date-picker>
+			<el-form-item label="结束时间" prop="endTIme">
+				<el-date-picker v-model="queryParams.endTime" type="datetime" placeholder="请选择结束时间" value-format="yyyy-MM-dd HH:mm:ss"></el-date-picker>
 			</el-form-item>
 			<el-form-item>
 				<el-button type="primary" icon="el-icon-search" size="mini" @click="handleQueryTime">搜索</el-button>
@@ -145,10 +145,8 @@ export default {
 				acountsName: null,
 				bankNo: null,
 				comments: null,
-				addtime: null,
-				userId: null,
-				UserName: null,
-				delFlag: null
+				startTime: null,
+				endTime: null
 			},
 			// 表单参数
 			form: {},
@@ -161,11 +159,6 @@ export default {
 				{ key: 5, label: `还款账户`, visible: true },
 				{ key: 6, label: `还款账号`, visible: true }
 			],
-			timesQuery: {
-				beginTime: '',
-				endTime: '',
-				objectType: ''
-			},
 			options: [
 				{
 					label: 'test',
@@ -215,22 +208,8 @@ export default {
 		},
 		// 时间查询
 		handleQueryTime() {
-			// 重置
-			this.repaymentList = this.tempRepaymentList;
-			// 筛选
-			this.repaymentList = this.filterTime();
-		},
-		// 筛选方法
-		filterTime() {
-			return this.repaymentList.filter(item => {
-				// 时间转换
-				const time_search = new Date(item.payDate).getTime();
-				const time_start = new Date(this.timesQuery.beginTime).getTime();
-				const date = new Date(this.timesQuery.endTime);
-				date.setDate(date.getDate() + 1);
-				const time_end = date.getTime();
-				return time_search >= time_start && time_search <= time_end;
-			});
+			this.queryParams.pageNum = 1;
+			this.getList();
 		},
 		printHTML() {
 			this.$print({

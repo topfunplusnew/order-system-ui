@@ -1,15 +1,15 @@
 <!--向外借钱-->
 <template>
 	<div class="app-container">
-		<el-form v-show="showSearch" ref="queryForm" :model="timesQuery" size="mini" :inline="true" label-width="68px">
+		<el-form v-show="showSearch" ref="queryForm" :model="queryParams" size="mini" :inline="true" label-width="68px">
 			<el-form-item label="开始时间" prop="beginTime">
-				<el-date-picker v-model="timesQuery.beginTime" type="datetime" placeholder="请选择开始时间" value-format="yyyy-MM-dd HH:mm:ss"></el-date-picker>
+				<el-date-picker v-model="queryParams.params.beginTime" type="datetime" placeholder="请选择开始时间" value-format="yyyy-MM-dd HH:mm:ss"></el-date-picker>
 			</el-form-item>
 			<el-form-item label="结束时间" prop="endTime">
-				<el-date-picker v-model="timesQuery.endTime" type="datetime" placeholder="请选择结束时间" value-format="yyyy-MM-dd HH:mm:ss"></el-date-picker>
+				<el-date-picker v-model="queryParams.params.endTime" type="datetime" placeholder="请选择结束时间" value-format="yyyy-MM-dd HH:mm:ss"></el-date-picker>
 			</el-form-item>
 			<el-form-item label="对象类型" prop="objectType">
-				<el-select v-model="timesQuery.objectType" placeholder="请选择对象类型">
+				<el-select v-model="queryParams.objectType" placeholder="请选择对象类型">
 					<el-option v-for="item in options" :key="item.value" :label="item.label" :value="item.value"></el-option>
 				</el-select>
 			</el-form-item>
@@ -343,10 +343,10 @@ export default {
 				futuresDate: null,
 				reason: null,
 				comments: null,
-				addtime: null,
-				userId: null,
-				UserName: null,
-				delFlag: null
+				params: {
+					beginTime: null,
+					endTime: null
+				}
 			},
 			// 表单参数
 			form: { ishave: '' },
@@ -450,12 +450,6 @@ export default {
 				{ key: 11, label: '事由', visible: true }
 			],
 
-			// 搜索参数
-			timesQuery: {
-				beginTime: '',
-				endTime: '',
-				objectType: ''
-			},
 			// 员工、客户、供应商、其他
 			options: [
 				{
@@ -579,34 +573,9 @@ export default {
 		},
 		// 时间查询
 		handleQueryTime() {
-			// 重置
-			this.lendMoneyList = this.tempLendMoneyList;
-			// 筛选事件
-			this.lendMoneyList = this.filterTime();
+			this.queryParams.pageNum = 1;
+			this.getList();
 		},
-		// 筛选方法
-		filterTime() {
-			return this.lendMoneyList.filter(item => {
-				// 时间转换
-				const time_search = new Date(item.futuresDate).getTime();
-				const time_start = new Date(this.timesQuery.beginTime).getTime();
-				const date = new Date(this.timesQuery.endTime);
-				date.setDate(date.getDate() + 1);
-				const time_end = date.getTime();
-				// 如果当前的客户类型给空
-				if (this.timesQuery.beginTime !== '' && this.timesQuery.endTime !== '') {
-					if (this.timesQuery.objectType !== '') {
-						return time_search >= time_start && time_search <= time_end && item.targetType === this.timesQuery.objectType;
-					} else {
-						return time_search >= time_start && time_search <= time_end;
-					}
-				} else {
-					return item.targetType === this.timesQuery.objectType;
-				}
-			});
-		},
-
-		//
 		handleCommitBack(val) {
 			this.form.targetBankNo = val.bankNo;
 			this.form.targetBankName = val.bankName;
