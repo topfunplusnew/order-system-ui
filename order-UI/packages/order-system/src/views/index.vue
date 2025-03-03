@@ -70,6 +70,33 @@
 						>
 							<el-table-column prop="index" label="序号" width="50" align="center" type="index"></el-table-column>
 							<el-table-column v-if="columns[0].visible" prop="orderDate" label="日期" show-overflow-tooltip></el-table-column>
+							<el-table-column v-if="columns[1].visible" prop="companyName" label="客户" show-overflow-tooltip></el-table-column>
+							<el-table-column v-if="columns[2].visible" prop="salesman" label="业务员" show-overflow-tooltip></el-table-column>
+							<el-table-column v-if="columns[3].visible" prop="arrears" label="欠款" show-overflow-tooltip></el-table-column>
+							<el-table-column v-if="columns[4].visible" prop="profit" label="含税利润" show-overflow-tooltip></el-table-column>
+							<el-table-column v-if="columns[5].visible" prop="profitNoTax" label="不含税利润" width="110" show-overflow-tooltip></el-table-column>
+							<el-table-column v-if="columns[6].visible" prop="payments" label="总货款" show-overflow-tooltip></el-table-column>
+							<el-table-column v-if="columns[7].visible" prop="paymentFactory" label="出厂货款" show-overflow-tooltip></el-table-column>
+							<el-table-column v-if="columns[8].visible" prop="tonnage" label="吨位" show-overflow-tooltip></el-table-column>
+							<el-table-column v-if="columns[9].visible" prop="clerk" label="内勤" show-overflow-tooltip></el-table-column>
+							<el-table-column v-if="columns[10].visible" prop="landCarNo" label="陆运车牌" show-overflow-tooltip>
+								<template #default="scope">
+									<span v-if="scope.row.landCarNo !== null">
+										{{ scope.row.landCarNo }}
+									</span>
+									<span v-else>无</span>
+								</template>
+							</el-table-column>
+							<el-table-column v-if="columns[11].visible" prop="seaCarNo" label="柜号" show-overflow-tooltip>
+								<template #default="scope">
+									<span v-if="scope.row.seaCarNo !== null">
+										{{ scope.row.seaCarNo }}
+									</span>
+									<span v-else>无</span>
+								</template>
+							</el-table-column>
+							<el-table-column v-if="columns[12].visible" prop="fleet" label="车队" show-overflow-tooltip></el-table-column>
+							<el-table-column v-if="columns[13].visible" prop="freight" label="运费" show-overflow-tooltip></el-table-column>
 						</el-table>
 						<pagination
 							v-show="total > 0"
