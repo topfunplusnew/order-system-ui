@@ -83,30 +83,18 @@ export default {
 				this.dailyProfitStatistics.systemInvoiceInYear - // 票点成本
 				this.dailyProfitStatistics.systemDailyExpenseYear // 管理费用
 			);
-		},
-		// 修正后的本月未入账金额结余
-		unaccountedAmount() {
-			// 计算本月未入账金额结余
-			return (
-				this.dailyProfitStatistics.systemRebateReceivableMonth +
-				this.dailyProfitStatistics.systemPriceReductionReceivableMonth -
-				this.dailyProfitStatistics.systemCustomerCommissionPayableMonth +
-				this.dailyProfitStatistics.systemTicketPointDiffMonth
-			);
-		},
-		// 修正后的本日应当利润
-		dailyExpectedProfit() {
-			// 计算本日应当利润
-			return this.monthlyProfit + this.unaccountedAmount - this.dailyProfitStatistics.systemInvoiceInMonth;
 		}
 	},
 
 	methods: {
 		calculateUnaccountedAmount(a, b, c, d) {
-			return fix(a + b - c + d);
+			return Number(a + b - c + d).toFixed(2);
+		},
+		calculateUnaccountedAmountNoFix(a, b, c, d) {
+			return Number(a + b - c + d);
 		},
 		calculateProfitToday(a, b, c) {
-			return fix(a + b - c);
+			return Number(a + b - c).toFixed(2);
 		},
 		getList() {
 			getDailyProfitStatistics(this.queryParams).then(res => {
@@ -281,7 +269,7 @@ export default {
 						{{
 							calculateProfitToday(
 								dailyProfit,
-								calculateUnaccountedAmount(
+								calculateUnaccountedAmountNoFix(
 									dailyProfitStatistics.systemRebateReceivableDay,
 									dailyProfitStatistics.systemPriceReductionReceivableDay,
 									dailyProfitStatistics.systemCustomerCommissionPayableDay,
@@ -296,7 +284,7 @@ export default {
 						{{
 							calculateProfitToday(
 								dailyProfit,
-								calculateUnaccountedAmount(
+								calculateUnaccountedAmountNoFix(
 									dailyProfitStatistics.systemRebateReceivableMonth,
 									dailyProfitStatistics.systemPriceReductionReceivableMonth,
 									dailyProfitStatistics.systemCustomerCommissionPayableMonth,
@@ -311,7 +299,7 @@ export default {
 						{{
 							calculateProfitToday(
 								dailyProfit,
-								calculateUnaccountedAmount(
+								calculateUnaccountedAmountNoFix(
 									dailyProfitStatistics.systemRebateReceivableYear,
 									dailyProfitStatistics.systemPriceReductionReceivableYear,
 									dailyProfitStatistics.systemCustomerCommissionPayableYear,
