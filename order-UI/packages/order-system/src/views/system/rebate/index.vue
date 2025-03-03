@@ -55,11 +55,11 @@
 					</el-col>
 				</template>
 				<!--        导出2-->
-				<template #export2>
-					<el-col :span="1.5">
-						<el-button v-hasPermi="['system:rebate:export']" plain icon="el-icon-folder-opened" size="mini" @click="handleExport2"></el-button>
-					</el-col>
-				</template>
+				<!--				<template #export2>-->
+				<!--					<el-col :span="1.5">-->
+				<!--						<el-button v-hasPermi="['system:rebate:export']" plain icon="el-icon-folder-opened" size="mini" @click="handleExport2"></el-button>-->
+				<!--					</el-col>-->
+				<!--				</template>-->
 			</right-toolbar>
 		</el-row>
 
