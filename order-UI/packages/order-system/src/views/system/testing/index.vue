@@ -1,22 +1,6 @@
 <template>
 	<div>
-		<!-- <div class="flex-display">
-      <div class="left-box">文件上传(input)：</div>
-      <input type="file" class="file-ipt" multiple @change="onChange" />
-    </div>
-    <hr />
-    <el-table v-if="tableHead.length" :data="tableData[1]" style="width: 100%">
-      <el-table-column
-        v-for="(data, key) in tableHead"
-        :key="key"
-        :prop="data"
-        :label="data"
-        width="180"
-      >
-      </el-table-column>
-    </el-table> -->
-
-		<!-- <el-button type="primary">点击增加{{ count }}</el-button> -->
+		<INVENTORY :need-to-show-info="inventory" />
 	</div>
 </template>
 <script>
@@ -24,14 +8,108 @@ import Vue from 'vue';
 import ElementUI from 'element-ui';
 import 'element-ui/lib/theme-chalk/index.css';
 import { read, utils } from 'xlsx';
+import INVENTORY from '@/components/NeedToShow/INVENTORY.vue';
 
 Vue.use(ElementUI);
 export default {
+	components: { INVENTORY },
 	data() {
 		return {
 			fileList: [], // 上传文件列表
 			tableHead: [], // 表头
-			tableData: [] // 表数据
+			tableData: [], // 表数据
+			inventory: {
+				createBy: null,
+				createTime: null,
+				updateBy: null,
+				updateTime: null,
+				remark: null,
+				selfBankCardType: null,
+				otherBankCardType: null,
+				id: 8,
+				storeHouseid: 1,
+				storeHouseName: '测试仓库',
+				storeDate: '2025-02-13 18:54:29',
+				landCarID: 1,
+				landCarNo: '陆运车牌',
+				landDriverTel: '11111111111',
+				landDriverName: '测试陆运司机',
+				seaCarID: null,
+				seaCarNo: null,
+				seaDriverTel: null,
+				seaDriverName: null,
+				landBankNo: '测试陆运司机',
+				seaBankNo: null,
+				landBankName: '测试陆运司机开户行',
+				seaBankName: null,
+				addtime: '2025-02-13 18:56:17',
+				userId: 1,
+				delFlag: 0,
+				showFlag: 0,
+				goodsCompany: '本部',
+				allLandFreight: 20093.4,
+				allSeaFreight: 0.0,
+				allTonnage: 223.26,
+				allFreightPrice: 90.0,
+				fleet: '梵蒂冈让他',
+				receiveProof: null,
+				checkUserId: null,
+				checkState: null,
+				inventoryDetailList: [
+					{
+						createBy: null,
+						createTime: null,
+						updateBy: null,
+						updateTime: null,
+						remark: null,
+						selfBankCardType: null,
+						otherBankCardType: null,
+						storeHouseName: null,
+						storeDate: null,
+						id: 11,
+						mainId: 8,
+						stockNumber: 2000,
+						supplier: '测试供应商',
+						supplierId: 1,
+						levelID: 5,
+						levelName: '本溪玉晶一等品',
+						countingUnit: '片',
+						height: 5.0,
+						length: 3660.0,
+						width: 2440.0,
+						pieces: 2000,
+						piecesPerPack: 100,
+						packs: 20,
+						price: 20.0,
+						isIncludeTaxFactory: 0,
+						sundryCost: 10.0,
+						paymentFactory: 357226.0,
+						paymentUnload: 30.0,
+						isIncludeTaxSale: 0,
+						payments: '535824.000',
+						erro: 0.0,
+						tonnage: 223.26,
+						landFreightPrice: 90.0,
+						landFreight: 20093.4,
+						seaFreight: null,
+						freight: 20093.4,
+						otherCost: 0.0,
+						profit: 158504.6,
+						profitNoTax: 158504.6,
+						actualPieces: 2000,
+						paymentsWithSundry: 0.0,
+						additionalFees: 0.0,
+						rebate: null,
+						customerCommission: 0.0,
+						comments: '0',
+						exWareHoustId: null,
+						delFlag: null,
+						addtime: null,
+						storeHouseid: null
+					}
+				],
+				userName: 'maolei'
+			}
 		};
 	},
 	methods: {

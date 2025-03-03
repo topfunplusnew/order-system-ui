@@ -189,16 +189,6 @@ export default {
 		refresh() {
 			this.getList();
 		},
-		// handleSubmitTime() {
-		// 	this.download(
-		// 		'statistics/export/companysummary',
-		// 		{
-		// 			...this.queryParams
-		// 		},
-		// 		`供应商科目余额汇总表_${parseTime(new Date().getTime())}.xlsx`
-		// 	);
-		// },
-		// 导出
 		handleExport() {
 			this.$datePicker().then(({ beginTime, endTime }) => {
 				this.queryParams.beginTime = beginTime;

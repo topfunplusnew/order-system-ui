@@ -20,6 +20,7 @@ import BANK_ACCEPTANCE from '@/components/NeedToShow/BANK_ACCEPTANCE.vue';
 import INVENTORYDETAILVue from '../../../../components/NeedToShow/INVENTORYDETAIL.vue';
 import ORDER_FREIGHTVue from '../../../../components/NeedToShow/ORDER_FREIGHT.vue';
 import RECEIVE_MONEY from '@/components/NeedToShow/RECEIVE_MONEY.vue';
+import BALANCEACCOUNT from "@/components/NeedToShow/BALANCEACCOUNT.vue";
 
 export default {
 	name: 'SupplierDetail',
@@ -210,7 +211,9 @@ export default {
 				[TableName.ORDER_DETAIL]: ORDER_DETAIL,
 				// 需要前端在这两个明细表上进行适配bankacceptance
 				[TableName.BANK_ACCOUNT_CHANGE]: BANK_ACCEPTANCE,
-				[TableName.ORDER_FREIGHT]: ORDER_FREIGHTVue
+				[TableName.ORDER_FREIGHT]: ORDER_FREIGHTVue,
+				// 平账
+				[TableName.BALANCEACCOUNT]: BALANCEACCOUNT
 			};
 			// 默认返回 null，如果没有匹配的 tableName
 			return components[tableName] || null;

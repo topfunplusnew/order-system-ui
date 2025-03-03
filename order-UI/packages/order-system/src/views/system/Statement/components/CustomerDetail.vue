@@ -19,6 +19,7 @@ import { getConfigValue } from '../data/config_get';
 import BANK_ACCEPTANCE from '@/components/NeedToShow/BANK_ACCEPTANCE.vue';
 import ORDER_FREIGHTVue from '../../../../components/NeedToShow/ORDER_FREIGHT.vue';
 import RECEIVE_MONEY from '@/components/NeedToShow/RECEIVE_MONEY.vue';
+import BALANCEACCOUNT from '@/components/NeedToShow/BALANCEACCOUNT.vue';
 
 export default {
 	name: 'CustomerDetail',
@@ -208,7 +209,9 @@ export default {
 				[TableName.INVENTORMAIN]: INVENTORY,
 				// 需要前端在这两个明细表上进行适配bankacceptance
 				[TableName.BANK_ACCEPTANCE]: BANK_ACCEPTANCE,
-				[TableName.ORDER_FREIGHT]: ORDER_FREIGHTVue
+				[TableName.ORDER_FREIGHT]: ORDER_FREIGHTVue,
+				// 平账
+				[TableName.BALANCEACCOUNT]: BALANCEACCOUNT
 			};
 			return components[tableName] || null; // 默认返回 null，如果没有匹配的 tableName
 		},

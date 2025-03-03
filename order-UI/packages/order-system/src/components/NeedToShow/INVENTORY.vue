@@ -37,6 +37,36 @@ export default {
 					<el-tag size="small">{{ needToShowInfo.comments || '无' }}</el-tag>
 				</el-descriptions-item>
 			</el-descriptions>
+
+			<!--      库存个体信息-->
+			<el-table :data="needToShowInfo.inventoryDetailList" stripe style="width: 100%">
+				<el-table-column prop="storeHouseName" label="仓库名称" width="150" />
+				<el-table-column prop="storeDate" label="入库日期" width="180">
+					<template #default="scope">{{ new Date(scope.row.storeDate).toLocaleDateString() }}</template>
+				</el-table-column>
+				<el-table-column prop="supplier" label="供应商" width="150" />
+				<el-table-column prop="levelName" label="等级名称" width="200" />
+				<el-table-column prop="stockNumber" label="库存数量" width="120">
+					<template #default="scope">{{ scope.row.stockNumber }} {{ scope.row.countingUnit }}</template>
+				</el-table-column>
+				<el-table-column prop="price" label="单价" width="120">
+					<template #default="scope">{{ scope.row.price }} 元</template>
+				</el-table-column>
+				<el-table-column prop="landFreight" label="陆运费" width="120">
+					<template #default="scope">{{ scope.row.landFreight || '0' }} 元</template>
+				</el-table-column>
+				<el-table-column prop="seaFreight" label="海运费" width="120">
+					<template #default="scope">{{ scope.row.seaFreight || '0' }} 元</template>
+				</el-table-column>
+				<el-table-column prop="profit" label="利润" width="150">
+					<template #default="scope">{{ scope.row.profit || '0' }} 元</template>
+				</el-table-column>
+				<el-table-column prop="comments" label="备注" width="150">
+					<template #default="scope">
+						<el-tag size="small">{{ scope.row.comments || '无' }}</el-tag>
+					</template>
+				</el-table-column>
+			</el-table>
 		</el-card>
 	</div>
 </template>
