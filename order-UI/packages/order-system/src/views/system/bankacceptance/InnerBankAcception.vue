@@ -20,7 +20,7 @@
 				<el-button icon="el-icon-refresh" size="mini" @click="resetQuery">刷新</el-button>
 			</el-col>
 			<el-col :span="1.5">
-				<el-button v-hasPermi="['system:bankacceptance:add']" type="danger" size="mini" @click="handleAdd">添加收入商业票据</el-button>
+				<el-button v-hasPermi="['system:bankacceptance:add']" type="danger" size="mini" @click="handleAdd">添加内部转账票据</el-button>
 			</el-col>
 			<right-toolbar :showSearch.sync="showSearch" :columns="columns" @queryTable="getList">
 				<template #print>
@@ -84,7 +84,7 @@
 
 		<pagination v-show="total > 0" :total="total" :page.sync="queryParams.pageNum" :limit.sync="queryParams.pageSize" @pagination="getList" />
 
-		<!-- 添加或修改商业票据、银行承兑对话框 -->
+		<!-- 添加或修改内部转账票据对话框 -->
 		<el-dialog :close-on-click-modal="false" :show-close="false" :title="title" :visible.sync="open" width="800px" append-to-body>
 			<el-form ref="form" :model="form" :rules="rules" label-width="140px">
 				<el-row>
@@ -104,7 +104,7 @@
 							<el-row>
 								<el-col :span="20">
 									<!--                  v-model="form.endorser"-->
-									<el-input disabled placeholder="请输入背书人" v-model="displayEndorserName" />
+									<el-input disabled placeholder="请输入背书人" v-model="form.endorserName" />
 								</el-col>
 								<el-col :span="4">
 									<!-- 选择的是客户或者供应商名称-->
@@ -201,14 +201,13 @@ import SearchOption from '@/components/SearchOption.vue';
 import { listBankAccount } from '@/api/system/bankAccount';
 import { mixin_printHTML } from '@/views/dashboard/mixins/print';
 import { excludeParams } from '@/api/tool/exclude';
-import { mixin_bankacception_fill } from '../../dashboard/mixins/bankacceptance/bankacception_fill';
 import CheckTotal from '../../dashboard/components/bankacceptance/CheckTotal.vue';
 import { listCompany } from '@/api/system/company';
 
 export default {
-	name: 'BankAcceptance',
+	name: 'InnerBankAcception',
 	components: { CheckTotal, SearchOption },
-	mixins: [mixin_printHTML, mixin_bankacception_fill],
+	mixins: [mixin_printHTML],
 	data() {
 		return {
 			// 遮罩层
@@ -223,7 +222,7 @@ export default {
 			showSearch: true,
 			// 总条数
 			total: 0,
-			// 商业票据、银行承兑表格数据
+			// 内部转账票据表格数据
 			bankAcceptanceList: [],
 			// 弹出层标题
 			title: '',
@@ -241,14 +240,14 @@ export default {
 				dueDate: null,
 				billAccount: null,
 				billDate: null,
-				billType: '收入',
+				billType: '内部转账',
 				reason: null,
 				billAmount: null,
 				inDiscountPoints: null,
 				inDiscountAmount: null,
 				billCategory: null,
-				origin: null,
-				endorser: null,
+				origin: '己方公司',
+				endorser: 0,
 				endorsee: null,
 				endorseReason: null,
 				comments: null,
@@ -326,6 +325,7 @@ export default {
 						trigger: 'blur'
 					}
 				],
+				endorserName: [{ required: true, message: '请输入背书人', trigger: 'blur' }],
 				// 添加校验
 				billAccount: [
 					{
@@ -390,7 +390,11 @@ export default {
 					}
 				]
 			},
-			displayEndorserName: null
+			queryBank: '',
+			// 背书人类型 默认为客户
+			type: '客户',
+			// 搜索客户
+			companyName: ''
 		};
 	},
 	// 展示与隐藏
@@ -422,6 +426,19 @@ export default {
 	methods: {
 		listCompany,
 		listBankAccount,
+		handleUpdateQueryName(val) {
+			this.queryBank = val;
+		},
+
+		// 背书人相关的填充
+		handleUpdateCompanyName(val) {
+			this.companyName = val;
+		},
+		handleCommitBackCompany(val) {
+			// 填充展示字段
+			this.form.endorserName = val.companyName;
+			this.form.endorser = val.id;
+		},
 		handleCommitBack(val) {
 			this.form.billAccount = val.acountsName;
 		},
@@ -461,7 +478,7 @@ export default {
 			});
 			return sums;
 		},
-		/** 查询商业票据、银行承兑列表 */
+		/** 查询内部转账票据列表 */
 		getList() {
 			this.loading = true;
 			listBankAcceptance(this.queryParams).then(response => {
@@ -485,7 +502,7 @@ export default {
 				dueDate: null,
 				billAccount: null,
 				billDate: null,
-				billType: '收入',
+				billType: '内部转账',
 				// 收票是由默认为购买
 				reason: '购买',
 				billAmount: null,
@@ -493,8 +510,9 @@ export default {
 				inDiscountAmount: null,
 				// 票据种类默认为电子
 				billCategory: '电子',
-				origin: null,
+				origin: '己方公司',
 				endorserName: null,
+				endorser: 0,
 				endorseReason: null,
 				comments: null,
 				addtime: null,
@@ -526,7 +544,7 @@ export default {
 		handleAdd() {
 			this.reset();
 			this.open = true;
-			this.title = '添加收入商业票据、银行承兑';
+			this.title = '内部转账票据';
 			this.form.billDate = formatTime(new Date());
 		},
 		/** 修改按钮操作 */
@@ -536,7 +554,7 @@ export default {
 			getBankAcceptance(id).then(response => {
 				this.form = response.data;
 				this.open = true;
-				this.title = '修改收入商业票据、银行承兑';
+				this.title = '修改收入内部转账票据';
 			});
 		},
 		/** 提交按钮 */
@@ -548,7 +566,7 @@ export default {
 						this.form.addtime = null;
 						this.form.updateTime = null;
 						this.form.userId = null;
-						this.form.billType = '收入';
+						this.form.billType = '内部转账';
 						this.form = excludeParams(this.form, this.$exclude);
 						updateBankAcceptance(this.form).then(response => {
 							this.$modal.msgSuccess('修改成功');
@@ -560,7 +578,7 @@ export default {
 						this.form.addtime = null;
 						this.form.updateTime = null;
 						this.form.userId = null;
-						this.form.billType = '收入';
+						this.form.billType = '内部转账';
 						this.form = excludeParams(this.form, this.$exclude);
 						addBankAcceptance(this.form).then(response => {
 							this.$modal.msgSuccess('新增成功');
@@ -575,7 +593,7 @@ export default {
 		handleDelete(row) {
 			const ids = row.id || this.ids;
 			this.$modal
-				.confirm('是否确认删除商业票据、银行承兑编号为"' + ids + '"的数据项？')
+				.confirm('是否确认删除内部转账票据编号为"' + ids + '"的数据项？')
 				.then(function () {
 					return delBankAcceptance(ids);
 				})

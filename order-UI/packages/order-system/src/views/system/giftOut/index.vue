@@ -6,7 +6,7 @@
 					v-model="daterangeOutDate"
 					style="width: 240px"
 					value-format="yyyy-MM-dd HH:mm:ss"
-					type="daterange"
+					type="datetimerange"
 					range-separator="-"
 					start-placeholder="开始日期"
 					end-placeholder="结束日期"

@@ -1,6 +1,41 @@
 <template>
 	<div class="app-container">
 		<el-form :model="queryParams" ref="queryForm" size="small" :inline="true" v-show="showSearch" label-width="100px">
+			<el-form-item label="仓库名称" prop="supplier">
+				<el-row>
+					<el-col :span="20">
+						<el-input v-model="storeHouseName" placeholder="请输入仓库" clearable size="mini" @keyup.enter.native="handleQuery" disabled />
+					</el-col>
+					<el-col :span="4">
+						<SearchOption
+							:get-data="listStoreHouse"
+							icon="el-icon-search"
+							:limit-info="{}"
+							query-label="仓库名称"
+							query-info="storeHouseName"
+							:query-name="queryStoreHouseName"
+							@commitBack="
+								value => {
+									queryParams.params.detail_exWareHoustId = value.id;
+									storeHouseName = value.storeHouseName;
+								}
+							"
+							@update:queryName="value => (queryStoreHouseName = value)"
+						>
+							<template #table-columns>
+								<el-table-column label="仓库名称" align="center" prop="storeHouseName" />
+								<el-table-column label="地址" align="center" prop="address" />
+							</template>
+						</SearchOption>
+					</el-col>
+				</el-row>
+			</el-form-item>
+			<el-form-item label="入库开始日期" prop="storeDate">
+				<el-date-picker v-model="queryParams.params.main_storeDate_startTime" type="date" value-format="yyyy-MM-dd" placeholder="选择入库日期" clearable />
+			</el-form-item>
+			<el-form-item label="入库结束日期" prop="storeDate">
+				<el-date-picker v-model="queryParams.params.main_storeDate_endTime" type="date" value-format="yyyy-MM-dd" placeholder="选择入库日期" clearable />
+			</el-form-item>
 			<el-form-item label="供应商" prop="supplier">
 				<el-input v-model="queryParams.supplier" placeholder="请输入供应商" clearable size="mini" @keyup.enter.native="handleQuery" />
 			</el-form-item>
@@ -29,41 +64,6 @@
 		</el-form>
 
 		<el-row :gutter="10" class="mb8">
-			<!-- <el-col :span="1.5">
-				<el-button
-					type="primary"
-					plain
-					icon="el-icon-plus"
-					size="mini"
-					@click="handleAdd"
-					v-hasPermi="['system:detail:add']"
-					>新增
-				</el-button>
-			</el-col>
-			<el-col :span="1.5">
-				<el-button
-					type="success"
-					plain
-					icon="el-icon-edit"
-					size="mini"
-					:disabled="single"
-					@click="handleUpdate"
-					v-hasPermi="['system:detail:edit']"
-					>修改
-				</el-button>
-			</el-col>
-			<el-col :span="1.5">
-				<el-button
-					type="danger"
-					plain
-					icon="el-icon-delete"
-					size="mini"
-					:disabled="multiple"
-					@click="handleDelete"
-					v-hasPermi="['system:detail:remove']"
-					>删除
-				</el-button>
-			</el-col> -->
 			<el-col :span="1.5">
 				<el-button type="warning" plain icon="el-icon-download" size="mini" @click="handleExport" v-hasPermi="['system:detail:export']">导出</el-button>
 			</el-col>
@@ -73,63 +73,66 @@
 						<el-button plain icon="el-icon-printer" size="mini" @click="printHTML"></el-button>
 					</el-col>
 				</template>
-				<template #export>
-					<el-col :span="1.5">
-						<el-button v-hasPermi="['system:bankaccount:export']" plain icon="el-icon-folder-opened" size="mini" @click="handleExport"></el-button>
-					</el-col>
-				</template>
 			</right-toolbar>
 		</el-row>
 
-		<el-table id="printBox" size="mini" v-loading="loading" :data="detailList" @selection-change="handleSelectionChange">
-			<!-- 多选框列 -->
-			<el-table-column type="selection" width="55" align="center" />
+		<el-row :gutter="10">
+			<el-col :span="4">
+				<div class="tree-container" style="max-height: 400px; overflow-y: auto">
+					<el-tree :data="storeList" :props="defaultProps" @node-click="handleNodeClick" />
+				</div>
+			</el-col>
+			<el-col :span="20">
+				<el-table id="printBox" size="mini" v-loading="loading" :data="detailList" @selection-change="handleSelectionChange">
+					<!-- 多选框列 -->
+					<!--			<el-table-column type="selection" width="55" align="center" />-->
 
-			<!-- 手写每一列，使用 v-if 判断列的可见性 -->
-			<el-table-column v-if="columns[0].visible" label="ID" align="center" prop="id" />
-			<el-table-column v-if="columns[1].visible" label="库存量" align="center" prop="stockNumber" />
-			<el-table-column v-if="columns[2].visible" label="剩余量" align="center" prop="actualPieces" />
-			<el-table-column v-if="columns[3].visible" label="供应商" align="center" prop="supplier" />
-			<el-table-column v-if="columns[4].visible" label="级别编码" align="center" prop="levelID" />
-			<el-table-column v-if="columns[5].visible" label="级别名称" align="center" prop="levelName" />
-			<el-table-column v-if="columns[6].visible" label="计量单位" align="center" prop="countingUnit" />
-			<el-table-column v-if="columns[7].visible" label="厚度" align="center" prop="height" />
-			<el-table-column v-if="columns[8].visible" label="长度" align="center" prop="length" />
-			<el-table-column v-if="columns[9].visible" label="宽度" align="center" prop="width" />
-			<el-table-column v-if="columns[10].visible" label="出厂片数" align="center" prop="pieces" />
-			<el-table-column v-if="columns[11].visible" label="每包片数" align="center" prop="piecesPerPack" />
-			<el-table-column v-if="columns[12].visible" label="包数" align="center" prop="packs" />
-			<el-table-column v-if="columns[13].visible" label="出厂单价" align="center" prop="price" />
-			<el-table-column v-if="columns[14].visible" label="出厂是否含税" align="center" prop="isIncludeTaxFactory" />
-			<el-table-column v-if="columns[15].visible" label="杂费" align="center" prop="sundryCost" />
-			<el-table-column v-if="columns[16].visible" label="出厂货款" align="center" prop="paymentFactory" />
-			<el-table-column v-if="columns[17].visible" label="卸货价" align="center" prop="paymentUnload" />
-			<el-table-column v-if="columns[18].visible" label="销售是否含税" align="center" prop="isIncludeTaxSale" />
-			<el-table-column v-if="columns[19].visible" label="总货款" align="center" prop="payments" />
-			<el-table-column v-if="columns[20].visible" label="误差" align="center" prop="erro" />
-			<el-table-column v-if="columns[21].visible" label="吨位" align="center" prop="tonnage" />
-			<el-table-column v-if="columns[22].visible" label="陆运费单价" align="center" prop="landFreightPrice" />
-			<el-table-column v-if="columns[23].visible" label="陆运费" align="center" prop="landFreight" />
-			<el-table-column v-if="columns[24].visible" label="海运费" align="center" prop="seaFreight" />
-			<el-table-column v-if="columns[25].visible" label="运费" align="center" prop="freight" />
-			<el-table-column v-if="columns[26].visible" label="其他费用" align="center" prop="otherCost" />
-			<el-table-column v-if="columns[27].visible" label="利润" align="center" prop="profit" />
-			<el-table-column v-if="columns[28].visible" label="不含税利润" align="center" prop="profitNoTax" />
-			<el-table-column v-if="columns[29].visible" label="实际片数" align="center" prop="actualPieces" />
-			<el-table-column v-if="columns[30].visible" label="总货款杂费" align="center" prop="paymentsWithSundry" />
-			<el-table-column v-if="columns[31].visible" label="加费" align="center" prop="additionalFees" />
-			<el-table-column v-if="columns[32].visible" label="返利金额" align="center" prop="rebate" />
-			<el-table-column v-if="columns[33].visible" label="客户佣金" align="center" prop="customerCommission" />
-			<el-table-column v-if="columns[34].visible" label="备注" align="center" prop="comments" />
-
-			<!-- 操作列 -->
-			<el-table-column v-if="columns[35].visible" label="操作" align="center" class-name="small-padding fixed-width">
-				<template #default="scope">
-					<el-button size="mini" type="text" @click="secondryInventoryOut(scope.row)">加工后出库</el-button>
-					<el-button size="mini" type="text" @click="afterbreakInventoryOut(scope.row)">破损后出库</el-button>
-				</template>
-			</el-table-column>
-		</el-table>
+					<!-- 手写每一列，使用 v-if 判断列的可见性 -->
+					<el-table-column v-if="columns[0].visible" label="ID" align="center" prop="id" />
+					<el-table-column v-if="columns[1].visible" label="库存量" align="center" prop="stockNumber" />
+					<el-table-column v-if="columns[2].visible" label="剩余量" align="center" prop="actualPieces" />
+					<el-table-column v-if="columns[3].visible" label="供应商" align="center" prop="supplier" />
+					<el-table-column v-if="columns[4].visible" label="级别编码" align="center" prop="levelID" />
+					<el-table-column v-if="columns[5].visible" label="级别名称" align="center" prop="levelName" />
+					<el-table-column v-if="columns[6].visible" label="计量单位" align="center" prop="countingUnit" />
+					<el-table-column v-if="columns[7].visible" label="厚度" align="center" prop="height" />
+					<el-table-column v-if="columns[8].visible" label="长度" align="center" prop="length" />
+					<el-table-column v-if="columns[9].visible" label="宽度" align="center" prop="width" />
+					<el-table-column v-if="columns[10].visible" label="出厂片数" align="center" prop="pieces" />
+					<el-table-column v-if="columns[11].visible" label="每包片数" align="center" prop="piecesPerPack" />
+					<el-table-column v-if="columns[12].visible" label="包数" align="center" prop="packs" />
+					<el-table-column v-if="columns[13].visible" label="出厂单价" align="center" prop="price" />
+					<el-table-column v-if="columns[14].visible" label="出厂是否含税" align="center" prop="isIncludeTaxFactory" />
+					<el-table-column v-if="columns[15].visible" label="杂费" align="center" prop="sundryCost" />
+					<el-table-column v-if="columns[16].visible" label="出厂货款" align="center" prop="paymentFactory" />
+					<el-table-column v-if="columns[17].visible" label="卸货价" align="center" prop="paymentUnload" />
+					<el-table-column v-if="columns[18].visible" label="销售是否含税" align="center" prop="isIncludeTaxSale" />
+					<el-table-column v-if="columns[19].visible" label="总货款" align="center" prop="payments" />
+					<el-table-column v-if="columns[20].visible" label="误差" align="center" prop="erro" />
+					<el-table-column v-if="columns[21].visible" label="吨位" align="center" prop="tonnage" />
+					<el-table-column v-if="columns[22].visible" label="陆运费单价" align="center" prop="landFreightPrice" />
+					<el-table-column v-if="columns[23].visible" label="陆运费" align="center" prop="landFreight" />
+					<el-table-column v-if="columns[24].visible" label="海运费" align="center" prop="seaFreight" />
+					<el-table-column v-if="columns[25].visible" label="运费" align="center" prop="freight" />
+					<el-table-column v-if="columns[26].visible" label="其他费用" align="center" prop="otherCost" />
+					<el-table-column v-if="columns[27].visible" label="利润" align="center" prop="profit" />
+					<el-table-column v-if="columns[28].visible" label="不含税利润" align="center" prop="profitNoTax" />
+					<el-table-column v-if="columns[29].visible" label="实际片数" align="center" prop="actualPieces" />
+					<el-table-column v-if="columns[30].visible" label="总货款杂费" align="center" prop="paymentsWithSundry" />
+					<el-table-column v-if="columns[31].visible" label="加费" align="center" prop="additionalFees" />
+					<el-table-column v-if="columns[32].visible" label="返利金额" align="center" prop="rebate" />
+					<el-table-column v-if="columns[33].visible" label="客户佣金" align="center" prop="customerCommission" />
+					<el-table-column v-if="columns[34].visible" label="备注" align="center" prop="comments" />
+					<!-- 操作列 -->
+					<el-table-column v-if="columns[35].visible" label="操作" align="center" class-name="small-padding fixed-width" fixed="right" width="120px">
+						<template #default="scope">
+							<el-button size="mini" type="text" @click="secondryInventoryOut(scope.row)">加工后出库</el-button>
+							<el-button size="mini" type="text" @click="afterbreakInventoryOut(scope.row)">破损后出库</el-button>
+						</template>
+					</el-table-column>
+				</el-table>
+			</el-col>
+		</el-row>
 
 		<pagination v-show="total > 0" :total="total" :page.sync="queryParams.pageNum" :limit.sync="queryParams.pageSize" @pagination="getList" />
 
@@ -294,9 +297,12 @@ import { addDetail, delDetail, getDetail, listDetail, updateDetail } from '@/api
 import { addExWarehouse } from '@/api/system/exWarehouse';
 import { parseTime } from '@/utils/ruoyi';
 import { mixin_printHTML } from '../../dashboard/mixins/print';
+import SearchOption from '@/components/SearchOption.vue';
+import { listStoreHouse } from '@/api/system/StoreHouse';
 
 export default {
 	name: 'Detail',
+	components: { SearchOption },
 	mixins: [mixin_printHTML],
 	data() {
 		return {
@@ -318,6 +324,12 @@ export default {
 			title: '',
 			// 是否显示弹出层
 			open: false,
+			storeHouseName: null,
+			queryStoreHouseName: null,
+			storeList: [],
+			defaultProps: {
+				label: 'label'
+			},
 			// 查询参数
 			queryParams: {
 				pageNum: 1,
@@ -358,7 +370,12 @@ export default {
 				customerCommission: null,
 				comments: null,
 				exWareHoustId: null,
-				delFlag: null
+				delFlag: null,
+				params: {
+					detail_exWareHoustId: null,
+					main_storeDate_startTime: null,
+					main_storeDate_endTime: null
+				}
 			},
 			// 表单参数
 			form: {},
@@ -495,8 +512,34 @@ export default {
 	},
 	created() {
 		this.getList();
+		this.fetchStore();
 	},
 	methods: {
+		listStoreHouse,
+		fetchStore() {
+			listStoreHouse().then(res => {
+				this.storeList = res.rows.map(item => {
+					return {
+						label: item.storeHouseName,
+						id: item.id,
+						children: []
+					};
+				});
+			});
+		},
+		// 左侧树的点击
+		handleNodeClick(data) {
+			this.loading = true;
+			listDetail({
+				params: {
+					detail_exWareHoustId: data.id
+				}
+			}).then(res => {
+				this.$message.success(`成功获取到 [${data.label}] 的货物信息!`);
+				this.inventoryMainList = res.rows;
+				this.loading = false;
+			});
+		},
 		/** 查询库存子列表 */
 		getList() {
 			this.loading = true;

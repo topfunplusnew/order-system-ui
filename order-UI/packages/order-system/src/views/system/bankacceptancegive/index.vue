@@ -105,7 +105,7 @@
 							<el-row>
 								<el-col :span="20">
 									<!--                  v-model="form.endorser"-->
-									<el-input disabled placeholder="请输入被背书人" v-model="form.endorserName" />
+									<el-input disabled placeholder="请输入被背书人" v-model="displayEndorserName" />
 								</el-col>
 								<el-col :span="4">
 									<!-- 选择的是客户或者供应商名称-->
@@ -173,38 +173,17 @@
 						</el-form-item>
 						<div style="width: 100%">
 							<el-form-item label="我方收票日期" prop="billDate">
-								<el-date-picker
-									style="width: 100%"
-									v-model="form.billDate"
-									type="datetime"
-									placeholder="选择日期"
-									format="yyyy 年 MM 月 dd 日"
-									value-format="yyyy-MM-dd HH:mm:ss"
-								></el-date-picker>
+								<el-date-picker style="width: 100%" v-model="form.billDate" type="datetime" placeholder="选择日期" value-format="yyyy-MM-dd HH:mm:ss"></el-date-picker>
 							</el-form-item>
 						</div>
 						<div style="width: 100%">
 							<el-form-item label="出票日期" prop="issueDate">
-								<el-date-picker
-									style="width: 100%"
-									v-model="form.issueDate"
-									type="datetime"
-									placeholder="选择日期"
-									format="yyyy 年 MM 月 dd 日"
-									value-format="yyyy-MM-dd HH:mm:ss"
-								></el-date-picker>
+								<el-date-picker style="width: 100%" v-model="form.issueDate" type="datetime" placeholder="选择日期" value-format="yyyy-MM-dd HH:mm:ss"></el-date-picker>
 							</el-form-item>
 						</div>
 						<div style="width: 100%">
 							<el-form-item label="到期日期" prop="dueDate">
-								<el-date-picker
-									style="width: 100%"
-									v-model="form.dueDate"
-									type="datetime"
-									placeholder="选择日期"
-									format="yyyy 年 MM 月 dd 日"
-									value-format="yyyy-MM-dd HH:mm:ss"
-								></el-date-picker>
+								<el-date-picker style="width: 100%" v-model="form.dueDate" type="datetime" placeholder="选择日期" value-format="yyyy-MM-dd HH:mm:ss"></el-date-picker>
 							</el-form-item>
 						</div>
 						<el-form-item label="备注" prop="comments">
@@ -354,13 +333,6 @@ export default {
 						trigger: 'blur'
 					}
 				],
-				endorserName: [
-					{
-						required: true,
-						message: '请输入被背书人',
-						trigger: 'blur'
-					}
-				],
 				// 添加校验
 				billAccount: [
 					{
@@ -424,7 +396,8 @@ export default {
 						trigger: 'blur'
 					}
 				]
-			}
+			},
+			displayEndorserName: null
 		};
 	},
 	created() {
@@ -511,7 +484,7 @@ export default {
 				dueDate: null,
 				billAccount: null,
 				billDate: null,
-				billType: null,
+				billType: '支出',
 				reason: '购买',
 				billAmount: null,
 				inDiscountPoints: null,

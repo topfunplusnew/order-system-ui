@@ -70,33 +70,6 @@
 						>
 							<el-table-column prop="index" label="序号" width="50" align="center" type="index"></el-table-column>
 							<el-table-column v-if="columns[0].visible" prop="orderDate" label="日期" show-overflow-tooltip></el-table-column>
-							<el-table-column v-if="columns[1].visible" prop="companyName" label="客户" show-overflow-tooltip></el-table-column>
-							<el-table-column v-if="columns[2].visible" prop="salesman" label="业务员" show-overflow-tooltip></el-table-column>
-							<el-table-column v-if="columns[3].visible" prop="arrears" label="欠款" show-overflow-tooltip></el-table-column>
-							<el-table-column v-if="columns[4].visible" prop="profit" label="含税利润" show-overflow-tooltip></el-table-column>
-							<el-table-column v-if="columns[5].visible" prop="profitNoTax" label="不含税利润" width="110" show-overflow-tooltip></el-table-column>
-							<el-table-column v-if="columns[6].visible" prop="payments" label="总货款" show-overflow-tooltip></el-table-column>
-							<el-table-column v-if="columns[7].visible" prop="paymentFactory" label="出厂货款" show-overflow-tooltip></el-table-column>
-							<el-table-column v-if="columns[8].visible" prop="tonnage" label="吨位" show-overflow-tooltip></el-table-column>
-							<el-table-column v-if="columns[9].visible" prop="clerk" label="内勤" show-overflow-tooltip></el-table-column>
-							<el-table-column v-if="columns[10].visible" prop="landCarNo" label="陆运车牌" show-overflow-tooltip>
-								<template #default="scope">
-									<span v-if="scope.row.landCarNo !== null">
-										{{ scope.row.landCarNo }}
-									</span>
-									<span v-else>无</span>
-								</template>
-							</el-table-column>
-							<el-table-column v-if="columns[11].visible" prop="seaCarNo" label="柜号" show-overflow-tooltip>
-								<template #default="scope">
-									<span v-if="scope.row.seaCarNo !== null">
-										{{ scope.row.seaCarNo }}
-									</span>
-									<span v-else>无</span>
-								</template>
-							</el-table-column>
-							<el-table-column v-if="columns[12].visible" prop="fleet" label="车队" show-overflow-tooltip></el-table-column>
-							<el-table-column v-if="columns[13].visible" prop="freight" label="运费" show-overflow-tooltip></el-table-column>
 						</el-table>
 						<pagination
 							v-show="total > 0"
@@ -106,10 +79,10 @@
 							@pagination="getList"
 							style="width: 100%; text-align: center"
 						/>
-						<!--        分页-->
 					</el-col>
 				</el-row>
 			</el-col>
+
 			<!-- 标记2 -->
 			<el-col :span="12">
 				<el-row :gutter="10">
@@ -149,6 +122,9 @@
 				</el-row>
 			</el-col>
 		</el-row>
+		<div class="fixed-footer">
+			<el-button type="primary" icon="el-icon-download" size="mini" @click="handleDownload">一键下载</el-button>
+		</div>
 	</div>
 </template>
 
@@ -220,6 +196,24 @@ export default {
 		this.handleProfitSearch();
 	},
 	methods: {
+		// 一键下载
+		handleDownload() {
+			this.$prompt('请选择导出日期', '提示', {
+				confirmButtonText: '确定',
+				cancelButtonText: '取消',
+				inputType: 'date'
+			}).then(res => {
+				console.log(res);
+				this.download(
+					'/system/allExport/export',
+					{
+						date: res.value
+					},
+					`FullReport_${new Date().getTime()}.xlsx`
+				);
+			});
+		},
+
 		handleSearch() {
 			this.getList();
 		},
@@ -322,5 +316,22 @@ export default {
 	.el-table {
 		overflow-x: auto;
 	}
+}
+
+.el-button--mini {
+	border-radius: 4px;
+	font-weight: 500;
+}
+
+.fixed-footer {
+	position: fixed;
+	bottom: 0;
+	left: 0;
+	width: 100%;
+	background: #fff;
+	border-top: 1px solid #ddd;
+	padding: 10px 20px;
+	text-align: right;
+	z-index: 1000;
 }
 </style>

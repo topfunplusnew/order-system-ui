@@ -97,13 +97,13 @@ export default {
 					<el-table-column label="票据交易日期" align="center" prop="billDate" width="120" show-overflow-tooltip />
 					<el-table-column label="收票事由" align="center" prop="incomeReason" width="120" show-overflow-tooltip />
 					<el-table-column label="票据种类（电子/纸质）" align="center" prop="billCategory" width="120" show-overflow-tooltip />
-					<el-table-column label="背书人(来源)" align="center" prop="incomeEndorser" width="120" show-overflow-tooltip />
+					<el-table-column label="背书人(来源)" align="center" prop="incomeEndorserName" width="120" show-overflow-tooltip />
 					<el-table-column label="收入票据来源" align="center" prop="incomeOrigin" width="120" show-overflow-tooltip />
 					<el-table-column label="收入票据金额" align="center" prop="incomeBillAmount" width="120" show-overflow-tooltip />
 					<el-table-column label="收入贴息点数" align="center" prop="incomeInDiscountPoints" width="120" show-overflow-tooltip />
 					<el-table-column label="收入贴息金额" align="center" prop="incomeInDiscountAmount" width="120" show-overflow-tooltip />
 					<el-table-column label="背书是由" align="center" prop="expenseReason" width="120" show-overflow-tooltip />
-					<el-table-column label="被背书人" align="center" prop="expenseEndorser" width="120" show-overflow-tooltip />
+					<el-table-column label="被背书人" align="center" prop="expenseEndorserName" width="120" show-overflow-tooltip />
 					<el-table-column label="支出票据来源" align="center" prop="expenseOrigin" width="120" show-overflow-tooltip />
 					<el-table-column label="支出票据金额" align="center" prop="expenseBillAmount" width="120" show-overflow-tooltip />
 					<el-table-column label="支出贴息点数" align="center" prop="expenseInDiscountPoints" width="120" show-overflow-tooltip />

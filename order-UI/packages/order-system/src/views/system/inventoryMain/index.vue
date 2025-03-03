@@ -5,12 +5,6 @@
 				<el-input v-model="queryParams.storeHouseName" placeholder="请输入仓库名称" clearable @keyup.enter.native="handleQuery" />
 			</el-form-item>
 			<el-form-item label="入库日期" prop="storeDate">
-				<!-- <el-input
-					v-model="queryParams.storeDate"
-					placeholder="请输入入库日期"
-					clearable
-					@keyup.enter.native="handleQuery"
-				/> -->
 				<el-date-picker v-model="queryParams.storeDate" type="date" value-format="yyyy-MM-dd" placeholder="选择入库日期" clearable />
 			</el-form-item>
 			<el-form-item label="陆运车牌" prop="landCarNo">
@@ -213,12 +207,12 @@
 					<!-- 添加车队 -->
 					<el-form-item label="车队">
 						<!-- <el-input
-							v-model="form.fleet"
-							type="text"
-							size="mini"
-							placeholder="请输入车队"
-							style="width: 130px"
-						/> -->
+              v-model="form.fleet"
+              type="text"
+              size="mini"
+              placeholder="请输入车队"
+              style="width: 130px"
+            /> -->
 						<el-row>
 							<el-col :span="12">
 								<el-input v-model="form.fleet" type="text" size="mini" placeholder="请输入车队" />
@@ -403,15 +397,15 @@
 						</template>
 					</el-table-column>
 					<!-- <el-table-column label="库存量" prop="stockNumber" width="150">
-						<template #default="scope">
-							<el-input
-								size="mini"
-								v-model.lazy="scope.row.stockNumber"
-								@change="() => (scope.row.actualPieces = scope.row.stockNumber)"
-								placeholder="入库时片数"
-							/>
-						</template>
-					</el-table-column> -->
+            <template #default="scope">
+              <el-input
+                size="mini"
+                v-model.lazy="scope.row.stockNumber"
+                @change="() => (scope.row.actualPieces = scope.row.stockNumber)"
+                placeholder="入库时片数"
+              />
+            </template>
+          </el-table-column> -->
 					<el-table-column label="每包片数" prop="piecesPerPack" width="150">
 						<template #default="scope">
 							<el-input size="mini" type="number" v-model="scope.row.piecesPerPack" @input="() => (scope.row.packs >= 0 ? calculatePacks(scope) : '')" placeholder="请输入每包片数" />
@@ -481,15 +475,15 @@
 						</template>
 					</el-table-column>
 					<!-- <el-table-column label="实际片数" prop="actualPieces" width="150">
-						<template #default="scope">
-							<el-input
-								size="mini"
-								v-model="scope.row.actualPieces"
-								placeholder="仓库还剩余片数"
-								disabled
-							/>
-						</template>
-					</el-table-column> -->
+            <template #default="scope">
+              <el-input
+                size="mini"
+                v-model="scope.row.actualPieces"
+                placeholder="仓库还剩余片数"
+                disabled
+              />
+            </template>
+          </el-table-column> -->
 					<el-table-column label="卸货价" prop="paymentUnload" width="150">
 						<template #default="scope">
 							<el-input
@@ -642,6 +636,7 @@ import CheckFiles from '../../../components/CheckFiles.vue';
 import { auditInventory } from '../../../api/system/inventoryMain';
 import StateTag from '../../dashboard/components/common/StateTag.vue';
 import { mixin_printHTML } from '../../dashboard/mixins/print';
+
 export default {
 	name: 'InventoryMain',
 	components: { SearchOption, CheckFiles, StateTag },
@@ -829,11 +824,6 @@ export default {
 			listInventoryMain({ storeHouseName: data.label }).then(res => {
 				this.inventoryMainList = res.rows;
 				this.loading = false;
-			});
-		},
-		filterNoStockNumber(data) {
-			return new Promise(resolve => {
-				resolve(data.filter(item => item.stockNumber > 0));
 			});
 		},
 		handleCheck(row) {

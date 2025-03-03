@@ -19,7 +19,7 @@ export var mixin_bankacception_fill = {
 		},
 		handleCommitBackCompany(val) {
 			// 填充展示字段
-			this.form.endorserName = val.companyName;
+			this.displayEndorserName = val.companyName;
 			// 数据库修改 2024/12/5
 			this.form.origin = val.companyType;
 			this.form.endorser = val.id;
